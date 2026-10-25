@@ -39,6 +39,11 @@ export interface PiAgentRequest {
    * (설정을 새로 만들지 않는다). 워커의 낱장 도트 찍기(src/ai/dotTextArt.ts)가 쓴다. 비면 roleModels.deep → 실행 모델.
    */
   readonly pixelModel?: RoleModel;
+  /**
+   * 잔일·검토자 모델(src/ai/assistantRoles.ts). 클라이언트가 해석한 값을 싣는다. 검토자 "off" = v2 검토자를 끈다.
+   * 비면 옛 동작: 검토자는 주 모델로(다른 문맥) 돈다.
+   */
+  readonly assistantRoles?: { readonly smol?: RoleModel | "off"; readonly advisor?: RoleModel | "off" };
   readonly provider: string;
   /** Stable persistence identity for companion-wide map ownership. Omission is conservative. */
   readonly projectKey?: string;
@@ -98,6 +103,11 @@ export interface PiAgentRequest {
    * 워커는 이 값이 "v2" 이면 runAssistantV2 로 보낸다. 비우면 v1 그대로.
    */
   readonly assistantVersion?: "v2";
+  /**
+   * 편집기가 쓰는 스토어 주소와 「먼저 묻기」 설정(autoInstall 기본 true)(src/assetStore/storeAccess.ts). 워커는 이 주소로 읽기 전용 스토어 클라이언트를 만들어
+   * store_find_music·store_install 이 워커 안에서도 상품을 찾고 받게 한다. 데스크톱 다리가 없는 편집기(브라우저)는 싣지 않는다.
+   */
+  readonly store?: { readonly url: string; readonly autoInstall: boolean };
   /** 기본 시스템 프롬프트를 대체한다(테스트·CLI 용). */
   readonly systemPrompt?: readonly string[];
   readonly maxTurns?: number;

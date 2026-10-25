@@ -1,0 +1,407 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "83f6a1c95ce9c62881a50d7bd97343d669300dcf9a3706586f452600acf5c584",
+ "width": 32,
+ "height": 64,
+ "kind": "structure",
+ "name": "scrap scaffold watchtower seen from above: sloped corrugated tin roof with a tarp patch and rust, lit plank lookout floor with sandbag parapet, braced wooden legs, ladder and concrete footings",
+ "label": "wasteland_ruins/watchtower",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "refer",
+ "reasons": [
+  "화풍: 화풍 판정이 갈림(걸린 판정 2/4)",
+  "화풍: 판정자 fail (2/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "refer",
+  "reasons": [
+   "화풍 판정이 갈림(걸린 판정 2/4)",
+   "판정자 fail (2/4)"
+  ],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 12,
+  "tileColorsP90": 21,
+  "darkV5": 47,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 8
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "borderline",
+   "borderline",
+   "right",
+   "right",
+   "borderline",
+   "right",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "corrugated tin roof with tarp patch and rust",
+      "rows": "0-8",
+      "evidence": "c",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": "9-9"
+     },
+     {
+      "part": "plank lookout floor",
+      "rows": "10-18",
+      "evidence": "a",
+      "front_edge_line_row": 19,
+      "eave_shadow_rows": "21-24"
+     },
+     {
+      "part": "sandbag parapet band",
+      "rows": "19-20",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "platform front beam/apron",
+      "rows": "21-26",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "braced legs, ladder and footings",
+      "rows": "27-62",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 9,
+    "front_face_rows": 44,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 0-8 are a sloped tin roof plane ending in a light front-edge line at rows 7-8, followed by a dark eave shadow at row 9. Rows 10-18 are a lit plank floor seen from above, ending in a light sandbag edge band at rows 19-20, with a shadowed platform front at rows 21-26. Below that, rows 27-62 show a tall front face of braced legs, ladder and footings. Both the roof and the floor have top surfaces and the front face is well over 3 rows, so it reads as three-quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The measured facts are fine. The candidate has 12 visible tones per tile against 12 and 10 for the references, 0% near-flat coverage, and 0% neutral dark edges, so the outlines are tinted dark material tones (brown by the wood, dark rust or teal by the roof). The picture is weaker. The whole tower uses only 26 distinct colours, against 185 and 66 for the references, so each material gets about 3-4 steps instead of Beodeul's 5-6. The corrugated roof has ridge lines, a tarp patch and a few rust dots, but no per-tile highlights or scallops like the reference roofs. The plank floor and sandbag parapet are small and simple. The braced legs and ladder are mostly one dark wood tone with few highlights, and the concrete footings are nearly plain. Next to the references it looks thinner and flatter, with shallower ramps and less grain, so it does not match the Beodeul shading depth. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 18794
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "corrugated tin roof with tarp patch",
+      "rows": "0-8",
+      "evidence": "c",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "plank lookout floor with sandbag parapet",
+      "rows": "10-19",
+      "evidence": "a",
+      "front_edge_line_row": 19,
+      "eave_shadow_rows": "21-22"
+     },
+     {
+      "part": "deck fascia / front beam",
+      "rows": "21-25",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "braced legs, ladder and footings",
+      "rows": "27-62",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 10,
+    "front_face_rows": 36,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The roof band (rows 0-8) ends in a light edge line at rows 7-8 and carries a teal tarp patch and rust. Below it the plank lookout floor (rows 10-19) is a top surface seen from above. It ends in a lighter sandbag band at rows 19-20, followed by darker fascia and shadow at rows 21-25. Below that, the front face is a tall open frame of braced legs, a ladder and footings at rows 27-62, about 36 rows. The tower is seen from the south with no receding side face. Both the roof and the floor show horizontal surfaces, so it reads as three-quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The measured facts match the references. The candidate has 12 visible tones per 16x16 tile against 12 and 10 for the references. Near-flat coverage is 0%, the same as both references. Dark edge pixels are 0% neutral, so the outlines lean toward the material tones (dark brown beside wood, dark rust beside tin) and do not read as a black sticker line. By eye, the corrugated roof has ridge lines, a tarp patch and rust speckle. The plank floor, the sandbag parapet, the braced legs and the ladder rungs each show their own value breaks and grain, with no large flat fills. The total palette is only 26 colours, against 66 and 185 in the references, so each material gets about 4 steps instead of Beodeul's 5-6. That is a locked-palette effect, since the visible tone count per tile still matches. The open leg area is sparse, but that follows from the scaffold subject. A careful artist would accept it next to the references, though it is slightly leaner.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17978
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "sloped corrugated tin roof with tarp patch and rust",
+      "rows": "0-8",
+      "evidence": "c",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": "9-9"
+     },
+     {
+      "part": "plank lookout floor with sandbag parapet",
+      "rows": "10-18",
+      "evidence": "a",
+      "front_edge_line_row": 20,
+      "eave_shadow_rows": "21-22"
+     },
+     {
+      "part": "front face of platform, braced legs, ladder and footings",
+      "rows": "21-62",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 9,
+    "front_face_rows": 42,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The roof occupies rows 0-8 as a sloped tin plane that ends in a light edge line at rows 7-8, followed by a dark eave row at row 9. Below it, rows 10-18 form a plank floor top with a lighter parapet band at rows 19-20. The platform front face (rows 21-26) and the legs, bracing and ladder (rows 27-62) give a front face well over 3 rows. No receding side face is drawn, so it reads as a top-and-front 3/4 view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The measured facts are fine: 12 visible tones per tile (references 12 and 10), 0% near-flat coverage, and 0% neutral dark edge pixels, so the outlines are tinted dark brown/teal rather than a black sticker line. By eye the piece is still shallower than the references. The whole object uses only 26 distinct colours across tin roof, tarp, rust, planks, sandbags, legs, ladder and concrete. That leaves roughly 3-4 steps per material, against the 5-6 per material on the Beodeul tile roofs, plaster and stone. The corrugated roof has ridge lines and a few rust dots, but no per-sheet highlights and no scalloped-tile rhythm. The braced legs and ladder read as thin, mostly two-tone dark strokes with little grain. The sandbags and footings are only lightly modelled, with no stone-by-stone shading. It is clean and tinted-outline, but the material ramps and surface grain are visibly thinner than the references, so I fail it rather than pass on tile-level numbers alone.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 16100
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "sloped corrugated tin roof with tarp patch",
+      "rows": "0-8",
+      "evidence": "c",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": "9-9"
+     },
+     {
+      "part": "plank lookout floor with sandbag parapet",
+      "rows": "10-21",
+      "evidence": "a",
+      "front_edge_line_row": 20,
+      "eave_shadow_rows": "22-23"
+     },
+     {
+      "part": "platform front apron",
+      "rows": "22-25",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "braced legs, ladder and footings",
+      "rows": "26-62",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 12,
+    "front_face_rows": 41,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The roof at rows 0-8 is a tin and tarp plane that ends in a light eave line at rows 7-8, with dark shadow at row 9. Below it, rows 10-21 are a plank floor seen from above, with horizontal plank lines and a light sandbag parapet band at rows 19-20 as its front edge. Rows 22-25 are a darker wooden front apron. Rows 26-62 are the front face of braced legs, ladder and concrete footings, so the front face is well over 3 rows. Both horizontal surfaces (roof and floor) are drawn as tops, not only as vertical strips."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The measured facts put the candidate level with the references. It has 12 visible tones per 16x16 tile against 12 and 10. Near-flat coverage is 0%, the same as both references. The dark edge pixels are 0% neutral, so the outlines carry a tint. By eye, the roof ribs, rust and tarp patch, the plank floor with sandbag parapet, and the braced legs with ladder are separated by value and hue shifts rather than a uniform black line. The candidate has only about 4 steps per material against the references' 5-6, and only 26 colours overall. It is also much smaller, so it has no large single-colour areas. The extra tones and grain on the roof and legs keep it from looking like a sticker, so I judge it acceptable next to the references, though slightly shallower in ramp depth.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17869
+  }
+ ],
+ "decidedAt": "2026-10-22T16:00:54.427Z",
+ "cells": {
+  "16": [
+   "09c88500f6a0902a",
+   "55495c2e0ddd1285",
+   "98c2059b8b7fa598",
+   "b2321062bd3d0923",
+   "c9786226227259d1",
+   "cef8eccfa0415d5d",
+   "ec92625ea8652d05",
+   "f4f08c80de3bcf57"
+  ],
+  "24": [
+   "0d8ac60ea80386d2",
+   "0de986849892aa7d",
+   "15a2ec2f38804c67",
+   "17d660dc9e90faab",
+   "1e4c646cd288d31c",
+   "21b56b728c076b4b",
+   "24202a18a5a721c4",
+   "24ae5f14f30d45af",
+   "29a3cfbbce1e660a",
+   "2e7e749d6e1cc2bd",
+   "390db4fd0dae1d3d",
+   "3fccc5b3b9956dd7",
+   "40572b77ee009b04",
+   "666dcb2905c38b1f",
+   "68c0665b2398fdc7",
+   "773421ac089c7535",
+   "7e48f75d920c1595",
+   "89e345709d638c5a",
+   "91a992c323889198",
+   "93ba1df68c7c1d88",
+   "9877b808d15bc9e5",
+   "9e2470963ae30490",
+   "a48c397731cbc559",
+   "a56dcba9465cf69c",
+   "a57a40baf9d62e67",
+   "ad77c4133c605069",
+   "b41bffc69d9d75d8",
+   "d526506ec0ac02bf",
+   "d572980d3f4f5831",
+   "d92c0a8a3b4a7fb2",
+   "dd58f1b3e6d3f75c",
+   "e01bfa30d17ae899",
+   "e6d7bdd6759c33bb",
+   "efd541751b18b901",
+   "f509f0ecbcbd52ad",
+   "fe7088a889a55b87"
+  ],
+  "32": [
+   "7c3a16ebb71b5213",
+   "cc39b7546c2e153d"
+  ],
+  "48": [
+   "57a39ecc0426ffc8",
+   "5987139a9bae0356",
+   "7aeaffaa2a2e018a",
+   "a3b977147c6f4be9",
+   "a9df1101c397bc62",
+   "a9eb23a6cfb323ce",
+   "ab76145a2414d3d6",
+   "c4bb133833b93eb9",
+   "d0e319fdb0dbdabf",
+   "d4f361276ad7b667",
+   "d89c5893096712c3",
+   "ebceb4401a27216b"
+  ]
+ }
+}

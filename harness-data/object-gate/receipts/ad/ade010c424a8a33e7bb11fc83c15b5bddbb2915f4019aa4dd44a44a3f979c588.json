@@ -1,0 +1,313 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ade010c424a8a33e7bb11fc83c15b5bddbb2915f4019aa4dd44a44a3f979c588",
+ "width": 96,
+ "height": 80,
+ "kind": "terrain",
+ "name": "dusty packed wasteland earth ground, a seamless 4x4-tile field with soft tonal patches, long dry cracks and pebbles running across tile borders, mixed with tiles of dry grass tufts",
+ "label": "wasteland_ruins/dirt-d",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 7,
+  "tileColorsP90": 10,
+  "darkV5": 92,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 30
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "ground field (full 96x80 tile block of packed earth, cracks, pebbles, grass tufts)",
+      "rows": "0-79",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "other",
+    "evidence": "This is a seamless terrain field and not a standing object. The silhouette is a full rectangle with a constant width of 96 across rows 0-79. The column scans show only mottled tonal patches, thin dark crack lines (for example rows 20-24 and 43-44), pebbles with light pixels (rows 7, 39-40 and 55-56) and small yellow grass tufts. There is no front-edge line, no eave shadow, no ellipse, no roof plane and no vertical face. It does not read as a standing body, so the top-surface and front-face rules do not apply, and the terrain kind matches the object."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 6,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The candidate shows 7 visible tones per 16x16 tile. That matches the paving reference (7) and is well above the grass reference (3). Near-flat coverage is 0%, the same as both references, and the picture shows no large single-colour areas. The soil carries about 6 lightness steps, from pale dusty patches through mid browns to dark brown cracks. Speckle grain, small light pebbles with shadow dots, and long cracks that cross tile borders give varied texture throughout. Dark edge pixels are 0% neutral, and the crack and pebble edges lean visibly brown, so the outline is a dark tone of the neighbouring earth rather than a black sticker line. There is no uniform outline around shapes, and forms are separated by value. The total palette is small (12 colours), but it still produces visible variation at the same density as the references. The dry grass tufts and yellow flecks add some variety. A careful artist would accept this next to the references without it looking thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 11666
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "ground tile field (earth patches, cracks, pebbles, grass tufts)",
+      "rows": "0-79",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The image is a seamless full-bleed ground texture, 96 px wide on every row from 0 to 79. It has no silhouette, no standing body, no front face and no front-edge line or eave shadow. The tonal patches, cracks, pebbles and grass tufts are surface texture only. It is terrain, so it is a flat top-down surface with no front face, which is expected for ground tiles."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a ground field and matches the reference kind (grass and paving). Measured facts: 7 visible tones per tile against 3 for the grass reference and 7 for paving; near-flat coverage 0%, the same as both references. Dark edge pixels are 0% neutral, so any dark tones are tinted brown rather than black. By eye, the soil carries several brown steps: mottled light and dark patches, thin cracks, grey pebbles, and speckle grain across tile borders. No large flat areas appear. There is no outline, which fits ground. The raw palette is small (12 colours) but gives about 5 readable tonal steps. A few small yellow dots look like stray accents but do not hurt the shading. It would sit next to the references without looking thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 8755
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "seamless ground field (earth patches, cracks, pebbles, grass tufts)",
+      "rows": "0-79",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "This is a seamless terrain field, not a standing object. The silhouette is a constant 96 px wide for rows 0-79, so there is no outline, front face, eave line, ellipse or roof. The column scans show only mottled tonal patches, thin dark crack lines (e.g. rows 20-23 and 43-44), pebbles (light pixels at rows 7, 55-56 and 71) and yellow grass tufts. The surface is flat and top-down with no vertical face, so it reads as a flat ground texture, which is what the terrain kind expects."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate shows 7 visible tones per 16x16 tile, against 3 for the grass reference and 7 for the paving reference. Near-flat coverage is 0%, the same as both references, so there are no flat fills. The soil carries mottled patches, dark-brown cracks that run across tile borders, and light pebbles with small shadows. About 5 brown lightness steps are visible, which is close to the references' 5-6. Dark edge pixels are 0% neutral, so the crack and shadow lines are tinted dark brown (dark material tone), not a black sticker outline, unlike the paving reference at 80% neutral. Weaknesses: only 12 colours in total, and the yellow dry-grass tufts are sparse and read as small dots. The ground still matches the references' richness and does not look thinner or flatter beside them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 10802
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "ground field (full 96x80 tile block)",
+      "rows": "0-79",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 80,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The image is a seamless terrain field. Every row from 0 to 79 is 96 px wide, so there is no silhouette, no front face and no edge line or eave shadow. The column scan shows only mottled earth tones, a few dark crack rows (such as 20-24 and 43-44) and pebbles. This is flat top-down ground texture, which is expected for terrain. It has no standing object volume, so the front face is 0 rows and it reads as a flat top-down slab."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate has 7 visible tones per 16x16 tile. That matches the paving reference (7) and beats the grass reference (3). Near-flat coverage is 0%, the same as both references. Dark edge pixels are 0% neutral, so the crack lines and pebble shadows lean brown and read as dark material tones, not a black sticker outline. By eye, the earth has mottled patches in about 5 lightness steps, long dark cracks that run across tile borders, and pebbles with light tops and dark undersides. The yellowish dry-grass flecks add variation. No large flat areas are visible. The palette is small at 12 colours in total, but the visible texture is comparable to the references. It would sit acceptably beside the Beodeul ground pieces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 10455
+  }
+ ],
+ "decidedAt": "2026-10-22T17:03:47.804Z",
+ "cells": {
+  "16": [
+   "0dfa8339684e7854",
+   "1c9f14f532c40e82",
+   "23d966e82540d90d",
+   "23e048c6b24c0a5e",
+   "26d18f275d920077",
+   "2ae9f7cd0977e0c4",
+   "321fa39648819288",
+   "35b0747ad24a2808",
+   "36bd469830798b6f",
+   "3940c2762a2c9aa6",
+   "3d61368efeed640d",
+   "49e6a3ff7bc80cf9",
+   "534f43c176b2f866",
+   "5a3eb648e26915d7",
+   "738da1fe45ee3e23",
+   "a888af4ec1ab0203",
+   "cc8c7aff9fcf1f0b",
+   "ceaf1b6dfa2e48ec",
+   "d9b6dc5c4097aaa6",
+   "db58f73b6dfeec09",
+   "e656d12679d21395"
+  ],
+  "24": [
+   "0bb321bc54fef0bb",
+   "21919e3136d6d2df",
+   "27cbd3c1b5a65de3",
+   "2ad28dd428cbb941",
+   "34081a3dddc3e500",
+   "34c8abbf98dfb9d3",
+   "37cb99b582327778",
+   "41af7fbb6beac327",
+   "42d13a92d6ecf9f4",
+   "4780c0be9c675f96",
+   "53e4549f99b135e5",
+   "58a4fe617c322526",
+   "5b869c203c920dc6",
+   "5bd6e2b9e13b539c",
+   "840238c5f3a00e73",
+   "849b16262d1a81a0",
+   "871b6cf219123042",
+   "878c15e5737dd014",
+   "9673920d7fc9186c",
+   "9bb01397d0ff4ed2",
+   "a20449bdbbc0bf18",
+   "a39a82e68a029a45",
+   "aadd8d4b0912f0bf",
+   "b13e0a83feacce04",
+   "ba4621b8ce9932ad",
+   "c3ce9cdaacd266a9",
+   "c7a00c8c59459ba7",
+   "cc7b2d868dfcb2ed",
+   "e9bb19504ccd227d",
+   "ef91c9a5a4bdb8d7",
+   "f1fc2c39dfeff003",
+   "f88ad46cf16204a4"
+  ],
+  "32": [
+   "0c6231eb95a344f4",
+   "15d09c10e890a095",
+   "298b43fe46d2c8fe",
+   "2e6690fb11283104",
+   "35f58f205b08250d",
+   "460a97f9ea3d286a",
+   "484d23d801f16b04",
+   "49853671fbf41f12",
+   "638b01f3d4770da2",
+   "6a35552fbddc8985",
+   "71347744cf1a2d35",
+   "7932ec15c85fa7ca",
+   "7bea45e5c941a4af",
+   "9236b2416563e512",
+   "d0df1fbf7dcde540",
+   "fb97db47d4524ece",
+   "ffcd22022febf5da"
+  ],
+  "48": [
+   "06e9dc27fbd41888",
+   "276a419a912b62f1",
+   "7441ffcd4acf49b6",
+   "974292bd982b034d",
+   "bd178056e6a07279",
+   "c5b0275440efcdd0",
+   "e7f7c3a81802e4b9",
+   "eebb3a87a0aa9794"
+  ]
+ }
+}

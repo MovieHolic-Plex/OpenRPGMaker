@@ -20,6 +20,7 @@ import type { FaceGraphic } from "@/project/types";
 import { sharedPortraitRendering } from "@/assets/sharedPortraitAssets";
 import { vnUiText, type VnUiKey } from "@/player/vnExtrasStrings";
 import { vnExtrasLanguage } from "@/project/vnExtras";
+import { endingSummaryText } from "@/project/endingSummary";
 
 /** 엔딩 화면 글자 — 게임 언어(편집기 언어가 아니다: 저작 vnExtras·대사 시스템 언어, 없으면 ko)로 고른다. */
 function endingText(key: VnUiKey, ...args: readonly (string | number)[]): string {
@@ -399,15 +400,8 @@ function buildEndingCg(terminal: TerminalScene, project: Project, presentation: 
     layer.append(pair);
   }
   layer.append(textNode("div", "ending-cg-frame", ""));
-  const epilogue = (ending?.epilogue ?? [])
-    // 말한 사람이 있는 줄은 이름을 붙인다 — 이름 없이 존댓말·반말 두 줄이 붙으면 누가 한 말인지 모른다.
-    .map((beat) => {
-      const text = typeof beat.text === "string" ? beat.text.trim() : "";
-      const speaker = "speaker" in beat && typeof beat.speaker === "string" ? beat.speaker.trim() : "";
-      return text && speaker ? `${speaker}: ${text}` : text;
-    })
-    .filter(Boolean)
-    .join("\n");
+  // 카드는 내레이션 — 말한 사람이 있는 줄은 「이름: …」 대본이 아니라 「」 인용으로 보인다(J36).
+  const epilogue = endingSummaryText(ending?.epilogue ?? []);
   return { layer, mode: partnerFigure ? "couple" : "scene", badge: endingBadge(endingId, Boolean(partnerFigure), presentation), epilogue };
 }
 

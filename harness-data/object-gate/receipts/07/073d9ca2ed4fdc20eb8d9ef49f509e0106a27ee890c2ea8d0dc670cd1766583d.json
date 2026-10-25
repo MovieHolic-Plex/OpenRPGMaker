@@ -1,0 +1,336 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "073d9ca2ed4fdc20eb8d9ef49f509e0106a27ee890c2ea8d0dc670cd1766583d",
+ "width": 16,
+ "height": 48,
+ "kind": "structure",
+ "name": "north-south barricade line of sandbags seen from above: a long band of stacked bag tops, with the end face at the bottom",
+ "label": "wasteland_ruins/barricade-v",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 독립 눈이 「3/4 아님」 2/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면",
+  "화풍: 판정자 fail (3/4)",
+  "화풍: 명암 3단 < 4 (2/4)",
+  "화풍: 칸 정보량이 기준보다 훨씬 낮음 (1/4)"
+ ],
+ "view34": {
+  "verdict": "refer",
+  "reasons": [
+   "독립 눈이 「3/4 아님」 2/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면"
+  ]
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (3/4)",
+   "명암 3단 < 4 (2/4)",
+   "칸 정보량이 기준보다 훨씬 낮음 (1/4)"
+  ],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 5
+ },
+ "metrics": {
+  "tileColorsMedian": 8,
+  "tileColorsP90": 9,
+  "darkV5": 47,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 3
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "wrong",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "sandbag stack tops (long band of bag tops)",
+      "rows": "0-39",
+      "evidence": "a",
+      "front_edge_line_row": 40,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "end face of the barricade (south face)",
+      "rows": "40-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 40,
+    "front_face_rows": 8,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 0-39 are a long top surface made of staggered bag tops. Each bag has a lighter top-edge row (L=143) over a mid-tone body (L=99), and the silhouette scallops between widths 12 and 16 on a 10-row period. The top ends at a front edge near row 40. Below it, rows 40-47 form a flat vertical end face about 8 rows tall, with a dark base on rows 46-47. This gives a large top surface plus a front face of 3 or more rows. No receding side face is drawn. The top is very deep compared with the front face, but both are present."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small, narrow sandbag column, much smaller than the full-building references, so the comparison is only partly like-for-like. It has 8 visible tones per tile against 10-12 for the references, which is lower but not far off. Near-flat coverage is 4% and the references are 0%, so there is little flat fill. Dark edge pixels are 0% neutral, so the outline leans a warm brown-grey, which fits dark_material_tone. By eye, each bag is shaded as a stacked lump with a light top and a dark underside, but there are only about 3 steps per bag. There are no per-bag grain dots or stitching, and no highlight clusters like the tile scallops and per-stone shading in the references. The column is a vertical stack of nearly identical blobs, so it looks thinner and more repetitive than the references' richly textured surfaces. A careful artist would likely want more ramp steps and surface texture beside the references, so it falls short of the bar.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 16457
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "sandbag band (stacked bag tops running north-south)",
+      "rows": "0-39",
+      "evidence": "a",
+      "front_edge_line_row": 39,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "end face of the barricade (south end, boxy front)",
+      "rows": "40-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 39,
+    "front_face_rows": 8,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 0-39 are a long top band made of repeating bag tops. The column scan shows a light highlight, then a dark seam, then brown body every 10 rows. The width swings 12-16 px, which gives the staggered bag edges. At about rows 37-39 the band ends in a light edge line, and an end face of about 8 rows (rows 40-47) sits below it, with a dark base at rows 46-47. The top surface is large and the south end face is 3+ rows, so it reads as a top plus a front face. The foreshortened top is very long, which makes it close to a top-down slab, and the object is a low barricade rather than a gate, pavilion or building, so the kind match is doubtful. The side strips look like outline and shading, not a receding side face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a narrow stack of sandbag tops, much simpler than the full houses, so I judged it as a thin or sparse prop. It shows about 8 visible tones per tile against 10-12 in the references. Near-flat coverage is 4% against 0%, so there are no large flat fills. Each bag has a highlight, a mid tone and a shadow edge, which gives roughly 4 lightness steps against about 6 on the roof tiles. The dark edge pixels are 0% neutral, so the outline leans toward the bag material and is not a black sticker line. Texture is modest: the bags are shaded one by one, but there is little grain or speckle inside them. The piece is slightly lower than the references in density and steps, yet a careful artist would accept it beside them without it looking flat or sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19124
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "sandbag stack top (long band of bag tops)",
+      "rows": "0-39",
+      "evidence": "a",
+      "front_edge_line_row": 40,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "south end face of the barricade",
+      "rows": "40-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 40,
+    "front_face_rows": 8,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 0-39 are one long top surface made of staggered bag tops. Each bag has a light highlight band (L about 125-143) over a brown body (L about 99), and the silhouette stays 12-16 px wide. At row 40 the top ends in a front-edge line, and below it rows 40-47 form a separate end face, a gray-brown block 14 px wide that darkens to a dark base at rows 46-47. The top is very tall and foreshortening is minimal, but a top surface and a front face of 8 rows (3 or more) are both clearly present. No isometric side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a tiny, narrow column of grey stacked sandbag blobs, much smaller than the full buildings on the left, so it is not a like-for-like building comparison. It shows about 8 visible tones per tile against 10-12 in the references, which is lower but not far off. Near-flat coverage is 4% against 0% for the references, so there is little flat fill. Dark edges are 0% neutral, so they carry a tint, but the picture shows mostly a dark grey-brown line around each bag, which reads closer to a uniform sticker outline than to Beodeul's selective material-tone outlines. Each bag has only about 3 lightness steps (highlight, mid, dark) against 5-6 per material in the references, and there is no per-element texture such as tile scallops or plaster speckle. The long band and end face described in the object are barely readable at this size. A careful artist would find it thinner and flatter than the references, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 15140
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "stacked sandbag tops (long band)",
+      "rows": "0-39",
+      "evidence": "a",
+      "front_edge_line_row": 39,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "end face of the barricade (south face)",
+      "rows": "40-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 40,
+    "front_face_rows": 8,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 0-39 are a tall band of staggered bag tops, with light highlight rows and dark seam rows repeating every 10 rows. This is a large horizontal surface seen from above. The band ends at about row 39-40, where the end face begins. The end face is a flat, vertical block at rows 40-47 with a dark base at rows 46-47, so the front face is 8 rows. The silhouette stays 14 px wide below the band, and no receding side face is drawn. The top surface is large and sits above a front face of 3 or more rows, so it reads as three_quarter, though the top-down band is much taller than the end face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a narrow sandbag stack with only 9 distinct colours in total, against 66 and 185 in the references. Each bag has roughly 3-4 steps (highlight, mid, shadow, outline), below Beodeul's 5-6 per material. The measured 8 visible tones per tile is under both references (12 and 10). The dark edge pixels are 0% neutral, so the outlines carry a tint (dark_material_tone) and it is not a black sticker line. Near-flat coverage is 4%, so there are no large flat fills, but the bags are drawn as outlined lumps with little per-bag grain or speckle. The stone reference shades each stone individually with varied highlights, and this piece looks thinner and more uniformly outlined next to it. It is neat but shallower than the standard, and when in doubt it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 27582
+  }
+ ],
+ "decidedAt": "2026-10-22T15:08:30.374Z",
+ "cells": {
+  "16": [
+   "60311c672a6d5dee",
+   "b2ffb6fcaa52f6ee",
+   "c7bb5404b29e04b1"
+  ],
+  "24": [
+   "19430c469c1e1693",
+   "1a480d72f37b62b5",
+   "561ac39c4763cc30",
+   "ad6fb2ed246cf135",
+   "b8f9567c7a52fa32",
+   "d24c1dadf4155b39"
+  ],
+  "32": [
+   "0f4a01cbb7967c10",
+   "28d744a0ea6a7b5d",
+   "2b751388c678d6cd",
+   "38f822d2312d2fbd",
+   "47b1936d683374bf",
+   "9f4c01d985b16dd6",
+   "bd0904473aa125b9",
+   "c7b248d2bbccce91",
+   "ceed795546c7109b",
+   "cf88aed4d15c2d87",
+   "d768ad9fce5116ff",
+   "f9da58037b226390"
+  ],
+  "48": [
+   "2e472696acf8ef06",
+   "2f02a9669c1d01b4",
+   "a90508a4b38a9931"
+  ]
+ }
+}

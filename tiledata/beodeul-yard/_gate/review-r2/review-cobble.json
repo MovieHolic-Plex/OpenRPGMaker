@@ -1,0 +1,16 @@
+{
+  "surface": "cobble",
+  "image": "tiledata/beodeul-yard/_gate/yard_cobble.png",
+  "verdict": "fail",
+  "view34": "pass",
+  "autotile": "pass",
+  "quality": "fail",
+  "material": "pass",
+  "defects": [
+    "Body interior: the large grey cobble sits at the same in-cell offset (~x+4..8, y+3..8) in nearly every body cell, so at 4x the grey stones form a rigid 16px column/row lattice (e.g. 4x image columns at x~100,165,230,290,355 and rows y~45,110,170,230). Pixel check: body variants share 30-52% identical pixels, so the 4 variants do not break the grid.",
+    "The 4-pixel brown 'sparkle' fleck motif in the earth joints repeats identically in most cells (8x crop at x~130,260,390,515 per row), reading as a stamped pattern.",
+    "Stones are nearly all 3-5px ovals evenly spaced on dark earth; 'mixed size' is not delivered - reads as uniform pebble scatter/gravel rather than laid river cobbles, busier than Beodeul road cobble at the same scale."
+  ],
+  "evidence": "Rim, south kerb face (light top + dark lower band), concave/convex corners, hole, neck and isolated cell all join without seams; no side faces. Colour and outline (dark brown, not black) sit fine beside the Beodeul house in compare-3x. The failure is the objectionable cell-period lattice of grey stones and repeated flecks, plus uniform stone size, visible at 1x/4x across the whole blob.",
+  "reviewer": "claude-opus independent adversarial review 2026-10-23 r2"
+}

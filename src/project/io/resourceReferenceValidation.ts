@@ -31,6 +31,7 @@ import { OGA_CRAFTPIX_BACKDROP_ASSETS } from "@/assets/ogaCraftpixBackgrounds";
 import { OPRN_PANORAMA_ASSETS } from "@/assets/oprnPanoramas";
 import { seCatalogResourceIds } from "@/assets/seCatalogRuntime";
 import { assert } from "./guards";
+import { isRetiredResourceId } from "@/assets/retiredAssets";
 import { openingMapViewResourceIds } from "@/project/openingMapView";
 
 export function collectResourceIds(project: Project): Set<string> {
@@ -134,10 +135,14 @@ export function validateSystemResources(system: SystemRecords, resourceIds: Read
   for (const [index, layer] of (system.titleScreen?.backgroundLayers ?? []).entries()) {
     validateOptionalResource(`system.titleScreen.backgroundLayers[${index}].resourceId`, layer.resourceId, resourceIds);
   }
+  for (const [index, runner] of (system.titleScreen?.runners ?? []).entries()) {
+    validateOptionalResource(`system.titleScreen.runners[${index}].resourceId`, runner.resourceId, resourceIds);
+  }
   for (const [index, effect] of (system.titleScreen?.effects ?? []).entries()) {
     validateOptionalResource(`system.titleScreen.effects[${index}].depthResourceId`, effect.depthResourceId, resourceIds);
   }
   validateCinematicResources("system.opening", system.opening, resourceIds);
+  validateCinematicResources("system.titleIntro", system.titleIntro, resourceIds);
   validateCinematicResources("system.gameOver.sequence", system.gameOver?.sequence, resourceIds);
   validateOptionalResource("system.gameOver.backgroundResourceId", system.gameOver?.backgroundResourceId, resourceIds);
   validateOptionalResource("system.gameOver.musicResourceId", system.gameOver?.musicResourceId, resourceIds);
@@ -160,13 +165,25 @@ function validateCinematicResources(label: string, sequence: CinematicSequence |
   }
 }
 
+/**
+ * 저장본 검증용 「알려진 리소스인가」. 살아 있는 id 집합에 있거나, 2026-10-07 저작권 정리로 그림을 지운 EasyRPG 계열 id 다.
+ *
+ * 왜(2026-10-25, ci-full 40165485978): 그 전에 저장한 프로젝트는 `easyrpg-battle-blow`·`easyrpg-backdrop-sky1`·`easyrpg-title-title1`
+ * 같은 id 를 그대로 들고 있다. 집합에서만 찾으면 그 프로젝트가 **역직렬화 자체에 실패**했다(전투 애니메이션 하나 때문에 게임 전체가 안 열림).
+ * 플레이어는 그 id 를 그리지 않거나(retiredAssets.ts) 대체 연출로 바꾼다(retroPixelAnimations.ts) — 열리는 것이 맞다.
+ * 새로 저작하는 경로(컷신 검증·조수 도구)는 이 함수를 쓰지 않고 살아 있는 집합만 본다.
+ */
+export function isKnownResourceId(resourceIds: ReadonlySet<string>, id: string): boolean {
+  return resourceIds.has(id) || isRetiredResourceId(id);
+}
+
 export function validateOptionalResource(
   label: string,
   id: string | undefined,
   knownResourceIds: ReadonlySet<string>
 ): void {
   if (id === undefined) return;
-  if (knownResourceIds.has(id)) return;
+  if (isKnownResourceId(knownResourceIds, id)) return;
   const isGeneratedPrefix =
     id.startsWith("generated-enemy-") || id.startsWith("farming-crop-") || id.startsWith("easyrpg-monster-");
   if (!isGeneratedPrefix) {

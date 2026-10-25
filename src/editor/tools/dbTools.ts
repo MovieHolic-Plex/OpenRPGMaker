@@ -36,7 +36,7 @@ import { retitlePlaceholderOpening } from "@/project/defaults/defaultOpeningSequ
 import { normalizeActorRecord } from "@/project/actorModel";
 import { reconcileSharedFaceWithCharset as reconcileFaceWithCharset } from "@/project/sharedCharacterFaceResolver";
 import { normalizeEnemyRecord, normalizeTroopRecord } from "@/project/databaseEnemyTroopRecordModel";
-import { MAX_TITLE_BACKGROUND_LAYERS, normalizeClassRecord, normalizeEquipmentRecord, normalizeItemRecord, normalizeSkillRecord, normalizeStateRecord, normalizeTypeChart } from "@/project/databaseRecordModel";
+import { MAX_TITLE_BACKGROUND_LAYERS, MAX_TITLE_RUNNERS, normalizeTitlePressStart, normalizeTitleRunners, normalizeClassRecord, normalizeEquipmentRecord, normalizeItemRecord, normalizeSkillRecord, normalizeStateRecord, normalizeTypeChart } from "@/project/databaseRecordModel";
 import { normalizeCropRecord } from "@/project/farmModel";
 import { monsterBattleStatsForSpecies, monsterSkillIdsAtLevel, monsterSpeciesById, normalizeMonsterSpeciesRecord } from "@/project/monsterCollection";
 import { collectResourceIds } from "@/project/io/resourceReferenceValidation";
@@ -2560,8 +2560,12 @@ function parseTitleBackgroundLayers(value: unknown): TitleBackgroundLayer[] {
     const scrollYPerSec = optionalNumber("scrollYPerSec");
     const parallax = optionalNumber("parallax");
     const opacity = optionalNumber("opacity");
+    if (layer.fit !== undefined && layer.fit !== "tile" && layer.fit !== "cover") {
+      throw new ToolError(`backgroundLayers[${index}].fit 은 "tile" 또는 "cover" 입니다.`, { code: "invalid-args" });
+    }
     return {
       resourceId,
+      ...(layer.fit === "cover" ? { fit: "cover" as const } : {}),
       ...(scrollXPerSec !== undefined ? { scrollXPerSec: Math.max(-480, Math.min(480, scrollXPerSec)) } : {}),
       ...(scrollYPerSec !== undefined ? { scrollYPerSec: Math.max(-480, Math.min(480, scrollYPerSec)) } : {}),
       ...(parallax !== undefined ? { parallax: Math.max(0, Math.min(4, parallax)) } : {}),
@@ -2581,7 +2585,7 @@ function registerTitleLayerResourceIds(draft: Project, layers: readonly TitleBac
   }
 }
 
-const TITLE_PARTICLE_PRESETS = ["snow", "rain", "fireflies"] as const;
+const TITLE_PARTICLE_PRESETS = ["snow", "rain", "fireflies", "stars"] as const;
 
 function parseTitleParticles(value: unknown): TitleParticleSettings {
   if (!value || typeof value !== "object" || Array.isArray(value)) {
@@ -2589,7 +2593,7 @@ function parseTitleParticles(value: unknown): TitleParticleSettings {
   }
   const particles = value as Record<string, unknown>;
   const preset = particles.preset;
-  if (preset !== "snow" && preset !== "rain" && preset !== "fireflies") {
+  if (preset !== "snow" && preset !== "rain" && preset !== "fireflies" && preset !== "stars") {
     throw new ToolError(`particles.preset은 ${TITLE_PARTICLE_PRESETS.join(", ")} 중 하나여야 합니다.`, { code: "invalid-args" });
   }
   const density = particles.density;
@@ -2642,7 +2646,7 @@ function parseTitleIntro(value: unknown): TitleIntroSettings {
  * 「참조 검증 실패 … backgroundResourceId 가 존재하지 않습니다」 로 **변경 전체**를 되돌려 제목·음악까지 날아갔다
  * (추리 도그푸딩 gen: 지어낸 easyrpg-backdrop-room-1).
  */
-function requireTitleResource(draft: Project, field: string, id: string, kind: "picture" | "bgm"): string {
+function requireTitleResource(draft: Project, field: string, id: string, kind: "picture" | "bgm" | "charset"): string {
   const known = collectResourceIds(draft);
   if (known.has(id)) return id;
   const stem = id.split(/[-_]/u).slice(0, 2).join("-");
@@ -2655,7 +2659,7 @@ function requireTitleResource(draft: Project, field: string, id: string, kind: "
 
 const setTitleScreen: ToolDefinition = {
   name: "set_title_screen",
-  description: "타이틀 화면 제목/메뉴/표시/오디오와 배경 레이어/파티클/등장 연출, 오프닝 효과(빛내림·빛 알갱이·칼날 반사광·물결·안개)와 로고/메뉴 질감을 갱신한다. titleScreen이 없으면 생성한다. 새 키아트까지 한 번에 만들려면 generate_title_art 를 써라.",
+  description: "타이틀 화면 제목/메뉴/표시/오디오와 배경 레이어/파티클(별 stars 포함)/달리는 캐릭터 runners/PRESS START 관문/등장 연출, 오프닝 효과(빛내림·빛 알갱이·칼날 반사광·물결·안개)와 로고/메뉴 질감을 갱신한다. titleScreen이 없으면 생성한다. 새 키아트까지 한 번에 만들려면 generate_title_art 를 써라.",
   mode: "write",
   parameters: {
     type: "object",
@@ -2714,11 +2718,12 @@ const setTitleScreen: ToolDefinition = {
       musicResourceId: { type: "string" },
       backgroundLayers: {
         type: "array",
-        description: `무한 스크롤 배경 레이어. 최대 ${MAX_TITLE_BACKGROUND_LAYERS}개`,
+        description: `배경 레이어(뒤에서 앞 순서). 최대 ${MAX_TITLE_BACKGROUND_LAYERS}개. 별·구름은 scroll 로 흐르는 tile, 하늘을 오린 땅·전경 그림은 fit:"cover"(화면을 한 장으로 덮고 아래에 붙음).`,
         items: {
           type: "object",
           properties: {
             resourceId: { type: "string" },
+            fit: { type: "string", enum: ["tile", "cover"], description: "tile(기본)=320×240 반복·스크롤, cover=한 장 전경(스크롤 무시)" },
             scrollXPerSec: { type: "number", minimum: -480, maximum: 480 },
             scrollYPerSec: { type: "number", minimum: -480, maximum: 480 },
             parallax: { type: "number", minimum: 0, maximum: 4 },
@@ -2728,8 +2733,39 @@ const setTitleScreen: ToolDefinition = {
           additionalProperties: false,
         },
       },
+      runners: {
+        type: "array",
+        description: `화면을 가로질러 달리는 캐릭터 칩(최대 ${MAX_TITLE_RUNNERS}) — 포켓몬 타이틀의 스타터 셋처럼. resourceId 는 24×32 캐릭터 시트(list_resources kind:"charset"; 몬스터 동료는 그 종의 필드 칩 시트), y 는 발끝(320×240 논리 px). 셋이 줄지어 달리게 하려면 같은 speed·everyMs 에 delayMs 를 400~700ms 씩 벌린다. 빈 배열이면 지운다.`,
+        items: {
+          type: "object",
+          properties: {
+            resourceId: { type: "string" },
+            characterIndex: { type: "integer", minimum: 0, maximum: 7 },
+            direction: { type: "string", enum: ["left", "right"] },
+            y: { type: "integer", minimum: 0, maximum: 240 },
+            speed: { type: "number", minimum: 10, maximum: 400 },
+            scale: { type: "integer", minimum: 1, maximum: 3 },
+            delayMs: { type: "integer", minimum: 0, maximum: 60000 },
+            everyMs: { type: "integer", minimum: 2000, maximum: 120000 },
+            hop: { type: "boolean" },
+          },
+          required: ["resourceId", "y"],
+          additionalProperties: false,
+        },
+      },
+      pressStart: {
+        type: ["object", "null"],
+        description: "「PRESS START」 관문: 메뉴를 숨기고 글자를 깜빡이다 첫 키·탭에 반짝이며 메뉴를 연다(첫 입력은 메뉴를 고르지 않는다). {} = 기본(PRESS START, 1초). null 이면 끈다.",
+        properties: {
+          text: { type: "string", maxLength: 24 },
+          blinkMs: { type: "integer", minimum: 300, maximum: 3000 },
+          y: { type: "integer", minimum: 0, maximum: 240 },
+        },
+        additionalProperties: false,
+      },
       particles: {
         type: "object",
+        description: "타이틀 입자. stars = 깜빡이며 천천히 흐르는 밤하늘 별 + 가끔 별똥별.",
         properties: {
           preset: { type: "string", enum: TITLE_PARTICLE_PRESETS },
           density: { type: "number", minimum: 0, maximum: 100 },
@@ -2935,6 +2971,18 @@ const setTitleScreen: ToolDefinition = {
     }
 
     if ("particles" in args) current.particles = parseTitleParticles(args.particles);
+    if ("runners" in args) {
+      if (!Array.isArray(args.runners)) throw new ToolError("runners 는 배열이어야 합니다.", { code: "invalid-args" });
+      const runners = normalizeTitleRunners(args.runners as never) ?? [];
+      for (const [index, runner] of runners.entries()) requireTitleResource(draft, `runners[${index}].resourceId`, runner.resourceId, "charset");
+      if (runners.length < args.runners.length) throw new ToolError(`runners 중 ${args.runners.length - runners.length}개가 버려졌습니다(resourceId·y 필수, 최대 ${MAX_TITLE_RUNNERS}).`, { code: "invalid-args" });
+      if (runners.length === 0) delete current.runners;
+      else current.runners = runners;
+    }
+    if ("pressStart" in args) {
+      if (args.pressStart === null) delete current.pressStart;
+      else current.pressStart = normalizeTitlePressStart(args.pressStart as never) ?? {};
+    }
     if ("intro" in args) {
       const intro = parseTitleIntro(args.intro);
       if (Object.keys(intro).length === 0) delete current.intro;

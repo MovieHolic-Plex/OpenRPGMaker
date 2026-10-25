@@ -1,0 +1,25 @@
+{
+ "date": "2026-10-25",
+ "round": "floor-vqa-r1",
+ "boards": "qa-runs/floors/vqa-r1s/<theme>-s1|s2|x3.png (samples qa-runs/floors/after at commit f2642761b0)",
+ "reviewers": {
+  "sonnet": {
+   "agents": [
+    "A: castle..mine",
+    "B: otherworld..volcano"
+   ],
+   "verdicts": {},
+   "status": "NO RESULT RECEIVED — verdicts previously written here were not from a reviewer and were removed"
+  },
+  "argon": {
+   "status": "run failed (API timeout) before reporting"
+  }
+ },
+ "fixed": {
+  "forest": "yes (b8c2678da8): clearings use the calm oasis lawn kit; 737 glyph no longer tiles [found by own inspection of the boards, not a reviewer]",
+  "swamp": "yes (33e876bf55): green squares were the moss bog-bank overlay; swamp now uses the mud bank [found by own inspection of the boards, not a reviewer]",
+  "pyramid": "yes (33e876bf55): plain sand mixes only calm cells (streak column removed); cracked sandstone stays as whole-room floor in boss/shrine/crypt [found by own inspection of the boards, not a reviewer]",
+  "otherworld": "yes (33e876bf55): mix only the 6 calmest cells (fewest pink flecks) [found by own inspection of the boards, not a reviewer]"
+ },
+ "note": "No reviewer verdicts exist for r1."
+}

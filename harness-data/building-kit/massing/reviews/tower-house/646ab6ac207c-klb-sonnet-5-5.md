@@ -1,0 +1,9 @@
+<!-- 검수자 klb-sonnet-5-5 원문 그대로. 묶음 p11, 판 코드 c09, 그림 화소 해시 646ab6ac207c0358e5a80cd06ea643ff693456ab81daf7457222ed3fed7ff10c. 함정 ['c03'] 를 FAIL 로 잡은 유효 회차. 감독은 아래 본문을 고치지 않았다. -->
+c09 (half-timber house with hip roof and chimney, attached round stone tower with conical roof, one arched plank door)
+
+A. 3/4 view: The main roof upper surface is large and reads as a real surface with a hip slope at the left end, matching the Beodeul hip roofs. The conical tower roof is seen from above with lit and shadowed tile courses, the same treatment as the Beodeul tower. Only the south facade is visible. The tower reads as part of the same building because its wall meets the house wall and its base overlaps the house corner. No isometric side faces.
+B. Structure: I scanned the 4x board top to bottom and found no grass bands through the roof, the timber band, the plaster wall or the tower. The green wedge between the right hip slope and the tower is open background above the lower roof, not a gap in the building. The chimney overlaps the roof ridge, so it does not float. The eave meets the wall with no gap. The bottom edge meets the ground along the house and the tower; the tower foot sits slightly lower, which suits a round tower in front. There is exactly one door (the arched plank door at lower left). The other openings are windows, one with shutters and a flower box.
+C. Style: The roof tiles are shaded in several steps with dark wear patches, the plaster is stippled, the timber frame has diagonal braces, and the tower stone has varied pink and purple courses. Outlines use dark material tones, not black. The palette and proportions match the Beodeul manor and its tower. The tower is somewhat more purple and the roof somewhat more blotchy than the reference, which is a mild harmony issue only.
+
+MAJOR: none
+VERDICT: PASS

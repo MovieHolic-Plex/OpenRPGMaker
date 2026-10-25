@@ -9,7 +9,8 @@ import type { M2RuntimeState } from "@/project/sessionRuntimeTypes"
 import type { RuntimeEventView } from "@/project/runtimeEventState"
 import type { RuntimeMoverSnapshot } from "@/player/runtimeMoverSnapshots";
 import { resourceDisplayName } from "@/player/resourceDisplay";
-import { resolvePictureSource } from "@/player/pictures/pictureResources";
+import { actorPictureActorId, resolvePictureSource } from "@/player/pictures/pictureResources";
+import { applyCharsetFrameCrop } from "@/assets/charsetFrameCrop";
 import {
   easedTweenProgress,
   interpolatePictureTransform,
@@ -33,6 +34,10 @@ type PictureSlot = {
   readonly container: HTMLElement;
   img: HTMLImageElement | null;
   label: HTMLElement | null;
+  /** 배우 걷기 그림 픽처(resourceId "actor:<배우 ID>") — 시트 한 칸을 CSS 로 잘라 보인다. */
+  sprite: HTMLElement | null;
+  /** 그린 배우 그림 열쇠(시트 URL|칸) — 같으면 다시 칠하지 않는다(매 프레임 불리는 경로). */
+  spriteKey?: string;
   resourceId: string;
   displayed: PictureTransform;
   from: PictureTransform;
@@ -41,6 +46,9 @@ type PictureSlot = {
   durationMs: number;
   easing?: EasingName;
 };
+
+/** 배우 걷기 그림 픽처의 시트 URL·인물 칸. 못 풀면 null(텍스트 라벨로 떨어진다). */
+export type ActorPictureGraphic = (actorId: string) => { readonly spriteUrl: string; readonly characterIndex: number } | null;
 
 function nowMs(): number {
   return typeof performance !== "undefined" && typeof performance.now === "function"
@@ -510,7 +518,7 @@ export class RuntimeDomOverlay {
   // 픽처 레이어를 실제 이미지로 렌더한다. 리소스가 이미지로 해석되면 <img> 슬롯을,
   // 아니면 기존 텍스트 라벨을 배치한다(폴백/테스트 호환). z-order 는 픽처 번호로 유도하고,
   // durationMs 와 실행 중인 Show/Move Picture 의 일회성 의도가 함께 있을 때만 트윈한다.
-  syncPictureLayer(pictures: Record<string, PictureState>): void {
+  syncPictureLayer(pictures: Record<string, PictureState>, actorGraphic?: ActorPictureGraphic): void {
     const host = this.host();
     if (!host) return;
     const layer = pictureLayerFor(host, undefined);
@@ -519,7 +527,7 @@ export class RuntimeDomOverlay {
     for (const picture of Object.values(pictures)) {
       present.add(picture.pictureId);
       // 섞기 방식이 있는 그림은 방식별 형제 층에 둔다 — 아래 pictureLayerFor 주석.
-      this.syncPictureSlot(picture.blendMode ? pictureLayerFor(host, picture.blendMode) : layer, picture, project);
+      this.syncPictureSlot(picture.blendMode ? pictureLayerFor(host, picture.blendMode) : layer, picture, project, actorGraphic);
     }
     for (const [id, slot] of this.pictureSlots) {
       if (present.has(id)) continue;
@@ -538,7 +546,8 @@ export class RuntimeDomOverlay {
   private syncPictureSlot(
     layer: HTMLElement,
     picture: PictureState,
-    project: RuntimeAssetProject | undefined
+    project: RuntimeAssetProject | undefined,
+    actorGraphic?: ActorPictureGraphic
   ): void {
     const target = pictureTransformFromState(picture);
     let slot = this.pictureSlots.get(picture.pictureId);
@@ -554,6 +563,7 @@ export class RuntimeDomOverlay {
         container,
         img: null,
         label: null,
+        sprite: null,
         resourceId: "",
         displayed: target,
         from: target,
@@ -565,7 +575,7 @@ export class RuntimeDomOverlay {
     }
     // 섞기 방식이 바뀌면 그 방식의 층으로 옮긴다(슬롯·트윈 상태는 그대로).
     if (slot.container.parentElement !== layer) layer.append(slot.container);
-    this.syncPictureMedia(slot, picture, project);
+    this.syncPictureMedia(slot, picture, project, actorGraphic);
     slot.container.style.zIndex = String(20 + pictureZIndex(picture.pictureId));
     const duration = picture.durationMs ?? 0;
     const transitionRequested = takePendingPictureTransition(picture);
@@ -597,8 +607,37 @@ export class RuntimeDomOverlay {
   private syncPictureMedia(
     slot: PictureSlot,
     picture: PictureState,
-    project: RuntimeAssetProject | undefined
+    project: RuntimeAssetProject | undefined,
+    actorGraphic?: ActorPictureGraphic
   ): void {
+    // "actor:<배우 ID>" — 그 배우가 지금 입은 걷기 그림(아래 보기·서 있는 칸). 성별 선택·옷 갈아입기를 따른다.
+    const actorId = actorPictureActorId(picture.resourceId);
+    const actorSprite = actorId ? actorGraphic?.(actorId) ?? null : null;
+    if (actorSprite) {
+      slot.img?.remove();
+      slot.img = null;
+      slot.label?.remove();
+      slot.label = null;
+      if (!slot.sprite) {
+        const sprite = document.createElement("span");
+        sprite.className = "picture-layer-image picture-layer-actor";
+        sprite.setAttribute("role", "img");
+        sprite.setAttribute("aria-label", picture.pictureId);
+        slot.container.append(sprite);
+        slot.sprite = sprite;
+      }
+      const key = `${actorSprite.spriteUrl}|${actorSprite.characterIndex}`;
+      if (slot.spriteKey !== key) {
+        applyCharsetFrameCrop(slot.sprite, actorSprite.spriteUrl, { characterIndex: actorSprite.characterIndex, direction: "down", pattern: 1 });
+        slot.spriteKey = key;
+      }
+      slot.container.dataset.render = "actor";
+      slot.resourceId = picture.resourceId;
+      return;
+    }
+    slot.sprite?.remove();
+    slot.sprite = null;
+    slot.spriteKey = undefined;
     const url = resolvePictureSource(picture.resourceId, project);
     if (url) {
       slot.label?.remove();

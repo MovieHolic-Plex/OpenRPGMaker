@@ -1,0 +1,274 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "314c77ba90b35f6828d6d99456b7809a734e8405479fe05735a0618d4a338f40",
+ "width": 16,
+ "height": 16,
+ "kind": "flat",
+ "name": "oily rain puddle in a muddy hollow on the ground with a rainbow sheen and reflections",
+ "label": "wasteland_ruins/puddle",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)"
+  ],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 4
+ },
+ "metrics": {
+  "tileColorsMedian": 18,
+  "tileColorsP90": 18,
+  "darkV5": 32,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 1
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "puddle water surface in muddy hollow (elliptical oval, brown rim around dark water with reflections)",
+      "rows": "2-14",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 13,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The object is a flat oval puddle. The width profile (7, 11, 13, 15, 16, 15, 13, 7 over rows 2-14) widens and narrows again, so it is an ellipse seen from above. It has no vertical front face, only a muddy rim and a water surface with a rainbow sheen and reflections. This matches the flat kind, a plate lying on the ground, so it reads as a top-down slab."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 4,
+    "evidence": "The candidate is a small isolated oval, roughly 14x18 source pixels. It looks like an eye or lens icon with a brown rim and a blue centre. It is not a 4x3-tile ground patch that blends into the surroundings, as the grass and paving references are. It reads as a sticker on a grey backdrop, with a closed rim all the way round and no ground texture, soil grain, mud edge or transition. The 17 visible tones per tile come from a tiny, busy area, not from a ground surface. The rim is tinted brown, so the outline is not near-black, and there are no flat fills. The rainbow sheen and reflections are barely readable at this size. Shading depth is about 4 steps against 5-6 in the references. The piece does not deliver the kind it was asked for, and when in doubt it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 11728
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "puddle water oval with muddy rim",
+      "rows": "2-14",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 13,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The object is a flat oval puddle. Its width profile widens from 7 at row 2 to 16 at rows 7-9 and narrows to 7 at row 14, so it is a single ellipse seen from above. It has a brown mud rim around dark water with a sheen and reflection highlights. There is no vertical front face, so it is a flat plate on the ground, which matches the 'flat' kind."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 4,
+    "evidence": "The candidate is a tiny isolated oval (about one tile or less) on a transparent background. It looks like an eye or sticker icon, not a 4x3-tile ground patch. The references are full tileable surfaces, grass and paving, that fill their area. The edge pixels are tinted dark brown (0% near-neutral), so the outline is acceptable. The 17 visible tones, 0% flat coverage and no flat fills are measured over the small footprint and do not make up for the missing ground context. There is no muddy hollow, soil grain or surrounding ground texture to match the grass or paving. The puddle has only about 3-4 steps in the blue water and 2-3 in the brown rim. It reads as a separate object with a rim outline, not a puddle blended into mud. It would look thinner and more sticker-like than the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 11496
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "puddle water surface with muddy rim",
+      "rows": "2-14",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 13,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The object is a flat oval puddle seen from above. The width profile widens from 7 at row 2 to 16 at rows 7-9, then narrows to 7 at row 14, so it is an ellipse spanning rows 2-14. It has a muddy brown rim, dark water inside, and small sheen and reflection highlights. There is no vertical front face and no eave. This is the expected look of a flat ground decal, so it reads as a top-down slab with no front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 4,
+    "evidence": "The candidate is a tiny isolated eye-shaped sprite, about one tile or less, with a dark brown rim and a blue/teal centre. It is not a 4x3-tile ground patch that fills and tiles like the grass and paving references. It reads as a sticker-like object on a transparent background, not a ground surface. The outline is tinted brown (0% neutral dark edge pixels), which is good, and the interior has a few steps for the water, sheen and highlight. The measured 17 visible tones are packed into a very small area, but the piece has no surrounding mud, soil grain or tuft texture. The paving reference shows far more structure over its area: stones shaded one by one, mortar lines and highlights. The brief asked for a muddy hollow with a rainbow sheen and reflections, and only a small hint of that is present. The kind mismatch alone fails it.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 11959
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "puddle water surface in muddy hollow (oval, seen from above)",
+      "rows": "2-14",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 13,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The silhouette is an oval whose width grows from 7 at row 2 to 16 at rows 7-9, then shrinks to 7 at row 14. The dark water interior with its sheen and reflection pixels is bordered by a brown mud rim. There is no vertical front face, apron or legs, so it is a flat ground decal with no front face (fewer than 3 rows). That matches the flat kind, so kind_matches is true."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 4,
+    "evidence": "The measured facts look healthy: 17 visible tones per tile against 3 for grass and 7 for paving, 0% near-flat coverage, and 0% neutral dark edges, so the outline is tinted brown rather than black. By eye the piece does not match that. It is a tiny isolated oval, roughly one tile or less, with a closed dark-brown ring around a blue centre and a single highlight. That reads as an eye icon or sticker, not a 4x3 ground patch. There is no muddy hollow, no soil grain around the rim, and no surrounding ground texture. The water ramp has about 4 steps and the rainbow sheen is barely visible. Next to the grass and paving references, which fill the whole area with grain and clumps, it looks thinner and more sticker-like. The tone count comes from a few saturated accents in a very small area, not from rich texture.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 12556
+  }
+ ],
+ "decidedAt": "2026-10-22T15:08:30.343Z",
+ "cells": {
+  "16": [
+   "a6dfc4701b2d5825"
+  ],
+  "24": [
+   "02db3b6663b7a39a",
+   "4b17e42d2028a7f1",
+   "4d1b9bdee9ae112f",
+   "553aefdd117e4839",
+   "68d8570e45a1e000",
+   "8572733253edf25c"
+  ],
+  "32": [
+   "0f94042b7451a4d3",
+   "1eaf57c8f2e8f2a1",
+   "465ff84f94049aa0",
+   "695bf2639bae9973",
+   "bf3ddee24854d2f3",
+   "f567d7510090222e"
+  ],
+  "48": [
+   "548fa723a3b10dbe",
+   "5f36a9877851247a",
+   "6e9355415524be7d",
+   "83f4ab92935186f0",
+   "945ac6449976613b",
+   "ab70ad52d271ec65"
+  ]
+ }
+}

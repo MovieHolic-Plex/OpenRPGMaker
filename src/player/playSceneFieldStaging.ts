@@ -1,11 +1,15 @@
 import { characterBaseOrigin } from "./characterOrigin";
-import Phaser from "phaser";
+// 타입만 가져온다. 값 import 는 phaser.esm.js 를 끌어와 모듈 평가 때 `window` 를 읽는다 —
+// 노드 vitest 에서 이 파일을 거치는 테스트 약 200개가 「window is not defined」로 수집조차 안 됐다(ci-full 40165485978).
+// 런타임에는 phaserRuntime 이 window.Phaser 를 꽂으므로 값은 전역 이름공간으로 읽는다(playSceneActionCombat 과 같다).
+import type Phaser from "phaser";
 import { ensureM2Runtime } from "@/player/interpreter/m2RuntimeState";
 import type { StepResult } from "@/player/interpreter/types";
 import { characterSpriteY } from "@/player/characterDepth";
 import { runtimeMapWorldScale } from "@/player/runtimeViewScale";
 import { screenOverlayHost } from "@/player/playSceneScreenEffects";
 import { syncDoors } from "@/player/playSceneDoors";
+import { syncFreezeFrame } from "@/player/playSceneFreezeFrame";
 import type { PlaySceneContext } from "@/player/playSceneTypes";
 import {
   isEmptySpriteLook,
@@ -19,6 +23,9 @@ import {
 import { mapTileSize } from "@/project/tileGeometry";
 import { store } from "@/project/store";
 import { runtimeEventViewById } from "@/project/runtimeEventState";
+
+/** Phaser.TintModes.FILL (Phaser 4). 값 import 없이 쓰려고 숫자로 둔다. */
+const TINT_MODE_FILL = 1;
 
 /**
  * 필드 연출 렌더러 — 파티클 · 캐릭터 모습 효과 · 레터박스.
@@ -43,6 +50,8 @@ const TEX = {
   puff: "oprn-fx-puff",
   plus: "oprn-fx-plus",
   drop: "oprn-fx-drop",
+  paper: "oprn-fx-paper",
+  petal: "oprn-fx-petal",
 } as const;
 
 /**
@@ -84,6 +93,16 @@ function ensureFxTextures(scene: PlaySceneContext): void {
     ctx.fillRect(3, 0, 1, 7);
     ctx.fillRect(0, 3, 7, 1);
     ctx.fillRect(2, 2, 3, 3);
+  });
+  // 종이 한 장(도트): 흰 면·아래 그늘·글줄 셋. 꽃잎: 연분홍 둥근 조각 + 짙은 끝.
+  canvasTexture(scene, TEX.paper, 7, (ctx) => {
+    ctx.fillStyle = "#c3c8d2"; ctx.fillRect(0, 0, 6, 7);
+    ctx.fillStyle = "#ffffff"; ctx.fillRect(0, 0, 5, 6);
+    ctx.fillStyle = "#9aa1ad"; ctx.fillRect(1, 1, 3, 1); ctx.fillRect(1, 3, 3, 1); ctx.fillRect(1, 5, 2, 1);
+  });
+  canvasTexture(scene, TEX.petal, 4, (ctx) => {
+    ctx.fillStyle = "#ffd1df"; ctx.fillRect(1, 0, 2, 1); ctx.fillRect(0, 1, 4, 2);
+    ctx.fillStyle = "#e88aa8"; ctx.fillRect(1, 3, 2, 1); ctx.fillRect(3, 2, 1, 1);
   });
   canvasTexture(scene, TEX.plus, 5, (ctx) => {
     ctx.fillStyle = "#fff";
@@ -172,6 +191,27 @@ const RECIPES: Record<ParticlePreset, ParticleRecipe> = {
       tint: [0xffffff, 0xffe060, 0xff8a30, 0xff3a18], blendMode: "ADD", emitting: false,
     }),
   },
+  // 부딪혀 떨군 서류 — 위로 확 흩어졌다가 천천히 회전하며 내려앉는다(낙하가 느려 «종이»로 읽힌다).
+  paper: {
+    texture: TEX.paper, burst: true, count: 9,
+    config: (s) => ({
+      x: { min: -6 * s, max: 6 * s }, y: { min: -18 * s, max: -10 * s },
+      speed: { min: 24 * s, max: 62 * s }, angle: { min: 200, max: 340 },
+      gravityY: 34 * s, lifespan: { min: 1500, max: 2300 },
+      rotate: { start: 0, end: 540 }, scale: { start: s, end: 0.9 * s }, alpha: { start: 1, end: 0.15 },
+      emitting: false,
+    }),
+  },
+  // 바람에 흩날리는 꽃잎 — 대상 위쪽에서 비스듬히 흘러내린다.
+  petals: {
+    texture: TEX.petal, burst: false, count: 1,
+    config: (s) => ({
+      x: { min: -40 * s, max: 40 * s }, y: { min: -48 * s, max: -30 * s },
+      speedX: { min: 6 * s, max: 22 * s }, speedY: { min: 8 * s, max: 20 * s },
+      lifespan: 2200, frequency: 120, quantity: 1,
+      rotate: { start: 0, end: 360 }, scale: { start: s, end: 0.8 * s }, alpha: { start: 1, end: 0 },
+    }),
+  },
   splash: {
     texture: TEX.drop, burst: true, count: 26,
     config: (s) => ({
@@ -207,7 +247,7 @@ export function playParticleEffect(scene: PlaySceneContext, step: ParticleStep, 
   const emitter = scene.add.particles(sprite ? 0 : x, sprite ? 0 : y, recipe.texture, recipe.config(scale));
   emitter.setDepth(PARTICLE_DEPTH);
   if (sprite) emitter.startFollow(sprite);
-  const longestLife = 1500;
+  const longestLife = step.preset === "paper" || step.preset === "petals" ? 2400 : 1500;
   return new Promise((resolve) => {
     const finish = (): void => {
       emitter.destroy();
@@ -299,7 +339,7 @@ function applyLook(scene: PlaySceneContext, sprite: Phaser.GameObjects.Sprite, r
   const definite = look as SpriteLook;
 
   if (definite.tint) {
-    if (definite.tintFill) sprite.setTint(hexToInt(definite.tint)).setTintMode(Phaser.TintModes.FILL);
+    if (definite.tintFill) sprite.setTint(hexToInt(definite.tint)).setTintMode(TINT_MODE_FILL);
     else sprite.setTint(hexToInt(definite.tint));
   } else sprite.clearTint();
   sprite.setFlipX(definite.flip === true);
@@ -332,7 +372,7 @@ function spawnAfterimage(scene: PlaySceneContext, sprite: Phaser.GameObjects.Spr
   ghost.setScale(sprite.scaleX, sprite.scaleY);
   ghost.setAngle(sprite.angle);
   ghost.setFlipX(sprite.flipX);
-  ghost.setTint(0x9ec8ff).setTintMode(Phaser.TintModes.FILL);
+  ghost.setTint(0x9ec8ff).setTintMode(TINT_MODE_FILL);
   ghost.setAlpha(0.45);
   ghost.setDepth(sprite.depth - 1);
   scene.tweens.add({ targets: ghost, alpha: 0, duration: 300, onComplete: () => ghost.destroy() });
@@ -414,6 +454,7 @@ export function updateFieldStaging(scene: PlaySceneContext): void {
   for (const [sprite, look] of lookTargets(scene)) applyLook(scene, sprite, look, now);
   syncLetterbox(scene);
   syncDoors(scene);
+  syncFreezeFrame(scene);
   syncNearSparkles(scene, now);
 }
 

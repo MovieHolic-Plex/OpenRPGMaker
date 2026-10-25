@@ -1,0 +1,6 @@
+verdict: PASS
+
+1. 3/4 view: the roof plane is two staggered rows of flat-lying doors (rows 1-14), with a pale eave lip and an under-shadow at rows 15-16. Below it is a 13-row south face of pallets with the entrance in cell (1,1). The recessed panels have their lit lips on the bottom and right edges, which is correct for an upper-left light. No side faces.
+2. Quality: 38 colours, palette-locked. Every door has a frame tone, a lit left edge, recessed panels, a brass knob and two paint chips, so none is a flat fill. Each pallet slat has a light row and a shadow row, with dark gaps, nails and three block posts. The dark entrance holds a lit mat and a shaded burlap sack with a tie. No stray pixels; the right outline was deliberately set to dark bark.
+3. Distinctness: no existing piece has a multi-coloured, panelled roof. stall-a and stall-b also have wooden slat fronts, but their roofs are teal or blue tarp, so this piece stays separate at 1x. It is also unlike market-shelter (striped tarp with hanging cloth).
+4. Readability at 1x: the doors read as doors because each shows two panels and a knob at one end, and the pallets read as pallets. Nit, not blocking: the door lengths are uneven (19-27 px against a 7 px height, about 2.7-3.9:1), which pushes the longer ones toward "drawer fronts". Making all four doors about 20-22 px long would firm up the read.

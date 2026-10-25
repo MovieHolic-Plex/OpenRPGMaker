@@ -1,0 +1,21 @@
+{
+ "name": "예배당",
+ "massing": "14",
+ "material": "stone",
+ "refs": [
+  "bd-house-cathedral",
+  "bd-mpart-tower"
+ ],
+ "walk": [
+  ".........*.",
+  "........***",
+  "........***",
+  "***********",
+  "***********",
+  "***********",
+  "XXXXXXXXXXX",
+  "XXXDXXXXXXX",
+  "..XDX......"
+ ],
+ "id": "chapel"
+}

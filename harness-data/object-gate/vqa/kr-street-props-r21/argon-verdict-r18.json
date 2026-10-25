@@ -1,0 +1,81 @@
+{
+  "pieces": [
+    {
+      "id": "cand-1",
+      "verdict": "PASS",
+      "defects": [
+        "Double-thick outer L-corner outline jaggies (#091125) on the top cap at (2,2)-(3,2) & (11,2)-(12,2), 3px horizontal black ledges at (1..3,7) & (11..13,7), and base corners at (2..4,27), (10..12,27), (2..3,30), & (11..12,30), whereas ref-3..5 step diagonally by 1px.",
+        "Navy collar band at x=5..9, y=9..10 is flat unshaded #19274a across all 5 columns with no top-left highlight or right-side shade."
+      ]
+    },
+    {
+      "id": "cand-2",
+      "verdict": "FAIL",
+      "defects": [
+        "Digit '2' (#0b1224, lum 17.8) at (5,15) and (5,19) directly touches and fuses into the left pillar outline (#091125, lum 16.7) at (4,15) and (4,19) with 0px left padding vs 1px right yellow padding at x=9 (y=14..19), unlike cand-1 which keeps 1px yellow margin on both x=5 and x=9.",
+        "Double-thick outer L-corner outline jaggies (#091125) on the top cap at (2,2)-(3,2) & (11,2)-(12,2), 3px horizontal black ledges at (1..3,7) & (11..13,7), and base corners at (2..4,27), (10..12,27), (2..3,30), & (11..12,30).",
+        "Navy collar band at x=5..9, y=9..10 is flat unshaded #19274a across all 5 columns with no left-to-right shading."
+      ]
+    },
+    {
+      "id": "cand-3",
+      "verdict": "FAIL",
+      "defects": [
+        "Unreadable / misread digit at 1x: top-left (5,14) and bottom-left (5,19) of digit '3' (#0b1224, lum 17.8) fuse directly into the continuous vertical left outline (#091125, lum 16.7) at (4,14)..(4,19), closing the open left side of '3' so it reads as 'B' or '8' at 1x native resolution.",
+        "Digit '3' is off-center in the 5px yellow plate (x=5..9), occupying x=5..8 with 0px left margin at x=5 and 1px unused yellow margin at x=9 (y=14..19).",
+        "Double-thick outer L-corner outline jaggies (#091125) on the top cap at (2,2)-(3,2) & (11,2)-(12,2), 3px horizontal black ledges at (1..3,7) & (11..13,7), and base corners at (2..4,27), (10..12,27), (2..3,30), & (11..12,30).",
+        "Navy collar band at x=5..9, y=9..10 is flat unshaded #19274a across all 5 columns."
+      ]
+    },
+    {
+      "id": "cand-4",
+      "verdict": "FAIL",
+      "defects": [
+        "Left vertex of digit '4' (#0b1224, lum 17.8) at (5,16) and (5,17) collides with and fuses into the left pillar outline (#091125, lum 16.7) at (4,16) and (4,17), clipping the left apex of '4' into the border and trapping a single isolated yellow pixel at (6,16) (#ddbf91) while leaving x=9 empty.",
+        "Double-thick outer L-corner outline jaggies (#091125) on the top cap at (2,2)-(3,2) & (11,2)-(12,2), 3px horizontal black ledges at (1..3,7) & (11..13,7), and base corners at (2..4,27), (10..12,27), (2..3,30), & (11..12,30).",
+        "Navy collar band at x=5..9, y=9..10 is flat unshaded #19274a across all 5 columns."
+      ]
+    },
+    {
+      "id": "cand-5",
+      "verdict": "PASS",
+      "defects": [
+        "Bottom-right corner at (13,30)-(14,31) is a square 90-degree outline corner (#091125 at (14,30) and (14,31)) where the shaded right side face meets the ground, whereas ref-3 tapers its right side face inward at (13,30)-(13,31)."
+      ]
+    },
+    {
+      "id": "cand-6",
+      "verdict": "PASS",
+      "defects": [
+        "Dark navy shade column on the right side face at x=13, y=5..29 (#131d32, lum 27.6) has very low luminance separation (delta 10.9) from the adjacent outer outline at x=14, y=5..29 (#091125, lum 16.7).",
+        "Bottom-right corner at (13,30)-(14,31) is a square 90-degree outline corner (#091125 at (14,30) and (14,31)) rather than stepping inward by 1px like ref-3."
+      ]
+    },
+    {
+      "id": "cand-7",
+      "verdict": "PASS",
+      "defects": [
+        "In '국' (y=8..16), the vertical stem of 'ㅜ' is only 1px tall at (6,12) (#e4cfae) with drop shadow at (6,13) (#660c28), leaving only a 1px dark gap above the 'ㄱ' bar at (3..9,14) (#e4cfae).",
+        "Dark burgundy shade column on the right side face at x=13, y=5..29 (#3a0616, lum 18.2) is nearly indistinguishable (delta 1.5) from the adjacent outer outline at x=14, y=5..29 (#091125, lum 16.7).",
+        "Bottom-right corner at (13,30)-(14,31) is a square 90-degree outline corner (#091125 at (14,30) and (14,31))."
+      ]
+    },
+    {
+      "id": "cand-8",
+      "verdict": "PASS",
+      "defects": [
+        "In lower syllable '국' (y=20..28), the vertical stem of 'ㅜ' is 1px tall at (6,24) (#f1f3f3) with drop shadow at (6,25) (#203a30) right above the 'ㄱ' bar at (3..9,26) (#f1f3f3), and dark green side shade at x=13, y=5..29 (#11201b, lum 28.5) has tight contrast against the x=14 outline (#091125, lum 16.7).",
+        "Bottom-right corner at (13,30)-(14,31) is a square 90-degree outline corner (#091125 at (14,30) and (14,31))."
+      ]
+    },
+    {
+      "id": "cand-9",
+      "verdict": "PASS",
+      "defects": [
+        "Outer corners (0,0), (15,0), (0,15), and (15,15) are sharp 90-degree solid #091125 pixels across the full 16x16 tile without 1px bevels.",
+        "Drain slots at (2..3, 2..3), (7..8, 2..3), (12..13, 2..3), (2..3, 7..8), (12..13, 7..8), (2..3, 12..13), (7..8, 12..13), and (12..13, 12..13) are 2x2 squares (3px #091125 + 1px #2a3539 at bottom-right) rather than elongated slits, though the grate pattern and central soil/root opening (x=6..9, y=6..9, #5a4531/#8a6a47/#a8865c) read clearly on the #969692 pavement."
+      ]
+    }
+  ],
+  "summary": "6 PASS (cand-1, cand-5, cand-6, cand-7, cand-8, cand-9), 3 FAIL (cand-2, cand-3, cand-4). Subway exit pillars cand-2, cand-3, and cand-4 fail 1x readability and detail hygiene because their dark digits (#0b1224) touch and fuse into the left vertical column outline (#091125) at x=4..5 with 0px left padding while leaving 1px yellow padding at x=9; in cand-3 this closes the left side of '3' so it misreads as 'B' at 1x, and in cand-4 it clips the left vertex of '4' into the border. cand-1 centers '1' at x=6..8 with 1px yellow margin on both sides and passes with minor cap/base outline jaggy nitpicks. All four vertical Korean shop signs (cand-5 '카페', cand-6 '편의', cand-7 '국밥', cand-8 '약국') show a clear 3-row 3/4 top face (y=1..3), consistent top-left lighting, and legible 1x Hangul jamo, passing with minor side-shade contrast nitpicks. cand-9 (16x16 cast-iron tree grate) reads clearly as a recessed iron grate with drain openings around a soil pit on grey pavement and passes."
+}

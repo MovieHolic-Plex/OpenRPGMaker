@@ -25,8 +25,22 @@ export const NPC_PATROL_TOOLS:readonly ToolDefinition[]=[
    const maps=args.mapId?[p.maps[String(args.mapId)]]:Object.values(p.maps);if(maps.some(m=>!m))throw new ToolError('맵 없음.',{code:'invalid-args'});
    return {summary:'NPC의 실제 저작 좌표와 이동 설정입니다. 출하 재생은 별도로 확인하세요.',data:maps.map(map=>({mapId:map.id,name:map.name,npcs:map.events.filter(e=>e.pages?.some(page=>page.graphic.sprite!==undefined&&!page.graphic.transparent)).map(e=>({id:e.id,name:e.name,x:e.x,y:e.y,pages:e.pages?.map(page=>({id:page.id,graphic:page.graphic,movement:page.movement})),cutOffEventIds:eventsCutOffBy(p,map,e).map(other=>other.id)}))}))};
  }},
- {name:'configure_npc_patrol',description:'기존 생활 NPC에 안전한 닫힌 순찰 경로를 저작. 모든 걸음의 실제 양방향 충돌·넓은 통행·출입구/시작점 보호·다른 NPC를 검사. 플레이어가 막으면 기다리며 건너뛰지 않음. 교수/상인/스토리 NPC에 무분별하게 적용 금지.',mode:'write',preservesAuthoredRaster:true,parameters:schema({mapId:{type:'string'},eventId:{type:'string'},x:{type:'integer'},y:{type:'integer'},directions:{type:'array',items:{type:'string',enum:['up','down','left','right']}},intervalMs:{type:'integer',minimum:800,maximum:5000}},['mapId','eventId','directions']),run:(p,args)=>{
+ {name:'configure_npc_patrol',description:'기존 생활 NPC에 안전한 닫힌 순찰 경로를 저작. 추격자·필드 적(movement.type chase)이면 그 추격 페이지에 순찰 경로를 달아 시야 밖에서 돌고 보면 쫓다 돌아오게 한다(새 추격자는 make_chase_scene 의 patrol). 모든 걸음의 실제 양방향 충돌·넓은 통행·출입구/시작점 보호·다른 NPC를 검사. 플레이어가 막으면 기다리며 건너뛰지 않음. 교수/상인/스토리 NPC에 무분별하게 적용 금지.',mode:'write',preservesAuthoredRaster:true,parameters:schema({mapId:{type:'string'},eventId:{type:'string'},x:{type:'integer'},y:{type:'integer'},directions:{type:'array',items:{type:'string',enum:['up','down','left','right']}},intervalMs:{type:'integer',minimum:800,maximum:5000}},['mapId','eventId','directions']),run:(p,args)=>{
    const map=p.maps[String(args.mapId)],event=map?.events.find(e=>e.id===args.eventId);if(!map||!event||!event.pages?.length)throw new ToolError('실제 NPC 없음.',{code:'invalid-args'});
+   // 추격자·필드 적(movement.type 'chase'): 페이지를 덮지 않고 그 추격 페이지에 순찰 경로만 단다 — 시야 밖에서 돌고, 보면 쫓고,
+   // 놓치면 돌아와 다시 돈다(이동 하나). 예전엔 「조건부 NPC」로 거절해서 조수가 moveEvent 를 따로 돌려 두 이동이 덜덜 떨었다(J54).
+   const chasePages=event.pages.filter(page=>page.movement?.type==='chase');
+   if(chasePages.length){
+     const dirs=args.directions;if(!Array.isArray(dirs)||dirs.length<2||dirs.length>24||dirs.some(dir=>typeof dir!=='string'||!Object.hasOwn(directions,dir)))throw new ToolError('추격자 순찰은 2..24 방향의 닫힌 경로입니다(또는 make_chase_scene 의 patrol:\'auto\' / {waypoints}).',{code:'invalid-args'});
+     const cells=[{x:event.x,y:event.y}];let at={x:event.x,y:event.y};
+     for(const dir of dirs as Dir[]){const [dx,dy]=directions[dir],next={x:at.x+dx,y:at.y+dy};if(!canMove(p,map,at.x,at.y,next.x,next.y)||!canMove(p,map,next.x,next.y,at.x,at.y))throw new ToolError(`순찰 걸음이 벽/지형을 가로지릅니다: (${at.x},${at.y})→(${next.x},${next.y}).`,{code:'unsafe-patrol'});cells.push(next);at=next;}
+     if(at.x!==event.x||at.y!==event.y)throw new ToolError('추격자 순찰은 지금 자리로 돌아오는 닫힌 경로여야 합니다(놓친 뒤 이 칸으로 돌아와 다시 돈다).',{code:'unsafe-patrol'});
+     for(const page of chasePages){
+       page.movement={...page.movement,route:{repeat:true,skippable:false,moves:(dirs as Dir[]).flatMap(dir=>[{kind:'move' as const,dir},{kind:'wait' as const}])},
+         pursuit:{scope:'map',doorDelayMs:0,searchMs:3000,...page.movement.pursuit,onLost:'return'}};
+     }
+     return {summary:`추격자 순찰 ${dirs.length}걸음을 추격 페이지 ${chasePages.length}개에 달았습니다 — 시야 밖에서 돌고, 보면 쫓고, 놓치면 돌아와 다시 순찰합니다.`,data:{mapId:map.id,eventId:event.id,cells,chasePages:chasePages.map(page=>page.id)}};
+   }
    if(event.pages.length!==1||event.pages[0].conditions.length||event.pages[0].commands.some(command=>command.kind!=='text'))throw new ToolError('조건부 이야기/거래/전투 NPC의 이동은 이 도구로 덮지 않습니다. 단일 대사 페이지 생활 주민을 선택하세요.',{code:'protected-npc'});
    const route=args.directions;if(!Array.isArray(route)||route.length<2||route.length>12||route.some(dir=>typeof dir!=='string'||!Object.hasOwn(directions,dir)))throw new ToolError('순찰은 2..12 방향의 닫힌 경로입니다.',{code:'invalid-args'});
    const x=args.x===undefined?event.x:Number(args.x),y=args.y===undefined?event.y:Number(args.y),interval=args.intervalMs===undefined?1600:Number(args.intervalMs);

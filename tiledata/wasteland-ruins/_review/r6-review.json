@@ -1,0 +1,180 @@
+{
+ "boards": [
+  "r6-board-samples-3x.png",
+  "r6-board-asphalt-decals-3x.png",
+  "r6-field1x-dirt-a.png",
+  "r6-field2x-dirt-a.png",
+  "r6-raw8x-dirt-a.png",
+  "r6-field1x-dirt-mixed.png",
+  "r6-field3x-dirt-mixed.png",
+  "r6-board-dirt-abcd-5x.png",
+  "r6-field1x-slab-a.png",
+  "r6-field2x-slab-a.png",
+  "r6-raw8x-slab-a.png",
+  "r6-board-slab-abc-6x.png",
+  "r6-board-beodeul-vs-6x.png",
+  "r6-beo-dirt.png",
+  "r6-beo-dirt2.png",
+  "r6-beo-cobble.png",
+  "r6-beo-sand.png",
+  "r6-asphalt-gate-4x.png",
+  "r6-board-decals-6x.png",
+  "r6-board-decals-raw-10x.png",
+  "r6-zoom-rubble-b.png",
+  "r6-zoom-rubble-c.png"
+ ],
+ "reviews": [
+  {
+   "id": "dirt-a",
+   "sha": "dc350aecf15720243e639a1d565d70beff9c7a601613c53e5b0d52ddf29833ed",
+   "verdict": "fail",
+   "reasons": [
+    "16px lattice is gone (no per-cell crack/blot), but the 64px period is now the lattice: on a 24x16-cell 1x field (r6-field1x-dirt-a.png) the same pair of dark-brown blots, the same 3-pebble triangle and the same grey crack repeat on an obvious 4x4-cell wallpaper grid",
+    "base is still two-tone grey/brown 1-2px camouflage mottle (9 colours over the 64x64 field); at 8x (r6-raw8x-dirt-a.png) the brown and grey alternate almost pixel-by-pixel, so it reads as digital-camo noise rather than soil clumps; Beodeul dirt crop (r6-beo-dirt.png) has directional dark streaks and clods with 6+ value steps",
+    "mixing variants b/c/d into 30% of cells (r6-field1x-dirt-mixed.png) does not break the 64 repeat because the variants share the identical base and anchor features"
+   ],
+   "fix": "Break the period: either a larger field (128 or 2 alternate 64 fields chosen per 64-block) or fewer high-contrast anchors (the two dark blots and pebble triangle are what make the repeat legible). Replace the grey/brown pixel mottle with 3-6px soil clods with lit top/dark underside, a 5-6 step ramp, and a couple of low-contrast large tonal patches."
+  },
+  {
+   "id": "dirt-b",
+   "sha": "98d0735b94f4ff8c4f94f867b41b374eae11cc216f8989d48030237511bc792d",
+   "verdict": "fail",
+   "reasons": [
+    "16px lattice is gone (no per-cell crack/blot), but the 64px period is now the lattice: on a 24x16-cell 1x field (r6-field1x-dirt-a.png) the same pair of dark-brown blots, the same 3-pebble triangle and the same grey crack repeat on an obvious 4x4-cell wallpaper grid",
+    "base is still two-tone grey/brown 1-2px camouflage mottle (9 colours over the 64x64 field); at 8x (r6-raw8x-dirt-a.png) the brown and grey alternate almost pixel-by-pixel, so it reads as digital-camo noise rather than soil clumps; Beodeul dirt crop (r6-beo-dirt.png) has directional dark streaks and clods with 6+ value steps",
+    "the 'dried-mud cracks' variant is nearly indistinguishable from dirt-a at 1x and 3x (r6-board-dirt-abcd-5x.png): a few extra 1px brown lines, no polygonal mud-crack plates, so it adds nothing as a variant"
+   ],
+   "fix": "Break the period: either a larger field (128 or 2 alternate 64 fields chosen per 64-block) or fewer high-contrast anchors (the two dark blots and pebble triangle are what make the repeat legible). Replace the grey/brown pixel mottle with 3-6px soil clods with lit top/dark underside, a 5-6 step ramp, and a couple of low-contrast large tonal patches. For b: draw real desiccation plates (curled polygon edges with a lit rim) spanning the cell."
+  },
+  {
+   "id": "dirt-c",
+   "sha": "b3f58cbaed4834c4d31707ea0700684e67f78cf555dbb5bfe63f7296004ec7e8",
+   "verdict": "fail",
+   "reasons": [
+    "16px lattice is gone (no per-cell crack/blot), but the 64px period is now the lattice: on a 24x16-cell 1x field (r6-field1x-dirt-a.png) the same pair of dark-brown blots, the same 3-pebble triangle and the same grey crack repeat on an obvious 4x4-cell wallpaper grid",
+    "base is still two-tone grey/brown 1-2px camouflage mottle (9 colours over the 64x64 field); at 8x (r6-raw8x-dirt-a.png) the brown and grey alternate almost pixel-by-pixel, so it reads as digital-camo noise rather than soil clumps; Beodeul dirt crop (r6-beo-dirt.png) has directional dark streaks and clods with 6+ value steps",
+    "gravel is evenly sprinkled single grey pixel-pairs and the rust is 2-3px red dots; reads as more speckle, not a gravel patch"
+   ],
+   "fix": "Break the period: either a larger field (128 or 2 alternate 64 fields chosen per 64-block) or fewer high-contrast anchors (the two dark blots and pebble triangle are what make the repeat legible). Replace the grey/brown pixel mottle with 3-6px soil clods with lit top/dark underside, a 5-6 step ramp, and a couple of low-contrast large tonal patches. For c: cluster gravel into a patch with 2-3px stones that have a highlight and shadow, rust as one larger stain."
+  },
+  {
+   "id": "dirt-d",
+   "sha": "ade010c424a8a33e7bb11fc83c15b5bddbb2915f4019aa4dd44a44a3f979c588",
+   "verdict": "fail",
+   "reasons": [
+    "16px lattice is gone (no per-cell crack/blot), but the 64px period is now the lattice: on a 24x16-cell 1x field (r6-field1x-dirt-a.png) the same pair of dark-brown blots, the same 3-pebble triangle and the same grey crack repeat on an obvious 4x4-cell wallpaper grid",
+    "base is still two-tone grey/brown 1-2px camouflage mottle (9 colours over the 64x64 field); at 8x (r6-raw8x-dirt-a.png) the brown and grey alternate almost pixel-by-pixel, so it reads as digital-camo noise rather than soil clumps; Beodeul dirt crop (r6-beo-dirt.png) has directional dark streaks and clods with 6+ value steps",
+    "dry grass is one identical 3x2 yellow chevron per cell at near-identical offsets (r6-board-dirt-abcd-5x.png, 4th panel): it reads as a stamped glyph and reintroduces a 16px rhythm; at 1x the yellow marks look like sparks or coins"
+   ],
+   "fix": "Break the period: either a larger field (128 or 2 alternate 64 fields chosen per 64-block) or fewer high-contrast anchors (the two dark blots and pebble triangle are what make the repeat legible). Replace the grey/brown pixel mottle with 3-6px soil clods with lit top/dark underside, a 5-6 step ramp, and a couple of low-contrast large tonal patches. For d: vary tuft size/shape/count per cell, use 2-3 blade strokes with a dark base and shadow, and allow empty cells."
+  },
+  {
+   "id": "slab-a",
+   "sha": "f39cc685b8c62296f8c96ff12c2e1df5457b6c34bd532c7564ae64b869f6c634",
+   "verdict": "fail",
+   "reasons": [
+    "still reads as tiled flooring: on a 1x/2x field (r6-field2x-slab-a.png) the pads are uniform 2-cell rectangles in a strict running-bond (brick) layout with a uniform dark grout line, i.e. bathroom or brick-wall tile, not broken concrete pads",
+    "no missing chunks; cracks stay inside pads instead of crossing seams; the same brown plug-hole blots recur on the 64 grid",
+    "slab surface is the same 1-2px speckle as the dirt base"
+   ],
+   "fix": "Vary pad sizes (1-4 cells, non-rectangular breaks), make seams lighter or missing in places, cut whole corners out to dirt below with a dark lip, let at least one big crack run across two pads, and give the pad surface broad worn/stained patches instead of speckle."
+  },
+  {
+   "id": "slab-b",
+   "sha": "3f6d520bad953158e97564928fbb534dd9cb2eadb8ac9677d00cc8c445ebe3d1",
+   "verdict": "fail",
+   "reasons": [
+    "still reads as tiled flooring: on a 1x/2x field (r6-field2x-slab-a.png) the pads are uniform 2-cell rectangles in a strict running-bond (brick) layout with a uniform dark grout line, i.e. bathroom or brick-wall tile, not broken concrete pads",
+    "no missing chunks; cracks stay inside pads instead of crossing seams; the same brown plug-hole blots recur on the 64 grid",
+    "slab surface is the same 1-2px speckle as the dirt base",
+    "weeds are an identical green sprite placed about once per 16px cell (r6-board-slab-abc-6x.png), a sticker grid that reintroduces the 16px lattice; weeds should sit in seams/cracks"
+   ],
+   "fix": "Vary pad sizes (1-4 cells, non-rectangular breaks), make seams lighter or missing in places, cut whole corners out to dirt below with a dark lip, let at least one big crack run across two pads, and give the pad surface broad worn/stained patches instead of speckle. Put weeds only in seams/cracks, irregular density."
+  },
+  {
+   "id": "slab-c",
+   "sha": "08cbde09fdd76cffa903c43c0b658a343ff9b8f0fd90a134beba8e08a6ce3f97",
+   "verdict": "fail",
+   "reasons": [
+    "still reads as tiled flooring: on a 1x/2x field (r6-field2x-slab-a.png) the pads are uniform 2-cell rectangles in a strict running-bond (brick) layout with a uniform dark grout line, i.e. bathroom or brick-wall tile, not broken concrete pads",
+    "no missing chunks; cracks stay inside pads instead of crossing seams; the same brown plug-hole blots recur on the 64 grid",
+    "slab surface is the same 1-2px speckle as the dirt base",
+    "'damage' is a regular array of identical dark ovals with teal centres, roughly one per cell, reading as rivets or bolt holes rather than spalling"
+   ],
+   "fix": "Vary pad sizes (1-4 cells, non-rectangular breaks), make seams lighter or missing in places, cut whole corners out to dirt below with a dark lip, let at least one big crack run across two pads, and give the pad surface broad worn/stained patches instead of speckle. Replace the oval stamps with a few large irregular spalls with lit far edge and dark near edge."
+  },
+  {
+   "id": "asphalt",
+   "sha": "09dc59cef02c22d89be0291c6e306cad7db30898daf41d1a0b1359deb481b89b",
+   "verdict": "fail",
+   "reasons": [
+    "road edge is a mechanical zig-zag: identical 2px bumps every ~4px along every border (r6-asphalt-gate-4x.png) read like a zipper/gear-tooth edge, not crumbling tar",
+    "a uniform 1px dark outline wraps every road shape, so the road looks like a cut-out sticker laid on the dirt instead of tar sunk into ground",
+    "tar fill is smoother than before but still an even blue-grey mottle with no wear, tyre tracks or lighter worn centre; isolated 1x1 piece reads as a slate square",
+    "dirt surround inherits the dirt-a 64 repeat faults"
+   ],
+   "fix": "Make edges irregular at multiple scales (bites of 1-5px, loose tar crumbs outside the edge, dirt pockets inside), drop the continuous outline in favour of a lit/dark lip only where tar is thick, add a lighter worn wheel band and a few patches."
+  },
+  {
+   "id": "rubble-b",
+   "sha": "dc211db2a4a6162dc581a46bf1cc6a084af74cd8b5bb14236febb5c14c491b35",
+   "verdict": "pass",
+   "reasons": [
+    "reads as a top-down brick-rubble pile at 1x and 8x (r6-zoom-rubble-b.png): red brick with lit top faces, dark mortar gaps, a grey concrete bit and a soft shadow; 5+ value steps",
+    "minor: footprint is nearly cell-square and the bricks are stacked in neat courses, so repeated piles look a bit like wall stumps; acceptable for a decal"
+   ],
+   "fix": "Optional: scatter 2-3 loose brick bits outside the main pile and loosen the courses so it reads as fallen, not stacked."
+  },
+  {
+   "id": "rubble-c",
+   "sha": "20940f2b15ac5fba3c9bb9045e953c18e13b66e77add71e8a777f1a7cafe3a53",
+   "verdict": "fail",
+   "reasons": [
+    "concrete chunks are boxy grey rectangles with single bright cyan/white pixels at their corners (r6-zoom-rubble-c.png); the cyan specks read as glints or glyph marks, not rebar",
+    "a red brick-coloured block sits inside the pile and the silhouette is a near-square that fills the cell (85% coverage, 14-15px straight runs on bottom/right edges)"
+   ],
+   "fix": "Draw rebar as 1px bent rust-brown lines sticking out of slab chunks, vary chunk angles, remove the cyan corner sparkles, and break the square footprint with loose fragments."
+  },
+  {
+   "id": "weeds-a",
+   "sha": "1852872c0524956e1c2e7d17363eaff262b66bd994007d0d0b4f16ebf96ac217",
+   "verdict": "pass",
+   "reasons": [
+    "green weed sprigs read as top-down weeds over dirt at 1x and 6x; 4-5 green steps, organic silhouette, no hard tile-edge cut (0 px top edge)",
+    "minor: a few single yellow pixels look like noise"
+   ],
+   "fix": "Optional: drop isolated yellow single pixels."
+  },
+  {
+   "id": "weeds-b",
+   "sha": "f96ce95c3a88efbb3706be2186d955ddd9fed336bac98880d7a0f8d382fdb403",
+   "verdict": "pass",
+   "reasons": [
+    "dry yellow tufts read as dead grass on dirt; irregular silhouette, dark stems at base, no tile-edge cut",
+    " minor: some pale single pixels speckle"
+   ],
+   "fix": "Optional: give the tuft a slightly darker base shadow."
+  },
+  {
+   "id": "weeds-c",
+   "sha": "3ee477a7d62b152bc542b24d6e830116b08b3831163f9df517cc27858dedc238",
+   "verdict": "fail",
+   "reasons": [
+    "dense green clump fills 65% of the cell and is cut by a straight vertical line on the left tile edge (12 opaque pixels in column 0), so in a map it shows a hard square seam (r6-board-decals-raw-10x.png, 5th panel)",
+    "white flowers are now isolated single pixels mixed with yellow single pixels, reading as speckle rather than flowers",
+    "gate sample is a lone 16x16 tile, never shown over the new dirt"
+   ],
+   "fix": "Pull the clump in 1-2px from all tile edges with a ragged outline, make the flowers 2x2 heads with a darker centre, and supply a sample over dirt."
+  },
+  {
+   "id": "puddle",
+   "sha": "16f16c94d2152bae28806235f5484884117b9f803d4db8f8a80175e53ad7ae2a",
+   "verdict": "fail",
+   "reasons": [
+    "at 1x the puddle is a small dark blue tilted lozenge with orange/pink/yellow single-pixel specks: it reads as a gem or sticker, not water (r6-board-decals-6x.png, last panel)",
+    "no reflection band or lighter shallow edge, no wet-dark mud ring; the decal carries its own grey/brown rim that does not match the 64-field dirt beneath it"
+   ],
+   "fix": "Make an irregular shallow puddle with a darker wet-mud ring, a lighter shallow rim, one or two sky-reflection streaks, and remove the multicolour specks; keep the decal transparent outside the wet ring."
+  }
+ ]
+}

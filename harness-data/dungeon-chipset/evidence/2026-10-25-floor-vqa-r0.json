@@ -1,0 +1,49 @@
+{
+ "date": "2026-10-25",
+ "round": "floor-vqa-r0",
+ "boards": "qa-runs/floors/vqa-r0/<theme>.png (samples qa-runs/floors/before = /tmp/dt-samples-c)",
+ "reviewers": {
+  "argon": {
+   "agent": "a0ab2ed942a5c0765",
+   "verdicts": {
+    "castle": "FAIL — majors: 2x2 noisy dark rubble patch seed1 top-left; yellow-brown crack decals, grey pebble piles, white bones, broken column bases strewn across corridors and throne rooms; 3-tile front-facing brick wall columns stamped onto side doorways; pillars/braziers/chests/benches floating mid-room; minors: darker vertical mortar band at corridor-room seams; flat iron grate strip seed2",
+    "catacomb": "FAIL — majors: seed1 top-center room floor covered in high-contrast yellow-brown crack noise on every tile; walkways littered with pebbles, skulls, bones, moss; darker grey floor band at room transitions; side doorways stamp 3-tile front-wall strips onto floor; pillars/candelabras/benches float mid-room; minors: reuses castle walls with weak theme separation; flat iron grates in corridors",
+    "cave": "FAIL — majors: heavy salt-and-pepper speckle and vertical dark streaks on every dirt tile, unblended rectangular tan dirt patches with sharp grid edges; turquoise crystals blocking narrow paths; three grates and a rug on lakeshore; south walls lack bottom border; minors: disconnected 1-tile bridges",
+    "forest": "FAIL — majors: camp props (drying racks, barrels, chests, logs, cairns) dropped randomly across lawn; tree bases along cluster south edges have hard rectangular cutoffs; 1x3 rectangular water trench by seed2 pond; minors: visible 16px grass grid repeat; hollow oak without root blending",
+    "ice": "FAIL — majors: cracked-ice zones busy high-contrast crack web with 16px repetition meeting snow along jagged unblended staircase seams; a row of 9 ice crystals fencing the main floor (seed1); desert eye statue on snow; minors: snow mounds/rocks in corridor bottlenecks",
+    "mine": "FAIL — majors: extreme floor noise from speckled brown dirt mixed with sharp-edged rectangular grey gravel patches; boulders/ore/skulls strewn on top; fence/bridge strip over the minecart track; minors: vertical corridor sides lack wall faces; support beams flat on north walls",
+    "otherworld": "FAIL — majors: purple floor with repetitive red slash speckles on every tile and raw rectangular grey flagstone patches; bones/skulls on paths; rectangular starry void pits cut abruptly with bones overlapping; jagged purple brick wall steps; minors: skeleton pillars floating",
+    "pyramid": "FAIL — majors: every sandstone tile has heavy dark-brown crack lines, broken by unblended stepped pale-sand patches cutting cobbles mid-tile; 2x1 front-wall bricks on floor; castle grates on corridor floor; minors: pillars/sarcophagi/beetles floating mid-room",
+    "ruins": "FAIL — majors: halls covered in repetitive green vine/crack pattern on every flagstone with rubble, colliding at raw 16px seams with plain cream tiles; pillars/chest clip the sun mosaic; side doorways place 3-tile wall strips on floor; minors: flat iron grate",
+    "swamp": "FAIL — majors: olive mud blotched with high-contrast pale yellow-green rectangular/cross-shaped grass patches with sharp 16px edges, plus goblets, bamboo posts, bones on open mud; bridges on dry mud; rigid square puddles; minors: flat base cutoffs on perimeter conifers",
+    "tower": "FAIL — majors: isolated cream square tiles like holes in dark grey brick floor; woven brown floor meets grey flagstone at raw seam; bookshelves floating mid-room blocking magic circle; stepped front-wall bricks on seed2 passage with floating flame; minors: spiral stair post flat cutoff",
+    "volcano": "FAIL — majors: ash floor broken by sharp rectangular tan dirt patches, grid-aligned orange cracks, smoking vents across walkways; lava uses high-contrast 16px scale/eye repeat; lava clips into furnace top; minors: grates on dirt floor; 1-tile grey steps don't bridge lava"
+   }
+  },
+  "sonnet": {
+   "agent": "a186f80872823b27d",
+   "verdicts": {
+    "forest": "PASS-ish notes — visible grass grid at 3x; 1-tile stray pond fragment by banner; wolves against mushroom rings; large empty areas",
+    "cave": "notes — floor dither very noisy at 3x; sand patches hard rectangular edges; three barred gates on a plank at pool edge; 1-tile water channel looks artificial",
+    "castle": "cleanest; blue marker unexplained (render event marker)",
+    "catacomb": "distinct theme; gold floor strip over-saturated (seed1)",
+    "_missing": "mine, otherworld, pyramid, ice not reviewed (images trimmed from context)"
+   }
+  }
+ },
+ "note": "blind; reviewers saw only boards + rubric R1-R7. Magenta/blue/white squares are render event markers (scripts/qa-game/render.mts), not art.",
+ "fixed": {
+  "castle": "yes: dropped cata/darkcata patches and cell scatter; corridor grates removed; hall litter cut to one corner cluster",
+  "catacomb": "partly: darkcata patch dropped (sewer patch kept, same brightness); bone scatter dropped; corridor grates removed",
+  "cave": "yes: base = calm mining-valley road dirt (no mix); sand/wetsand patches and shore ring dropped; moss clusters only at walls",
+  "forest": "no: 737 grass glyph repeat is in the base tile; variant tiles share it (not fixable in composer)",
+  "ice": "partly: cracked-ice sheets fewer/larger (sheetAt .82, scale 8); ice-slide strip no longer half-painted over the ice sheet",
+  "mine": "yes: base = calm yard grey with yard2 patch (same brightness); rock patches/scatter and mix dropped",
+  "otherworld": "partly: grey darkcata patches dropped; red-slash cell 13 excluded from mix",
+  "pyramid": "yes: base = calm camp sand with road patches; cracked sandstone only in boss/shrine/crypt rooms",
+  "ruins": "partly: cream trav patches dropped (ruin flagstone everywhere, trav only boss/vault)",
+  "swamp": "yes: reedbed patches dropped",
+  "tower": "yes: cream trav patches (the hole-like tiles) dropped",
+  "volcano": "yes: tan cave patches dropped; brown crack cell excluded from slag mix"
+ }
+}

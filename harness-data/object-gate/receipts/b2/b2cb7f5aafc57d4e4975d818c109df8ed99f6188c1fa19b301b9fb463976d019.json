@@ -1,0 +1,355 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b2cb7f5aafc57d4e4975d818c109df8ed99f6188c1fa19b301b9fb463976d019",
+ "width": 16,
+ "height": 16,
+ "kind": "frame",
+ "name": "north-south scrap fence section: wooden post with a band of overlapping corrugated sheet tops running north-south along its side, seen from above, tiles into a vertical line",
+ "label": "wasteland_ruins/fence-v",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 투영이 3/4 아님(front_elevation) (4/4)",
+  "3/4: 윗면 1행 < 3 (4/4)",
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "투영이 3/4 아님(front_elevation) (4/4)",
+   "윗면 1행 < 3 (4/4)",
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 16,
+  "tileColorsP90": 16,
+  "darkV5": 47,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 1
+ },
+ "eye": {
+  "verdicts": [
+   "borderline",
+   "borderline",
+   "right",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "right",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "corrugated sheet band (left, x=0-3)",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "wooden post top highlight",
+      "rows": "0-0",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "wooden post front face",
+      "rows": "1-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 1,
+    "front_face_rows": 14,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The column scan at x=8 shows one tan row at row 0, then a slightly lighter brown at rows 1-3, then flat dark brown down to row 14. There is no front-edge line and no eave shadow, so the post has at most a 1-row rim and no top surface. The sheet band at x=0-3 is a vertical strip of alternating teal and rust tiles in rows 0-15. It has no top plane or edge line, and it is drawn as a flat plan or elevation pattern rather than a 3/4 volume. There is no base or beam top face. The opaque silhouette is 11 px wide in rows 0-13, and the checkered area to the right lies outside it. The object therefore reads as a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a narrow vertical strip with a dark wood post and a band of overlapping corrugated sheet tops. It is small at 2x, so detail is hard to read by eye, and I lean on the measured facts. It shows 16 visible tones per full tile, which is level with the stall (17) and close to the well (20), and above the hedge (9). Near-flat coverage is 0%, so there are no large flat fills. The dark edge pixels are 0% neutral, so the outline is tinted (dark brown beside wood and sheet) rather than a black sticker line. By eye the sheet band shows alternating light and dark corrugation ridges plus a wood grain ramp on the post, about 4 steps per material against roughly 5 for the references. It is a little shallower than the best references, but it is not sticker-like and it is not thinner than the bench or lamp props. A careful artist would accept it next to them.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 1행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 1행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17125
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "wooden post",
+      "rows": "0-0",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "corrugated sheet band (left strip)",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 1,
+    "front_face_rows": 15,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The post has a 1-row light highlight at row 0 (x=8, #d6b073). Rows 1-3 are a slightly lighter brown, then dark brown continues to row 13 with a darker base at rows 14-15. This is a vertical face with only a 1-row rim and no front-edge line or eave shadow. The corrugated sheet strip on the left (column x=3) alternates blue-grey and rust bands down all 16 rows. It reads as a flat vertical elevation and shows no horizontal top surface. The silhouette is a constant 11 wide for rows 0-13, with no ellipse or widening. No beam or base shows a top face, so for a frame it is front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small post with a grey corrugated band, and at this size I can only judge it roughly by eye. The measured facts back it up. It has 16 visible tones per tile, against 9 for the hedge, 17 for the cheese stall and 20 for the roofed well. Near-flat coverage is 0%, so there are no flat fills. Dark edge pixels are 0% neutral, so the outline is tinted (brown beside the wood, dark grey-blue beside the sheet) and is not a uniform black sticker line. The post and the overlapping sheet tops show several lightness steps and per-sheet variation. It is somewhat less refined than the well or the stall, but it is at least as dense as the hedge and clearly richer than the bench and the lamp, which are thin pieces.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 1행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 1행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16320
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "corrugated sheet band (left, drawn as a flat top-down strip with overlapping tiles)",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "wooden post",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 1,
+    "front_face_rows": 14,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The post (x=5 to 10) has a 1-row tan highlight at row 0 (x=8, L=180). Rows 1-3 are slightly lighter, then a dark brown vertical face runs from rows 4 to 15. That highlight is only a rim, not a top surface, so the post reads as a front elevation. The sheet band on the left (x=0 to 4) is a flat top-down tile pattern of teal and rust patches, with no front-edge line, eave shadow or front face. The silhouette is a constant 11 wide for rows 0-13, so no ellipse or roof plane is visible. The frame has no horizontal beam or base showing a top face of 3 or more rows, so it does not read as three-quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a narrow vertical piece with a wood post on one side and a band of overlapping corrugated sheet tops on the other. It is thin, so I judged it by eye as well as by the numbers. Measured facts: 16 visible tones per tile, above the hedge (9) and close to the stall (17) and well (20). Near-flat coverage is 0%, so there are no flat fills. The dark edge pixels are 0% neutral, so the outline leans brown or red-brown rather than being a black sticker line. I see roughly 4 lightness steps on the post and the sheet. Several tones sit side by side, with per-sheet highlights and grain, and no large flat area. It is a little shallower than the 5-6 steps in the references, and it has only 16 colours against 38-40 in the richer references. It would still sit acceptably next to the references without looking flatter or more sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 1행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 1행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19122
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "wooden post (right half)",
+      "rows": "0-0",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "post front face",
+      "rows": "1-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "corrugated sheet strip (left side)",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 1,
+    "front_face_rows": 15,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The sprite is 11px wide and 16 rows tall. The post (x=5 and x=8) is a vertical brown face from row 1 to row 15. Only row 0 on x=8 is lighter (#d6b073), and rows 1-3 are a slightly lighter gradient. That is a 1-row rim at most, with no front-edge line and no eave shadow, and the width profile never widens and narrows, so there is no ellipse. The corrugated sheet on the left (x=3) alternates teal and red-brown bands every 1-3 rows as a flat vertical strip, with no top plane or depth. There are no horizontal beams or base with top faces, so as a frame it reads as a flat front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a thin, sparse prop: a wooden post with a band of overlapping corrugated sheet. The facts support it. It has 16 visible tones per tile, against 9 for the hedge, 17 for the cheese stall and 20 for the roofed well. Near-flat coverage is 0%, so there are no 5x5 flat fills. The near-neutral share of dark edge pixels is 0%, so the outline carries a tint (dark brown by the wood, dark grey-brown by the metal) and is not a black sticker line. By eye, the post and the sheet band each show roughly 4-5 lightness steps, with per-sheet highlights and ridge dots, and the forms separate by value. It is not clearly thinner or flatter than the references (bench, lamp, hedge) at the same scale. The weakness is that its small footprint makes the texture only moderate, so I rate texture 'some' and not 'rich'. A careful artist would still accept it beside the references.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 1행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 1행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17884
+  }
+ ],
+ "decidedAt": "2026-10-22T15:35:18.403Z",
+ "cells": {
+  "16": [
+   "0d59f7b8647ee088"
+  ],
+  "24": [
+   "427b3cacc3da097e",
+   "50a7b26456d5cc94",
+   "6c3f908f2986213f",
+   "9b00aece2bd93abb",
+   "c0203d00b4120da7",
+   "c594e49731237737"
+  ],
+  "32": [
+   "3119a956b0fb583a",
+   "592a6f5f556e4f45",
+   "647c304b684a012b",
+   "a786bc0d3265a9b4",
+   "cae17e6a9252f570",
+   "f876d0f1f697ad7b"
+  ],
+  "48": [
+   "15ef6fe4699a4914",
+   "18a4de8a0d737580",
+   "43fb1c6e09b965a9",
+   "8093fdad7fc9f276",
+   "97ad4159cccc3e75",
+   "f7a38f05355bda17"
+  ]
+ }
+}

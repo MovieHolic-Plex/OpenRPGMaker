@@ -1,0 +1,446 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "7ec37bb6db6297c3d2da9d1096cf06304818bbe6191520a32a08e92bce5ace09",
+ "width": 64,
+ "height": 96,
+ "kind": "structure",
+ "name": "박공 정면 오두막",
+ "label": "building-kit/massing/gable-cottage",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 8,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "5f62fef078ef7661"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 19,
+  "tileColorsP90": 23,
+  "darkV5": 53,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 21
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "tiled roof planes (left orange, right dark red, with ridge)",
+      "rows": "4-60",
+      "evidence": "c",
+      "front_edge_line_row": 60,
+      "eave_shadow_rows": "63-64"
+     },
+     {
+      "part": "chimney",
+      "rows": "6-23",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "front gable wall triangle with attic window",
+      "rows": "37-60",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "half-timbered front wall with door and window",
+      "rows": "61-95",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 57,
+    "front_face_rows": 35,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Large tiled roof planes fill rows 4-60 on both sides of the ridge. They end in a horizontal eave/beam line at rows 60-62, followed by dark eave shadow at rows 63-64. Below that is a vertical timber-framed front wall with a door and window, rows 61-95 (about 35 rows). The gable triangle at rows 37-60 is a vertical face. The roof planes count as the top surface, evidence (c). The chimney is a small detail rising above the roof."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate has 18 visible tones per 16x16 tile against 12 and 10 for the references, and 0% near-flat coverage like both references. Only 14% of its dark edge pixels are neutral, so the outlines lean brown or red-brown beside the roof and wood rather than reading as a black sticker line. The roof shows tile rows with per-tile highlights in about 5 orange and brown steps, plus a darker purple-red side slope. The plaster has speckle, and the door and shutters have wood grain. Compared with the references, the walls and the stone chimney are slightly simpler: the plaster is a bit plainer than the half-timbered reference and has fewer steps, and the chimney is just a grey block. This is a small gap in material depth, not a flat fill. Structure and density hold up next to the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15671
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "left roof slope (orange tiles)",
+      "rows": "5-60",
+      "evidence": "c",
+      "front_edge_line_row": 60,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "right roof slope (maroon tiles)",
+      "rows": "4-60",
+      "evidence": "c",
+      "front_edge_line_row": 60,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "chimney",
+      "rows": "5-23",
+      "evidence": "a",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "eave beam",
+      "rows": "61-64",
+      "evidence": "a",
+      "front_edge_line_row": 61,
+      "eave_shadow_rows": "63-64"
+     },
+     {
+      "part": "gable wall triangle",
+      "rows": "37-60",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "window box",
+      "rows": "80-82",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 40,
+    "front_face_rows": 35,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Both roof planes (rows 4-60) are drawn as tiled slopes with visible tile courses. They widen from the ridge at row 4 down to the full 64 px width at row 30 and end at the eave line at rows 60-61. The eave beam at rows 61-62 is followed by dark eave shadow at rows 63-64. Below the roof sit the timber-framed gable triangle (rows 37-60) and the plaster wall with door and window (rows 65-95), a front face of about 35 rows. The roof slopes serve as the top surface (evidence c), so the object reads as a three-quarter building."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The candidate has a tile roof with per-tile highlights and scalloped rows in about 5 orange/red steps, plus a darker shaded right slope. The plaster wall is speckled, and the wood door, shutters and trim carry grain. The measured facts back this up: 18 visible tones per tile against 12 and 10 for the references, 0% near-flat coverage like both references, and only 14% neutral dark edge pixels, so the outline is tinted (dark brown and red-brown) rather than a black sticker line. It is slightly simpler than the references in the wall (no half-timber or stone shading), but the roof, gable and door detail are at reference level.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16739
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "left roof slope (orange tiles, tile rows are the top plane)",
+      "rows": "7-60",
+      "evidence": "c",
+      "front_edge_line_row": 60,
+      "eave_shadow_rows": "62-64"
+     },
+     {
+      "part": "right roof slope (dark red tiles)",
+      "rows": "4-60",
+      "evidence": "c",
+      "front_edge_line_row": 60,
+      "eave_shadow_rows": "62-64"
+     },
+     {
+      "part": "chimney on roof, with a light cap row at the top",
+      "rows": "5-23",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "front gable wall triangle (vertical face under the roof edge)",
+      "rows": "37-60",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "timber-framed south wall with door and window",
+      "rows": "61-95",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 57,
+    "front_face_rows": 35,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is a cottage whose large sloped roof planes, rows 4-60, show tile courses and sit above a beam. That beam, rows 61-62, is the eave line and is followed by dark eave shadow at rows 63-64. Below it the timber-framed south wall, rows 61-95, has a door and a window and is more than 3 rows tall. The front gable triangle is a vertical face, but the roof slopes on both sides are visible top planes (evidence c). The chimney is a small detail and does not change the reading."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "Measured facts favour the candidate: 18 visible tones per tile against 12 and 10 for the references, 0% near-flat coverage like the references, and only 14% neutral dark edge pixels, so the outlines carry a tint. By eye the roof has tile rows with per-tile highlights in orange and a darker purple-red side slope, about 5 steps. The outlines are dark brown beside wood and dark red-brown beside tiles, not a black sticker line. The plaster wall has speckle, the door and shutters have wood grain, and the gable has timber trim. It is slightly simpler than the references: the wall has fewer steps, there is no stone or half-timber detail, and the chimney is a flat grey block with little shading. Still, it would sit acceptably next to the references without looking flatter or thinner.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17462
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "left roof slope (orange tiles)",
+      "rows": "5-60",
+      "evidence": "c",
+      "front_edge_line_row": 60,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "right roof slope (dark red tiles)",
+      "rows": "4-60",
+      "evidence": "c",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "chimney",
+      "rows": "6-23",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "gable triangle wall with attic window",
+      "rows": "37-60",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "eave beam over the wall",
+      "rows": "61-64",
+      "evidence": "a",
+      "front_edge_line_row": 61,
+      "eave_shadow_rows": "63-64"
+     }
+    ],
+    "main_top_rows": 57,
+    "front_face_rows": 35,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is a cottage with a large sloped tile roof (rows 4-60), drawn as two planes split by a ridge at about x=36. The roof silhouette widens from 2 to 64 px by row 30. Its tile rows are the top surface (evidence c). A brown eave beam at rows 61-62 acts as the front-edge line, with dark eave shadow at rows 63-64. Below it is a south wall face of about 31 rows (65-95) with a door, window and timber frame. Counting the gable triangle (rows 37-60) as front face too, the front face is about 35 rows or more. The chimney rises from the roof slope, and its top is just a thin light cap. The gable-end triangle faces south, and the roof slopes recede on both sides, which reads as three-quarter view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The candidate gable cottage has a tile roof with per-tile highlights and scallops in about 5 orange/red steps, plus a darker shaded side roof plane. The plaster wall is speckled, the timber trim and door have grain, and the stone chimney has individual shading. Measured facts back this up: 18 visible tones per tile against 12 and 10 for the references, 0% near-flat coverage like both references, and only 14% neutral dark edge pixels. The dark edges therefore lean brown or red-brown, matching the adjacent material, not a black sticker line. Structure is slightly simpler than the half-timber reference, since the walls have fewer ramp steps, but it would sit next to the references without looking thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16442
+  }
+ ],
+ "decidedAt": "2026-10-25T08:22:38.113Z",
+ "cells": {
+  "16": [
+   "0c2197ba4339844d",
+   "1523f4ed1d623dfb",
+   "1563083a2ee2f8e3",
+   "1b3f9a54437b2838",
+   "1de2c13df7e1480b",
+   "27ef5a69a4bf54fd",
+   "2e13d6a6fee88445",
+   "4866788d7fc6fcde",
+   "518dcc4e98dde720",
+   "52300a141d841f16",
+   "542269b53e7dbf1a",
+   "6004713764f68f07",
+   "682330e7af4846e9",
+   "7be4b287d78edce7",
+   "8a65b2849e4350db",
+   "9bb79a6580e9befe",
+   "b99baff9ae3580b3",
+   "bec69cb0860fa729",
+   "cab7415bdd2e7a3a",
+   "d4844334213c9192",
+   "e142850e25b52c00",
+   "eb54e2c94e59959a",
+   "ec9c78c6d840ce06"
+  ],
+  "24": [
+   "110f950b5cb0493f",
+   "12192c79c1b066e5",
+   "2036578e5322e619",
+   "24535241516c13af",
+   "26b5144bcfaf5c58",
+   "2d2cd7f6f88a7a1f",
+   "3e38fcb80a2e6676",
+   "41ae3b106e9f76df",
+   "44a859e6680d1a87",
+   "5388101f3ed9d897",
+   "5428be5db534e758",
+   "5b3937baff0b8a4e",
+   "5e5b7cd557228fb0",
+   "5f6fc970a40be427",
+   "7ac016a0d80d3214",
+   "7b20f8836c8c93d3",
+   "7f950e4d5e50ac48",
+   "7fa7d5c257ed2519",
+   "95023bd61c8bba79",
+   "9c4e0d00e4dffbd6",
+   "9cc20410f390f52b",
+   "9ec92f89f0781323",
+   "9ff731f847162db7",
+   "aac1e17e4c602a27",
+   "afc043f7e35a0a4a",
+   "b160b2e3a7ef1744",
+   "b72f67552f8f5097",
+   "b7960807b1514b15",
+   "c478a68164c28f60",
+   "c8e5966a4d8d0500",
+   "d642a69446d94593",
+   "dd8599b9ee108446",
+   "e2d265321b883351",
+   "e49fe15b8e5e28a7",
+   "f8ca7b32c77ce528",
+   "fc862dcabbab12a4"
+  ],
+  "32": [
+   "438e322c3be71946",
+   "6894d2c2fc893db3",
+   "756de4a6adc528ef",
+   "7fd2c417275b8d33",
+   "962e3d55e42b0106",
+   "a5c4c19a9337feb1"
+  ],
+  "48": [
+   "00716cd207c313bf",
+   "14cba1ffda5b8f2f",
+   "3779c7b17224eaf2",
+   "386feb4ccdd939e7",
+   "44cd956039a81749",
+   "45995563788ada78",
+   "69c0702e43cdf66c",
+   "7044d74030fd26d7",
+   "7984062aff3ed1d7",
+   "bb3995d222f33bfc",
+   "bc592a8353b003a2",
+   "fb443f1be97957ff"
+  ]
+ }
+}

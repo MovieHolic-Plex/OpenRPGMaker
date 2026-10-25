@@ -310,7 +310,8 @@ def bake_face(prefix, what, material, item_key):
         kits, ids = [], set()
         spec = [("face3h", f"{prefix}-face-3h", "3단"), ("face2h", f"{prefix}-face-2h", "2단"), ("base3h", f"{prefix}-face-3h-base", "3단 아랫단 변형"),
                 ("glyph3h", f"{prefix}-face-3h-glyph", "3단 새김 가운데"), ("glyph2h", f"{prefix}-face-2h-glyph", "2단 새김 가운데"),
-                ("alt3h", f"{prefix}-face-3h-alt", "3단 가운데단 변형")]
+                ("alt3h", f"{prefix}-face-3h-alt", "3단 가운데단 변형"),
+                ("mid3h", f"{prefix}-face-3h-mid", "3단 가운데 덩이(3칸 주기)"), ("mid2h", f"{prefix}-face-2h-mid", "2단 가운데 덩이(3칸 주기)")]
         for part, name, w_ in spec:
             cv = parts.get(part)
             if cv is None:
@@ -512,3 +513,8 @@ def main():
 
 if __name__ == "__main__":
     main()
+    # 주제 꼬리 뒤(33,152~)의 마당 바닥 꼬리(beodeul-yard/bake_yard.py)는 이 스크립트가 시트를 다시 쓰면 잘린다 — 이어서 다시 굽는다.
+    _yard = HERE.parent / "beodeul-yard" / "bake_yard.py"
+    if "--dry" not in sys.argv and _yard.exists() and G.SHEET_PATH == G.ROOT / "public/assets/beodeul-city/beodeul-city-chipset.png":
+        import subprocess
+        subprocess.run([sys.executable, str(_yard)], cwd=G.ROOT, check=True)

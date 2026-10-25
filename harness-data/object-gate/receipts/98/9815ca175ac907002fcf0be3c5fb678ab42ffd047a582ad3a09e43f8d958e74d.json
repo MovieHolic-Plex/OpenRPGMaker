@@ -1,0 +1,293 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "9815ca175ac907002fcf0be3c5fb678ab42ffd047a582ad3a09e43f8d958e74d",
+ "width": 16,
+ "height": 16,
+ "kind": "frame",
+ "name": "north-south scrap metal fence seen from above as a band of overlapping sheet tops on a post line, tiles into a vertical line",
+ "label": "wasteland_ruins/fence-v",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 종류 불일치"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "종류 불일치"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 15,
+  "tileColorsP90": 15,
+  "darkV5": 45,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 1
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "overlapping sheet tops on post line (whole band)",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 16,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The silhouette is a constant 10px wide for all 16 rows, a vertical strip that tiles. The column scans show only stacked colour bands (teal, brown, rust) from top to bottom. There is no front-edge line, no eave shadow, no ellipse and no south face. The object looks like a plan view of sheets along a post line, so it has no vertical front face of 3 or more rows. It also does not read as an open frame or rack with beams and a base. It matches the 'top-down slab (no front)' reference."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a narrow vertical band of overlapping sheet tops, and I could only judge it at a small size. Measured facts support it: 15 visible tones per full tile, against 9 for the hedge, 17 for the cheese stall and 20 for the roofed well. Near-flat coverage is 0%, so there are no large flat fills. 0% of its dark edge pixels are neutral, so the outline leans rust or brown rather than black, which matches the Beodeul habit of dark material-tone edges. By eye, the rusty, grey and orange sheets are separated by value with some per-sheet variation. The ramps look slightly shallower than the references' 5-6 steps (about 4 per material), but the tile carries as much visible information as the same-kind references. It would not look thinner or more sticker-like beside them.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15945
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "north",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "overlapping sheet tops on post line (whole strip)",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 16,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The object is a 10px-wide, 16-row vertical strip with constant width in every row. The column scans show only small colour patches (teal and grey-blue sheets, tan highlight, brown/rust patches) stacked along the length. None of them forms a front-edge line with eave shadow, an ellipse or a roof plane. There is no south-facing vertical face either. It is drawn as a plan-view band of sheet tops, so it is a flat top-down slab with no front face, not a frame with beams and base showing top faces."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a narrow vertical band of overlapping sheets on a post line. It is small at this scale, so the structural read is limited. The measured facts are in line with the references. It has 15 visible tones per 16x16 tile, against 9 for the hedge, 17 for the cheese stall and 20 for the well. Near-flat coverage is 0%, so there are no flat fills. The dark edge pixels are 0% neutral, so the outline is tinted and not a black sticker line. Sheet overlaps, rust and post tones give roughly 4 lightness steps per material, a little under the 5-6 of the references. That is not shallow for a thin fence prop, and it is no thinner than the hedge reference, which also has about 11 colours in total. A careful artist would accept it beside the references.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16275
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "vertical band of overlapping sheet tops on post line",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The silhouette is a constant 10px-wide strip across rows 0-15, with no widening or narrowing and so no ellipse. The column scans show only alternating colour patches (teal-grey, brown, rust) with no front-edge line, no eave shadow, and no south face below a top band. The whole strip looks like sheet tops seen from above. It has no front face of 3 or more rows, so it reads as a flat top-down slab. It also does not look like an open frame or rack with beams and a base."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a narrow vertical band of overlapping sheet tops, and at this size it is hard to read in detail. The measured facts support it. It has 15 visible tones per 16x16 tile, against 9 for the hedge, 17 for the cheese stall and 20 for the roofed well. Near-flat coverage is 0%, so there are no flat fills. Dark edge pixels are 0% neutral, so the outline is tinted (dark rust and brown beside the metal) rather than a black sticker line. By eye I see about 5 lightness steps across grey, rust and brown sheets, with sheet overlaps separated by value and some grain. It is not thinner or flatter than the hedge or the bench references, so it passes. Confidence is moderate because the piece is small and the board is low resolution.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16739
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "vertical band of overlapping sheet tops on a post line",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The silhouette is a constant 10px wide for all 16 rows. It is a flat vertical strip with no widening or narrowing, so there is no ellipse. The column scans show color changes along the strip (teal rows 0-2, tan row 3, brown rows 4-10, red-brown rows 11-15). They do not show a top band ending in a front-edge line with eave shadow below, and there is no horizontal edge or shadow line. No south-facing front face of 3 or more rows is drawn. This is a plan view of sheet tops on a post line, not a 3/4 view of an open frame with horizontal beams and a base. It reads as a top-down slab."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a thin vertical fence strip, so I judged it by eye as a sparse prop. It shows alternating rust-orange, grey and teal sheet tops with dark tinted edges, and no large single-colour areas. The measured facts support this: 15 visible tones per tile, which is level with the stall (17) and well (20) and above the hedge (9). Near-flat coverage is 0%, and 0% of its dark edge pixels are neutral, so the outline leans toward the material colours rather than being a black sticker line. Shading on each sheet looks like about 4 steps against roughly 5 on the references, which is a little shallower but not flat. A careful artist would likely accept it beside the bench and lamp, since it does not look thinner or flatter than they do.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18304
+  }
+ ],
+ "decidedAt": "2026-10-22T15:08:30.378Z",
+ "cells": {
+  "16": [
+   "7d43ebc46b263a65"
+  ],
+  "24": [
+   "3689717f725e3bab",
+   "509ae7b946dcbe0c",
+   "5880e3dc4f4f8fed",
+   "92bd2e5d036d5723",
+   "93edf2f3de4ca156",
+   "f68ca36b0cda0d87"
+  ],
+  "32": [
+   "334caba4fa89b1f7",
+   "360deac482a7d29e",
+   "a0f726c2ea75a373",
+   "aa11fade035a0a9d",
+   "af879380f517cc8a",
+   "faf3c59ecfea8005"
+  ],
+  "48": [
+   "1b01ff1a3060d38a",
+   "823323b96518a2d0",
+   "bfcb65786307c76e",
+   "c2e38bd9639c7739",
+   "e1c107fb46db1ca1",
+   "e22c6a436cf5a6c7"
+  ]
+ }
+}

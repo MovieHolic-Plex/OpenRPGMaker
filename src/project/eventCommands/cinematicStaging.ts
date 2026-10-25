@@ -40,7 +40,7 @@ export function normalizeShakeDirection(value: unknown): ShakeDirection {
 
 // ── 파티클 ──────────────────────────────────────────────────────
 
-export const PARTICLE_PRESETS = ["sparkle", "magic", "heal", "fire", "smoke", "dust", "explosion", "splash"] as const;
+export const PARTICLE_PRESETS = ["sparkle", "magic", "heal", "fire", "smoke", "dust", "explosion", "splash", "paper", "petals"] as const;
 export type ParticlePreset = (typeof PARTICLE_PRESETS)[number];
 export const PARTICLE_PRESET_LABELS: Record<ParticlePreset, string> = {
   sparkle: "반짝임 (보물·축복·변신)",
@@ -51,6 +51,8 @@ export const PARTICLE_PRESET_LABELS: Record<ParticlePreset, string> = {
   dust: "흙먼지 (착지·달리기 멈춤·붕괴)",
   explosion: "폭발 (폭탄·충돌)",
   splash: "물보라 (물에 빠짐·분수)",
+  paper: "흩날리는 종이 (부딪혀 서류를 떨굼·바람에 날린 편지)",
+  petals: "꽃잎 (벚꽃이 흩날림·고백·만남)",
 };
 
 export function isParticlePreset(value: unknown): value is ParticlePreset {

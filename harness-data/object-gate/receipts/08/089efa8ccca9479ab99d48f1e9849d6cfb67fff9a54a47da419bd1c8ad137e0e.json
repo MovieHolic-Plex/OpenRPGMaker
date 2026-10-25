@@ -1,0 +1,353 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "089efa8ccca9479ab99d48f1e9849d6cfb67fff9a54a47da419bd1c8ad137e0e",
+ "width": 16,
+ "height": 16,
+ "kind": "frame",
+ "name": "north-south scrap metal fence section seen from above as a band: top edge of the sheets and post heads, tiles into a vertical line",
+ "label": "wasteland_ruins/fence-v",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 종류 불일치"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "종류 불일치"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 15,
+  "tileColorsP90": 15,
+  "darkV5": 34,
+  "nearBlackEdge": 0.14,
+  "opaqueTiles": 1
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "borderline",
+   "wrong",
+   "borderline",
+   "borderline",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "borderline",
+   "borderline",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "metal sheet band (teal/grey strip running the full height)",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "upper post head (brown block)",
+      "rows": "2-5",
+      "evidence": "none",
+      "front_edge_line_row": 2,
+      "eave_shadow_rows": "5-5"
+     },
+     {
+      "part": "lower post head (brown block)",
+      "rows": "10-13",
+      "evidence": "none",
+      "front_edge_line_row": 10,
+      "eave_shadow_rows": "13-13"
+     }
+    ],
+    "main_top_rows": 16,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The object is a narrow vertical band, 8-9 px wide and 16 rows tall. It is the top edge of the sheets seen from above, tiled vertically. The main band (x=7: rows 0-1, 6-9, 14-15) has no front face and no front-edge line with an eave shadow. The two brown post heads (rows 2-5 and 10-13) each have a 1-row light line, 2 brown rows and a dark row. They are only 4 rows tall, and they are small details on the band, not a south face under a top surface. The main body therefore has no front face of 3 or more rows and is a flat top-down slab."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a narrow vertical band of stacked scrap sheets and post heads, a sparse prop like the lamp and bench references. On the primary facts it is at or above the references. It has 15 visible tones per tile against 9 for the hedge, 17 for the cheese stall and 20 for the roofed well. Its near-flat coverage is 0%, so there are no large flat fills. Its dark edge pixels are 0% near-neutral, so the outline is tinted. By eye the darks lean brown and blue-grey beside the metal and rust, not black, so I read the outline as dark material tone. Each material shows about 4 lightness steps (highlight, mid, dark, rust or edge), slightly fewer than Beodeul's 5-6, but the per-sheet variation and patching give enough grain that it would sit acceptably next to the hedge and bench. It is not sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(top_down_slab) (1/1)",
+    "앞면 0행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(top_down_slab) (1/1)",
+     "앞면 0행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18731
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "sheet band (top edge of the scrap sheets, seen from above as a vertical strip)",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "post heads (two small brown blocks)",
+      "rows": "2-5",
+      "evidence": "a",
+      "front_edge_line_row": 2,
+      "eave_shadow_rows": "5-5"
+     },
+     {
+      "part": "post heads (second block)",
+      "rows": "10-13",
+      "evidence": "a",
+      "front_edge_line_row": 10,
+      "eave_shadow_rows": "13-13"
+     }
+    ],
+    "main_top_rows": 16,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The main body is a narrow vertical band 8-9 px wide and 16 rows tall. The column scan shows no front face under it, only a lighter blue-grey strip at x=5-7 and a darker strip at x=9. Silhouette width stays at 8-9 for every row. It reads as a plan view of the fence, not an upright frame with horizontal beams and a base. The only elevation cues are two small post-head blocks at rows 2-5 and 10-13. Each has a 1-row tan top (L=180), 2 rows of brown face and a 1-row dark shadow. These are details and do not make a 3+ row front face for the main body. The kind is frame, so beams and a base should show top faces with a front below, and this drawing has neither."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a narrow vertical band, so I judged it mostly from the measured facts and could only partly check it by eye. It has 15 visible tones per 16x16 tile, which sits between prop-hedge (9) and prop-well-roofed (20) and is close to prop-stall-cheese (17). Near-flat coverage is 0%, so there are no large flat fills. The near-neutral share of dark edge pixels is 0%, so the outlines carry a tint (brownish/rusty beside the metal and posts) rather than being a black sticker line. Sheet tops and post heads show about 4-5 value steps with some grain and variation. Since the references are about 9-20 tones, it does not look thinner or flatter than they do. The weak point is that the band is small and I could not confirm per-sheet highlight detail by eye.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19092
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "scrap sheet band (teal/grey vertical strip, seen from above)",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "post heads / brackets (brown blocks with tan top line)",
+      "rows": "2-5",
+      "evidence": "none",
+      "front_edge_line_row": 2,
+      "eave_shadow_rows": "5-5"
+     },
+     {
+      "part": "post heads / brackets (second block)",
+      "rows": "10-13",
+      "evidence": "none",
+      "front_edge_line_row": 10,
+      "eave_shadow_rows": "13-13"
+     }
+    ],
+    "main_top_rows": 16,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The main body is a narrow vertical strip about 8-9 px wide and 16 rows tall. It is drawn as a flat band seen from above, with the sheet columns running top to bottom and no south-facing front face. The two brown blocks at rows 2-5 and 10-13 each have a tan top line (rows 2 and 10), 2 rows of face and a dark base row. They are small details, not the main volume. Nothing shows a front-edge line with a tall front face below it, and the strip has no legs or apron. It matches the 'top-down slab (no front)' reference, not an open frame with beams and base showing top faces."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a thin vertical band, so I judged it mostly by eye plus the measured facts. It reads as stacked sheet segments and post heads, with about 5 lightness steps across its metal and wood-like tones. The dark edge pixels are 0% neutral, so the outline is tinted and follows the adjacent material instead of being a uniform black sticker line. It has 15 visible tones per 16x16 tile and 0% near-flat coverage. That is above prop-hedge (9) and close to prop-stall-cheese (17) and prop-well-roofed (20). The segments carry some variation and grain rather than flat fills. It is a little simpler than the richest references, but a careful artist would accept it beside them without it looking flatter or more sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18678
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "north",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "scrap sheet band (metal, teal-grey, runs the full height)",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "post head 1 (brown block)",
+      "rows": "2-5",
+      "evidence": "none",
+      "front_edge_line_row": 2,
+      "eave_shadow_rows": "5-5"
+     },
+     {
+      "part": "post head 2 (brown block)",
+      "rows": "10-13",
+      "evidence": "none",
+      "front_edge_line_row": 10,
+      "eave_shadow_rows": "13-13"
+     }
+    ],
+    "main_top_rows": 16,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The object is an 8-9 px wide vertical strip over 16 rows. The sheet band (rows 0-15, columns x=7 and x=9) is a continuous top-down band with no front-edge line, no eave shadow and no south face below it. The two brown post heads (rows 2-5 and 10-13) each have a 1-row tan highlight at row 2 or 10, 2 rows of brown at rows 3-4 or 11-12, and a dark row at row 5 or 13. That is a small block detail, not a horizontal surface over a front face. There is no base, no horizontal beam top and no legs, so the main body has no front face of 3 or more rows and it is a flat top-down slab. It does not read as a frame with a top surface and a front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small vertical band of stacked sheet tops and post heads, in grey-brown metal and rust tones. It measures 15 visible tones per 16x16 tile, above prop-hedge (9) and close to prop-stall-cheese (17) and prop-well-roofed (20). Near-flat coverage is 0%, so there are no flat fills of 5x5 or larger. The dark edge pixels are 0% near-neutral, so the outline is a tinted dark tone of the adjacent material rather than a black sticker line. Each sheet shows about 4-5 value steps, with highlight, mid, dark and rust or shadow variation. That is slightly under Beodeul's 5-6 steps, but the grain varies from sheet to sheet. It is a simple strip, but a careful artist would accept it beside the references without it looking thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19807
+  }
+ ],
+ "decidedAt": "2026-10-22T14:22:06.494Z",
+ "cells": {
+  "16": [
+   "16b0931dae5a39c9"
+  ],
+  "24": [
+   "6f308a19aa076de6",
+   "7e9a0e753552fe6c",
+   "bb52f62394f33a1d",
+   "d800bb47eb7bb9b2",
+   "e1d80914981de8f7",
+   "e353f6bd5726bd20"
+  ],
+  "32": [
+   "0314c5f316cd39a3",
+   "2dff91b79854f4e2",
+   "8b10dfba8698d8d5",
+   "aaf17fe242e27d8c",
+   "acfd0e80840e37da",
+   "f6666600d2a68207"
+  ],
+  "48": [
+   "0d4649b5f0f64b18",
+   "33728e32d404ff98",
+   "58c5734e7b9b225e",
+   "8629d835998d2c49",
+   "a71632aebbaa2f1c",
+   "cf62c8d9952143be"
+  ]
+ }
+}

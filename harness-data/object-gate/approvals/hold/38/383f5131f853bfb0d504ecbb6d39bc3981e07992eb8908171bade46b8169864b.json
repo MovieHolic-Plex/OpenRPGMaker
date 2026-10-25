@@ -1,0 +1,16 @@
+{
+ "schema": "oprn-object-gate-hold-decision/1",
+ "pixelSha256": "383f5131f853bfb0d504ecbb6d39bc3981e07992eb8908171bade46b8169864b",
+ "profileHash": "4d8774b517f41638",
+ "kind": "terrain",
+ "decision": "allow",
+ "decidedBy": "supervisor (village-art)",
+ "decidedAt": "2026-10-23T05:48:50.296Z",
+ "by": "delegated",
+ "delegatedBy": "user",
+ "evidence": "tiledata/beodeul-yard/_gate_flag_dirt/r7/vqa-opus.json",
+ "via": "review-page",
+ "reasons": [],
+ "note": "delegated by user to supervisor 2026-10-23 — beodeul flag-over-dirt ruined edge autotile r7: gate terrain PASS (uncalibrated) + fresh independent Opus adversarial reviewer PASS (6/6 criteria)",
+ "sig": "dc1c6fbd6c8abda5beb078501ae68a76c6fe6a96716a4624187fdd68048c98c6"
+}

@@ -328,18 +328,33 @@ function layoutBlobOnce(spec: DungeonSpec, profile: GrammarInfo, salt: number): 
   }
   // 가장자리 안쪽으로 강제
   for (let y = 0; y < H; y += 1) for (let x = 0; x < W; x += 1) if (x < MARGIN || y < MARGIN + 4 || x >= W - MARGIN || y >= H - MARGIN) { g.floor[g.idx(x, y)] = 0; g.roomAt[g.idx(x, y)] = -1; }
-  smooth(g, 2, (x, y) => x >= entX - 2 && x < entX + ENT_W + 2 && y >= stubTop - 1 && y < entY + ENT_H + 2);
+  // 다듬기 셋: 둘이면 굴 둘레에 한 칸짜리 계단 턱이 많이 남아 16px 계단 윤곽으로 읽혔다(2026-10-25 floor VQA r4 cave·volcano).
+  smooth(g, 3, (x, y) => x >= entX - 2 && x < entX + ENT_W + 2 && y >= stubTop - 1 && y < entY + ENT_H + 2);
   // 입구 굴 북쪽 벽(계단·출구 자리)은 지킨다: 옆 방이 입구 곁까지 내려오면(허공을 줄이려고 허용) 옆으로 가는 통로가 이 벽을 뚫어
   // 계단 놓을 평평한 벽이 사라졌다. 목(stub) 세 칸만 뚫린 채로 둔다.
   for (let y = entY - 4; y < entY - 1; y += 1) for (let x = entX - 1; x < entX + ENT_W + 1; x += 1) {
     if (x >= entX + 5 && x < entX + 8) continue;
     g.floor[g.idx(x, y)] = 0; g.roomAt[g.idx(x, y)] = -1;
   }
+  // 북쪽 벽 윤곽 고르기: 한 칸 폭 들쭉날쭉(양옆 열보다 한 칸 높거나 낮은 바닥 윗끝)은 벽 앞면 3단이 한 칸마다 끊겨 16px 계단으로 읽혔다(2026-10-25 floor VQA r4 cave·volcano).
+  // 양옆이 같은 높이면 그 높이로 맞춘다(입구 굴 둘레는 그대로).
+  for (let pass = 0; pass < 2; pass += 1) for (let x = 1; x < W - 1; x += 1) {
+    if (x >= entX - 2 && x < entX + ENT_W + 2) continue;
+    for (let y = MARGIN + 5; y < H - MARGIN - 1; y += 1) {
+      const i = g.idx(x, y);
+      const top = (xx: number, yy: number) => g.floor[g.idx(xx, yy)] === 1 && g.floor[g.idx(xx, yy - 1)] === 0;
+      // 이 열만 한 칸 높게 솟은 바닥(위로 튀어나온 이빨): 양옆은 y 가 윗끝, 이 열은 y-1 이 윗끝
+      if (top(x, y - 1) && g.floor[i] === 1 && top(x - 1, y) && top(x + 1, y)) { g.floor[g.idx(x, y - 1)] = 0; g.roomAt[g.idx(x, y - 1)] = -1; }
+      // 이 열만 한 칸 패인 바닥: 양옆은 y 가 윗끝, 이 열은 y+1 이 윗끝
+      else if (g.floor[i] === 0 && top(x, y + 1) && top(x - 1, y) && top(x + 1, y)) { g.floor[i] = 1; g.roomAt[i] = g.roomAt[g.idx(x, y + 1)]!; }
+    }
+  }
   fillWallIslands(g, 30);
 
-  // ---- 떠 있는 땅·늪 둔덕(2026-10-23 dungeon-themes): 방 사이 굽은 길을 액체(마계 = 허공, 늪 = 늪물)로 바꾼다.
+  // ---- 떠 있는 땅(2026-10-23 dungeon-themes): 방 사이 굽은 길을 허공으로 바꾼다. 늪은 통로를 물로 채우지 않는다 — 벽(수관 숲) 사이 통로 물이
+  // 곧게 잘린 네모 물길·외톨이 물 칸으로 읽혔다(2026-10-25 floor VQA r3·r4 swamp). 늪물은 방 안 호수·웅덩이(잡음 덩이 + 진흙 둑)로만 고인다.
   // 방(빈터·둔덕)은 섬이 되고, settle 이 가장 짧은 줄에 다리(마계 돌다리·늪 널판 길)를 놓아 잇는다. 입구 굴 목은 마른 땅으로 둔다.
-  if (profile.liquid === "void" || profile.id === "swamp") {
+  if (profile.liquid === "void") {
     for (let y = 0; y < H; y += 1) for (let x = 0; x < W; x += 1) {
       const i = g.idx(x, y);
       if (!g.floor[i] || g.roomAt[i] !== -1) continue;
@@ -373,15 +388,23 @@ function layoutBlobOnce(spec: DungeonSpec, profile: GrammarInfo, salt: number): 
       if (c.kind !== "cavern" && c.kind !== "grotto") continue;
       if (c.rx < 6 || random() > pools) continue;
       const cells: number[] = [];
-      for (let y = c.cy - 2; y <= c.cy + 2; y += 1) for (let x = c.cx - 3; x <= c.cx + 3; x += 1) {
+      // 늪 웅덩이: 겹친 타원 둘(크기·자리 어긋남) + 큰 흔들림 — 3×2 타원 하나는 둑을 둘러도 둥근 네모 「물감 칸」으로 읽혔다(2026-10-25 floor VQA r4 swamp).
+      const lobes = profile.id === "swamp"
+        ? [{ x: c.cx, y: c.cy, rx: 3 + random() * 1.5, ry: 2 + random() }, { x: c.cx + (random() < 0.5 ? -2 : 2), y: c.cy + (random() < 0.5 ? -1 : 1), rx: 2 + random(), ry: 1.6 + random() * 0.8 }]
+        : [{ x: c.cx, y: c.cy, rx: 3, ry: 2 }];
+      const wobA = profile.id === "swamp" ? 0.7 : 0.3;
+      for (let y = c.cy - 4; y <= c.cy + 4; y += 1) for (let x = c.cx - 6; x <= c.cx + 6; x += 1) {
         if (!g.inb(x, y) || g.roomAt[g.idx(x, y)] !== c.index || ed[g.idx(x, y)]! < 3) continue;
-        if (((x - c.cx) / 3) ** 2 + ((y - c.cy) / 2) ** 2 + (vnoise(x, y, 3, seed + c.index) - 0.5) * 0.3 < 1) cells.push(g.idx(x, y));
+        const wob = (vnoise(x, y, 3, seed + c.index) - 0.5) * wobA;
+        if (lobes.some((l) => ((x - l.x) / l.rx) ** 2 + ((y - l.y) / l.ry) ** 2 + wob < 1)) cells.push(g.idx(x, y));
       }
       // 너무 작은 웅덩이(2×1 같은 네모 조각)는 두지 않는다 — 「사각 용암 칸」으로 읽혔다(2026-10-23).
       if (cells.length >= 10) for (const i of cells) g.liquid[i] = 1;
     }
     // 용암 못 가장자리가 계단처럼 각져 보이던 것을 다듬는다(용암은 가장자리 그림이 없어 모양이 곧 가장자리다): 이웃 8칸 다수결 두 번. 물(호수)은 운하 오토타일이 테두리를 그리니 건드리지 않는다.
-    if (profile.liquid === "lava") for (let pass = 0; pass < 2; pass += 1) {
+    // 늪물도 같은 다수결 — 웅덩이(3×2 타원)가 둥근 네모 「물감 칸」으로 읽혔다(2026-10-25 floor VQA r4 swamp).
+    // 마계 허공도 — 허공 가장자리가 16px 톱니·홑칸 이빨로 읽혔다(2026-10-25 floor VQA r5 otherworld).
+    if (profile.liquid === "lava" || profile.liquid === "void" || profile.id === "swamp") for (let pass = 0; pass < 2; pass += 1) {
       const next = g.liquid.slice();
       for (let y = 1; y < H - 1; y += 1) for (let x = 1; x < W - 1; x += 1) {
         const i = g.idx(x, y);
@@ -442,6 +465,23 @@ function layoutBlobOnce(spec: DungeonSpec, profile: GrammarInfo, salt: number): 
       let streams = 0;
       for (const [a, b] of pairs) { if (streams >= (profile.id === "cave" ? 1 : si === 0 ? 1 : 2)) break; if (tryStream(a, b)) streams += 1; }
       (g as Grid & { streams?: number }).streams = streams;
+    }
+  }
+  // 늪: 8칸 미만 외톨이 물 조각(굽은 길 끝·좁은 목에 남은 한두 칸)은 마른 땅으로 — 둑 그림이 모양을 못 받아 「버그 같은 1칸 물 네모」로 읽혔다(2026-10-25 floor VQA r4 swamp).
+  if (profile.id === "swamp") {
+    const seen = new Uint8Array(W * H);
+    for (let s0 = 0; s0 < W * H; s0 += 1) {
+      if (seen[s0] || !g.liquid[s0] || !g.floor[s0]) continue;
+      const comp = [s0]; seen[s0] = 1;
+      for (let k = 0; k < comp.length; k += 1) {
+        const c = comp[k]!, x = c % W, y = (c - x) / W;
+        for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]] as const) {
+          if (!g.inb(x + dx, y + dy)) continue;
+          const n = g.idx(x + dx, y + dy);
+          if (!seen[n] && g.liquid[n] && g.floor[n]) { seen[n] = 1; comp.push(n); }
+        }
+      }
+      if (comp.length < 8) for (const c of comp) g.liquid[c] = 0;
     }
   }
   // 문 앞 칸은 액체가 아니다

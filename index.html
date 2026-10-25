@@ -166,7 +166,61 @@
       #oprn-boot-loader .oprn-boot-fail-msg { margin: 0; font-size: 13px; line-height: 1.5; color: #334155; }
       #oprn-boot-loader .oprn-boot-fail details { font-size: 11.5px; color: #64748b; max-width: 100%; }
       #oprn-boot-loader .oprn-boot-fail code { display: block; margin-top: 6px; white-space: pre-wrap; word-break: break-all; text-align: left; max-height: 6em; overflow: auto; }
+      /* 마지막 편집 화면(데스크톱, electron/main/lastView.ts → public/boot-splash.js): 지난번에 닫을 때의 편집기 그림을 읽기 전용 자리표시로
+         깔고, 단계 글자를 아래 가운데 작은 칩으로 바꾼다. 그림을 묻는 동안(최대 400ms)은 로고·줄을 숨겨 흰 로더가 한 번 비치지 않게 한다. */
+      #oprn-boot-loader[data-resume-pending]:not([data-failed]) > * { visibility: hidden; }
+      #oprn-boot-loader .oprn-boot-resume { display: none; }
+      #oprn-boot-loader[data-resume]:not([data-failed]) { cursor: progress; }
+      #oprn-boot-loader[data-resume]:not([data-failed]) .oprn-boot-resume {
+        display: block;
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: left top;
+        user-select: none;
+        -webkit-user-drag: none;
+      }
+      #oprn-boot-loader[data-resume]:not([data-failed]) > :not(.oprn-boot-resume):not(.oprn-boot-text):not(.oprn-boot-stall) { display: none; }
+      #oprn-boot-loader[data-resume]:not([data-failed]) .oprn-boot-text {
+        position: absolute;
+        left: 50%;
+        bottom: 28px;
+        transform: translateX(-50%);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        min-height: 0;
+        padding: 7px 14px;
+        border-radius: 999px;
+        background: rgba(15, 23, 42, 0.82);
+        color: #fff;
+        font-size: 12.5px;
+        box-shadow: 0 4px 16px rgba(15, 23, 42, 0.25);
+        white-space: nowrap;
+      }
+      #oprn-boot-loader[data-resume]:not([data-failed]) .oprn-boot-text::before {
+        content: "";
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #8b96ff;
+        animation: oprn-boot-pulse 1s ease-in-out infinite alternate;
+      }
+      @keyframes oprn-boot-pulse { from { opacity: 0.35; } to { opacity: 1; } }
+      #oprn-boot-loader[data-resume]:not([data-failed]) .oprn-boot-stall {
+        position: absolute;
+        left: 50%;
+        bottom: 72px;
+        transform: translateX(-50%);
+        padding: 10px 14px;
+        border-radius: 10px;
+        background: #fff;
+        box-shadow: 0 4px 16px rgba(15, 23, 42, 0.18);
+      }
       @media (prefers-reduced-motion: reduce) {
+        #oprn-boot-loader[data-resume] .oprn-boot-text::before { animation: none; }
         #oprn-boot-loader { transition: none; }
         #oprn-boot-loader .oprn-boot-track { animation: none; }
         #oprn-boot-loader .oprn-boot-steps li[data-state="active"]::after { animation: none; width: 100%; transform: none; opacity: 0.45; }

@@ -1,0 +1,321 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "4e96a3fc5c08a939ed02fce9d35ceb1c5d495169af825df70252f00190e0b9b2",
+ "width": 16,
+ "height": 48,
+ "kind": "structure",
+ "name": "concrete wall running north-south seen from above: long top surface of the wall, broken notches, and the short south end face at the bottom",
+ "label": "wasteland_ruins/wall-v",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "refer",
+ "reasons": [
+  "3/4: 독립 눈이 「3/4 아님」 12/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면"
+ ],
+ "view34": {
+  "verdict": "refer",
+  "reasons": [
+   "독립 눈이 「3/4 아님」 12/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 9,
+  "tileColorsP90": 15,
+  "darkV5": 54,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 3
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "wall long top surface",
+      "rows": "0-34",
+      "evidence": "a",
+      "front_edge_line_row": 35,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "south end face of wall",
+      "rows": "37-43",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base shadow and grass at foot",
+      "rows": "44-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 35,
+    "front_face_rows": 10,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 0-34 form a long, light, speckled top surface of the wall, with a few notches. Row 35 is a bright 1-row front-edge line (L=189) and row 36 is a lighter step (L=163). Below them, rows 37-43 are a darker south end face (L about 120), and rows 44-46 are a dark base. The face is 7 rows, or about 10 with the base, so it is well over 3 rows. The dark vertical strips at the left and right edges are outlines, not receding side faces. The top surface is clearly drawn with an edge line above a distinct front face, so it reads as three-quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a thin, one-tile-wide wall strip, so it is judged by eye as a sparse object. Its measured 9 visible tones per tile are close to the references' 10 and 12. Near-flat coverage is 0%, the same as the references. Only 1% of its dark edge pixels are neutral, so the edges are tinted (dark grey-green/brown) rather than a black sticker line. The top face shows about 5 grey steps with speckle, notches and a moss touch at the south end, and the end face is darker for value separation. It is less varied than the stone and roof surfaces of the references (18 distinct colours in total against 66 and 185), which makes it slightly lower in density. It still reads as shaded, textured concrete, not a flat fill.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16920
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "wall top surface (long, with notches)",
+      "rows": "0-34",
+      "evidence": "a",
+      "front_edge_line_row": 35,
+      "eave_shadow_rows": "36"
+     },
+     {
+      "part": "south end face",
+      "rows": "37-46",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 35,
+    "front_face_rows": 10,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 0-34 form a long, light, foreshortened top surface with notches and stains. Row 35 is a bright front-edge line (L=189), and row 36 is a darker shadow row (L=163). Below that, rows 37-46 (10 rows) form a darker, vertical south end face (L about 120), and the base darkens at rows 44-47. The top surface, edge line and front face together match the 'cabinet: top + edge + eave' pattern. The wall is not a flat slab, because the front face is well over 3 rows. The dark columns at the left and right edges are the outline and shadow, not a receding side face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a thin, sparse wall strip, so I judged it by eye against the house references and used the measured facts as support. It has 9 visible tones per full tile, against 12 for house-h101_0 and 10 for house-h112_0-stone, so it is close to the references. Near-flat coverage is 0%, the same as both references, so there are no flat fills. Only 1% of its dark edge pixels are near-neutral, so the edges carry a tint and read as dark material tone rather than a black sticker line. The top surface shows a grey ramp of about 5 steps (highlight, light, mid, dark, deep). The notches and the end face are separated by value rather than by a uniform black outline. A green moss or grass accent at the foot adds variation. Texture is concrete grain and speckle with chipped notches, which is less rich than the tile scallops and per-stone shading on the references. Overall it is slightly lower in density and has one fewer shading step, but a careful artist would accept it next to the references without it looking flat or sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15407
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "wall top surface (long, with notches)",
+      "rows": "0-34",
+      "evidence": "a",
+      "front_edge_line_row": 35,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "south end face of wall",
+      "rows": "37-43",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base shadow and grass at foot",
+      "rows": "44-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 35,
+    "front_face_rows": 10,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 0-34 form a long, light grey top surface with notches. Row 35 is a bright front-edge line (#bcbdc3) and row 36 is a lighter lip. Rows 37-43 are a darker, brownish south end face, 7 rows tall. Rows 44-46 are a dark base with grass, and the silhouette narrows at row 47. The top is much larger than the front face, but the edge line and the separate darker front face mean the main body shows both a top surface and a front face of 3+ rows. No receding side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a thin, sparse concrete wall strip, so it should not be judged against full houses on size or richness. Measured facts: 9 visible tones per 16x16 tile against 12 and 10 for the references, 0% near-flat coverage (same as both references), and only 1% neutral dark edge pixels. That means the outline is tinted, a dark grey-blue concrete tone, not a black sticker line. By eye the top surface, the notches and the south end face are separated by value steps, and the broken notches and a small green moss speck add grain. It has about 4 gray steps against the references' 5-6, and only 18 distinct colours in total, so it is a little leaner than the references. It still has no large flat fills and does not look like a sticker, so a careful artist would accept it beside the references for a plain wall prop.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15191
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "wall top surface (long, with notches and stains)",
+      "rows": "0-34",
+      "evidence": "a",
+      "front_edge_line_row": 35,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "south end face of the wall",
+      "rows": "37-46",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 35,
+    "front_face_rows": 10,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 0-34 form a long, uniformly light grey top band (L about 150) with notch marks. It ends in a clear front-edge line at row 35 (#bcbdc3, the lightest row), with a lighter row 36 below it. Below that, the south end face runs rows 37-46 (about 10 rows) and is darker brown-grey (L about 120), with a darker base at rows 44-46. The silhouette is a constant 13 px wide across rows 0-44. I see no isometric side face. The very long top is what the name asks for (a wall seen from above), and it still has an edge line and a front face of 3+ rows."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a narrow concrete wall strip beside two full houses, so it is naturally simpler. The primary facts hold up against the references. It has 9 visible tones per 16x16 tile against 10 and 12 for the references, and 0% near-flat coverage, matching both. Only 1% of its dark edge pixels are neutral, so the outline leans toward a tinted grey-brown rather than a black sticker line. By eye, the top surface, the notches and the darker end face are separated by value, and the speckle and chips give some grain. A small green accent sits at the base. It is a little thinner than the references, with about 4 grey steps against 5-6, and only 18 distinct colours in total. That is expected for a plain concrete material with a locked palette, and it does not read as a flat fill or a sticker.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18161
+  }
+ ],
+ "decidedAt": "2026-10-22T14:22:06.312Z",
+ "cells": {
+  "16": [
+   "69cb2036e11eb35b",
+   "6b365d3ba768b029",
+   "e492e32b7617031a"
+  ],
+  "24": [
+   "0f6e403c8684c5cb",
+   "19217951190c866b",
+   "24779a67dfd64f63",
+   "2e207820c16335c3",
+   "363907e2545acf11",
+   "d0cf0149c536ff48"
+  ],
+  "32": [
+   "0402f1360b82ae54",
+   "25a957ca16a0cc9a",
+   "2a7aa20a7fcf2054",
+   "2ca40e61832c67a0",
+   "466766ea7d48c0a1",
+   "4b2ad4ce5d9df279",
+   "9714a11669bc79af",
+   "a84b5a41001a1ed3",
+   "ac8a22c5620966b9",
+   "d51b1c562cfc0937",
+   "e139a3f0abd9f697",
+   "f74924539866aae6"
+  ],
+  "48": [
+   "75a432a90c018faa",
+   "9adb0b2fe1f684f4",
+   "bc720a10715f0590"
+  ]
+ }
+}

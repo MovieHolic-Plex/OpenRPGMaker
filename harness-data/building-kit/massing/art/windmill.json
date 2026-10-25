@@ -1,0 +1,20 @@
+{
+ "name": "탑 풍차",
+ "massing": "M30",
+ "material": "stone",
+ "refs": [
+  "bd-house-mill1",
+  "bd-mpart-tower"
+ ],
+ "walk": [
+  "*****.",
+  ".****.",
+  "****..",
+  "*****.",
+  "*****.",
+  "******",
+  "XXXXXX",
+  "XXDXXX"
+ ],
+ "id": "windmill"
+}

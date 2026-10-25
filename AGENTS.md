@@ -65,6 +65,9 @@ This repository uses a project-local OpenWiki layer so coding agents can underst
 - **던전·동굴 공용 칩셋 beodeul_dungeon(버들항과 같은 oprn-atlas 계열)의 불규칙 벽·바닥 오토타일·물/용암/얼음 가장자리·계단·문·함정·상자·횃불 조각을 그릴 때**
   → `dungeon-chipset` · 시드 `harness-data/dungeon-chipset/seed.json` · `npm run harness -- dungeon-chipset palette|validate|list|draw|gate|sheet|pick|reject|status` · 문서 `openwiki/harnesses/dungeon-chipset.md`
   → 코드 손 도트(행 문자열), 버들항 실제 색 잠금 팔레트. 후보는 사람이 시트(`~/claude-viz/dungeon-<판>.html`)에서 고르고 pick 은 그림 해시에 묶인다. 관문 통과는 합격이 아니며 번들 굽기는 별도.
+- **버들항 계열 테마 건물(중세 판타지 왕국·사막 오아시스·설원 북방·버들항 귀족 구역)을 잠긴 팔레트 부품 조립으로 만들 때**
+  → `building-kit` · 시드 `harness-data/building-kit/<테마>/seed.json` · `npm run harness -- building-kit palette|validate|list|draw|dry|gate|assemble|review|sheet|pick|reject|objgate|projection|status` · 문서 `openwiki/harnesses/building-kit.md`
+  → 지붕·벽 칸·창·문·기단·층 띠·굴뚝을 행 문자열 코드 도트로 그려 조립한다. style-r5 부터 박공 정면 투영(용마루가 북쪽으로 물러나는 세로선)이 필수다(사용자 2026-10-22 판정, `requireGableFront`). 후보는 독립 검수 PASS 뒤 사람이 시트(`~/claude-viz/bk-<테마>-<판>.html`)에서 고르고 pick 은 그림 해시에 묶인다 — **감독·에이전트는 고르지 않는다.** 검수 PASS 는 합격이 아니며 번들 굽기는 별도. 조립 건물은 object-gate 영수증(kind structure)으로 부품을 덮는다.
 - **새 기물(오브젝트) 그림을 번들·공용 DB·스토어·공방 칩셋에 굽거나 올리기 전 / 굽기·게시 스크립트에 3/4 시점 관문을 붙일 때** → `object-gate` · 시드 `harness-data/object-gate/seed.json` · `npm run harness -- object-gate final-review|final-queue|final-calibrate|final-status|check|serve-holds|enqueue|review|status|preview` · 문서 `openwiki/harnesses/object-gate.md`. **최종 판정은 Opus 5.5 medium 적대적 VQA 다(사용자 결정 2026-10-21, 옵션 A 「사람 허용이 최종」을 대체).** 검사관 지시문으로 그 종류의 올바른 3/4 탑뷰(윗면 보임·옆면/아이소 없음·정면 입면도 아님·버들항 화풍)가 아닌 이유를 찾고, 한 호출 6장, 3표 만장일치, 애매하면 불합격. 기록(`final/<해시>.json`)은 그림 화소 해시·종류·프로필에 묶이고 **보정된 최종 프로필**(확실 위반을 하나도 놓치지 않은 것)의 기록만 출구에서 효력이 있다. Opus fail = 다시 그린다. 서명된 사람 거절(18323 검토 화면)은 Opus 통과도 막는 최종 차단이고, 사람 허용은 선택이며 Opus 판정이 없는 그림에만 효력이 있다. 감독자가 위임받아 허용을 기록할 때는 검토 API 에 `delegatedBy`+`evidence` 를 넣어 `by: "delegated"` 로 남긴다(사람 클릭 `human` 으로 위장 금지; 2026-10-21 이전 위임 기록은 note 의 「delegated by user to supervisor 2026-10-21」 로 구분). 옛 Sonnet·gemini 영수증은 조언이다. 감독·에이전트는 이 판정자 밖에서 그림을 통과시키지 않는다. **2026-10-21 현재 보정된 Opus 프로필 없음**(조건: 위반 100% + 칩셋 원본 90% 이상, v6 원본 70.3%) — 그때까지 Opus 기록은 효력이 없다.
 - **조선(바람의나라풍) 칩셋 joseon_baram 의 조각·지도를 만지거나 번들을 재생성할 때** (팔레트 잠금·게이트 P/E/T/L/S/A/K/TR/V·판정·지도 관문·16구역 적대 검수)
   → `joseon-baram` · 시드 `harness-data/joseon-baram/seed.json`(지도 15장·관문·쓰지 말 것)
@@ -128,6 +131,7 @@ This repository uses a project-local OpenWiki layer so coding agents can underst
    - 조선(바람의나라풍) 칩셋 joseon_baram · 손 도트 조각 291종+실내·사냥터·동굴 키트·오토타일 19종을 공용 번들 타일셋으로 (변환기 `build-joseon-tileset.py`, 시트 여러 장 합치기, 칸 통행 X/C/F·꼬리 복사본, 참고문서 6용도, 지도 15장 저장·장소 카드, 재실행 한 줄 `rebuild-joseon.sh`): `openwiki/joseon-baram.md`
    - 열대 군도·해적 항구 pirate_isles (`oprn-pirate`, 16px 코드 손 도트 174조각 → object-gate 통과분만 굽기 `pi_bake.py`, 순수 구성기 `pirateIslesComposer.ts` + 조수 도구 `compose_pirate_isles_map`, 해적·열대·군도 낱말 경로, 참고문서 `pi_refs.py`): `openwiki/pirate-isles.md`
    - 전국·에도 일본 번들 sengoku_edo (성하마을·여관 거리·무가 저택·성·신사/절·농촌 야외 + 다다미 실내, 손 도트 + object-gate 영수증만 굽기, 구성 도구 compose_sengoku_edo_map · link_sengoku_edo_interior, 방 구성 7개, 적대 QA 결함표): `openwiki/sengoku-edo.md`
+   - 폐허·황무지 칩셋 wasteland_ruins (포스트아포칼립스 정착지·좀비 폐허 도시·판잣집 촌, modern 계열 손 도트, `compose_wasteland_map`, 정식/--dev 굽기 구분·검수 기록): `openwiki/wasteland-ruins.md`
    - 마법 학교(해리포터풍) 번들 wizarding_world · 성채 공용 벽·바닥·문과 12공간 기물·학생/교수/생물 걷기 칩(Wizarding 시트)·마법 효과를 코드 손 도트 조각 모듈로 그려 **독립 검수 PASS·해시 일치분만** 굽는다 (계약 `scripts/content/wizarding/CONTRACT.md`, 굽기 4단계, 얇은 재검수 `recheck_sheet.py`, 장소 예제): `openwiki/wizarding-world.md`
    - 하늘섬 번들 sky_island(계열 oprn-sky) · 떠 있는 섬·밑면·밧줄/돌 다리·잔교·비공정·신전 섬·실내 넷을 코드 손 도트로 그려 object-gate 통과분만 굽고, 순수 구성기 `compose_sky_island_map`(마을·신전·부두·섬 사슬·방 넷, 엔진 BFS 재검사)로 깐다: `openwiki/sky-island.md`
    - 스팀펑크 공업 도시 번들 steampunk_city · 벽돌·철·구리 거리·공장·기차역·운하·비행선 정박장 + 실내 6종 코드 손 도트 163조각(object-gate 영수증, 프로필 미보정), 구성기 `compose_steampunk_city_map`(계획→건물→소품, BFS·여백), 하늘섬은 다른 칩셋: `openwiki/steampunk-city.md`
@@ -285,29 +289,45 @@ npm run qa:runtime:gate     # 게이트: 두 시나리오
    공유 `node_modules` 를 보면 `<체크아웃>/.vite-cache/dev` 로 스스로 뗀다. 직접 부를 수밖에 없으면(`/tmp` 기준선 사본 등) `VITE_CACHE_DIR=<그 사본 안 경로>` 를 반드시 준다.
 2. **저작 콘텐츠(맵·이벤트·데모) 작업은 워크트리로 병렬화하지 않는다.** 프로젝트 정본이
    워크트리 밖에서 공유되어 git 이 충돌을 못 본다 — 직렬화하거나 별도의 프로젝트 폴더/호스트 프로젝트로 분리한다.
-3. 검증은 **감독자가 직접** `npm run gates` 로 한다. 에이전트는 아래 hard rule 을 따른다.
+3. 검증은 **GitHub CI** 가 한다(아래 hard rule). 로컬에서 gates·vitest 를 돌리지 않는다.
    에이전트의 "테스트 통과했습니다"와 파이프를 거친 종료 코드는 근거로 쓰지 않는다 (실측: 백그라운드 실행기가 exit 0 을 보고했으나 실제로는
    typecheck exit 2 / vitest exit 1 이었다).
 4. 기준선이 빨간불이므로 게이트는 **기준선 대비 새 실패**만 회귀로 본다.
 
-## 워크트리·세션 에이전트는 gates / vitest / stash 금지 (hard rule)
+## 테스트는 GitHub CI 에서만 돈다 — 로컬 vitest·bun test·playwright test·gates 금지 (hard rule, 2026-10-25)
 
-**사용자가 이 세션에서 테스트나 게이트를 돌리라고 명시하지 않으면 실행하지 마라.**
-검증 습관, `openwiki/testing.md` 표, "완료하려면 테스트" 같은 기본 지시보다 **이 규칙이 이긴다.**
+**이 저장소는 공개 저장소이고, PR 마다 GitHub CI(ci-fast·ci-full)가 같은 검사를 돌린다. 개발 기계에서는 테스트 러너를 돌리지 않는다.**
+검증 습관, `openwiki/testing.md` 표, 훅의 "Test the changes", 감독자 지시문의 "targeted tests" 같은 문장보다 **이 규칙이 이긴다.**
 
-금지 (격리 워크트리·공유 트리 세션 모두. 감독자 역할이 아닌 한):
-- `npm run gates`, `gates:*`, `npm test`, `npx vitest`, `node scripts/run-vitest.mjs`, 전체 스위트, 전체 `typecheck`
-- dirty 를 치우려고 하는 `git stash` / `stash push` / `stash pop` / `stash apply`
-- "검증하려고 잠깐", "게이트 한 축만", "changed 만" 도 사용자가 시키지 않았으면 금지
+막는 장치(코드): `scripts/lib/ciOnlyTests.mjs` — `vitest.*.config.ts`·`playwright.config.ts`·`scripts/verify-gates.mjs`·`bunfig.toml` 이
+`CI` 가 아니면 바로 exit 1 한다. 이 장치를 지우거나 우회하지 마라.
 
-이유 (실측):
-- stash 스택은 저장소에 하나뿐이라 모든 워크트리가 공유한다. pop 이 남의 WIP 를 꺼낸다 — `openwiki/agent-worktrees.md`.
-- 여러 세션이 vitest/gates 를 겹치면 부하로 결과가 뒤집히고 공유 `node_modules` 워커가 머신 전체를 먹는다.
-- 게이트는 감독자가 직접 돌린다. 에이전트 테스트 통과 보고는 근거가 아니다.
+금지 (워크트리·공유 트리·서브에이전트 모두):
+- `npm test`, `npx vitest`, `node scripts/run-vitest.mjs`, `test:*`, `bun test`, `npx playwright test`, `npm run gates`·`gates:*`, 전체 `typecheck`
+- 「바꾼 파일 하나만」「changed 만」「검증하려고 잠깐」도 금지다. 실측(2026-10-25): 에이전트들이 「targeted」 테스트를 겹쳐 돌려 부하가 196까지 올랐다.
+- 스스로 `OPRN_LOCAL_TESTS=1` 이나 `CI=true` 를 붙이는 것.
+- dirty 를 치우려고 하는 `git stash` / `stash push` / `stash pop` / `stash apply` — stash 스택은 모든 워크트리가 공유한다(`openwiki/agent-worktrees.md`).
 
-허용:
-- 사용자가 **이번 메시지에서** 테스트/게이트를 하라고 적은 경우, 그 명령만.
-- dirty 는 `wip:` 커밋 또는 파일 사본. stash 아님.
+대신:
+- 검증은 바꾼 파일의 타입 검사(파일 범위 `tsc`), 실제 실행·플레이·캡처로 한다.
+- PR 을 올리고 `gh pr checks <번호> --watch` 로 CI 결과를 본다. CI 가 빨가면 그 로그를 읽고 고친다. 머지는 `node scripts/merge-pr.mjs <번호>` 로만 한다(아래 hard rule).
+- 에이전트의 "테스트 통과했습니다"는 근거가 아니다. CI 결과가 근거다.
+- 테스트 파일을 새로 쓰는 것은 괜찮다. 돌리는 것은 CI 가 한다.
+
+예외: 사용자가 **이번 메시지에서** 로컬 테스트를 하라고 적은 경우, 그 명령만 `OPRN_LOCAL_TESTS=1` 을 붙여 돌린다.
+dirty 는 `wip:` 커밋 또는 파일 사본으로 다룬다.
+
+## PR 은 ci-fast 초록 뒤에만, 도우미로 머지한다 (hard rule, 2026-10-25)
+
+**`gh pr merge` 를 직접 부르지 마라. `node scripts/merge-pr.mjs <PR 번호>`(= `npm run merge-pr -- <번호>`)로만 머지한다.**
+도우미는 그 PR 의 현재 머리 커밋에서 ci-fast 잡(`fast`)이 초록이 될 때까지 기다리고, 초록이면 그 커밋만
+(`--match-head-commit`) 머지한다. 빨강·취소·시간 초과면 머지하지 않고 로그 명령을 찍는다 — 고쳐서 푸시하고 다시 부른다.
+
+- 왜: main 에 브랜치 보호가 없고, 전에는 ci-fast 가 PR 에서 돌지도 않았다. 에이전트가 바로 머지해 빨간 코드가 main 에 쌓였다
+  (run 40185571034, #3464 의 타입 오류가 머지 뒤에야 잡혔다). 지금은 ci-fast 가 `pull_request` 에도 돈다.
+- 「ci-fast 체크가 없다」는 통과가 아니다. 도우미가 기다리다 시간 초과로 실패한다.
+- 도우미를 우회하려고 `--admin`·직접 `gh pr merge`·로컬 `git push origin main` 을 쓰지 않는다.
+- ci-full 은 4시간마다 main 을 돈다(머지 판정이 아니다). 빨가면 그 로그의 「기준선 대비 회귀」를 고친다.
 
 ## 새 타일·타일 학습은 공용에 추가한다 (hard rule)
 

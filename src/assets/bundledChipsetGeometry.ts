@@ -11,6 +11,7 @@ import skyIslandSheet from "./skyIslandSheet.json";
 import steampunkCitySheet from "./steampunkCitySheet.json";
 import modernCampusSheet from "./modernCampusSheet.json";
 import sfStationSheet from "./sfStationSheet.json";
+import wastelandRuinsSheet from "./wastelandRuinsSheet.json";
 import gothicManorSheet from "./gothicManorSheet.json";
 import prehistoricSheet from "./prehistoricSheet.json";
 import desertEastSheet from "./desertEastSheet.json";
@@ -62,6 +63,7 @@ export function bundledChipsetTilesPerRow(key: string): number {
   if (key === 'tex_beodeul_architecture') return 16;
   if (key === 'tex_beodeul_forms') return 16;
   if (key === 'tex_beodeul_reviewed') return 16;
+  if (key === 'tex_beodeul_massing') return 16;
   if (key === 'tex_beodeul_organic') return 16;
   if (key === "tex_forest_harmony_grass_joins") return 10;
   if (key === "tex_shared_forest_village_objects") return 6;
@@ -77,6 +79,7 @@ export function bundledChipsetTilesPerRow(key: string): number {
   if (key === "tex_steampunk_city") return steampunkCitySheet.tilesPerRow;
   if (key === "tex_modern_campus") return modernCampusSheet.tilesPerRow;
   if (key === "tex_sf_station") return sfStationSheet.tilesPerRow;
+  if (key === "tex_wasteland_ruins") return wastelandRuinsSheet.tilesPerRow;
   if (key === "tex_gothic_manor") return gothicManorSheet.tilesPerRow;
   if (key === "tex_prehistoric") return prehistoricSheet.tilesPerRow;
   if (key === "tex_desert_east") return desertEastSheet.tilesPerRow;

@@ -1,0 +1,16 @@
+{
+  "surface": "dirt",
+  "image": "tiledata/beodeul-yard/_gate/yard_dirt.png",
+  "verdict": "fail",
+  "view34": "pass",
+  "autotile": "pass",
+  "quality": "fail",
+  "material": "pass",
+  "defects": [
+    "Claimed wheel rut is not legible: it renders as a short double dash that repeats at exactly 16px across a row (8x crop _c at y~305, x~560/690/820; 4x full view row y~410 x~280-480), reading as a dotted line, not a rut.",
+    "Pebble/straw cluster (grey dot + yellow dash triplet) is stamped identically per variant cell and lines up in rows at 16px period (8x crop _c y~350 x~600/730/860; 4x x~70/110 vs 450/495 vs 395/430 clusters).",
+    "Earth fill is a uniform per-pixel 4-tone dither with no larger clods/value forms (no light-top-left/dark-bottom-right units); texture is noise rather than structured, flatter than Beodeul farmland and less clustered than Beodeul sand."
+  ],
+  "evidence": "Irregular grass-tufted rim, south bank shadow, hole, neck and the isolated mound all work; colour is distinctly redder/darker than Beodeul sand and reads as packed earth, so material passes. But the only features meant to break the field (rut, pebbles, straw) are stamped at the cell period and form visible dotted rows, and the fill itself is undifferentiated noise.",
+  "reviewer": "claude-opus independent adversarial review 2026-10-23 r2"
+}

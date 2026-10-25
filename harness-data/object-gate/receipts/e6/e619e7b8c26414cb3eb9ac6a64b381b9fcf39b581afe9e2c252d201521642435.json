@@ -1,0 +1,361 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e619e7b8c26414cb3eb9ac6a64b381b9fcf39b581afe9e2c252d201521642435",
+ "width": 16,
+ "height": 32,
+ "kind": "other",
+ "name": "rusty blank sign board on a thick post: board top edge seen from above, weathered blank face, no text",
+ "label": "wasteland_ruins/sign-blank",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 14,
+  "tileColorsP90": 14,
+  "darkV5": 40,
+  "nearBlackEdge": 0.06,
+  "opaqueTiles": 1
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "sign board top edge (weathered grey-teal band)",
+      "rows": "1-6",
+      "evidence": "a",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": "7"
+     },
+     {
+      "part": "rusty board front face",
+      "rows": "7-16",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "post",
+      "rows": "17-26",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "small foot base",
+      "rows": "27-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 10,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The board is the main body. Rows 1-6 form a grey-teal top band (6 rows) that ends in a lighter front-edge line at row 6 (L=190). Row 7 is a darker eave-shadow row (L=71 at x=8). Below it the rust face runs about rows 7-16, ending in a dark bottom edge. The post (rows 17-26, width 5) and small foot (rows 27-30) are thin supports. The board's top band is clearly separate from the front face, so this is not a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate has 13 visible tones per full tile, above the hedge reference (9) and below the cheese stall (17) and roofed well (20). Near-flat coverage is 0%, so the weathered board face and the post carry rust speckle and grain rather than flat fills. The dark edge pixels are 0% neutral, so the outline leans toward the dark rust-brown of the board and the dark grey-brown of the post instead of a black sticker line. The board has a lighter top rim, a mid face, speckled rust patches and a dark lower edge, and the post is shaded in a few steps, giving about 5 steps on the main ramps against roughly 6 for Beodeul. It is slightly simpler than the stall and well, but it holds up beside the hedge and fits the prop kind without looking flat or outlined in black.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 14577
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "sign board top (weathered metal top edge seen from above)",
+      "rows": "1-6",
+      "evidence": "a",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": "7"
+     },
+     {
+      "part": "rusty board front face",
+      "rows": "7-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "thick post shaft",
+      "rows": "17-26",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "post foot/base",
+      "rows": "27-30",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 9,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The board is the main body. Rows 1-6 form a light grey-blue top band with a lighter front-edge line at row 6 (L=190). Row 7 is darker below it and works as eave shadow, at least at x=8. Below that, the rust-coloured front face runs rows 7-15, 9 rows tall. A narrow post (width 5, rows 17-26) carries the board. The foot at rows 27-29 widens 7-9-7, so it reads as a small ellipse base. The dark band at the right edge of the face is shading, not a receding side face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small single-tile-wide prop, a board on a post. Measured facts: 13 visible tones per 16x16 tile, which is above the hedge reference (9) and below the stall (17) and well (20). Near-flat coverage is 0%, so there are no flat fills. Dark edge pixels are 0% neutral, so the outline is tinted (a dark rust-brown against the board and a dark tone beside the post) and not a black sticker line. The board shows a lit top edge, a weathered face with speckle, and a shaded post, roughly 5 ramp steps. That is slightly below the 6 on larger references but comparable to the hedge and lamp props of the same simple kind. A careful artist would accept it next to the references without it looking flatter or thinner. Its small size and the 2x board limit how well I can see the grain, so this is a modest pass.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15432
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "sign board top edge (weathered light teal band)",
+      "rows": "1-6",
+      "evidence": "a",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": "7"
+     },
+     {
+      "part": "sign board rusty front face",
+      "rows": "7-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "board bottom dark edge",
+      "rows": "15-16",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "thick post",
+      "rows": "17-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "post foot/base",
+      "rows": "27-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 10,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The board has a 6-row light teal top band (rows 1-6) that ends in a lighter front-edge line at row 6. A darker shadow row follows at row 7, and the rusty front face runs below it through rows 7-14, with a dark bottom edge at rows 15-16. The top band is clearly more than a 1-2 row rim. The board's front face is 8+ rows. The post and foot are narrow vertical supports below. The silhouette stays 16 wide with no receding side face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a small single-tile-wide prop: a rusty board on a grey post with a base. Its measured tones per tile (13) are above the hedge (9) and below the stall (17) and well (20). Near-flat coverage is 0% and the dark edge pixels are 0% neutral, so the outlines lean toward the neighbouring material (dark rust-brown beside the board, dark grey-blue beside the post) rather than being a black sticker line. The board face carries mottled rust variation and the post has a lighter and a darker side, so there are no large flat fills. It has about 4 visible steps per material, slightly fewer than Beodeul's 5-6, and the texture is modest rather than rich. Its richness is still in line with the thin props (bench, lamp) and the hedge, and it would sit acceptably beside them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15866
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "sign board top surface",
+      "rows": "1-6",
+      "evidence": "a",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": "7"
+     },
+     {
+      "part": "sign board rusty front face",
+      "rows": "7-16",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "post",
+      "rows": "17-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 10,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The board has a 6-row pale top band (rows 1-6) that ends in a lighter front-edge line at row 6 (L=190). Row 7 is a darker eave shadow, and the rusty blank face runs below it through about row 16, so the face is 10 rows. The post below (rows 17-30) is a thin support with a small base. The top band is a flat rectangular plane and is clearly more than a 1-2 row rim."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate has 13 visible tones per 16x16 tile, against 9 for the hedge and 17-20 for the stall and well. Near-flat coverage is 0%, and 0% of its dark edge pixels are neutral, so the outline carries a tint. By eye, the rusty board has a lighter top edge, a darker frame and mottled weathering on the face, with no large flat patches. The post is shaded in several steps rather than drawn as one flat shade with an outline. It reads as a finished prop of the same kind and sits acceptably beside the hedge. It is a little simpler than the stall and well, but that is expected for a small single-tile prop, and it does not look sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 13075
+  }
+ ],
+ "decidedAt": "2026-10-22T15:08:30.451Z",
+ "cells": {
+  "16": [
+   "20ba25cfb5691031",
+   "d0e0c5440b44af87"
+  ],
+  "24": [
+   "04cb81c5f047dbb2",
+   "07ce2e798550888c",
+   "2ec317c666abed18",
+   "42d4f86bd9224ecb",
+   "912a03c3057386cd",
+   "99cece498c9b3d65",
+   "9ab221fc77b8b512",
+   "a3a6f386811454a1",
+   "c318f8235569e44b",
+   "cf161cb2e5a2fcbb",
+   "d447344065185f87",
+   "e2b093b7624a529a"
+  ],
+  "32": [
+   "74354bf4e85bb992",
+   "7af6a7494da88a9c",
+   "b463d03fa0dbe784"
+  ],
+  "48": [
+   "0e2025a8de8a52c6",
+   "0f2645d814176c59",
+   "299adb786fcbb4ed",
+   "6b40f30cd55c6282",
+   "8cb64f6ce3fac32b",
+   "b463f8f1dedc545a"
+  ]
+ }
+}

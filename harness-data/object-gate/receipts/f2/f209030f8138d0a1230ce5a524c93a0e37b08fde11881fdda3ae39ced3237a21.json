@@ -1,0 +1,267 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f209030f8138d0a1230ce5a524c93a0e37b08fde11881fdda3ae39ced3237a21",
+ "width": 16,
+ "height": 16,
+ "kind": "flat",
+ "name": "가로수 보호판(주철)",
+ "label": "modern_city/street-kr/mc-prop-kr-tree-grate",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "ground",
+  "refs": [
+   "floor-stone-lobby",
+   "floor-wood-oak"
+  ],
+  "scale": 2,
+  "score": 7,
+  "refSet": {
+   "id": "modern_city",
+   "chipset": "modern_city",
+   "fallback": false,
+   "hash": "c65f3e22253bff78"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 8,
+  "tileColorsP90": 8,
+  "darkV5": 37,
+  "nearBlackEdge": 0.52,
+  "opaqueTiles": 1
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cast iron plate body with square frame border",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "central brown soil/tree opening",
+      "rows": "5-10",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 16,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The silhouette is a full 16x16 square with constant width on every row (0-15). It shows a symmetric concentric frame: outer border, inner dark slotted ring, and a brown center square at rows 5-10. There is no front-edge line, no eave shadow, and no vertical south face. The bottom rows (13-15) continue the same border pattern as the top rows (0-3) instead of forming a front face. This is a flat plate seen from above, which matches the flat kind."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small cast-iron tree grate: a frame, an inset plate and a brown centre ring. It measures 8 visible tones per tile, above floor-stone-lobby (6) and below floor-wood-oak (11). Near-flat coverage is 0%, against 24% for the lobby stone, so it has no large flat fills. The dark edge pixels are 0% neutral, so the outline leans toward a tint rather than being a neutral black sticker line, which fits dark_material_tone. It shows about 5 lightness steps on the iron frame and plate, close to the references' 6. It is simpler than the oak floor, but it is a small, sparse prop and holds up next to the lobby stone. Texture is only moderate, since the plate has little grain, but this is not shallow enough to fail.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 13053
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cast-iron tree grate plate seen from above, with a square frame, a slotted ring and a soil patch in the center",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 16,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The silhouette is a full 16x16 square (width 16 on every row). The column scans show the plate drawn from directly above: a dark border at rows 0-3, a slotted ring pattern, and a brown soil patch in the middle (rows 7-9). There is no front-edge line, no eave shadow and no vertical south face, only a thin light strip at row 15 that works as an outline. This is a flat plate with no front face, which is correct for a flat kind."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 6,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small cast-iron tree grate: a frame with a bevelled edge and a round brown-toned centre. It shows 8 visible tones per tile, above floor-stone-lobby (6) and below floor-wood-oak (11). Near-flat coverage is 0%, against 24% for the stone-lobby reference, so there are no large flat fills. Dark edge pixels are 0% neutral, so the outline leans toward the material tone rather than a black sticker line. The frame and centre have several separate value steps, about 5-6 on the iron ramp, which matches the stone reference. At this size the texture is modest, but nothing looks thinner or flatter than the shipped modern_city floors, and the measured facts support that.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 12515
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cast-iron tree grate plate (square frame with inner ring, slots and a wooden center)",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 16,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The silhouette is a full 16x16 square seen from directly above. The column scans show a repeating pattern of dark slot rows (rows 3 and 12) and lighter plate rows (4-11), with a brown center at rows 7-9. There is no front-edge line, no eave shadow, and no vertical south face of 3 or more rows. Row 15 is only a 1-row lighter edge. It is a flat plate lying on the ground, which matches the flat kind, and it is drawn top-down with no front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small cast-iron tree grate with a bevelled frame, an inner rim and a dark center hole with a lighter pit. Metal highlights and shadows give it about 5 visible steps, close to the stone-lobby reference's 6. It has 8 visible tones per tile, between the references' 6 and 11. Near-flat coverage is 0%, against 24% for the stone-lobby floor and 0% for the oak floor, so it has no large flat fills. The dark edge pixels are 0% neutral, so the outline leans toward the material and is not a black sticker line. The piece is small and sparse, so I judged density by eye. It reads as accepted shipped art next to the references and does not look thinner or flatter. Texture is moderate: the bevel and rim variation are clear, but there is little grain beyond that.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 14486
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cast-iron tree grate plate (square plate seen from above with center hole and soil)",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 16,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The silhouette is a full 16x16 square. Concentric square frames, slots and a brown soil square in the middle are all seen straight down. The column scans show only border and pattern bands, with no front-edge line, no eave shadow and no vertical south face. This is a flat plate lying on the ground, which matches the flat kind. It has no front face, so it reads as a top-down slab."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small cast-iron plate: a dark frame, a lighter inner bevel, and a round brownish tree-hole centre. It reads as several distinct lightness steps rather than one flat shade with an outline. The measured facts support this. It has 8 visible tones per tile, between floor-stone-lobby (6) and floor-wood-oak (11). Near-flat coverage is 0%, against 24% for the stone reference, so there are no big flat fills. 0% of its dark edge pixels are neutral, so the edges carry a tint (dark blue-grey and brown against the iron) and it is not a black sticker outline. Texture is moderate: bevel highlights and a shaded rim, but no heavy grain, which suits a smooth iron casting. At the board's scale it carries about as much information as the shipped references and does not look thinner or flatter than them. It passes, though not by a wide margin.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 14901
+  }
+ ],
+ "decidedAt": "2026-10-24T17:50:20.831Z",
+ "cells": {
+  "16": [
+   "205574596e9f476b"
+  ],
+  "24": [
+   "13fdd478d2fcaaed",
+   "33011a51c819b813",
+   "a2f321900fe615ac",
+   "b3cf3311711871d6",
+   "c5b088b61baea33a",
+   "f947526d96ca5dd8"
+  ],
+  "32": [
+   "252fafa320a2c412",
+   "28231d553df8aaf5",
+   "40a6e42a6b87bfe5",
+   "413ccdf09d823e01",
+   "c0f872500fdd2324",
+   "f510c2acb15b8cf1"
+  ],
+  "48": [
+   "1a6a34e687fc1f98",
+   "790a9cba12bc582a",
+   "a23059ee9e4d1080",
+   "aa62137dce274a66",
+   "dfdc2c82569af066",
+   "f24e83c656f5ca55"
+  ]
+ }
+}

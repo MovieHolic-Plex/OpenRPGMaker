@@ -1,0 +1,291 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "383dfeb0c5998de80c88da18d192c613dd61b01f574b9afe20cc7136be7b657f",
+ "width": 64,
+ "height": 48,
+ "kind": "terrain",
+ "name": "asphalt road tile with a long crack, weeds growing in it and a faded lane-paint fragment, laid among plain asphalt",
+ "label": "wasteland_ruins/asphalt-c",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (3/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (3/4)"
+  ],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 6
+ },
+ "metrics": {
+  "tileColorsMedian": 6,
+  "tileColorsP90": 17,
+  "darkV5": 51,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 12
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "asphalt ground texture with crack, weeds and lane-paint fragment, repeated in three patches",
+      "rows": "0-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The candidate is a full 64x48 opaque terrain tile filled with mottled grey-blue and brown asphalt texture. There is no silhouette, no front-edge line, no eave shadow, no ellipse and no vertical face. The column scans show repeating 16-row texture bands, not a top and a front. The dark crack, green weeds and yellow lane-paint flecks are surface details seen from above. As flat ground terrain it is a top-down surface with no front face, which is normal for this kind."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "Measured facts: candidate has 6 visible tones per tile against 3 for the grass reference and 7 for the paving reference, with 0% near-flat coverage, so it is not a flat fill. Only 18% of its dark edge pixels are near-neutral, so the outlines are mostly tinted. By eye, the asphalt is a cobble-like speckle of blue-grey tones, about 4 steps, with little per-stone highlight or shading compared with the paving reference's clear stone blocks and light edge highlights. The crack, weeds and lane fragment read as small yellow-green and dark marks scattered over a repeating texture. They look like stamped sprites, not a long crack. The crack is not clearly long or continuous, and the weeds are tiny and sparse. Because the same motif repeats at near-identical spacing, the patch looks tiled and mechanical, where the references vary more. Structure and density are close to the references but slightly thinner, and the shading craft is a little shallower than the paving. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 12597
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "asphalt ground surface with crack, weeds and lane-paint fragment",
+      "rows": "0-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "weeds and paint fragments on the ground",
+      "rows": "4-10, 20-28, 36-46",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The image is a flat, full-bleed 64x48 ground texture with a constant width of 64 across rows 0-47. It has no silhouette edge, no front-edge line, no eave shadow, no ellipse, and no vertical front face. The column scans show a repeating tiled pattern with a 16-row period, not a standing volume. This is a flat terrain tile seen from above with a crack, weeds and paint, so it has no front face of 3 or more rows and reads as a top-down slab. For a terrain kind this is the expected appearance."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "Measured facts are healthy: 6 visible tones per tile against 3 for the grass reference and 7 for the paving reference, 0% near-flat coverage, and only 18% near-neutral dark edges, so the dark pixels carry a tint. By eye, the asphalt is a speckled grey-blue noise with about 4 lightness steps. It has no larger shapes such as per-stone shading, slab joints or clumps, so it reads as uniform dither. The crack, weeds and lane-paint fragment are tiny and repeat identically across the 4x3 patch (the same yellow and green fragment in each tile), which looks stamped rather than crafted. The paving reference shows more structure, with individually shaded cobbles and bevelled slab edges. The candidate is not flat, and its speckle matches the grass reference's density, but it falls a little short of the paving reference in step count and structural richness. The crack is not a long continuous feature, as the prompt describes, and its repetition weakens the piece. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 10255
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "asphalt ground fill with crack, weeds and faded lane-paint fragments",
+      "rows": "0-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 48,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The image is a full 64x48 flat terrain tile. Every row has the same 64 px width, with no silhouette, no front-edge line, no eave shadow and no front face. The asphalt texture, the diagonal crack, the green weeds and the yellow paint fragments are all surface detail seen from above. The repeating column pattern at 16-row intervals comes from the tiled texture, not from stacked faces. This is a ground tile, so a top-down view is expected for the terrain kind."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The asphalt carries about 4 blue-grey lightness steps of speckle, plus a dark crack line and 2-3 weed greens and yellows. That is a little shallower than the paving reference's 5-6 steps but is a believable asphalt ramp. The measured facts support it: 6 visible tones per tile sits between grass (3) and paving (7), near-flat coverage is 0% (same as both references), and only 18% of dark edge pixels are neutral, so the crack and weed edges lean tinted rather than sticker-black. There are no flat fills; the whole surface is dithered with grain. It is less structured than the paving, which has per-stone highlights, and the weeds are small, so density is slightly lower but not much lower. Weaknesses: the crack reads as short repeated motifs rather than one long crack, and the lane-paint fragment is hard to see. These are content issues, not style-craft failures. A careful artist would accept it next to the paving reference without it looking sticker-like or flat.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 13968
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "asphalt ground tile with crack, weeds and lane paint fragments",
+      "rows": "0-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 48,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The image is a flat, full-bleed 64x48 ground texture (width 64 on every row). The column scan shows only repeating texture bands (rows 0-15, 16-31, 32-47), with no front-edge line, no eave shadow, no ellipse, and no vertical south face. Crack, weeds and paint fragments are surface details lying on the ground plane. As a terrain tile it is a flat top-down surface with no front face, so it reads as a top-down slab."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "none",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a speckled grey-blue asphalt with 6 visible tones per tile, close to the paving reference (7) and above the grass (3). Near-flat coverage is 0%, so there are no flat fills. The asphalt grain is a fairly uniform noise of a few steps and looks thinner than the paving reference's per-stone shading. The crack, weeds and lane paint are small, sparse and repeat identically across the patch, so the repetition reads as stamped rather than hand-varied. The ground has no outlines to judge, and the 18% near-neutral share of dark edge pixels is mostly tinted. The cracks and weeds are drawn as thin, mostly dark strokes with little highlight or shading, so the extra detail adds little depth. Overall it is acceptable but shallower than the reference, with about 4 effective shading steps against 6.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 8981
+  }
+ ],
+ "decidedAt": "2026-10-22T15:08:30.289Z",
+ "cells": {
+  "16": [
+   "3cc825096bc4beb4",
+   "a634f6bdeb25e69c"
+  ],
+  "24": [
+   "025f1e30fcb963ad",
+   "07587f9737939641",
+   "1173dab52817fa2a",
+   "1755da19e2fe76a3",
+   "2b42e2e47531e732",
+   "353201d69de6198b",
+   "384e9fc649fb6be6",
+   "55af3a3cf8d4cd70",
+   "62029446bf2e009f",
+   "7103bf73ba03ac95",
+   "8295a2b10660ebc6",
+   "84680106a9431cd0",
+   "84df406bb2d6228b",
+   "bbd8ea1dff26eaec",
+   "c80da39b18ccffb0",
+   "c9cbe9e854749944",
+   "db4f91a94780d304",
+   "ff75d21e57ee40a1"
+  ],
+  "32": [
+   "0c21e6c90e7ef249",
+   "32f658d2f1102873",
+   "45e409d75572318a",
+   "5257fe21c10b5895",
+   "65648a3256a6a61d",
+   "7a85caff07d612d4",
+   "7be3a0de96078826"
+  ],
+  "48": [
+   "56757033dd0900ff",
+   "64d86860b79253b0",
+   "9d0b1b1e072a1c49",
+   "aa64bfe9785a9d80",
+   "e8e8e3a9680f80c8",
+   "f3981ed0f35e90ca"
+  ]
+ }
+}

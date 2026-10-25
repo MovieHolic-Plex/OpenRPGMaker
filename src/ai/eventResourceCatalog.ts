@@ -23,7 +23,7 @@ import { builtinGeneratedResourceIds } from "@/assets/generatedAssetResourceReso
 import { GENERATED_ASSET_PLAN } from "@/assets/oprnGeneratedAssetPlan";
 import { SE_CATALOG, SE_CATALOG_CATEGORIES } from "@/assets/seCatalog";
 import { listMovieResources } from "@/editor/panels/eventEditor/playMoviePreview";
-import { resolvePictureSource } from "@/player/pictures/pictureResources";
+import { ACTOR_PICTURE_PREFIX, pictureResourceDrawable } from "@/player/pictures/pictureResources";
 import type { Project } from "@/project/types";
 import { faceReferenceMetadata, isAuthorableFaceReference } from "@/project/faceReferenceMetadata";
 
@@ -122,7 +122,7 @@ const PROMPT_SE_HEAD_IDS = [
 
 function collect(
   slot: EventResourceSlot,
-  project: Pick<Project, "assets" | "resourceProfiles">,
+  project: Pick<Project, "assets" | "resourceProfiles"> & { readonly database?: Pick<Project["database"], "actors"> },
 ): EventResourceOption[] {
   const options = new Map<string, EventResourceOption>();
   const add = (id: string, name: string): void => {
@@ -193,6 +193,8 @@ function collect(
       // `newCommand("showPicture")` 의 기본값 `tex_tiles_default` 도 그중 하나다(실측 resolves=false).
       // 제안이 검증을 통과하지 못하면 그것이 곧 프롬프트의 자기모순이다.
       for (const id of Object.keys(project.assets.sprites)) add(id, id);
+      // 배우 걷기 그림(지금 입은 모습) — 성별 선택·옷 갈아입기를 따른다. 24×32 한 칸이 배율 100%.
+      for (const actor of project.database?.actors ?? []) add(`${ACTOR_PICTURE_PREFIX}${actor.id}`, `${actor.name || actor.id} 걷기 그림(지금 입은 모습, 24×32 = 100%)`);
       break;
     case "movie":
       // 동영상은 업로드로만 들어온다 — 판정 근거는 playMoviePreview 가 소유한다.
@@ -221,7 +223,7 @@ function collect(
   // 제안 목록은 검증이 받아 주는 집합의 부분집합이어야 한다. 그림 칸의 판정 권위는 런타임
   // 해석기이므로 여기서 같은 함수로 걸러, "권했는데 반려" 가 구조적으로 불가능해진다.
   if (slot === "picture") {
-    return collected.filter((option) => resolvePictureSource(option.id, project) !== null);
+    return collected.filter((option) => pictureResourceDrawable(option.id, project));
   }
   return collected;
 }
@@ -267,7 +269,7 @@ function matchesSlot(slot: EventResourceSlot, kind: string | undefined, id: stri
 /** 이 슬롯에 실제로 고를 수 있는 리소스 목록(등장 순서 = 에디터 픽커 순서). */
 export function listEventResourceOptions(
   slot: EventResourceSlot,
-  project: Pick<Project, "assets" | "resourceProfiles">,
+  project: Pick<Project, "assets" | "resourceProfiles"> & { readonly database?: Pick<Project["database"], "actors"> },
 ): readonly EventResourceOption[] {
   return collect(slot, project);
 }
@@ -275,7 +277,7 @@ export function listEventResourceOptions(
 /** Full eligible IDs for validation; prompt selection is only a subset of this set. */
 export function eventResourceIdSet(
   slot: EventResourceSlot,
-  project: Pick<Project, "assets" | "resourceProfiles">,
+  project: Pick<Project, "assets" | "resourceProfiles"> & { readonly database?: Pick<Project["database"], "actors"> },
 ): Set<string> {
   return new Set(collect(slot, project).map((option) => option.id));
 }

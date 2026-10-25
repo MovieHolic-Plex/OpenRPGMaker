@@ -4,8 +4,9 @@ import { EMERALD_PROFESSOR_BUST_RESOURCE_ID } from './emeraldProfessorArt';
 import { createStagTitleEffects, monsterTitleArt, monsterTitleThemeOf, type MonsterTitleTheme } from './emeraldMonsterTitleArt';
 import { defaultTitleScreenSettings } from './defaults/defaultDatabase';
 import { validateOpeningAnimatic } from './openingAnimatic';
+import { EMERALD_OPENING_BACKDROPS } from '@/assets/emeraldOpeningBackdrops';
 import {
-  charsetPatternIndex, EMERALD_OPENING_SHOT_MS, EMERALD_OPENING_SHOTS, emeraldOpeningShot,
+  charsetPatternIndex, EMERALD_OPENING_SHOTS, emeraldOpeningShot, emeraldOpeningShotMs,
   type EmeraldOpeningCast, type EmeraldOpeningChip, type EmeraldOpeningShot,
 } from './emeraldMonsterOpeningShots';
 
@@ -44,8 +45,9 @@ function emeraldOpeningCast(project: Project): EmeraldOpeningCast {
     professor: fieldChip(project, /_lab_professor$/u) ?? PROFESSOR, rival: fieldChip(project, /_lab_rival$/u) ?? RIVAL, leader: fieldChip(project, /_gym_leader$/u) ?? LEADER, flyer: FLYER, wild: WILD,
     starters: ['grass', 'fire', 'water'].flatMap(type => {
       const starter = species.find(s => s.types?.includes(type)), front = starter?.graphic.monsterResourceId;
-      return starter && front ? [{ frontResourceId: front, chip: chipOf(starter.graphic.fieldGraphic) }] : [];
+      return starter && front ? [{ frontResourceId: front, chip: chipOf(starter.graphic.fieldGraphic), ...(starter.name ? { name: starter.name } : {}) }] : [];
     }),
+    places: Object.fromEntries(EMERALD_OPENING_BACKDROPS.flatMap(b => { const name = project.maps[b.mapId]?.name?.trim(); return name ? [[b.id, name]] : []; })),
   };
 }
 
@@ -68,8 +70,9 @@ function writeEmeraldOpening(project: Project, pages: readonly EmeraldOpeningPag
   const scenes = pages.map(page => {
     if (!page.id || !page.text.trim()) throw Error('Opening page needs an id and readable text');
     const composition = emeraldOpeningShot(page.shot, cast);
-    validateOpeningAnimatic(composition, EMERALD_OPENING_SHOT_MS, `opening.${page.id}`);
-    return { id: page.id, kind: 'animatic' as const, composition, durationMs: EMERALD_OPENING_SHOT_MS, narration: page.text };
+    const ms = emeraldOpeningShotMs(page.shot);
+    validateOpeningAnimatic(composition, ms, `opening.${page.id}`);
+    return { id: page.id, kind: 'animatic' as const, composition, durationMs: ms, narration: page.text };
   });
   project.system.opening = { enabled: true, skippable: true, scenes, ...(musicResourceId ? { musicResourceId } : {}) };
   delete project.meta.oprnOpeningBook;

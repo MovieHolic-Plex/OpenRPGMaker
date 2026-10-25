@@ -1,0 +1,364 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f18626586b7f7f9f0d8a4f9480ce7720d09b2acebceaf769f766b63976c43b75",
+ "width": 32,
+ "height": 16,
+ "kind": "frame",
+ "name": "washing line between two wooden poles seen from above: pole tops as small caps, a sagging rope with faded cloths folded over it so the back halves show as lit top surfaces and the front halves hang down, a zinc washtub with water on the ground and cloth shadows below",
+ "label": "wasteland_ruins/wash-line",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "refer",
+ "reasons": [
+  "3/4: 독립 눈이 「3/4 아님」 12/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면"
+ ],
+ "view34": {
+  "verdict": "refer",
+  "reasons": [
+   "독립 눈이 「3/4 아님」 12/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "wasteland_ruins",
+   "fallback": true,
+   "reason": "칩셋 wasteland_ruins 의 화풍 기준 묶음이 없다",
+   "hash": "2ad36264365ed8d5"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 25,
+  "tileColorsP90": 25,
+  "darkV5": 42,
+  "nearBlackEdge": 0.03,
+  "opaqueTiles": 2
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cloths folded over rope (lit back halves)",
+      "rows": "2-4",
+      "evidence": "a",
+      "front_edge_line_row": 4,
+      "eave_shadow_rows": "9"
+     },
+     {
+      "part": "zinc washtub with water",
+      "rows": "11-13",
+      "evidence": "d",
+      "front_edge_line_row": 13,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "wooden poles with small caps",
+      "rows": "0-1",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 3,
+    "front_face_rows": 5,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The rope with cloths is the horizontal member of the frame. Rows 2-4 are the lit back halves of the cloths, which read as the top surface (3 rows; x=8 L=172 on rows 3-4). Row 5 starts a darker front half (L=94) that hangs down to about row 9, about 5 rows of front face, with a darker bottom shadow at row 9. The tub below (rows 11-14) shows water inside its mouth (evidence d). The poles are thin vertical members with small caps at rows 0-1, and the horizontal member and the tub both show tops. The top band is short, but it ends at a fold or edge line with the hanging face below it, so it is not a flat front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The measured facts favour the candidate. It has 25 visible tones per 16x16 tile, against 17-20 for the stall and well, the richest references. Near-flat coverage is 0%, so there are no flat fills. Dark edge pixels are 0% neutral, so the outlines lean brown, blue or red rather than black. This matches the hedge and stall, which also sit near 0-1%. By eye, the poles with small caps, the sagging rope, the cloths (lit top halves with darker hanging fronts) and the tub with water and cloth shadows each carry two to four tones. That is a little shallower than the 5-6 step ramps on the roof and well references, but the piece is small and thin, and the variation is real. A careful artist would accept it next to the references without it looking flatter or more sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 31883
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "left and right pole caps",
+      "rows": "0-1",
+      "evidence": "a",
+      "front_edge_line_row": 1,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "cloths folded over the rope, lit back halves (blue, white, pink, green)",
+      "rows": "2-4",
+      "evidence": "a",
+      "front_edge_line_row": 4,
+      "eave_shadow_rows": "5"
+     },
+     {
+      "part": "zinc washtub with water",
+      "rows": "11-13",
+      "evidence": "d",
+      "front_edge_line_row": 13,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 3,
+    "front_face_rows": 5,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is the line of cloths. Rows 2-4 are the lit back halves folded over the rope, 3 rows deep, and the width grows from 20 to 29 to 32. They end in a lighter-to-darker change at row 4/5 (column x=8: L=172 on rows 3-4, then L=94 on rows 5-8). The front halves hang as darker faces on rows 5-9, 5 rows. The poles have small lighter caps on rows 0-1, where the width is 8 (two poles of 4). The washtub on rows 10-15 shows water or contents as a lighter strip on rows 11-13, which counts as evidence (d). The top is shallow but the drawing is not a flat elevation, so it reads as three_quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small prop, about 25 px wide at source scale. Measured facts favour it: 25 visible tones per full tile against 9-20 for the textured references (hedge, stall, well), 0% near-flat coverage, and 0% neutral dark edge pixels. That means the outlines lean toward the material (brown on the poles, darker cloth tones on the cloths) rather than a black sticker line. By eye, the pole caps, the sagging rope, the cloths with a lit back half and a darker hanging front, the zinc tub with water, and the cast shadows each carry several tones. No large single-colour areas show. It sits next to the references without looking thinner or flatter, though the cloths are small and have only 2-3 steps each. That is acceptable for a prop this size.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 28889
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "left wooden pole cap",
+      "rows": "0-1",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "right wooden pole cap",
+      "rows": "0-1",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "cloths folded over rope (lit back halves)",
+      "rows": "2-4",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "5-6"
+     },
+     {
+      "part": "zinc washtub opening with water",
+      "rows": "11-13",
+      "evidence": "d",
+      "front_edge_line_row": 13,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 3,
+    "front_face_rows": 5,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is the sagging rope with its cloths. In column x=8 rows 3-4 are light (L=172), and rows 5-8 drop to a darker, hanging front face (L=94) ending in a shadow row 9. That gives a lit top band of about 3 rows (2-4) with an edge change at row 5, over a hanging front face of about 5 rows (5-9). The same pattern repeats in the x=23 column. The pole tops are small caps at rows 0-1, and the poles continue down as vertical shafts. The washtub at rows 11-15 shows a light rim, teal water (row 12) and a rim line (row 13) above its body. The ground and cloth shadows sit below."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate has 25 visible tones per 16x16 tile, against 17 for the cheese stall, 20 for the roofed well and 9 for the hedge. Near-flat coverage is 0%, so no 5x5 areas are a single flat colour. Dark edge pixels are 0% neutral, so the outlines lean brown or blue-grey rather than black. This matches the hedge, stall and well, and avoids the near-black sticker look of the lamp. By eye, the wooden poles have a lit side, a dark side and a small cap. The cloths each show a lit top half and a darker hanging front, and the zinc tub, water and cloth shadows add further tones. The rope sag and the cloth folds read clearly. Each material ramp has about 4 steps, slightly fewer than the references' 5-6. That is acceptable for a thin, sparse prop, and the piece does not look flatter or thinner than the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 20940
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "pole caps (left and right)",
+      "rows": "0-3",
+      "evidence": "a",
+      "front_edge_line_row": 3,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "cloths folded over the rope, back halves lit",
+      "rows": "2-4",
+      "evidence": "a",
+      "front_edge_line_row": 4,
+      "eave_shadow_rows": "5"
+     },
+     {
+      "part": "hanging cloth fronts",
+      "rows": "5-9",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "zinc washtub with water",
+      "rows": "11-13",
+      "evidence": "d",
+      "front_edge_line_row": 13,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "tub front wall",
+      "rows": "14-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 3,
+    "front_face_rows": 5,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The cloths over the rope have a lighter band at rows 2-4 (column x=8 L=124/172, x=23 L=130/155) that ends at row 4 and is followed by darker cloth fronts at rows 5-9 (L=94 and 91-110). That is a lit top surface plus a hanging front face of about 5 rows. The pole caps at rows 0-3 are small lit tops over the poles, and the width steps 8, 20, 29, 32 show them widening into the cloth line. The washtub at rows 10-15 shows a light rim and water at rows 11-13 (L=172, 91, 172) over a darker front wall at rows 14-15. This reads as contents visible in an open container. The top band is only about 3 rows, but every major part has a top face and a front face, so the object reads as three-quarter view, not a flat elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate has 25 visible tones per 16x16 tile, above the roofed well (20) and the cheese stall (17). Near-flat coverage is 0%, so there are no 5x5 flat fills, and 0% of dark edge pixels are neutral, so the outlines lean brown or material-toned rather than sticker black. By eye, the poles with caps, the sagging rope, the folded cloths with lit tops and hanging fronts, the zinc tub and the cloth shadows each carry several tonal steps (about 4-5 per material, a little below Beodeul's 5-6). The cloths and tub rim show some grain and variation rather than single flat colours. It is a thin, sparse prop, but it does not look flatter or thinner than the hedge or bench, and a careful artist could accept it next to the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19584
+  }
+ ],
+ "decidedAt": "2026-10-23T06:42:07.232Z",
+ "cells": {
+  "16": [
+   "640bcf7df7a29d76",
+   "803f4332d2ce6bcf"
+  ],
+  "24": [
+   "0c68dde93b651931",
+   "199c8fa367efbb69",
+   "3040b58ac20c2602",
+   "370f190e5241b2ec",
+   "61ca533b615d44db",
+   "6bc2b36539cb314b",
+   "7adf280889e3b183",
+   "87f665061df87015",
+   "8c872fc5bf956959",
+   "ad68dd6c94a6daa7",
+   "b8c3452f11c3cb08",
+   "eef9450083288e46"
+  ],
+  "32": [
+   "4c75b9326acaffba",
+   "d36241a8c3c25153"
+  ],
+  "48": [
+   "535be113b3e136c8",
+   "6bad217fdc5e9958",
+   "8ad373f6727df486",
+   "8ef40d24ec321b81",
+   "de18cabd316bbeae",
+   "e839d3d13b07096e"
+  ]
+ }
+}

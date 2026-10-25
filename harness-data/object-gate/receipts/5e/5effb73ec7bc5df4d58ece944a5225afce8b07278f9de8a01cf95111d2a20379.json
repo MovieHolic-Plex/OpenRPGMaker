@@ -1,0 +1,307 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "5effb73ec7bc5df4d58ece944a5225afce8b07278f9de8a01cf95111d2a20379",
+ "width": 16,
+ "height": 48,
+ "kind": "structure",
+ "name": "concrete wall running north-south seen from above: long top surface of the wall, broken notches, and the short south end face at the bottom",
+ "label": "wasteland_ruins/wall-v",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "refer",
+ "reasons": [
+  "3/4: 독립 눈이 「3/4 아님」 12/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면"
+ ],
+ "view34": {
+  "verdict": "refer",
+  "reasons": [
+   "독립 눈이 「3/4 아님」 12/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 12,
+  "tileColorsP90": 15,
+  "darkV5": 54,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 3
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "wall top surface (long run north to south)",
+      "rows": "0-36",
+      "evidence": "a",
+      "front_edge_line_row": 35,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "south end face of wall",
+      "rows": "37-46",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 37,
+    "front_face_rows": 10,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 0-36 form a long, light grey top surface with notches and stains. It ends in a bright front-edge line at row 35 (L=189, with row 36 slightly lighter than the grey above it). Below that, rows 37-46 are a darker brownish-grey vertical south end face of about 10 rows, with a dark base at rows 44-47. The width is a constant 13 px, so no receding side face is drawn. The dark strips at the left and right columns read as outline and shadow. The top is far taller than the end face, as expected for a wall running north to south, so the object has both a top surface and a front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a thin concrete wall prop, so I judged it by eye as well as by the numbers. It matches the references on the primary facts: 12 visible tones per tile against 12 and 10, 0% near-flat coverage like both references, and only 1% neutral dark edge pixels. That means the outline is tinted, not a black sticker line. The top surface shows a grey ramp of about 5 steps with a light edge and darker side and end faces. Moss specks, broken notches and cracks add grain, so there are no large flat fills. It is a little simpler than the roofs and stonework on the houses, but it is not thinner or flatter than a careful artist would accept next to them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16168
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "wall top surface (long, with notches)",
+      "rows": "0-35",
+      "evidence": "a",
+      "front_edge_line_row": 35,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "south end face",
+      "rows": "37-46",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 36,
+    "front_face_rows": 10,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 0-34 are a long, light gray-lavender top surface (L about 150) with notches and a little moss. Row 35 is a 1-row, much lighter line (#bcbdc3, L=189), which is a front-edge line, and row 36 is a transitional strip. Rows 37-46 are a darker, brownish-gray south end face (L about 120) with a dark base at rows 44-47, so the front face is about 10 rows. The dark left and right columns are outline and shadow, not a receding side face. The top surface is clearly separated from the front face by an edge line and a tone change, so this is a three-quarter view with a very long top."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small, narrow concrete wall, while the references are whole houses, so the comparison is by material rather than form. On the primary facts it matches the references: 12 visible tones per tile against 12 and 10, 0% near-flat coverage like both references, and only 1% neutral dark edge pixels. That means its outline is a tinted dark grey, not a neutral black sticker line. By eye, the top surface, the side face and the south end face are separated by value steps of about 5 grey tones. There are mottled speckle, notch breaks, and a few moss or stain dots that give grain, so it has no flat fills. It has fewer steps and less per-element texture than the stone wall of house-h112_0, since it lacks the stone-by-stone shading. It is still not thinner or flatter than the reference tiles, and a careful artist would accept it next to them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15808
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "wall top surface (long, with notches)",
+      "rows": "0-36",
+      "evidence": "a",
+      "front_edge_line_row": 35,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "south end face of wall",
+      "rows": "37-46",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 36,
+    "front_face_rows": 10,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The wall's long top runs from row 0 to about row 36. It is light grey and speckled with notches and moss. A bright 1-row front-edge line at row 35 (#bcbdc3, with a lighter row 36 below it) closes the top surface. Below that, rows 37-46 form a darker brownish-grey south end face of 10 rows, with a dark base line at rows 44-46. The width stays at 13 px with no receding side face, so the dark strips at the left and right edges are outline or shadow. Because the top surface and a front face of 3 or more rows are both present, it reads as a three-quarter view. There is no eave shadow row, but the edge line is enough evidence."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a thin wall prop, so it is judged mostly by eye and against the stone house, house-h112_0-stone. It shows about 5 grey steps: a light top surface, mid faces, a dark south end face and dark notch shadows. It also has green moss flecks and broken-edge notches. The measured facts match the references: 12 visible tones per tile against 12 and 10, 0% near-flat coverage like both references, and only 1% neutral dark edge pixels. That last figure means the outlines lean toward the grey/green material tone rather than being a black sticker line. The raw total of 18 colours is low, but the visible tones are equal to the references, so I do not count it against the piece. The wall is somewhat simpler than the roof tiles in the references and is not richer than the stone wall. A careful artist would still accept it next to them without it looking flat.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16237
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "wall top surface (long, with notches)",
+      "rows": "0-36",
+      "evidence": "a",
+      "front_edge_line_row": 35,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "south end face of wall",
+      "rows": "37-46",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 36,
+    "front_face_rows": 10,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 0-36 form a long light-grey top band with notches and cracks. It ends in a bright front-edge line at row 35 (L=189), with a lighter row 36 below it. Below that, rows 37-44 are a darker brown-grey vertical south end face (L~120), and rows 45-46 are a dark base with moss at the bottom. The face is about 10 rows, so a front face of 3+ rows sits under a clear top surface. The dark strips at the left and right edges are symmetrical outline shading, not a receding side face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a narrow wall piece, much smaller than the reference buildings. It shows about 12 visible tones per 16x16 tile, equal to house-h101_0 (12) and above house-h112_0-stone (10). Near-flat coverage is 0%, the same as both references, so there are no flat fills. Only 1% of its dark edge pixels are neutral, so the outline leans a dark grey-green or brown rather than black, matching the material-tone approach of the references. The concrete top surface has a lighter highlight band, mid and dark grey steps, and speckled grain. Broken notches and small moss dots add variation, and the south end face is separated from the top by value alone. At this size I count about 5 ramp steps, slightly fewer than the roughly 6 on the reference roofs and stone. For a thin prop it does not look flatter or more sticker-like than the stone reference.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16173
+  }
+ ],
+ "decidedAt": "2026-10-22T15:08:30.359Z",
+ "cells": {
+  "16": [
+   "0dc29118932c60a3",
+   "5a877705af2a02dd",
+   "a5e9d89d75c2b8a3"
+  ],
+  "24": [
+   "44a40cf523e5cd15",
+   "5242b127e5558c7c",
+   "a49de0fd21c7b283",
+   "b88e1437dd674630",
+   "d33d13c8ffa32eb0",
+   "f463aa6794b5874f"
+  ],
+  "32": [
+   "0ce06c7bbcee3c30",
+   "19385da7e4d1ee2e",
+   "2dff0e31c8df91c8",
+   "33d8b95efc452486",
+   "33ef13d67e35c63b",
+   "5d7325f41ba40928",
+   "94ef20380eac7560",
+   "a752c558e0048ecb",
+   "c8d4fb9c0770c0fa",
+   "d5b189b37d6c8d83",
+   "ecaeab9b7f64d5c7",
+   "fad95f2d119f0ea6"
+  ],
+  "48": [
+   "245028dc87b1d262",
+   "29e64c1a0d7244c7",
+   "91c9df705534d509"
+  ]
+ }
+}

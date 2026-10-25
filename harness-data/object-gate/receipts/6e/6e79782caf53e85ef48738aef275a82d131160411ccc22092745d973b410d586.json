@@ -1,0 +1,398 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "6e79782caf53e85ef48738aef275a82d131160411ccc22092745d973b410d586",
+ "width": 16,
+ "height": 16,
+ "kind": "frame",
+ "name": "east-west scrap fence section: two rails of folded corrugated sheet metal on a wooden post, rail tops seen from above, tiles into a line",
+ "label": "wasteland_ruins/fence-h",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)",
+  "3/4: 투영이 3/4 아님(front_elevation) (2/4)",
+  "3/4: 윗면 2행 < 3 (2/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)",
+   "투영이 3/4 아님(front_elevation) (2/4)",
+   "윗면 2행 < 3 (2/4)"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 18,
+  "tileColorsP90": 18,
+  "darkV5": 34,
+  "nearBlackEdge": 0.14,
+  "opaqueTiles": 1
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "upper corrugated rail",
+      "rows": "3-4",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower corrugated rail",
+      "rows": "9-9",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "wooden post cap",
+      "rows": "0-1",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 12,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "Both rails are drawn mostly as vertical corrugated faces. Column x=4 shows a light strip at rows 3-4 and x=8 shows a light pixel at row 3, then rust and grey face rows down to a dark outline at row 8. The lower rail starts with only a 1-row light pixel at row 9 (x=8) and has no light band at x=4, so it has no top band, no consistent front-edge line and no eave shadow. The post (x=11) has a 2-row light cap at rows 0-1 and then a vertical face with no top surface. The tops of both rails are only 1-2 row rims, so the object reads as a front elevation, not as rail tops seen from above."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is small in the board, so I leaned on the measured facts and checked them against the picture. It has 18 visible tones per 16x16 tile, level with prop-stall-cheese (17) and prop-well-roofed (20) and well above prop-hedge (9). Near-flat coverage is 0%, so there are no flat fills. The dark edge pixels are 0% neutral, so the outlines carry a tint (dark brown beside the wood post, dark red-brown beside the rusty metal) rather than a near-black sticker line. By eye, the rails show a few lightness steps with corrugation ridges and rust or grain variation, and the wooden post is shaded separately. I count about 5 steps on the main ramp against about 6 on the references. It is slightly simpler than the stall and well but does not look thinner or flatter than the hedge or bench references.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16882
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "upper corrugated rail top",
+      "rows": "3-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-7"
+     },
+     {
+      "part": "lower corrugated rail top (single light row only)",
+      "rows": "9-9",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "wooden post top cap",
+      "rows": "0-1",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 3,
+    "front_face_rows": 8,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The upper rail has a light band at rows 3-5 (about x=4 and x=8). It ends in a front-edge line at row 5 (#738a90), followed by darker shadow rows 6-7 (#516268, #3d4b51) and a dark separator at row 8. That is a top surface of about 3 rows over a rust-colored front face. The lower rail shows only a 1-row light rim at row 9 above 4 rows of front face (rows 10-13), so it reads as a rim, not a top. The post is a vertical brown strip (x about 11-13, rows 0-14) with a 2-row light cap at rows 0-1. The front face totals about 8 rows (6-13). The main body reads as three_quarter because the upper rail shows a real top, but the lower rail is weak, so not every major part has a top."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small, tile-sized prop, so I judged mostly from the measured facts and what is visible at 2x. It has 18 visible tones per 16x16 tile, level with prop-stall-cheese (17) and prop-well-roofed (20) and well above prop-hedge (9). Near-flat coverage is 0%, so there are no large flat fills. Neutral dark edge pixels are 0%, so the outline carries a tint rather than being a near-black sticker line. By eye, the corrugated rails show several light-to-dark metal steps with ridge lines, and the wooden post is shaded separately from the metal. Texture is moderate rather than lush, and the piece is small, but it does not look thinner or flatter than the references of the same kind.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18005
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "upper rail (corrugated sheet)",
+      "rows": "3-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "8-8"
+     },
+     {
+      "part": "upper rail front face",
+      "rows": "6-7",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower rail top lip",
+      "rows": "9-9",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower rail front face",
+      "rows": "10-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "wooden post (top cap, then shaft)",
+      "rows": "0-3",
+      "evidence": "a",
+      "front_edge_line_row": 2,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 5,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The post (x=11-14) has a light top at rows 0-1 over a darker shaft, so it reads as a small top. The upper rail has a light teal band at rows 3-5 (x=4: L=155 at rows 3-4, mid at row 5) over rust rows 6-7, then a dark line at row 8. That band is thin and corrugated rather than a clear top surface. The lower rail has only a 1-row light lip at row 9 (x=8), then rust rows 10-13 and a dark outline at row 14. So the lower rail shows no real top and is essentially a front face. The silhouette is a 16-wide, 13-row block (rows 2-14) with no ellipse and no receding side face. The tops are too shallow to give a convincing 3/4 volume."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is small at 2x, so I leaned on the measured facts. It has 18 visible tones per 16x16 tile, level with prop-stall-cheese (17) and prop-well-roofed (20) and well above prop-hedge (9). Near-flat coverage is 0%, so there are no large flat fills. Dark edge pixels are 0% neutral, so the outline is tinted: dark rust-brown beside the metal and wood rather than a black sticker line. By eye, the corrugated rails show a highlight, mid, dark and rust-patch ramp of roughly 5 steps against a darker wooden post. The post and rail ramps are a little less layered than the roofed well, but the piece is not thinner or flatter than the references of the same kind.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 21358
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "upper corrugated rail top",
+      "rows": "3-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "8"
+     },
+     {
+      "part": "upper rail front face",
+      "rows": "6-7",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower corrugated rail top",
+      "rows": "9-9",
+      "evidence": "a",
+      "front_edge_line_row": 9,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower rail front face",
+      "rows": "10-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "wooden post cap",
+      "rows": "0-1",
+      "evidence": "a",
+      "front_edge_line_row": 1,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "wooden post shaft",
+      "rows": "2-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 3,
+    "front_face_rows": 5,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The upper rail has a 3-row blue-grey top band (rows 3-5) that ends in a slightly darker edge line at row 5. A rust front face follows (rows 6-7) and a dark shadow line at row 8. The lower rail has only a 1-row light top at row 9, which reads as a rim, over a 4-row rust front (rows 10-13). The post has a 2-row light cap (rows 0-1). The silhouette is 16 wide from row 2 to row 14, so the front face is well over 3 rows. The lower rail's top is thin, so not every major part clearly shows a top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a single 16x16 tile, so I judged mostly from the measured facts and what the small render shows. It has 18 visible tones per tile, against 17 for the cheese stall, 20 for the roofed well and 9 for the hedge. Near-flat coverage is 0%, so there are no large flat fills. The dark edge pixels are 0% neutral, so the outline is tinted (brown/rust beside the wood and metal) rather than a near-black sticker line. The rails and post show several lightness steps, with a corrugation rhythm and a wood post in different tones. That is about 5 steps per material, close to the references' 5-6. Texture is present but modest because the piece is small and sparse. A careful artist would accept it next to the references without it looking flatter or thinner.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "맨 위의 큰 부분(13행)이 윗면 없이 세로 면뿐 — 윗끝이 3/4 가 아님 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+     "맨 위의 큰 부분(13행)이 윗면 없이 세로 면뿐 — 윗끝이 3/4 가 아님 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18045
+  }
+ ],
+ "decidedAt": "2026-10-22T15:35:18.400Z",
+ "cells": {
+  "16": [
+   "c873a465dee29420"
+  ],
+  "24": [
+   "07c71e28c88b6273",
+   "143c808f236317a5",
+   "35c635eb4d0a4012",
+   "56d6138d5314501b",
+   "6e5c3f106b61725e",
+   "8071b1c84d99eb4f"
+  ],
+  "32": [
+   "3956a00182a21804",
+   "471928216e2442a2",
+   "9f6d624037cc3623",
+   "a3b2dc3e405c2d0e",
+   "a7b6cfa410d8a5ec",
+   "d60170479b7f8083"
+  ],
+  "48": [
+   "0724d1e2a5160d5a",
+   "264ffc6c5efb8692",
+   "31ec0918f1366865",
+   "58cfc658d3d90b62",
+   "a07e8cfe015214c8",
+   "e51e522c3f586792"
+  ]
+ }
+}

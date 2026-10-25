@@ -1,0 +1,483 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b09047a955b30ad7e0fc9d0bed58b56471f1c15fed33c26838bd2265551d4d6d",
+ "width": 144,
+ "height": 80,
+ "kind": "flat",
+ "name": "a smaller irregular broken-asphalt pothole with a dirt bottom, a shadowed far inner wall, a chipped lighter near rim, a short crack running out of it and a couple of loose chips; transparent decal on old asphalt",
+ "label": "wasteland_ruins/pothole-b",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 명암 3단 < 4 (4/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "명암 3단 < 4 (4/4)"
+  ],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 4,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "wasteland_ruins",
+   "fallback": true,
+   "reason": "칩셋 wasteland_ruins 의 화풍 기준 묶음이 없다",
+   "hash": "8cecb3a70460aa86"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 5,
+  "tileColorsP90": 8,
+  "darkV5": 77,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 45
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "gray asphalt-like rectangular patch with two small dark holes, drawn over a full-frame brown dirt ground",
+      "rows": "19-63",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 45,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The whole picture is a flat plan view. A gray rectangle (rows ~19-63, nearly full width) lies on brown dirt that fills rows 0-79. The only depth cues are two tiny dark holes at about rows 38-41 (x≈36 and x≈107) and a thin darker lower edge around rows 59-63. There is no vertical front face of 3 or more rows, no eave shadow and no ellipse. It reads as a flat decal seen from above, which fits the flat kind, but it does not clearly show an irregular pothole with a shadowed far wall and a lighter near rim."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 4,
+    "evidence": "The candidate does not read as the described pothole. It shows a large, hard-edged, near-rectangular grey asphalt slab on a brown dirt field, with two tiny dark nicks. The brief calls for an irregular hole with a dirt bottom, a shadowed far wall, a chipped lighter near rim, a crack and loose chips. The slab has none of that inner-wall and rim structure, and no readable crack or chips. Shading on the asphalt is shallow, about 3 steps (a mid grey with darker and lighter speckle plus a thin edge), against about 6 in the paving reference, where each stone is shaded one by one with highlight edges. The measured facts back this up: 5 visible tones per tile against 7 for paving, and only 1% near-flat coverage. Outlines are tinted (0% neutral dark edge pixels), so they are not sticker-black, and the speckle grain on both asphalt and dirt means no large flat fills. The slab's smooth, sharp rectangular edge looks pasted on and flatter than the reference's per-stone modelling. It fails mainly on missing form and shallow shading depth, not on colour.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 17935
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "gray asphalt patch with two small dark holes, lying on a dirt ground",
+      "rows": "19-63",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dirt ground fill around the patch",
+      "rows": "0-79",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 45,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The drawing is a flat plan view. A gray rectangular asphalt patch (rows 19-63) sits on an opaque dirt background that fills all 80 rows at full width. The patch has no front-edge line with a vertical face below it, no ellipse and no depth wall. A slightly darker strip at rows 59-63 is only a thin edge shadow, not a front face. The two small dark holes near rows 38-41 are flat marks. There is no vertical south face of 3 or more rows, so it reads as a flat top-down slab. That fits the flat kind, though it does not look like the described pothole with a shadowed far wall and a lighter near rim, and the background is opaque rather than a transparent decal."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "none",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 3,
+    "evidence": "The candidate does not read as the described pothole. It is a plain rectangular grey slab on speckled brown dirt with two tiny dark nicks. There is no irregular broken edge, no shadowed far wall, no lighter chipped near rim, no crack and no loose chips. The grey slab uses only about 3 lightness steps with faint speckle, and the brown ground has about 3-4 noisy steps. The 5 visible tones per tile are below the paving reference (7) and the near-flat coverage of 1% only reflects the noise speckle. Edges are soft and have no deliberate dark material-tone outline or per-chip shading, which is much flatter than the Beodeul paving, where each stone is shaded and tile edges carry highlights. The surface is mostly uniform noise rather than structured texture, so the piece looks shallower than the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 15672
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "gray asphalt patch with two small dark holes, seen from directly above",
+      "rows": "19-62",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "surrounding brown dirt ground",
+      "rows": "0-79",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 44,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The image is a flat plan view. A gray rectangular asphalt patch (about rows 19-62, with a roughly 1-row lighter line at rows 31 and 39 and a darker line at row 39 inside the two small holes) sits on a brown dirt field that fills all 144 columns in every row. The silhouette width is constant at 144 for rows 0-79, so there is no standing silhouette. No vertical south face of 3 or more rows is drawn, and there is no front-edge line with eave shadow. The two small dark holes at about rows 38-45 show only a thin dark lip, not a wall. Overall it reads as a flat decal seen from above, and it does not clearly show the described pothole with a shadowed far wall and a lighter near rim."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "none",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 4,
+    "evidence": "The candidate is a plain rounded grey rectangle on a speckled brown dirt field. It has no irregular broken edge, no dirt-bottomed pothole with a shadowed far wall, no chipped lighter near rim, no crack and no loose chips. Only two tiny dark nicks sit inside the slab. The asphalt body reads as about 3 tones (a mid grey, a darker grey and sparse light speckle), against roughly 6 steps in the reference paving, which has a lit rim, a shaded edge and per-stone shading. Edges are separated by a thin tinted rim with no uniform black line, so the outline is effectively none, and the 0% neutral dark-edge share agrees. The dirt has some grain. Measured tones per tile (5) are below the paving reference (7) and above the grass reference (3), and near-flat coverage is only 1%, so there are no large flat fills. The piece is too shallow in shading and too simple in structure to sit next to the reference paving. It also fails the requested subject, since a pothole needs a rim and a deep inner wall.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 17044
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "grey asphalt patch with two small dark pits",
+      "rows": "19-63",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dirt ground fill around the patch (opaque background, full 144 width)",
+      "rows": "0-79",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 45,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The image is a flat, top-down view. A grey rectangular asphalt patch (rows 19-63) sits on a full-canvas dirt background (rows 0-79 at width 144). It has no front-edge line, no eave shadow, no vertical south face and no ellipse. The only shading is a thin darker line near the bottom edge at about rows 59-63, which is a shadow rim, not a front face. The two small dark pits at about row 39 look like tiny holes. There is no clear irregular pothole with a shadowed far wall or a crack. It reads as a flat plate seen from above with 0 front-face rows."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 4,
+    "evidence": "The candidate reads as a large flat grey rectangle of asphalt on brown dirt with two tiny dark nicks. It does not show the described pothole: no irregular broken edge, no shadowed far inner wall, no chipped lighter near rim, no crack and no loose chips. The asphalt has only about 3 lightness steps (grey body, slightly lighter and darker speckle, a faint edge), against 5-6 in the Beodeul references. There is no tinted dark outline and no per-form value separation, so the rectangle looks like a pasted sticker. Speckle grain does give some texture, and the measured facts are acceptable (5 visible tones per tile against 3 for grass and 7 for paving, 1% near-flat, 0% neutral dark edges). Those numbers do not make up for the missing structure and the shallow ramp. A careful artist would not accept this next to the paving reference.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 14689
+  }
+ ],
+ "decidedAt": "2026-10-22T23:04:20.673Z",
+ "cells": {
+  "16": [
+   "046ede623f4e1fc4",
+   "197b836a71c41856",
+   "1f44054c1c6f2733",
+   "1f63d6fbff477767",
+   "27576df1e90b51f8",
+   "3128c2e1a4d38706",
+   "325f9d03f6670acf",
+   "4b271912bf41a0ae",
+   "516c62bd6b436521",
+   "53f0b8bb3fdf6927",
+   "55ca2b999cb2777f",
+   "57a01a5ce41b8fcf",
+   "57b8fa4d1eb95887",
+   "57fc98f3f560dfdf",
+   "592fb3651515ca56",
+   "6d3b0c5494311d44",
+   "701963da1546c5a0",
+   "7424c8a02611249a",
+   "7c598be88bdd2402",
+   "7d3438decb8024d8",
+   "87ebaacfb06760b3",
+   "8886fb93697d5499",
+   "92e45a208bd9b499",
+   "9841c0306962d588",
+   "9d76d9e966cd91e5",
+   "9ebaf740a8e38141",
+   "9f5af927f0af984a",
+   "a406069af4766046",
+   "aeecd0409de5c59b",
+   "bbb27ca60933d095",
+   "bf4d1cbcd45adc03",
+   "c2f6cebe48735da0",
+   "c87e4edc3d9417aa",
+   "ca3f76d628f12761",
+   "ce632c103a2b5d09",
+   "cf9344953836512b",
+   "d1085b2c564bf36b",
+   "e2745db7140954d1",
+   "e53c6edd0faa43fa",
+   "f54e9742cdc5a18f"
+  ],
+  "24": [
+   "02e1d47b5867c3fa",
+   "04db272cc35fe0be",
+   "0fea1629c342ebe2",
+   "19dcff530783cff6",
+   "1a1b870c3bed39b3",
+   "2011de6e92071eb0",
+   "2cb95e5e29bea7ee",
+   "36dc1efdedb09622",
+   "399edf9d6097460e",
+   "39c981fabc4530cc",
+   "3d561460bf5bb889",
+   "3d62c754ec01c445",
+   "47b2f0cad2cbdf70",
+   "47c0fd5663d671c7",
+   "4823b8be3286fffb",
+   "4ef0793fbc3f5e9b",
+   "5346acb9380e5ac3",
+   "563035350d3190cd",
+   "5b3dbbadfcb403c5",
+   "6685ac12c7ae3ec1",
+   "69317cd254971b40",
+   "6bc67a9f7ce0a20f",
+   "6efeede0ce6c5d1a",
+   "766dbecd8dd2ad82",
+   "79bf85253cfc92c2",
+   "7e6926d64716e740",
+   "85c71610ffbb61ee",
+   "85fe6d5c2d2b5501",
+   "8cf353eae40d6cb6",
+   "97110e727c9c1c86",
+   "a7ba61d30ac995b2",
+   "ad223ca73c65eb9e",
+   "bb0c01f1c328cea8",
+   "bb2d3f38942b0113",
+   "c88b235423cc97f4",
+   "ca9a4fbdd37afbbd",
+   "d0a83fef3edf9721",
+   "d22ecbaea85d42e5",
+   "e1b70665021de036",
+   "e27e250386ad777e",
+   "e936dd22b4bb01e9",
+   "eaaa733451e9c17c",
+   "ebcb2139ba19b0a6",
+   "eed588eed218c527",
+   "f11b52fb6b29cfae",
+   "f3469d79de9bc20f",
+   "f5a981d0df8e766f",
+   "f634157f64e9b4e7"
+  ],
+  "32": [
+   "00e36b1c1e9f093e",
+   "012075d1d7c120b3",
+   "0f9dc003afdd3d1f",
+   "191e7600042b6517",
+   "1a9305cd5311a8a8",
+   "1f67280409368a4b",
+   "23a32fed9dfbbd6e",
+   "23a95ee117c1c33d",
+   "244eeed614743c52",
+   "280279a25484bb4b",
+   "2939199845b1b7fb",
+   "2b2157f903a56ba8",
+   "2d16713beda38b0e",
+   "2eb025039b5e39b8",
+   "32cd707117e83f9c",
+   "340d3d0b4124507a",
+   "3744a86468269126",
+   "389fced166120937",
+   "3a2ea27689f08f52",
+   "41b8c9874ea6ecf6",
+   "47559d22d55724a9",
+   "4f9c344785e5fa97",
+   "5462ba31baccc28f",
+   "5518385fdd89332c",
+   "572b6bfccb4d3b48",
+   "5b07c487f9f8c4bb",
+   "5e265e1a7b0681c5",
+   "63f3a2b4d39e5909",
+   "64bb45fa6db6c551",
+   "68b6b89f451d3531",
+   "6b56958fb5d174ad",
+   "6e1065fa4cbbd2d4",
+   "7776af21b9bf77b5",
+   "7a8ac15edde779e1",
+   "7e57cf46250b476e",
+   "7e69f6678afe1b32",
+   "7f36c7e36ba6fdc8",
+   "7fd7bb93b602898f",
+   "845111d9a1fecd9d",
+   "860a904dbdaa6833",
+   "88b9bfad2be56733",
+   "89b9824e0cf5df57",
+   "89dd37f741ee1171",
+   "8abd144a930e715e",
+   "8c3bd229a6c9d2ad",
+   "920417a8acfb332d",
+   "9229cf52ca5d9a80",
+   "9515004f904a7d42",
+   "9846efcab2f48ae6",
+   "98550e12309621eb",
+   "9b4db7799e2c5aca",
+   "9bd3161d0badb91c",
+   "a01242f76d2c270e",
+   "a0757279eed12447",
+   "a49c80849231e804",
+   "a6e523e4a9798ade",
+   "a8962c74b426ef0f",
+   "aa7d054109e9c960",
+   "ace58bfebe4ba6f8",
+   "afc7ce35249211e9",
+   "b0f024ea517ef184",
+   "b1b05ef54380e88e",
+   "b1efd3872495741f",
+   "b2688e3a292c8b96",
+   "b3ccd78b5ba2aa8d",
+   "b444452d797dc585",
+   "b4a682b4e8687925",
+   "b657c46ecba44446",
+   "b9b1b37a07e25368",
+   "bb0edcbc99c1a5f9",
+   "bff30c8182f54d84",
+   "c569aa7e0b03ef40",
+   "c581ecad8a8dc960",
+   "cb6398d0393f157b",
+   "d28fc4bfe0fa9924",
+   "d4b9dc75e6d9f0f4",
+   "d73f383a2e2887c6",
+   "d92fb661ef66b4d2",
+   "df5c9b74ad8ca28d",
+   "dfaa49a4220d2b89",
+   "e2e5d7a800ca0980",
+   "e2e94892b244b15b",
+   "e79c08acc52fe195",
+   "e9a1ebd775db6589",
+   "f1d2286a07df5cf6",
+   "f21ade4ecc0a5b50",
+   "f493183f9a73dd75",
+   "f5adfaabdef05d5d",
+   "f7380a25ee1a703a",
+   "ff00bfac77585ef7"
+  ],
+  "48": [
+   "0aecd1d5d516846a",
+   "2abbcc8042a627eb",
+   "3cfab0b722ddc3dc",
+   "58c4556fcbaf79b9",
+   "67556a0806719df7",
+   "6c73aa21634defe6",
+   "7f7e761e4f0863da",
+   "8e83b83d6cb81258",
+   "9fc23ef01b4c174e",
+   "afef40c104099df5",
+   "d506315080fde56d",
+   "e7062446ab711234"
+  ]
+ }
+}

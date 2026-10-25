@@ -1,0 +1,303 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f39cc685b8c62296f8c96ff12c2e1df5457b6c34bd532c7564ae64b869f6c634",
+ "width": 96,
+ "height": 80,
+ "kind": "terrain",
+ "name": "broken old concrete pavement: irregular large pads with seams every two to three tiles, long cracks and missing chunks crossing tile borders, a seamless 4x4-tile field",
+ "label": "wasteland_ruins/slab-a",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 7,
+  "tileColorsP90": 10,
+  "darkV5": 80,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 30
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "concrete pavement field (pads, seams, cracks, missing chunks)",
+      "rows": "0-79",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 80,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The candidate is a seamless 96x80 flat ground texture filling the whole canvas. Dark seam lines run horizontally (rows 3, 18, 33, 50, 67) and vertically, forming irregular pads. Cracks and brownish chunk holes are scattered across the field. No standing volume is drawn: no front face, no eave line, no ellipse, and no side face. It is a flat terrain tile viewed top-down, as the terrain kind requires, so it has no front face by design."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 6,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate matches the paving reference on the primary facts: 7 visible tones per tile against 7, and 0% near-flat coverage like both references. Only 22% of its dark edge pixels are neutral, so the seams and cracks lean tinted (dark purple-grey and brown) rather than black. The reference paving is 80% neutral. The pads show about 6 lightness steps: highlight edge, light, mid, speckle, dark crack and deep seam. Texture is present throughout as grain speckle, rust-brown stains, hairline cracks and chipped pad corners. The seams carry a light bevel line. No area reaches 5x5 flat fill. Only 10 distinct colours in total is modest, but the visible density is at the reference level. Cracks cross tile borders and the pads repeat plausibly. The 4x3 board reads as a coherent ground patch, not a sticker.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 10990
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "concrete pavement field (flat ground texture with seams and cracks)",
+      "rows": "0-79",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The image is a seamless 4x4-tile ground field, 96 px wide for all 80 rows. It is a flat top-down texture: irregular pads separated by dark seams (rows 3, 18, 32-33, 67), cracks, and missing chunks. It has no front face, no eave shadow, and no standing volume. Because it is terrain, it should be a flat surface, so the lack of a front face is correct for the kind rather than a defect."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate has 7 visible tones per tile, the same as the paving reference and well above the grass reference's 3. Near-flat coverage is 0%, so there are no flat fills. The pads show a mottled light-to-dark grey-lavender ramp of about 5 steps, with speckle, hairline cracks and brown stain patches, and the pad edges are separated by value. Only 22% of the dark edge pixels are neutral, so the crack and seam lines lean toward a tinted dark tone of the concrete rather than a black sticker outline. The paving reference is 80% neutral, so the candidate is not worse there. The weakest point is that the pads repeat fairly regularly, with similar stains and crack shapes in each column. The grain is also finer and less varied than the reference's per-stone shading. Overall it holds up beside the reference without looking thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 12067
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "concrete pavement field (flat ground pads with seam lines and cracks)",
+      "rows": "0-79",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "This is a seamless 96x80 ground tile field, not a standing object. It is a flat top-down texture of mottled gray and brown concrete with dark seam lines, cracks and a few brown patches. No front face, eave, ellipse, or roof plane is drawn, and the dark seams are flat ground joints, not edge lines of raised volumes. The silhouette is a constant 96 px wide on every row, so it is a full rectangle with no profile. For terrain this flat top-down look is expected."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 6,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate has 7 visible tones per 16x16 tile, the same as the paving reference and well above the grass reference's 3. Near-flat coverage is 0%, and the pads show speckle grain, hairline cracks, missing chunks, and brownish stain patches, so no large area is a flat fill. The concrete ramp runs from highlight through light, mid and dark grey to a deep crack tone, about 6 steps. Only 22% of dark edge pixels are neutral, so the seams and cracks lean slightly tinted rather than pure black. This fits dark_material_tone better than the paving reference, which is 80% neutral. The seams separate pads by value and are not a uniform sticker outline. Total distinct colours is only 10, which is expected under a locked palette and does not lower the visible density. It would sit next to the references without looking thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 11246
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "concrete pavement field (flat ground, seams, cracks, chunks)",
+      "rows": "0-79",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The image is a seamless 96x80 ground tile field of speckled grey-brown concrete, filled edge to edge. Dark seam lines run horizontally (rows 3, 18, 33, 50, 59, 67) and vertically, with diagonal cracks and a few brown chunk holes. There is no standing object, no front face, no eave, no ellipse and no silhouette edge. The view is flat top-down, as expected for a terrain tile. It is a terrain texture, not a standing 3/4 object, so it reads as a flat slab."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The candidate has about 5 lightness steps on the concrete: light pad faces, mid grey-lilac, darker shadow edges along the seams and deep crack lines. Dots and speckle are scattered across the pads, and brown stain or chip patches break up the surface. The seams and cracks are dark but lean purple-brown, and only 22% of dark edge pixels are neutral, against 80% for the paving reference. Its 7 visible tones per tile match the paving reference's 7 and beat the grass reference's 3. Near-flat coverage is 0%, so there are no flat fills. Cracks and missing chunks cross the pad boundaries, and the seams sit every two to three tiles, as the brief asks. It would sit next to the paving reference without looking thinner or more sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 10588
+  }
+ ],
+ "decidedAt": "2026-10-22T17:03:47.825Z",
+ "cells": {
+  "16": [
+   "006124ef68a4ee7a",
+   "09dd6693f293f1de",
+   "1a0970a9fae8faef",
+   "2a30e6a3378d60da",
+   "56828d80c38535e4",
+   "6292b8f494b020e7",
+   "6d001c986051f51e",
+   "72d4a4106341394d",
+   "79d706af1e202015",
+   "baf740006670c4e8",
+   "c58e888fe2c710f0",
+   "dcc08c44eca7e4ac",
+   "dcd57d9b870b0a7e",
+   "e04b15d27dfcf847",
+   "f51b9abc98ebba25",
+   "f7473b6cd0b0fa84"
+  ],
+  "24": [
+   "109fd444943527a9",
+   "16004d9be57f2a82",
+   "1e9c7607eb0ec653",
+   "1f1c2a865034ccbd",
+   "2985da58180cd554",
+   "29a3d7abe47e8432",
+   "2d2249d8ccd156a0",
+   "334aebd604741aef",
+   "48d3f8ede7798119",
+   "48e565f5108e92b4",
+   "52627e51f8d97361",
+   "52fe18350e31c83a",
+   "5943cc870c5aa1b0",
+   "596fa9147a398373",
+   "6f0149f2151ae26b",
+   "7c504c7ce275cd64",
+   "7fbb78bf3e82b0c6",
+   "928302c971b2e2b9",
+   "932062f188888ba7",
+   "96cd0d5ac894afb3",
+   "9897a1b6e9250bf4",
+   "af817a5994063f7a",
+   "bc24772e1facb4b1",
+   "bdc64b1023cf84df",
+   "c6c7856987e0d546",
+   "cccbfae678f2a6e4",
+   "cfb5cc11229dca65",
+   "d545c87a60637654",
+   "d5e685ca11649e83",
+   "dcdc24d8d2a8f1e7",
+   "e0917d754037fdcf",
+   "f51dcc901ef0184e"
+  ],
+  "32": [
+   "0543b6c82fde3fb5",
+   "06eb6a0ba202e302",
+   "0be89edc7b0e98be",
+   "1d5ff9217b3bb187",
+   "25ec1748b1f3a408",
+   "2d8d06213c8d1685",
+   "45e573c69b4c4bf2",
+   "4b725e2aa9b1e9c6",
+   "6b1858da54759e08",
+   "791a341a2277d8ab",
+   "8928db71cccfcb2b",
+   "c63422448b62f48e"
+  ],
+  "48": [
+   "13a9a29b17601839",
+   "205c5118079c9d6a",
+   "3a96bee0b31919ef",
+   "4d9d4544bc2cb958",
+   "61c1e9a45015c879",
+   "81900cfea96c2cbb",
+   "a94a00c7a5750421",
+   "e54853f82f6d598a"
+  ]
+ }
+}

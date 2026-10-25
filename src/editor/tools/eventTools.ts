@@ -17,6 +17,7 @@ import { buildStoryFlagUsageIndex, usageBucketFor } from "@/project/storyFlagUsa
 import { ACTION_CONTROLS_GUIDE } from "@/player/keyBindings";
 import { EventPlacementAnalysis, eventRequiresPassableTile } from "@/project/eventPlacementRecovery";
 import { canMove, isPassable, tileAt } from "@/project/collision";
+import { unsafeSpawnLines } from "@/project/chaserSpawnSafety";
 import { isDoorArtCell } from "@/project/lint/scenePolishLint";
 import { normalizeLightingState } from "@/project/lightingRules";
 import { isWaterChipsetTile } from "@/project/defaults/chipsetMapping";
@@ -30,7 +31,8 @@ import { countLimitedRuntimeSupportCommandsForEvent } from "@/project/lint/proje
 import { genId } from "@/util/id";
 import { chestOpenCommands, chestOpenedGraphic, lootGrantCommands } from "@/editor/lootFeedback";
 import { buildMapPlacementContext } from "@/ai/mapPlacementContext";
-import type { Command, Condition, Dir, EventPage, EventPageCondition, EventPageGraphic, FaceGraphic, GameEvent, GameMap, GiftPrefs, GiftResponses, NpcScheduleEntry, NpcScheduleWhen, Project, SelfSwitchKey, ShopStockEntry, TransferFade, Trigger } from "@/project/types";
+import { laneCells } from "@/ai/v2/placementRules";
+import type { Command, Condition, Dir, EventPage, EventPageCondition, EventPageGraphic, FaceGraphic, GameEvent, GameMap, GiftPrefs, GiftResponses, MoveRoute, NpcScheduleEntry, NpcScheduleWhen, Project, SelfSwitchKey, ShopStockEntry, TransferFade, Trigger } from "@/project/types";
 import {
   canonicalizeSayBeatAliases,
   BEAT_KIND_INFERRED_WARNING,
@@ -61,7 +63,7 @@ import { inMapBounds, requireMap, type Point } from "./mapHelpers";
 import { SHARED_OBJECT_TOOLS, prepareSharedObject } from "./sharedObjectTools";
 import { ToolError, type SimplePage, type ToolDefinition, type ToolExecResult } from "./types";
 import { isFlushPassable, snapFlushToWall } from "./wallFlush";
-import { pageKeyFindings, pageKeyRejectMessage, pageKeyWarning } from "./eventPageKeys";
+import { movementKeyProblems, movementKeyRejectMessage, pageKeyFindings, pageKeyRejectMessage, pageKeyWarning } from "./eventPageKeys";
 import { CHANGE_TILE_USAGE, changeTileProblems, collectChangeTileCommands } from "@/project/changeTileValidation";
 import { withJosa } from "@/util/josa";
 import { assertDoorExitWidths, playerAnchors, reachableGateCandidates, transferGatesStayApproachable, transferTileSeversWalk, walkableFromAnchors } from "./transferReachability";
@@ -1197,6 +1199,11 @@ const upsertEvent: ToolDefinition = {
           { code: "invalid-args" },
         );
       }
+      // movement 의 모르는 키(movement.patrol·pursuit.patrol)는 저장돼도 실행기가 읽지 않는다 — 바뀐 movement 만 거절한다
+      // (그대로 돌려보낸 옛 페이지의 옛 키는 건드리지 않는다, J54).
+      const priorMovement = map.events.find((entry) => entry.id === patch.id)?.pages?.[index]?.movement;
+      const movementProblems = jsonEqual((page as { movement?: unknown }).movement, priorMovement) ? [] : movementKeyProblems((page as { movement?: unknown }).movement, `event.pages[${index}].movement`);
+      if (movementProblems.length) throw new ToolError(movementKeyRejectMessage(movementProblems), { code: "invalid-args" });
       const keyFindings = pageKeyFindings(page, `event.pages[${index}]`);
       if (keyFindings.reject.length > 0) throw new ToolError(pageKeyRejectMessage(keyFindings.reject), { code: "invalid-args" });
       if (keyFindings.warn.length > 0) warnings.push(pageKeyWarning(keyFindings.warn));
@@ -1353,7 +1360,7 @@ const placeNpc: ToolDefinition = {
     `${PLACE_NPC_OBJECT_GIMMICK_HINT} NPC 이벤트를 배치한다. 쓰기 전 find_events/get_event/get_story_state 로 기존 NPC·플래그를 읽고, 상태별 페이지(기본 + 조건이 다른 뒤 페이지)로 구성하라.  페이지는 조건이 서로 다른 상태 변형이어야 한다 — 한 줄 인사 한 페이지만 놓고 끝내지 말 것. graphic 은 query 로 외형을 고르고 생략하면 villager 기본. 물 위·통행 불가 칸 금지. 상점 NPC 는 make_villager({shop}) 1회 또는 이 툴 1회 — 같은 역할을 중복 배치하지 말 것. 순찰·시간표는 set_npc_schedule, 재고는 set_shop_stock.`
     + "한 줄 인사만 놓고 끝내지 마라. graphic은 {query} 또는 {textureKey,characterIndex}. query는 기존 별칭(villager|people|npc|human|사람|주민|actor|hero|animal|monster)과 자유 질의를 허용한다: 예 '할머니', 'old woman', '노인 남성'. "
     + "pages는 SimplePage로 EventPage로 컴파일된다. 페이지마다 name/graphic/conditions 를 줄 수 있다. 호감/선물은 characterId 를 명시. "
-    + "**대사가 있으면 charset에 대응하는 faceset changeFace를 자동 삽입**한다(page.face로 덮어쓰기 가능). page.conditions 단수 객체/null, page.commands 단수 객체, command→kind alias는 warning과 함께 정규화한다. 통행 불가/점유 칸이면 근처 통행 가능 칸으로 자동 착지한다. "
+    + "**대사가 있으면 charset에 대응하는 faceset changeFace를 자동 삽입**한다(page.face로 덮어쓰기 가능). page.conditions 단수 객체/null, page.commands 단수 객체, command→kind alias는 warning과 함께 정규화한다. 통행 불가/점유 칸이면 근처 통행 가능 칸으로 자동 착지한다. 사람은 차도·횡단보도·선로 한가운데 세우지 않는다 — 보도·가게 안·벤치 옆·카운터 뒤·문 앞에 세우고, 하나뿐인 출구 길목에는 세우거나 배회시키지 않는다(끝맺음 검사가 짚는다). "
     + "상점·여관 주인은 카운터 뒤 칸(카운터 윗면 칸)에 세워라: 카운터·탁자 칸은 카운터 속성(set_tile_rules counter, 손 도트 실내·버들항의 카운터/탁자/책상 칸은 기본으로 켜짐)이라 주인공이 카운터 앞에서 마주 보고 조사하면 너머 사람에게 말이 걸린다(연속 카운터 2칸까지). 카운터 앞 칸이 주인공이 설 수 있는 바닥인지 확인하라. "
     + "guide:'action-controls'는 예외: pages 없이 실제 키 계약의 조작 안내 한 페이지만 만든다. 맵마다 같은 안내를 재사용하며 재시도 시 기존 위치를 유지한다. 명시 id가 우선한다.",
   mode: "write",
@@ -2200,6 +2207,8 @@ function nearestPassableCell(
     return { bad: false, curb: false };
   };
   const totalWalkableEstimate = map.width * map.height > 25 ? 5 : 1;
+  // 차도·선로 칸(칩셋 이름표·태그) — 사람은 그 한가운데 서서 말하지 않는다(2026-10-25 사용자 규칙, 시타마치 판정).
+  const lanes = laneCells(project, map);
   const searchRadius = Math.max(maxRadius, 5);
   const candidates: Point[] = [];
   for (let radius = 0; radius <= searchRadius; radius += 1) {
@@ -2214,6 +2223,7 @@ function nearestPassableCell(
         if (!isPassable(project, map, cx, cy)) continue;
         if (componentSize(cx, cy) < totalWalkableEstimate) continue;
         if (isFurnitureOrRoadwayCell(cx, cy).bad) continue;
+        if (lanes.has(cy * map.width + cx)) continue;
         candidates.push({ x: cx, y: cy });
       }
     }
@@ -2275,7 +2285,17 @@ function transferEndpoint(
       && canMove(project, map, landing.x, landing.y, gate.x, gate.y)
       && canMove(project, map, gate.x, gate.y, landing.x, landing.y)) ?? null;
   };
-  const choices: Array<{ gate: Point; landing: Point; radius: number; flush: boolean; severs: boolean }> = [];
+  // 문·계단·길 그림이 아닌 물건(수정·이끼·버섯 덩이…) 위 출입구는 «물건을 밟으면 순간 이동»으로 읽힌다(2026-10-25 J25: 동굴 1층 입구가 발광 이끼 위).
+  const onProp = (x: number, y: number): boolean => {
+    const idx = y * map.width + x;
+    const tileset = project.tilesets[map.tilesetId];
+    return [map.upperTiles?.[idx], map.upperOverlayTiles?.[idx]].some((tile) => {
+      if (typeof tile !== "number" || tile < 0) return false;
+      const label = tileset?.tileMeta?.[tile]?.label ?? "";
+      return !!label && !/계단|사다리|문|입구|출구|통로|길|다리|발판|매트|깔개|그림자|stair|ladder|door|gate|exit|path|road|bridge|mat|rug|shadow/iu.test(label);
+    });
+  };
+  const choices: Array<{ gate: Point; landing: Point; radius: number; flush: boolean; severs: boolean; prop: boolean }> = [];
   for (let radius = snapBlocked ? 1 : 0; radius <= maxRadius; radius += 1) {
     const flushGates: Point[] = [];
     const innerGates: Point[] = [];
@@ -2297,6 +2317,7 @@ function transferEndpoint(
         radius,
         flush: isFlushGate(gate.x, gate.y),
         severs: transferTileSeversWalk(project, map, gate.x, gate.y),
+        prop: !fixed && onProp(gate.x, gate.y),
       });
     }
   }
@@ -2305,11 +2326,15 @@ function transferEndpoint(
   // 유일한 통로보다 막지 않는 칸을 먼저. 그 안에서는 예전처럼 가까운 칸, 그다음 벽에 붙은 칸.
   choices.sort((a, b) =>
     Number(a.severs) - Number(b.severs)
+    || Number(a.prop) - Number(b.prop)
     || a.radius - b.radius
     || Number(b.flush) - Number(a.flush)
     || a.gate.y - b.gate.y
     || a.gate.x - b.gate.x);
   const picked = choices[0]!;
+  if (notes && !picked.prop && (picked.gate.x !== origin.x || picked.gate.y !== origin.y) && onProp(origin.x, origin.y)) {
+    notes.push(`출입구 (${origin.x},${origin.y}) 는 물건 그림 위라 옆 빈 바닥 (${picked.gate.x},${picked.gate.y}) 에 두었습니다.`);
+  }
   if (notes && !picked.severs) {
     const blocked = choices.find((choice) => choice.severs && (
       choice.radius < picked.radius || (choice.radius === picked.radius && choice.flush && !picked.flush)
@@ -3123,6 +3148,134 @@ function placeHidingSpots(draft: Project, chaserMap: GameMap, raw: unknown, chas
   return { eventIds, warnings };
 }
 
+const PATROL_STEP: Record<Dir, readonly [number, number]> = { up: [0, -1], down: [0, 1], left: [-1, 0], right: [1, 0] };
+
+/** 순찰 한 걸음이 양방향으로 다닐 수 있는가(벽·지형). */
+function patrolStepOk(project: Project, map: GameMap, from: Point, to: Point): boolean {
+  return inMapBounds(map, to.x, to.y) && isPassable(project, map, to.x, to.y)
+    && canMove(project, map, from.x, from.y, to.x, to.y) && canMove(project, map, to.x, to.y, from.x, from.y);
+}
+
+/** 순찰 칸 위에 서 있는 다른 막는 이벤트(문·가구·NPC). */
+function patrolBlockers(map: GameMap, cells: readonly Point[], selfId: string): string[] {
+  const keys = new Set(cells.map((cell) => `${cell.x},${cell.y}`));
+  return map.events.filter((event) => event.id !== selfId && keys.has(`${event.x},${event.y}`)
+    && (event.pages ?? []).some((page) => page.priority === "same" && !page.graphic?.transparent)).map((event) => event.id);
+}
+
+/** 방향 목록으로 걸어 본 칸들. 막히면 null. */
+function walkPatrol(project: Project, map: GameMap, from: Point, dirs: readonly Dir[]): Point[] | null {
+  const cells = [{ ...from }];
+  let at = { ...from };
+  for (const dir of dirs) {
+    const next = { x: at.x + PATROL_STEP[dir][0], y: at.y + PATROL_STEP[dir][1] };
+    if (!patrolStepOk(project, map, at, next)) return null;
+    cells.push(next);
+    at = next;
+  }
+  return cells;
+}
+
+/** 'auto': 추격자 자리를 한 꼭짓점으로 하는 가장 큰 직사각 고리(가로·세로 2~6칸) — 둘레 칸이 모두 다닐 수 있어야 한다. 없으면 가장 긴 직선 왕복. */
+function autoPatrolDirs(project: Project, map: GameMap, from: Point, selfId: string): Dir[] | null {
+  let best: Dir[] | null = null;
+  for (let w = 6; w >= 2; w--) for (let h = 6; h >= 1; h--) {
+    for (const [hx, vy] of [["right", "down"], ["left", "down"], ["right", "up"], ["left", "up"]] as const) {
+      const back = { right: "left", left: "right", up: "down", down: "up" } as const;
+      const dirs: Dir[] = [...Array<Dir>(w).fill(hx), ...Array<Dir>(h).fill(vy), ...Array<Dir>(w).fill(back[hx]), ...Array<Dir>(h).fill(back[vy])];
+      const cells = walkPatrol(project, map, from, dirs);
+      if (cells && patrolBlockers(map, cells, selfId).length === 0 && (!best || dirs.length > best.length)) best = dirs;
+    }
+    if (best && best.length >= 2 * (w + h)) return best;
+  }
+  if (best) return best;
+  for (let length = 5; length >= 2; length--) for (const out of ["right", "left", "down", "up"] as const) {
+    const back = { right: "left", left: "right", up: "down", down: "up" } as const;
+    const dirs: Dir[] = [...Array<Dir>(length).fill(out), ...Array<Dir>(length).fill(back[out])];
+    const cells = walkPatrol(project, map, from, dirs);
+    if (cells && patrolBlockers(map, cells, selfId).length === 0) return dirs;
+  }
+  return null;
+}
+
+/** 들를 칸 목록을 사방 걸음으로 잇는다(칸 사이는 통행 칸 최단 길). 마지막에 출발 칸으로 돌아온다. */
+function waypointPatrolDirs(project: Project, map: GameMap, from: Point, waypoints: readonly Point[]): Dir[] {
+  const dirs: Dir[] = [];
+  let at = from;
+  for (const target of [...waypoints, from]) {
+    const path = shortestWalk(project, map, at, target);
+    if (!path) throw new ToolError(`순찰 칸 (${target.x}, ${target.y}) 로 걸어갈 길이 없습니다(${at.x}, ${at.y} 에서) — get_map_region 으로 통행 칸을 확인하세요.`, { code: "unsafe-patrol" });
+    dirs.push(...path);
+    at = target;
+  }
+  return dirs;
+}
+
+function shortestWalk(project: Project, map: GameMap, from: Point, to: Point): Dir[] | null {
+  if (from.x === to.x && from.y === to.y) return [];
+  const prev = new Map<string, { key: string; dir: Dir }>();
+  const startKey = `${from.x},${from.y}`;
+  const seen = new Set([startKey]);
+  let frontier = [from];
+  for (let depth = 0; depth < 200 && frontier.length; depth++) {
+    const next: Point[] = [];
+    for (const cell of frontier) for (const dir of ["up", "down", "left", "right"] as const) {
+      const step = { x: cell.x + PATROL_STEP[dir][0], y: cell.y + PATROL_STEP[dir][1] };
+      const key = `${step.x},${step.y}`;
+      if (seen.has(key) || !patrolStepOk(project, map, cell, step)) continue;
+      seen.add(key);
+      prev.set(key, { key: `${cell.x},${cell.y}`, dir });
+      if (step.x === to.x && step.y === to.y) {
+        const out: Dir[] = [];
+        for (let k = key; k !== startKey;) { const p = prev.get(k)!; out.unshift(p.dir); k = p.key; }
+        return out;
+      }
+      next.push(step);
+    }
+    frontier = next;
+  }
+  return null;
+}
+
+/**
+ * make_chase_scene 의 patrol → movement.route. 런타임 추격 무버(strategy chase)는 route 가 있으면 시야 밖에서 그 경로를 돌고,
+ * 시야에 들면 쫓고, 놓치면 집 칸으로 돌아와 경로 처음부터 다시 돈다 — 이동 하나로(J54: 추격자가 제자리에 서 있었고,
+ * 조수가 moveEvent 를 따로 돌려 두 이동이 서로 덮으며 덜덜 떨었다).
+ */
+function chaserPatrolRoute(project: Project, map: GameMap, from: Point, raw: unknown, selfId: string): { route: MoveRoute; cells: Point[] } | undefined {
+  let dirs: Dir[] | null;
+  if (raw === "auto" || raw === true || (raw && typeof raw === "object" && (raw as { mode?: unknown }).mode === "auto" && !(raw as { waypoints?: unknown }).waypoints && !(raw as { directions?: unknown }).directions)) {
+    dirs = autoPatrolDirs(project, map, from, selfId);
+    // 둘레가 막혔으면 추격자는 그대로 짓고 순찰만 뺀다 — 호출하는 쪽이 경고로 알린다.
+    if (!dirs) return undefined;
+  } else if (raw && typeof raw === "object" && !Array.isArray(raw)) {
+    const spec = raw as { waypoints?: unknown; directions?: unknown };
+    if (Array.isArray(spec.waypoints) && spec.waypoints.length > 0) {
+      dirs = waypointPatrolDirs(project, map, from, spec.waypoints.map((point, index) => pointFromRecord(point, `patrol.waypoints[${index}]`)));
+    } else if (Array.isArray(spec.directions) && spec.directions.length >= 2) {
+      if (!spec.directions.every((dir) => typeof dir === "string" && dir in PATROL_STEP)) throw new ToolError("patrol.directions 는 up|down|left|right 목록입니다.", { code: "invalid-args" });
+      dirs = spec.directions as Dir[];
+    } else throw new ToolError("patrol 은 {mode:'auto'}, {waypoints:[{x,y}...]}, {directions:[...]} 중 하나입니다.", { code: "invalid-args" });
+  } else throw new ToolError("patrol 은 {mode:'auto'}, {waypoints:[{x,y}...]}, {directions:[...]} 중 하나입니다.", { code: "invalid-args" });
+  if (dirs.length > 120) throw new ToolError(`순찰 경로가 너무 깁니다(${dirs.length}걸음) — 들를 칸을 줄이세요(120걸음까지).`, { code: "unsafe-patrol" });
+  const cells = walkPatrol(project, map, from, dirs);
+  if (!cells) throw new ToolError("순찰 경로가 벽·지형을 가로지릅니다 — get_map_region 으로 통행 칸을 확인하세요.", { code: "unsafe-patrol" });
+  const end = cells[cells.length - 1]!;
+  if (end.x !== from.x || end.y !== from.y) throw new ToolError("순찰은 출발 칸(추격자 자리)으로 돌아오는 닫힌 경로여야 합니다.", { code: "unsafe-patrol" });
+  const blockers = patrolBlockers(map, cells, selfId);
+  if (blockers.length) throw new ToolError(`순찰 경로가 다른 이벤트 칸을 지나갑니다: ${blockers.slice(0, 4).join(", ")} — 다른 칸으로 돌게 하세요.`, { code: "unsafe-patrol" });
+  // 걸음마다 한 박자 쉰다 — 추격과 같은 결정 간격이라 안 쉬면 순찰이 추격만큼 빠르다(place_field_enemy 와 같은 모양).
+  return { route: { repeat: true, skippable: false, moves: dirs.flatMap((dir) => [{ kind: "move" as const, dir }, { kind: "wait" as const }]) }, cells };
+}
+
+/** 이 맵의 시작 위치·체크포인트가 추격자 시야 안이면 경고한다(J61). 스위치로 깨우는 추격자는 시작에 없으니 시작 위치는 빼고 본다. */
+function chaserSpawnWarnings(project: Project, mapId: string, chaserId: string, activateSwitch: string | undefined): string[] {
+  void activateSwitch; // 스위치로 깨우는 추격자는 unsafeSpawnLines 가 시작 칸에서 뺀다.
+  return unsafeSpawnLines(project, mapId)
+    .filter((entry) => entry.eventId === chaserId)
+    .map((entry) => `${entry.line}. 추격자를 시야 밖(벽 너머·다른 방)에 두거나 set_start_position 으로 시작을 옮기거나, 체크포인트를 추격 구역 앞(문 밖)으로 옮기세요.`);
+}
+
 const makeChaseScene: ToolDefinition = {
   name: "make_chase_scene",
   description:
@@ -3147,6 +3300,15 @@ const makeChaseScene: ToolDefinition = {
         required: ["at"],
       },
       pursuit: PURSUIT_SCHEMA,
+      patrol: {
+        description: "시야 밖에서 걷는 순찰. {mode:'auto'} = 추격자 자리 둘레를 도는 닫힌 고리(방 크기에 맞춰), 또는 {waypoints:[{x,y}...]} 들를 칸 목록(출발 칸으로 돌아온다), 또는 {directions:[up|down|left|right...]} 출발 칸으로 돌아오는 닫힌 경로. 시야에 들면 쫓고, 놓치면 수색 뒤 순찰 자리로 돌아와 다시 순찰한다(추격자 하나, 이동 하나). 생략하면 제자리에서 기다린다.",
+        type: "object",
+        properties: {
+          mode: { type: "string", enum: ["auto"], description: "'auto' 면 둘레 고리를 스스로 찾는다" },
+          waypoints: { type: "array", items: COORD_SCHEMA },
+          directions: { type: "array", items: { type: "string", enum: ["up", "down", "left", "right"] } },
+        },
+      },
       killOnTouch: { type: "boolean" },
       safeZone: { ...RECT_SCHEMA, description: "{x,y,w,h} 안전 지대 — 이 안의 주인공은 절대 잡히지 않는다. 세이브 방·계단참 같은 몇 칸짜리 구역만. 추격 통로를 덮지 말 것" },
       activateSwitch: { type: "string" },
@@ -3206,6 +3368,7 @@ const makeChaseScene: ToolDefinition = {
     const pursuit = parsedPursuit && activateSwitch && parsedPursuit.tracking === undefined
       ? { ...parsedPursuit, tracking: "persistent" as const } : parsedPursuit;
     const commands: Command[] = args.killOnTouch === true ? [{ kind: "killPlayer", message: "붙잡혔다." }] : [];
+    const patrolRoute = args.patrol === undefined ? undefined : chaserPatrolRoute(draft, map, { x: placement.x, y: placement.y }, args.patrol, id);
     const event: GameEvent = {
       id,
       x: placement.x,
@@ -3228,7 +3391,10 @@ const makeChaseScene: ToolDefinition = {
             frequency: CHASER_FREQUENCY,
             ...(chaser.sightRange !== undefined ? { sightRange: Math.max(0, Math.trunc(chaser.sightRange)) } : {}),
             pathfind: true,
-            ...(pursuit ? { pursuit } : {}),
+            // 순찰이 있으면 놓친 뒤 집 칸(순찰 출발 칸)으로 돌아와 다시 돈다 — 정책을 안 정했으면 return 으로 둔다.
+            ...(pursuit ? { pursuit: patrolRoute && pursuit.onLost !== "return" && parsedPursuit?.onLost === undefined ? { ...pursuit, onLost: "return" as const } : pursuit }
+              : patrolRoute ? { pursuit: { scope: "map" as const, doorDelayMs: 0, searchMs: 3000, onLost: "return" as const } } : {}),
+            ...(patrolRoute ? { route: patrolRoute.route } : {}),
           },
           commands,
         },
@@ -3257,10 +3423,12 @@ const makeChaseScene: ToolDefinition = {
       ...(placement.adjusted ? [placementAdjustedWarning("추격자", chaser.at, placement)] : []),
       ...(ratio < 0.5 ? [`추격자 속도 ${speed} 은 한 칸 ${paceMs}ms — 주인공 걷기(${PLAYER_WALK_STEP_MS}ms/칸)의 ${Math.round(ratio * 100)}% 라 걸어서도 쉽게 따돌립니다. 긴장감 있는 추격은 speed 6(걷기의 2/3), 같은 속도는 7.`] : []),
       ...hiding.warnings,
+      ...(args.patrol !== undefined && !patrolRoute ? [`추격자 자리 (${placement.x}, ${placement.y}) 둘레에 돌 수 있는 통로가 없어 순찰 없이 제자리에서 기다립니다 — patrol.waypoints 로 들를 칸을 주거나, 넓은 복도에 두거나, configure_npc_patrol{directions} 로 길을 직접 주세요.`] : []),
+      ...chaserSpawnWarnings(draft, map.id, id, activateSwitch),
     ];
     return {
-      summary: `${map.name}에 추격자 '${id}' 생성 (${placement.x}, ${placement.y}) — 한 칸 ${paceMs}ms(걷기의 ${Math.round(ratio * 100)}%)${placement.adjusted ? ` — 요청 좌표 (${chaser.at.x}, ${chaser.at.y})에서 자동 조정` : ""}${safeZone ? " — 안전지대 추가" : ""}${hiding.eventIds.length ? ` — 은신처 ${hiding.eventIds.length}곳` : ""}${darkened ? " — 맵을 어둡게(ambient 0.5, 밝기는 set_lighting·set_scene_mood 로 조절)" : ""}${checkpointEventId ? ` — 진입 체크포인트 ${checkpointEventId}` : ""}`,
-      data: { eventId: id, safeZone, activateSwitch, checkpointEventId, hidingEventIds: hiding.eventIds, stepMs: paceMs, x: placement.x, y: placement.y, adjusted: placement.adjusted },
+      summary: `${map.name}에 추격자 '${id}' 생성 (${placement.x}, ${placement.y}) — 한 칸 ${paceMs}ms(걷기의 ${Math.round(ratio * 100)}%)${patrolRoute ? ` — 순찰 ${patrolRoute.cells.length - 1}걸음 고리(시야 밖에서 돌고, 보면 쫓고, 놓치면 돌아와 다시 순찰)` : " — 순찰 없음(시야에 들 때까지 제자리, patrol:{mode:'auto'} 로 순찰)"}${placement.adjusted ? ` — 요청 좌표 (${chaser.at.x}, ${chaser.at.y})에서 자동 조정` : ""}${safeZone ? " — 안전지대 추가" : ""}${hiding.eventIds.length ? ` — 은신처 ${hiding.eventIds.length}곳` : ""}${darkened ? " — 맵을 어둡게(ambient 0.5, 밝기는 set_lighting·set_scene_mood 로 조절)" : ""}${checkpointEventId ? ` — 진입 체크포인트 ${checkpointEventId}` : ""}`,
+      data: { eventId: id, safeZone, activateSwitch, checkpointEventId, hidingEventIds: hiding.eventIds, stepMs: paceMs, x: placement.x, y: placement.y, adjusted: placement.adjusted, ...(patrolRoute ? { patrolCells: patrolRoute.cells } : {}) },
       ...(warnings.length > 0 ? { warnings } : {}),
     };
   },
@@ -4182,7 +4350,8 @@ const scriptCutscene: ToolDefinition = {
     "camera{mode:'pan|follow|fixed|return',target|x,y,durationMs,wait,zoom}, " +
     "picture{action:'show|move|erase',pictureId,resourceId,x,y,scale,opacity,durationMs,easing,blendMode,wait}(easing:'easeOut' 이면 멈출 때 부드럽다, blendMode:'add' 면 빛기둥·유령처럼 밝게 겹친다), music{action:'bgm|se|bgs|fade|stop',resourceId}(bgs=음악 밑에 깔리는 반복 환경음), fade{direction:'in|out',durationMs,wait}, tint{color|value(sepia·#rrggbb·'r,g,b,알파'),durationMs,wait}, background{flowPercent,imageId?,durationMs,wait}(먼 배경 흐름 — 회상 진입에 flowPercent:0 으로 구름이 서서히 멈춘다. 배경 자체는 set_map_properties.background.preset), distort{effect:'wave|mosaic|rotate|clear',amount?,durationMs,wait}(화면 그림 자체를 비튼다 — 수중·꿈은 wave, 장면 전환은 mosaic(전환에만 — 켠 채 대사를 잇지 말고 곧 clear), 시간 왜곡은 rotate. 컷신 뒤에도 남으니 끝낼 때 clear), flash{color,durationMs}, shake{intensity:1|3|6|10,durationMs,axis:'both|horizontal|vertical'}(지진·쿵은 vertical, 부딪힘은 horizontal), " +
     "letterbox{show,size?,durationMs}(영화식 위아래 검은 띠 — 중요한 장면 시작에 넣는다. 컷신 끝에 자동으로 걷힘, 남기려면 keep:true), " +
-    "particles{preset:'sparkle|magic|heal|fire|smoke|dust|explosion|splash',target:'player'|이벤트 id|생략+x,y,durationMs,wait}(한 인물·한 칸에서 터지는 효과 — 보물=sparkle, 주문=magic, 회복=heal, 사라짐=smoke, 착지=dust, 폭발=explosion), " +
+    "freeze{show?,style?:'warm|mono|sepia|cool|none',durationMs?}(만화식 정지 화면 — 부딪힘·첫 만남·결정적 순간에 지금 화면을 하얗게 번쩍 멈춘 한 장으로 세운다. 대사는 그 위에. 컷신 끝에 자동으로 풀림, show:false 로 직접 풀기), " +
+    "particles{preset:'sparkle|magic|heal|fire|smoke|dust|explosion|splash|paper|petals',target:'player'|이벤트 id|생략+x,y,durationMs,wait}(한 인물·한 칸에서 터지는 효과 — 보물=sparkle, 주문=magic, 회복=heal, 사라짐=smoke, 착지=dust, 폭발=explosion, 부딪혀 서류가 흩날림=paper, 벚꽃 꽃잎=petals), " +
     "look{target,pose:'normal|fallen|fallenLeft|crouch|float',tint:'red|blue|green|yellow|purple|gray|black|white|none|#rrggbb',tintFill,flip,angle,afterimage,alpha,reset}(인물 모습 — 기절·잠=fallen, 숨기=crouch, 유령=float+alpha 0.6, 독=tint green, 실루엣=tint black+tintFill, 빠른 이동 잔상=afterimage. 컷신 뒤에도 남으니 되돌릴 땐 {reset:true}), " +
     "emote{target,emote:'exclamation|question|heart|heartBroken|smile|music|sweat|anger|ellipsis|sleep|sparkle|idea',durationMs,wait}(머리 위 감정 말풍선 — 놀람=exclamation), weather{weather:'none|rain|storm|snow|fog',intensity:0~1,durationMs}, " +
     "wait{ms}, parallel{beats}(동시에 — 예: 폭발 particles 와 shake 와 flash 를 한 번에), label, jump. 연출 조합 레시피는 read_directing_guide. " +
@@ -4371,6 +4540,8 @@ const patchEventPage: ToolDefinition = {
       throw new ToolError("set 에 바꿀 페이지 필드를 하나 이상 넣으세요.", { code: "invalid-args" });
     }
     const { id: _ignoredId, ...fields } = set as Record<string, unknown>;
+    const setMovementProblems = movementKeyProblems(fields.movement, "set.movement");
+    if (setMovementProblems.length) throw new ToolError(movementKeyRejectMessage(setMovementProblems), { code: "invalid-args" });
     const setKeyFindings = pageKeyFindings(fields, "set");
     if (setKeyFindings.reject.length > 0) throw new ToolError(pageKeyRejectMessage(setKeyFindings.reject), { code: "invalid-args" });
     if (setKeyFindings.warn.length > 0) throw new ToolError(`set 에 알 수 없는 페이지 키가 있다: ${setKeyFindings.warn.join(", ")}. ${pageKeyWarning(setKeyFindings.warn.map((key) => key.replace(/^set\./u, "")))}`, { code: "invalid-args" });

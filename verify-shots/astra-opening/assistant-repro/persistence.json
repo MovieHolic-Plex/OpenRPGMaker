@@ -1,0 +1,13 @@
+{
+  "projectId": "751f21fc-7d35-466b-b30c-f0287f16c5e1",
+  "projectDir": "/home/main/z-project/rpg-zzu-astra-opening/qa-runs/harnesses/assistant-capability/2026-10-25-astra-opening-r3/title-screen-runners-press-start/project",
+  "beforeRevision": 3,
+  "afterRevision": 4,
+  "reloadedRevision": 4,
+  "afterSha256": "92cae5cd5b213af1b9ba76c7f67725696ea4300571034d5d082ee2fa5b91b662",
+  "reloadedSha256": "92cae5cd5b213af1b9ba76c7f67725696ea4300571034d5d082ee2fa5b91b662",
+  "sameProject": true,
+  "sameStoredDocument": true,
+  "rendererLoadObserved": true,
+  "rendererMapsAndDatabaseEqual": true
+}

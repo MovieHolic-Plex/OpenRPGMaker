@@ -1,0 +1,350 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d4ae04151d43735ac67e8cd2a057872d1f38ff55817e0a961f75a6c532db30ef",
+ "width": 48,
+ "height": 32,
+ "kind": "other",
+ "name": "burnt-out car wreck lying east-west seen from above: charred roof and hood, empty window frames, scorched rusty body on flat tyres",
+ "label": "wasteland_ruins/car-burnt",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "refer",
+ "reasons": [
+  "3/4: 독립 눈이 「3/4 아님」 2/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면"
+ ],
+ "view34": {
+  "verdict": "refer",
+  "reasons": [
+   "독립 눈이 「3/4 아님」 2/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 15,
+  "tileColorsP90": 17,
+  "darkV5": 47,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 4
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "borderline",
+   "wrong",
+   "right",
+   "borderline",
+   "borderline",
+   "right",
+   "right",
+   "wrong",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cabin roof",
+      "rows": "4-14",
+      "evidence": "a",
+      "front_edge_line_row": 15,
+      "eave_shadow_rows": "15-17"
+     },
+     {
+      "part": "hood and trunk top",
+      "rows": "9-18",
+      "evidence": "a",
+      "front_edge_line_row": 19,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "body side with doors",
+      "rows": "19-23",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": "23-24"
+     },
+     {
+      "part": "tyres",
+      "rows": "24-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 10,
+    "front_face_rows": 10,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The hood and trunk are drawn as a 10-row textured charred band (rows 9-18) ending in a light red front-edge line at rows 18-19. The cabin roof sits above it as a gray top plane (rows 4-14) with a dark window strip at rows 15-17. Below the line is the body side with door seams (rows 19-23), a dark shadow at rows 23-24, then flat tyres (rows 24-28). That gives a top surface and a front face of 3 or more rows, so it reads as three-quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a wide east-west car wreck with a charred grey roof block, rust-brown body panels and dark tyres. It shows about 5 lightness steps across the rust body and roof, with per-panel highlights and scorch dots. Measured facts: 15 visible tones per tile against 17 for the cheese stall and 20 for the roofed well, and 0% near-flat coverage, so there are no flat fills. Only 17% of its dark edge pixels are neutral, so the outlines lean brown/rust like the neighbouring material, as in the Beodeul hedge and stall. Total distinct colours (19) are lower than the stall (40) and well (38) because the locked palette is smaller, but the visible tone count is close to theirs. Texture is somewhat less rich than the well, but a careful artist would accept it next to the references without it looking like a flat sticker.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18014
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cabin roof (charred, grey)",
+      "rows": "4-14",
+      "evidence": "a",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "hood and trunk top (charred brown)",
+      "rows": "9-18",
+      "evidence": "a",
+      "front_edge_line_row": 18,
+      "eave_shadow_rows": "20-22"
+     },
+     {
+      "part": "flat tyres",
+      "rows": "24-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 10,
+    "front_face_rows": 10,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette widens from 10 px at row 4 to 48 px by row 11, so the cabin roof sits on a wide body. Rows 9-18 form a top band across the hood, trunk and roof. It ends in a lighter reddish edge line at rows 18-19 (x=24, #8b4f3f), followed by darker rows 20-22. Below that, the body side with door panels runs through row 23, and the flat tyres and underbody fill rows 24-28. That gives a top surface of about 10 rows over a front face of about 10 rows. The car lies east-west and shows its side as the south face, which is normal. No isometric receding side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "Measured facts favour the candidate. It shows 15 visible tones per 16x16 tile, against 9 for the hedge, 17 for the cheese stall and 20 for the roofed well. Near-flat coverage is 0%, so there are no 5x5 flat fills. Only 17% of its dark edge pixels are neutral, so the outline leans toward dark brown and rust beside the body and is not a uniform black sticker line. By eye, the grey charred roof, the rusty hood and body and the dark tyres each carry about 4-5 value steps. The window frames and body panels are separated by value, not by a heavy outline, and there is speckled rust and scorch grain. It is a little less intricate than the stall and well, with only 19 total colours against 38-40, but it matches the hedge and bench-level craft. A careful artist would accept it next to the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16663
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "east",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "charred roof/cabin",
+      "rows": "4-14",
+      "evidence": "a",
+      "front_edge_line_row": 15,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "hood and trunk deck (flanks)",
+      "rows": "9-18",
+      "evidence": "a",
+      "front_edge_line_row": 19,
+      "eave_shadow_rows": "20-22"
+     },
+     {
+      "part": "flat tyres",
+      "rows": "24-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 10,
+    "front_face_rows": 9,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The widest body (48 px) runs from row 9 to row 22. Rows 9-18 form a top deck with the hood and trunk, and the cabin roof rises above it over rows 4-14. A lighter, reddish edge line at rows 18-19 (#7b5d48 / #8b4f3f) ends the top. Below it is a rusty side face of about rows 19-23, with dark shadow at rows 23-24. The tyres, rows 24-28, sit under the body and are narrower. A top surface of about 10 rows plus a front face of 5+ rows reads as three-quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate shows 15 visible tones per 16x16 tile, close to the stall (17) and well (20) and well above the bench and lamp, which are too thin to measure. Near-flat coverage is 0%, so there are no flat fills. Only 17% of its dark edge pixels are neutral, so the outline leans toward dark rust-brown beside the body panels rather than a uniform black sticker line. By eye, the body has a lighter rust ridge along the top, a charred grey-brown roof panel with a window recess, and darker wheel and underside shapes, giving about 5 value steps. The texture is moderate: some speckle and scorch variation, but fewer clumps and per-element highlights than the well or stall. It is slightly less rich than the best references but would sit acceptably beside them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16356
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "east",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cabin roof (charred, window frames)",
+      "rows": "4-18",
+      "evidence": "a",
+      "front_edge_line_row": 18,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "hood and trunk deck (left and right of cabin)",
+      "rows": "9-18",
+      "evidence": "a",
+      "front_edge_line_row": 18,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "body side panel (south face)",
+      "rows": "19-23",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": "23-24"
+     },
+     {
+      "part": "flat tyres",
+      "rows": "24-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 10,
+    "front_face_rows": 10,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The roof/cabin (rows 4-18, widening from 10 to 48 px) and the hood and trunk decks (rows 9-18) form a large top surface about 10 rows tall. A lighter reddish edge line at rows 18-19 (x=24 #8b4f3f) ends the top band. Below it is a scorched body side of about 5 rows (19-23), then dark shadow at rows 23-24 and tyres at rows 25-28, for a front face of about 10 rows with the tyres. The roof and hood read as horizontal planes seen from above, not as a flat vertical elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate has 15 visible tones per full tile. That is above the hedge (9) and close to the cheese stall (17) and roofed well (20). Near-flat coverage is 0%, so there are no 5x5 flat fills. Only 17% of dark edge pixels are neutral, so the outline leans toward dark rust brown and charred tone rather than a uniform black sticker line. The picture shows a rusty brown body ramp, a charred grey-brown roof and hood with darker window openings, and tyres separated by value. That gives roughly 4-5 steps per material, slightly shallower than Beodeul's 5-6. Its total of 19 distinct colours is low, but the visible tones per tile match the references, so I do not count that against it. The weak spots are modest per-element texture (no grain or speckle as rich as the stall or well) and a small footprint. Overall it would sit acceptably next to the references without looking flat or sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18297
+  }
+ ],
+ "decidedAt": "2026-10-22T16:17:40.903Z",
+ "cells": {
+  "16": [
+   "15a6b2d4a298d00d",
+   "176ff7c6a02c931b",
+   "3639ccca35c60c74",
+   "671cc8c17126d661",
+   "c7a9d9844d62f22f",
+   "dad2dd83297b42f5"
+  ],
+  "24": [
+   "0870b1678321e55f",
+   "63a695cf9db0c87b",
+   "70186909f3179a8e",
+   "8445921de188edd2",
+   "90427fbd54285171",
+   "912c00efd8906ab0",
+   "92c72cc5dc964287",
+   "cfcae2afc7d6299b"
+  ],
+  "32": [
+   "1ed4d0ce7307875e",
+   "2ee16d3773ae9378",
+   "2f988c78ed7e95be",
+   "3cfda6221eafeb75",
+   "9c9d8db7c84f59df",
+   "d0dd530318396754"
+  ],
+  "48": [
+   "3e3b84ef3253a980",
+   "5dc99d7e20cd7b5c"
+  ]
+ }
+}

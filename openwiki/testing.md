@@ -50,6 +50,22 @@
 `.omo/gates-vitest-report.json` 에서 **오래 걸린 파일 상위**를 뽑아 `/usr/bin/time -v` 로 단독 실행해
 피크 RSS 를 재는 쪽이 빠르다(이번에도 그렇게 찾았다).
 
+## PR 판정 = ci-fast(pull_request), 머지 = scripts/merge-pr.mjs, ci-full = 4시간 cron (2026-10-25)
+
+- ci-fast 는 `push`(main·release) 와 `pull_request`(→ main) 에 돈다. 전에는 push 뿐이라 PR 에 체크가 없었다.
+- 머지는 `node scripts/merge-pr.mjs <번호>` 로만 한다. 머리 커밋의 `fast` 체크가 초록이어야 `--match-head-commit` 으로 머지한다.
+- ci-full 은 main 푸시마다가 아니라 `17 */4 * * *` cron 이다. 푸시마다 걸면 한 판(약 4시간) 동안 대기 자리를 새 푸시가
+  계속 빼앗아 60판 중 51판이 cancelled 였다. 판정 논리(기준선 대비 회귀만 실패)는 그대로다.
+- 브랜치 보호(필수 체크 `fast`)는 저장소 설정이라 소유자가 켠다. 켜기 전에는 도우미 규칙이 유일한 방어다.
+
+## 그림 블라인드 검수의 Argon 은 `scripts/qa/argon-vqa.py` 로 (2026-10-25)
+
+Claude Code 의 `argon` 서브에이전트(`~/.claude/agents/argon.md`)는 **그림을 보지 못한다** — 그 판정은 눈 감은 판정이라 근거로 쓰지 않는다.
+그림 판정(적대 VQA·바닥/벽 블라인드 검수)은 `python3 scripts/qa/argon-vqa.py <out.txt> <prompt.txt> <img...>` 로 한다.
+로컬 프록시(기본 `http://127.0.0.1:8318`, `ARGON_VQA_BASE`)에 `gemini-4-argon-high`(`ARGON_VQA_MODEL`)로 그림을 data URI 로 직접 넣고,
+답을 고치지 않고 `<out.txt>` 에 쓴다(첫 줄 = 모델·그림 경로). 키는 이 박스의 `ANTHROPIC_AUTH_TOKEN` 을 읽기만 하고 출력·기록하지 않는다.
+`/tmp` 사본은 쓰지 않는다 — 이 박스의 `/tmp` 작업 폴더는 통째로 사라진 적이 있다.
+
 ## main 의 ci-fast 는 다음 머지가 진행 중 잡을 끊지 않는다 (2026-09-26)
 
 `concurrency.cancel-in-progress` 가 main 에서도 true 이면, 머지가 잡보다 빠를 때 앞선 main 실행이
@@ -984,6 +1000,8 @@ PR678의 고정 리비전별 원본·영수증·검사기는 `output/evidence/mo
   필드 사용이 거절되는 것이 현재 아이템 종류 계약에 맞다.
 
 # Testing
+
+> **2026-10-25 hard rule:** 테스트 러너(vitest·bun test·playwright test·gates)는 GitHub CI 에서만 돈다. 로컬에서는 `scripts/lib/ciOnlyTests.mjs` 가 막는다. 아래 명령 표는 CI 가 무엇을 돌리는지 설명하는 참고이고, 로컬 실행 지시가 아니다. AGENTS.md 「테스트는 GitHub CI 에서만」.
 
 ## Completed-house Phase 2 verification (2026-09-06)
 

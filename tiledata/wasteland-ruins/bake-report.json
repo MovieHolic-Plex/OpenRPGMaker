@@ -1,0 +1,238 @@
+{
+ "definition": {
+  "violations": 0,
+  "by_code": {},
+  "examples": {},
+  "tiles_checked": 2568,
+  "kits_checked": 70,
+  "groups_checked": 27,
+  "autotiles_checked": 1
+ },
+ "reassembly": {
+  "kits": 70,
+  "mismatched": 0,
+  "ids": []
+ },
+ "palette": {
+  "cells_off_palette": 0
+ },
+ "tiles": {
+  "count": 2568,
+  "rows": 54,
+  "kits": 70,
+  "groups": 27,
+  "autotiles": 1,
+  "animationStrips": 1
+ },
+ "animation_noncontiguous": [],
+ "adopted": {
+  "pieces": 71,
+  "by_group": {
+   "ground": 24,
+   "ruins": 10,
+   "shacks": 11,
+   "defense": 3,
+   "props": 23
+  }
+ },
+ "dev_only_adopted": [],
+ "mode": "bundle",
+ "rejected": [
+  {
+   "id": "dirt-a",
+   "status": "skipped",
+   "why": "감독 결정으로 키트에서 뺌"
+  },
+  {
+   "id": "dirt-b64",
+   "status": "skipped",
+   "why": "감독 결정으로 키트에서 뺌"
+  },
+  {
+   "id": "dirt-c64",
+   "status": "skipped",
+   "why": "감독 결정으로 키트에서 뺌"
+  },
+  {
+   "id": "dirt-d64",
+   "status": "skipped",
+   "why": "감독 결정으로 키트에서 뺌"
+  },
+  {
+   "id": "dirt-b45",
+   "status": "skipped",
+   "why": "감독 결정으로 키트에서 뺌"
+  },
+  {
+   "id": "asphalt",
+   "status": "pass",
+   "why": "판정 프로필 4d8774b517f41638 가 보정되지 않았다 — AI 판정(pass)은 조언일 뿐이다. Opus 최종 판정(object-gate final-review)을 받아라"
+  },
+  {
+   "id": "asphalt-in-ne",
+   "status": "skipped",
+   "why": "감독 결정으로 키트에서 뺌"
+  },
+  {
+   "id": "asphalt-in-nw",
+   "status": "skipped",
+   "why": "감독 결정으로 키트에서 뺌"
+  },
+  {
+   "id": "asphalt-in-se",
+   "status": "skipped",
+   "why": "감독 결정으로 키트에서 뺌"
+  },
+  {
+   "id": "asphalt-in-sw",
+   "status": "skipped",
+   "why": "감독 결정으로 키트에서 뺌"
+  },
+  {
+   "id": "asphalt-in-ne-nw",
+   "status": "skipped",
+   "why": "감독 결정으로 키트에서 뺌"
+  },
+  {
+   "id": "asphalt-in-ne-se",
+   "status": "skipped",
+   "why": "감독 결정으로 키트에서 뺌"
+  },
+  {
+   "id": "asphalt-in-ne-sw",
+   "status": "skipped",
+   "why": "감독 결정으로 키트에서 뺌"
+  },
+  {
+   "id": "asphalt-in-nw-se",
+   "status": "skipped",
+   "why": "감독 결정으로 키트에서 뺌"
+  },
+  {
+   "id": "asphalt-in-nw-sw",
+   "status": "skipped",
+   "why": "감독 결정으로 키트에서 뺌"
+  },
+  {
+   "id": "asphalt-in-se-sw",
+   "status": "skipped",
+   "why": "감독 결정으로 키트에서 뺌"
+  },
+  {
+   "id": "asphalt-in-ne-nw-se",
+   "status": "skipped",
+   "why": "감독 결정으로 키트에서 뺌"
+  },
+  {
+   "id": "asphalt-in-ne-nw-sw",
+   "status": "skipped",
+   "why": "감독 결정으로 키트에서 뺌"
+  },
+  {
+   "id": "asphalt-in-ne-se-sw",
+   "status": "skipped",
+   "why": "감독 결정으로 키트에서 뺌"
+  },
+  {
+   "id": "asphalt-in-nw-se-sw",
+   "status": "skipped",
+   "why": "감독 결정으로 키트에서 뺌"
+  },
+  {
+   "id": "asphalt-in-ne-nw-se-sw",
+   "status": "skipped",
+   "why": "감독 결정으로 키트에서 뺌"
+  },
+  {
+   "id": "track",
+   "status": "skipped",
+   "why": "감독 결정으로 키트에서 뺌"
+  },
+  {
+   "id": "slab-edge",
+   "status": "skipped",
+   "why": "감독 결정으로 키트에서 뺌"
+  },
+  {
+   "id": "slab-break",
+   "status": "skipped",
+   "why": "감독 결정으로 키트에서 뺌"
+  },
+  {
+   "id": "oil-stain-a",
+   "status": "pass",
+   "why": "판정 프로필 4d8774b517f41638 가 보정되지 않았다 — AI 판정(pass)은 조언일 뿐이다. Opus 최종 판정(object-gate final-review)을 받아라"
+  },
+  {
+   "id": "scorch-a",
+   "status": "pass",
+   "why": "판정 프로필 4d8774b517f41638 가 보정되지 않았다 — AI 판정(pass)은 조언일 뿐이다. Opus 최종 판정(object-gate final-review)을 받아라"
+  },
+  {
+   "id": "scorch-b",
+   "status": "pass",
+   "why": "판정 프로필 4d8774b517f41638 가 보정되지 않았다 — AI 판정(pass)은 조언일 뿐이다. Opus 최종 판정(object-gate final-review)을 받아라"
+  },
+  {
+   "id": "crop-bed-a",
+   "status": "none",
+   "why": "3/4·화풍 판정 영수증이 없다 — object-gate final-review 로 Opus 최종 판정을 받아라"
+  },
+  {
+   "id": "barricade-v",
+   "status": "fail",
+   "why": "판정 프로필 4d8774b517f41638 가 보정되지 않았다 — AI 판정(fail)은 조언일 뿐이다. Opus 최종 판정(object-gate final-review)을 받아라"
+  },
+  {
+   "id": "fence-v",
+   "status": "fail",
+   "why": "판정 프로필 4d8774b517f41638 가 보정되지 않았다 — AI 판정(fail)은 조언일 뿐이다. Opus 최종 판정(object-gate final-review)을 받아라"
+  },
+  {
+   "id": "car-burnt",
+   "status": "refer",
+   "why": "판정 프로필 4d8774b517f41638 가 보정되지 않았다 — AI 판정(refer)은 조언일 뿐이다. Opus 최종 판정(object-gate final-review)을 받아라"
+  },
+  {
+   "id": "watchtower",
+   "status": "refer",
+   "why": "판정 프로필 4d8774b517f41638 가 보정되지 않았다 — AI 판정(refer)은 조언일 뿐이다. Opus 최종 판정(object-gate final-review)을 받아라"
+  },
+  {
+   "id": "husk-c",
+   "status": "refer",
+   "why": "판정 프로필 4d8774b517f41638 가 보정되지 않았다 — AI 판정(refer)은 조언일 뿐이다. Opus 최종 판정(object-gate final-review)을 받아라"
+  },
+  {
+   "id": "husk-d",
+   "status": "fail",
+   "why": "판정 프로필 4d8774b517f41638 가 보정되지 않았다 — AI 판정(fail)은 조언일 뿐이다. Opus 최종 판정(object-gate final-review)을 받아라"
+  },
+  {
+   "id": "wall-h3",
+   "status": "skipped",
+   "why": "감독 결정으로 키트에서 뺌"
+  },
+  {
+   "id": "rubble-pile-b",
+   "status": "skipped",
+   "why": "감독 결정으로 키트에서 뺌"
+  },
+  {
+   "id": "husk-f",
+   "status": "skipped",
+   "why": "감독 결정으로 키트에서 뺌"
+  },
+  {
+   "id": "hut-tyre",
+   "status": "skipped",
+   "why": "감독 결정으로 키트에서 뺌"
+  },
+  {
+   "id": "asphalt",
+   "status": "replaced",
+   "why": "asphalt-ph(위상 칸)로 대체"
+  }
+ ],
+ "reassembly_from_files": 0
+}

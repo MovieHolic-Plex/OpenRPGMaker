@@ -2,6 +2,9 @@ import { existsSync, readFileSync } from "node:fs";
 import { defineConfig, devices } from "@playwright/test";
 import { applyLegacyEnvAliases } from "./scripts/lib/oprnEnv.mjs";
 import { readEnvPort } from "./scripts/lib/worktreeDevPort.mjs";
+import { assertCiOnlyTests } from "./scripts/lib/ciOnlyTests.mjs";
+
+assertCiOnlyTests("playwright test");
 
 applyLegacyEnvAliases();
 

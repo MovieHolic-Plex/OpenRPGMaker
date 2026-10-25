@@ -12,6 +12,7 @@ import wizardingWorldTilesetUrl from "@/assets/wizardingWorldTileset.json?url";
 import gothicManorTilesetUrl from "@/assets/gothicManorTileset.json?url";
 import pirateIslesTilesetUrl from "@/assets/pirateIslesTileset.json?url";
 import sfStationTilesetUrl from "@/assets/sfStationTileset.json?url";
+import wastelandRuinsTilesetUrl from "@/assets/wastelandRuinsTileset.json?url";
 import sengokuEdoTilesetUrl from "@/assets/sengokuEdoTileset.json?url";
 import modernCampusTilesetUrl from "@/assets/modernCampusTileset.json?url";
 import steampunkCityTilesetUrl from "@/assets/steampunkCityTileset.json?url";
@@ -30,6 +31,7 @@ const URLS: Record<BundledJsonKey, string> = {
   gothicManorTileset: gothicManorTilesetUrl,
   pirateIslesTileset: pirateIslesTilesetUrl,
   sfStationTileset: sfStationTilesetUrl,
+  wastelandRuinsTileset: wastelandRuinsTilesetUrl,
   sengokuEdoTileset: sengokuEdoTilesetUrl,
   modernCampusTileset: modernCampusTilesetUrl,
   steampunkCityTileset: steampunkCityTilesetUrl,

@@ -8,6 +8,7 @@
  * 지후 호감(var_fl_jihu)과 스위치 몇 개가 대사와 결말을 가른다. 맵은 firstLoveMaps.ts(시각 담당), 부품은 firstLoveKit.ts.
  * 등장인물·회사·앱·노래 이름은 모두 지어낸 것이다.
  */
+import { charsetFrameIndex } from "@/assets/easyrpgRtp";
 import { reviewedFaceIdForCharset } from "@/assets/reviewedCharsetFaces";
 import { runTool } from "@/editor/tools/toolRunner";
 import "@/editor/tools/toolRegistry";
@@ -21,7 +22,7 @@ import type { Command, Dir, GameEvent, GameMap, Project } from "@/project/types"
 import { FLAGSHIP_BEAT_MANIFESTS } from "./beats";
 import {
   bgm, call, callTo, caption, CAST, choices, m2, clearTintKeepBlack, emote, event, face, faceEachOther, fadeIn, fadeOut, flash, hidePlayer, ifCond, page,
-  playSe, say, sayAt, sayOver, sayTo, listenTo, fillListenerBusts, setSw, textAtBottom, faceHero, setVar, shake, showPlayer, stopBgm, stageAtLeast, stageBelow, stageIs, swOff, swOn, memoryTint, memoryPictureIn, memoryPictureOut, memoryPictureErase, think, transfer, voice, wait, walk,
+  playSe, say, sayAt, sayOver, sayTo, listenTo, fillListenerBusts, setSw, textAtBottom, faceHero, letterbox, setVar, shake, showPlayer, stopBgm, stageAtLeast, stageBelow, stageIs, swOff, swOn, memoryTint, memoryPictureIn, memoryPictureOut, memoryPictureErase, think, transfer, voice, wait, walk,
 } from "./firstLoveKit";
 import { buildFirstLoveMaps, drawnOverActor, FL_MAP, FL_TRAIN_CALL, FL_TRAIN_GO, nearestFree, type Cell, type FirstLoveAnchors } from "./firstLoveMaps";
 import { buildFirstLoveOpening } from "./firstLoveOpening";
@@ -39,6 +40,7 @@ const SW_KNOWS_WHY = "sw_fl_knows_why";
 const SW_COFFEE = "sw_fl_coffee";
 const SW_MILK = "sw_fl_milk";
 const SW_STORY = "sw_fl_story";
+const SW_BUMPED = "sw_fl_bumped"; // 출근길 횡단보도에서 부딪힌 남자(오프닝 A) — 사무실에서 그 목소리를 알아본다
 
 /** 흐름 단계 — 맵마다 자동 장면이 이 값을 보고 한 번 돈다. */
 const S = {
@@ -354,27 +356,88 @@ function buildMondayMorning(project: Project, a: FirstLoveAnchors): void {
     event("ev_fl_commuter_b", "통화하는 회사원", commuterB, [page("p", [], voice("회사원", "네, 부장님. 지금 역이에요. 5분이면… 네, 3분이요."), { who: "commuterB", dir: "right" })]),
   );
 
-  add(plat, scene("ev_fl_intro", { x: 1, y: 1 }, S.START, [
-    textAtBottom(),
-    bgm(BGM_OFFICE),
-    ...caption("월요일 오전 8시 41분, 한결역."),
-    ...think(
-      "첫 출근. 지각은 아니다. 아직은.",
-      "스튜디오 늘봄. 서른 명 남짓한 앱 회사. 면접 날 본 사무실엔 햇빛이 잘 들었다.",
-    ),
-    ...say("seoha", "happy", "…할 수 있어, 윤서하."),
-    ...think("(계단을 올라 역 밖으로 나가자.)"),
-    stage(S.ARRIVED),
-  ]));
-
+  // 아침 승강장 장면은 오프닝 A(거리에서 바로 시작)로 접었다 — 승강장 출구는 «내린 뒤»라 막혀 있다.
   add(plat, door("ev_fl_plat_exit", a.platform.exit, [stageAtLeast(V_STAGE, S.ARRIVED)],
     [transfer(FL_MAP.street, a.street.arrive.x, a.street.arrive.y, "down")],
     think("아직 정신이 없다.")));
 
-  // 거리(낮)
-  add(street, scene("ev_fl_street_am", { x: 1, y: 1 }, S.ARRIVED, [
-    ...think(`${a.street.exitNo}번 출구. 늘봄 빌딩은 저기, 제일 높은 유리 건물이다.`, "횡단보도만 건너면 된다."),
-    ...emote("player", "music"),
+  // 거리(낮) — 게임은 여기서 바로 시작한다(오프닝 A, 2026-10-25 사용자 승인): 출구에서 사람들이 쏟아져 나오고,
+  // 서하도 그 틈에 섞여 횡단보도를 건너다 맞은편에서 서두르던 남자와 부딪힌다. 서류가 날리고, 화면이 멈춘다(프리즈 프레임).
+  // 남자 얼굴은 아직 보지 못한다 — 사무실에서 「처음 뵙겠습니다」로 다시 마주친다.
+  const s = a.street;
+  // 부딪히는 자리는 세로 횡단보도(x≈21) 한가운데. 남자는 옆 줄(x+1)로 뛰어 내려오다 서하 쪽으로 꺾어 옆에서 부딪힌다 —
+  // 바로 위 칸에서 부딪히면 3/4 시점에서 남자 하반신이 서하 머리를 덮었다(Argon op1).
+  const bumpAt: Cell = nearestFree(project, street, { x: 20, y: 22 }, 1);  // 남쪽 보도, 세로 횡단보도 발치 바로 왼쪽(차도 밖)
+  const nearBump: Cell = bumpAt;
+  const rusher: Cell = nearestFree(project, street, { x: 21, y: 14 }, 1);   // 북쪽 보도, 횡단보도 머리
+  const rushStop: Cell = { x: bumpAt.x + 1, y: bumpAt.y };                   // 횡단보도를 뛰어 내려와 보도에 닿는 칸 — 서하 바로 오른쪽
+  // 출구에서 나온 사람들은 빈 보도에서 사라지지 않는다 — 둘은 늘봄 빌딩 문으로 들어가고, 둘은 동쪽 보도 끝(화면 밖)으로 걸어간다.
+  const crowd = [
+    { id: "ev_fl_crowd_1", tex: "tex_oprn_charset_modern3", index: 0, delay: 0, exit: "ev_fl_office_door" },
+    { id: "ev_fl_crowd_2", tex: "tex_oprn_charset_modern3", index: 2, delay: 2, far: { x: 47, y: 25 } },
+    { id: "ev_fl_crowd_3", tex: "tex_oprn_charset_modern2", index: 7, delay: 5, exit: "ev_fl_office_door" },
+    { id: "ev_fl_crowd_4", tex: "tex_oprn_charset_modern1", index: 1, delay: 7, far: { x: 47, y: 24 } },
+  ];
+  for (const c of crowd) {
+    add(street, event(c.id, "출근하는 사람", s.subway, [page(`${c.id}_p`, [stageIs(V_STAGE, S.START)], [], { dir: "down" })]));
+    const pg = street.events.find((e) => e.id === c.id)!.pages![0]! as unknown as { graphic: Record<string, unknown>; priority: string; overlapForbidden: boolean; movement: Record<string, unknown> };
+    pg.graphic = { sprite: { type: "bundled", id: c.tex }, direction: "down", pattern: charsetFrameIndex({ characterIndex: c.index, direction: "down", pattern: 1 }), transparent: false };
+    pg.priority = "same"; pg.overlapForbidden = false; pg.movement = { type: "fixed", speed: 4, frequency: 3 };
+  }
+  // 계단 칸에 숨어 있다가 차례로 나타나 내려선다(enterVia) → 각자 갈 곳으로.
+  const crowdRoute = (c: (typeof crowd)[number]): Command => ({ kind: "moveEvent", eventId: c.id, route: { moves: [
+    { kind: "changeOpacity", delta: -255 },
+    ...Array.from({ length: c.delay }, () => ({ kind: "wait" })),
+    { kind: "enterVia", x: s.subway.x, y: s.subway.y, dir: "down", se: "", closeSe: "" },
+    c.exit ? [{ kind: "approach", x: 21, y: 22, distance: 0 }, { kind: "approach", x: 21, y: 14, distance: 0 }, { kind: "exitVia", target: c.exit, se: "", closeSe: "" }] : { kind: "approach", x: c.far!.x, y: c.far!.y, distance: 0 },
+  ].flat(), repeat: false, wait: false, skippable: true } } as unknown as Command);
+  add(street, event("ev_fl_rusher", "서두르는 남자", rusher, [
+    page("rusher_p", [stageIs(V_STAGE, S.START)], [], { who: "jihu", dir: "down" }),
+  ]));
+  add(street, scene("ev_fl_cold_open", { x: 1, y: 2 }, S.START, [
+    textAtBottom(),
+    // 첫 화면은 검게 시작해 사람들이 숨은 뒤 밝아진다(계단 칸에 선 사람이 한 프레임 비치지 않게).
+    m2("Screen Effect", { effect: "fadeOut", value: "", durationMs: 1 }), wait(1),
+    hidePlayer(),
+    // 서하(숨은 채)가 출구 계단 앞 칸을 비켜 준다 — 계단 앞 칸이 하나뿐이라 서하가 서 있으면 나오던 사람이 계단에 갇혔다(Argon op1).
+    { kind: "moveEvent", eventId: "@player", route: { moves: [{ kind: "setThrough", enabled: true }, { kind: "move", dir: "right" }, { kind: "move", dir: "down" }, { kind: "setThrough", enabled: false }], repeat: false, wait: true, skippable: true } } as unknown as Command,
+    ...crowd.map(crowdRoute),
+    bgm(BGM_OFFICE, 1200),
+    ...letterbox(true, 1),
+    ...fadeIn(700),
+    wait(4200),
+    // 사람들이 다 빠진 뒤 서하도 계단을 올라온다(숨은 채 계단 앞 칸으로 돌아와 나타난다).
+    { kind: "moveEvent", eventId: "@player", route: { moves: [{ kind: "setThrough", enabled: true }, { kind: "move", dir: "up" }, { kind: "move", dir: "left" }, { kind: "turn", dir: "down" }, { kind: "setThrough", enabled: false }], repeat: false, wait: true, skippable: true } } as unknown as Command,
+    showPlayer(),
+    ...caption("월요일 오전 8시 41분, 한결역."),
+    ...think("첫 출근. 지각은 아니다. 아직은.", "스튜디오 늘봄. 서른 명 남짓한 앱 회사. 늘봄 빌딩은 길 건너, 제일 높은 유리 건물이다."),
+    ...say("seoha", "happy", "…할 수 있어, 윤서하."),
+    // 서하가 횡단보도를 건너기 시작한다. 반쯤 왔을 때 길 건너에서 남자가 휴대폰을 보며 뛰어 내려오다 서하 쪽으로 꺾는다.
+    // 부딪힘은 보도 위(횡단보도 발치)에서 — 차도에서 부딪히면 선 차와 겹쳐 서류가 보닛 위에 떴다(Argon op2).
+    walkRoute(project, FL_MAP.street, "@player", s.arrive, nearBump, [], true, "right"),
+    walkRoute(project, FL_MAP.street, "ev_fl_rusher", rusher, rushStop, [bumpAt], false, "left"),
+    waitMoves(),
+    quiet("cc0-se-orp-inventory-cloth-heavy", 0.8),
+    shake(260),
+    { kind: "moveEvent", eventId: "@player", route: { moves: [{ kind: "setDirectionFix", enabled: true }, { kind: "jump", dx: -1, dy: 0, heightPx: 4, durationMs: 220 }, { kind: "setDirectionFix", enabled: false }], repeat: false, wait: true, skippable: true } } as unknown as Command,
+    m2("Particle Effect", { preset: "paper", target: "player", durationMs: 1800, wait: false }),
+    quiet(SE_PAPER, 0.7),
+    wait(380),
+    m2("Screen Effect", { effect: "freeze", value: "warm", durationMs: 500 }),
+    wait(500),
+    ...think("…아."),
+    ...think("서류가, 봄바람에, 날아간다."),
+    m2("Screen Effect", { effect: "unfreeze", value: "", durationMs: 300 }),
+    wait(300),
+    ...voice("남자", "죄송합니다…! 괜찮으세요? 제가 지금 너무 늦어서—"),
+    ...think("고개를 들기도 전에, 남자는 떨어진 종이 한 장을 내 손에 쥐여 주고 다시 뛰어갔다."),
+    // 남자는 회사 쪽(늘봄 빌딩)으로 달려가 사라진다 — 얼굴은 못 봤다.
+    { kind: "moveEvent", eventId: "ev_fl_rusher", route: { moves: [{ kind: "changeSpeed", delta: 1 }, { kind: "approach", x: rusher.x, y: rusher.y, distance: 0 }, { kind: "exitVia", target: "ev_fl_office_door", se: "", closeSe: "" }], repeat: false, wait: false, skippable: true } } as unknown as Command,
+    ...think("…목소리가, 어디서 들어 본 것 같았는데."),
+    ...letterbox(false, 500),
+    wait(600),
+    setSw(SW_BUMPED, true),
+    ...think("(횡단보도를 건너 늘봄 빌딩으로 가자.)"),
     stage(S.STREET),
   ]));
   add(street,
@@ -538,6 +601,8 @@ function buildMondayOffice(project: Project, a: FirstLoveAnchors): void {
     ...think("금요일 점심, 방송실 창가. 스피커에서 흘러나오던 그 목소리."),
     ...sayAt("lead", "right", "base", "강지후 선임. 앱 개발 4년 차고, 이번 ‘하루끝’ 리뉴얼 메인 개발자예요. 모르는 건 이 사람한테 물어봐요."),
     ...say("jihu", "base", "…처음 뵙겠습니다. 강지후입니다."),
+    // 오프닝 A 의 횡단보도 — 그 목소리였다.
+    ifCond(swOn(SW_BUMPED), think("…아까 횡단보도. 서류를 주워 주고 뛰어가던, 그 목소리.")),
     ...think("처음… 뵙겠습니다?"),
     choices([
       { text: "“처음 뵙겠습니다. 잘 부탁드립니다, 선임님.”", then: [
@@ -640,7 +705,7 @@ function buildMondayOffice(project: Project, a: FirstLoveAnchors): void {
     face("ev_fl_jihu_roof", "up"),
     // 문 앞에서 난간 쪽으로 카메라가 천천히 건너가 그 사람을 찾는다.
     panTo(jihuRail.x, jihuRail.y, 1600),
-    ...think("…있다."),
+    ...think("하늘이 넓다. 그리고… 있다."),
     ...think("난간에 기대 선 뒷모습. 바람에 후드 끈이 흔들린다."),
     panBack(1000),
     walkRoute(project, FL_MAP.rooftop, "@player", r.doorOut, r.railHero),
@@ -1634,7 +1699,7 @@ export function createFirstLoveFlagshipDemo(): FlagshipDemoBuildResult {
   ensureVar(V_JIHU, "지후 호감도");
   for (const [id, name] of [
     [SW_TOLD_MINHO, "민호에게 털어놓음"], [SW_HONEST, "실수를 팀장에게 보고함"], [SW_SAW_LETTER, "수첩 속 편지를 봄"],
-    [SW_KNOWS_WHY, "지후가 떠난 이유를 들음"], [SW_COFFEE, "옥상 캔커피"], [SW_MILK, "바나나우유 두 개"], [SW_STORY, "발표에서 내 이야기를 함"],
+    [SW_KNOWS_WHY, "지후가 떠난 이유를 들음"], [SW_COFFEE, "옥상 캔커피"], [SW_MILK, "바나나우유 두 개"], [SW_STORY, "발표에서 내 이야기를 함"], [SW_BUMPED, "출근길 횡단보도에서 부딪힘"],
     ["sw_fl_jihu_in_konbini", "편의점에 지후 등장"], ["sw_fl_flashback", "회상 중"], ["sw_fl_jihu_gone", "회상: 지후 퇴장"],
     ["sw_fl_lead_left", "수요일: 팀장 퇴근"], ["sw_fl_jihu_boarded", "막차: 지후 탑승"], [FL_TRAIN_CALL, "막차: 열차 부르기"], [FL_TRAIN_GO, "막차: 문 닫고 출발"], ["sw_fl_minho_left", "수요일: 민호 퇴근"], ["sw_fl_closed_note", "수첩을 덮어 둠"], ["sw_fl_jihu_in_door", "막차: 지후 문간"], ["sw_fl_w_seoha_up", "수요일: 서하 일어섬"], ["sw_fl_w_jihu_up", "수요일: 지후 일어섬"], ["sw_fl_w_minho_up", "수요일: 민호 일어섬"], ["sw_fl_f_lead_up", "금요일: 팀장 일어섬"], ["sw_fl_f_jihu_up", "금요일: 지후 일어섬"], ["sw_fl_f_minho_up", "금요일: 민호 일어섬"],
     ["sw_fl_client_left", "금요일: 본부장 퇴장"], ["sw_fl_jihu_left", "금요일: 지후 퇴장"], ["sw_fl_admitted", "옥상: 지후가 기억한다고 말함"],
@@ -1698,8 +1763,9 @@ export function createFirstLoveFlagshipDemo(): FlagshipDemoBuildResult {
   resolveRoutes(project);
   // 차는 다닌다(사용자 r3: 업무 지구엔 차량 통행). 다만 오토바이·긴급차는 빼 둔다(r2 「돌아다니는 오토바이」) — firstLoveMaps 거리 후처리.
 
-  project.startMapId = FL_MAP.platformAm;
-  project.startPos = anchors.platform.arrive;
+  // 오프닝 A: 게임은 출근길 거리의 지하철 출구에서 시작한다(오프닝 몽타주 C 바로 뒤).
+  project.startMapId = FL_MAP.street;
+  project.startPos = anchors.street.arrive;
   project.mapTree = {
     mapId: FL_MAP.platformAm,
     children: [FL_MAP.street, FL_MAP.office, FL_MAP.rooftop, FL_MAP.streetPm, FL_MAP.konbini, FL_MAP.broadcast, FL_MAP.officePm, FL_MAP.officeFri, FL_MAP.platformPm]

@@ -1,0 +1,42 @@
+VERDICT: oil-stain-a=PASS, oil-stain-b=PASS, scorch-a=PASS, scorch-b=PASS, crop-bed-b=PASS, crop-bed-c=PASS
+
+oil-stain-a 1: PASS — Flat silhouette with no vertical extrusion or rim highlight; reads as lying flat on the dirt plane (`oil-stain-a-3x.png`).
+oil-stain-a 2: PASS — Reads clearly as dark viscous oil soaked into earth with a subtle blue-grey petroleum sheen and a trailing seep to the bottom-right (`oil-stain-a-3x.png`).
+oil-stain-a 3: PASS — Multi-step transition from dark oil core through oil-dampened brown earth into the base dirt; no hard outlines or noisy pixels (`oil-stain-a-3x.png`).
+oil-stain-a 4: PASS — Placed naturally beside fuel drums and crates (`crop-ruined-city-2-oil-stain-a-2_16-3x.png`, `crop-ruined-city-2-oil-stain-a-2_24-3x.png`); blends seamlessly into surrounding dirt without cell borders.
+oil-stain-a 5: PASS — Well-crafted, understated post-apocalyptic ground detail.
+
+oil-stain-b 1: PASS — Flat horizontal oval stain conforming to the 3/4 top-down ground plane (`oil-stain-b-3x.png`).
+oil-stain-b 2: PASS — Reads as a compact engine oil spot soaked into packed dirt with a faint slick sheen (`oil-stain-b-3x.png`).
+oil-stain-b 3: PASS — Smooth value steps from the dark center to damp earth edge; blends cleanly on both dirt variants (`oil-stain-b-3x.png`).
+oil-stain-b 4: PASS — Logical placement next to drums and scrap piles (`crop-ruined-city-2-oil-stain-b-30_3-3x.png`, `crop-ruined-city-2-oil-stain-b-37_36-3x.png`, `crop-settlement-1-scorch-b-11_23-3x.png` left of truck); no grid seams.
+oil-stain-b 5: PASS — Professional pixel execution matching the chipset style.
+
+scorch-a 1: PASS — Lies completely flat on the ground plane with no crater rim or pit depth (`scorch-a-3x.png`).
+scorch-a 2: PASS — Reads unmistakably as charred stick remnants, grey ash tips, and a faint ember speck over soot-blackened earth (`scorch-a-3x.png`).
+scorch-a 3: PASS — Crisp pixel clusters for the charred wood and ash against a soft soot gradient into the dirt (`scorch-a-3x.png`).
+scorch-a 4: PASS — Placed logically in front of burnt brick ruins and near campfires (`crop-settlement-1-scorch-a-2_12-3x.png`, `crop-shanty-6-scorch-a-30_11-3x.png`); integrates cleanly into the terrain.
+scorch-a 5: PASS — Convincing, well-detailed micro-prop decal.
+
+scorch-b 1: PASS — Reads as a flat surface scatter of ash and soot with no standing faces (`scorch-b-3x.png`).
+scorch-b 2: PASS — Distinct rounded soot patch with broken charcoal bits, grey ash flecks, and a warm ember pixel (`scorch-b-3x.png`).
+scorch-b 3: PASS — Controlled palette and soft outer soot halo that merges naturally into both dirt backgrounds (`scorch-b-3x.png`).
+scorch-b 4: PASS — Sensible placement near rubble and ruined structures (`crop-settlement-1-scorch-b-11_23-3x.png`, `map-settlement-1.png`); no visible tile seams or repetition.
+scorch-b 5: PASS — Clean, deliberate pixel work at 16px scale.
+
+crop-bed-b 1: PASS — Timber/plank border, horizontal tilled soil ridges, and leafy green tops read clearly in 3/4 top-down perspective (`crop-settlement-4-crop-bed-b-41_26-3x.png`).
+crop-bed-b 2: PASS — Immediately recognizable as a framed raised/bordered vegetable bed with three rows of leafy greens (`crop-settlement-4-crop-bed-b-41_26-3x.png`).
+crop-bed-b 3: PASS — Rich shading on the weathered plank frame (with joinery/nail accents), furrowed soil, and multi-tone green foliage matching the Beodeul quality bar (`crop-settlement-4-crop-bed-b-41_26-3x.png`).
+crop-bed-b 4: PASS — Sits naturally inside the fenced settlement garden plot offset from its pair (`map-settlement-4.png`, `crop-settlement-4-crop-bed-b-41_26-3x.png`); outer edge transitions cleanly into surrounding dirt.
+crop-bed-b 5: PASS — High-craft, cohesive chipset piece.
+
+crop-bed-c 1: PASS — Consistent 3/4 top-down view across the plank frame, soil furrows, and fruiting plants (`crop-settlement-4-crop-bed-c-35_24-3x.png`).
+crop-bed-c 2: PASS — Clearly reads as a second distinct planted garden bed variant featuring varied plant spacing and red/orange crop accents (`crop-settlement-4-crop-bed-c-35_24-3x.png`).
+crop-bed-c 3: PASS — Well-defined clusters on leaves, soil ridges, and weathered wood planks without noise or flat fills (`crop-settlement-4-crop-bed-c-35_24-3x.png`).
+crop-bed-c 4: PASS — Paired naturally inside the fenced enclosure with crates/containers between the beds (`map-settlement-4.png`, `crop-settlement-4-crop-bed-c-35_24-3x.png`).
+crop-bed-c 5: PASS — Crisp, believable survivor-garden asset.
+
+FIXES:
+None.
+
+VERDICT: oil-stain-a=PASS, oil-stain-b=PASS, scorch-a=PASS, scorch-b=PASS, crop-bed-b=PASS, crop-bed-c=PASS

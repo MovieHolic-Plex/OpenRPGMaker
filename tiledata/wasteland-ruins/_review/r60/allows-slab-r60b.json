@@ -1,0 +1,12 @@
+[
+ {
+  "sha": "8c6e9409dffb590f709c8838a121b06c66b8a54895e2fc8d827e17488946b7b3",
+  "evidence": "/home/main/z-project/rpg-zzu-village-art/tiledata/wasteland-ruins/_review/r60/review7/verdict-B.md",
+  "note": "wasteland_ruins/slab-ground r60b; object-gate PASS 4/4; independent adversarial reviewers A (Argon) and B (Sonnet 5.5) review7 both PASS 8/8 (verdict-A.md, verdict-B.md)"
+ },
+ {
+  "sha": "28a0e56d29bedc2dbbdd8393f730c996134a22e077b3d353bd863f1d5ecb3a45",
+  "evidence": "/home/main/z-project/rpg-zzu-village-art/tiledata/wasteland-ruins/_review/r60/review7/verdict-B.md",
+  "note": "wasteland_ruins/slab-joints r60b; object-gate PASS 4/4; independent adversarial reviewers A (Argon) and B (Sonnet 5.5) review7 both PASS 8/8 (verdict-A.md, verdict-B.md)"
+ }
+]

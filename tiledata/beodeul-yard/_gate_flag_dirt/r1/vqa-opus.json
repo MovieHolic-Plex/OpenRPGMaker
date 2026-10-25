@@ -1,0 +1,28 @@
+{
+  "verdict": "fail",
+  "reviewer": "opus fresh adversarial r1",
+  "criteria": {
+    "ragged_ruin_edge": {"result": "pass", "evidence": "sample-4x outer edge is broken slabs with chipped lips and loose pieces on the dirt (top edge 1x y~38-44, x~55-135). It reads as old paving breaking up, not a cut line. Weak spots: the raggedness reaches only about 2-4 px into each cell, so the blob silhouette still follows 16px steps (top-right notch 1x x~136-160,y~38-52; bottom-left steps 1x x~84-100,y~140-165)."},
+    "no_kerb": {"result": "pass", "evidence": "No continuous rim or dressed border anywhere on the outer edge or around the hole. Slab lips are single-slab outlines only."},
+    "no_square_holes": {"result": "fail", "evidence": "The interior dirt hole (1x crop x112-176,y64-128, /tmp/fd-rev1/hole.png) is still an almost square block. The left side holds near x~121, the bottom near y~120 and the right near x~165, and each edge wanders only 1-3 px, so it reads as a square cell knocked out of the paving rather than a collapse. This is the r8/r9 defect, made smaller but not removed."},
+    "seamless": {"result": "fail", "evidence": "Dark grout counted across the flag area (1x x56-232, y40-152) bunches on the tile boundaries. Column x%16 counts are 0:369 and 15:352, against about 170 for other columns. Row y%16=15 has 454, against about 190. At 4x and 8x (/tmp/fd-rev1/top.png) straight grout lines run unbroken along 16px boundaries, e.g. horizontal at 1x y~63-64 and vertical at x~63/79/95, so the cell grid shows through edge-to-body and body-to-body joins."},
+    "no_repeat_grid": {"result": "fail", "evidence": "The same mod-16 bunching appears on long straight runs (top edge 1x x56-136, horizontal neck y~56-72). The 16px lattice of boundary grout plus repeated triangular slab shapes on a diagonal give a visible stamp rhythm at 2x and 4x. Some of this comes from the pre-existing body tile, but the new N/S/W/E edges keep the same boundary grout, so the grid continues right to the ragged edge."},
+    "beodeul_quality": {"result": "fail", "evidence": "(a) Missing-slab cavities and sunken lips are drawn as flat pale blue-grey (~#c8c8c0 / grey-blue) that is lighter than the dirt, e.g. 1x (62,40),(70,52) and the edge-tiles NE/SE/inNE. They read as cement or ice, not shadow, and break the upper-left light logic: a sunken edge should go darker and warmer, toward dirt shadow. (b) Loose fragments are mostly isolated 2x2 near-white squares with no shadow pixel (1x ~(50,33),(70,32),(103,32),(185,50)). At 1x they read as white speckle or noise, not stone chips. The Beodeul reference chips/patches carry a 1-px dark underside. (c) Slab highlight/shadow contrast is low and the interior slabs are almost uniform cream, flatter than the Beodeul paving reference."}
+  },
+  "defects": [
+    "The interior dirt hole still reads as a square 16px-aligned cell. Its ragged amplitude is only 1-3 px.",
+    "Grout piles up on tile boundaries (x%16 in {15,0}, y%16=15 at about 2x the baseline), so a 16px grid of straight seams is visible across the court and into the edge tiles.",
+    "The outer silhouette follows 16px stair steps. Raggedness does not cross cell boundaries.",
+    "Sunken/missing-slab areas are drawn in light grey-blue instead of a darker earth shadow. This reads as concrete or ice and contradicts 'slight sunken shadow'.",
+    "Loose fragments are 2x2 white dots without a shadow pixel. They read as noise speckle, not chips.",
+    "Low slab value contrast compared with the Beodeul reference. The court looks washed out next to the saturated dirt."
+  ],
+  "fixes": [
+    "Let edge raggedness reach 6-10 px across the cell, and let missing slabs bite into neighbouring cells. Use variant edge tiles (at least 2-3 per side, chosen by position hash) so long edges and the hole sides do not hold a straight line.",
+    "For inner corners (inNW/inNE/inSE/inSW) and 1-cell holes, round off the corners with large broken slabs or a tilted slab, so a 1-3 cell hole reads as an irregular pit, not a square.",
+    "Break the boundary grout: draw slabs that straddle the x=15|0 and y=15|0 joins in body and edge tiles (draw on a 32px or 48px master and slice), so grout does not line up on the 16px lattice.",
+    "Recolour sunken areas and missing-slab beds as dirt in shadow (darker, warmer brown, 1-2 px dark under the slab lips on the lower/right side) instead of pale grey.",
+    "Make fragments 2x3 to 3x4 irregular chips with a highlight top-left pixel, a mid tone, and a 1-px dark shadow bottom-right. Cut the count of lone white 2x2 dots by about half.",
+    "Raise slab shading contrast: a highlight edge top-left and a mid-dark edge bottom-right per slab, as in the Beodeul paving reference."
+  ]
+}

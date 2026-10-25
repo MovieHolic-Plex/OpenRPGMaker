@@ -1,0 +1,333 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "60091b69f7c4268f3c6f1d50a01ce42e28f2dc47c6c520387b90b96a3594256b",
+ "width": 16,
+ "height": 16,
+ "kind": "container",
+ "name": "campfire: ring of stones seen from above with logs and flames burning inside (frame 1)",
+ "label": "wasteland_ruins/campfire-f1",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 15,
+  "tileColorsP90": 15,
+  "darkV5": 32,
+  "nearBlackEdge": 0.05,
+  "opaqueTiles": 1
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "flames rising above the fire",
+      "rows": "2-8",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stone ring opening with logs and embers seen from above",
+      "rows": "6-11",
+      "evidence": "d",
+      "front_edge_line_row": 12,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "front stones of the ring",
+      "rows": "12-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 4,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The ring is a round stone container. Back stones sit at rows 4-7 on the sides (x=12 shows gray stone at rows 4-6). Logs (brown rows 8-11 at x=8 and x=12) and flames are visible inside the opening, which counts as contents (d). A light front-edge row at about row 12 (x=12, L=163) is followed by dark front stones at rows 12-15, giving a front face of about 4 rows. The flames above are decor. The opening reads as a foreshortened ellipse, with the width profile widening from 6 at row 3 to 15 at rows 11-12 and then narrowing to 10 at row 15."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a very small campfire, about one tile, with 15 visible tones per tile. That is comparable to the hedge (9), the cheese stall (17) and the roofed well (20). Near-flat coverage is 0%, so there are no flat fills. Dark edge pixels are 0% neutral, so the outline is tinted. The stones look dark grey-brown and the logs dark brown, which reads as material-tone outlining and not a black sticker line. Shading is about 4 steps: stone highlight, mid and dark, plus flame yellow, orange and red and wood brown. The references use 5-6 steps. The stones show some per-stone variation, but the ring is small and simple, so the stones are shaded less individually than the well stones. Overall it is close to the reference quality bar for a single-tile prop, but it sits slightly lower than the richer pieces. A careful artist would probably accept it next to the hedge, but the small size leaves less room for texture and grain, and the flames and logs are somewhat compact. Because it is borderline and the rule is to fail when in doubt, I lean towards fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 14363
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "flames and burning logs inside the stone ring",
+      "rows": "3-11",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stone ring, back and top rim",
+      "rows": "5-11",
+      "evidence": "b",
+      "front_edge_line_row": 12,
+      "eave_shadow_rows": "11"
+     },
+     {
+      "part": "front stones of the ring",
+      "rows": "12-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 8,
+    "front_face_rows": 4,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette widens from 1 px at row 2 to 15 px at rows 11-12, then narrows to 10 px at row 15. This reads as a round ring seen from above. Flames and logs are visible inside the opening in rows 3-11, which is evidence (d). Column x=12 shows a dark interior at rows 9-11, then a light stone edge line at row 12 (L=163) over darker front stones at rows 13-15. Column x=5 shows the same light stone line at row 13. Those rows form a front face of about 4 rows below the open top, so the opening is seen from above with a front face under it."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small one-tile campfire. Its measured facts match or beat the comparable references: 15 visible tones per tile against 9 for the hedge, 17 for the cheese stall and 20 for the well. It has 0% near-flat coverage, and 0% of its dark edge pixels are neutral, so the outline is tinted (dark brown/grey-brown next to the stones and logs) rather than a black sticker line. By eye, the stones have a light-to-dark ramp with individual highlights, the flames step through yellow, orange and red, and the logs carry two or three browns. No area is a flat fill. Each material has about 3-5 steps, slightly under the 5-6 on the larger references, but this is a tiny prop and its density fits next to the hedge and stall tiles without looking thinner or more sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15242
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "flames",
+      "rows": "2-8",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stone ring opening with logs and embers (contents seen from above)",
+      "rows": "6-11",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "front stones of the ring",
+      "rows": "12-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 4,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The flames rise above the ring and are decor. The main body is the stone ring. The logs and embers inside it are visible from above (rows 6-11, evidence d). The silhouette widens from 6 px at row 3 to 15 px at rows 11-12, then narrows to 10 px at row 15, so it reads as a rounded bowl. Below the opening, the dark front stones in rows 12-15 (about 4 rows, L~47 in the scan) form a front face. The top surface is modest, but it is more than a rim, so I read it as a 3/4 view and not a flat slab."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small campfire, about one tile in size. It has 15 visible tones per 16x16 tile, which is above prop-hedge (9) and close to prop-stall-cheese (17) and prop-well-roofed (20). Near-flat coverage is 0%, so there are no flat fills. The stones are shaded individually with light tops and dark undersides. The flame steps from yellow through orange to red, and the logs have a couple of tones. Dark edge pixels are 0% neutral, so the outlines lean toward the neighbouring material (brown beside logs, dark stone tone beside stones) and the piece does not read as a sticker. Each material has about 3-4 steps, a little under the 5-6 in the larger references, but this is a tiny prop and the overall density matches the references of the same kind. A careful artist would accept it next to them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16731
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "flames and logs seen inside the stone ring (contents)",
+      "rows": "3-11",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stone ring, rim stones around the fire opening",
+      "rows": "9-12",
+      "evidence": "d",
+      "front_edge_line_row": 12,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "front stones of the ring (south face)",
+      "rows": "12-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 8,
+    "front_face_rows": 4,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The fire, logs and glowing core are visible from above inside an open ring of stones (rows 3-11, evidence d). The column at x=8 runs from flame yellow and white (rows 5-8) to dark logs and ember (rows 9-11). The column at x=12 has a light stone rim at row 4-6 and again at rows 12-13. Rows 12-15 are a darker stone front face of about 4 rows, with a lighter stone edge at row 12-13 (x=5 and x=12 show L=163 at rows 13 and 12). The silhouette widens from 1 to 15 px and narrows to 10 at row 15. This is not a flat top-down slab: the opening shows contents and a front face below it. The flame shape is a pointed, tapering one rather than a clean ellipse."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small single-tile campfire. It carries 15 visible tones in one 16x16 tile, against 9 for the hedge, 17 for the cheese stall and 20 for the roofed well, so it sits inside the reference range for props. Near-flat coverage is 0%, so there are no flat fills. The stones are shaded individually in light and dark greys, the flames step through several tones from yellow to orange to red, and the logs have separate lit and shadowed faces. The dark edge pixels are 0% neutral, so the outline leans toward the adjacent material (dark stone, dark wood, dark red) and is not a black sticker line. The remaining weakness is that each material ramp has about 4 steps, a little below the references' 5-6. At this size and with a 15-colour palette, that is acceptable and does not look thinner or flatter than the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17811
+  }
+ ],
+ "decidedAt": "2026-10-22T14:22:06.783Z",
+ "cells": {
+  "16": [
+   "8a0a5674aabb3068"
+  ],
+  "24": [
+   "28e438135c69dbf0",
+   "413642b7ffe30289",
+   "5e4231b05ca88515",
+   "771431a94468a114",
+   "91c0ab4864d405b9",
+   "e2baa5ce9d7c7234"
+  ],
+  "32": [
+   "1703fb90841a0122",
+   "18b8d68bb1ff832f",
+   "9cc828b87d163cad",
+   "db0b9a518c9c66a1",
+   "ea4b3c191f39b7fe",
+   "f5f8ccd96005e7fe"
+  ],
+  "48": [
+   "1d30a1316ff5ae0b",
+   "40d055e25e1ac8a4",
+   "4838be2cff8e7793",
+   "7e97e70973f9b0af",
+   "c5b89ef246d6d409",
+   "db6e8d304f06fcff"
+  ]
+ }
+}

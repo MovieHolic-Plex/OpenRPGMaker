@@ -131,7 +131,7 @@ const ENEMY_HP_BAR_OPTIONS: readonly { readonly id: string; readonly name: strin
 const START_PARTY_FACE_SIZE = 40;
 const BATTLE_FLOW_OPTIONS = ["gauge", "strict"] as const satisfies readonly BattleFlow[];
 const TITLE_PRESENTATION_MODES = ["text", "graphic", "both"] as const satisfies readonly TitleScreenTitleMode[];
-const TITLE_PARTICLE_PRESET_OPTIONS = ["none", "snow", "rain", "fireflies"] as const satisfies readonly ("none" | TitleParticlePreset)[];
+const TITLE_PARTICLE_PRESET_OPTIONS = ["none", "snow", "rain", "fireflies", "stars"] as const satisfies readonly ("none" | TitleParticlePreset)[];
 const TITLE_INTRO_LOGO_OPTIONS = ["none", "fadeIn", "riseIn"] as const satisfies readonly TitleIntroLogoAnimation[];
 const TITLE_INTRO_MENU_OPTIONS = ["none", "fadeIn", "slideUp"] as const satisfies readonly TitleIntroMenuAnimation[];
 const PLAY_RESOLUTION_PRESETS = ["320x240", "480x270", "426x240", "640x360", "640x480", "custom"] as const;

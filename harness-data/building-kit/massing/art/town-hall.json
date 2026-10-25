@@ -1,0 +1,21 @@
+{
+ "name": "시청",
+ "massing": "M09",
+ "material": "stone",
+ "refs": [
+  "bd-house-manor",
+  "bd-house-cathedral"
+ ],
+ "walk": [
+  "...***...",
+  "...***...",
+  ".*******.",
+  "*********",
+  "*********",
+  "XXXXXXXXX",
+  "XXXXXXXXX",
+  "XXXXDXXXX",
+  "XXXXDXXXX"
+ ],
+ "id": "town-hall"
+}

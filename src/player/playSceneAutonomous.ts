@@ -29,6 +29,7 @@ import { detourAroundPlayer, sidestepForPlayer } from "@/player/commandRouteDeto
 import { startPlayerRoute } from "@/player/playerRouteState";
 import { applySpriteAlpha, setNpcIdleFrame, setNpcWalkFrame } from "@/player/playSceneAutonomousSprites";
 import { nextChaseDecision } from "@/player/chaseAi";
+import { tickChaseSpawnGrace } from "@/player/chaseSpawnGrace";
 import { strollChainPending, strollPauseScale, wanderCommand } from "@/player/npcStroll";
 import { followerOccupiesTile } from "@/player/playSceneFollowers";
 import { nextSessionRandom } from "@/project/session";
@@ -45,6 +46,8 @@ export function updateAutonomousNPCs(scene: AutonomousNpcSceneContext, frameDelt
 
 function updateAutonomousNPCsInPass(scene: AutonomousNpcSceneContext, frameDeltaMs: number): void {
   const project = store.getCurrent();
+  // 시작·복귀 직후 은총 시간에는 추격자가 제자리에서 기다린다(시야 판정·접촉 없음, J61).
+  const spawnGrace = tickChaseSpawnGrace(scene, frameDeltaMs);
   const repathCandidates: LivingRepathCandidate[] = [];
   for (const [eventId, mover] of scene.autonomousNPCs) {
     const deltaMs = frameDeltaMs * (actionFieldSlow.get(mover) ?? 1);
@@ -74,6 +77,7 @@ function updateAutonomousNPCsInPass(scene: AutonomousNpcSceneContext, frameDelta
     } else {
       mover.carryMs = 0;
     }
+    if (mover.strategy === "chase" && spawnGrace && !mover.chaseTarget) continue;
     if (mover.strategy === "chase") {
       // 순찰+추격: 경로가 있고 추격 중이 아니면 아래 순찰(sequence) 처리로 흘려보낸다.
       const patrol = mover.moves.length > 0 && !mover.chaseTarget && !mover.actionFrozen

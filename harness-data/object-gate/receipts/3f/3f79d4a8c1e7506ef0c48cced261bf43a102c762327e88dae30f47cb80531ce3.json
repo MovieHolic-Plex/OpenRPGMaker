@@ -1,0 +1,301 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "3f79d4a8c1e7506ef0c48cced261bf43a102c762327e88dae30f47cb80531ce3",
+ "width": 48,
+ "height": 48,
+ "kind": "flat",
+ "name": "a smaller irregular broken-asphalt pothole with a dirt bottom, a shadowed far inner wall, a chipped lighter near rim, a short crack running out of it and a couple of loose chips; transparent decal on old asphalt",
+ "label": "wasteland_ruins/pothole-b",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "refer",
+ "reasons": [
+  "화풍: 화풍 판정이 갈림(걸린 판정 2/4)",
+  "화풍: 판정자 fail (2/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "refer",
+  "reasons": [
+   "화풍 판정이 갈림(걸린 판정 2/4)",
+   "판정자 fail (2/4)"
+  ],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 7,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "wasteland_ruins",
+   "fallback": true,
+   "reason": "칩셋 wasteland_ruins 의 화풍 기준 묶음이 없다",
+   "hash": "8cecb3a70460aa86"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 8,
+  "tileColorsP90": 9,
+  "darkV5": 71,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 9
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "pothole decal (asphalt patch with dirt bottom, crack, chips)",
+      "rows": "0-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 48,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The silhouette is a uniform 48-px-wide square across all rows 0-47. It is a flat decal seen from above: a dark grey asphalt field with lighter chipped speckles in rows 2-20, a small dirt-brown patch around rows 22-28 with a dark edge at row 22, and a brown dirt border at the left, right and bottom edges. There is no front-edge line, no eave shadow and no vertical south face of 3 or more rows. The brown at rows 45-47 is a bottom border, not a front face. This matches the flat kind, so it reads as a top-down slab."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate has 8 visible tones per tile, against 7 for the paving reference and 3 for the grass reference. Near-flat coverage is 0%, the same as both references, so the mottled asphalt has no large single-colour areas. Only 13% of its dark edge pixels are neutral, so the dark edges lean brown or grey-brown rather than black, which reads as dark material tone. The pothole is built from a dirt bottom, a shadowed far wall and a lighter chipped near rim, which gives about 5 distinct steps. It also has a short crack and a few chips. The asphalt grain is subtler and uses fewer total colours (10) than the references, so it is a little less rich than the stone-by-stone paving. But it is not a flat sticker, and a careful artist would accept it next to the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 13846
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "asphalt patch with pothole, cracks and chips, seen from above",
+      "rows": "0-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 48,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The silhouette is a uniform 48-px-wide square over rows 0-47. It is a flat ground decal seen from above. The grey asphalt (L about 77) has lighter chipped patches at rows 3-20 and a small dark dirt hole at rows 22-28 near x=24. A brown dirt border runs around the edge: rows 0-2 on top, the sides, and rows 45-47 at the bottom. The bottom rows 45-47 are a dark-to-brown border, not a vertical front face. No front-edge line, no eave shadow and no vertical face of 3+ rows appear. This fits a flat decal, so it reads as a top-down slab, which is expected for kind flat."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate measures 8 visible tones per tile, above the grass reference (3) and the paving reference (7). Near-flat coverage is 0%, the same as both references, so the asphalt speckle breaks up flat areas. Only 13% of dark edge pixels are neutral, so the dark edges lean brown and read as material-tone rather than a black sticker line. The pothole has a shadowed far wall, a dirt bottom, a lighter chipped near rim, a short crack and loose chips, which gives roughly 5 lightness steps. The total palette is small (10 colours), and the grain is less varied than Beodeul's per-stone shading, so texture is 'some' rather than 'rich'. Visible density is still at or above the references at this scale, and I see no large flat fills or uniform black outline. A careful artist would accept it next to the paving reference without it looking thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15790
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "north",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "asphalt patch with pothole, crack and chips, seen from above as a flat decal",
+      "rows": "0-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 48,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The silhouette is a uniform 48-wide rectangle across all rows 0-47, a flat asphalt decal with a dirt border. The grey asphalt has speckled lighter chips (rows 3-20) and a small dark-brown pothole around rows 21-28, seen straight from above. No front-edge line, eave shadow, vertical south face or ellipse is visible. The brown/dark bottom rows 44-47 are the border of the decal, not a front face. The drawing has no front face of 3 or more rows, so it reads as a flat top-down plate, which is correct for a flat floor decal."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The measured facts do not condemn it: 8 visible tones per tile (grass reference 3, paving reference 7), 0% near-flat coverage, and only 13% neutral dark edge pixels. The edges lean brown, so the outline reads as dark_material_tone. By eye it is still shallow against the paving reference. The whole patch uses only 10 distinct colours. The asphalt body is a grey mottle of about 3-4 steps, with none of the per-stone shading and highlight edges that make the paving read as a material. The pothole is tiny and simple. Its dirt bottom, shadowed far wall and chipped lighter rim are only 2-3 tones, and the crack and chips are barely visible. The brown border looks like a frame, which gives it a slight sticker look. It is cleanly drawn but would look thinner than the reference next to it.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 25095
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "asphalt patch decal with pothole, crack and chips",
+      "rows": "0-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "pothole dirt bottom and shadowed far wall",
+      "rows": "22-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 48,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The whole sprite is a 48x48 opaque square of grey asphalt, seen straight down. A brown dirt border runs around the edge, and rows 3-20 hold lighter chipped asphalt texture. The pothole is a small dark and brown patch at rows 22-28. It has no front-edge line, no eave shadow and no vertical south face. The silhouette is the same width on every row (0-47:48). The only dark band is a thin edge at rows 44-46, which is outline and not a front face. This is a flat ground decal, so it reads as a top-down slab with 0 front-face rows, as the flat kind expects."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The measured facts look fine on paper: 8 visible tones per tile against 3 for grass and 7 for paving, 0% near-flat coverage, and only 13% neutral dark edge pixels. The picture is weaker than the numbers. The whole patch uses only 10 distinct colours, where the references have 80 and 7 across a full tileset. The asphalt is a mid-grey base with sparse speckle and a brownish edge band. It reads as a framed rectangle rather than a worn surface. The pothole is tiny and has only about 3-4 tones: a dirt-brown blob with a slightly darker top. The shadowed far wall, chipped lighter near rim, crack and loose chips are barely legible. The references show tile-by-tile shading with highlight, mid and dark steps, plus grain clusters. The candidate has no comparable per-element shading, so it looks flatter and thinner than the references. The outline is tinted brown rather than black, which is fine.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 15890
+  }
+ ],
+ "decidedAt": "2026-10-22T23:12:58.208Z",
+ "cells": {
+  "16": [
+   "1b9ff118672d0870",
+   "2b26b6e38c05ede8",
+   "442178e80c150716",
+   "569e46610ebe15fe",
+   "68a768bcdc506e6d",
+   "a852b0b546117359",
+   "b893a0856db295f3",
+   "bc1c9357c36402c1",
+   "e991ccb29dd7c29f"
+  ],
+  "24": [
+   "136e61a0963d41e3",
+   "5f6e6ec1dfdd44cb",
+   "81b4757d55410955",
+   "8ce6554c45f4c133"
+  ],
+  "32": [
+   "00800c56dd4bac20",
+   "1961fdcdfaa0d7eb",
+   "1fa83ef6016cbcda",
+   "24923a532c1b0a59",
+   "2609f475b2738fd7",
+   "299a174c9ff6a9d4",
+   "44ee57067fc1f5af",
+   "5901de0a08358f51",
+   "666527d45efebaba",
+   "6931d5509df12e52",
+   "6ce475b3238fba1d",
+   "8fc8bcf4e9c13056",
+   "9cfb64b5b0911628",
+   "a2fc3466e21a0c6a",
+   "b2e3e939571bb67a",
+   "b38ef28dbe987933",
+   "bdcc1bb4e0e02355",
+   "c56ca33305a6b11f",
+   "d5c5a64f925c83dc",
+   "d78d9cf81d2af6b7",
+   "dbb4856ed8b87243",
+   "dfbde00e25526842",
+   "e02eec752ed2fa01",
+   "fd6a93ac0763cf22"
+  ],
+  "48": [
+   "bda5ca576a561e08"
+  ]
+ }
+}

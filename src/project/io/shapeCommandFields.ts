@@ -472,6 +472,9 @@ function validateCommandShape(label: string, value: unknown): void {
       requireBoolean(`${label}.showInitialName`, command.showInitialName);
       if (command.stringVariableId !== undefined) requireString(`${label}.stringVariableId`, command.stringVariableId);
       if (command.prompt !== undefined) requireString(`${label}.prompt`, command.prompt);
+      if (command.presentation !== undefined && command.presentation !== "window" && command.presentation !== "showcase") {
+        throw new ProjectFormatError(`${label}.presentation 은 window 또는 showcase 여야 합니다.`);
+      }
       const maxLength = requireNumber(`${label}.maxLength`, command.maxLength);
       if (Number.isInteger(maxLength) && maxLength >= 1 && maxLength <= 12) return;
       throw new ProjectFormatError(`${label}.maxLength가 잘못되었습니다.`);

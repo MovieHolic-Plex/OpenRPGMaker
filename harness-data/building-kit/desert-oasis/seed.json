@@ -1,0 +1,849 @@
+{
+ "harness": "building-kit",
+ "note": "style-r3 시드 — 사용자 2026-10-22 반려(「지붕·접지면·색감 어색, 왜 건물들이 ㅁ 자밖에 없냐」) 뒤 문법을 고쳤다: 기단 행 없음 · 질량 합성(탑 둘 + 물러난 가운데) · 총안 난간.",
+ "theme": {
+  "id": "desert-oasis",
+  "name": "사막 오아시스 도시",
+  "concept": "모래색 흙벽돌·마름 사암 벽에 평지붕+난간, 청록 돔 사원, 붉은 차양 시장, 우물집. 버들항 사막 오아시스 변형과 같은 재료.",
+  "decision": "사용자 2026-10-22: 테마 넷(중세 판타지 왕국·사막 오아시스·설원 북방·버들항 귀족 구역), 방식 「버들항식 부품 조립」"
+ },
+ "family": "oprn-atlas",
+ "tileset": {
+  "id": "bk_desert_oasis",
+  "family": "oprn-atlas",
+  "status": "골격 — 후보 없음. 번들에 굽지 않는다."
+ },
+ "rules": {
+  "tile": 16,
+  "family": "oprn-atlas",
+  "light": "왼쪽 위",
+  "view": "3/4 탑뷰 — 지붕 윗면이 면으로 보이고(건물 높이의 30~50%) 남쪽 정면이 보인다. 옆면·아이소 금지. 정면 입면도(지붕이 얇은 띠)도 금지.",
+  "outline": "던전·무림과 같은 외곽선 규칙 — 먹 윤곽(밝기 ≤ 0.12) 없음, 재질 자신의 명암(빛 받는 위·왼 = 밝은 단, 그늘 아래·오른 = 어두운 단). 큰 구조 바깥은 재질 어두운 단.",
+  "paletteLock": "불투명은 palette.json 색만, 반투명은 버들항 그림자 (12,14,20,α88) 하나만. 후보 코드에 hex 색 금지.",
+  "door": "건물 하나에 문은 정확히 하나(시드가 doorTwice 를 명시한 레시피만 예외), 문은 맨 아래 층, 문 앞 칸은 걸음.",
+  "storey": "벽 한 층 = 2칸(32px), 지붕 = 3행(2층은 4행 .tall), 기단은 선택(기본 없음). 문은 32px 높이(Actor1 24×32 와 같은 키).",
+  "seam": "가운데 조각은 가로로 1~6번 반복된다 — 기와 줄·줄눈·기둥 박자가 조각 경계를 넘어 이어져야 한다(16 주기 바탕).",
+  "eave": "처마는 지붕 l·r 조각의 바깥 2~3px 에 그린다 — 지붕 폭 = 벽 폭(overhang 0칸). 지붕 맨 아래 2행은 칸 경계까지 불투명하게 찍는다('~' 반투명을 쓰면 바닥이 비쳐 지붕·벽 사이가 벌어진다).",
+  "eaveShadow": "처마 그늘은 벽 조각 맨 위 1~2행에 벽 재질의 어두운 단으로 불투명하게 그린다. 벽 l·r 조각은 바깥 2~3px 을 투명(inset 2)으로 두어 처마가 벽보다 튀어나와 보이게 한다. '~' 는 건물 발치 바닥 그림자에만.",
+  "forbidden": [
+   "생성 이미지·트레이스",
+   "사람(캐릭터) 그리기 — 크기 비교는 Actor1",
+   "글자·상표가 있는 간판",
+   "원·다각형 마스크로 본체 만들기·잡음 채우기·난수",
+   "먹 윤곽"
+  ],
+  "ground": "건물은 땅에 바로 닿는다 — 전폭 기단·보도블록 행을 깔지 않는다(사용자 2026-10-22: 「접지면이 어긋나다」·「보도블록까지 그릴 필요가 있나」). 기초는 벽 조각 맨 아래 1~3px 의 어두운 단·돌이고, 기단(base)은 계단이 있는 대좌처럼 레시피가 명시할 때만 쓴다.",
+  "roof": "모임지붕(hip): 지붕 세트의 왼끝·오른끝 조각이 2칸이고 그 안에 처마 모서리→용마루 끝 사선이 들어간다. 용마루는 짧고 밝은 선, 사면은 2행 이상, 처마는 가장 어두운 띠. 1층은 3행, 2층은 4행(.tall). 처마는 끝 조각 바깥 2~3px 돌출, 벽 끝 조각은 inset 2 로 비운다. 건물 최소 폭 4칸.",
+  "colour": "지붕은 중간·어두운 단이 대부분이고 가장 밝은 단은 한 화소 하이라이트로 드문드문 — 밝은 단을 넓게 깔면 지붕이 떠 보인다(사용자 2026-10-22 「색감이 어색하다」). refs/ 의 버들항 기준 건물과 같은 배율로 견준다.",
+  "massing": "한 채는 질량(masses)을 합쳐 만든다 — 앞줄(depth 0)이 뒤 질량(depth 1)을 덮는다. 질량은 가로로 닿거나 겹치고, 문은 건물 전체에 하나. 층마다 벽 재질을 바꿀 수 있다(돌 1층 + 목조 2층)."
+ },
+ "palette": {
+  "note": "공유 램프(grass·cobble·stone·wood·iron)는 palette.py 가 모든 테마에 똑같이 뽑는다. 여기는 테마 램프만.",
+  "ramps": {
+   "adobe": {
+    "from": "beodeul",
+    "cells": [
+     {
+      "kit": "bd-pick-desert-oasis-khan"
+     }
+    ],
+    "k": 7,
+    "pred": "warm",
+    "why": "흙벽돌 벽 — 버들항 사막 대상 숙소(khan) 벽"
+   },
+   "sandstone": {
+    "from": "beodeul",
+    "cells": [
+     {
+      "kit": "bd-pick-desert-oasis-temple",
+      "rows": [
+       2,
+       3,
+       4
+      ]
+     }
+    ],
+    "k": 7,
+    "pred": "warm",
+    "why": "사암 마름돌 — 버들항 사막 사원 벽 줄"
+   },
+   "whitewash": {
+    "from": "beodeul",
+    "cells": [
+     {
+      "kit": "bd-pick-desert-oasis-shrine",
+      "rows": [
+       1,
+       2,
+       3,
+       4,
+       5
+      ]
+     }
+    ],
+    "k": 7,
+    "pred": "cream",
+    "why": "흰 회칠 — 버들항 사막 사당 벽"
+   },
+   "dome": {
+    "from": "beodeul",
+    "cells": [
+     {
+      "kit": "bd-pick-desert-oasis-temple",
+      "rows": [
+       0,
+       1
+      ]
+     }
+    ],
+    "k": 7,
+    "pred": "teal",
+    "why": "청록 돔 — 버들항 사막 사원 돔"
+   },
+   "awning": {
+    "from": "beodeul",
+    "cells": [
+     {
+      "kit": "bd-pick-desert-oasis-stall",
+      "rows": [
+       0,
+       1
+      ]
+     }
+    ],
+    "k": 7,
+    "pred": "red",
+    "why": "붉은 차양 천 — 버들항 사막 시장 노점 차양"
+   }
+  }
+ },
+ "characters": {
+  "sheet": "public/assets/easyrpg/charset/Actor1.png",
+  "note": "크기 비교 전용. 그리지 않는다."
+ },
+ "refs": [
+  {
+   "kit": "bd-pick-desert-oasis-khan",
+   "label": "버들항 사막 대상 숙소 9×9 — 흙벽돌·총안 난간",
+   "use": "inn"
+  },
+  {
+   "kit": "bd-pick-desert-oasis-temple",
+   "label": "버들항 사막 사원 8×5 — 사암 벽·청록 돔",
+   "use": "temple"
+  },
+  {
+   "kit": "bd-pick-desert-oasis-shrine",
+   "label": "버들항 사막 사당 4×6 — 흰 회칠·작은 돔",
+   "use": "shrine"
+  },
+  {
+   "kit": "bd-pick-desert-oasis-stall",
+   "label": "버들항 사막 노점 3×4 — 붉은 줄무늬 차양",
+   "use": "market"
+  }
+ ],
+ "lines": {
+  "note": "줄 = 화풍 하나. 첫 판 style-r1 의 후보 글자가 곧 줄이다.",
+  "A": {
+   "name": "흙벽돌 평지붕",
+   "concept": "햇볕에 구운 흙벽돌(adobe) 벽과 다진 흙 평지붕, 낮은 흙 난간, 나무 들보 끝(wood)이 벽 위로 튀어나온다. 오아시스 민가의 기본 줄.",
+   "materials": [
+    "adobe",
+    "wood",
+    "stone"
+   ],
+   "origin": {
+    "round": "style-r3",
+    "key": "A"
+   }
+  },
+  "B": {
+   "name": "사암 돔",
+   "concept": "다듬은 사암(sandstone) 벽과 아치 창·문, 평지붕 위 난간과 작은 돔. 사원·여관·부잣집 줄.",
+   "materials": [
+    "sandstone",
+    "dome",
+    "stone"
+   ],
+   "origin": {
+    "round": "style-r3",
+    "key": "B"
+   }
+  },
+  "C": {
+   "name": "흰 회칠",
+   "concept": "흰 회칠(whitewash) 벽, 파란·주황 천 차양(awning), 평지붕 난간. 시장 거리 줄.",
+   "materials": [
+    "whitewash",
+    "awning",
+    "wood",
+    "stone"
+   ],
+   "origin": {
+    "round": "style-r3",
+    "key": "C"
+   }
+  }
+ },
+ "waves": {
+  "roof": "지붕 세트 — 왼끝 2칸·가운데 1칸 반복·오른끝 2칸(모임 사선 자리), 3행(1층)·4행(2층 .tall). 평지붕은 끝 1칸",
+  "wall": "벽 세트 — 층마다 왼끝·가운데(반복)·창·문(1층만)·오른끝, 2행",
+  "band": "층 띠(처마돌림 선반) — 2층 이상에서 층 사이",
+  "base": "기단(선택) — 계단 있는 대좌가 필요할 때만. 기본 레시피는 기단 없이 벽이 땅에 닿는다",
+  "extra": "굴뚝·지붕창·옆 탑·현관·간판 걸이(글자 없음) — anchor 좌표에 얹는다"
+ },
+ "items": [
+  {
+   "id": "roof.flat",
+   "wave": "roof",
+   "kind": "set",
+   "title": "난간 평지붕 세트",
+   "size": [
+    3,
+    3
+   ],
+   "layer": "upper",
+   "walk": "★ 사람 뒤로 지나감(그림이 사람 위)",
+   "brief": "평지붕 3행 × 왼끝 1칸 · 가운데 1칸 반복 · 오른끝 1칸. 맨 윗행은 난간 윗면(칸 폭 2~4px 이빨이 일정한 박자), 가운데 행은 밝은 흙 다짐 지붕 면, 맨 아래 행은 처마 그늘(흙벽 어두운 단)이다. 난간은 왼끝·오른끝 조각에서 모서리를 돌아 닫힌다. 지붕 면은 중간 단 위주, 밝은 단은 드문드문. 처마는 끝 조각 바깥 2~3px 돌출, 맨 아래 2행은 칸 경계까지 불투명.",
+   "accept": [
+    "난간 윗면이 지붕 면보다 밝고 이빨 박자가 규칙적이다",
+    "지붕 면이 평평한 면으로 보이고 중간·어두운 단 위주다",
+    "가운데를 반복해도 난간·지붕 면이 이어진다",
+    "맨 아래 2행이 불투명하고 처마가 끝 조각 바깥 2~3px 에 있다",
+    "버들항 사막 대상 숙소 지붕과 같은 배율로 견줘 같은 게임으로 보인다"
+   ],
+   "pieces": [
+    {
+     "id": "l",
+     "role": "l",
+     "title": "왼끝(모임 사선)",
+     "at": [
+      0,
+      0
+     ],
+     "size": [
+      1,
+      3
+     ],
+     "kind": "roof",
+     "qMin": 0.6,
+     "qTopRow": false
+    },
+    {
+     "id": "m",
+     "role": "m",
+     "title": "가운데(반복)",
+     "at": [
+      1,
+      0
+     ],
+     "size": [
+      1,
+      3
+     ],
+     "kind": "roof",
+     "tileable": "x"
+    },
+    {
+     "id": "r",
+     "role": "r",
+     "title": "오른끝(모임 사선)",
+     "at": [
+      2,
+      0
+     ],
+     "size": [
+      1,
+      3
+     ],
+     "kind": "roof",
+     "qMin": 0.6,
+     "qTopRow": false
+    }
+   ],
+   "joins": [
+    [
+     "l",
+     "m",
+     "x"
+    ],
+    [
+     "m",
+     "m",
+     "x"
+    ],
+    [
+     "m",
+     "r",
+     "x"
+    ],
+    [
+     "l",
+     "r",
+     "x"
+    ]
+   ],
+   "end": 1
+  },
+  {
+   "id": "wall.storey",
+   "wave": "wall",
+   "kind": "set",
+   "title": "벽 한 층 세트",
+   "size": [
+    5,
+    2
+   ],
+   "layer": "lower",
+   "walk": "X 막힘 · 문 칸만 o",
+   "brief": "흙벽·사암 한 층(2행). 왼끝·가운데·창(아치 창)·문(아치 문)·오른끝. 처마 그늘은 맨 위 1~2행에 흙벽의 어두운 단으로 불투명하게. 왼끝·오른끝 조각은 바깥 2~3px 을 투명(inset 2)으로 둔다. 벽 조각의 맨 아래 1~3px 은 그 벽 재질의 어두운 단(또는 돌)으로 그린 기초다 — 건물은 땅에 바로 닿고 별도 기단 행을 두지 않는다.",
+   "accept": [
+    "가운데·창·문을 이어도 이음이 안 보인다",
+    "아치가 칸 경계에서 끊기지 않는다",
+    "처마 그늘이 맨 위 1~2행에 불투명하게 있고, 왼끝·오른끝 바깥 2~3px 은 투명이다"
+   ],
+   "pieces": [
+    {
+     "id": "l",
+     "role": "l",
+     "title": "왼끝",
+     "at": [
+      0,
+      0
+     ],
+     "size": [
+      1,
+      2
+     ],
+     "kind": "wall",
+     "inset": 2
+    },
+    {
+     "id": "m",
+     "role": "m",
+     "title": "가운데(반복)",
+     "at": [
+      1,
+      0
+     ],
+     "size": [
+      1,
+      2
+     ],
+     "kind": "wall",
+     "tileable": "x"
+    },
+    {
+     "id": "w",
+     "role": "w",
+     "title": "창 칸",
+     "at": [
+      2,
+      0
+     ],
+     "size": [
+      1,
+      2
+     ],
+     "kind": "wall"
+    },
+    {
+     "id": "d",
+     "role": "d",
+     "title": "문 칸",
+     "at": [
+      3,
+      0
+     ],
+     "size": [
+      1,
+      2
+     ],
+     "kind": "wall"
+    },
+    {
+     "id": "r",
+     "role": "r",
+     "title": "오른끝",
+     "at": [
+      4,
+      0
+     ],
+     "size": [
+      1,
+      2
+     ],
+     "kind": "wall",
+     "inset": 2
+    }
+   ],
+   "joins": [
+    [
+     "l",
+     "m",
+     "x"
+    ],
+    [
+     "m",
+     "m",
+     "x"
+    ],
+    [
+     "m",
+     "w",
+     "x"
+    ],
+    [
+     "w",
+     "m",
+     "x"
+    ],
+    [
+     "m",
+     "d",
+     "x"
+    ],
+    [
+     "d",
+     "m",
+     "x"
+    ],
+    [
+     "w",
+     "d",
+     "x"
+    ],
+    [
+     "d",
+     "w",
+     "x"
+    ],
+    [
+     "l",
+     "w",
+     "x"
+    ],
+    [
+     "w",
+     "r",
+     "x"
+    ],
+    [
+     "m",
+     "r",
+     "x"
+    ],
+    [
+     "l",
+     "d",
+     "x"
+    ],
+    [
+     "d",
+     "r",
+     "x"
+    ]
+   ]
+  },
+  {
+   "id": "base.stone",
+   "wave": "base",
+   "kind": "set",
+   "title": "기단 세트",
+   "size": [
+    3,
+    1
+   ],
+   "layer": "lower",
+   "walk": "X 막힘",
+   "brief": "기단(대좌) 세트. 1행 — **선택 부품**이다. 기본 레시피는 기단을 쓰지 않고 벽이 땅에 바로 닿는다. 레시피가 계단 있는 대좌(사원 대좌 같은 것)를 명시할 때만 깐다. 전폭 보도블록처럼 읽히면 실패다.",
+   "accept": [
+    "계단·대좌로 읽힌다(보도블록 띠가 아니다)",
+    "건물이 땅에 앉아 보인다(뜨지 않는다)",
+    "가운데 반복 이음이 안 보인다"
+   ],
+   "pieces": [
+    {
+     "id": "l",
+     "role": "l",
+     "title": "왼끝",
+     "at": [
+      0,
+      0
+     ],
+     "size": [
+      1,
+      1
+     ],
+     "kind": "base",
+     "foot": true
+    },
+    {
+     "id": "m",
+     "role": "m",
+     "title": "가운데(반복)",
+     "at": [
+      1,
+      0
+     ],
+     "size": [
+      1,
+      1
+     ],
+     "kind": "base",
+     "tileable": "x",
+     "foot": true
+    },
+    {
+     "id": "r",
+     "role": "r",
+     "title": "오른끝",
+     "at": [
+      2,
+      0
+     ],
+     "size": [
+      1,
+      1
+     ],
+     "kind": "base",
+     "foot": true
+    }
+   ],
+   "joins": [
+    [
+     "l",
+     "m",
+     "x"
+    ],
+    [
+     "m",
+     "m",
+     "x"
+    ],
+    [
+     "m",
+     "r",
+     "x"
+    ]
+   ]
+  },
+  {
+   "id": "extra.dome",
+   "wave": "extra",
+   "kind": "set",
+   "title": "돔",
+   "size": [
+    2,
+    2
+   ],
+   "layer": "upper",
+   "walk": "★",
+   "brief": "평지붕 위에 얹는 청록 돔(2×2). 윗면 빛이 왼쪽 위.",
+   "accept": [
+    "돔이 공처럼 보이지 않고 지붕에 앉아 있다"
+   ],
+   "pieces": [
+    {
+     "id": "x",
+     "role": "x",
+     "title": "돔",
+     "at": [
+      0,
+      0
+     ],
+     "size": [
+      2,
+      2
+     ],
+     "kind": "extra",
+     "top": [
+      0,
+      1
+     ]
+    }
+   ],
+   "joins": []
+  },
+  {
+   "id": "extra.awning",
+   "wave": "extra",
+   "kind": "set",
+   "title": "차양",
+   "size": [
+    2,
+    1
+   ],
+   "layer": "upper",
+   "walk": "★",
+   "brief": "문 위·노점 앞 줄무늬 차양(글자 없음).",
+   "accept": [
+    "차양 윗면이 보인다"
+   ],
+   "pieces": [
+    {
+     "id": "x",
+     "role": "x",
+     "title": "차양",
+     "at": [
+      0,
+      0
+     ],
+     "size": [
+      2,
+      1
+     ],
+     "kind": "extra"
+    }
+   ],
+   "joins": []
+  },
+  {
+   "id": "roof.crenel",
+   "wave": "roof",
+   "kind": "set",
+   "title": "총안(크레넬) 평지붕 세트",
+   "size": [
+    3,
+    3
+   ],
+   "layer": "upper",
+   "walk": "★ 사람 뒤로 지나감(그림이 사람 위)",
+   "brief": "총안 난간이 선 평지붕 3행 × 끝 1칸. 맨 윗행에 1~2px 홈이 일정 간격으로 파여 총안이 읽히고(홈 아래는 벽 그늘), 가운데 행은 흙 다짐 지붕 면, 맨 아래 행은 처마 그늘이다. 탑처럼 네 귀퉁이가 하늘로 열린 실루엣을 만든다 — 끝 조각의 바깥 모서리는 난간 이빨 하나만 남기고 비운다. 처마는 바깥 2~3px, 맨 아래 2행 불투명.",
+   "accept": [
+    "총안 홈이 하늘로 열려 실루엣이 톱니로 읽힌다(평평한 띠 아님)",
+    "난간 이빨 폭·간격이 규칙적이다",
+    "가운데를 반복해도 총안 박자가 이어진다",
+    "맨 아래 2행이 불투명하다",
+    "버들항 사막 대상 숙소의 총안 난간과 같은 배율로 견준다"
+   ],
+   "pieces": [
+    {
+     "id": "l",
+     "role": "l",
+     "title": "왼끝(모임 사선)",
+     "at": [
+      0,
+      0
+     ],
+     "size": [
+      1,
+      3
+     ],
+     "kind": "roof",
+     "qMin": 0.6,
+     "qTopRow": false
+    },
+    {
+     "id": "m",
+     "role": "m",
+     "title": "가운데(반복)",
+     "at": [
+      1,
+      0
+     ],
+     "size": [
+      1,
+      3
+     ],
+     "kind": "roof",
+     "tileable": "x"
+    },
+    {
+     "id": "r",
+     "role": "r",
+     "title": "오른끝(모임 사선)",
+     "at": [
+      2,
+      0
+     ],
+     "size": [
+      1,
+      3
+     ],
+     "kind": "roof",
+     "qMin": 0.6,
+     "qTopRow": false
+    }
+   ],
+   "joins": [
+    [
+     "l",
+     "m",
+     "x"
+    ],
+    [
+     "m",
+     "m",
+     "x"
+    ],
+    [
+     "m",
+     "r",
+     "x"
+    ],
+    [
+     "l",
+     "r",
+     "x"
+    ]
+   ],
+   "end": 1
+  }
+ ],
+ "buildings": [
+  {
+   "id": "mudhouse",
+   "title": "흙벽돌 집",
+   "use": "home",
+   "cols": 4,
+   "storeys": 1,
+   "roof": "roof.flat",
+   "wall": "wall.storey",
+   "walls": [
+    "L W D R"
+   ],
+   "note": "style-r3 — 4칸 폭 1층, 난간 있는 평지붕, 기단 행 없음"
+  },
+  {
+   "id": "khan",
+   "title": "사막 대상 숙소",
+   "use": "inn",
+   "masses": [
+    {
+     "id": "left",
+     "cols": 4,
+     "storeys": 2,
+     "x": 0,
+     "depth": 0,
+     "roof": "roof.crenel",
+     "walls": [
+      {
+       "item": "wall.storey",
+       "letters": "L W M R"
+      },
+      {
+       "item": "wall.storey",
+       "letters": "L W M R"
+      }
+     ]
+    },
+    {
+     "id": "centre",
+     "cols": 4,
+     "storeys": 1,
+     "x": 3,
+     "depth": 1,
+     "roof": "roof.flat",
+     "walls": [
+      {
+       "item": "wall.storey",
+       "letters": "L W D R"
+      }
+     ]
+    },
+    {
+     "id": "right",
+     "cols": 4,
+     "storeys": 2,
+     "x": 6,
+     "depth": 0,
+     "roof": "roof.crenel",
+     "walls": [
+      {
+       "item": "wall.storey",
+       "letters": "L W M R"
+      },
+      {
+       "item": "wall.storey",
+       "letters": "L W M R"
+      }
+     ]
+    }
+   ],
+   "note": "총안 탑 둘 사이로 한 칸 물러난 가운데 몸체 — 아치 문은 가운데에 하나"
+  },
+  {
+   "id": "temple",
+   "title": "돔 사원",
+   "use": "temple",
+   "masses": [
+    {
+     "id": "body",
+     "cols": 6,
+     "storeys": 1,
+     "x": 0,
+     "depth": 1,
+     "roof": "roof.flat",
+     "wall": "wall.storey",
+     "walls": [
+      "L W M W M R"
+     ]
+    },
+    {
+     "id": "drum",
+     "cols": 4,
+     "storeys": 2,
+     "x": 1,
+     "depth": 0,
+     "roof": "roof.flat",
+     "wall": "wall.storey",
+     "walls": [
+      "L M M M",
+      "L M D M"
+     ],
+     "extras": [
+      {
+       "part": "extra.dome",
+       "at": [
+        1,
+        0
+       ]
+      }
+     ]
+    }
+   ],
+   "note": "낮고 넓은 몸체(한 칸 물러남) + 앞으로 선 돔 북 — 문은 돔 아래 하나. 기단 행 없음(포장 금지)"
+  }
+ ],
+ "rounds": {
+  "style-r1": {
+   "wave": "style",
+   "title": "화풍 판 — 줄 A·B·C × 부품 최소 세트 + 조립 건물 둘",
+   "module": "src/harnesses/building-kit/rounds/desert-oasis/style_r1.py",
+   "keys": "letter",
+   "items": [
+    "roof.flat",
+    "wall.storey",
+    "base.stone"
+   ],
+   "lead": "줄마다 지붕 1변형·벽 1층(창·문)·기단을 그리고 작은 집·긴 집으로 조립해 본다. 사람이 줄을 고르거나 여럿 남긴다.",
+   "superseded": "style-r3"
+  },
+  "style-r3": {
+   "wave": "style",
+   "title": "화풍 판 3 — 기단 없는 접지 · 2칸 모임 사선 지붕 · 질량 합성",
+   "module": "src/harnesses/building-kit/rounds/desert-oasis/style_r3.py",
+   "keys": "letter",
+   "items": [
+    "roof.flat",
+    "roof.crenel",
+    "wall.storey",
+    "extra.dome"
+   ],
+   "buildings": [
+    "mudhouse",
+    "khan",
+    "temple"
+   ],
+   "lead": "줄 A·B·C 마다 부품 전부를 한 에이전트가 그리고, 이번 판의 건물 전부(여러 질량 포함)를 dry 로 조립해 refs/ 와 나란히 본다. 사용자 반려(지붕·접지면·색감·ㅁ자)를 문법으로 고친 판이다."
+  }
+ },
+ "plan": {
+  "style-r1": "줄 A·B·C × 평지붕·벽 한 층·기단 + 흙벽돌 집",
+  "civic-r1": "시장 차양·돔 사원·우물집",
+  "style-r3": "기단 없는 접지 · 2칸 끝 모임지붕 · 층별 벽 재질 · 질량 합성 (사용자 2026-10-22 반려 뒤)",
+  "frame-r2": "남긴 줄마다 후보 2: 지붕 변형 전부 · 층별 벽 재질 변형 · 층 띠 · 굴뚝/돔/탑 같은 extras"
+ }
+}

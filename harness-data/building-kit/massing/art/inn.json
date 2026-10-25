@@ -1,0 +1,19 @@
+{
+ "name": "여관",
+ "massing": "11",
+ "material": "plaster",
+ "refs": [
+  "bd-house-inn",
+  "bd-house-cstable"
+ ],
+ "walk": [
+  ".*****....",
+  "*******...",
+  "*******...",
+  "XXXXXXXXXX",
+  "XXXXXXXXXX",
+  "XXDXXXXXXX",
+  "XXDXXXXXXX"
+ ],
+ "id": "inn"
+}

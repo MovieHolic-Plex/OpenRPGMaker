@@ -1,0 +1,20 @@
+{
+ "name": "성문루",
+ "massing": "16",
+ "material": "stone",
+ "refs": [
+  "bd-wall-tower",
+  "bd-castle"
+ ],
+ "walk": [
+  "**********",
+  "**********",
+  "**********",
+  "**********",
+  "**********",
+  "XXXXXXXXXX",
+  "XXXXDXXXXX",
+  "XXXXDXXXXX"
+ ],
+ "id": "gatehouse"
+}

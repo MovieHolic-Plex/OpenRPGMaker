@@ -1,0 +1,366 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b6df3fc2c1fb0aebe0f3a882a407442e8326cb4e5f08c5ff276e916109355f9d",
+ "width": 16,
+ "height": 32,
+ "kind": "other",
+ "name": "세로 입간판 「편의」",
+ "label": "modern_city/street-kr/mc-prop-kr-sign-conv",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "refer",
+ "reasons": [
+  "3/4: 판정자 의견이 갈림(분명한 3/4 2/4, 분명한 위반 2/4)",
+  "3/4: 투영이 3/4 아님(front_elevation) (2/4)",
+  "3/4: 윗면 0행 < 3 (2/4)",
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (2/4)"
+ ],
+ "view34": {
+  "verdict": "refer",
+  "reasons": [
+   "판정자 의견이 갈림(분명한 3/4 2/4, 분명한 위반 2/4)",
+   "투영이 3/4 아님(front_elevation) (2/4)",
+   "윗면 0행 < 3 (2/4)",
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (2/4)"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "bus-shelter-a",
+   "kiosk-a",
+   "vending-a"
+  ],
+  "scale": 2,
+  "score": 7,
+  "refSet": {
+   "id": "modern_city",
+   "chipset": "modern_city",
+   "fallback": false,
+   "hash": "dc20de17343e77e8"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 10,
+  "tileColorsP90": 10,
+  "darkV5": 37,
+  "nearBlackEdge": 1,
+  "opaqueTiles": 2
+ },
+ "eye": {
+  "verdicts": [
+   "borderline",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top cap with light inner plate",
+      "rows": "0-5",
+      "evidence": "b",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-6"
+     },
+     {
+      "part": "blue sign board with white 편의 lettering (vertical face)",
+      "rows": "7-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base cap",
+      "rows": "29-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 24,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The width profile is 8, 14, 16, 16, 16, 14, then 14 down the body. Rows 0-5 form a gray cap whose top edge is rounded. A light plate sits inside it (L≈231 at x=8, rows 2-4). Row 5 is a darker front-edge row (L=113), and row 6 is a dark outline (L=17) that works as eave shadow. This reads as a small lid seen from above, though it is only weakly an ellipse because the cap is just 2 px wider than the body. Below it the blue board is a flat front face with white lettering (rows 7-28) and a gray base band at rows 29-30. The top reading is marginal, but the cap does show a top surface above a 24-row front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a vertical blue sign with white Korean lettering. It has about 4 steps on the blue body (a dark outline, mid blue, lighter panel and a highlight edge) and a rounded capsule top. The outline is a tinted dark navy, not neutral, matching the 0% near-neutral edge share of the references. Measured facts: 10 visible tones per tile against 6 for bus-shelter, 12 for kiosk and 20 for vending, so it is above the bus shelter, near the kiosk and below the vending machine. Near-flat coverage is 0%, so there are no flat fills. The interior is mostly a flat blue field broken only by the lettering and a few highlight pixels, and it has less grain and fewer clusters than vending-a, which is why density is only slightly lower. A careful artist would likely accept it next to the references as a simple sign, but this is borderline. It passes on the primary facts at or above two of the three references, with tinted outlines.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17978
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top cap / header of the sign frame (gray, with a light pill highlight)",
+      "rows": "0-5",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "blue sign panel with white lettering",
+      "rows": "7-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "bottom base strip (gray)",
+      "rows": "29-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 22,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The object is a tall standing sign seen face-on. The blue panel (rows 7-28) is a vertical face with lettering. The gray cap at rows 0-5 has widths 8, 14, 16, 16, 16, 14, so it is only rounded at its upper edge. It sits flat on the 14-wide body below, with a dark outline at row 6, so it is a hat-like end and not an ellipse. It has no front-edge line and no eave shadow. The light pill at rows 1-4 is a highlight on a front-facing strip. The 1-row lighter bevel at row 7 on the panel edge is only a rim. The base at rows 29-30 is likewise a plain front strip. No horizontal top surface is visible anywhere, and no side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a tall navy sign with a rounded top, a lighter blue panel and white Korean glyphs. The measured facts put it at 10 visible tones per tile, 0% near-flat coverage and 0% neutral dark edge pixels. That is above bus-shelter-a (6 tones, 9% flat) and just under kiosk-a (12), but well below vending-a (20). The outline is a dark blue-navy that leans toward the material, not neutral black, so it reads as dark_material_tone. The panel has a lighter inner frame and some edge highlighting, which gives about 4 steps on the body ramp. The references show more: vending-a has a detailed front with items and highlights, and kiosk-a has a striped awning with texture. The candidate's panel and body are fairly smooth, with little grain or speckle, so the surface is mostly clean blocks plus lettering. Texture is modest and structure is clean, but it looks a bit flatter and simpler than the richer references. It is comparable to bus-shelter-a and kiosk-a, so it is borderline. A simple standing sign is acceptable at this level, and it does not look sticker-like next to the references. Because the instruction says to fail when in doubt, and it is thinner than vending-a and kiosk-a on shading steps and surface grain, I rate it slightly lower.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 0행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 0행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 17982
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top cap of the sign",
+      "rows": "0-5",
+      "evidence": "b",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "blue sign panel with white text",
+      "rows": "7-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base cap",
+      "rows": "29-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 24,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The sign is a standing signboard seen from the south. At the top, rows 0-5 form a cap whose width profile is 8, 14, 16, 16, 16, 14. It widens and then steps back in, and a light oval highlight sits inside it, so it reads as a lid or ellipse top. A dark 1-row line at row 6 closes the cap as a front-edge line. Below it, rows 7-30 are the vertical blue face with white lettering, 24 rows tall, and rows 29-30 are a lighter base band. No side face is drawn. The top is only weakly shown: the cap is not clearly narrower than the body at its bottom edge, and there is no distinct eave shadow, so this is a borderline three_quarter reading."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a vertical blue signboard with a light rim and white Korean glyphs on a dark navy face. Measured facts: 10 visible tones per tile, against 6 (bus-shelter), 12 (kiosk) and 20 (vending). That is above the bus shelter and close to the kiosk, though well under the vending machine. Near-flat coverage is 0%, so no large flat fills. The dark edge pixels are 0% neutral, so the outline is tinted dark navy/blue, matching the references' treatment. Shading is about 4 steps (rim highlight, panel mid, panel dark, outline) against about 5 in the references. The sign face is fairly clean, with a glow gradient and glyphs but little grain. It would sit acceptably beside the references, and it is a thin object, so density is judged by eye. It is slightly lower than the richest reference but not a sticker look.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17525
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top cap (gray rounded end with light plate)",
+      "rows": "0-5",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "blue sign board with white vertical text",
+      "rows": "6-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "bottom base band (gray)",
+      "rows": "29-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 25,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The sign is a tall, flat board drawn face-on. The blue board (rows 7-30) with its white text is a vertical panel with no front-edge line or eave shadow. The top cap (rows 0-5) widens 8, 14, 16 and then drops to 14 for the shaft. It is rounded only at its upper edge and sits flat on the narrower shaft, so it is a hat and not an ellipse. The light plate inside it (rows 1-4 in the x=8 column) is a front-facing highlight, not a horizontal surface. The bottom gray band (rows 29-30) is also a front-facing strip. Nothing shows a top surface, so the sign reads as a front elevation, like the 'front elevation' and 'flat band cap' wrong examples."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a tall blue sign box with a light top cap, a lighter rim highlight, a mid-blue face, a darker edge side and white vertical Korean text. It reads as about 5 ramp steps (deep navy edge, dark blue, mid blue, light blue highlight, white), close to the references: the bus shelter is plainer, while the kiosk and vending machine are denser. The measured facts support this. Visible tones per tile are 10, against 6 for the bus shelter, 12 for the kiosk and 20 for the vending machine, so it sits in the reference range and above the bus shelter. Near-flat coverage is 0%, so there are no 5x5 flat fills; the text and edge shading break up the face. The dark edge pixels are 0% neutral, so the outline is a tinted dark navy, matching the adjacent blue material rather than a black sticker line. The face is fairly simple and the sign is thin, but a careful artist would accept it next to the kiosk and vending references without it looking flatter or more sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 0행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 0행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18998
+  }
+ ],
+ "decidedAt": "2026-10-24T16:50:29.445Z",
+ "cells": {
+  "16": [
+   "1fcc8afbf9380433",
+   "457ccfb78b35f36f"
+  ],
+  "24": [
+   "12ce8b074947d8dd",
+   "1f7b658419ca6019",
+   "2767acabbeea24b7",
+   "452a67b94d32650d",
+   "5b0a07e524d38b7c",
+   "7174570bb3f268c4",
+   "8a005d81687f0d8e",
+   "97013b792bad2a9d",
+   "afde05b8afaeb8e4",
+   "d8712656a617214c",
+   "da533f6c4a8c996b",
+   "e9c666cb17dd5bd3"
+  ],
+  "32": [
+   "4b4c7ecbeb08b6cc",
+   "bb01369964a30e4f",
+   "eb52aa859539ee86"
+  ],
+  "48": [
+   "5f0edcbfd2b914f9",
+   "67c10296c24bb3a6",
+   "9af987fc9198f21a",
+   "cba7a8714880fa31",
+   "d3edbd919a646801",
+   "f9f3b34210c9a280"
+  ]
+ }
+}

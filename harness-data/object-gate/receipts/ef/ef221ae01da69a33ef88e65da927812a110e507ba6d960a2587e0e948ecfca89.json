@@ -1,0 +1,437 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ef221ae01da69a33ef88e65da927812a110e507ba6d960a2587e0e948ecfca89",
+ "width": 96,
+ "height": 80,
+ "kind": "structure",
+ "name": "roofless ruined concrete building seen from above: broken wall tops, rubble-strewn interior floor, front wall with empty window holes and a dark doorway",
+ "label": "wasteland_ruins/husk-a",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 11,
+  "tileColorsP90": 16,
+  "darkV5": 34,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 30
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "back wall top",
+      "rows": "1-4",
+      "evidence": "a",
+      "front_edge_line_row": 4,
+      "eave_shadow_rows": "5-10"
+     },
+     {
+      "part": "interior rubble floor (open roofless interior)",
+      "rows": "11-47",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "front wall top band",
+      "rows": "47-49",
+      "evidence": "a",
+      "front_edge_line_row": 49,
+      "eave_shadow_rows": "50-53"
+     },
+     {
+      "part": "front wall face with windows and doorway",
+      "rows": "50-79",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 37,
+    "front_face_rows": 30,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The building is open from above. Rows 1-4 are a light back-wall top ending in an edge line at row 4, and rows 5-10 are the shadowed inner face of the back wall with window holes. Rows 11-47 are a large horizontal rubble floor, seen from above as contents of an open container (d). Rows 47-49 are the front wall top, a light band with a bright edge line at row 49 (L=189). Below it, rows 50-79 form a 30-row vertical front face with dark window holes and a dark doorway at about rows 62-79. The side walls are thin vertical strips without receding side faces. A top surface and a 3+ row front face are both present."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate has 11 visible tones per 16x16 tile, against 12 and 10 for the references, so density is on par. Near-flat coverage is 8% against 0% for the references. That is slightly higher, but it is only small patches of wall and floor, not large flat fills. Only 19% of its dark edge pixels are near-neutral, so about 81% carry a tint. The wall tops and window and door openings use dark tinted grey or brown-grey edges rather than a uniform black line, and the forms separate by value. The concrete ramp runs from light cap stones through mid and dark greys to the deep door and window voids, about 5 steps. The floor has rubble chunks, speckle and grain in several tones. It reads as a ruin and not as a sticker. The front wall is a bit plainer than the references' tile and plaster texture, but it is not flat. Overall it is acceptable beside the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19881
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "back wall top (light coping band)",
+      "rows": "1-4",
+      "evidence": "a",
+      "front_edge_line_row": 4,
+      "eave_shadow_rows": "5-6"
+     },
+     {
+      "part": "back wall inner face with window holes",
+      "rows": "5-10",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "rubble-strewn interior floor seen inside the roofless walls",
+      "rows": "12-46",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "front wall top (broken wall-top band)",
+      "rows": "47-49",
+      "evidence": "a",
+      "front_edge_line_row": 49,
+      "eave_shadow_rows": "50-51"
+     },
+     {
+      "part": "front wall south face with windows and doorway",
+      "rows": "50-79",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "vines, rubble bricks and debris",
+      "rows": "50-72",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 35,
+    "front_face_rows": 29,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is an open-topped walled enclosure. Its floor is visible inside it (rows 12-46, evidence d), bounded by wall-top bands at rows 1-4 (back) and 47-49 (front). The front wall top has a light edge-line at row 49 followed by a darker shadow row. Below it is a tall south face (rows 50-79) with window holes and a dark doorway, so a top surface and a front face of 3+ rows are both present. The side wall tops are narrow vertical strips, not receding side faces."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "Visible tones per tile are 11, against 12 and 10 for the references, so density is on par. Near-flat coverage is 8% against 0% for the references. That is slightly higher but still small, and it comes from the plain concrete wall faces. Only 19% of dark edge pixels are neutral, so the outlines are mostly tinted, a dark grey-brown beside the concrete rather than a black sticker line. By eye, the candidate has a grey ramp of about 5 steps across wall tops, wall face and floor. The rubble floor carries speckle, scattered orange-brown debris bits, cracks and a weed clump. The front wall has moss and vine accents, with window holes and a dark doorway shaded inside. This is less richly varied than the tile roofs and per-stone shading in the references, and the front wall is a little plain. It would still sit acceptably next to them without looking like a flat sticker.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19215
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "back wall top and back wall inner face with window holes",
+      "rows": "1-10",
+      "evidence": "a",
+      "front_edge_line_row": 4,
+      "eave_shadow_rows": "10-11"
+     },
+     {
+      "part": "open roofless interior with rubble-strewn floor, seen from above",
+      "rows": "11-47",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "front wall top (broken wall cap)",
+      "rows": "47-49",
+      "evidence": "a",
+      "front_edge_line_row": 49,
+      "eave_shadow_rows": "50-53"
+     },
+     {
+      "part": "front wall south face with window holes, doorway and rubble",
+      "rows": "50-79",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 38,
+    "front_face_rows": 30,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The building has no roof, so its top surface is the open interior. Rows 11-47 show the rubble floor, with the back wall's inner face and windows in rows 4-10 above it. The front wall has a light cap band in rows 47-49 whose front-edge line is row 49, followed by darker rows 50-53. Below that, the front south face (rows 50-79) holds the window holes, the dark doorway (rows 62-79) and the brick rubble, which gives a front face of about 30 rows. The side walls appear only as thin light wall-top strips at the left and right edges, not as receding side faces. A large top area plus a tall front face makes this three_quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate measures 11 visible tones per 16x16 tile, between the references at 12 and 10. Near-flat coverage is 8% against 0% for both references, a small gap that is not a flat-fill problem. Only 19% of its dark edge pixels are near-neutral, so the outlines mostly lean toward the material (dark grey-brown on the concrete, dark green near the vines). That is not a uniform black sticker line, though the 19% is above the references' 7-9%, so the outline is slightly less tinted than theirs. The interior floor carries mottled grey concrete, scattered orange-brown rubble bits, cracks and small plant specks, and the wall tops show broken, uneven edges. The front wall is the plainest area, with fewer grain dots than the plaster and stone references, which is why density is slightly lower. The concrete ramp has about 5 steps against the references' 6. The piece reads as a deliberate, textured ruin that a careful artist could place next to the references, so it passes narrowly.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18340
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "back wall top and inner face with window holes",
+      "rows": "1-11",
+      "evidence": "a",
+      "front_edge_line_row": 4,
+      "eave_shadow_rows": "10-11"
+     },
+     {
+      "part": "rubble-strewn interior floor seen from above, open roofless interior",
+      "rows": "12-47",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "front wall top (broken wall cap)",
+      "rows": "47-49",
+      "evidence": "a",
+      "front_edge_line_row": 49,
+      "eave_shadow_rows": "50-51"
+     },
+     {
+      "part": "side wall tops (left and right, 2-3 columns wide light bands)",
+      "rows": "4-46",
+      "evidence": "a",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 36,
+    "front_face_rows": 30,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The building is roofless, so the main top surface is the open interior. Rows 12-47 show the rubble floor, with the back wall's inner face and windows above it at rows 4-11. The front wall has a light top edge at rows 47-49, with its brightest line at row 49. Below it is a 30-row south face (rows 50-79) with a dark doorway, window holes and brick patches. The side walls show only narrow top bands, not receding side faces. The structure therefore has a visible top (the floor seen into the open interior) and a clear front face, so it reads as three-quarter view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate has 11 visible tones per tile against 12 and 10 for the references, so density is comparable. Its near-flat coverage is 8%, against 0% for both references. That is slightly higher but still small, and the floor speckle breaks up most areas. Only 19% of its dark edge pixels are neutral, so the outlines lean toward a tint (a dark cool grey-brown beside the concrete) rather than a uniform black sticker line. The floor carries rubble chunks in several tones, cracks and grain, and the wall tops have a lit/shaded split. The front wall is the flattest area, with a trim band and empty windows, but it still shows tonal variation and vines. It has roughly 5 grey steps, a little below the references' 5-6, and less scalloped tile-style texture. A careful artist would accept it beside the references without it looking like a sticker.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19162
+  }
+ ],
+ "decidedAt": "2026-10-22T14:22:06.267Z",
+ "cells": {
+  "16": [
+   "090e13884f87fb18",
+   "10583640d65da701",
+   "11d919b68a923e21",
+   "19f43a26dd5d9096",
+   "1f26ade45598a749",
+   "2209cc776bd8cc95",
+   "372820efc180c93a",
+   "47ddf5f87056dfae",
+   "4e35749bc177c27d",
+   "50728d0618590c22",
+   "563ed309ec5dd1f2",
+   "573d819c19aca800",
+   "6f03efd29123815f",
+   "7635ba13bb62ba46",
+   "781941a4f178bd5c",
+   "7b2633dfdbe87450",
+   "7cd4fbbf67aced40",
+   "84150ff29d4151cd",
+   "852853613c9a956e",
+   "91a659dbe5127265",
+   "953ea98e89f020e9",
+   "a0d7f91b48e9517b",
+   "aeb8de11539535fd",
+   "b80ff8b1db578d92",
+   "c3d9cd6e4eca4c0a",
+   "c4801f56f6b8f5c7",
+   "d38fcd532160510d",
+   "f677ca72363b94dc",
+   "fcccbe854ed475d9",
+   "fce491ed1b0bab23"
+  ],
+  "24": [
+   "02734f1c80cf45fe",
+   "069c526a754d1879",
+   "1c236415fb0479b0",
+   "1d41f1f6931813a4",
+   "23ee7cac0df172e6",
+   "26f97e9715dfc3a7",
+   "28dd3c9b6f850834",
+   "2eac54515692d55d",
+   "3143c07f600060f8",
+   "31cca25a98ef2799",
+   "3516682f7311bfa5",
+   "500be824ee1d39ab",
+   "584b4670fa85aed5",
+   "58ca34e2dd97dbe3",
+   "61c18ae199234fa9",
+   "647eb64477c73ebe",
+   "662f440c1779d9da",
+   "7089b620e21c1cb0",
+   "7ddf7bfea110bf03",
+   "84c38240487edd93",
+   "8f2d68bcf09febc0",
+   "a2f08d298ad350de",
+   "a2f8c2a6a5192bee",
+   "a85046088bbb8f54",
+   "b0b2c22b96f30502",
+   "b0c5efbd44b64e06",
+   "b49d6ec91273c906",
+   "ccf2fe1236104ed1",
+   "ced4bbcf1118e26c",
+   "d577dcef9367ab67",
+   "d8141891cf420778",
+   "f527c8fa6f671ee7"
+  ],
+  "32": [
+   "00d158a0becc1d04",
+   "2168e36fd02cafc6",
+   "387a5eafaaa97c4d",
+   "496606bbb5b85f93",
+   "4e90a4a564299e80",
+   "64205c3a8a0ed11e",
+   "6fbfee5038613d0a",
+   "7843c4776c3da377",
+   "ad414928de4c0a4b",
+   "af3b2d03c5f23c5c",
+   "b049cf1d1d109b78",
+   "d7229a3ce719d31f",
+   "dc3b7f3296c67750",
+   "ee980c52e14edbd5",
+   "f0681132a8033293",
+   "f485c9d3f91102c6",
+   "f7a77aa3f6c055de",
+   "fa0fc71ab22f35d5"
+  ],
+  "48": [
+   "29b33fdcaff897ee",
+   "2af18d748f6efa3b",
+   "39ea336ce1e3c662",
+   "471c5bec38cce3e1",
+   "751ba742ef505b63",
+   "7a7829e94d7a9ff4",
+   "8354a46647a29973",
+   "cf94036cc217bcb0"
+  ]
+ }
+}

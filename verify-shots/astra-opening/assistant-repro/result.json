@@ -1,0 +1,73 @@
+{
+  "caseId": "title-screen-runners-press-start",
+  "attempt": 1,
+  "task": "타이틀 화면을 밤 풍경으로 바꿔 줘. 별이 깜빡이며 천천히 흐르고 가끔 별똥별이 지나가게, 하늘은 두 겹이 다른 속도로 흐르게. 스타터 셋이 화면을 가로질러 줄지어 달려가고, 메뉴 대신 「PRESS START」가 깜빡이다가 키를 누르면 메뉴가 나오게 해 줘.",
+  "inputMode": "natural",
+  "errors": [],
+  "requests": [
+    {
+      "endpoint": "/v1/chat/completions",
+      "model": "claude-sonnet-5-5",
+      "provider": "local-cli:claude",
+      "at": "2026-10-25T06:00:59.571Z",
+      "taskPrefix": "",
+      "goalCampaign": false
+    },
+    {
+      "endpoint": "/v1/agent/run",
+      "model": "claude-sonnet-5-5",
+      "provider": "local-cli:claude",
+      "mode": "single",
+      "runId": "d460570b-b70b-451e-822f-c957f566a463",
+      "at": "2026-10-25T06:01:13.437Z",
+      "taskPrefix": "타이틀 화면을 밤 풍경으로 바꿔 줘. 별이 깜빡이며 천천히 흐르고 가끔 별똥별이 지나가게, 하늘은 두 겹이 다른 속도로 흐르게. 스타터 셋이 화면을 가로질러 줄지어 달려가고, 메뉴",
+      "goalCampaign": false,
+      "maxTurns": 200
+    },
+    {
+      "endpoint": "/v1/agent/run",
+      "model": "claude-sonnet-5-5",
+      "provider": "local-cli:claude",
+      "mode": "single",
+      "runId": "d460570b-b70b-451e-822f-c957f566a463",
+      "at": "2026-10-25T06:01:23.825Z",
+      "taskPrefix": "타이틀 화면을 밤 풍경으로 바꿔 줘. 별이 깜빡이며 천천히 흐르고 가끔 별똥별이 지나가게, 하늘은 두 겹이 다른 속도로 흐르게. 스타터 셋이 화면을 가로질러 줄지어 달려가고, 메뉴",
+      "goalCampaign": false,
+      "maxTurns": 200
+    }
+  ],
+  "firstTrial": true,
+  "directContentRepairByOperator": false,
+  "assistantEngine": {
+    "kind": "local-cli",
+    "cli": "claude",
+    "routineModel": "claude-sonnet-5-5",
+    "deepModel": "claude-sonnet-5-5",
+    "effort": "high"
+  },
+  "automaticPresetBoot": false,
+  "lastProbeCount": 43,
+  "turnSettled": true,
+  "realNativeRun": true,
+  "modelDone": true,
+  "modelErrors": [],
+  "save": {
+    "kind": "saved"
+  },
+  "persistence": {
+    "projectId": "751f21fc-7d35-466b-b30c-f0287f16c5e1",
+    "projectDir": "/home/main/z-project/rpg-zzu-astra-opening/qa-runs/harnesses/assistant-capability/2026-10-25-astra-opening-r3/title-screen-runners-press-start/project",
+    "beforeRevision": 3,
+    "afterRevision": 4,
+    "reloadedRevision": 4,
+    "afterSha256": "92cae5cd5b213af1b9ba76c7f67725696ea4300571034d5d082ee2fa5b91b662",
+    "reloadedSha256": "92cae5cd5b213af1b9ba76c7f67725696ea4300571034d5d082ee2fa5b91b662",
+    "sameProject": true,
+    "sameStoredDocument": true,
+    "rendererLoadObserved": true,
+    "rendererMapsAndDatabaseEqual": true
+  },
+  "contentChanged": true,
+  "completedMeasurement": true,
+  "elapsedMs": 328401
+}

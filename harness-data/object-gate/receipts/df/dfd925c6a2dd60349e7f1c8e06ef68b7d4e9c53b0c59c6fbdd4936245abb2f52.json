@@ -1,0 +1,439 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "dfd925c6a2dd60349e7f1c8e06ef68b7d4e9c53b0c59c6fbdd4936245abb2f52",
+ "width": 32,
+ "height": 16,
+ "kind": "box",
+ "name": "pile of old plastic crates and buckets seen from above: open-topped blue and green crates stacked two high with slotted fronts, a yellow crate, a white and a red bucket with round rims",
+ "label": "wasteland_ruins/crates-plastic",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "refer",
+ "reasons": [
+  "3/4: 판정자 의견이 갈림(분명한 3/4 0/4, 분명한 위반 0/4)",
+  "3/4: 앞면 7행 < 8 (4/4)"
+ ],
+ "view34": {
+  "verdict": "refer",
+  "reasons": [
+   "판정자 의견이 갈림(분명한 3/4 0/4, 분명한 위반 0/4)",
+   "앞면 7행 < 8 (4/4)"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "wasteland_ruins",
+   "fallback": true,
+   "reason": "칩셋 wasteland_ruins 의 화풍 기준 묶음이 없다",
+   "hash": "2ad36264365ed8d5"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 17,
+  "tileColorsP90": 17,
+  "darkV5": 39,
+  "nearBlackEdge": 0.01,
+  "opaqueTiles": 2
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "borderline",
+   "wrong",
+   "borderline",
+   "borderline",
+   "wrong",
+   "borderline",
+   "wrong",
+   "borderline",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "green crate (upper), open top with dark interior",
+      "rows": "0-3",
+      "evidence": "d",
+      "front_edge_line_row": 3,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "green crate front face with slots",
+      "rows": "4-8",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "blue crate (lower), rim and slotted front",
+      "rows": "9-15",
+      "evidence": "none",
+      "front_edge_line_row": 9,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "yellow crate open top with interior shadow",
+      "rows": "4-7",
+      "evidence": "a",
+      "front_edge_line_row": 7,
+      "eave_shadow_rows": "5-6"
+     },
+     {
+      "part": "white bucket round rim",
+      "rows": "3-5",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "red bucket round rim",
+      "rows": "6-8",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 7,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is the yellow crate, whose column x=16 shows a light rim at row 4, a dark interior band at rows 5-6, and a light front-edge line at row 7. Below that is a slotted front face at rows 8-13 (6 rows). The green crate shows a dark open top at rows 1-3 above its front face at rows 4-8. The blue crate is stacked under the green one, so its top is covered. The round buckets have elliptical rims. The pile therefore reads as 3/4 view, though the tops are short, about 3-4 rows."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small cluster of crates and buckets, about 25x15 source pixels. It measures 17 visible tones per 16x16 tile, level with prop-stall-cheese (17) and close to prop-well-roofed (20), and above prop-hedge (9). Near-flat coverage is 0%, so there are no large flat fills. Its dark edge pixels are 0% neutral, so the outlines lean toward the neighbouring material's colour rather than being a black sticker line. Each material (blue crate, green crate, yellow crate, white and red buckets) shows about 3-4 lightness steps, plus slot shadows and rim highlights, a little under the 5-6 steps of the references. That is acceptable at this small size, and the piece does not look thinner or flatter than the references. A careful artist would accept it next to them.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 의견이 갈림(분명한 3/4 0/1, 분명한 위반 0/1)",
+    "앞면 7행 < 8 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "판정자 의견이 갈림(분명한 3/4 0/1, 분명한 위반 0/1)",
+     "앞면 7행 < 8 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 23953
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "yellow crate open top (dark interior band)",
+      "rows": "4-7",
+      "evidence": "d",
+      "front_edge_line_row": 7,
+      "eave_shadow_rows": "5-6"
+     },
+     {
+      "part": "green crate open top (dark interior)",
+      "rows": "0-3",
+      "evidence": "d",
+      "front_edge_line_row": 3,
+      "eave_shadow_rows": "1-2"
+     },
+     {
+      "part": "blue crate top (thin rim, partly hidden by green crate above)",
+      "rows": "9-9",
+      "evidence": "a",
+      "front_edge_line_row": 9,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "white bucket round rim",
+      "rows": "3-5",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "red bucket round rim",
+      "rows": "5-7",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 7,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The yellow crate in column x=16 has an outline at row 3, a lighter rim at row 4, darker inner-wall or contents rows 5-6, and a light front-edge line at row 7. Below it the slotted front face runs rows 8-14, so it has a top of about 4 rows and a front face of 7 rows. The green crate has dark interior at rows 1-2 and a light front-edge line at row 3, followed by a slotted face at rows 4-7. The blue crate below it has a rim line at row 9 and a face at rows 10-15. The buckets show round rims. The pile shows open-container tops above front faces, so it reads as three-quarter view, not a flat elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is small, so I judged it mostly from the measured facts. It has 17 visible tones per 16x16 tile, equal to prop-stall-cheese (17) and just under prop-well-roofed (20), and well above prop-hedge (9). Near-flat coverage is 0%, so there are no large flat fills; the slotted crate fronts and bucket rims break up each surface. The dark edge pixels are 0% neutral, so the outlines carry a tint and read as dark tones of each material rather than a black sticker line. With 27 colours spread over blue, green, yellow, white and red items, each material gets about 4 steps, slightly under Beodeul's 5-6. That is acceptable for a pile of small plastic objects. A careful artist would accept it next to the references without it looking flat or sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 의견이 갈림(분명한 3/4 0/1, 분명한 위반 0/1)",
+    "앞면 7행 < 8 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "판정자 의견이 갈림(분명한 3/4 0/1, 분명한 위반 0/1)",
+     "앞면 7행 < 8 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19932
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "green crate (stacked on top)",
+      "rows": "0-3",
+      "evidence": "d",
+      "front_edge_line_row": 3,
+      "eave_shadow_rows": "1-2"
+     },
+     {
+      "part": "yellow crate (main body)",
+      "rows": "4-7",
+      "evidence": "d",
+      "front_edge_line_row": 7,
+      "eave_shadow_rows": "5-6"
+     },
+     {
+      "part": "white bucket round rim",
+      "rows": "3-6",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "blue crate (lower, top mostly covered by green crate)",
+      "rows": "8-9",
+      "evidence": "none",
+      "front_edge_line_row": 9,
+      "eave_shadow_rows": "8"
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 7,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Main body is the yellow crate (x=16 column). Row 3 is the outline. Row 4 is a light back rim. Rows 5-6 are darker, showing the inside of the open crate. Row 7 is a light front-edge line. Rows 8-13 are the slotted front face, and rows 14-15 are the base and outline, so the front face is about 7 rows. The green crate shows the same pattern: row 0 is the back rim, rows 1-2 are dark interior, row 3 is a light front-edge line, and rows 4-7 are the slotted face. The blue crate below has a rim line at row 9 and a front face in rows 10-15, and its top is hidden by the green crate stacked on it. The white bucket (x=23) shows a rim ellipse at the top. The stack therefore has visible top surfaces of about 4 rows plus a front face of 3 or more rows."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small cluster at the same scale as the references. Measured facts: 17 visible tones per full tile, which matches prop-stall-cheese (17) and is close to prop-well-roofed (20) and well above prop-hedge (9). Near-flat coverage is 0%, with no 5x5 flat fills. The 0% neutral dark-edge share means the outlines carry a tint; they read as a dark version of each crate's own colour (dark blue, dark green) and are not a uniform black sticker line. By eye, the blue and green crates show slotted fronts with rim highlights and shadow, and the buckets have round rims, so the forms are separated by value as well as by outline. Shading is about 4 steps per material against roughly 5 in the references, which is a little shallower. Texture is moderate: slots and rim highlights, but little grain. Overall it would sit next to the references without looking thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 의견이 갈림(분명한 3/4 0/1, 분명한 위반 0/1)",
+    "앞면 7행 < 8 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "판정자 의견이 갈림(분명한 3/4 0/1, 분명한 위반 0/1)",
+     "앞면 7행 < 8 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19945
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "green crate (upper) open top",
+      "rows": "0-2",
+      "evidence": "d",
+      "front_edge_line_row": 3,
+      "eave_shadow_rows": "1-2"
+     },
+     {
+      "part": "green crate front, slotted",
+      "rows": "3-8",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "blue crate (lower)",
+      "rows": "9-15",
+      "evidence": "none",
+      "front_edge_line_row": 9,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "yellow crate open top with interior",
+      "rows": "3-7",
+      "evidence": "d",
+      "front_edge_line_row": 7,
+      "eave_shadow_rows": "5-6"
+     },
+     {
+      "part": "yellow crate slotted front",
+      "rows": "8-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "white bucket rim",
+      "rows": "3-5",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "red bucket",
+      "rows": "6-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 7,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is the yellow crate (column x=16). Row 3 is the outline and row 4 is the rim. Rows 5-6 are a darker interior (contents visible inside the open top). Row 7 is a lighter front-edge line. Rows 8-13 are the slotted front face, and rows 14-15 are shadow and outline. That gives a top of about 4 rows and a front face of about 7 rows. The green crate on the blue crate shows the same pattern: dark opening at rows 1-2, an edge line at row 3, then the slotted face at rows 4-7. The blue crate below it has only a 1-row rim and its face, but its top is covered by the stack. The buckets sit beside the crates and show round rims. This is a three-quarter view with a front face of 3+ rows."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is small and I judge it largely from the numbers. It shows 17 visible tones per 16x16 tile, equal to the stall reference (17) and close to the well (20). Near-flat coverage is 0%, so there are no 5x5 flat fills. Dark edge pixels are 0% neutral, so the outlines lean toward each material's colour (dark blue beside the blue crate, dark green beside the green crate) rather than black, which matches Beodeul's selective, tinted outlining. The crates have slotted fronts and two-high stacking, and the buckets have rims with some highlight variation, so the main materials get about 4 steps against Beodeul's 5-6. That is a little thin, but plastic is a smooth material and the tile density is on par with the references, so a careful artist would accept it next to them without it looking sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 의견이 갈림(분명한 3/4 0/1, 분명한 위반 0/1)",
+    "앞면 7행 < 8 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "판정자 의견이 갈림(분명한 3/4 0/1, 분명한 위반 0/1)",
+     "앞면 7행 < 8 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 22492
+  }
+ ],
+ "decidedAt": "2026-10-23T06:32:53.341Z",
+ "cells": {
+  "16": [
+   "a3527895e4d45162",
+   "bd1d0ea3dc3a4d78"
+  ],
+  "24": [
+   "1864e3e3b7ced9c4",
+   "2d10a09c4046ae4d",
+   "3b34ce511457b469",
+   "525b6d0e7e04a864",
+   "5a0747f55193be4c",
+   "70ace755d2eb7bce",
+   "8d4f6b34e8fe7d97",
+   "a261dcae6b4c7edf",
+   "b02350fabca7eba4",
+   "c94e5ea384eaa1ef",
+   "e840d01a5ca76e5f",
+   "eae2f6255e1f67b9"
+  ],
+  "32": [
+   "594638f176fd1e83",
+   "b5e88c55f8d67079"
+  ],
+  "48": [
+   "1a71722caf37bad6",
+   "1c08ebf891f3968c",
+   "313f65e0f87cc96a",
+   "9dcee6bab92f9fda",
+   "c2fb97362918fea0",
+   "ff1ea8c85c72f5d6"
+  ]
+ }
+}

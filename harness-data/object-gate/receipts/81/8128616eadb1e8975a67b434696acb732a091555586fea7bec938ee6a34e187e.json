@@ -1,0 +1,357 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "8128616eadb1e8975a67b434696acb732a091555586fea7bec938ee6a34e187e",
+ "width": 32,
+ "height": 48,
+ "kind": "structure",
+ "name": "narrow shack seen from above: big plywood sheet roof as a top plane with nailed seams, weighed down by a brick and stones, front wall built of stacked old tyres in rows packed with dirt, a plywood door in the middle",
+ "label": "wasteland_ruins/hut-tyre",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 7,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "wasteland_ruins",
+   "fallback": true,
+   "reason": "칩셋 wasteland_ruins 의 화풍 기준 묶음이 없다",
+   "hash": "5f62fef078ef7661"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 14,
+  "tileColorsP90": 15,
+  "darkV5": 32,
+  "nearBlackEdge": 0.07,
+  "opaqueTiles": 6
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "plywood sheet roof with nailed seams",
+      "rows": "1-26",
+      "evidence": "c",
+      "front_edge_line_row": 26,
+      "eave_shadow_rows": "27-28"
+     },
+     {
+      "part": "brick and stones weighing down the roof",
+      "rows": "8-24",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stacked tyre front wall",
+      "rows": "29-45",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "plywood door",
+      "rows": "30-45",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 26,
+    "front_face_rows": 17,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The roof is a large plywood plane in rows 1-26. It ends in a light front-edge line at row 26 (#ddbf91 in the x=16 and x=23 scans), followed by dark eave shadow in rows 27-28 (L=60, then L=21). Below it is a tyre-and-dirt front wall in rows 29-45 with a door, about 17 rows of front face. The silhouette is 28-32 px wide, and the roof overhangs the wall slightly (width 32 at rows 20-45 against 28 at the top). The brick and stones sit on the roof as decor. The roof has a top surface and the wall has a front face, so this reads as three-quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is small, only about one or two tiles across. On the primary facts it matches or beats both references: 13 visible tones per tile against 12 and 10, 3% near-flat coverage against 0%, and 0% neutral dark edge pixels, so the outline is tinted. By eye, the dark edges next to the tyres and plywood lean brown or blue-grey rather than black, and the forms are separated by value. The plywood roof has seam lines, nail dots, and a brick and stones as separate shaded clumps. The tyre rows have highlight dots and dirt-packed grain, and the door is a distinct plank tone. Each material ramp has about 4 steps, fewer than the 5-6 on the references, and the total of 21 colours is low. That total is not evidence of shallowness on its own because the palette is locked. No large flat fills are visible, and a careful artist would accept it next to the references without it looking like a sticker.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18276
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "plywood sheet roof",
+      "rows": "2-26",
+      "evidence": "c",
+      "front_edge_line_row": 26,
+      "eave_shadow_rows": "27-28"
+     },
+     {
+      "part": "brick and stones weighing down the roof",
+      "rows": "7-9, 20-24",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "tyre front wall with plywood door",
+      "rows": "29-45",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 25,
+    "front_face_rows": 17,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 2-26 are a large plywood roof plane, about 25 rows, with a vertical nailed seam near x=22 and scattered nails. A light front-edge line sits at row 26 (L=195 #ddbf91), followed by dark eave shadow at rows 27-28 (L=60, then L=21). Below it, rows 29-45 are the vertical south face: stacked tyres in rows with a plywood door in the middle, about 17 rows. The brick and stones on the roof are decor. The object has a roof top surface and a front wall, so it is a three-quarter view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small, tile-sized shack, so it can't match the large references in ramp depth. On the primary facts it holds up: 13 visible tones per 16x16 tile against 12 and 10 for the references, 3% near-flat coverage (references 0%), and 0% neutral dark edge pixels, so the outlines carry a brown tint rather than a black sticker line. By eye, the plywood roof with seams and weights, the dirt-packed tyre rows and the lighter door each show about 3-4 tones with speckle and grain, with no big flat fills. Total distinct colours are low (21 against 66 and 185), but that follows from the locked palette and the small size. Per-material ramps are somewhat shallower than Beodeul's 5-6 steps, though the tile-level richness is comparable. A careful artist would accept it next to the references without it looking like a flat sticker.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18392
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "plywood sheet roof with nailed seams",
+      "rows": "1-26",
+      "evidence": "a",
+      "front_edge_line_row": 26,
+      "eave_shadow_rows": "27-28"
+     },
+     {
+      "part": "brick and stones weighing down the roof",
+      "rows": "6-9, 19-24",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "tyre front wall",
+      "rows": "29-45",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "plywood door",
+      "rows": "30-45",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 26,
+    "front_face_rows": 17,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-26 are a large plywood roof plane with seams and nails, ending in a light front-edge line at row 26 (#ddbf91). Rows 27-28 are dark eave shadow. Below that, rows 29-45 form a front wall of stacked tyres with a plywood door in the middle, so the front face is 17 rows. The brick and stones sit on the roof as decor. The silhouette is a plain rectangle with no receding side face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small, narrow shack, much smaller than the two references. That is fine for the object, so I did not fail it for size. Measured facts: 13 visible tones per full tile against 12 and 10 for the references, 3% near-flat coverage against 0%, and 0% neutral dark edge pixels, so the outline is tinted. By eye the dark edges lean brown or blue-grey, not black, and tyre rows are separated mostly by value. The plywood roof has seam lines and nail dots, the brick and stones on it are shaded separately, and the tyre wall shows rounded dark and mid bumps with a plywood door in the middle. Per-material ramps are about 4 steps, a little below the references' 5-6, and the tile roof scallops are replaced by simpler plank grain. There are no large flat fills, and tile density matches or exceeds the references. A careful artist would accept it beside the references without it looking thinner or sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16703
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "plywood sheet roof with nailed seams",
+      "rows": "1-26",
+      "evidence": "c",
+      "front_edge_line_row": 26,
+      "eave_shadow_rows": "27-28"
+     },
+     {
+      "part": "brick and stones weighing down the roof",
+      "rows": "7-9, 20-24",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "tyre front wall with plywood door",
+      "rows": "29-45",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 26,
+    "front_face_rows": 17,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The roof is a large plywood plane in rows 1-26. It ends in a light front-edge line at row 26 (L=195, #ddbf91), followed by dark eave shadow in rows 27-28 (L=60 and L=21). Below that, the front wall of stacked tyres and a plywood door runs from row 29 to row 45, which is 17 rows. The width profile stays at 28-32 px with no side face. The brick and stones on the roof are decor. The roof and the tall front face are both clearly drawn, so this reads as three-quarter view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is much smaller than the references, about 1.5 tiles wide, so the measured facts carry limited weight. It shows 13 visible tones per tile against 12 and 10 for the references, with 3% near-flat coverage and 0% neutral dark edges, so its outline is tinted dark brown beside the plywood and tyres and not near-black. By eye, the plywood roof has about 3-4 steps with seam lines and a few stone and brick dots, and the tyre rows have some ring shading. Its ramps are shallower than the references' 5-6 step tile scallops and per-stone shading, and the tiny plywood door and tyre wall read as somewhat simple and blocky. Texture is present and there are no flat fills, but the piece looks a bit thinner than the references, so it falls just short.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 15483
+  }
+ ],
+ "decidedAt": "2026-10-23T06:32:53.318Z",
+ "cells": {
+  "16": [
+   "0289121b8cd3b41a",
+   "4a0534910f2e07d7",
+   "a8174c94f24a0305",
+   "c5a53e8d8b218a70",
+   "d58cfe42cc90f71b",
+   "ddfea3f37ee002c0"
+  ],
+  "24": [
+   "1faf2211e4f5e5ca",
+   "27a26f16357ef8de",
+   "30500f6b896a8b2d",
+   "5277d3b3b76ea961",
+   "6c653f28db0043c6",
+   "900ffd72c3bbd3db",
+   "a4ab58c7583667ba",
+   "c6f384093844e150",
+   "c89175bf3c817f2c",
+   "c93ad45893b94081",
+   "de7b71c5222c62a7",
+   "eb44b3fc84859984"
+  ],
+  "32": [
+   "4aa595942fde725a",
+   "80ed76a4c4291877",
+   "a36f08eab1027871",
+   "bdac5d0224e9bab7"
+  ],
+  "48": [
+   "20a23f2c6af770e6",
+   "489a7f21a700b658",
+   "a58e9ec85e3fc7a8"
+  ]
+ }
+}

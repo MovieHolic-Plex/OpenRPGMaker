@@ -1,0 +1,12 @@
+verdict: FAIL
+
+1. 3/4 view: OK. The plywood top plane covers rows 2-26, with a lit front edge on row 26 and a shadow on row 27, over an 18-row south face with the door in cell (1,2). The trapezoid roof matches the house convention.
+2. Quality: mostly OK (22 colours, grain strokes, nail heads, seam drawn as a shadow line plus a light line). However, the tyre wall has almost no light. In the crop x1-15, y29-44, the most common colours are slate (42,53,57) with 66 px, dirt (101,76,57) with 47 px, navy-black (9,17,37) with 42 px and grey (59,54,52) with 33 px. The highlight (123,114,112) appears on only 6 px, about 2.5%.
+3. Distinctness: OK. The 2x3 tall footprint and the brown board roof differ from every existing shack and from the other new pieces.
+4. Readability at 1x: FAIL, and this is the piece's whole identity. The "tyres" are 9x4 rounded rectangles laid in a running bond (offset 5 every other course) with dirt wedges between them. That is the geometry of brick or stone coursing. The darkest tone is navy-blue rather than neutral rubber black, and there is almost no rounded sidewall sheen. At 1x and 3x the south face reads as a dark slate or cinder-block wall, not stacked tyres. The existing tyre prop reads as tyres only because its rounded, lighter sidewall shows; this wall loses that cue.
+
+Fixes (pixel level, in _hut_tyre):
+- Give each tyre course a clear rounded sidewall. Make row j=0 a light rim across i=1..7 (rubber 4, peaking at rubber 5 for i=2..4 for an upper-left sheen), row j=1 the tread with dark groove dashes, and row j=2 a mid tone. Make row j=3 plus the end pixels i=0 and i=8 the darkest. Round both ends over 2 px: drop the corner pixels at j=0/3 and set i=0/8 at j=1/2 to rubber 1. The highlight should then be about 15-20% of the wall, not 2.5%.
+- Shift the darkest wall tone from navy (9,17,37) to the neutral rubber/soot black used by the existing tyre prop, so the wall stops reading as blue stone.
+- Break the brick read. Either shorten the stagger (offset 3 instead of 5) and vary the tyre widths (8/9/10), or let one or two tyres bulge 1 px past the wall outline at the ends of a course, so the face is not a regular running bond.
+- Add one unmistakable tyre cue. Replace one roof stone (for example the one at (25,20)) with the existing weight_tyre(c, cx, cy) seen from above: a dark ring with a dirt-filled centre. Alternatively, show a ring top (dark ring, dirt core) on one end tyre where the wall's top course meets the eave.

@@ -1,7 +1,9 @@
 export const RECOLLECTION_BGM_ID = "cc0-bgm-rtp-emo-001";
 export const RECOLLECTION_PICTURE_ID = "pic_memory";
 export const RECOLLECTION_TINT = "#c4a070";
-export const DEFAULT_RECOLLECTION_PICTURE_RESOURCE_ID = "easyrpg-picture-cloud";
+// 예전 기본 `easyrpg-picture-cloud` 는 2026-10-07 저작권 정리로 그림이 지워졌다 — 컷신 검증이 「존재하지 않는 리소스」로 막아
+// 회상·오프닝 템플릿 전체가 실패했다(ci-full 40165485978). 같은 구름 그림인 OPRN 자체 파노라마 층을 쓴다.
+export const DEFAULT_RECOLLECTION_PICTURE_RESOURCE_ID = "oprn-pano-clouds";
 
 export type RecollectionBeatsInput = {
   readonly speaker: string;

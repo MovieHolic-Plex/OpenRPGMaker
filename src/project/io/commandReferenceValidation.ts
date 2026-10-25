@@ -1,3 +1,4 @@
+import { actorPictureActorId } from "@/project/pictureSources";
 import { BUILTIN_EQUIPMENT_SLOTS } from "@/project/equipmentSlots";
 import { isBuiltinFieldFxId } from "@/project/containerFx";
 import type {
@@ -9,7 +10,7 @@ import type {
   EventPageCondition,
 } from "../types";
 import { assert } from "./guards";
-import { validateOptionalResource } from "./resourceReferenceValidation";
+import { isKnownResourceId, validateOptionalResource } from "./resourceReferenceValidation";
 
 export type ReferenceContext = {
   appearanceIds?: ReadonlySet<string>;
@@ -354,9 +355,13 @@ function validateCommandReferences(command: Command, context: ReferenceContext):
         assert(context.actorIds.has(command.actorId), `enterHeroName: actorId가 존재하지 않습니다: ${command.actorId}`);
       }
       return;
-    case "showPicture":
-      assert(context.resourceIds.has(command.resourceId), `showPicture: resourceId가 존재하지 않습니다: ${command.resourceId}`);
+    case "showPicture": {
+      // "actor:<배우 ID>" 는 그 배우의 걷기 그림이다 — 리소스 대신 배우가 있어야 한다.
+      const pictureActor = actorPictureActorId(command.resourceId);
+      if (pictureActor) assert(context.actorIds.has(pictureActor), `showPicture: 배우 그림의 actorId가 존재하지 않습니다: ${pictureActor}`);
+      else assert(isKnownResourceId(context.resourceIds, command.resourceId), `showPicture: resourceId가 존재하지 않습니다: ${command.resourceId}`);
       return;
+    }
     case "playAudio":
       // 빈 id 는 모델이 음악 이름만 쓰고 id 를 빠뜨린 것이다(2026-10-25 조수 단독 게임 G12: 같은 거절 9번) — 고치는 법을 거절문에 싣는다.
       assert(context.resourceIds.has(command.resourceId), typeof command.resourceId === "string" && command.resourceId.trim()

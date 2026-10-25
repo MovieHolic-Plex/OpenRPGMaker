@@ -1,0 +1,18 @@
+{
+ "schema": "oprn-object-gate-hold-decision/1",
+ "pixelSha256": "99f47ba1ba37fffcf1d920aae10226e21bd78a26af04fa94727fd2793c91f21f",
+ "profileHash": "4d8774b517f41638",
+ "kind": "structure",
+ "decision": "allow",
+ "decidedBy": "supervisor (village-art)",
+ "decidedAt": "2026-10-23T07:20:31.500Z",
+ "by": "delegated",
+ "delegatedBy": "user",
+ "evidence": "tiledata/wasteland-ruins/_review/r57/draft2/opus-reviewer-hut-stove.md",
+ "via": "review-page",
+ "reasons": [
+  "3/4: 독립 눈이 「3/4 아님」 12/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면"
+ ],
+ "note": "delegated by user to supervisor 2026-10-23 — wasteland hut-stove: gate REFER (front-elevation reading) re-judged by fresh independent Opus adversarial reviewer PASS (r57 draft2)",
+ "sig": "fe028bbd5c53130fe769fe93324893d5105fb0a1b5da60909121e86f002e1a00"
+}

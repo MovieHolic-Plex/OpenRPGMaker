@@ -12,6 +12,7 @@ import beodeulArchitectureCatalog from './beodeulArchitectureCatalog.json';
 import beodeulFormsCatalog from './beodeulFormsCatalog.json';
 import beodeulOrganicCatalog from './beodeulOrganicCatalog.json';
 import beodeulReviewedCatalog from './beodeulReviewedCatalog.json';
+import beodeulMassingCatalog from './beodeulMassingCatalog.json';
 import joseonBaramSheet from "./joseonBaramSheet.json";
 import modernCitySheet from "./modernCitySheet.json";
 import jpCitySheet from "./jpCitySheet.json";
@@ -22,6 +23,7 @@ import skyIslandSheet from "./skyIslandSheet.json";
 import steampunkCitySheet from "./steampunkCitySheet.json";
 import modernCampusSheet from "./modernCampusSheet.json";
 import sfStationSheet from "./sfStationSheet.json";
+import wastelandRuinsSheet from "./wastelandRuinsSheet.json";
 import gothicManorSheet from "./gothicManorSheet.json";
 import prehistoricSheet from "./prehistoricSheet.json";
 import desertEastSheet from "./desertEastSheet.json";
@@ -142,6 +144,7 @@ export const BUNDLED_EASYRPG_CHIPSET_ASSETS = [
   {textureKey:'tex_beodeul_architecture',path:'assets/beodeul-architecture/chipset.png',name:'버들항 · 원본 보존 민가·성당'},
   {textureKey:'tex_beodeul_forms',path:'assets/beodeul-forms/chipset.png',name:'버들항 · 건물 구조 여섯 계열'},
   {textureKey:'tex_beodeul_reviewed',path:'assets/beodeul-reviewed/chipset.png',name:'버들항 · 사람이 허용한 건물'},
+  {textureKey:'tex_beodeul_massing',path:'assets/beodeul-massing/chipset.png',name:'버들항 · 중세 건물(덩어리 모형)'},
   // 버들항 자연 기물(2026-10-24) — 바위·덤불·통나무·버섯·들꽃·고사리·고목. 굽기 scripts/content/beodeul-organic/bake.py(object-gate 출구), 정의 project/defaults/beodeulOrganic.ts
   {textureKey:'tex_beodeul_organic',path:'assets/beodeul-organic/chipset.png',name:'버들항 · 자연 기물(바위·덤불·통나무·버섯·들꽃)'},
   // 버들항 v6(2026-09-28) — 로마풍 항구 도시 손 도트 렌더를 16px 칸으로 자른 시트(칸마다 땅/윗부분, 움직임 animationStrips).
@@ -178,6 +181,9 @@ export const BUNDLED_EASYRPG_CHIPSET_ASSETS = [
   // SF 정거장·네온 거리(2026-10-14) — 잠긴 팔레트 손 도트(정거장 실내·달 기지 야외·사이버 네온 거리)를 48열 16px 칸으로 구운 시트. 칸 번호는 덧붙이기 전용(자리 키 핀).
   // 재생성: scripts/content/sf-station/sf_bake.py (object-gate 통과 조각만) → sf_refs.py, 정의는 project/defaults/sfStation.ts, openwiki/sf-station.md.
   {textureKey:"tex_sf_station",path:"assets/sf-station/sf-station-chipset.png",name:"SF 정거장·네온 거리 (손 도트)"},
+  // 폐허·황무지(2026-10-22) — modern_city 팔레트에 잠긴 손 도트(갈라진 아스팔트·잔해·무너진 건물·고철 판잣집·바리케이드·녹슨 차·급수탑·모닥불·장터)를 48열 16px 칸으로 구운 시트.
+  // 칸 번호는 덧붙이기 전용(자리 키 핀). 재생성: scripts/content/wasteland-ruins/wl_bake.py (object-gate 출구 통과 조각만), 정의는 project/defaults/wastelandRuins.ts, openwiki/wasteland-ruins.md.
+  {textureKey:"tex_wasteland_ruins",path:"assets/wasteland-ruins/wasteland-ruins-chipset.png",name:"폐허·황무지 (손 도트)"},
   // 고딕 저택·묘지 · 호러(2026-10) — 잠긴 고딕 팔레트 손 도트(저택·예배당·묘지·미술관 건물, 묘비·고사목·철책, 실내 벽 셋·바닥·가구·전시실)를 48열 16px 칸으로 구운 시트.
   // 3/4 관문(object-gate) 영수증이 현재 그림 해시에 PASS 인 조각만 굽는다. 칸 번호는 덧붙이기 전용(자리 키 핀).
   // 재생성: scripts/content/gothic-manor/bake_gm.py, 정의는 project/defaults/gothicManor.ts, openwiki/gothic-manor.md.
@@ -218,6 +224,7 @@ export function bundledChipsetFrameCount(key: string): number {
   if (key === 'tex_beodeul_architecture') return beodeulArchitectureCatalog.count;
   if (key === 'tex_beodeul_forms') return beodeulFormsCatalog.count;
   if (key === 'tex_beodeul_reviewed') return beodeulReviewedCatalog.count;
+  if (key === 'tex_beodeul_massing') return beodeulMassingCatalog.count;
   if (key === 'tex_beodeul_organic') return beodeulOrganicCatalog.count;
   if (key === "tex_oprn_atlas_vehicles") return atlasVehicles.count;
   if (key === "tex_beodeul_city") return beodeulCitySheet.count;
@@ -231,6 +238,7 @@ export function bundledChipsetFrameCount(key: string): number {
   if (key === "tex_steampunk_city") return steampunkCitySheet.count;
   if (key === "tex_modern_campus") return modernCampusSheet.count;
   if (key === "tex_sf_station") return sfStationSheet.count;
+  if (key === "tex_wasteland_ruins") return wastelandRuinsSheet.count;
   if (key === "tex_gothic_manor") return gothicManorSheet.count;
   if (key === "tex_prehistoric") return prehistoricSheet.count;
   if (key === "tex_desert_east") return desertEastSheet.count;

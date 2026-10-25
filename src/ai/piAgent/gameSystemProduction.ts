@@ -5,12 +5,14 @@ export const GAME_SYSTEM_REQUEST_PATTERN = /시스템|상점|shop|메뉴|esc|포
 
 /** Completion evidence from actual tools, independent of the assistant's final text. */
 export class PiGameSystemProduction {
+  /** enabled=false: 조수 v2 — read/review_game_systems 를 싣지 않으므로 이 검사를 채울 길이 없다(2026-10-25 실조수: 스토어 음악을 다 건 뒤에도 「미완료」로 끝났다). */
+  constructor(private readonly enabled = true) {}
   requested = false;
   private read = false;
   private reviewed = '';
   private reviewIssues: string[] = [];
   record(name:string,result:ToolResult,p:Project):void {
-    if(!result.ok)return;
+    if(!this.enabled||!result.ok)return;
     if(name==='read_game_systems')this.read=true;
     if(['configure_monster_style','build_monster_game','configure_field_menu','set_dialogue_system','set_vn_extras','set_vn_look','configure_shop_presentation','set_sell_prices','configure_monster_campaign','configure_monster_system','compose_music','set_game_audio'].includes(name))this.requested=true;
     if(name==='review_game_systems'){

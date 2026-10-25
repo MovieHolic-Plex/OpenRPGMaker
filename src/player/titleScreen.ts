@@ -1,5 +1,6 @@
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { applySystemWindowSkinVariable, applyTitleScreenBackground } from "@/player/systemGraphics";
+import { createTitleRunnersCanvas } from "@/player/titleRunners";
 import { createTitleParticlesCanvas } from "@/player/titleParticles";
 import { createTitleEffectsCanvas, titleEffectsSignature, updateTitleEffectsCanvas } from "@/player/titleEffects/renderer";
 import {
@@ -215,7 +216,73 @@ export function renderTitleScreen(
   const logoAtMs = playSequence ? resolveTitleOpeningSequence(settings.sequence ?? {}).logoAtMs : 0;
   applyTitleLogoShine(title, titleNodes, settings.logoShine, firstEntry, playSequence ? logoAtMs : 0);
   if (playSequence) applyTitleOpeningSequence(title, titleNodes, menu, settings);
+  // PRESS START 관문은 처음 들어올 때만. 입장 시퀀스가 있으면 메뉴가 나올 때(menuAtMs) 글자가 뜬다.
+  if (settings.pressStart && firstEntry) {
+    applyTitlePressStart(title, menu, settings, playSequence ? resolveTitleOpeningSequence(settings.sequence ?? {}).menuAtMs : 0);
+  }
   return title;
+}
+
+/**
+ * 「PRESS START」 관문. 메뉴를 숨기고 글자를 깜빡인다. 첫 키·탭은 메뉴를 고르지 않고 관문만 연다 —
+ * 창(capture) 단계에서 받아 멈추므로 플레이어의 타이틀 키 처리(문서 bubble)까지 가지 않는다.
+ * 입장 시퀀스가 아직 도는 동안의 키는 시퀀스 건너뛰기 처리가 먼저 먹는다(그 처리기가 먼저 걸려 있다).
+ */
+function applyTitlePressStart(title: HTMLElement, menu: HTMLElement, settings: TitleScreenSettings, appearAtMs: number): void {
+  const gate = settings.pressStart ?? {};
+  const blinkMs = gate.blinkMs ?? 1000;
+  const prompt = el("div", {
+    class: "rm-title-press-start",
+    text: gate.text ?? "PRESS START",
+    dataset: { testid: "title-press-start" },
+    attrs: { "aria-live": "polite" },
+  });
+  prompt.style.top = logicalY(gate.y ?? Math.min(228, settings.layout.menuY + 18));
+  prompt.style.setProperty("--title-press-start-blink", `${blinkMs}ms`);
+  if (appearAtMs > 0) prompt.style.animationDelay = `${appearAtMs}ms, ${appearAtMs}ms`;
+  title.dataset.pressStart = "waiting";
+  menu.classList.add("rm-title-menu-gated");
+  title.append(prompt);
+  let swallowClick = false;
+  const open = (): void => {
+    if (title.dataset.pressStart !== "waiting") return;
+    title.dataset.pressStart = "open";
+    prompt.classList.add("rm-title-press-start-go");
+    menu.classList.remove("rm-title-menu-gated");
+    menu.classList.add("rm-title-menu-reveal");
+    title.dispatchEvent(new CustomEvent("oprn:title-press-start", { bubbles: true }));
+    setTimeout(() => prompt.remove(), 420);
+    cleanup();
+  };
+  const sequencePlaying = (): boolean => title.dataset.seqState === "playing";
+  const onKey = (event: KeyboardEvent): void => {
+    if (!title.isConnected) { cleanup(); return; }
+    if (sequencePlaying() || event.repeat || ["Shift", "Control", "Alt", "Meta", "Tab"].includes(event.key)) return;
+    event.preventDefault();
+    event.stopImmediatePropagation();
+    open();
+  };
+  const onPointer = (event: Event): void => {
+    if (sequencePlaying()) return;
+    event.preventDefault();
+    event.stopImmediatePropagation();
+    swallowClick = true;
+    open();
+  };
+  const onClick = (event: Event): void => {
+    if (!swallowClick) return;
+    swallowClick = false;
+    event.preventDefault();
+    event.stopImmediatePropagation();
+  };
+  function cleanup(): void {
+    window.removeEventListener("keydown", onKey, true);
+    title.removeEventListener("pointerdown", onPointer, true);
+    setTimeout(() => title.removeEventListener("click", onClick, true), 800);
+  }
+  window.addEventListener("keydown", onKey, true);
+  title.addEventListener("pointerdown", onPointer, true);
+  title.addEventListener("click", onClick, true);
 }
 
 const SEQ_ANIMATION_PREFIX = "rm-title-seq";
@@ -480,6 +547,7 @@ export function titleFxSignature(settings: TitleScreenSettings): string {
   return JSON.stringify({
     layers: settings.backgroundLayers ?? [],
     particles: settings.particles ?? null,
+    runners: settings.runners ?? [],
   });
 }
 
@@ -494,13 +562,15 @@ export function renderTitleFxStack(
 ): HTMLElement | null {
   const layers = settings.backgroundLayers ?? [];
   const particles = settings.particles;
-  if (layers.length === 0 && !particles) return null;
+  const runners = settings.runners ?? [];
+  if (layers.length === 0 && !particles && runners.length === 0) return null;
   const signature = titleFxSignature(settings);
   if (reuse && reuse.dataset?.titleFxSignature === signature) return reuse;
   const fx = el("div", { class: "rm-title-fx", dataset: { testid: "title-fx" } });
   fx.dataset.titleFxSignature = signature;
   fx.append(...renderTitleBackgroundLayers(layers, project));
   if (particles) fx.append(createTitleParticlesCanvas(particles));
+  if (runners.length > 0) fx.append(createTitleRunnersCanvas(runners, project));
   return fx;
 }
 
@@ -521,6 +591,12 @@ export function renderTitleBackgroundLayers(
     const url = resolveAssetResourceUrl(layer.resourceId, { project });
     if (url) node.style.backgroundImage = `url("${url}")`;
     if (layer.opacity !== undefined) node.style.opacity = String(layer.opacity);
+    if (layer.fit === "cover") {
+      // 한 장 전경: 화면을 덮고 아래에 붙인다. 스크롤은 하지 않는다.
+      node.classList.add("rm-title-bg-layer-cover");
+      node.dataset.titleLayerFit = "cover";
+      return node;
+    }
     // parallax 는 스크롤 속도 배율(깊이감) — 정지 레이어에는 아무 효과가 없다.
     const factor = layer.parallax ?? 1;
     const vx = (layer.scrollXPerSec ?? 0) * factor;

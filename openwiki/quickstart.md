@@ -1,5 +1,7 @@
 # Quickstart — 코딩 에이전트의 첫 10분
 
+> **2026-10-25 hard rule:** 테스트 러너(vitest·bun test·playwright test·gates)는 GitHub CI 에서만 돈다. 로컬에서는 `scripts/lib/ciOnlyTests.mjs` 가 막는다. 아래 명령 표는 CI 가 무엇을 돌리는지 설명하는 참고이고, 로컬 실행 지시가 아니다. AGENTS.md 「테스트는 GitHub CI 에서만」.
+
 이 페이지는 "무엇을 읽어라" 목록이 아니라 **이 저장소에서 헤매지 않는 방법**이다. 위에서부터 순서대로 쓰면 된다.
 사람용 개요는 `README.md`, 영역별 상세는 `openwiki/INDEX.md` 로 좌표를 잡아 필요한 절만 읽는다.
 

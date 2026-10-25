@@ -1,0 +1,374 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ba8747f36a0f540342883eca6b2badab970499efce30ed33cc0a567d7a4300a2",
+ "width": 32,
+ "height": 48,
+ "kind": "other",
+ "name": "abandoned rusted car facing south seen from above: trunk, roof and hood tops with cracked glass, front grille and bumper below",
+ "label": "wasteland_ruins/car-rust-v",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 8
+ },
+ "metrics": {
+  "tileColorsMedian": 18,
+  "tileColorsP90": 20,
+  "darkV5": 32,
+  "nearBlackEdge": 0.36,
+  "opaqueTiles": 6
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "borderline",
+   "right",
+   "right",
+   "borderline",
+   "right",
+   "right",
+   "borderline",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "trunk top",
+      "rows": "0-7",
+      "evidence": "a",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": "6-7"
+     },
+     {
+      "part": "roof and rear glass",
+      "rows": "9-19",
+      "evidence": "a",
+      "front_edge_line_row": 20,
+      "eave_shadow_rows": "17-20"
+     },
+     {
+      "part": "hood top",
+      "rows": "21-26",
+      "evidence": "a",
+      "front_edge_line_row": 26,
+      "eave_shadow_rows": "27-29"
+     },
+     {
+      "part": "grille and headlights front face",
+      "rows": "30-38",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "bumper",
+      "rows": "39-44",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 29,
+    "front_face_rows": 15,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 0-29 show the horizontal surfaces of the car. The trunk (rows 0-7) ends in a light edge line at row 8. The roof and glass (rows 9-19) end at the dark line at row 20. The hood (rows 21-26) ends in a light edge line at row 26 and is followed by darker shadow rows 27-29. Below that is a vertical front face of about 15 rows (rows 30-44), with the grille slats, headlights and bumper. The top surfaces are large and each part has an edge line, so this is a three-quarter view with a front face of 3+ rows."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate has 17 visible tones per full tile, matching the stall (17) and well (20) and above the hedge (9). Near-flat coverage is 2%, close to the references (0-13%). Dark edge pixels are 0% neutral, so the outline is tinted: dark green-teal beside the body, not a black sticker line. By eye the car body has about 5 green steps (highlight, light, mid, dark, deep) plus rust patches, cracked glass lines and grille detail. The roof and hood panels carry some grain and variation, but a few panels are smoother than the reference stall and well, so texture is 'some' rather than 'rich'. Overall it would sit acceptably next to the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 13437
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "trunk lid top",
+      "rows": "0-4",
+      "evidence": "a",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "rear window (cracked glass)",
+      "rows": "5-7",
+      "evidence": "a",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "roof",
+      "rows": "9-16",
+      "evidence": "a",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "windshield",
+      "rows": "17-19",
+      "evidence": "a",
+      "front_edge_line_row": 20,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "hood top",
+      "rows": "21-26",
+      "evidence": "a",
+      "front_edge_line_row": 26,
+      "eave_shadow_rows": "27-29"
+     }
+    ],
+    "main_top_rows": 27,
+    "front_face_rows": 18,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The car is drawn as a long stack of horizontal top surfaces from rows 0-26: trunk, rear window, roof, windshield and hood. Each is separated by light edge lines at rows 8, 18-20 and 26. The hood ends in a front-edge line at row 26 (#8ca29d) with darker shadow in rows 27-29. Below that is a vertical front face (rows 27-44) with the grille, headlights and bumper. The silhouette widths (28-32) show no receding side face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The candidate car has about 5 lightness steps on its green body and roof: highlight, light, mid, dark and deep. Rust patches, cracked glass lines, a grille and bumper detail add texture in several tones. Measured facts support this: 17 visible tones per 16x16 tile matches the cheese stall (17) and approaches the well (20). Near-flat coverage is 2%, well below the stall's 13%. The 0% neutral dark edge share shows tinted outlines, dark green and brown-green beside the body, not a black sticker line. The piece reads as hand-shaded and sits comfortably next to the references. Slight uncertainty comes from the dark overall tone, but hue and darkness are not judged.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 13293
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "trunk lid with rear window",
+      "rows": "0-8",
+      "evidence": "a",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": "6-7"
+     },
+     {
+      "part": "roof",
+      "rows": "9-16",
+      "evidence": "a",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "windshield",
+      "rows": "17-19",
+      "evidence": "a",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": "20"
+     },
+     {
+      "part": "hood",
+      "rows": "20-26",
+      "evidence": "a",
+      "front_edge_line_row": 26,
+      "eave_shadow_rows": "27-29"
+     }
+    ],
+    "main_top_rows": 27,
+    "front_face_rows": 17,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Trunk, roof and hood are drawn as a long stack of horizontal surfaces (rows 0-26), each with an edge line (rows 8 and 26) and a darker band below. The hood ends in a light front-edge line at row 26, followed by dark shadow at rows 27-29. Below that, the vertical front face (grille, headlight, bumper and wheels, rows 30-46) is about 17 rows tall. The top surfaces are taller than a rim, and the front face is clearly present, so this reads as three-quarter rather than a flat slab."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The candidate carries 17 visible tones per 16x16 tile, level with prop-stall-cheese (17) and prop-well-roofed (20) and above prop-hedge (9). Near-flat coverage is 2%, far below the stall's 13%, so there are no flat fills. The measured neutral share of dark edge pixels is 0%, which means the outlines lean toward a tint and are not neutral black. By eye, the body uses several dark green steps, with rust patches, cracked glass lines on the windshield, and a grille and bumper in separate greys. These read as material-toned edges, not a uniform sticker outline. The shading ramps hold about 5 steps and the texture is varied, so a careful artist would accept it next to the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 13333
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "trunk and rear window",
+      "rows": "0-8",
+      "evidence": "a",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "roof and windshield",
+      "rows": "9-19",
+      "evidence": "a",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": "20"
+     },
+     {
+      "part": "hood",
+      "rows": "20-26",
+      "evidence": "a",
+      "front_edge_line_row": 26,
+      "eave_shadow_rows": "27-29"
+     }
+    ],
+    "main_top_rows": 27,
+    "front_face_rows": 19,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The car has a long stack of horizontal top surfaces in rows 0-26: trunk, rear window, roof, windshield and hood. Light 1-row edge lines at rows 8 and 26 (L=155) mark the trunk edge and the hood's front edge. Below row 26 there is a darker shadow band (rows 27-29), then the vertical south face: grille and headlights (rows 30-38), bumper (rows 39-41) and wheels (rows 42-46). The front face is well over 3 rows. The top is drawn very tall and fairly flat, but it clearly ends in front-edge lines above a distinct front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "Measured facts are at the reference level: 17 visible tones per tile (stall 17, well 20, hedge 9), 2% near-flat coverage, and 0% neutral dark edge pixels, so the outline is tinted dark green and not a black sticker line. By eye the car reads as a green body with a darker green outline, rust patches, cracked glass and a grille. Each material ramp is only about 3-4 steps, whereas the references carry 5-6, with the roof and hood panels fairly broad and smooth. Texture is present as rust speckle and crack lines but is sparser than the per-tile scallops, grain and clumps on the stall and well. Overall it is clean and close to the references but slightly thinner in shading depth and grain, and I am not confident a careful artist would accept it as equal, so with doubt it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 14324
+  }
+ ],
+ "decidedAt": "2026-10-22T15:35:18.409Z",
+ "cells": {
+  "16": [
+   "05ca20a10d6191f3",
+   "06230b9e99504a3d",
+   "33b112fb42c8d7a9",
+   "474117435abf772e",
+   "486be3a54eeb6f3e",
+   "dddeb3175512a8b2"
+  ],
+  "24": [
+   "08c3c8b6fece04de",
+   "3e1d11d72b4bb3f8",
+   "3f07cae3ac535a65",
+   "57f60ac05a90f5e8",
+   "5e2e92854d62bf61",
+   "60cd3e3a165f9fc2",
+   "8c26864bab2dad55",
+   "a3008cfb1e28f036",
+   "dd1638e18f1ab2cf",
+   "ea666caba652d74c",
+   "ecd1db360ffcf2e5",
+   "edb527429f05bc1d"
+  ],
+  "32": [
+   "9fbd02beae518ce4",
+   "9fd442bef261680b",
+   "a9538fc1d4365348",
+   "e792d3d055633d6f"
+  ],
+  "48": [
+   "2a4bb23276ca2192",
+   "7f12d803713efdfb",
+   "c746a69246b3d4d3"
+  ]
+ }
+}

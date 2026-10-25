@@ -1,0 +1,302 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "0d01834f0aafc2f05e97d91212278781b99fe7c331d714495a5bdb610d7c6669",
+ "width": 64,
+ "height": 48,
+ "kind": "flat",
+ "name": "oily rain puddle in a churned muddy hollow on the ground with tyre ruts, a rainbow sheen and sky reflections",
+ "label": "wasteland_ruins/puddle",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (3/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (3/4)"
+  ],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 5
+ },
+ "metrics": {
+  "tileColorsMedian": 5,
+  "tileColorsP90": 17,
+  "darkV5": 72,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 12
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "churned mud ground with tyre ruts",
+      "rows": "0-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "oily puddles with sheen and sky reflections (upper-left one at rows 18-30, lower-right one at rows 34-47)",
+      "rows": "18-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 48,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The silhouette is a full 64x48 rectangle, with a constant width of 64 on every row. It is a seamless mud texture with two small puddles seen straight down. No front-edge line, no eave shadow and no vertical south face appear in any scan column. The dark 2-row bands at x=16, 32 and 47 are rut and mud texture, not edges. The object has no front face (0 rows), so it is a flat top-down plate, which suits the 'flat' kind."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The measured facts are acceptable: 5 visible tones per tile (grass reference 3, paving reference 7), 3% near-flat coverage, and 0% neutral dark edge pixels, so the dark tones are tinted brown and not a black sticker outline. By eye, though, the patch is weaker than the references. The mud is one mid-brown with sparse darker flecks, about 3-4 steps against the references' 5-6. The two blue puddles are tiny blobs of 2-3 tones. The tyre ruts, rainbow sheen and sky reflections in the brief are barely visible. Most of the area reads as a loosely speckled single brown, with none of the per-clump or per-stone shading of the grass and paving. A careful artist would find it thinner than the references, and when in doubt the verdict is fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 15009
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "muddy ground hollow with tyre ruts and two small puddles",
+      "rows": "0-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 48,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The silhouette is a full 64x48 rectangle (width 64 on every row) of mottled brown mud seen straight down. The dark 2-row bands in the column scan (rows 6-7, 14-15, 20-21 and others) are rut or shadow texture, not edge lines or eave shadows. The two puddles (about rows 17-31 and 34-47) are drawn as flat blue-teal patches with grey rims and sheen pixels. No south face, legs or apron is drawn, so there are 0 front-face rows. This is a flat ground decal, which matches the flat kind and has no 3/4 volume."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The measured facts are acceptable. The candidate has 5 visible tones per tile against 3 for the grass and 7 for the paving. Near-flat coverage is 3%, and the dark edge pixels are 0% neutral, so the outlines are tinted (brown mud, dark blue puddle rims) rather than black. By eye it is weaker than the references. The mud is a mid-brown field with only about 3-4 tones and sparse darker speckles, and it has none of the clustered tufts or per-stone shading the references show. The whole 4x3 patch has only two small blue puddle blobs with a thin dark rim. The tyre ruts, churned hollow and rainbow sheen the brief asks for are barely readable. Total distinct colours are 20 against 80 for the grass, so the ramps are shallower than Beodeul's 5-6 steps per material. Next to the grass and paving it looks thinner and more sparsely dotted. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 14220
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "muddy ground tile with tyre ruts and two small oily puddles seen from above",
+      "rows": "0-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 48,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The silhouette is a full 64-wide rectangle on every row from 0 to 47, a flat ground tile of mud texture. The two small puddles with a rainbow sheen are drawn as flat shapes seen from above. There is no front-edge line, no eave shadow and no vertical front face of 3 or more rows. The dark 2-row bands in the column scans are rut lines in the mud, not edges. This is a flat decal seen from above, which matches the flat kind."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The facts are acceptable. The candidate has 5 visible tones per tile against 3 for the grass and 7 for the paving. Near-flat coverage is 3%, and the dark edge pixels are 0% neutral, so the outlines lean brown or blue rather than black. By eye, though, the patch reads as a mostly uniform brown mud field with sparse dark speckle, about 3-4 browns and 3 blues on the puddle. The grass and paving references have clearer per-clump and per-stone shading at 5-6 steps. The two small blue puddle blobs are thin on structure. They show no clear rainbow sheen, no readable tyre ruts and no churned hollow shape. The surface is not flat-filled, but it is shallower and less structured than the references, so I fail it on the tie-break.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 15434
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "muddy ground tile with oily puddles and tyre ruts, seen from above",
+      "rows": "0-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 48,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The image is a full 64x48 field of mud texture, and the width is 64 across all rows. It has no silhouette and no standing volume. The column scans show only mud tones, with the dark 2-row bands at x=16, 32 and 47 being rut and shadow texture rather than edge lines. The puddles at about rows 18-31 and 34-47 are small flat patches with grey rims and blue-teal water. The bottom rows 38-43 at x=47 are the rim of a puddle, not a front face. The object lies flat as the 'flat' kind expects, with no front face of 3 or more rows, so it is a top-down slab."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a brown mud ground with two small blue puddle patches. Its mud ramp reads as about 4 steps (mid brown, lighter grain, darker pits and speckles), a little under the references' 5-6. Measured facts favour it: 5 visible tones per tile against 3 for the grass reference and 7 for the paving, and only 3% near-flat coverage, so there are no large flat fills. Dark edge pixels are 0% neutral, so the puddle edges lean dark brown or blue rather than black, which is a material-tone outline and not a sticker line. Texture is moderate: fine dots and grain across the mud, with some value variation inside the puddles. It is somewhat sparser than the dense grass and paving, and the ruts and rainbow sheen are barely visible, but those are subject issues, not shading craft. Structurally it is acceptable next to the references, so it passes narrowly.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 14275
+  }
+ ],
+ "decidedAt": "2026-10-22T17:22:29.534Z",
+ "cells": {
+  "16": [
+   "153d5435ba6b6bcb",
+   "18494630b5149183",
+   "3ae3b38831e1e6df",
+   "5723125a0402306b",
+   "72e18bb2565903f7",
+   "780417a0dcb7222f",
+   "951ae9614dbb9c8a",
+   "98c9d8457c91392f",
+   "aab490dabe713206",
+   "cfc7f4e381b48df7",
+   "e215bf2cfe6db03c",
+   "e87724cbf31ce075"
+  ],
+  "24": [
+   "00041f677db69484",
+   "0b582bfc4add962b",
+   "2d2058f9901b02f1",
+   "3371a2ded0d8d5cc",
+   "35042a1646adf42b",
+   "4ac3d5c7d1c91a79",
+   "62cbe2baa8532720",
+   "658d2ac528388b35",
+   "932e5b857410e314",
+   "a572654149869f5e",
+   "d4e11ad0b6430773",
+   "d5bb3a349b8443b2",
+   "da559b1b241f3afa",
+   "dd0d1d428962093c",
+   "de208bbb3403dd12",
+   "f1b88d15562f8608",
+   "f8a00ff0f261dc3a",
+   "fd397a4cf4f86646"
+  ],
+  "32": [
+   "18af8db64f963021",
+   "2627faebf96966b8",
+   "3519bdeea4d11317",
+   "3fc22822552a9aef",
+   "5162f3a0da7247b7",
+   "81eb95786d6b58fe",
+   "85d34f3b8ee2a166",
+   "ca6104c3c6a84fc6"
+  ],
+  "48": [
+   "0497a311fb05f531",
+   "25fed2f376ebe71a",
+   "31d15ad1ad65b137",
+   "678f14cd7b82d8fe",
+   "cb6880abfd34c5be",
+   "f2637383a52b1ea5"
+  ]
+ }
+}

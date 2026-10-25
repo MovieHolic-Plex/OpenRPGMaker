@@ -13,7 +13,8 @@ const text=(v:unknown)=>{if(typeof v!=='string'||!v.trim()||v.length>160)throw n
 const wavBytes=(url:string)=>{const m=/^data:audio\/wav;base64,(.+)$/.exec(url);if(!m)throw new ToolError('WAV 바이트를 확인할 수 없습니다.',{code:'invalid-audio'});return Uint8Array.from(atob(m[1]),c=>c.charCodeAt(0));};
 function playable(p:Project,id:string,kind:'music'|'sound'){
   if(!listAudioResources(kind,p).some(r=>r.id===id))throw new ToolError('실제 오디오 리소스가 없습니다: '+id,{code:'resource-not-found'});
-  const a=p.assets.uploaded[id],url=resolveAssetResourceUrl(id,{project:p});
+  // 파일 참조(ref) 자산은 조수 워커에 주소 해석기가 없어 url 이 비어도 재생 소스가 있다(스토어 카드로 넣은 곡, 2026-10-25 실조수: 6번 실패).
+  const a=p.assets.uploaded[id],url=resolveAssetResourceUrl(id,{project:p})||(a?.ref?.sha256?`asset-ref:${a.ref.sha256}`:'');
   if(!url)throw new ToolError('재생 소스가 없는 오디오입니다.',{code:'invalid-audio'});
   if(a){
     if(a.kind!==kind)throw new ToolError('오디오 종류가 다릅니다.',{code:'invalid-audio'});
@@ -27,7 +28,39 @@ function playable(p:Project,id:string,kind:'music'|'sound'){
   }else if(/\.(mid|midi)(?:[?#]|$)/i.test(url))throw new ToolError('브라우저가 재생하지 못하는 MIDI입니다.',{code:'invalid-audio'});
   return url;
 }
-const ROLES=['title','opening','field-default','battle-default','victory','defeat','cursor','confirm','cancel','maps'] as const;
+const ROLES=['title','opening','field-default','battle-default','victory','defeat','cursor','confirm','cancel','maps','boss'] as const;
+
+/** 보스전 이름 낱말 — troopIds 를 주지 않았을 때 보스 부대를 고른다. */
+const BOSS_NAME=/보스|boss|마왕|魔王|드래곤|dragon|용왕|수문장|두목|우두머리|대장|관장|군주|lord|king|queen|ボス/i;
+type Cmd={kind?:unknown;commandId?:unknown;troopId?:unknown;fields?:Record<string,unknown>;[key:string]:unknown};
+/** 명령 배열을 모두 돈다(분기·선택지 안 포함). */
+function eachCommandList(node:unknown,visit:(list:Cmd[])=>void,depth=0):void{
+  if(depth>24||!node||typeof node!=='object')return;
+  if(Array.isArray(node)){if(node.some(item=>item&&typeof item==='object'&&'kind' in (item as object)))visit(node as Cmd[]);for(const item of node)eachCommandList(item,visit,depth+1);return;}
+  for(const value of Object.values(node as Record<string,unknown>))if(value&&typeof value==='object')eachCommandList(value,visit,depth+1);
+}
+const isSystemBattleBgm=(c:Cmd|undefined,op:string)=>!!c&&c.kind==='m2Command'&&c.commandId==='m2-027-change-system-bgm'&&c.fields?.cue==='battle'&&c.fields?.operation===op;
+/**
+ * 보스전만 곡 바꾸기: 그 부대와 싸우는 전투 명령 바로 앞에 「전투 곡 바꾸기」, 바로 뒤에 「되돌리기」를 넣는다(이기든 지든 다음 전투는 기본 곡).
+ * 이미 있으면 곡만 바꾼다. 기본 전투 곡(battle-default)은 건드리지 않는다.
+ */
+function setBossBattleMusic(p:Project,id:string,troopIds:readonly string[]){
+  const want=new Set(troopIds),touched:{mapId:string;eventId:string;troopId:string}[]=[];
+  const lists:{list:Cmd[];mapId:string;eventId:string}[]=[];
+  for(const [mapId,map] of Object.entries(p.maps))for(const event of map.events??[])eachCommandList(event,list=>lists.push({list,mapId,eventId:event.id}));
+  for(const ce of p.commonEvents??[])eachCommandList(ce,list=>lists.push({list,mapId:'(공통 이벤트)',eventId:String((ce as {id?:unknown}).id??'')}));
+  for(const {list,mapId,eventId} of lists){
+    for(let i=0;i<list.length;i++){
+      const c=list[i]!;
+      if(c.kind!=='battleProcessing'||typeof c.troopId!=='string'||!want.has(c.troopId))continue;
+      const set={kind:'m2Command',commandId:'m2-027-change-system-bgm',fields:{cue:'battle',operation:'set',resourceId:id,volume:'100'}};
+      if(isSystemBattleBgm(list[i-1],'set'))list[i-1]=set;else{list.splice(i,0,set);i++;}
+      if(!isSystemBattleBgm(list[i+1],'reset'))list.splice(i+1,0,{kind:'m2Command',commandId:'m2-027-change-system-bgm',fields:{cue:'battle',operation:'reset'}});
+      touched.push({mapId,eventId,troopId:c.troopId});
+    }
+  }
+  return touched;
+}
 export const MUSIC_AUTHORING_TOOLS:readonly ToolDefinition[]=[
   tool('get_music_composer','새 음악을 실제 WAV로 만드는 악보·악기·루프 계약. 기존 BGM 선택과 구분.','read',schema({},[]),()=>({summary:'음표를 저작해 독립된 실제 스테레오 WAV를 만들 수 있습니다.',data:{
     method:'Original symbolic score, deterministic local synthesis; not remote studio/vocal generation. Notes are the actual audible composition, not labels or copied game music.',
@@ -67,13 +100,29 @@ export const MUSIC_AUTHORING_TOOLS:readonly ToolDefinition[]=[
     if(!score.tracks.length)throw new ToolError('해당 파트가 없습니다.',{code:'track-not-found'});
     return {summary:'실제로 합성한 악보와 측정값입니다. 음악 청취를 대신하지 않습니다.',data:{resourceId:id,...stored,score}};
   }),
-  tool('set_game_audio','타이틀/오프닝/필드/전투/승리·패배/메뉴 효과음/지정 맵에 실제 리소스를 연결. 종류와 대상 검증 후 변경.','write',schema({role:{type:'string',enum:[...ROLES]},resourceId:str,mapIds:{type:'array',items:str}},['role','resourceId']),(p,args)=>{
+  tool('set_game_audio','타이틀/오프닝/필드/전투/승리·패배/메뉴 효과음/지정 맵/보스전에 실제 리소스를 연결. 종류와 대상 검증 후 변경. 맵 배경음은 role:maps+mapIds, 모든 전투는 battle-default, 승리 팡파르는 victory(짧은 곡), 보스전만은 role:boss(+troopIds — 비우면 이름에 보스·마왕·드래곤 등이 든 부대) — 그 전투 직전에 곡을 바꾸고 끝나면 되돌리는 명령을 넣는다.','write',schema({role:{type:'string',enum:[...ROLES]},resourceId:str,mapIds:{type:'array',items:str},troopIds:{type:'array',items:str}},['role','resourceId']),(p,args)=>{
     const role=String(args.role),id=text(args.resourceId);if(!(ROLES as readonly string[]).includes(role))throw new ToolError('오디오 역할 오류.',{code:'invalid-args'});
     const kind=['cursor','confirm','cancel','defeat'].includes(role)?'sound':'music';
     playable(p,id,kind);
     let maps:string[]=[];
     if(role==='maps'){if(!Array.isArray(args.mapIds)||!args.mapIds.length||args.mapIds.length>256||args.mapIds.some(id=>typeof id!=='string'||!p.maps[id]))throw new ToolError('실제 mapIds가 필요합니다.',{code:'map-not-found'});maps=[...new Set(args.mapIds as string[])];}
     else if(args.mapIds!==undefined&&!(Array.isArray(args.mapIds)&&args.mapIds.length===0))throw new ToolError('mapIds는 maps 역할에서만 사용합니다.',{code:'invalid-args'});
+    if(args.troopIds!==undefined&&role!=='boss')throw new ToolError('troopIds는 boss 역할에서만 사용합니다.',{code:'invalid-args'});
+    if(role==='boss'){
+      const troops=p.database.troops??[];
+      const given=Array.isArray(args.troopIds)?(args.troopIds as unknown[]).filter((t):t is string=>typeof t==='string'):[];
+      const unknown=given.filter(t=>!troops.some(troop=>troop.id===t));
+      if(unknown.length)throw new ToolError('없는 부대: '+unknown.join(', ')+' — get_database_records(troops)로 id 를 확인하라.',{code:'troop-not-found'});
+      // 이름으로 고를 때는 실제로 전투 명령이 있는 부대만(2026-10-25 실조수: 쓰지 않는 「붉은 드래곤」만 잡혀 구미호 보스전을 못 찾았다).
+      const fought=new Set<string>();
+      for(const map of Object.values(p.maps))for(const event of map.events??[])eachCommandList(event,list=>{for(const c of list)if(c.kind==='battleProcessing'&&typeof c.troopId==='string')fought.add(c.troopId);});
+      for(const ce of p.commonEvents??[])eachCommandList(ce,list=>{for(const c of list)if(c.kind==='battleProcessing'&&typeof c.troopId==='string')fought.add(c.troopId);});
+      const ids=given.length?given:troops.filter(troop=>fought.has(troop.id)&&BOSS_NAME.test(troop.name??'')).map(troop=>troop.id);
+      if(!ids.length)throw new ToolError('보스 부대를 찾지 못했습니다. troopIds 로 보스 부대 id 를 주세요(전투 명령이 있는 부대): '+troops.filter(t=>fought.has(t.id)).slice(0,12).map(t=>`${t.id}(${t.name})`).join(', '),{code:'troop-not-found'});
+      const touched=setBossBattleMusic(p,id,ids);
+      if(!touched.length)throw new ToolError('이 부대와 싸우는 전투 명령(battleProcessing)이 맵 이벤트에 없습니다: '+ids.join(', ')+'. 보스 이벤트를 먼저 만들거나, 보이는 적·조우 전투라면 battle-default 를 쓰세요.',{code:'battle-not-found'});
+      return {summary:`보스전 ${touched.length}곳에 곡을 걸었습니다(그 전투 직전에 바꾸고 끝나면 기본 전투 곡으로 되돌림).`,data:{role,resourceId:id,kind,troopIds:ids,battles:touched,verificationScope:'authored-binding'}};
+    }
     if(role==='opening'&&!p.system.opening)throw new ToolError('먼저 오프닝을 저작하세요.',{code:'opening-not-found'});
     if(role==='title'&&!p.system.titleScreen)throw new ToolError('먼저 타이틀을 저작하세요.',{code:'title-not-found'});
     switch(role){

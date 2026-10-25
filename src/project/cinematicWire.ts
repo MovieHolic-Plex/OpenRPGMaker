@@ -9,6 +9,7 @@ function stable(v: unknown): string { return JSON.stringify(v, (_k, x) => x && t
 function slots(p: Project): { target: string; sequence: CinematicSequence | undefined; set: (s: CinematicSequence) => void }[] {
   return [
     { target: 'opening', sequence: p.system.opening, set: s => { p.system.opening = s; } },
+    { target: 'title-intro', sequence: p.system.titleIntro, set: s => { p.system.titleIntro = s; } },
     { target: 'game-over', sequence: p.system.gameOver?.sequence, set: s => { if(p.system.gameOver) p.system.gameOver.sequence = s; } },
     ...(p.system.gameOvers ?? []).map(row => ({ target: 'game-over:' + row.id, sequence: row.settings.sequence, set: (s: CinematicSequence) => { row.settings.sequence = s; } })),
   ];

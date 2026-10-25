@@ -1,0 +1,50 @@
+{
+ "reviewer": "opus fresh adversarial (r3)",
+ "verdict": "fail",
+ "notes": "Coords are sample-1x px (352x240, 16px cells, cell (cx,cy)). r3 is clearly better than the in-game current board and than r2 on holes/seams; it fails on stamp repetition, the chip line that outlines the edge, and weak sinking.",
+ "criteria": {
+  "ragged_ruin_edge": {
+   "result": "fail",
+   "evidence": "N edge: first-slab-top y histogram over x64-207 is concentrated at y39-44 (126/144 columns), so the slab heads form a near-straight band with small notches (sample-4x y~150-200 reads as a straight row of shard heads). Worse, loose chips sit in a regular dotted row 6-8px outside the edge at y32-35 (x50,58,69,90,97,107,138,146,157 ...), and the same dotted chip column runs parallel to the W edge at x~49 every ~16px (y~58,74,90,106,122 in west crop) and around the 2x2 hole. A chip row that follows the outline reads as a stamped outline, not rubble shed from a ruin. The W edge and hole rim themselves are acceptably irregular (W x-range 48-78)."
+  },
+  "no_kerb": {
+   "result": "pass",
+   "evidence": "No continuous dressed rim band on any of the 25 tiles or on the board; outside the slabs is plain dirt texture."
+  },
+  "no_square_holes": {
+   "result": "pass",
+   "evidence": "2x2 hole (x128-160,y80-112) reads as a rounded irregular pit with shards breaking into it on all sides; inner corners and the south tail (x80-180,y120-184) have no flush cell-aligned square corners this round."
+  },
+  "seamless": {
+   "result": "pass",
+   "evidence": "No visible seam lines where edge tiles meet body tiles (joint lines continue across, west/top crops) or where edge dirt meets dirt body tiles; dirt texture continuous across cell boundaries. Only the pre-existing body joint grid remains (see preexisting_issues)."
+  },
+  "no_repeat_grid": {
+   "result": "fail",
+   "evidence": "Byte-identical edge cells on the N run: (5,2)=(8,2), (6,2)=(9,2), (7,2)=(10,2)=(12,2), (4,2)=(11,2): cells 5-10 are a B,C,D,B,C,D cycle = exact 48px stamp, visible in the row-40..43 masks repeating at x64/x112 and in the chip row. NE diagonal staircase (13,2)=(14,3)=(15,4)=(16,5) identical, giving four identical stepped shard clusters along the diagonal (ne crop). Other identical edge sets: (3,3)=(3,4)=(9,5)=(4,8); (6,4)=(14,8)=(10,9)=(7,10); (16,8)=(14,9)=(10,10)=(7,11); (7,4)=(11,9)=(9,10); (8,4)=(13,9)=(8,10); (3,5)=(9,6)=(6,10)."
+  },
+  "beodeul_quality": {
+   "result": "fail",
+   "evidence": "Lip/sunken shadow is barely there: dirt pixel just outside N slab tops averages luminance 277 and just left of W slabs 276 vs dirt body 292 (~5% darker) - edge shards still sit on the dirt rather than sinking. Edge shards carry the body's very bright cream/grey-white tops (~(217,210,190)-(242,234,216)), far brighter and higher-contrast than the Beodeul stone in beodeul-ref-8x.png, so the broken edge reads as white tile shards scattered on dirt. Loose chips are uniform 2x2 grey-cap dots of identical shape, reading as stamped dots rather than varied stone fragments."
+  }
+ },
+ "preexisting_issues": [
+  "Flag body joint grid still visible on 16px cell borders inside the court; body cells repeat byte-identically (e.g. (5,3)=(10,3)=(12,3)=(10,4)=(11,5)=... 13 copies; (7,3)=(8,3)=(4,4)=... 8 copies), producing a visible repeating triangle-facet pattern.",
+  "Body slab tops are very bright cream/blue-grey, higher contrast than Beodeul stone references.",
+  "Dirt body scatters grey pebble pairs and orange clods on a fairly regular lattice across the whole yard (dirt-body-only-8x)."
+ ],
+ "defects": [
+  "N straight edge uses a 3-variant cycle in order, producing an exact 48px repeat over 6 cells.",
+  "Diagonal (convex staircase) uses the same tile 4 times in a row.",
+  "Loose chips placed at fixed offset outside the edge form a dotted line tracing the outline (N, W, hole rim).",
+  "Sunken lip shadow ~5% darker only; shards don't read as sinking into earth.",
+  "Edge shards inherit body brightness; too white vs Beodeul stone."
+ ],
+ "fixes": [
+  "Choose straight-edge variants by a hash of (x,y) with no-repeat-of-neighbour constraint instead of a position cycle; add 2+ more variants per side, and vary convex corner / diagonal tiles (at least 2 variants each).",
+  "Place chips at varied distances (1-12px out), varied sizes (1px, 2x1, 3x2 shard with shadow), clustered unevenly, and leave long stretches with none; do not put one chip per cell at the same offset.",
+  "Darken a 1-2px dirt band under the outer/lower side of each edge shard (lit from upper-left: shadow on S/E sides of shards) to ~15-20% darker than dirt body; give shards a dark lower lip pixel row.",
+  "Tone edge shards toward dirt: darker/warmer tops for outermost shards, partially covered by dirt pixels, so the court fades into the earth rather than stopping at bright fragments.",
+  "Vary N edge depth more (some cells recede 6-10px, others protrude) so the slab heads don't line up on y39-44."
+ ]
+}

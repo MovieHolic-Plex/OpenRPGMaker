@@ -1,0 +1,402 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "361b06d439c192605e6cb53bf3f3fd00e43693d513711fb0cb2c09bd64d1e21a",
+ "width": 48,
+ "height": 80,
+ "kind": "structure",
+ "name": "비둘기탑",
+ "label": "building-kit/massing/dovecote",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 7,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "5f62fef078ef7661"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 17,
+  "tileColorsP90": 26,
+  "darkV5": 44,
+  "nearBlackEdge": 0.01,
+  "opaqueTiles": 13
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "borderline",
+   "borderline",
+   "right",
+   "right",
+   "borderline",
+   "borderline",
+   "borderline",
+   "right",
+   "right",
+   "right",
+   "borderline"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "conical tiled roof",
+      "rows": "7-35",
+      "evidence": "c",
+      "front_edge_line_row": 35,
+      "eave_shadow_rows": "36-36"
+     },
+     {
+      "part": "small cupola/lantern with pointed cap on roof apex",
+      "rows": "0-7",
+      "evidence": "c",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stone tower shaft with windows and arched door",
+      "rows": "36-79",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 29,
+    "front_face_rows": 43,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The wide conical roof (rows 7-35) is drawn as a sloped tiled plane. Its tile rows alternate orange and dark maroon, and the silhouette widens steadily from 5px to 44px. It ends in a flared eave edge at rows 34-35, with a dark shadow line at row 36 (x=13 L=70, x=34 L=34) over the stone shaft. Below the roof, the 34px-wide stone face runs rows 36-79 and holds the windows, the arched door and the base moss, so there are over 40 rows of front face. This matches the roof-over-wall (c) pattern rather than a flat front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The candidate is a round dovecote tower with a scalloped conical tile roof. The roof shows about 5 steps with per-tile highlights. The stone walls carry clustered stones in several grey tones plus dark pigeon-hole dots, so the surface is textured. Visible tones per 16x16 tile are 16 against 12 and 10 for the references, and near-flat coverage is 0% like the references. The 30% near-neutral share of dark edge pixels is higher than the references' 7-9%, but by eye the outline is a dark brown/red-brown beside the roof and a dark grey-brown beside the stone, not a uniform black line. Forms are separated by value, and the door has a wood-tone frame. The piece is smaller and simpler than the houses but is not thinner or flatter than the reference stone wall. It would sit acceptably next to the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 12912
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "conical tiled roof",
+      "rows": "0-35",
+      "evidence": "c",
+      "front_edge_line_row": 36,
+      "eave_shadow_rows": "35-36"
+     },
+     {
+      "part": "small cupola with dormer window at roof peak",
+      "rows": "0-8",
+      "evidence": "c",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stone tower body with windows and arched door",
+      "rows": "36-79",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 36,
+    "front_face_rows": 43,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The wide conical roof is a sloped plane of orange tile rows 1-35. Its width grows steadily from 3 px to 44 px, and a dark eave edge and shadow sit at rows 34-36 above the tower. The stone cylindrical body below (rows 36-79, 34 px wide) is a clear front face of about 43 rows with windows, a door and a stone arch. The roof reads as a top surface over the front face, so the drawing is three-quarter view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a small round dovecote tower with a conical tile roof. The roof has several tile tones with scalloped highlights and a finial. The walls are a pale stone with dotted pigeon-hole texture, and a wooden arched door. Measured visible tones per tile are 16 against 12 and 10 for the references, and near-flat coverage is 0%, so density is not below the references on the numbers. The 30% near-neutral share of dark edge pixels is higher than the references' 7-9%, but most of the outline looks tinted, with dark brown by the roof and door and grey-violet by the stone, so it reads as dark material tone and not a black sticker line. By eye the tower is small and its wall ramp is shallower than the references: the stone has about 3-4 steps against the references' 5-6 steps, and the pigeon holes are repeated uniformly. The roof is rich and well shaded. It would sit acceptably beside the references, but it is slightly thinner and less varied overall.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 13020
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "conical tiled roof",
+      "rows": "1-35",
+      "evidence": "c",
+      "front_edge_line_row": 35,
+      "eave_shadow_rows": "36-37"
+     },
+     {
+      "part": "small cupola/finial at roof peak",
+      "rows": "0-7",
+      "evidence": "c",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stone tower body with windows",
+      "rows": "36-78",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "wooden arched door with stone frame",
+      "rows": "56-78",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 35,
+    "front_face_rows": 42,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette widens steadily from a point at row 0 to 44 px at rows 31-33, then narrows to 34 px at row 36. This is a large sloped, tiled conical roof plane (rows 1-35) that overhangs the body. Its lower edge is darker (rows 32-35, L≈50) and is followed by a shadow band under the eave at rows 36-37. Below it is a 34 px wide stone front face (rows 36-78, about 42 rows) with windows, a door, and a stone door frame. No side face is drawn. The roof's tile rows are the top surface, so it reads as three-quarter view and not as a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a round pigeon tower with a conical tile roof. Its roof shows scalloped tiles in several orange and brown steps, with a finial. The stone walls are shaded in light greys with dark hole dots, and the wooden door is tinted. Measured facts: 16 visible tones per tile against 12 and 10 for the references, 0% near-flat coverage like the references, and no flat fills. Density is therefore at or above the references on the numbers. The dark edge pixels are 30% neutral, against 7-9% for the references. That is a mix of tinted and neutral outline, so I call it 'mixed'. It is not a uniform black sticker line, but it leans a little more neutral than Beodeul. The roof has about 5 steps, while the references have 5-6. The stone wall is a bit pale and smooth, with fewer per-stone highlights than the stone reference. The piece is also small and simple. Overall it is close to the references but a little thinner in craft.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 13523
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "conical tiled roof",
+      "rows": "0-35",
+      "evidence": "c",
+      "front_edge_line_row": 35,
+      "eave_shadow_rows": "36"
+     },
+     {
+      "part": "small cupola/lantern at roof peak",
+      "rows": "0-7",
+      "evidence": "c",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "round stone tower body with windows",
+      "rows": "36-78",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "arched wooden door",
+      "rows": "57-78",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 35,
+    "front_face_rows": 42,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The wide conical roof (rows 0-35) is a sloped tile plane that widens from 1 to 44 px, with rows of tile courses and a dark eave edge at rows 35-36. This is a sloped roof top surface (evidence c). Below it is a stone tower front face of about 42 rows (rows 36-78) with windows and a door, at constant width 34. No receding side face is drawn. Roof plus front face reads as three-quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a round dovecote tower with a conical scalloped tile roof. The roof has about 4-5 tone steps and per-tile highlights, which is close to the references. The stone walls show several grey steps with dotted pigeon-hole niches and a speckled texture. Measured facts: 16 visible tones per tile against 12 and 10 for the references, 0% near-flat coverage, and no flat fills. The outline is the weak point. 30% of dark edge pixels are neutral, against 7-9% for the references, so part of the outline leans toward a neutral dark line. The silhouette looks slightly sticker-like, and the wall ramp is cooler and flatter than the stone wall on house-h112. The door and the base are small and fairly simple. The piece is smaller and simpler than the references, with less material variety, so density is slightly lower by eye despite the measured tone counts. A careful artist might accept it, but the partly neutral outline and thinner shading leave some doubt.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 13717
+  }
+ ],
+ "decidedAt": "2026-10-25T07:35:08.553Z",
+ "cells": {
+  "16": [
+   "0a2e029165fa697d",
+   "2744f55461eb90a0",
+   "4b119624c3eddf71",
+   "628d274ecde462eb",
+   "69219d54ee98dff3",
+   "71efeaefc4033e21",
+   "77d83ab134a2135b",
+   "7a048f4f05b6ba01",
+   "8401d51a0c243e9c",
+   "895cc76fe4f07ae0",
+   "8f2fec583e2b9d24",
+   "be20d31a4d4c8149",
+   "d206bcb3129759e1",
+   "e627c496949fb458",
+   "ed94f92d813165d9"
+  ],
+  "24": [
+   "00a885b96a85ea62",
+   "12f1f9daa5bf784a",
+   "4c4b7c2ee5ad63fa",
+   "4f6536dbb24819b6",
+   "6a92fa9ea958a816",
+   "71d5e1daa954ab20",
+   "a5fad7da3eebffaa",
+   "a714ee9124d1ffc0",
+   "aa12e00cce730f2b",
+   "ac7813cac6fa0a44",
+   "bf0fdd31bb758be8",
+   "ca931b763c765763",
+   "d1b07ec7e979baf6",
+   "dde43b4fbcaf684d",
+   "ec7d8798ae620793",
+   "f1073793614973c9"
+  ],
+  "32": [
+   "0bf8a9c26b5130a6",
+   "120027b45f93e5a5",
+   "1cd137ce1fe2ae9c",
+   "213c5bf693c005e0",
+   "22883f442115cb49",
+   "22d65fae36757218",
+   "2a82911c47310e10",
+   "32ba8bf961c13fc0",
+   "375a4f7ceda7a807",
+   "380b5cd45bc187d8",
+   "3a28967d99fd04ab",
+   "3dfd9d4cd1dcedaf",
+   "498430545ed23bea",
+   "58c5006c0702de80",
+   "5c3bf13b1b55b029",
+   "6acdd73e1f0bb8af",
+   "7430e81098a3b088",
+   "847f57f3879fb1cc",
+   "90f00c72b6d409d2",
+   "a822590ae4a1ccb1",
+   "ac680218f9d0ac27",
+   "b002ff9b3fbb71f0",
+   "bca31472876d3cfe",
+   "c2607715c2515a55",
+   "c5a6f330e82ee768",
+   "c65062aea1a179bf",
+   "cc364679edbe9404",
+   "ccc0bbc73f1539f6",
+   "d12c13e4b08582f6",
+   "d91da26692716a3d",
+   "d9f2ad4a4836b207",
+   "de53a02ff222099d",
+   "e1282be450119253",
+   "edb26dca4ccaadc6",
+   "edf6133fc7d9ab0c",
+   "f8a2212c6e3c29c2"
+  ],
+  "48": [
+   "3b5fa6b970e96a12",
+   "4b3d1ecad1795f64",
+   "4c8643eb4ab7ccca",
+   "da10a506bae6b8a3"
+  ]
+ }
+}

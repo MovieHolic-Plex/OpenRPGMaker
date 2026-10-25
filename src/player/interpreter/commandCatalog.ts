@@ -967,6 +967,7 @@ export function executeCommand(
         showInitialName: command.showInitialName,
         currentName: textTarget ? (state.session.stringVariables?.[textTarget] ?? "") : (actor?.name ?? ""),
         ...(command.prompt ? { prompt: command.prompt } : {}),
+        ...(command.presentation === "showcase" ? { presentation: "showcase" as const } : {}),
       });
     }
     case "changeGold": {

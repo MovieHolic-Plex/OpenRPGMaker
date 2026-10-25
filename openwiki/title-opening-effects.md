@@ -406,3 +406,35 @@ piano/bell/strings/bass, gain/pan과 MIDI pitch36..96·beat·duration·velocity�
 타이틀 크레딧 진입은 authored confirm, Escape/닫기로 돌아오면 authored cancel SE를 사용한다. 오프닝 장면 SE는 플레이어 SE 볼륨 설정을 따른다. `scripts/qa/audio-background-start-player.mjs`는 출하 플레이어의 분리 fixture에서 정상/느린 엔진/빠른 skip을 검증하고, 실제 WAV hash와 title cursor/confirm/cancel 및 첫 맵 음악의 재생을 대조한다. 실제 6컷 정본과 두 선택지는 `live-first-game-player.mjs`로 별도 검수한다.
 
 실제 Chromium 이동에서 document로 소비한 짧은 키 탭이 Phaser의 다음 프레임 이벤트로 다시 전달돼 한 칸 더 이동하는 사례를 확인했다. `Input`은 같은 DOM KeyboardEvent를 WeakSet으로 한 번만 캡처한다. 문서→다음 프레임 Phaser 전달 순서 계약은 `runtimeInputEditableTargets.test.ts`에 둔다.
+
+## 타이틀 앞 인트로 트랙·별·달리기·PRESS START·이름 쇼케이스 (2026-10-25, 아스트라 호라이즌 1.18)
+
+포켓몬 3세대(루비·사파이어·에메랄드, 파이어레드·리프그린)식 「짧고 밝은 인트로 → 타이틀 → 박사 소개 → 성별·이름 → 주인공이 작아지며 세계로」를 엔진 기능만으로 만든다. 데모 구현은 `src/project/flagship/astraTitleIntro.ts`·`emeraldCrown.ts`·`emeraldCrownFirstTen.ts`(박사 무대), 영상 캡처는 `scripts/qa/runtime/astra-opening.capture.mjs <play.json> <outDir>`.
+
+아스트라 흐름(2026-10-25 다시 짬 — 첫 판의 밤하늘·별·달을 가르는 전설 실루엣은 『폴른 스타』와 너무 닮아 반려됐다):
+1. 인트로 8.6초(`system.titleIntro`, 아무 키나 → 타이틀): 맑은 들판 키아트 위로 스타터 셋이 달려 들어와 깡충 → 정면 그림이 튀어 올라 하트·느낌표 → 같은 들판 위로 로고가 통통 박히고 하얀 섬광.
+2. 타이틀: 같은 들판, 스타터 달리기, 깜빡이는 PRESS START.
+3. 박사 소개(`system.opening`, Enter·Esc): `welcome`(박사 혼자 반김) → `capsule`(구슬이 포물선을 그려 터지고 첫 스타터가 튀어나옴) → `together`(라이벌·관장이 제 몬스터를 데리고 큰길을 오감) → `stage`(스타터 셋).
+4. 박사 무대(내 방 첫 자동 이벤트): 연구소 그림·박사 흉상(cg-nat10)·주인공 그림(`actor:actor_hero`)을 픽처로 띄워 남자아이/여자아이 → 이름 쇼케이스 → 「모험이 시작된단다」 → 주인공 그림이 방에 선 주인공 자리·크기로 줄고 무대가 걷힌다.
+
+| 기능 | 데이터 | 조수 경로 |
+|---|---|---|
+| 타이틀 앞 인트로(게임을 켜면 먼저, 아무 키나 → 타이틀) | `system.titleIntro: CinematicSequence` — `system.opening`(새 게임 뒤)과 별개 트랙. `entry` 는 before-title(기본)·attract 만(new-game 거절). 켜져 있으면 player 가 opening 의 before-title 보다 먼저 쓴다 | `configure_title_intro`, `create_opening_animatic_shot`/`configure_opening_entry`/`inspect_opening_timeline` 의 `track:"title-intro"`. 다른 샷 도구는 shotId 로 두 트랙을 다 찾는다(샷 id 는 트랙 사이에서도 유일) |
+| 실루엣 | 애니메틱 image 층 `tint: { color, amount? }` — amount 1(기본)이면 모양만 남는 단색 | 층 필드 그대로 |
+| 별똥별 | 애니메틱 입자 `preset: "meteors"`(시간의 순수 함수) | 〃 |
+| 타이틀 별 | `titleScreen.particles.preset: "stars"` — 세 깊이로 왼쪽으로 흐르며 깜빡이고 6.5초마다 별똥별. 화면 위 45%에만 뜬다 | `set_title_screen` |
+| 한 장 전경 층 | `backgroundLayers[].fit: "cover"` — 하늘을 오린 땅 그림을 화면에 덮고 아래에 붙인다(스크롤 없음). tile(기본)은 320×240 반복 | `set_title_screen` |
+| 달리는 칩 | `titleScreen.runners[]`(최대 6): 24×32 캐릭터 시트·칸·방향·발끝 y·속도·배율·지연·간격·hop. 위치·걸음은 시간의 순수 함수(`titleRunnerFrameAt`), canvas 너비는 화면 비율에 맞춘다(480×320 에서 칩이 옆으로 퍼지지 않게) | `set_title_screen` |
+| PRESS START | `titleScreen.pressStart { text?, blinkMs?, y? }` — 첫 입력까지 메뉴를 숨기고 깜빡인다. 입장 시퀀스가 도는 동안의 키는 시퀀스 건너뛰기가 먹는다 | `set_title_screen`(null 이면 지움) |
+| 박사 소개 지역 비행 | 에메랄드 오프닝 컷 `region`(6.5초): 맵 그림 넷을 1배로 바다 위에 띄워 카메라가 날고, 구름이 섬 가장자리를 덮고, 맵 이름표가 차례로 뜬다. `emeraldOpeningShotMs` 가 컷 길이 | 페이지의 `shot:"region"` |
+| 스타터 튀어나옴 | `stage` 컷: 빛 구슬 → 섬광 → 뛰어올라 착지 squash(기준점 발밑) → 반짝이·이름표, 박마다 효과음 | 기본 컷 |
+| 박사 소개 새 컷 | `welcome`(박사 혼자 반김)·`capsule`(구슬 포물선 → 섬광 → 첫 스타터 squash·하트, ball-throw/ball-break 효과음)·`together`(사람과 몬스터가 짝지어 걷기) | 페이지의 `shot` |
+| 배우 그림 픽처 | `showPicture.resourceId: "actor:<배우 ID>"` — 그 배우가 지금 입은 걷기 그림(아래 보기 서 있는 칸, 24×32 = 배율 100%). 성별 선택·옷 갈아입기를 따른다. 기준점은 왼쪽 위라 줄일 때 x·y 를 함께 옮긴다. 검증기(`commandReferenceValidation`·`eventDraftValidator`)는 리소스 대신 배우가 있는지 본다 | 조수 그림 목록(`eventResourceCatalog`)에 배우마다 `actor:` 항목이 뜬다 |
+| 이름 쇼케이스 | `enterHeroName.presentation: "showcase"` — 별빛 배경에서 주인공 걷기 그림(옷 갈아입기 덮어쓰기 반영)이 사방으로 돌고, 확정하면 반짝이가 터진 뒤 닫힌다. 입력 방식은 기본 창과 같다 | 명령 카탈로그 `presentation` enum |
+
+함정:
+- 타이틀 무대는 놀이 해상도(아스트라 480×320)인데 옛 층·입자는 320×240 을 가정한다. 땅 그림을 tile 로 깔면 가로로 반복돼 두 장이 붙어 보였다 → `fit:"cover"`.
+- 애니메틱 층의 기본 기준점은 왼쪽 위(0,0)다. squash 를 발밑에서 하려고 `anchorY:1` 을 주면 y 키도 발끝 자리로 옮겨야 한다.
+- 새 화소 없음: 들판 키아트·맵 그림·몬스터 그림·흉상 모두 기존 그림이다. 3/4 관문(object-gate) 대상인 새 그림이 없고 관문 영수증도 없다. 첫 판의 밤 풀밭 재칠 그림은 반려와 함께 지웠다.
+- 박사 무대의 「줄어든 끝」 좌표는 그 방(13×9, 시작 칸 (5,5))의 실측이다 — 방·시작 칸을 바꾸면 다시 잰다.
+- 컷 끝 프레임을 찍으면 다음 컷으로 넘어가는 페이드 중이라 어둡게 찍힌다. 판정은 컷 가운데 프레임으로 한다.

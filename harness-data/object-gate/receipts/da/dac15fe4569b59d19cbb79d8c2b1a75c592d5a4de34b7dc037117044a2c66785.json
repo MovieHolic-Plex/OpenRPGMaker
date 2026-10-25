@@ -1,0 +1,301 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "dac15fe4569b59d19cbb79d8c2b1a75c592d5a4de34b7dc037117044a2c66785",
+ "width": 16,
+ "height": 16,
+ "kind": "flat",
+ "name": "a small patch of alligator cracking — a net of three or four small polygons outlined by dark grey-black cracks, one plate slightly lifted, drawn as a transparent decal on old asphalt",
+ "label": "wasteland_ruins/road-crack-c",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 질감 없음 (4/4)",
+  "화풍: 칸 정보량이 기준보다 훨씬 낮음 (4/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "질감 없음 (4/4)",
+   "칸 정보량이 기준보다 훨씬 낮음 (4/4)"
+  ],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 3,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "wasteland_ruins",
+   "fallback": true,
+   "reason": "칩셋 wasteland_ruins 의 화풍 기준 묶음이 없다",
+   "hash": "8cecb3a70460aa86"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 0,
+  "tileColorsP90": 0,
+  "darkV5": 57,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 0
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "alligator crack net decal (polygons outlined by dark cracks, one lifted plate)",
+      "rows": "3-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 11,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The object is a transparent floor decal of dark crack lines (rows 3-13) seen from above, with a few brownish and grey highlight pixels for the lifted plate. The silhouette is sparse and irregular (widths 2-9 px) with no solid face, no front-edge line, no eave shadow, and no vertical front face. That is the expected appearance for a flat decal, so it reads as a top-down slab with no front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate renders as a tiny glyph, much smaller than the 4x3-tile patch it should cover, and it sits on a dark backdrop. The measured tone counts are 0 because it is smaller than one tile, so I judged by eye. It uses only 4 distinct colours in total, against 80 for the grass reference and 7 for the paving reference. That gives about 3 shading steps, with no visible plate lift, no per-plate shading, no asphalt grain and no speckle. Compared with the paving reference (about 7 visible tones, with stones shaded one by one and per-slab highlights), it is much thinner and reads as a flat sticker. The dark-edge neutral share is 4%, so the cracks lean slightly tinted rather than pure black, but at this size the outline treatment barely matters. The piece is sparse, but a careful artist would not accept it next to the references. It is far less rich and does not fill the intended 4x3 area.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 10714
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "alligator crack net decal (polygons outlined by dark cracks, one lifted plate)",
+      "rows": "3-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 11,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The decal is a sparse net of dark grey-black crack lines (rows 3-13, widths 2-9 px) on a transparent ground. It is seen straight from above as a flat pattern. There is no front face, no front-edge line, no eave shadow and no ellipse, and no vertical south face of 3 or more rows. The lifted plate is only a few lighter and brown pixels at rows 6-9 and 13 and does not form a vertical face. For a flat kind this is a flat top-down plate with no front face, so top_down_slab."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a tiny decal, smaller than one 16x16 tile, so the per-tile facts read 0 and I judged by eye. It has only 4 distinct colours in total. The reference grass has 80 and the paving 7 per tile, with about 3 and 7 visible tones. The candidate's material ramp has about 3 steps: a mid asphalt tone, a dark crack line and one lighter lifted-plate edge, against about 5-6 in the references. Only 4% of its dark edge pixels are neutral, so the crack lines carry a slight tint rather than being pure black. That does not offset the shallow ramp. The decal has no grain, speckle or per-plate shading, and it reads as a thin sticker-like glyph next to the richly textured grass and paving. It also does not give a 4x3-tile ground patch the density of the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 11361
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "alligator crack net decal on asphalt (flat polygons outlined by dark cracks)",
+      "rows": "3-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 11,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The decal is a flat net of dark crack outlines (rows 3-13) with no vertical south face, no front-edge line, no eave shadow and no legs or supports. The width profile shows irregular crack lines (widths 2-9) and not a body with a front face. It is seen from above as a flat plate, which matches the flat kind. The lifted plate is only a slight lighter patch, not a front face of 3 or more rows."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 2,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate on the right of the magenta bar is a tiny icon-like crack net, far smaller than the 4x3-tile ground patch it should be, and it sits on a transparent background. It has only 4 distinct colours in total, which is about 2 shading steps (crack line plus one fill) against 5-6 in the references. The cracks read as a uniform dark grey line on every shape, which is the sticker look. The near-neutral dark-edge share of 4% is not evidence of a tinted outline; with so few pixels the measurement is unreliable, so I judge by eye. Visible tones per tile is 0 because the piece is smaller than one tile, so I judge density by eye: it is much thinner than the grass (about 3 tones, grain clumps) and the paving (7 tones, stones shaded one by one). It has no texture, grain or per-plate shading, and the lifted plate shows no highlight or shadow step. It does not cover a 4x3 area and would not sit next to the references without looking sparse and flat.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 9064
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "alligator crack net decal with one lifted plate",
+      "rows": "3-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 11,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The decal is a transparent net of thin dark grey-black crack lines (rows 3-13, widths 2-9 px) seen from directly above, with a few small lighter or brownish pixels at rows 6-9 marking the lifted plate. No front face, front-edge line, eave shadow, ellipse or vertical face is drawn. It is a flat ground decal, which matches the kind flat, so it reads as a top-down plate with no front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate on the board is a tiny sprite of roughly 10x10 source pixels, far smaller than the 4x3-tile (64x48) ground patch the brief calls for. It does not read as a ground surface at the reference scale. It has only 4 distinct colours in total, so at most about 3 shading steps, against about 6 steps and 3-7 visible tones per tile in the grass and paving references. The cracks and the lifted plate are barely legible and there is no asphalt grain, speckle or per-plate shading. The dark edge pixels are only 4% neutral, so the outline is tinted rather than a black line. That is a point in its favour, but with so few colours the tint adds no real depth. The 0% near-flat coverage only reflects how small and sparse the piece is, not richness. A careful artist would not accept it next to the paving reference, since it looks much thinner and flatter.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 10512
+  }
+ ],
+ "decidedAt": "2026-10-22T23:08:27.565Z",
+ "cells": {
+  "16": [
+   "ed3a8679d33c7ac4"
+  ],
+  "24": [
+   "58b70bb9c571ac3d",
+   "7ac0a8406cbe89c6",
+   "96c4c4e9c454bfdb",
+   "b5cd74ed4f49f882",
+   "c99c59bb0a7491a0",
+   "f5005655d4625a80"
+  ],
+  "32": [
+   "07882c549aaa60ec",
+   "2c93b1f316e081a8",
+   "ac5937ba49f1e9d5",
+   "d841eefe01ce2e4e",
+   "f3e211ed71ec09c5",
+   "f464f870d4d179cc"
+  ],
+  "48": [
+   "623d4a19266240b2",
+   "63b41045568ff50e",
+   "7a4817fb5403d96f",
+   "7bdd0707e64e576c",
+   "eaa63b1195088958",
+   "f49199c2c3aaec71"
+  ]
+ }
+}

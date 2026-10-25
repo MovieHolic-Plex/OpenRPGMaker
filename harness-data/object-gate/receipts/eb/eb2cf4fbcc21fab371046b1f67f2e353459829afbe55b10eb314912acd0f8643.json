@@ -1,0 +1,348 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "eb2cf4fbcc21fab371046b1f67f2e353459829afbe55b10eb314912acd0f8643",
+ "width": 32,
+ "height": 64,
+ "kind": "structure",
+ "name": "scrap scaffold watchtower seen from above: sloped corrugated tin roof with a tarp patch and rust, lit plank lookout floor with sandbag parapet, braced wooden legs, ladder and concrete footings",
+ "label": "wasteland_ruins/watchtower",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "refer",
+ "reasons": [
+  "3/4: 독립 눈이 「3/4 아님」 11/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면"
+ ],
+ "view34": {
+  "verdict": "refer",
+  "reasons": [
+   "독립 눈이 「3/4 아님」 11/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 11,
+  "tileColorsP90": 16,
+  "darkV5": 47,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 7
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "borderline",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "plank lookout platform / roof deck (main body)",
+      "rows": "0-33",
+      "evidence": "a",
+      "front_edge_line_row": 30,
+      "eave_shadow_rows": "31-34"
+     },
+     {
+      "part": "braced wooden legs, ladder and footings (front face)",
+      "rows": "35-62",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 34,
+    "front_face_rows": 28,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 0-33 hold a wide plank deck at constant width 32. It is drawn as a horizontal surface seen from above, with stud and sandbag details at rows 1 and 26-27. The deck ends in a lighter front-edge row near row 30, then darker rows 31-33 and a very dark shadow row 34 (x=8 column scan). Below it, rows 35-62 show an open front: braced legs, a ladder and footings, which is 28 rows of front face. This is a top surface over a front face, not a flat slab. The silhouette narrows below the deck, as expected for open supports."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small, whole building in the same kind as the references. On the primary facts it matches them: 11 visible tones per 16x16 tile against 12 and 10 for the references, 0% near-flat coverage like both references, and only 1% neutral dark edge pixels, so the outlines carry a tint. By eye the outlines are dark brown beside the planks and rust beside the roof, not a uniform black sticker line. The surfaces carry texture: tin-roof corrugation bands, a tarp patch, plank lines on the floor, sandbag clumps, and a ladder with braced legs. Nothing is a large flat fill. Its total of 25 colours is low next to the references' 185 and 66, but that follows from the locked palette and does not show in the visible tones. Ramps per material look like about 4 steps, a little fewer than Beodeul's 5-6, though the information density is on par with the references. A careful artist would accept it next to them without it looking flatter or more sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18156
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "plank lookout deck (large lit plank floor with sandbag parapet and tarp patch)",
+      "rows": "0-33",
+      "evidence": "a",
+      "front_edge_line_row": 33,
+      "eave_shadow_rows": "34-34"
+     },
+     {
+      "part": "sandbag strips on deck",
+      "rows": "0-2",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "braced legs, ladder and footings (front face)",
+      "rows": "35-62",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 34,
+    "front_face_rows": 28,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 0-33 are a wide plank deck seen from above (32 px wide, plank rows, sandbag strips, tarp patch). It ends in a dark front-edge line at rows 33-34 with a shadow row below. Below it, rows 35-62 show the open front: braced wooden legs, a ladder and concrete footings, a front face of about 28 rows. The deck is a clear top surface above a front face, so it is not a flat slab. No tin roof slope is clearly distinct from the deck, but the deck itself serves as the top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small piece, so I judged it mostly on the measured facts plus what is visible at 2x. It has 11 visible tones per 16x16 tile, against 12 and 10 for the references, so density is on par. Near-flat coverage is 0%, the same as both references, and there are no large single-colour fills. Only 1% of its dark edge pixels are near-neutral, so the outlines lean brown or rust rather than black, which matches the references' tinted dark-material outlines. The roof shows corrugation bands with a tarp patch and rust, the plank floor shows grain, and the legs and braces are separated by value. I count about 4-5 steps per material, slightly fewer than the references' 5-6, partly because the whole piece uses only 25 colours. The piece reads as a shaded, textured object, not a flat sticker, and a careful artist would accept it next to the references, so it passes narrowly.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18469
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "plank deck / roof plane with sandbag parapet and patch",
+      "rows": "0-34",
+      "evidence": "a",
+      "front_edge_line_row": 34,
+      "eave_shadow_rows": "33-34"
+     },
+     {
+      "part": "braced wooden legs, ladder and concrete footings (front support)",
+      "rows": "35-62",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 34,
+    "front_face_rows": 28,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 0-34 form a wide plank surface 32px wide, with horizontal plank courses and sandbag/tin details. It ends in a dark front-edge line at rows 33-34 (#4a3828, then #2f2418), which acts as the eave shadow. Below it, rows 35-62 show the open front: braced legs, a ladder and footings, so there is a front face of 28 rows. The top surface is clearly present and large, like the 'table: top + legs' reference. The legs and ladder are vertical supports, so no major part lacks a top."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "Measured facts favour the candidate. It has 11 visible tones per tile against 12 and 10 for the references, 0% near-flat coverage like both references, and only 1% neutral dark edge pixels. Its outlines are therefore tinted (dark brown beside wood and rust) rather than a black sticker line. By eye, the roof has corrugation rows and rust/tarp variation, the lookout floor shows plank lines, and the sandbags, legs and footings are broken up by tone. Each material ramp has about 3-4 steps, fewer than the 5-6 on the Beodeul tile roofs, and the 25 total colours are modest. But the piece is small and the per-tile information matches the references, so it does not read as flatter or more sticker-like next to them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18721
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "plank deck / roof plane with sandbag strip and patches",
+      "rows": "0-34",
+      "evidence": "a",
+      "front_edge_line_row": 33,
+      "eave_shadow_rows": "34-34"
+     },
+     {
+      "part": "braced legs, ladder and footings (front face)",
+      "rows": "35-62",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 34,
+    "front_face_rows": 28,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 0-34 form one wide plank surface at full width (32 px). Its horizontal plank courses and sandbag strips read as a surface seen from above. It ends in a dark front-edge line at row 33 (L=60) and a darker eave shadow at row 34 (L=38). Below it, rows 35-62 show the open front: braced legs, a ladder and footings. That is 28 rows, well over 3. The top surface is large and clearly separated from the front face, so the drawing reads as three-quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small tower, but it is the same kind of whole building as the house references. Measured facts: 11 visible tones per 16x16 tile against 12 and 10 for the references, 0% near-flat coverage as in both references, and only 1% neutral dark edge pixels, so the outlines carry a tint. By eye the outlines are dark brown beside wood and dark rust beside tin, not a uniform black sticker line. The roof shows corrugation ridges, rust and tarp variation. The plank floor, sandbags, braced legs and ladder each have their own value breaks, and there are no large flat fills. Shading is a little shallower than the references' 5-6 steps per material, about 4 on the roof and wood, and the total of 25 colours is low. That fits a locked palette, and the visible tone density per tile matches the references. A careful artist would accept it beside them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16387
+  }
+ ],
+ "decidedAt": "2026-10-22T16:17:40.909Z",
+ "cells": {
+  "16": [
+   "10ccfa11234d6c47",
+   "4360c0c2c6728c79",
+   "47d0ecf85edd6ca7",
+   "6b1b5c80ce565508",
+   "7ff7589d5a32c98b",
+   "b1c16afda3a2f726",
+   "b9fd88ad3c227dea",
+   "d0f2ceb564145eba"
+  ],
+  "24": [
+   "008c2c784a07917b",
+   "074589e954d56b64",
+   "098a720edb87af8b",
+   "0a01911e8d679b7c",
+   "19bad254eb13efec",
+   "20590bfc639bf2b1",
+   "24594d7f1c56ca00",
+   "36381698e36e8db2",
+   "3abb284b1c8885e3",
+   "411b2f8058eed039",
+   "482708b34640f0ee",
+   "4db5408b07cbfc27",
+   "5815989c952c07be",
+   "62a7d6d144d04337",
+   "64c723b04ca1ef74",
+   "65f30ccc2b139707",
+   "6cca7998ab770501",
+   "7d2a828c39f17bef",
+   "7f1ee19b7f99e989",
+   "83aafbc23418cc5c",
+   "8cb57c032dc242c1",
+   "93d24d9c28f409ee",
+   "946f17ab9639096a",
+   "9cf3ea8235f240e8",
+   "9f3bd05cb19e25cc",
+   "c2206f1c03fd4521",
+   "c85ac149bf3de161",
+   "c8a1f7afe1b171d3",
+   "d051a5d8cb59071e",
+   "d2a5112fe1a483ed",
+   "d886789187f7a999",
+   "dd059e7105f55f74",
+   "de604dcb0ecf4c8e",
+   "eb7005658d9335f1",
+   "ed558002e2d6a06c",
+   "fa5941747a118e35"
+  ],
+  "32": [
+   "72fc410ca9869d44",
+   "84bdd0b7d5044f13"
+  ],
+  "48": [
+   "018fb879f1e526a8",
+   "0451d03a44ffe95b",
+   "2ae493948241c9f6",
+   "36d6c3397f6101b2",
+   "6ba675184c98611d",
+   "869267fe715a5e14",
+   "88bbf5dd4cc2946e",
+   "96e1d291f1bcdd06",
+   "ad0edbf3ad1922f9",
+   "e1886693e260d9e0",
+   "f54252c339951d06",
+   "fb019e4505d45a8c"
+  ]
+ }
+}

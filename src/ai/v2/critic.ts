@@ -9,12 +9,17 @@ const OUTDOOR_CONVENTIONS: Record<string, string> = {
   dungeon: "Genre conventions (do NOT count as majors): a dungeon or cave floor is drawn inside dark rock; dark rock or black OUTSIDE the walls is solid ground, not void — count void only for bare, purposeless floor INSIDE the walkable area. Stairs and ladders are the exits between floors.",
 };
 
-/** 비평 지시문. 실내면 v1 루브릭 그대로, 아니면 장르 관례만 갈아 끼운다. */
+/**
+ * 놓기 major(2026-10-25 판정 J5·J6·J31·J42·J64, 사용자 규칙): 차도·선로 한가운데 선 사람, 하나뿐인 출구 길목을 막는 사람,
+ * 카운터 손님 쪽에 선 주인, 쓰임에 안 맞는 가구(예배당 제단 뒤 안락의자, 장난감 가게·교실의 침대·소파 — 거실 한 벌).
+ */
+const PLACEMENT_MAJORS = "Placement majors (count each as a major with its cell): a person standing in the middle of a car lane, crosswalk or railway track (people stand on sidewalks, inside shops, by benches, counters and doors); a person standing in or next to the only one-cell-wide exit path so the way out is blocked; a shopkeeper standing on the customer side (south) of a counter instead of behind it (north); furniture from another kind of room — armchairs, sofas, beds, round rugs or potted plants in a chapel, a shop, a classroom, a hospital or a workshop (every room dressed like the same living room is a major).";
+
+/** 비평 지시문. 실내면 v1 루브릭 그대로, 아니면 장르 관례만 갈아 끼운다. 놓기 major 는 둘 다에 붙인다. */
 export function criticPrompt(task: string, type: PlaceType | "content", mapName: string, cells: { width: number; height: number }, px: { width: number; height: number } | undefined, otherMaps: readonly string[]): string {
   const base = featureCriticPrompt(task, mapName, cells, px, otherMaps);
-  if (type === "interior" || type === "house") return base;
-  const key = type === "cave" ? "dungeon" : type === "street" ? "street" : type === "dungeon" ? "dungeon" : "village";
-  return base.split("\n").map((line) => line.startsWith("Genre conventions") ? OUTDOOR_CONVENTIONS[key]! : line).join("\n");
+  const key = type === "interior" || type === "house" ? undefined : type === "cave" ? "dungeon" : type === "street" ? "street" : type === "dungeon" ? "dungeon" : "village";
+  return base.split("\n").flatMap((line) => line.startsWith("Genre conventions") ? [key ? OUTDOOR_CONVENTIONS[key]! : line, PLACEMENT_MAJORS] : [line]).join("\n");
 }
 
 export function pngSize(dataUrl: string): { width: number; height: number } | undefined {

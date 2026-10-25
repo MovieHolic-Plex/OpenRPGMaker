@@ -64,6 +64,7 @@ const TEXTURE_KEYS: Readonly<Record<string, BundledJsonKey>> = {
   tex_gothic_manor: "gothicManorTileset",
   tex_pirate_isles: "pirateIslesTileset",
   tex_sf_station: "sfStationTileset",
+  tex_wasteland_ruins: "wastelandRuinsTileset",
   tex_sengoku_edo: "sengokuEdoTileset",
   tex_modern_campus: "modernCampusTileset",
   tex_steampunk_city: "steampunkCityTileset",

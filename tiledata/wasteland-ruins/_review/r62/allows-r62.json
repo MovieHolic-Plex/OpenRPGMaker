@@ -1,0 +1,17 @@
+[
+ {
+  "sha": "1a3595ec9578037618959404f7c40a2317f8d461c6f3373e730b48e538e70d94",
+  "evidence": "/home/main/z-project/rpg-zzu-village-art/tiledata/wasteland-ruins/_review/r62/review4/verdict-B.md",
+  "note": "wasteland_ruins/oil-stain-b r62; object-gate PASS 4/4; independent adversarial reviewers A (Argon high) and B (Sonnet 5.5) review4 both PASS 5/5 (verdict-A.md, verdict-B.md)"
+ },
+ {
+  "sha": "ef0348939570de847c6706ba19a133168f526eb5ee087f2e6484ce3d1bc09bc6",
+  "evidence": "/home/main/z-project/rpg-zzu-village-art/tiledata/wasteland-ruins/_review/r62/review4/verdict-B.md",
+  "note": "wasteland_ruins/crop-bed-b r62; object-gate PASS 4/4; independent adversarial reviewers A (Argon high) and B (Sonnet 5.5) review4 both PASS 5/5 (verdict-A.md, verdict-B.md)"
+ },
+ {
+  "sha": "c45e032aede444e2dd5f0ca7197dad4a9a29a2b6d80853f79c5bb8650881753c",
+  "evidence": "/home/main/z-project/rpg-zzu-village-art/tiledata/wasteland-ruins/_review/r62/review4/verdict-B.md",
+  "note": "wasteland_ruins/crop-bed-c r62; object-gate PASS 4/4; independent adversarial reviewers A (Argon high) and B (Sonnet 5.5) review4 both PASS 5/5 (verdict-A.md, verdict-B.md)"
+ }
+]
