@@ -1254,6 +1254,9 @@ class ProjectStore {
 
   async flush(): Promise<ProjectFlushResult> {
     if (!canWriteTeamProject()) return { kind: "disabled" };
+    // 미룬 부팅 정규화가 아직이면 지금 끝낸다(표식·고친 내용이 dirty 가 된다) — 창을 일찍 닫아도 다음 실행이 또 «새 빌드 첫 부팅»이 되지 않게.
+    // 실패하면 그 오류로 던진다(저장 관문 — 정규화 안 된 문서는 쓰지 않는다).
+    if (this.deferredBootNormalization) await this.whenBootNormalized();
     if (this.autoSaveTimer) {
       clearTimeout(this.autoSaveTimer);
       this.autoSaveTimer = null;
