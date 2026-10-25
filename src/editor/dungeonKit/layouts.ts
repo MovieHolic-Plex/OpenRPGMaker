@@ -328,12 +328,26 @@ function layoutBlobOnce(spec: DungeonSpec, profile: GrammarInfo, salt: number): 
   }
   // 가장자리 안쪽으로 강제
   for (let y = 0; y < H; y += 1) for (let x = 0; x < W; x += 1) if (x < MARGIN || y < MARGIN + 4 || x >= W - MARGIN || y >= H - MARGIN) { g.floor[g.idx(x, y)] = 0; g.roomAt[g.idx(x, y)] = -1; }
-  smooth(g, 2, (x, y) => x >= entX - 2 && x < entX + ENT_W + 2 && y >= stubTop - 1 && y < entY + ENT_H + 2);
+  // 다듬기 셋: 둘이면 굴 둘레에 한 칸짜리 계단 턱이 많이 남아 16px 계단 윤곽으로 읽혔다(2026-10-25 floor VQA r4 cave·volcano).
+  smooth(g, 3, (x, y) => x >= entX - 2 && x < entX + ENT_W + 2 && y >= stubTop - 1 && y < entY + ENT_H + 2);
   // 입구 굴 북쪽 벽(계단·출구 자리)은 지킨다: 옆 방이 입구 곁까지 내려오면(허공을 줄이려고 허용) 옆으로 가는 통로가 이 벽을 뚫어
   // 계단 놓을 평평한 벽이 사라졌다. 목(stub) 세 칸만 뚫린 채로 둔다.
   for (let y = entY - 4; y < entY - 1; y += 1) for (let x = entX - 1; x < entX + ENT_W + 1; x += 1) {
     if (x >= entX + 5 && x < entX + 8) continue;
     g.floor[g.idx(x, y)] = 0; g.roomAt[g.idx(x, y)] = -1;
+  }
+  // 북쪽 벽 윤곽 고르기: 한 칸 폭 들쭉날쭉(양옆 열보다 한 칸 높거나 낮은 바닥 윗끝)은 벽 앞면 3단이 한 칸마다 끊겨 16px 계단으로 읽혔다(2026-10-25 floor VQA r4 cave·volcano).
+  // 양옆이 같은 높이면 그 높이로 맞춘다(입구 굴 둘레는 그대로).
+  for (let pass = 0; pass < 2; pass += 1) for (let x = 1; x < W - 1; x += 1) {
+    if (x >= entX - 2 && x < entX + ENT_W + 2) continue;
+    for (let y = MARGIN + 5; y < H - MARGIN - 1; y += 1) {
+      const i = g.idx(x, y);
+      const top = (xx: number, yy: number) => g.floor[g.idx(xx, yy)] === 1 && g.floor[g.idx(xx, yy - 1)] === 0;
+      // 이 열만 한 칸 높게 솟은 바닥(위로 튀어나온 이빨): 양옆은 y 가 윗끝, 이 열은 y-1 이 윗끝
+      if (top(x, y - 1) && g.floor[i] === 1 && top(x - 1, y) && top(x + 1, y)) { g.floor[g.idx(x, y - 1)] = 0; g.roomAt[g.idx(x, y - 1)] = -1; }
+      // 이 열만 한 칸 패인 바닥: 양옆은 y 가 윗끝, 이 열은 y+1 이 윗끝
+      else if (g.floor[i] === 0 && top(x, y + 1) && top(x - 1, y) && top(x + 1, y)) { g.floor[i] = 1; g.roomAt[i] = g.roomAt[g.idx(x, y + 1)]!; }
+    }
   }
   fillWallIslands(g, 30);
 

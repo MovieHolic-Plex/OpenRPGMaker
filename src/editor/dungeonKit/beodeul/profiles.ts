@@ -86,7 +86,9 @@ export const PROFILES: Record<BeodeulDungeonType, TypeProfile> = {
   cave: {
     ...GRAMMAR.cave,
     face: { h3: C("face-cave-3h"), h2: C("face-cave-2h") },
-    floor: { base: M("ground-road"), patches: [], mix: true, mixCells: [1, 3, 6, 7, 8] },   // 회색 긁힌 자국이 적은 칸(3~7점)만 — 칸 0·2·5(12~16점)가 「잔 점」으로 읽혔다(2026-10-25 floor VQA r2)   // 바다 동굴 모래 바닥은 칸마다 얼룩 결이라(결 11~18) 잔잔한 회갈색 흙바닥. 젖은 모래 물가 띠는 네모 고리로 읽혀 뺐다
+    floor: { base: M("ground-road"), patches: [], mix: true, mixCells: [1, 3, 6, 7, 8] },
+    // 물줄기 다리 = 광산 골짜기 널 — 돌다리 홑칸(난간 회색 네모)이 흙굴 물 위에 따로 떨어진 네모 판으로 읽혔다(2026-10-25 floor VQA r4 cave).
+    bridge: { ew: M("ground-deck"), ns: M("ground-deck") },   // 회색 긁힌 자국이 적은 칸(3~7점)만 — 칸 0·2·5(12~16점)가 「잔 점」으로 읽혔다(2026-10-25 floor VQA r2)   // 바다 동굴 모래 바닥은 칸마다 얼룩 결이라(결 11~18) 잔잔한 회갈색 흙바닥. 젖은 모래 물가 띠는 네모 고리로 읽혀 뺐다
   },
   temple: {
     ...GRAMMAR.temple,

@@ -63,6 +63,9 @@ export const GAP_KIT = {
   towerRing: "bd-dg-tower-ring-", towerPassS: "bd-dg-tower-pass-s",
 } as const;
 /** 오토타일 한 칸: 8방이 다 이어진 칸은 몸통 변형(interiorVariants[0])을 엔진과 같은 cellHash 로 고른다. */
+/** 벽가·다른 물건 곁에만 서는 잡동사니 키트(id 일부). */
+const CLUTTER_RE = /crate|barrel|bucket|sack|-rack|ore\b|ore-|ingots|coal-pile|slagheap|bones|bone-heap|skulls|rubble|loot|plank-pile|straw-bed/;
+
 function autoCell(g: AutotileGroup, m: number, x: number, y: number): number {
   // 위치 위상 변형(32×32 몸통 용암 등): 엔진 그리기와 같은 규칙으로 칸 위치가 고른다.
   if (g.phaseVariants) { const v = autotileVariantForMask(g, m, x, y); if (v !== undefined) return v; }
@@ -505,6 +508,18 @@ export function composeDungeon(ts: TilesetDef, spec: DungeonSpec): DungeonCompos
       cells.push({ x: X, y: Y, lo, up });
     }
     if (!cells.length) return false;
+    // 잡동사니(상자·통·자루·광석·뼈·잔해)는 벽가 또는 다른 물건 곁에만 — 방 한가운데 홀로 선 상자 더미가 길을 막는 「떠 있는 물건」으로 읽혔다(2026-10-25 floor VQA r4 castle·catacomb).
+    if (!opts.free && CLUTTER_RE.test(kitId)) {
+      const anchored = cells.some((c) => {
+        for (let dy = -1; dy <= 1; dy += 1) for (let dx = -1; dx <= 1; dx += 1) {
+          const X = c.x + dx, Y = c.y + dy;
+          if (!inb(X, Y) || cells.some((q) => q.x === X && q.y === Y)) continue;
+          if (!isFloor(X, Y) || isWall(X, Y) || upper[idx(X, Y)]! >= 0) return true;
+        }
+        return false;
+      });
+      if (!anchored) return false;
+    }
     const before = cells.map((c) => [lower[idx(c.x, c.y)]!, upper[idx(c.x, c.y)]!] as const);
     for (const c of cells) {
       if (c.lo >= 0) lower[idx(c.x, c.y)] = c.lo;

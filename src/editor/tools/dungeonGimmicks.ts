@@ -40,6 +40,15 @@ export const THEME_GIMMICKS: Readonly<Record<DungeonType, readonly DungeonGimmic
   otherworld: ["teleporter", "bridge"],
 };
 
+/** 자연 굴(blob 배치) — 벽 문틀이 없는 열린 흙길이라 쇠창살 칩이 맨땅에 선 창살로 읽혔다(2026-10-25 floor VQA r4 cave·volcano). 길은 바위로 막는다. */
+export const NATURAL_TYPES: ReadonlySet<DungeonType> = new Set<DungeonType>(["cave", "volcano", "ice", "forest", "swamp", "otherworld"]);
+/** 레버로 여는 길막이 그림: 자연 굴 = 바위(Object2 #5), 지은 던전 = 감옥 쇠창살 문(Object1 #5). */
+export function chokeBlockGraphic(type: DungeonType | string | undefined) {
+  return NATURAL_TYPES.has(type as DungeonType)
+    ? resolveGraphic({ textureKey: "tex_easyrpg_charset_object2", characterIndex: 5 } as never)
+    : resolveGraphic({ textureKey: "tex_easyrpg_charset_object1", characterIndex: 5 } as never);
+}
+
 export const GIMMICK_LABEL: Readonly<Record<DungeonGimmick, string>> = {
   lever: "레버 쇠창살", bridge: "레버로 내리는 다리", teleporter: "순간이동 마법진 한 쌍", minecart: "광차 정거장 한 쌍", iceslide: "얼음 미끄럼길", sandpit: "모래 함정(떨어지면 입구로)",
 };
@@ -494,17 +503,18 @@ function placeChokeLever(c: Ctx, entranceOk = true): string {
       for (let yy = leverRoom.y; yy < leverRoom.y + leverRoom.h; yy += 1) for (let xx = leverRoom.x; xx < leverRoom.x + leverRoom.w; xx += 1) if (seen[yy * W + xx] && !blocked.has(yy * W + xx) && free(c, { x: xx, y: yy })) roomCells.push({ x: xx, y: yy });
       if (!roomCells.length) continue;
       const sw = `sw_${c.map.id}_lever`;
-      ensureNamedSwitch(c.draft, sw, `${c.map.name}: 레버 당김(쇠창살 열림)`);
-      const bars = resolveGraphic({ textureKey: "tex_easyrpg_charset_object1", characterIndex: 5 } as never);
+      const rock = NATURAL_TYPES.has(c.type);
+      ensureNamedSwitch(c.draft, sw, `${c.map.name}: 레버 당김(${rock ? "바위 치움" : "쇠창살 열림"})`);
+      const bars = chokeBlockGraphic(c.type);
       cells.forEach((p, k) => {
         const gid = k === 0 ? `ev_${c.map.id}_lever_gate` : `ev_${c.map.id}_lever_gate_${p.x}_${p.y}`;
-        upsertEventIntoMap(c.map, { id: gid, name: "쇠창살", x: p.x, y: p.y, trigger: { kind: "action" }, commands: [], pages: [
-          { id: `${gid}_p1`, name: "닫힌 쇠창살", conditions: [], graphic: bars, trigger: { kind: "action" }, priority: "same", overlapForbidden: false, movement: fixedMove, commands: [textCmd("굳게 닫힌 쇠창살이다. 어딘가의 레버로 여는 것 같다.")] },
-          { id: `${gid}_p2`, name: "열린 쇠창살", conditions: [{ kind: "switch", switchId: sw, value: true }], graphic: { transparent: true }, trigger: { kind: "action" }, priority: "below", overlapForbidden: false, movement: fixedMove, commands: [] },
+        upsertEventIntoMap(c.map, { id: gid, name: rock ? "막힌 바위" : "쇠창살", x: p.x, y: p.y, trigger: { kind: "action" }, commands: [], pages: [
+          { id: `${gid}_p1`, name: rock ? "길을 막은 바위" : "닫힌 쇠창살", conditions: [], graphic: bars, trigger: { kind: "action" }, priority: "same", overlapForbidden: false, movement: fixedMove, commands: [textCmd(rock ? "큰 바위가 길을 막고 있다. 어딘가의 레버로 치울 수 있을 것 같다." : "굳게 닫힌 쇠창살이다. 어딘가의 레버로 여는 것 같다.")] },
+          { id: `${gid}_p2`, name: rock ? "치운 바위" : "열린 쇠창살", conditions: [{ kind: "switch", switchId: sw, value: true }], graphic: { transparent: true }, trigger: { kind: "action" }, priority: "below", overlapForbidden: false, movement: fixedMove, commands: [] },
         ] } as GameEvent);
       });
       const placed = placeLever(c.draft, c.map, wallFirst(c.draft, c.map, roomCells), `ev_${c.map.id}_lever`, "레버", sw,
-        [shake(3, 500), textCmd("어디선가 쇠창살이 올라가는 소리가 울렸다.")], "녹슨 레버가 있다. 힘껏 당겼다!", "레버는 이미 당겨져 있다.");
+        [shake(3, 500), textCmd(rock ? "쿠르릉… 어디선가 바위가 굴러가는 소리가 울렸다." : "어디선가 쇠창살이 올라가는 소리가 울렸다.")], "녹슨 레버가 있다. 힘껏 당겼다!", "레버는 이미 당겨져 있다.");
       if (!placed) return "";
       const leverAt = placed.at;
       return `레버 퍼즐: 레버 ${leverRoom.id}(${leverAt.x},${leverAt.y}) → ${target.id} 앞 좁은 목 쇠창살 ${cells.map((p) => `(${p.x},${p.y})`).join(" ")} 스위치 ${sw}.`;
