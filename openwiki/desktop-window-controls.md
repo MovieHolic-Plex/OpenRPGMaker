@@ -24,6 +24,7 @@
 | `electron/shared/windowControl.ts` | 동작 이름 `toggle-fullscreen｜minimize｜toggle-maximize｜close`, `WindowState`, `windowChromeFor(platform)` — 메인·프리로드·렌더러가 같은 표를 본다 |
 | `electron/shared/channels.ts` | `windowControl`(invoke), `windowFullscreen`(기존), **`windowState`**(조회 invoke + 변화 push, 같은 이름) |
 | `electron/main/main.ts` | `chromeOptions`, 동작 검증(`isWindowControlAction` 밖의 값은 `false`), maximize/unmaximize/restore/minimize/enter·leave-full-screen → `windowState` push |
+| `electron/main/directoryDialog.ts` | 폴더 선택 대화상자를 살아 있는 앱 창에 붙인다. 파일 메뉴는 스플래시·팀 창이 아니라 그 창을 고른다 |
 | `electron/preload/index.ts` | `oprn.platform`(동기), `oprn.windowState()`, `oprn.onWindowState(cb)` |
 | `src/app/windowChrome.ts` | `desktopWindowChrome()` — 브릿지가 없으면 `null`(브라우저·팀) |
 | `src/start/windowControls.ts` | 단추 마운트(`src/main.ts`·`startScreen.ts` 가 `mountWindowControls()` 호출, 한 번만 단다) |
@@ -34,6 +35,7 @@
 
 - **닫기는 우회하지 않는다.** `close` 동작은 `window.close()` 이고 `installCloseFlow` 가 가로채 flush → ack → destroy 한다
   (미저장 flush 가 먼저). 편집기에서 `flushBeforeClose` 수신 1회 실측. 시작 화면은 열린 세션이 없어 바로 닫힌다.
+- **폴더 선택 대화상자는 앱 창에 붙인다.** 시작 화면 「폴더 열기」·파일 메뉴는 `electron/main/directoryDialog.ts` 가 살아 있는 편집기 창을 부모로 넘긴다. 부모 없이 열면 모달이 아니어서 전체화면 창 뒤로 가고, 시작 화면은 그동안 바빠 보인다. 포커스가 스플래시·팀 창이어도 파일 메뉴는 그 창이 아니라 앱 창을 쓴다. 열기에 실패하면 메시지 상자를 띄운다.
 - **전체화면에서 「이전 크기로」** 는 전체화면만 벗어난다(그 전 창 크기/최대화 상태로 복귀). 최대화 단추 아이콘은
   최대화 **또는** 전체화면이면 ❐(복원), 아니면 ▢. 전체화면 단추는 `aria-pressed`.
 - 상태는 단추 밖에서도 바뀐다(끌기 영역 더블클릭·키·창 관리자) → 렌더러는 클릭 결과를 추측하지 않고 `onWindowState` push 만 믿는다.

@@ -12,6 +12,7 @@ import { registerAssetBrowser } from "./assetBrowser";
 import { acceptStoreDeepLink, registerAssetStore } from "./assetStore";
 import { findStoreDeepLinkArg } from "../../src/assetStore/deepLink";
 import { electronUserArgIndex, inspectCliProjectArgs, inspectCurrentCliProject } from "./cliProject";
+import { chosenDirectory, directoryDialogParent, directoryDialogProperties, pickAppWindow } from "./directoryDialog";
 import { registerAppProtocol, registerAssetProtocol } from "./protocols";
 import { captureLastViewBeforeClose, forgetLastViewWindow, markEditorLeft, markEditorSettled, readLastView, scheduleLastViewAfterSave } from "./lastView";
 import { createProjectSessionRegistry } from "./sessions";
@@ -120,6 +121,8 @@ const START_READY_FALLBACK_MS = 6_000;
 
 /** createWindow 로 만든 앱 창. 스플래시(data: 문서)는 여기 없다. */
 const appWindows = new Set<BrowserWindow>();
+/** 파일 메뉴가 스플래시·팀 창에 붙지 않도록, 마지막으로 앞에 있던 앱 창. */
+let lastAppWindow: BrowserWindow | null = null;
 /** 명령줄로 이 창에 연 프로젝트. QA 의 OPRN_OPEN_PROJECT_DIR 와 따로 둔다(그 변수는 잠금을 끈다). */
 const explicitProjectDir = new WeakMap<BrowserWindow, string>();
 
@@ -178,6 +181,8 @@ function createWindow(options: { readonly splash?: () => Splash | undefined; rea
   const id = window.webContents.id;
   if (options.projectDir) explicitProjectDir.set(window, options.projectDir);
   appWindows.add(window);
+  lastAppWindow = window;
+  window.on("focus", () => { lastAppWindow = window; });
 
   let shown = false;
   /** 스플래시에 오류를 띄웠다 — 「다시 시도」 전에는 대체 타이머가 빈 창을 보이지 않는다. */
@@ -237,7 +242,12 @@ function createWindow(options: { readonly splash?: () => Splash | undefined; rea
   window.on("unmaximize", broadcastState);
   window.on("restore", broadcastState);
   window.on("minimize", broadcastState);
-  window.on("closed", () => { revealOnStartReady.delete(id); appWindows.delete(window); explicitProjectDir.delete(window); });
+  window.on("closed", () => {
+    revealOnStartReady.delete(id);
+    appWindows.delete(window);
+    explicitProjectDir.delete(window);
+    if (lastAppWindow === window) lastAppWindow = null;
+  });
   // 문서를 떠나면(시작 화면 ↔ 편집기·새로고침) 다시 «부팅을 마쳤다» 신호가 올 때까지 찍지 않는다.
   window.webContents.on("did-start-navigation", (details) => { if (details.isMainFrame && !details.isSameDocument) markEditorLeft(id); });
   window.webContents.on("will-navigate", (event, url) => {
@@ -351,7 +361,47 @@ async function openProjectFromCli(projectDir: string): Promise<void> {
 }
 
 function focusedWindow(): BrowserWindow | null {
-  return BrowserWindow.getFocusedWindow() ?? BrowserWindow.getAllWindows()[0] ?? null;
+  return pickAppWindow({
+    focused: BrowserWindow.getFocusedWindow(),
+    lastFocused: lastAppWindow,
+    windows: [...appWindows],
+    isAppWindow: (window) => appWindows.has(window),
+    isDestroyed: (window) => window.isDestroyed(),
+  });
+}
+
+/**
+ * 폴더 선택 창. 살아 있는 앱 창이 있으면 그 창에 붙여 전체화면 뒤로 숨지 않게 한다.
+ * 고른 경로만 돌려주고, 취소면 null.
+ */
+function askForDirectory(owner: BrowserWindow | null, title: string, createDirectory = false): Promise<string | null> {
+  const parent = directoryDialogParent(owner);
+  const options = { title, properties: directoryDialogProperties(createDirectory) };
+  const pending = parent ? dialog.showOpenDialog(parent, options) : dialog.showOpenDialog(options);
+  return pending.then(chosenDirectory);
+}
+
+/** 파일 메뉴의 새 프로젝트·폴더 열기. 실패는 콘솔에만 두지 않고 창으로 보여 준다. */
+function openChosenFolder(window: BrowserWindow, options: {
+  readonly title: string;
+  readonly createDirectory?: boolean;
+  readonly recentTitle?: string;
+  readonly failure: string;
+}): void {
+  void (async () => {
+    try {
+      const dir = await askForDirectory(window, options.title, options.createDirectory === true);
+      if (!dir || window.isDestroyed()) return;
+      await adoptFolder(window, dir, options.recentTitle);
+    } catch (error) {
+      console.warn("[project] 폴더를 열지 못했습니다:", error);
+      if (window.isDestroyed()) return;
+      const detail = error instanceof Error ? error.message : String(error);
+      await dialog.showMessageBox(window, { type: "error", message: options.failure, detail }).catch((dialogError: unknown) => {
+        console.warn("[project] 오류 창을 띄우지 못했습니다:", dialogError);
+      });
+    }
+  })();
 }
 
 /** @deprecated multi-user team collaboration is not supported yet (2026-10-21).
@@ -460,8 +510,7 @@ function buildMenu(): void {
           click: () => {
             const window = focusedWindow();
             if (!window) return;
-            void dialog.showOpenDialog(window, { properties: ["openDirectory", "createDirectory"], title: "새 프로젝트 폴더 선택" })
-              .then((result) => (result.canceled || result.filePaths.length === 0 ? null : adoptFolder(window, result.filePaths[0], "새 프로젝트")));
+            openChosenFolder(window, { title: "새 프로젝트 폴더 선택", createDirectory: true, recentTitle: "새 프로젝트", failure: "새 프로젝트를 만들지 못했습니다." });
           },
         },
         {
@@ -472,8 +521,7 @@ function buildMenu(): void {
             const window = focusedWindow();
             if (!window) return;
             // 메뉴 경로는 폴더에 project.sqlite 가 없어도 연다 — initLocalProjectStore 가 만든다.
-            void dialog.showOpenDialog(window, { properties: ["openDirectory"], title: "프로젝트 폴더 열기" })
-              .then((result) => (result.canceled || result.filePaths.length === 0 ? null : adoptFolder(window, result.filePaths[0])));
+            openChosenFolder(window, { title: "프로젝트 폴더 열기", failure: "폴더를 열지 못했습니다." });
           },
         },
         { type: "separator" },
@@ -619,12 +667,8 @@ export async function startApp(boot: BootContext): Promise<void> {
     const title = typeof input?.title === "string" ? input.title : undefined;
     return typeof input?.root === "string" && input.root ? suggestProjectDir(title, input.root) : suggestProjectDir(title);
   });
-  ipcMain.handle(OPRN_CHANNELS.startChooseProjectRoot, async (event: IpcMainInvokeEvent, payload: unknown) => {
-    const owner = BrowserWindow.fromWebContents(event.sender);
-    const options = { properties: ["openDirectory", "createDirectory"] as Array<"openDirectory" | "createDirectory">, title: "새 게임을 만들 위치 선택" };
-    const result = owner ? await dialog.showOpenDialog(owner, options) : await dialog.showOpenDialog(options);
-    return result.canceled || result.filePaths.length === 0 ? null : result.filePaths[0];
-  });
+  ipcMain.handle(OPRN_CHANNELS.startChooseProjectRoot, (event: IpcMainInvokeEvent, _payload: unknown) =>
+    askForDirectory(BrowserWindow.fromWebContents(event.sender), "새 게임을 만들 위치 선택", true));
   ipcMain.handle(OPRN_CHANNELS.startOpenFolder, async (event: IpcMainInvokeEvent, payload: unknown) => {
     const requested = (payload as { readonly projectDir?: unknown } | null)?.projectDir;
     if (typeof requested === "string") {
@@ -633,10 +677,8 @@ export async function startApp(boot: BootContext): Promise<void> {
       rememberRecentProject(session.projectDir, session.store.info().title ?? requested);
       return { projectDir: session.projectDir, isNew: false, projectId: session.store.projectId };
     }
-    const { dialog } = await import("electron");
-    const result = await dialog.showOpenDialog({ properties: ["openDirectory"], title: "프로젝트 폴더 열기" });
-    if (result.canceled || result.filePaths.length === 0) return null;
-    const dir = result.filePaths[0];
+    const dir = await askForDirectory(BrowserWindow.fromWebContents(event.sender), "프로젝트 폴더 열기");
+    if (!dir) return null;
     // project.sqlite 가 없는 폴더도 그냥 연다 — 스토어가 만들어지고 렌더러의 store.load()
     // 가 빈 프로젝트를 심는다. isNew 는 시작 화면이 “새 프로젝트로 채택” 토스트를 띄우는 용도다.
     const isNew = !sessions.directoryExists(dir);
@@ -659,9 +701,9 @@ export async function startApp(boot: BootContext): Promise<void> {
     if (typeof input?.projectDir === "string" && input.projectDir) {
       dir = prepareNewProjectDir(input.projectDir);
     } else {
-      const result = await dialog.showOpenDialog({ properties: ["openDirectory", "createDirectory"], title: "새 프로젝트 폴더 선택" });
-      if (result.canceled || result.filePaths.length === 0) return null;
-      dir = result.filePaths[0];
+      const picked = await askForDirectory(BrowserWindow.fromWebContents(event.sender), "새 프로젝트 폴더 선택", true);
+      if (!picked) return null;
+      dir = picked;
     }
     const session = await sessions.open(event.sender.id, dir);
     // 시드(장르 프리셋 등)를 새 폴더에 심는다 — 빈 폴더로 시작하면 렌더러가 리로드 뒤에 적용할 수 없다.
