@@ -15,6 +15,7 @@ import { lookMismatches, oversizedSprites, pristineFantasyHero, titleBackdropMis
 import { dryBoats, dryBridges, placementProblems, type PlacementProblem } from "./placementRules";
 import { offPurposeProps } from "./roomPurpose";
 import { unsafeSpawnLines } from "@/project/chaserSpawnSafety";
+import { projectCanLoseHp, resolvedHudWidgets } from "@/project/fieldHud";
 
 type Obj = Record<string, unknown>;
 const obj = (v: unknown): Obj | undefined => (v && typeof v === "object" && !Array.isArray(v) ? (v as Obj) : undefined);
@@ -720,6 +721,11 @@ export function gameContentProblems(before: Project, after: Project, task: strin
   problems.push(...oversizedSprites(before, after));
   // 그림 ↔ 이름(J35·J30·J41): 젊은 인물에 노인 얼굴, 인형·태엽 병정에 사람 얼굴, 하얀 드레스에 분홍 드레스 칩.
   problems.push(...lookMismatches(before, after));
+  // 체력이 줄 일이 없는 게임에 체력 HUD(공포 꽃잎·하트)가 설명 없이 떠 있다(2026-10-25 심사 J67). 이번 실행이 HUD 를 바꿨을 때만.
+  if (JSON.stringify(before.system.fieldHud ?? null) !== JSON.stringify(after.system.fieldHud ?? null) && after.system.fieldHud
+    && resolvedHudWidgets(after.system.fieldHud).some((widget) => widget.source === "hp") && !projectCanLoseHp(after)) {
+    problems.push(`[게임 검사 HUD] 필드 HUD(${after.system.fieldHud.theme})가 체력(꽃잎·하트)을 늘 보이는데 이 게임에는 체력이 줄 일(전투·피해 명령·인카운트)이 없다 — 플레이어에게 설명 없는 장식이다. set_field_hud{theme:'${after.system.fieldHud.theme}', vitals:false} 로 끄거나, 체력을 쓰는 게임이면 피해를 주는 장치(함정·추격자 changeActorHp)를 만들고 set_life_flower 로 꽃잎의 뜻을 보인다.`);
+  }
   // 타이틀 그림 ↔ 시대(J38): 이번에 타이틀을 바꿨을 때만.
   if (JSON.stringify(before.system.titleScreen ?? null) !== JSON.stringify(after.system.titleScreen ?? null)) problems.push(...titleBackdropMismatch(after, task));
   // 주인공 모습 ↔ 장르(J43): 게임을 만드는 요청은 출하 검사(hero-look)가 이미 짚는다. 그 밖에는 이번에 장소(맵)를 새로 지은 실행만 —
