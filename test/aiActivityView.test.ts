@@ -12,6 +12,7 @@ beforeEach(() => {
   vi.stubGlobal("Event", window.Event);
   // el() 은 `child instanceof Node` 로 자식을 가른다 — document 만 바꾸면 Node 가 없어 전부 터졌다.
   vi.stubGlobal("Node", window.Node);
+  vi.stubGlobal("HTMLDetailsElement", window.HTMLDetailsElement);
   setActivityLevel("brief");
   setAiLiveCanvasEnabled(true);
 });

@@ -1,3 +1,4 @@
+/** @vitest-environment happy-dom */
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { modalStackDepthForTest, resetModalStackForTest } from "@/editor/ui/modalStack";
 import { findByTestId, installFakeDom, type FakeElement } from "./fakeDom";

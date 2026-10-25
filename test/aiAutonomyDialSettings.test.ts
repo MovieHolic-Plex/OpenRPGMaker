@@ -1,3 +1,4 @@
+/** @vitest-environment happy-dom */
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { AUTONOMY_LEVELS, resolveAutonomy, type AutonomyLevel } from "@/ai/autonomyLevels";
 import { AI_CONFIG_STORAGE_KEY, defaultAiConfig } from "@/ai/llmClient";

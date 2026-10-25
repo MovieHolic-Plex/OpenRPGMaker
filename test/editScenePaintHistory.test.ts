@@ -1,3 +1,4 @@
+/** @vitest-environment happy-dom */
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import { editorState } from "@/editor/editorState";
 import { paintTile } from "@/editor/actions";
@@ -23,11 +24,9 @@ const TILE_SIZE = 16;
 let EditSceneCtor: { readonly prototype: object };
 
 beforeAll(async () => {
-  vi.stubGlobal("window", {
-    Phaser: { Scene: class Scene {} },
-    location: { search: "" },
-  });
-  vi.stubGlobal("document", { querySelector: () => null });
+  // getLoadedPhaser() 는 모듈 로드 시점에 window.Phaser 를 읽고, phaser 자체는 document.documentElement 를
+  // 읽는다 — 손으로 만든 window/document 스텁으론 모자라 happy-dom 의 실제 window 를 쓴다.
+  (window as unknown as { Phaser: unknown }).Phaser = { Scene: class Scene {} };
   vi.stubGlobal("MouseEvent", class MouseEvent {});
   vi.stubGlobal("PointerEvent", class PointerEvent {});
 

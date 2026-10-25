@@ -1,3 +1,4 @@
+/** @vitest-environment happy-dom */
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { createAssistantViewNavigation } from "@/editor/assistantViewNavigation";
 import { subscribeEditorCameraFocus, type CameraFocusTarget } from "@/editor/editorCameraFocus";

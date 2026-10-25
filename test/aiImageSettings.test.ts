@@ -1,3 +1,4 @@
+/** @vitest-environment happy-dom */
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { AI_CONFIG_STORAGE_KEY, defaultAiConfig, loadAiConfig, saveAiConfig } from "@/ai/llmClient";
 import { generateAiImage, imageGenerationUsesOtherProvider } from "@/ai/imageGenerationClient";

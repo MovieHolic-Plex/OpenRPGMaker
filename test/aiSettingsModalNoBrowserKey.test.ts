@@ -1,3 +1,4 @@
+/** @vitest-environment happy-dom */
 // 설정 모달에 브라우저 보관 키·엔드포인트 입력이 없다는 것을 고정한다.
 //
 // 배경: `ai-config-apikey` 에 입력한 키는 saveAiConfig 를 통해
