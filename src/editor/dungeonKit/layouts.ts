@@ -403,7 +403,8 @@ function layoutBlobOnce(spec: DungeonSpec, profile: GrammarInfo, salt: number): 
     }
     // 용암 못 가장자리가 계단처럼 각져 보이던 것을 다듬는다(용암은 가장자리 그림이 없어 모양이 곧 가장자리다): 이웃 8칸 다수결 두 번. 물(호수)은 운하 오토타일이 테두리를 그리니 건드리지 않는다.
     // 늪물도 같은 다수결 — 웅덩이(3×2 타원)가 둥근 네모 「물감 칸」으로 읽혔다(2026-10-25 floor VQA r4 swamp).
-    if (profile.liquid === "lava" || profile.id === "swamp") for (let pass = 0; pass < 2; pass += 1) {
+    // 마계 허공도 — 허공 가장자리가 16px 톱니·홑칸 이빨로 읽혔다(2026-10-25 floor VQA r5 otherworld).
+    if (profile.liquid === "lava" || profile.liquid === "void" || profile.id === "swamp") for (let pass = 0; pass < 2; pass += 1) {
       const next = g.liquid.slice();
       for (let y = 1; y < H - 1; y += 1) for (let x = 1; x < W - 1; x += 1) {
         const i = g.idx(x, y);
