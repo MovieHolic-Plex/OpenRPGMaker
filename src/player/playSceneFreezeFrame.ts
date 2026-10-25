@@ -87,8 +87,11 @@ export function syncFreezeFrame(scene: PlaySceneContext): void {
     // 무대(.play-stage) 안에서 캔버스가 차지한 자리에 맞춘다 — 크롭·여백이 있으면 무대 전체(inset 0)에 깔면 그림이 어긋난다.
     const canvas = scene.game?.canvas;
     if (canvas instanceof HTMLElement) {
+      // 무대가 CSS 로 확대돼 있으면(정수 배율 맞춤) getBoundingClientRect 는 확대 뒤 화소다 — 무대 안 좌표(확대 전)로 되돌린다.
+      // 안 되돌리면 정지 그림이 배율만큼 한 번 더 커져 화면 한 귀퉁이만 보였다(QA 2026-10-25 d1-arrive).
       const hr = host.getBoundingClientRect(), cr = canvas.getBoundingClientRect();
-      if (cr.width > 0 && cr.height > 0) Object.assign(layer.style, { inset: "auto", left: `${cr.left - hr.left}px`, top: `${cr.top - hr.top}px`, width: `${cr.width}px`, height: `${cr.height}px` });
+      const sx = host.offsetWidth > 0 ? hr.width / host.offsetWidth : 1, sy = host.offsetHeight > 0 ? hr.height / host.offsetHeight : 1;
+      if (cr.width > 0 && cr.height > 0) Object.assign(layer.style, { inset: "auto", left: `${(cr.left - hr.left) / sx}px`, top: `${(cr.top - hr.top) / sy}px`, width: `${cr.width / sx}px`, height: `${cr.height / sy}px` });
     }
     const still = layer.querySelector<HTMLImageElement>(".runtime-freeze-still")!;
     const flash = layer.querySelector<HTMLElement>(".runtime-freeze-flash")!;
