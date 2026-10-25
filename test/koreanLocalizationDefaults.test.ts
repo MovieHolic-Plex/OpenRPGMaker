@@ -5,6 +5,7 @@ import { builtinGeneratedResourceIds } from "@/assets/generatedAssetResourceReso
 import { GENERATED_ASSET_PLAN } from "@/assets/oprnGeneratedAssetPlan";
 import { SCARLOXY_BATTLE_ANIMATION_ASSETS } from "@/assets/scarloxyPack";
 import { createBattleRuntime } from "@/battle/runtime";
+import { RETRO_PIXEL_FX_KEYS, retroPixelAnimationId, retroPixelFxResourceId } from "@/assets/retroPixelAnimations";
 import { createBlankProject } from "@/project/defaults";
 import { GENERATED_EFFECT_SHEETS, generatedEffectDatabaseAnimationId, generatedEffectResourceId } from "@/assets/generatedEffectSheets";
 
@@ -68,8 +69,12 @@ describe("Korean default localization and EasyRPG RTP defaults", () => {
     expect(project.database.enemies[0]?.monsterResourceId).toBe("generated-enemy-slime-01");
     expect(project.system.titleResourceId).toBe("oprn-title-field");
     expect(project.system.systemResourceId).toBe("windowskin-warm");
-    expect(project.system.battleSystemResourceId).toBe("easyrpg-system2-system2-c");
-    for (const id of defaultIds) expect(allKnownIds.has(id ?? "")).toBe(true);
+    // System2(전투 게이지 시트)는 저작권 정리(2026-10-07)로 지워져 기본값이 없다.
+    expect(project.system.battleSystemResourceId).toBeUndefined();
+    for (const id of defaultIds) {
+      if (id === undefined) continue;
+      expect(allKnownIds.has(id)).toBe(true);
+    }
   });
 
   it("ships RTP-backed early battle defaults with valid enemy, troop, and animation references", () => {
@@ -80,6 +85,7 @@ describe("Korean default localization and EasyRPG RTP defaults", () => {
     const resourceIds = new Set<string>([
       ...easyRpgIds, ...generatedIds, ...builtinGeneratedResourceIds(),
       ...GENERATED_EFFECT_SHEETS.map((effect) => generatedEffectResourceId(effect.slug)),
+      ...RETRO_PIXEL_FX_KEYS.map(retroPixelFxResourceId),
     ]);
 
     // When: battle seed records are inspected and a starter troop runtime is created.
@@ -108,6 +114,8 @@ describe("Korean default localization and EasyRPG RTP defaults", () => {
         "anim_scarloxy_scratch",
         "anim_scarloxy_splash",
         ...GENERATED_EFFECT_SHEETS.map((effect) => generatedEffectDatabaseAnimationId(effect.slug)),
+        // 도트 측면 전투 전용 도트 효과 anim_px_* 17종이 시작 기록에 함께 들어온다.
+        ...RETRO_PIXEL_FX_KEYS.map(retroPixelAnimationId),
       ])
     );
 
