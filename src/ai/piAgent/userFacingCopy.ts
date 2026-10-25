@@ -5,6 +5,8 @@ export function friendlyExecutionError(message: string): string {
   // 제공자 쪽 끊김은 사용자가 멈춘 것이 아니다 — 「중단했어요」라고 하면 사용자가 자기가 멈춘 줄 안다(G12).
   // 같은 맵의 앞선 작업이 아직 예약을 쥐고 있다 — 이유를 말하지 않으면 「실행 실패 · 변경 없음」만 보였다(2026-10-25 G46).
   if (/이미 실행 중입니다|map-busy/u.test(message)) return "이 맵에서 앞선 조수 작업이 아직 끝나지 않았어요. 그 작업이 끝나거나 멈춘 뒤(최대 몇 분) 다시 보내 주세요.";
+  // 편집기가 단계 적용 결과를 작업기에 돌려주지 못했다(부하로 연결이 잠깐 끊김) — 일반 문장 대신 무슨 일인지 말한다(G43).
+  if (/(적용|맵 이미지) 응답을 전달하지 못했습니다/u.test(message)) return "작업 도중 편집기와 AI 작업기 사이 연결이 끊겨 멈췄어요.";
   if (/^Request was aborted\.?$|첫 응답이 늦어/i.test(message)) return "AI 모델의 첫 응답이 너무 늦어 요청이 끊겼어요. 같은 요청을 다시 보내면 이어서 해요.";
   if (/중단했습니다|aborted/i.test(message)) return "작업을 중단했어요.";
   if (/PROHIBITED_CONTENT|content.filter|safety/i.test(message)) return "AI 제공자가 응답을 중단했어요. 답변을 끝까지 받지 못했어요.";
@@ -30,4 +32,30 @@ export function friendlyApplyFailure(reason: string, issue?: string): string {
     .replace(/\(\s*\)|\[\s*\]/gu, "")
     .replace(/\s+/gu, " ").trim();
   return /[가-힣]/u.test(cleaned) ? `${head} ${cleaned}` : head;
+}
+
+const READ_ONLY_TOOL = /^(get_|find_|list_|inspect|search|read_|lookup|see$|preview|plan_|run_scene_test|run_lint|check|explain|describe|query|tile_query|show_)/u;
+const WRITE_GROUPS: readonly (readonly [RegExp, string])[] = [
+  [/^(make_place|edit_place|make_game|build_|stamp_|paint_|tile_)/u, "장소를 짓거나 고침"],
+  [/^remove_event$/u, "이벤트를 지움"],
+  [/(event|cutscene|scene|npc|people|dialogue)/u, "이벤트·장면을 만들거나 고침"],
+  [/(opening|animatic)/u, "오프닝을 바꿈"],
+  [/title_screen/u, "타이틀 화면을 바꿈"],
+  [/ending/u, "엔딩을 바꿈"],
+  [/(story_flag|switch|variable)/u, "이야기 깃발을 정함"],
+  [/(time_system|clock)/u, "시간 설정을 바꿈"],
+];
+/**
+ * 실행이 도중에 끊겼을 때 이미 반영한 것을 쉬운 말로 — 일반 오류 문장만 보이면 사용자는 무엇이 바뀌었는지 몰랐다
+ * (2026-10-25 장난감 가게 G43: 이벤트 5개를 지우고 장면을 다시 쓰던 중 끊겼는데 「작업을 끝내지 못했어요」만 남았다).
+ */
+export function describeAppliedWrites(toolNames: readonly string[]): string {
+  const counts = new Map<string, number>();
+  for (const name of toolNames) {
+    if (READ_ONLY_TOOL.test(name)) continue;
+    const label = WRITE_GROUPS.find(([pattern]) => pattern.test(name))?.[1] ?? "그 밖의 설정을 바꿈";
+    counts.set(label, (counts.get(label) ?? 0) + 1);
+  }
+  if (!counts.size) return "";
+  return `끊기기 전에 반영한 것: ${[...counts].map(([label, n]) => n > 1 ? `${label}(${n}번)` : label).join(", ")}. 나머지 요청은 다시 보내 주시면 이어서 해요.`;
 }
