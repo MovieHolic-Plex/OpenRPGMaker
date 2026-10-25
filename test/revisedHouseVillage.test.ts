@@ -13,6 +13,7 @@ import { buildSettlementReferenceHouses } from "../scripts/lib/settlementReferen
 import { inspectHouse30 } from "../scripts/lib/house30Authoring.mts";
 import { smallVillageDefinition } from "../scripts/lib/smallVillageDefinition.mts";
 import { registerVillageDecorationCatalog } from "../scripts/lib/villageDecorationCatalog.mts";
+import { withRetiredEasyRpgTilesets } from "./support/retiredEasyRpgTilesets";
 
 it("combines all three house catalogs and counts a three- and four-storey landmark in the exact upstairs quota", () => {
   const entries = [
@@ -22,7 +23,7 @@ it("combines all three house catalogs and counts a three- and four-storey landma
       floors: ["townhouse", "setback", "inn", "workshop"].includes(study.id) ? 2 as const : 1 as const })),
   ];
   expect(entries).toHaveLength(57);
-  const project = createBlankProject();
+  const project = withRetiredEasyRpgTilesets(createBlankProject());
   project.tilesets[COMBINED_TOWN_TILESET_ID]!.structureKits = entries.map(e => e.kit);
   project.spatialAuthoring = emptySpatialDocument();
   project.spatialAuthoring.library.objects = Object.fromEntries(entries.map(e => [e.id, {

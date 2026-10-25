@@ -2,10 +2,11 @@ import { beforeEach, describe, expect, it } from "vitest";
 import { addSwitch, addVariable, renameSwitch, renameVariable } from "@/editor/actions";
 import { createBlankProject, COMBINED_TOWN_TILESET_ID } from "@/project/defaults";
 import { store } from "@/project/store";
+import { withRetiredEasyRpgTilesets } from "./support/retiredEasyRpgTilesets";
 
 describe("Database panel baseline behavior", () => {
   beforeEach(() => {
-    store.replace(createBlankProject());
+    store.replace(withRetiredEasyRpgTilesets(createBlankProject()));
   });
 
   it("keeps switch and variable CRUD data in the project store", () => {
@@ -21,7 +22,7 @@ describe("Database panel baseline behavior", () => {
   });
 
   it("appends switch and variable ids beyond 1000 when legacy slots are all in use", () => {
-    const project = createBlankProject();
+    const project = withRetiredEasyRpgTilesets(createBlankProject());
     project.switches = Array.from({ length: 1000 }, (_, index) => ({
       id: `sw_${String(index + 1).padStart(4, "0")}`,
       name: `Switch ${index + 1}`,

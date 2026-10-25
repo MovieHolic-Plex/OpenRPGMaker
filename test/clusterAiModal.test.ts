@@ -14,6 +14,7 @@ import { COMBINED_TOWN_TILESET_ID } from "@/project/defaults/constants";
 import { store } from "@/project/store";
 import type { Project, TileGroupMetadata } from "@/project/types";
 import { installFakeDom } from "./fakeDom";
+import { withRetiredEasyRpgTilesets } from "./support/retiredEasyRpgTilesets";
 
 type MockSession = {
   readonly getRunOperation: () => RunOperation;
@@ -156,7 +157,7 @@ beforeEach(() => {
       },
     },
   });
-  const project = createBlankProject();
+  const project = withRetiredEasyRpgTilesets(createBlankProject());
   const tileset = project.tilesets[COMBINED_TOWN_TILESET_ID];
   tileset.tileGroups = [makeFenceGroup()];
   store.replace(project);
@@ -223,7 +224,7 @@ describe("cluster AI modal", () => {
   });
 
   it("accepts proposed changes into the store and rebases the session", async () => {
-    const proposed = createBlankProject();
+    const proposed = withRetiredEasyRpgTilesets(createBlankProject());
     proposed.meta.title = "AI Proposed";
     mocks.proposedProject = proposed;
     mocks.nextResult = {

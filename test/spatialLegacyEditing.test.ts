@@ -16,11 +16,12 @@ import type { SpatialGalleryCard } from "@/editor/panels/spatialCatalog";
 
 import { convertLegacySpatialSnapshot } from "@/project/spatial/legacyImport";
 import { resolveSpatialGraphic } from "@/project/spatial/assets";
+import { withRetiredEasyRpgTilesets } from "./support/retiredEasyRpgTilesets";
 
 const previous = store.getCurrent();
 const tilesetId = INTERIOR_ROOM_TILESET_ID;
 beforeEach(() => {
-  store.replace(createBlankProject(), { preserveEventDrafts: false });
+  store.replace(withRetiredEasyRpgTilesets(createBlankProject()), { preserveEventDrafts: false });
   bindSpatialAuthoringControllerFactory(createSpatialAuthoringController);
   resetMapEditHistory();
 });

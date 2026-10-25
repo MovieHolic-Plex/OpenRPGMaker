@@ -12,11 +12,12 @@ import { createBlankProject } from "@/project/defaults";
 import { COMBINED_TOWN_TILESET_ID } from "@/project/defaults/constants";
 import { COMBINED_TOWN_HARNESS_PREFIX } from "@/project/tilesetHarness/combinedTownGroups";
 import type { AutotileGroup, TileGroupMetadata, TilesetDef } from "@/project/types";
+import { withRetiredEasyRpgTilesets } from "./support/retiredEasyRpgTilesets";
 
 const EXAMPLE = { mapId: "map_1", rect: { x: 0, y: 0, w: 4, h: 4 }, wallVocabId: "wall" };
 
 function tileset(): TilesetDef {
-  return createBlankProject().tilesets[COMBINED_TOWN_TILESET_ID];
+  return withRetiredEasyRpgTilesets(createBlankProject()).tilesets[COMBINED_TOWN_TILESET_ID];
 }
 
 function nineSliceWall(def: TilesetDef): TileGroupMetadata {

@@ -5,9 +5,10 @@ import { createBlankProject } from "@/project/defaults";
 import { COMBINED_TOWN_TILESET_ID } from "@/project/defaults/constants";
 import type { TileGroupMetadata } from "@/project/types";
 import type { ToolContext } from "@/editor/tools/types";
+import { withRetiredEasyRpgTilesets } from "./support/retiredEasyRpgTilesets";
 
 function contextWithGroup(): ToolContext {
-  const project = createBlankProject();
+  const project = withRetiredEasyRpgTilesets(createBlankProject());
   project.tilesets[COMBINED_TOWN_TILESET_ID].tileGroups = [roofGroup()];
   return { project };
 }
@@ -109,7 +110,7 @@ describe("structure rule tools", () => {
 
   it("upsert_tile_group stores junctions and overlays when provided", () => {
     // Given: a blank project with the default tileset.
-    const ctx: ToolContext = { project: createBlankProject() };
+    const ctx: ToolContext = { project: withRetiredEasyRpgTilesets(createBlankProject()) };
 
     // When: a group is upserted with structural rules.
     const result = runTool(ctx, "upsert_tile_group", {

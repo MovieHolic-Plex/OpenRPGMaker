@@ -4,6 +4,7 @@ import { buildClusterEditKickoff } from "@/ai/clusterAssistPrompt";
 import { createBlankProject } from "@/project/defaults";
 import { COMBINED_TOWN_TILESET_ID } from "@/project/defaults/constants";
 import type { TileGroupMetadata } from "@/project/types";
+import { withRetiredEasyRpgTilesets } from "./support/retiredEasyRpgTilesets";
 
 describe("클러스터 규칙 저작", () => {
   it("킥오프가 kind와 강도 원탭 선택, 강도 안내, set_cluster_rule 저장 지시를 포함한다", () => {
@@ -19,7 +20,7 @@ describe("클러스터 규칙 저작", () => {
   });
 
   it("컨텍스트가 soft/medium 규칙을 선호 힌트로 싣고 편집 후 run_lint를 권고한다", () => {
-    const project = createBlankProject();
+    const project = withRetiredEasyRpgTilesets(createBlankProject());
     const tileset = project.tilesets[COMBINED_TOWN_TILESET_ID];
     const group = Object.assign(baseGroup(), {
       rules: [

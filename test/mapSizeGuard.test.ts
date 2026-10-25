@@ -18,11 +18,12 @@ import { MAX_TOOL_MAP_DIMENSION } from "@/project/mapSizeLimits";
 import { store } from "@/project/store";
 import { installFakeDom } from "./fakeDom";
 import { deserialize, serialize } from '@/project/io';
+import { withRetiredEasyRpgTilesets } from "./support/retiredEasyRpgTilesets";
 
 const OVER = MAX_TOOL_MAP_DIMENSION + 1;
 
 function ctx(): ToolContext {
-  return { project: createBlankProject() };
+  return { project: withRetiredEasyRpgTilesets(createBlankProject()) };
 }
 
 /** 거부 메시지는 상한과 회복 수단(맵 분할 + transfer 연결)을 함께 말해야 한다. */
@@ -225,7 +226,7 @@ describe("사람 생성/크기변경 경로", () => {
 
   it("addMap 은 초대형 요청으로 맵을 만들지 않는다", () => {
     withDom(() => {
-      store.replace(createBlankProject());
+      store.replace(withRetiredEasyRpgTilesets(createBlankProject()));
       const id = addMap("초대형", OVER, OVER);
       expect(id).toBe("");
       expect(Object.values(store.getCurrent().maps).some((map) => map.width > MAX_TOOL_MAP_DIMENSION)).toBe(false);
@@ -234,7 +235,7 @@ describe("사람 생성/크기변경 경로", () => {
 
   it("addChildMap 도 초대형 요청으로 맵을 만들지 않는다", () => {
     withDom(() => {
-      store.replace(createBlankProject());
+      store.replace(withRetiredEasyRpgTilesets(createBlankProject()));
       const parentId = store.getCurrent().startMapId;
       const id = addChildMap(parentId, "초대형 하위", { width: OVER, height: 20 });
       expect(id).toBe("");
@@ -244,7 +245,7 @@ describe("사람 생성/크기변경 경로", () => {
 
   it("addMap 은 지원 상한을 그대로 만든다", () => {
     withDom(() => {
-      store.replace(createBlankProject());
+      store.replace(withRetiredEasyRpgTilesets(createBlankProject()));
       const id = addMap("경계", MAX_TOOL_MAP_DIMENSION, MAX_TOOL_MAP_DIMENSION);
       expect(id).not.toBe("");
       expect(store.getCurrent().maps[id]?.width).toBe(MAX_TOOL_MAP_DIMENSION);
@@ -253,7 +254,7 @@ describe("사람 생성/크기변경 경로", () => {
 
   it("resizeMap 은 초대형 크기로 바꾸지 않는다", () => {
     withDom(() => {
-      store.replace(createBlankProject());
+      store.replace(withRetiredEasyRpgTilesets(createBlankProject()));
       const mapId = store.getCurrent().startMapId;
       const before = store.getCurrent().maps[mapId]!.width;
       resizeMap(mapId, OVER, OVER);
@@ -263,7 +264,7 @@ describe("사람 생성/크기변경 경로", () => {
 
   it("createMapFromSpec 은 상한 밖 스펙으로 초대형 맵을 남기지 않는다", () => {
     withDom(() => {
-      store.replace(createBlankProject());
+      store.replace(withRetiredEasyRpgTilesets(createBlankProject()));
       const id = createMapFromSpec({
         name: "스펙 초과",
         width: OVER,
@@ -281,7 +282,7 @@ describe("사람 생성/크기변경 경로", () => {
 
 describe("lint 계약이 생성 계약과 일치한다", () => {
   it(`${OVER} 맵은 error 로 보고한다(warning-only 미지원 상태 금지)`, () => {
-    const project = createBlankProject();
+    const project = withRetiredEasyRpgTilesets(createBlankProject());
     const huge = createBlankMap("외부 초대형", OVER, 12);
     project.maps[huge.id] = huge;
     project.mapTree.children.push({ mapId: huge.id, children: [] });
@@ -294,7 +295,7 @@ describe("lint 계약이 생성 계약과 일치한다", () => {
   });
 
   it(`${MAX_TOOL_MAP_DIMENSION} 맵은 보고하지 않는다`, () => {
-    const project = createBlankProject();
+    const project = withRetiredEasyRpgTilesets(createBlankProject());
     const edge = createBlankMap("경계 맵", MAX_TOOL_MAP_DIMENSION, MAX_TOOL_MAP_DIMENSION);
     project.maps[edge.id] = edge;
     project.mapTree.children.push({ mapId: edge.id, children: [] });
@@ -333,7 +334,7 @@ describe("이미 들어온 초대형 맵(외부/구 데이터)", () => {
   it("캔버스를 열지 않고도 식별하고 지울 수 있다", () => {
     const restore = installFakeDom();
     try {
-      const project = createBlankProject();
+      const project = withRetiredEasyRpgTilesets(createBlankProject());
       const huge = createBlankMap("외부 초대형", OVER, OVER);
       project.maps[huge.id] = huge;
       project.mapTree.children.push({ mapId: huge.id, children: [] });

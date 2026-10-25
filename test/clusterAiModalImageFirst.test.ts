@@ -9,6 +9,7 @@ import { COMBINED_TOWN_TILESET_ID } from "@/project/defaults/constants";
 import { store } from "@/project/store";
 import type { Project, TileGroupMetadata } from "@/project/types";
 import { installFakeDom } from "./fakeDom";
+import { withRetiredEasyRpgTilesets } from "./support/retiredEasyRpgTilesets";
 
 type MockSession = {
   readonly sendUserMessage: ReturnType<typeof vi.fn<(text: string, onEvent: (event: SessionEvent) => void) => Promise<TurnResult>>>;
@@ -118,7 +119,7 @@ beforeEach(() => {
       },
     },
   });
-  const project = createBlankProject();
+  const project = withRetiredEasyRpgTilesets(createBlankProject());
   const tileset = project.tilesets[COMBINED_TOWN_TILESET_ID];
   tileset.tileGroups = [makeFenceGroup()];
   store.replace(project);

@@ -2,8 +2,9 @@ import { describe, expect, it } from "vitest";
 import { createBlankProject } from "@/project/defaults";
 import { seedInteriorCeilingAutotile, interiorCeilingQuarterKit } from "@/project/defaults/interiorCeilingAutotile";
 import { chipsetQuarterComposition } from "@/project/defaults/terrainQuarterAutotile";
+import { withRetiredEasyRpgTilesets } from "./support/retiredEasyRpgTilesets";
 
-const tileset = () => createBlankProject().tilesets.easyrpg_chipset_interior!;
+const tileset = () => withRetiredEasyRpgTilesets(createBlankProject()).tilesets.easyrpg_chipset_interior!;
 const map = (rows: number[][]) => ({ width: rows[0]!.length, height: rows.length, lowerTiles: rows.flat() });
 
 describe("native interior ceiling", () => {

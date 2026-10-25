@@ -10,6 +10,7 @@ import { createBlankProject } from "@/project/defaults";
 import { COMBINED_TOWN_TILESET_ID, TILE } from "@/project/defaults/constants";
 import { store } from "@/project/store";
 import { findByTestId, installFakeDom, type FakeElement } from "./fakeDom";
+import { withRetiredEasyRpgTilesets } from "./support/retiredEasyRpgTilesets";
 
 const CONIFER_TRUNK = 290;
 
@@ -17,7 +18,7 @@ describe("타일 레이어·배경 정책 편집기 표면", () => {
   let restoreDom: (() => void) | null = null;
 
   beforeEach(() => {
-    store.replace(createBlankProject());
+    store.replace(withRetiredEasyRpgTilesets(createBlankProject()));
     restoreDom = installFakeDom();
     setTilesetMetadataEditMode("passage", () => {});
   });

@@ -22,9 +22,10 @@ import {
   unapprovedVocabulary,
 } from "@/project/tileVocabulary";
 import type { TileGroupMetadata, TilesetDef } from "@/project/types";
+import { withRetiredEasyRpgTilesets } from "./support/retiredEasyRpgTilesets";
 
 function context(): { ctx: ToolContext; tileset: () => TilesetDef } {
-  const ctx: ToolContext = { project: createBlankProject() };
+  const ctx: ToolContext = { project: withRetiredEasyRpgTilesets(createBlankProject()) };
   return { ctx, tileset: () => ctx.project.tilesets[COMBINED_TOWN_TILESET_ID] };
 }
 
@@ -269,7 +270,7 @@ describe("suggestVocabGroups", () => {
 describe("assistantSession 어휘 제안", () => {
   it("propose_tile_vocabulary 커밋이 그룹을 origin:user 로 합의 표시한다", () => {
     expect(VOCABULARY_PROPOSAL_TOOLS.has("propose_tile_vocabulary")).toBe(true);
-    const project = createBlankProject();
+    const project = withRetiredEasyRpgTilesets(createBlankProject());
     const groupId = "session-unapproved-wall";
     project.tilesets[COMBINED_TOWN_TILESET_ID].tileGroups!.push({
       id: groupId,

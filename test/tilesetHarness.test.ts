@@ -6,10 +6,11 @@ import { deserialize, serialize } from "@/project/io";
 import { passageMarkForTile } from "@/project/tilesetPassage";
 import { applyCombinedTownHarness, applyEasyRpgThemeMetadataPacks, COMBINED_TOWN_HARNESS_GROUPS, DUNGEON_HARNESS_PREFIX, harnessLayerForTile, INTERIOR_HARNESS_PREFIX, isHarnessStackableTile } from "@/project/tilesetHarness";
 import type { TilesetDef } from "@/project/types";
+import { withRetiredEasyRpgTilesets } from "./support/retiredEasyRpgTilesets";
 
 describe("EasyRPG Combined Town tileset harness", () => {
   it("seeds the default Combined Town tileset with grouped metadata and grammars", () => {
-    const tileset = createBlankProject().tilesets[COMBINED_TOWN_TILESET_ID];
+    const tileset = withRetiredEasyRpgTilesets(createBlankProject()).tilesets[COMBINED_TOWN_TILESET_ID];
     const roadGroup = tileset.tileGroups?.find((group) => group.id.endsWith("dirt-road-autotile"));
     const sandGroup = tileset.tileGroups?.find((group) => group.id.endsWith("sand-autotile"));
     const waterGroup = tileset.tileGroups?.find((group) => group.id.endsWith("lake-water-autotile"));
@@ -43,7 +44,7 @@ describe("EasyRPG Combined Town tileset harness", () => {
   });
 
   it("tree canopies are upper ★ and trunks are lower solid for forest stacking", () => {
-    const tileset = createBlankProject().tilesets[COMBINED_TOWN_TILESET_ID];
+    const tileset = withRetiredEasyRpgTilesets(createBlankProject()).tilesets[COMBINED_TOWN_TILESET_ID];
     // 수관: upper + 통행 가능 → ★
     expect(tileset.priority[260]).toBe("upper");
     expect(passageMarkForTile(tileset, 260)).toBe("star");
@@ -57,7 +58,7 @@ describe("EasyRPG Combined Town tileset harness", () => {
   });
 
   it("seeds conifer, dry tree, broadleaf, flower, and bush cluster rules by default", () => {
-    const tileset = createBlankProject().tilesets[COMBINED_TOWN_TILESET_ID];
+    const tileset = withRetiredEasyRpgTilesets(createBlankProject()).tilesets[COMBINED_TOWN_TILESET_ID];
     const group = (suffix: string) => tileset.tileGroups?.find((entry) => entry.id.endsWith(suffix));
 
     expect(group("conifer-tree")?.rules).toEqual([
@@ -124,7 +125,7 @@ describe("EasyRPG Combined Town tileset harness", () => {
   });
 
   it("does not overwrite existing rules when the Combined Town harness is re-applied", () => {
-    const tileset = createBlankProject().tilesets[COMBINED_TOWN_TILESET_ID];
+    const tileset = withRetiredEasyRpgTilesets(createBlankProject()).tilesets[COMBINED_TOWN_TILESET_ID];
     const conifer = tileset.tileGroups?.find((group) => group.id.endsWith("conifer-tree"));
     if (!conifer) throw new Error("missing conifer group");
     conifer.rules = [{ id: "user-rule", kind: "count", params: { max: 7 }, strength: "soft", message: "사용자 규칙" }];
@@ -140,7 +141,7 @@ describe("EasyRPG Combined Town tileset harness", () => {
   });
 
   it("seeds missing default rules without resetting user-edited group layout", () => {
-    const tileset = createBlankProject().tilesets[COMBINED_TOWN_TILESET_ID];
+    const tileset = withRetiredEasyRpgTilesets(createBlankProject()).tilesets[COMBINED_TOWN_TILESET_ID];
     const conifer = tileset.tileGroups?.find((group) => group.id.endsWith("conifer-tree"));
     if (!conifer) throw new Error("missing conifer group");
     conifer.rules = undefined;
@@ -158,7 +159,7 @@ describe("EasyRPG Combined Town tileset harness", () => {
   });
 
   it("keeps tombstoned Combined Town harness groups deleted across serialization and re-apply", () => {
-    const project = createBlankProject();
+    const project = withRetiredEasyRpgTilesets(createBlankProject());
     const tileset = project.tilesets[COMBINED_TOWN_TILESET_ID];
     const groupId = COMBINED_TOWN_HARNESS_GROUPS[0]?.id;
     if (!groupId) throw new Error("missing harness group");
@@ -173,7 +174,7 @@ describe("EasyRPG Combined Town tileset harness", () => {
   });
 
   it("locks the Combined Town layer contract: roof body 374–377 lower, transparent caps 384–387 upper", () => {
-    const tileset = createBlankProject().tilesets[COMBINED_TOWN_TILESET_ID];
+    const tileset = withRetiredEasyRpgTilesets(createBlankProject()).tilesets[COMBINED_TOWN_TILESET_ID];
 
     expect(harnessLayerForTile(tileset, 85)).toBe("lower");
     expect(harnessLayerForTile(tileset, 378)).toBe("lower");
@@ -204,7 +205,7 @@ describe("EasyRPG Combined Town tileset harness", () => {
   });
 
   it("keeps uploaded or unknown tilesets from inheriting Combined Town number meaning", () => {
-    const base = createBlankProject().tilesets[COMBINED_TOWN_TILESET_ID];
+    const base = withRetiredEasyRpgTilesets(createBlankProject()).tilesets[COMBINED_TOWN_TILESET_ID];
     const uploaded: TilesetDef = {
       ...structuredClone(base),
       id: "uploaded-town",
@@ -219,7 +220,7 @@ describe("EasyRPG Combined Town tileset harness", () => {
   });
 
   it("rejects uploaded Combined Town id collisions", () => {
-    const base = createBlankProject().tilesets[COMBINED_TOWN_TILESET_ID];
+    const base = withRetiredEasyRpgTilesets(createBlankProject()).tilesets[COMBINED_TOWN_TILESET_ID];
     const uploaded: TilesetDef = {
       ...structuredClone(base),
       id: COMBINED_TOWN_TILESET_ID,
@@ -234,7 +235,7 @@ describe("EasyRPG Combined Town tileset harness", () => {
   });
 
   it("preserves user-locked values when re-seeding the harness", () => {
-    const tileset = createBlankProject().tilesets[COMBINED_TOWN_TILESET_ID];
+    const tileset = withRetiredEasyRpgTilesets(createBlankProject()).tilesets[COMBINED_TOWN_TILESET_ID];
     tileset.tileMeta![85] = {
       label: "사용자 창문",
       description: "내가 확정한 창문",
@@ -251,7 +252,7 @@ describe("EasyRPG Combined Town tileset harness", () => {
   });
 
   it("preserves user-edited runtime passage and terrain when re-seeding the harness", () => {
-    const tileset = createBlankProject().tilesets[COMBINED_TOWN_TILESET_ID];
+    const tileset = withRetiredEasyRpgTilesets(createBlankProject()).tilesets[COMBINED_TOWN_TILESET_ID];
     tileset.passability[374] = { up: false, down: false, left: false, right: false };
     tileset.terrain[374] = 9;
     tileset.tileMeta![374] = {
@@ -270,7 +271,7 @@ describe("EasyRPG Combined Town tileset harness", () => {
   });
 
   it("marks transparent object groups as stackable without forcing mixed props to one layer", () => {
-    const tileset = createBlankProject().tilesets[COMBINED_TOWN_TILESET_ID];
+    const tileset = withRetiredEasyRpgTilesets(createBlankProject()).tilesets[COMBINED_TOWN_TILESET_ID];
     const harnessTileCount = new Set(COMBINED_TOWN_HARNESS_GROUPS.flatMap((group) => [...group.tileIds])).size;
 
     expect(harnessTileCount).toBeGreaterThan(40);
@@ -283,7 +284,7 @@ describe("EasyRPG Combined Town tileset harness", () => {
 
 describe("EasyRPG theme metadata packs", () => {
   it("seeds exact-match dungeon and interior packs in default tilesets", () => {
-    const project = createBlankProject();
+    const project = withRetiredEasyRpgTilesets(createBlankProject());
     const dungeon = project.tilesets.easyrpg_chipset_dungeon;
     const interior = project.tilesets.easyrpg_chipset_interior;
 
@@ -296,7 +297,7 @@ describe("EasyRPG theme metadata packs", () => {
   });
 
   it("routes transparent-background interior furniture to the upper layer", () => {
-    const interior = createBlankProject().tilesets.easyrpg_chipset_interior;
+    const interior = withRetiredEasyRpgTilesets(createBlankProject()).tilesets.easyrpg_chipset_interior;
 
     expect(harnessLayerForTile(interior, 115)).toBe("upper");
     expect(harnessLayerForTile(interior, 268)).toBe("upper");
@@ -315,7 +316,7 @@ describe("EasyRPG theme metadata packs", () => {
   });
 
   it("applies packs only to exact bundled texture ids", () => {
-    const base = createBlankProject().tilesets.easyrpg_chipset_dungeon;
+    const base = withRetiredEasyRpgTilesets(createBlankProject()).tilesets.easyrpg_chipset_dungeon;
     const uploaded: TilesetDef = {
       ...structuredClone(base),
       id: "uploaded-dungeon",
@@ -330,7 +331,7 @@ describe("EasyRPG theme metadata packs", () => {
   });
 
   it("preserves existing group records and IDs, including ambiguous bundled prefix records", () => {
-    const tileset = createBlankProject().tilesets.easyrpg_chipset_dungeon;
+    const tileset = withRetiredEasyRpgTilesets(createBlankProject()).tilesets.easyrpg_chipset_dungeon;
     tileset.tileGroups = [
       ...(tileset.tileGroups ?? []),
       { id: "user-custom-group", name: "User Group", role: "terrain", defaultLayer: "lower", tileIds: [12], description: "", placementRules: "", source: "user", confidence: "high" },
@@ -352,7 +353,7 @@ describe("EasyRPG theme metadata packs", () => {
   });
 
   it("preserves source:user and userLocked tile metadata while applying runtime contracts", () => {
-    const tileset = createBlankProject().tilesets.easyrpg_chipset_interior;
+    const tileset = withRetiredEasyRpgTilesets(createBlankProject()).tilesets.easyrpg_chipset_interior;
     tileset.tileMeta![270] = { label: "내 바닥", description: "사용자 확정", source: "user", confidence: "high", passage: "passable" };
     tileset.tileMeta![1] = { label: "잠근 벽", description: "잠금", source: "bundled-default", confidence: "high", userLocked: true, passage: "solid" };
 

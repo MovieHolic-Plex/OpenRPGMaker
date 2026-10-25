@@ -3,6 +3,7 @@ import { createBlankProject } from "@/project/defaults";
 import { supportsChipsetQuarterComposition } from "@/editor/tilesetImage";
 import { dungeonTerrainQuarterKits } from "@/project/defaults/dungeonTerrainQuarter";
 import { chipsetQuarterComposition } from "@/project/defaults/terrainQuarterAutotile";
+import { withRetiredEasyRpgTilesets } from "./support/retiredEasyRpgTilesets";
 
 type MapView = { width: number; height: number; lowerTiles: number[] };
 
@@ -14,14 +15,14 @@ function quarterTile(sources: readonly { quarter: string; tile: number }[] | und
   return sources?.find((entry) => entry.quarter === quarter)?.tile;
 }
 
-const dungeonTileset = () => createBlankProject().tilesets.easyrpg_chipset_dungeon;
+const dungeonTileset = () => withRetiredEasyRpgTilesets(createBlankProject()).tilesets.easyrpg_chipset_dungeon;
 
 describe("dungeon terrain quarter composition (RM2k3 8×8 미니타일)", () => {
   it("던전 타일셋이 프로덕션 쿼터 렌더 게이트를 통과한다", () => {
     expect(supportsChipsetQuarterComposition(dungeonTileset())).toBe(true);
     expect(dungeonTerrainQuarterKits(dungeonTileset())).toHaveLength(12);
     // 다른 칩셋에서는 던전 킷이 잡히면 안 된다 (combined-town 흙길과 id 충돌).
-    expect(dungeonTerrainQuarterKits(createBlankProject().tilesets.easyrpg_chipset_interior)).toBeNull();
+    expect(dungeonTerrainQuarterKits(withRetiredEasyRpgTilesets(createBlankProject()).tilesets.easyrpg_chipset_interior)).toBeNull();
   });
 
   it("심연 링 코너(저장 368): 대각 하나만 열림 → 해당 쿼터만 오목 소스, 나머지는 몸통", () => {
