@@ -5,6 +5,7 @@ import { numberField, textField, selectField } from '@/editor/panels/databaseCon
 import { combatConditionFields } from '@/editor/panels/databaseCombatConditionFields';
 import { sectionCard } from '@/editor/panels/databaseWorkspace';
 import { store } from '@/project/store';
+import { COMBO_MAX_ACTORS } from '@/project/databaseRecordModel';
 import type { EnemyRecord, SkillRecord } from '@/project/types';
 import { el } from '@/util/dom';
 import { partyPixelChoices } from '@/assets/partyPixelSheets';
@@ -165,12 +166,12 @@ function skillAreaAndComboFields(record: SkillRecord): HTMLElement[] {
   const options = [{ id: '', name: '(없음)' }, ...actors.map(actor => ({ id: actor.id, name: actor.name }))];
   const saved = current().comboActorIds ?? [];
   const pending = saved.length ? undefined : pendingComboSlots.get(record.id);
-  const slots = [0, 1, 2].map(index => (pending ?? saved)[index] ?? '');
+  const slots = Array.from({ length: COMBO_MAX_ACTORS }, (_, index) => index).map(index => (pending ?? saved)[index] ?? '');
   const comboNote = el('p', { class: 'db-skill-card-note', dataset: { testid: 'skill-combo-note' } });
   const refreshNote = (): void => {
     const picked = new Set(slots.filter(Boolean));
-    comboNote.textContent = picked.size === 0 ? '연계기 아님. 배우를 2~3명 고르면 전원이 참전·생존·준비 상태일 때 메뉴에 열리고 각자 MP·턴을 씁니다.'
-      : picked.size === 1 ? '한 명 더 골라야 연계기가 됩니다(2~3명, 중복 불가).' : `연계기: ${picked.size}명 (${[...picked].map(id => actors.find(actor => actor.id === id)?.name ?? id).join(' · ')})`;
+    comboNote.textContent = picked.size === 0 ? '연계기 아님. 배우를 2~4명 고르면 전원이 참전·생존·준비 상태일 때 메뉴에 열리고 각자 MP·턴을 씁니다.'
+      : picked.size === 1 ? '한 명 더 골라야 연계기가 됩니다(2~4명, 중복 불가).' : `연계기: ${picked.size}명 (${[...picked].map(id => actors.find(actor => actor.id === id)?.name ?? id).join(' · ')})`;
   };
   const save = (): void => {
     const ids = [...new Set(slots.filter(Boolean))];

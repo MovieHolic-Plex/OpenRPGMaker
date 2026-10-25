@@ -36,7 +36,7 @@ import { retitlePlaceholderOpening } from "@/project/defaults/defaultOpeningSequ
 import { normalizeActorRecord } from "@/project/actorModel";
 import { reconcileSharedFaceWithCharset as reconcileFaceWithCharset } from "@/project/sharedCharacterFaceResolver";
 import { normalizeEnemyRecord, normalizeTroopRecord } from "@/project/databaseEnemyTroopRecordModel";
-import { MAX_TITLE_BACKGROUND_LAYERS, MAX_TITLE_RUNNERS, normalizeTitlePressStart, normalizeTitleRunners, normalizeClassRecord, normalizeEquipmentRecord, normalizeItemRecord, normalizeSkillRecord, normalizeStateRecord, normalizeTypeChart } from "@/project/databaseRecordModel";
+import { COMBO_MAX_ACTORS, MAX_TITLE_BACKGROUND_LAYERS, MAX_TITLE_RUNNERS, normalizeTitlePressStart, normalizeTitleRunners, normalizeClassRecord, normalizeEquipmentRecord, normalizeItemRecord, normalizeSkillRecord, normalizeStateRecord, normalizeTypeChart } from "@/project/databaseRecordModel";
 import { normalizeCropRecord } from "@/project/farmModel";
 import { monsterBattleStatsForSpecies, monsterSkillIdsAtLevel, monsterSpeciesById, normalizeMonsterSpeciesRecord } from "@/project/monsterCollection";
 import { collectResourceIds } from "@/project/io/resourceReferenceValidation";
@@ -837,7 +837,7 @@ const skillRecordSchema = objectSchema({
   },
   unforgettable: { type: "boolean", description: "잊을 수 없는 기술(비전머신 HM): 몬스터의 기술 교체 후보에서 빠진다. false 면 해제. 필드 기술(절단·파도타기)에 쓴다" },
   comboActorIds: stringArraySchema(
-    "연계기(듀얼·트리플 테크) 참가 배우 2~3명. 전원이 참전·생존·준비 상태여야 메뉴에 열리고, 각자 mpCost 와 턴을 소비한다. 멤버는 따로 배우지 않아도 된다. 빈 배열이면 해제",
+    "연계기(듀얼·트리플·4인 테크) 참가 배우 2~4명. 전원이 참전·생존·준비 상태여야 메뉴에 열리고, 각자 mpCost 와 턴을 소비한다. 멤버는 따로 배우지 않아도 된다. 빈 배열이면 해제",
   ),
   comboRequires: {
     type: "array",
@@ -856,7 +856,7 @@ const skillRecordSchema = objectSchema({
   comboStaging: objectSchema(
     {
       tint: { type: "string", description: "번쩍임·오라·제목 색 #rrggbb(생략 = 속성 색)" },
-      shake: { type: "string", enum: ["none", "light", "heavy"], description: "착탄 흔들림(생략 = 트리플 heavy · 듀얼 light)" },
+      shake: { type: "string", enum: ["none", "light", "heavy"], description: "착탄 흔들림(생략 = 셋 이상 heavy · 듀얼 light)" },
       slowMo: booleanSchema("착탄 순간 느린 화면(생략 = 켜기)"),
       kicker: { type: "string", description: "제목 카드 위 작은 글(예: 「듀얼 테크」). 생략 = 인원수로" },
     },
@@ -1548,8 +1548,8 @@ function validateSkillTechPatch(draft: Project, patch: unknown): void {
       throw new ToolError("skill.comboActorIds 는 배우 id 문자열 배열이어야 합니다. 예: [\"actor_hero\", \"actor_mage\"]", { code: "invalid-combo-actors" });
     }
     const unique = [...new Set((ids as string[]).map((id) => id.trim()))];
-    if (unique.length > 0 && (unique.length < 2 || unique.length > 3)) {
-      throw new ToolError(`skill.comboActorIds 는 서로 다른 배우 2~3명이어야 합니다(받은 ${unique.length}명). 해제하려면 빈 배열을 주세요.`, { code: "invalid-combo-actors" });
+    if (unique.length > 0 && (unique.length < 2 || unique.length > COMBO_MAX_ACTORS)) {
+      throw new ToolError(`skill.comboActorIds 는 서로 다른 배우 2~${COMBO_MAX_ACTORS}명이어야 합니다(받은 ${unique.length}명). 해제하려면 빈 배열을 주세요.`, { code: "invalid-combo-actors" });
     }
     const missing = unique.filter((id) => !draft.database.actors.some((actor) => actor.id === id));
     if (missing.length > 0) {

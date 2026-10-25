@@ -353,7 +353,7 @@ export interface SkillRecord {
   movePriority?: number;
   /** 실시간 액션 전투에서 캐스트 가능한 액션 스킬. 생략 시 턴제 전용. */
   actionSkill?: ActionSkillProfile;
-  /** 연계기(듀얼·트리플 테크): 함께 쓰는 배우 2~3명(시전자 포함). 모두 준비돼야 쓸 수 있고 각자 MP·턴을 소비한다. */
+  /** 연계기(듀얼·트리플·4인 테크): 함께 쓰는 배우 2~4명(시전자 포함, COMBO_MAX_ACTORS). 모두 준비돼야 쓸 수 있고 각자 MP·턴을 소비한다. */
   comboActorIds?: ActorId[];
   /**
    * 연계기 해금 조건(크로노 트리거식): 각 항목의 배우가 그 기술을 **배운 상태**여야 연계기가 메뉴에 열린다

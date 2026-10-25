@@ -171,7 +171,7 @@ export function battleSkillUseFailureLabel(
   }
 }
 
-/** 연계기(듀얼·트리플 테크)의 참가 배우. 정규화가 2~3명일 때만 남기므로 그 밖이면 일반 기술이다. */
+/** 연계기(듀얼·트리플·4인 테크)의 참가 배우. 정규화가 2~4명(COMBO_MAX_ACTORS)일 때만 남기므로 그 밖이면 일반 기술이다. */
 export function comboActorIdsOf(skill: Pick<SkillRecord, "comboActorIds"> | undefined): readonly ActorId[] | undefined {
   const ids = skill?.comboActorIds;
   return ids && ids.length >= 2 ? ids : undefined;

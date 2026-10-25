@@ -1526,7 +1526,7 @@ For real-time action combat on action maps (`system.actionCombat` + `map.actionC
 
 세 필드 모두 **값이 있을 때만 저장**한다(없는 옛 프로젝트·세이브는 동작·바이트 그대로).
 
-- **연계기** `SkillRecord.comboActorIds`(2~3명, 시전자 포함). 판정 단일 권위는 `battleActorSkillFailure`(`src/battle/battleSkillUse.ts`) —
+- **연계기** `SkillRecord.comboActorIds`(2~4명 `COMBO_MAX_ACTORS`, 시전자 포함). 판정 단일 권위는 `battleActorSkillFailure`(`src/battle/battleSkillUse.ts`) —
   런타임 명령 적법성·전투 메뉴·자동 전투가 같은 함수를 쓴다. 동료 전원이 참전·생존·행동 가능·침묵 아님·MP 충분이고
   **준비**(gauge: 게이지 100 / strict: 이번 라운드 미명령)여야 한다. 연계 멤버는 따로 배우지 않아도 목록에 뜬다(`comboSkillIdsFor`),
   동료가 참전하지 않으면 숨고 준비 안 됨이면 사유와 함께 비활성. 사용 시 각자 `mpCost` 소비, 동료 게이지 0 + gauge 사이클 행동 처리,
