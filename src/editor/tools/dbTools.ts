@@ -2811,6 +2811,7 @@ const setTitleScreen: ToolDefinition = {
       logoStyle: { type: "string", enum: TITLE_LOGO_STYLES, description: "제목 글자 질감. 지정하면 기본 편집 문구(A NEW ADVENTURE)를 숨긴다." },
       logoSubtitle: { type: "string", description: "로고 밑 작은 부제(예: OATH OF THE BLADE). 빈 문자열이면 해제." },
       menuStyle: { type: "string", enum: TITLE_MENU_STYLES, description: "window(창) | plain(키아트 위 글자 메뉴)" },
+      menuFontPx: { type: "integer", minimum: 10, maximum: 24, description: "타이틀 메뉴 글자 크기(논리 px 10~24). 생략·0 = 스킨 기본(11px). 넓은 화면(480 폭 이상)이나 큰 키아트 위 글자 메뉴는 14~18 이 읽기 좋다. CSS 를 고치지 말고 이 값으로." },
       sequence: {
         type: ["object", "null"],
         description:
@@ -3054,6 +3055,13 @@ function applyTitleOpeningArgs(current: TitleScreenSettings, args: Record<string
     const style = normalizeTitleMenuStyle(args.menuStyle);
     if (style) current.menuStyle = style;
     else delete current.menuStyle;
+  }
+  if ("menuFontPx" in args) {
+    // 정본 범위는 titleEffects normalize(10..24) — 저장 직후 읽어도 같은 값이 되도록 여기서도 같은 규칙으로 자른다.
+    const px = typeof args.menuFontPx === "number" && Number.isFinite(args.menuFontPx) && args.menuFontPx > 0 ? Math.min(24, Math.max(10, Math.round(args.menuFontPx))) : undefined;
+    if (px) current.menuFontPx = px;
+    else delete current.menuFontPx;
+    notes.push(px ? `메뉴 글자 ${px}px` : "메뉴 글자 기본 크기");
   }
   if ("sequence" in args) {
     const sequence = normalizeTitleOpeningSequence(args.sequence);

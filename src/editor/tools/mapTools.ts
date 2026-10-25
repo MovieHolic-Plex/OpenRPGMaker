@@ -1,3 +1,4 @@
+import { normalizeCameraZoom } from "@/project/cameraZoom";
 import { mapCharacterSizeFactor } from "@/project/characterScale";
 import { CHASER_SPAWN_MIN_STEPS, chaserThreatLine, chaserThreatsAt } from "@/project/chaserSpawnSafety";
 import { patchSunlight, type MapSunlight } from "@/project/sunlight";
@@ -2172,6 +2173,7 @@ const setMapProperties: ToolDefinition = {
       climate: mapClimateSchema,
       clearClimate: { type: "boolean" },
       characterScale: { type: "number", description: "이 맵에서 걷는 캐릭터(주인공·동료·탈것·캐릭터 이벤트) 크기 배율 0.25~1. 월드맵처럼 땅을 멀리서 보는 지도에서 0.5~0.75 로 줄인다. 1 이면 기본 크기로 되돌린다. 사용자가 원할 때만 — 기본은 줄이지 않는다." },
+      zoom: { type: "number", description: "이 맵의 기본 카메라 배율 0.25~6(1 = 프로젝트 기본으로 되돌림). 넓은 들판을 멀리(0.5~0.75), 좁은 방·긴장 장면을 가까이(1.5~2). 맵에 들어올 때마다 자동으로 걸린다 — auto 이벤트로 카메라 줌을 켜고 끄지 말 것. 연출 중 잠깐 당기는 줌만 이벤트 명령으로." },
       loop: { type: "string", enum: ["none", ...MAP_LOOP_VALUES], description: "반복 맵. horizontal=좌우 끝이 이어짐, vertical=위아래, both=사방, none=끔. 플레이어가 가장자리를 넘으면 반대편 같은 줄에 선다(반대편 칸이 통행 가능해야 한다)." },
     },
     required: ["mapId"],
@@ -2366,6 +2368,11 @@ const setMapProperties: ToolDefinition = {
         map.characterScale = mapCharacterSizeFactor({ characterScale: args.characterScale });
         changed.push(`캐릭터 크기=${Math.round(map.characterScale * 100)}%`);
       }
+    }
+    if (typeof args.zoom === "number" && Number.isFinite(args.zoom)) {
+      const zoom = normalizeCameraZoom(args.zoom);
+      if (zoom === undefined) { delete map.cameraZoom; changed.push("카메라 배율=프로젝트 기본"); }
+      else { map.cameraZoom = zoom; changed.push(`카메라 배율=${zoom}`); }
     }
     if (args.loop === "none") {
       delete map.loop;

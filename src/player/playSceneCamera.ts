@@ -8,7 +8,7 @@ import type { RuntimeCameraSessionState, RuntimeCameraTarget } from "@/project/s
 import { characterSpriteX, characterSpriteY, footprintSpriteX } from "@/player/characterDepth";
 import { runtimeEventViewsForMap } from "@/project/runtimeEventState"
 import { store } from "@/project/store";
-import { CAMERA_ZOOM_LIMITS, resolveCameraZoom } from "@/project/cameraZoom";
+import { CAMERA_ZOOM_LIMITS, resolveMapCameraZoom } from "@/project/cameraZoom";
 import { bumpPerfCounter } from "@/player/runtimePerfCounters";
 import { runtimeMapViewZoom } from "@/player/runtimeViewScale";
 import { reliefTopOverhangPx } from "@/player/playSceneRelief";
@@ -186,13 +186,13 @@ export function applyStoredCameraState(scene: PlaySceneContext): void {
     // 연출 상태가 없을 때의 배율은 **프로젝트 기본값**이다. 예전에는
     // centerRuntimeCamera 가 1 로 리셋한 값이 그대로 남았다 — 그래서 고해상도
     // 배경을 쓰려면 맵마다 auto 이벤트로 줌을 걸어야 했고 새 맵에서는 1 로 돌아갔다.
-    applyCameraZoom(scene, resolveCameraZoom(store.getCurrent().system));
+    applyCameraZoom(scene, resolveMapCameraZoom(store.getCurrent().system, scene.map));
     followCameraTarget(scene, { kind: "player" });
     return;
   }
   // Default/new-game camera state intentionally has no zoom. Centering a map
   // seeds 1, so inherit the authored system zoom instead of retaining that seed.
-  applyCameraZoom(scene, state.zoom ?? resolveCameraZoom(store.getCurrent().system));
+  applyCameraZoom(scene, state.zoom ?? resolveMapCameraZoom(store.getCurrent().system, scene.map));
   if (state.mode === "follow") {
     followCameraTarget(scene, state.target);
     return;

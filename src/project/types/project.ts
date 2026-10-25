@@ -123,6 +123,11 @@ export interface GameMap {
    * 읽기는 `mapCharacterSizeFactor`(project/characterScale.ts) 하나로.
    */
   characterScale?: number;
+  /**
+   * 이 맵의 기본 카메라 배율(0.25~6). 없으면 프로젝트 기본(system.cameraZoom). 연출 명령(카메라 줌)이 그 위에 일시적으로 덮는다.
+   * 맵마다 auto 이벤트로 줌을 켜고 끄던 것을 대신한다(2026-10-25 J69). 읽기는 `resolveMapCameraZoom`(project/cameraZoom.ts).
+   */
+  cameraZoom?: number;
   /** 세이브 금지 맵 (RM2003 "Save" 체크 해제). */
   disableSave?: boolean;
   /** 텔레포트(이동) 금지 맵. */
