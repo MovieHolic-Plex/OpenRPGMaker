@@ -74,6 +74,7 @@ const OLD = /노인|노파|노장|할아버지|할머니|늙은|노년|백발|�
 const DOLL = /인형|꼭두각시|마리오네트|오르골|marionette|doll|puppet/iu;
 const MACHINE = /태엽|자동인형|기계|로봇|병정 인형|장난감 병정|clockwork|automaton|robot/iu;
 const GHOST = /유령|귀신|원령|망령|혼령|ghost|phantom|spirit/iu;
+const PERSON = /여자|여성|남자|남성|소녀|소년|아가씨|부인|신부|하녀|메이드|언니|누나|엄마|어머니|woman|girl|lady|bride|maid/iu;
 const COLOUR_THING = /(흰|하얀|새하얀|검은|까만|빨간|붉은|파란|푸른|노란|분홍|보라|초록)\s*(드레스|원피스|옷|로브|망토|코트|기모노|한복)/u;
 
 function wantedOf(name: string): Wanted {
@@ -107,6 +108,8 @@ function spriteMismatch(name: string, entry: CharsetSemanticEntry): string | und
   const w = wantedOf(name);
   const text = `${entry.label} ${entry.tags.join(" ")} ${entry.appearance ?? ""}`;
   const isHuman = entry.gender === "male" || entry.gender === "female";
+  // 사람인 유령(「하얀 드레스의 여자」·「하얀 그림자」 같은 여자 유령)에 만화풍 시트 유령 몬스터 칩(J66 — 고무 오리로 읽혔다).
+  if (!isHuman && /시트 유령|이불/u.test(text) && (PERSON.test(name) || w.colour)) return `사람 유령인데 만화풍 흰 시트 유령 칩(${entry.label})이다 — 외형이 맞는 사람 칩에 blendMode:'add'(반투명 빛)를 쓴다`;
   if (w.nonHuman === "doll" && isHuman && !DOLL.test(text)) return `인형인데 사람 칩(${entry.label})이다`;
   if (w.nonHuman === "machine" && isHuman && !MACHINE.test(text)) return `태엽·기계 장난감인데 사람 칩(${entry.label})이다`;
   if (w.young && entry.age === "elder") return `젊은 인물인데 노인 칩(${entry.label})이다`;
