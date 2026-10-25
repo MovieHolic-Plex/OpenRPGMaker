@@ -83,9 +83,9 @@ const extra = (resource: string, index: number) => ({ resource, index });
 /** 1. 벚꽃 거리 — 꽃잎이 화면 가득 흩날리고, 출근하는 사람 둘이 보도를 지난다. */
 function blossomShot(): OpeningAnimatic {
   return shot([
-    mapBackdrop("blossom", { x: 0, y: -10 }, { x: -40, y: -20 }),
-    walker("w1", extra(M.modern3, 0), "right", { x: 60, y: 150 }, { x: 236, y: 150 }),
-    walker("w2", "seoha", "right", { x: -20, y: 176 }, { x: 148, y: 176 }, SHOT_MS, 400),
+    mapBackdrop("blossom", { x: 0, y: -6 }, { x: -20, y: -20 }),
+    walker("w1", extra(M.modern3, 0), "right", { x: 180, y: 188 }, { x: 390, y: 188 }),
+    walker("w2", "seoha", "right", { x: 110, y: 200 }, { x: 300, y: 200 }, SHOT_MS, 400),
     petals("petals-far", 70, 3, { opacity: 0.7 }),
     petals("petals-near", 40, 11, { particles: { preset: "petals", count: 40, seed: 11, size: 3, speed: 40 } } as Partial<AnimaticLayer>),
     caption("봄. 새 회사로 가는 첫 월요일."),
@@ -117,7 +117,7 @@ function officeShot(): OpeningAnimatic {
         frame: [{ atMs: 0, value: charsetFrameIndex({ characterIndex: CAST.jihu.index, direction: "up", pattern: 1 }) }] } } as AnimaticLayer,
     walker("lead", "lead", "left", { x: ox + 24 * 16, y: 150 }, { x: ox + 19 * 16, y: 118 }, 3000, 400),
     caption("스튜디오 늘봄. 서른 명 남짓한 앱 회사."),
-  ], { kind: "wipe-right", durationMs: 450 });
+  ], { kind: "fade", durationMs: 600 });
 }
 
 /** 4. 노을 옥상 — 노을 하늘 아래 난간, 지는 해. */
@@ -184,6 +184,9 @@ function titleShot(): OpeningAnimatic {
     { id: "skyline", kind: "image", role: "background", resourceId: "oprn-pano-sunset-skyline", sampling: "nearest", x: -60, y: 30, width: 640, height: 240 } as AnimaticLayer,
     { id: "dim", kind: "shape", shape: "rect", role: "background", color: "#1a0f1f", opacity: 0.35, x: 0, y: 0, width: STAGE.width, height: STAGE.height } as AnimaticLayer,
     petals("petals", 60, 53),
+    // 제목 띠 — 노을 해가 글자 뒤에 오면 흰 글자가 묻힌다(Argon op1). 어두운 띠를 깔아 대비를 지킨다.
+    { id: "title-band", kind: "shape", shape: "rect", role: "background", color: "#140a18", opacity: 0, x: 0, y: 84, width: STAGE.width, height: 100,
+      keys: { opacity: [key(200, 0), key(1000, 0.62, "ease-out")] } } as AnimaticLayer,
     { id: "title", kind: "text", role: "credit", text: "첫사랑", color: "#ffffff", x: 40, y: 92, width: 400, height: 60, startMs: 300,
       typography: { fontSize: 44, align: "center", weight: 800 },
       keys: { opacity: [key(300, 0), key(1300, 1, "ease-out")], scaleX: [key(300, 1.08), key(1600, 1, "ease-out")], scaleY: [key(300, 1.08), key(1600, 1, "ease-out")] } } as AnimaticLayer,
