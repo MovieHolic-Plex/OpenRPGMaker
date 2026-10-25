@@ -44,7 +44,7 @@ export const TOOL_ALIASES: readonly ToolAlias[] = [
   { terms: ["밸런스", "난이도", "시뮬레이션", "승률", "simulate", "balance", "difficulty"], tools: ["simulate_battle", "tune_enemy", "evaluate_game_quality"], label: "전투 시뮬" },
   { terms: ["전투 연출", "배틀 애니", "전투 애니메이션", "battle animation", "battle fx", "효과"], tools: ["upsert_battle_animation", "read_directing_guide", "list_fx_sheets"], label: "전투 연출" },
   { terms: ["액션 전투", "action combat", "realtime battle"], tools: ["set_action_combat", "make_action_enemy", "run_action_combat_test"], label: "액션 전투" },
-  { terms: ["비전머신", "필드 기술", "필드 스킬", "hidden machine", "field skill", "절단", "괴력", "파도타기", "폭포 오르기", "플래시", "덩굴", "물길 열기", "배지가 있어야", "배지 필요", "비전서 상자"], tools: ["place_field_obstacle", "upsert_skill", "run_scene_test"], label: "필드 기술 장애물(비전머신)" },
+  { terms: ["비전머신", "필드 기술", "필드 스킬", "hidden machine", "field skill", "절단", "괴력", "파도타기", "폭포 오르기", "플래시", "덩굴", "물길 열기", "배지가 있어야", "배지 필요", "비전서 상자", "장대 도약", "틈 건너뛰기", "뛰어넘게", "얼음 틈", "gap jump", "pole vault"], tools: ["place_field_obstacle", "upsert_skill", "run_scene_test"], label: "필드 기술 장애물(비전머신)" },
   // ── 포켓몬식 몬스터 전투 깊이(2026-10-16 깊이 감사 #3): 검색하면 맞아 보이는 틀린 도구(날씨→일상 날씨 upsert_life_system, 조건부 볼→set_encounter_table)가 먼저 나오던 것을 바로잡는다 ──
   { terms: ["특성", "몬스터 특성", "종 특성", "포켓몬 특성", "species ability", "immunetype", "resisttype", "boostlowhp", "immunestatus", "contactstatus", "statmultiplier"], tools: ["define_monster_species", "define_monster_families"], label: "몬스터 특성(species.ability)" },
   { terms: ["맹독", "혼란", "독 걸", "독 피해", "독 데미지", "독상태", "badly poisoned", "toxic", "confusion", "volatilestatus", "gen1majorstatus", "화상 상태", "마비 상태", "수면 상태"], tools: ["upsert_state", "upsert_skill"], label: "몬스터 상태이상(독·맹독·혼란)" },

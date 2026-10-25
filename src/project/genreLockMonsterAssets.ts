@@ -104,6 +104,7 @@ interface MonsterToolRow {
 
 /**
  * 몬스터 프로젝트(또는 몬스터 요청 턴)에서만 쓰는 도구 — 포켓몬식 수집·트레이너·센터·도감·포획·상성표·필드 기술 게이트.
+ * place_field_obstacle 은 여기 없다 — kind:'gap'(틈 건너뛰기·장대 도약)은 일반 RPG 필드 능력이라 열고, 나머지 kind(비전머신 HM 게이트)는 아래 ARG_RULES 가 막는다.
  * 여기 없는 도구는 막지 않는다: place_npc·upsert_enemy·upsert_troop·set_encounter_table(일반 랜덤 조우)·make_hunting_ground·place_field_enemy·author_dungeon·author_wild_route(버들항 필드 themeScene 이 일반 프로젝트에도 쓴다) 은 일반 RPG 도 쓴다.
  * 도구가 새로 생기면 이 표에 한 줄을 더한다(toolRunner·노출 표가 모두 이 표를 읽는다).
  */
@@ -125,7 +126,6 @@ export const MONSTER_ONLY_TOOLS: readonly MonsterToolRow[] = [
   { name: "place_monster_center", group: "field", why: "몬스터 센터 간호사(맡김→회복 연출)" },
   { name: "place_monster_pc", group: "field", why: "몬스터 보관함(PC)" },
   { name: "place_badge_gate", group: "field", why: "배지 N개 필요 길막이" },
-  { name: "place_field_obstacle", group: "field", why: "비전머신(HM) 필드 기술 게이트" },
 ];
 
 const MONSTER_ONLY_NAMES: ReadonlySet<string> = new Set(MONSTER_ONLY_TOOLS.map((row) => row.name));
@@ -186,6 +186,7 @@ interface ArgRule { readonly tool: string; readonly what: string; readonly inste
 const ARG_RULES: readonly ArgRule[] = [
   { tool: "set_project_genre", what: "genre:monster-collect", instead: "장르는 adventure-jrpg 등 이 게임에 맞는 값으로 둔다.", test: (args) => args.genre === "monster-collect" },
   { tool: "reset_project", what: "genrePreset:monster-collect", instead: "빈 프로젝트에 장르 프리셋 없이 시작하거나 이 게임에 맞는 프리셋을 쓴다.", test: (args) => args.genrePreset === "monster-collect" },
+  { tool: "place_field_obstacle", what: "kind:rock|tree|water|waterfall|dark(비전머신 HM 필드 기술 게이트)", instead: "일반 RPG 의 필드 능력 틈 건너뛰기는 kind:'gap'(requiresActorId·requiresSkillId) 으로, 열쇠·퍼즐 문은 compile_puzzle, 밀 바위는 place_pushable 로 만든다.", test: (args) => args.kind !== "gap" },
   { tool: "author_dungeon", what: "genre:pokemon(짧은 동굴·야생 조우 계획)", instead: "genre 를 생략하거나 rpg 로 둔다(긴 던전·필드 적·상자·잠긴 문).", test: (args) => args.genre === "pokemon" },
   { tool: "configure_game_systems", what: "battleModel:gen1(몬스터 대치 전투)·monsterCare(산책 돌봄)", instead: "전투 방식은 기본 도트 측면(rm2k3)으로 둔다.",
     test: (args) => {
