@@ -34,3 +34,17 @@
 .ai-objectgen-reference img { width: 72px; height: 72px; object-fit: contain; border-radius: 6px; border: 1px dashed var(--border-default); background: var(--bg-inset); }
 .ai-objectgen-reference small { color: var(--text-3); font-size: 11px; }
 .ai-objectgen-reference .is-none { color: var(--text-2); font-weight: 600; }
+/* 스토어 음악 카드: 글 · 미리듣기 · 넣기 (aiStoreCard.ts musicChoiceCard) */
+.ai-store-result.ai-store-music { grid-template-columns: minmax(0, 1fr) auto; }
+.ai-store-result.ai-store-music .ai-store-result-text { grid-column: 1 / -1; }
+.ai-store-result.ai-store-music .ai-store-result-text small { white-space: normal; }
+.ai-store-result.ai-store-music audio { width: 100%; min-width: 0; height: 32px; }
+/* 장면이 여럿인 음악 카드: 장면마다 한 묶음, 사이에 선 */
+.ai-store-music-scene { display: grid; gap: 6px; padding-top: 8px; border-top: 1px solid var(--border-default); }
+.ai-store-music-scene:first-of-type { border-top: 0; padding-top: 0; }
+.ai-store-music-note { display: grid; gap: 6px; padding: 8px 10px; border: 1px solid var(--border-default); border-radius: 8px; font-size: 13px; }
+.ai-store-music-note p { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: 0; }
+.ai-store-music-note small { color: var(--text-muted); }
+.ai-store-music-note button { margin-left: auto; }
+.ai-store-music-note .ai-store-result button { margin-left: 0; }
+.ai-store-music-note [hidden], .ai-store-music-note .ai-tileset-change-status:empty { display: none; }

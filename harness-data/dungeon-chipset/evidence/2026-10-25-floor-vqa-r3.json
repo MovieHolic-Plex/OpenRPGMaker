@@ -1,0 +1,28 @@
+{
+ "date": "2026-10-25",
+ "round": "floor-vqa-r3",
+ "boards": "qa-runs/floors/vqa-r3s (samples qa-runs/floors/after3 at 02cc2faea6)",
+ "reviewers": {
+  "argon": {
+   "agents": [
+    "B: otherworld..volcano (received)",
+    "A: castle..mine (NO RESULT RECEIVED)"
+   ],
+   "verdicts": {
+    "otherworld": "FAIL — majors: high-frequency speckled cracks over every floor tile, no rest areas (R1); blue circle half over the south cliff/void; bone pillar over a brick wall face; bones poking into the void (R4/R7); triangular wedge pieces and per-tile vertical cuts in the south cliff face (R3); minors: brick wall orange cracks cut at tile top/bottom; stepped wall sides lack end trim",
+    "pyramid": "FAIL — majors: cracked stone floor in the lower rooms high-contrast with a 16px repeat, cut straight against corridor sand with no transition (R1/R5); upper/centre protruding walls and right stepped wall show 4-5 brick rows with no ceiling cap; seed2 bottom ceiling gap squeezed to 1px (R3); minors: three spaced iron grates in the left corridor; scorpion overlaps a pillar; grey-purple rock off-palette",
+    "ruins": "FAIL — majors: moss flagstone repeats the same moss/brown dots at the same spot in every tile, strong 16px grid; sharp 2x2 green patch in the checker marble room (R1/R5); white rubble over the star mosaic and dense rubble in corridors (R4/R7); minors: marble/flagstone doorway cut straight; pillar overlaps a cross slab; dark cult altar off-tone",
+    "swamp": "FAIL — majors: bright teal/white dots on a 16px grid across pond water; broken 1x1 diagonal shoreline tile at a pond neck; lily pads on dry bank (R1/R5/R7); wooden bridge on dry ground; stump without canopy, post and water-dinosaur on bare ground; dark 16px square patches at the forest edge (R1/R4/R7); minors: lamp posts and crystal goblets read as a park",
+    "tower": "PASS — majors: none; minors: asymmetric top trim where round upper and lower rooms meet; missing ceiling trim over the left window; door without lintel; daytime clouds outside with starry windows; bookshelf touching the circle",
+    "volcano": "FAIL — majors: lava lake and river one high-contrast 16px tile with no variants, heavy grid; no inner-corner rim tiles so the grey stone rim breaks and lava is cut at right angles (R1/R5/R7); stepped grey rock walls lack side end tiles (R3); minors: three spaced grates in the left corridor; vertical bridge pieces over N-S lava; grey-purple rock off-palette"
+   }
+  }
+ },
+ "fixed": {
+  "ruins": "yes (c62206d2b9): calm limestone everywhere, moss flagstone only in the nave; rubble clusters and the overgrown 2x2 only next to walls; teleport circles no longer stamp over floor decals (mosaic)",
+  "pyramid": "partly (c62206d2b9): cracked sandstone only in the pharaoh boss room; walls/caps not touched (wall art, out of floor scope)",
+  "otherworld": "no: the speckle is the base floor art itself (already limited to the 6 calmest cells); needs a hand-dot redraw through the gate — not done this round. Circle/bones/cliff = gimmick and wall art, not touched",
+  "swamp": "no: water dot pattern, shoreline neck tile and bridge placement are water/gimmick art, out of floor scope",
+  "volcano": "no: lava tile and rim corners are lava art (gap lava autotile), out of floor scope; floor itself not flagged"
+ }
+}

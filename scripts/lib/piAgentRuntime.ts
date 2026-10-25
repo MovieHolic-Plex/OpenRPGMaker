@@ -74,6 +74,7 @@ import { isTransientProviderStreamError, PI_PROVIDER_STREAM_RETRY_LIMIT, provide
 import { explainOpenAiCompatRunError, guardedOpenAiCompatFetch, shapeOpenAiCompatCall } from "./openAiCompatModel.ts";
 import { isOpenAiCompatProviderId } from "../../src/ai/openAiCompat.ts";
 import { PLAN_EXECUTION_REKICK, ULTRABRAIN_PLAN_HEADING } from "../../src/ai/piAgent/planExecution.ts";
+import { WHOLE_GAME_REKICKS, unbuiltGameSigns, wantsWholeGame, wholeGameRekickPrompt } from "../../src/ai/v2/shipChecks.ts";
 import { addPiAgentUsage, changedProjectKeys, PI_AGENT_DEFAULT_TIMEOUT_MS, PI_MAP_LOSS_DECLINED_PREFIX, piMapScopeGuard, restoreCheckpointProject, slimCheckpointProject, slimProjectForWire, snapshotProjectKeepingHeavy, slimDoneEvent, unchangedHeavyKeys, type PiAgentDoneEvent, type PiAgentEvent, type PiAgentRequest, type PiAgentUsage, type PiCheckpointHeavyKey } from "../../src/ai/piAgent/protocol.ts";
 import { normalizePiThinkingLevel } from "../../src/ai/piAgent/thinkingLevel.ts";
 import { antigravityToolEnumPayload } from "./ohMyPiToolEnums.ts";
@@ -347,7 +348,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   const tools: PiToolShape[] = [];
   const exposed = new Set<string>();
   const monsterGameProduction = new PiMonsterGameProduction(!options.v2 && !request.readOnly && !options.readOnlyTools && (requestsEmeraldMonsterGame(request.task) || classifyMonsterGameRequest(request.task) === 'campaign'), request.task);
-  const gameSystemProduction = new PiGameSystemProduction();
+  const gameSystemProduction = new PiGameSystemProduction(!options.v2);
   // 채팅 한 줄 연애 게임 요청 — 도구 목록이 고정된 팀 하위 실행은 제외(팀은 finish 게이트가 한다).
   const romanceProduction = new PiRomanceProduction(!request.readOnly && !options.readOnlyTools && !options.toolNames && !options.subscribeTeamMessages, request.task);
   const npcLayoutProduction = new PiNpcLayoutProduction();
@@ -1156,6 +1157,18 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
       && changedProjectKeys(base, ctx.project).length === 0 && turns < maxTurns && !options.signal?.aborted) {
       emit({ type: "execution_status", name: "plan_execution_rekick", ok: false, summary: "계획만 다시 쓰고 바뀐 것 없이 끝나 실행을 한 번 더 요청합니다." });
       await promptResuming(PLAN_EXECUTION_REKICK);
+    }
+    // 게임 하나를 만드는 요청인데 뼈대(「기억의 조각 → 첫 구간 끝」)만 남았거나 엔딩이 하나도 없이 «확인하겠습니다» 같은 말로 턴이 끝났다
+    // (2026-10-25 Salad S3: 58판 중 9판이 뼈대만 남긴 채 끝났다 — 오류 없이 모델이 다음 할 일을 말하고 멈췄다). 최대 3번 이어 짓게 한다.
+    if (!options.v2 && !fatal && !rejected && !request.readOnly && !options.readOnlyTools && wantsWholeGame(request.task)) {
+      for (let kick = 1; kick <= WHOLE_GAME_REKICKS && turns < maxTurns && !fatal && !rejected && !options.signal?.aborted; kick++) {
+        const missing = unbuiltGameSigns(ctx.project, request.task);
+        if (!missing.length) break;
+        const beforeKick = ctx.project;
+        emit({ type: "execution_status", name: "whole_game_rekick", ok: false, summary: `게임이 아직 다 지어지지 않아 이어 짓게 합니다(${kick}/${WHOLE_GAME_REKICKS}): ${missing.join(" / ").slice(0, 300)}` });
+        await promptResuming(wholeGameRekickPrompt(missing));
+        if (kick > 1 && changedProjectKeys(beforeKick, ctx.project).length === 0) break;
+      }
     }
     // v2 완료 조건(비평 통과·기계 검사 통과·독립 검토자) — 못 채웠으면 한 차례 더 돌며 사실대로 보고하게 한다.
     // 두 번째 차례는 첫 후속이 쓴 «최종 보고»를 검토자가 다시 대어 보는 자리다(최대 2차례 — 끝없이 돌지 않는다).

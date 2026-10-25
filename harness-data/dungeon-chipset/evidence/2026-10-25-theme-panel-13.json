@@ -1,0 +1,26 @@
+{
+ "round": "theme-props-r9",
+ "panel": 13,
+ "date": "2026-10-25",
+ "boards": [
+  "qa-runs/walls/theme-props-r9/board-wall.ice_face-p9i.png"
+ ],
+ "criteria": "(1) true 3/4 top-down at 1x; (2) same game as Beodeul reference; (3) no seams/16px repeat; (4) reads as ice cave wall (SNES big flat facets, hard light edges). A MAJOR = a defect a player would notice at 1x. Blind.",
+ "reviewers": {
+  "klb-sonnet-5-5": "aa276b035760984e3",
+  "argon": "a15785e35cdc9c271"
+ },
+ "tally": {
+  "wall.ice_face": {
+   "A1": "FAIL both (repeating crack-cell/scallop 16px grid, pillowy mounds not flat facets, saturated cyan) — both name A1 most promising",
+   "A2": "FAIL both (reads as dark grey cobble/slate; ice only from icicles; confetti crystal)",
+   "A3": "FAIL both (vertical barcode/organ-pipe repeat, saturated deep blue, window-like highlights)"
+  }
+ },
+ "next": "A1: few large asymmetric flat facets spanning tile boundaries, one hard light edge each, desaturated blue, 2-3 base variants",
+ "object_gate": {
+  "A1": "FAIL 6ae4edc4d9a2",
+  "A2": "FAIL 0461276f0b12",
+  "A3": "FAIL 869a876d80a7 (3/4)"
+ }
+}

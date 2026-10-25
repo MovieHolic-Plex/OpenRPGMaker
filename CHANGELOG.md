@@ -5,6 +5,25 @@
 
 <!-- releases -->
 
+## 0.339.0 — 2026-10-25
+
+### 기능
+
+- **ai-v2** — independent advisor checks each turn's report against the diff (#3448) (`694bf7a`)
+- **ai** — whole-game builds can't ship editor defaults or one-line endings; set_field_hud; title spoiler check (J59, J60) (#3451) (`40a2fb2`)
+- **first-love** — anime-OP opening montage + street cold open (bump, paper, freeze); freeze-frame/petals/paper engine features; KR street props (#3450) (`bc9c01d`)
+
+### 수정
+
+- **ai** — v2 add_event say without who is narration; beats missing who are skipped with a warning instead of crashing (who.trim) (#3455) (`3355612`)
+- **ai** — shipChecks 의 미사용 filter 인자 제거 — main 빌드 차단(TS6133) (#3454) (`6b5286e`)
+- **flagship** — 네 번째 계절 오프닝 루프의 미사용 index 제거 — main 빌드 차단 (#3453) (`fd51801`)
+- **ai** — flashlight sources use at:{kind:'player'} everywhere; the schema rejected the 'player' string the horror card taught (#3446) (`1f2ecd1`)
+
+### 잡무
+
+- **ci** — css-winners 래칫을 현재 트리로 — 타이틀 메뉴 compact 선언 12건 (#3447) (`5a07254`)
+
 ## 0.338.0 — 2026-10-25
 
 ### 기능

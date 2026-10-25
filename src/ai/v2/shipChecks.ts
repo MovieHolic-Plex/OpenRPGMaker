@@ -97,7 +97,7 @@ export function editorDefaultsLeft(project: Project): ShipBlocker[] {
   if (hasBattles) {
     const troops = (project.database.troops ?? []) as unknown as Obj[];
     const bareMaps = [...battleMaps].filter((id) => id !== "common" && !(project.maps[id] as unknown as Obj | undefined)?.battleBackground)
-      .filter((id) => ![...battleTroops].some((t) => troops.find((tr) => tr.id === t)?.battleBackgroundResourceId));
+      .filter(() => ![...battleTroops].some((t) => troops.find((tr) => tr.id === t)?.battleBackgroundResourceId));
     if (bareMaps.length) add("battle-background", `전투가 나는 맵 ${bareMaps.length}장에 전투 배경이 없어 편집기 기본 배경이 나온다 — set_map_properties{battleBackground} 나 적 무리의 battleBackgroundResourceId 로 그 장소의 배경을 고른다.`, bareMaps.slice(0, 5).join(","));
   }
 
@@ -174,4 +174,25 @@ export function shipBlockers(project: Project, task: string): ShipBlocker[] {
   const spoilers = titleSpoilers(project);
   if (!wantsWholeGame(task)) return spoilers;
   return [...editorDefaultsLeft(project), ...endingClosureProblems(project), ...spoilers];
+}
+
+/** 게임이 «아직 안 지어졌다»는 신호 — 뼈대 자리표시만 남았거나 엔딩이 없다(편집기 기본 HUD·창 같은 마감 항목은 여기서 보지 않는다). */
+export const WHOLE_GAME_REKICKS = 3;
+export function unbuiltGameSigns(project: Project, task: string): string[] {
+  const out: string[] = [];
+  const skeleton = (project.endings ?? []).filter((e) => PLACEHOLDER_NAMES.has(e.name.trim()));
+  const real = (project.endings ?? []).filter((e) => !PLACEHOLDER_NAMES.has(e.name.trim()));
+  if (skeleton.length && !real.length) out.push(`엔딩이 뼈대 자리표시(${skeleton.map((e) => `「${e.name}」`).join("·")})뿐이다 — 요청한 이야기의 엔딩이 없다`);
+  else if (!real.length && /엔딩|결말|ending/iu.test(task)) out.push("엔딩이 하나도 없다");
+  const skeletonEvents = Object.values(project.maps).flatMap((m) => (m.events ?? []).filter((ev) => PLACEHOLDER_NAMES.has(String(ev.name ?? "").trim())).map((ev) => `「${ev.name}」(${m.name})`));
+  if (skeletonEvents.length && !real.length) out.push(`뼈대 이벤트가 그대로다: ${skeletonEvents.slice(0, 3).join(" · ")}`);
+  return out;
+}
+export function wholeGameRekickPrompt(missing: readonly string[]): string {
+  return [
+    "[이어 짓기] 게임이 아직 다 지어지지 않았다:",
+    ...missing.map((m) => `- ${m}`),
+    "다음에 할 일을 말로 적고 멈추지 말고, 지금 바로 도구를 불러 요청한 게임(장소·인물·사건·엔딩)을 이어 짓는다. 뼈대 자리표시(기억의 조각·첫 구간 끝)는 요청한 이야기의 장면으로 바꾸거나 지운다.",
+    "정말 더 지을 수 없으면(도구가 거절·제공자 오류) 지은 것과 못 지은 것을 사실대로 보고하고 끝낸다.",
+  ].join("\n");
 }

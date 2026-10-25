@@ -59,6 +59,11 @@
    "label": "게임 요소(퀘스트·아이템·주인공·전투·대화·연출)",
    "families": [],
    "note": "맵이 아닌 요청 40개(2026-10-23 v1·v2 비교). 판정은 출하 플레이어로 플레이한 사실 + 그림."
+  },
+  "music": {
+   "label": "스토어 음악 찾기·넣기·자리 걸기",
+   "families": [],
+   "note": "조수가 스토어 음악 팩에서 장면·장르·분위기로 곡을 찾아(store_find_music) 받아 넣고(store_install, 출처·라이선스·AI 표시 유지) 맵·전투·보스·승리·타이틀 자리에 거는지 본다(2026-10-25). 스토어 주소가 필요하다 — wholeGameSession.mjs --store-url <스테이징> [--store-ask-first]. 판정: assets/ 에 파일이 생겼는지, 자리 연결, 저장 뒤 재로드, 출하 플레이어 재생, Argon 이 곡을 듣고 맞는지."
   }
  },
  "forbiddenFamilies": [
@@ -8699,6 +8704,571 @@
    ],
    "verify": "동료 2 합류 / display follow / sceneFormation abreast",
    "suiteCategory": "fs-party"
+  },
+  {
+   "id": "g-music-town",
+   "category": "music",
+   "kind": "music",
+   "mode": "balanced",
+   "startTileset": "beodeul_city",
+   "needsStore": true,
+   "prompt": "이 마을에 어울리는 BGM 깔아줘",
+   "requires": [
+    "시작 마을 맵 bgm 이 스토어 마을 곡",
+    "곡 파일이 assets/ 에 있다",
+    "출처·라이선스·AI 표시"
+   ],
+   "verify": "map_blank_start.bgm = store_* 마을 곡, 재로드 뒤 유지, 출하 플레이어에서 재생",
+   "startBuild": [
+    {
+     "tool": "create_map",
+     "args": {
+      "id": "map_dungeon",
+      "name": "용의 동굴",
+      "width": 20,
+      "height": 15
+     }
+    },
+    {
+     "tool": "upsert_event",
+     "args": {
+      "mapId": "map_dungeon",
+      "event": {
+       "id": "ev_boss",
+       "name": "드래곤",
+       "x": 10,
+       "y": 3,
+       "commands": [
+        {
+         "kind": "text",
+         "body": "여기까지 온 것을 후회하게 해 주마!"
+        },
+        {
+         "kind": "battleProcessing",
+         "troopId": "troop_dragon",
+         "canEscape": false,
+         "canLose": false
+        },
+        {
+         "kind": "text",
+         "body": "...강하구나."
+        }
+       ]
+      }
+     }
+    },
+    {
+     "tool": "upsert_event",
+     "args": {
+      "mapId": "map_dungeon",
+      "event": {
+       "id": "ev_minor",
+       "name": "졸개",
+       "x": 5,
+       "y": 8,
+       "commands": [
+        {
+         "kind": "battleProcessing",
+         "troopId": "troop_bat_swarm"
+        }
+       ]
+      }
+     }
+    }
+   ]
+  },
+  {
+   "id": "g-music-boss",
+   "category": "music",
+   "kind": "music",
+   "mode": "balanced",
+   "startTileset": "beodeul_city",
+   "needsStore": true,
+   "prompt": "보스전 음악 긴장감 있게 바꿔줘",
+   "requires": [
+    "드래곤 전투 직전 battle set, 끝나면 reset",
+    "졸개 전투는 그대로",
+    "기본 전투곡 유지"
+   ],
+   "verify": "ev_boss 에 m2-027 set/reset 쌍, ev_minor 불변",
+   "startBuild": [
+    {
+     "tool": "create_map",
+     "args": {
+      "id": "map_dungeon",
+      "name": "용의 동굴",
+      "width": 20,
+      "height": 15
+     }
+    },
+    {
+     "tool": "upsert_event",
+     "args": {
+      "mapId": "map_dungeon",
+      "event": {
+       "id": "ev_boss",
+       "name": "드래곤",
+       "x": 10,
+       "y": 3,
+       "commands": [
+        {
+         "kind": "text",
+         "body": "여기까지 온 것을 후회하게 해 주마!"
+        },
+        {
+         "kind": "battleProcessing",
+         "troopId": "troop_dragon",
+         "canEscape": false,
+         "canLose": false
+        },
+        {
+         "kind": "text",
+         "body": "...강하구나."
+        }
+       ]
+      }
+     }
+    },
+    {
+     "tool": "upsert_event",
+     "args": {
+      "mapId": "map_dungeon",
+      "event": {
+       "id": "ev_minor",
+       "name": "졸개",
+       "x": 5,
+       "y": 8,
+       "commands": [
+        {
+         "kind": "battleProcessing",
+         "troopId": "troop_bat_swarm"
+        }
+       ]
+      }
+     }
+    }
+   ]
+  },
+  {
+   "id": "g-music-victory",
+   "category": "music",
+   "kind": "music",
+   "mode": "balanced",
+   "startTileset": "beodeul_city",
+   "needsStore": true,
+   "prompt": "승리 팡파르 넣어줘",
+   "requires": [
+    "승리 자리(battleVictoryMeResourceId)에 짧은 징글"
+   ],
+   "verify": "system.battleVictoryMeResourceId = store_* 징글(loopable:false)",
+   "startBuild": [
+    {
+     "tool": "create_map",
+     "args": {
+      "id": "map_dungeon",
+      "name": "용의 동굴",
+      "width": 20,
+      "height": 15
+     }
+    },
+    {
+     "tool": "upsert_event",
+     "args": {
+      "mapId": "map_dungeon",
+      "event": {
+       "id": "ev_boss",
+       "name": "드래곤",
+       "x": 10,
+       "y": 3,
+       "commands": [
+        {
+         "kind": "text",
+         "body": "여기까지 온 것을 후회하게 해 주마!"
+        },
+        {
+         "kind": "battleProcessing",
+         "troopId": "troop_dragon",
+         "canEscape": false,
+         "canLose": false
+        },
+        {
+         "kind": "text",
+         "body": "...강하구나."
+        }
+       ]
+      }
+     }
+    },
+    {
+     "tool": "upsert_event",
+     "args": {
+      "mapId": "map_dungeon",
+      "event": {
+       "id": "ev_minor",
+       "name": "졸개",
+       "x": 5,
+       "y": 8,
+       "commands": [
+        {
+         "kind": "battleProcessing",
+         "troopId": "troop_bat_swarm"
+        }
+       ]
+      }
+     }
+    }
+   ]
+  },
+  {
+   "id": "g-music-dungeon",
+   "category": "music",
+   "kind": "music",
+   "mode": "balanced",
+   "startTileset": "beodeul_city",
+   "needsStore": true,
+   "prompt": "동굴 맵에 으스스한 던전 음악 깔아줘",
+   "requires": [
+    "map_dungeon bgm 이 던전 곡"
+   ],
+   "verify": "map_dungeon.bgm = store_* 던전 곡",
+   "startBuild": [
+    {
+     "tool": "create_map",
+     "args": {
+      "id": "map_dungeon",
+      "name": "용의 동굴",
+      "width": 20,
+      "height": 15
+     }
+    },
+    {
+     "tool": "upsert_event",
+     "args": {
+      "mapId": "map_dungeon",
+      "event": {
+       "id": "ev_boss",
+       "name": "드래곤",
+       "x": 10,
+       "y": 3,
+       "commands": [
+        {
+         "kind": "text",
+         "body": "여기까지 온 것을 후회하게 해 주마!"
+        },
+        {
+         "kind": "battleProcessing",
+         "troopId": "troop_dragon",
+         "canEscape": false,
+         "canLose": false
+        },
+        {
+         "kind": "text",
+         "body": "...강하구나."
+        }
+       ]
+      }
+     }
+    },
+    {
+     "tool": "upsert_event",
+     "args": {
+      "mapId": "map_dungeon",
+      "event": {
+       "id": "ev_minor",
+       "name": "졸개",
+       "x": 5,
+       "y": 8,
+       "commands": [
+        {
+         "kind": "battleProcessing",
+         "troopId": "troop_bat_swarm"
+        }
+       ]
+      }
+     }
+    }
+   ]
+  },
+  {
+   "id": "g-music-joseon-all",
+   "category": "music",
+   "kind": "music",
+   "mode": "balanced",
+   "startTileset": "beodeul_city",
+   "needsStore": true,
+   "prompt": "조선풍 게임 음악 전부 맞춰줘",
+   "requires": [
+    "마을·동굴 맵 각각, 전투, 보스, 승리, 타이틀에 서로 다른 곡",
+    "장르는 실제로 조선·동양풍으로 들리는 곡 우선"
+   ],
+   "verify": "맵 2 + 전투 + 보스 + 승리 + 타이틀 연결, 곡 겹침 없음",
+   "startBuild": [
+    {
+     "tool": "create_map",
+     "args": {
+      "id": "map_dungeon",
+      "name": "용의 동굴",
+      "width": 20,
+      "height": 15
+     }
+    },
+    {
+     "tool": "upsert_event",
+     "args": {
+      "mapId": "map_dungeon",
+      "event": {
+       "id": "ev_boss",
+       "name": "드래곤",
+       "x": 10,
+       "y": 3,
+       "commands": [
+        {
+         "kind": "text",
+         "body": "여기까지 온 것을 후회하게 해 주마!"
+        },
+        {
+         "kind": "battleProcessing",
+         "troopId": "troop_dragon",
+         "canEscape": false,
+         "canLose": false
+        },
+        {
+         "kind": "text",
+         "body": "...강하구나."
+        }
+       ]
+      }
+     }
+    },
+    {
+     "tool": "upsert_event",
+     "args": {
+      "mapId": "map_dungeon",
+      "event": {
+       "id": "ev_minor",
+       "name": "졸개",
+       "x": 5,
+       "y": 8,
+       "commands": [
+        {
+         "kind": "battleProcessing",
+         "troopId": "troop_bat_swarm"
+        }
+       ]
+      }
+     }
+    }
+   ]
+  },
+  {
+   "id": "g-music-battle",
+   "category": "music",
+   "kind": "music",
+   "mode": "balanced",
+   "startTileset": "beodeul_city",
+   "needsStore": true,
+   "prompt": "일반 전투 음악 신나게 바꿔줘",
+   "requires": [
+    "battleBgmResourceId 가 스토어 전투곡"
+   ],
+   "verify": "system.battleBgmResourceId = store_* 전투곡",
+   "startBuild": [
+    {
+     "tool": "create_map",
+     "args": {
+      "id": "map_dungeon",
+      "name": "용의 동굴",
+      "width": 20,
+      "height": 15
+     }
+    },
+    {
+     "tool": "upsert_event",
+     "args": {
+      "mapId": "map_dungeon",
+      "event": {
+       "id": "ev_boss",
+       "name": "드래곤",
+       "x": 10,
+       "y": 3,
+       "commands": [
+        {
+         "kind": "text",
+         "body": "여기까지 온 것을 후회하게 해 주마!"
+        },
+        {
+         "kind": "battleProcessing",
+         "troopId": "troop_dragon",
+         "canEscape": false,
+         "canLose": false
+        },
+        {
+         "kind": "text",
+         "body": "...강하구나."
+        }
+       ]
+      }
+     }
+    },
+    {
+     "tool": "upsert_event",
+     "args": {
+      "mapId": "map_dungeon",
+      "event": {
+       "id": "ev_minor",
+       "name": "졸개",
+       "x": 5,
+       "y": 8,
+       "commands": [
+        {
+         "kind": "battleProcessing",
+         "troopId": "troop_bat_swarm"
+        }
+       ]
+      }
+     }
+    }
+   ]
+  },
+  {
+   "id": "g-music-title",
+   "category": "music",
+   "kind": "music",
+   "mode": "balanced",
+   "startTileset": "beodeul_city",
+   "needsStore": true,
+   "prompt": "타이틀 화면 음악 웅장한 걸로 넣어줘",
+   "requires": [
+    "타이틀 곡 연결"
+   ],
+   "verify": "system.titleScreen 음악 = store_* 타이틀 곡",
+   "startBuild": [
+    {
+     "tool": "create_map",
+     "args": {
+      "id": "map_dungeon",
+      "name": "용의 동굴",
+      "width": 20,
+      "height": 15
+     }
+    },
+    {
+     "tool": "upsert_event",
+     "args": {
+      "mapId": "map_dungeon",
+      "event": {
+       "id": "ev_boss",
+       "name": "드래곤",
+       "x": 10,
+       "y": 3,
+       "commands": [
+        {
+         "kind": "text",
+         "body": "여기까지 온 것을 후회하게 해 주마!"
+        },
+        {
+         "kind": "battleProcessing",
+         "troopId": "troop_dragon",
+         "canEscape": false,
+         "canLose": false
+        },
+        {
+         "kind": "text",
+         "body": "...강하구나."
+        }
+       ]
+      }
+     }
+    },
+    {
+     "tool": "upsert_event",
+     "args": {
+      "mapId": "map_dungeon",
+      "event": {
+       "id": "ev_minor",
+       "name": "졸개",
+       "x": 5,
+       "y": 8,
+       "commands": [
+        {
+         "kind": "battleProcessing",
+         "troopId": "troop_bat_swarm"
+        }
+       ]
+      }
+     }
+    }
+   ]
+  },
+  {
+   "id": "g-music-horror",
+   "category": "music",
+   "kind": "music",
+   "mode": "balanced",
+   "startTileset": "beodeul_city",
+   "needsStore": true,
+   "prompt": "호러 느낌으로 동굴 음악 바꿔줘",
+   "requires": [
+    "map_dungeon bgm 이 호러 곡"
+   ],
+   "verify": "map_dungeon.bgm = store_* 호러 곡",
+   "startBuild": [
+    {
+     "tool": "create_map",
+     "args": {
+      "id": "map_dungeon",
+      "name": "용의 동굴",
+      "width": 20,
+      "height": 15
+     }
+    },
+    {
+     "tool": "upsert_event",
+     "args": {
+      "mapId": "map_dungeon",
+      "event": {
+       "id": "ev_boss",
+       "name": "드래곤",
+       "x": 10,
+       "y": 3,
+       "commands": [
+        {
+         "kind": "text",
+         "body": "여기까지 온 것을 후회하게 해 주마!"
+        },
+        {
+         "kind": "battleProcessing",
+         "troopId": "troop_dragon",
+         "canEscape": false,
+         "canLose": false
+        },
+        {
+         "kind": "text",
+         "body": "...강하구나."
+        }
+       ]
+      }
+     }
+    },
+    {
+     "tool": "upsert_event",
+     "args": {
+      "mapId": "map_dungeon",
+      "event": {
+       "id": "ev_minor",
+       "name": "졸개",
+       "x": 5,
+       "y": 8,
+       "commands": [
+        {
+         "kind": "battleProcessing",
+         "troopId": "troop_bat_swarm"
+        }
+       ]
+      }
+     }
+    }
+   ]
   }
  ],
  "gates": {

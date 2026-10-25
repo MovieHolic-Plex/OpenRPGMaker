@@ -1,0 +1,508 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "8adc8e0e4c1533a83e01a7afcd7bc40fac6923bef5bbbe777a58efd719f73f4d",
+ "width": 128,
+ "height": 96,
+ "kind": "structure",
+ "name": "기둥 위 시장홀",
+ "label": "building-kit/massing/market-hall",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 8,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "5f62fef078ef7661"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 18,
+  "tileColorsP90": 27,
+  "darkV5": 61,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 40
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "main hip roof (tile plane)",
+      "rows": "12-44",
+      "evidence": "c",
+      "front_edge_line_row": 45,
+      "eave_shadow_rows": "44-45"
+     },
+     {
+      "part": "roof dormer/cupola roof",
+      "rows": "0-8",
+      "evidence": "c",
+      "front_edge_line_row": 9,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "upper floor timber-frame wall with windows",
+      "rows": "46-61",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "wooden beam/jetty band",
+      "rows": "62-64",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "ground floor market arcade with stalls",
+      "rows": "65-95",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "goods, barrels on stalls",
+      "rows": "68-92",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 33,
+    "front_face_rows": 50,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette widens steadily from row 12 (62 px) to row 28 (128 px), which is a large sloped tile roof plane covering rows 12-44. It ends in an eave edge at rows 44-45, where dark shadow rows (L=48) sit above a lighter line at rows 46-47. Below it is a tall front face of about 50 rows, made of the timber-frame upper floor, a jetty beam and the ground-floor arcade. The small cupola on top also has its own roof, rows 0-8. The roof is a clear top surface, so this reads as three-quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The candidate is a whole building (tile roof, timber-framed upper walls, stone arcade with stalls), the same kind as the references. Its roof has per-tile scallops with highlight, light, mid and dark steps plus small moss/leaf accents, about 5 steps against 5-6 in the references. Visible tones per tile are 16 against 12 and 10, and near-flat coverage is 1% against 0%, so it is at or above the references on both. Outlines read as dark brown beside the roof and wood and dark grey-blue beside the stone. The 24% near-neutral share of dark edge pixels is higher than the references' 7-9%, but most edges still lean tinted, not a uniform black sticker line. The stone arcade shows individual stones and the stalls carry goods, so there are no large flat fills. A careful artist would accept it next to the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 23108
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "main hip roof (tile plane)",
+      "rows": "12-44",
+      "evidence": "c",
+      "front_edge_line_row": 44,
+      "eave_shadow_rows": "44-45"
+     },
+     {
+      "part": "roof cupola/lantern with small pyramid cap",
+      "rows": "0-11",
+      "evidence": "c",
+      "front_edge_line_row": 11,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "half-timbered upper storey with windows",
+      "rows": "46-62",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "ground floor arcade with stalls, barrel and door",
+      "rows": "63-95",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 33,
+    "front_face_rows": 50,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The building has a large hipped tile roof spanning rows 12-44. Its silhouette widens from 62 to 128 px, so it is a sloped plane seen from above. It ends in an eave edge near rows 42-45, with dark eave shadow (L=48 at rows 44-45) directly below. Beneath it are a half-timbered upper storey (rows 46-62) and a ground-floor arcade (rows 63-95), about 50 rows of front face in total. The small cupola on the ridge has its own pyramid roof, drawn as a widening silhouette in rows 0-8. The roof reads as a top surface and the front face is clearly present, so this is a three-quarter view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The candidate is a whole building with a tile roof, timber-framed upper floor, windows and a stone arcade with market stalls, so it matches the reference kind. Measured facts are at or above the references: 16 visible tones per tile against 12 and 10, and 1% near-flat coverage against 0%. Only 24% of dark edge pixels are neutral, against 7% and 9% in the references, so the outline is slightly greyer but still mostly tinted. By eye the outlines are dark brown beside the timber and dark red-brown beside the roof tiles, not a uniform black line. The roof has per-tile scallops with highlights and a few scattered accent pixels, and it carries about 5 lightness steps. The stone arcade has individually shaded blocks, and the stalls, barrel, awnings and door add varied detail. The roof is somewhat larger and more regular than the references, but nothing reads as thinner, flatter or sticker-like next to them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 11389
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "main hip roof (tiles)",
+      "rows": "12-44",
+      "evidence": "c",
+      "front_edge_line_row": 43,
+      "eave_shadow_rows": "44-45"
+     },
+     {
+      "part": "dormer roof/cupola cap",
+      "rows": "0-8",
+      "evidence": "c",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dormer front wall with window",
+      "rows": "9-11",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "upper half-timbered storey",
+      "rows": "46-62",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "ground-floor arcade with market stalls",
+      "rows": "63-95",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 33,
+    "front_face_rows": 50,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body has a large sloped tiled roof plane, rows 12-44. Its width grows steadily from 62 to 128 px, and it ends in a dark eave shadow at rows 44-45 (L=48). Below it is a front face of about 50 rows: the half-timbered upper storey (rows 46-62), a beam, and the ground-floor arcade (rows 63-95). The small dormer on top has its own sloped cap (rows 0-8, widening from 2 to 24 px). The roof reads as a top surface, so the view is three-quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The candidate is a whole building (tiled roof, timber upper floor, stone arcade with stalls), the same kind as the references. Measured facts favour it: 16 visible tones per tile against 12 and 10 for the references, and 1% near-flat coverage against 0%. The roof has scalloped tiles with per-tile highlights and several red-brown steps, plus small moss and leaf accents and a lantern cupola. The stone arcade is shaded stone by stone, and the market stalls carry produce, an awning with stripes, and a barrel. The timber beams and shutters are outlined in dark brown. The 24% near-neutral share of dark edge pixels is higher than the references' 7-9%, but it is still low, and by eye the outlines lean brown and red-brown, so they read as dark material tone and not a black sticker line. I found no large flat fills. Density and texture are at or above both references, so a careful artist would accept it next to them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 13498
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "main hip roof (tiles)",
+      "rows": "12-43",
+      "evidence": "c",
+      "front_edge_line_row": 43,
+      "eave_shadow_rows": "44-45"
+     },
+     {
+      "part": "dormer roof (grey pyramid cap)",
+      "rows": "0-8",
+      "evidence": "c",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dormer front wall",
+      "rows": "9-11",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "half-timbered upper storey and ground-floor arcade (front face)",
+      "rows": "46-95",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 32,
+    "front_face_rows": 50,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette widens steadily from 62 px at row 12 to 128 px at row 28, which is a hip roof plane. Tile rows 12-43 form a large sloped roof, followed by dark eave shadow in rows 44-45 (L=48) and a lighter ledge in rows 46-47. Below that is a tall front face in rows 46-95: a timber-framed storey with windows, then a stone arcade with a stall, barrel and door. The small dormer on top has its own sloped cap in rows 0-8. The roof is the main top surface at about 32 rows, and the front face is about 50 rows, so it reads as three-quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The candidate's tile roof has scallops with per-tile highlights and about 5 lightness steps from highlight to deep red-brown, with moss/leaf speckle dots. The stone arcade base is shaded stone by stone, and the timber beams, shutters and market stalls carry grain and variation. Measured facts back this up: 16 visible tones per tile against 12 and 10 for the references, and 1% near-flat coverage against 0%. The 24% near-neutral share of dark edge pixels is higher than the references' 7% and 9%, but most edges still lean brown or red-brown beside wood and roof, so the outline reads as dark material tone and not a uniform black sticker line. Overall richness is at or slightly above the references and the piece looks like it belongs in the same chipset.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15502
+  }
+ ],
+ "decidedAt": "2026-10-25T09:05:11.209Z",
+ "cells": {
+  "16": [
+   "10d71750cbf159dc",
+   "15e1dcab8158744a",
+   "167fc37aefe1e3e2",
+   "180a0c40d43f3a35",
+   "244fd36ef3903d72",
+   "27501d3f98af0340",
+   "2aa138e258a9a2dc",
+   "2ed75cbf2a6d7a70",
+   "31cd7e7c5d40a68c",
+   "356efa4172c0f805",
+   "37eddb1244afc44e",
+   "3a9a22e52c34f868",
+   "3e1545b230712714",
+   "421f603b8ab2a774",
+   "4ba150aa32a4206b",
+   "4ce030143f6c166f",
+   "4d40f2ed66f8b311",
+   "4dcc3524f857eb20",
+   "4f777177cbf5f723",
+   "508563422902173c",
+   "51c1021c43fc71bd",
+   "53ed5359a06d0938",
+   "5ab01e148b3185dd",
+   "77a91b204c01e4b2",
+   "79216fe254e3608b",
+   "80ad4f7caf704b6b",
+   "876f3585fa12f09c",
+   "890d4dd84a448de5",
+   "8a918f470d4d3841",
+   "9db0d532026df1a2",
+   "a2f1dfcccab19d80",
+   "a50b15f817717d07",
+   "aedc4bebbcbff3d6",
+   "b5255a2e4cae9fdf",
+   "baf9d6ed435d392e",
+   "bb78e563af523b40",
+   "c64406f31d5f8ee1",
+   "c65191f9c5c1af4a",
+   "d95b97e2ece5f441",
+   "e540c2f97561fd74",
+   "ea48eb920c88695e",
+   "eec2c4e02c6ea955",
+   "f16f51dd13eeac95",
+   "f63a29e65b6c175b",
+   "fb725e3dc1d66fa0",
+   "ff9b5eb0ba6fcc12"
+  ],
+  "24": [
+   "005b25bf6a1564a9",
+   "01571a48829b74e2",
+   "042bcff47b1236dd",
+   "0c3b655fe55b2333",
+   "0c970be583dfbc75",
+   "0e02200d00f3c18d",
+   "1754706bcbf33820",
+   "1c8bd010fca2030d",
+   "1d6611cdc7a0030c",
+   "2db61da82935030c",
+   "2fbfbf3008596d5c",
+   "3213a3257787cd85",
+   "3298b7f333789bf0",
+   "3607cc45fc7287b3",
+   "37e8168be0dd8b88",
+   "3bebf31914fb3063",
+   "3d7b7c939667ca5f",
+   "411e287c071cbaf9",
+   "44b2589f064f0f6f",
+   "556df645f7307f82",
+   "55cf1ad415f45601",
+   "58e576b348de0f7d",
+   "5bce97049cc45d13",
+   "5c2b7c7581412933",
+   "6e7b7699c66b1f1e",
+   "71919e1e6e573681",
+   "73dca5196af8be33",
+   "761eaf41ed9681f9",
+   "7767c09d9c61e125",
+   "7b7068aba25ee272",
+   "7c9afb5366a20b3f",
+   "8069da3a6c2c5f1e",
+   "82f09413bac54646",
+   "837963fbf821820a",
+   "8572095d7f4b67b8",
+   "860ae22ba14d63de",
+   "8813574fff6f2671",
+   "890d4695d46385e5",
+   "8f844a69cbe436af",
+   "90dc89bd69029ab1",
+   "91e4b6bf2d9bc622",
+   "95b6c896516553d4",
+   "972191ed140cebe5",
+   "97d82a225398420d",
+   "988dd378777681d7",
+   "99cbd14662c1b599",
+   "9c083eb3f37e5e52",
+   "9cf0b6b0179afdf3",
+   "9d398ea0304a45a5",
+   "ae735b0f14bac478",
+   "b12d61361acfdd97",
+   "b67e0178583c6703",
+   "b8a7ec3bbe8b83c3",
+   "c018f0312d80c1a2",
+   "c08a033cf7f3777e",
+   "c1e4a3f48b3e8a5f",
+   "c66d2c5bfaff7b77",
+   "c724f95f023f5f92",
+   "cb2ec3bfe86a2d11",
+   "e2b70d377b0677a5",
+   "e3b72427096225dc",
+   "e3bde56591c45e87",
+   "e3c0f71714874049",
+   "eb75ec15f17dae14",
+   "f39c1b127a3ea82d",
+   "f4d5ac55ff732410",
+   "f52a3fe675a3926b",
+   "f6463284b44c814c",
+   "fb64b0192a0e52df",
+   "ffdf2db681061afb"
+  ],
+  "32": [
+   "0ce1f8f978386870",
+   "0e41a371f12a6dcc",
+   "1ba4ed05f9d53f55",
+   "26f576568d1978d7",
+   "2a6a499e95b45c3b",
+   "3d9fdd32613315b1",
+   "571d928f732488ae",
+   "643e7814dab22e68",
+   "8eaf5e36d65171d7",
+   "b9fb1aa73858c446",
+   "c6871062f33a2817",
+   "e77f9afbcd0f5c66"
+  ],
+  "48": [
+   "06302a138db95c48",
+   "3a4074895100fb99",
+   "564ed4217edb56a6",
+   "56baa7f93aefdf56",
+   "587f64a1f30abda0",
+   "60d77aceebfc306a",
+   "6b8b56aeb8ff90b0",
+   "71093b6e428df3d2",
+   "739282e330827b36",
+   "7ba30b767f6b3d29",
+   "90fa19768da43626",
+   "94b08747bfce416d",
+   "9979d84b2b63c9fd",
+   "a10e5dfcd1e8b21c",
+   "d4d6ac2a28be922c",
+   "d86671484866c4b5",
+   "f6967cfe9f4c8af6",
+   "f8aa0f1fdab42548"
+  ]
+ }
+}

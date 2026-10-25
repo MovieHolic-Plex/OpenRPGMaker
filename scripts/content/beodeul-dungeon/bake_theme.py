@@ -310,7 +310,8 @@ def bake_face(prefix, what, material, item_key):
         kits, ids = [], set()
         spec = [("face3h", f"{prefix}-face-3h", "3단"), ("face2h", f"{prefix}-face-2h", "2단"), ("base3h", f"{prefix}-face-3h-base", "3단 아랫단 변형"),
                 ("glyph3h", f"{prefix}-face-3h-glyph", "3단 새김 가운데"), ("glyph2h", f"{prefix}-face-2h-glyph", "2단 새김 가운데"),
-                ("alt3h", f"{prefix}-face-3h-alt", "3단 가운데단 변형")]
+                ("alt3h", f"{prefix}-face-3h-alt", "3단 가운데단 변형"),
+                ("mid3h", f"{prefix}-face-3h-mid", "3단 가운데 덩이(3칸 주기)"), ("mid2h", f"{prefix}-face-2h-mid", "2단 가운데 덩이(3칸 주기)")]
         for part, name, w_ in spec:
             cv = parts.get(part)
             if cv is None:

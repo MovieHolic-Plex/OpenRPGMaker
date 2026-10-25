@@ -1,0 +1,463 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "31b4800a514e6df243410f6c8c3453ec9e1c737a0e4f16c1696e69704b1d035d",
+ "width": 96,
+ "height": 128,
+ "kind": "structure",
+ "name": "탑 풍차",
+ "label": "building-kit/massing/windmill",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 8,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "5f62fef078ef7661"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 14,
+  "tileColorsP90": 25,
+  "darkV5": 62,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 27
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "thatched dome roof (cap)",
+      "rows": "6-42",
+      "evidence": "c",
+      "front_edge_line_row": 40,
+      "eave_shadow_rows": "41-44"
+     },
+     {
+      "part": "windmill sails (lattice blades)",
+      "rows": "0-66",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "round stone tower body",
+      "rows": "45-94",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stone platform with sacks (ground base)",
+      "rows": "95-127",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 37,
+    "front_face_rows": 50,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is a stone tower with a large thatched conical roof above it. The roof (rows 6-42) is a sloped plane. Its width grows from 2 to 46 px across rows 0-33, and its lower edge sits at about row 40 with a darker eave band (rows 41-44, L about 89 in column x=24) before the lighter stone wall starts at row 45. That makes it a roof/canopy top surface (evidence c) with an edge line and eave shadow. Below it the tower's south face is a tall vertical front (rows 45-94) with a door and a window. The sails are lattice frames, not tops, and they are part of the structure. The platform at the bottom is ground paving."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The candidate's visible tones per 16x16 tile (13) are at or above both references (12 and 10), and near-flat coverage is 2% against 0%. The thatched cap shows several brown steps with woven strokes, and the stone tower has per-brick shading with highlights and shadows across about 5 steps. The base paving is shaded stone by stone with moss dots. Outlines look like dark brown beside the thatch and dark purple-brown beside the stone, so they carry a tint. The 22% neutral share of dark edge pixels is higher than the references (7-9%) but still low, and I judge it to be tinted shading rather than a black sticker line. The sails are thin wooden lattice with a lighter wood highlight. The piece is slightly less layered than the tile roofs of the references, but it would sit next to them without looking flatter.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 14304
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "thatched dome roof",
+      "rows": "6-40",
+      "evidence": "c",
+      "front_edge_line_row": 40,
+      "eave_shadow_rows": "41-44"
+     },
+     {
+      "part": "round stone tower body",
+      "rows": "45-94",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stone base platform",
+      "rows": "95-127",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "sail blades (lattice frames)",
+      "rows": "0-68",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "sacks at base",
+      "rows": "108-117",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 35,
+    "front_face_rows": 83,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The windmill has a large thatched roof (rows ~6-40) that bulges as a sloped plane. Its width grows from 2 to 46 px, and the shingle texture shows it as a roof surface. The roof ends in a dark lower edge with narrower rows beneath (rows 41-46, widths 44 to 38), which reads as eave shadow. Below it a tall, round stone tower (rows ~45-127) forms the front face, with an arched door and a window. The tower is a cylinder, so it needs no top of its own beyond the roof. The sails are flat lattice frames and the sacks are decor. The structure reads as three-quarter view because the roof provides the top surface and the front face is far taller than 3 rows."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The candidate windmill tower has a thatched dome roof with straw-coloured clumps in several tones, and the sails have wood grain. The stone tower is shaded stone by stone, with a light-to-dark ramp across the curved body, and the base paving is textured. Visible tones per tile are 13, against 12 and 10 for the references. Near-flat coverage is 2%, close to the references' 0%, so there are no flat fills. The outlines read as dark brown beside the thatch and wood and a dark purple-grey beside the stone, so they are tinted material tones and not black. The 22% neutral share of dark edge pixels is higher than the references' 7-9%, but the picture does not show a uniform black sticker line. The shading ramps are slightly fewer than the roof tile ramps in the references, but the piece is comparable in craft and density.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 14512
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "thatched dome roof",
+      "rows": "6-43",
+      "evidence": "c",
+      "front_edge_line_row": 43,
+      "eave_shadow_rows": "41-43"
+     },
+     {
+      "part": "stone tower body",
+      "rows": "44-94",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stone base platform",
+      "rows": "95-119",
+      "evidence": "a",
+      "front_edge_line_row": 120,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "windmill sails",
+      "rows": "0-67",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "sacks on platform",
+      "rows": "107-114",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 37,
+    "front_face_rows": 51,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The tower is capped by a large thatched dome roof (rows 6-43). The silhouette widens from 2 to 46 px and the roof has a sloped thatch texture. It ends in an eave at rows 41-43, where the width narrows from 46 to 38 onto the tower. Below it the stone tower shows a 51-row front face (rows 44-94) with a door and window. The base platform has a paved top surface ending in a light front-edge line at row 120. The sails are flat lattice frames, and the sacks are decor."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The windmill is a whole building like the references, with a thatched cap, a stone tower, a door and a window. The measured facts are at or above the references: 13 visible tones per tile against 12 and 10, and 2% near-flat coverage against 0%. Only 22% of dark edge pixels are near-neutral, so the outline carries a tint. By eye it leans brown-purple beside the stone and brown beside the thatch, which is a dark material tone and not a black sticker line. The stone tower has individually shaded bricks with highlights, the thatch cap has woven hatching in several browns, and the sails have wood grain. The stone base is paved with varied slabs, and the grass and bread props add detail. Shading is about 5 steps on the stone and thatch, slightly below the roof ramps of the references, but there are no flat fills and the piece would sit comfortably next to them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15491
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "thatched dome roof (cap)",
+      "rows": "6-42",
+      "evidence": "c",
+      "front_edge_line_row": 42,
+      "eave_shadow_rows": "43-44"
+     },
+     {
+      "part": "windmill blades (sails)",
+      "rows": "0-65",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stone tower body",
+      "rows": "43-94",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stone platform/paving",
+      "rows": "95-117",
+      "evidence": "a",
+      "front_edge_line_row": 119,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 35,
+    "front_face_rows": 52,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is a round stone tower topped by a large thatched roof. The roof is a sloped plane of shingle rows 6-42. Its width grows from 2 to 46 px and it ends at an overhanging eave edge near row 42, with a dark shadow under it where the tower starts. The tower's south face, with the arched door, runs about rows 43-94 (50+ rows) and is clearly vertical. The blades are thin lattice frames, treated as structure but not as horizontal surfaces. The stone platform in front (rows 95-117, width 94) has a lighter front-edge band at rows 118-120. Overall it reads as a 3/4 view: a roof with a visible top surface above a tall front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The candidate's tower is built from individually shaded stone bricks in about 5 lightness steps with a cylindrical light-to-dark gradient. The thatched cap has straw grain and several tones, and the wooden sails carry plank highlights. The base paving is shaded stone by stone with small moss accents. Measured facts support this: 13 visible tones per tile against 12 and 10 in the references, and 2% near-flat coverage against 0%. The 22% near-neutral share of dark edge pixels is higher than the references' 7-9% but still low. By eye the outlines lean brown or purple-brown beside the stone and thatch, so they read as dark material tone rather than a black sticker line. There are no large flat fills. A careful artist would accept it next to the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15444
+  }
+ ],
+ "decidedAt": "2026-10-25T08:52:40.828Z",
+ "cells": {
+  "16": [
+   "079b23cf1d72be65",
+   "0b4540cbcee0282f",
+   "126516ba437e951f",
+   "13a4c439d19de71a",
+   "1ee94c6ae587fd3d",
+   "34033ada3aa7c1cb",
+   "3803495bf9020277",
+   "39e1d0faa64f7326",
+   "3cf4cc5cf382585a",
+   "424410c3c778fbce",
+   "429e1d765e3b52cc",
+   "47806d3b4e2c9f92",
+   "5ba7f034ef684c73",
+   "674e7acc6a8f5614",
+   "67de1b14a963cd69",
+   "773d4e44e370853c",
+   "7cdd58343f7f3a11",
+   "7e1bf320beb41ea4",
+   "81f091ca8505c3cb",
+   "8582c54646a6b5f4",
+   "8a452641e0d51a91",
+   "9c3e0af42726e515",
+   "a3e73e09a4282986",
+   "a4c3767f792147f4",
+   "a6c448520f17a3fc",
+   "b5430b61e097fb17",
+   "b827025140330d5b",
+   "ba78b0a0837ba679",
+   "bb04c5c627ea4565",
+   "bb8b3ae7b5c9393d",
+   "c0d85ab32dfe413a",
+   "c1c06fea94c80471",
+   "cf9c3c9b81a63d6a",
+   "d9f869e36e569bc7",
+   "dcbcda8a4338cab2",
+   "e905c3f4b85f4df9",
+   "eb142a51b31731e4",
+   "f586d24ce925cbf2",
+   "f97564d341d19c52",
+   "fb52a877ac49b81c",
+   "fc20e7f5570b8f1d"
+  ],
+  "24": [
+   "055da8680dd57885",
+   "07d059d86df5a5e2",
+   "0de234db4f4f2b5e",
+   "1820fcf2a2a11814",
+   "18e7f6e7c4967761",
+   "22a0db536fb2d6c8",
+   "274405fc8e931b61",
+   "297140ef38ffdea3",
+   "2ca0de764d5559fa",
+   "2e08d08f223b0045",
+   "45048ec80b0a8321",
+   "49f204bf3b66ca4c",
+   "4cdf139eb5c43d8e",
+   "507b797b5a63879f",
+   "5500401e6d44419f",
+   "59fa6ee52091cd58",
+   "5a512f14550c826d",
+   "65f7dce0cff4b077",
+   "65fbdb64cd930ce5",
+   "6da6901c19f5350c",
+   "755ace11bb5bfed0",
+   "778dd9805dab2805",
+   "79730e4591cb4b37",
+   "7fc81162321f5109",
+   "800f01bdfa099079",
+   "81e6012c2c9c31ba",
+   "893e0f83071e0d43",
+   "9179ee109f5179b1",
+   "a5c71623d2fd1859",
+   "a8d957d9eec39380",
+   "b405bb0f4d7ac8fc",
+   "bc6ca5af6fef2e45",
+   "bdb0979f7986e372",
+   "c29fa753695022f6",
+   "c31867f48d39ef63",
+   "cbfad827354519c8",
+   "cc98d8b2deb4e55b",
+   "d6f5a0703cfde902",
+   "d7f1a9e9847d1b6d",
+   "f452b3546ead8855",
+   "f6317fb89fe80703",
+   "f85f66b1a4f00b90",
+   "fa629640349425a9"
+  ],
+  "32": [
+   "1181e47dcf43f813",
+   "279dd038930d9b3b",
+   "4ebb9c13a7bcd320",
+   "53987693e75e9bc7",
+   "5b7ef3fe0f7b33aa",
+   "6f28a7df43f97f15",
+   "7d15de4f0d34e19b",
+   "9d91e6f3d10524dc",
+   "c66ead6b0de7eb1a",
+   "c876efb4953c559c",
+   "c9521308fa7a1e6e",
+   "d51bbd52a32c157f"
+  ],
+  "48": [
+   "070b281dd567ddaf",
+   "1fe32906c817ec71",
+   "201329f3dafa9717",
+   "417f57eb1b78b01d",
+   "4d152cd1b19ef2d0",
+   "5845377bff16f8fb",
+   "685b51da51866333",
+   "6ab41389c86d80ad",
+   "8deb8cc084af81b8",
+   "91acf9259bcd4f19",
+   "e79d14b834b2fbbc",
+   "f2fea34ab4e9b988"
+  ]
+ }
+}

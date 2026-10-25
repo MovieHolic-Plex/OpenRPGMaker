@@ -84,6 +84,10 @@ export async function runPiAgentViaCompanion(request: PiAgentRequest, options: R
   request = { ...request, imageProvider: request.imageProvider ?? imageConfig.imageProviderId,
     imageModel: request.imageModel ?? imageConfig.imageModel,
     pixelModel: request.pixelModel ?? resolvePixelModel(imageConfig).model };
+  if (!request.store) {
+    const store = await import("@/editor/assetStore/storeHint").then((m) => m.storeRunHint()).catch(() => undefined);
+    if (store) request = { ...request, store };
+  }
   const captureEpoch = inspectionEpoch();
   const doFetch = options.fetchImpl ?? fetch;
   const runId = newRunId();

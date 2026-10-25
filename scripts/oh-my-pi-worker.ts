@@ -25,6 +25,7 @@ import type { PiAgentRequest } from "../src/ai/piAgent/protocol.ts";
 import { applyLegacyEnvAliases } from "./lib/oprnEnv.mjs";
 import { piTimer } from "./lib/piRunTiming.mjs";
 import { registerOpenAiCompatEndpoints } from "./lib/openAiCompatModel.ts";
+import { configureWorkerStore } from "./lib/workerStore.ts";
 
 applyLegacyEnvAliases();
 
@@ -147,6 +148,7 @@ const server = Bun.serve({
         // Team members reuse this revision rather than blocking its heartbeat.
         await preparePiWorkerSharedContent();
         await preparePiWorkerAudio();
+        configureWorkerStore(agentRequest.store, String(agentRequest.task ?? ""));
         const held = holdWorkerKeys(body.providerApiKeys, agentRequest.provider, apiKey);
         const stream = createPiAgentNdjsonStream((onEvent) => (agentRequest.assistantVersion === "v2" ? runAssistantV2 : agentRequest.mode === "team" ? runPiTeam : runPiAgent)(agentRequest, {
           apiKey,
