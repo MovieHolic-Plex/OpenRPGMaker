@@ -1,0 +1,26 @@
+{
+ "buildings": [
+  {
+   "id": "cottage",
+   "kit": "bd-house-mk-cottage",
+   "sha256": "58707f18ffdc4b94643c0ff6fe398fe19ba92ea75f141bd19bbefdca6d19ce00",
+   "size": [
+    5,
+    5
+   ],
+   "blockedCells": 10,
+   "overhangCells": 15,
+   "entrance": [
+    1,
+    4,
+    1,
+    1
+   ]
+  }
+ ],
+ "installed": 1,
+ "tiles": 39,
+ "sheetTiles": 48,
+ "decisionLog": "harness-data/building-kit/massing/decisions.json",
+ "visualVerdict": "requires actual image review (gallery.png)"
+}

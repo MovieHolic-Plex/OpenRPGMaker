@@ -1,0 +1,20 @@
+{
+ "name": "교차 박공 십자형 집",
+ "massing": "18",
+ "material": "plaster",
+ "refs": [
+  "bd-house-h124_0",
+  "bd-house-h122_0"
+ ],
+ "walk": [
+  ".*.***.*.",
+  ".*******.",
+  "*********",
+  "*********",
+  "XXXXXXXXX",
+  "XXXXXXXXX",
+  "XXXXDXXXX",
+  "...XDX..."
+ ],
+ "id": "cross-house"
+}

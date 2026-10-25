@@ -284,10 +284,16 @@ def write_png(bid):
     return sha_png(png_path(bid))
 
 
+def _og():
+    sys.path.insert(0, os.path.join(REPO, 'src', 'harnesses', '_core'))
+    import object_gate
+    return object_gate
+
+
 def pixel_sha(bid):
+    """object-gate 와 같은 화소 해시(영수증·위임 허용·검수 원문이 모두 이 해시에 묶인다)."""
     rows, _ = load(bid)
-    a = np.array(image(rows))
-    return hashlib.sha256(a.tobytes()).hexdigest()
+    return _og().pixel_sha256(image(rows))
 
 
 # ---------------------------------------------------------------- previews
@@ -385,26 +391,260 @@ def review_state(bid, sha):
 REVIEWERS = ('argon', 'klb-sonnet-5-5')
 
 
-def gate_state(png):
-    """object-gate 영수증(kind structure) — 판정 결과를 읽기만 한다."""
-    sys.path.insert(0, os.path.join(REPO, 'src', 'harnesses', '_core'))
-    import object_gate as og
-    try:
-        st = og.status(png, kind='structure') if hasattr(og, 'status') else None
-    except Exception as e:  # noqa: BLE001
-        st = f'err {e}'
-    return st
+def state(bid):
+    f, w = check(bid, quiet=True)
+    if f:
+        return {'id': bid, 'check': 'FAIL', 'fails': f}
+    rows, meta = load(bid)
+    img = image(rows)
+    og = _og()
+    sha = og.pixel_sha256(img)
+    rc = og.read_receipt(sha)
+    held = og.read_hold_decision(sha)
+    rv = review_state(bid, sha)
+    return {'id': bid, 'check': 'ok', 'warns': w, 'sha': sha, 'size': [img.width // T, img.height // T],
+            'gate': (rc or {}).get('verdict'), 'gateKind': (rc or {}).get('kind'), 'gateReasons': (rc or {}).get('reasons'),
+            'gateProfile': (rc or {}).get('profileHash'),
+            'held': og.human_decision(held, rc) if rc else None,
+            'exit': og.refusal(img, kind='structure', context='bundle'),
+            'reviews': {k: v[0] for k, v in rv.items()}, 'reviewFiles': {k: v[1] for k, v in rv.items()},
+            'massing': meta['massing'], 'name': meta['name']}
 
 
-def status():
-    rows = []
+def status(as_json=False):
+    out = [state(b) for b in ids()]
+    if as_json:
+        print(json.dumps(out, ensure_ascii=False, indent=1))
+        return 0
+    for r in out:
+        if r['check'] != 'ok':
+            print(f"  {r['id']:22} check FAIL {r['fails'][:2]}")
+            continue
+        print(f"  {r['id']:22} {r['sha'][:12]} gate={r['gate']} held={r['held']} reviews={r['reviews']} exit={'통과' if not r['exit'] else '막힘'}")
+    return 0
+
+
+def gate_batch(path, only=None):
+    """object-gate review --batch 입력(줄마다 {png,kind,name,label}) — 지금 그림을 PNG 로 쓰고 목록을 만든다."""
+    lines = []
+    for bid in (only or ids()):
+        f, _ = check(bid, quiet=True)
+        if f:
+            continue
+        write_png(bid)
+        _, meta = load(bid)
+        lines.append(json.dumps({'png': png_path(bid), 'kind': 'structure', 'name': meta['name'],
+                                 'label': f'building-kit/massing/{bid}', 'chipset': 'beodeul_city'}, ensure_ascii=False))
+    open(path, 'w', encoding='utf-8').write('\n'.join(lines) + '\n')
+    print(f'{len(lines)}채 → {path}')
+    return 0
+
+
+def _blocked(meta):
+    return [[x, y] for y, r in enumerate(meta['walk']) for x, ch in enumerate(r) if ch in 'XD']
+
+
+def publish():
+    """check 통과 건물을 설치 입력으로 낸다: seed.json candidates + tiledata/beodeul-massing/sources/<id>.png.
+    설치(install.py --profile building-kit-massing)는 decisions.json 의 허용만 넣는다 — publish 는 허용이 아니다."""
+    seed = json.load(open(os.path.join(DATA, 'seed.json'), encoding='utf-8'))
+    src = os.path.join(REPO, 'tiledata', 'beodeul-massing', 'sources')
+    os.makedirs(src, exist_ok=True)
+    cands = []
     for bid in ids():
-        f, w = check(bid, quiet=True)
-        sha = pixel_sha(bid) if not f else '-'
-        rv = review_state(bid, sha) if not f else {}
-        rows.append((bid, 'FAIL' if f else 'ok', sha[:12], {k: v[0] for k, v in rv.items()}))
-    for r in rows:
-        print(f'  {r[0]:22} {r[1]:4} {r[2]:12} {r[3]}')
+        f, _ = check(bid, quiet=True)
+        if f:
+            print(f'  건너뜀 {bid}: check FAIL')
+            continue
+        rows, meta = load(bid)
+        img = image(rows)
+        img.save(os.path.join(src, f'{bid}.png'))
+        cands.append({'id': bid, 'name': meta['name'], 'role': meta.get('role', meta['name']), 'width': img.width, 'height': img.height,
+                      'entrance': entrance(meta), 'material': 'log' if meta['material'] == 'log' else meta['material'],
+                      'blocked': _blocked(meta), 'passages': meta.get('passages', []), 'round': 1,
+                      'source': f'building-kit/massing (bk-massing-100 {meta["massing"]})', 'massing': meta['massing'],
+                      'perspective': '3/4 탑뷰 · 지붕 윗면과 남쪽 정면', 'lighting': '왼쪽 위'})
+    seed['candidates'] = cands
+    json.dump(seed, open(os.path.join(DATA, 'seed.json'), 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
+    print(f'후보 {len(cands)}채 → seed.json candidates · {os.path.relpath(src, REPO)}/')
+    return 0
+
+
+DELEGATED_BY = 'user 2026-10-25 (bk-massing-100 → 실제 건물, 머지까지 위임)'
+
+
+def decide():
+    """위임 허용: 지금 그림 해시에 (1) object-gate 영수증 kind structure 가 pass 이고 (2) 서명된 허용 기록이 있고
+    (3) 검수자 둘(REVIEWERS)의 원문이 VERDICT: PASS 일 때만 decisions.json 에 allow 를 덧붙인다. 아니면 적지 않는다.
+    감독이 판정을 쓰지 않는다 — 여기 들어가는 근거는 모두 다른 판정자의 원문 파일이다."""
+    path = os.path.join(DATA, 'decisions.json')
+    log = json.load(open(path, encoding='utf-8')) if os.path.exists(path) else {'schema': 'oprn-building-decisions/1', 'log': []}
+    last = {}
+    for r in log['log']:
+        last[(r['item'], r['sha'])] = r
+    seq = max([r['seq'] for r in log['log']], default=0)
+    src = os.path.join(REPO, 'tiledata', 'beodeul-massing', 'sources')
+    added = 0
+    for bid in ids():
+        st = state(bid)
+        if st['check'] != 'ok':
+            continue
+        why = []
+        if st['gate'] != 'pass' and st['held'] != 'allow':
+            why.append(f'object-gate {st["gate"]}')
+        if st['exit']:
+            why.append('object-gate 출구 막힘')
+        for who in REVIEWERS:
+            if st['reviews'].get(who) != 'PASS':
+                why.append(f'{who} {st["reviews"].get(who, "없음")}')
+        if why:
+            print(f'  보류 {bid:22} {", ".join(why)}')
+            continue
+        png = os.path.join(src, f'{bid}.png')
+        if not os.path.exists(png) or _og().pixel_sha256(Image.open(png)) != st['sha']:
+            print(f'  보류 {bid:22} publish 를 먼저(소스 PNG 가 지금 그림과 다르다)')
+            continue
+        fsha = sha_png(png)
+        if (bid, fsha) in last and last[(bid, fsha)]['decision'] == 'allow':
+            continue
+        seq += 1
+        rc_path = os.path.relpath(os.path.join(str(_og().GATE_DATA), 'receipts', st['sha'][:2], st['sha'] + '.json'), REPO)
+        log['log'].append({'seq': seq, 'item': bid, 'sha': fsha, 'pixelSha256': st['sha'], 'decision': 'allow', 'by': 'delegated',
+                           'delegatedBy': DELEGATED_BY, 'evidence': [rc_path] + [st['reviewFiles'][w] for w in REVIEWERS],
+                           'note': 'object-gate pass/허용 + 독립 검수 둘 PASS(원문 파일)', 'at': datetime.datetime.now(datetime.timezone.utc).isoformat(timespec='seconds')})
+        added += 1
+        print(f'  허용 {bid}')
+    log['exportedAt'] = datetime.datetime.now(datetime.timezone.utc).isoformat(timespec='seconds')
+    log['counts'] = {'allow': sum(1 for r in log['log'] if r['decision'] == 'allow')}
+    json.dump(log, open(path, 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
+    print(f'위임 허용 {added}채 덧붙임 → {os.path.relpath(path, REPO)}')
+    return 0
+
+
+def evidence():
+    """object-gate 영수증 pass + 검수자 둘 PASS 인 그림마다 근거 묶음 파일을 쓰고, 위임 허용에 넘길 목록을 찍는다.
+    허용 자체는 18323 검토 서버(/api/decide, delegatedBy + evidence)가 서명해 기록한다 — 이 함수는 기록하지 않는다."""
+    out = []
+    for bid in ids():
+        st = state(bid)
+        if st['check'] != 'ok' or st['gate'] != 'pass' or any(st['reviews'].get(w) != 'PASS' for w in REVIEWERS):
+            continue
+        og = _og()
+        ev = {'schema': 'oprn-building-kit-massing-evidence/1', 'id': bid, 'pixelSha256': st['sha'], 'kind': 'structure',
+              'objectGate': {'receipt': os.path.join(str(og.GATE_DATA), 'receipts', st['sha'][:2], st['sha'] + '.json'),
+                             'verdict': st['gate'], 'profile': st['gateProfile'], 'profileCalibrated': False},
+              'reviews': {w: {'verdict': st['reviews'][w], 'file': st['reviewFiles'][w]} for w in REVIEWERS},
+              'delegatedBy': DELEGATED_BY}
+        path = os.path.join(REVIEWS, bid, f'{st["sha"][:12]}-evidence.json')
+        json.dump(ev, open(path, 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
+        out.append({'id': bid, 'sha': st['sha'], 'kind': 'structure', 'evidence': path, 'held': st['held']})
+    print(json.dumps(out, ensure_ascii=False))
+    return 0
+
+
+# ---------------------------------------------------------------- independent review packs
+REVIEW_PROMPT = """You are an adversarial visual QA reviewer for 16px pixel-art RPG buildings. You did not draw these and you are not on the
+artist's side: your job is to find reasons each candidate must be REJECTED. Never pass something you are unsure about.
+
+Each candidate has two boards (open both with Read):
+  <code>-1x.png  candidate at 1x on grass, next to two shipped "Beodeul port" reference buildings at 1x (same game, the quality bar)
+  <code>-4x.png  candidate at 4x next to one Beodeul reference at 4x
+
+Judge each candidate on:
+ A. 3/4 top-down view (required): the roof's upper surface is visible as a real surface (not a thin strip = flat front elevation);
+    only the south facade is visible — no isometric side faces, no sideways perspective; cylinders show a curved front + a cone/parapet
+    seen from above; parapets/crenellations show their walkable top; wings/towers read as ONE building with no ground between parts.
+ B. Structural integrity: no transparent gaps/holes through the building, no floating or cut-off parts, the building stands on the
+    ground (bottom edge meets the ground), exactly one door, nothing garbled/unreadable.
+ C. Style match with the Beodeul references at the same scale: material shading in several steps, outline in the material's dark tone
+    (not black ink), textured surfaces (roof tiles varying, plaster stipple, stone courses), no large flat single-colour fills, no
+    obvious 16px stamp repetition, colours harmonise with the references. It should look like it belongs in the same game.
+
+For EACH candidate write a file <OUT_DIR>/<code>.md containing: a few lines of observations for A, B, C, a list "MAJOR:" of blocking
+defects (or "MAJOR: none"), and as the LAST line exactly "VERDICT: PASS" or "VERDICT: FAIL". FAIL if any MAJOR defect exists.
+Write the files yourself with the Write tool; do not edit any other file. Finally reply with one line per code: "<code> PASS|FAIL".
+"""
+
+
+def _decoy(img):
+    """숨긴 함정: 건물을 가로로 3px 투명 띠로 끊는다(B 결함). 판정자가 이것을 통과시키면 그 묶음은 무효다."""
+    a = np.array(img)
+    ys = np.where(a[..., 3].any(1))[0]
+    mid = int(ys.min() + (ys.max() - ys.min()) * 0.48)
+    a[mid:mid + 3, :, 3] = 0
+    a[mid:mid + 3, :, :3] = 0
+    return Image.fromarray(a, 'RGBA')
+
+
+def review_pack(batch, bids, decoy_from=None):
+    import random as _r  # 묶음 안 순서 섞기용(그림이 아니다)
+    root = os.path.join(RUNS, 'review', batch)
+    os.makedirs(os.path.join(root, 'boards'), exist_ok=True)
+    os.makedirs(os.path.join(root, 'out'), exist_ok=True)
+    entries = []
+    for bid in bids:
+        f, _ = check(bid, quiet=True)
+        if f:
+            raise SystemExit(f'{bid}: check FAIL — 검수에 내지 않는다')
+        entries.append(('real', bid))
+    entries.append(('decoy', decoy_from or bids[0]))
+    rng = _r.Random(hashlib.sha256(batch.encode()).hexdigest())
+    rng.shuffle(entries)
+    key = {}
+    for n, (kind, bid) in enumerate(entries, 1):
+        code = f'c{n:02d}'
+        rows, meta = load(bid)
+        img = image(rows)
+        sha = _og().pixel_sha256(img)
+        if kind == 'decoy':
+            img = _decoy(img)
+        one = _row([_label(_on_grass(img), 'candidate 1x')] + [_label(_on_grass(beodeul_ref(k)), f'Beodeul 1x') for k in refs_for(meta)[:2]])
+        r0 = beodeul_ref(refs_for(meta)[0])
+        four = _row([_label(_on_grass(img.resize((img.width * 4, img.height * 4), Image.NEAREST)), 'candidate 4x'),
+                     _label(_on_grass(r0.resize((r0.width * 4, r0.height * 4), Image.NEAREST)), 'Beodeul 4x')])
+        one.save(os.path.join(root, 'boards', f'{code}-1x.png'))
+        four.save(os.path.join(root, 'boards', f'{code}-4x.png'))
+        key[code] = {'kind': kind, 'id': bid, 'sha': sha}
+    json.dump(key, open(os.path.join(root, 'key.json'), 'w'), indent=1)
+    codes = sorted(key)
+    prompt = (REVIEW_PROMPT.replace('<OUT_DIR>', os.path.join(root, 'out', '<REVIEWER>'))
+              + f"\nBoards folder: {os.path.join(root, 'boards')}\nCandidates: {', '.join(codes)}\n")
+    open(os.path.join(root, 'PROMPT.txt'), 'w').write(prompt)
+    print(f'묶음 {batch}: {len(codes)}장(함정 1) → {root}/PROMPT.txt')
+    return root
+
+
+def review_collect(batch, reviewer):
+    root = os.path.join(RUNS, 'review', batch)
+    key = json.load(open(os.path.join(root, 'key.json')))
+    out = os.path.join(root, 'out', reviewer)
+    got = {}
+    for code, k in key.items():
+        p = os.path.join(out, f'{code}.md')
+        if not os.path.exists(p):
+            got[code] = None
+            continue
+        m = VERDICT.findall(open(p, encoding='utf-8').read())
+        got[code] = m[-1] if m else None
+    decoys = [c for c, k in key.items() if k['kind'] == 'decoy']
+    if any(got[c] != 'FAIL' for c in decoys):
+        print(f'{batch}/{reviewer}: 함정 {decoys} 를 FAIL 로 잡지 못했다({[got[c] for c in decoys]}) — 이 묶음 판정은 무효(기록하지 않음)')
+        return 1
+    n = 0
+    for code, k in key.items():
+        if k['kind'] != 'real' or got[code] is None:
+            if k['kind'] == 'real':
+                print(f'  {code} {k["id"]}: {reviewer} 원문 없음')
+            continue
+        dst = os.path.join(REVIEWS, k['id'])
+        os.makedirs(dst, exist_ok=True)
+        raw = open(os.path.join(out, f'{code}.md'), encoding='utf-8').read()
+        head = (f'<!-- 검수자 {reviewer} 원문 그대로. 묶음 {batch}, 판 코드 {code}, 그림 화소 해시 {k["sha"]}. '
+                f'함정 {decoys} 를 FAIL 로 잡은 유효 회차. 감독은 아래 본문을 고치지 않았다. -->\n')
+        open(os.path.join(dst, f'{k["sha"][:12]}-{reviewer}.md'), 'w', encoding='utf-8').write(head + raw)
+        n += 1
+        print(f'  {k["id"]:22} {reviewer} {got[code]}')
+    print(f'{batch}/{reviewer}: 유효 — {n}건 기록')
     return 0
 
 
@@ -415,12 +655,39 @@ def main(argv=None):
     for c in ('check', 'render', 'boards'):
         p = sub.add_parser(c)
         p.add_argument('ids', nargs='*')
-    sub.add_parser('status')
+    st = sub.add_parser('status')
+    st.add_argument('--json', action='store_true')
+    gb = sub.add_parser('gate-batch')
+    gb.add_argument('out')
+    gb.add_argument('ids', nargs='*')
+    sub.add_parser('publish')
+    sub.add_parser('decide')
+    sub.add_parser('evidence')
+    rp = sub.add_parser('review-pack')
+    rp.add_argument('batch')
+    rp.add_argument('ids', nargs='+')
+    rp.add_argument('--decoy')
+    rc = sub.add_parser('review-collect')
+    rc.add_argument('batch')
+    rc.add_argument('reviewer')
     a = ap.parse_args(argv)
+    if a.cmd == 'review-pack':
+        review_pack(a.batch, a.ids, a.decoy)
+        return 0
+    if a.cmd == 'review-collect':
+        return review_collect(a.batch, a.reviewer)
     if a.cmd == 'palette':
         return build_palette()
     if a.cmd == 'status':
-        return status()
+        return status(a.json)
+    if a.cmd == 'gate-batch':
+        return gate_batch(a.out, a.ids)
+    if a.cmd == 'publish':
+        return publish()
+    if a.cmd == 'decide':
+        return decide()
+    if a.cmd == 'evidence':
+        return evidence()
     todo = a.ids or ids()
     bad = 0
     for bid in todo:

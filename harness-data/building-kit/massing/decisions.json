@@ -1,0 +1,25 @@
+{
+ "schema": "oprn-building-decisions/1",
+ "log": [
+  {
+   "seq": 1,
+   "item": "cottage",
+   "sha": "58707f18ffdc4b94643c0ff6fe398fe19ba92ea75f141bd19bbefdca6d19ce00",
+   "pixelSha256": "503425dc67d36168294061fac98d66e747ceda3584843736051645a2bd8571a6",
+   "decision": "allow",
+   "by": "delegated",
+   "delegatedBy": "user 2026-10-25 (bk-massing-100 → 실제 건물, 머지까지 위임)",
+   "evidence": [
+    "../rpg-zzu-object-gate-holds/harness-data/object-gate/receipts/50/503425dc67d36168294061fac98d66e747ceda3584843736051645a2bd8571a6.json",
+    "harness-data/building-kit/massing/reviews/cottage/503425dc67d3-argon.md",
+    "harness-data/building-kit/massing/reviews/cottage/503425dc67d3-klb-sonnet-5-5.md"
+   ],
+   "note": "object-gate pass/허용 + 독립 검수 둘 PASS(원문 파일)",
+   "at": "2026-10-25T06:47:01+00:00"
+  }
+ ],
+ "exportedAt": "2026-10-25T06:47:02+00:00",
+ "counts": {
+  "allow": 1
+ }
+}
