@@ -4,7 +4,7 @@
  * 하진은 여덟 살까지 살던 시타마치로 올봄 돌아왔다. 돌아온 지 세 계절, 가을의 끝. 내일 밤은 아케이드 등롱 축제다.
  * 학생회장 서연이 진흥회 일을 떠맡았고, 정문 큰 등롱에 넣을 「소원 등롱」 세 개가 아직 모이지 않았다 —
  * 하나는 소꿉친구 지호네 코하루 베이커리, 하나는 전철에서 늘 마주치는 유나네 센토 「마츠노유」, 하나는 진흥회 사무소의 서연.
- * 셋을 모아 등롱지기 할아버지에게 가져가면 아케이드에 불이 켜지고, 누구와 등롱 길을 걸을지 고른다.
+ * 셋을 모아 등롱지기 아저씨에게 가져가면 아케이드에 불이 켜지고, 누구와 등롱 길을 걸을지 고른다.
  * 그 사람에게 마음을 전하면, 그동안 쌓인 마음(장면 선택)이 결말을 가른다.
  *
  * 흐름은 변수 하나(var_sm_stage)가 쥔다: 0 전철 → 1 상점가 도착 → 2 등롱 모으기 → 3 점등 뒤 옥상.
@@ -82,7 +82,7 @@ const CAST: Readonly<Record<Who, CastMember>> = {
   seoyeon: { name: "서연", stem: "uni-girl-navy", tex: "tex_oprn_charset_modern1", resource: "oprn-charset-modern1", index: 4, side: "right" },
   jiho: { name: "지호", stem: "apron-olive", tex: "tex_oprn_charset_modern3", resource: "oprn-charset-modern3", index: 5, side: "right" },
   yuna: { name: "유나", stem: "uni-girl-sailor", tex: "tex_oprn_charset_modern1", resource: "oprn-charset-modern1", index: 5, side: "right" },
-  keeper: { name: "등롱지기 할아버지", stem: "teacher-tweed", tex: "tex_oprn_charset_modern3", resource: "oprn-charset-modern3", index: 6, side: "right" },
+  keeper: { name: "등롱지기 아저씨", stem: "teacher-tweed", tex: "tex_oprn_charset_modern3", resource: "oprn-charset-modern3", index: 6, side: "right" },
 };
 const bustId = (who: Who, expr: Expr): string => `shared-modern-${CAST[who].stem}-expressions-bust-${expr}`;
 const CLEAR_FACE: Command = { kind: "changeFace", resourceId: "", position: "left", flipHorizontally: false } as Command;
@@ -314,7 +314,7 @@ function buildHub(project: Project, arrive: Cell): void {
       "정문 큰 등롱에 「소원 등롱」 세 개를 넣어야 불이 켜지는데, 아직 하나도 안 모였어."),
     ...say("seoyeon", "base",
       "하나는 코하루 베이커리, 하나는 센토 마츠노유. 마지막 하나는… 진흥회 사무소에서 서류랑 씨름 중인 나한테 있고.",
-      "셋 다 모이면 정문 옆 등롱지기 할아버지께 가져다드리면 돼."),
+      "셋 다 모이면 정문 옆 등롱지기 아저씨한테 가져다드리면 돼."),
     choices([
       { text: "「같이 하자. 너 혼자 다 떠안지 말고.」", then: [
         ...say("seoyeon", "embarrassed", "…떠안은 거 아니거든. 그래도, 고마워."),
@@ -339,34 +339,36 @@ function buildHub(project: Project, arrive: Cell): void {
     gone(`${seoyeonId}_off`, [swOn("sw_sm_seoyeon_hub_off")]),
   ], "seoyeon"));
 
-  // 등롱지기 할아버지 — 북쪽 아케이드 정문(지붕 덮인 길) 옆.
+  // 등롱지기 아저씨(진흥회 — 공용 흉상에 노인이 없어 삼사십 대 어른으로 쓴다) — 북쪽 아케이드 정문(지붕 덮인 길) 옆.
   const keeperAt = nearestFree(project, hub, { x: 12, y: 12 });
   const keeperId = "ev_sm_keeper";
-  const remaining = (n: number): Command => ifCond(varIs(V_LANTERNS, n), say("keeper", "base", `소원 등롱이 ${n}개 모였구먼. ${3 - n}개 더 가져오게. 베이커리, 센토, 진흥회 사무소일세.`));
+  const remaining = (n: number): Command => ifCond(varIs(V_LANTERNS, n), say("keeper", "base", `소원 등롱이 ${n}개 모였네. ${3 - n}개 더 부탁해. 베이커리, 센토, 진흥회 사무소야.`));
   const heroines = [
     { who: "seoyeon" as const, at: { x: keeperAt.x - 1, y: keeperAt.y + 2 } },
     { who: "jiho" as const, at: { x: keeperAt.x + 1, y: keeperAt.y + 2 } },
     { who: "yuna" as const, at: { x: keeperAt.x + 3, y: keeperAt.y + 2 } },
   ].map((h) => ({ ...h, at: nearestFree(project, hub, h.at, [keeperAt]) }));
   // 등롱 불빛 — 정문 등롱과 가게 앞 처마 등롱. 칸은 거리 건물 문 칸(맨 아래 줄)이라 그 바로 위에 단다.
+  // 등롱 불빛 — 정문(지붕 덮인 길 입구)과 가게마다 문 앞 보도(처마 등롱 아래). 건물 벽 칸이 아니라 걷는 칸에 단다 —
+  // 벽 칸 빛은 밤 막 아래에서 거의 보이지 않았다(2026-10-25 플레이 캡처).
   const lampCells: Cell[] = [
-    { x: 14, y: 9 }, { x: 15, y: 9 },
-    ...(hub.locations ?? []).filter((l) => (l.tags ?? []).includes("jp-building")).map((l) => {
-      const m = /문 \((\d+),(\d+)\)/u.exec(l.note ?? "");
-      return m ? { x: Number(m[1]), y: Number(m[2]) - 1 } : null;
+    { x: 14, y: 11 }, { x: 15, y: 11 },
+    ...(hub.locations ?? []).filter((l) => (l.tags ?? []).includes("jp-building") && !(l.note ?? "").includes("닿지 않음")).map((l) => {
+      const m = /문 앞 접근칸 \((\d+),(\d+)\)/u.exec(l.note ?? "");
+      return m ? { x: Number(m[1]), y: Number(m[2]) } : null;
     }).filter((c): c is Cell => !!c),
   ];
   const lightUp: Command[] = [
-    { kind: "setLighting", ambient: 0.62, color: "#141a38", transitionMs: 1800 } as Command,
+    { kind: "setLighting", ambient: 0.72, color: "#0e1430", transitionMs: 1800 } as Command,
     wait(1800),
     ...lampCells.flatMap((c, i): Command[] => [
-      { kind: "addLight", source: { id: `sm_lantern_${i}`, at: c, radius: i < 2 ? 4 : 2.6, intensity: 1, color: "#ffb35c", flicker: true } satisfies LightSource } as Command,
+      { kind: "addLight", source: { id: `sm_lantern_${i}`, at: c, radius: i < 2 ? 5 : 3.2, intensity: 1, color: "#ffad4f", flicker: true } satisfies LightSource } as Command,
       ...(i < 2 || i % 3 === 0 ? [playSe(SE_LANTERN), wait(220)] : [wait(90)]),
     ]),
   ];
   const finale: Command[] = [
-    ...say("keeper", "happy", "오오, 세 개 다 모였구먼! 서연이 아가씨 말대로 든든한 청년이야."),
-    ...say("keeper", "base", "자, 정문 큰 등롱에 넣어 보게. 이 등롱은 해마다 동네 아이들 소원으로 불을 켰지."),
+    ...say("keeper", "happy", "오, 세 개 다 모였네! 서연이 말대로 든든한데."),
+    ...say("keeper", "base", "자, 정문 큰 등롱에 넣어 봐. 이 등롱은 해마다 동네 아이들 소원으로 불을 켜 왔어."),
     ...fadeOut(500), setSw("sw_sm_gather", true), ...fadeIn(500),
     ...say("seoyeon", "happy", "하진, 다 모았구나! 지호랑 유나도 불렀어. 점등은 다 같이 봐야지."),
     ...say("jiho", "happy", "우리 빵집 등롱도 들어갔지? 내 소원은 비밀!"),
@@ -378,7 +380,7 @@ function buildHub(project: Project, arrive: Cell): void {
     ...say("yuna", "happy", "……예쁘다."),
     ...say("jiho", "happy", "와아… 어릴 때 본 거랑 똑같아!"),
     ...say("seoyeon", "embarrassed", "해냈네, 우리."),
-    ...say("keeper", "happy", "허허. 등롱 길은 둘이 걸어야 제맛이지. 자네는 누구랑 걸을 텐가?"),
+    ...say("keeper", "happy", "등롱 길은 둘이 걸어야 제맛이지. 누구랑 걸을 거야?"),
     choices([
       { text: "서연과 걷는다", then: [setVar(V_DATE, "=", 1)] },
       { text: "지호와 걷는다", then: [setVar(V_DATE, "=", 2)] },
@@ -391,20 +393,20 @@ function buildHub(project: Project, arrive: Cell): void {
       ...say("yuna", "happy", "…넷이서 한 장 찍어요."),
       { kind: "triggerEnding", endingId: END_FRIENDS } as Command,
     ], [
-      ...say("keeper", "happy", "맨션 옥상에 올라가 보게. 아케이드 등롱이 한눈에 보이는 자리라네."),
+      ...say("keeper", "happy", "히카리 맨션 옥상에 올라가 봐. 아케이드 등롱이 한눈에 보이는 자리야."),
       setVar(V_STAGE, "=", 3),
       ...fadeOut(800),
       { kind: "transfer", mapId: M.rooftop, x: 0, y: 0, direction: "up", fade: "black" } as Command, // 좌표는 buildRooftop 이 채운다
     ]),
   ];
-  hub.events.push(event(keeperId, "등롱지기 할아버지", keeperAt, [
+  hub.events.push(event(keeperId, "등롱지기 아저씨", keeperAt, [
     page(`${keeperId}_p0`, [], [
       faceHero(keeperId),
-      ...say("keeper", "base", "아케이드 정문 등롱은 내일 밤에 켠다네. 소원 등롱 세 개가 들어가야 불이 붙지."),
+      ...say("keeper", "base", "아케이드 정문 등롱은 내일 밤에 켜. 소원 등롱 세 개가 들어가야 불이 붙거든."),
     ], { who: "keeper" }),
     page(`${keeperId}_p2`, [varAtLeast(V_STAGE, 2)], [
       faceHero(keeperId),
-      ...say("keeper", "base", "자네가 서연이 아가씨가 말한 그 청년이구먼."),
+      ...say("keeper", "base", "네가 서연이가 말한 그 친구구나."),
       ...[0, 1, 2].map(remaining),
       ifCond(varIs(V_LANTERNS, 3), finale),
     ], { who: "keeper" }),
@@ -558,7 +560,7 @@ function buildOffice(project: Project, link: { entry: Cell; exit: Cell }): void 
     ...say("seoyeon", "base", "진흥회 몫 소원 등롱이야. …내 소원도 들어 있어. 읽지 마."),
     ...lanternGiven(SW_L_SEOYEON),
   ];
-  const after: Command[] = [faceHero(id), ...say("seoyeon", "base", "등롱 셋 다 모이면 등롱지기 할아버지께 가져가. 정문 옆에 계셔.")];
+  const after: Command[] = [faceHero(id), ...say("seoyeon", "base", "등롱 셋 다 모이면 등롱지기 아저씨한테 가져가. 정문 옆에 계셔.")];
   project.maps[M.office]!.events.push(event(id, "서연", at, [
     page(`${id}_p1`, [], first, { who: "seoyeon" }),
     page(`${id}_p2`, [swOn(SW_L_SEOYEON)], after, { who: "seoyeon" }),
@@ -649,6 +651,8 @@ function buildRooftop(project: Project, link: { entry: Cell; exit: Cell }): Cell
     ], s.who));
     pages.push(page(`ev_sm_roof_scene_${s.who}`, [varIs(V_STAGE, 3), varIs(V_DATE, date)], [
       bgm(BGM_CONFESS, 1500),
+      ...fadeIn(900), // 점등식 끝의 화면 암전(fadeOut)을 여기서 걷는다 — 없으면 옥상 장면 내내 화면이 검다
+
       ...caption("히카리 맨션 옥상. 발밑으로 아케이드의 등롱 길이 강처럼 흐른다."),
       approach("@player", heroineId),
       turn(heroineId, "down"),
