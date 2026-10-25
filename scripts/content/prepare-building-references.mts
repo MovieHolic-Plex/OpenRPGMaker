@@ -36,8 +36,12 @@ m0.run(p,{id:EX.map.id,name:EX.map.name,width:W,height:H,tilesetId:ts.id,border:
 const m=p.maps[EX.map.id]!;m.lowerTiles=Array(W*H).fill(EX.grassTile);
 const index=(x:number,y:number)=>y*W+x;
 const placements:{kit:string;x:number;y:number;role:string}[]=[],fronts:{kit:string;x:number;y:number}[]=[];
+// 거리가 짧으면 다음 거리 줄로 넘긴다(map.rowStep 칸 아래에 길 한 쌍 더). rowStep 이 없으면 한 줄 거리(옛 동작 그대로).
+const STEP=(EX.map.rowStep as number|undefined)??0,roadRows:number[]=[ROAD];
 let cx=1;
-for(const kid of pick){const b=byKid.get(kid)!;assert(b,kid);const x=cx,y=ROAD-b.height;assert(x+b.width<=W-1,'street too short for '+kid);
+for(const kid of pick){const b=byKid.get(kid)!;assert(b,kid);
+ if(STEP&&cx+b.width>W-1){cx=1;roadRows.push(roadRows[roadRows.length-1]!+STEP);assert(roadRows[roadRows.length-1]!+1<H,'map too short for '+kid);}
+ const RR=roadRows[roadRows.length-1]!;const x=cx,y=RR-b.height;assert(x+b.width<=W-1,'street too short for '+kid);assert(y>=0,'row too low for '+kid);
  for(const [role,id,layer] of [['shadow',`${IDS.shadow}${kid}`,2],['body',`${IDS.house}${kid}`,3],['foundation',`${IDS.foundation}${kid}`,4]] as const){
   const k=kits.get(id)!;assert(k,id);
   for(let dy=0;dy<k.height;dy++)for(let dx=0;dx<k.width;dx++){const n=k.rows[dy]!.upperTiles[dx]!;
@@ -48,7 +52,7 @@ for(const kid of pick){const b=byKid.get(kid)!;assert(b,kid);const x=cx,y=ROAD-b
 }
 // 길: 흙 길 두 줄(beodeul_ground 의 연결 mask 흙 레시피를 target 으로 이식)
 const ground=p.tilesets[EX.groundTilesetId]!,recipes=new Map<string,any>((groundCatalog.recipes as any[]).map(r=>[r.id,r]));
-const road=new Set<number>();for(let x=0;x<W;x++)for(const y of [ROAD,ROAD+1])road.add(index(x,y));
+const road=new Set<number>();for(let x=0;x<W;x++)for(const r of roadRows)for(const y of [r,r+1])road.add(index(x,y));
 const tr=translateTiles(ground,ts,(groundCatalog.recipes as any[]).filter(r=>new RegExp(EX.roadRecipePattern).test(r.id)).flatMap(r=>r.rows.flat()));
 for(const i of road){const x=i%W,y=Math.floor(i/W);let mask=0;
  for(const [dx,dy,bit] of [[0,-1,1],[1,0,2],[0,1,4],[-1,0,8]] as const){if(road.has(index(x+dx,y+dy))&&x+dx>=0&&x+dx<W&&y+dy>=0&&y+dy<H)mask|=bit;}
@@ -110,7 +114,7 @@ const sections=catalog.buildings.map((b:any)=>{const kid=kidOf(b.id),total=b.row
 const PER_DOC=6;
 for(let k=0;k*PER_DOC<sections.length;k++){const first=catalog.buildings[k*PER_DOC],last=catalog.buildings[Math.min(sections.length,(k+1)*PER_DOC)-1];
  add(IDS.docs+'list-'+(k+1),`건물 ${k*PER_DOC+1}~${Math.min(sections.length,(k+1)*PER_DOC)} (${kidOf(first.id)} … ${kidOf(last.id)})`,`# 건물 ${k*PER_DOC+1}~${Math.min(sections.length,(k+1)*PER_DOC)}\n\n`+sections.slice(k*PER_DOC,(k+1)*PER_DOC).join('\n\n'));}
-add(IDS.docs+'street-plan','거리 예제 전체 배치',`# ${W}×${H} 거리 예제\n\n건물 아랫줄 y=${ROAD-1}, 길 y=${ROAD}~${ROAD+1}. 각 건물은 shadow→body→foundation 을 같은 원점에 놓았다.\n\n\`\`\`json\n${JSON.stringify({placements,fronts,checks})}\n\`\`\``);
+add(IDS.docs+'street-plan','거리 예제 전체 배치',`# ${W}×${H} 거리 예제\n\n거리 줄 ${roadRows.length}개: ${roadRows.map(r=>`건물 아랫줄 y=${r-1}, 길 y=${r}~${r+1}`).join(' · ')}. 각 건물은 shadow→body→foundation 을 같은 원점에 놓았다.\n\n\`\`\`json\n${JSON.stringify({placements,fronts,checks})}\n\`\`\``);
 for(const [layer,field] of [[1,'lowerTiles'],[2,'lowerOverlayTiles'],[3,'upperTiles'],[4,'upperOverlayTiles']] as const)
  add(IDS.docs+'street-layer-'+layer,'거리 예제 '+layer+'층 정답',`# target 맵 ${layer}층\n\n이 저장본 예제 전용 ${B.hostTilesetId} 번호(${field}). ${W}×${H}.\n\n\`\`\`json\n${JSON.stringify(Array.from({length:H},(_,y)=>Array.from({length:W},(_,x)=>layerTileAt(m,layer as 1|2|3|4,y*W+x))))}\n\`\`\``);
 const used=[...new Set([1,2,3,4].flatMap(l=>Array.from({length:W*H},(_,i)=>layerTileAt(m,l as 1|2|3|4,i))))].filter(v=>v>=0);
