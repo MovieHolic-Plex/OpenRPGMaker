@@ -97,7 +97,7 @@ export function editorDefaultsLeft(project: Project): ShipBlocker[] {
   if (hasBattles) {
     const troops = (project.database.troops ?? []) as unknown as Obj[];
     const bareMaps = [...battleMaps].filter((id) => id !== "common" && !(project.maps[id] as unknown as Obj | undefined)?.battleBackground)
-      .filter((id) => ![...battleTroops].some((t) => troops.find((tr) => tr.id === t)?.battleBackgroundResourceId));
+      .filter(() => ![...battleTroops].some((t) => troops.find((tr) => tr.id === t)?.battleBackgroundResourceId));
     if (bareMaps.length) add("battle-background", `전투가 나는 맵 ${bareMaps.length}장에 전투 배경이 없어 편집기 기본 배경이 나온다 — set_map_properties{battleBackground} 나 적 무리의 battleBackgroundResourceId 로 그 장소의 배경을 고른다.`, bareMaps.slice(0, 5).join(","));
   }
 
