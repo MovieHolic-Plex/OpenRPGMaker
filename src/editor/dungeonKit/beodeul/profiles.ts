@@ -65,12 +65,13 @@ export const PROFILES: Record<BeodeulDungeonType, TypeProfile> = {
   catacomb: {
     ...GRAMMAR.catacomb,
     face: { h3: S("face-cata-3h"), h2: S("face-cata-2h") },
-    floor: { base: S("floor-cata"), patches: [{ kit: S("floor-sewer"), at: 0.74, scale: 7 }], byKind: { crypt: S("floor-bone"), cell: K("floor-cell") } },
+    // 2×2 판석 키트는 칸을 섞어도 이음 대비가 같다(맞붙인 그대로 40.6 · 아무 순서 40.6) — 섞어서 2칸 주기 반복을 없앤다(2026-10-25 floor VQA r4 「16px 반복」).
+    floor: { base: S("floor-cata"), mix: true, patches: [{ kit: S("floor-sewer"), at: 0.74, scale: 7 }], byKind: { crypt: S("floor-bone"), cell: K("floor-cell") } },
   },
   castle: {
     ...GRAMMAR.castle,
     face: { h3: K("face-castle-3h"), h2: K("face-castle-2h") },
-    floor: { base: K("floor-castle"), patches: [], byKind: { cell: K("floor-cell") } },
+    floor: { base: K("floor-castle"), mix: true, patches: [], byKind: { cell: K("floor-cell") } },
   },
   labyrinth: {
     ...GRAMMAR.labyrinth,
@@ -91,12 +92,12 @@ export const PROFILES: Record<BeodeulDungeonType, TypeProfile> = {
     ...GRAMMAR.temple,
     face: { h3: T("face-temple-3h"), h2: T("face-temple-2h") },
     // 이끼 판석(floor-ruin)은 두 칸뿐이고 이끼가 칸마다 같은 자리라 16px 격자로 되풀이됐다(2026-10-25 floor VQA r3) — 신랑(큰 홀) 한 방만, 나머지는 잔잔한 석회 판석.
-    floor: { base: T("floor-trav"), patches: [], byKind: { nave: T("floor-ruin") } },
+    floor: { base: T("floor-trav"), mix: true, patches: [], byKind: { nave: T("floor-ruin") } },
   },
   mine: {
     ...GRAMMAR.mine,
     face: { h3: C("face-cave-3h"), h2: C("face-cave-2h") },
-    floor: { base: M("ground-yard"), patches: [{ kit: M("ground-yard2"), at: 0.62, scale: 6 }] },
+    floor: { base: M("ground-yard"), mix: true, patches: [{ kit: M("ground-yard2"), at: 0.62, scale: 6 }] },
   },
   volcano: {
     ...GRAMMAR.volcano,
@@ -108,7 +109,7 @@ export const PROFILES: Record<BeodeulDungeonType, TypeProfile> = {
   ice: {
     ...GRAMMAR.ice,
     face: { h3: [TK("ice-face-3h"), C("face-cave-3h")], h2: [TK("ice-face-2h"), C("face-cave-2h")] },
-    floor: { base: SN("ground-snow"), patches: [] },
+    floor: { base: SN("ground-snow"), mix: true, patches: [] },
     ceiling: ["beodeul_dungeon_ceiling_ice"],
     lakeFloor: [TK("ice-floor"), SN("ground-ice")],
     // gap 얼음굴 바닥(ice_floor A1, #3283): 얼음굴 돌바닥 오토타일 + 호수 방·덩이는 빙판 오토타일. 벽·천장은 검푸른 심층굴 바위(줄 C).
@@ -120,14 +121,14 @@ export const PROFILES: Record<BeodeulDungeonType, TypeProfile> = {
     face: { h3: C("face-cave-3h"), h2: C("face-cave-2h") },
     // 벽 칸은 수관 숲(writeBeodeulCanopy)이 덮는다.
     // 숲 바닥 잔디: 공용 잔디 737 은 칸마다 같은 풀 무늬가 박혀 16px 격자로 되풀이됐다(2026-10-25 floor VQA r0·r1) — 같은 색(평균 RGB 차 1)의 잔잔한 3×3 오아시스 잔디. 737 그림은 마을·길이 쓰니 건드리지 않는다.
-    floor: { base: [D("ground-lawn"), T("floor-grass")], patches: [] },   // 흙 덩이는 가장자리 그림이 없어 네모 얼룩으로 읽혔다 — 맨 잔디 + 풀·고사리 장식으로 결을 낸다
+    floor: { base: [D("ground-lawn"), T("floor-grass")], mix: true, patches: [] },   // 흙 덩이는 가장자리 그림이 없어 네모 얼룩으로 읽혔다 — 맨 잔디 + 풀·고사리 장식으로 결을 낸다
     bank: "grass", canopy: "leaf",
     bridge: { ew: SWP("ground-deck"), ns: SWP("ground-deck") },
   },
   swamp: {
     ...GRAMMAR.swamp,
     face: { h3: C("face-cave-3h"), h2: C("face-cave-2h") },
-    floor: { base: SWP("ground-mud"), patches: [] },
+    floor: { base: SWP("ground-mud"), mix: true, patches: [] },
     bank: "bog", canopy: "leaf",
     bridge: { ew: SWP("ground-deck"), ns: SWP("ground-deck") },
   },

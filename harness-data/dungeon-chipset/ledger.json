@@ -1210,78 +1210,6 @@
  "rejects": [],
  "runs": [
   {
-   "round": "theme-props-r7",
-   "at": "2026-10-24T22:57:47",
-   "fail": 0,
-   "warn": 0,
-   "warnByCode": {},
-   "polish": [],
-   "hashes": {
-    "wall.ice_face": {
-     "A1": "9cf8be3a23a77a13719f86c61e7eb7f74305a656230f805d67cda976603a177a",
-     "A2": "646a802307ce061b996babc446876a3d81251e5da8fc94f3c4e78873af465fa6"
-    }
-   }
-  },
-  {
-   "round": "theme-props-r7",
-   "at": "2026-10-24T22:59:28",
-   "fail": 0,
-   "warn": 0,
-   "warnByCode": {},
-   "polish": [],
-   "hashes": {
-    "wall.ice_face": {
-     "A1": "83730e0c5ed8fe52cfcf0ff968fa365ce1b552bbabf9aa7b1a5095e0724bd738",
-     "A2": "32fb6ca0924047c719ae12c2ab4168f09f9b2d61d7fa312ae84e961578f87c1e"
-    }
-   }
-  },
-  {
-   "round": "theme-props-r7",
-   "at": "2026-10-24T23:02:14",
-   "fail": 0,
-   "warn": 0,
-   "warnByCode": {},
-   "polish": [],
-   "hashes": {
-    "wall.ice_face": {
-     "A1": "d1cdd49e6381d6d07e4632eab2081029d721b21c995e402b4f38832f44d3a041",
-     "A2": "d11980e138943c2d24ccbfd4fb26af60e31bf30a931616ec6282ebb59a17a51e"
-    }
-   }
-  },
-  {
-   "round": "theme-props-r6",
-   "at": "2026-10-24T23:04:54",
-   "fail": 0,
-   "warn": 2,
-   "warnByCode": {
-    "R": 2
-   },
-   "polish": [],
-   "hashes": {
-    "prop.cracked_floor": {
-     "A1": "8118853a32d78718b5ffd30b9b3b4ab2c7a4d1b1480a543fea77853ac32d4783",
-     "A2": "8c169f690372a045b5e4b8657b369098e7d08f853de79b6b0bbdc8df1d6b8f6b"
-    }
-   }
-  },
-  {
-   "round": "theme-props-r7",
-   "at": "2026-10-24T23:07:36",
-   "fail": 0,
-   "warn": 0,
-   "warnByCode": {},
-   "polish": [],
-   "hashes": {
-    "wall.ice_face": {
-     "A1": "56598750e92c829f445815b0f7b8400ac5608180922596c4218e8e2e1ad29f98",
-     "A2": "d11980e138943c2d24ccbfd4fb26af60e31bf30a931616ec6282ebb59a17a51e"
-    }
-   }
-  },
-  {
    "round": "theme-props-r6",
    "at": "2026-10-24T23:12:37",
    "fail": 0,
@@ -1897,6 +1825,91 @@
     "wall.ice_face": {
      "A1": "690e1f79c1c26f449c4c86581cf827bf6bcd85b4786a56488da3f005cd3cb8e7",
      "A2": "8a6ad554e1f05bcea893beeaf0f0b3f4a3eee929740fea610061f171bb510378"
+    }
+   }
+  },
+  {
+   "round": "theme-floors-r1",
+   "at": "2026-10-25T11:31:21",
+   "fail": 0,
+   "warn": 2,
+   "warnByCode": {
+    "OUTLINE": 2
+   },
+   "polish": [
+    {
+     "item": "other.ground",
+     "key": "A1",
+     "code": "OUTLINE",
+     "msg": "가장자리 66화소 중 먹 0% — 상한(먹 15%·빛 쪽 50%) 넘음: ground 북변 빛 쪽 먹·0단 100%; ground 서변 빛 쪽 먹·0단 100% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    },
+    {
+     "item": "other.ground",
+     "key": "A2",
+     "code": "OUTLINE",
+     "msg": "가장자리 64화소 중 먹 0% — 상한(먹 15%·빛 쪽 50%) 넘음: ground 북변 빛 쪽 먹·0단 100%; ground 서변 빛 쪽 먹·0단 100% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    }
+   ],
+   "hashes": {
+    "other.ground": {
+     "A1": "b0a157107c3221b8da720ee88458c2b7587afa066213517f0bc1785fcd6d765e",
+     "A2": "e06ff7196ba5ec8f14b65af74b5f37cdbd566efb2222c42b2e4a953f8871ddf4"
+    }
+   }
+  },
+  {
+   "round": "theme-floors-r1",
+   "at": "2026-10-25T11:31:51",
+   "fail": 0,
+   "warn": 0,
+   "warnByCode": {},
+   "polish": [],
+   "hashes": {
+    "other.ground": {
+     "A1": "b0a157107c3221b8da720ee88458c2b7587afa066213517f0bc1785fcd6d765e",
+     "A2": "e06ff7196ba5ec8f14b65af74b5f37cdbd566efb2222c42b2e4a953f8871ddf4"
+    }
+   }
+  },
+  {
+   "round": "theme-floors-r1",
+   "at": "2026-10-25T11:32:22",
+   "fail": 0,
+   "warn": 0,
+   "warnByCode": {},
+   "polish": [],
+   "hashes": {
+    "other.ground": {
+     "A1": "150de57508b0db4d63d82fc222d7d7abbcf8cd0cc9c4bdb6e1213cbadf2963ec",
+     "A2": "f1ab6d91b12d497ccc82f87ab39e1bd9758184b835397dce1f4f9fccbaa9672d"
+    }
+   }
+  },
+  {
+   "round": "theme-floors-r1",
+   "at": "2026-10-25T15:13:55",
+   "fail": 0,
+   "warn": 0,
+   "warnByCode": {},
+   "polish": [],
+   "hashes": {
+    "other.ground": {
+     "A1": "fc20b1908b81a6b0edb63fde5ba138a200b7809d99d40180872172d1c56954d3",
+     "A2": "f1ab6d91b12d497ccc82f87ab39e1bd9758184b835397dce1f4f9fccbaa9672d"
+    }
+   }
+  },
+  {
+   "round": "theme-floors-r1",
+   "at": "2026-10-25T15:14:17",
+   "fail": 0,
+   "warn": 0,
+   "warnByCode": {},
+   "polish": [],
+   "hashes": {
+    "other.ground": {
+     "A1": "499988ef8d7d7820033c8c0e8654702bc27f9ed8af6cd0e7edd161e09256e8a0",
+     "A2": "f1ab6d91b12d497ccc82f87ab39e1bd9758184b835397dce1f4f9fccbaa9672d"
     }
    }
   }

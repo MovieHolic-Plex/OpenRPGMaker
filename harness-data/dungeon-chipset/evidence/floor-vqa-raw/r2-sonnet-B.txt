@@ -1,0 +1,12 @@
+# reviewer final message, verbatim from subagent transcript agent-a3a356c03ef370539.jsonl (model ocx-claude-klb--claude-sonnet-5.5)
+otherworld: FAIL — majors: R1 dense red/pink salt-and-pepper speckle across the dark purple floor (seed1 busy 3x crop, seed1 upper-right throne area, seed2 top area), which makes the walkable floor hard to read; minors: bone scatter sitting in walkways (seed1 and seed2 mid corridors).
+
+pyramid: PASS — majors: none; minors: busy high-contrast cracked-floor rooms (seed1 lower-left and lower-middle, seed2 upper-center and bottom), faint footprint texture on the sand.
+
+ruins: PASS — majors: none; minors: moss specks scattered over the flagstone (3x crop), bone piles in walkways (seed1 near the compass rose, seed2 just south of it).
+
+swamp: FAIL — majors: R1 isolated hard-edged single-tile water squares dropped into the ground floor (seed1 near (440,310) and (390,275); seed2 near (530,293), (487,661) and (360,677)), which read as square 16px patches of a different floor; minors: none beyond these.
+
+tower: PASS — majors: none; minors: large plain empty floor areas, brown plank patch at the right of seed2 (reads as a deliberate room, not a defect).
+
+volcano: PASS — majors: none; minors: fine low-contrast dark speckle on the purple-brown floor, visible only at 3x (seed1 busy crop near the anvil and centipede), many small lava-vent props scattered in open floor (seed1 and seed2), wide open floor spans in seed1 center and seed2 lower-left.

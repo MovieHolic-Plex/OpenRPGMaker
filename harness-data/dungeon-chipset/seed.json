@@ -4340,6 +4340,15 @@
     "wall.ice_face"
    ],
    "lead": "패널 13: 칸 경계를 넘는 큰 평평한 다각 면(48열 덩이) + 면마다 빛 가장자리 하나, 채도 낮춤."
+  },
+  "theme-floors-r1": {
+   "module": "src/harnesses/dungeon-chipset/rounds/theme_floors_r1.py",
+   "wave": "theme_arcane",
+   "title": "던전 테마 바닥 다시 그림 theme-floors-r1",
+   "items": [
+    "other.ground"
+   ],
+   "lead": "floor VQA r1~r4(Argon·Sonnet): 마계 바닥 A2 의 분홍·붉은 점(소금·후추)과 붉은 사선 금 → 잔잔한 보라 검은 판, 점 없음, 금 드물게, 빛 핏줄은 아주 드물게."
   }
  }
 }

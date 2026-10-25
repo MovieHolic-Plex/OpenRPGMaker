@@ -288,6 +288,9 @@ export function composeDungeon(ts: TilesetDef, spec: DungeonSpec): DungeonCompos
     let m = 0;
     const bits: [number, number, number][] = [[0, -1, 1], [1, 0, 2], [0, 1, 4], [-1, 0, 8], [1, -1, 16], [1, 1, 32], [-1, 1, 64], [-1, -1, 128]];
     for (const [dx, dy, bit] of bits) if (!isOpen(x + dx, y + dy)) m |= bit;
+    // 한 줄 두께 천장(위 = 방 바닥 남쪽 끝, 아래 = 다음 방 벽 앞면): 위·아래 테두리를 둘 다 그리면 두 회색 테두리 사이 2px 검은 틈으로 읽혔다(2026-10-25 floor VQA r4 castle·catacomb).
+    // 아래 벽 앞면이 제 윗선을 갖고 있으니 아래쪽은 닫힌 것으로 보고 위(바닥 쪽) 테두리 하나만 그린다.
+    if (!(m & 1) && !(m & 4) && inb(x, y + 1) && wallB[idx(x, y + 1)]! >= 0) m |= 4 | 32 | 64;
     if (useRock) { lower[idx(x, y)] = autoCell(rockGroup!, m, x, y); if (m !== 255) rimmed += 1; continue; }
     const g = groups[groups.length > 1 && hash01(x, y, seed) < 0.5 ? 1 : 0]!;
     lower[idx(x, y)] = ceilingTile(g, m) ?? voidTile;
@@ -319,6 +322,7 @@ export function composeDungeon(ts: TilesetDef, spec: DungeonSpec): DungeonCompos
     }
     if (fl.shore && hasKit(fl.shore) && nearLiquid(x, y) && hash01(x, y, seed + 71) < 0.8) id = fl.shore;
     if (fl.tile !== undefined && id === pick(fl.base)) { lower[idx(x, y)] = fl.tile; continue; }
+    // 섞음: 바닥 칸을 키트 무늬 순서 대신 해시로 고른다 — 키트 무늬 그대로 깔면 2~3칸 주기 반복이 넓은 방에서 격자로 드러났다(2026-10-25 floor VQA r4).
     if (fl.mix || kit(id).ai?.tags?.includes("섞음")) {
       const rows = kit(id).rows, w = rows[0]!.tiles.length;
       // mixCells 는 첫 후보 키트 기준 번호 — 옛 사본이 다른(작은) 키트로 물러섰으면 범위 안 번호만 남는다.

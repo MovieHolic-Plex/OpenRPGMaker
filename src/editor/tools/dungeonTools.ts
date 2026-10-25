@@ -154,14 +154,17 @@ function buildFloor(draft: Project, args: Record<string, unknown>, floor: FloorO
     const forest = new Set(composed.canopy.cells);
     // 수관 오토타일이 모양을 못 받는 숲 칸(한 칸 폭 틈·외톨이 칸)은 그림 없이 걸을 수 있는 잔디로 남아 숲을 뚫는 길이 된다.
     // 그런 칸은 숲에서 빼 빈터(잔디)로 둔다 — 이웃 모양이 바뀌니 고정점까지 몇 번 되풀이한다.
-    let plan = planBeodeulCanopy(map.width, map.height, composed.canopy.style, forest, (c) => !forest.has(c));
+    // 숲 그늘은 물·용암 칸에 얹지 않는다 — 같은 2층의 둑 그림을 덮어 물이 숲가에서 곧은 16px 네모로 끊겼다(2026-10-25 floor VQA r4 swamp).
+    const wetCells = new Set(composed.banks?.cells ?? []);
+    const shadeOk = (c: number) => !forest.has(c) && !wetCells.has(c);
+    let plan = planBeodeulCanopy(map.width, map.height, composed.canopy.style, forest, shadeOk);
     let opened = 0;
     for (let pass = 0; pass < 6; pass += 1) {
       const leak = [...forest].filter((c) => !plan.canopy.has(c));
       if (!leak.length) break;
       for (const c of leak) forest.delete(c);
       opened += leak.length;
-      plan = planBeodeulCanopy(map.width, map.height, composed.canopy.style, forest, (c) => !forest.has(c));
+      plan = planBeodeulCanopy(map.width, map.height, composed.canopy.style, forest, shadeOk);
     }
     writeBeodeulCanopy(draft, map, tileset, plan);
     if (opened) notes.push(`수관 모양이 안 맞는 한 칸 폭 숲 틈 ${opened}칸은 빈터로 열었다.`);
