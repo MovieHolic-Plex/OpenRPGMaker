@@ -213,7 +213,10 @@ describe("EditScene reliable brush", () => {
     } });
     scene.applyAtPointer(pointerAt(1, 3));
     scene.applyAtPointer(pointerAt(13, 3));
-    expect(store.getCurrent().maps[mapId].upperTiles.filter((tile) => tile === TILE.FLOWERS)).toHaveLength(2);
+    // 타일은 자기 홈 레이어로 놓인다(effectiveLayer). FLOWERS 의 홈이 lower 여도 도장 칸의 "upper" 요청이 거기로 가므로
+    // 두 레이어를 합쳐 센다 — 이 단언이 보는 것은 도장이 두 지점에 한 번씩 찍혔다는 점이다.
+    const placed = store.getCurrent().maps[mapId];
+    expect([...placed.lowerTiles, ...placed.upperTiles].filter((tile) => tile === TILE.FLOWERS)).toHaveLength(2);
   });
 });
 
