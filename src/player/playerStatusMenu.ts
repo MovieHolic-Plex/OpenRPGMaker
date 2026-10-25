@@ -28,6 +28,7 @@ import { partyWalker } from "@/player/partyWalker";
 import type { PlayerStatusMenuActions, PlayerStatusMenuOptions } from "@/player/playerStatusMenuTypes";
 import { el } from "@/util/dom";
 import { stampEmeraldSurface } from "@/player/emeraldSurfaces";
+import { resolvePlayResolution } from "@/project/playResolution";
 
 export {
   createPlayerStatusMenuSnapshot,
@@ -84,6 +85,13 @@ export function renderPlayerStatusMenu(options: PlayerStatusMenuOptions): HTMLEl
         : selectedCommand;
     panel.dataset.bagPocket = usesMonsterParty(options.project) ? options.inventoryView?.pocket ?? "items" : options.inventoryView?.filter ?? "all";
     panel.style.setProperty("--emerald-command-count", String(snapshot.commands.length));
+  }
+  // 메뉴 스킨은 전부 320×240 논리 무대 기준으로 짰다. 고해상도 프로젝트(연애 프리셋 1024×768 등)에서는 무대를 꽉 채운 창 안에
+  // 글자·레일이 원래 크기 그대로라 1280×720 에서 10px 남짓으로 눌렸다(2026-10-25 S6 club-festival). 정수배로 키워 같은 배치를 그린다.
+  const zoom = statusMenuZoom(resolvePlayResolution(options.project.system));
+  if (!emerald && zoom > 1) {
+    panel.dataset.menuZoom = String(zoom);
+    panel.style.setProperty("--status-menu-zoom", String(zoom));
   }
   // 도트 스킨 명령 창은 높이를 항목 수로 잡는다(pixelWindows.css --px-dock-h) — 7항목 연애 메뉴에서 「타이틀로」 가 창 밖으로 나갔다(R10).
   panel.style.setProperty("--status-menu-command-count", String(snapshot.commands.length));
@@ -844,4 +852,10 @@ function statusMenuDebug(selectedCommand: StatusMenuRailId, mode: "function" | "
 
 function assertNever(value: never): never {
   throw new Error(`Unhandled status menu command: ${String(value)}`);
+}
+
+/** 320×240 기준 메뉴를 논리 해상도에 맞춰 키우는 정수 배율(1 = 그대로). 도트 글꼴이 번지지 않게 정수만 쓴다. */
+export function statusMenuZoom(resolution: { readonly width: number; readonly height: number }): number {
+  const fit = Math.min(resolution.width / 320, resolution.height / 240);
+  return Number.isFinite(fit) && fit >= 2 ? Math.floor(fit) : 1;
 }
