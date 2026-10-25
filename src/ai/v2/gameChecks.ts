@@ -3,7 +3,7 @@
 // 왜(2026-10-24 새 12 사례): 비 → 화면 색만, 독 → 소리·번쩍임만, 엔딩 → 내레이션+타이틀, 우물 동전 → 물건이 없어도 고르기 창,
 // 암호 → 「이미 통과」 페이지 없음·선언 안 한 깃발. 모델이 「됐다」고 말해도 이 검사가 남은 문제를 끝맺음 관문에 올린다.
 // 순수 함수(before·after·요청 글) — 워커·테스트가 같이 부른다.
-import type { Command, Project } from "@/project/types";
+import type { Command, GameMap, Project } from "@/project/types";
 import { choiceMetaTag } from "@/project/choiceText";
 import { fieldMenu } from "@/project/fieldMenu";
 import { usesRelationshipMenu } from "@/project/relationshipMenu";
@@ -12,6 +12,8 @@ import { lockBypasses, placeholderTexts, selfRevealingLocks, unjoinedFollowers }
 import { splitScriptSpeaker } from "@/project/endingSummary";
 import { wantsWholeGame } from "./shipChecks";
 import { lookMismatches, oversizedSprites, pristineFantasyHero, titleBackdropMismatch } from "./lookChecks";
+import { placementProblems, type PlacementProblem } from "./placementRules";
+import { offPurposeProps } from "./roomPurpose";
 
 type Obj = Record<string, unknown>;
 const obj = (v: unknown): Obj | undefined => (v && typeof v === "object" && !Array.isArray(v) ? (v as Obj) : undefined);
@@ -706,6 +708,7 @@ export function gameContentProblems(before: Project, after: Project, task: strin
   // 주인공 모습 ↔ 장르(J43): 게임을 만드는 요청은 출하 검사(hero-look)가 이미 짚는다. 그 밖에는 이번에 장소(맵)를 새로 지은 실행만 —
   // 시작 위치 옮기기 같은 작은 고치기에서 시키지 않은 주인공 바꾸기를 시키지 않는다.
   if (!wantsWholeGame(task) && Object.keys(after.maps).some((id) => !before.maps[id])) problems.push(...pristineFantasyHero(after, task));
+  problems.push(...placementContentProblems(before, after));
   return problems;
 }
 
@@ -733,6 +736,36 @@ export function battleDataEmptied(before: Project, after: Project, task: string)
       const lost = BATTLE_DATA[section].filter((k) => fill(prev[k]) > 0 && fill(r[k]) < fill(prev[k]));
       if (!lost.length) continue;
       out.push(`[게임 검사 부작용] 기존 ${section === "actors" ? "배우" : "직업"} 「${String(r.name ?? r.id)}」의 전투 데이터(${lost.join(",")})를 비웠다 — 요청은 그 데이터를 지우라는 것이 아니다. 메뉴·화면에서 숨기는 것은 데이터 지우기가 아니다: 원래 값으로 되돌리고(${section === "actors" ? "upsert_actor" : "upsert_class"}), 메뉴 항목은 configure_field_menu{preset:'story'} 로, 체력 표시는 set_field_hud{off:true} 로 뺀다.`);
+    }
+  }
+  return out;
+}
+
+/**
+ * 놓기 검사(2026-10-25 판정 J5·J6·J40·J42·J31·J64, 사용자 규칙 «차도 한가운데 사람 금지»):
+ * 이번에 바뀐 맵의 사람·조사 이벤트 자리, 방 쓰임에 안 맞는 가구. 바뀐 이벤트(자리·페이지)만, 새로 지은 맵·타일이 바뀐 맵은 전부 본다.
+ */
+export function placementContentProblems(before: Project, after: Project): string[] {
+  const out: string[] = [];
+  const tilesKey = (m: GameMap | undefined): string => (m ? `${m.width}x${m.height}:${(m.lowerTiles as readonly number[] | undefined)?.join(",") ?? ""}|${(m.upperTiles as readonly number[] | undefined)?.join(",") ?? ""}|${(m.lowerOverlayTiles as readonly number[] | undefined)?.join(",") ?? ""}` : "");
+  for (const map of Object.values(after.maps)) {
+    const prev = before.maps[map.id];
+    const rebuilt = !prev || tilesKey(prev) !== tilesKey(map);
+    const oldEvents = new Map((prev?.events ?? []).map((e) => [e.id, JSON.stringify(e)]));
+    const ids = new Set((map.events ?? []).filter((e) => rebuilt || oldEvents.get(e.id) !== JSON.stringify(e)).map((e) => e.id));
+    if (ids.size) {
+      const rows = placementProblems(after, map, ids);
+      const by = (kind: PlacementProblem["kind"]) => rows.filter((r) => r.kind === kind).slice(0, 4).map((r) => `「${r.name}」(${r.eventId}) ${r.detail}`);
+      const where = map.name ?? map.id;
+      const lane = by("npc-lane"), exit = by("npc-exit"), counter = by("npc-counter"), object = by("event-object");
+      if (lane.length) out.push(`[게임 검사 사람 자리] ${where}: ${lane.join(" / ")} — 사람은 차도·선로 한가운데 서서 말하지 않는다. move_event 로 보도·가게 문 앞·벤치 옆·광장으로 옮기고, 배회하는 사람이면 movement 를 fixed 로 바꾸거나 보도 안쪽에 둔다.`);
+      if (exit.length) out.push(`[게임 검사 길막] ${where}: ${exit.join(" / ")} — 출구로 가는 한 칸 길이 막히면 플레이어가 맵을 못 나간다. move_event 로 길목에서 두세 칸 떨어진 넓은 바닥으로 옮기고, 배회는 fixed 로 바꾼다.`);
+      if (counter.length) out.push(`[게임 검사 카운터] ${where}: ${counter.join(" / ")} — 주인은 카운터 «뒤»(카운터 바로 위 칸, 아래를 보게) 선다. move_event 로 카운터 북쪽 칸에 옮기면 플레이어는 카운터 너머로 말을 건다.`);
+      if (object.length) out.push(`[게임 검사 물건 자리] ${where}: ${object.join(" / ")} — 조사 이벤트는 이름이 말하는 물건 칸(키 큰 가구는 맨 아래 앞면 칸)에 둔다. move_event 로 그 칸으로 옮긴다.`);
+    }
+    if (rebuilt) {
+      const off = offPurposeProps(after, map);
+      if (off.length) out.push(`[게임 검사 방 쓰임] ${map.name ?? map.id}: ${off.slice(0, 3).map((r) => `${r.room}(${r.purpose}) 에 ${r.props.slice(0, 4).map((p) => `${p.label}(${p.at.x},${p.at.y})`).join("·")}`).join(" / ")} — 그 방의 쓰임에 안 맞는 다른 방 가구다(거실 한 벌). tile_erase 로 걷어 내고 그 쓰임의 가구(예배당: 장의자·촛대, 가게: 진열대·카운터, 교실: 책상·의자, 병원: 침상·진료 책상)를 stamp_object 로 놓거나 edit_place 로 그 방을 다시 꾸민다.`);
     }
   }
   return out;
