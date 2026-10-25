@@ -1033,6 +1033,7 @@ function normalizeCompanionConfig(value: CompanionConfig | undefined): Companion
   if (value.spreadWhenBlocked === true) out.spreadWhenBlocked = true;
   if (value.fanOutInScenes === true) out.fanOutInScenes = true;
   if (value.display === "scenesOnly") out.display = "scenesOnly";
+  if (value.sceneFormation === "abreast") out.sceneFormation = "abreast";
   if (value.monsterFollowers === false) out.monsterFollowers = false;
   return Object.keys(out).length > 0 ? out : undefined;
 }

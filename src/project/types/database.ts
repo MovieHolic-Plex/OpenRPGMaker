@@ -2289,6 +2289,12 @@ export interface CompanionConfig {
    */
   display?: "follow" | "scenesOnly";
   /**
+   * display "scenesOnly" 일 때 장면에서 동료가 서는 자리. "nearest"(기본·생략) = 주인공에게서 가장 가까운 빈 칸(앞을 막을 수 있다).
+   * "abreast" = 고정 횡대 — 주인공이 보는 방향의 좌우(몸 길이만큼 떨어진 칸)에 첫째·둘째, 그 바깥에 셋째·넷째가 서고 모두 주인공과 같은 쪽을 본다.
+   * 주인공이 상대(보스 등)를 바라보게 돌려 두면 일행이 한 줄로 그 상대를 마주한다. 자리가 막히면 그 동료만 가장 가까운 빈 칸으로.
+   */
+  sceneFormation?: "nearest" | "abreast";
+  /**
    * false 면 파티 몬스터가 필드에서 주인공을 따라 걷지 않는다(HGSS 식 동행 끄기). 생략 = 따라온다 — 몬스터 동료는 주인공이
    * 떠난 칸으로 같은 박자에 한 칸 뒤를 걷는다(@/player/playSceneFollowers beginFollowerStep).
    */

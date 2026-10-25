@@ -145,6 +145,14 @@ function buildSessionRegistryToolsUnfiltered(input: SessionToolExposureInput): O
   if (/(퍼즐|기믹|레버|비밀\s*통로|오르간|화로|점화|발판|미끄럼|컨베이어|다이너마이트|미믹|수수께끼|수문|다리\s*개방|잠입|결계|비석|\bpuzzle\b|\bgimmick\b)/iu.test(input.requestText)) {
     appendUnique(tools, seen, toolSchemasForNames(["list_puzzle_presets", "author_map_puzzle", "compile_puzzle", "tile_change_effect", "check_reachability", "show_map_region", "run_lint"]) as OpenAiTool[]);
   }
+  // 「…이 드러난다/나타난다」 — 대사만 쓰고 지도는 그대로인 연출을 막는다(폴른 스타 승강 장치, 2026-10-25).
+  if (/(드러나|드러난|드러났|나타나게|나타난다|숨은\s*문|숨겨진\s*(문|통로|계단)|승강\s*장치|비밀\s*문|\breveal)/iu.test(input.requestText)) {
+    appendUnique(tools, seen, toolSchemasForNames(["stage_map_reveal", "list_spatial_designs", "find_events", "get_event", "show_map_region"]) as OpenAiTool[]);
+  }
+  // 보스와 마주 서는 대형·보스 HP 숨김 — 일반 설정 도구를 보인다.
+  if (/(대형|횡대|마주\s*(서|보)|일행.*(줄|나란히)|보스\s*HP|HP\s*(숨|가리)|체력\s*(숨|가리))/iu.test(input.requestText)) {
+    appendUnique(tools, seen, toolSchemasForNames(["configure_companion_rules", "upsert_enemy", "upsert_troop", "get_database_records"]) as OpenAiTool[]);
+  }
   appendUnique(tools, seen, mentionedToolSchemas(input.requestText) as OpenAiTool[]);
   appendUnique(tools, seen, input.discoveredToolNames
     ? toolSchemasForNames(input.discoveredToolNames) as OpenAiTool[]
