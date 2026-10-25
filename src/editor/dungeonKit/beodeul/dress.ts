@@ -720,7 +720,10 @@ function northCenter(c: DressCtx, r: PlacedRoom, w: number, inset = 1): [number,
 function standNorth(c: DressCtx, r: PlacedRoom, kitId: string, inset = 1): [number, number] | null {
   if (!c.hasKit(kitId)) return null;
   const def = c.kit(kitId);
-  for (const [x, y] of northCenter(c, r, def.width, inset).slice(0, 40)) {
+  const cands = northCenter(c, r, def.width, inset).slice(0, 40);
+  // 벽에 등을 댄 자리 먼저(윗줄 바로 위가 벽·천장) — 문 앞 칸을 피해 한 줄 내려선 옥좌가 방 가운데 떠 보였다(2026-10-25 floor VQA r4 castle).
+  const backed = ([x, y]: [number, number]) => Array.from({ length: def.width }, (_, dx) => x + dx).every((X) => !c.isWalk(X, y - 1));
+  for (const [x, y] of [...cands.filter(backed), ...cands.filter((q) => !backed(q))]) {
     const fy = y + def.height - 1;
     if (stand(c, kitId, x, fy)) return [x, fy];
   }
