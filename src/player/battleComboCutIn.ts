@@ -5,7 +5,7 @@
  *
  * 행동 앞(시퀀서 entryLeadMs 동안, 행동은 그 뒤에 시작한다):
  *   1. 화면 번쩍임 + 어두운 막 + 집중선, 무대가 살짝 확대된다(comboFx spectacular).
- *   2. 참가자 흉상이 양쪽에서 기운 판에 실려 미끄러져 들어와 가운데서 엇갈려 겹친다(트리플은 세 줄). 겹친 자리에 빛 사선.
+ *   2. 참가자 흉상이 양쪽에서 기운 판에 실려 미끄러져 들어와 가운데서 엇갈려 겹친다(트리플은 세 줄, 4인은 네 줄). 겹친 자리에 빛 사선.
  *   3. 큰 제목 카드(「듀얼 테크」 + 기술 이름)가 튀어나오고, 흉상들이 서로를 지나쳐 반대편으로 빠져나간다.
  *   4. 참가자 발밑에서 각자의 빛(그 사람이 해금 조건으로 배운 기술의 속성 색)이 차례로 솟는다.
  * 착탄(comboImpact, 행동의 피해마다):
@@ -168,7 +168,7 @@ function mountFaces(
   const title = document.createElement("div");
   title.className = "battle-combo-title";
   title.dataset.testid = "battle-combo-title";
-  const kicker = skill?.comboStaging?.kicker ?? (ordered.length >= 3 ? "트리플 테크" : "듀얼 테크");
+  const kicker = skill?.comboStaging?.kicker ?? (ordered.length >= 4 ? "쿼드 테크" : ordered.length >= 3 ? "트리플 테크" : "듀얼 테크");
   title.append(span("battle-combo-title-kicker", kicker), span("battle-combo-title-name", context.skillName(entry)));
   overlay.append(slash, title);
   root.append(overlay);
@@ -183,7 +183,7 @@ function mountBand(stage: HTMLElement, ordered: readonly string[], context: Comb
   band.dataset.members = String(ordered.length);
   band.style.setProperty("--combo-ms", `${Math.round(durationMs)}ms`);
   band.append(
-    span("battle-combo-cutin-label", ordered.length >= 3 ? "트리플 연계!" : "연계!"),
+    span("battle-combo-cutin-label", ordered.length >= 4 ? "4인 연계!" : ordered.length >= 3 ? "트리플 연계!" : "연계!"),
     span("battle-combo-cutin-names", ordered.map((id) => context.actorName(id)).join(" × ")),
     Object.assign(document.createElement("strong"), { className: "battle-combo-cutin-skill", textContent: context.skillName(entry) }),
   );

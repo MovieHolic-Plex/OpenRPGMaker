@@ -1,4 +1,4 @@
-// 자료집 「스킬 → 연계기」 하위 보기 — 크로노 트리거식 듀얼·트리플 테크를 한 화면에서 만든다(2026-10-24).
+// 자료집 「스킬 → 연계기」 하위 보기 — 크로노 트리거식 듀얼·트리플·4인 테크를 한 화면에서 만든다(2026-10-24).
 //
 // 연계기는 SkillRecord 의 comboActorIds·comboRequires·comboMpCosts·comboCombinedStats 다(전투 「연계」 명령이 연다).
 // 스킬 편집 탭에서도 고칠 수 있지만 칸이 흩어져 있어 「누가 누구와, 무엇을 배우면, 몇 MP 씩」을 한 카드로 모았다.
@@ -9,6 +9,7 @@ import { numberField, selectField, textField, toggleSwitch } from "@/editor/pane
 import { retroChoreographyPicker } from "@/editor/panels/databaseSkillRetroPicker";
 import { sectionCard } from "@/editor/panels/databaseWorkspace";
 import { store } from "@/project/store";
+import { COMBO_MAX_ACTORS } from "@/project/databaseRecordModel";
 import type { Project, SkillRecord } from "@/project/types";
 import { el } from "@/util/dom";
 import { comboTint, normalizeComboStaging, type ComboStaging } from "@/project/battleStaging";
@@ -49,7 +50,7 @@ function memberEditor(project: Project, skill: SkillRecord, slot: number, rerend
   const members = [...(skill.comboActorIds ?? [])];
   const actorId = members[slot] ?? NONE;
   const actorOptions = [
-    ...(slot >= 2 ? [{ id: NONE, name: "(없음 — 듀얼)" }] : []),
+    ...(slot >= 2 ? [{ id: NONE, name: slot === 2 ? "(없음 — 듀얼)" : "(없음)" }] : []),
     ...project.database.actors.map((actor) => ({ id: actor.id, name: actor.name })),
   ];
   const actorSelect = selectField(slot === 0 ? "시전자" : `동료 ${slot}`, `db-combo-member-${skill.id}-${slot}`, actorId, actorOptions, (value) => {
@@ -97,7 +98,8 @@ function techCard(project: Project, skill: SkillRecord, rerender: () => void): H
   });
   const members = el("div", {
     class: "db-combo-members",
-    children: [0, 1, 2].map((slot) => memberEditor(project, skill, slot, rerender)),
+    // 빈 칸은 하나만 더 보인다(듀얼이면 셋째 칸까지, 트리플이면 넷째 칸까지).
+    children: Array.from({ length: Math.min(COMBO_MAX_ACTORS, Math.max(3, (skill.comboActorIds?.length ?? 0) + 1)) }, (_, slot) => memberEditor(project, skill, slot, rerender)),
   });
   const elements = [{ id: NONE, name: "(없음)" }, ...(project.database.elements ?? []).map((element) => ({ id: element.id, name: element.name }))];
   const hits = skill.hitSequence?.length ?? 1;
@@ -136,7 +138,7 @@ function techCard(project: Project, skill: SkillRecord, rerender: () => void): H
     children: [
       el("label", { class: "db-combo-tint", children: [el("span", { text: "색(번쩍임·오라·제목)" }), tintInput] }),
       selectField("착탄 흔들림", `db-combo-shake-${skill.id}`, staging.shake ?? "", [
-        { id: "", name: "기본(트리플 강하게·듀얼 약하게)" }, { id: "none", name: "없음" }, { id: "light", name: "약하게" }, { id: "heavy", name: "강하게" },
+        { id: "", name: "기본(셋 이상 강하게·듀얼 약하게)" }, { id: "none", name: "없음" }, { id: "light", name: "약하게" }, { id: "heavy", name: "강하게" },
       ], (value) => saveStaging({ shake: (value || undefined) as ComboStaging["shake"] })),
       toggleSwitch("착탄 순간 느린 화면", `db-combo-slowmo-${skill.id}`, staging.slowMo !== false, (checked) => saveStaging({ slowMo: checked ? undefined : false })),
       textField("제목 위 작은 글", `db-combo-kicker-${skill.id}`, staging.kicker ?? "", (value) => saveStaging({ kicker: value || undefined })),

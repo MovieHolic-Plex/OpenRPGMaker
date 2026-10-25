@@ -340,6 +340,12 @@
 .battle-scene .battle-combo-faces[data-members="3"] .battle-combo-face[data-slot="2"] { top: 58%; z-index: 2; }
 .battle-scene .battle-combo-faces[data-members="3"] .battle-combo-face[data-slot="2"] { animation-delay: 70ms; }
 .battle-scene .battle-combo-faces[data-members="3"] .battle-combo-face[data-slot="1"] { animation-delay: 35ms; }
+/* 4인 연계: 네 줄 — 판을 낮추고 좁혀 겹침을 줄인다(왼·오·왼·오 번갈아 들어온다). */
+.battle-scene .battle-combo-faces[data-members="4"] .battle-combo-face { --face-h: 31%; width: 58%; }
+.battle-scene .battle-combo-faces[data-members="4"] .battle-combo-face[data-slot="0"] { top: 1%; }
+.battle-scene .battle-combo-faces[data-members="4"] .battle-combo-face[data-slot="1"] { animation-delay: 30ms; top: 24%; z-index: 1; }
+.battle-scene .battle-combo-faces[data-members="4"] .battle-combo-face[data-slot="2"] { animation-delay: 60ms; top: 47%; z-index: 2; }
+.battle-scene .battle-combo-faces[data-members="4"] .battle-combo-face[data-slot="3"] { animation-delay: 90ms; top: 69%; z-index: 3; }
 /* 들어옴(0~22%) → 서로를 향해 천천히 밀며 겹침(22~74%) → 서로를 지나쳐 반대편으로 빠짐(74~100%). */
 @keyframes battle-combo-face-left {
   0% { opacity: 0; translate: -115% 0; }

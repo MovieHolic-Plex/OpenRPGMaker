@@ -1,5 +1,5 @@
 // editor/tools/comboTechTools.ts
-// 연계기(크로노 트리거식 듀얼·트리플 테크) 전용 도구 — list_combo_techs(읽기) · upsert_combo_tech(쓰기).
+// 연계기(크로노 트리거식 듀얼·트리플·4인 테크) 전용 도구 — list_combo_techs(읽기) · upsert_combo_tech(쓰기).
 //
 // 연계기는 SkillRecord 의 comboActorIds·comboRequires·comboMpCosts·comboCombinedStats 로 저장된다(전투 「연계」 명령이 연다).
 // upsert_skill 로도 만들 수 있지만 필드가 흩어져 있어 조수가 「동료 둘이 함께 쓰는 기술」을 한 번에 저작하도록 묶었다.
@@ -46,7 +46,7 @@ function techRow(project: Project, skill: SkillRecord) {
 
 const listComboTechs: ToolDefinition = {
   name: "list_combo_techs",
-  description: "연계기(듀얼·트리플 테크) 목록 — 참가 배우·비용 몫·해금 조건(comboRequires)·연출(retroChoreographyId)·지금 파티로 열렸는지. 연계기를 만들거나 고치기 전에 읽는다.",
+  description: "연계기(듀얼·트리플·4인 테크) 목록 — 참가 배우·비용 몫·해금 조건(comboRequires)·연출(retroChoreographyId)·지금 파티로 열렸는지. 연계기를 만들거나 고치기 전에 읽는다.",
   mode: "read",
   parameters: { type: "object", properties: { actorId: { type: "string", description: "이 배우가 낀 연계기만" } } },
   run(project, args): ToolExecResult {
@@ -61,10 +61,10 @@ const listComboTechs: ToolDefinition = {
 const upsertComboTech: ToolDefinition = {
   name: "upsert_combo_tech",
   description: [
-    "연계기(크로노 트리거식 듀얼·트리플 테크)를 한 번에 만든다/고친다. 전투에서 참가자 전원이 준비되고 MP 가 있으면 명령 메뉴의 「연계」에 뜨고,",
+    "연계기(크로노 트리거식 듀얼·트리플·4인 테크, 참가자 2~4명)를 한 번에 만든다/고친다. 전투에서 참가자 전원이 준비되고 MP 가 있으면 명령 메뉴의 「연계」에 뜨고,",
     "쓰면 참가자 모두의 차례·MP(몫)를 쓰고 「연계!」 띠와 함께 도트 연출(choreographyId)이 재생된다.",
     "requires 로 「누가 무슨 기술을 배워야 열리는가」를 정한다(레벨 업으로 조건이 채워지면 결과 화면에 「새 연계기!」 카드).",
-    "power 는 시전자 능력치 기준 — combinedStats:true 면 참가자 공격력·마력의 합이라 power 를 낮게(40~70).",
+    "power 는 시전자 능력치 기준 — combinedStats:true 면 참가자 전원(2~4명) 공격력·마력의 합이라 power 를 낮게(셋 40~70, 넷 30~55).",
     "고칠 때는 id 와 바꿀 칸만. 저장은 upsert_skill 과 같은 검증을 지난다. 먼저 list_combo_techs·get_database_records(actors, skills)로 배우·기술 id 를 확인한다.",
   ].join(" "),
   mode: "write",
@@ -75,7 +75,7 @@ const upsertComboTech: ToolDefinition = {
       id: { type: "string", description: "skill_combo_<영문> 처럼. 없는 id 면 새로 만든다" },
       name: { type: "string" },
       description: { type: "string", description: "게임 안 한 줄 — 무엇이 다른가(예: 「불붙은 검으로 두 번 베고 화상을 남긴다」)" },
-      actorIds: { type: "array", items: { type: "string" }, description: "참가 배우 2~3명(첫째가 시전자 — 위력은 그 사람 능력치)" },
+      actorIds: { type: "array", items: { type: "string" }, description: "참가 배우 2~4명(첫째가 시전자 — 위력은 그 사람 능력치). 넷이면 네 사람이 모두 준비돼야 뜬다" },
       requires: {
         type: "array",
         description: "해금 조건 [{actorId, skillId}] — 그 배우가 그 기술을 배워야 「연계」에 뜬다. 빈 배열 = 조건 없음",
@@ -136,7 +136,7 @@ const upsertComboTech: ToolDefinition = {
     if (!id) throw new ToolError("upsert_combo_tech: id 가 필요합니다. 예: skill_combo_flame_cross", { code: "invalid-args" });
     const existing = draft.database.skills.find((skill) => skill.id === id);
     if (!existing && (typeof args.name !== "string" || !Array.isArray(args.actorIds))) {
-      throw new ToolError("새 연계기에는 name 과 actorIds(2~3명)가 필요합니다.", { code: "invalid-args" });
+      throw new ToolError("새 연계기에는 name 과 actorIds(2~4명)가 필요합니다.", { code: "invalid-args" });
     }
     if (existing && !existing.comboActorIds?.length && !Array.isArray(args.actorIds)) {
       throw new ToolError(`${id} 는 연계기가 아닌 기술입니다. 연계기로 바꾸려면 actorIds 를 주거나, 일반 기술은 upsert_skill 로 고치세요.`, { code: "invalid-args" });

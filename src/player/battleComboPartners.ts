@@ -58,6 +58,17 @@ function sfx(id: string, volume = 0.28): void {
   if (!reduced()) playBattleSample(id, volume);
 }
 
+/**
+ * 달려든 동료 slot(시전자 제외 0부터)의 자리 — 시전자는 적 바로 앞 가운데에 선다.
+ * 동료 하나·둘은 위·아래 안쪽 줄, 셋째(4인 연계)는 바깥 위 줄에 반 걸음 뒤로 서서 적을 둘러싼다.
+ * 안쪽 줄과 바깥 줄은 몸 반쯤(22px) 벌어져 칩이 포개지지 않는다. back 은 적 쪽으로 덜 다가서는 px.
+ */
+export function comboRushSlot(slot: number): { dy: number; back: number } {
+  const ring = Math.floor(slot / 2);
+  const side = slot % 2 === 0 ? -1 : 1;
+  return { dy: side * (16 + 22 * ring), back: 6 * (slot % 2) + 14 * ring };
+}
+
 function measureRush(field: HTMLElement, node: HTMLElement, entry: BattleTimelineEntrySnapshot, slot: number): { dx: number; dy: number } {
   const enemies = [...field.querySelectorAll<HTMLElement>(".battle-enemy:not(.defeated)")];
   const target = enemies.find((enemy) => enemy.dataset.testid === entry.targetId)
@@ -71,9 +82,8 @@ function measureRush(field: HTMLElement, node: HTMLElement, entry: BattleTimelin
   const enemyFront = (enemyRect.right - enemyRect.width * 0.15) / scale;
   const userFeet = (rect.top + rect.height * (45 / 48)) / scale;
   const enemyFeet = enemyRect.bottom / scale;
-  // 시전자는 적 바로 앞에 선다 — 동료는 위·아래로 번갈아 비켜 서서 적을 둘러싼다.
-  const spread = (slot % 2 === 0 ? -1 : 1) * (14 + 8 * Math.floor(slot / 2));
-  const dx = -Math.max(0, Math.round(bodyFront - enemyFront - 10 - 6 * slot));
+  const { dy: spread, back } = comboRushSlot(slot);
+  const dx = -Math.max(0, Math.round(bodyFront - enemyFront - 10 - back));
   const dy = Math.round(enemyFeet - userFeet + spread);
   return { dx: Number.isFinite(dx) ? dx : -72, dy: Number.isFinite(dy) ? Math.max(-90, Math.min(90, dy)) : 0 };
 }

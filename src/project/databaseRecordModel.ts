@@ -620,6 +620,9 @@ function normalizeTitleParticles(
 /** 타이틀 달리기 칩 상한. */
 export const MAX_TITLE_RUNNERS = 6;
 
+/** 연계기(듀얼·트리플·4인 테크) 참가 배우 최대 수(시전자 포함). 정규화·조수 검증·편집기 칸·전투 연출이 같은 값을 본다. */
+export const COMBO_MAX_ACTORS = 4;
+
 export function normalizeTitleRunners(runners: readonly Partial<TitleRunner>[] | undefined): TitleRunner[] | undefined {
   if (!Array.isArray(runners) || runners.length === 0) return undefined;
   const out: TitleRunner[] = [];
@@ -832,7 +835,7 @@ export function normalizeSkillRecord(record: Partial<SkillRecord> & Pick<SkillRe
     })(),
     // 연계기·범위기는 값이 있을 때만 남긴다 — 없는 옆 프로젝트는 바이트 그대로.
     ...(() => {
-      const comboActorIds = uniqueCleanIds(record.comboActorIds).slice(0, 3);
+      const comboActorIds = uniqueCleanIds(record.comboActorIds).slice(0, COMBO_MAX_ACTORS);
       if (comboActorIds.length < 2) return {};
       const comboRequires = Array.isArray(record.comboRequires)
         ? record.comboRequires.flatMap((entry) => {
