@@ -5,6 +5,13 @@
 
 <!-- releases -->
 
+## 0.346.2 — 2026-10-26
+
+### 수정
+
+- **player** — keep a changed map background across save and load (#3570) (`ae4b79d`)
+- **i18n** — call map-content shift by its name, not pan or scroll (#3569) (`196b885`)
+
 ## 0.346.1 — 2026-10-26
 
 ### 수정
