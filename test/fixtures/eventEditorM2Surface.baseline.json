@@ -1974,6 +1974,11 @@
    "event-command-face-option-shared-brown-headband-expressions-full-surprised",
    "event-command-face-option-shared-brown-headband-expressions-full-wink",
    "event-command-face-option-shared-brown-headband-expressions-full-worried",
+   "event-command-face-option-shared-fs-inquisitor-valen-expressions-bust-angry",
+   "event-command-face-option-shared-fs-inquisitor-valen-expressions-bust-base",
+   "event-command-face-option-shared-fs-inquisitor-valen-expressions-bust-happy",
+   "event-command-face-option-shared-fs-inquisitor-valen-expressions-bust-sad",
+   "event-command-face-option-shared-fs-inquisitor-valen-expressions-bust-surprised",
    "event-command-face-option-shared-green-bandana-expressions-00",
    "event-command-face-option-shared-green-bandana-expressions-01",
    "event-command-face-option-shared-green-bandana-expressions-02",
@@ -6019,6 +6024,11 @@
    "event-command-face-option-shared-brown-headband-expressions-full-surprised": "button{}",
    "event-command-face-option-shared-brown-headband-expressions-full-wink": "button{}",
    "event-command-face-option-shared-brown-headband-expressions-full-worried": "button{}",
+   "event-command-face-option-shared-fs-inquisitor-valen-expressions-bust-angry": "button{}",
+   "event-command-face-option-shared-fs-inquisitor-valen-expressions-bust-base": "button{}",
+   "event-command-face-option-shared-fs-inquisitor-valen-expressions-bust-happy": "button{}",
+   "event-command-face-option-shared-fs-inquisitor-valen-expressions-bust-sad": "button{}",
+   "event-command-face-option-shared-fs-inquisitor-valen-expressions-bust-surprised": "button{}",
    "event-command-face-option-shared-green-bandana-expressions-00": "button{}",
    "event-command-face-option-shared-green-bandana-expressions-01": "button{}",
    "event-command-face-option-shared-green-bandana-expressions-02": "button{}",
@@ -8823,9 +8833,9 @@
    "그림 고르기…"
   ],
   "tags": {
-   "button": 4001,
-   "div": 4020,
-   "img": 3999,
+   "button": 4006,
+   "div": 4025,
+   "img": 4004,
    "input": 1,
    "option": 8,
    "p": 4,
@@ -10064,6 +10074,11 @@
    "event-command-face-option-shared-brown-headband-expressions-full-surprised": "button",
    "event-command-face-option-shared-brown-headband-expressions-full-wink": "button",
    "event-command-face-option-shared-brown-headband-expressions-full-worried": "button",
+   "event-command-face-option-shared-fs-inquisitor-valen-expressions-bust-angry": "button",
+   "event-command-face-option-shared-fs-inquisitor-valen-expressions-bust-base": "button",
+   "event-command-face-option-shared-fs-inquisitor-valen-expressions-bust-happy": "button",
+   "event-command-face-option-shared-fs-inquisitor-valen-expressions-bust-sad": "button",
+   "event-command-face-option-shared-fs-inquisitor-valen-expressions-bust-surprised": "button",
    "event-command-face-option-shared-green-bandana-expressions-00": "button",
    "event-command-face-option-shared-green-bandana-expressions-01": "button",
    "event-command-face-option-shared-green-bandana-expressions-02": "button",
@@ -12856,8 +12871,8 @@
    "change-actor-faceset-preview": "주인공 선택 · (선택 없음)얼굴 그림 한 장을 고르면 그 얼굴이 저장됩니다.",
    "event-command-edit-summary": "기타 명령"
   },
-  "testidCount": 4016,
-  "controlCount": 4004
+  "testidCount": 4021,
+  "controlCount": 4009
  },
  "m2-026-change-vehicle-graphic": {
   "testids": [
@@ -13654,6 +13669,16 @@
     "cc0-sound-monster-hm-rock-smash",
     "cc0-sound-monster-hm-cut",
     "cc0-sound-monster-hm-surf",
+    "cc0-sound-puzzle-secret-solved",
+    "cc0-sound-puzzle-stone-push",
+    "cc0-sound-puzzle-plate-press",
+    "cc0-sound-puzzle-switch-clack",
+    "cc0-sound-puzzle-wrong",
+    "cc0-sound-puzzle-crystal-ping",
+    "cc0-sound-puzzle-organ-c",
+    "cc0-sound-puzzle-organ-e",
+    "cc0-sound-puzzle-organ-g",
+    "cc0-sound-puzzle-organ-c2",
     "easyrpg-sound-absorb1",
     "easyrpg-sound-absorb2",
     "easyrpg-sound-attack1",
@@ -13763,7 +13788,7 @@
   "tags": {
    "div": 13,
    "label": 2,
-   "option": 399,
+   "option": 409,
    "select": 2,
    "small": 1,
    "span": 1
@@ -16194,10 +16219,12 @@
     "beodeul_warm_trees",
     "beodeul_door",
     "beodeul_ground",
+    "beodeul_forest_trunks",
     "beodeul_nature",
     "beodeul_architecture",
     "beodeul_forms",
     "beodeul_reviewed",
+    "beodeul_organic",
     "joseon_baram",
     "modern_city",
     "jp_city",
@@ -16240,7 +16267,7 @@
   "tags": {
    "div": 10,
    "optgroup": 3,
-   "option": 45,
+   "option": 47,
    "p": 3,
    "select": 1,
    "span": 4
@@ -18107,7 +18134,11 @@
     "rotate",
     "clearDistortion",
     "letterbox",
-    "clearLetterbox"
+    "clearLetterbox",
+    "freeze",
+    "unfreeze",
+    "doorOpen",
+    "doorClose"
    ]
   },
   "labels": [
@@ -18130,7 +18161,7 @@
    "div": 17,
    "input": 3,
    "label": 3,
-   "option": 11,
+   "option": 15,
    "p": 1,
    "select": 1
   },
@@ -19498,6 +19529,16 @@
     "cc0-sound-monster-hm-rock-smash",
     "cc0-sound-monster-hm-cut",
     "cc0-sound-monster-hm-surf",
+    "cc0-sound-puzzle-secret-solved",
+    "cc0-sound-puzzle-stone-push",
+    "cc0-sound-puzzle-plate-press",
+    "cc0-sound-puzzle-switch-clack",
+    "cc0-sound-puzzle-wrong",
+    "cc0-sound-puzzle-crystal-ping",
+    "cc0-sound-puzzle-organ-c",
+    "cc0-sound-puzzle-organ-e",
+    "cc0-sound-puzzle-organ-g",
+    "cc0-sound-puzzle-organ-c2",
     "easyrpg-sound-absorb1",
     "easyrpg-sound-absorb2",
     "easyrpg-sound-attack1",
@@ -19606,7 +19647,7 @@
    "div": 15,
    "input": 2,
    "label": 4,
-   "option": 719,
+   "option": 729,
    "select": 2,
    "small": 1,
    "span": 1
@@ -20511,7 +20552,9 @@
     "smoke",
     "dust",
     "explosion",
-    "splash"
+    "splash",
+    "paper",
+    "petals"
    ],
    "m2-command-target-option-select": [
     "player",
@@ -20533,7 +20576,7 @@
    "div": 16,
    "input": 4,
    "label": 7,
-   "option": 13,
+   "option": 15,
    "select": 3
   },
   "tagByTestid": {
