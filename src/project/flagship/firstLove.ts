@@ -367,10 +367,10 @@ function buildMondayMorning(project: Project, a: FirstLoveAnchors): void {
   const s = a.street;
   // 부딪히는 자리는 세로 횡단보도(x≈21) 한가운데. 남자는 옆 줄(x+1)로 뛰어 내려오다 서하 쪽으로 꺾어 옆에서 부딪힌다 —
   // 바로 위 칸에서 부딪히면 3/4 시점에서 남자 하반신이 서하 머리를 덮었다(Argon op1).
-  const bumpAt: Cell = nearestFree(project, street, { x: 21, y: 20 }, 2);
-  const nearBump: Cell = { x: bumpAt.x, y: bumpAt.y + 2 };              // 서하가 잠깐 서는 칸(남자가 뛰어오는 걸 보기 전)
-  const rusher: Cell = nearestFree(project, street, { x: bumpAt.x + 1, y: 14 }, 2);
-  const rushStop: Cell = { x: bumpAt.x + 1, y: bumpAt.y };
+  const bumpAt: Cell = nearestFree(project, street, { x: 20, y: 22 }, 1);  // 남쪽 보도, 세로 횡단보도 발치 바로 왼쪽(차도 밖)
+  const nearBump: Cell = bumpAt;
+  const rusher: Cell = nearestFree(project, street, { x: 21, y: 14 }, 1);   // 북쪽 보도, 횡단보도 머리
+  const rushStop: Cell = { x: bumpAt.x + 1, y: bumpAt.y };                   // 횡단보도를 뛰어 내려와 보도에 닿는 칸 — 서하 바로 오른쪽
   // 출구에서 나온 사람들은 빈 보도에서 사라지지 않는다 — 둘은 늘봄 빌딩 문으로 들어가고, 둘은 동쪽 보도 끝(화면 밖)으로 걸어간다.
   const crowd = [
     { id: "ev_fl_crowd_1", tex: "tex_oprn_charset_modern3", index: 0, delay: 0, exit: "ev_fl_office_door" },
@@ -413,14 +413,13 @@ function buildMondayMorning(project: Project, a: FirstLoveAnchors): void {
     ...think("첫 출근. 지각은 아니다. 아직은.", "스튜디오 늘봄. 서른 명 남짓한 앱 회사. 늘봄 빌딩은 길 건너, 제일 높은 유리 건물이다."),
     ...say("seoha", "happy", "…할 수 있어, 윤서하."),
     // 서하가 횡단보도를 건너기 시작한다. 반쯤 왔을 때 길 건너에서 남자가 휴대폰을 보며 뛰어 내려오다 서하 쪽으로 꺾는다.
-    walkRoute(project, FL_MAP.street, "@player", s.arrive, nearBump, [], true, "up"),
-    { ...(walkRoute(project, FL_MAP.street, "ev_fl_rusher", rusher, rushStop, [bumpAt], false, "left") as object), } as unknown as Command,
-    wait(450),
-    walk("@player", ["up", "up"]),
-    wait(200),
+    // 부딪힘은 보도 위(횡단보도 발치)에서 — 차도에서 부딪히면 선 차와 겹쳐 서류가 보닛 위에 떴다(Argon op2).
+    walkRoute(project, FL_MAP.street, "@player", s.arrive, nearBump, [], true, "right"),
+    walkRoute(project, FL_MAP.street, "ev_fl_rusher", rusher, rushStop, [bumpAt], false, "left"),
+    waitMoves(),
     quiet("cc0-se-orp-inventory-cloth-heavy", 0.8),
     shake(260),
-    { kind: "moveEvent", eventId: "@player", route: { moves: [{ kind: "setDirectionFix", enabled: true }, { kind: "jump", dx: 0, dy: 1, heightPx: 4, durationMs: 220 }, { kind: "setDirectionFix", enabled: false }], repeat: false, wait: true, skippable: true } } as unknown as Command,
+    { kind: "moveEvent", eventId: "@player", route: { moves: [{ kind: "setDirectionFix", enabled: true }, { kind: "jump", dx: -1, dy: 0, heightPx: 4, durationMs: 220 }, { kind: "setDirectionFix", enabled: false }], repeat: false, wait: true, skippable: true } } as unknown as Command,
     m2("Particle Effect", { preset: "paper", target: "player", durationMs: 1800, wait: false }),
     quiet(SE_PAPER, 0.7),
     wait(380),
@@ -433,7 +432,7 @@ function buildMondayMorning(project: Project, a: FirstLoveAnchors): void {
     ...voice("남자", "죄송합니다…! 괜찮으세요? 제가 지금 너무 늦어서—"),
     ...think("고개를 들기도 전에, 남자는 떨어진 종이 한 장을 내 손에 쥐여 주고 다시 뛰어갔다."),
     // 남자는 회사 쪽(늘봄 빌딩)으로 달려가 사라진다 — 얼굴은 못 봤다.
-    { kind: "moveEvent", eventId: "ev_fl_rusher", route: { moves: [{ kind: "changeSpeed", delta: 1 }, { kind: "move", dir: "left" }, { kind: "approach", x: bumpAt.x, y: 14, distance: 0 }, { kind: "exitVia", target: "ev_fl_office_door", se: "", closeSe: "" }], repeat: false, wait: false, skippable: true } } as unknown as Command,
+    { kind: "moveEvent", eventId: "ev_fl_rusher", route: { moves: [{ kind: "changeSpeed", delta: 1 }, { kind: "approach", x: rusher.x, y: rusher.y, distance: 0 }, { kind: "exitVia", target: "ev_fl_office_door", se: "", closeSe: "" }], repeat: false, wait: false, skippable: true } } as unknown as Command,
     ...think("…목소리가, 어디서 들어 본 것 같았는데."),
     ...letterbox(false, 500),
     wait(600),
