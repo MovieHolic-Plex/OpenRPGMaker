@@ -5,6 +5,24 @@
 
 <!-- releases -->
 
+## 0.342.0 — 2026-10-25
+
+### 기능
+
+- **ai** — v2 move_object moves, turns or removes one placed piece of furniture (#3505) (`e95a467`)
+- **store** — news posts show real game screenshots — CDN upload script for shipped-player shots; assistant post guide asks for them (#3506) (`f0dd6f9`)
+- **qa** — scripts/qa/argon-vqa.py — image-capable Argon blind reviewer (gemini-4-argon-high, images inline) (#3503) (`2a7627d`)
+- **desktop** — show the last editor view instantly while the editor boots (#3501) (`e0071ba`)
+
+### 수정
+
+- **ai** — repair obvious tool-argument shape slips before failing validation (#3502) (`bda3a3f`)
+- **ai** — compat endpoints explain why they fail (key missing, step, DNS) and empty image replies no longer end the turn silently (#3499) (`3a416a3`)
+- **ai** — route images per model on openai-compat endpoints; 1-px image probe marks blind models (#3498) (`2af2138`)
+- **dungeon** — cave maps get no tower windows, dry bridges/boats are flagged, entrances get a cave mouth and avoid props (J25) (#3500) (`00dd4de`)
+- **ai** — v2 blocks combat games with no healing; encounters off unless asked (J55, J4) (#3494) (`532757b`)
+- **ai** — chasers patrol, spawn never inside chaser sight (J54, J61) (#3495) (`0825f19`)
+
 ## 0.341.0 — 2026-10-25
 
 ### 기능
