@@ -5,11 +5,15 @@ import { runPiAgent, type RunPiAgentOptions } from "./piAgentRuntime.ts";
 import type { PiAgentDoneEvent, PiAgentEvent, PiAgentRequest } from "../../src/ai/piAgent/protocol.ts";
 import { buildV2SystemPrompt } from "../../src/ai/v2/prompt.ts";
 import { createV2Tools, V2Session, v2FinishGate } from "../../src/ai/v2/verbs.ts";
+import { shipBlockers } from "../../src/ai/v2/shipChecks.ts";
 import type { PiAssistantV2Env } from "../../src/ai/v2/env.ts";
-import { adviseTurn, advisorFollowUp, advisorSummary, compactToolLog, summarizeProjectDiff, type AdvisorToolCall, type AdvisorVerdict } from "../../src/ai/v2/advisor.ts";
+import { adviseTurn, advisorFollowUp, withShipBlockers, advisorSummary, compactToolLog, summarizeProjectDiff, type AdvisorToolCall, type AdvisorVerdict } from "../../src/ai/v2/advisor.ts";
 
 /** 독립 검토자(src/ai/v2/advisor.ts). 끄려면 OPRN_V2_ADVISOR=0 — 비교 실행·장애 때만 쓴다. 읽기 전용 실행에는 돌지 않는다. */
-const advisorEnabled = (request: PiAgentRequest): boolean => process.env.OPRN_V2_ADVISOR !== "0" && !request.readOnly;
+// 설정에서 검토자를 끈 경우(assistantRoles.advisor = "off")도 돌지 않는다. 검토자 모델은 env.advisorChat(따로 고른 칸) → 없으면 주 모델(sideChat).
+const advisorEnabled = (request: PiAgentRequest): boolean => process.env.OPRN_V2_ADVISOR !== "0" && !request.readOnly && request.assistantRoles?.advisor !== "off";
+const advisorChatOf = (env: PiAssistantV2Env) => env.advisorChat ?? env.sideChat;
+const safeShip = (env: PiAssistantV2Env) => { try { return shipBlockers(env.ctx.project, env.request.task); } catch { return []; } };
 const safeDiff = (env: PiAssistantV2Env): string => {
   try { return summarizeProjectDiff(env.request.project, env.ctx.project); } catch (error) { return `(변경 요약 실패: ${error instanceof Error ? error.message : String(error)})`; }
 };
@@ -48,7 +52,7 @@ export async function runAssistantV2(request: PiAgentRequest, options: RunPiAgen
         if (round > 0) {
           if (followFrom) followMs = Date.now() - followFrom;
           if (!advisorEnabled(env.request) || !advice) return undefined;
-          const recheck = await adviseTurn({ task: env.request.task, toolLog: compactToolLog(calls), diff: safeDiff(env), report: draft }, env.sideChat, env.signal);
+          const recheck = withShipBlockers(await adviseTurn({ task: env.request.task, toolLog: compactToolLog(calls), diff: safeDiff(env), report: draft }, advisorChatOf(env), env.signal), safeShip(env));
           advice = { ...recheck, ms: advice.ms + recheck.ms, inputChars: advice.inputChars + recheck.inputChars };
           env.emit({ type: "execution_status", name: "v2.advisor.recheck", ok: !recheck.notes.some((n) => n.level === "blocker"), summary: `다시 검토 — ${advisorSummary(recheck)}`, data: recheck });
           return undefined;
@@ -57,8 +61,8 @@ export async function runAssistantV2(request: PiAgentRequest, options: RunPiAgen
         if (!advisorEnabled(env.request)) return gate;
         // 보고 초안을 «실제로 바뀐 것»에 대어 본다. 막는 메모는 끝맺음 관문 글과 함께 한 차례 더 돌린다.
         // 우려·참고는 조수에게만(관문 글에 붙거나 실행 기록 v2.advisor) — 사용자 대화창에는 싣지 않는다.
-        advice = await adviseTurn({ task: env.request.task, toolLog: compactToolLog(calls), diff: safeDiff(env), report: draft }, env.sideChat, env.signal);
-        env.emit({ type: "execution_status", name: "v2.advisor", ok: !advice.notes.some((n) => n.level === "blocker"), summary: advisorSummary(advice), data: advice });
+        advice = withShipBlockers(await adviseTurn({ task: env.request.task, toolLog: compactToolLog(calls), diff: safeDiff(env), report: draft }, advisorChatOf(env), env.signal), safeShip(env));
+        env.emit({ type: "execution_status", name: "v2.advisor", ok: !advice.notes.some((n) => n.level === "blocker"), summary: `${advisorSummary(advice)} · ${env.advisorModel ?? "주 모델"}`, data: { ...advice, model: env.advisorModel ?? "main" } });
         const blockerText = advisorFollowUp(advice);
         const softNotes = advice.notes.filter((n) => n.level !== "blocker");
         if (blockerText) { followFrom = Date.now(); return gate ? `${gate}\n\n${blockerText}` : blockerText; }

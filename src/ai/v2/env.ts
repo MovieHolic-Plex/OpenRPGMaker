@@ -12,6 +12,12 @@ export interface PiAssistantV2Env {
   readonly record: (record: PiToolCallRecord) => void;
   /** 조수와 같은 모델로 따로 부르는 한 번짜리 호출(비평가·해석) — 사용량은 stats.review 로 따로 모인다. */
   readonly sideChat: (messages: readonly unknown[], signal?: AbortSignal) => Promise<string>;
+  /**
+   * 독립 검토자용 대화(src/ai/assistantRoles.ts 의 advisor 칸). 칸이 없거나 그 계정 키가 없으면 비고, 검토자는 sideChat(주 모델·다른 문맥)으로 돈다.
+   * advisorModel 은 실제로 부르는 모델 이름(실행 기록용).
+   */
+  readonly advisorChat?: (messages: readonly unknown[], signal?: AbortSignal) => Promise<string>;
+  readonly advisorModel?: string;
   /** 맵 한 구역을 약 1배 PNG(data URL)로. 렌더 경로가 없으면 undefined. */
   readonly render?: (mapId: string, x: number, y: number, w: number, h: number) => Promise<string>;
   /** 동사 안에서 중간 결과를 편집기에 바로 싣는다(첫 짓기를 비평 전에 보이게). */

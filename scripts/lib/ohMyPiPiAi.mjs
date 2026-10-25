@@ -304,6 +304,7 @@ export async function createOhMyPiAdapters() {
       assertOpenAiCompatModelsAllowed([
         { provider, model: body.model },
         ...["deep", "writer", "vision", "build"].map((role) => ({ provider: body.roleModels?.[role]?.provider, model: body.roleModels?.[role]?.model })),
+        ...["smol", "advisor"].map((role) => ({ provider: body.assistantRoles?.[role]?.provider, model: body.assistantRoles?.[role]?.model })),
       ]);
       // 로컬 CLI 엔진(local-cli:*)은 키가 없다 — 사용자가 그 CLI 에 직접 로그인해 있다. 키를 찾지 않는다.
       const apiKey = String(provider).startsWith("local-cli:") ? undefined : await resolveRequestApiKey(provider);
@@ -312,6 +313,7 @@ export async function createOhMyPiAdapters() {
       const compat = await resolveOpenAiCompatRun([
         provider,
         ...["deep", "writer", "vision", "build"].map((role) => body.roleModels?.[role]?.provider),
+        ...["smol", "advisor"].map((role) => body.assistantRoles?.[role]?.provider),
       ].filter((id) => typeof id === "string"));
       for (const role of ["vision", "build"]) {
         const selected = body.roleModels?.[role];
@@ -329,7 +331,16 @@ export async function createOhMyPiAdapters() {
           providerApiKeys[selected.provider] = await resolveRequestApiKey(selected.provider);
         }
       }
-      // Resolve the image slot independently. Missing credentials must fail the image tool,
+      // 잔일·검토자(src/ai/assistantRoles.ts)도 선택 역할이다 — 계정이 없으면 실행기가 주 모델로 물러난다(작문과 같은 관례).
+      for (const role of ["smol", "advisor"]) {
+        const selected = body.assistantRoles?.[role];
+        const roleProvider = selected && typeof selected === "object" ? selected.provider : undefined;
+        if (!roleProvider || roleProvider in providerApiKeys || String(roleProvider).startsWith("local-cli:")) continue;
+        if (roleProvider in compat.endpoints) { providerApiKeys[roleProvider] = compat.keys[roleProvider]; continue; }
+        try { providerApiKeys[roleProvider] = await resolveRequestApiKey(roleProvider); }
+        catch { providerApiKeys[roleProvider] = undefined; }
+      }
+            // Resolve the image slot independently. Missing credentials must fail the image tool,
       // not prevent unrelated read/authoring turns from starting.
       const imageProvider = body.imageProvider || 'google-antigravity';
       if (!(imageProvider in providerApiKeys)) {
