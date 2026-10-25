@@ -89,6 +89,7 @@ import type { ToolContext, ToolResult } from "../../src/editor/tools/types.ts";
 import { runTool } from '../../src/editor/tools/index.ts';
 import { prepareMapBackgroundGeneration } from '../../src/editor/tools/mapBackgroundGenerationTool.ts';
 import { emptyTopRows } from '../../src/project/mapBackgroundVisibility.ts';
+import { isEmptyAssistantReply, messagesHaveImages, stripImages } from '../../src/ai/piAgent/emptyReply.ts';
 import { mapTileSize } from '../../src/project/tileGeometry.ts';
 import { composeVisiblePanorama } from '../../src/editor/mapPanoramaGeneration.ts';
 import { prepareOpeningImageRequest, prepareOpeningLayerRequest } from '../../src/editor/tools/cinematicTools.ts';
@@ -1007,7 +1008,15 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
     ...(options.signal ? { signal: options.signal } : {}),
     onStatus: (name, summary, data) => emit({ type: "execution_status", name, ok: true, summary, data }),
   }) : undefined;
+  // 빈 답 지키기(src/ai/piAgent/emptyReply.ts): 그림이 든 요청 뒤 빈 완료면 남은 요청에서 그림을 글로 바꿔 다시 묻는다.
+  let imagesStripped = false;
+  let lastRequestHadImages = false;
+  let emptyRetries = 0;
   const agent: PiLoopDriver = localLoop ?? new Agent({
+    transformContext: async (messages: unknown[]) => {
+      lastRequestHadImages = messagesHaveImages(messages);
+      return (imagesStripped && lastRequestHadImages ? stripImages(messages) : messages) as never;
+    },
     initialState: {
       systemPrompt,
       model,
@@ -1153,6 +1162,21 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
         .join("");
       if (text.trim()) emit({ type: "assistant", text });
       usage = addPiAgentUsage(usage, message.usage);
+      // 글도 도구 호출도 없는 «정상 끝» = 제공자가 답을 못 만든 것. 끝난 차례로 두지 않고 한 번 더 묻는다(그림이 원인이면 그림을 빼고).
+      if (!fatal && !options.signal?.aborted && isEmptyAssistantReply(message)) {
+        const imageCause = lastRequestHadImages && !imagesStripped;
+        if (imageCause) imagesStripped = true;
+        if (imageCause || emptyRetries < 1) {
+          if (!imageCause) emptyRetries += 1;
+          resumeAfter = imageCause ? "그림이 든 요청에 AI 가 빈 답을 보냄" : "AI 가 빈 답을 보냄";
+          emit({ type: "execution_status", name: "provider_empty_reply", ok: false, summary: imageCause
+            ? "이 AI 연결이 그림이 든 요청에 빈 답을 보냈습니다 — 이 실행의 남은 요청에서 그림을 빼고 다시 묻습니다."
+            : "AI 가 빈 답을 보냈습니다 — 한 번 더 묻습니다." });
+        } else {
+          fatal = fatal ?? "AI 모델이 빈 답만 보내 작업을 마치지 못했습니다. 다른 모델로 바꾸거나 다시 보내 주세요.";
+          emit({ type: "error", message: fatal });
+        }
+      }
       if (message.stopReason === "error" || message.errorMessage) {
         // 우리가 먼저 정한 사유(턴·시간 상한, 클라이언트 끊김)가 있으면 그것이 이긴다 — 코어가 합성한
         // aborted 메시지의 문구로 덮어쓰지 않는다.
