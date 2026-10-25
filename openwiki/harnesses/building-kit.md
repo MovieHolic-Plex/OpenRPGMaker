@@ -928,3 +928,40 @@ save 되풀이 7회, exit 0. 바탕 `0b9e645e` → 마감 `4eb598be`. 바뀐 불
 남은 어색함: 연못·광장·길 가장자리가 칸 단위 직선(표본에 가장자리 칸이 없다), 우리 오두막이 원본 집보다 키가 크고 지붕이 엳다.
 보기: http://mdc-server:18301/northern-snow-village-r2.html(r2 | r1 village-opus, r2 | 원본 「서리목」).
 
+
+## 덩어리 모형 → 실제 건물 `massing` (2026-10-25)
+
+사용자(2026-10-25): bk-massing-100(중세 덩어리 모형 100종 + 성 3채 + 성곽 도시)으로 실제 건물을 다양하게 만들어 머지까지. 판단은 위임(독립 검수 둘 + 3/4 관문 통과분만).
+
+### 한 건물 = 데이터 두 파일
+
+- `harness-data/building-kit/massing/art/<id>.txt` — 글자 하나 = 화소 하나(`.` 투명), 글자 → 잠긴 팔레트 `palette.json`(판타지 왕국 51색 + 버들항 건물 실화소 군집 64색).
+- `art/<id>.json` — 이름·덩어리 모형 번호·재질·버들항 기준 키트 둘·칸 통행 `walk`(X 벽·D 문 하나·* 처마/지붕·. 빈칸)·`passages`(성문·시장 아케이드 바닥).
+- 그리는 쪽: tile-artist(Opus) 가 `massing_lib.Canvas` 와 부품 문법 `kit_building`(바탕) 으로 그리고 손으로 마감한다. 절차서 `qa-runs/harnesses/building-kit/massing/BRIEF.md`(감독 메모 ①~㉙ = 검수자가 반복해 떨어뜨린 이유). 그리기 스크립트 `qa-runs/.../massing/work/<id>/draw.py`(커밋 안 됨 — 데이터 두 파일이 정본).
+- 기준: 같은 배율 버들항 키트 둘(`refs`), 구조는 덩어리 모형 렌더(`refs/<Mxx>.png`).
+
+### 명령 (`python3 src/harnesses/building-kit/massing.py …`)
+
+| 단계 | 하는 일 |
+|---|---|
+| `check [id…]` | 기계 검사: 16 배수·팔레트·walk 일치·문 하나(맨 아랫줄)·땅 칸 막힘·먹 윤곽 ≤15%·바닥 근처 가로 틈(FAIL) · 갇힌 구멍(경고). 통과는 합격이 아니다. |
+| `render [id…]` | 덩어리 모형 | 새 그림 3배 | 버들항 기준 3배, 1배 나란히. |
+| `gate-batch <out> [id…]` | object-gate `review --batch` 입력(kind structure). |
+| `review-pack <묶음> id… --decoy <id>` | 독립 검수판(1배·4배, 버들항 기준 옆) + 숨긴 함정(3px 투명 가로 절단). 순서는 묶음 이름 seed 로 섞는다. |
+| `review-collect <묶음> <검수자>` | 함정을 FAIL 로 못 잡으면 묶음 전체 무효(기록 안 함). 유효하면 원문을 `reviews/<id>/<해시12>-<검수자>.md` 에 그대로 복사(머리 주석만 덧붙임). |
+| `evidence` | 관문 pass + argon PASS + klb-sonnet-5-5 PASS 인 그림마다 근거 묶음 JSON. 18323 위임 허용(`/api/decide`, `delegatedBy` + `evidence`)에 넘긴다. |
+| `publish` / `decide` | seed `candidates` + `tiledata/beodeul-massing/sources/` 를 쓰고, 지금 소스 PNG 해시에 근거가 다 맞는 건물만 `decisions.json` 에 `by: delegated` 허용을 덧붙인다. |
+| `status [--json]` | 해시·관문·서명 허용·검수·출구. |
+
+설치: `OBJECT_GATE_DATA=<18323 데이터> scripts/content/rebuild-building-bundle.sh building-kit-massing` — beodeul-building-review 프로필 `building-kit-massing`(`approval: delegated`, `objectGate: structure`) 이 `install.py` 에서 건물마다 `require_pass` 를 다시 부른다. 결과는 `beodeul_massing` 시트 + `beodeul_city` 이식 키트 `bd-house-mk-*`(본체 3층)·`bd-mk-shadow-*`(2층)·`bd-mk-foundation-*`(4층), 참고문서 `beodeulMassingReferences.json`, 거리 예제(여러 줄 거리 `map.rowStep`).
+
+### 판정 규칙(감독은 판정하지 않는다)
+
+- 들어가는 건물 = 지금 그림 화소 해시에 (1) object-gate 영수증 kind structure pass(프로필 **미보정** — 영수증은 조언, 출구는 18323 서명 허용) (2) 독립 검수 argon PASS (3) klb-sonnet-5-5 PASS, 셋 다 원문 파일로 있는 것. 그림이 한 화소라도 바뀌면 처음부터 다시.
+- 같은 해시를 같은 검수자에게 다시 돌려 PASS 를 고르지 않는다(묶음이 무효일 때만 새 검수자로 다시).
+- 함정 놓침 실측: klb-sonnet-5-5 가 두 묶음(p10·p11)에서 3px 절단을 PASS — 무효 처리하고 프롬프트에 「4배 판을 위에서 아래로 훑어 잔디 띠를 찾는다」를 더했다.
+- argon 은 같은 대화를 이어 쓰면(이전 묶음을 기억) 더 엄해졌다(p8 전부 FAIL) — 묶음마다 새 검수자를 띄운다.
+
+### 조수 배치
+
+`author_beodeul_town` `roofs: "medieval"` — 살림집(main) 목골집·막돌집·탑집, 앵커(accent) 여관·대장간·예배당·비둘기탑·양조장 등. 설치 안 된 id 는 `have()` 가 거른다. 허용 건물 그림자·기초는 `stampReviewedCompanions` 가 `bd-house-rv-*` 와 같은 규칙으로 놓는다. 시연 `npx vite-node scripts/content/build-massing-town.mts '{"seed":7}'`. 시험 `test/beodeulMassingTileset.test.ts`, `src/harnesses/building-kit/tests/test_massing.py`.
