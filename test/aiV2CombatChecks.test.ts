@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { createBlankProject } from "@/project/defaults";
-import { combatProblems, healingSources, stepsPerEncounter } from "@/ai/v2/combatChecks";
+import { combatProblems, healingSources, stepsPerEncounter, weakPaidSkills } from "@/ai/v2/combatChecks";
 import { withEncountersOnlyWhenAsked } from "@/ai/v2/game";
 import type { PiToolShape } from "@/ai/piAgent/toolAdapter";
 import type { Project } from "@/project/types";
@@ -64,5 +64,14 @@ describe("v2 combat finish checks (J55 no healing, J4 first-area attrition)", ()
     expect(stepsPerEncounter(8)).toBe(14);
     expect(stepsPerEncounter(25)).toBe(8);
     expect(stepsPerEncounter(0)).toBe(Infinity);
+  });
+
+  it("flags an MP skill weaker than a free one the same actor knows (J8), and the default seed is fixed", () => {
+    const p = createBlankProject() as Project;
+    const hero = p.database.actors.find((a) => a.id === "actor_hero")!;
+    hero.learnedSkills = [...hero.learnedSkills, { level: 1, skillId: "skill_sword_slash" }, { level: 1, skillId: "skill_hero_cross_slash" }];
+    expect(weakPaidSkills(p)).toEqual([]);
+    p.database.skills.find((s) => s.id === "skill_hero_cross_slash")!.power = 62;
+    expect(weakPaidSkills(p).some((m) => m.includes("skill_hero_cross_slash"))).toBe(true);
   });
 });

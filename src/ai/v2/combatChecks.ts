@@ -114,7 +114,7 @@ export function healingSources(project: Project): string[] {
 
 /** 이 실행이 전투를 건드렸는가(전투 데이터·조우표·전투 명령). 안 건드린 작은 고치기에는 전투 검사를 걸지 않는다. */
 export function touchedCombat(before: Project, after: Project): boolean {
-  const db = (p: Project) => JSON.stringify([p.database.troops, p.database.enemies]);
+  const db = (p: Project) => JSON.stringify([p.database.troops, p.database.enemies, p.database.skills, p.database.actors, p.database.classes]);
   const enc = (p: Project) => JSON.stringify(Object.values(p.maps).map((m) => [m.id, m.encounterRate ?? 0, m.encounterTable ?? null, m.troopIds ?? null, m.fieldSpawns ?? null]));
   const fights = (p: Project) => JSON.stringify(allCommands(p).filter((r) => r.cmd.kind === "battleProcessing").map((r) => [r.mapId, r.cmd.troopId]));
   return db(before) !== db(after) || enc(before) !== enc(after) || fights(before) !== fights(after);
@@ -202,5 +202,46 @@ export function combatProblems(before: Project, after: Project, task: string): s
     const rate = after.maps[hard[0]!.mapId]!.encounterRate ?? 0;
     problems.push(`[게임 검사 전투 난이도] 시작 파티(Lv${hard[0]!.level})로 첫 전투 구역의 조우를 모의 12판 해 보니 너무 세다: ${list} — 첫 숲에서 몇 번 만에 전멸하고 레벨을 올릴 틈이 없다. 첫 구역 적은 시작 파티가 대개 이기고(승률 ${Math.round(FIRST_AREA_MIN_WIN * 100)}% 이상) HP 가 ${Math.round(FIRST_AREA_MIN_HP_SHARE * 100)}% 넘게 남도록 upsert_enemy 로 HP·공격을 낮추거나 그 무리를 뒤쪽 맵(또는 conditions.minPartyLevel)으로 옮긴다. 조우율 ${rate}(약 ${stepsPerEncounter(rate)}걸음마다 한 번)${rate > 10 ? "도 잦다 — 6~10 으로 낮춘다" : ""}. simulate_battle{troopId, heroLevel:${hard[0]!.level}} 로 다시 확인한다.`);
   }
+  // MP 기술이 공짜 기술보다 약하다(J8) — 기술·배우를 건드린 실행이나 게임 만들기 요청일 때.
+  problems.push(...weakPaidSkills(after).slice(0, 3));
   return problems;
+}
+
+/** 기술 하나의 대략 위력(런타임 뺄셈식의 공격 쪽: power + 능력치/2) × 타수·분산 없음 — 같은 배우 기술끼리 비교만 한다. */
+function skillMagnitude(project: Project, skillId: string, stats: { attack: number; mind: number; attackPower: number }): number | undefined {
+  const skill = project.database.skills.find((s) => s.id === skillId);
+  if (!skill || skill.effect?.kind !== "damage" || skill.effect.affects !== "hp" || skill.damageFormula) return undefined;
+  const stat = skill.effect.statistic === "mind" ? stats.mind : stats.attack;
+  // 기본 공격(skill_attack)은 위력 자리에 무기 공격력을 쓴다.
+  const power = skill.id === "skill_attack" ? stats.attackPower : skill.power;
+  const hits = skill.hitSequence?.length ? skill.hitSequence.reduce((a, b) => a + b, 0) : 1;
+  const crit = 1 + ((skill.criticalRate ?? 10) / 100) * ((skill.criticalMultiplier ?? 1.35) - 1);
+  return (power + Math.floor(stat / 2)) * hits * crit * ((skill.hitRate ?? 100) / 100);
+}
+
+/**
+ * MP 를 내는 기술이 공짜 기술보다 약하다(2026-10-25 판정 J8): 레온의 십자베기(MP 3, 위력 62)가 공짜 검격(위력 67)보다 덜 아팠다.
+ * 시작 파티가 아는 기술마다, 같은 대상 범위·같은 능력치의 공짜 피해 기술보다 기대 피해가 높지 않으면 짚는다(상태 효과가 붙은 기술은 뺀다 — 쓰임이 다르다).
+ */
+export function weakPaidSkills(project: Project): string[] {
+  const out: string[] = [];
+  for (const id of project.system.startActorIds ?? []) {
+    const raw = project.database.actors.find((a) => a.id === id);
+    if (!raw) continue;
+    const actor = normalizeActorRecord(raw);
+    const level = Math.max(actor.initialLevel, 5);
+    const stats = { attack: parameterValueAtLevel(actor.parameterCurves.attack, level), mind: parameterValueAtLevel(actor.parameterCurves.mind, level), attackPower: 10 };
+    const known = [...new Set([...actor.learnedSkills.filter((l) => l.tp === undefined && l.level <= level).map((l) => l.skillId), ...classLearnedSkillIdsUpToLevel(project, actor.classId, level)])];
+    const skills = known.map((sid) => project.database.skills.find((s) => s.id === sid)).filter((s): s is NonNullable<typeof s> => !!s);
+    const cost = (s: (typeof skills)[number]) => (s.mpCost?.flat ?? 0) + (s.mpCost?.percentMax ?? 0);
+    for (const paid of skills) {
+      if (cost(paid) <= 0 || paid.stateEffects?.length || paid.effect?.kind !== "damage") continue;
+      const mine = skillMagnitude(project, paid.id, stats);
+      if (mine === undefined) continue;
+      const rivals = skills.filter((s) => cost(s) <= 0 && s.scope === paid.scope && s.effect?.kind === "damage" && s.effect.statistic === (paid.effect as { statistic?: string }).statistic);
+      const best = rivals.map((s) => ({ s, m: skillMagnitude(project, s.id, stats) })).filter((r): r is { s: (typeof skills)[number]; m: number } => r.m !== undefined).sort((a, b) => b.m - a.m)[0];
+      if (best && mine <= best.m) out.push(`[게임 검사 기술] ${actor.name}의 「${paid.name}」(${paid.id}, MP ${cost(paid)}, 위력 ${paid.power})가 공짜 「${best.s.name}」(${best.s.id}, 위력 ${best.s.power})보다 약하다(Lv${level} 기대 피해 ${Math.round(mine)} ≤ ${Math.round(best.m)}) — MP 를 내고 쓸 까닭이 없다. upsert_skill 로 MP 기술 위력을 공짜 기술보다 10% 이상 높이거나(위력 ${Math.ceil(best.s.power * 1.1)} 이상), 속성·상태 효과·여러 대상 같은 다른 쓰임을 준다.`);
+    }
+  }
+  return out;
 }

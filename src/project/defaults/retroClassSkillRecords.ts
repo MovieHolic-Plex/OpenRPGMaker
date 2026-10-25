@@ -29,7 +29,7 @@ export const remove = (stateId: string): DatabaseStateEffect => ({ stateId, chan
 
 const SEEDS: Readonly<Record<string, Seed>> = {
   // 전사: 공격력 근접기. 필살기는 신성 속성 대형 일격.
-  skill_hero_cross_slash: { scope: "enemy", mp: 3, kind: "attack", power: 62, element: "sword", animation: anim("slash-steel") },
+  skill_hero_cross_slash: { scope: "enemy", mp: 3, kind: "attack", power: 74, element: "sword", animation: anim("slash-steel") },
   skill_hero_rush_pierce: { scope: "enemy", mp: 5, kind: "attack", power: 72, element: "spear", animation: anim("slash-steel"), critical: 15 },
   skill_hero_rising_blade: { scope: "enemy", mp: 6, kind: "attack", power: 80, element: "sword", animation: anim("slash-steel"), states: [add("state_defense_down", 35)] },
   skill_hero_flame_sword: { scope: "enemy", mp: 8, kind: "attack", power: 90, element: "fire", animation: anim("fire-burst") },
