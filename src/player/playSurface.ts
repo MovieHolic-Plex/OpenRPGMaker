@@ -219,16 +219,14 @@ export type TouchLayout = {
    * 아니면 무대 배율)로 나눈다. CSS(mobileUi.css)가 ESC 메뉴 명령 줄에 쓴다.
    */
   readonly menuRow: number;
-  /**
-   * 세로 타이틀 메뉴(2026-10-25): 무대 안에서는 줄이 21px 라 손가락에 작다. 무대 아래 빈 띠로 내려
-   * 메뉴 단추 줄 바로 위에 아래끝을 붙이고 줄을 44px 로 벌린다. bottom 은 무대 위끝에서 잰 화면 px, room 은 무대 위끝부터 그 자리까지.
-   * 가로·세로 띠가 없으면 null.
-   */
-  readonly title: { readonly bottom: number; readonly scale: number } | null;
 };
 
 /** 터치 대상 최소 높이(화면 px) — Apple HIG 44pt, Material 48dp 의 아래쪽. */
 export const TOUCH_TARGET_MIN = 44;
+/** 가로 조작 칸 폭(화면 px) — A·B 묶음 120 + 양옆 숨 쉴 틈. 무대는 이 두 칸 사이에만 그린다. */
+export const LANDSCAPE_GUTTER = 128;
+/** 가로 조이스틱 지름 — 칸 안에 들어가게. 누르는 칸은 왼쪽 칸 전체라 지름보다 넓다. */
+export const LANDSCAPE_STICK = 108;
 /** 세로 창 칸의 최대 논리 높이 — 남는 높이가 있으면 칸을 늘려 메뉴 줄을 44px 로 벌릴 자리를 만든다. */
 export const WINDOW_PANEL_MAX_HEIGHT = 400;
 
@@ -314,27 +312,26 @@ export function calculateTouchLayout(
       }
     }
     const menuRow = Math.ceil(TOUCH_TARGET_MIN / (panel ? panel.scale : scale));
-    // 타이틀 메뉴는 독과 같은 배율(1배 미만 무대면 1배)로 무대 아래 띠에 그린다 — 띠가 한 줄 몫도 없으면 무대 안 그대로.
-    const titleBottom = controlsY - stick / 2 - 52 - 4 - stageTop;
-    const title = titleBottom - stageH >= TOUCH_TARGET_MIN ? { bottom: Math.floor(titleBottom), scale: dockScale } : null;
-    return { mode: "portrait", scale, stageLeft, stageTop, bandTop, bandBottom, controlsY, gutter: 0, stick, dock, panel, menuRow, title };
+    return { mode: "portrait", scale, stageLeft, stageTop, bandTop, bandBottom, controlsY, gutter: 0, stick, dock, panel, menuRow };
   }
-  // 가로(2026-10-25 「모바일 가로 화면이 너무 작게 나온다」): 예전에는 좌우 조작 칸을 먼저 떼고 남은 폭에 정수 배율을 맞춰
-  // 아이폰 15 가로(734×343)에서 무대가 480×270(1배) — 화면 높이의 79%, 폭의 65% 였다. 이제 무대는 화면 높이를 채우고
-  // 조작(조이스틱·A/B·메뉴)은 무대 가장자리 위에 반투명하게 겹친다(data-touch-overlay). 칸 폭은 조작을 놓을 자리로만 쓴다.
-  // 칸은 조이스틱보다 넓어야 한다(좁으면 조이스틱이 화면 밖으로 잘린다 — 아이폰 가로 iframe 734px 에서 실측).
-  const gutterBase = Math.round(Math.min(stick + 40, Math.max(stick + 12, width * 0.15)));
+  // 가로(2026-10-25 2판, 사용자 「가로에서 버튼도 잘 안 눌리고 경험도 구림 — 데스크톱과 같은 경험」):
+  // 1판은 무대가 화면 높이를 채우고 조작을 무대 위에 반투명하게 겹쳤다 — 조이스틱·B 가 타이틀 메뉴·전투 적·창을 덮었고,
+  // 대사·전투·메뉴마다 조작을 옮기거나 옅게 하거나 끄는 규칙이 붙었다. 이제 좌우 칸은 조작 전용이고 무대는 그 사이에 맞춘다.
+  // 게임 화면은 데스크톱과 같은 모양 그대로 비율만 맞춰 커지고, 조작은 게임을 한 칸도 덮지 않는다.
+  // 칸 폭 = 조작 묶음 폭(A 64 + 틈 4 + B 52 = 120, 조이스틱 104) + 여백. 노치·둥근 모서리(안전 영역)는 칸에 일부만 더한다 —
+  // 조작은 안전 영역 안쪽 끝에 붙어도 엄지에 닿는다.
+  const stickL = LANDSCAPE_STICK;
   const availH = Math.max(40, height - safe.top - safe.bottom);
-  const fullW = Math.max(40, width - safe.left - safe.right);
-  const scale = landscapeTouchScale(fullW, availH, logicalW, logicalH, scaleMode);
-  const gutterL = gutterBase + safe.left;
-  const gutterR = gutterBase + safe.right;
+  const gutterL = Math.round(LANDSCAPE_GUTTER + safe.left * 0.6);
+  const gutterR = Math.round(LANDSCAPE_GUTTER + safe.right * 0.6);
+  const availW = Math.max(40, width - gutterL - gutterR);
+  const scale = landscapeTouchScale(availW, availH, logicalW, logicalH, scaleMode);
   const stageW = logicalW * scale;
   const stageH = logicalH * scale;
-  const stageLeft = Math.round(safe.left + (fullW - stageW) / 2);
+  const stageLeft = Math.round(gutterL + (availW - stageW) / 2);
   const stageTop = Math.round(safe.top + (availH - stageH) / 2);
   const controlsY = safe.top + availH * 0.62;
-  return { mode: "landscape", scale, stageLeft, stageTop, bandTop: safe.top, bandBottom: height - safe.bottom, controlsY, gutter: Math.max(gutterL, gutterR), stick, dock: null, panel: null, menuRow: Math.ceil(TOUCH_TARGET_MIN / scale), title: null };
+  return { mode: "landscape", scale, stageLeft, stageTop, bandTop: safe.top, bandBottom: height - safe.bottom, controlsY, gutter: Math.max(gutterL, gutterR), stick: stickL, dock: null, panel: null, menuRow: Math.ceil(TOUCH_TARGET_MIN / scale) };
 }
 
 /**
@@ -398,17 +395,6 @@ function syncTouchLayout(viewport: HTMLElement, width: number, height: number, r
     delete viewport.dataset.dialogueDock;
     for (const name of ["--dock-top", "--dock-left", "--dock-width", "--dock-height", "--dock-unscale"]) viewport.style.removeProperty(name);
     viewport.style.setProperty("--touch-controls-top", cssPx(layout.bandTop));
-  }
-  if (layout.title) {
-    // 타이틀 메뉴 띠: 값은 무대 좌표(게임 px). 줄 높이는 그 배율로 화면 44px.
-    viewport.dataset.titleBand = "true";
-    viewport.style.setProperty("--title-band-bottom", cssPx(layout.title.bottom / scale));
-    viewport.style.setProperty("--title-band-room", cssPx(layout.title.bottom / layout.title.scale));
-    viewport.style.setProperty("--title-band-unscale", String(layout.title.scale / scale));
-    viewport.style.setProperty("--title-band-row", cssPx(TOUCH_TARGET_MIN / layout.title.scale));
-  } else {
-    delete viewport.dataset.titleBand;
-    for (const name of ["--title-band-bottom", "--title-band-room", "--title-band-unscale", "--title-band-row"]) viewport.style.removeProperty(name);
   }
   if (layout.panel) {
     // 창 칸: 무대 자식(ESC 메뉴)은 무대 좌표·배율 되돌림으로, 뷰포트 자식(상점)은 화면 좌표·칸 배율로 옮긴다.

@@ -24,14 +24,19 @@ describe("calculateTouchLayout (mobile touch play, 2026-10-24)", () => {
   it.each([
     ["iPhone 15 landscape", 852, 393, { top: 0, right: 59, bottom: 21, left: 59 }],
     ["Pixel 7 landscape", 915, 412, zero],
-  ])("landscape %s: stage fills the height, controls overlay the edges", (_name, w, h, safe) => {
+    ["iPhone 13 landscape", 844, 390, zero],
+  ])("landscape %s: controls sit in side gutters and never cover the stage", (_name, w, h, safe) => {
     const layout = calculateTouchLayout(w, h, 480, 270, safe);
     expect(layout.mode).toBe("landscape");
-    expect(layout.stageLeft).toBeGreaterThanOrEqual(safe.left - 1);
-    expect(layout.stageLeft + 480 * layout.scale).toBeLessThanOrEqual(w - safe.right + 1);
+    // 무대는 좌우 조작 칸 사이에만 있다(2026-10-25 2판 — 조작이 게임을 덮지 않는다).
+    expect(layout.stageLeft).toBeGreaterThanOrEqual(layout.gutter - 1);
+    expect(layout.stageLeft + 480 * layout.scale).toBeLessThanOrEqual(w - layout.gutter + 1);
     expect(layout.stageTop + 270 * layout.scale).toBeLessThanOrEqual(h - safe.bottom + 0.5);
-    // 화면 높이(안전 영역 뺀)를 채운다 — 예전에는 칸을 떼고 정수 1배라 79% 였다.
-    expect(270 * layout.scale).toBeGreaterThanOrEqual((h - safe.top - safe.bottom) * 0.99);
+    // 칸은 A·B 묶음(120px)과 조이스틱이 들어갈 만큼 넓다.
+    expect(layout.gutter).toBeGreaterThanOrEqual(124);
+    expect(layout.stick).toBeLessThanOrEqual(layout.gutter);
+    // 게임 화면은 1배보다 크다(폰 가로에서 데스크톱 모양을 비율대로 키운다).
+    expect(layout.scale).toBeGreaterThan(1);
   });
 
   it("portrait phones below 1x get the 320x300 window panel at 1x", () => {
