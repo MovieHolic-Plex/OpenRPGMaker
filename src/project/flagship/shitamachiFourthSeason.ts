@@ -730,7 +730,7 @@ function buildRooftop(project: Project, link: { entry: Cell; exit: Cell }): Cell
       bgm(BGM_CONFESS, 1500),
       ...fadeIn(900), // 점등식 끝의 화면 암전(fadeOut)을 여기서 걷는다 — 없으면 옥상 장면 내내 화면이 검다
 
-      ...caption("히카리 맨션 옥상. 발밑으로 아케이드의 등롱 길이 강처럼 흐른다."),
+      ...caption("히카리 맨션 옥상. 난간 너머로 상점가 지붕들이 내려다보이고, 그 틈으로 등롱 불빛이 새어 오른다."), // 화면에 «등롱 강»은 안 보인다(VQA r2) — 보이는 것만 쓴다
       approach("@player", heroineId),
       turn(heroineId, "down"),
       ...s.open,
