@@ -4376,6 +4376,15 @@
     "other.ground"
    ],
    "lead": "r1~r3 손 판석 반려 → 허용된 theme-arcane-r1 arcane.tower_floor A1 짜임을 뼈대로 마계 색에 한 대 한 다시 칠함(A2 = 거울·순서 바꿈)."
+  },
+  "theme-floors-r5": {
+   "module": "src/harnesses/dungeon-chipset/rounds/theme_floors_r5.py",
+   "wave": "theme_arcane",
+   "title": "던전 테마 바닥 다시 그림 theme-floors-r5",
+   "items": [
+    "other.ground"
+   ],
+   "lead": "r2 A1 짜임 + 넓은 값 띠(vrock 전 단·arcane2, 6띠), 고정 둘레 고리(좌우 이음매), 올리브 막대 제거, 홈 깊이 변형별."
   }
  }
 }
