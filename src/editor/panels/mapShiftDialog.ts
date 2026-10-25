@@ -1,4 +1,5 @@
 import { shiftMapContent } from "@/editor/mapShiftActions";
+import { MAP_SHIFT_NOTE } from "@/editor/panels/mapShiftCopy";
 import { openEventSubdialog } from "@/editor/panels/eventEditor/subdialog";
 import type { MapId } from "@/project/types";
 import { el } from "@/util/dom";
@@ -7,7 +8,7 @@ export function openMapShiftDialog(mapId: MapId, mapName: string): void {
   openEventSubdialog({
     render: (body, close) => renderShiftBody(body, close, mapId),
     testId: `map-shift-modal-${mapId}`,
-    title: "Shift...",
+    title: "맵 밀기",
     subtitle: mapName,
     width: "narrow",
   });
@@ -20,11 +21,13 @@ function renderShiftBody(body: HTMLElement, close: () => void, mapId: MapId): vo
     el("div", {
       class: "panel-section map-shift-panel",
       children: [
+        el("p", { class: "m2-field-note", text: MAP_SHIFT_NOTE }),
         field("X", dxInput),
         field("Y", dyInput),
         el("button", {
           class: "btn",
-          text: "Apply",
+          text: "적용",
+          attrs: { type: "button" },
           dataset: { testid: "map-shift-apply" },
           on: {
             click: () => {

@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { MAP_SHIFT_NOTE } from "@/editor/panels/mapShiftCopy";
 import { matchSupportedLocale, resolveLocale } from "@/i18n/locale";
 import { createTranslator } from "@/i18n/translator";
 import en from "@/i18n/catalogs/en.json";
@@ -101,5 +102,24 @@ describe("shipped catalogs", () => {
     expect(createTranslator(en).translate("보기")).toBe("View");
     expect(createTranslator(ja).translate("언어")).toBeTruthy();
     expect(createTranslator(zh).translate("언어")).toBeTruthy();
+  });
+
+  it("translates map-content shift separately from view pan and map scroll", () => {
+    // 「맵 밀기」는 타일·이벤트·시작 위치를 칸 단위로 옮긴다. 화면 밀기(pan)나 맵 스크롤 명령이 아니다.
+    const note = MAP_SHIFT_NOTE;
+    expect(en["맵 밀기"]).toBe("Shift map contents");
+    expect(ja["맵 밀기"]).toBe("マップ内容をずらす");
+    expect(zh["맵 밀기"]).toBe("移动地图内容");
+    expect(en["맵 밀기"]).not.toBe(en["맵 화면 이동"]);
+    expect(ja["맵 밀기"]).not.toBe(ja["맵 스크롤"]);
+    expect(zh["맵 밀기"]).not.toBe(zh["맵 화면 이동"]);
+    expect(en["맵 밀기"].toLowerCase()).not.toMatch(/pan|scroll/);
+    expect(ja["맵 밀기"]).not.toContain("スクロール");
+    expect(createTranslator(en).translate(note)).toBe(en[note]);
+    expect(createTranslator(ja).translate(note)).toBe(ja[note]);
+    expect(createTranslator(zh).translate(note)).toBe(zh[note]);
+    expect(en[note]).toMatch(/tiles/i);
+    expect(ja[note]).toContain("マス");
+    expect(zh[note]).toContain("图块");
   });
 });
