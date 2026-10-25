@@ -5,6 +5,41 @@
 
 <!-- releases -->
 
+## 0.341.0 — 2026-10-25
+
+### 기능
+
+- **astra** — Gen 3 style opening - bright meadow intro, day title, professor capsule speech, gender/name stage with the hero shrinking into the room; actor:<id> pictures (#3432) (`7ebd815`)
+- **village-art** — wasteland_ruins tileset + composer, Beodeul yard floors, r62 ground decals (#3488) (`60ad0d5`)
+- **ai-v2** — ask_helpers — delegate bounded text jobs to the smol role (off until A/B) (#3483) (`cd1fcc4`)
+
+### 수정
+
+- **first-love** — opening VQA r1 fixes, cold-open bump, freeze alignment (#3463) (`1655d20`)
+- **ai/v2** — VQA reviewer always calls an alias that sees images (#3497) (`5ffa092`)
+- **project** — projects that name art removed in the 2026-10-07 purge load again; recollection uses a live cloud picture (#3492) (`a6c4691`)
+- **tools** — stamp_object clears off-purpose furniture and takes onOverlap nearest|replace (J64) (#3485) (`cd57223`)
+- **ai** — an empty provider reply never settles a turn; images are dropped once a provider blanks on them (#3486) (`7022e44`)
+- **ai/v2** — skip a VQA round when nothing changed since the last one (#3490) (`396429b`)
+- **ci** — 새 AI 컴포넌트의 표면 소유 선언 + undefined 토큰 폴백 제거, winners 래칫 갱신 (#3487) (`d3db7e8`)
+- **player** — type-only Phaser import in field staging and emotes (#3482) (`7238c47`)
+
+### 성능
+
+- **electron** — show the start splash the moment it is created, not after ready-to-show (#3489) (`3959f92`)
+
+### 문서
+
+- **openwiki** — drop a leftover merge-conflict marker and its stale duplicate in editor-ai-tools.md (#3491) (`7e2a67d`)
+
+### 빌드
+
+- fail the build when a bundled reference doc exceeds REFERENCE_LIMITS (#3493) (`db9885f`)
+
+### CI
+
+- ci-vitest-files — run chosen vitest files on a hosted runner on demand (#3484) (`76d1d1f`)
+
 ## 0.340.0 — 2026-10-25
 
 ### 기능
