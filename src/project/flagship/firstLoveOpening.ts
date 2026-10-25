@@ -100,21 +100,22 @@ function subwayShot(): OpeningAnimatic {
     walker("c2", "commuterB", "right", { x: -40, y: 118 }, { x: 220, y: 118 }),
     walker("c3", extra(M.modern3, 2), "left", { x: 470, y: 108 }, { x: 250, y: 108 }),
     walker("c4", "seoha", "right", { x: 120, y: 128 }, { x: 330, y: 128 }, SHOT_MS - 400, 200),
-    petals("petals", 10, 19, { opacity: 0.6 }),
     caption("8시 41분, 한결역."),
-  ], { kind: "wipe-left", durationMs: 450 });
+  ], { kind: "fade", durationMs: 500 });
 }
 
 /** 3. 사무실 — 모니터가 줄지어 선 7층, 자리에 앉은 사람들. */
 function officeShot(): OpeningAnimatic {
+  // 사무층 맵은 26칸(416px)이라 무대(480)보다 좁다 — 좌우 검은 띠(Argon op1)를 없애려고 맵 그림을 무대 폭으로 깔고 위아래만 민다.
+  // 확대하면 도트가 1.15배로 뭉개지므로 확대하지 않고, 맵 양옆 32px 를 같은 사무층 바닥색 띠(벽)로 메운다.
+  const W = 416, ox = Math.round((STAGE.width - W) / 2);
   return shot([
-    // 맵 (0,0) 을 무대 (32,-40) → (8,-64) 로 민다: 자리 무리(맵 y 96~200)가 레터박스 안에 든다. 앉은 지후·걸어오는 팀장.
-    mapBackdrop("office", { x: 32, y: -40 }, { x: 8, y: -64 }),
-    { ...standing("jihu", "jihu", "up", { x: 32 + 17 * 16 - 4, y: -40 + 9 * 16 - 16 }),
-      keys: { x: [key(0, 32 + 17 * 16 - 4), key(SHOT_MS, 8 + 17 * 16 - 4)], y: [key(0, -40 + 9 * 16 - 16), key(SHOT_MS, -64 + 9 * 16 - 16)],
+    { id: "wall", kind: "shape", shape: "rect", role: "background", color: "#2b2f3d", x: 0, y: 0, width: STAGE.width, height: STAGE.height } as AnimaticLayer,
+    mapBackdrop("office", { x: ox, y: -40 }, { x: ox, y: -96 }),
+    { ...standing("jihu", "jihu", "up", { x: ox + 17 * 16 - 4, y: -40 + 9 * 16 - 16 }),
+      keys: { y: [key(0, -40 + 9 * 16 - 16), key(SHOT_MS, -96 + 9 * 16 - 16)],
         frame: [{ atMs: 0, value: charsetFrameIndex({ characterIndex: CAST.jihu.index, direction: "up", pattern: 1 }) }] } } as AnimaticLayer,
-    walker("lead", "lead", "left", { x: 420, y: 170 }, { x: 330, y: 146 }, 3000, 400),
-    petals("petals", 8, 23, { opacity: 0.5 }),
+    walker("lead", "lead", "left", { x: ox + 24 * 16, y: 150 }, { x: ox + 19 * 16, y: 118 }, 3000, 400),
     caption("스튜디오 늘봄. 서른 명 남짓한 앱 회사."),
   ], { kind: "wipe-right", durationMs: 450 });
 }
@@ -149,7 +150,7 @@ function castShot(pair: readonly { who: Who; role: string; expr?: "base" | "happ
   pair.forEach((p, i) => {
     const at = Math.round(i * half), end = Math.round((i + 1) * half);
     const left = i % 2 === 0;
-    const bustX = left ? 40 : 250, nameX = left ? 236 : 40;
+    const bustX = left ? 20 : 270, nameX = left ? 236 : 40;   // 오른쪽 흉상은 무대 끝(480)에 붙인다 — 250 이면 들어 올린 팔이 그림 끝(450)에서 잘려 보였다(Argon op1)
     layers.push({
       id: `bust-${p.who}`, kind: "image", role: "actor", resourceId: bustId(p.who, p.expr ?? "base"), sampling: "linear",
       x: bustX, y: 34, width: 200, height: 200, startMs: at, endMs: end,
