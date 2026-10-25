@@ -490,6 +490,12 @@ function placeChokeLever(c: Ctx, entranceOk = true): string {
         cells.push({ x: px, y: py });
       }
       if (cells.length > 4) continue;
+      // 지은 던전의 쇠창살 문은 문틀 그림이라 양옆이 벽인 목에만 — 트인 바닥 한가운데 선 창살이 「허공에 걸린 사슬·창살」로 읽혔다(2026-10-25 floor VQA r4·r5 catacomb·pyramid).
+      if (!NATURAL_TYPES.has(c.type)) {
+        const ends = horiz ? [{ x: Math.min(...cells.map((p) => p.x)) - 1, y }, { x: Math.max(...cells.map((p) => p.x)) + 1, y }] : [{ x, y: Math.min(...cells.map((p) => p.y)) - 1 }, { x, y: Math.max(...cells.map((p) => p.y)) + 1 }];
+        if (ends.some((p) => isPassable(c.draft, c.map, p.x, p.y))) continue;
+        if (!horiz) continue;   // 세로 단면(가로 통로를 막는 세로 창살 줄)은 정면 그림이 옆으로 늘어서 문으로 안 읽힌다
+      }
       const blocked = new Set(cells.map((p) => p.y * W + p.x));
       const seen = reach(c, blocked);
       if (tgtCells.some((p) => seen[p.y * W + p.x])) continue;   // 옆으로 돌아간다 — 목이 아니다
