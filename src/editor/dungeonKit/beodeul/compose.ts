@@ -63,6 +63,9 @@ export const GAP_KIT = {
   towerRing: "bd-dg-tower-ring-", towerPassS: "bd-dg-tower-pass-s",
 } as const;
 /** 오토타일 한 칸: 8방이 다 이어진 칸은 몸통 변형(interiorVariants[0])을 엔진과 같은 cellHash 로 고른다. */
+/** 벽가·다른 물건 곁에만 서는 잡동사니 키트(id 일부). */
+const CLUTTER_RE = /crate|barrel|bucket|sack|-rack|ore\b|ore-|ingots|coal-pile|slagheap|bones|bone-heap|skulls|rubble|loot|plank-pile|straw-bed/;
+
 function autoCell(g: AutotileGroup, m: number, x: number, y: number): number {
   // 위치 위상 변형(32×32 몸통 용암 등): 엔진 그리기와 같은 규칙으로 칸 위치가 고른다.
   if (g.phaseVariants) { const v = autotileVariantForMask(g, m, x, y); if (v !== undefined) return v; }
@@ -253,10 +256,14 @@ export function composeDungeon(ts: TilesetDef, spec: DungeonSpec): DungeonCompos
     const faceId = pick(h >= 3 ? face.h3 : face.h2);
     const rows = kit(faceId).rows;
     const row = rows[(h >= 3 ? 3 : 2) - 1 - b]!.tiles;
-    const left = x > 0 && wallB[idx(x - 1, y)] === b, right = x + 1 < W && wallB[idx(x + 1, y)] === b;
+    // 이웃 열도 같은 줄이 벽 앞면이면(단 번호가 달라도) 이어진 벽 — 단만 보고 끝 칸(테두리)을 고르면 1칸 계단진 벽 한가운데에 세로 테두리 줄이 섰다(2026-10-25 floor VQA r5 「stepped walls with vertical shadow seams」).
+    const left = x > 0 && wallB[idx(x - 1, y)]! >= 0, right = x + 1 < W && wallB[idx(x + 1, y)]! >= 0;
     // 새김 가운데 열(`<앞면 키트>-glyph`, 1칸 폭 같은 높이)이 구워져 있으면 벽 가운데 칸을 드문드문 그것으로 — 같은 열의 단끼리는 같은 해시라 새김이 끊기지 않는다.
     const glyph = left && right && hasKit(`${faceId}-glyph`) && hash01(x, y + b, seed * 13 + 5) < 0.14 ? kit(`${faceId}-glyph`) : undefined;
     if (glyph && glyph.rows.length === rows.length) { lower[idx(x, y)] = glyph.rows[rows.length - 1 - b]!.tiles[0]!; continue; }
+    // 가운데 덩이(`<앞면 키트>-mid`, 3칸 폭 같은 높이)가 구워져 있으면 벽 가운데 칸은 그 덩이의 x % 3 열 — 반복 주기 48px(얼음굴 큰 면이 칸 경계를 넘는다).
+    const midKit = left && right && hasKit(`${faceId}-mid`) ? kit(`${faceId}-mid`) : undefined;
+    if (midKit && midKit.rows.length === rows.length) { lower[idx(x, y)] = midKit.rows[rows.length - 1 - b]!.tiles[x % midKit.rows[0]!.tiles.length]!; continue; }
     lower[idx(x, y)] = left && right ? row[1]! : !left && right ? row[0]! : left && !right ? row[2]! : row[1]!;
   }
 
@@ -285,6 +292,9 @@ export function composeDungeon(ts: TilesetDef, spec: DungeonSpec): DungeonCompos
     let m = 0;
     const bits: [number, number, number][] = [[0, -1, 1], [1, 0, 2], [0, 1, 4], [-1, 0, 8], [1, -1, 16], [1, 1, 32], [-1, 1, 64], [-1, -1, 128]];
     for (const [dx, dy, bit] of bits) if (!isOpen(x + dx, y + dy)) m |= bit;
+    // 한 줄 두께 천장(위 = 방 바닥 남쪽 끝, 아래 = 다음 방 벽 앞면): 위·아래 테두리를 둘 다 그리면 두 회색 테두리 사이 2px 검은 틈으로 읽혔다(2026-10-25 floor VQA r4 castle·catacomb).
+    // 아래 벽 앞면이 제 윗선을 갖고 있으니 아래쪽은 닫힌 것으로 보고 위(바닥 쪽) 테두리 하나만 그린다.
+    if (!(m & 1) && !(m & 4) && inb(x, y + 1) && wallB[idx(x, y + 1)]! >= 0) m |= 4 | 32 | 64;
     if (useRock) { lower[idx(x, y)] = autoCell(rockGroup!, m, x, y); if (m !== 255) rimmed += 1; continue; }
     const g = groups[groups.length > 1 && hash01(x, y, seed) < 0.5 ? 1 : 0]!;
     lower[idx(x, y)] = ceilingTile(g, m) ?? voidTile;
@@ -308,15 +318,24 @@ export function composeDungeon(ts: TilesetDef, spec: DungeonSpec): DungeonCompos
     let id: string = pick(fl.base);
     const byKindPref = r ? (r.kind === "lake" && profile.lakeFloor ? profile.lakeFloor : fl.byKind?.[r.kind]) : undefined;
     const byKind = byKindPref ? pick(byKindPref) : undefined;
-    if (r?.kind === "cell" && hasKit(K.floorCell) && y < r.y + 3) id = K.floorCell;
-    else if (byKind && hasKit(byKind)) id = byKind;
+    // 감방 윗 3줄만 황토 판(floor-cell)을 깔던 규칙은 뺐다 — 방 위쪽만 덮고 16px 가로선으로 끊긴 「반쪽 바닥」으로 읽혔다(2026-10-25 floor VQA r5 catacomb). 감방 바닥은 프로필 byKind 가 정한다.
+    if (byKind && hasKit(byKind)) id = byKind;
     else {
       for (const [k, p] of fl.patches.entries()) if (hasKit(p.kit) && vnoise(x, y, p.scale ?? 4, seed * 11 + k * 37) > p.at) id = p.kit;
       for (const [k, sc] of (fl.scatter ?? []).entries()) if (sc.p > 0 && hasKit(sc.kit) && hash01(x, y, seed * 17 + k) < sc.p) id = sc.kit;
     }
     if (fl.shore && hasKit(fl.shore) && nearLiquid(x, y) && hash01(x, y, seed + 71) < 0.8) id = fl.shore;
     if (fl.tile !== undefined && id === pick(fl.base)) { lower[idx(x, y)] = fl.tile; continue; }
-    if (fl.mix || kit(id).ai?.tags?.includes("섞음")) { const rows = kit(id).rows; lower[idx(x, y)] = rows[Math.floor(hash01(x, y, seed * 5 + 3) * rows.length)]!.tiles[Math.floor(hash01(y, x, seed * 7 + 1) * rows[0]!.tiles.length)]!; }
+    // 섞음: 바닥 칸을 키트 무늬 순서 대신 해시로 고른다 — 키트 무늬 그대로 깔면 2~3칸 주기 반복이 넓은 방에서 격자로 드러났다(2026-10-25 floor VQA r4).
+    if (fl.mix || kit(id).ai?.tags?.includes("섞음")) {
+      const rows = kit(id).rows, w = rows[0]!.tiles.length;
+      // mixCells 는 첫 후보 키트 기준 번호 — 옛 사본이 다른(작은) 키트로 물러섰으면 범위 안 번호만 남는다.
+      const all = Array.from({ length: rows.length * w }, (_, k) => k);
+      const listed = id === pick(fl.base) ? (fl.mixCells ?? []).filter((k) => k < all.length) : [];
+      const cells = listed.length ? listed : all;
+      const k = cells[Math.floor(hash01(x, y, seed * 5 + 3) * cells.length)]!;
+      lower[idx(x, y)] = rows[Math.floor(k / w)]!.tiles[k % w]!;
+    }
     else lower[idx(x, y)] = tileOf(id, x, y);
   }
   // 오토타일 바닥(얼음굴): 걷는 바닥 = ground 오토타일(이웃 = 걷는 바닥·다리), 호수 방 + 잡음 덩이 = 빙판 오토타일(이웃 = 빙판 칸).
@@ -348,12 +367,19 @@ export function composeDungeon(ts: TilesetDef, spec: DungeonSpec): DungeonCompos
   if (type === "mine" && hasKit("bd-pick-aqueduct-sewer-floor-plank")) {
     const plank = "bd-pick-aqueduct-sewer-floor-plank";
     const paintRow = (y: number, x0: number, x1: number) => { for (let x = x0; x < x1; x += 1) if (isWalk(x, y) && !bridge[idx(x, y)]) lower[idx(x, y)] = tileOf(plank, x, y); };
-    for (const c of corridors) {
-      if (c.dir !== "E" && c.dir !== "W") continue;
-      const ty = c.rect.y + Math.floor(c.rect.h / 2);
-      paintRow(ty, c.rect.x, c.rect.x + c.rect.w);
-      for (const id of [c.a, c.b]) { const rm = rooms.find((q) => q.id === id); if (rm && (rm.kind === "junction" || rm.kind === "entrance")) paintRow(rm.y + Math.floor(rm.h / 2), rm.x, rm.x + rm.w); }
+    // 방마다 선로 한 줄 — 높이가 다른 통로 둘이 한 방에 두 줄을 칠해 두꺼운 널판 띠가 됐고, 통로 가운데 줄이 방 줄과 달라 문목에서 한 칸 꺾였다(2026-10-25 floor VQA r5 mine).
+    const roomRow = new Map<string, number>();
+    const horiz = corridors.filter((c) => c.dir === "E" || c.dir === "W");
+    for (const c of horiz) {
+      const mid = c.rect.y + Math.floor(c.rect.h / 2);
+      for (const id of [c.a, c.b]) { const rm = rooms.find((q) => q.id === id); if (rm && (rm.kind === "junction" || rm.kind === "entrance") && !roomRow.has(rm.id) && mid >= rm.y && mid < rm.y + rm.h) roomRow.set(rm.id, mid); }
     }
+    for (const c of horiz) {
+      const mid = c.rect.y + Math.floor(c.rect.h / 2);
+      const near = [c.a, c.b].map((id) => roomRow.get(id)).find((r) => r !== undefined && r >= c.rect.y && r < c.rect.y + c.rect.h);
+      paintRow(near ?? mid, c.rect.x, c.rect.x + c.rect.w);
+    }
+    for (const [id, ty] of roomRow) { const rm = rooms.find((q) => q.id === id)!; paintRow(ty, rm.x, rm.x + rm.w); }
   }
   // 액체: 물은 운하 오토타일(돌 둑 테두리), 용암은 용암 키트 무늬. 다리 칸 밑도 같은 액체로 이어 보이게 마스크에 센다.
   const liqLike = (x: number, y: number) => inb(x, y) && (liquid[idx(x, y)] === 1 || bridge[idx(x, y)] === 1);
@@ -366,7 +392,11 @@ export function composeDungeon(ts: TilesetDef, spec: DungeonSpec): DungeonCompos
     liquidCells += 1;
     if (voidLiquid) continue;   // 허공은 천장 오토타일이 이미 칠했다
     if (profile.bank && (profile.liquid !== "lava" || !gapLava)) bankCells.push(idx(x, y));   // 용암은 gap 용암 오토타일이 식은 껍질 테두리를 그리면 둑을 얹지 않는다
-    if (profile.bank && profile.liquid !== "lava" && canal) { lower[idx(x, y)] = canal.variantMap["255"] ?? voidTile; continue; }   // 자연 물가: 가득 찬 물 칸 + 2층 둑 덧그림
+    if (profile.bank && profile.liquid !== "lava" && canal) {
+      // 몸통은 gap 물 속 변형 6종(늪 = 초록 B, 그 밖 = A)을 칸 해시로 — 운하 몸통 한 칸은 흰 점이 같은 자리라 연못에 16px 점 격자가 섰다(2026-10-25 floor VQA r5 swamp).
+      const body = autos.get(profile.id === "swamp" ? "beodeul_dungeon_water_B" : "beodeul_dungeon_water_A")?.interiorVariants?.[0];
+      lower[idx(x, y)] = body?.length ? body[cellHash(x, y) % body.length]! : canal.variantMap["255"] ?? voidTile; continue;
+    }   // 자연 물가: 가득 찬 물 칸 + 2층 둑 덧그림
     if (profile.liquidKit && hasKit(pick(profile.liquidKit))) { const rows = kit(pick(profile.liquidKit)).rows; lower[idx(x, y)] = rows[Math.floor(hash01(x, y, seed * 3 + 5) * rows.length)]!.tiles[Math.floor(hash01(y, x, seed * 9 + 2) * rows[0]!.tiles.length)]!; continue; }
     let m = 0;
     const bits: [number, number, number][] = [[0, -1, 1], [1, 0, 2], [0, 1, 4], [-1, 0, 8], [1, -1, 16], [1, 1, 32], [-1, 1, 64], [-1, -1, 128]];
@@ -481,7 +511,8 @@ export function composeDungeon(ts: TilesetDef, spec: DungeonSpec): DungeonCompos
       const X = x + dx, Y = y + dy;
       // 물·용암·다리 위에는 아무것도 놓지 않는다(액체는 걸을 수 없는 칸, 다리는 길이다)
       if (inb(X, Y) && (liquid[idx(X, Y)] || bridge[idx(X, Y)]) && !opts.liquidOk) return false;
-      if (ownSupport && up >= 0) {
+      if (opts.liquidOk && /boat/.test(kitId) && !liquid[idx(X, Y)]) return false;   // 배는 물 위에만 — 바닥에 얹힌 배가 「뭍에 오른 배」로 읽혔다(2026-10-25 floor VQA r5 cave)
+      if (ownSupport && up >= 0 && !opts.liquidOk) {
         const bottom = dy === def.height - 1;
         if (bottom ? !isWalk(X, Y) : !(isWalk(X, Y) || isWall(X, Y))) return false;
       }
@@ -490,6 +521,18 @@ export function composeDungeon(ts: TilesetDef, spec: DungeonSpec): DungeonCompos
       cells.push({ x: X, y: Y, lo, up });
     }
     if (!cells.length) return false;
+    // 잡동사니(상자·통·자루·광석·뼈·잔해)는 벽가 또는 다른 물건 곁에만 — 방 한가운데 홀로 선 상자 더미가 길을 막는 「떠 있는 물건」으로 읽혔다(2026-10-25 floor VQA r4 castle·catacomb).
+    if (!opts.free && CLUTTER_RE.test(kitId)) {
+      const anchored = cells.some((c) => {
+        for (let dy = -1; dy <= 1; dy += 1) for (let dx = -1; dx <= 1; dx += 1) {
+          const X = c.x + dx, Y = c.y + dy;
+          if (!inb(X, Y) || cells.some((q) => q.x === X && q.y === Y)) continue;
+          if (!isFloor(X, Y) || isWall(X, Y) || upper[idx(X, Y)]! >= 0) return true;
+        }
+        return false;
+      });
+      if (!anchored) return false;
+    }
     const before = cells.map((c) => [lower[idx(c.x, c.y)]!, upper[idx(c.x, c.y)]!] as const);
     for (const c of cells) {
       if (c.lo >= 0) lower[idx(c.x, c.y)] = c.lo;
@@ -717,7 +760,7 @@ export function composeDungeon(ts: TilesetDef, spec: DungeonSpec): DungeonCompos
         cluster(rs, e[0]?.[0] ?? r.x + 1, e[0]?.[1] ?? r.y + 1, 3, [[K.crate, 2], [K.barrel, 2], [K.crateStack, 1], [K.bucket, 1]]);
         put(K.brazier, r.x + 1 + Math.floor(rs() * 2), r.y + r.h - 2);
         put(K.brazier, r.x + r.w - 2 - Math.floor(rs() * 2), r.y + r.h - 2);
-        for (const [x, y] of e.slice(3, 7)) if (rs() < 0.6) put(weighted(rs, litter), x, y);
+        for (const [x, y] of e.slice(3, 5)) if (rs() < 0.5) put(weighted(rs, litter), x, y);
         // 입구 앵커: 계단 앞 길 양옆 기둥 한 쌍 — 「거의 빈 10×8 바닥」으로 읽혔다(2026-10-23 dg2-r1 VQA 지하 묘지). 길(계단 앞 세로 줄)은 비운다.
         if (s && r.w >= 9 && r.h >= 5) { const y = Math.min(r.y + r.h - 3, s.y + 3); if (put(K.column, s.x - 2, y - 1)) put(K.column, s.x + 2, y - 1); }
         break;
@@ -739,14 +782,15 @@ export function composeDungeon(ts: TilesetDef, spec: DungeonSpec): DungeonCompos
         if (r.h >= 7 && r.w >= 11) {
           const my = r.y + Math.floor(r.h / 2);
           if (put(K.brazier, cx - 3, my)) put(K.brazier, cx + 3, my);
-          const side = rs() < 0.5 ? r.x + 2 : r.x + r.w - 4;
-          cluster(rs, side, my, 3, litter);
+          rs();   // 가운데 잔해 무더기는 뺐다 — 기둥 줄 사이 길이 잔해로 막혀 보였다(2026-10-25 floor VQA r0). 난수 한 번은 그대로 소비.
         }
         hangAlong(slots, rs, 4, () => (rs() < 0.75 ? K.torch : K.banner));
         // 벽 장식 아치는 두지 않는다 — 열린 아치도 쇠창살 아치도 「어디로도 안 가는 문」으로 읽혔다(2026-10-23 VQA r1·r2). 난수 한 번은 그대로 소비해 배치를 흔들지 않는다.
         rs();
         const e = edgeCells(r, rs);
-        for (let c = 0; c < 2 + Math.floor(rs() * 2); c += 1) { const p = e[c * 5]; if (p) cluster(rs, p[0], p[1], 2 + Math.floor(rs() * 2), litter); }
+        // 잔해 모둠은 구석 한 곳만(edgeCells 는 구석이 앞), 작게.
+        rs();
+        if (e[0]) cluster(rs, e[0][0], e[0][1], 2, litter);
         // 지하묘지 홀: 벽가에 동서 석관 두엇(주제 그림) — 홀이 그냥 기둥 방으로 읽혔다.
         if (type === "catacomb") ossuaryWalls(slots, rs, 1);
         if (type === "catacomb" && hasKit(TK("sarcophagus-ew"))) { let n = 0; for (const [x, y] of e.slice(10)) { if (n >= 2) break; if (put(rs() < 0.2 && hasKit(TK("sarcophagus-ew-open")) ? TK("sarcophagus-ew-open") : TK("sarcophagus-ew"), x, y)) n += 1; } }
@@ -874,9 +918,10 @@ export function composeDungeon(ts: TilesetDef, spec: DungeonSpec): DungeonCompos
     }
     for (let y = r.y; y < r.y + r.h; y += 1) for (let x = r.x; x < r.x + r.w; x += 1) {
       if (doorstep[idx(x, y)]) continue;
+      // 배수 창살은 하수도·미궁만(성·묘지 통로 바닥 창살 띠가 「납작한 쇠 띠」로 읽혔다), 잔해는 드물게 — 2026-10-25 floor VQA r0.
       const v = hash01(x, y, seed + i);
-      if (v < 0.05) put(K.grate, x, y, { free: true });
-      else if (v < 0.09) put(weighted(rs, litter), x, y);
+      if (v < 0.03 && (type === "sewer" || type === "labyrinth")) put(K.grate, x, y, { free: true });
+      else if (v > 0.975) put(weighted(rs, litter), x, y);
     }
   });
 

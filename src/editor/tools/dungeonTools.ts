@@ -12,12 +12,11 @@ import { DungeonComposeError } from "../dungeonKit/errors";
 import { capabilityTableText } from "../dungeonKit/capabilities";
 import { DUNGEON_GENRES, GENRE_PRESETS, genreOfProject, planPopulation } from "../dungeonKit/genres";
 import { DUNGEON_REFERENCES, GRAMMAR, inferDungeonRequest, inferDungeonType } from "../dungeonKit/grammar";
-import { DUNGEON_GIMMICKS, GIMMICK_LABEL, THEME_GIMMICKS, placeLever, placeThemeGimmick, placeTowerWarp, wallFirst, type DungeonGimmick } from "./dungeonGimmicks";
+import { DUNGEON_GIMMICKS, GIMMICK_LABEL, NATURAL_TYPES, THEME_GIMMICKS, chokeBlockGraphic, placeLever, placeThemeGimmick, placeTowerWarp, wallFirst, type DungeonGimmick } from "./dungeonGimmicks";
 import { composeRouted, routeDungeon } from "../dungeonKit/route";
 import { assertMapIdAvailable } from "./mapHelpers";
 import { MAP_TOOLS } from "./mapTools";
 import { upsertEventIntoMap } from "./eventTools";
-import { resolveGraphic } from "./eventCompile";
 import { ensureNamedSwitch } from "./flagHelpers";
 import { asCell, asRoom, chestLoot, field, list, nested, pickTroops, placeRoamer, text, type Room } from "./jrpgVolumeTools";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
@@ -134,7 +133,8 @@ function buildFloor(draft: Project, args: Record<string, unknown>, floor: FloorO
     const wet = new Set(composed.banks.cells);
     const bridge = new Set<number>();
     composed.picture.forEach((row, y) => { for (let x = 0; x < row.length; x += 1) if (row[x] === "=") bridge.add(y * W + x); });
-    const table = composed.banks.style === "grass" ? BEODEUL_NATURE.bankGrass : composed.banks.style === "bog" ? BEODEUL_NATURE.bankBog : BEODEUL_NATURE.bankLava;
+    // 늪: 진흙 둑(bankMud) — 이끼 둑(bankBog)의 외톨이·가장자리 칸이 진흙 바닥 위 밝은 초록 16px 네모로 읽혔다(2026-10-25 floor VQA r0·r1).
+    const table = composed.banks.style === "grass" ? BEODEUL_NATURE.bankGrass : composed.banks.style === "bog" ? BEODEUL_NATURE.bankMud : BEODEUL_NATURE.bankLava;
     const N8 = [[-1, -1], [0, -1], [1, -1], [-1, 0], [1, 0], [-1, 1], [0, 1], [1, 1]] as const;
     const want = new Map<number, number>();
     for (const c of wet) {
@@ -153,14 +153,17 @@ function buildFloor(draft: Project, args: Record<string, unknown>, floor: FloorO
     const forest = new Set(composed.canopy.cells);
     // 수관 오토타일이 모양을 못 받는 숲 칸(한 칸 폭 틈·외톨이 칸)은 그림 없이 걸을 수 있는 잔디로 남아 숲을 뚫는 길이 된다.
     // 그런 칸은 숲에서 빼 빈터(잔디)로 둔다 — 이웃 모양이 바뀌니 고정점까지 몇 번 되풀이한다.
-    let plan = planBeodeulCanopy(map.width, map.height, composed.canopy.style, forest, (c) => !forest.has(c));
+    // 숲 그늘은 물·용암 칸에 얹지 않는다 — 같은 2층의 둑 그림을 덮어 물이 숲가에서 곧은 16px 네모로 끊겼다(2026-10-25 floor VQA r4 swamp).
+    const wetCells = new Set(composed.banks?.cells ?? []);
+    const shadeOk = (c: number) => !forest.has(c) && !wetCells.has(c);
+    let plan = planBeodeulCanopy(map.width, map.height, composed.canopy.style, forest, shadeOk);
     let opened = 0;
     for (let pass = 0; pass < 6; pass += 1) {
       const leak = [...forest].filter((c) => !plan.canopy.has(c));
       if (!leak.length) break;
       for (const c of leak) forest.delete(c);
       opened += leak.length;
-      plan = planBeodeulCanopy(map.width, map.height, composed.canopy.style, forest, (c) => !forest.has(c));
+      plan = planBeodeulCanopy(map.width, map.height, composed.canopy.style, forest, shadeOk);
     }
     writeBeodeulCanopy(draft, map, tileset, plan);
     if (opened) notes.push(`수관 모양이 안 맞는 한 칸 폭 숲 틈 ${opened}칸은 빈터로 열었다.`);
@@ -303,7 +306,8 @@ function placeLeverGate(draft: Project, map: GameMap, data: Record<string, unkno
   const sw = `sw_${map.id}_lever`;
   ensureNamedSwitch(draft, sw, `${map.name}: 레버 당김(쇠창살 열림)`);
   const fixed = { type: "fixed", speed: 3, frequency: 3 } as const;
-  const bars = resolveGraphic({ textureKey: "tex_easyrpg_charset_object1", characterIndex: 5 } as never);
+  const rock = NATURAL_TYPES.has(String(field(data, "type")) as DungeonType);
+  const bars = chokeBlockGraphic(String(field(data, "type")));
   // 같은 이름 = 한 물체(통로 폭만큼 놓은 창살 칸들) — 이름이 없으면 린트가 「서로 다른 조사물이 같은 그림」으로 본다.
   const ev = (id: string, at: Pt, name: string, pages: GameEvent["pages"]): GameEvent => ({ id, name, x: at.x, y: at.y, trigger: { kind: "action" }, commands: [], pages } as GameEvent);
   // 쇠창살은 통로 폭 전체를 막는다 — 3칸 통로 가운데 한 칸에만 두면 레버 없이 옆으로 지나갔다(2026-10-23 dg-r2 VQA).
@@ -314,10 +318,10 @@ function placeLeverGate(draft: Project, map: GameMap, data: Record<string, unkno
   const barCells = across.filter((c) => (c.x === gate.x && c.y === gate.y) || (isPassable(draft, map, c.x, c.y) && !map.events.some((e) => e.x === c.x && e.y === c.y)));
   barCells.forEach((cell, k) => {
     const gid = k === 0 && cell.x === gate.x && cell.y === gate.y ? `ev_${map.id}_lever_gate` : `ev_${map.id}_lever_gate_${cell.x}_${cell.y}`;
-    upsertEventIntoMap(map, ev(gid, cell, "쇠창살", [
-      { id: `${gid}_p1`, name: "닫힌 쇠창살", conditions: [], graphic: bars, trigger: { kind: "action" }, priority: "same", overlapForbidden: false, movement: fixed,
-        commands: [{ kind: "text", body: "굳게 닫힌 쇠창살이다. 어딘가의 레버로 여는 것 같다." } as Command] },
-      { id: `${gid}_p2`, name: "열린 쇠창살", conditions: [{ kind: "switch", switchId: sw, value: true }], graphic: { transparent: true }, trigger: { kind: "action" }, priority: "below", overlapForbidden: false, movement: fixed, commands: [] },
+    upsertEventIntoMap(map, ev(gid, cell, rock ? "막힌 바위" : "쇠창살", [
+      { id: `${gid}_p1`, name: rock ? "길을 막은 바위" : "닫힌 쇠창살", conditions: [], graphic: bars, trigger: { kind: "action" }, priority: "same", overlapForbidden: false, movement: fixed,
+        commands: [{ kind: "text", body: rock ? "큰 바위가 길을 막고 있다. 어딘가의 레버로 치울 수 있을 것 같다." : "굳게 닫힌 쇠창살이다. 어딘가의 레버로 여는 것 같다." } as Command] },
+      { id: `${gid}_p2`, name: rock ? "치운 바위" : "열린 쇠창살", conditions: [{ kind: "switch", switchId: sw, value: true }], graphic: { transparent: true }, trigger: { kind: "action" }, priority: "below", overlapForbidden: false, movement: fixed, commands: [] },
     ] as GameEvent["pages"]));
   });
   // gap 벽걸이 레버(#3283): 레버 칸 바로 북쪽 벽 앞면에 걸고 벽을 보고 조사한다. 그림·벽이 없으면 바닥에 옛 캐릭터 레버.
@@ -327,7 +331,7 @@ function placeLeverGate(draft: Project, map: GameMap, data: Record<string, unkno
     for (let y = ry; y < ry + rh; y += 1) for (let x = rx; x < rx + rw; x += 1) if (isPassable(draft, map, x, y) && !map.events.some((e) => Math.abs(e.x - x) + Math.abs(e.y - y) <= 1)) roomCells.push({ x, y }); }
   roomCells.sort((a, b) => Math.hypot(a.x - key.x, a.y - key.y) - Math.hypot(b.x - key.x, b.y - key.y));
   const placedLever = placeLever(draft, map, [...wallFirst(draft, map, roomCells), key], `ev_${map.id}_lever`, "레버", sw,
-    [{ kind: "text", body: "어디선가 쇠창살이 올라가는 소리가 울렸다." } as Command], "녹슨 레버가 있다. 힘껏 당겼다!", "레버는 이미 당겨져 있다.");
+    [{ kind: "text", body: rock ? "쿠르릉… 어디선가 바위가 굴러가는 소리가 울렸다." : "어디선가 쇠창살이 올라가는 소리가 울렸다." } as Command], "녹슨 레버가 있다. 힘껏 당겼다!", "레버는 이미 당겨져 있다.");
   if (!placedLever) { warnings.push(`${map.name}: 레버 자리를 못 찾았다`); return ""; }
   const at = placedLever.at;
   return `레버 퍼즐: ${placedLever.wall ? "벽 " : ""}레버 (${at.x},${at.y}${placedLever.wall ? " — 그 아래 칸에서 벽을 보고 조사" : ""}) → 쇠창살 ${barCells.map((c) => `(${c.x},${c.y})`).join(" ")}(통로 폭 전체) 스위치 ${sw}. 레버는 한 칸짜리 벽 레버 그림이 정상이다 — 다시 짓거나 다른 칩셋의 레버 기물을 찍지 않는다`;
@@ -444,7 +448,8 @@ function towerRooms(top: boolean, k: number, seed = 0, shape: TowerFloorShape = 
   if (top) {
     const big = h(99) < 0.6;
     if (shape === "hall") return [landing, { id: "gallery", kind: "hall", w: 12, h: 5, from, dir: "N", shift: 0, len: 3 }, { id: "throne", kind: "boss", w: 10, h: 7, from: "gallery", dir: "N", shift: 0, len: 3, shape: "round" }];
-    if (shape === "observatory") return [landing, { id: "throne", kind: "boss", w: 10, h: 8, from, dir: "N", shift: 0, len: 4, shape: "ring" },
+    // 링(gap 탑 링 키트)은 남·북 문만 있어 동·서 곁방이 닿지 않았다(시드 1·10·18·19 「닿지 않는 방 vault_w, vault_e」) — 관측실 보스방은 둥근 방으로.
+    if (shape === "observatory") return [landing, { id: "throne", kind: "boss", w: 10, h: 8, from, dir: "N", shift: 0, len: 4, shape: "round" },
       { id: "vault_w", kind: "vault", w: 6, h: 5, from: "throne", dir: "W", shape: "round" }, { id: "vault_e", kind: "storage", w: 6, h: 5, from: "throne", dir: "E", shape: "round" }];
     const study: DungeonRoomInput[] = h(k + 7) < 0.55 ? [{ id: "study", kind: h(k + 3) < 0.5 ? "library" : "storage", w: 7, h: 6, from, dir: side, shape: "round" }] : [];
     return [landing, { id: "throne", kind: "boss", w: big ? 10 : 8, h: big ? 8 : 6, from, dir: "N", shift: 0, len: 4, shape: "ring" }, ...study];
