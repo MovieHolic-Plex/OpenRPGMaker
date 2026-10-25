@@ -111,7 +111,7 @@ const installKey = (args: Record<string, unknown>): string => `install:${String(
  * 워커에서 받기: 매니페스트 → (곡만 고르면 그 곡만 남김) → 필요한 파일만 해시 확인하며 받기. 프로젝트 저장소에는 넣지 않는다 —
  * 문서에 dataUrl 로 들어가고, 편집기가 저장할 때 호스트가 assets/ 파일로 뗀다(inlineMediaRefs.ts).
  */
-async function prepareFromWorker(access: StoreReadAccess, slug: string, assetIds: readonly string[]): Promise<PreparedStoreItem & { readonly autoInstall: boolean }> {
+async function prepareFromWorker(access: StoreReadAccess, slug: string, assetIds: readonly string[]): Promise<PreparedStoreItem & { readonly autoInstall: boolean; readonly userMentionedStore?: boolean }> {
   const item: StoreItemDetail = await access.item(slug);
   const full = await access.manifest(slug, item.latestVersion);
   const manifest: StorePackManifest = assetIds.length ? subsetMusicManifest(full, assetIds) : full;
