@@ -1501,6 +1501,7 @@ export function applyFallenFieldRules(project: Project, exec: Exec): void {
   exec(project, "tune_field_enemies", { sightRange: 7, vision: "cone", pace: "fast", lungeSteps: 3, lungeSpeed: 6 });
   exec(project, "set_project_settings", { battle: { allowAutoBattle: false, clearStatesAfterBattle: true }, saveAccess: "savePoints" });
   // 마을 세이브 포인트 — 광장 분수 곁 별빛 결정(사당 제단·지하 4층 푸른 결정과 같은 결정 모양).
-  exec(project, "place_savepoint", { mapId: "fs_hub", x: 37, y: 29, id: "ev_fs_hub_savepoint", name: "별빛 기록석", mode: "slot" });
+  exec(project, "place_savepoint", { mapId: "fs_hub", x: 37, y: 28, id: "ev_fs_hub_savepoint", name: "별빛 기록석", mode: "slot",
+    objectId: "kit:beodeul_city/bd-pick-dungeon-theme-crystal-pedestal" });
 }
 
