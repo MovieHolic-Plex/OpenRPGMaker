@@ -14,6 +14,7 @@ import {
   explainOpenAiCompatError,
   isBlockedOpenAiCompatHost,
   isOpenAiCompatProviderId,
+  openAiCompatModelSeesImages,
   openAiCompatModelVerdict,
   openAiCompatSuffixedModelId,
   type OpenAiCompatWorkerEndpoint,
@@ -57,7 +58,9 @@ export function resolveOpenAiCompatModel(provider: string, requested?: string) {
     baseUrl: endpoint.baseUrl,
     // reasoning 을 끄면 pi-ai 는 reasoning_effort 를 실을 이유가 없다 — 모르는 인자를 400 으로 거절하는 서버의 기본 경로.
     reasoning: endpoint.reasoningMode === "field",
-    input: endpoint.supportsImages ? ["text", "image"] : ["text"],
+    // 그림은 모델마다 따진다 — 같은 엔드포인트에서도 그림을 못 보는 모델은 그림이 든 요청에 빈 답을 준다(2026-10-25 실측).
+    // 그림을 못 보는 모델이면 pi-ai 가 그림 자리를 글 한 줄로 바꿔 보낸다. 강도 접미사가 붙는 경우는 shapeOpenAiCompatCall 이 최종 ID 로 다시 정한다.
+    input: openAiCompatModelSeesImages(endpoint, id) ? ["text", "image"] : ["text"],
     cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 },
     contextWindow: endpoint.contextWindow,
     maxTokens: endpoint.maxOutputTokens,
@@ -90,14 +93,23 @@ export function shapeOpenAiCompatCall<M extends { id: string; name?: string }, O
   if (!endpoint) return { model, options };
   const direct = openAiCompatModelVerdict(endpoint, model.id);
   if (!direct.allowed) throw Object.assign(new Error(`${endpoint.name}: 모델 「${model.id}」 호출을 거절했어요. ${direct.reason ?? ""} 다른 모델로 바꿔 보내지 않아요.`), { status: 403 });
-  if (endpoint.reasoningMode === "field" || !options) return { model, options };
+  if (endpoint.reasoningMode === "field" || !options) return { model: withImageInput(endpoint, model, model.id), options };
   const { reasoning, ...rest } = options as Record<string, unknown>;
-  if (endpoint.reasoningMode === "none") return { model, options: rest as O };
+  if (endpoint.reasoningMode === "none") return { model: withImageInput(endpoint, model, model.id), options: rest as O };
   const id = openAiCompatSuffixedModelId(model.id, typeof reasoning === "string" ? reasoning : undefined);
   // 접미사가 붙은 최종 ID 도 같은 패턴을 지켜야 한다(허용 패턴이 접미사를 막을 수 있다).
   const verdict = openAiCompatModelVerdict(endpoint, id);
   if (!verdict.allowed) throw Object.assign(new Error(`${endpoint.name}: 모델 「${id}」 호출을 거절했어요. ${verdict.reason ?? ""} 다른 모델로 바꿔 보내지 않아요.`), { status: 403 });
-  return { model: id === model.id ? model : { ...model, id, name: id }, options: rest as O };
+  return { model: withImageInput(endpoint, id === model.id ? model : { ...model, id, name: id }, id), options: rest as O };
+}
+
+/** 최종 모델 ID 가 그림을 보는지에 맞춰 input 을 고친다(바뀔 때만 사본). */
+function withImageInput<M extends { id: string }>(endpoint: OpenAiCompatWorkerEndpoint, model: M, finalId: string): M {
+  const current = (model as { input?: readonly string[] }).input;
+  if (!Array.isArray(current)) return model;
+  const sees = openAiCompatModelSeesImages(endpoint, finalId);
+  if (sees === current.includes("image")) return model;
+  return { ...model, input: sees ? ["text", "image"] : ["text"] };
 }
 
 /**

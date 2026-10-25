@@ -13,6 +13,7 @@
 import matrix from "./assistantRoleMatrix.json";
 import type { AiConfig } from "./llmClient";
 import { modelForRole, type RoleModel, type ThinkingEffort } from "./modelRoles";
+import { openAiCompatBaseModelId, openAiCompatModelSeesImages } from "./openAiCompat";
 import { resolvePixelModel } from "./pixelModel";
 
 export type AssistantRole = "main" | "smol" | "advisor" | "vision" | "image" | "pixel";
@@ -27,6 +28,9 @@ export interface AvailableRoute {
   readonly models?: readonly string[];
   /** 사용자 지정 엔드포인트가 그림 입력을 받는가. 다른 경로는 표가 정한다. */
   readonly supportsImages?: boolean;
+  /** 사용자 지정 엔드포인트의 그림 모델 패턴·그림 시험에서 못 본 모델(openAiCompatModelSeesImages). */
+  readonly imageModels?: readonly string[];
+  readonly imageBlindModels?: readonly string[];
 }
 
 export type RoleAssignment =
@@ -62,12 +66,22 @@ function routeMatches(route: MatrixRoute, available: AvailableRoute): boolean {
   return route.providerId === available.providerId;
 }
 
-/** 그 경로가 이 칸의 모델을 실제로 낼 수 있는가. 목록이 없으면 표를 믿고, 있으면 목록에 있어야 한다(접두 일치 — gemini-4-argon-medium 같은 이름 포함). */
+/**
+ * 그 경로가 이 칸의 모델을 실제로 낼 수 있는가. 목록이 없으면 표를 믿고, 있으면 목록에 있어야 한다(접두 일치 — gemini-4-argon-medium 같은 이름 포함,
+ * 거꾸로 칸이 gemini-4-argon-high 처럼 강도 접미사를 단 이름이면 목록의 기본 이름 gemini-4-argon 으로도 낸다).
+ * 그림이 필요한 칸은 그 모델(칸에 적힌 최종 ID)이 그림을 실제로 보는 경우만 — 2026-10-25 8318 실측: 같은 엔드포인트에서도 모델마다 다르다.
+ */
 function entryUsable(entry: MatrixEntry, route: MatrixRoute, available: AvailableRoute): boolean {
-  if (entry.requiresEndpointImages && available.supportsImages !== true) return false;
+  if (entry.requiresEndpointImages && !openAiCompatModelSeesImages({
+    supportsImages: available.supportsImages === true,
+    ...(available.imageModels ? { imageModels: available.imageModels } : {}),
+    ...(available.imageBlindModels ? { imageBlindModels: available.imageBlindModels } : {}),
+  }, entry.model)) return false;
   const listed = available.models ?? [];
   if (!listed.length) return true;
-  return listed.some((model) => model === entry.model || model.startsWith(`${entry.model}-`) || (route.match ? model.includes(route.match) && model.includes(entry.model) : false));
+  const base = openAiCompatBaseModelId(entry.model);
+  return listed.some((model) => model === entry.model || model.startsWith(`${entry.model}-`) || (base !== entry.model && model === base)
+    || (route.match ? model.includes(route.match) && model.includes(entry.model) : false));
 }
 
 function candidatesFor(role: AssistantRole, available: readonly AvailableRoute[]): Candidate[] {

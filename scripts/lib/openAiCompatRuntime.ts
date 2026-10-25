@@ -19,6 +19,8 @@ import {
   isOpenAiCompatProviderId,
   openAiCompatAllowedModels,
   openAiCompatModelVerdict,
+  openAiCompatPatternMatches,
+  openAiCompatSuffixedModelId,
   type OpenAiCompatEndpointPublic,
   type OpenAiCompatLastTest,
   type OpenAiCompatWorkerEndpoint,
@@ -26,6 +28,7 @@ import {
 import {
   openAiCompatPublicView,
   openAiCompatStore,
+  type OpenAiCompatImageProbe,
   type OpenAiCompatSaveInput,
   type StoredOpenAiCompatEndpoint,
 } from "./openAiCompatStore.ts";
@@ -109,13 +112,101 @@ export async function resolveOpenAiCompatRun(ids: readonly string[]): Promise<{
       allowModels: row.allowModels,
       blockModels: row.blockModels,
       supportsImages: row.supportsImages,
+      imageModels: row.imageModels,
+      imageBlindModels: row.imageProbe?.blind ?? [],
       maxOutputTokens: row.maxOutputTokens,
       contextWindow: row.contextWindow,
       firstTokenTimeoutSec: row.firstTokenTimeoutSec,
     };
     keys[id] = row.apiKey || OPENAI_COMPAT_NO_KEY;
+    // 그림을 받는다고 켠 엔드포인트인데 아직 그림 시험을 하지 않았으면(또는 오래됐으면) 뒤에서 한 번 시험한다 — 이번 실행은 기다리지 않는다.
+    if (row.supportsImages && !process.env.VITEST && !imageProbing.has(id) && (!row.imageProbe || Date.now() - row.imageProbe.at > IMAGE_PROBE_MAX_AGE_MS)) {
+      imageProbing.add(id);
+      void probeOpenAiCompatImageModels(id).catch(() => undefined);
+    }
   }
   return { endpoints, keys };
+}
+
+// ── 그림 시험 ─────────────────────────────────────────────────────────────────
+// 2026-10-25 실측(127.0.0.1/mdc-server:8318): 같은 프록시에서 gemini-4-argon-high 만 그림을 보고, gemini-4-argon·gemini-3.8-flash 는
+// 그림이 든 요청에 빈 답(completion_tokens 0, finish "stop"), gemini-4-argon-medium 은 400 이었다. 엔드포인트 하나의 스위치로는 못 가른다.
+// 작은 단색 그림 한 장을 모델마다 보내 글로 답하면 «본다», 빈 답·400 이면 «못 본다» 로 적는다. 못 보는 모델에는 그림을 보내지 않는다
+// (pi-ai 가 그림 자리를 글 한 줄로 바꾼다 — scripts/lib/openAiCompatModel.ts).
+
+/** 8×8 단색(빨강) PNG. */
+const IMAGE_PROBE_PNG = "iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAIAAABLbSncAAAAEUlEQVR42mO4q6SEFTEMLQkAaixIQekd3E0AAAAASUVORK5CYII=";
+const IMAGE_PROBE_MAX_AGE_MS = 7 * 24 * 3600 * 1000;
+const IMAGE_PROBE_MAX_MODELS = 8;
+const IMAGE_PROBE_TIMEOUT_MS = 60_000;
+const imageProbing = new Set<string>();
+
+/** 시험할 최종 모델 ID — 그림 모델 패턴에 맞는 것·기본 모델 먼저, suffix 방식이면 강도 접미사를 붙인 이름까지. */
+export function openAiCompatImageProbeCandidates(row: Pick<StoredOpenAiCompatEndpoint, "models" | "defaultModel" | "reasoningMode" | "allowModels" | "blockModels" | "imageModels">): string[] {
+  const listed = openAiCompatAllowedModels(row, [...(row.defaultModel ? [row.defaultModel] : []), ...row.models]);
+  const expanded = listed.flatMap((id) => row.reasoningMode === "suffix"
+    ? [id, ...["high", "medium", "low"].map((level) => openAiCompatSuffixedModelId(id, level))]
+    : [id]);
+  const unique = [...new Set(expanded)].filter((id) => openAiCompatModelVerdict(row, id).allowed);
+  const wanted = (id: string) => row.imageModels.some((pattern) => openAiCompatPatternMatches(pattern, id)) || id === row.defaultModel;
+  return [...unique.filter(wanted), ...unique.filter((id) => !wanted(id))].slice(0, IMAGE_PROBE_MAX_MODELS);
+}
+
+function replyTextOf(text: string): string | undefined {
+  try {
+    const parsed = JSON.parse(text) as { choices?: Array<{ message?: { content?: unknown } }> };
+    const content = parsed.choices?.[0]?.message?.content;
+    if (typeof content === "string") return content;
+    if (Array.isArray(content)) return content.map((part) => (typeof (part as { text?: unknown })?.text === "string" ? (part as { text: string }).text : "")).join("");
+    return "";
+  } catch {
+    return undefined;
+  }
+}
+
+/**
+ * 저장된 엔드포인트의 모델마다 그림 한 장을 보내 본다. 글로 답하면 sees, 빈 답·400/422 면 blind.
+ * 인증·서버 오류·시간 초과는 판정하지 않는다(이전 판정을 그대로 둔다). 키는 응답·오류 어디에도 싣지 않는다.
+ */
+export async function probeOpenAiCompatImageModels(id: string, fetchImpl: FetchLike = fetch): Promise<OpenAiCompatImageProbe | undefined> {
+  try {
+    const row = openAiCompatStore.get(id);
+    if (!row?.supportsImages) return undefined;
+    const check = checkOpenAiCompatBaseUrl(row.baseUrl);
+    if (!check.ok || !check.url || (check.insecurePublic && !row.allowInsecurePublic)) return undefined;
+    await assertOpenAiCompatHostSafe(check.url);
+    const candidates = openAiCompatImageProbeCandidates(row);
+    if (!candidates.length) return undefined;
+    const headers = { ...authHeaders(row), "Content-Type": "application/json" };
+    const chatUrl = `${check.url}/chat/completions`;
+    const blind: string[] = [];
+    const sees: string[] = [];
+    const probeOne = async (model: string): Promise<void> => {
+      const body = {
+        model, stream: false, max_tokens: 2048,
+        messages: [{ role: "user", content: [
+          { type: "text", text: "What colour is this image? Answer with one word." },
+          { type: "image_url", image_url: { url: `data:image/png;base64,${IMAGE_PROBE_PNG}` } },
+        ] }],
+      };
+      try {
+        const response = await boundedFetch(fetchImpl, chatUrl, { method: "POST", headers, body: JSON.stringify(body) }, IMAGE_PROBE_TIMEOUT_MS);
+        if (response.status === 400 || response.status === 422) { blind.push(model); return; }
+        if (response.status >= 300) return;
+        const reply = replyTextOf(response.text);
+        if (reply === undefined) return;
+        (reply.trim() ? sees : blind).push(model);
+      } catch { /* 시간 초과·연결 실패는 판정하지 않는다 */ }
+    };
+    let next = 0;
+    const lane = async (): Promise<void> => { while (next < candidates.length) await probeOne(candidates[next++]!); };
+    await Promise.all(Array.from({ length: Math.min(3, candidates.length) }, lane));
+    const probe: OpenAiCompatImageProbe = { at: Date.now(), blind, sees };
+    if (blind.length || sees.length) openAiCompatStore.recordImageProbe(id, probe);
+    return probe;
+  } finally {
+    imageProbing.delete(id);
+  }
 }
 
 /**
@@ -179,6 +270,8 @@ export interface OpenAiCompatTestResult {
   readonly chat?: { readonly ok: boolean; readonly status?: number; readonly message?: string };
   /** true/false = 도구 호출 시험 결과, null = 시험하지 않았다. */
   readonly toolsOk: boolean | null;
+  /** 그림 입력을 켠 저장된 엔드포인트면 모델별 그림 시험 결과. */
+  readonly imageProbe?: OpenAiCompatImageProbe;
   readonly latencyMs: number;
   readonly warnings: string[];
 }
@@ -385,6 +478,18 @@ export async function testOpenAiCompat(input: OpenAiCompatTestInput, fetchImpl: 
       toolsOk, message: message.slice(0, 200),
     };
     openAiCompatStore.recordTest(input.id, { models, lastTest });
+    if (ok && stored.supportsImages) {
+      // 그림 입력을 켠 엔드포인트는 모델마다 그림을 실제로 보는지도 시험한다(빈 답이면 그 모델에는 그림을 보내지 않는다).
+      imageProbing.add(input.id);
+      const probe = await probeOpenAiCompatImageModels(input.id, fetchImpl);
+      if (probe && (probe.sees.length || probe.blind.length)) {
+        return {
+          ...result,
+          imageProbe: probe,
+          message: `${result.message} · 그림 시험: 보는 모델 ${probe.sees.length ? probe.sees.join(", ") : "없음"}${probe.blind.length ? ` · 그림 못 보는 모델 ${probe.blind.join(", ")}(그림을 보내지 않음)` : ""}`,
+        };
+      }
+    }
   }
   return result;
 }
