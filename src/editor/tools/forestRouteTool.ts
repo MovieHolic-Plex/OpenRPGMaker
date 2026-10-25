@@ -11,11 +11,11 @@ import { runTool } from "./toolRunner";
 import { requireMap } from "./mapHelpers";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
 
-type Side = "north" | "south" | "east" | "west";
+export type Side = "north" | "south" | "east" | "west";
 type Mood = "normal" | "dim" | "dark" | "fog" | "darkfog";
-const ACROSS = 32, ALONG = 40;
+export const ACROSS = 32, ALONG = 40;
 
-function call(project: Project, name: string, args: Record<string, unknown>): { data?: unknown; summary?: string } {
+export function call(project: Project, name: string, args: Record<string, unknown>): { data?: unknown; summary?: string } {
   const ctx = { project, assistantRun: false };
   const res = runTool(ctx, name, args, { dryRun: false });
   if (!res.ok) throw new ToolError(`${name} 실패: ${res.summary}`);
@@ -24,7 +24,7 @@ function call(project: Project, name: string, args: Record<string, unknown>): { 
 }
 
 /** 추상 좌표(u = 가로지름 0..31, v = 진행 0..39, v=39 가 들어오는 쪽, v=0 이 나가는 쪽)를 실제 맵 칸으로. */
-function toMap(side: Side, u: number, v: number): Cell {
+export function toMap(side: Side, u: number, v: number): Cell {
   switch (side) {
     case "north": return { x: u, y: v };
     case "south": return { x: ACROSS - 1 - u, y: ALONG - 1 - v };
@@ -32,10 +32,10 @@ function toMap(side: Side, u: number, v: number): Cell {
     case "west": return { x: v, y: ACROSS - 1 - u };
   }
 }
-const dims = (side: Side): { width: number; height: number } =>
+export const dims = (side: Side): { width: number; height: number } =>
   side === "north" || side === "south" ? { width: ACROSS, height: ALONG } : { width: ALONG, height: ACROSS };
 /** 두 칸 폭 문은 「왼쪽/위쪽 칸」 — 가로지름 축이 뒤집히는 쪽은 한 칸 당긴다. */
-function exitCell(side: Side, u: number, v: number): Cell {
+export function exitCell(side: Side, u: number, v: number): Cell {
   const flip = side === "south" || side === "west";
   const c = toMap(side, Math.floor(u) + (flip ? 1 : 0), v);
   return { x: Math.round(c.x), y: Math.round(c.y) };
@@ -78,14 +78,14 @@ function forestSpec(id: string, name: string, side: Side, seed: number, last: bo
     entry, exit,
   };
 }
-function centerBlob(side: Side, u: number, v: number, ru: number, rv: number) {
+export function centerBlob(side: Side, u: number, v: number, ru: number, rv: number) {
   const c = toMap(side, u, v);
   const vertical = side === "north" || side === "south";
   return { cx: c.x, cy: c.y, rx: vertical ? ru : rv, ry: vertical ? rv : ru };
 }
 
 /** 시작 맵 그쪽 가장자리에서 걸어 닿는 칸 — 길·빈 칸을 가운데 가까운 것부터. 없으면 가까운 칸에서 가장자리까지 윗층을 걷어 길을 낸다. */
-function originEdge(project: Project, map: GameMap, side: Side): Cell {
+export function originEdge(project: Project, map: GameMap, side: Side): Cell {
   const W = map.width, H = map.height;
   const start = project.startMapId === map.id && project.startPos ? project.startPos : { x: Math.floor(W / 2), y: Math.floor(H / 2) };
   const reach = computeReachableCells(project, map, start.x, start.y);
@@ -123,7 +123,7 @@ function inward(map: GameMap, at: Cell): { x: number; y: number; direction: "up"
   if (at.x === 0) return { x: 1, y: at.y, direction: "right" };
   return { x: at.x - 1, y: at.y, direction: "left" };
 }
-function link(project: Project, a: { mapId: string } & Cell, b: { mapId: string } & Cell): void {
+export function link(project: Project, a: { mapId: string } & Cell, b: { mapId: string } & Cell): void {
   call(project, "create_transfer_pair", { a, b });
   for (const [from, to] of [[a, b], [b, a]] as const) {
     const map = project.maps[from.mapId]!;

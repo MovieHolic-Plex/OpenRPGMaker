@@ -20,6 +20,7 @@ export function wantsPuzzle(task: string): boolean {
 }
 export const FALLEN_TIERS: readonly { readonly words: RegExp; readonly tools: readonly string[]; readonly card?: string }[] = [
   { words: /숲|들판|필드|초원|forest|woods?\b|field|meadow/iu, tools: ["author_forest_route"] },
+  { words: /설원|눈길|눈보라|눈 덮인|고갯길|서리|얼음 틈|빙판|북방|snow|blizzard|frozen/iu, tools: ["author_snow_route"] },
   { words: /뒤지|뒤져|뒤질|수납|항아리|통을|통이랑|통과 상자|서랍|옷장|들키|들켜|몰래|search/iu, tools: ["place_search_containers"] },
   { words: /숨겨|숨긴|숨은|조사하면|조사할|비석|책장|망원경|표지판|팻말|일지/u, tools: ["place_examine_hotspots"] },
   { words: /전부|모두|일괄|이름을|바꿔|바꾸/u, tools: ["replace_text_in_project"] },
@@ -103,6 +104,7 @@ export const GAME_CARD = `[게임 요소 — 퀘스트·아이템·상점·전�
 - 엔딩·결말: list_endings 로 보고 define_ending(id·name·epilogue)으로 엔딩을 정의한 뒤 선택지 갈래에 {kind:'triggerEnding',endingId} 를 넣는다. 내레이션 + returnToTitle 만으로 엔딩을 흉내 내지 않는다. «마지막에» 묻는 선택이면 그 앞 조건(보스 처치·완료 스위치)을 페이지 조건으로 건다.
 - 요청이 가리키는 자리(다리 앞·강가·우물 옆…)가 맵에 없으면 묻지 않는다: 그 물건·지형을 만들어(stamp_object·fill_region 덧그리기, 없으면 가장 그럴듯한 길목) 짓고 보고에 「~가 없어 ~에 만들었다」고 쓴다.
 - [폴른 스타식 일 — 맞는 도구가 있으면 손으로 조립하지 말고 그 도구를 쓴다]
+  · 설원 길 맵(눈 덮인 고갯길·서리 가도·얼음 들판, 1~3장): author_snow_route{fromMapId, side, count, moods:['snow','blizzard'], gapCount(얼음 틈 자리 수), openEnd} — 초록 숲 도구로 북방을 짓지 않는다. 가장자리 연결까지 한다. 얼음 틈 자리는 data.maps[i].gaps[k].from/to(틈 앞뒤 길 칸)로 돌려받는다 — 틈을 건너는 장치는 따로 둔다.
   · 숲·들판 맵(한 장이든 여러 장이든: 구불구불한 숲길·활엽수·나무 사이 숨은 물건·어둡고 안개 낀 숲, 트인 들판은 terrain:'field'): author_forest_route{fromMapId, side:'north'…, count, terrain, moods:['normal','darkfog'], hiddenPerMap} — 가장자리 연결까지 한다(따로 create_transfer_pair 하지 않는다). 돌려받은 data.maps[i].mapId·clearing 에 보스·사당·필드 적을 둔다. 「숲에 적/사당」 요청인데 숲 맵이 없으면 마을 맵 나무 덩이에 두지 말고 이 도구로 숲부터 짓는다.
   · 뒤질 수 있는 통·상자·항아리·옷장(뒤지는 연출, 한 번만, 다시 보면 빈 것, 주인이 보면 「!」 꾸중, 벽 너머·다른 방은 못 봄, 들킨 횟수): place_search_containers{mapId, containers:[{x,y,style,loot,ownerId,caughtLines,caughtVariableId}]}. 「세 번 걸리면 안 판다」는 caughtVariableId 를 주고 상점 NPC 에 그 변수 ≥3 조건 페이지.
   · 보이는 필드 적(돌아다니다 보면 「!」 하고 쫓아와 닿으면 전투, 멀어지면 포기, 앞만 보는 시야, 이기면 사라짐): place_field_enemy{behavior:'chase', sightRange, vision:'cone'(앞만 봄), giveUpRange(멀어지면 포기·복귀), patrol(순찰+추격)} — 마을 맵은 거부되니 숲·들판 맵에. 무작위 조우와 다르다.

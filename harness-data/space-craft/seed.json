@@ -9783,6 +9783,77 @@
    ],
    "verify": "upsert_combo_tech(actorIds 4명 — 카엘·엘레나·새라·이리스) / 저장된 skill.comboActorIds 길이 4(정규화가 넷째를 자르지 않음) / 넷 모두 파티에 있음 / 전원 준비 판정은 런타임(battleActorSkillFailure)이 맡음",
    "suiteCategory": "fs-combo"
+  },
+  {
+   "category": "game",
+   "kind": "logic",
+   "mode": "balanced",
+   "startTileset": "beodeul_city",
+   "startBuild": [
+    {
+     "tool": "author_beodeul_town",
+     "args": {
+      "mapId": "map_blank_start",
+      "name": "버들 마을",
+      "houseCount": 4,
+      "theme": "river",
+      "seed": 11
+     }
+    },
+    {
+     "tool": "place_npc",
+     "args": {
+      "mapId": "map_blank_start",
+      "id": "npc_chief",
+      "name": "촌장",
+      "x": 20,
+      "y": 16,
+      "movement": "fixed",
+      "graphic": {
+       "query": "노인 남성"
+      },
+      "pages": [
+       {
+        "lines": [
+         "어서 오게, 버들 마을일세."
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "tool": "place_npc",
+     "args": {
+      "mapId": "map_blank_start",
+      "id": "npc_smith",
+      "name": "대장장이",
+      "x": 14,
+      "y": 20,
+      "movement": "fixed",
+      "graphic": {
+       "query": "아저씨"
+      },
+      "pages": [
+       {
+        "lines": [
+         "망치 소리 좋지?"
+        ]
+       }
+      ]
+     }
+    }
+   ],
+   "id": "fs2-snow-route",
+   "prompt": "마을 북쪽으로 눈보라 치는 고갯길 두 장 이어 줘. 길 중간에 얼음 틈 두 군데.",
+   "requires": [
+    "author_snow_route",
+    "설원 맵 2장(눈 바닥·눈길·눈 덮인 침엽 벽)",
+    "마을 북쪽 가장자리와 연결",
+    "눈보라 날씨",
+    "얼음 틈 자리 2(gaps from/to)"
+   ],
+   "verify": "author_snow_route(fromMapId 마을, side north, count 2, gapCount 2, moods에 blizzard) / 초록 숲·풀밭 도구(author_forest_route·author_wild_route)로 대신하지 않음 / data.maps[*].gaps 합 2",
+   "suiteCategory": "fs2-snow"
   }
  ],
  "gates": {
