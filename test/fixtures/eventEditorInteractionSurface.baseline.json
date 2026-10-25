@@ -1,13 +1,17 @@
 {
  "text": {
   "reactions": {
+   "event-command-text-addressee": "no-change",
    "event-command-text-auto-advance": "self-only 컨트롤 값 변경 1개 [event-command-text-auto-advance: input[checkbox]{}→input[checkbox]{checked}]",
+   "event-command-text-auto-face": "self-only 컨트롤 값 변경 1개 [event-command-text-auto-face: input[checkbox]{checked}→input[checkbox]{}]",
    "event-command-text-body": "검증텍스트 변경 2개 [event-command-preview-body: \"문장 표시hello▼\"→\"문장 표시__probe__▼\", event-command-text-live-preview: \"문장 표시hello▼\"→\"문장 표시__probe__▼\"]",
+   "event-command-text-calling": "self-only 컨트롤 값 변경 1개 [event-command-text-calling: input[checkbox]{}→input[checkbox]{checked}]",
    "event-command-text-container": "no-change",
    "event-command-text-context": "no-change",
    "event-command-text-emotion": "no-change",
    "event-command-text-position": "no-change",
-   "event-command-text-speaker": "testid 신규 1종 [ecp-message-speaker] | 태그 개수 [div 34→35] | 검증텍스트 변경 2개 [event-command-preview-body: \"문장 표시hello▼\"→\"문장 표시hello__probe__▼\", event-command-text-live-preview: \"문장 표시hello▼\"→\"문장 표시hello__probe__▼\"] | 클래스 신규 5개 [ecp-message-speaker, ecp-message-speaker-nameplate, has-speaker, speaker, speake…(절단: 총 312자)",
+   "event-command-text-speaker": "testid 신규 1종 [ecp-message-speaker] | 태그 개수 [div 35→36] | 검증텍스트 변경 2개 [event-command-preview-body: \"문장 표시hello▼\"→\"문장 표시hello__probe__▼\", event-command-text-live-preview: \"문장 표시hello▼\"→\"문장 표시hello__probe__▼\"] | 클래스 신규 5개 [ecp-message-speaker, ecp-message-speaker-nameplate, has-speaker, speaker, speake…(절단: 총 312자)",
+   "event-command-text-speaker-actor": "no-change",
    "event-command-text-style": "no-change"
   },
   "initial": {
@@ -17,9 +21,12 @@
     "ecp-runtime-stage",
     "event-command-edit-summary",
     "event-command-preview-body",
+    "event-command-text-addressee",
     "event-command-text-advanced",
     "event-command-text-auto-advance",
+    "event-command-text-auto-face",
     "event-command-text-body",
+    "event-command-text-calling",
     "event-command-text-container",
     "event-command-text-container-segment-balloon",
     "event-command-text-container-segment-bark",
@@ -68,6 +75,8 @@
     "event-command-text-position-segment-top",
     "event-command-text-presentation",
     "event-command-text-speaker",
+    "event-command-text-speaker-actor",
+    "event-command-text-staging",
     "event-command-text-style",
     "event-command-text-tag-big",
     "event-command-text-tag-color",
@@ -141,6 +150,7 @@
     "event-command-text-section-head",
     "event-command-text-speaker-field",
     "event-command-text-speaker-hint",
+    "event-command-text-staging-field",
     "event-command-text-style-label",
     "event-command-text-tag",
     "event-command-text-tag-row",
@@ -160,8 +170,11 @@
     "small"
    ],
    "controls": {
+    "event-command-text-addressee": "input[text]{}",
     "event-command-text-auto-advance": "input[checkbox]{}",
+    "event-command-text-auto-face": "input[checkbox]{checked}",
     "event-command-text-body": "textarea{}",
+    "event-command-text-calling": "input[checkbox]{}",
     "event-command-text-container": "select{hidden}",
     "event-command-text-container-segment-balloon": "button{}",
     "event-command-text-container-segment-bark": "button{}",
@@ -203,6 +216,7 @@
     "event-command-text-position-segment-inherit": "button{}",
     "event-command-text-position-segment-top": "button{}",
     "event-command-text-speaker": "input[text]{}",
+    "event-command-text-speaker-actor": "input[text]{}",
     "event-command-text-style": "select{}",
     "event-command-text-tag-big": "button{}",
     "event-command-text-tag-color": "button{}",
@@ -308,8 +322,12 @@
     "대기키 입력까지 문장 정지",
     "대사 상자",
     "더 많은 문장 효과필요할 때만",
+    "듣는 인물",
     "말풍선",
     "말하는 사람비워 두면 이름표를 숨깁니다.",
+    "말하는 인물",
+    "말할 때 듣는 쪽을 본다",
+    "멀리서 부르기",
     "무전·전화",
     "반각반각 공백",
     "변수변수 값",
@@ -342,15 +360,15 @@
    "tags": {
     "button": 55,
     "details": 2,
-    "div": 34,
-    "input": 2,
-    "label": 3,
+    "div": 35,
+    "input": 6,
+    "label": 7,
     "option": 42,
     "p": 2,
     "section": 2,
     "select": 5,
     "small": 2,
-    "span": 72,
+    "span": 77,
     "strong": 1,
     "summary": 2,
     "textarea": 1
@@ -361,9 +379,12 @@
     "ecp-runtime-stage": "div",
     "event-command-edit-summary": "div",
     "event-command-preview-body": "div",
+    "event-command-text-addressee": "input",
     "event-command-text-advanced": "details",
     "event-command-text-auto-advance": "input",
+    "event-command-text-auto-face": "input",
     "event-command-text-body": "textarea",
+    "event-command-text-calling": "input",
     "event-command-text-container": "select",
     "event-command-text-container-segment-balloon": "button",
     "event-command-text-container-segment-bark": "button",
@@ -412,6 +433,8 @@
     "event-command-text-position-segment-top": "button",
     "event-command-text-presentation": "div",
     "event-command-text-speaker": "input",
+    "event-command-text-speaker-actor": "input",
+    "event-command-text-staging": "div",
     "event-command-text-style": "select",
     "event-command-text-tag-big": "button",
     "event-command-text-tag-color": "button",
@@ -442,8 +465,8 @@
     "event-command-text-limit-hint": "최대 #줄 / #자 권장",
     "event-command-text-live-preview": "문장 표시hello▼"
    },
-   "testidCount": 79,
-   "controlCount": 63
+   "testidCount": 84,
+   "controlCount": 67
   },
   "classes": [
    "body",
@@ -496,6 +519,7 @@
    "event-command-text-section-head",
    "event-command-text-speaker-field",
    "event-command-text-speaker-hint",
+   "event-command-text-staging-field",
    "event-command-text-style-label",
    "event-command-text-tag",
    "event-command-text-tag-row",
@@ -517,7 +541,7 @@
    "speaker",
    "speaker-nameplate"
   ],
-  "probeCount": 8,
+  "probeCount": 12,
   "reactingCount": 2
  },
  "changeFace": {
@@ -1767,6 +1791,11 @@
     "event-command-face-option-shared-brown-headband-expressions-full-surprised",
     "event-command-face-option-shared-brown-headband-expressions-full-wink",
     "event-command-face-option-shared-brown-headband-expressions-full-worried",
+    "event-command-face-option-shared-fs-inquisitor-valen-expressions-bust-angry",
+    "event-command-face-option-shared-fs-inquisitor-valen-expressions-bust-base",
+    "event-command-face-option-shared-fs-inquisitor-valen-expressions-bust-happy",
+    "event-command-face-option-shared-fs-inquisitor-valen-expressions-bust-sad",
+    "event-command-face-option-shared-fs-inquisitor-valen-expressions-bust-surprised",
     "event-command-face-option-shared-green-bandana-expressions-00",
     "event-command-face-option-shared-green-bandana-expressions-01",
     "event-command-face-option-shared-green-bandana-expressions-02",
@@ -5828,6 +5857,11 @@
     "event-command-face-option-shared-brown-headband-expressions-full-surprised": "button{}",
     "event-command-face-option-shared-brown-headband-expressions-full-wink": "button{}",
     "event-command-face-option-shared-brown-headband-expressions-full-worried": "button{}",
+    "event-command-face-option-shared-fs-inquisitor-valen-expressions-bust-angry": "button{}",
+    "event-command-face-option-shared-fs-inquisitor-valen-expressions-bust-base": "button{}",
+    "event-command-face-option-shared-fs-inquisitor-valen-expressions-bust-happy": "button{}",
+    "event-command-face-option-shared-fs-inquisitor-valen-expressions-bust-sad": "button{}",
+    "event-command-face-option-shared-fs-inquisitor-valen-expressions-bust-surprised": "button{}",
     "event-command-face-option-shared-green-bandana-expressions-00": "button{}",
     "event-command-face-option-shared-green-bandana-expressions-01": "button{}",
     "event-command-face-option-shared-green-bandana-expressions-02": "button{}",
@@ -8646,9 +8680,9 @@
     "흉상"
    ],
    "tags": {
-    "button": 4005,
-    "div": 4020,
-    "img": 3999,
+    "button": 4010,
+    "div": 4025,
+    "img": 4004,
     "input": 5,
     "label": 5,
     "option": 6,
@@ -9892,6 +9926,11 @@
     "event-command-face-option-shared-brown-headband-expressions-full-surprised": "button",
     "event-command-face-option-shared-brown-headband-expressions-full-wink": "button",
     "event-command-face-option-shared-brown-headband-expressions-full-worried": "button",
+    "event-command-face-option-shared-fs-inquisitor-valen-expressions-bust-angry": "button",
+    "event-command-face-option-shared-fs-inquisitor-valen-expressions-bust-base": "button",
+    "event-command-face-option-shared-fs-inquisitor-valen-expressions-bust-happy": "button",
+    "event-command-face-option-shared-fs-inquisitor-valen-expressions-bust-sad": "button",
+    "event-command-face-option-shared-fs-inquisitor-valen-expressions-bust-surprised": "button",
     "event-command-face-option-shared-green-bandana-expressions-00": "button",
     "event-command-face-option-shared-green-bandana-expressions-01": "button",
     "event-command-face-option-shared-green-bandana-expressions-02": "button",
@@ -12690,8 +12729,8 @@
     "event-command-face-preview": "res#미리보기를 찾을 수 없습니다.",
     "event-command-face-preview-host": "res#미리보기를 찾을 수 없습니다."
    },
-   "testidCount": 4026,
-   "controlCount": 4013
+   "testidCount": 4031,
+   "controlCount": 4018
   },
   "classes": [
    "ai-image-queue",
@@ -13050,6 +13089,7 @@
      "relativeFacing",
      "hiding",
      "pursuitActive",
+     "eventSeesPlayer",
      "clearCount",
      "endingSeen",
      "newGamePlus",
@@ -13114,7 +13154,7 @@
     "div": 15,
     "input": 1,
     "label": 4,
-    "option": 74,
+    "option": 75,
     "p": 3,
     "section": 2,
     "select": 3,
@@ -14516,6 +14556,7 @@
  },
  "transfer": {
   "reactions": {
+   "transfer-door-mode": "no-change",
    "transfer-player-direction-down": "컨트롤 값 변경 2개 [transfer-player-direction-down: input[radio]{}→input[radio]{checked}, transfer-player-direction-retain: input[radio]{checked}→input[radio]{}]",
    "transfer-player-direction-left": "컨트롤 값 변경 2개 [transfer-player-direction-left: input[radio]{}→input[radio]{checked}, transfer-player-direction-retain: input[radio]{checked}→input[radio]{}]",
    "transfer-player-direction-retain": "self-only 컨트롤 값 변경 1개 [transfer-player-direction-retain: input[radio]{checked}→input[radio]{}]",
@@ -14530,6 +14571,7 @@
     "event-command-edit-summary",
     "event-transfer-player-dialog",
     "transfer-command-summary",
+    "transfer-door-mode",
     "transfer-passability-badge",
     "transfer-player-direction-down",
     "transfer-player-direction-left",
@@ -14551,6 +14593,7 @@
     "cream-command-form-head",
     "passable",
     "rich-badge",
+    "transfer-command-door-row",
     "transfer-command-editor",
     "transfer-command-editor-inline",
     "transfer-command-inline-picker",
@@ -14571,6 +14614,7 @@
     "transfer-player-zoom-button"
    ],
    "controls": {
+    "transfer-door-mode": "select{}",
     "transfer-player-direction-down": "input[radio]{}",
     "transfer-player-direction-left": "input[radio]{}",
     "transfer-player-direction-retain": "input[radio]{checked}",
@@ -14584,10 +14628,17 @@
     "transfer-player-open>button#1": "button{}",
     "transfer-player-open>button#2": "button{}"
    },
-   "selectOptions": {},
+   "selectOptions": {
+    "transfer-door-mode": [
+     "auto",
+     "on",
+     "off"
+    ]
+   },
    "labels": [
     "¼",
     "검정",
+    "문 열림 연출자동켜기끄기",
     "방향",
     "선택 완료",
     "아래",
@@ -14607,14 +14658,17 @@
     "div": 15,
     "fieldset": 2,
     "input": 8,
-    "label": 8,
+    "label": 9,
     "legend": 2,
-    "span": 10
+    "option": 3,
+    "select": 1,
+    "span": 11
    },
    "tagByTestid": {
     "event-command-edit-summary": "div",
     "event-transfer-player-dialog": "div",
     "transfer-command-summary": "span",
+    "transfer-door-mode": "select",
     "transfer-passability-badge": "span",
     "transfer-player-direction-down": "input",
     "transfer-player-direction-left": "input",
@@ -14636,8 +14690,8 @@
     "transfer-passability-badge": "통행 가능",
     "transfer-player-map-preview": ""
    },
-   "testidCount": 17,
-   "controlCount": 12
+   "testidCount": 18,
+   "controlCount": 13
   },
   "classes": [
    "active",
@@ -14645,6 +14699,7 @@
    "cream-command-form-head",
    "passable",
    "rich-badge",
+   "transfer-command-door-row",
    "transfer-command-editor",
    "transfer-command-editor-inline",
    "transfer-command-inline-picker",
@@ -14664,7 +14719,7 @@
    "transfer-player-zoom",
    "transfer-player-zoom-button"
   ],
-  "probeCount": 8,
+  "probeCount": 9,
   "reactingCount": 6
  },
  "moveEvent": {
@@ -14679,12 +14734,14 @@
    "move-route-npc-target-map-input": "single-option",
    "move-route-npc-target-x-input": "no-change",
    "move-route-npc-target-y-input": "no-change",
-   "move-route-repeat-checkbox": "태그 개수 [div 26→27, span 107→108] | 컨트롤 값 변경 1개 [move-route-repeat-checkbox: input[checkbox]{}→input[checkbox]{checked}] | 검증텍스트 변경 2개 [ecp-move-preview: \"누구에게ev#시작점 · 오른쪽에서 이동 명령을 추가하세요이동 명령 없음\"→\"누구에게ev#시작점 · 오른쪽에서 이동 명령을 추가하세요이동 명령 없음반\", move-route-path-preview: \"누구에게ev#시작점 · 오른쪽에서 이동 명령을 추가하세요이동 명령…(절단: 총 394자)",
-   "move-route-skippable-checkbox": "태그 개수 [div 26→27, span 107→108] | 컨트롤 값 변경 1개 [move-route-skippable-checkbox: input[checkbox]{}→input[checkbox]{checked}] | 검증텍스트 변경 2개 [ecp-move-preview: \"누구에게ev#시작점 · 오른쪽에서 이동 명령을 추가하세요이동 명령 없음\"→\"누구에게ev#시작점 · 오른쪽에서 이동 명령을 추가하세요이동 명령 없음불\", move-route-path-preview: \"누구에게ev#시작점 · 오른쪽에서 이동 명령을 추가하세요이동…(절단: 총 397자)",
+   "move-route-repeat-checkbox": "태그 개수 [div 26→27, span 117→118] | 컨트롤 값 변경 1개 [move-route-repeat-checkbox: input[checkbox]{}→input[checkbox]{checked}] | 검증텍스트 변경 2개 [ecp-move-preview: \"누구에게ev#시작점 · 오른쪽에서 이동 명령을 추가하세요이동 명령 없음\"→\"누구에게ev#시작점 · 오른쪽에서 이동 명령을 추가하세요이동 명령 없음반\", move-route-path-preview: \"누구에게ev#시작점 · 오른쪽에서 이동 명령을 추가하세요이동 명령…(절단: 총 394자)",
+   "move-route-skippable-checkbox": "태그 개수 [div 26→27, span 117→118] | 컨트롤 값 변경 1개 [move-route-skippable-checkbox: input[checkbox]{}→input[checkbox]{checked}] | 검증텍스트 변경 2개 [ecp-move-preview: \"누구에게ev#시작점 · 오른쪽에서 이동 명령을 추가하세요이동 명령 없음\"→\"누구에게ev#시작점 · 오른쪽에서 이동 명령을 추가하세요이동 명령 없음불\", move-route-path-preview: \"누구에게ev#시작점 · 오른쪽에서 이동 명령을 추가하세요이동…(절단: 총 397자)",
    "move-route-sound-id-input": "no-change",
+   "move-route-stage-target-input": "no-change",
    "move-route-switch-id-input": "no-change",
+   "move-route-talk-distance-input": "no-change",
    "move-route-target-select": "컨트롤 값 변경 2개 [move-route-event-id-input: input[text]{}→input[text]{nodisplay}, move-route-event-picker-open: button{}→button{nodisplay}] | 검증텍스트 변경 2개 [ecp-move-preview: \"누구에게ev#시작점 · 오른쪽에서 이동 명령을 추가하세요이동 명령 없음\"→\"누구에게이 이벤트시작점 · 오른쪽에서 이동 명령을 추가하세요이동 명령 없\", move-route-path-preview: \"누구에게ev#시작점 · 오른쪽에서 …(절단: 총 365자)",
-   "move-route-wait-checkbox": "태그 개수 [div 26→27, span 107→108] | 컨트롤 값 변경 1개 [move-route-wait-checkbox: input[checkbox]{}→input[checkbox]{checked}] | 검증텍스트 변경 2개 [ecp-move-preview: \"누구에게ev#시작점 · 오른쪽에서 이동 명령을 추가하세요이동 명령 없음\"→\"누구에게ev#시작점 · 오른쪽에서 이동 명령을 추가하세요이동 명령 없음완\", move-route-path-preview: \"누구에게ev#시작점 · 오른쪽에서 이동 명령을 추가하세요이동 명령 없…(절단: 총 392자)"
+   "move-route-wait-checkbox": "태그 개수 [div 26→27, span 117→118] | 컨트롤 값 변경 1개 [move-route-wait-checkbox: input[checkbox]{}→input[checkbox]{checked}] | 검증텍스트 변경 2개 [ecp-move-preview: \"누구에게ev#시작점 · 오른쪽에서 이동 명령을 추가하세요이동 명령 없음\"→\"누구에게ev#시작점 · 오른쪽에서 이동 명령을 추가하세요이동 명령 없음완\", move-route-path-preview: \"누구에게ev#시작점 · 오른쪽에서 이동 명령을 추가하세요이동 명령 없…(절단: 총 392자)"
   },
   "initial": {
    "testids": [
@@ -14694,6 +14751,7 @@
     "event-command-edit-summary",
     "move-route-add-animation-off",
     "move-route-add-animation-on",
+    "move-route-add-approach-target",
     "move-route-add-change-graphic",
     "move-route-add-decrease-frequency",
     "move-route-add-decrease-opacity",
@@ -14701,6 +14759,8 @@
     "move-route-add-direction-fix-off",
     "move-route-add-direction-fix-on",
     "move-route-add-drop-in",
+    "move-route-add-enter-via",
+    "move-route-add-exit-via",
     "move-route-add-increase-frequency",
     "move-route-add-increase-opacity",
     "move-route-add-increase-speed",
@@ -14734,6 +14794,7 @@
     "move-route-add-turn-random",
     "move-route-add-turn-right",
     "move-route-add-turn-toward-player",
+    "move-route-add-turn-toward-target",
     "move-route-add-turn-up",
     "move-route-add-wait",
     "move-route-clear",
@@ -14760,8 +14821,10 @@
     "move-route-skippable-checkbox",
     "move-route-skippable-option",
     "move-route-sound-id-input",
+    "move-route-stage-target-input",
     "move-route-summary",
     "move-route-switch-id-input",
+    "move-route-talk-distance-input",
     "move-route-target-select",
     "move-route-wait-checkbox"
    ],
@@ -14816,6 +14879,7 @@
    "controls": {
     "move-route-add-animation-off": "button{}",
     "move-route-add-animation-on": "button{}",
+    "move-route-add-approach-target": "button{}",
     "move-route-add-change-graphic": "button{}",
     "move-route-add-decrease-frequency": "button{}",
     "move-route-add-decrease-opacity": "button{}",
@@ -14823,6 +14887,8 @@
     "move-route-add-direction-fix-off": "button{}",
     "move-route-add-direction-fix-on": "button{}",
     "move-route-add-drop-in": "button{}",
+    "move-route-add-enter-via": "button{}",
+    "move-route-add-exit-via": "button{}",
     "move-route-add-increase-frequency": "button{}",
     "move-route-add-increase-opacity": "button{}",
     "move-route-add-increase-speed": "button{}",
@@ -14856,6 +14922,7 @@
     "move-route-add-turn-random": "button{}",
     "move-route-add-turn-right": "button{}",
     "move-route-add-turn-toward-player": "button{}",
+    "move-route-add-turn-toward-target": "button{}",
     "move-route-add-turn-up": "button{}",
     "move-route-add-wait": "button{}",
     "move-route-clear": "button{disabled}",
@@ -14874,7 +14941,9 @@
     "move-route-repeat-checkbox": "input[checkbox]{}",
     "move-route-skippable-checkbox": "input[checkbox]{}",
     "move-route-sound-id-input": "input[text]{}",
+    "move-route-stage-target-input": "input[text]{}",
     "move-route-switch-id-input": "input[text]{}",
+    "move-route-talk-distance-input": "input[number]{}",
     "move-route-target-select": "select{}",
     "move-route-wait-checkbox": "input[checkbox]{}"
    },
@@ -14901,12 +14970,18 @@
     "X",
     "Y",
     "그래픽 변경...",
+    "다가갈·바라볼 대상",
     "대기",
+    "대상 곁으로 다가가기...",
+    "대상 쪽으로 향함...",
     "막히면 건너뛰기",
+    "말 거리(칸)",
     "모습",
     "목록",
     "무작위로 이동",
     "무작위로 향함",
+    "문으로 나가기...",
+    "문으로 들어오기...",
     "반복",
     "방향 고정 OFF",
     "방향 고정 ON",
@@ -14940,7 +15015,7 @@
     "위로 이동",
     "위로 향함",
     "위에서 낙하",
-    "이 단계 값 (스위치 · 모습 · 효과음 · NPC 맵 이동 · 체공)",
+    "이 단계 값 (스위치 · 모습 · 효과음 · NPC 맵 이동 · 체공 · 다가갈 대상)",
     "점프",
     "점프 dx",
     "점프 dy",
@@ -14959,16 +15034,16 @@
     "효과음 재생..."
    ],
    "tags": {
-    "button": 47,
+    "button": 51,
     "circle": 10,
     "details": 1,
     "div": 26,
-    "input": 13,
-    "label": 14,
+    "input": 15,
+    "label": 16,
     "option": 8,
     "p": 2,
     "select": 3,
-    "span": 107,
+    "span": 117,
     "summary": 1,
     "svg": 1
    },
@@ -14979,6 +15054,7 @@
     "event-command-edit-summary": "div",
     "move-route-add-animation-off": "button",
     "move-route-add-animation-on": "button",
+    "move-route-add-approach-target": "button",
     "move-route-add-change-graphic": "button",
     "move-route-add-decrease-frequency": "button",
     "move-route-add-decrease-opacity": "button",
@@ -14986,6 +15062,8 @@
     "move-route-add-direction-fix-off": "button",
     "move-route-add-direction-fix-on": "button",
     "move-route-add-drop-in": "button",
+    "move-route-add-enter-via": "button",
+    "move-route-add-exit-via": "button",
     "move-route-add-increase-frequency": "button",
     "move-route-add-increase-opacity": "button",
     "move-route-add-increase-speed": "button",
@@ -15019,6 +15097,7 @@
     "move-route-add-turn-random": "button",
     "move-route-add-turn-right": "button",
     "move-route-add-turn-toward-player": "button",
+    "move-route-add-turn-toward-target": "button",
     "move-route-add-turn-up": "button",
     "move-route-add-wait": "button",
     "move-route-clear": "button",
@@ -15045,8 +15124,10 @@
     "move-route-skippable-checkbox": "input",
     "move-route-skippable-option": "label",
     "move-route-sound-id-input": "input",
+    "move-route-stage-target-input": "input",
     "move-route-summary": "div",
     "move-route-switch-id-input": "input",
+    "move-route-talk-distance-input": "input",
     "move-route-target-select": "select",
     "move-route-wait-checkbox": "input"
    },
@@ -15056,8 +15137,8 @@
     "move-route-path-preview": "누구에게ev#시작점 · 오른쪽에서 이동 명령을 추가하세요이동 명령 없음",
     "move-route-summary": "(이동 단계 없음)"
    },
-   "testidCount": 76,
-   "controlCount": 63
+   "testidCount": 82,
+   "controlCount": 69
   },
   "classes": [
    "btn",
@@ -15109,7 +15190,7 @@
    "move-route-toolbar",
    "small"
   ],
-  "probeCount": 16,
+  "probeCount": 18,
   "reactingCount": 5
  },
  "setEventGraphicPattern": {
@@ -15168,8 +15249,15 @@
     "event-graphic-resource-tex_easyrpg_charset_vehicles",
     "event-graphic-resource-tex_farming_charset_chicken",
     "event-graphic-resource-tex_farming_charset_cow",
+    "event-graphic-resource-tex_oprn_charset_dawning_skybirds",
     "event-graphic-resource-tex_oprn_charset_harness_monster1",
     "event-graphic-resource-tex_oprn_charset_harness_monster2",
+    "event-graphic-resource-tex_oprn_charset_harness_monster3",
+    "event-graphic-resource-tex_oprn_charset_harness_monster4",
+    "event-graphic-resource-tex_oprn_charset_harness_monster5",
+    "event-graphic-resource-tex_oprn_charset_harness_monster6",
+    "event-graphic-resource-tex_oprn_charset_harness_monster7",
+    "event-graphic-resource-tex_oprn_charset_harness_monster8",
     "event-graphic-resource-tex_oprn_charset_heroes1",
     "event-graphic-resource-tex_oprn_charset_modern1",
     "event-graphic-resource-tex_oprn_charset_modern2",
@@ -15179,6 +15267,7 @@
     "event-graphic-resource-tex_oprn_charset_scarloxy_people11",
     "event-graphic-resource-tex_oprn_charset_scarloxy_people12",
     "event-graphic-resource-tex_oprn_charset_scarloxy_people13",
+    "event-graphic-resource-tex_oprn_charset_scarloxy_people14",
     "event-graphic-resource-tex_oprn_charset_scarloxy_people2",
     "event-graphic-resource-tex_oprn_charset_scarloxy_people3",
     "event-graphic-resource-tex_oprn_charset_scarloxy_people4",
@@ -15272,8 +15361,15 @@
     "event-graphic-resource-tex_easyrpg_charset_vehicles": "button{}",
     "event-graphic-resource-tex_farming_charset_chicken": "button{}",
     "event-graphic-resource-tex_farming_charset_cow": "button{}",
+    "event-graphic-resource-tex_oprn_charset_dawning_skybirds": "button{}",
     "event-graphic-resource-tex_oprn_charset_harness_monster1": "button{}",
     "event-graphic-resource-tex_oprn_charset_harness_monster2": "button{}",
+    "event-graphic-resource-tex_oprn_charset_harness_monster3": "button{}",
+    "event-graphic-resource-tex_oprn_charset_harness_monster4": "button{}",
+    "event-graphic-resource-tex_oprn_charset_harness_monster5": "button{}",
+    "event-graphic-resource-tex_oprn_charset_harness_monster6": "button{}",
+    "event-graphic-resource-tex_oprn_charset_harness_monster7": "button{}",
+    "event-graphic-resource-tex_oprn_charset_harness_monster8": "button{}",
     "event-graphic-resource-tex_oprn_charset_heroes1": "button{}",
     "event-graphic-resource-tex_oprn_charset_modern1": "button{}",
     "event-graphic-resource-tex_oprn_charset_modern2": "button{}",
@@ -15283,6 +15379,7 @@
     "event-graphic-resource-tex_oprn_charset_scarloxy_people11": "button{}",
     "event-graphic-resource-tex_oprn_charset_scarloxy_people12": "button{}",
     "event-graphic-resource-tex_oprn_charset_scarloxy_people13": "button{}",
+    "event-graphic-resource-tex_oprn_charset_scarloxy_people14": "button{}",
     "event-graphic-resource-tex_oprn_charset_scarloxy_people2": "button{}",
     "event-graphic-resource-tex_oprn_charset_scarloxy_people3": "button{}",
     "event-graphic-resource-tex_oprn_charset_scarloxy_people4": "button{}",
@@ -15327,6 +15424,7 @@
     "ScarloxyPeople11",
     "ScarloxyPeople12",
     "ScarloxyPeople13",
+    "ScarloxyPeople14",
     "ScarloxyPeople2",
     "ScarloxyPeople3",
     "ScarloxyPeople4",
@@ -15343,7 +15441,14 @@
     "chicken",
     "chips-1",
     "chips-2",
+    "chips-3",
+    "chips-4",
+    "chips-5",
+    "chips-6",
+    "chips-7",
+    "chips-8",
     "cow",
+    "dawning-skybirds",
     "scarloxy-charset-people1",
     "scarloxy-charset-people2",
     "가운데",
@@ -15376,7 +15481,7 @@
     "패턴"
    ],
    "tags": {
-    "button": 59,
+    "button": 67,
     "div": 16,
     "fieldset": 2,
     "input": 8,
@@ -15384,7 +15489,7 @@
     "legend": 2,
     "option": 2,
     "select": 1,
-    "span": 48
+    "span": 56
    },
    "tagByTestid": {
     "event-command-edit-summary": "div",
@@ -15429,8 +15534,15 @@
     "event-graphic-resource-tex_easyrpg_charset_vehicles": "button",
     "event-graphic-resource-tex_farming_charset_chicken": "button",
     "event-graphic-resource-tex_farming_charset_cow": "button",
+    "event-graphic-resource-tex_oprn_charset_dawning_skybirds": "button",
     "event-graphic-resource-tex_oprn_charset_harness_monster1": "button",
     "event-graphic-resource-tex_oprn_charset_harness_monster2": "button",
+    "event-graphic-resource-tex_oprn_charset_harness_monster3": "button",
+    "event-graphic-resource-tex_oprn_charset_harness_monster4": "button",
+    "event-graphic-resource-tex_oprn_charset_harness_monster5": "button",
+    "event-graphic-resource-tex_oprn_charset_harness_monster6": "button",
+    "event-graphic-resource-tex_oprn_charset_harness_monster7": "button",
+    "event-graphic-resource-tex_oprn_charset_harness_monster8": "button",
     "event-graphic-resource-tex_oprn_charset_heroes1": "button",
     "event-graphic-resource-tex_oprn_charset_modern1": "button",
     "event-graphic-resource-tex_oprn_charset_modern2": "button",
@@ -15440,6 +15552,7 @@
     "event-graphic-resource-tex_oprn_charset_scarloxy_people11": "button",
     "event-graphic-resource-tex_oprn_charset_scarloxy_people12": "button",
     "event-graphic-resource-tex_oprn_charset_scarloxy_people13": "button",
+    "event-graphic-resource-tex_oprn_charset_scarloxy_people14": "button",
     "event-graphic-resource-tex_oprn_charset_scarloxy_people2": "button",
     "event-graphic-resource-tex_oprn_charset_scarloxy_people3": "button",
     "event-graphic-resource-tex_oprn_charset_scarloxy_people4": "button",
@@ -15469,8 +15582,8 @@
     "event-command-edit-summary": "모습 바꾸기",
     "event-command-frame-walk-preview": ""
    },
-   "testidCount": 77,
-   "controlCount": 68
+   "testidCount": 85,
+   "controlCount": 76
   },
   "classes": [
    "active",
@@ -20778,7 +20891,7 @@
  "playAudio": {
   "reactions": {
    "play-audio-resource-select": "no-change",
-   "play-audio-search": "태그 개수 [option 398→2] | select 선택지 변경 1개 [play-audio-resource-select: 398→2종]"
+   "play-audio-search": "태그 개수 [option 408→2] | select 선택지 변경 1개 [play-audio-resource-select: 408→2종]"
   },
   "initial": {
    "testids": [
@@ -21134,6 +21247,16 @@
      "cc0-sound-monster-hm-rock-smash",
      "cc0-sound-monster-hm-cut",
      "cc0-sound-monster-hm-surf",
+     "cc0-sound-puzzle-secret-solved",
+     "cc0-sound-puzzle-stone-push",
+     "cc0-sound-puzzle-plate-press",
+     "cc0-sound-puzzle-switch-clack",
+     "cc0-sound-puzzle-wrong",
+     "cc0-sound-puzzle-crystal-ping",
+     "cc0-sound-puzzle-organ-c",
+     "cc0-sound-puzzle-organ-e",
+     "cc0-sound-puzzle-organ-g",
+     "cc0-sound-puzzle-organ-c2",
      "easyrpg-sound-absorb1",
      "easyrpg-sound-absorb2",
      "easyrpg-sound-attack1",
@@ -21243,7 +21366,7 @@
     "button": 5,
     "div": 16,
     "input": 1,
-    "option": 398,
+    "option": 408,
     "select": 1,
     "small": 1
    },
