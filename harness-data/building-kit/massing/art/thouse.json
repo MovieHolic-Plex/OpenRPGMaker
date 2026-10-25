@@ -7,14 +7,14 @@
   "bd-house-h122_0"
  ],
  "walk": [
-  ".*******.",
+  "..******.",
   "*********",
   "*********",
   "XXXXXXXXX",
   "XXXXXXXXX",
   "XXXXXXXXX",
   "XXXXDXXXX",
-  "...XDX..."
+  "..XXDXX.."
  ],
  "id": "thouse"
 }

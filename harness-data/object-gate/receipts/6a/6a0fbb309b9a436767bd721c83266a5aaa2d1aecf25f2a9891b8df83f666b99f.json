@@ -1,0 +1,434 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "6a0fbb309b9a436767bd721c83266a5aaa2d1aecf25f2a9891b8df83f666b99f",
+ "width": 192,
+ "height": 96,
+ "kind": "structure",
+ "name": "십일조 헛간",
+ "label": "building-kit/massing/tithe-barn",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 7,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "5f62fef078ef7661"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 12,
+  "tileColorsP90": 18,
+  "darkV5": 59,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 66
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "main thatched hip roof (front slope plus hipped side slopes)",
+      "rows": "5-57",
+      "evidence": "c",
+      "front_edge_line_row": 57,
+      "eave_shadow_rows": "58-60"
+     },
+     {
+      "part": "central gable dormer with its own sloped roof planes over the door",
+      "rows": "20-52",
+      "evidence": "c",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stone front wall with door, slit windows and a shutter",
+      "rows": "61-95",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 53,
+    "front_face_rows": 35,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The thatched roof fills rows 5-57. It narrows toward the top (width 118 at row 5, widening to 192 by row 37), so the hipped end slopes are visible. The roof ends in a dark eave line at rows 57-58, with shadow at rows 58-60 (L=48-71 at x=143). Below it the stone front wall spans rows about 61-95 (35 rows) and holds the double door, slit windows and a shutter. A gable dormer with its own sloped roof planes sits over the door. This is a roof slope above an eave line with a front face below, so it reads as three-quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The candidate's thatched roof shows about 5 straw steps, from a bright highlight through mid and dark tones to a deep shadow at the eaves. Streaky grain and a few moss tufts break up the surface. The stone wall has individually shaded blocks in several mauve and grey tones, with a darker base and mortar variation. The wood door and gable use brown grades, with plank lines and a dark brown edge. Outlines are tinted, not neutral black: the roof edge is dark brown and the stone edge is dark purple-brown. Only 8% of dark edge pixels are neutral, close to the references at 7% and 9%. Measured facts match the references: 12 visible tones per tile against 12 and 10, and 0% near-flat coverage like both. The raw colour count is lower (44 vs 185 and 66), but the candidate is near the stone reference, and the visible tones are equal. The scale and finish sit comfortably next to the references. The long wall is slightly repetitive, but no large flat fills appear.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 14265
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "main thatched hip roof",
+      "rows": "5-58",
+      "evidence": "c",
+      "front_edge_line_row": 58,
+      "eave_shadow_rows": "59-60"
+     },
+     {
+      "part": "front gable dormer roof over the door",
+      "rows": "18-60",
+      "evidence": "c",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 54,
+    "front_face_rows": 35,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The thatched roof fills rows 5-58 and widens steadily from 118 to 192 px. This is a large sloped roof plane, with the hipped end slopes at left and right shading darker. The roof ends in a dark front-edge line at about row 58, followed by eave shadow in rows 59-60 (L=48). Below it is a stone front wall with a double door and slit windows, about rows 61-95 (35 rows). The front gable over the door is also a sloped roof plane. The hip end slopes are roof surfaces, not receding side faces."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate's thatch roof has about 5 tan-to-brown steps with straw streaks and a few moss dots. The stone wall has individually shaded stones in pinkish-grey and purple tones, plus dark slit windows and a wooden door. Measured facts are on par with the references: 12 visible tones per tile against 12 and 10, 0% near-flat coverage, and 8% neutral dark edge pixels, so the outlines are tinted brown or purple-brown and not black. Raw distinct colours are lower (44 vs 185 and 66), but that is expected with a locked palette. By eye the roof is slightly more uniform than the reference tile roofs, which have per-tile highlights and warm-to-dark contrast, and the gable and wall are a little simpler. It would still sit acceptably next to the references and does not look sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 14894
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "hipped thatch roof (main slope plus hipped ends)",
+      "rows": "5-58",
+      "evidence": "c",
+      "front_edge_line_row": 58,
+      "eave_shadow_rows": "58-60"
+     },
+     {
+      "part": "front gable dormer with wooden boards",
+      "rows": "20-60",
+      "evidence": "c",
+      "front_edge_line_row": 60,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stone wall with door, windows and shutter",
+      "rows": "61-95",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 54,
+    "front_face_rows": 35,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The width profile widens steadily from 118 px at row 5 to 192 px at row 37. This is a sloped hipped thatch roof seen from above, with tile rows and highlights across rows 5-58. It ends in an eave edge near row 58 with dark shadow in rows 58-60. Below it, a south wall (rows 61-95) of about 35 rows shows a double door, narrow windows and a shutter. The front gable dormer also has its own sloped roof edges. The roof is the main top surface and the wall is the front face, so the object reads as three-quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate's thatch roof has about 5 ochre steps with streaky straw grain, a few leaf-green moss dots, and a lit ridge. The stone wall has individually shaded stones in mauve and grey with mortar variation, and a timber gable and door with wood grain. Measured facts back this up: 12 visible tones per tile (references 12 and 10), 0% near-flat coverage, and only 8% neutral dark edge pixels, so the outlines carry a tint (dark brown by the thatch and wood, dark purple-brown by the stone) rather than a black sticker line. The raw colour count of 44 is lower than the references' 185 and 66, but the visible tones match. The wall below the roof is somewhat uniform and the thatch is a little more regular than the reference tile scallops, so density is slightly lower, yet an artist would accept it beside the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19085
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "thatched hip roof (main body)",
+      "rows": "5-57",
+      "evidence": "c",
+      "front_edge_line_row": 54,
+      "eave_shadow_rows": "54-55"
+     },
+     {
+      "part": "front gable dormer on roof",
+      "rows": "19-57",
+      "evidence": "c",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stone front wall with double door and windows",
+      "rows": "58-95",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 50,
+    "front_face_rows": 38,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The large thatched roof spans rows 5-57. The silhouette widens steadily from 118 to 192 px over rows 5-37, which shows the sloped roof plane and the hipped ends. The roof ends in a darker eave line and shadow at rows 54-55 (L=98), and below it the stone south wall runs from row 58 to 95 (about 38 rows) with a door and slit windows. A gable dormer sits in front of the roof. The sloped roof is the top surface and the wall is the front face, so it reads as three-quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a thatched barn with a stone lower wall. Its measured facts match the references: 12 visible tones per tile against 12 and 10, 0% near-flat coverage, and 8% near-neutral dark edge pixels, so the outlines are tinted. The edges are dark brown beside the thatch and dark purple-brown beside the stone, not black. The thatch has about 5 steps (highlight, light, mid, dark, deep) with fibrous streaks and a few moss dots. The stone wall has individually shaded blocks with mortar variation. Weaknesses: the thatch is a broad, fairly uniform sweep of horizontal strokes without the per-tile scallop highlights that the references show. The wall has a few sparse, regular windows. The gable is a simple dark wood triangle. Raw colours total only 44 against 185 and 66, so it is slightly less varied. Still, no flat fills, and a careful artist would accept it next to the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15339
+  }
+ ],
+ "decidedAt": "2026-10-25T11:58:24.632Z",
+ "cells": {
+  "16": [
+   "0232fa5d3f4ac5b0",
+   "03c44ae7f00b4aad",
+   "0476be950e47f54a",
+   "06fc2c3f7c45fcf0",
+   "07261f6a39989fc4",
+   "07de336dbaa75e4b",
+   "0ad6f7daa80aa02e",
+   "0c4846a805f967e0",
+   "0ecadfec3b005f09",
+   "11952affcf793503",
+   "144bf09dca056e8c",
+   "1ba2c22ee89227d3",
+   "2253b61c40203765",
+   "240717816b8adcd8",
+   "274e3dce7f956f4c",
+   "2b7ef892d403e3ab",
+   "2d05892996d3a80e",
+   "2fa07cb24ff41e0c",
+   "34f0157d6e47a410",
+   "35af66ebf0562df3",
+   "47b2849896d6d8c8",
+   "4efbe8301dce81ab",
+   "516d402f400b3644",
+   "588f369fced23e43",
+   "5a183147c5a5ae91",
+   "5a32c10dc681dc18",
+   "5fba4e1c1e04fe0d",
+   "654dabdac035c07f",
+   "6693f9f172620200",
+   "6890a8a25501313b",
+   "6ef42d3d8324e1b8",
+   "748a313fc4db9479",
+   "78161716d3c11c5b",
+   "79a70e181ef18703",
+   "7dfd441929306ba8",
+   "8082e419f50e3dff",
+   "81fe781f7eb58a82",
+   "83f3caf3efaedac8",
+   "84333df3b71531b0",
+   "8651e3633cadacdb",
+   "8e86bfd04496727d",
+   "95a18aa555e3e009",
+   "967af06b472e4d28",
+   "995cec4238367638",
+   "a6a0298917f537ad",
+   "a94e06303f54b3e5",
+   "ab79cc9450bb129e",
+   "ad21c897222e522c",
+   "b1d5c8b33a19017d",
+   "b1fc5c06e1bc9828",
+   "b43b9ccf2f6f8492",
+   "bf98b209a4daaeff",
+   "c08a31b786793c3b",
+   "c2b92df204b348e9",
+   "c50a458d6ed03122",
+   "c7b42e1aaacac3b2",
+   "c9298dbb09320842",
+   "cda9627c2ad7c9a4",
+   "d11af4b909e08ed4",
+   "d748d543359ebfc2",
+   "dcbeb32abf5cdb1f",
+   "dce95dd8a730e36d",
+   "de6c3e4d77d282cf",
+   "e16824a6d2bb91a7",
+   "e1e1c26dc06d55e3",
+   "e30df06d70c6ff1b",
+   "e37cd438e5a8bed3",
+   "e3fbeacd1a50de93",
+   "f68e4eb947348031",
+   "ffb064ecfa47b650"
+  ],
+  "24": [
+   "008c3752639f9113",
+   "050a2edb1b5716a8",
+   "08e101a6040c7221",
+   "134be5fbcb33ddd3",
+   "154771dea3998ad0",
+   "1ead9477d11bb5c1",
+   "21827647f69505c3",
+   "29d06fb76e7a288e",
+   "319450faa39da7fc",
+   "36ca7a2c7d0bbb01",
+   "3ee5c5646b535163",
+   "447b513e1d1b5a81",
+   "479efed9bf10e897",
+   "482fcd7463016428",
+   "4bfb234a7faa2aa5",
+   "580f2c60d924c11c",
+   "5a57b35755c8e1ab",
+   "5b13107fe973c214",
+   "621187e249a1ed27",
+   "7816d1d1831df525",
+   "7a361b5084685a4c",
+   "8116e7d066b9fee1",
+   "832ccd33a8f165c4",
+   "837aab223966334c",
+   "8821e101393ff281",
+   "91f1178ea8e639af",
+   "9fa65cbf0f127fb1",
+   "b9b831be5046515f",
+   "bfc55b74b5a6853e",
+   "c5401e1bcfdf6160",
+   "d8281459e4bdb71c",
+   "fddd47c8cceb51ab"
+  ],
+  "32": [
+   "21c8a9293314a133",
+   "300be32e76fdabfd",
+   "3139dc710cf82c11",
+   "41931954896886d7",
+   "4e1dc4f44072732e",
+   "502571187c4a4465",
+   "5850ced305dda166",
+   "615c7e0da3cac063",
+   "66c9a256e52f0271",
+   "8fe56a808983922c",
+   "9e7b8fb319adcd76",
+   "b08884b9e8607862",
+   "b7f1c0dc2acab873",
+   "c267aede45c9d9c5",
+   "cf0f1b8a162407aa",
+   "dcd1534d7070e209",
+   "e2b2374d3363d746",
+   "ed5a6d50b4e1e6e9"
+  ],
+  "48": [
+   "74d7ac9562b697f7",
+   "7d253d6aff9fa0d4",
+   "7f3197a619128847",
+   "909eca06155aeb2c",
+   "9b2361bf4ea5ee35",
+   "b6dffca876b1d0a2",
+   "bb984b80a62501ef",
+   "ded8cb3b072167ca"
+  ]
+ }
+}

@@ -9,6 +9,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from common import Canvas, moss  # noqa: E402
 from bits import darken, outline, fill_pinholes  # noqa: E402
 from hand import barrel  # noqa: E402
+from deck import deck  # noqa: E402
 import pix  # noqa: E402
 from pix import Ashlar, sclamp  # noqa: E402
 
@@ -17,7 +18,7 @@ c = Canvas(4, 7)
 GY = H - 1
 PX0, PX1 = 1, 62
 BX0, BX1 = 3, 60
-PW = 5
+PW = 7
 FLOOR0 = 7
 MER = 34
 BODY = 52
@@ -30,8 +31,7 @@ ash = Ashlar([6, 6, 5, 6, 6, 5], seed=5, warm=False, widths=[9, 7, 11, 8, 10, 6,
 
 
 def body_shade(x, y):
-    f = (x - BX0) / (BX1 - BX0)
-    s = 1 if f < 0.15 else (0 if f < 0.4 else (-1 if f < 0.7 else -2))   # 넓이 전체에 걸친 다섯 단(한 단 어둡게)
+    s = -2 if x > BX1 - 3 else 0                  # 평평한 남쪽 면: 돌마다 밝기만 다르고, 오른 모 3px 만 그늘
     if y < BODY + 3:
         s -= 1
     return s
@@ -48,10 +48,9 @@ for x in range(BX0, BX1 + 1, 9):
     c.put(x, GY - 2, 'Y')
 
 # 화살창(짙은 돌 테 속 짙은 회색 틈)
-SLIT = ['.rnmj.', '.nWUe.', '.nWUe.', '.nWUe.', '.nWUe.', '.nWUe.', '.nWUe.', '.nWUe.', '.kYXa.', '.kiea.']
+SLIT = ['.rnmj.', '.nWUe.', '.nWUe.', 'nnWUee', 'WWWUUU', 'kkWUaa', '.nWUe.', '.nWUe.', '.kYXa.', '.kiea.']   # 십자 화살창
 c.rows(13, 60, SLIT)
-c.rows(45, 64, SLIT)
-c.rows(13, 80, SLIT[:1] + SLIT[1:6] + SLIT[-2:])
+c.rows(45, 60, SLIT)
 
 # 쇠 덧댄 문(열 2: 32..47) — 돌 홍예 + 판자 + 쇠 띠 셋 + 징 + 고리
 DX, DW = 34, 12
@@ -85,10 +84,10 @@ for x in range(PX0, PX1 + 1):
     k = x % 5
     dark = x > PX1 - 6
     c.put(x, CB, 'r' if not dark else 'k')
-    c.put(x, CB + 1, ('m' if k else 'j') if not dark else 'j')
+    c.put(x, CB + 1, 'm' if not dark else 'j')
     if BX0 <= x <= BX1:
-        for d in range(CB + 2, BODY):
-            t = ((8 if k == 1 else 7) - (d - CB - 2) - (2 if dark else 0)) if k in (1, 2, 3) else 3
+        for d in range(CB + 2, BODY):            # 한 줄 받침 몰딩: 밝은 모 → 둥근 배 → 그늘
+            t = (6, 4, 2, 1, 1)[min(4, d - CB - 2)] - (2 if dark else 0)
             c.put(x, d, sclamp(t))
     else:
         c.put(x, CB + 2, 'e' if x < 8 else 'a')
@@ -96,30 +95,7 @@ for x in range(PX0, PX1 + 1):
 
 # ---------------------------------------------------------------- 맨 위: 흉벽 고리 + 판석 바닥 + 소품
 FL0, FL1 = PX0 + PW, PX1 - PW
-FLAG_W = [13, 10, 15, 11, 14, 9, 12, 16, 10, 13]
-FLAG_T = 'pnpmpkpnmpkp'
-for y in range(FLOOR0, MER):
-    lv = y - FLOOR0
-    r = lv // 4
-    fy = lv % 4
-    x = FL0 - ((r * 5) % 11)
-    i = r * 3
-    while x <= FL1:
-        fw = FLAG_W[i % len(FLAG_W)]
-        tone = FLAG_T[(i * 5 + r) % len(FLAG_T)]
-        for xx in range(max(FL0, x), min(FL1, x + fw - 1) + 1):
-            fx = xx - x
-            if fy == 3:
-                ch = 'g'
-            elif fx == fw - 1:
-                ch = 'g' if fy else 'h'
-            elif fy == 0:
-                ch = {'m': 'n', 'k': 'm', 'n': 'r', 'p': 'r'}[tone]
-            else:
-                ch = tone
-            c.put(xx, y, ch)
-        x += fw
-        i += 1
+deck(c, FL0, FLOOR0, FL1, MER - 1, sw=9, sh=8, ox=3, oy=2)   # 버들항 성탑 윗바닥: 줄 맞춘 네모 판석
 for x in range(FL0, FL1 + 1):                     # 흉벽 안 그늘(뒤 3줄, 왼 3열)
     darken(c, x, FLOOR0, 2)
     darken(c, x, FLOOR0 + 1, 2)
@@ -131,8 +107,8 @@ for y in range(FLOOR0, MER):
 for y in range(0, MER + 5):                       # 옆 흉벽 윗면 띠(5)
     seam = y % 8 == 7
     for i in range(PW):
-        c.put(PX0 + i, y, 'e' if seam else ('k', 's', 'r', 'n', 'j')[i])
-        c.put(PX1 - i, y, 'Y' if seam else ('a', 'k', 'n', 'm', 'j')[i])
+        c.put(PX0 + i, y, 'j' if seam else ('k', 's', 's', 'r', 'r', 'n', 'm')[i])
+        c.put(PX1 - i, y, 'i' if seam else ('j', 'k', 'm', 'n', 'n', 'm', 'k')[i])
 for x in range(FL0, FL1 + 1):                     # 뒤 흉벽 윗면(갓돌 4) + 안쪽 남향 낮은 면(3)
     seam = (x - FL0) % 9 == 8
     for j, ch in enumerate(('n', 's', 'r', 'r')):
@@ -169,9 +145,7 @@ for x in range(PX0, PX1 + 1):
             t = [8, 7, 7, 7, 6, 6, 5, 4][kk] - (2 if dark else 0)
             if y == MER + 5:
                 t += 1
-            if y in (MER + 8, MER + 12):
-                t -= 3
-            if (y < MER + 8 and kk == 4) or (y > MER + 8 and kk == 2):
+            if y == MER + 12:
                 t -= 3
             c.put(x, y, sclamp(t))
     else:

@@ -27,27 +27,13 @@
   "round": 1,
   "material": "stone"
  },
- "brewery": {
-  "id": "brewery",
-  "name": "양조장",
-  "width": 144,
-  "height": 112,
-  "entrance": {
-   "x": 32,
-   "y": 80,
-   "w": 16,
-   "h": 32
-  },
-  "round": 1,
-  "material": "plaster"
- },
  "chapel": {
   "id": "chapel",
   "name": "예배당",
   "width": 176,
   "height": 144,
   "entrance": {
-   "x": 48,
+   "x": 32,
    "y": 112,
    "w": 16,
    "h": 32
@@ -83,20 +69,6 @@
   "round": 1,
   "material": "plaster"
  },
- "dormer-house": {
-  "id": "dormer-house",
-  "name": "지붕창 3층 집",
-  "width": 112,
-  "height": 128,
-  "entrance": {
-   "x": 48,
-   "y": 96,
-   "w": 16,
-   "h": 32
-  },
-  "round": 1,
-  "material": "plaster"
- },
  "dovecote": {
   "id": "dovecote",
   "name": "비둘기탑",
@@ -118,9 +90,9 @@
   "height": 96,
   "entrance": {
    "x": 16,
-   "y": 80,
+   "y": 64,
    "w": 16,
-   "h": 16
+   "h": 32
   },
   "round": 1,
   "material": "plaster"
@@ -181,20 +153,6 @@
   "round": 1,
   "material": "plaster"
  },
- "keep-tower": {
-  "id": "keep-tower",
-  "name": "사각 성탑",
-  "width": 80,
-  "height": 144,
-  "entrance": {
-   "x": 32,
-   "y": 128,
-   "w": 16,
-   "h": 16
-  },
-  "round": 1,
-  "material": "stone"
- },
  "l-farmhouse": {
   "id": "l-farmhouse",
   "name": "ㄱ자 농가",
@@ -212,11 +170,11 @@
  "lighthouse": {
   "id": "lighthouse",
   "name": "등대",
-  "width": 80,
-  "height": 160,
+  "width": 48,
+  "height": 144,
   "entrance": {
-   "x": 32,
-   "y": 128,
+   "x": 16,
+   "y": 112,
    "w": 16,
    "h": 32
   },
@@ -240,11 +198,11 @@
  "manor": {
   "id": "manor",
   "name": "저택",
-  "width": 192,
+  "width": 176,
   "height": 128,
   "entrance": {
    "x": 80,
-   "y": 96,
+   "y": 80,
    "w": 16,
    "h": 32
   },
@@ -257,7 +215,7 @@
   "width": 128,
   "height": 96,
   "entrance": {
-   "x": 112,
+   "x": 64,
    "y": 80,
    "w": 16,
    "h": 16
@@ -314,9 +272,9 @@
   "height": 96,
   "entrance": {
    "x": 96,
-   "y": 80,
+   "y": 64,
    "w": 16,
-   "h": 16
+   "h": 32
   },
   "round": 1,
   "material": "wood"
@@ -349,16 +307,16 @@
   "round": 1,
   "material": "stone"
  },
- "windmill": {
-  "id": "windmill",
-  "name": "탑 풍차",
-  "width": 96,
-  "height": 128,
+ "warehouse": {
+  "id": "warehouse",
+  "name": "계단 박공 창고",
+  "width": 80,
+  "height": 160,
   "entrance": {
    "x": 32,
-   "y": 112,
+   "y": 128,
    "w": 16,
-   "h": 16
+   "h": 32
   },
   "round": 1,
   "material": "stone"
@@ -369,7 +327,7 @@
   "width": 64,
   "height": 176,
   "entrance": {
-   "x": 16,
+   "x": 32,
    "y": 144,
    "w": 16,
    "h": 32

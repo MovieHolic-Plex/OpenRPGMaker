@@ -16,8 +16,8 @@ c = Canvas(9, 8)
 # ---------------------------------------------------------------- 본채(물러난 단층) — 땅선 y=111
 R_Y, E_Y = 22, 60
 hip_roof(c, 0, W - 1, R_Y, E_Y, 34, 109, vshift=6)
-chimney(c, 114, 8, 26, cw=7)
-chimney(c, 22, 14, 30, cw=6)
+chimney(c, 114, 8, 26, cw=7, start=2, slope=-1)
+chimney(c, 22, 14, 30, cw=6, start=6, slope=1)
 
 MX0, MX1 = 2, W - 3
 UY0 = E_Y + 3
@@ -27,8 +27,8 @@ plaster_more(c, MX0, UY0 + 5, MX1, 104, ox=2)
 for px in (MX0, 24, 44, 97, 117, MX1 - 2):
     post(c, px, UY0 + 2, 107)
 beam(c, MX0, MX1, UY0 + 4)
-for wx in (10, 30, 104, 124):
-    window(c, wx, UY0 + 12, w=9, h=12, box=True)
+for k, wx in enumerate((10, 30, 104, 124)):
+    window(c, wx, UY0 + 12, w=9, h=12, box=(k % 2 == 0), look=k)
 for x in range(MX0, MX1 + 1):
     c.put(x, 105, 'ε')
     c.put(x, 106, '-')
@@ -39,7 +39,7 @@ for (x, y) in [(20, 74), (38, 92), (109, 78), (131, 95), (15, 100), (128, 101)]:
 # ---------------------------------------------------------------- 날개(남북으로 가로지르는 높은 박공) — 땅선 y=127
 NX0, NX1 = 50, 93
 RX0, RX1 = NX0 - 4, NX1 + 4
-APEX, KNEE, EAVE, GPEAK = 2, E_Y, 82, 56
+APEX, KNEE, EAVE, GPEAK = R_Y + 3, 82, 82, 57   # 날개 용마루 뒤끝은 본채 용마루 바로 아래, 처마 모서리까지 곧은 골
 in_g = gable_front(c, RX0, RX1, APEX, KNEE, EAVE, GPEAK, NX0 - 2, NX1 + 2, vshift=2, attic=(9, 7))
 ctr = (RX0 + RX1 + 1) / 2.0
 half = (RX1 - RX0 + 1) / 2.0
@@ -94,7 +94,7 @@ door(c, DOOR_X, WY0 + 13, DOOR_W, H - (WY0 + 13) - 2)
 for px in (DOOR_X - 3, DOOR_X + DOOR_W):
     post(c, px, WY0 + 3, H - 3)
 beam(c, DOOR_X - 3, DOOR_X + DOOR_W + 2, WY0 + 10, h=1)
-window(c, 82, WY0 + 14, w=8, h=10, box=True)
+window(c, 82, WY0 + 14, w=8, h=10, box=True, look=5)
 # 등불(문 왼쪽 칸)
 for (x, y, ch) in [(56, 103, 'U'), (57, 103, 'U'), (57, 104, 'X'), (56, 105, 'X'), (57, 105, 'Y'), (58, 105, 'X'),
                    (56, 106, 'K'), (57, 106, 'L'), (58, 106, 'K'), (56, 107, 'K'), (57, 107, 'K'), (58, 107, 'τ'),
@@ -104,7 +104,14 @@ foundation(c, NX0, NX1, H - 2, step=(DOOR_X - 1, DOOR_X + DOOR_W))
 for (x, y, ch) in [(51, H - 3, 'N'), (52, H - 3, 'O'), (91, H - 3, 'O'), (3, 109, 'N'), (4, 109, 'O'),
                    (139, 109, 'N'), (46, 109, 'O'), (99, 109, 'N')]:
     c.put(x, y, ch)
-moss(c, [(8, 54, 1), (124, 46, 2), (36, 56, 0), (104, 57, 2), (80, 44, 2)])
+
+import importlib.util as _iu  # noqa: E402
+for _n in ('fixups', 'edgefix'):
+    _sp = _iu.spec_from_file_location(_n + '_ch', os.path.join(os.path.dirname(os.path.abspath(__file__)), _n + '.py'))
+    globals()[_n] = _iu.module_from_spec(_sp)
+    _sp.loader.exec_module(globals()[_n])
+fixups.finalize(c)
+print('  먹 윤곽 → 재질 어두운 단', edgefix.material_edges(c))
 
 meta = {
     'name': '교차 박공 십자형 집', 'massing': '18', 'material': 'plaster',

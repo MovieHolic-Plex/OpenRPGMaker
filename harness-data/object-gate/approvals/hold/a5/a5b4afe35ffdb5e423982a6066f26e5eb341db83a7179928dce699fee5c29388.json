@@ -1,0 +1,16 @@
+{
+ "schema": "oprn-object-gate-hold-decision/1",
+ "pixelSha256": "a5b4afe35ffdb5e423982a6066f26e5eb341db83a7179928dce699fee5c29388",
+ "profileHash": "4d8774b517f41638",
+ "kind": "structure",
+ "decision": "allow",
+ "decidedBy": "supervisor (building-kit massing)",
+ "decidedAt": "2026-10-25T12:24:05.901Z",
+ "by": "delegated",
+ "delegatedBy": "user 2026-10-25 (bk-massing-100 → 실제 건물, 머지까지 위임)",
+ "evidence": "/home/main/z-project/rpg-zzu-bk-src/harness-data/building-kit/massing/reviews/manor/a5b4afe35ffd-evidence.json",
+ "via": "review-page",
+ "reasons": [],
+ "note": "object-gate pass + argon PASS + klb-sonnet-5-5 PASS (원문 파일)",
+ "sig": "e0caaf87ded81afcb95a6f10fb1cd69c1bc83c1912b6bfd9de58f71df6b57751"
+}

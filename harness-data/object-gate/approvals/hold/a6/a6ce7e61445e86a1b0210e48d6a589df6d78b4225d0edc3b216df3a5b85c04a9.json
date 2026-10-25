@@ -1,0 +1,16 @@
+{
+ "schema": "oprn-object-gate-hold-decision/1",
+ "pixelSha256": "a6ce7e61445e86a1b0210e48d6a589df6d78b4225d0edc3b216df3a5b85c04a9",
+ "profileHash": "4d8774b517f41638",
+ "kind": "structure",
+ "decision": "allow",
+ "decidedBy": "supervisor (building-kit massing)",
+ "decidedAt": "2026-10-25T11:53:52.436Z",
+ "by": "delegated",
+ "delegatedBy": "user 2026-10-25 (bk-massing-100 → 실제 건물, 머지까지 위임)",
+ "evidence": "/home/main/z-project/rpg-zzu-bk-src/harness-data/building-kit/massing/reviews/town-hall/a6ce7e61445e-evidence.json",
+ "via": "review-page",
+ "reasons": [],
+ "note": "object-gate pass + argon PASS + klb-sonnet-5-5 PASS (원문 파일)",
+ "sig": "8141e98a31b273d586b682922cd1d718c8d05d498602f7a9d578ffb4c51246da"
+}

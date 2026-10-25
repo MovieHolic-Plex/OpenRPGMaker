@@ -4,20 +4,20 @@
  "material": "stone",
  "refs": [
   "bd-mpart-tower",
-  "bd-manor-tower"
+  "bd-house-cathedral"
  ],
  "walk": [
+  "..*.",
   ".**.",
-  ".**.",
-  "****",
-  "****",
-  "****",
-  "****",
-  "****",
-  "****",
-  "****",
-  "XDXX",
-  "XDXX"
+  ".***",
+  ".***",
+  ".***",
+  ".***",
+  ".***",
+  ".***",
+  ".***",
+  "XXDX",
+  "XXDX"
  ],
  "id": "wizard-tower"
 }
