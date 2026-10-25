@@ -7,8 +7,11 @@
 //
 // 도구: scripts/qa/play/qp.mjs(세션 CLI) · repro.mjs(재현) · to-scenario.mjs(회귀 시나리오).
 import { chromium } from "@playwright/test";
+import { execFileSync } from "node:child_process";
+import { existsSync } from "node:fs";
 import { readFile, writeFile } from "node:fs/promises";
-import { join } from "node:path";
+import { join, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
 import { gunzipSync } from "node:zlib";
 import { HOOK_OPS, applyOp, requireHooks } from "./runtimeQaRun.mjs";
 
@@ -125,7 +128,30 @@ export async function prepareBoot({ projectFile, entry, dir, keepOpening = false
   project.system = { ...project.system, ...patch };
   const target = join(dir, "boot-project.json");
   await writeFile(target, JSON.stringify(project));
-  return { projectFile: target };
+  return { projectFile: projectForPlayer(target, dir) };
+}
+
+const REPO_ROOT = fileURLToPath(new URL("../../", import.meta.url));
+
+/**
+ * 편집기 저장본을 **출하 내보내기 투영**(prepareWebExport)으로 바꿔 플레이어에 넘긴다 — 실제 출하물과 같은 project.json 이다.
+ * 왜(2026-10-25 S4): 저장본 그대로(안 쓰는 타일셋·참고문서·번들 정의 통째, 98MB)를 띄우면 출하물(5~14MB)보다 훨씬 무거워
+ * 상자에서 부팅 중 렌더러가 닫혔고, 출하물을 검증하지도 않았다. 이미 투영된 파일(번들 참조가 있는 것)은 그대로 쓴다.
+ * 투영이 실패하면(vite-node 없음 등) 원본 경로로 돌아가 예전처럼 띄운다.
+ */
+function projectForPlayer(file, dir) {
+  const out = join(dir, "player-project.json");
+  const viteNode = [resolve(REPO_ROOT, "node_modules/vite-node/dist/cli.mjs"), resolve(REPO_ROOT, "node_modules/vite-node/vite-node.mjs")].find((path) => existsSync(path));
+  if (!viteNode) return file;
+  try {
+    execFileSync(process.execPath, [viteNode, "--config", resolve(REPO_ROOT, "vite.config.ts"),
+      resolve(REPO_ROOT, "src/harnesses/assistant-capability/node/runtimeProjection.ts"), "--", file, out],
+    { cwd: REPO_ROOT, stdio: "pipe", maxBuffer: 1024 * 1024 });
+    return out;
+  } catch (error) {
+    process.stderr.write(`playSession: 내보내기 투영 실패 — 저장본 그대로 띄운다: ${String(error?.stderr ?? error?.message ?? error).slice(0, 300)}\n`);
+    return file;
+  }
 }
 
 /** 지금 화면의 압축 상태. `state` 명령과 재현 관측이 같이 쓴다. */

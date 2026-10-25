@@ -6,6 +6,7 @@ import { requireNumber, requireRecord } from "./guards";
 import { migrateV1toV3, migrateV2toV3, migrateV3toV4 } from "./migration";
 import { validateProjectV1, validateProjectV2, validateProjectV4 } from "./shape";
 import { restoreOwnedReferenceDocuments, reuseTilesetsView, withoutOwnedReferenceDocuments } from "../referenceOwnership";
+import { BundledTilesetRefError, restoreBundledTilesetRefs } from "../bundledTilesetRefs";
 
 function omitRetiredTerrainTemplates<T extends object>(owner: T): T | Record<string, unknown> {
   // 버려진 키가 없으면 같은 객체를 돌려준다 — 매번 새 객체를 만들면 저장 비교의 같은-객체 단축이 깨져
@@ -90,6 +91,9 @@ export function deserialize(raw: string): Project {
 export function deserializeParsed(parsed: unknown): Project {
   const data = requireRecord("project", parsed);
   const version = requireNumber("version", data.version);
+  // 내보낸 게임은 번들 타일셋을 참조로 싣는다(bundledTilesetRefs.ts) — 검사 전에 번들 정의로 되돌린다.
+  try { restoreBundledTilesetRefs(data); }
+  catch (error) { if (error instanceof BundledTilesetRefError) throw new ProjectFormatError(error.message); throw error; }
   if (version === 1) return migrateV1toV3(validateProjectV1(data));
   if (version === 2) return migrateV2toV3(validateProjectV2(data));
   // v3 는 얼굴 짝(시트 id + faceIndex)을 들고 있다 — 낱장 얼굴 id 로 바꾼 뒤 검사한다.
