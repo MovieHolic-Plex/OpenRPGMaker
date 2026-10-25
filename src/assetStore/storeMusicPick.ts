@@ -85,10 +85,11 @@ export function scoreStoreMusic(track: StoreMusicTrack, want: StoreMusicQuery): 
   const genreText = `${m.genreKo} ${m.genreLabel}`.toLowerCase();
   const lineWords = LINE_WORDS[m.genre] ?? [m.genre];
   const moods = m.mood.map((word) => word.toLowerCase());
+  let named = false;
   for (const word of tokens(want.query ?? "")) {
     if (word.length < 1) continue;
-    if (genreText.includes(word)) score += 6;
-    else if (lineWords.some((line) => line.includes(word) || word.includes(line))) score += track.cultureHeard === "partly" ? 3 : 1.5;
+    if (genreText.includes(word)) { score += 6; named = true; }
+    else if (lineWords.some((line) => line.includes(word) || word.includes(line))) { score += track.cultureHeard === "partly" ? 3 : 1.5; named = true; }
     if (moods.some((mood) => mood.includes(word))) score += 3;
     if (m.summaryKo.toLowerCase().includes(word)) score += 1;
   }
@@ -96,7 +97,12 @@ export function scoreStoreMusic(track: StoreMusicTrack, want: StoreMusicQuery): 
     if (moods.some((mood) => mood.includes(word) || word.includes(mood))) score += 4;
     else if (m.summaryKo.toLowerCase().includes(word)) score += 1.5;
   }
-  score += 3 * (want.projectLines?.[m.genre] ?? 0);
+  // 게임의 곡 결: 이미 든 스토어 곡과 같은 줄이면 앞으로, 한 줄이 절반 넘게 차지하는데 다른 줄이면(그 장르를 말하지 않았으면) 뒤로.
+  // 2026-10-25 실조수: 판타지 게임의 「으스스한 던전 음악」에 호러 팩의 트립합 곡이 붙었다(Argon 1점).
+  const lines = want.projectLines ?? {};
+  const share = lines[m.genre] ?? 0;
+  score += 3 * share;
+  if (!named && share === 0 && Object.values(lines).some((value) => value >= 0.5)) score -= 4;
   if (want.scene === "victory") score += m.loopable ? 0 : 3;
   else if (want.scene) score += m.loopable ? 2 : -6;
   return score;

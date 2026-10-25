@@ -174,7 +174,8 @@ try {
       await page.getByTestId('ai-send').click();
       log(`\n## ${step} USER (${new Date().toISOString()})\n${body}\n`);
     } else {
-      const button = page.locator(`[data-testid="${body.split('\n')[0].trim()}"]`).first();
+      // 가장 최근 카드의 단추(앞 카드의 같은 단추는 이미 끝나 꺼져 있다).
+      const button = page.locator(`[data-testid="${body.split('\n')[0].trim()}"]:not([disabled])`).last();
       await button.click();
       log(`\n## ${step} USER CLICK (${new Date().toISOString()}) ${body.split('\n')[0]}\n`);
     }

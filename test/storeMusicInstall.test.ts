@@ -61,6 +61,9 @@ describe("store music pick by scene", () => {
     const lines = projectMusicLines({ a: { kind: "music", meta: MANIFEST.content.assets.town!.meta }, b: { kind: "image", meta: {} } });
     expect(lines).toEqual({ joseon: 1 });
     expect(rankStoreMusic(pool, { scene: "victory", projectLines: lines })[0]?.assetId).toBe("win");
+    // 다른 줄 곡이 분위기 낱말을 더 맞혀도, 그 장르를 말하지 않았으면 게임의 줄이 앞선다. 장르를 말하면 그 장르.
+    expect(rankStoreMusic(pool, { scene: "victory", mood: "승리의", query: "팡파르", projectLines: lines })[0]?.assetId).toBe("win");
+    expect(rankStoreMusic(pool, { scene: "victory", query: "무협", projectLines: lines })[0]?.assetId).toBe("win2");
   });
   it("keeps only the chosen track in a subset manifest", () => {
     const subset = subsetMusicManifest(MANIFEST, ["win"]);
