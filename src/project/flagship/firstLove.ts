@@ -379,7 +379,9 @@ function buildMondayMorning(project: Project, a: FirstLoveAnchors): void {
     { id: "ev_fl_crowd_4", tex: "tex_oprn_charset_modern1", index: 1, delay: 18, exit: "ev_fl_office_door" },
   ];
   for (const c of crowd) {
-    add(street, event(c.id, "출근하는 사람", s.subway, [page(`${c.id}_p`, [stageIs(V_STAGE, S.START)], [], { dir: "down" })]));
+    // 처음엔 화면 밖 구석(맵 맨 윗줄)에 둔다 — 계단 칸에 세워 두면 차례가 늦은 사람이 경로가 닿을 때까지 계단에 보였다(Argon op4).
+    // enterVia 가 출구 칸으로 옮겨 나타나게 한다.
+    add(street, event(c.id, "출근하는 사람", { x: crowd.indexOf(c), y: 0 }, [page(`${c.id}_p`, [stageIs(V_STAGE, S.START)], [], { dir: "down" })]));
     const pg = street.events.find((e) => e.id === c.id)!.pages![0]! as unknown as { graphic: Record<string, unknown>; priority: string; overlapForbidden: boolean; movement: Record<string, unknown> };
     pg.graphic = { sprite: { type: "bundled", id: c.tex }, direction: "down", pattern: charsetFrameIndex({ characterIndex: c.index, direction: "down", pattern: 1 }), transparent: false };
     pg.priority = "same"; pg.overlapForbidden = false; pg.movement = { type: "fixed", speed: 4, frequency: 3 };
