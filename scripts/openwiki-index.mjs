@@ -20,6 +20,7 @@
 import { execFileSync } from "node:child_process";
 import { existsSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
 
 const ROOT = resolve(dirname(new URL(import.meta.url).pathname), "..");
 const INDEX_PATH = join(ROOT, "openwiki", "INDEX.md");
@@ -48,13 +49,42 @@ function estimateTokens(text) {
   return Math.round(hangul + rest / 4);
 }
 
-/** EUC-KR→UTF-8 깨짐의 지문: 한글 음절에 물음표가 붙어 끊긴 자리. */
-function garbledLines(lines) {
+// 문장 끝 물음표 뒤에 오는 글자. 「만들까요?」 「닿나? (경로)」 “뭔가요?” 는 깨짐이 아니다.
+// `?project=` 처럼 물음표 뒤에 바로 영문이 와도, 앞에 한글 음절이 없으면 쿼리 문자열이다.
+const QUESTION_TAIL = /[\s」』"'`)\]}>.,;:!?…·—–”’*_`/\\|、。-]/u;
+
+/**
+ * EUC-KR→UTF-8 깨짐의 지문: 물음표가 한글 단어 한가운데 박힌 줄.
+ * 문장 끝 물음표(공백·닫는 따옴표·구두점)는 세지 않는다.
+ */
+export function garbledLines(lines) {
   const hits = [];
   for (let i = 0; i < lines.length; i += 1) {
-    if (/[\uac00-\ud7a3]\?|\?[\uac00-\ud7a3]/.test(lines[i])) hits.push(i + 1);
+    if (lineHasMojibakeQuestion(lines[i])) hits.push(i + 1);
   }
   return hits;
+}
+
+function lineHasMojibakeQuestion(line) {
+  if (/\?[\uac00-\ud7a3]/.test(line)) return true;
+  for (const match of line.matchAll(/[\uac00-\ud7a3]\?+/g)) {
+    const after = line[match.index + match[0].length];
+    if (after !== undefined && !QUESTION_TAIL.test(after)) return true;
+  }
+  return false;
+}
+
+/** openwiki 본문과 harnesses/ 문서. INDEX.md 자신은 빼며, 하위 폴더는 harnesses 만 본다. */
+export function wikiMarkdownRels() {
+  const harnessDir = join(ROOT, "openwiki", "harnesses");
+  const harnessPages = existsSync(harnessDir)
+    ? readdirSync(harnessDir).filter((name) => name.endsWith(".md")).map((name) => `harnesses/${name}`)
+    : [];
+  return readdirSync(join(ROOT, "openwiki"))
+    .filter((name) => name.endsWith(".md") && name !== "INDEX.md")
+    .concat(harnessPages)
+    .sort()
+    .map((name) => `openwiki/${name}`);
 }
 
 /** 문서가 백틱으로 가리키는 경로 중 어디에도 없는 것. */
@@ -114,31 +144,22 @@ function collect() {
     trackedByBase.get(base).push(file);
   }
   // 하네스 문서는 openwiki/harnesses/<id>.md 에 모은다 (openwiki/harnesses/README.md).
-  const harnessDir = join(ROOT, "openwiki", "harnesses");
-  const harnessPages = existsSync(harnessDir)
-    ? readdirSync(harnessDir).filter((name) => name.endsWith(".md")).map((name) => `harnesses/${name}`)
-    : [];
-  const pages = readdirSync(join(ROOT, "openwiki"))
-    .filter((name) => name.endsWith(".md") && name !== "INDEX.md")
-    .concat(harnessPages)
-    .sort()
-    .map((name) => {
-      const rel = `openwiki/${name}`;
-      const text = readFileSync(join(ROOT, rel), "utf8");
-      const lines = text.split("\n");
-      return {
-        path: rel,
-        name,
-        bytes: Buffer.byteLength(text, "utf8"),
-        lines: lines.length,
-        tokens: estimateTokens(text),
-        truncates: Buffer.byteLength(text, "utf8") > READ_LIMIT_BYTES,
-        worstSection: worstSectionBytes(lines),
-        garbled: garbledLines(lines),
-        dead: deadReferences(rel, text, tracked, trackedByBase),
-        sections: sections(lines),
-      };
-    });
+  const pages = wikiMarkdownRels().map((rel) => {
+    const text = readFileSync(join(ROOT, rel), "utf8");
+    const lines = text.split("\n");
+    return {
+      path: rel,
+      name: rel.slice("openwiki/".length),
+      bytes: Buffer.byteLength(text, "utf8"),
+      lines: lines.length,
+      tokens: estimateTokens(text),
+      truncates: Buffer.byteLength(text, "utf8") > READ_LIMIT_BYTES,
+      worstSection: worstSectionBytes(lines),
+      garbled: garbledLines(lines),
+      dead: deadReferences(rel, text, tracked, trackedByBase),
+      sections: sections(lines),
+    };
+  });
   return { pages };
 }
 
@@ -189,7 +210,8 @@ function render({ pages }) {
   } else {
     out.push(
       "EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿지 말고** 같은 줄의 파일 경로·식별자만 쓰고, " +
-        "의미는 해당 소스 파일에서 직접 확인하라. 복원은 불가능하다(원본 바이트가 소실).",
+        "의미는 해당 소스 파일에서 직접 확인하라. 복원은 불가능하다(원본 바이트가 소실). " +
+        "문장 끝 물음표(「만들까요?」, “뭔가요?”)는 깨진 줄이 아니므로 이 목록에 없다.",
     );
     out.push("");
     out.push("| 페이지 | 깨진 줄 수 | 예시 줄 번호 |");
@@ -240,38 +262,41 @@ function render({ pages }) {
   return `${out.join("\n").trimEnd()}\n`;
 }
 
-const data = collect();
-const rendered = render(data);
+const isDirectRun = process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url);
+if (isDirectRun) {
+  const data = collect();
+  const rendered = render(data);
 
-if (wantJson) {
-  const summary = {
-    pages: data.pages.length,
-    bytes: data.pages.reduce((sum, page) => sum + page.bytes, 0),
-    tokens: data.pages.reduce((sum, page) => sum + page.tokens, 0),
-    oversize: data.pages.filter((page) => page.truncates).map((page) => page.path),
-    notSliceable: data.pages.filter((page) => page.worstSection > READ_LIMIT_BYTES).map((page) => page.path),
-    garbledPages: data.pages.filter((page) => page.garbled.length > 0).length,
-    garbledLines: data.pages.reduce((sum, page) => sum + page.garbled.length, 0),
-    deadRefs: data.pages.reduce((sum, page) => sum + page.dead.length, 0),
-  };
-  process.stdout.write(`${JSON.stringify(summary, null, 2)}\n`);
-}
-
-if (wantCheck) {
-  const current = existsSync(INDEX_PATH) ? readFileSync(INDEX_PATH, "utf8") : "";
-  if (current !== rendered) {
-    process.stderr.write(`${OUTPUT_NAME} 가 낡았다. \`npm run openwiki:index\` 를 돌려라.\n`);
-    process.exit(1);
+  if (wantJson) {
+    const summary = {
+      pages: data.pages.length,
+      bytes: data.pages.reduce((sum, page) => sum + page.bytes, 0),
+      tokens: data.pages.reduce((sum, page) => sum + page.tokens, 0),
+      oversize: data.pages.filter((page) => page.truncates).map((page) => page.path),
+      notSliceable: data.pages.filter((page) => page.worstSection > READ_LIMIT_BYTES).map((page) => page.path),
+      garbledPages: data.pages.filter((page) => page.garbled.length > 0).length,
+      garbledLines: data.pages.reduce((sum, page) => sum + page.garbled.length, 0),
+      deadRefs: data.pages.reduce((sum, page) => sum + page.dead.length, 0),
+    };
+    process.stdout.write(`${JSON.stringify(summary, null, 2)}\n`);
   }
-  if (!wantJson) process.stdout.write(`${OUTPUT_NAME} 최신.\n`);
-  process.exit(0);
-}
 
-writeFileSync(INDEX_PATH, rendered, "utf8");
-if (!wantJson) {
-  const dead = data.pages.reduce((sum, page) => sum + page.dead.length, 0);
-  const garbled = data.pages.reduce((sum, page) => sum + page.garbled.length, 0);
-  process.stdout.write(
-    `${OUTPUT_NAME} 갱신 — ${data.pages.length}쪽, 없는 파일 참조 ${dead}건, 깨진 줄 ${garbled}건.\n`,
-  );
+  if (wantCheck) {
+    const current = existsSync(INDEX_PATH) ? readFileSync(INDEX_PATH, "utf8") : "";
+    if (current !== rendered) {
+      process.stderr.write(`${OUTPUT_NAME} 가 낡았다. \`npm run openwiki:index\` 를 돌려라.\n`);
+      process.exit(1);
+    }
+    if (!wantJson) process.stdout.write(`${OUTPUT_NAME} 최신.\n`);
+    process.exit(0);
+  }
+
+  writeFileSync(INDEX_PATH, rendered, "utf8");
+  if (!wantJson) {
+    const dead = data.pages.reduce((sum, page) => sum + page.dead.length, 0);
+    const garbled = data.pages.reduce((sum, page) => sum + page.garbled.length, 0);
+    process.stdout.write(
+      `${OUTPUT_NAME} 갱신 — ${data.pages.length}쪽, 없는 파일 참조 ${dead}건, 깨진 줄 ${garbled}건.\n`,
+    );
+  }
 }
