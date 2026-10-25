@@ -9,7 +9,6 @@ import { activeEventRailGroup } from "@/editor/panels/eventEditor/eventEditorOpe
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
 import { editorState } from "@/editor/editorState";
-import { resetEditorUiModeForTests } from "@/editor/editorUiMode";
 import { resetModalStackForTest } from "@/editor/ui/modalStack";
 import type { EventPage } from "@/project/types";
 
@@ -55,7 +54,6 @@ describe("이벤트 설정 레일 정돈", () => {
   const modal = () => document.querySelector<HTMLElement>("[data-testid='event-condition-modal']");
 
   beforeEach(() => {
-    resetEditorUiModeForTests("expert");
     resetModalStackForTest();
     activeEventRailGroup.clear();
     host = document.createElement("div");
@@ -69,7 +67,6 @@ describe("이벤트 설정 레일 정돈", () => {
     unsubscribe();
     host.remove();
     modal()?.remove();
-    resetEditorUiModeForTests("standard");
   });
 
   it("시작 방식은 「모습과 대화」 안에 있고 「기타」 그룹은 없다", () => {
