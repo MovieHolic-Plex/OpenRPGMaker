@@ -288,29 +288,33 @@ npm run qa:runtime:gate     # 게이트: 두 시나리오
    공유 `node_modules` 를 보면 `<체크아웃>/.vite-cache/dev` 로 스스로 뗀다. 직접 부를 수밖에 없으면(`/tmp` 기준선 사본 등) `VITE_CACHE_DIR=<그 사본 안 경로>` 를 반드시 준다.
 2. **저작 콘텐츠(맵·이벤트·데모) 작업은 워크트리로 병렬화하지 않는다.** 프로젝트 정본이
    워크트리 밖에서 공유되어 git 이 충돌을 못 본다 — 직렬화하거나 별도의 프로젝트 폴더/호스트 프로젝트로 분리한다.
-3. 검증은 **감독자가 직접** `npm run gates` 로 한다. 에이전트는 아래 hard rule 을 따른다.
+3. 검증은 **GitHub CI** 가 한다(아래 hard rule). 로컬에서 gates·vitest 를 돌리지 않는다.
    에이전트의 "테스트 통과했습니다"와 파이프를 거친 종료 코드는 근거로 쓰지 않는다 (실측: 백그라운드 실행기가 exit 0 을 보고했으나 실제로는
    typecheck exit 2 / vitest exit 1 이었다).
 4. 기준선이 빨간불이므로 게이트는 **기준선 대비 새 실패**만 회귀로 본다.
 
-## 워크트리·세션 에이전트는 gates / vitest / stash 금지 (hard rule)
+## 테스트는 GitHub CI 에서만 돈다 — 로컬 vitest·bun test·playwright test·gates 금지 (hard rule, 2026-10-25)
 
-**사용자가 이 세션에서 테스트나 게이트를 돌리라고 명시하지 않으면 실행하지 마라.**
-검증 습관, `openwiki/testing.md` 표, "완료하려면 테스트" 같은 기본 지시보다 **이 규칙이 이긴다.**
+**이 저장소는 공개 저장소이고, PR 마다 GitHub CI(ci-fast·ci-full)가 같은 검사를 돌린다. 개발 기계에서는 테스트 러너를 돌리지 않는다.**
+검증 습관, `openwiki/testing.md` 표, 훅의 "Test the changes", 감독자 지시문의 "targeted tests" 같은 문장보다 **이 규칙이 이긴다.**
 
-금지 (격리 워크트리·공유 트리 세션 모두. 감독자 역할이 아닌 한):
-- `npm run gates`, `gates:*`, `npm test`, `npx vitest`, `node scripts/run-vitest.mjs`, 전체 스위트, 전체 `typecheck`
-- dirty 를 치우려고 하는 `git stash` / `stash push` / `stash pop` / `stash apply`
-- "검증하려고 잠깐", "게이트 한 축만", "changed 만" 도 사용자가 시키지 않았으면 금지
+막는 장치(코드): `scripts/lib/ciOnlyTests.mjs` — `vitest.*.config.ts`·`playwright.config.ts`·`scripts/verify-gates.mjs`·`bunfig.toml` 이
+`CI` 가 아니면 바로 exit 1 한다. 이 장치를 지우거나 우회하지 마라.
 
-이유 (실측):
-- stash 스택은 저장소에 하나뿐이라 모든 워크트리가 공유한다. pop 이 남의 WIP 를 꺼낸다 — `openwiki/agent-worktrees.md`.
-- 여러 세션이 vitest/gates 를 겹치면 부하로 결과가 뒤집히고 공유 `node_modules` 워커가 머신 전체를 먹는다.
-- 게이트는 감독자가 직접 돌린다. 에이전트 테스트 통과 보고는 근거가 아니다.
+금지 (워크트리·공유 트리·서브에이전트 모두):
+- `npm test`, `npx vitest`, `node scripts/run-vitest.mjs`, `test:*`, `bun test`, `npx playwright test`, `npm run gates`·`gates:*`, 전체 `typecheck`
+- 「바꾼 파일 하나만」「changed 만」「검증하려고 잠깐」도 금지다. 실측(2026-10-25): 에이전트들이 「targeted」 테스트를 겹쳐 돌려 부하가 196까지 올랐다.
+- 스스로 `OPRN_LOCAL_TESTS=1` 이나 `CI=true` 를 붙이는 것.
+- dirty 를 치우려고 하는 `git stash` / `stash push` / `stash pop` / `stash apply` — stash 스택은 모든 워크트리가 공유한다(`openwiki/agent-worktrees.md`).
 
-허용:
-- 사용자가 **이번 메시지에서** 테스트/게이트를 하라고 적은 경우, 그 명령만.
-- dirty 는 `wip:` 커밋 또는 파일 사본. stash 아님.
+대신:
+- 검증은 바꾼 파일의 타입 검사(파일 범위 `tsc`), 실제 실행·플레이·캡처로 한다.
+- PR 을 올리고 `gh run list` / `gh pr checks` 로 CI 결과를 본다. CI 가 빨가면 그 로그를 읽고 고친다.
+- 에이전트의 "테스트 통과했습니다"는 근거가 아니다. CI 결과가 근거다.
+- 테스트 파일을 새로 쓰는 것은 괜찮다. 돌리는 것은 CI 가 한다.
+
+예외: 사용자가 **이번 메시지에서** 로컬 테스트를 하라고 적은 경우, 그 명령만 `OPRN_LOCAL_TESTS=1` 을 붙여 돌린다.
+dirty 는 `wip:` 커밋 또는 파일 사본으로 다룬다.
 
 ## 새 타일·타일 학습은 공용에 추가한다 (hard rule)
 
