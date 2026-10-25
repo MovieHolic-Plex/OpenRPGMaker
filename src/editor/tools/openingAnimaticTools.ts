@@ -216,7 +216,7 @@ export const OPENING_ANIMATIC_TOOLS: readonly ToolDefinition[] = [
       optional: 'role(background/actor/foreground/prop/effect/credit), resourceId(image), text(text), color, shape(rect/ellipse/line), anchorX/Y, scaleX/Y(negative mirrors), rotation,opacity,startMs,endMs,space(world/screen),parallax(0..2),blend(source-over/lighter/screen/multiply)',
       keys: '{x/y/scaleX/scaleY/rotation/opacity/frame:[{atMs,value,ease?}]}',
       sampling: 'nearest/linear; sheets default nearest, other images default linear', crop: '{x,y,width,height} source pixels', sheet: '{frameWidth,frameHeight,columns,count,fps,loop?}; frame keys select poses; crop and sheet exclusive',
-      typography: '{fontSize?,weight?,align:left/center/right,typewriterMs?}', particles: '{preset:rain/snow/sparks/dust/stars,count,seed,speed?,size?}',
+      typography: '{fontSize?,weight?,align:left/center/right,typewriterMs?}', particles: '{preset:rain/snow/sparks/dust/stars/petals/paper,count,seed,speed?,size?}; petals = cherry-blossom petals drifting down and sideways (colour = petal pink), paper = fluttering paper sheets (colour = white)',
       region: 'image-only masked loop: {x,y,width,height,mode:scroll-x/scroll-y/palette-cycle/strip,pixels?,everyTicks?,tickMs?,wrap?,colors?,frames?}; layer-local pixels, so with no crop they are source-image pixels; only that window animates',
       shaft: 'kind:shaft: {spread(0..0.95),softness(0..1),dust:{count,seed,speed?,size?},pulse}; angled beam drawn as dithered pixel cells, dust only inside the beam mask',
       glow: 'kind:glow: {inner(0..0.95),pulse}; radial light in the layer box',

@@ -475,6 +475,55 @@
    "lint0": [
     "scene-transfer-facing"
    ]
+  },
+  {
+   "id": "opening-petal-montage",
+   "label": "벚꽃이 흩날리는 애니 오프닝 몽타주",
+   "lessons": [
+    "opening-particles-petals",
+    "opening-cast-roll"
+   ],
+   "prompt": "현대 연애 게임 오프닝을 애니메이션 오프닝처럼 만들어 줘. 벚꽃잎이 흩날리는 교정, 출근길 지하철, 사무실, 노을 지는 옥상 컷이 차례로 지나가고, 주인공과 등장인물들이 한 명씩 이름과 함께 지나간 다음 마지막에 제목이 뜨게 해 줘.",
+   "requirements": [
+    "system.opening has at least 5 animatic shots and the last shot shows the game title text",
+    "at least one shot has a particles layer with preset 'petals' (not snow or dust standing in for petals)",
+    "cast shots show bundled portrait/bust or charset images of the game's own characters with a text layer naming each one",
+    "preview_opening_animatic frames were actually inspected before reporting completion"
+   ],
+   "lint0": [],
+   "port": 19524
+  },
+  {
+   "id": "freeze-frame-meeting",
+   "label": "부딪히는 순간 정지 화면",
+   "lessons": [
+    "screen-freeze-frame",
+    "cutscene-freeze-beat"
+   ],
+   "prompt": "출근길 횡단보도에서 주인공이 어떤 사람과 부딪히는 첫 만남 장면을 만들어 줘. 부딪히는 순간 서류가 흩날리고, 화면이 만화처럼 멈춘 다음 주인공 속마음 한 줄이 나오게. 그다음엔 다시 움직이게 해 줘.",
+   "requirements": [
+    "the meeting is a script_cutscene (or event page) that runs once when the scene starts",
+    "it uses a freeze beat (Screen Effect effect 'freeze') after the collision and an unfreeze (explicit or cutscene cleanup) before control returns",
+    "the inner-thought line is shown while the freeze frame is up",
+    "the two people actually move into each other before the freeze (moveActor/approach), not a still pose"
+   ],
+   "lint0": [],
+   "port": 19525
+  },
+  {
+   "id": "paper-scatter-bump",
+   "label": "부딪혀 서류가 흩날림",
+   "lessons": [
+    "particles-paper"
+   ],
+   "prompt": "사무실 복도에서 신입이 서류 뭉치를 들고 가다 선배와 부딪혀 서류가 바닥에 흩날리는 장면을 넣어 줘.",
+   "requirements": [
+    "the collision is staged with a particles beat/command using preset 'paper' on the person who drops the papers",
+    "a shake or flash marks the impact",
+    "the scene does not fake the papers with picture images or unrelated presets such as dust or smoke"
+   ],
+   "lint0": [],
+   "port": 19526
   }
  ]
 }

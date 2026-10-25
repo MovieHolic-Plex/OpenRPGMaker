@@ -1,0 +1,309 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ed414f53f4fd7525d29c3de2717a18539e95e6eb91074b76291e401645abe096",
+ "width": 16,
+ "height": 32,
+ "kind": "other",
+ "name": "세로 입간판 「국밥」",
+ "label": "modern_city/street-kr/mc-prop-kr-sign-food",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "bus-shelter-a",
+   "kiosk-a",
+   "vending-a"
+  ],
+  "scale": 2,
+  "score": 7,
+  "refSet": {
+   "id": "modern_city",
+   "chipset": "modern_city",
+   "fallback": false,
+   "hash": "dc20de17343e77e8"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 10,
+  "tileColorsP90": 10,
+  "darkV5": 37,
+  "nearBlackEdge": 1,
+  "opaqueTiles": 2
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "borderline",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "gray-blue cap/roof on top of the signboard",
+      "rows": "1-7",
+      "evidence": "a",
+      "front_edge_line_row": 7,
+      "eave_shadow_rows": "8-8"
+     },
+     {
+      "part": "red signboard front face with 국밥 lettering",
+      "rows": "9-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 7,
+    "front_face_rows": 22,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The top cap spans rows 1-7. Its width grows from 12 at row 1 to 16 at rows 2-6, with a white highlight at rows 2-4, so it overhangs the body. It ends in a darker front-edge line at row 7 (L=71), and the dark outline at row 8 acts as a 1-row eave shadow. Below it the red board is a front face of about 22 rows (rows 8-30, width 14) carrying the cream lettering. No isometric side face is drawn. The cap is a visible horizontal top surface above a tall front face, so this is three-quarter rather than a flat front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a vertical red signboard with a cream '국밥' glyph and a dark red-brown outline. The outline is visibly tinted (0% near-neutral dark edges, same as all references), so it reads as dark_material_tone, not a black sticker line. It has 10 visible tones per tile, above bus-shelter-a (6) and below kiosk-a (12) and vending-a (20). Near-flat coverage is 0%, so there are no large flat fills. The red body shows about 4 steps (highlight edge, mid, dark, deep) with some texture from the lettering and trim. It is a narrower, simpler piece than the vending machine and kiosk, which carry more panel detail, buttons and highlights. That makes it somewhat lower in density than the richest references, but it is within the range of the shipped modern_city art and is not shallow.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 13067
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "gray cap or roof on top of the sign",
+      "rows": "1-7",
+      "evidence": "a",
+      "front_edge_line_row": 7,
+      "eave_shadow_rows": "8-8"
+     },
+     {
+      "part": "red board with 국밥 lettering (front face)",
+      "rows": "9-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 7,
+    "front_face_rows": 22,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-7 form a gray cap 16 px wide that overhangs the 14 px board below. It has a white highlight in rows 2-4, a darker front-edge line at row 7 (L=71), and a dark shadow or outline row at row 8. This reads as a top surface about 7 rows deep. Its rows 0-1 are rounded at the upper corners (width 8, then 12, then 16), but it ends in a flat, darker edge line rather than a bare hat on a shaft. Below it, the red board in rows 9-30 is a 22-row vertical front face with cream lettering and dark outlines, and no side face is drawn. The top reading is somewhat borderline because the cap is rounded only at its upper edge."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a small red vertical signboard with a dark red-brown body, a lighter red trim and cream/yellow hangul glyphs. Its dark edge pixels are 0% neutral, so the outline is a tinted dark red-brown that follows the material, not a black sticker line. It has 10 visible tones per 16x16 tile, 0% near-flat coverage, and no 5x5 flat fills. That is above bus-shelter-a (6 tones, 9% flat), a bit under kiosk-a (12) and well under vending-a (20). The shading ramp is about 4 steps (dark edge, body, lighter rim, highlight), compared with about 5 on the references. The signboard is a small, simple object, so the lower tone count is acceptable. It sits comfortably in the range of the shipped modern_city props and does not look flatter or more sticker-like than them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17120
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "gray cap / roof on top of the sign",
+      "rows": "1-7",
+      "evidence": "a",
+      "front_edge_line_row": 7,
+      "eave_shadow_rows": "8-8"
+     },
+     {
+      "part": "red sign board with cream lettering (front face)",
+      "rows": "9-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 7,
+    "front_face_rows": 22,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-7 are a gray cap wider than the board (16 px against 14 px). It has a pale highlight patch on rows 2-4, a darker front-edge line on row 7 (L=71) and a dark shadow row 8 above the red face, which reads as a top plane about 7 rows deep. Its upper corners are rounded (widths 8, 12, 16) and its bottom is flat, so it could be read as a hat, but the edge line and shadow row support a horizontal surface. Rows 9-30 are a 22-row vertical red front face with cream lettering. No receding side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a red vertical sign with a dark red-brown outline and a cream glyph panel. The measured facts show 10 visible tones per tile, 0% near-flat coverage and 0% neutral dark edge pixels, so the outline is tinted. That is above bus-shelter-a (6 tones, 9% flat), close to kiosk-a (12) and below vending-a (20). The tone count is comparable to the modern_city references, with only the vending machine clearly richer. Shading on the red body is about 4 steps (highlight, mid, dark, deep) against roughly 5 in the references. The sign has no large flat fills, and the glyph panel carries some variation. It reads as a coherent prop at the same scale and would sit acceptably beside the shipped references, even though it is a little simpler than the richest one.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 13487
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "gray cap/roof on top of the sign board",
+      "rows": "1-7",
+      "evidence": "a",
+      "front_edge_line_row": 7,
+      "eave_shadow_rows": "8-8"
+     },
+     {
+      "part": "red board with the 국밥 lettering (front face)",
+      "rows": "8-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 24,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The sign is a tall red board with cream lettering on rows 8-31, which is the front face (24 rows, width 14). Above it, rows 1-6 hold a gray-blue cap that is wider (16 against 14) and has a white highlight, so it reads as a sloped cap or roof overhanging the board. Row 7 is a darker line (L=71) with the dark outline at row 8 below it, which works as a front-edge line plus eave shadow. This gives a top band of about 6 rows over a clear front face. The cap's width profile (8, 12, 16, then 14) is not a true ellipse, so I rely on evidence (a) rather than (b). The call is borderline because the cap is only 6 rows and is drawn nearly flat."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a small vertical standing sign with a dark red body, a lighter cap and base, and a yellow-cream 국밥 glyph panel. Its 10 visible tones per tile are above bus-shelter-a (6) and close to kiosk-a (12), though below vending-a (20). Near-flat coverage is 0%, so there are no large flat fills. The dark edge pixels are 0% neutral, so the outline carries a red-brown tint and reads as dark material tone, not a black sticker line. The red body has about 4 lightness steps (highlight, mid, dark, deep) against 5-6 on the references. The lettering and the rim highlights add some texture, but the red body is somewhat smooth. It is simpler than vending-a but sits within the range of shipped modern_city props, so it would look acceptable beside the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 13694
+  }
+ ],
+ "decidedAt": "2026-10-24T14:42:30.935Z",
+ "cells": {
+  "16": [
+   "a4944068509c3fde",
+   "fef157a45b199816"
+  ],
+  "24": [
+   "2f48921a7d32cf07",
+   "325873dfe8c62760",
+   "3361b701876ba4bd",
+   "44819e927386ff8a",
+   "5579360a62b72d37",
+   "60332a8b05ce7f73",
+   "67edbc7bfb84cfb9",
+   "6fdee8becff170a5",
+   "93078507128e5360",
+   "a427f951d0f3fdeb",
+   "cc7ca5da55e56b2a",
+   "db02be864a72b352"
+  ],
+  "32": [
+   "8340dffc41fb0ad0",
+   "a6cc1c60add59632",
+   "d27638b839882011"
+  ],
+  "48": [
+   "1deadf88791a00fd",
+   "591f1043d66e0d96",
+   "97b40c4828eb7575",
+   "a81dc96f853ce278",
+   "a89a79271fd2a331",
+   "fff03bdba32fe45e"
+  ]
+ }
+}

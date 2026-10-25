@@ -1,0 +1,354 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "3c3eccc7c3b6f38fb21455f11462b7eb1743494f15f3d83e1eb4f29fa6cf86c6",
+ "width": 16,
+ "height": 32,
+ "kind": "other",
+ "name": "세로 입간판 「국밥」",
+ "label": "modern_city/street-kr/mc-prop-kr-sign-food",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 투영이 3/4 아님(front_elevation) (3/4)",
+  "3/4: 윗면 0행 < 3 (3/4)",
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (3/4)",
+  "화풍: 판정자 fail (3/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "투영이 3/4 아님(front_elevation) (3/4)",
+   "윗면 0행 < 3 (3/4)",
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (3/4)"
+  ]
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (3/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "bus-shelter-a",
+   "kiosk-a",
+   "vending-a"
+  ],
+  "scale": 2,
+  "score": 6,
+  "refSet": {
+   "id": "modern_city",
+   "chipset": "modern_city",
+   "fallback": false,
+   "hash": "dc20de17343e77e8"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 9,
+  "tileColorsP90": 9,
+  "darkV5": 37,
+  "nearBlackEdge": 1,
+  "opaqueTiles": 2
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "borderline",
+   "right",
+   "right",
+   "borderline",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "gray header cap with white highlight",
+      "rows": "1-5",
+      "evidence": "none",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "red sign board with cream hangul lettering",
+      "rows": "7-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 24,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The main body is a tall red board (rows 7-30, width 14) with cream lettering, drawn face-on as a vertical panel. The gray header at rows 1-5 is a flat, front-facing strip. It is slightly wider (16 at rows 2-4) and has a white highlight blob, but it does not widen and narrow again like an ellipse. The 1-row dark line at row 6 is an outline, not an edge line with eave shadow, so the header reads as a front-facing cap and not a receding top. No horizontal top surface and no side face are visible, so this is a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a small red-maroon vertical sign with the white Hangul text 국밥. Its 9 visible tones per tile are above bus-shelter-a (6) and below kiosk-a (12) and vending-a (20). Near-flat coverage is 0%, so there are no big flat fills, and the 0% near-neutral dark edges show tinted outlines (dark maroon beside the red body), which is consistent with the references. The body ramp is about 4 steps (highlight edge, mid red, dark red, deep maroon), against roughly 5 on the references. The surface is mostly smooth panel shading with a few highlight pixels and little grain, and it has no top cap, base detail or mounting hardware. That makes it simpler and a little flatter than kiosk-a and vending-a, although it matches the plain bus-shelter-a. As a thin single-tile sign it should not fail on sparseness, and a careful artist would accept it next to these references without it looking like a sticker. It is on the lower edge of acceptable.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 0행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 0행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 13638
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "gray header cap on top of the sign",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": "6-7"
+     },
+     {
+      "part": "red board with cream 국밥 lettering (front face)",
+      "rows": "7-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 24,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette widens from 8 to 14 to 16 px over rows 0-2, so the gray header overhangs the 14 px body below. Rows 1-5 form a flat gray band with a lighter highlight in rows 2-4. A dark line at row 6 ends the band, and the dark red row 7 acts as eave shadow. Below that, rows 7-30 are the red board with the lettering, a 24-row front face. No receding side face is drawn. This is borderline: the header could also be read as a vertical sign plate, but the band, edge line and shadow fit evidence (a)."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a small red-maroon vertical sign with white Hangul text (국밥). It has 9 visible tones per tile, which is above bus-shelter-a (6) and below kiosk-a (12) and vending-a (20). Near-flat coverage is 0%, so there are no large flat fills. Dark edge pixels are 0% neutral, so the outline is a tinted dark red-brown rather than black. The body shows a highlight edge, a mid red and a dark side, but only about 4 shading steps. That is less than the ~5 on the references' main materials. Its sparse shape and simple face also look a little thinner than the kiosk and vending machine. It is acceptable beside the bus shelter, but the richest references carry more grain and detail, so I lean slightly lower and fail on the 'when in doubt' rule.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 17123
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "gray header cap with white highlight",
+      "rows": "0-5",
+      "evidence": "none",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "red signboard face with cream calligraphy",
+      "rows": "7-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 24,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The sign is a flat vertical board. Rows 7-30 are the red face with cream lettering, inside a dark outline. The gray header at rows 0-5 widens from 8 to 14 to 16 and then returns to 14. It has a lighter oval highlight at rows 2-4, but it is a front-facing cap, not a horizontal plane. It is bounded only by the dark outline at row 6, with no distinct front-edge line and no eave shadow. The header's width stays within about 2 px of the board width, so it reads as a hat or lid, not an ellipse. The board has no top surface, no receding side face, and no visible depth. It is a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a red-maroon vertical sign with a cream 국밥 lettering panel. It has 9 visible tones per tile, 0% near-flat coverage and 0% neutral dark edge pixels. That is above bus-shelter-a (6 tones, 9% flat) and below kiosk-a (12) and vending-a (20). The outline is a dark maroon tint matching the body, not black, so it reads as dark_material_tone. The body has a highlight edge, a mid tone and a dark side, roughly 4 steps against about 5 on the references. Texture is limited to the lettering and a few edge highlights, with no grain or speckle like the kiosk and vending machine. Its density is lower than the richer references, though comparable to the bus shelter. Overall it is clean and well-formed but a bit simpler than the better modern_city references, and it sits in the gray zone where the instructions say to fail when in doubt.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 0행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 0행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 14048
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "gray header panel with white highlight",
+      "rows": "1-5",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "red signboard with cream hangul text",
+      "rows": "6-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 31,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The object is a tall sign drawn face-on. Rows 1-5 are a gray header panel with a white highlight blob. It has no front-edge line or eave shadow, and its width profile does not form an ellipse (8, 14, 16, then 14). The dark outline at row 6 sits directly under the header, so the header is a vertical face. Rows 7-30 are the red board with cream text, a vertical face. Row 31 is the bottom outline, with a width of 8. The outline widens only at rows 2-4 (16 wide against 14 elsewhere), which is a frame bulge and not a horizontal surface. No side face is drawn and no horizontal surface is visible, so it reads as a flat front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a dark red vertical sign with a white 국밥 lettering, a lighter rim and a darker body. It measures 9 visible tones per tile against 6 for bus-shelter, 12 for kiosk and 20 for vending. That is above the bus shelter but below the kiosk and well below the vending machine. Near-flat coverage is 0%, and 0% of dark edge pixels are neutral, so the outline is tinted dark red-brown rather than black. The body has about 3-4 red steps (rim highlight, mid, dark, deep) plus the white text. This is shallower than the references' 5-6 steps. The sign face is mostly a smooth gradient with little grain or speckle, so texture is modest. By eye it looks a little thinner and simpler than the kiosk and vending machine next to it, so density is slightly lower. It still reads as a plausible piece of this chipset, not a sticker, but with so little grain and so few steps it falls short of the standard, and when in doubt the verdict is fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 0행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 0행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 11825
+  }
+ ],
+ "decidedAt": "2026-10-24T14:39:12.586Z",
+ "cells": {
+  "16": [
+   "ae5442a000e2836d",
+   "d5869be3b43dd47e"
+  ],
+  "24": [
+   "1d40b698c3eace4a",
+   "1ec7f6cd80b47637",
+   "33d11458a3b5eb6d",
+   "5d85b6dc35218f57",
+   "5de25807b05342c3",
+   "60756f823561c952",
+   "62ea793a14593c5d",
+   "759213bfa4159cee",
+   "b94df7db3f580d1a",
+   "c3e37f91c7c503e0",
+   "d131c42f303dcafb",
+   "fbc9e9ad9405c8b3"
+  ],
+  "32": [
+   "17cf7e97b6b437db",
+   "6dff0cdfbed9cbf4",
+   "716a40d4b94dd4c5"
+  ],
+  "48": [
+   "05497f85f750d743",
+   "181d9992283b449a",
+   "2142bbc8e34e77e8",
+   "4e489d45c898e06a",
+   "99eafa4982b67c9b",
+   "ed7da79df0a7b416"
+  ]
+ }
+}

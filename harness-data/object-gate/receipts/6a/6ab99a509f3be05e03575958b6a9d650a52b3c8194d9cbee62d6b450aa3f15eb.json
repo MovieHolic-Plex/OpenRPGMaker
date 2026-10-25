@@ -1,0 +1,313 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "6ab99a509f3be05e03575958b6a9d650a52b3c8194d9cbee62d6b450aa3f15eb",
+ "width": 16,
+ "height": 32,
+ "kind": "other",
+ "name": "세로 입간판 「국밥」",
+ "label": "modern_city/street-kr/mc-prop-kr-sign-food",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "bus-shelter-a",
+   "kiosk-a",
+   "vending-a"
+  ],
+  "scale": 2,
+  "score": 6,
+  "refSet": {
+   "id": "modern_city",
+   "chipset": "modern_city",
+   "fallback": false,
+   "hash": "dc20de17343e77e8"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 10,
+  "tileColorsP90": 10,
+  "darkV5": 37,
+  "nearBlackEdge": 1,
+  "opaqueTiles": 2
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "borderline",
+   "right",
+   "right",
+   "right",
+   "right",
+   "borderline",
+   "borderline",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "gray-blue top cap or roof of the sign",
+      "rows": "1-7",
+      "evidence": "a",
+      "front_edge_line_row": 7,
+      "eave_shadow_rows": "8"
+     },
+     {
+      "part": "red board face with cream lettering",
+      "rows": "9-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 7,
+    "front_face_rows": 22,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The sign has a gray-blue cap in rows 1-7. It overhangs the board, since its width goes 8, 12, then 16 against a 14-wide body. It has a light highlight in rows 2-4 and ends in a darker 1-row edge line at row 7 (L=71). A dark outline row 8 follows, acting as eave shadow. Below it is a red board front face of about 22 rows (9-30) carrying cream characters, which are a vertical face with no top. The cap is rounded only at its upper edge, so it could be read as a hat, but the edge line and shadow below it count as a top band. A top band plus a tall front face reads as three_quarter, though weakly."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a small vertical red sign with a dark red-brown outline and a gold glyph panel. Its outline is tinted, not neutral, which matches the measured 0% near-neutral dark edge pixels. It shows 10 visible tones per tile, which falls between bus-shelter-a (6) and kiosk-a (12), below vending-a (20). Near-flat coverage is 0%, so there are no large flat fills. The red body has about 4 steps: a highlight edge, mid, dark and deep, with a lighter top cap. The shading is a bit shallower than vending-a and kiosk-a, and the body reads as fairly simple, with little grain beyond the glyph. It is a thin sign, so sparseness is acceptable. A careful artist would likely accept it next to these references without it looking like a sticker, but only just. Borderline, so the call is made on the measured facts, which are at or above two of the three references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15708
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "gray slate cap over the sign board",
+      "rows": "1-7",
+      "evidence": "a",
+      "front_edge_line_row": 7,
+      "eave_shadow_rows": "8"
+     },
+     {
+      "part": "red sign board with cream lettering",
+      "rows": "8-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 7,
+    "front_face_rows": 23,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The board is a tall red face (rows 8-30, 14 px wide) with cream lettering. Above it is a gray cap, rows 1-7, 16 px wide and so wider than the 14 px board. It has a lighter highlight in rows 2-4. Row 7 is darker (L=71) and works as the front-edge line, and the dark outline at row 8 acts as eave shadow. The cap overhangs the board and has a front edge, so it reads as a roof or lid plane, not just a rounded hat or a 1-2 row rim. The cap is the main top surface at about 7 rows, with a 23-row front face below. It is borderline, because the rounded upper corners (widths 8, 12, 16) could also be read as a hat."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a small red vertical signboard with a dark red-brown body, a lighter red border and cream glyphs for 국밥. The measured facts: 10 visible tones per full tile against 6 (bus-shelter), 12 (kiosk) and 20 (vending); 0% near-flat coverage, equal to kiosk and vending; 0% near-neutral dark edge pixels, so the outline is tinted, a dark red-brown that follows the material rather than a black sticker line. It sits within the reference range on the primary facts and well above bus-shelter. By eye the ramps are a bit shallow: about 4 steps on the red body (dark, mid, light border, highlight) against 5-6 on the kiosk and vending machine. The glyph strokes and the cap and base add some variation, so the candidate is not flat. It is slightly simpler than vending-a but at the level of accepted shipped art such as bus-shelter-a and close to kiosk-a, and it looks like it belongs next to them without appearing thinner or more sticker-like. Because it is a thin, sparse prop, I judged density by eye rather than counting against it.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15356
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "gray slate cap or roof on top of the sign",
+      "rows": "0-6",
+      "evidence": "a",
+      "front_edge_line_row": 7,
+      "eave_shadow_rows": "8"
+     },
+     {
+      "part": "red board face with cream lettering",
+      "rows": "9-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 7,
+    "front_face_rows": 22,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The top band (rows 0-6) is a gray cap. Its width grows 8, 12, 16 and holds at 16, and it overhangs the 14-wide board below. It has a pale highlight patch at rows 2-4 and ends in a darker front-edge line at row 7 (L=71). Row 8 is a dark outline that works as eave shadow. Below it, the red board with cream text (rows 9-30) is a vertical front face about 22 rows tall. The cap is not a bare rim, so the sign shows a top and a front. It is a borderline case, because the cap is a roof-like hat and does not narrow again like an ellipse."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a small red standing sign with a pale '국밥' glyph. Measured facts: 10 visible tones per tile, 0% near-flat coverage and 0% neutral dark edge pixels. That is above bus-shelter-a (6 tones), near kiosk-a (12) and below vending-a (20). The outline is a dark red-brown that leans toward the body colour, not neutral black, which matches the references' tinted outlines. Shading on the red body is only about 3-4 steps (light edge, mid, dark side, deep) and it has little grain. The lettering is simple and the form is a plain rounded rectangle. Next to the vending machine and kiosk it looks a bit thinner and flatter, but it is comparable to the bus shelter and is not sticker-like. Overall it is acceptable but slightly lower in richness than the better references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16226
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "gray slate cap/roof over the sign board",
+      "rows": "1-7",
+      "evidence": "a",
+      "front_edge_line_row": 7,
+      "eave_shadow_rows": "8"
+     },
+     {
+      "part": "dark red sign board with cream hangul text (front face)",
+      "rows": "9-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 7,
+    "front_face_rows": 23,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The sign has a gray cap in rows 1-7. It widens (8, 12, then 16 wide) and overhangs the 14-wide body, with a lighter highlight in rows 2-4. Its bottom is a darker front-edge line at row 7 (L=71), followed by a dark outline/shadow at row 8. That reads as a sloped roof or cap plane with an edge line and eave, not just a rim. Below it the board front runs from row 9 to 31 (about 23 rows) in dark red with cream text. The cap is borderline: its upper corners are rounded and its bottom is flat, so it could be read as a hat. The edge line and shadow below it are the evidence I counted as a top surface. There is no isometric side face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a small vertical standing sign with a red body, a dark red-brown outline and a cream glyph panel reading 국밥. Measured facts: 10 visible tones per 16x16 tile, 0% near-flat coverage and 0% neutral dark edge pixels. That puts it above bus-shelter-a (6 tones, 9% flat), close to kiosk-a (12 tones), and below vending-a (20 tones). The outline leans red-brown rather than neutral black, which matches the references' material-tone outlining. The body shows about 4 lightness steps (highlight edge, mid red, dark red, deep outline) against roughly 5 on the references. Texture is limited to the glyph and a few edge highlights, with no real grain, so it reads as simpler than kiosk-a and vending-a but not as a sticker with large flat fills. It is a simple single-tile-wide prop, so some sparseness is acceptable, but it looks a bit thinner than the average reference. This is borderline, and given the doubt rule it should not pass.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 18189
+  }
+ ],
+ "decidedAt": "2026-10-24T14:45:56.071Z",
+ "cells": {
+  "16": [
+   "4c6210ca263d2f43",
+   "b61415b8d2e59189"
+  ],
+  "24": [
+   "2f48921a7d32cf07",
+   "325873dfe8c62760",
+   "3267a83749a8329d",
+   "3361b701876ba4bd",
+   "44819e927386ff8a",
+   "67edbc7bfb84cfb9",
+   "6cd2d60e5f9b68bb",
+   "84caa9590eb3eb0a",
+   "927fecbf27dddfd0",
+   "a427f951d0f3fdeb",
+   "aced10beae92e95c",
+   "e51255137d34e289"
+  ],
+  "32": [
+   "1bae159a943574fe",
+   "9029a3ed2acf2ef4",
+   "e3fefe5a99a24d63"
+  ],
+  "48": [
+   "0ef7ba5940d751fc",
+   "24aa0b2321bb79d1",
+   "4b82a3a2604e6dcb",
+   "589e0d6579f60195",
+   "791fe357cf10a882",
+   "bd03a79659694c02"
+  ]
+ }
+}
