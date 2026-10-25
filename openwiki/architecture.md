@@ -23,6 +23,10 @@
   modulepreload 수십 개 뒤라 HTTP/1.1 연결을 기다려 첫 화면을 늦췄다 — `electron/serve/runtime.ts` 가 `<meta charset>` 바로 뒤에 심는다.
   Electron 창은 `backgroundColor: #F7F8F8`(스플래시 바탕색)이고 `ready-to-show` 가 첫 프레임 뒤라 흰 화면이 안 보인다. 시작 화면(`start-screen.html`)도 인라인 로고 뼈대를 먼저 그린다.
 
+- **셸 먼저 보이기 (2026-10-25):** 첫 부팅에서 `enterMode("edit")` 가 `renderEditor` 로 셸 DOM 을 붙인 직후 `revealShellEarly()`(src/app/bootLoader.ts, 마크 `shell-visible`)로 로더를 걷는다 —
+  맵 판(Phaser 기동·텍스처·`EditScene.preload` 의 팔레트 프레임 약 1s)을 기다리지 않는다. 그동안 맵 칸에는 글자 없는 도는 표시(`[data-map-loading]`, `aria-busy`)가 있고 `EditScene.create` 가 걷는다.
+  첫 화면 신호(`markBootSettled` — 미뤄 둔 한가한 일·부팅 정규화의 출발)와 마크 `settled`·데스크톱 `editorReady` 는 예전처럼 마운트를 다 끝낸 `dismissBootLoader` 가 낸다. 브리핑(웰컴)이 첫 화면을 맡을 때·플레이 부팅은 예전 그대로.
+  실측(웜, 2회 중앙값, 부하 46): 편집기 단계 시작 → 셸 보임 2.3s, → settled 3.2s(셸이 약 0.9s 먼저 보인다). 셸 보임 앞의 2.3s 는 편집기 청크(조수 도구 목록 toolRegistry 9.7MB 포함) 받기·평가와 renderEditor 다.
 - **새 빌드 첫 실행의 부팅 정규화는 첫 화면 뒤 (2026-10-25):** 편집기 부팅(`src/app/mode.ts`)은 `store.load({ deferBootNormalization: true })` 를 부른다.
   표식(`bootNormalization.ts`)이 지금 빌드와 안 맞는 문서는 load 가 정규화하지 않고 `deferredBootNormalization` 에 남긴 채 돌아오며(마크 `project-normalization-deferred`),
   첫 화면 뒤(`afterBootSettled`) `store.whenBootNormalized()` 가 정규화를 돌린다(마크 `deferred-normalization-start/done`, 바뀌면 `emit({scope:"project"})` 로 다시 그림).
