@@ -505,8 +505,8 @@
    "label": "숲 어귀 — 늑대가 7칸 밖에서 알아보고 3칸 덮친다(가만히 서면 잡힌다)",
    "note": "tune_field_enemies sightRange 7 · lungeSteps 3 · lungeSpeed 6",
    "mapId": "fs_forest_edge",
-   "x": 11,
-   "y": 24,
+   "x": 13,
+   "y": 21,
    "facing": "up",
    "switches": {
     "sw_fs_main_started": true,
@@ -569,8 +569,8 @@
    "label": "숲 어귀 — 덮치기를 보고 계속 걸어 내려가면 따돌린다",
    "note": "tune_field_enemies sightRange 7 · lungeSteps 3 · lungeSpeed 6",
    "mapId": "fs_forest_edge",
-   "x": 11,
-   "y": 24,
+   "x": 13,
+   "y": 21,
    "facing": "up",
    "switches": {
     "sw_fs_main_started": true,
