@@ -28,6 +28,9 @@ import { existsSync, readFileSync, writeFileSync, mkdirSync, rmSync, readdirSync
 import { tmpdir } from "node:os";
 import { dirname, resolve } from "node:path";
 import { classifyTestFailures } from "./lib/gatesRegression.mjs";
+import { assertCiOnlyTests } from "./lib/ciOnlyTests.mjs";
+
+assertCiOnlyTests("npm run gates");
 
 const DEFAULT_BASELINE = resolve(process.cwd(), ".omo/gates-baseline.json");
 const args = process.argv.slice(2);

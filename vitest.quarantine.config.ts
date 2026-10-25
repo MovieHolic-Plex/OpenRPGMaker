@@ -5,6 +5,9 @@
 //   node scripts/run-vitest.mjs run --config vitest.quarantine.config.ts --maxWorkers=2 --minWorkers=1
 import { defineConfig } from "vitest/config";
 import { fileURLToPath, URL } from "node:url";
+import { assertCiOnlyTests } from "./scripts/lib/ciOnlyTests.mjs";
+
+assertCiOnlyTests("vitest");
 
 export default defineConfig({
   resolve: {

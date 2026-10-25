@@ -154,6 +154,8 @@ export interface EventSpec {
   readonly after?: string;
   /** after 장면 뒤 그 NPC 가 하는 말(없으면 원래 대사). */
   readonly afterTalk?: readonly string[];
+  /** after NPC 의 어느 말 걸기 페이지에 이을지(0부터). 말 걸기 페이지가 여럿이면 꼭 고른다. */
+  readonly afterPage?: number;
   /** 비트 목록 — 사람 낱말(주인공·촌장)·움직임·대사. 빌더가 컷신 도구의 장면 명령으로 옮긴다. */
   readonly beats: readonly EventBeat[];
 }

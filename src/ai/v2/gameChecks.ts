@@ -319,6 +319,16 @@ const HIDDEN_WORDS = /숨겨|숨은|몰래|보이지\s*않|투명|비밀|hidden|
 const ENDING_WORDS = /엔딩|결말|ending/iu;
 const STATE_WORDS = /독초|독에|독이|독을|독\s*상태|중독|맹독|마비|수면\s*상태|잠\s*상태|상태\s*이상|혼란|침묵|poison|paraly|stun/iu;
 
+/** 맵 배경음·기본 전투곡·승리 팡파르·타이틀·오프닝 곡 연결이 바뀌었나(set_game_audio) — 그러면 음악 요청은 이벤트 명령 없이도 채워졌다. */
+function audioBindingsChanged(before: Project, after: Project): boolean {
+  const pick = (p: Project) => JSON.stringify([
+    Object.entries(p.maps).map(([id, map]) => [id, map.bgm ?? null]),
+    p.system.defaultBgmResourceId ?? null, p.system.battleBgmResourceId ?? null, p.system.battleVictoryMeResourceId ?? null,
+    p.system.titleScreen?.musicResourceId ?? null, p.system.opening?.musicResourceId ?? null,
+  ]);
+  return pick(before) !== pick(after);
+}
+
 /** 데이터베이스에서 새로 생기거나 바뀐 레코드만 JSON 으로(기본 데이터의 독 기술 등이 섞이지 않게). */
 function changedRecordsJson(before: Project, after: Project): string {
   const out: unknown[] = [];
@@ -346,7 +356,7 @@ export function gameContentProblems(before: Project, after: Project, task: strin
   const m2Has = (re: RegExp) => cmds.some((r) => r.cmd.kind === "m2Command" && re.test(String(r.cmd.commandId)));
   if (SHAKE_WORDS.test(task) && !m2Has(/m2-048/u)) problems.push("[게임 검사 화면] 요청에 흔들림·지진이 있는데 실제 화면 흔들기 명령이 없다(카메라 이동은 흔들림이 아니다). add_event 의 shake 비트({do:'shake',strength:'strong',axis:'vertical'})로 넣는다.");
   if (FLASH_WORDS.test(task) && !m2Has(/m2-047/u) && !cmds.some((r) => r.cmd.kind === "setWeather" && r.cmd.weather === "storm")) problems.push("[게임 검사 화면] 요청에 번쩍임·번개가 있는데 실제 화면 번쩍 명령이 없다(페이드 아웃은 번쩍이 아니다). add_event 의 flash 비트({do:'flash',color:'white'})로 넣는다.");
-  if (MUSIC_WORDS.test(task) && !kinds.has("playAudio") && !kinds.has("stopAudio") && !m2Has(/bgm|audio|music/iu)) problems.push("[게임 검사 음악] 요청에 음악·BGM 이 있는데 바꾼 이벤트에 음악 명령(playAudio)이 없다. add_event 의 music 비트({do:'music',action:'bgm',query:'festival'})로 넣는다.");
+  if (MUSIC_WORDS.test(task) && !audioBindingsChanged(before, after) && !kinds.has("playAudio") && !kinds.has("stopAudio") && !m2Has(/bgm|audio|music/iu)) problems.push("[게임 검사 음악] 요청에 음악·BGM 이 있는데 어느 자리에도 곡을 걸지 않았다. 맵·전투·보스·승리·타이틀 곡은 set_game_audio 로 건다(맞는 곡이 프로젝트에 없으면 store_find_music → 묻지 말고 store_install 로 넣은 뒤). 장면 도중 잠깐 바뀌는 곡만 add_event 의 music 비트({do:'music',action:'bgm',query:'festival'}).");
   // 1c) 눈에 안 보이는 «조사하는» 물건: 새로 만든 결정 키(action) 이벤트에 그림도 없고 그 칸에 물건 타일도 없다(이동석·덤불·표지판이 맨땅으로 보였다).
   if (!HIDDEN_WORDS.test(task)) {
     for (const ev of changed) {
@@ -665,9 +675,13 @@ export function gameContentProblems(before: Project, after: Project, task: strin
     const party = after.system.startActorIds ?? [];
     const level = Math.max(1, ...party.map((id) => after.database.actors.find((a) => a.id === id)?.initialLevel ?? 1));
     const seen = new Set<string>();
+    // 이 실행 전에도 그 이벤트에 있던 전투는 새로 저작한 것이 아니다(2026-10-25 실조수: 보스전 음악만 바꿨는데 드래곤 능력치를 깎았다).
+    const had = new Set<string>();
+    for (const ev of eventsOf(before).values()) for (const row of allCommands(ev)) if (row.cmd.kind === "battleProcessing") had.add(`${ev.mapId}/${ev.id}#${String(row.cmd.troopId)}`);
     for (const r of cmds) {
       const c = r.cmd as { kind?: string; troopId?: string; canLose?: boolean; troopSource?: string };
       if (c.kind !== "battleProcessing" || c.canLose || c.troopSource === "variable" || !c.troopId || seen.has(c.troopId)) continue;
+      if (had.has(`${r.ev.mapId}/${r.ev.id}#${c.troopId}`)) continue;
       seen.add(c.troopId);
       if (!after.database.troops.some((t) => t.id === c.troopId) || !party.length) continue;
       try {
@@ -685,6 +699,35 @@ export function gameContentProblems(before: Project, after: Project, task: strin
   // 그림 크기(J23): 보스가 아닌데 파티보다 훨씬 크게 그린 칩.
   problems.push(...oversizedSprites(before, after));
   return problems;
+}
+
+/** 값의 크기(배열 길이·객체의 빈 아닌 칸 수·빈 아닌 값 1). */
+function fill(v: unknown): number {
+  if (Array.isArray(v)) return v.length;
+  if (v && typeof v === "object") return Object.values(v as Obj).reduce<number>((n, x) => n + (fill(x) > 0 ? 1 : 0), 0);
+  return v === undefined || v === null || v === "" || v === false ? 0 : 1;
+}
+const BATTLE_DATA: Record<"actors" | "classes", readonly string[]> = {
+  actors: ["learnedSkills", "initialEquipment", "battleCommandIds", "classId"],
+  classes: ["skillIds", "learnedSkills", "battleCommands", "equipmentPermissions"],
+};
+/** 배우·직업의 전투 데이터가 줄었다(요청이 메뉴·화면이 아니라 그 데이터를 지우라고 했을 때만 정상). */
+export function battleDataEmptied(before: Project, after: Project, task: string): string[] {
+  const deleteAsk = /(스킬|기술|장비|직업|전투\s*명령|skill|equip)[^.!?\n]{0,10}(지워|지우|없애|삭제|비워|빼앗|못\s*쓰게|배우지)/iu.test(task)
+    && !/메뉴|탭|ESC|화면|창에서|창의|HUD|menu/iu.test(task);
+  if (deleteAsk) return [];
+  const out: string[] = [];
+  for (const section of ["actors", "classes"] as const) {
+    const old = new Map(((before.database as unknown as Obj)[section] as Obj[] | undefined ?? []).map((r) => [String(r.id), r]));
+    for (const r of ((after.database as unknown as Obj)[section] as Obj[] | undefined) ?? []) {
+      const prev = old.get(String(r.id));
+      if (!prev) continue;
+      const lost = BATTLE_DATA[section].filter((k) => fill(prev[k]) > 0 && fill(r[k]) < fill(prev[k]));
+      if (!lost.length) continue;
+      out.push(`[게임 검사 부작용] 기존 ${section === "actors" ? "배우" : "직업"} 「${String(r.name ?? r.id)}」의 전투 데이터(${lost.join(",")})를 비웠다 — 요청은 그 데이터를 지우라는 것이 아니다. 메뉴·화면에서 숨기는 것은 데이터 지우기가 아니다: 원래 값으로 되돌리고(${section === "actors" ? "upsert_actor" : "upsert_class"}), 메뉴 항목은 configure_field_menu{preset:'story'} 로, 체력 표시는 set_field_hud{off:true} 로 뺀다.`);
+    }
+  }
+  return out;
 }
 
 /** 요청과 상관없이 바뀌면 안 되는 것 — 기존 NPC 의 그림·이름이 요청 없이 바뀌었는지(고치기 요청에서 흔한 부작용). */
@@ -718,6 +761,10 @@ export function unaskedChanges(before: Project, after: Project, task: string): s
       }
     }
   }
+  // 배우·직업의 전투 데이터(배울 기술·처음 장비·전투 명령·장비 허용)를 비웠다 — 「메뉴의 스킬·장비 빼 줘」를 데이터 지우기로 흉내 냈다
+  // (2026-10-25 장난감 가게 고치기 4턴: 메뉴 도구가 안 실려 upsert_actor·upsert_class 로 주인공 기술·직업을 비웠다. 요청에 「파티」「스킬」이 있어
+  // 아래 일반 검사의 낱말 면제에 걸려 못 잡았다). 메뉴·화면에서 숨기는 요청이면 데이터는 그대로 둔다 — 낱말 면제 없이 본다.
+  out.push(...battleDataEmptied(before, after, task));
   // 이미 있던 데이터(아이템·장비·적·기술·직업)를 요청이 그 이름을 말하지 않았는데 고쳤다 — 값·능력치가 게임 전체에서 바뀐다(2026-10-24 스위트).
   const bdb = before.database as unknown as Record<string, unknown>, adb = after.database as unknown as Record<string, unknown>;
   if (!artAsk) for (const section of ["items", "weapons", "armors", "enemies", "skills", "classes", "actors"]) {

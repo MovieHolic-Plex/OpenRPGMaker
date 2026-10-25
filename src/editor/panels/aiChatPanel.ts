@@ -72,10 +72,10 @@ import { markDragOrigin, reportBackgroundBoard } from "./aiPresence";
 import { createJobEntry } from "./aiJobEntry";
 import { mountAiMapPresence } from "@/editor/aiMapPresence";
 import { createTilesetChangeCard } from "./aiTilesetChangeCard";
-import { createStoreCard } from "./aiStoreCard";
+import { createStoreCard, createStoreMusicCard, createStoreMusicNote } from "./aiStoreCard";
 import { createObjectGenBatch } from "./aiObjectGenCard";
 import { isObjectGenRequest } from "@/editor/workshop/objectRequest";
-import type { StoreCardRequest } from "@/editor/tools/storeTools";
+import type { StoreCardRequest, StoreMusicChoice } from "@/editor/tools/storeTools";
 import type { TilesetChangeQuestion } from "@/editor/tools/tilesetChangeTools";
 import { createAssistantWide } from "./aiAssistantWide";
 import { createInlineWorkCard } from "./aiInlineWorkCard";
@@ -2252,8 +2252,15 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       void send();
     };
     const objectRequests = requests.filter(isObjectGenRequest);
-    const other = requests.filter((request) => !isObjectGenRequest(request)).at(-1);
+    // 음악 카드는 장면마다 따로 오므로(「게임 음악 전부」) 한 카드로 묶는다 — 장면마다 한 곡을 고르고 한 번에 넣는다.
+    const musicChoices = requests.filter((request): request is StoreMusicChoice => request.kind === "store-music-choice");
+    const other = requests.filter((request) => !isObjectGenRequest(request) && request.kind !== "store-music-choice").at(-1);
     if (objectRequests.length) log.append(createObjectGenBatch(objectRequests, followUp));
+    // 기본: 조수가 이미 넣었다 → 「넣었어요 (바꾸기)」 쪽지. 「먼저 묻기」를 켠 사용자에게만 고르는 카드.
+    const askChoices = musicChoices.filter((choice) => !choice.autoInstall);
+    const note = createStoreMusicNote(musicChoices.filter((choice) => choice.autoInstall), followUp);
+    if (note) log.append(note);
+    if (askChoices.length) log.append(createStoreMusicCard(askChoices, followUp));
     if (other) log.append(createStoreCard(other, followUp));
     followConversationLog(log);
   };
@@ -2306,8 +2313,9 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
         hasActivePlan: workPlanSurfaceState?.active === true,
         autonomy: currentAutonomy(),
         // 로컬 CLI 엔진은 차례마다 CLI 프로세스를 새로 띄운다(실측 2026-10-20: codex exec 한 줄 답도 약 17초) — 30초 벽이면 의도 선언이 자주 잘린다.
-        declarer: () => {
-          const timeoutMs = isLocalCliProviderId(loadAiConfig().providerId) ? 120_000 : 30_000;
+        // 재시도(attempt 2)는 벽을 세 배로 — 느린 추론 공급자(DeepSeek 등)가 30초 벽에 턴을 통째로 잃었다(2026-10-25 Salad S2).
+        declarer: (attempt?: number) => {
+          const timeoutMs = (isLocalCliProviderId(loadAiConfig().providerId) ? 120_000 : 30_000) * (attempt && attempt > 1 ? 3 : 1);
           if (piIntentDeclarer?.timeoutMs !== timeoutMs) piIntentDeclarer = { timeoutMs, declarer: createLlmIntentDeclarer({ timeoutMs, coverageAudit: false }) };
           return piIntentDeclarer.declarer;
         },

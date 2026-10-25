@@ -7,6 +7,7 @@
 //
 // 순수 모듈: 변경 요약·입력 압축·응답 해석·후속 지시문은 결정적 함수다. 모델 호출은 sideChat 하나로만 한다(워커·재생 하네스가 같이 쓴다).
 import type { Project } from "@/project/types";
+import { battleDataEmptied } from "./gameChecks";
 
 type Obj = Record<string, unknown>;
 const obj = (v: unknown): Obj | undefined => (v && typeof v === "object" && !Array.isArray(v) ? (v as Obj) : undefined);
@@ -274,6 +275,8 @@ export function summarizeProjectDiff(before: Project, after: Project, maxChars: 
   const db0 = (before.database ?? {}) as unknown as Obj, db1 = (after.database ?? {}) as unknown as Obj;
   const dbChanged = Object.keys(db1).filter((k) => Array.isArray(db1[k]) && stable(db0[k]) !== stable(db1[k])).map((k) => `${k} ${Array.isArray(db0[k]) ? (db0[k] as unknown[]).length : 0}→${(db1[k] as unknown[]).length}`);
   if (dbChanged.length) out.push(`## 데이터베이스 바뀜: ${dbChanged.slice(0, 12).join(", ")}`);
+  // 개수만으로는 «주인공 기술·직업 전투 데이터를 비웠다»가 안 보인다(2026-10-25 장난감 가게 고치기 4턴: actors 136→136).
+  for (const line of battleDataEmptied(before, after, "").slice(0, 4)) out.push(`⚠ 비운 데이터: ${line.replace(/^\[[^\]]*\]\s*/u, "").split(" — ")[0]}`);
 
   const text = out.join("\n");
   return text.length > maxChars ? `${text.slice(0, maxChars - 40)}\n… (요약 ${text.length}자 중 앞부분)` : text;
@@ -321,7 +324,7 @@ export function advisorPrompt(input: AdvisorInput): string {
     "   Names count: when the report calls an event, person, map or switch by a name, that name must match the summary. If the report uses a new name (e.g. «태엽 병정 장난감») but the summary still shows the event under its old name (no 이름 바뀜 line), that claim is contradicted.",
     "   What the summary cannot show: it lists events, pages, flags, opening, title, HUD and endings exactly, but for map tiles it only says «타일·크기 바뀜». Claims about furniture, props, floor, walls or decoration inside a map whose tiles changed are \"shown\" if a successful build/edit write touched that map — never \"contradicted\". A later tool call that changed nothing (바꾼 것 없음) or was reverted does not undo an earlier successful one.",
     "   Keeping counts: «기존 … 유지 / 그대로 작동 / 원래대로» is a claim. A ⚠ 사라진 페이지 line or 사라진 대사 for that behaviour contradicts it — content moved to a different condition (e.g. from an affection condition to a day condition) is NOT kept.",
-    "2. removals — every event, map or ⚠ 사라진 페이지 the summary shows as deleted that the user did not ask to remove (a page rewritten under a different condition counts as removed). mentioned = true ONLY if the report explicitly tells the user that this was removed, replaced or deleted; saying the old behaviour is kept/유지 is NOT mentioning it.",
+    "2. removals — every event, map, ⚠ 사라진 페이지 or ⚠ 비운 데이터 line the summary shows as deleted that the user did not ask to remove (a page rewritten under a different condition counts as removed). mentioned = true ONLY if the report explicitly tells the user that this was removed, replaced or deleted; saying the old behaviour is kept/유지 is NOT mentioning it.",
     "3. unreachable — lines of the summary's 고리 검사. Include an «이번 실행 전부터» line only if it is about the same person/event/feature the user asked about in this request. report_says_works = the report says everything works / nothing left (못 한 것 없음 / 다 됐습니다 / 그대로 작동).",
     "4. missing — parts of the request that the summary shows were not done at all. report_says_done = the report claims that part is done.",
     "Do not flag style, wording or ideas the user did not ask for. Reads, previews and tests do not change the project. An empty list is the right answer when nothing is wrong. Korean one-line texts.",
@@ -373,6 +376,18 @@ export async function adviseTurn(input: AdvisorInput, sideChat: (messages: reado
     if (signal?.aborted) throw error;
     return { notes: [], ms: Date.now() - t0, inputChars: text.length, problem: `검토자 호출 실패: ${clip(error instanceof Error ? error.message : String(error), 160)}` };
   }
+}
+
+/**
+ * 출하 검사(src/ai/v2/shipChecks.ts shipBlockers — 편집기 기본값이 남음·한 줄 엔딩·제목 스포일러)를 막는 메모로 붙인다.
+ * 모델 판단이 아니라 코드 검사라 항상 blocker 다. 같은 id 를 두 번 넣지 않는다.
+ */
+export function withShipBlockers(verdict: AdvisorVerdict, blockers: readonly { readonly id: string; readonly message: string; readonly evidence: string }[]): AdvisorVerdict {
+  if (!blockers.length) return verdict;
+  const seen = new Set(verdict.notes.map((n) => n.what));
+  const extra = blockers.map((b): AdvisorNote => ({ level: "blocker", what: `[출하 차단 ${b.id}] ${b.message}`, evidence: b.evidence }))
+    .filter((n) => !seen.has(n.what));
+  return { ...verdict, notes: [...verdict.notes, ...extra] };
 }
 
 /** 막는 메모가 있으면 한 차례 더 돌릴 지시문. 없으면 undefined(검토 메모는 조수 기록에만 남는다). */

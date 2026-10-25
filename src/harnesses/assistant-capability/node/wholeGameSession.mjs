@@ -7,7 +7,7 @@
 // own question cards. It never calls editor tools or edits content.
 //
 // Usage:
-//   node src/harnesses/assistant-capability/node/wholeGameSession.mjs --project-dir <dir> --out <session dir> [--v2] [--turn-timeout-ms N]
+//   node src/harnesses/assistant-capability/node/wholeGameSession.mjs --project-dir <dir> --out <session dir> [--v2] [--turn-timeout-ms N] [--store-url <store> [--store-ask-first]]
 // Control files (written by the operator into <out>/inbox/, processed in name order):
 //   NNN.txt    -> a natural-language request typed into ai-input and sent
 //   NNN.click  -> one data-testid (first line) of a visible assistant card button to click
@@ -21,6 +21,7 @@ import { isDeepStrictEqual } from 'node:util';
 import { firefox } from 'playwright';
 import { stored, writeRuntimeProject, newEditor, startHost } from './editorDriver.mjs';
 import { readOAuthClientsFromPiAi } from '../../../../scripts/lib/oauthClients.mjs';
+import { installStoreBridge } from './storeBridgeShim.mjs';
 
 // Same environment repair as genre-run: the host bundle in /tmp cannot locate pi-ai itself.
 {
@@ -37,20 +38,26 @@ const projectDir = resolve(option('project-dir') ?? '');
 const out = resolve(option('out') ?? '');
 if (!option('project-dir') || !option('out')) throw Error('wholeGameSession --project-dir <dir> --out <session dir> [--v2]');
 const useV2 = argv.includes('--v2');
+// --store-url <스토어>: 브라우저 편집기에 읽기 전용 스토어 다리를 붙인다(storeBridgeShim.mjs). --store-ask-first: 「넣기 전에 먼저 묻기」를 켠 사용자(기본은 조수가 묻지 않고 넣고 「넣었어요 (바꾸기)」 쪽지를 띄운다).
+const storeUrl = option('store-url');
+const storeAutoInstall = !argv.includes('--store-ask-first');
+// --engine claude:claude-opus-5-5:medium → 조수 엔진을 로컬 CLI 로(제품 설정 「조수 엔진」 칸과 같은 저장값, src/ai/localCliEngine.ts). 비우면 계정 기본(Argon).
+const engineSpec = option('engine');
+const assistantEngine = engineSpec ? (() => { const [cli, model, effort] = engineSpec.split(':'); return { kind: 'local-cli', cli, ...(model ? { routineModel: model, deepModel: model } : {}), effort: effort || 'medium' }; })() : undefined;
 const turnTimeoutMs = Number(option('turn-timeout-ms') ?? 45 * 60_000);
 const sleep = ms => new Promise(done => setTimeout(done, ms));
 const json = (file, data) => writeFileSync(file, JSON.stringify(data, null, 2));
 for (const sub of ['inbox', 'done', 'turns']) mkdirSync(resolve(out, sub), { recursive: true });
 const transcript = resolve(out, 'transcript.md');
-if (!existsSync(transcript)) writeFileSync(transcript, `# Whole-game session transcript\n\nproject: ${projectDir}\nassistant: ${useV2 ? 'v2 (localStorage oprn:assistant-v2=1)' : 'v1 (product default)'}\n\n`);
+if (!existsSync(transcript)) writeFileSync(transcript, `# Whole-game session transcript\n\nproject: ${projectDir}\nassistant: ${useV2 ? 'v2 (localStorage oprn:assistant-v2=1)' : 'v1 (product default)'}${engineSpec ? ` · engine ${engineSpec}` : ''}\n\n`);
 const log = text => appendFileSync(transcript, text + '\n');
 
 // Cards that need a user answer. Their text is dumped so the operator can decide like a user.
 // Only these hold the turn. Object-generation / store cards stay on screen without blocking, so they are
 // reported (INFO_SELECTOR) but never treated as awaiting an answer.
-const CARD_SELECTOR = ['ai-decision-prompt', 'ai-tileset-change-card', 'ai-creation-choice', 'ai-pending-review']
+const CARD_SELECTOR = ['ai-decision-prompt', 'ai-tileset-change-card', 'ai-creation-choice', 'ai-pending-review', 'ai-store-music-card']
   .map(id => `[data-testid="${id}"]`).join(',');
-const INFO_SELECTOR = ['ai-objectgen-card', 'ai-store-missing-card'].map(id => `[data-testid="${id}"]`).join(',');
+const INFO_SELECTOR = ['ai-objectgen-card', 'ai-store-missing-card', 'ai-store-music-note'].map(id => `[data-testid="${id}"]`).join(',');
 
 let state = { phase: 'startup', startedAt: new Date().toISOString(), turns: 0 };
 const writeState = extra => { state = { ...state, ...extra, updatedAt: new Date().toISOString() }; json(resolve(out, 'state.json'), state); };
@@ -62,8 +69,9 @@ const browser = await firefox.launch({ firefoxUserPrefs: { 'network.notify.chang
 const requests = [], pageErrors = [];
 let editor, page;
 async function open() {
-  editor = await newEditor(browser, host.url, projectDir, {}, { async onPage(p) {
+  editor = await newEditor(browser, host.url, projectDir, assistantEngine ? { assistantEngine } : {}, { async onPage(p) {
     p.on('pageerror', error => pageErrors.push({ at: new Date().toISOString(), message: error.message.slice(0, 500) }));
+    if (storeUrl) await installStoreBridge(p, storeUrl, { autoInstall: storeAutoInstall });
     await p.addInitScript(v2 => {
       localStorage.setItem('oprn:editor-welcome-dismissed', '1');
       localStorage.setItem('oprn:assistant-v2', v2 ? '1' : '0');
@@ -93,18 +101,20 @@ async function cards(selector = CARD_SELECTOR) {
     buttons: [...node.querySelectorAll('button')].filter(b => !b.disabled).map(b => ({ testid: b.dataset.testid ?? null, text: b.innerText.trim().slice(0, 80) })),
   })), selector).catch(() => []);
 }
-async function waitSettle(mark, startedAt) {
+async function waitSettle(mark, startedAt, graceMs = 20000) {
   // A turn is over when the stream closed after the mark and the bridge is idle, or a card waits for an answer.
   for (;;) {
     if (Date.now() - startedAt > turnTimeoutMs) return 'timeout';
     const value = await page.evaluate(m => ({ events: (window.__capEvents ?? []).slice(m), busy: Boolean(window.__oprnAiBridge?.status().turnBusy) }), mark).catch(() => null);
     if (value) {
       const closed = value.events.some(e => ['stream_closed', 'error', 'stream_error'].includes(e.type));
-      if (!value.busy && (closed || Date.now() - startedAt > 20000)) return 'settled';
-      if ((await cards()).length && value.busy) {
+      if (!value.busy && (closed || Date.now() - startedAt > graceMs)) return 'settled';
+      // 답한 카드(단추가 모두 꺼진 카드)는 남아 있어도 기다리는 질문이 아니다 — 그 답의 후속 턴이 도는 중일 수 있다.
+      const open = async () => (await cards()).filter(card => card.buttons.length > 0).length;
+      if (await open() && value.busy) {
         // A pending question card holds the turn. Give the operator the decision.
         await sleep(5000);
-        if ((await cards()).length && await busy()) return 'awaiting-answer';
+        if (await open() && await busy()) return 'awaiting-answer';
       }
       writeState({ phase: 'turn', elapsedMs: Date.now() - startedAt, events: value.events.length,
         lastTool: value.events.filter(e => e.type === 'tool_start').at(-1)?.name ?? null });
@@ -169,12 +179,18 @@ try {
       await page.getByTestId('ai-send').click();
       log(`\n## ${step} USER (${new Date().toISOString()})\n${body}\n`);
     } else {
-      const button = page.locator(`[data-testid="${body.split('\n')[0].trim()}"]`).first();
+      // 가장 최근 카드 안의 첫 단추(앞 카드의 같은 단추는 이미 끝났다; 곡마다 「넣기」가 있는 카드에서는 맨 위 = 1순위 곡).
+      const testid = body.split('\n')[0].trim();
+      const inCard = page.locator(`${CARD_SELECTOR},[data-testid="ai-store-music-note"]`).last().locator(`[data-testid="${testid}"]:not([disabled])`);
+      const button = (await inCard.count()) ? inCard.first() : page.locator(`[data-testid="${testid}"]:not([disabled])`).last();
       await button.click();
       log(`\n## ${step} USER CLICK (${new Date().toISOString()}) ${body.split('\n')[0]}\n`);
     }
     writeState({ phase: 'turn', step });
-    const outcome = await waitSettle(mark, startedAt);
+    // 카드 단추(예: 스토어 음악 「넣기」)는 받기가 끝난 뒤에야 후속 요청을 보낸다 — 그 턴이 시작될 때까지 더 기다린다.
+    // 「바꾸기」처럼 턴을 열지 않는 단추는 오래 기다리지 않는다.
+    const opensTurn = kind === 'click' && !/^ai-store-music-swap\b/u.test(body);
+    const outcome = await waitSettle(mark, startedAt, opensTurn ? 5 * 60_000 : 20000);
     if (outcome === 'timeout') {
       await page.evaluate(() => window.__oprnAiBridge?.abort()).catch(() => {});
       await page.waitForFunction(() => !window.__oprnAiBridge?.status().turnBusy, null, { timeout: 60000 }).catch(() => {});
@@ -198,6 +214,8 @@ try {
       toolArgs: events.filter(e => e.type === 'tool_start').map(e => ({ name: e.name, args: e.args })),
       maps: Object.values(snap.project.maps).map(m => ({ id: m.id, name: m.name, size: `${m.width}x${m.height}`, events: (m.events ?? []).length })) };
     json(resolve(out, 'turns', `${step}.json`), turn);
+    // 남은 카드·쪽지가 있으면 화면에 보이게 내린다(캡처가 대화 위쪽만 찍던 것).
+    if (pending.length) await page.locator(`${CARD_SELECTOR},${INFO_SELECTOR}`).last().scrollIntoViewIfNeeded({ timeout: 2000 }).catch(() => {});
     await page.screenshot({ path: resolve(out, 'turns', `${step}.png`) }).catch(() => {});
     const toolLine = turn.toolCalls.map(t => `${t.name}${t.ok === false ? '(FAIL)' : ''}`).join(', ');
     log(`### ${step} ASSISTANT — ${outcome}, ${(turn.elapsedMs / 60000).toFixed(1)} min, save=${saveKind}, rev ${snap.revision}, model ${[...new Set(turn.requests.map(r => r.model))].join('/') || '-'}\n` +

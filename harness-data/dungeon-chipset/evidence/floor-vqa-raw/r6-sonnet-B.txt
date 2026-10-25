@@ -1,0 +1,6 @@
+otherworld: PASS — majors: none; minors: purple speckled cave floor is slightly noisy across both seeds; void pits with stalactite edges look mildly stepped.
+pyramid: PASS — majors: none; minors: cracked-tile rooms (s1 bottom-left, s2 top-centre) have a hard edge against the sand but read as deliberate rooms; sand footprint marks repeat; barred gates in s1 sit flush in the wall.
+ruins: PASS — majors: none; minors: 16px light/dark checker variation on the cream floor is faintly visible in both seeds (floor-repeat risk, still reads as authored flagstone); a ladder stub sits on the floor in the s2 top-left room.
+swamp: PASS — majors: none; minors: mud floor is sparse with light speckle in open areas of both seeds; a few props sit close to walkway edges.
+tower: PASS — majors: none; minors: spiral stair and stool overlap the curved wall in s1; s2 wood-floor patch has a hard edge but reads as a room.
+volcano: PASS — majors: none; minors: the small grey step blocks on the lava river in s1 (around x407,y373 and x343,y421) read more like stair stubs than plank bridges; the s2 lava river ends in an abrupt stub near x190,y630; purple-brown rock floor is mildly speckled in the 3x crops.

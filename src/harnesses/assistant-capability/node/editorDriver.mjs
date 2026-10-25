@@ -1,6 +1,6 @@
 import { spawn } from 'node:child_process';
 import { createServer } from 'node:net';
-import { readFileSync, writeFileSync, existsSync } from 'node:fs';
+import { readFileSync, writeFileSync, existsSync, openSync, writeSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { DatabaseSync } from 'node:sqlite';
 import { gunzipSync } from 'node:zlib';
@@ -52,6 +52,8 @@ export async function startHost(projectDir, dir) {
   });
   let log=''; const append = data => { log += data.toString(); };
   child.stdout.on('data', append); child.stderr.on('data', append);
+  // HARNESS_HOST_LOG=<file>: 진단용으로 호스트 출력을 그 파일(0600)에 남긴다. 제공자 오류에 자격 정보가 섞일 수 있으니 저장소·증거 폴더에 두지 말 것.
+  if (process.env.HARNESS_HOST_LOG) { const fd = openSync(process.env.HARNESS_HOST_LOG, 'a', 0o600); const tee = data => writeSync(fd, data); child.stdout.on('data', tee); child.stderr.on('data', tee); }
   const url=await new Promise((done, fail)=>{
     const timer=setTimeout(()=>fail(Error('Project host startup deadline')),60000);
     child.on('error', error=>{clearTimeout(timer);fail(error);});

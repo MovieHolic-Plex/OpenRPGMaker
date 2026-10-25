@@ -1,0 +1,314 @@
+"""원통 탑 붓(3차 감독 메모 ⑲): 작은 막돌 원통(왼쪽 밝음 → 오른쪽 어두움 세로 명암 단계, 줄은 밑 타원 따라 휜다)
++ 꼭대기로 좁아지는 작은 비늘 기와 원뿔. 난수 없음 — 돌 폭·바탕은 손으로 쓴 표를 줄마다 다른 자리에서 읽는다.
+granary-mill · tower-house 공용 사본."""
+import math
+
+# 본채 1층 막돌과 같은 연분홍·회갈 돌 램프(밝음 → 어둠) — 집과 같은 돌 가족
+WARM = ['q', 'o', 'o', 'l', 'l', 'f', 'f', 'c', 'c', 'J', 'C']
+COURSES = [3, 2, 3, 3, 2, 4, 3, 2, 3, 2, 3, 4]
+SW = [5, 3, 6, 4, 3, 5, 7, 4, 3, 6, 4, 5, 3, 4, 6, 5, 3, 7, 4, 5]
+FACE_OFF = '0101201010210100120101'     # 돌마다 바탕 밝기 차(0·1·2 단 어둡게)
+SPECK = '0003000500020000400030006000'
+
+
+def band(f):
+    """가로 위치 f(-1 왼끝 … 1 오른끝) → 명암 단계(0 가장 밝음). 왼끝 테두리는 한 단 내려 둥글게."""
+    if f < -0.82:
+        return 2
+    if f < -0.45:
+        return 0
+    if f < -0.1:
+        return 1
+    if f < 0.25:
+        return 2
+    if f < 0.55:
+        return 3
+    if f < 0.8:
+        return 4
+    return 5
+
+
+def shaft_old(c, cx, R, top, bottom, sag, start=0, skip=None):
+    """원통 몸통. top = 앞 가운데 윗선 y(옆은 sag 만큼 위), bottom = 땅 줄(가운데), 옆 밑은 sag 만큼 위.
+    줄(course)은 v = y - sag·cosθ 로 펴서 깐다 — 그래서 줄눈이 밑 타원처럼 휜다."""
+    skip = skip or (lambda x, y: False)
+    # 줄 경계(v 좌표)
+    edges = []
+    v = top - sag
+    k = 0
+    while v < bottom + 2:
+        edges.append((v, COURSES[(k + start) % len(COURSES)], k))
+        v += COURSES[(k + start) % len(COURSES)]
+        k += 1
+    for x in range(int(cx - R) - 1, int(cx + R) + 2):
+        dx = x + 0.5 - cx
+        if abs(dx) > R:
+            continue
+        f = dx / R
+        cosv = math.sqrt(max(0.0, 1 - f * f))
+        th = math.asin(max(-1.0, min(1.0, f)))
+        s = th * R + 200                  # 둘레 길이 좌표
+        b = band(f)
+        ytop = top - sag + round(sag * cosv)
+        ybot = bottom - sag + round(sag * cosv)
+        for y in range(ytop, min(ybot, c.h - 1) + 1):
+            if skip(x, y):
+                continue
+            vv = y - round(sag * cosv)
+            # 어느 줄?
+            ci = 0
+            for i, (v0, hgt, kk) in enumerate(edges):
+                if v0 <= vv < v0 + hgt:
+                    ci = i
+                    break
+            v0, hgt, kk = edges[ci]
+            r = vv - v0
+            # 그 줄의 돌
+            off = (kk * 7 + start * 3) % 11
+            pos = s + off
+            acc = 0
+            j = (kk * 5 + start) % len(SW)
+            n = 0
+            while acc + SW[j % len(SW)] <= pos:
+                acc += SW[j % len(SW)]
+                j += 1
+                n += 1
+            w = SW[j % len(SW)]
+            u = pos - acc
+            # 둘레에서 가장자리 쪽은 돌이 좁아 보인다 → 줄눈 폭은 화면에서 1px 유지
+            face = b + 1 + int(FACE_OFF[(n + kk * 3) % len(FACE_OFF)])
+            joint_v = (r == hgt - 1)
+            joint_u = (u >= w - (1.0 / max(0.25, cosv)) * 0.9)
+            if joint_v or joint_u:
+                ch = WARM[min(len(WARM) - 1, b + 5 + (1 if b >= 2 else 0))]
+            else:
+                ch = WARM[min(len(WARM) - 2, face)]
+                sp = SPECK[(n * 3 + kk + int(u)) % len(SPECK)]
+                if sp != '0' and r == 1 and int(u) == 1:
+                    ch = WARM[min(len(WARM) - 2, face + 1)]
+                if r == 0 and int(u) == 0 and b <= 2:
+                    ch = WARM[max(0, face - 1)]
+            c.put(x, y, ch)
+
+
+def ring_band(c, cx, R, y_front, sag, rows=3, out=0.0):
+    """원통을 두르는 돌 띠(가운데가 처지는 같은 곡선). 윗줄 밝은 턱 · 가운데 · 아랫줄 그늘 — 명암 단계는 몸통과 같다."""
+    rr = R + out
+    for x in range(int(cx - rr) - 1, int(cx + rr) + 2):
+        dx = x + 0.5 - cx
+        if abs(dx) > rr:
+            continue
+        f = dx / rr
+        cosv = math.sqrt(max(0.0, 1 - f * f))
+        b = band(f)
+        y0 = y_front - sag + round(sag * cosv)
+        for d in range(rows):
+            if d == 0:
+                ch = WARM[min(10, b)]                 # 밝은 윗턱
+            elif d == rows - 1:
+                ch = WARM[min(10, b + 7)]             # 띠 밑 그늘(몸통에 드리운다)
+            else:
+                ch = WARM[min(10, b + 2)]
+                if int((math.asin(f) * rr + 100)) % 6 == 0:
+                    ch = WARM[min(10, b + 6)]         # 띠돌 이음
+            c.put(x, y0 + d, ch)
+
+
+# 원뿔 비늘 색(명암 단계별): (윗빛, 몸, 아랫그늘)
+CONE_BANDS = [('L', 'ρ', '?'), ('ρ', 'π', '$'), ('π', '<', '@'), ('<', '=', '!'), ('=', '+', '9'), ('+', '&', '9')]
+
+
+def cone(c, cx, apex_y, base_y, hw, ell, th=3, sw=4.4, start=0):
+    """작은 비늘 기와 원뿔. 줄은 밑 타원과 나란히 휘고(th px), 한 줄의 비늘 수는 그 줄 둘레에 비례 —
+    꼭대기로 갈수록 비늘 수가 줄어 방사로 좁아진다. 장마다 왼쪽 1px 빛, 맨 아래 줄 그늘."""
+    H = base_y - apex_y
+    pts = {}
+    for y in range(apex_y, base_y + ell + 1):
+        for x in range(int(cx - hw) - 1, int(cx + hw) + 2):
+            dx = x + 0.5 - cx
+            t = min(1.0, max(0.0, (y + 0.5 - apex_y) / H))
+            half = hw * t
+            if half < 0.5 or abs(dx) > half:
+                continue
+            f = dx / half
+            bump = ell * t * math.sqrt(max(0.0, 1 - f * f))
+            if y > base_y + bump:
+                continue
+            v = y + 0.5 - apex_y - bump * 0.9
+            row = int(v // th)
+            lv = int(v % th)
+            # 이 줄의 비늘 수: 보이는 반 둘레 길이(π·half) / 비늘 폭
+            n = max(2, int(round(math.pi * half / sw)))
+            th_ang = math.asin(max(-1.0, min(1.0, f)))
+            p = (th_ang / math.pi + 0.5) * n + (0.5 if (row + start) % 2 else 0.0)
+            col = int(math.floor(p))
+            fr = p - col
+            b = band(f)
+            b = min(5, b if f > -0.82 else 1)
+            hi, body, sh = CONE_BANDS[b]
+            var = '0000100000200000'[(row * 3 + col * 5 + start) % 16]
+            if var == '1':
+                body = hi if b >= 2 else body
+            elif var == '2':
+                body = sh if b >= 3 else body
+            if lv == th - 1:
+                ch = sh
+            elif fr < 0.22:
+                ch = hi if lv == 0 else body
+            elif fr > 0.85:
+                ch = sh
+            else:
+                ch = body
+            pts[(x, y)] = ch
+    for (x, y), ch in pts.items():
+        c.put(x, y, ch)
+    return pts
+
+
+def cone_eave(c, cx, base_y, hw, ell):
+    """원뿔 처마 앞 끝 두께: 밑 타원 앞 반쪽을 따라 두 줄(명암 단계 따라)."""
+    for x in range(int(cx - hw), int(cx + hw) + 1):
+        dx = x + 0.5 - cx
+        if abs(dx) > hw:
+            continue
+        f = dx / hw
+        y = int(round(base_y + ell * math.sqrt(max(0, 1 - f * f))))
+        b = band(f)
+        c.put(x, y, ['ν', 'ν', '+', '&', '9', '9'][b])
+        c.put(x, y + 1, ['&', '&', '9', '9', '6', '6'][b])
+
+
+SLITS = [  # 좁은 창 셋 — 반짝 자리·덧돌·창턱이 다르다(⑰)
+    ['..ηζζ..', '.ηζDζ-.', '.ηDAD-.', '.ηFAA-.', '.η^AA-.', '.ηDAA-.', '.ηAAB-.', '.ηAAB-.', '.ζ----.', '.yxxwv.'],
+    ['..ηζζ..', '.ηζEζ-.', '.ηDA^-.', '.ηDAA-.', '.ηAAB-.', '.ηAFB-.', '.ηAAB-.', '.ζ----.', 'zyxxwvu'],
+    ['...ζ...', '..ηDζ..', '.ηDAD-.', '.ηHAA-.', '.ηDAA-.', '.ηA^B-.', '.ηAAB-.', '.ηAAB-.', '.ηAAB-.',
+     '.ζ----.', '..yxw..'],
+]
+
+
+def slit(c, x, y, k):
+    for j, row in enumerate(SLITS[k % len(SLITS)]):
+        for i, ch in enumerate(row):
+            if ch != '.':
+                c.put(x + i, y + j, ch)
+
+
+# ---------------------------------------------------------------- 6차: 줄 쌓은 돌 원통(점 무늬 없음)
+TCOURSE = [4, 3, 5, 3, 4, 4, 3, 5, 4, 3, 4, 5]           # 줄 높이(맨 아래 1px 줄눈 포함)
+TWIDTH = [6, 4, 7, 5, 3, 6, 8, 5, 4, 7, 5, 6, 4, 8, 5, 3, 6]   # 돌 가로(화면 px, 줄눈 포함)
+TVAR = '01001101000110100101'               # 돌마다 바탕 한 단 차(돌 하나는 한 색)
+TFACE = [('q', 'o'), ('o', 'l'), ('l', 'o'), ('f', 'l'), ('f', 'c'), ('c', 'c')]   # 명암 단계 → 돌 바탕(본채 막돌 분홍 가족)
+TLIGHT = {'o': 'q', 'l': 'o', 'f': 'l', 'c': 'f', 'q': 'q'}
+TMORTAR = ['J', 'J', 'J', 'J', 'J', 'J']    # 명암 단계 → 줄눈(본채처럼 짙은 보라)
+
+
+def tband(f):
+    """왼쪽 밝음 → 오른쪽 어둠, 계단 다섯 단. 왼끝 1px 테두리 띠는 한 단 내려 둥글게."""
+    if f < -0.86:
+        return 1
+    for lim, b in ((-0.5, 0), (-0.12, 1), (0.25, 2), (0.58, 3), (0.82, 4)):
+        if f < lim:
+            return b
+    return 5
+
+
+def _rim(cx, R, x):
+    dx = x + 0.5 - cx
+    if abs(dx) > R:
+        return None
+    f = dx / R
+    return f, math.sqrt(max(0.0, 1 - f * f))
+
+
+def shaft(c, cx, R, top, bottom, sag, start=0, skip=None):
+    """돌 줄이 밑 타원 따라 휘는 원통. 돌은 화면 가로 2~4px 면 + 1px 줄눈, 줄 높이 2~3px 면 + 1px 줄눈.
+    돌 하나는 한 색(명암 단계 + 돌마다 0/1 단), 몇 돌만 왼쪽 위 1px 빛. 점 무늬·디더 없음.
+    바깥 윤곽: 오른쪽·왼쪽 끝 1px 은 짙은 재료색으로 끊김 없이."""
+    skip = skip or (lambda x, y: False)
+    x0, x1 = int(cx - R) - 1, int(cx + R) + 1
+    for x in range(x0, x1 + 1):
+        r = _rim(cx, R, x)
+        if r is None:
+            continue
+        f, cosv = r
+        b = tband(f)
+        ytop = top - sag + round(sag * cosv)
+        ybot = bottom - sag + round(sag * cosv)
+        for y in range(ytop, min(ybot, c.h - 1) + 1):
+            if skip(x, y):
+                continue
+            vv = y - round(sag * cosv) - (top - sag)
+            # 줄 찾기
+            k, acc = 0, 0
+            while acc + TCOURSE[(k + start) % len(TCOURSE)] <= vv:
+                acc += TCOURSE[(k + start) % len(TCOURSE)]
+                k += 1
+            ch_h = TCOURSE[(k + start) % len(TCOURSE)]
+            rr = vv - acc
+            # 그 줄의 돌(화면 x, 줄마다 엇갈림)
+            u = int(math.asin(max(-1.0, min(1.0, f))) * R + 100) + (k * 5 + start * 3) % 7   # 둘레 길이 — 가장자리로 돌이 좁아진다
+            j, a2 = (k * 5 + start) % len(TWIDTH), 0
+            n = 0
+            while a2 + TWIDTH[j % len(TWIDTH)] <= u:
+                a2 += TWIDTH[j % len(TWIDTH)]
+                j += 1
+                n += 1
+            sw = TWIDTH[j % len(TWIDTH)]
+            uu = u - a2
+            sid = n + k * 7 + start
+            face = TFACE[b][int(TVAR[sid % len(TVAR)])]
+            vj = (uu == sw - 1) and abs(f) < 0.88               # 가장자리에선 세로 줄눈을 생략(돌이 휘어 사라진다)
+            if rr == ch_h - 1 or vj:
+                ch = TMORTAR[b]                                # 줄눈(본채 막돌처럼 짙은 보라 줄눈)
+            elif rr == 0 and uu == 0 and sid % 3 == 0 and b <= 3:
+                ch = TLIGHT[face]                              # 왼쪽 위 1px 빛
+            else:
+                ch = face
+            c.put(x, y, ch)
+    # 윤곽: 줄마다 오른쪽 끝 2px(짙게), 왼쪽 끝 1px
+    for y in range(0, c.h):
+        xs = [x for x in range(x0, x1 + 1) if _rim(cx, R, x) is not None
+              and top - sag + round(sag * _rim(cx, R, x)[1]) <= y <= bottom - sag + round(sag * _rim(cx, R, x)[1])
+              and not skip(x, y)]
+        if not xs:
+            continue
+        c.put(max(xs), y, 'J')
+        c.put(max(xs) - 1, y, 'c')
+        c.put(min(xs), y, 'J')
+
+
+def plinth(c, cx, R, bottom, sag, rows=3, out=1.0, start=0):
+    """짙은 돌 받침(몸통보다 out px 바깥): 맨 윗줄 밝은 턱, 가운데 돌(짙은 단 + 줄눈), 맨 아랫줄 짙은 윤곽.
+    같은 밑 타원 곡선을 따라 휜다 — 탑이 땅을 딛고 선다."""
+    rr = R + out
+    for x in range(int(cx - rr) - 1, int(cx + rr) + 2):
+        r = _rim(cx, rr, x)
+        if r is None:
+            continue
+        f, cosv = r
+        b = tband(f)
+        yb = bottom - sag + round(sag * cosv)
+        edge = abs(f) > 0.95
+        for d in range(rows + 1):
+            y = yb - rows + d
+            if d == rows or edge:
+                ch = 'V' if f < 0.6 else 'U'                   # 밑·양끝 윤곽
+            elif d == 0:
+                ch = ('n', 'k', 'k', 'i', 'g', 'e')[b]          # 윗턱(받침돌 밝은 모서리) — 본채 기초와 같은 회색 돌
+            else:
+                u = int(math.asin(f) * rr + 100 + start + d * 3)
+                if u % 7 == 0:
+                    ch = 'X' if b < 3 else 'W'                 # 받침돌 이음
+                else:
+                    ch = ('i', 'g', 'e', 'd', 'Y', 'X')[b]       # 짙은 받침돌
+            c.put(x, y, ch)
+    # 받침 위 몸통에 1px 그늘
+    for x in range(int(cx - R), int(cx + R) + 1):
+        r = _rim(cx, R, x)
+        if r is None:
+            continue
+        f, cosv = r
+        y = bottom - sag + round(sag * cosv) - rows - 1
+        g = c.get(x, y)
+        if g in WARM and g not in ('J', 'C'):
+            c.put(x, y, WARM[min(9, WARM.index(g) + 1)])

@@ -29,7 +29,7 @@ import type { BuildRun, ContentBuildResult, EventBeat, EventSpec } from "./types
 
 export const EVENT_CARD =
   "이벤트(events) 명세: {kind:'cutscene'|'talk'|'trigger', when?:'game-start'|'touch'|'talk', mapId?, where?, at?, beats:[…]}. " +
-  "after:'촌장' = 그 NPC 와 대화가 끝나면 이어서(그 NPC 대화 끝에 붙고 한 번만), afterTalk:[…] = 장면 뒤 그 NPC 가 할 말(밤이 됐으면 밤 인사처럼 바뀐 상황에 맞게). " +
+  "after:'촌장' = 그 NPC 와 대화가 끝나면 이어서(그 NPC 대화 끝에 붙고 한 번만 — 말 걸기 페이지가 여럿(낮·밤)이면 afterPage:번호), afterTalk:[…] = 장면 뒤 그 NPC 가 할 말(밤이 됐으면 밤 인사처럼 바뀐 상황에 맞게). " +
   "cutscene+game-start = 게임이 시작되면 한 번만 자동 재생(시작 맵, 맵마다 하나 — 다시 부르면 앞 컷신을 바꾼다). 비트 do: " +
   "walk{who,to}=걷기(to=길·광장·입구·문 앞 같은 자리 낱말, 다른 사람 이름이면 그 곁으로 걸어가 마주 선다, {x,y} 는 꼭 필요할 때만) / " +
   "say{who,text}=대사(who 를 비우면 내레이션) / appear{who,where?,looks?,talk?}=그 자리에 «팍» 나타남(where 생략 가능 — 뒤에 주인공에게 걸어오면 함수가 4~8칸 떨어진 길 위를 고른다; talk=컷신 뒤 말 걸면 할 말 배열) / " +
@@ -354,6 +354,21 @@ function defaultFollowUp(name: string, looks: string | undefined): string[] {
 function findNpcByName(map: GameMap, name: string): GameEvent | undefined {
   const want = name.trim().toLowerCase();
   return eventsOf(map).find((e) => (e.name ?? "").trim().toLowerCase() === want);
+}
+
+/** after NPC 의 어느 페이지에 장면을 이을지. 말 걸기 페이지가 여럿인데 afterPage 가 없으면 problem(페이지 목록). */
+function afterPageChoice(npc: GameEvent, afterPage: number | undefined): { pick?: number; problem?: string } {
+  const all = npc.pages ?? [];
+  const talkIdx = all.map((pg, i) => ({ pg, i })).filter(({ pg }) => { const k = (pg.trigger as { kind?: string } | undefined)?.kind; return k === undefined || k === "action"; }).map(({ i }) => i);
+  if (typeof afterPage === "number" && all[afterPage]) return { pick: afterPage };
+  if (talkIdx.length <= 1) return { pick: talkIdx[0] ?? 0 };
+  const list = talkIdx.map((i) => {
+    const pg = all[i]!;
+    const cond = (pg.conditions ?? []).map((c) => { const o = c as { kind?: string; switchId?: string; key?: string; value?: unknown }; return o.kind === "switch" ? `${o.switchId}=${o.value === false ? "꺼짐" : "켜짐"}` : o.kind === "selfSwitch" ? `셀프 ${o.key}` : String(o.kind); }).join(",") || "조건 없음";
+    const line = (pg.commands ?? []).map((c) => (c as { body?: string; text?: string }).body ?? (c as { text?: string }).text).find((t) => typeof t === "string");
+    return `${i}) ${cond} «${String(line ?? "").slice(0, 24)}»`;
+  }).join(" / ");
+  return { problem: `after: '${npc.name}' 은 말 걸기 페이지가 ${talkIdx.length}개다 — 장면이 일어나는 페이지를 afterPage 로 골라 add_event 를 다시 부른다(장면은 만들지 않았다): ${list}` };
 }
 
 // ───────────────────────── 빌더 ─────────────────────────
@@ -839,6 +854,13 @@ export function buildEvent(run: BuildRun, spec: EventSpec): EventBuildResult {
     mapId, x: hostCell.cell.x, y: hostCell.cell.y, trigger, beats, skippable: true, mode: "replace",
     once: when === "game-start" || when === "touch", ...(hostId ? { eventId: hostId } : {}),
   };
+  // after NPC 의 페이지를 못 고르면 장면을 만들기 전에 멈춘다(장면 배우·투명 이벤트를 남기지 않는다).
+  if (spec.after) {
+    const pre = findMap(run.ctx.project, mapId);
+    const npc0 = pre ? findNpcByName(pre, spec.after) : undefined;
+    const pre0 = npc0?.pages?.length ? afterPageChoice(npc0, spec.afterPage) : undefined;
+    if (pre0?.problem) return fail(pre0.problem, [mapId]);
+  }
   const cut = run.call("script_cutscene", args);
   for (const w of cut.warnings ?? []) warnings.push(`컷신: ${w}`);
   if (!cut.ok) return fail(`컷신을 만들지 못했다 — ${String(cut.summary).slice(0, 200)}`, [mapId]);
@@ -874,7 +896,16 @@ export function buildEvent(run: BuildRun, spec: EventSpec): EventBuildResult {
     if (!npc || !npc.pages?.length) warnings.push(`after: '${spec.after}' NPC 를 이 맵에서 못 찾아 따로 선 장면 이벤트로 남겼다.`);
     else if (commands.length === 0) warnings.push("after: 장면 명령을 못 읽어 NPC 에 잇지 못했다.");
     else {
-      const p0 = npc.pages[0]!;
+      // 어느 페이지에 이을까: 말 걸기 페이지가 여럿이면(낮·밤, 사건 전·후) 모델이 afterPage 로 고른다.
+      // 예전엔 늘 0번(낮 기본) 끝에 붙이고 「장면 뒤」 페이지를 맨 끝에 둬서, 셀프 스위치 D 가 켜진 뒤 밤 페이지의 기존 회상까지 가렸다
+      // (2026-10-25 장난감 가게 고치기 2턴: 오르골 추억이 밤 페이지에 있었다).
+      const choice = afterPageChoice(npc, spec.afterPage);
+      const pick = choice.pick;
+      if (pick === undefined) {
+        run.call("remove_event", { mapId, eventId: cutId });
+        return fail(choice.problem!, [mapId]);
+      } else {
+      const p0 = npc.pages[pick]!;
       const talked = { ...structuredClone(p0), id: undefined, name: `${p0.name ?? "대화"} (장면 뒤)`, conditions: [...(p0.conditions ?? []), { kind: "selfSwitch", key: "D", value: true }] };
       const afterLines = (spec.afterTalk ?? []).map((t) => String(t).trim()).filter(Boolean);
       if (afterLines.length) {
@@ -883,12 +914,16 @@ export function buildEvent(run: BuildRun, spec: EventSpec): EventBuildResult {
       }
       delete (talked as { id?: string }).id;
       const first = { ...structuredClone(p0), commands: [...(p0.commands ?? []), ...structuredClone(commands), { kind: "setSelfSwitch", key: "D", value: true }] };
-      const up = run.call("upsert_event", { mapId, replacePages: true, event: { id: npc.id, pages: [first, ...npc.pages.slice(1).map((pg) => structuredClone(pg)), talked] } });
+      // 「장면 뒤」 페이지는 고른 페이지 바로 뒤에 둔다 — 뒤쪽 페이지(밤·사건 뒤)가 조건이 맞으면 여전히 이긴다.
+      const pages: unknown[] = npc.pages.map((pg) => structuredClone(pg));
+      pages.splice(pick, 1, first, talked);
+      const up = run.call("upsert_event", { mapId, replacePages: true, event: { id: npc.id, pages } });
       if (!up.ok) warnings.push(`after: NPC 에 잇지 못했다 — ${String(up.summary).slice(0, 160)}`);
       else {
         run.call("remove_event", { mapId, eventId: cutId });
         hostEventId = npc.id;
-        warnings.push(`장면을 '${spec.after}' 대화 끝에 이었다(한 번만 — 그 뒤엔 원래 대사).`);
+        warnings.push(`장면을 '${spec.after}' ${pick}번 페이지 대화 끝에 이었다(한 번만 — 그 뒤엔 원래 대사).`);
+      }
       }
     }
   }

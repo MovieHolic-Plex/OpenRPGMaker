@@ -348,7 +348,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   const tools: PiToolShape[] = [];
   const exposed = new Set<string>();
   const monsterGameProduction = new PiMonsterGameProduction(!options.v2 && !request.readOnly && !options.readOnlyTools && (requestsEmeraldMonsterGame(request.task) || classifyMonsterGameRequest(request.task) === 'campaign'), request.task);
-  const gameSystemProduction = new PiGameSystemProduction();
+  const gameSystemProduction = new PiGameSystemProduction(!options.v2);
   // 채팅 한 줄 연애 게임 요청 — 도구 목록이 고정된 팀 하위 실행은 제외(팀은 finish 게이트가 한다).
   const romanceProduction = new PiRomanceProduction(!request.readOnly && !options.readOnlyTools && !options.toolNames && !options.subscribeTeamMessages, request.task);
   const npcLayoutProduction = new PiNpcLayoutProduction();
@@ -781,6 +781,23 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
     ...(options.extraTools ?? []),
   );
   // v2 동사 — wrapTool 을 거쳐 쓰기마다 체크포인트(실시간 적용·시공 재생)가 v1 과 같은 길로 간다.
+  // 검토자 칸(request.assistantRoles.advisor) — 주 모델과 다른 모델로 따로 부른다. 키가 없는 계정이면 주 모델로 물러난다(작문과 같은 관례).
+  const advisorRole = request.assistantRoles?.advisor && request.assistantRoles.advisor !== "off" ? request.assistantRoles.advisor : undefined;
+  const advisorCli = advisorRole ? localCliIdOf(advisorRole.provider) : undefined;
+  const advisorKey = advisorRole ? options.providerApiKeys?.[advisorRole.provider] ?? (advisorRole.provider === request.provider ? options.apiKey : undefined) : undefined;
+  const advisorChat = advisorRole && (advisorCli || advisorKey) ? async (messages: readonly unknown[], signal?: AbortSignal): Promise<string> => {
+    const t0 = Date.now();
+    sideUsage.calls += 1;
+    try {
+      if (advisorCli) return await localCliChat(advisorCli, advisorRole.model, addSideUsage)(messages, signal ?? options.signal);
+      const result = await completeProvider(advisorRole.provider, { model: advisorRole.model, max_tokens: 8192, messages },
+        { apiKey: advisorKey!, ...(signal ?? options.signal ? { signal: signal ?? options.signal } : {}) });
+      const reported = (result.completion as { usage?: { prompt_tokens?: number; completion_tokens?: number } }).usage;
+      if (reported) addSideUsage({ input: reported.prompt_tokens ?? 0, output: reported.completion_tokens ?? 0 });
+      const content = result.completion.choices[0]?.message.content;
+      return typeof content === "string" ? content : "";
+    } finally { sideUsage.ms += Date.now() - t0; }
+  } : undefined;
   const v2Env: PiAssistantV2Env | undefined = options.v2 ? {
     ctx, request, emit, record: recordCall,
     checkpoint: (label: string) => request.applyMode !== "step" ? checkpoint(label, label, options.signal) : Promise.resolve(),
@@ -788,6 +805,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
       const reply = await eventAssistChat(null, { messages, ...(signal ?? options.signal ? { signal: signal ?? options.signal } : {}) });
       return typeof reply.message.content === "string" ? reply.message.content : "";
     },
+    ...(advisorChat ? { advisorChat, advisorModel: `${advisorRole!.provider}/${advisorRole!.model}` } : {}),
     ...(options.renderToolImage ? { render: async (mapId: string, x: number, y: number, w: number, h: number) => `data:image/png;base64,${await renderMapRegionImage(ctx.project, { mapId, x, y, w, h }, options.renderToolImage!, options.signal)}` } : {}),
     ...(options.signal ? { signal: options.signal } : {}),
     toolsetOptions: { referenceGate, charsetGate, findToolsCallable, eventAssistChat: eventAssistChat as never, ...scopeGuard },
