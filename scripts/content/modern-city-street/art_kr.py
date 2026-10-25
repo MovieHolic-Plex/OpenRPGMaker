@@ -50,12 +50,12 @@ def ttop(a, x0, x1, y0, rows, face, back, rim):
 
 # 손으로 찍은 한글 9×9 — 자모 사이 1칸 틈(Argon r9: 글꼴 글자는 «국»의 ㅜ 줄기가 받침 ㄱ 에 붙고 «카»의 ㅋ 이 휘어 1배에서 안 읽혔다).
 HANGUL = {
-    '카': ["#####..#.", "....#..#.", "#####..##", "....#..#.", "....#..#.", "....#..#.", ".......#.", ".......#.", ".......#."],
+    '카': ["#####..#.", "....#..#.", "....#..#.", "#####..##", "....#..#.", "....#..#.", "...#...#.", "..#....#.", ".#.....#."],
     '페': ['......#.#', '#####.#.#', '.#.#..#.#', '.#.#..#.#', '.#.#.##.#', '.#.#..#.#', '.#.#..#.#', '#####.#.#', '......#.#'],
     '편': ["#####..#.", ".#.#..##.", ".#.#...#.", ".#.#..##.", "#####..#.", ".........", ".#.......", ".#.......", ".#######."],
-    '의': ['.###...#.', '#...#..#.', '#...#..#.', '#...#..#.', '.###...#.', '.......#.', '.......#.', '#####..#.', '.......#.'],
+    '의': ["..##...#.", ".#..#..#.", ".#..#..#.", ".#..#..#.", "..##...#.", ".......#.", "######.#.", ".......#.", ".......#."],
     '국': [".#######.", ".......#.", ".........", "#########", "....#....", ".........", ".#######.", ".......#.", ".......#."],
-    '밥': ["#...#..#.", "#...#..##", "#####..#.", "#...#..#.", "#####..#.", ".#.....#.", ".#######.", ".#.....#.", ".#######."],
+    '밥': ["#...#..#.", "#####..##", "#...#..#.", "#####..#.", ".........", ".#.....#.", ".#######.", ".#.....#.", ".#######."],
     '약': [".###...#.", "#...#..##", "#...#..#.", "#...#..##", ".###...#.", ".........", ".#######.", ".......#.", ".......#."],
 }
 
@@ -98,12 +98,12 @@ def stamp(a, mask, x0, y0, c, shade=None):
             if mask[y, x]: put(a, x0 + x, y0 + y, c)
 
 
-# 손으로 찍은 3×6 숫자(번호판용) — 번호판 안쪽 7칸에서 양옆 빛줄·그늘과 한 칸씩 떨어진다(Argon r11), 꺾임마다 획이 맞닿는다(Argon r9).
+# 손으로 찍은 4×6 숫자(번호판 x 5..8) — 왼쪽 빛줄(x=4)·오른쪽 그늘(x=10)과 한 칸씩 떨어진다(Argon r11). «4»는 사선 어깨가 있는 꼴(Argon r14: 3칸 «4»가 «ɥ»로 읽혔다).
 DIGITS = {
-    1: [".#.", "##.", ".#.", ".#.", ".#.", "###"],
-    2: ["###", "..#", "###", "#..", "#..", "###"],
-    3: ["###", "..#", "###", "..#", "..#", "###"],
-    4: ["#.#", "#.#", "#.#", "###", "..#", "..#"],
+    1: ["..#.", ".##.", "..#.", "..#.", "..#.", ".###"],
+    2: [".##.", "#..#", "...#", "..#.", ".#..", "####"],
+    3: ["###.", "...#", ".##.", "...#", "...#", "###."],
+    4: ["..#.", ".##.", "#.#.", "####", "..#.", "..#."],
 }
 
 
@@ -166,26 +166,46 @@ def subway_exit(n):
             else: c = SLATE[4] if x == x0 + 1 else SLATE[3] if x == x0 + 2 else SLATE[2] if x < x1 - 1 else SLATE[1]
             put(a, x, y, c)
     for x in range(x0 + 1, x1): put(a, x, 21, O)
-    stamp(a, digit_mask(n), 6, 13, INK[1])                    # x 6..8: 왼쪽 빛줄(x=4)·오른쪽 그늘(x=10)과 한 칸 이상 떨어진다(Argon r11)
+    stamp(a, digit_mask(n), 5, 13, INK[1])
     for y in range(22, 29):                                   # 몸통 오른쪽 그늘이 받침 윗면에 진다(받침 윗면 칸에만)
         if a[y, x1 + 1, 3] and tuple(a[y, x1 + 1, :3]) in (tuple(SLATE[3]), tuple(SLATE[4])): put(a, x1 + 1, y, SLATE[2])
-    # 갓: 윗판(뒤 WHITE 2·앞 WHITE 1) + 앞 두께 3줄(청록)
-    g = canvas(16, 32); yb = ellipse_plate(g, 7.5, 3.9, 7.2, 3.7, WHITE[1], WHITE[2], TEAL[3], thick=3)
-    m = g[..., 3] > 0; a[m] = g[m]
-    for (x, y) in ((7, 2), (8, 2), (6, 3), (9, 3), (7, 4), (8, 4)): put(a, x, y, TEAL[2])   # 윗판의 지하철 표지
-    for y in range(5, yb):
-        for x in range(10, 16):
-            if a[y, x, 3] and tuple(a[y, x, :3]) == TEAL[3]: put(a, x, y, TEAL[1])
-    for x in range(x0 + 1, x1):                               # 처마 그늘 — 갓 윤곽과 몸통 사이에 남은 몸통 칸까지 덮는다
-        for y in range(yb - 2, yb + 1):
-            if a[y, x, 3] and tuple(a[y, x, :3]) in [tuple(c) for c in AMBER]: put(a, x, y, INK[2])
-        put(a, x, yb, INK[2])
+    # 갓: 위에서 본 타원 윗판(뒤 WHITE 2·앞 WHITE 1) + 곧은 옆면 3줄(청록 띠, 오른쪽 끝 그늘) + 평평한 아래 윤곽 — 기둥 축(x=7)에 맞춘 원판.
+    # Argon r14: 두 타원을 겹친 갓은 y=5 에서 허리가 잘록해 «구름 두 덩이»로 읽혔고, 표지 고리는 축에서 반 칸 밀렸고, 아래 윤곽이 목에 홈을 냈다.
+    cx, rx, ry, top_y, rim = 7.5, 7.4, 3.0, 0, 3
+    cy = top_y + ry
+    yb = int(cy) + rim + 1                                    # 갓 아래 윤곽 줄
+    reg = np.zeros((32, 16), bool)
+    for y in range(top_y, yb + 1):
+        for x in range(16):
+            dx = (x + .5 - cx) / rx
+            if y + .5 <= cy:
+                dy = (y + .5 - cy) / ry
+                inside = dx * dx + dy * dy <= 1
+            else:
+                inside = abs(dx) <= 1                          # 곧은 옆면
+            reg[y, x] = inside
+    for y in range(32):
+        for x in range(16):
+            if not reg[y, x]: continue
+            dx = (x + .5 - cx) / rx
+            edge = any(not (0 <= y + v < 32 and 0 <= x + u < 16) or not reg[y + v, x + u] for u, v in ((1, 0), (-1, 0), (0, 1), (0, -1)))
+            if edge or y == yb: put(a, x, y, O)
+            elif y + .5 <= cy + 0.6: put(a, x, y, WHITE[2] if (y + .5 < cy - 0.8 and dx < 0.3) else WHITE[1] if dx < 0.5 else SLATE[4])
+            else: put(a, x, y, TEAL[4] if dx < -0.6 else TEAL[3] if dx < 0.5 else TEAL[1])
+    for (x, y) in ((7, 1), (6, 2), (8, 2), (7, 3)): put(a, x, y, TEAL[2])   # 윗판의 지하철 표지(축 x=7 대칭)
+    for x in range(x0 + 1, x1): put(a, x, yb + 1, INK[2])    # 처마 그늘(목 전체 한 줄, 홈 없음)
+    put(a, x0, yb + 1, O); put(a, x1, yb + 1, O)
+    for y in range(yb + 2, 10):                               # 처마 밑 목: 몸통 색으로 이어 붙인다
+        put(a, x0, y, O); put(a, x1, y, O)
+        for x in range(x0 + 1, x1): put(a, x, y, AMBER[1] if x >= x1 - 1 else INK[2] if y == yb + 2 else AMBER[2])
     # 받침 앞 두께·윗면에 좌상 빛 명암(Argon r11: 받침 앞줄이 한 색으로 평평했다)
     for y in range(24, 31):
         for x in range(16):
             c = tuple(a[y, x, :3]) if a[y, x, 3] else None
             if c == tuple(SLATE[1]): put(a, x, y, SLATE[2] if x < 6 else SLATE[1] if x < 11 else SLATE[0])
             elif c == tuple(SLATE[3]) and x >= 12: put(a, x, y, SLATE[2])
+    if not a[31, :, 3].any():                                 # 발밑을 칸 바닥(y=31)에 — 기준 조각처럼 땅에 붙인다(Argon r14: 1칸 떠 있었다)
+        a[1:] = a[:-1].copy(); a[0] = 0
     return a
 
 
@@ -212,7 +232,7 @@ def vertical_sign(chars, ramp, ink):
     # 윗면 = 밝은 금속 덮개(뒤 WHITE 2·앞 WHITE 1·앞 모서리 SLATE 4) — 앞면 간판 색과 분명히 갈라진다(r12: 같은 색 계열이라 «윗면 2행»으로 셌다, 관문).
     fy = ttop(a, x0, x1, 0, 6, WHITE[1], WHITE[2], SLATE[4])   # 윗면 0..5, 6 = 윤곽, 앞면 7 부터
     for y in range(1, 6):
-        for x in range(sx - 1, x1):
+        for x in range(sx, x1):
             if a[y, x, 3] and tuple(a[y, x, :3]) != tuple(O[:3]): put(a, x, y, SLATE[3])   # 윗면 오른쪽 끝 = 그늘
     for x in range(x0 + 4, x1 - 4): put(a, x, 3, top)         # 덮개 위 간판 색 한 줄(어느 가게인지 위에서도 보인다)
     for y in range(fy, 30):
@@ -224,7 +244,7 @@ def vertical_sign(chars, ramp, ink):
     for x in range(px0 + 1, px1 + 1): put(a, x, 18, dark)     # 두 칸 사이 띠
     for i, ch in enumerate(chars):
         stamp(a, hangul_mask(ch), px0 + 2, 8 if i == 0 else 20, ink)   # 글자 8..16 · 틈 17 · 띠 18 · 틈 19 · 글자 20..28
-    for x in range(x0 + 1, x1): put(a, x, 29, dark if x < sx else INK[2])   # 앞면 아래 모서리 그늘
+    for x in range(x0 + 1, x1): put(a, x, 29, dark)           # 앞면 아래 모서리 그늘(한 색, Argon r14: 오른쪽 끝에 남색 한 점)
     # 받침판: 윗면 한 줄(좌상 밝게)·윤곽
     for x in range(x0 + 1, x1): put(a, x, 30, SLATE[4] if x < 8 else SLATE[3])
     put(a, x0, 30, O); put(a, x1, 30, O)
