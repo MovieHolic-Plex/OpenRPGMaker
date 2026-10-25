@@ -1,5 +1,5 @@
 import { mainMark } from "./startupTiming";
-import { existsSync } from "node:fs";
+import { existsSync, realpathSync } from "node:fs";
 import { readFile } from "node:fs/promises";
 import { startLocalProjectServer, type LocalProjectServer } from "../serve/runtime";
 import { normalizeTeamUrl } from "../serve/localNetwork";
@@ -11,6 +11,7 @@ import { registerIpcHandlers } from "./ipc";
 import { registerAssetBrowser } from "./assetBrowser";
 import { acceptStoreDeepLink, registerAssetStore } from "./assetStore";
 import { findStoreDeepLinkArg } from "../../src/assetStore/deepLink";
+import { electronUserArgIndex, inspectCliProjectArgs, inspectCurrentCliProject } from "./cliProject";
 import { registerAppProtocol, registerAssetProtocol } from "./protocols";
 import { captureLastViewBeforeClose, forgetLastViewWindow, markEditorLeft, markEditorSettled, readLastView, scheduleLastViewAfterSave } from "./lastView";
 import { createProjectSessionRegistry } from "./sessions";
@@ -18,7 +19,7 @@ import { startCompanionServer, type CompanionServer } from "./companion";
 import { describeRecentProjects, listRecentTeams, prepareNewProjectDir, recentProjectCoverSource, rememberRecentProject, rememberRecentTeam, suggestProjectDir, writeRecentProjectCover } from "./recent";
 import { openTeamWindow } from "./teamWindow";
 import type { Splash } from "./splash";
-import { bootsToStartScreen, rendererDirectory, windowIconPath, type BootContext } from "./bootContext";
+import { rendererDirectory, windowIconPath, type BootContext, type SecondInstanceLaunch } from "./bootContext";
 import type { JoinTeamResult } from "../shared/start";
 import { TEAM_COLLAB_ENABLED } from "../shared/teamCollab";
 
@@ -46,6 +47,8 @@ const sessions = createProjectSessionRegistry();
 const hosting = new Set<string>();
 const teamHosts = new Map<string, LocalProjectServer>();
 let companionServer: CompanionServer | null = null;
+/** 첫 실행 스플래시. 부팅 중에 두 번째 실행이 프로젝트를 열면 시작 화면 신호를 기다리지 않고 닫는다. */
+let activeSplash: Splash | undefined;
 const rendererDir = rendererDirectory();
 const windowIcon = windowIconPath(rendererDir);
 /** 팀 호스트 포트. 앱을 다시 켜도 팀원이 받은 주소가 그대로 맞도록 고정 범위에서 먼저 찾는다. */
@@ -115,8 +118,29 @@ const revealOnStartReady = new Map<number, () => void>();
 /** 시작 화면이 신호를 못 보내도(옛 렌더러·오류) 첫 페인트 뒤 이만큼 지나면 창을 보인다. */
 const START_READY_FALLBACK_MS = 6_000;
 
+/** createWindow 로 만든 앱 창. 스플래시(data: 문서)는 여기 없다. */
+const appWindows = new Set<BrowserWindow>();
+/** 명령줄로 이 창에 연 프로젝트. QA 의 OPRN_OPEN_PROJECT_DIR 와 따로 둔다(그 변수는 잠금을 끈다). */
+const explicitProjectDir = new WeakMap<BrowserWindow, string>();
+
+function opensStartScreen(projectDir: string | undefined): boolean {
+  return process.env.OPRN_SMOKE_PAGE === undefined && projectDir === undefined && process.env.OPRN_OPEN_PROJECT_DIR === undefined;
+}
+
+function bootProjectDirOf(window: BrowserWindow): string | undefined {
+  return explicitProjectDir.get(window) ?? process.env.OPRN_OPEN_PROJECT_DIR;
+}
+
 function isStartScreenBoot(window: BrowserWindow): boolean {
-  return process.env.OPRN_SMOKE_PAGE === undefined && process.env.OPRN_OPEN_PROJECT_DIR === undefined && sessions.get(window.webContents.id) === null;
+  return process.env.OPRN_SMOKE_PAGE === undefined && bootProjectDirOf(window) === undefined && sessions.get(window.webContents.id) === null;
+}
+
+function warnIgnoredCliPaths(ignored: readonly string[]): void {
+  for (const path of ignored) console.warn(`[project] 명령줄 경로를 열지 않았습니다 (project.sqlite 가 있는 폴더가 아님): ${path}`);
+}
+
+function safeRealpath(dir: string): string {
+  try { return realpathSync(dir); } catch { return resolve(dir); }
 }
 
 /**
@@ -124,7 +148,7 @@ function isStartScreenBoot(window: BrowserWindow): boolean {
  * 보이며 스플래시를 닫는다. 그 전에 문서를 못 불러오면 스플래시가 오류를 보인다. 스플래시가 없는 창(두 번째 창·QA 진입점)은
  * 예전처럼 첫 페인트(ready-to-show)에 보인다. deferLoad 면 문서는 loadWindowContent 로 따로 싣는다(앱 시작 때 창 객체만 먼저 만든다).
  */
-function createWindow(options: { readonly splash?: () => Splash | undefined; readonly deferLoad?: boolean } = {}): BrowserWindow {
+function createWindow(options: { readonly splash?: () => Splash | undefined; readonly deferLoad?: boolean; readonly projectDir?: string } = {}): BrowserWindow {
   const splash = (): Splash | undefined => options.splash?.();
   const window = new BrowserWindow({
     width: 1280,
@@ -134,7 +158,7 @@ function createWindow(options: { readonly splash?: () => Splash | undefined; rea
     show: false,
     // 창 크기가 바뀌는 순간에 다른 색이 비치지 않게 문서 바탕색과 맞춘다 — 시작 화면은 어두운 #111214(startScreen.css),
     // 편집기는 tokens.css --bg-base.
-    backgroundColor: bootsToStartScreen() ? "#111214" : "#F7F8F8",
+    backgroundColor: opensStartScreen(options.projectDir) ? "#111214" : "#F7F8F8",
     // 전체화면은 보일 때 켠다 — 리눅스는 생성자에서 fullscreen 을 주면 show:false 여도 창을 바로 띄워(빈 화면이 스플래시를 덮었다).
     fullscreen: false,
     autoHideMenuBar: true,
@@ -152,6 +176,8 @@ function createWindow(options: { readonly splash?: () => Splash | undefined; rea
     },
   });
   const id = window.webContents.id;
+  if (options.projectDir) explicitProjectDir.set(window, options.projectDir);
+  appWindows.add(window);
 
   let shown = false;
   /** 스플래시에 오류를 띄웠다 — 「다시 시도」 전에는 대체 타이머가 빈 창을 보이지 않는다. */
@@ -211,7 +237,7 @@ function createWindow(options: { readonly splash?: () => Splash | undefined; rea
   window.on("unmaximize", broadcastState);
   window.on("restore", broadcastState);
   window.on("minimize", broadcastState);
-  window.on("closed", () => revealOnStartReady.delete(id));
+  window.on("closed", () => { revealOnStartReady.delete(id); appWindows.delete(window); explicitProjectDir.delete(window); });
   // 문서를 떠나면(시작 화면 ↔ 편집기·새로고침) 다시 «부팅을 마쳤다» 신호가 올 때까지 찍지 않는다.
   window.webContents.on("did-start-navigation", (details) => { if (details.isMainFrame && !details.isSameDocument) markEditorLeft(id); });
   window.webContents.on("will-navigate", (event, url) => {
@@ -226,12 +252,15 @@ function createWindow(options: { readonly splash?: () => Splash | undefined; rea
   return window;
 }
 
-/** 창에 첫 문서를 싣는다 — 시작 화면, QA 진입점(OPRN_SMOKE_PAGE·OPRN_OPEN_PROJECT_DIR), 또는 편집기. */
+/** 창에 첫 문서를 싣는다 — 시작 화면, QA 진입점(OPRN_SMOKE_PAGE·OPRN_OPEN_PROJECT_DIR), 명령줄 폴더, 또는 편집기. */
 function loadWindowContent(window: BrowserWindow): void {
   // QA 하니스용 진입점(OPRN_SMOKE_PAGE·OPRN_RENDERER_DIR 와 같은 계열): 폴더를 주면 시작 화면을
   // 건너뛰고 그 폴더를 연 채로 편집기를 띄운다. GUI 폴더 선택 대화상자를 자동화할 수 없어서
   // "앱이 폴더를 열고 편집기로 들어간다" 를 헤드리스에서 확인할 유일한 길이다.
-  const bootProjectDir = process.env.OPRN_OPEN_PROJECT_DIR;
+  // 명령줄 폴더(explicitProjectDir)도 같은 순서로 연다. 세션을 연 뒤에 문서를 다시 실어야
+  // 편집기 부팅이 빈 세션을 보지 않는다.
+  const bootProjectDir = bootProjectDirOf(window);
+  const openedByCli = explicitProjectDir.has(window);
   const startScreen = isStartScreenBoot(window);
   const smokePage = process.env.OPRN_SMOKE_PAGE;
   const devServerUrl = process.env.ELECTRON_RENDERER_URL;
@@ -240,10 +269,16 @@ function loadWindowContent(window: BrowserWindow): void {
   else if (devServerUrl) void window.loadURL(devServerUrl);
   else void window.loadURL(`${OPRN_APP_SCHEME}://oprn/index.html`);
   if (bootProjectDir !== undefined) {
-    void sessions.open(window.webContents.id, bootProjectDir).then(() => {
+    void sessions.open(window.webContents.id, bootProjectDir).then((session) => {
+      if (openedByCli) rememberRecentProject(session.projectDir, session.store.info().title ?? session.projectDir);
       if (window.isDestroyed()) return;
       if (devServerUrl) void window.loadURL(devServerUrl);
       else void window.loadURL(`${OPRN_APP_SCHEME}://oprn/index.html`);
+    }).catch((error: unknown) => {
+      console.warn("[project] 폴더를 열지 못했습니다:", error);
+      explicitProjectDir.delete(window);
+      if (window.isDestroyed() || smokePage) return;
+      void window.loadURL(`${OPRN_APP_SCHEME}://oprn/start-screen.html`);
     });
   }
 }
@@ -258,6 +293,61 @@ async function adoptFolder(window: BrowserWindow, projectDir: string, title?: st
   const session = await sessions.open(window.webContents.id, projectDir);
   rememberRecentProject(projectDir, title ?? session.store.info().title ?? projectDir);
   if (!window.isDestroyed()) void window.loadURL(rendererEntryUrl());
+}
+
+function dismissSplash(): void {
+  activeSplash?.close();
+  activeSplash = undefined;
+}
+
+function focusAppWindow(window: BrowserWindow): void {
+  if (window.isDestroyed()) return;
+  if (window.isMinimized()) window.restore();
+  window.show();
+  window.focus();
+}
+
+function windowAlreadyOpening(projectDir: string): BrowserWindow | null {
+  const resolved = safeRealpath(projectDir);
+  for (const window of appWindows) {
+    if (window.isDestroyed()) continue;
+    const open = sessions.get(window.webContents.id)?.projectDir;
+    const pending = explicitProjectDir.get(window);
+    if ((open && safeRealpath(open) === resolved) || (pending && safeRealpath(pending) === resolved)) return window;
+  }
+  return null;
+}
+
+/** 아직 프로젝트가 없는 시작 화면 창. 명령줄로 연 폴더를 여기 얹는다. */
+function idleStartWindow(): BrowserWindow | null {
+  for (const window of appWindows) {
+    if (window.isDestroyed()) continue;
+    if (sessions.get(window.webContents.id) !== null) continue;
+    if (explicitProjectDir.has(window)) continue;
+    return window;
+  }
+  return null;
+}
+
+/** 두 번째 실행이 넘긴 프로젝트. 같은 폴더가 이미 있으면 그 창을 앞으로 가져온다. */
+async function openProjectFromCli(projectDir: string): Promise<void> {
+  const resolved = safeRealpath(projectDir);
+  const existing = windowAlreadyOpening(resolved);
+  if (existing) { dismissSplash(); focusAppWindow(existing); return; }
+  console.log(`[project] 명령줄 폴더를 엽니다: ${resolved}`);
+  dismissSplash();
+  const idle = idleStartWindow();
+  if (idle) {
+    explicitProjectDir.set(idle, resolved);
+    focusAppWindow(idle);
+    try { await adoptFolder(idle, resolved); }
+    catch (error) {
+      explicitProjectDir.delete(idle);
+      console.warn("[project] 명령줄 폴더를 열지 못했습니다:", error);
+    }
+    return;
+  }
+  createWindow({ projectDir: resolved });
 }
 
 function focusedWindow(): BrowserWindow | null {
@@ -434,8 +524,12 @@ function buildMenu(): void {
 export async function startApp(boot: BootContext): Promise<void> {
   // 큰 창 객체(숨김)를 먼저 만들고 문서는 프로토콜·동반 서비스가 준비된 뒤 싣는다(아래 loadWindowContent).
   const { splash } = boot;
+  activeSplash = splash;
+  const cli = inspectCurrentCliProject();
+  warnIgnoredCliPaths(cli.ignored);
+  if (cli.dir) console.log(`[project] 명령줄 폴더를 엽니다: ${cli.dir}`);
   mainMark("createWindow");
-  const firstWindow = createWindow({ splash: () => splash, deferLoad: true });
+  const firstWindow = createWindow({ splash: () => splash, deferLoad: true, projectDir: cli.dir ?? undefined });
   mainMark("windowCreated");
   boot.setRetry(() => { if (!firstWindow.isDestroyed()) loadWindowContent(firstWindow); });
   const workerBinName = process.platform === "win32" ? "oh-my-pi-worker.exe" : "oh-my-pi-worker";
@@ -600,16 +694,28 @@ export async function startApp(boot: BootContext): Promise<void> {
   registerDeepLinkProtocol();
   mainMark("handlersRegistered");
   // 첫 실행 인자(Windows·Linux)와 본체를 읽기 전에 온 링크·두 번째 실행을 이제 처리한다. 이후 것은 바로 받는다.
-  // 두 번째 실행: 링크면 받고, 아니면 예전처럼 새 창(시작 화면)을 연다.
-  const onSecondInstance = (argv: readonly string[]): void => {
-    const link = findStoreDeepLinkArg([...argv]);
+  // 두 번째 실행: 프로젝트 폴더면 그 폴더를 연다. 링크만 있으면 창을 더 열지 않는다. 둘 다 없으면 새 시작 화면.
+  const onSecondInstance = (launch: SecondInstanceLaunch): void => {
+    const link = findStoreDeepLinkArg(launch.argv);
     if (link) acceptStoreDeepLink(link);
-    else createWindow();
+    // QA 진입점은 명령줄 폴더를 보지 않는다. OPRN_OPEN_PROJECT_DIR 은 잠금을 끄지만, 잠금이 켜진 채
+    // 그 변수가 남아 있으면 예전처럼 링크 아니면 새 창이다.
+    if (process.env.OPRN_SMOKE_PAGE !== undefined || process.env.OPRN_OPEN_PROJECT_DIR !== undefined) {
+      if (!link) createWindow();
+      return;
+    }
+    const found = inspectCliProjectArgs(launch.argv, launch.cwd, { fromIndex: electronUserArgIndex() });
+    warnIgnoredCliPaths(found.ignored);
+    if (found.dir) {
+      void openProjectFromCli(found.dir);
+      return;
+    }
+    if (!link) createWindow();
   };
   const early = boot.attachLinks(acceptStoreDeepLink, onSecondInstance);
   const initialLink = findStoreDeepLinkArg(process.argv);
   for (const link of [...(initialLink ? [initialLink] : []), ...early.links]) acceptStoreDeepLink(link);
-  for (const argv of early.secondInstances) onSecondInstance(argv);
+  for (const launch of early.secondInstances) onSecondInstance(launch);
   app.on("activate", () => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow();
   });
