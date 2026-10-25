@@ -19,3 +19,15 @@ export function resolvePictureSource(
   if (uploaded !== undefined && AUDIO_RESOURCE_KINDS.has(uploaded.kind)) return null;
   return resolveAssetResourceUrl(resourceId, project ? { project } : {});
 }
+
+/**
+ * 배우 걷기 그림 픽처 — resourceId 를 "actor:<배우 ID>" 로 주면 그 배우가 지금 입은 걷기 그림(아래를 보고 선 칸)을 픽처로 보인다.
+ * 성별 선택(Change Actor Graphic)·옷 갈아입기를 따르므로, 「주인공이 작아지며 세계로 들어간다」 같은 연출을 그림 없이 만든다.
+ */
+export const ACTOR_PICTURE_PREFIX = "actor:";
+
+export function actorPictureActorId(resourceId: string | undefined): string | null {
+  if (!resourceId?.startsWith(ACTOR_PICTURE_PREFIX)) return null;
+  const id = resourceId.slice(ACTOR_PICTURE_PREFIX.length).trim();
+  return id.length > 0 ? id : null;
+}
