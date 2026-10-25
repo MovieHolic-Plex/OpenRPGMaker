@@ -64,19 +64,26 @@ export function fieldApproachPauseAfter(recipe: FieldApproachRecipe, stepIndex: 
   return (stepIndex + 1) % recipe.burst === 0 ? recipe.pauseMs : 0;
 }
 
+// 영어 낱말은 앞뒤가 글자가 아닐 때만(「charset-battler」 의 bat 같은 오탐 방지), 복수형 s/es 허용. 한글은 그대로.
+const word = (english: string, korean: string): RegExp => new RegExp(`(?<![a-z])(?:${english})(?:e?s)?(?![a-z])|${korean}`, "i");
 const FAMILY_RULES: ReadonlyArray<readonly [RegExp, FieldApproachStyle]> = [
-  [/(wolf|hound|dog|boar|beast|fox|tiger|lion|panther|늑대|사냥개|멧돼지|짐승|여우|호랑이|사자|표범|들개)/i, "dash"],
-  [/(spider|frog|toad|mantis|cricket|flea|거미|개구리|두꺼비|사마귀|메뚜기|벼룩)/i, "pounce"],
-  [/(slime|jelly|blob|ooze|pudding|슬라임|젤리|점액)/i, "hop"],
-  [/(bat|bird|crow|raven|harpy|wasp|bee|moth|griffin|박쥐|까마귀|독수리|하피|말벌|꿀벌|나방|그리핀)/i, "swoop"],
-  [/(golem|giant|ogre|troll|armou?r|statue|construct|machine|guardian|골렘|거인|오우거|트롤|갑옷|석상|기계|수호자|파수병)/i, "lumber"],
-  [/(ghost|spirit|wraith|phantom|wisp|specter|spectre|soul|유령|정령|망령|원령|도깨비불|혼령|영혼)/i, "float"],
-  [/(snake|serpent|worm|lizard|eel|naga|뱀|구렁이|벌레|지렁이|도마뱀|장어|나가)/i, "slither"],
+  [word("wolf|wolve|hound|dog|boar|beast|fox|tiger|lion|panther", "늑대|사냥개|들개|멧돼지|짐승|여우|호랑이|사자|표범"), "dash"],
+  [word("spider|frog|toad|mantis|cricket|flea", "거미|개구리|두꺼비|사마귀|메뚜기|벼룩"), "pounce"],
+  [word("slime|jelly|jellie|blob|ooze|pudding", "슬라임|젤리|점액"), "hop"],
+  [word("bat|bird|crow|raven|harpy|harpie|wasp|bee|hornet|moth|griffin", "박쥐|까마귀|독수리|하피|말벌|꿀벌|나방|그리핀"), "swoop"],
+  [word("golem|giant|ogre|troll|armou?r|statue|construct|machine|guardian", "골렘|거인|오우거|트롤|갑옷|석상|기계|수호자|파수병"), "lumber"],
+  [word("ghost|spirit|wraith|phantom|wisp|specter|spectre|soul", "유령|정령|망령|원령|도깨비불|혼령|영혼"), "float"],
+  [word("snake|serpent|worm|lizard|eel|naga", "뱀|구렁이|벌레|지렁이|도마뱀|장어|나가"), "slither"],
 ];
 
 /** 이름·id 에서 종족을 읽어 기본 방식을 고른다. 모르면 walk. */
 export function defaultFieldApproachStyle(...hints: ReadonlyArray<string | undefined>): FieldApproachStyle {
+  // 맨 앞에 나온 종족이 이긴다(이벤트 이름 → 적 그룹 → 선두 적 순으로 넘긴다).
   const text = hints.filter(Boolean).join(" ");
-  for (const [rule, style] of FAMILY_RULES) if (rule.test(text)) return style;
-  return "walk";
+  let best: { index: number; style: FieldApproachStyle } | undefined;
+  for (const [rule, style] of FAMILY_RULES) {
+    const match = rule.exec(text);
+    if (match && (!best || match.index < best.index)) best = { index: match.index, style };
+  }
+  return best?.style ?? "walk";
 }

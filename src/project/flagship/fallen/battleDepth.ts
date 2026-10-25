@@ -140,7 +140,7 @@ export function applyFallenBattleDepth(project: Project, exec: ToolExec): void {
     mpCosts: [{ actorId: KAEL, mp: 3 }, { actorId: ELENA, mp: 5 }],
     scope: "enemy", kind: "damage", statistic: "attack", power: 62, elementId: "fire", hits: 2,
     stateEffects: [{ stateId: FS_BURN_STATE, chance: 60, operation: "add" }],
-    choreographyId: "skill_ninja_fire_style",
+    choreographyId: "skill_hero_cross_slash",
   });
   exec(project, "upsert_combo_tech", {
     id: FS_COMBO_FROST_LANCE,
