@@ -1502,3 +1502,30 @@
     grid-template-columns: minmax(0, 1fr);
   }
 }
+
+/* 역할 배정 표(src/editor/panels/aiRoleMatrixSettings.ts) — 고급 표와 같은 격자, 열만 모델·상태·직접 고르기. */
+.ai-role-matrix .ai-roles-head,
+.ai-role-matrix .ai-role-row {
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr) minmax(0, 1.2fr) minmax(96px, 0.8fr);
+}
+
+.ai-role-matrix-model {
+  color: var(--text-1);
+  font-size: 11.5px;
+  overflow-wrap: anywhere;
+}
+
+.ai-role-matrix-note,
+.ai-role-matrix-elsewhere {
+  color: var(--text-3);
+  font-size: 11px;
+  line-height: 1.35;
+}
+
+.ai-role-matrix .ai-role-row[data-tone="missing"] .ai-role-matrix-note {
+  color: var(--text-warning, #b7791f);
+}
+
+.ai-role-matrix-summary {
+  margin: 0 var(--space-2) var(--space-1);
+}

@@ -1,0 +1,83 @@
+{
+  "$comment": "조수 역할 × 계정 표 (src/ai/assistantRoles.ts 가 읽는다). 각 칸 = 권장 모델 먼저, 그다음 대체 순서. 칸이 없으면 그 계정은 그 역할을 못 한다(예: 그림 생성이 없는 계정). 경로(routes)는 같은 계정에 닿는 길이 여럿일 때 앞에 있는 것부터 쓴다. 모델 id 는 modelCatalog·localCliEngine·openwiki 의 실측 목록에 있는 것만 적는다.",
+  "roles": {
+    "main": { "label": "주 작업", "desc": "계획·시공·편집 루프(Argon 급)", "needs": ["text", "tools"], "missing": "조수를 쓸 수 없음 — 계정을 하나 연결하세요" },
+    "smol": { "label": "잔일", "desc": "짧은 확인·요약·반복 보조(싼 모델)", "needs": ["text"], "missing": "주 모델이 대신함" },
+    "advisor": { "label": "검토자", "desc": "턴 끝 보고를 실제 변경에 대어 봄(주 모델과 다른 눈)", "needs": ["text"], "missing": "검토자 꺼짐" },
+    "vision": { "label": "눈", "desc": "맵·컷신 그림을 보고 판정", "needs": ["text", "images"], "missing": "그림 검사 없음" },
+    "image": { "label": "그림 생성", "desc": "타이틀·배경·컷신·초상 한 장 통째로", "needs": ["imageOutput"], "missing": "새 그림 생성 없음 — 기존 그림만" },
+    "pixel": { "label": "도트", "desc": "타일·캐릭터·기물을 격자 문자열로 찍음(텍스트 모델)", "needs": ["text"], "missing": "주 모델이 찍음" }
+  },
+  "familyOrder": ["gemini", "gpt", "claude", "deepseek"],
+  "families": {
+    "gemini": {
+      "label": "Gemini",
+      "routes": [
+        { "providerId": "google-antigravity", "roles": {
+          "main": [{ "model": "gemini-4-argon", "thinkingLevel": "medium" }],
+          "smol": [{ "model": "gemini-3.8-flash", "thinkingLevel": "low" }, { "model": "gemini-3.1-flash-lite", "thinkingLevel": "low" }],
+          "advisor": [{ "model": "gemini-4-argon", "thinkingLevel": "medium" }, { "model": "gemini-3.8-flash", "thinkingLevel": "medium" }],
+          "vision": [{ "model": "gemini-4-argon", "thinkingLevel": "medium" }, { "model": "gemini-3.8-flash", "thinkingLevel": "medium" }],
+          "image": [{ "model": "gemini-3.1-flash-image", "thinkingLevel": "off" }],
+          "pixel": [{ "model": "gemini-4-argon", "thinkingLevel": "medium" }]
+        } },
+        { "providerId": "openai-compat:*", "match": "gemini-4-argon", "roles": {
+          "main": [{ "model": "gemini-4-argon", "thinkingLevel": "medium" }],
+          "smol": [{ "model": "gemini-4-argon", "thinkingLevel": "low" }],
+          "advisor": [{ "model": "gemini-4-argon", "thinkingLevel": "medium" }],
+          "vision": [{ "model": "gemini-4-argon", "thinkingLevel": "medium" }],
+          "pixel": [{ "model": "gemini-4-argon", "thinkingLevel": "medium" }]
+        } },
+        { "providerId": "local-cli:gemini", "roles": {
+          "main": [{ "model": "auto", "thinkingLevel": "medium" }],
+          "advisor": [{ "model": "auto", "thinkingLevel": "medium" }],
+          "vision": [{ "model": "auto", "thinkingLevel": "medium" }],
+          "pixel": [{ "model": "auto", "thinkingLevel": "medium" }]
+        } }
+      ]
+    },
+    "gpt": {
+      "label": "GPT",
+      "routes": [
+        { "providerId": "openai-codex", "roles": {
+          "main": [{ "model": "gpt-6.1-sol", "thinkingLevel": "medium" }],
+          "smol": [{ "model": "gpt-6-luna", "thinkingLevel": "low" }],
+          "advisor": [{ "model": "gpt-6.1-sol", "thinkingLevel": "medium" }, { "model": "gpt-6-astra", "thinkingLevel": "medium" }],
+          "vision": [{ "model": "gpt-6.1-sol", "thinkingLevel": "medium" }],
+          "image": [{ "model": "codex-image-default", "thinkingLevel": "off" }],
+          "pixel": [{ "model": "gpt-6.1-sol", "thinkingLevel": "medium" }]
+        } },
+        { "providerId": "local-cli:codex", "roles": {
+          "main": [{ "model": "gpt-6.1-sol", "thinkingLevel": "medium" }],
+          "smol": [{ "model": "gpt-6-luna", "thinkingLevel": "low" }],
+          "advisor": [{ "model": "gpt-6.1-sol", "thinkingLevel": "medium" }],
+          "vision": [{ "model": "gpt-6.1-sol", "thinkingLevel": "medium" }],
+          "pixel": [{ "model": "gpt-6.1-sol", "thinkingLevel": "medium" }]
+        } }
+      ]
+    },
+    "claude": {
+      "label": "Claude",
+      "routes": [
+        { "providerId": "local-cli:claude", "roles": {
+          "main": [{ "model": "opus", "thinkingLevel": "medium" }, { "model": "sonnet", "thinkingLevel": "medium" }],
+          "smol": [{ "model": "haiku", "thinkingLevel": "low" }],
+          "advisor": [{ "model": "sonnet", "thinkingLevel": "medium" }, { "model": "opus", "thinkingLevel": "medium" }],
+          "vision": [{ "model": "sonnet", "thinkingLevel": "medium" }],
+          "pixel": [{ "model": "opus", "thinkingLevel": "medium" }, { "model": "sonnet", "thinkingLevel": "medium" }]
+        } }
+      ]
+    },
+    "deepseek": {
+      "label": "DeepSeek",
+      "routes": [
+        { "providerId": "openai-compat:*", "match": "deepseek", "roles": {
+          "main": [{ "model": "deepseek-v4.1-flash", "thinkingLevel": "high" }],
+          "smol": [{ "model": "deepseek-v4.1-flash", "thinkingLevel": "low" }],
+          "advisor": [{ "model": "deepseek-v4.1-flash", "thinkingLevel": "high" }],
+          "vision": [{ "model": "deepseek-v4.1-flash", "thinkingLevel": "high", "requiresEndpointImages": true }]
+        } }
+      ]
+    }
+  }
+}
