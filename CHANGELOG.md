@@ -5,6 +5,12 @@
 
 <!-- releases -->
 
+## 0.335.1 — 2026-10-25
+
+### 수정
+
+- **ai** — v2 flags a clue that gates nothing in a guessable puzzle; upper floor of 「…1층」 is 「…2층」; driver seq de-dupe restarts per run (#3417) (`471d14d`)
+
 ## 0.335.0 — 2026-10-25
 
 ### 기능
