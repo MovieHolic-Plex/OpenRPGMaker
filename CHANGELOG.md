@@ -5,6 +5,32 @@
 
 <!-- releases -->
 
+## 0.344.0 — 2026-10-25
+
+### 기능
+
+- **player** — 44px touch rows in every ESC menu skin, title menu, item/save/load lists (PC look unchanged) (#3526) (`c01901e`)
+
+### 수정
+
+- **runtime** — ESC menu scales with high-res play resolutions (S6 club-festival) (#3530) (`24bbd58`)
+- **ai-v2** — horror HUD shows life petals only when HP can drop (J67) (#3531) (`6656aa5`)
+- **ai** — repeated identical tool-shape errors are refused; wrap repair covers open wrapper objects (#3528) (`b1a4f98`)
+- **beodeul-massing** — keep tileMeta in step with count when a bundled building sheet changes size (#3527) (`bde0d4a`)
+- **ai-v2** — person ghosts get a person chip, not the sheet ghost (J66) (#3522) (`1bb6c3e`)
+- **ai** — flag MP skills weaker than a free skill; default 십자베기 power 62→74 (J8) (#3519) (`0fd8d9f`)
+- **boot** — finish a pending deferred boot normalisation on flush (close) so the marker is saved (#3525) (`6eb042e`)
+- **ci** — bun on vitest runners, three unparseable test files, window-less editor boot (#3524) (`08fa2d3`)
+- **qa** — auto-play names the ending each route reached, not the first ending flag ever set (#3521) (`66391a3`)
+
+### 테스트
+
+- fix 18 ci-full environment failures (happy-dom pragma, CSS entry, async DOM stubs) (#3529) (`632ac9d`)
+
+### 기타
+
+- Dungeon lever gates: framed portcullis tile kit (#3533) (`6ed65db`)
+
 ## 0.343.0 — 2026-10-25
 
 ### 기능
