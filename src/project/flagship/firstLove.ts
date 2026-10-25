@@ -640,7 +640,7 @@ function buildMondayOffice(project: Project, a: FirstLoveAnchors): void {
     face("ev_fl_jihu_roof", "up"),
     // 문 앞에서 난간 쪽으로 카메라가 천천히 건너가 그 사람을 찾는다.
     panTo(jihuRail.x, jihuRail.y, 1600),
-    ...think("…있다."),
+    ...think("하늘이 넓다. 그리고… 있다."),
     ...think("난간에 기대 선 뒷모습. 바람에 후드 끈이 흔들린다."),
     panBack(1000),
     walkRoute(project, FL_MAP.rooftop, "@player", r.doorOut, r.railHero),
