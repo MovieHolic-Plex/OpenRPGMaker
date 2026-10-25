@@ -4,17 +4,17 @@
  "material": "stone",
  "refs": [
   "bd-house-manor",
-  "bd-manor-tower"
+  "bd-house-barracks"
  ],
  "walk": [
-  "************",
-  "************",
-  "************",
-  "************",
-  "XXXXXXXXXXXX",
-  "XXXXXXXXXXXX",
-  "XXXXXDXXXXXX",
-  "XXXXXDXXXXXX"
+  "***********",
+  "***********",
+  "***********",
+  "***XXXXX***",
+  "XXXXXXXXXXX",
+  "XXXXXDXXXXX",
+  "XXXXXDXXXXX",
+  "XXX.....XXX"
  ],
  "id": "manor"
 }

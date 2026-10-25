@@ -1,0 +1,477 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "fb31d4b18e62ab485d683e1e93ef20b166371e9e9cb5e2ea9b7495294ab3519a",
+ "width": 160,
+ "height": 96,
+ "kind": "structure",
+ "name": "병영",
+ "label": "building-kit/massing/barracks",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 7,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "5f62fef078ef7661"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 13,
+  "tileColorsP90": 18,
+  "darkV5": 56,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 43
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "hip roof (tiled slope, purple)",
+      "rows": "10-54",
+      "evidence": "c",
+      "front_edge_line_row": 54,
+      "eave_shadow_rows": "53-54"
+     },
+     {
+      "part": "chimneys (three, on roof ridge)",
+      "rows": "0-16",
+      "evidence": "a",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stone front wall with door and windows",
+      "rows": "55-95",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 45,
+    "front_face_rows": 41,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The building has a large sloped hip roof, rows 10-54, whose width grows steadily from 66 to 148 px. It reads as a roof plane with tile rows, a ridge beam at row 10, and a dark eave edge at rows 53-54. Below it is a stone front wall, rows 55-95, with a door and windows (41 rows). The chimneys have rim caps on the roof. The roof plane is the main top surface and the front wall is the south face, so the view is three-quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The blue tile roof has per-tile scallops with highlights, light, mid, dark and deep tones, about 5 steps, close to the reference roofs. The stone wall is shaded block by block with mortar lines, and the building also has shuttered windows, an arched door and chimney caps with their own shading. Visible tones per tile are 12, equal to h101 (12) and above h112 (10). Near-flat coverage is 1%, against 0% for both references, so there are no flat fills. The outline is the weakest point: 60% of dark edge pixels are near-neutral, against 7-9% for the references. By eye, though, the edges are mostly dark blue along the roof, a brown ridge line, and dark grey-brown stone beside the wall. Most of the neutral share therefore looks like the grey stone's own dark tone rather than a uniform black sticker outline, so I call it mixed. Forms are largely separated by value, and the piece would sit acceptably next to the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 13686
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "hipped tiled roof",
+      "rows": "10-54",
+      "evidence": "c",
+      "front_edge_line_row": 54,
+      "eave_shadow_rows": "52-54"
+     },
+     {
+      "part": "chimneys (three, on the ridge)",
+      "rows": "0-9",
+      "evidence": "a",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stone front wall with door and windows",
+      "rows": "55-95",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 45,
+    "front_face_rows": 41,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette widens steadily from 66 px at row 10 to 148 px at rows 53-54. This is a large sloped hipped roof plane of tile rows, with hip ridges running diagonally at the left and right. It ends in a dark eave line at rows 52-54 (x=74 is dark L~45 for rows 48-54, then the wall starts at row 55). Below it is a south wall of rows 55-95 (41 rows) with a door, windows and stone courses. The three chimneys on the ridge (rows 0-9) are structure and show small dark cap openings at the top. The roof is a clear top surface, so the building reads as three-quarter view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate matches the references on the primary facts: 12 visible tones per tile (references 12 and 10) and 1% near-flat coverage (references 0%). By eye, the blue roof has scalloped tiles with per-tile highlights across about 5 steps, from pale highlight to deep shadow. The stone walls have individually shaded blocks with speckle, and the windows have shutters and sills. The arched door and the chimneys with caps are built from several tones. The outline is the weakest point: 60% of dark edge pixels are near-neutral, against 7-9% for the references. That is a lean toward grey, but the building is not wrapped in a uniform black sticker line. The roof edge carries a brownish rim, and the walls separate mostly by value, with grey mortar lines between blocks. I judge it mixed, not near_black. Overall it would sit acceptably next to the references, with slightly less tonal variety in the wall ramp.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 53824
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "hipped tile roof",
+      "rows": "10-54",
+      "evidence": "c",
+      "front_edge_line_row": 54,
+      "eave_shadow_rows": "52-54"
+     },
+     {
+      "part": "chimneys (three)",
+      "rows": "0-9",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stone front wall with door and windows",
+      "rows": "55-95",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 45,
+    "front_face_rows": 41,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette widens steadily from 66 px at row 10 to 148 px at rows 53-54, the shape of a sloped hip roof. Its blue tile rows (10-54) have a dark eave-shadow band at rows 52-54 above the front wall. Below that, the south wall (rows 55-95, 41 rows) has a door and windows. The roof is a clear top surface above a front face of 3+ rows. The chimneys are small structural details on the ridge."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate matches the references on the primary facts: 12 visible tones per tile against 12 and 10, and 1% near-flat coverage against 0%. The roof is a scalloped tile roof with per-tile highlights and about 5 blue steps. The walls are individually shaded stone blocks with speckle. The windows have shutters and the door is framed, and there are chimneys with their own shading. Outlines are the weak point: 60% of dark edge pixels are near-neutral, against 7-9% for the references, so the lines lean grey rather than clearly material-tinted. Visually they are used selectively. The roof edge reads dark blue and brown, and the stone forms are separated mostly by value, so it is not a uniform black sticker outline. I rate the outline as mixed. Shading depth and texture are close to the reference, with no flat fills, so it passes narrowly.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 13709
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "hip roof (tiled slope with eave)",
+      "rows": "10-54",
+      "evidence": "c",
+      "front_edge_line_row": 54,
+      "eave_shadow_rows": "52-54"
+     },
+     {
+      "part": "chimneys (3)",
+      "rows": "0-16",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stone front wall with door and windows",
+      "rows": "55-95",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 45,
+    "front_face_rows": 41,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The building has a large sloped hip roof from rows 10-54. The silhouette widens steadily from 66 to 148 px, and the tile rows are visible. It ends in a dark eave line at rows 52-54, with the stone front wall below it (rows 55-95, 41 rows) holding the door and windows. The roof plane is the top surface (evidence c). The chimneys are small structural details that sit on the roof, and they show rim openings at the top."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate matches the references on the primary facts: 12 visible tones per tile against 12 and 10, and 1% near-flat coverage against 0%. By eye the blue tile roof has per-tile scallops with highlights and about 5 lightness steps. The stone wall has individually shaded blocks, and the windows have shutters and sills, with an arched door and chimney caps. The weak point is the outline. 60% of dark edge pixels are near-neutral against 7-9% in the references, so parts of the wall and window edges lean grey rather than taking the tone of the adjacent material. It is not a uniform black sticker line, though. The roof edge has a warm brown trim, and the forms are mostly separated by value. That makes the outline mixed rather than near_black. The shading is slightly shallower than the reference (5 steps against 6), but there are no flat fills and the density is on par, so it passes.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15288
+  }
+ ],
+ "decidedAt": "2026-10-25T11:46:43.353Z",
+ "cells": {
+  "16": [
+   "04877a1f6c7b83cf",
+   "0ad14e6960863ef8",
+   "0d20ef3002dce055",
+   "0dd9d42f53238884",
+   "13a14a41407da142",
+   "13d521faa888809e",
+   "1aa96d2e29efa37f",
+   "1f2151baa62a20d0",
+   "20644855ac02a408",
+   "22d085904a977be6",
+   "2535d92f8fa4045e",
+   "35946ce4a01fa8db",
+   "3d1272d12983b1a4",
+   "3e75e04c05dd05e4",
+   "4440c3de26a6b8a2",
+   "455499e1a3cddbfa",
+   "49ada3eafcc67339",
+   "5100bea985961ad0",
+   "537141275cc3968e",
+   "56208de2ad3e8ba4",
+   "578880bc7951442c",
+   "5a492d34183d46a6",
+   "6010c271def908fa",
+   "790b4814e45fa550",
+   "7bc852fd17e9843b",
+   "7ca70aa9528eadd6",
+   "86d538795f1cedb2",
+   "870219b927ae6e5f",
+   "9210fcbc9cf321ab",
+   "94328027b9126e0a",
+   "95f3e0a761fea4e6",
+   "97e6a1b36bed9546",
+   "9bae002226fd693b",
+   "a1ee31f8a54a5075",
+   "a66f4618df0c448e",
+   "a936235e601a492e",
+   "b6aefa7763b6128c",
+   "b91a6205f1a088fd",
+   "ba9c2ba55bdf718f",
+   "bb1a91cfeef180f7",
+   "bc12660c71972a18",
+   "bc7417da6aa3cb82",
+   "bd20ed13ea8f6e4b",
+   "bedf51dcaa3a3407",
+   "c10861ee6a4ed336",
+   "c58de687fbe650c6",
+   "d2850535facef370",
+   "d8cd9764467b4bcb",
+   "fac2023cb89e0442",
+   "fdbd24228dead690",
+   "ffcabb0d1a3bc26d"
+  ],
+  "24": [
+   "03c6c429bd08e25d",
+   "094872c6b0175d13",
+   "183b4a317ffe7776",
+   "1a97ec49b9d8b5a0",
+   "1b9f3753055e19c7",
+   "1c06f593b5735de1",
+   "1ec2f7e003bb0b14",
+   "1fb9aee3c31eea7c",
+   "2084881f662828e6",
+   "20d96e4ba00b8eaf",
+   "2ae143141af0b448",
+   "3031e76a97185ce3",
+   "30c9d383a40e2159",
+   "35700883a11090a8",
+   "377c3a3241d2ffdd",
+   "3a7daa33d1ae8897",
+   "3a8dde399394346d",
+   "41473929e819d629",
+   "42f976d07be2c730",
+   "43591703cfc8f22e",
+   "463832be0181a928",
+   "49253761f4fa3430",
+   "4b682059bfd848cd",
+   "4d1b8d8e6f928e39",
+   "50d8ebcc77faba43",
+   "57956cb9c2606158",
+   "59f3b0c358d055bf",
+   "5a4b9bea97840728",
+   "5df42fb747b85783",
+   "64315c93ea05b699",
+   "645b070dd711e6df",
+   "645ece278923fdfb",
+   "67e64eb013f4df42",
+   "6828050766b6e246",
+   "6896223115d41039",
+   "69e1e5bb4a477411",
+   "6b9ed2c407b565f8",
+   "6ec76352d3e56729",
+   "7284d483abd97c83",
+   "74bff4d97b94b625",
+   "74c39694964dfd16",
+   "772d6897db5af076",
+   "7a223edfa6fb8376",
+   "7a4744f6471e953d",
+   "7f3cc60b7787f189",
+   "825f8647c7da2923",
+   "8741df8a1bdd33f3",
+   "8fe3c95b425a155f",
+   "92b9bfd47ae4b3c7",
+   "94f9188cf8c31833",
+   "98fbda1a7343bcf0",
+   "9be1c2d59b43e1f6",
+   "a1b71364b9c95987",
+   "a2ec8b2a77689326",
+   "a3d6c6cd8ca352c4",
+   "a3f8e45b0333f4f1",
+   "a837b7af1a34e592",
+   "a99431f7669f5fdd",
+   "ac1fe70d509eb6b3",
+   "adaccd4071e33955",
+   "b456bc2f16d627ef",
+   "caa574b0bf10da14",
+   "cdffdbbd286956fd",
+   "ce1b0078294ff103",
+   "dc0fb05f06aad06b",
+   "e3142f24ae0fc228",
+   "e31850d85abfe5d6",
+   "e85be12db830058a",
+   "e9f4088229286c33",
+   "ee60658d0098f59a",
+   "fa203c7f30204e44",
+   "fb730c0f3e69a975",
+   "fd94186a2da87347",
+   "fdff4ef76acc8925",
+   "ff1388b8985daba6",
+   "ff37c78011a749fb"
+  ],
+  "32": [
+   "00510e3472f4c21f",
+   "14ce6dcb06751f96",
+   "2325d224069baa57",
+   "2504f7554ae1d535",
+   "4cbcacfe4186d448",
+   "6083c3aace917b25",
+   "611584de6acbfbb2",
+   "9fb7dea40c011ba8",
+   "ae6c0bc2036dca78",
+   "af3f93af058ebaf9",
+   "cc09f90e86f975a1",
+   "dedb4ab6e6bcbc41",
+   "f35e3f4070fd3beb",
+   "f9a4bfc68d6b4b37"
+  ],
+  "48": [
+   "0750d0f4f0903188",
+   "1a9bf6c089b8469b",
+   "22146604cad3bd0e",
+   "2ce145bc2b24c13a",
+   "2d15b7cacff0d912",
+   "32e3b743a7acbfce",
+   "38eab90a91405d72",
+   "5ddfeec223d6e55a",
+   "6a8325904e2b8616",
+   "6a97daeb7bca3f01",
+   "6f521dc9137692ea",
+   "718eb2a8f9621054",
+   "790ace71156e4fa9",
+   "7ce95a2171af8eaf",
+   "8e764e90a557fe3d",
+   "9801ef81f45393a0",
+   "9c960688d1a72f7a",
+   "bbdffed7bf8b52d0",
+   "bdbf710d1e1f29c0",
+   "bfaaedf476b36cb3",
+   "c43526edd1bce79f",
+   "c8aa9f52298f957d",
+   "d37457ceeb6af147"
+  ]
+ }
+}

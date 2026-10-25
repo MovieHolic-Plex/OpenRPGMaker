@@ -1,187 +1,185 @@
-"""wizard-tower — 마법사 탑(덩어리 모형 C15). 가는 마름돌 원통(둘레 돌림띠) + 아주 높은 청석 원뿔 + 금빛 별 깃대,
-둥근 창 줄, 아래 아치 문. 4×11 칸(64×176). 문 하나. 글자 없음. 난수 없음."""
+"""wizard-tower — 마법사 탑(덩어리 모형 C15), 6차 다시 그림.
+분홍 막돌 원통(줄이 밑 타원 따라 휘고 왼쪽 밝음 → 오른쪽 어둠 계단) + 큰 버들항 테라코타 원뿔(작은 비늘이 꼭대기로
+좁아진다, 밑 타원이 깊어 윗면이 크게 보인다) + 회색 돌 받침 + 돌림띠 둘 + 아치 창 + 아치 문. 4×11 칸(64×176). 문 하나. 난수 없음."""
+import importlib.util as _iu
 import math
 import os
 import sys
 
-sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'dovecote'))
-from towerlib import (Canvas, pix, ST, sclamp, fill_walk, taper_wall, ring_y, on_cyl,  # noqa: E402
-                      outline, darken)
-from common import door, moss  # noqa: E402
+HERE = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, os.path.join(HERE, '..', 'dovecote'))
+from towerlib import Canvas, fill_walk  # noqa: E402
+from common import door  # noqa: E402
+
+
+def _load(name, fn):
+    sp = _iu.spec_from_file_location(name, os.path.join(HERE, fn))
+    m = _iu.module_from_spec(sp)
+    sp.loader.exec_module(m)
+    return m
+
+
+TF = _load('towerfix_wz', 'towerfix.py')
+FX = _load('fixups_wz', 'fixups.py')
+EF = _load('edgefix_wz', 'edgefix.py')
 
 c = Canvas(4, 11)
 W, H = 64, 176
 GY = H - 1
-CX = 32.0
-R = 16.0
-SAG = 3
-TOP = 80
+TCX = 32.0
+R = 17.0
+SAG = 6
 
-# ---------------------------------------------------------------- 몸통(차가운 회색 마름돌)
-ash = pix.Ashlar([5, 5, 4, 5, 6, 5], seed=9, widths=[7, 9, 6, 10, 8, 6, 9, 7, 11, 6, 8, 10, 7], dark=1, warm=True)
-taper_wall(c, CX, lambda y: R, TOP, GY, ash, SAG)
-base = pix.Ashlar([4, 4], seed=4, widths=[12, 9, 14, 10, 11, 13], dark=2)
-taper_wall(c, CX, lambda y: R + 1.6, GY - 7, GY, base, 0)
-# 기초 윗면 턱(밝은 선)
-for x in range(int(CX - R) - 2, int(CX + R) + 3):
-    o = on_cyl(CX, R + 1.6, x)
-    if not o:
-        continue
-    dx, cosv, sh = o
-    y = GY - 8 + round(1 * cosv)
-    c.put(x, y, sclamp(10 + sh))
-
-# 돌림띠(내민 돌 고리) — 원통 둘레
-RINGS = [103, 127, 150]
-for ry in RINGS:
-    rr = R + 1.0
-    for x in range(int(CX - rr) - 1, int(CX + rr) + 2):
-        o = on_cyl(CX, rr, x)
-        if not o:
-            continue
-        dx, cosv, sh = o
-        y = ry + round(SAG * cosv)
-        k = int(math.asin(max(-1, min(1, dx / rr))) * rr + 100) % 6
-        c.put(x, y, sclamp(10 + sh if k else 9 + sh))
-        c.put(x, y + 1, sclamp(7 + sh))
-        c.put(x, y + 2, sclamp(4 + sh))
-        g = c.get(x, y + 3)
-        if g != '.' and abs(dx) <= R:
-            c.put(x, y + 3, darken(g, 2))
-
-# 처마 밑 그늘(원뿔 아래 4줄)
-for x in range(int(CX - R), int(CX + R) + 1):
-    yy = ring_y(CX, R, TOP, SAG, x)
-    if yy is None:
-        continue
-    for d in range(5):
-        g = c.get(x, yy - SAG + d)
-        if g != '.':
-            c.put(x, yy - SAG + d, darken(g, max(1, 4 - d)))
-
-# ---------------------------------------------------------------- 둥근 창(돌 테 + 납 유리, 하나는 불빛)
-def oculus(cx, cy, glow=False, rr=5.0):
-    """둥근 창: 돌 테(왼쪽 위 밝게, 오른쪽 아래 어둡게) + 쇠 십자 살 + 유리(하늘 반짝임 또는 불빛) + 밑 창턱."""
-    for y in range(int(cy - rr) - 1, int(cy + rr) + 2):
-        for x in range(int(cx - rr) - 1, int(cx + rr) + 2):
-            ddx, ddy = x + 0.5 - cx, y + 0.5 - cy
-            d = math.hypot(ddx, ddy)
-            if d > rr:
-                continue
-            lit = -(ddx + ddy) / max(d, 0.01)
-            if d > rr - 1.5:
-                ch = ('r' if lit > 0.7 else 'm') if lit > 0.2 else ('i' if lit > -0.5 else 'a')
-            elif abs(ddx) < 0.6 or abs(ddy) < 0.6:
-                ch = 'X' if not glow else 'τ'
-            elif glow:
-                ch = 'L' if (ddx < 0 and ddy < 0 and d < 2.4) else ('K' if lit > -0.6 else 'τ')
-            else:
-                ch = 'D' if ddy < -1 else ('A' if ddy < 1.5 else 'B')
-                if ddx < 0 and ddy < 0 and d < 2.8:
-                    ch = '^' if d < 1.9 else 'F'
+# ---------------------------------------------------------------- 네모 돌 단(윗면 포석이 위에서 보이고 앞면 마름돌 4줄)
+BOT = GY - 5                 # 탑 밑(단 윗면 위)
+PX0, PX1 = 1, 62
+PTOP, PFR = BOT - 13, GY - 4
+FLAG_W = [9, 7, 10, 8, 11, 7, 9, 10]
+WR = 'WYaeghijkmn'
+for y in range(PTOP, PFR + 1):
+    row = (y - PTOP) // 5
+    lv = (y - PTOP) % 5
+    off = [0, 4, 7, 2, 5][row % 5]
+    u = PX0 - off
+    k = row * 3
+    xs = []
+    while u < PX1 + 14:
+        xs.append(u)
+        u += FLAG_W[k % len(FLAG_W)]
+        k += 1
+    for x in range(PX0, PX1 + 1):
+        su = max(v for v in xs if v <= x)
+        lu = x - su
+        sid = xs.index(su) + row * 5
+        t = 8 if x < 18 else (7 if x < 44 else 6)
+        t += [0, 1, 0, -1, 0, 1, 0, 0, -1, 1, 0][sid % 11]
+        if lv == 4 or lu == 0:
+            t -= 3
+        elif lv == 0 or lu == 1:
+            t += 1
+        c.put(x, y, WR[max(0, min(len(WR) - 1, t))])
+for x in range(PX0, PX1 + 1):
+    c.put(x, PTOP, 'a' if x < 40 else 'Y')
+    c.put(x, PFR, 'r' if x % 9 else 'n')
+FW = [10, 8, 12, 9, 11, 7, 13]
+for y in range(PFR + 1, GY + 1):
+    j = y - PFR - 1
+    u = PX0 - (j * 5) % 7
+    k = j * 2
+    while u <= PX1:
+        w = FW[k % len(FW)]
+        for x in range(max(PX0, u), min(PX1 + 1, u + w)):
+            base = 'i' if x < 20 else ('g' if x < 44 else 'e')
+            ch = 'a' if (x == u + w - 1 or j == 3) else (('k' if x < 20 else 'i') if j == 0 else base)
             c.put(x, y, ch)
-    # 창 밑 그늘 + 돌 창턱
-    y = int(cy + rr) + 1
-    for x in range(int(cx - 3), int(cx + 4)):
-        c.put(x, y, 'k' if x < cx else 'i')
-        c.put(x, y + 1, 'Y')
+        u += w
+        k += 1
+# 단 양끝 세로 모서리(왼쪽 밝게 · 오른쪽 그늘)
+for y in range(PTOP, GY + 1):
+    c.put(PX0, y, 'e' if y < PFR else 'Y')
+    c.put(PX1, y, 'Y' if y < PFR else 'W')
+
+# ---------------------------------------------------------------- 몸통
+SHAFT_TOP = 70
+TF.shaft(c, TCX, R, SHAFT_TOP, BOT, SAG, start=3)
+TF.plinth(c, TCX, R, BOT, SAG, rows=4, out=1.5, start=1)
+# 탑이 단 윗면에 지는 그림자(빛 왼쪽 위 → 오른쪽 뒤로)
+for y in range(PTOP + 1, PFR):
+    for x in range(int(TCX), PX1):
+        e = ((x - (TCX + 12)) / (R + 8)) ** 2 + ((y - (BOT - 4)) / 6.0) ** 2
+        g = c.get(x, y)
+        if e < 1 and g in WR and abs(x + 0.5 - TCX) > R + 1.6:
+            c.put(x, y, WR[max(0, WR.index(g) - (3 if e < 0.6 else 2))])
+# 돌림띠 둘(같은 곡선, 윗턱 밝게 · 밑 그늘)
+for ry in (104, 136):
+    TF.ring_band(c, TCX, R, ry, SAG, rows=3, out=0.8)
+
+# ---------------------------------------------------------------- 아치 창(나무 테 + 청록 유리 + 흰 창턱) — 층마다 다르게
+ARCH = {
+    'a': ['..ηηη..', '.ηDEDη.', 'ηDE^ADη', 'ηA^AABη', 'ηAADABη', 'ηζζζζζη', 'ηAABABη', 'ηABAABη', 'ηAABBBη', 'ηζζζζζη',
+          'rmmmkki', '.YYaaY.'],
+    'b': ['..ηηη..', '.ηLKKη.', 'ηLKLKτη', 'ηKLKKτη', 'ηKKτKτη', 'ηζζζζζη', 'ηKKτKτη', 'ηKτKττη', 'ητKτττη', 'ηζζζζζη',
+          'rmmkkji', '.YaaYW.'],
+    'c': ['..ηηη..', '.ηDDDη.', 'ηD^EADη', 'ηAAA^Bη', 'ηAADABη', 'ηAAABBη', 'ηζζζζζη', 'ηAABABη', 'ηABBBBη',
+          'rmmkkii', '.YYaaY.'],
+}
+SIDE = ['.ηη.', 'ηD^η', 'ηADη', 'ηAAη', 'ηζζη', 'ηABη', 'ηBBη', 'mkki', '.YY.']
+SIDE_R = ['.ηζ', 'ηDζ', 'ηBζ', 'ηAζ', 'ηζζ', 'ηBζ', 'ηBζ', 'kie', '.aW']
 
 
-for (wx, wy, glow) in [(31, 91, False), (31, 115, True), (31, 138, False)]:
-    oc = on_cyl(CX, R, wx)
-    sag = round(SAG * oc[1]) if oc else 0
-    oculus(wx + 0.5, wy + sag, glow)
-# 옆 좁은 창(원통이 돌아 나가 좁게 보인다) — 층마다 양옆
-SL_L = ['.rk.', 'rDTe', 'r^Ta', 'mDTa', 'mTUa', 'kjea']
-SL_R = ['.kY', 'kTa', 'iTY', 'iTY', 'iUY', 'eaW']
-SL_LG = ['.rk.', 'rLτe', 'rKτa', 'mKτa', 'mτ7a', 'kjea']
-for k, fy in enumerate((88, 112, 135)):
-    oc = on_cyl(CX, R, 20)
-    c.rows(19, fy + round(SAG * oc[1]), SL_LG if k == 2 else SL_L)
-    oc = on_cyl(CX, R, 43)
-    c.rows(42, fy + round(SAG * oc[1]), SL_R)
+def put_rows(x, y, rows):
+    for j, row in enumerate(rows):
+        for i, ch in enumerate(row):
+            if ch != '.':
+                c.put(x + i, y + j, ch)
 
-# ---------------------------------------------------------------- 아치 문
-DX0, DW, DY0 = 21, 11, GY - 25
+
+def sag_at(x):
+    dx = x + 0.5 - TCX
+    return round(SAG * math.sqrt(max(0.0, 1 - (dx / R) ** 2)))
+
+
+for (wy, key) in ((80, 'a'), (112, 'b')):
+    put_rows(int(TCX) - 4, wy + sag_at(int(TCX)) - SAG, ARCH[key])
+for (wy, side) in ((84, 'L'), (116, 'R'), (118, 'L'), (86, 'R')):
+    if side == 'L':
+        x = int(TCX) - 13
+        put_rows(x, wy + sag_at(x + 2) - SAG, SIDE)
+    else:
+        x = int(TCX) + 10
+        put_rows(x, wy + sag_at(x + 1) - SAG, SIDE_R)
+
+# ---------------------------------------------------------------- 아치 문(돌 테) + 작은 등
+DX0, DW = 21, 10
+DY0 = BOT - 26
 for (dx, dy) in [(-2, 6), (-2, 4), (-2, 2), (-1, 0), (1, -2), (3, -3), (5, -3), (7, -2), (9, 0), (10, 2), (11, 4), (11, 6)]:
     for j in range(2):
         for k in range(2):
-            c.put(DX0 + dx + k, DY0 + dy + j, 'n' if (j == 0 and k == 0) else ('k' if j == 0 else 'i'))
-for y in range(DY0 + 8, GY):
-    c.put(DX0 - 2, y, 'k' if y % 4 else 'j')
-    c.put(DX0 - 1, y, 'e')
-    c.put(DX0 + DW, y, 'a')
-    c.put(DX0 + DW + 1, y, 'i' if y % 4 else 'e')
-door(c, DX0, DY0, DW, GY - DY0)
-for x in range(DX0 - 2, DX0 + DW + 2):
-    c.put(x, GY, 'Y' if x % 3 else 'W')
-# 문 위 작은 등(금빛)
-c.rows(DX0 + DW + 3, DY0 + 4, ['.Y.', 'XKX', 'XLX', '.τ.'])
+            c.put(DX0 + dx + k, DY0 + dy + j, 'q' if (j == 0 and k == 0) else ('o' if j == 0 else 'l'))
+for y in range(DY0 + 8, BOT - 3):
+    c.put(DX0 - 2, y, 'o' if y % 4 else 'l')
+    c.put(DX0 - 1, y, 'f')
+    c.put(DX0 + DW, y, 'c')
+    c.put(DX0 + DW + 1, y, 'l' if y % 4 else 'f')
+door(c, DX0, DY0, DW, BOT - 3 - DY0)
+for x in range(DX0 - 2, DX0 + DW + 2):          # 문턱 돌(받침과 이어진다)
+    c.put(x, BOT - 3, 'k' if x % 4 else 'i')
+# 문 앞 디딤돌 둘(단 윗면 → 앞면을 파고 땅으로)
+for k in range(2):
+    y = PFR - 3 + k * 4
+    for x in range(DX0 - 1, DX0 + DW + 1):
+        c.put(x, y, 'r' if x % 6 else 'n')
+        c.put(x, y + 1, 'm' if x % 6 else 'k')
+        c.put(x, y + 2, 'a' if x % 5 else 'Y')
+        c.put(x, y + 3, 'W' if k == 0 else 'Y')
+for y in range(PFR - 3, GY + 1):
+    c.put(DX0 - 2, y, 'a')
+    c.put(DX0 + DW + 1, y, 'W')
+put_rows(DX0 + DW + 3, DY0 + 5, ['.Y.', 'XKX', 'XLX', '.τ.'])
 
-# ---------------------------------------------------------------- 아주 높은 청석 원뿔 + 처마
-CONE_BASE = 74
-HW = R + 7.5
-pix.cone(c, CX, 13, CONE_BASE, HW, 6, seed=3)
-# 처마 앞 끝 두께(밑 타원 앞 반쪽)
-for x in range(int(CX - HW), int(CX + HW) + 1):
-    dx = x + 0.5 - CX
-    if abs(dx) > HW:
+# ---------------------------------------------------------------- 큰 테라코타 원뿔(밑 타원 깊게 — 윗면이 크게 보인다)
+CONE_BASE = 62
+HW = R + 6
+ELL = 9
+# 원뿔이 몸통 윗단에 지는 그늘
+for x in range(int(TCX - R), int(TCX + R) + 1):
+    dx = x + 0.5 - TCX
+    if abs(dx) > R:
         continue
-    ye = CONE_BASE + 6 * math.sqrt(max(0, 1 - (dx / HW) ** 2))
-    y = int(round(ye))
-    f = dx / HW
-    c.put(x, y, 'B' if f > 0.35 else ('C' if f > -0.2 else 'E'))
-    c.put(x, y - 1, 'E' if f > 0.35 else ('F' if f > -0.3 else 'G'))
-# 원뿔 모서리 밝은 선(왼쪽 사면 빛) — 꼭짓점→왼쪽 처마
-for y in range(14, CONE_BASE + 1):
-    t = (y - 13) / (CONE_BASE - 13)
-    x = int(round(CX - HW * t * 0.97))
-    if c.get(x + 1, y) != '.':
-        c.put(x + 1, y, 'H' if y % 4 else 'I')
-# 원뿔 위 작은 지붕창(둥근 머리 들창) 하나 — 창 앞면만, 위 작은 청석 모자
-DM = [
-    '.....IC.....',
-    '....IGFC....',
-    '...IHGFEC...',
-    '..IHGGFEEC..',
-    '.IHGGGFFEEC.',
-    'IHHGGGFFEEEC',
-    'BCCCCCCCCCCB',
-    '.nrkkkkjjia.',
-    '.nkLLKKτXia.',
-    '.nkLKKττXia.',
-    '.nkXXXXXX7a.',
-    '.nkKKτττXia.',
-    '.nkKτττ7Xia.',
-    '.mjiiieeeaY.',
-    '..CCEEEECC..',
-]
-c.rows(int(CX) - 6, 37, DM)
-# 꼭대기: 금 깃대 + 별(글자 없음)
-c.rows(int(CX) - 3, 0, [
-    '...L...',
-    '..LKL..',
-    'LLKKKLτ',
-    '.LKKKτ.',
-    '..KτK..',
-    '.Kτ.τK.',
-    '...τ...',
-    '...K...',
-    '...τ...',
-    '...K...',
-    '..ΚLτ..'.replace('Κ', 'K'),
-    '..ijY..',
-    '..eaW..',
-    '..YWU..',
-])
+    ye = int(round(CONE_BASE + ELL * math.sqrt(max(0, 1 - (dx / HW) ** 2)))) + 2
+    for d in range(4):
+        g = c.get(x, ye + d)
+        if g in TF.WARM and g not in ('J', 'C'):
+            c.put(x, ye + d, TF.WARM[min(9, TF.WARM.index(g) + (4 - d))])
+TF.cone(c, TCX, 9, CONE_BASE, HW, ELL, th=3, sw=3.6, start=2)
+TF.cone_eave(c, TCX, CONE_BASE, HW, ELL)
+# 꼭대기 쇠 장식(공 + 짧은 침)
+put_rows(int(TCX) - 2, 0, ['..Y..', '..a..', '.kiY.', '.iYW.', '..W..', '..Y..', '.aYW.', '.YWU.', '..U..', '..W..', '..W..'])   # 막대가 원뿔 꼭대기 화소까지 내려와 붙는다
 
-moss(c, [(17, 168, 2), (44, 165, 2), (20, 106, 2)])
-
-# 바깥 윤곽(재질 어두운 단): 돌만
-outline(c, {ch: 'a' for ch in ST}, x1=int(CX) - 1, y0=TOP - 2)
-outline(c, {ch: 'Y' for ch in ST}, x0=int(CX), y0=TOP - 2)
-outline(c, {'H': 'F', 'I': 'F', 'G': 'E', 'F': 'E'}, x1=int(CX) - 1, y0=14, y1=TOP + 3)
-outline(c, {'H': 'C', 'G': 'C', 'F': 'C', 'E': 'C'}, x0=int(CX), y0=14, y1=TOP + 3)
+FX.finalize(c)
+print('  먹 윤곽 → 재질 어두운 단', EF.material_edges(c))
+TN = _load('tint_wz', 'tint.py')
+print('  윤곽 색조', TN.tint_edges(c, TCX), '· 무채 가장자리', TN.neutral_share(c))
 
 walk = ['****', '****', '****', '****', '****', '****', '****', '****', '****', 'XDXX', 'XDXX']
 meta = {'name': '마법사 탑', 'massing': 'C15', 'material': 'stone',

@@ -13,6 +13,7 @@
   boards [id…]       검수판(1배·4배, 버들항 기준 옆) — 검수자에게 준다.
   publish            check 통과 건물을 beodeul-building-review 프로필 `building-kit-massing` 의 seed 후보·sources PNG 로 낸다.
   decide             증거(object-gate 영수증 + 검수자 둘의 원문 PASS)가 지금 그림 해시와 맞는 건물만 위임 허용을 decisions.json 에 적는다.
+  withdraw id… --reason  허용을 거둔다(두 판 안에 못 고친 건물을 번들에서 뺀다) — 결정 로그에 withdrawn 을 덧붙인다. 새 그림이 허용되면 decide 가 예전 해시에 replaced 를 남긴다.
   status             건물마다 해시·검사·관문·검수·허용 상태.
 """
 import argparse
@@ -550,10 +551,38 @@ def decide():
                            'note': 'object-gate pass/허용 + 독립 검수 둘 PASS(원문 파일)', 'at': datetime.datetime.now(datetime.timezone.utc).isoformat(timespec='seconds')})
         added += 1
         print(f'  허용 {bid}')
+        # 같은 건물의 예전 그림 허용은 새 그림으로 바뀐다 — 설치는 (건물, 해시)마다 마지막 결정만 보므로 예전 해시에 replaced 를 남긴다
+        for (item, osha), r in list(last.items()):
+            if item == bid and osha != fsha and r['decision'] == 'allow':
+                seq += 1
+                rec = {'seq': seq, 'item': bid, 'sha': osha, 'decision': 'replaced', 'by': 'delegated', 'replacedBy': fsha,
+                       'note': '같은 건물의 새 그림이 관문·독립 검수 둘을 통과해 바뀌었다', 'at': datetime.datetime.now(datetime.timezone.utc).isoformat(timespec='seconds')}
+                log['log'].append(rec); last[(item, osha)] = rec
     log['exportedAt'] = datetime.datetime.now(datetime.timezone.utc).isoformat(timespec='seconds')
     log['counts'] = {'allow': sum(1 for r in log['log'] if r['decision'] == 'allow')}
     json.dump(log, open(path, 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
     print(f'위임 허용 {added}채 덧붙임 → {os.path.relpath(path, REPO)}')
+    return 0
+
+
+def withdraw(bids, reason):
+    """허용을 거둔다(검수에서 두 판 안에 못 고친 건물을 번들에서 뺀다). 결정 로그에 withdrawn 을 덧붙인다 — 지우지 않는다."""
+    path = os.path.join(DATA, 'decisions.json')
+    log = json.load(open(path, encoding='utf-8'))
+    last = {}
+    for r in log['log']:
+        last[(r['item'], r['sha'])] = r
+    seq = max([r['seq'] for r in log['log']], default=0)
+    n = 0
+    for (item, sha), r in list(last.items()):
+        if item in bids and r['decision'] == 'allow':
+            seq += 1; n += 1
+            log['log'].append({'seq': seq, 'item': item, 'sha': sha, 'decision': 'withdrawn', 'by': 'delegated', 'delegatedBy': DELEGATED_BY,
+                               'note': reason, 'at': datetime.datetime.now(datetime.timezone.utc).isoformat(timespec='seconds')})
+            print(f'  거둠 {item} {sha[:12]}')
+    log['counts'] = {'allow': sum(1 for r in log['log'] if r['decision'] == 'allow')}
+    json.dump(log, open(path, 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
+    print(f'허용 거둠 {n}건')
     return 0
 
 
@@ -701,6 +730,9 @@ def main(argv=None):
     gb.add_argument('ids', nargs='*')
     sub.add_parser('publish')
     sub.add_parser('decide')
+    wd = sub.add_parser('withdraw')
+    wd.add_argument('ids', nargs='+')
+    wd.add_argument('--reason', required=True)
     sub.add_parser('evidence')
     rp = sub.add_parser('review-pack')
     rp.add_argument('batch')
@@ -723,6 +755,8 @@ def main(argv=None):
         return gate_batch(a.out, a.ids)
     if a.cmd == 'publish':
         return publish()
+    if a.cmd == 'withdraw':
+        return withdraw(set(a.ids), a.reason)
     if a.cmd == 'decide':
         return decide()
     if a.cmd == 'evidence':

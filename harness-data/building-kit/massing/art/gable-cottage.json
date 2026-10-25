@@ -3,15 +3,15 @@
  "massing": "2",
  "material": "plaster",
  "refs": [
-  "bd-house-h101_2",
-  "bd-house-lodge"
+  "bd-house-h124_0",
+  "bd-house-h101_2"
  ],
  "walk": [
-  "***.",
+  ".**.",
   "****",
   "****",
   "****",
-  "XXXX",
+  "XDXX",
   "XDXX"
  ],
  "id": "gable-cottage"
