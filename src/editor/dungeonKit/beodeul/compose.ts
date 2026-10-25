@@ -392,7 +392,11 @@ export function composeDungeon(ts: TilesetDef, spec: DungeonSpec): DungeonCompos
     liquidCells += 1;
     if (voidLiquid) continue;   // 허공은 천장 오토타일이 이미 칠했다
     if (profile.bank && (profile.liquid !== "lava" || !gapLava)) bankCells.push(idx(x, y));   // 용암은 gap 용암 오토타일이 식은 껍질 테두리를 그리면 둑을 얹지 않는다
-    if (profile.bank && profile.liquid !== "lava" && canal) { lower[idx(x, y)] = canal.variantMap["255"] ?? voidTile; continue; }   // 자연 물가: 가득 찬 물 칸 + 2층 둑 덧그림
+    if (profile.bank && profile.liquid !== "lava" && canal) {
+      // 몸통은 gap 물 속 변형 6종(늪 = 초록 B, 그 밖 = A)을 칸 해시로 — 운하 몸통 한 칸은 흰 점이 같은 자리라 연못에 16px 점 격자가 섰다(2026-10-25 floor VQA r5 swamp).
+      const body = autos.get(profile.id === "swamp" ? "beodeul_dungeon_water_B" : "beodeul_dungeon_water_A")?.interiorVariants?.[0];
+      lower[idx(x, y)] = body?.length ? body[cellHash(x, y) % body.length]! : canal.variantMap["255"] ?? voidTile; continue;
+    }   // 자연 물가: 가득 찬 물 칸 + 2층 둑 덧그림
     if (profile.liquidKit && hasKit(pick(profile.liquidKit))) { const rows = kit(pick(profile.liquidKit)).rows; lower[idx(x, y)] = rows[Math.floor(hash01(x, y, seed * 3 + 5) * rows.length)]!.tiles[Math.floor(hash01(y, x, seed * 9 + 2) * rows[0]!.tiles.length)]!; continue; }
     let m = 0;
     const bits: [number, number, number][] = [[0, -1, 1], [1, 0, 2], [0, 1, 4], [-1, 0, 8], [1, -1, 16], [1, 1, 32], [-1, 1, 64], [-1, -1, 128]];
