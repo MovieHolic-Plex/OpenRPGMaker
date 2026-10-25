@@ -2277,6 +2277,92 @@
      "level": 6
     }
    ]
+  },
+  {
+   "id": "save-crystal",
+   "label": "숲 사당 기록 결정 — 다가가면 반짝, 조사하면 「기록하시겠습니까?」",
+   "note": "place_savepoint objectId·sparkleRadius·prompt · page.nearSparkle",
+   "mapId": "fs_forest_shrine",
+   "x": 24,
+   "y": 15,
+   "facing": "up",
+   "party": [
+    {
+     "actorId": "actor_hero",
+     "level": 6
+    },
+    {
+     "actorId": "actor_fs_elena",
+     "level": 6
+    }
+   ],
+   "switches": {
+    "sw_fs_main_started": true,
+    "sw_fs_valen_marched": true
+   },
+   "beats": [
+    {
+     "id": "approach",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1500
+      },
+      {
+       "kind": "hold",
+       "dir": "up",
+       "ms": 2600
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 700
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "prompt",
+     "ops": [
+      {
+       "kind": "face",
+       "dir": "up"
+      },
+      {
+       "kind": "action"
+      },
+      {
+       "kind": "pressUntilJs",
+       "key": "Enter",
+       "fn": "(()=>!!document.querySelector(\"[data-testid='runtime-choices']\"))",
+       "maxPresses": 6,
+       "settleMs": 900
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1200
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "slots",
+     "ops": [
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1500
+      }
+     ],
+     "shot": true
+    }
+   ]
   }
  ]
 }

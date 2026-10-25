@@ -334,6 +334,12 @@ function validateCharacterScale(label: string, value: unknown): void {
  */
 function validateCharacterFootprintFields(label: string, page: Record<string, unknown>): void {
   validateFootprintPair(`${label}.footprint`, page.footprint, `${label}.passRows`, page.passRows);
+  if (page.nearSparkle !== undefined) {
+    const near = requireRecord(`${label}.nearSparkle`, page.nearSparkle);
+    const radius = requireNumber(`${label}.nearSparkle.radius`, near.radius);
+    assert(Number.isInteger(radius) && radius >= 1 && radius <= 6, `${label}.nearSparkle.radius 는 1~6 정수여야 합니다.`);
+    assert(near.preset === undefined || near.preset === "sparkle" || near.preset === "magic", `${label}.nearSparkle.preset 은 sparkle 또는 magic 입니다.`);
+  }
 }
 
 /**

@@ -8620,13 +8620,15 @@
     }
    ],
    "id": "fs-save-points",
-   "prompt": "메뉴에서는 저장을 못 하게 하고, 마을 광장에 세이브 포인트 하나만 둬서 거기서만 저장하게 해 줘. 세이브 포인트는 눈에 띄게.",
+   "prompt": "메뉴에서는 저장을 못 하게 하고, 마을 광장에 세이브 포인트 하나만 둬서 거기서만 저장하게 해 줘. 세이브 포인트는 빛나는 결정으로 눈에 띄게, 가까이 가면 반짝이고 조사하면 「기록하시겠습니까?」라고 묻게.",
    "requires": [
     "saveAccess savePoints",
-    "place_savepoint",
+    "place_savepoint objectId",
+    "nearSparkle",
+    "prompt 기록하시겠습니까?",
     "메뉴 저장 없음"
    ],
-   "verify": "saveAccess savePoints / place_savepoint / 메뉴 저장 없음",
+   "verify": "saveAccess savePoints / place_savepoint objectId·sparkleRadius·prompt / 메뉴 저장 없음",
    "suiteCategory": "fs-save"
   },
   {
