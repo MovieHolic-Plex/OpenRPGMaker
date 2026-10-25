@@ -486,6 +486,15 @@ function validateCommandShape(label: string, value: unknown): void {
       requireString(`${label}.difficultyId`, command.difficultyId);
       return;
     case "storeParty":
+      requireString(`${label}.partySetId`, command.partySetId);
+      if (command.actorIds !== undefined) {
+        requireArray(`${label}.actorIds`, command.actorIds);
+        (command.actorIds as unknown[]).forEach((actorId, index) => requireString(`${label}.actorIds[${index}]`, actorId));
+      }
+      if (command.mapId !== undefined) requireString(`${label}.mapId`, command.mapId);
+      if (command.x !== undefined) requireNumber(`${label}.x`, command.x);
+      if (command.y !== undefined) requireNumber(`${label}.y`, command.y);
+      return;
     case "recallParty":
       requireString(`${label}.partySetId`, command.partySetId);
       return;

@@ -9399,6 +9399,77 @@
      }
     }
    ],
+   "id": "fs2-party-split",
+   "prompt": "광장에서 파티를 둘로 나눠 줘. 주인공·수호자는 서쪽 길로, 마법사는 동쪽 길로 갈라지게 하고, 서로 상대 쪽 문을 열어 주는 레버를 하나씩 둬. 북쪽 끝 칸에서 다시 만나면 하나로 합쳐지게.",
+   "requires": [
+    "author_party_split",
+    "groups 2묶음(배우 겹침 없음)",
+    "레버→문 짝 2(한쪽 레버가 다른 쪽 문)",
+    "합류 칸에서 합침",
+    "풀이 검사 통과(data.solve)"
+   ],
+   "verify": "author_party_split(groups 2, levers 2, rejoin) / data.solve.leverOrder 에 a·b 가 하나씩(서로 열어 줌) / 경고에 「스스로 당깁니다」 없음 / 이벤트로 storeParty(actorIds)·recallParty 를 손으로 흉내내지 않음",
+   "suiteCategory": "fs2-split"
+  },
+  {
+   "category": "game",
+   "kind": "logic",
+   "mode": "balanced",
+   "startTileset": "beodeul_city",
+   "startBuild": [
+    {
+     "tool": "author_beodeul_town",
+     "args": {
+      "mapId": "map_blank_start",
+      "name": "버들 마을",
+      "houseCount": 4,
+      "theme": "river",
+      "seed": 11
+     }
+    },
+    {
+     "tool": "place_npc",
+     "args": {
+      "mapId": "map_blank_start",
+      "id": "npc_chief",
+      "name": "촌장",
+      "x": 20,
+      "y": 16,
+      "movement": "fixed",
+      "graphic": {
+       "query": "노인 남성"
+      },
+      "pages": [
+       {
+        "lines": [
+         "어서 오게, 버들 마을일세."
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "tool": "place_npc",
+     "args": {
+      "mapId": "map_blank_start",
+      "id": "npc_smith",
+      "name": "대장장이",
+      "x": 14,
+      "y": 20,
+      "movement": "fixed",
+      "graphic": {
+       "query": "아저씨"
+      },
+      "pages": [
+       {
+        "lines": [
+         "망치 소리 좋지?"
+        ]
+       }
+      ]
+     }
+    }
+   ],
    "id": "fs-combo-all-act",
    "prompt": "주인공과 마법사가 함께 쓰는 연계기 「불꽃 십자참」을 만들어 줘. 쓰면 두 사람 모두 움직여야 해 — 마법사가 반 걸음 나와 불을 걸고 주인공이 달려가 베고, 마지막엔 둘이 같이 마무리 자세. 크로노 트리거 더블 테크처럼.",
    "requires": [
