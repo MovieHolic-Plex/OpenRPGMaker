@@ -5,6 +5,33 @@
 
 <!-- releases -->
 
+## 0.343.0 — 2026-10-25
+
+### 기능
+
+- **shitamachi** — story-authored opening/title/ending, confession CGs, lantern HUD, sidewalk NPCs, room preset fixes (#3512) (`4c0e034`)
+- **astra** — generated day key art for the title screen (supervisor pick of 4, downscaled to 480x320 / 64 colours); runners move to the bottom grass (#3517) (`cea62ac`)
+- **building-kit** — VQA redraw of the medieval bundle (24 buildings) + town layout fixes (#3514) (`641a162`)
+- **runtime** — breadcrumb follow, lift ride, all-member combos, field approach styles, save glow (Fallen Star 1.22) (#3509) (`b5eb7fd`)
+
+### 수정
+
+- **ai** — ship check flags placeholder credit names like 「기획 · 제작 / 당신」 (#3518) (`88abe7c`)
+- **ai** — a run that ends without any answer says so; empty-reply guard skips the local CLI loop (#3516) (`f7fbc89`)
+- **runtime** — tap/QA walks stop when an event starts, so text never shows while the hero keeps walking (J62) (#3504) (`0c1ba78`)
+- **first-love** — opening and cold-open VQA fixes (op3/op4) (#3513) (`7f17f78`)
+- **ai** — ship check flags an opening with no shot of the place and title/ending art off the premise (J24, J65, J10, J17) (#3510) (`51b9675`)
+- **export** — ship bundled tilesets as references; qp boots the export projection (S4) (#3508) (`ea8c1cb`)
+
+### 성능
+
+- **boot** — reveal the editor shell before the map canvas boots (#3520) (`ff4ca86`)
+- **boot** — first-launch boot normalisation runs after the editor shell; saves wait for it (#3511) (`aa10acc`)
+
+### 테스트
+
+- fix 16 stale vitest files after EasyRPG art purge (#3515) (`66b1716`)
+
 ## 0.342.0 — 2026-10-25
 
 ### 기능
