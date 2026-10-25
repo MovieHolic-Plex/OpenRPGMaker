@@ -1,0 +1,380 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "176b67389a769ea769add2cfe39276e4f9ef98bfe979a98a76f90208f2262630",
+ "width": 64,
+ "height": 16,
+ "kind": "terrain",
+ "name": "other.ground r4 A1",
+ "label": "dungeon/other.ground.r4.A1",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 평면 채움 (4/4)",
+  "화풍: 칸 정보량이 기준보다 훨씬 낮음 (3/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "평면 채움 (4/4)",
+   "칸 정보량이 기준보다 훨씬 낮음 (3/4)"
+  ],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 4,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "dungeon",
+   "fallback": true,
+   "reason": "칩셋 dungeon 의 화풍 기준 묶음이 없다",
+   "hash": "8cecb3a70460aa86"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 7,
+  "tileColorsP90": 7,
+  "darkV5": 42,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 4
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "upper stone brick course",
+      "rows": "0-2",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "recessed dark-green panels with purple bevel",
+      "rows": "4-10",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower stone brick course with 1-row light highlight",
+      "rows": "12-15",
+      "evidence": "none",
+      "front_edge_line_row": 12,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 16,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "other",
+    "evidence": "This is a full-width 64x16 seamless terrain tile, drawn as a wall face with alternating stone bricks and inset panels. Every column has the same sequence: rows 0-2 stone, row 3 dark mortar line, rows 4-10 dark-green panel with purple bevel, row 11 dark line, row 12 light line, rows 13-15 stone. It is a flat frontal wall pattern with no ellipse, roof or open-container contents. The purple band at rows 4-5 and the light line at row 12 are bevel highlights, not receding horizontal surfaces. There is no standing-object volume to measure, so I report no main top surface and treat the whole 16 rows as vertical face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate should be a 4x3-tile ground patch, but it shows only a thin horizontal strip of bricks or blocks with purple-tinted dark outlines. The strip is under one tile tall and sits on a large flat dark slate field. The measured 9% near-flat coverage and 6 tones per tile are probably computed over the strip alone. By eye, most of the candidate area is one flat colour, which the grass and paving references never show (0% flat). Inside the strip there is some shading: stones with a lighter top edge and a few dots, roughly 4 steps against 5-6 in the paving reference. The outline is tinted (0% neutral dark edges), which is a point in its favour. However, the piece does not read as a continuous ground surface that could tile. It looks like a sticker or border strip, much thinner and flatter than the reference paving, which fills every tile with stones shaded one by one.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 21598
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "upper stone brick course",
+      "rows": "0-2",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "recessed dark panel course with purple top and left edge",
+      "rows": "4-10",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower stone brick course with 1-row light top highlight",
+      "rows": "12-15",
+      "evidence": "none",
+      "front_edge_line_row": 12,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 1,
+    "front_face_rows": 16,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The image is a 64x16 strip of repeating wall-face tiles seen head-on. Every column scan shows the same sequence: stone rows 0-2, a dark line at row 3, a purple/dark-green panel at rows 4-10, a dark line at row 11, a light highlight at row 12, and stone rows 13-15. The light row 12 and the purple edges are 1-row bevel or outline highlights, not a horizontal surface. There is no ellipse, no sloped roof or awning, and no visible contents. The tile reads as a flat vertical wall elevation with at most a 1-row rim."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a thin horizontal band of blue-purple bricks on a plain slate field, not a 4x3 ground patch with surface texture. The measured facts are close to the paving reference: 6 visible tones per tile against 7, 9% near-flat coverage, and 0% neutral dark edges, so the outlines are tinted dark blue/purple rather than black. By eye, the bricks have only a dark edge, a mid fill and a small highlight, with about 4 steps against the reference's 6. The brick interiors are mostly flat, with none of the per-stone cobble grain and speckle that the paving reference has on every stone. The surrounding area is one flat colour and the band is narrow, so the piece looks flatter and more sticker-like than either reference. Both references fill the whole tile area with varied texture. The candidate has 7 raw colours in total and only a small strip of detail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 20710
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "upper row of stone blocks",
+      "rows": "0-2",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "recessed dark panel band with purple bevel",
+      "rows": "4-10",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower row of stone blocks",
+      "rows": "12-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 16,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "other",
+    "evidence": "This is a 64x16 seamless terrain tile, a wall or floor texture, not a standing object. It is fully opaque at width 64 on every row 0-15. The column scan is identical at x=16, 32 and 47. Rows 0-2 are a light slate band, row 3 is a dark joint, rows 4-10 are a dark panel with a purple bevel line on its top row and left edge, row 11 is a dark joint, row 12 is a light highlight line, and rows 13-15 are slate again. The pattern is a repeating brick or panel face with no silhouette, no ellipse and no roof plane. It has no standing volume to measure, so main_top_rows is 0 and the whole tile is treated as one flat face. The terrain tile kind matches."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate should be a 4x3-tile ground patch, but it reads as one thin strip of bricks, about one tile tall, on a flat dark slate field. The strip itself has some structure, with tinted blue/purple dark outlines (0% neutral edge pixels) and a few stone highlights, and about 4 value steps. The paving reference is a full, densely shaded cobble surface with about 6 steps and per-stone shading. The 6 visible tones per tile and 9% near-flat coverage come from the strip, but most of the patch area is one flat colour with no grain or variation, so those figures overstate the patch. Next to the paving and grass references it looks sparse, thinner and flatter, and it does not cover a 4x3 ground surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 19519
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "upper stone brick course",
+      "rows": "0-2",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dark mortar band",
+      "rows": "3-3",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "recessed dark brick course with purple bevel",
+      "rows": "4-10",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "mortar line and lower brick course",
+      "rows": "11-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 16,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "This is a seamless 64x16 wall-face tile with no standing volume. The column scan shows the same stack at x=16, 32 and 47: rows 0-2 stone, row 3 dark mortar, rows 4-10 dark recessed brick, row 11 dark mortar, row 12 a light line, rows 13-15 stone. The light line at row 12 and the purple row at row 4 are bevel highlights on flat brick courses, not top surfaces with eave shadow. The whole tile is a vertical wall face with no ellipse, roof or visible contents. As terrain it is a flat face, so no top surface is expected."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is not a 4x3 ground patch. It is a thin horizontal strip of dark bricks with purple-blue edges, set on a large empty, flat slate field, so it does not read as the same kind as the grass and paving references. The strip has about 4 lightness steps, with small highlight dots on each brick but no per-stone shading like the paving reference. The outline pixels are tinted (0% near-neutral), which is acceptable. The measured 6 visible tones per tile and 9% near-flat coverage only describe the strip; by eye, most of the candidate area is one flat colour. The paving reference fills the whole tile with grain, cracks and highlights, so the candidate is much sparser and flatter overall. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 22584
+  }
+ ],
+ "decidedAt": "2026-10-25T11:54:46.104Z",
+ "cells": {
+  "16": [
+   "11357b92b9dc6ba6",
+   "42846f68d12f4ca9",
+   "b1976541f819082f"
+  ],
+  "24": [
+   "0318315171ee1369",
+   "19cfc2a2461d4d1b",
+   "1feb52272cce156e",
+   "2215bc110b6de8ce",
+   "28a756dc7d34a94b",
+   "316debb00b007a39",
+   "3d48357061f0abd3",
+   "4ea1e1c387d44e75",
+   "4f678d3a74f5fd08",
+   "803ae856e5ff1098",
+   "885b706e945dfdc8",
+   "a91daeeb233f124e",
+   "b37cdb98a9686547",
+   "d61da9a6b52e4e6f",
+   "df3b7932208f346c",
+   "eeb1dddc5366146f",
+   "f51869b5322d31c0",
+   "fbef1e0160701ec9"
+  ],
+  "32": [
+   "1f5b93ae4bbf779f",
+   "4cff055f9344657e",
+   "755ad074c59bcd84",
+   "824f7583c496916b"
+  ],
+  "48": [
+   "02a98e7aa5d826b0",
+   "0a26f4ba89cbbdff",
+   "29ef12ef50ba6c59",
+   "50071a7cccc422e0",
+   "5528e4a98ed8f3fd",
+   "8ee7f5688a09df98",
+   "a1f03dea06efe606",
+   "d06201ab90e45a59",
+   "d6f356ac76d664d3",
+   "e582e3199fda2e1c",
+   "fabdb9b4b52cbeb4",
+   "fac219a970082ede"
+  ]
+ }
+}

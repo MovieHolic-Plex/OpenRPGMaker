@@ -4349,6 +4349,33 @@
     "other.ground"
    ],
    "lead": "floor VQA r1~r4(Argon·Sonnet): 마계 바닥 A2 의 분홍·붉은 점(소금·후추)과 붉은 사선 금 → 잔잔한 보라 검은 판, 점 없음, 금 드물게, 빛 핏줄은 아주 드물게."
+  },
+  "theme-floors-r2": {
+   "module": "src/harnesses/dungeon-chipset/rounds/theme_floors_r2.py",
+   "wave": "theme_arcane",
+   "title": "던전 테마 바닥 다시 그림 theme-floors-r2",
+   "items": [
+    "other.ground"
+   ],
+   "lead": "r1 A2 Sonnet 블라인드 반려: 16px 세로 줄 반복·1화소 디더 잡음·돌/틈 대비 같음·벽 회녹과 색 끊김 → 엇갈린 돌, 결 절반·줄눈 곁, 틈 진하게, brick3 섞음."
+  },
+  "theme-floors-r3": {
+   "module": "src/harnesses/dungeon-chipset/rounds/theme_floors_r3.py",
+   "wave": "theme_arcane",
+   "title": "던전 테마 바닥 다시 그림 theme-floors-r3",
+   "items": [
+    "other.ground"
+   ],
+   "lead": "r2 A1 Argon 반려: 칸 경계 금 끊김·곧은 직교 금 격자·1화소 밝은 테(회로판)·올리브 막대 → 둘레 2화소 공유 계약, 대각 금, 테 없이 그늘 틈·일부 위 변 빛, 회녹은 빛 변 물만."
+  },
+  "theme-floors-r4": {
+   "module": "src/harnesses/dungeon-chipset/rounds/theme_floors_r4.py",
+   "wave": "theme_arcane",
+   "title": "던전 테마 바닥 다시 그림 theme-floors-r4",
+   "items": [
+    "other.ground"
+   ],
+   "lead": "r1~r3 손 판석 반려 → 허용된 theme-arcane-r1 arcane.tower_floor A1 짜임을 뼈대로 마계 색에 한 대 한 다시 칠함(A2 = 거울·순서 바꿈)."
   }
  }
 }
