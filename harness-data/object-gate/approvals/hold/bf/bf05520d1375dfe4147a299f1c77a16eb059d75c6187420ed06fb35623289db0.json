@@ -1,0 +1,16 @@
+{
+ "schema": "oprn-object-gate-hold-decision/1",
+ "pixelSha256": "bf05520d1375dfe4147a299f1c77a16eb059d75c6187420ed06fb35623289db0",
+ "profileHash": "4d8774b517f41638",
+ "kind": "terrain",
+ "decision": "allow",
+ "decidedBy": "supervisor (village-art)",
+ "decidedAt": "2026-10-23T01:21:26.477Z",
+ "by": "delegated",
+ "delegatedBy": "user",
+ "evidence": "tiledata/wasteland-ruins/_review/vqa-r7/pieces-verdict.json",
+ "via": "review-page",
+ "reasons": [],
+ "note": "delegated by user to supervisor 2026-10-23 — wasteland_ruins/dirt-d: gate PASS + 3 fresh Opus reviewers majority pass",
+ "sig": "9671ecfe48d4729836f8046b3b11cee5d33480993a43b885ac14534d583d9578"
+}

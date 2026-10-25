@@ -1,0 +1,353 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "29c84e80f69727859e821c9ee01c51caf19c9122f8059253d7ea0f17a1f1d37b",
+ "width": 48,
+ "height": 32,
+ "kind": "structure",
+ "name": "market stall of scavenged goods: sagging patched blue tarp roof seen from above on poles and battens, lit plank counter top with scrap parts, tins, bottles, a wire coil and a rusty can",
+ "label": "wasteland_ruins/stall-b",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 8
+ },
+ "metrics": {
+  "tileColorsMedian": 18,
+  "tileColorsP90": 19,
+  "darkV5": 46,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 6
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "blue tarp roof seen from above",
+      "rows": "0-10",
+      "evidence": "c",
+      "front_edge_line_row": 10,
+      "eave_shadow_rows": "11-13"
+     },
+     {
+      "part": "plank counter top",
+      "rows": "15-22",
+      "evidence": "a",
+      "front_edge_line_row": 22,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "scrap parts, tins, bottles, wire coil and rusty can on the counter",
+      "rows": "16-22",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "counter front face and poles",
+      "rows": "23-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 11,
+    "front_face_rows": 7,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The tarp roof fills rows 0-10 as a sloped plane. Its lighter lower edge line at row 10 is followed by dark eave shadow at rows 11-13, which shows the roof top surface. Below it, the plank counter top runs rows 15-22 and ends in a light front-edge line at row 22 (x=24 and x=35). The darker front face with the legs and shadow is rows 23-29, 7 rows. The goods on the counter are decor. No receding side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The candidate is a stall prop like the cheese stall and well references. Its tarp roof carries about 4-5 blue steps with patches, seams and highlight/shadow variation, and the plank counter and scrap goods add several more tones. The outlines lean blue on the tarp and brown on the wood, with no uniform black line, which matches the 0% near-neutral share of dark edge pixels. Measured facts: 18 visible tones per tile against 17 for the cheese stall and 20 for the well, and 0% near-flat coverage, so it matches the references and shows no flat fills. The small items on the counter (tins, bottles, coil, can) are individually shaded. It is slightly less stepped than the best references but would sit next to the cheese stall without looking thinner or more sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 13155
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "blue tarp roof/canopy plane",
+      "rows": "0-10",
+      "evidence": "c",
+      "front_edge_line_row": 10,
+      "eave_shadow_rows": "11-13"
+     },
+     {
+      "part": "plank counter top",
+      "rows": "15-22",
+      "evidence": "a",
+      "front_edge_line_row": 22,
+      "eave_shadow_rows": "23"
+     },
+     {
+      "part": "scrap parts, tins, bottles, wire coil and rusty can on counter",
+      "rows": "16-22",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "side poles and battens",
+      "rows": "11-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 11,
+    "front_face_rows": 7,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The tarp roof fills rows 0-10 as a sloped canopy plane. Row 10 is a light edge line (L=124, #5e80b2), followed by dark eave shadow in rows 11-13 (#2d436e). The silhouette narrows to 24 and then 10 px at rows 13-14, which is the sag and gap under the tarp. The counter has a lit plank top at rows 15-22 with goods on it, ending in a light front-edge line at row 22 (#916f57). Below it, a front face of about 7 rows (23-29) shows crate and panel shapes. The roof and the counter each show a top surface and a front face, so the whole reads as three-quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The candidate has 18 visible tones per 16x16 tile, against 17 for the cheese stall and 20 for the roofed well. Near-flat coverage is 0%, so there are no flat fills. Dark edge pixels are 0% neutral, so the outline is tinted. It reads as dark blue beside the tarp and dark brown beside the wood, not as a sticker-style black line. The blue tarp has several lightness steps, with patches, seams and highlights. The plank counter shows grain and lit tops. Scrap parts, tins and bottles add small clustered detail. The piece sits at the density and craft level of the cheese stall and well references. Both are comparable multi-material props.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 13501
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "blue tarp roof plane (sagging, patched)",
+      "rows": "0-12",
+      "evidence": "c",
+      "front_edge_line_row": 10,
+      "eave_shadow_rows": "11-12"
+     },
+     {
+      "part": "plank counter top",
+      "rows": "15-22",
+      "evidence": "a",
+      "front_edge_line_row": 22,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "scrap parts, tins, bottles, wire coil, rusty can on counter",
+      "rows": "16-22",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "side poles",
+      "rows": "11-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 13,
+    "front_face_rows": 7,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The blue tarp roof fills rows 0-12 as a sloped canopy plane. It ends in a lighter front-edge line at row 10 (#5e80b2) with dark eave shadow at rows 11-12 (#2d436e). Rows 13-14 are dark shadow under the tarp, where the silhouette narrows to 24 and 10 px. Below this the lit plank counter top runs rows 15-22 and ends in a light edge line at row 22 (#916f57). The scrap goods on it are decor. The counter front face with its planks and dark base is rows 23-29, 7 rows. Both the roof and the counter show a top surface above a front face, so this reads as three-quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The candidate stall matches the kind (prop-stall-cheese, prop-well-roofed). Measured facts: 18 visible tones per 16x16 tile against 17 for the stall and 20 for the well, so density is on par. Near-flat coverage is 0%, below the stall's 13%. Dark edge pixels are 0% neutral, so the outlines are tinted: dark blue beside the tarp and dark brown beside the wood, not a uniform black sticker line. By eye, the tarp has several blue steps with patch variation and battens, the counter has plank grain, and the scrap goods, tins, bottles and wire coil are each shaded individually. There are about 5 steps per material, comparable to the references. It would sit next to the cheese stall without looking thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 13597
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "blue tarp roof",
+      "rows": "0-10",
+      "evidence": "c",
+      "front_edge_line_row": 10,
+      "eave_shadow_rows": "11-13"
+     },
+     {
+      "part": "plank counter top",
+      "rows": "15-22",
+      "evidence": "a",
+      "front_edge_line_row": 22,
+      "eave_shadow_rows": "23-24"
+     },
+     {
+      "part": "scrap parts, tins, bottles, wire coil and rusty can on counter",
+      "rows": "16-22",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 11,
+    "front_face_rows": 15,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The blue tarp roof fills rows 0-10 as a sloped canopy plane. Row 10 is a lighter front-edge line (#5e80b2), and rows 11-13 are dark eave shadow (#2d436e). Below it, the open stall front runs rows 14-29 between the poles. The plank counter top (rows 15-22) has a lighter edge line at row 22, and the counter's front face and legs fill rows 23-29. The goods on the counter are decor. The width profile shows 48 px wide from row 15 down, with poles at the sides."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The candidate stall matches the stall and well references in size and kind. It measures 18 visible tones per 16x16 tile against 17 for the cheese stall and 20 for the roofed well. Near-flat coverage is 0%, below the cheese stall's 13%. Only 0% of its dark edge pixels are neutral, so the outline is tinted (dark blue-grey beside the tarp, dark brown beside the wood), not a black sticker line. The tarp roof shows about 5 blue steps with patches, seams and highlights. The plank counter has grain and is cluttered with small scrap items (tins, bottles, wire coil, rusty can), which reads as dense per-pixel detail. Nothing in it looks thinner or flatter than the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 12312
+  }
+ ],
+ "decidedAt": "2026-10-22T16:17:40.913Z",
+ "cells": {
+  "16": [
+   "3ea7f4651062e487",
+   "9f3bbd3735f4b7fc",
+   "ae0f3e0755a1c6b9",
+   "bfa8070ec5976cdc",
+   "db01ea180de36f5e",
+   "e011dfc5a57263b4"
+  ],
+  "24": [
+   "32a9a720bfa7919d",
+   "35a4da524a7ac429",
+   "3964a1cc475388e1",
+   "74512d4141739efc",
+   "75a6bcdbfda8f6be",
+   "a41eecc9a23cbe06",
+   "d17e5dea097438ab",
+   "f9717f37af89eb9f"
+  ],
+  "32": [
+   "08b40a9b477dca0f",
+   "73507625654759d2",
+   "914eaece7e2d7870",
+   "9ff584c58e641b06",
+   "b64fb3c19196f088",
+   "da8aa88296d834a2"
+  ],
+  "48": [
+   "89fccb9095f289ce",
+   "dd7b69572bda27d6"
+  ]
+ }
+}

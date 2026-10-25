@@ -1,0 +1,42 @@
+{"reviewer":"C",
+"majors":[
+{"target":"wasteland_ruins/asphalt (all wasteland roads)","issue":"Road fill is a strong blue-teal diagonal argyle/zigzag hatch that repeats every 16 px along the road (horizontal 16px-shift diff 7.3 vs ~20 for dirt); reads as a knitted pattern, not asphalt. Road meets dirt with a dead-straight hard cut, no curb, shoulder, crumbled edge or cracks/lane remnants. Hue is off-family vs modern-city's grey flat asphalt.","evidence":"/tmp/vqa-r2-C/s1-road.png (whole road band), settlement-1.png y208-240; ruined-city-2/5 grid roads","fix":"Redraw asphalt as grey low-contrast clustered fill with 2-3 variants placed non-periodically, add broken edge/curb autotile pieces, faded lane paint and cracks/potholes integrated into the surface."},
+{"target":"wasteland_ruins dirt ground (dirt-a/dirt-b) on all 6 wasteland maps","issue":"Ground repeats exactly with a 64 px period (64px-shift diff 3.7-8.8 vs ~18 at other offsets on shanty-6/shanty-3/settlement-1); the dark dimples of dirt-b line up in evenly spaced rows across open areas. Base texture is per-pixel salt-and-pepper speckle (TV static) rather than clustered clods like Beodeul or flat fills like modern-city.","evidence":"/tmp/vqa-r2-C/sh6-dirt.png (rows of dimples at equal spacing), /tmp/vqa-r2-C/dirtz.png; g-dirt-field2x.png 64px period","fix":"Randomise variant placement per cell (hash, not 4x4 block), reduce dimple frequency/make them rare overlays, rework base into clustered 3-4 tone patches with less single-pixel noise."},
+{"target":"settlement-1 vs settlement-4; ruined-city-2 vs ruined-city-5","issue":"Different seeds produce the same template: settlement = E-W road with a top row of ruins + N-S road + rectangular wall compound with a slab yard, 3-4 shacks above, 2 stalls + log/campfire inside, water towers, generator; ruined-city = identical 3x3 block grid with roads at the same x/y in both seeds. A player visiting both would see reskins.","evidence":"settlement-1.png vs settlement-4.png full view; ruined-city-2.png vs ruined-city-5.png roads at x~245/565, y~215/435 in both","fix":"Vary macro layout per seed (road count/orientation, diagonal/broken roads, compound shape and position, block sizes, collapsed blocks/craters, open squares)."},
+{"target":"settlement-1/4 perimeter wall (wall-h, wall-v)","issue":"Perimeter is built from identical wall-h stamps each with peaked end caps, so the wall reads as a row of identical tiny bunkers with notches between; wall-v segments have visible gaps between every piece. Isolated wall-h pieces float outside the compound.","evidence":"/tmp/vqa-r2-C/s1-compound.png top row and left column; orphan piece settlement-1.png ~(673,533), settlement-4.png ~(385,535)","fix":"Make wall an autotile with continuous middle segments, caps only at true ends and broken gaps where intended; drop stray segments or attach them to something."},
+{"target":"shanty-3, shanty-6","issue":"Repeated identical stamps: shanty-3 has 4-5 pixel-identical rusty shacks (same roof patch, same door), shanty-6 has ~8 identical teal tarp shelters; layout is a uniform scatter on an empty dirt field with no lanes, fences, yards or clustering - reads as a sprite dump rather than a town.","evidence":"/tmp/vqa-r2-C/sh3.png (three identical shacks right column), shanty-6.png tarps","fix":"Add shack/tarp variants (or recolour/flip/attachments), group dwellings along paths and around shared features, add fences/scrap walls/alleys."},
+{"target":"temple-ruins-5 vs temple-ruins-2","issue":"The temple flagstone yard is the same stamp in both seeds: small shrine top-left, column right, fallen wall block left, central temple, column pair, cypress on the right, all in the same relative positions. Only the yard position changes.","evidence":"/tmp/vqa-r2-C/t5.png vs /tmp/vqa-r2-C/t2.png","fix":"Compose the temple precinct procedurally (number/placement of columns, collapsed sections, altar, steps, overgrowth) per seed."},
+{"target":"mining-7, temple-ruins-5 forest edges","issue":"Forest masses end with stair-stepped hard rectangular cuts: canopies sliced flat, a straight horizontal strip of shadowed tree bases, and half trees at the block boundary.","evidence":"/tmp/vqa-r2-C/m7-yard.png right side (x~740-1080 in crop = map x~850-960, y~390-560); /tmp/vqa-r2-C/t5.png right side (map x~585-640, y~450-640)","fix":"Use the organic forest-edge pieces / scatter single trees along the edge; never cut canopy at cell boundaries."},
+{"target":"Beodeul grass (all 6 Beodeul maps)","issue":"Grass fill shows a faint repeating glyph-like mark (reads like 'Snge') on a tight grid across every open grass area - visible at 1x on light grass.","evidence":"/tmp/vqa-r2-C/grass.png (mining-7 x700-960,y80-200), also visible in t2.png and v3-yard.png borders","fix":"Remove the repeating mark from the grass base tile or break it with random variants."}
+],
+"minors":[
+{"target":"wasteland_ruins/slab-a/b/c","issue":"Every seam T-junction carries the same brown chip; looks mechanical. Slab field repeats every 128 px.","evidence":"/tmp/vqa-r2-C/slabz.png","fix":"Chip only some junctions; randomise."},
+{"target":"settlement compound slab yard","issue":"Slab rectangle ends with a hard straight edge onto dirt, no border/broken edge; stalls overhang its south edge.","evidence":"/tmp/vqa-r2-C/s1-compound.png middle","fix":"Add broken slab edge autotile."},
+{"target":"ruined-city-2","issue":"Brick piles placed partly over building roof edges and husks overlapping slab edges; scrap/brick confetti spread evenly over the whole map instead of clustering near ruins.","evidence":"/tmp/vqa-r2-C/rc2-mid.png","fix":"Collision-check overlays against buildings; cluster debris near collapse sites."},
+{"target":"wasteland maps vegetation","issue":"Bright saturated green round bushes (Beodeul-like) look out of place in an irradiated wasteland palette.","evidence":"ruined-city-2.png top row, shanty-3 centre","fix":"Desaturate/dry variant."},
+{"target":"mining-7, mining-2","issue":"Mining town identity is carried by one small yard; rest of map is farm fields and pines identical to other quarter villages. Yards in both seeds hold the same prop set (derrick, adit, ore rock, cart).","evidence":"/tmp/vqa-r2-C/m7-yard.png vs m2-yard.png","fix":"Add spoil heaps, rail tracks, ore carts, workers' huts; vary props."},
+{"target":"vineyard-3, vineyard-8","issue":"Winery building and vine-row block are the same stamp; v3 repeats the identical vine block twice.","evidence":"/tmp/vqa-r2-C/v3-yard.png","fix":"Vary vine row lengths/gaps."},
+{"target":"wasteland_ruins/puddle on maps","issue":"Puddles read as black pits (no rim/highlight); confusing next to the black pothole stamps.","evidence":"/tmp/vqa-r2-C/s1-tl.png (dark ovals)","fix":"Add lighter rim, sky reflection highlight."}
+],
+"pieces":{
+"wasteland_ruins/dirt-a":"fail",
+"wasteland_ruins/dirt-b":"fail",
+"wasteland_ruins/dirt-c":"pass",
+"wasteland_ruins/dirt-d":"pass",
+"wasteland_ruins/asphalt":"fail",
+"wasteland_ruins/slab-a":"pass",
+"wasteland_ruins/slab-b":"pass",
+"wasteland_ruins/slab-c":"pass",
+"wasteland_ruins/rubble-b":"fail",
+"wasteland_ruins/rubble-c":"pass",
+"wasteland_ruins/weeds-a":"pass",
+"wasteland_ruins/weeds-b":"pass",
+"wasteland_ruins/puddle":"fail"
+},
+"pieceNotes":{
+"wasteland_ruins/dirt-a":"base speckle noise + 64px periodic tiling visible on maps",
+"wasteland_ruins/dirt-b":"dimples form evenly spaced rows on maps (64px period)",
+"wasteland_ruins/asphalt":"16px argyle hatch repeat, no edges/curb",
+"wasteland_ruins/rubble-b":"red brick lump is an undefined noisy blob: no top plane/front split, no outline or contact shadow (rubble-c has them)",
+"wasteland_ruins/puddle":"flat dark blob, no rim or reflection; reads as a hole"
+}}

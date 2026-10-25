@@ -1,0 +1,24 @@
+{
+  "surface": "flag",
+  "image": "tiledata/beodeul-yard/_gate/yard_flag.png",
+  "pixel_sha256": "f1d01d41889ee7a9cb83d00a609f7c56505916e7518e594b753527c35f5c500d",
+  "verdict": "fail",
+  "view34": "pass",
+  "autotile": "pass",
+  "quality": "fail",
+  "material": "pass",
+  "defects": [
+    "/home/main/.cache/yard/vqa-r3/flag_a.png: slabs are near-uniform rectangles laid in straight courses (8x course lines y~55,120,185,250,315,380,445) so it reads as regular block/ashlar paving, not irregular crazy paving; body region shows 53% (h) / 63% (v) identical pixels at 16px shift vs 9-18% at 4/8px, i.e. cells are near-copies.",
+    "yard_flag-4x.png: across the large body (e.g. x 350-690, y 200-470) the slab pattern visibly repeats on a 64px (=16px) period; the 16px grid is readable at 4x.",
+    "/home/main/.cache/yard/vqa-r3/flag_a.png: grey diagonal crack glyph reused with the same shape in several slabs (8x ~(90,160),(270,160),(225,290),(410,290)), reading as a stamp."
+  ],
+  "evidence": "r2 banding (dark underside line every 16px) is largely fixed and slab shading now reads as a flat plane lit from upper-left; kerb rim with 2px south face, corners, hole, neck and isolated cell are seamless (flag_neck.png). Pale limestone with moss joints is distinct from the blue-accented Beodeul plaza. Still failing quality: the layout is a regular rectangular grid with cell-period repetition rather than irregular flagstones.",
+  "crops": [
+    "/home/main/.cache/yard/vqa-r3/flag_a.png",
+    "/home/main/.cache/yard/vqa-r3/flag_b.png",
+    "/home/main/.cache/yard/vqa-r3/flag_c.png",
+    "/home/main/.cache/yard/vqa-r3/flag_neck.png",
+    "/home/main/.cache/yard/vqa-r3/flag_iso.png"
+  ],
+  "reviewer": "claude-opus independent adversarial review 2026-10-23 r3"
+}

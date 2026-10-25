@@ -1,0 +1,563 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "cf4a5844854014d134a808d185b5fa099730d672ee8f21f41405627c6e448d8b",
+ "width": 80,
+ "height": 112,
+ "kind": "structure",
+ "name": "three-storey roofless concrete shell seen from above: wall tops and deep gutted interior, tall front face with three rows of empty window holes; the upper two storeys of the east corner have collapsed, leaving a broken one-storey stub with a rubble-covered slab top and a rubble heap",
+ "label": "wasteland_ruins/husk-c",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "refer",
+ "reasons": [
+  "화풍: 화풍 판정이 갈림(걸린 판정 2/4)",
+  "화풍: 판정자 fail (2/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "refer",
+  "reasons": [
+   "화풍 판정이 갈림(걸린 판정 2/4)",
+   "판정자 fail (2/4)"
+  ],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 7,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "wasteland_ruins",
+   "fallback": true,
+   "reason": "칩셋 wasteland_ruins 의 화풍 기준 묶음이 없다",
+   "hash": "5f62fef078ef7661"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 12,
+  "tileColorsP90": 18,
+  "darkV5": 33,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 29
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "main three-storey shell: wall tops and gutted interior seen from above",
+      "rows": "0-44",
+      "evidence": "d",
+      "front_edge_line_row": 44,
+      "eave_shadow_rows": "45-46"
+     },
+     {
+      "part": "collapsed east stub: rubble-covered slab top and rubble heap",
+      "rows": "50-89",
+      "evidence": "a",
+      "front_edge_line_row": 89,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 45,
+    "front_face_rows": 67,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 0-44 show the open top of the shell: a light wall-top rim around a brown rubble-filled interior floor. The interior is visible inside the walls (evidence d). The top ends in a light wall-top band at rows 42-44, then the front face begins at row 45. The front face runs from row 45 to row 111 and carries three rows of window holes and a door, so it is well over 3 rows. The east stub has its own rubble slab top at rows 50-88, ending in a light edge line near row 89, with a front face of about 20 rows below it. Both major parts show a top surface and a front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "Measured facts are near the references: 11 visible tones per tile vs 12 and 10, near-flat coverage 10% vs 0%, and only 10% neutral dark edge pixels, so the outlines are tinted rather than black. By eye, the concrete walls show speckle, stains, vines and rubble, and the interior floor has soil and debris variation, so it is not a sticker look. The main concrete ramp is only about 4 steps (light top edge, mid grey, darker stain, deep window holes) against the references' 5-6 steps on roof tiles. The wall face is also mostly one mid-grey with sparse speckle and no per-block shading like the stone reference's one-by-one stones. The window holes are plain dark rectangles with little frame detail. Some wall areas read as flat, as shown by the 10% near-flat coverage. Overall it is a bit thinner and flatter than the references, and with the doubt rule this fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 14982
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "main building wall tops and gutted interior (open roofless shell seen from above)",
+      "rows": "0-44",
+      "evidence": "d",
+      "front_edge_line_row": 43,
+      "eave_shadow_rows": "45-46"
+     },
+     {
+      "part": "collapsed east stub rubble-covered slab top with rubble heap",
+      "rows": "50-89",
+      "evidence": "a",
+      "front_edge_line_row": 90,
+      "eave_shadow_rows": "91-92"
+     },
+     {
+      "part": "moss, rubble and debris on the interior floor and slab",
+      "rows": "10-36",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 45,
+    "front_face_rows": 66,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main shell has a large top region (rows 0-44). Light wall-top rims run around a deep brown rubble-strewn interior, which is visible contents (d). A light wall-top band at rows 42-44 acts as the front-edge line, with darker rows below it. Below that is a tall south face (rows 46-111) with three rows of window holes and string-course lines at about rows 66 and 90. The east stub has its own rubble slab top (rows 50-89), a light edge line at about row 90, and a short front face with a window below it. Both parts show a top surface and a front face, so it reads as three-quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The measured facts are at the reference level: 11 visible tones per tile against 12 and 10, near-flat coverage 10% against 0%, and only 10% of dark edge pixels neutral, so the outline carries a tint. By eye, the candidate's concrete walls are grey-blue with speckle, but the wall faces use only about 3-4 lightness steps against the references' 5-6 on roof tiles and stone. The window holes are dark, with little interior shading and few frame highlights. The interior floor and rubble have good dirt grain with small orange and green accents. The slab top and the upper wall tops are comparatively smooth, and the collapsed east stub has a small flat patch. Overall it is competent and not sticker-like, but the wall ramp is shallower and the texture less layered than the per-tile stone shading and tile scallops in the references. Under the 'when in doubt, fail' rule, the shallow wall ramp and the flat areas outweigh the numbers.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 16779
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "main shell: wall tops and gutted interior floor seen from above",
+      "rows": "0-44",
+      "evidence": "d",
+      "front_edge_line_row": 44,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "east corner one-storey stub: rubble-covered slab top",
+      "rows": "41-88",
+      "evidence": "a",
+      "front_edge_line_row": 89,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "rubble heap and bricks on stub slab",
+      "rows": "56-86",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 45,
+    "front_face_rows": 67,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main shell has a large top region in rows 0-44: a wall-top rim with the brown gutted interior floor and debris visible inside the open box. It ends in a light front wall-top band at rows 42-44, which acts as the front-edge line. Below it the south face runs from about row 45 to 111 and beyond, with three rows of window holes and a door. The east stub has a rubble-covered slab top in rows 41-88, ending at a light edge line at row 89, and below it a front face with a window. Both volumes show a top surface and a front face of 3+ rows, so this reads as three-quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The primary facts sit inside the reference range. The candidate has 11 visible tones per tile against 12 and 10 for the references. Only 10% of it is near-flat, and just 10% of its dark edge pixels are neutral, so the outlines lean tinted (dark grey-brown or green-grey) rather than black. By eye, the gutted interior is the richest area: soil and rubble in several browns, plus green moss and weeds. The concrete face has mottled grey speckle with moss streaks and window holes in a darker tone, and the east stub carries scattered rubble and red-brown debris. The weaker points are the concrete ramp, at about 4 steps against the references' 5-6, and the raw colour count of 42 against 66 and 185. The wall-top rim and parts of the wall face are fairly smooth grey. This is a small gap in step depth and not a sticker-style fill. A careful artist could accept it next to the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 23528
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "main three-storey block: wall tops and gutted interior floor seen from above",
+      "rows": "0-45",
+      "evidence": "d",
+      "front_edge_line_row": 44,
+      "eave_shadow_rows": "45-46"
+     },
+     {
+      "part": "collapsed east stub: rubble-covered slab top",
+      "rows": "50-88",
+      "evidence": "a",
+      "front_edge_line_row": 89,
+      "eave_shadow_rows": "90-91"
+     },
+     {
+      "part": "rubble heap and plants on stub slab",
+      "rows": "56-86",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 45,
+    "front_face_rows": 66,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main block has a large top region in rows 0-45. It is a ring of light wall tops (a 3-4 row band on the left, right and top) around a brown gutted interior floor, so contents are visible inside an open shell (d). The top ends in a light front-edge line at about rows 42-44, and the front face runs below it from row 46 to row 111. That face is about 66 rows tall and carries three rows of dark window holes and a door. The east stub has its own rubble slab top in rows 50-88, ending in a light edge line at about row 89 with a one-storey front face below it (rows 91-111, one window). Both volumes show a top surface and a front face, so it reads as three-quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a whole building, so it matches the reference kind. Visible tones per 16x16 tile are 11, against 12 and 10 for the two references, so it sits inside their range. Only 10% of it is near-flat, which is mostly the dark window holes and the wall-top bands, against 0% for the references. Just 10% of its dark edge pixels are neutral, close to the references' 7% and 9%, so the outlines lean toward the material tone (blue-grey beside the concrete, dark brown beside the soil and rubble) and do not form a black sticker line. The concrete wall face is mottled with speckle, stains and moss patches. The gutted interior has soil grain, debris and green growth in several tones. The rubble stub carries orange and grey fragments shaded piece by piece. The concrete ramp has about 4 clear steps, a little shallower than the roof tiles and stone of the references, and the raw colour count of 42 reflects the locked palette. The result is slightly leaner than the references but not flat or sticker-like, and a careful artist would accept it beside them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16962
+  }
+ ],
+ "decidedAt": "2026-10-23T03:18:50.203Z",
+ "cells": {
+  "16": [
+   "0654b84b62ce82b7",
+   "073610b4de5b066c",
+   "17d7fe277bb1d969",
+   "1c15a9823ee329c5",
+   "3483645409aafdd1",
+   "35111f2307c007ce",
+   "423c2936479c34f7",
+   "493aaf5bd75c4fae",
+   "4c1661f38bc01686",
+   "4f14685c2350cbfd",
+   "4f39bc209538c32d",
+   "4f4e245b4af765a0",
+   "4fd736371b24dd5b",
+   "51c654a4621f3208",
+   "571db0848116a990",
+   "5ffd3b2f467d30ab",
+   "67539c5f77787cbf",
+   "683b77d3959cbae5",
+   "70531c56ce70d541",
+   "744efb5a18909136",
+   "75c9263fcfa086d8",
+   "8aac9c7600c299d1",
+   "8b4193c8d97fe6eb",
+   "90716ca0261eae41",
+   "a2c0f7fb4dfac0d2",
+   "a2d1b58ed0c9f754",
+   "b8769b132be10e13",
+   "d5ed86e9da879a44",
+   "ddfd60aa6c06c741",
+   "fa20d11030ce8b75",
+   "fbd63029a1853d06",
+   "ff561ca23454aea8"
+  ],
+  "24": [
+   "00b94571b27a9bd6",
+   "0193aebc4ad6722f",
+   "06f963205c4976bc",
+   "0b96930e1bd73f2e",
+   "0c8c3d24698b01fb",
+   "0d01f6f3ddf4d94c",
+   "0ecdef0b041ab171",
+   "14acf0cba2e0f3ae",
+   "166a967e9937e2a6",
+   "16a60d906a8c286c",
+   "1b9570082ca89b55",
+   "1cac4d373f22b428",
+   "1d464eb0a88d5f2f",
+   "1f7dc3fb2553f310",
+   "2347996308cacab6",
+   "2636589a6530cd48",
+   "28d2abed01dd6e57",
+   "291367e521c8fdfb",
+   "2a0e1a5c5fc9f3a4",
+   "2a3c294e5c65a847",
+   "2c36f2180ee0392c",
+   "36d74ffc3399d9cb",
+   "3777997e24ccdd20",
+   "3893e75896fd6490",
+   "38948001f68590cc",
+   "3912fe9a5f0bf79a",
+   "3aa51239a9e6e4a0",
+   "3b45c97d64b12d61",
+   "3d2a9feb15c567bf",
+   "3fa4f51ec4d92583",
+   "41079beff7ef79c2",
+   "49ff46db04be9746",
+   "4a2a9e1daa1db8f0",
+   "4b228a8828c1a255",
+   "547ad2c82dc9b77d",
+   "55083958e528762d",
+   "559a67279d042cc6",
+   "55ff2fe6fe6b67af",
+   "585d3c51ab9750a4",
+   "5edb9526802de518",
+   "600f55db8b021f9c",
+   "62d86b66f87b87ca",
+   "69b152503e39ee8e",
+   "6a73b45476b4ee67",
+   "6e390a956318df80",
+   "6f3df45650715676",
+   "703e36ff588cd190",
+   "708c0b568416305f",
+   "73848d04f6275756",
+   "73acce60a7ee0f27",
+   "74351d3d4405d85f",
+   "77d4f3422b7218f4",
+   "7c8067e2caebcfcf",
+   "7ef78216847307ac",
+   "7f0d850c86befbcd",
+   "85b8b693cb6b564e",
+   "86a797343a6bcf44",
+   "86f02723b0797738",
+   "8b8e412ba058e280",
+   "925a14a5aad8f64c",
+   "930bc6905eb94dcf",
+   "9c8d6fdb90730d3e",
+   "9faba0270207478f",
+   "a175ef540af0d06d",
+   "a2f181fd9befbd8d",
+   "a40610a472f5be65",
+   "a4ded6b4c0c445e8",
+   "a73047d3e11f448b",
+   "a8bbe966efe2fbaa",
+   "aa7f6effd48e5a14",
+   "aab4c7199fa6d83b",
+   "abea3c171f6a54d2",
+   "abf53008b953e6ad",
+   "ac89673079b12a9c",
+   "ad19cf16f53718ca",
+   "ad7eea0612d74f78",
+   "b527e9b5067d9fd6",
+   "b80f781132cb7e00",
+   "bda2d2685e2ce44b",
+   "bee3c3f980434142",
+   "c93fb7efcf470910",
+   "cbe3c15cbd0fd7b5",
+   "cc52d17d958028d9",
+   "cc68951c2dfbd2b5",
+   "cc91e06e1c2d8bc5",
+   "cfcf536a77129421",
+   "d0e2bc8196c1796a",
+   "d642a3ccbac4d64b",
+   "da1e42ae98518dc7",
+   "db2bcee1b70a8df0",
+   "dc1a09aedcbca757",
+   "dc4929d787619719",
+   "dde6daa49b70b09d",
+   "e31bc875a4f4b635",
+   "e785dbb21c1e5ce4",
+   "eb098f313e5a72fd",
+   "f00fa1fbea2c7776",
+   "f1b9b269ed5e0093",
+   "f1fae44483c78079",
+   "f49f5a67da69174d",
+   "f4c3f8cc0a26969a",
+   "f5c1e13df55adebc",
+   "f7362f9dc4c36cef",
+   "f740076198236c02",
+   "f76d6ce2e54e5ac2",
+   "fbad9eba8a5eaedf",
+   "fc03be258e606bff",
+   "fd83c2548343b2e1"
+  ],
+  "32": [
+   "0159cfe3c71c5eda",
+   "0432326d03784b98",
+   "0cfa60fcd2cbae7e",
+   "11c5d40dd6e01e31",
+   "122505b707140118",
+   "1a69158ce6fc5266",
+   "1dd02ed8c6f1b288",
+   "27912bae468588c7",
+   "285a4ae507097616",
+   "2a49ebe393105efa",
+   "2fbf4dd6486a8926",
+   "39a09ab7ef886d73",
+   "3aad595a94bf1f46",
+   "3c485d158d8b549b",
+   "3d51fc77049f9666",
+   "3e168109c322ff23",
+   "4103df99c8afcbfe",
+   "410efa78d4dd0751",
+   "416df95ef7ece3ab",
+   "4773ba4229b8324b",
+   "48ff2082ba269c6c",
+   "4b716bfdc5639d67",
+   "5051bb294e699f24",
+   "551bc54e88e04f86",
+   "57eb1249a27e093f",
+   "663747d6baa78cd8",
+   "6acad70d21779bc5",
+   "6f520df4426d76bc",
+   "724affbe0fa05d9e",
+   "72c6cc654d13a0c4",
+   "75a2a3470506ae6d",
+   "78751308c0bfc5df",
+   "7c2614c915f07ee1",
+   "83bf921d5491eb50",
+   "855968b2730abf8e",
+   "87a0ef87a7a7bc1a",
+   "9e668a5c507e7882",
+   "9f9135c5cfb1deb0",
+   "9ff79a94b72eae8a",
+   "a292e74b4fad430a",
+   "a5f9822157f5f6bd",
+   "a65ee1f1abfa5775",
+   "a745cb859b1401b9",
+   "a9356cfcdfdccce4",
+   "aa099bf5f0064f7f",
+   "afda9f7dfa63a91d",
+   "b28ffac242daadfd",
+   "b3208e5186e051a8",
+   "b8c06e8472913d83",
+   "ba99bd13d41d9305",
+   "bbbed93797fe3a3d",
+   "bbf9ddd8a0cf0c30",
+   "c49ad1a9e5dc9b48",
+   "c83b25181016eed8",
+   "cfbba6b1cac6f227",
+   "d3cd0273d1b82eb2",
+   "d8441f55d364f0e6",
+   "dbf84f4908fdd1d6",
+   "dc227b7455abea8b",
+   "df6bca1e13bebedf",
+   "e1988f63bb0f99d9",
+   "edbdc68524ac5832",
+   "eeafe039816c403e",
+   "f533759b2b7b7a61",
+   "f7f9eceeb9482df4",
+   "f936f2022ff60361"
+  ],
+  "48": [
+   "0619215e4120e782",
+   "0da1058db04d4495",
+   "14643ab37830c88a",
+   "1572754f940e1f9b",
+   "1a82a62339045b23",
+   "2d73b6d8449cad57",
+   "36e165e23b843c1a",
+   "3d6b1c9db3e24f06",
+   "3fea586919cd5d92",
+   "4b80d42af2343214",
+   "567af9b78af5a0e9",
+   "661551f381cd6e53",
+   "6811924187a674a4",
+   "7a79eb6c6b204e89",
+   "829902f5c358101a",
+   "902d1ce04e72c1d5",
+   "91a454822c3039bf",
+   "92a4874885b3d634",
+   "9306433afefcdd6e",
+   "975e5d2ac00bd904",
+   "9bb73ef0ed99130f",
+   "a2c9a8bc1b4eb7c9",
+   "aa831bfb345e44f7",
+   "b15e78614619d6ee",
+   "b9175b1fbe375fbb",
+   "ba21f67117948c2b",
+   "c3e33b544ccb35be",
+   "c59f5284b69e787f",
+   "cb27ca5d10125e4f",
+   "dd223d2f861bd9e9",
+   "df1b7aecf41af1bd",
+   "e3e1a3936ea83b65",
+   "e7b148832750aa01",
+   "e85c94bc4385e00e",
+   "f5dec0dc88573b3e",
+   "ff75678e46d63da9"
+  ]
+ }
+}

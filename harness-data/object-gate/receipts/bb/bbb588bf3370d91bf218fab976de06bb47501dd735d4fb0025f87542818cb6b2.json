@@ -1,0 +1,429 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "bbb588bf3370d91bf218fab976de06bb47501dd735d4fb0025f87542818cb6b2",
+ "width": 192,
+ "height": 192,
+ "kind": "terrain",
+ "name": "rustic cobbled work yard ground autotile: rounded warm river cobbles with dark earth joints, a low dressed stone kerb rim with a 2px front face on the south edge, grass tufts at the rim, lying flat on grass (top-down 3/4 RPG ground)",
+ "label": "beodeul_yard/cobble",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 명암 3단 < 4 (2/4)",
+  "화풍: 평면 채움 (1/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "명암 3단 < 4 (2/4)",
+   "평면 채움 (1/4)"
+  ],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 5
+ },
+ "metrics": {
+  "tileColorsMedian": 4,
+  "tileColorsP90": 28,
+  "darkV5": 46,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 144
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cobble field (rounded cobbles with dark joints, seen from above)",
+      "rows": "20-57",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dressed stone kerb rim, north and side edges (light top strip, 2 rows)",
+      "rows": "18-19",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dressed stone kerb, south edge front face (2 rows) with a cast shadow on the grass below",
+      "rows": "58-61",
+      "evidence": "none",
+      "front_edge_line_row": 58,
+      "eave_shadow_rows": "60-61"
+     },
+     {
+      "part": "grass tufts at the rim",
+      "rows": "16-18",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 38,
+    "front_face_rows": 2,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "This is a flat ground autotile sheet. Each cobbled patch is a top-down field of cobbles that fills nearly the whole patch, for example rows 20-57 in the top-left block. The kerb is a light 1-2 row rim on the north and side edges (rows 18-19 at x=48). On the south edge it has only a 2-row front face (light stone row then a dark joint or shadow row), followed by 1-2 rows of shadow on the grass. That is fewer than 3 front-face rows, and no vertical body or receding side face is drawn. The tile is therefore a flat slab, which is normal for terrain, rather than a standing object with a top and a front."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate has 4 visible tones per 16x16 tile against 7 for the paving reference and 3 for the grass. Near-flat coverage is 7%, so the surface is not flat, and the cobbles carry some variation. Dark edge pixels are 0% neutral, so the outline leans warm brown and reads as a dark material tone, not a sticker line. The cobbles are small round dots in a few warm tones with dark joints, and each cobble has only about 2-3 steps (highlight, body, shadow). The stone kerb is a pale beige band with little per-stone shading, and the 2px south face is barely distinguishable from the rim. The grass base is a repeating tuft pattern in a narrow green range. It looks tiled and flatter than the Beodeul grass with its clumps and darker patches. The piece is cleanly built but has fewer shading steps than the 5-6 per material in the references, so it is a bit shallow.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 19135
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cobble ground field",
+      "rows": "20-56",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dressed stone kerb south edge",
+      "rows": "57-58",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "grass tufts at rim",
+      "rows": "17-19",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 36,
+    "front_face_rows": 2,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "This is a flat ground autotile seen from above. The cobbled field is a large top surface of cobbles and dark joints with a light kerb rim around it. The only vertical face is the kerb's 2-row south face, which is under the 3-row minimum for a front face. It has no raised volume and no side face, so it reads as a flat top-down slab rather than a 3/4 object."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The cobbles are rounded and warm with dark earth joints, and the kerb rim is a pale stone with a tinted outline (0% neutral dark edge pixels), so the outline is acceptable. However, the candidate shows only 4 visible tones per 16x16 tile against 7 for the paving reference and about 3 for the grass reference. Its tile structure is thin. The cobbles are tiny, nearly uniform dots with 2-3 tones each, and they repeat in an obvious pattern with little per-stone shading. The kerb is a thin, flat pale band with little shading and no clear 2px south face. The surrounding grass is a flat green with faint repeated tuft marks, much flatter than the grass reference, which has distinct clumps and dark patches. Flat coverage is 7% against 0% for both references. The shading ramps are shallow at roughly 4 steps against about 5-6 in Beodeul. Overall it is clean but a step below the reference on richness.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 14795
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cobbled yard surface (flat ground)",
+      "rows": "20-175",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dressed stone kerb rim with 2px south front face",
+      "rows": "18-19",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "grass tufts at rim",
+      "rows": "18-20",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 20,
+    "front_face_rows": 2,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The sheet is a flat autotile layout of cobble ground on grass. The cobble field is seen from directly above (round stones and dark joints), with no foreshortened raised top. The only vertical face is the thin 2-row kerb on the south edges (light rim at rows 18-19 in the column scans, then a dark joint row), which is under the 3-row minimum for a front face. The shape is a ground slab with a rim, not a standing volume."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The cobbles are readable as individual stones: warm brown and grey stones with a tan highlight dot on a dark earth joint. The dark edge pixels are tinted (0% neutral), so the outline is a material tone, not a black sticker line. Each stone has only about 3 steps (joint, mid, highlight), and the kerb rim is a thin pale band with little per-stone shading. The grass is a faint repeating tuft pattern in 2-3 close greens. The measured 4 visible tones per tile and 4 raw colours per tile are well below the paving reference (7 visible tones). They are only level with the grass reference (3), and the rest of the candidate is cobbles. Raw colour count per tile is not the deciding fact. The shading ramps are still clearly shallower than Beodeul's 5-6 steps per material, and the cobble field is uniformly dense but thin in tone variety. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 17830
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cobble field (flat ground, dark earth joints)",
+      "rows": "20-34",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dressed stone kerb rim on south edge (2px front face)",
+      "rows": "35-36",
+      "evidence": "none",
+      "front_edge_line_row": 35,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "grass tufts at rim",
+      "rows": "18-19",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 15,
+    "front_face_rows": 2,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The patches are flat cobble ground seen from above, with a light stone kerb outline. The column scan repeats on a 16-row period: a light kerb band at rows 18-19, then dark joints and rounded cobbles from rows 20 to about 34, then a light kerb row at 35 and 29. The south kerb face is only about 2 rows, below the 3-row minimum for a front face. There is no receding side face and no roof, so the tile reads as a flat top-down slab. That is normal for a ground autotile, and the separate rule decides pass or fail."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate has only 4 visible tones per 16x16 tile (32 colours overall) against 7 for the paving reference. Its cobbles read as warm browns and grey-blues with dark earth joints, but each cobble is a small 2-3 step blob, so shading is shallow next to the 5-6 steps Beodeul uses. The kerb rim is a pale 2-3 step stone band with little per-stone shading, and the 2px south face is thin and fairly flat. Dark edge pixels are 0% neutral, so the outline is tinted brown and counts as dark_material_tone, not a sticker line. Near-flat coverage is 7% against 0% for both references, which is a mild flat-fill signal. The grass background is a repeated tuft pattern that looks regular and tiled, and it is simpler than the reference grass. The patch has a stray island piece and a hole, which are autotile demo shapes and not a fault. Overall the piece is cleaner and flatter than the reference and lower in density, so it is not equal in craft.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 18767
+  }
+ ],
+ "decidedAt": "2026-10-22T15:12:50.682Z",
+ "cells": {
+  "16": [
+   "18dc98657b7c2ab2",
+   "195586b575d2631e",
+   "30aca85ad0d77ac7",
+   "460e259b66c215bc",
+   "5da8b4ae99184e5c",
+   "685d4890dd2acd28",
+   "7597a02d69c68074",
+   "7e14b3c81608bf8e",
+   "7fbd215a6e079837",
+   "8aaad989f9d6fab7",
+   "94c755c173447258",
+   "b71e4e811c289018",
+   "cb9caafb72cb74eb",
+   "d262c366aade9a29",
+   "d341cbf742087661",
+   "d3693b3824875da5",
+   "d9930af8fd310782",
+   "e2131cb475d605fb"
+  ],
+  "24": [
+   "058f22f1900fc19d",
+   "07fb051f436dcdbd",
+   "08b34e92383b53a8",
+   "10b83cc453eae1e8",
+   "134c9dc3760a93ec",
+   "1662210f249bae6e",
+   "2119dc348c61f945",
+   "30dc93366e0c21f7",
+   "32652b52880bc4f6",
+   "332914bb1fdb2046",
+   "4f357a389d733d1b",
+   "522791a11128acc2",
+   "57a5a54d978b3931",
+   "5a96f19e2776265c",
+   "5b428cf20b3aa1ad",
+   "64e1e68c622c1267",
+   "66bcda7a5c072a91",
+   "66c538519437603f",
+   "6d91c6cdcaa6807a",
+   "719c4fe24cdad185",
+   "72f86668f66162d3",
+   "826dda2dd8e41d8d",
+   "86d48f1ce6413991",
+   "8dd0522c7d469680",
+   "92ee334a59401256",
+   "9396fffdb1d0bc98",
+   "a039bf9cd21a43e0",
+   "a1070749fb71fddc",
+   "a84c900750924f69",
+   "ab93a1382978eb4d",
+   "b335348d19138945",
+   "b983cfef8a7892d9",
+   "c0a7cd1d001b8d1e",
+   "c53c0c931c449258",
+   "c6d7c146eec3c05d",
+   "cfa8015fb9a179b0",
+   "d24abf575bbf9ab6",
+   "d61fbce5e06a9263",
+   "e025df9e6a0914bc",
+   "e2874aa21484e409",
+   "e3ffee5b7f397e63",
+   "e707686318cb4819",
+   "eca3845ee2b9c129",
+   "f14cb641f7a86d46",
+   "f347dab4009cf9f3",
+   "f34b1e33f31d1161"
+  ],
+  "32": [
+   "0068ae8e586a3494",
+   "042eba00d34ffa28",
+   "128b8a20e7c0972e",
+   "208e2b97614eef55",
+   "209b71a66681efa4",
+   "23904f3fa4ac8353",
+   "23d2602860bcaf39",
+   "3ce5ba6dfa5c4d9a",
+   "415bbdac5fd18eff",
+   "4fa943998ab9f789",
+   "59e3a68a429b3c14",
+   "65c8932695fa4b7d",
+   "6cb66d111e49b315",
+   "6d8eb1d0efff1d04",
+   "782206030cc68ae6",
+   "7e10eb665a20ba14",
+   "9247e01c2c69965e",
+   "9c13b23227077c09",
+   "afd4cd78f8c489b3",
+   "c2677fee031ec793",
+   "c472e53d5cd2d05d",
+   "eed2598f32c070ca",
+   "f78b49968c55f1eb"
+  ],
+  "48": [
+   "10857a6142f852a0",
+   "10dfd8f6c98c1750",
+   "26f137d6bb40b07b",
+   "371f90fe8a748906",
+   "455091ba6632f948",
+   "6f392d3c7e2d34ee",
+   "87d299e3c55b63ca",
+   "9506b0989d3883a6",
+   "c22fc2fef5ee6283",
+   "cc0067b7e74af134",
+   "d7c4d4d547a84490",
+   "dcc25ad050bc2e2e",
+   "ecd84bbeaba0ddcb",
+   "f2d6a313f1379668"
+  ]
+ }
+}

@@ -1,0 +1,370 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b274d74365d19470c06f263d65f70cc2dded54fe3075a6febeec9cbfc625352b",
+ "width": 16,
+ "height": 16,
+ "kind": "frame",
+ "name": "north-south scrap fence section seen from above: a band of overlapping weathered planks with rusty nails running north-south beside a wooden post, each plank showing its top and its south end, tiles into a vertical line",
+ "label": "wasteland_ruins/fence-v",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 투영이 3/4 아님(front_elevation) (4/4)",
+  "3/4: 윗면 1행 < 3 (4/4)",
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)",
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 명암 3단 < 4 (1/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "투영이 3/4 아님(front_elevation) (4/4)",
+   "윗면 1행 < 3 (4/4)",
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)"
+  ]
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "명암 3단 < 4 (1/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 5
+ },
+ "metrics": {
+  "tileColorsMedian": 7,
+  "tileColorsP90": 7,
+  "darkV5": 47,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 1
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "borderline",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "borderline",
+   "right",
+   "right",
+   "right",
+   "borderline"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "overlapping plank band (left, repeated every 6 rows)",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "wooden post (right)",
+      "rows": "0-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 1,
+    "front_face_rows": 15,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The column scan at x=2 repeats a 6-row cycle: a 1-row light tan band (#d6b073) at rows 0, 6 and 12, then 3 rows of plank face, then a reddish row and a dark shadow row. Each light band is only a 1-row lip or plank end, with no multi-row top plane and no ellipse. The post at x=5 is one flat dark column for rows 0-14 with no cap. The right column (x=7) has only 2 light rows at the top, then a vertical face down to row 14. Everything is a vertical face seen head-on, so the main top surface is 1 row at most, which is a rim only. The object reads as a front elevation, not a 3/4 top-and-front view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a thin tiling fence strip of brown planks with dark seams. Its dark edge pixels are 0% neutral, so the outline is tinted dark brown beside the wood, which is correct material-tone work. It has no flat 5x5 areas (0% near-flat). The shading is shallow, though. The whole piece uses only 7 distinct colours, and the planks show about 4 lightness steps, against 5-6 on Beodeul wood. The simple bench and lamp references still carry 14 colours each, and the hedge carries 11 and 9 visible tones per tile. The candidate's 7 visible tones per tile sit below the hedge and well below the stall (17) and well (20). By eye, the planks and nails read as a little thinner and more uniform than the reference wood, with little per-plank grain or highlight variation. Because the fence is a sparse object, this is only a mild shortfall, but it would look slightly flatter next to the references, and with doubt the verdict is fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 1행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 1행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 15392
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "left plank stack (three overlapping planks)",
+      "rows": "0-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "plank end caps (light 1-row strips at rows 0, 6, 12, each over a dark shadow row)",
+      "rows": "0-0",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "wooden post",
+      "rows": "0-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 1,
+    "front_face_rows": 15,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "Column x=2 shows the planks as repeating 6-row segments: a 1-row light strip (#d6b073) at rows 0, 6 and 12, then 3 rows of brown face, a nail row and a dark shadow row. Each light strip is only a 1-row rim or plank-end highlight, not a top surface, and no band ends in an edge line with eave shadow below it. The post at x=7 has 2 light rows (0-1) over 12 rows of vertical brown face, which is only a rim. Nothing widens and narrows into an ellipse, and no contents or roof plane are visible. The width profile is a constant 10 for rows 0-14, so the whole sprite reads as a flat front view, even though the name says it is seen from above."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a thin, narrow strip of stacked brown planks. Its dark edge pixels are 0% neutral, so the outline is tinted dark brown and reads as dark_material_tone, which matches Beodeul practice. There are no flat 5x5 areas (0% near-flat coverage). It has only 7 visible tones per tile, against 9 for the hedge, 17 for the stall and 20 for the well. For a thin prop I judged density by eye, not by the per-tile count. The planks use about 3-4 lightness steps, and the rusty nails and the wooden post are barely readable. Each plank's top and south end are only hinted at with a light edge and a dark line. Next to the references the strip looks thinner and more uniform, closer to stacked logs than to weathered scrap planks. It has no per-plank grain, wear or rust variation, and it would need more ramp steps and texture to sit beside the hedge or well without looking flatter.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 1행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 1행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 17651
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "overlapping plank band (left), each plank has a 1-row light end cap at rows 0, 6 and 12",
+      "rows": "0-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": "5, 11"
+     },
+     {
+      "part": "wooden post (right, x=7), flat vertical face",
+      "rows": "4-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dark gap or post between planks (x=5)",
+      "rows": "0-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 1,
+    "front_face_rows": 15,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The drawing is a 10-wide strip, 15 rows tall, that tiles vertically. Each plank has a 1-row light end line (#d6b073) at rows 0, 6 and 12. Below it come 3 rows of vertical face, a nail row and a dark shadow row, so the repeat is 6 rows. A 1-row light line is a rim, not a top surface. The post at x=7 is a uniform vertical face from row 4 to row 13, with no top band, edge line or ellipse. The dark column at x=5 is flat as well. The whole thing reads as a flat front elevation of planks. It does not read as an open frame with horizontal beams showing top faces, so the frame kind does not fit well."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a narrow strip of vertical brown planks with a darker brown edge, and the picture is too small to show much more. The measured facts support that. Its dark edge pixels are 0% neutral, so the outline is tinted and reads as dark material tone, not a sticker line. It has 0% near-flat coverage, so there are no big flat fills. But the whole piece uses only 7 distinct colours, which gives about 7 visible tones per tile. That is below the hedge (9) and far below the stall (17) and the well (20). Wood reads as roughly 3-4 steps against Beodeul's 5-6. Plank tops and south ends are only lightly differentiated. The rusty nails and weathering are at most a dot or two, with no per-plank highlights or grain clusters. The bench and lamp references show 0 visible tones per tile because they are thin, so I judged density by eye. Next to the richer Beodeul props the candidate looks thinner and flatter. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 17793
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "left plank stack (overlapping planks)",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "wooden post (right column)",
+      "rows": "0-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 1,
+    "front_face_rows": 14,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "Column x=2 repeats a 1-row light line (rows 0, 6, 12), 3 rows of face, a nail row and a dark row. Each light line is only a 1-row highlight on the plank's upper edge, and no band of top-surface rows sits above a front-edge line. The planks are vertical faces stacked in a front elevation. The post at x=7 has a light cap of 2 rows (0-1) over a dark face (rows 4-13), which is a rim and not an ellipse or a top plane. The dark column at x=5 is a gap or shadow. No horizontal plank top or post top is visible, so the main top is 1-2 rows and the front face is about 14 rows."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a narrow vertical strip of plank and post. Its whole palette is only 7 colours, against 14 for the bench and lamp and 38-40 for the stall and well. Its 7 visible tones per tile are at the level of the hedge (9) but well below the stall (17) and well (20). There are no flat fills (0% near-flat). The dark edges are fully tinted (0% neutral), so it avoids the black-sticker look. Each material (plank wood, post, nail rust) has only about 3 lightness steps, whereas Beodeul uses 5-6. The plank faces show little per-plank highlight, grain or weathering variation, so the strip reads as stripes and looks thinner and flatter than the bench or hedge. The shading is too shallow for the Beodeul standard.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 1행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 1행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 16271
+  }
+ ],
+ "decidedAt": "2026-10-22T16:14:08.687Z",
+ "cells": {
+  "16": [
+   "afbff98ad02e4fe9"
+  ],
+  "24": [
+   "277acc74780fb6b2",
+   "5f3c92a86bc05e14",
+   "7264444cd3922584",
+   "864b5db4c664fddc",
+   "94302c4a4576e3a9",
+   "c524949897242d03"
+  ],
+  "32": [
+   "0356c67026eee920",
+   "4df4cadde6f0e7c9",
+   "62c2fbc4996d0056",
+   "846e6a898a1d8755",
+   "8d91ea2491f1cd07",
+   "f299205d2a0e01e6"
+  ],
+  "48": [
+   "0428099aac48f71a",
+   "41d084b883aaf559",
+   "610b182e8c2b0287",
+   "9112f5e9e45c1290",
+   "ad9a82eaf4a933fb",
+   "ba0fd72ef322c9e0"
+  ]
+ }
+}

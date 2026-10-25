@@ -513,3 +513,8 @@ def main():
 
 if __name__ == "__main__":
     main()
+    # 주제 꼬리 뒤(33,152~)의 마당 바닥 꼬리(beodeul-yard/bake_yard.py)는 이 스크립트가 시트를 다시 쓰면 잘린다 — 이어서 다시 굽는다.
+    _yard = HERE.parent / "beodeul-yard" / "bake_yard.py"
+    if "--dry" not in sys.argv and _yard.exists() and G.SHEET_PATH == G.ROOT / "public/assets/beodeul-city/beodeul-city-chipset.png":
+        import subprocess
+        subprocess.run([sys.executable, str(_yard)], cwd=G.ROOT, check=True)

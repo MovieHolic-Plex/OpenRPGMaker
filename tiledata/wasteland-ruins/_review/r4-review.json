@@ -1,0 +1,120 @@
+{
+ "boards": [
+  "/home/main/z-project/rpg-zzu-village-art/tiledata/wasteland-ruins/_review/r4-board-weeds-a.png",
+  "/home/main/z-project/rpg-zzu-village-art/tiledata/wasteland-ruins/_review/r4-board-weeds-b.png",
+  "/home/main/z-project/rpg-zzu-village-art/tiledata/wasteland-ruins/_review/r4-board-car-burnt.png",
+  "/home/main/z-project/rpg-zzu-village-art/tiledata/wasteland-ruins/_review/r4-board-van-rust.png",
+  "/home/main/z-project/rpg-zzu-village-art/tiledata/wasteland-ruins/_review/r4-board-watchtower.png",
+  "/home/main/z-project/rpg-zzu-village-art/tiledata/wasteland-ruins/_review/r4-board-log-seat.png",
+  "/home/main/z-project/rpg-zzu-village-art/tiledata/wasteland-ruins/_review/r4-board-stall-b.png",
+  "/home/main/z-project/rpg-zzu-village-art/tiledata/wasteland-ruins/_review/r4-grid-weeds-a.png",
+  "/home/main/z-project/rpg-zzu-village-art/tiledata/wasteland-ruins/_review/r4-grid-weeds-b.png",
+  "/home/main/z-project/rpg-zzu-village-art/tiledata/wasteland-ruins/_review/r4-grid-car-burnt.png",
+  "/home/main/z-project/rpg-zzu-village-art/tiledata/wasteland-ruins/_review/r4-grid-van-rust.png",
+  "/home/main/z-project/rpg-zzu-village-art/tiledata/wasteland-ruins/_review/r4-grid-watchtower.png",
+  "/home/main/z-project/rpg-zzu-village-art/tiledata/wasteland-ruins/_review/r4-grid-log-seat.png",
+  "/home/main/z-project/rpg-zzu-village-art/tiledata/wasteland-ruins/_review/r4-grid-stall-b.png"
+ ],
+ "reviews": [
+  {
+   "id": "weeds-a",
+   "verdict": "fail",
+   "view34": "fail",
+   "quality": "fail",
+   "reasons": [
+    "At 1x and 3x on earth it reads as a small round bush or sapling, not flat weeds: a smooth domed outline fills rows 1-14 across nearly the full 16 px width.",
+    "Shading runs top to bottom like a standing volume: light green in rows 2-6, dark (18,58,36) in rows 10-13, and a brown trunk-like stub in rows 13-15 (x≈7-9). The receipt judge also read it as a front-elevation bush.",
+    "There are no separate blades or rosettes. The \"two broad-leaved rosettes\" are invisible, and the two orange pixels at rows 3 and 4 read as berries.",
+    "Next to the Beodeul grass and hedge it is a soft blob with no leaf clusters; the silhouette is almost square."
+   ],
+   "fix": "Redraw it as a low, irregular decal: a few separate blade tufts and 1-2 rosettes radiating from centres, with earth showing between them. Keep most pixels in rows 6-15 and use a small cast shadow, not a dome gradient. Break the square silhouette.",
+   "sha": "a6d19b070a956116590649ffd369067089a38b52111da666257b3f07f557e378"
+  },
+  {
+   "id": "weeds-b",
+   "verdict": "fail",
+   "view34": "fail",
+   "quality": "fail",
+   "reasons": [
+    "It reads as a yellow hay bale or block sitting on a brown dirt mound. A flat yellow mass fills rows 0-7 across the full width, with a hard horizontal boundary at rows 7-8.",
+    "There are no seed heads or blade strokes. The yellows (184,155,31) and (210,165,76) form 2-3 px squares, not grass lines.",
+    "The brown earth mass in rows 8-12 is taller than the grass and looks like a mound face; the green shoots in rows 11-15 sit at the bottom like a frontal layer.",
+    "Next to the Beodeul grass it is blocky and flat-filled; the \"patch on the ground\" read fails."
+   ],
+   "fix": "Draw thin dry blades, 1 px wide and leaning, with seed-head dots at their tips. Spread them as a loose tuft over a small, visible earth patch, keep the outline irregular, and drop the solid yellow slab and the dirt-mound block.",
+   "sha": "f9dab8047d4cb1d8cbcb59145527afe89ae43e7cf24f2a090e82a8c1f18fe0d7"
+  },
+  {
+   "id": "car-burnt",
+   "verdict": "fail",
+   "view34": "pass",
+   "quality": "fail",
+   "reasons": [
+    "View: there is a roof plane in rows 4-13 and hood and trunk plates in rows 9-17 above a side band in rows 18-22, so the top-plus-front structure is present.",
+    "Near-black dominates: 420 of 1026 opaque pixels have RGB sum below 90. The window frames in rows 5-17 and the tyres in rows 22-28 are flat (14,23,32) and (9,17,37) slabs, so it reads as a black sticker cut-out.",
+    "It does not read as burnt. The roof is a light salmon block with a brick-like pattern in rows 4-13, lighter than the body, with no char, soot gradient or scorch transition. It reads as a red-topped car, not a charred shell.",
+    "The silhouette is a cartoon cab-hump with big black wheel blobs and looks toy-like next to the Beodeul stall and well. The white 1 px dots on the black glass (rows 8 and 13) read as rivets or eyes."
+   ],
+   "fix": "Darken the roof and hood to charred greys and browns with rust bleeding in at the edges. Use 4-5 value steps of dark warm grey for the empty window frames instead of flat near-black, and show the burnt interior through the windows. Replace the black wheel blobs with flattened tyre tops in dark grey material tones and add soot streaks on the side band.",
+   "sha": "995a58c70db8299d89336ec378f04f6a4b44d29085ff19dc895aad2e53269105"
+  },
+  {
+   "id": "van-rust",
+   "verdict": "fail",
+   "view34": "pass",
+   "quality": "fail",
+   "reasons": [
+    "View: the roof top is clear, with ribs, a crate and a spare tyre in rows 2-16, then the cab top and windshield slope at the east end in rows 3-14, the south side in rows 17-24 and tyres in rows 25-28. The 3/4 read is unambiguous.",
+    "The rust is pasted stickers: the same 4-6 px orange ovals repeat at about 9 spots (rows 3-7 at x 2-6, rows 13-16 at x 21-27 and x 40-48, rows 19-24 at x 12-25, and others). Each is a flat 2-3 tone blob with no streaking, pitting or edge bleed.",
+    "The white-grey body is a clean, even fill (four greys 148-195) with regular rib lines. Apart from the stickers it looks new, not abandoned. The described sliding door is not legible on the side.",
+    "The tyres in rows 25-28 are flat near-black (14,23,32) ovals. Next to Beodeul the body looks flatter and more like a toy model."
+   ],
+   "fix": "Replace the oval stickers with rust that follows the form: streaks running down from the roof seams and ribs, pitted patches at the panel bottoms and wheel arches, and dirt grime along the sill. Break the body fill with dents and a missing or open panel, draw the sliding door seam and handle, and render the tyres in dark rubber tones with a flattened top.",
+   "sha": "670e0e52376f4d12214bd6644abe3a1679997fad83763594b4961a9f335d92ed"
+  },
+  {
+   "id": "watchtower",
+   "verdict": "fail",
+   "view34": "fail",
+   "quality": "fail",
+   "reasons": [
+    "Ambiguous view: the roof top is only rows 0-8 of 64 (about 14%). The \"lit plank floor\" in rows 10-18 sits directly under the roof and reads as a horizontal-plank front wall of a box, not a deck seen from above; under a roof the floor could not be visible from above anyway.",
+    "Rows 27-62 are a pure front elevation: perfectly mirror-symmetric X-bracing, a centre ladder and two footings. The whole object is a rigid 32x64 rectangle with no taper and no ground cast shadow.",
+    "The sandbag parapet is not legible. Rows 19-20 are a uniform grey band that reads as a stone sill.",
+    "The tarp is a flat teal rectangle in rows 1-6 (x 3-13), and the rust spots are the same orange oval stickers as on the van.",
+    "It reads as tidy and new rather than scavenged: even plank spacing, symmetric legs and no missing boards. Next to the Beodeul house and well it looks like a clean wooden cabinet on stilts."
+   ],
+   "fix": "Choose one: an open lookout (no roof, deck top seen from above for 6-8+ rows, with lumpy sandbag tops on the parapet), or a roofed one where the roof overhang reads clearly and the deck is shown only as a front rail. Make the legs asymmetric with a patched or missing brace, taper the legs or make them uneven, and replace the sticker tarp and rust with shaped, shaded patches.",
+   "sha": "83f6a1c95ce9c62881a50d7bd97343d669300dcf9a3706586f452600acf5c584"
+  },
+  {
+   "id": "log-seat",
+   "verdict": "fail",
+   "view34": "fail",
+   "quality": "fail",
+   "reasons": [
+    "The left end in rows 3-12 (x 2-6) is drawn as an upright oval end cap with a light rim. For an east-west log seen from the south in 3/4 view, that is a visible side face; three of the four receipt judges flagged the side or isometric face.",
+    "There are no rings: the \"sawn end showing rings\" is a light rim around a flat brown interior.",
+    "The silhouette is a squared rectangle with straight top and bottom edges in rows 2-13, so it reads as a crate or box, not a round log. The top highlight is a single flat cream stripe in rows 4-5, which looks like a sticker rather than curved bark.",
+    "Unexplained teal pixels at rows 11-13 and a yellow-grey blob at the right end in rows 11-14 (x 28-31) read as stray marks, not moss or a branch stub.",
+    "Only 13 colours. Bark grain is a few horizontal dashes, and the piece looks flatter than the Beodeul bench."
+   ],
+   "fix": "Round the top and bottom edges so the cross-section reads as a cylinder, with the highlight band curving into darker bark at the front. Drop the side-on end cap, or reduce it to a thin sliver with a hint of rings on the south-facing cut. Add bark furrows and knots, and make the right-end stub a readable broken branch or remove it.",
+   "sha": "d53aeea93a7c0ce981243287b5f5eb54c3df25eb1d6fc82f1a551129f3ad5116"
+  },
+  {
+   "id": "stall-b",
+   "verdict": "fail",
+   "view34": "fail",
+   "quality": "fail",
+   "reasons": [
+    "The lower half, rows 14-31, is a pure front elevation of a chest of drawers: six drawer fronts with knobs in two rows (rows 22-31). The \"lit plank counter top\" is only a 1 px cream line at row 21, so no counter top surface is seen from above. 10 of 12 independent eyes in the receipt also called it a front elevation.",
+    "The goods in rows 16-20 are drawn in elevation inside a framed shelf box, as if behind glass, not lying on a top surface.",
+    "The tarp roof in rows 0-13 sits straight on the counter. No poles or battens are visible between them, so the stall reads as a cabinet with a blue lid.",
+    "Even drawer modules, knobs and straight trim make it read as indoor furniture, not a scavenged market stall. Compared with the Beodeul cheese stall, which shows the counter top and goods from above and is lifted on posts, it is flatter and has the wrong typology."
+   ],
+   "fix": "Give the counter a lit plank top 5-8 rows deep with the scrap goods laid on it, seen from above. Shorten the front to a rough plank or crate face (mismatched boards, no drawers or knobs). Show two or more poles lifting the sagging tarp above the counter, with a shadow gap under the tarp.",
+   "sha": "b0df1c6b4344aca941fa33374692a9a3e20599486966f247c6d507e13f21be07"
+  }
+ ]
+}

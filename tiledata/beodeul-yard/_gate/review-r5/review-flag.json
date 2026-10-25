@@ -1,0 +1,24 @@
+{
+  "surface": "flag",
+  "image": "tiledata/beodeul-yard/_gate/yard_flag.png",
+  "pixel_sha256": "3e8db42a9b157393b6951e220dabe2c703aab2003b81239687ddc9789d7172e5",
+  "verdict": "fail",
+  "view34": "pass",
+  "autotile": "pass",
+  "quality": "fail",
+  "material": "fail",
+  "defects": [
+    "/home/main/.cache/yard/vqa-r5/flag_body8x.png (1x crop 96..160,48..112): slabs are still small 3-6px pieces, many cut with an identical notched '<' chevron outline (8x (60,60),(60,190),(60,320),(60,450),(190,60),(190,190),(320,190),(320,320)), so the court reads as a small arrowhead mosaic, not large irregular crazy-paved limestone flags; no slab reaches the large-flag scale seen in compare-3x bottom row.",
+    "/home/main/.cache/yard/vqa-r5/flag_hole8x.png: the '<' chevron and pale '1'-shaped crack glyph repeat exactly every 16px down the left column (8x x 10-60, y~60,190,320,450) and along the top row - a stamped motif.",
+    "/home/main/.cache/yard/vqa-r5/flag_body8x.png: 56% (h) / 44% (v) pixel-identical at a 16px shift vs 9-18% at 4/8px (r4: 54/45) - cell-period repetition unchanged; at yard_flag-4x.png x 340-690, y 200-470 the diagonal chevron rows give an obvious woven/herringbone texture on a 64px period."
+  ],
+  "evidence": "Plane is flat and lit upper-left; rim with 2px south face, corners, hole, neck and isolated cell join cleanly. Pale stone with mossy joints is distinct in colour from the blue Beodeul plaza. However the r4 defects persist: slabs are too small and their chevron cut is stamped in every cell, so the surface reads as a repeating arrowhead mosaic rather than irregular flagstones, and the 16px grid is readable at 4x.",
+  "crops": [
+    "/home/main/.cache/yard/vqa-r5/flag_full8x.png",
+    "/home/main/.cache/yard/vqa-r5/flag_body8x.png",
+    "/home/main/.cache/yard/vqa-r5/flag_south8x.png",
+    "/home/main/.cache/yard/vqa-r5/flag_hole8x.png",
+    "/home/main/.cache/yard/vqa-r5/flag_iso8x.png"
+  ],
+  "reviewer": "claude-opus independent adversarial review 2026-10-23 r5"
+}

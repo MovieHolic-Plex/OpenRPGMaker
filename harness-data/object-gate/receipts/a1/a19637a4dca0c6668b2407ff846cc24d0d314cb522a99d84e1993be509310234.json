@@ -1,0 +1,422 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a19637a4dca0c6668b2407ff846cc24d0d314cb522a99d84e1993be509310234",
+ "width": 16,
+ "height": 48,
+ "kind": "structure",
+ "name": "broken concrete wall running north-south seen from above: three stepped wall blocks receding north, each showing its top surface and short south face, with rebar and weeds",
+ "label": "wasteland_ruins/wall-v",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 14,
+  "tileColorsP90": 16,
+  "darkV5": 57,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 3
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "wrong",
+   "borderline",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "borderline",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "north wall block top",
+      "rows": "0-8",
+      "evidence": "a",
+      "front_edge_line_row": 9,
+      "eave_shadow_rows": "10-10"
+     },
+     {
+      "part": "north block south face with rebar",
+      "rows": "10-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "middle wall block top with weeds",
+      "rows": "14-22",
+      "evidence": "a",
+      "front_edge_line_row": 23,
+      "eave_shadow_rows": "24-24"
+     },
+     {
+      "part": "middle block south face",
+      "rows": "24-27",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "south wall block top",
+      "rows": "28-37",
+      "evidence": "a",
+      "front_edge_line_row": 38,
+      "eave_shadow_rows": "39-39"
+     },
+     {
+      "part": "south block south face",
+      "rows": "39-45",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "weeds and rebar",
+      "rows": "5-9, 18-26",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 10,
+    "front_face_rows": 7,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Three stepped wall blocks. Each has a stone top band (rows 0-8, 14-22, 28-37) that ends in a light front-edge line (rows 9, 23, 38) at L=189. A 1-row dark eave shadow follows (rows 10, 24, 39), then a darker south face of 4-7 rows (rows 10-13, 24-27, 39-45). The largest block, the south one, has a 10-row top and a 7-row front face. The dark columns at the left and right edges look like ground or shadow, not an isometric side face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small prop, so I judged it mostly on the measured facts. It has 14 visible tones per 16x16 tile against 12 and 10 for the references. Its near-flat coverage is 0%, the same as both references, so there are no large flat fills. Only 6% of its dark edge pixels are neutral, in line with the references at 7% and 9%, so the outline leans toward the adjacent material tone (grey-brown beside concrete, dark green beside weeds) and is not a black sticker line. By eye, each stepped block has a lighter top face and a darker south face. Cracks, speckle, green weeds and a warm rebar accent add variation. It has about 5 lightness steps on the concrete, slightly fewer than the roughly 6 on the references' roof and stone ramps. That is acceptable for a small ruin piece. Its raw palette is only 20 colours, but the visible tone count matches the references, so it would sit acceptably beside them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17136
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "north wall block top",
+      "rows": "0-9",
+      "evidence": "a",
+      "front_edge_line_row": 9,
+      "eave_shadow_rows": "10-12"
+     },
+     {
+      "part": "north block south face",
+      "rows": "10-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "middle wall block top",
+      "rows": "14-23",
+      "evidence": "a",
+      "front_edge_line_row": 23,
+      "eave_shadow_rows": "24-25"
+     },
+     {
+      "part": "middle block south face",
+      "rows": "24-27",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "south wall block top",
+      "rows": "28-38",
+      "evidence": "a",
+      "front_edge_line_row": 38,
+      "eave_shadow_rows": "39"
+     },
+     {
+      "part": "south block south face",
+      "rows": "39-45",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "weeds and rebar",
+      "rows": "4-10, 18-26",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 11,
+    "front_face_rows": 7,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Three stepped wall blocks are stacked down the sprite. Each has a wide top band, a 1-row light front-edge line (rows 9, 23, 38, L=189), then darker shadow and a south face below. The largest block is the south one: top rows 28-38 with the edge line at 38, then the face and shadow at rows 39-45. The top surfaces are much taller than the faces, but each block has a distinct edge line and a face below it, so the blocks read as top plus front. Weeds and rebar are decor on the tops."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small ruined concrete wall prop, not a roofed house, so it can only be compared on structure and shading craft. The measured facts support it. It has 14 visible tones per 16x16 tile against 12 and 10 for the references. Its near-flat coverage is 0%, the same as both references. Only 6% of its dark edge pixels are neutral (references 7% and 9%), so the outlines carry a tint rather than being a black sticker line. By eye, each block has a lighter top face and a darker south face. Grain and crack variation, rebar and weed accents break up the grey, and there are no large flat fills. The concrete ramp looks like about 4 steps against roughly 5-6 on the reference roofs and walls. That is a little shallower, but it is reasonable for a thin, simple prop, and it does not look thinner or flatter than the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18759
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "north",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "north wall block (top)",
+      "rows": "0-8",
+      "evidence": "a",
+      "front_edge_line_row": 9,
+      "eave_shadow_rows": "10-12"
+     },
+     {
+      "part": "middle wall block (top)",
+      "rows": "14-22",
+      "evidence": "a",
+      "front_edge_line_row": 23,
+      "eave_shadow_rows": "24-25"
+     },
+     {
+      "part": "south wall block (top)",
+      "rows": "28-37",
+      "evidence": "a",
+      "front_edge_line_row": 38,
+      "eave_shadow_rows": "39"
+     },
+     {
+      "part": "weeds and rebar",
+      "rows": "5-9, 19-26",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 10,
+    "front_face_rows": 7,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The wall is drawn as three stepped blocks. Each block has a stone top band (about 9 rows, e.g. rows 28-37), then a light 1-row front-edge line (rows 9, 23, 38, L=189), then a darker south face (rows 10-13, 24-27, 39-45). The tops are real horizontal surfaces ending in an edge line with shadow below. The south block's face is 7 rows (39-45). Weeds and rebar are decor on top. The dark strips at the left and right are outline or shadow, not a receding side face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small grey wall prop, about 14x30 source pixels, so I judged it mostly from the measured facts. It has 14 visible tones per 16x16 tile against 12 and 10 for the references. Near-flat coverage is 0%, the same as both references, so there are no flat fills. Only 6% of its dark edge pixels are neutral, which is in line with the references (7% and 9%), so the outline is a tinted, material-toned dark rather than a black sticker line. By eye, each stepped block shows a lighter top face and a darker south face. Speckled concrete grain, a rusty rebar accent and green weed clumps add variation. The ramp is about 5 steps, slightly shallower than the roof and stone ramps on the houses. Density and texture are comparable to the references for a small prop, and it does not look thinner or flatter next to them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15621
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "north wall block top",
+      "rows": "0-9",
+      "evidence": "a",
+      "front_edge_line_row": 9,
+      "eave_shadow_rows": "10"
+     },
+     {
+      "part": "north wall block south face",
+      "rows": "10-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "middle wall block top",
+      "rows": "14-23",
+      "evidence": "a",
+      "front_edge_line_row": 23,
+      "eave_shadow_rows": "24"
+     },
+     {
+      "part": "middle wall block south face",
+      "rows": "24-27",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "south wall block top",
+      "rows": "28-37",
+      "evidence": "a",
+      "front_edge_line_row": 38,
+      "eave_shadow_rows": "39"
+     },
+     {
+      "part": "south wall block south face",
+      "rows": "39-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "weeds and rebar",
+      "rows": "5-9, 18-26",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 10,
+    "front_face_rows": 8,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Three stacked wall blocks each have a wide top band (rows 0-9, 14-23, 28-37) that ends in a light 1-row front-edge line (rows 9, 23, 38). Each line is followed by a darker brown south face with shadow (rows 10-13, 24-27, 39-47). The nearest block has about 10 rows of top and about 8 rows of front face. Every block has both a top surface and a front face, so the wall reads as three-quarter view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small, thin prop of three stepped grey blocks with rebar and green weeds. It is hard to read at this size, so I leaned on the measured facts. It has 14 visible tones per 16x16 tile, against 12 and 10 for the two references. Near-flat coverage is 0%, the same as both references, so it has no flat fills. Only 6% of its dark edge pixels are neutral, close to the references' 7% and 9%, so the outlines carry a tint rather than being a uniform black line. By eye, each block shows a lighter top face, a mid south face and a darker shadow edge, which gives about 5 grey steps. Cracks, speckle and the green weeds add variation. It has fewer total colours (20) than the references because of its locked palette, but its per-tile visible richness matches theirs. It does not look thinner or more sticker-like than the references, so it passes, though the small size limits how much I can confirm by eye.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17100
+  }
+ ],
+ "decidedAt": "2026-10-22T15:35:18.381Z",
+ "cells": {
+  "16": [
+   "31349b4f05e1c96f",
+   "801815935c8f7851",
+   "e17e62cc608636d5"
+  ],
+  "24": [
+   "0d0ab69a88fefc5a",
+   "6417f4a64a05584b",
+   "65bdf9cc6fd43d76",
+   "6df4e05136bdeb35",
+   "737bb1bc303f186b",
+   "bcdf1061e99b2662"
+  ],
+  "32": [
+   "00cbb26f34a618e2",
+   "0190270b96170292",
+   "37eb34f3e4113829",
+   "39460c78ad63f76b",
+   "4db3282c328e3bc4",
+   "5045d6b6e6e3048c",
+   "7e33ffa990d0ef41",
+   "961b1a8c3cc91506",
+   "9cff3efbe2b61433",
+   "aa6f68bdea12ea9c",
+   "dab18948d9f6ddf9",
+   "ea2d7f377a3d5673"
+  ],
+  "48": [
+   "01a9e5e2a67d922b",
+   "22443c0ad1f38354",
+   "b5ee175a97977bf8"
+  ]
+ }
+}

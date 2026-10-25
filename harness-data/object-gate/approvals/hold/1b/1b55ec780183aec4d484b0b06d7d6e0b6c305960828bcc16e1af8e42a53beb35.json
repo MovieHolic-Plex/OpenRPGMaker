@@ -1,0 +1,16 @@
+{
+ "schema": "oprn-object-gate-hold-decision/1",
+ "pixelSha256": "1b55ec780183aec4d484b0b06d7d6e0b6c305960828bcc16e1af8e42a53beb35",
+ "profileHash": "4d8774b517f41638",
+ "kind": "flat",
+ "decision": "allow",
+ "decidedBy": "supervisor (village-art)",
+ "decidedAt": "2026-10-22T18:49:42.362Z",
+ "by": "delegated",
+ "delegatedBy": "user",
+ "evidence": "/home/main/z-project/rpg-zzu-village-art/tiledata/wasteland-ruins/_review/r18/opus-reviewer-verdict.md",
+ "via": "review-page",
+ "reasons": [],
+ "note": "delegated by user to supervisor 2026-10-23 — wasteland_ruins/rubble-c; gate pass; fresh Opus adversarial reviewer r18 (round 3) pass; delegated by user to supervisor 2026-10-23",
+ "sig": "af56c6b86edf917aa0c77112bd766ca329cc0a714b4d3137e41520a97d2f3e08"
+}

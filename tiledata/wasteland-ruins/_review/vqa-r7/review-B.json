@@ -1,0 +1,88 @@
+{
+ "reviewer": "B",
+ "majors": [
+  {
+   "target": "settlement-1.png",
+   "issue": "Compound is still a left/right mirror: fence runs split by a centred gap, twin junk-car+tyre husks side by side above the fence, two identical small shacks flanking the big shack, identical car-shell husk twice down the right side, two identical water towers. Reads as a symmetric stamp, not a grown camp.",
+   "evidence": "/tmp/vqa-r7-B/s1-compound.png (whole crop; husks top at x~110 and ~220 in 1x crop coords, shacks either side of centre, shells right edge top/bottom)",
+   "fix": "Break symmetry: offset the fence gap, drop one husk, use different shack variants/orientations per slot, single water tower, vary the side props."
+  },
+  {
+   "target": "settlement-1.png, ruined-city-2.png, ruined-city-5.png",
+   "issue": "Identical vehicle stamps repeated close together: same blue sedan twice on one road (settlement-1 E-W road x~425/~630; ruined-city-2 x~280/~695), same green truck twice on the N-S road in settlement-1 (y~85/~325) and twice in ruined-city-5 plaza, plus two identical blue sedans in the ruined-city-5 lot.",
+   "evidence": "/tmp/vqa-r7-B/s1-road.png, /tmp/vqa-r7-B/rc2-road.png, /tmp/vqa-r7-B/rc5-plaza.png",
+   "fix": "One instance per vehicle sprite per screen; add colour/damage/rotation variants or enforce a minimum distance between identical wreck stamps."
+  },
+  {
+   "target": "shanty-3.png, shanty-6.png",
+   "issue": "The water-tower + stall + campfire compound on a concrete pad is the same stamp in both shanty seeds (only weed overlays differ) - the shared-compound reuse fixed in settlements has moved to shanty town. Shanty-3 also repeats the same red shack 4-5x and blue shack 3x, two pairs stacked in the same columns (x~343 and x~447).",
+   "evidence": "/tmp/vqa-r7-B/sh3-tower.png vs /tmp/vqa-r7-B/sh6-tower.png; shanty-3 overview shacks at (343,72)/(343,215) and (447,72)/(447,265)",
+   "fix": "Generate the compound from parts per seed (tower position, stall vs other landmark, pad shape) and diversify shack variants / forbid same variant within ~6 cells or in the same column."
+  },
+  {
+   "target": "mining-7.png, mining-2.png",
+   "issue": "Mine adit still stands free on flat yard dirt with no hillside/rock face behind it - a stone doorway box sitting in a field. In mining-2 it is centred and flanked by two identical boulder piles (third copy below), giving a symmetric stamp look; mining-7 also repeats the same boulder pile twice.",
+   "evidence": "/tmp/vqa-r7-B/m7-yard.png (adit lower right), /tmp/vqa-r7-B/m2-yard.png (adit top centre between twin boulders)",
+   "fix": "Back the adit onto a cliff/terrace or forest edge, or add a rock-mound/spoil-heap behind it; use varied rock pieces and no symmetric flanking."
+  },
+  {
+   "target": "vineyard-3.png, vineyard-8.png",
+   "issue": "Lone golden/ochre cell still present: every vine block has one solid yellow-brown square in its bottom-right row slot, plus bare/dark dead cells in some rows. Reads as a texture error, repeated identically on all 6 blocks.",
+   "evidence": "/tmp/vqa-r7-B/v3-vine.png (bottom row, second-from-right cell); same position in all blocks of /tmp/vqa-r7-B/v3-yard.png and v8-yard.png",
+   "fix": "Remove the end-cap cell or replace it with a proper post/row-end piece matching the vine row; randomise sparse gaps instead of the fixed corner."
+  },
+  {
+   "target": "temple-ruins-5.png, temple-ruins-8.png",
+   "issue": "Flagstone yard still reads freshly paved: uniformly intact crazy paving with a crisp continuous kerb outline, no missing stones, no soil/grass breakthrough, no rubble gradient toward the edge. Only a few bush and wall-chunk decals sit on top.",
+   "evidence": "/tmp/vqa-r7-B/t5-yard.png, /tmp/vqa-r7-B/t8-yard.png (whole paved area and outer kerb)",
+   "fix": "Erode the paving: drop stones to dirt/grass at the margins and in patches, break the kerb line, add cracked/sunken stone variants and rubble scatter."
+  }
+ ],
+ "minors": [
+  {
+   "target": "piece-road-crack-c.png",
+   "issue": "Piece FAIL reason: the crack is a small closed, near-symmetric loop glyph (reads like a rune/character), not a crack - artificial against check 2. On ruined-city-2 it shows as a dark sigil on the road.",
+   "evidence": "/tmp/vqa-r7-B/z-piece-road-crack-c.png centre; /tmp/vqa-r7-B/rc2-road.png left (x~130,y~155 in crop)",
+   "fix": "Redraw as an open branching crack with uneven segment lengths, or drop it and keep crack-a/b."
+  },
+  {
+   "target": "piece-asphalt-ph.png",
+   "issue": "Bead speckle is gone and no repeat grid is visible on maps, but the interior is a high-contrast light/dark camo blotch with dirt-brown flecks - reads more like gravel than worn asphalt.",
+   "evidence": "/tmp/vqa-r7-B/asph-int.png",
+   "fix": "Lower blotch contrast by one ramp step; keep brown flecks only near edges/cracks."
+  },
+  {
+   "target": "piece-road-crack-c.png",
+   "issue": "Gate preview background is the old speckled/bead asphalt with a pale wash, not the new asphalt-ph interior - preview may not match what is composed.",
+   "evidence": "/tmp/vqa-r7-B/z-piece-road-crack-c.png",
+   "fix": "Regenerate the gate image on the current asphalt interior."
+  },
+  {
+   "target": "settlement-4.png",
+   "issue": "Lower-left quarter far from the road is still sparse open dirt with a lone tent/bed/shack and scattered rubble.",
+   "evidence": "/tmp/vqa-r7-B/s4-bare.png",
+   "fix": "Pull the outlying dwellings closer to the road or add a path/garden plot linking them."
+  },
+  {
+   "target": "vineyard-3.png, vineyard-8.png",
+   "issue": "Both seeds use the same kit and count (winery, 3 vine blocks, barrel rack, press, basket pair) in roughly mirrored arrangement.",
+   "evidence": "/tmp/vqa-r7-B/v3-yard.png vs /tmp/vqa-r7-B/v8-yard.png",
+   "fix": "Vary block count/size and add or drop one prop type per seed."
+  },
+  {
+   "target": "settlement-4.png",
+   "issue": "Sidewalks at the road jog now connect; OK. Noted as verified."
+  }
+ ],
+ "pieces": {
+  "wasteland_ruins/dirt-b": "pass",
+  "wasteland_ruins/dirt-c": "pass",
+  "wasteland_ruins/dirt-d": "pass",
+  "wasteland_ruins/asphalt-ph": "pass",
+  "wasteland_ruins/road-crack-a": "pass",
+  "wasteland_ruins/road-crack-b": "pass",
+  "wasteland_ruins/road-crack-c": "fail",
+  "wasteland_ruins/pothole-a": "pass",
+  "wasteland_ruins/pothole-b": "pass"
+ }
+}

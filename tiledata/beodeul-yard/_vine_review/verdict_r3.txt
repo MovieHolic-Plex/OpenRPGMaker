@@ -1,0 +1,22 @@
+VERDICT: PASS
+
+Reviewer: fresh adversarial Visual QA, round 3 (v4, 2-cell vine rows). Images checked: v4_rows_1x/2x/4x, v4_with_refs_1x/2x, v4_tiles_4x, v4_cells_split_8x, beodeul_refs_4x, ref_tree-1a786c_4x. Earlier verdict_r2 was read for context.
+
+At 1x-2x play scale, none of the four rules is broken anymore. The issues below are minors that would polish the tile; none blocks it.
+
+RULE CHECK
+1. 3/4 top plane / fold: PASS. The top cells are a lighter, lower-contrast plane, and the lip of lit clumps over a dark crevice sits near 2/3 height. Below it is a clearly darker front band. At 2x the read is "canopy seen from above, rolling over into a shaded front", not a side-view hedge wall. At 1x it reads as a green band with a dark lower edge and fruit under it, which is acceptable.
+2. Beodeul lit clumps: PASS (marginal on the top plane). The lip clumps are separate and rounded, lit from the upper left, with dark crevices between them, so they are comparable to the manor shrubs and the tree. The top plane is intentionally flat. Its greens sit between the pergola top and the tree, close enough to fit next to Beodeul at 1x/2x.
+3. Grapes: PASS. The grapes are now a clearly purple-violet with a lighter top-left pixel (visible at 4x/8x). They sit at varied heights and sizes, 1-3 bunches per cell. At 1x they read as small purple bunches rather than dark holes. The glint itself does not survive at 1x, which is unavoidable at this size.
+4. Seamless repetition: PASS. No seams between middles at any scale. Top-plane grapes are gone, so the 16 px grape grid from v3 is gone. Ends are rounded at the top corners, and the lip sags past the end posts, so the ends look finished.
+
+MINORS (non-blocking)
+a. Top-plane texture: at 4x-8x the top plane is a mosaic of flat polygon blobs outlined with 1-px dark olive. It looks closer to crazy paving or turtle shell than to leaves. It is fine at 1x-2x. Fix: break some outlines, add a few 2-3 px lit leaf tips, and lighten the back edge slightly so the back-to-front gradient becomes visible. At present the gradient barely reads; the plane looks almost uniform.
+b. Lip rhythm: the lip clumps are nearly the same size at nearly even spacing. At 2x they read a little like a beaded trim along the whole row. Fix: vary clump width (3-6 px), and let one clump in some middles push 1-2 px higher or lower.
+c. Mid-post caps (m2, m5): a small orange nub on the top edge with only a 1-2 px shaft. At 1x/2x it still reads as an orange speck more than a post top. It is acceptable, but a 1-px darker shadow pixel to its lower right, or a slightly wider cap, would help it read as a post.
+d. Silhouette: the canopy outline is still a near-perfect rectangle with straight vertical sides. Overall the rows read slightly as clipped topiary or boxwood rather than vines. The 2-piece shortest row is the worst case (a green box between two sticks). Fix: a few stray tendrils or leaf tufts beyond the top edge and sides, plus more corner rounding on the top cell.
+e. Front grape band: at 1x the grapes still merge into a purple fringe along one band just above the trunk line. Heights do vary now, so this is minor. One or two bunches higher up, partly under the lip, would loosen it.
+f. End posts: thin, flat 2-tone sticks that are taller than the canopy. They have no lit cap or cast shadow of their own. Acceptable.
+g. Ground shadow: now solid, and offset slightly to the lower right. Good. Trunks vary and some middles have none. Good.
+
+Summary: v4 fixes every v3 major. The top plane and fold read correctly, the ends are rounded, top grapes are removed, the hem is varied, and the post caps have shafts. What remains is texture and rhythm polish (minors a-e). PASS.

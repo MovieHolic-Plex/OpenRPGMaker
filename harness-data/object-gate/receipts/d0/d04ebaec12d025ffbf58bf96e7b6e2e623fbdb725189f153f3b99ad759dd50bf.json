@@ -1,0 +1,347 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d04ebaec12d025ffbf58bf96e7b6e2e623fbdb725189f153f3b99ad759dd50bf",
+ "width": 48,
+ "height": 32,
+ "kind": "structure",
+ "name": "tarp lean-to shelter: sloped tarp roof seen from above held by poles, open front with dark inside, bedroll and crate",
+ "label": "wasteland_ruins/lean-to",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "refer",
+ "reasons": [
+  "3/4: 독립 눈이 「3/4 아님」 12/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면"
+ ],
+ "view34": {
+  "verdict": "refer",
+  "reasons": [
+   "독립 눈이 「3/4 아님」 12/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 21,
+  "tileColorsP90": 22,
+  "darkV5": 32,
+  "nearBlackEdge": 0.38,
+  "opaqueTiles": 6
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "tarp roof (sloped teal plane with a top beam)",
+      "rows": "2-19",
+      "evidence": "c",
+      "front_edge_line_row": 20,
+      "eave_shadow_rows": "21-22"
+     },
+     {
+      "part": "bedroll and crate inside the open front",
+      "rows": "22-31",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "side poles",
+      "rows": "18-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 18,
+    "front_face_rows": 11,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 2-19 are a large sloped tarp roof plane in teal with wrinkles and creases, topped by a brown beam in rows 1-2. A light 1-row front-edge line at row 20 (L=172) ends the roof. Dark eave shadow follows in rows 21-22. Below it, rows 21-31 form an open dark front face about 11 rows tall, with the bedroll and crate inside as decor. The poles at left and right are vertical supports. This matches the green reference pattern of a top band, an edge line, shadow and a front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small lean-to, so I judged it on tile richness rather than size. It has 19 visible tones per 16x16 tile against 12 and 10 for the references, and 0% near-flat coverage like both references. Its dark edge pixels are 0% neutral, so the outline carries a tint: dark teal beside the tarp and dark brown beside the poles and crate. That is the material-tone approach, not a uniform black sticker line. The tarp has mottled patches and fold highlights over about 4-5 teal steps, and the dark interior, bedroll and crate each add their own tones. The cloth is smoother than the tile-scallop roofs and the tarp ramp is a little shallower than Beodeul's 5-6 steps, but I found no flat fills and no sticker look. A careful artist would accept it beside the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15626
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "tarp roof (sloped teal plane seen from above)",
+      "rows": "3-19",
+      "evidence": "c",
+      "front_edge_line_row": 20,
+      "eave_shadow_rows": "21-22"
+     },
+     {
+      "part": "top ridge beam / back pole strip",
+      "rows": "1-2",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "crate top inside the shelter",
+      "rows": "22-23",
+      "evidence": "a",
+      "front_edge_line_row": 24,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "bedroll",
+      "rows": "25-30",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 17,
+    "front_face_rows": 11,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The tarp roof fills rows 3-19 as a large teal plane with fold and crease highlights. It ends in a light front-edge line at row 20, which is followed by dark eave shadow in rows 21-22. Below that, the open front shows a dark interior in rows 21-31 (11 rows) with a crate and bedroll. Brown poles run down both sides. The crate has its own lighter top (row 22 is tan) above its front slats. The roof is a sloped top surface of 17 rows over a front face of 11 rows, so it reads as three-quarter view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is small, about 25x18 source pixels. Its tarp roof shows several teal steps plus mottled patches and fold lines, and the poles, bedroll and crate add warm brown accents. Measured facts support this. It has 19 visible tones per tile against 12 and 10 for the references. Its near-flat coverage is 0%, the same as the references. Its dark edge pixels are 0% neutral, so the outlines lean dark teal or brown rather than black. It has no flat fills. It is less structured than the scalloped-tile references, with fewer per-tile highlights, but the density is at or above the references and it reads as a material-toned piece rather than a sticker.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16163
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "tarp roof (sloped canopy plane)",
+      "rows": "2-19",
+      "evidence": "c",
+      "front_edge_line_row": 20,
+      "eave_shadow_rows": "21-22"
+     },
+     {
+      "part": "ridge beam / top edge",
+      "rows": "0-1",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "crate inside shelter",
+      "rows": "22-24",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "bedroll inside shelter",
+      "rows": "25-30",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 18,
+    "front_face_rows": 11,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is a teal tarp roof over rows 2-19, a sloped plane with fold and highlight marks. It ends in a light front-edge line at row 20 (#a1b2ae), followed by dark eave shadow at rows 21-22. Below that is an open dark front face at rows 21-31 (about 11 rows) with brown support poles at both sides. Inside are a bedroll and a crate, which are contents rather than the main body. The width grows from 38 to 48, with no isometric side face. The roof shows a clear top surface and the front face has 3+ rows, so it reads as three-quarter view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a very small lean-to, about one to two tiles wide, so it is not judged on size. The tarp roof has a light top edge, mid teal, darker folds and mottled wrinkle patches, plus a dark interior and a bedroll and crate, giving roughly 4 distinct steps against the references' 5-6. The outline follows the material: dark teal beside the tarp and dark brown beside the poles, with no neutral black line. The measured facts agree: 0% neutral dark edge pixels, 0% near-flat coverage, and 19 visible tones per tile, above the references' 12 and 10. The tarp is less textured than the references' scalloped tile roofs, but it has no flat fills and carries enough variation to sit next to the references without looking like a sticker.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15942
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "tarp roof (sloped plane seen from above)",
+      "rows": "1-19",
+      "evidence": "c",
+      "front_edge_line_row": 20,
+      "eave_shadow_rows": "21-22"
+     },
+     {
+      "part": "crate inside shelter (top band and front slats)",
+      "rows": "22-24",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "bedroll inside shelter",
+      "rows": "24-29",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 18,
+    "front_face_rows": 11,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The tarp roof fills rows 2-19 as a large teal sloped plane with a brown ridge beam at the top (rows 0-1). It ends in a light front-edge line at row 20 (#a1b2ae), followed by dark eave shadow at rows 21-24 in the open front. The front face is the dark interior with poles at the sides, rows 21-31 (about 11 rows), holding a bedroll and a crate. The crate shows its own top band at rows 22-24. The roof top surface is far larger than a rim, so this is a 3/4 view and not a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is small, so I judged mostly from the measured facts and what the board shows. It has 19 visible tones per tile against 12 and 10 for the references. Near-flat coverage is 0%, the same as both references. The dark edge pixels are 0% neutral, so the outlines are tinted: dark teal beside the tarp and dark brown beside the poles and crate. The tarp shows about 5 teal steps with mottled folds and highlights, and the dark open front, bedroll and crate add separate value groups. Texture is less systematic than the tile scallops and plaster speckle on the references, so I rate it 'some' rather than 'rich'. No large flat fills are visible, and a careful artist would accept it next to the references without it looking thinner or more sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 14811
+  }
+ ],
+ "decidedAt": "2026-10-22T15:35:18.388Z",
+ "cells": {
+  "16": [
+   "81e38c66dd6a243b",
+   "966bdaaab3ea3859",
+   "9a35c2812c690231",
+   "be76326c3ee95f12",
+   "d58c0b9097e80135",
+   "ec2a204c53f85fee"
+  ],
+  "24": [
+   "2ab58230c41f6f42",
+   "4392f2ebae5a4ada",
+   "55b828703240948d",
+   "94b4892b5e689b66",
+   "9ac95ecd29f8fa4c",
+   "ade62961df4de8fd",
+   "c14752297ddcbe25",
+   "dfdc1b3b716c44f0"
+  ],
+  "32": [
+   "05eb1780fe8dac0b",
+   "37ecd68e050febaf",
+   "4acd7c151b3ee79a",
+   "5da427b330b2d23a",
+   "91d689e51a0e1ea2",
+   "a542b12eb5ec8c73"
+  ],
+  "48": [
+   "28e84a697714cf2d",
+   "9f9196cfa41deacf"
+  ]
+ }
+}

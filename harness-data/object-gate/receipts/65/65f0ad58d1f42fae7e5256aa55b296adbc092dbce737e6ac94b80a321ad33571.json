@@ -1,0 +1,358 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "65f0ad58d1f42fae7e5256aa55b296adbc092dbce737e6ac94b80a321ad33571",
+ "width": 64,
+ "height": 48,
+ "kind": "structure",
+ "name": "rusted steel shipping container turned into a home, seen from above: flat ribbed container roof as a top plane with corner castings, corrugated front side with a cut-in door under a sagging tarp awning on two poles and a cut-out window with bars",
+ "label": "wasteland_ruins/container-home",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 17,
+  "tileColorsP90": 22,
+  "darkV5": 33,
+  "nearBlackEdge": 0.01,
+  "opaqueTiles": 12
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "container roof (flat ribbed plane with corner castings)",
+      "rows": "4-18",
+      "evidence": "a",
+      "front_edge_line_row": 19,
+      "eave_shadow_rows": "20-21"
+     },
+     {
+      "part": "sagging tarp awning on two poles",
+      "rows": "19-28",
+      "evidence": "c",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": "29-30"
+     },
+     {
+      "part": "small crate at lower right",
+      "rows": "37-45",
+      "evidence": "a",
+      "front_edge_line_row": 38,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 15,
+    "front_face_rows": 26,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The container roof is a 15-row plane (rows 4-18) with rust patches and corner castings. It ends in a light front-edge line at row 19 (L=172 at x=32 and x=47), followed by dark eave shadow at rows 20-21 (L=56 at x=47). Below that is the corrugated front face, rows 19-45, with the door, barred window and tarp awning. The awning is teal and has stripe rows 19-28 that act as a sloped canopy plane, held up by two poles. The small crate at lower right has a light top band at row 37 and legs below, so it has a top as well."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small container home: a ribbed roof strip with corner castings on top, a corrugated front with rust patches, a teal tarp awning with a barred window beside it, and a door cut-in. Measured facts favour it. It has 17 visible tones per 16x16 tile against 12 and 10 for the references. Near-flat coverage is 4% against 0% for both references, which is small. The share of near-neutral dark edge pixels is 0%, so the outline is tinted. By eye, the edge pixels lean dark blue or teal beside the steel and dark brown beside the rust, so the outline reads as the dark tone of the adjacent material rather than a black sticker line. The steel ramp has about 5 steps (highlight, light, mid, dark, deep). The corrugation lines, rust speckle and awning folds give real grain. The main weakness is that the steel front is a little more uniform than the references' tile-by-tile shading. That is a modest gap for a corrugated metal surface, and it does not read as flat fill or sticker-like. A careful artist would accept it next to the references on density and outline craft.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15776
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "container roof (flat ribbed top plane with corner castings)",
+      "rows": "4-18",
+      "evidence": "a",
+      "front_edge_line_row": 19,
+      "eave_shadow_rows": "20-21"
+     },
+     {
+      "part": "sagging tarp awning on two poles",
+      "rows": "19-29",
+      "evidence": "c",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": "28-29"
+     },
+     {
+      "part": "small crate at bottom right",
+      "rows": "37-45",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 15,
+    "front_face_rows": 27,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The roof is a tall band at rows 4-18 (15 rows) of blue ribbed plate with rust patches and corner castings at both ends. It ends in a light front-edge line at row 19 (#a1b2ae at x=32 and x=47), followed by dark eave shadow at rows 20-21 (#1f3052 at x=47). Below that is the corrugated front face, rows 20-46 (about 27 rows), containing the dark door cut-in (rows about 29-42), the barred window (rows about 27-35) and the base strip at rows 43-46. The teal tarp awning (rows 19-29) is a sloped canopy plane over the door and ends in a dark scalloped edge at rows 28-29. Silhouette width is constant at 62, so there is no side face. The main body clearly has a top surface and a front face, so it reads as three_quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small whole building, a container home, so it matches the reference kind. It measures 17 visible tones per tile against 12 and 10 for the references. Near-flat coverage is 4% against 0% for both references, which is low and not a flat-fill problem. 0% of its dark edge pixels are neutral, so the outline is a tinted dark blue and rust tone beside the steel, not a black sticker line. By eye, the blue steel carries about 4 lightness steps with corrugation ribs and orange rust patches. The teal tarp awning has its own highlight and shadow. The barred window and corner castings add small detail. It has fewer shading steps than the roughly 6 on the reference tile roofs, and the roof plane is thin. Even so, the rust speckle, rib lines and tinted outlines mean it would not look flatter or thinner than the references beside them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18353
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "container roof with ribbed blue-steel plane and corner castings",
+      "rows": "4-18",
+      "evidence": "a",
+      "front_edge_line_row": 19,
+      "eave_shadow_rows": "20-21"
+     },
+     {
+      "part": "sagging teal tarp awning on two poles",
+      "rows": "19-29",
+      "evidence": "c",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "corrugated front wall with door and barred window",
+      "rows": "20-46",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "crate or stool in the bottom right corner",
+      "rows": "37-45",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 15,
+    "front_face_rows": 27,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The roof is a 15-row band (rows 4-18) of ribbed blue steel with rust patches and dark corner castings at the top. It ends in a light front-edge line at row 19 (#a1b2ae), followed by dark eave shadow at rows 20-21. Below that is a 27-row corrugated front face (rows 20-46) with a door, a barred window and a base strip. The teal tarp awning (rows 19-29) is a sloped canopy plane on poles, so it counts as a top surface. The silhouette is a constant 62px wide with no side face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small building (about 60x40 source pixels) with a narrow roof plane, a corrugated front, a teal tarp awning on poles, and a barred window. Measured facts support it: 17 visible tones per tile against 12 and 10 for the references, 4% near-flat coverage against 0%, and 0% neutral dark edge pixels. The outlines are therefore tinted, a dark blue-steel and rust-brown that follows the neighbouring material, not a black sticker line. By eye, the wall has about 4 steps (base blue, rib highlight, dark rib shadow, rust orange/brown patches). It also has rust speckle, corrugation lines and a tarp with 2-3 teal tones. That is a little fewer steps than the roof ramps of the references, but the texture and density are on par. The window bars and poles carry detail, and no large area is a flat fill. The roof strip is thin and less layered than the reference tile roofs, which keeps shading steps below the references, but a careful artist would accept it beside them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15503
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "container roof (ribbed top plane with corner castings)",
+      "rows": "4-18",
+      "evidence": "a",
+      "front_edge_line_row": 19,
+      "eave_shadow_rows": "20-21"
+     },
+     {
+      "part": "sagging tarp awning (teal canopy plane)",
+      "rows": "19-29",
+      "evidence": "c",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": "28-29"
+     },
+     {
+      "part": "small crate/stool at bottom right",
+      "rows": "37-45",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 15,
+    "front_face_rows": 26,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The blue ribbed roof fills rows 4-18, about 15 rows. It ends in a light front-edge line at row 19 (#a1b2ae), followed by dark eave shadow at rows 20-21. Below it the corrugated front face runs from about row 20 to row 45, roughly 26 rows. It holds the door opening, the barred window and the teal awning, which is a sloped canopy plane at rows 19-29 on two poles. The silhouette is a constant 62 px wide, so there is no side face. The main body has both a top surface and a tall front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The measured facts favour the candidate. It has 17 visible tones per tile against 12 and 10 for the references. Near-flat coverage is 4%, close to the references' 0%. None of its dark edge pixels are neutral, so the outlines lean toward the material (dark blue-steel and rust-brown) rather than a black sticker line. By eye, the blue corrugated wall has rib lines and scattered rust speckle. The teal awning has several tonal steps, and the barred window and door cut-in are shaded separately. The roof plane is a thin band with corner castings and rib marks, so its ramps are shorter than the references' tile roofs, with about 4 steps on the main steel ramp against 5-6. That is below the references but not shallow. No large flat fills are visible. A careful artist would accept it next to the references without it looking much flatter or thinner.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15743
+  }
+ ],
+ "decidedAt": "2026-10-22T19:48:19.567Z",
+ "cells": {
+  "16": [
+   "02929c36c5186909",
+   "04a703e21e59ca8a",
+   "1e9f839887ad7730",
+   "31ffa13c36b3163c",
+   "6db0ad066d1834ab",
+   "8546251d922237af",
+   "8943e0750f75d447",
+   "8fc4630c92ab4114",
+   "9e307c764343d8ef",
+   "efee2ec222d04d49",
+   "f636e7b429f3445e",
+   "fe0f5be314645134"
+  ],
+  "24": [
+   "03c349df5d1d4981",
+   "10dbf7370e3b372b",
+   "3594bd961c84d031",
+   "3d42e08e4749dc3c",
+   "44869840cb365a38",
+   "623d113ff9c7f948",
+   "809717b721844f3a",
+   "81820435d5febe9b",
+   "855391e6a473c64d",
+   "887b5806cb78dfc9",
+   "8ddc562079959d96",
+   "a22e74da3eec2da9",
+   "a5c2a677905822a4",
+   "a9023edf09c3b9d8",
+   "bd987d8ed442b60b",
+   "f1d956560199e20d",
+   "f274c5867fb8b146",
+   "f847ed921e4e0c9c"
+  ],
+  "32": [
+   "279233903952894f",
+   "3ccadcacbeba28a6",
+   "5b721510f8a3c3ae",
+   "700c0164f408d307",
+   "9005332a2f0d0012",
+   "addf21bb84c7ecdc",
+   "caf32abd060c2c3e",
+   "f8e11367b4991f36"
+  ],
+  "48": [
+   "36bc71b5a9e21504",
+   "3dfe38512b866427",
+   "578104616291731d",
+   "70ae0b304d1a74cf",
+   "c2f07f232b0188ac",
+   "ecd769d8849ea0a8"
+  ]
+ }
+}

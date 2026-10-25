@@ -1,0 +1,355 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "c3849942e5e0aa32ec56da31a1446d3ef7d2fbdf1d8cd1211d122f693342a14a",
+ "width": 16,
+ "height": 48,
+ "kind": "structure",
+ "name": "north-south barricade line of stacked sandbags seen from above: rows of bags each showing a bulging top and a short front, end face at the bottom",
+ "label": "wasteland_ruins/barricade-v",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "refer",
+ "reasons": [
+  "3/4: 독립 눈이 「3/4 아님」 7/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면",
+  "화풍: 화풍 판정이 갈림(걸린 판정 2/4)",
+  "화풍: 판정자 fail (2/4)"
+ ],
+ "view34": {
+  "verdict": "refer",
+  "reasons": [
+   "독립 눈이 「3/4 아님」 7/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면"
+  ]
+ },
+ "style": {
+  "verdict": "refer",
+  "reasons": [
+   "화풍 판정이 갈림(걸린 판정 2/4)",
+   "판정자 fail (2/4)"
+  ],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 6
+ },
+ "metrics": {
+  "tileColorsMedian": 8,
+  "tileColorsP90": 9,
+  "darkV5": 47,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 3
+ },
+ "eye": {
+  "verdicts": [
+   "borderline",
+   "wrong",
+   "wrong",
+   "borderline",
+   "wrong",
+   "borderline",
+   "wrong",
+   "wrong",
+   "borderline",
+   "borderline",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top sandbag course (gray bulging top)",
+      "rows": "1-8",
+      "evidence": "a",
+      "front_edge_line_row": 7,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower sandbag courses (repeated gray top over brown front, 12-row period)",
+      "rows": "9-45",
+      "evidence": "a",
+      "front_edge_line_row": 19,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 38,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The column at x=8 shows gray rows 1-6 ending in a light 2-row edge line at rows 7-8, followed by about 10 rows of brown front face (rows 9-18). The same pattern repeats every 12 rows (edge lines at 19-20, 31-32, 40-41), and the gray bulges at x=4 and x=11 show the same top-then-front rhythm for each bag. The first course has a distinct top band of about 6 rows with an edge line and a front face well over 3 rows. The lower courses are partly overlapped by the course above, so each of them shows only a shorter top strip. The object has no isometric side face and is not a flat slab, so it reads as a 3/4 view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small narrow column of stacked sandbags, not a whole building, so it does not match the reference kind. Judged by eye against the references, it has about 4 lightness steps per bag with a tinted dark-brown outline. Measured facts: 8 visible tones per tile against 10-12 for the references, 0% near-flat coverage, and 0% neutral dark edges, so the outline is not near-black. Each bag has a bulge highlight and a dark underside, but there is little grain or speckle, and the material ramps are shallower than the roof tiles and stone in the references. It is clean and not a sticker, but it is a little thinner and flatter than the Beodeul reference. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 16880
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top sandbag course (gray bulging tops)",
+      "rows": "1-8",
+      "evidence": "a",
+      "front_edge_line_row": 7,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "repeated sandbag courses (same gray top, light edge, brown face)",
+      "rows": "9-41",
+      "evidence": "a",
+      "front_edge_line_row": 19,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "bottom front face",
+      "rows": "42-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 10,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The object is a tall strip of stacked bag courses that repeat about every 12 rows. At x=8, rows 1-6 are a gray top surface that ends in a light 2-row edge line at rows 7-8, with a brown front face below at rows 9-18. The same sequence repeats at rows 19-20, 31-32 and 40-41. At x=11, rows 1-2 are light, 3-6 dark gray, then light again at 7-8. The silhouette bulges from width 15 to 16 and narrows again every 12 rows, which gives the rounded bag tops. The bottom has a brown front face of about 5 rows (rows 42-46) over a dark base row at 47. The top of each bag is only a few rows deep, but the main body shows a top band with a front-edge line and a front face of 3+ rows, so it reads as three-quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a small vertical stack of sandbags, roughly one tile wide and two tall. It is a prop rather than a full building, so the reference kind is only loosely comparable. The measured facts show 8 visible tones per tile against 12 and 10 for the references, with 0% near-flat coverage, which matches the references. Dark edge pixels are 0% neutral, so the outline is tinted brown, the dark tone of the adjacent material, not a black sticker line. By eye, each bag has a lighter bulging top, a mid face and a darker underside, giving about 4 distinct steps against the references' 5-6. Texture is limited to the bag-to-bag shading, with no grain or speckle dots as on the reference plaster and tiles. It is slightly thinner than the references but not flat or sticker-like, and a careful artist would likely accept it as a small prop.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18222
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top sandbag course, grey bulging tops",
+      "rows": "1-8",
+      "evidence": "a",
+      "front_edge_line_row": 7,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "second course of bag tops, offset and brick-like",
+      "rows": "13-20",
+      "evidence": "a",
+      "front_edge_line_row": 19,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "third course of bag tops",
+      "rows": "25-32",
+      "evidence": "a",
+      "front_edge_line_row": 31,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "fourth course of bag tops",
+      "rows": "37-42",
+      "evidence": "a",
+      "front_edge_line_row": 40,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 10,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Seen at x=8, the stack repeats every 12 rows. Rows 1-6 are a grey bag-top band, rows 7-8 are a lighter front-edge line (L=143), and rows 9-18 are a brown front face. The pattern repeats at rows 19-20 (edge line) and 21-30 (brown), then 31-32 and 33-39, then 40-41 and 42-45. The columns at x=4 and x=11 alternate grey and brown every 6 rows, so the bags are staggered like bricks. A dark base row sits at row 47. No isometric side face is drawn. Each course has a grey top band ending in a light edge line, with a brown front below it. The reading is moderately uncertain because the repeated texture is flat and could also pass for a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a small, narrow prop strip of stacked bags, set against two whole-building references, so I judged craft rather than size. Each bag has a light tan bulging top, a mid-tone front and a darker brown lower edge. That gives about 4-5 brown steps, against about 6 on the reference roofs and walls. The outline is a dark brown tinted to the bag material, not neutral black, which fits the measured 0% neutral dark edge pixels (references 7-9%). There are no flat fills: near-flat coverage is 0% and no 5x5 area is a single colour. Visible tones per tile are 8, against 12 and 10 for the references, which is slightly lower but close, and fair for a thin prop. The bags are shaded one by one with small highlights, not left as a flat body with an outline. A careful artist would accept it next to the references without it reading as a sticker, though it is a little simpler than they are.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 21517
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top sandbag course (grey bulging top)",
+      "rows": "1-6",
+      "evidence": "a",
+      "front_edge_line_row": 7,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "second course of bags (top and front edge)",
+      "rows": "13-20",
+      "evidence": "a",
+      "front_edge_line_row": 19,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "third course of bags (top and front edge)",
+      "rows": "25-32",
+      "evidence": "a",
+      "front_edge_line_row": 31,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "fourth course of bags (top and front edge)",
+      "rows": "37-42",
+      "evidence": "a",
+      "front_edge_line_row": 40,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 10,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The sprite is a 15px-wide stack of four sandbag courses, about 12 rows each, with bags staggered brick-fashion across the columns. In column x=8 the uppermost bag has a grey top at rows 1-6, a light front-edge line at rows 7-8, and a brown front face at rows 9-18 (10 rows). Column x=11 shows the same pattern, with a light bulge at rows 1-2 over a darker grey band at rows 3-6. Every course repeats this pattern: grey top, light edge line, then brown front. The silhouette also bulges and narrows with each bag, from 14 to 16 px wide. So the main body has a top surface of more than 2 rows and a front face of 3+ rows. No receding side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a small vertical stack of brown sandbags, much smaller than the reference houses and not a building, so the kind match is only nominal. It shows about 4 brown steps: highlight on each bag's top, mid, dark and a dark brown separation line. The dark edge pixels carry a brown tint (0% neutral), so the outline is a dark material tone, not near-black. Each bag has its own bulge and shading with no flat 5x5 areas (0%). It has 8 visible tones per tile against 10-12 in the references, which is slightly lower but acceptable for a small prop. Still, the ramp is narrower than the 5-6 steps Beodeul uses, and the bags have little grain or speckle. It looks a little flatter and thinner than the references, so I am failing it when in doubt.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 18114
+  }
+ ],
+ "decidedAt": "2026-10-22T15:35:18.392Z",
+ "cells": {
+  "16": [
+   "0815d6e4a45e1841",
+   "37acbc0f03567054",
+   "f2cec056bdfbf289"
+  ],
+  "24": [
+   "07687770803cb121",
+   "19270327972ab9af",
+   "763c1b76513d0f0e",
+   "91ca40646836563c",
+   "e376ae6e34729014",
+   "fbe203924816311e"
+  ],
+  "32": [
+   "0817ffa458d96e2a",
+   "1c5d8c95dd3a99ae",
+   "33958e7625b3456f",
+   "4f8d5007ace17340",
+   "72f1dac6e0de5493",
+   "76349f336c31c775",
+   "83447926aaad51dd",
+   "8eec204b6387d0c9",
+   "95a9d18fe3b114e1",
+   "9a72f523a0dcc181",
+   "fa39e07f1ea283a2",
+   "fd82cea6831281c5"
+  ],
+  "48": [
+   "4bc9454c864f8d74",
+   "6d6702e8473ff589",
+   "f74e0d836d8e1926"
+  ]
+ }
+}

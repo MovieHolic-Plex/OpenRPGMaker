@@ -1,0 +1,414 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b62227c7b34c2c9474f5b708e71af0bf9ccac3d56254b1639dd0fdafdf727ac1",
+ "width": 32,
+ "height": 16,
+ "kind": "frame",
+ "name": "washing line between two wooden poles seen from above: pole tops as small caps, a sagging rope with ragged cloths and rags pegged on it in faded colours, light shadow on the ground",
+ "label": "wasteland_ruins/wash-line",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 투영이 3/4 아님(front_elevation) (4/4)",
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)",
+  "3/4: 윗면 0행 < 3 (2/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "투영이 3/4 아님(front_elevation) (4/4)",
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)",
+   "윗면 0행 < 3 (2/4)"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "wasteland_ruins",
+   "fallback": true,
+   "reason": "칩셋 wasteland_ruins 의 화풍 기준 묶음이 없다",
+   "hash": "2ad36264365ed8d5"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 18,
+  "tileColorsP90": 18,
+  "darkV5": 42,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 2
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "left pole cap",
+      "rows": "0-3",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "right pole cap",
+      "rows": "0-3",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "sagging rope (horizontal beam)",
+      "rows": "4-5",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "hanging cloths and rags",
+      "rows": "6-14",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "ground shadow",
+      "rows": "2-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 10,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "This is a flat front view. The two poles are vertical strips with a small lighter cap at rows 0-3, which is a short block with no front-edge line and no eave shadow. The rope is a 1-2 row yellow line at rows 4-5, with no horizontal surface. The cloths at rows 6-14 are vertical faces seen head-on. The gray area is a ground shadow whose width tapers from 32 down to 6 over rows 11-15, so it adds no top surface. No part of the frame shows a top face of 3 or more rows, so it reads as front_elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small, sparse prop, so I judged it mostly by eye next to the references, with the facts as support. It carries 18 visible tones per full 16x16 tile, close to the cheese stall (17) and roofed well (20) and well above the hedge (9). Near-flat coverage is 0%, so there are no flat fills. The dark edge pixels are 0% neutral, so the outline leans brown or tinted by the neighbouring material and is not a black sticker line. The pole caps, the sagging rope, and the pegged cloths in several faded tones with separate light and dark values read as clustered detail. The cloths and poles have about 3-4 steps each, a little under the 5-6 of the references, but the density matches a careful artist's work beside the stall and well. It does not look thinner or flatter than the references.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 0행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 0행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19859
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "pole tops (small caps)",
+      "rows": "0-3",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "sagging rope",
+      "rows": "4-6",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "pegged cloths and rags",
+      "rows": "6-14",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "ground shadow",
+      "rows": "2-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 12,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The two poles are vertical brown faces. Their tops are tiny 2-3 row caps with no ellipse and no edge line plus eave shadow. The rope is a 1-2 row line that sags across the gap and shows no horizontal surface. The cloths hang as vertical faces (rows 6-14) and count as decor. The grey patch behind them (widths 30-32, narrowing to 6 by row 15) is a ground shadow, not a top surface of the frame. The whole thing is a flat front elevation with no readable top face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small, sparse prop, so I judged it by eye as well as by the numbers. It reads as a washing line with two wooden poles, pole-top caps, a sagging rope and pegged cloths in faded blue, pink and white. The cloths show a few shading steps and ragged hems, and the poles are shaded wood. The measured facts support this. It has 18 visible tones per tile, against 17 for the cheese stall and 20 for the roofed well, and 9 for the hedge. Near-flat coverage is 0%, so there are no big flat fills. Dark edge pixels are 0% neutral, so the outlines lean brown or material-tinted and are not a black sticker line. It is somewhat thinner than the largest references, with about 4 ramp steps on the cloths and poles against about 5-6, but it is not flatter or more sticker-like than the bench or the lamp. A careful artist would accept it next to them.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 0행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 0행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16604
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "left and right pole caps",
+      "rows": "0-3",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "sagging rope (front-facing strip)",
+      "rows": "4-5",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "pegged cloths and rags",
+      "rows": "6-14",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "ground shadow",
+      "rows": "11-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 11,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The two poles are vertical brown faces from about row 4 to 15. Each has a small cap about 5 px wide (rows 0-3, width 10 across both). The cap rows are only 2-3 high, and the width profile 10, 10, 8, 10 does not widen and then narrow like an ellipse, so it reads as a small rim. The rope (rows 4-5, yellow) is a flat front-facing strip with no top surface, edge line or eave shadow. The cloths hang as flat vertical faces and count as decor. There is no horizontal beam or base showing a top face, so the piece reads as a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small, thin prop of about 24x18 source pixels. It carries 18 visible tones per full tile, level with the stall (17) and the well (20) and double the hedge (9). Near-flat coverage is 0%, so there are no large flat fills. The dark edge pixels are 0% neutral, so the outline is tinted: dark brown beside the poles and rope, and dark tones of each cloth colour. By eye, the poles have capped tops with 3-4 wood steps. The sagging rope and the ragged cloths in faded blue, pink and cream each get a light/mid/dark step with pegs and ragged edges. The ground shadow is light and varied. The cloths are slightly shallower than the stall's fabric, but for a sparse prop the piece is as rich as the references and not sticker-like. The outline is selective and not a uniform black line.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 21998
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "left and right pole caps",
+      "rows": "0-3",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "sagging rope (thin yellow line)",
+      "rows": "4-5",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "hanging cloths and rags",
+      "rows": "6-14",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "pole shafts",
+      "rows": "4-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 11,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The piece is drawn as a flat front view. The two poles are vertical brown shafts. Their caps are only about 2-3 rows tall and as wide as the shaft (width 10), with no ellipse and no eave shadow. The rope is a 1-row line that sags across rows 4-5, and the cloths hang as vertical faces in rows 6-14. The grey ground shadow (width 32) is a flat backdrop with no horizontal beam or base showing a top face. The only top-like evidence is the tiny pole caps, so it reads as front_elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small prop, about 22x19 source pixels. Its measured facts sit in the range of the richer references: 18 visible tones per full tile against 17 for the cheese stall, 20 for the well and 9 for the hedge. Near-flat coverage is 0%, so there are no large flat fills. The dark edge pixels are 0% neutral, so the outline is tinted. It reads as dark brown beside the poles and rope, not a uniform black sticker line. By eye, the poles and caps have a few wood steps and the pegged cloths use several faded tones with small folds and ragged edges. The sagging rope and the light ground shadow add variety. The ramps (about 4 steps per material) are a little shallower than Beodeul's 5-6, but the object is thin and sparse. A careful artist would accept it next to the stall and well without it looking flatter or more sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18660
+  }
+ ],
+ "decidedAt": "2026-10-23T06:32:53.336Z",
+ "cells": {
+  "16": [
+   "4e2e65b027c9ec27",
+   "dc7c7ea1b12152f6"
+  ],
+  "24": [
+   "0c55c55847881466",
+   "1ef69cb0b9e888ac",
+   "57379a79b5cf1a3b",
+   "66caeb86d8010f34",
+   "6a2fb03d327d6e57",
+   "8106cb3796b76dc5",
+   "81536f6caa379ee0",
+   "c5fbfb37d1f96d44",
+   "cf048118bea0a22b",
+   "d685a164dedbe52c",
+   "d91a05a9f7bb6a16",
+   "dfaf2e4b2920c376"
+  ],
+  "32": [
+   "215028218b405057",
+   "b642a63113931891"
+  ],
+  "48": [
+   "2a41d6e388e3b3f9",
+   "4a6ffd5470230211",
+   "6ab3ef67625f13f9",
+   "73d9c53bee15b9c1",
+   "cd360cd55ec96e8e",
+   "e38c0156ba332a5c"
+  ]
+ }
+}

@@ -1,0 +1,59 @@
+{
+ "boards": [
+  "/home/main/z-project/rpg-zzu-village-art/tiledata/wasteland-ruins/_review/r5-zoom-car-burnt.png",
+  "/home/main/z-project/rpg-zzu-village-art/tiledata/wasteland-ruins/_review/r5-board-car-burnt.png",
+  "/home/main/z-project/rpg-zzu-village-art/tiledata/wasteland-ruins/_review/r5-zoom-watchtower.png",
+  "/home/main/z-project/rpg-zzu-village-art/tiledata/wasteland-ruins/_review/r5-board-watchtower.png",
+  "/home/main/z-project/rpg-zzu-village-art/tiledata/wasteland-ruins/_review/r5-zoom-asphalt-b.png",
+  "/home/main/z-project/rpg-zzu-village-art/tiledata/wasteland-ruins/_review/r5-board-asphalt-b.png",
+  "/home/main/z-project/rpg-zzu-village-art/tiledata/wasteland-ruins/_review/r5-tiled-asphalt-b.png"
+ ],
+ "reviews": [
+  {
+   "id": "car-burnt",
+   "sha": "d4ae04151d43735ac67e8cd2a057872d1f38ff55817e0a961f75a6c532db30ef",
+   "verdict": "fail",
+   "view34": "fail",
+   "quality": "fail",
+   "reasons": [
+    "It does not read as a car. The hood and trunk plates in rows 9-17 (x 4-15 and x 33-44) are vertical brown plank or stripe strokes, so at 3x the body reads as a wooden chest or sofa with a stone block (the cabin, rows 4-14) set on top.",
+    "The ends at x 0-3 and x 45-47, rows 11-23, are tall blue-grey vertical slabs. They read as upright end faces or side panels, not as a bumper seen from above, and they flatten the top-plane read into a front-elevation box.",
+    "There is no glass or window-frame read. The 'empty window frames' are only a thin dark ring around the cabin in rows 5-17, with no opening contrast, so the cabin is an unreadable grey lump.",
+    "The body is one uniform rust-brown value band. The front side (rows 18-23) is a lighter horizontal strip and is barely darker than the top, so the top/front value break is weak. The tyres in rows 24-28 are dark rectangles.",
+    "It does not read as burnt: there is no soot gradient, blistered paint or charred black-to-rust transition. It is less detailed and flatter than the Beodeul stall and well at 3x."
+   ],
+   "fix": "Make it read as a car from above first. Draw a long lighter hood and trunk lid with a clear outline of the car's footprint (rounded corners, wheel arches poking out), and a cabin with a dark empty windscreen and side-window holes framed by a lighter pillar rim. Turn the end slabs into a 2-3 px top-lit bumper lip. Make the south side clearly darker than the top, 3-5 rows tall, with a door line. Add char: a black-to-umber soot bloom across the roof and hood, with rust only at the panel edges."
+  },
+  {
+   "id": "watchtower",
+   "sha": "eb2cf4fbcc21fab371046b1f67f2e353459829afbe55b10eb314912acd0f8643",
+   "verdict": "fail",
+   "view34": "fail",
+   "quality": "fail",
+   "reasons": [
+    "Rows 0-32 are one full-width 32-px rectangle of horizontal planks with no top/front break. There is no distinct tin roof, no deck front edge and no lip shadow, so it reads as a wooden wall or crate front, not a floor seen from above. 11 of 12 independent eyes in the receipt agreed.",
+    "The 'sandbag parapet' is evenly spaced yellow-grey rivet dots in rows 1, 13-14 and 25-27. It reads as bolts, not sandbags. The dark slot in rows 9-13 and the blue frame in rows 21-25 read as a hatch and window on a wall.",
+    "The corrugated roof and tarp from the name are absent or illegible. Nothing at the top is lighter or sloped.",
+    "Rows 33-63 show the legs, ladder and X-brace as a pure elevation. The concrete block at the bottom left (rows 56-62) and the barrel at the bottom right are pasted on, with no cast shadow under the tower.",
+    "Next to the Beodeul houses it looks like a flat plank panel on stilts. The planks are the same 3-4 value strokes repeated with no wear gradient, so it is flatter."
+   ],
+   "fix": "Split the upper block into three parts: a lighter roof (or open deck) top plane of 8-12 rows that clearly shows the planks running east-west receding north, a 1 px light front edge, and a darker 4-6 row south fascia or parapet of lumpy sandbags (rounded light-topped blobs). Keep the legs short below, slightly tapered, with an asymmetric missing brace and a soft ground shadow. If it has a roof, show the roof as the sloped light top with the deck lip visible only as a dark fascia under it, and do not draw the floor face-on."
+  },
+  {
+   "id": "asphalt-b",
+   "sha": "e2cda1a8638a77149f07dfcedc6f4a714f33a1045112c5a4b7f05891ff1c0202",
+   "verdict": "fail",
+   "view34": "pass",
+   "quality": "fail",
+   "reasons": [
+    "View: it is a flat ground surface with no standing volume, so the 3/4 view passes.",
+    "The base reads as granite or gravel noise, not asphalt. It is uniform 1 px blue-grey speckle with brown blotches across all plain tiles, with no larger-scale value structure (wear lanes, patches, tar seams), and it looks noisier than the Beodeul paving.",
+    "The pothole tiles (around rows 4-15 at x 17-31 and rows 20-31 at x 49-63) use a near-black, spiky-edged blob with yellow and green specks at its sides. At 1x and 3x they read as a beetle or spider rather than a water-filled hole. There is no lighter rim, no water highlight and no broken-edge chips.",
+    "The 'long-crack' variant (rows 32-47 at x 0-15, and rows 0-15 at x 48-63) is mostly a weed clump plus a dark grey square block. No long crack is legible.",
+    "Tiling: the plain tiles join without hard seams, but in the 2x2 repeat the 16-px grid shows as an even dot pattern, and the variants repeat as identical stamps.",
+    "There are about 3-4 effective value steps against 5-6 in the paving ref, with mixed near-black outlines on the hole."
+   ],
+   "fix": "Rebuild the base as darker, smoother asphalt: 2-3 close mid-greys with sparse lighter aggregate dots and a few soft lighter wear patches, which needs less contrast than now. Draw the pothole as an irregular hole with a lighter broken-edge rim on the north side, a dark south inner wall, and a water pool with a 1-2 px sky highlight, using umber rather than near-black. Draw the crack variant as a long branching 1 px dark line with a lighter lip, crossing at least 2/3 of the tile, with weeds kept tiny."
+  }
+ ]
+}

@@ -1,0 +1,46 @@
+{
+ "reviewer": "opus fresh adversarial (r5)",
+ "verdict": "fail",
+ "notes": "Coords are sample-1x px (448x288, 16px cells, cell (cx,cy)) unless noted. sample() re-rendered from the module is byte-identical to r5/sample-1x.png. Big improvement over r4: N edge is now flat broken slabs at uneven depth, lip shadow is in range, edge slabs are dimmer, seams are clean, hole is a rounded pit. One r4 defect only partly fixed: the straight-edge variant picker still has a strict 4-cell phase cycle with only 2 tiles per phase, so the 14-cell N edge shows a 64px period. Crops in /tmp/vqa-r5/.",
+ "criteria": {
+  "ragged_ruin_edge": {
+   "result": "pass",
+   "evidence": "N edge (x112-336, y24-56; /tmp/vqa-r5/n_x8_16_8x.png): wide, low, flat slab pieces, some with a missing corner, plus loose pieces lying on the earth. Measured first-stone depth per column along row 2 ranges 2..20 px with flat runs, so there is no picket/teeth silhouette on a common baseline. S edge depth 4..17 px (sd 4.6). Sprouts and chips are no longer one per cell at the same y. However the green-spotted slab at the left of (8,2),(12,2),(16,2) and the dark chip in (9,2),(13,2) recur exactly every 64px, which comes from the repeat defect below."
+  },
+  "no_kerb": {
+   "result": "pass",
+   "evidence": "None of the 65 edge tiles (edge-tiles-8x.png) has a continuous dressed rim. Outside the slabs the tile is plain dirt-body texture."
+  },
+  "no_square_holes": {
+   "result": "pass",
+   "evidence": "2x2 hole cells (9..10,6..7): dirt spreads about 37..88 x 88..136 with rounded corners and slabs breaking into it (/tmp/vqa-r5/hole_8x.png). The inner-corner tiles show no cell-aligned square notches. Minor issue: the west wall of the hole (E-role cells (8,6),(8,7), x~133-138) is a near-straight vertical over ~30px."
+  },
+  "seamless": {
+   "result": "pass",
+   "evidence": "Across edge-cell to dirt-body-cell borders, the mean luminance step between dirt pixels is 8.1 (n=1446), against 9.05 at the interior pixel pair 2px in (n=1360), so there is no seam. `flag_dirt_art.py check` prints OK. The remaining straight lines on cell borders are the pre-existing body joint grid."
+  },
+  "no_repeat_grid": {
+   "result": "fail",
+   "evidence": "Variant dump, N edge row y=2, x7..20: NW N7 N N3 N5 N7 N N3 N6 N7 N2 N4 N5 NE3. No two cells within 3 are identical (the r4 32px stamp is gone), but phase_role computes cls=(along+off)%4, a strict 4-cycle with only 2 tiles per class. So cells (8,2),(12,2),(16,2) are all N7 (hash 33824), and the 3-cell run N7,N,N3 at x8-10 repeats exactly at x12-14. Pixel autocorrelation of the N band (y24-48, x128-336): 0.78 at a 64px shift and 0.77 at 128px, against 0.57-0.60 at 16/32/48/80/96px. The column-depth profile string repeats almost verbatim at offsets 0, 64 and 128. That is a visible fixed period, and it makes the docstring claim '주기 없음' false. Diagonals pass the 3-cell rule: NE 20..24 = NE3,NE4,NE,NE2,NE3; SW 3..7 = SW4,SW,SW2,SW3,SW4. But SW4 sits at both (7,12) and (8,14), 2 cells apart on the same west-facing contour with only W2 (8,13) between them, because the corner picker only separates cells on the same x-y line."
+  },
+  "beodeul_quality": {
+   "result": "pass",
+   "evidence": "Dirt body mean luminance is 103.2. The dirt pixel directly outside a slab is almost entirely shadow colour f=(112,80,46), averaging 85.8 below slabs, 85.9 above, 86.3 to the right and 85.9 to the left: 16.4-16.9% darker. Outer N-edge stone averages 183 (y32-44) against body stone 204 (~10% dimmer), and edge slabs use the warm earth-tinted ramp. The board comparison (board-new-vs-current-2x.png) sits acceptably next to the temple-ruins court. The body is much brighter and busier than the reference (pre-existing, see below)."
+  }
+ },
+ "preexisting_issues": [
+  "Flag body: the joint grid shows on 16px cell borders, and body cells repeat byte-identically, giving a regular triangle-facet lattice across the court.",
+  "Flag body slab tops are very bright cream/blue-grey, with higher contrast than the Beodeul temple-ruins stone.",
+  "Dirt body scatters grey pebble pairs and orange clods on a fairly regular lattice (visible in the dirt margins of sample-4x)."
+ ],
+ "defects": [
+  "Straight-edge phase is a strict 4-cycle with 2 tiles per phase, giving a visible 64px period on the 14-cell N edge: N7 at x8,12,16, and the run N7,N,N3 at x8-10 equals x12-14. Autocorrelation is 0.78 at 64px against a ~0.58 baseline. Periodic sprout/chip landmarks follow from it.",
+  "Corner picker separates only cells on the same diagonal line: SW4 appears at (7,12) and (8,14), 2 cells apart on one contour.",
+  "Minor: the hole's west wall (E cells (8,6),(8,7)) is a near-straight vertical. NW base variant is a lone pointed triangle shard on dirt (edge-tiles-8x, NW row col 1)."
+ ],
+ "fixes": [
+  "Break the 4-cycle. Option 1: re-hash the phase offset per 4-cell block, off = H(other, floor(along/4), salt) % 4, and at block boundaries reject a tile equal to any of the previous 3 by computing them (still a pure function: evaluate the 3 predecessors' choices). Option 2: draw index = H(x,y) % 8 and resolve collisions against the 3 predecessors deterministically. Verify with the cell-hash dump and the N-band autocorrelation: no shift of 32..128px should exceed the others by more than ~0.05.",
+  "Include neighbouring diagonal lines in the corner choice (e.g. reject a variant equal to the corner tile at (x±1, y±2)), or hash the line index into the step offset so adjacent lines start at different phases.",
+  "Optionally roughen the straight W wall of E variants E/E8 and give NW base variant a flat lying piece instead of a single triangle."
+ ]
+}

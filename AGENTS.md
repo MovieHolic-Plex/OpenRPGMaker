@@ -131,6 +131,7 @@ This repository uses a project-local OpenWiki layer so coding agents can underst
    - 조선(바람의나라풍) 칩셋 joseon_baram · 손 도트 조각 291종+실내·사냥터·동굴 키트·오토타일 19종을 공용 번들 타일셋으로 (변환기 `build-joseon-tileset.py`, 시트 여러 장 합치기, 칸 통행 X/C/F·꼬리 복사본, 참고문서 6용도, 지도 15장 저장·장소 카드, 재실행 한 줄 `rebuild-joseon.sh`): `openwiki/joseon-baram.md`
    - 열대 군도·해적 항구 pirate_isles (`oprn-pirate`, 16px 코드 손 도트 174조각 → object-gate 통과분만 굽기 `pi_bake.py`, 순수 구성기 `pirateIslesComposer.ts` + 조수 도구 `compose_pirate_isles_map`, 해적·열대·군도 낱말 경로, 참고문서 `pi_refs.py`): `openwiki/pirate-isles.md`
    - 전국·에도 일본 번들 sengoku_edo (성하마을·여관 거리·무가 저택·성·신사/절·농촌 야외 + 다다미 실내, 손 도트 + object-gate 영수증만 굽기, 구성 도구 compose_sengoku_edo_map · link_sengoku_edo_interior, 방 구성 7개, 적대 QA 결함표): `openwiki/sengoku-edo.md`
+   - 폐허·황무지 칩셋 wasteland_ruins (포스트아포칼립스 정착지·좀비 폐허 도시·판잣집 촌, modern 계열 손 도트, `compose_wasteland_map`, 정식/--dev 굽기 구분·검수 기록): `openwiki/wasteland-ruins.md`
    - 마법 학교(해리포터풍) 번들 wizarding_world · 성채 공용 벽·바닥·문과 12공간 기물·학생/교수/생물 걷기 칩(Wizarding 시트)·마법 효과를 코드 손 도트 조각 모듈로 그려 **독립 검수 PASS·해시 일치분만** 굽는다 (계약 `scripts/content/wizarding/CONTRACT.md`, 굽기 4단계, 얇은 재검수 `recheck_sheet.py`, 장소 예제): `openwiki/wizarding-world.md`
    - 하늘섬 번들 sky_island(계열 oprn-sky) · 떠 있는 섬·밑면·밧줄/돌 다리·잔교·비공정·신전 섬·실내 넷을 코드 손 도트로 그려 object-gate 통과분만 굽고, 순수 구성기 `compose_sky_island_map`(마을·신전·부두·섬 사슬·방 넷, 엔진 BFS 재검사)로 깐다: `openwiki/sky-island.md`
    - 스팀펑크 공업 도시 번들 steampunk_city · 벽돌·철·구리 거리·공장·기차역·운하·비행선 정박장 + 실내 6종 코드 손 도트 163조각(object-gate 영수증, 프로필 미보정), 구성기 `compose_steampunk_city_map`(계획→건물→소품, BFS·여백), 하늘섬은 다른 칩셋: `openwiki/steampunk-city.md`

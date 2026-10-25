@@ -1,0 +1,24 @@
+{
+  "surface": "dirt",
+  "image": "tiledata/beodeul-yard/_gate/yard_dirt.png",
+  "pixel_sha256": "d067e9f5d0ddcdb8949a2e2dcccf09226a9bf447bd77bf3805835b384cfaa70b",
+  "verdict": "fail",
+  "view34": "pass",
+  "autotile": "pass",
+  "quality": "fail",
+  "material": "pass",
+  "defects": [
+    "/home/main/.cache/yard/vqa-r3/dirt_neck.png: the straight south-edge tile carries a clod + straw-dash pair that repeats exactly every 16px (8x clods at x~270,400,530, straw at x~355,485,615, y~105) - a stamped dotted line along every long edge; also visible in yard_dirt-4x.png bottom run y~435 x~265-440.",
+    "yard_dirt-4x.png: the west-edge tile's dark hole + grey pebble pair is identical in consecutive cells (4x at (80,215) and (80,280); cells (0,3)/(0,4) share the same pixel hash), likewise (530,340)/(465,405) - stamped motifs on the unvaried edge tiles.",
+    "/home/main/.cache/yard/vqa-r3/dirt_a.png: the intended faint cart rut is absent anywhere in the blob; the field is a 1px 4-tone dither with small clods only - acceptable as packed earth but the rut feature was not delivered."
+  ],
+  "evidence": "Big improvement over r2: body fill no longer shows a dotted rut row, clods have light-top/dark-bottom form, organic tufted rim, darker south bank lip, hole, neck and isolated mound all join cleanly, and the red-brown reads distinct from Beodeul sand. Remaining failure is the edge tiles: with no variants their clod/straw/pebble props repeat at exactly 16px along straight edges, forming visible stamped rows.",
+  "crops": [
+    "/home/main/.cache/yard/vqa-r3/dirt_a.png",
+    "/home/main/.cache/yard/vqa-r3/dirt_b.png",
+    "/home/main/.cache/yard/vqa-r3/dirt_c.png",
+    "/home/main/.cache/yard/vqa-r3/dirt_neck.png",
+    "/home/main/.cache/yard/vqa-r3/dirt_iso.png"
+  ],
+  "reviewer": "claude-opus independent adversarial review 2026-10-23 r3"
+}

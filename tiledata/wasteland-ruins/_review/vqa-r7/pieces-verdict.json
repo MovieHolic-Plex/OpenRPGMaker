@@ -1,0 +1,56 @@
+{
+ "round": "vqa-r7",
+ "reviewers": "3 fresh Opus 5.5 (A,B,C), majority rules",
+ "files": [
+  "review-A.json",
+  "review-B.json",
+  "review-C.json"
+ ],
+ "pieces": {
+  "wasteland_ruins/dirt-b": [
+   "pass",
+   "pass",
+   "pass"
+  ],
+  "wasteland_ruins/dirt-c": [
+   "pass",
+   "pass",
+   "pass"
+  ],
+  "wasteland_ruins/dirt-d": [
+   "pass",
+   "pass",
+   "pass"
+  ],
+  "wasteland_ruins/asphalt-ph": [
+   "pass",
+   "pass",
+   "pass"
+  ],
+  "wasteland_ruins/road-crack-a": [
+   "pass",
+   "pass",
+   "pass"
+  ],
+  "wasteland_ruins/road-crack-b": [
+   "pass",
+   "pass",
+   "pass"
+  ],
+  "wasteland_ruins/road-crack-c": [
+   "pass",
+   "fail",
+   "pass"
+  ],
+  "wasteland_ruins/pothole-a": [
+   "pass",
+   "pass",
+   "pass"
+  ],
+  "wasteland_ruins/pothole-b": [
+   "pass",
+   "pass",
+   "pass"
+  ]
+ }
+}

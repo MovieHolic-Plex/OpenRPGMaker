@@ -1,0 +1,19 @@
+{
+ "schema": "oprn-object-gate-hold-decision/1",
+ "pixelSha256": "a6d500bf9d783c3b6ddff2c661630dfa25a80e099febaecce6ce52c88c1ec09e",
+ "profileHash": "4d8774b517f41638",
+ "kind": "structure",
+ "decision": "allow",
+ "decidedBy": "supervisor (village-art)",
+ "decidedAt": "2026-10-23T04:55:02.782Z",
+ "by": "delegated",
+ "delegatedBy": "user",
+ "evidence": "tiledata/wasteland-ruins/_review/r56/draft2/opus-reviewer-husk-h.md",
+ "via": "review-page",
+ "reasons": [
+  "화풍: 화풍 판정이 갈림(걸린 판정 2/4)",
+  "화풍: 판정자 fail (2/4)"
+ ],
+ "note": "delegated by user to supervisor 2026-10-23 — wasteland husk-h (3-storey shop block): gate REFER (style split 2/4) re-judged by fresh independent Opus adversarial reviewer PASS (r56 draft2)",
+ "sig": "7f7ce740f344ea552d4a8af7cbc819b6098521567a5ba63e9db3c5fba5c3991f"
+}

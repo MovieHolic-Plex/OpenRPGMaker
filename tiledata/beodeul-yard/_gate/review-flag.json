@@ -1,0 +1,26 @@
+{
+  "surface": "flag",
+  "image": "tiledata/beodeul-yard/_gate/yard_flag.png",
+  "pixel_sha256": "061f2747a36abef77f8b0e5bf93ee8c2df61cda9444dd4ac6cdedf801f39e142",
+  "verdict": "pass",
+  "view34": "pass",
+  "autotile": "pass",
+  "quality": "pass",
+  "material": "pass",
+  "defects": [
+    "minor, non-blocking: /home/main/.cache/yard/vqa-r6/flag_body8x.png: because every slab stays inside its cell, a joint pixel exists in the 2px band of each cell border on 83-89% of its length vs ~45% on other lines (joints doubled at borders, col/row 15/0 dark fraction 0.45-0.55 vs ~0.27); the joints zigzag (max straight run 5px) so at 4x (/home/main/.cache/yard/vqa-r6/flag_west4x.png) it shows only as a faint square rhythm, not a drawn grid.",
+    "minor, non-blocking: /home/main/.cache/yard/vqa-r6/flag_innercorner16x.png (16x (130-160,95-125), 1x ~(108,18)): at the stepped inner corner the light kerb tops of the two rims do not meet; a 1-2px dark joint notch sits in the mitre. Not visible at 4x."
+  ],
+  "evidence": "r5 defects are gone: no stamped '<' chevron or crack glyph; slabs are irregular 4-8px polygons with 1px joints, moss dots in wider joints, a few grey sunken/cracked slabs (flag_body8x.png, flag_hole8x.png). 16px pixel-identity dropped from 56%/44% to 34%/28%; 26 distinct cell images scattered. Flat 3/4 plane, upper-left lighting, kerb with south face; corners, hole, neck and isolated cell join cleanly with no slab cut at a cell border (flag_ne8x.png, flag_hole8x.png). Reads as pale limestone crazy paving, distinct from Beodeul's blue/grey plaza and ashlar paving. Residual cell-border joint density is the only grid cue and is tolerable at normal zoom.",
+  "crops": [
+    "/home/main/.cache/yard/vqa-r6/flag_full8x.png",
+    "/home/main/.cache/yard/vqa-r6/flag_body8x.png",
+    "/home/main/.cache/yard/vqa-r6/flag_south8x.png",
+    "/home/main/.cache/yard/vqa-r6/flag_hole8x.png",
+    "/home/main/.cache/yard/vqa-r6/flag_iso8x.png",
+    "/home/main/.cache/yard/vqa-r6/flag_ne8x.png",
+    "/home/main/.cache/yard/vqa-r6/flag_innercorner16x.png",
+    "/home/main/.cache/yard/vqa-r6/flag_west4x.png"
+  ],
+  "reviewer": "claude-opus independent adversarial review 2026-10-23 r6"
+}

@@ -1,0 +1,36 @@
+{
+ "boards": [
+  "/home/main/z-project/rpg-zzu-village-art/tiledata/wasteland-ruins/_review/r8-board-1x.png",
+  "/home/main/z-project/rpg-zzu-village-art/tiledata/wasteland-ruins/_review/r8-board-3x.png",
+  "/home/main/z-project/rpg-zzu-village-art/tiledata/wasteland-ruins/_review/r8-board-8x.png",
+  "/home/main/z-project/rpg-zzu-village-art/tiledata/wasteland-ruins/_review/r8-board-gate10x.png",
+  "/home/main/z-project/rpg-zzu-village-art/tiledata/wasteland-ruins/_review/r8-raw-rubble-c.png",
+  "/home/main/z-project/rpg-zzu-village-art/tiledata/wasteland-ruins/_review/r8-raw-puddle.png"
+ ],
+ "reviews": [
+  {
+   "id": "rubble-c",
+   "sha": "9672a66ed3b43b3fded339f164b1bf42c69288625f22780dfc1a59d300d0e4b3",
+   "verdict": "fail",
+   "reasons": [
+    "Cited defect fixed: no cyan or white glints remain. The brightest pixels are neutral greys (188,189,195) and (181,194,191) in runs of 3 to 5, not isolated dots.",
+    "New defect: the decal fills almost the whole 16x16 cell as one dense rectangular block, framed on three sides by a continuous dark (42,53,57) outline. At 1x and 3x it reads as a single boxy object, like an engine block, crate stack or machine, not scattered ground debris. It looks like a sticker stamped on the dirt.",
+    "The silhouette has straight vertical and horizontal edges and a near-square footprint. When it repeats on the board it is an obvious identical stamp. Beodeul ground detail breaks up into loose clusters that fade into the ground.",
+    "The bottom-left near-black maroon (45,1,15) pixels read as a dark red gash or hole rather than an oil stain.",
+    "There are 25 opaque colours and the value range is wide, so 5+ value steps are met. The fail is for silhouette and read, not values."
+   ],
+   "fix": "Break the block into 3 to 5 separate debris pieces with dirt showing between them: a bent sheet, 2 or 3 concrete lumps, a few glass flecks, and a cable line. Give it an irregular, roughly diagonal footprint of about 10x10 to 12x12 inside the cell, not edge to edge. Drop the continuous outer outline and use contact shadows only under each piece. Replace the (45,1,15) maroon with a soft, low-alpha dark oil patch that blends into the dirt."
+  },
+  {
+   "id": "puddle",
+   "sha": "4d124b81134a3fa590580d170b162f76216e32e7b1d36062dfd742c9e1f56509",
+   "verdict": "pass",
+   "reasons": [
+    "Cited defects gone: no magenta pixel, no sparkle dots, no grey dashed rim. The palette is navy water in 4 steps (L17/21/37/57) plus a brown damp margin in 4 to 5 steps (L60/81/100/116/118), so 9 value steps.",
+    "An irregular, slightly lopsided oval of about 14x11 with a damp brown margin that blends into the dirt. At 1x and 3x it reads as a dark rain or oil puddle in a hollow, seen top-down. It is not a gem or sticker, and it has no glyph-like marks.",
+    "Minor: the interior b/c checker mottle (rows 6 to 9) reads slightly as lumpy tar or stone at 8x+. The 'faint sky reflection' is only the lighter (40,61,83) lower band, so the reflection is weak. Neither is fatal at game scale."
+   ],
+   "fix": "Optional polish: smooth the interior mottle into 2 or 3 broad flat bands, darkest near the upper bank. Add one short, soft lighter streak of 2 to 3 px, not a dot, for the sky reflection."
+  }
+ ]
+}

@@ -23,6 +23,7 @@ import { SKY_ISLAND_TEXTURE, createSkyIslandTileset, ensureSkyIslandReferences, 
 import { STEAMPUNK_CITY_TEXTURE, createSteampunkCityTileset, ensureSteampunkCityReferences, ensureSteampunkCityTileset, steampunkCityBundledReferenceDocuments } from "./steampunkCity";
 import { MODERN_CAMPUS_TEXTURE, createModernCampusTileset, ensureModernCampusReferences, ensureModernCampusTileset, modernCampusBundledReferenceDocuments } from "./modernCampus";
 import { SF_STATION_TEXTURE, createSfStationTileset, ensureSfStationReferences, ensureSfStationTileset, sfStationBundledReferenceDocuments } from "./sfStation";
+import { WASTELAND_RUINS_TEXTURE, createWastelandRuinsTileset, ensureWastelandRuinsReferences, ensureWastelandRuinsTileset, wastelandRuinsBundledReferenceDocuments } from "./wastelandRuins";
 import { GOTHIC_MANOR_TEXTURE, createGothicManorTileset, ensureGothicManorReferences, ensureGothicManorTileset, gothicManorBundledReferenceDocuments } from "./gothicManor";
 import { PREHISTORIC_TEXTURE, createPrehistoricTileset, ensurePrehistoricReferences, ensurePrehistoricTileset, prehistoricBundledReferenceDocuments } from "./prehistoric";
 import { DESERT_EAST_TEXTURE, createDesertEastTileset, ensureDesertEastReferences, ensureDesertEastTileset, desertEastBundledReferenceDocuments } from "./desertEast";
@@ -156,6 +157,7 @@ const REFERENCE_DOCS_WITHOUT_DEFINITION: Readonly<Record<string, () => TilesetRe
   [GOTHIC_MANOR_TEXTURE]: gothicManorBundledReferenceDocuments,
   [PIRATE_ISLES_TEXTURE]: pirateIslesBundledReferenceDocuments,
   [SF_STATION_TEXTURE]: sfStationBundledReferenceDocuments,
+  [WASTELAND_RUINS_TEXTURE]: wastelandRuinsBundledReferenceDocuments,
   [SENGOKU_EDO_TEXTURE]: sengokuEdoBundledReferenceDocuments,
   [MODERN_CAMPUS_TEXTURE]: modernCampusBundledReferenceDocuments,
   [STEAMPUNK_CITY_TEXTURE]: steampunkCityBundledReferenceDocuments,
@@ -274,6 +276,11 @@ export function ensureBundledTilesets(project: { tilesets: Record<string, Tilese
       if (asset.textureKey === SF_STATION_TEXTURE) {
         changed = ensureSfStationTileset(project.tilesets[id]) || changed;
         changed = ensureSfStationReferences(project.tilesets[id]) || changed;
+      }
+      // 폐허·황무지 (wasteland_ruins 굽기): 번들 칸 표·`wl-` 부품/오토타일·참고문서를 옛 사본에도 맞춘다(칸 번호는 덧붙이기 전용).
+      if (asset.textureKey === WASTELAND_RUINS_TEXTURE) {
+        changed = ensureWastelandRuinsTileset(project.tilesets[id]) || changed;
+        changed = ensureWastelandRuinsReferences(project.tilesets[id]) || changed;
       }
       // 고딕 저택·묘지 (gothic_manor 굽기): 번들 칸 표·`gm-` 부품/오토타일·참고문서를 옛 사본에도 맞춘다(칸 번호는 덧붙이기 전용).
       if (asset.textureKey === GOTHIC_MANOR_TEXTURE) {
@@ -470,6 +477,7 @@ function bundledEasyRpgTilesetBase(asset: (typeof BUNDLED_EASYRPG_CHIPSET_ASSETS
   if (asset.textureKey === STEAMPUNK_CITY_TEXTURE) return createSteampunkCityTileset();
   if (asset.textureKey === MODERN_CAMPUS_TEXTURE) return createModernCampusTileset();
   if (asset.textureKey === SF_STATION_TEXTURE) return createSfStationTileset();
+  if (asset.textureKey === WASTELAND_RUINS_TEXTURE) return createWastelandRuinsTileset();
   if (asset.textureKey === GOTHIC_MANOR_TEXTURE) return createGothicManorTileset();
   if (asset.textureKey === PREHISTORIC_TEXTURE) return createPrehistoricTileset();
   if (asset.textureKey === DESERT_EAST_TEXTURE) return createDesertEastTileset();

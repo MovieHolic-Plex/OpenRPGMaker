@@ -1,0 +1,286 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "508463900e1cdb313e9e98b73565ddec1b9e35e2c7bb61ec7be823236d629135",
+ "width": 64,
+ "height": 48,
+ "kind": "flat",
+ "name": "a rounder dark brown oil stain soaked into packed earth with a small drip lobe and two stray drops, warm brown-black core fading through three steps into the dirt, a tiny dull sheen",
+ "label": "wasteland_ruins/oil-stain-b",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 7,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "wasteland_ruins",
+   "fallback": true,
+   "reason": "칩셋 wasteland_ruins 의 화풍 기준 묶음이 없다",
+   "hash": "8cecb3a70460aa86"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 5,
+  "tileColorsP90": 10,
+  "darkV5": 66,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 12
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "packed earth ground patch with dark stain spots",
+      "rows": "0-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 48,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The silhouette is a full 64x48 rectangle in every row (rows 0-47 all width 64), so there is no outline to read as a standing object. The art is a flat ground texture with dark brown pits and stray drops seen straight from above. The column scans show only texture noise, with no front-edge line, eave shadow, ellipse or vertical face. There is no front face, so this is a flat top-down decal, which fits the flat kind."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate has 5 visible tones per tile, between the grass reference (3) and the paving reference (7). Near-flat coverage is 0%, the same as both references, so there are no flat 5x5 fills. The soil is mottled with grain and small pebble-like dots in several browns. The stain cores are warm brown-black and fade into the dirt in steps, with a tint instead of neutral black: 0% of dark edge pixels are near-neutral, so the dark tones read as the material's own dark brown. Only 14 distinct colours are used in total, which is a thin ramp next to the 80 in the grass reference, but the visible tone count per tile holds up. The patch reads as dirt, not as a sticker, and sits acceptably beside the references. It is a little less intricate than the best Beodeul tiles, and the stains are small and subtle.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 14499
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "oil stain on packed earth, drawn as a flat ground decal filling the whole 64x48 tile",
+      "rows": "0-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 48,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The image is a full-bleed 64x48 dirt texture. The width is 64 in every row, so there is no silhouette, front face, edge line, eave shadow or side face. The dark oil patches seen from above sit flat in the ground texture. It is a flat ground decal seen from above, which is correct for kind flat, and it has no front face of 3+ rows."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate has 5 visible tones per 16x16 tile, above the grass reference (3) and below the paving reference (7). Near-flat coverage is 0%, the same as both references, so the dirt carries speckle and grain rather than flat fills. The stain edges are fully tinted (0% neutral dark edge pixels), so they read as warm brown-black fading into the soil, not a black sticker outline. The stain core, three fade steps and the dirt give roughly 5 lightness steps on the main ramp. The weak points are a modest 14 total colours and stains that are small and sparse on the board, which makes the piece a little simpler than the paving. Still, it would sit acceptably beside the references without looking flatter.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 12712
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "ground patch (packed earth with dark stain pits)",
+      "rows": "0-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 48,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The silhouette is a full 64-px-wide rectangle on every row from 0 to 47, so there is no tapering and no front edge. The column scans show only mottled earth tones. Dark brown pits appear near rows 6-12, 20-28 and 38-45, and there are a few grey and pink specks. None of this forms a front-edge line, eave shadow or vertical face. The image is a flat top-down ground decal with no front face (0 rows), which fits the flat kind."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a soil patch with mottled grain and dark stain blobs, and it has no drawn outline. The stains fade into the dirt by value, and the dark edge pixels are tinted (0% neutral), so there is no sticker line. Visible tones per tile are 5, above the grass reference (3) and below the paving reference (7). Near-flat coverage is 0%, so no large flat fills. Soil grain, stain falloff steps and the core give about 5 steps. Its weak points are a low raw colour count (14 total, 5 per tile) and fairly small, sparse stains, so the stain detail and sheen are less rich than the reference's per-tile variation. That puts it slightly below the references on density, but a careful artist would still accept it next to the grass reference.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15660
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "oil stain and packed-earth ground",
+      "rows": "0-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 48,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The silhouette is a full 64-wide rectangle on every row from 0 to 47. The pixels are mottled brown earth with dark brown-black stain blotches, a few grey sheen pixels and a few reddish drip pixels. There is no front-edge line, no eave shadow, no vertical face, no side face and no ellipse. The column scans show only small lightness changes (L about 60-114) that are texture. The surface is a flat ground decal seen from above with no front face, which suits the flat kind."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "none",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The soil is mottled with grain and speckle, so no area reads as a flat fill. Near-flat coverage is 0%, the same as both references. It has 5 visible tones per tile, between the grass (3) and the paving (7). Dark edge pixels are 0% neutral, so the stain edges are tinted brown and not a black sticker line. The stain fades from a dark core through a few warm brown steps into the dirt, with no hard outline. Weaknesses: the total palette is small (14 colours) against the references' richer ramps, and the stain blotches are fairly small and low-contrast. The sheen and drip lobe barely register. It is slightly less dense than the paving reference, but it holds up next to the grass, so I accept it.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15828
+  }
+ ],
+ "decidedAt": "2026-10-24T17:25:51.726Z",
+ "cells": {
+  "16": [
+   "085be42defcbb8de",
+   "2c89a48922e7d60d",
+   "363dae9191616c1e",
+   "44473a9dc0405027",
+   "86321864d112f0e8",
+   "9dcaf49a4c52984b",
+   "a4f66aba5c0b0cba",
+   "a5a5143982bbc314",
+   "be1b60c9927bf3ff",
+   "d464b16dff957a89",
+   "dffd1f862319743b",
+   "efe044aa04cf6c04"
+  ],
+  "24": [
+   "127528cc263404ab",
+   "1a2ab9f05dc38f9b",
+   "1d7fcab8936fd5ca",
+   "1dbda9554150ba2b",
+   "23ee54658454c0df",
+   "2bf2826d422d165b",
+   "2d6945d663fb849b",
+   "3133a4be70fdf5a3",
+   "391b36dd13d3b609",
+   "410428f0c769a928",
+   "55ccd9f9da84d721",
+   "5636b43e88fa478e",
+   "687e84f81f8292e3",
+   "a986cbd63b693120",
+   "bd9a9a478c47ffb9",
+   "be574e49818b6539",
+   "d99d58fdc6395008",
+   "dd151fe53e1a963d"
+  ],
+  "32": [
+   "48c039a494c4ecca",
+   "89cea52bd47717f5",
+   "97412e2bfcb1fbaf",
+   "b088dfa07ba3ebe6",
+   "c6b002fe70ce501c",
+   "c821fa39feacbc4b",
+   "ce8256d72221c930",
+   "f97ffbe75f353407"
+  ],
+  "48": [
+   "0145e3178ed77f12",
+   "08843407631b581f",
+   "3f3f53d106718559",
+   "9672162d45b93cc1",
+   "e434efd806b40d3b",
+   "e5077a0f6ce60e60"
+  ]
+ }
+}

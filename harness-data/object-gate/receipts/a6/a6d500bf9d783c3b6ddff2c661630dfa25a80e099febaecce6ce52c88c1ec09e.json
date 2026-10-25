@@ -1,0 +1,400 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a6d500bf9d783c3b6ddff2c661630dfa25a80e099febaecce6ce52c88c1ec09e",
+ "width": 96,
+ "height": 96,
+ "kind": "structure",
+ "name": "wide three-storey ruined shop block seen from above: flat roof with a parapet and air-con boxes, the east half of the roof fallen in so a tilted roof slab lies inside the open top floor; faded yellow plaster upper floors with dark empty windows, the top floor front broken down at the east, and a row of three ground-floor shops with a half-open rolling shutter, a closed dented shutter and a smashed display window under a bare awning frame",
+ "label": "wasteland_ruins/husk-h",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "refer",
+ "reasons": [
+  "화풍: 화풍 판정이 갈림(걸린 판정 2/4)",
+  "화풍: 판정자 fail (2/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "refer",
+  "reasons": [
+   "화풍 판정이 갈림(걸린 판정 2/4)",
+   "판정자 fail (2/4)"
+  ],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 7,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "wasteland_ruins",
+   "fallback": true,
+   "reason": "칩셋 wasteland_ruins 의 화풍 기준 묶음이 없다",
+   "hash": "5f62fef078ef7661"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 14,
+  "tileColorsP90": 19,
+  "darkV5": 34,
+  "nearBlackEdge": 0.01,
+  "opaqueTiles": 36
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "flat roof with air-con boxes and fallen east half (grey roof deck inside parapet)",
+      "rows": "5-31",
+      "evidence": "a",
+      "front_edge_line_row": 32,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "air-con boxes on roof",
+      "rows": "9-29",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "tilted collapsed roof slab at east",
+      "rows": "8-31",
+      "evidence": "a",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "ground-floor awning frame",
+      "rows": "68-72",
+      "evidence": "a",
+      "front_edge_line_row": 70,
+      "eave_shadow_rows": "71-72"
+     }
+    ],
+    "main_top_rows": 27,
+    "front_face_rows": 64,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The building is seen from the south. Rows 1-4 are the back and side parapet in yellow. Rows 5-31 are a large grey roof deck seen from above, with air-con boxes standing on it and a tilted collapsed slab on the east half. The roof ends at a yellow front edge line at row 32. Below it, the yellow plaster front face with two window storeys runs from row 32 to about row 67. A grey awning band at rows 68-72 has a light edge line at row 70 and dark shadow beneath. The shopfronts continue below it past row 95. The roof is a real top surface of about 27 rows, and the front face is far taller than 3 rows."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "Measured facts: the candidate has 14 visible tones per tile against 12 and 10 for the references, near-flat coverage is 9% against 0%, and dark edge pixels are 0% neutral, so outlines are tinted rather than near-black. By eye, the plaster walls, the roof rubble and the shutters carry speckle and grain, but the ramps are shallower than the references' 5-6 step tile and brick ramps. The plaster mostly has 3-4 steps (light, mid, dark, plus a few dots), and the shutters are mostly 2-3 grey-blue bands. The 9% flat coverage comes from the plaster wall between the windows and the dark roof interior, so it is a minor weakness. The density measure is at the references' level, but the picture reads as thinner and flatter than the richly textured tile roofs and the shaded stone. A careful artist would likely notice the shallower shading next to the references. The candidate is a ruined top-down block with a different structure, so some simplification is expected, but when in doubt it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 18961
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "flat roof with parapet, air-con boxes and collapsed east half",
+      "rows": "5-31",
+      "evidence": "a",
+      "front_edge_line_row": 32,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "air-con boxes on roof",
+      "rows": "9-29",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "shop awning frame",
+      "rows": "68-71",
+      "evidence": "a",
+      "front_edge_line_row": 70,
+      "eave_shadow_rows": "71-72"
+     }
+    ],
+    "main_top_rows": 27,
+    "front_face_rows": 64,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The roof is a wide grey surface at rows 5-31, framed by the yellow parapet at rows 0-4 and the side parapets. It is about 27 rows deep and holds the air-con boxes and the fallen roof slab. The yellow plaster front face starts at row 32, marked by a lighter row (#d2a54c), and runs down through the two window storeys (rows 32-67), the awning band (rows 68-71) and the shopfronts (rows 72-95). That gives about 64 rows of front face. The roof's front edge has no clear eave shadow row. The awning is a thin grey strip with a dark shadow beneath it. No receding side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "Measured facts are roughly on par with the references: 14 visible tones per tile against 12 and 10, 9% near-flat coverage against 0%, and 0% neutral dark edge pixels, so the outlines are tinted. By eye the candidate has real texture: rubble and debris on the collapsed roof, plaster speckle and cracks, and ribbed shutters. The outline is a dark material tone, not a sticker line. It is weaker on shading depth, though. Each material, such as the plaster, the shutters and the roof slab, has only about 3-4 lightness steps, where the references have 5-6 with per-tile highlights. The plaster walls and the flat roof read somewhat flat and muted. The ground-floor shutters are largely uniform grey bands, and the tinted outlines are less selective than Beodeul's. The distinct colour count is also low (44 against 185 and 66), so the palette is leaner. The result is a competent piece, but it looks a little thinner and flatter than the references, and 9% flat coverage is a measurable gap against their 0%.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 17345
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "flat roof with parapet, air-con boxes and the collapsed east half with tilted slab",
+      "rows": "5-31",
+      "evidence": "a",
+      "front_edge_line_row": 32,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "air-con boxes on roof",
+      "rows": "9-29",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "bare awning frame strip over the ground-floor shops",
+      "rows": "68-72",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 27,
+    "front_face_rows": 64,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The roof is a large grey surface at rows 5-31, about 27 rows. It sits inside a yellow parapet border at rows 1-4 and carries the air-con boxes, with the broken-in slab at the east. It ends at a plaster edge line at row 32. Below that is a tall south face of about 64 rows: two plaster storeys with dark windows (rows 32-67), then the shopfront with shutters and a smashed window (rows 68-95). The roof reads as a horizontal surface seen from above, so the object reads as a three-quarter view. No receding side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate has 14 visible tones per 16x16 tile against 12 and 10 for the references, so it is at or above them on the primary density fact. Near-flat coverage is 9% (the references are at 0%), which is low and fits the small flat areas such as the dark window voids and the shutter slats rather than large dead fills. The dark edge pixels are 0% near-neutral, so the outlines lean toward the neighbouring material (brown beside plaster and debris, blue-grey beside the shutters) and do not read as a black sticker line. By eye the yellow plaster has speckle and weathering stains, the roof interior has rubble and a tilted slab with several grey-brown steps, and the shutters carry slat lines and dents. Plaster and roof ramps look like about 4 steps against 5-6 in the references, and total colour count is much lower (44 against 66-185), but this is a palette effect and the visible texture is comparable. A careful artist would accept it next to the references without it looking flatter or thinner.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17200
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "flat roof with parapet (west intact half, east half collapsed with tilted slab)",
+      "rows": "1-31",
+      "evidence": "a",
+      "front_edge_line_row": 32,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "air-con boxes on roof",
+      "rows": "9-30",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "ground-floor awning frame / cornice strip",
+      "rows": "68-72",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 27,
+    "front_face_rows": 64,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The roof is a large grey horizontal surface in rows 5-31, with a yellow parapet rim in rows 1-4 and along the sides. It ends at a front-edge line at row 32 (x=24 shows #d2a54c), where the yellow plaster front face begins. The air-con boxes sit on the roof as decor. The front face runs from row 32 to row 95: two storeys of windows in rows 32-67, a grey awning strip in rows 68-72, and the shutters and display window below it. The east roof collapse also shows tilted slab surfaces. The awning is drawn as a thin front-facing strip, but it is minor next to the roof."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "Measured facts favour the candidate. It has 14 visible tones per 16x16 tile against 12 and 10 for the references. Near-flat coverage is 9%, small and not far from the references' 0%. 0% of its dark edge pixels are neutral, so the outlines lean toward the material tones (brown on plaster, blue-grey on the shutters) instead of a black sticker line. By eye, the faded plaster has speckle and stain variation. The rubble in the collapsed roof shows a tilted slab, debris and broken edges. The shutters have slat ridges, and the windows and awning frame carry dark and light accents. The facade is dense with detail and does not read as flat blocks. Weaknesses: the plaster ramp is about 4 steps against the references' 5-6, the total palette is small (44 colours against 185 and 66), and some wall bands and the shutter slats are fairly uniform. A careful artist would still accept it beside the references on density and outline craft.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17724
+  }
+ ],
+ "decidedAt": "2026-10-23T04:37:03.591Z",
+ "cells": {
+  "16": [
+   "023917817380f441",
+   "0824371f60f6eb2d",
+   "11513870467a681c",
+   "1843e88000c5bec3",
+   "198b3144c13aa942",
+   "1ee710ad596ed3c1",
+   "226bc6d64036439a",
+   "283a9ffbdc977966",
+   "29b170f2dc343ce7",
+   "384596fffd5e00fd",
+   "393afdae7b5d9d3a",
+   "3b2d116f310e1956",
+   "429553962a2e1999",
+   "48b9e5a3f4d18e0e",
+   "570b91b4ebd8fd66",
+   "5f34c15a8e50e0a5",
+   "6238af145c3c868a",
+   "71c5ff1a34bae870",
+   "74efe7b66dc070ad",
+   "7b07b1ddebaea053",
+   "81785086e314b676",
+   "92aa9d6e7c3746f8",
+   "a1c49d8498dcdcb0",
+   "aac657f763c3639f",
+   "ab931103197f676d",
+   "b215f7e8ca6ccc92",
+   "bd6f0837c9107945",
+   "c4a083eaf073417b",
+   "c7965d006db42562",
+   "ca4549c49e4c3818",
+   "e810383abc7b0509",
+   "ececa94f2edabfbd",
+   "edd374e32f2f3491",
+   "efd0b9d9088c960c",
+   "f5dac39deb4119b6",
+   "f6feed2eb50516e7"
+  ],
+  "24": [
+   "01e94574d7f76c20",
+   "2982ab2ee2168315",
+   "31ec432a136a2c0e",
+   "4c6534addb2c5479",
+   "5f94bd17b55704cc",
+   "62de55bfc5aabf48",
+   "83fa58fd2c71b15c",
+   "8763baa40bfb6d4c",
+   "8a36979891b91fe4",
+   "97e36ca602306e37",
+   "a10c225f346f9114",
+   "b673ce5781a302cc",
+   "bd8638e129289bf8",
+   "c1da2e3146d3489b",
+   "d966f5687d14885c",
+   "f334058b16338bb0"
+  ],
+  "32": [
+   "17c127d1e712cd1f",
+   "2c436fed6189b1f7",
+   "30d02e0b2b46a45c",
+   "35f9a3b983434e81",
+   "76a103668ae4ca3b",
+   "92466de78632af2d",
+   "b9a67040447dce34",
+   "e502cf1f65ae9fb1",
+   "ea996f8d3c4a1be5"
+  ],
+  "48": [
+   "377c11386041d0c0",
+   "5d9171035ca48fe5",
+   "5f460d7315c342df",
+   "ae5e70a087f567e6"
+  ]
+ }
+}

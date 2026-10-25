@@ -34,6 +34,8 @@ const CHIPSET_TOOLS: Record<string, readonly string[]> = {
   modern_campus: CAMPUS_EXPOSED_TOOLS,
   modern_city: MODERN_CITY_EXPOSED_TOOLS,
   joseon_baram: JOSEON_TOOLS,
+  // 폐허·황무지(2026-10-22): 칩셋 정책 파일이 없다 — 이 표의 노트와 도구가 경로 전부다(아래 villageTypeSuppressesThemes 가 다른 테마 노트를 끈다).
+  wasteland_ruins: ["compose_wasteland_map", "create_map", "resize_map", "show_map_region", "list_map_locations", "check_reachability", "set_start_position", "create_transfer_pair"],
   beodeul_city: ["author_beodeul_town", "dress_village_quarter", "stamp_object", "check_city_form", "check_reachability", "show_map_region"],
 };
 
@@ -44,9 +46,12 @@ export function villageTypeForTurn(intent: Pick<IntentDeclaration, "mode" | "spa
   return matchVillageType(text);
 }
 
-/** 어떤 칩셋 노트도 붙이지 않는다(그림 없음). */
+/** 칩셋 정책(테마 사슬)이 따로 없는 칩셋 — 이 표의 노트만으로 간다. 다른 테마 노트(「도시 거리」→ jp_city 등)가 새치기하지 않게 끈다. */
+const ROUTE_ONLY_CHIPSETS = new Set(["wasteland_ruins"]);
+
+/** 어떤 칩셋 노트도 붙이지 않는다(그림 없음 · 또는 이 표가 경로 전부인 칩셋). */
 export function villageTypeSuppressesThemes(type: VillageType | null): boolean {
-  return type?.status === "needs-art";
+  return type?.status === "needs-art" || (!!type?.chipset && ROUTE_ONLY_CHIPSETS.has(type.chipset));
 }
 
 /** 버들항 마을 노트를 끈다(그림 없음 또는 다른 칩셋). */

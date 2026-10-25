@@ -1,0 +1,319 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "cebb5dcf9593edd2e006fb2a07844dfbaab94b612c8f5c06784e2faedf347e96",
+ "width": 48,
+ "height": 32,
+ "kind": "structure",
+ "name": "tall freestanding broken concrete wall segment running east-west: wall top seen from above, a deep V-shaped break in the middle with exposed rebar stubs, an intact square pier at the west end, a slanted broken east end, front face below",
+ "label": "wasteland_ruins/wall-h2",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "refer",
+ "reasons": [
+  "3/4: 독립 눈이 「3/4 아님」 12/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면"
+ ],
+ "view34": {
+  "verdict": "refer",
+  "reasons": [
+   "독립 눈이 「3/4 아님」 12/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 7,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "wasteland_ruins",
+   "fallback": true,
+   "reason": "칩셋 wasteland_ruins 의 화풍 기준 묶음이 없다",
+   "hash": "5f62fef078ef7661"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 11,
+  "tileColorsP90": 12,
+  "darkV5": 48,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 6
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "wall top band (main body, both sides of the V break)",
+      "rows": "2-7",
+      "evidence": "a",
+      "front_edge_line_row": 7,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "west square pier top",
+      "rows": "0-7",
+      "evidence": "a",
+      "front_edge_line_row": 7,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 21,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "At x=12 and x=35 the light-gray top band runs rows 3-6 (L about 143-147) and ends in a 1-row lighter front-edge line at row 7 (L=189). Below it the darker concrete front face runs rows 8-28, 21 rows, followed by a dark base at rows 29-31. The top band is wider at the pier, where the silhouette starts at row 0, and it steps down around the V-shaped break with rebar stubs. No eave shadow row is distinct, since row 8 is only slightly darker. The top edge-line evidence is enough for a top surface. No side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a small ruined wall, not a full roofed house, but it is the same 'building' kind for this chipset. Measured facts are on par with the references: 11 visible tones per tile against 12 and 10, 0% near-flat coverage, and only 2% neutral dark edge pixels. That last figure means the outline is tinted, a dark grey-brown beside the concrete rather than a black sticker line. By eye, the concrete has about 5 lightness steps: a lit top face, mid and dark face tones, and crack and speckle pixels. The V-break, the rebar stubs with warm accents and the rubble at the base add varied clusters. It has less per-element texture than the roof tiles and stone courses in the references, so density is slightly lower, but there are no flat fills. A careful artist would accept it beside the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16599
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "wall top and west pier top (light band)",
+      "rows": "3-7",
+      "evidence": "a",
+      "front_edge_line_row": 7,
+      "eave_shadow_rows": "8"
+     },
+     {
+      "part": "broken east segment top (light band stepping down along the V break)",
+      "rows": "5-12",
+      "evidence": "a",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 21,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Columns x=12 and x=35 show a light band at rows 3-6 (L~143-147) that ends in a lighter 1-row front-edge line at row 7 (L=189). Below it a darker front face runs from row 8 to row 28 (L~109-114), with a dark base or shadow row at row 29. The wall top is therefore a foreshortened horizontal surface about 5 rows deep, above a front face of 21 rows. The V break, rebar stubs and slanted east end cut the top band and the profile, but they remain part of the wall's own structure. The silhouette is a south-facing wall with no isometric side face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate shows about 5 grey concrete steps: a light top edge, a mid face, shadowed lower areas and a dark crack and V-break. Its outline is a dark bluish-grey tint of the concrete rather than black. Only 2% of its dark edge pixels are neutral, against 7-9% for the references, so the line carries tint. It has 11 visible tones per tile against 12 and 10 for the references, and 0% near-flat coverage, the same as the references. Speckle, cracks and the small reddish rebar stubs add grain, so there are no flat fills. It is a small, simple prop, but it is not thinner or more sticker-like than the references. It is a little less textured than the tiled roofs, which have per-tile highlights, but it is comparable to the stone wall reference.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16556
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "wall top, west pier and intact east section",
+      "rows": "2-7",
+      "evidence": "a",
+      "front_edge_line_row": 7,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "V-break fragment top with rebar stubs",
+      "rows": "13-17",
+      "evidence": "a",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "front face of concrete wall",
+      "rows": "8-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 21,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The columns at x=12 and x=35 show a light grey top band at rows 3-6. It ends in a bright 1-row front-edge line at row 7 (L=189), and the darker front face runs below it from row 8 to row 28. The band is about 5 rows tall including the edge line. It is lighter than the face (L about 145 vs 110). The eave shadow is weak, but the edge line is clear. The west pier shares the same top band. The deep V-break (rows 7-13 at x=24) has dark rebar and shows a broken lighter top fragment at rows 13-17. The slanted east end is part of the south silhouette, not a receding side face. Rows 29-31 are the base outline and a ground shadow."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small broken concrete wall of about one to two tiles. By eye it shows roughly 4-5 grey steps: a lighter wall top, a mid face, darker shadow in the V-break and along the base, and a few speckle and crack dots. The rebar stubs add a reddish accent. The measured facts match the references. It has 11 visible tones per tile against 12 and 10 for the references, and 0% near-flat coverage like both of them. Only 2% of its dark edge pixels are neutral, so the outline is tinted, a dark grey-brown that follows the material, not a uniform black sticker line. Its raw palette is small (14 colours) because it uses a locked palette, but the visible variety per tile still matches the references. It is simpler than the tiled roofs and stone walls of the references. For a plain concrete object that is acceptable, and it does not look flatter or more sticker-like next to them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17062
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "wall top and pier top (light concrete band with rubble)",
+      "rows": "2-7",
+      "evidence": "a",
+      "front_edge_line_row": 7,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "V-break floor, a lower top surface in the middle between the rebar stubs",
+      "rows": "13-17",
+      "evidence": "a",
+      "front_edge_line_row": 18,
+      "eave_shadow_rows": "18-20"
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 21,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "At x=12 and x=35, rows 3-6 are a lighter top band (L about 145). Row 7 is a bright 1-row front-edge line (L=189). Below it the darker front face runs rows 8-28 (21 rows), and rows 29-31 are ground shadow and base. The silhouette widens from 11 to 48 px over rows 0-14, which fits a sloped broken top and the slanted east end. At x=24 the V break shows dark rebar stubs in rows 7-12 and a lighter top surface in rows 13-17, then a darker face from row 18. This is not an isometric side face, so side_face_visible is false. The top band is thin but has an edge line and a face of 3+ rows below it, so it reads as three-quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "Measured facts put the candidate at the references' level. It shows 11 visible tones per tile against 12 and 10 for the references. Near-flat coverage is 0%, and only 2% of dark edge pixels are neutral, so the edges carry a tint. The picture agrees: the edges lean dark grey-brown beside the concrete and rust beside the rebar, with no uniform black sticker line. The concrete face has about 5 grey steps, from a light top edge through mid and dark tones to a deep shadow in the V break. Speckle and mottling break up the face, and the rust-red rebar stubs add some variation. The whole piece uses only 14 distinct colours, which is lean next to the references' 185 and 66, but the per-tile visible tones match. The piece is small and simple, which is not grounds for failing it. It would sit acceptably next to the stone house wall without looking flatter or more sticker-like. Texture is a little less rich than the references' per-tile scallops and stone-by-stone shading, so I rate it 'some'.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17441
+  }
+ ],
+ "decidedAt": "2026-10-23T03:18:50.219Z",
+ "cells": {
+  "16": [
+   "1a2cf81584ed7cc5",
+   "4dbdf244be342b0a",
+   "6886e8b833854dd2",
+   "7751598502dcb67f",
+   "87061bcd72c706b8",
+   "e57930a61df13a39"
+  ],
+  "24": [
+   "0350c1d0bf2f06b7",
+   "6e13c5a0614bc24a",
+   "70b788f17a873e0a",
+   "823662dad77f0966",
+   "996fe29a63684240",
+   "d3cad20c2b8a93fd",
+   "d6d3b402545cf61c",
+   "f94d9e705fbd0c8f"
+  ],
+  "32": [
+   "208ee3d285ee9197",
+   "5ba7afe0b36bf1d3",
+   "60933176cc6dd64d",
+   "62ad8e8956682d85",
+   "8874ab91e0c0e9a6",
+   "d9d0514426db16cc"
+  ],
+  "48": [
+   "a03507f4023a7557",
+   "da5516a0b8cebd3f"
+  ]
+ }
+}

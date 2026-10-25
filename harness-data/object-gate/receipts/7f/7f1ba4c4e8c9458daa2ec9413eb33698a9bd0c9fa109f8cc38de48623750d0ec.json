@@ -1,0 +1,388 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "7f1ba4c4e8c9458daa2ec9413eb33698a9bd0c9fa109f8cc38de48623750d0ec",
+ "width": 192,
+ "height": 192,
+ "kind": "terrain",
+ "name": "flagstone temple court ground autotile: large irregular pale limestone slabs with dark joints, moss in the joints, a cracked and a sunken slab, a low dressed kerb rim with a 2px front face on the south edge, lying flat on grass (top-down 3/4 RPG ground)",
+ "label": "beodeul_yard/flag",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 칸 정보량이 기준보다 훨씬 낮음 (1/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "칸 정보량이 기준보다 훨씬 낮음 (1/4)"
+  ],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 5
+ },
+ "metrics": {
+  "tileColorsMedian": 4,
+  "tileColorsP90": 26,
+  "darkV5": 77,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 144
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "flagstone paving field (large slabs, joints, moss)",
+      "rows": "18-59",
+      "evidence": "a",
+      "front_edge_line_row": 58,
+      "eave_shadow_rows": "59-60"
+     },
+     {
+      "part": "low dressed kerb rim, south edge face",
+      "rows": "58-61",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 42,
+    "front_face_rows": 2,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "This is a flat ground autotile, not a standing object. The column scan at x=48 and x=96 shows grass in rows 0-17. From row 18 the paving is drawn top-down, as repeating slab bands of about 5 light rows each with a 1-row darker lower edge and a 1-2 row dark joint. The only vertical face is the kerb on the south edge, about 2 rows (dark line plus light lip), with no 3+ row front face. The paving is a flat plane with no volume, so it reads as a top-down slab, which is correct for terrain. The row numbers for the paving's south edge and the kerb (58-61) are estimates, since the scan is truncated."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate measures 4 visible tones per tile against 7 for the paving reference and 3 for the grass reference, with only 28 distinct colours in total. Its stones are small, uniform cobbles with about 4 beige-to-grey steps. They are not the large irregular slabs in the brief, and there is no visible moss in the joints, no cracked or sunken slab, and no clear 2px kerb face on the south edge. The outlines are a tinted brownish-grey, not neutral (0% near-neutral dark edge pixels), so they pass as dark material tone. The grass is a flat mid-green with a faint repeating tile mark and little grain or tufting, which is thinner than the reference grass with its dark clumps. The slab shapes are also repetitive. Overall the piece is flatter and less detailed than the Beodeul paving, and it misses several specified features. The patch is a free-form blob with a hole, not a clear 4x3 autotile layout.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 20050
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "flagstone paving field (flat slabs with dark joints, moss, cracked and sunken slab)",
+      "rows": "18-180",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "low dressed kerb rim on south edges (about 2px front face)",
+      "rows": "28-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 160,
+    "front_face_rows": 2,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "This is a flat ground autotile: a large paving field seen from above, with irregular slabs, dark joints and moss. The only vertical face is the 2px kerb on the south edges (e.g. the dark rows 20-21 and 29 in the column scans), which is below the 3-row front-face minimum. There is no standing volume, so I read it as a top-down slab, which is expected for terrain."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate shows an irregular cobble patch on grass, not the described large limestone slabs with dark joints, moss, a cracked and a sunken slab, or a clear 2px south kerb face. The stones are small and cobble-like with a light rim, so the brief is only partly met. Measured: 4 visible tones per tile against 7 for the paving reference and 3 for the grass reference. Near-flat coverage is 7%, against 0% for both references. The dark edge pixels are 0% neutral, so the outlines are tinted brown-grey rather than black, which fits dark_material_tone. The stone ramp has about 4 steps (pale highlight, light, mid, dark joint) against roughly 6 on the Beodeul paving. The grass is a repeating tuft pattern with few tones and looks flat and patterned. The mossy joints and the cracked and sunken slabs are not readable, and the patch looks like a sticker laid on a tiled backdrop. It is shallower than the reference in shading steps and detail, and does not match the requested object.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 12702
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "flagstone paving field (flat ground slabs with joints, moss, cracked and sunken slab)",
+      "rows": "18-167",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dressed kerb rim, 2px south front face on each south edge, for example rows 20-21 at x=48",
+      "rows": "20-21",
+      "evidence": "none",
+      "front_edge_line_row": 19,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 150,
+    "front_face_rows": 2,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "This is a flat ground autotile seen from above. The column scan shows repeating slab bands of about 5 rows (L~210) separated by 1-row dark joints (#4a4332), which is a paving pattern, not a standing volume. The only vertical face is the kerb's 2px south front (dark rows 20-21 under the light edge at row 18-19), which is under the 3-row minimum for a front face. The silhouette is an irregular autotile footprint on grass with a hole in the middle, so there is no standing body, and the footprint is judged as a top-down slab."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The measured facts put the candidate at 4 visible tones per 16x16 tile, against 7 for the paving reference. Its 7% near-flat coverage is low, but the grass is a faint repeating stamp with little real variation. The stone reads as small pebble-like cobbles with about 3-4 lightness steps (cream, tan, grey-brown, dark joint). The brief asked for large irregular slabs, moss in the joints, a cracked slab, a sunken slab and a 2px kerb face. The image shows none of these clearly. The edge is a thin tinted brown-grey line (0% neutral dark edge pixels), so it is not a black sticker outline. That is the one point in its favour. It is drawn as a loose blob with a hole and a stray stone, not a clean 4x3 autotile. Overall it is shallower and less structured than the Beodeul paving and grass references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 18536
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "flagstone paving field (flat slabs with joints, moss, cracked and sunken slab)",
+      "rows": "18-74",
+      "evidence": "a",
+      "front_edge_line_row": 75,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "low dressed kerb rim, 2px south front face",
+      "rows": "75-76",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 57,
+    "front_face_rows": 2,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The object is flat paving seen from above. At x=96 the stone runs from row 18 (light edge #f2ead8) down through repeating slab-and-joint rows (light slab 5 rows, mid-tone edge row, dark joint row) to the kerb near row 75. The kerb front face is only about 2 rows, which is a thin lip and not a front face of 3 or more rows. No raised volume or receding side face is drawn. The grass hole in the middle and the stepped outline have the same 2px kerb on their south edges. The dark joints and the 2px kerb give a flat ground tile, so it reads as a top-down slab, as expected for terrain."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate has 4 visible tones per tile against 7 for the paving reference and 3 for the grass. Its raw count is only 4 colours per tile, so it is a thin ramp. Stone ramps read as about 4 steps (pale highlight, cream, tan, brown joint), short of Beodeul's 5-6. Dark edge pixels are 0% neutral, so the joints and rim are tinted brown rather than sticker-black; that part is fine. The cobbles are shaded one by one, but they are small and rounded and look like uniform cobbles, not the large irregular limestone slabs the brief asks for. The moss in the joints, the cracked slab and the sunken slab are not visible at this scale. The kerb's 2px south face is only weakly legible. The grass is a faint repeated tuft stamp with almost no tonal range, so it is close to flat. The grass also does not carry the clumped, multi-green variation of the reference. The paving blob is not laid out as a clear 4x3 autotile set. Overall it is clean but shallower and less specific than the reference paving, and it misses the brief's key features.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 24109
+  }
+ ],
+ "decidedAt": "2026-10-22T15:12:50.703Z",
+ "cells": {
+  "16": [
+   "11d62b6d601d1b5e",
+   "17831fa21eb95f2d",
+   "242f8a2ddc552491",
+   "249e5d3262b28d90",
+   "334d536299ece0f0",
+   "3bbf3ea64dd5b0ee",
+   "3d637ba42fe69140",
+   "54d089bfd8a54d2e",
+   "797263986fc8058c",
+   "8236be29a86f547b",
+   "9d5e06243d14afe7",
+   "abb96d3be18ee4f9",
+   "b16f1476b5f4b27d",
+   "c2415b050ecfd126",
+   "d506f8547a6209d7",
+   "d9930af8fd310782",
+   "fe7a205a1e9be5df",
+   "fe86be07afdc4026"
+  ],
+  "24": [
+   "070dfc38a405410e",
+   "0866d20feb40560b",
+   "10b83cc453eae1e8",
+   "16df67da70324d03",
+   "17153f08b79d0255",
+   "28ad4e4fc5cb43d9",
+   "2a0a032d56e8879d",
+   "2d6bb3b61944ddc6",
+   "30aefef4247914d0",
+   "32bd9a1719d99f35",
+   "34e2ca0f597a9da9",
+   "381c69c321b60d3a",
+   "3d6f4dc819fbcc99",
+   "5261a1e4ca128c1a",
+   "5fd890f71648164b",
+   "68db636816c41d9b",
+   "6bd56d765024f476",
+   "770e906bcdb48cf3",
+   "773f25497e27691a",
+   "7750ff19ff63782c",
+   "80d65ef55fa598bc",
+   "82cd0da728103f6a",
+   "844cdf1f1fefa3ca",
+   "86b5fd39e48afd7d",
+   "86d48f1ce6413991",
+   "87514764cf497e0d",
+   "88e98a672786318a",
+   "8aa3a3527346b65c",
+   "968b4adb96583e42",
+   "a723c15b6c675620",
+   "a9d144e5601d9bae",
+   "bf62108026d2d6e5",
+   "c0a7cd1d001b8d1e",
+   "c39864745991f67c",
+   "c7fd5d9f5e2c855b",
+   "c802e85180f9b295",
+   "cfd3f44250828495",
+   "d24abf575bbf9ab6",
+   "d42bf7181dfb45a2",
+   "d7ae3fe8432080a0",
+   "dd14dad7078837b0",
+   "df6769ab1f51c4ff",
+   "e5a8163fb47a2b59",
+   "e734b19e1751f3bc",
+   "f57121ffaec14430",
+   "fe78e72b591f75f1"
+  ],
+  "32": [
+   "01bcd53e0507014b",
+   "08389e21f80403e8",
+   "0b464d8ccc43d7a8",
+   "1f9390e3fd114d63",
+   "2009823bab864ccd",
+   "23904f3fa4ac8353",
+   "49b397f751c59f60",
+   "4c0c010136c865c0",
+   "4defb6c0679118f8",
+   "4eb130afadfde602",
+   "52683d9b977a41f8",
+   "5b231a2070e267bc",
+   "6b60e3d9be8486f8",
+   "7a307c0dd4ab0a7c",
+   "88a40609bcb7f907",
+   "907d907199741407",
+   "a7f1221b817c1c37",
+   "b10e8bae94d61b2a",
+   "b2c57ba2a07f3028",
+   "b7b840b2eced37d7",
+   "c5cd6a01f4f45748",
+   "d65d35da3e385e68",
+   "f0c1fb7e5eab08ba"
+  ],
+  "48": [
+   "1048d8fcb4296805",
+   "1ac42cd939ceaefd",
+   "32c8cb57b392d747",
+   "38fe0d6ea844bec1",
+   "4702539914ca3777",
+   "5e17a8687b8ed7d6",
+   "793fa9de4e623727",
+   "9c676ab241048a7f",
+   "a31c5f9ef85bab50",
+   "b6a52fb466758538",
+   "cd323ee33134e951",
+   "d8c86a72fe22e25e",
+   "dcc25ad050bc2e2e",
+   "eb1021d113275256"
+  ]
+ }
+}

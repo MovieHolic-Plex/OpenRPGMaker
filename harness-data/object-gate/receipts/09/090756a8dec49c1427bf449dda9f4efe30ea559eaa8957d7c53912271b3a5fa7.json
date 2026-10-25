@@ -1,0 +1,302 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "090756a8dec49c1427bf449dda9f4efe30ea559eaa8957d7c53912271b3a5fa7",
+ "width": 16,
+ "height": 32,
+ "kind": "structure",
+ "name": "short broken concrete wall stub overgrown with climbing vines: wall top seen from above, vine-covered front face",
+ "label": "wasteland_ruins/vine-wall",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 13,
+  "tileColorsP90": 13,
+  "darkV5": 40,
+  "nearBlackEdge": 0.22,
+  "opaqueTiles": 2
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "broken wall top (grey stone slab seen from above)",
+      "rows": "6-12",
+      "evidence": "a",
+      "front_edge_line_row": 12,
+      "eave_shadow_rows": "13-13"
+     },
+     {
+      "part": "vine-covered front face",
+      "rows": "13-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 18,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 6-11 form a light grey stone band (L about 150-160) on the wall top. It ends in a 1-row lighter front-edge line at row 12 (#bcbdc3), with a dark green shadow immediately below at row 13 in some columns. Below that, rows 13-30 form a dark green vine-covered front face of about 18 rows, with a base shadow at rows 30-31. The width profile widens from 10 to 16 over rows 5-10 as the top's back corner is cut diagonally. The wall is a single body, so no other part needs a top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a one-tile prop beside two full houses, so I judged it by tile density rather than size. It shows 13 visible tones per tile against 12 and 10 for the references, and 0% near-flat coverage, the same as both references. Its dark edge pixels are 0% neutral, so the outline carries a tint. By eye it reads as dark green-grey beside the vines and concrete, not a black sticker line. The concrete top has a light-to-dark ramp with crack and speckle variation. The vine face uses several greens in clumps with no large flat area. It has fewer ramp steps (about 4 per material) than the roofs and walls of the references (5-6), and only 15 distinct colours in total. That is a modest palette, but the visible texture matches the reference tiles. A careful artist would accept it next to them without it looking flatter or thinner.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18869
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "broken wall top (grey concrete)",
+      "rows": "6-11",
+      "evidence": "a",
+      "front_edge_line_row": 12,
+      "eave_shadow_rows": "13-13"
+     },
+     {
+      "part": "vine-covered front face",
+      "rows": "13-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 18,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 6-11 form a light grey band (L about 150-160) for the wall top. The silhouette widens from 12 to 16 px at the broken upper-right corner. Row 12 is a 1-row lighter front-edge line (L=189, #bcbdc3). Below it, rows 13-29 are the dark green vine-covered front face (L about 65-70) with a few exposed concrete patches, ending in a dark base at rows 30-31. This gives a top surface of about 6 rows over a front face of about 18 rows, with no isometric side face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small prop, so it was judged by eye against the house walls and the measured facts. It has 13 visible tones per tile against 12 and 10 for the references. Near-flat coverage is 0%, the same as both references, and 0% of its dark edge pixels are neutral, so the outline carries a tint. By eye the edges read as dark green beside the vines and a dark grey-green beside the concrete, not a black sticker line. The concrete top and the vine face are separated by value, and the vines show several greens in clumps with speckle. Its total of 15 colours is far below the references' 185 and 66. That limits each material ramp to about 4 steps against the references' 5-6, so it is slightly shallower. Because it is a small prop, I do not hold that against it.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19302
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "broken wall top (concrete slab seen from above)",
+      "rows": "6-12",
+      "evidence": "a",
+      "front_edge_line_row": 12,
+      "eave_shadow_rows": "13-13"
+     },
+     {
+      "part": "vine-covered front face",
+      "rows": "13-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 7,
+    "front_face_rows": 19,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The column scan shows a light grey band at rows 6-11 (L about 150-160). It ends in a 1-row lighter front-edge line at row 12 (#bcbdc3 in columns 8 and 11). Below that line, vine-green and dark rows begin, with a dark row at row 12 or 13 acting as eave shadow. The silhouette widens from 10 to 16 px over rows 5-10, which reads as the broken, angled top outline. Rows 13-29 are the vine-covered front face (about 17 rows), and rows 30-31 are a dark base. The top is a 7-row horizontal surface above a tall front face, so it matches the green cabinet and barrel reference pairs rather than the rim-only ones."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a tiny, roughly one-tile prop, so it is not directly comparable to the full houses. The measured facts favour it. It has 13 visible tones per tile against 12 and 10 for the references, 0% near-flat coverage, and 0% neutral dark edge pixels, so the outline leans green or grey-green rather than black. By eye, the concrete top reads as about 4 steps from light cap to dark face, with speckle and cracks. The vines add 3-4 greens in clumps, so the surface is not a flat fill. The weak points are the 15 total distinct colours against 66-185 for the references, and a ramp shallower than the 5-6 steps Beodeul uses. That puts it slightly below the references on richness. Per-tile density, tinted outlines and absence of flat fills are enough to stand next to them without looking like a sticker.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18567
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "concrete wall top (broken, light grey)",
+      "rows": "6-11",
+      "evidence": "a",
+      "front_edge_line_row": 12,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "vine-covered front face",
+      "rows": "13-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 18,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 6-11 form a light grey concrete band (L about 150-160). At x=4 the band widens to rows 6-11, and the silhouette widens from 10 to 16 px across rows 5-10, so the band reads as a broken, slanted top. It ends in a bright 1-row front-edge line at row 12 (L=189, #bcbdc3) in columns 8 and 11. Below it, rows 13-29 are a vertical face of dark green vines with grey concrete patches, and rows 30-31 are a dark base shadow. The top is 6 rows deep and the front face is about 17-18 rows, so the stub shows both a top surface and a front face. There is no clear eave shadow, but the edge line is enough evidence."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small prop set against full houses, so I judged it on tile density and craft rather than size. It shows 13 visible tones per 16x16 tile, against 12 for h101 and 10 for the stone house. Near-flat coverage is 0%, the same as both references, so there are no flat fills. Dark edge pixels are 0% neutral, so the outline leans green or teal to match the adjacent vines and concrete, not a black sticker line. The pale concrete top and the vine clumps in several greens give visible grain. The weak point is the total palette of only 15 colours, which suggests about 4 steps per material against the references' 5-6. That is a modest drop in ramp depth, not a drop in per-tile information. Judged by eye at this small size, a careful artist could accept it next to the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18842
+  }
+ ],
+ "decidedAt": "2026-10-22T14:22:07.120Z",
+ "cells": {
+  "16": [
+   "b3951fb51fe9ee70",
+   "c3cca225c1a9cedf"
+  ],
+  "24": [
+   "1adc81f80756d1e1",
+   "4757fa3a260ae241",
+   "4eaa369cd0edf3fc",
+   "54838f169abdc822",
+   "57106524f5bbea2b",
+   "7dda6625340eda62",
+   "a89a9b9c37ea6bc5",
+   "a9043c2d2d497ff6",
+   "aeb98b9185ccbfbd",
+   "dd316abcfe24ef51",
+   "eb77b72fea84e0c4",
+   "fecd1040e376f8ba"
+  ],
+  "32": [
+   "372f0de244a52424",
+   "4625797bb91f2e05",
+   "a6e399ea02d24bd4"
+  ],
+  "48": [
+   "130f8ef0e01b9ea6",
+   "343786d9a69a831c",
+   "53175f84d091f909",
+   "a012de83814ea251",
+   "cd4abc232205d72b",
+   "d485b33aca26d9b4"
+  ]
+ }
+}

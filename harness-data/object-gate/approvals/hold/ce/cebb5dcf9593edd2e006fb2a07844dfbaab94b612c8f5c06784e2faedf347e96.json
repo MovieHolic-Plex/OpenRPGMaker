@@ -1,0 +1,18 @@
+{
+ "schema": "oprn-object-gate-hold-decision/1",
+ "pixelSha256": "cebb5dcf9593edd2e006fb2a07844dfbaab94b612c8f5c06784e2faedf347e96",
+ "profileHash": "4d8774b517f41638",
+ "kind": "structure",
+ "decision": "allow",
+ "decidedBy": "supervisor (village-art)",
+ "decidedAt": "2026-10-23T03:39:01.773Z",
+ "by": "delegated",
+ "delegatedBy": "user",
+ "evidence": "tiledata/wasteland-ruins/_review/r55/opus-reviewer-verdict.md",
+ "via": "review-page",
+ "reasons": [
+  "3/4: 독립 눈이 「3/4 아님」 12/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면"
+ ],
+ "note": "delegated by user to supervisor 2026-10-23 — wasteland_ruins/wall-h2: gate REFER re-checked by two fresh independent adversarial Opus reviewers -> PASS (r55).",
+ "sig": "586b62b8922f750f8b2c98967fb1f1291b60d714cb0278f07ca2bcdeb9758fa6"
+}

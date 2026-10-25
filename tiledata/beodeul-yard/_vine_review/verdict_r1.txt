@@ -1,0 +1,33 @@
+VERDICT: FAIL
+
+Reviewer: independent adversarial VQA (fresh), 2026-10-23. Images: v2_rows_1x/2x/4x, v2_tiles_4x, v2_cells_split_8x, compared against beodeul_refs_*, ref_tree-*, prev1_*, old_vine_field_*.
+
+Overall: real progress over prev1. The canopy is now made of lit rounded clumps in a Beodeul-like green ramp, the row has mass, and the ends have posts. It still does not pass. At 1x and 2x a row reads as a two-cell box hedge, made of two stacked tiers of bushes plus a flat dark slab. It does not read as a canopy top plane folding into a front face. The top-plane grapes are still specks.
+
+MAJORS
+1. The top cell is drawn as two side-lit TIERS of balls, not one plane seen from above (rule 1).
+   Measured mean luminance per scanline in row 1 at 1x (y16..y33): bright at y17 and y26, dark troughs at y23 and y31. Each 16px top cell holds two horizontal bands of clumps, each lit on top and shaded underneath, with a dark crevice line between the bands across the whole row. That reads as a front-facing wall of stacked bushes (a hedge). It does not read as a receding plane. The bumpy cauliflower silhouette on the top 2-3px is also a side-profile cue.
+   Fix: remove the continuous dark band at the mid-height of the top cell (around local y7-8 of each top cell). Break the crevices into irregular, staggered gaps, as in ref_tree-d43edd, where crevices never line up into a horizontal stripe. Give the plane its own lighting gradient: brightest clumps toward the back/top edge, slightly darker and denser toward the fold edge. Do not repeat the same light-top/dark-bottom stack twice.
+
+2. The front face is a featureless flat slab, and the fold is a hard straight seam (rule 1).
+   Front cell rows y34-y37 at 1x contain only 2 colours (luminance std 9-17, versus 80-130 in the canopy). At 4x the front is a uniform dark-green band with perfectly straight top and bottom edges. A ruler-straight horizontal line runs the full row length exactly on the cell boundary between top and front. The front looks like a painted box, not foliage folding down. It is the main reason the row reads as a clipped box hedge.
+   Fix: let 2-4 canopy clumps lap over the cell boundary into the front cell (irregular lower lip). Add 1-2 darker leaf-clump shapes and a few mid-green leaf pixels on the front face so it reads as shaded leaves. Make the bottom edge of the foliage ragged (hanging leaf tips 1-2px) instead of a straight line with rounded corners.
+
+3. The top-plane grapes are still dark specks (rule 3, carried over from prev1 major #3).
+   In every top cell (split_8x upper row, m1..m6 and the ends) the grapes are 1-2px dark navy/indigo dots with no highlight. At 1x they disappear into or read as noise in the leaves. Only the bottom-edge bunches (front cell, about 3x4px with a light pixel) read as grapes.
+   Fix: either remove the scattered top-plane specks or make each one a 2x3 / 3x3 bunch with a lighter violet highlight pixel and a 1px dark outline against the leaves. Fewer, readable bunches are better than many specks.
+
+MINORS
+4. Periodic rhythm. Autocorrelation of the second clump tier along x gives r=0.56 at a 32px lag (r around 0.3 at 15-16px). The middle set cycles visibly every 2 cells, and in the long rows the clumps sit on a near-uniform ~7px lattice of equal-sized balls. The Beodeul trees mix clump sizes (small 3-4px to large 8-10px). Vary clump sizes per middle and offset clump centres between m1..m6.
+5. Ends. The canopy ends are cut square at the top corners (left end and right end, top cell). Only the bottom-front corner is rounded, so the end looks sliced rather than finished. Round the top-back corner by 2-3px and add a loose clump overhanging the post. The thin light-grey vertical stroke beside the end posts (wire/brace) reads as a stray 1px line at 1x. Either thicken it into a visible diagonal brace or drop it.
+6. Ground shadow is still weak/absent. Under the foliage there is a grey wire and an orange-brown horizontal bar that reads as a wooden bottom rail, not a cast shadow. The dirt below and behind the row is the same tone as open ground. Add a 2-3px darker, desaturated dirt shadow band under and slightly right of the row (match the Beodeul tree ground shadow).
+7. Trunks/posts. Mid trunks (about 2-3px, split_8x lower row) are acceptable now but sit at very regular intervals with identical shapes. Vary lean and width by 1px. The mid post pieces are indistinguishable from trunks at 1x. Make posts straighter and lighter wood with a cap pixel so the two read differently.
+8. Style fit at 1x. The canopy ramp/contrast is close to the Beodeul tree, but the rows are much more saturated and heavier than the Beodeul pergola vine (beodeul_refs, far left), which uses a finer speckled texture. Next to the pergola these rows will look like a different set. Consider pulling the darkest front green toward the pergola/tree shadow green.
+
+WHAT IMPROVED (not grounds for passing)
+- The prev1 side-view thin hedge strip is gone. The rows now have a top region and a front region.
+- The clumps now have upper-left lighting and dark crevices with a Beodeul-like green ramp.
+- The bottom-edge grape bunches have a highlight pixel and read at 1x as purple dots.
+- No hard vertical seams between middles were visible at 1x/2x/4x.
+
+To pass, at minimum: fix majors 1-3 (one top plane instead of two stacked tiers, a leafy irregular front face with no straight seam at the cell boundary, readable grapes or no grapes on the top plane). Then re-review at 1x next to the Beodeul trees and pergola.

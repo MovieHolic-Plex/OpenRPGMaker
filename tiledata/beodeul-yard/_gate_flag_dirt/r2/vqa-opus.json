@@ -1,0 +1,55 @@
+{
+  "reviewer": "opus fresh adversarial (r2)",
+  "verdict": "fail",
+  "notes": "board-new-vs-current-2x.png appeared later and was reviewed afterwards. Compared with the current in-game board, the new art clearly fixes the square 1-cell dirt holes and the hard flag/dirt seams, so it is a real improvement. It does not change any criterion result below. Coords are sample-1x px; cells are 16px, cell (cx,cy).",
+  "criteria": {
+    "ragged_ruin_edge": {
+      "result": "fail",
+      "evidence": "Edges are broken up, but the N edge reads as a row of near-identical pale triangular 'teeth' (sample-4x x~280-540,y~150-200; 1x rows 37-46, cells (4..7,2)) - comb-like shards of uniform size/tone rather than slabs sinking into earth. W edge (cells (4,5),(4,6), x64-80) has its slab boundary at x=72-74 on almost every row y84-87, 92-94, 108-110, 116-118 - a near-straight vertical cut 8px in from the cell edge. No sunken lip shadow: mean luminance of the pixel just below slab lips = 322 vs dirt body mean 295 (lighter, not darker), so fragments sit on top of the dirt instead of sinking into it."
+    },
+    "no_kerb": {
+      "result": "pass",
+      "evidence": "No continuous dressed rim or outline band along any edge in sample-4x or the 17 edge tiles; outside of the slabs is plain packed-dirt texture."
+    },
+    "no_square_holes": {
+      "result": "fail",
+      "evidence": "The 2x2 interior hole (x128-160,y80-112) reads as an irregular rounded pit - good. But the south tail has a hard square cell-corner: slab block cut flat along y=158/159 at x88-95 and a new slab starting flush at the cell corner (96,160) with straight top and left sides (1x rows 160-165 '####' at x96-99); visible in bot.png crop at 8x (256,384). The W edge also shows full-dirt pixel rows exactly at y=95,111,127 followed by slab rows starting at y=96,112,128 - square, cell-aligned breaks."
+    },
+    "seamless": {
+      "result": "fail",
+      "evidence": "Edge tiles inherit the body's cell-border joint path: along the W edge every edge cell's last row is pure dirt/joint (y=95,111,127 '...............o') and the next cell begins with a slab top at x74-79, so the 16px cell borders show as horizontal breaks running into the ragged edge. Corner (96,160) shows a straight vertical seam between S-tail cells (5,9)/(6,10)."
+    },
+    "no_repeat_grid": {
+      "result": "fail",
+      "evidence": "Exact 16x16 duplicates on a straight run: N edge cells (4,2)==(6,2) and (5,2)==(7,2) (byte-identical), i.e. a pure N/N2 alternation with a 32px period across 4 cells, plainly visible as a repeated tooth pattern in sample-4x top edge. Other byte-identical edge cells: (8,2)=(11,3)=(12,4)=(14,5); (3,3)=(4,5)=(10,5)=(5,9); (7,4)=(13,7)=(10,8)=(6,9); (9,4)=(11,8)=(7,9)=(9,9); (14,7)=(13,8)=(10,9)=(6,10). W edge rows y96-99 vs y112-115 near identical (16px period)."
+    },
+    "beodeul_quality": {
+      "result": "fail",
+      "evidence": "Slabs are very bright (top colours (217,210,190),(242,234,216),(207,204,192)) against dirt ~295 luminance - far higher contrast than the Beodeul reference stone (beodeul-ref-8x.png), so the court reads as a pile of white tile shards. Edge fragments are flat single-tone triangles with no lip shadow. Loose 1-3px grey chips are scattered evenly over the whole yard including far from the paving (e.g. x16-40 and x200-270 rows 30-175), reading as noise speckle rather than fragments shed from the court. Cool grey/blue facets (207,204,192)/(200,197,186) give an icy cast."
+    }
+  },
+  "preexisting_body_issues": [
+    "Flag body tiles have joints that bunch on 16px cell borders: every body cell's last row (y=47,95,111,127,143) is mostly joint ('.....##.#.....#o') and first row starts with a repeated '####......###...' slab pattern, producing a visible 16px grid inside the full-body area.",
+    "Body cells repeat byte-identically at 16/32px (e.g. (4,3)=(5,5)=(11,7)=(8,8); (5,3)=(6,5)=(11,5)=(5,7)=(6,7)); diagonal light-grey triangle facets repeat visibly across the court in sample-4x.",
+    "Light grey-blue triangular facets in the body read cold/icy versus the warm Beodeul palette."
+  ],
+  "defects": [
+    "N edge = N/N2 strict alternation, byte-identical every 32px (cells (4,2)/(6,2), (5,2)/(7,2)).",
+    "N edge fragments are uniform pale triangular teeth (comb-like).",
+    "W edge slab boundary near-straight at x=72-74 over 48px; cell-border dirt rows at y=95/111/127 carry the body's 16px grid into the broken edge (new edge tiles make the preexisting grid more visible).",
+    "Hard square corner at (96,160) in the south tail (flat cut y=158, flush slab start x=96).",
+    "No sunken shadow under slab lips (below-lip luminance 322 > dirt 295).",
+    "Grey chip speckle scattered uniformly over the entire yard, not concentrated near the broken edge.",
+    "Slab brightness/contrast well above Beodeul reference."
+  ],
+  "fixes": [
+    "Give each straight edge direction >=3-4 variants (N,N2,N3,N4...) and pick by a position hash, not strict alternation; also vary per-cell chip placement so no two edge cells are byte-identical on a run.",
+    "Redraw N edge fragments as mixed-size rounded/polygonal slab pieces (some half-buried, partially covered by dirt pixels) instead of evenly spaced triangles; vary depth of the broken line by 3-8px across the tile.",
+    "On W/E edges, move the break line in/out by several px within each tile and avoid ending slabs at the cell's top/bottom rows; overlap a fragment across the y=cell border region so the body's border joint does not continue as a straight dirt row into the edge.",
+    "Fix the S/iso/inner-corner tile that produces the flush slab corner at (96,160): round or chip that corner and break the flat y=158 cut.",
+    "Add a 1px darker dirt shadow (≈dirt shade -40 luminance) under lower/right lips of slab fragments and a darker sunk rim on fragment undersides to read as sinking into earth.",
+    "Restrict loose grey chips to within ~1 cell of the paving (in the edge tiles), use slab colour with shading for them, and reduce far-field speckle in dirt body.",
+    "Tone edge fragments down (darker warm mid-tones, weathered/dirtied tops) toward Beodeul stone values so contrast against dirt is closer to the reference."
+  ],
+  "comparison_vs_current": "improved: the current board's square dirt holes and straight seams are gone, and the interior hole reads as a pit. Still failing: 32px N/N2 repeat, comb-like teeth, near-straight W cut, cell-border dirt rows, square corner at (96,160), no lip shadow, and slab brightness."
+}

@@ -1,0 +1,384 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "3bd31e7dcf2570923b6e5387741b138f77b6bd00a9d69f564c2e3eacfc470e2f",
+ "width": 192,
+ "height": 192,
+ "kind": "terrain",
+ "name": "packed-earth yard ground autotile: tamped reddish-brown earth with faint wheel rut, footprints, pebbles and straw, a slight earth bank shadow on the south edge and grass tufts creeping over the rim, lying flat on grass (top-down 3/4 RPG ground)",
+ "label": "beodeul_yard/dirt",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 명암 3단 < 4 (4/4)",
+  "화풍: 칸 정보량이 기준보다 훨씬 낮음 (1/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "명암 3단 < 4 (4/4)",
+   "칸 정보량이 기준보다 훨씬 낮음 (1/4)"
+  ],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 5
+ },
+ "metrics": {
+  "tileColorsMedian": 4,
+  "tileColorsP90": 13,
+  "darkV5": 106,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 144
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "packed-earth patch, flat ground drawn top-down on a full grass background",
+      "rows": "19-175",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "This is a flat ground autotile. A dirt patch with an irregular outline lies on a full 192x192 grass field. The column scan shows only alternating dirt and grass runs and no front face, only a thin earth-bank shadow of about 3 rows (e.g. rows 75-77 at x=96) along the south edges. The light 1-row lines (rows 26, 42, 58, 74) are texture bands in the dirt, not front-edge lines of a raised body. There is no vertical south face of 3 or more rows, so it reads as a flat top-down ground tile, which is correct for terrain."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate's dirt reads as a mottled brown with a few lighter and darker clumps, roughly 3-4 brown steps against the 5-6 Beodeul uses per material. It is only 4 visible tones per tile, versus 3 for the grass reference and 7 for the paving reference. Near-flat coverage is 7%, so there are no big flat areas, but the grass background is a repeated light tuft pattern over one green, close to flat. The dirt rim has little dark-brown edging, and the south bank shadow is faint. The grass tufts over the rim are small and uniform. Rut, footprints, pebbles and straw are barely visible: only a few yellow and grey specks sit in the upper left of the patch. The shape also looks like a blob with stray bits, and its inner hole and edges are not clearly autotile-like. Overall it is acceptable but shallower than the references, with less shading depth and less varied texture.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 11077
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "packed-earth ground patch lying flat on grass, with grass tufts on the rim and a thin earth-bank shadow on the south edge",
+      "rows": "9-86",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The image is a flat ground autotile: an irregular packed-earth patch with a grass hole in the middle, drawn on a full-bleed grass background. The column scan shows repeating earth texture, with light 1-row speckle lines at rows 26, 42 and 58 that are texture, not edge lines. The 3-row dark bands (L=86) are the bank shadow at the south edge of the earth, and they sit directly against grass. There is no raised body and no vertical front face of 3 or more rows, so it is a flat top-down terrain tile. A terrain tile is not expected to show a 3/4 top surface and a front face. The silhouette is 192 wide on every row because the grass fills the tile."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate earth patch shows only about 4 visible tones per tile (reference paving has 7, and the reference grass has 3 visible tones but much richer clustered texture). The dirt reads as a mottled brown with a few yellow and grey specks. It has roughly 3 lightness steps and no distinct highlight/mid/dark/deep ramp. The surrounding grass is nearly uniform with a faint repeated tuft glyph, which is much flatter than the reference grass clumps in several greens. The requested wheel rut, footprints and south bank shadow are barely visible, if at all. The dirt edge has a tinted dark brown rim rather than a black outline, so the outline is not a sticker, but the edge is a uniform scalloped fringe with no grass tufts creeping over the rim. Near-flat coverage is low (7%), yet that comes from noisy speckle rather than structured shading. The piece is clearly lower in richness and shading depth than the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 18082
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "packed-earth ground patch lying flat on grass",
+      "rows": "9-86",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "This is a flat ground autotile: a reddish-brown earth patch on a full-bleed grass background (width 192 on every row). The column scan shows earth texture runs with 1-row lighter pebble or straw lines and short darker bank-shadow runs, 3 rows (#70502e / L=86) at the south edge of earth areas, e.g. rows 59-61 at x=48 and rows 75-77 at x=96. These are a thin edge shadow, not a vertical front face of 3 or more rows. There is no standing volume, no eave line and no ellipse. It is terrain lying flat, so it reads as a top-down slab, as expected for a ground tile."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate's earth patch shows only about 4 visible tones per tile, against 7 for the paving reference and 3 for the grass reference, which looks richer by eye. The dirt is a mottled brown with a few pebble and straw dots, but it reads as a single noisy mid-brown ramp with roughly 3 lightness steps. Beodeul uses 5-6 per material. The edge has dark brown tinted pixels (0% neutral), so it is not a sticker outline, but it is a fairly uniform dark rim. The south bank shadow is barely readable, and the wheel rut and footprints described in the brief are not visible. The surrounding grass is a repeated, low-contrast tuft pattern with only 2-3 greens, much thinner than the reference grass with its clumps and dark variation. Flat coverage is low at 7%, but the surface is mostly uniform noise without per-clump shading. A careful artist would find it flatter and less structured than the reference. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 11311
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "packed-earth patch, flat ground (main body)",
+      "rows": "19-74",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "3-row dark bank shadow on the south edge of the earth (e.g. rows 75-77 at x=96)",
+      "rows": "75-77",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": "75-77"
+     },
+     {
+      "part": "grass tufts over the rim, pebbles, straw",
+      "rows": "19-140",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 56,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "This is a flat ground autotile: a reddish-brown earth patch with an irregular outline on a full-bleed grass background, drawn top-down. The column scans show the earth as a long uniform run (e.g. x=96 rows 27-73, broken only by 1-row lighter lines at 26, 42, 58 and 74). Those lines are texture or rut marks, not eave edges. Each south edge has only a 3-row darker strip (L=86, #70502e) that reads as a cast bank shadow. It has no vertical face texture, no lighter edge line above it, and it does not widen or narrow like an ellipse. There is no standing volume and no receding side face. The patch reads as a flat top-down slab, which is correct for a terrain tile."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate has about 4 visible tones per tile, against 3 for the reference grass and 7 for the paving. Its earth has a mottled brown with a few pebbles and straw flecks, and that gives some texture. Near-flat coverage is 7%, so there are no big flat areas, but the grass around the patch is a faint, nearly flat repeating tuft pattern. The soil ramp is shallow: roughly 3 brown steps (light, mid, dark), where Beodeul uses 5-6 per material. The requested features are barely readable at this scale. There is no clear wheel rut, no visible footprints, and no visible south-bank shadow, so the patch reads as a uniform lumpy blob. The grass tufts over the rim are only a thin dark-green fringe. The patch edge has no outline and relies on value separation, which is acceptable, but the shape is blobby and the single isolated blob far from the main patch looks like a stray fragment. Overall it is a competent but shallower and flatter piece than the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 18815
+  }
+ ],
+ "decidedAt": "2026-10-22T15:12:50.694Z",
+ "cells": {
+  "16": [
+   "11e715448d41d835",
+   "137caddde7fff575",
+   "25e31d55700a1720",
+   "261765af3e74e3cc",
+   "3f46c76d25b02c5b",
+   "41f95cd578167380",
+   "43f3daf16e1cb8d1",
+   "4d1b6c6873421e5c",
+   "56355e8e664659f1",
+   "8d9a7ade64b79280",
+   "a55c19e33548d3da",
+   "c93f43e3253608e2",
+   "cf82791c409f0f18",
+   "d9930af8fd310782",
+   "dda43998e8384cfc",
+   "de1e66f150129f4c",
+   "deb8c784841cbe53",
+   "fd373e662565dfc9"
+  ],
+  "24": [
+   "0f21f4015b43ce48",
+   "106a730d5745c9b7",
+   "10b83cc453eae1e8",
+   "125bf8b4b343481b",
+   "14d336ffe0c490cd",
+   "1594bea840ea9402",
+   "1ab3820fcd0fde4c",
+   "1e9850f25f342cf6",
+   "22ddef74fa48b9a7",
+   "22e1b2034ebf4ec0",
+   "24d7634835bd7b0f",
+   "25c2ce8f404f50d8",
+   "3fd973a7e80285e9",
+   "455f93430c7dec4b",
+   "4daeff76b7b74e17",
+   "4ee9f1431bca1e73",
+   "4f204e8215630f33",
+   "501c92a4e9d742fb",
+   "51a9c198bb04a836",
+   "61675d0962811793",
+   "6fca5e6d055e8f78",
+   "80278f08cfd3e7f6",
+   "86d48f1ce6413991",
+   "9015c18ef5af7e9b",
+   "92a17bcc5677f346",
+   "a3075d31e79a44ba",
+   "a80c1135faf28d49",
+   "b30ea820ac0b0092",
+   "b6a50a4f0d47d8be",
+   "c0a7cd1d001b8d1e",
+   "c34d682b6eeef83e",
+   "c50f793f2576a9ff",
+   "cac57942abf95b80",
+   "cf4d7fae57aebf7d",
+   "d19ce18b2827cfa9",
+   "d249dd08d6ae2da5",
+   "d24abf575bbf9ab6",
+   "db3f61aaba639d79",
+   "e0eb9a26ca36a766",
+   "e5a88a8b4652543e",
+   "e6eb328bdaf0147d",
+   "e9c73ca09cdb75b3",
+   "f38297a8523b7216",
+   "fd7154414c4aa3c2",
+   "ff175e986682f6b2",
+   "ff64ba5aa4d42984"
+  ],
+  "32": [
+   "02de5d80777527f8",
+   "0603b6618f979588",
+   "09f1a0742837be35",
+   "0f5973631051b213",
+   "1a524ca8d2f0aa6b",
+   "1b73311a347a567e",
+   "1d98798e6f368ec6",
+   "23904f3fa4ac8353",
+   "2ed3f6d03cee3d8e",
+   "3c5616ee5e9d0a06",
+   "3d3d4bbddbf1f16b",
+   "4755b2814fbcf5cb",
+   "4a3ef76640b3b068",
+   "4e1af04175eedd83",
+   "5b798d63114d0541",
+   "63b79fb69bac71c0",
+   "6e8e55012bafce5f",
+   "7eb58c6a012e7174",
+   "908cd3f75f364ee4",
+   "973d08e813370451",
+   "b09f7f9a5fd71c93",
+   "c62181ca6693d6ec",
+   "d7427c4c7e0b9acc"
+  ],
+  "48": [
+   "08a1f4da8e802357",
+   "1dd96a44f76c57dc",
+   "5a534ef4e8204958",
+   "69bd0853cefbbd8d",
+   "6bdecb9cb26db12a",
+   "87270827f08b19cc",
+   "9dac5111339ab9f2",
+   "a17e81245d6f42b8",
+   "c9472b39e2fe4d72",
+   "db0637691800b9d4",
+   "dcc25ad050bc2e2e",
+   "df1a5a5b6f0a1a87",
+   "e1016c3fc71bd739",
+   "f0a648c1922a5ee1"
+  ]
+ }
+}
