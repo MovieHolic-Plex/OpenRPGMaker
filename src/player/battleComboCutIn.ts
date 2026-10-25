@@ -17,10 +17,10 @@
  * 피해·위력 계산과 무관한 표시 전용이다. 기술의 도트 연출은 기존 경로(retroChoreographyId) 그대로 그 뒤에 재생된다.
  */
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
-import { findSharedPortrait, resolveSharedPortraitUrl, sharedExpressionSetIdOf, sharedPortraitId, sharedPortraitWithExpression } from "@/assets/sharedPortraitAssets";
+import { resolveSharedPortraitUrl } from "@/assets/sharedPortraitAssets";
+import { comboBustResourceId } from "@/project/comboBust";
 import type { BattleTimelineEntrySnapshot } from "@/battle/types";
 import { COMBO_ELEMENT_TINT, comboTint, resolveBattleStaging, type ComboShake, type ResolvedBattleStaging } from "@/project/battleStaging";
-import { resolveAppearancePortrait } from "@/project/characterAppearances";
 import type { Project, SkillRecord } from "@/project/types";
 import { playBattleSfx } from "@/player/battleSfx";
 
@@ -55,27 +55,12 @@ function memberTint(project: Project, skill: SkillRecord | undefined, actorId: s
  * 전신은 쓰지 않는다(컷인 판에는 어깨 위만 들어간다).
  */
 export function actorBustImage(project: Project, actorId: string): { readonly url: string; readonly kind: "bust" | "face" } | undefined {
-  const actor = project.database.actors.find((record) => record.id === actorId);
-  if (!actor) return undefined;
-  const resolve = (resourceId: string): string | undefined => resolveSharedPortraitUrl(resourceId) ?? resolveAssetResourceUrl(resourceId, { project }) ?? undefined;
-  const appearance = resolveAppearancePortrait(project, actor.appearanceId, "bust");
-  if (appearance?.presentation === "bust") {
-    const id = sharedPortraitWithExpression(appearance.resourceId, "determined") ?? appearance.resourceId;
-    const url = resolve(id);
-    if (url) return { url, kind: "bust" };
+  // 고르는 순서는 project/comboBust.ts 하나 — 내보내기(webExportAssets)가 같은 그림을 싣는다.
+  for (const candidate of comboBustResourceId(project, actorId)) {
+    const url = resolveSharedPortraitUrl(candidate.resourceId) ?? resolveAssetResourceUrl(candidate.resourceId, { project }) ?? undefined;
+    if (url) return { url, kind: candidate.kind };
   }
-  const face = appearance?.resourceId ?? actor.faceResourceId;
-  const setId = sharedExpressionSetIdOf(face);
-  if (setId) {
-    const base = sharedPortraitId(setId, "bust", "base");
-    if (findSharedPortrait(base)) {
-      const id = sharedPortraitWithExpression(base, "determined") ?? base;
-      const url = resolve(id);
-      if (url) return { url, kind: "bust" };
-    }
-  }
-  const url = face ? resolve(face) : undefined;
-  return url ? { url, kind: "face" } : undefined;
+  return undefined;
 }
 
 function span(className: string, text?: string): HTMLElement {

@@ -1,0 +1,17 @@
+{
+ "name": "롱하우스",
+ "massing": "5",
+ "material": "plaster",
+ "refs": [
+  "bd-house-h101_0",
+  "bd-house-cstable"
+ ],
+ "walk": [
+  "********...",
+  "***********",
+  "***********",
+  "XDXXXXXXXXX",
+  "XDXXXXXXXXX"
+ ],
+ "id": "longhouse"
+}

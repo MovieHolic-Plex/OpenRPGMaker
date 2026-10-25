@@ -22,7 +22,7 @@ Research responses distinguish `conceptualRequirements` (study labels, never cal
 
 Runtime starts its clock after images load. Sequence music remains outside shot DOM replacement. Shot cues use their own elements, synchronize metadata-delayed seeks against current elapsed time, and stop on next/Skip/abort/load error. Canvas state restores even when a crop fails. Reduced motion freezes positional/camera/particle/sprite motion and retains timing/opacity/narration. In the pixel-grid vocabulary it freezes region loops, dust drift, the glow pulse, the stride walk and the dither reveal, while caption/emote **visibility timing** still follows the clock. Cues and narration cannot be proved through a silent frame preview.
 
-Entry transitions reveal from the stage background: cut/fade/wipe/iris/flash/dither. They are not a cross-dissolve of the previous shot. `dither` is an ordered 4×4 Bayer dissolve from the stage background (17 coverage steps, pixel-art vocabulary) — it still knocks the incoming shot out of the background, so it is *not* a blend with the previous shot; a true cross-dissolve remains unimplemented and is stated as such in `get_animatic_capabilities`. Particle presets are seeded rain/snow/sparks/dust/stars. No live map-session mutation is used to author a montage.
+Entry transitions reveal from the stage background: cut/fade/wipe/iris/flash/dither. They are not a cross-dissolve of the previous shot. `dither` is an ordered 4×4 Bayer dissolve from the stage background (17 coverage steps, pixel-art vocabulary) — it still knocks the incoming shot out of the background, so it is *not* a blend with the previous shot; a true cross-dissolve remains unimplemented and is stated as such in `get_animatic_capabilities`. Particle presets are seeded rain/snow/sparks/dust/stars/petals/paper (petals = tumbling cherry-blossom flakes drifting sideways, paper = rotating paper sheets fluttering down). No live map-session mutation is used to author a montage.
 
 ## Pixel-grid stage and alive-viewport primitives (2026-10-15)
 
@@ -182,6 +182,12 @@ pixel-animatic request as an in-game cutscene request and sent the assistant to 
   `pixelizeOpeningImage` for one file (also covers the JPEG-in-worker case).
 - `node scripts/qa/opening-pixel-compare.mjs <name> --ref <dir> --run <label>=<outDir> …` — one self-contained page with
   the reference capture beside every iteration's contact sheet, both videos and shot table.
+
+## Game map as the opening background (2026-10-25, Shitamachi)
+
+When there is no matching still, an image layer may use `resourceId: "map-view:<mapId>"` — the player draws that map's tile layers once at 1 map pixel = 1 stage pixel (`src/player/mapBackgroundMapView.ts` `renderMapViewCanvas`, cached per project in `openingAnimaticRenderer.ts`) and the layer `crop` (map pixels) chooses the part shown. Events are not drawn; put people on top with `place_opening_charset_actor` (stage px = map px − crop origin).
+The tool surface is `place_opening_background({shotId, layerId, mapId, focus:{x,y}, zoom})` — it computes the stage-ratio crop around the focus cell (`src/project/openingMapView.ts` `openingMapViewCrop`). The «one backdrop per shot» rule counts a map-view background as reused only when the crop origin is the same (two different streets corners of one map are different shots). Resource validation lists `map-view:<id>` for every map (`openingMapViewResourceIds`).
+Captions: when an animatic shot has a caption layer with cues, the DOM narration line is hidden (`data-captioned-on-canvas`), so a tool-made shot that also kept `narration` no longer shows the same sentence twice; the narration still becomes the canvas aria-label.
 
 ## Entry timing
 

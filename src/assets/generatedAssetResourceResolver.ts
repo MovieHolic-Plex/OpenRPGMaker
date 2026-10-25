@@ -7,6 +7,7 @@ import { RETRO_PIXEL_FX_URLS } from "./retroPixelAnimations";
 import { EMERALD_OPENING_BACKDROP_URLS } from "./emeraldOpeningBackdrops";
 import { ASTRA_CAST_URLS } from "./astraCast";
 import { FALLEN_STAR_BACKDROP_URLS } from "./fallenStarOpeningBackdrops";
+import { FIRST_LOVE_OPENING_BACKDROP_URLS } from "./firstLoveOpeningBackdrops";
 import { uploadedAssetUrl } from "@/project/persistence/assetAccessors";
 import { withInlineAsset } from "./inlineAssetStore";
 import { resolveCc0IconAssetUrl } from "./cc0IconAssets";
@@ -60,7 +61,8 @@ const BUILTIN_GENERATED_RESOURCE_URLS: Record<string, string | null> = {
   ...ASTRA_CAST_URLS,
   // 『폴른 스타』 오프닝·타이틀 배경(게임 맵을 1:1 로 구운 그림).
   ...FALLEN_STAR_BACKDROP_URLS,
-  // 아스트라 호라이즌 인트로·타이틀 밤 풀밭 층(타이틀 그림에서 하늘 오림 + 밤 색).
+  // 『첫사랑』 오프닝 몽타주 배경(게임 맵을 1:1 로 구운 그림).
+  ...FIRST_LOVE_OPENING_BACKDROP_URLS,
   hero: null,
   "oprn-title-bright": "/assets/generated/title/oprn-title-bright-v2.png",
   "oprn-title-blue": "/assets/generated/title/default-title-blue.png",

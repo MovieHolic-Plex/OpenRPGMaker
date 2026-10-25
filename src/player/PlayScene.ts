@@ -128,6 +128,7 @@ import { recordPlayBootDiagnostic } from "@/player/playBootDiagnostics";
 import { diagnosticToken } from "@/util/diagnosticObserver";
 import { createRuntimePerfCounters, type RuntimePerfCounters } from "@/player/runtimePerfCounters";
 import { onRegistryValue } from "@/player/registryReady";
+import { syncDialogueCameraLift } from "@/player/dialogueCameraLift";
 
 const PhaserRuntime = getLoadedPhaser();
 const MAX_FAILED_ASSETS = 20;
@@ -188,6 +189,8 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
   private handSlotChip: HandSlotChip | null = null;
   private handSlotHost: HTMLElement | null = null;
   private minimapUserHidden = false;
+  /** 대화 중 인물 보이기(system.dialogueKeepActorsVisible) 가 카메라 추적 오프셋을 걸어 두었는가. */
+  private dialogueCameraLifted = false;
   private worldAtlasController: ReturnType<typeof createWorldAtlasController> | null = null;
   lightingOverlayImage?: Phaser.GameObjects.Image;
   lightingMaskTexture?: Phaser.Textures.CanvasTexture;
@@ -436,6 +439,12 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
     updateScreenDistortion(this);
     updateMode7(this, deltaMs);
     updateFieldStaging(this);
+    this.dialogueCameraLifted = syncDialogueCameraLift(
+      this,
+      this.game.registry.get("dialogueHost") as HTMLElement | undefined,
+      store.getCurrent().system.dialogueKeepActorsVisible === true,
+      this.dialogueCameraLifted,
+    );
     const tileView = runtimeCameraTileView(this.cameras.main);
     syncRuntimeTileWindow(this, tileView);
     syncTileCulling(this, tileView, mapTileSize(this.map));

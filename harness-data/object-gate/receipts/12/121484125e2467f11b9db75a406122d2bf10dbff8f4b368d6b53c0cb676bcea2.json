@@ -1,0 +1,292 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "121484125e2467f11b9db75a406122d2bf10dbff8f4b368d6b53c0cb676bcea2",
+ "width": 16,
+ "height": 16,
+ "kind": "flat",
+ "name": "가로수 보호판(주철)",
+ "label": "modern_city/street-kr/mc-prop-kr-tree-grate",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "ground",
+  "refs": [
+   "floor-stone-lobby",
+   "floor-wood-oak"
+  ],
+  "scale": 2,
+  "score": 7,
+  "refSet": {
+   "id": "modern_city",
+   "chipset": "modern_city",
+   "fallback": false,
+   "hash": "c65f3e22253bff78"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 11,
+  "tileColorsP90": 11,
+  "darkV5": 36,
+  "nearBlackEdge": 1,
+  "opaqueTiles": 1
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cast-iron plate top with concentric square frames and a brown soil center",
+      "rows": "0-12",
+      "evidence": "none",
+      "front_edge_line_row": 12,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "thin south edge (plate thickness)",
+      "rows": "13-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 12,
+    "front_face_rows": 2,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The silhouette is a full 16x16 square. The columns show nested concentric square rings (light gray, dark navy, light gray, navy) around a brown center square at rows 6-9. This is a plan view looking straight down. The only hint of depth is a dark line at row 12 followed by a 2-row mid-gray band at rows 13-14. That is a thin plate edge of fewer than 3 rows, not a real front face. The plate is flat and seen from above, which suits a flat kind, but it has no 3/4 front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a single-tile cast-iron tree grate: concentric bevelled square rings around a dark brown centre. It shows 10 visible tones per 16x16 tile, which is above floor-stone-lobby (6) and close to floor-wood-oak (11). Near-flat coverage is 0%, against 24% for the stone reference, so no large flat fills. The dark edge pixels are 0% neutral, so the outline carries a tint and reads as a darker version of the neighbouring material, not a black sticker line. The ring bevels give about 5 lightness steps, slightly fewer than the references' 5-6. Texture is modest, with grain only on the rings, but this is a small, sparse prop, and by eye it holds up beside the shipped floors without looking thinner or flatter. It passes, with a modest score for the limited texture and slightly fewer steps.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 21245
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cast-iron grate plate with concentric square frames and a central wood-colored tree hole",
+      "rows": "0-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "bottom bevel / plate thickness strip",
+      "rows": "13-14",
+      "evidence": "none",
+      "front_edge_line_row": 12,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 13,
+    "front_face_rows": 2,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The silhouette is a full 16-wide square on every row (rows 0-15). It is drawn as concentric square rings seen straight from above: a light gray outer ring, a navy ring, another light ring, a dark ring, then the central brown tree hole at rows 5-10. Rows 13-14 (L=114) are a slightly darker band under a dark line at row 12. That is a 2-row bevel or edge thickness, not a vertical front face of 3 or more rows. There is no ellipse, no roof plane and no eave shadow. For a flat floor plate this is the expected top-down view, so it reads as a top-down slab."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate has 10 visible tones per 16x16 tile, against 6 for floor-stone-lobby and 11 for floor-wood-oak, so it sits within the reference range. Near-flat coverage is 0%, lower than the lobby's 24% and equal to the oak floor's. The dark edge pixels are 0% neutral, so the outline is tinted, not a near-black sticker line, and the frame is separated by value steps. By eye, the concentric bevelled frame in stepped grey-blue tones with a brown centre shows about 5 shading steps, close to the references' 5-6. It is a simple object, but it has no large flat areas and its density matches the references. Texture is modest, with no heavy grain, but nothing reads as a flat fill.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17225
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cast-iron plate top with concentric square rings",
+      "rows": "0-12",
+      "evidence": "a",
+      "front_edge_line_row": 12,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "bevel/thickness strip at the bottom edge",
+      "rows": "13-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "soil opening in the center",
+      "rows": "5-10",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 13,
+    "front_face_rows": 2,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The silhouette is a full 16-px-wide square on every row (0-15). It is drawn as concentric square rings seen from directly above, with a soil patch in the center at rows 6-9. The only hint of thickness is a dark line at row 12 followed by a 2-row darker strip at rows 13-14, which is fewer than 3 front-face rows. That makes it a flat plate with no real front face, as expected for a flat floor object."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a small single tile-size tree grate with concentric square frames and a brown centre. Measured facts: 10 visible tones per tile (references 6 and 11), 0% near-flat coverage and 0% neutral dark edge pixels, so the outline is tinted rather than black. By the numbers it matches floor-wood-oak and beats the lobby stone. By eye, however, it is a very small, simple object with only about 4 clear value steps across the nested squares. It has little grain or speckle, and no per-plank-style texture or highlight dots like the references. The frame is a clean stepped bevel with no dots, scratches or wear. The surroundings are transparent or grey, so it does not read as a ground patch laid 4x3 tiles. A careful artist would likely find it a bit thinner and more sticker-like than the references, which carry tile seams, speckle and grain. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 14173
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "concentric square cast-iron frame plate with a central soil/tree opening, seen from directly above",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 16,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The silhouette is a full 16x16 square with constant width on every row (0-15:16). The column scans show concentric square bands (outline, light grey ring, dark navy ring, light grey ring, dark navy ring, brown soil center), which is a flat plate seen from directly above. No front-edge line with eave shadow, no ellipse and no vertical front face appear. The darker bottom rows 13-14 and the dark outline at row 15 are only the plate's rim bevel, not a 3+ row vertical face. This matches the kind 'flat', so it is a flat top-down slab."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a cast-iron tree-grate plate built from nested frames: a light rim, mid and dark bevel steps, and a brown soil centre. It reads as a distinct object with about 5 lightness steps on the iron, comparable to the stone and oak references. Measured facts support this. It has 10 visible tones per tile, against 6 for the lobby stone and 11 for the oak, so it is above the stone and level with the oak. Near-flat coverage is 0%, which is better than the stone's 24%, so there are no flat fills of 5x5 or larger. The dark edge pixels are 0% neutral, so the outlines lean toward the material tone rather than being a black sticker line. Texture is moderate: the bevels and tonal steps carry the detail, but there is little grain or speckle, so it is less textured than the oak. A careful artist would accept it next to the references without it looking flatter.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 12757
+  }
+ ],
+ "decidedAt": "2026-10-24T17:34:41.208Z",
+ "cells": {
+  "16": [
+   "b0c5f5a49f243ea5"
+  ],
+  "24": [
+   "312d5f8b18ac3458",
+   "50ce2a603ae16fd2",
+   "b059b9e729a6eae0",
+   "cc629910c027299f",
+   "d45c05b671f04aff",
+   "e12c2f0da16d7389"
+  ],
+  "32": [
+   "00b05b14cf259729",
+   "5657d1d12f9b707d",
+   "6b081afb51b6d3be",
+   "6c903e606812b768",
+   "b68aef79327945a5",
+   "f3b1f638f5a9398b"
+  ],
+  "48": [
+   "12f426d1be83f8bc",
+   "1cc606c600d78537",
+   "3c613479077b7e35",
+   "994a4b6fb44d91d0",
+   "b261e76e7f98f78d",
+   "fe4e6824e41d5e40"
+  ]
+ }
+}

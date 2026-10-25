@@ -59,6 +59,11 @@
    "label": "게임 요소(퀘스트·아이템·주인공·전투·대화·연출)",
    "families": [],
    "note": "맵이 아닌 요청 40개(2026-10-23 v1·v2 비교). 판정은 출하 플레이어로 플레이한 사실 + 그림."
+  },
+  "music": {
+   "label": "스토어 음악 찾기·넣기·자리 걸기",
+   "families": [],
+   "note": "조수가 스토어 음악 팩에서 장면·장르·분위기로 곡을 찾아(store_find_music) 받아 넣고(store_install, 출처·라이선스·AI 표시 유지) 맵·전투·보스·승리·타이틀 자리에 거는지 본다(2026-10-25). 스토어 주소가 필요하다 — wholeGameSession.mjs --store-url <스테이징> [--store-ask-first]. 판정: assets/ 에 파일이 생겼는지, 자리 연결, 저장 뒤 재로드, 출하 플레이어 재생, Argon 이 곡을 듣고 맞는지."
   }
  },
  "forbiddenFamilies": [
@@ -8006,6 +8011,1264 @@
    ],
    "verify": "대장장이 상점 / 철검·포션 / 원래 대사 유지",
    "suiteCategory": "edits"
+  },
+  {
+   "category": "game",
+   "kind": "logic",
+   "mode": "balanced",
+   "startTileset": "beodeul_city",
+   "startBuild": [
+    {
+     "tool": "author_beodeul_town",
+     "args": {
+      "mapId": "map_blank_start",
+      "name": "버들 마을",
+      "houseCount": 4,
+      "theme": "river",
+      "seed": 11
+     }
+    },
+    {
+     "tool": "place_npc",
+     "args": {
+      "mapId": "map_blank_start",
+      "id": "npc_chief",
+      "name": "촌장",
+      "x": 20,
+      "y": 16,
+      "movement": "fixed",
+      "graphic": {
+       "query": "노인 남성"
+      },
+      "pages": [
+       {
+        "lines": [
+         "어서 오게, 버들 마을일세."
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "tool": "place_npc",
+     "args": {
+      "mapId": "map_blank_start",
+      "id": "npc_smith",
+      "name": "대장장이",
+      "x": 14,
+      "y": 20,
+      "movement": "fixed",
+      "graphic": {
+       "query": "아저씨"
+      },
+      "pages": [
+       {
+        "lines": [
+         "망치 소리 좋지?"
+        ]
+       }
+      ]
+     }
+    }
+   ],
+   "id": "fs-boss-squad-first",
+   "prompt": "촌장에게 말 걸면 심문관과 싸우게 해 줘. 첫 전투는 병사 넷만 나오고 심문관은 뒤에서 지켜보기만 하고, 병사들을 이기면 다음 전투부터 심문관이 직접 나서게 해 줘. 싸우기 전 장면에서는 일행이 옆으로 나란히 서서 심문관을 마주 보게 해 줘.",
+   "requires": [
+    "1차 전투 병사 4",
+    "심문관 없음",
+    "승리 후 2차 전투에 심문관",
+    "일행 횡대(sceneFormation abreast)"
+   ],
+   "verify": "1차 전투 병사 4 / 심문관 없음 / 승리 후 2차 전투에 심문관 / 일행 횡대(sceneFormation abreast)",
+   "suiteCategory": "fs-boss"
+  },
+  {
+   "category": "game",
+   "kind": "logic",
+   "mode": "balanced",
+   "startTileset": "beodeul_city",
+   "startBuild": [
+    {
+     "tool": "author_beodeul_town",
+     "args": {
+      "mapId": "map_blank_start",
+      "name": "버들 마을",
+      "houseCount": 4,
+      "theme": "river",
+      "seed": 11
+     }
+    },
+    {
+     "tool": "place_npc",
+     "args": {
+      "mapId": "map_blank_start",
+      "id": "npc_chief",
+      "name": "촌장",
+      "x": 20,
+      "y": 16,
+      "movement": "fixed",
+      "graphic": {
+       "query": "노인 남성"
+      },
+      "pages": [
+       {
+        "lines": [
+         "어서 오게, 버들 마을일세."
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "tool": "place_npc",
+     "args": {
+      "mapId": "map_blank_start",
+      "id": "npc_smith",
+      "name": "대장장이",
+      "x": 14,
+      "y": 20,
+      "movement": "fixed",
+      "graphic": {
+       "query": "아저씨"
+      },
+      "pages": [
+       {
+        "lines": [
+         "망치 소리 좋지?"
+        ]
+       }
+      ]
+     }
+    }
+   ],
+   "id": "fs-boss-hidehp",
+   "prompt": "보스 '그림자 기사'를 만들어 촌장에게 말 걸면 싸우게 하고, 일반 적은 체력바가 보이지만 보스만은 체력을 숨겨 줘.",
+   "requires": [
+    "보스 전투",
+    "보스 hideHp",
+    "일반 적 HP 표시 유지"
+   ],
+   "verify": "보스 전투 / 보스 hideHp / 일반 적 HP 표시 유지",
+   "suiteCategory": "fs-boss"
+  },
+  {
+   "category": "game",
+   "kind": "logic",
+   "mode": "balanced",
+   "startTileset": "beodeul_city",
+   "startBuild": [
+    {
+     "tool": "author_beodeul_town",
+     "args": {
+      "mapId": "map_blank_start",
+      "name": "버들 마을",
+      "houseCount": 4,
+      "theme": "river",
+      "seed": 11
+     }
+    },
+    {
+     "tool": "place_npc",
+     "args": {
+      "mapId": "map_blank_start",
+      "id": "npc_chief",
+      "name": "촌장",
+      "x": 20,
+      "y": 16,
+      "movement": "fixed",
+      "graphic": {
+       "query": "노인 남성"
+      },
+      "pages": [
+       {
+        "lines": [
+         "어서 오게, 버들 마을일세."
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "tool": "place_npc",
+     "args": {
+      "mapId": "map_blank_start",
+      "id": "npc_smith",
+      "name": "대장장이",
+      "x": 14,
+      "y": 20,
+      "movement": "fixed",
+      "graphic": {
+       "query": "아저씨"
+      },
+      "pages": [
+       {
+        "lines": [
+         "망치 소리 좋지?"
+        ]
+       }
+      ]
+     }
+    }
+   ],
+   "id": "fs-reveal-lift",
+   "prompt": "대장장이 옆 바닥에 레버 이벤트를 두고, 당기면 '바닥이 열리며 승강 장치가 드러났다'는 말과 함께 카메라가 그쪽으로 가서 실제로 지도에 승강 장치가 나타났다가 돌아오게 해 줘. 드러난 뒤에만 그 위에 올라서면 다른 곳으로 이동하게 해 줘.",
+   "requires": [
+    "레버 이벤트",
+    "지도 칸이 실제로 바뀜(changeTile)",
+    "카메라 이동·복귀",
+    "드러난 뒤에만 타기(스위치 조건)"
+   ],
+   "verify": "레버 이벤트 / 지도 칸이 실제로 바뀜(changeTile) / 카메라 이동·복귀 / 드러난 뒤에만 타기(스위치 조건)",
+   "suiteCategory": "fs-cinema"
+  },
+  {
+   "category": "game",
+   "kind": "logic",
+   "mode": "balanced",
+   "startTileset": "beodeul_city",
+   "startBuild": [
+    {
+     "tool": "author_beodeul_town",
+     "args": {
+      "mapId": "map_blank_start",
+      "name": "버들 마을",
+      "houseCount": 4,
+      "theme": "river",
+      "seed": 11
+     }
+    },
+    {
+     "tool": "place_npc",
+     "args": {
+      "mapId": "map_blank_start",
+      "id": "npc_chief",
+      "name": "촌장",
+      "x": 20,
+      "y": 16,
+      "movement": "fixed",
+      "graphic": {
+       "query": "노인 남성"
+      },
+      "pages": [
+       {
+        "lines": [
+         "어서 오게, 버들 마을일세."
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "tool": "place_npc",
+     "args": {
+      "mapId": "map_blank_start",
+      "id": "npc_smith",
+      "name": "대장장이",
+      "x": 14,
+      "y": 20,
+      "movement": "fixed",
+      "graphic": {
+       "query": "아저씨"
+      },
+      "pages": [
+       {
+        "lines": [
+         "망치 소리 좋지?"
+        ]
+       }
+      ]
+     }
+    }
+   ],
+   "id": "fs-battle-noauto",
+   "prompt": "이 게임에는 자동 전투가 없었으면 해. 전투에서 자동 전투 단축키나 표시가 아예 안 나오게 해 줘.",
+   "requires": [
+    "allowAutoBattle false",
+    "F 키 토글·표시 없음"
+   ],
+   "verify": "allowAutoBattle false / F 키 토글·표시 없음",
+   "suiteCategory": "fs-battle"
+  },
+  {
+   "category": "game",
+   "kind": "logic",
+   "mode": "balanced",
+   "startTileset": "beodeul_city",
+   "startBuild": [
+    {
+     "tool": "author_beodeul_town",
+     "args": {
+      "mapId": "map_blank_start",
+      "name": "버들 마을",
+      "houseCount": 4,
+      "theme": "river",
+      "seed": 11
+     }
+    },
+    {
+     "tool": "place_npc",
+     "args": {
+      "mapId": "map_blank_start",
+      "id": "npc_chief",
+      "name": "촌장",
+      "x": 20,
+      "y": 16,
+      "movement": "fixed",
+      "graphic": {
+       "query": "노인 남성"
+      },
+      "pages": [
+       {
+        "lines": [
+         "어서 오게, 버들 마을일세."
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "tool": "place_npc",
+     "args": {
+      "mapId": "map_blank_start",
+      "id": "npc_smith",
+      "name": "대장장이",
+      "x": 14,
+      "y": 20,
+      "movement": "fixed",
+      "graphic": {
+       "query": "아저씨"
+      },
+      "pages": [
+       {
+        "lines": [
+         "망치 소리 좋지?"
+        ]
+       }
+      ]
+     }
+    }
+   ],
+   "id": "fs-battle-combo-faces",
+   "prompt": "촌장과 대장장이가 같이 쓰는 연계기 '불꽃 망치'를 만들고, 연계기를 쓸 때 두 사람 얼굴이 양쪽에서 교차하는 컷인이 나오게 해 줘. 내보낸 게임에서도 얼굴이 떠야 해.",
+   "requires": [
+    "연계기 2인",
+    "comboCutIn faces",
+    "내보내기에 흉상 포함"
+   ],
+   "verify": "연계기 2인 / comboCutIn faces / 내보내기에 흉상 포함",
+   "suiteCategory": "fs-battle"
+  },
+  {
+   "category": "game",
+   "kind": "logic",
+   "mode": "balanced",
+   "startTileset": "beodeul_city",
+   "startBuild": [
+    {
+     "tool": "author_beodeul_town",
+     "args": {
+      "mapId": "map_blank_start",
+      "name": "버들 마을",
+      "houseCount": 4,
+      "theme": "river",
+      "seed": 11
+     }
+    },
+    {
+     "tool": "place_npc",
+     "args": {
+      "mapId": "map_blank_start",
+      "id": "npc_chief",
+      "name": "촌장",
+      "x": 20,
+      "y": 16,
+      "movement": "fixed",
+      "graphic": {
+       "query": "노인 남성"
+      },
+      "pages": [
+       {
+        "lines": [
+         "어서 오게, 버들 마을일세."
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "tool": "place_npc",
+     "args": {
+      "mapId": "map_blank_start",
+      "id": "npc_smith",
+      "name": "대장장이",
+      "x": 14,
+      "y": 20,
+      "movement": "fixed",
+      "graphic": {
+       "query": "아저씨"
+      },
+      "pages": [
+       {
+        "lines": [
+         "망치 소리 좋지?"
+        ]
+       }
+      ]
+     }
+    }
+   ],
+   "id": "fs-state-clear-after",
+   "prompt": "전투에서 걸린 독이나 수면 같은 상태 이상은 전투가 끝나면 다 풀리게 해 줘. 단, '저주' 상태만은 전투 뒤에도 남게.",
+   "requires": [
+    "clearStatesAfterBattle true",
+    "저주 clearOnBattleEnd false"
+   ],
+   "verify": "clearStatesAfterBattle true / 저주 clearOnBattleEnd false",
+   "suiteCategory": "fs-state"
+  },
+  {
+   "category": "game",
+   "kind": "logic",
+   "mode": "balanced",
+   "startTileset": "beodeul_city",
+   "startBuild": [
+    {
+     "tool": "author_beodeul_town",
+     "args": {
+      "mapId": "map_blank_start",
+      "name": "버들 마을",
+      "houseCount": 4,
+      "theme": "river",
+      "seed": 11
+     }
+    },
+    {
+     "tool": "place_npc",
+     "args": {
+      "mapId": "map_blank_start",
+      "id": "npc_chief",
+      "name": "촌장",
+      "x": 20,
+      "y": 16,
+      "movement": "fixed",
+      "graphic": {
+       "query": "노인 남성"
+      },
+      "pages": [
+       {
+        "lines": [
+         "어서 오게, 버들 마을일세."
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "tool": "place_npc",
+     "args": {
+      "mapId": "map_blank_start",
+      "id": "npc_smith",
+      "name": "대장장이",
+      "x": 14,
+      "y": 20,
+      "movement": "fixed",
+      "graphic": {
+       "query": "아저씨"
+      },
+      "pages": [
+       {
+        "lines": [
+         "망치 소리 좋지?"
+        ]
+       }
+      ]
+     }
+    }
+   ],
+   "id": "fs-foe-lunge",
+   "prompt": "마을 북쪽 숲에 늑대 셋을 보이는 적으로 두고, 멀리서도 플레이어를 알아보고 순간적으로 확 덮쳐 오게 해 줘. 그래도 계속 걸으면 피할 수는 있게.",
+   "requires": [
+    "보이는 적 3",
+    "시야 넓힘",
+    "발견 뒤 덮치기(chaseLunge)",
+    "주인공보다 빠르지 않음"
+   ],
+   "verify": "보이는 적 3 / 시야 넓힘 / 발견 뒤 덮치기(chaseLunge) / 주인공보다 빠르지 않음",
+   "suiteCategory": "fs-foe"
+  },
+  {
+   "category": "game",
+   "kind": "logic",
+   "mode": "balanced",
+   "startTileset": "beodeul_city",
+   "startBuild": [
+    {
+     "tool": "author_beodeul_town",
+     "args": {
+      "mapId": "map_blank_start",
+      "name": "버들 마을",
+      "houseCount": 4,
+      "theme": "river",
+      "seed": 11
+     }
+    },
+    {
+     "tool": "place_npc",
+     "args": {
+      "mapId": "map_blank_start",
+      "id": "npc_chief",
+      "name": "촌장",
+      "x": 20,
+      "y": 16,
+      "movement": "fixed",
+      "graphic": {
+       "query": "노인 남성"
+      },
+      "pages": [
+       {
+        "lines": [
+         "어서 오게, 버들 마을일세."
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "tool": "place_npc",
+     "args": {
+      "mapId": "map_blank_start",
+      "id": "npc_smith",
+      "name": "대장장이",
+      "x": 14,
+      "y": 20,
+      "movement": "fixed",
+      "graphic": {
+       "query": "아저씨"
+      },
+      "pages": [
+       {
+        "lines": [
+         "망치 소리 좋지?"
+        ]
+       }
+      ]
+     }
+    }
+   ],
+   "id": "fs-foe-no-random",
+   "prompt": "숲에서는 걸을 때마다 터지는 랜덤 전투를 없애고, 눈에 보이는 몬스터와만 싸우게 해 줘. 레벨 올릴 만큼은 몬스터가 있어야 해.",
+   "requires": [
+    "encounterRate 0",
+    "보이는 적 여럿",
+    "다시 나타남(respawn)"
+   ],
+   "verify": "encounterRate 0 / 보이는 적 여럿 / 다시 나타남(respawn)",
+   "suiteCategory": "fs-foe"
+  },
+  {
+   "category": "game",
+   "kind": "logic",
+   "mode": "balanced",
+   "startTileset": "beodeul_city",
+   "startBuild": [
+    {
+     "tool": "author_beodeul_town",
+     "args": {
+      "mapId": "map_blank_start",
+      "name": "버들 마을",
+      "houseCount": 4,
+      "theme": "river",
+      "seed": 11
+     }
+    },
+    {
+     "tool": "place_npc",
+     "args": {
+      "mapId": "map_blank_start",
+      "id": "npc_chief",
+      "name": "촌장",
+      "x": 20,
+      "y": 16,
+      "movement": "fixed",
+      "graphic": {
+       "query": "노인 남성"
+      },
+      "pages": [
+       {
+        "lines": [
+         "어서 오게, 버들 마을일세."
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "tool": "place_npc",
+     "args": {
+      "mapId": "map_blank_start",
+      "id": "npc_smith",
+      "name": "대장장이",
+      "x": 14,
+      "y": 20,
+      "movement": "fixed",
+      "graphic": {
+       "query": "아저씨"
+      },
+      "pages": [
+       {
+        "lines": [
+         "망치 소리 좋지?"
+        ]
+       }
+      ]
+     }
+    }
+   ],
+   "id": "fs-save-points",
+   "prompt": "메뉴에서는 저장을 못 하게 하고, 마을 광장에 세이브 포인트 하나만 둬서 거기서만 저장하게 해 줘. 세이브 포인트는 빛나는 결정으로 눈에 띄게, 가까이 가면 반짝이고 조사하면 「기록하시겠습니까?」라고 묻게.",
+   "requires": [
+    "saveAccess savePoints",
+    "place_savepoint objectId",
+    "nearSparkle",
+    "prompt 기록하시겠습니까?",
+    "메뉴 저장 없음"
+   ],
+   "verify": "saveAccess savePoints / place_savepoint objectId·sparkleRadius·prompt / 메뉴 저장 없음",
+   "suiteCategory": "fs-save"
+  },
+  {
+   "category": "game",
+   "kind": "logic",
+   "mode": "balanced",
+   "startTileset": "beodeul_city",
+   "startBuild": [
+    {
+     "tool": "author_beodeul_town",
+     "args": {
+      "mapId": "map_blank_start",
+      "name": "버들 마을",
+      "houseCount": 4,
+      "theme": "river",
+      "seed": 11
+     }
+    },
+    {
+     "tool": "place_npc",
+     "args": {
+      "mapId": "map_blank_start",
+      "id": "npc_chief",
+      "name": "촌장",
+      "x": 20,
+      "y": 16,
+      "movement": "fixed",
+      "graphic": {
+       "query": "노인 남성"
+      },
+      "pages": [
+       {
+        "lines": [
+         "어서 오게, 버들 마을일세."
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "tool": "place_npc",
+     "args": {
+      "mapId": "map_blank_start",
+      "id": "npc_smith",
+      "name": "대장장이",
+      "x": 14,
+      "y": 20,
+      "movement": "fixed",
+      "graphic": {
+       "query": "아저씨"
+      },
+      "pages": [
+       {
+        "lines": [
+         "망치 소리 좋지?"
+        ]
+       }
+      ]
+     }
+    }
+   ],
+   "id": "fs-party-follow",
+   "prompt": "촌장과 대장장이를 동료로 넣고, 필드에서 둘이 주인공 뒤를 줄지어 따라 걷게 해 줘. 컷신에서는 주인공 옆에 나란히 서게.",
+   "requires": [
+    "동료 2 합류",
+    "display follow",
+    "sceneFormation abreast"
+   ],
+   "verify": "동료 2 합류 / display follow / sceneFormation abreast",
+   "suiteCategory": "fs-party"
+  },
+  {
+   "id": "g-music-town",
+   "category": "music",
+   "kind": "music",
+   "mode": "balanced",
+   "startTileset": "beodeul_city",
+   "needsStore": true,
+   "prompt": "이 마을에 어울리는 BGM 깔아줘",
+   "requires": [
+    "시작 마을 맵 bgm 이 스토어 마을 곡",
+    "곡 파일이 assets/ 에 있다",
+    "출처·라이선스·AI 표시"
+   ],
+   "verify": "map_blank_start.bgm = store_* 마을 곡, 재로드 뒤 유지, 출하 플레이어에서 재생",
+   "startBuild": [
+    {
+     "tool": "create_map",
+     "args": {
+      "id": "map_dungeon",
+      "name": "용의 동굴",
+      "width": 20,
+      "height": 15
+     }
+    },
+    {
+     "tool": "upsert_event",
+     "args": {
+      "mapId": "map_dungeon",
+      "event": {
+       "id": "ev_boss",
+       "name": "드래곤",
+       "x": 10,
+       "y": 3,
+       "commands": [
+        {
+         "kind": "text",
+         "body": "여기까지 온 것을 후회하게 해 주마!"
+        },
+        {
+         "kind": "battleProcessing",
+         "troopId": "troop_dragon",
+         "canEscape": false,
+         "canLose": false
+        },
+        {
+         "kind": "text",
+         "body": "...강하구나."
+        }
+       ]
+      }
+     }
+    },
+    {
+     "tool": "upsert_event",
+     "args": {
+      "mapId": "map_dungeon",
+      "event": {
+       "id": "ev_minor",
+       "name": "졸개",
+       "x": 5,
+       "y": 8,
+       "commands": [
+        {
+         "kind": "battleProcessing",
+         "troopId": "troop_bat_swarm"
+        }
+       ]
+      }
+     }
+    }
+   ]
+  },
+  {
+   "id": "g-music-boss",
+   "category": "music",
+   "kind": "music",
+   "mode": "balanced",
+   "startTileset": "beodeul_city",
+   "needsStore": true,
+   "prompt": "보스전 음악 긴장감 있게 바꿔줘",
+   "requires": [
+    "드래곤 전투 직전 battle set, 끝나면 reset",
+    "졸개 전투는 그대로",
+    "기본 전투곡 유지"
+   ],
+   "verify": "ev_boss 에 m2-027 set/reset 쌍, ev_minor 불변",
+   "startBuild": [
+    {
+     "tool": "create_map",
+     "args": {
+      "id": "map_dungeon",
+      "name": "용의 동굴",
+      "width": 20,
+      "height": 15
+     }
+    },
+    {
+     "tool": "upsert_event",
+     "args": {
+      "mapId": "map_dungeon",
+      "event": {
+       "id": "ev_boss",
+       "name": "드래곤",
+       "x": 10,
+       "y": 3,
+       "commands": [
+        {
+         "kind": "text",
+         "body": "여기까지 온 것을 후회하게 해 주마!"
+        },
+        {
+         "kind": "battleProcessing",
+         "troopId": "troop_dragon",
+         "canEscape": false,
+         "canLose": false
+        },
+        {
+         "kind": "text",
+         "body": "...강하구나."
+        }
+       ]
+      }
+     }
+    },
+    {
+     "tool": "upsert_event",
+     "args": {
+      "mapId": "map_dungeon",
+      "event": {
+       "id": "ev_minor",
+       "name": "졸개",
+       "x": 5,
+       "y": 8,
+       "commands": [
+        {
+         "kind": "battleProcessing",
+         "troopId": "troop_bat_swarm"
+        }
+       ]
+      }
+     }
+    }
+   ]
+  },
+  {
+   "id": "g-music-victory",
+   "category": "music",
+   "kind": "music",
+   "mode": "balanced",
+   "startTileset": "beodeul_city",
+   "needsStore": true,
+   "prompt": "승리 팡파르 넣어줘",
+   "requires": [
+    "승리 자리(battleVictoryMeResourceId)에 짧은 징글"
+   ],
+   "verify": "system.battleVictoryMeResourceId = store_* 징글(loopable:false)",
+   "startBuild": [
+    {
+     "tool": "create_map",
+     "args": {
+      "id": "map_dungeon",
+      "name": "용의 동굴",
+      "width": 20,
+      "height": 15
+     }
+    },
+    {
+     "tool": "upsert_event",
+     "args": {
+      "mapId": "map_dungeon",
+      "event": {
+       "id": "ev_boss",
+       "name": "드래곤",
+       "x": 10,
+       "y": 3,
+       "commands": [
+        {
+         "kind": "text",
+         "body": "여기까지 온 것을 후회하게 해 주마!"
+        },
+        {
+         "kind": "battleProcessing",
+         "troopId": "troop_dragon",
+         "canEscape": false,
+         "canLose": false
+        },
+        {
+         "kind": "text",
+         "body": "...강하구나."
+        }
+       ]
+      }
+     }
+    },
+    {
+     "tool": "upsert_event",
+     "args": {
+      "mapId": "map_dungeon",
+      "event": {
+       "id": "ev_minor",
+       "name": "졸개",
+       "x": 5,
+       "y": 8,
+       "commands": [
+        {
+         "kind": "battleProcessing",
+         "troopId": "troop_bat_swarm"
+        }
+       ]
+      }
+     }
+    }
+   ]
+  },
+  {
+   "id": "g-music-dungeon",
+   "category": "music",
+   "kind": "music",
+   "mode": "balanced",
+   "startTileset": "beodeul_city",
+   "needsStore": true,
+   "prompt": "동굴 맵에 으스스한 던전 음악 깔아줘",
+   "requires": [
+    "map_dungeon bgm 이 던전 곡"
+   ],
+   "verify": "map_dungeon.bgm = store_* 던전 곡",
+   "startBuild": [
+    {
+     "tool": "create_map",
+     "args": {
+      "id": "map_dungeon",
+      "name": "용의 동굴",
+      "width": 20,
+      "height": 15
+     }
+    },
+    {
+     "tool": "upsert_event",
+     "args": {
+      "mapId": "map_dungeon",
+      "event": {
+       "id": "ev_boss",
+       "name": "드래곤",
+       "x": 10,
+       "y": 3,
+       "commands": [
+        {
+         "kind": "text",
+         "body": "여기까지 온 것을 후회하게 해 주마!"
+        },
+        {
+         "kind": "battleProcessing",
+         "troopId": "troop_dragon",
+         "canEscape": false,
+         "canLose": false
+        },
+        {
+         "kind": "text",
+         "body": "...강하구나."
+        }
+       ]
+      }
+     }
+    },
+    {
+     "tool": "upsert_event",
+     "args": {
+      "mapId": "map_dungeon",
+      "event": {
+       "id": "ev_minor",
+       "name": "졸개",
+       "x": 5,
+       "y": 8,
+       "commands": [
+        {
+         "kind": "battleProcessing",
+         "troopId": "troop_bat_swarm"
+        }
+       ]
+      }
+     }
+    }
+   ]
+  },
+  {
+   "id": "g-music-joseon-all",
+   "category": "music",
+   "kind": "music",
+   "mode": "balanced",
+   "startTileset": "beodeul_city",
+   "needsStore": true,
+   "prompt": "조선풍 게임 음악 전부 맞춰줘",
+   "requires": [
+    "마을·동굴 맵 각각, 전투, 보스, 승리, 타이틀에 서로 다른 곡",
+    "장르는 실제로 조선·동양풍으로 들리는 곡 우선"
+   ],
+   "verify": "맵 2 + 전투 + 보스 + 승리 + 타이틀 연결, 곡 겹침 없음",
+   "startBuild": [
+    {
+     "tool": "create_map",
+     "args": {
+      "id": "map_dungeon",
+      "name": "용의 동굴",
+      "width": 20,
+      "height": 15
+     }
+    },
+    {
+     "tool": "upsert_event",
+     "args": {
+      "mapId": "map_dungeon",
+      "event": {
+       "id": "ev_boss",
+       "name": "드래곤",
+       "x": 10,
+       "y": 3,
+       "commands": [
+        {
+         "kind": "text",
+         "body": "여기까지 온 것을 후회하게 해 주마!"
+        },
+        {
+         "kind": "battleProcessing",
+         "troopId": "troop_dragon",
+         "canEscape": false,
+         "canLose": false
+        },
+        {
+         "kind": "text",
+         "body": "...강하구나."
+        }
+       ]
+      }
+     }
+    },
+    {
+     "tool": "upsert_event",
+     "args": {
+      "mapId": "map_dungeon",
+      "event": {
+       "id": "ev_minor",
+       "name": "졸개",
+       "x": 5,
+       "y": 8,
+       "commands": [
+        {
+         "kind": "battleProcessing",
+         "troopId": "troop_bat_swarm"
+        }
+       ]
+      }
+     }
+    }
+   ]
+  },
+  {
+   "id": "g-music-battle",
+   "category": "music",
+   "kind": "music",
+   "mode": "balanced",
+   "startTileset": "beodeul_city",
+   "needsStore": true,
+   "prompt": "일반 전투 음악 신나게 바꿔줘",
+   "requires": [
+    "battleBgmResourceId 가 스토어 전투곡"
+   ],
+   "verify": "system.battleBgmResourceId = store_* 전투곡",
+   "startBuild": [
+    {
+     "tool": "create_map",
+     "args": {
+      "id": "map_dungeon",
+      "name": "용의 동굴",
+      "width": 20,
+      "height": 15
+     }
+    },
+    {
+     "tool": "upsert_event",
+     "args": {
+      "mapId": "map_dungeon",
+      "event": {
+       "id": "ev_boss",
+       "name": "드래곤",
+       "x": 10,
+       "y": 3,
+       "commands": [
+        {
+         "kind": "text",
+         "body": "여기까지 온 것을 후회하게 해 주마!"
+        },
+        {
+         "kind": "battleProcessing",
+         "troopId": "troop_dragon",
+         "canEscape": false,
+         "canLose": false
+        },
+        {
+         "kind": "text",
+         "body": "...강하구나."
+        }
+       ]
+      }
+     }
+    },
+    {
+     "tool": "upsert_event",
+     "args": {
+      "mapId": "map_dungeon",
+      "event": {
+       "id": "ev_minor",
+       "name": "졸개",
+       "x": 5,
+       "y": 8,
+       "commands": [
+        {
+         "kind": "battleProcessing",
+         "troopId": "troop_bat_swarm"
+        }
+       ]
+      }
+     }
+    }
+   ]
+  },
+  {
+   "id": "g-music-title",
+   "category": "music",
+   "kind": "music",
+   "mode": "balanced",
+   "startTileset": "beodeul_city",
+   "needsStore": true,
+   "prompt": "타이틀 화면 음악 웅장한 걸로 넣어줘",
+   "requires": [
+    "타이틀 곡 연결"
+   ],
+   "verify": "system.titleScreen 음악 = store_* 타이틀 곡",
+   "startBuild": [
+    {
+     "tool": "create_map",
+     "args": {
+      "id": "map_dungeon",
+      "name": "용의 동굴",
+      "width": 20,
+      "height": 15
+     }
+    },
+    {
+     "tool": "upsert_event",
+     "args": {
+      "mapId": "map_dungeon",
+      "event": {
+       "id": "ev_boss",
+       "name": "드래곤",
+       "x": 10,
+       "y": 3,
+       "commands": [
+        {
+         "kind": "text",
+         "body": "여기까지 온 것을 후회하게 해 주마!"
+        },
+        {
+         "kind": "battleProcessing",
+         "troopId": "troop_dragon",
+         "canEscape": false,
+         "canLose": false
+        },
+        {
+         "kind": "text",
+         "body": "...강하구나."
+        }
+       ]
+      }
+     }
+    },
+    {
+     "tool": "upsert_event",
+     "args": {
+      "mapId": "map_dungeon",
+      "event": {
+       "id": "ev_minor",
+       "name": "졸개",
+       "x": 5,
+       "y": 8,
+       "commands": [
+        {
+         "kind": "battleProcessing",
+         "troopId": "troop_bat_swarm"
+        }
+       ]
+      }
+     }
+    }
+   ]
+  },
+  {
+   "id": "g-music-horror",
+   "category": "music",
+   "kind": "music",
+   "mode": "balanced",
+   "startTileset": "beodeul_city",
+   "needsStore": true,
+   "prompt": "호러 느낌으로 동굴 음악 바꿔줘",
+   "requires": [
+    "map_dungeon bgm 이 호러 곡"
+   ],
+   "verify": "map_dungeon.bgm = store_* 호러 곡",
+   "startBuild": [
+    {
+     "tool": "create_map",
+     "args": {
+      "id": "map_dungeon",
+      "name": "용의 동굴",
+      "width": 20,
+      "height": 15
+     }
+    },
+    {
+     "tool": "upsert_event",
+     "args": {
+      "mapId": "map_dungeon",
+      "event": {
+       "id": "ev_boss",
+       "name": "드래곤",
+       "x": 10,
+       "y": 3,
+       "commands": [
+        {
+         "kind": "text",
+         "body": "여기까지 온 것을 후회하게 해 주마!"
+        },
+        {
+         "kind": "battleProcessing",
+         "troopId": "troop_dragon",
+         "canEscape": false,
+         "canLose": false
+        },
+        {
+         "kind": "text",
+         "body": "...강하구나."
+        }
+       ]
+      }
+     }
+    },
+    {
+     "tool": "upsert_event",
+     "args": {
+      "mapId": "map_dungeon",
+      "event": {
+       "id": "ev_minor",
+       "name": "졸개",
+       "x": 5,
+       "y": 8,
+       "commands": [
+        {
+         "kind": "battleProcessing",
+         "troopId": "troop_bat_swarm"
+        }
+       ]
+      }
+     }
+    }
+   ]
   }
  ],
  "gates": {

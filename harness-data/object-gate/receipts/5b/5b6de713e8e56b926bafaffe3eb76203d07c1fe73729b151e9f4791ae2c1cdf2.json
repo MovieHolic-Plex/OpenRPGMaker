@@ -1,0 +1,313 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "5b6de713e8e56b926bafaffe3eb76203d07c1fe73729b151e9f4791ae2c1cdf2",
+ "width": 16,
+ "height": 32,
+ "kind": "other",
+ "name": "세로 입간판 「카페」",
+ "label": "modern_city/street-kr/mc-prop-kr-sign-cafe",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "refer",
+ "reasons": [
+  "3/4: 독립 눈이 「3/4 아님」 4/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면"
+ ],
+ "view34": {
+  "verdict": "refer",
+  "reasons": [
+   "독립 눈이 「3/4 아님」 4/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "bus-shelter-a",
+   "kiosk-a",
+   "vending-a"
+  ],
+  "scale": 2,
+  "score": 7,
+  "refSet": {
+   "id": "modern_city",
+   "chipset": "modern_city",
+   "fallback": false,
+   "hash": "dc20de17343e77e8"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 8,
+  "tileColorsP90": 8,
+  "darkV5": 37,
+  "nearBlackEdge": 0.96,
+  "opaqueTiles": 2
+ },
+ "eye": {
+  "verdicts": [
+   "borderline",
+   "wrong",
+   "borderline",
+   "borderline",
+   "wrong",
+   "borderline",
+   "borderline",
+   "borderline",
+   "wrong",
+   "borderline",
+   "wrong",
+   "borderline"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top cap of the sign (white lid with brown shaded lower corners)",
+      "rows": "0-8",
+      "evidence": "b",
+      "front_edge_line_row": 7,
+      "eave_shadow_rows": "8-8"
+     },
+     {
+      "part": "sign board front face with the 카페 lettering",
+      "rows": "9-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 8,
+    "front_face_rows": 23,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The width profile runs 8, 12, 16 (rows 2-6), 14, then 8 at row 8, so the top silhouette widens and narrows again like an ellipse. That is rows 0-8, with a pale lid surface in rows 1-6 and a brown front rim at row 7. A dark shadow row at row 8 sits above the board. Below it, rows 9-31 are a 14-wide vertical front face with a dark frame, a brown board and white lettering. The top is a pale plate above a tall front face, so I read it as a top surface with a front face. This is a moderately confident call, because the cap could also be read as a rounded hat on a narrower neck."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a thin standing sign, so I judged it by eye against the references as well as by the numbers. It has 8 visible tones per tile, above bus-shelter-a (6) and below kiosk-a (12) and vending-a (20). Its near-flat coverage is 0%, better than bus-shelter-a (9%), and 0% of its dark edge pixels are neutral, so the outline is a tinted dark brown beside the wood-like body and not a black sticker line. The body and the cream cap each show a few shading steps (cap highlight and shadow, body light and dark, lettering), and the lettering breaks up the face of the sign. It is simpler than kiosk-a and vending-a but matches bus-shelter-a, which is accepted shipped art. A careful artist would accept it next to these references without it looking flat or sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 22413
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top cap plate of the sign",
+      "rows": "0-8",
+      "evidence": "b",
+      "front_edge_line_row": 7,
+      "eave_shadow_rows": "8"
+     },
+     {
+      "part": "sign board front face with 카페 lettering",
+      "rows": "9-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 8,
+    "front_face_rows": 23,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The width profile for rows 0-8 is 8, 12, 16 (rows 2-6), 14, 8. It widens and then narrows again, so it is an ellipse-like cap of about 8 rows. Its light surface rows 1-6 end in a brownish front-edge row at 7, followed by a dark outline at row 8. Below it, rows 9-31 (23 rows, width 14) form a vertical brown face with white lettering and a dark blue edge line at row 10. Together the cap and the tall front face read as a 3/4-view standing board, not a flat front elevation. The cap is slightly wider than the board, so the object may be read as a sign with a lid."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a small vertical sign with a cream cap, a brown board and light '카페' lettering. It is about one tile wide, so it is simple and sparse by nature. Measured facts: 8 visible tones per tile, above bus-shelter-a (6) and below kiosk-a (12) and vending-a (20). Near-flat coverage is 0%, lower than bus-shelter-a's 9%. 0% of dark edge pixels are neutral, so the outline is tinted: dark brown beside the board, darker beside the cap. It reads as dark_material_tone, not a black sticker line. The board and cap carry about 4 lightness steps, with a highlight edge and shaded sides, and the lettering adds structure, so there are no large flat fills. It is slightly less rich than kiosk-a and vending-a, but it is at or above the accepted bus-shelter-a and fits next to the references without looking flat or sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19259
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "sign head / top plate",
+      "rows": "0-8",
+      "evidence": "b",
+      "front_edge_line_row": 7,
+      "eave_shadow_rows": "8"
+     },
+     {
+      "part": "board front face with lettering",
+      "rows": "9-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 8,
+    "front_face_rows": 23,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The top plate spans rows 0-8, and its width profile (8, 12, 16 for rows 2-6, 14, 8) widens and then narrows like an ellipse, wider than the board below. Row 7 is a brown edge line, and row 8 (L=17) is a dark eave shadow, so the plate reads as a horizontal surface seen from above. Below it, rows 9-31 form a 23-row front face: a brown board with a dark frame and white '카페' lettering. The silhouette shows no receding side face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate has 8 visible tones per tile. That is above bus-shelter-a (6) and below kiosk-a (12) and vending-a (20). It has 0% near-flat coverage, which matches kiosk-a and vending-a and beats bus-shelter-a (9%). Dark edge pixels are 0% neutral, and by eye the outline is a dark brown that leans toward the board and cream cap, not a uniform black sticker line. The cream cap and brown board each show a highlight, a mid tone and a dark edge. The lettering is pixel-drawn and legible and breaks up the board face. It is a thin, simple standing sign, so it has less grain than vending-a, but it sits on par with bus-shelter-a and a little below kiosk-a. A careful artist would accept it next to these references without it looking noticeably thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17345
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top cap / header of the sign (white, rounded, wider than the body)",
+      "rows": "0-7",
+      "evidence": "b",
+      "front_edge_line_row": 7,
+      "eave_shadow_rows": "8-10"
+     },
+     {
+      "part": "sign board front face with the white 카페 lettering on brown",
+      "rows": "9-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 8,
+    "front_face_rows": 22,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The width profile (0:8, 1:12, 2-6:16, 7:14, 8:8, then 14 wide) shows a cap that widens and then narrows again over rows 0-8. It ends in a brown front-edge line at row 7, followed by a dark outline at row 8 and a navy shadow band at rows 9-10. Below it is a tall front face of about 22 rows (rows 10-31) with the white lettering, so the cap reads as a top surface over a front face. This is ambiguous: the cap could also be a flat topper or banner drawn face-on. I read it as a top surface because of the edge line, the shadow band and the ellipse-like width profile. No side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a thin standing sign, so I judged it by eye against the references as well as the numbers. It shows 8 visible tones per 16x16 tile, which is above bus-shelter-a (6), a little below kiosk-a (12) and well below vending-a (20). Near-flat coverage is 0%, so there are no large flat fills; the board has a lighter cap, a mid and dark body, and light lettering. Its dark edge pixels are 0% neutral, so the outline is a tinted dark brown beside the wood and not a black sticker line. It has about 4 clear lightness steps against roughly 5 on the references. It looks a little simpler than the kiosk and vending machine but no thinner or flatter than the bus shelter, so a careful artist would accept it next to these shipped modern_city pieces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17359
+  }
+ ],
+ "decidedAt": "2026-10-24T17:04:33.912Z",
+ "cells": {
+  "16": [
+   "27a50534aee873d4",
+   "f465098dd31baf1d"
+  ],
+  "24": [
+   "147cdd700738675c",
+   "1da9073d489ad16e",
+   "20573df3c04a88f1",
+   "236a3656c26d5eaf",
+   "2444698579b700c0",
+   "3e75fe180ab5c530",
+   "6d63bd96424192d2",
+   "8d51f2d7bf930a08",
+   "8f5949f0ce5b9e15",
+   "f8a8c3c66ebd3a46",
+   "fc0fd30fbf7e4592",
+   "fdbda3b240cfba58"
+  ],
+  "32": [
+   "701cd05ae8ad853c",
+   "9150e50a339a0b54",
+   "9be7639fff763a48"
+  ],
+  "48": [
+   "1210b7e39496f971",
+   "24537ebbb84ab250",
+   "69faea1772223803",
+   "8e47d3879c780500",
+   "a9e69360d4238b4c",
+   "b812b14b18f5663d"
+  ]
+ }
+}

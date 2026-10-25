@@ -1317,6 +1317,12 @@ function updateHeldInterpreter(
   currentEventId: string | undefined
 ): void {
   if (state.held && state.held.interp !== interp) {
+    // 바깥 이벤트가 끝났고(예: 장소 이동으로 끝나는 컷신) 그 사이 이동한 맵의 자동 실행 이벤트가 선택지에서 기다리면
+    // 그 안쪽 해석기를 그대로 들고 간다 — 런타임도 바깥 이벤트가 끝난 뒤 새 맵 자동 실행이 선택지를 띄운다.
+    if (stop.stop === "done") {
+      if (currentEventId) releaseCutsceneControlForOwner(state.session, currentEventId);
+      return;
+    }
     state.runtimeFailure = `Nested interaction still waiting for ${state.held.mode}; cannot replace its interpreter`;
     return;
   }

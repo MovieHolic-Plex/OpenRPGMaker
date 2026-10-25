@@ -1,0 +1,564 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "500efcf7a2374bc4b941aa7f2f5b5f7c36ae3b5f5bc072898014423da14ad25b",
+ "width": 144,
+ "height": 128,
+ "kind": "structure",
+ "name": "원통 망루가 붙은 집",
+ "label": "building-kit/massing/tower-house",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 8,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "5f62fef078ef7661"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 15,
+  "tileColorsP90": 19,
+  "darkV5": 53,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 56
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "main house hip roof (tile plane)",
+      "rows": "34-72",
+      "evidence": "c",
+      "front_edge_line_row": 72,
+      "eave_shadow_rows": "72-74"
+     },
+     {
+      "part": "conical tower roof",
+      "rows": "0-33",
+      "evidence": "c",
+      "front_edge_line_row": 33,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "chimney",
+      "rows": "12-37",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "cylindrical tower body",
+      "rows": "34-127",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "flower pot at door",
+      "rows": "118-125",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 39,
+    "front_face_rows": 52,
+    "side_face_visible": true,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main house has a large sloped tile roof (rows 34-72, hip roof with a visible side slope at left and right) ending at an eave line around row 72-74 with dark shadow under it. Below it is a half-timbered front wall of roughly 50 rows (rows 74-127) with door and windows. The tower has a conical tile roof (rows 0-33) with a flared eave at rows 20-33 above the cylindrical stone body. The roofs read as top surfaces, so the building reads as three-quarter view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The candidate's roof has scalloped tiles with per-tile highlights in several orange and red-brown steps, plus darker purple-red patches. The conical tower roof has the same tile scallops. The plaster walls carry speckle, and the timber framing is shaded in brown. The stone tower is shaded stone by stone in pink-grey tones and has small windows with dark frames. Measured facts back this up: 13 visible tones per tile against 12 and 10 for the references, and 0% near-flat coverage like both references. The 24% near-neutral share of dark edge pixels is higher than the references' 7% and 9%, but it is still low, and by eye the outlines lean brown and red-brown next to the wood and roof, so they read as dark material tones. There is no flat fill and no sticker look. The piece is on par with the references in structure and shading craft.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 11071
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "main house hip roof (tile plane)",
+      "rows": "34-72",
+      "evidence": "c",
+      "front_edge_line_row": 72,
+      "eave_shadow_rows": "71-74"
+     },
+     {
+      "part": "cylindrical tower conical roof",
+      "rows": "0-33",
+      "evidence": "c",
+      "front_edge_line_row": 33,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "chimney",
+      "rows": "12-24",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "half-timbered front wall with door and windows",
+      "rows": "74-126",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stone cylindrical tower body",
+      "rows": "27-126",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "flower pot and window boxes",
+      "rows": "88-125",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 39,
+    "front_face_rows": 52,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main house has a large sloped tile roof (rows 34-72) with lighter and darker tile bands, ending in an eave line near row 72 with shadow beneath, and a half-timbered front wall below (rows 74-126, about 52 rows). The tower has a conical tiled roof (rows 0-33) that flares out to an eave at about row 33, over a cylindrical stone shaft. The roofs are the top surfaces and the walls are the front faces, so this is a three-quarter view. The chimney is a small detail rising from the roof."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The candidate's roof has scalloped tiles with per-tile highlights and mottled variation in several red-brown steps (about 5). The conical tower roof is shaded in the same way. The plaster walls are speckled and the tower stones are shaded one by one. The timber framing has light and dark brown steps. Outlines are dark brown beside wood and dark red-brown beside tiles, and the forms are often separated by value alone. The 24% near-neutral share of dark edge pixels is above the references (7% and 9%) but still means most edge pixels are tinted, so this is not a uniform black line. The measured facts are 13 visible tones per tile against 12 and 10 for the references, and 0% near-flat coverage, so it is at or above the references on density with no flat fills. It would sit next to the references without looking flatter or more sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 11456
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "house hipped roof (tile plane with a ridge and a sloped east end)",
+      "rows": "20-72",
+      "evidence": "c",
+      "front_edge_line_row": 72,
+      "eave_shadow_rows": "72-74"
+     },
+     {
+      "part": "tower conical roof (tile rows with a flared brim)",
+      "rows": "2-33",
+      "evidence": "c",
+      "front_edge_line_row": 33,
+      "eave_shadow_rows": "34-36"
+     },
+     {
+      "part": "chimney on the roof (a small cap at the top, then a vertical shaft)",
+      "rows": "12-25",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "tower cylindrical stone body (vertical face)",
+      "rows": "34-126",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "half-timbered front wall with door and windows",
+      "rows": "74-126",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "potted plant at the door",
+      "rows": "118-125",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 53,
+    "front_face_rows": 53,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is the house. Its large tiled hipped roof covers rows 20-72, with a dark eave line and shadow at rows 72-74. Below it is a south wall of about 53 rows (74-126) with timber framing, windows and a door. The tower has a conical tiled roof (rows 2-33) that widens to a brim, which counts as a roof plane, above a cylindrical stone body. Both roofs show their top surfaces, so the object reads as three-quarter view, not front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The candidate's roof has scalloped tiles with per-tile highlights in several orange-red steps plus darker mottled patches, similar to the reference roofs. The cone tower roof is shaded the same way. The plaster walls are speckled and the tower stone is shaded block by block. The timber framing has light and dark brown steps. Measured visible tones per tile are 13 against references of 12 and 10, and near-flat coverage is 0%, so there are no flat fills. The outline reads as dark brown or red-brown beside the roof and wood, and the references are similar. The 24% neutral share of dark edge pixels is higher than the references' 7-9% but still low, so most dark edges are tinted. Structure and detail (windows with sills, door, chimney, tower slits) match the reference quality, so it passes.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18800
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "main house hip roof (tile slopes)",
+      "rows": "34-72",
+      "evidence": "c",
+      "front_edge_line_row": 73,
+      "eave_shadow_rows": "73-74"
+     },
+     {
+      "part": "tower conical roof",
+      "rows": "0-44",
+      "evidence": "c",
+      "front_edge_line_row": 44,
+      "eave_shadow_rows": "45-47"
+     },
+     {
+      "part": "chimney with cap",
+      "rows": "20-40",
+      "evidence": "a",
+      "front_edge_line_row": 22,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 39,
+    "front_face_rows": 50,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is the half-timbered house. Its tiled hip roof fills rows 34-72 and is a large sloped plane with a dark eave line and shadow at rows 73-74. Below it the front wall (rows 75-123) has timber beams, windows and a door, so the front face is about 50 rows. The cylindrical tower on the right has a conical tiled roof (rows 0-44) that ends in an eave line, and its stone body is a vertical face. The chimney has a lighter cap. The roofs show their top slopes, so every major part has a top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The candidate's roof has per-tile scallops with highlight, light, mid, dark and deep reds, and some purple mottling. The conical tower roof carries the same tile texture. Plaster walls have speckle, and the timber frame is shaded in browns with a lighter top edge. The stone tower is shaded stone by stone, with small windows. The outlines are tinted dark brown or red-brown beside the roof and wood, not neutral black. The measured facts agree: 13 visible tones per tile against 12 and 10 for the references, 0% near-flat coverage, and 24% neutral dark edge pixels. That share is higher than the references' 7-9% but still mostly tinted. Density is on par with the references and nothing reads as a sticker or a flat fill. Wall plaster is a little simpler than the reference stone, but it is acceptable.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16536
+  }
+ ],
+ "decidedAt": "2026-10-25T09:05:33.433Z",
+ "cells": {
+  "16": [
+   "012a43d09a2d4033",
+   "02948f7d675d2878",
+   "05d5bd0f564f52d1",
+   "0c24a6c7ef668f4d",
+   "0f4819d847df9b7f",
+   "1001852d1a77bceb",
+   "105635b4e7ec9840",
+   "1555985f1e1035e5",
+   "18559e00de173ee5",
+   "1c8cf8dfd3ec8cff",
+   "1d28c940b6054234",
+   "1ffbf3747eb33382",
+   "220530733200d42f",
+   "2de99f46b8dd2513",
+   "329cf8bd47548820",
+   "32a57e09e8b1df83",
+   "335e9225d5273cfe",
+   "348dece180b2ccdf",
+   "39f058d999fcdc46",
+   "40373d63a2787685",
+   "413ac40525bf7b43",
+   "47763d0d255f39ae",
+   "4937b082e21b065b",
+   "50182be147890512",
+   "57cfb2b42165ed61",
+   "5a26ed3818ace36f",
+   "5bdbc1d2ed0b477b",
+   "5e4a285c79b80474",
+   "6074f6392ca57aad",
+   "60e9ce6dddf4295d",
+   "643806ca7d431bd4",
+   "6930405df68de701",
+   "6a34f02f57af3a5f",
+   "763dd4d4fe4e05ab",
+   "7b3e0eaa6b4ea051",
+   "822fc57ee181b902",
+   "867cbdb1d0a7ca59",
+   "8e36a3afd5d4fd23",
+   "94ca7faec0ccdef6",
+   "a0dda08b2b61896e",
+   "ab6c252ef38d7b60",
+   "ad634ee9787b9d47",
+   "adb201cce42dca9d",
+   "af1d69a4d72d5048",
+   "bb0313d18ed0cf16",
+   "be1a33290e9606e4",
+   "c4d0678126683b94",
+   "c754534771ecbdc0",
+   "d5e2edd5437668ae",
+   "dc9e800e3fc54acd",
+   "e27d5eb0e97799b2",
+   "e58a516814e84d89",
+   "e617a2edd6a335d4",
+   "e813f5e7acd46407",
+   "e97bf6d056d327f0",
+   "ef8ec4764372f084",
+   "f1e67657333c149f",
+   "f20f55d2d819be30",
+   "f30b5cd2a33565cd",
+   "f55adb615722ef37",
+   "fc5f48c22e744bd4"
+  ],
+  "24": [
+   "029af15fbabee917",
+   "040f5ce70155dd8c",
+   "04b1ad345c1530bc",
+   "0a1cf4829f252112",
+   "1bbe81e27b8899e4",
+   "1d96c18004211e76",
+   "1dba0e4bb8cbbde6",
+   "1dd006604e27d2ec",
+   "1f67d7fd844aa091",
+   "2c418e07de61afa5",
+   "33b562ebc940dbc3",
+   "34dbe7c9ef9b4d95",
+   "36048f5ca63b3055",
+   "389034122c714bcf",
+   "389f5f7d612c1166",
+   "3d85f930ab40f5d8",
+   "407a7de76d2e5fa0",
+   "4e40c305f0a977b4",
+   "5060b6a453d8ca00",
+   "5192f612d2cd2d3b",
+   "5232ac2243a949b6",
+   "52f0ab1a7daddcb3",
+   "5a1b68c0e15fd0a9",
+   "5bac99d0880408f5",
+   "5ed1830c37b37696",
+   "617e188bfc76e954",
+   "75c7b1ad3ffa9e81",
+   "797660c70360e40f",
+   "7ca5a51e7c63d63f",
+   "7ca68f6d8de9a949",
+   "7fd5170eb7db11e1",
+   "7ff9729503784a92",
+   "8566b2b5354c926b",
+   "8e498308668fdbd3",
+   "94b13a3a18e88d69",
+   "965424badba66e77",
+   "9780623bc1cc988f",
+   "99b1c7d78839676a",
+   "9a316b88587d47f5",
+   "9e25dfcd050e72e8",
+   "a0c3af91eaf094b9",
+   "a186e123b824362f",
+   "a24346067e5c4b37",
+   "a455b909e65787eb",
+   "a561dbe324f2e625",
+   "b7f8e1b632513e07",
+   "b83c4797d98644f0",
+   "b8e2337df381ace8",
+   "bd48397da9222767",
+   "be12716101c633f7",
+   "cae62ab8dabce6fe",
+   "cbefbf0df9ce1e8f",
+   "d03d2a40cac8822f",
+   "d1932664feae8719",
+   "d562b30105a16268",
+   "d85f6c53b12a22f5",
+   "d9e6c1a3de918dec",
+   "ec71639389b4aa6e",
+   "eec5e2238b05e90f",
+   "f0fc6c85615b28eb",
+   "f3bbc76c9979caa2",
+   "fa8174733e50fb05"
+  ],
+  "32": [
+   "03266beaa5934ddc",
+   "0fffa85ae7a26050",
+   "14c8c3856ebad0c9",
+   "15a25f56a5020862",
+   "21ab7c1940897d7b",
+   "2d8d96a8ae3cabd0",
+   "3428b98fc3c8ad44",
+   "34a3271b3f15e418",
+   "35e66487bae72196",
+   "3940436b1a7b5e01",
+   "4c3901f8c790c631",
+   "5064173031393d5b",
+   "59d01484b0262a7a",
+   "5d109b10891dc91e",
+   "5f555129c170200c",
+   "5fb29bcf7e7d0cd7",
+   "68a0acaf04eb73f4",
+   "6e00cfb8c68ba7ca",
+   "6ec38d1c2fb7caa7",
+   "735b229a6ee8ebc1",
+   "7bb811b8c73adb9f",
+   "7d2cc91b6400c724",
+   "84631603b0398ddf",
+   "8867c5606f4afac3",
+   "88907a3bee7de1bb",
+   "894f129cfb30adb7",
+   "8cc49a12645a5708",
+   "8d3a50e2d502112e",
+   "9571506358669670",
+   "979c51c4a568b190",
+   "9800ce726d233b3b",
+   "9e2f4b22c23c5a97",
+   "9fee5540780b7ab1",
+   "a20a56d505bd6889",
+   "a500cd69e1f30930",
+   "a6231a43c31b10ae",
+   "a6a0aa1679dc92c8",
+   "aadcffc30b234ddb",
+   "ac0010c798975e14",
+   "b73ee644cdb975a2",
+   "c047a1e5029c5cea",
+   "c4d28c4206d0d368",
+   "d7807fcb781a7b01",
+   "da96cad7730c0704",
+   "dc515e913c3e6e35",
+   "dcf0026691bf6962",
+   "dd7a80fd44e710d6",
+   "e6d83715b8c29a2c",
+   "e913f7e3f584d583",
+   "e998ca2feb4fc958",
+   "eb92ead511431121",
+   "ee993dd64067e270",
+   "f0a14d3c2df24ee2",
+   "f8914a48088a31b6",
+   "fa5c84836bba85f5"
+  ],
+  "48": [
+   "018de88a876495fd",
+   "18309f9c2d0f896f",
+   "2103343e3c1cf778",
+   "2725969dea403318",
+   "3a9de142081dbbae",
+   "4fbe1c03adab393a",
+   "52793ade29ccbdf5",
+   "720d0e64bf8c786e",
+   "7481560aaeb8b215",
+   "7a69ba35dc171a68",
+   "8a57997e3e3d7e0a",
+   "8c920286663eb06c",
+   "9a98db7f02176a5f",
+   "c88d09bd66d38adf",
+   "cd268b87a7ca7d26",
+   "d09793729dfab97f",
+   "e880210ae88b4dfa"
+  ]
+ }
+}

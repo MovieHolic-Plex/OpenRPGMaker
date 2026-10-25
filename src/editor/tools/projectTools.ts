@@ -301,6 +301,8 @@ const setProjectSettings: ToolDefinition = {
             required: ["enabled"], additionalProperties: false,
           },
           weaknessExtraAction: { type: "boolean", description: "약점(속성 배율 > 1)을 찌르면 한 번 더 행동(페르소나식)" },
+          allowAutoBattle: { type: "boolean", description: "false = 플레이어 자동 전투 없음(F 키 토글·자동 표시가 사라지고 명령을 늘 직접 고른다). true/생략 = 켤 수 있다" },
+          clearStatesAfterBattle: { type: "boolean", description: "true = 전투가 끝나면 파티의 상태 이상(독·수면·마비…)이 모두 풀린다. 상태 하나만 남기려면 upsert_state clearOnBattleEnd:false. false = 상태별 규칙만" },
           emotionCycle: {
             type: "array",
             description: "감정 상성표. 상태의 emotion.family 끼리 공격자→대상 피해 배율. 빈 배열이면 해제",
@@ -341,6 +343,7 @@ const setProjectSettings: ToolDefinition = {
         additionalProperties: false,
       },
       startActorIds: { type: "array", items: { type: "string" } },
+      saveAccess: { type: "string", enum: ["anywhere", "savePoints"], description: "savePoints = 메뉴 「저장」을 없애고 세이브 포인트에서만 저장(place_savepoint 로 마을·쉼터·던전에 둔다). anywhere(기본) = 메뉴에서 언제든" },
       dialogue: {
         type: "object",
         description: "게임 전체 NPC 대사창의 기본 모양·글꼴·글자 소리. 인물별 이름 색·목소리는 upsert_character_profile 의 dialogue 로 덮는다.",
@@ -353,6 +356,7 @@ const setProjectSettings: ToolDefinition = {
           font: { type: "string", enum: FONT_REGISTRY.map((font) => font.id), description: "대사창 글꼴(편집기 글꼴과 별개). 보통 생략 — 스타일이 어울리는 글꼴을 이미 고른다." },
           speed: { type: "number", minimum: DIALOGUE_PROJECT_SPEED_LIMITS.min, maximum: DIALOGUE_PROJECT_SPEED_LIMITS.max, description: "모든 대사의 기본 말 빠르기 배율(1=기본). 느긋한 이야기 0.8, 경쾌한 액션 1.2." },
           punctuationPause: { type: "boolean", description: "쉼표·마침표에서 잠깐 쉬기(기본 true). 기계·로봇 톤이면 false." },
+          keepActorsVisible: { type: "boolean", description: "대화창·선택지가 떠 있는 동안 카메라를 내려 말하는 두 사람을 창 위 빈 화면에 보이게 한다(기본 false). 맵 위 인물끼리 마주 보는 장면이 많은 연애·일상·추리 게임이면 true." },
           fullPortraitHeight: {
             type: "integer",
             minimum: DIALOGUE_FULL_PORTRAIT_LIMITS.height.min,
@@ -447,6 +451,10 @@ const setProjectSettings: ToolDefinition = {
       if (!next) throw new ToolError("chapter.labels 에 정수 값 → 이름이 하나 이상 있어야 합니다.", { code: "invalid-args" });
       draft.system.chapter = next;
       changed.push(`장 표시=${Object.keys(next.labels).length}개`);
+    }
+    if (args.saveAccess === "savePoints" || args.saveAccess === "anywhere") {
+      if (args.saveAccess === "savePoints") draft.system.saveAccess = "savePoints"; else delete draft.system.saveAccess;
+      changed.push(args.saveAccess === "savePoints" ? "저장은 세이브 포인트에서만" : "어디서나 저장");
     }
     if (typeof args.title === "string" && args.title.trim()) {
       const previousTitles = [draft.meta.title, draft.system.titleScreen?.title ?? ""];
@@ -586,6 +594,10 @@ const setProjectSettings: ToolDefinition = {
       if (battle.limitGauge && typeof battle.limitGauge === "object") draft.system.limitGauge = battle.limitGauge as NonNullable<typeof draft.system.limitGauge>;
       if (battle.resource2 && typeof battle.resource2 === "object") draft.system.resource2 = battle.resource2 as NonNullable<typeof draft.system.resource2>;
       if (battle.partyGauge && typeof battle.partyGauge === "object") draft.system.partyGauge = battle.partyGauge as NonNullable<typeof draft.system.partyGauge>;
+      if (battle.allowAutoBattle === false) { draft.system.allowAutoBattle = false; changed.push("자동 전투 없음"); }
+      else if (battle.allowAutoBattle === true) { delete draft.system.allowAutoBattle; changed.push("자동 전투 켤 수 있음"); }
+      if (battle.clearStatesAfterBattle === true) { draft.system.clearStatesAfterBattle = true; changed.push("전투 뒤 상태 이상 해제"); }
+      else if (battle.clearStatesAfterBattle === false) delete draft.system.clearStatesAfterBattle;
       if (battle.weaknessExtraAction === true) draft.system.weaknessExtraAction = true;
       else if (battle.weaknessExtraAction === false) delete draft.system.weaknessExtraAction;
       if (Array.isArray(battle.emotionCycle)) {
@@ -622,7 +634,12 @@ const setProjectSettings: ToolDefinition = {
         }
         changed.push(`대화창=${DIALOGUE_STYLES[style].label}`);
       }
-      const { font, speed, punctuationPause, fullPortraitHeight, fullPortraitDrop } = args.dialogue as Record<string, unknown>;
+      const { font, speed, punctuationPause, keepActorsVisible, fullPortraitHeight, fullPortraitDrop } = args.dialogue as Record<string, unknown>;
+      if (typeof keepActorsVisible === "boolean") {
+        // false 도 남긴다 — 연애 기본값(applyRomanceDefaults)이 저작자가 끈 값을 다시 켜지 않게.
+        draft.system.dialogueKeepActorsVisible = keepActorsVisible;
+        changed.push(`대화 중 인물 보이기=${keepActorsVisible ? "켬" : "끔"}`);
+      }
       if (font !== undefined) {
         if (font === null || font === "") delete draft.system.dialogueFont;
         else if (!isFontFamilyId(font)) throw new ToolError(`알 수 없는 글꼴입니다: ${String(font)}`, { code: "invalid-args" });

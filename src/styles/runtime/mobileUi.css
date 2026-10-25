@@ -290,6 +290,10 @@
   transform: scale(var(--dock-unscale));
   transform-origin: 0 0;
 }
+/* 독은 무대 밖(아래 띠)이라 컷신 띠(레터박스)를 피해 올리지 않는다 — 올리면 독이 무대 아래 끝을 덮었다(J33 실측). */
+.player-layout .play-viewport[data-dialogue-dock] > .play-stage[data-letterbox] > .dialogue-overlay:is(.position-bottom, .position-top):not(.balloon-active) {
+  translate: none;
+}
 .player-layout .play-viewport[data-dialogue-dock] > .play-stage > .dialogue-overlay.choices-active:is(.position-bottom, .position-top):not(.balloon-active) {
   height: auto !important;
   min-height: 0 !important;

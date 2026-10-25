@@ -75,7 +75,7 @@ export const DIRECTING_GUIDE = `# 연출 지침 (script_cutscene 비트)
 ]
 
 ## 이벤트 명령으로 직접 쓸 때(upsert_event, 컷신 밖)
-- 화면 효과 m2-202-screen-effect fields{effect,value,durationMs}: effect = fadeIn·fadeOut·flash·tint·weather·wave·mosaic·rotate·clearDistortion·letterbox·clearLetterbox·doorOpen·doorClose. value = 색·날씨·세기·띠 두께% · 문은 "x,y,너비,높이,slide|swing,left|right"(타일 문 그림 왼쪽 위 칸; 엘리베이터 = slide, 여닫이 = swing).
+- 화면 효과 m2-202-screen-effect fields{effect,value,durationMs}: effect = fadeIn·fadeOut·flash·tint·weather·wave·mosaic·rotate·clearDistortion·letterbox·clearLetterbox·freeze·unfreeze·doorOpen·doorClose. freeze = 만화식 정지 화면(지금 화면을 한 장 찍어 세움, 값 = warm·mono·sepia·cool·none, 컷신 비트 freeze 로도 쓴다). value = 색·날씨·세기·띠 두께% · 문은 "x,y,너비,높이,slide|swing,left|right"(타일 문 그림 왼쪽 위 칸; 엘리베이터 = slide, 여닫이 = swing).
 - 화면 흔들기 m2-048-shake-screen fields{intensity:"1"|"3"|"6"|"10",durationMs,direction:"both"|"horizontal"|"vertical"}.
 - 파티클 효과 m2-224-particle-effect fields{preset,target:"player"|"this-event"|"event"|"tile",eventId,x,y,durationMs,wait}.
 - 모습 효과 m2-225-sprite-look fields{target:"player"|"this-event"|"event",eventId,reset,pose:"keep"|자세,tint:"keep"|"none"|색 이름,tintHex,tintFill/flip/afterimage:"keep"|"on"|"off",angle,opacity(%)}.

@@ -51,6 +51,9 @@ const INVALID_MODEL_TOAST_KEY = Symbol("ai-settings-invalid-model");
 import { renderAiAuthSettings, type AiAuthStatusSnapshot } from "./aiAuthSettings";
 import { renderAiCompatSettings, type AiCompatRoleSlot } from "./aiCompatSettings";
 import { renderAiToolUsagePanel } from "./aiToolUsagePanel";
+import { fetchConnectedRoutes, renderAiRoleMatrixSettings } from "./aiRoleMatrixSettings";
+import { localCliOfProvider } from "@/ai/localCliEngine";
+import { saveEngineChoice } from "@/start/settings/localAgents";
 import { deckIcon } from "./aiDeckIcons";
 import { installEventEditorCustomSelects } from "./eventEditor/customSelect";
 
@@ -615,6 +618,7 @@ export function renderAiSettingsForm(options: {
     const { build: _same, ...rest } = roles;
     return rest;
   };
+  let roleMatrix: ReturnType<typeof renderAiRoleMatrixSettings> | undefined;
   const collect = (): AiConfig => ({
     authMode,
     providerId,
@@ -646,7 +650,18 @@ export function renderAiSettingsForm(options: {
     autonomyLevel: isAutonomyLevel(autonomySelect.value) ? autonomySelect.value : "balanced",
     piTeam: config.piTeam ?? DEFAULT_PI_TEAM,
     piApply: normalizePiApplyMode(piApplySelect.value),
+    ...roleMatrixSlots(),
   });
+  // 역할 배정 표(잔일·검토자) — 표가 아직 없으면(첫 collect) 저장값을 그대로 둔다.
+  function roleMatrixSlots(): Pick<AiConfig, "assistantRoles"> {
+    if (!roleMatrix) return config.assistantRoles ? { assistantRoles: config.assistantRoles } : {};
+    const picked = roleMatrix.collect();
+    for (const role of ["smol", "advisor"] as const) {
+      if (picked.pinned[role]) modelSelectionOverrides[role] = true;
+      else delete modelSelectionOverrides[role];
+    }
+    return { assistantRoles: picked.assistantRoles };
+  }
 
   /** 연결 카드의 「이 역할에 쓰기」 — 그 역할 칸만 이 엔드포인트·모델로 바꾸고 직접 지정으로 표시한다(다른 칸·기본 제공자는 그대로). */
   const assignCompatRole = (slot: AiCompatRoleSlot, endpointId: string, endpointModel: string): void => {
@@ -890,12 +905,45 @@ export function renderAiSettingsForm(options: {
     persist(false);
     authSettings.recheck();
   });
+  // ── 역할 배정(연결된 계정으로 자동) ─────────────────────────────────────────
+  roleMatrix = renderAiRoleMatrixSettings(() => persist(false), (recommended) => {
+    // 로컬 CLI 추천(Claude 가 연결돼 있으면 Opus 5.5 medium)은 조수 엔진 선택으로 넣는다 — 그래야 실제 실행이 그 모델로 간다.
+    const cli = localCliOfProvider(recommended.provider);
+    if (cli) {
+      saveEngineChoice({ kind: "local-cli", cli, routineModel: recommended.model, deepModel: recommended.model, effort: recommended.thinkingLevel === "low" || recommended.thinkingLevel === "high" ? recommended.thinkingLevel : "medium" });
+      toast(`조수 엔진을 ${recommended.model} (${recommended.thinkingLevel})로 맞췄습니다.`, "ok");
+    } else {
+      saveEngineChoice(null);
+      for (const c of specialistControls.filter((entry) => entry.role === "deep" || entry.role === "build")) {
+        fillProviderOptions(c.provider, recommended.provider);
+        c.provider.value = recommended.provider;
+        c.field.refresh(authMode, recommended.provider);
+        c.field.setValue(recommended.model, authMode, recommended.provider);
+        c.effort.value = recommended.thinkingLevel;
+        modelSelectionOverrides[c.role] = true;
+      }
+      persist(false);
+    }
+    refreshRoleMatrix();
+  });
+  let connectedRoutes: Awaited<ReturnType<typeof fetchConnectedRoutes>> = [];
+  const refreshRoleMatrix = (): void => roleMatrix?.refresh(collect(), connectedRoutes);
+  const reloadConnectedRoutes = (): void => {
+    void fetchConnectedRoutes().then((routes) => { connectedRoutes = routes; refreshRoleMatrix(); }, () => undefined);
+  };
+  roleMatrix.refresh(config, connectedRoutes);
+  reloadConnectedRoutes();
+  const roleMatrixSection = settingsSection("role-matrix", "역할 배정",
+    "연결된 계정으로 역할마다 모델을 고릅니다. 채울 수 없는 역할은 무엇으로 대신하는지 보여 줍니다.", [roleMatrix.element]);
+
   const onConfigChanged = (): void => {
+    refreshRoleMatrix();
     updateReadiness();
     void refreshAiConnectionStatus(updateReadiness);
   };
   const win = typeof window === "undefined" ? undefined : window;
   win?.addEventListener?.(AI_CONNECTION_STATUS_CHANGED_EVENT, updateReadiness);
+  win?.addEventListener?.(AI_CONNECTION_STATUS_CHANGED_EVENT, reloadConnectedRoutes);
   win?.addEventListener?.(AI_CONFIG_CHANGED_EVENT, onConfigChanged);
   const SUMMARY_TONE = {
     connected: "ready",
@@ -1134,6 +1182,7 @@ export function renderAiSettingsForm(options: {
       ]),
       pane("models", [
         settingsSection("presets", "품질 프리셋", "역할별 모델과 추론 강도를 한 번에 맞춥니다.", [presetGroup]),
+        roleMatrixSection,
         rolesDetails,
         settingsSection("image", "그림·도트 모델", "무엇을 만드느냐에 따라 쓰는 모델이 따로 있습니다.", [
           settingsCard("image-large", "그림 (타이틀·배경·컷신·초상)", "이미지 생성 모델이 한 장을 통째로 그립니다.", [
@@ -1202,6 +1251,7 @@ export function renderAiSettingsForm(options: {
     connectionCheckButton,
     dispose: () => {
       win?.removeEventListener?.(AI_CONNECTION_STATUS_CHANGED_EVENT, updateReadiness);
+      win?.removeEventListener?.(AI_CONNECTION_STATUS_CHANGED_EVENT, reloadConnectedRoutes);
       win?.removeEventListener?.(AI_CONFIG_CHANGED_EVENT, onConfigChanged);
       window.removeEventListener(OPENAI_COMPAT_CHANGED_EVENT, onCompatChanged);
       compatSettings.dispose();

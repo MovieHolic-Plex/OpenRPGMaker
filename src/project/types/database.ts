@@ -1174,6 +1174,11 @@ export interface StateRecord {
   disablesEquipSlot?: string;
   /** retro2003 전투에서 이 상태가 걸린 동안 몸 위에 남는 오라 프리셋 id(src/assets/battleStateAuras.ts). "none" = 끔, 없으면 기본 상태 id 표. */
   battleAura?: string;
+  /**
+   * 전투가 끝나면 이 상태가 풀리는가. true = 풀린다, false = 남는다(system.clearStatesAfterBattle 이 켜져 있어도).
+   * 생략 = system.clearStatesAfterBattle 을 따르고, 그것도 없으면 removalCondition 이 「전투 종료」일 때만 풀린다.
+   */
+  clearOnBattleEnd?: boolean;
 }
 
 /** 피해 계열별 받는 피해 %(100 = 보통, 0 = 무효). */
@@ -2051,6 +2056,16 @@ export interface SystemRecords {
   /** onField 면 전투가 **필드 위에서** 벌어진다(크로노식): 전환 연출 없이, 적은 부딪힌 심볼 자리에, 아군은 파티가 선 자리에
    *  선다. 배경은 필드 스냅샷 그대로(확대·자르기 없음). battleBackdrop 과 무관하게 필드 배경을 쓴다. 생략 = 전환 후 전투장. */
   battlePresentation?: "onField";
+  /** false 면 플레이어 자동 전투(F 키 토글·상태 표시)가 없다 — 명령은 늘 직접 고른다. 생략 = 켤 수 있다(기존). 배우별 자동 전투(ActorOptions.autoBattle)와 별개. */
+  allowAutoBattle?: boolean;
+  /**
+   * true 면 전투가 끝날 때(승리·도주·지는 전투 뒤 이어지는 경우) 파티의 상태 이상이 모두 풀린다 — 독·수면·마비 등.
+   * 상태 하나가 StateRecord.clearOnBattleEnd:false 면 그 상태만 남는다. 생략 = 상태별 규칙만(clearOnBattleEnd:true 이거나
+   * removalCondition 이 「전투 종료」인 상태만 풀린다).
+   */
+  clearStatesAfterBattle?: boolean;
+  /** "savePoints" 면 메뉴의 「저장」이 사라지고 세이브 포인트(place_savepoint 의 openSaveMenu)에서만 저장한다. 생략 = 어디서나. */
+  saveAccess?: "anywhere" | "savePoints";
   battleUiStyle?: BattleUiStyle;
   /** 전투 타격감 프리셋(project/battleHitFeel.ts). 생략 = impact(묵직하게). 스킨과 별개 축이다. */
   battleHitFeel?: import("@/project/battleHitFeel").BattleHitFeel;
@@ -2077,6 +2092,11 @@ export interface SystemRecords {
   dialogueSpeed?: number;
   /** false 면 구두점 뒤에 쉬지 않는다. 생략 = 쉰다. */
   dialoguePunctuationPause?: boolean;
+  /**
+   * true 면 필드 대화창·선택지가 열려 있는 동안 카메라를 내려 주인공(과 마주 선 상대)을 창 위 빈 화면에 둔다
+   * (player/dialogueCameraLift.ts). 생략 = 끔 — 카메라는 늘 주인공을 화면 가운데에 둔다.
+   */
+  dialogueKeepActorsVisible?: boolean;
   /** 하단 대사창 뒤 전신 초상의 크기·내림(%). 생략 = 높이 125·내림 20. */
   dialogueFullPortrait?: import("@/project/dialogueStyles").DialogueFullPortraitSettings;
   fieldHud?: import("../fieldHud").FieldHudConfig;
@@ -2341,6 +2361,12 @@ export interface CompanionConfig {
    * 장면이 끝나면 다시 숨는다. 몬스터 동행(포켓몬식)은 monsterFollowers 로 따로 정한다.
    */
   display?: "follow" | "scenesOnly";
+  /**
+   * 이야기 장면(컷신 잠금; scenesOnly 는 동료가 말할 때도)에서 동료가 서는 자리 — display "follow" 든 "scenesOnly" 든. "nearest"(기본·생략) = 주인공에게서 가장 가까운 빈 칸(앞을 막을 수 있다).
+   * "abreast" = 고정 횡대 — 주인공이 보는 방향의 좌우(몸 길이만큼 떨어진 칸)에 첫째·둘째, 그 바깥에 셋째·넷째가 서고 모두 주인공과 같은 쪽을 본다.
+   * 주인공이 상대(보스 등)를 바라보게 돌려 두면 일행이 한 줄로 그 상대를 마주한다. 자리가 막히면 그 동료만 가장 가까운 빈 칸으로.
+   */
+  sceneFormation?: "nearest" | "abreast";
   /**
    * false 면 파티 몬스터가 필드에서 주인공을 따라 걷지 않는다(HGSS 식 동행 끄기). 생략 = 따라온다 — 몬스터 동료는 주인공이
    * 떠난 칸으로 같은 박자에 한 칸 뒤를 걷는다(@/player/playSceneFollowers beginFollowerStep).

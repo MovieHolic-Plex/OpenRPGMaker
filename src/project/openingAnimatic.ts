@@ -3,8 +3,6 @@ export type AnimaticEase = 'linear' | 'ease-in' | 'ease-out' | 'ease-in-out' | '
 export type AnimaticKey = { atMs: number; value: number; ease?: AnimaticEase };
 export type AnimaticProperty = 'x' | 'y' | 'scaleX' | 'scaleY' | 'rotation' | 'opacity' | 'frame';
 export type AnimaticTracks = Partial<Record<AnimaticProperty, AnimaticKey[]>>;
-export type AnimaticParticlePreset = 'rain' | 'snow' | 'sparks' | 'dust' | 'stars' | 'meteors';
-export const ANIMATIC_PARTICLE_PRESETS: readonly AnimaticParticlePreset[] = ['rain', 'snow', 'sparks', 'dust', 'stars', 'meteors'];
 export type AnimaticLayerKind = 'image' | 'text' | 'shape' | 'particles' | 'shaft' | 'glow' | 'emote' | 'caption';
 export const ANIMATIC_LAYER_KINDS: readonly AnimaticLayerKind[] = ['image', 'text', 'shape', 'particles', 'shaft', 'glow', 'emote', 'caption'];
 /** Integer-pixel composition: the whole shot rasterises into one low-resolution buffer, then upscales by an integer factor. */
@@ -101,6 +99,12 @@ export type OpeningAnimatic = {
   layers: AnimaticLayer[]; camera?: AnimaticCamera; audioCues?: AnimaticAudioCue[];
   transition?: { kind: 'cut' | 'fade' | 'wipe-left' | 'wipe-right' | 'iris' | 'flash' | 'dither'; durationMs: number; color?: string };
 };
+/**
+ * Seeded particle presets. petals = cherry-blossom petals drifting down and sideways while they tumble (two-tone flake, the flat
+ * side flips); paper = A4 sheets fluttering down, rotating as they fall (white rectangles with a shade edge).
+ */
+export type AnimaticParticlePreset = 'rain' | 'snow' | 'sparks' | 'dust' | 'stars' | 'petals' | 'paper' | 'meteors';
+export const ANIMATIC_PARTICLE_PRESETS: readonly AnimaticParticlePreset[] = ['rain', 'snow', 'sparks', 'dust', 'stars', 'petals', 'paper', 'meteors'];
 export const ANIMATIC_LIMITS = { layers: 32, keysPerTrack: 128, audioCues: 32, particles: 200, captionCues: 32, dimension: 1920 } as const;
 export const ANIMATIC_TRANSITION_KINDS = ['cut', 'fade', 'wipe-left', 'wipe-right', 'iris', 'flash', 'dither'] as const;
 export const ANIMATIC_REGION_MODES = ['scroll-x', 'scroll-y', 'palette-cycle', 'strip'] as const;

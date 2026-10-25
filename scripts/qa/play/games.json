@@ -48,7 +48,10 @@
       "kind": "generator",
       "startMap": "map_shitamachi_arcade",
       "buildTimeoutMs": 900000,
-      "note": "일본 골목 회상극 9맵. 컷신·대화 위주.",
+      "note": "일본 골목 연애 데모 9맵. 74MB 라 파일 스트리밍으로는 렌더러가 죽는다(Target crashed) — 제품 데모 분기(?demo=shitamachi-fourth-season)로 띄운다.",
+      "query": {
+        "demo": "shitamachi-fourth-season"
+      },
       "playable": true
     },
     {

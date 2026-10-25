@@ -74,6 +74,7 @@ import { isTransientProviderStreamError, PI_PROVIDER_STREAM_RETRY_LIMIT, provide
 import { explainOpenAiCompatRunError, guardedOpenAiCompatFetch, shapeOpenAiCompatCall } from "./openAiCompatModel.ts";
 import { isOpenAiCompatProviderId } from "../../src/ai/openAiCompat.ts";
 import { PLAN_EXECUTION_REKICK, ULTRABRAIN_PLAN_HEADING } from "../../src/ai/piAgent/planExecution.ts";
+import { WHOLE_GAME_REKICKS, unbuiltGameSigns, wantsWholeGame, wholeGameRekickPrompt } from "../../src/ai/v2/shipChecks.ts";
 import { addPiAgentUsage, changedProjectKeys, PI_AGENT_DEFAULT_TIMEOUT_MS, PI_MAP_LOSS_DECLINED_PREFIX, piMapScopeGuard, restoreCheckpointProject, slimCheckpointProject, slimProjectForWire, snapshotProjectKeepingHeavy, slimDoneEvent, unchangedHeavyKeys, type PiAgentDoneEvent, type PiAgentEvent, type PiAgentRequest, type PiAgentUsage, type PiCheckpointHeavyKey } from "../../src/ai/piAgent/protocol.ts";
 import { normalizePiThinkingLevel } from "../../src/ai/piAgent/thinkingLevel.ts";
 import { antigravityToolEnumPayload } from "./ohMyPiToolEnums.ts";
@@ -98,6 +99,7 @@ import { localCliIdOf } from './localCliAgent/types.ts';
 import { createLocalCliLoop, type LocalCliLoop } from './localCliAgent/localCliLoop.ts';
 import { shrinkReferenceImage } from './referenceImageShrink.ts';
 import { LOCAL_CLI_ADAPTERS, localCliBinary } from './localCliAgent/registry.ts';
+import { animaticResourceIds } from '../../src/project/openingAnimatic.ts';
 import { PiOpeningProduction, OPENING_ANIMATIC_AUTHORING_TOOLS, OPENING_PRODUCTION_PROMPT, requestsFullGameOpeningProduction, requestsOpeningProduction, openingImageProject } from '../../src/ai/piAgent/openingProduction.ts';
 
 // 조수 도구는 이 Bun 일꾼 안에서 돈다 — 편집기 기본값(상대 /v1 fetch)은 여기서 닿지 않으므로 월드맵 빌드를 프로세스 안에서 부른다.
@@ -276,6 +278,12 @@ export const resolvePiModel = resolveOhMyPiModel;
  * 렌더러(toolImageRenderer.renderPiMapImage)는 칸 배열을 받는다. 좌표만 넘기면 「map-rendering-unavailable: invalid region」으로 거절한다 —
  * 1배 확인 루프(#3258)에서 고친 것과 같은 실패가 컷신 검토·inspect_interior_layout 그림에도 남아 있었다(2026-10-22).
  */
+/** 애니메틱 샷 하나가 쓰는 그림 id(찍을 때 실을 것만). */
+function animaticResourceIdsFor(project: Project, shotId: string): string[] {
+  const scene = project.system.opening?.scenes.find((entry) => entry.id === shotId);
+  if (!scene || scene.kind !== "animatic") return [];
+  return animaticResourceIds(scene.composition);
+}
 export async function renderMapRegionImage(project: Project, region: { mapId: string; x: number; y: number; w: number; h: number },
   renderToolImage: NonNullable<RunPiAgentOptions["renderToolImage"]>, signal?: AbortSignal): Promise<string> {
   const copy = cloneProjectSharingSharedDictionaries(project);
@@ -347,7 +355,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   const tools: PiToolShape[] = [];
   const exposed = new Set<string>();
   const monsterGameProduction = new PiMonsterGameProduction(!options.v2 && !request.readOnly && !options.readOnlyTools && (requestsEmeraldMonsterGame(request.task) || classifyMonsterGameRequest(request.task) === 'campaign'), request.task);
-  const gameSystemProduction = new PiGameSystemProduction();
+  const gameSystemProduction = new PiGameSystemProduction(!options.v2);
   // 채팅 한 줄 연애 게임 요청 — 도구 목록이 고정된 팀 하위 실행은 제외(팀은 finish 게이트가 한다).
   const romanceProduction = new PiRomanceProduction(!request.readOnly && !options.readOnlyTools && !options.toolNames && !options.subscribeTeamMessages, request.task);
   const npcLayoutProduction = new PiNpcLayoutProduction();
@@ -780,6 +788,23 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
     ...(options.extraTools ?? []),
   );
   // v2 동사 — wrapTool 을 거쳐 쓰기마다 체크포인트(실시간 적용·시공 재생)가 v1 과 같은 길로 간다.
+  // 검토자 칸(request.assistantRoles.advisor) — 주 모델과 다른 모델로 따로 부른다. 키가 없는 계정이면 주 모델로 물러난다(작문과 같은 관례).
+  const advisorRole = request.assistantRoles?.advisor && request.assistantRoles.advisor !== "off" ? request.assistantRoles.advisor : undefined;
+  const advisorCli = advisorRole ? localCliIdOf(advisorRole.provider) : undefined;
+  const advisorKey = advisorRole ? options.providerApiKeys?.[advisorRole.provider] ?? (advisorRole.provider === request.provider ? options.apiKey : undefined) : undefined;
+  const advisorChat = advisorRole && (advisorCli || advisorKey) ? async (messages: readonly unknown[], signal?: AbortSignal): Promise<string> => {
+    const t0 = Date.now();
+    sideUsage.calls += 1;
+    try {
+      if (advisorCli) return await localCliChat(advisorCli, advisorRole.model, addSideUsage)(messages, signal ?? options.signal);
+      const result = await completeProvider(advisorRole.provider, { model: advisorRole.model, max_tokens: 8192, messages },
+        { apiKey: advisorKey!, ...(signal ?? options.signal ? { signal: signal ?? options.signal } : {}) });
+      const reported = (result.completion as { usage?: { prompt_tokens?: number; completion_tokens?: number } }).usage;
+      if (reported) addSideUsage({ input: reported.prompt_tokens ?? 0, output: reported.completion_tokens ?? 0 });
+      const content = result.completion.choices[0]?.message.content;
+      return typeof content === "string" ? content : "";
+    } finally { sideUsage.ms += Date.now() - t0; }
+  } : undefined;
   const v2Env: PiAssistantV2Env | undefined = options.v2 ? {
     ctx, request, emit, record: recordCall,
     checkpoint: (label: string) => request.applyMode !== "step" ? checkpoint(label, label, options.signal) : Promise.resolve(),
@@ -787,6 +812,30 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
       const reply = await eventAssistChat(null, { messages, ...(signal ?? options.signal ? { signal: signal ?? options.signal } : {}) });
       return typeof reply.message.content === "string" ? reply.message.content : "";
     },
+    ...(advisorChat ? { advisorChat, advisorModel: `${advisorRole!.provider}/${advisorRole!.model}` } : {}),
+    ...(options.renderToolImage ? { renderArt: async (art: { resourceId: string } | { shotId: string; atMs: readonly number[] }) => {
+      const ids = "resourceId" in art ? [art.resourceId] : animaticResourceIdsFor(ctx.project, art.shotId);
+      const tool = "resourceId" in art ? "show_opening_image" : "preview_opening_animatic";
+      const data = "resourceId" in art ? { resourceId: art.resourceId } : { shotId: art.shotId, atMs: [...art.atMs], resourceIds: ids };
+      const png = await options.renderToolImage!(openingImageProject(ctx.project, ids), tool, data, options.signal);
+      return png.startsWith("data:") ? png : `data:image/png;base64,${png}`;
+    } } : {}),
+    roleChat: async (role: { provider: string; model: string }, messages: readonly unknown[], signal?: AbortSignal): Promise<string> => {
+      const t0 = Date.now();
+      sideUsage.calls += 1;
+      try {
+        const cli = localCliIdOf(role.provider);
+        if (cli) return await localCliChat(cli, role.model, addSideUsage)(messages, signal ?? options.signal);
+        const key = options.providerApiKeys?.[role.provider] ?? (role.provider === request.provider ? options.apiKey : undefined);
+        if (!key) throw new Error(`${role.provider} 계정 키가 이 실행에 없음`);
+        const result = await completeProvider(role.provider, { model: role.model, max_tokens: 8192, messages }, { apiKey: key, ...(signal ?? options.signal ? { signal: signal ?? options.signal } : {}) });
+        const reported = (result.completion as { usage?: { prompt_tokens?: number; completion_tokens?: number } }).usage;
+        if (reported) addSideUsage({ input: reported.prompt_tokens ?? 0, output: reported.completion_tokens ?? 0 });
+        const content = result.completion.choices[0]?.message.content;
+        return typeof content === "string" ? content : "";
+      } finally { sideUsage.ms += Date.now() - t0; }
+    },
+    keyedProviders: new Set([...Object.entries(options.providerApiKeys ?? {}).filter(([, key]) => Boolean(key)).map(([id]) => id), ...(options.apiKey ? [request.provider] : []), ...(localCliIdOf(request.provider) ? [request.provider] : [])]),
     ...(options.renderToolImage ? { render: async (mapId: string, x: number, y: number, w: number, h: number) => `data:image/png;base64,${await renderMapRegionImage(ctx.project, { mapId, x, y, w, h }, options.renderToolImage!, options.signal)}` } : {}),
     ...(options.signal ? { signal: options.signal } : {}),
     toolsetOptions: { referenceGate, charsetGate, findToolsCallable, eventAssistChat: eventAssistChat as never, ...scopeGuard },
@@ -1157,10 +1206,24 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
       emit({ type: "execution_status", name: "plan_execution_rekick", ok: false, summary: "계획만 다시 쓰고 바뀐 것 없이 끝나 실행을 한 번 더 요청합니다." });
       await promptResuming(PLAN_EXECUTION_REKICK);
     }
-    // v2 완료 조건(비평 통과·기계 검사 통과) — 못 채웠으면 한 차례 더 돌며 사실대로 보고하게 한다.
-    if (options.v2?.afterMain && v2Env && !fatal && !rejected && !options.signal?.aborted && turns < maxTurns) {
-      const followUp = await options.v2.afterMain(v2Env);
-      if (followUp && !fatal && !rejected && !options.signal?.aborted) await promptResuming(followUp);
+    // 게임 하나를 만드는 요청인데 뼈대(「기억의 조각 → 첫 구간 끝」)만 남았거나 엔딩이 하나도 없이 «확인하겠습니다» 같은 말로 턴이 끝났다
+    // (2026-10-25 Salad S3: 58판 중 9판이 뼈대만 남긴 채 끝났다 — 오류 없이 모델이 다음 할 일을 말하고 멈췄다). 최대 3번 이어 짓게 한다.
+    if (!options.v2 && !fatal && !rejected && !request.readOnly && !options.readOnlyTools && wantsWholeGame(request.task)) {
+      for (let kick = 1; kick <= WHOLE_GAME_REKICKS && turns < maxTurns && !fatal && !rejected && !options.signal?.aborted; kick++) {
+        const missing = unbuiltGameSigns(ctx.project, request.task);
+        if (!missing.length) break;
+        const beforeKick = ctx.project;
+        emit({ type: "execution_status", name: "whole_game_rekick", ok: false, summary: `게임이 아직 다 지어지지 않아 이어 짓게 합니다(${kick}/${WHOLE_GAME_REKICKS}): ${missing.join(" / ").slice(0, 300)}` });
+        await promptResuming(wholeGameRekickPrompt(missing));
+        if (kick > 1 && changedProjectKeys(beforeKick, ctx.project).length === 0) break;
+      }
+    }
+    // v2 완료 조건(비평 통과·기계 검사 통과·독립 검토자) — 못 채웠으면 한 차례 더 돌며 사실대로 보고하게 한다.
+    // 두 번째 차례는 첫 후속이 쓴 «최종 보고»를 검토자가 다시 대어 보는 자리다(최대 2차례 — 끝없이 돌지 않는다).
+    for (let round = 0; options.v2?.afterMain && v2Env && round < (options.v2?.maxRounds ?? 2) && !fatal && !rejected && !options.signal?.aborted && turns < maxTurns; round++) {
+      const followUp = await options.v2.afterMain(v2Env, round);
+      if (!followUp || fatal || rejected || options.signal?.aborted) break;
+      await promptResuming(followUp);
     }
     // 인게임 컷신은 조수의 보고가 아니라 객관 측정 + 독립 판정자로 검증한다(openingProduction.recordCutsceneReview).
     const reviewInGameCutscene = async (): Promise<void> => {

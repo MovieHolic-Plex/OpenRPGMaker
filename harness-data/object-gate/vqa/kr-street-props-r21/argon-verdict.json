@@ -1,0 +1,68 @@
+{
+  "pieces": [
+    {
+      "id": "cand-1",
+      "verdict": "PASS",
+      "defects": [
+        "Minor nitpick: silhouette occupies x=0..13 (y=4..7 touches x=0 while x=14..15 are transparent), shifting the pillar 1px left of true horizontal center within the 16px tile."
+      ]
+    },
+    {
+      "id": "cand-2",
+      "verdict": "PASS",
+      "defects": [
+        "Minor nitpick: silhouette occupies x=0..13 (x=14..15 transparent), 1px left of horizontal tile center; digit '2' top-left pixel at (5,15) and base at (5,19) leave 1px left margin at x=4 (#e4cfae) and 1px right margin at x=9 (#d2a54c)."
+      ]
+    },
+    {
+      "id": "cand-3",
+      "verdict": "PASS",
+      "defects": [
+        "Minor nitpick: silhouette occupies x=0..13 (x=14..15 transparent), 1px left of horizontal tile center."
+      ]
+    },
+    {
+      "id": "cand-4",
+      "verdict": "PASS",
+      "defects": [
+        "Minor nitpick: silhouette occupies x=0..13 (x=14..15 transparent), 1px left of horizontal tile center."
+      ]
+    },
+    {
+      "id": "cand-5",
+      "verdict": "PASS",
+      "defects": [
+        "Minor nitpick: 1px glyph drop-shadow pixels at (3,17) and (9,17) (#593323) overwrite the bottom inner border row y=17 (#603727) of the upper sign panel."
+      ]
+    },
+    {
+      "id": "cand-6",
+      "verdict": "PASS",
+      "defects": [
+        "Minor nitpick: 1px glyph drop-shadow pixels at (3..9,17) (#223458) overwrite the bottom inner border row y=17 (#25395f) of the upper sign panel."
+      ]
+    },
+    {
+      "id": "cand-7",
+      "verdict": "PASS",
+      "defects": [
+        "Minor nitpick: 1px glyph drop-shadow pixel at (9,17) (#660c28) overwrites the bottom inner border row y=17 (#710e2d) of the upper sign panel."
+      ]
+    },
+    {
+      "id": "cand-8",
+      "verdict": "PASS",
+      "defects": [
+        "Minor nitpick: 1px glyph drop-shadow pixel at (9,17) (#203a30) overwrites the bottom inner border row y=17 (#254136) of the upper sign panel."
+      ]
+    },
+    {
+      "id": "cand-9",
+      "verdict": "PASS",
+      "defects": [
+        "Minor nitpick: the eight 2x2 drain holes at (2..3,2..3), (7..8,2..3), (12..13,2..3), (2..3,7..8), (12..13,7..8), (2..3,12..13), (7..8,12..13), (12..13,12..13) are spaced 3px apart, making the iron frame read slightly more like a perforated/bolted plate than a slotted grate at 1x."
+      ]
+    }
+  ],
+  "summary": "All 9 candidates pass visual QA against ref-1..ref-5. Standing props cand-1..cand-8 have clear 3/4 top faces (4 rows on pillars y=2..5, 4 rows on shop signs y=1..4), consistent top-left lighting and right-side depth planes, closed #091125 outlines, appropriate street scale, and crisp 1x legibility for exit numbers 1-4 and stacked Hangul syllables (카페, 편의, 국밥, 약국) with accurate jamo. Flat ground decal cand-9 has clean recessed bevel lighting and readable drain holes around the central soil pit (x=6..9, y=6..9)."
+}

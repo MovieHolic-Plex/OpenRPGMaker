@@ -3,6 +3,7 @@
 //         / list_resources / run_lint / check_reachability.
 // 읽기 툴은 project를 변형하지 않는다(runner가 read 모드로 처리).
 
+import { faceLookText } from "@/assets/faceLooks";
 import { oprnPanoramaSetOfImage } from "@/assets/oprnPanoramas";
 import { mapBackgroundVisibility } from "@/project/mapBackgroundVisibility";
 import { lintScenePolish } from "@/project/lint/scenePolishLint";
@@ -453,9 +454,10 @@ function searchFacesets(project: Project, query: string): Pick<ResourceSearchRes
     return {
       id: face.resourceId,
       label: metadata.name,
-      description: `${paired.length > 0
+      // 그림 설명(나이·종류·외형)을 맨 앞에 — 설명은 240자에서 잘린다(2026-10-25 J35: 이름표만 보고 노인 얼굴을 「젊은 제페토」에게 줬다).
+      description: `${metadata.description} ${paired.length > 0
         ? `짝 걷기 그림: ${paired.join(", ")}. ${(pairedNotes.get(face.resourceId) ?? []).join(" ")}`
-        : "짝 걷기 그림 없음 — 걷기 그림과 같은 인물인지 직접 확인하고 쓴다."} ${metadata.description}`,
+        : "짝 걷기 그림 없음 — 걷기 그림과 같은 인물인지 직접 확인하고 쓴다."}`.trim(),
       haystack: `${face.resourceId} ${metadata.name} ${traits} ${metadata.description} ${paired.join(" ")}`.toLocaleLowerCase(),
     };
   });
@@ -467,8 +469,8 @@ function searchFacesets(project: Project, query: string): Pick<ResourceSearchRes
   const portraits = SHARED_PORTRAIT_ASSETS.filter(asset => !project.assets.uploaded?.[asset.id]).map((asset) => ({
     id: asset.id,
     label: faceReferenceMetadata(asset.id, asset.name, project).name,
-    description: `${sharedPortraitReferenceNote(asset.setId)} ${asset.mode === "full" ? "전신 — 대사 창 뒤에 크게 선다" : "흉상 — 대사 창 옆 초상"}. 얼굴 바꾸기에 이 id 를 쓰면 이어지는 대사의 emotion(happy·sad·angry·surprised)이 같은 인물의 표정 그림으로 바꾼다. 다른 표정은 끝의 -base 를 ${sharedPortraitExpressionsOfSet(asset.setId).filter((expression) => expression !== "base").join("·")} 로 바꾼다.`,
-    haystack: `${asset.id} ${asset.name} ${asset.mode === "full" ? "전신 full body 초상 portrait" : "흉상 bust 초상 portrait"}`.toLocaleLowerCase(),
+    description: `${faceLookText(asset.id) ? `${faceLookText(asset.id)} ` : ""}${sharedPortraitReferenceNote(asset.setId)} ${asset.mode === "full" ? "전신 — 대사 창 뒤에 크게 선다" : "흉상 — 대사 창 옆 초상"}. 얼굴 바꾸기에 이 id 를 쓰면 이어지는 대사의 emotion(happy·sad·angry·surprised)이 같은 인물의 표정 그림으로 바꾼다. 다른 표정은 끝의 -base 를 ${sharedPortraitExpressionsOfSet(asset.setId).filter((expression) => expression !== "base").join("·")} 로 바꾼다.`,
+    haystack: `${asset.id} ${asset.name} ${faceLookText(asset.id) ?? ""} ${asset.mode === "full" ? "전신 full body 초상 portrait" : "흉상 bust 초상 portrait"}`.toLocaleLowerCase(),
   }));
   const basePortraits = portraits.filter(asset => asset.id.endsWith("-base"));
   const terms = needle.split(/\s+/).filter(Boolean);

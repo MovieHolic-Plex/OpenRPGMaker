@@ -90,14 +90,21 @@ const CITY_HOUSES = "h101_0 h101_1 h102_0 h102_1 h103_0 h103_1 h103_2 h104_0 h10
 // AI 는 팔레트 이름 하나만 고르고(실험 H7 — ~/exp-creativity), 함수가 「주색 80%·둘째 20%」로 섞는다. 강조색은 앵커(여관 등)가 맡는다.
 // 청회색·이끼·통나무 집은 사람이 허용한 건물(bd-house-rv-*, beodeul-building-review)에서 가게·탑·교회를 뺀 살림집만 고른다.
 const rv = (names: string): string[] => names.split(/\s+/).filter(Boolean).map((n) => `bd-house-rv-${n}`);
-export const BEODEUL_ROOF_PALETTES = ["red", "slate", "moss", "log"] as const;
+// 중세 건물(medieval, 2026-10-25): bk-massing-100 덩어리 모형을 손 도트로 그려 3/4 관문 + 독립 검수 둘을 통과한 bd-house-mk-*(beodeulMassing).
+// 아직 설치되지 않은 id 는 have() 가 거른다 — 목록은 이름만 미리 적어 둔다.
+const mk = (names: string): string[] => names.split(/\s+/).filter(Boolean).map((n) => `bd-house-mk-${n}`);
+export const BEODEUL_ROOF_PALETTES = ["red", "slate", "moss", "log", "medieval"] as const;
 export type BeodeulRoofPalette = (typeof BEODEUL_ROOF_PALETTES)[number];
-export const ROOF_PALETTE_LABEL: Record<BeodeulRoofPalette, string> = { red: "붉은 기와", slate: "청회색 슬레이트", moss: "이끼 초가·너와", log: "통나무집" };
+export const ROOF_PALETTE_LABEL: Record<BeodeulRoofPalette, string> = { red: "붉은 기와", slate: "청회색 슬레이트", moss: "이끼 초가·너와", log: "통나무집", medieval: "중세 건물(목골·막돌·탑)" };
 const ROOF_PALETTES: Record<BeodeulRoofPalette, { main: string[]; accent: string[] }> = {
   red: { main: CITY_HOUSES, accent: [] },
   slate: { main: rv("r6-02 r6-08 r9-05 r9-14 r9-16 r7-09 r9-08"), accent: rv("r2-10 r7-01 r9-01 r8-06 r9-17") },
   moss: { main: rv("r7-02 r8-02 r8-07 r9-02 r9-13 r9-18 r6-01 r6-06 r9-10"), accent: rv("r7-01 r9-01 r2-10") },
   log: { main: rv("r10-01 r10-03 r10-04 r10-05 r10-06"), accent: rv("r6-01 r8-07 r9-18") },
+  medieval: {
+    main: mk("cottage gable-cottage thouse jetty-house merchant-house dormer-house cross-house l-farmhouse longhouse tower-house"),
+    accent: mk("inn smithy chapel dovecote brewery bakery guildhall granary-mill market-hall warehouse"),
+  },
 };
 /** roofs 를 생략하면 seed 로(붉은 기와 절반·이끼·청회색) — 같은 「평범한 마을」 요청이 늘 붉은 기와가 되지 않게. 늪·사막·설원은 자기 집 키트가 있어 쓰지 않는다. */
 // 통나무(log)는 산골·숲속을 말할 때만 — 장터·성벽 마을이 seed 로 통나무 마을이 되면 어색했다(after2 실측: 생략한 넷 중 셋이 통나무).
@@ -284,7 +291,7 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
   for (const k of ts.structureKits ?? []) {
     const ent = (k.parts ?? []).find((p) => p.kind === "entrance");
     // 허용 건물(bd-house-rv-*)의 문은 두 칸 높이(dy = 문 윗칸) — 문 앞 계산은 아랫칸 기준이라 아랫칸으로 맞춘다
-    const doorDy = ent ? (k.id.startsWith(RV_PREFIX) ? ent.dy + Math.max(1, ent.h ?? 1) - 1 : ent.dy) : 0;
+    const doorDy = ent ? (reviewedPrefix(k.id) ? ent.dy + Math.max(1, ent.h ?? 1) - 1 : ent.dy) : 0;
     kitIndex.set(k.id, { id: k.id, w: k.width, h: k.height, door: ent ? { dx: ent.dx, dy: doorDy } : null, def: k });
   }
   const have = (ids: readonly string[]) => ids.filter((id) => kitIndex.has(id));
@@ -2015,7 +2022,7 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
     }
     try { stampObjectTool.run(draft, { objectId: `kit:${TS_ID}/${s.kit}`, mapId, x: s.x, y: s.y }); stamped += 1; }
     catch (e) { failed += 1; if (failed <= 3) warnings.push(`찍기 실패 ${s.kit}@(${s.x},${s.y}): ${(e as Error).message.slice(0, 200)}`); continue; }
-    if (s.kit.startsWith(RV_PREFIX)) reviewedStamps.push(s);
+    if (reviewedPrefix(s.kit)) reviewedStamps.push(s);
     if (before) appendStructurePlacement(draft.maps[mapId]!, { kitId: s.kit, rect, before });
     // 물레방아 맨 아래 줄은 운하 돌 둑에 맞춘 물보라 기둥(반투명 파란 막대)이라 들판 물에서는 떠 보인다 — 바퀴가 물에 잠긴 모습으로 둔다
     if (s.kit === "bd-pick-riverside-mill-waterwheel" && naturalWater) for (let i = 0; i < k.w; i += 1) if (inMap(s.x + i, s.y + k.h - 1)) draft.maps[mapId]!.upperTiles[idx(s.x + i, s.y + k.h - 1)] = -1;
@@ -2519,11 +2526,18 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
   };
 }
 
-const RV_PREFIX = "bd-house-rv-";
-/** 허용 건물은 본체(3층)와 같은 원점에 바닥 그림자(2층 bd-rv-shadow-*)·기초(4층 bd-rv-foundation-*)를 함께 놓는다(beodeulReviewed 배치 규칙). */
+/** 허용·검수 통과 건물 묶음(beodeulReviewed bd-house-rv-* · beodeulMassing bd-house-mk-*): 본체 id 머리 → 그림자·기초 id 머리. */
+const REVIEWED_SETS = [
+  { house: "bd-house-rv-", shadow: "bd-rv-shadow-", foundation: "bd-rv-foundation-" },
+  { house: "bd-house-mk-", shadow: "bd-mk-shadow-", foundation: "bd-mk-foundation-" },
+] as const;
+function reviewedPrefix(kitId: string): (typeof REVIEWED_SETS)[number] | undefined { return REVIEWED_SETS.find((r) => kitId.startsWith(r.house)); }
+/** 허용 건물은 본체(3층)와 같은 원점에 바닥 그림자(2층 *-shadow-*)·기초(4층 *-foundation-*)를 함께 놓는다(beodeulReviewed 배치 규칙). */
 function stampReviewedCompanions(map: import("@/project/types").GameMap, ts: TilesetDef, kitId: string, x0: number, y0: number): void {
-  const id = kitId.slice(RV_PREFIX.length);
-  for (const [prefix, layer] of [["bd-rv-shadow-", 2], ["bd-rv-foundation-", 4]] as const) {
+  const set = reviewedPrefix(kitId);
+  if (!set) return;
+  const id = kitId.slice(set.house.length);
+  for (const [prefix, layer] of [[set.shadow, 2], [set.foundation, 4]] as const) {
     const kit = (ts.structureKits ?? []).find((k) => k.id === prefix + id);
     if (!kit) continue;
     kit.rows.forEach((row, j) => (row.upperTiles ?? []).forEach((t, i) => {

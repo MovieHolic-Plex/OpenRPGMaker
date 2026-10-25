@@ -6,6 +6,7 @@ import { characterSpriteY } from "@/player/characterDepth";
 import { runtimeMapWorldScale } from "@/player/runtimeViewScale";
 import { screenOverlayHost } from "@/player/playSceneScreenEffects";
 import { syncDoors } from "@/player/playSceneDoors";
+import { syncFreezeFrame } from "@/player/playSceneFreezeFrame";
 import type { PlaySceneContext } from "@/player/playSceneTypes";
 import {
   isEmptySpriteLook,
@@ -17,6 +18,8 @@ import {
   type SpriteLook,
 } from "@/project/eventCommands/cinematicStaging";
 import { mapTileSize } from "@/project/tileGeometry";
+import { store } from "@/project/store";
+import { runtimeEventViewById } from "@/project/runtimeEventState";
 
 /**
  * 필드 연출 렌더러 — 파티클 · 캐릭터 모습 효과 · 레터박스.
@@ -41,6 +44,8 @@ const TEX = {
   puff: "oprn-fx-puff",
   plus: "oprn-fx-plus",
   drop: "oprn-fx-drop",
+  paper: "oprn-fx-paper",
+  petal: "oprn-fx-petal",
 } as const;
 
 /**
@@ -82,6 +87,16 @@ function ensureFxTextures(scene: PlaySceneContext): void {
     ctx.fillRect(3, 0, 1, 7);
     ctx.fillRect(0, 3, 7, 1);
     ctx.fillRect(2, 2, 3, 3);
+  });
+  // 종이 한 장(도트): 흰 면·아래 그늘·글줄 셋. 꽃잎: 연분홍 둥근 조각 + 짙은 끝.
+  canvasTexture(scene, TEX.paper, 7, (ctx) => {
+    ctx.fillStyle = "#c3c8d2"; ctx.fillRect(0, 0, 6, 7);
+    ctx.fillStyle = "#ffffff"; ctx.fillRect(0, 0, 5, 6);
+    ctx.fillStyle = "#9aa1ad"; ctx.fillRect(1, 1, 3, 1); ctx.fillRect(1, 3, 3, 1); ctx.fillRect(1, 5, 2, 1);
+  });
+  canvasTexture(scene, TEX.petal, 4, (ctx) => {
+    ctx.fillStyle = "#ffd1df"; ctx.fillRect(1, 0, 2, 1); ctx.fillRect(0, 1, 4, 2);
+    ctx.fillStyle = "#e88aa8"; ctx.fillRect(1, 3, 2, 1); ctx.fillRect(3, 2, 1, 1);
   });
   canvasTexture(scene, TEX.plus, 5, (ctx) => {
     ctx.fillStyle = "#fff";
@@ -170,6 +185,27 @@ const RECIPES: Record<ParticlePreset, ParticleRecipe> = {
       tint: [0xffffff, 0xffe060, 0xff8a30, 0xff3a18], blendMode: "ADD", emitting: false,
     }),
   },
+  // 부딪혀 떨군 서류 — 위로 확 흩어졌다가 천천히 회전하며 내려앉는다(낙하가 느려 «종이»로 읽힌다).
+  paper: {
+    texture: TEX.paper, burst: true, count: 9,
+    config: (s) => ({
+      x: { min: -6 * s, max: 6 * s }, y: { min: -18 * s, max: -10 * s },
+      speed: { min: 24 * s, max: 62 * s }, angle: { min: 200, max: 340 },
+      gravityY: 34 * s, lifespan: { min: 1500, max: 2300 },
+      rotate: { start: 0, end: 540 }, scale: { start: s, end: 0.9 * s }, alpha: { start: 1, end: 0.15 },
+      emitting: false,
+    }),
+  },
+  // 바람에 흩날리는 꽃잎 — 대상 위쪽에서 비스듬히 흘러내린다.
+  petals: {
+    texture: TEX.petal, burst: false, count: 1,
+    config: (s) => ({
+      x: { min: -40 * s, max: 40 * s }, y: { min: -48 * s, max: -30 * s },
+      speedX: { min: 6 * s, max: 22 * s }, speedY: { min: 8 * s, max: 20 * s },
+      lifespan: 2200, frequency: 120, quantity: 1,
+      rotate: { start: 0, end: 360 }, scale: { start: s, end: 0.8 * s }, alpha: { start: 1, end: 0 },
+    }),
+  },
   splash: {
     texture: TEX.drop, burst: true, count: 26,
     config: (s) => ({
@@ -205,7 +241,7 @@ export function playParticleEffect(scene: PlaySceneContext, step: ParticleStep, 
   const emitter = scene.add.particles(sprite ? 0 : x, sprite ? 0 : y, recipe.texture, recipe.config(scale));
   emitter.setDepth(PARTICLE_DEPTH);
   if (sprite) emitter.startFollow(sprite);
-  const longestLife = 1500;
+  const longestLife = step.preset === "paper" || step.preset === "petals" ? 2400 : 1500;
   return new Promise((resolve) => {
     const finish = (): void => {
       emitter.destroy();
@@ -412,6 +448,37 @@ export function updateFieldStaging(scene: PlaySceneContext): void {
   for (const [sprite, look] of lookTargets(scene)) applyLook(scene, sprite, look, now);
   syncLetterbox(scene);
   syncDoors(scene);
+  syncFreezeFrame(scene);
+  syncNearSparkles(scene, now);
+}
+
+// ── 가까이 오면 반짝임(page.nearSparkle) ────────────────────────────────
+
+type NearSparkleState = { mapId: string; ids: readonly string[]; inside: Set<string>; nextCheck: number };
+const nearSparkleStates = new WeakMap<PlaySceneContext, NearSparkleState>();
+
+/** 세이브 포인트처럼 page.nearSparkle 이 있는 이벤트 — 플레이어가 반경 안으로 들어오는 순간 그 칸에 반짝임 한 번. */
+function syncNearSparkles(scene: PlaySceneContext, now: number): void {
+  const map = scene.map;
+  if (!map || !scene.session) return;
+  let state = nearSparkleStates.get(scene);
+  if (!state || state.mapId !== map.id) {
+    state = { mapId: map.id, ids: map.events.filter((event) => event.pages?.some((page) => page.nearSparkle)).map((event) => event.id), inside: new Set(), nextCheck: 0 };
+    nearSparkleStates.set(scene, state);
+  }
+  if (state.ids.length === 0 || now < state.nextCheck) return;
+  state.nextCheck = now + 150;
+  const project = store.getCurrent();
+  for (const id of state.ids) {
+    const view = runtimeEventViewById(project, map, scene.session, scene.eventPositions, id);
+    const near = view?.page?.nearSparkle;
+    if (!view || !near) { state.inside.delete(id); continue; }
+    const distance = Math.max(Math.abs(view.x - scene.tileX), Math.abs(view.y - scene.tileY));
+    if (distance > near.radius) { state.inside.delete(id); continue; }
+    if (state.inside.has(id)) continue;
+    state.inside.add(id);
+    void playParticleEffect(scene, { kind: "particleEffect", preset: near.preset ?? "sparkle", target: { kind: "tile", x: view.x, y: view.y }, durationMs: 900, wait: false });
+  }
 }
 
 /** 테스트·QA 가 파티클 그림 없이 레시피를 대조할 수 있게 내보낸다. */

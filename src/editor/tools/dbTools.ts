@@ -1034,6 +1034,7 @@ const stateRecordSchema = objectSchema({
   gen1MajorStatus: { type: "string", enum: ["poison", "toxic", "burn", "sleep", "freeze", "paralysis"] },
   volatileStatus: { type: "string", enum: ["confusion"] },
   removalCondition: stringSchema(),
+  clearOnBattleEnd: booleanSchema("true = 전투가 끝나면 풀린다(독·수면을 전투 밖으로 끌고 가지 않는 게임), false = 남는다. 생략 = set_project_settings battle.clearStatesAfterBattle 을 따른다"),
   restriction: stringSchema(),
   priority: integerSchema(),
   accuracyModifier: integerSchema(),
@@ -2666,7 +2667,7 @@ const setTitleScreen: ToolDefinition = {
       title: { type: "string" },
       menuLabels: {
         type: "object",
-        description: "{ newGame, continueGame, resume, credits, quit } — credits 는 저작자 표기 창을 여는 항목(항상 보임)",
+        description: "{ newGame, continueGame, resume, credits, quit } — credits 는 저작자 표기 창을 여는 항목(항상 보임). continueGame=저장 슬롯에서 불러오기, resume=자동 저장에서 바로 이어하기(자동 저장이 있을 때만 보임) — 둘은 함께, 서로 다른 말로 바꾼다(한쪽만 「…이어하기」로 바꾸면 타이틀에 「이어하기」가 두 줄 뜬다).",
         properties: {
           newGame: { type: "string" },
           continueGame: { type: "string" },
@@ -2864,6 +2865,13 @@ const setTitleScreen: ToolDefinition = {
 
     const labels = args.menuLabels as Partial<typeof current.menuLabels> | undefined;
     if (labels) current.menuLabels = { ...current.menuLabels, ...labels };
+    // 불러오기(continueGame)만 「…이어하기」로 바꾸면 자동 저장 재개(resume, 기본 「이어하기」)와 두 줄이 같은 말이 된다(2026-10-25 J34
+    // 「이어하기」·「기억 이어하기」). resume 을 따로 주지 않았으면 겹치지 않는 말로 채운다.
+    const labelNotes: string[] = [];
+    if (labels?.continueGame && !labels.resume && !current.menuLabels.resume?.trim() && /이어/u.test(labels.continueGame)) {
+      current.menuLabels = { ...current.menuLabels, resume: "방금 하던 곳부터" };
+      labelNotes.push("불러오기 이름이 「이어하기」와 겹쳐 자동 저장 재개 이름을 「방금 하던 곳부터」로 정했다 — 바꾸려면 menuLabels.resume 을 함께 준다");
+    }
 
     const visibility = args.menuVisibility as Partial<{ newGame: boolean; continueGame: boolean; quit: boolean }> | undefined;
     if (visibility) {
@@ -2981,14 +2989,14 @@ const setTitleScreen: ToolDefinition = {
       else current.intro = intro;
     }
 
-    const opening = applyTitleOpeningArgs(current, args);
+    const opening = applyTitleOpeningArgs(current, args, draft);
 
-    return { summary: `타이틀 화면 설정: "${current.title}"${opening}` };
+    return { summary: `타이틀 화면 설정: "${current.title}"${opening}${labelNotes.length ? ` · ${labelNotes.join(" · ")}` : ""}` };
   },
 };
 
 /** set_title_screen 의 오프닝 인자(프리셋·효과·로고/메뉴 질감·배경 맞춤). 요약 꼬리 문자열을 돌려준다. */
-function applyTitleOpeningArgs(current: TitleScreenSettings, args: Record<string, unknown>): string {
+function applyTitleOpeningArgs(current: TitleScreenSettings, args: Record<string, unknown>, project?: Project): string {
   const notes: string[] = [];
   if (typeof args.openingPreset === "string") {
     const preset = findTitleOpeningPreset(args.openingPreset);
@@ -2998,7 +3006,14 @@ function applyTitleOpeningArgs(current: TitleScreenSettings, args: Record<string
         { code: "invalid-args" },
       );
     }
-    current.effects = titleOpeningPresetEffects(preset);
+    // 프리셋 효과(물·안개·빛내림 자리)는 그 프리셋으로 그린 키아트의 구도 좌표다. 배경이 다른 그림이면 엉뚱한 곳에 물결·안개가 뜬다
+    // (2026-10-25 G41: 장난감 가게 게임에 「달밤 성」 해자 물결이 기본 들판 그림 위에 깔렸다) — 그때는 자리 없는 효과만 남긴다.
+    const bg = current.backgroundResourceId;
+    const bgName = bg ? String(project?.assets.uploaded[bg]?.name ?? "") : "";
+    const drawnForPreset = bgName.includes(preset.label) || bgName.includes(preset.id);
+    const presetEffects = titleOpeningPresetEffects(preset);
+    current.effects = drawnForPreset ? presetEffects : presetEffects.filter((effect) => effect.kind === "camera" || effect.kind === "parallax");
+    if (!drawnForPreset) notes.push(`배경이 「${preset.label}」 프리셋 그림이 아니라 물결·안개·빛내림 자리를 뺐다(구도가 다르다) — 게임 주제에 맞는 배경을 깔고, 효과는 그 그림을 보고 effects 로 직접 준다. 주제와 다른 프리셋(성·항구·사막…)을 고르지 않는다`);
     current.logoStyle = preset.logoStyle;
     current.menuStyle = preset.menuStyle;
     current.sequence = { ...preset.sequence };

@@ -126,6 +126,12 @@ export function runSurfaceChecks({ stylesRoot, srcRoot, registry, entries }) {
     // 값이 문자열 리터럴인 것만 인정한다. types.ts 의 `"--x"?: string;` 같은 타입
     // 시그니처는 값이 식별자라 걸리지 않는다 — 타입 선언을 정의로 세면 안 된다.
     for (const m of src.matchAll(/[`"'](--[\w-]+)[`"']\s*:\s*[`"']/g)) tsDefs.add(m[1]);
+    // style 속성 문자열로 선언 묶음을 통째 주입하는 형태:
+    //   src/editor/panels/tilePaletteGrid.ts  style: `--custom-cols:${columns};--custom-rows:${rows}`
+    // 값이 `${…}` 로 시작하므로 위 두 패턴(따옴표로 닫힌 키)에 걸리지 않는다. 선언 목록의 경계
+    // (줄 시작·`;`·따옴표·공백) 뒤에 오고 값이 실제로 붙은 `--x:` 만 정의로 센다 — 문서 문자열에
+    // 적힌 `--x:` 까지 정의로 세면 미정의 변수를 놓치기 때문이다.
+    for (const m of src.matchAll(/(?:^|[;`"'\s])(--[\w-]+)\s*:\s*(?:\$\{|[\w#(])/g)) tsDefs.add(m[1]);
   }
   const tsDefined = (name) => tsDefs.has(name) || [...tsDefs].some((k) => k.endsWith("*") && name.startsWith(k.slice(0, -1)));
 

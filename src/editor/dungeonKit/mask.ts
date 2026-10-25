@@ -6,7 +6,7 @@
 // 불변식은 grid.ts(fixThickness·thinWalls·settle)가 지킨다. compose.ts 에서 옮겨 왔을 뿐 rooms 문법의 출력은 그대로다.
 import type { DungeonLayout, DungeonSpec, DungeonType, PlacedRoom } from "./types";
 import { DungeonComposeError } from "./errors";
-import { Grid, WALL_ROWS, edgeDistance, rng, settle, vnoise, type Rect } from "./grid";
+import { Grid, WALL_ROWS, edgeDistance, fixThickness, rng, settle, vnoise, type Rect } from "./grid";
 import { addCrossings, carveSewer } from "./layouts";
 import type { GrammarInfo } from "./grammar";
 
@@ -118,6 +118,8 @@ export function buildMask(layout: DungeonLayout, profile: GrammarInfo, type: Dun
     bridgeCount += st.bridges;
     if (st.removed) warnings.push(`닿지 않는 바닥 ${st.removed}칸을 막았다(액체로 갈라져 다리를 놓을 수 없는 조각).`);
   }
+  // 방+통로 배치도 두께 규칙만은 늘 맞춘다 — 나란한 방·통로 사이 한 칸 벽(천장 1칸 + 앞면)이 두 벽 사이 검은 틈 기둥으로 읽혔다(2026-10-25 floor VQA r4 catacomb·castle).
+  else if (!layout.thin) fixThickness(g);
   if (type === "sewer") bridgeCount += addCrossings(g, rooms as readonly PlacedRoom[], seed);
   return { grid: g, partitions, bridgeCount, warnings, entranceStart };
 }

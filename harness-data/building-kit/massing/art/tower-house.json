@@ -1,0 +1,20 @@
+{
+ "name": "원통 망루가 붙은 집",
+ "massing": "15",
+ "material": "plaster",
+ "refs": [
+  "bd-manor-tower",
+  "bd-mpart-tower"
+ ],
+ "walk": [
+  ".......**",
+  ".**...***",
+  "*********",
+  "*********",
+  "*********",
+  "XXXXXXXXX",
+  "XXDXXXXXX",
+  "XXDXXXXXX"
+ ],
+ "id": "tower-house"
+}

@@ -103,6 +103,8 @@ export interface PlaceRecord {
   readonly spec: PlaceSpec;
   readonly result: PlaceBuildResult;
   readonly rounds: number;
+  /** 더 나빠져 되돌린 고치기 수 — 첫 되돌림은 고치기 횟수에 세지 않는다(G28). */
+  readonly reverts?: number;
 }
 
 /** 빌더가 v1 도구를 부르는 창구. 실행기가 시공 재생 기록·도구 기록을 붙여 준다. */
@@ -152,6 +154,8 @@ export interface EventSpec {
   readonly after?: string;
   /** after 장면 뒤 그 NPC 가 하는 말(없으면 원래 대사). */
   readonly afterTalk?: readonly string[];
+  /** after NPC 의 어느 말 걸기 페이지에 이을지(0부터). 말 걸기 페이지가 여럿이면 꼭 고른다. */
+  readonly afterPage?: number;
   /** 비트 목록 — 사람 낱말(주인공·촌장)·움직임·대사. 빌더가 컷신 도구의 장면 명령으로 옮긴다. */
   readonly beats: readonly EventBeat[];
 }

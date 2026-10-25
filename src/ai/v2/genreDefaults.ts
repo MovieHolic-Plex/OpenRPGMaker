@@ -6,6 +6,11 @@
 // 이미 저작자가 정한 값은 덮지 않는다(각 기본값이 ??= 로 동작). 주인공 칩은 손대지 않은 기본(판타지 Actor1 0번)일 때만 바꾼다.
 import { applyRomanceDefaults } from "@/project/romancePreset";
 import { GENRE_LOCK_PRESETS } from "@/project/genreLock";
+import { fieldMenu, storyFieldMenu } from "@/project/fieldMenu";
+import { resolveNpcGraphic } from "@/assets/charsetQuery";
+import { findCharsetAsset } from "@/assets/charsetCatalog";
+import { charsetBattlerForCharacter } from "@/assets/charsetBattlers";
+import { sharedFaceIdForCharset } from "@/project/sharedCharacterFaceResolver";
 import type { Project } from "@/project/types";
 
 export const ROMANCE_SETUP_WORDS = /연애|데이트|썸|고백|공략|호감도|러브|미연시|romance|dating/iu;
@@ -41,9 +46,51 @@ export function applyModernSetupDefaults(project: Project, task: string, freshSt
  */
 export function applyStorySetupDefaults(project: Project, task: string, freshStart = false): string[] {
   const setup = freshStart || GAME_SETUP_WORDS.test(task);
-  if (!setup || project.system.fieldHud !== undefined || BATTLE_WORDS.test(task)) return [];
-  project.system.fieldHud = { theme: "minimal", vitals: false, clock: true, tools: false, objective: false, hideEmpty: true };
-  return ["체력 HUD 끔"];
+  if (!setup || BATTLE_WORDS.test(task)) return [];
+  const applied: string[] = [];
+  if (project.system.fieldHud === undefined) {
+    project.system.fieldHud = { theme: "minimal", vitals: false, clock: true, tools: false, objective: false, hideEmpty: true };
+    applied.push("체력 HUD 끔");
+  }
+  const hero = redressStoryHero(project, task);
+  if (hero) applied.push(hero);
+  // ESC 메뉴도 전투 없는 기본으로 — 스킬·장비·파티가 아무 일도 안 하는 JRPG 틀로 읽혔다(2026-10-25 판정 J39). 저작한 메뉴·연애 메뉴는 그대로.
+  if (!fieldMenu(project)) {
+    project.meta.oprnFieldMenu = storyFieldMenu();
+    applied.push("ESC 메뉴 이야기용");
+  }
+  return applied;
+}
+
+/** 공장 기본 주인공 장비(검·떡갈나무 방패) — 전투 없는 이야기에서 들고 다닐 까닭이 없다. */
+const FACTORY_HERO_ARMS: Readonly<Record<string, string>> = { weapon: "equip_sword", shield: "equip_oak_shield" };
+
+/**
+ * 전투 없는 이야기 게임의 손대지 않은 기본 주인공(판타지 칩 Actor1 0번, 검과 방패를 든 두건 검사)을 평범한 사람 차림으로 갈아입힌다(J43).
+ * 그림은 이름표가 아니라 그림 설명으로 찾는다(list_npc_graphics 와 같은 검색 — 성별·나이 낱말) — 요청이 소녀·여자 주인공을 말하면 젊은 여성,
+ * 아니면 청년 남성 주민. 얼굴은 그 칩의 검토된 짝 얼굴, 없으면 비운다(다른 인물의 얼굴을 빌리지 않는다). 저작자가 이미 바꾼 주인공은 그대로.
+ */
+function redressStoryHero(project: Project, task: string): string | undefined {
+  const hero = project.database.actors.find((actor) => actor.id === "actor_hero") ?? project.database.actors[0];
+  if (!hero || !PRISTINE_HERO.has(hero.characterResourceId) || (hero.characterIndex ?? 0) !== 0) return undefined;
+  // 모험가·용사가 주인공인 판타지 이야기(전투 낱말이 없어도)는 검사 차림이 맞다.
+  if (/용사|모험|검사|기사|전사|영웅|퀘스트|rpg|hero|adventure|quest|knight|warrior/iu.test(task)) return undefined;
+  const query = /소녀|여자|여성|아가씨|그녀|girl|woman|heroine/iu.test(task) ? "젊은 여성" : "청년 남성";
+  const pick = resolveNpcGraphic(query);
+  const asset = pick ? findCharsetAsset(pick.textureKey) : undefined;
+  if (!pick || !asset) return undefined;
+  const pristineFace = hero.faceResourceId === undefined || hero.faceResourceId === "easyrpg-faceset-actor1-00";
+  hero.characterResourceId = asset.id;
+  hero.characterIndex = pick.characterIndex;
+  const battler = charsetBattlerForCharacter(asset.id, pick.characterIndex);
+  if (battler) hero.battleCharacterResourceId = battler; else delete hero.battleCharacterResourceId;
+  if (pristineFace) {
+    const face = sharedFaceIdForCharset(pick.textureKey, pick.characterIndex);
+    if (face) hero.faceResourceId = face; else delete hero.faceResourceId;
+  }
+  const equipment = hero.initialEquipment ?? {};
+  for (const [slot, id] of Object.entries(FACTORY_HERO_ARMS)) if (equipment[slot] === id) delete equipment[slot];
+  return `주인공 차림 「${pick.label}」(${pick.appearance ?? query}) — 판타지 검사 기본 칩·검·방패를 뺐다`;
 }
 
 /** 빈 프로젝트(이벤트·엔딩 없음)인가 — 첫 장소를 짓는 요청을 게임 시작으로 본다. */

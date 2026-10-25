@@ -1,0 +1,344 @@
+{
+ "note": "자동 생성 — src/harnesses/building-kit/palette.py. 손으로 고치지 말 것. 단 0 = 가장 어두움(그 재료의 윤곽).",
+ "theme": "desert-oasis",
+ "sheet": "public/assets/beodeul-city/beodeul-city-chipset.png",
+ "tileset": "src/assets/beodeulCityTileset.json",
+ "method": "출처 칸·키트 줄의 불투명 화소를 밝기순 화소 수 k등분 → 칸마다 최빈 실제색 → 공용 시트 존재 대조(손 램프는 같은 단 밝기 ±0.04)",
+ "ramps": {
+  "grass": [
+   "#3f723e",
+   "#618c3b",
+   "#6e9943",
+   "#729c44",
+   "#7aa34b",
+   "#84ab52",
+   "#8bb14e"
+  ],
+  "cobble": [
+   "#374243",
+   "#565755",
+   "#5b6667",
+   "#777579",
+   "#929491",
+   "#c4c6c3"
+  ],
+  "stone": [
+   "#37383c",
+   "#3e403d",
+   "#5a5b62",
+   "#929491",
+   "#c4c6c3",
+   "#dee0dd"
+  ],
+  "wood": [
+   "#22150c",
+   "#452a17",
+   "#5e3a1c",
+   "#744c2a",
+   "#9a5d39",
+   "#a26e36",
+   "#c69250"
+  ],
+  "iron": [
+   "#262729",
+   "#37383c",
+   "#5a5b62",
+   "#797a84"
+  ],
+  "adobe": [
+   "#3b2a22",
+   "#62402a",
+   "#8a5e3c",
+   "#ae7c50",
+   "#c89a66",
+   "#dcaa4c",
+   "#ecc870"
+  ],
+  "sandstone": [
+   "#422f21",
+   "#7e4a34",
+   "#885a26",
+   "#ac7044",
+   "#cf9558",
+   "#e8b672",
+   "#fff0c0"
+  ],
+  "whitewash": [
+   "#bfb4ae",
+   "#dbd1c3",
+   "#ede5d6",
+   "#fbf6ea"
+  ],
+  "dome": [
+   "#08212e",
+   "#14485a",
+   "#2a8c98",
+   "#4cb0b0",
+   "#84d4c8",
+   "#c8f4e8"
+  ],
+  "awning": [
+   "#89190c",
+   "#8a2c1c",
+   "#9e2514",
+   "#dd2912",
+   "#e0482a"
+  ]
+ },
+ "sources": {
+  "grass": {
+   "kind": "shared",
+   "from": [
+    {
+     "kit": "bd-ground-lawn-1"
+    },
+    {
+     "kit": "bd-ground-lawn-4"
+    }
+   ],
+   "pixels": 14848,
+   "pred": null,
+   "why": "버들항 잔디(외곽 마당 잔디 키트 6×6 몸통)"
+  },
+  "cobble": {
+   "kind": "shared",
+   "from": [
+    {
+     "group": "beodeul:paving"
+    },
+    {
+     "group": "beodeul:plaza"
+    }
+   ],
+   "pixels": 2034,
+   "pred": "grey",
+   "why": "버들항 길 포석·광장 판석(연석·판석 회색)"
+  },
+  "stone": {
+   "kind": "shared",
+   "from": [
+    {
+     "kit": "bd-house-h101_0",
+     "rows": [
+      5
+     ]
+    },
+    {
+     "kit": "bd-house-h109_0",
+     "rows": [
+      5
+     ]
+    }
+   ],
+   "pixels": 316,
+   "pred": "grey",
+   "why": "버들항 살림집 기단(맨 아래 줄 회색 주춧돌 — 문기둥 나무색은 뺀다)"
+  },
+  "wood": {
+   "kind": "shared",
+   "from": [
+    {
+     "kit": "bd-out-log-wall"
+    },
+    {
+     "kit": "bd-out-plank-wall"
+    },
+    {
+     "kit": "bd-out-plank-door"
+    }
+   ],
+   "pixels": 2048,
+   "pred": null,
+   "why": "버들항 외곽 통나무·널벽·널문 나무"
+  },
+  "iron": {
+   "kind": "shared",
+   "from": [
+    {
+     "kit": "bd-prop-lamp_double"
+    },
+    {
+     "kit": "bd-prop-lamp_crook"
+    },
+    {
+     "kit": "bd-out-hanging-sign"
+    }
+   ],
+   "pixels": 321,
+   "pred": "ironish",
+   "why": "버들항 가로등 기둥·간판 걸이 쇠(푸른 회색 — 유리·등불 색은 뺀다)"
+  },
+  "adobe": {
+   "kind": "beodeul",
+   "from": [
+    {
+     "kit": "bd-pick-desert-oasis-khan"
+    }
+   ],
+   "pixels": 14795,
+   "pred": "warm",
+   "why": "흙벽돌 벽 — 버들항 사막 대상 숙소(khan) 벽"
+  },
+  "sandstone": {
+   "kind": "beodeul",
+   "from": [
+    {
+     "kit": "bd-pick-desert-oasis-temple",
+     "rows": [
+      2,
+      3,
+      4
+     ]
+    }
+   ],
+   "pixels": 5092,
+   "pred": "warm",
+   "why": "사암 마름돌 — 버들항 사막 사원 벽 줄"
+  },
+  "whitewash": {
+   "kind": "beodeul",
+   "from": [
+    {
+     "kit": "bd-pick-desert-oasis-shrine",
+     "rows": [
+      1,
+      2,
+      3,
+      4,
+      5
+     ]
+    }
+   ],
+   "pixels": 2700,
+   "pred": "cream",
+   "why": "흰 회칠 — 버들항 사막 사당 벽"
+  },
+  "dome": {
+   "kind": "beodeul",
+   "from": [
+    {
+     "kit": "bd-pick-desert-oasis-temple",
+     "rows": [
+      0,
+      1
+     ]
+    }
+   ],
+   "pixels": 414,
+   "pred": "teal",
+   "why": "청록 돔 — 버들항 사막 사원 돔"
+  },
+  "awning": {
+   "kind": "beodeul",
+   "from": [
+    {
+     "kit": "bd-pick-desert-oasis-stall",
+     "rows": [
+      0,
+      1
+     ]
+    }
+   ],
+   "pixels": 252,
+   "pred": "red",
+   "why": "붉은 차양 천 — 버들항 사막 시장 노점 차양"
+  }
+ },
+ "envelope": [
+  [
+   0.054,
+   0.404
+  ],
+  [
+   0.148,
+   0.502
+  ],
+  [
+   0.216,
+   0.551
+  ],
+  [
+   0.29,
+   0.563
+  ],
+  [
+   0.38,
+   0.592
+  ],
+  [
+   0.427,
+   0.625
+  ],
+  [
+   0.564,
+   0.645
+  ]
+ ],
+ "shadow": {
+  "rgb": [
+   12,
+   14,
+   20
+  ],
+  "alpha": 88,
+  "why": "버들항 시트에 실제로 있는 반투명 바닥 그림자(윗칸 기물·처마 전용)"
+ },
+ "allowed": [
+  "#08212e",
+  "#14485a",
+  "#22150c",
+  "#262729",
+  "#2a8c98",
+  "#37383c",
+  "#374243",
+  "#3b2a22",
+  "#3e403d",
+  "#3f723e",
+  "#422f21",
+  "#452a17",
+  "#4cb0b0",
+  "#565755",
+  "#5a5b62",
+  "#5b6667",
+  "#5e3a1c",
+  "#618c3b",
+  "#62402a",
+  "#6e9943",
+  "#729c44",
+  "#744c2a",
+  "#777579",
+  "#797a84",
+  "#7aa34b",
+  "#7e4a34",
+  "#84ab52",
+  "#84d4c8",
+  "#885a26",
+  "#89190c",
+  "#8a2c1c",
+  "#8a5e3c",
+  "#8bb14e",
+  "#929491",
+  "#9a5d39",
+  "#9e2514",
+  "#a26e36",
+  "#ac7044",
+  "#ae7c50",
+  "#bfb4ae",
+  "#c4c6c3",
+  "#c69250",
+  "#c89a66",
+  "#c8f4e8",
+  "#cf9558",
+  "#dbd1c3",
+  "#dcaa4c",
+  "#dd2912",
+  "#dee0dd",
+  "#e0482a",
+  "#e8b672",
+  "#ecc870",
+  "#ede5d6",
+  "#fbf6ea",
+  "#fff0c0"
+ ],
+ "count": 55
+}

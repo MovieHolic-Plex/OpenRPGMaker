@@ -47,7 +47,16 @@ def hashes(project, rnd, cand, spec):
 def cast_img(spec, member, expr='base'):
     m = next(x for x in spec['lineup'] if x['id'] == member)
     p = ROOT / m['dir'] / f'bust-{expr}.png'
-    return Image.open(p if p.exists() else ROOT / m['dir'] / 'bust-base.png').convert('RGBA')
+    return as_shown(spec, Image.open(p if p.exists() else ROOT / m['dir'] / 'bust-base.png').convert('RGBA'))
+
+
+def as_shown(spec, im):
+    """what the player actually sees. `reviewView: "bustPixelate"` = illustration casts (Fallen, First Love) are reviewed through a
+    port of src/player/bustPixelate.ts (fit into 44x46, bottom-centre, 16-colour median cut, 1px outline); a 3000px wide
+    illustration row is neither what the player sees nor something the reviewer can take in."""
+    if spec.get('reviewView') != 'bustPixelate': return im
+    from pixelate_view import bust_pixelate
+    return bust_pixelate(im)
 
 
 # ---------------------------------------------------------------- calibrate
@@ -183,12 +192,12 @@ def fix(a):
 
 # ---------------------------------------------------------------- check
 def check_one(spec, rules, project, rnd, cand):
-    d = round_dir(project, rnd) / cand; base = Image.open(d / 'bust-base.png')
+    d = round_dir(project, rnd) / cand; base = as_shown(spec, Image.open(d / 'bust-base.png').convert('RGBA'))
     b = rd(DATA / project / 'baseline.json'); fails, per = [], {}
     for e in spec['expressions']:
         p = d / f'bust-{e}.png'
         if not p.exists(): fails.append(f'{e}: missing'); continue
-        im = Image.open(p); m = measure(im); per[e] = m; f = []
+        im = as_shown(spec, Image.open(p).convert('RGBA')); m = measure(im); per[e] = m; f = []
         if spec['canvas'] and list(im.size) != spec['canvas']: f.append(f'size {im.size} != {spec["canvas"]}')
         if m['colours'] > rules['maxColours']: f.append(f'colours {m["colours"]} > {rules["maxColours"]}')
         if m['partialAlpha'] or not m['cornersTransparent']: f.append('background not clean transparent')
@@ -250,7 +259,7 @@ def lineup(a):
     blind = dict(zip(letters, cs)); bdir = rdir / '_blind'; shutil.rmtree(bdir, ignore_errors=True); bdir.mkdir(parents=True)
     k = min(3, len(cast))
     for L, c in blind.items():
-        d = rdir / c; ims = [Image.open(d / f'bust-{e}.png').convert('RGBA') for e in spec['expressions']]
+        d = rdir / c; ims = [as_shown(spec, Image.open(d / f'bust-{e}.png').convert('RGBA')) for e in spec['expressions']]
         b0 = ims[0] if spec['canvas'] else ims[0].resize((round(ims[0].width * 128 / ims[0].height), 128), Image.LANCZOS)
         row = cast[:k] + [b0] + cast[k:]
         for s in (1, 3):
@@ -326,7 +335,7 @@ def dialogue(a):
 # ---------------------------------------------------------------- repeated blind review (the gate) + its calibration
 def load_set(spec, d):
     d = ROOT / d if not os.path.isabs(str(d)) else Path(d)
-    return [Image.open(d / f'bust-{e}.png').convert('RGBA') for e in spec['expressions']]
+    return [as_shown(spec, Image.open(d / f'bust-{e}.png').convert('RGBA')) for e in spec['expressions']]
 
 
 def cast_bases(spec, exclude=None):

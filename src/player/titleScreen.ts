@@ -97,7 +97,8 @@ export function listTitleMenuOptions(settings: TitleScreenSettings, context?: Ti
       id: "resume",
       testId: "title-resume-game",
       elementId: "title-option-resume-game",
-      label: settings.menuLabels.resume?.trim() || DEFAULT_RESUME_LABEL,
+      // 저자가 불러오기만 「…이어하기」로 바꾼 옛 프로젝트도 두 줄이 같은 말로 뜨지 않게(J34).
+      label: settings.menuLabels.resume?.trim() || (/이어/u.test(settings.menuLabels.continueGame ?? "") ? "방금 하던 곳부터" : DEFAULT_RESUME_LABEL),
     });
   }
   if (visibility?.continueGame !== false) {
@@ -199,7 +200,9 @@ export function renderTitleScreen(
   if (playIntro) applyTitleIntroToLogoNodes(titleNodes, settings.intro);
   title.append(...titleNodes);
   // 조작 안내 줄은 그리지 않는다 — 키아트 하단을 가리고, 메뉴 커서가 이미 선택을 보여 준다.
-  const menu = renderMenu(settings, options, clampedIndex, false);
+  // 메뉴 위끝은 로고·부제 아래 — 항목이 늘면(이어하기) 메뉴를 위로 끌어올려 부제를 덮었다(2026-10-25 J28).
+  const logoBottom = settings.logoStyle ? titleBlockBottom(settings, titleFit) : undefined;
+  const menu = renderMenu(settings, options, clampedIndex, false, logoBottom);
   wireTitleOptionClicks(menu, options, actions);
   if (playIntro) applyTitleIntroToMenu(menu, settings.intro);
   title.append(menu);
@@ -508,6 +511,13 @@ function fitTitleTextNodes(nodes: readonly HTMLElement[], settings: TitleScreenS
   node.style.width = "max-content";
   node.style.textWrap = "balance";
   node.dataset.titleLines = String(fit.lines);
+  // 「제목 — 부제」가 두 줄로 접히면 둘째 줄이 「—」로 시작했다(2026-10-25 J28). 줄을 대시 자리에서 끊고 대시는 뺀다.
+  const dash = /\s+[—–―-]\s+/u;
+  if (fit.lines === 2 && dash.test(settings.title)) {
+    const [head, ...rest] = settings.title.split(dash);
+    node.textContent = "";
+    node.append(head ?? "", node.ownerDocument.createElement("br"), rest.join(" "));
+  }
   return fit;
 }
 
@@ -728,6 +738,17 @@ function renderTitleLogo(
     node.style.backgroundRepeat = "no-repeat";
     node.style.backgroundPosition = "center";
     node.style.imageRendering = "pixelated";
+    // 그림이 무대 밖으로 반쯤 나가면(x 가 가장자리) 안쪽으로 당긴다 — 회중시계가 오른쪽 끝에서 반으로 잘렸다(2026-10-25 J28).
+    // 상자는 300×70 contain 이라 실제로 보이는 폭은 그림 비율로 정해진다.
+    const probe = new Image();
+    probe.onload = () => {
+      if (!probe.naturalWidth || !probe.naturalHeight) return;
+      const shown = Math.min(300, 70 * probe.naturalWidth / probe.naturalHeight);
+      const half = shown / 2 + 4;
+      const x = Math.min(TITLE_SCREEN_LOGICAL_WIDTH - half, Math.max(half, graphic.x));
+      if (x !== graphic.x) node.style.left = logicalX(x);
+    };
+    probe.src = url;
   }
   return node;
 }
@@ -764,11 +785,24 @@ export function titleMenuTop(menuY: number, optionCount: number, hintVisible: bo
   return Math.max(0, Math.min(menuY, maxTop));
 }
 
+/** 로고(제목 줄 수 × 크기)와 저자 부제 아래끝(논리 px). 제목이 왼쪽 메뉴와 같은 세로 띠를 쓸 때 메뉴가 이 위로 올라가면 겹친다. */
+function titleBlockBottom(settings: TitleScreenSettings, titleFit: TitleFit | null): number {
+  const lines = titleFit?.lines ?? 1;
+  const titleHeightPx = titleFit ? Math.round(titleFit.fontPx * 1.1 * lines) : 27;
+  let bottom = settings.layout.titleY + titleHeightPx + 3;
+  if (settings.logoSubtitle) {
+    const fit = fitTitleSubtitle(settings.logoSubtitle, { left: settings.layout.titleX, basePx: 8, baseSpacingEm: 0.32 });
+    bottom += Math.ceil(fit.fontPx * (fit.lines > 1 ? 1.35 : 1.2) * fit.lines);
+  }
+  return bottom + 4;
+}
+
 function renderMenu(
   settings: TitleScreenSettings,
   options: readonly TitleMenuOption[],
   selectedIndex: number,
   hintVisible: boolean,
+  minTop?: number,
 ): HTMLElement {
   const menu = el("div", {
     class: "rm-title-menu rm-title-menu-open",
@@ -777,7 +811,20 @@ function renderMenu(
   if (settings.menuStyle) menu.dataset.menuStyle = settings.menuStyle;
   if (settings.menuFontPx) menu.style.setProperty("--rm-title-menu-font", `${settings.menuFontPx}px`);
   menu.style.left = logicalX(settings.layout.menuX);
-  menu.style.top = logicalY(titleMenuTop(settings.layout.menuY, options.length, hintVisible));
+  let top = titleMenuTop(settings.layout.menuY, options.length, hintVisible);
+  if (minTop !== undefined && top < minTop) {
+    top = Math.min(minTop, TITLE_SCREEN_LOGICAL_HEIGHT - TITLE_MENU_BOTTOM_MARGIN - 40);
+    // 로고 아래로 내리면 넘칠 때 — 줄 높이를 줄여(글자 크기 비례) 무대 안에 넣는다.
+    const room = TITLE_SCREEN_LOGICAL_HEIGHT - TITLE_MENU_BOTTOM_MARGIN - top;
+    const need = titleMenuHeight(options.length);
+    if (need > room) {
+      const scale = Math.max(0.6, room / need);
+      menu.style.setProperty("--rm-title-menu-font", `${Math.max(7, Math.floor((settings.menuFontPx ?? 11) * scale))}px`);
+      menu.dataset.compact = "true";
+    }
+    menu.dataset.belowLogo = "true";
+  }
+  menu.style.top = logicalY(top);
   for (const [index, option] of options.entries()) {
     menu.append(
       titleOption(

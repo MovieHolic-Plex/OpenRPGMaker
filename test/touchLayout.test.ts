@@ -46,4 +46,17 @@ describe("calculateTouchLayout (mobile touch play, 2026-10-24)", () => {
     expect(calculateTouchLayout(1024, 768, 480, 270, zero, { scaleMode: "integer" }).scale).toBe(1.5);
     expect(calculateTouchLayout(1024, 768, 480, 270, zero, { scaleMode: "integer" }).panel).toBeNull();
   });
+
+  // J33: 4:3 무대(320×240)는 폰 세로에서 1배를 넘어 예전엔 대사 독이 꺼지고 무대 아래 540px 가 비었다.
+  it("4:3 stage above 1x on a portrait phone still docks the dialogue below the stage at stage scale", () => {
+    const layout = calculateTouchLayout(390, 844, 320, 240, zero);
+    expect(layout.scale).toBeGreaterThan(1);
+    const stageBottom = layout.stageTop + 240 * layout.scale;
+    expect(layout.dock).not.toBeNull();
+    expect(layout.dock!.scale).toBeCloseTo(layout.scale);
+    expect(layout.dock!.top).toBeGreaterThanOrEqual(stageBottom);
+    // 독 아래에 조작(메뉴 줄 포함)이 그대로 들어간다.
+    expect(layout.controlsY - layout.stick / 2 - 52).toBeGreaterThanOrEqual(layout.dock!.top + layout.dock!.height);
+    expect(layout.controlsY + layout.stick / 2).toBeLessThanOrEqual(844);
+  });
 });

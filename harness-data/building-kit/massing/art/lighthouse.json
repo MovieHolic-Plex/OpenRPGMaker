@@ -1,0 +1,22 @@
+{
+ "name": "등대",
+ "massing": "M38",
+ "material": "stone",
+ "refs": [
+  "bd-house-mill1",
+  "bd-wall-tower"
+ ],
+ "walk": [
+  "..*..",
+  ".***.",
+  ".***.",
+  ".***.",
+  ".***.",
+  ".***.",
+  ".***.",
+  ".XXX.",
+  "XXDXX",
+  "XXDXX"
+ ],
+ "id": "lighthouse"
+}

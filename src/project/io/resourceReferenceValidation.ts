@@ -31,6 +31,7 @@ import { OGA_CRAFTPIX_BACKDROP_ASSETS } from "@/assets/ogaCraftpixBackgrounds";
 import { OPRN_PANORAMA_ASSETS } from "@/assets/oprnPanoramas";
 import { seCatalogResourceIds } from "@/assets/seCatalogRuntime";
 import { assert } from "./guards";
+import { openingMapViewResourceIds } from "@/project/openingMapView";
 
 export function collectResourceIds(project: Project): Set<string> {
   const ids = new Set<string>();
@@ -58,6 +59,8 @@ export function collectResourceIds(project: Project): Set<string> {
   // 456개 효과음 카탈로그. BGM 과 같은 이유로 반드시 등록해야 한다 — 빠지면 이 효과음을
   // 지정한 프로젝트가 오디오만 무음이 되는 게 아니라 역직렬화 자체에 실패한다.
   for (const id of seCatalogResourceIds()) ids.add(id);
+  // 오프닝 컷 배경 「게임 속 맵 그대로」(map-view:<mapId>) — 맵이 있으면 쓸 수 있다(openingMapView.ts).
+  for (const id of openingMapViewResourceIds(project)) ids.add(id);
   for (const id of SCARLOXY_RESOURCE_IDS) ids.add(id);
   // 몬스터 수집 하네스 번들 종 그림. 캠페인 종이 이 id 를 쓰므로 빠지면 그 프로젝트가 역직렬화에서 던진다.
   for (const id of HARNESS_MONSTER_RESOURCE_IDS) ids.add(id);

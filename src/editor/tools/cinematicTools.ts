@@ -1,4 +1,5 @@
 import { animaticResourceIds, retimeOpeningAnimatic, validateOpeningAnimatic } from "@/project/openingAnimatic";
+import { openingMapViewMapId } from "@/project/openingMapView";
 import { parseCinematicPresentation, CINEMATIC_PRESENTATION_PRESETS, CINEMATIC_TEXT_ANIMATIONS, CINEMATIC_ENTRANCES } from '@/project/cinematicPresentation';
 import { validateGameOverSettings } from "@/project/io/shapeDatabaseFields";
 import { parseCinematicDirection } from '@/project/cinematicDirection';
@@ -810,6 +811,8 @@ const OPENING_DIRECTION_FIELDS = ["focus", "angle", "light", "palette", "cast"] 
 
 /** SQLite media references are valid even when the worker has no browser URL bridge. */
 export function hasOpeningImage(project: Project, id: string): boolean {
+  const mapViewId = openingMapViewMapId(id);
+  if (mapViewId) return !!project.maps[mapViewId];
   const asset = project.assets.uploaded[id];
   if (asset?.ref) return asset.ref.mime.startsWith('image/');
   if (asset?.dataUrl) return /^data:image\//.test(asset.dataUrl) || (!!resolveAssetResourceUrl(id, { project }) && !['music', 'sound', 'movie'].includes(asset.kind));

@@ -433,9 +433,9 @@ export function buildFallenForestMaps(project: Project, ids: { hub: string; fore
         narrate("제단 위 별 조각이 푸르게 맥박친다.\n손을 얹자 지친 몸에 온기가 번진다."),
         { kind: "recoverAll" } as unknown as Command,
         { kind: "checkpointSave", label: "savepoint" } as unknown as Command,
-        { kind: "choices", prompt: "별 조각에 여기까지를 새겨 둘까?", cancelBehavior: "branch", options: [
-          { text: "새겨 둔다", branch: [{ kind: "openSaveMenu" } as unknown as Command] },
-          { text: "그만둔다", branch: [] },
+        { kind: "choices", prompt: "기록하시겠습니까?", cancelBehavior: "branch", options: [
+          { text: "예", branch: [{ kind: "openSaveMenu" } as unknown as Command] },
+          { text: "아니오", branch: [] },
         ], cancelBranch: [] } as unknown as Command,
       ];
       // 제단의 별 조각은 쉬지 않고 반짝인다 — 투명 병렬 이벤트가 결정 칸에 반짝이를 띄운다.

@@ -5,6 +5,69 @@
 
 <!-- releases -->
 
+## 0.339.0 — 2026-10-25
+
+### 기능
+
+- **ai-v2** — independent advisor checks each turn's report against the diff (#3448) (`694bf7a`)
+- **ai** — whole-game builds can't ship editor defaults or one-line endings; set_field_hud; title spoiler check (J59, J60) (#3451) (`40a2fb2`)
+- **first-love** — anime-OP opening montage + street cold open (bump, paper, freeze); freeze-frame/petals/paper engine features; KR street props (#3450) (`bc9c01d`)
+
+### 수정
+
+- **ai** — v2 add_event say without who is narration; beats missing who are skipped with a warning instead of crashing (who.trim) (#3455) (`3355612`)
+- **ai** — shipChecks 의 미사용 filter 인자 제거 — main 빌드 차단(TS6133) (#3454) (`6b5286e`)
+- **flagship** — 네 번째 계절 오프닝 루프의 미사용 index 제거 — main 빌드 차단 (#3453) (`fd51801`)
+- **ai** — flashlight sources use at:{kind:'player'} everywhere; the schema rejected the 'player' string the horror card taught (#3446) (`1f2ecd1`)
+
+### 잡무
+
+- **ci** — css-winners 래칫을 현재 트리로 — 타이틀 메뉴 compact 선언 12건 (#3447) (`5a07254`)
+
+## 0.338.0 — 2026-10-25
+
+### 기능
+
+- rebuild Shitamachi flagship demo + speakers-visible dialogue camera, map-view openings, romance story preset (#3445) (`4a87b28`)
+- **save-points** — sparkle on approach and 「기록하시겠습니까?」 prompt; Fallen's three save points share one look (#3441) (`55a0f95`)
+
+### 수정
+
+- **space-craft** — judge edited maps against their start state, not only absolute gates (#3439) (`f3c3ec7`)
+- **test** — 가짜 DOM 의 DocumentFragment·getComputedStyle 구멍과 dialogue sentinel (surface 축) (#3443) (`8473772`)
+- **ai** — choice text never shows design tags like (엔딩)/(+1일); non-combat games get a story ESC menu without skills/equipment/party (J37, J39) (#3442) (`a260f85`)
+- **runtime** — opening audio never freezes the animatic; title menu under the logo; distinct resume label (#3440) (`3fa4f02`)
+
+## 0.337.0 — 2026-10-25
+
+### 기능
+
+- **fallen-star** — act-1 battle, field and save fixes for 1.21 (general tools) (#3435) (`24526a3`)
+
+### 수정
+
+- **editor** — move_event 길막힘 경고가 pages 없는 이벤트에서 죽지 않게 (#3437) (`a405302`)
+- **ai** — cutscene critic gets a real repair round, first place revert keeps a retry, move_event warns when it cuts a path (#3436) (`523ed7f`)
+- **ci** — css 게이트를 초록으로 — 죽은 규칙·표면 소유 누락을 고치고 래칫을 현재 트리로 올린다 (#3434) (`86bd519`)
+- **ai** — stop picture searches after 3 misses, keep title preset effects off foreign art, name a dead worker (#3433) (`3a758ca`)
+
+## 0.336.0 — 2026-10-25
+
+### 기능
+
+- **ai** — horror sound presets and ambient (bgs) beat for v2 events (#3430) (`b5439b8`)
+- **ai** — v2 puzzle-chain verb, sealed-room fill and horror finish checks (#3428) (`691a0a9`)
+
+### 수정
+
+- **player** — shop and save/load windows show whole rows and unclipped text (#3429) (`ff023e0`)
+
+### 잡무
+
+- **deps-dev** — bump undici from 6.29.0 to 6.29.1 (#3356) (`cc47bb6`)
+- **deps-dev** — bump fast-uri from 3.1.8 to 3.1.9 (#3355) (`1de8e96`)
+- **deps-dev** — bump happy-dom from 21.0.3 to 21.0.4 (#3354) (`bd1d9d9`)
+
 ## 0.335.3 — 2026-10-25
 
 ### 수정

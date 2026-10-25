@@ -11,7 +11,8 @@ type DomGlobalName =
   | "Image"
   | "HTMLTextAreaElement"
   | "requestAnimationFrame"
-  | "cancelAnimationFrame";
+  | "cancelAnimationFrame"
+  | "getComputedStyle";
 type PreviousDomGlobals = {
   readonly document: Document | undefined;
   readonly Node: typeof Node | undefined;
@@ -26,6 +27,7 @@ type PreviousDomGlobals = {
   readonly HTMLTextAreaElement: typeof HTMLTextAreaElement | undefined;
   readonly requestAnimationFrame: typeof requestAnimationFrame | undefined;
   readonly cancelAnimationFrame: typeof cancelAnimationFrame | undefined;
+  readonly getComputedStyle: typeof getComputedStyle | undefined;
 };
 
 type FakeDomOptions = {
@@ -90,6 +92,20 @@ export class FakeNode {
     }
     notifyChildList(this, nodes, [], previousSibling, null);
     this.childrenChanged(nodes.at(-1));
+  }
+
+  /**
+   * 프로덕션 코드가 DocumentFragment 를 만들어 한 번에 붙인다
+   * (src/editor/panels/tilesetChipsetPreview.ts:297 — 창 단위 타일 칸 렌더).
+   * 조각은 자기 자식들을 들고 다니다가 붙는 순간 자식만 옮기고 사라진다.
+   */
+  appendChild(child: FakeNode): FakeNode {
+    if (child instanceof FakeFragment) {
+      for (const node of [...child.childNodes]) this.append(node);
+      return child;
+    }
+    this.append(child);
+    return child;
   }
 
   removeChild(child: FakeNode): FakeNode {
@@ -263,6 +279,11 @@ function notifyValueMutation(target: FakeNode, type: "attributes" | "characterDa
   const record: FakeMutationRecord = { type, target, attributeName, oldValue,
     addedNodes: [], removedNodes: [], previousSibling: null, nextSibling: null, attributeNamespace: null };
   for (const observer of mutationObservers) observer.enqueue(target, record);
+}
+
+/** DocumentFragment — 붙지 않은 자식 목록. FakeNode.appendChild 가 자식만 옮긴다. */
+class FakeFragment extends FakeNode {
+  readonly nodeType = 11;
 }
 
 export class FakeElement extends FakeNode {
@@ -672,6 +693,7 @@ export function installFakeDom(options: FakeDomOptions = {}): () => void {
     HTMLTextAreaElement: globalThis.HTMLTextAreaElement,
     requestAnimationFrame: globalThis.requestAnimationFrame,
     cancelAnimationFrame: globalThis.cancelAnimationFrame,
+    getComputedStyle: globalThis.getComputedStyle,
   } satisfies PreviousDomGlobals;
   animationFrames.clear();
   for (const observer of mutationObservers) observer.disconnect();
@@ -704,6 +726,23 @@ export function installFakeDom(options: FakeDomOptions = {}): () => void {
       animationFrames.delete(frameId);
     });
   }
+  // 창 크기 계산 결과를 읽는 코드(scriptScroll 의 scrollParent 등)가 가짜 노드에 getComputedStyle 을
+  // 부른다. happy-dom 의 getComputedStyle 은 happy-dom Element 가 아니면 TypeError 를 던지고,
+  // 그 호출이 requestAnimationFrame 콜라이백처럼 테스트 종료 뒤에 돌면 처리되지 않은 오류가 된다
+  // (실측: databaseAllTabsRenderWalk — 7/7 통과인데 Errors 1). 가짜 DOM 이 사는 동안은 가짜 스타일을
+  // 돌려주어 두 세계가 섞이지 않게 한다.
+  defineDomGlobal("getComputedStyle", (element: unknown): unknown => {
+    if (element instanceof FakeElement) return element.style;
+    // 가짜 DOM 과 happy-dom 노드가 한 트리에 섞인다(가짜 요소의 부모가 실제 window 쪽 노드).
+    // happy-dom 은 자기가 만든 Element 가 아니면 TypeError 를 던지므로, 그 경우에는 빈 스타일로
+    // 답한다 — 여기서 던지면 RAF 콜라이백에서 처리되지 않은 오류가 된다.
+    try {
+      if (typeof previous.getComputedStyle === "function") return previous.getComputedStyle(element as Element);
+    } catch {
+      /* 가짜 노드 — 빈 스타일로 답한다. */
+    }
+    return createFakeStyle();
+  });
   // document 레벨 키다운/포인터다운 리스너(Escape·바깥 클릭 처리용)를 등록/해제/발화할 수 있도록
   // 최소 EventTarget 동작을 흉내낸다(FakeElement.addEventListener 와 동일한 패턴).
   documentListeners = {};
@@ -718,6 +757,8 @@ export function installFakeDom(options: FakeDomOptions = {}): () => void {
       return body.children;
     },
     createElement: (tagName: string) => tagName.toLowerCase() === "audio" ? new FakeAudio() : new FakeElement(tagName),
+    // DocumentFragment — appendChild(fragment) 는 자식만 옮긴다(FakeNode.appendChild).
+    createDocumentFragment: () => new FakeFragment(),
     // SVG 아이콘(makeSvgIcon)이 createElementNS를 쓴다 — 네임스페이스는 무시하고 일반 요소로 위임.
     createElementNS: (_ns: string, tagName: string) => new FakeElement(tagName),
     createTextNode: (text: string) => {
@@ -774,6 +815,11 @@ export function installFakeDom(options: FakeDomOptions = {}): () => void {
     restoreDomGlobal("Image", previous.Image);
     restoreDomGlobal("HTMLTextAreaElement", previous.HTMLTextAreaElement);
     restoreDomGlobal("requestAnimationFrame", previous.requestAnimationFrame);
+    // getComputedStyle 은 되돌리지 않는다. 이 테스트들의 렌더는 requestAnimationFrame 콜백을
+    // 남기고 끝나는데(scriptScroll → scrollParent), 그 콜백은 teardown **뒤**에 돌아 가짜 노드를
+    // 순회한다. 그때 happy-dom 의 원래 구현으로 돌아가 있으면 TypeError 가 처리되지 않은 오류가 되어
+    // 초록인 테스트 파일도 Errors 1 이 된다. 남기는 것은 위임용 래퍼뿐이라(진짜 Element 는 이전
+    // 구현에 그대로 넘긴다) 다음 테스트에 해가 없다.
     restoreDomGlobal("cancelAnimationFrame", previous.cancelAnimationFrame);
   };
 }

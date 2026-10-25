@@ -106,6 +106,7 @@ export function normalizeStateRecord(record: Partial<StateRecord> & Pick<StateRe
     ...(isGen1MajorStatus(record.gen1MajorStatus) ? { gen1MajorStatus: record.gen1MajorStatus } : {}),
     ...(record.volatileStatus === "confusion" ? { volatileStatus: record.volatileStatus } : {}),
     ...(record.removalCondition !== undefined ? { removalCondition: optionalString(record.removalCondition) } : {}),
+    ...(typeof record.clearOnBattleEnd === "boolean" ? { clearOnBattleEnd: record.clearOnBattleEnd } : {}),
     ...(record.restriction !== undefined ? { restriction: optionalString(record.restriction) } : {}),
     ...(record.priority !== undefined ? { priority: optionalNumber(record.priority) } : {}),
     ...(record.accuracyModifier !== undefined ? { accuracyModifier: optionalNumber(record.accuracyModifier) } : {}),
@@ -345,6 +346,7 @@ export function normalizeSystemRecords(system: Partial<SystemRecords> & Pick<Sys
     records.dialogueSpeed = Math.round(Math.min(DIALOGUE_PROJECT_SPEED_LIMITS.max, Math.max(DIALOGUE_PROJECT_SPEED_LIMITS.min, system.dialogueSpeed)) * 100) / 100;
   }
   if (system.dialoguePunctuationPause === false) records.dialoguePunctuationPause = false;
+  if (typeof system.dialogueKeepActorsVisible === "boolean") records.dialogueKeepActorsVisible = system.dialogueKeepActorsVisible;
   if (fullPortrait) records.dialogueFullPortrait = fullPortrait;
   // 기본(actors)은 저장하지 않고, 명시적 monsters 선택만 보존한다.
   if (system.battleParty === "monsters") records.battleParty = "monsters";
@@ -398,6 +400,10 @@ export function normalizeSystemRecords(system: Partial<SystemRecords> & Pick<Sys
   if (resource2) records.resource2 = resource2;
   if (partyGauge) records.partyGauge = partyGauge;
   if (system.weaknessExtraAction === true) records.weaknessExtraAction = true;
+  // 자동 전투 끄기·전투 뒤 상태 해제·세이브 포인트 전용(2026-10-25). 화이트리스트 — 빠뜨리면 저장 왕복에 사라진다.
+  if (system.allowAutoBattle === false) records.allowAutoBattle = false;
+  if (system.clearStatesAfterBattle === true) records.clearStatesAfterBattle = true;
+  if (system.saveAccess === "savePoints") records.saveAccess = "savePoints";
   if (emotionCycle) records.emotionCycle = emotionCycle;
   if (actionCombat) records.actionCombat = actionCombat;
   if (Array.isArray(system.toolActions)) records.toolActions = system.toolActions;
@@ -1080,6 +1086,7 @@ function normalizeCompanionConfig(value: CompanionConfig | undefined): Companion
   if (value.spreadWhenBlocked === true) out.spreadWhenBlocked = true;
   if (value.fanOutInScenes === true) out.fanOutInScenes = true;
   if (value.display === "scenesOnly") out.display = "scenesOnly";
+  if (value.sceneFormation === "abreast") out.sceneFormation = "abreast";
   if (value.monsterFollowers === false) out.monsterFollowers = false;
   return Object.keys(out).length > 0 ? out : undefined;
 }

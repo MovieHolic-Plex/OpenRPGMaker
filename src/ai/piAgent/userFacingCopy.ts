@@ -7,8 +7,13 @@ export function friendlyExecutionError(message: string): string {
   if (/이미 실행 중입니다|map-busy/u.test(message)) return "이 맵에서 앞선 조수 작업이 아직 끝나지 않았어요. 그 작업이 끝나거나 멈춘 뒤(최대 몇 분) 다시 보내 주세요.";
   // 편집기가 단계 적용 결과를 작업기에 돌려주지 못했다(부하로 연결이 잠깐 끊김) — 일반 문장 대신 무슨 일인지 말한다(G43).
   if (/(적용|맵 이미지) 응답을 전달하지 못했습니다/u.test(message)) return "작업 도중 편집기와 AI 작업기 사이 연결이 끊겨 멈췄어요.";
+  // 작업기(bun)가 죽으면 스트림이 「terminated」로 끝난다(2026-10-25 G45 실제 강제 종료 시험) — 맵 예약은 풀린다.
+  if (/^terminated$|worker (exited|crashed)|작업기가 (종료|멈)/iu.test(message.trim())) return "AI 작업기가 갑자기 멈췄어요. 같은 요청을 다시 보내면 처음부터 다시 해요.";
   if (/^Request was aborted\.?$|첫 응답이 늦어/i.test(message)) return "AI 모델의 첫 응답이 너무 늦어 요청이 끊겼어요. 같은 요청을 다시 보내면 이어서 해요.";
   if (/중단했습니다|aborted/i.test(message)) return "작업을 중단했어요.";
+  // 공급자(클라우드)의 내용 검열 400 — 원문 오류나 「끝까지 받지 못했어요」만 보이면 무엇을 해야 할지 모른다(2026-10-25 Salad S1:
+  // DeepSeek·InferHub 가 공포 요청 9건을 「InternalError.Algo.DataInspectionFailed: Input text data may contain inappropriate content」로 끊었다).
+  if (/DataInspectionFailed|inappropriate content|moderation|content[_ ]policy|flagged by|data_inspection/iu.test(message)) return "이 AI 연결(제공자)이 요청이나 만든 내용 일부를 부적절한 표현으로 보고 막았어요. 공포·폭력 묘사가 있으면 표현을 조금 순하게 바꿔 다시 보내거나(예: 「피」 대신 「붉은 얼룩」), 설정에서 다른 AI 모델로 바꿔 보세요.";
   if (/PROHIBITED_CONTENT|content.filter|safety/i.test(message)) return "AI 제공자가 응답을 중단했어요. 답변을 끝까지 받지 못했어요.";
   if (/401|403|auth|credential|로그인|인증/i.test(message)) return "AI 연결을 확인하지 못했어요. 설정에서 로그인 상태를 확인해 주세요.";
   if (/429|rate.limit|quota|한도/i.test(message)) return "AI 사용 한도에 도달했어요. 잠시 후 다시 시도해 주세요.";

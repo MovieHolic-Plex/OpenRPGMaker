@@ -20,6 +20,7 @@ import type { FaceGraphic } from "@/project/types";
 import { sharedPortraitRendering } from "@/assets/sharedPortraitAssets";
 import { vnUiText, type VnUiKey } from "@/player/vnExtrasStrings";
 import { vnExtrasLanguage } from "@/project/vnExtras";
+import { endingSummaryText } from "@/project/endingSummary";
 
 /** 엔딩 화면 글자 — 게임 언어(편집기 언어가 아니다: 저작 vnExtras·대사 시스템 언어, 없으면 ko)로 고른다. */
 function endingText(key: VnUiKey, ...args: readonly (string | number)[]): string {
@@ -399,15 +400,8 @@ function buildEndingCg(terminal: TerminalScene, project: Project, presentation: 
     layer.append(pair);
   }
   layer.append(textNode("div", "ending-cg-frame", ""));
-  const epilogue = (ending?.epilogue ?? [])
-    // 말한 사람이 있는 줄은 이름을 붙인다 — 이름 없이 존댓말·반말 두 줄이 붙으면 누가 한 말인지 모른다.
-    .map((beat) => {
-      const text = typeof beat.text === "string" ? beat.text.trim() : "";
-      const speaker = "speaker" in beat && typeof beat.speaker === "string" ? beat.speaker.trim() : "";
-      return text && speaker ? `${speaker}: ${text}` : text;
-    })
-    .filter(Boolean)
-    .join("\n");
+  // 카드는 내레이션 — 말한 사람이 있는 줄은 「이름: …」 대본이 아니라 「」 인용으로 보인다(J36).
+  const epilogue = endingSummaryText(ending?.epilogue ?? []);
   return { layer, mode: partnerFigure ? "couple" : "scene", badge: endingBadge(endingId, Boolean(partnerFigure), presentation), epilogue };
 }
 
@@ -526,9 +520,13 @@ export function showEndingScreen(scene: PlaySceneContext, title: string, message
     const finalTitle = textNode("div", "ending-final-title", endingFinalTitle(presentation, endingId));
     finalTitle.dataset.testid = "ending-final-title";
     final.append(finalTitle);
-    final.append(textNode("div", "ending-final-caption", title));
+    // 부제와 요약 줄은 한 기둥 안에 흐른다 — 둘 다 절대 위치(55%·63%)였을 때 두 줄로 넘어간 엔딩 이름이
+    // 「플레이 시간」 줄과 겹쳤다(시타마치 VQA before 12-ending-final).
+    const meta = textNode("div", "ending-final-meta", "");
+    meta.append(textNode("div", "ending-final-caption", title));
     const summary = endingSummaryLine(scene);
-    if (summary) final.append(textNode("div", "ending-final-summary", summary));
+    if (summary) meta.append(textNode("div", "ending-final-summary", summary));
+    final.append(meta);
     const actions = textNode("div", "game-over-actions", "");
     const button = terminalButton("return-title", endingText("ending.returnTitle"), () => { void exitTerminal(terminal, () => scene.returnToTitle()); });
     actions.append(button); final.append(actions); terminal.root.append(final);

@@ -14,6 +14,7 @@ import { applyMonsterExperienceAndEvolution, giveMonster, monsterCurrentHp } fro
 import { addMonsterEvs, monsterStatRulesOf } from "@/project/monsterStatRules";
 import type { Project } from "@/project/types";
 import { transitionItemStates } from "@/project/itemTransitions";
+import { statesKeptAfterBattle } from "@/project/battleEndStates";
 
 export type BattleRewardsOutcome = {
   readonly result: BattleResult;
@@ -52,7 +53,7 @@ export function applyBattleRewardsToSession(
     applyBattleVitalsToSession(session, outcome.actors ?? []);
     // 파티 몬스터가 싸운 경우, 전투 종료 HP를 인스턴스에 되돌려쓴다(경험치 가산보다 먼저).
     applyBattleMonsterVitalsToSession(session, outcome.actors ?? []);
-    applyBattleStatesToSession(session, outcome.actors ?? []);
+    applyBattleStatesToSession(session, outcome.actors ?? [], project);
     applyBattleEventStateToSession(session, outcome.eventState);
     // The battle seeded its switch copy before first sighting; receipts are monotonic.
     for (const receipt of journal) {
@@ -241,12 +242,13 @@ function applyBattleMonsterVitalsToSession(session: PlaySession, actors: readonl
   }
 }
 
-function applyBattleStatesToSession(session: PlaySession, actors: readonly BattleBattlerSnapshot[]): void {
+function applyBattleStatesToSession(session: PlaySession, actors: readonly BattleBattlerSnapshot[], project: Project): void {
   session.actorStateIds ??= {};
   session.actorSkillPp ??= {};
   for (const actor of actors) {
     if (actor.monsterInstanceId) continue;
-    session.actorStateIds[actor.recordId] = [...actor.stateIds];
+    // 전투 종료로 풀리는 상태(system.clearStatesAfterBattle · StateRecord.clearOnBattleEnd · removalCondition 「전투 종료」)는 넘기지 않는다.
+    session.actorStateIds[actor.recordId] = statesKeptAfterBattle(project, actor.stateIds);
     if (actor.skillPp) session.actorSkillPp[actor.recordId] = { ...actor.skillPp };
   }
 }

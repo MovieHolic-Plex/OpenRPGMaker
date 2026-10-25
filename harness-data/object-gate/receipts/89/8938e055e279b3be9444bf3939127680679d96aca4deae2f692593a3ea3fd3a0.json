@@ -1,0 +1,309 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "8938e055e279b3be9444bf3939127680679d96aca4deae2f692593a3ea3fd3a0",
+ "width": 16,
+ "height": 32,
+ "kind": "other",
+ "name": "세로 입간판 「약국」",
+ "label": "modern_city/street-kr/mc-prop-kr-sign-pharm",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "bus-shelter-a",
+   "kiosk-a",
+   "vending-a"
+  ],
+  "scale": 2,
+  "score": 7,
+  "refSet": {
+   "id": "modern_city",
+   "chipset": "modern_city",
+   "fallback": false,
+   "hash": "dc20de17343e77e8"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 11,
+  "tileColorsP90": 11,
+  "darkV5": 37,
+  "nearBlackEdge": 1,
+  "opaqueTiles": 2
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "gray cap or lid on top of the sign",
+      "rows": "1-7",
+      "evidence": "a",
+      "front_edge_line_row": 7,
+      "eave_shadow_rows": "8"
+     },
+     {
+      "part": "green sign board with white lettering, front face",
+      "rows": "9-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 7,
+    "front_face_rows": 22,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The top cap spans rows 1-7. Its width grows from 8 to 12 to 16 and it overhangs the 14-wide body. A light oval highlight sits at rows 2-4. Row 7 is a darker front-edge line (L=71), and row 8 is a very dark outline (L=17) that acts as eave shadow. Below it the green board front runs rows 9-30 (22 rows) with white lettering. The cap is rounded only at its upper edge, so a flat hat reading is possible. The edge line and shadow below it still make it a top surface (evidence a). The object has no side face and is a small standing signboard."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small vertical sign with a dark green rounded cap, a green panel carrying the vertical text 약국, and a dark base. It shows 11 visible tones per 16x16 tile, against 6 (bus-shelter), 12 (kiosk) and 20 (vending) for the references. That is above the bus shelter and close to the kiosk. Near-flat coverage is 0%, so there are no flat fills of 5x5 or larger, and the lettering and panel edges break up the surface. The dark edge pixels are 0% neutral, matching the references, so the outline leans toward the material colour (dark green/teal) rather than black. It has about 4 visible shading steps on the body and cap, slightly fewer than the roughly 5 on the references, but it is a thin, simple sign and reads as the same family as the kiosk and vending machine. It would sit next to them without looking flatter or more sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 14418
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "gray top cap of the signboard",
+      "rows": "1-7",
+      "evidence": "a",
+      "front_edge_line_row": 7,
+      "eave_shadow_rows": "8-8"
+     },
+     {
+      "part": "green signboard face with white lettering",
+      "rows": "9-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 7,
+    "front_face_rows": 22,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The sign has a gray cap in rows 1-7. It is wider than the board (16 against 14) and has a lighter oval highlight in rows 2-4. Rows 5-6 are darker, and row 7 is a darker front-edge line (L=71), followed by the dark outline in row 8 as shadow. This reads as a horizontal top slab seen from above. Below it, the green board in rows 9-30 (22 rows, width 14) is a clear vertical south face carrying the white lettering. The cap's bottom edge is flat and its top corners are rounded, so it could be read as a hat. The front-edge line and the highlight inside it still give a top plane, so it is judged a top surface. The object is not column-like, so round_cap is null."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a vertical pharmacy sign: a rounded cap, a body with a lit edge, and vertical lettering. On the measured facts it has 11 visible tones per tile, against 6 (bus-shelter), 12 (kiosk) and 20 (vending). Its near-flat coverage is 0%, so there are no large flat fills, whereas the bus shelter has 9%. The 0% near-neutral share of dark edge pixels means the outline is tinted, a dark green-teal tone of the body that matches the references' own dark material edges, so it is not a sticker-style black line. The body has a highlight edge, a mid tone and a dark tone, plus the lettering, which gives about 4 steps against roughly 5 for the references. That is slightly fewer, but the piece is a thin, simple sign, and it sits comfortably next to the kiosk and bus shelter without looking flatter or thinner.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15292
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "gray cap on top of the sign, with a white highlight oval",
+      "rows": "1-7",
+      "evidence": "a",
+      "front_edge_line_row": 7,
+      "eave_shadow_rows": "7-8"
+     },
+     {
+      "part": "green sign panel with white '약국' lettering",
+      "rows": "8-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 23,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The top cap spans rows 1-7. The silhouette widens from 8 to 12 to 16 px over rows 0-2, and rows 2-6 are a light gray-blue plane with a white highlight oval at x=8, rows 2-4. Row 7 is a darker line (L=71) that works as the front-edge line, followed by the dark outline on row 8, which acts as eave shadow. Below it the green panel runs rows 8-31 (about 23 rows) with white lettering, so there is a clear front face. This is a plausible cap or top plane over a vertical sign, not just a 1-2 row rim. There is no side face, and the silhouette narrows to 14 px below the cap."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a tall, narrow signboard with a rounded dark cap, a green body and vertical light lettering. Its measured facts are 11 visible tones per full tile, 0% near-flat coverage and 0% neutral dark edge pixels. That is on par with kiosk-a (12 tones, 0%) and well above bus-shelter-a (6 tones, 9%), though below vending-a (20). The dark edge pixels all carry a tint, so the outline reads as a dark version of the adjacent material rather than a black sticker line. The cap and body have a highlight edge and a dark side, which gives about 4 shading steps against roughly 5 in the references. The lettering adds variation, so there are no large flat fills. It is a little simpler than vending-a but sits within the range of the shipped modern_city props, and a careful artist would accept it next to them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 13043
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "sign head cap (grey top plane with white oval highlight)",
+      "rows": "1-7",
+      "evidence": "a",
+      "front_edge_line_row": 7,
+      "eave_shadow_rows": "8"
+     },
+     {
+      "part": "green sign board with vertical text (front face)",
+      "rows": "9-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 7,
+    "front_face_rows": 22,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The top band, rows 1-7, is a grey cap that is wider than the board (16 px against 14 px). It holds a white oval highlight in rows 2-4. Its lower boundary is a darker front-edge line at row 7 (L=71), followed by the dark outline at row 8 as eave shadow. Below it the green board front face runs rows 9-30 (22 rows) with the vertical text. The cap's silhouette only widens (8, 12, 16) and ends flat on the board, so the oval is weak. The edge line, shadow and overhang still make it a top plane rather than a 1-2 row rim. There is no isometric side face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a narrow vertical standing sign with a rounded cap and a green/teal body carrying vertical lettering. It has 11 visible tones per 16x16 tile, which sits between kiosk-a (12) and bus-shelter-a (6) and below vending-a (20). Near-flat coverage is 0%, so there are no large flat fills, and the lettering plus panel edges give some variation. The dark edge pixels are 0% neutral, so the outline is tinted, a dark teal/green tone rather than black, matching the references. Shading on the body is about 4 steps (highlight, light, mid, dark), a little shallower than the references' 5, and the texture is modest, mostly the lettering and a top highlight with little grain. The prop is small and simple, and a careful artist would likely accept it next to kiosk-a and bus-shelter-a without it looking like a sticker, though it is a bit thinner than vending-a.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 14906
+  }
+ ],
+ "decidedAt": "2026-10-24T14:42:30.940Z",
+ "cells": {
+  "16": [
+   "4351ffb5eaf08095",
+   "c3802dc66807648e"
+  ],
+  "24": [
+   "25c6c4b32a28edd4",
+   "2f48921a7d32cf07",
+   "3361b701876ba4bd",
+   "45f18fbda6fd5404",
+   "67edbc7bfb84cfb9",
+   "6ee165ce808e0755",
+   "7f3c6514ad0c4b79",
+   "a0c4b26e3cb32cf5",
+   "ab13d27b7d2e0131",
+   "b4d5e74ac58f1aa5",
+   "f069315ad146a609",
+   "f6d54d879ed7d93c"
+  ],
+  "32": [
+   "1d29b4bfbe1989dd",
+   "7dce72be3b2e26f7",
+   "d2c3c4e28eccfa54"
+  ],
+  "48": [
+   "2f202043f36628b2",
+   "6adfaa10db1c9a6f",
+   "73c1893df9b796c8",
+   "d2a4cedf422882b6",
+   "e231421c3c952f8b",
+   "fc193641216eba53"
+  ]
+ }
+}

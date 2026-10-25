@@ -114,6 +114,7 @@ const bridge = {
     catalog: invoke(OPRN_CHANNELS.storeCatalog),
     item: invoke(OPRN_CHANNELS.storeItem),
     blob: invoke(OPRN_CHANNELS.storeBlob),
+    manifest: invoke(OPRN_CHANNELS.storeManifest),
     installed: invoke(OPRN_CHANNELS.storeInstalled),
     install: invoke(OPRN_CHANNELS.storeInstall),
     uninstall: invoke(OPRN_CHANNELS.storeUninstall),

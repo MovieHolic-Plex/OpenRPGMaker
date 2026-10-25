@@ -1,0 +1,364 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "cd0a5e55d9889ac71336343eae5d88b0ac423344dcdc9a34815d11806cc24fb5",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "지하철 출구 번호 표지 3",
+ "label": "modern_city/street-kr/mc-prop-kr-exit-3",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "bus-shelter-a",
+   "kiosk-a",
+   "vending-a"
+  ],
+  "scale": 2,
+  "score": 7,
+  "refSet": {
+   "id": "modern_city",
+   "chipset": "modern_city",
+   "fallback": false,
+   "hash": "dc20de17343e77e8"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 14,
+  "tileColorsP90": 14,
+  "darkV5": 36,
+  "nearBlackEdge": 1,
+  "opaqueTiles": 2
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top cap plate (white dome top with teal underside)",
+      "rows": "1-7",
+      "evidence": "b",
+      "front_edge_line_row": 7,
+      "eave_shadow_rows": "8-8"
+     },
+     {
+      "part": "shaft with navy header band, tan number sign panel, and grey lower body",
+      "rows": "9-27",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base flare/foot",
+      "rows": "27-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 7,
+    "front_face_rows": 19,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": {
+     "cap_rows": 7,
+     "cap_width": 15,
+     "shaft_width": 9,
+     "rounded_at_both_edges": true
+    },
+    "reads_as": "three_quarter",
+    "evidence": "The width profile runs 7, 11, 13, 15 (rows 4-7), then narrows to 11 at row 8 and to 9 on the shaft (rows 9-26). This is an ellipse plate that overhangs the shaft: it is rounded at the top, and it is bounded by narrower rows below. Rows 2-5 are light, the top surface, and rows 6-7 are a darker teal front lip, with the dark outline at row 8 acting as eave shadow. The shaft (rows 9-27) is a vertical front face about 19 rows tall. It carries a navy band, a tan sign with the '3', and a grey lower section. The base widens to 13 at rows 28-30. The cap matches the green 'column: ellipse cap' reference, not the flat band cap."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a bollard-style exit sign with a cream/grey cylindrical body, a dark cap and a numbered orange panel. Its measured 13 visible tones per tile sits between kiosk-a (12) and vending-a (20) and well above bus-shelter-a (6). Near-flat coverage is 0%, so there are no flat fills, and 0% of dark edge pixels are neutral, so the outline carries a tint (dark material tone) rather than a black sticker line. The body shows about 5 lightness steps with a left-to-right cylinder gradient and a highlight, comparable to the references. Texture is modest, mostly shading bands and the sign panel, but it matches the shipped modern_city props at the same scale. Nothing looks thinner or flatter than the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16724
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top cap plate (white lid with diamond emblem)",
+      "rows": "1-5",
+      "evidence": "b",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": "7-7"
+     },
+     {
+      "part": "cap front lip (teal band)",
+      "rows": "6-7",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "shaft with sign panel 'B'",
+      "rows": "9-27",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base flare",
+      "rows": "27-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 22,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": {
+     "cap_rows": 7,
+     "cap_width": 15,
+     "shaft_width": 9,
+     "rounded_at_both_edges": true
+    },
+    "reads_as": "three_quarter",
+    "evidence": "The cap rows 1-7 widen from 7 to 11, 13 and 15, then step in to 11 at row 8 and 9 on the shaft, so the cap overhangs the shaft by 3 px per side. Rows 2-5 are a light top surface with a diamond emblem. Rows 6-7 are a darker teal front lip that acts as the front-edge line with shadow. Below the cap, the shaft (rows 9-27, width 9) is a vertical front face with the sign panel. A flared base follows at rows 27-30. The cap's bottom edge is fairly flat and steps in abruptly, so the cap is somewhat hat-like, but it is bounded by narrower rows above and below, so I count it as an ellipse plate."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a bollard-style sign post with a cap, a shaded cylindrical body and a numbered plate. It measures 13 visible tones per tile, against 6 (bus-shelter), 12 (kiosk) and 20 (vending) for the references, so it sits at or above the median. Near-flat coverage is 0%, which matches kiosk and vending and is better than the bus shelter's 9%. The dark edge pixels are 0% neutral, so the outline carries a tint and reads as a dark material tone rather than a black sticker line. The body has about 5 lightness steps of cylinder shading, with a highlight on the left and a darker right side. There is some texture on the cap and plate, but less than the vending machine. It is small and simple but not thinner or flatter than the shipped references, and a careful artist would accept it beside them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 21493
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top cap plate (white top, teal front rim)",
+      "rows": "1-7",
+      "evidence": "b",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": "8-8"
+     },
+     {
+      "part": "sign plate with number 3 on shaft",
+      "rows": "9-21",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "grey lower shaft and flared foot",
+      "rows": "23-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 22,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": {
+     "cap_rows": 7,
+     "cap_width": 15,
+     "shaft_width": 9,
+     "rounded_at_both_edges": true
+    },
+    "reads_as": "three_quarter",
+    "evidence": "The cap widens from 7 to 15 px over rows 1-4 and holds 15 px through row 7. Row 8 drops to 11 px, then the shaft is 9 px wide (rows 9-26). The white rows 2-5 read as the top surface. The teal rows 6-7 read as the front rim, and the dark row 8 as its underside shadow. The cap overhangs the 9 px shaft by 3 px on each side, so it reads as an ellipse plate rather than a flat band. Below it the shaft is a vertical face about 22 rows tall (rows 9-30), with a sign plate at rows 11-21 and a flared foot at rows 27-30. The foot has no distinct top surface, but it is not a major part."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a bollard-style exit-number post with a cap, a body and a number plate. It has 13 visible tones per tile, against 6 (bus-shelter), 12 (kiosk) and 20 (vending) for the references, so it is in the range of the shipped modern_city art. Near-flat coverage is 0%, and the references are 0-9%. The dark edge pixels are 0% neutral, so the outline is tinted, a dark blue-grey/brown material tone, not a black sticker line. The body shows a highlight-to-shadow ramp of about 4 steps, a little below the vending machine but comparable to the kiosk and bus shelter. It is small and simple, but it holds up next to the references without looking flatter or more sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18165
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cap plate (white top with teal underside)",
+      "rows": "1-7",
+      "evidence": "b",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": "6-7"
+     },
+     {
+      "part": "pole shaft with number sign",
+      "rows": "9-22",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base plinth",
+      "rows": "23-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 22,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": {
+     "cap_rows": 7,
+     "cap_width": 15,
+     "shaft_width": 9,
+     "rounded_at_both_edges": true
+    },
+    "reads_as": "three_quarter",
+    "evidence": "The width profile runs 7, 11, 13, then 15 for rows 4-7, then drops to 11 at row 8 and 9 for the shaft. The cap therefore widens from a narrow top and narrows again below, and overhangs the 9-wide shaft by 3 px on each side. Rows 2-5 are a light top plane. Rows 6-7 are a darker teal band that works as the front edge and underside shadow. The shaft below is a tall front face (rows 9-30) carrying the sign panel and a flared gray base."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a bollard-style sign post with a number plate. It has about 13 visible tones per tile, which is level with kiosk-a (12) and above bus-shelter-a (6), though below vending-a (20). Near-flat coverage is 0%, so there are no large flat fills. The dark edge pixels are 0% neutral, so the outline is tinted (a dark blue-grey toned to the adjacent material) and not a near-black sticker line, matching the references. The cylindrical body shows roughly 5 lightness steps with a highlight side and a shadow side, plus a lit cap. The number plate is small and fairly simple, but it fits next to the modern_city references without looking thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17172
+  }
+ ],
+ "decidedAt": "2026-10-25T04:33:42.104Z",
+ "cells": {
+  "16": [
+   "0b948d4650d74a73",
+   "930d7e3d7a33de98"
+  ],
+  "24": [
+   "05ee0c92e8f28cb8",
+   "20a2b978fdcef469",
+   "426b626d8907feca",
+   "457187a54ae9e049",
+   "5fe7ea5d7e83f7e6",
+   "95b53c4f2c73bc72",
+   "96f5155fd17ff6c6",
+   "9cb53281b50f7c4d",
+   "abca943ad082d073",
+   "b0ff0aa0dc8aacc4",
+   "f9083c2d080717c0",
+   "fe6d28db3cec4c8f"
+  ],
+  "32": [
+   "1af43105385687a9",
+   "270984543aaf6ca2",
+   "72b953dff4da459e"
+  ],
+  "48": [
+   "4991ca3154563a1d",
+   "76e9e005a10dfabe",
+   "794d8bad54dc1997",
+   "923379ae6a51eb6e",
+   "a1633987eba0c823",
+   "d888637f9ad0ac63"
+  ]
+ }
+}
