@@ -3981,6 +3981,15 @@
    ],
    "lead": "얼음 바위 다시 그림: 서리 낀 검푸른 바위 윗면(흰 테 없음) + 어두운 바위 위 반투명 얼음 앞면(48px 덩이, 고드름 제각각). 바닥은 고른 gap-ice-r1 A1."
   },
+  "gap-ice-r3": {
+   "module": "src/harnesses/dungeon-chipset/rounds/gap_ice_r3.py",
+   "wave": "gap",
+   "title": "얼음 동굴 벽 gap-ice-r3",
+   "items": [
+    "gap.ice_rock"
+   ],
+   "lead": "r2 평면 채움 반려 → 윗면 값 띠·서리 덩이·그늘 금, 앞면 결정면·빛 획·깊은 밑 그늘·2~7px 고드름, 48px 가운데 덩이 유지."
+  },
   "gap-tower-r1": {
    "module": "src/harnesses/dungeon-chipset/rounds/gap_tower_r1.py",
    "wave": "gap",

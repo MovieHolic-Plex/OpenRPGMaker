@@ -1205,24 +1205,22 @@
    "by": "delegated",
    "delegatedBy": "delegated by user to supervisor 2026-10-24",
    "evidence": "harness-data/dungeon-chipset/evidence/2026-10-24-theme-panel-11.json"
+  },
+  {
+   "round": "gap-ice-r3",
+   "item": "gap.ice_rock",
+   "line": "*",
+   "letter": "A2",
+   "sha256": "ce46d8170c04648520ff1b9205b7363b3622957b8b74a85aa556efd439571b13",
+   "note": "",
+   "at": "2026-10-25T21:36:07",
+   "by": "delegated",
+   "delegatedBy": "delegated by user to supervisor 2026-10-25",
+   "evidence": "harness-data/dungeon-chipset/evidence/2026-10-25-gap-ice-r3-panel.json"
   }
  ],
  "rejects": [],
  "runs": [
-  {
-   "round": "theme-walls-r10",
-   "at": "2026-10-24T23:33:03",
-   "fail": 0,
-   "warn": 0,
-   "warnByCode": {},
-   "polish": [],
-   "hashes": {
-    "wall.other_rim": {
-     "A1": "5f1e23f1bf15c5073ae41e0c6c9412ed161436e1ab489567ba3c3db9a704ce35",
-     "A2": "ba984d18389fe0795362cd1a1d24d0b3116dac797deb5f3238b7d34187176334"
-    }
-   }
-  },
   {
    "round": "theme-props-r8",
    "at": "2026-10-24T23:33:40",
@@ -1841,6 +1839,20 @@
     "gap.ice_rock": {
      "A1": "0fdeb0485fd9745c227e6bb29f6fdfc7a81958418946bd348f33dbca80fc5bea",
      "A2": "24efc5ad000fa69fa7d1496aa63176c40b95c9d1d72e380195b556590fbb7f88"
+    }
+   }
+  },
+  {
+   "round": "gap-ice-r3",
+   "at": "2026-10-25T21:27:28",
+   "fail": 0,
+   "warn": 0,
+   "warnByCode": {},
+   "polish": [],
+   "hashes": {
+    "gap.ice_rock": {
+     "A1": "ce044a44933533117ec15babb2e28910e8560dcce282c278a87122a2e829edb9",
+     "A2": "ce46d8170c04648520ff1b9205b7363b3622957b8b74a85aa556efd439571b13"
     }
    }
   }
