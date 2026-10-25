@@ -20,7 +20,7 @@ export type BgmInstallOptions = {
 const LOOPBACK = new Set(["127.0.0.1", "::1", "::ffff:127.0.0.1"]);
 
 /**
- * 이 엔드포인트는 gh 를 실행하고 디스크에 1.3GB 를 쓴다. 네트워크에 열어 두지 않는 것이
+ * 이 엔드포인트는 공개 BGM 릴리스를 받아 디스크에 약 1.3GB 를 쓴다. 네트워크에 열어 두지 않는 것이
  * 기본값이고, 원격 주소로 에디터를 여는 사람만 명시적으로 opt-in 한다.
  */
 function defaultAllowAddress(address: string | undefined, remoteAllowed: boolean): boolean {
@@ -45,7 +45,7 @@ function directorySize(directory: string): number {
 }
 
 /**
- * gh 를 stdio:'ignore' 로 띄우므로 다운로드 자체는 진행 정보를 내지 않는다.
+ * 공개 HTTPS 다운로드와 gh 대체 경로 모두 진행 이벤트를 내지 않는다.
  * installRelease 가 쓰는 스테이징 디렉터리 크기가 유일한 실제 진행률 신호다.
  */
 function stagedBytes(parent: string): number {

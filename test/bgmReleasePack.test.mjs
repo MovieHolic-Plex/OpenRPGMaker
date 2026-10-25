@@ -5,7 +5,8 @@ import { mkdtemp, mkdir, writeFile, readFile, readdir, rm, symlink, stat } from 
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { createServer } from 'node:http';
-import { once } from 'node:events';
+import { EventEmitter, once } from 'node:events';
+import { writeFileSync } from 'node:fs';
 
 let release = {};
 try { release = await import('../scripts/lib/bgm-release.mjs'); }
@@ -184,15 +185,28 @@ test('final full verification rejects a promotion that does not install its file
   await noTemps(f);
   assert.equal((await release.verifyInstalled({ root: f.root, manifest: f.manifest })).complete, false);
 });
+async function serve(t, handler) {
+  const server = createServer(handler);
+  t.after(() => new Promise((resolve) => { server.closeAllConnections?.(); server.close(resolve); }));
+  server.listen(0, '127.0.0.1');
+  await once(server, 'listening');
+  return `http://127.0.0.1:${server.address().port}`;
+}
+function ghChild() {
+  const child = new EventEmitter();
+  child.kill = () => {};
+  return child;
+}
 test('cancellation reaches a real download child and cleans lock/staging before rejecting', { timeout: 5000 }, async (t) => {
   const f = await fixture(t);
+  const blocked = await serve(t, (_req, res) => { res.writeHead(404).end(); });
   const controller = new AbortController();
   const { spawn } = await import('node:child_process');
   let child; let exited;
   t.after(() => { if (child && child.exitCode === null && child.signalCode === null) child.kill('SIGKILL'); });
   const operation = install(f, { archive: undefined, signal: controller.signal, download: async (options) => {
     assert.equal(options.signal, controller.signal);
-    return release.downloadRelease({ ...options, spawnProcess: () => {
+    return release.downloadRelease({ ...options, downloadBase: blocked, apiBase: blocked, spawnProcess: () => {
       child = spawn(process.execPath, ['-e', "process.on('message', () => {}); process.send('ready');"], { stdio: ['ignore', 'ignore', 'ignore', 'ipc'] });
       exited = once(child, 'exit');
       child.once('message', () => controller.abort(new Error('test cancellation')));
@@ -205,4 +219,134 @@ test('cancellation reaches a real download child and cleans lock/staging before 
   assert.ok(child.signalCode || child.exitCode !== null);
   await noTemps(f);
   assert.deepEqual(await readdir(local(f.root)), []);
+});
+test('public asset URL installs the release without gh', async (t) => {
+  api('downloadRelease');
+  const f = await fixture(t);
+  const archive = await readFile(f.archive);
+  const seen = [];
+  const base = await serve(t, (req, res) => {
+    seen.push(req.url);
+    if (req.url?.endsWith(`/${f.manifest.archive.fileName}`)) {
+      res.writeHead(200, { 'Content-Length': String(archive.length) });
+      res.end(archive);
+      return;
+    }
+    res.writeHead(500).end(req.url ?? '');
+  });
+  let gh = 0;
+  await release.installRelease({
+    root: f.root, manifest: f.manifest,
+    download: (options) => release.downloadRelease({
+      ...options, downloadBase: base, apiBase: base,
+      spawnProcess: () => { gh += 1; throw new Error('gh should not run'); },
+    }),
+  });
+  assert.equal(gh, 0);
+  assert.equal(seen.some((url) => url.includes('/releases/download/bgm-v1/')), true);
+  assert.equal(seen.some((url) => url.includes('/releases/tags/')), false);
+  assert.equal((await release.verifyInstalled({ root: f.root, manifest: f.manifest })).complete, true);
+  await noTemps(f);
+});
+test('API asset redirect is used when the browser download URL is missing', async (t) => {
+  const f = await fixture(t);
+  const archive = await readFile(f.archive);
+  let accept = '';
+  const base = await serve(t, (req, res) => {
+    if (req.url?.includes('/releases/download/')) { res.writeHead(404).end(); return; }
+    if (req.url?.endsWith('/releases/tags/bgm-v1')) {
+      const body = JSON.stringify({ assets: [{ id: 7, name: f.manifest.archive.fileName, size: archive.length, state: 'uploaded' }] });
+      res.writeHead(200, { 'Content-Type': 'application/json', 'Content-Length': String(Buffer.byteLength(body)) });
+      res.end(body);
+      return;
+    }
+    if (req.url?.endsWith('/releases/assets/7')) {
+      accept = req.headers.accept ?? '';
+      res.writeHead(302, { Location: '/payload.tar' }).end();
+      return;
+    }
+    if (req.url === '/payload.tar') {
+      res.writeHead(200, { 'Content-Length': String(archive.length) });
+      res.end(archive);
+      return;
+    }
+    res.writeHead(500).end(req.url ?? '');
+  });
+  let gh = 0;
+  await release.installRelease({
+    root: f.root, manifest: f.manifest,
+    download: (options) => release.downloadRelease({
+      ...options, downloadBase: base, apiBase: base,
+      spawnProcess: () => { gh += 1; throw new Error('gh should not run'); },
+    }),
+  });
+  assert.equal(gh, 0);
+  assert.equal(accept, 'application/octet-stream');
+  assert.equal((await release.verifyInstalled({ root: f.root, manifest: f.manifest })).complete, true);
+});
+test('hash mismatch does not fall back to gh', async (t) => {
+  const f = await fixture(t);
+  const archive = await readFile(f.archive);
+  let requests = 0;
+  const base = await serve(t, (_req, res) => {
+    requests += 1;
+    res.writeHead(200, { 'Content-Length': String(archive.length) });
+    res.end(Buffer.alloc(archive.length, 1));
+  });
+  let gh = 0;
+  await assert.rejects(release.downloadRelease({
+    manifest: f.manifest, directory: f.dir, downloadBase: base, apiBase: base,
+    spawnProcess: () => { gh += 1; return ghChild(); },
+  }), /SHA256/);
+  assert.equal(gh, 0);
+  assert.equal(requests, 1);
+});
+test('a refused redirect does not fetch that host and gh is the only fallback', async (t) => {
+  const f = await fixture(t);
+  const archive = await readFile(f.archive);
+  const base = await serve(t, (req, res) => {
+    if (req.url?.includes('/releases/download/')) {
+      res.writeHead(302, { Location: 'https://release-assets.evil.invalid/tar' }).end();
+      return;
+    }
+    res.writeHead(404).end();
+  });
+  const calls = [];
+  const dir = join(f.dir, 'gh-fallback');
+  await mkdir(dir);
+  const path = await release.downloadRelease({
+    manifest: f.manifest, directory: dir, downloadBase: base, apiBase: base,
+    spawnProcess: (_command, args) => {
+      calls.push(args);
+      writeFileSync(join(dir, f.manifest.archive.fileName), archive);
+      const child = ghChild();
+      process.nextTick(() => child.emit('close', 0));
+      return child;
+    },
+  });
+  assert.deepEqual(calls, [[
+    'release', 'download', f.manifest.tag, '--repo', f.manifest.repo,
+    '--pattern', f.manifest.archive.fileName, '--dir', dir,
+  ]]);
+  assert.equal(path, join(dir, f.manifest.archive.fileName));
+  assert.deepEqual(await release.hashFile(path), { bytes: archive.length, sha256: digest(archive) });
+});
+test('an asset whose size disagrees with the manifest does not fall back to gh', async (t) => {
+  const f = await fixture(t);
+  const base = await serve(t, (req, res) => {
+    if (req.url?.includes('/releases/download/')) { res.writeHead(404).end(); return; }
+    if (req.url?.endsWith('/releases/tags/bgm-v1')) {
+      const body = JSON.stringify({ assets: [{ id: 7, name: f.manifest.archive.fileName, size: 1, state: 'uploaded' }] });
+      res.writeHead(200, { 'Content-Type': 'application/json', 'Content-Length': String(Buffer.byteLength(body)) });
+      res.end(body);
+      return;
+    }
+    res.writeHead(500).end();
+  });
+  let gh = 0;
+  await assert.rejects(release.downloadRelease({
+    manifest: f.manifest, directory: f.dir, downloadBase: base, apiBase: base,
+    spawnProcess: () => { gh += 1; return ghChild(); },
+  }), /신뢰 매니페스트/);
+  assert.equal(gh, 0);
 });

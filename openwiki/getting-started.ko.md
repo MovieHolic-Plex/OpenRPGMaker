@@ -151,23 +151,22 @@ Resource Manager에서 16px·32px·48px 격자 PNG를 임포트해 쓸 수 있�
 | BGM 카탈로그 전체 281곡 | [BGM v1 Release](https://github.com/MovieHolic-Plex/OpenRPGMaker/releases/tag/bgm-v1) | 아래 명령 |
 | 사용자가 추가한 그림·음원 | 프로젝트 데이터 | 해당 프로젝트 불러오기 |
 
-#### GitHub CLI로 설치
+#### 공개 릴리스로 설치
 
-이 저장소는 공개되어 있습니다. [GitHub CLI (`gh`)](https://cli.github.com/)가 필요합니다.
+이 저장소와 [BGM v1 Release](https://github.com/MovieHolic-Plex/OpenRPGMaker/releases/tag/bgm-v1)는 공개되어 있습니다. `gh` 로그인 없이 설치합니다.
 
 ```bash
-gh auth login
 npm run bgm:install
 npm run bgm:verify
 npm run dev
 ```
 
-`bgm:install`은 `bgm-v1`의 `rpg-zzu-bgm-v1.tar`를 받아, 코드에 고정된 `assets/bgm-release-v1.json`의 크기와 SHA-256으로 검증한 뒤 설치합니다. 완료 메시지는 **281/281곡 검증 완료**입니다. 이미 전곡이 정상 설치돼 있으면 다시 다운로드하지 않습니다.
+`bgm:install`은 `bgm-v1`의 `rpg-zzu-bgm-v1.tar`를 HTTPS로 받아, 코드에 고정된 `assets/bgm-release-v1.json`의 크기와 SHA-256으로 검증한 뒤 설치합니다. 릴리스 페이지의 직접 주소가 거절되면 공개 GitHub API로 같은 파일을 받습니다. 둘 다 거절될 때만 `gh`로 한 번 더 시도합니다. 완료 메시지는 **281/281곡 검증 완료**입니다. 이미 전곡이 정상 설치돼 있으면 다시 다운로드하지 않습니다.
 
-#### gh 없이 수동 설치 / 다른 컴퓨터로 옮기기
+#### 수동 설치 / 다른 컴퓨터로 옮기기
 
 1. [BGM v1 Release](https://github.com/MovieHolic-Plex/OpenRPGMaker/releases/tag/bgm-v1)를 엽니다.
-2. **Assets의 `rpg-zzu-bgm-v1.tar`**를 다운로드합니다. `Source code (zip)`은 음원 팩이 아닙니다.
+2. **Assets의 `rpg-zzu-bgm-v1.tar`**를 다운로드합니다. 주소는 `https://github.com/MovieHolic-Plex/OpenRPGMaker/releases/download/bgm-v1/rpg-zzu-bgm-v1.tar` 입니다. `Source code (zip)`은 음원 팩이 아닙니다. 그 주소가 404이면 `npm run bgm:install`을 그대로 실행하세요.
 3. 압축을 직접 풀지 말고, 프로젝트 폴더에서 받은 파일을 지정합니다. 경로에 공백이 있으면 따옴표로 감싸세요.
 
 ```bash
