@@ -5,6 +5,23 @@
 
 <!-- releases -->
 
+## 0.336.0 — 2026-10-25
+
+### 기능
+
+- **ai** — horror sound presets and ambient (bgs) beat for v2 events (#3430) (`b5439b8`)
+- **ai** — v2 puzzle-chain verb, sealed-room fill and horror finish checks (#3428) (`691a0a9`)
+
+### 수정
+
+- **player** — shop and save/load windows show whole rows and unclipped text (#3429) (`ff023e0`)
+
+### 잡무
+
+- **deps-dev** — bump undici from 6.29.0 to 6.29.1 (#3356) (`cc47bb6`)
+- **deps-dev** — bump fast-uri from 3.1.8 to 3.1.9 (#3355) (`1de8e96`)
+- **deps-dev** — bump happy-dom from 21.0.3 to 21.0.4 (#3354) (`bd1d9d9`)
+
 ## 0.335.3 — 2026-10-25
 
 ### 수정
