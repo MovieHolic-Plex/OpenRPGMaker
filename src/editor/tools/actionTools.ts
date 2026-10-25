@@ -294,7 +294,7 @@ const removeFieldSpawn: ToolDefinition = {
 
 const setFactions: ToolDefinition = {
   name: "set_factions",
-  description: "진영(faction) 레지스트리와 진영 간 태도를 설정한다. 태도는 -2 최악의 적 / -1 적 / 0 중립 / 1 우호 / 2 동맹이며, 적지 않은 쌍은 중립이다. aggression 은 0 비공격 / 1 적에게만 선공 / 2 중립에게도 선공 / 3 광폭. 예약 id 'player'와 'enemy'는 자동으로 있고 서로 적이다. 적 레코드나 필드 스폰에 factionId 를 줘서 소속을 지정하면 NPC 들이 서로 싸운다.",
+  description: "진영(faction) 레지스트리와 진영 간 태도를 설정한다. 태도는 -2 최악의 적 / -1 적 / 0 중립 / 1 우호 / 2 동맹이며, 적지 않은 쌍은 중립이다. aggression 은 0 비공격 / 1 적에게만 선공 / 2 중립에게도 선공 / 3 광폭. 예약 id 'player'와 'enemy'는 자동으로 있고 서로 적이다. 적 레코드나 필드 스폰에 factionId 를 줘서 소속을 지정하면 NPC 들이 서로 싸운다. 보이는 필드 적(place_field_enemy)은 그 도구의 factionId(생략 = 선두 적의 factionId)로 진영을 달면, 적대(-1 이하) 진영끼리 2칸 안에서 마주칠 때 맵 위에서 짧게 부딪히고 약한 쪽이 사라진다(플레이어는 둘 다에게 덮쳐진다).",
   mode: "write",
   domains: ["database"],
   parameters: {

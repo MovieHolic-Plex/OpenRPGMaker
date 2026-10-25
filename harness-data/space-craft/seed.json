@@ -10141,6 +10141,76 @@
    ],
    "verify": "configure_story_journal(writers 이리스·카엘, lines write 여러 개 + erase + reread) / meta.oprnStoryJournal 존재 / 이벤트에 Journal Line write·erase·reread / 출하 플레이어 ESC 메뉴 일지에 줄이 쌓이고 지운 줄이 흐리게, 다시 읽은 뒤 되살아남 / 세이브·로드 뒤 일지 유지",
    "suiteCategory": "fs-journal"
+  },
+  {
+   "category": "game",
+   "kind": "logic",
+   "mode": "balanced",
+   "startTileset": "beodeul_city",
+   "startBuild": [
+    {
+     "tool": "author_beodeul_town",
+     "args": {
+      "mapId": "map_blank_start",
+      "name": "버들 마을",
+      "houseCount": 4,
+      "theme": "river",
+      "seed": 11
+     }
+    },
+    {
+     "tool": "place_npc",
+     "args": {
+      "mapId": "map_blank_start",
+      "id": "npc_chief",
+      "name": "촌장",
+      "x": 20,
+      "y": 16,
+      "movement": "fixed",
+      "graphic": {
+       "query": "노인 남성"
+      },
+      "pages": [
+       {
+        "lines": [
+         "어서 오게, 버들 마을일세."
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "tool": "place_npc",
+     "args": {
+      "mapId": "map_blank_start",
+      "id": "npc_smith",
+      "name": "대장장이",
+      "x": 14,
+      "y": 20,
+      "movement": "fixed",
+      "graphic": {
+       "query": "아저씨"
+      },
+      "pages": [
+       {
+        "lines": [
+         "망치 소리 좋지?"
+        ]
+       }
+      ]
+     }
+    }
+   ],
+   "id": "fs2-battle-guest",
+   "prompt": "회수자 HP 60% 되면 발렌이 손님으로 들어와서 자동으로 싸우게 해 줘. 얼음 위에서 등 같이 띄웠을 때만.",
+   "requires": [
+    "회수자 적·트룹과 발렌 배우(없으면 upsert_enemy·upsert_troop·upsert_actor)",
+    "add_battle_guest atEnemyHpPercent 60",
+    "requireSwitchId 로 「등 같이 띄움」 스위치 조건",
+    "전투 페이지 changeParty 로 흉내내지 않음"
+   ],
+   "verify": "add_battle_guest(troopId 회수자 트룹, actorId 발렌, atEnemyHpPercent 60, enemyId 회수자, requireSwitchId) / troop.battleGuests 에 발렌 1건·조건 enemyHpBelow 60 + switch / simulate_battle switchesOn 으로 phaseCoverage battle-guest firedRuns>0 / 파티(startActorIds)에 발렌 없음",
+   "suiteCategory": "fs2-guest"
   }
  ],
  "gates": {

@@ -302,6 +302,7 @@ export const TOOL_LABELS: Readonly<Record<string, ToolLabelEntry>> = {
   simulate_battle: inspect("전투 시뮬레이션", "shield"),
   tune_enemy: people("적 능력치 조정", "user"),
   author_boss_phases: people("보스 페이즈", "user"),
+  add_battle_guest: people("전투 중 손님", "user"),
   upsert_troop_battle_page: people("전투 이벤트 편집", "flag"),
   delete_troop_battle_page: people("전투 이벤트 삭제", "flag"),
   rename_switch: system("스위치 번호 바꾸기"),
