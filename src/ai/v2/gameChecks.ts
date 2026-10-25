@@ -566,7 +566,9 @@ export function gameContentProblems(before: Project, after: Project, task: strin
     const op = after.system.opening as { enabled?: boolean; scenes?: { narration?: string; resourceId?: string }[] } | undefined;
     const factory = !!op?.enabled && (op.scenes ?? []).some((sc) => /강을 낀 왕국에는 오래도록 전쟁이 없었다/u.test(sc.narration ?? "") || sc.resourceId === "oprn-still-kingdom-day");
     const newGame = after.meta.title !== before.meta.title || /게임을? (하나 )?만들|게임 하나|새 게임|만들고 싶어/u.test(task);
-    if (factory && newGame && JSON.stringify(op) === JSON.stringify(before.system.opening)) {
+    // 요청이 오프닝을 고치라는데 공장 기본이 그대로면, 설정(켜기·음악)만 바꿨어도 문제다 — 「오프닝을 새로 만들었다」는 거짓 보고가 났다(2026-10-25 G35).
+    const openingAsk = /오프닝|opening|시작할 때 나오|처음 (시작할 때|나오는)/iu.test(task);
+    if (factory && (openingAsk || newGame && JSON.stringify(op) === JSON.stringify(before.system.opening))) {
       problems.push("[게임 검사 오프닝] 게임을 새로 만들었는데 오프닝이 프로젝트 기본(「강을 낀 왕국에는 오래도록 전쟁이 없었다」)이 그대로 켜져 있다 — 새 게임 첫 화면에 엉뚱한 이야기가 나온다. plan_opening/set_opening 으로 이 게임 이야기(주인공·목표) 몇 장면으로 바꾸거나, 오프닝을 원하지 않으면 set_opening{enabled:false}.");
     }
   }
@@ -597,9 +599,9 @@ export function gameContentProblems(before: Project, after: Project, task: strin
 
 /** 요청과 상관없이 바뀌면 안 되는 것 — 기존 NPC 의 그림·이름이 요청 없이 바뀌었는지(고치기 요청에서 흔한 부작용). */
 export function unaskedChanges(before: Project, after: Project, task: string): string[] {
-  if (/그림|외형|모습|얼굴|옷|칩|graphic|sprite|face/iu.test(task)) return [];
+  const artAsk = /그림|외형|모습|얼굴|옷|칩|graphic|sprite|face/iu.test(task);
   const out: string[] = [];
-  for (const map of Object.values(before.maps)) {
+  if (!artAsk) for (const map of Object.values(before.maps)) {
     const now = after.maps[map.id];
     if (!now) continue;
     for (const ev of map.events ?? []) {
@@ -610,9 +612,25 @@ export function unaskedChanges(before: Project, after: Project, task: string): s
       if (g0 !== "null" && (g0 !== g1 || f0 !== f1)) out.push(`[게임 검사 부작용] 기존 「${ev.name || ev.id}」의 그림·얼굴이 요청 없이 바뀌었다 — 원래 graphic·face 를 그대로 둔다.`);
     }
   }
+  // 요청 없이 지운 이야기 이벤트(2026-10-25 G31: 회상을 넣어 달라는 요청에 하나뿐인 오프닝 컷신 ev_v2cut_start 를 지우고 보고도 안 했다).
+  // 장소를 다시 지으며 바뀐 것·자리표시·같은 이름으로 다시 만든 것은 빼고, 명령이 3개 이상인 이벤트만 센다.
+  if (!/지워|지우|삭제|없애|빼\s*줘|빼고|치워|remove|delete/iu.test(task)) {
+    const names = new Set(Object.values(after.maps).flatMap((m) => (m.events ?? []).map((e) => e.name || e.id)));
+    const ids = new Set(Object.values(after.maps).flatMap((m) => (m.events ?? []).map((e) => e.id)));
+    for (const map of Object.values(before.maps)) {
+      if (!after.maps[map.id]) continue;
+      for (const ev of map.events ?? []) {
+        if (ids.has(ev.id) || names.has(ev.name || ev.id) || /placeholder|자리표시/iu.test(`${ev.id} ${ev.name ?? ""}`)) continue;
+        const size = (ev.pages ?? []).reduce((n, pg) => n + (pg.commands?.length ?? 0), 0);
+        const auto = (ev.pages ?? []).some((pg) => ["auto", "parallel"].includes(String((pg.trigger as { kind?: string } | undefined)?.kind ?? "")));
+        if (size < 3) continue;
+        out.push(`[게임 검사 부작용] 요청에 없는데 기존 이벤트 「${ev.name || ev.id}」(${ev.id}${auto ? ", 자동 실행 컷신" : ""}, 명령 ${size}개)를 지웠다 — 그 장면·대사가 게임에서 사라진다. 요청과 상관없으면 같은 내용으로 되살리고, 일부러 대신했으면 보고에 무엇을 왜 지웠는지 적는다.`);
+      }
+    }
+  }
   // 이미 있던 데이터(아이템·장비·적·기술·직업)를 요청이 그 이름을 말하지 않았는데 고쳤다 — 값·능력치가 게임 전체에서 바뀐다(2026-10-24 스위트).
   const bdb = before.database as unknown as Record<string, unknown>, adb = after.database as unknown as Record<string, unknown>;
-  for (const section of ["items", "weapons", "armors", "enemies", "skills", "classes", "actors"]) {
+  if (!artAsk) for (const section of ["items", "weapons", "armors", "enemies", "skills", "classes", "actors"]) {
     const old = new Map(((bdb[section] as Obj[] | undefined) ?? []).map((r) => [String(r.id), r]));
     for (const r of (adb[section] as Obj[] | undefined) ?? []) {
       const prev = old.get(String(r.id));
