@@ -1,0 +1,388 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "1253bc1d3d0992b6ee1cadec0d1188c5c9e088cc92229c6a7897f62f38563490",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "지하철 출구 번호 표지 3",
+ "label": "modern_city/street-kr/mc-prop-kr-exit-3",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)",
+  "3/4: 기둥 머리가 타원 판이 아님(위아래 둥글림 false, 몸통보다 4 튀어나옴 < 6) (4/4)",
+  "3/4: 투영이 3/4 아님(front_elevation) (3/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)",
+   "기둥 머리가 타원 판이 아님(위아래 둥글림 false, 몸통보다 4 튀어나옴 < 6) (4/4)",
+   "투영이 3/4 아님(front_elevation) (3/4)"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "bus-shelter-a",
+   "kiosk-a",
+   "vending-a"
+  ],
+  "scale": 2,
+  "score": 7,
+  "refSet": {
+   "id": "modern_city",
+   "chipset": "modern_city",
+   "fallback": false,
+   "hash": "dc20de17343e77e8"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 14,
+  "tileColorsP90": 14,
+  "darkV5": 36,
+  "nearBlackEdge": 0.91,
+  "opaqueTiles": 2
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "white sign head / cap box",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "8"
+     },
+     {
+      "part": "white head front face",
+      "rows": "6-8",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "post body with teal header band, yellow number panel and grey base",
+      "rows": "11-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 22,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": {
+     "cap_rows": 9,
+     "cap_width": 14,
+     "shaft_width": 10,
+     "rounded_at_both_edges": false
+    },
+    "reads_as": "three_quarter",
+    "evidence": "The white head (rows 0-9) widens from 10 to 12 to 14 and then drops to a 2px neck at row 10. It is a flat-bottomed box that overhangs the 10px post, not an ellipse plate. Columns x=4 and x=11 show light rows 1-4, a slightly darker line at row 5 (L=202), light rows 6-7 and a shadow row at row 8 (L=113). That is a weak top band with a front-edge line, then a front face. The post below (rows 11-29) is a vertical face only. It has a dark outline row, a teal band at rows 12-13, a yellow panel with a '3' at rows 14-21 and a grey base at rows 23-28. It shows no horizontal surface of its own, so not all major parts have a top. The cap is not rounded at both edges."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a small bollard-style sign: a pale cap, a grey-blue body with a yellow panel and a '3'. Measured 13 visible tones per full tile, which is above bus-shelter-a (6) and close to kiosk-a (12), though below vending-a (20). Near-flat coverage is 9%, equal to bus-shelter-a and well below nothing worse than the references. The dark edge pixels are 0% neutral, so the outline is tinted (dark blue-grey/brown) rather than black, matching the references. Shading is about 4 steps on the body and cap, a little shallower than the 5-6 on kiosk-a and vending-a. Texture is limited to a few edge highlights and the sign glyph, with no grain. It is a thin, simple prop and sits acceptably next to the references on the primary facts, so it is not a sticker-like fail.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "기둥 머리가 타원 판이 아님(위아래 둥글림 false, 몸통보다 4 튀어나옴 < 6) (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+     "기둥 머리가 타원 판이 아님(위아래 둥글림 false, 몸통보다 4 튀어나옴 < 6) (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 26538
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "sign box at the top (white panel with a teal symbol)",
+      "rows": "0-9",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "post body (teal band, yellow panel with a '3', gray base)",
+      "rows": "11-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 19,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": {
+     "cap_rows": 10,
+     "cap_width": 14,
+     "shaft_width": 10,
+     "rounded_at_both_edges": false
+    },
+    "reads_as": "front_elevation",
+    "evidence": "The top part (rows 0-9) is a sign box seen face-on. Its width goes 10, 12, 14 and then stays at 14 until row 9, where it ends flat above a 2px neck at row 10. That is a rounded-top hat with a flat bottom, not an ellipse plate bounded by narrower rows above and below. The rows are a uniform light face with a symbol and have no front-edge line followed by eave shadow, so they do not show a horizontal top surface. The post below (rows 11-29, width 10) is a flat vertical face of a teal band, a yellow panel with the '3', and a gray base, with no top surface and no visible side face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small standing sign post with a pale cap, a dark post body and a yellow number panel with a '3'. Measured facts: 13 visible tones per 16x16 tile, against 6 (bus-shelter), 12 (kiosk) and 20 (vending). Near-flat coverage is 9%, equal to bus-shelter-a and below nothing worse than the references. 0% of dark edge pixels are neutral, so the outlines carry a tint (dark blue-grey/brown) and are not near-black stickers. Shading is 3-4 steps on the cap and body, slightly fewer than the vending machine, but similar to the kiosk and shelter. The object is thin and small, so some sparseness is expected. A careful artist would accept it next to these references, and it does not look flatter or more sticker-like than bus-shelter-a.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 0행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 0행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 14318
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "sign head (white panel with symbol)",
+      "rows": "0-9",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "post top teal band",
+      "rows": "12-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "post front with yellow number panel",
+      "rows": "14-21",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "post gray base",
+      "rows": "23-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 18,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": {
+     "cap_rows": 10,
+     "cap_width": 14,
+     "shaft_width": 10,
+     "rounded_at_both_edges": false
+    },
+    "reads_as": "front_elevation",
+    "evidence": "The sign head is a flat front-facing panel, 14 wide with the top corners chamfered over rows 0-2. It ends flat at row 9 and sits on a 2px neck at row 10, so it is a hat or box shape and not an ellipse plate. Row 8 is only a darker bottom edge of the panel, with no horizontal surface above it. The post below (rows 11-29, width 10) is all vertical faces: a 2-row teal band at rows 12-13 (a rim, not a top surface), a yellow number panel at rows 14-21, and a gray base at rows 23-28. No row range has an edge line plus eave shadow or an ellipse. The width profile goes 10, 12, 14 and then drops to 2, which is not an overhanging cap over a shaft."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a small bollard-like sign post: a pale cap, a dark-teal body with a few shading steps, and a yellow number plate with a dark digit. Measured facts: 13 visible tones per tile, which is above bus-shelter-a (6) and close to kiosk-a (12), though below vending-a (20). Near-flat coverage is 9%, equal to bus-shelter-a and not above any reference. The dark edge pixels are 0% neutral, so the outline is tinted, a dark teal/brown-ish material tone rather than a black sticker line. It has about 4 visible steps on the body against roughly 5 on the references. The piece is small and simple, with less grain than vending-a, but it holds up next to the shipped modern_city references and is not thinner or flatter than the bus shelter.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 0행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 0행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18145
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "white sign head / cap (rows 0-9, width 10→12→14)",
+      "rows": "0-9",
+      "evidence": "none",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "post body with teal header band, yellow '3' panel and grey base",
+      "rows": "11-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": "11-13"
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 19,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": {
+     "cap_rows": 10,
+     "cap_width": 14,
+     "shaft_width": 10,
+     "rounded_at_both_edges": false
+    },
+    "reads_as": "front_elevation",
+    "evidence": "The head widens from 10 to 14 px over rows 0-3 and then stays at 14 until row 9. It is rounded only at the top corners and ends flat, so it is a hat shape rather than an ellipse plate narrowing again below. Its content is face-on: white panel, a teal symbol on rows 3-5, one darker row at row 8 and an outline at row 9. There is no front-edge line with eave shadow that marks a horizontal top. Row 10 is a 2 px neck. The body (rows 11-29, width 10) is a flat vertical face made of a teal band, a yellow panel with a '3' and a grey base. It shows no horizontal top surface, so the whole object reads as a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 4,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small standing pole prop with a cap, a body and a numbered '3' sign. It reads at the same scale and in the same style as the modern_city references. Measured facts: 13 visible tones per full tile is above bus-shelter-a (6) and kiosk-a (12) and below vending-a (20). Near-flat coverage is 9%, equal to bus-shelter-a and low. Dark edge pixels are 0% near-neutral, so the outline is tinted and follows the adjacent material rather than being a neutral black line. By eye the body has a light top cap, a mid-tone shaft with a darker side, and a lit sign panel with a dark number. That is about 4 steps, similar to the references' shading on their small props. Texture is modest but present, with no large flat fills. A careful artist would accept it beside the references without it looking thinner or more sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 0행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 0행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15853
+  }
+ ],
+ "decidedAt": "2026-10-24T14:12:51.226Z",
+ "cells": {
+  "16": [
+   "e891008e4c49d538",
+   "f872911273b4facb"
+  ],
+  "24": [
+   "4a7fd966c1f4394a",
+   "4b62fcfc2385420f",
+   "5188e77b90972ab5",
+   "57f19315569d5179",
+   "5ecb96c1ec7c4d94",
+   "6914a031fb2b0ba3",
+   "73fcb5776269760a",
+   "d792c467819b7684",
+   "d87d5f78a16c9cca",
+   "e0154550b8b87b9e",
+   "e41995fc9e579cb8",
+   "eb4100ebc48a331f"
+  ],
+  "32": [
+   "196da08946842d08",
+   "b4566e3fb8e2369a",
+   "f9bbb7526af84f86"
+  ],
+  "48": [
+   "0ee7cf6ed75def27",
+   "80466932652a68a9",
+   "b4b933a7fad1d7cc",
+   "baff9f034ab498b1",
+   "bfbcd6bf9f3f82bb",
+   "f701d9584018bf30"
+  ]
+ }
+}

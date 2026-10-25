@@ -61,7 +61,7 @@ export type AnimaticLayer = {
   crop?: { x: number; y: number; width: number; height: number };
   sheet?: { frameWidth: number; frameHeight: number; columns: number; count: number; fps: number; loop?: boolean };
   typography?: { fontSize?: number; weight?: number; align?: 'left' | 'center' | 'right'; typewriterMs?: number };
-  particles?: { preset: 'rain' | 'snow' | 'sparks' | 'dust' | 'stars'; count: number; seed: number; speed?: number; size?: number };
+  particles?: { preset: AnimaticParticlePreset; count: number; seed: number; speed?: number; size?: number };
   region?: AnimaticRegionLoop;
   shaft?: AnimaticShaft;
   glow?: AnimaticGlow;
@@ -90,6 +90,12 @@ export type OpeningAnimatic = {
   layers: AnimaticLayer[]; camera?: AnimaticCamera; audioCues?: AnimaticAudioCue[];
   transition?: { kind: 'cut' | 'fade' | 'wipe-left' | 'wipe-right' | 'iris' | 'flash' | 'dither'; durationMs: number; color?: string };
 };
+/**
+ * Seeded particle presets. petals = cherry-blossom petals drifting down and sideways while they tumble (two-tone flake, the flat
+ * side flips); paper = A4 sheets fluttering down, rotating as they fall (white rectangles with a shade edge).
+ */
+export type AnimaticParticlePreset = 'rain' | 'snow' | 'sparks' | 'dust' | 'stars' | 'petals' | 'paper';
+export const ANIMATIC_PARTICLE_PRESETS: readonly AnimaticParticlePreset[] = ['rain', 'snow', 'sparks', 'dust', 'stars', 'petals', 'paper'];
 export const ANIMATIC_LIMITS = { layers: 32, keysPerTrack: 128, audioCues: 32, particles: 200, captionCues: 32, dimension: 1920 } as const;
 export const ANIMATIC_TRANSITION_KINDS = ['cut', 'fade', 'wipe-left', 'wipe-right', 'iris', 'flash', 'dither'] as const;
 export const ANIMATIC_REGION_MODES = ['scroll-x', 'scroll-y', 'palette-cycle', 'strip'] as const;
@@ -241,7 +247,7 @@ export function validateOpeningAnimatic(value: unknown, durationMs: number, path
     }
     if (l.kind === 'particles') {
       const q = object(l.particles, p + '.particles'); fields(q, ['preset', 'count', 'seed', 'speed', 'size'], p + '.particles');
-      option(q.preset, ['rain', 'snow', 'sparks', 'dust', 'stars'], p + '.preset'); if (!q.preset) throw Error(p + ': particle preset required');
+      option(q.preset, ANIMATIC_PARTICLE_PRESETS, p + '.preset'); if (!q.preset) throw Error(p + ': particle preset required');
       number(q.count, p + '.count', 1, ANIMATIC_LIMITS.particles, true); number(q.seed, p + '.seed', 0, 2147483647, true);
       if (q.speed !== undefined) number(q.speed, p + '.speed', 0, 2000); if (q.size !== undefined) number(q.size, p + '.size', 0.5, 100);
     } else if (l.particles !== undefined) throw Error(p + ': particles on nonparticle layer');

@@ -1,0 +1,337 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "13ec3c7efcd60289d70e23fbb0d02444bdae25c6c6df25a976a36a22dc8c1be7",
+ "width": 16,
+ "height": 32,
+ "kind": "other",
+ "name": "세로 입간판 「약국」",
+ "label": "modern_city/street-kr/mc-prop-kr-sign-pharm",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "bus-shelter-a",
+   "kiosk-a",
+   "vending-a"
+  ],
+  "scale": 2,
+  "score": 7,
+  "refSet": {
+   "id": "modern_city",
+   "chipset": "modern_city",
+   "fallback": false,
+   "hash": "dc20de17343e77e8"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 17,
+  "tileColorsP90": 17,
+  "darkV5": 32,
+  "nearBlackEdge": 1,
+  "opaqueTiles": 2
+ },
+ "eye": {
+  "verdicts": [
+   "borderline",
+   "borderline",
+   "borderline",
+   "right",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top header band of sign",
+      "rows": "1-4",
+      "evidence": "a",
+      "front_edge_line_row": 4,
+      "eave_shadow_rows": "5-5"
+     },
+     {
+      "part": "green sign panel with Korean lettering",
+      "rows": "6-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base strip",
+      "rows": "30-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 25,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "At the top, rows 1-3 are a white band, lighter than the face below, with rounded upper corners (widths 10, 12, 14, then 15). Row 4 is a grayish front-edge line (L=132). Row 5 is a dark row (L=17) that works as eave shadow. Together these give a roughly 4-row top surface. Below it, rows 6-29 are a green panel with white lettering, and row 30 is a gray base line. That makes a front face of about 25 rows. No receding side face is drawn. The top is rounded only at its upper corners and has a flat bottom edge, so it is not an ellipse. It is accepted under evidence (a) because it has an edge line and a shadow row, though it is a marginal, thin top."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a vertical green sign with the Korean text 「약국」 in white, a dark green-teal outline and a lighter top edge, which matches the style of the neighbouring modern_city props. Measured facts: 14 visible tones per tile against 6 (bus-shelter), 12 (kiosk) and 20 (vending); 0% near-flat coverage; 0% near-neutral dark edge pixels, so the outline is tinted, not a black sticker line. The surface has some panel shading and edge highlights, though the sign body is fairly simple, so texture is only 'some'. For a thin single-sign prop it is at least as rich as the bus-shelter and kiosk references and would sit acceptably next to them, so it passes.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15160
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top cap band of the sign",
+      "rows": "1-4",
+      "evidence": "a",
+      "front_edge_line_row": 4,
+      "eave_shadow_rows": "5-5"
+     },
+     {
+      "part": "green sign panel with Korean lettering (front face)",
+      "rows": "6-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "bottom base strip",
+      "rows": "30-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 24,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The tall sign has a light top band in rows 1-3 with a gray front-edge line in row 4. Row 5 is a dark outline or shadow row directly under it. The band's rounded upper corners (widths 10, 12, 14, then 15) make it a hat-like top, not an ellipse. A green panel with white lettering fills rows 6-29 as the front face, and a gray base strip sits at row 30. No isometric side face is drawn. The top is a thin 4-row cap with an edge line and shadow, so it is a marginal top surface. The front face is clearly 24 rows."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a tall dark-green signboard with light 'Pharmacy' lettering, a lighter top panel and a rim highlight. Measured facts support it: 14 visible tones per tile against 6 (bus-shelter), 12 (kiosk) and 20 (vending), 0% near-flat coverage, and 0% neutral dark edge pixels, so the outline is tinted dark green rather than black. Shading depth is about 4 steps on the green body (rim highlight, mid, dark, deep edge), a little under the references at about 5. Texture is modest: the lettering and edge gradient give some variation, but the panel face is fairly smooth with little grain. By eye, density sits between kiosk and vending and clearly above bus-shelter. It is slightly simpler than the best references but would sit acceptably next to them without looking sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15533
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "sign top cap band",
+      "rows": "1-4",
+      "evidence": "a",
+      "front_edge_line_row": 4,
+      "eave_shadow_rows": "5-5"
+     },
+     {
+      "part": "green sign panel with lettering (front face)",
+      "rows": "6-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base strip",
+      "rows": "30-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 25,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "A tall standing sign with a light band at rows 1-3 under rounded top corners (widths 10, 12, 14, then 15). Row 4 is a mid-gray front-edge line (L=132), and row 5 is a dark outline row that works as eave shadow. Below it the green lettered panel runs rows 6-29, about 25 rows of vertical front face, and row 30 is a gray base strip. The top band is thin at about 4 rows, but it has an edge line and a shadow row, so it counts as a top surface under (a). No receding side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a vertical green sign box with light 약국 lettering. Measured facts put it at 14 visible tones per tile, between kiosk-a (12) and vending-a (20) and well above bus-shelter-a (6). Near-flat coverage is 0%, so the body has no large flat fills. Its dark edge pixels are 0% neutral, so the outline leans dark green rather than black, which matches the references (all 0%). The picture shows a body with a lighter top edge, a mid body, and a darker side and base, so I count about 5 shading steps, comparable to the references. The texture is more modest than vending-a, but it sits at the kiosk-a level, and nothing reads as a sticker-style flat shape. Because the sign is thin, the density judgement rests on the measured facts and my eye, and neither shows it as flatter than the shipped references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17434
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top cap of the sign board",
+      "rows": "0-4",
+      "evidence": "a",
+      "front_edge_line_row": 4,
+      "eave_shadow_rows": "5-5"
+     },
+     {
+      "part": "green panel face with Hangul lettering",
+      "rows": "6-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "grey base strip",
+      "rows": "30-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 26,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The sign is a tall board. Rows 1-3 are a near-white band (L about 238). Row 4 is a greyer front-edge line (#738a90), and row 5 is a dark row that works as eave shadow. That gives a top band of about 4-5 rows with a front-edge line, which meets evidence (a). The top corners are rounded (width 10, 12, 14, then 15), but the band sits on a full-width body, so it is not a hat on a narrower shaft. Below it, rows 6-29 form a green front face with white lettering, and rows 30-31 are a grey base strip. The front face is about 26 rows. No receding side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a vertical dark-green sign with light Hangul text '약국'. Measured facts: 14 visible tones per 16x16 tile against 6 (bus-shelter), 12 (kiosk) and 20 (vending) for the references, so it sits within the reference range. Near-flat coverage is 0%, which is at or below every reference (bus-shelter 9%). Dark edge pixels are 0% neutral, so the outline is tinted (dark green) and not a sticker-style black line. The panel has a visible highlight edge, a mid body and a dark side, plus a frame and base, giving about 5 steps comparable to the references. Texture is modest, with some variation on the panel but little grain, which is acceptable for a simple sign. Structure and shading match the shipped modern_city props, so it would sit next to them without looking thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15563
+  }
+ ],
+ "decidedAt": "2026-10-25T04:47:30.163Z",
+ "cells": {
+  "16": [
+   "1ceaadf35d70ee96",
+   "51ba01fd3c1cb03b"
+  ],
+  "24": [
+   "14488e0d856b3650",
+   "21aa60c5f7478a52",
+   "3caf174edefccd76",
+   "56a1ade9ec5808c4",
+   "5b0260a5593dc7a4",
+   "5da4b24bd595c74a",
+   "815db2206fd92ab6",
+   "84ab310c8827ed9f",
+   "8ca3cfaad189e445",
+   "c66b9ff910c1df08",
+   "cb465131615fc70c",
+   "face9fba64d1e0f6"
+  ],
+  "32": [
+   "27001fd8116881ba",
+   "2bbbd405a725b2ed",
+   "d5c7c0447ea29b1e"
+  ],
+  "48": [
+   "572b33dbb3a6ec47",
+   "5f250119d609fb7b",
+   "76af58a7beacba1f",
+   "b2969ab81a385624",
+   "d5351dc335421e11",
+   "f79e2fc033ab4c71"
+  ]
+ }
+}

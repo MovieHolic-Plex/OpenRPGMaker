@@ -1,0 +1,376 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "42f5cafd7457d6e8cc82fa141c29988ae4954d8b476ffe87ab03481c59ed99db",
+ "width": 16,
+ "height": 32,
+ "kind": "other",
+ "name": "세로 입간판 「카페」",
+ "label": "modern_city/street-kr/mc-prop-kr-sign-cafe",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 판정자 의견이 갈림(분명한 3/4 2/4, 분명한 위반 2/4)",
+  "3/4: 투영이 3/4 아님(front_elevation) (2/4)",
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (2/4)",
+  "3/4: 윗면 2행 < 3 (1/4)",
+  "화풍: 판정자 fail (3/4)"
+ ],
+ "view34": {
+  "verdict": "refer",
+  "reasons": [
+   "판정자 의견이 갈림(분명한 3/4 2/4, 분명한 위반 2/4)",
+   "투영이 3/4 아님(front_elevation) (2/4)",
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (2/4)",
+   "윗면 2행 < 3 (1/4)"
+  ]
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (3/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "bus-shelter-a",
+   "kiosk-a",
+   "vending-a"
+  ],
+  "scale": 2,
+  "score": 6,
+  "refSet": {
+   "id": "modern_city",
+   "chipset": "modern_city",
+   "fallback": false,
+   "hash": "dc20de17343e77e8"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 9,
+  "tileColorsP90": 9,
+  "darkV5": 37,
+  "nearBlackEdge": 1,
+  "opaqueTiles": 2
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "borderline",
+   "borderline",
+   "wrong",
+   "wrong",
+   "borderline",
+   "borderline",
+   "right",
+   "borderline",
+   "borderline",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "header cap with pink label strip",
+      "rows": "1-5",
+      "evidence": "none",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-6"
+     },
+     {
+      "part": "brown sign board with 카페 lettering",
+      "rows": "7-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base strip",
+      "rows": "30-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 24,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The main body is a tall, face-on sign board (rows 7-29) with a flat brown face and white lettering. Nothing on it is seen from above. The header (rows 1-5) is white with a pink label strip at row 3, which reads as a face-on plate rather than a receding horizontal surface. Its gray line at row 5 and the dark row 6 act more like an outline than an eave. The silhouette is nearly constant at 13-15 px wide, with no ellipse widening and narrowing. So the top is a rim of at most 2 rows, and the front face is about 24 rows."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a vertical brown standing sign with the Korean text 카페 on it. It measures 9 visible tones per tile, between bus-shelter (6) and kiosk (12) but well below vending (20). Near-flat coverage is 0%, and the dark edge pixels are 0% neutral, so the outline is tinted dark brown rather than black. It has a lighter panel, a darker border, and a few shading steps on the body, but the large brown areas have little grain or per-pixel texture compared with the kiosk and vending references, which carry more highlights, stripes and detail. It is clean and consistent with the chipset, but a bit simpler and flatter than the richer references. It is borderline, and with the instruction to fail when in doubt, it falls just short.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 17246
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "header cap (white band with pink stripe)",
+      "rows": "1-5",
+      "evidence": "none",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-6"
+     },
+     {
+      "part": "brown signboard face with white 카페 lettering",
+      "rows": "7-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "gray base strip",
+      "rows": "30-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 23,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The sign is a flat vertical board seen face-on. The brown board (rows 7-29) holds the white lettering, and the base strip at row 30 is a flat edge. The header (rows 1-5) is a white band with a pink stripe at row 3, which reads as a face-on label panel. It narrows from 15 to 13 to 11 px for rounded corners, but it does not widen and narrow again like an ellipse. Row 5 is a gray-blue line and row 6 is dark, but together with the pink stripe these look like the header's frame rather than a horizontal top plane. No horizontal surface with depth is drawn, so the main body shows no top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a tall brown sign with a dark brown outline that leans warm, so it reads as dark_material_tone (0% near-neutral edge pixels, same as the references). It has 9 visible tones per tile, above bus-shelter-a (6) and below kiosk-a (12) and vending-a (20). Near-flat coverage is 0%. By eye, the body has only about 3-4 brown steps: a light edge, a mid body, a dark side and a shadow. The cream panel carries the lettering and has little grain or dotting. The references show more per-surface shading, such as the kiosk awning stripes and the vending machine's panels and highlights. The sign is clean and not a sticker, but it is simpler and flatter than the richer references, and sits closer to the bus shelter than to the kiosk or vending machine. The same-kind match is fair, but when in doubt this fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 0행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 0행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 17832
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "sign top cap (white band with a pink label slot)",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6"
+     },
+     {
+      "part": "brown sign board with white 카페 lettering",
+      "rows": "7-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "grey base strip",
+      "rows": "30-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 23,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "A light band at rows 1-5 sits above the board. Its front-edge line is the grey row 5 (#738a90), followed by the dark shadow row 6 (#091125). The brown board below (rows 7-29, about 23 rows) is a vertical front face carrying the white lettering, with a grey base at row 30. The cap is 5 rows tall, which matches the cabinet 'top 5 + edge + eave' reference. The pink stripe at row 3 could instead be a face-on label, which would make the cap a front-facing header, but the edge line and shadow below it favour a top surface. The width profile goes 11, 13, 15 and never narrows again, so it is not an ellipse. No receding side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a narrow vertical sign in brown with the Korean text 카/페 in light letters. It has 9 visible tones per tile, which is above bus-shelter-a (6) and below kiosk-a (12) and vending-a (20). Near-flat coverage is 0%, so there are no large flat fills. The dark edge pixels are 0% neutral, so the outline is a dark brown tint, as on the references. The body shows about 4 lightness steps: a lit left edge, a mid brown, a darker right side and a dark base. The references have more, including highlights, panel detail and small items. The candidate is a simple slab with two text glyphs and little grain, so it looks a little flatter and thinner than kiosk-a and vending-a. It is still at or above the weakest reference, bus-shelter-a, and is acceptable as a simple single-tile sign.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15304
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top header band of the A-frame sign",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-6"
+     },
+     {
+      "part": "brown board face with white 카페 lettering",
+      "rows": "7-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "grey base strip",
+      "rows": "30-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 24,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-5 form a light band at the top of the sign. It has rounded corners (widths 11, 13, 15) and a pink stripe in the middle columns, and it ends in a grey front-edge line at row 5 (L=132). Row 6 is a dark outline that acts as eave shadow. Below it the brown board (rows 7-29, with a divider at row 18) carries the white lettering as a vertical front face, and row 30 is a grey base strip. The top band is a borderline reading: the pink stripe could also be a face-on label, so I measured it as a 5-row top surface with an edge line. There is no receding side face, because the silhouette stays 15 px wide from row 3 to row 31."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a tall brown sign board with the Korean characters 카페 in light text on a dark panel. It has a lighter top cap and a dark base. Measured facts: 9 visible tones per tile, 0% near-flat coverage, and 0% neutral dark edge pixels, so the outline is tinted brown. That is above bus-shelter-a (6 tones) and below kiosk-a (12) and vending-a (20). By eye, the body is mostly a flat panel with a simple side highlight, about 3-4 steps against 5+ in the references. It has no grain, no detail on the cap and no secondary shapes like the kiosk awning stripes or the vending machine buttons. It is clean and consistent with the chipset but a little flatter and simpler than the mid and upper references. For a simple single-tile-wide sign this is borderline, so I am failing it on the 'when in doubt, fail' rule.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 16907
+  }
+ ],
+ "decidedAt": "2026-10-25T04:09:13.881Z",
+ "cells": {
+  "16": [
+   "d5aaced54a34ea36",
+   "dd0ccbfba995ea91"
+  ],
+  "24": [
+   "2c71f1f4867f2006",
+   "5d6f645fdaf07956",
+   "68594bfeafb94d97",
+   "6b983b55408d300d",
+   "7bca8f3bd82a8650",
+   "9918d363a46fbf8e",
+   "9b97bcbc95e44eee",
+   "9fa8779358b22536",
+   "a4a7faba901cd8bd",
+   "b1c870f5634627be",
+   "c50eca6c535b13cc",
+   "ec093276ff3545a2"
+  ],
+  "32": [
+   "3411f4ed1dd7fbbf",
+   "793391b9474e5829",
+   "b7b40cfc88d0e381"
+  ],
+  "48": [
+   "17dceaa4424404f0",
+   "29ebaca6530840f6",
+   "4daf41b6a40a4d2c",
+   "54ca090d3699510e",
+   "7ef914bbfede3577",
+   "960179f3a25ce34c"
+  ]
+ }
+}

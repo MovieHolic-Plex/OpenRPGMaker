@@ -1,0 +1,384 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "391ce436d238855d3100faefd88101fea81e365da0afbc8e7995789855ad7b4f",
+ "width": 16,
+ "height": 32,
+ "kind": "other",
+ "name": "지하철 출구 번호 표지 3",
+ "label": "modern_city/street-kr/mc-prop-kr-exit-3",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 투영이 3/4 아님(front_elevation) (4/4)",
+  "3/4: 윗면 0행 < 3 (4/4)",
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "투영이 3/4 아님(front_elevation) (4/4)",
+   "윗면 0행 < 3 (4/4)",
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "bus-shelter-a",
+   "kiosk-a",
+   "vending-a"
+  ],
+  "scale": 2,
+  "score": 7,
+  "refSet": {
+   "id": "modern_city",
+   "chipset": "modern_city",
+   "fallback": false,
+   "hash": "dc20de17343e77e8"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 14,
+  "tileColorsP90": 14,
+  "darkV5": 36,
+  "nearBlackEdge": 1,
+  "opaqueTiles": 1
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "sign panel header band (cream)",
+      "rows": "1-3",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "sign panel face (teal band with white circle, gold field with number)",
+      "rows": "4-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "pole",
+      "rows": "15-27",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base plate",
+      "rows": "28-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 30,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The main body is a sign panel (rows 0-14, width 10) on a thin pole (rows 15-27, width 4) and a small base (rows 28-31). The panel's cream band at rows 1-3 is a face-on header. It has no front-edge line, no eave shadow and no ellipse, and it widens only by the outline row 0 (width 8 to 10). The rest of the panel is a teal stripe with a white ring and a gold field with a number, all vertical face. The base shows only a 1-2 row lighter strip at rows 29-30, which is a rim and not a real top surface. Nothing in the drawing shows a horizontal surface seen from above, so it reads as a flat front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a thin sign-on-pole prop. It has 13 visible tones per 16x16 tile, against 6 for bus-shelter-a, 12 for kiosk-a and 20 for vending-a. Near-flat coverage is 0%, below bus-shelter-a's 9% and level with kiosk-a and vending-a. The dark edge pixels are 0% neutral, so the outline is tinted. By eye it is a dark blue-grey/brown tone beside the yellow sign head and the grey pole, not a uniform black sticker line. The sign face has a highlight, a mid tone and a dark symbol, and the pole and base carry a few tone steps. Shading is a little shallower than vending-a, but it is level with kiosk-a and bus-shelter-a. A careful artist would accept it next to these references without it looking flatter or thinner.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 0행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 0행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15603
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "sign box (exit number panel)",
+      "rows": "1-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "pole",
+      "rows": "15-27",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base plate",
+      "rows": "28-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 14,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The main body is the sign box, rows 1-14 and 10 px wide. It is a flat, face-on panel with a dark outline at row 0 and a cream band at rows 1-3 that belongs to the sign face. There is no front-edge line, no eave shadow and no ellipse, so no horizontal top surface is shown. The pole (rows 15-27, 4 px wide) and the small base plate (rows 28-31, with one lighter row at 29) are also drawn as vertical faces. The whole object is a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a thin pole-mounted sign prop with a yellow sign head, a pole and a base. The measured facts give 13 visible tones per tile, which is above bus-shelter-a (6) and kiosk-a (12) and below vending-a (20). Near-flat coverage is 0%, with no exact flat fills. The dark edge pixels are 0% neutral, so the outline is tinted, a dark tone of the adjacent material rather than near-black. The sign face has a highlight, a mid tone, and a dark edge, and the pole has a light side and a shadow side. This gives about 4 steps against about 5 for the references. The sign face is small and the pole is thin, but both carry shading. By eye it sits comfortably next to the shipped modern_city props and does not look flatter or more sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 0행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 0행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 12295
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "sign panel (face-on, cream, teal and gold bands)",
+      "rows": "0-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "pole",
+      "rows": "15-27",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base plate",
+      "rows": "28-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 15,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The main body is the sign panel in rows 0-14, 10 px wide, drawn face-on. Row 0 is only the narrower outline. Rows 1-3 are a cream band with no front-edge line and no eave shadow below it. They read as part of the printed face, along with the teal band in rows 5-7 and the gold area in rows 8-13. The silhouette never widens and narrows again, so there is no ellipse, roof or visible contents. The pole (rows 15-27, 4 px wide) is a plain vertical shaft. The base in rows 28-31 is 6 to 8 px wide, with a light row 29 and a dark row 30. That is at most a 1-2 row rim and not a top surface. The whole object is a front elevation with no top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a slim sign on a pole: a yellow-ish sign box with a dark panel on a post and base. Measured facts: 13 visible tones per tile, above bus-shelter (6) and kiosk (12) and below vending (20). Near-flat coverage is 0%, and the dark edge pixels are 0% neutral, so the outline carries a tint, consistent with the references. By eye, the sign face and post show a few shading steps plus some detail dots, so it is not a flat sticker. It is a thin object, so sparseness shouldn't count against it, and it sits comparably next to the shipped modern_city props without looking flatter. It is slightly shallower than the vending machine, but it matches the kiosk and shelter level.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 0행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 0행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 12645
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "sign box panel (cream top band, teal band with white ring, yellow lower field)",
+      "rows": "0-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "pole",
+      "rows": "15-27",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base plate",
+      "rows": "28-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 31,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The sign box (rows 0-14, width 10) is a face-on panel. Its outline is dark at row 0 and row 14. Rows 1-3 are a cream stripe, then a teal band at rows 5-7 and a yellow field at rows 8-13. None of these shows a front-edge line, eave shadow or ellipse, and no contents are visible, so there is no horizontal top surface. The pole (rows 15-27, width 4) is a plain vertical shaft. The base (rows 28-31, width 6-8) is a tiny strip with a 1-row lighter line at row 29. That is only a rim, not a top surface. The whole object is a flat front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small sign on a pole: a yellow sign head with a dark number glyph on a dark post and base. Measured facts: 13 visible tones per 16x16 tile, against 6 for bus-shelter-a, 12 for kiosk-a and 20 for vending-a, so it is within the reference range. Near-flat coverage is 0%, below bus-shelter-a's 9% and equal to kiosk-a and vending-a. Dark edge pixels are 0% near-neutral, matching the references and indicating a tinted outline. By eye, the sign face and pole show 4 or so steps with highlight edges and a shaded base, which is slightly thinner than vending-a but comparable to the kiosk and shelter. It is sparse, as thin props are, but it does not look flatter or more sticker-like than the shipped modern_city references.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 0행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 0행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 12547
+  }
+ ],
+ "decidedAt": "2026-10-24T13:30:25.813Z",
+ "cells": {
+  "16": [
+   "19cc91dbc772d27e",
+   "a08f3eb6223442c2"
+  ],
+  "24": [
+   "30de59778002d668",
+   "385ddd51bdfa81bf",
+   "6bc4171cbe3d1596",
+   "73f60c5cc2e0f707",
+   "7db6e09d72e5153c",
+   "806dbf9c69a41c3f",
+   "93c728a1d4a8c725",
+   "a37422be20f3cfdc",
+   "b34c5006db16517f",
+   "b9dcd87c7b15351c",
+   "ddda391311961fc1",
+   "f9e8153e2eed51a9"
+  ],
+  "32": [
+   "223b0723c7fca745",
+   "484fd90a1d73e423",
+   "a6e354025e94ff13"
+  ],
+  "48": [
+   "0f42512bcb65ee68",
+   "17a8a3caae5d99d3",
+   "491da396be4ff515",
+   "4f98ab71e6dff574",
+   "6f9bc9ca53be0f85",
+   "b334af896e40040f"
+  ]
+ }
+}

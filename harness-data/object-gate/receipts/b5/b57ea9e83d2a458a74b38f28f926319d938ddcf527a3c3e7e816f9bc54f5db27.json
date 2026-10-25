@@ -1,0 +1,341 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b57ea9e83d2a458a74b38f28f926319d938ddcf527a3c3e7e816f9bc54f5db27",
+ "width": 16,
+ "height": 32,
+ "kind": "other",
+ "name": "세로 입간판 「약국」",
+ "label": "modern_city/street-kr/mc-prop-kr-sign-pharm",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "bus-shelter-a",
+   "kiosk-a",
+   "vending-a"
+  ],
+  "scale": 2,
+  "score": 6,
+  "refSet": {
+   "id": "modern_city",
+   "chipset": "modern_city",
+   "fallback": false,
+   "hash": "dc20de17343e77e8"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 9,
+  "tileColorsP90": 9,
+  "darkV5": 37,
+  "nearBlackEdge": 1,
+  "opaqueTiles": 2
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top cap of the sign (gray plate wider than the board, with a light center highlight)",
+      "rows": "1-7",
+      "evidence": "a",
+      "front_edge_line_row": 7,
+      "eave_shadow_rows": "8-8"
+     },
+     {
+      "part": "green board face with white '약국' lettering",
+      "rows": "9-26",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base band",
+      "rows": "28-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 7,
+    "front_face_rows": 22,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The sign is a tall board seen from the south. At the top, rows 1-7 form a gray cap that overhangs the body (width 16 against 14 below). Its silhouette widens 8, 12, 16 over rows 0-2, and the center carries a light highlight in rows 2-4. Row 7 (L=71) is a darker front-edge line and row 8 (L=17) is a dark shadow line directly under it, so the cap reads as a top surface and not a plain rim. Below it, rows 9-26 are the vertical green face with white lettering, and rows 28-30 are a base band that is also a front face. The front face is about 22 rows. No receding side face is drawn. This is a borderline case, because the cap could also be read as a rounded hat."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a tall, narrow standing sign with a dark teal-green body, a lighter rim and top cap, and a glyph panel reading 약국. It has 9 visible tones per 16x16 tile, 0% near-flat coverage and 0% neutral dark edge pixels. That is above bus-shelter-a (6 tones, 9% flat) and below kiosk-a (12) and vending-a (20). The outline leans teal and is not near-black, so it reads as a dark material tone, as in the references. Shading is about 4 steps (highlight rim, mid body, dark side, deep outline) against roughly 5 on the kiosk and vending references. The face has little grain or speckle, so texture is modest. It is thinner than the kiosk and vending machine, but it is a simple sign with a clean tinted outline and no flat fills. A careful artist would accept it beside bus-shelter-a, and it is at or above the weakest shipped reference on the measured facts.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15947
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "sign head cap (grey top plate with white highlight)",
+      "rows": "1-6",
+      "evidence": "a",
+      "front_edge_line_row": 7,
+      "eave_shadow_rows": "8"
+     },
+     {
+      "part": "green sign panel with white text (vertical face)",
+      "rows": "9-26",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base block",
+      "rows": "28-30",
+      "evidence": "none",
+      "front_edge_line_row": 27,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 23,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The head is a grey plate at rows 1-6. It widens from 8 to 12 to 16 px, then overhangs the 14 px body below. A darker line at row 7 (L=71) works as the front-edge line, and the very dark row 8 acts as eave shadow. A white highlight at rows 2-4 reads as a lit horizontal surface. Below it, the green panel with white text runs rows 9-26 as a vertical front face. A dark line at row 27 and a base band at rows 28-30 close the body, giving about 23 front rows in total. The top is a thin, slightly foreshortened plate with a visible edge line rather than a bare rim, so it reads as three-quarter, though weakly. The base band has no top of its own and is a minor part."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a vertical sign about one tile wide and two tiles tall, in dark green-teal with a pale glyph panel. Measured facts: 9 visible tones per tile, against 6 for bus-shelter, 12 for kiosk and 20 for vending. That puts it above the bus-shelter, below the kiosk and well below the vending machine. Near-flat coverage is 0%, so there are no large flat fills. Dark edge pixels are 0% neutral, so the outline is tinted, a dark teal-green beside the body, not a black sticker line. By eye, the body has a light top cap, a mid face, a darker side edge and a sign panel, about 4 steps against 5 or so on the kiosk and vending references. The glyph panel is simple and the body has little grain or speckle, so it looks slightly flatter and simpler than the kiosk and vending machine. It is still comparable to the shipped bus-shelter, and the measured facts do not show a clear gap. A careful artist would accept it next to the references, but it is on the lean side.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17434
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top cap of the sign (gray-blue lid with highlight)",
+      "rows": "1-7",
+      "evidence": "a",
+      "front_edge_line_row": 7,
+      "eave_shadow_rows": "8-8"
+     },
+     {
+      "part": "green sign board with white vertical lettering",
+      "rows": "9-26",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base block",
+      "rows": "28-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 7,
+    "front_face_rows": 22,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The width profile goes 8, 12, 16 (rows 2-6), then 14 (rows 7-30). The top cap in rows 1-7 is a different, gray-blue material, with a white highlight in rows 2-4. It ends in a darker front-edge line at row 7 (L=71), followed by the dark outline at row 8 (L=17), which acts as eave shadow. That reads as a lid or top surface about 7 rows deep. Below it, rows 9-30 form a vertical green face with white lettering, a dark divider at row 27, and a base band in rows 28-30. The front face is well over 3 rows. The cap is not a column cap, so round_cap is null."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a vertical pharmacy sign in dark green-grey with a light cross/text glyph. It measures 9 visible tones per tile, which is above bus-shelter-a (6) and below kiosk-a (12) and vending-a (20). Near-flat coverage is 0%, so there are no large flat fills. The dark edge pixels are 0% neutral, so the outline leans toward the body hue, as it does in the references. The body ramp is about 4 steps: a lighter top cap, a mid body, a dark side and a deep edge. The references show 5 or more steps, with more panel detail and highlights. The sign is a simple object, and its density is roughly in line with the simpler references, so it would sit acceptably next to them. It is somewhat plainer than kiosk-a and vending-a, hence 'slightly_lower' rather than equal.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15922
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top cap of the sign (grey-blue lid with highlight)",
+      "rows": "1-6",
+      "evidence": "a",
+      "front_edge_line_row": 7,
+      "eave_shadow_rows": "8-8"
+     },
+     {
+      "part": "green sign board with white lettering (vertical face)",
+      "rows": "9-26",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base plinth",
+      "rows": "28-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 23,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The tall standing sign has a cap on top. The cap is rows 1-6 and is wider (16 px) than the board (14 px) below it. It carries a white highlight, which shows a horizontal surface seen from above. A darker front-edge line at row 7 and the dark outline at row 8 follow it. The cap's top corners are rounded (widths 8, 12, 16) and its bottom edge is flat, so it is not a clean ellipse. The edge line and shadow still give evidence (a). Below the cap is a green front face of about 23 rows (rows 8-30) with white lettering, and a base at rows 28-30. No receding side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a small vertical sign with a dark teal body, a lighter rim and a pale glyph panel. By the measured facts it has 9 visible tones per tile against 6 for bus-shelter, 12 for kiosk and 20 for vending. That is above bus-shelter and below the richer two. Near-flat coverage is 0%, so there are no large flat fills. Dark edge pixels are 0% neutral, so the outline is tinted (dark teal) and not a black sticker line, the same as the references. The body has about 4 lightness steps (highlight rim, mid, dark, deep) against 5-6 on the kiosk and vending machine. The glyph panel gives some detail, but the body is fairly plain and has little grain or per-surface variation. At the board's 2x scale it looks slightly thinner than the kiosk and vending references and does not reach their texture and detail. It is acceptable against the bus-shelter but not equal to the stronger references, so I am failing it on the slightly-lower density.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 17302
+  }
+ ],
+ "decidedAt": "2026-10-24T14:33:09.521Z",
+ "cells": {
+  "16": [
+   "6566dc6b58a19af3",
+   "ff185e2f059c1638"
+  ],
+  "24": [
+   "04a828511c00ee8a",
+   "26713f2155e705e6",
+   "4014063b5d234d63",
+   "4f6f1e59b642872d",
+   "6131a48642b54c13",
+   "949343d8fb1a805b",
+   "9d7239bf5a3a11b5",
+   "9fb78cc09cabaa3b",
+   "b7482137d148431d",
+   "b9137b5a5d635098",
+   "f072617d4facb211",
+   "f1c6641e7b765655"
+  ],
+  "32": [
+   "3db83528548e3d1e",
+   "57119bffb773f8bb",
+   "e85021ee0b617515"
+  ],
+  "48": [
+   "38aa7f857c480b53",
+   "45d8bb1e3abee0cf",
+   "5a1284f510132c62",
+   "b7a8bc4b9f215933",
+   "be3132c6262afe02",
+   "c66d345411ff00eb"
+  ]
+ }
+}

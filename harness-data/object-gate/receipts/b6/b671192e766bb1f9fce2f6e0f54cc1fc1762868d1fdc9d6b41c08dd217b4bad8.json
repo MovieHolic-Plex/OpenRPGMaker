@@ -1,0 +1,309 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b671192e766bb1f9fce2f6e0f54cc1fc1762868d1fdc9d6b41c08dd217b4bad8",
+ "width": 16,
+ "height": 32,
+ "kind": "other",
+ "name": "세로 입간판 「약국」",
+ "label": "modern_city/street-kr/mc-prop-kr-sign-pharm",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "bus-shelter-a",
+   "kiosk-a",
+   "vending-a"
+  ],
+  "scale": 2,
+  "score": 7,
+  "refSet": {
+   "id": "modern_city",
+   "chipset": "modern_city",
+   "fallback": false,
+   "hash": "dc20de17343e77e8"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 11,
+  "tileColorsP90": 11,
+  "darkV5": 37,
+  "nearBlackEdge": 1,
+  "opaqueTiles": 2
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "borderline",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "gray sign-box top cap with highlight",
+      "rows": "1-7",
+      "evidence": "a",
+      "front_edge_line_row": 7,
+      "eave_shadow_rows": "8"
+     },
+     {
+      "part": "green sign face with white hangul letters",
+      "rows": "9-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 7,
+    "front_face_rows": 22,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-6 form a gray top band, 16 px wide against the 14 px body. It has a lighter highlight ellipse at rows 2-4 and ends in a darker front-edge line at row 7 (L=71). Row 8 is a dark outline/eave shadow (L=17). Below it the vertical green sign face runs rows 9-30 (22 rows) with the white letters. The top is rounded at its upper corners (widths 8, 12, 16), but the edge line and shadow under it read as a top surface, not a rim or a flat-bottomed hat. No side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a vertical standing sign with a light cap, a dark body and pale lettering. It measures 11 visible tones per 16x16 tile, against 6 for bus-shelter-a, 12 for kiosk-a and 20 for vending-a, so it sits level with kiosk-a and well above the bus shelter. Near-flat coverage is 0%, so there are no large flat fills; the body carries edge highlights and the glyphs break up the surface. The dark edge pixels are 0% neutral, which means the outline is tinted toward the neighbouring teal/green material and is not a black sticker line. By eye it has about 4 lightness steps on the body and cap, slightly fewer than the vending machine and kiosk. It is a thin prop, so I did not hold that against it. A careful artist would accept it next to the shipped modern_city references without it looking flatter or more sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16072
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "gray top cap of the sign",
+      "rows": "1-7",
+      "evidence": "a",
+      "front_edge_line_row": 7,
+      "eave_shadow_rows": "8-8"
+     },
+     {
+      "part": "green signboard with white Korean text (front face)",
+      "rows": "8-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 23,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The top cap spans rows 1-6, is wider than the board (16 vs 14 px), and has a lighter highlight in rows 2-4. Row 7 is a darker front-edge line (L=71), followed by a dark outline row 8 that acts as eave shadow. Below it the green board with the white '약국' lettering is a vertical front face of about 23 rows (8-30). The cap is a rounded-corner rectangle, not a dome on a narrower shaft, so it reads as a top surface. The cap is short and the ellipse cue is weak, so this is borderline."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a vertical standing sign: a dark teal-green cabinet with a lighter cap and Korean lettering in light tones. It shows 11 visible tones per 16x16 tile, against 6 (bus-shelter), 12 (kiosk) and 20 (vending). That is above the bus shelter, close to the kiosk and below the vending machine. Near-flat coverage is 0%, with no large single-colour areas, so the lettering and body shading break up the surface. The dark edge pixels are 0% neutral, so the outline is tinted dark teal rather than black, the same as the references. Shading on the body is about 4 steps (cap highlight, body mid, body dark, deep edge), a little shallower than the references' 5-6. Texture is limited to the lettering and a few edge highlights. It is a simple prop and sits acceptably next to the shipped modern_city pieces, though slightly less rich than the kiosk and vending machine.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16548
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top cap/lid of the sign (grey slab with a light highlight patch)",
+      "rows": "1-7",
+      "evidence": "a",
+      "front_edge_line_row": 7,
+      "eave_shadow_rows": "8-8"
+     },
+     {
+      "part": "sign face with the white Korean lettering on a green panel",
+      "rows": "9-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 22,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The top cap spans rows 1-7. It widens from 8 to 12 to 16 px and overhangs the 14 px body. A light highlight patch sits at rows 2-4, with a mid-grey band at rows 5-6 and a darker front-edge line at row 7 (L=71). A dark outline row at row 8 acts as the eave shadow. Below it the green front face runs from row 9 to row 30, about 22 rows, carrying the white lettering. The cap is only weakly elliptical because the width drops from 16 to 14, but the band ending in a front-edge line and shadow reads as a horizontal top surface of about 6 rows. That is more than a 1-2 row rim, so the object reads as three-quarter view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 4,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a vertical pharmacy sign with a dark green-teal cabinet body, a lighter cap, and Korean glyphs on a pale panel. Its measured tones per 16x16 tile are 11, which is close to kiosk-a (12) and above bus-shelter-a (6), though below vending-a (20). Near-flat coverage is 0%, so it has no large flat fills. Dark edge pixels are 0% neutral, so the outline is tinted dark teal/green, not near-black, matching the references. The body has about 4 lightness steps (highlight on the cap, light, mid, dark), the same as the references at this scale. Texture is modest, coming from the lettering and the cap highlight rather than grain, but it is comparable to the shipped props. It would sit acceptably beside the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 14568
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top cap of the sign",
+      "rows": "1-7",
+      "evidence": "a",
+      "front_edge_line_row": 7,
+      "eave_shadow_rows": "8-8"
+     },
+     {
+      "part": "green sign face with white Korean text",
+      "rows": "9-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 7,
+    "front_face_rows": 22,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The grey cap at rows 1-7 is 16 px wide and overhangs the 14 px body. It has a light oval highlight in rows 2-4 that reads as a horizontal lid. A darker front-edge line at row 7 (L=71) and a dark outline at row 8 follow it. Below that, the green sign face spans rows 9-30 (22 rows) with a white text panel, a clear front face. The sign is a single slab-like block with no side face drawn, and the top is marked by the edge line and shadow rather than the outline alone."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a vertical pharmacy sign with a dark green-teal cap, a body with light and shadow sides, and a column of light glyphs reading 약국. Measured facts: 11 visible tones per tile, against 6 for bus-shelter, 12 for kiosk and 20 for vending. That is within the reference range and above the bus-shelter. Near-flat coverage is 0%, which matches kiosk and vending. Dark edge pixels are 0% neutral, so the outline is tinted, a dark green-teal toned to the body, not black, which matches the references. The body shows about 5 lightness steps, with a rim highlight, a mid tone, a shadow side and a dark base, comparable to the references' ramps. Texture is modest: the body is a clean panel with glyph detail and little grain. The references are similarly clean, so this is acceptable. At this scale a careful artist would accept it next to the kiosk and bus-shelter without it looking flatter or more sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 14599
+  }
+ ],
+ "decidedAt": "2026-10-24T14:45:56.073Z",
+ "cells": {
+  "16": [
+   "5e9b7a4dcf1b6ddf",
+   "d878faa1fe9fd9ad"
+  ],
+  "24": [
+   "0d253b7b75988a0a",
+   "25c6c4b32a28edd4",
+   "2f48921a7d32cf07",
+   "3361b701876ba4bd",
+   "4cb4902477d28e40",
+   "580fbfdf2131607b",
+   "67edbc7bfb84cfb9",
+   "7752cfacb7930c33",
+   "7f3c6514ad0c4b79",
+   "ac870008647382b3",
+   "f069315ad146a609",
+   "f077de85fcbc3686"
+  ],
+  "32": [
+   "a1f6c40b0f14cba4",
+   "b4254d813b5829b6",
+   "e8ccf29354e0c8e4"
+  ],
+  "48": [
+   "0508c67b7bc9c5cf",
+   "25a8271858c6e698",
+   "4575e033c985f7ac",
+   "48edd6f26a5e94e7",
+   "7d656beb18f3a194",
+   "96f8e282ac6b0662"
+  ]
+ }
+}

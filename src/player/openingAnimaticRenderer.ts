@@ -167,12 +167,52 @@ function drawText(ctx: CanvasRenderingContext2D, l: AnimaticLayer, t: number, sn
   for (const [i, line] of lines.entries()) { if (i > 0 && (i + 1) * size * 1.25 > l.height) break; ctx.fillText(line, x, i * size * 1.25); }
   ctx.restore();
 }
+/**
+ * Falling flakes that drift sideways and tumble: cherry petals (layer colour + a darker underside as the flake flips)
+ * and paper sheets (white face, grey edge, rotating). Pure function of time; one flake per particle index.
+ */
+function drawFlutter(ctx: CanvasRenderingContext2D, l: AnimaticLayer, preset: 'petals' | 'paper', seconds: number, i: number,
+  a: number, b: number, c: number, speed: number, size: number, snap: (v: number) => number, cell: number): void {
+  const paper = preset === 'paper';
+  const fall = seconds * speed * (0.55 + c * 0.9);
+  const sway = Math.sin(seconds * (0.9 + c * 1.4) + a * 20) * (paper ? 26 : 18) + seconds * speed * (paper ? 0.15 : 0.55);
+  const x = snap(modulo(a * l.width + sway, l.width)), y = snap(modulo(b * l.height + fall, l.height));
+  const spin = seconds * (paper ? 2.2 : 3.4) * (0.6 + c) + i;
+  const flip = Math.cos(spin);
+  const base = ctx.fillStyle;
+  const under = paper ? '#b9bec8' : '#d98aa6';
+  const w = (paper ? size * 3.2 : size * 1.6) * (0.75 + c * 0.5), h = (paper ? size * 4.2 : size * 1.1) * (0.75 + c * 0.5);
+  ctx.save();
+  ctx.translate(x, y);
+  if (cell > 0) {
+    // Pixel grid: no rotation — the flip shows as width shrinking to one cell, so petals stay crisp squares.
+    const cw = Math.max(cell, Math.round(Math.abs(flip) * w / cell) * cell), ch = Math.max(cell, Math.round(h / cell) * cell);
+    ctx.fillStyle = flip >= 0 ? base : under;
+    ctx.fillRect(-cw / 2, -ch / 2, cw, ch);
+    if (paper && cw > cell) { ctx.fillStyle = under; ctx.fillRect(-cw / 2, ch / 2 - cell, cw, cell); }
+  } else {
+    ctx.rotate(spin * 0.5 + c * 6);
+    ctx.scale(Math.max(0.15, Math.abs(flip)), 1);
+    ctx.fillStyle = flip >= 0 ? base : under;
+    if (paper) {
+      ctx.fillRect(-w / 2, -h / 2, w, h);
+      ctx.fillStyle = under; ctx.fillRect(-w / 2, h / 2 - Math.max(1, h * 0.12), w, Math.max(1, h * 0.12));
+      ctx.fillStyle = '#9aa1ad'; for (let r = 1; r <= 3; r += 1) ctx.fillRect(-w / 2 + w * 0.15, -h / 2 + h * r / 4.5, w * 0.6, Math.max(0.5, h * 0.05));
+    } else {
+      ctx.beginPath(); ctx.ellipse(0, 0, w, h, 0, 0, Math.PI * 2); ctx.fill();
+    }
+  }
+  ctx.restore();
+  ctx.fillStyle = base;
+}
+
 function drawParticles(ctx: CanvasRenderingContext2D, l: AnimaticLayer, t: number, snapping = 0): void {
-  const p = l.particles!, seconds = (t - (l.startMs ?? 0)) / 1000, speed = p.speed ?? (p.preset === 'rain' ? 500 : 35), size = p.size ?? 2;
+  const p = l.particles!, seconds = (t - (l.startMs ?? 0)) / 1000, speed = p.speed ?? (p.preset === 'rain' ? 500 : p.preset === 'paper' ? 46 : p.preset === 'petals' ? 28 : 35), size = p.size ?? 2;
   const snap = (v: number) => snapping > 0 ? Math.round(v * snapping) / snapping : v;
   const cell = snapping > 0 ? 1 / snapping : 0;
   for (let i = 0; i < p.count; i++) {
     const a = random(p.seed, i * 3), b = random(p.seed, i * 3 + 1), c = random(p.seed, i * 3 + 2);
+    if (p.preset === 'petals' || p.preset === 'paper') { drawFlutter(ctx, l, p.preset, seconds, i, a, b, c, speed, size, snap, cell); continue; }
     const upward = p.preset === 'sparks' || p.preset === 'dust';
     const x = snap(modulo(a * l.width + Math.sin(seconds * 0.8 + c * 9) * (p.preset === 'snow' ? 20 : 4), l.width));
     const y = snap(p.preset === 'stars' ? b * l.height : modulo(b * l.height + seconds * speed * (0.5 + c) * (upward ? -1 : 1), l.height));
