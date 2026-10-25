@@ -389,8 +389,8 @@ function buildMondayMorning(project: Project, a: FirstLoveAnchors): void {
     { kind: "changeOpacity", delta: -255 },
     ...Array.from({ length: c.delay }, () => ({ kind: "wait" })),
     { kind: "enterVia", x: s.subway.x, y: s.subway.y, dir: "down", se: "", closeSe: "" },
-    c.exit ? { kind: "exitVia", target: c.exit, se: "", closeSe: "" } : { kind: "approach", x: c.far!.x, y: c.far!.y, distance: 0 },
-  ], repeat: false, wait: false, skippable: true } } as unknown as Command);
+    c.exit ? [{ kind: "approach", x: 21, y: 22, distance: 0 }, { kind: "approach", x: 21, y: 14, distance: 0 }, { kind: "exitVia", target: c.exit, se: "", closeSe: "" }] : { kind: "approach", x: c.far!.x, y: c.far!.y, distance: 0 },
+  ].flat(), repeat: false, wait: false, skippable: true } } as unknown as Command);
   add(street, event("ev_fl_rusher", "서두르는 남자", rusher, [
     page("rusher_p", [stageIs(V_STAGE, S.START)], [], { who: "jihu", dir: "down" }),
   ]));
@@ -420,7 +420,7 @@ function buildMondayMorning(project: Project, a: FirstLoveAnchors): void {
     wait(200),
     quiet("cc0-se-orp-inventory-cloth-heavy", 0.8),
     shake(260),
-    { kind: "moveEvent", eventId: "@player", route: { moves: [{ kind: "setDirectionFix", enabled: true }, { kind: "jump", dx: -1, dy: 0, heightPx: 4, durationMs: 220 }, { kind: "setDirectionFix", enabled: false }], repeat: false, wait: true, skippable: true } } as unknown as Command,
+    { kind: "moveEvent", eventId: "@player", route: { moves: [{ kind: "setDirectionFix", enabled: true }, { kind: "jump", dx: 0, dy: 1, heightPx: 4, durationMs: 220 }, { kind: "setDirectionFix", enabled: false }], repeat: false, wait: true, skippable: true } } as unknown as Command,
     m2("Particle Effect", { preset: "paper", target: "player", durationMs: 1800, wait: false }),
     quiet(SE_PAPER, 0.7),
     wait(380),
@@ -433,7 +433,7 @@ function buildMondayMorning(project: Project, a: FirstLoveAnchors): void {
     ...voice("남자", "죄송합니다…! 괜찮으세요? 제가 지금 너무 늦어서—"),
     ...think("고개를 들기도 전에, 남자는 떨어진 종이 한 장을 내 손에 쥐여 주고 다시 뛰어갔다."),
     // 남자는 회사 쪽(늘봄 빌딩)으로 달려가 사라진다 — 얼굴은 못 봤다.
-    { kind: "moveEvent", eventId: "ev_fl_rusher", route: { moves: [{ kind: "changeSpeed", delta: 1 }, { kind: "exitVia", target: "ev_fl_office_door", se: "", closeSe: "" }], repeat: false, wait: false, skippable: true } } as unknown as Command,
+    { kind: "moveEvent", eventId: "ev_fl_rusher", route: { moves: [{ kind: "changeSpeed", delta: 1 }, { kind: "move", dir: "left" }, { kind: "approach", x: bumpAt.x, y: 14, distance: 0 }, { kind: "exitVia", target: "ev_fl_office_door", se: "", closeSe: "" }], repeat: false, wait: false, skippable: true } } as unknown as Command,
     ...think("…목소리가, 어디서 들어 본 것 같았는데."),
     ...letterbox(false, 500),
     wait(600),
