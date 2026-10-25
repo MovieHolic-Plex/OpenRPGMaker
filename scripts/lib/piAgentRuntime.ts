@@ -821,7 +821,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
       const png = await options.renderToolImage!(openingImageProject(ctx.project, ids), tool, data, options.signal);
       return png.startsWith("data:") ? png : `data:image/png;base64,${png}`;
     } } : {}),
-    roleChat: async (role: { provider: string; model: string }, messages: readonly unknown[], signal?: AbortSignal): Promise<string> => {
+    roleChat: async (role: { provider: string; model: string; effort?: "low" | "medium" | "high" }, messages: readonly unknown[], signal?: AbortSignal): Promise<string> => {
       const t0 = Date.now();
       sideUsage.calls += 1;
       try {
@@ -829,7 +829,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
         if (cli) return await localCliChat(cli, role.model, addSideUsage)(messages, signal ?? options.signal);
         const key = options.providerApiKeys?.[role.provider] ?? (role.provider === request.provider ? options.apiKey : undefined);
         if (!key) throw new Error(`${role.provider} 계정 키가 이 실행에 없음`);
-        const result = await completeProvider(role.provider, { model: role.model, max_tokens: 8192, messages }, { apiKey: key, ...(signal ?? options.signal ? { signal: signal ?? options.signal } : {}) });
+        const result = await completeProvider(role.provider, { model: role.model, max_tokens: 8192, messages, ...(role.effort ? { reasoning: { effort: role.effort } } : {}) }, { apiKey: key, ...(signal ?? options.signal ? { signal: signal ?? options.signal } : {}) });
         const reported = (result.completion as { usage?: { prompt_tokens?: number; completion_tokens?: number } }).usage;
         if (reported) addSideUsage({ input: reported.prompt_tokens ?? 0, output: reported.completion_tokens ?? 0 });
         const content = result.completion.choices[0]?.message.content;

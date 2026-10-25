@@ -24,7 +24,7 @@ export interface PiAssistantV2Env {
    */
   readonly renderArt?: (request: { readonly resourceId: string } | { readonly shotId: string; readonly atMs: readonly number[] }) => Promise<string>;
   /** 역할 모델 하나로 따로 부르기(그림 포함 가능). 그 계정 키가 없으면 던진다. */
-  readonly roleChat?: (role: { readonly provider: string; readonly model: string }, messages: readonly unknown[], signal?: AbortSignal) => Promise<string>;
+  readonly roleChat?: (role: { readonly provider: string; readonly model: string; readonly effort?: "low" | "medium" | "high" }, messages: readonly unknown[], signal?: AbortSignal) => Promise<string>;
   /** 이 실행에 키가 실린 계정 id(로컬 CLI 포함). 검수자 고르기에 쓴다. */
   readonly keyedProviders?: ReadonlySet<string>;
   /** 맵 한 구역을 약 1배 PNG(data URL)로. 렌더 경로가 없으면 undefined. */
