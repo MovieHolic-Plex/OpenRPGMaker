@@ -6,6 +6,7 @@
 // 이미 저작자가 정한 값은 덮지 않는다(각 기본값이 ??= 로 동작). 주인공 칩은 손대지 않은 기본(판타지 Actor1 0번)일 때만 바꾼다.
 import { applyRomanceDefaults } from "@/project/romancePreset";
 import { GENRE_LOCK_PRESETS } from "@/project/genreLock";
+import { fieldMenu, storyFieldMenu } from "@/project/fieldMenu";
 import type { Project } from "@/project/types";
 
 export const ROMANCE_SETUP_WORDS = /연애|데이트|썸|고백|공략|호감도|러브|미연시|romance|dating/iu;
@@ -41,9 +42,18 @@ export function applyModernSetupDefaults(project: Project, task: string, freshSt
  */
 export function applyStorySetupDefaults(project: Project, task: string, freshStart = false): string[] {
   const setup = freshStart || GAME_SETUP_WORDS.test(task);
-  if (!setup || project.system.fieldHud !== undefined || BATTLE_WORDS.test(task)) return [];
-  project.system.fieldHud = { theme: "minimal", vitals: false, clock: true, tools: false, objective: false, hideEmpty: true };
-  return ["체력 HUD 끔"];
+  if (!setup || BATTLE_WORDS.test(task)) return [];
+  const applied: string[] = [];
+  if (project.system.fieldHud === undefined) {
+    project.system.fieldHud = { theme: "minimal", vitals: false, clock: true, tools: false, objective: false, hideEmpty: true };
+    applied.push("체력 HUD 끔");
+  }
+  // ESC 메뉴도 전투 없는 기본으로 — 스킬·장비·파티가 아무 일도 안 하는 JRPG 틀로 읽혔다(2026-10-25 판정 J39). 저작한 메뉴·연애 메뉴는 그대로.
+  if (!fieldMenu(project)) {
+    project.meta.oprnFieldMenu = storyFieldMenu();
+    applied.push("ESC 메뉴 이야기용");
+  }
+  return applied;
 }
 
 /** 빈 프로젝트(이벤트·엔딩 없음)인가 — 첫 장소를 짓는 요청을 게임 시작으로 본다. */

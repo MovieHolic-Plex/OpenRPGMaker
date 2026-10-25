@@ -1,7 +1,7 @@
 import { SHOP_UI_PRESETS, effectiveShopUiPreset, isShopUiPreset } from '@/project/shopUiPresets';
 import type { ToolDefinition, JsonSchema } from './types';
 import { ToolError } from './types';
-import { FIELD_MENU_COMMANDS, collectorFieldMenu, romanceFieldMenu, validateFieldMenu, fieldMenu, type AuthoredFieldMenu, type FieldMenuCommand } from '@/project/fieldMenu';
+import { FIELD_MENU_COMMANDS, collectorFieldMenu, romanceFieldMenu, storyFieldMenu, validateFieldMenu, fieldMenu, type AuthoredFieldMenu, type FieldMenuCommand } from '@/project/fieldMenu';
 import {
   BACKLOG_LIMIT_MAX, BACKLOG_LIMIT_MIN, DIALOGUE_SPEEDS, DIALOGUE_UI_LANGUAGES, SKIP_SCOPES, WINDOW_OPACITY_MAX, WINDOW_OPACITY_MIN,
   backlogEnabled, mergeDialogueSystem, resolveDialogueSystem, validateDialogueSystem, type DialogueSystemPatch,
@@ -57,8 +57,8 @@ export const GAME_SYSTEM_AUTHORING_TOOLS:readonly ToolDefinition[]=[
     else throw new ToolError('상점 스킨 오류.',{code:'invalid-args'});
     return {summary:'상점 표현을 저장했습니다. 실제 거래 검증은 별도입니다.',data:systemView(p)};
   }),
-  tool('configure_field_menu' ,'ESC 메뉴의 실제 항목·순서·표시 이름과 창 스타일을 저작. collector는 도감/동료/가방/수첩/지도/배지/저장/설정, romance는 호감도/일정/소지품/백로그/저장/불러오기/설정/타이틀로. custom 은 entries 전체를 지정하거나, 지금 메뉴에 add(추가)/remove(삭제)만 얹는다. 백로그 항목을 넣으면 대사 시스템의 백로그도 함께 켠다. 기본 기능의 가용성·저장 제한은 유지.','write',schema({preset:{type:'string',enum:['collector','romance','default','custom']},entries:{type:'array',items:{type:'object',additionalProperties:false,properties:{command:{type:'string',enum:[...FIELD_MENU_COMMANDS]},label:str},required:['command','label']}},add:{type:'array',description:'custom 전용. 지금 메뉴에 덧붙일 항목(저장 앞, 타이틀로 앞에 들어간다).',items:{type:'object',additionalProperties:false,properties:{command:{type:'string',enum:[...FIELD_MENU_COMMANDS]},label:str},required:['command','label']}},remove:{type:'array',description:'custom 전용. 지금 메뉴에서 뺄 항목.',items:{type:'string',enum:[...FIELD_MENU_COMMANDS]}},style:{type:'string',enum:['field-list','pixel','classic','sheet','workbench']}},['preset']),(p,args)=>{
-    const preset=String(args.preset);if(!['collector','romance','default','custom'].includes(preset))throw new ToolError('메뉴 프리셋 오류: preset 은 collector|romance|default|custom 중 하나여야 합니다.',{code:'invalid-args'});
+  tool('configure_field_menu' ,'ESC 메뉴의 실제 항목·순서·표시 이름과 창 스타일을 저작. collector는 도감/동료/가방/수첩/지도/배지/저장/설정, romance는 호감도/일정/소지품/백로그/저장/불러오기/설정/타이틀로, story(전투 없는 이야기·공포·회상)는 소지품/갤러리/엔딩/대화 기록/저장/불러오기/설정/타이틀로. custom 은 entries 전체를 지정하거나, 지금 메뉴에 add(추가)/remove(삭제)만 얹는다. 백로그 항목을 넣으면 대사 시스템의 백로그도 함께 켠다. 기본 기능의 가용성·저장 제한은 유지.','write',schema({preset:{type:'string',enum:['collector','romance','story','default','custom']},entries:{type:'array',items:{type:'object',additionalProperties:false,properties:{command:{type:'string',enum:[...FIELD_MENU_COMMANDS]},label:str},required:['command','label']}},add:{type:'array',description:'custom 전용. 지금 메뉴에 덧붙일 항목(저장 앞, 타이틀로 앞에 들어간다).',items:{type:'object',additionalProperties:false,properties:{command:{type:'string',enum:[...FIELD_MENU_COMMANDS]},label:str},required:['command','label']}},remove:{type:'array',description:'custom 전용. 지금 메뉴에서 뺄 항목.',items:{type:'string',enum:[...FIELD_MENU_COMMANDS]}},style:{type:'string',enum:['field-list','pixel','classic','sheet','workbench']}},['preset']),(p,args)=>{
+    const preset=String(args.preset);if(!['collector','romance','story','default','custom'].includes(preset))throw new ToolError('메뉴 프리셋 오류: preset 은 collector|romance|story|default|custom 중 하나여야 합니다.',{code:'invalid-args'});
     // Presets own their entries; structured model providers may emit optional arrays.
     // Custom explicitly owns user labels/order. Preset entries are not a mutation input.
     let next:AuthoredFieldMenu|undefined;
@@ -66,6 +66,7 @@ export const GAME_SYSTEM_AUTHORING_TOOLS:readonly ToolDefinition[]=[
     if(preset==='default')next=undefined;
     else if(preset==='collector')next=collectorFieldMenu();
     else if(preset==='romance')next=romanceFieldMenu();
+    else if(preset==='story')next=storyFieldMenu();
     else{
       const adds=Array.isArray(args.add)?args.add as {command:FieldMenuCommand;label:string}[]:[];
       const removes=Array.isArray(args.remove)?(args.remove as unknown[]).map(String):[];

@@ -1,4 +1,5 @@
 import { isParticlePreset, normalizeParticleDurationMs, normalizeShakeDirection } from "@/project/eventCommands/cinematicStaging";
+import { playerChoiceText } from "@/project/choiceText";
 import { playMonsterSfx } from "@/player/monsterSfx";
 import { monsterCampaign } from "@/project/monsterJournal";
 import { normalizeBlendMode } from "@/project/blendMode";
@@ -613,7 +614,7 @@ export function executeCommand(
       return pause("choices", {
         kind: "choices",
         prompt: command.prompt,
-        options: command.options.slice(0, 5).map((option) => ({ text: option.text })),
+        options: command.options.slice(0, 5).map((option) => ({ text: playerChoiceText(option.text) })),
         settings: state.session.messageWindowSettings ?? DEFAULT_MESSAGE_WINDOW_SETTINGS,
         cancelBehavior: command.cancelBehavior,
       });
