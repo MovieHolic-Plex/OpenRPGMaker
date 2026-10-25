@@ -3863,7 +3863,7 @@ const moveEvent: ToolDefinition = {
     const cutOff: string[] = [];
     if (reachBefore && reachAfter && reachAfter.size < reachBefore.size) {
       const touches = (set: Set<number>, ev: { x: number; y: number }) => [[1, 0], [-1, 0], [0, 1], [0, -1], [0, 0]].some(([dx, dy]) => { const x = ev.x + dx!, y = ev.y + dy!; return inMapBounds(map, x, y) && set.has(y * map.width + x); });
-      for (const other of map.events) if (other.id !== event.id && other.pages.some((pg) => { const k = typeof pg.trigger === "string" ? pg.trigger : (pg.trigger as { kind?: string } | undefined)?.kind ?? "action"; return !/^(auto|autorun|parallel)/u.test(k); }) && touches(reachBefore, other) && !touches(reachAfter, other)) cutOff.push(`${other.name || other.id}(${other.x},${other.y})`);
+      for (const other of map.events) if (other.id !== event.id && (other.pages ?? []).some((pg) => { const k = typeof pg.trigger === "string" ? pg.trigger : (pg.trigger as { kind?: string } | undefined)?.kind ?? "action"; return !/^(auto|autorun|parallel)/u.test(k); }) && touches(reachBefore, other) && !touches(reachAfter, other)) cutOff.push(`${other.name || other.id}(${other.x},${other.y})`);
     }
     const warnings = [
       ...(cutOff.length ? [`이 자리가 길을 막아 ${cutOff.slice(0, 5).join(", ")}${cutOff.length > 5 ? ` 외 ${cutOff.length - 5}개` : ""} 에 더는 걸어 닿지 못한다 — 통로가 아닌 벽 쪽 칸으로 옮긴다`] : []),
