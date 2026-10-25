@@ -144,7 +144,7 @@
   animation: ending-roll var(--credits-duration, 30000ms) linear both;
 }
 .terminal-scene[data-monster-style="emerald"] .ending-credits-roll { text-wrap: balance; }
-.ending-final-title { position: absolute; top: 36%; left: 5%; right: 5%; text-align: center; font-size: 23px; letter-spacing: 6px; font-weight: 400; }
+.ending-final-title { position: absolute; bottom: 47%; left: 5%; right: 5%; line-height: 1.25; text-align: center; font-size: 23px; letter-spacing: 6px; font-weight: 400; }
 .ending-final-caption { position: absolute; top: 55%; left: 10%; right: 10%; text-align: center; font-size: 9px; line-height: 1.6; opacity: .65; overflow-wrap: anywhere; }
 .ending-final-summary { position: absolute; top: 63%; left: 8%; right: 8%; text-align: center; font-size: 9px; line-height: 1.6; opacity: .8; letter-spacing: .04em; text-shadow: 0 1px 0 #000; overflow-wrap: anywhere; }
 @keyframes terminal-darken { from { background: transparent; } to { background: #080809; } }
@@ -227,6 +227,9 @@
   text-shadow: 0 .3cqh .8cqh rgba(0, 0, 0, .85);
 }
 .ending-screen[data-ending-cg="scene"] .ending-epilogue { inset: 16% 14% 16%; width: auto; }
+/* 긴 요약은 글자를 줄이기 전에 판부터 넓힌다(G52) — fitEndingMessage 가 붙인다. */
+.ending-screen[data-ending-cg="scene"] .ending-epilogue.ending-epilogue--long { inset: 7% 8% 11%; }
+.ending-screen[data-ending-cg="couple"] .ending-epilogue.ending-epilogue--long { top: 5%; bottom: 10%; }
 .ending-badge {
   padding: .7cqh 1.8cqh; border: .25cqh solid #f3c98b; border-radius: 99px;
   background: linear-gradient(180deg, rgba(255, 214, 160, .3), rgba(160, 90, 60, .25));

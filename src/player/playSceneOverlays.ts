@@ -421,10 +421,38 @@ function fitEndingMessage(epilogue: HTMLElement): void {
   // 요약 글 상자는 자기 max-height 안에서 스크롤하므로 판만 재면 늘 «들어간다» 로 읽혔다 — 마지막 줄이 상자 안에서 잘렸다(첫사랑 VQA r35).
   // 판과 글 상자 둘 다 넘치지 않는 가장 큰 크기를 고른다.
   const fits = (): boolean => epilogue.scrollHeight <= epilogue.clientHeight + 1 && message.scrollHeight <= message.clientHeight + 1;
-  for (let size = 4.6; size >= 3; size -= 0.2) {
-    message.style.fontSize = `${size.toFixed(1)}cqh`;
-    if (fits()) return;
+  const tryMessage = (from: number, to: number): boolean => {
+    for (let size = from; size >= to - 0.01; size -= 0.2) {
+      message.style.fontSize = `${size.toFixed(1)}cqh`;
+      if (fits()) return true;
+    }
+    return false;
+  };
+  if (tryMessage(4.6, 3.4)) return;
+  // 제목이 두 줄이고 요약이 길면 3cqh 에서도 마지막 줄이 잘렸다(장난감 가게 엔딩, 2026-10-25 G52·심판 J3).
+  // 글자를 더 줄이기 전에 판을 넓히고, 그다음 제목을 줄이고, 마지막에만 요약을 2.6cqh 까지 내린다.
+  epilogue.classList.add("ending-epilogue--long");
+  if (tryMessage(3.4, 3)) return;
+  const heading = epilogue.querySelector<HTMLElement>(".ending-heading");
+  for (let size = 6.2; heading && size >= 4.6; size -= 0.8) {
+    heading.style.fontSize = `${size.toFixed(1)}cqh`;
+    if (tryMessage(3.4, 3)) return;
   }
+  tryMessage(2.8, 2.6);
+}
+
+/**
+ * 마지막 화면의 큰 제목·작은 제목은 따로 절대 위치라 큰 제목이 두 줄로 넘어가면 둘째 줄이 작은 제목을 덮었다
+ * (「마지막 태엽을 감고 끝」의 「끝」, 2026-10-25 G52). 한 줄에 들어갈 때까지 글자를 줄이고, 최소 크기에서도 넘치면 줄바꿈을 허용한다.
+ */
+function fitOneLine(element: HTMLElement, from: number, to: number, unit: string): void {
+  if (element.clientWidth <= 0) return;
+  element.style.whiteSpace = "nowrap";
+  for (let size = from; size >= to - 0.01; size -= from > 20 ? 1 : 0.4) {
+    element.style.fontSize = `${size.toFixed(1)}${unit}`;
+    if (element.scrollWidth <= element.clientWidth + 1) return;
+  }
+  element.style.whiteSpace = "";
 }
 
 export function showEndingScreen(scene: PlaySceneContext, title: string, message: string, presentation?: EndingPresentation, endingId?: string): void {
@@ -504,13 +532,23 @@ export function showEndingScreen(scene: PlaySceneContext, title: string, message
     const actions = textNode("div", "game-over-actions", "");
     const button = terminalButton("return-title", endingText("ending.returnTitle"), () => { void exitTerminal(terminal, () => scene.returnToTitle()); });
     actions.append(button); final.append(actions); terminal.root.append(final);
+    const fitFinal = (): void => {
+      if (!final.isConnected || terminal.root.dataset.monsterStyle === "emerald") return;
+      const scaled = terminal.root.dataset.endingCg !== undefined;
+      fitOneLine(finalTitle, scaled ? 11 : 23, scaled ? 6 : 14, scaled ? "cqh" : "px");
+      const caption = final.querySelector<HTMLElement>(".ending-final-caption");
+      if (caption) fitOneLine(caption, scaled ? 6.4 : 9, scaled ? 3.6 : 7, scaled ? "cqh" : "px");
+    };
+    fitFinal();
+    void document.fonts?.ready.then(fitFinal);
     terminal.menu(() => attachCursorMenu(final, { items: [button], cancelEl: button }));
   };
   const credits = async (): Promise<void> => {
     terminal.phase("credits-transition");
     if (!await terminal.wait(terminal.reducedMotion ? 0 : 500)) return;
     terminal.root.querySelector(".ending-epilogue")?.remove();
-    const copy = presentation?.credits?.trim();
+    // 조수가 줄바꿈을 글자 「\n」로 저장한 크레딧(2026-10-25 G50·심판 J2)도 줄로 보인다.
+    const copy = presentation?.credits?.replace(/(?:\\r)?\\n/gu, "\n").trim();
     if (!copy) { finish(); return; }
     terminal.phase("credits");
     const viewport = textNode("div", "ending-credits", "");
