@@ -60,7 +60,7 @@
       "repo": "https://github.com/MovieHolic-Plex/char-gen.git",
       "visibility": "private",
       "branch": "main",
-      "commit": "c309ceec2d8e40b5a11b8dca6e2f5fee6e1be065",
+      "commit": "b1efe55daff8e0271a30caef82f5151be2994448",
       "contract": [
         {
           "file": "chargen/pack.py",

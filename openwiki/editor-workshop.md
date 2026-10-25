@@ -85,7 +85,7 @@
 - 호스트(`workshopGen.mjs` `runCharPhoto`)가 고정판 char-gen `cli.py photo 사진 --out run` 을 사용자 CLI 로 돈다.
   - 환경 변수: `CHARGEN_VISION_CLI`=고른 CLI, `CHARGEN_VISION_MODEL`=모델.
   - 결과 칩은 RTP(EasyRPG, CC BY 4.0) 머리·몸 짝을 고르고 옷·머리 색을 사진에 맞게 칠한 종이 인형이다.
-  - 짝을 고를 때 쓰는 그림(2026-10-25, char-gen `c309cee`): 그림 도구(사용자 컴퓨터의 Codex CLI 등)가 사진 속 사람을 걷기 그림으로 그리고, 그 실루엣이 고르기를 이끈다. 어느 쪽이었는지는 `candidates.json` `picture` → 상태의 `photoPicture` 로 화면에 온다.
+  - 짝을 고를 때 쓰는 그림(2026-10-25, char-gen `c309cee`·`b1efe55`): 그림 도구(사용자 컴퓨터의 Codex CLI 등)가 사진 속 사람을 걷기 그림으로 그리고, 그 실루엣이 고르기를 이끈다. 어느 쪽이었는지는 `candidates.json` `picture` → 상태의 `photoPicture` 로 화면에 온다.
     - `photo`: 사진에서 바로 그렸다.
     - `description`: 그림 도구가 사진을 거절했다(유명인 사진 — Codex 안전 정책). 사진 속 모습을 글로 옮겨(이름·역할 없이) 그 글로 그렸다. 화면에 그 사실을 알린다.
     - `none`: 그림 도구가 없거나 또 실패했다. 특징만으로 고른다. 화면에 「Codex CLI 를 설치하고 로그인하면 더 비슷하게 골라요」를 띄운다.
@@ -98,7 +98,7 @@
   - 고르기는 `POST /v1/workshop/gen/pick {jobId, rank, title}` 로 한다(`hostGen.pickHostGen`).
   - 고르면 호스트가 그 칩만 `cli.py pack … --chip-model <CLI/모델> --license CC-BY-4.0` 으로 묶어 `done` + `pack` 을 준다. 생성 방식은 mixed 다(머리·몸 고르기와 색을 모델이 정했다). `--chip-method procedural` 로 묶으면 `aiGenerated:true` 와 어긋나 `validateManifest` 가 거절했다.
 - 사진은 호스트 작업 폴더(`~/.cache/oprn/workshop-gen/<job>/`)에만 있고 묶음에는 들어가지 않는다.
-- lock: char-gen `c309cee`(그림 → 글로 그리기 → 그림 없음 순으로 내려간다, 수염·모자 거르기). 처음 붙일 때는 `39dd8ab`(계약 동사에 `photo` 추가).
+- lock: char-gen `b1efe55`(그림 → 글로 그리기 → 그림 없음 순으로 내려간다 — 그림 도구가 아예 없으면 글 묘사도 건너뛴다, 수염·모자 거르기). 처음 붙일 때는 `39dd8ab`(계약 동사에 `photo` 추가).
 - 시험:
   - 호스트: `test/workshop/workshopGenPhoto.test.ts`(가짜 char-gen·CLI 로 picking → pick → done, 입력 거절, `--no-picture` 를 넘기지 않음, `photoPicture` 전달).
   - 실화면: `scripts/qa/workshop-photo-capture.mjs`(PHOTO=사진 경로, 사진은 저장소에 두지 않는다).

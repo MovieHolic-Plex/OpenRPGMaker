@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **184쪽 / 7025KB / 약 2,057,761 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **184쪽 / 7025KB / 약 2,057,784 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -29,7 +29,7 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | `openwiki/editor-pre-edit-routing.md` | 189KB | 72KB ⚠상한 초과 — 절을 더 쪼개라 | 1171 | ~55,451 |
 | `openwiki/editor-validation.md` | 61KB | 16KB | 406 | ~17,230 |
 | `openwiki/editor-workflows-misc.md` | 90KB | 33KB | 635 | ~25,270 |
-| `openwiki/editor-workshop.md` | 64KB | 15KB | 260 | ~19,196 |
+| `openwiki/editor-workshop.md` | 64KB | 15KB | 260 | ~19,219 |
 | `openwiki/harnesses/assistant-capability.md` | 59KB | 8KB | 380 | ~18,190 |
 | `openwiki/harnesses/interview-scene-bank.md` | 56KB | 38KB | 197 | ~17,387 |
 | `openwiki/harnesses/monster-collect-species.md` | 63KB | 18KB | 353 | ~19,132 |
@@ -1401,7 +1401,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L17` Quick routing
 - `L25` For AI agents
 
-### `openwiki/editor-workshop.md` — 64KB · 260줄 · ~19,196 토큰 · 통째읽기 잘림
+### `openwiki/editor-workshop.md` — 64KB · 260줄 · ~19,219 토큰 · 통째읽기 잘림
 
 - `L50` 한 번에 만들기 — 「딸깍」 공방 (2026-10-23)
   - `L72` 캐릭터 = 호스트가 고정판 char-gen 을 띄운다
