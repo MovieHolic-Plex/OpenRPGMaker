@@ -544,7 +544,7 @@ export function playCinematicSequence(options: {
         ready(canvas); beginLoading();
         playOpeningAnimatic({ project, canvas, composition: scene.composition, durationMs: scene.durationMs, signal: lifetime.signal, reducedMotion,
           onReady: () => { if (!alive || !mediaActive) return; clearTimeout(loadTimer); root.dataset.mediaState = 'ready'; status.textContent = ''; },
-          onError: message => { if (!alive || !mediaActive) return; fail('error'); status.textContent = message; }, onDone: () => { if (alive) next(); } });
+          onError: message => { if (!alive || !mediaActive) return; console.warn('[opening animatic]', message); fail('error'); status.textContent = '장면을 그리지 못했어요. Enter로 넘어가세요.'; }, onDone: () => { if (alive) next(); } });
         break;
       }
       case "video": {
