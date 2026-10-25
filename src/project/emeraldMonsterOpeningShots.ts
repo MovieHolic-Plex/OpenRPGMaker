@@ -174,17 +174,20 @@ function stageShot(cast: EmeraldOpeningCast): OpeningAnimatic {
 }
 
 /**
- * 지역 비행: 군도 위를 높이 날며 섬(맵) 넷을 지난다 — 해변 → 1번길 → 마을 → 체육관 숲. 섬 사이는 바다와 구름이 가리고,
+ * 지역 비행: 군도 위를 높이 날며 섬(맵) 넷을 지난다 — 해변 → 1번길 → 마을 → 언덕 정원. 모두 바깥 맵이다(체육관은 실내라 벽 테두리가 드러났다).
+ * 섬은 좁은 바다 틈(40px)만 두고 붙여 화면이 어느 순간에도 땅을 비추고, 틈은 구름이 가린다. 섬 사이는 바다와 구름이 가리고,
  * 섬을 지날 때 핀이 반짝이며 이름표가 뜬다. 새떼가 같은 쪽으로 난다. 배경은 맵 그림을 1배(멀리서 본 크기)로 쓴다.
  */
 function regionShot(cast: EmeraldOpeningCast): OpeningAnimatic {
   const ms = emeraldOpeningShotMs('region');
   type Isle = { id: EmeraldOpeningBackdropId; x: number; y: number };
-  const isles: Isle[] = [{ id: 'dawn', x: 0, y: 40 }, { id: 'route', x: 470, y: 0 }, { id: 'town', x: 920, y: 140 }, { id: 'gym', x: 1330, y: 70 }];
+  // 마을·정원(높이 320)이 놓인 띠(y 110..430)를 해변·1번길(더 높다)도 덮는다 — 카메라는 그 띠 가운데(y 270)로만 난다.
+  const isles: Isle[] = [{ id: 'dawn', x: 0, y: 0 }, { id: 'route', x: 456, y: 20 }, { id: 'town', x: 880, y: 110 }, { id: 'stage', x: 1272, y: 110 }];
   const centerOf = (isle: Isle) => { const { crop } = emeraldOpeningBackdrop(isle.id); return { x: isle.x + crop.width / 2, y: isle.y + crop.height / 2 }; };
   const centers = isles.map(centerOf);
-  const camX: AnimaticKey[] = centers.map((c, i) => ({ atMs: Math.round(i * (ms - 500) / (isles.length - 1)), value: Math.round(c.x), ...(i ? { ease: 'ease-in-out' as const } : {}) }));
-  const camY: AnimaticKey[] = centers.map((c, i) => ({ atMs: Math.round(i * (ms - 500) / (isles.length - 1)), value: Math.round(Math.min(Math.max(c.y, 200), 330)), ...(i ? { ease: 'ease-in-out' as const } : {}) }));
+  // 첫 화면도 땅 위에서 연다 — 해변 가운데(208)에서 열면 줌 1.1 화면 왼쪽 끝에 빈 바다가 걸렸다.
+  const camX: AnimaticKey[] = centers.map((c, i) => ({ atMs: Math.round(i * (ms - 500) / (isles.length - 1)), value: Math.round(i === 0 ? c.x + 32 : c.x), ...(i ? { ease: 'ease-in-out' as const } : {}) }));
+  const camY: AnimaticKey[] = [{ atMs: 0, value: 270 }];
   const islandLayers = isles.flatMap((isle, i): AnimaticLayer[] => {
     const { resourceId, crop } = emeraldOpeningBackdrop(isle.id);
     return [
@@ -197,9 +200,12 @@ function regionShot(cast: EmeraldOpeningCast): OpeningAnimatic {
   const clouds: AnimaticLayer[] = [];
   isles.forEach((isle, i) => {
     const { crop } = emeraldOpeningBackdrop(isle.id);
-    for (const [fx, fy, size] of [[0.02, 0.12, 250], [0.98, 0.4, 260], [0.45, 1.02, 260]] as const) {
+    for (const [fx, fy, size] of [[0.3, -0.02, 220], [0.7, 1.02, 230]] as const) {
       clouds.push(cloud(`cloud-${i}-${clouds.length}`, isle.x + crop.width * fx, isle.y + crop.height * fy, size, 1));
     }
+    // 다음 섬과의 바다 틈을 덮는 구름 기둥.
+    const next = isles[i + 1];
+    if (next) clouds.push(cloud(`gap-${i}`, (isle.x + crop.width + next.x) / 2, 270, 240, 1, 0.95));
   });
   const hiCloud = [cloud('hi-a', 420, 120, 280, 1.5, 0.55), cloud('hi-b', 1050, 420, 300, 1.5, 0.5)];
   const labels = isles.flatMap((isle, i): AnimaticLayer[] => {

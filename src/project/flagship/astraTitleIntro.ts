@@ -153,16 +153,19 @@ function legendShot(): OpeningAnimatic {
 // ── 3. 숲가의 셋 ────────────────────────────────────────────────────────
 /** 밤 풀밭. 거대한 그림자가 풀 위를 훑고, 스타터 셋(뒷모습)이 놀라 튀어 오르며 하늘을 본다. 멀리 숲 위로 전설이 날아간다. */
 function forestShot(cast: AstraIntroCast): OpeningAnimatic {
-  const ms = 3 * BAR, cam: CamKeys = { x: [key(0, 240), key(ms, 240)], y: [key(0, 176), key(ms, 160, "ease-in-out")], zoom: [key(0, 1), key(ms, 1.05, "ease-in-out")] };
+  // 카메라는 높이를 고정하고 살짝만 다가간다 — 위로 올라가며 1.05배로 다가가면 스타터 발이 아래 레터박스에 잘렸다(2026-10-25 적대 VQA).
+  const ms = 3 * BAR, cam: CamKeys = { x: [key(0, 240), key(ms, 240)], y: [key(0, 168), key(ms, 168)], zoom: [key(0, 1), key(ms, 1.03, "ease-in-out")] };
   const ground = astraArt("meadow-night");
   const shadowAt = 2 * BEAT, startle = shadowAt + 3 * BEAT, farFrom = Math.round(3 * BAR / 2);
-  const size = 112, baseY = 300, xs = [118, 240, 362];
+  const size = 96, baseY = 262, xs = [122, 240, 358];
   const starters = cast.starters.slice(0, 3).flatMap((starter, i): AnimaticLayer[] => {
     const at = startle + i * 140, x = xs[i]!, top = baseY - size;
     return [
       { id: `starter-${i}`, kind: "image", role: "actor", characterRole: "monster", resourceId: starter.back, sampling: "nearest", x: x - size / 2, y: top, width: size, height: size, parallax: 1.15,
         keys: { y: [key(0, top), key(at, top), key(at + 150, top - 26, "ease-out"), key(at + 330, top, "ease-in"), key(at + 2 * BEAT, top), key(at + 2 * BEAT + 120, top - 8, "ease-out"), key(at + 2 * BEAT + 260, top, "ease-in")] } },
-      { id: `starter-${i}-emote`, kind: "emote", role: "effect", x: x - 14, y: top - 34, width: 28, height: 30, parallax: 1.15, startMs: at + 80, endMs: at + 1800, emote: { preset: "exclaim", tail: "down", popMs: 140, outMs: 200 } },
+      // 느낌표는 그림 상자 위가 아니라 머리 곁에 — 뒷모습 그림은 상자 위 22~40% 가 비어 있어 상자 위에 띄우면 허공에 떴다.
+      // 펄쩍 뛰었다 내려앉은 뒤(at+330)에 떠서 셋이 같은 높이·같은 크기로 보인다.
+      { id: `starter-${i}-emote`, kind: "emote", role: "effect", x: x - size / 2 + Math.round(size * 0.62) - 14, y: top + Math.round(size * 0.3) - 30, width: 28, height: 30, parallax: 1.15, startMs: at + 330, endMs: at + 2000, emote: { preset: "exclaim", tail: "down", popMs: 140, outMs: 200 } },
     ];
   });
   const far = flightKeys({ x: 540, y: 60 }, { x: -80, y: 92 }, farFrom, ms - 200, 6, 8);
