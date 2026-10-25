@@ -24,9 +24,9 @@ describe("captureActivityVisuals resource search", () => {
   });
 
   it("draws a backdrop hit from the asset id behind the search prefix", () => {
-    const [visual] = preview("backdrop", "cosmos");
-    expect(visual?.resourceId).toBe("easyrpg-backdrop-cosmos1");
-    expect(resolveAssetResourceUrl(visual?.resourceId)).toBe("/assets/easyrpg/backdrop/Cosmos1.png");
+    const [visual] = preview("backdrop", "oprn-pano-sky-day");
+    expect(visual?.resourceId).toBe("oprn-pano-sky-day");
+    expect(resolveAssetResourceUrl(visual?.resourceId)).toBe("/assets/panoramas/oprn-pano-sky-day.png");
   });
 
   it("keeps a monster catalog id that already resolves", () => {
