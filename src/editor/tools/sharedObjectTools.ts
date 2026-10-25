@@ -2,11 +2,12 @@
 // 목록은 sharedDesignCatalog.ts(공용 오브젝트 카탈로그 + 프로젝트 킷). 장소 안 킷은 그 장소 원본을 prepare 에서 불러 온다.
 import { isPassable } from "@/project/collision";
 import { checkKitPlacement, checkReliefPlacement } from "@/project/kitPlacementRules";
-import { footprintFromUpper, footprintRefusal } from "@/project/objectFootprint";
+import { footprintFromUpper, footprintRefusal, overlappedObjects } from "@/project/objectFootprint";
+import { offPurposeProps } from "@/ai/v2/roomPurpose";
 import { isRetiredInteriorTileset, retiredInteriorMessage } from "@/project/retiredInteriorTilesets";
 import { regionReferenceScene, preloadRegionReferenceScene, type RegionReferenceScene } from "@/project/regionReferenceImport";
 import { installStampAssets, stampPattern, type StampPattern } from "@/project/objectStamp";
-import type { Project, StructureKitDef, TilesetDef } from "@/project/types";
+import type { GameMap, Project, StructureKitDef, TilesetDef } from "@/project/types";
 import { catalogEntry, resolveObjectAlias, sharedObjectDef, sharedObjects, sharedPlaces } from "./sharedDesignCatalog";
 import { rejectSettlementPropOnRoute } from "./routePropPolicy";
 import { rejectOnSceneStage } from "./sceneStageGuard";
@@ -103,12 +104,13 @@ export function sharedDesignDetail(project: Project, id: string) {
 
 export const SHARED_OBJECT_TOOLS: readonly ToolDefinition[] = [
   { name: "stamp_object", mode: "write", domains: ["map"],
-    description: "Stamp one shared object (list_spatial_designs kind:object → data.shared.rows[].id: obj:… from the shared object catalog — leafless trees, volcano peaks, climate terrain pieces, harbor parts, gatehouse, house exteriors, village props — or kit:/group: for this project's other kits) onto a map with its top-left at (x, y). Works without spatial activation. The object keeps its authored cells; when the map's tileset shows other pictures at those numbers the pictures are grafted onto the map's tileset (same tile size only) and renumbered, so place kits such as generated building exteriors, the gatehouse or harbor boats can go onto a forest village map. -1 cells leave the map as it is. layers: both (default for kits/houses), upper (default for harbor parts and volcano peaks — keeps the water/ground below) or lower. obj:house/<form> rows stamp only the exterior; use author_house for doors and interiors. Overflow past the map edge is clipped and reported. Each row carries owner (where it belongs — next to what) and passage; follow owner. On maps with height steps (relief) the drawn cells must sit on one level, off ramp/stair cells, and not right north of higher ground (it hides the bottom row); a rejection names the levels and a nearby top-left on each level. Ground paint, shadows and bridges are exempt. A standing prop kit (kit:…, no ground cells) is refused when its feet (blocking cells, or its bottom row) land on a wall, ceiling, roof, void, water or a blocked structure, or when any drawn cell overlaps another object; the refusal names the nearest free floor top-left — retry there.",
+    description: "Stamp one shared object (list_spatial_designs kind:object → data.shared.rows[].id: obj:… from the shared object catalog — leafless trees, volcano peaks, climate terrain pieces, harbor parts, gatehouse, house exteriors, village props — or kit:/group: for this project's other kits) onto a map with its top-left at (x, y). Works without spatial activation. The object keeps its authored cells; when the map's tileset shows other pictures at those numbers the pictures are grafted onto the map's tileset (same tile size only) and renumbered, so place kits such as generated building exteriors, the gatehouse or harbor boats can go onto a forest village map. -1 cells leave the map as it is. layers: both (default for kits/houses), upper (default for harbor parts and volcano peaks — keeps the water/ground below) or lower. obj:house/<form> rows stamp only the exterior; use author_house for doors and interiors. Overflow past the map edge is clipped and reported. Each row carries owner (where it belongs — next to what) and passage; follow owner. On maps with height steps (relief) the drawn cells must sit on one level, off ramp/stair cells, and not right north of higher ground (it hides the bottom row); a rejection names the levels and a nearby top-left on each level. Ground paint, shadows and bridges are exempt. A standing prop kit (kit:…, no ground cells) is refused when its feet (blocking cells, or its bottom row) land on a wall, ceiling, roof, void, water or a blocked structure, or when any drawn cell overlaps another object; the refusal names the nearest free floor top-left — retry there, or pass onOverlap:'nearest' (stamp at that free spot) / onOverlap:'replace' (clear the overlapped furniture first). Furniture that does not fit the room's purpose (a sofa or fridge in a classroom, an armchair in a chapel) is cleared automatically.",
     parameters: { type: "object", properties: {
       objectId: { type: "string", description: "list_spatial_designs(kind:'object') 의 data.shared.rows[].id" },
       mapId: { type: "string" },
       x: { type: "integer", description: "왼쪽 위 칸 x" }, y: { type: "integer", description: "왼쪽 위 칸 y" },
       layers: { type: "string", enum: ["both", "lower", "upper"], description: "찍을 층. 생략하면 오브젝트 기본값" },
+      onOverlap: { type: "string", enum: ["refuse", "nearest", "replace"], description: "서는 소품이 다른 가구와 겹칠 때: refuse(기본 — 가까운 빈 자리를 알려 준다) · nearest(그 가까운 빈 자리에 바로 찍는다) · replace(겹친 가구를 걷어 내고 그 자리에 찍는다). 방 쓰임에 안 맞는 가구(교실의 소파·냉장고, 예배당의 안락의자)와 겹치면 기본값에서도 걷어 낸다" },
     }, required: ["objectId", "mapId", "x", "y"], additionalProperties: false },
     prepare: args => prepareSharedObject(args.objectId),
     preservesAuthoredRaster: true,
@@ -133,9 +135,31 @@ export const SHARED_OBJECT_TOOLS: readonly ToolDefinition[] = [
       // 발자국(project/objectFootprint.ts, 2026-10-21): 소품 킷(kit: 서는 물건, 8×8 이하, 아래층 그림 없음)의 발이 벽·천장·허공·물 위거나
       // 다른 물체와 겹치면 거부하고 가까운 빈 바닥을 알려 준다. 실측: 2×4 혼천의를 서재 두 방 사이 벽·천장 위에 찍었다(objectgen VQA FAIL).
       const footprintChecked = !!kitDef && isStandingPropKit(kitDef, pattern) && layers !== "lower";
+      // 겹침 처리(2026-10-25 J64): 학교 교실에 남은 소파·냉장고 위에 책상을 찍다 11번 거부됐다 — 쓰임에 안 맞는 가구는 걷어 내고,
+      // nearest/replace 를 주면 그 자리로 옮기거나 겹친 가구를 걷는다.
+      const overlapNotes: string[] = [];
       if (footprintChecked) {
         const cells = footprintFromUpper(pattern.width, pattern.height, pattern.upper, resolved.source);
-        const refusal = footprintRefusal(project, map, cells, Number(args.x), Number(args.y), `「${resolved.name}」(${objectId}) ${pattern.width}×${pattern.height}`);
+        const label = `「${resolved.name}」(${objectId}) ${pattern.width}×${pattern.height}`;
+        let refusal = footprintRefusal(project, map, cells, Number(args.x), Number(args.y), label);
+        const mode = String(args.onOverlap ?? "refuse");
+        if (refusal?.code === "object-overlaps-object") {
+          const hit = overlappedObjects(project, map, cells, Number(args.x), Number(args.y));
+          const offHere = offPurposeLabels(project, map);
+          const offOnly = hit.length > 0 && hit.every((h) => offHere.has(h.label));
+          if (mode === "replace" || offOnly) {
+            for (const h of hit) for (const i of h.cells) { map.upperTiles[i] = -1; if (map.upperOverlayTiles) map.upperOverlayTiles[i] = -1; }
+            overlapNotes.push(`겹친 가구 ${hit.map((h) => `「${h.label}」`).join("·")} 을(를) 걷어 내고 찍었다${offOnly && mode !== "replace" ? " — 이 방 쓰임에 안 맞는 가구였다" : ""}`);
+            refusal = footprintRefusal(project, map, cells, Number(args.x), Number(args.y), label);
+          } else if (mode === "nearest" && refusal.suggestion) {
+            const at = refusal.suggestion.at;
+            overlapNotes.push(`(${String(args.x)},${String(args.y)}) 가 「${hit.map((h) => h.label).join("·")}」와 겹쳐 가장 가까운 빈 자리 (${at.x},${at.y}) 에 찍었다`);
+            args = { ...args, x: at.x, y: at.y };
+            refusal = footprintRefusal(project, map, cells, at.x, at.y, label);
+          } else {
+            refusal = { ...refusal, message: `${refusal.message} 그 자리에 꼭 놓아야 하면 onOverlap:'replace'(겹친 ${hit.map((h) => `「${h.label}」`).join("·") || "가구"}를 걷어 낸다), 가까운 빈 자리면 onOverlap:'nearest' 로 다시 부른다.` };
+          }
+        }
         if (refusal) throw new ToolError(refusal.message, { code: refusal.code, mapId: map.id, ...(refusal.suggestion ? refusal.suggestion.at : {}) });
       }
       // 높이 단(map.relief): 그림은 한 단 위에만, 경사로 칸 금지, 남쪽 높은 칸이 아랫줄을 덮지 않게. relief 없는 맵은 그대로.
@@ -160,6 +184,7 @@ export const SHARED_OBJECT_TOOLS: readonly ToolDefinition[] = [
         }
       }
       const warnings = [
+        ...overlapNotes,
         ...(startNote ? [startNote] : []),
         ...(result.clipped ? [`맵 밖으로 나간 칸은 뺐다 — 찍힌 범위 ${JSON.stringify(result.rect)}`] : []),
         // 2026-10-07 적대적 검토: 모델이 꽃 상자를 가로수 수관 위에 찍어 소품이 나무 잎에 얹혀 보였다. 덮인 칸을 되돌려 알린다.
@@ -178,3 +203,8 @@ export const SHARED_OBJECT_TOOLS: readonly ToolDefinition[] = [
     },
   },
 ];
+
+/** 이 맵의 방에서 쓰임에 안 맞는 가구 이름(위층) — 방 기록(hand-layout-room)의 쓰임과 가구 이름표로(src/ai/v2/roomPurpose.ts). */
+function offPurposeLabels(project: Project, map: GameMap): Set<string> {
+  return new Set(offPurposeProps(project, map).flatMap((room) => room.props.map((prop) => prop.label)));
+}

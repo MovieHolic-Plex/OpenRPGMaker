@@ -137,6 +137,9 @@ function labelOf(project: Project, map: GameMap, tile: number | undefined): stri
   return meta?.label ?? "";
 }
 
+/** 집이 아닌 건물 — 그 건물 맵에 집 방 이름으로 지은 방은 건물 쓰임을 따른다. */
+const INSTITUTION = new Set(["chapel", "school", "classroom", "hospital", "library"]);
+
 /** 맵의 방 기록(손 도트 layout 방)과 그 쓰임 — 방 이름(kind)과 맵 이름에서. */
 export function roomPurposes(map: GameMap): { room: RoomLoc; purpose: RoomPurpose }[] {
   const locs = ((map.locations ?? []) as unknown as (RoomLoc & { tags?: string[] })[]).filter((l) => (l.tags ?? []).includes("hand-layout-room"));
@@ -144,7 +147,11 @@ export function roomPurposes(map: GameMap): { room: RoomLoc; purpose: RoomPurpos
   const out: { room: RoomLoc; purpose: RoomPurpose }[] = [];
   for (const room of locs) {
     // 방 하나짜리 맵은 맵 이름이 그 방의 쓰임이다(「태엽 장난감 가게」의 entrance 방). 여러 방이면 방 이름만 본다(가게 맵의 침실은 침실).
-    const purpose = purposeOf(room.name.replace(/_/gu, " ")) ?? (single ? purposeOf(map.name ?? "") : undefined);
+    // 집 방 이름(living·bedroom…)으로 지은 방은 맵 이름의 쓰임을 따른다 — 학교 맵의 방 다섯이 living·bedroom 으로 지어져 소파·냉장고가 깔렸다(J64).
+    // 맵 이름이 학교·병원·예배당처럼 «집이 아닌» 건물일 때만(가게 맵의 침실은 침실로 둔다).
+    const mapPurpose = purposeOf(map.name ?? "");
+    const houseKind = /^(living|bedroom|master_bedroom|kitchen|dining|entrance|hall|study)\d*$/u.test(room.name);
+    const purpose = purposeOf(room.name.replace(/_/gu, " ")) ?? (single || (houseKind && mapPurpose && INSTITUTION.has(mapPurpose.id)) ? mapPurpose : undefined);
     if (purpose) out.push({ room, purpose });
   }
   return out;
