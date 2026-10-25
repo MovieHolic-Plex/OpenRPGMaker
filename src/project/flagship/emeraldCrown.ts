@@ -1,4 +1,5 @@
 import { charsetFrameIndex, decodeCharsetFrameIndex } from "@/assets/easyrpgRtp";
+import { ASTRA_TITLE_ART_ID } from "@/assets/astraCast";
 import { configureEmeraldMonsterOpening, type EmeraldOpeningPage } from "@/project/emeraldMonsterOpening";
 import { astraIntroCast, buildAstraTitleIntro } from "@/project/flagship/astraTitleIntro";
 import { createMonsterExpedition } from "@/project/examples/monsterExpedition";
@@ -1127,8 +1128,10 @@ const STARTER_NOTES: Record<string, string> = {
 function configureAstraDayTitle(project: Project): void {
   const title = project.system.titleScreen;
   if (!title) return;
+  // 타이틀 그림은 생성 키아트(사용자 요청 2026-10-25) — 인트로는 기존 들판 그림 그대로.
+  title.backgroundResourceId = ASTRA_TITLE_ART_ID;
   title.runners = astraIntroCast(project).starters.flatMap((starter, i) => starter.chip
-    ? [{ resourceId: starter.chip.resourceId, characterIndex: starter.chip.index, direction: "right" as const, y: 230 - i * 2, speed: 60, scale: 2, delayMs: 600 + i * 1000, everyMs: 11000, hop: true }]
+    ? [{ resourceId: starter.chip.resourceId, characterIndex: starter.chip.index, direction: "right" as const, y: 300 - i * 2, speed: 60, scale: 2, delayMs: 600 + i * 1000, everyMs: 11000, hop: true }]
     : []);
   // 논리 y(240 높이 기준) 112 = 산등성이 위 하늘 — 키아트의 여우(논리 y 129~)와 겹치지 않는다(적대 검수 r3).
   title.pressStart = { text: "PRESS START", blinkMs: 700, y: 112 };
