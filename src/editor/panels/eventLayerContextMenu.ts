@@ -11,10 +11,15 @@ import {
   type MapContextMenuItem,
   type MapContextMenuPoint,
 } from "@/editor/panels/mapContextMenu";
+import { eventAtPoint, eventBodyRect } from "@/project/eventFootprintQuery";
+import { rectsOverlap } from "@/project/footprint";
 import { store } from "@/project/store";
 import type { Command, EventPage, GameEvent, MapId } from "@/project/types";
 import { genId } from "@/util/id";
-import { eventAtPoint } from "@/project/eventFootprintQuery";
+import { toast } from "@/util/toast";
+
+/** 끌어 옮기기(DragOperationHandler)와 같은 문장. 카탈로그 키라 문구를 바꾸면 번역도 같이 고친다. */
+const OCCUPIED_EVENT_CELL_MESSAGE = "이미 다른 이벤트가 있는 칸입니다.";
 
 export type EventLayerContextMenuTarget = {
   readonly mapId: MapId;
@@ -55,7 +60,10 @@ export function eventLayerContextMenuItems(target: EventLayerContextMenuTarget):
       testId: "event-layer-event-ai-queue",
     } satisfies MapContextMenuItem]),
     {
-      action: () => openNewEventEditorModal(target.mapId, target.x, target.y),
+      action: () => {
+        if (refuseOccupiedCell(target)) return;
+        openNewEventEditorModal(target.mapId, target.x, target.y);
+      },
       icon: "event",
       id: "create-event",
       label: "이벤트 생성...",
@@ -113,7 +121,10 @@ export function eventLayerContextMenuItems(target: EventLayerContextMenuTarget):
       testId: "event-layer-delete",
     },
     {
-      action: () => createTransferEvent(target),
+      action: () => {
+        if (refuseOccupiedCell(target)) return;
+        createTransferEvent(target);
+      },
       icon: "event",
       id: "create-transfer-event",
       label: "장소 이동 이벤트 생성...",
@@ -129,7 +140,10 @@ export function eventLayerContextMenuItems(target: EventLayerContextMenuTarget):
       testId: "event-layer-set-player-start",
     },
     {
-      action: () => createVehicleLocationEvent(target),
+      action: () => {
+        if (refuseOccupiedCell(target)) return;
+        createVehicleLocationEvent(target);
+      },
       icon: "map-start",
       id: "vehicle-start",
       label: "탈것 시작 위치 설정...",
@@ -202,11 +216,32 @@ export function pasteEventAt(target: EventLayerContextMenuTarget): void {
   const map = store.getCurrent().maps[target.mapId];
   if (!map || !inBounds(target, map)) return;
   const event = cloneEventForPaste(eventClipboard, target);
+  // 앵커만 보면 2칸 이상 이벤트의 머리·옆 칸 위에 복제본이 숨는다. 클릭은 먼저 깔린
+  // 이벤트를 집으므로 붙여넣은 쪽은 화면에 없는 것처럼 보인다. 끌어 옮기기와 같이 거절한다.
+  if (placementOverlapsExisting(target, event)) {
+    toast(OCCUPIED_EVENT_CELL_MESSAGE, "error");
+    return;
+  }
   recordProjectSnapshot();
   store.update((project) => {
     project.maps[target.mapId]?.events.push(event);
   });
   editorState.set({ selectedEventId: event.id, selectedEventPageId: latestPageId(event) });
+}
+
+function refuseOccupiedCell(target: EventLayerContextMenuTarget): boolean {
+  const map = store.getCurrent().maps[target.mapId];
+  if (!map || !eventAtPoint(map, target.x, target.y)) return false;
+  toast(OCCUPIED_EVENT_CELL_MESSAGE, "error");
+  return true;
+}
+
+function placementOverlapsExisting(target: EventLayerContextMenuTarget, incoming: GameEvent): boolean {
+  const map = store.getCurrent().maps[target.mapId];
+  if (!map) return false;
+  const body = eventBodyRect(incoming);
+  // 초안이 있어도 화면의 몸 사각은 라이브 이벤트에 있다. 맵 전체를 복제하지 않는다.
+  return map.events.some((existing) => rectsOverlap(eventBodyRect(existing), body));
 }
 
 function deleteEventAt(target: EventLayerContextMenuTarget): void {
