@@ -29,7 +29,8 @@ export interface AdvisorToolCall {
 }
 export interface AdvisorInput {
   readonly task: string;
-  readonly toolLog: readonly AdvisorToolCall[];
+  /** compactToolLog 결과(압축한 한 덩이 글). */
+  readonly toolLog: string;
   readonly diff: string;
   readonly report: string;
 }
