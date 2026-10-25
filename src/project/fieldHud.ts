@@ -1,3 +1,4 @@
+import type { Project } from "./types";
 /** Serializable HUD authoring. No executable expressions or arbitrary CSS in project data. */
 export const FIELD_HUD_THEMES = { collector: "수집 · 여행", classic: "고전 JRPG", horror: "상징 · 호러", chase: "추격 · HUD 없음", hearts: "하트 · 모험", minimal: "고요한 탐험", farm: "생활 · 농장", survival: "생존 · 탐험", adventure: "액션 · 모험", party: "파티 RPG", legacy: "기존 HUD" } as const;
 export const HUD_KINDS = { gauge: "게이지", clock: "달력 · 시계", slots: "슬롯 모음", text: "정보 · 숫자", party: "파티", timers: "상태 타이머", image: "이미지" } as const;
@@ -127,4 +128,15 @@ export const JRPG_CLASSIC_FIELD_HUD: FieldHudConfig = { theme: "classic", vitals
 /** 저장된 fieldHud 가 없는 파티 모험 JRPG 는 프리셋을 거치기 전에 만든 프로젝트·헤드리스 생성물도 같은 클래식 HUD 로 본다. */
 export function effectiveFieldHud(project: { readonly system: { readonly fieldHud?: FieldHudConfig; readonly genre?: string } }): FieldHudConfig | undefined {
   return project.system.fieldHud ?? (project.system.genre === "adventure-jrpg" ? JRPG_CLASSIC_FIELD_HUD : undefined);
+}
+
+/** 플레이 중 체력이 줄 수 있는가: 인카운트, 전투 명령, 체력을 깎는 명령(changeActorHp -=). 하나도 없으면 체력 HUD 는 장식일 뿐이다. */
+export function projectCanLoseHp(p: Pick<Project, "maps" | "database">): boolean {
+  let found=false;
+  const walk=(list:unknown):void=>{if(found||!Array.isArray(list))return;for(const raw of list){if(found)return;if(!raw||typeof raw!=='object')continue;const c=raw as Record<string,unknown>;
+    if(c.kind==='battleProcessing'||(c.kind==='changeActorHp'&&(c.op==='-='||(typeof c.amount==='number'&&c.amount<0)))){found=true;return;}
+    for(const v of Object.values(c)){if(Array.isArray(v))walk(v);else if(v&&typeof v==='object')for(const w of Object.values(v as Record<string,unknown>))if(Array.isArray(w))walk(w);}}};
+  for(const map of Object.values(p.maps)){if((map.encounterRate??0)>0&&(map.encounterTable??[]).length>0)return true;for(const ev of map.events??[])for(const page of ev.pages??[])walk(page.commands);}
+  for(const ce of (p.database as {commonEvents?:{commands?:unknown}[]}).commonEvents??[])walk(ce.commands);
+  return found;
 }

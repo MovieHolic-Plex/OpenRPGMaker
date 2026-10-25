@@ -19,7 +19,7 @@ import { checkMonsterCampaignDefinition } from '@/project/monsterCampaignConsist
 import { installBadgeCeremonies } from '@/project/monsterBadgeCeremony';
 import { resizeCampaignGyms } from '@/project/examples/monsterExpedition/resizeGyms';
 import { listStatusMenuCommandIds, listStatusMenuRailIds, statusMenuRailLabel } from '@/player/playerStatusMenuModel';
-import { FIELD_HUD_THEMES, normalizeFieldHud } from '@/project/fieldHud';
+import { FIELD_HUD_THEMES, normalizeFieldHud, projectCanLoseHp } from '@/project/fieldHud';
 import type { Project } from '@/project/types';
 import type { PlaySession } from '@/project/session';
 const str:JsonSchema={type:'string'};
@@ -65,10 +65,15 @@ export const GAME_SYSTEM_AUTHORING_TOOLS:readonly ToolDefinition[]=[
     const theme=typeof args.theme==='string'?args.theme:(p.system.fieldHud?.theme??'minimal');
     const prev=p.system.fieldHud&&p.system.fieldHud.theme===theme?p.system.fieldHud:undefined;
     const flags:Record<string,boolean>={};for(const k of keys.slice(2))if(typeof args[k]==='boolean')flags[k]=args[k] as boolean;
+    // 공포 HUD 의 꽃잎은 체력이다. 체력이 줄 일(전투·피해 명령·인카운트)이 없는 공포 탐험에 말없이 켜면 설명 없는 분홍 꽃이 떠 있다(2026-10-25 심사 J67).
+    // 테마만 고르면 그런 게임에서는 체력·시계·도구 칸을 켜지 않는다. 명시한 칸(vitals:true 등)과 이미 고른 같은 테마 값은 그대로다.
+    const damageless=!projectCanLoseHp(p);
+    if(!prev&&theme==='horror'&&damageless)for(const k of ['vitals','clock','tools'])if(flags[k]===undefined)flags[k]=false;
     const next=normalizeFieldHud({...(prev??{}),theme,...flags,...(prev?.widgets?{widgets:prev.widgets}:{})});
     if(!prev)delete next.widgets;
     p.system.fieldHud=next;
-    return {summary:`필드 HUD: ${FIELD_HUD_THEMES[next.theme]}(${next.theme}) — 체력 ${next.vitals?'표시':'숨김'}, 시계 ${next.clock?'표시':'숨김'}, 도구 ${next.tools?'표시':'숨김'}`,data:{hud:next}};
+    const note=next.theme==='horror'&&!next.vitals&&damageless&&flags.vitals!==true?' — 체력이 줄 일(전투·피해)이 없어 꽃잎 생명을 켜지 않았다. 체력을 쓰는 게임이면 vitals:true 나 set_life_flower 로 켠다':'';
+    return {summary:`필드 HUD: ${FIELD_HUD_THEMES[next.theme]}(${next.theme}) — 체력 ${next.vitals?'표시':'숨김'}, 시계 ${next.clock?'표시':'숨김'}, 도구 ${next.tools?'표시':'숨김'}${note}`,data:{hud:next}};
   }),
   tool('configure_shop_presentation','전체 상점의 표현을 명시적으로 선택. collector는 흰 도트 창의 도구점. 상품·가격·수량·매입 예산은 유지. event-default는 각 명령 스킨 사용.','write',schema({preset:{type:'string',enum:[...SHOP_UI_PRESETS,'event-default']}},['preset']),(p,args)=>{
     if(args.preset==='event-default')delete p.meta.oprnShopPreset;
@@ -338,3 +343,4 @@ export const GAME_SYSTEM_AUTHORING_TOOLS:readonly ToolDefinition[]=[
   }),
   tool('review_game_systems','설정 후 시스템 조합과 실제 ESC 메뉴 모델 재검토. 플레이를 했다는 주장 없이 불일치 보고.','read',schema({},[]),p=>({summary:issues(p).length?'게임 시스템 조합에 확인할 항목이 있습니다.':'설정과 실제 메뉴 모델의 조합이 일치합니다. 출하 플레이 검증은 별도입니다.',data:systemView(p)})),
 ];
+
