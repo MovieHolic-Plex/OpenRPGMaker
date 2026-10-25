@@ -90,6 +90,8 @@ try {
       await page.screenshot({ path: shotName(`prof-p${s}`, Date.now() - t0) });
       for (let w = 0; w < 30 && (await canvasMs()) < 4300 && (await pageNow()) === s; w++) await page.waitForTimeout(250);
       await page.screenshot({ path: shotName(`prof-p${s}-end`, Date.now() - t0) });
+      // 컷이 제 시간에 스스로 넘어가면 Enter 가 다음 컷을 건너뛴다 — 잠깐 기다려 본다.
+      for (let w = 0; w < 8 && (await pageNow()) === s; w++) await page.waitForTimeout(250);
       for (let k = 0; k < 4 && (await pageNow()) === s && await present(page, "[data-testid='cinematic-sequence']"); k++) {
         await page.keyboard.press("Enter");
         await page.waitForTimeout(900);
