@@ -6,7 +6,7 @@ import type { AnimaticKey, AnimaticLayer, OpeningAnimatic } from './openingAnima
  * 별빛섬 맵을 구운 배경 위에 RPG Maker 2000 캐릭터 시트(24×32 칸, 12열 8인)와 64×64 몬스터 그림을 얹는다.
  * 무대 480×320 에서 모든 그림을 정확히 2배로 그린다 — 배경·캐릭터·몬스터 도트가 같은 크기로 보인다.
  */
-export type EmeraldOpeningShot = EmeraldOpeningBackdropId | 'region';
+export type EmeraldOpeningShot = EmeraldOpeningBackdropId | 'region' | 'capsule' | 'together';
 /** 옛 생성기 소개를 고르게 나눠 싣는 기본 컷 순서(region 은 직접 고를 때만 쓴다). */
 export const EMERALD_OPENING_SHOTS: readonly EmeraldOpeningShot[] = ['dawn', 'route', 'lab', 'stage', 'gym', 'town'];
 export const EMERALD_OPENING_SHOT_MS = 4500;
@@ -235,6 +235,60 @@ function regionShot(cast: EmeraldOpeningCast): OpeningAnimatic {
   [{ id: 'wind', resourceId: 'cc0-se-orp-battle-swing', atMs: 200, durationMs: 1200, volume: 0.3 }]);
 }
 
+/**
+ * 박사가 구슬을 던지고, 터진 빛에서 첫 스타터가 튀어나와 하트를 띄운다(포켓몬 3세대 박사 소개의 「몬스터가 튀어나온다」).
+ * 연구소 그림 위에서 박사가 선 채 구슬이 포물선을 그리고, 바닥에 닿는 순간 하얀 빛이 터진다.
+ */
+function capsuleShot(cast: EmeraldOpeningCast): OpeningAnimatic {
+  const professor = standAt(7, 5), starter = cast.starters[0];
+  const land = { x: 330, y: 234 }, throwAt = 500, hitAt = 1150, popAt = hitAt + 60, foot = 266;
+  const arcX: AnimaticKey[] = [{ atMs: throwAt, value: 268 }, { atMs: hitAt, value: land.x - 10, ease: 'linear' }];
+  const arcY: AnimaticKey[] = [{ atMs: throwAt, value: 140 }, { atMs: Math.round((throwAt + hitAt) / 2), value: 84, ease: 'ease-out' }, { atMs: hitAt, value: land.y - 10, ease: 'ease-in' }];
+  return shot([
+    backdrop('lab'),
+    standing('professor', cast.professor, 'right', professor),
+    // 구슬: 위 반은 빨갛고 아래 반은 흰 빛 — 빛무리 둘을 겹쳐 그린다(새 그림 없음).
+    { id: 'capsule', kind: 'glow', role: 'effect', space: 'screen', color: '#ff6a5a', x: 0, y: 0, width: 22, height: 22, startMs: throwAt, endMs: hitAt + 40, glow: { inner: 0.7 }, keys: { x: arcX, y: arcY } },
+    { id: 'capsule-core', kind: 'glow', role: 'effect', space: 'screen', color: '#ffffff', x: 0, y: 0, width: 12, height: 12, startMs: throwAt, endMs: hitAt + 40, glow: { inner: 0.9 },
+      keys: { x: arcX.map(k => ({ ...k, value: k.value + 5 })), y: arcY.map(k => ({ ...k, value: k.value + 5 })) } },
+    { id: 'burst', kind: 'glow', role: 'effect', space: 'screen', color: '#ffffff', blend: 'lighter', x: land.x - 110, y: land.y - 130, width: 220, height: 220, startMs: hitAt, endMs: hitAt + 800, glow: { inner: 0.25 },
+      keys: { opacity: [{ atMs: hitAt, value: 1 }, { atMs: hitAt + 800, value: 0, ease: 'ease-out' }], scaleX: [{ atMs: hitAt, value: 0.3 }, { atMs: hitAt + 320, value: 1.2, ease: 'ease-out' }], scaleY: [{ atMs: hitAt, value: 0.3 }, { atMs: hitAt + 320, value: 1.2, ease: 'ease-out' }] } },
+    { id: 'burst-sparks', kind: 'particles', role: 'effect', space: 'screen', color: '#fff3a0', blend: 'lighter', x: land.x - 80, y: land.y - 120, width: 160, height: 140, startMs: hitAt, endMs: hitAt + 1600,
+      particles: { preset: 'sparks', count: 26, seed: 33, speed: 24, size: 1.6 }, keys: { opacity: [{ atMs: hitAt, value: 1 }, { atMs: hitAt + 1600, value: 0, ease: 'ease-in' }] } },
+    ...(starter ? [
+      { id: 'starter-shadow', kind: 'shape' as const, shape: 'ellipse' as const, role: 'prop' as const, space: 'screen' as const, color: '#0b1420', x: land.x - 34, y: foot - 8, width: 68, height: 12, startMs: popAt + 300, opacity: 0.3 },
+      { id: 'starter', kind: 'image' as const, role: 'actor' as const, characterRole: 'monster' as const, space: 'screen' as const, resourceId: starter.frontResourceId, sampling: 'nearest' as const,
+        x: land.x, y: foot, width: MONSTER, height: MONSTER, anchorX: 0.5, anchorY: 1, startMs: popAt,
+        keys: {
+          y: [{ atMs: popAt, value: foot }, { atMs: popAt + 200, value: foot - 34, ease: 'ease-out' as const }, { atMs: popAt + 380, value: foot, ease: 'ease-in' as const }],
+          scaleX: [{ atMs: popAt, value: 0.2 }, { atMs: popAt + 200, value: 0.96 }, { atMs: popAt + 380, value: 1.18, ease: 'ease-out' as const }, { atMs: popAt + 540, value: 1, ease: 'ease-in-out' as const }],
+          scaleY: [{ atMs: popAt, value: 0.2 }, { atMs: popAt + 200, value: 1.1 }, { atMs: popAt + 380, value: 0.82, ease: 'ease-out' as const }, { atMs: popAt + 540, value: 1, ease: 'ease-in-out' as const }],
+        } },
+      { id: 'starter-heart', kind: 'emote' as const, role: 'effect' as const, space: 'screen' as const, x: land.x + 26, y: foot - MONSTER + 6, width: 32, height: 32, startMs: popAt + 620, endMs: 4400, emote: { preset: 'heart' as const, tail: 'down' as const, popMs: 160 } },
+    ] : []),
+    emote('professor-emote', 'exclaim', professor, popAt + 400, popAt + 1500),
+  ], { x: 240, y: 176 }, '#0b1420', [
+    { id: 'throw', resourceId: 'cc0-sound-monster-ball-throw', atMs: throwAt, durationMs: 600, volume: 0.5 },
+    { id: 'pop', resourceId: 'cc0-sound-monster-ball-break', atMs: hitAt, durationMs: 700, volume: 0.55 },
+    { id: 'cry', resourceId: 'cc0-se-ors-creature-misc-01', atMs: popAt + 380, durationMs: 900, volume: 0.5 },
+  ]);
+}
+
+/** 사람과 몬스터가 함께: 마을 큰길을 라이벌·관장이 제 몬스터를 데리고 오가고, 연못가에서 들몬스터가 깡충 뛴다. */
+function togetherShot(cast: EmeraldOpeningCast): OpeningAnimatic {
+  const lower = standAt(0, 8).y, upper = standAt(0, 7).y;
+  const fire = cast.starters[1]?.chip ?? cast.wild, water = cast.starters[2]?.chip ?? cast.wild, pond = standAt(7, 10);
+  return shot([
+    backdrop('town'),
+    walking('rival', cast.rival, 'right', [{ atMs: 0, x: 130, y: lower }, { atMs: 4400, x: 450, y: lower }]),
+    walking('rival-buddy', fire, 'right', [{ atMs: 0, x: 80, y: lower }, { atMs: 4400, x: 400, y: lower }]),
+    walking('leader', cast.leader, 'left', [{ atMs: 0, x: 600, y: upper }, { atMs: 4400, x: 330, y: upper }]),
+    walking('leader-buddy', water, 'left', [{ atMs: 0, x: 650, y: upper }, { atMs: 4400, x: 380, y: upper }]),
+    standing('pond-wild', cast.wild, 'down', pond, { keys: { y: [0, 1, 2, 3, 4, 5].map(n => ({ atMs: 400 + n * 700, value: n % 2 ? pond.y - 10 : pond.y, ease: 'ease-in-out' as const })) } }),
+    emote('rival-emote', 'heart', { x: 400, y: lower }, 2400, 3800),
+  ], { x: 352, y: 256 });
+}
+
 /** 체육관: 라이벌이 관장 앞으로 걸어 올라가 맞선다. */
 function gymShot(cast: EmeraldOpeningCast): OpeningAnimatic {
   // 화단(6~7행) 바로 아래(8행)에 서면 머리가 화단 나무판에 겹쳐 화단 속에 선 것처럼 보인다 - 한 칸 띄운 9행에서 맞선다.
@@ -266,7 +320,7 @@ function townShot(cast: EmeraldOpeningCast): OpeningAnimatic {
 }
 
 const BUILDERS: Record<EmeraldOpeningShot, (cast: EmeraldOpeningCast) => OpeningAnimatic> = {
-  dawn: dawnShot, route: routeShot, lab: labShot, stage: stageShot, gym: gymShot, town: townShot, region: regionShot,
+  dawn: dawnShot, route: routeShot, lab: labShot, stage: stageShot, gym: gymShot, town: townShot, region: regionShot, capsule: capsuleShot, together: togetherShot,
 };
 
 export function emeraldOpeningShot(id: EmeraldOpeningShot, cast: EmeraldOpeningCast): OpeningAnimatic {

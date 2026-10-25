@@ -1,6 +1,7 @@
 // test/astraOpening.test.ts
 // 아스트라 호라이즌 오프닝(2026-10-25)에 붙인 일반 엔진 기능 — 실루엣 틴트·별똥별 입자·타이틀 달리기/PRESS START/cover 층·
-// 박사 소개 지역 비행·이름 쇼케이스 명령 — 의 데이터 계약과 순수 함수를 확인한다. 그림은 영상 캡처로 따로 본다.
+// 박사 소개 지역 비행·구슬 컷·이름 쇼케이스·배우 그림 픽처 — 의 데이터 계약과 순수 함수, 그리고 밝은 3세대식 인트로의 길이·재료를 확인한다.
+// 그림은 영상 캡처로 따로 본다.
 import { describe, expect, it } from "vitest";
 import { validateOpeningAnimatic, type OpeningAnimatic } from "@/project/openingAnimatic";
 import { normalizeSystemRecords, normalizeTitlePressStart, normalizeTitleRunners } from "@/project/databaseRecordModel";
@@ -8,6 +9,7 @@ import { titleRunnerFrameAt } from "@/player/titleRunners";
 import { titleShootingStarAt } from "@/player/titleParticles";
 import { astraTitleIntroScenes } from "@/project/flagship/astraTitleIntro";
 import { emeraldOpeningShot, emeraldOpeningShotMs } from "@/project/emeraldMonsterOpeningShots";
+import { actorPictureActorId } from "@/player/pictures/pictureResources";
 import { defaultSystem, defaultTitleScreenSettings } from "@/project/defaults/defaultDatabase";
 
 const stage = (layers: OpeningAnimatic["layers"]): OpeningAnimatic => ({ width: 480, height: 320, layers });
@@ -37,7 +39,7 @@ describe("title runners, PRESS START and cover layers", () => {
     expect(normalizeTitlePressStart({ text: "PRESS START", blinkMs: 900, y: 192 })).toMatchObject({ y: 192 });
   });
   it("keeps fit:cover on a background layer through normalization", () => {
-    const settings = normalizeSystemRecords({ ...defaultSystem(), titleScreen: { ...defaultTitleScreenSettings(), backgroundLayers: [{ resourceId: "oprn_astra_art_meadow-night", fit: "cover" }, { resourceId: "oprn-pano-night-stars-far", scrollXPerSec: -3 }] } }).titleScreen!;
+    const settings = normalizeSystemRecords({ ...defaultSystem(), titleScreen: { ...defaultTitleScreenSettings(), backgroundLayers: [{ resourceId: "oprn_emerald_title_meadow", fit: "cover" }, { resourceId: "oprn-pano-night-stars-far", scrollXPerSec: -3 }] } }).titleScreen!;
     expect(settings.backgroundLayers?.[0]?.fit).toBe("cover");
     expect(settings.backgroundLayers?.[1]?.fit).toBeUndefined();
   });
@@ -61,14 +63,25 @@ describe("title runners, PRESS START and cover layers", () => {
 
 describe("Astra intro and professor shots", () => {
   const chip = { resourceId: "tex_oprn_charset_harness_monster1", index: 1 };
-  it("builds a 20-30 s title intro whose shots all validate", () => {
-    const scenes = astraTitleIntroScenes({ starters: [0, 1, 2].map(() => ({ back: "harness-monster-leafling-back", chip })) });
+  it("builds a short, bright Gen 3 style title intro (no night sky) whose shots all validate", () => {
+    const scenes = astraTitleIntroScenes({ starters: [0, 1, 2].map(() => ({ front: "harness-monster-leafling-front", chip })) });
     const total = scenes.reduce((sum, scene) => sum + scene.durationMs, 0);
-    expect(total).toBeGreaterThanOrEqual(20000);
-    expect(total).toBeLessThanOrEqual(30000);
+    expect(total).toBeLessThanOrEqual(10000);
     const layers = scenes.flatMap((scene) => (scene as { composition: OpeningAnimatic }).composition.layers);
-    expect(layers.some((l) => l.tint)).toBe(true);
-    expect(layers.some((l) => l.particles?.preset === "meteors")).toBe(true);
+    expect(layers.some((l) => l.particles?.preset === "meteors" || l.particles?.preset === "stars")).toBe(false);
+    expect(layers.some((l) => l.tint)).toBe(false);
+    expect(layers.some((l) => /night|moon|lunavane/u.test(l.resourceId ?? ""))).toBe(false);
+    expect(layers.filter((l) => l.resourceId === "harness-monster-leafling-front").length).toBeGreaterThan(0);
+  });
+  it("pops a monster out of the professor's capsule and walks people with their monsters", () => {
+    const cast = { hero: chip, professor: chip, rival: chip, leader: chip, flyer: chip, wild: chip, starters: [{ frontResourceId: "a", chip, name: "토리프" }] };
+    for (const id of ["capsule", "together"] as const) expect(() => validateOpeningAnimatic(emeraldOpeningShot(id, cast), emeraldOpeningShotMs(id), id)).not.toThrow();
+    expect(emeraldOpeningShot("capsule", cast).layers.some((l) => l.id === "starter" && l.resourceId === "a")).toBe(true);
+  });
+  it("reads actor:<id> as an actor walking-graphic picture", () => {
+    expect(actorPictureActorId("actor:actor_hero")).toBe("actor_hero");
+    expect(actorPictureActorId("actor:")).toBeNull();
+    expect(actorPictureActorId("oprn_emerald_opening_lab")).toBeNull();
   });
   it("flies over the region with world-anchored place labels", () => {
     const cast = { hero: chip, professor: chip, rival: chip, leader: chip, flyer: chip, wild: chip, starters: [{ frontResourceId: "a", chip, name: "토리프" }], places: { route: "1번 도로", town: "다우닝 시티" } };

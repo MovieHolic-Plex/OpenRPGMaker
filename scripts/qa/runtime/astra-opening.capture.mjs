@@ -117,9 +117,11 @@ try {
       await page.screenshot({ path: shotName("name-confirm", Date.now() - t0) });
       await page.waitForTimeout(1600);
       await page.screenshot({ path: shotName("name-after", Date.now() - t0) });
-      await page.keyboard.press("Enter");
-      await page.waitForTimeout(1500);
-      await page.screenshot({ path: shotName("name-after2", Date.now() - t0) });
+      // 박사 무대의 남은 대사 → 주인공이 작아지며 무대가 걷힌다 → 방. 넘길 때마다 0.35초 간격으로 세 장.
+      for (let i = 0; i < 5; i++) {
+        await page.keyboard.press("Enter");
+        for (const at of [350, 700, 1050]) { await page.waitForTimeout(350); await page.screenshot({ path: shotName(`stage-${i}-${at}`, Date.now() - t0) }); }
+      }
     }
     report.marks.nameEnd = Date.now() - t0;
   }
