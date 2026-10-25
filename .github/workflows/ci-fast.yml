@@ -19,6 +19,15 @@ on:
     branches:
       - main
       - 'release/**'
+  # PR 에도 돈다 (2026-10-25). 전에는 push 만 있어서 PR 에 체크가 하나도 없었고(`gh pr checks` →
+  # "no checks reported"), 에이전트가 `gh pr merge` 로 바로 머지해 빨간 코드가 main 에 들어왔다
+  # (run 40185571034: #3464 의 TS18048 이 머지 뒤에야 잡혔다). 이제 PR 머지 전 판정은 이 잡이 한다 —
+  # `node scripts/merge-pr.mjs <번호>` 가 이 체크 초록을 기다린 뒤에만 머지한다.
+  # pull_request 체크아웃은 「PR 머리 + 지금 main」 병합 커밋이라 HEAD~1 = main 이다(jp_city 핀 검사가 그대로 맞다).
+  # 포크 PR 도 호스티드 러너·읽기 전용 토큰으로 돈다. 비밀은 쓰지 않는다.
+  pull_request:
+    branches:
+      - main
 
 concurrency:
   # push 와 pull_request 가 같은 브랜치면 메모리 예산을 같이 쓴다.

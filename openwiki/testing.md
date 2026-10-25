@@ -50,6 +50,14 @@
 `.omo/gates-vitest-report.json` 에서 **오래 걸린 파일 상위**를 뽑아 `/usr/bin/time -v` 로 단독 실행해
 피크 RSS 를 재는 쪽이 빠르다(이번에도 그렇게 찾았다).
 
+## PR 판정 = ci-fast(pull_request), 머지 = scripts/merge-pr.mjs, ci-full = 4시간 cron (2026-10-25)
+
+- ci-fast 는 `push`(main·release) 와 `pull_request`(→ main) 에 돈다. 전에는 push 뿐이라 PR 에 체크가 없었다.
+- 머지는 `node scripts/merge-pr.mjs <번호>` 로만 한다. 머리 커밋의 `fast` 체크가 초록이어야 `--match-head-commit` 으로 머지한다.
+- ci-full 은 main 푸시마다가 아니라 `17 */4 * * *` cron 이다. 푸시마다 걸면 한 판(약 4시간) 동안 대기 자리를 새 푸시가
+  계속 빼앗아 60판 중 51판이 cancelled 였다. 판정 논리(기준선 대비 회귀만 실패)는 그대로다.
+- 브랜치 보호(필수 체크 `fast`)는 저장소 설정이라 소유자가 켠다. 켜기 전에는 도우미 규칙이 유일한 방어다.
+
 ## main 의 ci-fast 는 다음 머지가 진행 중 잡을 끊지 않는다 (2026-09-26)
 
 `concurrency.cancel-in-progress` 가 main 에서도 true 이면, 머지가 잡보다 빠를 때 앞선 main 실행이

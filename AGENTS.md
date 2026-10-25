@@ -309,12 +309,24 @@ npm run qa:runtime:gate     # 게이트: 두 시나리오
 
 대신:
 - 검증은 바꾼 파일의 타입 검사(파일 범위 `tsc`), 실제 실행·플레이·캡처로 한다.
-- PR 을 올리고 `gh run list` / `gh pr checks` 로 CI 결과를 본다. CI 가 빨가면 그 로그를 읽고 고친다.
+- PR 을 올리고 `gh pr checks <번호> --watch` 로 CI 결과를 본다. CI 가 빨가면 그 로그를 읽고 고친다. 머지는 `node scripts/merge-pr.mjs <번호>` 로만 한다(아래 hard rule).
 - 에이전트의 "테스트 통과했습니다"는 근거가 아니다. CI 결과가 근거다.
 - 테스트 파일을 새로 쓰는 것은 괜찮다. 돌리는 것은 CI 가 한다.
 
 예외: 사용자가 **이번 메시지에서** 로컬 테스트를 하라고 적은 경우, 그 명령만 `OPRN_LOCAL_TESTS=1` 을 붙여 돌린다.
 dirty 는 `wip:` 커밋 또는 파일 사본으로 다룬다.
+
+## PR 은 ci-fast 초록 뒤에만, 도우미로 머지한다 (hard rule, 2026-10-25)
+
+**`gh pr merge` 를 직접 부르지 마라. `node scripts/merge-pr.mjs <PR 번호>`(= `npm run merge-pr -- <번호>`)로만 머지한다.**
+도우미는 그 PR 의 현재 머리 커밋에서 ci-fast 잡(`fast`)이 초록이 될 때까지 기다리고, 초록이면 그 커밋만
+(`--match-head-commit`) 머지한다. 빨강·취소·시간 초과면 머지하지 않고 로그 명령을 찍는다 — 고쳐서 푸시하고 다시 부른다.
+
+- 왜: main 에 브랜치 보호가 없고, 전에는 ci-fast 가 PR 에서 돌지도 않았다. 에이전트가 바로 머지해 빨간 코드가 main 에 쌓였다
+  (run 40185571034, #3464 의 타입 오류가 머지 뒤에야 잡혔다). 지금은 ci-fast 가 `pull_request` 에도 돈다.
+- 「ci-fast 체크가 없다」는 통과가 아니다. 도우미가 기다리다 시간 초과로 실패한다.
+- 도우미를 우회하려고 `--admin`·직접 `gh pr merge`·로컬 `git push origin main` 을 쓰지 않는다.
+- ci-full 은 4시간마다 main 을 돈다(머지 판정이 아니다). 빨가면 그 로그의 「기준선 대비 회귀」를 고친다.
 
 ## 새 타일·타일 학습은 공용에 추가한다 (hard rule)
 
