@@ -7,6 +7,7 @@ import { storeProjectId, type StorePackManifest } from "@/assetStore/format";
 import { runToolAsync } from "@/editor/tools/asyncToolRunner";
 import { runTool } from "@/editor/tools/toolRunner";
 import { createEmptyToolProject } from "@/editor/tools/emptyProject";
+import { createBlankProject } from "@/project/defaults";
 import { isStoreCardRequest } from "@/editor/tools/storeTools";
 import { gameContentProblems } from "@/ai/v2/gameChecks";
 import type { Project } from "@/project/types";
@@ -144,6 +145,21 @@ describe("set_game_audio boss", () => {
 });
 
 describe("v2 finish check", () => {
+  it("does not re-balance a boss that was already there when only its music changed", () => {
+    const ctx = { project: createBlankProject() };
+    expect(runTool(ctx, "create_map", { id: "m_cave", name: "동굴", width: 8, height: 8 }, { dryRun: false }).ok).toBe(true);
+    const made = runTool(ctx, "upsert_event", { mapId: "m_cave", event: { id: "ev_boss", name: "드래곤", x: 1, y: 1, commands: [{ kind: "battleProcessing", troopId: "troop_dragon", canEscape: false, canLose: false }] } }, { dryRun: false });
+    expect(made.ok, made.summary).toBe(true);
+    ctx.project.assets.uploaded.boss_song = { id: "boss_song", name: "보스곡", kind: "music", dataUrl: "data:audio/ogg;base64,T2dnUwACAAAAAAAAAAA=", meta: {} };
+    const before = structuredClone(ctx.project);
+    expect(runTool(ctx, "set_game_audio", { role: "boss", resourceId: "boss_song" }, { dryRun: false }).ok).toBe(true);
+    expect(gameContentProblems(before, ctx.project, "보스전 음악 긴장감 있게 바꿔줘").join("\n")).not.toMatch(/게임 검사 전투/);
+    // 새로 저작한 전투는 여전히 본다.
+    const fresh = structuredClone(before);
+    fresh.maps.m_cave!.events = [];
+    expect(gameContentProblems(fresh, ctx.project, "드래곤 보스전 만들어 줘").join("\n")).toMatch(/게임 검사 전투/);
+  });
+
   it("does not ask for a playAudio event when the request was met by binding map/system music", () => {
     const before = createEmptyToolProject();
     const after = structuredClone(before);

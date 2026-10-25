@@ -675,9 +675,13 @@ export function gameContentProblems(before: Project, after: Project, task: strin
     const party = after.system.startActorIds ?? [];
     const level = Math.max(1, ...party.map((id) => after.database.actors.find((a) => a.id === id)?.initialLevel ?? 1));
     const seen = new Set<string>();
+    // 이 실행 전에도 그 이벤트에 있던 전투는 새로 저작한 것이 아니다(2026-10-25 실조수: 보스전 음악만 바꿨는데 드래곤 능력치를 깎았다).
+    const had = new Set<string>();
+    for (const ev of eventsOf(before).values()) for (const row of allCommands(ev)) if (row.cmd.kind === "battleProcessing") had.add(`${ev.mapId}/${ev.id}#${String(row.cmd.troopId)}`);
     for (const r of cmds) {
       const c = r.cmd as { kind?: string; troopId?: string; canLose?: boolean; troopSource?: string };
       if (c.kind !== "battleProcessing" || c.canLose || c.troopSource === "variable" || !c.troopId || seen.has(c.troopId)) continue;
+      if (had.has(`${r.ev.mapId}/${r.ev.id}#${c.troopId}`)) continue;
       seen.add(c.troopId);
       if (!after.database.troops.some((t) => t.id === c.troopId) || !party.length) continue;
       try {
