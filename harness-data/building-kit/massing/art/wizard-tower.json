@@ -1,0 +1,23 @@
+{
+ "name": "마법사 탑",
+ "massing": "C15",
+ "material": "stone",
+ "refs": [
+  "bd-mpart-tower",
+  "bd-manor-tower"
+ ],
+ "walk": [
+  ".**.",
+  ".**.",
+  ".**.",
+  "****",
+  "****",
+  ".**.",
+  "****",
+  ".**.",
+  "****",
+  "XDXX",
+  "XDXX"
+ ],
+ "id": "wizard-tower"
+}

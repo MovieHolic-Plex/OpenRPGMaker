@@ -1,0 +1,17 @@
+{
+ "name": "비둘기탑",
+ "massing": "M05",
+ "material": "stone",
+ "refs": [
+  "bd-mpart-tower",
+  "bd-house-mill1"
+ ],
+ "walk": [
+  "***",
+  "***",
+  "***",
+  "XXX",
+  "XDX"
+ ],
+ "id": "dovecote"
+}

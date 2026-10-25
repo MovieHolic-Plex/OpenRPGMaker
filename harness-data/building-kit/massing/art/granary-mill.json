@@ -1,0 +1,19 @@
+{
+ "name": "방앗간",
+ "massing": "13",
+ "material": "plaster",
+ "refs": [
+  "bd-house-mill1",
+  "bd-mpart-tower"
+ ],
+ "walk": [
+  "**********",
+  "**********",
+  "**********",
+  "XXXXXXXXXX",
+  "XXXXXXXXXX",
+  "XXXDXXXXXX",
+  "XXXDXXXXXX"
+ ],
+ "id": "granary-mill"
+}

@@ -1,0 +1,21 @@
+{
+ "name": "사각 성탑",
+ "massing": "20",
+ "material": "stone",
+ "refs": [
+  "bd-wall-tower",
+  "bd-castle"
+ ],
+ "walk": [
+  "*****",
+  "*****",
+  "*****",
+  "*****",
+  "*****",
+  "XXXXX",
+  "XXXXX",
+  "XXXXX",
+  "XXDXX"
+ ],
+ "id": "keep-tower"
+}

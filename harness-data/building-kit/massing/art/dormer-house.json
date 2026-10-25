@@ -1,0 +1,20 @@
+{
+ "name": "지붕창 3층 집",
+ "massing": "17",
+ "material": "plaster",
+ "refs": [
+  "bd-house-manor",
+  "bd-house-h104_1"
+ ],
+ "walk": [
+  "*******",
+  "*******",
+  "*******",
+  "XXXXXXX",
+  "XXXXXXX",
+  "XXXXXXX",
+  "XXXDXXX",
+  "XXXDXXX"
+ ],
+ "id": "dormer-house"
+}
