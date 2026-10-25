@@ -179,7 +179,7 @@ export type EventBeat =
   /** 배경 음악 바꾸기·효과음·멈춤 — query 는 음원 찾을 낱말(festival·battle·town·sad…). */
   /** 머리 위 감정 표시(!·?·♥·땀·…) — 대사창으로 흉내 내지 않는다. */
   | { readonly do: "emote"; readonly who: string; readonly emote: string }
-  | { readonly do: "music"; readonly action?: "bgm" | "se" | "stop" | "fade"; readonly query?: string };
+  | { readonly do: "music"; readonly action?: "bgm" | "se" | "bgs" | "stop" | "fade"; readonly query?: string };
 
 /** 없는 기물 — draw_object 의 인자. */
 export interface ObjectSpec {
