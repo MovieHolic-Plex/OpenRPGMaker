@@ -103,6 +103,8 @@ export interface PlaceRecord {
   readonly spec: PlaceSpec;
   readonly result: PlaceBuildResult;
   readonly rounds: number;
+  /** 더 나빠져 되돌린 고치기 수 — 첫 되돌림은 고치기 횟수에 세지 않는다(G28). */
+  readonly reverts?: number;
 }
 
 /** 빌더가 v1 도구를 부르는 창구. 실행기가 시공 재생 기록·도구 기록을 붙여 준다. */

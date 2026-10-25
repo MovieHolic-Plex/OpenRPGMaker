@@ -64,7 +64,7 @@ import { isFlushPassable, snapFlushToWall } from "./wallFlush";
 import { pageKeyFindings, pageKeyRejectMessage, pageKeyWarning } from "./eventPageKeys";
 import { CHANGE_TILE_USAGE, changeTileProblems, collectChangeTileCommands } from "@/project/changeTileValidation";
 import { withJosa } from "@/util/josa";
-import { assertDoorExitWidths, reachableGateCandidates, transferGatesStayApproachable, transferTileSeversWalk, walkableFromAnchors } from "./transferReachability";
+import { assertDoorExitWidths, playerAnchors, reachableGateCandidates, transferGatesStayApproachable, transferTileSeversWalk, walkableFromAnchors } from "./transferReachability";
 import {
   COMMAND_SCHEMA_COMPACT,
   COORD_SCHEMA,
@@ -3855,9 +3855,18 @@ const moveEvent: ToolDefinition = {
       code: "move-event-impassable",
     });
     const previous = { x: event.x, y: event.y };
+    const reachBefore = walkAroundSolidEvents(draft, map);
     event.x = placement.x;
     event.y = placement.y;
+    // 길을 막는 자리로 옮기면 다른 사람·물건이 못 닿게 된다(2026-10-25 G33: 장난감을 옮긴 뒤 장면 시험이 (2,6)→(11,5) 못 감으로 실패).
+    const reachAfter = reachBefore ? walkAroundSolidEvents(draft, map) : null;
+    const cutOff: string[] = [];
+    if (reachBefore && reachAfter && reachAfter.size < reachBefore.size) {
+      const touches = (set: Set<number>, ev: { x: number; y: number }) => [[1, 0], [-1, 0], [0, 1], [0, -1], [0, 0]].some(([dx, dy]) => { const x = ev.x + dx!, y = ev.y + dy!; return inMapBounds(map, x, y) && set.has(y * map.width + x); });
+      for (const other of map.events) if (other.id !== event.id && other.pages.some((pg) => { const k = typeof pg.trigger === "string" ? pg.trigger : (pg.trigger as { kind?: string } | undefined)?.kind ?? "action"; return !/^(auto|autorun|parallel)/u.test(k); }) && touches(reachBefore, other) && !touches(reachAfter, other)) cutOff.push(`${other.name || other.id}(${other.x},${other.y})`);
+    }
     const warnings = [
+      ...(cutOff.length ? [`이 자리가 길을 막아 ${cutOff.slice(0, 5).join(", ")}${cutOff.length > 5 ? ` 외 ${cutOff.length - 5}개` : ""} 에 더는 걸어 닿지 못한다 — 통로가 아닌 벽 쪽 칸으로 옮긴다`] : []),
       ...(placement.adjusted ? [placementAdjustedWarning(`이벤트 '${event.id}'`, { x: requestedX, y: requestedY }, placement)] : []),
       ...followScheduleSlots(map.id, event, previous),
     ];
@@ -4437,3 +4446,26 @@ export const EVENT_TOOLS: readonly ToolDefinition[] = [
   moveEvent,
   scriptCutscene,
 ];
+
+/** 시작·착지점에서 걸어 닿는 칸 — 지나갈 수 없는 이벤트(첫 페이지가 «같은 층»이고 통과가 아닌 것)가 선 칸은 막힌 것으로 본다. */
+function walkAroundSolidEvents(project: Project, map: GameMap): Set<number> | null {
+  const solid = new Set<number>();
+  for (const ev of map.events) {
+    const page = ev.pages?.[0] as { priority?: string; through?: boolean } | undefined;
+    if (page && (page.priority ?? "same") === "same" && !page.through) solid.add(ev.y * map.width + ev.x);
+  }
+  const anchors = playerAnchors(project, map);
+  if (!anchors.length) return null;
+  const seen = new Set<number>(anchors.map((a) => a.y * map.width + a.x));
+  const queue = [...anchors];
+  for (let i = 0; i < queue.length; i += 1) {
+    const c = queue[i]!;
+    for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]] as const) {
+      const x = c.x + dx, y = c.y + dy, key = y * map.width + x;
+      if (!inMapBounds(map, x, y) || seen.has(key) || solid.has(key) || !canMove(project, map, c.x, c.y, x, y)) continue;
+      seen.add(key);
+      queue.push({ x, y });
+    }
+  }
+  return seen;
+}
