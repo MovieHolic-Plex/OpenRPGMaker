@@ -832,6 +832,16 @@ export interface EventPageMovement {
   moveIntervalMs?: number;
   /** chase 전용. 시야에 처음 들어온 순간 말풍선+짧은 멈춤 뒤 추격을 시작한다. */
   sightAlert?: ChaseSightAlert;
+  /**
+   * chase 전용 「덮치기」: 발견(sightAlert 멈춤이 끝난 순간) 뒤 첫 steps 칸을 speed 랭크 걸음으로 쉬지 않고 달려든다.
+   * 그 뒤는 평소 추격 걸음. 주인공 걷기(랭크 6 = 160ms/칸)보다 빠르게 두면 피할 수 없으니 6 이하로 둔다.
+   */
+  chaseLunge?: ChaseLunge;
+}
+
+export interface ChaseLunge {
+  steps: number;
+  speed: number;
 }
 
 export interface EventPage {

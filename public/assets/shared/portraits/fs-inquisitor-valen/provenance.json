@@ -1,0 +1,110 @@
+{
+ "pipeline": "shared-portrait-sheet",
+ "script": "scripts/content/portraits/fallen_valen.py",
+ "style": "public/assets/generated/faces/actor1-bust.png",
+ "identity": "fallenValenChip.ts (front+side) + IDENTITY text",
+ "finalize": "finalize.clean + quant(128)",
+ "round": "r1",
+ "candidate": "v3",
+ "compose": {
+  "crop": [
+   230,
+   0,
+   932,
+   735
+  ],
+  "faceBox": [
+   470,
+   160,
+   820,
+   500
+  ],
+  "aligned": {
+   "happy": [
+    -4,
+    1
+   ],
+   "sad": [
+    0,
+    -1
+   ],
+   "angry": [
+    -4,
+    1
+   ],
+   "surprised": [
+    0,
+    -1
+   ]
+  },
+  "why": "blind review r1: head framed too small; expressions shifted the whole bust"
+ },
+ "castPortraitHarness": {
+  "pick": {
+   "project": "fallen-star",
+   "role": "valen",
+   "round": "r1",
+   "candidate": "valen-v3a",
+   "by": "coordinator relaying user brief 2026-10-25: gate = blind Argon median>=6.5 & same-artist>=3/5 next to the Fallen cast",
+   "at": "2026-10-25T12:37:58",
+   "basis": "check PASS + repeated blind review median 8.0 (spread 7.0-9.0), same artist 4/5",
+   "hashes": {
+    "base": "65d073f602b583d6036419d37bf6d28442ae88f0fefda41553a6c5f0cb8f4156",
+    "happy": "401c13629b030fc71feaeae8312a71f74b70aac3e993b2748d586d5802ee927b",
+    "sad": "ee3901f4948b5a512e3f96db6f37647548f5165b2d44483a2f48e2ec42c85786",
+    "angry": "627d10db2d9f515cd496ab009653c2e2044cec2fbe42b2109486b578f3c7ad08",
+    "surprised": "09f33bfa4f38d5e713b52fa69ce77e4973aab841c1a3be207ad78be0c87734c0"
+   },
+   "review": {
+    "aggregate": {
+     "n": 5,
+     "scores": [
+      8.0,
+      9.0,
+      8.0,
+      7.0,
+      9.0
+     ],
+     "median": 8.0,
+     "min": 7.0,
+     "max": 9.0,
+     "sameArtistVotes": 4,
+     "defectVotes": {
+      "base": 1,
+      "happy": 1,
+      "sad": 3,
+      "angry": 0,
+      "surprised": 2
+     },
+     "worstDefectVotes": 3
+    },
+    "pass": true,
+    "why": [],
+    "thresholds": {
+     "fitMin": 6.5,
+     "sameArtistMin": 3,
+     "defectMaxVotes": 5
+    }
+   },
+   "fixes": []
+  },
+  "fixes": []
+ },
+ "pictures": {
+  "bust-base.png": {
+   "pixelSha256": "65d073f602b583d6036419d37bf6d28442ae88f0fefda41553a6c5f0cb8f4156"
+  },
+  "bust-happy.png": {
+   "pixelSha256": "401c13629b030fc71feaeae8312a71f74b70aac3e993b2748d586d5802ee927b"
+  },
+  "bust-sad.png": {
+   "pixelSha256": "ee3901f4948b5a512e3f96db6f37647548f5165b2d44483a2f48e2ec42c85786"
+  },
+  "bust-angry.png": {
+   "pixelSha256": "627d10db2d9f515cd496ab009653c2e2044cec2fbe42b2109486b578f3c7ad08"
+  },
+  "bust-surprised.png": {
+   "pixelSha256": "09f33bfa4f38d5e713b52fa69ce77e4973aab841c1a3be207ad78be0c87734c0"
+  }
+ }
+}

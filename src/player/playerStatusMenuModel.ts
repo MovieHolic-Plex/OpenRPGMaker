@@ -245,7 +245,8 @@ export function listStatusMenuCommandIds(project: Project, session: PlaySession)
     isGiftSystemEnabled(project) || Object.keys(session.friendship ?? {}).length > 0;
   const relationship = usesRelationshipMenu(project);
   // Change Save Access: false면 메뉴의 저장 항목을 숨긴다(세이브 포인트 전용 설계).
-  const saveDisabled = session.m2Runtime?.access?.save === false;
+  // system.saveAccess "savePoints": 세이브 포인트(openSaveMenu)에서만 저장 — 메뉴 항목은 없다.
+  const saveDisabled = session.m2Runtime?.access?.save === false || project.system.saveAccess === "savePoints";
   // 그룹 순서대로 평탄화 — 화면 순서와 ↑↓ 이동 순서를 한 배열이 결정한다.
   const authored = fieldMenu(project);
   return (authored ? authored.entries.map(row => row.command) : STATUS_MENU_COMMAND_GROUPS.flatMap((group) => group.commandIds)).filter((id) => {

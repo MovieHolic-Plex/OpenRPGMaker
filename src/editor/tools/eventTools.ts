@@ -58,6 +58,7 @@ import { assertEventPartyActorReferences } from "./partyActorReferences";
 import { declareReferencedFlags, declaredFlagsWarning, ensureNamedSwitch, ensureNamedVariable } from "./flagHelpers";
 import { buildFieldMonsterEvent } from "@/project/fieldMonsterTemplate";
 import { inMapBounds, requireMap, type Point } from "./mapHelpers";
+import { SHARED_OBJECT_TOOLS, prepareSharedObject } from "./sharedObjectTools";
 import { ToolError, type SimplePage, type ToolDefinition, type ToolExecResult } from "./types";
 import { isFlushPassable, snapFlushToWall } from "./wallFlush";
 import { pageKeyFindings, pageKeyRejectMessage, pageKeyWarning } from "./eventPageKeys";
@@ -3511,14 +3512,40 @@ const placeSavepoint: ToolDefinition = {
       id: { type: "string" },
       heal: { type: "boolean", description: "true 면 저장 전에 파티 전원 회복(recoverAll). 기본 false — 크로노 트리거의 세이브 포인트는 회복하지 않는다." },
       mode: { type: "string", enum: ["both", "slot", "checkpoint"], description: "both(기본): 체크포인트 + 저장 칸 메뉴 · slot: 저장 칸 메뉴만 · checkpoint: 사망 재시도용 메모리 체크포인트만" },
+      objectId: { type: "string", description: "세이브 포인트를 눈에 띄는 공용 오브젝트 그림(stamp_object 와 같은 id, 예: 받침 위 수정 덩이)으로 세운다. x,y 를 그림의 왼쪽 위로 찍고, 이벤트는 그림 맨 아래 줄 가운데 칸에 투명하게 둔다. 생략하면 기본 크리스탈 걷기 칩." },
     },
     required: ["mapId", "x", "y"],
     additionalProperties: false,
   },
+  prepare: (args) => (typeof args.objectId === "string" ? prepareSharedObject(args.objectId) : Promise.resolve()),
   run(draft, args): ToolExecResult {
-    const map = requireMap(draft, args.mapId as string);
-    const requestedX = args.x as number;
-    const requestedY = args.y as number;
+    let map = requireMap(draft, args.mapId as string);
+    let requestedX = args.x as number;
+    let requestedY = args.y as number;
+    let objectFootprint: { x: number; y: number; w: number; h: number } | undefined;
+    if (typeof args.objectId === "string" && args.objectId) {
+      // 오브젝트를 찍고, 바뀐 칸의 테두리에서 맨 아래 줄 가운데를 조사 칸으로 쓴다(그림은 칸이 맡고 이벤트는 투명).
+      const stamp = SHARED_OBJECT_TOOLS.find((tool) => tool.name === "stamp_object");
+      if (!stamp) throw new ToolError("stamp_object 도구가 없습니다.", { code: "savepoint-no-stamp", mapId: map.id });
+      const layers = ["lowerTiles", "lowerOverlayTiles", "upperTiles", "upperOverlayTiles"] as const;
+      const before = layers.map((key) => [...((map as unknown as Record<string, number[] | undefined>)[key] ?? [])]);
+      stamp.run(draft, { objectId: args.objectId, mapId: map.id, x: requestedX, y: requestedY });
+      map = requireMap(draft, args.mapId as string);
+      let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+      layers.forEach((key, li) => {
+        const after = (map as unknown as Record<string, number[] | undefined>)[key] ?? [];
+        for (let i = 0; i < after.length; i += 1) {
+          if (after[i] === (before[li]![i] ?? -1)) continue;
+          const cx = i % map.width, cy = Math.floor(i / map.width);
+          minX = Math.min(minX, cx); maxX = Math.max(maxX, cx); minY = Math.min(minY, cy); maxY = Math.max(maxY, cy);
+        }
+      });
+      if (Number.isFinite(minX)) {
+        objectFootprint = { x: minX, y: minY, w: maxX - minX + 1, h: maxY - minY + 1 };
+        requestedX = Math.floor((minX + maxX) / 2);
+        requestedY = maxY;
+      }
+    }
     const heal = args.heal === true;
     const saveMode = args.mode === undefined ? "both" : args.mode;
     if (saveMode !== "both" && saveMode !== "slot" && saveMode !== "checkpoint") {
@@ -3535,7 +3562,9 @@ const placeSavepoint: ToolDefinition = {
       replacesAutoInspect: true,
     });
     const { x, y, adjusted } = placement;
-    const graphic = resolveGraphic({ query: "크리스탈" }, { overrides: draft.charsetLabels });
+    const graphic = objectFootprint
+      ? ({ transparent: true } as EventPageGraphic)
+      : resolveGraphic({ query: "크리스탈" }, { overrides: draft.charsetLabels });
     const id = (args.id as string | undefined) ?? genId("ev_save");
     const name = (args.name as string | undefined) ?? "세이브 포인트";
     const trigger: Trigger = { kind: "action" };
@@ -3572,8 +3601,8 @@ const placeSavepoint: ToolDefinition = {
       ...(map.disableSave && saveMode !== "checkpoint" ? [`${map.name} 은(는) 저장 금지 맵이라 저장 칸 메뉴에서 저장할 수 없습니다 — 저장 장소라면 set_map_properties 로 이 맵의 저장 금지를 끄세요.`] : []),
     ];
     return {
-      summary: `${map.name}에 세이브 포인트 '${name}' 배치 (${x}, ${y}) — ${saveMode === "slot" ? "저장 칸 메뉴" : saveMode === "checkpoint" ? "체크포인트(저장 칸 안 염)" : "체크포인트 + 저장 칸 메뉴"}${heal ? " · 전원 회복 포함" : ""}${adjusted ? ` — 요청 좌표 (${requestedX}, ${requestedY})에서 자동 조정` : ""}`,
-      data: { eventId: id, x, y, adjusted, heal, mode: saveMode },
+      summary: `${map.name}에 세이브 포인트 '${name}' 배치 (${x}, ${y})${objectFootprint ? ` · 그림 ${String(args.objectId)}` : ""} — ${saveMode === "slot" ? "저장 칸 메뉴" : saveMode === "checkpoint" ? "체크포인트(저장 칸 안 염)" : "체크포인트 + 저장 칸 메뉴"}${heal ? " · 전원 회복 포함" : ""}${adjusted ? ` — 요청 좌표 (${requestedX}, ${requestedY})에서 자동 조정` : ""}`,
+      data: { eventId: id, x, y, adjusted, heal, mode: saveMode, ...(objectFootprint ? { object: { id: args.objectId, ...objectFootprint } } : {}) },
       ...(saveWarnings.length > 0 ? { warnings: saveWarnings } : {}),
     };
   },

@@ -93,6 +93,8 @@ export type AutonomousMover = {
   alertSeen?: boolean;
   /** 놀람 뒤 남은 멈춤(ms) — 이 동안 추격 걸음을 떼지 않는다. */
   alertHoldMs?: number;
+  /** movement.chaseLunge: 발견 뒤 남은 덮치기 칸 수. */
+  lungeLeft?: number;
   /** 순찰+추격: 직전 프레임에 추격 상태였다. 추격이 끝나면 순찰을 처음 걸음부터 다시 시작한다. */
   patrolChasing?: boolean;
   chaseHome?: { readonly x: number; readonly y: number };

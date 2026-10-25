@@ -3,7 +3,7 @@ import { damageTypeMultiplier } from "@/battle/battleElementModifiers";
 import type { EnemyRecord, Project, StateRecord } from "@/project/types";
 import { loadBattleFixture } from "./fixtures/battleFixtureLoadable";
 
-// 받는 피해 계열(물리·마법) — 적 기본값과 상태 덮어쓰기(2026-10-24, 폴른 스타 「달비늘 용」·「관통상」).
+// 받는 피해 계열(물리·마법) — 적 기본값과 상태 덮어쓰기(2026-10-24, 폴른 스타 「달빛의 용」·「관통상」).
 
 function project(): Project {
   const p = loadBattleFixture();

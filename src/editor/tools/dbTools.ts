@@ -1034,6 +1034,7 @@ const stateRecordSchema = objectSchema({
   gen1MajorStatus: { type: "string", enum: ["poison", "toxic", "burn", "sleep", "freeze", "paralysis"] },
   volatileStatus: { type: "string", enum: ["confusion"] },
   removalCondition: stringSchema(),
+  clearOnBattleEnd: booleanSchema("true = 전투가 끝나면 풀린다(독·수면을 전투 밖으로 끌고 가지 않는 게임), false = 남는다. 생략 = set_project_settings battle.clearStatesAfterBattle 을 따른다"),
   restriction: stringSchema(),
   priority: integerSchema(),
   accuracyModifier: integerSchema(),

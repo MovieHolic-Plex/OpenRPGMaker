@@ -234,6 +234,9 @@ export function validateSystem(value: unknown): void {
     requireBoolean(`system.${key}.enabled`, config.enabled);
   }
   if (system.weaknessExtraAction !== undefined) requireBoolean("system.weaknessExtraAction", system.weaknessExtraAction);
+  if (system.allowAutoBattle !== undefined) requireBoolean("system.allowAutoBattle", system.allowAutoBattle);
+  if (system.clearStatesAfterBattle !== undefined) requireBoolean("system.clearStatesAfterBattle", system.clearStatesAfterBattle);
+  if (system.saveAccess !== undefined) assert(system.saveAccess === "anywhere" || system.saveAccess === "savePoints", "system.saveAccess 는 anywhere | savePoints");
   if (system.emotionCycle !== undefined) {
     for (const [index, raw] of requireArray("system.emotionCycle", system.emotionCycle).entries()) {
       const rule = requireRecord(`system.emotionCycle[${index}]`, raw);

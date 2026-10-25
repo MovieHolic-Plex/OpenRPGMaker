@@ -8006,6 +8006,697 @@
    ],
    "verify": "대장장이 상점 / 철검·포션 / 원래 대사 유지",
    "suiteCategory": "edits"
+  },
+  {
+   "category": "game",
+   "kind": "logic",
+   "mode": "balanced",
+   "startTileset": "beodeul_city",
+   "startBuild": [
+    {
+     "tool": "author_beodeul_town",
+     "args": {
+      "mapId": "map_blank_start",
+      "name": "버들 마을",
+      "houseCount": 4,
+      "theme": "river",
+      "seed": 11
+     }
+    },
+    {
+     "tool": "place_npc",
+     "args": {
+      "mapId": "map_blank_start",
+      "id": "npc_chief",
+      "name": "촌장",
+      "x": 20,
+      "y": 16,
+      "movement": "fixed",
+      "graphic": {
+       "query": "노인 남성"
+      },
+      "pages": [
+       {
+        "lines": [
+         "어서 오게, 버들 마을일세."
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "tool": "place_npc",
+     "args": {
+      "mapId": "map_blank_start",
+      "id": "npc_smith",
+      "name": "대장장이",
+      "x": 14,
+      "y": 20,
+      "movement": "fixed",
+      "graphic": {
+       "query": "아저씨"
+      },
+      "pages": [
+       {
+        "lines": [
+         "망치 소리 좋지?"
+        ]
+       }
+      ]
+     }
+    }
+   ],
+   "id": "fs-boss-squad-first",
+   "prompt": "촌장에게 말 걸면 심문관과 싸우게 해 줘. 첫 전투는 병사 넷만 나오고 심문관은 뒤에서 지켜보기만 하고, 병사들을 이기면 다음 전투부터 심문관이 직접 나서게 해 줘. 싸우기 전 장면에서는 일행이 옆으로 나란히 서서 심문관을 마주 보게 해 줘.",
+   "requires": [
+    "1차 전투 병사 4",
+    "심문관 없음",
+    "승리 후 2차 전투에 심문관",
+    "일행 횡대(sceneFormation abreast)"
+   ],
+   "verify": "1차 전투 병사 4 / 심문관 없음 / 승리 후 2차 전투에 심문관 / 일행 횡대(sceneFormation abreast)",
+   "suiteCategory": "fs-boss"
+  },
+  {
+   "category": "game",
+   "kind": "logic",
+   "mode": "balanced",
+   "startTileset": "beodeul_city",
+   "startBuild": [
+    {
+     "tool": "author_beodeul_town",
+     "args": {
+      "mapId": "map_blank_start",
+      "name": "버들 마을",
+      "houseCount": 4,
+      "theme": "river",
+      "seed": 11
+     }
+    },
+    {
+     "tool": "place_npc",
+     "args": {
+      "mapId": "map_blank_start",
+      "id": "npc_chief",
+      "name": "촌장",
+      "x": 20,
+      "y": 16,
+      "movement": "fixed",
+      "graphic": {
+       "query": "노인 남성"
+      },
+      "pages": [
+       {
+        "lines": [
+         "어서 오게, 버들 마을일세."
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "tool": "place_npc",
+     "args": {
+      "mapId": "map_blank_start",
+      "id": "npc_smith",
+      "name": "대장장이",
+      "x": 14,
+      "y": 20,
+      "movement": "fixed",
+      "graphic": {
+       "query": "아저씨"
+      },
+      "pages": [
+       {
+        "lines": [
+         "망치 소리 좋지?"
+        ]
+       }
+      ]
+     }
+    }
+   ],
+   "id": "fs-boss-hidehp",
+   "prompt": "보스 '그림자 기사'를 만들어 촌장에게 말 걸면 싸우게 하고, 일반 적은 체력바가 보이지만 보스만은 체력을 숨겨 줘.",
+   "requires": [
+    "보스 전투",
+    "보스 hideHp",
+    "일반 적 HP 표시 유지"
+   ],
+   "verify": "보스 전투 / 보스 hideHp / 일반 적 HP 표시 유지",
+   "suiteCategory": "fs-boss"
+  },
+  {
+   "category": "game",
+   "kind": "logic",
+   "mode": "balanced",
+   "startTileset": "beodeul_city",
+   "startBuild": [
+    {
+     "tool": "author_beodeul_town",
+     "args": {
+      "mapId": "map_blank_start",
+      "name": "버들 마을",
+      "houseCount": 4,
+      "theme": "river",
+      "seed": 11
+     }
+    },
+    {
+     "tool": "place_npc",
+     "args": {
+      "mapId": "map_blank_start",
+      "id": "npc_chief",
+      "name": "촌장",
+      "x": 20,
+      "y": 16,
+      "movement": "fixed",
+      "graphic": {
+       "query": "노인 남성"
+      },
+      "pages": [
+       {
+        "lines": [
+         "어서 오게, 버들 마을일세."
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "tool": "place_npc",
+     "args": {
+      "mapId": "map_blank_start",
+      "id": "npc_smith",
+      "name": "대장장이",
+      "x": 14,
+      "y": 20,
+      "movement": "fixed",
+      "graphic": {
+       "query": "아저씨"
+      },
+      "pages": [
+       {
+        "lines": [
+         "망치 소리 좋지?"
+        ]
+       }
+      ]
+     }
+    }
+   ],
+   "id": "fs-reveal-lift",
+   "prompt": "대장장이 옆 바닥에 레버 이벤트를 두고, 당기면 '바닥이 열리며 승강 장치가 드러났다'는 말과 함께 카메라가 그쪽으로 가서 실제로 지도에 승강 장치가 나타났다가 돌아오게 해 줘. 드러난 뒤에만 그 위에 올라서면 다른 곳으로 이동하게 해 줘.",
+   "requires": [
+    "레버 이벤트",
+    "지도 칸이 실제로 바뀜(changeTile)",
+    "카메라 이동·복귀",
+    "드러난 뒤에만 타기(스위치 조건)"
+   ],
+   "verify": "레버 이벤트 / 지도 칸이 실제로 바뀜(changeTile) / 카메라 이동·복귀 / 드러난 뒤에만 타기(스위치 조건)",
+   "suiteCategory": "fs-cinema"
+  },
+  {
+   "category": "game",
+   "kind": "logic",
+   "mode": "balanced",
+   "startTileset": "beodeul_city",
+   "startBuild": [
+    {
+     "tool": "author_beodeul_town",
+     "args": {
+      "mapId": "map_blank_start",
+      "name": "버들 마을",
+      "houseCount": 4,
+      "theme": "river",
+      "seed": 11
+     }
+    },
+    {
+     "tool": "place_npc",
+     "args": {
+      "mapId": "map_blank_start",
+      "id": "npc_chief",
+      "name": "촌장",
+      "x": 20,
+      "y": 16,
+      "movement": "fixed",
+      "graphic": {
+       "query": "노인 남성"
+      },
+      "pages": [
+       {
+        "lines": [
+         "어서 오게, 버들 마을일세."
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "tool": "place_npc",
+     "args": {
+      "mapId": "map_blank_start",
+      "id": "npc_smith",
+      "name": "대장장이",
+      "x": 14,
+      "y": 20,
+      "movement": "fixed",
+      "graphic": {
+       "query": "아저씨"
+      },
+      "pages": [
+       {
+        "lines": [
+         "망치 소리 좋지?"
+        ]
+       }
+      ]
+     }
+    }
+   ],
+   "id": "fs-battle-noauto",
+   "prompt": "이 게임에는 자동 전투가 없었으면 해. 전투에서 자동 전투 단축키나 표시가 아예 안 나오게 해 줘.",
+   "requires": [
+    "allowAutoBattle false",
+    "F 키 토글·표시 없음"
+   ],
+   "verify": "allowAutoBattle false / F 키 토글·표시 없음",
+   "suiteCategory": "fs-battle"
+  },
+  {
+   "category": "game",
+   "kind": "logic",
+   "mode": "balanced",
+   "startTileset": "beodeul_city",
+   "startBuild": [
+    {
+     "tool": "author_beodeul_town",
+     "args": {
+      "mapId": "map_blank_start",
+      "name": "버들 마을",
+      "houseCount": 4,
+      "theme": "river",
+      "seed": 11
+     }
+    },
+    {
+     "tool": "place_npc",
+     "args": {
+      "mapId": "map_blank_start",
+      "id": "npc_chief",
+      "name": "촌장",
+      "x": 20,
+      "y": 16,
+      "movement": "fixed",
+      "graphic": {
+       "query": "노인 남성"
+      },
+      "pages": [
+       {
+        "lines": [
+         "어서 오게, 버들 마을일세."
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "tool": "place_npc",
+     "args": {
+      "mapId": "map_blank_start",
+      "id": "npc_smith",
+      "name": "대장장이",
+      "x": 14,
+      "y": 20,
+      "movement": "fixed",
+      "graphic": {
+       "query": "아저씨"
+      },
+      "pages": [
+       {
+        "lines": [
+         "망치 소리 좋지?"
+        ]
+       }
+      ]
+     }
+    }
+   ],
+   "id": "fs-battle-combo-faces",
+   "prompt": "촌장과 대장장이가 같이 쓰는 연계기 '불꽃 망치'를 만들고, 연계기를 쓸 때 두 사람 얼굴이 양쪽에서 교차하는 컷인이 나오게 해 줘. 내보낸 게임에서도 얼굴이 떠야 해.",
+   "requires": [
+    "연계기 2인",
+    "comboCutIn faces",
+    "내보내기에 흉상 포함"
+   ],
+   "verify": "연계기 2인 / comboCutIn faces / 내보내기에 흉상 포함",
+   "suiteCategory": "fs-battle"
+  },
+  {
+   "category": "game",
+   "kind": "logic",
+   "mode": "balanced",
+   "startTileset": "beodeul_city",
+   "startBuild": [
+    {
+     "tool": "author_beodeul_town",
+     "args": {
+      "mapId": "map_blank_start",
+      "name": "버들 마을",
+      "houseCount": 4,
+      "theme": "river",
+      "seed": 11
+     }
+    },
+    {
+     "tool": "place_npc",
+     "args": {
+      "mapId": "map_blank_start",
+      "id": "npc_chief",
+      "name": "촌장",
+      "x": 20,
+      "y": 16,
+      "movement": "fixed",
+      "graphic": {
+       "query": "노인 남성"
+      },
+      "pages": [
+       {
+        "lines": [
+         "어서 오게, 버들 마을일세."
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "tool": "place_npc",
+     "args": {
+      "mapId": "map_blank_start",
+      "id": "npc_smith",
+      "name": "대장장이",
+      "x": 14,
+      "y": 20,
+      "movement": "fixed",
+      "graphic": {
+       "query": "아저씨"
+      },
+      "pages": [
+       {
+        "lines": [
+         "망치 소리 좋지?"
+        ]
+       }
+      ]
+     }
+    }
+   ],
+   "id": "fs-state-clear-after",
+   "prompt": "전투에서 걸린 독이나 수면 같은 상태 이상은 전투가 끝나면 다 풀리게 해 줘. 단, '저주' 상태만은 전투 뒤에도 남게.",
+   "requires": [
+    "clearStatesAfterBattle true",
+    "저주 clearOnBattleEnd false"
+   ],
+   "verify": "clearStatesAfterBattle true / 저주 clearOnBattleEnd false",
+   "suiteCategory": "fs-state"
+  },
+  {
+   "category": "game",
+   "kind": "logic",
+   "mode": "balanced",
+   "startTileset": "beodeul_city",
+   "startBuild": [
+    {
+     "tool": "author_beodeul_town",
+     "args": {
+      "mapId": "map_blank_start",
+      "name": "버들 마을",
+      "houseCount": 4,
+      "theme": "river",
+      "seed": 11
+     }
+    },
+    {
+     "tool": "place_npc",
+     "args": {
+      "mapId": "map_blank_start",
+      "id": "npc_chief",
+      "name": "촌장",
+      "x": 20,
+      "y": 16,
+      "movement": "fixed",
+      "graphic": {
+       "query": "노인 남성"
+      },
+      "pages": [
+       {
+        "lines": [
+         "어서 오게, 버들 마을일세."
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "tool": "place_npc",
+     "args": {
+      "mapId": "map_blank_start",
+      "id": "npc_smith",
+      "name": "대장장이",
+      "x": 14,
+      "y": 20,
+      "movement": "fixed",
+      "graphic": {
+       "query": "아저씨"
+      },
+      "pages": [
+       {
+        "lines": [
+         "망치 소리 좋지?"
+        ]
+       }
+      ]
+     }
+    }
+   ],
+   "id": "fs-foe-lunge",
+   "prompt": "마을 북쪽 숲에 늑대 셋을 보이는 적으로 두고, 멀리서도 플레이어를 알아보고 순간적으로 확 덮쳐 오게 해 줘. 그래도 계속 걸으면 피할 수는 있게.",
+   "requires": [
+    "보이는 적 3",
+    "시야 넓힘",
+    "발견 뒤 덮치기(chaseLunge)",
+    "주인공보다 빠르지 않음"
+   ],
+   "verify": "보이는 적 3 / 시야 넓힘 / 발견 뒤 덮치기(chaseLunge) / 주인공보다 빠르지 않음",
+   "suiteCategory": "fs-foe"
+  },
+  {
+   "category": "game",
+   "kind": "logic",
+   "mode": "balanced",
+   "startTileset": "beodeul_city",
+   "startBuild": [
+    {
+     "tool": "author_beodeul_town",
+     "args": {
+      "mapId": "map_blank_start",
+      "name": "버들 마을",
+      "houseCount": 4,
+      "theme": "river",
+      "seed": 11
+     }
+    },
+    {
+     "tool": "place_npc",
+     "args": {
+      "mapId": "map_blank_start",
+      "id": "npc_chief",
+      "name": "촌장",
+      "x": 20,
+      "y": 16,
+      "movement": "fixed",
+      "graphic": {
+       "query": "노인 남성"
+      },
+      "pages": [
+       {
+        "lines": [
+         "어서 오게, 버들 마을일세."
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "tool": "place_npc",
+     "args": {
+      "mapId": "map_blank_start",
+      "id": "npc_smith",
+      "name": "대장장이",
+      "x": 14,
+      "y": 20,
+      "movement": "fixed",
+      "graphic": {
+       "query": "아저씨"
+      },
+      "pages": [
+       {
+        "lines": [
+         "망치 소리 좋지?"
+        ]
+       }
+      ]
+     }
+    }
+   ],
+   "id": "fs-foe-no-random",
+   "prompt": "숲에서는 걸을 때마다 터지는 랜덤 전투를 없애고, 눈에 보이는 몬스터와만 싸우게 해 줘. 레벨 올릴 만큼은 몬스터가 있어야 해.",
+   "requires": [
+    "encounterRate 0",
+    "보이는 적 여럿",
+    "다시 나타남(respawn)"
+   ],
+   "verify": "encounterRate 0 / 보이는 적 여럿 / 다시 나타남(respawn)",
+   "suiteCategory": "fs-foe"
+  },
+  {
+   "category": "game",
+   "kind": "logic",
+   "mode": "balanced",
+   "startTileset": "beodeul_city",
+   "startBuild": [
+    {
+     "tool": "author_beodeul_town",
+     "args": {
+      "mapId": "map_blank_start",
+      "name": "버들 마을",
+      "houseCount": 4,
+      "theme": "river",
+      "seed": 11
+     }
+    },
+    {
+     "tool": "place_npc",
+     "args": {
+      "mapId": "map_blank_start",
+      "id": "npc_chief",
+      "name": "촌장",
+      "x": 20,
+      "y": 16,
+      "movement": "fixed",
+      "graphic": {
+       "query": "노인 남성"
+      },
+      "pages": [
+       {
+        "lines": [
+         "어서 오게, 버들 마을일세."
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "tool": "place_npc",
+     "args": {
+      "mapId": "map_blank_start",
+      "id": "npc_smith",
+      "name": "대장장이",
+      "x": 14,
+      "y": 20,
+      "movement": "fixed",
+      "graphic": {
+       "query": "아저씨"
+      },
+      "pages": [
+       {
+        "lines": [
+         "망치 소리 좋지?"
+        ]
+       }
+      ]
+     }
+    }
+   ],
+   "id": "fs-save-points",
+   "prompt": "메뉴에서는 저장을 못 하게 하고, 마을 광장에 세이브 포인트 하나만 둬서 거기서만 저장하게 해 줘. 세이브 포인트는 눈에 띄게.",
+   "requires": [
+    "saveAccess savePoints",
+    "place_savepoint",
+    "메뉴 저장 없음"
+   ],
+   "verify": "saveAccess savePoints / place_savepoint / 메뉴 저장 없음",
+   "suiteCategory": "fs-save"
+  },
+  {
+   "category": "game",
+   "kind": "logic",
+   "mode": "balanced",
+   "startTileset": "beodeul_city",
+   "startBuild": [
+    {
+     "tool": "author_beodeul_town",
+     "args": {
+      "mapId": "map_blank_start",
+      "name": "버들 마을",
+      "houseCount": 4,
+      "theme": "river",
+      "seed": 11
+     }
+    },
+    {
+     "tool": "place_npc",
+     "args": {
+      "mapId": "map_blank_start",
+      "id": "npc_chief",
+      "name": "촌장",
+      "x": 20,
+      "y": 16,
+      "movement": "fixed",
+      "graphic": {
+       "query": "노인 남성"
+      },
+      "pages": [
+       {
+        "lines": [
+         "어서 오게, 버들 마을일세."
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "tool": "place_npc",
+     "args": {
+      "mapId": "map_blank_start",
+      "id": "npc_smith",
+      "name": "대장장이",
+      "x": 14,
+      "y": 20,
+      "movement": "fixed",
+      "graphic": {
+       "query": "아저씨"
+      },
+      "pages": [
+       {
+        "lines": [
+         "망치 소리 좋지?"
+        ]
+       }
+      ]
+     }
+    }
+   ],
+   "id": "fs-party-follow",
+   "prompt": "촌장과 대장장이를 동료로 넣고, 필드에서 둘이 주인공 뒤를 줄지어 따라 걷게 해 줘. 컷신에서는 주인공 옆에 나란히 서게.",
+   "requires": [
+    "동료 2 합류",
+    "display follow",
+    "sceneFormation abreast"
+   ],
+   "verify": "동료 2 합류 / display follow / sceneFormation abreast",
+   "suiteCategory": "fs-party"
   }
  ],
  "gates": {
