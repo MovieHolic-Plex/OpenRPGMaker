@@ -1,3 +1,4 @@
+/** @vitest-environment happy-dom */
 import { EventEmitter } from "node:events";
 import { afterAll, afterEach, beforeAll, expect, it, vi } from "vitest";
 import { installEditRenderGate, type EditRenderGateGame } from "@/editor/editRenderGate";
@@ -5,11 +6,9 @@ import type { ProjectChangeDescriptor } from "@/project/store";
 
 let prototype: object;
 beforeAll(async () => {
-  vi.stubGlobal("window", {
-    Phaser: { Scene: class {} }, location: { search: "" },
-    addEventListener() {}, removeEventListener() {},
-  });
-  vi.stubGlobal("document", { querySelector: () => null });
+  // getLoadedPhaser() 는 모듈 로드 시점에 window.Phaser 를 읽고, phaser 자체는 document.documentElement 를
+  // 읽는다 — 손으로 만든 window/document 스텁으론 모자라 happy-dom 의 실제 window 를 쓴다.
+  (window as unknown as { Phaser: unknown }).Phaser = { Scene: class Scene {} };
   prototype = (await import("@/editor/EditScene")).EditScene.prototype;
 }, 90_000);
 afterEach(() => vi.restoreAllMocks());

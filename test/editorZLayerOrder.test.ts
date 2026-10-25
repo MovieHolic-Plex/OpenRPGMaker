@@ -42,7 +42,7 @@ describe("편집기 z 층 순서", () => {
 
   it("그 계산식이 여전히 app-modal 기준이다 — 하드코딩으로 바뀌면 위 단정이 거짓이 된다", () => {
     const wide = readCssFamily(
-      "src/styles/database/index.css",
+      "src/styles/index.css",
       "src/styles/database/tabs-b-assistant-panel/19-assistant-cards.css",
     );
     expect(wide).toContain("calc(var(--z-app-modal) + 20)");

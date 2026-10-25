@@ -7,7 +7,7 @@ import { readCssFamily } from "./cssFamily";
 vi.mock("@/editor/tools/toolRegistry", () => ({ activeTools: () => [] }));
 
 const css = readCssFamily(
-  "src/styles/database/index.css",
+  "src/styles/index.css",
   "src/styles/database/tabs-b-assistant-panel/08-studio-mode-start-screen.css",
 );
 const layoutKey = "oprn:ai-studio-layout";

@@ -1,8 +1,20 @@
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+/** @vitest-environment happy-dom */
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { AUTONOMY_LEVELS, resolveAutonomy, type AutonomyLevel } from "@/ai/autonomyLevels";
 import { AI_CONFIG_STORAGE_KEY, defaultAiConfig } from "@/ai/llmClient";
 import { resetModalStackForTest } from "@/editor/ui/modalStack";
 import { findByTestId, installFakeDom, type FakeElement } from "./fakeDom";
+
+// 역할 배정 표는 모달을 열 때 연결된 경로를 비동기로 가져와 다시 그린다. 오프라인에서도 그 약속은 테스트가 끝난 뒤에
+// 풀려 복원된 happy-dom document 로 옵션을 만들고 가짜 select 에 붙이다 미처리 오류를 낸다 — 이 파일은 경로 조회를 보지 않는다.
+vi.mock("@/editor/panels/aiRoleMatrixSettings", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@/editor/panels/aiRoleMatrixSettings")>()),
+  fetchConnectedRoutes: () => new Promise<never>(() => undefined),
+}));
+// 도구 사용량 패널도 같은 사정이다: 열자마자 IndexedDB·대화 기록을 읽고 나중에 자기 보고서를 그려 넣는다.
+vi.mock("@/editor/panels/aiToolUsagePanel", () => ({
+  renderAiToolUsagePanel: () => document.createElement("div"),
+}));
 
 // 인증 상태 조회는 모킹하지 않는다 — test/aiChatPanelSettings.test.ts 와 같은 방식이다.
 // 모달이 마운트되면 동반 서비스 조회가 실패하고 연결 요약이 오류 문구로 떨어지지만,
