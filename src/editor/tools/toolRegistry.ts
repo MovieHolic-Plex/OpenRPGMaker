@@ -61,6 +61,7 @@ import { HOUSE_VISION_TOOLS } from "./houseVisionTools";
 import { INVESTIGATION_TOOLS } from "./investigationTools";
 import { SEARCH_CONTAINER_TOOLS } from "./searchContainerTools";
 import { FOREST_ROUTE_TOOLS } from "./forestRouteTool";
+import { SNOW_ROUTE_TOOLS } from "./snowRouteTool";
 import { MYSTERY_CASE_TOOLS } from "./mysteryCaseTool";
 import { NARRATIVE_HORROR_TEMPLATE_TOOLS } from "./narrativeHorrorTemplateTools";
 import { CUTSCENE_ART_TOOLS } from "./cutsceneArtTools";
@@ -345,6 +346,7 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   ...withDomain(INVESTIGATION_TOOLS, "event"),
   ...withDomain(SEARCH_CONTAINER_TOOLS, "event"),
   ...withDomain(FOREST_ROUTE_TOOLS, "map"),
+  ...withDomain(SNOW_ROUTE_TOOLS, "map"),
   ...withDomain(PUZZLE_AUTHORING_TOOLS, "event"),
   ...withDomain(MYSTERY_CASE_TOOLS, "event"),
   ...withDomain(NARRATIVE_HORROR_TEMPLATE_TOOLS, "event"),
