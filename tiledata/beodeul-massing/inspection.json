@@ -314,8 +314,8 @@
     8,
     6
    ],
-   "blockedCells": 6,
-   "overhangCells": 40,
+   "blockedCells": 16,
+   "overhangCells": 30,
    "entrance": [
     7,
     5,
@@ -382,8 +382,8 @@
     12,
     6
    ],
-   "blockedCells": 33,
-   "overhangCells": 39,
+   "blockedCells": 36,
+   "overhangCells": 36,
    "entrance": [
     6,
     5,
@@ -416,8 +416,8 @@
     9,
     9
    ],
-   "blockedCells": 24,
-   "overhangCells": 43,
+   "blockedCells": 36,
+   "overhangCells": 31,
    "entrance": [
     4,
     7,

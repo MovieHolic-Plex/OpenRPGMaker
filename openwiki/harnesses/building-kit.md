@@ -936,7 +936,8 @@ save 되풀이 7회, exit 0. 바탕 `0b9e645e` → 마감 `4eb598be`. 바뀐 불
 ### 한 건물 = 데이터 두 파일
 
 - `harness-data/building-kit/massing/art/<id>.txt` — 글자 하나 = 화소 하나(`.` 투명), 글자 → 잠긴 팔레트 `palette.json`(판타지 왕국 51색 + 버들항 건물 실화소 군집 64색).
-- `art/<id>.json` — 이름·덩어리 모형 번호·재질·버들항 기준 키트 둘·칸 통행 `walk`(X 벽·D 문 하나·* 처마/지붕·. 빈칸)·`passages`(성문·시장 아케이드 바닥).
+- `art/<id>.json` — 이름·덩어리 모형 번호·재질·버들항 기준 키트 둘·칸 통행 `walk`(X 벽·D 문 하나·* 처마/지붕·. 빈칸). `passages`(열린 통로)는 받지 않는다 — 2026-10-25 감사에서 시청 아케이드·시장 가판대가 통로로 적혀 그림의 벽을 지나갔고 곳간 벽 줄에 `*` 홈이 있었다. `check` 가 땅 칸 X/D·벽 아래 `*` 금지·벽 줄 홈 금지를 FAIL 로 막는다.
+- 참고문서 생성(`prepare-building-references.mts`)은 문서 한 장을 100k 자 안으로 나누고(`addJsonPages`, 큰 JSON 은 항목 단위), 끝에 편집기·호스트와 같은 `validateTilesetReferences` 와 그림 파일 크기 검사를 통과해야 쓴다. #3460 이 262k 문서를 실어 모든 프로젝트 저장이 거절됐다(#3473 손 분할).
 - 그리는 쪽: tile-artist(Opus) 가 `massing_lib.Canvas` 와 부품 문법 `kit_building`(바탕) 으로 그리고 손으로 마감한다. 절차서 `scripts/content/building-kit/massing/BRIEF.md`(감독 메모 ①~㉙ = 검수자가 반복해 떨어뜨린 이유). 그리기 스크립트 `scripts/content/building-kit/massing/work/<id>/draw.py`(+ 같은 폴더 도우미, 난수 없음). `python3 scripts/content/building-kit/massing/regen.py --check` 가 32채를 모두 다시 그려 커밋된 art 와 바이트·화소 해시가 같은지 본다 (2026-10-25 깨끗한 체크아웃에서 32/32 같음). 부품 조립 도우미 `massing_lib.kit_part`/`kit_building` 은 `rounds/fantasy-kingdom/style_r1·r3·r4·r5·r8.py` 판 모듈을 읽는다(같이 커밋).
 - 기준: 같은 배율 버들항 키트 둘(`refs`), 구조는 덩어리 모형 렌더(`refs/<Mxx>.png`).
 

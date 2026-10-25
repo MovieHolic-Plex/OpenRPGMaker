@@ -239,11 +239,24 @@ def check(bid, quiet=False):
             fails.append(f'문은 한 열에 세로로 1~2칸 하나뿐이어야 한다: {doors}')
         elif ys[-1] != chh - 1:
             fails.append('문 아랫칸이 그림 맨 아래 칸 줄이 아니다(문 앞 칸이 키트 밖 땅이어야 한다)')
-    passages = set(tuple(p) for p in meta.get('passages', []))
+    # 칸 통행은 그림과 맞아야 한다(2026-10-25 감사: 시청 아케이드·장터 가판대가 통로로 적혀 벽을 지나갔다).
+    # 열린 통로(passages)는 그림으로 확인할 수 없어 받지 않는다. 땅 닿는 칸은 막힘, 벽(X) 아래에 지나가는 칸이 없다,
+    # 벽 줄에 지붕 칸(*)이 홈처럼 파고들지 않는다.
+    if meta.get('passages'):
+        fails.append('passages(열린 통로)는 받지 않는다 — 땅 칸은 X 나 D 로')
     for cx in range(cw):
         ys = [cy for cy in range(chh) if walk[cy][cx] != '.']
-        if ys and walk[max(ys)][cx] not in 'XD' and (cx, max(ys)) not in passages:
-            fails.append(f'열 {cx} 의 땅 닿는 칸 ({cx},{max(ys)}) 이 막힘이 아니다(통로면 passages 에 적는다)')
+        if ys and walk[max(ys)][cx] not in 'XD':
+            fails.append(f'열 {cx} 의 땅 닿는 칸 ({cx},{max(ys)}) 이 막힘이 아니다')
+        top = next((cy for cy in range(chh) if walk[cy][cx] in 'XD'), None)
+        if top is not None:
+            under = [cy for cy in range(top, chh) if walk[cy][cx] == '*']
+            if under:
+                fails.append(f'열 {cx}: 벽 칸 아래 ({cx},{under[0]}) 가 지나가는 칸(*)이다')
+    for cy in range(chh - 1):
+        for cx in range(1, cw - 1):
+            if walk[cy][cx] == '*' and walk[cy][cx - 1] in 'XD' and walk[cy][cx + 1] in 'XD' and walk[cy + 1][cx] in 'XD':
+                fails.append(f'칸 ({cx},{cy}): 벽 줄에 파고든 지나가는 칸(*) — 양옆·아래가 막힘')
     if not alpha[h - 1].any():
         fails.append('맨 아래 화소 줄이 비었다 — 건물이 칸 경계에 닿아야 한다')
     for cx in range(cw):
