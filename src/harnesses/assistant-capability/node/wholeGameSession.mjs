@@ -7,7 +7,7 @@
 // own question cards. It never calls editor tools or edits content.
 //
 // Usage:
-//   node src/harnesses/assistant-capability/node/wholeGameSession.mjs --project-dir <dir> --out <session dir> [--v2] [--turn-timeout-ms N]
+//   node src/harnesses/assistant-capability/node/wholeGameSession.mjs --project-dir <dir> --out <session dir> [--v2] [--turn-timeout-ms N] [--store-url <store> [--store-auto-install]]
 // Control files (written by the operator into <out>/inbox/, processed in name order):
 //   NNN.txt    -> a natural-language request typed into ai-input and sent
 //   NNN.click  -> one data-testid (first line) of a visible assistant card button to click
@@ -21,6 +21,7 @@ import { isDeepStrictEqual } from 'node:util';
 import { firefox } from 'playwright';
 import { stored, writeRuntimeProject, newEditor, startHost } from './editorDriver.mjs';
 import { readOAuthClientsFromPiAi } from '../../../../scripts/lib/oauthClients.mjs';
+import { installStoreBridge } from './storeBridgeShim.mjs';
 
 // Same environment repair as genre-run: the host bundle in /tmp cannot locate pi-ai itself.
 {
@@ -37,6 +38,9 @@ const projectDir = resolve(option('project-dir') ?? '');
 const out = resolve(option('out') ?? '');
 if (!option('project-dir') || !option('out')) throw Error('wholeGameSession --project-dir <dir> --out <session dir> [--v2]');
 const useV2 = argv.includes('--v2');
+// --store-url <스토어>: 브라우저 편집기에 읽기 전용 스토어 다리를 붙인다(storeBridgeShim.mjs). --store-auto-install: 「묻지 않고 넣기」를 켠 사용자.
+const storeUrl = option('store-url');
+const storeAutoInstall = argv.includes('--store-auto-install');
 const turnTimeoutMs = Number(option('turn-timeout-ms') ?? 45 * 60_000);
 const sleep = ms => new Promise(done => setTimeout(done, ms));
 const json = (file, data) => writeFileSync(file, JSON.stringify(data, null, 2));
@@ -48,7 +52,7 @@ const log = text => appendFileSync(transcript, text + '\n');
 // Cards that need a user answer. Their text is dumped so the operator can decide like a user.
 // Only these hold the turn. Object-generation / store cards stay on screen without blocking, so they are
 // reported (INFO_SELECTOR) but never treated as awaiting an answer.
-const CARD_SELECTOR = ['ai-decision-prompt', 'ai-tileset-change-card', 'ai-creation-choice', 'ai-pending-review']
+const CARD_SELECTOR = ['ai-decision-prompt', 'ai-tileset-change-card', 'ai-creation-choice', 'ai-pending-review', 'ai-store-music-card']
   .map(id => `[data-testid="${id}"]`).join(',');
 const INFO_SELECTOR = ['ai-objectgen-card', 'ai-store-missing-card'].map(id => `[data-testid="${id}"]`).join(',');
 
@@ -64,6 +68,7 @@ let editor, page;
 async function open() {
   editor = await newEditor(browser, host.url, projectDir, {}, { async onPage(p) {
     p.on('pageerror', error => pageErrors.push({ at: new Date().toISOString(), message: error.message.slice(0, 500) }));
+    if (storeUrl) await installStoreBridge(p, storeUrl, { autoInstall: storeAutoInstall });
     await p.addInitScript(v2 => {
       localStorage.setItem('oprn:editor-welcome-dismissed', '1');
       localStorage.setItem('oprn:assistant-v2', v2 ? '1' : '0');
