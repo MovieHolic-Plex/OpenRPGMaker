@@ -14,6 +14,7 @@
  */
 import { charsetFrameIndex } from "@/assets/easyrpgRtp";
 import { reviewedFaceIdForCharset } from "@/assets/reviewedCharsetFaces";
+import modernCityRoomSpec from "@/assets/modernCityRoomSpec.json";
 import { runTool } from "@/editor/tools/toolRunner";
 import "@/editor/tools/toolRegistry";
 import { isPassable } from "@/project/collision";
@@ -215,7 +216,7 @@ function buildMaps(project: Project): { arrive: Cell; links: Record<"house" | "b
     { mapId: M.house, name: "하진의 집", tileset: "modern_city", room: "mc_house", seed: 1 },
     { mapId: M.bakery, name: "코하루 베이커리", tileset: "modern_city", room: "mc_bakery_cafe", seed: 7 },
     { mapId: M.sento, name: "센토 마츠노유", tileset: "modern_city", room: "mc_sento", seed: 8 },
-    { mapId: M.office, name: "상점가 진흥회 사무소", tileset: "modern_city", room: "mc_council_room", seed: 4 },
+    { mapId: M.office, name: "상점가 진흥회 사무소", tileset: "modern_city", room: "mc_office", seed: 1 },
     { mapId: M.rooftop, name: "히카리 맨션 옥상", tileset: "modern_city", room: "mc_rooftop", seed: 6 },
   ] as const;
   for (const r of rooms) {
@@ -683,12 +684,31 @@ function buildRooftop(project: Project, link: { entry: Cell; exit: Cell }): Cell
     const y = map.height - 2;
     fenceGlow.push({ id: `roof_street_${x}`, at: { x, y }, radius: 2.4, intensity: 0.75, color: "#ff9f4a", flicker: true });
   }
+  // 지붕 밖(실내 생성기의 «건물 밖» 칸)을 비워 맵 배경이 비치게 하고, 배경에는 상점가 맵을 줄여 깐다 — 난간 너머로 아래 동네가 내려다보인다
+  // (VQA: 옥상이 하늘·도시 없이 벽에 갇힌 안뜰로 보였다). 빈 칸 위에는 등롱 불빛을 흩어 «밤의 거리»로 읽히게 한다.
+  const VOID_TILE = (modernCityRoomSpec as { void: number }).void;
+  const viewLights: LightSource[] = [];
+  for (let i = 0; i < map.lowerTiles.length; i++) {
+    if (map.lowerTiles[i] !== VOID_TILE) continue;
+    map.lowerTiles[i] = -1;
+    const x = i % map.width, y = Math.floor(i / map.width);
+    if (y > 0 && y < map.height - 1 && x > 0 && x < map.width - 1 && (x * 7 + y * 13) % 11 === 0) {
+      viewLights.push({ id: `roof_town_${x}_${y}`, at: { x, y }, radius: 1.6, intensity: 0.85, color: (x + y) % 2 ? "#ffb35a" : "#ff7a4a", flicker: true });
+    }
+  }
+  map.background = {
+    imageId: "",
+    fromMap: { mapId: M.hub, scale: 0.5, haze: 0.3, hazeColor: "#1b2246", desaturate: 0.15, focusX: 14, focusY: 12 },
+    cameraFollow: 0.35,
+    showInEmptyCells: true,
+  };
   map.defaultLighting = {
     ambient: 0.55, color: "#121734",
     sources: [
       { id: "roof_glow_a", at: spot, radius: 5, intensity: 0.9, color: "#ffbf73", flicker: false },
       { id: "roof_glow_b", at: arrive, radius: 3, intensity: 0.7, color: "#ffd9a0", flicker: false },
       ...fenceGlow,
+      ...viewLights,
     ],
   };
   map.bgm = { mode: "custom", resourceId: BGM_ROOF } as GameMap["bgm"];
@@ -868,6 +888,14 @@ export function createShitamachiFourthSeasonFlagshipDemo(): FlagshipDemoBuildRes
 
   // 이야기형 연애 기본값 — 체력 하트 대신 호감 하트, 관계 메뉴, 대사 읽기 보조, 장르 잠금. 하루 루프는 없다.
   applyRomanceDefaults(project, { force: true, dayLoop: false });
+
+  // 새 프로젝트는 번들 칩셋 46개(참고문서 포함 약 70MB)를 모두 들고 태어난다. 이 데모가 쓰는 칩셋(맵 칩셋과 그 이식 원본)만 남긴다 —
+  // 편집기에서 열면 ensureBundledTilesets 가 나머지를 다시 붙이므로 저자는 잃는 것이 없다(데모 project.json 61MB 실측).
+  const keepTilesets = new Set(Object.values(project.maps).map((m) => m.tilesetId));
+  for (const id of [...keepTilesets]) {
+    for (const graft of project.tilesets[id]?.tileGrafts ?? []) keepTilesets.add(graft.sourceChipset);
+  }
+  for (const id of Object.keys(project.tilesets)) if (!keepTilesets.has(id)) delete project.tilesets[id];
 
   const serialized = serialize(project);
   const reloaded = deserialize(serialized);

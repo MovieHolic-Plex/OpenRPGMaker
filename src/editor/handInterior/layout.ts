@@ -657,6 +657,7 @@ function buildCandidatesForVariant(
   const pairOf = (list: readonly Pair[] | undefined) => (list ?? []).map(pairTuple).flatMap(([p, q]) =>
     wants.filter((w) => matches(w, p)).flatMap((a) => wants.filter((w) => w !== a && matches(w, q)).map((b) => [a.id, b.id] as [string, string])));
   const programOpen = pairOf(vary?.v.open);
+  const sealedPairs = pairOf(vary?.v.sealed);
   const prefer = [...pairOf(req.prefer), ...pairOf(PREFER_DEFAULT)];
   const openPairs = [...pairOf(req.open), ...programOpen, ...pairOf(OPEN_DEFAULT)];
   const isOpen = (a: string, b: string) => openPairs.some(([p, q]) => (p === a && q === b) || (p === b && q === a));
@@ -700,7 +701,8 @@ function buildCandidatesForVariant(
       for (const q of rects.values()) { q.x -= mx; q.y -= my; }
     }
     const BW = Math.max(...[...rects.values()].map((q) => q.x + q.w)) + 1, BH = Math.max(...[...rects.values()].map((q) => q.y + q.h)) + 1;
-    const edges = adjacency(rects);
+    // program 이 막은 쌍(sealed)은 이웃이어도 문을 내지 않는다 — 남탕↔여탕·로비↔목욕 홀(2026-10-25 센토 남녀 분리).
+    const edges = adjacency(rects).filter((e) => !sealedPairs.some(([p, q]) => (p === e.a && q === e.b) || (p === e.b && q === e.a)));
     const prio = (e: Edge, from: string) => {
       const to = e.a === from ? e.b : e.a;
       return (prefer.some(([p, q]) => (p === from && q === to) || (p === to && q === from)) ? 0 : 4) + (isOpen(from, to) ? 0 : 1) + (isHub(byId.get(to)!.kind) ? 0 : 2);

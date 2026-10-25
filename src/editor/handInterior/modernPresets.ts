@@ -32,6 +32,8 @@ export interface ModernProgramVariation {
   readonly trim?: Readonly<Record<string, number>>;
   /** 칸막이 없이 넓게 트는 방 쌍(로비↔대기실, 매장↔진열 알코브 등). */
   readonly open?: readonly (readonly [string, string])[];
+  /** 붙어 있어도 문을 내지 않는 방 쌍(남탕↔여탕, 로비↔목욕 홀처럼 지나가면 안 되는 이웃). 종류 또는 id. */
+  readonly sealed?: readonly (readonly [string, string])[];
   /** 줄 사이에 깔린 복도(arch-hall) - rows 에 복도 줄(`arch-hall`)이 있을 때 그 복도의 꾸밈 묶음(archHall.ts). */
   readonly hall?: "school" | "hospital" | "office" | "hotel" | "public";
   /** 참이면 남쪽 외벽 출구 틈을 열지 않는다(2층·3층처럼 계단·엘리베이터로만 오가는 상층). */
