@@ -5,6 +5,12 @@
 
 <!-- releases -->
 
+## 0.346.1 — 2026-10-26
+
+### 수정
+
+- **first-love** — single title, no black/loading card before cold open, sidewalk-only walkers, zoomed bump with sizable particles (#3568) (`18a2787`)
+
 ## 0.346.0 — 2026-10-26
 
 ### 기능
