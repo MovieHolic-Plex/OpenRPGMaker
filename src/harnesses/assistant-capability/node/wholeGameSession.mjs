@@ -185,7 +185,9 @@ try {
     }
     writeState({ phase: 'turn', step });
     // 카드 단추(예: 스토어 음악 「넣기」)는 받기가 끝난 뒤에야 후속 요청을 보낸다 — 그 턴이 시작될 때까지 더 기다린다.
-    const outcome = await waitSettle(mark, startedAt, kind === 'click' ? 5 * 60_000 : 20000);
+    // 「바꾸기」처럼 턴을 열지 않는 단추는 오래 기다리지 않는다.
+    const opensTurn = kind === 'click' && !/^ai-store-music-swap\b/u.test(body);
+    const outcome = await waitSettle(mark, startedAt, opensTurn ? 5 * 60_000 : 20000);
     if (outcome === 'timeout') {
       await page.evaluate(() => window.__oprnAiBridge?.abort()).catch(() => {});
       await page.waitForFunction(() => !window.__oprnAiBridge?.status().turnBusy, null, { timeout: 60000 }).catch(() => {});
@@ -209,6 +211,8 @@ try {
       toolArgs: events.filter(e => e.type === 'tool_start').map(e => ({ name: e.name, args: e.args })),
       maps: Object.values(snap.project.maps).map(m => ({ id: m.id, name: m.name, size: `${m.width}x${m.height}`, events: (m.events ?? []).length })) };
     json(resolve(out, 'turns', `${step}.json`), turn);
+    // 남은 카드·쪽지가 있으면 화면에 보이게 내린다(캡처가 대화 위쪽만 찍던 것).
+    if (pending.length) await page.locator(`${CARD_SELECTOR},${INFO_SELECTOR}`).last().scrollIntoViewIfNeeded({ timeout: 2000 }).catch(() => {});
     await page.screenshot({ path: resolve(out, 'turns', `${step}.png`) }).catch(() => {});
     const toolLine = turn.toolCalls.map(t => `${t.name}${t.ok === false ? '(FAIL)' : ''}`).join(', ');
     log(`### ${step} ASSISTANT — ${outcome}, ${(turn.elapsedMs / 60000).toFixed(1)} min, save=${saveKind}, rev ${snap.revision}, model ${[...new Set(turn.requests.map(r => r.model))].join('/') || '-'}\n` +
