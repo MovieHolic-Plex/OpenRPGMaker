@@ -89,7 +89,9 @@ export function scoreStoreMusic(track: StoreMusicTrack, want: StoreMusicQuery): 
   for (const word of tokens(want.query ?? "")) {
     if (word.length < 1) continue;
     if (genreText.includes(word)) { score += 6; named = true; }
-    else if (lineWords.some((line) => line.includes(word) || word.includes(line))) { score += track.cultureHeard === "partly" ? 3 : 1.5; named = true; }
+    // 팩 줄 낱말(따로 더한다 — 「판타지」가 「중국풍 판타지」에도 들어 있어 장르 이름만으로는 판타지 팩을 못 가린다).
+    // 문화색을 따로 들어 본 곡(조선 팩)은 실제로 들리는 만큼만 친다.
+    if (lineWords.some((line) => line.includes(word) || word.includes(line))) { score += track.cultureHeard === "no" ? 1.5 : track.cultureHeard === "partly" ? 3 : 6; named = true; }
     if (moods.some((mood) => mood.includes(word))) score += 3;
     if (m.summaryKo.toLowerCase().includes(word)) score += 1;
   }
@@ -101,8 +103,12 @@ export function scoreStoreMusic(track: StoreMusicTrack, want: StoreMusicQuery): 
   // 2026-10-25 실조수: 판타지 게임의 「으스스한 던전 음악」에 호러 팩의 트립합 곡이 붙었다(Argon 1점).
   const lines = want.projectLines ?? {};
   const share = lines[m.genre] ?? 0;
-  score += 3 * share;
-  if (!named && share === 0 && Object.values(lines).some((value) => value >= 0.5)) score -= 4;
+  // 사용자가 장르를 말했는데(어느 팩 줄 낱말과 맞음) 이 곡은 그 장르가 아니면 분위기가 맞아도 뒤로.
+  const asked = tokens(want.query ?? "").some((word) => Object.values(LINE_WORDS).some((words) => words.some((line) => line.includes(word) || word.includes(line))));
+  if (asked && !named) score -= 6;
+  score += 4 * share;
+  // 분위기 낱말 몇 개(최대 약 9점)보다 장르가 어긋나는 것이 더 크게 틀린다 — 그래서 감점이 분위기 점수만큼 크다.
+  if (!named && share === 0 && Object.values(lines).some((value) => value >= 0.5)) score -= 8;
   if (want.scene === "victory") score += m.loopable ? 0 : 3;
   else if (want.scene) score += m.loopable ? 2 : -6;
   return score;

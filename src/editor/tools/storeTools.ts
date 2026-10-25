@@ -238,7 +238,7 @@ const storeFindMusic: ToolDefinition = {
     type: "object",
     properties: {
       scene: { type: "string", enum: [...STORE_MUSIC_SCENES], description: "곡이 맡을 장면: town 마을·가게, field 필드·월드맵, dungeon 던전·동굴, battle 일반 전투, boss 보스전, victory 승리 팡파르(짧은 곡), sad 슬픈 장면, tense 긴장·잠입·공포, title 타이틀, ending 엔딩" },
-      query: { type: "string", description: "장르·분위기 낱말(예: 조선, 무협, 판타지, 호러, 몬스터). 사용자의 말을 짧게" },
+      query: { type: "string", description: "이 게임의 장르 낱말을 꼭 넣는다(예: 조선, 무협, 판타지, 호러, 몬스터, 현대, SF — 사용자가 말하지 않았으면 게임 제목·맵 이름·이미 쓰는 곡으로 짐작) + 사용자의 말 짧게" },
       mood: { type: "string", description: "분위기(예: 평화로운, 긴장감, 웅장한, 쓸쓸한, 신나는)" },
       need: { type: "string", description: "카드에 보여 줄 한 줄(예: 「버들 마을에 깔 배경음악」, 「붉은 드래곤 보스전 음악」)" },
       limit: { type: "integer", minimum: 1, maximum: 6, description: "후보 수(기본 4)" },

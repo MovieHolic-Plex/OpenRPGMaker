@@ -65,6 +65,17 @@ describe("store music pick by scene", () => {
     expect(rankStoreMusic(pool, { scene: "victory", mood: "승리의", query: "팡파르", projectLines: lines })[0]?.assetId).toBe("win");
     expect(rankStoreMusic(pool, { scene: "victory", query: "무협", projectLines: lines })[0]?.assetId).toBe("win2");
   });
+  it("a named genre picks that pack line even when another pack's genre text shares the word, and beats a better mood match", () => {
+    const pack = (slug: string, assets: Record<string, unknown>) => storeMusicTracks({ slug, latestVersion: 1, title: slug }, { ...MANIFEST, content: { ...MANIFEST.content, assets } } as unknown as StorePackManifest);
+    const pool = [
+      ...pack("joseon", { cn: track(5, "cn", { genreLine: "joseon", genreKo: "중국풍 판타지", cultureHeard: "no", sceneRoles: ["title"], mood: ["웅장한"], loopable: true, lengthSec: 60, summaryKo: "웅장한 곡." }) }),
+      ...pack("fantasy", { ft: track(6, "ft", { genreLine: "fantasy", genreKo: "판타지 JRPG", sceneRoles: ["title"], mood: ["모험의"], loopable: true, lengthSec: 60, summaryKo: "모험 곡." }) }),
+      ...pack("scifi", { sf: track(7, "sf", { genreLine: "scifi", genreKo: "SF", sceneRoles: ["title"], mood: ["웅장한"], loopable: true, lengthSec: 60, summaryKo: "웅장한 신스." }) }),
+      ...pack("monster", { mt: track(8, "mt", { genreLine: "monster", genreKo: "몬스터 수집", sceneRoles: ["title"], mood: ["희망찬"], loopable: true, lengthSec: 60, summaryKo: "모험 시작." }) }),
+    ];
+    expect(rankStoreMusic(pool, { scene: "title", query: "판타지" })[0]?.assetId).toBe("ft");
+    expect(rankStoreMusic(pool, { scene: "title", query: "몬스터 웅장한", mood: "웅장한" })[0]?.assetId).toBe("mt");
+  });
   it("keeps only the chosen track in a subset manifest", () => {
     const subset = subsetMusicManifest(MANIFEST, ["win"]);
     expect(Object.keys(subset.content.assets)).toEqual(["win"]);
