@@ -20,6 +20,9 @@ const CACHE_LIMIT = 512 * 1024 * 1024;
 export const RESUME_GRACE_MS = 5 * 60 * 1000;
 /** 끝난 실행 기록을 들고 있는 시간 — 마지막 done 줄을 놓친 브라우저가 다시 받을 수 있게. */
 const FINISHED_TTL_MS = 10 * 60 * 1000;
+/** 멈춘 실행의 워커가 이만큼 지나도 끝나지 않으면 죽은 것으로 보고 맵 예약을 푼다(2026-10-25 G45: 적용 응답이 막힌 워커가
+ * 스트림을 닫지 않아 finish 가 안 왔고, 실행 기록만 지워진 채 맵이 25분 넘게 「이미 실행 중」으로 막혔다). */
+const ABORT_RELEASE_MS = 60 * 1000;
 /** 실행 하나가 들고 있는 줄 상한(바이트). 체크포인트 줄이 크므로 넘으면 오래된 줄부터 버린다(이어 받기 창이 줄어든다). */
 const LOG_LIMIT = 256 * 1024 * 1024;
 
@@ -116,13 +119,20 @@ function finish(run) {
   run.cleanupTimer.unref?.();
 }
 
+/** 워커를 멈춘다. 워커가 끝나면 finish 가 예약을 풀고, ABORT_RELEASE_MS 안에 안 끝나면 여기서 푼다(release 는 두 번 불러도 된다). */
+function abortRun(run) {
+  run.controller.abort();
+  const timer = setTimeout(() => { if (!run.finished) run.mapClaim?.release(); }, ABORT_RELEASE_MS);
+  timer.unref?.();
+}
+
 function detach(run) {
   if (run.finished || run.listeners.size > 0) return;
   run.detachedAt = Date.now();
   clearTimeout(run.graceTimer);
   run.graceTimer = setTimeout(() => {
     if (run.listeners.size > 0 || run.finished) return;
-    run.controller.abort();
+    abortRun(run);
     runs.delete(run.runId);
   }, RESUME_GRACE_MS);
   run.graceTimer.unref?.();
@@ -257,7 +267,7 @@ export function resumeRelayedRun(runId, after) {
 export function cancelRelayedRun(runId) {
   const run = runs.get(runId);
   if (!run) return false;
-  run.controller.abort();
+  abortRun(run);
   return true;
 }
 

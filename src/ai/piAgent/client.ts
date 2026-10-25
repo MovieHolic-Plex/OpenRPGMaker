@@ -104,6 +104,14 @@ export async function runPiAgentViaCompanion(request: PiAgentRequest, options: R
     }, { fetchImpl: doFetch }).catch(() => undefined);
   };
   options.signal?.addEventListener("abort", onUserAbort, { once: true });
+  // 적용·그림 응답을 못 보내 스트림을 끊을 때는 워커도 멈추게 한다 — 안 그러면 워커가 응답을 기다린 채 맵 예약을 쥐고 있어
+  // 같은 맵의 다음 요청이 「이미 실행 중」으로 막혔다(2026-10-25 G45).
+  const cancelAfterAckFailure = () => {
+    if (!resumable) return;
+    void fetchCompanion(companionAuthUrl("/v1/agent/cancel", request.provider), {
+      method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ runId }),
+    }, { fetchImpl: doFetch }).catch(() => undefined);
+  };
   // 대입이 스트림 콜백 안에서만 일어나 제어흐름 분석이 초기값 null 로 좁힌다(그러면 truthy 분기가 never 가 된다).
   let done: PiAgentDoneEvent | null = null as PiAgentDoneEvent | null;
   let lastError: string | null = null;
@@ -163,7 +171,7 @@ export async function runPiAgentViaCompanion(request: PiAgentRequest, options: R
         ...(options.signal ? { signal: options.signal } : {}),
       }, { fetchImpl: doFetch });
       if (!ack.ok) throw new PiAgentClientError("맵 이미지 응답을 전달하지 못했습니다.", ack.status);
-    })).catch(error => { checkpointError = error; abortStream(); });
+    })).catch(error => { checkpointError = error; cancelAfterAckFailure(); abortStream(); });
     return true;
   };
   const decoder = createPiAgentLineDecoder((line) => {
@@ -206,7 +214,7 @@ export async function runPiAgentViaCompanion(request: PiAgentRequest, options: R
           ...(options.signal ? { signal: options.signal } : {}),
         }, { fetchImpl: doFetch });
         if (!ack.ok) throw new PiAgentClientError(stale ? "적용 응답을 전달하지 못했습니다 — 워커 연결이 먼저 끊겼습니다." : "적용 응답을 전달하지 못했습니다.", ack.status);
-      })).catch(error => { checkpointError = error; abortStream(); });
+      })).catch(error => { checkpointError = error; cancelAfterAckFailure(); abortStream(); });
       return;
     }
     if (event.type === "done") done = event;
