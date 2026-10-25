@@ -219,6 +219,12 @@ export type TouchLayout = {
    * 아니면 무대 배율)로 나눈다. CSS(mobileUi.css)가 ESC 메뉴 명령 줄에 쓴다.
    */
   readonly menuRow: number;
+  /**
+   * 세로 타이틀 메뉴(2026-10-25): 무대 안에서는 줄이 21px 라 손가락에 작다. 무대 아래 빈 띠로 내려
+   * 메뉴 단추 줄 바로 위에 아래끝을 붙이고 줄을 44px 로 벌린다. bottom 은 무대 위끝에서 잰 화면 px, room 은 무대 위끝부터 그 자리까지.
+   * 가로·세로 띠가 없으면 null.
+   */
+  readonly title: { readonly bottom: number; readonly scale: number } | null;
 };
 
 /** 터치 대상 최소 높이(화면 px) — Apple HIG 44pt, Material 48dp 의 아래쪽. */
@@ -308,7 +314,10 @@ export function calculateTouchLayout(
       }
     }
     const menuRow = Math.ceil(TOUCH_TARGET_MIN / (panel ? panel.scale : scale));
-    return { mode: "portrait", scale, stageLeft, stageTop, bandTop, bandBottom, controlsY, gutter: 0, stick, dock, panel, menuRow };
+    // 타이틀 메뉴는 독과 같은 배율(1배 미만 무대면 1배)로 무대 아래 띠에 그린다 — 띠가 한 줄 몫도 없으면 무대 안 그대로.
+    const titleBottom = controlsY - stick / 2 - 52 - 4 - stageTop;
+    const title = titleBottom - stageH >= TOUCH_TARGET_MIN ? { bottom: Math.floor(titleBottom), scale: dockScale } : null;
+    return { mode: "portrait", scale, stageLeft, stageTop, bandTop, bandBottom, controlsY, gutter: 0, stick, dock, panel, menuRow, title };
   }
   // 가로(2026-10-25 「모바일 가로 화면이 너무 작게 나온다」): 예전에는 좌우 조작 칸을 먼저 떼고 남은 폭에 정수 배율을 맞춰
   // 아이폰 15 가로(734×343)에서 무대가 480×270(1배) — 화면 높이의 79%, 폭의 65% 였다. 이제 무대는 화면 높이를 채우고
@@ -325,7 +334,7 @@ export function calculateTouchLayout(
   const stageLeft = Math.round(safe.left + (fullW - stageW) / 2);
   const stageTop = Math.round(safe.top + (availH - stageH) / 2);
   const controlsY = safe.top + availH * 0.62;
-  return { mode: "landscape", scale, stageLeft, stageTop, bandTop: safe.top, bandBottom: height - safe.bottom, controlsY, gutter: Math.max(gutterL, gutterR), stick, dock: null, panel: null, menuRow: Math.ceil(TOUCH_TARGET_MIN / scale) };
+  return { mode: "landscape", scale, stageLeft, stageTop, bandTop: safe.top, bandBottom: height - safe.bottom, controlsY, gutter: Math.max(gutterL, gutterR), stick, dock: null, panel: null, menuRow: Math.ceil(TOUCH_TARGET_MIN / scale), title: null };
 }
 
 /**
@@ -389,6 +398,17 @@ function syncTouchLayout(viewport: HTMLElement, width: number, height: number, r
     delete viewport.dataset.dialogueDock;
     for (const name of ["--dock-top", "--dock-left", "--dock-width", "--dock-height", "--dock-unscale"]) viewport.style.removeProperty(name);
     viewport.style.setProperty("--touch-controls-top", cssPx(layout.bandTop));
+  }
+  if (layout.title) {
+    // 타이틀 메뉴 띠: 값은 무대 좌표(게임 px). 줄 높이는 그 배율로 화면 44px.
+    viewport.dataset.titleBand = "true";
+    viewport.style.setProperty("--title-band-bottom", cssPx(layout.title.bottom / scale));
+    viewport.style.setProperty("--title-band-room", cssPx(layout.title.bottom / layout.title.scale));
+    viewport.style.setProperty("--title-band-unscale", String(layout.title.scale / scale));
+    viewport.style.setProperty("--title-band-row", cssPx(TOUCH_TARGET_MIN / layout.title.scale));
+  } else {
+    delete viewport.dataset.titleBand;
+    for (const name of ["--title-band-bottom", "--title-band-room", "--title-band-unscale", "--title-band-row"]) viewport.style.removeProperty(name);
   }
   if (layout.panel) {
     // 창 칸: 무대 자식(ESC 메뉴)은 무대 좌표·배율 되돌림으로, 뷰포트 자식(상점)은 화면 좌표·칸 배율로 옮긴다.

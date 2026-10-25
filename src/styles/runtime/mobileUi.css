@@ -443,3 +443,108 @@
   background: color-mix(in srgb, var(--accent, #6c79f2) 55%, white);
   border-color: #fff;
 }
+
+/* ── 목록 줄 터치 크기(2026-10-25, #3324 후속) ──
+   ESC 메뉴 안 목록(아이템·스킬·장비·저장·불러오기·옵션)과 타이틀 메뉴·불러오기 칸이 폰에서 16~24px 였다.
+   터치 UI 에서만 줄 높이를 화면 44px(--touch-menu-row = 44 / 그 창의 배율, 게임 px)로 벌린다. 글자 크기·PC 모양은 그대로다.
+   목록이 길어지면 창 안에서 넘기고(keepWholeRows 가 줄 경계로 자른다), 커서를 옮기면 따라 내려간다.
+   에메랄드(몬스터) 스킨은 자기 480 판형·32px 줄이라 건드리지 않는다. */
+.play-viewport[data-touch-ui] .oprn-status-menu.main-menu:not([data-monster-style="emerald"]) .status-menu-detail-list > .status-menu-detail-action {
+  min-height: var(--touch-menu-row, 20px);
+  touch-action: manipulation;
+}
+.play-viewport[data-touch-ui] .oprn-status-menu.main-menu:not([data-monster-style="emerald"]) .status-menu-detail-list:not(:has(.with-vitals, .has-description)) {
+  --oprn-menu-row-step: var(--touch-menu-row, 22px);
+  gap: 0;
+}
+
+/* 불러오기 칸(타이틀 → 불러오기, 이벤트 불러오기 화면): 칸·뒤로 줄을 44px 로. */
+.play-viewport[data-touch-ui] .oprn-load-panel :is(.oprn-load-slot, .oprn-load-back) {
+  min-height: var(--touch-menu-row, 18px);
+  align-content: center;
+  touch-action: manipulation;
+}
+
+/* 타이틀 메뉴 — 가로: 줄을 44px 로 벌리고, 길어진 메뉴가 무대 아래로 넘치지 않게 아래끝을 무대 아래 8px 에 붙인다. */
+.play-viewport[data-touch-layout="landscape"] .rm-title-screen .rm-title-menu {
+  top: auto !important;
+  bottom: 8px;
+}
+.play-viewport[data-touch-layout] .rm-title-screen .rm-title-menu .rm-title-menu-button,
+.play-viewport[data-touch-layout] .rm-title-screen .rm-title-menu[data-compact="true"] .rm-title-menu-button {
+  min-height: var(--touch-menu-row, 16px);
+  display: flex;
+  align-items: center;
+  touch-action: manipulation;
+}
+
+/* 타이틀 메뉴·불러오기 창 — 세로(data-title-band): 무대가 1배보다 작아 줄이 21px 였다. 무대 아래 빈 띠로 내려
+   메뉴 단추 줄 바로 위에 아래끝을 붙이고, 독과 같은 배율(1배)로 그려 줄을 44px 로 벌린다. 키 그림은 무대에 그대로 다 보인다.
+   값은 무대 좌표(playSurface syncTouchLayout: --title-band-bottom·-unscale·-row·-room). */
+.play-viewport[data-title-band] > .play-stage,
+.play-viewport[data-title-band] > .play-stage > .rm-title-screen { overflow: visible; }
+.play-viewport[data-title-band] > .play-stage > .rm-title-screen .rm-title-menu {
+  inset: auto !important;
+  top: var(--title-band-bottom) !important;
+  left: 50% !important;
+  min-width: 200px;
+  transform-origin: 50% 100%;
+  transform: translate(-50%, -100%) scale(var(--title-band-unscale, 1)) !important;
+}
+.play-viewport[data-title-band] > .play-stage > .rm-title-screen .rm-title-menu .rm-title-menu-button,
+.play-viewport[data-title-band] > .play-stage > .rm-title-screen .rm-title-menu[data-compact="true"] .rm-title-menu-button {
+  min-height: var(--title-band-row, 44px);
+  font-size: 15px;
+  justify-content: center;
+  padding-left: 12px;
+  padding-right: 12px;
+}
+.play-viewport[data-title-band] > .play-stage > .oprn-load-panel .oprn-load-window {
+  position: absolute;
+  top: var(--title-band-bottom);
+  left: 50%;
+  width: 300px;
+  max-height: calc(var(--title-band-room, 400px) - 8px);
+  transform-origin: 50% 100%;
+  transform: translate(-50%, -100%) scale(var(--title-band-unscale, 1));
+  font-size: 13px;
+}
+.play-viewport[data-title-band] > .play-stage > .oprn-load-panel :is(.oprn-load-slot, .oprn-load-back) {
+  min-height: var(--title-band-row, 44px);
+}
+/* 세로 조이스틱 칸은 무대 아래 띠 위끝부터 받는다 — 타이틀·불러오기 창이 띠에 내려와 있는 동안은 메뉴 단추 줄부터만 받는다(창 아래쪽 줄을 가로채지 않게). */
+.play-viewport[data-title-band]:has(> .play-stage > :is(.rm-title-screen-editorial, .oprn-load-panel)) > .touch-pad .touch-stick-zone {
+  top: calc(var(--touch-controls-y) - var(--touch-stick) / 2 - 52px);
+}
+.play-viewport[data-title-band]:has(> .play-stage > :is(.rm-title-screen-editorial, .oprn-load-panel)) > .touch-pad .touch-stick-zone .touch-dpad:not([data-floating]) {
+  top: calc(var(--touch-stick) / 2 + 52px);
+}
+
+/* 다른 메뉴 스킨(도트·에메랄드 밖)의 명령 줄: 터치 UI 에서만 화면 44px. 명령이 많아 창을 넘으면 명령 칸 안에서 넘긴다. PC 모양은 그대로. */
+.play-viewport[data-touch-ui] .oprn-status-menu.main-menu:not([data-menu-skin="pixel"], [data-monster-style="emerald"]) .status-menu-command-rail > .status-menu-command {
+  min-height: var(--touch-menu-row, 20px);
+  flex-shrink: 0;
+  touch-action: manipulation;
+}
+.play-viewport[data-touch-ui] .oprn-status-menu.main-menu:not([data-menu-skin="pixel"], [data-monster-style="emerald"]) .status-menu-command-rail {
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: none;
+  /* 격자 명령 칸(sheet·field-list 등)은 줄 높이가 grid-auto-rows 로 고정돼 있어 min-height 만으로는 줄끼리 겹친다. */
+  grid-auto-rows: var(--touch-menu-row, 16px);
+  row-gap: 0;
+}
+/* 옛 창 네 종(retro-2000·2003·classic-xp·vx)·시트·여행 목록·리본: 명령 칸 높이가 창 안에 고정돼 44px 줄이 세 줄만 들어갔다.
+   터치 첫 화면에서는 명령 칸을 창 아래까지 늘리고, 그 자리의 돈·시간 상자는 접는다(도트 스킨이 장소·시간을 접는 것과 같다). */
+.play-viewport[data-touch-ui] .oprn-status-menu.main-menu:is([data-menu-skin="retro-2000"], [data-menu-skin="retro-2003"], [data-menu-skin="classic-xp"], [data-menu-skin="classic-vx"], [data-menu-skin="sheet"], [data-menu-skin="field-list"])[data-status-menu-screen="main"] .status-menu-command-rail {
+  height: auto !important;
+  max-height: none !important;
+  bottom: 8px !important;
+}
+.play-viewport[data-touch-ui] .oprn-status-menu.main-menu:is([data-menu-skin="retro-2000"], [data-menu-skin="retro-2003"], [data-menu-skin="classic-xp"], [data-menu-skin="classic-vx"])[data-status-menu-screen="main"] :is(.status-menu-gold, .status-menu-time) { display: none; }
+/* 리본(가로 탭 한 줄)은 줄을 늘리면 탭 아래가 잘린다 — 탭 줄 높이를 같이 늘린다. */
+.play-viewport[data-touch-ui] .oprn-status-menu.main-menu[data-menu-skin="ribbon"][data-status-menu-screen="main"] .status-menu-command-rail {
+  height: auto !important;
+  min-height: var(--touch-menu-row, 20px);
+  overflow: visible;
+}
