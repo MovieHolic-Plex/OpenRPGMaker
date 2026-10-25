@@ -7,6 +7,7 @@
 //  사용자 규칙(2026-10-25): 사람은 차도·선로 한가운데 서서 말하지 않는다. 보도·가게 안·벤치·카운터·문 앞에 선다.
 // 순수 함수 — 칩셋 이름표·태그(라벨)로 판정한다.
 import { canMove, isPassable } from "@/project/collision";
+import { isDoorArtCell } from "@/project/staging/doorCells";
 import type { GameEvent, GameMap, Project } from "@/project/types";
 
 type Cell = { readonly x: number; readonly y: number };
@@ -227,9 +228,73 @@ export function objectEventFit(project: Project, map: GameMap, ev: { name?: stri
   return { ok: false, label, onLabel, ...(nearest ? { nearest } : {}) };
 }
 
+// ───────────── 출입구 그림 ─────────────
+
+/** 출입구 칸에 있어도 되는 그림(문·계단·굴 입구·길·다리·깔개). */
+const GATE_ART = /계단|사다리|문|입구|출구|갱구|굴|아치|통로|길|다리|발판|매트|깔개|그림자|stair|ladder|door|gate|adit|mouth|arch|exit|path|road|bridge|mat|rug|shadow/iu;
+/** 바닥에 놓인 낱개 소품 — 출입구 칸에 있으면 «물건 위 순간 이동»으로 읽힌다. */
+const LOOSE_PROP = /이끼|버섯|수정|결정|석순|돌|바위|자갈|부스러기|뼈|해골|풀|덤불|꽃|상자|궤짝|통|자루|화분|양초|촛|moss|mushroom|crystal|stalag|stone|rock|rubble|bone|skull|grass|bush|flower|crate|chest|barrel|sack|pot|candle/iu;
+function upperLabelsAt(project: Project, map: GameMap, x: number, y: number): string[] {
+  if (x < 0 || y < 0 || x >= map.width || y >= map.height) return [];
+  const i = y * map.width + x;
+  const m = map as unknown as { upperTiles?: ArrayLike<number>; upperOverlayTiles?: ArrayLike<number> };
+  return [m.upperTiles?.[i], m.upperOverlayTiles?.[i]].map((t) => metaOf(project, map, t)?.label ?? "").filter(Boolean);
+}
+function transferTargets(ev: GameEvent): string[] {
+  const lists: unknown[][] = [ev.commands ?? [], ...((ev.pages ?? []).map((p) => p.commands ?? []))];
+  return lists.flat().filter((c) => (c as { kind?: string }).kind === "transfer").map((c) => String((c as { mapId?: unknown }).mapId ?? ""));
+}
+
+/** 물에 닿지 않는 다리 칸(바닥 두 층 이름표 「다리」, 사방 어디에도 물·늪·용암·얼음·허공 없음) — 마른 바위 위 다리(J25). 이어진 다리 덩이마다 칸 하나. */
+const BRIDGE_WORD = /다리|bridge|부교|널다리/iu;
+const WET_WORD = /물|water|강|호수|lake|canal|운하|늪|swamp|용암|lava|얼음|ice|허공|void|바다|sea|폭포/iu;
+export function dryBridges(project: Project, map: GameMap): Cell[] {
+  const w = map.width, h = map.height;
+  const m = map as unknown as { lowerTiles?: ArrayLike<number>; lowerOverlayTiles?: ArrayLike<number> };
+  const ground = (i: number): string[] => [m.lowerTiles?.[i], m.lowerOverlayTiles?.[i]].map((t) => metaOf(project, map, t)?.label ?? "").filter(Boolean);
+  const isBridge = (i: number) => ground(i).some((l) => BRIDGE_WORD.test(l) && !/다리미|사다리/u.test(l));
+  const isWet = (i: number) => ground(i).some((l) => WET_WORD.test(l) && !BRIDGE_WORD.test(l)) || ((map as unknown as { terrainDesign?: { waterDepth?: ArrayLike<number> } }).terrainDesign?.waterDepth?.[i] ?? 0) > 0;
+  const seen = new Uint8Array(w * h);
+  const out: Cell[] = [];
+  for (let s0 = 0; s0 < w * h; s0++) {
+    if (seen[s0] || !isBridge(s0)) continue;
+    const run = [s0]; seen[s0] = 1; let wet = false;
+    for (let k = 0; k < run.length; k++) {
+      const c = run[k]!, cx = c % w, cy = (c - cx) / w;
+      for (const [dx, dy] of DIRS) {
+        const nx = cx + dx, ny = cy + dy;
+        if (nx < 0 || ny < 0 || nx >= w || ny >= h) { wet = true; continue; }
+        const j = ny * w + nx;
+        if (isWet(j)) wet = true;
+        else if (!seen[j] && isBridge(j)) { seen[j] = 1; run.push(j); }
+      }
+    }
+    if (!wet) out.push({ x: s0 % w, y: Math.floor(s0 / w) });
+  }
+  return out;
+}
+
+/** 물 위가 아닌 배(덮개 층 이름표 「배」 — 바닥 층이 물이 아님). 덩이마다 칸 하나(J25: 동굴 젖은 모래 위 작은 배가 «마른 바위 위 나무다리»로 읽혔다). */
+const BOAT_WORD = /작은 배|조각배|나룻배|보트|카누|뗏목|\bboat\b|rowboat|raft|canoe/iu;
+export function dryBoats(project: Project, map: GameMap): Cell[] {
+  const w = map.width;
+  const m = map as unknown as { lowerTiles?: ArrayLike<number>; lowerOverlayTiles?: ArrayLike<number>; upperTiles?: ArrayLike<number> };
+  const out: Cell[] = [];
+  const taken = new Set<number>();
+  for (let i = 0; i < w * map.height; i++) {
+    if (taken.has(i) || !BOAT_WORD.test(metaOf(project, map, m.upperTiles?.[i])?.label ?? "")) continue;
+    const wet = [m.lowerTiles?.[i], m.lowerOverlayTiles?.[i]].some((t) => WET_WORD.test(metaOf(project, map, t)?.label ?? "")) || ((map as unknown as { terrainDesign?: { waterDepth?: ArrayLike<number> } }).terrainDesign?.waterDepth?.[i] ?? 0) > 0;
+    if (wet) continue;
+    const x = i % w, y = Math.floor(i / w);
+    for (let dy = -2; dy <= 2; dy++) for (let dx = -2; dx <= 2; dx++) taken.add((y + dy) * w + x + dx);
+    out.push({ x, y });
+  }
+  return out;
+}
+
 // ───────────── 맵 하나 검사(끝맺음 관문) ─────────────
 
-export interface PlacementProblem { readonly kind: "npc-lane" | "npc-exit" | "npc-counter" | "event-object"; readonly eventId: string; readonly name: string; readonly at: Cell; readonly detail: string }
+export interface PlacementProblem { readonly kind: "npc-lane" | "npc-exit" | "npc-counter" | "event-object" | "transfer-prop" | "door-bare"; readonly eventId: string; readonly name: string; readonly at: Cell; readonly detail: string }
 
 export function placementProblems(project: Project, map: GameMap, eventIds?: ReadonlySet<string>): PlacementProblem[] {
   const out: PlacementProblem[] = [];
@@ -252,9 +317,20 @@ export function placementProblems(project: Project, map: GameMap, eventIds?: Rea
       if (isShopkeeperName(name) && counterSide(project, map, ev) === "front") out.push({ kind: "npc-counter", eventId: ev.id, name, at: { x: ev.x, y: ev.y }, detail: `카운터 앞 손님 쪽 (${ev.x},${ev.y})에 서 있다 — 카운터는 북쪽이 주인 자리다` });
       continue;
     }
+    if (hasTransfer(ev)) {
+      // 출입구(2026-10-25 J25): 물건(수정·이끼·버섯) 그림 위 출입구, 문·계단·굴 입구 그림 없이 맨땅에서 던전으로 들어가는 출입구.
+      // 건물 정면·역사(驛舍) 칸 위 출입구는 문간이다 — 바닥 소품(수정·이끼·버섯·돌·풀·상자·통) 위만 짚는다.
+      const prop = isDoorArtCell(project, map, ev.x, ev.y) ? undefined : upperLabelsAt(project, map, ev.x, ev.y).find((l) => !GATE_ART.test(l) && LOOSE_PROP.test(l));
+      if (prop) out.push({ kind: "transfer-prop", eventId: ev.id, name, at: { x: ev.x, y: ev.y }, detail: `출입구 (${ev.x},${ev.y}) 가 물건 그림 「${prop.replace(/\s*\([^)]*\)\s*$/u, "")}」 위에 있다 — 물건을 밟으면 순간 이동하는 것처럼 보인다` });
+      const to = transferTargets(ev).map((id) => project.maps[id]).find((m) => m && (m as unknown as { mapRole?: string }).mapRole === "dungeon");
+      const outdoor = (map as unknown as { mapRole?: string; climate?: { mode?: string } }).mapRole !== "dungeon" && (map as unknown as { climate?: { mode?: string } }).climate?.mode !== "indoor";
+      const art = [0, -1, 1].some((dy) => isDoorArtCell(project, map, ev.x, ev.y + dy) || [...labelsAt(project, map, ev.x, ev.y + dy)].some((l) => GATE_ART.test(l) && !/길|path|road|모랫길|흙길/iu.test(l)));
+      if (to && outdoor && !art) out.push({ kind: "door-bare", eventId: ev.id, name, at: { x: ev.x, y: ev.y }, detail: `「${to.name ?? to.id}」(던전)으로 들어가는 출입구 (${ev.x},${ev.y}) 에 굴 입구·문·계단 그림이 없다 — 맨땅·풀밭에서 갑자기 동굴로 들어간다` });
+      continue;
+    }
     // 조사 이벤트(결정 키, 그림 없음) — 이름이 말하는 물건 위에 있어야 한다.
     const action = (ev.pages ?? []).some((p) => (p.trigger as { kind?: string } | undefined)?.kind === "action");
-    if (!action || hasTransfer(ev)) continue;
+    if (!action) continue;
     const fit = objectEventFit(project, map, ev);
     if (fit && !fit.ok && fit.nearest) out.push({ kind: "event-object", eventId: ev.id, name, at: { x: ev.x, y: ev.y }, detail: `이름이 말하는 물건이 이 칸(${ev.x},${ev.y}${fit.onLabel ? `, 그림 「${fit.onLabel}」` : ""})에 없다 — 그 물건은 (${fit.nearest.x},${fit.nearest.y})에 있다` });
   }
