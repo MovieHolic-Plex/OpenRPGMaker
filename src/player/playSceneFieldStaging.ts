@@ -535,9 +535,9 @@ function syncEventGlows(scene: PlaySceneContext, now: number): void {
       ensureGlowTextures(scene);
       const color = glowColor(glow.color);
       const radiusPx = Math.max(1, Math.min(3, glow.radius ?? 2)) * size;
-      const halo = scene.add.image(x, y, GLOW_TEX.halo).setBlendMode(Phaser.BlendModes.ADD).setTint(color).setDepth(GLOW_HALO_DEPTH);
-      const core = scene.add.image(x, y, GLOW_TEX.halo).setBlendMode(Phaser.BlendModes.ADD).setTint(0xffffff).setDepth(GLOW_HALO_DEPTH + 1);
-      const ring = scene.add.image(x, y, GLOW_TEX.ring).setBlendMode(Phaser.BlendModes.ADD).setTint(color).setDepth(GLOW_HALO_DEPTH + 2);
+      const halo = scene.add.image(x, y, GLOW_TEX.halo).setBlendMode("ADD").setTint(color).setDepth(GLOW_HALO_DEPTH);
+      const core = scene.add.image(x, y, GLOW_TEX.halo).setBlendMode("ADD").setTint(0xffffff).setDepth(GLOW_HALO_DEPTH + 1);
+      const ring = scene.add.image(x, y, GLOW_TEX.ring).setBlendMode("ADD").setTint(color).setDepth(GLOW_HALO_DEPTH + 2);
       const twinkles = scene.add.particles(x, y, TEX.star, {
         x: { min: -radiusPx * 0.75, max: radiusPx * 0.75 }, y: { min: -radiusPx * 0.9, max: radiusPx * 0.35 },
         lifespan: 650, frequency: 170, quantity: 1, speed: 0,

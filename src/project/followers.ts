@@ -333,6 +333,7 @@ export function resetFollowerTrailNearPlayer(
   }
   // 고전 빵부스러기: 맵에 들어서면 동료가 주인공 칸에 겹쳐 같은 쪽을 보고 선다 — 주인공이 걸으면 밟은 칸을 따라 한 명씩 풀려 나온다
   // (마더·크로노 트리거). 문 밖·벽 너머 칸에 미리 세우지 않는다.
+  const monsterOnly = session.followers.every((entry) => entry.kind === "monster" || Boolean(entry.monsterInstanceId));
   if (isBreadcrumbFollow(config) && !monsterOnly) {
     session.followerTrail = Array.from({ length: slots }, () => ({ x: session.x, y: session.y, direction: facing }));
     return;
