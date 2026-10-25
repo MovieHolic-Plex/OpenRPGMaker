@@ -16224,6 +16224,7 @@
     "beodeul_architecture",
     "beodeul_forms",
     "beodeul_reviewed",
+    "beodeul_massing",
     "beodeul_organic",
     "joseon_baram",
     "modern_city",
@@ -16235,6 +16236,7 @@
     "steampunk_city",
     "modern_campus",
     "sf_station",
+    "wasteland_ruins",
     "gothic_manor",
     "prehistoric",
     "desert_east",
@@ -16267,7 +16269,7 @@
   "tags": {
    "div": 10,
    "optgroup": 3,
-   "option": 47,
+   "option": 49,
    "p": 3,
    "select": 1,
    "span": 4
@@ -20724,5 +20726,103 @@
   },
   "testidCount": 14,
   "controlCount": 11
+ },
+ "m2-226-lift-ride": {
+  "testids": [
+   "event-command-edit-summary",
+   "m2-command-body-m2-226-lift-ride",
+   "m2-command-depth-input",
+   "m2-command-depth-note",
+   "m2-command-direction-option-select",
+   "m2-command-distance-input",
+   "m2-command-distance-note",
+   "m2-command-durationMs-input",
+   "m2-command-durationMs-note",
+   "m2-command-mode-option-select",
+   "m2-command-se-input",
+   "m2-command-wait-checkbox",
+   "m2-command-width-input",
+   "m2-command-width-note",
+   "m2-command-x-input",
+   "m2-command-y-input"
+  ],
+  "classes": [
+   "cream-command-form",
+   "cream-command-form-head",
+   "empty-hint",
+   "field",
+   "m2-command-body",
+   "m2-field-note",
+   "m2-number-field"
+  ],
+  "controls": {
+   "m2-command-depth-input": "input[number]{}",
+   "m2-command-direction-option-select": "select{}",
+   "m2-command-distance-input": "input[number]{}",
+   "m2-command-durationMs-input": "input[number]{}",
+   "m2-command-mode-option-select": "select{}",
+   "m2-command-se-input": "input[text]{}",
+   "m2-command-wait-checkbox": "input[checkbox]{checked}",
+   "m2-command-width-input": "input[number]{}",
+   "m2-command-x-input": "input[number]{}",
+   "m2-command-y-input": "input[number]{}"
+  },
+  "selectOptions": {
+   "m2-command-direction-option-select": [
+    "up",
+    "down"
+   ],
+   "m2-command-mode-option-select": [
+    "depart",
+    "arrive",
+    "move"
+   ]
+  },
+  "labels": [
+   "기계음 효과음",
+   "끝날 때까지 대기",
+   "발판 깊이(칸)",
+   "발판 왼쪽 X(-1 = 주인공 칸)",
+   "발판 위쪽 Y(-1 = 주인공 칸)",
+   "발판 폭(칸)",
+   "방식",
+   "방향",
+   "시간(ms)",
+   "움직이는 칸 수"
+  ],
+  "tags": {
+   "div": 23,
+   "input": 8,
+   "label": 10,
+   "option": 5,
+   "select": 2
+  },
+  "tagByTestid": {
+   "event-command-edit-summary": "div",
+   "m2-command-body-m2-226-lift-ride": "div",
+   "m2-command-depth-input": "input",
+   "m2-command-depth-note": "div",
+   "m2-command-direction-option-select": "select",
+   "m2-command-distance-input": "input",
+   "m2-command-distance-note": "div",
+   "m2-command-durationMs-input": "input",
+   "m2-command-durationMs-note": "div",
+   "m2-command-mode-option-select": "select",
+   "m2-command-se-input": "input",
+   "m2-command-wait-checkbox": "input",
+   "m2-command-width-input": "input",
+   "m2-command-width-note": "div",
+   "m2-command-x-input": "input",
+   "m2-command-y-input": "input"
+  },
+  "texts": {
+   "event-command-edit-summary": "기타 명령",
+   "m2-command-depth-note": "적용 범위 #~#",
+   "m2-command-distance-note": "적용 범위 #~#",
+   "m2-command-durationMs-note": "적용 범위 #~#",
+   "m2-command-width-note": "적용 범위 #~#"
+  },
+  "testidCount": 16,
+  "controlCount": 10
  }
 }
