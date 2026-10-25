@@ -1,0 +1,304 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e1a3d30fb22e2220e0e68e81156712593f162279aa76954693303828d28bccf6",
+ "width": 64,
+ "height": 16,
+ "kind": "terrain",
+ "name": "other.ground r2 A2",
+ "label": "dungeon/other.ground.r2.A2",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 평면 채움 (1/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "평면 채움 (1/4)"
+  ],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 4,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "dungeon",
+   "fallback": true,
+   "reason": "칩셋 dungeon 의 화풍 기준 묶음이 없다",
+   "hash": "8cecb3a70460aa86"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 6,
+  "tileColorsP90": 6,
+  "darkV5": 42,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 4
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "ground texture tile (dark slate with purple cracks and green moss patches)",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The tile fills the full 64x16 area with a uniform width of 64 on every row, so there is no silhouette. It is a flat ground texture with cracks and moss patches. The column scans show only texture variation: rows 6 and 13 hold a lighter crack line (L=66) against a dark base (L=36-43). There is no front-edge line, eave shadow, ellipse or front face, so it is a seamless terrain tile viewed from above and not a standing object."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 4,
+    "evidence": "The candidate shows only a thin strip of dark cracked cobble, roughly 45x10 source pixels, at the bottom of its panel. The rest is the flat board background, so it does not read as a 4x3-tile ground patch. The measured facts are acceptable: 6 visible tones against 7 for paving and 3 for grass, 0% near-flat coverage, and 0% neutral dark edge pixels, so the outlines are tinted rather than black. By eye, the strip has about 4 close dark-blue/grey steps with low contrast. The cracks are thin and the stones are not shaded one by one with per-stone highlights as in the paving reference. With so little surface drawn and so little tonal range, it looks thinner and flatter than the reference. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 13531
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "ground tile texture (dark blue-grey with mossy patches and cracks)",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The candidate is a full 16x16 opaque terrain tile (width 64 on all rows in the scan, a tiled strip). It is a flat ground texture with crack lines and moss patches, with no standing volume, no front-edge line followed by eave shadow, no ellipse and no front face. Columns show only 1-row lighter crack lines at rows 6 and 13 against uniform dark fill, which are texture detail rather than edges of a top surface. As a terrain tile it is a flat surface, so it reads as top-down with no front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 4,
+    "evidence": "The candidate shows only a thin strip of dark cracked cobble along the bottom, and the rest of its area is the flat board background. It does not read as a 4x3-tile ground patch, and it does not cover a full 16x16 tile area the way the references do. The strip has about 4 visible steps (6 colours in total) against roughly 6 for the paving reference. The edges are tinted blue-grey rather than neutral black (0% near-neutral), so the outline is acceptable. Measured density is 6 visible tones per tile against 7 for paving and 3 for grass, with 0% flat coverage, so the numbers alone would not fail it. The strip itself is also low in contrast, with few highlights and no per-stone shading like the paving reference's lit edges. A careful artist would not accept it next to the reference as a full ground patch, and in cases of doubt the rule is to fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 13837
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "ground tile texture (full 64x16 tile strip)",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "other",
+    "evidence": "This is a flat terrain tile: a full-width 64x16 opaque texture of dark blue-grey, purple crack lines and green-grey patches. The silhouette is 64 wide on every row, with no outline, no standing body, no front-edge line and no eave shadow. The light rows at 6 and 13 in the column scan are crack lines in the texture, not edge lines of a top surface. It is a seamless ground pattern, not a standing object, so the three-quarter/front-elevation distinction does not apply."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 4,
+    "evidence": "The candidate does not read as a 4x3-tile ground patch. Only a thin strip of dark cracked stone, about 48x10 source px, sits at the bottom of the frame, and the rest of the frame is just the board's flat grey-blue background. It looks more like a wall base or cliff edge than paving or grass, so it doesn't match the reference kind. The strip itself has a tinted blue-dark outline (0% neutral dark edge pixels) and some crack and stone texture, but it shows roughly 4 lightness steps in very low contrast, against about 6 on the paving reference. The measured 6 visible tones per tile and 0% near-flat coverage are acceptable next to the references (3 and 7). They only describe the strip, though, and do not make up for a patch that fails to fill 4x3 tiles and has no per-stone highlights like the paving. Stones are not shaded one by one, and the ground has no tileable surface structure. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 15726
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "ground tile texture (full 64x16 tile strip)",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "This is a terrain ground tile, a full-bleed 64x16 texture with a constant width of 64 across rows 0-15. It has no silhouette, no standing body, no front face and no ellipse or edge-line structure. The column scans show dark, noisy texture with only 1-row lighter lines at rows 6 and 13, which are crack or pattern details, not a front-edge line with eave shadow. It is a flat top-down ground texture."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 4,
+    "evidence": "Only a thin strip of dark cracked stone, about one tile high, sits at the bottom of the candidate area. The rest of the 4x3 patch is an empty flat blue-grey field, so the piece does not read as a 4x3 ground surface next to the grass and paving references. The strip's own tones (6 visible per tile vs 3 for grass and 7 for paving) and its 0% neutral dark edges (tinted blue-dark cracks, not black) are acceptable. But the strip has only about 4 distinct lightness steps against roughly 6 on the references, with little per-stone highlight shading. Flat or empty coverage dominates the patch, and the measured 0% near-flat figure does not match what is visible. A careful artist would not accept this beside the references, and when in doubt it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 13222
+  }
+ ],
+ "decidedAt": "2026-10-25T11:39:15.388Z",
+ "cells": {
+  "16": [
+   "49fdb0210f10cd03",
+   "770411a9b38ddef2",
+   "7fe65d97f041ce43",
+   "9e9abf94443b649f"
+  ],
+  "24": [
+   "2493ad94a5090e82",
+   "293437f3edcec7ef",
+   "307bb71a438ead96",
+   "337a79c917fae7c6",
+   "533bd34ffc3432de",
+   "5849fe0f9800ca02",
+   "600004d7c50ebc62",
+   "63938f09b9862693",
+   "68d543e218d9d9e2",
+   "6e296e5e62f95682",
+   "7a6a5ba09b80f5a2",
+   "b11a55d9c59358b6",
+   "bb534019023ddf49",
+   "bd5e16008df7a4f5",
+   "d8fb9ccb6a12d5dd",
+   "e78ef3659eb9bc61",
+   "ef42e8dc10480045",
+   "f91a77e03b4ac4f6"
+  ],
+  "32": [
+   "569fffd6fda60606",
+   "9ecfa0b284638abc",
+   "d6bdbb63ee0a8a67",
+   "eed31d49b163995e"
+  ],
+  "48": [
+   "1508c0146198764a",
+   "1801f1d460f68b17",
+   "707f6e604ed77320",
+   "70f23772c242738d",
+   "90b267575ef7bc09",
+   "a23f1c78abdb4447",
+   "a7e589dd42b5ead3",
+   "baff34cec3ef3463",
+   "c18e6bb77d912028",
+   "c468cc095841d619",
+   "cc8798572111b2db",
+   "cdb4828ac8559598"
+  ]
+ }
+}
