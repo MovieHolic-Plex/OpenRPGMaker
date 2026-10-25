@@ -12,7 +12,7 @@ import type { Project } from "./types";
 export const FIELD_MENU_DEFAULT_LABELS: Readonly<Record<FieldMenuCommand, string>> = {
   items: "소지품", skills: "스킬", equipment: "장비", monsters: "동료", save: "저장", load: "불러오기", status: "상태", row: "열 바꾸기",
   formation: "진형", "monster-dex": "도감", "region-map": "지도", "campaign-progress": "배지·목표", "trainer-card": "원정 수첩",
-  "battle-reports": "전투 기록", quests: "일정", relationships: "호감도", gallery: "갤러리", endings: "엔딩", "life-ledger": "생활 장부",
+  "battle-reports": "전투 기록", quests: "일정", journal: "일지", relationships: "호감도", gallery: "갤러리", endings: "엔딩", "life-ledger": "생활 장부",
   backlog: "백로그", options: "설정", wait: "전투 대기", "to-title": "타이틀로",
 };
 
@@ -21,7 +21,7 @@ export const FIELD_MENU_COMMAND_HELP: Readonly<Record<FieldMenuCommand, string>>
   items: "가진 물건을 보고 씁니다.", skills: "주인공의 스킬을 봅니다.", equipment: "장비를 갈아입힙니다.", monsters: "함께 다니는 몬스터를 봅니다.",
   save: "진행을 저장 칸에 저장합니다.", load: "저장한 진행을 불러옵니다.", status: "능력치와 상태를 봅니다.", row: "전열·후열을 바꿉니다.",
   formation: "파티 진형을 바꿉니다.", "monster-dex": "만난 몬스터 도감.", "region-map": "지역 지도.", "campaign-progress": "배지와 진행 목표.",
-  "trainer-card": "주인공 원정 수첩.", "battle-reports": "최근 전투 기록.", quests: "받은 임무·일정.", relationships: "인물과의 호감도.",
+  "trainer-card": "주인공 원정 수첩.", "battle-reports": "최근 전투 기록.", quests: "받은 임무·일정.", journal: "이야기 일지(이벤트가 한 줄씩 적는다).", relationships: "인물과의 호감도.",
   gallery: "본 그림(CG)을 다시 봅니다.", endings: "엔딩 목록과 달성 체크리스트.", "life-ledger": "출하·수집·박물관 기록.",
   backlog: "지난 대사를 다시 읽습니다.", options: "음량·대사 속도 등 기기 설정.", wait: "전투 중 시간 정지 설정.", "to-title": "타이틀 화면으로 돌아갑니다(항상 맨 끝).",
 };

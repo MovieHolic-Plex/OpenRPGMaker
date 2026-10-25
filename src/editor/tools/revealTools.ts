@@ -57,7 +57,7 @@ function changesFromObject(project: Project, map: GameMap, objectId: string, x: 
 
 type CommandList = Command[];
 /** 텍스트 본문에 anchor 가 든 첫 대사 바로 뒤에 넣는다(갈래·선택지 안까지 찾는다). 못 찾으면 false. */
-function insertAfterText(list: CommandList, anchor: string, inserted: Command[]): boolean {
+export function insertAfterText(list: CommandList, anchor: string, inserted: Command[]): boolean {
   for (let i = 0; i < list.length; i += 1) {
     const cmd = list[i] as unknown as Record<string, unknown>;
     if (cmd.kind === "text" && typeof cmd.body === "string" && cmd.body.includes(anchor)) {

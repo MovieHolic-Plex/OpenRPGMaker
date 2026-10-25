@@ -10000,6 +10000,76 @@
    ],
    "verify": "author_beodeul_town 으로 지은 마을을 sourceMapId 로 derive_map_variant(variants:[{look:\"burned\", keepIntact:\"north\"}]) / 결과 look.keptIntact 가 가장 북쪽 집, demolishedBuildings ≥ 1 / 변형 맵 그림에 잿빛 집터·숯 기둥이 집 자리마다, 길은 원본 그대로 / look:\"ruin\" 으로 대신하지 않음",
    "suiteCategory": "fs-burned"
+  },
+  {
+   "category": "game",
+   "kind": "logic",
+   "mode": "balanced",
+   "startTileset": "beodeul_city",
+   "startBuild": [
+    {
+     "tool": "author_beodeul_town",
+     "args": {
+      "mapId": "map_blank_start",
+      "name": "버들 마을",
+      "houseCount": 4,
+      "theme": "river",
+      "seed": 11
+     }
+    },
+    {
+     "tool": "place_npc",
+     "args": {
+      "mapId": "map_blank_start",
+      "id": "npc_chief",
+      "name": "촌장",
+      "x": 20,
+      "y": 16,
+      "movement": "fixed",
+      "graphic": {
+       "query": "노인 남성"
+      },
+      "pages": [
+       {
+        "lines": [
+         "어서 오게, 버들 마을일세."
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "tool": "place_npc",
+     "args": {
+      "mapId": "map_blank_start",
+      "id": "npc_smith",
+      "name": "대장장이",
+      "x": 14,
+      "y": 20,
+      "movement": "fixed",
+      "graphic": {
+       "query": "아저씨"
+      },
+      "pages": [
+       {
+        "lines": [
+         "망치 소리 좋지?"
+        ]
+       }
+      ]
+     }
+    }
+   ],
+   "id": "fs2-journal",
+   "prompt": "이리스 일지를 메뉴에서 읽게 해 줘. 비트마다 한 줄씩 쌓이고, 탑에서 지워진 줄은 카엘이 읽어 주면 돌아오게.",
+   "requires": [
+    "configure_story_journal 또는 m2 Journal Line",
+    "ESC 메뉴 「일지」 항목",
+    "쓰기·지우기·다시 읽기 세 동작",
+    "다시 읽을 때 기술 되찾기(learnSkill) 연결"
+   ],
+   "verify": "configure_story_journal(writers 이리스·카엘, lines write 여러 개 + erase + reread) / meta.oprnStoryJournal 존재 / 이벤트에 Journal Line write·erase·reread / 출하 플레이어 ESC 메뉴 일지에 줄이 쌓이고 지운 줄이 흐리게, 다시 읽은 뒤 되살아남 / 세이브·로드 뒤 일지 유지",
+   "suiteCategory": "fs-journal"
   }
  ],
  "gates": {
