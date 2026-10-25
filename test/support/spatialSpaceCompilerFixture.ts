@@ -9,6 +9,18 @@ import { resolveMaterialSlots } from "../../src/editor/operators/materialSlots";
 import type { SpaceDesign, SpatialAuthoringDocument, SpatialOccurrence } from "../../src/project/spatial/types";
 import type { Project } from "../../src/project/types";
 import { withRetiredEasyRpgTilesets } from "./retiredEasyRpgTilesets";
+import { DEFAULT_TILESET_ID } from "../../src/project/defaults/constants";
+
+/**
+ * 공간 컴파일 테스트가 쓰지 않는 번들 타일셋을 뺀다. 공간 거래 테스트는 미리보기·수락·되감기마다 프로젝트를 통째로
+ * 복제·직렬화하는데, 번들 타일셋이 30벌 넘게 늘어(2026-10, 정의 수십 MB) 한 케이스가 15~48초로 늘어 시간 초과가 났다
+ * (ci-vitest-files 40191146961). 맵이 쓰는 것·이 픽스처들이 이름으로 부르는 것만 남긴다.
+ */
+function keepSpatialFixtureTilesets(project: Project): void {
+  const keep = new Set<string>([interiorAtlas, DEFAULT_TILESET_ID, "easyrpg_chipset_combined_town", "easyrpg_chipset_world", "worldmap_selected"]);
+  for (const map of Object.values(project.maps)) keep.add(map.tilesetId);
+  for (const id of Object.keys(project.tilesets)) if (!keep.has(id)) delete project.tilesets[id];
+}
 
 export const spaceRoot = spatialId("compiler-room");
 export const spaceDesign = spatialId("room-design");
@@ -17,6 +29,7 @@ export const interiorAtlas = "easyrpg_chipset_interior";
 /** Numeric regression fixture only: shipped beds plus an authored asymmetric hearth assembly. */
 export function spaceCompilerFixture(seed = 7, shape: SpaceDesign["shape"] = "rect"): Project {
   const project = withRetiredEasyRpgTilesets(createBlankProject());
+  keepSpatialFixtureTilesets(project);
   const tileset = project.tilesets[interiorAtlas];
   if (!tileset) throw new TypeError("Missing shipped interior atlas");
   tileset.structureKits = [...(tileset.structureKits ?? []), {
