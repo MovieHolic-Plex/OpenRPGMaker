@@ -58,10 +58,16 @@ export function readStoreMusicMeta(meta: unknown): StoreMusicMeta | null {
   };
 }
 
-/** 검색 태그: 장르·장면(영·한)·분위기·빠르기·루프 여부. */
+/** 「조선 전통」 → 조선·조선풍·전통·전통풍. 사용자는 「조선풍 전투」처럼 말한다. */
+function genreWords(genreKo: string): string[] {
+  const words = genreKo.split(/[\s·]+/u).filter(Boolean);
+  return [...words, ...words.map((word) => `${word}풍`)];
+}
+
+/** 검색 태그: 장르(「~풍」 포함)·장면(영·한)·분위기·빠르기·루프 여부. */
 export function storeMusicTags(music: StoreMusicMeta): string[] {
   return [...new Set([
-    music.genreKo, music.genreLabel, music.genre,
+    music.genreKo, ...genreWords(music.genreKo), music.genreLabel, music.genre,
     ...music.scenes.flatMap((scene) => [scene, STORE_MUSIC_SCENE_LABELS[scene]]),
     ...music.mood,
     ...(music.tempo ? [music.tempo] : []),

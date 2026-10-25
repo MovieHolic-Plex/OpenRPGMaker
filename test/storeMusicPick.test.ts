@@ -38,7 +38,7 @@ describe("store music pick", () => {
 
   it("lists store tracks with searchable genre, scene and mood tags and a listening description", () => {
     const boss = listAudioResources("music", projectWithPack()).find((entry) => entry.id === "jb")!;
-    expect(boss.tags).toEqual(expect.arrayContaining(["조선 전통", "boss", "보스", "비장한", "루프"]));
+    expect(boss.tags).toEqual(expect.arrayContaining(["조선 전통", "조선풍", "boss", "보스", "비장한", "루프"]));
     expect(boss.description).toContain("장구와 해금");
     expect(boss.description).toContain("150 BPM");
     expect(boss.descriptionSource).toBe("ai-listening");
@@ -49,6 +49,10 @@ describe("store music pick", () => {
     expect(data.candidates[0]?.resourceId).toBe("jb");
     expect(data.candidates.map((c) => c.resourceId)).not.toContain("jt");
     expect(data.candidates[0]?.music).toMatchObject({ scenes: ["boss"], loopable: true, genre: "조선 전통" });
+  });
+
+  it("finds a genre by its 「~풍」 form inside a scene", () => {
+    expect(pick(projectWithPack(), { scene: "boss", query: "조선풍", limit: 5 }).candidates[0]?.resourceId).toBe("jb");
   });
 
   it("scene alone matches store tracks by their scene roles, not their names", () => {
