@@ -32,6 +32,7 @@ import { resolveActorName, resolveActorFaceResourceId } from "@/project/sessionA
 import { defaultActorFaceResourceId, normalizeActorRecord } from "@/project/actorModel";
 import type { StatusMenuStatDelta } from "@/player/playerStatusMenuDetailTypes";
 import { effectiveActorClassId } from "@/project/sessionClass";
+import { actorFieldStateNames, KNOCKED_OUT_STATE_NAME } from "@/player/actorFieldStates";
 import type { PlaySession } from "@/project/session";
 import type {
   ActorInitialEquipment,
@@ -399,8 +400,11 @@ function itemDetail(options: StatusMenuDetailOptions): StatusMenuDetail {
       entries: partyActors(project, session).map((actor) => {
         const preview = previewMenuItemTarget(project, session, item, actor.id);
         const stateName = (stateId: string) => project.database.states.find((state) => state.id === stateId)?.name;
-        const stateNames = preview.stateIds.map(stateName).filter((name): name is string => Boolean(name));
+        // HP 0 이면 「전투불능」 — 회복약 대상 목록에서 쓰러진 동료가 「정상」으로 보이면 안 된다(J7).
+        const stateNames = actorFieldStateNames(project, session, actor.id);
         const curedStateNames = preview.curedStateIds.map(stateName).filter((name): name is string => Boolean(name));
+        // 되살리는 아이템(HP 0 → 1 이상)은 「전투불능 → 정상」을 미리 보인다.
+        if (!preview.reason && preview.hp <= 0 && preview.hpAfter > 0 && stateNames.includes(KNOCKED_OUT_STATE_NAME)) curedStateNames.push(KNOCKED_OUT_STATE_NAME);
         const anyTarget = item.scope === "allAllies" && session.partyActorIds.some((id) => canUseMenuItemOnActor(project, session, item, id));
         const eligible = anyTarget || canUseMenuItemOnActor(project, session, item, actor.id);
         return {
@@ -740,7 +744,7 @@ function statusDetail(project: Project, session: PlaySession): StatusMenuDetail 
       // 구분자를 "/" 로 쓰면 HP 510/514 의 분수 슬래시와 뒤섞여 어디까지가 한 항목인지
       // 읽히지 않는다. 가운뎃점으로 갈라 분수 슬래시만 슬래시로 남긴다.
       description: vitals
-        ? `HP ${vitals.hp}/${vitals.maxHp} · MP ${vitals.mp}/${vitals.maxMp} · 정상`
+        ? `HP ${vitals.hp}/${vitals.maxHp} · MP ${vitals.mp}/${vitals.maxMp} · ${actorFieldStateNames(project, session, actor.id).join(" · ") || "정상"}`
         : "HP 0/0 · MP 0/0 · 정상",
     };
   });
