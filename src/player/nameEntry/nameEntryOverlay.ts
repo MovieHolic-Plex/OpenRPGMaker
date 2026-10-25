@@ -142,6 +142,8 @@ export function showNameEntry(host: HTMLElement, request: NameEntryRequest): Pro
         for (let colIndex = 0; colIndex < page.rows[rowIndex].length; colIndex += 1) {
           const selected = rowIndex === cursor.row && colIndex === cursor.col;
           keys[flatIndex]?.classList.toggle("selected", selected);
+          // 문자표가 스크롤되므로 방향키로 고른 칸이 늘 보이게 한다.
+          if (selected) keys[flatIndex]?.scrollIntoView?.({ block: "nearest" });
           flatIndex += 1;
         }
       }

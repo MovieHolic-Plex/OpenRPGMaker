@@ -207,12 +207,13 @@ function regionShot(cast: EmeraldOpeningCast): OpeningAnimatic {
     const c = centers[i]!, at = camX[i]!.atMs, from = Math.max(0, at - 700), to = Math.min(ms, at + 1300);
     if (!name) return [];
     return [
-      { id: `pin-${i}`, kind: 'glow', role: 'effect', color: '#ffe27a', blend: 'lighter', x: c.x - 14, y: c.y - 14, width: 28, height: 28, startMs: from, endMs: to,
-        glow: { inner: 0.4, pulse: { hz: 2, amount: 0.3, pattern: 'pulse', seed: i } }, keys: { opacity: [{ atMs: from, value: 0 }, { atMs: from + 200, value: 1 }, { atMs: to - 250, value: 1 }, { atMs: to, value: 0 }] } },
-      { id: `label-${i}`, kind: 'text', role: 'credit', text: name, color: '#fff6d8', x: c.x - 120, y: c.y - 56, width: 240, height: 24, startMs: from, endMs: to,
+      // 이름표 밑 어두운 띠 — 밝은 풀밭·모래 위에서도 읽힌다.
+      { id: `plate-${i}`, kind: 'shape', shape: 'rect', role: 'effect', color: '#0b1a2e', x: c.x - (Array.from(name).length * 9 + 14), y: c.y - 59, width: Array.from(name).length * 18 + 28, height: 28, startMs: from, endMs: to,
+        keys: { opacity: [{ atMs: from, value: 0 }, { atMs: from + 220, value: 0.62 }, { atMs: to - 250, value: 0.62 }, { atMs: to, value: 0 }] } },
+      { id: `label-${i}`, kind: 'text', role: 'credit', text: name, color: '#fff6d8', x: c.x - 120, y: c.y - 54, width: 240, height: 24, startMs: from, endMs: to,
         // 기준점을 적어 둬야 렌더러의 「가운데 정렬 글이 화면 밖으로 넘치면 화면 가운데로」 보정이 세계 좌표 이름표를 끌고 가지 않는다.
         anchorX: 0, anchorY: 0,
-        typography: { fontSize: 17, weight: 900, align: 'center' }, keys: { opacity: [{ atMs: from, value: 0 }, { atMs: from + 220, value: 1 }, { atMs: to - 250, value: 1 }, { atMs: to, value: 0 }], y: [{ atMs: from, value: c.y - 48 }, { atMs: from + 260, value: c.y - 56, ease: 'ease-out' }] } },
+        typography: { fontSize: 17, weight: 900, align: 'center' }, keys: { opacity: [{ atMs: from, value: 0 }, { atMs: from + 220, value: 1 }, { atMs: to - 250, value: 1 }, { atMs: to, value: 0 }], y: [{ atMs: from, value: c.y - 46 }, { atMs: from + 260, value: c.y - 54, ease: 'ease-out' }] } },
     ];
   });
   const flock = [0, 1, 2].map(i => walking(`flock-${i}`, { resourceId: cast.flyer.resourceId, index: [0, 1, 3][i]! }, 'right',

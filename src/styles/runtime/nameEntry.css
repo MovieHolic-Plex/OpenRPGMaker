@@ -7,7 +7,10 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  /* 한글 문자표는 14줄이라 320 높이 화면보다 길다 — 가운데 정렬이면 제목·이름 칸·확정 단추가 화면 밖으로 밀렸다(2026-10-25).
+     제목·이름·탭·단추는 늘 보이고 문자표만 그 사이에서 스크롤한다. */
+  justify-content: flex-start;
+  overflow: hidden;
   gap: 10px;
   padding: 16px;
   background: rgba(4, 8, 24, 0.72);
@@ -87,6 +90,10 @@
 
 .name-entry-grid {
   display: flex;
+  flex: 0 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  scrollbar-width: thin;
   flex-direction: column;
   gap: 3px;
   padding: 8px;
@@ -268,4 +275,18 @@
   .name-entry-showcase.confirmed .name-entry-cell.filled {
     animation: none;
   }
+}
+
+/* 문자표 말고는 줄어들지 않는다(스크롤은 문자표만). */
+.name-entry-title,
+.name-entry-bar,
+.name-entry-tabs,
+.name-entry-controls {
+  flex-shrink: 0;
+}
+
+/* 쇼케이스는 왼쪽 34% 를 무대가 쓰므로 문자표 칸을 조금 줄여 열 칸이 다 들어가게 한다. */
+.name-entry-showcase .name-entry-key {
+  min-width: 26px;
+  height: 26px;
 }
