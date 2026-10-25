@@ -21,7 +21,7 @@ const setLightingVolume: ToolDefinition = {
       color: { type: "string", description: "마스크 색상. 기본 #000000" },
       sources: {
         type: "array",
-        description: "LightSource[]. at은 'player' 문자열, {x,y}, {eventId}, 또는 {kind:'player'}를 허용한다.",
+        description: "LightSource[]. at 은 객체: 플레이어를 따라가는 빛 {kind:'player'}, 칸 {x,y}, 이벤트 {eventId}.",
         items: LIGHT_SOURCE_SCHEMA,
       },
       applyMode: { type: "string", enum: ["map", "event"], description: "기본 map" },
@@ -32,7 +32,7 @@ const setLightingVolume: ToolDefinition = {
   invalidArgsExample: {
     mapId: "map1",
     ambient: 0.85,
-    sources: [{ id: "flashlight", at: "player", radius: 4, intensity: 1 }],
+    sources: [{ id: "flashlight", at: { kind: "player" }, radius: 4, intensity: 1 }],
     applyMode: "map",
   },
   run(draft, args): ToolExecResult {
@@ -93,7 +93,7 @@ const setSceneMood: ToolDefinition = {
       },
       lighting: {
         type: "object",
-        description: "set_lighting_volume 와 같은 꼴: {ambient:0~1, color, sources:[{at:'player'|{x,y}|{eventId}, radius, intensity?, color?, flicker?}], area?(applyMode event)} — 광원 자리는 at 안에 둔다.",
+        description: "set_lighting_volume 와 같은 꼴: {ambient:0~1, color, sources:[{at:{kind:'player'}|{x,y}|{eventId}, radius, intensity?, color?, flicker?}], area?(applyMode event)} — 광원 자리는 at 안에 둔다.",
         additionalProperties: true,
       },
       applyMode: { type: "string", enum: ["map", "event"], description: "기본 map" },
@@ -103,7 +103,7 @@ const setSceneMood: ToolDefinition = {
   invalidArgsExample: {
     mapId: "map1",
     weather: { kind: "storm", intensity: 0.7, transitionMs: 300 },
-    lighting: { ambient: 0.85, color: "#000000", sources: [{ id: "flashlight", at: "player", radius: 4, intensity: 1 }] },
+    lighting: { ambient: 0.85, color: "#000000", sources: [{ id: "flashlight", at: { kind: "player" }, radius: 4, intensity: 1 }] },
     applyMode: "map",
   },
   run(draft, args): ToolExecResult {
@@ -319,7 +319,7 @@ function sourceArg(value: unknown, label: string): LightSource {
 function lightAnchorArg(value: unknown, label: string): LightSourceAnchor {
   if (value === "player") return "player";
   if (typeof value !== "object" || value === null || Array.isArray(value)) {
-    throw new ToolError(`${label}는 'player', {x,y}, {eventId} 중 하나여야 합니다(받은 값 ${JSON.stringify(value) ?? "없음"}). 예: sources:[{at:'player',radius:4}, {at:{x:7,y:8},radius:3,color:'#ff9944'}, {at:{eventId:'ev_candle'},radius:2}].`, { code: "lighting-anchor" });
+    throw new ToolError(`${label}는 {kind:'player'}, {x,y}, {eventId} 중 하나여야 합니다(받은 값 ${JSON.stringify(value) ?? "없음"}). 예: sources:[{at:{kind:'player'},radius:4}, {at:{x:7,y:8},radius:3,color:'#ff9944'}, {at:{eventId:'ev_candle'},radius:2}].`, { code: "lighting-anchor" });
   }
   const record = value as Record<string, unknown>;
   if (record.kind === "player" || record.target === "player") return "player";

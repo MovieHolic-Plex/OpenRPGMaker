@@ -1,4 +1,5 @@
 import { isParticlePreset, normalizeParticleDurationMs, normalizeShakeDirection } from "@/project/eventCommands/cinematicStaging";
+import { playerChoiceText } from "@/project/choiceText";
 import { playMonsterSfx } from "@/player/monsterSfx";
 import { monsterCampaign } from "@/project/monsterJournal";
 import { normalizeBlendMode } from "@/project/blendMode";
@@ -583,11 +584,12 @@ export function executeCommand(
     }
     case "text": {
       const listenerFace = state.listenerFace;
+      const speaker = resolveSpeakerToken(state, command.speaker);
       state.listenerFace = undefined;
       state.faceSinceText = false;
       return pause("text", {
         kind: "text",
-        speaker: command.speaker,
+        speaker,
         body: textBodyOf(command),
         face: state.currentFace,
         ...(listenerFace ? { listenerFace } : {}),
@@ -612,7 +614,7 @@ export function executeCommand(
       return pause("choices", {
         kind: "choices",
         prompt: command.prompt,
-        options: command.options.slice(0, 5).map((option) => ({ text: option.text })),
+        options: command.options.slice(0, 5).map((option) => ({ text: playerChoiceText(option.text) })),
         settings: state.session.messageWindowSettings ?? DEFAULT_MESSAGE_WINDOW_SETTINGS,
         cancelBehavior: command.cancelBehavior,
       });
@@ -1404,4 +1406,16 @@ function resolveSwitchValue(session: { switches: Record<string, boolean>; variab
   if (typeof value === "boolean") return value;
   if (value === "toggle") return !getSwitch(session as any, switchId);
   return (session.variables[value.id] ?? 0) !== 0;
+}
+
+/**
+ * 화자 칸에 남은 이동 대상 토큰(「@player」·「player」)을 주인공 이름으로 — 조수 컷신이 말하는 사람을 이동 대상 id 로 적어
+ * 공포 저택 오프닝 이름표에 「@player」가 그대로 떴다(2026-10-25 판정 J11). 주인공 = 파티 맨 앞 배우.
+ */
+function resolveSpeakerToken(state: { readonly session: { readonly partyActorIds: readonly string[]; readonly actorNames?: Readonly<Record<string, string>> }; readonly project?: { readonly database: { readonly actors: readonly { readonly id: string; readonly name: string }[] } } }, speaker: string | undefined): string | undefined {
+  const raw = speaker?.trim();
+  if (!raw || !/^@?(player|hero)$/iu.test(raw)) return speaker;
+  const leaderId = state.session.partyActorIds[0];
+  const actor = leaderId ? state.project?.database.actors.find((entry) => entry.id === leaderId) : undefined;
+  return (leaderId && state.session.actorNames?.[leaderId]) || actor?.name || undefined;
 }

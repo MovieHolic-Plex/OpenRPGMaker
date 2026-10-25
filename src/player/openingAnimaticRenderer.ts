@@ -1,6 +1,8 @@
 import { resolveAssetResourceUrl } from '@/assets/generatedAssetResourceResolver';
 import { parseCssColor, sampleAnimaticTrack, animaticCueVolume, animaticPulseValue, type OpeningAnimatic, type AnimaticLayer, type AnimaticRegionLoop } from '@/project/openingAnimatic';
 import type { Project } from '@/project/types';
+import { openingMapViewMapId } from '@/project/openingMapView';
+import { renderMapViewCanvas } from '@/player/mapBackgroundMapView';
 
 export type AnimaticImages = Map<string, HTMLImageElement>;
 
@@ -61,15 +63,39 @@ function decodedImage(url: string): Promise<HTMLImageElement> {
 export function warmAnimaticImages(project: Project, a: OpeningAnimatic): void {
   for (const l of a.layers) {
     if (l.kind !== 'image' || !l.resourceId) continue;
+    const mapId = openingMapViewMapId(l.resourceId);
+    if (mapId) { void mapViewImage(project, mapId).catch(() => undefined); continue; }
     const url = resolveAssetResourceUrl(l.resourceId, { project });
     if (url) void decodedImage(url).catch(() => undefined);
   }
+}
+/**
+ * 「게임 속 맵 그대로」 배경(map-view:<mapId>) — 맵 타일 층을 원 크기로 한 번 그려 그림으로 쓴다(openingMapView.ts).
+ * 같은 맵 객체면 다시 그리지 않는다(편집기에서 맵을 고치면 새 객체라 새로 그린다).
+ */
+const mapViewImages = new WeakMap<object, Promise<HTMLImageElement>>();
+function mapViewImage(project: Project, mapId: string): Promise<HTMLImageElement> {
+  const map = project.maps[mapId];
+  if (!map) return Promise.reject(Error(`애니메틱 맵 배경 없음: ${mapId}`));
+  const cached = mapViewImages.get(map);
+  if (cached) return cached;
+  const promise = (async () => {
+    const canvas = await renderMapViewCanvas(project, { mapId, scale: 1, haze: 0, desaturate: 0 });
+    if (!canvas) throw Error(`애니메틱 맵 배경을 그릴 수 없음: ${mapId}`);
+    const image = new Image(); image.src = canvas.toDataURL('image/png'); await image.decode(); return image;
+  })();
+  promise.catch(() => { if (mapViewImages.get(map) === promise) mapViewImages.delete(map); });
+  mapViewImages.set(map, promise);
+  return promise;
 }
 export async function loadAnimaticImages(project: Project, a: OpeningAnimatic, signal: AbortSignal): Promise<AnimaticImages> {
   const ids = [...new Set(a.layers.flatMap(l => l.kind === 'image' ? [l.resourceId!] : []))];
   keyedCache.clear();
   return new Map(await Promise.all(ids.map(async id => {
-    signal.throwIfAborted(); const url = resolveAssetResourceUrl(id, { project }); if (!url) throw Error(`애니메틱 그림 없음: ${id}`);
+    signal.throwIfAborted();
+    const mapId = openingMapViewMapId(id);
+    if (mapId) { const image = await mapViewImage(project, mapId); signal.throwIfAborted(); return [id, image] as const; }
+    const url = resolveAssetResourceUrl(id, { project }); if (!url) throw Error(`애니메틱 그림 없음: ${id}`);
     const image = await decodedImage(url); signal.throwIfAborted(); return [id, image] as const;
   })));
 }
@@ -141,12 +167,52 @@ function drawText(ctx: CanvasRenderingContext2D, l: AnimaticLayer, t: number, sn
   for (const [i, line] of lines.entries()) { if (i > 0 && (i + 1) * size * 1.25 > l.height) break; ctx.fillText(line, x, i * size * 1.25); }
   ctx.restore();
 }
+/**
+ * Falling flakes that drift sideways and tumble: cherry petals (layer colour + a darker underside as the flake flips)
+ * and paper sheets (white face, grey edge, rotating). Pure function of time; one flake per particle index.
+ */
+function drawFlutter(ctx: CanvasRenderingContext2D, l: AnimaticLayer, preset: 'petals' | 'paper', seconds: number, i: number,
+  a: number, b: number, c: number, speed: number, size: number, snap: (v: number) => number, cell: number): void {
+  const paper = preset === 'paper';
+  const fall = seconds * speed * (0.55 + c * 0.9);
+  const sway = Math.sin(seconds * (0.9 + c * 1.4) + a * 20) * (paper ? 26 : 18) + seconds * speed * (paper ? 0.15 : 0.55);
+  const x = snap(modulo(a * l.width + sway, l.width)), y = snap(modulo(b * l.height + fall, l.height));
+  const spin = seconds * (paper ? 2.2 : 3.4) * (0.6 + c) + i;
+  const flip = Math.cos(spin);
+  const base = ctx.fillStyle;
+  const under = paper ? '#b9bec8' : '#d98aa6';
+  const w = (paper ? size * 3.2 : size * 1.6) * (0.75 + c * 0.5), h = (paper ? size * 4.2 : size * 1.1) * (0.75 + c * 0.5);
+  ctx.save();
+  ctx.translate(x, y);
+  if (cell > 0) {
+    // Pixel grid: no rotation — the flip shows as width shrinking to one cell, so petals stay crisp squares.
+    const cw = Math.max(cell, Math.round(Math.abs(flip) * w / cell) * cell), ch = Math.max(cell, Math.round(h / cell) * cell);
+    ctx.fillStyle = flip >= 0 ? base : under;
+    ctx.fillRect(-cw / 2, -ch / 2, cw, ch);
+    if (paper && cw > cell) { ctx.fillStyle = under; ctx.fillRect(-cw / 2, ch / 2 - cell, cw, cell); }
+  } else {
+    ctx.rotate(spin * 0.5 + c * 6);
+    ctx.scale(Math.max(0.15, Math.abs(flip)), 1);
+    ctx.fillStyle = flip >= 0 ? base : under;
+    if (paper) {
+      ctx.fillRect(-w / 2, -h / 2, w, h);
+      ctx.fillStyle = under; ctx.fillRect(-w / 2, h / 2 - Math.max(1, h * 0.12), w, Math.max(1, h * 0.12));
+      ctx.fillStyle = '#9aa1ad'; for (let r = 1; r <= 3; r += 1) ctx.fillRect(-w / 2 + w * 0.15, -h / 2 + h * r / 4.5, w * 0.6, Math.max(0.5, h * 0.05));
+    } else {
+      ctx.beginPath(); ctx.ellipse(0, 0, w, h, 0, 0, Math.PI * 2); ctx.fill();
+    }
+  }
+  ctx.restore();
+  ctx.fillStyle = base;
+}
+
 function drawParticles(ctx: CanvasRenderingContext2D, l: AnimaticLayer, t: number, snapping = 0): void {
-  const p = l.particles!, seconds = (t - (l.startMs ?? 0)) / 1000, speed = p.speed ?? (p.preset === 'rain' ? 500 : 35), size = p.size ?? 2;
+  const p = l.particles!, seconds = (t - (l.startMs ?? 0)) / 1000, speed = p.speed ?? (p.preset === 'rain' ? 500 : p.preset === 'paper' ? 46 : p.preset === 'petals' ? 28 : 35), size = p.size ?? 2;
   const snap = (v: number) => snapping > 0 ? Math.round(v * snapping) / snapping : v;
   const cell = snapping > 0 ? 1 / snapping : 0;
   for (let i = 0; i < p.count; i++) {
     const a = random(p.seed, i * 3), b = random(p.seed, i * 3 + 1), c = random(p.seed, i * 3 + 2);
+    if (p.preset === 'petals' || p.preset === 'paper') { drawFlutter(ctx, l, p.preset, seconds, i, a, b, c, speed, size, snap, cell); continue; }
     const upward = p.preset === 'sparks' || p.preset === 'dust';
     const x = snap(modulo(a * l.width + Math.sin(seconds * 0.8 + c * 9) * (p.preset === 'snow' ? 20 : 4), l.width));
     const y = snap(p.preset === 'stars' ? b * l.height : modulo(b * l.height + seconds * speed * (0.5 + c) * (upward ? -1 : 1), l.height));
@@ -615,6 +681,17 @@ export function playOpeningAnimatic(options: { project: Project; canvas: HTMLCan
   const draw: DrawOptions = { reducedMotion: options.reducedMotion, durationMs: options.durationMs };
   let frame = 0, stopped = false, started = 0;
   const cues = new Map<string, HTMLAudioElement>();
+  // 브라우저 자동재생 막힘(첫 화면에 사용자 입력이 없을 때 정상)은 그림을 멈출 이유가 아니다 — 소리만 미뤘다가 첫 입력에 다시 튼다.
+  // 예전에는 장면 전체를 멈추고 「오디오 큐 자동재생 차단: …」 개발자 글을 화면에 남겼다(2026-10-25 J26).
+  const skipped = new Set<string>();
+  const blocked = new Set<HTMLAudioElement>();
+  let retryArmed = false;
+  const armRetry = () => {
+    if (retryArmed || stopped) return; retryArmed = true;
+    const doc = canvas.ownerDocument;
+    const retry = () => { retryArmed = false; for (const a of [...blocked]) { blocked.delete(a); if (!stopped && !a.paused) continue; if (!stopped) void a.play().catch(() => { blocked.add(a); armRetry(); }); } };
+    for (const type of ['pointerdown', 'keydown', 'touchstart'] as const) doc.addEventListener(type, retry, { once: true, capture: true, signal });
+  };
   const stop = () => { if (stopped) return; stopped = true; view.cancelAnimationFrame(frame); signal.removeEventListener('abort', stop); for (const audio of cues.values()) { audio.pause(); audio.removeAttribute('src'); audio.load(); audio.remove(); } cues.clear(); };
   signal.addEventListener('abort', stop, { once: true });
   const ready = (async () => {
@@ -632,13 +709,18 @@ export function playOpeningAnimatic(options: { project: Project; canvas: HTMLCan
         try { drawAnimaticFrame(canvas, a, images, t, draw); }
         catch (error) { stop(); options.onError(String(error)); return; }
         for (const cue of a.audioCues ?? []) {
+          if (skipped.has(cue.id)) continue;
           let audio = cues.get(cue.id); const active = t >= cue.atMs && t < cue.atMs + cue.durationMs;
           if (active && !audio) {
-            const url = resolveAssetResourceUrl(cue.resourceId, { project: options.project }); if (!url) { stop(); options.onError('오디오 큐 없음: ' + cue.resourceId); return; }
+            const url = resolveAssetResourceUrl(cue.resourceId, { project: options.project }); if (!url) { console.warn('[animatic] audio cue missing:', cue.resourceId); skipped.add(cue.id); continue; }
             audio = canvas.ownerDocument.createElement('audio'); audio.src = url; audio.loop = cue.loop ?? false; audio.dataset.testid = 'animatic-audio-cue'; audio.dataset.cueId = cue.id; audio.volume = animaticCueVolume(cue, t); canvas.parentElement?.append(audio); cues.set(cue.id, audio);
             audio.addEventListener('loadedmetadata', () => { if (!stopped && audio!.duration > 0 && Number.isFinite(audio!.duration)) { const offset = (cue.offsetMs ?? 0) / 1000 + Math.max(0, view.performance.now() - started - cue.atMs) / 1000; audio!.currentTime = audio!.loop ? offset % audio!.duration : Math.min(offset, audio!.duration); } }, { once: true, signal });
-            audio.addEventListener('error', () => { if (!stopped) { stop(); options.onError('오디오 큐 로딩 실패: ' + cue.resourceId); } }, { once: true, signal });
-            void audio.play().catch(() => { if (!stopped) { stop(); options.onError('오디오 큐 자동재생 차단: ' + cue.resourceId); } });
+            audio.addEventListener('error', () => { if (!stopped) console.warn('[animatic] audio cue failed to load:', cue.resourceId); }, { once: true, signal });
+            void audio.play().catch((error: unknown) => {
+              // 짧은 큐(0.5초 시계 소리)는 play() 가 끝나기 전에 pause() 되어 AbortError 로 거절된다 — 정상이다(판정자 J26 근본 원인). 무시한다.
+              // 자동재생 막힘(NotAllowedError)만 첫 입력에 다시 튼다. 어떤 소리 실패도 그림을 멈추지 않는다.
+              if (!stopped && (error as { name?: string } | null)?.name === 'NotAllowedError') { blocked.add(audio!); armRetry(); }
+            });
           }
           if (audio) { audio.volume = animaticCueVolume(cue, t); if (!active) audio.pause(); }
         }

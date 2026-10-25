@@ -259,17 +259,19 @@ export function buildFirstLoveMaps(project: Project, exec: ExecTool): FirstLoveA
     const streetMap = project.maps[FL_MAP.street];
     const bg = roofRoom.background;
     if (streetMap && bg) {
-      const scale = 1 / 3;
-      // 거리 북쪽 건물 줄(타워 0~12행)과 큰길(13~20행)을 띠로: 차도가 난간 바로 뒤, 타워·가게 줄이 그 위. 띠 위로는 하늘·먼 빌딩이 남는다.
-      const region = { x: 0, y: 1, width: streetMap.width, height: 20 };
+      // 사용자 2026-10-24 「옥상에선 하늘이 보이는 게 더 기분이 좋다」 — 위에서부터 하늘·구름 → 먼 빌딩 → 안개 낀 거리(작게) → 난간.
+      // 거리 띠는 1/4 배·가게 줄과 큰길만(15줄 = 60px) 두고 위아래를 녹여 그 위로 하늘이 넓게 남는다.
+      const scale = 1 / 4;
+      const region = { x: 0, y: 6, width: streetMap.width, height: 15 };
       const cell = streetMap.tileSize * scale;
       const railScreenY = 108; // 도착 화면의 난간 윗줄(논리 px, 480×270)
       const bandTop = railScreenY - region.height * cell;
       const focusY = Math.round((region.y + (135 - bandTop) / cell - 0.5) * 100) / 100;
-      const layers = (bg.layers ?? []).filter((layer) => !layer.imageId.endsWith("-near"));
+      // 세로로 한 장인 층(loopY:false)은 카메라를 세로로 따라가지 않는다 — 하늘을 올려다보는 카메라 팬은 거리 띠를 하늘에 띄웠다(영상 r1). 팬은 가로·제자리만.
+      const layers = (bg.layers ?? []).filter((layer) => !layer.imageId.endsWith("-city-near"));
       roofRoom.background = {
         ...bg,
-        layers: [...layers, { imageId: "", fromMap: { mapId: FL_MAP.street, scale, haze: 0.3, desaturate: 0.35, focusY, region, feather: 0.1 }, loopX: true, loopY: false, cameraFollow: 0.4 }],
+        layers: [...layers, { imageId: "", fromMap: { mapId: FL_MAP.street, scale, haze: 0.38, desaturate: 0.35, focusY, region, feather: 0.3 }, loopX: true, loopY: false, cameraFollow: 0.4 }],
       };
     }
   }

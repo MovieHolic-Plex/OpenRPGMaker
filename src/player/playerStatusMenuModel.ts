@@ -18,6 +18,7 @@ import { resolveTerms } from "@/project/terms";
 import type { Project } from "@/project/types";
 import { hasLifeLedgerData } from "@/player/lifeLedger";
 import { menuSkinFor } from "@/player/menuSkins/registry";
+import { actorFieldStateNames } from "@/player/actorFieldStates";
 import { buildQuestLog } from "@/player/questLog";
 import type { SaveSlotReadResult } from "@/player/saveSlots";
 import type { MenuSkinRailStyle } from "@/player/menuSkins/types";
@@ -245,7 +246,8 @@ export function listStatusMenuCommandIds(project: Project, session: PlaySession)
     isGiftSystemEnabled(project) || Object.keys(session.friendship ?? {}).length > 0;
   const relationship = usesRelationshipMenu(project);
   // Change Save Access: false면 메뉴의 저장 항목을 숨긴다(세이브 포인트 전용 설계).
-  const saveDisabled = session.m2Runtime?.access?.save === false;
+  // system.saveAccess "savePoints": 세이브 포인트(openSaveMenu)에서만 저장 — 메뉴 항목은 없다.
+  const saveDisabled = session.m2Runtime?.access?.save === false || project.system.saveAccess === "savePoints";
   // 그룹 순서대로 평탄화 — 화면 순서와 ↑↓ 이동 순서를 한 배열이 결정한다.
   const authored = fieldMenu(project);
   return (authored ? authored.entries.map(row => row.command) : STATUS_MENU_COMMAND_GROUPS.flatMap((group) => group.commandIds)).filter((id) => {
@@ -319,16 +321,14 @@ export function createPlayerStatusMenuSnapshot(
     const nextLevel = level < normalized.maxLevel && levelNext > levelBase
       ? { remaining: Math.max(0, levelNext - exp), ratio: vitalRatio(exp - levelBase, levelNext - levelBase) }
       : undefined;
-    const stateNames = (session.actorStateIds?.[actorId] ?? [])
-      .map((stateId) => project.database.states.find((state) => state.id === stateId)?.name)
-      .filter((name): name is string => Boolean(name));
+    const stateNames = actorFieldStateNames(project, session, actorId);
     return [{
       actorId,
       name: resolveActorName(session, actor),
       levelLabel: `L${level}`,
       className: (classId ? classesById.get(classId)?.name : undefined) ?? "직업 없음",
       level,
-      condition: "정상",
+      condition: stateNames.join(" · ") || "정상",
       faceResourceId: resolveActorFaceResourceId(session, actor, project) ?? defaultActorFaceResourceId(actor),
       hpLabel: vitals ? `${hpTerm} ${vitals.hp}/${vitals.maxHp}` : `${hpTerm} 0/0`,
       mpLabel: vitals ? `${mpTerm} ${vitals.mp}/${vitals.maxMp}` : `${mpTerm} 0/0`,

@@ -10,6 +10,7 @@ import { fillLotUses } from "@/project/jpCityLotUse";
 import { setLayerTileAt } from "@/project/mapLayers";
 import { clearTileStack } from "@/project/mapOverlayTiles";
 import type { GameMap, Project } from "@/project/types";
+import { inMainWalkComponent, mainWalkComponent } from "@/project/walkComponent";
 import { claimStartIfBlank } from "./composerStart";
 import { requireMap } from "./mapHelpers";
 import { hasJpForestR4, paintJpForestArea } from "@/editor/jpCity/forestPainter";
@@ -137,6 +138,17 @@ export const COMPOSE_JP_CITY_STREET_TOOL: ToolDefinition = {
     }
     built.locations = (built.locations ?? []).filter((l) => !(l.tags ?? []).includes("jp-building"));    // 다시 짜면 옛 건물 위치 이름표는 지운다
     const labels = labelStreetBuildings(built, outcome.buildings);
+    // 문 앞이 큰길에서 걸어서 닿지 않는 건물(맵 끝 뒷골목에 갇힌 남쪽 줄 등)은 이름표에 적고 경고한다 — link_jp_city_interior 가 거부한다.
+    const walk = mainWalkComponent(next, built);
+    const deadDoors: string[] = [];
+    for (const loc of built.locations ?? []) {
+      if (!(loc.tags ?? []).includes("jp-building")) continue;
+      const m = /문 앞 접근칸 \((\d+),(\d+)\)/u.exec(loc.note ?? "");
+      if (!m || inMainWalkComponent(walk, built, { x: Number(m[1]), y: Number(m[2]) })) continue;
+      loc.note = `${loc.note} · 문 앞이 큰길에서 걸어서 닿지 않음 — 실내를 잇지 말 것`;
+      deadDoors.push(`${loc.name} (${m[1]},${Number(m[2]) - 1})`);
+    }
+    if (deadDoors.length) warnings.push(`큰길에서 걸어서 닿지 않는 건물 문 ${deadDoors.length}곳: ${deadDoors.join(" · ")} — 이 문에는 실내를 잇지 않는다(다른 문을 쓰거나 seed 를 바꾼다)`);
     draft.maps[mapId] = built;
     for (const [id, ts] of Object.entries(next.tilesets)) draft.tilesets[id] = ts;
     const startNote = claimStartIfBlank(draft, mapId, pickStreetStartPos(draft, built, plan.walkRows)).note;

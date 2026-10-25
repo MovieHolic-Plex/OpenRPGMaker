@@ -1,0 +1,347 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d2b86b35ace2550120a90b8be8ba9ca3dbfe75029f8a47eeae68f9d89ccdac12",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "지하철 출구 번호 표지 3",
+ "label": "modern_city/street-kr/mc-prop-kr-exit-3",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "bus-shelter-a",
+   "kiosk-a",
+   "vending-a"
+  ],
+  "scale": 2,
+  "score": 6,
+  "refSet": {
+   "id": "modern_city",
+   "chipset": "modern_city",
+   "fallback": false,
+   "hash": "dc20de17343e77e8"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 10,
+  "tileColorsP90": 10,
+  "darkV5": 36,
+  "nearBlackEdge": 1,
+  "opaqueTiles": 2
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top cap plate (white sign head)",
+      "rows": "0-9",
+      "evidence": "b",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": "9-10"
+     },
+     {
+      "part": "shaft with gold number panel",
+      "rows": "10-24",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base plate",
+      "rows": "25-30",
+      "evidence": "b",
+      "front_edge_line_row": 29,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 10,
+    "front_face_rows": 15,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": {
+     "cap_rows": 10,
+     "cap_width": 16,
+     "shaft_width": 8,
+     "rounded_at_both_edges": true
+    },
+    "reads_as": "three_quarter",
+    "evidence": "The width profile of the cap runs 6, 12, 14, 16 (rows 3-7), 14, 12 and then drops to the 8-wide shaft at row 10. It widens and narrows again, so it is an elliptical plate that overhangs the shaft. Row 8 is a gray front-edge line (L=113) and row 9 is dark, which gives the shadow beneath. The shaft (rows 10-24, width 8) carries the gold number panel as its front face. The base (rows 25-30) is also an ellipse, widening 10, 14, 16, 16, 14, 10, so the post sits on a plate with a visible top."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a small bollard-style sign: a pale cap, a grey post and an amber panel carrying the number 3, with a dark base. It has about 4 lightness steps on the post and cap, which is comparable to bus-shelter-a (about 3-4) but below the kiosk and vending references (5-6). Its outlines lean blue-grey or brown, with 0% near-neutral dark edge pixels, matching the references, so they read as dark material tone rather than sticker black. It has 9 visible tones per tile, above bus-shelter-a (6) and below kiosk-a (12) and vending-a (20), with 0% near-flat coverage. Texture is limited to a few highlight and shadow dots plus the number glyph. It is a thin, single-tile prop, so I judge density by eye. It is slightly simpler than the kiosk and vending machine, but it would sit acceptably next to bus-shelter-a without looking flatter or more sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 14881
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "white sign cap (ellipse plate with teal slot mark)",
+      "rows": "0-9",
+      "evidence": "b",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": "9-9"
+     },
+     {
+      "part": "shaft with gold 'B' panel (vertical face)",
+      "rows": "10-24",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "round base plinth (ellipse)",
+      "rows": "25-30",
+      "evidence": "b",
+      "front_edge_line_row": 29,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 10,
+    "front_face_rows": 15,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": {
+     "cap_rows": 10,
+     "cap_width": 16,
+     "shaft_width": 8,
+     "rounded_at_both_edges": true
+    },
+    "reads_as": "three_quarter",
+    "evidence": "The width profile of the top part goes 6, 12, 14, then 16 for rows 3-7, then back to 14 and 12 at rows 8-9. That is a lens-shaped ellipse plate that is narrower above and below its widest rows, and it overhangs the 8px shaft by 4px on each side. Row 8 (L=113) reads as the front rim and row 9 is dark shadow beneath it. The white rows 2-7 are the cap's top surface. Below it the shaft runs rows 10-24 as a 15-row front face carrying the gold 'B' panel. The base at rows 25-30 also widens and narrows (10, 14, 16, 16, 14, 10), so it reads as an elliptical plinth."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a small standing pole prop with a white cap, a grey stem and an orange numbered panel. It measures 9 visible tones per tile, 0% near-flat coverage and 0% neutral dark edge pixels, so the outline is tinted rather than black. That is above bus-shelter-a (6 tones, 9% flat) and below kiosk-a (12) and vending-a (20). Because the piece is thin, density is judged by eye. It shows about 4 lightness steps on the cap and stem, which is a bit shallower than the references' 5. The orange panel and its digit are readable, but the stem is fairly plain and the base is simple. Next to the kiosk and vending machine it looks slightly thinner and flatter, though it is not a sticker-like piece and sits roughly at the level of the bus shelter. Borderline; with no clear flat fills and tinted outlines it is acceptable.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 14820
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "white cap plate at top of the post",
+      "rows": "0-9",
+      "evidence": "b",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": "9"
+     },
+     {
+      "part": "base plinth ellipse",
+      "rows": "25-30",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 10,
+    "front_face_rows": 15,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": {
+     "cap_rows": 10,
+     "cap_width": 16,
+     "shaft_width": 8,
+     "rounded_at_both_edges": true
+    },
+    "reads_as": "three_quarter",
+    "evidence": "The width profile of the top part goes 6, 12, 14, 16 (rows 3-7), 14, 12, then drops to the 8-wide shaft at row 10. That is an ellipse plate that widens and narrows again, and it overhangs the shaft by 4 px on each side. A teal slot sits in the middle of the white surface, which reads as the top face. A darker row at 8-9 (L=113 at x=4, 8 and 11) works as the front rim and shadow. Below it, the shaft (rows 10-24) is a dark pole with a gold sign panel (rows 11-20) and a grey lower section (rows 22-24), giving about 15 rows of front face. The base at rows 25-30 (widths 10, 14, 16, 16, 14, 10) is also an elliptical plinth. This matches the green column reference with the ellipse cap."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a small bollard-style sign post with a white cap, a dark pole and a yellow numbered panel. It measures 9 visible tones per tile, above bus-shelter-a (6) and a little below kiosk-a (12), but well below vending-a (20). Near-flat coverage is 0%, so there are no large flat fills. Dark edge pixels are 0% neutral, so the outline is tinted, as in the references. The cap and body show about 4 steps of shading, a little fewer than the 5 or so in the richer references. The piece is thin and simple, so I judge its density by eye. It reads cleanly and sits acceptably next to bus-shelter-a, but it looks slightly thinner and flatter than kiosk-a and vending-a, with little grain on the pole or the panel.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 14872
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top cap disc (white sign head)",
+      "rows": "0-9",
+      "evidence": "b",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": "9"
+     },
+     {
+      "part": "base plate (foot, widening at the bottom)",
+      "rows": "25-30",
+      "evidence": "b",
+      "front_edge_line_row": 29,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 8,
+    "front_face_rows": 15,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": {
+     "cap_rows": 10,
+     "cap_width": 16,
+     "shaft_width": 8,
+     "rounded_at_both_edges": true
+    },
+    "reads_as": "three_quarter",
+    "evidence": "The cap runs rows 0-9 with width profile 6,12,14,16 (rows 3-7),14,12. It widens and then narrows again, so it is an ellipse plate and not a flat band or a hat. It overhangs the 8px shaft by 4px on each side. Rows 0-7 are the light top surface, with a small teal slot mark in rows 3-5. Row 8 (L=113) is the front-edge line, and row 9 is dark eave shadow over the shaft. The shaft in rows 10-24 is the front face, 15 rows tall: a yellow number panel in rows 11-21 and a gray lower segment in rows 22-24. The base in rows 25-30 widens 10,14,16,16,14,10 and is also an elliptical plate. No receding side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a small bollard-style sign: a pale cap, a column, and a gold plate with the number 3. It has about 4 lightness steps on the main materials (cap highlight, light, mid, dark). Its dark edge pixels are 0% neutral, so the outline is tinted and reads as dark material tone, not sticker black. It measures 9 visible tones per tile, which is above bus-shelter-a (6) and kiosk-a is at 12, but well below vending-a (20). Near-flat coverage is 0%, so there are no flat fills. The piece is thin and sparse, so density is judged by eye. It is cleanly drawn but slightly flatter and simpler than kiosk-a and vending-a. The cap and column show little grain or per-material texture, and the base looks plain. It is close to the shipped standard but a little thin, and the doubt goes against it.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 14509
+  }
+ ],
+ "decidedAt": "2026-10-24T14:33:09.484Z",
+ "cells": {
+  "16": [
+   "540342a511c7ca82",
+   "d08167ed3437777e"
+  ],
+  "24": [
+   "010bd778e6b4b244",
+   "14fee616b090e189",
+   "29adbafa49c6fa12",
+   "2a78b504890cace6",
+   "2f394df5446c3e38",
+   "420ac6e70bcb3604",
+   "5e4da71be2b934a7",
+   "6e6dbc1dd5375b7f",
+   "7a635a262d20f60c",
+   "906350a8a95d5956",
+   "a0e67ab7bcc2d7ec",
+   "dc0b4ba41d2efbbc"
+  ],
+  "32": [
+   "0abf75b516f3713f",
+   "5f0b72cbf1581e77",
+   "bbd19c9292b1aae2"
+  ],
+  "48": [
+   "1bda80cd0b4b0a29",
+   "4409cfb78ff65966",
+   "81b808fcac5fc0de",
+   "95ce919fc4c58a5e",
+   "cf409ffcdaad32ae",
+   "e631b1b193fc0040"
+  ]
+ }
+}

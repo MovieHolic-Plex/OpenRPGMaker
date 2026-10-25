@@ -1,7 +1,7 @@
 import { SHOP_UI_PRESETS, effectiveShopUiPreset, isShopUiPreset } from '@/project/shopUiPresets';
 import type { ToolDefinition, JsonSchema } from './types';
 import { ToolError } from './types';
-import { FIELD_MENU_COMMANDS, collectorFieldMenu, romanceFieldMenu, validateFieldMenu, fieldMenu, type AuthoredFieldMenu, type FieldMenuCommand } from '@/project/fieldMenu';
+import { FIELD_MENU_COMMANDS, collectorFieldMenu, romanceFieldMenu, storyFieldMenu, validateFieldMenu, fieldMenu, type AuthoredFieldMenu, type FieldMenuCommand } from '@/project/fieldMenu';
 import {
   BACKLOG_LIMIT_MAX, BACKLOG_LIMIT_MIN, DIALOGUE_SPEEDS, DIALOGUE_UI_LANGUAGES, SKIP_SCOPES, WINDOW_OPACITY_MAX, WINDOW_OPACITY_MIN,
   backlogEnabled, mergeDialogueSystem, resolveDialogueSystem, validateDialogueSystem, type DialogueSystemPatch,
@@ -19,6 +19,7 @@ import { checkMonsterCampaignDefinition } from '@/project/monsterCampaignConsist
 import { installBadgeCeremonies } from '@/project/monsterBadgeCeremony';
 import { resizeCampaignGyms } from '@/project/examples/monsterExpedition/resizeGyms';
 import { listStatusMenuCommandIds, listStatusMenuRailIds, statusMenuRailLabel } from '@/player/playerStatusMenuModel';
+import { FIELD_HUD_THEMES, normalizeFieldHud } from '@/project/fieldHud';
 import type { Project } from '@/project/types';
 import type { PlaySession } from '@/project/session';
 const str:JsonSchema={type:'string'};
@@ -51,14 +52,32 @@ function systemView(p:Project){const c=monsterCampaign(p),session=p.session as P
 };}
 export const GAME_SYSTEM_AUTHORING_TOOLS:readonly ToolDefinition[]=[
   tool('read_game_systems','전투 규칙·출전 파티·ESC 실제 항목·HUD·도감/지도/배지 정의·음악 연결을 함께 읽고 불일치를 표시.','read',schema({},[]),p=>({summary:'현재 게임 시스템과 실제 메뉴 모델을 조회했습니다.',data:systemView(p)})),
+  // 2026-10-25 사용자 규칙: 편집기 기본 HUD(체력 하트·514/514)를 출하하지 않는다. 조수가 장르에 맞는 HUD 를 고르거나 끈다.
+  tool('set_field_hud','탐색 화면에 늘 떠 있는 HUD 를 장르에 맞게 고르거나 끈다(편집기 기본 HUD 를 그대로 두지 않는다). theme: '+Object.entries(FIELD_HUD_THEMES).filter(([k])=>k!=='legacy').map(([k,v])=>`${k}(${v})`).join(', ')+'. off:true = HUD 없음(이야기·추리·연애 대부분). vitals/clock/tools/objective 로 칸을 켜고 끈다.','write',schema({
+    theme:{type:'string',enum:Object.keys(FIELD_HUD_THEMES).filter(k=>k!=='legacy'),description:'HUD 모양. 공포=horror(꽃잎 생명), 추격·이야기=chase(없음), 농장=farm, 모험=hearts, 고전 JRPG=classic, 파티 RPG=party.'},
+    off:{type:'boolean',description:'true 면 상시 HUD 를 모두 끈다.'},
+    vitals:{type:'boolean',description:'체력 표시'},clock:{type:'boolean',description:'달력·시계'},tools:{type:'boolean',description:'도구 슬롯'},objective:{type:'boolean',description:'목표 한 줄'},
+  },[]),(p,args)=>{
+    const keys=['theme','off','vitals','clock','tools','objective'];const unknown=Object.keys(args).filter(k=>!keys.includes(k));
+    if(unknown.length)throw new ToolError(`알 수 없는 인자 ${unknown.join(', ')}. 허용: ${keys.join(', ')}.`,{code:'invalid-args'});
+    if(args.off===true){p.system.fieldHud={theme:'chase',vitals:false,clock:false,tools:false,objective:false,hideEmpty:true,widgets:[]};return {summary:'필드 HUD 를 껐습니다(상시 표시 없음).',data:{hud:p.system.fieldHud}};}
+    if(args.theme===undefined&&!keys.slice(2).some(k=>args[k]!==undefined))throw new ToolError('바꿀 것이 없습니다. 예: {theme:"horror"} · {off:true} · {theme:"hearts",clock:false}',{code:'invalid-args'});
+    const theme=typeof args.theme==='string'?args.theme:(p.system.fieldHud?.theme??'minimal');
+    const prev=p.system.fieldHud&&p.system.fieldHud.theme===theme?p.system.fieldHud:undefined;
+    const flags:Record<string,boolean>={};for(const k of keys.slice(2))if(typeof args[k]==='boolean')flags[k]=args[k] as boolean;
+    const next=normalizeFieldHud({...(prev??{}),theme,...flags,...(prev?.widgets?{widgets:prev.widgets}:{})});
+    if(!prev)delete next.widgets;
+    p.system.fieldHud=next;
+    return {summary:`필드 HUD: ${FIELD_HUD_THEMES[next.theme]}(${next.theme}) — 체력 ${next.vitals?'표시':'숨김'}, 시계 ${next.clock?'표시':'숨김'}, 도구 ${next.tools?'표시':'숨김'}`,data:{hud:next}};
+  }),
   tool('configure_shop_presentation','전체 상점의 표현을 명시적으로 선택. collector는 흰 도트 창의 도구점. 상품·가격·수량·매입 예산은 유지. event-default는 각 명령 스킨 사용.','write',schema({preset:{type:'string',enum:[...SHOP_UI_PRESETS,'event-default']}},['preset']),(p,args)=>{
     if(args.preset==='event-default')delete p.meta.oprnShopPreset;
     else if(typeof args.preset==='string'&&isShopUiPreset(args.preset))p.meta.oprnShopPreset=args.preset;
     else throw new ToolError('상점 스킨 오류.',{code:'invalid-args'});
     return {summary:'상점 표현을 저장했습니다. 실제 거래 검증은 별도입니다.',data:systemView(p)};
   }),
-  tool('configure_field_menu' ,'ESC 메뉴의 실제 항목·순서·표시 이름과 창 스타일을 저작. collector는 도감/동료/가방/수첩/지도/배지/저장/설정, romance는 호감도/일정/소지품/백로그/저장/불러오기/설정/타이틀로. custom 은 entries 전체를 지정하거나, 지금 메뉴에 add(추가)/remove(삭제)만 얹는다. 백로그 항목을 넣으면 대사 시스템의 백로그도 함께 켠다. 기본 기능의 가용성·저장 제한은 유지.','write',schema({preset:{type:'string',enum:['collector','romance','default','custom']},entries:{type:'array',items:{type:'object',additionalProperties:false,properties:{command:{type:'string',enum:[...FIELD_MENU_COMMANDS]},label:str},required:['command','label']}},add:{type:'array',description:'custom 전용. 지금 메뉴에 덧붙일 항목(저장 앞, 타이틀로 앞에 들어간다).',items:{type:'object',additionalProperties:false,properties:{command:{type:'string',enum:[...FIELD_MENU_COMMANDS]},label:str},required:['command','label']}},remove:{type:'array',description:'custom 전용. 지금 메뉴에서 뺄 항목.',items:{type:'string',enum:[...FIELD_MENU_COMMANDS]}},style:{type:'string',enum:['field-list','pixel','classic','sheet','workbench']}},['preset']),(p,args)=>{
-    const preset=String(args.preset);if(!['collector','romance','default','custom'].includes(preset))throw new ToolError('메뉴 프리셋 오류: preset 은 collector|romance|default|custom 중 하나여야 합니다.',{code:'invalid-args'});
+  tool('configure_field_menu' ,'ESC 메뉴의 실제 항목·순서·표시 이름과 창 스타일을 저작. collector는 도감/동료/가방/수첩/지도/배지/저장/설정, romance는 호감도/일정/소지품/백로그/저장/불러오기/설정/타이틀로, story(전투 없는 이야기·공포·회상)는 소지품/갤러리/엔딩/대화 기록/저장/불러오기/설정/타이틀로. custom 은 entries 전체를 지정하거나, 지금 메뉴에 add(추가)/remove(삭제)만 얹는다. 백로그 항목을 넣으면 대사 시스템의 백로그도 함께 켠다. 기본 기능의 가용성·저장 제한은 유지.','write',schema({preset:{type:'string',enum:['collector','romance','story','default','custom']},entries:{type:'array',items:{type:'object',additionalProperties:false,properties:{command:{type:'string',enum:[...FIELD_MENU_COMMANDS]},label:str},required:['command','label']}},add:{type:'array',description:'custom 전용. 지금 메뉴에 덧붙일 항목(저장 앞, 타이틀로 앞에 들어간다).',items:{type:'object',additionalProperties:false,properties:{command:{type:'string',enum:[...FIELD_MENU_COMMANDS]},label:str},required:['command','label']}},remove:{type:'array',description:'custom 전용. 지금 메뉴에서 뺄 항목.',items:{type:'string',enum:[...FIELD_MENU_COMMANDS]}},style:{type:'string',enum:['field-list','pixel','classic','sheet','workbench']}},['preset']),(p,args)=>{
+    const preset=String(args.preset);if(!['collector','romance','story','default','custom'].includes(preset))throw new ToolError('메뉴 프리셋 오류: preset 은 collector|romance|story|default|custom 중 하나여야 합니다.',{code:'invalid-args'});
     // Presets own their entries; structured model providers may emit optional arrays.
     // Custom explicitly owns user labels/order. Preset entries are not a mutation input.
     let next:AuthoredFieldMenu|undefined;
@@ -66,6 +85,7 @@ export const GAME_SYSTEM_AUTHORING_TOOLS:readonly ToolDefinition[]=[
     if(preset==='default')next=undefined;
     else if(preset==='collector')next=collectorFieldMenu();
     else if(preset==='romance')next=romanceFieldMenu();
+    else if(preset==='story')next=storyFieldMenu();
     else{
       const adds=Array.isArray(args.add)?args.add as {command:FieldMenuCommand;label:string}[]:[];
       const removes=Array.isArray(args.remove)?(args.remove as unknown[]).map(String):[];

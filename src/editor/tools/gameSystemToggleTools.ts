@@ -5,6 +5,7 @@
 // UI 패리티: editor/panels/databaseSystemView.ts(배틀 모델/선물/보상 체크박스, 옵트인 섹션).
 import { applyBattleMethod } from "@/project/battleMethod";
 import { GENRE_PACK_IDS, isGenrePackId } from "@/project/genrePackId";
+import { applyRomanceDefaults } from "@/project/romancePreset";
 import type { MonsterCareConfig, RewardPolicy, SystemRecords } from "@/project/types";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
 
@@ -235,4 +236,31 @@ const setProjectGenre: ToolDefinition = {
   },
 };
 
-export const GAME_SYSTEM_TOGGLE_TOOLS: readonly ToolDefinition[] = [configureGameSystems, setProjectGenre];
+const applyRomancePreset: ToolDefinition = {
+  name: "apply_romance_preset",
+  description:
+    "연애·관계 게임 기본값을 한 번에 깐다: 체력 하트 대신 호감 하트 HUD(값이 바뀐 뒤 잠깐), ESC 관계 메뉴(장르 잠금), 대사 읽기 보조(기록·오토·스킵), "
+    + "엔딩 목록·갤러리, 시작 맵 BGM(비었을 때). 저작자가 이미 정한 값(대화창 스타일·HUD 위젯·타이틀 그림)은 덮지 않는다. "
+    + "dayLoop:true(기본) = 하루 루프(시간이 흐르고 대화 칸 3개, 14일째 누적 호감 기한 엔딩). "
+    + "dayLoop:false = 이야기형(정해진 장면 순서로 흐르는 연애 데모·비주얼 노벨) — 시계·대화 칸·기한 엔딩 없이 호감 하트만. "
+    + "전투가 없는 연애 게임에 「514/514」 같은 체력 하트가 떠 있으면 이 도구로 바꾼다.",
+  mode: "write",
+  domains: ["system"],
+  parameters: {
+    type: "object",
+    properties: {
+      dayLoop: { type: "boolean", description: "하루 루프(시간·대화 칸·기한 엔딩)를 켠다. 기본 true. 이야기형 연애는 false" },
+    },
+    additionalProperties: false,
+  },
+  run(draft, args): ToolExecResult {
+    const dayLoop = args.dayLoop !== false;
+    const applied = applyRomanceDefaults(draft, { force: true, dayLoop });
+    return {
+      summary: applied.length ? `연애 기본값(${dayLoop ? "하루 루프" : "이야기형"}): ${applied.join(", ")}` : "연애 기본값이 이미 모두 깔려 있다(바꾼 것 없음)",
+      data: { applied, dayLoop },
+    };
+  },
+};
+
+export const GAME_SYSTEM_TOGGLE_TOOLS: readonly ToolDefinition[] = [configureGameSystems, setProjectGenre, applyRomancePreset];

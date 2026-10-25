@@ -76,7 +76,6 @@ const pickNote = A ? 1 : 0;
 const pickC6 = A ? 0 : 1;
 const pickC7 = A ? 0 : 1;
 
-const exitCell = at("fl_platform_am", "ev_fl_plat_exit");
 const officeDoor = at("fl_street", "ev_fl_office_door");
 const elevator = at("fl_office", "ev_fl_elev");
 const minho = at("fl_office", "ev_fl_minho");
@@ -103,9 +102,9 @@ export default {
       { kind: "waitFor", testid: "dialogue-box", state: "present", timeoutMs: 30000 },
       shotPause(1500),
     ], shot: true },
-    { id: "intro-bust", note: "서하 흉상 대사", ops: [{ kind: "pressUntilJs", key: "Enter", fn: "() => /할 수 있어/.test(document.querySelector(\"[data-testid='dialogue-box']\")?.textContent ?? '')", maxPresses: 10 }, shotPause(900)], shot: true },
-    { id: "platform", note: "승강장 — 조작 가능", ops: [untilStage(1), shotPause(600)], shot: true },
-    { id: "street", note: "역 밖 거리(낮)", ops: [...stepInto("fl_platform_am", exitCell, "up"), untilStage(2), shotPause(600)], shot: true },
+    { id: "intro-bust", note: "서하 흉상 대사(출구 앞)", ops: [{ kind: "pressUntilJs", key: "Enter", fn: "() => /할 수 있어/.test(document.querySelector(\"[data-testid='dialogue-box']\")?.textContent ?? '')", maxPresses: 10 }, shotPause(900)], shot: true },
+    { id: "freeze", note: "횡단보도에서 부딪힘 — 정지 화면", ops: [{ kind: "key", key: "Enter" }, { kind: "waitFor", testid: "runtime-freeze-frame", state: "present", timeoutMs: 20000 }, shotPause(700)], shot: true },
+    { id: "street", note: "부딪힌 뒤 거리(낮) — 조작 가능", ops: [untilStage(2), shotPause(600)], shot: true },
     { id: "office-arrive", note: "사무실 도착 — 팀장 인사", ops: [...stepInto("fl_street", officeDoor, "up"), { kind: "waitFor", testid: "dialogue-box", state: "present", timeoutMs: 20000 }, shotPause(1200)], shot: true },
     { id: "meet", note: "처음 뵙겠습니다", ops: [{ kind: "pressUntilJs", key: "Enter", fn: "() => /강지후입니다/.test(document.querySelector(\"[data-testid='dialogue-box']\")?.textContent ?? '')", maxPresses: 90, settleMs: 500 }, shotPause(1200)], shot: true },
     { id: "c1", note: "선택 1", ops: [toChoice(), shotPause(500)], shot: true },

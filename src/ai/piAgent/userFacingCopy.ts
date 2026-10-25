@@ -7,6 +7,8 @@ export function friendlyExecutionError(message: string): string {
   if (/이미 실행 중입니다|map-busy/u.test(message)) return "이 맵에서 앞선 조수 작업이 아직 끝나지 않았어요. 그 작업이 끝나거나 멈춘 뒤(최대 몇 분) 다시 보내 주세요.";
   // 편집기가 단계 적용 결과를 작업기에 돌려주지 못했다(부하로 연결이 잠깐 끊김) — 일반 문장 대신 무슨 일인지 말한다(G43).
   if (/(적용|맵 이미지) 응답을 전달하지 못했습니다/u.test(message)) return "작업 도중 편집기와 AI 작업기 사이 연결이 끊겨 멈췄어요.";
+  // 작업기(bun)가 죽으면 스트림이 「terminated」로 끝난다(2026-10-25 G45 실제 강제 종료 시험) — 맵 예약은 풀린다.
+  if (/^terminated$|worker (exited|crashed)|작업기가 (종료|멈)/iu.test(message.trim())) return "AI 작업기가 갑자기 멈췄어요. 같은 요청을 다시 보내면 처음부터 다시 해요.";
   if (/^Request was aborted\.?$|첫 응답이 늦어/i.test(message)) return "AI 모델의 첫 응답이 너무 늦어 요청이 끊겼어요. 같은 요청을 다시 보내면 이어서 해요.";
   if (/중단했습니다|aborted/i.test(message)) return "작업을 중단했어요.";
   if (/PROHIBITED_CONTENT|content.filter|safety/i.test(message)) return "AI 제공자가 응답을 중단했어요. 답변을 끝까지 받지 못했어요.";

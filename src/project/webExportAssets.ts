@@ -5,6 +5,8 @@ import { openingStillPackUrl } from "@/assets/openingStillPackCdn";
 import { BUNDLED_IMAGE_ASSETS, TEX_DIALOGUE_FRAME, TEX_TILESET } from "@/assets/bundled";
 import { isKnownRetiredResource, resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { sharedPortraitExpressionSiblings } from "@/assets/sharedPortraitAssets";
+import { comboBustResourceId, comboMemberActorIds } from "@/project/comboBust";
+import { resolveBattleStaging } from "@/project/battleStaging";
 import { DEFAULT_GAME_OVER_BACKGROUND_RESOURCE_ID } from "./cinematicSettings";
 import { battlerIdleAnimation } from "@/assets/battlerIdleAnimations";
 import { bundledPixelEnemySheet } from "@/assets/pixelEnemySheets";
@@ -62,6 +64,10 @@ export function collectWebExportAssets(project: Project): readonly WebExportAsse
   // The player always loads the placeable overlay textures (rock/gem charset, tree) — see
   // projectBundledTextureKeys in bundled.ts — so the export must always ship them.
   for (const key of PLACEABLE_OVERLAY_TEXTURE_KEYS) ids.add(key);
+  // 연계기 「얼굴 교차」 컷인은 런타임이 배우의 결의 흉상을 고른다 — 데이터에 이름이 없으니 같이 싣는다(project/comboBust.ts).
+  if (resolveBattleStaging(project.system.battleStaging).comboCutIn === "faces") {
+    for (const actorId of comboMemberActorIds(project)) for (const candidate of comboBustResourceId(project, actorId)) ids.add(candidate.resourceId);
+  }
   // 공용 흉상·전신은 대사의 표정에 따라 런타임이 같은 모양의 다른 표정 그림으로 바꾼다 — 참조된 모양의 5표정을 같이 싣는다.
   for (const id of [...ids]) for (const sibling of sharedPortraitExpressionSiblings(id)) ids.add(sibling);
   const usedUploadedIds = collectUsedUploadedAssetIds(project);

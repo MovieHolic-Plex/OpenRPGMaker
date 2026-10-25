@@ -1693,6 +1693,8 @@ function screenEffectPreviewModel(effect: string, value: string, durationMs: num
         restOpacity: 0,
         note: plan.percent > 0 ? `레터박스 — 위아래 ${plan.percent}% 검은 띠` : "레터박스 걷기",
       };
+    case "freeze":
+      return { background: "rgba(255,255,255,0)", fromOpacity: 0, restOpacity: 0, note: plan.on ? `정지 화면 — 지금 화면을 멈춘 한 장으로(${plan.style})` : "정지 화면 풀기" };
     case "distortion":
       // 물결·모자이크·기울기는 게임 화면 자체를 비트는 카메라 후처리라 미리보기 덮개로 흉내 내지 않는다.
       return { background: "rgba(15,23,42,0)", fromOpacity: 0, restOpacity: 0, note: DISTORTION_NOTES[plan.effect] ?? "화면 왜곡" };

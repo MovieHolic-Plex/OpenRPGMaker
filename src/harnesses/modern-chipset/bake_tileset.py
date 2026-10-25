@@ -806,6 +806,9 @@ def main():
         # 움직이는 거리 소품(신호등·보행자 신호·건널목·화살표판·택시 승강장) — 이름 핀(anim:*)으로 번호를 고정한 칸·스트립·키트를 다시 붙인다.
         import bake_anim
         bake_anim.apply()
+        # 한국 업무 지구 소품(지하철 출구 번호 표지·세로 입간판·가로수 보호판, art_kr.py) — 이름 핀(kr:*)으로 번호를 고정해 다시 붙인다.
+        import bake_kr
+        bake_kr.apply()
     rep = out['report']
     if a.selftest:
         rep['selftest'] = selftest(a.out_root)

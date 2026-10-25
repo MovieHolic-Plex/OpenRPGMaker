@@ -4,6 +4,7 @@
 // 「심부름 퀘스트」「새 무기를 상점에서」「보스 전투 뒤 감사」를 옮길 길이 없었다. 이 층은 이미 검증된 v1 결정론 도구를
 // 그대로 내놓는다(스키마·검증·저장 계약이 v1 과 같다). 요청에 게임 낱말이 있을 때만 싣는다 — 맵 요청의 첫 턴을 무겁게 하지 않는다.
 import { createPiToolset, type PiToolShape } from "@/ai/piAgent/toolAdapter";
+import { WHOLE_GAME_WORDS } from "./shipChecks";
 import { getTool } from "@/editor/tools/toolRegistry";
 import type { PiAssistantV2Env } from "./env";
 
@@ -11,6 +12,11 @@ export const GAME_WORDS = /퀘스트|의뢰|심부름|부탁|아이템|회복약
 
 
 /** 폴른 스타 제작에서 나온 일 묶음 — 요청 낱말이 있을 때만 그 도구를 더 싣는다(첫 턴을 무겁게 하지 않는다). */
+export const HORROR_WORDS = /공포|호러|무서|오싹|귀신|유령|괴물|좀비|저택|폐교|폐병원|병원|추격|쫓아|쫓기|숨어|숨을 곳|옷장|손전등|어둠|비명|깜짝|horror|scary|ghost|haunted/iu;
+/** 퍼즐 사슬 동사를 실을 요청 — 단서·자물쇠·잠긴 방·탈출. */
+export function wantsPuzzle(task: string): boolean {
+  return HORROR_WORDS.test(task) || /퍼즐|단서|금고|비밀번호|암호|열쇠|잠긴|잠겨|탈출|수수께끼|puzzle|clue|escape|riddle/iu.test(task);
+}
 export const FALLEN_TIERS: readonly { readonly words: RegExp; readonly tools: readonly string[]; readonly card?: string }[] = [
   { words: /숲|들판|필드|초원|forest|woods?\b|field|meadow/iu, tools: ["author_forest_route"] },
   { words: /뒤지|뒤져|뒤질|수납|항아리|통을|통이랑|통과 상자|서랍|옷장|들키|들켜|몰래|search/iu, tools: ["place_search_containers"] },
@@ -29,6 +35,10 @@ export const FALLEN_TIERS: readonly { readonly words: RegExp; readonly tools: re
   { words: /행인|오가|출근|퇴근|지나다니|사람들이 (걸|다니|오|지나)|walkers?\b|pedestrian/iu, tools: ["add_street_walkers"], card: "· 거리를 오가는 행인: add_street_walkers{mapId, walkers:[{name, graphic:{query:'회사원'}, stops:[{x,y},{x,y,waitSec}](들를 칸 2곳 이상 — 정류장·횡단보도 건너편·건물 문 앞·지하철 계단), speed 2~4 를 사람마다 다르게}]} — 길찾기·차 양보는 함수가 한다. 좌표는 read_npc_layout/find_empty_ground 나 거리 도구 결과(문·정류장·출구 칸)에서." },
   { words: /회사 거리|오피스|빌딩 거리|지하철 출구|도시 거리|도심|modern city|office street/iu, tools: ["resize_map", "create_map", "compose_modern_city_street", "link_modern_city_interior", "add_street_walkers", "set_map_properties"], card: "· 현대 도시 거리(modern_city 칩셋): compose_modern_city_street{mapId, seed, shops, landmark:'tower10'(큰 빌딩), subwayExits:1~4(번호 출구), korean:true(한국 거리)} — 맵은 60×50 권장(작으면 먼저 resize_map{mapId,width:60,height:50}; 새 거리 맵이면 create_map{tilesetId:'modern_city',width:60,height:50}). 결과 data.subwayExits·buildings 의 칸으로 행인 stops·이동 이벤트를 단다." },
   { words: /옥상|내려다|전망대|전망|아래 거리|배경으로|rooftop/iu, tools: ["set_map_properties"], card: "· 옥상·전망대에서 아래 동네가 보이는 배경: set_map_properties{mapId:옥상 맵, background:{fromMap:{mapId:아래 거리 맵, scale:0.33, haze:0.3}, showInEmptyCells:true}} — 그림을 지어내지 않는다. 옥상 맵 가장자리(울타리 밖)는 빈 칸으로 둬야 배경이 보인다." },
+  // 2026-10-25 공포 트랙(판정 J11~J15): 어둠·손전등·추격·숨기·게임 오버·퍼즐 — v1 에 있던 일반 기능을 공포 낱말에 싣는다.
+  // 2026-10-25 사용자 규칙: 다 지은 게임에 편집기 기본 타이틀·오프닝·HUD·창·음악·이름·얼굴·엔딩 카드를 남기지 않는다(J59: 첫 턴에 오프닝 도구가 없어 「새 프로젝트」 타이틀이 남았다).
+  { words: WHOLE_GAME_WORDS, tools: ["set_title_screen", "plan_opening", "set_opening", "list_opening_media", "list_resources", "set_field_hud", "set_game_over", "define_ending", "set_vn_look", "set_project_settings", "set_map_properties", "upsert_actor", "list_npc_graphics"], card: "· 출하 전 기본값 바꾸기(게임 하나를 만들 때 반드시): 편집기 기본값을 그대로 두면 끝맺음 관문이 막는다. ① 제목·타이틀 그림 = set_title_screen{title, backgroundResourceId}(그림은 list_resources{kind:'backdrop',query:<배경 낱말>}). 제목에 퍼즐 답·암호·결말을 쓰지 않는다. ② 오프닝 = plan_opening → set_opening(이 게임의 장면) 또는 set_opening{enabled:false}. ③ HUD = set_field_hud{theme:<장르>} 또는 {off:true}. ④ 대사창·메뉴 = set_vn_look{preset} 또는 set_project_settings{resources:{systemResourceId}}. ⑤ 맵마다 곡 = set_map_properties{mapId,bgm}, 전투가 있으면 전투 곡·전투 배경(set_map_properties{battleBackground}). ⑥ 주인공·동료 이름·모습·얼굴 = upsert_actor(list_npc_graphics 로 외형 고르기). ⑦ 질 수 있으면 set_game_over. ⑧ 엔딩 = define_ending 의 epilogue 3줄 이상(무슨 일이 어떻게 끝났는지·인물의 매듭) + presentation{backgroundResourceId(마지막 그림), finalTitle, credits}. 대사 한 줄 엔딩은 엔딩이 아니다." },
+  { words: HORROR_WORDS, tools: ["make_chase_scene", "configure_object_behavior", "make_horror_loop", "set_lighting_volume", "set_scene_mood", "set_game_over", "set_life_flower", "compile_puzzle", "make_gallery_room"], card: "· 공포: 어둠·손전등 = set_lighting_volume{mapId, ambient:0.15~0.3, sources:[{at:{kind:'player'}, radius:3~4}]}(손전등은 플레이어를 따라간다 — at 은 늘 객체). 쫓아오는 것 = make_chase_scene(순찰하다 보면 쫓고, 놓치면 돌아간다: pursuit{searchMs, onLost:'return'}, hidingSpots, killOnTouch, safeZone). 옷장·침대 밑 숨기 = configure_object_behavior{mapId, eventId, pageId, kind:'hiding'}(또는 make_chase_scene 의 hidingSpots). 잡히면 = set_game_over{presentation:'horror'}. 단서→금고→열쇠→잠긴 방 = author_puzzle_chain 하나로(답은 단서에만). 잠긴 방은 seal_locked_room 이 벽 틈을 막는다. 깜짝 놀람은 add_event 비트(화면 흔들림·번쩍임·효과음)로, 대사에 「@player」·{name} 을 쓰지 않는다 — 주인공 이름을 쓴다. 동료가 «합류»하면 changeParty{action:'add'}." },
 ];
 export function fallenTierTools(task: string): string[] {
   return FALLEN_TIERS.filter((tier) => tier.words.test(task)).flatMap((tier) => tier.tools);
@@ -106,7 +116,7 @@ export const GAME_CARD = `[게임 요소 — 퀘스트·아이템·상점·전�
 - 도구가 거절하면 이유를 읽고 고쳐 다시 부른다. 같은 거절이 두 번이면 방법을 바꾼다. 할 수 없는 것은 보고에 적는다.`;
 
 export function wantsGameTools(task: string): boolean {
-  return GAME_WORDS.test(task);
+  return GAME_WORDS.test(task) || HORROR_WORDS.test(task);
 }
 
 /** 이미 있는 맵에 물길·다리·작은 물건을 덧그리는 요청(맵을 새로 짓지 않는다) — v1 결정론 덧그리기 도구 셋. */
@@ -166,5 +176,37 @@ export function createGameTools(env: PiAssistantV2Env, task = ""): PiToolShape[]
   // 게임 요청도 «조사하는 물건»(비석·이동석·분수)을 보이게 찍어야 해서 물건 찾기·찍기를 같이 준다(2026-10-24: 투명 이벤트가 맨땅에 남았다).
   const want = [...(wantsGameTools(task) ? [...gameToolNames(task), "list_spatial_designs", "stamp_object", ...fallenTierTools(task)] : []), ...(wantsTerrainTools(task) ? V2_TERRAIN_TOOLS : []), ...storeTierTools(task)];
   const names = [...new Set(want)].filter((name) => getTool(name));
-  return createPiToolset(env.ctx, { ...(env.toolsetOptions ?? {}), toolNames: names, onCall: env.record });
+  return withPictureSearchBudget(createPiToolset(env.ctx, { ...(env.toolsetOptions ?? {}), toolNames: names, onCall: env.record }));
+}
+
+/**
+ * 그림 찾기 상한(G44, 2026-10-25 장난감 가게): 묶음에 장난감 가게 그림이 없는데 list_resources 를 14번 돌렸다.
+ * 그림·배경(picture·backdrop·faceset) 검색이 0개로 끝난 것이 3번이면 더 찾지 않고 «없다»를 분명히 돌려준다 —
+ * 사용자에게 그리기/일반 그림 중 고르게 하거나, 가장 가까운 일반 그림을 쓰고 보고에 적으라고 한다.
+ */
+export const PICTURE_SEARCH_MISSES = 3;
+export function withPictureSearchBudget(tools: PiToolShape[]): PiToolShape[] {
+  let misses = 0;
+  const tried: string[] = [];
+  return tools.map((tool) => tool.name !== "list_resources" ? tool : {
+    ...tool,
+    async execute(id, params, signal) {
+      const args = (params ?? {}) as { kind?: string; query?: string };
+      const pictureLike = ["picture", "backdrop", "faceset"].includes(String(args.kind));
+      if (pictureLike && misses >= PICTURE_SEARCH_MISSES) {
+        const summary = `그림 묶음에 맞는 그림이 없다(이미 ${misses}번 0개: ${tried.join(", ")}). 더 찾지 않는다 — ` +
+          "(1) 사용자에게 «꼭 맞는 그림이 없어요. 새로 그릴까요, 비슷한 일반 그림을 쓸까요?»라고 ask_user 로 묻거나, " +
+          "(2) 이미 찾은 것 중 가장 가까운 일반 그림(밤하늘·들판·실내 등)을 쓰고 보고에 «맞는 그림이 없어 일반 그림을 썼다»고 적는다.";
+        return { content: [{ type: "text", text: JSON.stringify({ ok: false, summary }) }] } as Awaited<ReturnType<PiToolShape["execute"]>>;
+      }
+      const result = await tool.execute(id, params, signal);
+      if (pictureLike) {
+        const first = result.content.find((c) => c.type === "text") as { text: string } | undefined;
+        let count = -1;
+        try { const parsed = JSON.parse(first?.text ?? "{}") as { summary?: string }; count = Number(/리소스 (\d+)개/u.exec(String(parsed.summary ?? ""))?.[1] ?? -1); } catch { /* 글 */ }
+        if (count === 0) { misses += 1; tried.push(`${args.kind}:${String(args.query ?? "").slice(0, 30)}`); }
+      }
+      return result;
+    },
+  });
 }

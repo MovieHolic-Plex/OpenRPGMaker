@@ -1,4 +1,5 @@
 import { mapTileSize } from "@/project/tileGeometry";
+import { npcMoveDurationMs } from "@/project/characterMotion";
 import { actionFieldSlow } from "./actionFieldSlow";
 import { isDetectionEmoting } from "./npcDetectionEncounter";
 import { pursuitTarget } from "./horrorRuntime";
@@ -345,14 +346,26 @@ function updateChaseNpc(
     : precomputed ? precomputed.value
     : pursuitTarget({ project, map: scene.map, session: scene.session, positions: scene.eventPositions }, view, mover, deltaMs);
   const sightAlert = view.movement.sightAlert;
+  const lunge = view.movement.chaseLunge;
+  const seenBefore = mover.alertSeen === true;
   if (sightAlert && !mover.chaseTarget && holdForSightAlert(scene, eventId, mover, sightAlert, tracked, deltaMs)) {
+    // 덮치기(movement.chaseLunge)는 놀람 멈춤이 끝나는 순간부터 센다.
+    if (lunge && !seenBefore && mover.alertSeen) mover.lungeLeft = Math.max(0, Math.round(lunge.steps));
     setNpcIdleFrame(sprite, baseFrame, mover.facing, view.animationType, mover.animationEnabled);
     return;
   }
+  if (lunge && !sightAlert && !seenBefore && tracked && !tracked.searching && !mover.chaseTarget) {
+    mover.alertSeen = true;
+    mover.lungeLeft = Math.max(0, Math.round(lunge.steps));
+  }
+  if (tracked === null || tracked?.searching) mover.lungeLeft = 0;
   if (tracked === null) {
     setNpcIdleFrame(sprite, baseFrame, mover.facing, view.animationType, mover.animationEnabled);
     return;
   }
+  // 덮치는 동안은 걸음 사이 쉼 없이 바로 다음 칸으로.
+  const lunging = (mover.lungeLeft ?? 0) > 0 && lunge !== undefined;
+  if (lunging) mover.timer = Math.max(mover.timer, mover.moveIntervalMs);
   const pursuit = mover.chaseTarget ?? tracked ?? { x: scene.tileX, y: scene.tileY };
   const targetEvent = mover.chaseTarget
     ? findBlockingEventOverlappingRect(project, scene.map, scene.session, scene.eventPositions,
@@ -415,7 +428,9 @@ function updateChaseNpc(
     return;
   }
   moveAutonomousRuntimePosition(scene, eventId, decision.x, decision.y, frameDir);
-  mover.activeMove = { fromX: view.x, fromY: view.y, toX: decision.x, toY: decision.y, dir: frameDir, baseFrame, elapsedMs: 0 };
+  mover.activeMove = { fromX: view.x, fromY: view.y, toX: decision.x, toY: decision.y, dir: frameDir, baseFrame, elapsedMs: 0,
+    ...(lunging ? { durationMs: npcMoveDurationMs(lunge!.speed) } : {}) };
+  if (lunging) mover.lungeLeft = (mover.lungeLeft ?? 1) - 1;
   if (sprite) {
     sprite.setPosition(footprintSpriteX(view.x, view.footprint, mapTileSize(scene.map)), characterSpriteY(view.y, mapTileSize(scene.map)));
     updateCharacterDepth(sprite, view.priority);
