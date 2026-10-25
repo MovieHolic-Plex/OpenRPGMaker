@@ -2663,7 +2663,7 @@ const setTitleScreen: ToolDefinition = {
       title: { type: "string" },
       menuLabels: {
         type: "object",
-        description: "{ newGame, continueGame, resume, credits, quit } — credits 는 저작자 표기 창을 여는 항목(항상 보임)",
+        description: "{ newGame, continueGame, resume, credits, quit } — credits 는 저작자 표기 창을 여는 항목(항상 보임). continueGame=저장 슬롯에서 불러오기, resume=자동 저장에서 바로 이어하기(자동 저장이 있을 때만 보임) — 둘은 함께, 서로 다른 말로 바꾼다(한쪽만 「…이어하기」로 바꾸면 타이틀에 「이어하기」가 두 줄 뜬다).",
         properties: {
           newGame: { type: "string" },
           continueGame: { type: "string" },
@@ -2829,6 +2829,13 @@ const setTitleScreen: ToolDefinition = {
 
     const labels = args.menuLabels as Partial<typeof current.menuLabels> | undefined;
     if (labels) current.menuLabels = { ...current.menuLabels, ...labels };
+    // 불러오기(continueGame)만 「…이어하기」로 바꾸면 자동 저장 재개(resume, 기본 「이어하기」)와 두 줄이 같은 말이 된다(2026-10-25 J34
+    // 「이어하기」·「기억 이어하기」). resume 을 따로 주지 않았으면 겹치지 않는 말로 채운다.
+    const labelNotes: string[] = [];
+    if (labels?.continueGame && !labels.resume && !current.menuLabels.resume?.trim() && /이어/u.test(labels.continueGame)) {
+      current.menuLabels = { ...current.menuLabels, resume: "방금 하던 곳부터" };
+      labelNotes.push("불러오기 이름이 「이어하기」와 겹쳐 자동 저장 재개 이름을 「방금 하던 곳부터」로 정했다 — 바꾸려면 menuLabels.resume 을 함께 준다");
+    }
 
     const visibility = args.menuVisibility as Partial<{ newGame: boolean; continueGame: boolean; quit: boolean }> | undefined;
     if (visibility) {
@@ -2936,7 +2943,7 @@ const setTitleScreen: ToolDefinition = {
 
     const opening = applyTitleOpeningArgs(current, args, draft);
 
-    return { summary: `타이틀 화면 설정: "${current.title}"${opening}` };
+    return { summary: `타이틀 화면 설정: "${current.title}"${opening}${labelNotes.length ? ` · ${labelNotes.join(" · ")}` : ""}` };
   },
 };
 

@@ -878,3 +878,13 @@
   font-size: var(--runtime-font-size-9);
   font-style: italic;
 }
+
+/* 로고 아래로 내린 메뉴가 무대보다 길 때(titleScreen.ts renderMenu data-compact) — 줄 사이를 줄인다(2026-10-25 J28). */
+.rm-title-screen .rm-title-menu[data-compact="true"] {
+  gap: 0;
+}
+.rm-title-screen .rm-title-menu[data-compact="true"] .rm-title-menu-button {
+  min-height: 12px;
+  padding-top: 1px;
+  padding-bottom: 1px;
+}
