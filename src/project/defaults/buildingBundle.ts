@@ -15,6 +15,18 @@ export interface BuildingBundleConfig{
  approval?:{tag:string;text:string};
 }
 
+/**
+ * 판이 바뀌어 count 가 줄거나 늘면 tileMeta 도 같은 길이로 맞춘다(되읽기 validateTileset 은 «길이 == count»).
+ * 이 시트들은 tileMeta 를 싣지 않지만 편집기가 빈 칸으로 채워 저장해 둔 옛 프로젝트가 있다 — 실측(2026-10-25):
+ * #3514 가 beodeul_massing 을 1392→1184 칸으로 줄이자 count 만 따라가고 tileMeta 1392 가 남아 저장이 「tileMeta 길이 불일치」로 막혔다.
+ */
+export function fitTileMetaToCount(ts:TilesetDef):boolean{
+ const meta=ts.tileMeta;if(!meta||meta.length===ts.count)return false;
+ if(meta.length>ts.count)ts.tileMeta=meta.slice(0,ts.count);
+ else ts.tileMeta=[...meta,...Array.from({length:ts.count-meta.length},()=>({label:'',description:''}))];
+ return true;
+}
+
 export function defineBuildingBundle(cfg:BuildingBundleConfig){
  const {catalog,ids}=cfg;
  const prefixes=[ids.house,ids.shadow,ids.foundation];
@@ -40,6 +52,7 @@ export function defineBuildingBundle(cfg:BuildingBundleConfig){
   if(ts.id!==cfg.tilesetId||ts.image.id!==cfg.texture)return false;
   const fresh=createTileset();let changed=false;
   for(const key of ['count','priority','passability','terrain'] as const)if(JSON.stringify(ts[key])!==JSON.stringify(fresh[key])){(ts as any)[key]=fresh[key];changed=true;}
+  if(fitTileMetaToCount(ts))changed=true;
   const kits=ts.structureKits??=[];
   for(const k of fresh.structureKits!){const at=kits.findIndex(old=>old.id===k.id);if(at<0){kits.push(k);changed=true;}else if(JSON.stringify(kits[at])!==JSON.stringify(k)){kits[at]=k;changed=true;}}
   // a building removed from the catalog must not linger as a placeable kit
