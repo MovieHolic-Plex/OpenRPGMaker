@@ -555,7 +555,7 @@ export const OPENING_ANIMATIC_TOOLS: readonly ToolDefinition[] = [
   }),
   definition('place_opening_background', '무대 전체를 덮는 배경 그림 레이어를 정확히 깔아 준다(x,y는 «앵커 점»이므로 손으로 채우면 어긋난다). '
     + '그림 대신 mapId 를 주면 그 게임 맵을 그대로 배경으로 쓴다(맞는 오프닝 그림이 없을 때 — 엉뚱한 스틸 대신 실제 무대). focus {x,y} = 가운데에 올 맵 칸(기본 맵 가운데), zoom 1 = 맵 화소 1:1(384×216 무대면 칸 24×13.5개), 2 = 두 배로 당김. 인물은 그려지지 않으니 place_opening_charset_actor 로 얹는다.',
-  'write', schema({ shotId: str, layerId: str, resourceId: str, mapId: str, focus: { type: 'object', properties: { x: num, y: num }, required: ['x', 'y'], additionalProperties: false }, zoom: num, opacity: num, index: integer }, ['shotId', 'layerId']), (p, args) => {
+  'write', schema({ shotId: str, layerId: str, resourceId: str, mapId: str, focus: { type: 'object', properties: { x: num, y: num }, required: ['x', 'y'], additionalProperties: false }, zoom: num, opacity: num, index: integer, sampling: { type: 'string', enum: ['nearest', 'linear'], description: 'nearest(기본) = 도트 그림·맵. linear = 붓 그림 일러스트(키아트)를 무대에 줄여 깔 때 — nearest 로 줄이면 계단처럼 깨진다.' } }, ['shotId', 'layerId']), (p, args) => {
     const s = shot(p, args.shotId), id = text(args.layerId, 'layerId');
     const width = s.composition.width, height = s.composition.height;
     const mapId = typeof args.mapId === 'string' && args.mapId.trim() ? args.mapId.trim() : '';
@@ -573,7 +573,7 @@ export const OPENING_ANIMATIC_TOOLS: readonly ToolDefinition[] = [
       resourceId = text(args.resourceId, 'resourceId');
       if (!hasOpeningImage(p, resourceId)) throw new ToolError(`배경 그림을 찾을 수 없습니다: ${resourceId}`, { code: 'resource-not-found' });
     }
-    const layer: AnimaticLayer = { id, kind: 'image', role: 'background', resourceId, x: 0, y: 0, width, height, anchorX: 0, anchorY: 0, sampling: 'nearest',
+    const layer: AnimaticLayer = { id, kind: 'image', role: 'background', resourceId, x: 0, y: 0, width, height, anchorX: 0, anchorY: 0, sampling: args.sampling === 'linear' && !mapId ? 'linear' : 'nearest',
       ...(crop ? { crop } : {}),
       ...(args.opacity !== undefined ? { opacity: Number(args.opacity) } : {}) };
     const rows = s.composition.layers, at = rows.findIndex(row => row.id === id);

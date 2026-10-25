@@ -3607,6 +3607,19 @@ r8~r11 실편집기 녹화에서 조수는 도구를 찾지 않고 paint_tiles �
 - 시험: `test/dialogueCameraLift.test.ts`, 하네스 과제 `dialogue-keeps-speakers-visible`(scene-lessons-seed, 19528).
 헤드리스 러너(`sceneTestRunner`): 선택 → 장소 이동으로 끝나는 이벤트 뒤, 도착 맵 자동 실행이 선택지에서 기다리면 그 안쪽 해석기를 그대로 들고 간다(예전에는 «Nested interaction still waiting» 실패로 자동 플레이가 첫 장면에서 멈췄다).
 
+### 장르 기본값 걷어 내기 — HUD·오프닝 그림·결말 그림 (2026-10-25, 시타마치 2차)
+
+사용자가 시타마치를 보고 「오프닝이 에디터 기본 같다·기본 HUD·엔딩 약함·차도 위 NPC」를 짚었다. 조수가 직접 고칠 수 있게 한 것:
+- **HUD 저작** `set_project_settings({fieldHud:{theme?, menuStyle?, widgets:[…]}})` — 위젯 칸은 모두 열거된 이름 있는 속성(자유 키 없음). `widgets` 를 주면 통째로 바꾸고 테마 기본 위젯(체력·시계·도구)은 끈다. `widgets:[]` = HUD 끔. `source:"variable"` 은 없는 변수면 거절. 연애 기본값은 `widgets` 가 정해져 있으면 손대지 않는다. 시타마치: 「소원 등롱 n / 3」 하나(`condition:"nonzero"`, 왼쪽 위 종이 판).
+- **붓 그림 오프닝** `place_opening_background({…, resourceId, sampling:"linear"})` — 기본 nearest 는 도트·맵용이고, 1672×941 일러스트를 480×270 무대에 줄이면 계단처럼 깨진다. `mapId` 배경은 항상 nearest. 시타마치 오프닝 = 이 이야기용으로 생성한 다섯 장(공용 전신 초상으로 만든 참조 시트로 인물 일치, 감독 선택, 출처 `public/assets/generated/title/shitamachi-keyart-provenance.json`) + `animate_opening_camera` 천천히 밀기 + 자막.
+- **결말 순서**: 맵 위 마지막 대사 → `fadeOut` → `showPicture`(결말 그림, 480 무대에 29%) → `triggerEnding` → `define_ending.epilogue` 첫 비트 `{kind:"picture",action:"show"}` 위로 «그 뒤» 와 다른 인물 각자의 매듭 → 엔딩 카드. 첫사랑(`firstLove.ts endingOpen`)과 같은 모양.
+- **장면 그림(CG)**: 고백 순간·옛 사진처럼 이야기 중간의 한 장면은 `showPicture`(opacity 0) → 같은 그림 opacity 255 `durationMs` 로 서서히 띄우고, 그동안의 대사는 흉상 없이 이름표만(`changeFace` 비움) — 그림 속 인물 위에 같은 사람 흉상이 겹친다. 끝나면 opacity 0 → `erasePicture`. 시타마치 `cgIn`·`overCg`·`cgOut`.
+- **결말 카드 흉상 끄기** `define_ending.presentation.portraits:"none"` — 결말 그림에 이미 두 사람이 그려져 있으면 카드 위 커플 흉상을 그리지 않는다(`playSceneOverlays.buildEndingCg`). 기본 `auto`.
+- **듣는 사람 흉상은 불투명**(`dialogue.css`·`dialogueStyles.css`) — 반투명(0.9·0.96)이면 뒤 배경이 비쳐 «유령»으로 읽혔다(VQA r1). 누가 말하는지는 밝기·크기로 가린다.
+- **타이틀**: `set_title_screen({logoStyle:"gold", menuStyle:"plain"})` — 기본 창 메뉴·glow 글자는 차가운 파란 기본 스킨으로 읽혔다. 메뉴 글자 크기 `menuFontPx` 는 아직 도구 인자가 아니다(데이터 필드만 있음).
+- 하네스 과제(scene-lessons-seed): `story-hud-replaces-genre-default`(19537) · `painted-opening-from-story-stills`(19538) · `ending-scene-then-final-image`(19539) · `npcs-stand-on-sidewalks`(19540) · `confession-cg-over-dialogue`(19541) · `lanterns-visibly-light`(19542).
+- 조수가 스스로 못 한 것: 그림 생성 — 대표 데모 빌드는 헤드리스라 `generate_opening_image` 가 `image-generation-unavailable` 로 멈춘다. 감독이 같은 생성기(kaykai)를 직접 돌려 후보를 고르고 resolver 에 등록했다. 편집기 안 조수는 `generate_opening_image({referenceResourceIds:[인물 전신 초상…]})` 로 같은 일을 할 수 있다. NPC 를 «보도» 에 놓는 것 — `place_npc`·`add_street_walkers` 는 차도/보도를 가리지 않아, 칸 이름표(tileMeta label)를 읽어 자리를 감독이 골랐다.
+
 ## 연애 3차 수리 — 칩·ESC 메뉴·뼈대·완료 문 (2026-10-16, romance-fix-3)
 
 - **인물 칩 = Modern1~3(24칸).** 장르 잠금 `romance` 에 `charsets`(families `modern`·`object`·`uploaded`, 주인공 기본 `oprn-charset-modern2` 칸 2)가 생겼고 `enableGenreLockSettled` 로 켠다(`romancePreset.ts`) — 켜는 순간 기본 로스터·주인공이 Modern 칩으로 옮겨진다. `charsetQuery.categoryOf()` 는 `tex_oprn_charset_modern*` 을 `people` 로 센다(이게 `object` 로 새서 「villager」「npc」 같은 일반 질의와 place_npc 기본값이 잠금 아래 0건이었다). `list_npc_graphics` 가 0건이면 `data.hint` 에 낱말 하나로 줄이라고 적는다(공백으로 이은 여러 낱말은 모두 맞아야 한다).

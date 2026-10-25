@@ -7,10 +7,10 @@ import type { InteriorRoomTemplate } from "./templates";
 import type { ModernProgramVariation } from "./modernPresets";
 import { g, o, row, seatedTable, t, type Venue } from "./venueKit";
 
-const VENUES: readonly Venue[] = [
+const BASE_VENUES: readonly Venue[] = [
   // ── 학생 1. 07:00 2층 가정집 1층 (26×20, 비사각형 계단식 외곽) - 위 줄 북서 중정 후퇴(void:2) + 침실·아이 방·욕실·계단실,
   //    아래 줄 거실(h:7)·부엌(h:6)·현관(h:8) 계단형 남쪽 외곽. 모든 방이 거실·부엌·계단 홀과 직접 이어져 침실·욕실을 통과하지 않는다.
-  { program: "mc_house", map: "family-house", variation: {
+  { program: "mc_house", map: "family-house", variation: { plainDoorways: true,
     rows: [["void:2", "house-bedroom", "house-kidroom", "house-bath", "house-stairhall"], ["house-living", "house-kitchen", "house-genkan"]], ragged: true,
     entrance: "house-genkan", hubs: ["house-living", "house-kitchen", "house-genkan", "house-stairhall"],
     above: [["house-stairhall", "house-genkan"], ["house-bedroom", "house-living"], ["house-kidroom", "house-living"], ["house-bath", "house-kitchen"]],
@@ -344,15 +344,17 @@ const VENUES: readonly Venue[] = [
     ] },
   ] },
 
-  // ── 학생 9. 17:30 학교 옥상 (36×24, 계단형 탑옥 외곽) - 위 줄 북서 후퇴(void:4)·탑옥 기계실(13×9)·옥상 온실 화단(16×9),
-  //    아래 줄 펜스로 둘러친 루프탑 데크(34×12, 자판기·벤치·동서 마주 보는 야외 테이블).
+  // ── 학생 9. 17:30 학교 옥상 (36×24, 계단형 탑옥 외곽) - 2026-10-25 옥상답게: 북서쪽은 지붕 밖(void:21, 맵 배경으로 아래 동네가 보이는 자리),
+  //    북동 탑옥 기계실(13×9, 계단실·고가 물탱크·냉각탑), 아래 줄 루프탑 데크(34×12, 북쪽 난간·남쪽 난간이 끊김 없이 둘러친다).
+  //    옛 판은 위 줄에 마루 깐 온실 방이 붙어 옥상이 아니라 실내 로비처럼 보였다(시타마치 적대 VQA).
   { program: "mc_rooftop", map: "rooftop", variation: {
-    rows: [["void:4", "roof-machine", "roof-garden"], ["rooftop-deck"]], ragged: true,
+    rows: [["void:21", "roof-machine"], ["rooftop-deck"]], ragged: true,
     entrance: "rooftop-deck", hubs: ["rooftop-deck"],
-    above: [["roof-machine", "rooftop-deck"], ["roof-garden", "rooftop-deck"]], left: [["roof-machine", "roof-garden"]],
+    keepMaterials: ["rooftop-deck", "roof-machine"],
+    above: [["roof-machine", "rooftop-deck"]],
     palettes: [
-      { "rooftop-deck": ["mci-tile-concourse", "mci-wall-metal"], "roof-garden": ["mci-wood-oak", "mci-wall-brick"] },
-      { "rooftop-deck": ["mci-stone-lobby", "mci-wall-brick"], "roof-garden": ["mci-wood-dark", "mci-wall-metal"] },
+      { "rooftop-deck": ["mci-concrete", "mci-wall-metal"] },
+      { "rooftop-deck": ["mci-tile-concourse", "mci-wall-metal"] },
     ] }, rooms: [
     { kind: "roof-machine", w: 13, h: 9, floor: "mci-concrete", wall: "mci-wall-metal", items: [
       o("mci-ac-wall", 1, 0), o("mci-ac-wall", 9, 0),
@@ -360,21 +362,17 @@ const VENUES: readonly Venue[] = [
       // 고가 물탱크 + 냉각탑(배관·사다리) - 탑옥 기계실의 중심 설비.
       o("jumbo-roof-water-tower", 4, 5), o("jumbo-roof-cooling-tower", 8, 5), o("mci-pallet", 12, 8),
     ] },
-    { kind: "roof-garden", w: 16, h: 9, floor: "mci-wood-oak", wall: "mci-wall-brick", items: [
-      ...row("mci-planter", 0, 2, 3, 2), ...row("mci-planter", 10, 2, 3, 2),
-      o("mci-plant-tall", 1, 5), o("museum-gallery-bench", 3, 5), o("museum-gallery-bench", 10, 5), o("mci-plant-tall", 13, 5),
-      o("mci-plant-tall", 0, 8), o("mci-plant-tall", 15, 8),
-    ] },
-    { kind: "rooftop-deck", w: 34, h: 12, floor: "mci-tile-concourse", wall: "mci-wall-metal", items: [
-      ...row("roof-fence", 0, 2, 3, 2), ...row("roof-fence", 28, 2, 3, 2),
-      o("subway-vending-machine", 7, 2), o("subway-vending-machine", 31, 2),
-      o("mci-bench-metal", 2, 5),
-      ...seatedTable("mci-t-wood", "mci-chair-wood", 7, 6, 2, 1, { e: true, w: true }), g("mci-g-coffee", 7, 6),
-      o("mci-cafe-chair-e", 13, 6), o("mci-cafe-table", 14, 6), o("mci-cafe-chair-w", 15, 6),
-      o("mci-cafe-chair-e", 18, 6), o("mci-cafe-table", 19, 6), o("mci-cafe-chair-w", 20, 6),
-      ...seatedTable("mci-t-wood", "mci-chair-wood", 25, 6, 2, 1, { e: true, w: true }), g("mci-g-coffee", 25, 6),
-      o("mci-bench-metal", 30, 5),
-      ...row("roof-fence", 0, 2, 7, 11), ...row("roof-fence", 20, 2, 7, 11),
+    { kind: "rooftop-deck", w: 34, h: 12, floor: "mci-concrete", wall: "mci-wall-metal", items: [
+      // 북쪽 난간 - 지붕 밖(동네가 내려다보이는 쪽) 벽면 앞을 끊김 없이. 동쪽은 탑옥 벽이라 난간 대신 자판기.
+      ...row("roof-fence", 0, 2, 10, 2),
+      o("subway-vending-machine", 23, 2), o("subway-vending-machine", 31, 2),
+      // 가운데는 비운 콘크리트 데크 — 옥상은 앉아 쉬는 자리가 난간 쪽에 있고 한가운데는 트여 있다.
+      // 카페 탁자·의자 줄은 «옥상 카페·광장»으로 읽혔다(시타마치 VQA r1, Argon·Sonnet). 벤치·화분만 난간 곁에.
+      o("mci-bench-metal", 2, 4), o("mci-planter", 6, 4), o("mci-planter", 12, 4),
+      o("mci-bench-metal", 16, 4), o("mci-planter", 21, 4),
+      o("mci-bench-metal", 30, 5), o("mci-planter", 2, 9), o("mci-planter", 30, 9),
+      // 남쪽 난간 - 가운데 출입구(계단) 자리만 비운다.
+      ...row("roof-fence", 0, 2, 8, 11), ...row("roof-fence", 18, 2, 8, 11),
     ] },
   ] },
   // ── 학생 10. 18:30 게임센터·노래방 & 만화카페 (40×28, 계단형 외곽) - 위 줄 북서 후퇴(void:2)·인형뽑기 존·노래방·서점, 아래 줄 아케이드 홀(24×13)·만화카페(13×11 후퇴).
@@ -470,7 +468,7 @@ const VENUES: readonly Venue[] = [
 
   // ── 직장인 2. 08:30 베이커리 카페 (24×18, 계단형 외곽) - 위 줄 북서 후퇴(void:2)·제빵실(9×7)·에스프레소 바(10×7), 아래 줄 카페 좌석 홀(22×8).
   //    에스프레소 바와 카페 홀을 오픈 아치로 트고, 2×2 원목 식탁과 동·서 마주 보는 의자로 상판 위 커피·케이크가 온전히 보이게 배치.
-  { program: "mc_bakery_cafe", map: "bakery-cafe", variation: {
+  { program: "mc_bakery_cafe", map: "bakery-cafe", variation: { plainDoorways: true,
     rows: [["void:2", "bakery-kitchen", "espresso-bar"], ["cafe-hall"]], ragged: true,
     entrance: "cafe-hall", hubs: ["cafe-hall", "espresso-bar"], above: [["bakery-kitchen", "cafe-hall"], ["espresso-bar", "cafe-hall"]], left: [["bakery-kitchen", "espresso-bar"]],
     palettes: [
@@ -712,16 +710,21 @@ const VENUES: readonly Venue[] = [
     ] },
   ] },
 
-  // ── 직장인 8. 22:00 센토·스파 (40×30, 계단형 외곽) - 위 줄 북서 후퇴(void:3)·건식 사우나(14×8, 히터·2단 벤치)·노천탕(20×8),
-  //    가운데 남탕/여탕 대칭 목욕 홀(38×11, 중앙 칸막이 기준 좌측 男탕·우측 女탕 각각 씻는 자리 6기 + 대온탕·냉탕 2기 대칭),
-  //    아래 줄 번대(番台) 카운터 탈의실(38×7, 중앙 번대 기준 좌측 男 노렌·신발장·체중계·평상 / 우측 女 노렌·신발장·체중계·평상 완벽 대칭).
-  { program: "mc_sento", map: "sento", variation: {
-    rows: [["void:3", "sento-sauna", "sento-rotenburo"], ["sento-bathhall"], ["sento-changing"]], ragged: true,
-    entrance: "sento-changing", hubs: ["sento-changing", "sento-bathhall"],
-    above: [["sento-sauna", "sento-bathhall"], ["sento-rotenburo", "sento-bathhall"], ["sento-bathhall", "sento-changing"]], left: [["sento-sauna", "sento-rotenburo"]],
-    fixed: ["sento-bathhall", "sento-changing"], palettes: [
-      { "sento-bathhall": ["mci-tile-small", "mci-wall-tile"], "sento-changing": ["mci-wood-oak", "mci-wall-home"], "sento-rotenburo": ["mci-stone-lobby", "mci-wall-brick"] },
-      { "sento-bathhall": ["mci-stone-lobby", "mci-wall-tile"], "sento-changing": ["mci-wood-dark", "mci-wall-brick"], "sento-rotenburo": ["mci-wood-dark", "mci-wall-brick"] },
+  // ── 직장인 8. 22:00 센토·스파 (40×30, 계단형 외곽) - 2026-10-25 남탕·여탕 분리(시타마치 적대 VQA: 남녀 노렌만 걸린 한 칸 탈의실이
+  //    4칸 통로로 한 목욕 홀에 트여 남녀 구분이 없었다).
+  //    아래 줄: 남탕 탈의실 | 번대(番台) 로비(거리 출입구) | 여탕 탈의실 - 로비에서 양쪽 탈의실로만 들어간다.
+  //    가운데 줄: 남탕 목욕 홀 | 여탕 목욕 홀 - 각 탈의실 바로 위, 두 홀 사이와 로비 위는 막힌 칸막이(sealed).
+  //    위 줄: 건식 사우나(남탕 쪽) · 노천탕(여탕 쪽) - 반대편 홀·서로 사이는 막는다.
+  { program: "mc_sento", map: "sento", variation: { plainDoorways: true,
+    rows: [["void:3", "sento-sauna", "sento-rotenburo"], ["sento-bath-m", "sento-bath-w"], ["sento-changing-m", "sento-lobby", "sento-changing-w"]], ragged: true,
+    entrance: "sento-lobby", hubs: ["sento-lobby", "sento-changing-m", "sento-changing-w", "sento-bath-m", "sento-bath-w"],
+    above: [["sento-sauna", "sento-bath-m"], ["sento-rotenburo", "sento-bath-w"], ["sento-bath-m", "sento-changing-m"], ["sento-bath-w", "sento-changing-w"]],
+    left: [["sento-sauna", "sento-rotenburo"], ["sento-bath-m", "sento-bath-w"], ["sento-changing-m", "sento-lobby"], ["sento-lobby", "sento-changing-w"]],
+    sealed: [["sento-bath-m", "sento-bath-w"], ["sento-lobby", "sento-bath-m"], ["sento-lobby", "sento-bath-w"], ["sento-sauna", "sento-rotenburo"],
+      ["sento-sauna", "sento-bath-w"], ["sento-rotenburo", "sento-bath-m"], ["sento-changing-m", "sento-bath-w"], ["sento-changing-w", "sento-bath-m"]],
+    fixed: ["sento-bath-m", "sento-bath-w", "sento-changing-m", "sento-lobby", "sento-changing-w"], palettes: [
+      { "sento-bath-m": ["mci-tile-small", "mci-wall-tile"], "sento-bath-w": ["mci-tile-small", "mci-wall-tile"], "sento-changing-m": ["mci-wood-oak", "mci-wall-home"], "sento-changing-w": ["mci-wood-oak", "mci-wall-home"], "sento-lobby": ["mci-wood-oak", "mci-wall-home"], "sento-rotenburo": ["mci-stone-lobby", "mci-wall-brick"] },
+      { "sento-bath-m": ["mci-stone-lobby", "mci-wall-tile"], "sento-bath-w": ["mci-stone-lobby", "mci-wall-tile"], "sento-changing-m": ["mci-wood-dark", "mci-wall-brick"], "sento-changing-w": ["mci-wood-dark", "mci-wall-brick"], "sento-lobby": ["mci-wood-dark", "mci-wall-brick"], "sento-rotenburo": ["mci-wood-dark", "mci-wall-brick"] },
     ] }, rooms: [
     { kind: "sento-sauna", w: 14, h: 8, floor: "mci-wood-dark", wall: "mci-wall-brick", items: [
       o("mci-wall-clock", 6, 0),
@@ -732,32 +735,35 @@ const VENUES: readonly Venue[] = [
     { kind: "sento-rotenburo", w: 20, h: 8, floor: "mci-stone-lobby", wall: "mci-wall-brick", items: [
       o("shrine-shimenawa", 8, 0),
       o("mci-planter", 0, 2), o("mci-planter", 18, 2), o("shrine-stone-lantern", 3, 3), o("shrine-stone-lantern", 16, 3),
-      // 히노키 테두리 대형 노천탕 하나를 한가운데 - 석등 둘이 양옆을 지킨다.
       o("jumbo-sento-grand-bath", 7, 3), o("mci-plant-tall", 0, 7), o("mci-plant-tall", 19, 7),
     ] },
-    { kind: "sento-bathhall", w: 38, h: 11, floor: "mci-tile-small", wall: "mci-wall-tile", items: [
-      // 북벽 대형 타일 벽화(6×2)는 사우나 문(x=9)과 노천탕 문(x=26) 및 거울(y=2)을 피해 끊김 없는 벽면(좌 x=1..6, 중앙 x=15..20, 우 x=31..36)에 배치.
-      o("jumbo-sento-mural", 1, 0), o("jumbo-sento-mural", 15, 0), o("jumbo-sento-mural", 31, 0),
-      // 씻는 자리(거울+수전)는 벽화 양옆·문 옆 벽면(좌 x=10..13, 우 x=22..29)에 대칭 배치해 거울이 벽화를 가리지 않는다.
-      ...row("sento-wash-station", 10, 2, 2, 2),
-      o("mci-planter", 18, 2),
-      ...row("sento-wash-station", 22, 2, 2, 2), ...row("sento-wash-station", 28, 2, 1, 2),
-      // 남탕·여탕 각각 바깥쪽 대형 온탕(6×4) + 안쪽 탕(4×3) - 칸막이 기준 좌우 대칭.
-      o("jumbo-sento-grand-bath", 2, 5), o("sento-bath", 10, 5),
-      o("mci-planter", 18, 5), o("mci-planter", 18, 8),
-      o("sento-bath", 24, 5), o("jumbo-sento-grand-bath", 30, 5),
-      o("home-bath-stool", 0, 8), o("mci-bench-metal", 9, 9), o("mci-bench-metal", 27, 9), o("home-bath-stool", 37, 8),
-      o("mci-basket-stack", 0, 10), o("mci-basket-stack", 37, 10),
+    // 남탕 목욕 홀(18×11) - 서쪽 북벽 벽화, 동쪽 씻는 자리. 문(사우나·탈의실)은 가운데 언저리에 나므로 x=8..11 을 비운다.
+    { kind: "sento-bath-m", w: 18, h: 11, floor: "mci-tile-small", wall: "mci-wall-tile", items: [
+      o("jumbo-sento-mural", 1, 0), ...row("sento-wash-station", 12, 2, 3, 2),
+      o("jumbo-sento-grand-bath", 1, 5), o("sento-bath", 12, 5),
+      o("home-bath-stool", 0, 9), o("mci-bench-metal", 13, 9), o("mci-basket-stack", 17, 10),
     ] },
-    { kind: "sento-changing", w: 38, h: 7, floor: "mci-wood-oak", wall: "mci-wall-home", items: [
-      // 좌측 남탕(男 노렌 x=8) | 중앙 시계·번대 카운터(x=14..21) | 우측 여탕(女 노렌 x=28) - 문(x=16..20)과 신발장을 피해 배치.
-      o("sento-noren-men", 8, 0), o("mci-wall-clock", 14, 0), o("mci-tv-wall", 21, 0), o("sento-noren-women", 28, 0),
-      ...row("sento-shoe-locker", 0, 2, 4, 2), o("mci-fridge", 11, 2), o("mci-washbasin", 13, 2),
-      o("mci-washbasin", 24, 2), o("mci-fridge", 26, 2), ...row("sento-shoe-locker", 30, 2, 4, 2),
-      o("mci-wait-bench", 3, 5), o("infirmary-scale", 10, 5),
-      o("mci-counter-register", 17, 5), g("mci-g-register", 18, 5),
-      o("infirmary-scale", 27, 5), o("mci-wait-bench", 32, 5),
-      o("mci-plant-tall", 0, 6), o("mci-tactile", 18, 6), o("mci-tactile", 19, 6), o("mci-plant-tall", 37, 6),
+    // 여탕 목욕 홀(19×11) - 남탕의 거울상.
+    { kind: "sento-bath-w", w: 19, h: 11, floor: "mci-tile-small", wall: "mci-wall-tile", items: [
+      ...row("sento-wash-station", 1, 2, 3, 2), o("jumbo-sento-mural", 12, 0),
+      o("sento-bath", 2, 5), o("jumbo-sento-grand-bath", 12, 5),
+      o("mci-basket-stack", 0, 10), o("mci-bench-metal", 3, 9), o("home-bath-stool", 18, 9),
+    ] },
+    // 남탕 탈의실(14×7) - 男 노렌, 신발장·세면대·평상·체중계.
+    { kind: "sento-changing-m", w: 14, h: 7, floor: "mci-wood-oak", wall: "mci-wall-home", items: [
+      o("sento-noren-men", 2, 0), ...row("sento-shoe-locker", 0, 2, 2, 2), o("mci-washbasin", 12, 2),
+      o("mci-wait-bench", 1, 5), o("infirmary-scale", 11, 5), o("mci-plant-tall", 13, 6),
+    ] },
+    // 번대 로비(8×7) - 거리 출입구. 시계·번대 카운터, 양옆 탈의실로 가는 문.
+    { kind: "sento-lobby", w: 8, h: 7, floor: "mci-wood-oak", wall: "mci-wall-home", items: [
+      o("mci-wall-clock", 3, 0), o("mci-fridge", 0, 2),
+      o("mci-counter-register", 3, 3), g("mci-g-register", 4, 3),
+      o("mci-tactile", 3, 6), o("mci-tactile", 4, 6),
+    ] },
+    // 여탕 탈의실(14×7) - 女 노렌, 남탕 탈의실의 거울상.
+    { kind: "sento-changing-w", w: 14, h: 7, floor: "mci-wood-oak", wall: "mci-wall-home", items: [
+      o("sento-noren-women", 10, 0), o("mci-washbasin", 1, 2), ...row("sento-shoe-locker", 10, 2, 2, 2),
+      o("infirmary-scale", 2, 5), o("mci-wait-bench", 10, 5), o("mci-plant-tall", 0, 6),
     ] },
   ] },
 
@@ -966,6 +972,28 @@ const VENUES: readonly Venue[] = [
     ] },
   ] },
 ];
+
+/**
+ * 동네 센토(mc_sento_machi) — mc_sento 에서 위 줄(사우나·노천탕)을 뺀 골목 목욕탕. 번대 로비 → 남녀 탈의실 → 남녀 목욕 홀 두 줄.
+ * 시타마치 데모 VQA r1(Argon·Sonnet): 위 줄 사우나(금속 벤치 줄)와 실내 노천탕이 «이상한 욕조 방·빈 마루방»으로 읽혔다.
+ * 골목 센토는 대개 탕 홀·탈의실·번대뿐이다. 스파·온천은 mc_sento·mc_onsen 을 쓴다.
+ */
+function machiSento(base: Venue): Venue {
+  const drop = new Set(["sento-sauna", "sento-rotenburo"]);
+  const keep = (pairs: readonly (readonly [string, string])[] | undefined) => pairs?.filter(([a, b]) => !drop.has(a) && !drop.has(b));
+  const v = base.variation;
+  return {
+    ...base, program: "mc_sento_machi", map: "sento-machi",
+    variation: {
+      ...v,
+      rows: v.rows?.filter((row) => !row.some((k) => drop.has(k))),
+      ...(v.above ? { above: keep(v.above) } : {}), ...(v.left ? { left: keep(v.left) } : {}), ...(v.sealed ? { sealed: keep(v.sealed) } : {}),
+      ...(v.hubs ? { hubs: v.hubs.filter((k) => !drop.has(k)) } : {}),
+    } as Venue["variation"],
+    rooms: base.rooms.filter((r) => !drop.has(r.kind)),
+  };
+}
+const VENUES: readonly Venue[] = [...BASE_VENUES, machiSento(BASE_VENUES.find((v) => v.program === "mc_sento")!)];
 
 export const DAILY_VENUE_TEMPLATES: readonly InteriorRoomTemplate[] = VENUES.flatMap((v) =>
   v.rooms.map((r, i) => ({ ...r, id: `${v.map}:${r.kind}#${i}`, map: v.map, building: v.program, items: [...r.items] })));

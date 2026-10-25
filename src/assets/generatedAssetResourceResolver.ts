@@ -80,6 +80,22 @@ const BUILTIN_GENERATED_RESOURCE_URLS: Record<string, string | null> = {
   "oprn-first-love-ending-a": "/assets/generated/title/first-love-ending-a.jpg",
   "oprn-first-love-ending-b": "/assets/generated/title/first-love-ending-b.jpg",
   "oprn-first-love-ending-c": "/assets/generated/title/first-love-ending-c.jpg",
+  // 『시타마치의 네 번째 계절』 타이틀·오프닝 5컷·엔딩 4장(2026-10-25, 같은 모델·같은 화풍, 공용 전신 초상 참조 시트로 인물 일치). 후보 2~3장 중 감독 선택 —
+  // 출처·프롬프트: public/assets/generated/title/shitamachi-keyart-provenance.json.
+  "oprn-shitamachi-title": "/assets/generated/title/shitamachi-title.jpg",
+  "oprn-shitamachi-yuna": "/assets/generated/title/shitamachi-yuna.jpg",
+  "oprn-shitamachi-op-train": "/assets/generated/title/shitamachi-op-train.jpg",
+  "oprn-shitamachi-op-arcade": "/assets/generated/title/shitamachi-op-arcade.jpg",
+  "oprn-shitamachi-op-bakery": "/assets/generated/title/shitamachi-op-bakery.jpg",
+  "oprn-shitamachi-op-office": "/assets/generated/title/shitamachi-op-office.jpg",
+  "oprn-shitamachi-op-gate": "/assets/generated/title/shitamachi-op-gate.jpg",
+  "oprn-shitamachi-end-seoyeon": "/assets/generated/title/shitamachi-end-seoyeon.jpg",
+  "oprn-shitamachi-end-jiho": "/assets/generated/title/shitamachi-end-jiho.jpg",
+  "oprn-shitamachi-end-friends": "/assets/generated/title/shitamachi-end-friends.jpg",
+  "oprn-shitamachi-roof-seoyeon": "/assets/generated/title/shitamachi-roof-seoyeon.jpg",
+  "oprn-shitamachi-roof-jiho": "/assets/generated/title/shitamachi-roof-jiho.jpg",
+  "oprn-shitamachi-roof-yuna": "/assets/generated/title/shitamachi-roof-yuna.jpg",
+  "oprn-shitamachi-photo": "/assets/generated/title/shitamachi-photo.jpg",
   // 몬스터 수집 프리셋 오프닝 박사 반신상(2026-10-16) — gpt-image-2.5-sunburst 생성 → 격자 복원 도트화. 출처·프롬프트: public/assets/emerald-monster/professor-bust-provenance.json.
   "oprn_emerald_professor_bust": "/assets/emerald-monster/professor-bust.png",
   "horror-mystery-blue-gallery": "/assets/generated/title/horror-mystery-blue-gallery.png",

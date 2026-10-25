@@ -14,6 +14,7 @@ import { BATTLE_COMBO_CUT_INS, BATTLE_COMBO_FXS, BATTLE_ENEMY_LUNGES, BATTLE_REV
 import { DISPLAY_FILTER_LABELS, DISPLAY_FILTERS, isDisplayFilterName, normalizeDisplayFilter } from "@/project/displayFilter";
 import { BATTLE_SKINS, isRetiredBattleSkinId, listActiveBattleSkinIds } from "@/battle/skins/registry";
 import { applyBattleMethod } from "@/project/battleMethod";
+import { FIELD_HUD_THEMES, HUD_ANCHORS, HUD_CONDITIONS, HUD_KINDS, HUD_MENUS, HUD_PANELS, HUD_SHAPES, HUD_SOURCES, HUD_WIDGET_LIMIT, normalizeHudWidget } from "@/project/fieldHud";
 import {
   BATTLE_LOOK_COMMAND_IDS,
   BATTLE_LOOK_COMMAND_LABELS,
@@ -372,6 +373,34 @@ const setProjectSettings: ToolDefinition = {
         },
         additionalProperties: false,
       },
+      fieldHud: {
+        type: "object",
+        description: "탐색 화면 HUD(상시 표시 판). 장르 기본 HUD(연애 호감 하트·체력 하트 등)가 게임에 안 맞으면 이 게임의 목표를 읽는 위젯으로 바꾸거나 widgets:[] 로 끈다."
+          + " 예: 소원 등롱 셋을 모으는 이야기 = {widgets:[{id:\"lanterns\",kind:\"gauge\",source:\"variable\",variableId:\"모은 수 변수\",max:3,shape:\"number\",label:\"소원 등롱\",anchor:\"top-left\",panel:\"paper\",condition:\"nonzero\"}]}."
+          + " widgets 를 주면 기존 위젯을 통째로 바꾼다.",
+        properties: {
+          theme: { type: "string", enum: Object.keys(FIELD_HUD_THEMES) },
+          menuStyle: { type: "string", enum: Object.keys(HUD_MENUS), description: "ESC 메뉴 모양. project = 프로젝트 메뉴 설정을 따른다." },
+          widgets: {
+            type: "array", maxItems: HUD_WIDGET_LIMIT,
+            items: {
+              type: "object",
+              properties: {
+                id: { type: "string" }, label: { type: "string" },
+                kind: { type: "string", enum: Object.keys(HUD_KINDS) }, source: { type: "string", enum: Object.keys(HUD_SOURCES) },
+                shape: { type: "string", enum: Object.keys(HUD_SHAPES) }, anchor: { type: "string", enum: Object.keys(HUD_ANCHORS) },
+                panel: { type: "string", enum: Object.keys(HUD_PANELS) }, condition: { type: "string", enum: Object.keys(HUD_CONDITIONS) },
+                x: { type: "integer" }, y: { type: "integer" }, width: { type: "integer" }, height: { type: "integer" },
+                color: { type: "string" }, showValue: { type: "boolean" }, max: { type: "integer" }, slots: { type: "integer" },
+                variableId: { type: "string" }, npcKey: { type: "string" }, switchId: { type: "string" }, resourceId: { type: "string" },
+              },
+              required: ["kind", "source"],
+              additionalProperties: false,
+            },
+          },
+        },
+        additionalProperties: false,
+      },
       newGamePlus: {
         type: "object",
         description:
@@ -437,6 +466,25 @@ const setProjectSettings: ToolDefinition = {
       if (next) draft.system.newGamePlus = next;
       else delete draft.system.newGamePlus;
       changed.push(`강하게 다시 하기=${next?.enabled ? "켬" : "끔"}`);
+    }
+    if (args.fieldHud !== undefined) {
+      const hud = args.fieldHud as { theme?: string; menuStyle?: string; widgets?: unknown[] };
+      const prev = draft.system.fieldHud;
+      const next = { theme: "minimal", vitals: false, clock: false, tools: false, objective: false, hideEmpty: true, ...(prev ?? {}) } as NonNullable<typeof prev>;
+      if (hud.theme !== undefined) { if (!Object.hasOwn(FIELD_HUD_THEMES, hud.theme)) throw new ToolError(`알 수 없는 HUD 테마: ${hud.theme}`, { code: "invalid-args" }); next.theme = hud.theme as typeof next.theme; }
+      if (hud.menuStyle !== undefined) { if (!Object.hasOwn(HUD_MENUS, hud.menuStyle)) throw new ToolError(`알 수 없는 메뉴 모양: ${hud.menuStyle}`, { code: "invalid-args" }); next.menuStyle = hud.menuStyle as typeof next.menuStyle; }
+      if (hud.widgets !== undefined) {
+        if (!Array.isArray(hud.widgets)) throw new ToolError("fieldHud.widgets 는 배열입니다.", { code: "invalid-args" });
+        next.widgets = hud.widgets.slice(0, HUD_WIDGET_LIMIT).map((raw, i) => {
+          const w = normalizeHudWidget(raw, i);
+          if (w.source === "variable" && (!w.variableId || !draft.variables.some((v) => v.id === w.variableId))) throw new ToolError(`HUD 위젯 ${w.id}: 변수 ${w.variableId ?? "(없음)"} 가 없습니다.`, { code: "invalid-args" });
+          return w;
+        });
+        // 위젯을 직접 정했으면 테마 기본 위젯(체력·시계·도구)은 끈다.
+        next.vitals = false; next.clock = false; next.tools = false;
+      }
+      draft.system.fieldHud = next;
+      changed.push(next.widgets?.length === 0 ? "HUD=끔" : `HUD 위젯 ${next.widgets?.length ?? "기본"}개`);
     }
     if (args.chapter !== undefined) {
       if (typeof args.chapter !== "object" || args.chapter === null || Array.isArray(args.chapter)) {

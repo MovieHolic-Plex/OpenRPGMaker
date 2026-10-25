@@ -634,8 +634,10 @@ function buildCandidatesForVariant(
   const baseWants = [...layoutWants(tilesetId, req), ...hallWants];
   const vary = programVariation(tilesetId, req);
   const entrance = pickEntrance(baseWants, req.entrance || !vary?.v.entrance ? req : { ...req, entrance: vary.v.entrance });
-  const explicitFloorIds = new Set((req.rooms ?? []).filter((q) => q.floor).map((q) => q.id ?? q.kind));
-  const explicitWallIds = new Set((req.rooms ?? []).filter((q) => q.wall).map((q) => q.id ?? q.kind));
+  const keepKinds = new Set(vary?.v.keepMaterials ?? []);
+  const keptIds = baseWants.filter((w) => keepKinds.has(w.kind)).map((w) => w.id);
+  const explicitFloorIds = new Set([...(req.rooms ?? []).filter((q) => q.floor).map((q) => q.id ?? q.kind), ...keptIds]);
+  const explicitWallIds = new Set([...(req.rooms ?? []).filter((q) => q.wall).map((q) => q.id ?? q.kind), ...keptIds]);
   const wants: Want[] = baseWants.map((w, idx) => {
     const isEnt = w.id === entrance;
     const fixed = Boolean(vary?.v.fixed?.includes(w.kind));
@@ -657,6 +659,7 @@ function buildCandidatesForVariant(
   const pairOf = (list: readonly Pair[] | undefined) => (list ?? []).map(pairTuple).flatMap(([p, q]) =>
     wants.filter((w) => matches(w, p)).flatMap((a) => wants.filter((w) => w !== a && matches(w, q)).map((b) => [a.id, b.id] as [string, string])));
   const programOpen = pairOf(vary?.v.open);
+  const sealedPairs = pairOf(vary?.v.sealed);
   const prefer = [...pairOf(req.prefer), ...pairOf(PREFER_DEFAULT)];
   const openPairs = [...pairOf(req.open), ...programOpen, ...pairOf(OPEN_DEFAULT)];
   const isOpen = (a: string, b: string) => openPairs.some(([p, q]) => (p === a && q === b) || (p === b && q === a));
@@ -700,7 +703,8 @@ function buildCandidatesForVariant(
       for (const q of rects.values()) { q.x -= mx; q.y -= my; }
     }
     const BW = Math.max(...[...rects.values()].map((q) => q.x + q.w)) + 1, BH = Math.max(...[...rects.values()].map((q) => q.y + q.h)) + 1;
-    const edges = adjacency(rects);
+    // program 이 막은 쌍(sealed)은 이웃이어도 문을 내지 않는다 — 남탕↔여탕·로비↔목욕 홀(2026-10-25 센토 남녀 분리).
+    const edges = adjacency(rects).filter((e) => !sealedPairs.some(([p, q]) => (p === e.a && q === e.b) || (p === e.b && q === e.a)));
     const prio = (e: Edge, from: string) => {
       const to = e.a === from ? e.b : e.a;
       return (prefer.some(([p, q]) => (p === from && q === to) || (p === to && q === from)) ? 0 : 4) + (isOpen(from, to) ? 0 : 1) + (isHub(byId.get(to)!.kind) ? 0 : 2);
@@ -764,7 +768,7 @@ function buildCandidatesForVariant(
         return e.kind === "h" && !/^(genkan|entrance)$/u.test(lower.kind) ? { a: e.a, b: e.b, open: true, span } : { a: e.a, b: e.b, open: true };
       }
       const door = DOOR_OF[A.kind]?.[e.kind] ?? DOOR_OF[B.kind]?.[e.kind];
-      return { a: e.a, b: e.b, ...(door && S.objects[door] ? { door } : {}) };
+      return { a: e.a, b: e.b, ...(door && S.objects[door] ? { door } : vary?.v.plainDoorways ? { door: "none" } : {}) };
     });
     // 변주 seed 의 동↔서 뒤집기는 점수를 다 매긴 뒤 결과 좌표에만 한다 — 왼·오른 쌍 규칙까지 거울로 뒤집힌 배치가 된다.
     const rooms: LayoutRoom[] = wants.map((w) => {
