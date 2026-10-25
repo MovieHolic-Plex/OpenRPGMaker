@@ -7,11 +7,15 @@
    "event-command-text-context": "replaceCommand {\"body\":\"hello\",\"context\":\"system\",\"kind\":\"text\",\"speaker\":\"<undefined>\"}",
    "event-command-text-container": "replaceCommand {\"body\":\"hello\",\"container\":\"corner\",\"kind\":\"text\",\"speaker\":\"<undefined>\"}",
    "event-command-text-position": "replaceCommand {\"body\":\"hello\",\"kind\":\"text\",\"position\":\"bottom\",\"speaker\":\"<undefined>\"}",
+   "event-command-text-speaker-actor": "replaceCommand {\"body\":\"hello\",\"kind\":\"text\",\"speaker\":\"<undefined>\",\"speakerActor\":\"__p_7d2827__\"}",
+   "event-command-text-addressee": "replaceCommand {\"addressee\":\"__p_b24bcd__\",\"body\":\"hello\",\"kind\":\"text\",\"speaker\":\"<undefined>\"}",
+   "event-command-text-auto-face": "replaceCommand {\"autoFace\":false,\"body\":\"hello\",\"kind\":\"text\",\"speaker\":\"<undefined>\"}",
+   "event-command-text-calling": "replaceCommand {\"body\":\"hello\",\"calling\":true,\"kind\":\"text\",\"speaker\":\"<undefined>\"}",
    "event-command-text-auto-advance": "replaceCommand {\"autoAdvance\":true,\"body\":\"hello\",\"kind\":\"text\",\"speaker\":\"<undefined>\"}",
    "event-command-text-style": "replaceCommand {\"body\":\"hello\",\"kind\":\"text\",\"speaker\":\"<undefined>\",\"style\":\"terminal\"}"
   },
-  "probeCount": 8,
-  "commitCount": 8,
+  "probeCount": 12,
+  "commitCount": 12,
   "noCommitCount": 0
  },
  "changeFace": {
@@ -189,6 +193,7 @@
  },
  "transfer": {
   "probes": {
+   "transfer-door-mode": "replaceCommand {\"door\":false,\"kind\":\"transfer\",\"mapId\":\"map1\",\"x\":0,\"y\":0}",
    "transfer-player-direction-retain": "radio-uncheck",
    "transfer-player-direction-up": "replaceCommand {\"direction\":\"up\",\"fade\":\"black\",\"kind\":\"transfer\",\"mapId\":\"map1\",\"x\":0,\"y\":0}",
    "transfer-player-direction-right": "replaceCommand {\"direction\":\"right\",\"fade\":\"black\",\"kind\":\"transfer\",\"mapId\":\"map1\",\"x\":0,\"y\":0}",
@@ -198,8 +203,8 @@
    "transfer-player-fade-white": "replaceCommand {\"direction\":\"retain\",\"fade\":\"white\",\"kind\":\"transfer\",\"mapId\":\"map1\",\"x\":0,\"y\":0}",
    "transfer-player-fade-none": "replaceCommand {\"direction\":\"retain\",\"fade\":\"none\",\"kind\":\"transfer\",\"mapId\":\"map1\",\"x\":0,\"y\":0}"
   },
-  "probeCount": 8,
-  "commitCount": 6,
+  "probeCount": 9,
+  "commitCount": 7,
   "noCommitCount": 0
  },
  "moveEvent": {
@@ -219,11 +224,13 @@
    "move-route-hop-dx-input": "no-commit",
    "move-route-hop-dy-input": "no-commit",
    "move-route-hop-height-input": "no-commit",
-   "move-route-hop-duration-input": "no-commit"
+   "move-route-hop-duration-input": "no-commit",
+   "move-route-stage-target-input": "no-commit",
+   "move-route-talk-distance-input": "no-commit"
   },
-  "probeCount": 16,
+  "probeCount": 18,
   "commitCount": 5,
-  "noCommitCount": 11
+  "noCommitCount": 13
  },
  "setEventGraphicPattern": {
   "probes": {
