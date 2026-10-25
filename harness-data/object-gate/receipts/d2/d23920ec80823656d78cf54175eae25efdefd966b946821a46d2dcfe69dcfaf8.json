@@ -1,0 +1,504 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d23920ec80823656d78cf54175eae25efdefd966b946821a46d2dcfe69dcfaf8",
+ "width": 80,
+ "height": 64,
+ "kind": "structure",
+ "name": "ruined concrete building whose front corner has collapsed into a rubble ramp, seen from above with walls, interior floor and front face",
+ "label": "wasteland_ruins/husk-b",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 7,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "wasteland_ruins",
+   "fallback": true,
+   "reason": "칩셋 wasteland_ruins 의 화풍 기준 묶음이 없다",
+   "hash": "5f62fef078ef7661"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 15,
+  "tileColorsP90": 19,
+  "darkV5": 35,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 20
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "back wall top band",
+      "rows": "0-4",
+      "evidence": "a",
+      "front_edge_line_row": 4,
+      "eave_shadow_rows": "5-6"
+     },
+     {
+      "part": "open interior floor with debris, seen from above",
+      "rows": "5-27",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "front wall top (coping)",
+      "rows": "28-31",
+      "evidence": "a",
+      "front_edge_line_row": 31,
+      "eave_shadow_rows": "32-34"
+     },
+     {
+      "part": "collapsed corner rubble ramp",
+      "rows": "30-63",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "plants and flowers on floor",
+      "rows": "12-26",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 31,
+    "front_face_rows": 31,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 0-4 show the back wall top with a light edge line at row 4. Rows 5-27 show an interior floor with debris, seen from above. Rows 28-31 show the front wall top, which ends in a bright edge line at row 31 (L=189), followed by darker wall face. Below it, rows 32-62 hold the south face with a door and two windows, about 31 rows. The collapsed corner on the right is a rubble heap that reads as a sloped ramp (evidence d). The top surface is large and clearly foreshortened above a tall front face, so the object reads as a 3/4 view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate has 14 visible tones per tile against 12 and 10 for the references, so it is at or above both on density. Only 8% of it is near-flat, and the references sit at 0%. Just 13% of its dark edge pixels are neutral, so the edges lean toward the adjacent grey-blue concrete and are not a black sticker line. The concrete ramp reads as about 5 steps: light slab top, mid wall, mottled face, dark window and door openings, and shadow. Rubble chunks, debris specks and moss or flower dots add texture. The front wall and the parapet are somewhat calmer than the reference roof and stone. The ramp is a little less rich than the references' per-tile scallops, and it is smaller and more muted. The piece still holds up next to the references on structure, tone count and outline craft.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18038
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "back wall top rim",
+      "rows": "1-4",
+      "evidence": "a",
+      "front_edge_line_row": 4,
+      "eave_shadow_rows": "5-6"
+     },
+     {
+      "part": "interior floor seen from above (open roofless building)",
+      "rows": "5-27",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "front wall top band",
+      "rows": "28-31",
+      "evidence": "a",
+      "front_edge_line_row": 31,
+      "eave_shadow_rows": "32"
+     },
+     {
+      "part": "collapsed rubble ramp at front right corner",
+      "rows": "31-63",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 27,
+    "front_face_rows": 32,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The top of the building is an open interior floor and wall tops, rows 1-31. The back wall rim is rows 1-4 and the interior floor with debris is rows 5-27. The front wall top is a light band at rows 28-31 that ends in a bright edge line at row 31, with a darker row at 32 below it. The front face runs from row 32 to 63 with a door and two windows, so it is far more than 3 rows. The rubble ramp at the front right has stacked slabs and bricks that read as sloped heaps. The main body therefore has both a clear top surface and a front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a smaller, grey concrete ruin, but it meets the references on the measured facts. It has 14 visible tones per tile against 12 and 10 for the references. Only 13% of its dark edge pixels are neutral, so the outline leans toward a tinted dark grey-brown rather than a black sticker line. Near-flat coverage is 8% against 0% for the references, which is slightly worse but not a flat fill. By eye, the front face has speckled concrete grain, the rubble ramp is built from individually shaded chunks, and the roof slab has debris, rebar bits and small plants. The concrete ramps look slightly shallower (about 5 steps) than the tile roofs and stone (5-6). The monochrome material also gives less per-unit scalloping and grain variety than the tile roofs. Overall it is plausible next to the references without looking thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17357
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "back wall coping (top of north wall)",
+      "rows": "0-4",
+      "evidence": "a",
+      "front_edge_line_row": 4,
+      "eave_shadow_rows": "5-6"
+     },
+     {
+      "part": "interior floor seen from above (open roofless interior with rubble and debris)",
+      "rows": "5-27",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "front wall coping (top of south wall)",
+      "rows": "28-31",
+      "evidence": "a",
+      "front_edge_line_row": 31,
+      "eave_shadow_rows": "32-34"
+     },
+     {
+      "part": "east side wall top",
+      "rows": "0-28",
+      "evidence": "a",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "collapsed corner rubble ramp (heap of blocks)",
+      "rows": "30-63",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "weeds and plants on floor",
+      "rows": "22-27",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 32,
+    "front_face_rows": 31,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The building shows a large top region in rows 0-31: wall-top bands (rows 1-4 at the back, 28-31 at the front), and the interior floor with debris visible between them in rows 5-27. The front wall top ends in a light front-edge line at row 31 (L=189), followed by darker rows 32-34. Below it the south face runs rows 32-63 (about 31 rows) with two windows and a door. The right front corner is a rubble heap that reads as a ramp. The silhouette width is a constant 80 across all rows, so it is not a flat slab."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate measures 14 visible tones per tile, against 12 and 10 for the references. Its near-flat coverage is 8%, small but above the references' 0%, and only 13% of its dark edge pixels are neutral, so the outlines lean toward the material tone rather than a black sticker line. By eye, the concrete front face has speckle and stain variation. The rubble ramp and the interior floor carry mixed debris clusters in several grey and brown tones, which gives roughly 5 lightness steps on the walls. It is less crisp than the tile-roof references, and the dark windows and door are fairly flat. Overall it holds up next to the references on structure, texture and density, and I found no sticker-like flat areas large enough to fail it.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16908
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "back wall top / coping",
+      "rows": "1-4",
+      "evidence": "a",
+      "front_edge_line_row": 4,
+      "eave_shadow_rows": "5"
+     },
+     {
+      "part": "open interior floor with rubble and debris, seen from above",
+      "rows": "5-27",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "front wall top band",
+      "rows": "28-31",
+      "evidence": "a",
+      "front_edge_line_row": 31,
+      "eave_shadow_rows": "32-34"
+     },
+     {
+      "part": "collapsed corner rubble ramp (right side)",
+      "rows": "29-63",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "plants and small debris on the floor",
+      "rows": "10-26",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 27,
+    "front_face_rows": 32,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The building is drawn without a roof, so its top is the open interior floor with rubble, rows 5-27. A back wall cap sits above it at rows 1-4, and a front wall top band at rows 28-31 ends in a light front-edge line at row 31 (L=189, x=20 and x=40). Below that, rows 32-63 are a front face of 32 rows with two windows and a door. On the right the front corner has collapsed into a rubble ramp with chunks and debris. The right wall top (x about 80-84% of width, rows 0-26) is a flat strip, not a receding side face. Top surface plus front face reads as three-quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate has 14 visible tones per 16x16 tile against 12 and 10 for the references, so it is at or above them on the primary density fact. Its dark edge pixels are only 13% near-neutral, so the outlines lean toward the grey-brown of the adjacent concrete rather than a black sticker line. Near-flat coverage is 8% against 0% for the references. That is slightly higher but small, and it comes mostly from the dark window and door openings. The concrete wall face shows speckle and mottling, the interior floor and parapet carry debris clusters, and the rubble ramp is shaded stone by stone. It has about 5 tonal steps on the concrete ramp, close to the references' 5-6. The texture is somewhat less crisp and varied than the tile and plaster work on the references, which is why I rate it 'some' rather than 'rich'. A careful artist would accept it beside the references without it looking thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17986
+  }
+ ],
+ "decidedAt": "2026-10-25T13:02:59.268Z",
+ "cells": {
+  "16": [
+   "1a6bb4e2d6f384cc",
+   "1bf5312a441e2937",
+   "2373a745aaff9b13",
+   "277cd837c549cb99",
+   "2f39a81f4938f65f",
+   "32a0ad9356ca6425",
+   "349383f5d9301cae",
+   "394798d637ecb122",
+   "4d85146b74b78de1",
+   "546fdf17e0301133",
+   "8cbd22448574abc3",
+   "91802393afebff91",
+   "966c97cf0e3d3d4a",
+   "a213175dbf9630fb",
+   "a44590a4a88374a8",
+   "b838d8e1050c8243",
+   "cfaa1e4c9a2b9b1a",
+   "d17144204994e835",
+   "f5338a7f4a9ef976",
+   "ffa819eac06cfb4d"
+  ],
+  "24": [
+   "00bacd4baf6327ef",
+   "0100cdcfaad257cb",
+   "06ae405b75093b78",
+   "0e294de2ed3e2e36",
+   "12b31e39a522554b",
+   "13f3b13d5c2f2b73",
+   "1744eaf58cd882de",
+   "23ebd06619f235fd",
+   "24e62cd827899dba",
+   "2570379cb4298a51",
+   "2e906104feb1fef3",
+   "309911f5bb2aeeb6",
+   "34d7d40a55bc0805",
+   "383b0ea4d59c938b",
+   "38df5781db0f0e83",
+   "3d5b2ebc8a00c589",
+   "3d7bbe1fc5e79c2a",
+   "3f637d86998bd097",
+   "434da8fc7c41fabd",
+   "4a4cb10ac04a692f",
+   "58e0039f8c6212d8",
+   "5ab0e60414732a8b",
+   "6c486ec0e13262d1",
+   "6d0c729c19b7a880",
+   "6e62b494d282104f",
+   "737424f70d232349",
+   "786c7d4795bde196",
+   "78cc1e6bf85332f3",
+   "798a73272f813977",
+   "7c6d0a712c2b2970",
+   "809169f11c5a100d",
+   "80ef3f3e9faba784",
+   "85ddd16802467a8d",
+   "871a469d5ee9fa19",
+   "8922129d338a3070",
+   "8a78a66224c5e52b",
+   "942583b1f3748c85",
+   "99e34605d9a0d496",
+   "9d1b6e0772dabbdd",
+   "9db486c6659f44a7",
+   "9f08ec9224ff7f97",
+   "a592c27e35e6bd88",
+   "aa336ccf8b0ae0df",
+   "ad4d0cd283dbc75a",
+   "b8155b2998ca57b2",
+   "b856018d917dd993",
+   "babbe61e33277e20",
+   "babe87678687b24b",
+   "be6ecd49fc98e37d",
+   "c4ef984bd1c51297",
+   "c536ceaeeb92430e",
+   "c5c016a185600b7e",
+   "c844f24874184019",
+   "c88e54f73d789bef",
+   "ca3fffc151af89a9",
+   "cb62f6150e8e5175",
+   "cbcbf3c0a6fea0f8",
+   "cc6f562a8b11853d",
+   "ce5627dbb412d229",
+   "d5884caddc9fc09e",
+   "da3ded355b57af1f",
+   "db942387bdc48650",
+   "e0cca6a5484dc5bd",
+   "e55c6052f4b06d84",
+   "efe3495587e9f136",
+   "f05c2b2c8b223f9b",
+   "f4ab6653f96a8837",
+   "f69084edb801a744",
+   "f6e5bd70f5358639",
+   "fd59c4338cf3db8a",
+   "fded00c5e74b1df9",
+   "ff84f1f42bebbdf1"
+  ],
+  "32": [
+   "14a276b21020d025",
+   "1509cb48e89c1b7e",
+   "24fef673ab13abdd",
+   "3045e70aebe59911",
+   "32dec3fa3f804c0d",
+   "3e5de1ee1666ef76",
+   "485bb893cca87cc3",
+   "5781393d24891935",
+   "65cf52a85f43fee6",
+   "812b58d1195a328f",
+   "8d31286043af4a6d",
+   "9d69ee36f264338c",
+   "a547565514e2206c",
+   "b5fcfeccd921c953",
+   "cdc4354229d4ff94",
+   "d44585ab2036c661",
+   "e97ab94df47e9386",
+   "f1d0a586ac6747b7"
+  ],
+  "48": [
+   "047081d1f8d449b1",
+   "093c8a58ed8618e0",
+   "1027cfc767f775dc",
+   "23c23f5e942d836d",
+   "41f10f49fc907e61",
+   "45567ca389b38f66",
+   "4653dd6dbde513a2",
+   "48c4896ec6618b6b",
+   "4a9aaf17727be5bd",
+   "557c9e79c926ce8a",
+   "58123588871f6532",
+   "69981e103e0f693d",
+   "79c7655ff2d9b1d5",
+   "7d0c7c5865c66bba",
+   "8aadda743005158b",
+   "92bbcc49504ffbe4",
+   "a086fbf899a17ed8",
+   "a6646f4e9272b3fd",
+   "ad9a329453052992",
+   "b76b08f4ab9086e6",
+   "b7e534e7a1001e98",
+   "c8646665cf49801f",
+   "d0a4f84cb27d5ecc",
+   "d95dd158ad681041"
+  ]
+ }
+}

@@ -480,11 +480,12 @@ function blobNoise(x: number, y: number, seed: number, scale: number): number {
  * 빈 땅에 잔해·잡초·웅덩이 덧그림 — r4: 모든 칸에 같은 밀도로 흩어 «잡음»으로 읽혔다. 잡음 덩이(잡초 무리·잔해 무더기·물 고인 곳) 안에만 모으고,
  * 길 한가운데에는 두지 않는다(길 가장자리 칸에만 드물게 잡초·잔해 — r4: 길 위 덤불·웅덩이가 강의 갈대처럼 읽혔다).
  */
+// r63 검수(사용자·Sonnet·Argon): 바닥 덧그림이 10×10 칸에 12~40개라 «지저분한 바닥»이었다(버들항 2~15) — 밀도 절반 이하, 길 금·포트홀 7%→2.5%·서로 6칸, 웅덩이 1~2, 얼룩 상한 절반.
 function scatterDecals(b: Board, density: number, road: readonly boolean[]): void {
   const rubble = RUBBLE.flatMap((id) => b.cells(id)), weeds = WEEDS.flatMap((id) => b.cells(id)), puddle = b.cells("puddle");
   // 웅덩이는 값 잡음 격자 꼭짓점마다 같은 타원이 서서 «격자»로 읽혔다(r5) — 맵에 2~4곳만, 아무 데나(길·기물 밖), 서로 6칸 이상.
   const wet = new Set<number>();
-  if (puddle.length) for (let t = 0, want = b.int(2, 4); t < 200 && wet.size < want; t++) {
+  if (puddle.length) for (let t = 0, want = b.int(1, 2); t < 200 && wet.size < want; t++) {
     const x = b.int(1, b.w - 2), y = b.int(1, b.h - 2), i = b.idx(x, y);
     if (road[i] || b.taken[i] || b.slab[i] || [...wet].some((j) => Math.abs(j % b.w - x) + Math.abs(Math.floor(j / b.w) - y) < 6)) continue;
     wet.add(i);
@@ -496,8 +497,8 @@ function scatterDecals(b: Board, density: number, road: readonly boolean[]): voi
     const used: number[] = [];
     for (let y = 1; y < b.h - 1; y++) for (let x = 1; x < b.w - 1; x++) {
       const i = b.idx(x, y);
-      if (!road[i] || roadEdge(x, y) || b.taken[i] || layerTileAt(b.map, 2, i) >= 0 || hash2(x * 7 + 3, y * 13 + 5, b.seed + 211) > 0.07) continue;
-      if (used.some((j) => Math.abs(j % b.w - x) + Math.abs(Math.floor(j / b.w) - y) < 3)) continue;
+      if (!road[i] || roadEdge(x, y) || b.taken[i] || layerTileAt(b.map, 2, i) >= 0 || hash2(x * 7 + 3, y * 13 + 5, b.seed + 211) > 0.025) continue;
+      if (used.some((j) => Math.abs(j % b.w - x) + Math.abs(Math.floor(j / b.w) - y) < 6)) continue;
       b.setDecal(x, y, roadMarks[Math.floor(hash2(y, x * 5, b.seed + 223) * roadMarks.length)]!); used.push(i);
     }
   }
@@ -508,7 +509,7 @@ function scatterDecals(b: Board, density: number, road: readonly boolean[]): voi
   const oil = ["oil-stain-a", "oil-stain-b"].flatMap((id) => b.cells(id)), scorch = ["scorch-a", "scorch-b"].flatMap((id) => b.cells(id));
   const OILY = new Set(["car-rust-h", "car-rust-v", "van-rust", "car-burnt", "generator", "drums", "scrap-heap"]), SOOTY = new Set(["campfire", "car-burnt", "husk-a", "husk-b", "husk-e", "rubble-pile"]);
   // r62: 껍데기 발치마다 그을음이 붙어 같은 덧그림이 한 줄로 섰다(검수 A «row y=25») — 얼룩끼리 4칸 이상 띄우고 맵당 상한, 모닥불은 늘, 껍데기는 셋에 하나.
-  const stains: number[] = []; const stainCap = Math.max(4, Math.round(b.w * b.h / 160));
+  const stains: number[] = []; const stainCap = Math.max(2, Math.round(b.w * b.h / 320));
   const stainAt = (pool: number[], ids: Set<string>, salt: number) => {
     if (!pool.length) return;
     for (const p of b.placed) {
@@ -530,7 +531,7 @@ function scatterDecals(b: Board, density: number, road: readonly boolean[]): voi
   stainAt(scorch, SOOTY, 509); stainAt(oil, OILY, 503);
   // r11: 값 잡음 덩이는 격자 축을 따라 가늘게 남아 잡초가 «한 칸 폭 곧은 기둥·ㄱ자»로 섰다 — 무작위 중심의 흔들린 타원 덩이로.
   const patches: { x: number; y: number; rx: number; ry: number }[] = [];
-  for (let k = Math.max(3, Math.round(b.w * b.h * density * 0.03)); k > 0; k--) patches.push({ x: b.int(1, b.w - 2), y: b.int(1, b.h - 2), rx: 1.3 + b.int(0, 12) / 10, ry: 1 + b.int(0, 8) / 10 });
+  for (let k = Math.max(2, Math.round(b.w * b.h * density * 0.03)); k > 0; k--) patches.push({ x: b.int(1, b.w - 2), y: b.int(1, b.h - 2), rx: 1.3 + b.int(0, 12) / 10, ry: 1 + b.int(0, 8) / 10 });
   const weedAt = (x: number, y: number) => patches.some((p) => { const d = Math.hypot((x - p.x) / p.rx, (y - p.y) / p.ry); return d < 1 + (hash2(x * 3 + 1, y * 5 + 2, b.seed + 97) - 0.5) * 0.7; });
   const nearTaken = (x: number, y: number) => { for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) if (b.inb(x + dx, y + dy) && b.taken[b.idx(x + dx, y + dy)]) return true; return false; };
   for (let y = 0; y < b.h; y++) for (let x = 0; x < b.w; x++) {
@@ -545,7 +546,7 @@ function scatterDecals(b: Board, density: number, road: readonly boolean[]): voi
     if (wet.has(i)) pool = puddle;
     // r8: 낱칸 잔해가 맵 전체에 고르게(때로 격자로) 뿌려져 «얼룩»으로 읽혔다 — 덩이 안에만, 덩이는 더 드물고 더 빽빽하게.
     // r10: 덩이 안에서도 낱칸이 띄엄띄엄(대각 바둑판·세로 줄)이라 «고르게 뿌린 잔해»였다 — 덩이 속만, 속에선 빽빽이(낱칸 대신 작은 무더기).
-    else if (weedAt(x, y) && r < 0.7 * (onRoad ? 0.3 : 1)) pool = weeds;
+    else if (weedAt(x, y) && r < 0.5 * (onRoad ? 0.3 : 1)) pool = weeds;
     // 잔해 낱칸 그림은 두세 가지뿐이라 빽빽하면 «같은 돌 깔개»가 된다(r10 시험) — 덩이 한가운데만, 기물 둘레 1칸은 비우고, 맵당 상한.
     else if (rubZ > 0.75 && r < 0.4 && !onRoad && rubN < rubCap && !nearTaken(x, y) && nearBuilt(x, y, 3) && x > 0 && y > 0 && x < b.w - 1 && y < b.h - 1) { pool = rubble; rubN++; }
     if (pool.length) b.setDecal(x, y, pool[Math.floor(hash2(x + 3, y + 7, b.seed) * pool.length)]!);
@@ -1324,7 +1325,7 @@ export function composeWastelandMap(map: GameMap, tileset: TilesetDef, kind: Was
   roadsideGravel(b, out.road);
   finishSlab(b, out.road);
   wearPaths(b, out.areas, out.road);
-  scatterDecals(b, kind === "ruined-city" ? 0.09 : kind === "settlement" ? 0.045 : 0.045, out.road);
+  scatterDecals(b, kind === "ruined-city" ? 0.045 : 0.02, out.road);
   const counts = new Map<string, number>();
   for (const p of b.placed) counts.set(p.id, (counts.get(p.id) ?? 0) + 1);
   const top = [...counts.entries()].sort((a, c) => c[1] - a[1]).slice(0, 8).map(([id, n]) => `${id}×${n}`).join(", ");

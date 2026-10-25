@@ -1,0 +1,393 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f7982acc463a08e5f2a791390e20a029ea4e6422ddae98d5f586d2067f76b8d6",
+ "width": 48,
+ "height": 48,
+ "kind": "structure",
+ "name": "open market shelter seen from above: sagging roof sewn from orange and green tarp strips as a top plane on four poles, a row of hanging cloths and rags in pink, yellow, blue and white along the front eave, rolled rugs and bundles on the ground below, no counter",
+ "label": "wasteland_ruins/market-shelter",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "refer",
+ "reasons": [
+  "3/4: 독립 눈이 「3/4 아님」 3/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면",
+  "화풍: 화풍 판정이 갈림(걸린 판정 2/4)",
+  "화풍: 판정자 fail (2/4)"
+ ],
+ "view34": {
+  "verdict": "refer",
+  "reasons": [
+   "독립 눈이 「3/4 아님」 3/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면"
+  ]
+ },
+ "style": {
+  "verdict": "refer",
+  "reasons": [
+   "화풍 판정이 갈림(걸린 판정 2/4)",
+   "판정자 fail (2/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "wasteland_ruins",
+   "fallback": true,
+   "reason": "칩셋 wasteland_ruins 의 화풍 기준 묶음이 없다",
+   "hash": "2ad36264365ed8d5"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 15,
+  "tileColorsP90": 23,
+  "darkV5": 32,
+  "nearBlackEdge": 0.02,
+  "opaqueTiles": 9
+ },
+ "eye": {
+  "verdicts": [
+   "borderline",
+   "wrong",
+   "right",
+   "right",
+   "borderline",
+   "right",
+   "borderline",
+   "wrong",
+   "right",
+   "borderline",
+   "borderline",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "tarp roof plane (orange and green strips)",
+      "rows": "1-15",
+      "evidence": "c",
+      "front_edge_line_row": 16,
+      "eave_shadow_rows": "18-19"
+     },
+     {
+      "part": "yellow front eave band",
+      "rows": "16-17",
+      "evidence": "none",
+      "front_edge_line_row": 16,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "hanging cloths and rags along the eave",
+      "rows": "18-25",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "rolled rugs and bundles on the ground",
+      "rows": "36-46",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 15,
+    "front_face_rows": 30,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The roof is a large tarp plane in rows 1-15, made of green and orange strips in two tiers. It ends in a yellow front-edge band at rows 16-17, and the dark open underside starts right below it at row 18, which acts as eave shadow. Below that is a front face of about 30 rows (rows 18-47), made of the poles, the hanging cloths, the dark interior and the ground goods. The roof is a sloped plane above an edge line, so it counts as a top surface (evidence c)."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate's measured facts sit close to the stall and well references. It has 15 visible tones per tile against 17 for prop-stall-cheese and 20 for prop-well-roofed, and 13% near-flat coverage, identical to the cheese stall. Its dark edge pixels are 0% near-neutral, so the outlines carry a tint, matching the hedge and the stall rather than the grey outlines of the lamp. By eye, the roof is built from distinct orange and green tarp strips with a dark brown-toned edge. The hanging cloths in pink, yellow, blue and white and the rugs below add varied small shapes. The roof ramps look slightly shallower (about 4 steps) than the 5-6 steps of the references. The cloths are small near-flat patches, and the dark underside has little grain, so overall density is a touch lower than the best references. There are no large flat fills, and the piece would sit acceptably beside the cheese stall.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15198
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "tarp roof (green and orange strips)",
+      "rows": "1-15",
+      "evidence": "c",
+      "front_edge_line_row": 16,
+      "eave_shadow_rows": "18-19"
+     },
+     {
+      "part": "yellow front eave band",
+      "rows": "16-17",
+      "evidence": "none",
+      "front_edge_line_row": 16,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "hanging cloths and rags",
+      "rows": "18-25",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "rolled rugs and bundles on the ground",
+      "rows": "37-46",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 15,
+    "front_face_rows": 30,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-15 are a large roof plane of alternating green and orange tarp strips, crossed by pole and rope lines. It ends in a yellow front-edge band at rows 16-17, and the dark open interior starts directly below at row 18. That makes it a sloped roof top surface (c) of about 15 rows. Below it is a front face of about 30 rows (rows 18-47): hanging cloths, two poles and a dark interior, then a brown ground with rugs. The poles and cloths are structure and goods, and the rugs on the ground are decor. The roof is foreshortened and reads clearly as a top plane over a vertical front."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "On the measured facts the candidate matches the closest reference, prop-stall-cheese: 15 visible tones per tile against 17, and 13% near-flat coverage, the same as that stall. It is also close to prop-hedge (9 tones) and below prop-well-roofed (20 tones), which is the richest reference. The 0% near-neutral dark edge pixels show the outline is tinted, not black, so it reads as a dark tone of the neighbouring material. By eye, the orange and green tarp strips on the roof show about 4 steps with seam and stitch variation. The hanging cloths in pink, yellow, blue and white are mostly 2-3 tone blocks, a bit simpler than the cheese stall's awning and goods. The rugs and bundles below add small clusters of varied tone. The dark area under the roof is mostly one flat tone, but it is small and stays under the 5x5 flat-fill concern. Overall a careful artist would accept it next to the cheese stall without it looking like a sticker.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17232
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "tarp roof (orange and green strips, sagging top plane)",
+      "rows": "1-15",
+      "evidence": "c",
+      "front_edge_line_row": 16,
+      "eave_shadow_rows": "18-19"
+     },
+     {
+      "part": "yellow front eave band",
+      "rows": "16-17",
+      "evidence": "a",
+      "front_edge_line_row": 16,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "hanging cloths, rolled rugs and bundles on the ground",
+      "rows": "18-47",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 15,
+    "front_face_rows": 30,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The roof is a tarp plane spanning rows 1-15, with alternating orange and green strip bands plus a darker seam at rows 8-10. It ends in a yellow front-edge line at rows 16-17, and the dark open space below starts at row 18. The front face runs from row 18 to 47. It has hanging cloths in rows 18-25, a dark void with two poles in rows 18-33, and a ground strip with rugs in rows 34-47. The roof is a clear sloped top surface, not a rim or a front-facing strip. The four poles, roof and eave are structure, so the structure rules apply and the top is present."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "Measured facts: the candidate has 15 visible tones per tile against 17 for the cheese stall and 20 for the roofed well, so it is close to the stall-type references. Near-flat coverage is 13%, the same as the cheese stall. Dark edge pixels are 0% neutral, so the outlines are tinted, not black. By eye, the tarp roof strips in orange and green and the hanging cloths give good colour separation and some variation. The roof, though, is a few broad strips with about 3-4 lightness steps each and little per-strip highlight or grain. The ground bundles and rugs are small, simple blocks. Compared with the stall-cheese roof and the well's tile scallops, the candidate looks a bit softer, with fewer shading steps and less grain per material. It is not a flat sticker, but it does not match the reference richness on the roof and the rugs.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 12640
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "tarp roof (green and orange strips, sloped plane)",
+      "rows": "1-15",
+      "evidence": "c",
+      "front_edge_line_row": 16,
+      "eave_shadow_rows": "18-19"
+     },
+     {
+      "part": "yellow front eave band",
+      "rows": "16-17",
+      "evidence": "none",
+      "front_edge_line_row": 16,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "hanging cloths along the eave",
+      "rows": "18-25",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "rolled rugs and bundles on the ground",
+      "rows": "36-46",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 15,
+    "front_face_rows": 30,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-15 are a tall sloped tarp roof made of two bands of green and orange strips. It ends in a yellow front-edge line at rows 16-17, with the dark open interior below it. That is evidence (c). Below the eave the front is open, with poles, hanging cloths, a dark back area (rows 18-33) and a ground strip with rugs (rows 34-47), so the front face is about 30 rows. The cloths and rugs are decor. No isometric side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The measured facts support the candidate. It has 15 visible tones per full tile against 17 for the cheese stall and 20 for the roofed well. Near-flat coverage is 13%, the same as the cheese stall. Its dark edge pixels are 0% neutral, so the outline is tinted: a dark brown-purple edge that follows the material rather than a black sticker line. By eye, the candidate reads as a convincing market shelter. The tarp roof has orange and green strips, and the hanging cloths in pink, yellow, blue and white are separate small shapes. The rugs and bundles below show some variation. It is slightly weaker than the stall and well references in a few places. The roof strips and cloth blocks have about 3-4 steps each, where the references use 5-6. The tarp strips are fairly flat inside, with little seam or fold grain. The cloths are mostly single-tone blocks with only a little highlight. The ground bundles are small and fairly simple. Overall it is close to the references in density and outline treatment, but a little shallower in per-material shading. When in doubt the call is fail, so the shallow per-material ramps and flat tarp and cloth areas decide it.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 15249
+  }
+ ],
+ "decidedAt": "2026-10-25T13:02:59.394Z",
+ "cells": {
+  "16": [
+   "255333fbaa081daf",
+   "38118330f71ff7b1",
+   "a23d904162a8b7d3",
+   "b4a7cb93a2be0223",
+   "c124110eff9df2bc",
+   "cc7ff41d22c9e232",
+   "cfacc21ebece5b09",
+   "e5492c30683c2e1d",
+   "fe865352cc012887"
+  ],
+  "24": [
+   "565182de540867bc",
+   "7d8ec6b76669812f",
+   "859a4eb7e723a3a6",
+   "cdd2fdd51ef12be5"
+  ],
+  "32": [
+   "1443652f2e076431",
+   "2125bc9a3f10064f",
+   "2551fbf0f5e1db6b",
+   "39b1991a8679e006",
+   "3b1a0f13d14d275d",
+   "3e3c0b61e2c74ff9",
+   "450e4e2a7b4d11d7",
+   "450f935d56c05685",
+   "73cadbd2a1ef74b9",
+   "77921438acb78625",
+   "796fee05fd1dfc55",
+   "7c577298d69bc01a",
+   "82d4821d38d92b1b",
+   "94b29b9f8c92ceb9",
+   "a0af6891d6d70579",
+   "a3c95a3f89fbbdcf",
+   "aac93bcdf9339c3b",
+   "b551e91d2d26335f",
+   "bcb791303fba3f98",
+   "c1722bae57c1c947",
+   "e75b865b930986a6",
+   "e7e8427c1b4e7e41",
+   "ec8221ac5d944636",
+   "f1cf8d6f0e014377"
+  ],
+  "48": [
+   "34d2877143e37ac8"
+  ]
+ }
+}

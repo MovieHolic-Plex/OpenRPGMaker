@@ -1,0 +1,403 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "df8b5fce9ca5c0a5305ea028353ba37557a66ee0883169e766ecdd07428f1fd9",
+ "width": 64,
+ "height": 32,
+ "kind": "other",
+ "name": "abandoned rusted car lying east-west seen from above: roof, hood and trunk tops, broken windows, rusty side panel with flat tyres",
+ "label": "wasteland_ruins/car-rust-h",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (3/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (3/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 6,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "wasteland_ruins",
+   "fallback": true,
+   "reason": "칩셋 wasteland_ruins 의 화풍 기준 묶음이 없다",
+   "hash": "2ad36264365ed8d5"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 17,
+  "tileColorsP90": 17,
+  "darkV5": 33,
+  "nearBlackEdge": 0.21,
+  "opaqueTiles": 6
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "borderline",
+   "right",
+   "borderline",
+   "borderline",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "borderline"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cabin roof / windshield top (tapered plane)",
+      "rows": "2-7",
+      "evidence": "c",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "hood and body top deck",
+      "rows": "8-13",
+      "evidence": "a",
+      "front_edge_line_row": 13,
+      "eave_shadow_rows": "14-14"
+     },
+     {
+      "part": "front face: grille/bumper panel with flat tyres",
+      "rows": "15-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 16,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The car is drawn facing the viewer. The silhouette steps from a narrow tapered roof (rows 2-7, width 18-30) to a wide body (rows 8-30, width 58-64). The body's top band (rows 8-12) is the hood deck. It ends in a light 1-row front-edge line at row 13 (L=172 at x=16, 32 and 47), followed by a dark shadow row 14 (L=65). Below that is a vertical front face of about 16 rows (rows 15-30) with the grille, bumper and two wheels. The roof tapering above the hood adds a second sloped plane. The top surface is about 6 rows against a 16-row front face, so it reads as a 3/4 view rather than a flat elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate shows 15 visible tones per 16x16 tile, against 17 for the cheese stall, 20 for the roofed well and 9 for the hedge. Near-flat coverage is 3%, below the stall's 13%, so there are no large flat fills. 0% of its dark edge pixels are neutral, so the outline leans dark blue or brown next to the body panels and is not a black sticker line. The blue body has about 4 lightness steps: highlight on the roof and hood, mid panel, dark shade and deep wheel arches. Orange rust patches, window breakage and tyre shading add grain and variation to the panels. It is a bit leaner than the well and stall, with 28 total colours against their 38-40, and its shading ramps are somewhat shorter than Beodeul's 5-6 steps. Even so, it sits at or above the hedge and close to the larger props on the primary facts, and an artist would accept it beside them without it looking like a sticker.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 25555
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cabin roof",
+      "rows": "2-7",
+      "evidence": "c",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "windshield and hood top band",
+      "rows": "8-13",
+      "evidence": "a",
+      "front_edge_line_row": 13,
+      "eave_shadow_rows": "14"
+     },
+     {
+      "part": "front face with grille, bumper and headlights",
+      "rows": "15-26",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "flat tyres",
+      "rows": "20-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 12,
+    "front_face_rows": 17,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The car is drawn nose-on, facing south, not lying east-west. The silhouette is a narrow trapezoid at rows 2-7 (width 18 to 30) that jumps to 58-64 wide at row 8. That is a cabin roof above a wider hood and windshield band. Row 13 is a light line (#a1b2ae) at x=16 and x=47, followed by a dark row 14 (#2d436e). Together they form a front-edge line with eave shadow, so rows 8-13 read as a top surface. The vertical front face runs from row 15 to row 30 and holds the grille, bumper, headlights and tyres. That is about 17 rows, with no receding side face. Overall it has a top plane and a front face, so it reads as three-quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate has 15 visible tones per 16x16 tile, against 9-20 for the references that have measurable tiles (hedge 9, cheese stall 17, well 20), so it sits inside the reference range. Near-flat coverage is 3%, which is low, and the dark edge pixels are 0% neutral, so the outline is tinted rather than a black sticker line. By eye the outline is a dark blue and rust tone next to the body panels, not pure black. The blue body has about 4 lightness steps: highlight along the roof and hood, a mid blue, a darker blue and a dark panel edge. Rust patches and windows add some texture dots. Even so, the large blue flanks and the roof look somewhat smoother and less grained than the cheese stall or well, which carry per-element highlights and speckle. The windows and tyres read as dark masses with little internal shading. Overall it is a competent, clearly tinted piece with slightly fewer steps and less grain than the best references, so it is slightly lower in density, not a flat sticker. With the 'when in doubt, fail' rule, the shallower body ramp and the dark window and tyre blobs weigh against it.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 19911
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cabin roof and windshield",
+      "rows": "2-13",
+      "evidence": "c",
+      "front_edge_line_row": 13,
+      "eave_shadow_rows": "14"
+     },
+     {
+      "part": "hood top",
+      "rows": "9-13",
+      "evidence": "a",
+      "front_edge_line_row": 13,
+      "eave_shadow_rows": "14"
+     },
+     {
+      "part": "front face with grille, bumper and panel",
+      "rows": "15-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "wheels",
+      "rows": "20-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 16,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette is a narrow cabin (width 18-30, rows 2-7) on a wide body (width 58-64, rows 8+). A hood top band at rows 9-12 ends in a light front-edge line at row 13 (L=172) followed by a dark shadow row at 14. Below it is a vertical front face of about 16 rows (15-30) with the grille, bumper panel and wheels. The cabin's windshield and roof planes sit above the hood. So the main body has a top band and a tall front face and reads as three-quarter, even though the description says east-west."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "Measured facts: the candidate has 15 visible tones per 16x16 tile, against 17 for the cheese stall, 20 for the roofed well and 9 for the hedge. Near-flat coverage is 3%, which is low and in line with the references. Dark edge pixels are 0% neutral, so the outline is tinted. By eye the outline is a dark blue that follows the body, not a black sticker line. The blue body shows about 4 lightness steps: a lighter roof highlight, mid blue, dark panel and deep shadow. There is rust-patch and speckle texture on the panels, but the roof and hood areas are fairly smooth and uniform compared with the well or stall. The wheels are small dark blobs with little shading. Overall it is competent and not flat, but the shading ramps are a bit shallower and the texture sparser than the best Beodeul props (stall, well), so it sits just under the bar. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 16116
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "hood and fender tops (left and right of the cabin)",
+      "rows": "8-13",
+      "evidence": "a",
+      "front_edge_line_row": 13,
+      "eave_shadow_rows": "14-14"
+     },
+     {
+      "part": "cabin roof and windscreen block",
+      "rows": "2-12",
+      "evidence": "c",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "front face: grille, bumper, headlights, flat tyres",
+      "rows": "15-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 16,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette is narrow at rows 2-7 (cabin roof, 18-30 px) and widens to 58-64 px from row 8. Hood and fender tops occupy rows 8-13 and end in a light front-edge line at row 13 (#a1b2ae). Row 14 is a dark eave shadow. Below it, rows 15-30 form a vertical front face with a grille, headlights, a bumper and wheel arches with flat tyres. The cabin has a sloped roof and windscreen above the hood. The top is only about 6 rows, but it has an edge line and a shadow, and the front face is clearly more than 3 rows. The view is a front-facing three-quarter view, although the name says the car lies east-west."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "Measured facts: the candidate has 15 visible tones per full tile against 9 (hedge), 17 (cheese stall) and 20 (roofed well). Near-flat coverage is 3%, against 0-13% for the references. Dark edge pixels are 0% neutral, so the outline is tinted, dark blue-ish, not a black sticker line. By eye, the blue body has about 4 lightness steps with rust patches, cracked windows and dark tyres, which gives some texture. It is a little flatter than the well or stall: the roof and hood are broad blue areas with only light speckle, and the rust blotches are sparse. It is acceptable on the numbers and clearly not a flat sticker, but a careful artist would see the large body panels as somewhat thinner than the well's stone-by-stone shading and the stall's multi-tone cloth and goods. Because of that, and the instruction to fail when in doubt, I fail it narrowly.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 15529
+  }
+ ],
+ "decidedAt": "2026-10-25T13:02:59.314Z",
+ "cells": {
+  "16": [
+   "1d9d3a424886be34",
+   "2bf0d6f997ebc715",
+   "4dbb097bfcd9dc28",
+   "4dfb049a2b5d1702",
+   "876637ee74432c51",
+   "c127b57e3f1e3c29",
+   "d2948589fe2f4d95",
+   "f09198d929c20e8a"
+  ],
+  "24": [
+   "108ca9c122551998",
+   "24838ff1d9b5afe6",
+   "2535b06405e013f6",
+   "36df3bbeb845fe33",
+   "3bc0006c39f0dc26",
+   "3bc35f1bf6091621",
+   "455ef472b2ed375c",
+   "472bc4d037e6ce2c",
+   "4b01e8b60356b7ce",
+   "4c9eb8a9af6e8a4b",
+   "4e78e972c2cbb752",
+   "506e1557aa6de579",
+   "5123cd8079309ec5",
+   "57a761e82cbe1923",
+   "57b0b2c19c5904da",
+   "6bab4a9d5e97c3e5",
+   "6bb3d43c0b5d7786",
+   "6c8c7520fb6abc9e",
+   "6e9bda4b4a522094",
+   "7edb00125807a1d9",
+   "8395151d50b6c710",
+   "843c5688caed086a",
+   "8537371cc6cc33d7",
+   "8ace12d344b2206e",
+   "9dd8434819092e3d",
+   "a044ce350701c067",
+   "ad213b71a7067c99",
+   "bf718d99d6b84853",
+   "c8e74e300d4bb427",
+   "cee298669ef4e686",
+   "d793d01745070e16",
+   "e001ce232aeef6fc",
+   "ecff412abf3e55a8",
+   "fee51cdf0c2bc826"
+  ],
+  "32": [
+   "0876f6381140cff2",
+   "40eaef2be0c31dfa"
+  ],
+  "48": [
+   "182ba6af88fed2e5",
+   "33a5626ab5763d67",
+   "60cf3fc442dd2ffc",
+   "6c179b8d78ed29dc",
+   "95f6c9b8d5c1aec1",
+   "97e769f4d41829ec",
+   "c01321ac20a35343",
+   "ddb803ec606e81a7",
+   "e8671894333715fd",
+   "ecaa9f2d88a57505",
+   "f13b5b50669f910b",
+   "f993c774ece560e1"
+  ]
+ }
+}

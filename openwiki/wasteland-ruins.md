@@ -127,6 +127,21 @@ modern 계열이고 팔레트는 modern_city 에 잠겨 있다. 그림은 코드
 - **검수 기록:** `_review/r62/review1~4/`(BRIEF·판·맵 crop·verdict-A Argon·verdict-B Sonnet). 4판 결과 두 검수자 모두 PASS 는 oil-stain-b·crop-bed-b·crop-bed-c 셋이고, 이것만 위임 허용(`_review/r62/allows-r62.json`)으로 굽혔다. oil-stain-a·scorch-a·scorch-b 는 4판에도 한쪽 이상 FAIL(검수자 사이 판정이 판마다 갈렸다)이라 굽지 않는다 — 구성기는 굽힌 조각만 쓰므로 지금 맵에는 그을음이 없고 기름은 b 하나다.
   - 자료 만들기: `wl_decal_review.py <검수 폴더> <프로브 출력>`(프로브는 `VA_DUMP=1 bun scripts/qa/village-art-probe.mts --out …`). Argon 검수: `ARGON_MODEL=gemini-4-argon-high wl_argon_review.py <폴더> A`(127.0.0.1:8318; `gemini-4-argon` 은 그림을 넣으면 빈 답을 냈다).
 
+### r63 에서 더한 것 (주인공 크기·고요한 바닥)
+
+사용자 지적: 기물이 버들항과 크기가 다르고 바닥이 지저분하다. 주인공(Actor1 24×32, 16px 맵에서 1배, 보이는 키 24px)을 기물 옆에 세운 비교판으로 잰다.
+
+- **잣대(버들항 실측):** 문 10~12×24~26px, 한 층 30~34px, 창 8~10px(틀), 처마 ≥28px, 상자 13px, 통 14px. 작업자 계약 `tiledata/wasteland-ruins/_review/r63/SCALE-CONTRACT.md`.
+- **비교판 도구:** `wl_scale_sheet.py <out> [--only id,…]`(주인공 옆 기물·버들항 기준, 높이 표) · `wl_hero_map.py <map.png> <out> cx,cy …`(맵에 주인공 세우기).
+- **다시 그려 구운 것(관문 PASS + Sonnet 검수 PASS + 위임 허용):** husk-a·husk-b(문 25px)·husk-tall(4×8, 30px 세 층)·shack-b·shack-c·container-home·stall-a/b(3×3, 처마 30px)·dead-tree(3×4)·lamp-broken(1×3)·hut-sheet(3×3)·wash-line(3×2).
+- **아직 옛 크기(다시 그림이 3/4 관문 화풍에서 FAIL/REFER):** shack-a·lean-to·tent-tarp·gate-scrap·car-rust-h/v·van-rust·husk-e/g/h·lean-doors·shack-2f·hut-stove·market-shelter.
+  `legacy_r62/ids.json` 의 id 는 `legacy_r62/lg_*.py`(origin/main #3488 모듈 사본)의 r62 그림을 쓴다(`wl_all._load_legacy`). 새 그림은 각 wl_*.py 에 그대로 있다 — 관문을 넘기면 ids.json 에서 빼고 굽는다.
+- **흙:** `calm_tone` — 바탕 7b5d48 에 낱화소 알(밝은 916f57·어두운 654c39, 밀도 14~28% 를 32px 흐름으로)만, 덩이 얼룩 없음. 팔레트가 잠겨 한 단 차이가 ±18 이라 덩이 대신 낱알로 대비를 낮춘다. 3~14% 는 관문 «평면 채움»으로 떨어졌다.
+- **길(asphalt-ph)은 r62 그대로:** 고요하게 다시 그린 판은 관문 REFER 였지만 Sonnet 이 «여전히 가장 시끄러운 바닥»으로 FAIL — 다음 판 과제.
+- **표본 바탕 고정:** 덧그림·텃밭·판 조각의 관문 표본은 흙 위에 얹혀 찍히므로, 흙을 바꾸면 그림이 같아도 sha 가 바뀐다. `dirt-b62/c62/d62`·`asphalt-ph62`(굽지 않음, SKIP)를 표본 바탕으로 써서 옛 영수증·허용을 지킨다.
+- **구성기 밀도:** 덧그림 밀도 settlement·shanty 0.045→0.02, ruined-city 0.09→0.045, 길 금·포트홀 7%→2.5%·서로 6칸, 웅덩이 1~2, 얼룩 상한 절반, 잡초 덩이 속 확률 0.7→0.5.
+- 검수 기록: `_review/r63/review1`(Sonnet·Argon, 둘 다 FAIL) → `review2`(Sonnet 하나 — 사용자 지시로 Argon 생략·2판 상한): 12조각 PASS, 흙 PASS, 길 FAIL. 허용 `_review/r63/allows-r63.json`.
+
 ## 검수 기록
 
 - **증거:** `tiledata/wasteland-ruins/_review/`

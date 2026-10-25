@@ -1,0 +1,410 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "1aad64b49a136774a61fa881e41659e5056b75b4f8d9bc0ae24a783b3f71a575",
+ "width": 192,
+ "height": 144,
+ "kind": "terrain",
+ "name": "dusty packed wasteland earth ground, a seamless 8x8-tile field (128px period) of soft low-contrast clumped earth with irregularly scattered raised clods and small grit clusters, no rows or grid alignment, a few tiles with gravel and rust flakes",
+ "label": "wasteland_ruins/dirt-c",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 명암 3단 < 4 (2/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "명암 3단 < 4 (2/4)"
+  ],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 6,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "wasteland_ruins",
+   "fallback": true,
+   "reason": "칩셋 wasteland_ruins 의 화풍 기준 묶음이 없다",
+   "hash": "8cecb3a70460aa86"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 4,
+  "tileColorsP90": 5,
+  "darkV5": 94,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 108
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "packed earth ground field",
+      "rows": "0-143",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 144,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The image is a seamless full-bleed terrain texture. The width is 192 on every row, and the column scans show only noise-level lightness changes (L about 100 with scattered darker or lighter specks). There is no silhouette, front-edge line, eave shadow, ellipse, or front face. This is a flat top-down ground fill, which is expected for terrain, and the tile has no standing structure to measure."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a fine, uniform speckle of brown soil with only 4 visible tones per tile, against 3 for the grass reference and 7 for the paving reference. Near-flat coverage is 3%, so there are no real flat fills, and there is no outline to judge (dark edge pixels are 0% neutral). The weakness is structure. The brief asks for raised clods and grit clusters, but the field reads as an even noise grain. Clods are barely visible, with only a few faint darker smudges. The scattered gravel and rust flakes are sparse single dots. There is no clump-by-clump shading with highlight and shadow sides, so the material ramp is shallow, about 4 steps against Beodeul's 5-6. With only 11 distinct colours in total, the surface looks more like a stippled sticker than hand-shaded earth. Compared with the grass reference, which has clear tufts and a dark patch, the candidate has less shape-level information. It is cleanly seamless and low-contrast as requested, but a careful artist would likely see it as flatter than the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 9339
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "ground tile field",
+      "rows": "0-143",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "other",
+    "evidence": "The image is a seamless terrain tile of earth texture, 192 px wide across all rows 0-143, with no silhouette, no edges and no standing volume. The column scan shows only small speckle runs of similar brown (L about 100) with 1-2 row darker flecks, i.e. grit and clods spread across the whole field, with no front-edge line, eave shadow or ellipse. It is a flat ground texture, not a standing object, so there is no front face and no object top surface to measure. Terrain kind matches the description."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a uniform brown field with fine speckle grain. It has only 11 distinct colours in total and about 4 visible tones per tile, against 3 for the reference grass and 7 for the paving. Near-flat coverage is 3%, so there are no big flat fills, but the grain is a fine, even noise. The brief asks for 'irregularly scattered raised clods' and 'clumped earth', and the image shows almost none of them. I can see only a few faint darker smudges and a handful of tiny grit and rust specks. Beodeul's grass has distinct tufts, clumps and a few lit highlight dots in several greens (about 5 steps). The candidate has roughly 3 steps on its main ramp (base, dark speck, light speck) and no shaded clod forms. It has no outlines, so the sticker look does not apply. On tone count it matches the grass tile, but it is structurally flatter and more like noise than clustered texture. A careful artist would find it thinner than the reference, so I fail it.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 10431
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "seamless earth ground field (flat terrain texture, no standing structure)",
+      "rows": "0-143",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "other",
+    "evidence": "This is a terrain tile, not a standing object. The silhouette is a full 192px-wide opaque rectangle over rows 0-143, and the column scans show only a uniform earth tone (L~100) broken by scattered darker 1-2 row specks (L~81, L~60) and a few lighter clods (L~109-118). There is no front-edge line, no eave shadow, no ellipse, no roof or canopy, no vertical face and no side face. It is a continuous, seamless ground texture with scattered grit, gravel and rust flakes, which suits the terrain kind. The top-surface and front-face rules for standing objects do not apply, so 'other' is the fitting reading."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a seamless earth ground with fine speckle grain. It shows 4 visible tones per tile, against 3 for the grass reference and 7 for the paving. Near-flat coverage is 3%, so there are no big flat fills, and there is no outline to judge (0% neutral dark edge pixels). Its ramp is shallow: only 11 distinct colours in total, 4 per tile, against 80 colours in the grass reference. The surface is a uniform brown noise speckle with very little clumping. The prompt describes irregular raised clods and grit clusters, but the picture shows almost none. The few grey and rust flakes are tiny and sparse, and a few faint darker patches are barely visible. Next to the grass reference, which has distinct tufts, clumps and a dark-shaded patch, the candidate reads as a flat noise fill. It lacks shaped clods with highlight and shadow sides, and it lacks varied cluster structure. The measured numbers are acceptable but the structure is thinner than the references, so it falls short of the Beodeul bar.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 9399
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "ground field (seamless earth texture with clods, grit, gravel and rust flakes)",
+      "rows": "0-143",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "This is a seamless terrain tile, not a standing object. The column scans show only a uniform earth tone (L about 100) with scattered 1-2 row darker flecks (#654c39, #4a3828) and a few lighter clods (#916f57). The silhouette is a constant 192 px wide for every row, so there is no front-edge line, eave shadow, ellipse, or front face. It reads as a flat top-down ground texture, which is the expected form for terrain."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a fine-speckled brown earth field with only about 3-4 visible lightness steps, and 11 distinct colours in total. The reference grass has 80 colours and shows clumps, tufts and a darker patch in several greens; the paving shows stones shaded one by one. The candidate has 4 visible tones per tile against 3 for the grass and 7 for the paving. Its near-flat coverage is 3%, so the speckle grain is real and there are no large flat fills. Dark edge pixels are 0% neutral and there are no outlines, so it is not a sticker look. The weakness is structural: the clods and grit clusters asked for in the brief barely read. The surface is a uniform fine noise, and the few stones and rust flakes are tiny and sparse. The low-contrast earth lacks the clumped shapes, the larger-scale tonal variation and the per-clod highlight and shadow that the Beodeul references show. It reads as flat speckled noise over a single mid-brown, shallower than the references. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 10141
+  }
+ ],
+ "decidedAt": "2026-10-25T13:07:45.941Z",
+ "cells": {
+  "16": [
+   "03f9b86b7a7515ab",
+   "11ba873af6dbd488",
+   "1997da5eca8496b1",
+   "24a98f3ab9459cb7",
+   "2c75f56466289945",
+   "2dc8cd3f2d3a05b7",
+   "2f814f5562db5d1f",
+   "366ae61d65785b17",
+   "3d31b2d5c7d0d34d",
+   "3e0d5596f10a6e72",
+   "494c177ef35d556d",
+   "4ae23229e3ce47fe",
+   "4c11268804241558",
+   "52ae4ada04452734",
+   "66aa000ad5aa498b",
+   "67085da2606f739b",
+   "6b2f40ce4a4e7223",
+   "730c2f94e4ea3238",
+   "753a530c1e8246da",
+   "7f64adcc4bbdda2b",
+   "806aef078b4b3bb3",
+   "8394062ac02b1bc6",
+   "88b022b2e1d67048",
+   "8dc3a1461de966aa",
+   "917e7347d3c6bb52",
+   "9a602542f5f0b680",
+   "a44c0bebfc68980b",
+   "a6f92d77c8200a2c",
+   "bdb5241be0c1b0b7",
+   "cd928ae9cc315389",
+   "d483fada5f06a8af",
+   "d91c26b066dfdb09",
+   "da773e3647c0ca0d",
+   "ec1616c74cbd4a0f",
+   "eda93530058e8220",
+   "edc0f40d636b219f",
+   "ff174a76880b2c64",
+   "ff71d9074286e905"
+  ],
+  "24": [
+   "031bd7a2d272d94f",
+   "08b5f5fdf4fa8d10",
+   "0961cd7ec917a5fd",
+   "0975ede2991c5f7f",
+   "108018ff55007561",
+   "15df33299b522204",
+   "1c045fc12e58d697",
+   "227244a89f6ba0e7",
+   "273e70432d8a0278",
+   "284dba91028632be",
+   "323c9faa403f436c",
+   "34deced88ca69e55",
+   "35ac8e0b892658d4",
+   "36c475df5ec443ec",
+   "3d2b6f7c94138437",
+   "43b7e1d2bba37634",
+   "489ed2027406cba6",
+   "571424ca6798ee34",
+   "5a371384965e72da",
+   "5b610dbc28c12469",
+   "6bd6ded1c89963ee",
+   "6d5a8d38abf1deb0",
+   "76a14d1335930410",
+   "79e806e3230488aa",
+   "80d9ee21ef545919",
+   "836eaa56b115cc3c",
+   "895c2e1622239ddd",
+   "8bbcc2c013cd7c87",
+   "8d178de7d75fcead",
+   "97b6638373f79efc",
+   "9b7224b887f430e1",
+   "affadd9eee30a4e9",
+   "b6493c7421da1732",
+   "b679d0b3e30a5e03",
+   "bc76dd7a52208ccb",
+   "c13f1efaf06e5761",
+   "c1ee1538ee14dfa0",
+   "c55e39e19b09dbd3",
+   "c67e0a70c373ead3",
+   "cc347e343b7c8134",
+   "d4582ba3e95ef7aa",
+   "d817106e196b50fa",
+   "df0bddc3a5636241",
+   "e446d548201dae6a",
+   "ec69b4ddf26d37aa",
+   "f014faa961077395",
+   "f0808d647fd13dcd",
+   "fad7f5922249b460"
+  ],
+  "32": [
+   "110702b1adc9bf75",
+   "11881510c4b30e50",
+   "1312e21eb7fba994",
+   "16aaa0ad072c369b",
+   "1b384d19fcb4b2d1",
+   "1f01844c1e802155",
+   "30a63d78c9779a82",
+   "33640cffe4bc91af",
+   "35d1829968409883",
+   "37f38a71c6d94365",
+   "39a9cd290b4053de",
+   "3d483d60b1253ab3",
+   "3d62fe1af984c9b1",
+   "44c91166f0930cbe",
+   "497510db1340a076",
+   "4f3e6f416e8f60b5",
+   "5306e874245cf375",
+   "58eae3e738e06f14",
+   "68125c82567c531b",
+   "6f68a6462a220ae2",
+   "787f648a34471fa9",
+   "863f5cfda3e64d09",
+   "871b9c2e8c297b92",
+   "871c33a49b760d80",
+   "8a603bdee239278c",
+   "8ce1a8e73e634bd6",
+   "96efd7c408dd64a7",
+   "978ea35d7f5ab11b",
+   "987fd9fdf0ad068d",
+   "990997e12f73a04d",
+   "9dadafa4c8fed834",
+   "a249373845dbede8",
+   "ba386082e59f0d59",
+   "c072afa20f859860",
+   "c9a5306fe9b82b68",
+   "cec939a67ab1d137",
+   "cfc9c6d8cdb0f54b",
+   "d282f60a7c97e052",
+   "d33433595bcff9e7",
+   "d453d3f5ff8c1911",
+   "dbfd03c5ec431b7b",
+   "eb847518d57535ad",
+   "f5cac59db3565b77",
+   "fb1664e2bb39f262"
+  ],
+  "48": [
+   "0bd99a6dfad12c71",
+   "129ff075c75b0286",
+   "23a89f2534683b51",
+   "2774ad727a5fa013",
+   "3afa66ec96a82538",
+   "5748bd800a73a371",
+   "6a0905623834c23d",
+   "8213c0bae5a7d17e",
+   "8a47cbacde0ef788",
+   "8d3eabe92406b634",
+   "d8d15dcb0aab143e",
+   "e4c9b6e43fa74a4d"
+  ]
+ }
+}

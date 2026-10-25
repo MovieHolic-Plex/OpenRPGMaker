@@ -111,7 +111,7 @@ def ground_cell(x, y, seed):
        group='ground', tags=['콘크리트', '광장', '보도', '바닥'],
        desc='깨진 콘크리트 판의 아래층(줄눈 없음). 8×8칸 결 판을 단 셋(rows 0~7 어두움 · 8~15 가운데 · 16~23 밝음)으로 둔다. '
             '칸 64개는 서로 독립(골재 덩이가 칸 경계를 넘지 않음). 맵 칸 (x,y) 에는 판 단 t 와 n = ground_cell(x,y) 로 rows[n//8 + 8t].tiles[n%8] — 주기 없음. 줄눈으로 둘린 판마다 단 하나. 위 평면층에 slab-joints.',
-       sample=lambda f=0: board_sample(seed=5))
+       sample=lambda f=0: board_sample(seed=5, r62=True))   # r63: 판 그림은 그대로 — 표본 바탕만 r62(영수증 sha 유지)
 def _ground(c):
     for t, d in enumerate(TONES):
         for y in range(SP):
@@ -458,7 +458,7 @@ def draw_tile(c, ox, oy, spec):
        group='ground', tags=['콘크리트', '줄눈', '덧그림', '보도', '광장'],
        desc='깨진 콘크리트 판의 줄눈·표시·가장자리 덧그림(위 평면층). 붓으로 찍지 않는다 — 구성기가 맵 판 짜임(가로 줄눈 2~4칸마다, 띠마다 세로 줄눈 2~4칸)과 '
             '네 이웃 종류(판·흙·길)로 칸을 고른다. 아래층은 slab-ground.',
-       sample=lambda f=0: board_sample(SAMPLE_PLAN_B, seed=92))
+       sample=lambda f=0: board_sample(SAMPLE_PLAN_B, seed=92, r62=True))
 def _joint_sheet(c):
     for i, spec in enumerate(ORDER): draw_tile(c, (i % COLS) * 16, (i // COLS) * 16, spec)
 
@@ -498,12 +498,12 @@ SAMPLE_PLAN_B = [
 ]
 
 
-def board_sample(plan=SAMPLE_PLAN, seed=5, decal=True):
+def board_sample(plan=SAMPLE_PLAN, seed=5, decal=True, r62=False):
     H, W = len(plan), len(plan[0])
     slab = lambda x, y: 0 <= x < W and 0 <= y < H and plan[y][x] == '#'
     road = lambda x, y: 0 <= x < W and 0 <= y < H and plan[y][x] == 'R'
-    dirt = tiled(DIRT8_IDS, [''.join('b' if h2(i, j, 6) % 16 < 10 else 'c' if h2(i, j, 6) % 16 < 13 else 'd' for i in range(W)) for j in range(H)])()
-    asph = render(PIECES['asphalt-ph']) if 'asphalt-ph' in PIECES else None
+    dirt = tiled({k: (v[0] + '62' if r62 and v[0] != 'dirt-d' else v[0] + '62' if r62 else v[0], None, None) for k, v in DIRT8_IDS.items()} if r62 else DIRT8_IDS, [''.join('b' if h2(i, j, 6) % 16 < 10 else 'c' if h2(i, j, 6) % 16 < 13 else 'd' for i in range(W)) for j in range(H)])()
+    asph = render(PIECES['asphalt-ph62' if r62 else 'asphalt-ph']) if 'asphalt-ph' in PIECES else None   # r63: slab-joints 표본은 r62 길·흙 바탕(영수증 sha 유지)
     G = render(PIECES['slab-ground']); Jm = render(PIECES['slab-joints'])
     L = Layout(W, H, seed)
     a = dirt.copy()

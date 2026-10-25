@@ -1,0 +1,423 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ed94a53e2a3456332ee0f277639cadbe8ed418d07024dd4afaa701b2d7ddcdde",
+ "width": 64,
+ "height": 64,
+ "kind": "structure",
+ "name": "larger scrap-metal shack seen from above: patched corrugated roof with a tarp patch and a stovepipe chimney, scrap front wall with plank door and boarded window",
+ "label": "wasteland_ruins/shack-b",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 7,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "wasteland_ruins",
+   "fallback": true,
+   "reason": "칩셋 wasteland_ruins 의 화풍 기준 묶음이 없다",
+   "hash": "5f62fef078ef7661"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 15,
+  "tileColorsP90": 17,
+  "darkV5": 35,
+  "nearBlackEdge": 0.17,
+  "opaqueTiles": 16
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "patched corrugated roof",
+      "rows": "3-32",
+      "evidence": "c",
+      "front_edge_line_row": 31,
+      "eave_shadow_rows": "32-34"
+     },
+     {
+      "part": "teal tarp patch on roof",
+      "rows": "8-20",
+      "evidence": "c",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stovepipe chimney",
+      "rows": "3-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "scrap front wall with plank door and boarded window",
+      "rows": "35-63",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 29,
+    "front_face_rows": 29,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The roof is a large sloped plane covering rows 3-32. Its patchwork, tarp and horizontal seam lines mark it as a roof surface. It ends in a light front-edge line at row 31, then a dark eave shadow at rows 32-34 (L=21-71). Below that is a vertical front wall from rows 35-63 with a plank door, a boarded window and scrap panels, about 29 rows. The silhouette widens slightly from 54 to 64 px going down the roof, which gives a perspective slope. The stovepipe is a small vertical detail on the roof and does not change the reading."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a whole building (roof, front wall, door, window) like the references, but smaller. The measured facts favour it: 15 visible tones per 16x16 tile against 12 and 10 for the references, 0% near-flat coverage (same as both references), and 0% neutral dark edge pixels, so the outlines carry a tint. By eye the outlines are dark rust-brown or blue-grey toned to the neighbouring material, with no uniform black sticker line. The corrugated roof has about 5 steps, with ridge highlights, rust patches, a teal tarp patch and a stovepipe. The wall has separate planks, a plank door and a boarded window, each with its own value. Texture is less dense than the tile scallops and plaster speckle on the references, and the roof ramp is a step or so shallower, but nothing is a flat fill and a careful artist would accept it beside the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 81907
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "patched corrugated roof with tarp patch",
+      "rows": "3-32",
+      "evidence": "c",
+      "front_edge_line_row": 32,
+      "eave_shadow_rows": "33-34"
+     },
+     {
+      "part": "stovepipe chimney",
+      "rows": "5-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "scrap front wall with plank door and boarded window",
+      "rows": "35-63",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 30,
+    "front_face_rows": 29,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The roof is a large sloped plane covering rows 3-32 (about 30 rows). It is made of patched corrugated sheets with a teal tarp patch, and the rows are widest at the bottom. A light eave edge at row 32 is followed by a dark eave shadow at rows 33-34. Below it, the vertical south wall spans rows 35-63 (about 29 rows) and holds the plank door, the boarded window and scrap panels. The stovepipe sits on the roof as a gray patch with a dark base at rows 12-14, and it does not break the roof's top surface. No isometric side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The measured facts favour the candidate: 15 visible tones per 16x16 tile against 12 and 10 for the references, 0% near-flat coverage, and 0% neutral dark edge pixels, so the outlines are tinted. By eye, the roof has a grey-blue corrugated ramp of about 4-5 steps. It also carries rust patches, a teal tarp patch with its own dark edge, and a stovepipe chimney. The wall has several brown plank tones, a boarded window with slats, and a plank door. Outlines are dark brown or dark blue-grey beside the adjacent material, not a uniform black sticker line. The piece is smaller and less ornate than the tile-roof references, with fewer per-tile highlights than their scalloped roofs. Still, no large area is a flat fill, and the tile information density matches or exceeds the references, so a careful artist would accept it beside them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 83908
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "patched corrugated roof with tarp patch",
+      "rows": "3-32",
+      "evidence": "c",
+      "front_edge_line_row": 32,
+      "eave_shadow_rows": "33-34"
+     },
+     {
+      "part": "stovepipe chimney on roof",
+      "rows": "4-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "front wall with plank door and boarded window",
+      "rows": "35-63",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 30,
+    "front_face_rows": 29,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "A large sloped roof plane (patched corrugated metal and tarp) fills rows 3-32. It ends in a light-to-dark eave edge at row 32, followed by a very dark shadow band at rows 33-34. Below it the vertical front wall (rows 35-63) shows the plank door, boarded window and scrap panels, so the roof is a real top surface above a 29-row front face. The stovepipe is a small part sitting on the roof."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "Measured facts favour the candidate: 15 visible tones per tile against 12 and 10 for the references, 0% near-flat coverage, and 0% neutral dark edge pixels, so the outlines are tinted. Judged by eye, the candidate is much smaller and simpler than the references. The corrugated roof has about 4 steps with some rust and tarp patches and little per-sheet highlighting. The wall planks are fairly uniform. Against the references' 5-6 step tile ramps, scalloped per-tile highlights and speckled plaster or stone, the shading is shallower. The 15 tones are probably inflated by the many hue accents (rust, blue tarp), not by lightness depth. Overall it is slightly thinner and less crafted than the references, and it is not a clear match for them.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 13294
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "patched corrugated roof with tarp and patches",
+      "rows": "3-32",
+      "evidence": "c",
+      "front_edge_line_row": 32,
+      "eave_shadow_rows": "33-34"
+     },
+     {
+      "part": "stovepipe chimney",
+      "rows": "4-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "scrap front wall with plank door and boarded window",
+      "rows": "35-62",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 30,
+    "front_face_rows": 28,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The roof is a large sloped plane in rows 3-32, drawn with tarp, rust and blue patches. It ends in a dark front-edge line at row 32, followed by dark eave shadow in rows 33-34. Below it, rows 35-62 (28 rows) show the vertical front wall with the plank door, boarded window and corrugated panels. The width profile steps gradually from 54 to 64 px across the roof, then holds at 62 px for the wall. The stovepipe is a small part sitting on the roof and does not change the reading. The roof has a real top surface and the wall has a real front face, so this reads as three-quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The measured facts favour the candidate: 15 visible tones per 16x16 tile against 12 and 10 for the references, 0% near-flat coverage like both references, and 0% neutral dark edge pixels, so the outlines are tinted. By eye the roof has about 5 steps in a grey-blue ramp, with corrugation lines, rust patches, a teal tarp patch and a stovepipe with its own shading. The front wall has vertical scrap planks in several browns, a boarded window with slats, and a plank door with a blue panel. Dark edges lean brown or blue-grey beside each material rather than forming a uniform black sticker line. The piece is smaller and uses a tighter palette than the tile-roof references, with slightly fewer ramp steps than their 5-6. It still carries comparable visible information and texture, with no large flat fills, and would sit acceptably next to the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15538
+  }
+ ],
+ "decidedAt": "2026-10-25T13:02:59.287Z",
+ "cells": {
+  "16": [
+   "0ea513353741bb91",
+   "0f43257cd010a1b7",
+   "0f95deeb0655c476",
+   "19eab3c8aa31e8b5",
+   "227fe3aff11bef3c",
+   "426ca0bb60ef7754",
+   "463049adef5c335d",
+   "4e7e3d8a4eee4442",
+   "6b72a33d341ee946",
+   "81e5b04725770fb9",
+   "a267d2d028f96145",
+   "b846f945b197dd99",
+   "d40b6526d7c3df16",
+   "e2667157fbbd317d",
+   "eb82dee660810679",
+   "fa52e0968e275878"
+  ],
+  "24": [
+   "0fd924cda56179bc",
+   "13a933f84d428103",
+   "15bec3743a5c205f",
+   "176a8d749487677e",
+   "1acc639806f74a5e",
+   "2852d31530baadd3",
+   "32ddc3dd9e1b5de5",
+   "3884f8a1922ba0f2",
+   "39a42fc88874ad35",
+   "3a4a647d87812720",
+   "41ff072db2042868",
+   "4691a33e7e091324",
+   "4712751cf442b7c2",
+   "493409957e8e508b",
+   "4aa10d656eea53d9",
+   "4bd40ee0b74774a6",
+   "4beee6282b4e1870",
+   "51e82418086c260d",
+   "5a62aa335da9154a",
+   "5c6e7a7897cb2010",
+   "5e59302814e42f93",
+   "6cd5127b32aeba4c",
+   "7101a58bb652bf97",
+   "73b7baf72e0ff52c",
+   "75eea377ca1d4636",
+   "78159ca0cb457532",
+   "79bd570f31d916eb",
+   "807dba92ceda3f00",
+   "81c439ae6be2c801",
+   "90fb42613935d7f1",
+   "997bea5a905a562c",
+   "9a31d99dd5960bf4",
+   "ac83e7b2fdf4af83",
+   "ac919060fd92585e",
+   "adfcbaade631d7bd",
+   "b50f222e830e07c6",
+   "b57e4d179479f91d",
+   "b6aa516c37bb73af",
+   "bb9e5985b3bb916e",
+   "c2eda5b1a65a8c09",
+   "c6593993bea10fe6",
+   "c96e85bd868ac323",
+   "cd04a373fbd1ca01",
+   "d13f7864bf5cffcf",
+   "d4ac9d0d0019e5d9",
+   "d85e652323ad2676",
+   "dfd42b6b4afdcf67",
+   "e4dfe163b1f1bda7",
+   "ebb0c6c414bbaa68",
+   "ec90bcf7b336133f",
+   "f83f3ddb567e09ec",
+   "f8c4a47764ee01f0",
+   "fae21284397f6a57",
+   "feb394ec80b5aa1c"
+  ],
+  "32": [
+   "6c6f22bbe4c11561",
+   "700ed390031e8603",
+   "c501e543e2fc90c5",
+   "ed4de6f7e2627728"
+  ],
+  "48": [
+   "1192263e5c06fe15",
+   "2045dbf05be4a821",
+   "2b18a6fe90bf88b3",
+   "3b6757deb1f0f56d",
+   "5394e60df0bf529f",
+   "5856da1d339abd96",
+   "5ea0a6b44d34557c",
+   "63293bfb514a798d",
+   "64536101359b6607",
+   "64588b469c7ea3d4",
+   "6e5506cc66ab59b0",
+   "76624933b0a7f4fb",
+   "789f58e56d7ee063",
+   "80776e3b373c8f17",
+   "81ad5c244a1ee711",
+   "867461717f1e1e6d",
+   "99ac1ef151899b52",
+   "9cfe24e9176fb74c",
+   "9f48fcdb5e9902b7",
+   "a07d0ce2eb9b0960",
+   "ba1c815b1bb7f234",
+   "ca72409f8e2a290b",
+   "d03ed78c47de534e",
+   "f52e20b7fec38acd"
+  ]
+ }
+}

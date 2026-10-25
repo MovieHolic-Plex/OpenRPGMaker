@@ -1,0 +1,339 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "2fee6eb9f8dbc266aa09a862c3e7db58984dfe0a347a466e256fdc3d6764b3a5",
+ "width": 64,
+ "height": 48,
+ "kind": "flat",
+ "name": "scattered tufts of dry yellow-brown grass with drooping seed heads and a few green shoots on bare earth",
+ "label": "wasteland_ruins/weeds-b",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 7,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "wasteland_ruins",
+   "fallback": true,
+   "reason": "칩셋 wasteland_ruins 의 화풍 기준 묶음이 없다",
+   "hash": "8cecb3a70460aa86"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 5,
+  "tileColorsP90": 9,
+  "darkV5": 72,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 12
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "bare earth ground patch (full 64x48 rectangle)",
+      "rows": "0-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dry grass tuft top right with seed heads",
+      "rows": "2-9",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dry grass tuft right with seed heads",
+      "rows": "17-30",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dry grass tuft bottom left",
+      "rows": "34-47",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "green shoots",
+      "rows": "13-15, 18-19, 30-31, 34-35, 46-47",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 48,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The whole sprite is a full-width, 64-pixel-wide, 48-row earth-colored textured ground patch seen from above. Its brown noise has no front-edge line, no eave shadow and no vertical face. The grass tufts (yellow-brown stalks, pale seed heads, small green shoots) are scattered decor on the surface, and no front face of 3 or more rows is drawn. This is a flat ground decal, which fits the flat kind, and it reads as a top-down slab."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate has 5 visible tones per tile, above the reference grass (3) and below the paving (7). Near-flat coverage is only 2% (reference grass 0%), so the soil is broken up by speckle, pebbles and grain rather than left as a flat fill. The dark edge pixels are 0% neutral, so the dark tones carry a brown or green tint and there is no black sticker outline. The yellow tufts show about 3 tones, with highlight, mid and dark strokes, and the green shoots add a few more. The tufts are sparse and the total palette is small (16 colours against 80 for the reference grass), so the shading ramps are slightly shallower than Beodeul's 5-6 steps. By eye, the tile still carries at least as much visible information as the reference grass tile, and a careful artist would accept it beside the reference.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 14822
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "bare earth ground patch",
+      "rows": "0-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dry grass tufts, seed heads and green shoots",
+      "rows": "2-47",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 48,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The image is a full 64x48 opaque earth-brown ground tile with scattered grass tufts and green shoots lying on it. The silhouette is a uniform 64 px wide for every row (0-47), so there is no edge line, no eave shadow, no front face and no raised volume. This is a flat ground decal seen from above, which matches the flat kind. It has no front face (0 rows), so it reads as a top-down slab."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 4,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate has 5 visible tones per tile against 3 for the reference grass and 7 for the paving, so it is at or above the grass reference. Near-flat coverage is 2% against 0% for both references, so there are no real flat fills. The soil carries grain speckle in several browns. The tufts are drawn in 3-4 yellow-brown steps with a few green shoots. Dark edge pixels are 0% neutral, so the outline is a tinted dark brown that follows the material and is not a sticker line. It is still a sparse, low-contrast ground patch with only 16 colours in total. That is lighter than the 80-colour grass reference, but it reads as equally textured at the same scale.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17265
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "bare earth ground patch with grass tufts, seen from above as a flat decal",
+      "rows": "0-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dry grass tufts and green shoots lying on the ground",
+      "rows": "2-47",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 48,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The silhouette is a full 64-wide opaque square across rows 0-47 with no transparent rows. It is a textured brown earth patch seen from above, with no front-edge line, no eave shadow, no ellipse and no vertical south face. The grass tufts and green shoots are scattered small details on the ground. This is a flat ground decal with no front face, which is what the flat kind describes."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a brown soil ground with sparse yellow grass tufts and a few green shoots. Measured facts: 5 visible tones per tile (reference grass 3, paving 7), 2% near-flat coverage (references 0%), and 0% neutral dark edge pixels, so there is no black sticker outline. The soil has grain dots and the tufts have a few yellow tones, so texture is present, but only about 4 steps are used across the soil ramp and the tufts are small, sparse and a bit uniform. The tufts have no clear dark-tone shading or per-blade highlights like the Beodeul grass clumps. Overall it is a little thinner than the references, though not flat. Since the brief says to fail when in doubt and a careful artist would likely find it a little thinner next to the reference, it fails narrowly.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 11028
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "bare earth ground patch filling the whole tile",
+      "rows": "0-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dry grass tufts, seed heads and green shoots scattered on the earth",
+      "rows": "3-47",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 48,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The drawing is a full 64x48 opaque ground decal of brown earth, with the same width on every row and no silhouette edge. Small grass tufts, seed heads and green shoots are scattered over it. There is no front face, no front-edge line, no eave shadow and no vertical face, so it is a flat top-down patch seen from above. That fits a flat floor decal."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate carries 5 visible tones per 16x16 tile, against 3 for the reference grass and 7 for the paving, so it is at or above the grass reference of the same ground kind. Near-flat coverage is only 2%, close to the references' 0%, so there are no large flat fills. The soil has speckle and grain in several brown steps. The tufts are built from yellow highlight, mid ochre and dark brown, with a few green shoots. The dark edge pixels are 0% neutral, so the outlines lean brown and follow the adjacent material rather than being a black sticker line. The weaknesses are only 16 distinct colours overall, and the soil ramp is about 3-4 steps against 5-6 in the references. Because the palette is locked, this is acceptable, and the piece does not look flatter or thinner than the grass reference.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 11528
+  }
+ ],
+ "decidedAt": "2026-10-25T13:21:06.351Z",
+ "cells": {
+  "16": [
+   "23c5cc445b95a5fd",
+   "24a98f3ab9459cb7",
+   "485ebdb42883d6a0",
+   "67085da2606f739b",
+   "6bc2d544a2d5a240",
+   "6c5cc6e8fdc8ccb9",
+   "798c60dabad45c51",
+   "8b793ac4b3eef3fa",
+   "92b952b862d51051",
+   "966935718cf41b10",
+   "e330bef08fa5c657",
+   "eda93530058e8220"
+  ],
+  "24": [
+   "02a61acc81161055",
+   "0cf503ef40e79d9a",
+   "1493d6d98a58ce6b",
+   "21d5f61daeadd035",
+   "298198d7ec4bfc82",
+   "3079df4b1230d2aa",
+   "529436c766c78b9b",
+   "5974d3a03ec49b70",
+   "638d70b80a7e4e0b",
+   "7144df772a35cf38",
+   "854fd96038965a52",
+   "879c943b009c3ebe",
+   "8e7b3c7bb47418da",
+   "a8cb26207356f3de",
+   "c60289ed403e2f0a",
+   "d693fadbf577ca32",
+   "d82532530ec29001",
+   "d85e688c4f2da208"
+  ],
+  "32": [
+   "05f1afc23b655bac",
+   "1bc44366daf5113d",
+   "3cb367681cbe75aa",
+   "62f90b4e704b4e82",
+   "6d9976beef73d927",
+   "96fbfc197b62566a",
+   "bcc8e1cb01b7f399",
+   "bfbe01d6792df2ae"
+  ],
+  "48": [
+   "0854fd174becc050",
+   "25f4ac9ca9944af1",
+   "7dc973d68e511124",
+   "abe1aa23856de91f",
+   "db014582072e3998",
+   "e4fa5e4bc5dca370"
+  ]
+ }
+}

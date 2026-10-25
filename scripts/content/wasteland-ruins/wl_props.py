@@ -27,109 +27,132 @@ def flat_tyre(c, x, y, w=9):
     c.HL(x + 2, y - 1, w - 4, K('metal', 2)); c.P(x + w // 2, y + 1, K('metal', 4))
 
 
-def car_h(c, paint, seed=0, burnt=False):
-    """동서로 놓인 승용차(48×32). 앞(보닛)은 동쪽."""
-    P = paint
-    if burnt: P = 'brust'
-    hi = 5 if not burnt else 6
-    # 아래 그림자
-    c.shadow([(x, y) for y in (29, 30) for x in range(4, 46)])
-    # 옆면(남쪽 면): 행 18..27
-    for y in range(18, 28):
-        for x in range(3, 46):
-            t = 2 if y < 25 else 1
-            if y == 18: t = 4
-            if y == 19: t = 3
+def wheel_side(c, wx, cy=26, r=5, burnt=False):
+    """옆에서 본 바퀴(지름 10): 고무 원판(위 밝게) + 휠 테 + 바람 빠져 바닥에 퍼진 아래 두 줄."""
+    for y in range(cy - r, cy + r + 1):
+        for x in range(wx - r - 1, wx + r + 2):
+            d = ((x - wx) / (r + .5)) ** 2 + ((y - cy) / (r + .5)) ** 2
+            if d > 1: continue
+            t = 4 if y < cy - 2 else 3 if y < cy + 1 else 2
+            if x < wx - 2 and y < cy: t += 1
+            c.P(x, y, K('rubber', t))
+    c.HL(wx - r - 1, cy + r - 1, 2 * r + 3, K('rubber', 2)); c.HL(wx - r - 1, cy + r, 2 * r + 3, K('rubber', 1))
+    c.ell(wx, cy - 1, 2, 2, K('rust' if burnt else 'metal', 3)); c.HL(wx - 1, cy - 3, 3, K('rust' if burnt else 'metal', 5))
+    c.P(wx, cy - 1, K('soot', 1)); c.P(wx + 1, cy, K('metal', 1) if not burnt else K('soot', 0))
+
+
+def car_h(c, paint, seed=0):
+    """동서로 놓인 승용차(64×32), 앞(보닛)은 동쪽. 지붕 판(2..9) · 트렁크·보닛 윗면(8..13) · 옆면 20행(10..29: 옆 유리 띠 + 문 판) · 바퀴 지름 10."""
+    P = paint; TOP = len(MAT[P]) - 1
+    c.shadow([(x, y) for y in (30, 31) for x in range(5 + (y - 30), 60 - (y - 30))])
+    # 아래 옆면(남쪽 문 판) 14..29
+    for y in range(14, 30):
+        x0, x1 = (2, 61) if y < 29 else (3, 60)
+        for x in range(x0, x1 + 1):
+            t = 2 if y == 14 else 4 if y < 19 else 3 if y < 25 else 2 if y < 28 else 1
+            if x == x0: t += 1
+            if x == x1: t -= 1
             c.P(x, y, K(P, t))
-    c.HL(3, 27, 43, K(P, 0)); c.VL(3, 18, 10, K(P, 3)); c.VL(45, 18, 9, K(P, 1))
-    for x in (17, 29): c.VL(x, 19, 7, K(P, 0)); c.VL(x + 1, 19, 7, K(P, 3))          # 문 이음
-    c.HL(21, 21, 3, K('metal', 5)); c.HL(32, 21, 3, K('metal', 5))                   # 손잡이
-    # 바퀴 구멍(아치) + 주저앉은 타이어
-    for wx in (7, 34):
-        for y in range(23, 28):
-            for x in range(wx - 1, wx + 10):
-                if (x - wx - 4) ** 2 / 30 + (y - 28) ** 2 / 25 <= 1: c.P(x, y, K('soot', 0))
-        c.HL(wx, 22, 8, K(P, 4)) if not burnt else None
-        flat_tyre(c, wx, 26, 9)
-    # 윗면: 트렁크(서) · 뒤 유리 · 지붕 · 앞 유리 · 보닛(동)
+    for x in (25, 39): c.VL(x, 15, 12, K(P, 1)); c.VL(x + 1, 15, 12, K(P, 4))                 # 문 이음
+    c.HL(29, 17, 4, K('metal', 6)); c.HL(43, 17, 3, K('metal', 6)); c.HL(3, 21, 58, K(P, 2)); c.HL(3, 22, 58, K(P, 4))   # 손잡이 · 허리 주름선
+    for wx in (14, 50):                                                                         # 바퀴 아치
+        for y in range(19, 30):
+            for x in range(wx - 8, wx + 9):
+                if ((x - wx) / 7.5) ** 2 + ((y - 30) / 8.5) ** 2 <= 1: c.P(x, y, K('soot', 0) if y > 22 else K('soot', 1))
+        for x in range(wx - 7, wx + 8):
+            yy = 30 - int(8.5 * max(0.0, 1 - ((x - wx) / 7.5) ** 2) ** 0.5) - 1
+            if 14 < yy < 29: c.P(x, yy, K(P, TOP - 1))
+        wheel_side(c, wx, 25, 5)
+    # 트렁크(서) · 보닛(동) 윗면 8..13
     def plane(x0, x1, y0, y1, t):
-        for y in range(y0, y1):
-            for x in range(x0, x1):
-                c.P(x, y, K(P, t + (1 if y == y0 + 1 else 0) - (1 if y == y1 - 1 else 0)))
-    plane(3, 12, 8, 18, hi - 1)                                                       # 트렁크
-    plane(34, 46, 8, 18, hi - 1)                                                      # 보닛
-    c.HL(4, 8, 7, K(P, hi)); c.HL(35, 8, 10, K(P, hi))
-    c.VL(45, 9, 9, K(P, 2)); c.VL(3, 9, 9, K(P, hi))
-    # 유리 고리(지붕 둘레): 뒤 유리 12..15, 앞 유리 30..34, 남쪽 옆 유리 행 14..17
-    if not burnt:
-        glass_broken(c, 12, 5, 4, 13, seed, 2); glass_broken(c, 30, 5, 4, 13, seed + 1, 3)
-        glass_broken(c, 16, 14, 14, 4, seed + 2, 1)
-    else:
-        c.R(12, 5, 4, 13, K('soot', 0)); c.R(30, 5, 4, 13, K('soot', 0)); c.R(16, 14, 14, 4, K('soot', 0))
-        c.VL(12, 5, 13, K('rust', 2)); c.VL(33, 5, 13, K('rust', 2)); c.HL(16, 17, 14, K('rust', 1))
-    c.VL(16, 14, 4, K(P, 2)); c.VL(23, 14, 4, K(P, 2)); c.VL(29, 14, 4, K(P, 2))     # 기둥
-    # 지붕(가장 밝은 판)
-    plane(16, 30, 3, 14, hi)
-    c.HL(17, 3, 12, K(P, min(hi + 1, 6))); c.VL(16, 4, 10, K(P, hi + 1)); c.VL(29, 4, 10, K(P, hi - 2))
-    if burnt:                                                  # 그을린 지붕·보닛: 검댕 얼룩(디더) + 벗겨진 녹
-        for y in range(19, 27):
-            for x in range(3, 46):
-                if c.get(x, y) in MAT['brust'] and field(x * 2, y * 2, 77, 64) > 0.5 and (x + y) % 2 == 0: c.P(x, y, K('soot', 3))
-        c.R(19, 6, 6, 4, K('rust', 3)); c.HL(19, 6, 6, K('rust', 4)); c.P(20, 7, K('rust', 5))
-    # 범퍼·등
-    c.R(45, 13, 2, 12, K('metal', 2)); c.VL(46, 13, 12, K('metal', 1)); c.P(45, 18, K('paint', 2) if not burnt else K('soot', 2))
-    c.R(1, 13, 2, 12, K('metal', 2)); c.VL(1, 13, 12, K('metal', 4)); c.P(2, 18, K('wine', 2) if not burnt else K('soot', 2))
-    for y in range(3, 28):                                     # 칠 바램 결(밝은 점·어두운 점)
-        for x in range(3, 46):
+        for y in range(y0, y1 + 1):
+            for x in range(x0, x1 + 1):
+                tt = t - (1 if y == y0 else 0) + (1 if y == y1 else 0) + (1 if x == x0 and y > y0 else 0) - (1 if x == x1 else 0)
+                c.P(x, y, K(P, tt))
+    plane(2, 16, 8, 13, TOP - 2); plane(47, 61, 8, 13, TOP - 2); c.HL(3, 13, 14, K(P, TOP)); c.HL(47, 13, 14, K(P, TOP))
+    for x in (51, 56): c.VL(x, 9, 4, K(P, TOP - 1)); c.VL(x + 1, 9, 4, K(P, TOP - 3))            # 보닛 주름
+    c.clear(2, 8); c.clear(61, 8)
+    # 유리 고리: 뒤 유리 17..21 · 앞 유리 42..46 · 옆 유리 띠 10..13
+    for x in range(17, 22):
+        for y in range(3 + (21 - x), 14): c.P(x, y, K('glass', 2 + (1 if (x + y) % 7 == 0 else 0)))
+    for x in range(42, 47):
+        for y in range(3 + (x - 42), 14): c.P(x, y, K('glass', 3 if y < 7 + (x - 42) else 2))
+    glass_broken(c, 22, 10, 10, 4, seed + 2, 2); glass_broken(c, 33, 10, 9, 4, seed + 3, 1)
+    c.VL(32, 10, 4, K(P, 3)); c.VL(21, 10, 4, K(P, 3)); c.VL(42, 10, 4, K(P, 2))                # 기둥
+    for (x, y) in ((18, 8), (19, 9), (44, 6), (45, 8), (26, 11), (27, 12), (36, 11)): c.P(x, y, K('glass', 5))
+    c.P(44, 10, K('soot', 0)); c.P(44, 11, K('soot', 1))
+    # 지붕(가장 밝은 판) 2..9
+    for y in range(2, 10):
+        x0, x1 = (22, 41) if y > 2 else (23, 40)
+        for x in range(x0, x1 + 1):
+            t = TOP - 1
+            if y == 2: t = TOP - 2
+            if y in (3, 4) and x < 34: t = TOP
+            if x == x0: t = TOP
+            if x == x1: t = TOP - 3
+            if y == 9: t = TOP
+            c.P(x, y, K(P, t))
+    c.HL(17, 14, 30, K(P, TOP - 1))                                                             # 창 밑 어깨선
+    # 범퍼 · 등
+    c.R(62, 11, 2, 15, K('metal', 3)); c.VL(63, 11, 15, K('metal', 1)); c.HL(62, 11, 2, K('metal', 5))
+    c.R(0, 11, 2, 15, K('metal', 3)); c.VL(0, 11, 15, K('metal', 5)); c.HL(0, 25, 2, K('metal', 1))
+    c.R(60, 15, 2, 2, K('paint', 2)); c.P(60, 15, K('paint', 3)); c.R(2, 15, 2, 2, K('wine', 2))
+    for y in range(2, 30):                                                                      # 칠 바램 결
+        for x in range(2, 62):
             col = c.get(x, y)
-            if col in MAT[P] and h2(x, y, seed + 30) % 19 == 0: c.P(x, y, K(P, MAT[P].index(col) + (1 if (x + y) % 2 else -1)))
-    # 녹: 바퀴 아치 둘레·문 아래·지붕 얼룩
-    rust_patch(c, 3, 3, 44, 25, seed=seed + 11, dens=0.32 if not burnt else 0.55, mat='rust' if not burnt else 'brust',
-               on=set(MAT[P]))
-    c.outline()
+            if col in MAT[P] and h2(x, y, seed + 30) % 23 == 0: c.P(x, y, K(P, MAT[P].index(col) + (1 if (x + y) % 2 else -1)))
+    on = set(MAT[P])
+    rust_patch(c, 2, 8, 60, 22, seed=seed + 11, dens=0.30, mat='rust', on=on)
+    rust_blob(c, 8, 11, 3, 2, on, seed + 1, 'rust', 4); rust_blob(c, 30, 6, 3, 1, on, seed + 4, 'rust', 4); rust_blob(c, 33, 24, 4, 2, on, seed + 5, 'rust', 4)
+    c.outline(top=False)
 
 
 def car_v(c, paint, seed=0):
-    """남북으로 놓인 승용차(32×48), 앞이 남쪽(아래): 트렁크·지붕·보닛 윗면 + 큰 앞면(앞 유리 아래 보닛 끝 · 그릴 · 등 · 범퍼, 17행)."""
+    """남북으로 놓인 승용차(32×64), 앞이 남쪽: 트렁크·뒤 유리·지붕·앞 유리·보닛 윗면(2..45) + 앞면(46..60: 그릴·등·번호판·범퍼) · 옆으로 삐진 바퀴."""
     P = paint
-    c.shadow([(x, y) for y in (46, 47) for x in range(4, 29)])
+    c.shadow([(x, y) for y in (62, 63) for x in range(4, 29)])
     def plane(x0, x1, y0, y1, t):
         for y in range(y0, y1):
             for x in range(x0, x1):
                 tt = t + (1 if x == x0 + 1 else 0) - (1 if x == x1 - 1 else 0)
                 if h2(x, y, seed) % 17 == 0: tt -= 1
                 c.P(x, y, K(P, tt))
-    plane(5, 27, 1, 5, 4); c.HL(6, 1, 20, K(P, 5))            # 트렁크
-    glass_broken(c, 6, 5, 20, 3, seed, 2)                     # 뒤 유리
-    plane(5, 27, 8, 16, 5); c.HL(6, 8, 20, K(P, 6)); c.VL(5, 8, 8, K(P, 6))   # 지붕
-    glass_broken(c, 6, 16, 20, 5, seed + 1, 3)                # 앞 유리
-    plane(4, 28, 21, 27, 4); c.HL(5, 21, 22, K(P, 5)); c.VL(15, 22, 4, K(P, 3)); c.VL(16, 22, 4, K(P, 5)); c.HL(4, 26, 24, K(P, 6))   # 보닛 + 앞 턱 빛
-    c.VL(4, 1, 26, K(P, 3)); c.VL(3, 3, 24, K(P, 2)); c.VL(27, 1, 26, K(P, 2)); c.VL(28, 3, 24, K(P, 1))
-    for y in (3, 20): c.R(1, y, 3, 6, K('rubber', 2)); c.VL(1, y, 6, K('rubber', 4)); c.R(28, y, 3, 6, K('rubber', 1)); c.VL(30, y, 6, K('rubber', 0))
-    # 앞면(남쪽) 17행: 보닛 앞 끝 · 그릴 · 등 · 빈 번호판 · 범퍼 · 범퍼 밑 그늘 + 앞바퀴 아래 반쪽
-    for y in range(27, 44):
+    for y in (4, 37):                                                                           # 옆으로 삐진 바퀴(지름 10)
+        c.R(1, y, 3, 10, K('rubber', 2)); c.VL(1, y, 10, K('rubber', 4)); c.HL(1, y, 3, K('rubber', 5))
+        c.R(28, y, 3, 10, K('rubber', 1)); c.VL(30, y, 10, K('rubber', 0)); c.HL(28, y, 3, K('rubber', 3))
+    plane(5, 27, 2, 10, 4); c.HL(6, 2, 20, K(P, 5))                                             # 트렁크
+    glass_broken(c, 6, 10, 20, 5, seed, 2)                                                      # 뒤 유리
+    plane(5, 27, 15, 29, 5); c.HL(6, 15, 20, K(P, 6)); c.VL(5, 15, 14, K(P, 6))                   # 지붕
+    for y in range(17, 28, 4): c.HL(8, y, 16, K(P, 6))                                           # 지붕 골
+    glass_broken(c, 6, 29, 20, 7, seed + 1, 3)                                                   # 앞 유리
+    plane(4, 28, 36, 46, 4); c.HL(5, 36, 22, K(P, 5)); c.VL(15, 37, 8, K(P, 3)); c.VL(16, 37, 8, K(P, 5)); c.HL(4, 45, 24, K(P, 6))
+    c.VL(4, 2, 44, K(P, 3)); c.VL(3, 4, 41, K(P, 2)); c.VL(27, 2, 44, K(P, 2)); c.VL(28, 4, 41, K(P, 1))
+    # 앞면 46..60
+    for y in range(46, 60):
         for x in range(3, 29):
-            t = 3 if y < 30 else 2 if y < 39 else 1
+            t = 3 if y < 49 else 2 if y < 57 else 1
             if h2(x, y, seed + 9) % 19 == 0: t += 1
             c.P(x, y, K(P, t))
-    c.HL(3, 27, 26, K(P, 4)); c.VL(3, 27, 17, K(P, 3)); c.VL(28, 27, 17, K(P, 0))
-    c.R(9, 30, 14, 5, K('soot', 1)); [c.VL(x, 30, 5, K('metal', 3)) for x in range(10, 23, 2)]; c.HL(9, 30, 14, K('metal', 5)); c.HL(9, 34, 14, K('metal', 1))
-    c.R(4, 30, 4, 4, K('glass', 3)); c.HL(4, 30, 4, K('glass', 5)); c.P(5, 31, K('white', 2)); c.HL(4, 33, 4, K('glass', 1))
-    c.R(24, 30, 4, 4, K('soot', 0)); c.P(25, 31, K('glass', 5)); c.P(27, 32, K('glass', 4))
-    c.R(12, 36, 8, 3, K('body', 4)); c.HL(12, 36, 8, K('body', 6)); c.HL(12, 38, 8, K('body', 2))
-    c.R(2, 39, 28, 3, K('metal', 3)); c.HL(2, 39, 28, K('metal', 5)); c.HL(2, 41, 28, K('metal', 1)); c.P(21, 40, K('soot', 1)); c.P(22, 40, K('soot', 1))
-    for wx in (3, 22): flat_tyre(c, wx, 42, 7)
-    rust_patch(c, 2, 1, 28, 43, seed=seed + 5, dens=0.33, on=set(MAT[P]))
+    c.HL(3, 46, 26, K(P, 4)); c.VL(3, 46, 14, K(P, 3)); c.VL(28, 46, 14, K(P, 0))
+    c.R(9, 49, 14, 6, K('soot', 1)); [c.VL(x, 49, 6, K('metal', 3)) for x in range(10, 23, 2)]; c.HL(9, 49, 14, K('metal', 5)); c.HL(9, 54, 14, K('metal', 1))
+    c.R(4, 49, 4, 5, K('glass', 3)); c.HL(4, 49, 4, K('glass', 5)); c.P(5, 50, K('white', 2)); c.HL(4, 53, 4, K('glass', 1))
+    c.R(24, 49, 4, 5, K('soot', 0)); c.P(25, 50, K('glass', 5)); c.P(27, 52, K('glass', 4))
+    c.R(12, 55, 8, 3, K('body', 4)); c.HL(12, 55, 8, K('body', 6)); c.HL(12, 57, 8, K('body', 2))
+    c.R(2, 58, 28, 3, K('metal', 3)); c.HL(2, 58, 28, K('metal', 5)); c.HL(2, 60, 28, K('metal', 1)); c.P(21, 59, K('soot', 1)); c.P(22, 59, K('soot', 1))
+    for wx in (2, 22): flat_tyre(c, wx, 61, 8)
+    on = set(MAT[P])
+    rust_patch(c, 2, 1, 28, 60, seed=seed + 5, dens=0.33, on=on)
+    rust_blob(c, 20, 20, 3, 2, on, seed + 2, 'rust', 4); rust_blob(c, 9, 40, 3, 2, on, seed + 3, 'rust', 4)
     c.outline()
 
 
-@piece('car-rust-h', '녹슨 승용차 (가로)', 3, 2, 'other', en='abandoned rusted car lying east-west seen from above: roof, hood and trunk tops, broken windows, rusty side panel with flat tyres',
-       tags=['차', '폐차'], desc='버려진 녹슨 승용차(동서). 깨진 유리, 바람 빠진 타이어.', solid=[(0, 1), (1, 1), (2, 1), (1, 0)])
+@piece('car-rust-h', '녹슨 승용차 (가로)', 4, 2, 'other', en='abandoned rusted car lying east-west seen from above: roof, hood and trunk tops, broken windows, rusty side panel with flat tyres',
+       tags=['차', '폐차'], desc='버려진 녹슨 승용차(동서). 깨진 유리, 바람 빠진 타이어.', solid=[(0, 1), (1, 1), (2, 1), (3, 1), (1, 0), (2, 0)])
 def _car_h(c): car_h(c, 'blue', seed=2)
 
 
-@piece('car-rust-v', '녹슨 승용차 (세로)', 2, 3, 'other', en='abandoned rusted car facing south seen from above: trunk, roof and hood tops with cracked glass, front grille and bumper below',
-       tags=['차', '폐차'], desc='버려진 녹슨 승용차(남북, 앞이 남쪽).', solid=[(0, 1), (1, 1), (0, 2), (1, 2)])
+@piece('car-rust-v', '녹슨 승용차 (세로)', 2, 4, 'other', en='abandoned rusted car facing south seen from above: trunk, roof and hood tops with cracked glass, front grille and bumper below',
+       tags=['차', '폐차'], desc='버려진 녹슨 승용차(남북, 앞이 남쪽).', solid=[(0, 1), (1, 1), (0, 2), (1, 2), (0, 3), (1, 3)])
 def _car_v(c): car_v(c, 'army', seed=7)
 
 
@@ -262,8 +285,8 @@ def car_top_h(c, P, seed=0, burnt=False):
 def _car_burnt(c): car_burnt_r5(c)
 
 
-@piece('van-rust', '녹슨 승합차', 4, 2, 'other', en='abandoned rusty box van lying east-west seen from above: long flat roof top, cab windshield, side with sliding door and flat tyres',
-       tags=['차', '폐차'], desc='버려진 녹슨 승합차(동서, 앞이 동쪽).', solid=[(0, 1), (1, 1), (2, 1), (3, 1), (1, 0), (2, 0)])
+@piece('van-rust', '녹슨 승합차', 5, 3, 'other', en='abandoned rusty box van lying east-west seen from above: long flat roof top, cab windshield, side with sliding door and flat tyres',
+       tags=['차', '폐차'], desc='버려진 녹슨 승합차(동서, 앞이 동쪽).', solid=[(0, 1), (1, 1), (2, 1), (3, 1), (4, 1), (0, 2), (1, 2), (2, 2), (3, 2), (4, 2), (1, 0), (2, 0), (3, 0)])
 def _van(c): van_r5(c)
 
 
@@ -375,32 +398,47 @@ def _log(c): log_r5(c)
 
 
 def stall(c, seed, tarp, goods):
-    # 기둥(뒤 둘은 지붕 밑, 앞 둘)
-    for x in (2, 43): c.R(x, 10, 3, 20, K('wood', 2)); c.VL(x, 10, 20, K('wood', 4))
-    # 상자 계산대(윗면 + 앞면)
-    fy = box(c, 4, 18, 40, 5, 9, 'wood', tt=4, ft=2)
-    for x in range(4, 44, 10): c.VL(x, fy, 9, K('wood', 0)); c.VL(x + 1, fy, 9, K('wood', 3))
-    c.HL(4, fy + 4, 40, K('wood', 1))
-    # 계산대 위 물건
+    c.shadow([(x, y) for y in (46, 47) for x in range(3 + (y - 46), 47)])
+    # 차양 밑 그늘진 뒤 판벽(14..26) + 선반 + 걸어 둔 물건
+    for y in range(14, 27):
+        for x in range(4, 44):
+            k = (x - 4) % 5
+            t = 0 if k == 0 else 2 if k == 1 else 1
+            if h2(x, y, seed + 3) % 11 == 0: t += 1
+            c.P(x, y, K('wood', t))
+    c.HL(4, 21, 40, K('wood', 4)); c.HL(4, 22, 40, K('wood', 1))                            # 선반
+    for x in range(6, 42, 7): c.R(x, 18, 3, 3, K('metal', 3)); c.HL(x, 18, 3, K('metal', 5))  # 선반 위 깡통
+    c.VL(14, 14, 7, K('rubber', 3)); c.ell(14, 23, 2, 1, K('rubber', 4)); c.P(14, 23, K('wood', 0))  # 걸어 둔 전선 고리
+    c.line(30, 14, 30, 19, K('metal', 2)); c.R(28, 19, 5, 3, K('rust', 3)); c.HL(28, 19, 5, K('rust', 5))   # 걸어 둔 냄비
+    for x in (4, 42): c.R(x, 14, 2, 13, K('wood', 2)); c.VL(x, 14, 13, K('wood', 3))        # 뒤 기둥
+    # 앞 기둥(땅까지)
+    for x in (1, 44): c.R(x, 13, 3, 33, K('wood', 2)); c.VL(x, 13, 33, K('wood', 4)); c.VL(x + 2, 13, 33, K('wood', 1))
+    # 상자 계산대: 윗면 27..32 · 앞면 33..45(13행)
+    fy = box(c, 4, 27, 40, 6, 13, 'wood', tt=4, ft=2)
+    for x in range(4, 44, 10): c.VL(x, fy, 13, K('wood', 0)); c.VL(x + 1, fy, 13, K('wood', 3))
+    c.HL(4, fy + 6, 40, K('wood', 1)); c.HL(4, fy + 7, 40, K('wood', 3))
+    for x in (9, 19, 29, 39): c.P(x, fy + 2, K('metal', 6)); c.P(x, fy + 9, K('metal', 6))
     goods(c, fy)
-    # 방수포 지붕 윗면(사다리꼴, 처진 주름, 덧댄 천, 앞 늘어진 가장자리)
-    for r in range(13):
-        l = int(round(3 * (1 - r / 12)))
+    # 방수포 지붕 윗면(1..15, 사다리꼴, 처진 주름, 덧댄 천) + 앞 늘어진 가장자리(16..17)
+    for r in range(15):
+        l = int(round(3 * (1 - r / 14)))
         for x in range(l, 48 - l):
-            t = 4 if r < 4 else 3 if r < 9 else 2
+            t = 4 if r < 5 else 3 if r < 10 else 2
             fold = (x * 2 + r) % 12
             if fold == 0: t -= 1
             elif fold == 1: t += 1
-            if r == 6 and x % 2 == 0: t -= 1                    # 처진 가운데 주름
+            if r == 7 and x % 2 == 0: t -= 1
             c.P(x, r + 1, K(tarp, t))
-        if r in (3, 9):
-            for x in range(l + 2, 48 - l - 2, 3): c.P(x, r + 1, K(tarp, 5))              # 박음질
-    c.HL(3, 1, 42, K(tarp, 5)); c.HL(0, 13, 48, K(tarp, 5))
-    for x in range(0, 48):                                    # 늘어진 앞 가장자리(물결)
+        if r in (4, 10):
+            for x in range(l + 2, 48 - l - 2, 3): c.P(x, r + 1, K(tarp, 5))
+    c.HL(3, 1, 42, K(tarp, 5)); c.HL(0, 15, 48, K(tarp, 5))
+    for x in range(0, 48):
         d = 1 + (1 if (x // 4) % 2 else 0)
-        for j in range(d): c.P(x, 14 + j, K(tarp, 2 if j == 0 else 1))
-    rust_patch(c, 0, 1, 48, 15, seed=seed, dens=0.18, mat='brust', on=set(MAT[tarp]))
-    c.R(30, 4, 8, 5, K('army' if tarp != 'army' else 'tarp', 3)); c.HL(30, 4, 8, K('army' if tarp != 'army' else 'tarp', 5))
+        for j in range(d): c.P(x, 16 + j, K(tarp, 2 if j == 0 else 1))
+    rust_patch(c, 0, 1, 48, 17, seed=seed, dens=0.18, mat='brust', on=set(MAT[tarp]))
+    pm = 'army' if tarp != 'army' else 'tarp'
+    c.R(30, 4, 9, 6, K(pm, 3)); c.HL(30, 4, 9, K(pm, 5)); c.VL(30, 4, 6, K(pm, 4)); c.HL(30, 10, 9, K(tarp, 1))
+    for i in range(0, 9, 2): c.P(30 + i, 9, K(pm, 2))
     c.outline()
 
 
@@ -470,13 +508,13 @@ def goods_b(c, fy):
     c.R(33, fy - 6, 7, 6, K('rust', 3)); c.HL(33, fy - 6, 7, K('rust', 5)); c.P(36, fy - 4, K('rust', 1))   # 녹슨 통
 
 
-@piece('stall-a', '고물 노점 A', 3, 2, 'structure', style='prop', en='market stall of scavenged goods: patched tarp roof seen from above on poles, crate counter with tins and bottles',
-       tags=['노점', '시장'], desc='방수포 지붕 아래 상자 계산대에 통조림·병을 늘어놓은 노점.', solid=[(0, 1), (1, 1), (2, 1)])
+@piece('stall-a', '고물 노점 A', 3, 3, 'structure', style='prop', en='market stall of scavenged goods: patched tarp roof seen from above on poles, crate counter with tins and bottles',
+       tags=['노점', '시장'], desc='방수포 지붕 아래 상자 계산대에 통조림·병을 늘어놓은 노점.', solid=[(0, 1), (1, 1), (2, 1), (0, 2), (1, 2), (2, 2)])
 def _stall_a(c): stall(c, 4, 'tarp', goods_a)
 
 
-@piece('stall-b', '고물 노점 B', 3, 2, 'structure', style='prop', en='market stall of scavenged goods: sagging patched blue tarp roof seen from above on poles and battens, lit plank counter top with scrap parts, tins, bottles, a wire coil and a rusty can',
-       tags=['노점', '시장'], desc='기운 파란 방수포를 덮은 노점. 고철 부품·통조림·병·전선·녹슨 통.', solid=[(0, 1), (1, 1), (2, 1)])
+@piece('stall-b', '고물 노점 B', 3, 3, 'structure', style='prop', en='market stall of scavenged goods: sagging patched blue tarp roof seen from above on poles and battens, lit plank counter top with scrap parts, tins, bottles, a wire coil and a rusty can',
+       tags=['노점', '시장'], desc='기운 파란 방수포를 덮은 노점. 고철 부품·통조림·병·전선·녹슨 통.', solid=[(0, 1), (1, 1), (2, 1), (0, 2), (1, 2), (2, 2)])
 def _stall_b(c): stall_r5(c)
 
 
@@ -623,35 +661,49 @@ def _rubble_pile(c):
 
 
 # ------------------------------------------------------------------ 식물
-@piece('dead-tree', '죽은 나무', 2, 3, 'organic', en='dead leafless tree with gnarled bare branches and a thick trunk with exposed roots',
-       tags=['나무', '식물'], desc='잎 없는 죽은 나무.', solid=[(0, 2), (1, 2)])
-def _dead_tree(c):
-    c.shadow([(x, y) for y in (44, 45) for x in range(9, 24)])
-    # 줄기(굵게, 왼쪽 빛) + 뿌리
-    for y in range(18, 45):
-        w = 5 + (y - 18) // 9
-        x0 = 14 - w // 2 + (1 if y < 30 else 0)
+def dead_tree_draw(c):
+    c.shadow([(x, y) for y in (60, 61, 62) for x in range(12 + (y - 60), 36 - (y - 60))])
+    # 줄기(굵게 7→11, 왼쪽 빛) + 뿌리
+    for y in range(24, 61):
+        w = 7 + (y - 24) // 9
+        x0 = 21 - w // 2 + (1 if y < 42 else 0)
         for i in range(w):
             t = 4 if i == 0 else 3 if i < w // 2 else 2 if i < w - 1 else 1
             if (y + i * 3) % 7 == 0: t -= 1
             c.P(x0 + i, y, K('wood', t))
-    for y in range(18, 45, 3):                                # 껍질 골·옹이
-        for x in range(9, 20):
+    for y in range(24, 61, 3):                                     # 껍질 골·옹이
+        for x in range(14, 30):
             if c.get(x, y) in MAT['wood'] and h2(x, y, 4) % 3 == 0: c.P(x, y, K('wood', 1))
-    c.P(13, 30, K('wood', 0)); c.P(14, 30, K('wood', 1)); c.P(13, 29, K('wood', 4))
-    for (pts, t) in ((((10, 44), (6, 46)), 2), (((18, 44), (23, 46)), 1), (((13, 45), (12, 47)), 2)):
-        c.line(*pts[0], *pts[1], K('wood', t)); c.line(pts[0][0], pts[0][1] - 1, pts[1][0], pts[1][1] - 1, K('wood', t + 1))
-    # 가지(두 화소 굵기 → 끝 한 화소)
-    branches = [((14, 20), (6, 9), (2, 6)), ((15, 19), (22, 8), (27, 4)), ((14, 14), (13, 4), (15, 0)), ((16, 24), (25, 17), (30, 16)),
-                ((13, 24), (5, 19), (1, 18)), ((6, 9), (8, 3)), ((22, 8), (19, 2)), ((25, 17), (27, 12))]
-    for br in branches:
+    for y in range(26, 58, 7): c.VL(19 + (y // 7) % 3, y, 4, K('wood', 1))
+    c.R(20, 40, 2, 2, K('wood', 0)); c.P(22, 40, K('wood', 1)); c.HL(20, 39, 2, K('wood', 4))
+    c.P(23, 31, K('wood', 0)); c.P(23, 30, K('wood', 4))
+    roots = (((16, 58), (9, 61), (6, 62)), ((26, 58), (33, 61), (37, 62)), ((20, 60), (18, 63)), ((24, 60), (27, 63)))
+    for pts in roots:
+        for k, (a, b) in enumerate(zip(pts, pts[1:])):
+            c.line(a[0], a[1], b[0], b[1], K('wood', 2)); c.line(a[0], a[1] - 1, b[0], b[1] - 1, K('wood', 3 if k else 4))
+            if k == 0: c.line(a[0], a[1] + 1, b[0], b[1] + 1, K('wood', 1))
+    # 가지(세 화소 → 두 화소 → 끝 한 화소)
+    branches = [((21, 28), (11, 15), (5, 10), (1, 8)), ((23, 27), (33, 13), (40, 7)), ((21, 22), (20, 9), (22, 1)),
+                ((24, 34), (36, 24), (44, 22)), ((19, 34), (8, 27), (2, 25)),
+                ((11, 15), (12, 6)), ((33, 13), (30, 4)), ((36, 24), (40, 17)), ((8, 27), (5, 21)), ((20, 9), (15, 3)), ((40, 7), (46, 5))]
+    for bi, br in enumerate(branches):
         for k, (a, b) in enumerate(zip(br, br[1:])):
             c.line(a[0], a[1], b[0], b[1], K('wood', 2))
-            if k == 0: c.line(a[0] + 1, a[1], b[0] + 1, b[1], K('wood', 3)); c.line(a[0], a[1] - 1, b[0], b[1] - 1, K('wood', 4))
-    for (x, y) in ((4, 8), (9, 4), (24, 6), (28, 15), (3, 18), (16, 2)):                 # 매달린 마른 잎·덩굴
+            if k == 0 and bi < 5:
+                c.line(a[0] + 1, a[1], b[0] + 1, b[1], K('wood', 3)); c.line(a[0], a[1] - 1, b[0], b[1] - 1, K('wood', 4))
+                c.line(a[0] + 1, a[1] + 1, b[0] + 1, b[1] + 1, K('wood', 1))
+            elif k == 1 and bi < 5:
+                c.line(a[0], a[1] - 1, b[0], b[1] - 1, K('wood', 3))
+    for (x, y) in ((6, 11), (13, 5), (36, 9), (42, 21), (4, 24), (24, 3), (45, 4), (29, 5)):   # 매달린 마른 잎·덩굴
         c.P(x, y, K('dry', 3)); c.P(x + 1, y + 1, K('dry', 2)); c.P(x, y + 1, K('dry', 4))
-    for y in range(26, 44, 2): c.P(10 + (y // 4) % 2, y, K('plant', 3)); c.P(9, y + 1, K('plant', 5))   # 줄기 감은 덩굴
+    for y in range(35, 59, 2): c.P(16 + (y // 4) % 2, y, K('plant', 3)); c.P(15 + (y // 4) % 2, y + 1, K('plant', 5))   # 줄기 감은 덩굴
+    c.P(17, 34, K('plant', 6)); c.P(15, 47, K('plant', 6))
     c.outline()
+
+
+@piece('dead-tree', '죽은 나무', 3, 4, 'organic', en='dead leafless tree with gnarled bare branches and a thick trunk with exposed roots',
+       tags=['나무', '식물'], desc='잎 없는 죽은 나무.', solid=[(1, 3)])
+def _dead_tree(c): dead_tree_draw(c)
 
 
 @piece('bush-wild', '야생 덤불', 2, 2, 'organic', en='overgrown wild shrub: dense leafy bush clumps in several greens with a few dry twigs',
@@ -700,40 +752,41 @@ def _vine_wall(c):
 
 
 # ------------------------------------------------------------------ 가로등·방벽·표지판
-@piece('lamp-broken', '휜 가로등', 1, 2, 'column', en='bent broken street lamp: round concrete base plate seen from above, rusty pole bent over to the side, with a wide oval lamp hood plate hanging at the end',
-       tags=['가로등', '폐허'], desc='휘어 부러진 옛 가로등.', solid=[(0, 1)])
-def _lamp(c):
-    c.shadow([(x, y) for y in (30, 31) for x in range(2 + (y - 30), 12)])
-    # 콘크리트 받침(타원 윗면 + 짧은 앞면)
-    c.R(1, 27, 10, 3, K('conc', 3)); c.VL(1, 27, 3, K('conc', 4)); c.VL(10, 27, 3, K('conc', 2)); c.HL(2, 29, 8, K('conc', 1))
-    c.ell(5.5, 27, 4.5, 2, K('conc', 4)); c.ell(5.5, 27, 3.5, 1, K('conc', 5)); c.HL(3, 26, 4, K('conc', 6)); c.P(2, 27, K('conc', 6))
-    c.P(8, 28, K('conc', 2)); c.P(9, 27, K('conc', 3))
-    for (x, y) in ((11, 28), (12, 29)): c.P(x, y, K('glass', 5))                        # 떨어진 유리 조각
-    c.P(13, 28, K('glass', 3))
-    # 기둥 밑 고리
-    c.ell(5, 25, 2, 1, K('metal', 4)); c.HL(4, 24, 3, K('metal', 6)); c.HL(4, 26, 3, K('metal', 2))
-    # 기둥(3폭: 빛·몸·그늘) 행 6..24, 가운데쯤 한 번 휘어 1칸 왼쪽으로 기운다
-    for y in range(6, 25):
-        x = 4 if y >= 15 else 3
+def lamp_draw(c):
+    D = 16
+    c.shadow([(x, y) for y in (46, 47) for x in range(2 + (y - 46), 12)])
+    c.R(1, 27 + D, 10, 3, K('conc', 3)); c.VL(1, 27 + D, 3, K('conc', 4)); c.VL(10, 27 + D, 3, K('conc', 2)); c.HL(2, 29 + D, 8, K('conc', 1))
+    c.ell(5.5, 27 + D, 4.5, 2, K('conc', 4)); c.ell(5.5, 27 + D, 3.5, 1, K('conc', 5)); c.HL(3, 26 + D, 4, K('conc', 6)); c.P(2, 27 + D, K('conc', 6))
+    c.P(8, 28 + D, K('conc', 2)); c.P(9, 27 + D, K('conc', 3))
+    for (x, y) in ((11, 44), (12, 45)): c.P(x, y, K('glass', 5))
+    c.P(13, 44, K('glass', 3))
+    c.ell(5, 25 + D, 2, 1, K('metal', 4)); c.HL(4, 24 + D, 3, K('metal', 6)); c.HL(4, 26 + D, 3, K('metal', 2))
+    # 기둥(3폭) 행 6..40, 가운데쯤 한 번 휘어 1칸 왼쪽으로 기운다
+    for y in range(6, 41):
+        x = 4 if y >= 23 else 3
         c.P(x, y, K('metal', 6)); c.P(x + 1, y, K('metal', 4)); c.P(x + 2, y, K('metal', 2))
-    c.P(6, 15, K('metal', 2)); c.P(3, 14, None)
-    for (y, h) in ((11, 2), (19, 3)):
+    c.P(6, 23, K('metal', 2)); c.P(3, 22, None)
+    c.HL(3, 31, 3, K('metal', 5)); c.HL(3, 32, 3, K('metal', 1))                              # 이음 고리
+    for (y, h) in ((11, 2), (19, 3), (34, 4)):
         for j in range(h):
-            x = 4 if y + j >= 15 else 3
+            x = 4 if y + j >= 23 else 3
             c.P(x, y + j, K('rust', 5)); c.P(x + 1, y + j, K('rust', 3)); c.P(x + 2, y + j, K('rust', 1))
-    c.P(4, 17, K('metal', 7)); c.P(3, 8, K('metal', 7))
-    # 꺾인 팔: 위에서 오른쪽으로 둥글게 넘어가 앞으로 숙인다(두 화소: 위 빛 · 아래 그늘)
+    c.P(4, 27, K('metal', 7)); c.P(3, 8, K('metal', 7)); c.P(5, 38, K('rust', 4)); c.P(5, 39, K('rust', 5))
     arm = [(3, 5), (4, 4), (5, 3), (6, 2), (7, 2), (8, 2), (9, 2), (10, 3), (11, 4), (12, 5)]
     for (x, y) in arm: c.P(x, y, K('metal', 6 if x < 9 else 5)); c.P(x, y + 1, K('metal', 2))
     c.P(5, 4, K('metal', 3)); c.P(6, 1, K('metal', 7)); c.P(7, 1, K('metal', 5))
-    # 등갓: 위에서 보이는 넓은 타원 판(밝은 윗면 · 앞 테) + 아래 어두운 속 · 깨진 유리
     c.ell(11.5, 8, 4, 2, K('metal', 4))
     c.ell(11.5, 7, 3, 1, K('metal', 5)); c.HL(9, 6, 5, K('metal', 6)); c.P(10, 6, K('metal', 7)); c.P(8, 7, K('metal', 6))
     c.HL(8, 10, 8, K('metal', 1)); c.P(15, 9, K('metal', 2))
     c.P(10, 11, K('glass', 3)); c.P(11, 11, K('glass', 6)); c.P(12, 11, K('glass', 2)); c.P(11, 12, K('glass', 4))
-    c.P(14, 11, K('rubber', 1)); c.P(14, 12, K('rubber', 1)); c.P(15, 13, K('rubber', 2)); c.P(15, 14, K('rubber', 1))   # 늘어진 전선
+    for (x, y) in ((14, 11), (14, 12), (15, 13), (15, 14), (15, 15), (14, 16), (14, 17)): c.P(x, y, K('rubber', 1 if y % 2 else 2))   # 늘어진 전선
     rust_patch(c, 8, 6, 8, 4, seed=12, dens=0.3, on=set(MAT['metal']))
     c.outline(top=False)
+
+
+@piece('lamp-broken', '휜 가로등', 1, 3, 'column', en='bent broken street lamp: round concrete base plate seen from above, rusty pole bent over to the side, with a wide oval lamp hood plate hanging at the end',
+       tags=['가로등', '폐허'], desc='휘어 부러진 옛 가로등.', solid=[(0, 2)])
+def _lamp(c): lamp_draw(c)
 
 
 @piece('jersey-barrier', '콘크리트 방벽', 2, 1, 'box', en='concrete jersey road barrier block lying east-west: narrow top ridge seen from above, sloped front face, chipped and stained',
@@ -906,100 +959,105 @@ def car_burnt_r5(c):
 
 # ------------------------------------------------------------------ 녹슨 승합차
 def van_r5(c):
+    """동서로 놓인 녹슨 상자 승합차(80×48), 앞은 동쪽. 긴 지붕 판(2..17) · 옆면 28행(18..45, 미닫이문 반쯤 열림) · 바퀴 지름 11."""
     P = 'body'; on = set(MAT[P])
-    for wx in (8, 48):                                          # 납작한 타이어(고무 3단, 위 밝게)
-        c.HL(wx, 25, 9, K('rubber', 5)); c.P(wx, 25, K('rubber', 6)); c.P(wx + 1, 25, K('rubber', 6))
-        c.HL(wx, 26, 9, K('rubber', 3)); c.HL(wx + 1, 27, 7, K('rubber', 2))
-        for x in range(wx + 1, wx + 8, 2): c.P(x, 26, K('rubber', 4))
-    # 옆면(남쪽) 18..25: 위 빛 → 아래 때 그러데이션
-    for y in range(18, 26):
-        x0, x1 = (2, 61) if y < 25 else (3, 60)
+    # 옆면(남쪽) 18..45
+    for y in range(18, 46):
+        x0, x1 = (2, 77) if y < 45 else (3, 76)
         for x in range(x0, x1 + 1):
-            t = {18: 6, 19: 5, 20: 4, 21: 4, 22: 3, 23: 3, 24: 2, 25: 1}[y]
+            t = 6 if y == 18 else 5 if y == 19 else 4 if y < 30 else 3 if y < 40 else 2 if y < 44 else 1
             if x == x0: t += 1
             if x == x1: t -= 1
-            if y >= 23 and h2(x, y, 3) % 3 == 0: t -= 1          # 문턱 때
+            if y >= 40 and h2(x, y, 3) % 3 == 0: t -= 1                                        # 문턱 때
             c.P(x, y, K(P, t))
-    for wx in (8, 48):                                          # 바퀴 아치(어두운 회갈)
-        for y in range(22, 26):
-            for x in range(wx - 1, wx + 10):
-                if ((x - wx - 4) / 5.6) ** 2 + ((y - 26) / 3.2) ** 2 <= 1: c.P(x, y, K('brust', 1) if y < 25 else K('brust', 0))
-    # 미닫이문: 뒤로 반쯤 밀린 문짝(테 + 손잡이) · 열린 틈으로 보이는 어두운 실내 · 위 레일
-    c.HL(20, 18, 28, K(P, 2)); c.HL(20, 19, 28, K(P, 6))           # 레일 홈
-    c.VL(20, 20, 4, K(P, 1)); c.VL(21, 20, 4, K(P, 6))             # 문 뒤 이음
-    c.VL(36, 20, 4, K(P, 6)); c.VL(37, 20, 4, K(P, 2))             # 문짝 앞 모서리(빛·그늘)
-    c.HL(34, 21, 2, K('metal', 6)); c.P(34, 22, K('metal', 2))
-    for y in range(20, 26):                                        # 열린 틈(실내, 바닥까지)
-        for x in range(38, 46):
-            c.P(x, y, K('brust', 1) if y < 22 else K('soot', 3) if y < 24 else K('brust', 2))
-    c.P(39, 22, K('metal', 3)); c.P(40, 23, K('rust', 3)); c.P(43, 21, K('brust', 3))
-    c.VL(46, 20, 5, K(P, 1)); c.VL(47, 20, 4, K(P, 5))             # 틈 앞 문설주
-    c.VL(51, 19, 5, K(P, 1)); c.VL(52, 19, 5, K(P, 5)); c.HL(54, 21, 2, K('metal', 6))   # 운전석 문
-    # 긴 지붕(2..17): 둥근 가장자리, 앞 턱 밝게, 리브
+    c.HL(2, 33, 76, K(P, 2)); c.HL(2, 34, 76, K(P, 5))                                          # 허리 보호대
+    for x in (4, 61): c.VL(x, 20, 24, K(P, 2)); c.VL(x + 1, 20, 24, K(P, 5))                    # 판 이음
+    # 뒤 옆 창(짐칸, 판자로 막음)
+    c.R(7, 21, 13, 9, K('wood', 2)); [c.HL(7, y, 13, K('wood', 3 if y % 2 else 1)) for y in range(21, 30, 3)]
+    c.HL(7, 21, 13, K('wood', 4)); c.VL(19, 21, 9, K('wood', 0)); c.P(9, 23, K('metal', 6)); c.P(17, 26, K('metal', 6))
+    # 미닫이문: 뒤로 반쯤 밀린 문짝 + 열린 틈(폭 11 · 높이 25, 바닥까지)
+    c.HL(24, 18, 36, K(P, 2)); c.HL(24, 19, 36, K(P, 6))                                         # 레일
+    c.VL(24, 20, 24, K(P, 1)); c.VL(25, 20, 24, K(P, 6))
+    c.R(28, 21, 10, 8, K('glass', 2)); c.HL(28, 21, 10, K('glass', 4)); glass_broken(c, 29, 22, 8, 6, 5, 2)
+    c.VL(45, 20, 24, K(P, 6)); c.VL(46, 20, 24, K(P, 2)); c.HL(42, 31, 2, K('metal', 6)); c.P(42, 32, K('metal', 2))
+    for y in range(20, 46):                                                                     # 열린 틈(실내)
+        for x in range(47, 58):
+            c.P(x, y, K('brust', 1) if y < 24 else K('soot', 3) if y < 41 else K('brust', 2))
+    c.R(49, 30, 6, 3, K('burlap', 3)); c.HL(49, 30, 6, K('burlap', 5)); c.P(52, 36, K('metal', 3)); c.P(55, 38, K('rust', 3))
+    c.VL(58, 20, 25, K(P, 1)); c.VL(59, 20, 24, K(P, 5))
+    # 운전석 문 + 창
+    c.VL(63, 19, 25, K(P, 1)); c.VL(64, 19, 25, K(P, 5))
+    glass_broken(c, 65, 20, 9, 8, 6, 2); c.HL(65, 28, 9, K(P, 6)); c.HL(67, 31, 3, K('metal', 6))
+    for wx in (16, 66):                                                                         # 바퀴 아치 + 바퀴
+        for y in range(33, 46):
+            for x in range(wx - 9, wx + 10):
+                if ((x - wx) / 8.6) ** 2 + ((y - 46) / 9.6) ** 2 <= 1: c.P(x, y, K('brust', 1) if y < 40 else K('brust', 0))
+        wheel_side(c, wx, 41, 5)
+    # 긴 지붕 2..17: 둥근 가장자리, 앞 턱 밝게, 리브
     for y in range(2, 18):
-        x0 = 3 if y > 2 else 4; x1 = 49 if y > 2 else 48
+        x0 = 3 if y > 2 else 4; x1 = 62 if y > 2 else 61
         for x in range(x0, x1 + 1):
             t = 6
             if y == 2: t = 5
             if y == 17: t = 7
             if x == x0: t = 7
             if x == x1: t = 4
-            if y in (3, 4) and x0 < x < 30: t = 7
+            if y in (3, 4) and x0 < x < 38: t = 7
             if h2(x, y, 41) % 29 == 0: t -= 1
             c.P(x, y, K(P, t))
-    for x in range(8, 48, 6):
+    for x in range(9, 61, 7):
         for y in range(3, 17): c.P(x, y, K(P, 7)); c.P(x + 1, y, K(P, 4))
-    for (x, y) in ((25, 13), (41, 6)):                             # 움푹한 자국
+    for (x, y) in ((31, 14), (52, 6)):                                                          # 움푹한 자국
         c.P(x, y, K(P, 4)); c.P(x + 1, y, K(P, 4)); c.P(x, y + 1, K(P, 7)); c.P(x + 1, y + 1, K(P, 7))
-    # 앞 유리
-    for x in range(50, 55):
-        for y in range(3 + (x - 50), 18):
-            c.P(x, y, K('glass', 3 if y < 6 + (x - 50) else 2))
-    for (x, y) in ((51, 5), (52, 6), (52, 9), (53, 10), (54, 14)): c.P(x, y, K('glass', 5))
-    c.P(52, 12, K('glass', 1)); c.P(53, 12, K('glass', 0)); c.P(52, 13, K('glass', 1))
-    c.HL(50, 17, 5, K(P, 6))
+    # 앞 유리(경사)
+    for x in range(63, 70):
+        for y in range(3 + (x - 63), 18):
+            c.P(x, y, K('glass', 3 if y < 7 + (x - 63) else 2))
+    for (x, y) in ((64, 5), (65, 6), (66, 10), (67, 11), (68, 15)): c.P(x, y, K('glass', 5))
+    c.P(66, 13, K('glass', 1)); c.P(67, 13, K('glass', 0)); c.P(66, 14, K('glass', 1))
+    c.HL(63, 17, 7, K(P, 6))
     # 보닛: 덮개가 떨어져 엔진 칸이 드러남
-    for y in range(8, 18):
-        for x in range(55, 62):
-            t = 5 if y > 8 else 4
+    for y in range(9, 18):
+        for x in range(70, 78):
+            t = 5 if y > 9 else 4
             if y == 17: t = 6
-            if x == 61: t = 3
-            if x == 55 and y > 8: t = 6
+            if x == 77: t = 3
+            if x == 70 and y > 9: t = 6
             c.P(x, y, K(P, t))
-    c.clear(61, 8)
-    for y in range(10, 16):
-        for x in range(56, 61):
-            c.P(x, y, K('brust', 1) if y == 10 else K('soot', 3) if (x + y) % 3 else K('brust', 2))
-    c.R(57, 12, 3, 2, K('metal', 3)); c.HL(57, 12, 3, K('metal', 5)); c.P(59, 14, K('rust', 4)); c.P(56, 13, K('rubber', 4))
-    c.R(62, 10, 2, 14, K('metal', 3)); c.VL(63, 10, 14, K('metal', 1)); c.P(62, 12, K('paint', 2)); c.P(62, 21, K('paint', 1))
-    c.R(0, 9, 2, 15, K('metal', 3)); c.VL(0, 9, 15, K('metal', 5)); c.P(1, 12, K('wine', 2)); c.P(1, 20, K('wine', 2))
+    c.clear(77, 9)
+    for y in range(11, 16):
+        for x in range(71, 77):
+            c.P(x, y, K('brust', 1) if y == 11 else K('soot', 3) if (x + y) % 3 else K('brust', 2))
+    c.R(72, 12, 3, 2, K('metal', 3)); c.HL(72, 12, 3, K('metal', 5)); c.P(75, 14, K('rust', 4)); c.P(71, 13, K('rubber', 4))
+    c.R(78, 10, 2, 22, K('metal', 3)); c.VL(79, 10, 22, K('metal', 1)); c.R(76, 20, 2, 3, K('paint', 2)); c.P(76, 20, K('paint', 3))
+    c.R(0, 9, 2, 24, K('metal', 3)); c.VL(0, 9, 24, K('metal', 5)); c.R(2, 21, 2, 3, K('wine', 2))
     # 지붕 짐: 묶은 천 꾸러미 · 눕힌 헌 타이어
-    box(c, 11, 6, 11, 5, 3, 'army', tt=4, ft=2)
-    for x in (14, 19): c.VL(x, 6, 8, K('dry', 2)); c.P(x, 6, K('dry', 4))
-    c.P(12, 7, K('army', 6)); c.P(17, 8, K('army', 2)); c.P(16, 7, K('army', 6))
-    c.ell(32, 9, 5, 3, K('rubber', 4)); c.ell(32, 9, 4, 2, K('rubber', 5)); c.ell(32, 9, 2, 1, K('rubber', 2))
-    c.HL(29, 12, 7, K('rubber', 3)); c.HL(29, 13, 7, K('rubber', 2)); c.P(29, 7, K('rubber', 6))
-    # 녹: 지붕 리브 이음을 따라 번진 줄 · 지붕 가장자리에서 옆면으로 흘러내린 녹물 · 문턱·아치 둘레 패인 녹 · 크기 다른 꽃 몇
-    for k, x in enumerate(range(8, 48, 6)):
+    box(c, 13, 5, 14, 6, 4, 'army', tt=4, ft=2)
+    for x in (17, 23): c.VL(x, 5, 10, K('dry', 2)); c.P(x, 5, K('dry', 4))
+    c.P(14, 6, K('army', 6)); c.P(21, 8, K('army', 2)); c.P(20, 7, K('army', 6))
+    c.ell(42, 9, 6, 3, K('rubber', 4)); c.ell(42, 9, 5, 2, K('rubber', 5)); c.ell(42, 9, 2, 1, K('rubber', 2))
+    c.HL(38, 12, 9, K('rubber', 3)); c.HL(38, 13, 9, K('rubber', 2)); c.P(38, 7, K('rubber', 6))
+    # 녹: 리브 줄 · 옆면으로 흘러내린 녹물 · 문턱·아치 둘레 패인 녹 · 꽃
+    for k, x in enumerate(range(9, 61, 7)):
         y0 = 3 + h2(k, 1, 5) % 6; ln = 2 + h2(k, 2, 5) % 6
         for j in range(ln):
             if c.get(x + 1, y0 + j) in on: c.P(x + 1, y0 + j, K('rust', 3 if j == 0 else 4 if j < ln - 1 else 5))
-    for k, x in enumerate((5, 11, 17, 24, 31, 43, 50, 57)):
-        ln = 2 + h2(k, 3, 9) % 4
+    for k, x in enumerate((6, 13, 21, 27, 36, 43, 61, 70, 75)):
+        ln = 3 + h2(k, 3, 9) % 6
         for j in range(ln):
             if c.get(x, 19 + j) in on: c.P(x, 19 + j, K('rust', 4 if j < ln - 1 else 5))
         c.P(x, 18, K('rust', 3)) if c.get(x, 18) in on else None
-    for y in range(21, 26):                                         # 문턱·아치 둘레 패인 녹
-        for x in range(2, 62):
+    for y in range(35, 46):
+        for x in range(2, 78):
             if c.get(x, y) not in on: continue
-            near = min(abs(x - 12), abs(x - 52))
-            v = field(x * 3, y * 3, 55, 64) + (0.18 if near < 7 else 0) + (y - 21) * 0.04
+            near = min(abs(x - 16), abs(x - 66))
+            v = field(x * 3, y * 3, 55, 64) + (0.18 if near < 10 else 0) + (y - 35) * 0.03
             if v > 0.86: c.P(x, y, K('rust', 2 if h2(x, y, 4) % 4 == 0 else 3))
             elif v > 0.77: c.P(x, y, K('rust', 4))
-    bloom(c, 6, 6, 3, on, 1, 0.8, drip=1); bloom(c, 44, 13, 4, on, 2, 0.6, drip=0); bloom(c, 58, 22, 2, on, 4, 0.8)
-    bloom(c, 26, 15, 2, on, 3, 0.7); bloom(c, 5, 21, 3, on, 7, 0.8, drip=2)
+    bloom(c, 7, 7, 3, on, 1, 0.8, drip=1); bloom(c, 56, 13, 4, on, 2, 0.6, drip=0); bloom(c, 74, 38, 2, on, 4, 0.8)
+    bloom(c, 32, 15, 2, on, 3, 0.7); bloom(c, 8, 37, 3, on, 7, 0.8, drip=2); bloom(c, 36, 26, 3, on, 8, 0.8, drip=2)
     ol_soft(c)
-    c.shadow([(x, y) for y in (27, 28, 29) for x in range(4 + (y - 27), 62 - (y - 27))])
+    c.shadow([(x, y) for y in (46, 47) for x in range(4 + (y - 46), 77 - (y - 46))])
 
 
 # ------------------------------------------------------------------ 망루(지붕 없는 열린 감시대)
@@ -1111,66 +1169,78 @@ def log_r5(c):
 
 # ------------------------------------------------------------------ 노점 B
 def stall_r5(c, tarp='blue'):
-    # 계산대 앞면(짧게 23..28): 짝 안 맞는 세로 판 · 판 하나는 함석 · 아래 그늘
+    D = 10
+    # 차양 밑 그늘진 뒤 판벽(13..24) + 걸어 둔 물건
+    for y in range(13, 25):
+        for x in range(4, 44):
+            k = (x - 4) % 6
+            t = 0 if k == 0 else 2 if k == 1 else 1
+            if h2(x, y, 13) % 13 == 0: t += 1
+            c.P(x, y, K('wood', t))
+    c.line(10, 13, 10, 17, K('metal', 2)); c.R(8, 17, 5, 4, K('metal', 3)); c.HL(8, 17, 5, K('metal', 5)); c.HL(8, 20, 5, K('metal', 1))   # 걸어 둔 함석 통
+    c.line(20, 13, 22, 19, K('dry', 2)); c.line(21, 13, 24, 18, K('dry', 3))                 # 매단 밧줄
+    c.ell(34, 18, 3, 2, K('rubber', 4)); c.ell(34, 18, 1, 0, K('wood', 1))                   # 걸어 둔 타이어 고리
+    c.R(39, 15, 4, 6, K('army', 3)); c.HL(39, 15, 4, K('army', 5))                           # 걸린 천 자루
+    for x in (4, 42): c.R(x, 9, 2, 16, K('wood', 2)); c.VL(x, 9, 16, K('wood', 3))           # 뒤 기둥
+    # 계산대 앞면(33..45, 13행): 짝 안 맞는 세로 판 · 판 하나는 함석 · 아래 그늘
     boards = [(3, 5, 'wood', 2), (8, 4, 'wood', 3), (12, 6, 'metal', 3), (18, 5, 'wood', 2), (23, 4, 'brust', 3), (27, 6, 'wood', 3), (33, 5, 'wood', 2), (38, 7, 'army', 2)]
     for (x, w, m, t) in boards:
         for i in range(w):
-            for y in range(23, 29):
+            for y in range(33, 46):
                 tt = t + (1 if i == 0 else -1 if i == w - 1 else 0)
-                if y == 28: tt = t - 2
+                if y == 45: tt = t - 2
                 if h2(x + i, y, 4) % 9 == 0: tt -= 1
                 c.P(x + i, y, K(m, tt))
-    c.P(14, 25, K('rust', 3)); c.P(15, 26, K('rust', 4)); c.P(5, 24, K('metal', 6)); c.P(20, 24, K('metal', 6)); c.P(29, 24, K('metal', 6))
-    c.clear(44, 28); c.clear(3, 28)
-    # 계산대 윗면(15..22, 8행): 동서로 놓인 밝은 판 · 이음 · 앞 턱 가장 밝게, 뒤쪽은 차양 그늘
-    for y in range(15, 23):
+    c.HL(3, 39, 42, K('wood', 1))                                                            # 가로 띠장
+    c.P(14, 36, K('rust', 3)); c.P(15, 37, K('rust', 4)); c.P(14, 41, K('rust', 3))
+    for x in (5, 20, 29, 40): c.P(x, 34, K('metal', 6)); c.P(x, 42, K('metal', 6))
+    c.clear(44, 45); c.clear(3, 45)
+    # 계산대 윗면(25..32)
+    for y in range(15 + D, 23 + D):
         for x in range(3, 45):
-            k = (y - 15) % 3
+            k = (y - 15 - D) % 3
             t = 4 if k != 2 else 3
-            if y == 22: t = 4
-            if y <= 16: t = 3 if y == 16 else 2
-            if h2(x, y, 6) % 13 == 0 and 16 < y < 22: t -= 1
+            if y == 22 + D: t = 4
+            if y <= 16 + D: t = 3 if y == 16 + D else 2
+            if h2(x, y, 6) % 13 == 0 and 16 + D < y < 22 + D: t -= 1
             c.P(x, y, K('wood', t))
-    # 물건(위에서 본 모양): 깡통 뚜껑 타원 · 누운 병 · 톱니 고리 · 감은 전선 · 축전지 · 고철 조각
     for (x, y) in ((6, 18), (9, 19), (7, 21)):
-        c.ell(x, y, 1, 0, K('metal', 5)); c.P(x - 1, y, K('metal', 6)); c.P(x + 1, y, K('metal', 3)); c.HL(x - 1, y + 1, 3, K('metal', 2))
+        y += D; c.ell(x, y, 1, 0, K('metal', 5)); c.P(x - 1, y, K('metal', 6)); c.P(x + 1, y, K('metal', 3)); c.HL(x - 1, y + 1, 3, K('metal', 2))
     for (x, y, m) in ((13, 18, 'glass'), (14, 21, 'army')):
-        c.HL(x, y, 5, K(m, 3)); c.HL(x, y - 1, 4, K(m, 5)); c.P(x + 5, y, K(m, 2)); c.P(x + 1, y - 1, K(m, 6)); c.HL(x, y + 1, 5, K('wood', 2))
-    c.ell(24, 19, 2, 1, K('metal', 4)); c.P(24, 19, K('wood', 3)); c.P(22, 19, K('metal', 6)); c.HL(23, 21, 3, K('wood', 2))
-    for (x, y) in ((22, 17), (26, 18), (26, 20), (22, 21)): c.P(x, y, K('metal', 3))
-    c.ell(31, 19, 2, 1, K('rubber', 4)); c.P(31, 19, K('wood', 3)); c.HL(30, 18, 3, K('rubber', 6)); c.HL(30, 21, 3, K('wood', 2))
-    box(c, 35, 16, 6, 3, 2, 'army', tt=4, ft=2, ao=False); c.P(36, 17, K('brick', 4)); c.P(39, 17, K('metal', 6))
-    c.line(41, 20, 44, 18, K('rust', 4)); c.line(41, 21, 44, 19, K('rust', 2))
-    # 기둥 넷: 뒤 둘(차양 밑 짧게) · 앞 둘(땅까지)
-    for x in (4, 42): c.R(x, 9, 2, 6, K('wood', 2)); c.VL(x, 9, 6, K('wood', 3))
+        y += D; c.HL(x, y, 5, K(m, 3)); c.HL(x, y - 1, 4, K(m, 5)); c.P(x + 5, y, K(m, 2)); c.P(x + 1, y - 1, K(m, 6)); c.HL(x, y + 1, 5, K('wood', 2))
+    c.ell(24, 19 + D, 2, 1, K('metal', 4)); c.P(24, 19 + D, K('wood', 3)); c.P(22, 19 + D, K('metal', 6)); c.HL(23, 21 + D, 3, K('wood', 2))
+    for (x, y) in ((22, 17), (26, 18), (26, 20), (22, 21)): c.P(x, y + D, K('metal', 3))
+    c.ell(31, 19 + D, 2, 1, K('rubber', 4)); c.P(31, 19 + D, K('wood', 3)); c.HL(30, 18 + D, 3, K('rubber', 6)); c.HL(30, 21 + D, 3, K('wood', 2))
+    box(c, 35, 16 + D, 6, 3, 2, 'army', tt=4, ft=2, ao=False); c.P(36, 17 + D, K('brick', 4)); c.P(39, 17 + D, K('metal', 6))
+    c.line(41, 20 + D, 44, 18 + D, K('rust', 4)); c.line(41, 21 + D, 44, 19 + D, K('rust', 2))
+    # 앞 기둥(땅까지)
     for x in (0, 45):
-        for y in range(9, 30): c.P(x, y, K('wood', 4)); c.P(x + 1, y, K('wood', 3)); c.P(x + 2, y, K('wood', 1))
-    # 차양(0..9): 앞으로 기운 방수포 판 — 앞 두 기둥 사이로 가운데가 처진다, 덧댄 천, 앞 가장자리는 기둥 사이로 늘어진 호
-    for r in range(10):
-        l = int(round(3 * (1 - r / 9)))
+        for y in range(9, 47): c.P(x, y, K('wood', 4)); c.P(x + 1, y, K('wood', 3)); c.P(x + 2, y, K('wood', 1))
+    # 차양(0..13) + 앞 가장자리 처진 호(14..16)
+    for r in range(14):
+        l = int(round(3 * (1 - r / 13)))
         for x in range(l, 48 - l):
             u = x / 47.0
-            sag = 1 - abs(u - 0.5) * 2                                # 가운데 처짐
-            t = 3 + (1 if r >= 3 else 0) + (1 if r >= 6 else 0)
-            if u < 0.08 or u > 0.92: t += 1                           # 기둥 위 팽팽한 귀퉁이
-            if sag > 0.5 and r >= 4: t -= 1
+            sag = 1 - abs(u - 0.5) * 2
+            t = 3 + (1 if r >= 4 else 0) + (1 if r >= 9 else 0)
+            if u < 0.08 or u > 0.92: t += 1
+            if sag > 0.5 and r >= 6: t -= 1
             fold = (x + r // 2) % 9
-            if fold == 0 and 0 < r < 9: t -= 1
-            elif fold == 1 and 0 < r < 9: t += 1
+            if fold == 0 and 0 < r < 13: t -= 1
+            elif fold == 1 and 0 < r < 13: t += 1
             if r == 0: t = 2
             c.P(x, r, K(tarp, max(1, min(6, t))))
-    for x in range(48):                                            # 앞 가장자리: 처진 호(가운데가 1~2 행 더 내려온다)
+    for x in range(48):
         sag = 1 - abs(x / 47.0 - 0.5) * 2
         d = 1 + (1 if sag > 0.35 else 0) + (1 if sag > 0.8 else 0)
-        for j in range(d): c.P(x, 10 + j, K(tarp, 5 if j == 0 else 2))
-    for (px, py, pw, ph, m) in ((7, 2, 8, 5, 'army'), (31, 4, 7, 4, 'burlap')):
+        for j in range(d): c.P(x, 14 + j, K(tarp, 5 if j == 0 else 2))
+    for (px, py, pw, ph, m) in ((7, 2, 9, 7, 'army'), (31, 5, 8, 5, 'burlap')):
         for j in range(ph):
             for i in range(pw):
                 c.P(px + i, py + j, K(m, 4 + (1 if i < 2 else -1 if i > pw - 3 else 0)))
         c.HL(px, py + ph, pw, K(tarp, 1)); c.VL(px + pw, py, ph + 1, K(tarp, 1))
         for i in range(0, pw, 2): c.P(px + i, py, K(m, 2))
-    for (x, y) in ((0, 9), (1, 10), (46, 9), (47, 10)): c.P(x, y, K('dry', 3))
-    c.P(19, 6, K('tarp', 1)); c.P(20, 6, K('blue', 1))
+    for (x, y) in ((0, 13), (1, 14), (46, 13), (47, 14)): c.P(x, y, K('dry', 3))
+    c.P(19, 8, K('tarp', 1)); c.P(20, 8, K('blue', 1))
     ol_soft(c)
-    c.shadow([(x, y) for y in range(12, 15) for x in range(3, 45) if not c.has(x, y)])
-    c.shadow([(x, y) for y in (29, 30, 31) for x in range(3 + (y - 29), 47)])
+    c.shadow([(x, y) for y in (46, 47) for x in range(3 + (y - 46), 47)])

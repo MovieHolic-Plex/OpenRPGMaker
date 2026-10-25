@@ -18,6 +18,28 @@ for _m in MODS:
         importlib.import_module(_m)
 
 
+def _load_legacy():
+    """r63: 크기 보정 다시 그림이 3/4 관문을 못 넘은 조각은 r62 그림(관문 통과·허용된 해시)을 그대로 쓴다 — legacy_r62/ids.json 의 id 만.
+    legacy_r62/lg_*.py 는 origin/main(#3488) 의 모듈 사본이다. 다시 그린 그림이 관문을 넘으면 그 id 를 ids.json 에서 빼고, 비면 폴더째 지운다."""
+    d = os.path.join(C.HERE, 'legacy_r62'); f = os.path.join(d, 'ids.json')
+    if not os.path.exists(f): return
+    ids = json.load(open(f))
+    if not ids: return
+    import importlib.util
+    cur = C.PIECES; C.PIECES = {}
+    try:
+        for name in ('ruins', 'props', 'ruins_b', 'ruins_c', 'shanty'):
+            spec = importlib.util.spec_from_file_location('lg_' + name, os.path.join(d, 'lg_%s.py' % name))
+            mod = importlib.util.module_from_spec(spec); spec.loader.exec_module(mod)
+        leg = C.PIECES
+    finally:
+        C.PIECES = cur
+    for i in ids: cur[i] = leg[i]
+
+
+_load_legacy()
+
+
 _BLEND = None
 
 

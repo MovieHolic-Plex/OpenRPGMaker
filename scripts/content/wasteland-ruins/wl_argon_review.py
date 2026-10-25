@@ -17,6 +17,8 @@ for cp in crops:
     if k and seen.get(k, 0) < 2: pick.append(cp); seen[k] = seen.get(k, 0) + 1
 maps = [m for m in sorted(glob.glob(os.path.join(R, 'map-*.png'))) if 'settlement' in m]
 imgs = pieces + [os.path.join(R, 'ref-beodeul-sheet-2x.png'), os.path.join(R, 'ref-modern-city-2x.png')] + maps + pick
+if os.environ.get('ARGON_IMAGES'):
+    imgs = [os.path.join(R, x) for x in os.environ['ARGON_IMAGES'].split(',')]
 content = [{"type": "text", "text": brief}]
 for p in imgs:
     content.append({"type": "text", "text": "FILE: " + os.path.basename(p)})
