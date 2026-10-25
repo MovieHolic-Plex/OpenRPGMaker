@@ -3635,7 +3635,7 @@ r8~r11 실편집기 녹화에서 조수는 도구를 찾지 않고 paint_tiles �
 - **듣는 사람 흉상은 불투명**(`dialogue.css`·`dialogueStyles.css`) — 반투명(0.9·0.96)이면 뒤 배경이 비쳐 «유령»으로 읽혔다(VQA r1). 누가 말하는지는 밝기·크기로 가린다.
 - **타이틀**: `set_title_screen({logoStyle:"gold", menuStyle:"plain"})` — 기본 창 메뉴·glow 글자는 차가운 파란 기본 스킨으로 읽혔다. 메뉴 글자 크기 `menuFontPx` 는 아직 도구 인자가 아니다(데이터 필드만 있음).
 - 하네스 과제(scene-lessons-seed): `story-hud-replaces-genre-default`(19537) · `painted-opening-from-story-stills`(19538) · `ending-scene-then-final-image`(19539) · `npcs-stand-on-sidewalks`(19540) · `confession-cg-over-dialogue`(19541) · `lanterns-visibly-light`(19542).
-- 조수가 스스로 못 한 것: 그림 생성 — 대표 데모 빌드는 헤드리스라 `generate_opening_image` 가 `image-generation-unavailable` 로 멈춘다. 감독이 같은 생성기(kaykai)를 직접 돌려 후보를 고르고 resolver 에 등록했다. 편집기 안 조수는 `generate_opening_image({referenceResourceIds:[인물 전신 초상…]})` 로 같은 일을 할 수 있다. NPC 를 «보도» 에 놓는 것 — `place_npc`·`add_street_walkers` 는 차도/보도를 가리지 않아, 칸 이름표(tileMeta label)를 읽어 자리를 감독이 골랐다.
+- 조수가 스스로 못 한 것: 그림 생성 — 대표 데모 빌드는 헤드리스라 `generate_opening_image` 가 `image-generation-unavailable` 로 멈춘다. 감독이 같은 생성기(kaykai)를 직접 돌려 후보를 고르고 resolver 에 등록했다. 편집기 안 조수는 `generate_opening_image({referenceResourceIds:[인물 전신 초상…]})` 로 같은 일을 할 수 있다. NPC 를 «보도» 에 놓는 것 — `place_npc`·`add_street_walkers` 는 차도/보도를 가리지 않아, 칸 이름표(tileMeta label)를 읽어 자리를 감독이 골랐다. (2026-10-26 갱신: `add_street_walkers` 는 이제 보도·횡단보도로만 길을 찾고 차도 들를 곳을 거절한다 — `openwiki/modern-city.md`.)
 
 ## 연애 3차 수리 — 칩·ESC 메뉴·뼈대·완료 문 (2026-10-16, romance-fix-3)
 

@@ -429,6 +429,7 @@ export function modernFieldsFor(title: string): readonly M2CommandFieldSpec[] | 
         { key: "x", label: "X(맵 좌표일 때)", type: "number", defaultValue: 0 },
         { key: "y", label: "Y(맵 좌표일 때)", type: "number", defaultValue: 0 },
         { key: "durationMs", label: "시간(ms)", type: "number", defaultValue: 1200, min: 100, max: 60000, step: 100 },
+        { key: "sizePercent", label: "크기(%)", type: "number", defaultValue: 100, min: 25, max: 400, step: 25 },
         { key: "wait", label: "끝날 때까지 대기", type: "boolean", defaultValue: false },
       ];
     case "Sprite Look":

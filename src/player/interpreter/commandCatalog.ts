@@ -1,6 +1,6 @@
 import { applyJournalLine } from "./journalCommands";
 import { normalizeLiftRide } from "@/project/eventCommands/liftRide";
-import { isParticlePreset, normalizeParticleDurationMs, normalizeShakeDirection } from "@/project/eventCommands/cinematicStaging";
+import { isParticlePreset, normalizeParticleDurationMs, normalizeParticleSizePercent, normalizeShakeDirection } from "@/project/eventCommands/cinematicStaging";
 import { playerChoiceText } from "@/project/choiceText";
 import { playMonsterSfx } from "@/player/monsterSfx";
 import { monsterCampaign } from "@/project/monsterJournal";
@@ -386,6 +386,7 @@ function executeM2Command(
       preset: isParticlePreset(preset) ? preset : "sparkle",
       target: stagingTarget(command.fields, state.currentEventId, true),
       durationMs: normalizeParticleDurationMs(command.fields.durationMs),
+      sizePercent: normalizeParticleSizePercent(command.fields.sizePercent),
       wait: fieldBoolean(command.fields, "wait", false),
     });
   }

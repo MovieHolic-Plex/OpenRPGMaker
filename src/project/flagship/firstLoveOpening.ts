@@ -1,10 +1,10 @@
 /**
  * 『첫사랑』 오프닝 — 애니메이션 오프닝풍 몽타주(2026-10-25 사용자 승인 C 안), 약 30초.
  *
- * 벚꽃 거리 → 아침 지하철 → 사무실 → 노을 옥상 → 등장인물이 이름과 함께 한 명씩 → 마지막에 제목.
+ * 벚꽃 거리 → 아침 지하철 → 사무실 → 노을 옥상 → 등장인물이 이름과 함께 한 명씩 → 검게 닫힘(제목은 타이틀 화면이 맡는다).
  * 배경은 게임 맵 그 자체를 1:1 로 구운 그림(src/assets/firstLoveOpeningBackdrops.ts)이라 플레이 화면과 화풍이 같다.
  * 걷는 사람은 게임의 같은 걷기 칩(CAST), 흉상은 대화에 쓰는 공용 흉상이다 — 새로 그린 인물은 없다.
- * 벚꽃잎은 애니메틱 입자 'petals'(일반 기능), 노을은 공용 노을 파노라마. 마지막 제목 컷 뒤 게임은 출근길 횡단보도의 첫 만남에서 바로 시작한다.
+ * 벚꽃잎은 애니메틱 입자 'petals'(일반 기능), 노을은 공용 노을 파노라마. 마지막 컷이 검게 닫히면 게임은 출근길 횡단보도의 첫 만남에서 바로 시작한다.
  */
 import { CHARSET_FRAME_COUNT, CHARSET_FRAME_HEIGHT, CHARSET_FRAME_WIDTH, CHARSET_SHEET_COLUMNS, charsetFrameIndex } from "@/assets/easyrpgRtp";
 import { firstLoveOpeningBackdrop, type FirstLoveOpeningBackdropId } from "@/assets/firstLoveOpeningBackdrops";
@@ -123,7 +123,7 @@ function officeShot(): OpeningAnimatic {
     // 팀장은 사무실 바닥 통로(가구 없는 줄)로 걷는다 — 소파를 뚫고 지나갔다(Argon op2).
     { ...walker("lead", "lead", "left", { x: ox + 21 * 16, y: -40 + 6 * 16 - 16 }, { x: ox + 12 * 16, y: -40 + 6 * 16 - 16 }, 3200, 300),
       keys: { x: [key(300, ox + 21 * 16, "linear"), key(3500, ox + 12 * 16, "linear")], y: [key(0, -40 + 6 * 16 - 16, "linear"), key(SHOT_MS, -96 + 6 * 16 - 16, "linear")] } } as AnimaticLayer,
-    caption("스튜디오 늘봄. 서른 명 남짓한 앱 회사."),
+    caption("서른 명 남짓한 작은 앱 회사, 스튜디오 늘봄."),
   ], { kind: "fade", durationMs: 600 });
 }
 
@@ -144,11 +144,11 @@ function rooftopShot(): OpeningAnimatic {
       glow: { inner: 0.25, pulse: { hz: 0.4, amount: 0.15, pattern: "pulse", seed: 4 } } } as AnimaticLayer,
     petals("petals", 26, 31, { opacity: 0.85 }),
     caption("노을이 지는 옥상. 그리고 — 그 사람."),
-  ], { kind: "dither", durationMs: 650 });
+  ], { kind: "fade", durationMs: 650 });
 }
 
 /** 5·6. 등장인물 — 흉상이 한 명씩 미끄러져 들어오고 이름이 뜬다. */
-function castShot(pair: readonly { who: Who; role: string; expr?: "base" | "happy" }[], shade: string): OpeningAnimatic {
+function castShot(pair: readonly { who: Who; role: string; expr?: "base" | "happy" }[], shade: string, closing = false): OpeningAnimatic {
   const layers: AnimaticLayer[] = [
     { id: "band", kind: "shape", shape: "rect", role: "background", color: shade, x: 0, y: 0, width: STAGE.width, height: STAGE.height } as AnimaticLayer,
     petals("petals", 34, 41 + pair.length, { opacity: 0.8 }),
@@ -177,33 +177,14 @@ function castShot(pair: readonly { who: Who; role: string; expr?: "base" | "happ
       keys: { opacity: [key(at + 450, 0), key(at + 850, 1, "ease-out"), key(end - 300, 1), key(end, 0, "ease-in")] },
     } as AnimaticLayer);
   });
+  // 마지막 컷은 검게 닫는다 — 넘김 덮개가 이 마지막 장면을 잡고, 게임 첫 장면(첫 출근 아침)이 검은 화면에서 밝아진다.
+  if (closing) layers.push({ id: "close", kind: "shape", shape: "rect", role: "background", color: "#000000", opacity: 0, x: 0, y: 0, width: STAGE.width, height: STAGE.height,
+    keys: { opacity: [key(SHOT_MS - 700, 0), key(SHOT_MS - 60, 1, "ease-in")] } } as AnimaticLayer);
   return shot(layers, { kind: "flash", durationMs: 220, color: "#fff1f6" }, shade);
 }
 
 const FULL_NAMES: Partial<Record<Who, string>> = { seoha: "윤서하", jihu: "강지후", minho: "차민호" };
 function nameOf(who: Who): string { return FULL_NAMES[who] ?? CAST[who].name; }
-
-/** 7. 제목 — 노을빛 위에 꽃잎, 「첫사랑」. */
-function titleShot(): OpeningAnimatic {
-  return shot([
-    { id: "sky", kind: "image", role: "background", resourceId: "oprn-pano-sunset", sampling: "nearest", x: -80, y: 0, width: 640, height: 240,
-      keys: { x: [key(0, -80), key(SHOT_MS, -110)] } } as AnimaticLayer,
-    { id: "skyline", kind: "image", role: "background", resourceId: "oprn-pano-sunset-skyline", sampling: "nearest", x: -60, y: 30, width: 640, height: 240 } as AnimaticLayer,
-    { id: "dim", kind: "shape", shape: "rect", role: "background", color: "#1a0f1f", opacity: 0.35, x: 0, y: 0, width: STAGE.width, height: STAGE.height } as AnimaticLayer,
-    petals("petals", 60, 53),
-    // 제목 띠 — 노을 해가 글자 뒤에 오면 흰 글자가 묻힌다(Argon op1). 어두운 띠를 깔아 대비를 지킨다.
-    // 띠 가장자리를 세 겹으로 겹쳐 부드럽게 한다 — 한 장이면 윗변이 해를 가로로 잘랐다(Argon op2).
-    ...([[72, 124, 0.18], [80, 108, 0.22], [88, 92, 0.3]] as const).map(([y, h, o], i) => ({
-      id: `title-band-${i}`, kind: "shape", shape: "rect", role: "background", color: "#140a18", opacity: 0, x: 0, y, width: STAGE.width, height: h,
-      keys: { opacity: [key(200, 0), key(1000, o, "ease-out")] } } as AnimaticLayer)),
-    { id: "title", kind: "text", role: "credit", text: "첫사랑", color: "#ffffff", x: 40, y: 92, width: 400, height: 60, startMs: 300,
-      typography: { fontSize: 44, align: "center", weight: 800 },
-      keys: { opacity: [key(300, 0), key(1300, 1, "ease-out")], scaleX: [key(300, 1.08), key(1600, 1, "ease-out")], scaleY: [key(300, 1.08), key(1600, 1, "ease-out")] } } as AnimaticLayer,
-    { id: "subtitle", kind: "text", role: "credit", text: "10년 만에, 사수가 됐다", color: "#ffe2ec", x: 40, y: 152, width: 400, height: 24, startMs: 1300,
-      typography: { fontSize: 14, align: "center", weight: 600 },
-      keys: { opacity: [key(1300, 0), key(2100, 1, "ease-out")] } } as AnimaticLayer,
-  ], { kind: "flash", durationMs: 260, color: "#fff6ee" });
-}
 
 const SHOTS: readonly { id: string; build: () => OpeningAnimatic }[] = [
   { id: "fl_op_blossom", build: blossomShot },
@@ -211,8 +192,8 @@ const SHOTS: readonly { id: string; build: () => OpeningAnimatic }[] = [
   { id: "fl_op_office", build: officeShot },
   { id: "fl_op_rooftop", build: rooftopShot },
   { id: "fl_op_cast1", build: () => castShot([{ who: "seoha", role: "신입 UX 디자이너", expr: "happy" }, { who: "jihu", role: "앱 개발 4년 차 · 사수" }], "#3a2236") },
-  { id: "fl_op_cast2", build: () => castShot([{ who: "minho", role: "백엔드 신입 · 동기", expr: "happy" }, { who: "lead", role: "프로덕트팀 팀장" }], "#22304a") },
-  { id: "fl_op_title", build: titleShot },
+  // 제목 컷은 두지 않는다 — 제목은 타이틀 화면(set_title_screen)이 이미 보여 줬다. 오프닝 끝에 다시 띄우면 제목이 두 번 나왔다(Sonnet op5).
+  { id: "fl_op_cast2", build: () => castShot([{ who: "minho", role: "백엔드 신입 · 동기", expr: "happy" }, { who: "lead", role: "프로덕트팀 팀장" }], "#22304a", true) },
 ];
 
 export function buildFirstLoveOpening(project: Project, musicResourceId?: string): void {
