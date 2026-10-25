@@ -1,5 +1,21 @@
 > 저장소 전환 안내(2026-09-21): 아래 옛 원격 DB·설정·명령은 과거 기록이다. 현재 저장·이관 지침은 [프로젝트 저장 전환](storage-retirement.md)과 AGENTS를 따른다.
 
+## 「드러났다」를 지도에 보이기 `stage_map_reveal` · 장면 대형 `sceneFormation` · 보스 HP 숨김 (2026-10-25)
+
+사용자 지적(폴른 스타 1막): 「승강 장치가 드러났다」는 대사뿐이고 지도에는 아무것도 나타나지 않았다. 일반 도구로 푼다.
+
+- `stage_map_reveal` (write, `src/editor/tools/revealTools.ts`, 도메인 event·map) `{mapId, eventId, pageId?, objectId+x+y | tiles[], afterText?, theme?(stone·machine·magic·fire), camera?(기본 true), switchId?}`.
+  `objectId` 는 `stamp_object` 와 같은 공용 오브젝트 id 다. 초안에 한 번 찍어 보고 4층의 차이만 뽑은 뒤 맵을 되돌린다(이식된 그림 칸은 칩셋에 남는다).
+  그 차이를 이벤트 페이지 안 `afterText` 가 든 첫 대사 바로 뒤(갈래·선택지 안까지 찾는다)에 끼운다:
+  카메라 `panTo`(좌표, `target` 은 주지 않는다 — 카탈로그에 `position` 이 없어 굽기가 거절한다) → `revealInWaves`(세 물결 changeTile·먼지·흔들림·색조) → `switchId` 켬 → 카메라 `return`.
+  changeTile 은 세션 칸 덮어쓰기라 저장·불러오기에 남는다. 드러난 것을 쓰게 하려면 그 칸에 같은 `switchId` 조건 페이지를 가진 이벤트를 따로 둔다.
+  노출: 「드러나·나타나게·숨은 문/통로/계단·승강 장치·비밀 문·reveal」 낱말이면 `sessionToolExposure` 가 `stage_map_reveal`·`list_spatial_designs`·`find_events`·`get_event`·`show_map_region` 을 함께 연다.
+- `configure_companion_rules {sceneFormation: "nearest"|"abreast"}` → `system.companions.sceneFormation`. `display:"scenesOnly"` 의 장면에서 동료가 서는 자리다.
+  `abreast` = 주인공이 보는 방향에 수직으로 나란히(첫째 화면 왼쪽, 둘째 오른쪽, 그 바깥), 칸이 막히면 옛 `nearest` 로 떨어진다(`followers.ts abreastCell`).
+  옛 `nearest` 는 빈 칸 중 가장 가까운 곳이라, 적이 걸어오는 쪽(주인공 앞)에 동료가 서는 일이 있었다.
+- 보스 HP 숨김은 이미 있던 적 단위 `upsert_enemy {enemy:{id, hideHp:true}}` 를 쓴다(새 필드 없음). 「대형·횡대·보스 HP·체력 숨김」 낱말이면 `configure_companion_rules`·`upsert_enemy`·`upsert_troop`·`get_database_records` 를 연다.
+- 조수 트랙 과제: `harness-data/space-craft/seed.json` 의 `fs-boss-squad-first`·`fs-boss-hidehp`·`fs-reveal-lift`.
+
 ## 이야기 흐름 읽기 `get_story_outline` · `read_story_script` · `set_scene_summaries` (2026-10-25)
 
 같은 파일 `dialogueTools.ts`. 모델은 자료집 「대사 › 대본」 과 같은 `buildStory`([editor-database.md](editor-database.md) 「대본」 절). 별칭 「이야기 흐름·대본 읽기」(줄거리·전체 흐름·1막·대본…)와 「대사 관리·윤문」 양쪽에 걸린다.
