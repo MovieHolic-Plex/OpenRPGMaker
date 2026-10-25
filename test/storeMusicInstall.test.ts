@@ -152,6 +152,17 @@ describe("set_game_audio boss", () => {
   });
 });
 
+describe("set_game_audio with a file-backed store track", () => {
+  it("accepts a track stored as an assets/ file reference (card install) even where no URL resolver exists", () => {
+    const ctx = { project: createEmptyToolProject() };
+    expect(runTool(ctx, "create_map", { id: "m_town", name: "마을", width: 8, height: 8 }, { dryRun: false }).ok).toBe(true);
+    ctx.project.assets.uploaded.store_x__town = { id: "store_x__town", name: "마을곡", kind: "music", ref: { sha256: sha(9), mime: "audio/ogg", extension: "ogg", bytes: 10 }, meta: {} } as never;
+    const r = runTool(ctx, "set_game_audio", { role: "maps", resourceId: "store_x__town", mapIds: ["m_town"] }, { dryRun: false });
+    expect(r.ok, r.summary).toBe(true);
+    expect((ctx.project.maps.m_town!.bgm as { resourceId?: string } | undefined)?.resourceId).toBe("store_x__town");
+  });
+});
+
 describe("v2 finish check", () => {
   it("does not re-balance a boss that was already there when only its music changed", () => {
     const ctx = { project: createBlankProject() };

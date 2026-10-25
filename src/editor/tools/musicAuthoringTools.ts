@@ -13,7 +13,8 @@ const text=(v:unknown)=>{if(typeof v!=='string'||!v.trim()||v.length>160)throw n
 const wavBytes=(url:string)=>{const m=/^data:audio\/wav;base64,(.+)$/.exec(url);if(!m)throw new ToolError('WAV 바이트를 확인할 수 없습니다.',{code:'invalid-audio'});return Uint8Array.from(atob(m[1]),c=>c.charCodeAt(0));};
 function playable(p:Project,id:string,kind:'music'|'sound'){
   if(!listAudioResources(kind,p).some(r=>r.id===id))throw new ToolError('실제 오디오 리소스가 없습니다: '+id,{code:'resource-not-found'});
-  const a=p.assets.uploaded[id],url=resolveAssetResourceUrl(id,{project:p});
+  // 파일 참조(ref) 자산은 조수 워커에 주소 해석기가 없어 url 이 비어도 재생 소스가 있다(스토어 카드로 넣은 곡, 2026-10-25 실조수: 6번 실패).
+  const a=p.assets.uploaded[id],url=resolveAssetResourceUrl(id,{project:p})||(a?.ref?.sha256?`asset-ref:${a.ref.sha256}`:'');
   if(!url)throw new ToolError('재생 소스가 없는 오디오입니다.',{code:'invalid-audio'});
   if(a){
     if(a.kind!==kind)throw new ToolError('오디오 종류가 다릅니다.',{code:'invalid-audio'});
