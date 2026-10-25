@@ -1,6 +1,7 @@
 // 조수 v2 실행기 — v1 의 runPiAgent 를 그대로 쓰되(체크포인트·실시간 시공·맵 소유권·사용량·로컬 CLI), 도구를 v2 동사로,
 // 시스템 지시를 v2 카드로 바꾼다. v1 레지스트리 도구는 하나도 노출하지 않는다(options.toolNames 가 아무것도 고르지 않는다).
 // 켜는 곳: 편집기 ?assistant=v2 또는 localStorage oprn:assistant-v2=1 → 요청 assistantVersion:"v2" → 워커가 여기로 보낸다.
+import { createHash } from "node:crypto";
 import { runPiAgent, type RunPiAgentOptions } from "./piAgentRuntime.ts";
 import type { PiAgentDoneEvent, PiAgentEvent, PiAgentRequest } from "../../src/ai/piAgent/protocol.ts";
 import { buildV2SystemPrompt } from "../../src/ai/v2/prompt.ts";
@@ -24,6 +25,8 @@ const safeDiff = (env: PiAssistantV2Env): string => {
  * 화면 검수 고리(src/ai/v2/vqa.ts) — 게임 전체를 만드는 요청에만, 읽기 전용이 아닐 때만. 끄려면 OPRN_V2_VQA=0.
  * 사용자 규칙(2026-10-25): 최소 한 판, 결함 없는 판이 나오거나 3판을 돌 때까지. 그림 경로가 없는 실행은 «검수 못 함»으로 보고한다.
  */
+/** 프로젝트 내용 지문(판 사이 변화 확인용). 직렬화가 실패하면 빈 값 — 그때는 건너뛰지 않는다. */
+const projectFingerprint = (project: unknown): string => { try { return createHash("sha256").update(JSON.stringify(project)).digest("hex"); } catch { return ""; } };
 const vqaEnabled = (request: PiAgentRequest): boolean => process.env.OPRN_V2_VQA !== "0" && !request.readOnly && wantsWholeGame(request.task);
 
 async function captureVqaShots(env: PiAssistantV2Env): Promise<{ shots: VqaShot[]; failed: string[] }> {
@@ -68,6 +71,7 @@ export async function runAssistantV2(request: PiAgentRequest, options: RunPiAgen
   let vqaPhase: "advisor" | "advisor-recheck" | "vqa" | "done" = "advisor";
   let vqaReviewer: { provider: string; model: string; sameAsMain: boolean } | undefined;
   let vqaMs = 0;
+  let vqaReviewedFingerprint: string | undefined;
   const runVqaRound = async (env: PiAssistantV2Env): Promise<VqaRound> => {
     if (!env.render && !env.renderArt) {
       // 그림 경로가 없는 실행(편집기 렌더 브로커 없음): 검수자를 부르지 않고 «검수 못 함» 판 하나를 남긴다. vqaStep 이 거기서 멈춘다.
@@ -98,6 +102,15 @@ export async function runAssistantV2(request: PiAgentRequest, options: RunPiAgen
   /** 화면 검수 한 걸음: 판 하나를 돌고, 결함이 있으면 고치기 지시, 끝났으면 (남은 결함이 있을 때) 정직한 최종 보고 지시. */
   const vqaStep = async (env: PiAssistantV2Env): Promise<string | undefined> => {
     if (!vqaEnabled(env.request) || (vqaRounds.length && !vqaShouldContinue(vqaRounds))) { vqaPhase = "done"; return undefined; }
+    // 고치기 차례에 프로젝트 내용이 하나도 바뀌지 않았으면 같은 그림을 다시 검수하지 않는다 — 결함이 그대로 남았다고 적고 끝낸다.
+    const previous = vqaRounds.at(-1);
+    const fingerprint = projectFingerprint(env.ctx.project);
+    if (previous && !previous.problem && fingerprint && fingerprint === vqaReviewedFingerprint) {
+      vqaPhase = "done";
+      env.emit({ type: "execution_status", name: "v2.vqa", ok: false, summary: `화면 검수 ${previous.round + 1}/${VQA_MAX_ROUNDS} 건너뜀 — 앞 판 뒤로 바뀐 것이 없음, 결함 ${previous.defects.length}건 그대로`, data: { skipped: true, round: previous.round + 1 } });
+      return vqaLeftoverInstruction(vqaRounds, "앞 판 결함을 고치는 동안 프로젝트가 하나도 바뀌지 않았다");
+    }
+    vqaReviewedFingerprint = fingerprint;
     const round = await runVqaRound(env);
     const noRenderPath = !env.render && !env.renderArt;
     if (!noRenderPath && !vqaClean(round) && vqaShouldContinue(vqaRounds)) return vqaFollowUp(round);
