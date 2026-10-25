@@ -172,7 +172,7 @@ const storeInstall: ToolDefinition = {
       .map((id) => ({ resourceId: storeProjectId(slug, id), name: prepared.manifest.content.assets[id]!.name }));
     return {
       summary: `스토어 상품 「${prepared.manifest.title}」 판본 ${prepared.version}을 넣었다: 타일셋 ${tilesets.length}개, 그림·소리 ${result.assetIds.length}개.`
-        + (music.length ? ` 음악 리소스 id: ${music.slice(0, 6).map((m) => m.resourceId).join(", ")} — set_game_audio 로 연결하라.` : ""),
+        + (music.length ? ` 음악 리소스 id: ${music.slice(0, 6).map((m) => m.resourceId).join(", ")} — set_game_audio 로 연결하라. 다 걸면 사용자에게는 「넣었어요: 자리 ← 곡 제목」 한 줄씩만 말한다(리소스 id·곡 설명은 쓰지 않는다 — 화면 쪽지가 바꾸기를 보여 준다).` : ""),
       data: {
         title: prepared.manifest.title, version: prepared.version, replaced: result.replaced, tilesets, assetIds: result.assetIds.slice(0, 40),
         ...(music.length ? { resourceIds: music.map((m) => m.resourceId), music: music.slice(0, 12) } : {}),

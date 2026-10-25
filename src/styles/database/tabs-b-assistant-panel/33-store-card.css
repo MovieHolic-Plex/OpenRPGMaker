@@ -47,3 +47,4 @@
 .ai-store-music-note small { color: var(--text-muted); }
 .ai-store-music-note button { margin-left: auto; }
 .ai-store-music-note .ai-store-result button { margin-left: 0; }
+.ai-store-music-note [hidden], .ai-store-music-note .ai-tileset-change-status:empty { display: none; }
