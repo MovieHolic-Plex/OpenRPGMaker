@@ -162,7 +162,7 @@ export type CutscenePictureBeat = {
 
 export type CutsceneMusicBeat = {
   readonly kind: "music";
-  readonly action: "bgm" | "se" | "fade" | "stop";
+  readonly action: "bgm" | "se" | "bgs" | "fade" | "stop";
   readonly resourceId?: string;
   readonly loop?: boolean;
   readonly durationMs?: number;
@@ -977,6 +977,8 @@ function musicActionOf(beat: CutsceneMusicBeat): CutsceneMusicBeat["action"] {
 function compileMusicBeat(beat: CutsceneMusicBeat): Command[] {
   const action = musicActionOf(beat);
   if (action === "stop" || action === "fade") return [{ kind: "stopAudio" }];
+  // bgs = 음악 밑에 계속 깔리는 환경음(공포 웅웅거림·심장 고동) — 배경 음악을 바꾸지 않는다.
+  if (action === "bgs") return [{ kind: "playAudio", resourceId: beat.resourceId ?? "", loop: true, channel: "bgs" }];
   return [{ kind: "playAudio", resourceId: beat.resourceId ?? "", loop: action === "bgm" ? true : beat.loop ?? false }];
 }
 

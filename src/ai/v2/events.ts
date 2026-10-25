@@ -18,6 +18,7 @@ import { chebyshev, planApproach, type ApproachWorld } from "@/project/staging/a
 import { probeCutscene } from "@/editor/cutscenePreview/probe";
 import { findCharsetAsset } from "@/assets/charsetCatalog";
 import { searchResources } from "@/assets/resourceSearch";
+import { horrorSoundFor } from "./horrorSounds";
 import { charsetFrameIndex, decodeCharsetFrameIndex } from "@/assets/easyrpgRtp";
 import type { MachineCheck } from "./checks";
 import {
@@ -33,7 +34,7 @@ export const EVENT_CARD =
   "walk{who,to}=걷기(to=길·광장·입구·문 앞 같은 자리 낱말, 다른 사람 이름이면 그 곁으로 걸어가 마주 선다, {x,y} 는 꼭 필요할 때만) / " +
   "say{who,text}=대사 / appear{who,where?,looks?,talk?}=그 자리에 «팍» 나타남(where 생략 가능 — 뒤에 주인공에게 걸어오면 함수가 4~8칸 떨어진 길 위를 고른다; talk=컷신 뒤 말 걸면 할 말 배열) / " +
   "face{who,toward}=바라봄 / wait{ms} / fade{dir:'in'|'out'} / " +
-  "tint{tone:'night'|'dusk'|'dawn'|'sepia'|'clear'}=화면 색(밤이 되면 컷신 뒤에도 밤으로 남는다, 되돌리려면 clear) / weather{weather:'rain'|'storm'|'snow'|'fog'|'none',intensity?:0~1}=실제 날씨(비가 오기 시작한다 → weather rain; tint 로 흉내 내지 않는다, 컷신 뒤에도 남는다) / shake{strength?:'weak'|'medium'|'strong',axis?:'vertical'(지진·쿵)|'horizontal'(부딪힘),ms?}=화면 흔들림(지진은 camera 로 흉내 내지 않는다) / flash{color?:'white'|'#rrggbb',ms?}=번쩍(번개·폭발 — fade 로 흉내 내지 않는다) / music{action:'bgm'|'se'|'stop'|'fade',query}=배경 음악 바꾸기(축제·전투 음악 등)·효과음 — query 는 음원 낱말 / emote{who,emote:'!'|'?'|'♥'|'땀'|'화'|'…'|'zzz'}=머리 위 감정 표시(놀람 «!»은 대사로 쓰지 않고 이것) / camera{to}=카메라를 자리 낱말·사람·'x,y' 로 옮겨 보여 줌, to:'back' 이면 주인공에게 복귀(빠뜨려도 끝에 돌아온다) / " +
+  "tint{tone:'night'|'dusk'|'dawn'|'sepia'|'clear'}=화면 색(밤이 되면 컷신 뒤에도 밤으로 남는다, 되돌리려면 clear) / weather{weather:'rain'|'storm'|'snow'|'fog'|'none',intensity?:0~1}=실제 날씨(비가 오기 시작한다 → weather rain; tint 로 흉내 내지 않는다, 컷신 뒤에도 남는다) / shake{strength?:'weak'|'medium'|'strong',axis?:'vertical'(지진·쿵)|'horizontal'(부딪힘),ms?}=화면 흔들림(지진은 camera 로 흉내 내지 않는다) / flash{color?:'white'|'#rrggbb',ms?}=번쩍(번개·폭발 — fade 로 흉내 내지 않는다) / music{action:'bgm'|'se'|'bgs'|'stop'|'fade',query}=배경 음악 바꾸기(축제·전투 음악 등)·효과음·bgs=음악 밑에 계속 깔리는 환경음(바람·심장 고동·웅웅거림) — query 는 음원 낱말(공포: 비명·심장·삐걱·물방울·웅웅·속삭임·쾅·발소리는 함수가 만들어 넣는다) / emote{who,emote:'!'|'?'|'♥'|'땀'|'화'|'…'|'zzz'}=머리 위 감정 표시(놀람 «!»은 대사로 쓰지 않고 이것) / camera{to}=카메라를 자리 낱말·사람·'x,y' 로 옮겨 보여 줌, to:'back' 이면 주인공에게 복귀(빠뜨려도 끝에 돌아온다) / " +
   "look{who,as:'shadow'|'ghost'|'normal'}=검은 실루엣·반투명 유령·원래 모습 / vanish{who}=연기처럼 사라짐(«지나가는» 그림자는 등장한 반대쪽 자리 낱말로 걸어가 사라진다 — 다른 사람 곁으로 걸으면 «찾아온» 장면이 된다). " +
   "대사 속 마을·사람 이름은 맵 이름·기존 NPC 대사에 있는 것을 그대로 쓴다(새로 짓지 않는다). " +
   "who: 주인공·player·hero = 플레이어, 그 밖의 이름 = 컷신에 나타나는 사람(appear 로 먼저 등장시키거나 맵에 이미 있는 NPC 이름). " +
@@ -674,18 +675,30 @@ export function buildEvent(run: BuildRun, spec: EventSpec): EventBuildResult {
       }
       case "music": {
         const action = b.action ?? "bgm";
-        if ((action === "bgm" || action === "se") && !b.query?.trim()) { warnings.push("music: bgm·se 는 query(음원 낱말)가 필요하다."); break; }
+        if ((action === "bgm" || action === "se" || action === "bgs") && !b.query?.trim()) { warnings.push("music: bgm·se·bgs 는 query(음원 낱말)가 필요하다."); break; }
         // 음원 낱말을 실제 음원 id 로 — 없는 낱말(sad·ghost)은 장면 전체를 «없는 리소스»로 실패시켰다(2026-10-24 h-fog-ghost).
         let resourceId: string | undefined;
-        if (action === "bgm" || action === "se") {
+        if (action === "bgm" || action === "se" || action === "bgs") {
           const q = b.query!.trim().toLowerCase();
-          const SYN: [RegExp, string[]][] = [[/sad|sorrow|슬픈|슬픔|비극|애도|tear/u, ["mystery", "night", "town"]], [/ghost|horror|유령|공포|귀신|scary|eerie|으스스/u, ["mystery", "dungeon", "night"]], [/festival|party|축제|잔치|celebrat/u, ["축제", "festival", "town"]], [/battle|fight|전투|싸움|boss|보스/u, ["battle"]], [/thunder|천둥|번개|lightning/u, ["explosion", "폭발", "boom"]], [/calm|peace|평화|잔잔|town|마을/u, ["town"]]];
+          // 공포 효과음·환경음(비명·심장·삐걱·물방울·웅웅·속삭임·쾅·발소리)은 묶음에 없다 — 내장 합성으로 한 번 만들어 다시 쓴다.
+          const horror = action !== "bgm" ? horrorSoundFor(q) : undefined;
+          if (horror) {
+            const have = Object.values(project().assets.uploaded ?? {}).find((a) => a.kind === "sound" && a.name === horror.name);
+            if (have) resourceId = have.id;
+            else {
+              const made = run.call("generate_original_se", { name: horror.name, brief: horror.brief, patch: horror.patch });
+              const id = (made.data as { resourceId?: string } | undefined)?.resourceId;
+              if (made.ok && id) resourceId = id;
+            }
+          }
+          const SYN: [RegExp, string[]][] = [[/sad|sorrow|슬픈|슬픔|비극|애도|tear/u, ["mystery", "night", "town"]], [/ghost|horror|유령|공포|귀신|scary|eerie|으스스/u, ["mystery", "dungeon", "night"]], [/festival|party|축제|잔치|celebrat/u, ["축제", "festival", "town"]], [/battle|fight|전투|싸움|boss|보스/u, ["battle"]], [/thunder|천둥|번개|lightning/u, ["explosion", "폭발", "boom"]], [/calm|peace|평화|잔잔|town|마을/u, ["town"]], [/wind|바람/u, ["wind"]]];
           const tries = [q, ...(SYN.find(([re]) => re.test(q))?.[1] ?? [])];
-          for (const t of tries) { const hit = searchResources(action, t)[0]; if (hit) { resourceId = hit.id.replace(/^(?:bgm|se):/u, ""); break; } }
+          const kind = action === "bgm" ? "bgm" : "se";
+          if (!resourceId) for (const t of tries) { const hit = searchResources(kind, t)[0]; if (hit) { resourceId = hit.id.replace(/^(?:bgm|se):/u, ""); break; } }
           if (!resourceId) { warnings.push(`music: '${b.query}' 에 맞는 ${action} 음원을 못 찾아 이 비트는 뺐다 — list_resources 로 음원 id 를 찾아 다시 준다.`); break; }
         }
         out.push(action === "stop" || action === "fade" ? { kind: "music", action } : { kind: "music", action, resourceId: resourceId! });
-        effects.push(action === "bgm" ? `the background music changes to a '${b.query}' track (stays after the scene)` : action === "se" ? `a '${b.query}' sound effect plays` : "the music stops");
+        effects.push(action === "bgm" ? `the background music changes to a '${b.query}' track (stays after the scene)` : action === "se" ? `a '${b.query}' sound effect plays` : action === "bgs" ? `a looping '${b.query}' ambient sound starts under the music (stays after the scene)` : "the music stops");
         break;
       }
       case "camera": {
