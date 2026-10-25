@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { runTool } from "@/editor/tools";
+import { DEFAULT_RECOLLECTION_PICTURE_RESOURCE_ID } from "@/editor/recollectionBeats";
 import { characterSpriteX, characterSpriteY } from "@/player/characterDepth";
 import { createBlankProject } from "@/project/defaults";
 import {
@@ -64,7 +65,7 @@ describe("script_cutscene + run_scene_test", () => {
         { kind: "interact" },
         {
           kind: "expect",
-          pictureVisible: { id: "pic_memory", resourceId: "easyrpg-picture-cloud" },
+          pictureVisible: { id: "pic_memory", resourceId: DEFAULT_RECOLLECTION_PICTURE_RESOURCE_ID },
         },
         { kind: "interact" },
         { kind: "interact" },
