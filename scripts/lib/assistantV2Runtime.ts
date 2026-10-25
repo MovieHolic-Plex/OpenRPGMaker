@@ -7,7 +7,7 @@ import type { PiAgentDoneEvent, PiAgentEvent, PiAgentRequest } from "../../src/a
 import { buildV2SystemPrompt } from "../../src/ai/v2/prompt.ts";
 import { createV2Tools, V2Session, v2FinishGate } from "../../src/ai/v2/verbs.ts";
 import { shipBlockers } from "../../src/ai/v2/shipChecks.ts";
-import { pickVqaReviewer, reviewVqaRound, vqaClean, vqaFollowUp, vqaLeftoverInstruction, vqaShotPlan, vqaShouldContinue, vqaSummary, wantsWholeGame, VQA_MAX_ROUNDS, type VqaRound, type VqaShot } from "../../src/ai/v2/vqa.ts";
+import { pickVqaReviewer, reviewVqaRound, vqaClean, vqaFollowUp, vqaLeftoverInstruction, vqaShotPlan, vqaReviewerLabel, vqaShouldContinue, vqaSummary, wantsWholeGame, VQA_MAX_ROUNDS, type VqaReviewerPick, type VqaRound, type VqaShot } from "../../src/ai/v2/vqa.ts";
 import { familyOfProviderId } from "../../src/ai/assistantRoles.ts";
 import type { PiAssistantV2Env } from "../../src/ai/v2/env.ts";
 import { adviseTurn, advisorFollowUp, withShipBlockers, advisorSummary, compactToolLog, summarizeProjectDiff, type AdvisorToolCall, type AdvisorVerdict } from "../../src/ai/v2/advisor.ts";
@@ -69,7 +69,7 @@ export async function runAssistantV2(request: PiAgentRequest, options: RunPiAgen
   // 화면 검수 고리 상태 — 판 기록, 다음 afterMain 차례가 무엇을 할지.
   const vqaRounds: VqaRound[] = [];
   let vqaPhase: "advisor" | "advisor-recheck" | "vqa" | "done" = "advisor";
-  let vqaReviewer: { provider: string; model: string; sameAsMain: boolean } | undefined;
+  let vqaReviewer: VqaReviewerPick | undefined;
   let vqaMs = 0;
   let vqaReviewedFingerprint: string | undefined;
   const runVqaRound = async (env: PiAssistantV2Env): Promise<VqaRound> => {
@@ -85,12 +85,15 @@ export async function runAssistantV2(request: PiAgentRequest, options: RunPiAgen
       ...(env.request.roleModels?.vision ? { vision: env.request.roleModels.vision } : {}),
       ...(env.request.assistantRoles?.advisor && env.request.assistantRoles.advisor !== "off" ? { advisor: env.request.assistantRoles.advisor } : {}),
       keyed: env.keyedProviders ?? new Set([env.request.provider]),
-      familyOf: (id) => familyOfProviderId(id),
+      // 사용자 지정 엔드포인트(openai-compat:*)는 계정 이름으로 계열을 모른다 — 그 계정에 실린 모델 이름으로 가린다(8318 Argon → gemini).
+      familyOf: (id) => familyOfProviderId(id, [env.request.roleModels?.vision, env.request.assistantRoles?.advisor === "off" ? undefined : env.request.assistantRoles?.advisor, { provider: env.request.provider, model: env.request.model ?? "" }]
+        .filter((slot): slot is { provider: string; model: string } => Boolean(slot && slot.provider === id)).map((slot) => slot.model)),
     });
     const t0 = Date.now();
     const { shots, failed } = await captureVqaShots(env);
-    const reviewer = `${vqaReviewer.provider}/${vqaReviewer.model}${vqaReviewer.sameAsMain ? " (주 모델과 같은 계열 — 다른 계열 계정 없음)" : ""}`;
-    const chat = env.roleChat && !vqaReviewer.sameAsMain ? (messages: readonly unknown[], signal?: AbortSignal) => env.roleChat!(vqaReviewer!, messages, signal) : env.sideChat;
+    const reviewer = vqaReviewerLabel(vqaReviewer);
+    // 주 모델이 검수자일 때도 roleChat 으로 부른다 — Argon 이면 그림을 보는 high 별칭으로 가야 한다(sideChat 은 주 모델 강도 그대로).
+    const chat = env.roleChat ? (messages: readonly unknown[], signal?: AbortSignal) => env.roleChat!(vqaReviewer!, messages, signal) : env.sideChat;
     const round = await reviewVqaRound({ task: env.request.task, shots, round: vqaRounds.length + 1, previous: vqaRounds.at(-1)?.defects ?? [], chat, reviewer, ...(env.signal ? { signal: env.signal } : {}) });
     const withFailed: VqaRound = failed.length && !round.problem && !shots.length ? { ...round, problem: `그림을 찍지 못함: ${failed.join(", ")}` } : round;
     vqaRounds.push(withFailed);

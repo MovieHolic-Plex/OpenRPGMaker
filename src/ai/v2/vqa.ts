@@ -73,6 +73,7 @@ export function vqaPrompt(task: string, shots: readonly VqaShot[], round: number
 
 /** 검수자 답 읽기. 읽지 못하면 결함 0 이 아니라 problem 을 돌려준다(깨끗한 판으로 세지 않는다). */
 export function parseVqaReply(text: string, shots: readonly VqaShot[]): { defects: VqaDefect[]; problem?: string } {
+  if (!text.trim()) return { defects: [], problem: "검수자 빈 답 — 그림을 보지 못했을 수 있음(검수 안 된 판)" };
   const start = text.indexOf("{"), end = text.lastIndexOf("}");
   if (start < 0 || end <= start) return { defects: [], problem: "검수자 답에 JSON 이 없음" };
   let parsed: unknown;
@@ -163,10 +164,26 @@ export { wantsWholeGame } from "./shipChecks";
 
 /**
  * 검수자 모델 고르기 — 그림을 받는 모델 중 주 모델과 다른 계열을 먼저(역할표 src/ai/assistantRoles.ts 의 규칙과 같다).
- * 순서: 사용자가 정한 «눈» 칸(그 계정 키가 있을 때) → 검토자 칸(그림을 받는 계열일 때) → 키가 있는 다른 계열 계정의 기본 눈 모델 → 주 모델(같은 눈, 표시).
+ * 순서: 사용자가 정한 «눈» 칸(그 계정 키가 있을 때) → 검토자 칸(그림을 받는 계열일 때) → 키가 있는 다른 계열 계정의 기본 눈 모델
+ * → 로컬 Claude CLI Sonnet(주 모델이 Claude 가 아닐 때) → 주 모델(같은 눈, 표시). Argon 은 어느 자리든 그림을 보는 high 별칭으로 부른다(vqaVisionModel).
  * keyed = 이 실행에 키가 실린 계정(호스트가 역할·그림 칸 계정의 키를 싣는다) + 로컬 CLI.
  */
-export interface VqaReviewerPick { readonly provider: string; readonly model: string; readonly sameAsMain: boolean }
+export interface VqaReviewerPick { readonly provider: string; readonly model: string; readonly sameAsMain: boolean; readonly effort?: "high" }
+
+/**
+ * 그림을 실제로 보는 별칭으로 바꾼다. 2026-10-25 실측(8318, 16×16 PNG): gemini-4-argon·gemini-3.8-flash 는 빈 답, -medium 은 400,
+ * gemini-4-argon-high 만 그림을 봤다. 그래서 Argon 검수자는 늘 high 로 부른다 — google-antigravity 는 강도 라우팅(effort high →
+ * gemini-4-argon-high), 이름에 강도가 박힌 사용자 지정 엔드포인트(openai-compat:*)는 모델 ID 자체를 -high 로.
+ */
+export function vqaVisionModel(pick: { readonly provider: string; readonly model: string }): { provider: string; model: string; effort?: "high" } {
+  const argon = /^gemini-4-argon(?:-(?:low|medium|high))?$/u.exec(pick.model);
+  if (!argon) return { provider: pick.provider, model: pick.model };
+  if (pick.provider.startsWith("openai-compat:")) return { provider: pick.provider, model: "gemini-4-argon-high" };
+  return { provider: pick.provider, model: "gemini-4-argon", effort: "high" };
+}
+/** 검수자 표시 이름 — 실제로 부른 별칭을 보인다(판정자가 «눈 먼 판»을 가려낼 수 있게). */
+export const vqaReviewerLabel = (pick: VqaReviewerPick): string =>
+  `${pick.provider}/${pick.effort === "high" && pick.model === "gemini-4-argon" ? "gemini-4-argon-high" : pick.model}${pick.sameAsMain ? " (주 모델과 같은 계열 — 다른 계열 계정 없음)" : ""}`;
 export function pickVqaReviewer(input: {
   readonly main: { readonly provider: string; readonly model: string };
   readonly vision?: { readonly provider: string; readonly model: string };
@@ -178,13 +195,15 @@ export function pickVqaReviewer(input: {
   const differs = (provider: string) => { const f = input.familyOf(provider); return Boolean(f && f !== mainFamily); };
   const seesImages = (provider: string) => !/deepseek/iu.test(provider) && input.familyOf(provider) !== "deepseek";
   const usable = (provider: string) => input.keyed.has(provider) || provider.startsWith("local-cli:");
-  if (input.vision && usable(input.vision.provider) && differs(input.vision.provider)) return { ...input.vision, sameAsMain: false };
-  if (input.advisor && usable(input.advisor.provider) && seesImages(input.advisor.provider) && differs(input.advisor.provider)) return { ...input.advisor, sameAsMain: false };
+  if (input.vision && usable(input.vision.provider) && differs(input.vision.provider)) return { ...vqaVisionModel(input.vision), sameAsMain: false };
+  if (input.advisor && usable(input.advisor.provider) && seesImages(input.advisor.provider) && differs(input.advisor.provider)) return { ...vqaVisionModel(input.advisor), sameAsMain: false };
   const defaults: readonly { provider: string; model: string }[] = [
     { provider: "google-antigravity", model: "gemini-4-argon" },
     { provider: "openai-codex", model: "gpt-6.1-sol" },
   ];
-  const other = defaults.find((d) => input.keyed.has(d.provider) && differs(d.provider));
-  if (other) return { ...other, sameAsMain: false };
-  return { ...input.main, sameAsMain: true };
+  // 키 있는 다른 계열 계정이 없으면 로컬 Claude CLI 의 Sonnet(주 모델이 Claude 가 아닐 때만). CLI 가 없으면 호출이 실패해 «검수 못 함» 판이 된다(깨끗한 판이 아니다).
+  const other = defaults.find((d) => input.keyed.has(d.provider) && differs(d.provider))
+    ?? (differs("local-cli:claude") ? { provider: "local-cli:claude", model: "claude-sonnet-5-5" } : undefined);
+  if (other) return { ...vqaVisionModel(other), sameAsMain: false };
+  return { ...vqaVisionModel(input.main), sameAsMain: true };
 }
