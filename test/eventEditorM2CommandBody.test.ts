@@ -140,7 +140,7 @@ describe("event editor M2 command body", () => {
         renderM2CommandBody(context, {
           kind: "m2Command",
           commandId: "m2-029-change-system-graphic",
-          fields: { target: "window", operation: "set", value: "easyrpg-system-system" },
+          fields: { target: "window", operation: "set", value: "windowskin-warm" },
         }) ?? document.createElement("div")
     );
 
@@ -149,8 +149,8 @@ describe("event editor M2 command body", () => {
     const preview = findByTestId(body, "m2-command-value-resource-preview");
     expect(picker?.tagName).toBe("SELECT");
     expect(picker?.attrs["aria-label"]).toBe("메뉴 모습 선택");
-    expect(picker?.textContent).toContain("System · 시스템 그림 · EasyRPG");
-    expect(preview?.dataset.resourceId).toBe("easyrpg-system-system");
+    expect(picker?.textContent).toContain("windowskin-warm");
+    expect(preview?.dataset.resourceId).toBe("windowskin-warm");
   });
 
   it("renders map/event location commands with friendly event, map, and coordinate controls", () => {
