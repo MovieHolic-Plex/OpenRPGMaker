@@ -19,7 +19,7 @@ const STYLE_FILTER: Record<FreezeStyle, string> = {
   none: "none",
   mono: "grayscale(1) contrast(1.15)",
   sepia: "sepia(0.85) contrast(1.05)",
-  warm: "sepia(0.35) saturate(1.25) contrast(1.08) brightness(1.04)",
+  warm: "sepia(0.6) saturate(1.35) hue-rotate(-8deg) contrast(1.06) brightness(1.08)",
   cool: "saturate(0.7) hue-rotate(-12deg) brightness(1.02) contrast(1.1)",
 };
 

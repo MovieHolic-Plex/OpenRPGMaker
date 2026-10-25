@@ -112,14 +112,14 @@ function officeShot(): OpeningAnimatic {
   return shot([
     { id: "wall", kind: "shape", shape: "rect", role: "background", color: "#2b2f3d", x: 0, y: 0, width: STAGE.width, height: STAGE.height } as AnimaticLayer,
     mapBackdrop("office", { x: ox, y: -40 }, { x: ox, y: -96 }),
-    { ...standing("jihu", "jihu", "up", { x: ox + 17 * 16 - 4, y: -40 + 9 * 16 - 16 }),
-      keys: { y: [key(0, -40 + 9 * 16 - 16), key(SHOT_MS, -96 + 9 * 16 - 16)],
-        frame: [{ atMs: 0, value: charsetFrameIndex({ characterIndex: CAST.jihu.index, direction: "up", pattern: 1 }) }] } } as AnimaticLayer,
-    // 자리에 앉은 동료들 — 빈 사무실로 읽혔다(Argon op2). 의자 칸(맵 그림 기준) 위에 앉은 자세로 두고 배경과 같이 민다.
-    ...([[112, 176, "up", "minho"], [240, 176, "up", "commuterB"], [128, 112, "down", "commuterA"], [256, 112, "down", "clerk"]] as const).map(([mx, my, dir, who], i) => ({
-      ...standing(`desk-${i}`, who, dir, { x: ox + mx - 4, y: -40 + my - 16 }),
-      keys: { y: [key(0, -40 + my - 16), key(SHOT_MS, -96 + my - 16)],
-        frame: [{ atMs: 0, value: charsetFrameIndex({ characterIndex: CAST[who].index, direction: dir, pattern: 1 }) }] } } as AnimaticLayer)),
+    { ...standing("jihu", "jihu", "left", { x: ox + 18 * 16 - 4, y: -40 + 10 * 16 - 16 }),
+      keys: { y: [key(0, -40 + 10 * 16 - 16), key(SHOT_MS, -96 + 10 * 16 - 16)],
+        frame: [{ atMs: 0, value: charsetFrameIndex({ characterIndex: CAST.jihu.index, direction: "left", pattern: 1 }) }] } } as AnimaticLayer,
+    // 동료들은 통로를 오간다 — 의자 칸에 세우면 의자 위에 선 것으로 읽혔다(Argon op3). 배경과 같이 위로 민다.
+    { ...walker("aisle-1", "minho", "right", { x: ox + 8 * 16, y: -40 + 16 * 16 - 16 }, { x: ox + 12 * 16, y: -40 + 16 * 16 - 16 }, 3600, 200),
+      keys: { x: [key(200, ox + 8 * 16, "linear"), key(3800, ox + 12 * 16, "linear")], y: [key(0, -40 + 16 * 16 - 16, "linear"), key(SHOT_MS, -96 + 16 * 16 - 16, "linear")] } } as AnimaticLayer,
+    { ...walker("aisle-2", "commuterB", "down", { x: ox + 13 * 16, y: -40 + 13 * 16 - 16 }, { x: ox + 13 * 16, y: -40 + 17 * 16 - 16 }, 3600, 400),
+      keys: { x: [key(0, ox + 13 * 16)], y: [key(400, -40 + 13 * 16 - 16 - 9, "linear"), key(4000, -96 + 17 * 16 - 16, "linear")] } } as AnimaticLayer,
     // 팀장은 사무실 바닥 통로(가구 없는 줄)로 걷는다 — 소파를 뚫고 지나갔다(Argon op2).
     { ...walker("lead", "lead", "left", { x: ox + 21 * 16, y: -40 + 6 * 16 - 16 }, { x: ox + 12 * 16, y: -40 + 6 * 16 - 16 }, 3200, 300),
       keys: { x: [key(300, ox + 21 * 16, "linear"), key(3500, ox + 12 * 16, "linear")], y: [key(0, -40 + 6 * 16 - 16, "linear"), key(SHOT_MS, -96 + 6 * 16 - 16, "linear")] } } as AnimaticLayer,
@@ -138,8 +138,8 @@ function rooftopShot(): OpeningAnimatic {
       keys: { x: [key(0, -20), key(SHOT_MS, -60)] } } as AnimaticLayer,
     // 옥상 아랫부분(난간·데크)만 — 하늘 자리는 노을 파노라마가 맡는다. 두 사람은 난간 앞에서 노을을 본다.
     { ...mapBackdrop("rooftop", { x: 0, y: 94 }, { x: 0, y: 84 }), id: "deck" } as AnimaticLayer,
-    { ...standing("seoha", "seoha", "up", { x: 212, y: 116 }), keys: { y: [key(0, 116), key(SHOT_MS, 106)], frame: [{ atMs: 0, value: charsetFrameIndex({ characterIndex: CAST.seoha.index, direction: "up", pattern: 1 }) }] } } as AnimaticLayer,
-    { ...standing("jihu", "jihu", "up", { x: 238, y: 116 }), keys: { y: [key(0, 116), key(SHOT_MS, 106)], frame: [{ atMs: 0, value: charsetFrameIndex({ characterIndex: CAST.jihu.index, direction: "up", pattern: 1 }) }] } } as AnimaticLayer,
+    { ...standing("seoha", "seoha", "up", { x: 262, y: 116 }), keys: { y: [key(0, 116), key(SHOT_MS, 106)], frame: [{ atMs: 0, value: charsetFrameIndex({ characterIndex: CAST.seoha.index, direction: "up", pattern: 1 }) }] } } as AnimaticLayer,
+    { ...standing("jihu", "jihu", "up", { x: 288, y: 116 }), keys: { y: [key(0, 116), key(SHOT_MS, 106)], frame: [{ atMs: 0, value: charsetFrameIndex({ characterIndex: CAST.jihu.index, direction: "up", pattern: 1 }) }] } } as AnimaticLayer,
     { id: "sun", kind: "glow", role: "effect", color: "#ffb36b", blend: "lighter", x: 300, y: 30, width: 180, height: 180, opacity: 0.55,
       glow: { inner: 0.25, pulse: { hz: 0.4, amount: 0.15, pattern: "pulse", seed: 4 } } } as AnimaticLayer,
     petals("petals", 26, 31, { opacity: 0.85 }),
