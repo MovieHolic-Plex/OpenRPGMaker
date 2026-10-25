@@ -239,6 +239,16 @@ export function validateSystem(value: unknown): void {
   if (system.weaknessExtraAction !== undefined) requireBoolean("system.weaknessExtraAction", system.weaknessExtraAction);
   if (system.allowAutoBattle !== undefined) requireBoolean("system.allowAutoBattle", system.allowAutoBattle);
   if (system.clearStatesAfterBattle !== undefined) requireBoolean("system.clearStatesAfterBattle", system.clearStatesAfterBattle);
+  if (system.partyBonds !== undefined) {
+    const partyBonds = requireRecord("system.partyBonds", system.partyBonds);
+    requireOnlyFields("system.partyBonds", partyBonds, ["max", "members"]);
+    if (partyBonds.max !== undefined) requireNumber("system.partyBonds.max", partyBonds.max);
+    for (const [index, raw] of requireArray("system.partyBonds.members", partyBonds.members).entries()) {
+      const member = requireRecord(`system.partyBonds.members[${index}]`, raw);
+      requireString(`system.partyBonds.members[${index}].actorId`, member.actorId);
+      requireString(`system.partyBonds.members[${index}].variableId`, member.variableId);
+    }
+  }
   if (system.saveAccess !== undefined) assert(system.saveAccess === "anywhere" || system.saveAccess === "savePoints", "system.saveAccess 는 anywhere | savePoints");
   if (system.emotionCycle !== undefined) {
     for (const [index, raw] of requireArray("system.emotionCycle", system.emotionCycle).entries()) {

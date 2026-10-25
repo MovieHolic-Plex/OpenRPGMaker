@@ -29,6 +29,7 @@ import { TILESET_REFERENCE_TOOLS, withTilesetReferencePurpose } from "./tilesetR
 
 import { BATTLE_TOOLS } from "./battleTools";
 import { COMBO_TECH_TOOLS } from "./comboTechTools";
+import { PARTY_BOND_TOOLS } from "./partyBondTools";
 import { TROOP_BATTLE_PAGE_TOOLS } from "./troopBattlePageTools";
 import { CLUSTER_RULE_TOOLS } from "./clusterRuleTools";
 import { DB_TOOLS } from "./dbTools";
@@ -402,6 +403,7 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   ...withDomain(STORY_TOOLS, "quest"),
   ...withDomain(BATTLE_TOOLS, "battle"),
   ...withDomain(COMBO_TECH_TOOLS, "battle"),
+  ...withDomain(PARTY_BOND_TOOLS, "event"),
   ...withDomain(TROOP_BATTLE_PAGE_TOOLS, "battle"),
   ...withDomain(REFACTOR_TOOLS, "system"),
   ...withDomain(QUALITY_EVALUATION_TOOLS, "system"),

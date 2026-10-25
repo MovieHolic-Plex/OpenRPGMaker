@@ -9854,6 +9854,65 @@
    ],
    "verify": "author_snow_route(fromMapId 마을, side north, count 2, gapCount 2, moods에 blizzard) / 초록 숲·풀밭 도구(author_forest_route·author_wild_route)로 대신하지 않음 / data.maps[*].gaps 합 2",
    "suiteCategory": "fs2-snow"
+  },
+  {
+   "category": "game",
+   "kind": "logic",
+   "mode": "balanced",
+   "startTileset": "beodeul_city",
+   "startBuild": [
+    {
+     "tool": "author_beodeul_town",
+     "args": {
+      "mapId": "map_blank_start",
+      "name": "버들 마을",
+      "houseCount": 4,
+      "theme": "river",
+      "seed": 11
+     }
+    },
+    {
+     "tool": "upsert_actor",
+     "args": {
+      "actor": {
+       "id": "actor_elena",
+       "name": "엘레나",
+       "classId": "class_hero"
+      }
+     }
+    },
+    {
+     "tool": "upsert_actor",
+     "args": {
+      "actor": {
+       "id": "actor_sera",
+       "name": "새라",
+       "classId": "class_hero"
+      }
+     }
+    },
+    {
+     "tool": "upsert_actor",
+     "args": {
+      "actor": {
+       "id": "actor_iris",
+       "name": "이리스",
+       "classId": "class_hero"
+      }
+     }
+    }
+   ],
+   "id": "fs2-party-bonds",
+   "prompt": "모닥불마다 엘레나·새라·이리스 중 한 명이랑 얘기하게 하고, 세 번 고른 사람이랑은 듀얼 연계기가 열리게 해 줘.",
+   "requires": [
+    "configure_party_bonds",
+    "members 3명(엘레나·새라·이리스) 유대 변수",
+    "unlocks atLeast 3 × 3 (comboTechId)",
+    "upsert_combo_tech 주인공+동료 듀얼 3개, requires 에 그 동료가 시작 때 모르는 기술",
+    "모닥불 조사 지점(campfires) 또는 ce_party_bond_talk 호출"
+   ],
+   "verify": "configure_party_bonds(members 3, unlocks atLeast 3 comboTechId) / system.partyBonds 3명 / ce_party_bond_talk 선택지 3개·고른 사람 +1 / ce_party_bond_check 가 learnSkill 로 연계기 requires 를 채움 / 상태 메뉴 「관계」에 유대 ♥ 3줄 / setVariable·choices 손 저작으로 흉내내지 않음",
+   "suiteCategory": "fs2-bonds"
   }
  ],
  "gates": {
