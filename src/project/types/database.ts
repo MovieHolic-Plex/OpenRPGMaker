@@ -273,6 +273,20 @@ export interface ClassEquipmentPermissions {
   equipmentIds: EquipmentId[];
 }
 
+/** 힘 모으기 끊기 규칙(SkillRecord.chargeBreak). 조건은 「또는」 — 하나만 맞아도 끊긴다. */
+export interface SkillChargeBreak {
+  /** 모으는 동안 받은 HP 피해 누계가 이 값 이상이면 끊긴다. */
+  damage?: number;
+  /** 이 속성(DatabaseElementRecord.id) 기술에 맞으면 끊긴다. */
+  elementIds?: string[];
+  /** 이 상태가 걸리면 끊긴다. */
+  stateIds?: string[];
+  /** 끊겼을 때 시전자의 한 줄(예 「송신 실패」). 생략 = 시스템 문장만. */
+  message?: string;
+  /** 끊긴 뒤 다음 자기 차례 하나를 쉰다(기본 true). */
+  stagger?: boolean;
+}
+
 export interface SkillRecord {
   /** Native turn battle gimmick. Omitted keeps the original skill rules. */
   battleGimmick?: import("@/battle/battleGimmickRules").BattleGimmick;
@@ -422,6 +436,12 @@ export interface SkillRecord {
    * 적이 쓰면 보스 대기술 예고가 된다 — 플레이어가 방어·회복으로 대비할 틈. 아군도 같다. 생략 = 바로 발동.
    */
   chargeTurns?: number;
+  /**
+   * 충전 끊기(chargeTurns 가 있을 때만 의미): 모으는 동안 이 조건 중 하나를 맞으면 모으던 기술이 취소된다.
+   * damage = 모으는 동안 받은 HP 피해 누계 문턱, elementIds = 이 속성 기술에 맞으면, stateIds = 이 상태가 걸리면.
+   * message = 끊겼을 때 시전자가 하는 한 줄(예 「송신 실패」). stagger(기본 true) = 끊긴 뒤 다음 자기 차례 하나를 휘청거려 쉰다.
+   */
+  chargeBreak?: SkillChargeBreak;
   /**
    * 소환(retro2003 연출): 파티원 도트 시트 id("party-pixel-<칩>"). 시전하면 그 몬스터가 시전자 앞에 나타나
    * 대상에게 달려가 첫 착탄에 맞춰 치고 사라진다. 그림만이다 — 위력·타수·상태는 이 레코드 값 그대로. 생략 = 소환 없음.

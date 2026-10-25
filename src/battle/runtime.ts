@@ -478,8 +478,65 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
   // 지금 실행 중인 명령의 번호. 명령이 시작될 때 올리고, 그동안 기록되는 엔트리에 찍는다(연출 묶음의 열쇠).
   let actionCounter = 0;
   let currentActionId: number | undefined;
+  // 힘 모으기 장부(SkillRecord.chargeTurns). recordTimeline 이 충전 끊기(chargeBreak)를 판정하므로 그보다 먼저 선언한다.
+  // damageTaken = 모으는 동안 받은 HP 피해 누계.
+  const pendingCharges = new Map<string, { readonly skillId: SkillId; turnsLeft: number; damageTaken: number; readonly command?: ActorCommand; readonly action?: EnemyActionChoice }>();
+  // 끊긴 힘 모으기의 줄. 타격 엔트리 사이에 끼우면 연출 묶음(같은 actionId)을 깨므로, 다음 명령이 시작되거나 스냅숏을 뜰 때 제 actionId 로 내보낸다.
+  const pendingChargeBreakLines: Omit<BattleTimelineEntrySnapshot, "sequence">[] = [];
+  // 충전이 끊겨 다음 자기 차례 하나를 쉬는 배틀러(SkillChargeBreak.stagger).
+  const chargeStaggeredIds = new Set<string>();
+  function flushChargeBreaks(): void {
+    if (pendingChargeBreakLines.length === 0) return;
+    const resumeActionId = currentActionId;
+    for (const line of pendingChargeBreakLines.splice(0)) {
+      flushHitWakes();
+      actionCounter += 1;
+      currentActionId = actionCounter;
+      recordTimeline(line);
+    }
+    currentActionId = resumeActionId;
+  }
+  /** 충전 끊기(SkillRecord.chargeBreak): 모으는 중인 배틀러가 맞은 피해·속성·상태를 규칙과 견준다. */
+  function noteChargeBreak(entry: Omit<BattleTimelineEntrySnapshot, "sequence">): void {
+    if (!entry.targetId || entry.aside) return;
+    const pending = pendingCharges.get(entry.targetId);
+    if (!pending) return;
+    const rule = lookupSkill(pending.skillId)?.chargeBreak;
+    if (!rule) return;
+    let broken = false;
+    if (entry.kind === "damage" && entry.hit !== false && (entry.resource ?? "hp") === "hp") {
+      pending.damageTaken += Math.max(0, entry.amount ?? 0);
+      if (rule.damage && rule.damage > 0 && pending.damageTaken >= rule.damage) broken = true;
+      const elementId = entry.skillId ? lookupSkill(entry.skillId)?.elementId : undefined;
+      if (elementId && rule.elementIds?.includes(elementId)) broken = true;
+    } else if (entry.kind === "stateAdded" && entry.stateId && rule.stateIds?.includes(entry.stateId)) {
+      broken = true;
+    }
+    if (!broken) return;
+    pendingCharges.delete(entry.targetId);
+    const battler = [...actors, ...enemies].find((row) => row.id === entry.targetId);
+    if (!battler) return;
+    // 휘청거림은 적만 — 아군은 명령을 고른 뒤에 차례를 빼앗으면 고른 명령이 말없이 사라진다.
+    if (rule.stagger !== false && battlerSide(battler) === "enemy") chargeStaggeredIds.add(battler.id);
+    const skillName = lookupSkill(pending.skillId)?.name ?? "기술";
+    const line = rule.message?.trim();
+    pendingChargeBreakLines.push({
+      kind: "special", side: battlerSide(battler), userRecordId: battler.recordId, targetId: battler.id,
+      charge: true, chargeBroken: true, chargeSkillId: pending.skillId,
+      message: `${withJosa(battler.name, "이/가")} 모으던 ${withJosa(skillName, "이/가")} 끊겼다!`,
+      ...(line ? { chargeBreakLine: line } : {}),
+    });
+  }
+  /** 충전이 끊겨 휘청거리는 차례면 그 줄을 남기고 true(차례를 쓴다). */
+  function consumeChargeStagger(battler: MutableBattler): boolean {
+    if (!chargeStaggeredIds.delete(battler.id)) return false;
+    beginTimelineAction();
+    recordTimeline({ kind: "special", side: battlerSide(battler), userRecordId: battler.recordId, targetId: battler.id, charge: true, message: `${withJosa(battler.name, "은/는")} 힘이 끊겨 휘청거린다!` });
+    return true;
+  }
   function beginTimelineAction(): void {
     flushHitWakes();
+    flushChargeBreaks();
     actionCounter += 1;
     currentActionId = actionCounter;
   }
@@ -497,6 +554,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     if (!strikesWoken) flushHitWakes();
     timeline.push({ ...stamped, sequence: timeline.length });
     if (strikesWoken) flushHitWakes();
+    noteChargeBreak(stamped);
   }
   /** 방금 기록된 타임라인 엔트리에 애니메이션을 붙인다. 스킬/아이템 실행부가
    *  recordAction 직후 lastAnimation 을 세팅하므로, 그 시점에 호출해 엔트리와 짝을 맞춘다. */
@@ -2354,6 +2412,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
 
   function finishStrictRoundLog(round: number): void {
     flushHitWakes();
+    flushChargeBreaks();
     roundLogs.push({
       round,
       actions: [...strictCurrentRoundActions],
@@ -2408,6 +2467,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
 
   function snapshot(): BattleSnapshot {
     flushHitWakes();
+    flushChargeBreaks();
     const enemiesInBattle = visibleEnemies();
     const nextReady = battleFlow === "gauge" && phase === "charging" && !result
       ? nextReadyBattler(chargingActors(), enemiesInBattle, Infinity, skinHasteMultiplier,
@@ -2523,7 +2583,6 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
   // ── 힘 모으기(SkillRecord.chargeTurns, 2026-10-01) ──
   // 쓰겠다고 정한 차례에는 예고만 남기고, 자기 차례가 chargeTurns 번 더 오면 그때 발동한다. 적·아군 같은 규칙이고
   // gauge·strict 흐름 모두 「자기 차례」를 센다. 반격(drainCounters)처럼 차례 밖에서 쓰는 기술은 모으지 않는다.
-  const pendingCharges = new Map<string, { readonly skillId: SkillId; turnsLeft: number; readonly command?: ActorCommand; readonly action?: EnemyActionChoice }>();
 
   function chargeTurnsOf(skillId: SkillId | undefined): number {
     if (gen1 || !skillId) return 0;
@@ -2537,6 +2596,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     // skillId 를 싣지 않는다 — 실으면 연출 재생기가 이 줄을 기술 시전으로 보고 시전자 위에 착탄 연출을 튼다(녹화 실측).
     recordTimeline({
       kind: "special", side: battlerSide(battler), userRecordId: battler.recordId, targetId: battler.id, charge: true,
+      ...(first ? { chargeStart: true as const, chargeSkillId: skillId } : {}),
       message: first
         ? `${withJosa(battler.name, "이/가")} ${withJosa(name, "을/를")} 준비한다! (${turnsLeft}턴 뒤)`
         : `${withJosa(battler.name, "이/가")} 힘을 모으고 있다… (${name}까지 ${turnsLeft}턴)`,
@@ -2564,7 +2624,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     if (command.kind === "skill") {
       const turns = chargeTurnsOf(command.skillId);
       if (turns > 0) {
-        pendingCharges.set(actor.id, { skillId: command.skillId, turnsLeft: turns, command });
+        pendingCharges.set(actor.id, { skillId: command.skillId, turnsLeft: turns, damageTaken: 0, command });
         recordCharging(actor, command.skillId, turns, true);
         return undefined;
       }
@@ -2574,6 +2634,10 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
 
   /** 적의 자기 차례 행동(gauge·strict). 힘 모으기를 거친 뒤 executeEnemyAction 으로 넘긴다. */
   function executeEnemyTurnAction(enemy: MutableBattler, action: EnemyActionChoice | undefined): void {
+    if (consumeChargeStagger(enemy)) {
+      weakness.standUp(enemy.id);
+      return;
+    }
     const pending = pendingCharges.get(enemy.id);
     if (pending?.action) {
       pending.turnsLeft -= 1;
@@ -2589,7 +2653,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     const turns = chargeTurnsOf(action?.skillId);
     if (action?.skillId && turns > 0) {
       weakness.standUp(enemy.id);
-      pendingCharges.set(enemy.id, { skillId: action.skillId, turnsLeft: turns, action });
+      pendingCharges.set(enemy.id, { skillId: action.skillId, turnsLeft: turns, damageTaken: 0, action });
       recordCharging(enemy, action.skillId, turns, true);
       return;
     }
@@ -2598,7 +2662,10 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
 
   /** 쓰러진 배틀러는 모으던 힘을 잃는다(부활해도 이어지지 않는다). */
   function dropDefeatedCharges(): void {
-    for (const battler of [...actors, ...enemies]) if (battler.hp <= 0) pendingCharges.delete(battler.id);
+    for (const battler of [...actors, ...enemies]) if (battler.hp <= 0) {
+      pendingCharges.delete(battler.id);
+      chargeStaggeredIds.delete(battler.id);
+    }
   }
 
   /** 스냅숏에 힘 모으기·변신을 싣는다(배틀러 자체 필드가 아니라 런타임 장부·상태에서 온다). */

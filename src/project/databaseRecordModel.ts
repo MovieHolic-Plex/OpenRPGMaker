@@ -1,4 +1,4 @@
-import { normalizeFixedDamage, normalizeMultiHit } from "@/project/skillBattleRules";
+import { normalizeChargeBreak, normalizeFixedDamage, normalizeMultiHit } from "@/project/skillBattleRules";
 import { normalizeShinyRate } from "@/project/monsterIdentity";
 import { CHARACTER_MOTION_STYLES } from "@/battle/characterMotion";
 import { normalizeHeldItemEffect } from "@/battle/heldItems";
@@ -804,6 +804,7 @@ export function normalizeSkillRecord(record: Partial<SkillRecord> & Pick<SkillRe
     ...(Number.isFinite(record.flinchChance) && record.flinchChance! > 0 ? { flinchChance: clampInteger(record.flinchChance!, 0, 100) } : {}),
     ...(Number.isFinite(record.gaugeShift) && record.gaugeShift !== 0 ? { gaugeShift: clampInteger(record.gaugeShift!, -100, 100) } : {}),
     ...(Number.isFinite(record.chargeTurns) && record.chargeTurns! > 0 ? { chargeTurns: clampInteger(record.chargeTurns!, 1, 3) } : {}),
+    ...(Number.isFinite(record.chargeTurns) && record.chargeTurns! > 0 && normalizeChargeBreak(record.chargeBreak) ? { chargeBreak: normalizeChargeBreak(record.chargeBreak) } : {}),
     ...(typeof record.summonResourceId === "string" && record.summonResourceId.trim() ? { summonResourceId: record.summonResourceId.trim().slice(0, 96) } : {}),
     ...(typeof record.retroChoreographyId === "string" && record.retroChoreographyId.trim() ? { retroChoreographyId: record.retroChoreographyId.trim().slice(0, 96) } : {}),
     ...(isPokemonMoveMotion(record.moveMotion) ? { moveMotion: record.moveMotion } : {}),

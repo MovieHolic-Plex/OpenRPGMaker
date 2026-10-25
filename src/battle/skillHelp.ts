@@ -90,6 +90,7 @@ export function skillHelpTags(project: Project, skill: SkillRecord): string[] {
   if (skill.recoilPercent) tags.push(`반동 ${skill.recoilPercent}%`);
   if (skill.hpCostPercent) tags.push(`HP 대가 ${skill.hpCostPercent}%`);
   if (skill.chargeTurns) tags.push(`${skill.chargeTurns}차례 모음`);
+  if (skill.chargeTurns && skill.chargeBreak) tags.push(skill.chargeBreak.damage ? `${skill.chargeBreak.damage} 피해로 끊김` : "끊을 수 있음");
   if (skill.gaugeShift) tags.push(skill.gaugeShift < 0 ? "행동 지연" : "행동 앞당김");
   if (skill.flinchChance) tags.push(`풀죽음 ${skill.flinchChance}%`);
   if (skill.weaponAffinity) {

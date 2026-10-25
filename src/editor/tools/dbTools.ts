@@ -942,6 +942,16 @@ const skillRecordSchema = objectSchema({
   chargeTurns: integerSchema(
     "힘 모으기 1~3(0=바로 발동). 고른 차례엔 「…을 준비한다!」 예고만 하고 자기 차례가 N 번 더 오면 발동한다. 적이 쓰면 보스 대기술 예고. 한 차례를 버리므로 위력을 1.6~1.8배로",
   ),
+  chargeBreak: objectSchema(
+    {
+      damage: integerSchema("모으는 동안 받은 HP 피해 누계가 이 값 이상이면 끊긴다(예 300)"),
+      elementIds: stringArraySchema("이 속성 id 기술에 맞으면 끊긴다(database.elements id, 1~8)"),
+      stateIds: stringArraySchema("이 상태가 걸리면 끊긴다(상태 id 1~8, 예 기절·침묵)"),
+      message: stringSchema("끊겼을 때 시전자가 하는 한 줄(예 「송신 실패」). 생략 = 「…이 끊겼다!」 시스템 문장만"),
+      stagger: booleanSchema("끊긴 뒤 다음 자기 차례 하나를 휘청거려 쉰다(적만, 기본 true). false = 바로 다시 행동"),
+    },
+    "충전 끊기(chargeTurns 가 있을 때만): 모으는 동안 damage 이상 맞거나 elementIds 속성·stateIds 상태를 맞으면 모으던 기술이 취소된다(조건은 「또는」). 모으는 중엔 머리 위 「기술 · 남은 차례」 표식, 끊기면 「끊김!」 글자 + 시스템 문장 + message. simulate_battle 의 chargeBreaks 로 끊긴 횟수를 확인한다. 해제 = null",
+  ),
   summonResourceId: stringSchema(
     '소환 그림(retro2003 도트 연출): 파티원 도트 시트 id "party-pixel-<칩>"(예 party-pixel-monster2-4 흙 골렘, party-pixel-monster3-6 업화, party-pixel-animal-7 사자). 시전하면 그 몬스터가 시전자 앞에 나타나 대상에게 달려가 첫 타에 맞춰 친다. 그림만 — 위력·타수·상태는 이 스킬 값. 시전자 motion 은 cast 가 어울린다. 빈 문자열이면 해제',
   ),
@@ -1593,6 +1603,30 @@ function validateSkillTechPatch(draft: Project, patch: unknown): void {
     const missing = (exploit.stateIds as unknown[]).filter((id) => typeof id !== "string" || !draft.database.states.some((state) => state.id === id));
     if (missing.length > 0) {
       throw new ToolError(`exploitStates.stateIds 에 없는 상태: ${missing.map(String).join(", ")} — 허용 예시: ${knownIds(draft.database.states)}`, { code: "state-not-found" });
+    }
+  }
+  if (record.chargeBreak !== undefined && record.chargeBreak !== null) {
+    const rule = record.chargeBreak as Record<string, unknown>;
+    const allowed = ["damage", "elementIds", "stateIds", "message", "stagger"];
+    const unknownKeys = rule && typeof rule === "object" && !Array.isArray(rule) ? Object.keys(rule).filter((key) => !allowed.includes(key)) : ["(객체 아님)"];
+    const hasCondition = unknownKeys.length === 0 && ((typeof rule.damage === "number" && rule.damage >= 1)
+      || (Array.isArray(rule.elementIds) && rule.elementIds.length > 0) || (Array.isArray(rule.stateIds) && rule.stateIds.length > 0));
+    if (!hasCondition) {
+      throw new ToolError(`skill.chargeBreak 는 {damage?:1 이상, elementIds?:[속성 id], stateIds?:[상태 id], message?, stagger?} 이고 조건(damage·elementIds·stateIds) 하나 이상이 필요합니다${unknownKeys.length ? `(모르는 키: ${unknownKeys.join(", ")})` : ""}. 예: {damage:300, message:"송신 실패"}`, { code: "invalid-charge-break" });
+    }
+    const chargeTurns = typeof record.chargeTurns === "number" ? record.chargeTurns
+      : typeof record.id === "string" ? draft.database.skills.find((skill) => skill.id === record.id)?.chargeTurns : undefined;
+    if (!chargeTurns || chargeTurns < 1) {
+      throw new ToolError("skill.chargeBreak 는 힘 모으기 기술에만 붙습니다 — chargeTurns(1~3)를 같이 주세요. 예: {chargeTurns:3, chargeBreak:{damage:300}}", { code: "invalid-charge-break" });
+    }
+    const missingStates = (Array.isArray(rule.stateIds) ? rule.stateIds : []).filter((id) => typeof id !== "string" || !draft.database.states.some((state) => state.id === id));
+    if (missingStates.length > 0) {
+      throw new ToolError(`chargeBreak.stateIds 에 없는 상태: ${missingStates.map(String).join(", ")} — 허용 예시: ${knownIds(draft.database.states)}`, { code: "state-not-found" });
+    }
+    const elements = draft.database.elements ?? [];
+    const missingElements = (Array.isArray(rule.elementIds) ? rule.elementIds : []).filter((id) => typeof id !== "string" || !elements.some((element) => element.id === id));
+    if (missingElements.length > 0) {
+      throw new ToolError(`chargeBreak.elementIds 에 없는 속성: ${missingElements.map(String).join(", ")} — 있는 속성: ${elements.map((element) => element.id).slice(0, 12).join(", ") || "없음"}`, { code: "element-not-found" });
     }
   }
   if (typeof record.comboSwitchId === "string" && record.comboSwitchId.trim()) {
