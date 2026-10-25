@@ -9913,6 +9913,22 @@
    ],
    "verify": "configure_party_bonds(members 3, unlocks atLeast 3 comboTechId) / system.partyBonds 3명 / ce_party_bond_talk 선택지 3개·고른 사람 +1 / ce_party_bond_check 가 learnSkill 로 연계기 requires 를 채움 / 상태 메뉴 「관계」에 유대 ♥ 3줄 / setVariable·choices 손 저작으로 흉내내지 않음",
    "suiteCategory": "fs2-bonds"
+  },
+  {
+   "category": "game",
+   "kind": "logic",
+   "mode": "balanced",
+   "startTileset": "beodeul_city",
+   "id": "fs2-burned",
+   "prompt": "새벽샘 마을 하나 지어서 서른 해 전에 불탄 모습으로 바꿔 줘. 북쪽 끝 집 한 채만 안 무너지게.",
+   "requires": [
+    "author_beodeul_town 으로 새벽샘 마을",
+    "derive_map_variant look burned",
+    "keepIntact north",
+    "집 자리·길 유지(신전 폐허 조각 아님)"
+   ],
+   "verify": "author_beodeul_town 으로 지은 마을을 sourceMapId 로 derive_map_variant(variants:[{look:\"burned\", keepIntact:\"north\"}]) / 결과 look.keptIntact 가 가장 북쪽 집, demolishedBuildings ≥ 1 / 변형 맵 그림에 잿빛 집터·숯 기둥이 집 자리마다, 길은 원본 그대로 / look:\"ruin\" 으로 대신하지 않음",
+   "suiteCategory": "fs-burned"
   }
  ],
  "gates": {

@@ -58,7 +58,7 @@ const ROLE_NPC: Record<Role, { readonly name: string; readonly query: string }> 
   shop: { name: "무기점 주인", query: "중년 남성 주민" },
   elder: { name: "장로", query: "대머리 남성 주민" },
 };
-const DUNGEON_BY_LOOK: Record<VariantLook | "none", string> = { none: "cave", past: "temple", ruin: "catacomb", future: "castle" };
+const DUNGEON_BY_LOOK: Record<VariantLook | "none", string> = { none: "cave", past: "temple", ruin: "catacomb", future: "castle", burned: "cave" };
 
 const key = (c: Cell): string => `${c.x},${c.y}`;
 const inside = (map: GameMap, c: Cell): boolean => c.x >= 0 && c.y >= 0 && c.x < map.width && c.y < map.height;
@@ -260,7 +260,7 @@ const expandJrpgCampaignVolume: ToolDefinition = {
       dungeon: { type: "boolean", description: "가도 끝 던전(기본 true)" },
       dungeonName: { type: "string" },
       dungeonType: { type: "string", description: "author_dungeon type(기본 look 별 cave/temple/catacomb/castle)" },
-      look: { type: "string", enum: [...VARIANT_LOOKS], description: "가도·던전 시대 모습(ruin=붕괴 후·폐허, past=고대, future=미래)" },
+      look: { type: "string", enum: [...VARIANT_LOOKS], description: "가도·던전 시대 모습(ruin=붕괴 후·폐허, past=고대, future=미래, burned=불탄 마을 — 가도엔 조명만)" },
       troops: {
         type: "object",
         properties: { field: { type: "array", items: { type: "string" } }, midBoss: { type: "string" }, boss: { type: "string" } },
