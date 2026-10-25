@@ -48,6 +48,8 @@ export interface OprnStoreBridge {
   catalog(input: { q?: string; kind?: string; grade?: "" | "single" | "pack"; sort?: "" | "new" | "popular"; page?: number; lang?: StoreLocale }): Promise<StoreCatalogPage>;
   item(input: { slug: string; lang?: StoreLocale }): Promise<StoreItemDetail>;
   blob(input: { sha256: string }): Promise<Uint8Array>;
+  /** 판본 매니페스트만 받는다(팩 전체를 받지 않음). 옛 데스크톱 앱에는 없다. */
+  manifest?(input: { slug: string; version: number }): Promise<StorePackManifest>;
   installed(): Promise<InstalledStoreItem[]>;
   install(input: { slug: string; version?: number }): Promise<InstalledStoreItem>;
   uninstall(input: { slug: string }): Promise<boolean>;

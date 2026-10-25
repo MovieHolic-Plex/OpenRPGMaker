@@ -78,6 +78,7 @@ export const OPRN_CHANNELS = {
   storeCatalog: "oprn:store.catalog",
   storeItem: "oprn:store.item",
   storeBlob: "oprn:store.blob",
+  storeManifest: "oprn:store.manifest",
   storeInstalled: "oprn:store.installed",
   storeInstall: "oprn:store.install",
   storeUninstall: "oprn:store.uninstall",
