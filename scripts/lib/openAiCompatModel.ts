@@ -133,12 +133,146 @@ export function guardedOpenAiCompatFetch(base: typeof fetch = fetch): typeof fet
         if (error && typeof error === "object" && "status" in error) throw error;
       }
     }
-    const response = await base(input as never, { ...init, redirect: "manual" });
-    if (response.status >= 300 && response.status < 400) {
-      throw Object.assign(new Error(`서버가 다른 주소로 넘기려 해요(${response.status}). 보안상 따라가지 않아요. 최종 주소를 기본 주소로 넣으세요.`), { status: 502 });
+    const send = async (body: RequestInit["body"] | undefined): Promise<Response> => {
+      const response = await base((typeof input === "string" || input instanceof URL ? input : raw) as never, { ...init, ...(body !== undefined ? { body } : {}), redirect: "manual" });
+      if (response.status >= 300 && response.status < 400) {
+        throw Object.assign(new Error(`서버가 다른 주소로 넘기려 해요(${response.status}). 보안상 따라가지 않아요. 최종 주소를 기본 주소로 넣으세요.`), { status: 502 });
+      }
+      return response;
+    };
+    const response = await send(undefined);
+    if (!isChatCompletionsCall(raw, init)) return response;
+    // 빈 답 지키기. CLIProxyAPI(mdc-server:8318)는 이미지가 든 요청에 200 + 빈 내용(content:null, 도구 호출 없음, stop)을 돌려준다
+    // (2026-10-25 실측, /v1/chat/completions·/v1/messages 둘 다). 그대로 넘기면 조수는 아무 말 없이 턴을 끝낸다.
+    // 이미지가 있었으면 이미지 자리를 「못 봤다」는 글로 바꿔 한 번 더 보내고, 그래도 비면 사람 말 오류로 바꾼다.
+    const first = await inspectChatReply(response);
+    if (!first.empty) return first.response;
+    const stripped = typeof init?.body === "string" ? stripImageParts(init.body) : null;
+    if (stripped !== null) {
+      const retry = await send(stripped);
+      if (!retry.ok) return retry;
+      const second = await inspectChatReply(retry);
+      if (!second.empty) return second.response;
     }
-    return response;
+    return emptyReplyResponse(stripped !== null);
   }) as typeof fetch;
+}
+
+// ── 빈 답 지키기 ──────────────────────────────────────────────────────────────
+
+/** 서버가 이미지를 받지 못해 빼고 다시 보냈다는 표시. 모델이 그림을 본 척하지 않도록 이미지 자리에 남긴다. */
+export const OPENAI_COMPAT_IMAGE_OMITTED_NOTE = "[이미지 생략: 이 서버가 이미지가 든 요청에 빈 답을 돌려줘서 이미지 없이 다시 보냈어요. 이 그림은 보지 못했어요.]";
+
+function isChatCompletionsCall(url: string, init: RequestInit | undefined): boolean {
+  return (init?.method ?? "GET").toUpperCase() === "POST" && /\/chat\/completions(?:\?|$)/u.test(url);
+}
+
+/** 요청 본문(JSON 문자열)의 image_url 조각을 글 조각으로 바꾼다. 이미지가 없거나 JSON 이 아니면 null. */
+export function stripImageParts(body: string): string | null {
+  if (!body.includes("image_url")) return null;
+  let parsed: { messages?: unknown };
+  try { parsed = JSON.parse(body) as { messages?: unknown }; } catch { return null; }
+  if (!Array.isArray(parsed.messages)) return null;
+  let changed = false;
+  const messages = parsed.messages.map((message) => {
+    const content = (message as { content?: unknown })?.content;
+    if (!Array.isArray(content)) return message;
+    let replaced = false;
+    const next = content.flatMap((part) => {
+      if ((part as { type?: unknown })?.type !== "image_url") return [part];
+      changed = true;
+      // 이미지 여러 장이 연달아 있으면 표시는 한 번만 남긴다.
+      if (replaced) return [];
+      replaced = true;
+      return [{ type: "text", text: OPENAI_COMPAT_IMAGE_OMITTED_NOTE }];
+    });
+    return { ...(message as object), content: next };
+  });
+  return changed ? JSON.stringify({ ...parsed, messages }) : null;
+}
+
+type ChatChoice = { delta?: Record<string, unknown>; message?: Record<string, unknown> };
+
+/** 모델이 무언가를 돌려준 조각인가 — 글·도구 호출·생각(추론)·오류. 역할만 있는 첫 조각과 usage 조각은 아니다. */
+function chunkHasSubstance(payload: unknown): boolean {
+  if (!payload || typeof payload !== "object") return false;
+  if ("error" in payload) return true;
+  const choices = (payload as { choices?: unknown }).choices;
+  if (!Array.isArray(choices)) return false;
+  return choices.some((choice: ChatChoice) => {
+    const part = choice?.delta ?? choice?.message;
+    if (!part || typeof part !== "object") return false;
+    const nonEmpty = (value: unknown) => (typeof value === "string" && value.length > 0) || (Array.isArray(value) && value.length > 0);
+    return nonEmpty(part.content) || nonEmpty(part.tool_calls) || nonEmpty(part.function_call ? [part.function_call] : undefined)
+      || nonEmpty(part.reasoning_content) || nonEmpty(part.reasoning) || nonEmpty(part.reasoning_details) || nonEmpty(part.refusal);
+  });
+}
+
+function concatBytes(chunks: readonly Uint8Array[]): Uint8Array<ArrayBuffer> {
+  const out = new Uint8Array(new ArrayBuffer(chunks.reduce((sum, chunk) => sum + chunk.byteLength, 0)));
+  let offset = 0;
+  for (const chunk of chunks) { out.set(chunk, offset); offset += chunk.byteLength; }
+  return out;
+}
+
+/**
+ * 응답이 빈 답인지 본다. 스트림(SSE)은 내용이 담긴 첫 조각이 올 때까지만 모아 두었다가, 오면 모은 것부터 그대로 흘려보낸다
+ * (스트림 전체를 붙잡지 않는다). 내용 없이 끝나면 empty. 200 이 아니거나 본문이 없으면 건드리지 않는다.
+ */
+export async function inspectChatReply(response: Response): Promise<{ empty: boolean; response: Response }> {
+  if (!response.ok || !response.body) return { empty: false, response };
+  const init = { status: response.status, statusText: response.statusText, headers: response.headers };
+  const isStream = (response.headers.get("content-type") ?? "").includes("text/event-stream");
+  const reader = response.body.getReader();
+  const decoder = new TextDecoder();
+  const held: Uint8Array[] = [];
+  let pending = "";
+  let substance = false;
+  let finished = false;
+  while (!substance) {
+    const { value, done } = await reader.read();
+    if (done) { finished = true; break; }
+    held.push(value);
+    if (!isStream) continue; // JSON 본문은 끝까지 모아 한 번에 본다
+    pending += decoder.decode(value, { stream: true });
+    const lines = pending.split(/\r?\n/u);
+    pending = lines.pop() ?? "";
+    for (const line of lines) {
+      const data = line.startsWith("data:") ? line.slice(5).trim() : "";
+      if (!data || data === "[DONE]") continue;
+      try { if (chunkHasSubstance(JSON.parse(data))) { substance = true; break; } } catch { substance = true; break; } // 모르는 형식은 그대로 넘긴다
+    }
+  }
+  if (!isStream && finished) {
+    const bytes = concatBytes(held);
+    try { substance = chunkHasSubstance(JSON.parse(new TextDecoder().decode(bytes))); } catch { substance = true; }
+    return { empty: !substance, response: new Response(bytes, init) };
+  }
+  if (finished) {
+    if (!substance && pending.trim()) {
+      const data = pending.startsWith("data:") ? pending.slice(5).trim() : "";
+      try { substance = Boolean(data && data !== "[DONE]" && chunkHasSubstance(JSON.parse(data))); } catch { substance = true; }
+    }
+    return { empty: !substance, response: new Response(concatBytes(held), init) };
+  }
+  // 내용이 왔다 — 모아 둔 조각을 먼저 내보내고 나머지는 원래 스트림에서 그대로 잇는다.
+  const stream = new ReadableStream<Uint8Array>({
+    start(controller) { for (const chunk of held) controller.enqueue(chunk); },
+    async pull(controller) {
+      try {
+        const { value, done } = await reader.read();
+        if (done) controller.close(); else controller.enqueue(value);
+      } catch (error) { controller.error(error); }
+    },
+    cancel(reason) { return reader.cancel(reason); },
+  });
+  return { empty: false, response: new Response(stream, init) };
+}
+
+/** 빈 답을 사람 말 오류로. 422 — 5xx 처럼 SDK 가 같은 요청을 자동 재시도하지 않게 한다. 「empty reply」 는 explainOpenAiCompatError 의 표지다. */
+function emptyReplyResponse(retriedWithoutImages: boolean): Response {
+  const message = `empty reply: 서버가 빈 답을 돌려줬어요(글·도구 호출 없음)${retriedWithoutImages ? ". 이미지를 빼고 다시 보내도 빈 답이었어요" : ""}.`;
+  return new Response(JSON.stringify({ error: { message, type: "empty_reply" } }), { status: 422, headers: { "content-type": "application/json" } });
 }
 
 /** 실행 오류 원문을 「무엇을 고치면 되는지」 로 바꾼다(원문은 뒤에 남는다). 사용자 지정 제공자가 아니면 그대로. */
