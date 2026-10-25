@@ -33,7 +33,7 @@ import { isForcedWelcomeRehearsal } from "@/editor/automationBootContext";
 import { isBlankStartProject } from "@/project/projectBlankness";
 import { hasElectronBridge, openFolderHeldByMainProcess, type ElectronRepository } from "@/project/persistence/electronRepository";
 import { projectRepository } from "@/project/persistence/repository";
-import { dismissBootLoader, reportBootStage } from "@/app/bootLoader";
+import { revealShellEarly, dismissBootLoader, reportBootStage } from "@/app/bootLoader";
 import { bootMark } from "@/util/bootMarks";
 import { rememberBootBrief } from "@/app/bootBrief";
 import { getAiConnectionStatus } from "@/editor/panels/aiConnectionStatus";
@@ -249,7 +249,10 @@ async function finishEditorBoot(startedAt: number): Promise<void> {
   }
 
   await renderTopbar();
+  // 브리핑이 첫 화면을 맡을 때는 웰컴이 덮을 때까지 로더를 남긴다(아래) — 그 밖에는 셸 DOM 이 붙는 즉시 보인다.
+  afterFirstShellDom = !playAtBoot && (!showBriefing || !elements) ? revealShellEarly : null;
   await enterMode(playAtBoot ? "play" : "edit");
+  afterFirstShellDom = null;
   bootMark("shell-mounted");
   // 편집기 셸이 그려졌다 — index.html 의 첫 로드 로더를 걷는다. 브리핑이 뜰 때는 웰컴이 마운트된
   // 직후까지 로더를 남겨 편집기가 한순간도 맨몸으로 보이지 않게 한다(아래 openConceptFeedOverlay 직후).
@@ -538,6 +541,9 @@ function renderLoadFailureScreen(_error: unknown): void {
 }
 
 // 모드 진입. 이전 모드 정리 후 새 모드 부팅.
+/** 첫 부팅에서 편집기 셸 DOM 이 붙은 직전에 한 번 부를 것(finishEditorBoot 가 건다). */
+let afterFirstShellDom: (() => void) | null = null;
+
 export async function enterMode(mode: Mode): Promise<void> {
   const run = ++modeRun;
   if (mode === currentMode && modeMounted && elements?.main.firstChild) return;
@@ -570,6 +576,10 @@ export async function enterMode(mode: Mode): Promise<void> {
     const { renderEditor } = await import("@/editor/panels/editor");
     if (run !== modeRun) return;
     renderEditor(elements.main);
+    // 첫 부팅: 셸 DOM 이 붙었다 — 맵 판(Phaser 기동·텍스처)을 기다리지 않고 셸을 먼저 보인다(finishEditorBoot 가 건다).
+    const reveal = afterFirstShellDom;
+    afterFirstShellDom = null;
+    reveal?.();
   } else {
     const [{ renderPlayer }] = await Promise.all([import("@/player/player"), preloadRuntimeStyles()]);
     if (run !== modeRun) return;
