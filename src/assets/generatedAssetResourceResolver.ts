@@ -5,7 +5,7 @@ import { PARTY_PIXEL_SHEETS } from "./partyPixelSheets";
 import { BATTLE_SCENERY_CATALOG } from "./battleSceneryCatalog";
 import { RETRO_PIXEL_FX_URLS } from "./retroPixelAnimations";
 import { EMERALD_OPENING_BACKDROP_URLS } from "./emeraldOpeningBackdrops";
-import { ASTRA_CAST_URLS } from "./astraCast";
+import { ASTRA_CAST_URLS, ASTRA_TITLE_ART_URLS } from "./astraCast";
 import { FALLEN_STAR_BACKDROP_URLS } from "./fallenStarOpeningBackdrops";
 import { FIRST_LOVE_OPENING_BACKDROP_URLS } from "./firstLoveOpeningBackdrops";
 import { uploadedAssetUrl } from "@/project/persistence/assetAccessors";
@@ -59,6 +59,7 @@ const BUILTIN_GENERATED_RESOURCE_URLS: Record<string, string | null> = {
   ...EMERALD_OPENING_BACKDROP_URLS,
   // 아스트라 호라이즌 등장인물 흉상·전신(char-gen, 감독 선택, 원래 도트 크기).
   ...ASTRA_CAST_URLS,
+  ...ASTRA_TITLE_ART_URLS,
   // 『폴른 스타』 오프닝·타이틀 배경(게임 맵을 1:1 로 구운 그림).
   ...FALLEN_STAR_BACKDROP_URLS,
   // 『첫사랑』 오프닝 몽타주 배경(게임 맵을 1:1 로 구운 그림).
