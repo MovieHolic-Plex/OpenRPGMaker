@@ -38,6 +38,12 @@ jobs:
           node-version: 24
           cache: npm
 
+      # 일부 테스트(spatialPlaceCli·npcGoldReward·assistantAcceptanceProvider)가 bun 으로 CLI 를 띄운다.
+      # 러너에 bun 이 없어 「spawnSync bun ENOENT」로 실패했다(ci-full 40165485978).
+      #    저장소 정책이 GitHub 소유 액션만 허용하므로(oven-sh/setup-bun 은 startup_failure) npm 패키지로 깐다.
+      - name: bun 설치
+        run: npm install -g bun@1.4.2 && bun --version
+
       - run: npm ci
 
       - name: vitest (지정 파일만)

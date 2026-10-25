@@ -18,6 +18,8 @@ describe("pack catalog", () => {
     expect(lookupPackCatalog("other", [entry])).toBeNull();
   });
 });
+
+describe("asset page allowlist", () => {
   it("allows itch pages and their file host", () => {
     expect(assetPageUrl("https://guttykreum.itch.io/free-japanese-city-game-assets")?.hostname).toBe("guttykreum.itch.io");
     expect(assetPageUrl("https://img.itch.zone/a/original.png")?.hostname).toBe("img.itch.zone");

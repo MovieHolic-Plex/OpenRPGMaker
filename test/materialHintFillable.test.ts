@@ -28,7 +28,6 @@ describe("면 채우기 재료 힌트", () => {
     expect(result.summary).toContain("채울 수 있는 재료");
     expect(result.summary).toMatch(/"물"|"모래"|"흙길"/u);
   });
-  });
 
   // qa-game mystery-3: 벽 재료로 fill_region 을 같은 인자로 11번 재시도했다 — 어느 도구로 갈지 알려 준다.
   it("벽 재료는 build_wall·place_concept 로, 가구는 place_props 로 보낸다", () => {

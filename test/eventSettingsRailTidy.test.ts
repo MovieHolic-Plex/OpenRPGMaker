@@ -51,7 +51,7 @@ describe("이벤트 설정 레일 정돈", () => {
   };
   const flush = () => new Promise<void>((resolve) => queueMicrotask(() => resolve()));
   const header = (slug: string) =>
-    host.querySelector<HTMLButtonElement>(\`[data-rail-group="\${slug}"] > .event-editor-settings-accordion-header\`)!;
+    host.querySelector<HTMLButtonElement>(`[data-rail-group="${slug}"] > .event-editor-settings-accordion-header`)!;
   const modal = () => document.querySelector<HTMLElement>("[data-testid='event-condition-modal']");
 
   beforeEach(() => {
