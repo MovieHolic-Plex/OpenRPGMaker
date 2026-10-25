@@ -926,6 +926,18 @@ function page3M2SummaryParts(
         valuePart(`${str("durationMs") || "1200"}ms`)
       );
     }
+    case "Lift Ride": {
+      const mode = str("mode") || "depart";
+      const modeLabel = mode === "arrive" ? "도착" : mode === "move" ? "층 이동" : "떠나기";
+      return commandLine(
+        labelOf("승강 장치"),
+        valuePart(modeLabel),
+        plainPart(" · "),
+        valuePart(`${str("direction") === "down" ? "아래로" : "위로"} ${str("distance") || "4"}칸`),
+        plainPart(" · "),
+        valuePart(`${str("durationMs") || "2600"}ms`)
+      );
+    }
     case "Sprite Look": {
       const parts: string[] = [];
       if (str("reset") === "true") parts.push("원래 모습");

@@ -69,6 +69,8 @@ export function normalizeEventPage(page: Pick<EventPage, "id"> & Partial<EventPa
       ...(movement?.pathfind !== undefined ? { pathfind: movement.pathfind } : {}),
       ...(movement?.moveIntervalMs !== undefined ? { moveIntervalMs: movement.moveIntervalMs } : {}),
       ...(movement?.sightAlert ? { sightAlert: movement.sightAlert } : {}),
+      ...(movement?.chaseLunge ? { chaseLunge: movement.chaseLunge } : {}),
+      ...(movement?.approachStyle ? { approachStyle: movement.approachStyle } : {}),
     },
     commands: Array.isArray(page.commands) ? page.commands : [],
   };
