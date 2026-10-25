@@ -23,7 +23,10 @@ const RETIRED_SHEETS: readonly { readonly id: string; readonly textureKey: strin
   { id: "easyrpg_chipset_retro_world", textureKey: "tex_easyrpg_chipset_retro_world", name: "레트로 월드" },
 ];
 
-export function withRetiredEasyRpgTilesets<T extends { tilesets: Record<string, TilesetDef> }>(project: T): T {
+export function withRetiredEasyRpgTilesets<T extends { tilesets: Record<string, TilesetDef> }>(
+  project: T,
+  options: { readonly interiorHarness?: boolean } = {},
+): T {
   const addedInterior = !project.tilesets[RETIRED_INTERIOR_TILESET_ID];
   for (const sheet of RETIRED_SHEETS) {
     if (project.tilesets[sheet.id]) continue;
@@ -34,7 +37,7 @@ export function withRetiredEasyRpgTilesets<T extends { tilesets: Record<string, 
     ensureTilesetHarnesses({ tilesets: { [sheet.id]: tileset } });
     project.tilesets[sheet.id] = tileset;
   }
-  if (addedInterior) ensureInteriorRoomHarness(project as unknown as Project);
+  if (addedInterior && options.interiorHarness !== false) ensureInteriorRoomHarness(project as unknown as Project);
   return project;
 }
 

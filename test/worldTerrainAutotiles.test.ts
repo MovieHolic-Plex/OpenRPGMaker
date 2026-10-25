@@ -185,7 +185,8 @@ describe("World terrain autotiles", () => {
 
   it("leaves every other bundled tileset untouched even though tile IDs overlap", () => {
     for (const ts of Object.values(defaultTilesets())) {
-      if (ts.id === "easyrpg_chipset_world") continue;
+      // worldmap_selected 는 월드 시트 480칸 정의를 그대로 복제해 아이콘만 덧붙인다(worldmapSelected.ts) — 같은 지형 킷을 갖는 것이 맞다.
+      if (ts.id === "easyrpg_chipset_world" || ts.id === "worldmap_selected") continue;
       const before = structuredClone(ts);
       expect(seedWorldTerrainAutotiles(ts)).toBe(false);
       for (const {anchor} of ART) expect(worldTerrainQuarterKit(ts,anchor+61)).toBeNull();
