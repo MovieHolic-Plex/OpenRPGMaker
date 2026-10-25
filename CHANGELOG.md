@@ -5,6 +5,12 @@
 
 <!-- releases -->
 
+## 0.335.3 — 2026-10-25
+
+### 수정
+
+- **ai** — retry transient checkpoint/render acks, and a cut-off run tells the user what it already applied (G43) (#3426) (`fb3a953`)
+
 ## 0.335.2 — 2026-10-25
 
 ### 수정
