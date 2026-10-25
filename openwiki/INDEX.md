@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **186쪽 / 7139KB / 약 2,092,219 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **187쪽 / 7177KB / 약 2,103,820 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -16,10 +16,10 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | 페이지 | 통짜 크기 | 가장 큰 절 | 줄 | 토큰 추정 |
 |---|---|---|---|---|
 | `openwiki/atlas-biome-interior.md` | 77KB | 16KB | 439 | ~23,044 |
-| `openwiki/beodeul-city.md` | 178KB | 15KB | 964 | ~54,024 |
+| `openwiki/beodeul-city.md` | 180KB | 15KB | 977 | ~54,583 |
 | `openwiki/charset-actor-harness.md` | 70KB | 7KB | 501 | ~22,135 |
 | `openwiki/editor-ai-panel.md` | 714KB | 100KB ⚠상한 초과 — 절을 더 쪼개라 | 4618 | ~209,752 |
-| `openwiki/editor-ai-tools.md` | 527KB | 90KB ⚠상한 초과 — 절을 더 쪼개라 | 3729 | ~154,136 |
+| `openwiki/editor-ai-tools.md` | 535KB | 90KB ⚠상한 초과 — 절을 더 쪼개라 | 3761 | ~156,578 |
 | `openwiki/editor-database.md` | 454KB | 64KB ⚠상한 초과 — 절을 더 쪼개라 | 2660 | ~133,372 |
 | `openwiki/editor-event-authoring.md` | 182KB | 78KB ⚠상한 초과 — 절을 더 쪼개라 | 1109 | ~53,296 |
 | `openwiki/editor-event-commands.md` | 75KB | 32KB | 318 | ~20,784 |
@@ -43,8 +43,8 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | `openwiki/runtime-project-schema.md` | 250KB | 70KB ⚠상한 초과 — 절을 더 쪼개라 | 1785 | ~70,467 |
 | `openwiki/runtime-sessions.md` | 150KB | 60KB ⚠상한 초과 — 절을 더 쪼개라 | 858 | ~40,901 |
 | `openwiki/team-project-host.md` | 51KB | 5KB | 536 | ~15,628 |
-| `openwiki/testing.md` | 250KB | 48KB | 2320 | ~70,298 |
-| `openwiki/tileset-reference-documents.md` | 59KB | 4KB | 602 | ~18,202 |
+| `openwiki/testing.md` | 251KB | 48KB | 2328 | ~70,539 |
+| `openwiki/tileset-reference-documents.md` | 60KB | 4KB | 603 | ~18,386 |
 
 ## 한국어 산문이 깨진 페이지
 
@@ -56,7 +56,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | `openwiki/atlas-biome-interior.md` | 1 | 384 |
 | `openwiki/chipset-gap-inventory.md` | 1 | 20 |
 | `openwiki/editor-ai-panel.md` | 26 | 3093, 3094, 3095, 3096, 3097, 3098, 3112, 3122 |
-| `openwiki/editor-ai-tools.md` | 8 | 22, 2365, 2366, 2370, 2372, 2374, 2562, 3503 |
+| `openwiki/editor-ai-tools.md` | 8 | 22, 2365, 2366, 2370, 2372, 2374, 2562, 3500 |
 | `openwiki/editor-database.md` | 14 | 131, 132, 133, 134, 135, 136, 1184, 1188 |
 | `openwiki/editor-event-authoring.md` | 16 | 525, 526, 529, 534, 535, 536, 537, 538 |
 | `openwiki/editor-event-command-fixes.md` | 11 | 11, 12, 14, 15, 16, 17, 18, 19 |
@@ -117,7 +117,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | `openwiki/gothic-manor.md` | 1 | `dist-electron/browser-bridge.js` |
 | `openwiki/growth-trees.md` | 3 | `.omo/evidence/growth-integrated/browser-presets/report.json`, `applied-bundle.json`, `verify-shots/runtime-qa/growth-tree/SUMMARY.md` |
 | `openwiki/harnesses/README.md` | 1 | `docs/superpowers/specs/2026-10-05-unified-harness-production.md` |
-| `openwiki/harnesses/assistant-capability.md` | 24 | `REPORT.md`, `agent-briefs.json`, `assessment.json`, `asset-receipts.json`, `before/after/original/trace.json`, `boxes.json`, `dist-electron/browser-bridge.js`, `dist/export-player/player.html`, `film-log.json`, `live.json`, `map-portals/after.png`, `matrix-native.json`, `matrix-score.json`, `matrix-validation.json`, `native-result.json`, `output/qa/vn2/seed-novn.json`, `page-errors.json`, `project.json`, `reloaded.png`, `report.html`, `runtime-recheck.json`, `seed-novn.json`, `selfcheck.json`, `visual.json` |
+| `openwiki/harnesses/assistant-capability.md` | 23 | `REPORT.md`, `agent-briefs.json`, `assessment.json`, `asset-receipts.json`, `before/after/original/trace.json`, `boxes.json`, `dist-electron/browser-bridge.js`, `dist/export-player/player.html`, `film-log.json`, `live.json`, `map-portals/after.png`, `matrix-native.json`, `matrix-score.json`, `matrix-validation.json`, `native-result.json`, `output/qa/vn2/seed-novn.json`, `page-errors.json`, `project.json`, `report.html`, `runtime-recheck.json`, `seed-novn.json`, `selfcheck.json`, `visual.json` |
 | `openwiki/harnesses/beodeul-architecture.md` | 1 | `qa-runs/harnesses/beodeul-architecture/structural-families-review.png` |
 | `openwiki/harnesses/beodeul-building-review.md` | 19 | `.pixels.json`, `DATA/store-uploads.json`, `output/beodeul-building-review/round7-v3-gate-status.json`, `round4-mill-pass-courtyard-rejection.json`, `round7-browser-proof.json`, `round7-new-candidates.png`, `round7-save-proof.json`, `round7-v2-texture-rejection.json`, `scripts/content/prepare-beodeul-reviewed-references.mts`, `verify-shots/beodeul-building-review/round6-save-proof.json`, `verify-shots/beodeul-building-review/round6-v1-rejection.json`, `verify-shots/beodeul-building-review/round6-v2-rejection.json`, `verify-shots/beodeul-building-review/round6-v3-rejection.json`, `verify-shots/beodeul-building-review/round6-v4-rejection.json`, `verify-shots/beodeul-building-review/round6-v5-structure-rejection.json`, `verify-shots/beodeul-building-review/round6-v6-top-rejection.json`, `verify-shots/beodeul-building-review/round6-visualqa-proof.json`, `verify-shots/beodeul-building-review/round7-v1-texture-rejection.json`, `verify-shots/beodeul-building-review/round7-visualqa-proof.json` |
 | `openwiki/harnesses/building-kit-city-plan.md` | 1 | `.../research/castles-and-cities.md` |
@@ -212,7 +212,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | `openwiki/terrain-design-suite.md` | 2 | `verify-shots/terrain-assistant-live/SUMMARY.md`, `verify-shots/terrain-seams/SUMMARY.md` |
 | `openwiki/terrain-placement-tools.md` | 1 | `verify-shots/terrain-placement/SUMMARY.md` |
 | `openwiki/testing.md` | 97 | `../dialogue.css`, `.mts`, `.omo/evidence/house-protection/p2/README.md`, `.omo/evidence/house-protection/p2/exercise.mts`, `.omo/evidence/life-full-20260906/10/VERIFY.md`, `.omo/evidence/life-full-20260906/5/q1/browser-proof.mjs`, `.omo/evidence/life-full-20260906/phase3-verification/final/VERIFY.md`, `.omo/gates-vitest-report.json`, `5/correction/browser-proof.mjs`, `COMPARISON.md`, `SOURCE-EVIDENCE.md`, `X.quarantine.test.ts`, `X.test.ts`, `acceptance-live-check.mjs`, `actions.json`, `aiChatObservability.test.ts`, `aiChatPanelTransportError.test.ts`, `aiSelectionChipScope.test.ts`, `before/probe.json`, `boot-failure.json`, `browser-play-start.png`, `browser-proof.mjs`, `browser-title.png`, `checks.json`, `completion.json`, `dist/cli.mjs`, `docs/reviews/db-beginner-adversarial-qa-findings.md`, `docs/reviews/db-beginner-heuristics-rubric.md`, `event-editor.command-preview/07-identifiable-previews.css`, `generation.json`, `harness-proof.mjs`, `legacyDb-proof-first-save.json`, `node_modules/vite-node/vite-node.mjs`, `output/evidence/acceptance-gate-followup/README.md`, `output/evidence/acceptance-live/README.md`, `output/evidence/concept-expansion/README.md`, `output/evidence/concept-v2/validation.json`, `output/evidence/functional-acceptance/public-smoke.json`, `output/evidence/horror-mystery-prototype/browser-qa.json`, `output/evidence/map-owned-overlays/phase2/BROWSER.md`, `priority.mjs`, `probe.json`, `project.json`, `public-probe.mjs`, `qa-db-beginner-mode.spec.ts`, `raw-results.json`, `reloaded.json`, `reports/feature16/README.md`, `reports/region-polish/facts.json`, `scripts/author-natural-village-harness.mts`, `scripts/author-natural-village-reference.mts`, `scripts/build-horror-mystery-prototype.mts`, `scripts/capture-horror-browser-evidence.mts`, `scripts/qa/acceptance-live.mjs`, `scripts/qa/maker-interview-ui.mjs`, `src/testing/horrorExperienceQa.ts`, `src/testing/horrorMysteryQaPlan.ts`, `test/actionRpgAuthoringAcceptance.test.ts`, `test/aiEventPlacementSurfaceGate.test.ts`, `test/autosaveStatus.test.ts`, `test/buildPalette.test.ts`, `test/databaseKoreanRtpDefaults.test.ts`, `test/debugSession.test.ts`, `test/dialoguePreviewPresentationCss.test.ts`, `test/dungeonRoomPipeline.test.ts`, `test/dungeonThemedLayouts.test.ts`, `test/e2e/chat-dock-switch.spec.ts`, `test/e2e/dialogue-nameplate-clears-body.spec.ts`, `test/e2e/stardew-resident-runtime.spec.ts`, `test/horrorBrowserEvidenceFreshness.test.ts`, `test/horrorSemanticScenarios.test.ts`, `test/iceDiagonalTerrain.test.ts`, `test/interiorConceptAssemblies.test.ts`, `test/loadNewRemoteProject.test.ts`, `test/p0DayTransitionSceneFailure.test.ts`, `test/p0RuntimeIntegration.test.ts`, `test/p1DayTransitionIntegration.test.ts`, `test/p1RuntimeUi.test.ts`, `test/p1WeatherDayTransition.test.ts`, `test/regionTaskRun.test.ts`, `test/stardewDemo.test.ts`, `test/storePersistenceProof.test.ts`, `test/tilesetAiClient.test.ts`, `test/toolActionAuthoringParity.test.ts`, `test/villageBuilder.test.ts`, `verify-shots/db-ux/pseudo-baseline/probe.json`, `verify-shots/maker-click-first/README.md`, `verify-shots/map-size-benchmark-20261001/SUMMARY.md`, `verify-shots/map-size-optimized-20261001/SUMMARY.md`, `verify-shots/official-map-512-20261001/SUMMARY.md`, `verify-shots/runtime-qa/action-rpg/SUMMARY.md`, `verify-shots/runtime-qa/coordinate-move/SUMMARY.md`, `verify-shots/runtime-qa/esc-menu/SUMMARY.md`, `verify-shots/runtime-qa/monster-town/SUMMARY.md`, `verify-shots/runtime-qa/romance-vn-ui2/17-title-load-card.png`, `verify-shots/runtime-qa/status-menu-adversarial/SUMMARY.md`, `verify-shots/runtime-tile-window-20261001/SUMMARY.md` |
-| `openwiki/tile-geometry.md` | 13 | `checks.json`, `editor-checks.json`, `output/slates-reference/source-row.json`, `persistence.json`, `public/assets/slates/slates-reference-recipes.json`, `reports/slates-study/index.html`, `scripts/content/save-slates-reference.mjs`, `slates-reference-tile-provenance.json`, `verify-shots/character-auto-scale/SUMMARY.md`, `verify-shots/slates-reference/SUMMARY.md`, `verify-shots/slates32/persistence.json`, `verify-shots/tile-geometry/SUMMARY.md`, `verify-shots/tile-size-support/SUMMARY.md` |
+| `openwiki/tile-geometry.md` | 12 | `checks.json`, `editor-checks.json`, `output/slates-reference/source-row.json`, `public/assets/slates/slates-reference-recipes.json`, `reports/slates-study/index.html`, `scripts/content/save-slates-reference.mjs`, `slates-reference-tile-provenance.json`, `verify-shots/character-auto-scale/SUMMARY.md`, `verify-shots/slates-reference/SUMMARY.md`, `verify-shots/slates32/persistence.json`, `verify-shots/tile-geometry/SUMMARY.md`, `verify-shots/tile-size-support/SUMMARY.md` |
 | `openwiki/tile-layer-policy.md` | 19 | `.omo/evidence/castle-tiles/NOTES.md`, `.omo/evidence/chipset-transparency/NOTES.md`, `Castle2_5.png`, `castle-map.md`, `clean_furniture.png`, `docs/superpowers/specs/2026-09-24-mz-four-layer-design.md`, `lpcWoodenFurniture.ts`, `modern-exteriors/modern-city-atlas.png`, `public/assets/forest-harmony/chipset.png`, `public/assets/opengameart-castle-reference-composite.png`, `public/assets/opengameart-castle-tiles.png`, `public/assets/opengameart-lpc-wooden-furniture-16px.png`, `public/assets/opengameart-lpc-wooden-furniture.png`, `scripts/bake-village-archetype-previews.mts`, `scripts/compare-castle-reference.py`, `src/assets/forestHarmonyTileset.json`, `src/project/defaults/castleTileset.ts`, `src/project/defaults/lpcWoodenFurniture.ts`, `src/project/defaults/lpcWoodenFurnitureObjects.ts` |
 | `openwiki/tileset-reference-documents.md` | 66 | `author-diverse-villages.mjs`, `author-pixel-art-world-city.mjs`, `author-rpg-places.mjs`, `build-climate-chipsets.py`, `civic-programs.json`, `embed-public-tile-recipes.mjs`, `externalTileGrounding.ts`, `extra-parts.json`, `forestHarmony.ts`, `forestHarmonyTileset.json`, `forestTrunkTiles.ts`, `pixel-art-world-school-rooms.mjs`, `pixelArtWorldCity.json`, `pixelArtWorldLayoutGuidance.json`, `prepare-forest-grass-joins.mjs`, `prepare-pixel-art-world-city.mjs`, `prepare-pixel-art-world-layout-guidance.mjs`, `prepare-pixel-art-world-retail-interiors.mjs`, `prepare-pixel-art-world-school.mjs`, `prepare-pixel-art-world-urban.mjs`, `prepare-public-tile-recipes.mjs`, `prepare-rpg-places-references.mjs`, `prepare-rpg-places-regions.mjs`, `publicTileRecipes.ts`, `publish-pixel-art-world-local-library.mjs`, `regionReferences/fantasy-places.json`, `register-executable-tile-guides.mjs`, `register-forest-public-references.mjs`, `render-public-recipe-references.mjs`, `save-pixel-art-world-city.mjs`, `scripts/content/build-dewbank-references.mjs`, `scripts/content/build-tile-assembly-catalog.mjs`, `scripts/content/pixel-art-world-ceiling-walls.mjs`, `scripts/content/prepare-diverse-village-references.mjs`, `scripts/content/prepare-forest-public-references.mjs`, `scripts/content/prepare-pixel-art-world-dense-interiors.mjs`, `scripts/content/prepare-pixel-art-world-izakaya-ceiling.mjs`, `scripts/content/prepare-pixel-art-world-references.mjs`, `scripts/content/publish-executable-tile-guides.mjs`, `scripts/content/register-castle-references.mjs`, `scripts/content/register-dewbank-references.mjs`, `scripts/content/save-pixel-art-world-host-patch.mjs`, `scripts/content/save-tileset-references.mjs`, `scripts/qa/capture-rpg-places.mjs`, `src/assets/climateVillageTilesets.json`, `src/assets/pixelArtWorldCatalog.json`, `src/assets/sharedCastleReferences.json`, `src/assets/sharedDiverseVillageReferences.json`, `src/editor/externalTilesetImport.ts`, `src/project/defaults/climateVillages.ts`, `src/project/defaults/forestHarmony.ts`, `src/project/forestRecipes.ts`, `tile-labels.json`, `tiledata/castle-tiles-rpgs/ai-references/README.md`, `tiledata/forest-villages/canopy-leaves/README.md`, `tiledata/forest-villages/diverse/cliff-source.json`, `tiledata/forest-villages/diverse/landmarks.json`, `tiledata/forest-villages/diverse/research-layout.md`, `tiledata/rpg-places/sign-labels.json`, `tilesetAiQuestionEditor.ts`, `tilesetCheckerSummary.ts`, `verify-shots/beodeul-building-refinement/README.md`, `verify-shots/beodeul-ground/README.md`, `verify-shots/beodeul-small-village/README.md`, `village-civic-props.mjs`, `village-household-props.mjs` |
 | `openwiki/title-opening-effects.md` | 5 | `.effects.json`, `assistant-receipt.json`, `features/SUMMARY.md`, `verify-shots/opening-typography/README.md`, `verify-shots/runtime-qa/title-effects/SUMMARY.md` |
@@ -303,7 +303,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L253` Live editor AI assistant MCP (same UI session)
 - `L272` Refreshing the wiki
 
-### `openwiki/architecture.md` — 25KB · 135줄 · ~7,027 토큰
+### `openwiki/architecture.md` — 25KB · 136줄 · ~7,150 토큰
 
 절 제목 없음 (평면 목록 페이지).
 
@@ -418,7 +418,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L131` 함정 목록
 - `L161` 실린 자산의 실측값
 
-### `openwiki/beodeul-city.md` — 178KB · 964줄 · ~54,024 토큰 · 통째읽기 잘림
+### `openwiki/beodeul-city.md` — 180KB · 977줄 · ~54,583 토큰 · 통째읽기 잘림
 
 - `L3` 출처 정정 (2026-10-22) — RTP 파생 칸은 크레딧, 나무는 다시 그렸다
 - `L46` 2026-10-05 건물 반려와 사람의 허용/거절 대기열
@@ -476,7 +476,8 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L839` 던전 시공기 2판 — 적대 시각 QA 뒤 한 번 고침 (2026-10-14 같은 날)
   - `L862` 던전 시공기 3판 — 종류(`type`) 8가지 (2026-10-14, 사용자: 「던전 종류가 좀 다양해야 할 것 같다」)
   - `L887` 던전 시공기 4판 — 장르 × 칩셋 어댑터 (2026-10-15, 사용자: 「던전을 장르별로 — 포켓몬풍 / 일반 RPG / 그 밖」)
-- `L954` 자연 기물 beodeul_organic (2026-10-24) — 숲·들판의 바위·덤불·통나무·버섯·들꽃·고사리·풀·이끼 돌·고목·사당 돌
+- `L954` 마당 바닥 오토타일 (2026-10-23, village-art)
+- `L967` 자연 기물 beodeul_organic (2026-10-24) — 숲·들판의 바위·덤불·통나무·버섯·들꽃·고사리·풀·이끼 돌·고목·사당 돌
 
 ### `openwiki/bgm-catalog.md` — 26KB · 354줄 · ~6,772 토큰
 
@@ -771,7 +772,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L4605` 왼쪽 사이드바(그리기·지형·활동 막대) 탭 전환 계약 (2026-10-17)
 - `L4613` UX 2차 — 도크 배치·서버 AI 꺼짐 문구 (2026-10-21, F24)
 
-### `openwiki/editor-ai-tools.md` — 527KB · 3729줄 · ~154,136 토큰 · 통째읽기 잘림 · 깨진 줄 8
+### `openwiki/editor-ai-tools.md` — 535KB · 3761줄 · ~156,578 토큰 · 통째읽기 잘림 · 깨진 줄 8
 
 - `L3` 「드러났다」를 지도에 보이기 `stage_map_reveal` · 장면 대형 `sceneFormation` · 보스 HP 숨김 (2026-10-25)
 - `L30` 이야기 흐름 읽기 `get_story_outline` · `read_story_script` · `set_scene_summaries` (2026-10-25)
@@ -906,64 +907,64 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L3112` 기존 서사 플래그의 설명 수정 (2026-09-25)
 - `L3125` 타이틀 오프닝 효과 도구 (2026-09-25)
 - `L3140` 크로노 트리거식 필드 도구 인자 (2026-09-26)
-- `L3171` Pi 오프닝 제작·그림 검토 계약 (2026-10-03)
-- `L3199` Independent opening timelines
-- `L3203` Monster collector setup and verification (2026-10-03)
-- `L3209` Structured optional read arrays (2026-10-04)
-- `L3219` NPC, shop and readable opening production (2026-10-04)
-- `L3228` 에메랄드 참고 전체 몬스터 제작 (2026-10-04)
-- `L3283` Emerald native sprite contract (2026-10-04 correction)
-- `L3289` 세계 지도 지형 도구 (2026-10-03)
-- `L3299` Bounded romance authoring tools
-  - `L3303` 선택 정수 enum의 Antigravity 전달 (2026-10-04)
-- `L3311` 글자·장면 오프닝 연출 (2026-10-04)
-- `L3321` 오프닝 스토리보드·그림 배우·원곡 BGM (2026-10-04)
-- `L3329` OST·효과음 직접 작곡 (2026-10-05)
-- `L3333` 작은 편집의 래스터 보존과 선택지 취소 (2026-10-05)
-- `L3339` 슈퍼하네싱 사용자 선택 기물 우선 사용 (2026-10-05)
-- `L3348` 키트 시트 야외 빈 터 꾸미기 — `find_empty_ground` · `furnish_outdoor_area` (2026-10-07)
-  - `L3363` naturalize_beodeul_hamlet (2026-10-04)
-- `L3368` compose_beodeul_courtyard_village (2026-10-04)
-- `L3373` refine_beodeul_courtyard_vegetation (2026-10-04)
-- `L3378` 오프닝 그림 프롬프트 구조화 (2026-10-11)
-  - `L3384` 그림 기본 경로 = ChatGPT(GPT Image) (2026-10-11)
-  - `L3390` 오프닝 바이블·cast·화풍 기법 (2026-10-11)
-  - `L3397` 오프닝 후보 생성 + 독립 판정자 (2026-10-11)
-  - `L3403` 시연 오프닝 6컷 mp4 (2026-10-12)
-  - `L3408` 조수가 도트를 직접 찍는다 — `author_pixel_art` · `author_actor_charset` · Argon 기본 (2026-10-14)
-  - `L3415` 대형 유닛 walker · smash — 세계가 반응하는 행군 (2026-10-14)
-  - `L3422` 사람 비율·지문·색조·자세 (2026-10-15, 오프닝 1라운드 장면 분석 뒤)
-- `L3431` 몬스터 자유 경로 도구 (monster-free-b, 2026-10-14)
-- `L3440` 몬스터 캠페인 규모 인자화 · 정의 일치 검사 (2026-10-14, monster-free-a)
-- `L3465` 세계 변형판 · 장소 입구 · 지형 조우 (2026-10-15, worker B, FF6급 감사)
-- `L3478` 필드 스킬 게이트 증명: `useFieldSkill` + `partyKnowsSkill` (2026-10-15, FF6 수정 C)
-- `L3482` 무대 공연 도구 — author_stage_performance (2026-10-15, FF6급 감사 #31)
-- `L3492` `place_field_obstacle` — 비전머신(HM) 필드 기술 게이트 (2026-10-15, poke-fix-p Phase 2)
-- `L3507` 포켓몬풍 필드·진행 규칙 도구 (2026-10-15, poke-fix-p)
-- `L3515` 팀 교대 전투 도구 (2026-10-15, FF6 수정 A)
-- `L3523` 비행 시점 모드7 — place_vehicle flightView (2026-10-15, FF6급 감사 #31, 안 A)
-- `L3534` `upsert_item.heldEffect` — 지닌 도구 (2026-10-16, poke-depth PR4)
-- `L3542` `define_monster_species.ability` — 특성 (2026-10-16, poke-depth PR3)
-- `L3549` `upsert_state` 의 맹독·혼란 (2026-10-16, poke-depth PR2)
-- `L3557` `upsert_skill.statStageEffects` — 능력치 단계 (2026-10-16, poke-depth PR1)
-- `L3566` 세계 카드 AI 공개 범위가 걸리는 도구 (2026-10-16)
-- `L3571` `upsert_skill.weather` — 날씨 기술 (2026-10-16, poke-depth PR5)
-- `L3577` 연애 루프 도구 변경 (2026-10-16)
-- `L3584` `upsert_item.captureProfile.condition` — 조건부 볼 (2026-10-16, poke-depth PR6)
-- `L3589` `upsert_item` 몬스터 필드 아이템 — 부활·PP·이상한 사탕·진화의 돌·가방 포켓 (2026-10-16, poke-sys-items)
-- `L3596` `upsert_item.repelSteps` / `escapeTo` · `configure_monster_system.escapeGraceSteps` — 필드 도구 (2026-10-16, poke-sys ②)
-- `L3602` 이야기형 연애 기본값 `apply_romance_preset` (2026-10-25, 시타마치)
-  - `L3606` 대화 중 인물 보이기 `system.dialogueKeepActorsVisible` (2026-10-25)
-- `L3613` 연애 3차 수리 — 칩·ESC 메뉴·뼈대·완료 문 (2026-10-16, romance-fix-3)
-- `L3622` `set_dialogue_system` — 대사창 읽기 보조 (2026-10-17, 미연시 시스템 UI 1단계)
-- `L3630` 공용 규칙 모듈 `src/project/menuSystem.ts` — 자료집 「메뉴·시스템」 탭과 같은 검증 (2026-10-17, 미연시 3단계)
-- `L3635` `set_vn_extras` — 갤러리·엔딩 목록·세이브 카드 (2026-10-17, 미연시 시스템 UI 2단계)
-- `L3642` `set_vn_look` — 미연시 대사창 룩(프리셋·이름표·선택지·대기 표시·글자) (2026-10-17, vn-look-1)
-- `L3654` 바로 깔기 `place_house` — 장식 정리 후 집 배치·`jp_city` 지원 (2026-10-17)
-- `L3659` `list_puzzle_presets` · `author_map_puzzle` — 상태 공간 모형(BFS) 퍼즐 프리셋 카탈로그 20종 (2026-10-20, jrpg-puzzle-presets-r2)
-- `L3670` 마을 종류 표 — `find_village_type` · `dress_village_quarter` · `dress_joseon_market` (2026-10-22, village-eras)
-- `L3706` 연계기·기술 정체성·결과 팡파레 — `list_combo_techs` · `upsert_combo_tech` · `battle.fanfare` (2026-10-24, fs-battle-2)
-- `L3716` 폴른 스타 제작을 조수 도구로 (2026-10-25, 폴른 재현 트랙)
+- `L3168` Pi 오프닝 제작·그림 검토 계약 (2026-10-03)
+- `L3196` Independent opening timelines
+- `L3200` Monster collector setup and verification (2026-10-03)
+- `L3206` Structured optional read arrays (2026-10-04)
+- `L3216` NPC, shop and readable opening production (2026-10-04)
+- `L3225` 에메랄드 참고 전체 몬스터 제작 (2026-10-04)
+- `L3280` Emerald native sprite contract (2026-10-04 correction)
+- `L3286` 세계 지도 지형 도구 (2026-10-03)
+- `L3296` Bounded romance authoring tools
+  - `L3300` 선택 정수 enum의 Antigravity 전달 (2026-10-04)
+- `L3308` 글자·장면 오프닝 연출 (2026-10-04)
+- `L3318` 오프닝 스토리보드·그림 배우·원곡 BGM (2026-10-04)
+- `L3326` OST·효과음 직접 작곡 (2026-10-05)
+- `L3330` 작은 편집의 래스터 보존과 선택지 취소 (2026-10-05)
+- `L3336` 슈퍼하네싱 사용자 선택 기물 우선 사용 (2026-10-05)
+- `L3345` 키트 시트 야외 빈 터 꾸미기 — `find_empty_ground` · `furnish_outdoor_area` (2026-10-07)
+  - `L3360` naturalize_beodeul_hamlet (2026-10-04)
+- `L3365` compose_beodeul_courtyard_village (2026-10-04)
+- `L3370` refine_beodeul_courtyard_vegetation (2026-10-04)
+- `L3375` 오프닝 그림 프롬프트 구조화 (2026-10-11)
+  - `L3381` 그림 기본 경로 = ChatGPT(GPT Image) (2026-10-11)
+  - `L3387` 오프닝 바이블·cast·화풍 기법 (2026-10-11)
+  - `L3394` 오프닝 후보 생성 + 독립 판정자 (2026-10-11)
+  - `L3400` 시연 오프닝 6컷 mp4 (2026-10-12)
+  - `L3405` 조수가 도트를 직접 찍는다 — `author_pixel_art` · `author_actor_charset` · Argon 기본 (2026-10-14)
+  - `L3412` 대형 유닛 walker · smash — 세계가 반응하는 행군 (2026-10-14)
+  - `L3419` 사람 비율·지문·색조·자세 (2026-10-15, 오프닝 1라운드 장면 분석 뒤)
+- `L3428` 몬스터 자유 경로 도구 (monster-free-b, 2026-10-14)
+- `L3437` 몬스터 캠페인 규모 인자화 · 정의 일치 검사 (2026-10-14, monster-free-a)
+- `L3462` 세계 변형판 · 장소 입구 · 지형 조우 (2026-10-15, worker B, FF6급 감사)
+- `L3475` 필드 스킬 게이트 증명: `useFieldSkill` + `partyKnowsSkill` (2026-10-15, FF6 수정 C)
+- `L3479` 무대 공연 도구 — author_stage_performance (2026-10-15, FF6급 감사 #31)
+- `L3489` `place_field_obstacle` — 비전머신(HM) 필드 기술 게이트 (2026-10-15, poke-fix-p Phase 2)
+- `L3504` 포켓몬풍 필드·진행 규칙 도구 (2026-10-15, poke-fix-p)
+- `L3512` 팀 교대 전투 도구 (2026-10-15, FF6 수정 A)
+- `L3520` 비행 시점 모드7 — place_vehicle flightView (2026-10-15, FF6급 감사 #31, 안 A)
+- `L3531` `upsert_item.heldEffect` — 지닌 도구 (2026-10-16, poke-depth PR4)
+- `L3539` `define_monster_species.ability` — 특성 (2026-10-16, poke-depth PR3)
+- `L3546` `upsert_state` 의 맹독·혼란 (2026-10-16, poke-depth PR2)
+- `L3554` `upsert_skill.statStageEffects` — 능력치 단계 (2026-10-16, poke-depth PR1)
+- `L3563` 세계 카드 AI 공개 범위가 걸리는 도구 (2026-10-16)
+- `L3568` `upsert_skill.weather` — 날씨 기술 (2026-10-16, poke-depth PR5)
+- `L3574` 연애 루프 도구 변경 (2026-10-16)
+- `L3581` `upsert_item.captureProfile.condition` — 조건부 볼 (2026-10-16, poke-depth PR6)
+- `L3586` `upsert_item` 몬스터 필드 아이템 — 부활·PP·이상한 사탕·진화의 돌·가방 포켓 (2026-10-16, poke-sys-items)
+- `L3593` `upsert_item.repelSteps` / `escapeTo` · `configure_monster_system.escapeGraceSteps` — 필드 도구 (2026-10-16, poke-sys ②)
+- `L3599` 이야기형 연애 기본값 `apply_romance_preset` (2026-10-25, 시타마치)
+  - `L3603` 대화 중 인물 보이기 `system.dialogueKeepActorsVisible` (2026-10-25)
+- `L3610` 연애 3차 수리 — 칩·ESC 메뉴·뼈대·완료 문 (2026-10-16, romance-fix-3)
+- `L3619` `set_dialogue_system` — 대사창 읽기 보조 (2026-10-17, 미연시 시스템 UI 1단계)
+- `L3627` 공용 규칙 모듈 `src/project/menuSystem.ts` — 자료집 「메뉴·시스템」 탭과 같은 검증 (2026-10-17, 미연시 3단계)
+- `L3632` `set_vn_extras` — 갤러리·엔딩 목록·세이브 카드 (2026-10-17, 미연시 시스템 UI 2단계)
+- `L3639` `set_vn_look` — 미연시 대사창 룩(프리셋·이름표·선택지·대기 표시·글자) (2026-10-17, vn-look-1)
+- `L3651` 바로 깔기 `place_house` — 장식 정리 후 집 배치·`jp_city` 지원 (2026-10-17)
+- `L3656` `list_puzzle_presets` · `author_map_puzzle` — 상태 공간 모형(BFS) 퍼즐 프리셋 카탈로그 20종 (2026-10-20, jrpg-puzzle-presets-r2)
+- `L3667` 마을 종류 표 — `find_village_type` · `dress_village_quarter` · `dress_joseon_market` (2026-10-22, village-eras)
+- `L3738` 연계기·기술 정체성·결과 팡파레 — `list_combo_techs` · `upsert_combo_tech` · `battle.fanfare` (2026-10-24, fs-battle-2)
+- `L3748` 폴른 스타 제작을 조수 도구로 (2026-10-25, 폴른 재현 트랙)
 
 ### `openwiki/editor-database.md` — 454KB · 2660줄 · ~133,372 토큰 · 통째읽기 잘림 · 깨진 줄 14
 
@@ -2420,7 +2421,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L27` 공방 태그 이주
 - `L33` 시험
 
-### `openwiki/opening-animatic-authoring.md` — 42KB · 408줄 · ~10,760 토큰
+### `openwiki/opening-animatic-authoring.md` — 43KB · 415줄 · ~10,973 토큰
 
 - `L3` Ownership and format
 - `L9` Assistant surface
@@ -2448,6 +2449,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L349` 2026-10-16 iteration 1: dedicated pixel opening contract
 - `L374` 2026-10-16 iteration 2: save-path and completion gates
 - `L396` Fallen Star cinematic cold open (2026-10-24)
+- `L409` Title-intro track, silhouettes, meteors (2026-10-25)
 
 ### `openwiki/opening-reference-study.md` — 10KB · 57줄 · ~2,901 토큰
 
@@ -3361,120 +3363,121 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L70` 저장·크기 변경
 - `L79` 확인
 
-### `openwiki/testing.md` — 250KB · 2320줄 · ~70,298 토큰 · 통째읽기 잘림
+### `openwiki/testing.md` — 251KB · 2328줄 · ~70,539 토큰 · 통째읽기 잘림
 
 - `L3` AI 세션 테스트의 모델 id 는 임의로 짓지 않는다 (2026-09-14)
 - `L19` 전체 스위트가 워커 힙에서 죽던 문제 (2026-09-11)
-- `L53` main 의 ci-fast 는 다음 머지가 진행 중 잡을 끊지 않는다 (2026-09-26)
-- `L60` parity 스위트 CI OOM (2026-09-19)
-- `L72` ci-full vitest 는 힙 합을 75% 안에 둔다 (2026-10-04)
-- `L96` 게이트 반복은 `--changed` 로 좁힌다 (2026-09-13)
-  - `L123` vitest 는 왜 28분이고, 무엇을 만져도 안 줄어드는가 (2026-09-14 실측)
-  - `L152` AI 조수 가족이 왜 이렇게 잘 뒤집히나 (실측)
-- `L161` 격리 원장 `test/QUARANTINE.md` (2026-09-13)
-- `L179` 브라우저 테스트는 별도 스테이지다 (2026-09-13)
-- `L193` P5 delivery gates and the P4 regressions they caught (2026-09-09)
-  - `L195` Open: checkpoint writes still slow the authoring loop
-- `L247` P4 checkpoint storage and boot admission (2026-09-09)
-- `L301` P3 request-bound fixture alignment (2026-09-08)
-- `L326` Issue 693 verification contracts (2026-09-08)
-- `L350` Request-coverage gate follow-up (2026-09-08)
-- `L393` Native event battle reliability QA (2026-09-08)
-- `L429` Real large-world player QA (2026-09-07)
-- `L438` CSS budget: file count is informational
-- `L450` Selection and composer surface contracts (2026-09-06)
-- `L469` P3/current-main composition fixtures (2026-09-08)
-  - `L496` Cooperative Node scheduling in long session fixtures (2026-09-08)
-- `L512` AI turn observation contracts (2026-09-06)
-  - `L533` P2 R1 retained-draft Ask (2026-09-07)
-  - `L571` P2 R3 wiki delivery (2026-09-07)
-- `L600` P3 ownership and stale-base verification (2026-09-07)
-  - `L675` Autosave status fixture ownership (2026-09-08)
-  - `L689` Project history transport isolation
-- `L721` Canonical project storage versus AI history (2026-09-06)
-  - `L723` 데스크톱(Electron) 스모크는 이렇게 돈다 (2026-09-16)
-- `L745` Action RPG authoring and runtime proof (2026-09-07)
-- `L766` Database CSS ownership contracts (2026-09-06)
-- `L787` Audio description verification
-  - `L811` Real editor surfaces
-  - `L838` Exported-player playback and dependency evidence
-- `L887` Mac onboarding Phase 1 contracts (2026-09-06)
-- `L915` Task10 field-input verification and limits (2026-09-06)
-- `L931` Life QA observation and action receipts (2026-09-06)
-  - `L939` Task5 validation correction (2026-09-06)
-  - `L947` Task5 Q1 audio boundary correction (2026-09-06)
-- `L955` 기존 실패 비교는 진단 내용까지 확인한다 (2026-09-05)
-- `L972` Esc 메뉴 동작·시각 검증 (2026-09-05)
-- `L990` Completed-house Phase 2 verification (2026-09-06)
-- `L1021` P2 낚시·채집·도감·박물관 focused gate (2026-08-25)
-- `L1028` Map-owned overlays: actual AI-turn browser regression (2026-09-05)
-- `L1037` Editor e2e boot-overlay determinism (2026-08-31)
-- `L1042` 영역 다듬기 focused gate (2026-08-31)
-- `L1049` AI 이벤트 배치 통행성 focused gate (2026-08-30)
-- `L1057` 체공(점프·낙하) focused gate (2026-08-29)
-  - `L1066` 좌표 목적지 이동 QA — `node scripts/qa-coordinate-move.mjs` (OPRN-OUT-013, 2026-09-10)
-  - `L1083` 좌표 이동 저작 폼 QA — `node scripts/capture-coordinate-move-form.mjs`
-  - `L1092` 체공 런타임 QA — `npm run qa:runtime -- --scenario hop`
-  - `L1122` 워크트리에 `node_modules` 가 없을 때 (2026-08-29 실측)
-- `L1185` Roguelike run Phase 0–3 coverage (2026-08-24)
-  - `L1196` 조건 게이트를 부하 중에 재지 마라 (실측 2026-08-29)
-- `L1205` 데이터베이스 UI/UX 계측 하네스 (2026-08-30)
-  - `L1229` 가상 요소 텍스트를 안 재면 `tinyFont 0` 은 "안 봤다" 는 뜻이다 (실측)
-  - `L1250` 0px 이미지는 "깨진 것" 과 "접힌 것" 을 갈라야 한다 (실측)
-  - `L1256` 타이밍에 취약한 e2e 가 빨간불이면 그 스펙이 단정하는 속성을 직접 재라 (실측 2026-08-30)
-  - `L1279` 소스를 grep 하는 테스트는 이름만 봐서는 회귀를 못 가른다 (실측)
-- `L1287` Agent validation rule
-- `L1398` Event-editor trust-loop validation (2026-07-30)
-- `L1403` 얼굴 바꾸기(changeFace) 폼 시각 계약 (2026-08-28 실측)
-- `L1422` Tile-to-world persistence concurrency (task20)
-- `L1428` P2 spatial focused gate (2026-08-25)
-- `L1437` 대화창 연출 focused gate (2026-08-30)
-- `L1512` 워크트리 e2e 는 dev 서버가 조용히 안 뜬다 (2026-08-27 실측)
-  - `L1531` `locator.click()` 은 잘림 버그를 구조적으로 못 잡는다 (2026-08-29 실측)
-  - `L1543` 스크롤이 생겼다고 다 닿는 건 아니다 — 가운데 정렬 넘침 (2026-08-30 실측)
-  - `L1551` 미정의 커스텀 프로퍼티는 콘솔에 아무 말도 남기지 않는다 (2026-08-30 실측)
-  - `L1558` `ERR_NETWORK_CHANGED` 는 HMR 말고 호스트 인터페이스 때문에도 터진다 (2026-08-28 실측)
-- `L1580` 런타임(게임) 전용 비전 QA 하네스 (2026-08-28)
-  - `L1582` 메뉴 적대적 플레이 회귀 (2026-09-05)
-  - `L1594` 바라보는 방향 기록 — `recordUntilJs` (2026-10-21)
-  - `L1609` 런타임 QA 체크포인트 — 늦은 단계는 타이틀부터 다시 하지 않는다 (2026-10-21, hard rule)
-- `L1789` sceneTestRunner 의 자율 이동 관측 공백 (2026-08-27)
-- `L1796` NPC 배회 런타임 QA — `npm run qa:runtime -- --scenario npc-movement` (2026-09-17)
-- `L1810` fakeDom 은 프로덕션이 쓰는 브라우저 전역을 빠짐없이 준다 (2026-08-29)
-  - `L1831` Shared fake DOM enhancement contracts (2026-09-08)
-- `L1863` bugfix-sweep 실제 표면 하네스 (2026-08-29)
-- `L1876` 마을 설계서 (2026-09-05)
-- `L1881` 공포 제작 개정 QA와 개발 서버 전송 (2026-09-05)
-- `L1891` 상점 진열 중심 편집 검증 (2026-09-05)
-- `L1899` 실제 DB로 나가는 전체 검사 요청 (2026-09-05 실측)
-- `L1905` Request-bound functional acceptance verification (2026-09-07)
-- `L1973` 조수 보상 저작과 출하 플레이어 검증 (2026-09-06)
-- `L1983` 실내 조립·형상 검증 (2026-09-05)
-- `L1987` Feature16 player preferences / inventory / shop (2026-09-21)
-- `L1999` Feature16 통합 검증 (2026-09-21)
-  - `L2007` 필드 HUD 브라우저 증거 (2026-09-21)
-  - `L2013` 장르 HUD 시각 확인 (2026-09-21)
-- `L2021` 실제 첫 생성 → 정본 재로드 → 출하 ZIP 플레이 (2026-10-03)
-- `L2046` 맵 크기 성능 실측 (2026-10-01)
-  - `L2067` 화면 주변 타일 유지 검증
-  - `L2090` 공식 512×512 저작 상한 검증
-  - `L2118` 공식 1024×1024 저작 상한과 성능 검증
-- `L2136` 첫 자동 게임의 실제 대사 대기 (2026-10-04)
-  - `L2152` Maker repair and click-first startup (2026-10-04)
-- `L2177` 조수 기능별 실제 수행 점검 (2026-10-05)
-- `L2181` FF6 수정 A 헤드리스 프로브 (2026-10-15)
-- `L2187` 몬스터 여정 영상 (2026-10-07)
-- `L2194` 세계 변형·입구·지형 조우 · ct-vehicle 픽스처 (2026-10-15, worker B)
-- `L2204` 필드 스킬 게이트 시험 (2026-10-15, FF6 수정 C)
-- `L2215` CT 회귀 시나리오 복구 (2026-10-15)
-- `L2226` 팀 교대 전투 프로브 (2026-10-15, FF6 수정 A)
-- `L2234` `qa:game check` 자동 플레이가 연애물을 거짓으로 막던 네 원인 (2026-10-16)
-- `L2245` 연애 조수 한 편의 완성도 측정 — 조수 대용 3판 (2026-10-16, 2차 수리 C)
-- `L2251` 몬스터 마을 시스템 시각 QA (2026-10-16)
-- `L2255` 연애 3차 수리 검증 — 조수 대용 + 출하 플레이어 (2026-10-16, romance-fix-3)
-- `L2262` 대사창 읽기 보조 검증 (2026-10-17)
-- `L2269` 미연시 추가 화면 검증 (2026-10-17)
-- `L2276` 에이전트 플레이 세션 · 재현 · 게임 카탈로그 (2026-10-22)
+- `L53` PR 판정 = ci-fast(pull_request), 머지 = scripts/merge-pr.mjs, ci-full = 4시간 cron (2026-10-25)
+- `L61` main 의 ci-fast 는 다음 머지가 진행 중 잡을 끊지 않는다 (2026-09-26)
+- `L68` parity 스위트 CI OOM (2026-09-19)
+- `L80` ci-full vitest 는 힙 합을 75% 안에 둔다 (2026-10-04)
+- `L104` 게이트 반복은 `--changed` 로 좁힌다 (2026-09-13)
+  - `L131` vitest 는 왜 28분이고, 무엇을 만져도 안 줄어드는가 (2026-09-14 실측)
+  - `L160` AI 조수 가족이 왜 이렇게 잘 뒤집히나 (실측)
+- `L169` 격리 원장 `test/QUARANTINE.md` (2026-09-13)
+- `L187` 브라우저 테스트는 별도 스테이지다 (2026-09-13)
+- `L201` P5 delivery gates and the P4 regressions they caught (2026-09-09)
+  - `L203` Open: checkpoint writes still slow the authoring loop
+- `L255` P4 checkpoint storage and boot admission (2026-09-09)
+- `L309` P3 request-bound fixture alignment (2026-09-08)
+- `L334` Issue 693 verification contracts (2026-09-08)
+- `L358` Request-coverage gate follow-up (2026-09-08)
+- `L401` Native event battle reliability QA (2026-09-08)
+- `L437` Real large-world player QA (2026-09-07)
+- `L446` CSS budget: file count is informational
+- `L458` Selection and composer surface contracts (2026-09-06)
+- `L477` P3/current-main composition fixtures (2026-09-08)
+  - `L504` Cooperative Node scheduling in long session fixtures (2026-09-08)
+- `L520` AI turn observation contracts (2026-09-06)
+  - `L541` P2 R1 retained-draft Ask (2026-09-07)
+  - `L579` P2 R3 wiki delivery (2026-09-07)
+- `L608` P3 ownership and stale-base verification (2026-09-07)
+  - `L683` Autosave status fixture ownership (2026-09-08)
+  - `L697` Project history transport isolation
+- `L729` Canonical project storage versus AI history (2026-09-06)
+  - `L731` 데스크톱(Electron) 스모크는 이렇게 돈다 (2026-09-16)
+- `L753` Action RPG authoring and runtime proof (2026-09-07)
+- `L774` Database CSS ownership contracts (2026-09-06)
+- `L795` Audio description verification
+  - `L819` Real editor surfaces
+  - `L846` Exported-player playback and dependency evidence
+- `L895` Mac onboarding Phase 1 contracts (2026-09-06)
+- `L923` Task10 field-input verification and limits (2026-09-06)
+- `L939` Life QA observation and action receipts (2026-09-06)
+  - `L947` Task5 validation correction (2026-09-06)
+  - `L955` Task5 Q1 audio boundary correction (2026-09-06)
+- `L963` 기존 실패 비교는 진단 내용까지 확인한다 (2026-09-05)
+- `L980` Esc 메뉴 동작·시각 검증 (2026-09-05)
+- `L998` Completed-house Phase 2 verification (2026-09-06)
+- `L1029` P2 낚시·채집·도감·박물관 focused gate (2026-08-25)
+- `L1036` Map-owned overlays: actual AI-turn browser regression (2026-09-05)
+- `L1045` Editor e2e boot-overlay determinism (2026-08-31)
+- `L1050` 영역 다듬기 focused gate (2026-08-31)
+- `L1057` AI 이벤트 배치 통행성 focused gate (2026-08-30)
+- `L1065` 체공(점프·낙하) focused gate (2026-08-29)
+  - `L1074` 좌표 목적지 이동 QA — `node scripts/qa-coordinate-move.mjs` (OPRN-OUT-013, 2026-09-10)
+  - `L1091` 좌표 이동 저작 폼 QA — `node scripts/capture-coordinate-move-form.mjs`
+  - `L1100` 체공 런타임 QA — `npm run qa:runtime -- --scenario hop`
+  - `L1130` 워크트리에 `node_modules` 가 없을 때 (2026-08-29 실측)
+- `L1193` Roguelike run Phase 0–3 coverage (2026-08-24)
+  - `L1204` 조건 게이트를 부하 중에 재지 마라 (실측 2026-08-29)
+- `L1213` 데이터베이스 UI/UX 계측 하네스 (2026-08-30)
+  - `L1237` 가상 요소 텍스트를 안 재면 `tinyFont 0` 은 "안 봤다" 는 뜻이다 (실측)
+  - `L1258` 0px 이미지는 "깨진 것" 과 "접힌 것" 을 갈라야 한다 (실측)
+  - `L1264` 타이밍에 취약한 e2e 가 빨간불이면 그 스펙이 단정하는 속성을 직접 재라 (실측 2026-08-30)
+  - `L1287` 소스를 grep 하는 테스트는 이름만 봐서는 회귀를 못 가른다 (실측)
+- `L1295` Agent validation rule
+- `L1406` Event-editor trust-loop validation (2026-07-30)
+- `L1411` 얼굴 바꾸기(changeFace) 폼 시각 계약 (2026-08-28 실측)
+- `L1430` Tile-to-world persistence concurrency (task20)
+- `L1436` P2 spatial focused gate (2026-08-25)
+- `L1445` 대화창 연출 focused gate (2026-08-30)
+- `L1520` 워크트리 e2e 는 dev 서버가 조용히 안 뜬다 (2026-08-27 실측)
+  - `L1539` `locator.click()` 은 잘림 버그를 구조적으로 못 잡는다 (2026-08-29 실측)
+  - `L1551` 스크롤이 생겼다고 다 닿는 건 아니다 — 가운데 정렬 넘침 (2026-08-30 실측)
+  - `L1559` 미정의 커스텀 프로퍼티는 콘솔에 아무 말도 남기지 않는다 (2026-08-30 실측)
+  - `L1566` `ERR_NETWORK_CHANGED` 는 HMR 말고 호스트 인터페이스 때문에도 터진다 (2026-08-28 실측)
+- `L1588` 런타임(게임) 전용 비전 QA 하네스 (2026-08-28)
+  - `L1590` 메뉴 적대적 플레이 회귀 (2026-09-05)
+  - `L1602` 바라보는 방향 기록 — `recordUntilJs` (2026-10-21)
+  - `L1617` 런타임 QA 체크포인트 — 늦은 단계는 타이틀부터 다시 하지 않는다 (2026-10-21, hard rule)
+- `L1797` sceneTestRunner 의 자율 이동 관측 공백 (2026-08-27)
+- `L1804` NPC 배회 런타임 QA — `npm run qa:runtime -- --scenario npc-movement` (2026-09-17)
+- `L1818` fakeDom 은 프로덕션이 쓰는 브라우저 전역을 빠짐없이 준다 (2026-08-29)
+  - `L1839` Shared fake DOM enhancement contracts (2026-09-08)
+- `L1871` bugfix-sweep 실제 표면 하네스 (2026-08-29)
+- `L1884` 마을 설계서 (2026-09-05)
+- `L1889` 공포 제작 개정 QA와 개발 서버 전송 (2026-09-05)
+- `L1899` 상점 진열 중심 편집 검증 (2026-09-05)
+- `L1907` 실제 DB로 나가는 전체 검사 요청 (2026-09-05 실측)
+- `L1913` Request-bound functional acceptance verification (2026-09-07)
+- `L1981` 조수 보상 저작과 출하 플레이어 검증 (2026-09-06)
+- `L1991` 실내 조립·형상 검증 (2026-09-05)
+- `L1995` Feature16 player preferences / inventory / shop (2026-09-21)
+- `L2007` Feature16 통합 검증 (2026-09-21)
+  - `L2015` 필드 HUD 브라우저 증거 (2026-09-21)
+  - `L2021` 장르 HUD 시각 확인 (2026-09-21)
+- `L2029` 실제 첫 생성 → 정본 재로드 → 출하 ZIP 플레이 (2026-10-03)
+- `L2054` 맵 크기 성능 실측 (2026-10-01)
+  - `L2075` 화면 주변 타일 유지 검증
+  - `L2098` 공식 512×512 저작 상한 검증
+  - `L2126` 공식 1024×1024 저작 상한과 성능 검증
+- `L2144` 첫 자동 게임의 실제 대사 대기 (2026-10-04)
+  - `L2160` Maker repair and click-first startup (2026-10-04)
+- `L2185` 조수 기능별 실제 수행 점검 (2026-10-05)
+- `L2189` FF6 수정 A 헤드리스 프로브 (2026-10-15)
+- `L2195` 몬스터 여정 영상 (2026-10-07)
+- `L2202` 세계 변형·입구·지형 조우 · ct-vehicle 픽스처 (2026-10-15, worker B)
+- `L2212` 필드 스킬 게이트 시험 (2026-10-15, FF6 수정 C)
+- `L2223` CT 회귀 시나리오 복구 (2026-10-15)
+- `L2234` 팀 교대 전투 프로브 (2026-10-15, FF6 수정 A)
+- `L2242` `qa:game check` 자동 플레이가 연애물을 거짓으로 막던 네 원인 (2026-10-16)
+- `L2253` 연애 조수 한 편의 완성도 측정 — 조수 대용 3판 (2026-10-16, 2차 수리 C)
+- `L2259` 몬스터 마을 시스템 시각 QA (2026-10-16)
+- `L2263` 연애 3차 수리 검증 — 조수 대용 + 출하 플레이어 (2026-10-16, romance-fix-3)
+- `L2270` 대사창 읽기 보조 검증 (2026-10-17)
+- `L2277` 미연시 추가 화면 검증 (2026-10-17)
+- `L2284` 에이전트 플레이 세션 · 재현 · 게임 카탈로그 (2026-10-22)
 
 ### `openwiki/tile-geometry.md` — 12KB · 145줄 · ~3,629 토큰
 
@@ -3510,7 +3513,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L347` 픽셀 크기 기록 계약 (2026-09-22)
 - `L369` AI 하위 페인트의 상위 가구 보존 (2026-09-25)
 
-### `openwiki/tileset-reference-documents.md` — 59KB · 602줄 · ~18,202 토큰 · 통째읽기 잘림
+### `openwiki/tileset-reference-documents.md` — 60KB · 603줄 · ~18,386 토큰 · 통째읽기 잘림
 
 - `L5` 공용 타일셋 참고 이미지는 호스트 주소다 (2026-09-26)
 - `L20` 공용 SQLite 지역 참고문서 조회 (2026-09-24)
@@ -3519,40 +3522,40 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L89` 사용자 경로와 정본
 - `L106` 타일 화면 구성 (2026-09-21)
 - `L127` 저장 계약
-- `L139` AI 선행 읽기 계약
-- `L173` Slates 이관
-- `L186` 확인 자료와 범위
-- `L192` Castle2 성채 학습 이관
-- `L204` 숲마을 공용 자료 (2026-09-21)
-- `L220` 공용 forest_harmony 참고문서 보충 (2026-09-22)
-  - `L235` Castle2 공용 기본 제공 수정
-- `L244` 실행형 부품·조립·검증 자료
-- `L262` 공용 숲 실행 조립법 (2026-09-22)
-  - `L279` 상세 공용 조립 계약 (public-assembly-v2)
-- `L291` 이슬여울 마을 장식 표본 (2026-09-22)
-- `L315` 다양한 마을의 번들 소유 참고문서 (2026-09-23)
-  - `L331` 절벽 조립 교정 (2026-09-23)
-  - `L341` 잔디 경계 개정3 (2026-09-23)
-  - `L351` 굽은 지형·입구 개정4 (2026-09-23)
-  - `L361` 생활 마당 개정5 (2026-09-23)
-  - `L370` 사용 목적 개정6 (2026-09-23)
-  - `L380` 공동 공간·정원 개정7 (2026-09-23)
-  - `L391` 계단 대지 개정8 (2026-09-23)
-  - `L406` 강과 폭포 개정9 (2026-09-23)
-  - `L418` 컨셉 마을 3종 · 창문 개정10 (2026-09-23)
-  - `L434` 판타지 장소 11곳 · 상점·성 내부·마왕성 (2026-09-23)
-  - `L450` 기후 마을 · 설원·화산 (2026-09-23)
-  - `L463` 사막·가을 기후 + 마을 사이 필드 (2026-09-23)
-  - `L476` 나무 몸통 개정 — 잘린 줄기 없애기 (2026-09-23)
-  - `L495` 공용 PAW 장면 실행 경로 (2026-09-25)
-- `L516` PAW 천장 아래 벽과 실제 가게2종 (2026-09-25)
-  - `L538` 수관 잎 채움 (2026-09-24)
-- `L549` 번들 참고 이미지는 정적 경로다 (2026-09-25)
-  - `L566` Emerald 몬스터 원본 도트 변형 (2026-10-04)
-- `L570` 버들항 밝은 잔디 접지·꾸밈 공용 용도 (2026-10-04)
-- `L599` 버들항 공동마당 배치 참고문서 (2026-10-04)
+- `L140` AI 선행 읽기 계약
+- `L174` Slates 이관
+- `L187` 확인 자료와 범위
+- `L193` Castle2 성채 학습 이관
+- `L205` 숲마을 공용 자료 (2026-09-21)
+- `L221` 공용 forest_harmony 참고문서 보충 (2026-09-22)
+  - `L236` Castle2 공용 기본 제공 수정
+- `L245` 실행형 부품·조립·검증 자료
+- `L263` 공용 숲 실행 조립법 (2026-09-22)
+  - `L280` 상세 공용 조립 계약 (public-assembly-v2)
+- `L292` 이슬여울 마을 장식 표본 (2026-09-22)
+- `L316` 다양한 마을의 번들 소유 참고문서 (2026-09-23)
+  - `L332` 절벽 조립 교정 (2026-09-23)
+  - `L342` 잔디 경계 개정3 (2026-09-23)
+  - `L352` 굽은 지형·입구 개정4 (2026-09-23)
+  - `L362` 생활 마당 개정5 (2026-09-23)
+  - `L371` 사용 목적 개정6 (2026-09-23)
+  - `L381` 공동 공간·정원 개정7 (2026-09-23)
+  - `L392` 계단 대지 개정8 (2026-09-23)
+  - `L407` 강과 폭포 개정9 (2026-09-23)
+  - `L419` 컨셉 마을 3종 · 창문 개정10 (2026-09-23)
+  - `L435` 판타지 장소 11곳 · 상점·성 내부·마왕성 (2026-09-23)
+  - `L451` 기후 마을 · 설원·화산 (2026-09-23)
+  - `L464` 사막·가을 기후 + 마을 사이 필드 (2026-09-23)
+  - `L477` 나무 몸통 개정 — 잘린 줄기 없애기 (2026-09-23)
+  - `L496` 공용 PAW 장면 실행 경로 (2026-09-25)
+- `L517` PAW 천장 아래 벽과 실제 가게2종 (2026-09-25)
+  - `L539` 수관 잎 채움 (2026-09-24)
+- `L550` 번들 참고 이미지는 정적 경로다 (2026-09-25)
+  - `L567` Emerald 몬스터 원본 도트 변형 (2026-10-04)
+- `L571` 버들항 밝은 잔디 접지·꾸밈 공용 용도 (2026-10-04)
+- `L600` 버들항 공동마당 배치 참고문서 (2026-10-04)
 
-### `openwiki/title-opening-effects.md` — 42KB · 409줄 · ~12,693 토큰
+### `openwiki/title-opening-effects.md` — 48KB · 441줄 · ~14,436 토큰
 
 - `L6` 데이터
 - `L18` 프리셋
@@ -3572,6 +3575,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L337` 스토리보드·독립 그림 모션·원곡 BGM (2026-10-04 후속)
   - `L388` 참고한 연출 계약
 - `L398` 실제 첫 맵을 오프닝 뒤에서 준비 (2026-10-05)
+- `L410` 타이틀 앞 인트로 트랙·별·달리기·PRESS START·이름 쇼케이스 (2026-10-25, 아스트라 호라이즌 1.18)
 
 ### `openwiki/ui-discovery-pilot.md` — 6KB · 108줄 · ~1,430 토큰
 
@@ -3602,6 +3606,18 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L175` 저장된 집에서 실제 마을로 (2026-09-12)
   - `L191` 조밀한 소형 주택 마을로 수정 (2026-09-13)
 - `L210` 저장된 소규모 집 구성 (2026-09-13)
+
+### `openwiki/wasteland-ruins.md` — 20KB · 146줄 · ~6,096 토큰
+
+- `L6` 파일
+- `L23` 조각
+- `L48` 구성 규칙 (검수 r1~r3 에서 배운 것)
+  - `L67` r5~r7 에서 더한 규칙
+  - `L96` r9 에서 더한 규칙
+  - `L107` r10~r11 에서 더한 규칙
+  - `L118` r61~r62 에서 더한 것 (바닥 덧그림)
+- `L130` 검수 기록
+- `L142` 마을 종류 표 연결
 
 ### `openwiki/wizarding-world.md` — 17KB · 147줄 · ~5,224 토큰
 
