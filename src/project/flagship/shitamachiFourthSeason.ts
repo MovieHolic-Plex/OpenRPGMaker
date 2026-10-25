@@ -693,8 +693,8 @@ function buildTitleAndOpening(project: Project, spots: { jiho: Cell; yuna: Cell;
     }
     if (index === shots.length - 1) {
       execTool(project, "upsert_opening_light_fx", {
-        shotId: s.id, layerId: "lantern", kind: "glow", x: 14 * 16 + 16 - crop.x - 48, y: 9 * 16 + 8 - crop.y - 48, width: 96, height: 96,
-        color: "#ffb35c", blend: "lighter", inner: 0.3, pulse: { hz: 0.6, amount: 0.3, pattern: "pulse", seed: 7 },
+        shotId: s.id, layerId: "lantern", kind: "glow", x: 15 * 16 - crop.x - 20, y: 9 * 16 + 8 - crop.y - 20, width: 40, height: 40,
+        color: "#ff9a3c", blend: "screen", inner: 0.12, pulse: { hz: 0.5, amount: 0.25, pattern: "pulse", seed: 7 },
       });
     }
     execTool(project, "set_opening_caption", { shotId: s.id, layerId: "caption", letterbox: 0.15, color: "#fff4e6", cues: [{ atMs: 300, text: s.caption, typewriterMs: 900 }] });

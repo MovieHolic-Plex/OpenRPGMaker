@@ -475,6 +475,73 @@
    "lint0": [
     "scene-transfer-facing"
    ]
+  },
+  {
+   "id": "opening-map-view-backdrop",
+   "label": "맞는 오프닝 그림이 없을 때 게임 맵 그대로 오프닝 배경",
+   "port": 19524,
+   "lessons": [
+    "opening-map-view-background",
+    "opening-caption-only"
+   ],
+   "prompt": "일본 상점가 거리 맵과 빵집 실내를 만들고, 새 게임을 누르면 나오는 3컷짜리 짧은 오프닝을 붙여 줘. 오프닝 그림은 새로 만들지 말고 우리 게임 맵 그대로 보여 줘 — 1컷 상점가 정문, 2컷 빵집 안, 3컷 다시 상점가 큰길. 컷마다 한 줄 자막만 나오게 해.",
+   "requirements": [
+    "the opening has three animatic shots",
+    "every shot's background layer uses resourceId map-view:<mapId> of a map that exists in the project (no unrelated stills)",
+    "shots 1 and 3 use the street map with different crops",
+    "each shot has a caption layer with one cue and the shot narration is empty, so the caption is shown once",
+    "the opening plays on new game and the player reaches the field afterwards"
+   ]
+  },
+  {
+   "id": "romance-story-preset-no-hp",
+   "label": "이야기형 연애 게임 — 체력 하트 대신 호감 하트, 하루 루프 없음",
+   "port": 19525,
+   "lessons": [
+    "romance-preset-story-mode",
+    "no-hp-hud-in-romance"
+   ],
+   "prompt": "고등학생 연애 이야기 게임을 만들 거야. 전투도 날짜 넘기기도 없고, 장면을 따라 걸으며 대화하는 게임이야. 화면 왼쪽 위에 체력 같은 숫자가 나오지 않게 하고 대신 히로인 둘의 호감 하트만 보이게 해 줘. 메뉴에서 호감도와 대화 기록을 볼 수 있어야 해.",
+   "requirements": [
+    "romance defaults are applied with the day loop off (no timeSystem/socialLoop deadline ending)",
+    "the field HUD shows no HP/vitals and no clock; it shows only the affection widget",
+    "the field menu offers relationships and backlog entries",
+    "two heroines exist as project characters and talking to them can change friendship"
+   ]
+  },
+  {
+   "id": "jp-street-shop-doors-walk-in",
+   "label": "일본 상점가 가게 문으로 걸어 들어가 실내에서 다시 걸어 나오기",
+   "port": 19526,
+   "lessons": [
+    "jp-city-street-shop-doors",
+    "link-jp-city-interior"
+   ],
+   "prompt": "시타마치 상점가 거리 맵을 만들고, 거리의 빵집 문과 목욕탕(센토) 문으로 걸어 들어가면 각각 빵집 실내와 센토 실내로 가게 해 줘. 순간이동 메뉴 말고 진짜 문으로. 안에서 출구로 걸어 나오면 그 가게 문 앞으로 돌아와야 해. 빵집 안에는 점원 한 명을 세워 줘.",
+   "requirements": [
+    "the street map is composed with compose_jp_city_street and two interiors exist",
+    "each interior is linked to a street building door with link_jp_city_interior (enter events on the street door, exit events inside)",
+    "there is no teleport/choice menu used instead of doors",
+    "walking out of each interior lands on the street cell in front of the same door",
+    "the bakery clerk NPC stands on a passable floor cell reachable from the bakery entrance"
+   ]
+  },
+  {
+   "id": "affection-gated-confession-endings",
+   "label": "쌓인 호감이 고백 결말을 가른다",
+   "port": 19527,
+   "lessons": [
+    "affection-gated-ending",
+    "ending-conditions"
+   ],
+   "prompt": "히로인 한 명과의 짧은 연애 장면 게임을 만들어 줘. 장면 두 개에서 대답을 고르면 마음 점수가 오르거나 안 오르고, 마지막 옥상에서 고백하면 점수가 4 이상일 때만 연인 결말, 아니면 친구 결말이 나와야 해. 고백 선택지에 결말 이름이나 내부 이름이 보이면 안 돼.",
+   "requirements": [
+    "a score variable is raised by choices in at least two scenes",
+    "the confession branches with a fork on the score variable (>= 4) into two different triggerEnding commands",
+    "two endings are defined; the lover ending has a condition on the score",
+    "no choice text contains ending names, map ids or parenthesised notes",
+    "both endings are reachable by some choice sequence"
+   ]
   }
  ]
 }
