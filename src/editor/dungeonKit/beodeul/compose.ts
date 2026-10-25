@@ -367,12 +367,19 @@ export function composeDungeon(ts: TilesetDef, spec: DungeonSpec): DungeonCompos
   if (type === "mine" && hasKit("bd-pick-aqueduct-sewer-floor-plank")) {
     const plank = "bd-pick-aqueduct-sewer-floor-plank";
     const paintRow = (y: number, x0: number, x1: number) => { for (let x = x0; x < x1; x += 1) if (isWalk(x, y) && !bridge[idx(x, y)]) lower[idx(x, y)] = tileOf(plank, x, y); };
-    for (const c of corridors) {
-      if (c.dir !== "E" && c.dir !== "W") continue;
-      const ty = c.rect.y + Math.floor(c.rect.h / 2);
-      paintRow(ty, c.rect.x, c.rect.x + c.rect.w);
-      for (const id of [c.a, c.b]) { const rm = rooms.find((q) => q.id === id); if (rm && (rm.kind === "junction" || rm.kind === "entrance")) paintRow(rm.y + Math.floor(rm.h / 2), rm.x, rm.x + rm.w); }
+    // 방마다 선로 한 줄 — 높이가 다른 통로 둘이 한 방에 두 줄을 칠해 두꺼운 널판 띠가 됐고, 통로 가운데 줄이 방 줄과 달라 문목에서 한 칸 꺾였다(2026-10-25 floor VQA r5 mine).
+    const roomRow = new Map<string, number>();
+    const horiz = corridors.filter((c) => c.dir === "E" || c.dir === "W");
+    for (const c of horiz) {
+      const mid = c.rect.y + Math.floor(c.rect.h / 2);
+      for (const id of [c.a, c.b]) { const rm = rooms.find((q) => q.id === id); if (rm && (rm.kind === "junction" || rm.kind === "entrance") && !roomRow.has(rm.id) && mid >= rm.y && mid < rm.y + rm.h) roomRow.set(rm.id, mid); }
     }
+    for (const c of horiz) {
+      const mid = c.rect.y + Math.floor(c.rect.h / 2);
+      const near = [c.a, c.b].map((id) => roomRow.get(id)).find((r) => r !== undefined && r >= c.rect.y && r < c.rect.y + c.rect.h);
+      paintRow(near ?? mid, c.rect.x, c.rect.x + c.rect.w);
+    }
+    for (const [id, ty] of roomRow) { const rm = rooms.find((q) => q.id === id)!; paintRow(ty, rm.x, rm.x + rm.w); }
   }
   // 액체: 물은 운하 오토타일(돌 둑 테두리), 용암은 용암 키트 무늬. 다리 칸 밑도 같은 액체로 이어 보이게 마스크에 센다.
   const liqLike = (x: number, y: number) => inb(x, y) && (liquid[idx(x, y)] === 1 || bridge[idx(x, y)] === 1);
