@@ -173,6 +173,32 @@ export function sealLockedRoom(run: BuildRun, mapId: string, eventId: string): C
 }
 
 /** 사슬 한 번에 짓기. 앞 고리가 만든 것(learn·reward.flag·reward.item)만 뒤 고리의 needs 가 될 수 있다. */
+/** 누구나 먼저 쳐 보는 번호(2026-10-25 판정 J63: 1024·1234·0000 금고). 3자리 이상만 본다. */
+const COMMON_CODES = new Set(["1024", "2048", "1004", "2580", "1212", "1122", "6969", "1357", "2468", "0123", "9876"]);
+export function trivialCode(code: string): boolean {
+  if (!/^\d{3,}$/u.test(code)) return false;
+  if (COMMON_CODES.has(code)) return true;
+  const d = [...code].map(Number);
+  if (d.every((x) => x === d[0])) return true;
+  const steps = d.slice(1).map((x, i) => x - d[i]!);
+  return steps.every((s) => s === 1) || steps.every((s) => s === -1);
+}
+
+/**
+ * 고르기 자물쇠의 보기 순서(J63: 정답이 늘 첫 보기라 첫 칸만 누르면 풀렸다). 보이는 다섯 칸 안에 정답을 반드시 넣고,
+ * 이름에서 나온 고정 해시로 정답 자리를 첫 칸이 아닌 곳에 둔다 — 같은 입력은 늘 같은 순서(재현).
+ */
+export function shuffledOptions(options: readonly string[], answer: string, seed: string): string[] {
+  const others = [...new Set(options.filter((o) => o !== answer))].slice(0, 4);
+  if (!others.length) return [answer];
+  let h = 7;
+  for (const c of seed) h = (h * 31 + c.charCodeAt(0)) | 0;
+  h = Math.abs(h);
+  const rotated = others.map((_, i) => others[(i + h) % others.length]!);
+  const at = 1 + (h % others.length);
+  return [...rotated.slice(0, at), answer, ...rotated.slice(at)];
+}
+
 export function buildPuzzleChain(run: BuildRun, args: ChainArgs): ContentBuildResult {
   const warnings: string[] = [];
   const eventIds: { mapId: string; eventId: string }[] = [];
@@ -241,9 +267,10 @@ export function buildPuzzleChain(run: BuildRun, args: ChainArgs): ContentBuildRe
       let attempt: Obj[];
       if (link.options?.length) {
         if (!link.options.includes(link.code)) return fail(`${index + 1}번 고리(code): options 에 정답 ${link.code} 이 없다`);
-        attempt = [{ kind: "choices", cancelBehavior: "branch", cancelBranch: [], options: link.options.slice(0, 5).map((text) => ({ text, branch: text === link.code ? [...rewardCmds(), { kind: "setSwitch", switchId: solved, value: true }] : say(link.wrongLines ?? ["…아무 일도 일어나지 않는다."]) })) }];
+        attempt = [{ kind: "choices", cancelBehavior: "branch", cancelBranch: [], options: shuffledOptions(link.options, link.code, `${chainKey}:${index}`).map((text) => ({ text, branch: text === link.code ? [...rewardCmds(), { kind: "setSwitch", switchId: solved, value: true }] : say(link.wrongLines ?? ["…아무 일도 일어나지 않는다."]) })) }];
       } else {
         if (!/^\d{1,8}$/u.test(link.code)) return fail(`${index + 1}번 고리(code): 숫자 자물쇠의 code 는 1~8자리 숫자 — 글자 답이면 options 로 고르게 한다`);
+        if (trivialCode(link.code)) return fail(`${index + 1}번 고리(code): 정답 ${link.code} 은 아무나 먼저 쳐 보는 번호다(같은 숫자·차례 숫자·1024 같은 흔한 번호) — 단서에서만 알 수 있는 번호(날짜·시계 바늘·책 쪽수를 이은 것)로 바꾼다`);
         const variableId = `var_${chainKey}_${index + 1}`;
         run.call("declare_story_flag", { action: "declare", id: `${chainKey}-code-${index + 1}`, kind: "variable", targetId: variableId, description: `${args.name}: 입력한 번호` });
         attempt = [{ kind: "inputNumber", variableId, digits: link.code.length },
