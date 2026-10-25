@@ -1,0 +1,496 @@
+{
+ "harness": "building-kit/massing",
+ "note": "bk-massing-100 덩어리 모형을 실제 손 도트 건물로. 크기는 칸(16px) 목표 — 버들항 기준 건물과 같은 배율. 문은 정확히 하나, 문 아랫칸 = 그림 맨 아래 줄. 사람(캐릭터)·글자·상표 금지.",
+ "rules": [
+  "16px 칸, 계열 oprn-atlas — 버들항(beodeul_city)과 같은 맵에 섞인다. 빛은 왼쪽 위.",
+  "3/4 탑뷰: 지붕 윗면이 면으로 크게 보이고 남쪽 정면이 보인다. 옆면·아이소 금지. 정면 입면도(지붕이 얇은 띠) 금지.",
+  "박공 정면 질량은 박공 삼각벽이 남쪽을 보고 용마루가 북쪽으로 물러난다(세로선). 정면과 나란한 용마루 지붕은 처마→용마루 사면이 넓게 보인다.",
+  "날개는 본채 지붕에 골로 이어져 한 채로 보인다(사이에 땅 없음).",
+  "바깥 윤곽은 먹선(밝기 ≤ 0.12)이 아니라 재질의 어두운 단. 바닥 그림자는 그리지 않는다(설치가 따로 깐다).",
+  "색은 palette.json 글자만. 면을 한 색으로 칠하지 않는다 — 기와 낱장 변화·회벽 점묘·막돌·창턱·꽃상자·유리 반짝임·징 박힌 문 같은 버들항 수준의 디테일.",
+  "난수·잡음 채우기 금지 — 손으로 고른 좌표·행 문자열·손 motif.",
+  "문은 정확히 하나(D 칸 1~2개 세로), 문 아래 칸은 키트 밖 땅. 벽 칸 X, 지붕·처마·탑 윗부분처럼 사람 뒤로 지나가는 칸 *, 빈 칸 ."
+ ],
+ "buildings": [
+  {
+   "id": "cottage",
+   "name": "단층 오두막",
+   "massing": "1",
+   "size": [
+    5,
+    5
+   ],
+   "brief": "모임지붕 1층, 굴뚝 하나, 회벽 반목조. 가장 작은 살림집.",
+   "refs": [
+    "bd-house-h101_0",
+    "bd-house-lodge"
+   ],
+   "material": "plaster"
+  },
+  {
+   "id": "gable-cottage",
+   "name": "박공 정면 오두막",
+   "massing": "2",
+   "size": [
+    4,
+    6
+   ],
+   "brief": "박공 끝이 남쪽을 보는 1층 오두막, 짧은 지붕 깊이, 굴뚝. 정면 박공 삼각벽에 작은 다락 창.",
+   "refs": [
+    "bd-house-h101_2",
+    "bd-house-lodge"
+   ],
+   "material": "plaster"
+  },
+  {
+   "id": "jetty-house",
+   "name": "위층이 튀어나온 2층 집",
+   "massing": "3",
+   "size": [
+    5,
+    7
+   ],
+   "brief": "막돌 1층 위로 반목조 2층이 2~3px 앞으로 튀어나온다(아래 들보 그늘). 박공 정면.",
+   "refs": [
+    "bd-house-h102_1",
+    "bd-house-inn"
+   ],
+   "material": "plaster"
+  },
+  {
+   "id": "longhouse",
+   "name": "롱하우스",
+   "massing": "5",
+   "size": [
+    11,
+    5
+   ],
+   "brief": "사람·가축 한 지붕의 긴 1층 집, 오른쪽 끝에 낮은 외쪽 가축칸(판자벽). 문은 사람 쪽 하나.",
+   "refs": [
+    "bd-house-h101_0",
+    "bd-house-cstable"
+   ],
+   "material": "plaster"
+  },
+  {
+   "id": "thouse",
+   "name": "ㅜ자 집",
+   "massing": "6",
+   "size": [
+    9,
+    8
+   ],
+   "brief": "정면과 나란한 2층 본채(depth 1) 앞에 박공 정면 1층 날개(문)가 붙고 날개 지붕이 본채 지붕 속 골에서 만난다(한 윤곽).",
+   "refs": [
+    "bd-house-h124_0",
+    "bd-house-h122_0"
+   ],
+   "material": "plaster"
+  },
+  {
+   "id": "l-farmhouse",
+   "name": "ㄱ자 농가",
+   "massing": "7",
+   "size": [
+    9,
+    6
+   ],
+   "brief": "긴 1층 본채 + 오른쪽 앞으로 박공 정면 날개(문). 지붕이 골로 이어진다. 소박한 농가.",
+   "refs": [
+    "bd-house-h101_0",
+    "bd-house-h122_0"
+   ],
+   "material": "plaster"
+  },
+  {
+   "id": "merchant-house",
+   "name": "모임지붕 2층 상인 집",
+   "massing": "9",
+   "size": [
+    7,
+    7
+   ],
+   "brief": "막돌 1층 + 회벽 2층, 모임지붕, 굴뚝 둘, 1층에 걸린 간판(글자 없음).",
+   "refs": [
+    "bd-house-h106_1",
+    "bd-house-inn"
+   ],
+   "material": "plaster"
+  },
+  {
+   "id": "guildhall",
+   "name": "계단 박공 길드 회관",
+   "massing": "10",
+   "size": [
+    6,
+    9
+   ],
+   "brief": "3층 마름돌 회관, 정면 계단 박공(크로스텝), 청석 지붕, 층마다 창 셋, 아치 문.",
+   "refs": [
+    "bd-house-cathedral",
+    "bd-house-h124_0"
+   ],
+   "material": "stone"
+  },
+  {
+   "id": "inn",
+   "name": "여관",
+   "massing": "11",
+   "size": [
+    10,
+    7
+   ],
+   "brief": "막돌 1층 + 반목조 2층 본채(굴뚝 둘, 걸린 간판) + 오른쪽 마구간 외쪽지붕(판자벽, 열린 칸). 문은 본채 하나.",
+   "refs": [
+    "bd-house-inn",
+    "bd-house-cstable"
+   ],
+   "material": "plaster"
+  },
+  {
+   "id": "smithy",
+   "name": "대장간",
+   "massing": "12",
+   "size": [
+    7,
+    5
+   ],
+   "brief": "막돌 작업장 + 오른쪽 열린 외쪽 작업칸(기둥, 안에 불빛 도는 화덕·모루), 굵은 돌 굴뚝 연기 없음.",
+   "refs": [
+    "bd-house-smithy_town",
+    "bd-house-smithy"
+   ],
+   "material": "stone"
+  },
+  {
+   "id": "granary-mill",
+   "name": "방앗간",
+   "massing": "13",
+   "size": [
+    10,
+    7
+   ],
+   "brief": "2층 방앗간 본채(회벽·막돌) + 오른쪽 둥근 곡물탑(돌 원통 + 원뿔 기와 지붕).",
+   "refs": [
+    "bd-house-mill1",
+    "bd-mpart-tower"
+   ],
+   "material": "plaster"
+  },
+  {
+   "id": "chapel",
+   "name": "예배당",
+   "massing": "14",
+   "size": [
+    11,
+    9
+   ],
+   "brief": "청석 지붕 본당(마름돌, 뾰족 아치 창) + 오른쪽 사각 종탑(종창 + 높은 청석 첨탑) + 앞 박공 현관(문).",
+   "refs": [
+    "bd-house-cathedral",
+    "bd-mpart-tower"
+   ],
+   "material": "stone"
+  },
+  {
+   "id": "tower-house",
+   "name": "원통 망루가 붙은 집",
+   "massing": "15",
+   "size": [
+    9,
+    8
+   ],
+   "brief": "2층 회벽 집 + 오른쪽에 붙은 높은 돌 원통 망루(원뿔 기와 지붕, 좁은 창).",
+   "refs": [
+    "bd-manor-tower",
+    "bd-mpart-tower"
+   ],
+   "material": "plaster"
+  },
+  {
+   "id": "gatehouse",
+   "name": "성문루",
+   "massing": "16",
+   "size": [
+    10,
+    8
+   ],
+   "brief": "두 원탑(청석 원뿔 지붕, 총안 띠) 사이에 아치 통로 + 위 총안 회랑. 통로는 지나갈 수 있고(passages), 문은 왼쪽 탑 아래 작은 문 하나.",
+   "refs": [
+    "bd-wall-tower",
+    "bd-castle"
+   ],
+   "material": "stone"
+  },
+  {
+   "id": "dormer-house",
+   "name": "지붕창 3층 집",
+   "massing": "17",
+   "size": [
+    7,
+    8
+   ],
+   "brief": "3층 회벽 집, 청석 지붕에 지붕창 둘, 굴뚝. 층마다 창 셋, 가운데 문.",
+   "refs": [
+    "bd-house-manor",
+    "bd-house-h104_1"
+   ],
+   "material": "plaster"
+  },
+  {
+   "id": "cross-house",
+   "name": "교차 박공 십자형 집",
+   "massing": "18",
+   "size": [
+    9,
+    8
+   ],
+   "brief": "정면과 나란한 본채를 앞으로 튀어나온 높은 박공 날개가 가로지른다(십자). 날개 정면에 문.",
+   "refs": [
+    "bd-house-h124_0",
+    "bd-house-h122_0"
+   ],
+   "material": "plaster"
+  },
+  {
+   "id": "manor",
+   "name": "저택",
+   "massing": "19",
+   "size": [
+    12,
+    8
+   ],
+   "brief": "청석 모임지붕 본채 + 양쪽 앞으로 나온 박공 날개 둘 + 가운데 박공 현관(문), 마름돌 1층, 굴뚝 둘.",
+   "refs": [
+    "bd-house-manor",
+    "bd-manor-tower"
+   ],
+   "material": "stone"
+  },
+  {
+   "id": "keep-tower",
+   "name": "사각 성탑",
+   "massing": "20",
+   "size": [
+    5,
+    9
+   ],
+   "brief": "높은 사각 마름돌 탑, 맨 위 총안 흉벽 + 안쪽 작은 모임지붕 망루, 화살창, 아래 아치 문.",
+   "refs": [
+    "bd-wall-tower",
+    "bd-castle"
+   ],
+   "material": "stone"
+  },
+  {
+   "id": "tithe-barn",
+   "name": "십일조 헛간",
+   "massing": "M02",
+   "size": [
+    12,
+    6
+   ],
+   "brief": "긴 높은 헛간(돌 아래벽 + 판자 위벽, 큰 기와 지붕) + 앞 측랑 외쪽 + 가운데 박공 포치(큰 문 하나).",
+   "refs": [
+    "bd-house-ware0",
+    "bd-house-cstable"
+   ],
+   "material": "wood"
+  },
+  {
+   "id": "dovecote",
+   "name": "비둘기탑",
+   "massing": "M05",
+   "size": [
+    3,
+    5
+   ],
+   "brief": "작은 돌 원통 + 원뿔 기와 지붕, 몸통에 비둘기 구멍 줄, 아래 작은 문.",
+   "refs": [
+    "bd-mpart-tower",
+    "bd-house-mill1"
+   ],
+   "material": "stone"
+  },
+  {
+   "id": "market-hall",
+   "name": "기둥 위 시장홀",
+   "massing": "M08",
+   "size": [
+    8,
+    6
+   ],
+   "brief": "1층은 돌기둥 아치 개방(지나갈 수 있음 passages), 2층 반목조 홀, 기와 모임지붕. 문은 옆 계단 아래 하나.",
+   "refs": [
+    "bd-house-inn",
+    "bd-house-cafe"
+   ],
+   "material": "plaster"
+  },
+  {
+   "id": "town-hall",
+   "name": "시청",
+   "massing": "M09",
+   "size": [
+    9,
+    9
+   ],
+   "brief": "앞 1층 아케이드(아치 셋) + 2층 마름돌 본관(청석 지붕) + 뒤 가운데 종탑(시계 자리, 첨탑).",
+   "refs": [
+    "bd-house-manor",
+    "bd-house-cathedral"
+   ],
+   "material": "stone"
+  },
+  {
+   "id": "warehouse",
+   "name": "계단 박공 창고",
+   "massing": "M13",
+   "size": [
+    5,
+    10
+   ],
+   "brief": "5층 좁은 벽돌 창고, 계단 박공, 층마다 하역문 세로줄 + 꼭대기 들보 도르래, 아래 큰 문.",
+   "refs": [
+    "bd-house-ware0",
+    "bd-house-cathedral"
+   ],
+   "material": "stone"
+  },
+  {
+   "id": "windmill",
+   "name": "탑 풍차",
+   "massing": "M30",
+   "size": [
+    6,
+    8
+   ],
+   "brief": "원뿔대 돌 탑 + 회전 지붕(나무 널) + X자 날개 넷(정지), 아래 문.",
+   "refs": [
+    "bd-house-mill1",
+    "bd-mpart-tower"
+   ],
+   "material": "stone"
+  },
+  {
+   "id": "brewery",
+   "name": "양조장",
+   "massing": "M32",
+   "size": [
+    9,
+    7
+   ],
+   "brief": "2층 양조 본채(기와) + 높은 벽돌 굴뚝 + 옆 통 쌓인 1층 창고 외쪽.",
+   "refs": [
+    "bd-house-ware0",
+    "bd-house-smithy_town"
+   ],
+   "material": "plaster"
+  },
+  {
+   "id": "bakery",
+   "name": "빵집",
+   "massing": "M33",
+   "size": [
+    6,
+    5
+   ],
+   "brief": "1층 빵집(기와, 걸린 빵 간판) + 왼쪽에 붙은 둥근 돔 화덕(돌, 작은 굴뚝).",
+   "refs": [
+    "bd-house-h106_1",
+    "bd-house-cafe"
+   ],
+   "material": "plaster"
+  },
+  {
+   "id": "lighthouse",
+   "name": "등대",
+   "massing": "M38",
+   "size": [
+    5,
+    10
+   ],
+   "brief": "바위 받침 위 원뿔대 흰 돌탑(가로 띠), 맨 위 난간 + 유리 등실 + 원뿔 지붕, 아래 문.",
+   "refs": [
+    "bd-house-mill1",
+    "bd-wall-tower"
+   ],
+   "material": "stone"
+  },
+  {
+   "id": "great-hall",
+   "name": "대회당",
+   "massing": "C07",
+   "size": [
+    11,
+    8
+   ],
+   "brief": "높은 박공 지붕(청석) 마름돌 대회당, 긴 뾰족 아치 큰 창 줄, 큰 굴뚝, 버팀벽, 가운데 큰 아치 문.",
+   "refs": [
+    "bd-house-cathedral",
+    "bd-castle"
+   ],
+   "material": "stone"
+  },
+  {
+   "id": "armory-tower",
+   "name": "무기고 탑",
+   "massing": "C11",
+   "size": [
+    4,
+    7
+   ],
+   "brief": "좁은 창의 두꺼운 사각 탑, 총안 흉벽 윗면(걸어 다니는 바닥 보임), 쇠 덧댄 문.",
+   "refs": [
+    "bd-wall-tower",
+    "bd-castle"
+   ],
+   "material": "stone"
+  },
+  {
+   "id": "wizard-tower",
+   "name": "마법사 탑",
+   "massing": "C15",
+   "size": [
+    4,
+    11
+   ],
+   "brief": "가는 돌 원통 + 아주 높은 청석 원뿔 지붕(별 장식 깃대), 둥근 창 줄, 아래 아치 문.",
+   "refs": [
+    "bd-mpart-tower",
+    "bd-manor-tower"
+   ],
+   "material": "stone"
+  },
+  {
+   "id": "curtain-wall",
+   "name": "성벽 구간 + 원탑",
+   "massing": "C04",
+   "size": [
+    13,
+    7
+   ],
+   "brief": "마름돌 성벽(위 총안 + 목조 덧대기 회랑 지붕) 양쪽 끝까지 + 가운데 오른쪽 원탑(원뿔 청석 지붕). 문은 원탑 아래 하나. 성벽 칸은 막힘.",
+   "refs": [
+    "bd-castle",
+    "bd-wall-tower"
+   ],
+   "material": "stone"
+  },
+  {
+   "id": "barracks",
+   "name": "병영",
+   "massing": "C10",
+   "size": [
+    10,
+    6
+   ],
+   "brief": "2층 길쭉한 마름돌 병영(청석 박공 지붕, 굴뚝 셋, 좁은 창 줄), 가운데 문.",
+   "refs": [
+    "bd-house-barracks",
+    "bd-castle"
+   ],
+   "material": "stone"
+  }
+ ]
+}
