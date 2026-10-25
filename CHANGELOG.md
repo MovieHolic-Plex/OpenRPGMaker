@@ -5,6 +5,13 @@
 
 <!-- releases -->
 
+## 0.346.7 — 2026-10-26
+
+### 수정
+
+- **player** — release held keys when a gamepad disconnects (#3586) (`20cd0dc`)
+- **i18n** — call the ground layer 地上 in Japanese, not battle (#3585) (`e562220`)
+
 ## 0.346.6 — 2026-10-26
 
 ### 수정
