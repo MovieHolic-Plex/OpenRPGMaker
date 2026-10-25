@@ -9677,6 +9677,77 @@
      }
     }
    ],
+   "id": "fs2-timed-escape",
+   "prompt": "호수 얼음이 갈라지기 시작하면 60초 안에 북쪽 기슭까지 뛰게 해 줘. 늦으면 사당에서 다시. (이 마을 남쪽 끝에서 북쪽 끝까지를 얼음 호수로 치고, 남쪽 끝 칸을 사당 자리로 써.)",
+   "requires": [
+    "make_timed_escape 또는 엔진 timer 명령",
+    "화면 카운트다운 60초",
+    "바닥 칸이 시간 순서대로 무너짐(그림 바뀜·막힘·흔들림)",
+    "북쪽 출구 칸 닿으면 성공",
+    "시간 초과 시 체크포인트로 이동"
+   ],
+   "verify": "make_timed_escape(mapId, seconds 60, exit 북쪽 칸, checkpoint 남쪽 사당 칸, area+from south 또는 steps) / timer start 60 명령 / 남은 시간 조건 페이지의 changeTile+Shake Screen / 시간 초과 autorun 의 transfer 가 체크포인트 / 대사만으로 흉내내지 않음",
+   "suiteCategory": "fs2-escape"
+  },
+  {
+   "category": "game",
+   "kind": "logic",
+   "mode": "balanced",
+   "startTileset": "beodeul_city",
+   "startBuild": [
+    {
+     "tool": "author_beodeul_town",
+     "args": {
+      "mapId": "map_blank_start",
+      "name": "버들 마을",
+      "houseCount": 4,
+      "theme": "river",
+      "seed": 11
+     }
+    },
+    {
+     "tool": "place_npc",
+     "args": {
+      "mapId": "map_blank_start",
+      "id": "npc_chief",
+      "name": "촌장",
+      "x": 20,
+      "y": 16,
+      "movement": "fixed",
+      "graphic": {
+       "query": "노인 남성"
+      },
+      "pages": [
+       {
+        "lines": [
+         "어서 오게, 버들 마을일세."
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "tool": "place_npc",
+     "args": {
+      "mapId": "map_blank_start",
+      "id": "npc_smith",
+      "name": "대장장이",
+      "x": 14,
+      "y": 20,
+      "movement": "fixed",
+      "graphic": {
+       "query": "아저씨"
+      },
+      "pages": [
+       {
+        "lines": [
+         "망치 소리 좋지?"
+        ]
+       }
+      ]
+     }
+    }
+   ],
    "id": "fs-follow-breadcrumb",
    "prompt": "동료들이 주인공을 따라올 때 포켓몬·마더·크로노 트리거처럼 주인공이 밟은 칸을 그대로 한 걸음 뒤에서 밟게 해 줘. 지름길로 가로지르지 말고, 주인공이 서면 그 자리에 멈추고, 맵을 옮기면 주인공 뒤에 겹쳐 서 있다가 걸으면 풀려 나오게.",
    "requires": [

@@ -3765,6 +3765,18 @@ r8~r11 실편집기 녹화에서 조수는 도구를 찾지 않고 paint_tiles �
   - needs-art 대안은 seed를 1 이상으로 준다. 기본 seed 0이면 대안 맵이 그 종류를 직접 요청한 맵과 바이트까지 같았다.
 - **시험 시드:** `harness-data/assistant-capability/village-eras-seed.json`(v2 23건, 조수 대용 Sonnet 5.5 high, 포트 19640~19662). era-ruins-village·era-mining·era-vineyard·era-ruined-city·era-wasteland·era-postapoc 가 village-art 로 새로 지을 수 있게 된 종류다.
 
+## `make_timed_escape` — 제한 시간 탈출(무너지는 바닥·카운트다운·체크포인트) (2026-10-25, 폴른 2막 과제 10)
+
+`src/editor/tools/timedEscapeTools.ts`. 일반 도구 — 갈라지는 호수 얼음·붕괴하는 탑·가라앉는 다리.
+
+- **시작:** `start` 칸 묶음을 밟거나(밟기 이벤트) `startSwitchId` 가 켜지면(진행 이벤트 자동 페이지) 엔진 `timer start seconds` → 진행 스위치 `sw_escape_<map>_<id>_active` 켬. 타이머가 흐르는 동안 런타임 타이머 HUD(`runtime-timer-hud`)가 남은 시간을 띄운다.
+- **붕괴:** `area`+`from`+`bands`(그쪽부터 띠로 나눠 시간에 고르게) 또는 `steps[{x,y,width,height,atSecond}]`. 묶음마다 대표 칸 이벤트의 병렬 페이지가 「진행 중 · 남은 시간 ≤ seconds−atSecond · 남은 시간 > 0 · 묶음 스위치 꺼짐」에서 먼지·`collapse1`·흔들림·`changeTile`(layer 기본 lower → `collapsedTile`, 기본 -1; 2층 장식도 비움) 후 묶음 스위치를 켠다. 모든 붕괴 칸 이벤트는 묶음 스위치가 켜지면 「주인공과 같은 층」 투명 페이지가 되어 길을 막는다(칩셋 통행값에 기대지 않는다).
+- **빠짐:** `fallOnCollapse`(기본 true) — 묶음을 가로 줄 토막 로케이션(`loc_escape_<id>_c<i>_<j>`, 태그 `timed-escape`)으로 올려 두고, 무너지는 순간 `insideLocation` 이면 빠짐 스위치를 켜고 타이머를 0 으로 둔다 → 실패 경로로.
+- **실패:** 진행 이벤트의 자동 페이지(진행 중 · 타이머 ≤ 0): 진행 끔 → 타이머 0 → `startSwitchId` 끔 → 대사(빠짐/시간 초과) → 묶음 스위치 끔 + 원래 칸 `changeTile` 복원 → `checkpoint` 로 transfer(검은 페이드). 다시 시작은 시작 칸을 다시 밟기.
+- **성공:** 출구 칸 밟기(진행 중일 때만): 진행 스위치를 **먼저** 끄고 타이머 0(반대로 하면 그 사이 시간 초과 페이지가 실패로 받는다) → `_done`·`successSwitchId` 켬. 무너진 칸은 그대로 남는다.
+- start·exit·같은 맵 checkpoint 칸은 무너지지 않는다. 붕괴 칸 최대 400. 같은 `escapeId` 로 다시 부르면 이전 이벤트·로케이션을 지우고 새로 짓는다.
+- 시험 과제: `harness-data/space-craft/seed.json` 의 `fs2-timed-escape`.
+
 ## 연계기·기술 정체성·결과 팡파레 — `list_combo_techs` · `upsert_combo_tech` · `battle.fanfare` (2026-10-24, fs-battle-2)
 
 - `list_combo_techs {actorId?}` (읽기): 연계기마다 참가자·비용 몫·꼬리표(전투 도움말과 같은 문장 `skillHelp`)·해금 조건·연출·지금 파티로 열렸는지(`unlockedAtStart`, 못 채운 조건 `missing`).

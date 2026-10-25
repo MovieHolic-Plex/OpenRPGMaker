@@ -170,6 +170,7 @@ import { PARTY_SPLIT_TOOLS } from "./partySplitTools";
 import { WEB_SEARCH_TOOLS } from "./webSearchTool";
 import { TILESET_CHANGE_TOOLS } from "./tilesetChangeTools";
 import { STORE_TOOLS } from "./storeTools";
+import { TIMED_ESCAPE_TOOLS } from "./timedEscapeTools";
 import { OBJECT_GEN_TOOLS } from "./objectGenTool";
 import { SCENE_SETTING_TOOLS } from "./sceneSettingTools";
 
@@ -273,6 +274,7 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   ...SCENE_SETTING_TOOLS,
   ...withDomain(CONSTRUCTION_TOOLS_V3, "tile"),
   ...withDomain(HOUSE_VISION_TOOLS, "tile"),
+  ...TIMED_ESCAPE_TOOLS,
   // 손 도트 실내 v5 — 실내를 까는 유일한 조수 경로(2026-09-29). 옛 EasyRPG·Tibo 실내 방 세션·던전 방 파이프라인·팩 마을·
   // 숲 조립·키큰 풀 도구는 2026-10-07 저작권 정리로 칩셋과 함께 지웠다.
   ...withDomain(HAND_INTERIOR_TOOLS, "tile"),
