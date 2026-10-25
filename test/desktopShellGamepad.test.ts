@@ -24,7 +24,7 @@ describe("desktop shell gamepad", () => {
     cleanups.push(() => input.remove());
 
     let southPressed = false;
-    const restorePads = stubGamepads(() => southPressed);
+    const restorePads = stubGamepads(() => [gamepad(southPressed)]);
     cleanups.push(restorePads);
 
     const windowEvents: KeyboardEvent[] = [];
@@ -71,6 +71,113 @@ describe("desktop shell gamepad", () => {
     expect(keyups).toHaveLength(1);
     expect(keyups[0]?.target).toBe(input);
   });
+
+  it("releases a held button when the pad disconnects, even if that event clears the connected flag first", () => {
+    const frames: FrameRequestCallback[] = [];
+    const restoreRaf = stubAnimationFrame(frames);
+    cleanups.push(restoreRaf);
+
+    let pad: Gamepad | null = gamepad(false);
+    const restorePads = stubGamepads(() => [pad]);
+    cleanups.push(restorePads);
+
+    const keydowns: KeyboardEvent[] = [];
+    const keyups: KeyboardEvent[] = [];
+    const onKeyDown = (event: Event): void => {
+      if (event instanceof KeyboardEvent && event.key === "ArrowLeft") keydowns.push(event);
+    };
+    const onKeyUp = (event: Event): void => {
+      if (event instanceof KeyboardEvent && event.key === "ArrowLeft") keyups.push(event);
+    };
+    window.addEventListener("keydown", onKeyDown);
+    window.addEventListener("keyup", onKeyUp);
+    cleanups.push(() => {
+      window.removeEventListener("keydown", onKeyDown);
+      window.removeEventListener("keyup", onKeyUp);
+    });
+
+    const cleanup = installDesktopShellBridge(document.body, { gamepadPolling: true });
+    cleanups.push(cleanup);
+
+    flushFrame(frames);
+    pad = gamepadWithStick(-1, 0);
+    flushFrame(frames);
+    expect(keydowns).toHaveLength(1);
+    expect(window.__oprnDesktopShellState?.gamepadConnected).toBe(true);
+
+    // The disconnect event used to clear gamepadConnected and skip the poll's
+    // keyup, so the character kept walking after the controller dropped.
+    pad = null;
+    window.dispatchEvent(new Event("gamepaddisconnected"));
+    expect(keyups).toHaveLength(1);
+    expect(window.__oprnDesktopShellState?.gamepadConnected).toBe(false);
+
+    flushFrame(frames);
+    expect(keyups).toHaveLength(1);
+
+    // Still holding the stick when the pad comes back starts walking again.
+    pad = gamepadWithStick(-1, 0);
+    flushFrame(frames);
+    expect(keydowns).toHaveLength(2);
+    expect(keyups).toHaveLength(1);
+  });
+
+  it("releases a held stick on the next poll if the connected flag was cleared without a keyup", () => {
+    const frames: FrameRequestCallback[] = [];
+    const restoreRaf = stubAnimationFrame(frames);
+    cleanups.push(restoreRaf);
+
+    let pad: Gamepad | null = gamepadWithStick(-1, 0);
+    const restorePads = stubGamepads(() => [pad]);
+    cleanups.push(restorePads);
+
+    const keyups: KeyboardEvent[] = [];
+    const onKeyUp = (event: Event): void => {
+      if (event instanceof KeyboardEvent && event.key === "ArrowLeft") keyups.push(event);
+    };
+    window.addEventListener("keyup", onKeyUp);
+    cleanups.push(() => window.removeEventListener("keyup", onKeyUp));
+
+    const cleanup = installDesktopShellBridge(document.body, { gamepadPolling: true });
+    cleanups.push(cleanup);
+
+    flushFrame(frames);
+    expect(window.__oprnDesktopShellState?.gamepadConnected).toBe(true);
+
+    // The disconnect listener used to do only this, then the poll skipped keyup.
+    const state = window.__oprnDesktopShellState;
+    if (state) state.gamepadConnected = false;
+    pad = null;
+    flushFrame(frames);
+    expect(keyups).toHaveLength(1);
+  });
+
+  it("releases a held button when polling stops", () => {
+    const frames: FrameRequestCallback[] = [];
+    const restoreRaf = stubAnimationFrame(frames);
+    cleanups.push(restoreRaf);
+
+    let southPressed = false;
+    const restorePads = stubGamepads(() => [gamepad(southPressed)]);
+    cleanups.push(restorePads);
+
+    const keyups: KeyboardEvent[] = [];
+    const onKeyUp = (event: Event): void => {
+      if (event instanceof KeyboardEvent && event.key === "Enter") keyups.push(event);
+    };
+    window.addEventListener("keyup", onKeyUp);
+    cleanups.push(() => window.removeEventListener("keyup", onKeyUp));
+
+    const cleanup = installDesktopShellBridge(document.body, { gamepadPolling: true });
+    cleanups.push(cleanup);
+
+    flushFrame(frames);
+    southPressed = true;
+    flushFrame(frames);
+
+    cleanup();
+    expect(keyups).toHaveLength(1);
+  });
 });
 
 function stubAnimationFrame(frames: FrameRequestCallback[]): () => void {
@@ -87,10 +194,10 @@ function stubAnimationFrame(frames: FrameRequestCallback[]): () => void {
   };
 }
 
-function stubGamepads(southPressed: () => boolean): () => void {
+function stubGamepads(read: () => readonly (Gamepad | null)[]): () => void {
   const nav = navigator as Navigator & { getGamepads?: () => (Gamepad | null)[] };
   const previous = nav.getGamepads;
-  const getGamepads = (): (Gamepad | null)[] => [gamepad(southPressed())];
+  const getGamepads = (): (Gamepad | null)[] => [...read()];
   Object.defineProperty(navigator, "getGamepads", { configurable: true, value: getGamepads });
   return () => {
     if (previous) Object.defineProperty(navigator, "getGamepads", { configurable: true, value: previous });
@@ -99,6 +206,10 @@ function stubGamepads(southPressed: () => boolean): () => void {
 }
 
 function gamepad(southPressed: boolean): Gamepad {
+  return gamepadWithStick(0, 0, southPressed);
+}
+
+function gamepadWithStick(axisX: number, axisY: number, southPressed = false): Gamepad {
   const buttons = Array.from({ length: 16 }, () => ({ pressed: false, touched: false, value: 0 }));
   buttons[0] = { pressed: southPressed, touched: southPressed, value: southPressed ? 1 : 0 };
   return {
@@ -106,7 +217,7 @@ function gamepad(southPressed: boolean): Gamepad {
     index: 0,
     connected: true,
     mapping: "standard",
-    axes: [0, 0, 0, 0],
+    axes: [axisX, axisY, 0, 0],
     buttons,
     timestamp: 0,
   } as unknown as Gamepad;
