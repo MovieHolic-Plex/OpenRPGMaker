@@ -36,6 +36,7 @@ export function titleParticleCount(preset: TitleParticlePreset, density: number 
   const intensity = Math.max(0, Math.min(1, raw / 100));
   if (intensity <= 0) return 0;
   if (preset === "fireflies") return Math.max(1, Math.round(TITLE_FIREFLY_MAX * intensity));
+  if (preset === "stars") return Math.max(1, Math.round(TITLE_PARTICLE_MAX * intensity));
   return weatherParticleCount({ kind: preset, intensity }, TITLE_PARTICLE_MAX);
 }
 
@@ -62,6 +63,7 @@ function titleParticleAt(
   height: number,
 ): TitleParticlePoint {
   if (preset === "fireflies") return fireflyAt(index, timeMs, width, height);
+  if (preset === "stars") return starAt(index, timeMs, width, height);
   // 눈/비 좌표 눈금은 playSceneWeather.renderPrecipitation 과 동일(37/53 스트라이드, 0.03 횡류).
   const speed = preset === "rain" ? 0.46 : 0.14;
   const x = positiveModulo(index * 37 + Math.floor(timeMs * 0.03), width + 32) - 16;
@@ -81,6 +83,25 @@ function fireflyAt(index: number, timeMs: number, width: number, height: number)
   const opacity = 0.2 + pulse * 0.7;
   const size = 1.5 + ((index * 7) % 3) * 0.5;
   return { x: round3(x), y: round3(y), size, opacity: round3(opacity) };
+}
+
+// 밤하늘 별 순수 모델: 세 깊이(먼 별은 느리고 작다)로 왼쪽으로 천천히 흐르며 제각각 깜빡인다. 하늘(위 45%)에만 뜬다 — 지평선 아래 풀밭에 별이 박히지 않게.
+function starAt(index: number, timeMs: number, width: number, height: number): TitleParticlePoint {
+  const depth = index % 3; // 0 먼 · 1 중간 · 2 가까운
+  const drift = timeMs * (0.0025 + depth * 0.003);
+  const x = positiveModulo(index * 83 + (index * index) % 37 - drift, width + 8) - 4;
+  const y = positiveModulo(index * 47 + (index * 13) % 29, Math.round(height * 0.45));
+  const twinkle = (Math.sin((timeMs + index * 577) / (600 + (index % 5) * 170)) + 1) / 2;
+  return { x: round3(x), y: round3(y), size: 0.55 + depth * 0.35, opacity: round3(0.25 + twinkle * (0.45 + depth * 0.15)) };
+}
+
+/** 가끔 지나가는 별똥별(stars 프리셋). 6.5초마다 한 줄, 0.7초 동안 왼쪽 아래로. 없으면 null. */
+export function titleShootingStarAt(timeMs: number, width: number, height: number): { x: number; y: number; length: number; opacity: number } | null {
+  const period = 6500, life = 700, cycle = Math.floor(timeMs / period), local = timeMs - cycle * period;
+  if (local > life || cycle === 0 && local < 1200) return null;
+  const u = local / life, seedX = positiveModulo(cycle * 131, 100) / 100, seedY = positiveModulo(cycle * 71, 100) / 100;
+  const startX = width * (0.45 + seedX * 0.5), startY = height * (0.04 + seedY * 0.22), travel = width * 0.35;
+  return { x: round3(startX - travel * u * 0.87), y: round3(startY + travel * u * 0.5), length: round3(10 + 26 * Math.min(1, u * 3)), opacity: round3(u < 0.2 ? u / 0.2 : u > 0.7 ? (1 - u) / 0.3 : 1) };
 }
 
 /**
@@ -136,6 +157,7 @@ function drawTitleParticles(
 ): void {
   const { width, height } = TITLE_PARTICLE_STAGE;
   context.clearRect(0, 0, width, height);
+  if (settings.preset === "stars") drawTitleShootingStar(context, timeMs, width, height);
   for (const point of titleParticlePositions(settings, timeMs, width, height)) {
     if (settings.preset === "rain") {
       context.strokeStyle = `rgba(174, 208, 255, ${point.opacity})`;
@@ -146,12 +168,41 @@ function drawTitleParticles(
       context.stroke();
       continue;
     }
+    if (settings.preset === "stars") {
+      // 도트 별: 작은 사각(가까운 별은 십자 반짝임).
+      context.fillStyle = `rgba(232, 240, 255, ${point.opacity})`;
+      const r = Math.max(1, Math.round(point.size));
+      context.fillRect(Math.round(point.x), Math.round(point.y), r, r);
+      if (point.size > 1.2 && point.opacity > 0.7) {
+        context.fillStyle = `rgba(232, 240, 255, ${round3(point.opacity * 0.45)})`;
+        context.fillRect(Math.round(point.x) - 1, Math.round(point.y), 1, 1);
+        context.fillRect(Math.round(point.x) + r, Math.round(point.y), 1, 1);
+        context.fillRect(Math.round(point.x), Math.round(point.y) - 1, 1, 1);
+        context.fillRect(Math.round(point.x), Math.round(point.y) + r, 1, 1);
+      }
+      continue;
+    }
     const color = settings.preset === "fireflies" ? "255, 226, 130" : "255, 255, 255";
     context.fillStyle = `rgba(${color}, ${point.opacity})`;
     context.beginPath();
     context.arc(point.x, point.y, point.size, 0, Math.PI * 2);
     context.fill();
   }
+}
+
+function drawTitleShootingStar(context: CanvasRenderingContext2D, timeMs: number, width: number, height: number): void {
+  const star = titleShootingStarAt(timeMs, width, height);
+  if (!star) return;
+  const tailX = star.x + star.length * 0.87, tailY = star.y - star.length * 0.5;
+  const gradient = context.createLinearGradient(star.x, star.y, tailX, tailY);
+  gradient.addColorStop(0, `rgba(255, 255, 255, ${star.opacity})`);
+  gradient.addColorStop(1, "rgba(180, 210, 255, 0)");
+  context.strokeStyle = gradient;
+  context.lineWidth = 1.2;
+  context.beginPath();
+  context.moveTo(star.x, star.y);
+  context.lineTo(tailX, tailY);
+  context.stroke();
 }
 
 function prefersReducedMotion(): boolean {

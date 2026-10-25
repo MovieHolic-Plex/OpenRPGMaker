@@ -18,12 +18,42 @@
   position: absolute;
 }
 
-.rm-title-screen .rm-title-particles {
+.rm-title-screen .rm-title-particles,
+.rm-title-screen .rm-title-runners {
   height: 100%;
   inset: 0;
   position: absolute;
   width: 100%;
 }
+
+.rm-title-screen .rm-title-runners { image-rendering: pixelated; }
+
+/* PRESS START 관문: 메뉴는 숨고 글자가 깜빡인다. 첫 입력에 반짝이며 메뉴가 나온다. */
+.rm-title-screen .rm-title-menu.rm-title-menu-gated { opacity: 0; pointer-events: none; visibility: hidden; }
+.rm-title-screen .rm-title-menu.rm-title-menu-reveal { animation: rm-title-press-reveal 360ms cubic-bezier(.2,.7,.2,1) both; }
+.rm-title-screen .rm-title-press-start {
+  animation: rm-title-press-in 500ms ease-out both, rm-title-press-blink var(--title-press-start-blink, 1000ms) steps(1, end) infinite;
+  color: #fff6d0;
+  font-family: var(--runtime-ui-font);
+  font-size: 11px;
+  left: 0;
+  letter-spacing: 0.18em;
+  pointer-events: none;
+  position: absolute;
+  right: 0;
+  text-align: center;
+  text-shadow: 1px 1px 0 #1a1630, -1px 0 0 #1a1630, 0 -1px 0 #1a1630, 0 0 6px rgba(255, 214, 120, 0.7);
+  transform: translateY(-50%);
+  z-index: 3;
+}
+.rm-title-screen .rm-title-press-start.rm-title-press-start-go { animation: rm-title-press-go 400ms ease-out both; }
+@keyframes rm-title-press-in { from { opacity: 0; } }
+@keyframes rm-title-press-blink { 50% { opacity: 0; } }
+@keyframes rm-title-press-go {
+  0% { color: #ffffff; letter-spacing: 0.18em; opacity: 1; text-shadow: 0 0 10px #ffffff, 0 0 18px #ffd878; }
+  100% { letter-spacing: 0.5em; opacity: 0; }
+}
+@keyframes rm-title-press-reveal { from { opacity: 0; filter: brightness(2.2); } }
 
 .player-layout.system-shell .rm-title-screen.rm-title-screen-editorial {
   --oprn-title-text: #f8fafc;
@@ -121,6 +151,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .rm-title-screen .rm-title-press-start { animation: none !important; }
   .rm-title-screen .rm-title-bg-layer,
   .rm-title-screen .rm-title-intro-fade-in,
   .rm-title-screen .rm-title-intro-rise-in,

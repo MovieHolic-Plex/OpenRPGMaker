@@ -453,6 +453,8 @@ const getOpening: ToolDefinition = {
         + `${opening.musicResourceId ? `, 배경음악 ${opening.musicResourceId}` : ", 배경음악 없음"}.`,
       data: {
         opening,
+        // 타이틀 앞 인트로(track:"title-intro")는 따로 있다 — 여기선 요약만.
+        titleIntro: project.system.titleIntro ? { enabled: project.system.titleIntro.enabled, shots: project.system.titleIntro.scenes.map(scene => scene.id), musicResourceId: project.system.titleIntro.musicResourceId ?? null } : null,
         generatedStills,
         sceneCount: opening.scenes.length,
         enabled: opening.enabled,

@@ -1656,7 +1656,45 @@ export interface TitleBackgroundLayer {
   opacity?: number;
 }
 
-export type TitleParticlePreset = "snow" | "rain" | "fireflies";
+/** stars = 깜빡이며 천천히 흐르는 밤하늘 별(가끔 별똥별이 지난다). */
+export type TitleParticlePreset = "snow" | "rain" | "fireflies" | "stars";
+
+/**
+ * 타이틀을 가로질러 달려가는 캐릭터 칩(포켓몬 타이틀의 스타터 셋처럼). 24×32 칸 RM2000 캐릭터 시트를 쓴다.
+ * 좌표는 타이틀 논리 좌표(320×240). 한 번 지나간 뒤 everyMs 마다 다시 달린다. 최대 6.
+ */
+export interface TitleRunner {
+  resourceId: string;
+  /** 시트 안 인물 번호 0..7. 생략 0. */
+  characterIndex?: number;
+  /** 달리는 쪽. 생략 right(왼→오). */
+  direction?: "left" | "right";
+  /** 발끝 y(논리 px, 0..240). */
+  y: number;
+  /** 논리 px/s 10..400. 생략 60. */
+  speed?: number;
+  /** 정수 배율 1..3. 생략 1. */
+  scale?: number;
+  /** 첫 등장 ms 0..60000. 생략 0. */
+  delayMs?: number;
+  /** 다시 달리기 시작하는 간격 ms 2000..120000. 생략 12000. */
+  everyMs?: number;
+  /** 걸음마다 통통 튄다. */
+  hop?: boolean;
+}
+
+/**
+ * 「PRESS START」 관문. 켜면 메뉴가 숨은 채 글자가 깜빡이고, 아무 키·탭을 하면 반짝이며 메뉴가 나온다(첫 입력은 메뉴를 고르지 않는다).
+ * 타이틀에 처음 들어올 때만 — 메뉴 이동 재렌더에는 다시 걸지 않는다.
+ */
+export interface TitlePressStart {
+  /** 최대 24자. 생략 "PRESS START". */
+  text?: string;
+  /** 깜빡임 주기 ms 300..3000. 생략 1000. */
+  blinkMs?: number;
+  /** 글자 가운데 y(논리 px 0..240). 생략 = 메뉴 자리. */
+  y?: number;
+}
 
 export interface TitleParticleSettings {
   preset: TitleParticlePreset;
@@ -1797,6 +1835,10 @@ export interface TitleScreenSettings {
   particles?: TitleParticleSettings;
   /** 로고/메뉴 등장 연출. 유효한 연출이 하나도 없으면 normalize 가 필드를 생략한다. */
   intro?: TitleIntroSettings;
+  /** 화면을 가로질러 달리는 캐릭터 칩(최대 6). 비면 normalize 가 생략. */
+  runners?: TitleRunner[];
+  /** 「PRESS START」 관문. 생략 = 바로 메뉴. */
+  pressStart?: TitlePressStart;
   /** 입장 시퀀스. 있으면 intro 의 로고/메뉴 연출보다 우선한다. */
   sequence?: TitleOpeningSequence;
   /** 로고 반사광. 생략 = none. */
@@ -2050,6 +2092,12 @@ export interface SystemRecords {
   titleScreen?: TitleScreenSettings;
   /** Opt-in pre-map new-game sequence. Disabled sequences retain their authored content. */
   opening?: CinematicSequence;
+  /**
+   * 타이틀 앞 인트로(포켓몬식 «전설 추격» 콜드 오픈). 게임을 켜면 타이틀보다 먼저 한 번 재생되고, 아무 키나 누르면 타이틀로 간다.
+   * opening(새 게임 뒤 박사 소개)과 따로 있어 둘을 함께 쓸 수 있다. entry.mode "attract" 면 타이틀에서 idleMs 동안 입력이 없을 때도 다시 튼다.
+   * 생략 = 없음(옛 동작: opening.entry 가 before-title 이면 그것을 튼다).
+   */
+  titleIntro?: CinematicSequence;
   /** Optional game-over sequence and terminal-menu presentation. */
   gameOver?: GameOverSettings;
   gameOvers?: import("../cinematicSettings").GameOverDefinition[];

@@ -3,6 +3,8 @@ export type AnimaticEase = 'linear' | 'ease-in' | 'ease-out' | 'ease-in-out' | '
 export type AnimaticKey = { atMs: number; value: number; ease?: AnimaticEase };
 export type AnimaticProperty = 'x' | 'y' | 'scaleX' | 'scaleY' | 'rotation' | 'opacity' | 'frame';
 export type AnimaticTracks = Partial<Record<AnimaticProperty, AnimaticKey[]>>;
+export type AnimaticParticlePreset = 'rain' | 'snow' | 'sparks' | 'dust' | 'stars' | 'meteors';
+export const ANIMATIC_PARTICLE_PRESETS: readonly AnimaticParticlePreset[] = ['rain', 'snow', 'sparks', 'dust', 'stars', 'meteors'];
 export type AnimaticLayerKind = 'image' | 'text' | 'shape' | 'particles' | 'shaft' | 'glow' | 'emote' | 'caption';
 export const ANIMATIC_LAYER_KINDS: readonly AnimaticLayerKind[] = ['image', 'text', 'shape', 'particles', 'shaft', 'glow', 'emote', 'caption'];
 /** Integer-pixel composition: the whole shot rasterises into one low-resolution buffer, then upscales by an integer factor. */
@@ -61,7 +63,16 @@ export type AnimaticLayer = {
   crop?: { x: number; y: number; width: number; height: number };
   sheet?: { frameWidth: number; frameHeight: number; columns: number; count: number; fps: number; loop?: boolean };
   typography?: { fontSize?: number; weight?: number; align?: 'left' | 'center' | 'right'; typewriterMs?: number };
-  particles?: { preset: 'rain' | 'snow' | 'sparks' | 'dust' | 'stars'; count: number; seed: number; speed?: number; size?: number };
+  /**
+   * 'meteors' = shooting stars: each particle streaks diagonally (down-left by default, angle = rotation of the layer)
+   * for a short burst, then waits its turn again. speed = streak px/s (default 260), size = head thickness.
+   */
+  particles?: { preset: AnimaticParticlePreset; count: number; seed: number; speed?: number; size?: number };
+  /**
+   * Image layers only. Recolour every opaque pixel toward `color` by `amount` (0..1, default 1 = solid silhouette).
+   * The source alpha is kept, so a monster sprite becomes its shape — a legend crossing the moon, a shadow on the grass.
+   */
+  tint?: { color: string; amount?: number };
   region?: AnimaticRegionLoop;
   shaft?: AnimaticShaft;
   glow?: AnimaticGlow;
@@ -185,7 +196,7 @@ export function validateOpeningAnimatic(value: unknown, durationMs: number, path
   const ids = new Set<string>();
   for (const [i, raw] of a.layers.entries()) {
     const p = `${path}.layers[${i}]`, l = object(raw, p);
-    fields(l, ['id', 'kind', 'role', 'characterRole', 'stateFrames', 'resourceId', 'text', 'color', 'shape', 'x', 'y', 'width', 'height', 'anchorX', 'anchorY', 'scaleX', 'scaleY', 'rotation', 'opacity', 'startMs', 'endMs', 'space', 'parallax', 'blend', 'keys', 'sampling', 'crop', 'sheet', 'typography', 'particles', 'region', 'shaft', 'glow', 'emote', 'caption', 'walk'], p);
+    fields(l, ['id', 'kind', 'role', 'characterRole', 'stateFrames', 'resourceId', 'text', 'color', 'shape', 'x', 'y', 'width', 'height', 'anchorX', 'anchorY', 'scaleX', 'scaleY', 'rotation', 'opacity', 'startMs', 'endMs', 'space', 'parallax', 'blend', 'keys', 'sampling', 'crop', 'sheet', 'typography', 'particles', 'region', 'shaft', 'glow', 'emote', 'caption', 'walk', 'tint'], p);
     id(l.id, p + '.id'); if (ids.has(String(l.id))) throw Error(p + ': duplicate layer id'); ids.add(String(l.id));
     option(l.kind, ANIMATIC_LAYER_KINDS, p + '.kind'); if (!l.kind) throw Error(p + ': kind required');
     option(l.role, ['background', 'actor', 'foreground', 'prop', 'effect', 'credit'], p + '.role');
@@ -209,7 +220,12 @@ export function validateOpeningAnimatic(value: unknown, durationMs: number, path
     option(l.space, ['world', 'screen'], p + '.space'); option(l.blend, ['source-over', 'lighter', 'screen', 'multiply'], p + '.blend'); color(l.color, p + '.color');
     validateAnimaticTracks(l.keys, ANIMATIC_PROPERTIES, durationMs, p + '.keys');
     if (l.kind === 'image') { id(l.resourceId, p + '.resourceId'); option(l.sampling, ['nearest', 'linear'], p + '.sampling'); }
-    else if (l.resourceId !== undefined || l.sampling !== undefined || l.crop !== undefined || l.sheet !== undefined) throw Error(p + ': image fields on nonimage layer');
+    else if (l.resourceId !== undefined || l.sampling !== undefined || l.crop !== undefined || l.sheet !== undefined || l.tint !== undefined) throw Error(p + ': image fields on nonimage layer');
+    if (l.tint !== undefined) {
+      const tint = object(l.tint, p + '.tint'); fields(tint, ['color', 'amount'], p + '.tint');
+      if (typeof tint.color !== 'string') throw Error(p + '.tint.color: required'); color(tint.color, p + '.tint.color');
+      if (tint.amount !== undefined) number(tint.amount, p + '.tint.amount', 0, 1);
+    }
     if (l.kind === 'text' || l.kind === 'caption') { if (l.kind === 'text' && (typeof l.text !== 'string' || l.text.length > 4000)) throw Error(p + ': text length must be0..4000'); }
     else if (l.text !== undefined || l.typography !== undefined) throw Error(p + ': typography on nontext layer');
     if (l.kind === 'text' && typeof l.text !== 'string') throw Error(p + ': text layer requires text');
@@ -241,7 +257,7 @@ export function validateOpeningAnimatic(value: unknown, durationMs: number, path
     }
     if (l.kind === 'particles') {
       const q = object(l.particles, p + '.particles'); fields(q, ['preset', 'count', 'seed', 'speed', 'size'], p + '.particles');
-      option(q.preset, ['rain', 'snow', 'sparks', 'dust', 'stars'], p + '.preset'); if (!q.preset) throw Error(p + ': particle preset required');
+      option(q.preset, ANIMATIC_PARTICLE_PRESETS, p + '.preset'); if (!q.preset) throw Error(p + ': particle preset required');
       number(q.count, p + '.count', 1, ANIMATIC_LIMITS.particles, true); number(q.seed, p + '.seed', 0, 2147483647, true);
       if (q.speed !== undefined) number(q.speed, p + '.speed', 0, 2000); if (q.size !== undefined) number(q.size, p + '.size', 0.5, 100);
     } else if (l.particles !== undefined) throw Error(p + ': particles on nonparticle layer');

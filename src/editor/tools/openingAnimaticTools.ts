@@ -1,5 +1,5 @@
 import { retimeOpeningAnimatic, validateOpeningAnimatic, animaticResourceIds, ANIMATIC_LIMITS, ANIMATIC_EMOTE_PRESETS, sampleAnimaticTrack, type AnimaticLayer, type AnimaticTracks, type OpeningAnimatic } from '@/project/openingAnimatic';
-import type { CinematicScene, Project } from '@/project/types';
+import type { CinematicScene, CinematicSequence, Project } from '@/project/types';
 import { CINEMATIC_SCENE_LIMIT } from '@/project/cinematicSettings';
 import { catalogLookup, hasOpeningImage } from './cinematicTools';
 import { ToolError, type ToolDefinition, type JsonSchema, type ToolExecResult } from './types';
@@ -11,8 +11,29 @@ import { CHARSET_CHARACTER_COUNT, CHARSET_FRAME_COUNT, CHARSET_FRAME_HEIGHT, CHA
 import { isTitleCardNarration } from '@/project/defaults/defaultOpeningSequence';
 type Shot = Extract<CinematicScene, { kind: 'animatic' }>;
 function text(v: unknown, label: string): string { if (typeof v !== 'string' || !v.trim()) throw new ToolError(label + ' 문자열이 필요합니다.', { code: 'invalid-args' }); return v.trim(); }
+/**
+ * 애니메틱 샷이 사는 두 트랙: opening(새 게임 뒤, 기본) · title-intro(게임을 켜면 타이틀 앞, system.titleIntro).
+ * 샷 id 는 두 트랙에서 서로 겹치지 않게 만든다 — 그래서 레이어·카메라 도구는 트랙을 몰라도 샷 id 로 찾는다.
+ */
+export type AnimaticTrack = 'opening' | 'title-intro';
+const TRACKS: readonly AnimaticTrack[] = ['opening', 'title-intro'];
+const trackSchema: JsonSchema = { type: 'string', enum: ['opening', 'title-intro'], description: 'opening=새 게임 뒤(기본) · title-intro=게임을 켜면 타이틀 앞(전설 추격 인트로)' };
+function trackArg(raw: unknown): AnimaticTrack {
+  if (raw === undefined || raw === null || raw === '') return 'opening';
+  if (raw !== 'opening' && raw !== 'title-intro') throw new ToolError('track 은 opening 또는 title-intro.', { code: 'invalid-args' });
+  return raw;
+}
+function trackSequence(project: Project, track: AnimaticTrack): CinematicSequence | undefined {
+  return track === 'title-intro' ? project.system.titleIntro : project.system.opening;
+}
+function setTrackSequence(project: Project, track: AnimaticTrack, sequence: CinematicSequence): void {
+  if (track === 'title-intro') project.system.titleIntro = sequence; else project.system.opening = sequence;
+}
+function trackOfShot(project: Project, id: string): AnimaticTrack | undefined {
+  return TRACKS.find(track => trackSequence(project, track)?.scenes.some(s => s.id === id));
+}
 function shot(project: Project, raw: unknown): Shot {
-  const id = text(raw, 'shotId'), s = project.system.opening?.scenes.find(s => s.id === id);
+  const id = text(raw, 'shotId'), track = trackOfShot(project, id), s = track ? trackSequence(project, track)?.scenes.find(s => s.id === id) : undefined;
   if (!s || s.kind !== 'animatic') throw new ToolError('애니메틱 샷을 찾을 수 없습니다: ' + id, { code: 'scene-not-found' });
   return structuredClone(s);
 }
@@ -55,7 +76,7 @@ function check(project: Project, s: Shot, enforceBackdrop = false): void {
 }
 function backdropConflict(project: Project, s: Shot): string | null {
   const ids = s.composition.layers.filter(l => l.kind === 'image' && l.role === 'background').map(l => l.resourceId!);
-  for (const other of project.system.opening?.scenes ?? []) {
+  for (const other of trackSequence(project, trackOfShot(project, s.id) ?? 'opening')?.scenes ?? []) {
     if (other.kind !== 'animatic' || other.id === s.id) continue;
     if (other.composition.layers.some(l => l.kind === 'image' && l.role === 'background' && ids.includes(l.resourceId!))) return other.id;
   }
@@ -66,7 +87,7 @@ function commit(project: Project, s: Shot, summary: string, touchesBackdrop = fa
     const conflict = backdropConflict(project, s);
     if (conflict) throw new ToolError(`오프닝 배경이 다른 샷 ${conflict}와 재사용됩니다. 현재 샷의 배경을 새 리소스로 바꾸세요.`, { code: 'dedicated-backdrop-required' });
   }
-  check(project, s, touchesBackdrop); const opening = project.system.opening!;
+  check(project, s, touchesBackdrop); const opening = trackSequence(project, trackOfShot(project, s.id) ?? 'opening')!;
   opening.scenes[opening.scenes.findIndex(row => row.id === s.id)] = s;
   return { summary, data: { shotId: s.id, durationMs: s.durationMs, layers: s.composition.layers.length, resourceIds: animaticResourceIds(s.composition) } };
 }
@@ -216,7 +237,8 @@ export const OPENING_ANIMATIC_TOOLS: readonly ToolDefinition[] = [
       optional: 'role(background/actor/foreground/prop/effect/credit), resourceId(image), text(text), color, shape(rect/ellipse/line), anchorX/Y, scaleX/Y(negative mirrors), rotation,opacity,startMs,endMs,space(world/screen),parallax(0..2),blend(source-over/lighter/screen/multiply)',
       keys: '{x/y/scaleX/scaleY/rotation/opacity/frame:[{atMs,value,ease?}]}',
       sampling: 'nearest/linear; sheets default nearest, other images default linear', crop: '{x,y,width,height} source pixels', sheet: '{frameWidth,frameHeight,columns,count,fps,loop?}; frame keys select poses; crop and sheet exclusive',
-      typography: '{fontSize?,weight?,align:left/center/right,typewriterMs?}', particles: '{preset:rain/snow/sparks/dust/stars,count,seed,speed?,size?}',
+      typography: '{fontSize?,weight?,align:left/center/right,typewriterMs?}', particles: '{preset:rain/snow/sparks/dust/stars/meteors,count,seed,speed?,size?}; meteors = shooting stars that streak down-left across the box with a fading tail (speed = streak px/s, default 260; count 3..8 reads as an occasional meteor shower)',
+      tint: 'image-only {color, amount?(0..1, default 1)}: recolours the opaque pixels, alpha kept. amount 1 = solid silhouette (a legendary monster crossing the moon, a shadow sliding over the grass), 0.3..0.6 = night/sunset wash on one sprite',
       region: 'image-only masked loop: {x,y,width,height,mode:scroll-x/scroll-y/palette-cycle/strip,pixels?,everyTicks?,tickMs?,wrap?,colors?,frames?}; layer-local pixels, so with no crop they are source-image pixels; only that window animates',
       shaft: 'kind:shaft: {spread(0..0.95),softness(0..1),dust:{count,seed,speed?,size?},pulse}; angled beam drawn as dithered pixel cells, dust only inside the beam mask',
       glow: 'kind:glow: {inner(0..0.95),pulse}; radial light in the layer box',
@@ -231,7 +253,8 @@ export const OPENING_ANIMATIC_TOOLS: readonly ToolDefinition[] = [
     camera: '{x?,y?,zoom?,rotation?,keys:{x/y/zoom/rotation:[{atMs,value,ease?}]},shake:{atMs,durationMs,amplitude,frequency?,seed?}}',
     transition: '{kind:cut/fade/wipe-left/wipe-right/iris/flash/dither,durationMs,color?}; reveals from the stage background at shot entry, never a cross-dissolve of the previous shot. dither = ordered 4×4 Bayer dissolve from the background (pixel-art vocabulary); cross-dissolve is still not offered — the earlier shot is disposed, not blended.',
     audio: '{id,resourceId,atMs,durationMs,volume(0..1)?,fadeInMs?,fadeOutMs?,offsetMs?,loop?}; separate timed cues; sequence music remains uninterrupted',
-    entry: 'configure_opening_entry chooses one sequence location: new-game(default), before-title(first cold title visit; input dismisses), attract(title idle with repeat; any key dismisses without activating menu). One sequence, not simultaneous separate tracks.',
+    entry: 'configure_opening_entry chooses where the opening track plays: new-game(default), before-title(first cold title visit; input dismisses), attract(title idle with repeat; any key dismisses without activating menu).',
+    tracks: 'Two separate tracks can coexist. track:"opening" (default) plays after New Game (e.g. the professor introduction). track:"title-intro" (system.titleIntro) plays when the game boots, BEFORE the title screen (e.g. a Pokémon-style legend-chase cold open: shooting stars → a legendary silhouette crosses the sky → starters look up → logo slam); any key skips to the title. Create its shots with create_opening_animatic_shot({track:"title-intro",…}); every layer/camera/audio tool then finds the shot by its id. configure_opening_entry({track:"title-intro", mode:"attract", idleMs}) also replays it as the title idle demo. Shot ids must be unique across both tracks.',
     playback: 'loading completes before clock starts; Skip/abort removes frame loop and all cues; reduced motion freezes camera/shake, region loops, dust, glow pulse, sprite walk and dither reveal, keeps narration/caption/emote timing',
     preview: 'preview_opening_animatic returns real canvas frames to Pi; images inspect composition/time, native playback separately proves audio/Skip/handoff',
       tools: 'place_opening_background, set_opening_pixel_grid, set_opening_region_loop, upsert_opening_light_fx, upsert_opening_emote, set_opening_caption, apply_opening_walk, place_opening_charset_actor, set_opening_sprite_states, plus up to date with new primitives: upsert_opening_layer, animate_opening_layer, animate_opening_camera, set_opening_transition, upsert_opening_audio_cue',
@@ -290,7 +313,17 @@ export const OPENING_ANIMATIC_TOOLS: readonly ToolDefinition[] = [
     if (!frames?.length) throw new ToolError('이 사례는 실제 확인 프레임이 없습니다. 문헌 확인 범위를 읽으세요.', { code: 'reference-frames-unavailable' });
     return { summary: '연구용 실제 프레임 전달 요청. 프로젝트 리소스가 아닙니다.', data: { id: row!.id, frames: frames.slice(0, 4) } };
   }),
-  definition('configure_opening_entry', '재생 위치:새 게임/최초 타이틀 전/타이틀 유휴 데모. 기존 샷 유지.', 'write', schema({ mode: { type: 'string', enum: ['new-game', 'before-title', 'attract'] }, idleMs: integer, repeatDelayMs: integer }, ['mode']), (p, args) => {
+  definition('configure_opening_entry', '재생 위치:새 게임/최초 타이틀 전/타이틀 유휴 데모. 기존 샷 유지. track:"title-intro" 는 타이틀 앞 인트로(before-title=켤 때 한 번, attract=켤 때+유휴 데모).', 'write', schema({ mode: { type: 'string', enum: ['new-game', 'before-title', 'attract'] }, idleMs: integer, repeatDelayMs: integer, track: trackSchema }, ['mode']), (p, args) => {
+    if (trackArg(args.track) === 'title-intro') {
+      const intro = p.system.titleIntro;
+      if (!intro) throw new ToolError('먼저 track:"title-intro" 로 create_opening_animatic_shot 을 만드세요.', { code: 'opening-not-found' });
+      if (args.mode === 'new-game') throw new ToolError('타이틀 인트로는 타이틀 앞에서만 돈다(before-title 또는 attract). 새 게임 뒤 장면은 track:"opening" 에 만드세요.', { code: 'invalid-args' });
+      const idle = args.mode === 'attract';
+      for (const name of ['idleMs', 'repeatDelayMs']) if (idle && args[name] !== undefined && (!Number.isSafeInteger(args[name]) || Number(args[name]) < 1000 || Number(args[name]) > 300000)) throw new ToolError(name + ':1000..300000ms 정수 필요.', { code: 'invalid-args' });
+      if (idle) intro.entry = { mode: 'attract', ...(args.idleMs !== undefined ? { idleMs: Number(args.idleMs) } : {}), ...(args.repeatDelayMs !== undefined ? { repeatDelayMs: Number(args.repeatDelayMs) } : {}) };
+      else delete intro.entry;
+      return { summary: idle ? '타이틀 인트로: 켤 때 한 번 + 타이틀 유휴 데모.' : '타이틀 인트로: 켤 때 타이틀 앞에서 한 번.', data: { track: 'title-intro', entry: intro.entry ?? { mode: 'before-title' } } };
+    }
     if (!p.system.opening) throw new ToolError('먼저 오프닝을 저작하세요.', { code: 'opening-not-found' });
     if (!['new-game', 'before-title', 'attract'].includes(String(args.mode)) || typeof args.mode !== 'string') throw new ToolError('재생 위치 오류.', { code: 'invalid-args' });
     // 유휴 대기 값은 attract 에서만 뜻이 있다 — new-game/before-title 로 보낸 값은 버린다(선택 칸을 다 채우는 모델이
@@ -300,8 +333,28 @@ export const OPENING_ANIMATIC_TOOLS: readonly ToolDefinition[] = [
     p.system.opening.entry = { mode: args.mode as 'new-game' | 'before-title' | 'attract', ...(usesIdle && args.idleMs !== undefined ? { idleMs: Number(args.idleMs) } : {}), ...(usesIdle && args.repeatDelayMs !== undefined ? { repeatDelayMs: Number(args.repeatDelayMs) } : {}) };
     return { summary: '재생 위치를 저장했습니다. before-title/attract는 새 게임에 같은 시퀀스를 중복 재생하지 않습니다.', data: { entry: p.system.opening.entry } };
   }),
-  definition('create_opening_animatic_shot', '빈 합성 샷 추가. 교체는 replace:true와 clearLayers:true를 함께 명시해야 기존 레이어를 지웁니다.', 'write', schema({ shotId: str, durationMs: integer, width: integer, height: integer, background: str, index: integer, replace: { type: 'boolean' }, clearLayers: { type: 'boolean' }, narration: str }, ['shotId', 'durationMs']), (p, args) => {
-    const id = text(args.shotId, 'shotId'), duration = Number(args.durationMs), opening = structuredClone(p.system.opening ?? { enabled: true, skippable: true, scenes: [] });
+  definition('configure_title_intro', '타이틀 앞 인트로(track:"title-intro")의 음악·켜기·지우기. 샷은 create_opening_animatic_shot({track:"title-intro"}).', 'write', schema({ musicResourceId: str, enabled: bool, remove: bool }, []), (p, args) => {
+    if (args.remove === true) {
+      if (!p.system.titleIntro) throw new ToolError('지울 타이틀 인트로가 없습니다.', { code: 'opening-not-found' });
+      const count = p.system.titleIntro.scenes.length; delete p.system.titleIntro;
+      return { summary: `타이틀 인트로(샷 ${count}개)를 지웠습니다.`, data: { removed: true } };
+    }
+    const intro = p.system.titleIntro;
+    if (!intro) throw new ToolError('먼저 create_opening_animatic_shot({track:"title-intro",…}) 로 샷을 만드세요.', { code: 'opening-not-found' });
+    if (args.enabled !== undefined) intro.enabled = args.enabled === true;
+    if (typeof args.musicResourceId === 'string') {
+      const music = args.musicResourceId.trim();
+      if (!music) delete intro.musicResourceId;
+      else if (!catalogLookup(p)('music', music)) throw new ToolError(`음악 ${music} 을 찾을 수 없습니다. list_opening_media(kind:"music") 에서 고르세요.`, { code: 'resource-not-found' });
+      else intro.musicResourceId = music;
+    }
+    const total = intro.scenes.reduce((sum, scene) => sum + scene.durationMs, 0);
+    return { summary: `타이틀 인트로: 샷 ${intro.scenes.length}개 · ${(total / 1000).toFixed(1)}초 · ${intro.enabled ? '켜짐' : '꺼짐'} · 음악 ${intro.musicResourceId ?? '없음'}.`, data: { titleIntro: { enabled: intro.enabled, musicResourceId: intro.musicResourceId ?? null, entry: intro.entry ?? { mode: 'before-title' }, shots: intro.scenes.map(scene => ({ shotId: scene.id, durationMs: scene.durationMs })) } } };
+  }),
+  definition('create_opening_animatic_shot', '빈 합성 샷 추가. 교체는 replace:true와 clearLayers:true를 함께 명시해야 기존 레이어를 지웁니다. track:"title-intro" 면 게임을 켜면 타이틀 앞에 도는 인트로(opening=새 게임 뒤 장면과 따로).', 'write', schema({ shotId: str, durationMs: integer, width: integer, height: integer, background: str, index: integer, replace: { type: 'boolean' }, clearLayers: { type: 'boolean' }, narration: str, track: trackSchema }, ['shotId', 'durationMs']), (p, args) => {
+    const track = trackArg(args.track), otherTrack = trackOfShot(p, String(args.shotId ?? '').trim());
+    if (otherTrack && otherTrack !== track) throw new ToolError(`샷 ${String(args.shotId)} 은 이미 ${otherTrack} 트랙에 있습니다. 다른 shotId 를 쓰세요.`, { code: 'scene-exists' });
+    const id = text(args.shotId, 'shotId'), duration = Number(args.durationMs), opening = structuredClone(trackSequence(p, track) ?? { enabled: true, skippable: true, scenes: [] });
     const existing = opening.scenes.findIndex(s => s.id === id); if (existing >= 0 && args.replace !== true) throw new ToolError('기존 샷입니다. 명시적 replace:true 필요.', { code: 'scene-exists' });
     if (existing >= 0 && args.clearLayers !== true) throw new ToolError('기존 샷의 레이어를 지우려면 clearLayers:true를 명시하세요. 아니면 새 shotId를 사용하세요.', { code: 'replace-would-erase-layers' });
     if (!opening.scenes.some(sc => sc.kind === 'animatic') && opening.scenes.every(sc => sc.kind === 'text' && isTitleCardNarration(sc.narration, p.system?.titleScreen?.title ?? p.meta?.title))) {
@@ -329,7 +382,7 @@ export const OPENING_ANIMATIC_TOOLS: readonly ToolDefinition[] = [
     check(p, s);
     if (existing >= 0) opening.scenes[existing] = s;
     else { if (opening.scenes.length >= CINEMATIC_SCENE_LIMIT) throw new ToolError('장면 수 초과.', { code: 'too-many-scenes' }); const index = args.index === undefined ? opening.scenes.length : Number(args.index); if (!Number.isSafeInteger(index) || index < 0 || index > opening.scenes.length) throw new ToolError('index 범위 오류.', { code: 'invalid-args' }); opening.scenes.splice(index, 0, s); }
-    p.system.opening = opening; return { summary: '애니메틱 샷을 만들었습니다. 레이어·동작을 저작하세요.', data: { shotId: id, composition: s.composition } };
+    setTrackSequence(p, track, opening); return { summary: `애니메틱 샷을 만들었습니다(${track}). 레이어·동작을 저작하세요.`, data: { shotId: id, track, composition: s.composition } };
   }),
   definition('upsert_opening_layer', '그림/배우/글/도형/입자 레이어 추가·교체. 계약:get_animatic_capabilities.', 'write', schema({ shotId: str, layer: obj, index: integer }, ['shotId', 'layer']), (p, args) => {
     const s = shot(p, args.shotId), l = structuredClone(args.layer) as AnimaticLayer;
@@ -395,10 +448,11 @@ export const OPENING_ANIMATIC_TOOLS: readonly ToolDefinition[] = [
     s.composition = retimeOpeningAnimatic(s.composition, s.durationMs, duration); s.durationMs = duration;
     return commit(p, s, '샷과 종속 시간축을 함께 변경했습니다. 스프라이트 fps와 원본 음원은 유지됩니다.');
   }),
-  definition('inspect_opening_timeline', '샷별 레이어·동작·포즈·큐·빈 무대 구조 검토.', 'read', schema({ shotId: str }, []), (p, args) => {
-    let offset = 0; const shots = (p.system.opening?.scenes ?? []).map(s => { const startMs = offset; offset += s.durationMs; if (s.kind !== 'animatic') return { shotId: s.id, kind: s.kind, startMs, durationMs: s.durationMs };
+  definition('inspect_opening_timeline', '샷별 레이어·동작·포즈·큐·빈 무대 구조 검토. track:"title-intro" 면 타이틀 앞 인트로.', 'read', schema({ shotId: str, track: trackSchema }, []), (p, args) => {
+    const track = args.shotId && !args.track ? trackOfShot(p, String(args.shotId)) ?? 'opening' : trackArg(args.track);
+    let offset = 0; const shots = (trackSequence(p, track)?.scenes ?? []).map(s => { const startMs = offset; offset += s.durationMs; if (s.kind !== 'animatic') return { shotId: s.id, kind: s.kind, startMs, durationMs: s.durationMs };
       return { shotId: s.id, kind: s.kind, startMs, durationMs: s.durationMs, composition: s.composition, movingLayers: s.composition.layers.filter(l => Object.keys(l.keys ?? {}).some(k => k !== 'opacity') || (l.sheet?.fps ?? 0) > 0).map(l => l.id), warnings: s.composition.layers.length ? [] : ['레이어 없는 빈 무대'] }; }).filter(s => !args.shotId || s.shotId === args.shotId);
-    return { summary: `타임라인 ${shots.length}샷, 시간은 ms. 구조 검토이며 재생 증거와 다릅니다.`, data: { shots, automaticDurationMs: (p.system.opening?.scenes ?? []).every(s => s.durationMs > 0 && s.kind !== 'video') ? offset : null } };
+    return { summary: `타임라인(${track}) ${shots.length}샷, 시간은 ms. 구조 검토이며 재생 증거와 다릅니다.`, data: { track, shots, automaticDurationMs: (trackSequence(p, track)?.scenes ?? []).every(s => s.durationMs > 0 && s.kind !== 'video') ? offset : null } };
   }),
   definition('preview_opening_animatic', '현재 합성 샷의 실제 시간 표본을 모델에 전달. 최대4프레임.', 'read', schema({ shotId: str, atMs: { type: 'array', items: integer, maxItems: 4 } }, ['shotId']), (p, args) => {
     const s = shot(p, args.shotId), samples = args.atMs ?? [...new Set([0, Math.floor(s.durationMs / 3), Math.floor(s.durationMs * 2 / 3), s.durationMs])];

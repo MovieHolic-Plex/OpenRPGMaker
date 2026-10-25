@@ -961,6 +961,7 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     mountHostControls(surface.viewport);
     mountTouchPad(surface);
     surface.stage.append(title);
+    title.addEventListener("oprn:title-press-start", () => emitTitleJuice("title-confirm"));
     focusSelectedTitleOption(title);
     surface.sync();
     if (!redrawOfTitle) startTitleBgm(titleProject);
@@ -968,6 +969,7 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     requestAnimationFrame(() => requestAnimationFrame(() => {
       if (!shellActive || !firstEnter) return;
       cinematicAssets.warm(project, project.system.opening);
+      if (project.system.titleIntro?.entry?.mode === "attract") cinematicAssets.warm(project, project.system.titleIntro);
       const field = resolveMapBgm(project, project.startMapId);
       audioWarmup.warm(project, [titleProject.system.titleScreen?.musicResourceId,
         ...Object.values(titleProject.system.titleScreen?.sounds ?? {}),
@@ -981,7 +983,9 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
   };
 
   const armTitleAttract = (title: HTMLElement, stage: HTMLElement, project: ReturnType<typeof store.getCurrent>, repeated = false): void => {
-    const opening = project.system.opening;
+    // 타이틀 인트로(system.titleIntro)가 attract 면 그것을, 아니면 옛 opening(entry attract)을 유휴 데모로 쓴다.
+    const intro = project.system.titleIntro;
+    const opening = intro?.enabled && intro.entry?.mode === "attract" && intro.scenes.length ? intro : project.system.opening;
     if (!opening?.enabled || opening.entry?.mode !== "attract" || !opening.scenes.length) return;
     clearTimeout(attractTimer); detachAttractInput?.();
     const reset = (): void => { clearTimeout(attractTimer); attractTimer = setTimeout(begin, repeated ? opening.entry?.repeatDelayMs ?? 15000 : opening.entry?.idleMs ?? 15000); };
@@ -1009,8 +1013,10 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
   };
 
   const playBeforeTitle = (): void => {
-    const project = store.getCurrent(), sequence = project.system.opening;
-    if (!sequence?.enabled || sequence.entry?.mode !== 'before-title' || !sequence.scenes.length) { renderTitle(); return; }
+    const project = store.getCurrent(), intro = project.system.titleIntro;
+    // 타이틀 인트로가 먼저다(attract 여도 처음 켤 때는 한 번 튼다). 없으면 옛 opening.entry before-title.
+    const sequence = intro?.enabled && intro.scenes.length ? intro : project.system.opening;
+    if (!sequence?.enabled || (sequence !== intro && sequence.entry?.mode !== 'before-title') || !sequence.scenes.length) { renderTitle(); return; }
     stopGame(); stopAllAudio();
     const surface = createPlaySurface(resolvePlayResolution(project.system), surfaceScaleFor(project), undefined, surfaceOptions);
     playStage = surface.stage; cleanupPlaySurface = surface.cleanup; layout.append(surface.viewport); mountTouchPad(surface); surface.sync();

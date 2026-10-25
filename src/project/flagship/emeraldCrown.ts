@@ -1,5 +1,7 @@
 import { charsetFrameIndex, decodeCharsetFrameIndex } from "@/assets/easyrpgRtp";
 import { configureEmeraldMonsterOpening, type EmeraldOpeningPage } from "@/project/emeraldMonsterOpening";
+import { astraIntroCast, buildAstraTitleIntro } from "@/project/flagship/astraTitleIntro";
+import { astraArt } from "@/assets/astraOpeningArt";
 import { createMonsterExpedition } from "@/project/examples/monsterExpedition";
 import mapTemplates from "@/project/examples/monsterExpedition/mapTemplates.json";
 import { composeTown, type TownSketch, type TownTemplate } from "@/project/examples/monsterExpedition/townLayouts";
@@ -1115,6 +1117,29 @@ const STARTER_NOTES: Record<string, string> = {
   mx_species_tidekeeper: "꼬리로 바다 위에 우뚝 서서 해일 같은 볏을 펼친다. 볏 끝의 서리로 거친 파도를 얼려 멈춘다.",
 };
 
+/**
+ * 타이틀 화면(승인안 C): 밤하늘 성운 위로 먼 별·가까운 별 두 겹이 다른 속도로 흐르고, 하늘을 오린 밤 풀밭이 앞에 선다.
+ * 별이 깜빡이며 이따금 별똥별이 긋고, 스타터 셋이 차례로 화면을 가로질러 달린다. 「PRESS START」가 깜빡이고 키를 누르면 메뉴.
+ */
+function configureAstraNightTitle(project: Project): void {
+  const title = project.system.titleScreen;
+  if (!title) return;
+  title.backgroundResourceId = "oprn-pano-night";
+  title.backgroundFit = "cover";
+  title.backgroundRendering = "pixelated";
+  title.backgroundLayers = [
+    { resourceId: "oprn-pano-night-stars-far", scrollXPerSec: -3 },
+    { resourceId: "oprn-pano-night-stars-near", scrollXPerSec: -8, opacity: 0.85 },
+    { resourceId: astraArt("title-night").resourceId },
+  ];
+  title.particles = { preset: "stars", density: 60 };
+  title.runners = astraIntroCast(project).starters.flatMap((starter, i) => starter.chip
+    ? [{ resourceId: starter.chip.resourceId, characterIndex: starter.chip.index, direction: "right" as const, y: 236 - i * 3, speed: 74, scale: 2, delayMs: 1800 + i * 650, everyMs: 16000, hop: true }]
+    : []);
+  title.pressStart = { text: "PRESS START", blinkMs: 900, y: 192 };
+}
+
+
 export function createEmeraldCrownFlagshipDemo(): FlagshipDemoBuildResult {
   const { project } = createMonsterExpedition({ firstGymType: "grass", gymCount: 1 });
 
@@ -1218,7 +1243,10 @@ export function createEmeraldCrownFlagshipDemo(): FlagshipDemoBuildResult {
   if (project.system.titleScreen) {
     project.system.titleScreen.title = "아스트라 호라이즌";
     project.system.titleScreen.logoSubtitle = "다우닝 시티와 여명의 날개";
+    configureAstraNightTitle(project);
   }
+  // 게임을 켜면 타이틀보다 먼저 도는 전설 추격 인트로(약 27초, 아무 키나 누르면 타이틀).
+  buildAstraTitleIntro(project);
 
   remapAstraBuildingKits(project);
   const serialized = serialize(project);

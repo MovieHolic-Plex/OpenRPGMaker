@@ -9,7 +9,7 @@ export type AnimaticImages = Map<string, HTMLImageElement>;
  * 런타임 맵은 이 색을 키로 지우는데 오프닝 렌더러는 원본을 그대로 그려, 번들 24×32 배우마다 청록 상자가 붙었다
  * (2026-10-16 run-3 실측: 마을 주민 6명·기사 6명이 모두 색 상자를 쓰고 섰다). 시트에 알파가 이미 있으면 그대로 쓴다.
  */
-function keyedCharset(image: HTMLImageElement): HTMLImageElement | HTMLCanvasElement {
+export function keyedCharset(image: HTMLImageElement): HTMLImageElement | HTMLCanvasElement {
   const width = image.naturalWidth, height = image.naturalHeight;
   if (!width || !height) return image;
   // RM2000 캐릭터칩 시트 규격(288×256)에만 적용한다 — 아무 스트립이나 색을 지우면 그림이 뽑힌다.
@@ -115,6 +115,17 @@ function scratchCanvas(key: string, width: number, height: number, frequent = fa
   return canvas;
 }
 
+function tintedSource(id: string, image: CanvasImageSource, source: { x: number; y: number; width: number; height: number }, tint: NonNullable<AnimaticLayer['tint']>): HTMLCanvasElement | null {
+  const width = Math.max(1, Math.round(source.width)), height = Math.max(1, Math.round(source.height));
+  const canvas = scratchCanvas(`tint:${id}:${source.x},${source.y}`, width, height);
+  const ctx = canvas.getContext('2d'); if (!ctx) return null;
+  ctx.imageSmoothingEnabled = false;
+  ctx.drawImage(image, source.x, source.y, source.width, source.height, 0, 0, width, height);
+  ctx.globalCompositeOperation = 'source-atop'; ctx.globalAlpha = Math.max(0, Math.min(1, tint.amount ?? 1));
+  ctx.fillStyle = tint.color; ctx.fillRect(0, 0, width, height);
+  ctx.globalCompositeOperation = 'source-over'; ctx.globalAlpha = 1;
+  return canvas;
+}
 function drawText(ctx: CanvasRenderingContext2D, l: AnimaticLayer, t: number, snapping = 0): void {
   // With a pixelGrid every size is measured in GRID pixels, so a 12px line is 12 low-res pixels (crisp after the
   // integer upscale) instead of 12 stage pixels scaled down to the grid — which landed the glyphs on fractional
@@ -141,7 +152,45 @@ function drawText(ctx: CanvasRenderingContext2D, l: AnimaticLayer, t: number, sn
   for (const [i, line] of lines.entries()) { if (i > 0 && (i + 1) * size * 1.25 > l.height) break; ctx.fillText(line, x, i * size * 1.25); }
   ctx.restore();
 }
+/**
+ * Shooting stars. Particle i owns a repeating slot: it waits, streaks across part of the box along the layer's
+ * down-left diagonal with a fading tail, then waits again. Pure function of time (scrub-safe).
+ */
+function drawMeteors(ctx: CanvasRenderingContext2D, l: AnimaticLayer, t: number, snapping = 0): void {
+  const p = l.particles!, seconds = Math.max(0, t - (l.startMs ?? 0)) / 1000, speed = p.speed ?? 260, size = p.size ?? 1.5;
+  const travel = Math.max(40, Math.min(l.width, l.height) * 0.7), life = travel / speed;
+  const dx = -0.87, dy = 0.5, cell = snapping > 0 ? 1 / snapping : 0;
+  for (let i = 0; i < p.count; i++) {
+    const a = random(p.seed, i * 5), b = random(p.seed, i * 5 + 1), c = random(p.seed, i * 5 + 2);
+    const period = life + 0.8 + c * 3.2, phase = a * period;
+    const local = (seconds + phase) % period;
+    if (local > life || seconds + phase < period * 0.15 && i % 2 === 1) continue;
+    const u = local / life, startX = l.width * (0.35 + 0.65 * b), startY = l.height * 0.55 * random(p.seed, i * 5 + 3);
+    const hx = startX + dx * travel * u, hy = startY + dy * travel * u, tail = Math.min(travel * 0.45, 18 + speed * 0.12) * Math.min(1, u * 4);
+    const fade = u < 0.15 ? u / 0.15 : u > 0.75 ? Math.max(0, (1 - u) / 0.25) : 1;
+    const alpha = ctx.globalAlpha;
+    if (cell > 0) {
+      const steps = Math.max(1, Math.round(tail / cell));
+      for (let s = 0; s <= steps; s++) {
+        ctx.globalAlpha = alpha * fade * (1 - s / (steps + 1));
+        ctx.fillRect(Math.round((hx - dx * s * cell) / cell) * cell, Math.round((hy - dy * s * cell) / cell) * cell, cell, cell);
+      }
+      ctx.globalAlpha = alpha;
+      continue;
+    }
+    const gradient = ctx.createLinearGradient(hx, hy, hx - dx * tail, hy - dy * tail);
+    gradient.addColorStop(0, withAlpha(l.color ?? '#ffffff', fade));
+    gradient.addColorStop(1, withAlpha(l.color ?? '#ffffff', 0));
+    ctx.save();
+    ctx.strokeStyle = gradient; ctx.lineWidth = size; ctx.lineCap = 'round';
+    ctx.beginPath(); ctx.moveTo(hx, hy); ctx.lineTo(hx - dx * tail, hy - dy * tail); ctx.stroke();
+    ctx.globalAlpha = alpha * fade; ctx.fillStyle = '#ffffff';
+    ctx.beginPath(); ctx.arc(hx, hy, size * 0.9, 0, Math.PI * 2); ctx.fill();
+    ctx.restore();
+  }
+}
 function drawParticles(ctx: CanvasRenderingContext2D, l: AnimaticLayer, t: number, snapping = 0): void {
+  if (l.particles!.preset === 'meteors') { drawMeteors(ctx, l, t, snapping); return; }
   const p = l.particles!, seconds = (t - (l.startMs ?? 0)) / 1000, speed = p.speed ?? (p.preset === 'rain' ? 500 : 35), size = p.size ?? 2;
   const snap = (v: number) => snapping > 0 ? Math.round(v * snapping) / snapping : v;
   const cell = snapping > 0 ? 1 / snapping : 0;
@@ -562,7 +611,12 @@ function drawStage(ctx: CanvasRenderingContext2D, sx: number, sy: number, snappi
         const frame = l.walk ? walkFrame(l, at) : Math.floor(sample('frame', sheet.loop ? automatic % sheet.count : Math.min(sheet.count - 1, automatic)));
         crop = { x: frame % sheet.columns * sheet.frameWidth, y: Math.floor(frame / sheet.columns) * sheet.frameHeight, width: sheet.frameWidth, height: sheet.frameHeight };
       }
-      if (crop) { if (crop.x + crop.width > image.naturalWidth || crop.y + crop.height > image.naturalHeight) throw Error(`그림 ${l.resourceId}의 crop/프레임이 원본 경계를 넘습니다.`); ctx.drawImage(drawSource, crop.x, crop.y, crop.width, crop.height, 0, 0, snapSize(l.width), snapSize(l.height)); }
+      const source = crop ?? { x: 0, y: 0, width: image.naturalWidth, height: image.naturalHeight };
+      if (crop && (crop.x + crop.width > image.naturalWidth || crop.y + crop.height > image.naturalHeight)) throw Error(`그림 ${l.resourceId}의 crop/프레임이 원본 경계를 넘습니다.`);
+      // tint: recolour the opaque pixels in a scratch canvas (alpha kept), then draw that instead of the source.
+      const tinted = l.tint ? tintedSource(l.resourceId!, crop ? drawSource : image, source, l.tint) : null;
+      if (tinted) ctx.drawImage(tinted, 0, 0, source.width, source.height, 0, 0, snapSize(l.width), snapSize(l.height));
+      else if (crop) ctx.drawImage(drawSource, crop.x, crop.y, crop.width, crop.height, 0, 0, snapSize(l.width), snapSize(l.height));
       else ctx.drawImage(image, 0, 0, snapSize(l.width), snapSize(l.height));
       if (l.region) drawRegionLoop(ctx, l, drawSource, l.region, crop ?? { x: 0, y: 0, width: image.naturalWidth, height: image.naturalHeight }, at, snapping);
     } else if (l.kind === 'text') drawText(ctx, l, t, snapping);
