@@ -179,3 +179,39 @@ export function unjoinedFollowers(project: Project, changedIds: ReadonlySet<stri
   }
   return out;
 }
+
+/**
+ * 타일을 바꿔 길을 여는 장치(레버·다리·스위치)가 실제로 아무 데도 안 여는 경우(2026-10-25 판정 J1, 약초 동굴 B2):
+ * 레버가 다리를 내리지만 다리 없이도 보스 방까지 걸어갔다. 바뀐 칸 중 «못 가던 칸이 갈 수 있게 되는» 것이 있는
+ * 장치만 본다(레버 손잡이만 뒤집는 장식은 제외). 바꾼 뒤 새로 닿는 칸이 그 칸들 말고 하나도 없으면 퍼즐이 아니다.
+ */
+export function gatesThatOpenNothing(project: Project, changedIds?: ReadonlySet<string>): string[] {
+  const out: string[] = [];
+  for (const map of Object.values(project.maps)) {
+    for (const ev of map.events ?? []) {
+      if (changedIds && !changedIds.has(ev.id)) continue;
+      const edits: { layer: "lower" | "upper"; x: number; y: number; tile: number }[] = [];
+      for (const page of (ev.pages ?? []) as unknown[]) walk(obj(page)?.commands, (cmd) => {
+        if (cmd.kind !== "changeTile" || (cmd.mapId !== undefined && cmd.mapId !== map.id)) return;
+        const x = cmd.x, y = cmd.y, tile = cmd.tile;
+        if (!Number.isInteger(x) || !Number.isInteger(y) || !Number.isInteger(tile)) return;
+        if ((x as number) < 0 || (y as number) < 0 || (x as number) >= map.width || (y as number) >= map.height) return;
+        edits.push({ layer: cmd.layer === "upper" ? "upper" : "lower", x: x as number, y: y as number, tile: tile as number });
+      });
+      if (!edits.length) continue;
+      const lowerTiles = map.lowerTiles.slice(), upperTiles = map.upperTiles.slice();
+      for (const e of edits) (e.layer === "upper" ? upperTiles : lowerTiles)[e.y * map.width + e.x] = e.tile;
+      const opened: GameMap = { ...map, lowerTiles, upperTiles };
+      const freed = new Set(edits.filter((e) => !isPassable(project, map, e.x, e.y) && isPassable(project, opened, e.x, e.y)).map((e) => `${e.x},${e.y}`));
+      if (!freed.size) continue;
+      const before = reachWithout(project, map, new Set());
+      const after = reachWithout(project, opened, new Set());
+      if (!before || !after) continue;
+      const fresh = [...after].filter((k) => !before.has(k) && !freed.has(k));
+      if (fresh.length) continue;
+      const cells = [...freed].slice(0, 3).map((k) => `(${k})`).join("·");
+      out.push(`${map.name}의 「${ev.name || ev.id}」(${ev.id})가 ${cells} 칸을 열지만 그 너머는 이미 다른 길로 걸어 닿는다 — 장치를 안 써도 끝까지 간다`);
+    }
+  }
+  return out;
+}

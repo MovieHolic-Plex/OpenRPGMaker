@@ -414,8 +414,11 @@ function placeBridge(c: Ctx): string {
     // 레버를 둘 방이 남아야 한다(입구 말고 닿는 방)
     const leverRooms = c.rooms.filter((r) => r.kind !== "entrance" && r.spots.some((s) => seen[s.y * W + s.x]));
     if (!leverRooms.length && cut) continue;
+    // 다리를 걷어도 못 가는 방이 없으면 퍼즐이 아니다 — 레버 없이 보스까지 걸어간다(2026-10-25 판정 J1). 그런 무리는 고르지 않는다.
+    if (!cut) continue;
     if (!best || cut > best.cut) best = { g, cut, seen };
   }
+  // 막는 다리가 없으면 빈 문자열 → placeThemeGimmick 이 다음 기믹(레버 관문 등)으로 넘어간다.
   if (!best) return "";
   // 레버 = 다리를 건너지 않고 닿는 방 중 가장 깊은 방, 벽 앞 자리
   const reachable = c.rooms.filter((r) => r.spots.some((s) => best!.seen[s.y * W + s.x] && free(c, s)));
