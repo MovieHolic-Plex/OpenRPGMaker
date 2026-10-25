@@ -17,7 +17,6 @@ import { composeRouted, routeDungeon } from "../dungeonKit/route";
 import { assertMapIdAvailable } from "./mapHelpers";
 import { MAP_TOOLS } from "./mapTools";
 import { upsertEventIntoMap } from "./eventTools";
-import { resolveGraphic } from "./eventCompile";
 import { ensureNamedSwitch } from "./flagHelpers";
 import { asCell, asRoom, chestLoot, field, list, nested, pickTroops, placeRoamer, text, type Room } from "./jrpgVolumeTools";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
