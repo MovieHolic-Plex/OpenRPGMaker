@@ -99,12 +99,19 @@ faceset(48×48 얼굴)·picture(흉상·전신) 에셋을 가리킨다. 표정 �
 - **카드 / 바로 넣기.** 「묻지 않고 바로 넣기」(localStorage `oprn:store-auto-install`)가 꺼져 있으면 결과가 음악 카드(`ai-store-music-card`: 미리 듣기 `<audio>`·「넣기」·「건너뛰기」·자동 넣기 확인란)로 뜨고 턴이 멈춘다.
   「넣기」는 `addStoreItemToProject(slug,{assetIds:[곡]})` 뒤 「원래 요청을 이어서 하라」 후속 요청을 보낸다. 켜져 있으면 조수가 바로 `store_install` 한다.
   꺼진 상태에서 음악 팩을 `store_install` 하면 `store-ask-first` 로 거절된다(사용자가 스토어를 직접 말했으면 `userAsked:true`).
-- **곡 하나만 넣기.** `store_install({slug,assetIds})` 는 `subsetMusicManifest` 로 고른 곡만 남겨 그 파일 하나만 받는다. 출처(`origin`: 상품·판본·라이선스·`aiGenerated`·크레딧)가 그대로 붙고, 저장하면 호스트가 `assets/` 파일로 뗀다.
-  결과의 `resourceIds` 를 `set_game_audio` 에 넘긴다.
+- **곡 하나만 넣기.** `store_install({slug,assetIds})` 는 `subsetMusicManifest` 로 고른 곡만 남겨 그 파일 하나만 받는다(팩 전체를 받지 않는다 — 편집기 창 쪽은 데스크톱 다리 `store.manifest` 로 매니페스트만 받고 곡 파일만 `store.blob`).
+  출처(`origin`: 상품·판본·라이선스·`aiGenerated`·크레딧)가 그대로 붙는다. 카드 「넣기」는 곧바로 `assets/` 파일 참조(ref)로 넣고, 워커의 자동 넣기는 문서에 dataUrl 로 들어갔다가 호스트가 저장 뒤(세션 처음 몇 번)·다음 열기 때 `assets/` 파일로 뗀다.
+  결과의 `resourceIds` 를 `set_game_audio` 에 넘긴다. ref 만 있는 곡도 `set_game_audio` 가 받는다(워커에는 주소 해석기가 없다).
+- **곡 고르기 점수**(`scoreStoreMusic`): 장면 > 사용자가 말한 장르(장르 이름 +6, 팩 줄 낱말 +6, 조선 팩은 실제로 들리는 만큼 3/1.5) > 분위기. 장르를 말했는데 다른 장르 곡은 −6.
+  장르를 말하지 않았으면 프로젝트에 이미 든 스토어 곡의 줄을 따른다(같은 줄 +4×비율, 한 줄이 절반 넘는데 다른 줄이면 −8) — 판타지 게임의 「으스스한 던전」에 호러 팩 트립합이 붙던 것(2026-10-25 실조수)을 막는다.
+- **장면 여럿 = 카드 하나.** 「게임 음악 전부」처럼 `store_find_music` 을 장면마다 부르면 패널이 한 카드로 묶는다(장면마다 「고르기」, 맨 아래 「고른 곡 넣기」 한 번 → 후속 요청 하나). v2 는 카드를 띄운 실행을 사용자 질문으로 보고 끝맺음 관문이 넣기를 재촉하지 않는다.
 - **보스전만 다른 곡.** `set_game_audio role:"boss"`(+`troopIds`, 비우면 이름에 보스·마왕·드래곤·관장 등이 든 부대)는 그 `battleProcessing` 앞뒤에 `m2-027-change-system-bgm`(battle set / reset)을 넣는다. 다시 불러도 한 쌍만 남는다.
 - 시험: 단위 `test/storeMusicInstall.test.ts`. 실조수: `bun src/harnesses/assistant-capability/node/musicStorePrepare.ts <dir> <fantasy|joseon|monster> <제목>`(마을·동굴·보스전 시드) →
   `node src/harnesses/assistant-capability/node/wholeGameSession.mjs --project-dir <dir>/project --out <dir>/session --v2 --store-url <스테이징> [--store-auto-install]`.
   브라우저 편집기에는 데스크톱 다리가 없어서 드라이버가 읽기 전용 스토어 다리를 붙인다(`storeBridgeShim.mjs`). 요청 목록은 `harness-data/space-craft/seed.json` 의 `g-music-*`.
+  출하 플레이어 재생 확인: `wholeGamePlayer.mjs --project-dir <dir>/project --out <dir>/player --serve` 뒤
+  `musicPlayProbe.mjs --boot <dir>/player/player-url.json --out <dir>/probe [--title] [--map 맵:x:y] [--event 맵:x:y:방향] [--win]` — 실제로 시간이 흐르는 `<audio>` 만 「재생」으로 센다(엔진 요청 기록만으로는 안 됨). 오프닝은 건너뛴다(오프닝 동안은 오프닝 곡이 맞다).
+  2026-10-25 스테이징 실조수(v2·Argon, 판타지·몬스터 자동 넣기 + 조선 카드, 요청 10개): 첫 판 14자리 중 9자리 적합(Argon 청취), 14자리 모두 `assets/` 파일·저장 뒤 재로드 유지, 출하 플레이어에서 타이틀·마을·던전·전투·보스·승리 재생 확인. 빗나간 것과 고친 것은 위 점수 규칙·카드 묶기·boss 자동 고르기.
 
 ## 게시기
 
