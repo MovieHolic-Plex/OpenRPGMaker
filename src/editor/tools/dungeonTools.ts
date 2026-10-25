@@ -293,6 +293,12 @@ function doorOpenCommands(map: GameMap, at: Stair): Command[] {
 }
 
 /** 레버 퍼즐(같은 칩셋 안): 보물 방(없으면 보스방)으로 들어가는 통로 칸에 닫힌 쇠창살 문, 먼 곁방에 레버. 레버를 당기면 스위치가 켜지고 문이 사라진다. */
+/** 쇠창살 이벤트가 문으로 읽히는 단면: 가로 한 줄(세로 단면은 옆으로 늘어선 창살 기둥이 된다)이고 양 끝 바깥이 벽. 2026-10-25 gate Sonnet: 트인 바닥에 선 세로 창살 기둥 = 「떠 있는 쇠창살」. */
+function barsFitDoorway(draft: Project, map: GameMap, cells: readonly Pt[]): boolean {
+  if (!cells.length || cells.some((p) => p.y !== cells[0]!.y)) return false;
+  const y = cells[0]!.y, xs = cells.map((p) => p.x);
+  return !isPassable(draft, map, Math.min(...xs) - 1, y) && !isPassable(draft, map, Math.max(...xs) + 1, y);
+}
 function placeLeverGate(draft: Project, map: GameMap, data: Record<string, unknown>, warnings: string[]): string {
   const lock = field(field(data, "population"), "lockedGate");
   const gate = asCell(lock);
@@ -316,7 +322,7 @@ function placeLeverGate(draft: Project, map: GameMap, data: Record<string, unkno
   // 키트가 안 들어가는 단면(동서 통로의 세로 단면 등)이면 이 경로를 접고 placeChokeLever 가 다른 목을 찾는다.
   // 쇠창살문 키트가 안 들어가는 단면이면 옛 쇠창살 이벤트로 물러선다 — 접으면 탑 레버가 6/10 → 3/10 으로 줄었다(2026-10-25).
   const block = placeLeverBlock(draft, map, String(field(data, "type")), barCells, sw, null, field(data, "gateStyle"))
-    ?? (field(data, "gateStyle") === undefined && leverGateStyle(String(field(data, "type"))) === "portcullis" ? placeLeverBlock(draft, map, String(field(data, "type")), barCells, sw, null, "bars") : null);
+    ?? (field(data, "gateStyle") === undefined && leverGateStyle(String(field(data, "type"))) === "portcullis" && barsFitDoorway(draft, map, barCells) ? placeLeverBlock(draft, map, String(field(data, "type")), barCells, sw, null, "bars") : null);
   if (!block) { warnings.push(`${map.name}: 잠긴 통로 단면에 쇠창살문 키트가 들어가지 않는다 — 다른 좁은 목을 찾는다.`); return ""; }
   // gap 벽걸이 레버(#3283): 레버 칸 바로 북쪽 벽 앞면에 걸고 벽을 보고 조사한다. 그림·벽이 없으면 바닥에 옛 캐릭터 레버.
   // 벽 레버 후보: 열쇠 방 상자 안 모든 바닥 칸(북쪽이 벽인 칸 먼저, 계획 자리에 가까운 순)
