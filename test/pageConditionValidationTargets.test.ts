@@ -21,6 +21,8 @@ const cases: readonly { readonly condition: EventPageCondition; readonly code: s
   { condition: { kind: "friendshipAtLeast", value: 100 }, code: "condition.friendship.no-character-id", simpleId: "event-page-friendship-condition-npc-key", advancedField: "friendship-npc-key" },
   { condition: { kind: "relationshipAtLeast", state: "dating" }, code: "condition.relationship.no-character-id", simpleId: "event-page-relationship-condition-npc-key", advancedField: "relationship-npc-key" },
   { condition: { kind: "gold", op: "<", amount: -1 }, code: "condition.gold.impossible", advancedField: "gold-amount" },
+  { condition: { kind: "difficulty", difficultyId: "" }, code: "reference.difficulty.missing", advancedField: "difficulty" },
+  { condition: { kind: "itemUsed", itemId: "" }, code: "reference.item.missing", advancedField: "item-used" },
   { condition: { kind: "all", conditions: [] }, code: "condition.all.empty", advancedField: "group-kind" },
   { condition: { kind: "any", conditions: [] }, code: "condition.any.empty", advancedField: "group-kind" },
   { condition: { kind: "run", query: "flag", flag: "", value: true }, code: "condition.run.flag-empty", advancedField: "run" },

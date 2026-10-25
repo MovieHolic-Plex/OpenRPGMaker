@@ -208,7 +208,7 @@ Enter 로 맡기면 곧바로 닫혀 다음 칸을 누를 수 있다. 맡긴 일
 - **추격 훅(#28)**: 추격자 `movement.pursuit.lostSwitchId` 는 수색 끝에 포기하는 순간 켜고 다시 발견하면 끈다. `followSwitchId` 는 문을 따라 다른 맵으로 넘어오기 시작하면 켠다(`horrorRuntime.ts` / `pursuitDoors.ts`). 페이지 조건으로 「따돌렸다」·「문이 열린다」 연출을 건다. 페이지 추격 패널과 `configure_object_behavior` 의 `pursuit` 에 노출, `test/mgPursuitHooks.test.ts`.
 - **파티 스킬 조건(`partyKnowsSkill{skillId,present?}`, 2026-10-15)**: 「이 스킬을 아는 구성원이 파티에 있다」 — 바위깨기·물 건너기 같은 필드 스킬 게이트의 페이지 조건·분기 조건. `partySkills.ts` 가 배우(습득표·직업·성장 트리·장비)와 몬스터 파티를 한꺼번에 푼다. 평가기는 둘(session·pageResolution)과 전투 이벤트라 한 군데만 고치면 어긋난다.
 - **배지 수 조건(`badgeCount{op,value}`, 2026-10-16)**: 「배지를 N개 이상 받았다」 — 몬스터 캠페인 `badges[].switchId` 가 켜진 개수(정의가 없으면 `mx_badge_N` 규약 스위치)를 비교한다. 해석기는 `project/badgeProgress.ts` 하나이고 `partySkillContext` 가 캠페인 배지 목록을 실어 모든 페이지 해석 호출처에 퍼진다(전투 이벤트는 `badgeContext`). 도구: `place_badge_gate`. 자세한 규칙은 `openwiki/monster-badge-progression.md`.
-- 난이도·아이템 사용 조건(`difficulty`·`itemUsed`)은 간단 행이 없어 고급 조건 목록에 나온다(`pageConditionLayout.ts`).
+- 난이도·아이템 사용 조건(`difficulty`·`itemUsed`)은 간단 행이 없어 고급 조건 목록에 나온다(`pageConditionLayout.ts`). 검토 종은 그 행의 `event-page-advanced-condition-difficulty-<순번>`·`event-page-advanced-condition-item-used-<순번>` 으로 간다(`pageConditionField`).
 
 ## 구역(로케이션) 조건분기 (OPRN-OUT-020, 2026-09-10)
 
