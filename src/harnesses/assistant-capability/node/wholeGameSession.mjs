@@ -163,6 +163,8 @@ try {
       log(`\n## ${step} WAIT (continue observing from event ${mark})\n`);
     } else if (kind === 'txt') {
       if (await busy()) await waitSettle(mark, Date.now());
+      // --snapshots: the stored project before each typed turn (advisor replay needs before/after; after = next turn's before or live.json).
+      if (argv.includes('--snapshots')) { try { mkdirSync(resolve(out, 'snapshots'), { recursive: true }); writeRuntimeProject(projectDir, resolve(out, 'snapshots', `${step}-before.json`)); } catch (error) { log(`snapshot failed: ${error.message}\n`); } }
       await page.getByTestId('ai-input').fill(body);
       await page.getByTestId('ai-send').click();
       log(`\n## ${step} USER (${new Date().toISOString()})\n${body}\n`);
@@ -192,6 +194,8 @@ try {
       pageErrors: pageErrors.slice(errorMark), toolCalls: tools.filter(t => t.type === 'tool_end'), pendingCards: pending, answer, draftReports,
       done: events.filter(e => e.type === 'done').map(e => ({ stats: e.stats, usage: e.usage })),
       statusNotes: events.filter(e => e.type === 'execution_status').map(e => `${e.name}: ${String(e.summary ?? '').slice(0, 300)}`).slice(-40),
+      advisor: events.filter(e => e.type === 'execution_status' && String(e.name).startsWith('v2.advisor')).map(e => ({ name: e.name, data: e.data })),
+      toolArgs: events.filter(e => e.type === 'tool_start').map(e => ({ name: e.name, args: e.args })),
       maps: Object.values(snap.project.maps).map(m => ({ id: m.id, name: m.name, size: `${m.width}x${m.height}`, events: (m.events ?? []).length })) };
     json(resolve(out, 'turns', `${step}.json`), turn);
     await page.screenshot({ path: resolve(out, 'turns', `${step}.png`) }).catch(() => {});

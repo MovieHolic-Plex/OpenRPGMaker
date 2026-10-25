@@ -22,7 +22,10 @@ export interface PiAssistantV2Env {
 }
 export interface PiAssistantV2Hooks {
   readonly tools: (env: PiAssistantV2Env) => PiToolShape[];
-  /** 주 지시가 끝난 뒤 한 번 — 글을 돌려주면 그 글로 한 차례 더 돈다(완료 조건 미충족 보고 등). */
-  readonly afterMain?: (env: PiAssistantV2Env) => Promise<string | undefined> | string | undefined;
+  /**
+   * 주 지시가 끝난 뒤 — 글을 돌려주면 그 글로 한 차례 더 돈다(완료 조건 미충족 보고 등). round 0 이 첫 부름이고,
+   * round 0 이 글을 돌려줘 한 차례 더 돈 뒤에 round 1 로 한 번 더 부른다(새 최종 보고를 다시 대어 보는 자리). 최대 2차례.
+   */
+  readonly afterMain?: (env: PiAssistantV2Env, round: number) => Promise<string | undefined> | string | undefined;
 }
 

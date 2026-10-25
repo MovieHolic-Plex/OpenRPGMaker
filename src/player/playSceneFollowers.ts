@@ -230,7 +230,8 @@ export function syncFollowerSprites(
     const reappearing = !position.hidden && followerHidden.has(key);
     if (position.hidden) followerHidden.add(key);
     else followerHidden.delete(key);
-    if (reappearing && isMonsterFollower(position.follower)) followerEmerging.set(key, 0);
+    // 다시 나타나는 동료는 주인공 몸이 그 칸을 비운 뒤 떠오른다 — 문으로 막 들어와 숨었던 파티 동료도 같다(J9).
+    if (reappearing) followerEmerging.set(key, 0);
     if (options?.snap || position.hidden || reappearing) {
       followerSlotMotion.delete(key);
       followerWalkElapsedMs.set(key, 0);

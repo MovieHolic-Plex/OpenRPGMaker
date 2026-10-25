@@ -1,0 +1,19 @@
+{
+ "name": "무기고 탑",
+ "massing": "C11",
+ "material": "stone",
+ "refs": [
+  "bd-wall-tower",
+  "bd-castle"
+ ],
+ "walk": [
+  "****",
+  "****",
+  "****",
+  "XXXX",
+  "XXXX",
+  "XXDX",
+  "XXDX"
+ ],
+ "id": "armory-tower"
+}

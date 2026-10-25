@@ -27,6 +27,7 @@
 | `object-gate` | 공용 오브젝트 게이트 (3/4 시점 + 버들항 화풍) | 장르 무관 | `harness-data/object-gate/seed.json` | `openwiki/harnesses/object-gate.md` |
 | `interview-scene-bank` | 인터뷰 선택 배경 | 장르 무관 | `harness-data/interview-scene-bank/seed.json` | `openwiki/harnesses/interview-scene-bank.md` |
 | `battle-trainer-sprites` | 전투 트레이너 스프라이트 (생성형 → 도트화) | 장르 무관 | `harness-data/battle-trainer-sprites/seed.json` | `openwiki/harnesses/battle-trainer-sprites.md` |
+| `building-kit` | 테마 건물 부품 조립 (버들항 계열 oprn-atlas) | 장르 무관 | `harness-data/building-kit/fantasy-kingdom/seed.json` | `openwiki/harnesses/building-kit.md` |
 | `cast-portrait` | 캐스트 대사 흉상 (기존 캐스트와 같은 규격) | 장르 무관 | `harness-data/cast-portrait/seed.json` | `openwiki/harnesses/cast-portrait.md` |
 
 ## monster-collect-species — 몬스터 수집 종 스프라이트
@@ -492,6 +493,38 @@ GPT 6.1 sol high가 정지·걷기 12프레임을 전부 직접 저작하고 사
 - `sheet` — 고르기 시트: 참고 샘플 옆에 같은 배율로 나란히, 전투 합성 미리보기 포함 자체완결 HTML 을 ~/claude-viz 에 쓴다.
 - `pick` — 고르기 기록: 사용자가 고른 역할=글자를 현재 그림 해시에 묶어 기록한다.
 - `bake` — 번들 굽기: 고른 후보만 public/assets/battle-trainers/<역할>/ 와 index.json 으로 굽는다. 고르기 전에는 거절한다.
+
+**들어오는 길:** CLI 있음 · 에디터 화면 아직 없음 · 조수 도구 아직 없음
+
+## building-kit — 테마 건물 부품 조립 (버들항 계열 oprn-atlas)
+
+버들항(beodeul_city)과 같은 계열 oprn-atlas 의 16px 3/4 탑뷰 건물을 테마 넷(중세 판타지 왕국·사막 오아시스·설원 북방·버들항 귀족 구역)에 부품 조립으로 만든다. 테마마다 잠긴 팔레트(공유 램프는 버들항 실화소에서 뽑고, 테마 램프는 버들항 출처 또는 밝기 범위 안의 손 램프) → 줄(line) 셋의 화풍 판 style-r1(부품 최소 세트 + 조립 건물 둘) → 기계 관문(P 팔레트·Z 크기·Q 불투명·F 윗면 띠·S 반복 이음·J 세트 이음·Y 줄 재료·G 바닥 닿음 + 조립 A1~A11, WARN OUTLINE·CONTRAST·T·L·N) → 독립 Opus 검수(숨긴 함정 통과 시 회차 무효, 유효 3회 다수결) → 사람이 시트에서 (항목, 줄)마다 pick/reject(그림 해시에 묶임) → 사람이 고른 부품으로 조립한 건물만 object-gate 3/4 영수증(kind structure) → village 로 그 줄의 건물을 길·마당·광장이 있는 마을에 놓는다. 관문 통과는 합격이 아니다. 번들 굽기·타일셋 배선·참고문서는 사람이 고른 뒤의 별도 작업이다.
+
+**이럴 때 쓴다:**
+- 버들항 계열 테마 건물(중세 판타지 왕국·사막 오아시스·설원 북방·버들항 귀족 구역)의 지붕·벽 칸·창·문·기단·층 띠·굴뚝·탑·현관 부품 후보를 새로 그리거나 다시 낼 때
+- 같은 테마 건물을 부품 교체로 크기·용도 변형(작은 집·긴 집·여관·대장장이·길드·교회·성문탑)으로 늘릴 때
+- 테마 건물 후보를 사람이 시트에서 줄마다 고르게 하거나, 고른 부품으로 조립한 건물이 지금 그림과 맞는지 확인할 때
+- 새 건물 그림을 번들·공용 DB·스토어에 넣기 전 3/4 관문(object-gate kind structure) 영수증을 확인할 때 — 부품은 조립 건물 영수증으로 덮인다
+- 기존 버들항 건물 원본의 국소 보정에는 쓰지 않는다 — beodeul-architecture / beodeul-building-review
+- 테마 건물을 마을 단위로 놓아 접지·길·문 방향·건물끼리 어울림을 볼 때
+
+**단계** (`npm run harness -- building-kit <단계>`):
+- `palette` — 팔레트 뽑기: 테마 팔레트를 다시 뽑는다 — 공유 램프(잔디·포석·기단 돌·나무·쇠)는 버들항 실제 화소에서, 테마 램프는 seed 출처(버들항 칸·조각) 또는 손 램프(단마다 버들항 같은 단 밝기 ±0.04 안). --check 는 비교만.
+- `validate` — 시드 점검: 테마 넷 seed(규칙·줄·부품 세트 pieces/joins·조립 레시피·판 모듈 후보 키·팔레트 최신·Actor1·기준 그림)를 점검한다. 판 모듈이 아직 없으면 「그리기 전」으로 보고한다.
+- `list` — 항목 목록: 테마·줄별 부품 세트와 조립 레시피. 줄마다 ★ = 사람이 고른 것(현재 그림과 해시가 맞을 때), - = 그 줄에서 뺀 항목.
+- `draw` — 후보 그리기: 판 모듈 후보를 그려 qa-runs/harnesses/building-kit/<테마>/<판>/ 에 1배·4배·부품 PNG 와 manifest.json(해시)을 쓴다. --agent 는 (줄, 후보)마다 새 그리기 프로세스(기본 claude-opus-5-5 · effort high, BUILDING_KIT_DRAWER_MODEL/EFFORT 로만 바꾼다)를 띄운다. requireGableFront 판은 샌드박스 refs/ 에 회색 투영 안내도가 들어간다.
+- `dry` — 후보 한 장 미리보기: 후보 하나를 그려 관문과 조립 결과를 그대로 보여 준다 — 그리기 에이전트가 스스로 고칠 때 쓰는 입구.
+- `gate` — 기계 관문: 부품마다 P 팔레트·Z 크기·Q 불투명·F 윗면 띠·S 반복 이음·J 세트 이음·G 바닥 닿음(Y 줄 재료), 같은 항목 후보끼리 R, WARN OUTLINE·CONTRAST·T·L·N. FAIL 이 있으면 검수·시트로 가지 않는다.
+- `assemble` — 조립: 조립 레시피대로 부품을 붙여 building.png·kit.json(칸 격자 lower/upper·walkGrid·door)을 만들고 조립 관문 A1~A15(문 하나·지붕/벽 틈 없음·지붕이 벽을 덮음·기단이 바닥에 닿음·맞닿은 조각 이음·지붕 비율 밴드·용마루 하한·같은 땅 행·탑 지붕 폭/재료·박공 정면 용마루 세로선과 왼쪽 밝은 사면·골이 뒤 지붕에 닿음·굴뚝이 지붕 위·requireGableFront 판은 박공 정면 질량 필수)을 건다. 질량 종류 ridge_side·gable_front·lean_to.
+- `finish` — 마감(손 디테일): 조립 관문을 모두 통과한 건물마다(--line, --building) 새 Opus 5.5 high 프로세스(BUILDING_KIT_FINISH_MODEL/EFFORT, 시간 BUILDING_KIT_FINISH_TIMEOUT 기본 5400s)가 팔레트 글자 격자 pixels.txt 를 finish_draw.py 의 명시 좌표·행 문자열로 고쳐 기와 낱장 변화·처마 밝은 선·회벽 점묘·막돌·창턱/꽃상자/유리 반짝임·아치 문/징·소품을 더한다. check.py (a) 윤곽 그대로 (b) 문 재질 (c) 팔레트만 (d) 처마 선 ±1px (e) 코드 AST(난수·식 채우기 금지) (f) 12% 이상 변화 (g) 16px 자기상관 감소. 하네스가 깨끗한 입력으로 finish_draw.py·check.py 를 다시 돌려 finished/<후보>.<건물>.png|.json 에 쓴다. 통과는 합격이 아니다 — review/sheet/village/pick --finished 로 마감 그림 해시에 묶인 같은 길을 간다.
+- `review` — 독립 검수: 관문을 통과한 조립 건물만. 버들항 기준 건물 + 섞인 후보 + 숨긴 함정(지붕/벽 틈·문 둘·평면 채우기·잡음·얇은 지붕 입면·색만 바꾼 원본, requireGableFront 판은 후보 자기 부품으로 만든 평평한 정면 입면 flat_elevation) 보드를 새 Opus 판정자에게 보인다. --finished 는 마감 그림(함정도 마감 그림에서 만든다)과 review-finished/ 영수증. 함정을 하나라도 통과시키면 그 회차 무효, 유효 3회 다수결, 영수증은 그림 해시+판정 원문 해시에 묶인다.
+- `sheet` — 고르기 시트: 검수 PASS 후보만 버들항 기준 건물·Actor1·1배/3배·조립 건물·거리 장면과 함께 ~/claude-viz/bk-<테마>-<판>.html 자체완결 시트로 쓴다(--show-failed 는 실패 사유와 함께 회색). --finished 는 마감 건물(바탕·마감 비교, 마감 해시)을 bk-<테마>-<판>-finished.html 에.
+- `pick` — 고르기(사람): 사람이 시트에서 고른 후보를 시트 때 해시(--sha 앞 8자리)와 현재 그림 해시로 대조해 ledger.json 에 (항목, 줄)마다 기록하고 picked/<줄>/<항목>.png 로 복사한다. 에이전트 대리 선택 경로는 없다. --finished 는 <건물> <후보> 로 마감 시트에 보인 마감 해시를 picked/<줄>/finished/<건물>.png 와 finishedPicks 에 기록한다.
+- `reject` — 버리기(사람): 사람이 버린 후보와 이유를 그림 해시와 함께 기록한다(다음 판의 「하지 말 것」).
+- `objgate` — 3/4 관문 영수증: 사람이 고른 부품으로 조립한 건물마다 object-gate require_pass(kind structure, context bundle)를 받는다. 부품은 조립 건물 영수증으로 덮인다. 영수증이 없으면 「3/4 관문 미통과」.
+- `village` — 마을 놓기: 그 줄의 조립 건물(검수 PASS 영수증이 지금 그림 해시와 맞는 것만, --all 은 전부)을 테마 팔레트 색만으로 그린 잔디(북방은 눈) 바닥·구불구불한 길·광장·우물·나무 위에 놓는다. 문은 길을 향하고 마당 1~2칸을 거쳐 길까지 걸어갈 수 있다(BFS 확인). 건물끼리 겹치지 않고 같은 --seed 면 같은 마을이 나온다. PNG 1배·2배와 ~/claude-viz/bk-village-<테마>-<판>-<줄>.html. --finished 는 마감 검수 PASS 마감 건물로 놓는다.
+- `projection` — 투영 안내도: 박공 정면 투영(앞 박공 → 북쪽으로 물러나는 세로 용마루 → 왼쪽 밝은·오른쪽 어두운 사면 → 뒤 꼭대기 ^, 그리고 ㄱ자 본채+날개+골+굴뚝)을 16px 칸 위 무채색 도형으로 그려 projection-*-1x/4x.png 로 쓴다. 사용자 참고 그림은 쓰지 않는다.
+- `status` — 현황: 테마별 판·관문·검수·시트·고른 것(현재 해시와 맞는지)·3/4 영수증 유무를 보여 준다.
 
 **들어오는 길:** CLI 있음 · 에디터 화면 아직 없음 · 조수 도구 아직 없음
 

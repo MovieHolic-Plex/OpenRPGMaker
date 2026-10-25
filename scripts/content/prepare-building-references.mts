@@ -11,6 +11,14 @@ import {renderMapPng} from '../qa-game/render.mts';
 const profileId=process.argv.slice(2).find(a=>!a.startsWith('-'))??'beodeul';
 const profile=(JSON.parse(fs.readFileSync('src/harnesses/beodeul-building-review/profiles.json','utf8')).profiles as any[]).find(x=>x.id===profileId);assert(profile,'unknown profile '+profileId);
 const B=profile.bundle,EX=profile.example,IDS=B.ids as {house:string;shadow:string;foundation:string;docs:string};
+// 위임 프로필(building-kit massing)은 사람 클릭이 아니다 — 문서가 출처를 정확히 말한다.
+const DELEGATED=B.approval==='delegated';
+const ALLOWED=DELEGATED?'검수 통과':'사람이 허용한';
+const PROVENANCE=DELEGATED
+ ?`**사용자 위임 허용**(2026-10-25)만 들어 있다: 그림 해시마다 3/4 관문(object-gate kind structure) 영수증 + 독립 검수자 둘(argon · klb-sonnet-5-5)의 원문 PASS 가 있고, 설치가 object-gate 출구를 다시 확인했다(결정 로그 ${profile.seedDir}/decisions.json, 프로필 ${profileId}). 반려·미통과 그림은 없다.`
+ :`건물 검수 화면에서 **사람이 현재 그림 해시에 허용**한 건물만 들어 있다(결정 로그 harness-data/beodeul-building-review/decisions.json, 프로필 ${profileId}). 거절·미선택 그림은 없다.`;
+const ENSURE=DELEGATED?'ensureBeodeulMassing':'ensureBeodeulReviewed';
+const WALLS=DELEGATED?'벽 칸은 그린 이가 칸마다 적은 walk 격자(X 막힘·D 문·* 지나감)를 그대로 쓴다. 문 칸과 땅에 닿는 칸은 막힘이다(성문·시장홀 통로 칸만 예외).':'${WALLS}';
 const catalog=JSON.parse(fs.readFileSync(B.catalog,'utf8')),groundCatalog=JSON.parse(fs.readFileSync(EX.groundCatalog,'utf8'));
 const data=B.tiledata as string,pub=B.publicDir as string,label=profile.label as string;
 const p=createBlankProject(),ts=p.tilesets[B.hostTilesetId]!;
@@ -28,8 +36,12 @@ m0.run(p,{id:EX.map.id,name:EX.map.name,width:W,height:H,tilesetId:ts.id,border:
 const m=p.maps[EX.map.id]!;m.lowerTiles=Array(W*H).fill(EX.grassTile);
 const index=(x:number,y:number)=>y*W+x;
 const placements:{kit:string;x:number;y:number;role:string}[]=[],fronts:{kit:string;x:number;y:number}[]=[];
+// 거리가 짧으면 다음 거리 줄로 넘긴다(map.rowStep 칸 아래에 길 한 쌍 더). rowStep 이 없으면 한 줄 거리(옛 동작 그대로).
+const STEP=(EX.map.rowStep as number|undefined)??0,roadRows:number[]=[ROAD];
 let cx=1;
-for(const kid of pick){const b=byKid.get(kid)!;assert(b,kid);const x=cx,y=ROAD-b.height;assert(x+b.width<=W-1,'street too short for '+kid);
+for(const kid of pick){const b=byKid.get(kid)!;assert(b,kid);
+ if(STEP&&cx+b.width>W-1){cx=1;roadRows.push(roadRows[roadRows.length-1]!+STEP);assert(roadRows[roadRows.length-1]!+1<H,'map too short for '+kid);}
+ const RR=roadRows[roadRows.length-1]!;const x=cx,y=RR-b.height;assert(x+b.width<=W-1,'street too short for '+kid);assert(y>=0,'row too low for '+kid);
  for(const [role,id,layer] of [['shadow',`${IDS.shadow}${kid}`,2],['body',`${IDS.house}${kid}`,3],['foundation',`${IDS.foundation}${kid}`,4]] as const){
   const k=kits.get(id)!;assert(k,id);
   for(let dy=0;dy<k.height;dy++)for(let dx=0;dx<k.width;dx++){const n=k.rows[dy]!.upperTiles[dx]!;
@@ -40,7 +52,7 @@ for(const kid of pick){const b=byKid.get(kid)!;assert(b,kid);const x=cx,y=ROAD-b
 }
 // 길: 흙 길 두 줄(beodeul_ground 의 연결 mask 흙 레시피를 target 으로 이식)
 const ground=p.tilesets[EX.groundTilesetId]!,recipes=new Map<string,any>((groundCatalog.recipes as any[]).map(r=>[r.id,r]));
-const road=new Set<number>();for(let x=0;x<W;x++)for(const y of [ROAD,ROAD+1])road.add(index(x,y));
+const road=new Set<number>();for(let x=0;x<W;x++)for(const r of roadRows)for(const y of [r,r+1])road.add(index(x,y));
 const tr=translateTiles(ground,ts,(groundCatalog.recipes as any[]).filter(r=>new RegExp(EX.roadRecipePattern).test(r.id)).flatMap(r=>r.rows.flat()));
 for(const i of road){const x=i%W,y=Math.floor(i/W);let mask=0;
  for(const [dx,dy,bit] of [[0,-1,1],[1,0,2],[0,1,4],[-1,0,8]] as const){if(road.has(index(x+dx,y+dy))&&x+dx>=0&&x+dx<W&&y+dy>=0&&y+dy<H)mask|=bit;}
@@ -70,9 +82,9 @@ fs.writeFileSync(`${data}/street-example.json`,JSON.stringify({map:m,placements,
 
 // ---- 문서 ---------------------------------------------------------------------------------------
 const n=catalog.buildings.length;
-add(IDS.docs+'guide','허용한 건물 · 시공 순서',`# ${label} · 사람이 허용한 건물 ${n}채
+add(IDS.docs+'guide',`${ALLOWED} 건물 · 시공 순서`,`# ${label} · ${ALLOWED} 건물 ${n}채
 
-건물 검수 화면에서 **사람이 현재 그림 해시에 허용**한 건물만 들어 있다(결정 로그 harness-data/beodeul-building-review/decisions.json, 프로필 ${profileId}). 거절·미선택 그림은 없다. 시트 ${B.tilesetId}(${B.texture}, 16px, 16열, ${catalog.count}칸), 모든 프로젝트의 ${B.hostTilesetId} 에는 \`ensureBeodeulReviewed\`(translateTiles)로 이식되어 있다. 칸 번호를 다른 시트와 섞지 않는다 — 현재 프로젝트의 키트 id(${IDS.house}*)로 놓는다.
+${PROVENANCE} 시트 ${B.tilesetId}(${B.texture}, 16px, 16열, ${catalog.count}칸), 모든 프로젝트의 ${B.hostTilesetId} 에는 \`${ENSURE}\`(translateTiles)로 이식되어 있다. 칸 번호를 다른 시트와 섞지 않는다 — 현재 프로젝트의 키트 id(${IDS.house}*)로 놓는다.
 
 ## 조립 순서(건물 한 채)
 1. 본체 width×height 와 **문 아래 한 칸**(접근칸)을 평지에 예약한다. 잘라서 줄이거나 반복하지 않는 고정 키트.
@@ -81,7 +93,7 @@ add(IDS.docs+'guide','허용한 건물 · 시공 순서',`# ${label} · 사람�
 4. 건물끼리는 사각형이 겹치면 안 된다(본체 칸 3층 충돌 금지). 같은 키트를 연속으로 놓지 말고 폭·지붕 색·층수를 섞는다.
 
 ## 통행과 문
-- **벽 칸은 막힘, 지붕 처마 칸은 걸을 수 있음.** 벽 칸은 칸별 밝은 회벽/돌 색 비율로 가려 열별 지면에서 위로 이어 붙였고, 문 칸과 맨 아래 줄은 항상 막힘이다. 통나무집은 지붕 아래 벽 띠 전체가 막힘이다.
+- **벽 칸은 막힘, 지붕 처마 칸은 걸을 수 있음.** ${WALLS}
 - 키트 한 채마다 입구 한 곳(parts.entrance, 문 그림 칸). **문 그림·문 앞 접근칸·출입구·전이 이벤트는 다르다** — 이 키트는 그림과 통행만 준다. 문 안으로 들어가는 전이 이벤트는 맵에 따로 만든다.
 - 문 앞 칸(문 y + h)은 키트 밖이므로 길로 비워 둔다. 소품·나무로 막지 않는다.
 
@@ -98,19 +110,19 @@ ${catalog.buildings.map(b=>`- ${b.id} · ${b.name} · ${b.width}×${b.height} ·
 `);
 // 문서 한도(분류당 64)가 있으므로 건물 설명은 6채씩 한 문서로 묶는다.
 const sections=catalog.buildings.map((b:any)=>{const kid=kidOf(b.id),total=b.rows.flat().filter((v:number)=>v>=0).length;
- return `## ${b.name}\n\n키트 ${b.id}, 원본 후보 ${b.source}(그림 해시 ${b.sha256.slice(0,12)}…). ${b.width}×${b.height}칸(${b.width*16}×${b.height*16}px), ${b.material==='log'?'통나무':'목골·돌'} 벽, 한 입구: 문 (${b.parts[0]!.dx},${b.parts[0]!.dy}) ${b.parts[0]!.w}×${b.parts[0]!.h}, 문 앞 (${b.parts[0]!.dx},${b.parts[0]!.dy+b.parts[0]!.h}). 층: 2=${IDS.shadow}${kid}, 3=본체, 4=${IDS.foundation}${kid}, 같은 원점. 막힌 칸 ${b.blocked.length}, 걸을 수 있는 처마 ${total-b.blocked.length}.\n\n\`\`\`json\n${JSON.stringify({id:b.id,width:b.width,height:b.height,entrance:b.parts[0],blockedCells:b.blocked,rows:b.rows,shadowRows:b.shadowRows,foundationRows:b.foundationRows,groundLines:b.groundLines})}\n\`\`\`\n\n칸 번호는 ${B.tilesetId} 시트의 것이다. ${B.hostTilesetId} 에서는 \`ensureBeodeulReviewed\` 이식 번호이므로 kit 키트 id 로 놓는다.\n\n![허용한 건물 전체](image:${IDS.docs}gallery)\n`;});
+ return `## ${b.name}\n\n키트 ${b.id}, 원본 후보 ${b.source}(그림 해시 ${b.sha256.slice(0,12)}…). ${b.width}×${b.height}칸(${b.width*16}×${b.height*16}px), ${b.material==='log'?'통나무':'목골·돌'} 벽, 한 입구: 문 (${b.parts[0]!.dx},${b.parts[0]!.dy}) ${b.parts[0]!.w}×${b.parts[0]!.h}, 문 앞 (${b.parts[0]!.dx},${b.parts[0]!.dy+b.parts[0]!.h}). 층: 2=${IDS.shadow}${kid}, 3=본체, 4=${IDS.foundation}${kid}, 같은 원점. 막힌 칸 ${b.blocked.length}, 걸을 수 있는 처마 ${total-b.blocked.length}.\n\n\`\`\`json\n${JSON.stringify({id:b.id,width:b.width,height:b.height,entrance:b.parts[0],blockedCells:b.blocked,rows:b.rows,shadowRows:b.shadowRows,foundationRows:b.foundationRows,groundLines:b.groundLines})}\n\`\`\`\n\n칸 번호는 ${B.tilesetId} 시트의 것이다. ${B.hostTilesetId} 에서는 \`${ENSURE}\` 이식 번호이므로 kit 키트 id 로 놓는다.\n\n![${ALLOWED} 건물 전체](image:${IDS.docs}gallery)\n`;});
 const PER_DOC=6;
 for(let k=0;k*PER_DOC<sections.length;k++){const first=catalog.buildings[k*PER_DOC],last=catalog.buildings[Math.min(sections.length,(k+1)*PER_DOC)-1];
  add(IDS.docs+'list-'+(k+1),`건물 ${k*PER_DOC+1}~${Math.min(sections.length,(k+1)*PER_DOC)} (${kidOf(first.id)} … ${kidOf(last.id)})`,`# 건물 ${k*PER_DOC+1}~${Math.min(sections.length,(k+1)*PER_DOC)}\n\n`+sections.slice(k*PER_DOC,(k+1)*PER_DOC).join('\n\n'));}
-add(IDS.docs+'street-plan','거리 예제 전체 배치',`# ${W}×${H} 거리 예제\n\n건물 아랫줄 y=${ROAD-1}, 길 y=${ROAD}~${ROAD+1}. 각 건물은 shadow→body→foundation 을 같은 원점에 놓았다.\n\n\`\`\`json\n${JSON.stringify({placements,fronts,checks})}\n\`\`\``);
+add(IDS.docs+'street-plan','거리 예제 전체 배치',`# ${W}×${H} 거리 예제\n\n거리 줄 ${roadRows.length}개: ${roadRows.map(r=>`건물 아랫줄 y=${r-1}, 길 y=${r}~${r+1}`).join(' · ')}. 각 건물은 shadow→body→foundation 을 같은 원점에 놓았다.\n\n\`\`\`json\n${JSON.stringify({placements,fronts,checks})}\n\`\`\``);
 for(const [layer,field] of [[1,'lowerTiles'],[2,'lowerOverlayTiles'],[3,'upperTiles'],[4,'upperOverlayTiles']] as const)
  add(IDS.docs+'street-layer-'+layer,'거리 예제 '+layer+'층 정답',`# target 맵 ${layer}층\n\n이 저장본 예제 전용 ${B.hostTilesetId} 번호(${field}). ${W}×${H}.\n\n\`\`\`json\n${JSON.stringify(Array.from({length:H},(_,y)=>Array.from({length:W},(_,x)=>layerTileAt(m,layer as 1|2|3|4,y*W+x))))}\n\`\`\``);
 const used=[...new Set([1,2,3,4].flatMap(l=>Array.from({length:W*H},(_,i)=>layerTileAt(m,l as 1|2|3|4,i))))].filter(v=>v>=0);
 add(IDS.docs+'street-tiles','예제에 쓴 칸의 출처와 통행',`# 사용한 target 칸\n\n\`\`\`json\n${JSON.stringify(used.map(v=>({targetTile:v,graft:ts.tileGrafts?.find(g=>g.targetTile===v)??null,priority:ts.priority[v],passability:ts.passability[v]})))}\n\`\`\``);
 const pic=(id:string,name:string,path:string,caption:string)=>images.push({id,name,caption,dataUrl:path});
-pic(IDS.docs+'gallery','허용한 건물 전체 · 원본 해상도',`${B.publicUrl}/gallery.png`,`허용 ${n}채, 그림자·본체·기초를 층 순서대로 1:1 합성(잔디 위). 라벨은 키트 id 의 뒷부분.`);
+pic(IDS.docs+'gallery',`${ALLOWED} 건물 전체 · 원본 해상도`,`${B.publicUrl}/gallery.png`,`${ALLOWED} ${n}채, 그림자·본체·기초를 층 순서대로 1:1 합성(잔디 위). 라벨은 키트 id 의 뒷부분.`);
 pic(IDS.docs+'street',`거리 예제 · ${pick.length}채`,`${B.publicUrl}/street.png`,`실제 mapTileDraw 출력, ${W}×${H}. 건물마다 그림자·기초가 붙어 땅에 선다.`);
 pic(IDS.docs+'error','정상 / 막힌 문 앞',`${B.publicUrl}/normal-error.png`,`왼쪽 정상, 오른쪽은 ${f0.kit} 문 앞(${f0.x},${f0.y})에 anvil 을 놓은 실제 변조.`);
-const refs=[{id:B.referencesId,name:`${label} · 사람이 허용한 건물 ${n}채`,description:'검수 화면에서 사람이 허용한 건물만. 본체·바닥 그림자·기초 3층 조립, 벽 막힘·처마 통행, 문 앞 접근칸, 64×22 거리 예제와 막힌 문 앞 오류.',documents,images}];
+const refs=[{id:B.referencesId,name:`${label} · ${ALLOWED} 건물 ${n}채`,description:`${DELEGATED?'3/4 관문·독립 검수 둘을 통과하고 사용자 위임으로 허용한 건물만':'검수 화면에서 사람이 허용한 건물만'}. 본체·바닥 그림자·기초 3층 조립, 벽 막힘·처마 통행, 문 앞 접근칸, ${W}×${H} 거리 예제와 막힌 문 앞 오류.`,documents,images}];
 fs.writeFileSync(`${data}/references.json`,JSON.stringify(refs,null,2)+'\n');fs.writeFileSync(B.references,JSON.stringify(refs)+'\n');
 console.log(JSON.stringify({documents:documents.length,images:images.length,buildings:n,fronts:fronts.length,doorsSolid:true,wallsSolidAndOverhangWalkable:true,actualMutationBlocksDoor:true}));

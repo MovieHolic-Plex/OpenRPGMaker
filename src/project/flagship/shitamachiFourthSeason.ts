@@ -723,7 +723,7 @@ function buildTitleAndOpening(project: Project, spots: { jiho: Cell; yuna: Cell;
       actors: [{ who: "keeper", at: spots.keeper, dir: "down" }, { who: "hajin", at: { x: spots.keeper.x + 2, y: spots.keeper.y + 1 }, dir: "up" }],
     },
   ];
-  for (const [index, s] of shots.entries()) {
+  for (const s of shots) {
     execTool(project, "create_opening_animatic_shot", { shotId: s.id, durationMs: 5200, width: STAGE.width, height: STAGE.height, replace: true, clearLayers: true });
     execTool(project, "set_opening_pixel_grid", { shotId: s.id, width: STAGE.width, height: STAGE.height });
     execTool(project, "place_opening_background", { shotId: s.id, layerId: "bg", mapId: s.mapId, focus: s.focus });

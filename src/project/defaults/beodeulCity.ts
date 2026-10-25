@@ -14,6 +14,7 @@ import {beodeulFacilityReferences,ensureBeodeulFacilityKits} from './beodeulFaci
 import {beodeulFormsHostReferences,ensureBeodeulForms} from './beodeulForms';
 import {ensureBeodeulOrganic} from './beodeulOrganic';
 import {beodeulReviewedHostReferences,ensureBeodeulReviewed} from './beodeulReviewed';
+import {beodeulMassingHostReferences,ensureBeodeulMassing} from './beodeulMassing';
 import type { AutotileGroup, PassFlag, StructureKitDef, TileAiMetadata, TileGroupMetadata, TilesetDef } from "../types";
 import type { TilesetReferenceCategory } from "../tilesetReferences";
 import { copyBundleEnd, relocateLocalTail, type LocalTailRelocation, type RelocationProject } from "./localTailRelocation";
@@ -90,7 +91,7 @@ function baseReferenceDocuments(): TilesetReferenceCategory[] {
 export function beodeulCityBundledReferenceDocuments(): TilesetReferenceCategory[] {
   const docs = baseReferenceDocuments();
   const ids = new Set(docs.map((category) => category.id));
-  for (const category of [...beodeulFacilityReferences(), ...beodeulFormsHostReferences(), ...beodeulReviewedHostReferences()]) {
+  for (const category of [...beodeulFacilityReferences(), ...beodeulFormsHostReferences(), ...beodeulReviewedHostReferences(), ...beodeulMassingHostReferences()]) {
     if (ids.has(category.id)) return createBeodeulCityTileset().referenceDocuments ?? [];
     ids.add(category.id);
     docs.push(structuredClone(category));
@@ -122,6 +123,7 @@ export function createBeodeulCityTileset(): TilesetDef {
   ensureBeodeulFacilityKits(tileset);
   ensureBeodeulForms(tileset);
   ensureBeodeulReviewed(tileset);
+  ensureBeodeulMassing(tileset);
   ensureBeodeulOrganic(tileset);
   return tileset;
 }

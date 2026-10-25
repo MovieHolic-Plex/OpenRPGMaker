@@ -314,12 +314,13 @@ export function resetFollowerTrailNearPlayer(
     if (!inBounds(map, x, y)) return false;
     return options?.project ? isPassable(options.project, map, x, y) : true;
   };
-  // 몬스터만 따라오는 열차(HGSS): 바로 뒤 칸이 문·계단·벽이면 옆 칸에 세우지 않고 잠깐 숨긴다 — 주인공이 첫 걸음을 떼면
-  // 주인공이 떠난 칸(문 앞·계단 앞)에서 나타나 뒤를 따른다. 옆 칸에 세우면 주인공이 그쪽으로 걸을 때 둘이 서로를
-  // 뚫고 자리를 바꿨다(2026-10-23 회복 센터 문·2층 계단 실측).
-  const monsterOnly = session.followers.every((entry) => entry.kind === "monster" || Boolean(entry.monsterInstanceId));
+  // 바로 뒤 칸이 문·계단·벽이면(문으로 막 들어왔다) 옆·앞 칸에 세우지 않고 잠깐 숨긴다 — 주인공이 첫 걸음을 떼면
+  // 주인공이 떠난 칸(문 앞·계단 앞)에서 나타나 뒤를 따른다. 옆·앞 칸에 세우면 주인공이 그쪽으로 걸을 때 둘이 서로를
+  // 뚫고 자리를 바꿨다 — 몬스터 열차(2026-10-23 회복 센터 문·2층 계단)와 파티 동료(J9: 동굴 계단으로 내려오면 동료가
+  // 주인공 앞에 섰다가 첫 걸음에 뒤로 튀었다) 모두. 저작자가 spreadWhenBlocked 를 켰으면 followerPositions 가 빈 궤적일 때
+  // 옆 빈 칸에 세운다(그 선택은 그대로 존중한다).
   const back = DIR_STEP[OPPOSITE[facing]];
-  if (monsterOnly && !open(session.x + back.dx, session.y + back.dy)) {
+  if (!open(session.x + back.dx, session.y + back.dy)) {
     session.followerTrail = [];
     return;
   }
@@ -555,7 +556,11 @@ export function followerPositions(
     }
     const point = trail[at];
     if (!point) {
-      const spread = config?.spreadWhenBlocked === true && world ? nearestSpreadCell(hero, world, clear) : null;
+      // 문으로 막 들어와 궤적이 비었다. 걸을 때는 숨겼다가 주인공이 떠난 칸에서 나타나게 두고(J9: 앞에 세우면 첫 걸음에
+      // 뒤로 튄다), 도착하자마자 이야기 장면(컷신 잠금·동료 대사)이 돌면 액터 동료는 옆 빈 칸에 세운다 — 문 이벤트 자체도
+      // 이벤트라 inScene 으로는 가르지 않는다(그러면 문을 지날 때마다 앞에 섰다).
+      const actor = follower.kind !== "monster" && !follower.monsterInstanceId;
+      const spread = (config?.spreadWhenBlocked === true || (actor && world?.storyScene === true)) && world ? nearestSpreadCell(hero, world, clear) : null;
       if (spread) {
         taken.push(spread);
         return { follower, x: spread.x, y: spread.y, direction: world?.playerFacing ?? follower.graphic.direction };

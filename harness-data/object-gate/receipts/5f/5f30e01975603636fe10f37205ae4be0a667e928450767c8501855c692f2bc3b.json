@@ -1,0 +1,542 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "5f30e01975603636fe10f37205ae4be0a667e928450767c8501855c692f2bc3b",
+ "width": 144,
+ "height": 128,
+ "kind": "structure",
+ "name": "교차 박공 십자형 집",
+ "label": "building-kit/massing/cross-house",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 8,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "5f62fef078ef7661"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 18,
+  "tileColorsP90": 23,
+  "darkV5": 53,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 53
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "main hip roof (tiled slope across the whole width)",
+      "rows": "22-62",
+      "evidence": "c",
+      "front_edge_line_row": 62,
+      "eave_shadow_rows": "61-62"
+     },
+     {
+      "part": "front cross gable roof (central tiled slope)",
+      "rows": "22-63",
+      "evidence": "c",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "chimneys",
+      "rows": "8-21",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "front porch gable and lintel beam",
+      "rows": "63-76",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 41,
+    "front_face_rows": 49,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is a house whose hip roof covers rows 22-62, with rows of tile, widening silhouette from 93 to 144 px, and a dark eave shadow at about rows 61-62. Under it, the timber-framed plaster front wall runs from row 63 to about row 111, which is a front face of roughly 49 rows. The central cross gable has a sloped tiled roof plane that reaches down to the porch. The chimneys stand above the roof and count as decor. The porch below the gable has a front-facing lintel and is a small vertical element. Taken together, the roof slopes give a clear top surface above a tall front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The candidate roof has scalloped tiles with per-tile highlights across about 5 steps, from orange highlight through mid red-brown to dark purple-brown in the valleys, and it matches the reference roofs in tile rhythm. The plaster walls carry speckle grain and the timber framing has light and dark brown steps. Outlines lean brown or red-brown beside wood and roof tiles, not neutral black. The 22% near-neutral share of dark edge pixels is above the references' 7-9% but still means most edge pixels are tinted. Measured facts: 15 visible tones per tile against 12 and 10 for the references, and 0% near-flat coverage, the same as both references. Density is at or above the references. The cross-gable roof and the porch are built with proper shading, and the windows and door are detailed. It would sit next to the references without looking flatter or more sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15563
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "main hipped tile roof",
+      "rows": "22-62",
+      "evidence": "c",
+      "front_edge_line_row": 62,
+      "eave_shadow_rows": "61-62"
+     },
+     {
+      "part": "central cross gable roof (front-facing gable with sloped tile plane)",
+      "rows": "30-62",
+      "evidence": "c",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "chimneys",
+      "rows": "8-30",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "entrance porch lintel beam",
+      "rows": "81-84",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 41,
+    "front_face_rows": 49,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is a house whose large hipped tile roof (rows 22-62, width growing from 93 to 144 px as the slopes widen) is a sloped roof plane (evidence c), ending at an eave line around rows 61-62 with dark eave shadow. Below it is a plaster and timber front wall (rows 63-111, about 49 rows) with windows and a door. The central cross-gable also shows its tile slope above its eave. The porch protrusion at rows 112-127 is part of the front face. The chimneys are decor. This reads as a 3/4 view building."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The candidate's roof has scalloped tiles with per-tile highlights in about 5 steps, from orange highlight to dark red-brown, plus a shaded cross-gable valley, so it reads like the reference roofs. The plaster walls carry speckle grain and the timber frame is brown with light and dark variation. Doors and windows are shaded individually. Measured facts support this: 15 visible tones per tile against 12 and 10 for the references, and 0% near-flat coverage, the same as the references. The dark edge pixels are 22% neutral, higher than the references' 7-9% but still mostly tinted. By eye the outlines are dark brown or red-brown next to the roof and wood, with no uniform black sticker line. Structure and craft are on par with Beodeul, so I pass it.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 11807
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "main hipped tile roof",
+      "rows": "22-62",
+      "evidence": "c",
+      "front_edge_line_row": 62,
+      "eave_shadow_rows": "61-62"
+     },
+     {
+      "part": "front cross gable roof slope",
+      "rows": "22-62",
+      "evidence": "c",
+      "front_edge_line_row": 62,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "porch lintel beam",
+      "rows": "85-89",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "chimneys",
+      "rows": "8-21",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 41,
+    "front_face_rows": 49,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is a hipped tile roof covering rows 22-62. Its tile rows form a sloped roof plane, and the silhouette widens from 93 to 144 px as the slope recedes. A dark eave line and shadow sit at rows 61-62, with the timber-framed plaster front wall below at rows 63-111. The cross gable and its sloped roof plane project forward from the center of the main roof. The porch below is a vertical face with a flat beam lintel and has no roof of its own, but it is a small part. The two chimneys are small details."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The candidate roof has scalloped tiles with per-tile highlights across about 5 steps, from orange highlight through mid red-brown to dark purple-brown shadow. The cross-gable valley reads clearly. Walls carry plaster speckle, and the timber frame, shutters and door show wood grain. The outlines are dark brown beside wood and dark red-brown beside roof tiles, and are tinted. The 22% neutral share of dark edge pixels is higher than the references' 7-9%, but the image shows no uniform black sticker line, so I read the outline as dark material tone. Measured facts are 15 visible tones per tile against 12 and 10 for the references, and 0% near-flat coverage, equal to the references. Structure and detail match the Beodeul house references, and the candidate is not thinner or flatter than them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 22041
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "main hip roof (tile slopes)",
+      "rows": "22-62",
+      "evidence": "c",
+      "front_edge_line_row": 62,
+      "eave_shadow_rows": "61-63"
+     },
+     {
+      "part": "central cross gable roof (front-facing gable slope)",
+      "rows": "15-62",
+      "evidence": "c",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "porch lintel beam",
+      "rows": "51-53",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "left chimney",
+      "rows": "8-21",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "right chimney",
+      "rows": "5-17",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 41,
+    "front_face_rows": 49,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is a house with a large tiled hip roof covering rows 22-62, widening from 93 to 144 px. This is a sloped roof plane, and it ends at an eave line around row 62 with a dark shadow band beneath it. Below that is a plaster and timber front wall of about 49 rows (63-111) with windows and a door. A cross gable projects at the center with its own tiled slope, and a porch with a lintel sits below it. The chimneys are placed on the roof and are structural-looking but minor, so they are listed as small extras. The roof's top surface is clearly visible, so the drawing reads as three-quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The candidate's roof has scalloped tiles with per-tile highlights in about 5 steps, from bright orange-gold to dark red-brown, plus a shaded cross-gable valley. This matches the reference roofs. Walls carry plaster speckle, and the timber framing uses brown tones with dark brown edges. The outlines lean brown and red-brown by eye, so they read as material tones, not black. The 22% near-neutral share of dark edge pixels is higher than the references' 7-9% but still low overall, and it comes from the grey chimneys and dark window interiors. Visible tones per tile are 15, against 12 and 10 for the references. Near-flat coverage is 0%, the same as the references, so there are no flat fills. Doors, windows with flower boxes and the lantern add detail. At this scale the piece sits comfortably next to the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 12680
+  }
+ ],
+ "decidedAt": "2026-10-25T09:05:33.452Z",
+ "cells": {
+  "16": [
+   "02ddf47d4abedec3",
+   "04ed011b40fe35b6",
+   "072a6bbbe1f9be8f",
+   "080a90a7b664e94e",
+   "08c9d68e1fceae67",
+   "0dc252286ec2dfaa",
+   "10e290290a3361d9",
+   "14a2112037015234",
+   "19ce8b313405c9de",
+   "26b4babd5a191f4e",
+   "2bcc748615c601bd",
+   "2e1f09f71710d661",
+   "3790f3bb140175ed",
+   "37b754e3c46b19bd",
+   "384c8b5508e47231",
+   "3c5ddb508cf6144e",
+   "3de71b9f6f30d73a",
+   "4299a4e03ada2539",
+   "44055dfc90555b6d",
+   "4dfc2caf0d8fcffb",
+   "5352a2d836619d5c",
+   "5b28432575a5402f",
+   "5b515795bf7fe593",
+   "5b90772327e9e4ef",
+   "63039ca8364686f8",
+   "6835cd37767c7c95",
+   "71719abf4af212f3",
+   "7cc242e1b806e173",
+   "88d9a1aa624e7879",
+   "891a0a46fae31b1a",
+   "8c1358fad9c54e04",
+   "8d6705bf78bd537f",
+   "9b4763a650ddf499",
+   "9ccea0b81ef20132",
+   "a041ec9fe87f6066",
+   "a9678c6df0868c8c",
+   "aa04088b24cce6ed",
+   "ae33afc38b96d3ab",
+   "aeb73c2bcbc9fe87",
+   "c06530dc57cb7b5e",
+   "c1b7e9318cb2f808",
+   "ca79ce30244e85a5",
+   "ccbc824e927f7187",
+   "d30d90792bb9a032",
+   "d5939b23a4581fa6",
+   "d6e7b4484aefdc43",
+   "dbdc6d9923791d75",
+   "ebc3c21832d70e86",
+   "eefe02cc1bc02f39",
+   "ef57800942adbb5f",
+   "f105a2de9e7393f5",
+   "f378a6b16db2bd84",
+   "f381329839afa9e1",
+   "f3ed5f038c98553a",
+   "f7fa6cc81f373fdc",
+   "f863df93f39449a8",
+   "f8d46f9d3a82bd94"
+  ],
+  "24": [
+   "016c8aeb185cec66",
+   "056fadb3bd6969c3",
+   "05feb97d84be7046",
+   "06f60d21db32d2ad",
+   "0a4ae82a9677ea9f",
+   "0db57c794f4f2981",
+   "12ff274ac3736c87",
+   "144c9fe3bf85d622",
+   "1b4c5974eca7afe2",
+   "200dd551636b2df3",
+   "21ddc2456d2fa7e7",
+   "2415c8966a21c6e5",
+   "24997143000ac3e2",
+   "24a12e87d2e60901",
+   "2d4129f5f8e28cec",
+   "39f643b772a0221a",
+   "3aed1888b8b01832",
+   "3e208085233281e6",
+   "44167b25f507ff7e",
+   "46e4d350c563357e",
+   "4809e38683ace960",
+   "54e1ef3dbd2ee12c",
+   "56af6162391911fa",
+   "58db0911abd99634",
+   "5d447b384637ae9a",
+   "5d9cab173c05a81d",
+   "60182e3a5478be92",
+   "606b5e3d157f7a98",
+   "643cc580f992badd",
+   "65f3fd23343b1de8",
+   "6c4f5886a002260b",
+   "72c0d4639ecf6c16",
+   "760d206e6bc68446",
+   "768265f0858c21b3",
+   "77246abdc5797363",
+   "81a6d153b5e822a0",
+   "826424279acbc446",
+   "82a4b79e1c7f3040",
+   "83062b008610c02d",
+   "8382f8dd20af07cd",
+   "8809dcb9f9b49771",
+   "a0f3c22768033d03",
+   "a2fd2cb2a26e752b",
+   "a3585dfc9b25f870",
+   "a59651b3d2b78144",
+   "ab5051c50002f409",
+   "ac60dd2cf4cf5ae0",
+   "bad77fcbdb477899",
+   "ceeda7e7a7bd13be",
+   "d056d67923e54e25",
+   "d0b8732f835f3954",
+   "d4041fcaceb115c6",
+   "d470c96a115b659d",
+   "d85aa83274a66b8b",
+   "db9eb718c7eb897c",
+   "dcdf6e564a507ea2",
+   "dd30855309404c78",
+   "e4fa17d8263375d6",
+   "ec9f13fca97796f7",
+   "f32fb20684369b88",
+   "f3ffc77f1134e722"
+  ],
+  "32": [
+   "075b63ebb046fcb8",
+   "0860e5c2d9b07c27",
+   "10f776905d749b46",
+   "16cd2707a2da9bd5",
+   "171e785fa5f4547c",
+   "17583fc56d6bf501",
+   "1d6126bc0d02a5f3",
+   "1de153d70d50412e",
+   "20fb1dcdcc5f20ec",
+   "2955b49c3f46e819",
+   "2c51cfe5002a52cd",
+   "2d18580188664dae",
+   "2fb1d9b35a131e36",
+   "323c56dbac9503a2",
+   "386743262c3c0126",
+   "3af03991045ecf34",
+   "3b9663dff5c2f67c",
+   "3cce281f85d94c62",
+   "3f2c0040df418c02",
+   "427cdaae7f03b277",
+   "47e3951b9325bae1",
+   "4cc1d36cff6fb2c1",
+   "53ed99a25c61f403",
+   "62738d98dd64b165",
+   "676826cd2039f463",
+   "6af2c2e54142ebe8",
+   "71070b4d2d60e3aa",
+   "715d9638ea22fc25",
+   "7423a1a55748821d",
+   "74bbb7dde15ada43",
+   "7d585107c024c8f0",
+   "80d8fab69200b0eb",
+   "85353787f28cdf17",
+   "85748dbee8d63cd6",
+   "951e1cd1b33b4c03",
+   "96708b4c0573d765",
+   "996b5f1a25a49cb4",
+   "9bd7a60809d5fafe",
+   "9d442190ebc731fb",
+   "9d678038cb64fc0e",
+   "a4283aaedd1930b9",
+   "acd398ca61999f84",
+   "affbfa58fa3f5120",
+   "b0b1a5a979a94a1b",
+   "b53fd29ebec7e3a2",
+   "b908e79b0e6885d1",
+   "bca9651a1a94c6d7",
+   "c1ba2f88f3169a00",
+   "c439e9be712a62f8",
+   "da6be2ce00214170",
+   "e17f85bc6a9ac391",
+   "e3cc705f6e8fb480",
+   "ee67f828ab7d66b1",
+   "f45d94f16e5723bb",
+   "f5bfbbaeb38628dc",
+   "f5e0f588888dfd3f",
+   "fb7d43ab0edb28c7",
+   "fdf6e043591adddf"
+  ],
+  "48": [
+   "0dfa81798d57d843",
+   "14fc6d51921cc2b7",
+   "6c096fe6ce82c5c4",
+   "745ec8fd8e66c93d",
+   "7f7a186dcf17389d",
+   "873054d06bd14c84",
+   "8c41c6981090841e",
+   "a1de871599b4d9c4",
+   "a2f958961202e903",
+   "a87a7d340063168f",
+   "a9221f14c2910a8a",
+   "d2803e0b5f5d2e2a",
+   "d4fb019cbbdc00c4",
+   "d793ff74fb755837",
+   "ed2290aa941363b0",
+   "edad7c0c5d2e79cc",
+   "f6d7d18f6c36bfe1",
+   "fdb92c1481a96f16"
+  ]
+ }
+}

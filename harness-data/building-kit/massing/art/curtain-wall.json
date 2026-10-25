@@ -1,0 +1,19 @@
+{
+ "name": "성벽 토막",
+ "massing": "C04",
+ "material": "stone",
+ "refs": [
+  "bd-castle",
+  "bd-wall-tower"
+ ],
+ "walk": [
+  "*************",
+  "*************",
+  "*************",
+  "*************",
+  "XXXXXXXXXXXXX",
+  "XXXXXXXXXDXXX",
+  "XXXXXXXXXDXXX"
+ ],
+ "id": "curtain-wall"
+}
