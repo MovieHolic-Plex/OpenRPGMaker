@@ -207,7 +207,7 @@ export type TouchLayout = {
    * 세로 대사 독: 무대가 1배보다 작게 그려질 때 대사·선택지 창을 무대 아래 빈 띠에 1배(게임 px = 화면 px)로 그린다.
    * 뷰포트 위에서 잰 px. 독이 없으면 null.
    */
-  readonly dock: { readonly top: number; readonly left: number; readonly width: number; readonly height: number } | null;
+  readonly dock: { readonly top: number; readonly left: number; readonly width: number; readonly height: number; /** 독 안 창의 화면 배율(1배 미만 무대면 1, 아니면 무대 배율). */ readonly scale: number } | null;
   /**
    * 세로 창 칸(2026-10-24): 무대가 1배보다 작을 때 ESC 메뉴·상점 창을 무대 대신 이 칸에 그린다.
    * 칸은 어느 폰이든 같은 논리 크기(WINDOW_PANEL_WIDTH×HEIGHT 게임 px)이고, 들어가면 1배(글자 12px)다.
@@ -277,10 +277,14 @@ export function calculateTouchLayout(
     const bandBottom = height - safe.bottom;
     let free = Math.max(0, bandBottom - bandTop - controlsBlock);
     let dock: TouchLayout["dock"] = null;
-    if (options.dialogueDock !== false && scale < 1 && free >= DIALOGUE_DOCK_MIN_HEIGHT + 8) {
+    // 독 배율: 무대가 1배 미만이면 1배(글자를 키운다), 1배 이상이면 무대와 같은 배율(글자 크기는 그대로).
+    // 4:3 무대(320×240)는 폰 세로에서 1.2배쯤이라 예전엔 독이 꺼지고 무대 아래 540px 가 비었다 — 대사가 지도를 덮은 채
+    // 빈 띠만 남았다(2026-10-25 심판 J33). 띠가 남으면 배율과 상관없이 대사 창을 그 띠로 내린다.
+    const dockScale = Math.max(1, scale);
+    if (options.dialogueDock !== false && free >= (DIALOGUE_DOCK_MIN_HEIGHT + 8) * dockScale) {
       // 독 높이: 남는 띠에서 조작 자리를 뺀 만큼(선택지까지 들어가게), 단 화면 절반을 넘기지 않는다.
-      const dockH = Math.floor(Math.min(free - 8, Math.max(DIALOGUE_DOCK_MIN_HEIGHT, logicalH * 0.6)));
-      dock = { top: Math.round(bandTop + 4), left: Math.round(safe.left), width: Math.floor(availW), height: dockH };
+      const dockH = Math.floor(Math.min(free - 8, Math.max(DIALOGUE_DOCK_MIN_HEIGHT * dockScale, logicalH * 0.6 * dockScale)));
+      dock = { top: Math.round(bandTop + 4), left: Math.round(safe.left), width: Math.floor(availW), height: dockH, scale: dockScale };
       free = Math.max(0, free - dockH - 8);
     }
     const controlsTop = dock ? dock.top + dock.height + 4 : bandTop;
@@ -374,11 +378,12 @@ function syncTouchLayout(viewport: HTMLElement, width: number, height: number, r
   if (layout.dock) {
     // 독은 무대의 자식(대사 창)을 무대 좌표로 옮기고 배율을 되돌려(1/scale) 1배로 그린다 — 값은 무대 좌표(게임 px).
     viewport.dataset.dialogueDock = "true";
+    // 폭·높이는 창 자신의 좌표(독 배율로 나눈 게임 px) — 1배 독이면 화면 px 그대로다.
     viewport.style.setProperty("--dock-top", cssPx((layout.dock.top - layout.stageTop) / scale));
     viewport.style.setProperty("--dock-left", cssPx((layout.dock.left - layout.stageLeft) / scale));
-    viewport.style.setProperty("--dock-width", cssPx(layout.dock.width));
-    viewport.style.setProperty("--dock-height", cssPx(layout.dock.height));
-    viewport.style.setProperty("--dock-unscale", String(1 / scale));
+    viewport.style.setProperty("--dock-width", cssPx(layout.dock.width / layout.dock.scale));
+    viewport.style.setProperty("--dock-height", cssPx(layout.dock.height / layout.dock.scale));
+    viewport.style.setProperty("--dock-unscale", String(layout.dock.scale / scale));
     viewport.style.setProperty("--touch-controls-top", cssPx(layout.dock.top + layout.dock.height + 4));
   } else {
     delete viewport.dataset.dialogueDock;
