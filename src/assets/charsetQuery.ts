@@ -324,7 +324,7 @@ export function findNpcGraphicMatches(
   const intentTerms = intentWords(normalized);
   const termHitsEntry = (term: string, entry: CharsetSemanticEntry): boolean =>
     intentTerms.has(term) || textMatchScore(term, entry) > 0;
-  return catalog
+  const strict = catalog
     .map((entry) => {
       if (!satisfiesIntent(entry, intent)) return { entry, score: 0 };
       // 여러 낱말 질의는 낱말마다 이 칸을 가리켜야 한다. 하나만 맞아도 채택하면 「고양이 석상」이 살아 있는
@@ -336,7 +336,32 @@ export function findNpcGraphicMatches(
     })
     .filter((match) => match.score > 0)
     .sort((a, b) => b.score - a.score);
+  if (strict.length > 0 || queryTerms.length < 2) return strict;
+  // 모든 낱말을 가진 칸이 없으면 «가장 많은 낱말이 맞는 칸»을 준다(성별·나이 의도는 그대로 지킨다).
+  // 왜(2026-10-25 심사 J66): 「하얀 드레스 여자 유령」이 0건이라 조수가 「유령」 한 낱말로 다시 찾아 만화풍 흰 시트 유령을
+  // 하얀 드레스 여자 자리에 놓았다 — 판정자 눈에 고무 오리였다. 의도 낱말이 아닌 낱말이 하나는 맞아야 한다.
+  const described = queryTerms.filter((term) => !intentTerms.has(term));
+  return catalog
+    .map((entry) => {
+      if (!satisfiesIntent(entry, intent)) return { entry, score: 0 };
+      const hits = described.filter((term) => textMatchScore(term, entry) > 0);
+      if (hits.length === 0) return { entry, score: 0 };
+      return { entry, score: hits.length * 100 + intentScore(entry, intent) + hits.reduce((sum, term) => sum + textMatchScore(term, entry), 0) };
+    })
+    .filter((match) => match.score > 0)
+    .sort((a, b) => b.score - a.score);
 }
+
+/** 질의 낱말 중 이 칸이 가리키지 않는 것(부분 일치로 고른 칸이면 비어 있지 않다). 성별·나이 의도 낱말은 맞은 것으로 친다. */
+export function unmatchedNpcGraphicTerms(query: string, entry: CharsetSemanticEntry): string[] {
+  const normalized = normalizeQuery(query);
+  const intentTerms = intentWords(normalized);
+  return normalized.split(/\s+/).filter((term) => term && !intentTerms.has(term) && textMatchScore(term, entry) <= 0);
+}
+
+/** 사람(여자·소녀·부인…)이 유령인 인물 — 사람 칩에 반투명 빛(blendMode add)으로 그린다. 시트 유령 몬스터 칩이 아니다. */
+export const GHOST_WORDS = /유령|귀신|원령|망령|혼령|ghost|phantom|spirit/iu;
+export const PERSON_WORDS = /여자|여성|남자|남성|소녀|소년|아이|아가씨|부인|아주머니|할머니|할아버지|노인|신부|하녀|메이드|언니|누나|엄마|어머니|아버지|사람|woman|girl|boy|man|lady|bride|maid/iu;
 
 export function queryNpcGraphics(query: string | undefined, limit = 20, overrides?: readonly CharsetLabelOverride[]): NpcGraphicMatch[] {
   const cappedLimit = Math.max(1, Math.min(100, Math.floor(limit)));
