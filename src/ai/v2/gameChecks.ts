@@ -553,6 +553,18 @@ export function gameContentProblems(before: Project, after: Project, task: strin
       break;
     }
   }
+  // 회상(과거 장면): 화면 색만 바꾸고 지금 인물이 옛이야기를 읽어 주면 과거 장면이 아니다 — 과거 인물이 화면에 나와야 한다
+  // (2026-10-25 장난감 가게 G34: 「장난감에게 말 걸면 과거 장면이 보이게」에 세피아 색 + 장난감 독백만 넣었다).
+  if (/회상|과거 장면|과거의 장면|옛날 장면|플래시백|flashback/iu.test(task) && /보이|나오|나와|등장|화면|장면/u.test(task)) {
+    const others = (ev: { id: string }) => cmds.some((r) => r.ev.id === ev.id && (
+      (r.cmd.kind === "moveEvent" && r.cmd.eventId !== undefined && r.cmd.eventId !== "player")
+      || (r.cmd.kind === "m2Command" && /m2-225/u.test(String(r.cmd.commandId)) && Number((r.cmd.fields as Obj | undefined)?.opacity ?? 0) > 0)
+      || (r.cmd.kind === "look" && r.cmd.target !== "player")));
+    const tinted = changed.filter((ev) => cmds.some((r) => r.ev.id === ev.id && (r.cmd.kind === "tint" || (r.cmd.kind === "m2Command" && /m2-046|m2-202/u.test(String(r.cmd.commandId))))));
+    if (tinted.length && !changed.some(others)) {
+      problems.push("[게임 검사 회상] 요청은 과거 장면이 화면에 보이는 회상인데, 바꾼 이벤트는 화면 색만 바꾸고 지금 인물이 옛이야기를 말한다 — 과거 인물이 나오지 않는다. add_event{kind:'cutscene',when:'talk',after:'<말 거는 대상 이름>',beats:[{do:'tint',tone:'sepia'},{do:'appear',who:'<과거 인물>'},{do:'walk',…},{do:'say',who:'<과거 인물>',text:…},{do:'vanish',who:'<과거 인물>'},{do:'tint',tone:'clear'}]} 로 과거 인물을 세워 움직이고 말하게 한다(장면 뒤에는 사라진다).");
+    }
+  }
   // 「제1막 끝」 카드: 대사 한 줄로 흉내 내면 게임이 그대로 이어진다 — 진짜 엔딩(막 끝 화면)이어야 한다(fs-end-act).
   if (/제\s*\d+\s*막\s*끝|막이?\s*끝나|막 끝/u.test(task) && !kinds.has("triggerEnding")) {
     problems.push("[게임 검사 엔딩] 요청에 「막 끝」 화면이 있는데 바꾼 이벤트에 진짜 엔딩 명령이 없다 — 대사 「제1막 끝」만으로는 게임이 그대로 이어진다. define_ending{id:'ending_act1',presentation:{finalTitle:'제1막 끝',badge:'제2막으로 이어집니다'}} 뒤 그 장면 끝에 {kind:'triggerEnding',endingId:'ending_act1'} 를 넣는다.");
