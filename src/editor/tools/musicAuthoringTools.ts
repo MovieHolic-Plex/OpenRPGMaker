@@ -31,7 +31,7 @@ function playable(p:Project,id:string,kind:'music'|'sound'){
 const ROLES=['title','opening','field-default','battle-default','victory','defeat','cursor','confirm','cancel','maps','boss'] as const;
 
 /** 보스전 이름 낱말 — troopIds 를 주지 않았을 때 보스 부대를 고른다. */
-const BOSS_NAME=/보스|boss|마왕|魔王|드래곤|dragon|용왕|수문장|두목|대장|군주|lord|king|queen/i;
+const BOSS_NAME=/보스|boss|마왕|魔王|드래곤|dragon|용왕|수문장|두목|우두머리|대장|관장|군주|lord|king|queen|ボス/i;
 type Cmd={kind?:unknown;commandId?:unknown;troopId?:unknown;fields?:Record<string,unknown>;[key:string]:unknown};
 /** 명령 배열을 모두 돈다(분기·선택지 안 포함). */
 function eachCommandList(node:unknown,visit:(list:Cmd[])=>void,depth=0):void{
@@ -113,8 +113,12 @@ export const MUSIC_AUTHORING_TOOLS:readonly ToolDefinition[]=[
       const given=Array.isArray(args.troopIds)?(args.troopIds as unknown[]).filter((t):t is string=>typeof t==='string'):[];
       const unknown=given.filter(t=>!troops.some(troop=>troop.id===t));
       if(unknown.length)throw new ToolError('없는 부대: '+unknown.join(', ')+' — get_database_records(troops)로 id 를 확인하라.',{code:'troop-not-found'});
-      const ids=given.length?given:troops.filter(troop=>BOSS_NAME.test(troop.name??'')).map(troop=>troop.id);
-      if(!ids.length)throw new ToolError('보스 부대를 찾지 못했습니다. troopIds 로 보스 부대 id 를 주세요: '+troops.slice(0,12).map(t=>`${t.id}(${t.name})`).join(', '),{code:'troop-not-found'});
+      // 이름으로 고를 때는 실제로 전투 명령이 있는 부대만(2026-10-25 실조수: 쓰지 않는 「붉은 드래곤」만 잡혀 구미호 보스전을 못 찾았다).
+      const fought=new Set<string>();
+      for(const map of Object.values(p.maps))for(const event of map.events??[])eachCommandList(event,list=>{for(const c of list)if(c.kind==='battleProcessing'&&typeof c.troopId==='string')fought.add(c.troopId);});
+      for(const ce of p.commonEvents??[])eachCommandList(ce,list=>{for(const c of list)if(c.kind==='battleProcessing'&&typeof c.troopId==='string')fought.add(c.troopId);});
+      const ids=given.length?given:troops.filter(troop=>fought.has(troop.id)&&BOSS_NAME.test(troop.name??'')).map(troop=>troop.id);
+      if(!ids.length)throw new ToolError('보스 부대를 찾지 못했습니다. troopIds 로 보스 부대 id 를 주세요(전투 명령이 있는 부대): '+troops.filter(t=>fought.has(t.id)).slice(0,12).map(t=>`${t.id}(${t.name})`).join(', '),{code:'troop-not-found'});
       const touched=setBossBattleMusic(p,id,ids);
       if(!touched.length)throw new ToolError('이 부대와 싸우는 전투 명령(battleProcessing)이 맵 이벤트에 없습니다: '+ids.join(', ')+'. 보스 이벤트를 먼저 만들거나, 보이는 적·조우 전투라면 battle-default 를 쓰세요.',{code:'battle-not-found'});
       return {summary:`보스전 ${touched.length}곳에 곡을 걸었습니다(그 전투 직전에 바꾸고 끝나면 기본 전투 곡으로 되돌림).`,data:{role,resourceId:id,kind,troopIds:ids,battles:touched,verificationScope:'authored-binding'}};

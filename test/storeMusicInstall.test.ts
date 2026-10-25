@@ -153,6 +153,17 @@ describe("set_game_audio boss", () => {
     expect(listOf("ev_slime").map((c) => c.kind)).toEqual(["battleProcessing"]);
     expect(ctx.project.system.battleBgmResourceId).toBe(battleBefore);
   });
+  it("auto-detects only boss troops that are actually fought (an unused dragon does not hide the gumiho boss)", () => {
+    const { project, mapId } = bossProject();
+    const ctx = { project };
+    ctx.project.database.troops.push({ id: "troop_gumiho", name: "구미호 우두머리", members: [] } as never);
+    const map = ctx.project.maps[mapId]! as unknown as { events: { id: string; commands?: { kind: string; troopId?: string }[]; pages?: { commands: { kind: string; troopId?: string }[] }[] }[] };
+    const boss = map.events.find((e) => e.id === "ev_boss")!;
+    for (const c of boss.pages?.[0]?.commands ?? boss.commands ?? []) if (c.kind === "battleProcessing") c.troopId = "troop_gumiho";
+    const r = runTool(ctx, "set_game_audio", { role: "boss", resourceId: "boss_song" }, { dryRun: false });
+    expect(r.ok, r.summary).toBe(true);
+    expect((r.data as { troopIds: string[] }).troopIds).toEqual(["troop_gumiho"]);
+  });
 });
 
 describe("set_game_audio with a file-backed store track", () => {
