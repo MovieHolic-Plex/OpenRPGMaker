@@ -53,7 +53,25 @@ export function storeMusicTracks(item: Pick<StoreItemSummary, "slug" | "latestVe
 
 const tokens = (text: string): string[] => text.toLowerCase().split(/[\s,·/]+/u).map((word) => word.replace(/(풍|스러운|같은|느낌|음악|곡|bgm)$/u, "")).filter((word) => word.length > 0);
 
-export interface StoreMusicQuery { readonly scene?: StoreMusicScene; readonly query?: string; readonly mood?: string }
+export interface StoreMusicQuery {
+  readonly scene?: StoreMusicScene; readonly query?: string; readonly mood?: string;
+  /** 프로젝트에 이미 든 스토어 곡의 장르 줄 비율(projectMusicLines). 장르 말이 없을 때 같은 줄 곡을 앞에 둔다. */
+  readonly projectLines?: Readonly<Record<string, number>>;
+}
+
+/** 프로젝트에 이미 넣은 스토어 곡(meta.oprnMusic)의 장르 줄 비율 — 「승리 팡파르 넣어줘」처럼 장르를 안 말해도 게임의 곡 결을 따른다. */
+export function projectMusicLines(uploaded: Readonly<Record<string, { readonly kind?: string; readonly meta?: unknown }>>): Record<string, number> {
+  const counts: Record<string, number> = {};
+  let total = 0;
+  for (const asset of Object.values(uploaded)) {
+    if (asset.kind !== "music") continue;
+    const line = readStoreMusicMeta(asset.meta)?.genre;
+    if (!line) continue;
+    counts[line] = (counts[line] ?? 0) + 1;
+    total += 1;
+  }
+  return Object.fromEntries(Object.entries(counts).map(([line, n]) => [line, n / total]));
+}
 
 /** 점수: 장면이 맞아야 높다. 장르는 실제로 들리는 장르(genreKo)가 팩 줄보다 무겁다. 승리는 짧은 곡, 그 밖은 루프. */
 export function scoreStoreMusic(track: StoreMusicTrack, want: StoreMusicQuery): number {
@@ -78,6 +96,7 @@ export function scoreStoreMusic(track: StoreMusicTrack, want: StoreMusicQuery): 
     if (moods.some((mood) => mood.includes(word) || word.includes(mood))) score += 4;
     else if (m.summaryKo.toLowerCase().includes(word)) score += 1.5;
   }
+  score += 3 * (want.projectLines?.[m.genre] ?? 0);
   if (want.scene === "victory") score += m.loopable ? 0 : 3;
   else if (want.scene) score += m.loopable ? 2 : -6;
   return score;

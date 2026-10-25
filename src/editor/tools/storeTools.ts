@@ -20,7 +20,7 @@ import { storeGameProjectKey, type StoreGameChanges } from "@/project/storeGameR
 import type { StoreReviewsPage } from "@/assetStore/bridgeTypes";
 import { briefReview, complaintThemes, mergeReviews, tallyText } from "@/editor/assetStore/reviewDigest";
 import { workerStoreAccess, type StoreReadAccess } from "@/assetStore/storeAccess";
-import { briefStoreMusic, rankStoreMusic, storeMusicTracks, subsetMusicManifest, type StoreMusicTrack } from "@/assetStore/storeMusicPick";
+import { briefStoreMusic, projectMusicLines, rankStoreMusic, storeMusicTracks, subsetMusicManifest, type StoreMusicTrack } from "@/assetStore/storeMusicPick";
 import { STORE_MUSIC_SCENES, type StoreMusicScene } from "@/assets/storeMusicMeta";
 import { storeProjectId, type StoreItemDetail, type StorePackManifest } from "@/assetStore/format";
 
@@ -254,15 +254,15 @@ const storeFindMusic: ToolDefinition = {
       return { tracks: await loadStoreMusic(access, String(args.query ?? "").trim()), autoInstall: access.autoInstall };
     });
   },
-  run(_project, args): ToolExecResult {
+  run(project, args): ToolExecResult {
     const scene = sceneOf(args.scene);
     if (!scene) throw new ToolError(`scene 은 ${STORE_MUSIC_SCENES.join("·")} 중 하나다.`, { code: "invalid-args" });
     const loadedMusic = take<{ tracks: StoreMusicTrack[]; autoInstall: boolean }>(findKey(args));
     const limit = Math.min(6, Math.max(1, Number(args.limit) || 4));
-    const want = { scene, query: String(args.query ?? ""), mood: String(args.mood ?? "") };
+    const want = { scene, query: String(args.query ?? ""), mood: String(args.mood ?? ""), projectLines: projectMusicLines(project.assets.uploaded) };
     let picked = rankStoreMusic(loadedMusic.tracks, want, limit);
     const sceneOnly = picked.length === 0;
-    if (sceneOnly) picked = rankStoreMusic(loadedMusic.tracks, { query: want.query, mood: want.mood }, limit);
+    if (sceneOnly) picked = rankStoreMusic(loadedMusic.tracks, { query: want.query, mood: want.mood, projectLines: want.projectLines }, limit);
     const choice: StoreMusicChoice = {
       kind: "store-music-choice", need: String(args.need ?? "").trim().slice(0, 120) || `${want.query} ${scene} 음악`.trim(), scene,
       autoInstall: loadedMusic.autoInstall,

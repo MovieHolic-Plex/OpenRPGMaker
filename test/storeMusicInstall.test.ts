@@ -2,7 +2,7 @@
 // 워커 안의 스토어는 가짜 읽기 길(setWorkerStoreAccess)로 바꾼다 — 실제 스테이징 시험은 openwiki/asset-store.md 「조수가 스토어 음악을 넣는다」.
 import { afterEach, describe, expect, it } from "vitest";
 import { mentionsStore, setWorkerStoreAccess, type StoreReadAccess } from "@/assetStore/storeAccess";
-import { rankStoreMusic, storeMusicTracks, subsetMusicManifest } from "@/assetStore/storeMusicPick";
+import { projectMusicLines, rankStoreMusic, storeMusicTracks, subsetMusicManifest } from "@/assetStore/storeMusicPick";
 import { storeProjectId, type StorePackManifest } from "@/assetStore/format";
 import { runToolAsync } from "@/editor/tools/asyncToolRunner";
 import { runTool } from "@/editor/tools/toolRunner";
@@ -53,6 +53,14 @@ describe("store music pick by scene", () => {
     expect(rankStoreMusic(tracks, { scene: "town", query: "조선풍" })[0]?.assetId).toBe("town");
     expect(rankStoreMusic(tracks, { scene: "boss", query: "조선" }).map((t) => t.assetId)).toEqual(["boss"]);
     expect(rankStoreMusic(tracks, { scene: "victory" })[0]?.assetId).toBe("win");
+  });
+  it("follows the genre line of store music already in the project when the request names no genre", () => {
+    const other = { ...MANIFEST, content: { ...MANIFEST.content, assets: { win2: track(4, "win2", { genreLine: "wuxia", genreKo: "무협 퓨전", sceneRoles: ["victory"], mood: ["승리의"], loopable: false, lengthSec: 8, summaryKo: "무협 팡파르." }) } } } as unknown as StorePackManifest;
+    const pool = [...storeMusicTracks({ slug: "wuxia-pack", latestVersion: 1, title: "W" }, other), ...tracks];
+    expect(rankStoreMusic(pool, { scene: "victory" })[0]?.assetId).toBe("win2");
+    const lines = projectMusicLines({ a: { kind: "music", meta: MANIFEST.content.assets.town!.meta }, b: { kind: "image", meta: {} } });
+    expect(lines).toEqual({ joseon: 1 });
+    expect(rankStoreMusic(pool, { scene: "victory", projectLines: lines })[0]?.assetId).toBe("win");
   });
   it("keeps only the chosen track in a subset manifest", () => {
     const subset = subsetMusicManifest(MANIFEST, ["win"]);
