@@ -3,14 +3,14 @@
  "massing": "M09",
  "material": "stone",
  "refs": [
-  "bd-house-manor",
-  "bd-house-cathedral"
+  "bd-house-cathedral",
+  "bd-house-manor"
  ],
  "walk": [
-  "...***...",
+  "....*....",
+  "...**....",
   "...***...",
   ".*******.",
-  "*********",
   "*********",
   "XXXXXXXXX",
   "XXXXXXXXX",

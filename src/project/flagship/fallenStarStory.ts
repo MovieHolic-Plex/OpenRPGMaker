@@ -106,7 +106,7 @@ export const FALLEN_STAR_ACT1: ChapterSpec = {
       name: FS_NAMES.inquisitor,
       enemyName: FS_NAMES.inquisitor,
       query: "젊은 남성 마법사",
-      graphic: "charset-battler-actor1-4",
+      graphic: "charset-battler-fs-valen",
       intro: [
         "심문관 발렌: 역시 이 문을 연 건 너희였군.",
         "심문관 발렌: 옛 별지기들이 하늘과 말을 나누던 방이다. 교단이 봉인한 죄의 방이지.",

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { createBlankProject } from "@/project/defaults";
-import { editorDefaultsLeft, endingClosureProblems, shipBlockers, titleSpoilers, wantsWholeGame } from "@/ai/v2/shipChecks";
+import { editorDefaultsLeft, endingClosureProblems, offPremiseArt, openingWithoutPlace, shipBlockers, titleSpoilers, wantsWholeGame } from "@/ai/v2/shipChecks";
 import { getTool } from "@/editor/tools";
 import type { Project } from "@/project/types";
 
@@ -47,5 +47,29 @@ describe("ship checks: editor defaults (2026-10-25 user rule)", () => {
     const map = p.maps[p.startMapId!]!;
     map.events.push({ id: "ev_safe", name: "금고", x: 1, y: 1, pages: [{ trigger: { kind: "action" }, conditions: [], commands: [{ kind: "fork", condition: { kind: "variable", variableId: "v1", op: "==", value: 1024 }, then: [], else: [] }] }] } as never);
     expect(titleSpoilers(p)[0]?.id).toBe("title-spoiler");
+  });
+});
+
+describe("ship checks: the opening and endings show this game's place (J24, J65, J10, J17)", () => {
+  it("flags an opening made only of sky layers and clears once a map shot is added", () => {
+    const p = createBlankProject() as Project;
+    p.system.opening = { enabled: true, skippable: true, scenes: [
+      { id: "s1", kind: "image", resourceId: "oprn-pano-night", narration: "비 오는 밤", durationMs: 4000, motion: "none" },
+      { id: "s2", kind: "image", resourceId: "oprn-pano-sky-day-clouds-near", narration: "구름", durationMs: 4000, motion: "none" },
+    ] };
+    expect(openingWithoutPlace(p).map((b) => b.id)).toEqual(["opening-no-place"]);
+    p.system.opening.scenes.push({ id: "s3", kind: "animatic", narration: "저택", durationMs: 4000, composition: { width: 384, height: 216, layers: [{ id: "bg", kind: "image", role: "background", resourceId: `map-view:${p.startMapId}`, x: 0, y: 0, width: 384, height: 216 }] } } as never);
+    expect(openingWithoutPlace(p)).toEqual([]);
+  });
+
+  it("flags endings that fall back to the snowy factory title art in a story with no snow", () => {
+    const p = createBlankProject() as Project;
+    p.endings = [{ id: "e1", name: "나란히 내리는 역", conditions: [], priority: 1, epilogue: [] }];
+    expect(offPremiseArt(p, "서울 지하철 연애 게임 만들어 줘").map((b) => b.id)).toContain("ending-off-premise");
+    p.endings[0]!.presentation = { backgroundResourceId: "oprn-pack-still-modern-01" };
+    expect(offPremiseArt(p, "서울 지하철 연애 게임 만들어 줘").map((b) => b.id)).not.toContain("ending-off-premise");
+    p.endings[0]!.presentation = { backgroundResourceId: "oprn-still-snow-village" };
+    expect(offPremiseArt(p, "서울 지하철 연애 게임 만들어 줘").map((b) => b.id)).toContain("ending-off-premise");
+    expect(offPremiseArt(p, "눈 내리는 겨울 마을 연애 게임 만들어 줘").map((b) => b.id)).not.toContain("ending-off-premise");
   });
 });

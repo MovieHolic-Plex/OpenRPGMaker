@@ -4,15 +4,15 @@
  "material": "plaster",
  "refs": [
   "bd-house-inn",
-  "bd-house-cafe"
+  "bd-house-cathedral"
  ],
  "walk": [
-  ".******.",
+  "..****..",
   "********",
   "********",
   "********",
   "XXXXXXXX",
-  "XXXXXXXD"
+  "XXXXDXXX"
  ],
  "id": "market-hall"
 }

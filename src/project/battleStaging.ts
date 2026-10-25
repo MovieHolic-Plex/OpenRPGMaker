@@ -113,7 +113,16 @@ export interface ComboStaging {
   readonly slowMo?: boolean;
   /** 제목 카드 위 작은 글(예: 「듀얼 테크」「트리플 테크」). 생략 = 인원수로. */
   readonly kicker?: string;
+  /**
+   * 함께 쓰는 동료(시전자 말고 참가자)가 무엇을 하나 — rush: 적 앞까지 달려가 차례로 벤다 · cast: 반 걸음 나와 시전 ·
+   * ranged: 반 걸음 나와 쏘기/던지기 · auto(생략): 그 동료가 요구 기술로 정한다(마법 → cast, 원거리 캐릭터 → ranged, 나머지 rush).
+   * 마지막 타 뒤에는 참가자 모두가 함께 마무리 자세 + 빛.
+   */
+  readonly partners?: ComboPartnerAction;
 }
+
+export type ComboPartnerAction = "auto" | "rush" | "cast" | "ranged";
+export const COMBO_PARTNER_ACTIONS: readonly ComboPartnerAction[] = ["auto", "rush", "cast", "ranged"];
 
 export function normalizeComboStaging(value: unknown): ComboStaging | undefined {
   if (!value || typeof value !== "object" || Array.isArray(value)) return undefined;
@@ -124,6 +133,8 @@ export function normalizeComboStaging(value: unknown): ComboStaging | undefined 
   if (shake) out.shake = shake;
   if (raw.slowMo === false) out.slowMo = false;
   if (typeof raw.kicker === "string" && raw.kicker.trim()) out.kicker = raw.kicker.trim().slice(0, 24);
+  const partners = pick(COMBO_PARTNER_ACTIONS, raw.partners);
+  if (partners && partners !== "auto") out.partners = partners;
   return Object.keys(out).length > 0 ? out : undefined;
 }
 

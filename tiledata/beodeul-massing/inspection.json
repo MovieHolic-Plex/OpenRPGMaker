@@ -20,33 +20,16 @@
   {
    "id": "barracks",
    "kit": "bd-house-mk-barracks",
-   "sha256": "4a84525f64643c257b1d2f44540cca54884952c3a526ec487cbd226eca7f5cfe",
+   "sha256": "cc30ca850e9c02e8c1830d44bac09416dd3c71bd9af2a99d8b4289edd2a7f356",
    "size": [
     10,
     6
    ],
    "blockedCells": 30,
-   "overhangCells": 29,
+   "overhangCells": 21,
    "entrance": [
     4,
     4,
-    1,
-    2
-   ]
-  },
-  {
-   "id": "brewery",
-   "kit": "bd-house-mk-brewery",
-   "sha256": "24856e3ffc4e4da78b6e82fe35033f83b8ab04676839da4edb598ec66e51c649",
-   "size": [
-    9,
-    7
-   ],
-   "blockedCells": 36,
-   "overhangCells": 19,
-   "entrance": [
-    2,
-    5,
     1,
     2
    ]
@@ -54,15 +37,15 @@
   {
    "id": "chapel",
    "kit": "bd-house-mk-chapel",
-   "sha256": "e9f42570ff5b594b1db192f57056addab3e45aaefb2c2d142e1b1573861e2b4b",
+   "sha256": "2cf55a33bb0b1470601cd38e758fe8c98ac770fbd7c5949a8d385c16d4f7a97b",
    "size": [
     11,
     9
    ],
    "blockedCells": 25,
-   "overhangCells": 40,
+   "overhangCells": 39,
    "entrance": [
-    3,
+    2,
     7,
     1,
     2
@@ -88,32 +71,15 @@
   {
    "id": "cross-house",
    "kit": "bd-house-mk-cross-house",
-   "sha256": "47393fd32d5750df1e5a552706309818f6453d76c87e7cf9732b69ec706dbb24",
+   "sha256": "290c98b2883c11071ede4632116b5e23a87309621ff50f2ba0969fe6a70a3df5",
    "size": [
     9,
     8
    ],
    "blockedCells": 30,
-   "overhangCells": 27,
+   "overhangCells": 28,
    "entrance": [
     4,
-    6,
-    1,
-    2
-   ]
-  },
-  {
-   "id": "dormer-house",
-   "kit": "bd-house-mk-dormer-house",
-   "sha256": "ce8eafef9ed0b596b6abfc31c3d81afeeb6b679a65322d291da29e192b5a5619",
-   "size": [
-    7,
-    8
-   ],
-   "blockedCells": 35,
-   "overhangCells": 19,
-   "entrance": [
-    3,
     6,
     1,
     2
@@ -139,18 +105,18 @@
   {
    "id": "gable-cottage",
    "kit": "bd-house-mk-gable-cottage",
-   "sha256": "aa684f9ae521b9e772bf607b37b6a78b869b42f9eb16ccb84a21817dce57ca64",
+   "sha256": "73426b65baffd51fcc83986d9a0f427548b096ccf1319624f783535f8e20f18e",
    "size": [
     4,
     6
    ],
    "blockedCells": 8,
-   "overhangCells": 15,
+   "overhangCells": 14,
    "entrance": [
     1,
-    5,
+    4,
     1,
-    1
+    2
    ]
   },
   {
@@ -173,13 +139,13 @@
   {
    "id": "great-hall",
    "kit": "bd-house-mk-great-hall",
-   "sha256": "9a71ae7d0d358966882e2517a19873dffdba3a86d0051123855f21e180c67c7c",
+   "sha256": "8b0014357ad73046773eb44ff7d96b9356a1c520059e4f71675840558d2691b3",
    "size": [
     11,
     8
    ],
    "blockedCells": 44,
-   "overhangCells": 42,
+   "overhangCells": 32,
    "entrance": [
     5,
     6,
@@ -207,13 +173,13 @@
   {
    "id": "jetty-house",
    "kit": "bd-house-mk-jetty-house",
-   "sha256": "53fb07d9eeb3b956d73d060a90973e569fd9d042882564c19d34e6d13947bedf",
+   "sha256": "2a7a6724328f0c12a517986af1d926d5a4f92e9b1ff64f76b97496d3ab2b6158",
    "size": [
     5,
     7
    ],
-   "blockedCells": 15,
-   "overhangCells": 18,
+   "blockedCells": 20,
+   "overhangCells": 13,
    "entrance": [
     2,
     5,
@@ -222,32 +188,15 @@
    ]
   },
   {
-   "id": "keep-tower",
-   "kit": "bd-house-mk-keep-tower",
-   "sha256": "fe7e80b8caa5cbc3a91ab0720dde977b794f4803c06a4ad1fbd684da62c46c98",
-   "size": [
-    5,
-    9
-   ],
-   "blockedCells": 25,
-   "overhangCells": 20,
-   "entrance": [
-    2,
-    8,
-    1,
-    1
-   ]
-  },
-  {
    "id": "l-farmhouse",
    "kit": "bd-house-mk-l-farmhouse",
-   "sha256": "18949f01494551472a62252d35ff30b40a6484b14c47862aae1ceb1a57fe6d35",
+   "sha256": "a1e7fd8c47e21388d44b92f35fd471adbae0e39e2fc41b69dd8adfa73b4e97ef",
    "size": [
     9,
     6
    ],
    "blockedCells": 19,
-   "overhangCells": 28,
+   "overhangCells": 29,
    "entrance": [
     7,
     4,
@@ -258,16 +207,16 @@
   {
    "id": "lighthouse",
    "kit": "bd-house-mk-lighthouse",
-   "sha256": "cc40721eb582aedfd877ea76c6bb9894b4302eefb8b3477baf6ee3595f7ee51d",
+   "sha256": "722b17fcca13aef3950a2928876567c5ff96941db7c45d1e5b81ea4fea842de9",
    "size": [
-    5,
-    10
+    3,
+    9
    ],
-   "blockedCells": 13,
+   "blockedCells": 6,
    "overhangCells": 19,
    "entrance": [
-    2,
-    8,
+    1,
+    7,
     1,
     2
    ]
@@ -292,16 +241,16 @@
   {
    "id": "manor",
    "kit": "bd-house-mk-manor",
-   "sha256": "e78e48b8007a30334ff89ed3ca898a795aa6bef1e9fed038aaeccf1f7c3fa1fa",
+   "sha256": "b27e0cf50dc975681d00978ed975ab30a58d1c1b71e1d7463ed5fcc50c4f8a3c",
    "size": [
-    12,
+    11,
     8
    ],
-   "blockedCells": 48,
-   "overhangCells": 48,
+   "blockedCells": 44,
+   "overhangCells": 39,
    "entrance": [
     5,
-    6,
+    5,
     1,
     2
    ]
@@ -309,15 +258,15 @@
   {
    "id": "market-hall",
    "kit": "bd-house-mk-market-hall",
-   "sha256": "7cfa77e125d66ff3187155cd3daa0736efdc951d895fdba5ecb78faa06d2b40c",
+   "sha256": "d30589b5c362bc9cd6f16413c58212b990c48266ea4892643e8157ed6be936d2",
    "size": [
     8,
     6
    ],
    "blockedCells": 16,
-   "overhangCells": 30,
+   "overhangCells": 28,
    "entrance": [
-    7,
+    4,
     5,
     1,
     1
@@ -360,13 +309,13 @@
   {
    "id": "thouse",
    "kit": "bd-house-mk-thouse",
-   "sha256": "6736a6b259d7530b39d2b1912282a95bb54d4a042547889a8dc6527c58267d41",
+   "sha256": "74a8991b73da24e25ca980f5fec4a87c2cb702906b2fc60400d4d49928741597",
    "size": [
     9,
     8
    ],
-   "blockedCells": 39,
-   "overhangCells": 25,
+   "blockedCells": 41,
+   "overhangCells": 24,
    "entrance": [
     4,
     6,
@@ -377,18 +326,18 @@
   {
    "id": "tithe-barn",
    "kit": "bd-house-mk-tithe-barn",
-   "sha256": "86dfa3294f0b08c07f9e7d8cb6e237add8501af690a1d29f76a680d26613c54d",
+   "sha256": "41f5ae10bbd42ffbff0c9d6c79b5c10bf46f81696cfac6cb19dbf7a6e0c54853",
    "size": [
     12,
     6
    ],
    "blockedCells": 36,
-   "overhangCells": 36,
+   "overhangCells": 34,
    "entrance": [
     6,
-    5,
+    4,
     1,
-    1
+    2
    ]
   },
   {
@@ -411,13 +360,13 @@
   {
    "id": "town-hall",
    "kit": "bd-house-mk-town-hall",
-   "sha256": "f6b3a0dbc19c12b3c453ddec08b45aec4b2bd4471d6118e495c8537e27106b22",
+   "sha256": "99921abed71bf2528d182dd55e357bda7a6c73bc7eb953ef94b1ddf57ba58a3d",
    "size": [
     9,
     9
    ],
    "blockedCells": 36,
-   "overhangCells": 31,
+   "overhangCells": 22,
    "entrance": [
     4,
     7,
@@ -426,43 +375,43 @@
    ]
   },
   {
-   "id": "windmill",
-   "kit": "bd-house-mk-windmill",
-   "sha256": "2e66f14f2e4bf31ecbdffe60881ace0c19a566bd5e7388d24d7dca3edf639a8c",
+   "id": "warehouse",
+   "kit": "bd-house-mk-warehouse",
+   "sha256": "abfae20630c90d2718c1d30d6c179ccd6d9149ef9b3c718f1e57c4eae2b87358",
    "size": [
-    6,
-    8
+    5,
+    10
    ],
-   "blockedCells": 12,
-   "overhangCells": 29,
+   "blockedCells": 35,
+   "overhangCells": 13,
    "entrance": [
     2,
-    7,
+    8,
     1,
-    1
+    2
    ]
   },
   {
    "id": "wizard-tower",
    "kit": "bd-house-mk-wizard-tower",
-   "sha256": "8bf8521a0b502a6c43e8707fdc3316d187b4a72d67ae6b6ff0a7ec86c60fb161",
+   "sha256": "530ee7d022005c898a44553c8a91ae1618b4ec7bd9ea2c71b148b88dec525782",
    "size": [
     4,
     11
    ],
    "blockedCells": 8,
-   "overhangCells": 32,
+   "overhangCells": 24,
    "entrance": [
-    1,
+    2,
     9,
     1,
     2
    ]
   }
  ],
- "installed": 27,
- "tiles": 1379,
- "sheetTiles": 1392,
+ "installed": 24,
+ "tiles": 1180,
+ "sheetTiles": 1184,
  "decisionLog": "harness-data/building-kit/massing/decisions.json",
  "visualVerdict": "requires actual image review (gallery.png)"
 }

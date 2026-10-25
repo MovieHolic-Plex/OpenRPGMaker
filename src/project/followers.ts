@@ -64,7 +64,14 @@ export function getFollowerBodySpan(session: object): number {
 function effectiveGap(session: object, config: CompanionConfig | undefined): number {
   const authored = config?.gap;
   if (typeof authored === "number" && Number.isFinite(authored)) return resolveCompanionRules(config).gap;
+  // 고전 빵부스러기: 앞사람 바로 한 걸음 뒤(크로노 트리거·마더·포켓몬). 몸이 큰 칩은 조금 겹쳐 그려진다 — 그 게임들과 같다.
+  if (isBreadcrumbFollow(config)) return 1;
   return getFollowerBodySpan(session);
+}
+
+/** 고전 빵부스러기 뒤따르기(기본). companions.followMode "spaced" 만 옛 동작. */
+export function isBreadcrumbFollow(config: CompanionConfig | undefined): boolean {
+  return config?.followMode !== "spaced";
 }
 
 /** 몸끼리 띄울 최소 거리(체비쇼프, 칸). 1 = 같은 칸만 피한다(몸 길이 1·옛 동작). */
@@ -324,6 +331,13 @@ export function resetFollowerTrailNearPlayer(
     session.followerTrail = [];
     return;
   }
+  // 고전 빵부스러기: 맵에 들어서면 동료가 주인공 칸에 겹쳐 같은 쪽을 보고 선다 — 주인공이 걸으면 밟은 칸을 따라 한 명씩 풀려 나온다
+  // (마더·크로노 트리거). 문 밖·벽 너머 칸에 미리 세우지 않는다.
+  const monsterOnly = session.followers.every((entry) => entry.kind === "monster" || Boolean(entry.monsterInstanceId));
+  if (isBreadcrumbFollow(config) && !monsterOnly) {
+    session.followerTrail = Array.from({ length: slots }, () => ({ x: session.x, y: session.y, direction: facing }));
+    return;
+  }
   session.followerTrail = trailBehind({ x: session.x, y: session.y }, facing, slots, open);
 }
 
@@ -466,6 +480,7 @@ export function followerPositions(
   readonly hidden?: boolean;
 }[] {
   const { formation } = resolveCompanionRules(config);
+  const breadcrumb = isBreadcrumbFollow(config) && formation === "line";
   // 걸음을 막 시작한 주인공은 목적지 칸에 선 것으로 본다 — 동료가 비워지는 칸(주인공이 떠나는 칸)으로 같이 걷는다.
   const hero = world?.heroAt ?? { x: session.x, y: session.y };
   const gap = effectiveGap(session, config);
@@ -529,6 +544,16 @@ export function followerPositions(
     // 옆자리가 모자라면(인접 4칸 초과 인원, 또는 물·벽으로 막힌 칸) 그 동료는 일렬로 떨어진다.
     const slot = slots[index];
     if (slot && !blocked?.(slot.x, slot.y)) return { follower, x: slot.x, y: slot.y, direction: slot.direction };
+    // 고전 빵부스러기(기본): 앞사람이 gap 걸음 전에 밟은 칸 — 건너뛰기·기다리기·비켜 서기 없이 그 칸 그대로.
+    // 궤적이 짧으면(막 맵에 들어옴) 가장 오래된 칸(= 들어선 칸)에 겹쳐 선다. 장면 대형(위 분기)은 그대로 쓴다.
+    if (breadcrumb && !(config?.fanOutInScenes === true && world?.inScene && index > 0)) {
+      if (trail.length === 0) return { follower, x: hero.x, y: hero.y, direction: follower.graphic.direction, hidden: true };
+      const crumb = Math.min(trailIndexFor(index, gap), trail.length - 1);
+      const point = trail[crumb]!;
+      cursor = crumb;
+      taken.push({ x: point.x, y: point.y });
+      return { follower, x: point.x, y: point.y, direction: point.direction ?? follower.graphic.direction };
+    }
     // 1) 앞사람에게서 gap 칸 뒤 궤적 점.
     // 2) 그 점이 주인공·앞 동료와 붙어 있으면(모퉁이·되돌아오기) 지금 선 칸에서 **기다린다** — 그 칸이
     //    여전히 궤적 위·앞사람 뒤이고 붙어 있지 않을 때. 더 뒤 점으로 뛰었다 돌아오면 두 칸씩 미끄러진다.

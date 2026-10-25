@@ -13,6 +13,7 @@ import {
   type WebPlayerBundleFile,
 } from "@/project/playerDeploymentManifest";
 import type { Project, TileAiMetadata } from "@/project/types";
+import { bundledTilesetRefView, withBundledTilesetRefs } from "@/project/bundledTilesetRefs";
 import type { SpatialLibrary } from "@/project/spatial/types";
 import {
   collectRetiredExportReferences,
@@ -98,11 +99,14 @@ function exportProjection(project: Project): Project {
   };
   delete projection.audioDescriptions;
   delete projection.monsterMetadata;
-  for (const tileset of Object.values(projection.tilesets)) {
-    if (tileset.tileMeta) tileset.tileMeta = tileset.tileMeta.map(playTileMeta);
+  for (const [id, tileset] of Object.entries(projection.tilesets)) {
     delete tileset.referenceDocuments;
     delete tileset.referenceSourceTilesetId;
     for (const kit of tileset.structureKits ?? []) delete kit.referenceDocuments;
+    // 번들 정의와 같은 타일셋은 prepareWebExport 가 참조로 바꿔 싣지 않는다 — 설명을 줄이면 동치가 깨져 참조가 안 된다.
+    // 줄이기는 통째로 실리는 타일셋(업로드·고친 번들·출판 판본)에만.
+    const shipsAsRef = !project.meta.publication && bundledTilesetRefView(id, tileset) !== undefined;
+    if (tileset.tileMeta && !shipsAsRef) tileset.tileMeta = tileset.tileMeta.map(playTileMeta);
   }
   if (project.spatialAuthoring) {
     projection.spatialAuthoring = { ...project.spatialAuthoring,
@@ -122,7 +126,9 @@ function exportProjection(project: Project): Project {
 
 export function prepareWebExport(project: Project): PreparedWebExport {
   const exportProject = exportProjection(project);
-  const projectJson = serialize(exportProject);
+  // 번들 정의와 같은 타일셋은 참조로 싣는다 — 플레이어 번들이 같은 정의를 이미 갖고 있다(bundledTilesetRefs.ts, S4).
+  // 출판 판본(meta.publication)은 보관된 옛 런타임이 읽을 수 있으니 예전처럼 통째로 싣는다.
+  const projectJson = serialize(project.meta.publication ? exportProject : withBundledTilesetRefs(exportProject));
   deserialize(projectJson);
   const assets = collectWebExportAssets(exportProject);
   const projectJsonBytes = encoder.encode(projectJson).length;

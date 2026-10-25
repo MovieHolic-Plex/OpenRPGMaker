@@ -59,8 +59,13 @@ def front_shade(x, y):
 
 lx, rx, out_l, out_r = slate_hip_roof(c, BX0, BX1, R_Y, E_Y, 36, 111, seed=3, front_shade=front_shade)
 # 앞 사면을 버들항 성 지붕 결(둥근 윗머리 반짝 + 두 줄 겹침 그늘, 5×6 장)로 다시 깐다. 처마 쪽 두 줄은 한 단 그늘.
-pix.slate_rect(c, BX0, R_Y + 2, BX1 - BX0 + 1, E_Y - R_Y - 1, seed=2,
-               shade=lambda x, y: -1 if y > E_Y - 3 else 0, mask=lambda x, y: lx(y) + 1 < x < rx(y) - 1)
+import slate2  # noqa: E402
+slate2.slate_roof(c, lambda x, y: lx(y) + 1 < x < rx(y) - 1, BX0, BX1, R_Y + 2, E_Y - 1, th=4, vshift=2)
+for _y in range(0, E_Y + 2):            # 왼쪽 모임 사면 흰 줄무늬를 한 단 낮춘다
+    for _x in range(0, 60):
+        _g = c.get(_x, _y)
+        if _g in ('I', 'H'):
+            c.put(_x, _y, {'I': 'H', 'H': 'G'}[_g])
 slate_eave(c, BX0, BX1, E_Y + 1)
 for cx_ in (30, CX - 4, 110):
     stone_chimney(c, cx_, 0, 17, w=8)
@@ -119,33 +124,32 @@ for (x0, lit) in ((WX0, True), (WX1 - 6, False)):
 
 
 # ---------------------------------------------------------------- 좁은 아치창(버들항 성 결: 밝은 돌 테 + 짙은 남빛 유리 + 하늘 반짝)
-SLIT = [
-    '.rmmj.',
-    'rDDDAi',
-    'mF^DAi',
-    'mE^AAi',
-    'mDAABi',
-    'mDAABi',
-    'mYaaai',
-    'mE^AAi',
-    'mDAABi',
-    'mDAABi',
-    'mBAABi',
-    'mBBBAi',
-    'nmmmie',
-    'aYYYYa',
-]
+UP = {  # 2층 좁은 아치창 — 반짝 자리·덧창·불빛이 창마다 다르다
+    0: ['.rmmj.', 'rDDDAi', 'mF^DAi', 'mE^AAi', 'mDAABi', 'mDAABi', 'mYaaai', 'mE^AAi', 'mDAABi', 'mDAABi', 'mBAABi', 'mBBBAi', 'nmmmie', 'aYYYYa'],
+    1: ['.rmmj.', 'rDDDAi', 'mDDF^i', 'mDAE^i', 'mAAABi', 'mAABBi', 'mYaaai', 'mDAAAi', 'mAA^Bi', 'mAABBi', 'mBABBi', 'mBBBBi', 'nmmmie', 'aYYYYa'],
+    2: ['.rmmj.', 'rDLKAi', 'mLKKτi', 'mKKτAi', 'mKτττi', 'mτττBi', 'mYaaai', 'mDAABi', 'mDAABi', 'mE^ABi', 'mBAABi', 'mBBBAi', 'nmmmie', 'aYYYYa'],
+    3: ['.rmmj.', 'rDDDAi', 'mF^DAi', 'mDAAAi', 'mDAABi', 'mDABBi', 'mYaaai', 'mqoqoi', 'mολοli'.replace('ο','o').replace('λ','l'), 'mololi', 'mlllli', 'mBBBAi', 'nmmmie', 'aYYYYa'],
+    4: ['.rmmj.', 'rDDDAi', 'mDAADi', 'mD^AAi', 'mF^ABi', 'mDAABi', 'mYaaai', 'mDAABi', 'mDAABi', 'mAAABi', 'mBA^Bi', 'mBBBAi', 'nmmmie', 'aYYYYa'],
+}
+LO = {  # 1층은 네모 머리(돌 상인방) — 2층과 모양부터 다르다, 창마다 또 다르다
+    0: ['knnnmj', 'aYYYYa', 'mDDDAi', 'mF^DAi', 'mE^AAi', 'mYaaai', 'mDAABi', 'mDAABi', 'mBAABi', 'mBBBAi', 'kmmmie', 'aYYYYa'],
+    1: ['knnnmj', 'aYYYYa', 'mDDDAi', 'mDDF^i', 'mAAABi', 'mYaaai', 'mAA^Bi', 'mAABBi', 'mBBBBi', 'mBBBBi', 'NOkmie', 'aYYYYa'],
+    2: ['knnnmj', 'aYYYYa', 'mτKKτi', 'mKLKτi', 'mKKττi', 'mYaaai', 'mτKτ7i', 'mKττ7i', 'mτττ7i', 'mτ777i', 'kmmmie', 'aYYYYa'],
+    3: ['knnnmj', 'aYYYYa', 'mDDDAi', 'mD^AAi', 'mDAAAi', 'mYaaai', 'mqoolι'.replace('ι','i'), 'moolli', 'mollli', 'mBBBAi', 'kONmie', 'aYYYYa'],
+    4: ['knnnmj', 'aYYYYa', 'mDDDAi', 'mDAADi', 'mF^ABi', 'mYaaai', 'mDAABi', 'mDA^Bi', 'mBAABi', 'mBBBAi', 'kmmmie', 'aYYYYa'],
+}
+UP_ORDER = [0, 1, 4, 2, 3, 1, 4]
+LO_ORDER = [1, 3, 0, None, 4, 2, 0]
 UP_Y, LO_Y = WY0 + 6, SC + 7
 for k, wx in enumerate((17, 36, 55, 74, 93, 112, 131)):
-    c.rows(wx - 2, UP_Y, SLIT)
-    if wx != CX:
-        c.rows(wx - 2, LO_Y, SLIT)
-    # 창 위 쐐기돌
-    for yy in (UP_Y - 1,) + (() if wx == CX else (LO_Y - 1,)):
+    c.rows(wx - 2, UP_Y, UP[UP_ORDER[k]])
+    for yy in (UP_Y - 1,):                     # 2층 아치 위 쐐기돌
         c.put(wx, yy, 's')
         c.put(wx + 1, yy, 'n')
         c.put(wx - 1, yy, 'r')
         c.put(wx + 2, yy, 'j')
+    if LO_ORDER[k] is not None:
+        c.rows(wx - 2, LO_Y, LO[LO_ORDER[k]])
 
 # ---------------------------------------------------------------- 가운데 아치문(돌 홍예 + 징 판자 + 계단 돌)
 DXX, DW = 68, 12
@@ -164,11 +168,6 @@ door(c, DXX, 70, DW, GY - 1 - 70)
 for x in range(DXX - 3, DXX + DW + 2):             # 문 앞 디딤돌
     c.put(x, GY - 1, 'r' if x % 4 else 'm')
     c.put(x, GY, 'i' if x % 3 else 'Z')
-# 문 위 방패 돋을새김(남빛 바탕 + 금빛 테, 글자 없음)
-for j, row in enumerate(['KKKKK', 'KFGFK', 'KFHFK', 'KEFEK', '.KEK.', '..K..']):
-    for i, ch in enumerate(row):
-        if ch != '.':
-            c.put(CX - 2 + i, 57 + j, ch)
 # 양쪽 깃발(남빛 천 + 금 별 모양 점, 글자 없음) — 2층 창 사이에 건다
 for bx in (44, 101):
     for j, row in enumerate(['τXXXXτ', '.FGGE.', '.FGGE.', '.FKKE.', '.FLKE.', '.FGGE.', '.FGGE.', '.FG.E.', '.F..E.']):
@@ -181,6 +180,14 @@ for (x, y, ch) in [(4, 92, 'N'), (5, 92, 'O'), (30, 92, 'N'), (118, 92, 'O'), (1
                    (88, 92, 'O'), (20, 80, 'e'), (128, 50, 'e'), (50, 85, 'e')]:
     c.put(x, y, ch)
 moss(c, [(10, 30, 2), (130, 28, 2), (60, 22, 2)])
+
+import importlib.util as _iu  # noqa: E402
+for _n in ('fixups', 'edgefix'):
+    _sp = _iu.spec_from_file_location(_n + '_br', os.path.join(os.path.dirname(os.path.abspath(__file__)), _n + '.py'))
+    globals()[_n] = _iu.module_from_spec(_sp)
+    _sp.loader.exec_module(globals()[_n])
+fixups.finalize(c)
+print('  먹 윤곽 → 재질 어두운 단', edgefix.material_edges(c))
 
 meta = {'name': '병영', 'massing': 'C10', 'material': 'stone',
         'refs': ['bd-house-barracks', 'bd-castle'], 'walk': auto_walk(c, 3, 4, (4, 5))}

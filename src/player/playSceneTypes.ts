@@ -95,6 +95,9 @@ export type AutonomousMover = {
   alertHoldMs?: number;
   /** movement.chaseLunge: 발견 뒤 남은 덮치기 칸 수. */
   lungeLeft?: number;
+  /** movement.approachStyle: 추격 중 지금까지 뗀 칸 수(묶음 쉼 계산)와 이번 칸 뒤 쉴 시간. */
+  approachStep?: number;
+  approachPauseMs?: number;
   /** 순찰+추격: 직전 프레임에 추격 상태였다. 추격이 끝나면 순찰을 처음 걸음부터 다시 시작한다. */
   patrolChasing?: boolean;
   chaseHome?: { readonly x: number; readonly y: number };
@@ -138,6 +141,8 @@ export type AutonomousMoveTween = {
   readonly hop?: import("@/player/characterHop").CharacterHop;
   /** 이 한 수의 지속 시간. 없으면 mover.moveDurationMs(이동 속도) 를 쓴다. */
   readonly durationMs?: number;
+  /** 다가오는 방식의 몸짓 — 진행 수직 흔들림(sway)·위아래(bob), 칸 비율. sign 은 흔들리는 쪽. */
+  readonly approach?: { readonly sway: number; readonly bob: number; readonly sign: number };
 };
 
 export type RuntimeTimer = {

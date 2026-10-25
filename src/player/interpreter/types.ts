@@ -151,6 +151,8 @@ export type StepResult =
   | { kind: "particleEffect"; preset: ParticlePreset; target: StagingTarget; durationMs: number; wait: boolean }
   /** 캐릭터 모습 효과. 장면이 세션(m2Runtime.screen.spriteLooks)에 써서 매 프레임 그린다. */
   | { kind: "spriteLook"; target: Exclude<StagingTarget, { kind: "tile" }>; fields: Readonly<Record<string, unknown>> }
+  /** 승강 장치 타기 — 발판·레일·사슬을 그리고 파티를 태워 위/아래로 옮긴다(playSceneLiftRide). */
+  | ({ kind: "liftRide" } & import("@/project/eventCommands/liftRide").LiftRideSpec)
   | {
       kind: "scrollMap";
       direction: "down" | "left" | "right" | "up";

@@ -3667,7 +3667,7 @@ const placeStorageChest: ToolDefinition = {
 
 const placeSavepoint: ToolDefinition = {
   name: "place_savepoint",
-  description: "세이브 포인트 이벤트를 배치한다(크리스탈 외형). 조사하면 mode 에 따라 동작한다 — both(기본): 사망 재시도용 체크포인트를 기록하고 **저장 칸 메뉴(openSaveMenu)** 도 연다(크로노 트리거식: 크리스탈에서 3칸 중 골라 저장) · slot: 저장 칸 메뉴만 · checkpoint: 체크포인트만(저장 칸 안 염, 새로고침하면 사라진다 — 호러·사망 재시도용). 플레이어가 새로고침 뒤에도 이어 하려면 slot 이나 both 다. 맵이 저장 금지(set_map_properties disableSave)면 경고한다. 벽 위여도 인접 칸에서 조사할 수 있으면 그대로 두고, 사방이 막힌 칸이면 근처(반경 3) 통행 가능 칸으로 자동 착지한다. 세이브 포인트는 반드시 이 툴 — place_npc/upsert_event 흉내 금지.",
+  description: "세이브 포인트 이벤트를 배치한다(크리스탈 외형, 기본으로 늘 빛남 — glow). 조사하면 mode 에 따라 동작한다 — both(기본): 사망 재시도용 체크포인트를 기록하고 **저장 칸 메뉴(openSaveMenu)** 도 연다(크로노 트리거식: 크리스탈에서 3칸 중 골라 저장) · slot: 저장 칸 메뉴만 · checkpoint: 체크포인트만(저장 칸 안 염, 새로고침하면 사라진다 — 호러·사망 재시도용). 플레이어가 새로고침 뒤에도 이어 하려면 slot 이나 both 다. 맵이 저장 금지(set_map_properties disableSave)면 경고한다. 벽 위여도 인접 칸에서 조사할 수 있으면 그대로 두고, 사방이 막힌 칸이면 근처(반경 3) 통행 가능 칸으로 자동 착지한다. 세이브 포인트는 반드시 이 툴 — place_npc/upsert_event 흉내 금지.",
   mode: "write",
   choosesOwnGraphic: true,
   parameters: {
@@ -3681,6 +3681,8 @@ const placeSavepoint: ToolDefinition = {
       heal: { type: "boolean", description: "true 면 저장 전에 파티 전원 회복(recoverAll). 기본 false — 크로노 트리거의 세이브 포인트는 회복하지 않는다." },
       mode: { type: "string", enum: ["both", "slot", "checkpoint"], description: "both(기본): 체크포인트 + 저장 칸 메뉴 · slot: 저장 칸 메뉴만 · checkpoint: 사망 재시도용 메모리 체크포인트만" },
       prompt: { type: "string", description: "조사하면 먼저 묻는 말(예: 「기록하시겠습니까?」). 주면 예/아니오 선택지가 뜨고 「예」일 때만 저장 칸을 연다." },
+      glow: { type: "boolean", description: "true(기본) 면 세이브 포인트가 늘 빛난다 — 숨 쉬듯 커졌다 작아지는 빛무리·둘레 반짝임·위로 오르는 빛 알갱이·퍼지는 고리(page.glow). 화면 끝에서도 보인다. false 면 끔" },
+      glowColor: { type: "string", description: "빛 색 #rrggbb(기본 푸른 별빛 #8fd8ff)" },
       sparkleRadius: { type: "integer", minimum: 0, maximum: 6, description: "플레이어가 이 칸 수 안으로 다가오면 세이브 포인트에 반짝임이 한 번 터진다(page.nearSparkle). 0 이면 끔. objectId 를 주면 기본 2." },
       objectId: { type: "string", description: "세이브 포인트를 눈에 띄는 공용 오브젝트 그림(stamp_object 와 같은 id, 예: 받침 위 수정 덩이)으로 세운다. x,y 를 그림의 왼쪽 위로 찍고, 이벤트는 그림 맨 아래 줄 가운데 칸에 투명하게 둔다. 생략하면 기본 크리스탈 걷기 칩." },
     },
@@ -3758,6 +3760,12 @@ const placeSavepoint: ToolDefinition = {
           animationType: "fixedGraphic",
           movement: PASSIVE,
           ...(sparkleRadius > 0 ? { nearSparkle: { radius: sparkleRadius } } : {}),
+          ...(args.glow !== false ? { glow: {
+            radius: 2,
+            ...(typeof args.glowColor === "string" && /^#[0-9a-f]{6}$/i.test(args.glowColor) ? { color: args.glowColor.toLowerCase() } : {}),
+            // 오브젝트 그림이면 빛은 그림 가운데 — 이벤트는 맨 아래 줄 가운데에 있다.
+            ...(objectFootprint ? { offsetX: objectFootprint.x + (objectFootprint.w - 1) / 2 - x, offsetY: objectFootprint.y + (objectFootprint.h - 1) / 2 - y } : {}),
+          } } : {}),
           commands: [
             ...(heal ? [{ kind: "recoverAll" } as Command] : []),
             ...(saveMode !== "slot" ? [{ kind: "checkpointSave", label: "savepoint" } as Command] : []),

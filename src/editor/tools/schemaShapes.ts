@@ -467,6 +467,7 @@ export const NATIVE_EVENT_PAGE_SCHEMA: JsonSchema = {
         pathfind: { type: "boolean" },
         moveIntervalMs: { type: "number" },
         sightAlert: { type: "object", description: "chase 전용. 시야에 처음 든 순간 {emote,holdMs} 말풍선+멈춤 뒤 추격" },
+        approachStyle: { type: "string", enum: ["walk", "dash", "pounce", "hop", "swoop", "lumber", "float", "slither"], description: "chase 전용 다가오는 방식 — dash 질주(늑대)·pounce 아치 도약(거미)·hop 통통(슬라임)·swoop 들쭉날쭉 급강하(박쥐)·lumber 느리지만 끈질김(골렘)·float 부유(유령)·slither S자(뱀)" },
       },
       description: "EventPageMovement. custom는 route:MoveRoute, living은 living:NpcLivingMovement, chase는 pursuit:ChaseAcrossMaps를 추가할 수 있다.",
       additionalProperties: true,

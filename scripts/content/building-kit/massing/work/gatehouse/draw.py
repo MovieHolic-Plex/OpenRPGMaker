@@ -206,7 +206,7 @@ for x, g in merlon_row(BACK, 9, 4, 3, back=True):
 # 이음은 한 단 어두운 회색. 뒤 두 줄은 뒤 흉벽 그늘. 바닥 위 나무 들창 하나 + 화로 하나(걷는 곳이라는 표시).
 DROWS = [2, 3, 4, 5, 5, 6, 7]
 FLAGW = [13, 10, 16, 11, 14, 12, 15, 10, 13]
-FT = 'zy0zyzx0yzyx'
+FT = 'rnsmrnmsrmnr'   # 차가운 회색 판석(아래 몸채 돌과 같은 결·온도)
 y = DECK0
 for ri, rh in enumerate(DROWS):
     x = BX0 - [0, 6, 3, 9, 5, 1, 7][ri % 7]
@@ -223,23 +223,36 @@ for ri, rh in enumerate(DROWS):
                 if not (BX0 <= xx <= BX1):
                     continue
                 if fy == rh - 1:
-                    ch = 'u'                          # 줄 이음(판석 앞 모서리 그늘)
+                    ch = 'j'                          # 줄 이음(판석 앞 모서리 그늘)
                 elif i == w - 1:
-                    ch = 'w'                          # 세로 이음
-                elif fy == 0 and i < 2:
-                    ch = '2' if tone != '0' else '4'  # 판석 윗모서리 빛
+                    ch = 'm' if (yy + ri) % 3 else 'k'   # 세로 이음(옅게 — 벽 줄눈처럼 진하지 않게)
+                elif fy == 0 and i < 3:
+                    ch = 's' if tone != 's' else 'r'  # 판석 윗모서리 빛
+                elif (xx * 5 + yy * 3) % 13 == 0:
+                    ch = 'm' if tone != 'm' else 'k'  # 판석 결(낱알)
                 else:
                     ch = tone
                 if ri == 0:
-                    ch = {'0': 'x', 'z': 'w', 'y': 'v', 'x': 'v', '2': 'x', '4': 'y', 'u': 't', 'w': 'u'}.get(ch, ch)   # 뒤 흉벽 그늘
+                    ch = {'s': 'n', 'r': 'm', 'n': 'k', 'm': 'k', 'k': 'j', 'j': 'i'}.get(ch, ch)   # 뒤 흉벽 그늘
                 c.put(xx, yy, ch)
             xx0 += w
             nn += 1
     y += rh
-# 나무 들창(위에서 본 네모 판자 + 쇠 고리)
-c.rows(64, DECK0 + 17, ['_ηηηηηηη_', 'ηθηηθηηθε', 'ηθηXXηηθε', 'ηηηηηηηηε', '_εεεεεεε_'])
-# 쇠 화로(위에서 본 둥근 그릇 + 숯불)
-c.rows(100, DECK0 + 12, ['.YWWY.', 'WτKτW.', 'WKLKτW', '.WττW.', '..YY..'])
+# 양 옆 흉벽(위에서 본 남북 방향 낮은 벽): 윗면 3px 갓돌 + 바닥 쪽 안 면 2px 그늘 — 회랑이 양옆으로 닫힌 상자로 읽힌다
+for y in range(BACK, MER + 1):
+    k = (y - BACK) % 6
+    for x, chs in ((BX0, 'nsr'), (BX1 - 2, 'rsn')):
+        for i, ch in enumerate(chs):
+            c.put(x + i, y, 'k' if k == 5 else ch)
+    c.put(BX0 + 3, y, 'k' if y >= DECK0 else c.get(BX0 + 3, y))      # 왼 흉벽 안 면(동쪽을 본다 — 빛)
+    c.put(BX0 + 4, y, 'm' if y >= DECK0 else c.get(BX0 + 4, y))
+    c.put(BX1 - 3, y, 'i' if y >= DECK0 else c.get(BX1 - 3, y))      # 오른 흉벽 안 면(그늘)
+    c.put(BX1 - 4, y, 'j' if y >= DECK0 else c.get(BX1 - 4, y))
+# 왼 흉벽이 바닥에 던지는 그늘(빛은 왼쪽 위): 흉벽 안쪽 오른편 3px 를 한 단 어둡게 — 바닥이 수평면으로 읽힌다
+DK = {'s': 'r', 'r': 'n', 'n': 'm', 'm': 'k', 'k': 'j', 'j': 'i'}
+for y in range(DECK0, MER - 3):
+    for x in range(BX0 + 5, BX0 + 8 - (1 if y % 2 else 0)):
+        c.put(x, y, DK.get(c.get(x, y), c.get(x, y)))
 # 앞 흉벽: 이 + 총안 틈(틈으로 바닥이 보이고 이 그늘이 오른쪽에 진다)
 for x, g in merlon_row(MER, 10, 3, 6):
     c.put(x, MER, 'x' if g < 2 else 'z')
@@ -347,8 +360,8 @@ def left_extras(cx):
 
 
 def right_extras(cx):
-    c.rows(int(cx) - 1, 64, WIN)                 # 위층: 작은 유리창
-    c.rows(int(cx) + 2, 92, SLIT)                # 아래: 화살 구멍(비켜 놓음)
+    for sy, ox in ((70, 1), (96, -2)):           # 왼 탑과 같은 십자 화살 구멍, 높이·자리만 다르게
+        c.rows(int(cx) - 2 + ox, sy, SLIT)
 
 
 tower(22.0, 1, 0, 2, left_extras)

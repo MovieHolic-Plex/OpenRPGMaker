@@ -43,8 +43,8 @@
   },
   {
    "id": "party-follow",
-   "label": "숲 어귀 — 동료가 뒤를 따라 걷는다 · 메뉴에 저장 없음 · 사당 세이브 포인트",
-   "note": "configure_companion_rules display follow · set_project_settings saveAccess savePoints · place_savepoint ev_fs_hub_savepoint",
+   "label": "숲 어귀 — 동료가 주인공이 밟은 칸을 그대로 한 걸음 뒤에서 밟는다 · 메뉴에 저장 없음 · 사당 세이브 포인트",
+   "note": "companions.followMode breadcrumb(기본) · set_project_settings saveAccess savePoints · place_savepoint",
    "mapId": "fs_forest_edge",
    "x": 15,
    "y": 35,
@@ -74,27 +74,42 @@
       {
        "kind": "hold",
        "dir": null,
-       "ms": 1500
+       "ms": 1200
       },
       {
        "kind": "hold",
        "dir": "up",
-       "ms": 2200
+       "ms": 1300
       },
       {
        "kind": "hold",
        "dir": "right",
-       "ms": 500
+       "ms": 800
       },
       {
        "kind": "hold",
-       "dir": "down",
-       "ms": 1600
+       "dir": "up",
+       "ms": 800
+      },
+      {
+       "kind": "hold",
+       "dir": "left",
+       "ms": 650
       },
       {
        "kind": "hold",
        "dir": null,
-       "ms": 600
+       "ms": 1400
+      },
+      {
+       "kind": "hold",
+       "dir": "down",
+       "ms": 500
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1200
       }
      ],
      "shot": true
@@ -130,7 +145,7 @@
        "kind": "teleport",
        "mapId": "fs_forest_shrine",
        "x": 24,
-       "y": 12
+       "y": 15
       },
       {
        "kind": "face",
@@ -140,6 +155,16 @@
        "kind": "hold",
        "dir": null,
        "ms": 900
+      },
+      {
+       "kind": "hold",
+       "dir": "up",
+       "ms": 2600
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 600
       }
      ],
      "shot": true
@@ -148,14 +173,18 @@
      "id": "save-open",
      "ops": [
       {
+       "kind": "face",
+       "dir": "up"
+      },
+      {
        "kind": "action"
       },
       {
        "kind": "pressUntilJs",
        "key": "Enter",
-       "fn": "(()=>!!document.querySelector(\"[data-testid='runtime-choices'], [data-testid*='save-slot'], [data-testid*='save']\"))",
+       "fn": "(()=>!!document.querySelector(\"[data-testid='runtime-choices']\"))",
        "maxPresses": 8,
-       "settleMs": 700
+       "settleMs": 900
       },
       {
        "kind": "key",
@@ -164,7 +193,7 @@
       {
        "kind": "hold",
        "dir": null,
-       "ms": 1200
+       "ms": 1500
       }
      ],
      "shot": true
@@ -2358,6 +2387,423 @@
        "kind": "hold",
        "dir": null,
        "ms": 1500
+      }
+     ],
+     "shot": true
+    }
+   ]
+  },
+  {
+   "id": "lift-ride",
+   "label": "지하 4층 승강 장치 — 발판·레일·사슬, 동료가 올라타고 함께 위로, 천문대에 올라와 선다",
+   "note": "m2 Lift Ride depart/arrive · place_lift",
+   "mapId": "fs_vault_b4",
+   "x": 14,
+   "y": 4,
+   "facing": "right",
+   "switches": {
+    "sw_fs_main_started": true,
+    "sw_fs_main_step0": true,
+    "sw_fs_valen_marched": true,
+    "sw_fs_main_step1": true,
+    "sw_fs_iris_awake": true,
+    "sw_fs_iris_joined": true,
+    "sw_fs_valen_crash_on": true,
+    "sw_fs_valen_crash_met": true,
+    "sw_fs_main_step2": true,
+    "sw_fs_vault_seal_open": true,
+    "sw_fs_b3_west_lever": true,
+    "sw_fs_b3_sun_lever": true,
+    "sw_fs_b3_moon_lever": true,
+    "sw_fs_dragon_met": true,
+    "sw_fs_dragon_down": true,
+    "sw_fs_b4_lift_open": true
+   },
+   "party": [
+    {
+     "actorId": "actor_hero",
+     "level": 9
+    },
+    {
+     "actorId": "actor_fs_elena",
+     "level": 9
+    },
+    {
+     "actorId": "actor_fs_iris",
+     "level": 9
+    }
+   ],
+   "items": {
+    "item_potion": 3
+   },
+   "beats": [
+    {
+     "id": "board",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1200
+      },
+      {
+       "kind": "hold",
+       "dir": "right",
+       "ms": 420
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 900
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "ride",
+     "ops": [
+      {
+       "kind": "pressUntilJs",
+       "key": "Enter",
+       "fn": "(()=>!document.querySelector(\"[data-testid='dialogue-box']\"))",
+       "maxPresses": 4,
+       "settleMs": 500
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 2600
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "arrive",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 4200
+      }
+     ],
+     "shot": true
+    }
+   ]
+  },
+  {
+   "id": "save-glow",
+   "label": "마을 광장 기록석 — 멀리서도 늘 빛난다(숨 쉬는 빛무리·반짝임·오르는 빛)",
+   "note": "page.glow · place_savepoint glow 기본",
+   "mapId": "fs_hub",
+   "x": 37,
+   "y": 36,
+   "facing": "up",
+   "party": [
+    {
+     "actorId": "actor_hero",
+     "level": 6
+    }
+   ],
+   "switches": {
+    "sw_fs_main_started": true,
+    "sw_fs_valen_marched": true
+   },
+   "beats": [
+    {
+     "id": "far",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 4500
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "near",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": "up",
+       "ms": 900
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 3000
+      }
+     ],
+     "shot": true
+    }
+   ]
+  },
+  {
+   "id": "combo-starfall",
+   "label": "트리플 테크 「폴른 스타」 — 셋이 모두 움직이고 함께 마무리",
+   "note": "battleComboPartners: 동료 rush/cast, 착탄마다 차례로, 끝에 함께 마무리",
+   "mapId": "fs_forest",
+   "x": 15,
+   "y": 9,
+   "facing": "down",
+   "switches": {
+    "sw_fs_main_started": true,
+    "sw_fs_main_step0": true,
+    "sw_fs_valen_marched": true,
+    "sw_fs_main_step1": true,
+    "sw_fs_iris_awake": true,
+    "sw_fs_iris_joined": true,
+    "sw_fs_valen_crash_on": true
+   },
+   "variables": {
+    "var_fs_main_progress": 2
+   },
+   "party": [
+    {
+     "actorId": "actor_hero",
+     "level": 9
+    },
+    {
+     "actorId": "actor_fs_elena",
+     "level": 9
+    },
+    {
+     "actorId": "actor_fs_iris",
+     "level": 9
+    }
+   ],
+   "items": {
+    "item_potion": 3,
+    "item_ether": 3
+   },
+   "beats": [
+    {
+     "id": "battle",
+     "ops": [
+      {
+       "kind": "pressUntilJs",
+       "key": "Enter",
+       "fn": "(()=>!!document.querySelector(\"[data-testid='battle-scene']\"))",
+       "maxPresses": 60,
+       "settleMs": 600
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 2500
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "cutin",
+     "ops": [
+      {
+       "kind": "battle",
+       "plan": {
+        "actor_hero": [
+         "combo:skill_combo_fs_fallen_star"
+        ],
+        "actor_fs_elena": [
+         "combo:skill_combo_fs_fallen_star"
+        ],
+        "actor_fs_iris": [
+         "combo:skill_combo_fs_fallen_star"
+        ]
+       },
+       "fallback": "defend",
+       "commands": 3,
+       "timeoutMs": 60000
+      },
+      {
+       "kind": "pressUntilJs",
+       "key": "Shift",
+       "fn": "(()=>(window.__qaBattleLog||[]).some(r=>/연계기/.test(r.line||'')))",
+       "maxPresses": 3,
+       "settleMs": 400
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 2500
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "after",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 3500
+      }
+     ],
+     "shot": true
+    }
+   ]
+  },
+  {
+   "id": "approach-pounce",
+   "label": "덤불 숲 — 거미는 웅크렸다 아치로 뛰어든다",
+   "note": "movement.approachStyle · tune_field_enemies approachStyle auto",
+   "mapId": "fs_forest_thicket",
+   "x": 10,
+   "y": 21,
+   "facing": "right",
+   "switches": {
+    "sw_fs_main_started": true,
+    "sw_fs_valen_marched": true
+   },
+   "variables": {
+    "var_fs_main_progress": 0
+   },
+   "party": [
+    {
+     "actorId": "actor_hero",
+     "level": 6
+    },
+    {
+     "actorId": "actor_fs_elena",
+     "level": 6
+    }
+   ],
+   "items": {
+    "item_potion": 3
+   },
+   "beats": [
+    {
+     "id": "approach",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 7000
+      }
+     ],
+     "shot": true
+    }
+   ]
+  },
+  {
+   "id": "approach-swoop",
+   "label": "덤불 숲 — 나방은 좌우로 흔들리며 들쭉날쭉 날아든다",
+   "note": "movement.approachStyle · tune_field_enemies approachStyle auto",
+   "mapId": "fs_forest_thicket",
+   "x": 22,
+   "y": 13,
+   "facing": "up",
+   "switches": {
+    "sw_fs_main_started": true,
+    "sw_fs_valen_marched": true
+   },
+   "variables": {
+    "var_fs_main_progress": 0
+   },
+   "party": [
+    {
+     "actorId": "actor_hero",
+     "level": 6
+    },
+    {
+     "actorId": "actor_fs_elena",
+     "level": 6
+    }
+   ],
+   "items": {
+    "item_potion": 3
+   },
+   "beats": [
+    {
+     "id": "approach",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 7000
+      }
+     ],
+     "shot": true
+    }
+   ]
+  },
+  {
+   "id": "approach-float",
+   "label": "숲 — 도깨비불은 둥실 떠서 미끄러지듯 온다",
+   "note": "movement.approachStyle · tune_field_enemies approachStyle auto",
+   "mapId": "fs_forest",
+   "x": 14,
+   "y": 21,
+   "facing": "up",
+   "switches": {
+    "sw_fs_main_started": true,
+    "sw_fs_valen_marched": true
+   },
+   "variables": {
+    "var_fs_main_progress": 0
+   },
+   "party": [
+    {
+     "actorId": "actor_hero",
+     "level": 6
+    },
+    {
+     "actorId": "actor_fs_elena",
+     "level": 6
+    }
+   ],
+   "items": {
+    "item_potion": 3
+   },
+   "beats": [
+    {
+     "id": "approach",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 7000
+      }
+     ],
+     "shot": true
+    }
+   ]
+  },
+  {
+   "id": "approach-slither",
+   "label": "개울 — 뱀장어는 S자로 기어 온다",
+   "note": "movement.approachStyle · tune_field_enemies approachStyle auto",
+   "mapId": "fs_forest_stream",
+   "x": 30,
+   "y": 13,
+   "facing": "up",
+   "switches": {
+    "sw_fs_main_started": true,
+    "sw_fs_valen_marched": true
+   },
+   "variables": {
+    "var_fs_main_progress": 0
+   },
+   "party": [
+    {
+     "actorId": "actor_hero",
+     "level": 6
+    },
+    {
+     "actorId": "actor_fs_elena",
+     "level": 6
+    }
+   ],
+   "items": {
+    "item_potion": 3
+   },
+   "beats": [
+    {
+     "id": "approach",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 7000
       }
      ],
      "shot": true

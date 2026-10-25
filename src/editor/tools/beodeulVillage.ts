@@ -93,6 +93,7 @@ const rv = (names: string): string[] => names.split(/\s+/).filter(Boolean).map((
 // 중세 건물(medieval, 2026-10-25): bk-massing-100 덩어리 모형을 손 도트로 그려 3/4 관문 + 독립 검수 둘을 통과한 bd-house-mk-*(beodeulMassing).
 // 아직 설치되지 않은 id 는 have() 가 거른다 — 목록은 이름만 미리 적어 둔다.
 const mk = (names: string): string[] => names.split(/\s+/).filter(Boolean).map((n) => `bd-house-mk-${n}`);
+const MEDIEVAL_ANCHORS = mk("town-hall market-hall chapel inn great-hall");
 export const BEODEUL_ROOF_PALETTES = ["red", "slate", "moss", "log", "medieval"] as const;
 export type BeodeulRoofPalette = (typeof BEODEUL_ROOF_PALETTES)[number];
 export const ROOF_PALETTE_LABEL: Record<BeodeulRoofPalette, string> = { red: "붉은 기와", slate: "청회색 슬레이트", moss: "이끼 초가·너와", log: "통나무집", medieval: "중세 건물(목골·막돌·탑)" };
@@ -103,7 +104,8 @@ const ROOF_PALETTES: Record<BeodeulRoofPalette, { main: string[]; accent: string
   log: { main: rv("r10-01 r10-03 r10-04 r10-05 r10-06"), accent: rv("r6-01 r8-07 r9-18") },
   medieval: {
     main: mk("cottage gable-cottage thouse jetty-house merchant-house dormer-house cross-house l-farmhouse longhouse tower-house"),
-    accent: mk("inn smithy chapel dovecote brewery bakery guildhall granary-mill market-hall warehouse"),
+    // 비둘기탑·물레방앗간은 집이 아니다(2026-10-25 VQA: 비둘기탑이 길가 집으로, 물레방아 방앗간이 강에서 8칸 떨어진 뭍에 섰다) — 집 목록에서 뺀다
+    accent: mk("inn smithy chapel brewery bakery guildhall market-hall warehouse"),
   },
 };
 /** roofs 를 생략하면 seed 로(붉은 기와 절반·이끼·청회색) — 같은 「평범한 마을」 요청이 늘 붉은 기와가 되지 않게. 늪·사막·설원은 자기 집 키트가 있어 쓰지 않는다. */
@@ -1055,7 +1057,9 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
   }
   let gatherDoor: { x: number; y: number } | null = null;
   {
-    const cand = have(spec.anchors).filter((id) => K(id).door);
+    // 중세 건물 마을은 모이는 곳에 시청·장터·예배당·여관 같은 공공 건물(2026-10-25 VQA: 광장·장터·교회가 없고 앵커가 원본 버들항 집이었다)
+    const anchorPool = roofs === "medieval" ? have(MEDIEVAL_ANCHORS) : [];
+    const cand = (anchorPool.length ? anchorPool : have(spec.anchors)).filter((id) => K(id).door);
     const order = cand.map((id) => ({ id, r: rand() })).sort((a, b) => a.r - b.r).map((o) => o.id);
     let done = false;
     // 가까운 자리부터, 안 되면 ±16칸까지(계단식 비탈 물가 띠 88×56 seed 11 은 ±10 안이 다 단 경계였다 — 길가 집 띠가 지형·물에 좁아진 마을에서 앵커를 놓치지 않게 — 앞 자리에서 찾으면 결과는 그대로)
@@ -1083,7 +1087,8 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
   if (gatherDoor && (form === "street" || form === "riverbank") && !coastStreet) { // 포구 길가는 길 아래가 바로 잔교 머리 물가 — 판석 대신 물가 소품
     const yBelow = gatherDoor.y + gather.s.width;
     const gl = lv[idx(gatherDoor.x, gatherDoor.y)]!;
-    const apron = blob(gatherDoor.x, yBelow + 1, 2.6, 1.4, 0.05).filter((c) => occ[c] === FREE && lv[c] === gl && !rampCells.has(c));
+    const big = roofs === "medieval"; // 중세 건물 마을: 공공 건물 앞 작은 광장
+    const apron = blob(gatherDoor.x, yBelow + (big ? 2 : 1), big ? 4.2 : 2.6, big ? 2.2 : 1.4, 0.05).filter((c) => occ[c] === FREE && lv[c] === gl && !rampCells.has(c));
     for (const c of apron) { occ[c] = PLAZAC; plazaCells.push(c); plazaSet.add(c); }
   }
 
@@ -1110,7 +1115,8 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
     let n = 0;
     const spots = (k: Kit): [number, number][] => {
       const out: [number, number][] = [];
-      for (let dy = 1; dy <= 4; dy += 1) for (const dx of [0, -2, 2, -3, 3, -4, 4, -5, 5]) out.push([gatherDoor!.x + dx - Math.floor(k.w / 2), gatherDoor!.y + gather.s.width + dy - k.h]);
+      // 문 줄(dx 0)은 마지막 — 우물이 앵커 문 바로 앞을 막지 않게(2026-10-25 VQA)
+      for (let dy = 1; dy <= 4; dy += 1) for (const dx of [-3, 3, -4, 4, -2, 2, -5, 5, 0]) out.push([gatherDoor!.x + dx - Math.floor(k.w / 2), gatherDoor!.y + gather.s.width + dy - k.h]);
       return out;
     };
     const place = (ids: readonly string[]) => {
@@ -1172,7 +1178,8 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
         if (!flatCells([...east, idx(ml, fy)]) || !flatCells(west) || !offRim([...east, ...west])) continue; // 나루 길은 한 단(경사로 없이 닿는다)·절벽 끝 위 아님
         for (const c of [...east, ...west]) occ[c] = ROAD;
         keepRoad.add(idx(wE + 1, fy)); if (wW > 0) keepRoad.add(idx(wW - 1, fy));
-        if (boat && at(wE - 1, fy) === WATERC && at(wE - 2, fy) === WATERC) { stamps.push({ kit: boat.id, x: wE - 2, y: fy, record: false }); onWater.add(idx(wE - 1, fy)); onWater.add(idx(wE - 2, fy)); }
+        // 나룻배는 동쪽 나루에 붙여 맨다(강 한가운데 떠 있으면 길이 둑에서 끊긴 것처럼 보였다 — 2026-10-25 VQA)
+        if (boat && at(wE - 1, fy) === WATERC && at(wE, fy) === WATERC) { stamps.push({ kit: boat.id, x: wE - 1, y: fy, record: false }); onWater.add(idx(wE, fy)); onWater.add(idx(wE - 1, fy)); }
         if (post) for (const [px, py] of [[wE + 1, fy - 1], [wW - 1, fy - 1]] as const) if (px >= 0 && fits(post, px, py - post.h + 1)) claim(post, px, py - post.h + 1, PROP, false);
         ferry = { x: wE + 1, y: fy };
         break;
@@ -1377,7 +1384,8 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
     if (!pool.length) return null;
     // 많이 쓴 키트는 덜 고른다
     const uses = (id: string) => placedHouses.filter((p) => p.id === id).length;
-    const scored = pool.map((id) => ({ id, s: rand() + uses(id) * 0.6 })).sort((a, b) => a.s - b.s);
+    // 중세 건물 마을은 종류가 많다 — 한 바퀴 다 쓰기 전에는 같은 집을 다시 고르지 않는다(2026-10-25 VQA: 오두막·박공 오두막이 다섯 채씩)
+    const scored = pool.map((id) => ({ id, s: rand() + uses(id) * (roofs === "medieval" ? 3 : 0.6) })).sort((a, b) => a.s - b.s);
     return K(scored[0]!.id);
   };
   const isPath = (v: number) => v === ROAD || v === PLAZAC;
@@ -1492,6 +1500,7 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
     return upperReach(rect) >= upperReach(new Set()) - own;
   };
   const fenceAt = new Map<number, FenceKind>();
+  const gateTrack = new Set<number>(); // 울타리 문 → 길 걸음 자리(모랫길로 칠한다)
   const fenceGates: number[] = []; // 울타리 문 칸 — 13단계에서 입구로부터 닿는지 잰다
   const fenceInside = new Set<number>(); // 울타리 안 칸(밭·텃밭) — 문으로 드는 울타리 안이라 「갇힌 빈터」로 세지 않는다
   const planFence = (x0: number, y0: number, x1: number, y1: number, near: (c: number) => number): boolean => {
@@ -1535,6 +1544,8 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
       if (rect.some((c) => lv[c]! > 0) && !keepsUpperOpen(new Set(rect))) return false;
     }
     for (const c of gatePath) if (occ[c] === FREE) occ[c] = CLEAR;
+    // 밭 울타리 문 길은 맨 풀밭이면 안 보였다(2026-10-25 VQA 「문·길 없는 밭」) — 모랫길로 칠한다(통행은 그대로 빈 땅)
+    if (fenced) { for (const c of gatePath) gateTrack.add(c); gateTrack.add(gate); }
     for (let y = y0 + 1; y < y1; y += 1) for (let x = x0 + 1; x < x1; x += 1) fenceInside.add(idx(x, y));
     const gx = gate % W, gy = (gate - gx) / W;
     for (const c of ring) {
@@ -2009,6 +2020,7 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
   paintCells(roadCells.filter((c) => !trackCells.has(c)), spec.road);
   // 단 위 윗길·오르막(풀밭 마을)은 모랫길 — 큰길 포석과 다른 밭길·고갯길
   paintCells(roadCells.filter((c) => trackCells.has(c)), { mat: SAND_PATH });
+  paintCells([...gateTrack].filter((c) => occ[c] === CLEAR || fenceGates.includes(c)), { mat: SAND_PATH });
   paintStep("길 깔기", [ROAD]);
   paintCells(plazaPaint, spec.plaza);
   paintStep("광장 판석", [PLAZAC]);

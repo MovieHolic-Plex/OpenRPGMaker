@@ -1,0 +1,568 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a6ce7e61445e86a1b0210e48d6a589df6d78b4225d0edc3b216df3a5b85c04a9",
+ "width": 144,
+ "height": 144,
+ "kind": "structure",
+ "name": "시청",
+ "label": "building-kit/massing/town-hall",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 8,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "5f62fef078ef7661"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 21,
+  "tileColorsP90": 25,
+  "darkV5": 59,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 46
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "main hipped roof (purple tiles)",
+      "rows": "59-81",
+      "evidence": "c",
+      "front_edge_line_row": 81,
+      "eave_shadow_rows": "82-83"
+     },
+     {
+      "part": "clock tower spire roof",
+      "rows": "3-42",
+      "evidence": "c",
+      "front_edge_line_row": 41,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "clock tower shaft with clock face",
+      "rows": "43-58",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stone upper wall with shuttered windows and banners",
+      "rows": "84-108",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "ground floor arcade with arches and door",
+      "rows": "111-143",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 23,
+    "front_face_rows": 60,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is a building with a wide hipped roof, rows 59-81, whose silhouette widens from 72 to 144 px. Its tile rows are the top surface (evidence c) and end in a dark eave line at about row 81-83. Below it the south face runs from about row 84 to 143 as a stone wall with windows and an arcade. The clock tower has its own conical roof at rows 3-42 over a front-facing shaft. The roof slopes are visible, so the building reads as three-quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The candidate has 20 visible tones per 16x16 tile against 12 and 10 for the references, and 0% near-flat coverage, the same as both references. The roof is a blue-purple tile ramp with per-tile scallops and highlights (about 5 steps). The stone walls show block-by-block shading and speckle. The clock tower, shutters, arches and balustrade add further detail. Outlines lean toward the adjacent material (dark purple-blue next to the roof, warm grey-brown next to stone) and are used selectively, not as a uniform black line. The 21% near-neutral share of dark edge pixels is higher than the references' 7-9% but still mostly tinted. It reads as the same quality bar as the references, with no sticker look and no flat fills.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 11970
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "main hipped roof (tile slopes)",
+      "rows": "59-81",
+      "evidence": "c",
+      "front_edge_line_row": 82,
+      "eave_shadow_rows": "80-82"
+     },
+     {
+      "part": "clock tower spire roof (conical)",
+      "rows": "3-40",
+      "evidence": "c",
+      "front_edge_line_row": 40,
+      "eave_shadow_rows": "41-42"
+     },
+     {
+      "part": "clock tower shaft",
+      "rows": "41-58",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "finial cross at spire tip",
+      "rows": "0-8",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 23,
+    "front_face_rows": 61,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is a building with a hipped tile roof at rows 59-81. The width profile widens steadily from 72 to 144 px, so the roof slopes read as a top surface 23 rows tall. A darker eave edge at rows 80-82 sits above the stone front wall (rows 82-143), which is about 61 rows tall. The clock tower has its own conical tiled roof (rows 3-40) that widens down to a 25 px eave, then a plain front-facing shaft. The finial cross is decor. The south face shows the arcaded ground floor, upper windows, and banners, all as vertical faces. The roof planes on both the main body and the tower are clear top surfaces."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The candidate shows 20 visible tones per 16x16 tile against 12 and 10 for the references, and 0% near-flat coverage, the same as both references. The blue-violet tile roof has about 5 steps (highlight, light, mid, dark, deep) with per-tile scallops and highlights. The stone walls carry block shading and speckle in several tones, and the clock tower and arcade are shaded stone by stone. The outlines are dark tints of the neighbouring material (dark violet-blue beside the roof, dark brown beside the shutters and door, grey-brown beside the stone), not a uniform black line. The 21% near-neutral share of dark edge pixels is low and fits tinted edges. The art is as rich as the references and not sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 10682
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "main hipped roof (blue tiles)",
+      "rows": "59-81",
+      "evidence": "c",
+      "front_edge_line_row": 81,
+      "eave_shadow_rows": "80-81"
+     },
+     {
+      "part": "clock tower conical spire roof",
+      "rows": "3-42",
+      "evidence": "c",
+      "front_edge_line_row": 41,
+      "eave_shadow_rows": "41-42"
+     },
+     {
+      "part": "clock tower shaft (front face with clock)",
+      "rows": "43-58",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stone facade upper floor with windows",
+      "rows": "82-110",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "ground floor arcade with arches and door",
+      "rows": "111-143",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 23,
+    "front_face_rows": 62,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is a building with a wide hipped roof (rows 59-81) whose silhouette widens from 72 to 144 px. Its tile rows form a sloped roof plane that ends in a dark eave line at rows 80-81, above the stone front face (rows 82-143, about 62 rows) with windows, an arcade and a door. The clock tower has its own conical roof (rows 3-42) over a front-facing shaft. Both roofs show top slopes, so the object reads as three-quarter view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The candidate has 20 visible tones per 16x16 tile against 12 and 10 for the references, and 0% near-flat coverage, the same as both references. The blue tile roof shows about 5 steps (highlight, light, mid, dark, deep) with per-tile scallop highlights. The stone walls are shaded block by block with speckle, and the arches, balustrade, shutters, clock tower and banners add structure. Only 21% of dark edge pixels are near-neutral, so most outlines lean toward the material tone (dark blue under the roof, brown beside the shutters and wood), not a uniform black sticker line. This is a little higher than the references' 7-9% but still clearly tinted. The piece is larger and more detailed than the references, and I see no flat fills or sticker look.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 11425
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "main hipped roof (tiles)",
+      "rows": "59-81",
+      "evidence": "c",
+      "front_edge_line_row": 81,
+      "eave_shadow_rows": "80-81"
+     },
+     {
+      "part": "clock tower conical spire roof",
+      "rows": "3-40",
+      "evidence": "c",
+      "front_edge_line_row": 40,
+      "eave_shadow_rows": "41-42"
+     },
+     {
+      "part": "clock tower shaft with clock face",
+      "rows": "41-58",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "upper stone wall with windows and banners",
+      "rows": "82-109",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "ground floor arcade with arches and door",
+      "rows": "110-143",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 23,
+    "front_face_rows": 62,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is a two-storey building under a large hipped tile roof occupying rows 59-81. The width grows from 72 to 144 px, so the sloped roof plane is clearly drawn, with its front eave line at about rows 80-81 above the stone front wall. The south face (rows 82-143) holds the windows, banners, arcade and door, so the front face is well over 3 rows. The clock tower on the ridge has a conical roof with slope rows 3-40, and its flat eave ring at rows 40-42 sits on a narrower shaft. Every major part therefore has a roof or top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The candidate has 20 visible tones per 16x16 tile against 12 and 10 for the references, and 0% near-flat coverage, the same as the references. The purple roof has about 5 steps (highlight, light, mid, dark, deep) with per-tile scallop highlights. The stone walls are shaded block by block with speckle, and the arcade, windows, shutters and clock tower add more detail. Only 21% of dark edge pixels are near-neutral, so the outlines mostly lean toward the material tone (dark purple beside the roof, dark brown beside wood, grey-brown beside stone). They are not a uniform black sticker line. The building is larger and more complex than the references but matches them in craft and density, so a careful artist would accept it next to them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 11116
+  }
+ ],
+ "decidedAt": "2026-10-25T11:46:43.387Z",
+ "cells": {
+  "16": [
+   "01a2f60fdc6a82ed",
+   "02e5b0fbda06b339",
+   "0611c23b03f8daf9",
+   "06ec93afa9fe4068",
+   "09db08187e261009",
+   "0b8e72043ba5e409",
+   "0bf37bc278d21016",
+   "1049d8d2edd40d8d",
+   "10a83c6b3648b9d8",
+   "242943c643007743",
+   "3b1075b09d478f83",
+   "442af5cf638cc196",
+   "49ce65aaa7ffa288",
+   "4aa73f93c6a2accc",
+   "53ab1fc734079877",
+   "5989b752b827cbec",
+   "5c2299bfe8bd95b2",
+   "6789c8bb6ef1e414",
+   "6846061397aa8a9f",
+   "6a09a9e44f7f7cf4",
+   "6cae7c5d65fb09c3",
+   "6d10b71c2659bec5",
+   "719947bfb12e49fa",
+   "75cbd2cf292735d6",
+   "7900add847e9b04d",
+   "799d67c630783fc1",
+   "7e358cf8e6d2b148",
+   "7ea8046396501b87",
+   "82565340fff804f3",
+   "82abe0ba91094272",
+   "8f0ab7145145b066",
+   "90fc5c7d5c191986",
+   "935e21bf0991c4e1",
+   "94a6775c00354d1c",
+   "960545bdd8de10a2",
+   "a00e61e5fc3f8d8d",
+   "a2226431f2ba00a6",
+   "a827d80e5a59280d",
+   "b28b81857e73250b",
+   "b4d416e601521146",
+   "b5042d91d23bcaf2",
+   "b9787ddff2e4ef32",
+   "bcefeac593967d08",
+   "c498aafcdbf59563",
+   "c7ca19407171dc7c",
+   "c8a77b18e87a9d38",
+   "c8f7e579e41914ec",
+   "d626f5fcb822c4e7",
+   "d9b919968636254e",
+   "da2a476c1c17b5f8",
+   "e27ea96bb28bef44",
+   "e73eb22cf8e59141",
+   "e780d778df8153f7",
+   "f5308e35bde4cfd5",
+   "f5f710f8661a1c53",
+   "f7d27aae2bd466e4",
+   "fc1c5325cd08b354",
+   "fcadd79b70e1e4b5"
+  ],
+  "24": [
+   "0fd00c04f00b677b",
+   "12a55a66becd3904",
+   "28dfd48b22d2dd2c",
+   "2f2daba931690a48",
+   "3f933750d8b47a34",
+   "4c1385bf12debf31",
+   "4d6e52d55fd8587a",
+   "58c0230dbee0d20f",
+   "6fe60245d2a3eb09",
+   "70009581db3110f3",
+   "73d47695da9f0365",
+   "81b290864c53af8c",
+   "84be7d43314aa78c",
+   "8870b6f205960550",
+   "88912f6f58bf5360",
+   "91356789dcc92955",
+   "99af8fee293c4800",
+   "9e5e948a5b35d5fa",
+   "a2f6695d98cd9148",
+   "b3f59b70be905590",
+   "b7534644cc849ee9",
+   "b7a2f722f697b64e",
+   "bc2d2b740fa5048b",
+   "bd4a4f8f71ac890d",
+   "cf31a33dc55ffded",
+   "e900cde3db2a270f",
+   "f87630a9f5930974",
+   "fde705a21f965b25"
+  ],
+  "32": [
+   "068d53a52dd735eb",
+   "0e46f2497893f88a",
+   "100dadcb85c2c5b1",
+   "10345979d7df656e",
+   "15821beea26b1068",
+   "15d7678d8cdf3649",
+   "186e40aaab8013ec",
+   "1b0cfc2f1103a165",
+   "1b8c495d0d72f76c",
+   "1ce14dee85ff4593",
+   "1dd260e234501954",
+   "1de1608feae85a7f",
+   "1eb8fdd69fcc9691",
+   "1f79e32a6c453844",
+   "208f103a0b62e1a7",
+   "237bb62ae63ee189",
+   "2446f34f9e7add1e",
+   "2526583909ba2dc3",
+   "294d230b5209d6d2",
+   "29f654b0b85cffc6",
+   "2f8bbc0a29f43781",
+   "3661578c4caf253d",
+   "38e4bb059f177ee9",
+   "392c208acc59b73b",
+   "3adb7dc3f8edc818",
+   "3d97ea7adc0254b6",
+   "3ef1d70cc031e8d1",
+   "3f8bed6bec9ba5db",
+   "4002b73665e73699",
+   "412173d1f8c9c785",
+   "4444b36286727f1b",
+   "471bf791aba5c921",
+   "4823acd60871ae37",
+   "4e83dd25cfa0ebbf",
+   "5462c8152ea9b1d4",
+   "564fa6bf51c0f485",
+   "5885923253d3d146",
+   "591ee69b3b18e454",
+   "5a66dc1abded5c62",
+   "5ebaeb9f5a6bbdff",
+   "60ade89d2be854b3",
+   "642c34513153c461",
+   "657965f41b9f8327",
+   "6650f50895daf837",
+   "6841acb88b99d44d",
+   "6882a1b145f0d7b9",
+   "68f3010c6553e27a",
+   "710b11b79adbc17a",
+   "720993dcb739c700",
+   "7627ce2fc7d4e6c8",
+   "770cd6f4c31e6487",
+   "787efda58f31da3b",
+   "78ec32fea9fb12cd",
+   "7f08f54572a73b9b",
+   "7f8ae0742f86432b",
+   "8035943d27c74627",
+   "8330fb78511402d5",
+   "840b1dfc9dd4477f",
+   "869c8b2b3a6c35aa",
+   "89296e46dec89f16",
+   "8ccfa05a7657c9cc",
+   "8db2714555822a65",
+   "925543259bea7ad5",
+   "941aca00f504bbd6",
+   "980052b5a1d2c186",
+   "9f3df383b34eb79e",
+   "a176a4db8d604683",
+   "a89627b2237c1215",
+   "a89b8a6b10e04917",
+   "a94b5bfffd2e1051",
+   "ab8407966d1de030",
+   "ade95498b256a332",
+   "b04cf16451e651bb",
+   "b165378643aa24bf",
+   "b4b4baf9120dac82",
+   "b55a222e6bd7fb65",
+   "b6ae0c9935d77e66",
+   "b96c772163103760",
+   "bde9e315f709a72a",
+   "bff8e601903927f3",
+   "c1114e600cf0777d",
+   "c31a90fde8b2ad57",
+   "c55abf1d6d6fd797",
+   "c57cfc6492d06d3d",
+   "c7f95d3b43a63d96",
+   "c9d6641ce8e707de",
+   "d4ee6c96798873eb",
+   "d5a7409e5c728efd",
+   "d708b61976e7dee0",
+   "d9791b8d7f2349ce",
+   "db191ec605a7dec6",
+   "dc0106bf61be668c",
+   "ddc615242907f7e2",
+   "e01ec64c17ac2e3d",
+   "e1e1c2ca41f963c3",
+   "e239191329f814af",
+   "e3d529791b593128",
+   "e3f234c6ca5a37cf",
+   "e6b9545135b259bc",
+   "e841eabef416fdbf",
+   "ea4bdafee2dd70d8",
+   "ead760965166d01d",
+   "ed2603fcd41e91d4",
+   "ed8e0892ccdb381f",
+   "ed9463be89efb78c",
+   "eea19ac561d12caf",
+   "f38c1b0ac00a9be8",
+   "f6ce49549ebd33bc",
+   "f7c4adf75e2cbd6b",
+   "f8617cf61d159c50",
+   "fcef339bd342924c",
+   "fe5a730f95d053dc",
+   "ffbeb67f52dbd1ae"
+  ],
+  "48": [
+   "2b8192523abdb5bd",
+   "73a99f22d058943a",
+   "7c1c916323a8230d",
+   "97353045cfa33635",
+   "9d26e0a4b61d245c",
+   "aa6110851772aadf",
+   "f97d66caff8fdfaf"
+  ]
+ }
+}
