@@ -80,3 +80,20 @@
 .ai-chat-panel.is-assistant-idle .ai-workspace-view-options { display: none; }
 .ai-team-member-records > summary { padding: 8px 0; color: var(--text-2); cursor: pointer; font: 12px var(--font-ui); }
 .ai-team-member-records > summary:focus-visible, .ai-workspace-view-options > summary:focus-visible { outline: var(--focus-outline); }
+
+/* 960px 이하: 왼쪽 도구 패널(336px) 옆에 열린 조수 오버레이 380px 가 맵을 약 190px 만 남겼다(2026-10-22 VQA C20).
+   오버레이 폭을 남는 폭에 맞춰 줄이고(최소 280px) 줌 도구 막대도 같은 폭만큼만 비킨다. */
+@media (max-width: 960px) {
+  :root {
+    --ai-narrow-dock-w: clamp(280px, calc(100vw - 600px), 380px);
+  }
+
+  .ai-right-dock .ai-chat-panel.is-workspace.is-left-sidebar:not(.is-studio):not(.is-collapsed) {
+    width: var(--ai-narrow-dock-w);
+  }
+
+  .editor-layout:has(> .ai-right-dock:not(.is-collapsed)) .canvas-toolbar:not(.ai-studio-monitor-chrome > .canvas-toolbar) {
+    right: calc(var(--ai-narrow-dock-w) + 8px);
+    max-width: calc(100% - var(--ai-narrow-dock-w) - 20px);
+  }
+}

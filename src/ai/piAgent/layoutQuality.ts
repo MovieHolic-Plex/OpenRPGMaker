@@ -178,22 +178,32 @@ export function layoutQualityLimits(stats: Pick<LayoutQualityStats, "openLand">)
   return stats.openLand ? OPEN_LAND_LAYOUT_LIMITS : LAYOUT_QUALITY_LIMITS;
 }
 
-function layoutProblems(stats: LayoutQualityStats): string[] {
+/**
+ * interior = 방 짓기 역할표 칩셋으로 지은 실내 — 좌우 대칭을 묻지 않는다. 의식실·성소·관측 홀은 축 대칭이 설계다:
+ * 2026-10-22 조수 실력 시험에서 독립 검수 8.1~8.2 를 받은 폴른 스타 천문대·지하 방이 대칭 3.0·3.1배였고, 이 권고를 받은 조수는
+ * 단을 두른 기둥 넷 중 하나·석상 한 쌍 중 하나를 지워 「누락처럼 보인다」는 검수 지적을 새로 만들었다.
+ */
+function layoutProblems(stats: LayoutQualityStats, interior = false): string[] {
   const lim = layoutQualityLimits(stats);
   const open = stats.openLand ? `, 트인 땅 기준 — 모래·눈 바닥 ${stats.openGround}%` : "";
   const problems: string[] = [];
   if (stats.empty > lim.empty) problems.push(`빈 바닥 ${stats.empty}% (기준 ≤${lim.empty}%${open})`);
   if (stats.square > lim.square) problems.push(`소품 없는 빈 정사각형 ${stats.square}×${stats.square}칸${stats.squareAt ? ` (왼위 ${stats.squareAt.x},${stats.squareAt.y})` : ""} (기준 ≤${lim.square}${open})`);
-  if (stats.mirror > lim.mirror) problems.push(`좌우 대칭 ${stats.mirror}배 (기준 ≤${lim.mirror}, 우연이면 1)`);
+  if (!interior && stats.mirror > lim.mirror) problems.push(`좌우 대칭 ${stats.mirror}배 (기준 ≤${lim.mirror}, 우연이면 1)`);
   return problems;
 }
 
-/** 이번 실행이 1층을 크게 칠한 맵(새 맵 포함)만 본다. 작은 수정·이미 있던 맵의 소품 추가는 묻지 않는다. */
+/**
+ * 이번 실행이 1층을 크게 칠한 맵(새 맵 포함)만 본다. 작은 수정·이미 있던 맵의 소품 추가는 묻지 않는다.
+ * 빈 칸으로 «비운» 칸은 칠한 것으로 세지 않는다 — 맵 배경(파노라마)이 비칠 하늘·바다 자리를 비우는 일(clearForBackground)이다.
+ * 2026-10-22 조수 시험: 「옥상 뒤에 노을 하늘」 요청에서 위 7줄을 비우자 이 검사가 원래부터 빈 옥상 바닥을 「빈 바닥 50%」로 잡아
+ * 조수가 사용자가 청하지 않은 벤치·가로등 11개를 깔았다.
+ */
 function paintedShare(map: GameMap, before: GameMap | undefined): number {
   const n = map.width * map.height;
   if (!before || before.width !== map.width || before.height !== map.height) return 1;
   let changed = 0;
-  for (let i = 0; i < n; i++) if (map.lowerTiles[i] !== before.lowerTiles[i]) changed++;
+  for (let i = 0; i < n; i++) if (map.lowerTiles[i] !== before.lowerTiles[i] && (map.lowerTiles[i] ?? -1) >= 0) changed++;
   return changed / n;
 }
 
@@ -217,10 +227,12 @@ export function inspectPiLayoutQuality(project: Project, baseline: Project, scop
     if (paintedShare(map, baseline.maps[mapId]) < MIN_PAINTED_SHARE) continue;
     const stats = measureLayoutQuality(project, map);
     if (!stats || stats.floorCells < MIN_FLOOR) continue;
-    const problems = layoutProblems(stats);
+    const interior = !!roomSpecOf(project.tilesets[map.tilesetId]);
+    // 같은 역할표 칩셋으로 까는 거리(modern_city·jp_city)는 실내가 아니다 — 지은 실내(climate indoor)만 대칭을 묻지 않는다.
+    const problems = layoutProblems(stats, interior && map.climate?.mode === "indoor");
     const relief = map.relief;
     const hasRamp = relief?.ramps?.some((v) => v >= 1 && v <= 8) ?? false;
-    if (problems.length) issues.push({ mapId, stats, problems, ...(roomSpecOf(project.tilesets[map.tilesetId]) ? { interior: true } : {}),
+    if (problems.length) issues.push({ mapId, stats, problems, ...(interior ? { interior: true } : {}),
       ...(relief && (hasRelief(relief) || hasRamp) ? { relief: true } : {}) });
   }
   return issues;

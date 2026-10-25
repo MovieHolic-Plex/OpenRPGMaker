@@ -13,7 +13,7 @@ import { bundledJson } from "./bundledJson";
 const data = () => bundledJson("atlasBiomeInteriorTileset");
 import references from "@/assets/sharedHandInteriorReferences.json";
 import type { AutotileGroup, PassFlag, Project, SlideRule, StructureKitDef, TileAiMetadata, TileGroupMetadata, TilesetDef } from "../types";
-import type { TilesetReferenceCategory } from "../tilesetReferences";
+import { REFERENCE_LIMITS, type TilesetReferenceCategory } from "../tilesetReferences";
 import { attachWorkshopTiles, detachWorkshopTiles } from "../workshopTiles";
 
 export const ATLAS_BIOME_INTERIOR_ID = "atlas_biome_interior";
@@ -108,7 +108,13 @@ export function ensureAtlasBiomeInteriorReferences(tileset: TilesetDef): boolean
     const documents = category.documents.filter(d => !existing.documents.some(old => old.id === d.id));
     const images = category.images.filter(i => !existing.images.some(old => old.id === i.id));
     if (!documents.length && !images.length) continue;
-    const next = { ...existing, documents: [...existing.documents, ...structuredClone(documents)], images: [...existing.images, ...structuredClone(images)] };
+    // 번들이 기물 사전 문서를 다시 나눠 id 가 바뀌면(2026-10 실측: objects-elf-farm-guild-hall → objects-elf-farm-gimmick-guild …) 옛 조각과 새 조각이
+    // 합쳐져 문서 한도(64)를 넘고, 그 프로젝트는 저장 검사에서 막힌다. 한도를 넘을 때만 번들에 없는 옛 번들 조각(같은 용도 id 머리)을 뺀다.
+    const ownPrefix = `${category.id}-`;
+    const keptDocs = existing.documents.length + documents.length > REFERENCE_LIMITS.documents
+      ? existing.documents.filter(old => !old.id.startsWith(ownPrefix) || category.documents.some(d => d.id === old.id))
+      : existing.documents;
+    const next = { ...existing, documents: [...keptDocs, ...structuredClone(documents)], images: [...existing.images, ...structuredClone(images)] };
     tileset.referenceDocuments = tileset.referenceDocuments!.map(c => c === existing ? next : c);
     changed = true;
   }

@@ -45,6 +45,8 @@ export interface StateBehavior {
   readonly magicDefenseMultiplier: number;
   readonly forcedAction?: "attackRandom" | "rage";
   readonly elementRates?: Readonly<Record<string, string>>;
+  /** 피해 계열별 받는 피해 %를 바꿔 쓰는 값(physical/magic · 속성 예외 elements). 생략 = 바꾸지 않음. */
+  readonly damageTypeRates?: Readonly<{ physical?: number; magic?: number; elements?: Readonly<Record<string, number>> }>;
   // 반격·도발·감싸기·회피·리플렉·리레이즈·선고(2026-10-01). 모두 runtimeEffects 에서만 온다.
   readonly counterChance: number;
   readonly taunt: boolean;
@@ -53,6 +55,8 @@ export interface StateBehavior {
   readonly reflect: boolean;
   readonly reraisePercent: number;
   readonly doomTurns: number;
+  /** 0 이면 제한 없음. 걸린 뒤 자기 턴이 이만큼 지나면 반드시 풀린다. */
+  readonly maxTurns: number;
   readonly invertHealing: boolean;
   readonly grantSkillIds: readonly string[];
 }
@@ -105,6 +109,7 @@ export function stateBehavior(record: StateRecord): StateBehavior {
     magicDefenseMultiplier: runtime?.magicDefenseMultiplier ?? 1,
     ...(runtime?.forcedAction === "attackRandom" || runtime?.forcedAction === "rage" ? { forcedAction: runtime.forcedAction } : {}),
     ...(runtime?.elementRates ? { elementRates: runtime.elementRates } : {}),
+    ...(runtime?.damageTypeRates ? { damageTypeRates: runtime.damageTypeRates } : {}),
     counterChance: clampPercent(runtime?.counterChance),
     taunt: runtime?.taunt === true,
     cover: runtime?.cover === true,
@@ -112,6 +117,7 @@ export function stateBehavior(record: StateRecord): StateBehavior {
     reflect: runtime?.reflect === true,
     reraisePercent: clampPercent(runtime?.reraisePercent),
     doomTurns: Math.max(0, Math.min(9, Math.round(Number(runtime?.doomTurns ?? 0) || 0))),
+    maxTurns: Math.max(0, Math.min(9, Math.round(Number(runtime?.maxTurns ?? 0) || 0))),
     invertHealing: runtime?.invertHealing === true,
     grantSkillIds: Array.isArray(runtime?.grantSkillIds) ? runtime.grantSkillIds.filter((id): id is string => typeof id === "string" && id.length > 0).slice(0, 12) : [],
   };
@@ -267,7 +273,8 @@ export function runStateUpkeep(project: Project, battler: MutableBattler, rng: R
       removedStateIds.push(stateId);
       return { hpDamage, hpHealing, removedStateIds, doomedStateId: stateId, doomedHp };
     }
-    if (turns >= behavior.recoverNaturallyFromTurn && rollPercent(behavior.recoverNaturallyChance, rng)) {
+    if ((behavior.maxTurns > 0 && turns >= behavior.maxTurns)
+      || (turns >= behavior.recoverNaturallyFromTurn && rollPercent(behavior.recoverNaturallyChance, rng))) {
       removeState(battler, stateId);
       removedStateIds.push(stateId);
     }
@@ -416,6 +423,28 @@ export function reraiseForStates(project: Project, battler: { readonly stateIds:
 }
 
 /** 활성 상태가 덮어쓰는 속성 등급. 나중에 걸린 상태가 이긴다. 없으면 undefined. */
+/**
+ * 걸린 상태가 정한 피해 계열 받는 피해 %(가장 큰 값). 어느 상태도 그 계열을 정하지 않으면 undefined —
+ * 그때는 배틀러의 기본값(적 damageTypeRates)을 쓴다. 바꿔 쓰는 값이라 「마법 무효」 적도 상태 하나로 열 수 있다.
+ */
+export function stateDamageTypeRateOverride(project: Project, battler: { readonly stateIds: readonly string[] }, kind: "physical" | "magic", elementId?: string): number | undefined {
+  let rate: number | undefined;
+  for (const stateId of battler.stateIds) {
+    const value = resolveDamageTypeRate(behaviorFor(project, stateId)?.damageTypeRates, kind, elementId);
+    if (value === undefined) continue;
+    rate = rate === undefined ? value : Math.max(rate, value);
+  }
+  return rate;
+}
+
+/** 한 출처(적 기록 또는 상태 하나)의 받는 피해 % — 맞은 속성의 예외(elements)가 있으면 그것, 없으면 계열 값. */
+export function resolveDamageTypeRate(rates: { readonly physical?: number; readonly magic?: number; readonly elements?: Readonly<Record<string, number>> } | undefined, kind: "physical" | "magic", elementId?: string): number | undefined {
+  if (!rates) return undefined;
+  const fromElement = elementId ? rates.elements?.[elementId] : undefined;
+  const value = typeof fromElement === "number" && Number.isFinite(fromElement) ? fromElement : rates[kind];
+  return typeof value === "number" && Number.isFinite(value) ? value : undefined;
+}
+
 export function stateElementRateOverride(project: Project, battler: { readonly stateIds: readonly string[] }, elementId: string): string | undefined {
   let grade: string | undefined;
   for (const stateId of battler.stateIds) {

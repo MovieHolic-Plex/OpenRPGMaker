@@ -368,7 +368,6 @@ describe("life recovery ledger UI", () => {
         layout,
         getActiveScene: () => fakeScene,
         getPlayStage: () => layout,
-        getPlayStartedAt: () => 0,
         closeMenu: () => undefined,
         closeMenuWithJuice: () => undefined,
         renderTitle: () => undefined,

@@ -1,0 +1,28 @@
+{
+ "schema": "oprn-object-gate-queue/1",
+ "id": "wz-stairs-r3",
+ "title": "마법 학교 계단 r3 (내려가는 계단통 2 · 부엉이 탑 올라가는 계단)",
+ "explainImage": "/tmp/wzst/g10/wz-stairs-r3.png",
+ "explainText": "wz-stairs-r2 다음 판: 내려가는 계단통 두 개(성채·부엉이 탑)의 난간을 위에서 본 낮은 손잡이 윗면으로 다시 그리고, 부엉이 탑 올라가는 계단의 챌판·돌결을 고쳤다. 남쪽에서 들어서 북쪽을 보며 내려가거나 오른다.",
+ "createdAt": "2026-10-22T11:44:58.176Z",
+ "items": [
+  {
+   "sha": "75f18ff5ebbb40d6150bcb2e1c19f4d7ae0be42f1005be4028fae080e00f6eeb",
+   "kind": "flat",
+   "label": "wizarding_world stairs wz-castle-stair-down (DOWN)",
+   "source": "/tmp/wzst/g10/wz-castle-stair-down.png"
+  },
+  {
+   "sha": "2bd13cb858e536ef3c2579a42c87fd5a268bab297523c2f4b8bdc53f0e8c098f",
+   "kind": "structure",
+   "label": "wizarding_world stairs wz-owl-stair-up (UP)",
+   "source": "/tmp/wzst/g10/wz-owl-stair-up.png"
+  },
+  {
+   "sha": "91d758e274f2d6e0fff8b4b0dd0010188e67ab7954de8a5896c0cab6c349278b",
+   "kind": "flat",
+   "label": "wizarding_world stairs wz-owl-stair-down (DOWN)",
+   "source": "/tmp/wzst/g10/wz-owl-stair-down.png"
+  }
+ ]
+}

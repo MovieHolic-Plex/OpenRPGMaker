@@ -1,7 +1,7 @@
 // src/harnesses/_core/workshop/objectGenFlow.ts
 /**
  * object-gen 흐름(MovieHolic-Plex/object-gen `objectgen/flow.py`)을 공방 대화 호출로 옮긴 것(2026-10-21).
- * 지시문·판정 문장·견본(anchors)은 고치지 않고 `objectGenKit.json`(원본 상수 사본)에서 읽는다 — 원본이 바뀌면 사본만 다시 뽑는다.
+ * 지시문·판정 문장·견본(anchors)은 고치지 않고 gen-kits 생성물(`genKits/object-gen.json`, lock 고정 커밋)에서 읽는다 — 원본이 바뀌면 lock 을 올리고 `npm run gen-kits:sync`.
  *
  * 원본 단계와 여기:
  *   ref    참고 그림 2장(시점 검사)          → engine.makeReference(referenceCount 2, STYLE_NOTE 덧붙임)
@@ -15,24 +15,27 @@
  * 판정은 후보 한 장 + 숨긴 반려 표본으로 한다(원본은 그 판 후보 전부를 한 판에).
  */
 import type { ChatMessage, ContentPart } from "@/ai/llmClient";
-import kitJson from "./objectGenKit.json";
+import { kitConstant, kitFile, objectGenKit } from "./genKits";
 import { gridToAnswer, onBackground, renderGrid, scaleImage } from "./grid";
+import { styleFacts } from "@/harnesses/object-gate/node/facts";
 import type { DrawContext, Grid, Palette, Rgba, RgbaImage, ReviewContext, Verdict, WorkshopEnv, WorkshopItem } from "./types";
 
-type KitSection = "prompts" | "reference" | "picker" | "vqa" | "drawer" | "exemplars";
-const kit = kitJson as unknown as {
-  commit: string;
-  constants: Record<KitSection, Record<string, unknown>>;
-  anchors: Record<string, { examples?: { file: string; label: string }[]; good: { file: string; label: string; why?: string }[]; bad: { file: string; label: string; why?: string }[]; rejects?: { file: string }[] }>;
-};
+type KitSection = "prompts" | "reference" | "picker" | "vqa" | "drawer" | "exemplars" | "footprint";
+type AnchorSet = { examples?: { file: string; label: string }[]; good: { file: string; label: string; why?: string }[]; bad: { file: string; label: string; why?: string }[]; rejects?: { file: string }[] };
 
-/** 원본 상수 하나. 없으면 던진다(원본이 이름을 바꿨는데 사본을 그대로 쓰는 일을 막는다). */
+/**
+ * 원본 상수 하나 — gen-kits 생성물(genKits/object-gen.json, tiledata/gen-kits.lock.json 의 고정 커밋에서 npm run gen-kits:sync 가 뽑음)에서 읽는다.
+ * 손으로 옮긴 사본(objectGenKit.json)은 2026-10-22 에 지웠다: lock 을 올리면 다음 빌드부터 공방 지시문·판정 기준이 그 커밋 것이 된다.
+ * 없으면 던진다(원본이 이름을 바꿨는데 옛 글로 조용히 도는 일을 막는다).
+ */
 export function kitValue<T = string>(section: KitSection, name: string): T {
-  const value = kit.constants[section]?.[name];
-  if (value === undefined) throw new Error(`object-gen 상수 ${section}.${name} 가 사본(objectGenKit.json)에 없다`);
-  return value as T;
+  return kitConstant<T>(objectGenKit, section, name);
 }
-export const OBJECTGEN_COMMIT = kit.commit;
+/** 지금 공방이 따르는 object-gen 커밋(lock) */
+export const OBJECTGEN_COMMIT = objectGenKit.commit;
+const anchorSet = (set: string): AnchorSet | undefined => {
+  try { return JSON.parse(kitFile(objectGenKit, `objectgen/anchors/${set}/set.json`)) as AnchorSet; } catch { return undefined; }
+};
 /** 원본 flow.DEFAULT_STYLE */
 export const OG_STYLE = "oprn-interior-v5-large";
 export const OG_JUDGE_RUNS = 3;
@@ -58,8 +61,8 @@ const anchorCache = new Map<string, Promise<OgAnchors>>();
 export function loadAnchors(env: WorkshopEnv, set = OG_STYLE): Promise<OgAnchors> {
   let pending = anchorCache.get(set);
   if (!pending) {
-    const meta = kit.anchors[set];
-    if (!meta) throw new Error(`object-gen 견본 묶음 ${set} 이 사본에 없다`);
+    const meta = anchorSet(set);
+    if (!meta) throw new Error(`object-gen@${OBJECTGEN_COMMIT.slice(0, 9)} 에 견본 묶음 ${set} 이 없다`);
     const load = (file: string) => env.loadImage(env.assetUrl(`assets/gen-kits/object-gen/anchors/${set}/${file}`));
     const many = (list: readonly { file: string; label?: string; why?: string }[]) =>
       Promise.all(list.map(async (entry) => ({ label: entry.label ?? entry.file, why: entry.why ?? "", image: await load(entry.file) })));
@@ -103,6 +106,55 @@ export function card(image: RgbaImage, floor: Rgba, k = SCALE): RgbaImage {
 export function exemplarSheet(anchors: OgAnchors, floor: Rgba, k = 6): RgbaImage {
   return hstack(anchors.examples.map((anchor) => scaleImage(onBackground(anchor.image, floor), k)), 12, [200, 200, 200, 255]);
 }
+
+// --- 참고 그림 견본(원본 reference.aspect_sheet) ------------------------------------------------------------------------
+const ASPECT_PX = kitValue<Readonly<Record<"wide" | "tall" | "square", readonly [number, number]>>>("reference", "ASPECT_PX");
+const REF_BG = kitValue<readonly [number, number, number]>("reference", "BACKGROUND");
+export type RefAspect = "wide" | "tall" | "square";
+/** 원본 aspect_of: 폭:키 ≥1.3 wide, ≤0.77 tall, 나머지 square. */
+export function aspectOf(w: number, h: number): RefAspect {
+  const r = w / Math.max(h, 1e-9);
+  return r >= 1.3 ? "wide" : r <= 0.77 ? "tall" : "square";
+}
+function sheetLayout(images: readonly RgbaImage[], width: number, height: number, k: number, pad: number): [number, number][] | null {
+  let x = pad, y = pad, row = 0;
+  const spots: [number, number][] = [];
+  for (const image of images) {
+    const w = image.width * k, h = image.height * k;
+    if (x + w > width - pad && x > pad) { x = pad; y += row + pad; row = 0; }
+    if (x + w > width - pad || y + h > height - pad) return null;
+    spots.push([x, y]);
+    x += w + pad;
+    row = Math.max(row, h);
+  }
+  return spots;
+}
+/**
+ * 원본 aspect_sheet: 견본 그림(1배)을 물체 비율(ASPECT_PX) 캔버스에 들어가는 만큼 크게(kMax→1), 각각 바닥색 위에.
+ * 그림 경로는 붙인 그림의 비율로 답한다 — 옛 한 줄 띠(약 4.6:1)를 붙이면 짐마차가 평면도, 노점이 정면으로 나왔다(2026-10-22 A/B).
+ * 안 들어가는 그림은 뒤에서부터 뺀다.
+ */
+export function aspectSheet(images: readonly RgbaImage[], aspect: RefAspect, floor: Rgba, kMax = 8): RgbaImage | null {
+  const [width, height] = ASPECT_PX[aspect];
+  const pad = 24;
+  for (let use = images.length; use > 0; use--) {
+    const list = images.slice(0, use);
+    for (let k = kMax; k >= 1; k--) {
+      const spots = sheetLayout(list, width, height, k, pad);
+      if (!spots) continue;
+      const data = new Uint8ClampedArray(width * height * 4);
+      for (let i = 0; i < data.length; i += 4) data.set([REF_BG[0], REF_BG[1], REF_BG[2], 255], i);
+      list.forEach((image, n) => {
+        const big = scaleImage(onBackground(image, floor), k);
+        const [ox, oy] = spots[n]!;
+        for (let y = 0; y < big.height; y++) data.set(big.data.subarray(y * big.width * 4, (y + 1) * big.width * 4), ((oy + y) * width + ox) * 4);
+      });
+      return { width, height, data };
+    }
+  }
+  return null;
+}
+
 const fit = (image: RgbaImage, width: number, height: number): RgbaImage => {
   // 원본 _fit: 더 크면 최근접으로 줄이고, 바닥에 맞춰 가운데.
   let source = image;
@@ -239,10 +291,23 @@ export function ogCheck(item: WorkshopItem, grid: Grid, palette: Palette): OgChe
   const edge = painted.filter(([x, y]) => [[1, 0], [-1, 0], [0, 1], [0, -1]].some(([dx, dy]) => at(x + dx!, y + dy!) === null));
   const ink = edge.filter(([x, y]) => { const e = palette.byKey.get(at(x, y)!); return e ? (e.rgba[0] + e.rgba[1] + e.rgba[2]) / 3 <= 30 : false; });
   if (edge.length && ink.length > 0.6 * edge.length) warn.push({ code: "INK", msg: `${ink.length}/${edge.length} edge pixels are near-black - outline with the material's darkest shade` });
-  const topRows = topPlaneRows(renderGrid(grid, palette));
+  // 화풍 밀도(2026-10-23): 공방 「한 번에 만들기」의 마지막 관문(object-gate 화풍 판정자)은 칸당 보이는 색조를 칩셋 소품과 나란히 잰다.
+  // 실측 — 낡은 우물 두 장이 모양은 맞았지만 「보이는 색조 14 vs 기준 20, 지붕이 납작」으로 4/4 탈락해 다시 그리기까지 16분을 썼다.
+  // 관문 기준은 그대로 두고, 그리는 쪽이 같은 숫자를 미리 보고 고치게 경고만 단다(통과 판정에 쓰지 않는다).
+  const rendered = renderGrid(grid, palette);
+  const facts = styleFacts({ width: rendered.width, height: rendered.height, data: rendered.data as unknown as Uint8Array });
+  if (!LOOSE_STYLE_KINDS.has(item.gateKind ?? "") && facts.visibleTonesMedian > 0 && facts.visibleTonesMedian < STYLE_TONES_FLOOR) {
+    warn.push({ code: "THIN", msg: `${facts.visibleTonesMedian} visible tones per full 16x16 tile (median) - comparable props of this chipset carry about 17-20 (a roofed well 20, a market stall 17); the style gate fails thin, flat shading. Give each material 5-6 shades (tile/plank texture with highlights on roofs, individually shaded stones)` });
+  }
+  if (facts.nearFlatFill > 0.2) warn.push({ code: "FLAT", msg: `${Math.round(facts.nearFlatFill * 100)}% of the object is 5x5 blocks with no visible change - break flat fills with texture and shading` });
+  const topRows = topPlaneRows(rendered);
   if (TOP_KINDS.has(item.gateKind ?? "") && STANDING.has(anchor) && topRows < 3) warn.push({ code: "TOP", msg: `measured top plane is ${topRows} row(s) (column scan) - a 3/4 top needs >= 3 lit rows above the front` });
   return { ok: hard.length === 0, hard, warn, topRows };
 }
+/** 칩셋 소품 수준의 칸당 보이는 색조 하한 — 경고용(관문 기준이 아니다). */
+const STYLE_TONES_FLOOR = 17;
+/** 풀·덤불·바닥 같은 종류는 칩셋 기준도 색조가 적다(버들항 산울타리 9) — 경고하지 않는다. */
+const LOOSE_STYLE_KINDS = new Set(["organic", "flat", "terrain", "debris"]);
 export const describeCheck = (check: OgCheck): string => [
   `${check.ok ? "PASS" : "FAIL"} (mechanical checks only - not an approval) · measured top plane ${check.topRows} row(s)`,
   ...check.hard.map((i) => `  FAIL ${i.code}: ${i.msg}`), ...check.warn.map((i) => `  warn ${i.code}: ${i.msg}`),
@@ -282,12 +347,23 @@ export function ogDrawBrief(ctx: DrawContext, opts: { readonly hasReference: boo
     `- Brief: ${brief}`,
     `- Placement: ${ANCHOR_TEXT[anchor] ?? anchor}${item.use.length ? `; use: ${item.use.join(", ")}` : ""}`,
     `- Canvas: ${item.width}x${item.height} px = ${cellsW}x${cellsH} cells of 16px. Foot rows (blocking): ${item.footRows ?? 1}.${item.padTop ? ` Keep the top ${item.padTop} rows empty.` : ""}`,
+    // 원본 prompts.draw_brief 의 Footprint 줄(object-gen 8d894eb) — 큰 물건의 발밑/위 줄을 그리는 쪽이 알게.
+    ...((item.footRows ?? 1) > 0 && (item.footRows ?? 1) < cellsH && anchor !== "flat" && anchor !== "hang"
+      ? [`- Footprint: the bottom ${item.footRows ?? 1} cell row(s) are where it stands (they block walking); the ${cellsH - (item.footRows ?? 1)} row(s) above hold only its tall parts, drawn over a person walking behind it. A person is 1 cell wide and 2 cells tall.`]
+      : []),
     `- 3/4 gate kind: ${item.gateKind ?? "other"}`,
     `- Your direction ${letter}: ${DIRECTIONS[letter] ?? ctx.direction.text}`,
     "",
   ];
   const note = [ctx.roundNote, ctx.redrawNote].filter(Boolean).join("\n");
   if (note) lines.push("## Note from the person (follow first)", note, "");
+  if (ctx.gated) {
+    lines.push("## Final check (automatic, strict - nobody overrides it)",
+      "After the review the drawing goes to this chipset's 3/4 + style gate. It puts your drawing next to the chipset's own shipped props",
+      "at the same scale and fails anything thinner or flatter than them, even when the form is right. Built props there carry about 17-20",
+      "visible tones per 16x16 tile and 5-6 shades per material: roofs show tile or plank texture with highlights, stones are shaded",
+      "one by one, outlines use each material's darkest shade (not flat black), and there are no large flat fills.", "");
+  }
   const rules = ogRules(item);
   if (rules) lines.push("## Drawing rules for this set (follow them; the picker checks them as well as readability)", rules, "");
   const v = ctx.lastVerdict;
@@ -301,7 +377,11 @@ export function ogDrawBrief(ctx: DrawContext, opts: { readonly hasReference: boo
     ...(opts.hasReference ? [
       "reference/ref-*.png (large, generated) = what the object looks like from this view. Use it for FORM only: which",
       "parts exist, where, their proportions, what makes it recognisable. Never downscale, trace or sample it - place every",
-      "pixel yourself with the palette keys (a REFCOPY warning means the drawing looks like a shrunken reference).", ""] : [""]),
+      "pixel yourself with the palette keys (a REFCOPY warning means the drawing looks like a shrunken reference).",
+      // 모양만 보라는 말에 색까지 버려 금빛 건초를 연한 베이지로 칠했다(2026-10-22 VQA major) — 색 몫만은 따르게 한다.
+      ...(ctx.referenceColors?.length ? [`Its main colours, mapped to the nearest palette keys (share of the object): ${ctx.referenceColors.map((c) => `${c.key} ${c.hex} ${c.share}%`).join(", ")}.`,
+        "Keep these hues for the matching parts (shade them with darker/lighter keys of the same ramp) - do not wash a saturated part out to beige or grey."] : []),
+      ""] : [""]),
     anchor === "flat" || anchor === "hang" ? `## View\n- This object ${ANCHOR_TEXT[anchor]}.\n` : `${kitValue("prompts", "VIEW")}\n`,
     kitValue("prompts", "RECIPE"),
     ...(cellsW * cellsH >= LARGE_CELLS ? ["", kitValue("prompts", "LARGE")] : []),
@@ -344,7 +424,8 @@ export function ogLookMessage(ctx: DrawContext, grid: Grid, env: WorkshopEnv, st
     content: [
       txt(`Look ${look}/${max}. preview: your drawing at 8x, then 1x (what the player sees), then 2x, on the floor colour.`),
       img(env.encodePng(scaleImage(art, 8))), img(env.encodePng(art)), img(env.encodePng(scaleImage(art, 2))),
-      txt(`j.dry: ${describeCheck(check)}\n\nFix every FAIL code; look honestly - would it sit next to the exemplars in the same game, and read at 1x? `
+      txt(`j.dry: ${describeCheck(check)}\n\n${ctx.gated && check.warn.some((w) => w.code === "THIN" || w.code === "FLAT")
+        ? "THIN/FLAT matter here: the final style gate measures exactly these numbers against this chipset's props and has failed drawings with fewer than about 17 visible tones per tile. Do not keep it as is - redraw the shading (more steps per material, textured roof and stones) and answer the whole JSON.\n\n" : ""}Fix every FAIL code; look honestly - would it sit next to the exemplars in the same game, and read at 1x? `
         + "Compare with the reference pictures (FORM only) and the exemplars above. If anything should change, answer the whole improved JSON "
         + "(same format). If it is done, answer exactly {\"keep\": true, \"note\": \"<what you drew, and anything that still does not read>\"}."),
     ],
@@ -506,10 +587,20 @@ export function aggregateJudge(results: readonly JudgeRunResult[], need = OG_JUD
 /** 원본 vqa.review: 유효 3판이 모일 때까지(무효는 2번까지 더) 새 판정 호출. */
 export async function ogReview(ctx: ReviewContext, env: WorkshopEnv, style: OgStyle, anchors: OgAnchors | null, ask: (messages: ChatMessage[]) => Promise<string>, rand: Rand = Math.random): Promise<Verdict> {
   const results: JudgeRunResult[] = [];
-  for (let i = 0; i < OG_JUDGE_RUNS + OG_JUDGE_RETRIES; i++) {
+  const one = async (): Promise<JudgeRunResult> => {
     const run = ogJudgeRun(ctx, env, style, anchors, rand);
-    results.push(scoreJudge(await ask(run.messages), run.key));
+    return scoreJudge(await ask(run.messages), run.key);
+  };
+  // 첫 두 판은 함께 묻는다(2026-10-23 「한 번에 만들기」 속도). 둘 다 유효하고 판정이 같으면 셋째 판은 3판 다수결을 바꿀 수 없다 —
+  // 2:0 이면 셋째가 무엇이든 같은 결론이라 호출 하나를 아낀다. 갈리거나 무효가 있으면 원본처럼 유효 3판까지 더 묻는다.
+  results.push(...await Promise.all([one(), one()]));
+  const firstValid = results.filter((r) => !r.void);
+  if (firstValid.length === 2 && Boolean(firstValid[0]!.view34 && firstValid[0]!.quality) === Boolean(firstValid[1]!.view34 && firstValid[1]!.quality)) {
+    return aggregateJudge(results, 2);
+  }
+  for (let i = results.length; i < OG_JUDGE_RUNS + OG_JUDGE_RETRIES; i++) {
     if (results.filter((r) => !r.void).length >= OG_JUDGE_RUNS) break;
+    results.push(await one());
   }
   return aggregateJudge(results);
 }

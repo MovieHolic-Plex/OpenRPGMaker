@@ -1,3 +1,4 @@
+import { withInlineAsset } from "@/assets/inlineAssetStore";
 import { BATTLE_SCENERY_CATALOG, BATTLE_SCENERY_LAYERS, resolveSceneryBiome, type BattleSceneryBiome } from "@/assets/battleSceneryCatalog";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { getBattleSkin, resolveSkinId } from "@/battle/skins/registry";
@@ -21,10 +22,11 @@ function loadSceneryLayers(biome: BattleSceneryBiome): Promise<boolean> {
   const entry = BATTLE_SCENERY_CATALOG.find((item) => item.biome === biome)!;
   const load = Promise.all(BATTLE_SCENERY_LAYERS.map((layer) => new Promise<boolean>((resolve) => {
     const image = new Image();
+    image.fetchPriority = "high";
     const timer = window.setTimeout(() => resolve(false), LAYER_LOAD_TIMEOUT_MS);
     image.onload = () => { void image.decode().catch(() => undefined).then(() => { window.clearTimeout(timer); resolve(true); }); };
     image.onerror = () => { window.clearTimeout(timer); resolve(false); };
-    image.src = `/${entry.layers[layer]}`;
+    image.src = withInlineAsset(`/${entry.layers[layer]}`);
   }))).then((results) => {
     const ok = results.every(Boolean);
     if (ok) readyBiomes.add(biome);
@@ -41,12 +43,12 @@ function usesLayeredScenery(project: Project): boolean {
 }
 
 /** 전투 진입 커버 동안 이 전투의 겹 배경 네 장을 미리 읽어 둔다. 첫 화면부터 겹 배경이 깔리게 한다. */
-export function preloadBattleScenery(project: Project, resourceId?: string): void {
-  if (!usesLayeredScenery(project)) return;
+export function preloadBattleScenery(project: Project, resourceId?: string): Promise<unknown> {
+  if (!usesLayeredScenery(project)) return Promise.resolve();
   // 전투 DOM 과 같은 id 로 지형을 고른다(battleFieldDom effectiveBackdropId: 트룹/시스템 배경 → 스킨 기본 배경).
   const effectiveId = resourceId ?? getBattleSkin(resolveSkinId(project.system.battleUiStyle)).defaultBackdropResourceId;
   const biome = resolveSceneryBiome(project, { backdropResourceId: effectiveId });
-  if (biome) void loadSceneryLayers(biome);
+  return biome ? loadSceneryLayers(biome).catch(() => undefined) : Promise.resolve();
 }
 
 export function clearBattleScenery(backdrop: HTMLElement): void {
@@ -133,7 +135,7 @@ export function syncBattleScenery(backdrop: HTMLElement, project: Project, resou
       for (const name of BATTLE_SCENERY_LAYERS) {
         const node = document.createElement("div");
         node.className = `battle-scenery-layer battle-scenery-${name}`;
-        node.style.backgroundImage = `url("/${entry.layers[name]}")`;
+        node.style.backgroundImage = `url("${withInlineAsset(`/${entry.layers[name]}`)}")`;
         camera.insertBefore(node, canvas);
       }
       camera.dataset.layers = "ready";

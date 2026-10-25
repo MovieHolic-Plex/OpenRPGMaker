@@ -106,6 +106,8 @@ export function linkEntranceInDraft(draft: Project, args: DungeonLinkArgs): { li
     if (info.source === "marker") { toGate = info.gate; toLanding = info.landing; }
     else notes.push(`맵 ${toMap.id} 에 던전 입구 표식이 없어 문 칸을 고르지 못했다 — 연결 도구가 맵 가장자리 중앙 문으로 보정한다. 정확히 하려면 toGate{x,y}.`);
   }
+  // author_dungeon 의 자리표시 출구(바깥 맵이 없을 때 입구 계단에 둔 것)는 진짜 연결로 바꾼다.
+  toMap.events = toMap.events.filter((e) => e.id !== `ev_${toMap.id}_exit_placeholder`);
   const otherExit = toMap.events.find((e) => (e.pages ?? []).some((page) => page.commands.some((c) => c.kind === "transfer"
     && (c as { mapId?: string }).mapId !== fromMap.id)) && toGate && Math.abs(e.x - toGate.x) <= 1 && Math.abs(e.y - toGate.y) <= 1);
   if (otherExit) notes.push(`던전 ${toMap.id} 의 문 칸에는 이미 다른 야외로 나가는 문(${otherExit.id})이 있다 — 한 던전은 입구 하나가 원칙이다. 두 번째 문은 가까운 다른 빈 칸에 놓였으니 위치를 확인하라(여러 입구가 필요하면 입구마다 던전을 따로 짓는다).`);

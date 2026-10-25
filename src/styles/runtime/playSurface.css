@@ -75,7 +75,7 @@
 .player-layout .play-stage > .dialogue-overlay.position-top {
   bottom: auto;
   height: min(var(--runtime-dialogue-panel-height, 27%), var(--play-visible-height));
-  top: var(--play-crop-top);
+  top: calc(var(--play-crop-top) + 6px);
 }
 .player-layout .play-stage > .dialogue-overlay.position-center {
   bottom: auto;
@@ -107,6 +107,16 @@
   height: auto;
   min-height: min(var(--runtime-choice-panel-height, 26%), var(--play-visible-height));
   max-height: calc(var(--play-visible-height) - 8px);
+}
+/* 고정 틀 선택지(dialogue.css 끝): 대사 상자와 같은 높이를 지키고, 선택지 칸만 그 위에 뜬다. */
+.player-layout .play-stage > .dialogue-overlay.choices-active.choices-framed.position-bottom,
+.player-layout .play-stage > .dialogue-overlay.choices-active.choices-framed.position-top {
+  height: min(var(--runtime-dialogue-panel-height, 27%), var(--play-visible-height));
+  max-height: none;
+  min-height: 63px;
+}
+.player-layout .play-stage > .dialogue-overlay[data-dialogue-stage].choices-active.choices-framed.position-bottom {
+  min-height: 0;
 }
 .player-layout .play-stage > .runtime-overlay:not(.game-over-panel):not(.runtime-commerce-overlay):not([data-testid="runtime-error"]) {
   inset: calc(var(--play-crop-top) + 12px) calc(var(--play-crop-right) + 12px)
@@ -290,6 +300,8 @@
 }
 /* 애니메틱 캔버스는 position:absolute 라 static 자막을 덮는다 - 연출 없는 애니메틱 컷도 자막이 캔버스 위에 와야 읽힌다. */
 .cinematic-sequence[data-scene-kind="animatic"] .cinematic-frame:not([data-presented="true"]) .cinematic-narration { position: relative; z-index: 1; }
+/* 자막 트랙이 있는 애니메틱 샷: 글은 캔버스 자막이 그린다 — 상자는 화면 읽기용으로만 남긴다(G49). */
+.cinematic-narration.cinematic-narration--captioned { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; padding: 0; border: 0; background: none; }
 .cinematic-narration:empty { display: none; }
 .cinematic-status {
   position: absolute; bottom: 8px; max-width: 90%;
@@ -371,28 +383,29 @@
 }
 .player-layout.system-shell .rm-title-screen[data-monster-style="emerald"] .rm-title-screen-title[data-logo-style] {
   left: 6%; top: 12%; width: 57%; max-width: 57%;
-  margin: 0; font: 36px/40px Galmuri9, monospace;
+  margin: 0; font: 33px/40px "Galmuri11 Bold", Galmuri9, monospace;
   letter-spacing: 0; color: #f5efc5; text-shadow: 2px 2px #153b48;
   -webkit-text-stroke: 0; overflow-wrap: anywhere;
 }
 .player-layout.system-shell .rm-title-screen[data-monster-style="emerald"] .rm-title-logo-subtitle {
   left: 6%; top: 34%; width: 58%; color: #e8efce;
-  font: 9px/12px Galmuri9, monospace; text-shadow: 1px 1px #153b48;
+  font: 700 8px/12px Galmuri9, monospace; text-shadow: 1px 1px #153b48;
   letter-spacing: 0; transform: none;
   /* 예전 18px 은 맞춤 계산(fitTitleSubtitle, 8px 기준)이 한 줄로 판정해 nowrap 을 남겨 오른쪽에서 잘렸다(2026-10-20).
      Galmuri9 원래 크기 9px 로 두고 폭 58% 안에서 접는다 — 두 줄 제목 아래 두 줄이어도 메뉴(48%) 위에서 끝난다. */
   white-space: normal; word-break: keep-all; overflow-wrap: anywhere;
 }
 .player-layout.system-shell .rm-title-screen[data-monster-style="emerald"] .rm-title-menu[data-menu-style="plain"] {
-  left: 6% !important; top: 48% !important; width: 42%;
-  min-width: 0; max-width: 42%; padding: 4px 6px; gap: 0;
+  /* 2026-10-21: 키아트를 가리던 큰 상자(42%·18px 글자)를 줄여 하단 중앙에 둔다. */
+  left: 50% !important; top: auto !important; bottom: 12px !important; width: 128px;
+  transform: translateX(-50%) !important;
+  min-width: 0; max-width: 128px; padding: 3px 4px; gap: 0;
   background: #f7f5df; border: 2px solid #384946; border-radius: 0;
   box-shadow: inset 0 0 0 2px #bbcabc, 2px 2px #153b48;
-  transform: none;
 }
 .player-layout.system-shell .rm-title-screen[data-monster-style="emerald"] .rm-title-menu[data-menu-style="plain"] .rm-title-menu-button {
-  color: #334940; font: 18px/24px Galmuri9, monospace;
-  min-height: 0; padding: 2px 4px 2px 16px; margin: 0;
+  color: #334940; font: 16px/20px Galmuri9, monospace;
+  min-height: 0; padding: 1px 4px 1px 16px; margin: 0;
   background: transparent; border: 0; border-radius: 0;
   text-align: left; letter-spacing: 0; text-shadow: none;
 }
@@ -433,17 +446,20 @@
 .cinematic-shot .cinematic-layer[data-depth='foreground'] { z-index: 3; }
 
 /* 시네마틱 오프닝: 건너뛰기 안내(3초 뒤 서서히) · 레터박스 막대 안 한 줄 자막. */
-.cinematic-skip-hint { position: absolute; top: 10px; right: 14px; z-index: 5; font: 12px/1.2 Galmuri9, system-ui, sans-serif; color: #fff9; text-shadow: 0 1px 2px #000; pointer-events: none; opacity: 0; animation: cinematic-skip-hint-in .6s ease 3s forwards; }
-@keyframes cinematic-skip-hint-in { to { opacity: 1; } }
+/* 밝은 하늘·모래 위에서 흰 글자만으로는 보이지 않았다(2026-10-20 검수) — 어두운 바탕 띠를 깐다. */
+.cinematic-skip-hint { position: absolute; top: 8px; right: 10px; z-index: 5; font: 9px/12px Galmuri9, system-ui, sans-serif; color: #fff; background: #0b1420c0; padding: 2px 6px; text-shadow: none; border: 0; border-radius: 0; margin: 0; cursor: pointer; touch-action: manipulation; pointer-events: auto; opacity: .85; }
+/* Visible from the first frame: it is re-created every shot, so a delayed fade-in hid the tap target for 3 s of each shot. */
+.cinematic-skip-hint:hover, .cinematic-skip-hint:active { opacity: 1; }
 .cinematic-frame[data-presented="true"] .cinematic-narration[data-layout="bar"] { position: absolute; left: 0; right: 0; bottom: 0; height: var(--cinematic-letterbox); width: auto; max-width: none; max-height: none; padding: 0 6%; display: flex; align-items: center; justify-content: center; text-align: center; background: none; overflow: hidden; }
 
 /* 폰 세로(D16): 무대는 가로 폭에 맞춰 0.8배로 줄 수밖에 없다(480 논리 폭 > 390 화면). 글자가 작게 보이는 대신
    남는 아래 띠에 가로 보기를 권하는 안내를 둔다. 도트 격자 계약상 비정수 확대·세로 전용 레이아웃은 만들지 않는다. */
 .play-viewport[data-layout="portrait"]::after {
   color: #98a090;
-  content: "가로로 돌리면 더 크게 보여요";
-  font: 18px/24px "Galmuri9", "Noto Sans CJK KR", "Noto Sans KR", "Malgun Gothic", "Apple SD Gothic Neo", sans-serif;
+  content: attr(data-rotate-hint);
+  font: 15px/20px "Galmuri9", "Noto Sans CJK KR", "Noto Sans KR", "Malgun Gothic", "Apple SD Gothic Neo", sans-serif;
   left: 0;
+  padding: 0 12px;
   pointer-events: none;
   position: absolute;
   right: 0;
@@ -490,9 +506,24 @@
   40% { transform: scale(1.35); }
 }
 
-/* 위쪽의 이름·얼굴 없는 한 줄(장소·시간 자막, 위 내레이션)은 대사 칸 높이를 통째로 쓰지 않고 내용 높이만 차지한다.
-   선택지·말풍선은 자기 규칙을 따른다. */
-.player-layout .play-stage > .dialogue-overlay.position-top:not(.choices-active):not(.balloon-active):has(.dialogue-box:not(.has-speaker):not(.has-bust-face):not(.has-face)) {
+/* 저자가 위에 고정한(position:"top") 이름·얼굴 없는 한 줄(장소·시간 자막)은 대사 칸 높이를 통째로 쓰지 않고 내용 높이만 차지한다.
+   주인공을 가리지 않으려고 자동으로 위로 간 내레이션(잠긴 문 안내 등)은 **보통 대사창 그대로** 둔다 — 같은 틀이어야 한다
+   (2026-10-22, 폴른 스타 철문 줄이 납작한 자막 상자로 바뀌어 보였다). 선택지·말풍선은 자기 규칙을 따른다. */
+.player-layout .play-stage > .dialogue-overlay.position-top[data-dialogue-position-reason="fixed"]:not(.choices-active):not(.balloon-active):not(.dialogue-continued):has(.dialogue-box:not(.has-speaker):not(.has-bust-face):not(.has-face)) {
   height: auto;
   min-height: 0;
+}
+/* 레터박스 안쪽(2026-10-22): 컷신 띠가 켜지면 대사창은 띠를 덮지 않고 보이는 그림 안쪽에 선다.
+   띠 높이(--runtime-letterbox-px, playSceneFieldStaging.ts)에서 크롭 여백을 뺀 만큼만 민다 — 크롭이 띠를 이미 가리면 0.
+   `translate` 는 `transform`(가운데 정렬·등장 연출)과 따로 합성된다. 전환 애니메이션은 두지 않는다 — 띠가 켜진 뒤 여는
+   창이 미끄러져 올라오면 그것이 곧 「창이 움직인다」다. 말풍선은 무대 좌표라 제외. */
+.play-stage[data-letterbox] > .dialogue-overlay:not(.balloon-active).position-bottom {
+  translate: 0 calc(-1 * max(0px, var(--runtime-letterbox-px, 0px) - var(--play-crop-bottom, 0px)));
+}
+.play-stage[data-letterbox] > .dialogue-overlay:not(.balloon-active).position-top {
+  translate: 0 max(0px, var(--runtime-letterbox-px, 0px) - var(--play-crop-top, 0px));
+}
+/* 미연시 bar 레이아웃은 화면 끝에 닿는 전폭 띠다 — 위 창 6px 내림(이름표 여백)을 받지 않는다(이름표는 vnLook 이 띠 아래로 내린다). */
+.player-layout .play-stage > .dialogue-overlay[data-vn-layout="bar"][data-vn-look].position-top {
+  top: var(--play-crop-top);
 }

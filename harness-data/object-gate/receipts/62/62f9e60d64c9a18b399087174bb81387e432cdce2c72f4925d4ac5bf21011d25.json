@@ -1,0 +1,285 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "62f9e60d64c9a18b399087174bb81387e432cdce2c72f4925d4ac5bf21011d25",
+ "width": 16,
+ "height": 48,
+ "kind": "flat",
+ "name": "royal carpet runner",
+ "label": "beodeul_dungeon/earth.carpet",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 7,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "8cecb3a70460aa86"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 8,
+  "tileColorsP90": 8,
+  "darkV5": 113,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 3
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "north",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "carpet runner body (red checkered center with gold borders)",
+      "rows": "3-44",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 42,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The object is a long flat rug seen from above: a red checkered center with gold side borders and a gold fringe or end bar at the top (rows 2-4) and bottom (rows 43-45). Its width stays at 12-13 px from rows 2-45 with no widening or narrowing that would suggest an ellipse. There is no front face of 3 or more rows and no eave shadow, so it has no vertical south face. This matches a flat plate, which is correct for the kind flat."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a narrow vertical runner with a gold border around a red field with a darker diamond/dot pattern. The whole piece uses only 8 distinct colours, so each material gets about 3 lightness steps (red: base, dark, highlight; gold: light, mid, dark). The references use roughly 5-6 steps per material. The outline is a dark red-brown that leans toward the neighbouring material, and 0% of its dark edge pixels are neutral, so it is not a sticker line. The measured facts are fine: 8 visible tones per tile is on par with paving (7) and above grass (3), and near-flat coverage is 0%. Those numbers come from a small, clean, low-colour pattern rather than from layered shading. The fabric has no weave grain, no per-tassel or per-thread highlights, and no wear variation, so it reads as a tidy but simplified icon beside the grain-rich paving and grass tufts. The shallow ramps and thin texture put it below the references, and when in doubt the rule is to fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 15108
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "north",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "carpet runner field (red checkered center with gold borders)",
+      "rows": "2-45",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "tassel fringes at top and bottom ends",
+      "rows": "0-2, 44-46",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 44,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The object is a long, narrow carpet seen straight from above. The silhouette is about 12 px wide and runs from row 1 to row 46. The column scan shows a red checkered center (x=8, rows 5-42, alternating #a40100 and #9e2514) inside gold borders (x=5 and x=11), with a dark brown inner edge at row 4 and row 43. The end bars at rows 2-3 and 44-45 are gold, with small tassels at rows 1 and 46. No front-edge line, eave shadow, vertical south face or receding side face is drawn, so there are no front-face rows. This matches a flat floor decal, which is a flat plate with no front face, so it reads as a top-down slab."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The runner is a vertical strip with a gold border and a red field carrying a darker repeating pattern. It has 8 visible tones per tile, against 7 for the paving reference and 3 for the grass reference. Near-flat coverage is 0%, the same as both references, so no 5x5 area is a flat fill. Dark edge pixels are 0% neutral, so the outline is a dark brown or red-brown tint of the adjacent gold and red, not a black sticker line. Each material ramp is shorter than Beodeul's 5-6 steps, with roughly 3-4 steps each for red and gold, and the whole piece has only 8 colours. The pattern and border still give it visible grain and structure, and on the primary facts it is at or above the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17047
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "north",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "carpet runner field (red checker) with gold border, seen from above as a flat plate",
+      "rows": "2-45",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "tassel fringes at the top and bottom ends",
+      "rows": "0-1, 46-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 44,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The runner is a long flat rectangle (about 12 px wide, rows 2-45) with a gold border and a red checkered center, viewed straight down. Column scans show uniform border and field bands from row 4 to 43, with no front-edge line, no eave shadow, no ellipse and no vertical front face. The ends are only thin gold bars and fringe of 1-2 rows. This is a flat plate with no front face (fewer than 3 rows), which is correct for a flat kind."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a narrow runner with a gold trim border and a red centre carrying a woven pattern. Measured facts: 8 visible tones per tile, against 3 for the grass reference and 7 for the paving reference. Near-flat coverage is 0%, the same as both references. The dark edge pixels are 0% neutral, so the outline is a tinted dark red-brown rather than a black sticker line. The 8 colours are split across two materials (cloth and gold), so each ramp has about 3-4 steps, a little below Beodeul's 5-6. The paving reference also has only 7 colours in total, so the candidate's tone count is comparable. The pattern and trim highlights break up the surface, so there are no flat fills. Overall it is a bit simpler than the references but would sit acceptably beside them without looking flat or sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17241
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "carpet runner (flat plate with gold border, red checkered center, fringe at both ends)",
+      "rows": "1-46",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 46,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The silhouette is a uniform 12-13 px wide strip across rows 4-43, with fringe tapering at rows 1 and 46. The column scan shows a gold border (x=5, rows 4-43), a red checkered center (x=8) and a gold border on the other side (x=11). It is a flat rug seen from above, with no front face, no thickness, no eave and no side face. For kind flat this is the expected top-down plate."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a narrow vertical carpet strip with a gold border and a red field carrying a darker diamond/stripe pattern. Its measured facts meet the bar: 8 visible tones per tile against 7 for the paving reference and 3 for grass, 0% near-flat coverage, and 0% neutral dark edge pixels, so the outline is tinted. By eye the outline is a dark brown-red beside the gold and red, not a black sticker line. Shading is about 4 steps per material (gold highlight, mid, dark; red light, mid, dark), a little below the 5-6 in the references, but the pattern breaks up the red field so there are no flat 5x5 areas. It is clean and about as dense as the paving reference, so a careful artist would accept it next to the references. Its palette is only 8 colours in total, which keeps it from being richer. I'm giving a pass with some reservation about the shallow ramps.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17212
+  }
+ ],
+ "decidedAt": "2026-10-23T04:35:08.560Z",
+ "cells": {
+  "16": [
+   "2b830a10ba542e8c",
+   "416d9048e3a5bad9",
+   "9b589aede207d5f4"
+  ],
+  "24": [
+   "04fb35c002116940",
+   "1590f4c706bfa205",
+   "2609c4b3bf3763df",
+   "2e3b0864ec03cbc3",
+   "69822e45998543c4",
+   "82a65493470ef606"
+  ],
+  "32": [
+   "26046d7a56db5df6",
+   "3ee77ed8b3b030e7",
+   "4d0336e2b133cbc4",
+   "90efe6979c2686da",
+   "a1233e94719a50fe",
+   "aeb23932fcce652f",
+   "b091f24b9a0cb463",
+   "baac4c74ae3ff764",
+   "bfd99954bd21965f",
+   "d123a203081c4207",
+   "d6b0b95d13b8451c",
+   "e8f9c9071f66d318"
+  ],
+  "48": [
+   "163df8bf92a0709b",
+   "6c287db8e4ed6cd0",
+   "be6db6ba15534c78"
+  ]
+ }
+}

@@ -8,7 +8,7 @@ import { prepareProjectInterviewBootAssets } from "../projectInterviewBootPrepar
 import { isLiveApplyMode, normalizePiApplyMode } from "@/ai/piAgent/applyMode";
 import { createPendingReviewPrompt } from "./aiPendingReview";
 import { completionHeadline, createRefineFindings, plainMadeSummary, refineFindingsText } from "./aiPiCompletionReport";
-import { friendlyApplyFailure, friendlyExecutionError } from "@/ai/piAgent/userFacingCopy";
+import { describeAppliedWrites, friendlyApplyFailure, friendlyExecutionError, GENERIC_EXECUTION_ERROR } from "@/ai/piAgent/userFacingCopy";
 import { configForUltrabrain } from "@/ai/ultrabrainConfig";
 import { modelForRole } from "@/ai/modelRoles";
 import { executionRoleFor } from "@/ai/buildRole";
@@ -55,6 +55,7 @@ import { mapRunScope, independentMapRunRoots, settleMapRuns } from "@/ai/piAgent
 import { editorAiMapRuns } from "@/ai/piAgent/editorMapRunLocks";
 import { aiProjectRunKey } from "@/editor/aiMapRunOwnership";
 import { composePiTask } from "@/ai/piAgent/executionRoute";
+import { isAssistantV2Enabled } from "@/ai/v2/switch";
 import { buildPiRunRequest, buildUltrabrainPlanRequest, needsUltrabrainPlanTurn, prefersCallerThinking, withUltrabrainPlan } from "@/ai/piAgent/plainTurn";
 import { applyProposedProject, captureApplyAuthority } from "@/editor/tools/applyChangesetToStore";
 import { mapLossConfirmRequest } from "@/ai/mapDestructionConfirm";
@@ -186,6 +187,8 @@ export interface PiRunOptions {
   readonly viewNavigation?: boolean;
   /** 기존 의도 판정이 확인한 단순 생성·수정. 단독·단일 맵일 때만 별도 모델 단계를 줄인다. */
   readonly routineEdit?: boolean;
+  /** 계획 턴을 건너뛴다(PiRunPlan.skipPlanTurn — 실내 짓기). */
+  readonly skipPlanTurn?: boolean;
   /** 쓰기 툴 미제공 — 질문(읽기 전용) 턴. */
   readonly readOnly?: boolean;
   /** 실행하지 않고 계획만. readOnly 와 함께 켜진다(자율성 「확인」). */
@@ -224,6 +227,10 @@ export interface PiRunOptions {
   readonly intentNote?: string | null;
   /** 의도 판정 한 줄 — 활동 로그에만 싣는다(`PiRunPlan.routingAudit`). 모델에는 가지 않는다. */
   readonly routingAudit?: string;
+  /** 다듬기 모드 — 계획 턴 없이 1배 검토→고치기만 N바퀴·M분 돈다(src/ai/piAgent/featureReview.ts). */
+  readonly polish?: import("@/ai/piAgent/featureReview").FeaturePolishOptions;
+  /** 조수 v2(src/ai/v2, 기본 꺼짐) — 계획 턴·조화 검수 없이 v2 실행기로 보낸다. 판단·짓기·비평·고치기는 워커의 v2 루프가 한다. */
+  readonly assistantVersion?: "v2";
 }
 
 /** 적용 뒤 영수증(지금 → 적용 후) 재료. 렌더는 패널이 한다 — 되돌리기와 스튜디오 「변경」 탭이 거기 있다. */
@@ -294,6 +301,8 @@ export async function runPiCommand(
   options: PiRunOptions = {},
 ): Promise<boolean> {
   if (command.goalMode) options = { ...options, maxTurns: GOAL_MAX_TURNS, timeoutMs: GOAL_TIMEOUT_MS };
+  // v2 스위치(기본 꺼짐) — 단독 평문 턴만 v2 로 간다. 목표·팀·다듬기는 v1 그대로.
+  if (!command.goalMode && command.mode !== "team" && !options.polish && isAssistantV2Enabled()) options = { ...options, assistantVersion: "v2", skipPlanTurn: true };
   const projectKey = aiProjectRunKey();
   editorAiMapRuns.refreshBundles(projectKey, store.getCurrent());
   const claim = editorAiMapRuns.acquire(projectKey, mapRunScope({
@@ -397,7 +406,8 @@ async function runPiCommandProtected(command: ParsedPiCommand, surface: PiComman
   const routineEdit = options.routineEdit === true && !readOnly && !team
     && command.mapIds.length === 1 && Boolean(base.maps[command.mapIds[0]!]);
   const mapRoots = independentMapRunRoots(base, command.mapIds);
-  const groups = team || options.planOnly ? [mapRoots] : mapRoots.length > 0 ? mapRoots.map((id) => [id]) : [[] as string[]];
+  // 다듬기는 앞 턴이 지은 맵 묶음(층으로 이어진 홀·아래층 등)을 조수 하나가 함께 고친다 — 맵마다 나누면 서로의 맵을 고치려다 범위 밖으로 거절된다(2026-10-22 실측).
+  const groups = team || options.planOnly || options.polish ? [mapRoots] : mapRoots.length > 0 ? mapRoots.map((id) => [id]) : [[] as string[]];
   // 병합 여부 한 곳 — 체크포인트 발행·최종 병합·요청의 가드 신호(mapBundleMerge)가 같은 값을 쓴다.
   // 가드가 꺼진 채 병합만 하면 범위 밖 맵 변경이 도구에선 성공하고 병합에서 버려진다.
   const mergedFromBundles = mergesMapBundles({ team, mapIds: command.mapIds, scopedByUser: command.scopedByUser === true, groupCount: groups.length });
@@ -545,11 +555,14 @@ async function runPiCommandProtected(command: ParsedPiCommand, surface: PiComman
   const navigateView = createAssistantViewNavigation(() => options.viewNavigation === true, {
     background: surface.background, signal: surface.signal,
   });
+  /** 성공한 도구 이름(쓰기 도구만 골라 끊긴 실행의 보고에 쓴다, G43). */
+  const succeededTools: string[] = [];
   const showConstructionEvent = (event: PiAgentEvent): void => {
     surface.onEvent?.(event);
     let nested = event;
     while (nested.type === "agent_event") nested = nested.event;
     if (nested.type === "tool_end" && nested.ok) {
+      succeededTools.push(nested.name);
       const result = nested.result as { data?: unknown } | undefined;
       navigateView(nested.name, result?.data);
       // 워커의 revert_last_edit 는 초안을 건드리지 않고 되돌림만 요청한다 — 실행이 끝난 뒤 아래에서 편집기 스택으로 실행한다.
@@ -659,7 +672,7 @@ async function runPiCommandProtected(command: ParsedPiCommand, surface: PiComman
   try {
     // 모델이 읽는 지시문 = 사용자 문장 + 의도 노트. 계획 턴도 같은 것을 읽어야 계획에 author_village 같은
     // 이름이 남고, 실행 턴이 그 이름을 따라간다(노트 없이는 산문 계획 → paint_road 손작업으로 흘렀다).
-    if (needsUltrabrainPlanTurn({ readOnly, team, routineEdit, applyMode })) {
+    if (!options.polish && !(options.skipPlanTurn && !readOnly && !team) && needsUltrabrainPlanTurn({ readOnly, team, routineEdit, applyMode })) {
       surface.setStatus("어떻게 바꿀지 정리하고 있어요.");
       let plan = "";
       let planError = "";
@@ -706,7 +719,8 @@ async function runPiCommandProtected(command: ParsedPiCommand, surface: PiComman
         ...(effectiveTeamSpec ? { teamSpec: effectiveTeamSpec } : {}),
         preferCallerThinking,
         ...(options.thinkingLevel ? { callerThinkingLevel: options.thinkingLevel } : {}),
-      }), ...(options.timeoutMs ? { timeoutMs: options.timeoutMs } : {}) },
+        ...(options.polish ? { polish: options.polish } : {}),
+      }), ...(options.assistantVersion ? { assistantVersion: options.assistantVersion } : {}), ...(options.timeoutMs ? { timeoutMs: options.timeoutMs } : {}) },
       { signal: surface.signal, returnIncompleteResult: command.goalMode === true, onEvent: wrap(mapIds, index),
         onCheckpoint: readOnly || applyMode === "review" ? undefined : async checkpoint => stage("checkpoint", async () => {
           // 이 체크포인트를 낳은 도구의 실제 시공 단계 — 적용 직후 맵 위에서 그 순서대로 다시 튼다(agentConstructionReveal).
@@ -748,7 +762,7 @@ async function runPiCommandProtected(command: ParsedPiCommand, surface: PiComman
     finishLog({ applied: publication.count > 0, changedCount: publication.count, error: message });
     surface.setStatus("작업을 마치지 못했어요.");
     surface.appendProcess?.(message);
-    surface.appendBubble("system", `${friendlyExecutionError(message)} ${segmentReverted ? "" : publication.count ? "이미 반영한 변경은 남아 있으며 되돌릴 수 있어요." : "변경한 내용은 적용하지 않았어요."}`.trim());
+    surface.appendBubble("system", `${friendlyExecutionError(message)} ${segmentReverted ? "" : publication.count ? `이미 반영한 변경은 남아 있으며 되돌릴 수 있어요. ${describeAppliedWrites(succeededTools)}` : "변경한 내용은 적용하지 않았어요."}`.trim());
     return false;
   }
   if (surface.signal?.aborted) {
@@ -918,6 +932,9 @@ async function runPiCommandProtected(command: ParsedPiCommand, surface: PiComman
     if (streamErrors.length) {
       surface.appendProcess?.(streamErrors.join("\n"));
       surface.appendBubble("system", stoppedByLimit ? "작업 한도에 도달해 끝까지 마치지 못했어요. 작업 범위를 줄이거나 자율성 설정을 조정해 다시 요청해 주세요." : "작업 중 일부 문제가 있었어요. 작업 과정을 확인해 주세요.");
+      // 왜 멈췄는지 한 줄 — 「작업 과정을 확인」만 남기면 끊긴 턴이 사용자에게는 침묵이다(2026-10-25 조수 단독 게임 G12: 네 번 연속 아무 설명 없음).
+      const reason = friendlyExecutionError(streamErrors[0]!);
+      if (!stoppedByLimit && reason !== GENERIC_EXECUTION_ERROR) surface.appendBubble("system", reason);
     }
     if (droppedEverything) surface.appendProcess?.(spillReason);
     surface.appendBubble("system", droppedEverything ? "요청한 변경이 선택한 작업 범위를 벗어나 적용하지 않았어요. 작업 범위를 바꿔 다시 요청해 주세요." : caption);
@@ -936,7 +953,8 @@ async function runPiCommandProtected(command: ParsedPiCommand, surface: PiComman
   // Review the merged postprocessed draft once; preserve whole-map context.
   // Negative/unavailable review keeps the existing manual proposal path, never auto-applies.
   // 예상보다 범위가 커졌으면 검토를 복원한다. 생략을 "검수 통과"로 기록하지 않는다.
-  const needsHarmonyReview = applyMode !== "yolo" && (applyMode === "auto" || !routineEdit || changedKeys.some(key => key !== `maps.${command.mapIds[0]}` && key !== "tilesets" && key !== "assets" && !(key === "startPos" && merged.project.startMapId === command.mapIds[0])));
+  // v2 는 워커 안에서 독립 비평가가 1배 그림을 보고 고치게 했다 — 브라우저 조화 검수를 한 번 더 돌리지 않는다.
+  const needsHarmonyReview = options.assistantVersion !== "v2" && applyMode !== "yolo" && (applyMode === "auto" || !routineEdit || changedKeys.some(key => key !== `maps.${command.mapIds[0]}` && key !== "tilesets" && key !== "assets" && !(key === "startPos" && merged.project.startMapId === command.mapIds[0])));
   let harmonyApproved = false;
   // 끝난 뒤 사용자에게 보여 줄 «남은 문제» — 무엇이 문제인지 말하지 않는 경고는 아무것도 알려 주지 않는다.
   let unresolvedFindings: string[] = [];
@@ -1194,7 +1212,7 @@ async function runPiCommandProtected(command: ParsedPiCommand, surface: PiComman
     }
     finishLog({ applied: true, changedCount, stoppedReason: "적용됨" });
     surface.setStatus(streamErrors.length ? "변경 반영됨 · 응답 중 오류" : (harmonyManualReview && applyMode !== "yolo") ? "반영됨 · 확인할 문제 있음" : saveAccepted ? "적용·저장 완료" : "적용됨 · 저장 확인 필요");
-    if (streamErrors.length) surface.appendBubble("system", `${friendlyExecutionError(streamErrors[0]!)} 이미 반영한 변경은 남아 있으며 되돌릴 수 있어요. 저장 상태는 저장 표시에서 확인해 주세요.`);
+    if (streamErrors.length) surface.appendBubble("system", `${friendlyExecutionError(streamErrors[0]!)} 이미 반영한 변경은 남아 있으며 되돌릴 수 있어요. ${lastAssistantText.trim() ? "" : `${describeAppliedWrites(succeededTools)} `}저장 상태는 저장 표시에서 확인해 주세요.`);
     if (lastAssistantText.trim()) surface.appendBubble("assistant", lastAssistantText);
     if (team || !surface.showChangeReceipt || !receiptMapId) surface.appendBubble("system", `변경 내용을 적용했어요.${spilledKeys.length ? " 선택한 범위를 벗어난 변경은 제외했어요." : ""}${streamErrors.length ? " 작업 중 일부 문제가 있었어요. 작업 과정을 확인해 주세요." : ""}`);
     surface.showChangeReceipt?.({

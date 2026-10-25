@@ -1,0 +1,1818 @@
+{
+ "panel": 1,
+ "round": "theme-earth-r1",
+ "rule": "majority of 4; on a 2-2 tie the majority of the 3 Opus judges decides; a major counts when 2 of 4 raise the same problem",
+ "delegatedBy": "delegated by user to supervisor 2026-10-23",
+ "prompt": "You are a blind reviewer of 16px pixel-art game tiles for a SNES-style JRPG (3/4 top-down view). Do not read any code or other files; judge only the PNG boards listed below (open each with the Read tool; crop/zoom with python PIL into /tmp if you need detail). Each board shows: a reference from the existing game (\"Beodeul\", the quality bar) at 1x and 3x, then two candidates X and Y, each as the piece at 1x and 3x (checkerboard = transparent) and in a small scene with a 16x24 character for scale.\n\nCriteria for each candidate:\n(1) reads correctly in 3/4 top-down at 1x (top surfaces seen from above, front faces full height, no oblique/side view, no flat front elevation)\n(2) looks like it belongs to the same game as the Beodeul reference (palette, shading, texture density, outline, pixel density, scale vs the character)\n(3) joins are seamless (rails/carpet/decals line up, no visible 16px repeat, no broken edges)\n(4) reads as its stated purpose and theme (title line on each board)\n\nA \"major\" is a defect that would make you reject the piece for the game; a \"minor\" is polish. Be adversarial and concrete (say where in the picture).\n\nBoards:\n- /home/main/z-project/rpg-zzu-dt-earth/qa-runs/dungeon-themes/panel/r1/armor_stand.png\n- /home/main/z-project/rpg-zzu-dt-earth/qa-runs/dungeon-themes/panel/r1/banner.png\n- /home/main/z-project/rpg-zzu-dt-earth/qa-runs/dungeon-themes/panel/r1/candelabra.png\n- /home/main/z-project/rpg-zzu-dt-earth/qa-runs/dungeon-themes/panel/r1/carpet.png\n- /home/main/z-project/rpg-zzu-dt-earth/qa-runs/dungeon-themes/panel/r1/ore_vein.png\n- /home/main/z-project/rpg-zzu-dt-earth/qa-runs/dungeon-themes/panel/r1/ossuary.png\n- /home/main/z-project/rpg-zzu-dt-earth/qa-runs/dungeon-themes/panel/r1/overgrown.png\n- /home/main/z-project/rpg-zzu-dt-earth/qa-runs/dungeon-themes/panel/r1/portcullis.png\n- /home/main/z-project/rpg-zzu-dt-earth/qa-runs/dungeon-themes/panel/r1/rails.png\n- /home/main/z-project/rpg-zzu-dt-earth/qa-runs/dungeon-themes/panel/r1/rubble_heap.png\n- /home/main/z-project/rpg-zzu-dt-earth/qa-runs/dungeon-themes/panel/r1/sarc_ew.png\n- /home/main/z-project/rpg-zzu-dt-earth/qa-runs/dungeon-themes/panel/r1/sarc_ns.png\n- /home/main/z-project/rpg-zzu-dt-earth/qa-runs/dungeon-themes/panel/r1/statue_head.png\n- /home/main/z-project/rpg-zzu-dt-earth/qa-runs/dungeon-themes/panel/r1/throne.png\n- /home/main/z-project/rpg-zzu-dt-earth/qa-runs/dungeon-themes/panel/r1/timber_frame.png\n- /home/main/z-project/rpg-zzu-dt-earth/qa-runs/dungeon-themes/panel/r1/timber_post.png\n- /home/main/z-project/rpg-zzu-dt-earth/qa-runs/dungeon-themes/panel/r1/tomb_slab.png\n\nWrite your answer as JSON (and nothing else) to /home/main/z-project/rpg-zzu-dt-earth/qa-runs/dungeon-themes/panel/r1/ans-1.json, in this form, then reply with just \"done\":\n{\"items\": {\"<board file name without .png>\": {\"X\": {\"majors\": [\"...\"], \"minors\": [\"...\"]}, \"Y\": {\"majors\": [], \"minors\": []}, \"pick\": \"X\" or \"Y\", \"why\": \"one line\"}}}\n",
+ "results": [
+  {
+   "board": "/home/main/z-project/rpg-zzu-dt-earth/qa-runs/dungeon-themes/panel/r1/rails.png",
+   "round": "theme-earth-r1",
+   "item": "earth.rails",
+   "labels": {
+    "X": {
+     "key": "A1",
+     "sha256": "3f3be62008206bc310e8844ba87ba1e5e8c82dacd8a70da4f0df5b6ac8fdb8ac"
+    },
+    "Y": {
+     "key": "A2",
+     "sha256": "8802275ff808679f2bd79bbb2ed6e716dd20d0ab5cd62695737383a52a0481fa"
+    }
+   },
+   "votes": {
+    "opus1": "Y",
+    "opus2": "Y",
+    "opus3": "Y",
+    "argon": "Y"
+   },
+   "tie": false,
+   "pick": "Y",
+   "pickKey": "A2",
+   "answers": {
+    "opus1": {
+     "X": {
+      "majors": [
+       "only two ties per 16px tile, so straight runs show an obvious 16px repeat and look like ladders with gaps",
+       "T-junction and crossing tiles have dark gaps and misaligned rail stubs where rails meet"
+      ],
+      "minors": [
+       "curve ties radiate inconsistently",
+       "end-stop bumpers are large relative to the track"
+      ]
+     },
+     "Y": {
+      "majors": [
+       "T-junction and crossing tiles are messy: rails cross with jagged stubs and dark holes"
+      ],
+      "minors": [
+       "rails are bright light grey, slightly brighter than the Beodeul cart metal",
+       "curve ties are irregular",
+       "dense ties make the vertical track a little busy"
+      ]
+     },
+     "pick": "Y",
+     "why": "denser ties make straight and curved runs read as continuous track; X's sparse ties expose the tile repeat"
+    },
+    "opus2": {
+     "X": {
+      "majors": [
+       "T-junction and cross pieces leave rails broken or overlapping with no proper switch and drop sleepers under the crossing (X scene 2x, top and middle junctions)"
+      ],
+      "minors": [
+       "Sleepers are sparse (about 2 per tile) and dark, so straights look skeletal",
+       "Rails are dull grey and low contrast against the dirt",
+       "Curves carry almost no sleepers"
+      ]
+     },
+     "Y": {
+      "majors": [
+       "Same junction problem: rails cross without a switch and sleepers are missing at crossings"
+      ],
+      "minors": [
+       "Curves carry almost no sleepers"
+      ]
+     },
+     "pick": "Y",
+     "why": "Same layout, but Y has denser sleepers and brighter rails that read better on the mine floor"
+    },
+    "opus3": {
+     "X": {
+      "majors": [
+       "curve, T and cross pieces have no ties under the bent rails and the junction pieces show messy diagonal tie fragments (X shapes) - joins look broken"
+      ],
+      "minors": [
+       "ties on straights are dark brown and sparse, nearly vanishing into the brown cave floor at 1x"
+      ]
+     },
+     "Y": {
+      "majors": [
+       "same untied curves and messy diagonal junction fragments as X; the contrast between densely tied straights and bare curves is very visible in the loop"
+      ],
+      "minors": [
+       "denser tie rhythm on straights reads better at 1x"
+      ]
+     },
+     "pick": "Y",
+     "why": "Near-identical sets; Y's denser ties read as track on the cave floor at 1x, though both have weak curves/junctions."
+    },
+    "argon": {
+     "X": {
+      "majors": [
+       "The 4-way cross junction (bottom row, 2nd tile in piece 3x) fills the center with a cluttered diagonal X-web of metal pixels that looks mangled at 1x.",
+       "The T-junctions (bottom row, 1st and center tiles) try to draw simultaneous curved turnouts in both directions, creating thick grey pixel blobs where the rails meet."
+      ],
+      "minors": [
+       "Only 3 sleepers per 16px straight tile makes the track look sparse compared to the sleeper ends protruding 2px outside the rails."
+      ]
+     },
+     "Y": {
+      "majors": [],
+      "minors": [
+       "In the T-junctions (bottom row of piece 3x), the curved inner guard rails create a slightly dense cluster of grey pixels at the branch point.",
+       "The horizontal end-stop wooden buffer block (bottom right of piece 3x) covers the full height of the rails without showing the rail tips underneath."
+      ]
+     },
+     "pick": "Y",
+     "why": "Y has a clean orthogonal 4-way crossing, better-proportioned sleepers (4 per tile), and cleaner rail joins at 1x than X's cluttered junction webs."
+    }
+   }
+  },
+  {
+   "board": "/home/main/z-project/rpg-zzu-dt-earth/qa-runs/dungeon-themes/panel/r1/timber_frame.png",
+   "round": "theme-earth-r1",
+   "item": "earth.timber_frame",
+   "labels": {
+    "X": {
+     "key": "A2",
+     "sha256": "5c89f4edd69b64336ab22401592f5125a62acfdc432a0b1eec2cf69922cbc34c"
+    },
+    "Y": {
+     "key": "A1",
+     "sha256": "aed74b82428f56710237cf27ca3a704cc951df27637e82ba32a5cf30fc4b74ab"
+    }
+   },
+   "votes": {
+    "opus1": "Y",
+    "opus2": "Y",
+    "opus3": "Y",
+    "argon": "Y"
+   },
+   "tie": false,
+   "pick": "Y",
+   "pickKey": "A1",
+   "answers": {
+    "opus1": {
+     "X": {
+      "majors": [],
+      "minors": [
+       "white caps at the top of the posts look like bandages/paper, not iron bands",
+       "lintel shows little top surface",
+       "adjacent frames butt together with doubled posts at the join"
+      ]
+     },
+     "Y": {
+      "majors": [],
+      "minors": [
+       "doubled posts where two frames meet",
+       "iron bands are low contrast",
+       "knee braces are stiff 45-degree strokes"
+      ]
+     },
+     "pick": "Y",
+     "why": "lintel has a lit top face and iron bands match the mine look; X's white caps look odd"
+    },
+    "opus2": {
+     "X": {
+      "majors": [],
+      "minors": [
+       "White bands at the post tops read like snow or paper rather than iron straps",
+       "Adjacent frames make doubled posts at the join"
+      ]
+     },
+     "Y": {
+      "majors": [],
+      "minors": [
+       "Adjacent frames make doubled posts at the join",
+       "Lintel overhang is slightly heavy"
+      ]
+     },
+     "pick": "Y",
+     "why": "Near-identical; Y's mid-post iron bands read more like mine bracing"
+    },
+    "opus3": {
+     "X": {
+      "majors": [],
+      "minors": [
+       "white/grey bands at post tops look like paint stripes and are odd for mine timber",
+       "frame is a flat front elevation (acceptable on the wall face)",
+       "adjacent frames abut with doubled posts"
+      ]
+     },
+     "Y": {
+      "majors": [],
+      "minors": [
+       "iron bands mid-post are fine but subtle",
+       "same doubled posts when tiled"
+      ]
+     },
+     "pick": "Y",
+     "why": "Both match the Beodeul mine entrance timber; Y's bands are placed like iron straps and look more natural."
+    },
+    "argon": {
+     "X": {
+      "majors": [],
+      "minors": [
+       "The two white/light-grey iron binding bands near the top of the vertical posts are overly bright and thick (3px tall), drawing too much eye attention at 1x.",
+       "When two frames are placed side-by-side in scene 2x, the adjacent vertical posts form a double-thick column while the top beam touches edge-to-edge."
+      ]
+     },
+     "Y": {
+      "majors": [],
+      "minors": [
+       "When two frames are placed side-by-side in scene 2x, the vertical posts double up in the middle, though the bevelled beam ends make the join look intentional."
+      ]
+     },
+     "pick": "Y",
+     "why": "Y's narrower 1px dark iron straps and warmer wood grain match the Beodeul mine entrance reference much better than X's chunky white bandages."
+    }
+   }
+  },
+  {
+   "board": "/home/main/z-project/rpg-zzu-dt-earth/qa-runs/dungeon-themes/panel/r1/timber_post.png",
+   "round": "theme-earth-r1",
+   "item": "earth.timber_post",
+   "labels": {
+    "X": {
+     "key": "A1",
+     "sha256": "e50c6c48df3d60a35f5618b769306faf529bd06d303af4115dc8547d3a1f9054"
+    },
+    "Y": {
+     "key": "A2",
+     "sha256": "d687e11f1a5c02b1ca24383d77d14ec34a7f9f996f3d68e7558734f73df51761"
+    }
+   },
+   "votes": {
+    "opus1": "X",
+    "opus2": "Y",
+    "opus3": "X",
+    "argon": "X"
+   },
+   "tie": false,
+   "pick": "X",
+   "pickKey": "A1",
+   "answers": {
+    "opus1": {
+     "X": {
+      "majors": [],
+      "minors": [
+       "post holds nothing up, the wide head block looks like a pedestal",
+       "metal bands are slightly blue against the warm wood",
+       "a bit stocky compared with the slender Beodeul lantern post"
+      ]
+     },
+     "Y": {
+      "majors": [
+       "the small rounded mushroom cap reads as a bollard/mooring post rather than a mine timber"
+      ],
+      "minors": [
+       "very thin at 1x, almost a line",
+       "single band near the top only"
+      ]
+     },
+     "pick": "X",
+     "why": "square header block and banded shaft read as a mine support post; Y reads as a bollard"
+    },
+    "opus2": {
+     "X": {
+      "majors": [],
+      "minors": [
+       "Wide stepped capital makes it read as a decorative column rather than a mine prop",
+       "Cap shows little top plane"
+      ]
+     },
+     "Y": {
+      "majors": [],
+      "minors": [
+       "Plain, little wood grain at 1x"
+      ]
+     },
+     "pick": "Y",
+     "why": "Y's simple round-capped post reads as a mine timber with a visible top"
+    },
+    "opus3": {
+     "X": {
+      "majors": [],
+      "minors": [
+       "capital is wide and flared like a furniture column rather than a mine prop",
+       "light top cap with visible top surface - good 3/4"
+      ]
+     },
+     "Y": {
+      "majors": [],
+      "minors": [
+       "very thin post; little volume at 1x",
+       "cap is small"
+      ]
+     },
+     "pick": "X",
+     "why": "X has visible volume and a readable top surface at 1x; Y is a thin stick."
+    },
+    "argon": {
+     "X": {
+      "majors": [
+       "The top capital block is huge (almost the full 16px width with diagonal side brackets), making the 1x2 post look top-heavy like a stone shrine pillar or anvil rather than a mine timber post.",
+       "In scene 2x, the top of the left post overlaps the bottom of the cave wall awkwardly while the right post sits in the middle of the floor supporting nothing."
+      ],
+      "minors": [
+       "The two grey metal bands divide the short shaft into cramped segments."
+      ]
+     },
+     "Y": {
+      "majors": [
+       "Has the same overly bright, thick 3px white/grey band near the top of the shaft that clashes with the warm brown wood palette of the Beodeul reference."
+      ],
+      "minors": [
+       "The rounded mushroom-like top cap still looks slightly like a freestanding bollard when placed in the middle of the room in scene 2x."
+      ]
+     },
+     "pick": "X",
+     "why": "X uses darker iron bands that fit the Beodeul wood-and-iron palette and its top corbel/saddle block reads as a load-bearing mine prop, whereas Y's bright white band looks like a bandage on a bollard."
+    }
+   }
+  },
+  {
+   "board": "/home/main/z-project/rpg-zzu-dt-earth/qa-runs/dungeon-themes/panel/r1/ore_vein.png",
+   "round": "theme-earth-r1",
+   "item": "earth.ore_vein",
+   "labels": {
+    "X": {
+     "key": "A1",
+     "sha256": "2f12eb1fde1c41e5b8415dfa75698b3bf9f5d6789464452eb0d447496215ee3b"
+    },
+    "Y": {
+     "key": "A2",
+     "sha256": "5ef32de4933dd4fd867056ecc0d1d2e0063b54175d4864e914d7fbaf649ae592"
+    }
+   },
+   "votes": {
+    "opus1": "X",
+    "opus2": "X",
+    "opus3": "Y",
+    "argon": "X"
+   },
+   "tie": false,
+   "pick": "X",
+   "pickKey": "A1",
+   "answers": {
+    "opus1": {
+     "X": {
+      "majors": [
+       "the deposits are drawn as rounded boulders with a dark outline sitting on the wall, i.e. objects rather than veins in the wall face; the dark diagonal crack strokes sticking out of the boulders look like legs/sticks"
+      ],
+      "minors": [
+       "gold 1x1 and iron 1x1 are tiny blobs that read as pebbles",
+       "iron 2x2 grey nuggets are low contrast against the dark wall"
+      ]
+     },
+     "Y": {
+      "majors": [
+       "gold and iron are almost indistinguishable: both are white/grey zigzag streaks, gold has only 2-3 yellow pixels, so the purpose (ore type) does not read",
+       "white lightning-like streaks read as cracks or ice crystals rather than ore"
+      ],
+      "minors": [
+       "1x1 pieces look like small birds/arrows"
+      ]
+     },
+     "pick": "X",
+     "why": "X at least reads as gold vs iron ore with the right colours; Y's streaks don't read as ore at all"
+    },
+    "opus2": {
+     "X": {
+      "majors": [
+       "2x2 nodules carry their own dark drop-outline and black diagonal crack lines poking out like insect legs, so they read as rocks or bugs stuck on the wall rather than a vein embedded in it (X scene 2x)"
+      ],
+      "minors": [
+       "1x1 pieces are tiny blobs that read like pebbles"
+      ]
+     },
+     "Y": {
+      "majors": [
+       "Gold and iron are nearly indistinguishable at 1x (only a few yellow pixels on the gold vein)",
+       "Thin white branching streaks read as cracks, lightning or bones, not ore"
+      ],
+      "minors": [
+       "Very low pixel mass. Nearly vanishes on the dark wall at 1x"
+      ]
+     },
+     "pick": "X",
+     "why": "Only X reads as gold vs iron ore at 1x, though its leg-like cracks need fixing"
+    },
+    "opus3": {
+     "X": {
+      "majors": [
+       "each ore blob has dark diagonal crack lines sticking out past its edge in an X pattern, which look like stray strokes/sticks rather than wall cracks",
+       "rounded boulder-like blobs read as rocks sitting on the wall rather than a vein in the wall face"
+      ],
+      "minors": [
+       "gold dots are bright and dense, decent at 1x"
+      ]
+     },
+     "Y": {
+      "majors": [],
+      "minors": [
+       "white-grey streaks with tiny gold specks; gold vs iron variants differ only by a few yellow pixels",
+       "very pale streaks look slightly like cracks/frost more than ore",
+       "low texture density compared to the wall"
+      ]
+     },
+     "pick": "Y",
+     "why": "Y reads as a vein embedded in the wall face; X's blobs with protruding X-lines look like objects stuck on the wall."
+    },
+    "argon": {
+     "X": {
+      "majors": [
+       "Both 2x2 ore veins look like round polka-dotted blobs or spiderwebs pasted onto the wall rather than geological mineral veins breaking through rock.",
+       "The 2x2 patch outline forms a dark circular cushion that ignores the horizontal stone courses of the mine wall in scene 2x."
+      ],
+      "minors": [
+       "The 1x1 decals look like floating round pebbles rather than wall cracks."
+      ]
+     },
+     "Y": {
+      "majors": [
+       "The pale grey rock matrix surrounding the diagonal fissure is much brighter than the dark green-grey mine wall, reading as a pasted-on grey sticker with jagged staircase edges in scene 2x.",
+       "Between gold and iron variants, the grey border dominates so heavily that the tiny 1-2px gold vs iron flecks are nearly indistinguishable at 1x."
+      ],
+      "minors": [
+       "The 2x2 gold and iron veins use the exact same diagonal silhouette, looking conspicuously cloned when placed in the same room."
+      ]
+     },
+     "pick": "X",
+     "why": "Although X is overly round and speckled, Gold and Iron are immediately distinguishable at 1x and its dark rock border blends into the mine wall, whereas Y reads as identical bright grey slashes."
+    }
+   }
+  },
+  {
+   "board": "/home/main/z-project/rpg-zzu-dt-earth/qa-runs/dungeon-themes/panel/r1/ossuary.png",
+   "round": "theme-earth-r1",
+   "item": "earth.ossuary",
+   "labels": {
+    "X": {
+     "key": "A2",
+     "sha256": "f44cf2ba1253ce5fab97ad37819f5ee13a7b87ec2ee2c1add41cc586739f6ca2"
+    },
+    "Y": {
+     "key": "A1",
+     "sha256": "3a90759b780e0a1d6aac4312fd3cbcf2a84ca48dfbe33f7f917555f6c869b64a"
+    }
+   },
+   "votes": {
+    "opus1": "Y",
+    "opus2": "Y",
+    "opus3": "X",
+    "argon": "Y"
+   },
+   "tie": false,
+   "pick": "Y",
+   "pickKey": "A1",
+   "answers": {
+    "opus1": {
+     "X": {
+      "majors": [
+       "dense identical skull grid turns into a noisy speckle texture at 1x and the exact repeat of the same skull is obvious"
+      ],
+      "minors": [
+       "no bones visible, only skulls",
+       "frame is a thin grey line; recess has no depth/shadow at top"
+      ]
+     },
+     "Y": {
+      "majors": [],
+      "minors": [
+       "bone rows read a little like fences or railings",
+       "only one row of skulls per shelf, less 'stacked' than the title implies",
+       "shelf ledges are light grey and slightly brighter than the surrounding wall"
+      ]
+     },
+     "pick": "Y",
+     "why": "shelved rows of skulls and bones with ledges read as catacomb niches at 1x; X becomes noise"
+    },
+    "opus2": {
+     "X": {
+      "majors": [],
+      "minors": [
+       "Dense skull grid becomes high-frequency noise at 1x and reads like a pattern texture",
+       "Bones between skulls are barely legible"
+      ]
+     },
+     "Y": {
+      "majors": [],
+      "minors": [
+       "Long-bone shelves are monotone stripes and the occasional skull on them looks pasted",
+       "Per-row frames make it look like shelving more than stacked bones in the wall"
+      ]
+     },
+     "pick": "Y",
+     "why": "Alternating skull and bone courses read as a catacomb ossuary at 1x and are calmer than X's noisy grid"
+    },
+    "opus3": {
+     "X": {
+      "majors": [],
+      "minors": [
+       "skull grid is dense and repetitive; stacked columns repeat every few pixels and read slightly as wallpaper",
+       "frame top edge sits a bit proud of the wall top line"
+      ]
+     },
+     "Y": {
+      "majors": [],
+      "minors": [
+       "alternating shelf rows of skulls and long bones are clearer but sparse; less 'packed ossuary' feel",
+       "shelves look like flat cabinets"
+      ]
+     },
+     "pick": "X",
+     "why": "X reads instantly as a wall packed with skulls and bones; Y looks more like a shelf with few skulls."
+    },
+    "argon": {
+     "X": {
+      "majors": [
+       "The wall niche is packed with a uniform grid of identical elongated vertical blobs that read like corn kernels or teeth rather than skulls and stacked bones.",
+       "Severe repetitive grid pattern across both the 3-high and 2-high pieces with no structural shelves or natural bone pile variation."
+      ],
+      "minors": [
+       "In the bottom scene 2x, placing two 2-high niches side by side creates a thick double vertical frame post in the middle."
+      ]
+     },
+     "Y": {
+      "majors": [],
+      "minors": [
+       "The horizontal femurs in the middle tier of the 3-high version and bottom tier of the 2-high version form a slightly rigid horizontal stripe.",
+       "Side frame posts don't merge when two niches are placed adjacent in scene 2x."
+      ]
+     },
+     "pick": "Y",
+     "why": "Y clearly reads as recessed catacomb shelves holding skulls and long bones matching Beodeul's skull shading, while X looks like a noisy grid of vertical maggots or corn."
+    }
+   }
+  },
+  {
+   "board": "/home/main/z-project/rpg-zzu-dt-earth/qa-runs/dungeon-themes/panel/r1/sarc_ns.png",
+   "round": "theme-earth-r1",
+   "item": "earth.sarc_ns",
+   "labels": {
+    "X": {
+     "key": "A2",
+     "sha256": "6607d7d8e19fdbe87d766c14cc1232f2b07677e0173236c9186b3391490c30f9"
+    },
+    "Y": {
+     "key": "A1",
+     "sha256": "f8beba61e7aaf10a74d2b4c35da9c06dddec2774bb70ac75d3b8ceeb7955c90c"
+    }
+   },
+   "votes": {
+    "opus1": "Y",
+    "opus2": "Y",
+    "opus3": "Y",
+    "argon": "Y"
+   },
+   "tie": false,
+   "pick": "Y",
+   "pickKey": "A1",
+   "answers": {
+    "opus1": {
+     "X": {
+      "majors": [
+       "anthropoid (mummy-case) outline filling the whole 1x2 plus thin base reads as an upright coffin/door standing against the wall, not a lid seen from above",
+       "open version: dark gap on the left and top reads like a doorway"
+      ],
+      "minors": [
+       "no carved detail inside the outline",
+       "base step is shallow"
+      ]
+     },
+     "Y": {
+      "majors": [],
+      "minors": [
+       "cross lid could be misread as an upright gravestone when placed near a wall",
+       "open version's black slit with bones is very narrow",
+       "front step at the bottom is the only front face, slightly short"
+      ]
+     },
+     "pick": "Y",
+     "why": "cross on a lid with a front step reads as a lying stone coffin better than X's upright mummy-case shape"
+    },
+    "opus2": {
+     "X": {
+      "majors": [
+       "Lid effigy reads as a vase or bowling pin, not a body or tomb motif"
+      ],
+      "minors": [
+       "Open lid slides out past the box's right edge, outside the 1x2 footprint"
+      ]
+     },
+     "Y": {
+      "majors": [],
+      "minors": [
+       "Bones in the open gap are abstract white bits",
+       "Plain lid with a cross is slightly sparse in texture vs the reference"
+      ]
+     },
+     "pick": "Y",
+     "why": "Y's cross relief reads clearly as a tomb and the open state stays inside its footprint"
+    },
+    "opus3": {
+     "X": {
+      "majors": [],
+      "minors": [
+       "anthropoid (mummy-shape) lid outline reads Egyptian rather than European catacomb",
+       "open version shows black void on right only; lid displacement unclear"
+      ]
+     },
+     "Y": {
+      "majors": [],
+      "minors": [
+       "open version's black slot is narrow and looks like a crack rather than an open lid",
+       "cross on lid is plain"
+      ]
+     },
+     "pick": "Y",
+     "why": "Y's cross lid fits a catacomb and matches the E-W set; X's mummy outline is off-theme."
+    },
+    "argon": {
+     "X": {
+      "majors": [
+       "In the open variant (piece 3x right), the displaced lid is clipped vertically along the right edge of the 16px tile, cutting off the right side of the lid and leaving virtually no visible dark opening (only a 2px sliver on the left)."
+      ],
+      "minors": [
+       "The mummy/effigy outline on the lid has a somewhat wobbly peanut-shaped silhouette at 1x."
+      ]
+     },
+     "Y": {
+      "majors": [
+       "In the open variant (piece 3x right), the lid is shifted right and clipped cleanly in half by the 16px tile boundary, so the cross engraving is cut off at the right edge instead of resting asymmetrically or leaning.",
+       "The dark interior opening on the left is only 3px wide, looking like a narrow slot rather than an opened coffin."
+      ],
+      "minors": [
+       "The front base face has only a single wide recessed rectangle rather than the finer dentil pattern of the Beodeul reference."
+      ]
+     },
+     "pick": "Y",
+     "why": "Both candidates clip the shifted lid at the 16px tile edge in the open state, but Y has a cleaner, sharper cross relief on the lid and a wider, more readable dark interior opening with visible skull/bone pixels."
+    }
+   }
+  },
+  {
+   "board": "/home/main/z-project/rpg-zzu-dt-earth/qa-runs/dungeon-themes/panel/r1/sarc_ew.png",
+   "round": "theme-earth-r1",
+   "item": "earth.sarc_ew",
+   "labels": {
+    "X": {
+     "key": "A1",
+     "sha256": "ca606bc03a88090e29eecfbd7e3414a3a81b5816849f41d6786a16a062b088a6"
+    },
+    "Y": {
+     "key": "A2",
+     "sha256": "596b6b8b586754521c65c8443849a45e4e6559e960c7bff542815ab533e2fd4f"
+    }
+   },
+   "votes": {
+    "opus1": "X",
+    "opus2": "X",
+    "opus3": "X",
+    "argon": "X"
+   },
+   "tie": false,
+   "pick": "X",
+   "pickKey": "A1",
+   "answers": {
+    "opus1": {
+     "X": {
+      "majors": [],
+      "minors": [
+       "open version: lid slides forward and hides the front panel, so the open coffin loses its front face",
+       "interior slot is a thin dark strip at the back; bones are hard to read",
+       "front panel is short compared with the Beodeul reference"
+      ]
+     },
+     "Y": {
+      "majors": [
+       "lid carving is a blotchy unreadable figure, and the front face is plain without panels, so it reads as a plain stone bench rather than a sarcophagus"
+      ],
+      "minors": [
+       "same open-state issue: thin dark slot, front face partially hidden"
+      ]
+     },
+     "pick": "X",
+     "why": "clean lid motif and paneled front read as a sarcophagus and match the reference; Y's lid art is muddy"
+    },
+    "opus2": {
+     "X": {
+      "majors": [],
+      "minors": [
+       "Open state changes the body: the paneled front face of the closed state shrinks to a thin strip with stubs, so the swap is not in place",
+       "Interior gap contents look like keyboard keys rather than bones"
+      ]
+     },
+     "Y": {
+      "majors": [],
+      "minors": [
+       "Lid relief is an illegible smudge",
+       "Plain front band. Open state front also changes thickness",
+       "Interior gap contents look like keys"
+      ]
+     },
+     "pick": "X",
+     "why": "X has a legible lid relief and paneled front, closer to the reference sarcophagus detail"
+    },
+    "opus3": {
+     "X": {
+      "majors": [],
+      "minors": [
+       "lid top line ornament is a thin 1px bar, a bit plain",
+       "front face height is shallow vs the Beodeul sarcophagus"
+      ]
+     },
+     "Y": {
+      "majors": [],
+      "minors": [
+       "lid texture is noisy/speckled and less clean",
+       "front band shading slightly muddy"
+      ]
+     },
+     "pick": "X",
+     "why": "Both read fine in 3/4; X is cleaner and closer to the Beodeul cream sarcophagus finish."
+    },
+    "argon": {
+     "X": {
+      "majors": [],
+      "minors": [
+       "In the open state (piece 3x right), the slid-forward lid hangs down over the front face without showing the exposed front rim of the lower stone basin behind it."
+      ]
+     },
+     "Y": {
+      "majors": [
+       "The front vertical side of the sarcophagus box is completely uncarved flat beige bands, lacking the recessed panel detailing of the Beodeul reference.",
+       "The lid relief looks like a tadpole or bent wire rather than a recognizable effigy or sword."
+      ],
+      "minors": [
+       "In the open state, the dark interior gap at the top is very narrow (only 3px high) and the bone pixels inside look like random square dots."
+      ]
+     },
+     "pick": "X",
+     "why": "X has a clear sword relief on the lid and recessed architectural panels on the front face that match the Beodeul stone chest reference."
+    }
+   }
+  },
+  {
+   "board": "/home/main/z-project/rpg-zzu-dt-earth/qa-runs/dungeon-themes/panel/r1/tomb_slab.png",
+   "round": "theme-earth-r1",
+   "item": "earth.tomb_slab",
+   "labels": {
+    "X": {
+     "key": "A1",
+     "sha256": "d41ef89c48c1965fd19ab80a8befee51239385b6e1d91e4d976a84615eeed9ba"
+    },
+    "Y": {
+     "key": "A2",
+     "sha256": "9de11efd144890049cc0f9da9c2deb240b4e2861d4b6350bf496f3a0e077669d"
+    }
+   },
+   "votes": {
+    "opus1": "X",
+    "opus2": "X",
+    "opus3": "X",
+    "argon": "X"
+   },
+   "tie": false,
+   "pick": "X",
+   "pickKey": "A1",
+   "answers": {
+    "opus1": {
+     "X": {
+      "majors": [
+       "surface is perfectly flat grey with no speckle or wear, far lower texture density than the Beodeul floor slabs it sits beside"
+      ],
+      "minors": [
+       "cross engraving is thin and faint at 1x",
+       "bevelled frame is uniform and plain"
+      ]
+     },
+     "Y": {
+      "majors": [
+       "skull-and-crossbones reads as a pirate/poison sign rather than a catacomb tomb inscription",
+       "same flat untextured surface as X"
+      ],
+      "minors": [
+       "crack line is a nice touch but ends abruptly at the bottom-right edge"
+      ]
+     },
+     "pick": "X",
+     "why": "engraved cross reads as a tomb slab; Y's skull and crossbones is off-theme; both need floor texture"
+    },
+    "opus2": {
+     "X": {
+      "majors": [],
+      "minors": [
+       "Slab is smooth flat grey with far less texture density than the Beodeul stone floor",
+       "Pair of slabs shows an obvious identical repeat"
+      ]
+     },
+     "Y": {
+      "majors": [],
+      "minors": [
+       "Skull and crossbones reads as a pirate or poison sign more than an engraved tomb",
+       "Smooth flat grey with low texture, same as X"
+      ]
+     },
+     "pick": "X",
+     "why": "Engraved cross in a bordered slab reads as a catacomb tomb; Y's skull motif is cliché"
+    },
+    "opus3": {
+     "X": {
+      "majors": [],
+      "minors": [
+       "slab is plain flat grey with a simple cross, low texture vs the Beodeul floor",
+       "bevel frame is light and soft"
+      ]
+     },
+     "Y": {
+      "majors": [
+       "large skull-and-crossbones engraving reads as pirate/poison sign, off-theme for a tomb slab, and dominates the floor"
+      ],
+      "minors": [
+       "crack line across the slab is fine"
+      ]
+     },
+     "pick": "X",
+     "why": "X reads as a sober engraved tomb slab set in the floor; Y's skull-and-crossbones is off-tone."
+    },
+    "argon": {
+     "X": {
+      "majors": [
+       "The 2x2 slab is a large flat square of uniform mid-grey with minimal texture density, looking like a clean concrete sidewalk tile rather than weathered catacomb stone matching the Beodeul reference.",
+       "The outer dark frame makes each 2x2 slab sit like a raised plastic button on top of the floor mortar grid in scene 2x."
+      ],
+      "minors": [
+       "The engraved cross is off-center and very plain compared to the surrounding empty grey surface."
+      ]
+     },
+     "Y": {
+      "majors": [
+       "The 2x2 surface is a completely flat, untextured single-color grey fill that clashes starkly with the speckled, multi-tone Beodeul catacomb floor reference.",
+       "The skull-and-crossbones engraving looks like a crude modern pirate icon drawn with 1px dark lines rather than a carved stone relief."
+      ],
+      "minors": [
+       "Lacks an inner bevel or recessed border to give the slab stone depth."
+      ]
+     },
+     "pick": "X",
+     "why": "Both lack sufficient stone surface texture compared to the Beodeul floor reference, but X has a bevelled inner border and a believable carved cross relief whereas Y looks like a flat grey square with a pirate skull."
+    }
+   }
+  },
+  {
+   "board": "/home/main/z-project/rpg-zzu-dt-earth/qa-runs/dungeon-themes/panel/r1/candelabra.png",
+   "round": "theme-earth-r1",
+   "item": "earth.candelabra",
+   "labels": {
+    "X": {
+     "key": "A1",
+     "sha256": "0f155aea346792019a38b01674a28a1dbcaa908ace6857e0c9666b9819f846ea"
+    },
+    "Y": {
+     "key": "A2",
+     "sha256": "65035e94e9358fa19855071ca4f597725d14f1e3f341d375ac1e2ae9ec3b611b"
+    }
+   },
+   "votes": {
+    "opus1": "Y",
+    "opus2": "Y",
+    "opus3": "Y",
+    "argon": "Y"
+   },
+   "tie": false,
+   "pick": "Y",
+   "pickKey": "A2",
+   "answers": {
+    "opus1": {
+     "X": {
+      "majors": [
+       "splayed tripod legs are drawn as a flat front elevation with no ground footprint or top-down base, so the stand looks like it floats/stands on two points"
+      ],
+      "minors": [
+       "saturated yellow-gold is brighter than anything in the Beodeul palette",
+       "candle arms crowd the top of the tile and the outermost candles touch the tile edge"
+      ]
+     },
+     "Y": {
+      "majors": [],
+      "minors": [
+       "silver is low contrast against the grey stone wall in the scene",
+       "flame frames differ by only a pixel or two, animation will be barely visible",
+       "base ellipse is small relative to the 5-candle head, looks top-heavy"
+      ]
+     },
+     "pick": "Y",
+     "why": "round foot shows a top-down ellipse so it sits on the floor in 3/4 view; X's tripod reads as a side elevation"
+    },
+    "opus2": {
+     "X": {
+      "majors": [],
+      "minors": [
+       "Splayed tripod legs are drawn in flat front elevation with no foot plane, so they read spindly at 1x",
+       "Saturated gold is far brighter than the grey and amber Beodeul lamp",
+       "Flame frames barely differ between the 3 animation frames"
+      ]
+     },
+     "Y": {
+      "majors": [],
+      "minors": [
+       "Flame frames barely differ between the 3 animation frames",
+       "Arms are thin 1px lines and get a little lost against the grey wall at 1x"
+      ]
+     },
+     "pick": "Y",
+     "why": "Silver body with an elliptical base reads 3/4 and matches the reference's grey-metal lamp palette better"
+    },
+    "opus3": {
+     "X": {
+      "majors": [
+       "bright saturated yellow-gold reads cartoonish and clashes with the muted Beodeul palette; tripod legs splay like a flat front elevation with no visible base top"
+      ],
+      "minors": [
+       "arms are thin 1px lines that break up at 1x",
+       "flame frames differ very little"
+      ]
+     },
+     "Y": {
+      "majors": [],
+      "minors": [
+       "silver/pewter is somewhat flat with little shading on the stem",
+       "base is a small rounded foot; top of base only barely suggested"
+      ]
+     },
+     "pick": "Y",
+     "why": "Y's pewter tone and stepped base sit in the Beodeul palette and read as a standing candelabra; X's neon gold tripod looks pasted in."
+    },
+    "argon": {
+     "X": {
+      "majors": [
+       "The tripod base is a flat 2D front-elevation stick drawing with three splayed legs on the same horizontal line, showing no 3/4 top plane or depth.",
+       "The single-pixel brass stem and arms are too spindly and noisy against the stone brick mortar lines in scene 1x."
+      ],
+      "minors": [
+       "The three candle cups sit on a completely flat horizontal bar with no 3/4 curvature."
+      ]
+     },
+     "Y": {
+      "majors": [],
+      "minors": [
+       "The two outer curved arms are purely front-planar, though the elliptical 3/4 base and rounded candle drip pans anchor it well in 3/4 view.",
+       "The silver-grey metal blends slightly with the grey stone floor and wall in scene 1x."
+      ]
+     },
+     "pick": "Y",
+     "why": "Y has a proper 3/4 elliptical pedestal base and fuller pixel volume matching the Beodeul stand reference, whereas X is a spindly flat stick figure."
+    }
+   }
+  },
+  {
+   "board": "/home/main/z-project/rpg-zzu-dt-earth/qa-runs/dungeon-themes/panel/r1/throne.png",
+   "round": "theme-earth-r1",
+   "item": "earth.throne",
+   "labels": {
+    "X": {
+     "key": "A2",
+     "sha256": "3f97b4bc2b3ccc6555776091344ed814af8fc759ca5fc3c0a767fc27e8479ce1"
+    },
+    "Y": {
+     "key": "A1",
+     "sha256": "4b28d3e1a614bc1411a45d1a6abac995e558b45c632569b8f354d460bca670e0"
+    }
+   },
+   "votes": {
+    "opus1": "Y",
+    "opus2": "Y",
+    "opus3": "Y",
+    "argon": "Y"
+   },
+   "tie": false,
+   "pick": "Y",
+   "pickKey": "A1",
+   "answers": {
+    "opus1": {
+     "X": {
+      "majors": [
+       "grey stone throne merges with the grey dais at 1x, so the focal object disappears and the piece reads as a stone block with a red stripe"
+      ],
+      "minors": [
+       "red carpet down the steps is narrow",
+       "gold accents are only a few pixels"
+      ]
+     },
+     "Y": {
+      "majors": [],
+      "minors": [
+       "throne is a front elevation with no visible seat top",
+       "gold frame and red back are very saturated against the muted Beodeul palette",
+       "throne is tall and narrow relative to the 3x3 dais"
+      ]
+     },
+     "pick": "Y",
+     "why": "gold-framed red throne is unmistakable as a royal throne at 1x; X vanishes into the dais"
+    },
+    "opus2": {
+     "X": {
+      "majors": [],
+      "minors": [
+       "Small grey stone chair is dwarfed by the dais and barely reads as royal at 1x",
+       "Dais top is brick coursing with little sense of a raised top plane"
+      ]
+     },
+     "Y": {
+      "majors": [],
+      "minors": [
+       "Throne back touches the top edge of the 3x3",
+       "Heavy saturated gold vs the muted reference",
+       "Dais top is brick coursing with little sense of a raised top plane"
+      ]
+     },
+     "pick": "Y",
+     "why": "Red and gold throne reads instantly as a castle throne at 1x; X reads as a plain stone seat"
+    },
+    "opus3": {
+     "X": {
+      "majors": [
+       "throne is grey stone of the same colour as the dais and wall so it nearly disappears; reads as a tombstone/altar rather than a royal throne"
+      ],
+      "minors": [
+       "red carpet strip on the steps is narrow"
+      ]
+     },
+     "Y": {
+      "majors": [],
+      "minors": [
+       "red/gold chair is very saturated vs the Beodeul palette",
+       "chair back seen fully frontal; seat top only hinted"
+      ]
+     },
+     "pick": "Y",
+     "why": "Y reads instantly as a royal throne on a stepped dais; X's grey chair blends into the stone."
+    },
+    "argon": {
+     "X": {
+      "majors": [
+       "The throne chair is constructed from the exact same grey stone color and value as the stepped dais behind it, causing the chair to camouflage into the platform at 1x.",
+       "The pointed triangular backrest looks like a flat doghouse or obelisk in front elevation with no side thickness or 3/4 top rim."
+      ],
+      "minors": [
+       "The armrests are 1px grey lines that vanish against the stone dais steps."
+      ]
+     },
+     "Y": {
+      "majors": [],
+      "minors": [
+       "The high red backrest is largely flat front-on, though the top gold rail, side posts, and protruding armrests give it enough 3/4 chair structure.",
+       "The gold frame highlights are slightly bright compared to the muted stone dais."
+      ]
+     },
+     "pick": "Y",
+     "why": "Y's crimson and gold throne contrasts clearly against the grey stone dais and reads immediately as a royal throne at 1x, while X's grey stone chair disappears into the grey steps."
+    }
+   }
+  },
+  {
+   "board": "/home/main/z-project/rpg-zzu-dt-earth/qa-runs/dungeon-themes/panel/r1/carpet.png",
+   "round": "theme-earth-r1",
+   "item": "earth.carpet",
+   "labels": {
+    "X": {
+     "key": "A1",
+     "sha256": "8ded4ea97cb02587b12d7acc95a4a2cb81fbd94c9dd59edc2890738c81204ff1"
+    },
+    "Y": {
+     "key": "A2",
+     "sha256": "ea911974ca52be4b43237427cc94fbfb0f0a76ee82151e0389d3f06ef00b553d"
+    }
+   },
+   "votes": {
+    "opus1": "Y",
+    "opus2": "Y",
+    "opus3": "X",
+    "argon": "Y"
+   },
+   "tie": false,
+   "pick": "Y",
+   "pickKey": "A2",
+   "answers": {
+    "opus1": {
+     "X": {
+      "majors": [
+       "3-wide piece is a large flat red field with almost no texture, far below the Beodeul carpet's texture density",
+       "1-wide runner shows a dark horizontal seam line near the top at 3x and the diamond motif spacing makes the 16px repeat obvious in the scene"
+      ],
+      "minors": [
+       "fringe only appears at the ends and is thin",
+       "gold border is a single flat line"
+      ]
+     },
+     "Y": {
+      "majors": [],
+      "minors": [
+       "checkered gold border is noisy at 1x and slightly busier than the Beodeul reference",
+       "chain-of-diamonds motif repeats every tile; fine for a runner but visibly regular",
+       "border colours are more saturated than the reference rug"
+      ]
+     },
+     "pick": "Y",
+     "why": "patterned border and repeated motif join cleanly and have texture density closer to the reference; X is flat red with a visible seam"
+    },
+    "opus2": {
+     "X": {
+      "majors": [],
+      "minors": [
+       "1-wide runner has a dark horizontal seam near the top (top-end and middle boundary is visible)",
+       "Stray dark-red specks leak into the left gold border of the 1-wide piece",
+       "Large flat red field with almost no weave texture, much smoother than the textured Beodeul rug"
+      ]
+     },
+     "Y": {
+      "majors": [],
+      "minors": [
+       "Checkered gold border is very busy and noisy at 1x",
+       "Medallion motif is cut by the border at the top and bottom ends of the 3-wide piece",
+       "Brown end bar of the 1-wide runner sticks out past the runner's side edge"
+      ]
+     },
+     "pick": "Y",
+     "why": "Y's patterned field and repeating medallions tile as a runner with more texture density; X's seam and flat field look unfinished"
+    },
+    "opus3": {
+     "X": {
+      "majors": [],
+      "minors": [
+       "1-wide runner has a visible horizontal seam line near the top end (lighter bar across) in piece 3x",
+       "large plain red field with sparse gold diamonds is a bit empty compared to the textured Beodeul rug",
+       "flat colour with no weave texture"
+      ]
+     },
+     "Y": {
+      "majors": [
+       "thick yellow checkered border is very noisy and high-contrast; in the scene it buzzes and does not match Beodeul's soft rug texture"
+      ],
+      "minors": [
+       "repeated diamond chain down the middle makes the 16px repeat obvious on the 3-wide runner",
+       "fringe ends look like more border rather than tassels"
+      ]
+     },
+     "pick": "X",
+     "why": "X's clean gold-trimmed red runner joins seamlessly and reads royal; Y's checker border is noisy and exposes the repeat."
+    },
+    "argon": {
+     "X": {
+      "majors": [
+       "The 3-wide carpet body is a large flat expanse of unshaded solid red with no weave or texture density, clashing with the richly textured Beodeul reference rug and stone floor.",
+       "In the 1-wide runner (piece 3x left), the gold diamond medallions sit at the bottom of each 16px segment with wide empty red gaps above, creating an obvious, awkward 16px vertical repeat."
+      ],
+      "minors": [
+       "The top and bottom gold fringe teeth are chunky 2px blocks that look like yellow battlements rather than fabric fringe."
+      ]
+     },
+     "Y": {
+      "majors": [
+       "The inner gold border has a harsh, repetitive 2px dark-brown/bright-gold dashed checkerboard pattern along both sides that creates severe visual buzz at 1x.",
+       "On the 3-wide carpet top and bottom ends, a stray yellow notch protrudes inward from the center of the horizontal gold border."
+      ],
+      "minors": [
+       "The center diamond chain on the 3-wide runner is overly busy compared to the rest of the red field."
+      ]
+     },
+     "pick": "Y",
+     "why": "Y has subtle dithered fabric texture and evenly spaced center medallions that tile cleanly, whereas X has a dead flat red fill and lopsided vertical spacing."
+    }
+   }
+  },
+  {
+   "board": "/home/main/z-project/rpg-zzu-dt-earth/qa-runs/dungeon-themes/panel/r1/banner.png",
+   "round": "theme-earth-r1",
+   "item": "earth.banner",
+   "labels": {
+    "X": {
+     "key": "A1",
+     "sha256": "edda852cbe43207ec0e9585082d47fdade8db6ad9d76fb586f1b5a3abcc5e7d4"
+    },
+    "Y": {
+     "key": "A2",
+     "sha256": "663f98b2f4aa9743755f788aeae7d2abb3ee80b8e0ea2905afdf55f0e24fffc8"
+    }
+   },
+   "votes": {
+    "opus1": "X",
+    "opus2": "X",
+    "opus3": "X",
+    "argon": "Y"
+   },
+   "tie": false,
+   "pick": "X",
+   "pickKey": "A1",
+   "answers": {
+    "opus1": {
+     "X": {
+      "majors": [],
+      "minors": [
+       "gold rod finials are tiny and the rod has no visible wall bracket",
+       "crown emblem is a yellow smudge at 1x",
+       "swallow-tail notch is shallow"
+      ]
+     },
+     "Y": {
+      "majors": [],
+      "minors": [
+       "pointed shield-shaped bottom plus tassel reads more like a heraldic pennant than the rectangular Beodeul banner",
+       "shield emblem in the middle is redundant with the shield outline, muddy at 1x",
+       "narrower body leaves a lot of empty wall in the 1x2 slot"
+      ]
+     },
+     "pick": "X",
+     "why": "rectangular body with gold edge and crown is closest to the Beodeul banner shape and reads royal at 1x"
+    },
+    "opus2": {
+     "X": {
+      "majors": [],
+      "minors": [
+       "Swallowtail bottom ends right at the floor line in the 2x scene, so it is slightly long for a 1x2 hung piece",
+       "Field is flat red with little cloth shading compared with the reference's folds"
+      ]
+     },
+     "Y": {
+      "majors": [],
+      "minors": [
+       "Shield-shaped pennant is short and leaves the lower half of the 1x2 cell mostly empty",
+       "Tassel hangs off the bottom point as a stray 1px tail",
+       "Blank gold shield emblem reads less as 'royal' than a crown"
+      ]
+     },
+     "pick": "X",
+     "why": "Crown emblem, gold rod and trim read as a royal castle banner and fill the 1x2 well"
+    },
+    "opus3": {
+     "X": {
+      "majors": [],
+      "minors": [
+       "rectangular banner with notched tail is a flat front elevation (acceptable for a wall hanging) but the gold crown is tiny and smudgy at 1x",
+       "outline is very saturated orange-gold vs Beodeul's darker trim"
+      ]
+     },
+     "Y": {
+      "majors": [],
+      "minors": [
+       "shield-shaped pennant with gold point is slightly narrower and leaves wall visible on both sides",
+       "emblem is a vague gold blob at 1x"
+      ]
+     },
+     "pick": "X",
+     "why": "X has the fuller royal-banner silhouette closer to the Beodeul banner reference; Y's shield-shaped tail reads more as a pennant."
+    },
+    "argon": {
+     "X": {
+      "majors": [
+       "The banner is a flat front-elevation rectangle spanning almost the entire 16px tile width, with vertical gold side borders that make it look like a rigid frame rather than hanging cloth.",
+       "In scene 1x and 2x, the bottom swallowtail tips sit flush on the floor line with no wall space below, reading like a door panel rather than a wall-hung banner."
+      ],
+      "minors": [
+       "The crown emblem in the upper half is boxy and off-center in vertical balance."
+      ]
+     },
+     "Y": {
+      "majors": [
+       "The bottom gold tassel hangs all the way down to the floor mortar line in scene 2x, leaving too little wall clearance under a wall-mounted banner."
+      ],
+      "minors": [
+       "The shield emblem in the center is a plain geometric block lacking the finer pixel detailing of the Beodeul reference banner emblem.",
+       "Vertical cloth folds are minimal compared to the shaded vertical ribs on the reference red banner."
+      ]
+     },
+     "pick": "Y",
+     "why": "Y has a tapered pennant silhouette with a hanging tassel and narrower width that reads as a cloth wall banner, while X looks like a flat rectangular door panel."
+    }
+   }
+  },
+  {
+   "board": "/home/main/z-project/rpg-zzu-dt-earth/qa-runs/dungeon-themes/panel/r1/armor_stand.png",
+   "round": "theme-earth-r1",
+   "item": "earth.armor_stand",
+   "labels": {
+    "X": {
+     "key": "A1",
+     "sha256": "c51d41457257bc1b3693b98aadeaebfac6f4214c127ed484949d1708c624d618"
+    },
+    "Y": {
+     "key": "A2",
+     "sha256": "7cecf722222b576546b2a4fc4d81c6098ea108a5b482c99561c4f5f233cad539"
+    }
+   },
+   "votes": {
+    "opus1": "Y",
+    "opus2": "X",
+    "opus3": "Y",
+    "argon": "X"
+   },
+   "tie": true,
+   "pick": "Y",
+   "pickKey": "A2",
+   "answers": {
+    "opus1": {
+     "X": {
+      "majors": [
+       "plain grey knight is a flat front elevation with no top surface on the stand; the thin wooden base disc reads as a sliver, so at 1x it is a grey stick figure that barely reads as armour"
+      ],
+      "minors": [
+       "almost no colour accent; grey armour merges with the grey stone floor in the scene",
+       "red plume is 1-2 px and invisible at 1x"
+      ]
+     },
+     "Y": {
+      "majors": [],
+      "minors": [
+       "still mostly front-on; base disc shows only a thin top ellipse",
+       "spear tip and shield edge are cramped against the 16px width, right edge of the spear touches the tile border",
+       "tabard cross is a 3x3 blob at 1x"
+      ]
+     },
+     "pick": "Y",
+     "why": "red tabard, shield and spear give a clear silhouette and read as a displayed suit of armour at 1x; X is a featureless grey figure"
+    },
+    "opus2": {
+     "X": {
+      "majors": [],
+      "minors": [
+       "Plain grey armor on a brown plinth is readable at 1x, but the plinth is a thin flat slab with almost no visible top plane",
+       "Red plume is the only accent. It reads a bit generic next to the detailed Beodeul statue"
+      ]
+     },
+     "Y": {
+      "majors": [
+       "Saturated red tabard and cross shield plus a spear make it read as a living guard NPC at 1x rather than an empty suit of armor on a stand (Y scene 1x)"
+      ],
+      "minors": [
+       "Spear shaft runs down past the side of the base. The silhouette is cluttered at 1x",
+       "Red is much more saturated than the muted Beodeul statue palette"
+      ]
+     },
+     "pick": "X",
+     "why": "X reads clearly as an empty display armor and stays closer to the muted reference palette; Y looks like a guard character"
+    },
+    "opus3": {
+     "X": {
+      "majors": [],
+      "minors": [
+       "plain grey suit with only a red plume reads generic; little colour interest vs Beodeul statue",
+       "wooden base disc is a thin flat oval, slightly weak top surface at 1x",
+       "lighter, more saturated steel than the muted Beodeul stone statue"
+      ]
+     },
+     "Y": {
+      "majors": [],
+      "minors": [
+       "red tabard + shield + polearm crowd the 16px width; shield edge almost touches the cell border at 1x",
+       "polearm shaft is a 1px line that flickers at 1x"
+      ]
+     },
+     "pick": "Y",
+     "why": "Y reads as a guard armour display with heraldry at 1x and has more silhouette variety; X is a bland grey figure."
+    },
+    "argon": {
+     "X": {
+      "majors": [],
+      "minors": [
+       "The pauldrons and chestplate lack a dark internal separator line at 3x, making the upper torso read slightly blob-like compared to the Beodeul statue reference.",
+       "The wooden base disc is a flat oval without a distinct top rim highlight to match the strong 3/4 pedestal shading in the reference."
+      ]
+     },
+     "Y": {
+      "majors": [
+       "Over-saturated bright red tabard and yellow cross dominate the 16x32 silhouette at 1x, clashing with Beodeul's muted, weathered dungeon palette.",
+       "Proportions are boxy and toy-like (oversized visor slit and stubby legs on the wooden base), reading like a front-facing icon rather than a 3/4 armor stand."
+      ],
+      "minors": [
+       "The spear shaft on the right merges visually with the right edge of the wooden base."
+      ]
+     },
+     "pick": "X",
+     "why": "X matches the Beodeul steel palette and cylindrical 3/4 shading, whereas Y looks boxy and overly saturated with primary red and yellow."
+    }
+   }
+  },
+  {
+   "board": "/home/main/z-project/rpg-zzu-dt-earth/qa-runs/dungeon-themes/panel/r1/portcullis.png",
+   "round": "theme-earth-r1",
+   "item": "earth.portcullis",
+   "labels": {
+    "X": {
+     "key": "A2",
+     "sha256": "aea9ca9f2e755b01c3cb0f6c3f8a144998168a36d7bbe375fb1aebb9d818726e"
+    },
+    "Y": {
+     "key": "A1",
+     "sha256": "b66534489ad64389afaec317f62e214e12e4bba80118f56960154e6cafb0a29f"
+    }
+   },
+   "votes": {
+    "opus1": "Y",
+    "opus2": "Y",
+    "opus3": "Y",
+    "argon": "Y"
+   },
+   "tie": false,
+   "pick": "Y",
+   "pickKey": "A1",
+   "answers": {
+    "opus1": {
+     "X": {
+      "majors": [
+       "closed gate is a diagonal lattice (net/fence) rather than vertical portcullis bars",
+       "raised version shows no gate teeth at the top, so it reads as an empty arch, not a raised portcullis",
+       "light grey wall surround does not match the dark wall it is placed in"
+      ],
+      "minors": [
+       "pointed gothic arch differs from the round Beodeul arch"
+      ]
+     },
+     "Y": {
+      "majors": [
+       "light grey wall block clashes with the darker surrounding wall in the scene"
+      ],
+      "minors": [
+       "rectangular opening is plainer than the arched Beodeul gate",
+       "bars are evenly spaced with no horizontal crossbars, slightly flat",
+       "the dark opening in the raised state has no floor/depth hint"
+      ]
+     },
+     "pick": "Y",
+     "why": "vertical bars and visible spike row in the raised state read clearly as a portcullis; X reads as a lattice window"
+    },
+    "opus2": {
+     "X": {
+      "majors": [
+       "Diagonal lattice grid reads as a window grate or net, not a portcullis (which needs vertical bars and crossbars like the reference)"
+      ],
+      "minors": [
+       "Pointed arch outline steps unevenly",
+       "Raised state shows only small teeth at the top"
+      ]
+     },
+     "Y": {
+      "majors": [],
+      "minors": [
+       "Square opening has no arch, so it is plainer than the reference's rounded gate",
+       "Raised state's spike row is thin"
+      ]
+     },
+     "pick": "Y",
+     "why": "Y's vertical-bar gate and raised spikes read unmistakably as a portcullis"
+    },
+    "opus3": {
+     "X": {
+      "majors": [
+       "closed gate shows a diagonal crosshatch lattice instead of vertical portcullis bars, reads as a window grille",
+       "pointed gothic arch outline with stepped pixel edges looks off-style vs the Beodeul round arch"
+      ],
+      "minors": [
+       "raised state shows only a dark opening; no bar teeth visible at top"
+      ]
+     },
+     "Y": {
+      "majors": [],
+      "minors": [
+       "square opening without arch is plainer than the Beodeul arch reference",
+       "stone surround is flat with little top-surface cue",
+       "raised state shows bar spikes along the top - good, but they are thin at 1x"
+      ]
+     },
+     "pick": "Y",
+     "why": "Y reads as a real portcullis (vertical bars, spikes when raised); X's diagonal lattice looks like a grille window."
+    },
+    "argon": {
+     "X": {
+      "majors": [
+       "The stone wall surround is baked into the 3x2 piece in a bright pale grey brick pattern that completely clashes with the dark mossy dungeon wall tiles in scene 1x and 2x, creating a jarring rectangular patch.",
+       "The portcullis grate uses a 45-degree diagonal lattice instead of vertical iron drop-bars, which contradicts both the raised spikes in the open state and the Beodeul reference portcullis."
+      ],
+      "minors": [
+       "The pointed Gothic arch apex touches the very top pixel of the 2-high wall face."
+      ]
+     },
+     "Y": {
+      "majors": [
+       "The 3x2 piece bakes in flat grey stone pillars and lintel blocks that do not match the dark green-grey brick texture of the dungeon wall in scene 1x and 2x.",
+       "The gate opening is a flat rectangular cutout rather than an arch, looking like a modern prison cell or garage door."
+      ],
+      "minors": [
+       "The floor threshold shadow inside the open gate is a flat horizontal grey band."
+      ]
+     },
+     "pick": "Y",
+     "why": "Y has proper vertical iron bars and bottom spikes that match the raised portcullis state and Beodeul reference grate, whereas X uses a contradictory diagonal lattice and even brighter mismatched wall bricks."
+    }
+   }
+  },
+  {
+   "board": "/home/main/z-project/rpg-zzu-dt-earth/qa-runs/dungeon-themes/panel/r1/overgrown.png",
+   "round": "theme-earth-r1",
+   "item": "earth.overgrown",
+   "labels": {
+    "X": {
+     "key": "A1",
+     "sha256": "b0aa301a856f002587ffc1bfa97b4531c40e6681afaf79b22281bbbe4ebb938b"
+    },
+    "Y": {
+     "key": "A2",
+     "sha256": "045a4201dee6648ade29ecfed8ba5cf2261554efd61cf7f896e9539a86971c29"
+    }
+   },
+   "votes": {
+    "opus1": "Y",
+    "opus2": "Y",
+    "opus3": "Y",
+    "argon": "X"
+   },
+   "tie": false,
+   "pick": "Y",
+   "pickKey": "A2",
+   "answers": {
+    "opus1": {
+     "X": {
+      "majors": [
+       "the big flat leaf blobs read as lily pads or stray paper cut-outs lying on the slabs, not grass breaking through cracks; they ignore the slab joints"
+      ],
+      "minors": [
+       "roots are thin and disconnected from the leaves",
+       "green is a different hue from the Beodeul grass tile"
+      ]
+     },
+     "Y": {
+      "majors": [],
+      "minors": [
+       "the plus-shaped sprouts look like sparkle icons",
+       "roots are diagonal strokes that don't follow the slab seams",
+       "slightly sparse; little grass compared to the title"
+      ]
+     },
+     "pick": "Y",
+     "why": "thin roots and sprouts sit on the slabs as a believable overgrowth decal; X's leaf blobs read as foreign objects"
+    },
+    "opus2": {
+     "X": {
+      "majors": [
+       "Big flat green leaf blob reads as a lily pad or spilled paint, not grass breaking through slabs, and is far bigger than the fine moss specks of the Beodeul ruin floor (X scene 2x)"
+      ],
+      "minors": [
+       "Single long root is sparse. The 2x2 decal has a lot of empty area"
+      ]
+     },
+     "Y": {
+      "majors": [],
+      "minors": [
+       "Repeated plus-shaped sprouts read like '+' symbols or sparkles",
+       "Roots are thin and the decal is light on grass mass"
+      ]
+     },
+     "pick": "Y",
+     "why": "Y's roots and small sprouts sit naturally in the slab joints at reference scale; X's blob looks pasted on"
+    },
+    "opus3": {
+     "X": {
+      "majors": [
+       "two large flat round leaf blobs look like lily pads lying on the floor, not grass breaking through slabs; scale is too big vs the character"
+      ],
+      "minors": [
+       "roots are thin brown lines that do not follow slab seams",
+       "flat green with little shading vs Beodeul grass texture"
+      ]
+     },
+     "Y": {
+      "majors": [],
+      "minors": [
+       "sprigs and roots are sparse and small; at 1x reads as scattered weeds",
+       "roots float across slab centres instead of emerging from cracks"
+      ]
+     },
+     "pick": "Y",
+     "why": "Y's small roots and sprouts sit in the Beodeul ruin floor scale; X's giant leaf blobs look out of place."
+    },
+    "argon": {
+     "X": {
+      "majors": [
+       "The large green blob in the upper-left quadrant of the 2x2 decal has a heavy dark outline and smooth gradient that looks like a floating green rock or lily pad rather than grass breaking through slab joints.",
+       "The brown root at the bottom is a rigid horizontal bar that cuts across the stone slabs without following or emerging from the cracks."
+      ],
+      "minors": [
+       "When placed twice in scene 2x, the identical big green blob immediately betrays the 2x2 repeat."
+      ]
+     },
+     "Y": {
+      "majors": [
+       "The roots are drawn as straight diagonal brown sticks with symmetrical cross-shaped (+ sign) neon green leaves spaced at regular intervals, looking artificial and geometric.",
+       "Two small grey stone rectangles are baked into the bottom of each root cluster, clashing with the underlying beige ruin floor slabs in scene 2x."
+      ],
+      "minors": [
+       "Leaf greens are slightly more neon than the Beodeul reference grass palette."
+      ]
+     },
+     "pick": "X",
+     "why": "X uses the natural Beodeul moss greens and organic clusters without baking mismatched grey stone bricks into the transparent decal like Y does."
+    }
+   }
+  },
+  {
+   "board": "/home/main/z-project/rpg-zzu-dt-earth/qa-runs/dungeon-themes/panel/r1/rubble_heap.png",
+   "round": "theme-earth-r1",
+   "item": "earth.rubble_heap",
+   "labels": {
+    "X": {
+     "key": "A1",
+     "sha256": "a7a1cb36081e40445714e536db9de6a74bb606bb9dd503a50b9a7210ec9017bb"
+    },
+    "Y": {
+     "key": "A2",
+     "sha256": "a8ad740e490f8183de1839e1ce99b257f7600313bf14ccd77f832686a66c9b14"
+    }
+   },
+   "votes": {
+    "opus1": "X",
+    "opus2": "X",
+    "opus3": "X",
+    "argon": "X"
+   },
+   "tie": false,
+   "pick": "X",
+   "pickKey": "A1",
+   "answers": {
+    "opus1": {
+     "X": {
+      "majors": [],
+      "minors": [
+       "blocks lack the crack/joint lines of the Beodeul stone",
+       "pile is a little symmetric and centred",
+       "top faces are visible but all blocks have the same light value"
+      ]
+     },
+     "Y": {
+      "majors": [
+       "rounded, soft pebbles with weak outline read as boulders/potatoes rather than collapsed temple masonry, and look blurry next to the crisp Beodeul stones"
+      ],
+      "minors": [
+       "low contrast against the light slab floor, disappears at 1x",
+       "pile is flat and small for a 2x2"
+      ]
+     },
+     "pick": "X",
+     "why": "angular blocks with lit top faces read as fallen masonry in 3/4; Y is soft and vague"
+    },
+    "opus2": {
+     "X": {
+      "majors": [],
+      "minors": [
+       "Blocks lack the crack and joint detail of the Beodeul masonry pieces",
+       "Slightly cooler beige than the ruin floor"
+      ]
+     },
+     "Y": {
+      "majors": [
+       "Rounded pebbles read as river stones, not collapsed cut temple masonry, and the heap does not fill the 2x2"
+      ],
+      "minors": [
+       "Low contrast. Fades into the floor at 1x"
+      ]
+     },
+     "pick": "X",
+     "why": "X's angular blocks with lit top faces read 3/4 and as fallen temple masonry"
+    },
+    "opus3": {
+     "X": {
+      "majors": [],
+      "minors": [
+       "blocks are slightly brighter/cooler than the Beodeul sandstone",
+       "a couple of blocks read as floating with little contact shadow"
+      ]
+     },
+     "Y": {
+      "majors": [
+       "blocks are rounded soft pebbles with low contrast; heap reads as a blurry rock pile, not collapsed cut masonry from the temple"
+      ],
+      "minors": [
+       "smaller footprint leaves the 2x2 mostly empty"
+      ]
+     },
+     "pick": "X",
+     "why": "X shows angular cut blocks with clear tops matching the Beodeul ruin block reference; Y is a mushy pebble pile."
+    },
+    "argon": {
+     "X": {
+      "majors": [],
+      "minors": [
+       "Several stones in the heap are rectangular blocks with horizontal faces that look slightly stacked rather than shattered, though they match the temple block reference well."
+      ]
+     },
+     "Y": {
+      "majors": [
+       "The rubble consists of five smooth, rounded river boulders floating with transparent gaps between them rather than a collapsed heap of temple masonry.",
+       "The top half of the 2x2 footprint is mostly empty transparent space, making the piece look sparse and underscaled."
+      ],
+      "minors": [
+       "Concentric highlight rings on the largest boulder look like contour lines on a pebble."
+      ]
+     },
+     "pick": "X",
+     "why": "X reads as a dense, overlapping pile of fractured temple stone blocks matching the Beodeul ruin reference palette and angular masonry style, while Y looks like scattered round pebbles."
+    }
+   }
+  },
+  {
+   "board": "/home/main/z-project/rpg-zzu-dt-earth/qa-runs/dungeon-themes/panel/r1/statue_head.png",
+   "round": "theme-earth-r1",
+   "item": "earth.statue_head",
+   "labels": {
+    "X": {
+     "key": "A1",
+     "sha256": "d34e6af43f9594074383b1acf2da8ba2335908b3bbcb12fdd9200af24e9becfb"
+    },
+    "Y": {
+     "key": "A2",
+     "sha256": "f04d856c5e88078652ee7fedbee73d5b932aa30a4ed12b8f05d51a4f307f83bd"
+    }
+   },
+   "votes": {
+    "opus1": "X",
+    "opus2": "Y",
+    "opus3": "X",
+    "argon": "Y"
+   },
+   "tie": true,
+   "pick": "X",
+   "pickKey": "A1",
+   "answers": {
+    "opus1": {
+     "X": {
+      "majors": [],
+      "minors": [
+       "face is upright facing the viewer, not tilted as a fallen head would be",
+       "moss rim is a uniform line around the top, a bit like a hairline",
+       "face features are crude (slit eyes, slit mouth)"
+      ]
+     },
+     "Y": {
+      "majors": [
+       "rounded blob with faint features reads as a boulder or potato; the 'statue head' purpose is lost at 1x"
+      ],
+      "minors": [
+       "moss is a few scattered green pixels",
+       "softer outline than the Beodeul pieces"
+      ]
+     },
+     "pick": "X",
+     "why": "visible face, moss cap and stone shading read as a fallen statue head; Y reads as a rock"
+    },
+    "opus2": {
+     "X": {
+      "majors": [],
+      "minors": [
+       "Upright frontal face reads as a standing moai head rather than a fallen one",
+       "Moss is a thin ring around the crown that reads like a hairline"
+      ]
+     },
+     "Y": {
+      "majors": [],
+      "minors": [
+       "Facial features are faint at 1x and the head can read as a loaf or blob",
+       "Moss is sparse"
+      ]
+     },
+     "pick": "Y",
+     "why": "Y's tilted head reads as fallen and sits better in the ruin; X looks upright"
+    },
+    "opus3": {
+     "X": {
+      "majors": [],
+      "minors": [
+       "face is a broad flat moai-like mask, slightly cartoonish",
+       "moss rim around top is a uniform green ring rather than patchy"
+      ]
+     },
+     "Y": {
+      "majors": [
+       "head is a smooth pale blob with tiny face marks; barely reads as a statue head at 1x, more like a boulder or bread loaf"
+      ],
+      "minors": [
+       "moss is a few specks only"
+      ]
+     },
+     "pick": "X",
+     "why": "X reads clearly as a mossy fallen stone head; Y is ambiguous at 1x."
+    },
+    "argon": {
+     "X": {
+      "majors": [
+       "Drawn as a flat front-on cartoon face filling the 2x2 square like an icon or emoji, lacking 3/4 top-plane volume and proper foreshortening.",
+       "The wide rectangular teeth-like mouth and heavy dark eyebrow blocks look comical and clash with the solemn, weathered Beodeul statue style."
+      ],
+      "minors": [
+       "The moss on top sits like a flat green hairpiece along the upper edge."
+      ]
+     },
+     "Y": {
+      "majors": [
+       "Facial features (two dark eye slots, triangular nose hole, and flat mouth slit) read like a jack-o'-lantern or skull mask rather than a carved stone statue head.",
+       "The bright unshaded cream dome on the upper-left lacks stone texture density and fractures, looking too smooth and doughy against the ruin floor."
+      ],
+      "minors": [
+       "The broken neck base is completely hidden, so it reads more like a half-buried mask than a fallen head lying on the floor."
+      ]
+     },
+     "pick": "Y",
+     "why": "Y sits better on the floor with a 3/4 rounded cranium, cast shadow, and subtle moss on the side, whereas X looks like a giant flat cartoon face."
+    }
+   }
+  }
+ ]
+}

@@ -1,0 +1,312 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "81d7b340db00c717713d85c8722651bb38c9ae4f37f92d96439e054195497e62",
+ "width": 96,
+ "height": 96,
+ "kind": "terrain",
+ "name": "other.ground",
+ "label": "beodeul_dungeon/other.ground",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 명암 3단 < 4 (4/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "명암 3단 < 4 (4/4)"
+  ],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 5,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "8cecb3a70460aa86"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 6,
+  "tileColorsP90": 6,
+  "darkV5": 35,
+  "nearBlackEdge": 0.08,
+  "opaqueTiles": 36
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "ground tile texture, full 96x96 block with scattered speckles and a few orange crack lines",
+      "rows": "0-95",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The silhouette is a uniform 96-wide block across rows 0-95. The column scans show only a dark purple speckled texture with isolated lighter pixels and a few orange crack lines. There is no front-edge line, no eave shadow, no ellipse and no standing front face. This is a flat terrain texture, so it reads as a top-down slab. As a terrain tile it is not a standing object, so the missing front face is expected."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a dark purple ground with a scattered speckle or wave grain and a few small red-orange crack or ember streaks. It has about 5 visible tones per tile, which is above the grass reference (3) and a little below the paving reference (7). Near-flat coverage is 0%, so there are no flat fills. The main ramp is shallow, though: raw colours per tile are only 6 and the total is 9, so the base reads as roughly 3 purple steps plus the red accents. The grain is a uniform repeated pattern, with no per-clump or per-stone shading like the references. The dark edge pixels are tinted (0% neutral), and there are no outlines. By eye, it reads as a fairly even noise texture and is flatter than the Beodeul grass and paving, which have tufts, highlights and stone-by-stone shading. The structure is thinner than the references, so I am failing it when in doubt.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 12089
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "ground texture fill (full 96x96 tile, noise with a few thin orange crack lines)",
+      "rows": "0-95",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The image is a seamless dark purple noise texture filling the full 96x96 square, with no silhouette, no edge line, no eave shadow and no front face. The silhouette width is 96 on every row. A few thin orange crack lines appear at about rows 19-28 and 35-44, but they are surface detail. It reads as flat terrain ground, which suits the terrain kind, so it is a flat top-down fill with no standing volume."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a dark purple ground with scattered wavy speckle and a few red-orange crack streaks. It has no outline, and its dark edge pixels are tinted (0% neutral), so the outline is not a sticker line. The measured facts are 5 visible tones per tile, above the grass reference (3) and below the paving reference (7). Near-flat coverage is 0%, so there are no large flat fills. By eye, though, the base ramp is only about 3 close dark steps, plus the red accents. The speckle is a uniform repeating noise with no clumps, tufts or per-stone shading like the references. Only 6 raw colours per tile and 9 in total make it noticeably shallower than the grass reference's 26 raw colours per tile and 80 in total. The pattern is also low-contrast and tiles monotonously. A careful artist would likely see it as thinner than the Beodeul grass and paving, so it fails on shading depth and variation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 12031
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "ground texture field (dark purple noise with sparse lighter speckles and a few thin orange crack lines)",
+      "rows": "0-95",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The image is a full-bleed 96x96 terrain tile. Every row is 96 px wide, so there is no silhouette. The fill is dark purple speckle noise, with a few thin orange crack or lava lines near rows 18-29 and 35-45. The column scans show no front-edge line, no eave shadow, no ellipse and no front face. This is a flat top-down ground texture, which is expected for terrain, so there is no standing object to measure."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a dark purple ground patch with a faint wavy scratch texture and a few small red-orange crack marks. It has about 3 lightness steps on the main ramp: a dark base, a slightly lighter speckle and the red accents. The measured facts show 5 visible tones per tile, 0% near-flat coverage and 0% neutral dark edges, so there is no flat fill and no sticker outline. The grass reference shows 3 visible tones and the paving reference 7, so the candidate sits between them. Beodeul references have richer clumped grain and per-element shading, with grass tufts and stones shaded one by one. The candidate's texture is a uniform, low-contrast noise pattern with only 9 distinct colours in total (6 per tile) against 80 for the grass reference. It reads as a thin repeated pattern without clusters or structure, and the red marks are sparse and sit on top of the ground rather than being part of it. A careful artist would likely call it shallower than the references, so I fail it on the shallow ramp and the lack of clustered detail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 10285
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "ground texture fill",
+      "rows": "0-95",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The image is a full 96x96 opaque tile of dark purple noise with a few orange crack lines. The silhouette is a uniform 96 wide on every row. There is no front face, eave line, ellipse or standing volume. This is a flat terrain texture, which fits the terrain kind, so it reads as a top-down surface with no front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a dark purple ground with scattered wavy speckle and a few red-orange crack marks. Measured facts: 5 visible tones per tile, which is above the grass reference (3) and a little below paving (7). Near-flat coverage is 0%, and the dark edge pixels are tinted (0% neutral). Only 9 distinct colours in total and 6 per tile. By eye the base ramp is only about 3 steps (dark base, mid speckle, lighter fleck), with a thin accent colour for the cracks. The speckle is a uniform repeating noise pattern with no clumps, tufts or per-stone shading, so it looks like a tiled texture, not hand-shaded craft. The few crack marks sit as isolated stickers on the field. It is not flat, but the shading ramp and the structure (no tufts, stones or grain clusters) are shallower than the Beodeul references, which use 5-6 steps per material. A careful artist would likely see it as thinner than the references, so I fail it on doubt.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 10092
+  }
+ ],
+ "decidedAt": "2026-10-23T04:34:38.344Z",
+ "cells": {
+  "16": [
+   "10ba07567fad41ef",
+   "3713d091a251a232",
+   "4573835a8a41daac",
+   "48e18dd53fbebbcb",
+   "54baf42080447956",
+   "5c2d24797ee74669",
+   "642d5b0f57529914",
+   "6e173ec6d5308ec7",
+   "7cefa5c8f6c74597",
+   "834061a2a811ac58",
+   "d9f2408be3c098bb",
+   "def43869697423e4"
+  ],
+  "24": [
+   "10467556735d4ea0",
+   "1847081cbf7abd75",
+   "1a988484b6b67894",
+   "3b04f244b510b7ee",
+   "715c8d9e04b9a332",
+   "7a42bb257b119c59",
+   "7b3849ad201aa5ea",
+   "ac2e0c6c74468bb5",
+   "b55e39f6fa1344f0",
+   "b767c9e0f186d5e1",
+   "c0a397c84c644e58",
+   "c8cb8f641b67a3e2",
+   "d7c5b319d1f96904",
+   "f079570fd9778901",
+   "f2672ab04b75093f",
+   "f78300e794ada712"
+  ],
+  "32": [
+   "05fd065bd2e1d85e",
+   "1405a9a9e1670675",
+   "3c3eecfb296f3a37",
+   "46299f2c476f1fca",
+   "6d678dce2ec7888f",
+   "858508fae7539230",
+   "8764b09695db92b9",
+   "89e39c4037442f1f",
+   "fddf280c875f2072"
+  ],
+  "48": [
+   "05d5c63d0f63aed3",
+   "0bcbf489f3521e7a",
+   "4eed26d4d8a357fb",
+   "c7bd119f3fbfbddd"
+  ]
+ }
+}

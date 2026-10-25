@@ -1,0 +1,4 @@
+{"queue":"jp-in-stairs-13","round":5,"judge":"claude-opus-5.5 (fresh subagent, no prior scores)","date":"2026-10-22","verdict":"fail","majors":1,"axis2":7,"axis6":6,
+ "majorFindings":["cs-stairs-up-bare: still a rolling-shutter read (dark housing band, even slats, jamb-like side strips)"],
+ "minorFindings":["wood stairwell far treads turned cold slate (use warm brown ramp)","pit side walls not visible enough","as-stairs-up damage subtle","rail jog on 1-cell stairs","sc/up stairs a bit even"],
+ "action":"cs stair: 2px concrete side-wall blocks with lit tops and form marks, west wall shadow widening up the flight, wide first step jutting past the side walls; wood stairwell deep treads stay in the ita ramp; stronger pit side walls"}

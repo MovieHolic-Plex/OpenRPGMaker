@@ -1,0 +1,1455 @@
+{
+ "panel": "theme-climate-r1 blind panel 3 (3 fresh Opus + 1 Argon), 2026-10-23",
+ "rule": "a major counts only if at least 2 of the 4 judges raise the same problem; pick = candidate with 0 counted majors, majority vote among those (Opus majority on ties)",
+ "delegatedBy": "delegated by user to supervisor 2026-10-23",
+ "prompt": "# Blind review panel — dungeon chipset pieces\n\nYou are one independent judge. Do not edit or create any files; only open the PNG boards below with the Read tool\n(they are large; read each one fully). No other context is needed.\n\nEach board is one item for an OPRN 16px RPG chipset in 3/4 top-down view (RPG Maker style: tops are visible planes, fronts below them,\nno side faces, light from top-left). At the top of the board are REFERENCE crops from the existing \"Beodeul\" chipset (the quality\nbar) at 1x and 3x and an RPG Maker person for scale. Below are anonymous candidates labelled X and Y for the same item: the piece at 1x and\n3x, its parts, a small scene at 1x and 2x (animated items show all frames side by side), and extras (tile mosaics / test maps) for\nfloors, walls and autotiles.\n\nJudge each candidate against these criteria:\n1. reads correctly in 3/4 top-down at 1x (top planes visible, fronts below, no side/isometric faces, sits on the floor with contact);\n2. sits in the same game as the Beodeul reference (palette harmony, texture density, number of shading steps, no toy/flat/clip-art look,\n   no black ink outlines);\n3. seamless joins: floors/walls/autotiles show no visible 16px repeat or seams; multi-cell objects join without cuts;\n4. reads as its stated purpose and as its theme (the board title says what it is).\n\nA MAJOR problem = something that would make you refuse to ship it (misreads at 1x, wrong view, clearly below the reference's quality,\nvisible seams/grid, does not read as the item). A MINOR problem = worth polishing but shippable.\n\nReply with ONLY a JSON object, no prose before or after:\n{\"<board file name without .png>\": {\"X\": {\"majors\": [{\"problem\": \"...\", \"where\": \"...\"}], \"minors\": [{\"problem\": \"...\", \"where\": \"...\"}]},\n                                    \"Y\": {\"majors\": [...], \"minors\": [...]},\n                                    \"pick\": \"X\" or \"Y\", \"why\": \"one sentence\"}, ...}\n\nBoards:\n- /home/main/.cache/dungeon-themes/climate-panel/r1-swfo/theme-climate-r1__tc.fo_ancient_tree.png\n- /home/main/.cache/dungeon-themes/climate-panel/r1-swfo/theme-climate-r1__tc.fo_boulder.png\n- /home/main/.cache/dungeon-themes/climate-panel/r1-swfo/theme-climate-r1__tc.fo_bramble.png\n- /home/main/.cache/dungeon-themes/climate-panel/r1-swfo/theme-climate-r1__tc.fo_ring.png\n- /home/main/.cache/dungeon-themes/climate-panel/r1-swfo/theme-climate-r1__tc.fo_waystone.png\n- /home/main/.cache/dungeon-themes/climate-panel/r1-swfo/theme-climate-r1__tc.sw_boardwalk.png\n- /home/main/.cache/dungeon-themes/climate-panel/r1-swfo/theme-climate-r1__tc.sw_idol.png\n- /home/main/.cache/dungeon-themes/climate-panel/r1-swfo/theme-climate-r1__tc.sw_lily.png\n- /home/main/.cache/dungeon-themes/climate-panel/r1-swfo/theme-climate-r1__tc.sw_moss.png\n- /home/main/.cache/dungeon-themes/climate-panel/r1-swfo/theme-climate-r1__tc.sw_root_arch.png\n- /home/main/.cache/dungeon-themes/climate-panel/r1-swfo/theme-climate-r1__tc.sw_wisp.png\n",
+ "boards": {
+  "theme-climate-r1__tc.sw_root_arch": {
+   "item": "tc.sw_root_arch",
+   "labels": {
+    "X": {
+     "key": "A2",
+     "sha256": "a45673663d211fd2aab6273bdde6a473d1cb0d472b98a8c4d4154489205db5df"
+    },
+    "Y": {
+     "key": "A1",
+     "sha256": "999f1c1ed74a56c627f594aa66bb48d4ac9156498b7caf8a7e88da06b164b3ea"
+    }
+   },
+   "votes": {
+    "argon": "A1",
+    "opus1": "A1",
+    "opus2": "A1",
+    "opus3": "A1"
+   },
+   "counted": {
+    "A1": [],
+    "A2": [
+     "roots wire-thin / reads as scribble, not a root arch"
+    ]
+   },
+   "pick": "A1"
+  },
+  "theme-climate-r1__tc.sw_moss": {
+   "item": "tc.sw_moss",
+   "labels": {
+    "X": {
+     "key": "A1",
+     "sha256": "039b9dbefcedbf430aa54d54fd6ac7e5b9d0b8c9c499a0afa4f1f560ea3db66f"
+    },
+    "Y": {
+     "key": "A2",
+     "sha256": "37fc14a4a7f734585edb64f4111f06b8d28cafa792d47ea0fdeceb9f980c79a4"
+    }
+   },
+   "votes": {
+    "argon": "A1",
+    "opus1": "A1",
+    "opus2": "A1",
+    "opus3": "A1"
+   },
+   "counted": {
+    "A1": [],
+    "A2": []
+   },
+   "pick": "A1"
+  },
+  "theme-climate-r1__tc.sw_lily": {
+   "item": "tc.sw_lily",
+   "labels": {
+    "X": {
+     "key": "A2",
+     "sha256": "d5aee77ba5aee72137be0b3debbe05a747fe7ad03242d4cfeb636245c3d74112"
+    },
+    "Y": {
+     "key": "A1",
+     "sha256": "d62ebb24c8fe5ef354e53d5cc696d4720cf195d0a6053a4599455339d660f0be"
+    }
+   },
+   "votes": {
+    "argon": "A2",
+    "opus1": "?",
+    "opus2": "A1",
+    "opus3": "A1"
+   },
+   "counted": {
+    "A1": [],
+    "A2": []
+   },
+   "pick": "A1",
+   "note": "one judge omitted this board; 3 judges, A2 major raised by one judge only"
+  },
+  "theme-climate-r1__tc.sw_wisp": {
+   "item": "tc.sw_wisp",
+   "labels": {
+    "X": {
+     "key": "A1",
+     "sha256": "c109eb72e47594e05178e19d8102b86d18097e707b824c42f47d2afa104f82dc"
+    },
+    "Y": {
+     "key": "A2",
+     "sha256": "d9c5eabf43d300e9bbaf4140d5193249370b5cd366f143f112360d834b4309d6"
+    }
+   },
+   "votes": {
+    "argon": "A1",
+    "opus1": "A1",
+    "opus2": "A1",
+    "opus3": "A1"
+   },
+   "counted": {
+    "A1": [],
+    "A2": []
+   },
+   "pick": "A1"
+  },
+  "theme-climate-r1__tc.sw_idol": {
+   "item": "tc.sw_idol",
+   "labels": {
+    "X": {
+     "key": "A2",
+     "sha256": "770fd21495617b0da7369ebfe4ecfbc914b4b1e02f931f7d48eb3c39c69db8b0"
+    },
+    "Y": {
+     "key": "A1",
+     "sha256": "902c372338a277bf391e6be0acfaf3c0c5415dae37be4c3a1589c4b655e4f043"
+    }
+   },
+   "votes": {
+    "argon": "A1",
+    "opus1": "A1",
+    "opus2": "A1",
+    "opus3": "A1"
+   },
+   "counted": {
+    "A1": [],
+    "A2": [
+     "reads as a yellow mound / fortress, not an idol"
+    ]
+   },
+   "pick": "A1"
+  },
+  "theme-climate-r1__tc.sw_boardwalk": {
+   "item": "tc.sw_boardwalk",
+   "labels": {
+    "X": {
+     "key": "A2",
+     "sha256": "70dcffcac22c1a43dadf7a5f0e17b14456822c34066916230ac09342d7883de6"
+    },
+    "Y": {
+     "key": "A1",
+     "sha256": "84ea58b43dc064367ffa559615728becb09874c76f24fc92f19da67e7bca9227"
+    }
+   },
+   "votes": {
+    "argon": "A1",
+    "opus1": "A1",
+    "opus2": "A2",
+    "opus3": "A2"
+   },
+   "counted": {
+    "A1": [],
+    "A2": []
+   },
+   "pick": "A2",
+   "note": "A2 majors from two judges were different problems, not counted; 2-2 vote, Opus majority A2"
+  },
+  "theme-climate-r1__tc.fo_ancient_tree": {
+   "item": "tc.fo_ancient_tree",
+   "labels": {
+    "X": {
+     "key": "A2",
+     "sha256": "2860b66512e05112e2dbada2ed5cd918c722a689be6ed6d62b9f7e984649f687"
+    },
+    "Y": {
+     "key": "A1",
+     "sha256": "bce876a08d0915eaa4ad14e84337f49d3499e3553e5088fa792343a9d2660808"
+    }
+   },
+   "votes": {
+    "argon": "A1",
+    "opus1": "A1",
+    "opus2": "A1",
+    "opus3": "A1"
+   },
+   "counted": {
+    "A1": [],
+    "A2": [
+     "trunk looks pasted together, branches thin"
+    ]
+   },
+   "pick": "A1",
+   "note": "consensus minor on A1: plain black hollow, no door detail"
+  },
+  "theme-climate-r1__tc.fo_ring": {
+   "item": "tc.fo_ring",
+   "labels": {
+    "X": {
+     "key": "A2",
+     "sha256": "ec4715a050aca721e11049b8825c3f671cf1b450f2635ad1eea2fea930808db9"
+    },
+    "Y": {
+     "key": "A1",
+     "sha256": "628fda8a8066dc35f7e16faaf5c33c57ddd1a36e929517d5e18b5e9dd778c962"
+    }
+   },
+   "votes": {
+    "argon": "A1",
+    "opus1": "A1",
+    "opus2": "A1",
+    "opus3": "A1"
+   },
+   "counted": {
+    "A1": [],
+    "A2": [
+     "cyan caps read as crystals, not mushrooms"
+    ]
+   },
+   "pick": "A1"
+  },
+  "theme-climate-r1__tc.fo_boulder": {
+   "item": "tc.fo_boulder",
+   "labels": {
+    "X": {
+     "key": "A2",
+     "sha256": "eda2aafb7fc72a5c0afe9ed33bfd7aaddda7b83b5c9336b4ba7602e52982047d"
+    },
+    "Y": {
+     "key": "A1",
+     "sha256": "a82d99d59a7fa85e553aabca9e1f3a06a9c31071b3c7e2b50e8bc2e006916c52"
+    }
+   },
+   "votes": {
+    "argon": "A2",
+    "opus1": "A2",
+    "opus2": "A1",
+    "opus3": "A1"
+   },
+   "counted": {
+    "A1": [
+     "harsh flat value split"
+    ],
+    "A2": []
+   },
+   "pick": "A2"
+  },
+  "theme-climate-r1__tc.fo_bramble": {
+   "item": "tc.fo_bramble",
+   "labels": {
+    "X": {
+     "key": "A2",
+     "sha256": "d2e86a7ed8f916de48a192f28fe0c063add48f2b116b304265efeeff8f12824f"
+    },
+    "Y": {
+     "key": "A1",
+     "sha256": "efff3ec0df2da1ad3c07417b71e3a8f0973b4639c0fd0229d8cb16be90f0d93e"
+    }
+   },
+   "votes": {
+    "argon": "A2",
+    "opus1": "A2",
+    "opus2": "A2",
+    "opus3": "A2"
+   },
+   "counted": {
+    "A1": [
+     "reads as a rectangular box"
+    ],
+    "A2": []
+   },
+   "pick": "A2"
+  },
+  "theme-climate-r1__tc.fo_waystone": {
+   "item": "tc.fo_waystone",
+   "labels": {
+    "X": {
+     "key": "A2",
+     "sha256": "16e35a0e1d5260001bc6d2a3d487c1a4cf75c4c48dce4cb80b36035c00caf4c1"
+    },
+    "Y": {
+     "key": "A1",
+     "sha256": "e8ff8780a5ef07c032862f49f2900f7602d06c4f40c5e77271fc74d797bcb6fa"
+    }
+   },
+   "votes": {
+    "argon": "A1",
+    "opus1": "A1",
+    "opus2": "A1",
+    "opus3": "A1"
+   },
+   "counted": {
+    "A1": [],
+    "A2": []
+   },
+   "pick": "A1"
+  }
+ },
+ "raw": {
+  "argon": {
+   "theme-climate-r1__tc.fo_ancient_tree": {
+    "X": {
+     "majors": [
+      {
+       "problem": "Canopy is shallow and top-heavy with exposed thin Y-branches and disconnected vertical green lines hanging in mid-air, failing to read as a massive ancient tree at 1x.",
+       "where": "rows 3-4 between canopy and trunk"
+      }
+     ],
+     "minors": [
+      {
+       "problem": "Foliage sub-clusters use smooth spherical gradients rather than the crisp jagged leaf clusters of the Beodeul reference tree.",
+       "where": "canopy rows 1-3"
+      }
+     ]
+    },
+    "Y": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "Foliage puffs are slightly rounder and more uniform than the ragged leaf clusters in the Beodeul reference.",
+       "where": "canopy rows 1-5"
+      },
+      {
+       "problem": "Prompt asks for a hollow door in the trunk base, and while the dark cavern opening reads well as a hollow entrance, it lacks door framing or threshold detail.",
+       "where": "bottom center of trunk, rows 6-7"
+      }
+     ]
+    },
+    "pick": "Y",
+    "why": "Y has the commanding canopy volume, root flare, and grounded silhouette of a giant ancient landmark tree, whereas X has an awkward gap with thin branches and floating vine lines."
+   },
+   "theme-climate-r1__tc.fo_boulder": {
+    "X": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "Stone surface could use slightly crisper facet planes to match the reference cairn rocks.",
+       "where": "center rock body"
+      }
+     ]
+    },
+    "Y": {
+     "majors": [
+      {
+       "problem": "Harsh value split between the dark moss cap and overly bright grey lower rock makes the boulder read as two flat zones rather than a unified 3D volume at 1x.",
+       "where": "midline boundary between moss and rock face"
+      }
+     ],
+     "minors": []
+    },
+    "pick": "X",
+    "why": "X reads as a cohesive, weighty 3/4 boulder with natural moss integration and smooth shading steps that sit well on the forest floor."
+   },
+   "theme-climate-r1__tc.fo_bramble": {
+    "X": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "Red berry/thorn highlights are slightly sparse on the right cell compared to the left.",
+       "where": "right cell of 2x1 piece"
+      }
+     ]
+    },
+    "Y": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "Intertwined branch structure is muddier at 1x, reading more like a noisy brown bush than distinct thorny brambles.",
+       "where": "across full 2x1 span"
+      }
+     ]
+    },
+    "pick": "X",
+    "why": "X clearly shows interlocking thorny vines and sharp barbs that read immediately at 1x as an impassable bramble barrier."
+   },
+   "theme-climate-r1__tc.fo_ring": {
+    "X": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "Pale cyan caps and white sparkle pixels blend together at 1x, making individual mushroom shapes harder to distinguish than red toadstools.",
+       "where": "upper arc of the ring"
+      }
+     ]
+    },
+    "Y": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "Ring layout is slightly octagonal and symmetric.",
+       "where": "outer perimeter of the 2x2 ring"
+      }
+     ]
+    },
+    "pick": "Y",
+    "why": "Y directly matches the Beodeul toadstool reference palette and cap/stem readability at 1x while forming a clear fairy ring on the grass."
+   },
+   "theme-climate-r1__tc.fo_waystone": {
+    "X": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "Circular cyan emblem in the center looks somewhat like a modern button or lens rather than an ancient carved rune.",
+       "where": "center of front face"
+      }
+     ]
+    },
+    "Y": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "Base contact shadow on the right side is slightly narrow.",
+       "where": "bottom of lower cell"
+      }
+     ]
+    },
+    "pick": "Y",
+    "why": "Y has a tapered ancient monolith silhouette, weathered stone cracks, moss patches, and an irregular glowing rune that harmonizes with the forest ruin reference."
+   },
+   "theme-climate-r1__tc.sw_boardwalk": {
+    "X": {
+     "majors": [
+      {
+       "problem": "Plank scale and framing do not match the reference boardwalk tile, resulting in a jarring seam where 3 thick boards meet the 4-plank deck tile.",
+       "where": "both 1x1 parts in scene view"
+      }
+     ],
+     "minors": []
+    },
+    "Y": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "Horizontal plank lines are still slightly thicker than the 4-plank reference tile when placed at the bottom of a vertical run.",
+       "where": "scene 2x bottom-right boardwalk end"
+      }
+     ]
+    },
+    "pick": "Y",
+    "why": "Y reads much better as splintered, broken boardwalk planks over dark swamp water and aligns more closely with the reference deck timber construction."
+   },
+   "theme-climate-r1__tc.sw_idol": {
+    "X": {
+     "majors": [
+      {
+       "problem": "Idol head is dwarfed by a large tan dirt mound that clashes with the dark bog water and looks like a miniature turret on sand rather than a half-sunk stone head.",
+       "where": "lower half of the 2x2 piece"
+      }
+     ],
+     "minors": []
+    },
+    "Y": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "Top plane of the cranium could show slightly stronger top-left lighting contrast.",
+       "where": "top row of the stone head"
+      }
+     ]
+    },
+    "pick": "Y",
+    "why": "Y fills the 2x2 footprint with a convincing ancient mossy stone face whose chin and mouth are genuinely submerged in the dark bog water."
+   },
+   "theme-climate-r1__tc.sw_lily": {
+    "X": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "A few single-pixel yellow dots around the pads read slightly noisy at 1x.",
+       "where": "water gaps around lily pads"
+      }
+     ]
+    },
+    "Y": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "Lily pads have heavy bottom shading and rounded highlights that make them look thick and bulbous rather than flat floating leaves.",
+       "where": "both 1x1 variants"
+      }
+     ]
+    },
+    "pick": "X",
+    "why": "X lies flat on the water plane with clear V-notched lily pads, varied pad sizes, and crisp white lotus blossoms that read naturally at 1x."
+   },
+   "theme-climate-r1__tc.sw_moss": {
+    "X": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "Hanging moss strands are pale grey-green and slightly low-contrast against the lighter swamp grass tile in the scene.",
+       "where": "hanging strands below branches"
+      }
+     ]
+    },
+    "Y": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "Cut-off horizontal branch stubs look boxy and less organic than the reference dead tree forks.",
+       "where": "upper cell left and right branches"
+      }
+     ]
+    },
+    "pick": "X",
+    "why": "X preserves the natural forked branch silhouette and bark texture of the swamp reference while adding clear curtains of hanging moss."
+   },
+   "theme-climate-r1__tc.sw_root_arch": {
+    "X": {
+     "majors": [
+      {
+       "problem": "Arch is a thin smooth brown loop that looks like bent wire rather than gnarled mangrove roots, and its low center crowds the character sprite walking underneath.",
+       "where": "upper center of the 2x2 arch"
+      }
+     ],
+     "minors": []
+    },
+    "Y": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "Inner root legs have a slightly vertical pillar feel on the inside edges.",
+       "where": "lower left and right inner edges"
+      }
+     ]
+    },
+    "pick": "Y",
+    "why": "Y frames the walkable passage cleanly with braided mangrove roots, a mossy foliage crown, and hanging tendrils that read as an overhead arch."
+   },
+   "theme-climate-r1__tc.sw_wisp": {
+    "X": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "Frame-to-frame motion is subtle in the main core, mostly shifting the tail tip and outer sparkle pixels.",
+       "where": "parts 1 to 3"
+      }
+     ]
+    },
+    "Y": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "Warm yellow-green hue blends into the swamp grass palette and looks like a regular candle flame rather than an eerie spectral wisp.",
+       "where": "flame core across all 3 frames"
+      }
+     ]
+    },
+    "pick": "X",
+    "why": "X's spectral cyan glow, floating wisp tail, and orbiting motes pop clearly against the dark swamp palette and read unmistakably as a will-o-wisp at 1x."
+   }
+  },
+  "opus1": {
+   "theme-climate-r1__tc.fo_ancient_tree": {
+    "X": {
+     "majors": [
+      {
+       "problem": "The trunk is clearly a separate prop stuck under the canopy and doesn't grow from it. The thin dark branch arcs, the hanging lantern dots and the door added on top give a pasted-together, clip-art look that is below the Beodeul tree.",
+       "where": "trunk/canopy junction and the branch arcs at 1x and 3x"
+      }
+     ],
+     "minors": [
+      {
+       "problem": "The canopy is dark and low-contrast next to the brighter Beodeul tree, and its highlight steps are muddy.",
+       "where": "canopy"
+      },
+      {
+       "problem": "The splayed roots on the left run as long flat diagonals that read as sideways, not as roots sitting on the ground.",
+       "where": "root base left"
+      }
+     ]
+    },
+    "Y": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "The opening is a plain black hollow with no frame, step or light, so at 1x it reads more as a cave hole than a door.",
+       "where": "trunk base opening"
+      },
+      {
+       "problem": "The canopy repeats very evenly sized leaf clumps, which looks a little stamped.",
+       "where": "canopy"
+      }
+     ]
+    },
+    "pick": "Y",
+    "why": "Y's canopy and trunk read as one massive tree at the reference's quality, while X looks assembled from parts."
+   },
+   "theme-climate-r1__tc.fo_boulder": {
+    "X": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "The stone is quite dark and flat-grey, with few shading steps on its top plane.",
+       "where": "boulder body"
+      },
+      {
+       "problem": "The dark contact shadow is close to a black ink rim along the bottom.",
+       "where": "base outline"
+      }
+     ]
+    },
+    "Y": {
+     "majors": [
+      {
+       "problem": "The near-white flat grey face with one hard tone boundary under the moss cap looks toy-like and clip-art. Its value range does not match the Beodeul rocks.",
+       "where": "stone face below the moss"
+      }
+     ],
+     "minors": [
+      {
+       "problem": "The moss cap sits like a hat with a straight edge instead of growing over the stone.",
+       "where": "moss cap"
+      }
+     ]
+    },
+    "pick": "X",
+    "why": "X's darker textured stone with draped moss sits in the Beodeul palette, while Y's pale flat face looks toy-like."
+   },
+   "theme-climate-r1__tc.fo_bramble": {
+    "X": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "The thorn tangle is reddish-brown with few greens, so at 1x it reads more like a dead wood pile than a living bramble.",
+       "where": "whole piece"
+      },
+      {
+       "problem": "The canes at the top edge look thin and noisy.",
+       "where": "top silhouette"
+      }
+     ]
+    },
+    "Y": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "The silhouette is a flat-topped rectangular block, like a hedge planter, with little 3/4 volume.",
+       "where": "outline"
+      },
+      {
+       "problem": "The red berry dots are dense and evenly spread, which looks patterned.",
+       "where": "surface"
+      }
+     ]
+    },
+    "pick": "X",
+    "why": "X's tangled cane silhouette reads better as a thorny path-blocker than Y's boxy block."
+   },
+   "theme-climate-r1__tc.fo_ring": {
+    "X": {
+     "majors": [
+      {
+       "problem": "The cyan-white mushrooms clash with the warm Beodeul palette. At 1x they read as sparkles or crystals, not mushrooms.",
+       "where": "mushroom caps"
+      }
+     ],
+     "minors": [
+      {
+       "problem": "The ring's interior has scattered noise dots.",
+       "where": "center"
+      }
+     ]
+    },
+    "Y": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "The red caps are very saturated and almost identical, so the ring looks stamped.",
+       "where": "mushroom caps"
+      },
+      {
+       "problem": "The ring is sparse at 1x and the caps have little shading.",
+       "where": "whole ring"
+      }
+     ]
+    },
+    "pick": "Y",
+    "why": "Y's red-capped mushrooms match the reference mushroom and read clearly as a fairy ring."
+   },
+   "theme-climate-r1__tc.fo_waystone": {
+    "X": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "The rounded tombstone shape reads slightly as a gravestone.",
+       "where": "silhouette"
+      },
+      {
+       "problem": "The glyph is a large symmetric cyan target that looks a little like a UI icon.",
+       "where": "carving"
+      }
+     ]
+    },
+    "Y": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "The pale stone is lighter than the other forest stones in the scene.",
+       "where": "body"
+      },
+      {
+       "problem": "The glow is fainter at 1x.",
+       "where": "carving"
+      }
+     ]
+    },
+    "pick": "Y",
+    "why": "Y's tapered menhir with an inset carving reads more as an ancient waystone than X's gravestone shape."
+   },
+   "theme-climate-r1__tc.sw_boardwalk": {
+    "X": {
+     "majors": [
+      {
+       "problem": "The broken half shows a single diagonal stick floating in a background-coloured gap, with no water or posts. It reads as missing pixels rather than a broken plank over water.",
+       "where": "part 2 (broken cell)"
+      }
+     ],
+     "minors": [
+      {
+       "problem": "The rail or crossbar detail on the end cell is cluttered at 1x.",
+       "where": "part 1"
+      }
+     ]
+    },
+    "Y": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "The broken cell shows only small gaps between snapped planks, so the break is subtle at 1x.",
+       "where": "part 2"
+      },
+      {
+       "problem": "The end cell's support posts read slightly as a bench front.",
+       "where": "part 1 front"
+      }
+     ]
+    },
+    "pick": "Y",
+    "why": "Y's broken cell keeps plank fragments and posts, so it reads as a damaged boardwalk instead of a hole."
+   },
+   "theme-climate-r1__tc.sw_idol": {
+    "X": {
+     "majors": [
+      {
+       "problem": "The head sits on a flat yellow-olive mound, so it reads as a statue on an island rather than half sunk in bog. The boxy helmet-like head misreads at 1x.",
+       "where": "base mound and head"
+      }
+     ],
+     "minors": [
+      {
+       "problem": "The mound colour clashes with the swamp water.",
+       "where": "base"
+      }
+     ]
+    },
+    "Y": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "The lower half fades into a dark band with little waterline highlight, so the sinking could read more clearly.",
+       "where": "waterline"
+      },
+      {
+       "problem": "The face is symmetric and a bit generic.",
+       "where": "face"
+      }
+     ]
+    },
+    "pick": "Y",
+    "why": "Y reads as a mossy stone face half-submerged in the bog, while X is a boxy statue on a yellow island."
+   },
+   "theme-climate-r1__tc.sw_moss": {
+    "X": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "The moss strands are pale olive and evenly spaced like a curtain.",
+       "where": "hanging moss"
+      },
+      {
+       "problem": "The forked top is symmetric, a Y shape.",
+       "where": "branches"
+      }
+     ]
+    },
+    "Y": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "A single horizontal branch at the top reads like a signpost or T-bar.",
+       "where": "top branch"
+      },
+      {
+       "problem": "Moss hangs only on the left side, so the piece looks lopsided.",
+       "where": "moss"
+      }
+     ]
+    },
+    "pick": "X",
+    "why": "X's forked dead tree with moss draped on both sides reads more naturally than Y's signpost-like crossbar."
+   },
+   "theme-climate-r1__tc.sw_root_arch": {
+    "X": {
+     "majors": [
+      {
+       "problem": "The arch is very thin and sparse, two spindly legs with a tiny leaf tuft. It reads as wire hoops, not a mangrove root mass, and the canopy covers little of the walker.",
+       "where": "whole arch"
+      }
+     ],
+     "minors": [
+      {
+       "problem": "The roots have little shading.",
+       "where": "legs"
+      }
+     ]
+    },
+    "Y": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "The canopy top band is a flat horizontal slab that looks like a roof beam.",
+       "where": "top band"
+      },
+      {
+       "problem": "The legs are straight vertical posts, which looks a bit like a gate.",
+       "where": "legs"
+      }
+     ]
+    },
+    "pick": "Y",
+    "why": "Y has a solid leafy crown with hanging moss over sturdier roots, so it reads as an arch people walk under."
+   },
+   "theme-climate-r1__tc.sw_wisp": {
+    "X": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "The cyan teardrop is a bit large and icon-like, and the frames differ only slightly.",
+       "where": "frames 1-3"
+      }
+     ]
+    },
+    "Y": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "The yellow flame wisp is close in colour to the reference lantern and reads more like a fire spark than a ghost light.",
+       "where": "flame colour"
+      },
+      {
+       "problem": "It is small and dim at 1x against the dark water.",
+       "where": "scene 1x"
+      }
+     ]
+    },
+    "pick": "X",
+    "why": "X's cool glowing orb reads clearly as an eerie will-o-wisp and stands out at 1x."
+   }
+  },
+  "opus2": {
+   "theme-climate-r1__tc.fo_ancient_tree": {
+    "X": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "canopy is darker and flatter than the reference, with weak top-left highlights and evenly lit lumps",
+       "where": "canopy"
+      },
+      {
+       "problem": "long splayed roots on the left make the base footprint lopsided",
+       "where": "trunk base, left roots"
+      }
+     ]
+    },
+    "Y": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "the hollow is a plain black opening with no door detail, so it reads as a cave mouth more than a door",
+       "where": "trunk base opening"
+      },
+      {
+       "problem": "the trunk is mostly hidden under the canopy, so the landmark silhouette is mostly foliage",
+       "where": "trunk/canopy proportion"
+      }
+     ]
+    },
+    "pick": "Y",
+    "why": "Y's canopy matches the Beodeul tree's density and lighting closely, and the hollow still reads at 1x, while X's canopy looks flatter and darker."
+   },
+   "theme-climate-r1__tc.fo_boulder": {
+    "X": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "dark, low-contrast grey; it is darker than the reference stones and gets muddy on grass at 1x",
+       "where": "rock body"
+      },
+      {
+       "problem": "the moss on top barely shows",
+       "where": "top plane"
+      }
+     ]
+    },
+    "Y": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "the moss sits like a separate cap and does not blend down the sides",
+       "where": "top moss"
+      },
+      {
+       "problem": "the crack line is a little graphic",
+       "where": "front face"
+      }
+     ]
+    },
+    "pick": "Y",
+    "why": "Y's lighter stone and clear top/front split match the reference rocks better and read clearly at 1x."
+   },
+   "theme-climate-r1__tc.fo_bramble": {
+    "X": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "reads more as dead brush than thorns; the thorn spikes are not clear at 1x",
+       "where": "whole piece"
+      },
+      {
+       "problem": "muted brown is a bit dull next to the forest greens",
+       "where": "palette"
+      }
+     ]
+    },
+    "Y": {
+     "majors": [
+      {
+       "problem": "dense rectangular block with a flat top edge; at 1x it reads as a red-brown box or hedge brick, not a thorn tangle",
+       "where": "silhouette"
+      }
+     ],
+     "minors": [
+      {
+       "problem": "berry dots are noisy and texture density is higher than the reference",
+       "where": "body"
+      }
+     ]
+    },
+    "pick": "X",
+    "why": "X's open tangle of branches reads as a bramble across the path, while Y looks like a boxy block."
+   },
+   "theme-climate-r1__tc.fo_ring": {
+    "X": {
+     "majors": [
+      {
+       "problem": "pale cyan caps read as crystals or ice sparkles at 1x, not mushrooms",
+       "where": "ring caps at 1x"
+      }
+     ],
+     "minors": [
+      {
+       "problem": "the ring is sparse and faint on grass",
+       "where": "scene 1x"
+      }
+     ]
+    },
+    "Y": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "small caps make the ring a thin dotted circle at 1x",
+       "where": "scene 1x"
+      },
+      {
+       "problem": "the inner grass tufts barely show",
+       "where": "ring centre"
+      }
+     ]
+    },
+    "pick": "Y",
+    "why": "Y's red caps match the reference mushroom and read as a mushroom ring at 1x."
+   },
+   "theme-climate-r1__tc.fo_waystone": {
+    "X": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "rounded slab shape with a big centred rune reads as a gravestone",
+       "where": "silhouette"
+      },
+      {
+       "problem": "the glow is a large flat cyan symbol, a bit clip-art",
+       "where": "carving"
+      }
+     ]
+    },
+    "Y": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "the carving glow is faint and barely shows at 1x",
+       "where": "carving"
+      }
+     ]
+    },
+    "pick": "Y",
+    "why": "Y's tapered mossy menhir reads as a natural standing stone in the reference's style, while X looks like a tombstone."
+   },
+   "theme-climate-r1__tc.sw_boardwalk": {
+    "X": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "the front bracing on the end piece is busy at 1x",
+       "where": "part 1 front"
+      },
+      {
+       "problem": "the fallen plank in the gap is small and thin",
+       "where": "part 2"
+      }
+     ]
+    },
+    "Y": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "the broken piece has only small notches, so it reads as worn rather than broken",
+       "where": "part 2"
+      }
+     ]
+    },
+    "pick": "X",
+    "why": "X's large gap with a fallen plank reads clearly as a broken boardwalk, and its planks match the reference wood."
+   },
+   "theme-climate-r1__tc.sw_idol": {
+    "X": {
+     "majors": [
+      {
+       "problem": "spiked crown, boxy face and yellow sand mound read as a small fortress or house on an island, not a head half-sunk in bog",
+       "where": "whole piece"
+      },
+      {
+       "problem": "the yellow mound clashes with the dark bog palette",
+       "where": "base"
+      }
+     ],
+     "minors": []
+    },
+    "Y": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "face features are low contrast at 1x",
+       "where": "face"
+      },
+      {
+       "problem": "the waterline at the base is weak, so the sinking could read more strongly",
+       "where": "bottom edge"
+      }
+     ]
+    },
+    "pick": "Y",
+    "why": "Y reads as a mossy stone face half-sunk in the bog, while X reads as a building."
+   },
+   "theme-climate-r1__tc.sw_lily": {
+    "X": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "bright yellow-green rims outline every pad, which looks toy-like next to the reference's soft greens",
+       "where": "pad edges"
+      },
+      {
+       "problem": "speckled scatter dots add noise",
+       "where": "part 2"
+      }
+     ]
+    },
+    "Y": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "pads are close in value to the dark water and get a bit lost at 1x",
+       "where": "scene 1x"
+      }
+     ]
+    },
+    "pick": "Y",
+    "why": "Y's filled pads with small pink flowers match the swamp palette and look natural, while X's outlined rims look toy-like."
+   },
+   "theme-climate-r1__tc.sw_moss": {
+    "X": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "pale moss strands are a bit even and stripey",
+       "where": "hanging moss"
+      }
+     ]
+    },
+    "Y": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "short, stubby silhouette with few branches, so it is weaker as a 1x2 piece and leaves the top cell sparse",
+       "where": "upper cell"
+      },
+      {
+       "problem": "moss is concentrated on one side",
+       "where": "left side"
+      }
+     ]
+    },
+    "pick": "X",
+    "why": "X's taller branching snag with moss on both sides matches the reference dead tree and fills the 1x2 better."
+   },
+   "theme-climate-r1__tc.sw_root_arch": {
+    "X": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "thin root legs with almost no canopy read as spider legs, not a mangrove arch",
+       "where": "whole silhouette"
+      },
+      {
+       "problem": "little top-plane mass for an upper-layer arch",
+       "where": "top"
+      }
+     ]
+    },
+    "Y": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "the leafy top band is a little flat and straight",
+       "where": "arch top"
+      }
+     ]
+    },
+    "pick": "Y",
+    "why": "Y's thicker roots and mossy leafy crown read as a mangrove arch a person walks under, while X looks spidery."
+   },
+   "theme-climate-r1__tc.sw_wisp": {
+    "X": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "the three frames barely differ, so the animation is very subtle",
+       "where": "frames 1-3"
+      },
+      {
+       "problem": "cyan glow is saturated next to the muted swamp palette",
+       "where": "orb"
+      }
+     ]
+    },
+    "Y": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "the yellow flame shape reads as a candle flame or sparkle more than a floating wisp",
+       "where": "silhouette"
+      },
+      {
+       "problem": "frames change little",
+       "where": "frames 1-3"
+      }
+     ]
+    },
+    "pick": "X",
+    "why": "X's glowing orb with a trailing tail reads clearly as a floating will-o-wisp against the dark bog."
+   }
+  },
+  "opus3": {
+   "theme-climate-r1__tc.fo_ancient_tree": {
+    "X": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "canopy is darker and flatter than the reference, with few light-green highlight clusters",
+       "where": "canopy"
+      },
+      {
+       "problem": "the trunk is large flat brown areas with little bark texture, and the lanterns and hanging strands add clutter",
+       "where": "trunk and branches"
+      }
+     ]
+    },
+    "Y": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "the hollow is a plain black opening with no door or frame detail, so it reads as a cave mouth more than a door",
+       "where": "trunk base"
+      },
+      {
+       "problem": "the canopy takes most of the height and the trunk is squat",
+       "where": "overall proportions"
+      }
+     ]
+    },
+    "pick": "Y",
+    "why": "Y's canopy matches the reference's shading steps and highlights, and its hollow still reads clearly as an entrance at 1x."
+   },
+   "theme-climate-r1__tc.fo_boulder": {
+    "X": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "the dark grey body has low contrast and a weak top plane, so at 1x it reads as a soft blob",
+       "where": "rock body"
+      },
+      {
+       "problem": "the moss is faint and hard to see",
+       "where": "top"
+      }
+     ]
+    },
+    "Y": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "the lighter grey is slightly brighter than the reference stones",
+       "where": "rock body"
+      }
+     ]
+    },
+    "pick": "Y",
+    "why": "Y has a clear lit top plane, a moss cap and a crack, and its grey is closer to the reference pebbles."
+   },
+   "theme-climate-r1__tc.fo_bramble": {
+    "X": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "it is small and dark-red at 1x, so the thorns barely read and it could pass for dead brush",
+       "where": "whole piece"
+      }
+     ]
+    },
+    "Y": {
+     "majors": [
+      {
+       "problem": "the straight rectangular silhouette reads as a planter box or berry crate, not a bramble",
+       "where": "outline"
+      }
+     ],
+     "minors": [
+      {
+       "problem": "the red dots read as berries rather than thorns",
+       "where": "surface"
+      }
+     ]
+    },
+    "pick": "X",
+    "why": "X's irregular tangled outline reads as a thorny barrier; Y looks like a box."
+   },
+   "theme-climate-r1__tc.fo_ring": {
+    "X": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "the pale cyan mushrooms have low contrast on grass and look sparkly rather than solid at 1x",
+       "where": "mushrooms"
+      },
+      {
+       "problem": "the scattered sparkle pixels add noise",
+       "where": "inside the ring"
+      }
+     ]
+    },
+    "Y": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "the caps are tiny with minimal shading, so they become red dots at 1x",
+       "where": "caps"
+      }
+     ]
+    },
+    "pick": "Y",
+    "why": "Y's red-cap mushrooms match the reference mushroom and read clearly as a ring on grass."
+   },
+   "theme-climate-r1__tc.fo_waystone": {
+    "X": {
+     "majors": [
+      {
+       "problem": "the rounded-top slab with a centred emblem reads as a gravestone rather than a waystone",
+       "where": "silhouette"
+      }
+     ],
+     "minors": [
+      {
+       "problem": "the stone is flat and dark with little texture next to the reference rocks",
+       "where": "stone face"
+      }
+     ]
+    },
+    "Y": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "the glowing carving is faint at 1x",
+       "where": "carving"
+      }
+     ]
+    },
+    "pick": "Y",
+    "why": "Y's mossy obelisk has stone texture closer to the reference and reads as a standing stone."
+   },
+   "theme-climate-r1__tc.sw_boardwalk": {
+    "X": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "the plank ends show no posts in the water and no water contact or shadow, so they read weakly as 'over water'",
+       "where": "end pieces"
+      },
+      {
+       "problem": "the transparent gap in the broken piece shows the background through it",
+       "where": "part 2"
+      }
+     ]
+    },
+    "Y": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "the broken piece reads as notched boards rather than snapped ones",
+       "where": "part 2"
+      },
+      {
+       "problem": "there are no posts or water contact",
+       "where": "end pieces"
+      }
+     ]
+    },
+    "pick": "X",
+    "why": "X's snapped diagonal plank makes the broken end clearer, and both match the deck reference equally."
+   },
+   "theme-climate-r1__tc.sw_idol": {
+    "X": {
+     "majors": [
+      {
+       "problem": "the idol sits on a yellow mud mound and is not sunk into the bog; the yellow clashes with the swamp palette",
+       "where": "base"
+      }
+     ],
+     "minors": [
+      {
+       "problem": "the spiky crown and boxy head read as a small building or robot at 1x",
+       "where": "head"
+      }
+     ]
+    },
+    "Y": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "the face features are low-contrast at 1x",
+       "where": "face"
+      }
+     ]
+    },
+    "pick": "Y",
+    "why": "Y reads as a mossy stone face half-sunk into the bog and fits the swamp palette."
+   },
+   "theme-climate-r1__tc.sw_lily": {
+    "X": {
+     "majors": [
+      {
+       "problem": "the bright yellow-green outlined pads look like rings or donuts, a clip-art look that sits apart from the dark water reference",
+       "where": "pads"
+      }
+     ],
+     "minors": []
+    },
+    "Y": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "the pads are slightly blobby, and the two variants are similar",
+       "where": "parts 1-2"
+      }
+     ]
+    },
+    "pick": "Y",
+    "why": "Y's filled, softly shaded pads with flowers sit naturally on the reference water."
+   },
+   "theme-climate-r1__tc.sw_moss": {
+    "X": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "the hanging moss strands are pale and thin at 1x",
+       "where": "branches"
+      }
+     ]
+    },
+    "Y": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "the short trunk with a crossbar reads like a post or cross, and it fills the 1x2 cell poorly",
+       "where": "silhouette"
+      }
+     ]
+    },
+    "pick": "X",
+    "why": "X is a tall forked dead tree close to the reference snag, and its moss reads."
+   },
+   "theme-climate-r1__tc.sw_root_arch": {
+    "X": {
+     "majors": [
+      {
+       "problem": "the spindly roots with almost no top mass read as thin twigs, not a mangrove arch, and are weak at 1x",
+       "where": "whole piece"
+      }
+     ],
+     "minors": []
+    },
+    "Y": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "the inner root faces are flat brown with little texture",
+       "where": "legs"
+      }
+     ]
+    },
+    "pick": "Y",
+    "why": "Y has a leafy, mossy top and thick roots, so it reads as an arch you walk under."
+   },
+   "theme-climate-r1__tc.sw_wisp": {
+    "X": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "frames differ only slightly, so the motion is subtle",
+       "where": "frames 1-3"
+      },
+      {
+       "problem": "the saturated cyan is a bit strong for the palette",
+       "where": "glow"
+      }
+     ]
+    },
+    "Y": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "the small pale yellow flame has low contrast at 1x and looks like a candle flame",
+       "where": "flame"
+      },
+      {
+       "problem": "frames differ only slightly",
+       "where": "frames 1-3"
+      }
+     ]
+    },
+    "pick": "X",
+    "why": "X's glowing orb with a tail reads instantly as a will-o-wisp over dark water at 1x."
+   }
+  }
+ }
+}

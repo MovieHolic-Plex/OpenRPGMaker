@@ -1,0 +1,1694 @@
+{
+ "n": 5,
+ "model": "gemini-4-argon-high",
+ "thresholds": {
+  "fitMin": 6.5,
+  "sameArtistMin": 3,
+  "defectMaxVotes": 5
+ },
+ "summary": {
+  "positivesPassing": "6/6",
+  "negativesRejected": "5/5",
+  "separates": true,
+  "weakestPositiveMedian": 8.0,
+  "strongestNegativeMedian": 5.0,
+  "probes": {
+   "cg-nat10-approved": {
+    "median": 9.0,
+    "sameArtistVotes": 5,
+    "passes": true
+   },
+   "cg-nat10-shipped-1.17": {
+    "median": 9.0,
+    "sameArtistVotes": 5,
+    "passes": true
+   },
+   "cg-nat9": {
+    "median": 9.0,
+    "sameArtistVotes": 5,
+    "passes": true
+   },
+   "cg-nat1": {
+    "median": 9.0,
+    "sameArtistVotes": 5,
+    "passes": true
+   },
+   "cg-nat12": {
+    "median": 6.0,
+    "sameArtistVotes": 0,
+    "passes": false
+   }
+  }
+ },
+ "subjects": {
+  "hero": {
+   "kind": "positive",
+   "dir": "public/assets/emerald-monster/cast/hero",
+   "aggregate": {
+    "n": 5,
+    "scores": [
+     9.0,
+     9.0,
+     9.0,
+     6.0,
+     7.0
+    ],
+    "median": 9.0,
+    "min": 6.0,
+    "max": 9.0,
+    "sameArtistVotes": 3,
+    "defectVotes": {
+     "base": 0,
+     "happy": 5,
+     "sad": 0,
+     "angry": 4,
+     "surprised": 1
+    },
+    "worstDefectVotes": 5
+   },
+   "runs": [
+    {
+     "castFit": 9,
+     "sameArtist": true,
+     "defects": {
+      "base": "none",
+      "happy": "asymmetric cheek marks (one pixel under viewer-left eye versus two pixels under viewer-right eye)",
+      "sad": "none",
+      "angry": "single isolated dark pixel between the eyebrows next to the center bang tip reads as a stray pixel",
+      "surprised": "none"
+     },
+     "notes": "The portrait integrates seamlessly with the existing lineup in shading ramps, facial feature construction, hair clustering, and framing, with the slightly larger eyes reading naturally as a younger character archetype. Only minor single-pixel cleanup is needed on the happy and angry variants.",
+     "position": 5,
+     "seed": 101,
+     "model": "gemini-4-argon-high"
+    },
+    {
+     "castFit": 9,
+     "sameArtist": true,
+     "defects": {
+      "base": "none",
+      "happy": "asymmetric cheek blush pixels (one pixel on viewer's left cheek versus two pixels on viewer's right)",
+      "sad": "none",
+      "angry": "single dark pixel at the tip of the center hair bang sits awkwardly between the lowered eyebrows and reads slightly like a stray pixel",
+      "surprised": "none"
+     },
+     "notes": "The subject matches the existing cast closely in facial construction, eye rendering, skin shading ramps, and hair spike clustering (especially comparable to cast member 4), with the slightly larger head-to-shoulder ratio reading naturally as a younger character. Only the slightly darker outline and flatter shading on the cap's crown and visor feel marginally stiffer than the rest of the lineup.",
+     "position": 2,
+     "seed": 102,
+     "model": "gemini-4-argon-high"
+    },
+    {
+     "castFit": 9,
+     "sameArtist": true,
+     "defects": {
+      "base": "none",
+      "happy": "asymmetric cheek blush (one pixel on viewer-left cheek vs two pixels on viewer-right cheek)",
+      "sad": "none",
+      "angry": "none",
+      "surprised": "none"
+     },
+     "notes": "The subject seamlessly matches the cast's facial construction, cluster shading, and framing (particularly close to portraits 4 and 5), with slightly larger eyes that read naturally as younger character proportions. Outlines on the cap and hair are marginally darker than portraits 1–4, and the happy expression has an uneven blush pixel count, but all expressions are crisp and consistent.",
+     "position": 6,
+     "seed": 103,
+     "model": "gemini-4-argon-high"
+    },
+    {
+     "castFit": 6,
+     "sameArtist": false,
+     "defects": {
+      "base": "none",
+      "happy": "asymmetric single/double blush pixels under the eyes that read like stray pixels",
+      "sad": "none",
+      "angry": "stray dark pixel floating by the inner brow beside the center hair bang",
+      "surprised": "none"
+     },
+     "notes": "The subject stands out due to much darker, near-black outlines (especially on the jawline, cap, and jacket) compared to the cast's softer hue-shifted outlines, alongside flatter shading on the hat and larger, rounder chibi facial proportions.",
+     "position": 1,
+     "seed": 104,
+     "model": "gemini-4-argon-high"
+    },
+    {
+     "castFit": 7,
+     "sameArtist": false,
+     "defects": {
+      "base": "none",
+      "happy": "asymmetric cheek pixels under the eyes (one dot on viewer's left, two dots on viewer's right)",
+      "sad": "none",
+      "angry": "stray dark pixel floating between the eyebrows just left of the central bang tip",
+      "surprised": "asymmetric eye placement and mouth shape (viewer's left iris is pushed against the inner corner with wide outer sclera while the right iris is centered; lopsided open mouth)"
+     },
+     "notes": "While the palette ramp count, nose/mouth shorthand, and framing align well with the cast, the subject stands out slightly due to near-black outlines along the jawline/cap (whereas the cast uses softer hue-shifted outlines, especially on skin) and noticeably larger, rounder chibi head/eye proportions. Several expressions also contain minor pixel-level asymmetries and stray pixels.",
+     "position": 5,
+     "seed": 105,
+     "model": "gemini-4-argon-high"
+    }
+   ]
+  },
+  "mom": {
+   "kind": "positive",
+   "dir": "public/assets/emerald-monster/cast/mom",
+   "aggregate": {
+    "n": 5,
+    "scores": [
+     9.0,
+     9.0,
+     9.0,
+     9.0,
+     9.0
+    ],
+    "median": 9.0,
+    "min": 9.0,
+    "max": 9.0,
+    "sameArtistVotes": 5,
+    "defectVotes": {
+     "base": 0,
+     "happy": 2,
+     "sad": 2,
+     "angry": 0,
+     "surprised": 0
+    },
+    "worstDefectVotes": 2
+   },
+   "runs": [
+    {
+     "castFit": 9,
+     "sameArtist": true,
+     "defects": {
+      "base": "none",
+      "happy": "missing eyebrows leave the forehead bare compared to the other expressions",
+      "sad": "asymmetric eyes: viewer's right eye has a 2px-wide outer sclera versus 1px on the left eye",
+      "angry": "none",
+      "surprised": "none"
+     },
+     "notes": "The subject seamlessly matches the cast's colored outlines, shading ramp, hair clustering, proportions, and facial feature construction (especially portrait 4). Aside from a 1px sclera width discrepancy in the sad expression and omitted eyebrows in happy, pixel placement is clean and consistent.",
+     "position": 5,
+     "seed": 101,
+     "model": "gemini-4-argon-high"
+    },
+    {
+     "castFit": 9,
+     "sameArtist": true,
+     "defects": {
+      "base": "none",
+      "happy": "eyebrows are completely missing, leaving an unusually bare forehead compared to the other expressions",
+      "sad": "none",
+      "angry": "none",
+      "surprised": "none"
+     },
+     "notes": "The subject seamlessly matches the existing cast in colored-outline discipline, shading ramp count, facial construction, and hair clustering, bridging the softer features of portraits 2–4 with the narrower mature jawline of portrait 5. Aside from the omitted eyebrows on the happy variant, all expressions are crisp, symmetric, and free of pixel artifacts.",
+     "position": 2,
+     "seed": 102,
+     "model": "gemini-4-argon-high"
+    },
+    {
+     "castFit": 9,
+     "sameArtist": true,
+     "defects": {
+      "base": "none",
+      "happy": "none",
+      "sad": "slight eye shading asymmetry where the viewer-right eye has grey upper-sclera pixels absent on the viewer-left eye",
+      "angry": "none",
+      "surprised": "none"
+     },
+     "notes": "The subject matches the existing cast seamlessly in colored outline weight, palette ramp count, hair clustering, and facial feature construction (especially close to portraits 3 and 4). Proportions sit slightly narrower in the shoulders and face due to the tall bun framing, but well within the cast's natural variation.",
+     "position": 6,
+     "seed": 103,
+     "model": "gemini-4-argon-high"
+    },
+    {
+     "castFit": 9,
+     "sameArtist": true,
+     "defects": {
+      "base": "none",
+      "happy": "none",
+      "sad": "none",
+      "angry": "none",
+      "surprised": "none"
+     },
+     "notes": "The subject matches the existing cast seamlessly in outline color/weight, shading ramps, hair clustering, and facial feature construction (especially compared to portraits 3 and 4). All five expressions are clean, readable, and free of pixel-level artifacts while maintaining consistent character identity.",
+     "position": 1,
+     "seed": 104,
+     "model": "gemini-4-argon-high"
+    },
+    {
+     "castFit": 9,
+     "sameArtist": true,
+     "defects": {
+      "base": "none",
+      "happy": "none",
+      "sad": "none",
+      "angry": "none",
+      "surprised": "none"
+     },
+     "notes": "The subject seamlessly matches the existing cast in outline weight, colored selout, shading ramp count, facial feature construction, and overall proportions. All five expressions are cleanly pixelled with consistent anatomy and zero stray pixels or artifacts.",
+     "position": 5,
+     "seed": 105,
+     "model": "gemini-4-argon-high"
+    }
+   ]
+  },
+  "nurse": {
+   "kind": "positive",
+   "dir": "public/assets/emerald-monster/cast/nurse",
+   "aggregate": {
+    "n": 5,
+    "scores": [
+     8.0,
+     7.0,
+     9.0,
+     7.0,
+     8.0
+    ],
+    "median": 8.0,
+    "min": 7.0,
+    "max": 9.0,
+    "sameArtistVotes": 3,
+    "defectVotes": {
+     "base": 2,
+     "happy": 1,
+     "sad": 5,
+     "angry": 5,
+     "surprised": 3
+    },
+    "worstDefectVotes": 5
+   },
+   "runs": [
+    {
+     "castFit": 8,
+     "sameArtist": true,
+     "defects": {
+      "base": "none",
+      "happy": "none",
+      "sad": "asymmetric eyes and brows (viewer's right eye extends lower/wider than the left, with a flattened right brow)",
+      "angry": "inconsistent sclera placement between the eyes and missing left-side outline contrast on the clenched teeth",
+      "surprised": "asymmetric eye construction (viewer's right eye places the sclera on the inner side rather than outer, shifting the gaze relative to base)"
+     },
+     "notes": "The subject matches the cast's proportions, colored 1px outlines, skin ramp, and eye construction very closely (especially portrait 3), blending naturally into the lineup. Only minor tells are slightly finer 1px vertical hair highlights and a softer, lower-contrast mouth line in the base portrait.",
+     "position": 5,
+     "seed": 101,
+     "model": "gemini-4-argon-high"
+    },
+    {
+     "castFit": 7,
+     "sameArtist": false,
+     "defects": {
+      "base": "low-contrast skin-toned mouth lacks the dark brown linework used across the entire cast",
+      "happy": "none",
+      "sad": "asymmetric eyes (viewer's right eye is 1px taller and differently shaped than the left) and overly faint skin-toned mouth",
+      "angry": "uncentered/cross-eyed iris placement",
+      "surprised": "eyebrows break into fragmented single pixels"
+     },
+     "notes": "While head proportions, framing, and colored outlines fit the lineup well, the subject stands out due to much softer, low-contrast mouth rendering compared to the crisp dark mouths of the cast, alongside finer vertical hair banding. Several expressions also suffer from minor pixel-level polish issues like asymmetric eye heights and fragmented single-pixel eyebrows.",
+     "position": 2,
+     "seed": 102,
+     "model": "gemini-4-argon-high"
+    },
+    {
+     "castFit": 9,
+     "sameArtist": true,
+     "defects": {
+      "base": "none",
+      "happy": "none",
+      "sad": "asymmetric eyes: viewer's right eye is 1px taller and more open than viewer's left eye",
+      "angry": "slight eye asymmetry: viewer's left iris is 3px wide while the right iris is 2px wide, making the gaze uneven",
+      "surprised": "none"
+     },
+     "notes": "The subject matches the existing cast closely in framing, colored outline weight, skin/clothing ramps, and facial proportions (especially alongside #3). Only minor eye asymmetries in the sad and angry variants and a slightly softer mouth line in the base portrait stand out on close inspection.",
+     "position": 6,
+     "seed": 103,
+     "model": "gemini-4-argon-high"
+    },
+    {
+     "castFit": 7,
+     "sameArtist": false,
+     "defects": {
+      "base": "lighter, low-contrast mouth compared to cast; broken/gapped outer shoulder outlines",
+      "happy": "asymmetrical closed eye heights and shapes; broken/gapped outer shoulder outlines",
+      "sad": "markedly asymmetrical eye heights and shapes (right eye taller than left); faint crooked mouth",
+      "angry": "asymmetrical sclera placement making gaze cross/diverge; broken/gapped outer shoulder outlines",
+      "surprised": "asymmetrical eyebrows (right eyebrow fragmented into disconnected pixels); broken/gapped outer shoulder outlines"
+     },
+     "notes": "While the head proportions, palette ramp, and dark colored outlines align closely with #3 in Image 1, the subject stands out due to finer vertical-stripe hair texturing rather than chunky clusters, broken outer outlines along the white sleeves, and noticeably weaker mouth contrast. Furthermore, the expression variants introduce clear pixel-level asymmetries in eye heights, gaze direction, and eyebrow integrity.",
+     "position": 1,
+     "seed": 104,
+     "model": "gemini-4-argon-high"
+    },
+    {
+     "castFit": 8,
+     "sameArtist": true,
+     "defects": {
+      "base": "none",
+      "happy": "none",
+      "sad": "asymmetric eye heights (viewer's right eye drops lower and is larger than the left) and missing nose pixel compared to the other expressions",
+      "angry": "asymmetric iris shapes and placement causing a slightly mismatched gaze",
+      "surprised": "none"
+     },
+     "notes": "Framing, proportions, skin ramp, eye construction, and tinted jawline outlines match the existing cast (especially portraits 3 and 4) very closely. The only minor stylistic deviations are slightly finer vertical 1px hair striations and softer, lower-contrast mouth lines than the rest of the lineup.",
+     "position": 5,
+     "seed": 105,
+     "model": "gemini-4-argon-high"
+    }
+   ]
+  },
+  "naru": {
+   "kind": "positive",
+   "dir": "public/assets/emerald-monster/cast/naru",
+   "aggregate": {
+    "n": 5,
+    "scores": [
+     9.0,
+     8.0,
+     8.0,
+     9.0,
+     8.0
+    ],
+    "median": 8.0,
+    "min": 8.0,
+    "max": 9.0,
+    "sameArtistVotes": 5,
+    "defectVotes": {
+     "base": 0,
+     "happy": 5,
+     "sad": 5,
+     "angry": 1,
+     "surprised": 5
+    },
+    "worstDefectVotes": 5
+   },
+   "runs": [
+    {
+     "castFit": 9,
+     "sameArtist": true,
+     "defects": {
+      "base": "none",
+      "happy": "single stray dark pixel at the bottom-left corner of the open mouth",
+      "sad": "asymmetric eyes where the viewer's right eye is noticeably smaller/more squinted than the left",
+      "angry": "none",
+      "surprised": "asymmetric eyes with mismatched iris size and vertical alignment"
+     },
+     "notes": "The subject matches the existing cast's coloured outlines, palette ramps, hair-band highlights, and facial construction (especially portrait 3) closely enough to read as the same artist. Minor pixel cleanup is needed on a few expression variants, mainly eye symmetry in sad/surprised and a stray dark pixel on the happy mouth.",
+     "position": 5,
+     "seed": 101,
+     "model": "gemini-4-argon-high"
+    },
+    {
+     "castFit": 8,
+     "sameArtist": true,
+     "defects": {
+      "base": "none",
+      "happy": "stray dark pixel on the bottom-left edge of the open mouth",
+      "sad": "viewer's right eye and brow are noticeably more squished than the left beyond the base 3/4 perspective",
+      "angry": "none",
+      "surprised": "asymmetric broken eyes: viewer's right eye has an oversized white sclera block on top with a tiny low iris that does not match the left eye"
+     },
+     "notes": "The portrait matches the cast's colored outlines, palette ramp count, facial construction, and hair clustering very closely (especially character 3 from Image 1), with only slightly narrower shoulders and flatter shirt shading. Expression edits introduce minor pixel defects, most notably the mismatched eye construction in the surprised frame.",
+     "position": 2,
+     "seed": 102,
+     "model": "gemini-4-argon-high"
+    },
+    {
+     "castFit": 8,
+     "sameArtist": true,
+     "defects": {
+      "base": "none",
+      "happy": "asymmetric closed-eye arches and a stray dark pixel on the bottom-left corner of the open mouth",
+      "sad": "asymmetric eyes where the viewer's right iris is smaller and differently shaped than the left",
+      "angry": "none",
+      "surprised": "mismatched eyes with irises at different heights and horizontal positions, creating a broken gaze"
+     },
+     "notes": "The base portrait matches the cast's colored outlines, hair clustering, and shading ramps closely, though the head and shoulders are slightly more petite than portraits 1–5. However, several expression variants introduce clear eye-construction inconsistencies and minor pixel artifacts.",
+     "position": 6,
+     "seed": 103,
+     "model": "gemini-4-argon-high"
+    },
+    {
+     "castFit": 9,
+     "sameArtist": true,
+     "defects": {
+      "base": "none",
+      "happy": "single dark stray outline pixel on the bottom-left edge of the open mouth",
+      "sad": "asymmetric eye openness where the viewer's right eyelid droops lower than the left",
+      "angry": "none",
+      "surprised": "asymmetric sclera and iris placement making the viewer's right eye look slightly misaligned relative to the left"
+     },
+     "notes": "The portrait matches the existing cast closely in colored outline weight, palette ramp count, facial feature construction, and hair cluster shading (particularly alongside portraits 2 and 3). Minor pixel-level inconsistencies appear only in a few expression variants, notably a stray dark lip pixel on happy and slight iris/eyelid asymmetry on sad and surprised.",
+     "position": 1,
+     "seed": 104,
+     "model": "gemini-4-argon-high"
+    },
+    {
+     "castFit": 8,
+     "sameArtist": true,
+     "defects": {
+      "base": "none",
+      "happy": "stray dark pixel on the bottom-left corner of the open mouth",
+      "sad": "asymmetric eyes where the right eye is noticeably smaller and differently constructed than the left",
+      "angry": "slightly uneven eye sclera and mouth corner pixels",
+      "surprised": "asymmetric eyes with the right iris sitting lower under a white sclera band while the left iris reaches the upper lash"
+     },
+     "notes": "The base portrait matches the cast's colored outlines, shading steps, facial proportions, and zig-zag hair highlights (especially portrait 3) closely enough to pass as the same artist. However, the expression variants introduce clear pixel-level eye asymmetries and a stray mouth pixel.",
+     "position": 5,
+     "seed": 105,
+     "model": "gemini-4-argon-high"
+    }
+   ]
+  },
+  "yurim": {
+   "kind": "positive",
+   "dir": "public/assets/emerald-monster/cast/yurim",
+   "aggregate": {
+    "n": 5,
+    "scores": [
+     9.0,
+     8.0,
+     8.0,
+     8.0,
+     8.0
+    ],
+    "median": 8.0,
+    "min": 8.0,
+    "max": 9.0,
+    "sameArtistVotes": 5,
+    "defectVotes": {
+     "base": 0,
+     "happy": 0,
+     "sad": 4,
+     "angry": 0,
+     "surprised": 0
+    },
+    "worstDefectVotes": 4
+   },
+   "runs": [
+    {
+     "castFit": 9,
+     "sameArtist": true,
+     "defects": {
+      "base": "none",
+      "happy": "none",
+      "sad": "asymmetric eyes: viewer-right upper eyelid is flatter/lower than viewer-left and omits the iris highlight pixel",
+      "angry": "none",
+      "surprised": "none"
+     },
+     "notes": "Proportions, coloured outlines, palette ramp count, and facial feature construction match the existing cast closely, with only slightly finer micro-clustering in the hair texture. Expressions maintain consistent identity, aside from minor eyelid/highlight asymmetry on the sad face.",
+     "position": 5,
+     "seed": 101,
+     "model": "gemini-4-argon-high"
+    },
+    {
+     "castFit": 8,
+     "sameArtist": true,
+     "defects": {
+      "base": "none",
+      "happy": "none",
+      "sad": "asymmetric eyes: viewer's right eye lacks the specular highlight and has a heavier, flatter upper lid than the left",
+      "angry": "none",
+      "surprised": "none"
+     },
+     "notes": "Facial construction, eye rendering, coloured outlines, and bust framing match the existing cast closely, though the hair shading is slightly more fragmented and noisy than the cleaner clusters on cast members 1 and 5. Expressions maintain identity well aside from the mismatched right eye in the sad variant.",
+     "position": 2,
+     "seed": 102,
+     "model": "gemini-4-argon-high"
+    },
+    {
+     "castFit": 8,
+     "sameArtist": true,
+     "defects": {
+      "base": "none",
+      "happy": "none",
+      "sad": "none",
+      "angry": "none",
+      "surprised": "none"
+     },
+     "notes": "Eye construction, skin shading ramp, warm interior outlines, and bust framing match the existing cast closely. The hair uses slightly busier, more fragmented highlight clusters than the broader locks on portraits 1–5, but it still reads naturally alongside them and all five expressions are clean and consistent.",
+     "position": 6,
+     "seed": 103,
+     "model": "gemini-4-argon-high"
+    },
+    {
+     "castFit": 8,
+     "sameArtist": true,
+     "defects": {
+      "base": "none",
+      "happy": "none",
+      "sad": "asymmetric eyes: the viewer-right eye lacks the iris highlight present in the left eye and has a heavier flat upper lid",
+      "angry": "none",
+      "surprised": "none"
+     },
+     "notes": "The subject matches the cast's eye/nose/mouth construction, dark-tinted outlines, and shading ramps very closely, with only slightly finer/noisier clustering in the hair spikes and hoodie folds. Identity and framing hold consistently across the lineup and expression sheet aside from the mismatched right eye in the sad expression.",
+     "position": 1,
+     "seed": 104,
+     "model": "gemini-4-argon-high"
+    },
+    {
+     "castFit": 8,
+     "sameArtist": true,
+     "defects": {
+      "base": "none",
+      "happy": "none",
+      "sad": "asymmetric eyes (screen-left eye retains a white highlight pixel while screen-right eye lacks it and has a heavier upper lid)",
+      "angry": "none",
+      "surprised": "none"
+     },
+     "notes": "The subject seamlessly matches the cast's colored outlines, facial feature construction, and proportioning, though the hair rendering uses slightly smaller, noisier leaf-like clusters than the smoother locks on the rest of the cast. All expressions maintain consistent identity with clean pixel work aside from a minor eye asymmetry in the sad variant.",
+     "position": 5,
+     "seed": 105,
+     "model": "gemini-4-argon-high"
+    }
+   ]
+  },
+  "muyeong": {
+   "kind": "positive",
+   "dir": "public/assets/emerald-monster/cast/muyeong",
+   "aggregate": {
+    "n": 5,
+    "scores": [
+     9.0,
+     9.0,
+     8.0,
+     7.0,
+     8.0
+    ],
+    "median": 8.0,
+    "min": 7.0,
+    "max": 9.0,
+    "sameArtistVotes": 4,
+    "defectVotes": {
+     "base": 0,
+     "happy": 5,
+     "sad": 1,
+     "angry": 0,
+     "surprised": 1
+    },
+    "worstDefectVotes": 5
+   },
+   "runs": [
+    {
+     "castFit": 9,
+     "sameArtist": true,
+     "defects": {
+      "base": "none",
+      "happy": "asymmetric cheek blush (2px on viewer's left, 1px on viewer's right) and slightly uneven right eyebrow pixels on the mask",
+      "sad": "none",
+      "angry": "none",
+      "surprised": "none"
+     },
+     "notes": "The subject seamlessly matches the existing cast's proportions, colored outlines, shading steps, and spiky hair clustering. Aside from a minor blush/eyebrow asymmetry on the happy variant, all expressions are clean and consistent in identity.",
+     "position": 5,
+     "seed": 101,
+     "model": "gemini-4-argon-high"
+    },
+    {
+     "castFit": 9,
+     "sameArtist": true,
+     "defects": {
+      "base": "none",
+      "happy": "asymmetric cheek blush (2px on viewer's left, 1px on right) and white eye arcs where skin/dark closed eyelids should be inside the mask cutouts",
+      "sad": "none",
+      "angry": "none",
+      "surprised": "none"
+     },
+     "notes": "The subject seamlessly matches the cast's selout color weight, shading ramps, hair clustering, and bust proportions. Only the happy expression has minor pixel inconsistencies with its asymmetric blush and white eye arcs.",
+     "position": 2,
+     "seed": 102,
+     "model": "gemini-4-argon-high"
+    },
+    {
+     "castFit": 8,
+     "sameArtist": true,
+     "defects": {
+      "base": "none",
+      "happy": "Closed eyes inside the mask are drawn as stark white arcs instead of dark lashes/outlines, reading like glowing eyes or sclera, and cheek blush asymmetry (2px vs 1px) is clunky.",
+      "sad": "none",
+      "angry": "none",
+      "surprised": "none"
+     },
+     "notes": "The subject seamlessly matches the existing cast in outline weight, colored lineart, palette ramp counts, hair clustering, and bust proportions. Aside from the confusing white eye-arcs on the happy expression, pixel placement across all variants is clean and consistent.",
+     "position": 6,
+     "seed": 103,
+     "model": "gemini-4-argon-high"
+    },
+    {
+     "castFit": 7,
+     "sameArtist": false,
+     "defects": {
+      "base": "none",
+      "happy": "closed eyes turn into white arches despite normal eyes in base, asymmetric blush (2px left vs 1px right), and stray red pixel on the right side of the mask",
+      "sad": "eyebrow pixels clip unevenly into the upper mask outline",
+      "angry": "none",
+      "surprised": "red eyebrows disappear into tiny black pixels above the mask, and the wide sclera deform the mask into jagged 1px rings"
+     },
+     "notes": "Palette, colored outlines, and spiky hair clusters match the lineup well, but the sharper V-shaped jaw, 2px vertical nose (versus 1px dot noses across the entire cast), and rigid torso symmetry read as a slightly different hand. Several expression variants also break the logic and pixel cleanliness of the mask and eyebrows.",
+     "position": 1,
+     "seed": 104,
+     "model": "gemini-4-argon-high"
+    },
+    {
+     "castFit": 8,
+     "sameArtist": true,
+     "defects": {
+      "base": "none",
+      "happy": "asymmetric blush (2px on viewer's left cheek vs 1px on right) and slightly uneven red brow pixels on the right side of the mask",
+      "sad": "none",
+      "angry": "none",
+      "surprised": "none"
+     },
+     "notes": "Proportions, colored outlines, facial construction, and bust framing match the existing cast closely, though the subject's hair lacks the brighter crown highlight step seen on portraits 2–4 and 6. Expressions are clean and consistent on-model aside from the uneven cheek blush in the happy variant.",
+     "position": 5,
+     "seed": 105,
+     "model": "gemini-4-argon-high"
+    }
+   ]
+  },
+  "old-professor-chargen": {
+   "kind": "negative",
+   "dir": "public/assets/emerald-monster/cast/professor",
+   "aggregate": {
+    "n": 5,
+    "scores": [
+     5.0,
+     6.0,
+     6.0,
+     5.0,
+     4.0
+    ],
+    "median": 5.0,
+    "min": 4.0,
+    "max": 6.0,
+    "sameArtistVotes": 0,
+    "defectVotes": {
+     "base": 5,
+     "happy": 5,
+     "sad": 5,
+     "angry": 5,
+     "surprised": 5
+    },
+    "worstDefectVotes": 5
+   },
+   "runs": [
+    {
+     "castFit": 5,
+     "sameArtist": false,
+     "defects": {
+      "base": "missing outer outlines on ears, hair tips, and white coat shoulders (unlike #3's dark-outlined white uniform), plus stray grey pixels at the left glasses rim",
+      "happy": "broken bottom rims on the glasses, thick dark smudge on left frame, mismatched stray pink and grey pixels for the right blush, and a stray red pixel breaking the lower-left mouth outline",
+      "sad": "glasses frames warp from round to jagged/flat-topped and eyes are noticeably asymmetric in height and opening",
+      "angry": "glasses change design into half-rims with missing top frames",
+      "surprised": "asymmetric eyes (viewer's right iris has a dark cluster at the top that is missing on the left) and broken left glasses frame"
+     },
+     "notes": "While the facial proportions and eye rendering mimic the cast well, the subject lacks the cast's consistent dark exterior outlines around hair, ears, and white clothing (compare with #3). The expression sheet also suffers from AI-like consistency errors where the glasses warp or vanish and stray pixels appear around the blush and mouth.",
+     "position": 5,
+     "seed": 101,
+     "model": "gemini-4-argon-high"
+    },
+    {
+     "castFit": 6,
+     "sameArtist": false,
+     "defects": {
+      "base": "missing outer outline on ears, fragmented dashed outline on white coat shoulders, grey stray pixels on outer-left glasses rim",
+      "happy": "asymmetric blush (solid pink bar on left cheek vs stray pink and grey single pixels on right), broken glasses rims with thick dark smudge on left temple, un-outlined ears and broken coat outline",
+      "sad": "warped/broken top glasses rims, asymmetric eye openness and pupil placement, un-outlined ears and broken coat outline",
+      "angry": "top rims of glasses disappear into eyebrows, un-outlined ears and broken coat outline",
+      "surprised": "asymmetric iris/highlight pixels between left and right eyes, un-outlined ears and broken coat outline"
+     },
+     "notes": "Facial proportions, skin shading, and teal iris rendering closely match the existing cast, but the subject stands out due to un-outlined ears, a fragmented outline on the white coat (unlike character 3's fully outlined white uniform), and noisy, inconsistent hair tips. Several expressions also suffer from broken glasses geometry and stray pixel artifacts like the corrupted right-cheek blush in 'happy'.",
+     "position": 2,
+     "seed": 102,
+     "model": "gemini-4-argon-high"
+    },
+    {
+     "castFit": 6,
+     "sameArtist": false,
+     "defects": {
+      "base": "broken outer outline along the white lab coat shoulders (unlike #3's fully outlined white uniform) and stray grey pixels inside the left lens",
+      "happy": "broken bottom rims on the glasses, thick dark smudge on left temple of frame, and mismatched right blush (one pink pixel and one stray grey pixel)",
+      "sad": "glasses deform from round to blocky/octagonal with broken upper rims, and eyes are noticeably asymmetrical in height and pupil shape",
+      "angry": "glasses lose their upper rims entirely (changing design to half-frame rectangular lenses) plus the same broken coat outline",
+      "surprised": "asymmetrical iris/sclera shapes between left and right eyes and broken pixels on the upper-left glasses rim"
+     },
+     "notes": "While facial proportions, eye rendering, and palette fit the cast closely, the subject stands out due to missing/broken silhouette outlines on the white lab coat and looser un-outlined hair tips compared to the crisp continuous outlines of every cast member. Additionally, the expression sheet suffers from inconsistent glasses geometry and stray pixel artifacts.",
+     "position": 6,
+     "seed": 103,
+     "model": "gemini-4-argon-high"
+    },
+    {
+     "castFit": 5,
+     "sameArtist": false,
+     "defects": {
+      "base": "broken spotty outline on the white coat shoulders, un-outlined hair silhouette unlike the rest of the cast, and stray grey pixels on the left glasses rim",
+      "happy": "glasses frames break at the top with a thick smudge on the left rim, and the right cheek blush dissolves into two mismatched pink and grey stray pixels",
+      "sad": "glasses frames warp into jagged broken shapes at the top and the left eye construction is smudged and asymmetric",
+      "angry": "round glasses change shape into flat-topped rims that merge into the eyebrows, alongside the broken shoulder outlines",
+      "surprised": "asymmetric eyes with stray dark pixels in the right sclera above the iris, plus a broken left glasses frame"
+     },
+     "notes": "While facial proportions, skin shading, and eye colours mimic the cast closely, the subject stands out due to its un-outlined hair tips and broken, spotty lab coat outlines (compare to character 3's crisp white uniform outline). Across expressions, the round glasses warp inconsistently and introduce stray pixel artifacts typical of generated edits rather than hand-drawn sprite sheets.",
+     "position": 1,
+     "seed": 104,
+     "model": "gemini-4-argon-high"
+    },
+    {
+     "castFit": 4,
+     "sameArtist": false,
+     "defects": {
+      "base": "missing outer outlines on hair, ears, and white lab coat shoulders (unlike #3's fully outlined white uniform); stray grey pixels inside viewer-left glasses lens",
+      "happy": "broken/missing bottom rims of glasses with a thick dark smudge on viewer-left frame, mismatched blush (2px bar on left vs 1 pink + 1 grey stray pixel on right), and a stray red pixel protruding below the mouth",
+      "sad": "warped/broken top glasses rims and asymmetric eye/iris sizes",
+      "angry": "upper glasses rims vanish completely under the eyebrows, changing how the frames are constructed",
+      "surprised": "asymmetric eyes/pupils (stray dark pixels at top of viewer-right sclera) and broken lab coat outline"
+     },
+     "notes": "Every existing cast member uses continuous dark outlines around hair silhouettes, ears, and light clothing (see #3), whereas the subject's hair, ears, and coat bleed directly into the background without outlines. The expression sheet also exhibits severe structural inconsistency in the glasses and stray pixel artifacts typical of generative edits rather than hand-drawn pixel art.",
+     "position": 5,
+     "seed": 105,
+     "model": "gemini-4-argon-high"
+    }
+   ]
+  },
+  "shared-elder": {
+   "kind": "negative",
+   "dir": "public/assets/emerald-monster/cast/professor-shared-elder",
+   "aggregate": {
+    "n": 5,
+    "scores": [
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0
+    ],
+    "median": 1.0,
+    "min": 1.0,
+    "max": 1.0,
+    "sameArtistVotes": 0,
+    "defectVotes": {
+     "base": 5,
+     "happy": 5,
+     "sad": 5,
+     "angry": 5,
+     "surprised": 5
+    },
+    "worstDefectVotes": 5
+   },
+   "runs": [
+    {
+     "castFit": 1,
+     "sameArtist": false,
+     "defects": {
+      "base": "muddy downscaling/anti-aliasing artifacts, stray light pixels on cheeks, and a floating horizontal black cutoff line at the bottom",
+      "happy": "smeared white teeth blob, blurry eye lines, and the bottom cutoff shifts higher than the base portrait",
+      "sad": "muddy smeared eye sockets, noisy neck pixels, and inconsistent bottom cutoff height",
+      "angry": "smeared indistinct eyes, stray dark pixels on the cheek, and noisy collar/neck shading",
+      "surprised": "blurry asymmetrical eyes, smeared mouth/teeth, turtleneck changes color, and the bottom cutoff shifts higher again"
+     },
+     "notes": "The subject completely clashes with the cast due to its 3/4 angle, realistic proportions, desaturated noisy palette, downscaling artifacts, and floating black bottom border, whereas the cast uses clean front-facing anime busts flush with the bottom edge. Across expressions, the subject also suffers from shifting crop heights, inconsistent clothing colors, and smeared facial features.",
+     "position": 5,
+     "seed": 101,
+     "model": "gemini-4-argon-high"
+    },
+    {
+     "castFit": 1,
+     "sameArtist": false,
+     "defects": {
+      "base": "cutoff floating above baseline with a black bottom border line, muddy anti-aliasing noise on neck and beard, smeared indistinct eyes, and stray pale grey pixels on both cheeks",
+      "happy": "inconsistent vertical crop shifted higher than base, smeared white teeth blob lacking pixel definition, stray grey cheek pixels, and black bottom border line",
+      "sad": "muddy smeared eye sockets with indistinct pupils, stray dark pixels on cheeks, noisy neck shading, and black bottom border line",
+      "angry": "viewer-left eye dissolves into a muddy brown smear, stray dark grey pixels under eyes, noisy neck/beard pixels, and black bottom border line",
+      "surprised": "inconsistent vertical crop and shifted turtleneck height/colour compared to base, smeared eyes and teeth, stray white/grey cheek pixels, and black bottom border line"
+     },
+     "notes": "The subject completely clashes with the cast in every metric: it uses a 3/4 realistic proportion with tiny eyes, muted noisy downscale-like shading, and a floating horizontal bottom border, whereas the existing cast is strictly front-facing with saturated cel-shaded clusters, large anime eyes, and flush bottom framing. Across expressions, the subject suffers from inconsistent bottom cropping, shifting clothing details, stray cheek artifacts, and muddy, unreadable facial features.",
+     "position": 2,
+     "seed": 102,
+     "model": "gemini-4-argon-high"
+    },
+    {
+     "castFit": 1,
+     "sameArtist": false,
+     "defects": {
+      "base": "solid dark bottom border line floating above the cast baseline, muddy anti-aliasing on neck/beard, and unnatural white/grey pixel artifacts under the eyes",
+      "happy": "cropped higher than base with shifted vertical framing, solid bottom border line, and a smeared white blob for teeth",
+      "sad": "solid bottom border line, smeared indistinct eye clusters, and stray dark pixels on the cheek",
+      "angry": "solid bottom border line, viewer-left eye is a muddy brown smudge with no clear structure, and stray dark spots on both cheeks",
+      "surprised": "inconsistent vertical crop and turtleneck color shift compared to base, solid bottom border line, and blurry/noisy mouth and eye pixels"
+     },
+     "notes": "The subject completely breaks the lineup's art direction: it uses a semi-realistic 3/4-view style with noisy, desaturated shading and a hard bottom border line, whereas the existing cast consists of clean, vibrant, front-facing chibi/anime busts flush with the bottom edge. Across expressions, the subject also suffers from inconsistent vertical cropping, shifting shirt colors, and downscaling/AI-like pixel smears.",
+     "position": 6,
+     "seed": 103,
+     "model": "gemini-4-argon-high"
+    },
+    {
+     "castFit": 1,
+     "sameArtist": false,
+     "defects": {
+      "base": "muddy downscaling noise in palette, smeared indistinct eyes, stray light grey pixels on cheeks, and a solid dark bottom border line cropped higher than the cast",
+      "happy": "vertical framing/crop shifts upward, smeared white teeth blob, indistinct eyes, and noisy pixel artifacts",
+      "sad": "muddy smeared eye sockets, stray grey pixels on cheek and neck, and bottom border line",
+      "angry": "eyes are completely smeared into dark blobs, stray dark pixel on the cheek, and noisy shading artifacts",
+      "surprised": "vertical crop shifts upward, shirt color shifts noticeably bluer, smeared asymmetrical eyes and mouth, and stray white pixels on cheeks"
+     },
+     "notes": "The subject completely clashes with the cast in every metric: it uses a semi-realistic 3/4-angle bust with tiny features, dirty/noisy color ramps, and a floating horizontal bottom border, whereas the existing cast uses front-facing anime proportions, large crisp eyes, clean hand-placed clusters, and flush bottom framing.",
+     "position": 1,
+     "seed": 104,
+     "model": "gemini-4-argon-high"
+    },
+    {
+     "castFit": 1,
+     "sameArtist": false,
+     "defects": {
+      "base": "floating bottom edge with a hard dark border instead of reaching the canvas bottom, stray white/grey pixels on cheeks under eyes, and noisy downscale-like shading on neck and beard",
+      "happy": "inconsistent higher bottom crop compared to base, blurry unoutlined white blob for teeth, and stray light pixels on cheeks",
+      "sad": "muddy smeared eye sockets with indistinct eye shapes and noisy pixel artifacts on the neck",
+      "angry": "smeared indistinct viewer-left eye, stray dark pixels on cheek under eye, and noisy neck shading",
+      "surprised": "inconsistent higher bottom crop, turtleneck changes colour to a brighter blue, stray white pixels on cheek, and smeared/blurry eyes and mouth"
+     },
+     "notes": "The subject completely clashes with the cast due to its 3/4 realistic proportions, tiny eyes, desaturated noisy palette, and floating cut-off bottom border versus the cast's front-facing, vibrant, clean-clustered anime style. Across expressions, it suffers from downscale-like pixel noise, smeared facial features, and inconsistent bottom cropping.",
+     "position": 5,
+     "seed": 105,
+     "model": "gemini-4-argon-high"
+    }
+   ]
+  },
+  "shared-moustache": {
+   "kind": "negative",
+   "dir": "public/assets/emerald-monster/cast/professor-shared-moustache",
+   "aggregate": {
+    "n": 5,
+    "scores": [
+     1.0,
+     2.0,
+     1.0,
+     1.0,
+     1.0
+    ],
+    "median": 1.0,
+    "min": 1.0,
+    "max": 2.0,
+    "sameArtistVotes": 0,
+    "defectVotes": {
+     "base": 5,
+     "happy": 5,
+     "sad": 5,
+     "angry": 5,
+     "surprised": 5
+    },
+    "worstDefectVotes": 5
+   },
+   "runs": [
+    {
+     "castFit": 1,
+     "sameArtist": false,
+     "defects": {
+      "base": "grey and white stray artifact pixels along the jawline and neck, noisy anti-aliasing, and a black-outlined bottom edge cropped higher than the cast baseline",
+      "happy": "large white and grey pixel smears across the neck, muddy blurred teeth/mouth interior, and smeared right eye",
+      "sad": "stray white pixels on the neck, noisy skin pixels on the chin, and a blurry smeared mouth beneath the mustache",
+      "angry": "white and grey stray pixels on the neck and jawline, muddy eye pixels, and expression barely differs from base",
+      "surprised": "grey and white artifact pixels along the jawline and neck, asymmetrical noisy eyes, and an indistinct dark blob mouth"
+     },
+     "notes": "The subject immediately stands out due to its 3/4 angle, semi-realistic facial proportions with tiny eyes, muted noisy palette with downscaling artifacts, and higher bottom crop with a black border. The existing cast uses symmetrical front-facing busts, large anime eyes, clean hand-placed pixel clusters, and flush bottom framing.",
+     "position": 5,
+     "seed": 101,
+     "model": "gemini-4-argon-high"
+    },
+    {
+     "castFit": 2,
+     "sameArtist": false,
+     "defects": {
+      "base": "Grey/white halo artifacts along the jawline and neck, muddy anti-aliased eyes and collar, and a dark horizontal cutoff line floating above the cast baseline.",
+      "happy": "Severe white/grey smear artifacts across the neck and jaw, muddy indistinct teeth/mouth, and viewer's right eye bleeding into the hair.",
+      "sad": "Head shifts pose downward relative to other expressions, faint muddy tear pixels, and white stray pixels on the neck.",
+      "angry": "Reads as neutral rather than angry, smeared viewer's right eye, and white/grey artifact pixels on the neck and jawline.",
+      "surprised": "Asymmetric, blurry white/grey eye blobs, ambiguous dark blob below mustache (mouth vs. soul patch), and white smear artifacts along the jaw and neck."
+     },
+     "notes": "The subject immediately stands out as a downscaled/AI-generated portrait with realistic 3/4 proportions, tiny eyes, and heavy anti-aliasing noise, clashing sharply with the cast's clean, hand-clustered front-facing anime style. Additionally, the bust is framed too high with an artificial dark bottom border instead of sitting flush on the canvas edge like the rest of the lineup.",
+     "position": 2,
+     "seed": 102,
+     "model": "gemini-4-argon-high"
+    },
+    {
+     "castFit": 1,
+     "sameArtist": false,
+     "defects": {
+      "base": "grey/white stray pixels along jawline and neck, noisy downscaling artifacts on collar and hair, dark horizontal border line along bottom edge",
+      "happy": "heavy white/grey pixel smears across the neck, muddy indistinct open mouth, smeared asymmetric eyes",
+      "sad": "noisy stray pixels on cheek and neck, smudged eyes, indistinct brown blob under mustache",
+      "angry": "nearly identical to base expression instead of reading as angry, smudged right eye, stray white pixels on neck and behind jaw",
+      "surprised": "asymmetric noisy eyes, grey/white artifacts along jawline and neck, ambiguous dark blob under mustache"
+     },
+     "notes": "The subject immediately stands out due to its 3/4 angle, realistic comic proportions with tiny eyes, floating bottom cut-off line, and noisy anti-aliased rendering, whereas the existing cast uses clean hand-clustered pixel art, front-facing poses, and large anime eyes. Every expression also suffers from severe downscaling noise and white/grey artifacts on the neck that shift inconsistently between frames.",
+     "position": 6,
+     "seed": 103,
+     "model": "gemini-4-argon-high"
+    },
+    {
+     "castFit": 1,
+     "sameArtist": false,
+     "defects": {
+      "base": "Downscaling smears throughout, grey/white artifact pixels along the jawline and neck, muddy hair/shirt clusters, and an unwanted dark outline across the bottom edge.",
+      "happy": "Severe white/grey artifact blotches across the neck and jaw, smeared blurry teeth/mouth, right eye muddied into hair, and dark bottom-edge line.",
+      "sad": "Blurry smeared tear and mouth pixels, stray grey/white artifacts on the neck, noisy unclustered shading, and dark bottom-edge line.",
+      "angry": "Reads as neutral rather than angry, blurry asymmetric eyes with grey AA smears, stray white pixels on neck, and dark bottom-edge line.",
+      "surprised": "Messy unclustered eyes, ambiguous brown blob under mustache that reads like a soul patch instead of an open mouth, white neck/jaw artifacts, and dark bottom-edge line."
+     },
+     "notes": "The subject immediately stands out due to its 3/4 view, realistic adult proportions, tiny eyes, muted palette, and heavy downscaling/anti-aliasing noise compared to the front-facing, hand-clustered, vibrant anime style of the cast. It also has a solid dark border along the bottom edge and severe grey/white neck artifacts across all expressions.",
+     "position": 1,
+     "seed": 104,
+     "model": "gemini-4-argon-high"
+    },
+    {
+     "castFit": 1,
+     "sameArtist": false,
+     "defects": {
+      "base": "noisy downscaling artifacts, grey/white stray pixels along jaw and neck, dark bottom border line floating above cast baseline",
+      "happy": "large white/grey smear across the neck and throat, muddy indistinct mouth pixels",
+      "sad": "smeared semi-transparent tear pixels, white artifacts on neck, blurry mouth under mustache",
+      "angry": "white stray pixels on neck, muddy mouth smear, fails to read as angry compared to base",
+      "surprised": "smeared asymmetric eyes with noisy sclera, white artifacts along jaw and neck, blurry mouth"
+     },
+     "notes": "The subject completely clashes with the cast due to its 3/4 angle, realistic facial proportions with tiny eyes, shorter vertical crop with a bottom outline, and noisy downscaled/AI-generated pixel artifacts instead of clean hand-pixelled clusters.",
+     "position": 5,
+     "seed": 105,
+     "model": "gemini-4-argon-high"
+    }
+   ]
+  },
+  "hand-a": {
+   "kind": "negative",
+   "dir": "public/assets/emerald-monster/cast/professor-hand-a",
+   "aggregate": {
+    "n": 5,
+    "scores": [
+     3.0,
+     3.0,
+     3.0,
+     3.0,
+     3.0
+    ],
+    "median": 3.0,
+    "min": 3.0,
+    "max": 3.0,
+    "sameArtistVotes": 0,
+    "defectVotes": {
+     "base": 2,
+     "happy": 0,
+     "sad": 3,
+     "angry": 2,
+     "surprised": 2
+    },
+    "worstDefectVotes": 3
+   },
+   "runs": [
+    {
+     "castFit": 3,
+     "sameArtist": false,
+     "defects": {
+      "base": "none",
+      "happy": "none",
+      "sad": "stray dark pixels in the upper-center hair crown that do not exist in the base sprite, plus muddy anti-aliasing around the mouth corners",
+      "angry": "stray lighter-brown pixel just below the top hair tuft",
+      "surprised": "none"
+     },
+     "notes": "The subject clearly reads as a different artist due to its rigid mirror symmetry, desaturated palette, blocky ears, tiny eyes, vertical-striped hair texture, and flat coat shading, whereas the existing cast uses vibrant colours, large expressive anime eyes, and dynamic, chunky hair and clothing clusters.",
+     "position": 5,
+     "seed": 101,
+     "model": "gemini-4-argon-high"
+    },
+    {
+     "castFit": 3,
+     "sameArtist": false,
+     "defects": {
+      "base": "none",
+      "happy": "none",
+      "sad": "none",
+      "angry": "none",
+      "surprised": "none"
+     },
+     "notes": "The subject clearly reads as a different artist due to rigid mirror symmetry, blocky rectangular ears, tiny non-anime eye construction, and flat vertical-striped hair and clothing shading that lack the cast's organic volume and hue-shifted palettes. While the pixel work itself is clean and consistent across all five expressions without technical defects, the anatomical proportions and rendering style stand out starkly against the lineup.",
+     "position": 2,
+     "seed": 102,
+     "model": "gemini-4-argon-high"
+    },
+    {
+     "castFit": 3,
+     "sameArtist": false,
+     "defects": {
+      "base": "smudged, overly soft mouth and cheek shading",
+      "happy": "none",
+      "sad": "faint, low-contrast mouth that blurs into skin tones",
+      "angry": "none",
+      "surprised": "unnatural boxy square eye construction"
+     },
+     "notes": "The subject stands out immediately due to rigid bilateral mirroring, boxy ears, radial striped hair rather than chunky organic locks, desaturated colours, and flat coat shading (compare with #3's richly shaded white uniform). Facial construction also diverges sharply from the cast, replacing crisp mouths, dot noses, and expressive anime eyes with tiny slit eyes, wide nose bars, and soft, low-contrast mouth shading.",
+     "position": 6,
+     "seed": 103,
+     "model": "gemini-4-argon-high"
+    },
+    {
+     "castFit": 3,
+     "sameArtist": false,
+     "defects": {
+      "base": "none",
+      "happy": "none",
+      "sad": "none",
+      "angry": "none",
+      "surprised": "none"
+     },
+     "notes": "The subject stands out clearly as a different hand due to rigid near-perfect horizontal symmetry, small semi-realistic eyes rather than large anime eyes, rectangular ear blocks, desaturated skin tones, and flat clothing shading compared to the vibrant, organic clustering of the existing cast. While the pixel execution across expressions is clean and defect-free, the anatomical proportions and rendering style do not match the lineup.",
+     "position": 1,
+     "seed": 104,
+     "model": "gemini-4-argon-high"
+    },
+    {
+     "castFit": 3,
+     "sameArtist": false,
+     "defects": {
+      "base": "muddy low-contrast mouth and cheek shading reads as smeared at 1x",
+      "happy": "none",
+      "sad": "stray dark pixel in upper-center hair",
+      "angry": "inconsistent dark pixels in upper-center hair compared to base",
+      "surprised": "eye construction loses upper lash line, breaking visual consistency"
+     },
+     "notes": "The subject immediately stands out as a different artist due to obvious mirror-tool symmetry, tiny narrow eyes versus the cast's tall anime eyes, blocky rectangular ears, thin vertical hair striping instead of volumetric clusters, and flat unshaded clothing.",
+     "position": 5,
+     "seed": 105,
+     "model": "gemini-4-argon-high"
+    }
+   ]
+  },
+  "hand-b": {
+   "kind": "negative",
+   "dir": "public/assets/emerald-monster/cast/professor-hand-b",
+   "aggregate": {
+    "n": 5,
+    "scores": [
+     4.0,
+     3.0,
+     4.0,
+     3.0,
+     4.0
+    ],
+    "median": 4.0,
+    "min": 3.0,
+    "max": 4.0,
+    "sameArtistVotes": 0,
+    "defectVotes": {
+     "base": 5,
+     "happy": 5,
+     "sad": 5,
+     "angry": 5,
+     "surprised": 5
+    },
+    "worstDefectVotes": 5
+   },
+   "runs": [
+    {
+     "castFit": 4,
+     "sameArtist": false,
+     "defects": {
+      "base": "low-contrast glasses frames blend muddily into skin shading; rigid staircase grey hair streaks lack natural clustering",
+      "happy": "noisy single-pixel wrinkle speckles around outer eyes",
+      "sad": "muddy single-pixel shading artifacts around nose and mouth",
+      "angry": "low-contrast glasses frames smear into nose/cheek shading",
+      "surprised": "stray noisy dither/wrinkle pixels at outer eye corners despite wide-eyed expression"
+     },
+     "notes": "The subject stands out clearly from the cast due to its round chin, missing neck, smaller stiffer eyes, and rigid diagonal grey hair streaks compared to the cast's tapered chins, clear necks, and flowing hair clusters. Low-contrast glasses and single-pixel facial wrinkle noise also clash with the cast's clean, bold pixel clusters.",
+     "position": 5,
+     "seed": 101,
+     "model": "gemini-4-argon-high"
+    },
+    {
+     "castFit": 3,
+     "sameArtist": false,
+     "defects": {
+      "base": "low-contrast grey glasses muddy the nose/cheek area and rigid 1:1 mirrored grey hair streaks/shoulders lack organic clustering",
+      "happy": "noisy stray wrinkle pixels around the outer eyes and muddy glasses bridge",
+      "sad": "stray dark shadow pixels under the glasses around the nose and mouth read like dirt",
+      "angry": "muddy pixel clutter where the glasses bridge meets the nose shading",
+      "surprised": "noisy stray pixels around the outer eyes/temples and muddy glasses"
+     },
+     "notes": "The subject immediately stands out due to rigid symmetry, geometric arc shoulders, flat desaturated skin tones, and stiff diagonal hair streaks that lack the cast's organic clustering and lush anime eye construction. Across expressions, low-contrast glasses and scattered single-pixel facial wrinkles create muddy noise unseen in the existing portraits.",
+     "position": 2,
+     "seed": 102,
+     "model": "gemini-4-argon-high"
+    },
+    {
+     "castFit": 4,
+     "sameArtist": false,
+     "defects": {
+      "base": "low-contrast glasses read poorly and muddy 1px wrinkle pixels clutter the forehead and cheeks",
+      "happy": "noisy stray-looking crow's-feet pixels around the outer eyes",
+      "sad": "awkward vertical dark skin pixels above the mouth corners look like smudges or snot",
+      "angry": "inconsistent nose/cheek shadow pixels compared to base",
+      "surprised": "missing lower nose shadow compared to the other expressions and noisy pixels beside the eyes"
+     },
+     "notes": "The subject stands out due to rigid mirror-like symmetry, a wide rounded jaw instead of the cast's tapered anime chins, stiff stair-stepped grey hair streaks, and noisy single-pixel facial lines that clash with the cast's clean cel-style pixel shading. Its desaturated skin, tiny eyes, and low-contrast glasses also lack the bold readability of the existing portraits.",
+     "position": 6,
+     "seed": 103,
+     "model": "gemini-4-argon-high"
+    },
+    {
+     "castFit": 3,
+     "sameArtist": false,
+     "defects": {
+      "base": "rigid left-right mirror symmetry across hair, head, and coat; low-contrast grey glasses sit awkwardly below the eyes and muddy the mid-face pixels",
+      "happy": "noisy single-pixel wrinkle dots around the outer eyes read as stray pixels at 1x",
+      "sad": "stray-looking single-pixel skin-shadow dots around the eyes and upper lip",
+      "angry": "muddy pixel clustering around the nose bridge and glasses",
+      "surprised": "stray wrinkle pixels beside the eyes and a muddy pixel cluster above the open mouth"
+     },
+     "notes": "The subject stands out immediately as a different artist due to obvious mirror-tool symmetry, a flatter/boxier head and smaller eyes than the cast's tapered anime proportions, desaturated palettes, and stiff diagonal banding on the grey hair streaks and coat sleeves. None of the existing cast use mirrored hair/clothing or low-contrast 1px facial accessories that blend into skin shading.",
+     "position": 1,
+     "seed": 104,
+     "model": "gemini-4-argon-high"
+    },
+    {
+     "castFit": 4,
+     "sameArtist": false,
+     "defects": {
+      "base": "low-contrast glasses blend muddily into skin shading; stiffly mirrored hair streaks and coat outlines",
+      "happy": "noisy stray-looking crow's-feet speckles around the outer eyes and cramped, unclear eye construction",
+      "sad": "muddy vertical pixel smudges between the glasses bridge and mouth",
+      "angry": "muddy skin-tone pixel noise around the nose and glasses rims",
+      "surprised": "stray noisy shading speckles around the outer eye corners"
+     },
+     "notes": "The subject stands out as a different hand due to its pillow-shaded skin, noisy unclustered grey hair streaks, black-outlined lab coat (unlike character 3's clean cel-shaded white uniform), and low-contrast glasses that muddy the face. Its round bowl-shaped jaw, lack of bright hair highlights, and stiff symmetry also break from the cast's lively, tapered anime proportions.",
+     "position": 5,
+     "seed": 105,
+     "model": "gemini-4-argon-high"
+    }
+   ]
+  },
+  "cg-nat10-approved": {
+   "kind": "probe",
+   "dir": "harness-data/cast-portrait/astra-horizon/approved-cg-nat10",
+   "aggregate": {
+    "n": 5,
+    "scores": [
+     9.0,
+     9.0,
+     9.0,
+     9.0,
+     9.0
+    ],
+    "median": 9.0,
+    "min": 9.0,
+    "max": 9.0,
+    "sameArtistVotes": 5,
+    "defectVotes": {
+     "base": 0,
+     "happy": 0,
+     "sad": 3,
+     "angry": 5,
+     "surprised": 0
+    },
+    "worstDefectVotes": 5
+   },
+   "runs": [
+    {
+     "castFit": 9,
+     "sameArtist": true,
+     "defects": {
+      "base": "none",
+      "happy": "none",
+      "sad": "asymmetric age/cheek lines (2px line on viewer's left, single stray pixel on right)",
+      "angry": "missing the character's signature age/cheek lines present in all other expressions",
+      "surprised": "none"
+     },
+     "notes": "The subject seamlessly matches the cast's pixel clustering, palette ramps, coloured outlines (including the navy outline on white fabric seen in #3), and bust framing. Only minor expression consistency issues appear in the cheek lines on the sad and angry variants.",
+     "position": 5,
+     "seed": 101,
+     "model": "gemini-4-argon-high"
+    },
+    {
+     "castFit": 9,
+     "sameArtist": true,
+     "defects": {
+      "base": "none",
+      "happy": "none",
+      "sad": "none",
+      "angry": "missing the nasolabial/cheek age lines that appear in all four other expressions, slightly altering his apparent age/identity",
+      "surprised": "none"
+     },
+     "notes": "The subject matches the existing cast's pixel technique, colour ramps, hair clustering, and colored outline rules (notably matching portrait 3's white-garment shading and star badge) nearly indistinguishably. Only the angry expression drops his defining cheek lines.",
+     "position": 2,
+     "seed": 102,
+     "model": "gemini-4-argon-high"
+    },
+    {
+     "castFit": 9,
+     "sameArtist": true,
+     "defects": {
+      "base": "none",
+      "happy": "none",
+      "sad": "asymmetric nasolabial fold on viewer's right (missing top pixel compared to base)",
+      "angry": "missing nasolabial folds/age lines present in all other expressions, and slightly asymmetric eyebrow thickness",
+      "surprised": "none"
+     },
+     "notes": "The subject blends seamlessly with the existing cast in line weight, colour ramps, hair clustering, and framing, down to matching #3's coat and star pin treatment. The only notable flaw is in the expression sheet, where the character's signature age lines vanish completely in the angry expression and lose a pixel on one side in the sad expression.",
+     "position": 6,
+     "seed": 103,
+     "model": "gemini-4-argon-high"
+    },
+    {
+     "castFit": 9,
+     "sameArtist": true,
+     "defects": {
+      "base": "none",
+      "happy": "none",
+      "sad": "none",
+      "angry": "missing the nasolabial age lines present on his cheeks in all four other expressions, altering his apparent age/identity",
+      "surprised": "none"
+     },
+     "notes": "The subject matches the existing cast seamlessly in outline weight, color ramps, hair clustering, proportions, and recurring details like the star lapel pin. Aside from the missing cheek lines on the angry variant, the pixel work across all expressions is clean and consistent.",
+     "position": 1,
+     "seed": 104,
+     "model": "gemini-4-argon-high"
+    },
+    {
+     "castFit": 9,
+     "sameArtist": true,
+     "defects": {
+      "base": "none",
+      "happy": "none",
+      "sad": "fragmented, asymmetric cheek age lines with stray single-pixel dots",
+      "angry": "missing cheek age lines present in all other expressions, altering his apparent age/identity",
+      "surprised": "none"
+     },
+     "notes": "The portrait blends seamlessly into the cast lineup, matching the outline weight, coloured lineart (especially #3's dark-blue outlines on white fabric), palette ramps, and proportions. Only minor expression cleanup is needed to restore the missing age lines on angry and fix the broken cheek lines on sad.",
+     "position": 5,
+     "seed": 105,
+     "model": "gemini-4-argon-high"
+    }
+   ]
+  },
+  "cg-nat10-shipped-1.17": {
+   "kind": "probe",
+   "dir": "public/assets/emerald-monster/cast/professor-cg-nat10",
+   "aggregate": {
+    "n": 5,
+    "scores": [
+     10.0,
+     9.0,
+     9.0,
+     9.0,
+     9.0
+    ],
+    "median": 9.0,
+    "min": 9.0,
+    "max": 10.0,
+    "sameArtistVotes": 5,
+    "defectVotes": {
+     "base": 0,
+     "happy": 0,
+     "sad": 0,
+     "angry": 0,
+     "surprised": 0
+    },
+    "worstDefectVotes": 0
+   },
+   "runs": [
+    {
+     "castFit": 10,
+     "sameArtist": true,
+     "defects": {
+      "base": "none",
+      "happy": "none",
+      "sad": "none",
+      "angry": "none",
+      "surprised": "none"
+     },
+     "notes": "The subject seamlessly matches the existing cast in head-to-shoulder proportions, outline weight, shading ramps, hair clustering, and even shared details like the star badge on portrait 3. All five expressions are cleanly pixelled on grid with consistent facial construction and zero artifacts.",
+     "position": 5,
+     "seed": 101,
+     "model": "gemini-4-argon-high"
+    },
+    {
+     "castFit": 9,
+     "sameArtist": true,
+     "defects": {
+      "base": "none",
+      "happy": "none",
+      "sad": "none",
+      "angry": "none",
+      "surprised": "none"
+     },
+     "notes": "The subject seamlessly matches the existing cast's colored outlines, shading steps, hair clustering, and uniform detailing (especially echoing character 3's white coat and star badge). All five expressions sit cleanly on the pixel grid with consistent anatomy and zero stray pixels or artifacts.",
+     "position": 2,
+     "seed": 102,
+     "model": "gemini-4-argon-high"
+    },
+    {
+     "castFit": 9,
+     "sameArtist": true,
+     "defects": {
+      "base": "none",
+      "happy": "none",
+      "sad": "none",
+      "angry": "none",
+      "surprised": "none"
+     },
+     "notes": "The subject matches the existing cast seamlessly in head-to-shoulder framing, colored outline weights, nose construction, hair clustering, and even shares the exact navy-outlined white fabric and star-pin treatment seen on character 3. The eyes lack the bright specular highlight dot used across the younger cast members, which reads naturally as an older-character design choice rather than a different hand, and all five expression sprites are pixel-clean.",
+     "position": 6,
+     "seed": 103,
+     "model": "gemini-4-argon-high"
+    },
+    {
+     "castFit": 9,
+     "sameArtist": true,
+     "defects": {
+      "base": "none",
+      "happy": "none",
+      "sad": "none",
+      "angry": "none",
+      "surprised": "none"
+     },
+     "notes": "The subject seamlessly matches the existing cast in outline weight, color ramps, hair clustering, and facial feature construction, appropriately adapting proportions for an older character. All five expressions are clean, consistent in identity, and free of pixel-level defects.",
+     "position": 1,
+     "seed": 104,
+     "model": "gemini-4-argon-high"
+    },
+    {
+     "castFit": 9,
+     "sameArtist": true,
+     "defects": {
+      "base": "none",
+      "happy": "none",
+      "sad": "none",
+      "angry": "none",
+      "surprised": "none"
+     },
+     "notes": "The subject blends seamlessly with the existing cast, matching their proportions, outline weights, skin/hair shading ramps, vertical nose-shadow convention, and even #3's dark-outlined white uniform and star lapel pin. All five expressions are cleanly pixelled on-grid with consistent anatomy and zero artifacts.",
+     "position": 5,
+     "seed": 105,
+     "model": "gemini-4-argon-high"
+    }
+   ]
+  },
+  "cg-nat9": {
+   "kind": "probe",
+   "dir": "public/assets/emerald-monster/cast/professor-cg-nat9",
+   "aggregate": {
+    "n": 5,
+    "scores": [
+     9.0,
+     9.0,
+     9.0,
+     8.0,
+     9.0
+    ],
+    "median": 9.0,
+    "min": 8.0,
+    "max": 9.0,
+    "sameArtistVotes": 5,
+    "defectVotes": {
+     "base": 1,
+     "happy": 0,
+     "sad": 1,
+     "angry": 1,
+     "surprised": 1
+    },
+    "worstDefectVotes": 1
+   },
+   "runs": [
+    {
+     "castFit": 9,
+     "sameArtist": true,
+     "defects": {
+      "base": "none",
+      "happy": "none",
+      "sad": "none",
+      "angry": "none",
+      "surprised": "none"
+     },
+     "notes": "The subject seamlessly matches the existing cast in outline colour/weight, shading ramps, hair clustering, and facial feature construction (even sharing the exact star badge motif with character 3). All five expressions are cleanly pixelled with zero stray pixels or identity drift.",
+     "position": 5,
+     "seed": 101,
+     "model": "gemini-4-argon-high"
+    },
+    {
+     "castFit": 9,
+     "sameArtist": true,
+     "defects": {
+      "base": "none",
+      "happy": "none",
+      "sad": "none",
+      "angry": "none",
+      "surprised": "none"
+     },
+     "notes": "The subject matches the cast's colored outline weights, palette ramping, hair clustering, and outfit rendering (including the exact star badge and white coat shading style from cast member 3). The only minor stylistic divergence is the smaller, highlight-free irises compared to the larger anime-style eyes with top-left specular dots across the rest of the lineup, though this reads plausibly as an older character trait.",
+     "position": 2,
+     "seed": 102,
+     "model": "gemini-4-argon-high"
+    },
+    {
+     "castFit": 9,
+     "sameArtist": true,
+     "defects": {
+      "base": "none",
+      "happy": "none",
+      "sad": "none",
+      "angry": "none",
+      "surprised": "none"
+     },
+     "notes": "The subject matches the existing cast seamlessly in outline colouring, palette ramps, hair clustering, and garment detailing (notably echoing character 3's dark-outlined white fabric and star badge). Facial proportions and smaller eyes read naturally as an older character within the exact same art style, and all five expressions are clean and consistent.",
+     "position": 6,
+     "seed": 103,
+     "model": "gemini-4-argon-high"
+    },
+    {
+     "castFit": 8,
+     "sameArtist": true,
+     "defects": {
+      "base": "Viewer's right eye appears copy-pasted from the left without mirroring the sclera, placing white on the inner side and shifting his gaze right unlike the forward-facing cast.",
+      "happy": "none",
+      "sad": "Same unmirrored eye sclera on viewer's right eye, causing an unintended sideways gaze.",
+      "angry": "Same unmirrored eye sclera on viewer's right eye.",
+      "surprised": "Wide eyes only have sclera on the left side of both irises, making him look sideways to the right instead of forward."
+     },
+     "notes": "Line weight, coloured outlines, palette ramps, shading clusters, and details like the lapel star match the existing cast's hand closely, though his narrower short-haired head silhouette and smaller eyes read slightly more compact in the lineup. The main technical flaw across open-eyed expressions is that both eyes share the exact same left-side sclera placement rather than mirroring outer sclera like every cast member in Image 1.",
+     "position": 1,
+     "seed": 104,
+     "model": "gemini-4-argon-high"
+    },
+    {
+     "castFit": 9,
+     "sameArtist": true,
+     "defects": {
+      "base": "none",
+      "happy": "none",
+      "sad": "none",
+      "angry": "none",
+      "surprised": "none"
+     },
+     "notes": "The subject blends seamlessly with the existing cast in outline coloring, palette ramps, hair clustering, and framing, right down to matching character 3's white coat shading and star pin. The only minor stylistic departure is the omission of the 1px white upper-iris specular highlight present across the rest of the cast, while all five expressions are pixel-clean and strictly on-model.",
+     "position": 5,
+     "seed": 105,
+     "model": "gemini-4-argon-high"
+    }
+   ]
+  },
+  "cg-nat1": {
+   "kind": "probe",
+   "dir": "public/assets/emerald-monster/cast/professor-cg-nat1",
+   "aggregate": {
+    "n": 5,
+    "scores": [
+     9.0,
+     9.0,
+     9.0,
+     9.0,
+     9.0
+    ],
+    "median": 9.0,
+    "min": 9.0,
+    "max": 9.0,
+    "sameArtistVotes": 5,
+    "defectVotes": {
+     "base": 0,
+     "happy": 5,
+     "sad": 5,
+     "angry": 0,
+     "surprised": 0
+    },
+    "worstDefectVotes": 5
+   },
+   "runs": [
+    {
+     "castFit": 9,
+     "sameArtist": true,
+     "defects": {
+      "base": "none",
+      "happy": "asymmetric blush marks (1px dots on left cheek vs 2px vertical ticks on right cheek)",
+      "sad": "broken mouth split into two separate dots with a skin-colored gap in the center",
+      "angry": "none",
+      "surprised": "none"
+     },
+     "notes": "The subject blends seamlessly with the existing cast in outline color/weight, shading ramps, hair clustering, and facial proportions. Only minor expression pixel cleanup is needed on the happy blush and the broken sad mouth.",
+     "position": 5,
+     "seed": 101,
+     "model": "gemini-4-argon-high"
+    },
+    {
+     "castFit": 9,
+     "sameArtist": true,
+     "defects": {
+      "base": "none",
+      "happy": "asymmetric blush marks (1px dots on viewer's left cheek vs 2px vertical ticks on viewer's right)",
+      "sad": "broken mouth split into two disconnected pixels with a gap in the center",
+      "angry": "none",
+      "surprised": "none"
+     },
+     "notes": "The portrait matches the existing cast nearly seamlessly in proportions, coloured linework, hair clustering, and shading ramps. Fixing the broken mouth on the sad expression and matching the blush ticks on the happy expression will make the set production-ready.",
+     "position": 2,
+     "seed": 102,
+     "model": "gemini-4-argon-high"
+    },
+    {
+     "castFit": 9,
+     "sameArtist": true,
+     "defects": {
+      "base": "none",
+      "happy": "asymmetric blush marks under the eyes (1px dots on the left cheek vs 2px vertical dashes on the right)",
+      "sad": "broken mouth line with a skin-coloured gap in the middle leaving two disconnected pixel fragments",
+      "angry": "none",
+      "surprised": "none"
+     },
+     "notes": "The subject seamlessly matches the existing cast in head proportions, colored outlines, shading ramps, hair clustering, and facial feature construction. Aside from the broken mouth on 'sad' and mismatched blush pixels on 'happy', the portrait and expressions are indistinguishable from the original artist's hand.",
+     "position": 6,
+     "seed": 103,
+     "model": "gemini-4-argon-high"
+    },
+    {
+     "castFit": 9,
+     "sameArtist": true,
+     "defects": {
+      "base": "none",
+      "happy": "asymmetric blush marks (1px dots on left cheek vs 2px vertical ticks on right cheek)",
+      "sad": "broken mouth line split into a dash and a stray dot with a gap in the middle",
+      "angry": "none",
+      "surprised": "none"
+     },
+     "notes": "The portrait matches the existing cast nearly seamlessly in proportions, palette, hair clustering, and colored outline weight, particularly echoing portrait 3's uniform shading and badge. Only minor expression cleanup is needed for the broken mouth in sad and mismatched blush height in happy.",
+     "position": 1,
+     "seed": 104,
+     "model": "gemini-4-argon-high"
+    },
+    {
+     "castFit": 9,
+     "sameArtist": true,
+     "defects": {
+      "base": "none",
+      "happy": "asymmetric blush marks under the eyes (two separated 1px dots on the left vs two 2px-tall vertical dashes on the right)",
+      "sad": "broken mouth line with a 1px skin-coloured gap splitting it into two disconnected pieces",
+      "angry": "none",
+      "surprised": "none"
+     },
+     "notes": "The subject seamlessly matches the cast's proportions, palette ramps, coloured outlines, and facial construction (especially echoing #1's ears/skin and #3's blue eyes and white uniform shading). Only minor pixel-cleanup issues appear in the happy blush marks and the broken sad mouth.",
+     "position": 5,
+     "seed": 105,
+     "model": "gemini-4-argon-high"
+    }
+   ]
+  },
+  "cg-nat12": {
+   "kind": "probe",
+   "dir": "public/assets/emerald-monster/cast/professor-cg-nat12",
+   "aggregate": {
+    "n": 5,
+    "scores": [
+     7.0,
+     7.0,
+     6.0,
+     6.0,
+     6.0
+    ],
+    "median": 6.0,
+    "min": 6.0,
+    "max": 7.0,
+    "sameArtistVotes": 0,
+    "defectVotes": {
+     "base": 4,
+     "happy": 5,
+     "sad": 5,
+     "angry": 1,
+     "surprised": 5
+    },
+    "worstDefectVotes": 5
+   },
+   "runs": [
+    {
+     "castFit": 7,
+     "sameArtist": false,
+     "defects": {
+      "base": "missing nose pixel (every cast member has a shaded nose)",
+      "happy": "missing nose pixel; under-eye bags disappear",
+      "sad": "missing nose pixel; under-eye bags disappear",
+      "angry": "missing nose pixel",
+      "surprised": "missing nose pixel; asymmetric pupils/irises and broken/off-center mouth"
+     },
+     "notes": "While the palette, proportions, and coloured outlines match the cast very well, the subject noticeably omits the shaded nose present on all six existing characters and uses a darker brown outline for the coat rather than the cool navy outline seen on white fabric in character 3. Additionally, the surprised expression suffers from mismatched pupil shapes and an asymmetrically shaded mouth, and the under-eye details inconsistently vanish across expressions.",
+     "position": 5,
+     "seed": 101,
+     "model": "gemini-4-argon-high"
+    },
+    {
+     "castFit": 7,
+     "sameArtist": false,
+     "defects": {
+      "base": "none",
+      "happy": "under-eye crease pixels present in base/angry disappear",
+      "sad": "under-eye crease pixels present in base/angry disappear",
+      "angry": "none",
+      "surprised": "asymmetric iris shapes between left and right eyes, lopsided mouth, and stray faint shading pixels under eyes"
+     },
+     "notes": "Palette ramps, outline weight, and clothing shading match the cast closely, but the portrait completely omits a nose shadow (present on every existing cast member) and has a slightly smaller head-to-canvas scale. The surprised expression also breaks pixel symmetry in the eyes and mouth.",
+     "position": 2,
+     "seed": 102,
+     "model": "gemini-4-argon-high"
+    },
+    {
+     "castFit": 6,
+     "sameArtist": false,
+     "defects": {
+      "base": "missing nose shadow present on every cast member; isolated dark pixels under outer eyes read like stray pixels",
+      "happy": "under-eye marks from base disappear",
+      "sad": "under-eye marks from base disappear",
+      "angry": "none",
+      "surprised": "asymmetric irises (left is wider/notched, right is a thin vertical bar), under-eye marks fade to faint tan, and mouth is slightly lopsided"
+     },
+     "notes": "While head proportions and line weight are close to the cast, the subject stands out due to omitting the cast's universal nose pixel, lacking top hair highlights, and outlining the white coat in warm brown rather than cool dark blue like character 3. Across expressions, the dark under-eye marks appear and disappear inconsistently and the surprised eyes are asymmetrically constructed.",
+     "position": 6,
+     "seed": 103,
+     "model": "gemini-4-argon-high"
+    },
+    {
+     "castFit": 6,
+     "sameArtist": false,
+     "defects": {
+      "base": "missing nose shadow present on every cast member; isolated dark pixels under outer eye corners read as stray pixels",
+      "happy": "under-eye dark pixels from base expression disappear",
+      "sad": "under-eye dark pixels from base expression disappear",
+      "angry": "none",
+      "surprised": "asymmetric irises (left is stepped with highlight, right is a 1x3 vertical bar), missing dark upper eyelid line so sclera bleeds into skin, misshapen mouth, and under-eye dots shift colour"
+     },
+     "notes": "While the palette, outline weight, and ear/clothing rendering closely echo the cast, the subject stands out due to having a completely blank mid-face with no nose shadow (unlike all six reference characters), flatter hair highlights, and an un-outlined star badge compared to character 3. Expression consistency also breaks down in the surprised face and the disappearing under-eye marks.",
+     "position": 1,
+     "seed": 104,
+     "model": "gemini-4-argon-high"
+    },
+    {
+     "castFit": 6,
+     "sameArtist": false,
+     "defects": {
+      "base": "isolated single dark pixels under both outer eye corners read as stray pixels; missing the 2px vertical nose shadow present on every cast member",
+      "happy": "under-eye marks from base disappear completely (inconsistent facial identity)",
+      "sad": "under-eye marks from base disappear completely (inconsistent facial identity)",
+      "angry": "none",
+      "surprised": "asymmetric irises/pupils (viewer's left iris has a wider shape with a light-blue pixel while the right is a solid dark-blue block), lopsided mouth outline, and under-eye marks change colour"
+     },
+     "notes": "While head proportions and skin tones match the lineup well, the subject stands out due to completely lacking the cast's signature vertical nose mark, having flat unhighlighted hair clusters, and using warm brown outlines on a white coat (unlike character 3's cool outlines). Across expressions, the under-eye marks inconsistently vanish and the surprised face has broken eye symmetry.",
+     "position": 5,
+     "seed": 105,
+     "model": "gemini-4-argon-high"
+    }
+   ]
+  }
+ },
+ "at": "2026-10-25T04:23:52"
+}

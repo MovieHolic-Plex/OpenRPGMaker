@@ -1,0 +1,57 @@
+{
+ "schema": "bdg-vqa/1",
+ "judge": "claude-opus-5-5",
+ "date": "2026-10-21",
+ "batch": "fallen-observatory-r1",
+ "commit": "f44d3ddd4b",
+ "overall": "FAIL",
+ "criteriaNotes": {
+  "1_topdown_view": "Lens bench is a clean 3/4 view: light top face with tools, darker drawer front, legs and floor shadow. Telescope reads as 3/4: the pier shows an elliptical top cap, the base disc is an ellipse, and the objective end shows a tilted lens ellipse. The tube is a side profile, which is acceptable for a telescope. The platform's plank top and darker front are only weakly separated, and the 3-post rail is a flat strip on the back edge, so it reads as a front-on crate. Both wall pieces read as hanging or set into the wall.",
+  "2_style_fit": "Brass/wood ramps and dark-brown outlines match v5 (desk, alchemy table, orrery) in the side-by-side strip. Off-style spots: the telescope uses pure #000000 and near-black #08080a/#1e1e24 at the eyepiece, while v5 outlines are dark brown. The dome slit sky uses two full-width rows of mechanical 50% checker dither as gradient bands. The chart's bottom text row is grey 1px squiggle noise.",
+  "3_readability_1x": "The telescope is clearly a big brass refractor and reads as the room's centrepiece, a big step up from the old tiny tripods. The dome slit reads as a starry opening with a moon. The chart reads as a star map. The lens bench reads as a workbench, though the right-hand tools (grey/black tongs or compass) blur at 1x. The platform does NOT read as an observing platform. Next to the desk it reads as a wooden crate or chest. The step is a 7px block in the bottom-right corner, there is no ladder, and the gold back-rail reads as trim.",
+  "4_placement": "The slit is roughly above the telescope's objective. It runs about one tile above the wall-face rows: its wood frame and black sky cover the grey wall-top cap rail and enter the dark ceiling band, and the cap rail stops abruptly at both frame edges with no termination. The moon and top stars therefore sit in the ceiling row. Both charts sit correctly on the wall rows. The telescope base disc sits on the floor with a shadow, at a good scale for a 5x6 piece. The platform is placed beside the desk, about 4 tiles from the eyepiece, so it does not work as a stand to look through the telescope. The room keeps its dark-ceiling interior read.",
+  "5_silhouette_outline": "Telescope artifacts: (a) a 1px slate #4a5460 diagonal line runs from about (36,41) to (27,55) across the brown wooden tube and brass band, reading as a crack or scratch rather than a rod; (b) a stray 3x3 stub of pure #000000 with orange #b77246/#9a5435 dangles under the tube at cols 26-28, rows 57-59, beside the pier; (c) the eyepiece is a 7x2 near-black blob (#08080a/#1e1e24) with a single #b8daea highlight. The wooden tube also has hnoise grain mottle that looks slightly noisy next to v5 wood. The other pieces have clean edges, apart from the platform's single grey nail pixels, which read as noise flecks."
+ },
+ "items": [
+  {
+   "id": "great_telescope",
+   "name": "큰 굴절 망원경(5×6 — 천문대 중심) (great telescope)",
+   "kind": "other",
+   "pixelSha256": "04679e31b58ca9466d14b97ffdb8c2cf468b3dfc9bf0d4e3ecfa729d05c21bfc",
+   "verdict": "FAIL",
+   "reasons": "Strong composition and a convincing centrepiece (passes criteria 1, 3 and 4), but it fails clean edges and outline (criteria 2 and 5). A stray 1px #4a5460 diagonal line crosses the tube from (36,41) to (27,55). A detached pure-black and orange 3px stub hangs at (26-28,57-59). The eyepiece is a near-black #08080a/#1e1e24 blob, and pure #000000 is off-palette next to v5's dark-brown outlines. Fix: remove the line and the stub, and give the eyepiece a brass rim with brown-black shading."
+  },
+  {
+   "id": "dome_slit",
+   "name": "지붕 관측 틈(별 하늘, 2칸) (dome slit)",
+   "kind": "wall_mounted",
+   "pixelSha256": "f5b57b287ff7672488e21f244ed2031d1c6b5ded87de65d4438fb17428dc796e",
+   "verdict": "FAIL",
+   "reasons": "Readable as a starry slit with a wood and iron frame and a stone sill. But the 2x3 piece is placed one tile above the wall-face rows: its top row covers the wall-top cap rail and runs into the dark ceiling band, and the cap rail ends abruptly at both frame edges, so the moon floats in the ceiling (criterion 4). The sky gradient uses two full-width rows of mechanical 50% checker dither (rows about 9-10 and 17-18), which looks more procedural than v5 (criterion 2). Fix: fit the slit to the wall-face rows, or draw a proper cap or arch transition where it breaks the rail, and soften the dither bands."
+  },
+  {
+   "id": "celestial_chart",
+   "name": "별자리 원판 도표(2칸) (celestial chart)",
+   "kind": "wall_mounted",
+   "pixelSha256": "9609d1a28b0d588a16bce8fc4bdc6500cebfd0784480440f031a5237c94aea90",
+   "verdict": "PASS",
+   "reasons": "Hanging scroll with dark wood rods top and bottom, parchment, and a blue star disc with a constellation. It reads as a star chart at 1x, sits on the wall rows in both placements, and fits v5's star-chart colours. Minor: the grey 1px 'text' squiggles on the bottom row are slightly noisy."
+  },
+  {
+   "id": "lens_bench",
+   "name": "렌즈 작업대(3칸) (lens bench)",
+   "kind": "low_furniture",
+   "pixelSha256": "17f0d7ef4a7094e3f69db90a5104270a6b9e2506ecb4db139904c1ee53802e16",
+   "verdict": "PASS",
+   "reasons": "Clean 3/4 with a light top face (lens in a frame, lens pieces, a standing magnifier) over a darker drawer front, legs and shadow. Outlines and wood ramp match v5's alchemy and chart tables. Note: the piece is actually 48x31, a 3x2 footprint, not the 3x1 in the brief. The right-hand grey tools are muddy at 1x, but this is not disqualifying."
+  },
+  {
+   "id": "observing_platform",
+   "name": "관측 발판(2칸 단과 계단) (observing platform)",
+   "kind": "low_furniture",
+   "pixelSha256": "f76983ba62c43ec00977a4b941572f3313d5a3b6575c82109b6bab80095129c8",
+   "verdict": "FAIL",
+   "reasons": "At 1x it reads as a wooden crate or chest, not a dais with steps (criterion 3). The top face (plank rows about 4-17) and the front face are separated only by one light lip line. The back rail is a flat gold strip with 3 stub posts. The step is a lone 7px block in the bottom-right corner, and there is no ladder. Single grey nail pixels look like noise. It is also placed beside the desk, about 4 tiles from the telescope eyepiece, so it has no function in the room (criterion 4). Note: the piece is actually 32x32, a 2x2 footprint, not the 2x1 in the brief."
+  }
+ ]
+}

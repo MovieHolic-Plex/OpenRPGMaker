@@ -1,0 +1,33 @@
+{
+ "queue": "jp-in-stairs-13",
+ "round": 20,
+ "judges": "3x claude-opus-5.5 fresh subagents in parallel, no prior scores; a major counts only if >=2 of 3 raise it",
+ "date": "2026-10-22",
+ "verdict": "fail",
+ "perReviewer": {
+  "A": {
+   "majors": 6,
+   "axis2": 6,
+   "axis6": 5
+  },
+  "B": {
+   "majors": 0,
+   "axis2": 7,
+   "axis6": 7
+  },
+  "C": {
+   "majors": 2,
+   "axis2": 7,
+   "axis6": 6
+  }
+ },
+ "majorityMajors": [
+  "stairwell-down-wood (A+C): at 1x in house-2f reads as a crib/hearth — tall slatted rail over a brown box with a light south plank"
+ ],
+ "minorityMajors": [
+  "sc/mc/of/as stairwells (A only): cage/grille"
+ ],
+ "upStairs": "all 7 up stairs: no major from any reviewer",
+ "majoritycount": 1,
+ "action": "wood well: lower sparse rail (<=9px, balusters every 4px), tread ramp floor -> near-black with 1px light nosing + dark drop per tread, 1px dark floor-edge line at the south rim"
+}

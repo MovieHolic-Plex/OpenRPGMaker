@@ -1,0 +1,12 @@
+{
+  "item": "tc.pyr_floor",
+  "candidate": "A1",
+  "pixelSha256": "dc1f5073e3c137c42b3dca31d2d92192ad5b9ec52aab007599f425f4aeaa9975",
+  "verdict": "fail",
+  "problems": [
+    "Reads as a vertical running-bond brick wall rather than top-down flagstones: 8px-tall courses with strong full-width top bevel highlights blend right into the north brick wall in the room scene and test map.",
+    "Random 16x16 cell mixing creates mismatched vertical mortar joints at cell boundaries, producing unnatural 2-3px brick slivers next to overly wide blocks.",
+    "Flat, stamped fill inside each brick with almost no per-stone tonal variation or sandstone grain compared to the reference."
+  ],
+  "reason": "Fails because the 8px running-bond courses with uniform top bevel highlights read like a vertical brick wall (especially against the pyramid wall in the room scene), random 16px mixing creates broken sliver bricks at cell seams, and the stone faces are too flat and uniform."
+}

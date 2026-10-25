@@ -582,6 +582,10 @@ function literalLabel(value: string): string {
       return "배우 HP";
     case "actorCommand":
       return "배우 명령";
+    case "enemyState":
+      return "적 상태";
+    case "enemiesAlive":
+      return "남은 적 수";
     default:
       return value;
   }

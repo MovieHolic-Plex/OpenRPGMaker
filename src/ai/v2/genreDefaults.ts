@@ -1,0 +1,52 @@
+// 조수 v2 — 채팅 한 줄로 시작한 현대·연애 게임에도 장르 기본값을 깐다.
+//
+// 왜 (2026-10-25 조수 단독 게임 G17/G18): 「현대 한국 배경의 연애 게임」을 빈 프로젝트에서 시작하면 주인공이 판타지 기본 칩(주황 머리 갑옷 영웅)이고,
+// 전투가 없는데 체력 하트 HUD 「514/514」가 떴다. 연애 기본값(applyRomanceDefaults: 하루 루프·호감 하트 HUD·장르 잠금으로 주인공 현대 칩·대화창·타이틀)은
+// 새 게임 인터뷰에서 연애를 고른 프로젝트에만 깔렸다. 조수가 첫 현대 장소를 지은 뒤 여기서 한 번 깐다.
+// 이미 저작자가 정한 값은 덮지 않는다(각 기본값이 ??= 로 동작). 주인공 칩은 손대지 않은 기본(판타지 Actor1 0번)일 때만 바꾼다.
+import { applyRomanceDefaults } from "@/project/romancePreset";
+import { GENRE_LOCK_PRESETS } from "@/project/genreLock";
+import type { Project } from "@/project/types";
+
+export const ROMANCE_SETUP_WORDS = /연애|데이트|썸|고백|공략|호감도|러브|미연시|romance|dating/iu;
+/** 게임 하나를 시작하는 요청(장소 하나만 짓는 요청이면 HUD·연애 루프는 건드리지 않는다). */
+const GAME_SETUP_WORDS = /게임|game/iu;
+/** 전투를 말하는 낱말(전투가 있으면 체력 HUD 를 둔다). */
+const BATTLE_WORDS = /전투|싸우|싸움|싸워|보스|적\b|적이|적을|적의|적과|적들|몬스터|마물|좀비|스킬|기술|마법|레벨|능력치|공격|체력|\bHP\b|마나|약점|인카운터|조우|무기|칼|검을|검이|갑옷|방패|장비|battle|enemy|skill|boss|monster|weapon|zombie/iu;
+const PRISTINE_HERO = new Set([undefined, "easyrpg-charset-actor1"]);
+
+/** 첫 현대 장소를 지은 뒤 한 번. 깐 것 이름 목록(보고용). */
+export function applyModernSetupDefaults(project: Project, task: string, freshStart = false): string[] {
+  const applied: string[] = [];
+  const setup = freshStart || GAME_SETUP_WORDS.test(task);
+  if (setup && ROMANCE_SETUP_WORDS.test(task) && !project.system.genreLock) {
+    applied.push(...applyRomanceDefaults(project, { force: true }).map((name) => `연애 기본값 ${name}`));
+  }
+  const hero = project.database.actors.find((actor) => actor.id === "actor_hero") ?? project.database.actors[0];
+  if (hero && PRISTINE_HERO.has(hero.characterResourceId) && (hero.characterIndex ?? 0) === 0) {
+    const look = GENRE_LOCK_PRESETS.romance.charsets!.playerDefault;
+    hero.characterResourceId = look.resourceId;
+    hero.characterIndex = look.characterIndex;
+    if (hero.faceResourceId === "easyrpg-faceset-actor1-00") delete hero.faceResourceId;
+    applied.push("주인공 현대 칩");
+  }
+  applied.push(...applyStorySetupDefaults(project, task, freshStart));
+  return applied;
+}
+
+/**
+ * 전투를 말하지 않은 게임(현대든 판타지든): 체력 HUD 를 끈다(연애 기본값이 이미 호감 HUD 를 깔았으면 그대로).
+ * 처음엔 현대 장소에만 깔아서 판타지 풍 이야기 게임(장난감 가게 회상)에 하트 다섯 개와 「514/514」가 남았다(2026-10-25 G51).
+ * freshStart: 빈 프로젝트에서 처음 장소를 짓는 요청 — 「게임」이라는 낱말이 없어도 게임을 시작하는 것이다(「폐업 직전 장난감 가게 (회상 스토리)」).
+ */
+export function applyStorySetupDefaults(project: Project, task: string, freshStart = false): string[] {
+  const setup = freshStart || GAME_SETUP_WORDS.test(task);
+  if (!setup || project.system.fieldHud !== undefined || BATTLE_WORDS.test(task)) return [];
+  project.system.fieldHud = { theme: "minimal", vitals: false, clock: true, tools: false, objective: false, hideEmpty: true };
+  return ["체력 HUD 끔"];
+}
+
+/** 빈 프로젝트(이벤트·엔딩 없음)인가 — 첫 장소를 짓는 요청을 게임 시작으로 본다. */
+export function isFreshProject(project: Project): boolean {
+  return (project.endings ?? []).length === 0 && Object.values(project.maps).every((map) => (map.events ?? []).length === 0);
+}

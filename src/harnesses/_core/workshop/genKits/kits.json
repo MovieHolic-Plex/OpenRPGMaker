@@ -4,23 +4,35 @@
   "object-gen": {
    "repo": "https://github.com/MovieHolic-Plex/object-gen.git",
    "visibility": "public",
-   "commit": "ca9e85c876859c79ccfb764b6a40b5999a10896b",
+   "commit": "8979bbce97b5d55d1df84746ee7160c04abd1225",
    "vendored": true,
    "contract": "ok"
   },
   "char-gen": {
    "repo": "https://github.com/MovieHolic-Plex/char-gen.git",
    "visibility": "private",
-   "commit": "d5f263904ca2b671ab6d54942b9c3651aa3e9d22",
+   "commit": "39dd8ab31e1d8bd75b4d34b3a9c58436a4a4b06a",
    "vendored": false,
-   "contract": "ok"
+   "contract": "ok",
+   "fingerprint": {
+    "chargen/prompts.py": "dfeb9ab2e262f1d8",
+    "chargen/judge.py": "23d62e79d627dbf8",
+    "chargen/quality.py": "b59db4df8a77bfe4",
+    "chargen/verify.py": "b3bf84c6b1b9413e"
+   }
   },
   "tile-gen": {
    "repo": "https://github.com/MovieHolic-Plex/tile-gen.git",
    "visibility": "private",
    "commit": "bf5359722545fa7bd566aa6bba66aabac3c9c0df",
    "vendored": false,
-   "contract": "ok"
+   "contract": "ok",
+   "fingerprint": {
+    "tilegen/prompts.py": "881e11dbfe99ef05",
+    "tilegen/vqa.py": "0332f3ae8edfeed0",
+    "tilegen/checks.py": "8bc4d30a41f5ed5d",
+    "tilegen/gate.py": "71332670c8d5e67c"
+   }
   }
  }
 }

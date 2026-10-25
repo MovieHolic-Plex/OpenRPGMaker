@@ -1,0 +1,573 @@
+[
+ {
+  "project": "astra-horizon",
+  "role": "professor",
+  "round": "r3-chargen",
+  "candidate": "professor-cg-nat10",
+  "by": "user (2026-10-25, relayed by the coordinator): 「이거는 꽤 규격이 괜찮네. 앞으로 이렇게 하도록 하네싱을 꽉 잡도록」",
+  "at": "2026-10-25T04:00:19",
+  "basis": "HUMAN OVERRIDE of the blind verdict (blind reviewer: not the same artist (argon (gemini-4-argon, fresh blind agent, round 3))): The user approved cg-nat10 after seeing it in the cast lineup and the real dialogue box (astra-presentation-1.html, published as 1.16). The blind Argon reviews disagree with each other on these pixels' family: 9.5/same artist (2026-10-24, earlier packet), then 5, 7 and 5/not same artist in three fresh harness packets (review-argon-1/-2/review-argon.json). The concrete pixel defects they found (iris 4 vs 3 px, angry losing the age lines, mouths without a dark rim, base-only chin bar, sad crease) were fixed with harness fix (fixes.json, 31 px over 5 expressions); machine check PASS on the current pixels. Remaining reviewer notes are style judgements (smile lines, 2-tone iris, surprised eye size).",
+  "hashes": {
+   "base": "795a162707d9e8fff3c74b083f4a0fa0efc1b0526a8f35f914a059f80c2f94b2",
+   "happy": "441a0ffdb5e6b190d105c25bd82861c87f718f74fc44825608763599195c6487",
+   "sad": "eb3691a753765e9a64ad53033360d5d193c5d74925212cf7c5fa232fabd290d9",
+   "angry": "3862b4f68b16e61d836c3f9892bbb7457df3dd128c81c321d486164ae54e4459",
+   "surprised": "ac823b4359fd529df82c126ee523dda9fe7ce1666105316dc3d1fc4ff7ef81b6"
+  },
+  "check": {
+   "size": [
+    64,
+    64
+   ],
+   "colours": 15,
+   "partialAlpha": 0,
+   "cornersTransparent": true,
+   "outlineDark": 0.99,
+   "mirrorScore": 0.703,
+   "eyes": [
+    [
+     7,
+     6,
+     30,
+     35
+    ],
+    [
+     7,
+     6,
+     30,
+     35
+    ]
+   ],
+   "eyeColourGap": 0,
+   "eyesSymmetric": true,
+   "top": 3,
+   "bottomCover": 0.984,
+   "sideTouch": true,
+   "headTouchesSide": false,
+   "headWidth": 48,
+   "headCentreOffset": 0.0,
+   "fill": 0.547
+  },
+  "verdict": {
+   "reviewer": "argon (gemini-4-argon, fresh blind agent, round 3)",
+   "source": "qa-runs/harnesses/cast-portrait/astra-horizon/r3-chargen/_blind/REVIEW-PROMPT.md + calibrate-against-cast instruction",
+   "at": "2026-10-25T03:59:57",
+   "letters": {
+    "X": "professor-cg-nat1",
+    "Z": "professor-cg-nat10",
+    "W": "professor-cg-nat12",
+    "Y": "professor-cg-nat9"
+   },
+   "hashes": {
+    "professor-cg-nat1": {
+     "base": "34a17abf6fe06c246849acc72537b5b97a4ccefa1d703df83d72a217524944b6",
+     "happy": "35525dbb093f6c002a191b91a5bd933bbd2db63b74aee745a969e1c3cd31d3f6",
+     "sad": "4fc9ddb6b0c0ddcd1b1c66a8b20072f3bf03470c1f0484f2c7683726d38ac5b5",
+     "angry": "73ab7fd04dcb08f14adff6bbb115bd74a998a68236a9f2dee7c8de223feede4c",
+     "surprised": "9eae0c3c27a1138a48fdfb3fea57217570e518f91012a9139777d04ca43004b6"
+    },
+    "professor-cg-nat10": {
+     "base": "795a162707d9e8fff3c74b083f4a0fa0efc1b0526a8f35f914a059f80c2f94b2",
+     "happy": "441a0ffdb5e6b190d105c25bd82861c87f718f74fc44825608763599195c6487",
+     "sad": "eb3691a753765e9a64ad53033360d5d193c5d74925212cf7c5fa232fabd290d9",
+     "angry": "3862b4f68b16e61d836c3f9892bbb7457df3dd128c81c321d486164ae54e4459",
+     "surprised": "ac823b4359fd529df82c126ee523dda9fe7ce1666105316dc3d1fc4ff7ef81b6"
+    },
+    "professor-cg-nat12": {
+     "base": "b37673236e08a57333f8010ee2aca4a00c85fdde0ae508d244a004e7aa7bedc3",
+     "happy": "02f8c80aa1806aea55f6432cc49ede8386b0d74261179a0f6e8bec4ca4baac91",
+     "sad": "fed134d877aa29ca1f6b43d99f099a094cc4b6d0537208d0d6013445203b9f93",
+     "angry": "5d8c708ae259f98e9e16807c3ffe06a53fffd1eda004841e6dea4cf575860d7b",
+     "surprised": "95edc106a9096fc4d5893be4d71cd51f929848dd316495b1d5ecb1addebd6164"
+    },
+    "professor-cg-nat9": {
+     "base": "78a867955e8a3ed3bdc267ecc94de9953098ab9b081f440dde10ea8a3f804002",
+     "happy": "7d1f82acabd17482593166e87d7e58b9fca17554b7377617f829b3744803ea9b",
+     "sad": "add5f9403401a1a7e524383071529338486e5cb52eeef88c70f5a165b9f90273",
+     "angry": "ad6de5dfe2154fd278c01fb877b453e4fc03e9e413da8311404c594d8afa011a",
+     "surprised": "5ff025eb1317af98e0672da5f655157a075435db079cd5bb843d3d917896d7aa"
+    }
+   },
+   "review": {
+    "ranking": [
+     "X",
+     "Y",
+     "Z",
+     "W"
+    ],
+    "candidates": {
+     "W": {
+      "castFit": 3,
+      "sameArtist": false,
+      "defects": {
+       "base": "Missing nose across 1x (31..32, 35..38) (flat #fac887 skin, whereas all 6 cast members draw a 2-4px shaded nose); broken exterior collar outline where light #bccad1 touches background directly at 1x (21,46) and (44,47), and un-outlined white coat edges #f1f4f1 at 1x (1,61..63) and (63,61..63); asymmetric 1px skin notch in right jaw outline at 1x (41,42); bottom-clipped amorphous yellow badge blob at 1x (42..46, 58..63) instead of cast2's 5-pointed star.",
+       "happy": "Broken mouth outline at 1x (28,41) where #de5f51 mouth fill touches #fac887 skin directly with no dark border while the right side doubles its #3b1319 outline at 1x (33..34, 40); stray #fac887 skin pixel leaked into the dark #1b2246 shirt collar at 1x (39,48) plus 18 other non-face hair/ear/collar pixel shifts vs base (e.g. (38,23), (47,37)); right jaw outline gap widened at 1x (43,37) and (41,42); broken exterior collar/sleeve outlines at 1x (21,46), (43,46), (44,47), (1,61..63), (63,61..63).",
+       "sad": "Stray #fac887/#eb9651 skin pixels leaked into the dark #1b2246 shirt collar at 1x (39,48) and into dark hair at 1x (25,22) and (32,19) alongside 13 other unintended hair/ear pixel shifts vs base; broken exterior collar/sleeve outlines where #bccad1/#f1f4f1 touch background at 1x (21,46), (43,46), (44,47), (1,61..63), (63,61..63); asymmetric right jaw notch at 1x (41,42) and clipped badge blob at 1x (42..46, 58..63).",
+       "angry": "Missing white eye highlight in right eye at 1x (38,30) (solid #1b2246 across (37..39, 30) while left eye has #f1f4f1 glint at (26,30)); broken left jaw outline where dark #3b1319 disappears to #fac887 skin at 1x (21,37) and right lash/jaw drops at (43,33); stray #fac887 skin pixel leaked into #1b2246 shirt collar at 1x (39,48) plus 22 non-face hair/collar pixel mutations vs base; broken exterior outlines at 1x (43,46), (44,47), (1,61..63), (63,61..63).",
+       "surprised": "Severely asymmetric, smeared eyes across 1x (23..28, 29..34) vs (36..40, 29..34): left eye has a #f1f4f1 glint at 1x (26,31) and 6px sclera width while right eye lacks any highlight and is narrower with solid #1b2246/#294482 blocks at (37..38, 31..33), plus muddy #bccad1 smears on upper eyelids at (26..27, 29) and (38..39, 29); broken mouth missing its right dark outline at 1x (33, 41..42) (#de5f51 touches #fac887 skin directly); coat silhouette shifts at 1x (45, 47..48) plus 23 other non-face pixel mutations vs base and broken outlines at (21,46), (43,46), (1,61..63), (63,61..63)."
+      },
+      "notes": "Clearly a different, weaker hand from the existing cast (sameArtist: false). Outline colour/weight: uses one reddish-burgundy outline (#3b1319) everywhere including the white lab coat, whereas cast2 uses cool dark navy (#10193e/#110938) on white uniform edges, and leaves exterior coat borders un-outlined at (21,46), (44,47), (1,61..63), (63,61..63). Palette and shading: 15-16 colours, but blotchy #7890a5/#bccad1 coat folds and malformed clipped yellow badge blob (42..46, 58..63) contrast sharply with cast2's clean banded shading and crisp 5-pointed star. Eye and mouth construction: small high-set 5px eyes (y=28..32) with only 2 iris tones (#1b2246, #294482) vs the cast's 3+ iris tones, completely missing nose (every cast member has a shaded nose), and broken mouth outlines in happy/surprised. Framing/stability: head_w=48 (top y=2) fits the box, but 16-25 pixels in hair, ears, shirt, and collar mutate randomly across expressions. Verdict: do not ship."
+     },
+     "X": {
+      "castFit": 7,
+      "sameArtist": false,
+      "defects": {
+       "base": "Chest star emblem at 1x (41..46, 59..63) is bottom-clipped at y=63 into an indistinct rounded yellow blob with soft #aa672d border rather than the cast's crisp 5-pointed star (cf. cast2 at 1x (39..45, 57..63)); noisy 1px checkerboard-like #c1cad0 dithering along both outer coat sleeves across 1x (1..12, 56..63) and (51..62, 56..63); round boyish lower face (y=29..43) reads noticeably younger than a grey-templed professor.",
+       "happy": "Asymmetric cheek blush (left cheek has 2 pixels on 1 row at 1x (22,36) and (24,36), whereas right cheek has 4 pixels across 2 rows at 1x (39,36..37) and (41,36..37)); 1px #ba5733 mouth fill leaks into the bottom lip outline at 1x (32,43); unintended pixel shifts outside the face vs base in grey hair streaks and ears at 1x (14,30), (46,30..31), (16,33), (47,33); bottom-clipped badge blob at 1x (41..46, 59..63).",
+       "sad": "Broken mouth line at 1x (29..33, 42) split by a 2px #fbcb8b skin gap at 1x (31..32, 42) into disconnected #53291e fragments at (29..30, 42) and (33,42); stray dark #0e1e41 pixels overwrite the left coat lapel shading vs base at 1x (23, 48..49) plus hair/ear pixel drift at (14,30) and (16,33); bottom-clipped badge blob at 1x (41..46, 59..63).",
+       "angry": "Asymmetric eye highlights: left eye loses its white #f6f7f7 glint (1x (22..23, 31) are grey #c1cad0 and (26,31) is dark #060d24) while right eye keeps bright #f6f7f7 glints at 1x (38,31) and (41,31) — in cast-only-3x every cast member has matching white glints in both eyes; unintended hair/ear pixel shifts vs base at 1x (17,30), (16,33), (47,33); bottom-clipped badge blob at 1x (41..46, 59..63).",
+       "surprised": "Unintended hair/ear pixel shifts outside the face vs base at 1x (17,30) and (47,33), and bottom-clipped amorphous badge blob at 1x (41..46, 59..63)."
+      },
+      "notes": "Best overall candidate and closest to the cast's rendering warmth, though still distinguishable on close inspection (sameArtist: false). Outline colour/weight: matches the cast's dual-material 1px dark outlines well (#1e0e0d dark brown on hair/skin, #060d24 dark navy on the white coat) with zero broken exterior borders. Palette and shading: 16 colours per frame with warm skin (#fbcb8b/#ee9651) and rich layered hair clusters, but introduces noisy 1px #c1cad0 dithering on outer coat sleeves (1..12, 56..63; 51..62, 56..63) unlike cast2's clean cel-banded cloth folds, and renders the star emblem at (41..46, 59..63) as a bottom-clipped blob. Eye and mouth construction: 6px eyes (y=29..34) with 3 blue iris tones (#0e1e41, #28457e, #627ea4), #c1cad0 sclera corner AA, white glint, and 2px shaded nose (31, 37..38) closely echo cast0/cast1/cast2, though sad has a split mouth at (31..32, 42) and angry drops the left eye glint. Framing and head size: top y=3, head_w=50, jaw_w=30 at y=36 match cast proportions well, though the round face reads boyish for grey temples and minor peripheral pixels drift across expressions. Ship verdict (best candidate, #1 in ranking): borderline / conditional no-ship as-is — fix the split sad mouth (31..32, 42), restore the left angry eye glint (22..26, 31), lock non-face pixels across expressions, clean sleeve dithering, and redraw the clipped star emblem (41..46, 59..63) before shipping."
+     },
+     "Y": {
+      "castFit": 6,
+      "sameArtist": false,
+      "defects": {
+       "base": "Missing dark #121733 exterior outline on the right coat sleeve edge at 1x (62, 62..63) where #cacfd4 touches background (left sleeve edge x=0 is outlined in #121733); isolated 4-way enclosed 1px background hole between right jaw and hair at 1x (42,43); youthful 20s face read understates the grey-templed professor age.",
+       "happy": "Asymmetric closed-eye arcs where the right eye outer tip drops 1px of dark #231313 at 1x (39,34) (#fbca8b skin vs #231313 at (24..25, 34) and (38,34)); mouth shifted 1px left (x=27..34) with mismatched left vs right outline colours (#231313 near-black at 1x (27..28, 40..42) vs lighter #3d1c18 brown at (33..34, 40..42)); neck shadow pixel at 1x (28,47) changes from #e58f55 to #fbca8b vs base; missing right sleeve outline at 1x (62, 62..63) and enclosed 1px hole at (42,43).",
+       "sad": "Neck shadow pixel at 1x (28,47) changes from #e58f55 to #fbca8b vs base; minor lower-iris shade mismatch at 1x (27,35) (#121733 vs #2a4b92 at (37,35)); missing right coat sleeve outline at 1x (62, 62..63) and enclosed 1px jaw/hair hole at (42,43).",
+       "angry": "Asymmetric inner eye corners and brows across 1x (28..30, 31..32) vs (34..35, 31..32) (left inner corner uses lighter #3d1c18 brown block at (28..29, 31) and (29,32) while right inner corner uses near-black #231313 at (34..35, 31) and (34,32)); neck shadow pixel shift at 1x (28,47) vs base; missing right sleeve outline at 1x (62, 62..63) and enclosed hole at (42,43).",
+       "surprised": "Prominent upper-eyelid colour mismatch: left eye upper lash at 1x (24..27, 30) and outer lash (23,32) are near-black #231313, whereas right eye upper lash at 1x (36..39, 30) and outer lash (40,32) are lighter brown #3d1c18 (visibly paler right eyelid at 2x ingame and 4x sheet); extra #e58f55 pixel elongates the nose upward at 1x (32,35); missing right sleeve outline at 1x (62, 62..63) and enclosed hole at (42,43)."
+      },
+      "notes": "Clean, disciplined pixel clusters and a crisp 5-pointed chest star (42..48, 56..62), but stands out in head proportions and facial construction (sameArtist: false). Outline colour/weight: uses dual-material 1px dark outlines (#231313 hair/face, #121733 coat), except the right sleeve drops its dark outline at (62, 62..63). Palette and shading: 15-16 colours with clean cel shading, though the two rigid 1px vertical #939faa ruler-straight lines on the sleeves (x=16, y=54..58 and x=47, y=54..58) look stiffer than cast2's organic folds. Eye and mouth construction: narrow 5px-wide eyes (x=24..28 and 35..39) with 3 iris tones (#121733, #1d3166, #2a4b92) sit beneath thick blocky 2px #3d1c18 eyebrows (y=28..29) unlike any cast member's tapered 1px brows, and surprised/happy have left-right dark-vs-brown outline colour mismatches. Framing and head size: narrower cranium (head_w=43, matched only by helmeted cast0 while unhelmeted cast1..5 are 46..59) topped by a tall curved ahoge spike (y=4..11), reading noticeably smaller-headed and younger in lineup-Y-1x/3x and ingame-Y."
+     },
+     "Z": {
+      "castFit": 5,
+      "sameArtist": false,
+      "defects": {
+       "base": "Missing dark #0f1330 exterior outline on the right coat sleeve edge at 1x (62, 61..63) and bottom-left corner at 1x (0,63) where bright #f3f5f4 touches background directly; flat 2-tone iris block (#0f1330 + uniform #2f467e across y=33..35) lacks the 3rd lighter iris highlight tone used by every cast member.",
+       "happy": "Asymmetric eyebrows across y=27..29 (left brow has #e39052/#662f1a/#4e2315 at 1x (23..28, 27) and 2px #662f1a inner tip at (22..23, 29), whereas right brow is a narrower 3px #4e2315 bar at 1x (37..39, 27) with a 1px inner tip at (40,29)), plus unintended hair highlight shift at 1x (21,28) (#854322 -> #e39052); missing exterior coat outline at 1x (62, 61..63) and (0,63).",
+       "sad": "Asymmetric brow shading where left brow has #854322 pixels at 1x (23,27) and (28,27) with no counterpart on the right brow (35..41, 27) plus unintended pixel change at 1x (21,28); missing exterior coat outline at 1x (62, 61..63) and (0,63).",
+       "angry": "Asymmetric outer brow tips at y=28 (left brow has 3px #4e2315 at 1x (22..24, 28) vs 2px at 1x (39..40, 28)); missing exterior coat outline at 1x (62, 61..63) and (0,63).",
+       "surprised": "Cartoonish 7px-tall pure-white #f3f5f4 bug-eyes across 1x (22..28, 30..36) and (35..41, 30..36) with tiny floating un-glinted 2x2 pupils at 1x (25..26, 33..34) and (37..38, 33..34) (non-mirrored #2f467e left column + #0f1330 right column in both eyes, zero highlight glint), breaking character identity and eye style completely in ingame-Z-surprised; missing exterior coat outline at 1x (62, 61..63) and (0,63)."
+      },
+      "notes": "Captures the mature middle-aged professor brief best and locks non-face torso/star pixels cleanly across all 5 expressions, but clearly comes from a different pixel-art hand (sameArtist: false). Outline colour/weight: dual 1px dark outlines (#1d0e0d hair/face, #0f1330 coat), except the right sleeve border is un-outlined white #f3f5f4 at (62, 61..63). Palette and shading: 15-16 colours with very clean geometric clusters and a crisp chest star (41..47, 56..61), but sleeve folds are drawn as rigid 1px #97a1b0 lines (x=15..16 and 47..48, y=51..63) and grey hair temples use neutral #bebebe slabs. Eye and mouth construction: starkest style divergence — only 2 iris tones (#0f1330 + flat 4x2 #2f467e block) with pure #f3f5f4 sclera and no sclera corner AA (every cast member uses 3+ iris tones), prominent 3px nasolabial fold wrinkles at (25..26, 40..42) and (37..38, 40..42) absent across the entire cast, a stiff 4px vertical 1px nose bar (32, 35..38), and gag-style glintless bug-eyes in surprised. Framing and head size: top y=3, head_w=48, jaw_w=32 at y=36 match cast framing well."
+     }
+    }
+   }
+  },
+  "fixes": [
+   {
+    "expr": "base",
+    "pixels": {
+     "35,32": "#f3f5f4",
+     "36,32": "#0f1330",
+     "38,33": "#2f467e",
+     "39,33": "#0f1330",
+     "39,34": "#2f467e",
+     "39,35": "#2f467e"
+    },
+    "before": "42bf8cdffd312f380c4f999ec910f0ca5d8f14cd2f9646ce6e79d3762fe9900c",
+    "after": "9be36ed1a8ad08f19529a458459827989ceeefb0268cfc0956c048ddd1566445",
+    "why": "mirror the left eye onto the right (blind review: iris 4 px left vs 3 px right)",
+    "at": "2026-10-25T03:15:09"
+   },
+   {
+    "expr": "sad",
+    "pixels": {
+     "36,33": "#0f1330",
+     "38,33": "#f3f5f4",
+     "38,34": "#2f467e",
+     "39,34": "#0f1330",
+     "39,35": "#2f467e"
+    },
+    "before": "7191afd7255bd909934449dd131680e60623031cac4b0c57c7961037eae6f574",
+    "after": "31f0fef2589a70ab487c315d13ec516f382afa17988df7f1c27f7bc4065351b4",
+    "why": "mirror the left eye onto the right (blind review: iris 4 px left vs 3 px right)",
+    "at": "2026-10-25T03:15:10"
+   },
+   {
+    "expr": "angry",
+    "pixels": {
+     "37,29": "#4e2315",
+     "37,30": "#4e2315",
+     "36,32": "#0f1330",
+     "38,33": "#2f467e",
+     "39,34": "#2f467e",
+     "39,35": "#f9c485"
+    },
+    "before": "03b21f1bc18a23dd42fd8972a861b979ae10419ed92b9dc7b652cacdf9c15458",
+    "after": "734a9084f8813657c86410e14ddda3f3b7f75580ac453acbf899f3062876e51d",
+    "why": "mirror the left eye onto the right (blind review: iris 4 px left vs 3 px right)",
+    "at": "2026-10-25T03:15:10"
+   },
+   {
+    "expr": "angry",
+    "pixels": {
+     "26,40": "#b36434",
+     "37,40": "#b36434",
+     "25,41": "#b36434",
+     "38,41": "#b36434",
+     "25,42": "#b36434",
+     "38,42": "#b36434"
+    },
+    "before": "734a9084f8813657c86410e14ddda3f3b7f75580ac453acbf899f3062876e51d",
+    "after": "3862b4f68b16e61d836c3f9892bbb7457df3dd128c81c321d486164ae54e4459",
+    "why": "keep the smile-line age pixels of base (blind review: lines vanish only in angry)",
+    "at": "2026-10-25T03:15:10"
+   },
+   {
+    "expr": "surprised",
+    "pixels": {
+     "32,44": "#ec4e38",
+     "33,44": "#ec4e38"
+    },
+    "before": "01a78ebe052d5da27d48f11f2157ac8f446aabca0ecad474ac0bf64ab79dc268",
+    "after": "d377417174590707c405b0e2b0655eb78beeb3816bb7c3ccf89e24c0d3a64ce8",
+    "why": "open mouth interior red like happy (blind review: brown inside read as hair colour)",
+    "at": "2026-10-25T03:15:11"
+   },
+   {
+    "expr": "surprised",
+    "pixels": {
+     "31,44": "#ec4e38",
+     "33,44": "#662f1a",
+     "30,45": "#f9c485",
+     "32,45": "#662f1a"
+    },
+    "before": "d377417174590707c405b0e2b0655eb78beeb3816bb7c3ccf89e24c0d3a64ce8",
+    "after": "ac823b4359fd529df82c126ee523dda9fe7ce1666105316dc3d1fc4ff7ef81b6",
+    "why": "open mouth: symmetric O with dark rim all round (blind review r2: un-outlined red, bottom rim shifted left)",
+    "at": "2026-10-25T03:41:43"
+   },
+   {
+    "expr": "sad",
+    "pixels": {
+     "37,40": "#b36434"
+    },
+    "before": "31f0fef2589a70ab487c315d13ec516f382afa17988df7f1c27f7bc4065351b4",
+    "after": "eb3691a753765e9a64ad53033360d5d193c5d74925212cf7c5fa232fabd290d9",
+    "why": "right smile line top pixel like base (blind review r2: crease 3 px left vs 2 px right)",
+    "at": "2026-10-25T03:41:44"
+   },
+   {
+    "expr": "happy",
+    "pixels": {
+     "35,41": "#2e140f",
+     "28,42": "#2e140f",
+     "35,42": "#2e140f",
+     "39,34": "#1d0e0d"
+    },
+    "before": "f91d3d267bddfac993a8043339e6b5b5887fa06b304903e73afe4b5a2192ee3c",
+    "after": "441a0ffdb5e6b190d105c25bd82861c87f718f74fc44825608763599195c6487",
+    "why": "mouth dark rim on both sides; closed-eye arc mirrored (blind review r2)",
+    "at": "2026-10-25T03:41:44"
+   },
+   {
+    "expr": "base",
+    "pixels": {
+     "30,44": "#f9c485",
+     "31,44": "#f9c485",
+     "32,44": "#f9c485",
+     "33,44": "#f9c485"
+    },
+    "before": "9be36ed1a8ad08f19529a458459827989ceeefb0268cfc0956c048ddd1566445",
+    "after": "795a162707d9e8fff3c74b083f4a0fa0efc1b0526a8f35f914a059f80c2f94b2",
+    "why": "drop the base-only chin bar under the mouth (blind review r2: reads as double lips, absent in every other expression)",
+    "at": "2026-10-25T03:41:45"
+   }
+  ]
+ },
+ {
+  "project": "astra-horizon",
+  "role": "professor",
+  "round": "r3-chargen",
+  "candidate": "professor-cg-nat10",
+  "by": "user (2026-10-25, relayed by the coordinator): 「이거는 꽤 규격이 괜찮네. 앞으로 이렇게 하도록 하네싱을 꽉 잡도록」",
+  "at": "2026-10-25T04:25:42",
+  "basis": "check PASS + repeated blind review median 9.0 (spread 9.0-10.0), same artist 5/5",
+  "hashes": {
+   "base": "795a162707d9e8fff3c74b083f4a0fa0efc1b0526a8f35f914a059f80c2f94b2",
+   "happy": "441a0ffdb5e6b190d105c25bd82861c87f718f74fc44825608763599195c6487",
+   "sad": "eb3691a753765e9a64ad53033360d5d193c5d74925212cf7c5fa232fabd290d9",
+   "angry": "3862b4f68b16e61d836c3f9892bbb7457df3dd128c81c321d486164ae54e4459",
+   "surprised": "ac823b4359fd529df82c126ee523dda9fe7ce1666105316dc3d1fc4ff7ef81b6"
+  },
+  "check": {
+   "size": [
+    64,
+    64
+   ],
+   "colours": 15,
+   "partialAlpha": 0,
+   "cornersTransparent": true,
+   "outlineDark": 0.99,
+   "mirrorScore": 0.703,
+   "eyes": [
+    [
+     7,
+     6,
+     30,
+     35
+    ],
+    [
+     7,
+     6,
+     30,
+     35
+    ]
+   ],
+   "eyeColourGap": 0,
+   "eyesSymmetric": true,
+   "top": 3,
+   "bottomCover": 0.984,
+   "sideTouch": true,
+   "headTouchesSide": false,
+   "headWidth": 48,
+   "headCentreOffset": 0.0,
+   "fill": 0.547
+  },
+  "review": {
+   "aggregate": {
+    "n": 5,
+    "scores": [
+     9.0,
+     9.0,
+     10.0,
+     9.0,
+     9.0
+    ],
+    "median": 9.0,
+    "min": 9.0,
+    "max": 10.0,
+    "sameArtistVotes": 5,
+    "defectVotes": {
+     "base": 0,
+     "happy": 0,
+     "sad": 0,
+     "angry": 0,
+     "surprised": 0
+    },
+    "worstDefectVotes": 0
+   },
+   "pass": true,
+   "why": [],
+   "thresholds": {
+    "fitMin": 6.5,
+    "sameArtistMin": 3,
+    "defectMaxVotes": 5
+   }
+  },
+  "verdict": {
+   "reviewer": "argon (gemini-4-argon, fresh blind agent, round 3)",
+   "source": "qa-runs/harnesses/cast-portrait/astra-horizon/r3-chargen/_blind/REVIEW-PROMPT.md + calibrate-against-cast instruction",
+   "at": "2026-10-25T03:59:57",
+   "letters": {
+    "X": "professor-cg-nat1",
+    "Z": "professor-cg-nat10",
+    "W": "professor-cg-nat12",
+    "Y": "professor-cg-nat9"
+   },
+   "hashes": {
+    "professor-cg-nat1": {
+     "base": "34a17abf6fe06c246849acc72537b5b97a4ccefa1d703df83d72a217524944b6",
+     "happy": "35525dbb093f6c002a191b91a5bd933bbd2db63b74aee745a969e1c3cd31d3f6",
+     "sad": "4fc9ddb6b0c0ddcd1b1c66a8b20072f3bf03470c1f0484f2c7683726d38ac5b5",
+     "angry": "73ab7fd04dcb08f14adff6bbb115bd74a998a68236a9f2dee7c8de223feede4c",
+     "surprised": "9eae0c3c27a1138a48fdfb3fea57217570e518f91012a9139777d04ca43004b6"
+    },
+    "professor-cg-nat10": {
+     "base": "795a162707d9e8fff3c74b083f4a0fa0efc1b0526a8f35f914a059f80c2f94b2",
+     "happy": "441a0ffdb5e6b190d105c25bd82861c87f718f74fc44825608763599195c6487",
+     "sad": "eb3691a753765e9a64ad53033360d5d193c5d74925212cf7c5fa232fabd290d9",
+     "angry": "3862b4f68b16e61d836c3f9892bbb7457df3dd128c81c321d486164ae54e4459",
+     "surprised": "ac823b4359fd529df82c126ee523dda9fe7ce1666105316dc3d1fc4ff7ef81b6"
+    },
+    "professor-cg-nat12": {
+     "base": "b37673236e08a57333f8010ee2aca4a00c85fdde0ae508d244a004e7aa7bedc3",
+     "happy": "02f8c80aa1806aea55f6432cc49ede8386b0d74261179a0f6e8bec4ca4baac91",
+     "sad": "fed134d877aa29ca1f6b43d99f099a094cc4b6d0537208d0d6013445203b9f93",
+     "angry": "5d8c708ae259f98e9e16807c3ffe06a53fffd1eda004841e6dea4cf575860d7b",
+     "surprised": "95edc106a9096fc4d5893be4d71cd51f929848dd316495b1d5ecb1addebd6164"
+    },
+    "professor-cg-nat9": {
+     "base": "78a867955e8a3ed3bdc267ecc94de9953098ab9b081f440dde10ea8a3f804002",
+     "happy": "7d1f82acabd17482593166e87d7e58b9fca17554b7377617f829b3744803ea9b",
+     "sad": "add5f9403401a1a7e524383071529338486e5cb52eeef88c70f5a165b9f90273",
+     "angry": "ad6de5dfe2154fd278c01fb877b453e4fc03e9e413da8311404c594d8afa011a",
+     "surprised": "5ff025eb1317af98e0672da5f655157a075435db079cd5bb843d3d917896d7aa"
+    }
+   },
+   "review": {
+    "ranking": [
+     "X",
+     "Y",
+     "Z",
+     "W"
+    ],
+    "candidates": {
+     "W": {
+      "castFit": 3,
+      "sameArtist": false,
+      "defects": {
+       "base": "Missing nose across 1x (31..32, 35..38) (flat #fac887 skin, whereas all 6 cast members draw a 2-4px shaded nose); broken exterior collar outline where light #bccad1 touches background directly at 1x (21,46) and (44,47), and un-outlined white coat edges #f1f4f1 at 1x (1,61..63) and (63,61..63); asymmetric 1px skin notch in right jaw outline at 1x (41,42); bottom-clipped amorphous yellow badge blob at 1x (42..46, 58..63) instead of cast2's 5-pointed star.",
+       "happy": "Broken mouth outline at 1x (28,41) where #de5f51 mouth fill touches #fac887 skin directly with no dark border while the right side doubles its #3b1319 outline at 1x (33..34, 40); stray #fac887 skin pixel leaked into the dark #1b2246 shirt collar at 1x (39,48) plus 18 other non-face hair/ear/collar pixel shifts vs base (e.g. (38,23), (47,37)); right jaw outline gap widened at 1x (43,37) and (41,42); broken exterior collar/sleeve outlines at 1x (21,46), (43,46), (44,47), (1,61..63), (63,61..63).",
+       "sad": "Stray #fac887/#eb9651 skin pixels leaked into the dark #1b2246 shirt collar at 1x (39,48) and into dark hair at 1x (25,22) and (32,19) alongside 13 other unintended hair/ear pixel shifts vs base; broken exterior collar/sleeve outlines where #bccad1/#f1f4f1 touch background at 1x (21,46), (43,46), (44,47), (1,61..63), (63,61..63); asymmetric right jaw notch at 1x (41,42) and clipped badge blob at 1x (42..46, 58..63).",
+       "angry": "Missing white eye highlight in right eye at 1x (38,30) (solid #1b2246 across (37..39, 30) while left eye has #f1f4f1 glint at (26,30)); broken left jaw outline where dark #3b1319 disappears to #fac887 skin at 1x (21,37) and right lash/jaw drops at (43,33); stray #fac887 skin pixel leaked into #1b2246 shirt collar at 1x (39,48) plus 22 non-face hair/collar pixel mutations vs base; broken exterior outlines at 1x (43,46), (44,47), (1,61..63), (63,61..63).",
+       "surprised": "Severely asymmetric, smeared eyes across 1x (23..28, 29..34) vs (36..40, 29..34): left eye has a #f1f4f1 glint at 1x (26,31) and 6px sclera width while right eye lacks any highlight and is narrower with solid #1b2246/#294482 blocks at (37..38, 31..33), plus muddy #bccad1 smears on upper eyelids at (26..27, 29) and (38..39, 29); broken mouth missing its right dark outline at 1x (33, 41..42) (#de5f51 touches #fac887 skin directly); coat silhouette shifts at 1x (45, 47..48) plus 23 other non-face pixel mutations vs base and broken outlines at (21,46), (43,46), (1,61..63), (63,61..63)."
+      },
+      "notes": "Clearly a different, weaker hand from the existing cast (sameArtist: false). Outline colour/weight: uses one reddish-burgundy outline (#3b1319) everywhere including the white lab coat, whereas cast2 uses cool dark navy (#10193e/#110938) on white uniform edges, and leaves exterior coat borders un-outlined at (21,46), (44,47), (1,61..63), (63,61..63). Palette and shading: 15-16 colours, but blotchy #7890a5/#bccad1 coat folds and malformed clipped yellow badge blob (42..46, 58..63) contrast sharply with cast2's clean banded shading and crisp 5-pointed star. Eye and mouth construction: small high-set 5px eyes (y=28..32) with only 2 iris tones (#1b2246, #294482) vs the cast's 3+ iris tones, completely missing nose (every cast member has a shaded nose), and broken mouth outlines in happy/surprised. Framing/stability: head_w=48 (top y=2) fits the box, but 16-25 pixels in hair, ears, shirt, and collar mutate randomly across expressions. Verdict: do not ship."
+     },
+     "X": {
+      "castFit": 7,
+      "sameArtist": false,
+      "defects": {
+       "base": "Chest star emblem at 1x (41..46, 59..63) is bottom-clipped at y=63 into an indistinct rounded yellow blob with soft #aa672d border rather than the cast's crisp 5-pointed star (cf. cast2 at 1x (39..45, 57..63)); noisy 1px checkerboard-like #c1cad0 dithering along both outer coat sleeves across 1x (1..12, 56..63) and (51..62, 56..63); round boyish lower face (y=29..43) reads noticeably younger than a grey-templed professor.",
+       "happy": "Asymmetric cheek blush (left cheek has 2 pixels on 1 row at 1x (22,36) and (24,36), whereas right cheek has 4 pixels across 2 rows at 1x (39,36..37) and (41,36..37)); 1px #ba5733 mouth fill leaks into the bottom lip outline at 1x (32,43); unintended pixel shifts outside the face vs base in grey hair streaks and ears at 1x (14,30), (46,30..31), (16,33), (47,33); bottom-clipped badge blob at 1x (41..46, 59..63).",
+       "sad": "Broken mouth line at 1x (29..33, 42) split by a 2px #fbcb8b skin gap at 1x (31..32, 42) into disconnected #53291e fragments at (29..30, 42) and (33,42); stray dark #0e1e41 pixels overwrite the left coat lapel shading vs base at 1x (23, 48..49) plus hair/ear pixel drift at (14,30) and (16,33); bottom-clipped badge blob at 1x (41..46, 59..63).",
+       "angry": "Asymmetric eye highlights: left eye loses its white #f6f7f7 glint (1x (22..23, 31) are grey #c1cad0 and (26,31) is dark #060d24) while right eye keeps bright #f6f7f7 glints at 1x (38,31) and (41,31) — in cast-only-3x every cast member has matching white glints in both eyes; unintended hair/ear pixel shifts vs base at 1x (17,30), (16,33), (47,33); bottom-clipped badge blob at 1x (41..46, 59..63).",
+       "surprised": "Unintended hair/ear pixel shifts outside the face vs base at 1x (17,30) and (47,33), and bottom-clipped amorphous badge blob at 1x (41..46, 59..63)."
+      },
+      "notes": "Best overall candidate and closest to the cast's rendering warmth, though still distinguishable on close inspection (sameArtist: false). Outline colour/weight: matches the cast's dual-material 1px dark outlines well (#1e0e0d dark brown on hair/skin, #060d24 dark navy on the white coat) with zero broken exterior borders. Palette and shading: 16 colours per frame with warm skin (#fbcb8b/#ee9651) and rich layered hair clusters, but introduces noisy 1px #c1cad0 dithering on outer coat sleeves (1..12, 56..63; 51..62, 56..63) unlike cast2's clean cel-banded cloth folds, and renders the star emblem at (41..46, 59..63) as a bottom-clipped blob. Eye and mouth construction: 6px eyes (y=29..34) with 3 blue iris tones (#0e1e41, #28457e, #627ea4), #c1cad0 sclera corner AA, white glint, and 2px shaded nose (31, 37..38) closely echo cast0/cast1/cast2, though sad has a split mouth at (31..32, 42) and angry drops the left eye glint. Framing and head size: top y=3, head_w=50, jaw_w=30 at y=36 match cast proportions well, though the round face reads boyish for grey temples and minor peripheral pixels drift across expressions. Ship verdict (best candidate, #1 in ranking): borderline / conditional no-ship as-is — fix the split sad mouth (31..32, 42), restore the left angry eye glint (22..26, 31), lock non-face pixels across expressions, clean sleeve dithering, and redraw the clipped star emblem (41..46, 59..63) before shipping."
+     },
+     "Y": {
+      "castFit": 6,
+      "sameArtist": false,
+      "defects": {
+       "base": "Missing dark #121733 exterior outline on the right coat sleeve edge at 1x (62, 62..63) where #cacfd4 touches background (left sleeve edge x=0 is outlined in #121733); isolated 4-way enclosed 1px background hole between right jaw and hair at 1x (42,43); youthful 20s face read understates the grey-templed professor age.",
+       "happy": "Asymmetric closed-eye arcs where the right eye outer tip drops 1px of dark #231313 at 1x (39,34) (#fbca8b skin vs #231313 at (24..25, 34) and (38,34)); mouth shifted 1px left (x=27..34) with mismatched left vs right outline colours (#231313 near-black at 1x (27..28, 40..42) vs lighter #3d1c18 brown at (33..34, 40..42)); neck shadow pixel at 1x (28,47) changes from #e58f55 to #fbca8b vs base; missing right sleeve outline at 1x (62, 62..63) and enclosed 1px hole at (42,43).",
+       "sad": "Neck shadow pixel at 1x (28,47) changes from #e58f55 to #fbca8b vs base; minor lower-iris shade mismatch at 1x (27,35) (#121733 vs #2a4b92 at (37,35)); missing right coat sleeve outline at 1x (62, 62..63) and enclosed 1px jaw/hair hole at (42,43).",
+       "angry": "Asymmetric inner eye corners and brows across 1x (28..30, 31..32) vs (34..35, 31..32) (left inner corner uses lighter #3d1c18 brown block at (28..29, 31) and (29,32) while right inner corner uses near-black #231313 at (34..35, 31) and (34,32)); neck shadow pixel shift at 1x (28,47) vs base; missing right sleeve outline at 1x (62, 62..63) and enclosed hole at (42,43).",
+       "surprised": "Prominent upper-eyelid colour mismatch: left eye upper lash at 1x (24..27, 30) and outer lash (23,32) are near-black #231313, whereas right eye upper lash at 1x (36..39, 30) and outer lash (40,32) are lighter brown #3d1c18 (visibly paler right eyelid at 2x ingame and 4x sheet); extra #e58f55 pixel elongates the nose upward at 1x (32,35); missing right sleeve outline at 1x (62, 62..63) and enclosed hole at (42,43)."
+      },
+      "notes": "Clean, disciplined pixel clusters and a crisp 5-pointed chest star (42..48, 56..62), but stands out in head proportions and facial construction (sameArtist: false). Outline colour/weight: uses dual-material 1px dark outlines (#231313 hair/face, #121733 coat), except the right sleeve drops its dark outline at (62, 62..63). Palette and shading: 15-16 colours with clean cel shading, though the two rigid 1px vertical #939faa ruler-straight lines on the sleeves (x=16, y=54..58 and x=47, y=54..58) look stiffer than cast2's organic folds. Eye and mouth construction: narrow 5px-wide eyes (x=24..28 and 35..39) with 3 iris tones (#121733, #1d3166, #2a4b92) sit beneath thick blocky 2px #3d1c18 eyebrows (y=28..29) unlike any cast member's tapered 1px brows, and surprised/happy have left-right dark-vs-brown outline colour mismatches. Framing and head size: narrower cranium (head_w=43, matched only by helmeted cast0 while unhelmeted cast1..5 are 46..59) topped by a tall curved ahoge spike (y=4..11), reading noticeably smaller-headed and younger in lineup-Y-1x/3x and ingame-Y."
+     },
+     "Z": {
+      "castFit": 5,
+      "sameArtist": false,
+      "defects": {
+       "base": "Missing dark #0f1330 exterior outline on the right coat sleeve edge at 1x (62, 61..63) and bottom-left corner at 1x (0,63) where bright #f3f5f4 touches background directly; flat 2-tone iris block (#0f1330 + uniform #2f467e across y=33..35) lacks the 3rd lighter iris highlight tone used by every cast member.",
+       "happy": "Asymmetric eyebrows across y=27..29 (left brow has #e39052/#662f1a/#4e2315 at 1x (23..28, 27) and 2px #662f1a inner tip at (22..23, 29), whereas right brow is a narrower 3px #4e2315 bar at 1x (37..39, 27) with a 1px inner tip at (40,29)), plus unintended hair highlight shift at 1x (21,28) (#854322 -> #e39052); missing exterior coat outline at 1x (62, 61..63) and (0,63).",
+       "sad": "Asymmetric brow shading where left brow has #854322 pixels at 1x (23,27) and (28,27) with no counterpart on the right brow (35..41, 27) plus unintended pixel change at 1x (21,28); missing exterior coat outline at 1x (62, 61..63) and (0,63).",
+       "angry": "Asymmetric outer brow tips at y=28 (left brow has 3px #4e2315 at 1x (22..24, 28) vs 2px at 1x (39..40, 28)); missing exterior coat outline at 1x (62, 61..63) and (0,63).",
+       "surprised": "Cartoonish 7px-tall pure-white #f3f5f4 bug-eyes across 1x (22..28, 30..36) and (35..41, 30..36) with tiny floating un-glinted 2x2 pupils at 1x (25..26, 33..34) and (37..38, 33..34) (non-mirrored #2f467e left column + #0f1330 right column in both eyes, zero highlight glint), breaking character identity and eye style completely in ingame-Z-surprised; missing exterior coat outline at 1x (62, 61..63) and (0,63)."
+      },
+      "notes": "Captures the mature middle-aged professor brief best and locks non-face torso/star pixels cleanly across all 5 expressions, but clearly comes from a different pixel-art hand (sameArtist: false). Outline colour/weight: dual 1px dark outlines (#1d0e0d hair/face, #0f1330 coat), except the right sleeve border is un-outlined white #f3f5f4 at (62, 61..63). Palette and shading: 15-16 colours with very clean geometric clusters and a crisp chest star (41..47, 56..61), but sleeve folds are drawn as rigid 1px #97a1b0 lines (x=15..16 and 47..48, y=51..63) and grey hair temples use neutral #bebebe slabs. Eye and mouth construction: starkest style divergence — only 2 iris tones (#0f1330 + flat 4x2 #2f467e block) with pure #f3f5f4 sclera and no sclera corner AA (every cast member uses 3+ iris tones), prominent 3px nasolabial fold wrinkles at (25..26, 40..42) and (37..38, 40..42) absent across the entire cast, a stiff 4px vertical 1px nose bar (32, 35..38), and gag-style glintless bug-eyes in surprised. Framing and head size: top y=3, head_w=48, jaw_w=32 at y=36 match cast framing well."
+     }
+    }
+   }
+  },
+  "fixes": [
+   {
+    "expr": "base",
+    "pixels": {
+     "35,32": "#f3f5f4",
+     "36,32": "#0f1330",
+     "38,33": "#2f467e",
+     "39,33": "#0f1330",
+     "39,34": "#2f467e",
+     "39,35": "#2f467e"
+    },
+    "before": "42bf8cdffd312f380c4f999ec910f0ca5d8f14cd2f9646ce6e79d3762fe9900c",
+    "after": "9be36ed1a8ad08f19529a458459827989ceeefb0268cfc0956c048ddd1566445",
+    "why": "mirror the left eye onto the right (blind review: iris 4 px left vs 3 px right)",
+    "at": "2026-10-25T03:15:09"
+   },
+   {
+    "expr": "sad",
+    "pixels": {
+     "36,33": "#0f1330",
+     "38,33": "#f3f5f4",
+     "38,34": "#2f467e",
+     "39,34": "#0f1330",
+     "39,35": "#2f467e"
+    },
+    "before": "7191afd7255bd909934449dd131680e60623031cac4b0c57c7961037eae6f574",
+    "after": "31f0fef2589a70ab487c315d13ec516f382afa17988df7f1c27f7bc4065351b4",
+    "why": "mirror the left eye onto the right (blind review: iris 4 px left vs 3 px right)",
+    "at": "2026-10-25T03:15:10"
+   },
+   {
+    "expr": "angry",
+    "pixels": {
+     "37,29": "#4e2315",
+     "37,30": "#4e2315",
+     "36,32": "#0f1330",
+     "38,33": "#2f467e",
+     "39,34": "#2f467e",
+     "39,35": "#f9c485"
+    },
+    "before": "03b21f1bc18a23dd42fd8972a861b979ae10419ed92b9dc7b652cacdf9c15458",
+    "after": "734a9084f8813657c86410e14ddda3f3b7f75580ac453acbf899f3062876e51d",
+    "why": "mirror the left eye onto the right (blind review: iris 4 px left vs 3 px right)",
+    "at": "2026-10-25T03:15:10"
+   },
+   {
+    "expr": "angry",
+    "pixels": {
+     "26,40": "#b36434",
+     "37,40": "#b36434",
+     "25,41": "#b36434",
+     "38,41": "#b36434",
+     "25,42": "#b36434",
+     "38,42": "#b36434"
+    },
+    "before": "734a9084f8813657c86410e14ddda3f3b7f75580ac453acbf899f3062876e51d",
+    "after": "3862b4f68b16e61d836c3f9892bbb7457df3dd128c81c321d486164ae54e4459",
+    "why": "keep the smile-line age pixels of base (blind review: lines vanish only in angry)",
+    "at": "2026-10-25T03:15:10"
+   },
+   {
+    "expr": "surprised",
+    "pixels": {
+     "32,44": "#ec4e38",
+     "33,44": "#ec4e38"
+    },
+    "before": "01a78ebe052d5da27d48f11f2157ac8f446aabca0ecad474ac0bf64ab79dc268",
+    "after": "d377417174590707c405b0e2b0655eb78beeb3816bb7c3ccf89e24c0d3a64ce8",
+    "why": "open mouth interior red like happy (blind review: brown inside read as hair colour)",
+    "at": "2026-10-25T03:15:11"
+   },
+   {
+    "expr": "surprised",
+    "pixels": {
+     "31,44": "#ec4e38",
+     "33,44": "#662f1a",
+     "30,45": "#f9c485",
+     "32,45": "#662f1a"
+    },
+    "before": "d377417174590707c405b0e2b0655eb78beeb3816bb7c3ccf89e24c0d3a64ce8",
+    "after": "ac823b4359fd529df82c126ee523dda9fe7ce1666105316dc3d1fc4ff7ef81b6",
+    "why": "open mouth: symmetric O with dark rim all round (blind review r2: un-outlined red, bottom rim shifted left)",
+    "at": "2026-10-25T03:41:43"
+   },
+   {
+    "expr": "sad",
+    "pixels": {
+     "37,40": "#b36434"
+    },
+    "before": "31f0fef2589a70ab487c315d13ec516f382afa17988df7f1c27f7bc4065351b4",
+    "after": "eb3691a753765e9a64ad53033360d5d193c5d74925212cf7c5fa232fabd290d9",
+    "why": "right smile line top pixel like base (blind review r2: crease 3 px left vs 2 px right)",
+    "at": "2026-10-25T03:41:44"
+   },
+   {
+    "expr": "happy",
+    "pixels": {
+     "35,41": "#2e140f",
+     "28,42": "#2e140f",
+     "35,42": "#2e140f",
+     "39,34": "#1d0e0d"
+    },
+    "before": "f91d3d267bddfac993a8043339e6b5b5887fa06b304903e73afe4b5a2192ee3c",
+    "after": "441a0ffdb5e6b190d105c25bd82861c87f718f74fc44825608763599195c6487",
+    "why": "mouth dark rim on both sides; closed-eye arc mirrored (blind review r2)",
+    "at": "2026-10-25T03:41:44"
+   },
+   {
+    "expr": "base",
+    "pixels": {
+     "30,44": "#f9c485",
+     "31,44": "#f9c485",
+     "32,44": "#f9c485",
+     "33,44": "#f9c485"
+    },
+    "before": "9be36ed1a8ad08f19529a458459827989ceeefb0268cfc0956c048ddd1566445",
+    "after": "795a162707d9e8fff3c74b083f4a0fa0efc1b0526a8f35f914a059f80c2f94b2",
+    "why": "drop the base-only chin bar under the mouth (blind review r2: reads as double lips, absent in every other expression)",
+    "at": "2026-10-25T03:41:45"
+   }
+  ]
+ }
+]

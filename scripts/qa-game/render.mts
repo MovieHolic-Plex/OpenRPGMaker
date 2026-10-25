@@ -6,6 +6,7 @@
 // 타일은 에디터 캔버스 렌더러와 같은 함수(`editor/mapTileDraw.drawMapTileLayer`: 받침 타일·4분면 오토타일·호수·겹침 스택)로
 // 그린다. 캔버스 대신 pngjs 버퍼 위에 drawImage 만 구현한 작은 2D 컨텍스트를 넘긴다. 이벤트는 스프라이트 대신 표식(문·전투·엔딩·기타).
 
+import { resolveOprnPanoramaAssetUrl } from "../../src/assets/oprnPanoramas.ts";
 import fs from "node:fs";
 import path from "node:path";
 import { PNG } from "pngjs";
@@ -13,6 +14,7 @@ import jpeg from "jpeg-js";
 import { drawCharsetPreview, type CharsetPreviewCandidate } from '../../src/ai/charsetPreview.ts';
 import { charsetFrameSource, decodeCharsetFrameIndex } from '../../src/assets/easyrpgRtp.ts';
 import { findCharsetAsset } from '../../src/assets/charsetCatalog.ts';
+import { generatedMonsterSpriteUrl } from '../../src/assets/generatedMonsterSprites.ts';
 import { resolveAssetResourceUrl } from '../../src/assets/generatedAssetResourceResolver.ts';
 import { drawMapTileLayer } from "../../src/editor/mapTileDraw.ts";
 import { reliefMapView } from "../../src/editor/reliefMapView.ts";
@@ -140,6 +142,14 @@ const refAssetRoots: string[] = [];
 export function addRenderAssetRoot(dir: string): void {
   if (!refAssetRoots.includes(dir)) refAssetRoots.push(dir);
 }
+function refDataUrl(ref: { sha256: string; extension: string; mime: string } | undefined): string | null {
+  if (!ref) return null;
+  for (const root of refAssetRoots) {
+    const file = path.join(root, `${ref.sha256}.${ref.extension.replace(/^\./u, "") || "png"}`);
+    if (fs.existsSync(file)) return `data:${ref.mime};base64,${fs.readFileSync(file).toString("base64")}`;
+  }
+  return null;
+}
 function refAssetDataUrl(project: Project, tileset: TilesetDef): string | null {
   if (tileset.image.type !== "uploaded") return null;
   const ref = project.assets.uploaded[tileset.image.id]?.ref;
@@ -224,6 +234,16 @@ export function renderMapPng(project: Project, map: GameMap, scale = 1, sunSourc
     const i = (y * target.width + x) * 4;
     target.data[i] = dark ? 42 : 51; target.data[i + 1] = dark ? 42 : 51; target.data[i + 2] = dark ? 46 : 58; target.data[i + 3] = 255;
   }
+  // 빈 칸에 비치는 맵 배경(showInEmptyCells, OPRN 파노라마) — 게임처럼 빈 칸에 배경 그림이 보이게 바닥에 깐다(층 그림이 덮는다).
+  const bgUrl = map.background?.showInEmptyCells ? resolveOprnPanoramaAssetUrl(map.background.imageId ?? "") : null;
+  const bgFile = bgUrl ? path.join("public", bgUrl.replace(/^\//u, "")) : "";
+  if (bgFile && fs.existsSync(bgFile)) {
+    const bg = PNG.sync.read(fs.readFileSync(bgFile));
+    for (let y = 0; y < target.height; y += 1) for (let x = 0; x < target.width; x += 1) {
+      const s = (((y % bg.height) * bg.width) + (x % bg.width)) * 4, d = (y * target.width + x) * 4;
+      target.data[d] = bg.data[s]!; target.data[d + 1] = bg.data[s + 1]!; target.data[d + 2] = bg.data[s + 2]!; target.data[d + 3] = 255;
+    }
+  }
   let note: string | undefined;
   if (!tileset || !image) note = `타일셋 이미지를 읽지 못했습니다(${map.tilesetId})`;
   else {
@@ -288,10 +308,19 @@ export function renderMapPng(project: Project, map: GameMap, scale = 1, sunSourc
 }
 
 
+/**
+ * 검수용 맵 그림 — 편집기 전용 시작 위치 표시(초록 테두리)를 뺀다. 하네스 검수 그림의 기본(space-craft·assistant-capability).
+ * 2026-10-22 적대 검수자가 시작 표시를 이동 칸·출구로 읽어 점수가 기울었다. HARNESS_START_MARKER=1 이면 표시를 둔다.
+ */
+export function renderReviewMapPng(project: Project, map: GameMap, scale = 1): { png: Buffer; note?: string } {
+  return renderMapPng(process.env.HARNESS_START_MARKER === "1" ? project : { ...project, startMapId: "" } as Project, map, scale);
+}
+
+
 function drawEventCharset(context: PngContext, project: Project, event: GameMap["events"][number], ex: number, ey: number, size: number): boolean {
   const evName = `${event.name ?? ""} ${event.pages?.[0]?.name ?? ""}`;
   const pageGraphic = event.pages?.[0]?.graphic;
-  const spriteId = pageGraphic?.sprite?.type === "bundled" ? pageGraphic.sprite.id : event.graphic?.textureKey;
+  const spriteId = pageGraphic?.sprite?.type === "bundled" || pageGraphic?.sprite?.type === "uploaded" ? pageGraphic.sprite.id : event.graphic?.textureKey;
   // 표지판(이정표): Object1 0번(나무 문) 대신 나무 표지판 픽셀 아이콘을 그린다.
   if (/이정표|표지판|푯말|안내판/u.test(evName) && (!spriteId || spriteId === "tex_easyrpg_charset_object1")) {
     context.fillStyle = "rgba(92, 58, 33, 1)";
@@ -316,7 +345,8 @@ function drawEventCharset(context: PngContext, project: Project, event: GameMap[
   }
   if (!spriteId) return false;
   const asset = findCharsetAsset(spriteId);
-  const url = asset?.url ?? resolveAssetResourceUrl(spriteId, { project });
+  const uploaded = project.assets.uploaded[spriteId];
+  const url = asset?.url ?? (uploaded ? uploadedAssetUrl(uploaded) || refDataUrl(uploaded.ref) : null) ?? resolveAssetResourceUrl(spriteId, { project });
   const file = url && /^\/?assets\//u.test(url) ? path.join("public", url.replace(/^\//u, "").split("?")[0]!) : null;
   const bytes = url?.startsWith("data:image/") ? Buffer.from(url.slice(url.indexOf(",") + 1), "base64")
     : file && fs.existsSync(file) ? fs.readFileSync(file) : null;
@@ -327,6 +357,14 @@ function drawEventCharset(context: PngContext, project: Project, event: GameMap[
     // RTP 캐릭터셋은 좌상단(0,0) 배경색이 투명 키색이다.
     if (raster.data[3] === 255) {
       applyTransparentColorKey(raster.data, [raster.data[0]!, raster.data[1]!, raster.data[2]!]);
+    }
+    // 필드 적의 생성 몬스터 그림(generated-enemy-*): 런타임은 초상 한 장을 32px(2칸) 상자에 맞춰 발밑 가운데로 그린다(eventSpriteResources fitSize 32).
+    // 칩 칸으로 자르면 투명 구석만 잘려 적이 안 보였다(2026-10-23 assistant-dungeons VQA 「투명 적」).
+    if (!asset && !uploaded && generatedMonsterSpriteUrl(spriteId)) {
+      const scale = (size * 2) / Math.max(raster.width, raster.height);
+      const dw = Math.max(1, Math.round(raster.width * scale)), dh = Math.max(1, Math.round(raster.height * scale));
+      context.drawImage(raster, 0, 0, raster.width, raster.height, ex + Math.round((size - dw) / 2), ey + size - dh, dw, dh);
+      return true;
     }
     const rawPattern = pageGraphic?.pattern ?? event.graphic?.pattern;
     const selection = typeof rawPattern === "number" && rawPattern >= 3
@@ -529,6 +567,11 @@ export async function renderMain(argv: readonly string[] = process.argv.slice(2)
   const scale = Number(arg("scale") ?? 1);
   const started = Date.now();
   const { project } = loadProjectFile(projectFile);
+  // 저장본 옆의 자산 폴더(project/assets · assets)와 --assets 폴더에서 ref 자산 바이트를 찾는다 — 공용 캐릭터 칩처럼
+  // ref 로만 저장된 업로드 캐릭터가 판정 그림에서 빈 상자로 빠졌다(2026-10-22 r2 boss-balance-sim).
+  for (const dir of [arg("assets"), path.join(path.dirname(projectFile), "project", "assets"), path.join(path.dirname(projectFile), "assets")]) {
+    if (dir && fs.existsSync(dir)) addRenderAssetRoot(dir);
+  }
   store.replaceProject(project);
   const current = store.getCurrent();
   fs.mkdirSync(path.join(out, "render"), { recursive: true });

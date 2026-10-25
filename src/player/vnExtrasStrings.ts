@@ -54,7 +54,25 @@ export type VnUiKey =
   | "save.hintDisabled"
   | "save.hintConfirm"
   | "save.hintPick"
-  | "load.hint";
+  | "load.hint"
+  | "ending.badge.character"
+  | "ending.badge.bad"
+  | "ending.badge.normal"
+  | "ending.badge.happy"
+  | "ending.badge.plain"
+  | "ending.badge.continued"
+  | "ending.actEnd"
+  | "ending.chapterEnd"
+  | "ending.theEnd"
+  | "ending.heading"
+  | "ending.kicker.dark"
+  | "ending.kicker.couple"
+  | "ending.kicker.journey"
+  | "ending.hallOfFame"
+  | "ending.continue"
+  | "ending.creditsSkip"
+  | "ending.creditsRead"
+  | "ending.returnTitle";
 
 type Row = Readonly<Record<SupportedLocale, string>>;
 
@@ -105,6 +123,25 @@ export const VN_UI_STRINGS: Readonly<Record<VnUiKey, Row>> = {
   "save.hintPick": { ko: "저장할 슬롯을 선택하세요.", en: "Choose a slot to save to.", ja: "保存するスロットを選んでください。", zh: "请选择存档栏。" },
   "load.hint": { ko: "불러올 저장 칸을 선택하세요.", en: "Choose a save to load.", ja: "読み込むセーブを選んでください。", zh: "请选择要读取的存档。" },
   "endings.undefined": { ko: "없음", en: "none", ja: "なし", zh: "无" },
+  // 엔딩 화면(playSceneOverlays.showEndingScreen) — 배지·마지막 장·안내. 엔딩 presentation 의 badge·finalTitle·kicker 가 있으면 그 글이 이긴다.
+  "ending.badge.character": { ko: "캐릭터 엔딩", en: "CHARACTER ENDING", ja: "キャラクターエンディング", zh: "角色结局" },
+  "ending.badge.bad": { ko: "배드 엔딩", en: "BAD ENDING", ja: "バッドエンディング", zh: "坏结局" },
+  "ending.badge.normal": { ko: "노멀 엔딩", en: "NORMAL ENDING", ja: "ノーマルエンディング", zh: "普通结局" },
+  "ending.badge.happy": { ko: "해피 엔딩", en: "HAPPY ENDING", ja: "ハッピーエンディング", zh: "幸福结局" },
+  "ending.badge.plain": { ko: "엔딩", en: "ENDING", ja: "エンディング", zh: "结局" },
+  "ending.badge.continued": { ko: "다음 이야기에 계속", en: "TO BE CONTINUED", ja: "次回へつづく", zh: "未完待续" },
+  "ending.actEnd": { ko: "제{0}막 끝", en: "END OF ACT {0}", ja: "第{0}幕 完", zh: "第{0}幕 终" },
+  "ending.chapterEnd": { ko: "제{0}장 끝", en: "END OF CHAPTER {0}", ja: "第{0}章 完", zh: "第{0}章 终" },
+  "ending.theEnd": { ko: "끝", en: "THE END", ja: "完", zh: "终" },
+  "ending.heading": { ko: "엔딩", en: "The End", ja: "エンディング", zh: "结局" },
+  "ending.kicker.dark": { ko: "이야기의 끝", en: "The end of the story", ja: "物語の終わり", zh: "故事的终点" },
+  "ending.kicker.couple": { ko: "두 사람의 이야기", en: "Their story", ja: "ふたりの物語", zh: "两个人的故事" },
+  "ending.kicker.journey": { ko: "우리의 여정", en: "Our journey", ja: "わたしたちの旅", zh: "我们的旅程" },
+  "ending.hallOfFame": { ko: "전당 등록!", en: "Hall of Fame!", ja: "殿堂入り!", zh: "荣登殿堂!" },
+  "ending.continue": { ko: "Z / Enter 계속", en: "Z / Enter  Continue", ja: "Z / Enter 次へ", zh: "Z / Enter 继续" },
+  "ending.creditsSkip": { ko: "Z / Enter 누르면 빠르게   ·   Esc 건너뛰기", en: "Hold Z / Enter  Fast   ·   Esc  Skip", ja: "Z / Enter 長押しで早送り   ·   Esc とばす", zh: "按住 Z / Enter 快进   ·   Esc 跳过" },
+  "ending.creditsRead": { ko: "PgUp/PgDn 읽기   ·   Z / Enter 마침", en: "PgUp/PgDn  Read   ·   Z / Enter  Finish", ja: "PgUp/PgDn 読む   ·   Z / Enter 終わる", zh: "PgUp/PgDn 阅读   ·   Z / Enter 结束" },
+  "ending.returnTitle": { ko: "타이틀로 돌아가기", en: "Return to title", ja: "タイトルへ戻る", zh: "返回标题" },
 };
 
 export function vnUiText(language: { readonly language: DialogueUiLanguage } | undefined, key: VnUiKey, ...args: readonly (string | number)[]): string {

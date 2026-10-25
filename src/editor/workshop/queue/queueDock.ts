@@ -6,10 +6,14 @@
  * 작업이 하나도 없으면 단추도 숨는다. 편집기(renderEditor)가 그릴 때 붙이고, 편집기를 걷으면 함께 떨어진다.
  */
 import "@/styles/database/workshop/queue.css";
+// 불씨 막대·드러남(craft.css)은 공방 시트 묶음에 있다 — 작업 줄이 공방보다 먼저 떠도 같은 모양이 되게 함께 읽는다.
+import "@/styles/database/workshop/index.css";
 import { clearChildren, el } from "@/util/dom";
 import { toast } from "@/util/toast";
+import { castThumbDataUrl, packCast } from "../castPreview";
 import { gridDataUrl } from "../pixels";
 import { armWorkshopStamp } from "../workshopBake";
+import { craftBar, markReveal, revealPhase } from "../workshopArt";
 import { jobStateLabel, pauseParts, SOURCE_LABELS, type JobState } from "./jobModel";
 import { QUEUE_MAX_LIMIT, workshopQueue, type JobView, type QueueSnapshot } from "./workshopQueue";
 
@@ -23,6 +27,8 @@ let unsubscribe: (() => void) | null = null;
 let ticker: ReturnType<typeof setInterval> | null = null;
 let lastSignature = "";
 const packThumbs = new Map<string, string>();
+/** 작은 그림이 사람 묶음(얼굴·앞모습)인 작업 */
+const packCastThumbs = new Set<string>();
 const busy = new Set<string>();
 
 /** 편집기 셸에 작업 줄 단추를 붙인다(여러 번 불러도 하나). */
@@ -99,8 +105,21 @@ function onKeydown(event: KeyboardEvent): void {
   root.querySelector<HTMLElement>(".wq-pill")?.focus();
 }
 
+/**
+ * 알약은 할 일이 남았을 때만 — 진행·고를 차례·멈춤. 다 끝나면 「모두 끝남」을 잠깐(SETTLED_LINGER_MS) 보이고 숨는다.
+ * 전에는 끝난 작업이 줄에 남아 있는 한 「공방 작업 모두 끝남」이 화면 구석에 계속 떠 있었다(2026-10-23 UX 검수).
+ */
+const SETTLED_LINGER_MS = 6000;
+let lastLiveAt = 0;
+function pillWanted(snapshot: QueueSnapshot, now = Date.now()): boolean {
+  const { active, queued, ready, paused } = snapshot.counts;
+  // 못 그린 작업은 그 카드(공방 창)가 알린다 — 알약을 영영 붙잡지 않는다.
+  if (active + queued + ready + paused > 0 || snapshot.hold) { lastLiveAt = now; return true; }
+  return snapshot.jobs.length > 0 && now - lastLiveAt < SETTLED_LINGER_MS;
+}
+
 function signature(snapshot: QueueSnapshot): string {
-  return JSON.stringify([open, snapshot.limit, snapshot.hold, snapshot.hold?.until ? Math.ceil((snapshot.hold.until - Date.now()) / 1000) : 0, snapshot.backend, [...busy],
+  return JSON.stringify([open, pillWanted(snapshot), snapshot.limit, snapshot.hold, snapshot.hold?.until ? Math.ceil((snapshot.hold.until - Date.now()) / 1000) : 0, snapshot.backend, [...busy],
     snapshot.jobs.map((view) => (view.job.pause?.until ? Math.ceil((view.job.pause.until - Date.now()) / 1000) : 0)),
     snapshot.jobs.map((view) => [view.job.id, view.state, view.holding, Math.round(view.progress * 20), view.etaMs === null ? null : Math.ceil(view.etaMs / 60_000),
       view.job.pause?.reason, view.job.error, view.job.installWait, view.job.calls,
@@ -115,7 +134,7 @@ function render(force: boolean): void {
   lastSignature = next;
   requestAnimationFrame(clearFloatingNeighbours);
   // 공방 큰 화면이 열려 있는 동안은 알약을 숨긴다(공방 머리에 「작업 줄」 단추가 있다) — 알약이 후보 카드 단추를 가렸다(2026-10-21 VQA).
-  const visible = (snapshot.jobs.length > 0 && !suppressed) || open;
+  const visible = (pillWanted(snapshot) && !suppressed) || open;
   root.hidden = !visible;
   if (!visible) return;
   const focusedJob = (document.activeElement as HTMLElement | null)?.closest?.("[data-job]")?.getAttribute("data-job") ?? null;
@@ -130,16 +149,17 @@ function render(force: boolean): void {
 }
 
 function pill(snapshot: QueueSnapshot): HTMLElement {
-  const { active, queued, ready, paused } = snapshot.counts;
+  const { active, queued, ready, paused, failed } = snapshot.counts;
   const working = active + queued;
   const parts: string[] = [];
   if (working) parts.push(`${working}개 진행`);
   if (ready) parts.push(`${ready}개 고를 차례`);
   if (paused) parts.push(`${paused}개 멈춤`);
+  if (failed) parts.push(`${failed}개 못 그림`);
   // 조각마다 따로 번역되게 span 으로 잇는다(한 덩이로 이으면 영어에서 「1개 진행 · 8 to pick」처럼 반만 바뀌었다).
   const label = partsNodes(parts.length ? parts : ["모두 끝남"]);
-  return el("button", {
-    class: "wq-pill" + (ready ? " has-ready" : "") + (snapshot.hold || paused ? " has-paused" : "") + (open ? " is-open" : ""),
+  return markReveal(el("button", {
+    class: "wq-pill" + (ready ? " has-ready" : "") + (active ? " is-active" : "") + (snapshot.hold || paused ? " has-paused" : "") + (open ? " is-open" : ""),
     attrs: { type: "button", "aria-expanded": String(open), "aria-controls": "wq-panel", title: "공방 작업 줄" },
     dataset: { testid: "workshop-queue-pill" },
     on: { click: () => { open = !open; render(true); if (open) root?.querySelector<HTMLElement>(".wq-panel")?.focus(); } },
@@ -148,7 +168,7 @@ function pill(snapshot: QueueSnapshot): HTMLElement {
       el("span", { class: "wq-pill-title", text: "공방 작업" }),
       el("span", { class: "wq-pill-count", children: label }),
     ],
-  });
+  }), revealPhase("pill-ready", ready > 0));
 }
 
 function panel(snapshot: QueueSnapshot): HTMLElement {
@@ -231,7 +251,8 @@ function thumb(view: JobView): HTMLElement {
   if (job.pack) {
     const url = packThumbs.get(job.id);
     if (!url) void loadPackThumb(job.id);
-    return el("div", { class: "wq-thumb", children: url ? [el("img", { attrs: { src: url, alt: "" } })] : [] });
+    // 사람 묶음은 밝은 바탕(물건용 갈색 바닥이 아니라) — 얼굴이나 앞모습 머리~가슴을 정수 배율로.
+    return el("div", { class: "wq-thumb" + (packCastThumbs.has(job.id) ? " is-cast" : ""), children: url ? [el("img", { attrs: { src: url, alt: "" } })] : [] });
   }
   const run = round?.runs.find((candidate) => candidate.status === "done" && candidate.grid) ?? round?.runs.find((candidate) => candidate.grid);
   if (run?.grid && item && session) {
@@ -250,10 +271,18 @@ async function loadPackThumb(jobId: string): Promise<void> {
   const queue = workshopQueue();
   const view = queue.snapshot().jobs.find((candidate) => candidate.job.id === jobId);
   const sha = view?.job.pack?.previewBlob;
-  if (!view || !sha) return;
+  if (!view) return;
   try {
     const pack = await queue.packOf(view.job);
-    const bytes = pack.blobs.get(sha);
+    // 사람 묶음: 시트 통째(288×256)를 52px 로 찌그러뜨리지 않고 첫 사람의 얼굴·앞모습을 쓴다.
+    const castUrl = await castThumbDataUrl(packCast(pack.manifest, pack.blobs)).catch(() => null);
+    if (castUrl) {
+      packCastThumbs.add(jobId);
+      packThumbs.set(jobId, castUrl);
+      render(true);
+      return;
+    }
+    const bytes = sha ? pack.blobs.get(sha) : undefined;
     if (!bytes) return;
     packThumbs.set(jobId, URL.createObjectURL(new Blob([bytes.slice()], { type: "image/png" })));
     render(true);
@@ -350,7 +379,7 @@ function actions(view: JobView): HTMLElement[] {
         if (reason) { toast(reason, "info"); return; }
         open = false;
         render(true);
-        toast(`「${job.title}」 붓을 들었어요. 맵에서 놓을 곳을 누르세요. Esc 로 내려놓아요.`, "info");
+        toast(`「${job.title}」 붓을 들었어요. 맵에서 놓을 곳을 누르세요. Esc로 그만둬요.`, "info");
       }, true, disabled));
     }
     out.push(actionButton("줄에서 빼기", "remove", () => act(id, () => queue.remove(id), "작업을 바꾸지 못했어요"), false, disabled, true));
@@ -372,7 +401,9 @@ function row(view: JobView, _snapshot: QueueSnapshot): HTMLElement {
   const { job, state } = view;
   const tone = view.holding ? "warn" : STATE_TONE[state];
   const showBar = state === "queued" || state === "reference" || state === "drawing" || state === "review";
-  return el("li", {
+  // 그리던 작업이 고를 차례가 된 그 순간 한 번 드러낸다(판을 다시 그려도 이어서)
+  const reveal = revealPhase(`job:${job.id}`, state === "ready");
+  return markReveal(el("li", {
     class: `wq-row is-${tone}`, dataset: { job: job.id, state, testid: "workshop-queue-row", source: job.source },
     children: [
       thumb(view),
@@ -394,16 +425,14 @@ function row(view: JobView, _snapshot: QueueSnapshot): HTMLElement {
               el("span", { class: "wq-line", dataset: { testid: "workshop-queue-line" }, children: partsNodes(stateParts(view)) }),
             ],
           }),
-          ...(showBar ? [el("div", {
-            class: "wq-bar", attrs: { role: "progressbar", "aria-valuemin": "0", "aria-valuemax": "100", "aria-valuenow": String(Math.round(view.progress * 100)), "aria-label": "진행" },
-            children: [el("span", { attrs: { style: `width: ${Math.max(4, Math.round(view.progress * 100))}%` } })],
-          })] : []),
+          // 줄 서는 중·계정 대기는 끝을 모르는 막대, 그리는 중이면 빛이 지나가는 불씨 막대
+          ...(showBar ? [craftBar({ value: state === "queued" || view.holding ? null : view.progress, hot: state !== "queued" && !view.holding, label: "진행" })] : []),
           ...[candidates(view)].filter((node): node is HTMLElement => node !== null),
           el("div", { class: "wq-actions", children: actions(view) }),
         ],
       }),
     ],
-  });
+  }), reveal);
 }
 
 /** 시험·정리용 */

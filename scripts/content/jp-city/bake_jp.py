@@ -72,7 +72,7 @@ BLOCK_ORDER = ['autotiles_ground', 'autotiles_lines', 'roads', 'buildings', 'str
                'interior_school', 'interior_gym', 'interior_station', 'interior_office', 'interior_post',
                'dungeon_underground', 'dungeon_hospital', 'dungeon_school', 'dungeon_construction', 'dungeon_warehouse',
                'interior_amuse', 'interior_karaoke', 'interior_famires', 'interior_hotel', 'interior_mall',
-               'interior_hospital', 'interior_school2', 'interior_office2', 'shitamachi_pack', 'jp_regions_pack', 'jp_inaka_pack', 'jp_forest_r4', 'interior_house3']
+               'interior_hospital', 'interior_school2', 'interior_office2', 'shitamachi_pack', 'jp_regions_pack', 'jp_inaka_pack', 'jp_forest_r4', 'interior_house3', 'street_stairs']
 PEOPLE = (851, 1005)            # 행인(Actor1) 자리 — 번들에서 제외, 투명 빈 칸으로 번호만 지킨다
 N_ORIG = 2880
 SIGN_DECOS = ('sign_h', 'vstack', 'wallad', 'vsign', 'plate', 'board', 'rtext', 'facade_ad', 'vision', 'mural')
@@ -563,7 +563,11 @@ def bake(out_root, dry=False, blocks_dir=BLOCKS_DIR, block_order=None, quiet=Fal
             im = c['img']
             assert im.size == (16, 16), (bname, loc, im.size)
             im = BL.norm(im); assert c['pc'] in BL.PC, (bname, loc, c['pc'])
-            tid = cells.put(f'{bname}/{loc}', im, dict(pc=c['pc'], label=c['label'], role=crole.get(loc, 'detail'), cat='block:' + bname, tags=list(c.get('tags', [])), desc=c['desc']))
+            inf = dict(pc=c['pc'], label=c['label'], role=crole.get(loc, 'detail'), cat='block:' + bname, tags=list(c.get('tags', [])), desc=c['desc'])
+            if c.get('dirs'):            # 방향 통행(계단 칸: 위·아래로만 등) — 걷는 pc 만, 적어도 한 방향은 열린다
+                assert BL.PC[c['pc']][1] and any(c['dirs'].values()) and set(c['dirs']) == {'up', 'down', 'left', 'right'}, (bname, loc, c['dirs'])
+                inf['dirs'] = dict(c['dirs'])
+            tid = cells.put(f'{bname}/{loc}', im, inf)
             local2tid[(bname, loc)] = tid
         for a in B.get('autotiles', []): pending_autotiles.append((bname, a))
         for g in B.get('groups', []): pending_groups.append((bname, g))
@@ -713,7 +717,7 @@ def bake(out_root, dry=False, blocks_dir=BLOCKS_DIR, block_order=None, quiet=Fal
                 tile_meta.append(dict(label='옛 굽기 칸', description='옛 굽기 칸(번호 고정용) — 지금은 쓰지 않는다.', source='bundled-default'))
             continue
         prio, passable, passage, home = BL.PC[inf['pc']]
-        passability.append(dict(PASS) if passable else dict(SOLID)); priority.append(prio); terrain.append(0)
+        passability.append(dict(inf['dirs']) if inf.get('dirs') else dict(PASS) if passable else dict(SOLID)); priority.append(prio); terrain.append(0)
         meta = dict(label=inf['label'], description=inf['desc'], role=inf['role'], passage=passage, defaultLayer=home, tags=list(inf['tags']), source='bundled-default',
                     confidence='high', repeatability='repeat' if inf['pc'] == 'floor' else 'fixed')
         if inf['pc'] == 'flat': meta['locked'] = True; meta['layerBacking'] = 'none'; meta['description'] += ' 투명 덧그림: 붓은 위층, 캐릭터 밑에 그린다.'

@@ -1,6 +1,6 @@
 import { mapCharacterSizeFactor } from "@/project/characterScale";
 import { fallHop, jumpHop } from "@/player/characterHop";
-import { invalidateEventIdIndexPass } from "@/project/runtimeEventState";
+import { invalidateEventIdIndexPass, moveRuntimeEventPosition } from "@/project/runtimeEventState";
 import { mapTileSize } from "@/project/tileGeometry";
 import type { Dir } from "@/player/input";
 import { npcMoveDurationMs, npcMoveIntervalMs } from "@/player/playScenePageMoveRoutes";
@@ -28,6 +28,8 @@ import {
   playMoveRouteSound,
 } from "@/player/playSceneAutonomousRouteEffects";
 import { nextSessionRandom } from "@/project/session";
+import { expandApproach, turnTowardDir } from "@/player/playSceneApproach";
+import { applyDoorCue, applyPlaceAt, expandEnterVia, expandExitVia } from "@/player/playSceneDoorway";
 
 const DEFAULT_JUMP_DISTANCE = 2;
 
@@ -98,6 +100,12 @@ export function movementDeltaForCommand(
     case "turnRandom":
     case "turnTowardPlayer":
     case "turnAwayFromPlayer":
+    case "approach":
+    case "turnToward":
+    case "exitVia":
+    case "enterVia":
+    case "doorCue":
+    case "placeAt":
     case "setDirectionFix":
     case "setThrough":
     case "setAnimation":
@@ -133,24 +141,55 @@ export function executeInstantCommand(
       );
       return true;
     case "turn":
-      turnNpc(target, command.dir);
+      turnNpc(routeContext, target, command.dir);
       return true;
     case "turnRelative":
-      turnNpc(target, relativeTurn(target.mover.facing, command.turn, () => nextSessionRandom(routeContext.scene.session, "movement")));
+      turnNpc(routeContext, target, relativeTurn(target.mover.facing, command.turn, () => nextSessionRandom(routeContext.scene.session, "movement")));
       return true;
     case "turnRandom":
-      turnNpc(target, randomDirection(() => nextSessionRandom(routeContext.scene.session, "movement")));
+      turnNpc(routeContext, target, randomDirection(() => nextSessionRandom(routeContext.scene.session, "movement")));
       return true;
     case "turnTowardPlayer": {
       const dir = playerRelativeDirection(routeContext.scene, routeContext.eventId, true);
-      if (dir) turnNpc(target, dir);
+      if (dir) turnNpc(routeContext, target, dir);
       return true;
     }
     case "turnAwayFromPlayer": {
       const dir = playerRelativeDirection(routeContext.scene, routeContext.eventId, false);
-      if (dir) turnNpc(target, dir);
+      if (dir) turnNpc(routeContext, target, dir);
       return true;
     }
+    case "approach": {
+      // 이 순간의 실제 위치로 목적 칸을 고르고, 이 단계 자리에 보통 걸음들 + 대상 쪽 돌기를 끼운다(같은 속도·막힘 처리).
+      const expansion = expandApproach(routeContext.scene, routeContext.eventId, { x: target.view.x, y: target.view.y }, command);
+      const at = target.mover.step - 1;
+      target.mover.moves = [...target.mover.moves.slice(0, at), ...expansion, ...target.mover.moves.slice(at + 1)];
+      target.mover.step = at;
+      return true;
+    }
+    case "turnToward": {
+      const dir = turnTowardDir(routeContext.scene, { x: target.view.x, y: target.view.y }, command);
+      if (dir) turnNpc(routeContext, target, dir);
+      return true;
+    }
+    case "exitVia":
+    case "enterVia": {
+      // 문으로 나가기·들어오기 — approach 처럼 이 자리에 걸음·문 단계를 펼친다(playSceneDoorway).
+      const from = { x: target.view.x, y: target.view.y };
+      const expansion = command.kind === "exitVia"
+        ? expandExitVia(routeContext.scene, routeContext.eventId, from, command)
+        : expandEnterVia(routeContext.scene, routeContext.eventId, from, command);
+      const at = target.mover.step - 1;
+      target.mover.moves = [...target.mover.moves.slice(0, at), ...expansion, ...target.mover.moves.slice(at + 1)];
+      target.mover.step = at;
+      return true;
+    }
+    case "doorCue":
+      applyDoorCue(routeContext.scene, command, (id) => playMoveRouteSound(routeContext.scene, id));
+      return true;
+    case "placeAt":
+      applyPlaceAt(routeContext.scene, routeContext.eventId, target.mover, target.sprite, target.view, command);
+      return true;
     case "setDirectionFix":
       target.mover.directionFix = command.enabled;
       return true;
@@ -217,8 +256,15 @@ function playerRelativeMove(context: NpcRouteCommandContext, towardPlayer: boole
   return dir ? { ...commandDelta(dir), face: dir } : null;
 }
 
-function turnNpc(target: NpcCommandTarget, dir: Dir): void {
+function turnNpc(routeContext: NpcRouteCommandContext, target: NpcCommandTarget, dir: Dir): void {
   const frameDir = applyFacing(target.mover, dir);
+  // 돈 방향을 런타임 위치에도 남긴다. 경로가 끝나 무버가 지워진 뒤 표면 갱신은 그 위치의 방향(없으면 페이지 그림 방향)으로
+  // 인물을 다시 그린다 — 예전에는 걸음만 방향을 남겨, 경로 끝의 「돌아보기」가 다음 갱신에서 마지막 걸음 방향으로 되돌아갔다
+  // (2026-10-22 r3 party-enter-cutscene: 두 동료가 「서로 바라보며」 대사하는 장면에서 둘 다 등을 보였다).
+  moveRuntimeEventPosition(routeContext.scene.eventPositions, routeContext.eventId, target.view.x, target.view.y, frameDir);
+  // 세션에 옮겨 둔 위치(eventLocations)가 이 맵에 있으면 그쪽 방향도 함께 남긴다(첫사랑 r2: 옥상에서 서하를 보던 지후가 아래를 봄).
+  const location = routeContext.scene.session.eventLocations?.[routeContext.eventId];
+  if (location?.mapId === routeContext.scene.map.id) routeContext.scene.session.eventLocations[routeContext.eventId] = { ...location, direction: frameDir };
   setNpcIdleFrame(
     target.sprite,
     target.baseFrame,

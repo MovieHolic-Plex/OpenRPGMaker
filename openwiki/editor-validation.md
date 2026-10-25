@@ -2,6 +2,10 @@
 
 # Editor Validation Expectations
 
+## 계단 입구 검사 `stair-*` (2026-10-22)
+
+`stair-entrance-blocked` · `stair-misfacing` · `stair-trigger-off` — 장면 다듬기 검사(`lintScenePolish`)에 붙은 warning. 계약·배치·참고문서는 `openwiki/stair-entrance-contract.md`.
+
 ## 장면 다듬기 경고 `scene-*` (2026-10-21)
 
 `src/project/lint/scenePolishLint.ts` — 세 데모를 사람이 손으로 고친 결함 중 기계로 잡히는 것. 전부 warning(커밋을 막지 않는다).
@@ -14,14 +18,39 @@
 | `scene-transfer-pair` | 돌아오는 문형 이동이 있는데 착지가 그 문에서 체비쇼프 2칸 이상 / 방향이 «문 → 착지» 쪽이 아니다 |
 | `scene-transfer-facing` | transfer 에 direction 이 없다(장면 전환 포함) |
 | `scene-stair-direction` | 맵 이름의 층(옥상·N층·지하)으로 위/아래가 갈리는데 계단 이름표가 반대(내려가는·구멍 ↔ 올라가는) |
-| `scene-npc-vanish` | 첫 페이지가 보이는 NPC 가 Erase Event 또는 스위치 «떠남» 빈 투명 페이지로 사라지는데, 바로 앞 경로가 출구(가장자리·이동 이벤트 1칸 안·문 칸) 앞에서 끝나지 않는다. 예외: 검은 화면 뒤, 동료 합류 뒤, 전투 직후 대사 없이(쓰러진 필드 적). 경로 속 불투명도 -200 이하도 같은 판정 |
+| `scene-npc-vanish` | 첫 페이지가 보이는 NPC 가 Erase Event 또는 스위치 «떠남» 빈 투명 페이지로 사라지는데, 바로 앞 경로가 출구(가장자리·이동 이벤트 1칸 안·문 칸) 앞에서 끝나지 않는다. 예외: 검은 화면 뒤, 동료 합류 뒤, 전투 직후 대사 없이(쓰러진 필드 적), 숨김 스위치 바로 뒤 두 명령 안에 주인공 `Sprite Look` 되돌리기(앉은 주인공 대역 → 일어선 주인공 바통 넘기기, 첫사랑 r33). 경로 속 불투명도 -200 이하도 같은 판정(여러 번 나눈 옅어짐 -85×3 은 누적해 본다, 2026-10-23) |
 | `scene-dialogue-position-mixed` | text.position·displayTextSettings 위치(preventObscuringPlayer 아래 = auto)가 둘 이상(sign·system·letter 줄 제외). 프로젝트당 1건 |
 | `scene-dialogue-context-mixed` | sign·system·letter 밖의 context 가 둘 이상, 또는 box 밖의 container(말풍선) |
 | `scene-map-no-bgm` | 시작 맵·이동 목적지인데 bgm 이 비었다(명시 `none` 은 의도). 자동/병렬 페이지의 BGM 재생이나 이동 직전 BGM 재생이 있으면 통과 |
 | `scene-moving-vehicle` | 켜진 `map.transit` 노선에 탈것이 있다 / 이름이 탈것인 이벤트의 첫 페이지 이동이 fixed 가 아니다 |
-| `scene-hang-on-floor` | 손 도트 실내 걸이 물건(handInteriorSpec kind `hang`, 칩셋 키트 `hand-interior:<id>`)의 위층 타일이 걸을 수 있는 칸에 있다(걸이 타일은 통행 가능, 벽면 1층은 막힘 — 칸이 통행 가능 = 바닥 위). 맵·물건마다 1건. Fallen 별자리표(fs_observatory)·거미줄(지하 화로의 방)을 잡았다 |
-| `scene-ceiling-tile` | 천장 구역 = 아래층이 천장·공허 이름표(`천장`·`ceiling`·`공허`·`void`, 막힘) 칸. ① 그 칸 어느 층이든 천장 아닌 타일이 있다 ② 천장 칸에 닿은 고립 통행 성분(아래층 통행만 본다, 이벤트·시작 칸 없음)이 있다. 맵마다 1건. Fallen fs_vault 의 방 밖 암반 바닥 값 칸(345칸)을 잡았다. 회색 디더 천장 재질(default·rock)은 천장 칸이라 못 잡는다 — 1배 실행 화면으로 본다(SKILL 3장 7) |
+| `scene-hang-on-floor` | 손 도트 실내 걸이 물건(handInteriorSpec kind `hang`, 칩셋 키트 `hand-interior:<id>`)의 위층 타일이 걸을 수 있는 칸에 있다(걸이 타일은 통행 가능, 벽면 1층은 막힘 — 칸이 통행 가능 = 바닥 위). 맵·물건마다 1건. Fallen 별자리표(fs_observatory)·거미줄(지하 화로의 방)을 잡았다. 이름에 문틀·arch 가 든 물건은 통로 위에 거는 것이 제자리라 뺀다(2026-10-23) |
+| `scene-ceiling-tile` | 천장 구역 = 아래층이 천장·공허 이름표(`천장`·`ceiling`·`공허`·`void`, 막힘) 칸. ① 그 칸 어느 층이든 천장 아닌 타일이 있다 ② 천장 칸에 닿은 고립 통행 성분(아래층 통행만 본다, 이벤트·시작 칸 없음)이 있다. 맵마다 1건. Fallen fs_vault 의 방 밖 암반 바닥 값 칸(345칸)을 잡았다. 회색 디더 천장 재질(default·rock)은 천장 칸이라 못 잡는다 — 1배 실행 화면으로 본다(SKILL 3장 7). 이름표가 「천장 띠」「천장 줄」인 걸이 그림(천문대 둥근 지붕 띠 등)은 통행 가능이어도 천장 타일로 친다(2026-10-23) |
+| `scene-speaker-absent` | 대사 한 줄의 화자(이름 → 맵 인물, `project/staging/dialogueActors.ts`)나 명시 듣는 인물이 그 줄 시점에 **보이지 않는다** — 페이지를 명령 순서대로 재생(Set Event Location·moveEvent 경로 끝·approach 계획·Erase·스위치·모습 효과 투명 주인공), 분기는 사본으로. 선택지는 «방금 말한 인물»(lastSpoken)이 없으면 같은 코드 |
+| `scene-talk-far` | 화자–듣는 인물 체비쇼프 > 2(`TALK_DISTANCE_LIMIT`). 부르는 줄(`text.calling`·외침 context·말풍선)은 제외 |
+| `scene-talk-facing` | 자동 돌아보기(런타임과 같은 규칙) 뒤에도 듣는 인물의 방향 부채꼴(90°)에 화자가 없다(NPC 끼리, 듣는 쪽이 고정 방향일 때) |
+| `scene-npc-vanish-short` | 출구 «한 칸 앞»(이동 이벤트 1칸 안·문 그림 이웃·가장자리 2칸 안)에서 경로가 끝난 NPC 가 그 뒤 지우기·«떠남» 페이지·경로 속 불투명도 0 으로 사라진다. 사라져도 되는 칸은 이동 이벤트 칸·문 그림 칸·맵 끝 칸 «바로 그 칸»뿐 → exitVia. exitVia 경로는 문 칸에서 사라진 것으로 본다(런타임과 같은 문 칸 규칙) |
 | `scene-actors-stacked` | 한 페이지 안에서 Set Event Location·moveEvent(경로 끝 모의)로 **보이는** 두 인물이 같은 칸에 선다. 명령 순서대로 무대에서 내린다: Erase Event, 경로 끝 투명화, 스위치를 켜 «떠남» 페이지가 되거나 보이는 페이지 모두의 «스위치 꺼짐» 조건이 깨짐(`switchesThatHide`, 사라짐 검사와 공유). 같은 문으로 차례로 떠나는 것은 통과 |
+| `scene-actors-stacked` | 한 페이지 안에서 Set Event Location·moveEvent(경로 끝 모의)로 **보이는** 두 인물이 같은 칸에 선다. 명령 순서대로 무대에서 내린다: Erase Event, 경로 끝 투명화(한 번 −200 이하 또는 여러 번 나눠 합이 −200 이하 — `leave()` 의 −64×4 퇴장), 스위치를 켜 «떠남» 페이지가 되거나 보이는 페이지 모두의 «스위치 꺼짐» 조건이 깨짐(`switchesThatHide`, 사라짐 검사와 공유). 같은 문으로 차례로 떠나는 것은 통과 |
+| `scene-speaker-faces-away` | 자동·병렬 장면 한 페이지를 명령 순서대로 모의한다(경로 걸음 → 끝 걸음 방향, turn, turnTowardPlayer, 스위치·투명화로 퇴장, 선택지·조건 갈래는 갈래마다 무대 복사). 무대 = 그 페이지가 움직이는 인물 + 이름표로 찾은 화자(«오 팀장» ↔ «오정민 팀장», 낱말이 모두 들어 있으면) + 주인공(이 맵에 내리는 이동이 모두 같은 칸일 때 그 칸·방향). 대사 화자 곁 3칸 안에 사람이 있는데 무대의 누구 쪽도 보지 않으면 경고. 조사(action) 페이지는 주인공 칸을 몰라 건너뛴다 — 그쪽은 런타임 기록(`scripts/qa/runtime/facing-audit.mjs`)으로 본다. 첫사랑 «나 먼저 가요!» 민호를 잡았다 |
+| `scene-route-interrupted` | 한 페이지를 명령 순서대로 걸으며 «기다리지 않는(wait 가 true 아님) 3걸음 이상 경로»가 도는 인물을 기억한다. 같은 인물에게 다시 moveEvent 가 오면 경고(런타임은 새 경로로 갈아 끼운다), `Wait for All Movement` 를 만나면 비운다. 첫사랑 금요일: 퇴장하는 본부장에게 돌기를 줬더니 (7,15)에 영영 섰다 |
+| `scene-npc-vanish` (단계 변수) | 장면 페이지가 `setVariable =` 로 진행 변수를 바꿀 때, 그 페이지의 조건에서 «바꾸기 전 값»을 읽어(== 값, >= 아래 끝) 같은 맵 인물의 켜질 페이지를 전후로 견준다. 보이던 페이지가 빈·투명 페이지로 바뀌면 경고 — 화면이 검은 동안·출구로 걸어 나간 뒤·걸어가 선 칸에 다음 판 이벤트가 같은 순간 나타나는 바꿔 끼우기는 뺀다. 인물 경로는 앞 걸음이 끝난 칸에서 이어 모의한다. 첫사랑 r3 «점심시간» 지후 |
+| `scene-bust-faces-away` | `changeFace` 의 `flipHorizontally` 가 원래 시선을 아는 흉상(`sharedPortraitNativeGaze`, 공용 현대 흉상·전신 = 오른쪽)에 걸렸다. 런타임 `dialogue.ts` 가 자리에 맞춰 흉상을 상대 쪽으로 돌리고(`gaze-mirror` 클래스: 오른쪽 자리의 오른쪽 시선 흉상을 거울), 인물은 저작한 자리를 장면 내내 지킨다(듣는 사람이 화자와 같은 쪽이면 반대편으로 옮겨 그리지 않고 비운다 — 옮기면 줄마다 좌우가 바뀐다). 뒤집기는 그 결과를 화면 바깥으로 다시 돌린다. 첫사랑 r4 |
+| `scene-seated-cannot-stand` | 장면 순서대로 각 인물 칸을 따라가며(`setThrough` 포함) 첫 «막힌 칸에서 열린 칸으로» 걸음이 `canMove` 에 막히는지 본다 — 의자·소품 칸(나가는 방향 비트가 닫힌 칸)에 앉힌 인물. 건너뛰기 경로는 막힌 걸음을 다 버려 인물이 제자리에 서고 퇴장 연출만 다른 곳에서 돈다. 첫사랑 r5 본부장. 선택지·조건 갈래는 갈래마다 갈래 앞 자리에서 따로 따라간다(갈래 뒤는 첫 갈래의 끝 자리) — 한 줄로 이어 읽으면 둘째 갈래가 첫 갈래 끝 자리에서 출발해 엉뚱한 칸을 짚었다(첫사랑 r25) |
+| `scene-tint-clears-fade` | 페이지를 차례로 읽어 「화면 효과」 fadeOut 뒤 fadeIn 전의 「Tint Screen」(value 가 검정 `0,0,0,1` 이 아닌 것)을 잡는다. 페이드(`screenEffectPlan.ts` FADE_OUT_TINT)와 Tint Screen 은 같은 `runtime.screen.tint` 칸을 쓰므로 덮인 동안 neutral 을 주면 검은 덮개가 걷힌다. 첫사랑 r6 회상→수요일 |
+| `scene-actor-under-furniture` | 보이는 그림이 있는 이벤트 칸의 `upperTiles` 타일이 `tileset.priority` 로 `upper` 이고 그 칸이 지나갈 수 없으면(가구) 경고. upper 는 인물보다 앞에 그려지므로 의자 등받이가 얼굴을 덮는다. 첫사랑 r7 회의실. `priority: "above"` 쪽(의자 위에 그린 앉은 모습)은 빼고, 그 짝인 «스위치가 켜져야 보이는 같은 층 쪽»(일어나 옆 바닥으로 나온 뒤)도 시작 칸에서 그려지지 않는 것으로 본다(첫사랑 r25 수요일 야근). 위를 보고 앉힌 같은 층 인물도 경고한다 — 등받이가 머리를 가로질러 고글처럼 보였다(r28; 이전의 «위를 보면 면제»는 뺐다) |
+| `scene-map-smaller-than-screen` | 이벤트가 있는 맵마다 `system.playResolution` ÷ `tileSize` 와 맵 크기를 비교해 둘레 검정 비율이 15% 를 넘으면 경고(루브릭 축 1 기준). `background` 를 둔 맵은 건너뛴다. 첫사랑 옥상 24칸 폭(20%) |
+| `scene-letterbox-dialogue` | 페이지를 차례로 읽어 「Screen Effect」 letterbox 와 clearLetterbox 사이의 `text` 를 잡는다. 레터박스가 대화창을 위로 올려(y192→158) 창이 뛰고 화면을 가린다. 첫사랑 r9 회상·막차 |
+| `scene-commands-after-transfer` | 맵 이벤트 페이지의 같은 명령 목록(가지 안 포함)에서 `transfer` 뒤에 `wait` 말고 다른 명령이 있으면 경고. 엔진은 `continueAfterTransfer` 를 공용 이벤트에만 켜므로 맵 이벤트는 이동에서 끝난다(`src/player/interpreter/resume.ts`). 첫사랑 엔딩 C |
+| `scene-ending-under-fade` | 페이지를 차례로 읽어 fadeOut 뒤 fadeIn 없이 `triggerEnding` 이 오고, 그 엔딩 에필로그에 `picture` 비트가 있으면 경고. 에필로그 그림이 페이드 색조 아래에 그려진다. 첫사랑 r10 |
+| `scene-ending-card-shared` / `scene-ending-card-title-art` | 엔딩이 둘 이상일 때 `presentation.backgroundResourceId` 가 다른 엔딩과 같거나 타이틀 화면 그림과 같으면 경고. 다른 결말이 같은 장면으로 끝나 보이고, 타이틀 그림 속 인물이 게임 인물과 다르게 생겼다. 첫사랑 r23·r25 |
+| `scene-actor-head-under-upper` | 장면 페이지를 차례로 읽어 moveEvent 경로 끝 칸(지나갈 수 있는 칸)마다 바로 위 칸의 upperTiles·upperOverlayTiles 가 ★(항상 위, 계단·foot-dy 제외)이면 경고. 소품이 머리를 덮는다. 첫사랑 r15 편의점 |
+| `scene-bust-side-switch` | 페이지를 차례로 읽어 흉상 changeFace(presentation bust)의 인물(흉상 id 에서 표정 꼬리를 뗀 것)마다 자리를 기억하고, 장소 이동·fadeOut 전에 반대 자리로 나오면 경고. 첫사랑 VQA r16 |
+| `scene-route-through-actor` | 페이지를 차례로 읽어 그 페이지가 움직인 인물의 자리를 기억하고, 다른 인물의 경로 걸음(지나감 구간 제외)이 기다림 없이 서 있는 인물 칸을 밟으면 경고. 기다리지 않는 경로로 걷는 중인 인물은 세지 않는다. 첫사랑 r40 |
+| `scene-exit-blocked` | 페이지를 갈래(선택지·조건)마다 따로 읽어 장면이 움직인 인물과 주인공(이 맵으로 들어오는 이동이 모두 같은 칸이면 그 칸)의 자리를 기억하고, `exitVia` 가 시작하는 순간 문 칸까지 BFS(엔진 `canMove`, 서 있는 인물 칸은 막힘, 기다리지 않는 경로로 걷는 중인 인물은 통과)가 닿지 않으면 경고. 런타임 `expandExitVia` 는 길이 없으면 제자리에서 사라진다. 첫사랑 r34 |
+| `scene-arrival-faces-exit` | 짝 없는 한쪽 이동(문형 왕복 짝은 `scene-transfer-pair` 몫)의 도착 방향 1~2칸 앞에 이동 칸이나 문·계단 그림이 있다 — 막 지나온 문을 보고 선다 |
+
+인물 연출 셋(`src/project/lint/sceneStagingLint.ts`, 2026-10-22): 페이지 조건(스위치·변수·셀프 스위치, 어디서도 안 켜는 스위치는 꺼짐)으로 시작 시점 보이는 인물을 정하고, 주인공 위치는 그 맵으로 오는 유일한 이동 착지 → 조사 트리거 앞 칸 → 시작 위치 순.
+`npx --no-install tsx --import ./tiledata/jp-city/refs/css-stub.mjs scripts/qa/staging/lint-flagship-staging.mts`: 첫사랑 origin/main 8건(talk-far 9·4·5·12·3·3·3·3칸) → approach 이관 뒤 0, Fallen Star·Astra 0(이름 있는 화자 줄 96·125, 인물로 푼 줄 33·79). 퇴장(`scene-npc-vanish`): 첫사랑 origin/main 4건(방 안에서 두 칸 걷고 사라지는 민호·본부장·지후, 걷지 않고 사라지는 팀장) → exitVia 이관 뒤 0, Astra 0. `scene-npc-vanish-short`(2026-10-22 main 기준): Fallen Star 3건(fs_hub 심문회 기사·발렌 (54,22), fs_vault 걸어 들어오는 발렌 (15,8) — 출구 한 칸 앞에서 사라짐, 데모 담당이 exitVia 로 옮길 것), 첫사랑·Astra 0.
 
 데모 검증(2026-10-21, `scripts/qa/scene-polish-lint.mts`): Fallen Star polish2 13건(방향 없는 이동 4·착지 2칸 3·문 아닌 칸 5·대사 뒤 사라짐 1), Astra fv 15건(문을 보는 착지 10 — 이후 손으로 고친 7fa8b2f3c2 와 같은 곳·한 칸 어긋난 출입 매트 2·표시 없는 출구 2·제자리 지우는 라이벌 1),
 「첫사랑」 수정 전 4건(움직이는 교통 2·내려가는 계단으로 옥상 1·맨바닥 출구 1) → 수정 뒤 r2 최신 2건(같은 칸으로 걷는 두 인물). 거짓 경고로 고친 것: 키트 문 부품의 풀밭 칸, 필드 길 출구(끝 2칸 안), 쓰러진 필드 적·합류 동료.

@@ -210,8 +210,8 @@ function traceCondition(
         targetId: condition.timerId,
         actual,
         expected: condition.seconds,
-        op: "<=",
-        summary: `timer:${condition.timerId}=${actual} <= ${condition.seconds}`,
+        op: condition.op ?? "<=",
+        summary: `timer:${condition.timerId}=${actual} ${condition.op ?? "<="} ${condition.seconds}`,
       };
     }
     case "timePhase": {
@@ -347,6 +347,7 @@ function traceCondition(
     case "relativeFacing":
     case "hiding":
     case "pursuitActive":
+    case "eventSeesPlayer":
     case "clearCount":
     case "endingSeen":
     case "newGamePlus":

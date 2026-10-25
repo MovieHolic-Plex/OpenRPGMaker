@@ -7,6 +7,7 @@ import type { PiAgentEvent } from "@/ai/piAgent/protocol";
 import type { MapRunTicket } from "@/editor/aiMapRunQueue";
 import { narrateAiActivity } from "@/editor/aiActivityNarration";
 import { el } from "@/util/dom";
+import { createFeatureChecklistView } from "./aiFeatureChecklist";
 
 /** 최근 단계 줄 수. */
 const STEP_LIMIT = 5;
@@ -41,6 +42,7 @@ export function createMapRunCard(input: { readonly mapName: string; readonly lab
   const root = el("section", { class: "ai-map-run-card", dataset: { testid: "ai-map-run-card", state: "waiting" } });
   root.setAttribute("aria-live", "polite");
   root.append(header, label, steps, messages, process);
+  const featureChecklist = createFeatureChecklistView((element) => messages.append(element));
 
   const step = (text: string, kind: "run" | "ok" | "fail" | "say" = "run"): void => {
     const last = steps.lastElementChild as HTMLElement | null;
@@ -66,6 +68,7 @@ export function createMapRunCard(input: { readonly mapName: string; readonly lab
       if (root.dataset.state === "running" || root.dataset.state === "waiting") status.textContent = text;
     },
     event(raw) {
+      featureChecklist.event(raw);
       let event = raw;
       while (event.type === "agent_event") event = event.event;
       if (event.type === "tool_start") step(narrateAiActivity({ toolName: event.name, done: false }).action);

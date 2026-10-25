@@ -53,6 +53,26 @@ export type AutonomousMover = {
   moveIntervalMs: number;
   moveDurationMs: number;
   activeMove: AutonomousMoveTween | null;
+  /**
+   * 걷기 패턴 위상(0~3). 한 칸에 두 장씩 넘어가고 다음 칸은 이어서 — 왼발·오른발이 칸마다 번갈아 나온다.
+   * 예전에는 칸마다 같은 발로 다시 시작했다(2026-10-22 「NPC 걷는 게 이상함」).
+   */
+  walkPhase?: number;
+  /**
+   * 페이지 자율 이동(custom·random)의 산책 리듬(@/player/npcStroll): 같은 방향 걸음은 이어 걷고, 방향이 바뀔 때만
+   * 흔들린 길이로 멈춘다. 명령 경로·시간표·생활 이동·추격에는 켜지 않는다.
+   */
+  naturalStroll?: boolean;
+  /** 무작위 산책의 지금 걷기 묶음 — 이 방향으로 left 칸 더. */
+  wanderRun?: { readonly dir: Dir; readonly left: number };
+  /** 마지막으로 시작한 한 칸 걸음의 방향(막히면 지운다). */
+  lastStepDir?: Dir;
+  /** 이번 멈춤의 길이 배율(빈도 간격에 곱함). */
+  pauseScale?: number;
+  /** 명령 경로: 앞 걸음이 끝나며 남은 시간(ms). 다음 걸음이 이만큼 앞서 시작해 칸 경계에서 프레임을 잃지 않는다. */
+  carryMs?: number;
+  /** 명령 경로: 다음 명령 전에 쉴 시간(ms). 경로 안 `wait` 명령이 빈도 간격만큼 건다. 없으면 바로 다음 명령. */
+  routeWaitMs?: number;
   sightRange?: number;
   giveUpRange?: number;
   pathfind?: boolean;
@@ -83,6 +103,8 @@ export type AutonomousMover = {
    * playSceneAutonomous §retryBlockedStep 참조.
    */
   blockedSteps?: number;
+  /** 명령 경로가 막혀 주인공을 한 칸 비켜 세웠다(commandRouteDetour.sidestepForPlayer) — 한 번만. */
+  playerSidestepped?: boolean;
   /** 페이지 생활 경로만 막힌 걸음을 보존하고 이벤트 점유를 피해 재탐색한다. */
   livingRoute?: boolean;
   /** 재탐색 사이의 시뮬레이션 시간. 표면 갱신/성공한 걸음에서 초기화하지 않는다. */
@@ -155,6 +177,10 @@ export interface PlayerRouteState {
    * **이 루트가 사는 동안만** 산다 — 수명 계약은 `clearPlayerRouteThrough`(playerRouteState) 주석.
    */
   through?: boolean;
+  /** 맵 탭(클릭)으로 시작한 경로 — 패드·키 입력이 들어오면 그만두고, 걷는 중 새 탭이 갈아 끼운다. */
+  pointer?: boolean;
+  /** 이 경로는 달린다(맵 탭으로 먼 곳에 갈 때 — playScenePointerMove TAP_RUN_MIN_STEPS). 생략 = 걷기(이벤트 강제 이동). */
+  dash?: boolean;
 }
 
 /**

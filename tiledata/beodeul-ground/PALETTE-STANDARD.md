@@ -6,8 +6,8 @@
 
 | 역할 | 어두운 색 | 중간색 | 밝은 색 | 적용 |
 |---|---|---|---|---|
-| 나뭇잎 · 확정 따뜻한 황록 | #2e4913 | #3a6922 | #7dad33 | approved-color-standard |
-| 바탕 잔디 · 밝은 원본 737 | #569e35 | #579f35 | #58a035 | retain-native |
+| 나뭇잎 · 확정 따뜻한 황록 | #243420 | #497428 | #a3c64a | approved-color-standard |
+| 바탕 잔디 · 밝은 원본 737 | #618c3b | #6e9943 | #6e9943 | retain-native |
 | 기와 · 원본 황토/갈색 | #582840 | #863736 | #c67832 | retain-native |
 | 벽 · 건물별 한 재질 | #633712 | #695554 | #aa8a7e | retain-concept-per-building |
 

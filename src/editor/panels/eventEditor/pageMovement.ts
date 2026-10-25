@@ -1,4 +1,5 @@
 import { defaultChaseSight, defaultChasePursuit } from "@/project/npcBehavior";
+import { doorLabel, stageTargetLabel } from "./moveRouteCommandCatalog";
 import { renderMovementSight } from "./pageNpcBehavior";
 import { renderChaseSettings } from "./pageHorror";
 import { updateEventPage } from "@/editor/eventPages";
@@ -16,6 +17,7 @@ const MOVEMENT_TYPE_OPTIONS = [
   { value: "chase", label: "추격" },
   { value: "custom", label: "사용자 지정" },
   { value: "living", label: "생활 이동" },
+  { value: "fly", label: "하늘을 남(새)" },
 ] as const;
 
 export function renderPageMovement(mapId: MapId, eventId: string, page: EventPage): HTMLElement {
@@ -182,6 +184,18 @@ function moveLabel(command: MoveCommand): string {
       return "플레이어 쪽으로 향함";
     case "turnAwayFromPlayer":
       return "플레이어 반대로 향함";
+    case "approach":
+      return `${stageTargetLabel(command)} 곁으로 다가가기`;
+    case "turnToward":
+      return `${stageTargetLabel(command)} 쪽으로 향함`;
+    case "exitVia":
+      return `${doorLabel(command)} 문으로 나가기`;
+    case "enterVia":
+      return `${doorLabel(command)} 문으로 들어오기`;
+    case "doorCue":
+      return command.se ? `문 소리 ${command.se}` : "문 프레임";
+    case "placeAt":
+      return `(${command.x}, ${command.y}) 로 옮김`;
     case "setDirectionFix":
       return `방향 고정 ${onOff(command.enabled)}`;
     case "setThrough":

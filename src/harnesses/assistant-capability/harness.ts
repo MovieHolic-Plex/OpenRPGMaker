@@ -11,6 +11,9 @@ export const ASSISTANT_CAPABILITY_HARNESS = defineHarness({
   stages: [
     { id: 'genre-prepare', title: '장르별 격리 정본', summary: '빈 프로젝트 여덟 개와 공용 SQLite 판본을 분리해 준비한다. 콘텐츠는 조수가 실제 입력창에서 만든다.' },
     { id: 'genre-run', title: '장르별 실제 제작', summary: '전용 포트·입력창으로 장르 게임을 제작하고 최초/보수 시도·모델 요청·엄격한 저장 재로드를 각각 보존한다.' },
+    { id: 'scene-score', title: '장면 교훈 기계 채점', summary: 'scene-lessons-seed 시도(genre-run)의 도구 호출·실패 호출·scene-* 경고·qa-game 막힘·저장 재로드를 채점하고 1배 맵 렌더를 남긴다. 시각 판정은 아니다.' },
+    { id: 'scene-film', title: '장면 교훈 실제 플레이 영상', summary: '저장본을 출하 player.html 에서 실제 걷기·결정 키로 돌며 MP4 와 4초 간격 프레임을 남긴다. 순간이동·상태 주입 없음.' },
+    { id: 'scene-judge-input', title: '장면 교훈 판정 입력', summary: '새 판정자에게 줄 요청·요구·그림 목록(해시)을 만든다. 판정 결과는 그 해시와 함께 visual.json 에 남긴다.' },
     { id: 'portals', title: '출입구 실제 수행', summary: '격리된 빈 맵에서 집·문·실내·마을 출구를 실제 입력창으로 저작하고 통행·왕복·보존·SQLite 재로드와 PNG를 남긴다.' },
     { id: 'portal-controls', title: '출입구 결함 반례', summary: '막힌 문앞·닿지 않는 맵 끝·연결 재실행을 실제 도구로 검사한다. 실모델 성적과 별도로 남긴다.' },
     { id: 'portal-recheck', title: '저장 출입구 플레이 재관측', summary: '모델 재실행·결과 수선 없이 같은 저장본의 플레이 관측을 다시 남기고 최초 판정을 보존한다.' },
@@ -32,6 +35,8 @@ export const ASSISTANT_CAPABILITY_HARNESS = defineHarness({
     { id: 'matrix-tools', title: '작은 명령 50개 도구 계약', summary: '격리된 결정론적 fixture에서 50개 명령의 canonical editor tool 호출, 읽기 불변·쓰기 변경 커밋을 각각 검사한다. 모델·SQLite·플레이·독립 시각 검수와 별도 집계한다.' },
     { id: 'matrix-live', title: '작은 명령 50개 자연어 입력', summary: '실제 에디터 입력창에 50개 프롬프트를 순서대로 넣고 scripted agent transport로 응답을 고정해 적용·저장·새 context 재로드·대표 플레이를 검사한다. native provider 성공률·독립 시각 검수와 별도 집계한다.' },
     { id: 'matrix-native', title: '작은 명령 50개 실제 모델 수행', summary: '50개 프롬프트를 실제 입력창과 실제 provider에 제출하고 tool 호출·정본 SQLite 저장·새 context 재로드를 명령별로 확인한다. scripted transport와 모델 품질 점수는 통과로 세지 않는다.' },
+    { id: 'matrix500-spec', title: '명령 가족 500개 명세 생성', summary: 'families/ 의 가족 100 × 변형 5 로 command-matrix-500.json 을 쓰고 가족·행 수를 센다. 100 가족이 다 구현되기 전에는 complete=false 로 그만큼만 실행한다.' },
+    { id: 'matrix500-selfcheck', title: '명령 가족 판정기 자기검사', summary: '모델·브라우저 없이 가족마다 정답은 통과, 오답 전부와 무변경 문서는 실패하는지 검사한다. 판정기가 정답/오답을 구분하지 못하면 실모델 점수도 의미가 없다.' },
     { id: 'matrix-score', title: '작은 명령 50개 모델 품질 점수', summary: '실제 모델의 자연어 해석·도구 판단과 전후 화면 쌍의 시각 품질을 50개 모두 채점한다. 모델 호출 누락은 정적 점수로 대체하지 않는다.' },
   ],
   entrypoints: { cli: true, editorUi: false, assistantTool: false },

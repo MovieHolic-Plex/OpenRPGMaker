@@ -1,0 +1,17 @@
+{
+ "schema": "oprn-object-gate-hold-decision/1",
+ "pixelSha256": "191034e6f44e5455d3ec95e408809468b2ee167f41d01842eabd10aafc0e82b8",
+ "profileHash": "4d8774b517f41638",
+ "kind": "organic",
+ "decision": "allow",
+ "decidedBy": "user",
+ "decidedAt": "2026-10-24T13:25:52.330Z",
+ "by": "human",
+ "via": "review-page",
+ "reasons": [
+  "화풍: 화풍 판정이 갈림(걸린 판정 2/4)",
+  "화풍: 판정자 fail (2/4)"
+ ],
+ "note": "forest-trunks T3 r8 — user approved directly 2026-10-24 (\"이건 이제 통과\"), relayed by coordinator; Argon VQA 7/7 PASS: harness-data/object-gate/vqa/forest-trunks-t3r8.argon-vqa.json",
+ "sig": "91326997dd2ae061c261b8a962e93e3c5191428299cee87bcf9fb8208069b7aa"
+}

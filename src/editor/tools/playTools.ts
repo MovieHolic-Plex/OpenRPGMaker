@@ -178,7 +178,7 @@ const runSceneTestTool: ToolDefinition = {
     " 몬스터 파티 게임의 HM 체인(기술머신을 파티 몬스터에게 가르쳐 길 열기) 선행 조건: ① 새 장면 세션의 몬스터 파티는 비어 있다 — set 스텝에는 몬스터 지급이 없으니 스타터를 주는 이벤트(박사 interact → 선택지가 뜨면 choose index)를 같은 steps 에서 먼저 지나거나, 이미 스타터를 지급한 뒤의 상태를 만들어 두고 시작한다. 파티가 비면 useItem 이 「가르칠 파티 몬스터를 선택하세요」로 실패한다. ② 아이템은 set {inventory:{item_hm_…:1}} 또는 상자·NPC interact 로 먼저 가방에 넣는다. ③ useItem {itemId} 는 파티 몬스터 중 그 기술을 배울 수 있는 첫 몬스터에게 쓰이며(대상을 고를 수 없다, machineSkillIds 제한 종은 건너뜀) 기술 칸이 가득 차면 교체 선택 대기로 남는다. ④ choose 는 대기 중인 선택지(대화 선택·교체)가 있을 때만 된다 — 없으면 「choose를 처리할 대기 중 선택지가 없습니다」. ⑤ 그다음 장애물 옆으로 walk·face → useFieldSkill {skillId,target:장애물 이벤트 id} → move 로 지나간다." +
     " present 는 대기 중인 presentItem(아이템 제시)에 itemId 를 내고, itemId 를 빼면 닫는다(cancelBranch)." +
     " expect는 playerAt, switchOn/Off, variableEquals, variableAtLeast, eventAt, eventOnMap, eventDistanceToPlayerLessThan, followerCount, followerAt, partyIncludes, partyExcludes, cameraAt, lightingAmbient, lightAt, lightCount, weatherKind, animationPlaying, fieldSpawnCount, spawnedCount, pictureVisible, bgmPlaying, gameOver, endingReached, cutsceneLocked, mapId, gameTimeAt, timerRemaining({timer1:초}), timerRunning(id), timePhase, cropStageAt, inventoryCount, goldDelta, inventoryDelta, ownedMonsterDelta, interactionComplete, friendshipAtLeast, shopStock를 지원한다. " +
-    "Purchase proof: walk to/interact with the intended seller, then purchase {eventId,itemId,count,unitPrice}; assert goldDelta and inventoryDelta. Opens a real pending shop; no transaction means interactionComplete:false. Ordinary player-buy stock only, not haggle/shopkeeper/services. lastTransfer:{fromMapId,eventId,toMapId} asserts the last actual interpreter transfer. " +
+    "Purchase proof: walk to/interact with the intended seller, then purchase {eventId,itemId,count,unitPrice}; assert goldDelta and inventoryDelta. Opens a real pending shop; no transaction means interactionComplete:false. Ordinary player-buy stock only, not haggle/shopkeeper/services. lastTransfer:{fromMapId,toMapId,eventId?} asserts the last actual interpreter transfer (eventId optional; copy it exactly or omit it). " +
     "NPC reward proof: snapshotRewards immediately before interacting; expect goldDelta:20 for currency, inventoryDelta:{itemId:count} / ownedMonsterDelta:{speciesId:count} (or {atLeast:1}) and interactionComplete:true. inventoryDelta.gold is an inventory item ID, never currency. For one-time rewards, snapshot again and interact twice in the SAME steps array, then expect zero gold/item/monster deltas. eventId checks the physically selected NPC, never directly executes its commands. finalState includes gold, partyActorIds (actor battle party), ownedMonsterCounts across party+box, monsterParty and monsterBox." +
     " Party-join proof: expect partyIncludes:\"actor_id\" after the join interaction. followerCount/followerAt only prove a walking follower (addFollower), not a battle-party member; only changeParty {actorId,action:\"add\"} changes partyActorIds." +
     " 필드 액션 전투는 실행하지 않으며, wait/스폰 성공은 전투 증거가 아니다. 액션 전투는 run_action_combat_test로 검증한다.",
@@ -210,7 +210,7 @@ const runSceneTestTool: ToolDefinition = {
             actorId: { type: "string", description: "useFieldSkill: 쓰는 배우/몬스터 인스턴스 id(생략=아는 첫 구성원)" },
             count: { type: "integer", minimum: 1, maximum: 99 },
             unitPrice: { type: "integer", minimum: 0 },
-            lastTransfer: { type: "object", properties: { fromMapId: { type: "string" }, eventId: { type: "string" }, toMapId: { type: "string" } }, required: ["fromMapId", "eventId", "toMapId"], additionalProperties: false },
+            lastTransfer: { type: "object", properties: { fromMapId: { type: "string" }, eventId: { type: "string" }, toMapId: { type: "string" } }, required: ["fromMapId", "toMapId"], additionalProperties: false },
             text: { type: "string" },
             interactionComplete: { type: "boolean" },
             endingReached: { type: "string", minLength: 1, pattern: "\\S", description: "Exact ending ID reached by the scene (e.g. ending_escape), never a boolean." },
@@ -235,12 +235,14 @@ const runSceneTestTool: ToolDefinition = {
     const { input: flatArgs, flattened } = flattenNestedExpectSteps(rawArgs);
     const { input: splitArgs, split } = splitInteractWalkSteps(flatArgs);
     const { input: adjacentArgs, normalized } = normalizeAdjacentSteps(project, splitArgs);
-    const { input: args, expanded } = expandRepeatedMoveSteps(adjacentArgs);
+    const { input: movedArgs, expanded } = expandRepeatedMoveSteps(adjacentArgs);
+    const { input: args, fixes } = repairCommonSceneFields(movedArgs);
     const problem = sceneTestInputProblem(args);
     if (problem || !isSceneTestInput(args)) throw new ToolError(`Malformed scene test input: ${problem}`, { code: "invalid-scene-test" });
     const result = runSceneTest(project, args);
     return {
-      ...(flattened.length + split.length + normalized.length + expanded.length > 0 ? { warnings: [
+      ...(flattened.length + split.length + normalized.length + expanded.length + fixes.length > 0 ? { warnings: [
+        ...fixes,
         ...(flattened.length > 0 ? [`expect 스텝 ${flattened.join(", ")} 의 { kind:"expect", expect:{…} } 를 { kind:"expect", …} 로 펼쳐 실행했다 — 단언 필드는 스텝에 바로 쓴다.`] : []),
         ...(split.length > 0 ? [`interact 스텝 ${split.join(", ")} 의 to/adjacent 를 앞 스텝 {kind:"walk",to,adjacent:true} 로 나눠 실행했다 — 걷기와 조사는 두 스텝이다(스텝 번호가 하나씩 밀린다).`] : []),
         ...(normalized.length > 0 ? [`스텝 ${normalized.join(", ")} 의 adjacent 를 walk 스텝으로 옮겨 실행했다 — adjacent 는 {kind:"walk",to,adjacent:true} 에만 있다(interact 는 앞에 walk 가 붙어 스텝 번호가 밀린다).`] : []),
@@ -282,3 +284,34 @@ const runActionCombatTestTool: ToolDefinition = {
 };
 
 export const PLAY_TOOLS: readonly ToolDefinition[] = [playWalkthrough, runSceneTestTool, runActionCombatTestTool];
+
+
+/**
+ * 모델이 자주 틀리는 시험 스텝 칸을 뜻이 분명한 것만 고친다(2026-10-24 v2 스위트: run_scene_test 거절이 도구 실패의 1위).
+ * - expect.text/message/says → messageShown:true(대사가 떴는가만 본다 — 글자 비교는 시험기가 하지 않는다)
+ * - expect.variableEquals/variableAtLeast {id,value} → {variableId,value}
+ * - expect.eventOnMap "id" → {eventId:"id", mapId: 시험 맵}
+ * - useItem.actorId·target → 버린다(아이템은 파티에 쓴다)
+ * - set.hour·minute·time → 버린다(시험기는 시간을 못 바꾼다 — advanceDays 만)
+ */
+function repairCommonSceneFields(input: unknown): { input: unknown; fixes: string[] } {
+  const fixes: string[] = [];
+  if (!input || typeof input !== "object" || !Array.isArray((input as { steps?: unknown }).steps)) return { input, fixes };
+  const mapId = (input as { mapId?: unknown }).mapId;
+  const steps = ((input as { steps: unknown[] }).steps).map((raw, i) => {
+    if (!raw || typeof raw !== "object" || Array.isArray(raw)) return raw;
+    const step = { ...(raw as Record<string, unknown>) };
+    if (step.kind === "expect") {
+      for (const k of ["text", "message", "says", "dialogue", "textIncludes"]) if (k in step) { delete step[k]; step.messageShown = true; fixes.push(`steps[${i}] expect.${k} 를 messageShown:true 로 바꿨다(대사 글자는 비교하지 않는다).`); }
+      for (const k of ["variableEquals", "variableAtLeast"]) {
+        const v = step[k] as Record<string, unknown> | undefined;
+        if (v && typeof v === "object" && typeof v.id === "string" && v.variableId === undefined) { step[k] = { variableId: v.id, value: v.value }; fixes.push(`steps[${i}] expect.${k}.id 를 variableId 로 옮겼다.`); }
+      }
+      if (typeof step.eventOnMap === "string") { step.eventOnMap = { eventId: step.eventOnMap, mapId }; fixes.push(`steps[${i}] expect.eventOnMap 문자열을 {eventId,mapId} 로 감쌌다.`); }
+    }
+    if (step.kind === "useItem") for (const k of ["actorId", "target", "actor"]) if (k in step) { delete step[k]; fixes.push(`steps[${i}] useItem.${k} 는 없는 칸이라 뺐다(아이템은 파티에 쓴다).`); }
+    if (step.kind === "set") for (const k of ["hour", "minute", "time", "timePhase"]) if (k in step) { delete step[k]; fixes.push(`steps[${i}] set.${k} 는 시험기가 못 바꿔 뺐다(시간은 advanceDays 만 — 시간대 페이지는 정적 확인).`); }
+    return step;
+  });
+  return { input: { ...(input as Record<string, unknown>), steps }, fixes };
+}

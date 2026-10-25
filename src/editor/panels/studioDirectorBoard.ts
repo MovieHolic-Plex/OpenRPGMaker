@@ -28,6 +28,7 @@ import {
 import { drawAnimaticFrame, loadAnimaticImages } from "@/player/openingAnimaticRenderer";
 import { store } from "@/project/store";
 import type { MapId, Project } from "@/project/types";
+import { t } from "@/i18n";
 import { el } from "@/util/dom";
 import { toast } from "@/util/toast";
 
@@ -65,6 +66,9 @@ const TABS: readonly { readonly id: StudioDirectorTab; readonly label: string }[
 const EVENT_KIND_LABEL: Record<string, string> = { npc: "인물", door: "문", battle: "전투", ending: "엔딩", story: "연출" };
 /** 길이 0 = 입력을 기다리는 장면. 인플레이스 재생은 이 시간만큼 보여 주고 넘어간다. */
 const WAIT_SHOT_PREVIEW_MS = 3000;
+
+const SHOT_KIND_LABELS = { text: "글자", image: "그림", animatic: "컷 연출", video: "영상" } as const;
+const shotKindLabel = (kind: keyof typeof SHOT_KIND_LABELS): string => t(SHOT_KIND_LABELS[kind]);
 
 function seconds(ms: number): string {
   return ms > 0 ? `${(ms / 1000).toFixed(1)}s` : "입력 대기";
@@ -254,7 +258,8 @@ export function createStudioDirectorBoard(options: StudioDirectorBoardOptions = 
         el("div", {
           class: "ai-studio-director-stage-hud",
           children: [
-            el("span", { text: `♪ ${bgmName}` }),
+            // ♪ 는 따로 둔다 — 이으면 「프로젝트 기본 BGM」 같은 정확 일치 키가 깨진다.
+            el("span", { children: ["♪ ", bgmName] }),
             el("span", { text: `${LIGHTING_PRESETS[beat.lightingPreset === "custom" ? "day" : beat.lightingPreset].label}${beat.lightingPreset === "custom" ? "(사용자 조명)" : ""}` }),
             ...(beat.encounterCount > 0 ? [el("span", { text: `조우 ${beat.encounterCount}종 · ${beat.encounterRate}` })] : []),
           ],
@@ -660,7 +665,7 @@ export function createStudioDirectorBoard(options: StudioDirectorBoardOptions = 
     const showShot = (index: number, atMs = 0) => {
       const shot = opening.shots[index];
       if (!shot) return;
-      status.textContent = `SHOT ${index + 1}/${opening.shots.length} · ${shot.kind} · ${seconds(shot.durationMs)}`;
+      status.textContent = `SHOT ${index + 1}/${opening.shots.length} · ${shotKindLabel(shot.kind)} · ${seconds(shot.durationMs)}`;
       void drawShot(main, project, shot, atMs, signal);
     };
     const stop = () => {
@@ -735,7 +740,7 @@ export function createStudioDirectorBoard(options: StudioDirectorBoardOptions = 
           el("button", {
             class: "ai-studio-director-shot-frame",
             attrs: { type: "button", "aria-label": `장면 ${shot.index + 1} 보기` },
-            children: [thumb, el("span", { class: "ai-studio-director-shot-badge", text: `SHOT ${shot.index + 1} · ${shot.kind}` })],
+            children: [thumb, el("span", { class: "ai-studio-director-shot-badge", text: `SHOT ${shot.index + 1} · ${shotKindLabel(shot.kind)}` })],
             on: { click: () => { stop(); selectedShot = shot.index; refresh(); } },
           }),
           narration,
@@ -790,7 +795,8 @@ export function createStudioDirectorBoard(options: StudioDirectorBoardOptions = 
     root.dataset.genre = genre;
     root.dataset.genreSource = genreOverride ? "override" : "detected";
     root.dataset.tab = activeTab;
-    subtitleLine.textContent = `${GENRE_META[genre].label}${genreOverride ? " (수동)" : " (자동 판정)"} · ${GENRE_META[genre].subtitle}`;
+    // 부제는 긴 문장 키가 따로 있다 — 한 문자열로 이으면 문장 속 쉼표에서 쪼개져 반만 번역된다.
+    subtitleLine.replaceChildren(GENRE_META[genre].label, genreOverride ? " (수동)" : " (자동 판정)", " · ", GENRE_META[genre].subtitle);
     genreButtons.forEach((btn, i) => {
       const active = GENRES[i] === genre;
       btn.classList.toggle("is-active", active);

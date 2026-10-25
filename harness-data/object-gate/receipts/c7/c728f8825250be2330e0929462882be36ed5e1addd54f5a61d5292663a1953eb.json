@@ -1,0 +1,434 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "c728f8825250be2330e0929462882be36ed5e1addd54f5a61d5292663a1953eb",
+ "width": 64,
+ "height": 48,
+ "kind": "container",
+ "name": "lion-head stone fountain",
+ "label": "workshop-objectgen-3/c2-fountain",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+  "화풍: 평면 채움 (4/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+   "평면 채움 (4/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 4
+ },
+ "metrics": {
+  "tileColorsMedian": 8,
+  "tileColorsP90": 12,
+  "darkV5": 75,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 8
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "basin rim and water opening (ellipse)",
+      "rows": "15-37",
+      "evidence": "b",
+      "front_edge_line_row": 37,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "water inside basin",
+      "rows": "21-36",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": "21"
+     },
+     {
+      "part": "lion-head spout pillar with cap and water jet",
+      "rows": "2-28",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 23,
+    "front_face_rows": 10,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette width grows from 30 at row 15 to 60 at rows 24-37 and then narrows to 18 by row 47. This is an elliptical basin. Teal water (rows 18-36) is visible inside the opening, with a dark eave shadow at row 21 under the back rim. Rim stones span rows 15-37, and a light front-edge line sits at rows 37-38. Below it is a grey stone front face of about 10 rows (38-47) with vertical joints. The lion-head pillar, its cap, and the water jet stand on or over the basin, so they are decor. The basin is the main body."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate fountain reads clearly, but its measured facts match the shallow look. Its dark edge pixels are 100% near-neutral, so the outline is a neutral dark line rather than a tinted material tone. Near-flat coverage is 32%, against 0-13% for the detailed references (hedge 0%, stall 13%, well 0%). It has 8 visible tones per tile, versus 17-20 for the stall and well, which are the closest props in size and complexity. By eye, the stone basin and the pedestal are mostly smooth grey with 2-3 steps and no per-stone shading, no mortar or speckle and little moss or wear. The water has only a few flat blue bands and no ripple dots. The lion head is small and simple. Beside the roofed well, which has shaded stones and a textured roof, the fountain looks flatter and more sticker-like.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 12985
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "basin rim and water surface (elliptical open basin with water inside)",
+      "rows": "15-37",
+      "evidence": "b",
+      "front_edge_line_row": 38,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "water inside the basin",
+      "rows": "18-36",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lion-head pillar cap slab",
+      "rows": "2-8",
+      "evidence": "a",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": "7-8"
+     },
+     {
+      "part": "lion-head pillar shaft (vertical face)",
+      "rows": "9-26",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "water jet from lion mouth",
+      "rows": "17-29",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 23,
+    "front_face_rows": 9,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is a wide stone basin. Its silhouette widens from 30 px at row 15 to 60 px at rows 24-37, then narrows to 18 px at row 47, which gives an ellipse profile. Rows 15-37 show the rim and the open water surface seen from above, with dark eave shadow at rows 21 and 17-21 under the back rim. Row 38 (L=223) is a light front-edge line. Below it, rows 39-46 are the south face of the basin wall with a darker base band. The lion-head pillar behind the basin has its own cap slab at rows 2-8, with a front-edge line at row 6 and shadow at rows 7-8. The shaft below it is a vertical face, which is acceptable. The water jet is decor."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate fountain reads clearly, but the shading is shallow. The stone basin and the back block show about 3 grey steps, against roughly 5-6 per material in the references (well, stall). The dark edge pixels are 100% near-neutral, so the outline is a uniform grey-black line, the sticker look. The references with tinted outlines (hedge 0%, stall 1%, well 33%) lean towards dark material tones. Near-flat coverage is 32%, against 0-13% for the comparable references, so the basin rim and water have large flat areas with no stone-by-stone shading or grain. Visible tones per tile are 8, against 17 (stall) and 20 (well) for the richest references, and the hedge reference is at 9. The candidate is therefore well below the well and stall, which are the closest kinds. The water has a little ripple highlight, but the stone has no per-block texture.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 15238
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "basin rim and water (open ellipse)",
+      "rows": "15-37",
+      "evidence": "b",
+      "front_edge_line_row": 37,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "water inside basin",
+      "rows": "21-35",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lion-head pillar cap slab",
+      "rows": "2-8",
+      "evidence": "a",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": "7-8"
+     },
+     {
+      "part": "water jet from lion mouth",
+      "rows": "17-29",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 23,
+    "front_face_rows": 9,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette widens from 30 px at row 15 to 60 px at rows 24-37, which is an elliptical basin mouth. The mouth is seen from above, with turquoise water filling rows 21-35 and a light front rim at rows 34-37 (edge line at row 37). Below it the stone front face runs rows 38-46 and tapers toward the base. The lion-head pillar has its own top slab at rows 2-8, with a light front edge at row 6 and darker rows 7-8 beneath it. The pillar's face is rows 9-26. The water jet is decor."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate fountain reads as a clean but shallow piece. Its measured dark edge pixels are 100% near-neutral, so the outline is a grey/black line rather than a dark tone of the adjacent material, which is the sticker look. The Beodeul references with similar mass (hedge 0%, cheese stall 1%, well 33%) carry tinted outlines. Near-flat coverage is 32% against 0-13% for the references that have measurable values. The stone basin and the water each use only about 2-3 steps with little per-stone shading or grain, and the pedestal is largely flat grey. Visible tones per tile are 8, against 9 for the hedge, 17 for the cheese stall and 20 for the roofed well, so the candidate sits well below the richer references. Next to the well it looks thinner, flatter and more sticker-like. The lion head is only a small detail and does not make up for this.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 15328
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "basin opening with water, ellipse mouth",
+      "rows": "15-37",
+      "evidence": "d",
+      "front_edge_line_row": 37,
+      "eave_shadow_rows": "21"
+     },
+     {
+      "part": "basin rim ring (back and sides)",
+      "rows": "15-20",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lion-head pillar cap slab",
+      "rows": "2-8",
+      "evidence": "a",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": "7-8"
+     },
+     {
+      "part": "lion-head pillar face",
+      "rows": "9-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "water jet and splash",
+      "rows": "16-29",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "basin front wall",
+      "rows": "38-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 23,
+    "front_face_rows": 10,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The basin silhouette widens from 30 px at row 15 to 60 px at rows 24-37 and then narrows to 18 px at row 47, which is a full ellipse. Rows 18-33 show water (teal) inside the open basin, a dark shadow row at 21 under the back rim, and a light front rim edge at rows 34-37. Below that, rows 38-47 are a grey stone front wall with panel seams, which is a front face of about 10 rows. The pillar cap at rows 2-8 has a lighter top band, an edge line at row 6 and shadow at rows 7-8, so it also shows a top. The water jet is decor."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate fountain has about 3 lightness steps on the stone (light grey, mid grey, dark) and about 2-3 on the water (a flat teal body with a lighter ripple). Measured facts: 100% of dark edge pixels are neutral, so the outline is a uniform near-black/grey line, the sticker look; the references with tinted outlines (hedge 0%, stall 1%, well 33%) differ. Near-flat coverage is 32% against 0-13% for the references that have measurable tiles. The 8 visible tones per tile are below the well (20), stall (17) and hedge (9). The basin rim and the lion-head block are large smooth fills with no per-stone shading, grain or speckle. The water is a flat teal field with only a few highlight strokes. Beodeul's well shows stones shaded one by one and tile texture, so the candidate looks thinner, flatter and more sticker-like beside it.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 14916
+  }
+ ],
+ "decidedAt": "2026-10-22T06:32:22.988Z",
+ "cells": {
+  "16": [
+   "0576dbfbea479130",
+   "082403a446b47b65",
+   "0897b61b5173da37",
+   "0b3a363aa9fb2716",
+   "27269ec483db76d3",
+   "5979a511d7204c92",
+   "7e593bc679db8e92",
+   "8982f550e9adc732",
+   "a334899dc46a4f0e",
+   "f7e385596595ce02"
+  ],
+  "24": [
+   "22ef2e6da8f0588f",
+   "257101b7fe5aad44",
+   "35a673f10f3b7358",
+   "3b6290e78eaa60ef",
+   "43749fd282f49c0d",
+   "5242b51f0ac35917",
+   "664f90a9f5df4a81",
+   "6d713a3a8c0291b1",
+   "6d7707c96bacad61",
+   "7060fb8f8f963e4e",
+   "717336d26df0ca95",
+   "74dfbb70f36610a4",
+   "8b3ceae92b868ffa",
+   "8cc95847f8856ffe",
+   "8cdc829a48cca01d",
+   "8e6a882adb6ea004",
+   "b72589b36ae5c620",
+   "de2a92006659496a"
+  ],
+  "32": [
+   "3420388859df7f02",
+   "5932d0ef446d4761",
+   "5bc2fa29453af0e6",
+   "737c8c279b06fcad",
+   "7a2c8a041a8a7c26",
+   "8dcc6fc2647c2dbc",
+   "b677eb813ef883a2",
+   "f1d783c9403c529a"
+  ],
+  "48": [
+   "45ba77971cfb17ff",
+   "482dce53cc90aeed",
+   "6284ad0294ec4a7d",
+   "77c4726a8818b258",
+   "b778308d9af0902e",
+   "c5397dcc52050306"
+  ]
+ }
+}

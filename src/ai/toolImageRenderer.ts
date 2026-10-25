@@ -12,6 +12,7 @@ import { reliefGroundFromImage } from "@/editor/reliefGroundSurface";
 import { cellLift, reliefLiftField } from "@/project/relief/screen";
 import type { GameMap, Project, TilesetDef } from "@/project/types";
 import { mapVisualEvidenceUnavailable } from "./mapVisualEvidence";
+import { drawMapBackgroundPreview } from "./mapBackgroundPreview";
 import {
   canvasDataUrl,
   createCanvas,
@@ -193,10 +194,10 @@ async function renderTileGrid(project: Project, data: unknown, label = "영역")
   if (unavailable) throw new Error(unavailable);
   const payload = tileGridPayload(project, data);
   if (!payload) return [];
-  return renderTileGridPayload(payload, `${label} (${payload.x},${payload.y}) ${payload.w}×${payload.h}`);
+  return renderTileGridPayload(payload, `${label} (${payload.x},${payload.y}) ${payload.w}×${payload.h}`, undefined, project);
 }
 
-async function renderTileGridPayload(payload: TileGridPayload, label: string, draft?: Project): Promise<RenderedToolImage[]> {
+async function renderTileGridPayload(payload: TileGridPayload, label: string, draft?: Project, backgroundProject?: Project): Promise<RenderedToolImage[]> {
   const image = keyedTilesetImage(payload.tileset, await loadTilesetImage(payload.tileset, draft));
   // Whole-map coverage renders reach here, so the canvas is sized to the delivered
   // image rather than drawn huge and shrunk. Small regions keep the native scale.
@@ -216,6 +217,11 @@ async function renderTileGridPayload(payload: TileGridPayload, label: string, dr
     context.drawImage(pair.canvas, 0, (s.y * s.scale - payload.y) * drawSize + pad, s.w * s.scale * drawSize, s.h * s.scale * drawSize);
   };
   drawCheckerBackground(context, canvas.width, canvas.height, Math.max(4, Math.floor(drawSize / 2)));
+  const bgNotes: string[] = [];
+  const bgProject = backgroundProject ?? draft;
+  const bgLayers = payload.map?.background && bgProject
+    ? await drawMapBackgroundPreview(context, payload.map, bgProject, drawSize, payload.tileset.tileSize, canvas.width, canvas.height, bgNotes) : 0;
+  if (bgLayers || bgNotes.length) label = `${label}${bgLayers ? ` · 맵 배경 ${bgLayers}층 첫 프레임(빈 칸으로 비침, 스크롤·카메라 따라가기 없음)` : ""}${bgNotes.length ? ` · ${bgNotes.join(", ")}` : ""}`;
   if (payload.map) {
     const scale = drawSize / payload.tileset.tileSize;
     if (relief && region) {

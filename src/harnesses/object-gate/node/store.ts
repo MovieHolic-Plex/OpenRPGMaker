@@ -4,7 +4,7 @@ import { homedir } from 'node:os';
 import { existsSync, mkdirSync, readFileSync, readdirSync, unlinkSync, writeFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { PNG } from 'pngjs';
-import { OBJECT_GATE_PROFILE, objectGatePixelSha256, objectGateProfileHash, type ObjectGateFinal, type ObjectGateFinalProfileRecord, type ObjectGateFrontPropApproval, type ObjectGateHoldDecision, type ObjectGateProfileRecord, normalizeObjectGateImage, objectGateHoldPayload, type ObjectGateReceipt, type ObjectGateStyleKind } from '../../_core/objectGate';
+import { OBJECT_GATE_PROFILE, objectGatePixelSha256, objectGateProfileHash, type ObjectGateFinal, type ObjectGateFinalProfileRecord, type ObjectGateFrontPropApproval, type ObjectGateHoldDecision, type ObjectGateProfileRecord, normalizeObjectGateImage, objectGateHoldPayload, type ObjectGateReceipt, type ObjectGateStyleKind, type ObjectGateStyleRefSet } from '../../_core/objectGate';
 
 export const GATE_DATA = resolve(process.env.OBJECT_GATE_DATA ?? 'harness-data/object-gate');
 const receiptPath = (sha: string) => resolve(GATE_DATA, 'receipts', sha.slice(0, 2), `${sha}.json`);
@@ -58,7 +58,7 @@ export function readHoldDecision(sha: string): ObjectGateHoldDecision | null {
   const want = Buffer.from(holdSignature(key, d), 'hex'), got = Buffer.from(d.sig, 'hex');
   return got.length === want.length && timingSafeEqual(got, want) ? d : null;
 }
-/** 검토 화면 서버 전용. 다른 곳에서 부르지 않는다. */
+/** 검토 화면 서버 전용. 예외는 기록을 좁히기만 하는 CLI 정정 단계 redelegate-holds·supersede-holds(cli.ts) — 새 허용은 만들지 못한다. */
 export function writeHoldDecision(d: Omit<ObjectGateHoldDecision, 'sig'>): string {
   const key = holdKey(true)!;
   const signed = { ...d, sig: '' } as ObjectGateHoldDecision;
@@ -136,12 +136,55 @@ export function writeProfile(record: ObjectGateProfileRecord): string {
 
 /** 화풍 기준 그림 목록(종류별 PNG 경로, 이름순) + 화소 해시. build_style_refs.py 가 manifest.json 을 쓴다. */
 export type StyleRef = { name: string; path: string; sha256: string };
-export function styleRefs(kind: ObjectGateStyleKind): StyleRef[] {
-  const manifestPath = resolve(GATE_DATA, 'style-refs', 'manifest.json');
-  if (!existsSync(manifestPath)) throw Error(`화풍 기준 그림이 없다 — python3 src/harnesses/object-gate/tools/build_style_refs.py (${manifestPath})`);
+/** 버들항 기본 묶음 = style-refs/<종류>. 보정 프로필 해시(gateProfile)는 이 묶음에만 묶인다 — 칩셋 묶음을 더해도 프로필은 그대로다. */
+export const BASE_STYLE_REF_SET = 'beodeul_city';
+const BASE_SET_NAMES = new Set(['beodeul_city', 'beodeul', 'bd']);
+export function styleRefs(kind: ObjectGateStyleKind, setId: string = BASE_STYLE_REF_SET): StyleRef[] {
+  const base = setId === BASE_STYLE_REF_SET;
+  const root = base ? resolve(GATE_DATA, 'style-refs') : resolve(GATE_DATA, 'style-refs', 'sets', setId);
+  const manifestPath = resolve(root, 'manifest.json');
+  if (!existsSync(manifestPath)) {
+    if (base) throw Error(`화풍 기준 그림이 없다 — python3 src/harnesses/object-gate/tools/build_style_refs.py (${manifestPath})`);
+    return [];
+  }
   const manifest = JSON.parse(readFileSync(manifestPath, 'utf8')) as Record<string, Record<string, { sha256: string }>>;
   return Object.entries(manifest[kind] ?? {}).sort(([a], [b]) => a.localeCompare(b))
-    .map(([name, meta]) => ({ name, path: resolve(GATE_DATA, 'style-refs', kind, `${name}.png`), sha256: meta.sha256 }));
+    .map(([name, meta]) => ({ name, path: resolve(root, kind, `${name}.png`), sha256: meta.sha256 }));
+}
+
+/** 칩셋 묶음 id 목록(style-refs/sets/<id>/manifest.json 이 있는 것). */
+export function styleRefSetIds(): string[] {
+  const root = resolve(GATE_DATA, 'style-refs', 'sets');
+  return existsSync(root) ? readdirSync(root).filter(d => existsSync(resolve(root, d, 'manifest.json'))).sort() : [];
+}
+function styleRefAliases(): Record<string, string> {
+  const f = resolve(GATE_DATA, 'style-refs', 'sets', 'aliases.json');
+  return existsSync(f) ? JSON.parse(readFileSync(f, 'utf8')) as Record<string, string> : {};
+}
+/** 라벨에서 칩셋 이름을 읽는다 — 첫 「/」·공백 앞 토막(예: "jp_city/interior/x" → jp_city, "wizarding_world stairs x" → wizarding_world). */
+export function chipsetOfLabel(label?: string): string | null {
+  const m = (label ?? '').trim().match(/^([A-Za-z0-9][A-Za-z0-9_-]*)(?=[/\s])/);
+  return m ? m[1]!.toLowerCase() : null;
+}
+
+/**
+ * 후보의 칩셋 → 화풍 기준 그림 묶음. 칩셋 묶음에 그 종류가 있으면 그것, 없으면 버들항 묶음으로 떨어진다(fallback, 이유를 적는다).
+ * 버들항 칩셋은 기본 묶음 그대로(fallback 아님).
+ */
+export function resolveStyleRefs(kind: ObjectGateStyleKind, chipset: string | null | undefined): { refs: StyleRef[]; refSet: ObjectGateStyleRefSet } {
+  const raw = chipset ? chipset.trim().toLowerCase() : null;
+  const id = raw ? (styleRefAliases()[raw] ?? raw) : null;
+  const hashOf = (refs: StyleRef[]) => createHash('sha256').update(refs.map(r => `${r.name}:${r.sha256}`).join('\n')).digest('hex').slice(0, 16);
+  const base = (reason?: string) => {
+    const refs = styleRefs(kind);
+    return { refs, refSet: { id: BASE_STYLE_REF_SET, chipset: id, fallback: Boolean(reason), ...(reason ? { reason } : {}), hash: hashOf(refs) } };
+  };
+  if (!id) return base('후보의 칩셋을 모른다(라벨 앞머리·--chipset 없음)');
+  if (BASE_SET_NAMES.has(id)) return base();
+  if (!styleRefSetIds().includes(id)) return base(`칩셋 ${id} 의 화풍 기준 묶음이 없다`);
+  const refs = styleRefs(kind, id);
+  if (!refs.length) return base(`칩셋 ${id} 묶음에 화풍 종류 ${kind} 기준 그림이 없다`);
+  return { refs, refSet: { id, chipset: id, fallback: false, hash: hashOf(refs) } };
 }
 
 /** 현재 프로필 = 규칙(rules.ts) + 화풍 기준 그림 해시. 기준 그림이 바뀌어도 프로필 해시가 바뀐다. */

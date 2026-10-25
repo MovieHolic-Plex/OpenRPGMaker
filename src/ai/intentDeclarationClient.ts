@@ -10,6 +10,7 @@
 import { listLiveConceptFacilityLabels } from "@/editor/conceptBundleResolve";
 import { activeTools } from "@/editor/tools";
 import type { Project } from "@/project/types";
+import { isUntouchedMap } from "@/project/projectBlankness";
 import { monsterAssetsAllowed, toolHiddenByMonsterLock } from "@/project/genreLockMonsterAssets";
 import { isMonsterRequestTurn } from "./piAgent/monsterGameRequest";
 import {
@@ -63,6 +64,7 @@ export function buildIntentFacts(input: BuildIntentFactsInput): IntentFacts {
     currentMap: currentMap ? { id: currentMap.id, name: currentMap.name } : null,
     selection: input.selection ?? null,
     maps: Object.values(input.project.maps).map((map) => ({ id: map.id, name: map.name })),
+    untouchedMapIds: Object.values(input.project.maps).filter((map) => isUntouchedMap(map)).map((map) => map.id),
     facilityLabels: [...listLiveConceptFacilityLabels(input.project)],
     // 몬스터 자산 역방향 잠금: 몬스터 프로젝트가 아니고 이번 요청도 몬스터 수집 요청이 아니면 포켓몬식 도구는 선언 후보(툴 목록)에 올리지 않는다.
     toolNames: activeTools().map((tool) => tool.name).filter((name) => !toolHiddenByMonsterLock(input.project, name, { monsterTurn: isMonsterRequestTurn(input.userText) })),

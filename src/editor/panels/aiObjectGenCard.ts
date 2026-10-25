@@ -212,6 +212,8 @@ function objectGenCard(request: ObjectGenRequest, modules: Promise<[QueueModule,
       el("h3", { text: `「${request.title}」을(를) 그려 넣어요` }),
       el("p", { class: "ai-tileset-change-reason", text: request.description }),
       el("p", { class: "ai-tileset-change-detail", text: `칩셋 「${request.tilesetName}」의 색과 그림 느낌으로 ${size}${request.base ? ` · (${request.base.x},${request.base.y})에 놓아요` : ""}. 내 AI 계정으로 그리고, 이 게임에만 들어가요.` }),
+      // 크기 결정(왜 이 칸 수인가) — 조수가 정한 칸 수를 크기 사전으로 확인·조정한 결과(2026-10-22).
+      ...(request.footprint ? [el("p", { class: "ai-tileset-change-detail ai-objectgen-footprint", dataset: { testid: "ai-objectgen-footprint" }, text: `칸 정하기: ${request.footprint.passage.join(" / ")} (X 막힘 · * 위로 솟음) — ${request.footprint.reason}${request.footprint.adjusted.length ? ` · 조정: ${request.footprint.adjusted.join(", ")}` : ""}` })] : []),
       reference,
       candidates,
       el("label", { class: "ai-store-agree ai-objectgen-auto", children: [autoBox, "알아서 고르기 — 검수를 통과한 첫 후보를 바로 넣어요(이 기기에 기억)"] }),

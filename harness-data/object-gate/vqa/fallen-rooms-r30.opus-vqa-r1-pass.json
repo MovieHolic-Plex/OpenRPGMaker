@@ -1,0 +1,32 @@
+{
+  "schema": "bdg-vqa/1",
+  "judge": "claude-opus-5-5",
+  "date": "2026-10-22",
+  "batch": "fallen-rooms-r30",
+  "commit": "2d0dd28dbc",
+  "overall": "PASS",
+  "criteriaNotes": {
+    "0_hash_check": "pixel_sha256 of /tmp/fsrooms/gate-r30/stone_brazier.png computed with src/harnesses/_core/object_gate.pixel_sha256 = e6f7799b320958af0ba19260127e0f95cb401604a6ff037a7bb31a0e87836948. Pixel-by-pixel comparison against the lit brazier in brazier-pair-x8.png: rows 13-31 (lip front face, pedestal neck, foot, cast shadow) are identical under a 1:1 palette mapping; rows 6-12 differ only inside the rim (fuel vs flame) plus the lip top-edge pixels x6-9 of row 12 that the flame covered in the lit version. Outer rim pixels (x1-2, x13-14) match. Swap-in-place contract holds.",
+    "1_topdown_view": "Same 3/4 construction as the approved lit brazier: 1px back rim line at row 9, bowl contents rows 10-11, front lip top edge row 12, front faces below. The back log is a horizontal cylinder showing its bark top face plus a small cut end, rising 3px above the back rim as a stacked log would; the front log shows its bark top (row 10) and dark underside (row 11), its lower edge hidden by the front lip. No side or iso faces.",
+    "2_style_fit": "Every log/ash/charcoal colour already exists in the v5 sheet in quantity (154,84,53 x13138; 109,59,21 x9303; 99,49,11 x7880; 26,14,6 x7889; 208,196,182 x6310; 58,53,48 x6358 ...). Logs use the sheet's near-black brown outline, 3-step bark ramp with sparse bark streaks, light cut ends; stone keeps the existing blue-grey ramp lit from the left. No flat blocks, no dithering noise.",
+    "3_readability_1x": "In mock-gate.png and the 3x dais crop the four cold braziers read as stone braziers holding a small stack of brown logs with pale cut ends - clearly distinct from the plain pedestals/columns around the dais and no longer a bollard/post silhouette. The two lit braziers in the shrine make the swap pairing obvious. The charcoal/ash bed is small (about 3px at x11-13, rows 10-11) so it reads mainly as logs laid ready rather than as ash, which is acceptable for 'laid ready to be lit'.",
+    "4_placement": "Foot and cast shadow unchanged from the lit version; the piece stands on the dais checker at the four corners without floating or clipping. The logs sit inside the rim: front log occluded by the lip, back log overlapping the back rim line from in front.",
+    "5_silhouette_outline": "Clean closed silhouette; the log cap adds a compact 5x3 bump above the rim with full outline. Minor: lip top edge row 12 runs I I I I I M L H L L L L - the single darkest pixel at (9,12) makes a 1px notch in the lip highlight; it reads as a contact shadow under the logs at 8x and is invisible at 1x, so not blocking."
+  },
+  "items": [
+    {
+      "id": "atlas_biome_interior/plus/stone brazier",
+      "name": "돌 화로(꺼짐, 버들항 돌 받침 화로) (stone brazier)",
+      "kind": "other",
+      "pixelSha256": "e6f7799b320958af0ba19260127e0f95cb401604a6ff037a7bb31a0e87836948",
+      "verdict": "PASS",
+      "reasons": [
+        "Rim outer pixels, lip front face, pedestal, foot and shadow are pixel-identical to the approved lit brazier; only the bowl contents (rows 6-12 inside the rim) differ, so the puzzle swap is seamless.",
+        "At 1x in the room the cold braziers read as stone braziers laid with logs (brown stack with pale cut ends above the rim), not as bollards or posts.",
+        "All colours come from the existing v5 sheet; logs have outline, 3-step bark ramp and light cut ends consistent with v5 wood props.",
+        "Correct 3/4 view: top faces of logs and back rim line visible, front lip hides the front log's lower edge; no side faces.",
+        "Optional polish (non-blocking): pixel (9,12) (42,42,50) is a 1px dark notch in the lip top edge; (89,100,112) would keep the lip highlight continuous. The charcoal/ash bed is only ~3px at x11-13 - one more pale ash pixel at the left of the bowl (e.g. (2..3,11) region is taken by the cut end, so (10,11)) would match the brief's 'bed with ash clumps' better."
+      ]
+    }
+  ]
+}

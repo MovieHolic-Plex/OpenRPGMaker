@@ -70,11 +70,13 @@ function positionCurrent(): void {
   const { panel, trigger } = current;
   const rect = trigger.getBoundingClientRect();
   const margin = 8;
-  panel.style.maxHeight = `${window.innerHeight - margin * 2}px`;
+  // 톱바 아래로 가두고 넘치는 본문은 표면 안에서 스크롤한다 — 키 큰 표면이 톱바·로고를 덮지 않게.
+  const topInset = Math.max(margin, (document.querySelector('.topbar')?.getBoundingClientRect().bottom ?? 0) + 4);
+  panel.style.maxHeight = `${window.innerHeight - topInset - margin}px`;
   const box = panel.getBoundingClientRect();
   panel.style.left = `${Math.max(margin, Math.min(rect.left, window.innerWidth - box.width - margin))}px`;
   const below = window.innerHeight - rect.bottom - margin;
-  panel.style.top = `${Math.max(margin, below >= box.height ? rect.bottom + 4 : rect.top - box.height - 4)}px`;
+  panel.style.top = `${Math.max(topInset, below >= box.height ? rect.bottom + 4 : rect.top - box.height - 4)}px`;
 }
 
 /** Nonmodal auxiliary work surfaces share dismissal, viewport anchoring and focus. */

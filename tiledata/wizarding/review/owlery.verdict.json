@@ -1,6 +1,6 @@
 {
  "module": "owlery",
- "sealed": "2026-10-07T09:28:06.793029+09:00",
+ "sealed": "2026-10-23T02:10:03.505371+09:00",
  "reviewer": "sonnet adversarial",
  "pieces": {
   "wz-owl-wall-n": {
@@ -170,13 +170,13 @@
   },
   "wz-owl-stair-up": {
    "verdict": "PASS",
-   "hash": "83a029762d9abba9b4aced9e1b2e9da65a8d3d0b5d64b61e9ea3ce74bd38ff58",
-   "reason": "recheck: treads, nosing shadows and risers now read as ascending stairs."
+   "hash": "07314a0dccec8f1f8945dba4644d04d609daf1870673a9b81d069bc530101309",
+   "reason": "2026-10-23 다시 그림(원근 디딤판·얇은 챌판/계단통 얇은 내림 단). Opus 적대 검수 r2 3명 중 다수 major 0 — 올라가는/내려가는 계단으로 1배·3배에서 읽힘, 3/4 윗면 일관, wizarding_world 화풍. {'wz-clock-stair': 'object-gate PASS (wizarding_world refs)', 'wz-castle-stair-up': 'object-gate PASS (wizarding_world refs)', 'wz-hd-stairs-down': 'object-gate PASS (wizarding_world refs)', 'wz-owl-stair-down': 'object-gate PASS (wizarding_world refs, kind flat)', 'wz-owl-stair-up': 'object-gate REFER → fresh Argon adversarial PASS → delegated allow 2026-10-23', 'wz-castle-stair-down': 'object-gate REFER (style split) → fresh Argon adversarial PASS → delegated "
   },
   "wz-owl-stair-down": {
    "verdict": "PASS",
-   "hash": "a16fc998cfa4ad8fb0f9ecf23ae116e4d960d4c877f33b996bfd7a8849ca7786",
-   "reason": "recheck: floor-rim frame and darkening steps read as stairwell going down."
+   "hash": "25cd3b33d3a050062737a40378f05dbcd90f56a91235e6f82dbe632e0a818d9f",
+   "reason": "2026-10-23 다시 그림(원근 디딤판·얇은 챌판/계단통 얇은 내림 단). Opus 적대 검수 r2 3명 중 다수 major 0 — 올라가는/내려가는 계단으로 1배·3배에서 읽힘, 3/4 윗면 일관, wizarding_world 화풍. {'wz-clock-stair': 'object-gate PASS (wizarding_world refs)', 'wz-castle-stair-up': 'object-gate PASS (wizarding_world refs)', 'wz-hd-stairs-down': 'object-gate PASS (wizarding_world refs)', 'wz-owl-stair-down': 'object-gate PASS (wizarding_world refs, kind flat)', 'wz-owl-stair-up': 'object-gate REFER → fresh Argon adversarial PASS → delegated allow 2026-10-23', 'wz-castle-stair-down': 'object-gate REFER (style split) → fresh Argon adversarial PASS → delegated "
   },
   "wz-owl-door-closed": {
    "verdict": "PASS",

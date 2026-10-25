@@ -1,0 +1,16 @@
+{
+ "round": 15,
+ "judge": "Opus 5.5 (fresh adversarial reviewer agent, no prior scores)",
+ "queue": "abi-stairs-v5",
+ "images": "http://mdc-server:18301/jp-stairs-1/interior-v5/r15/kits-4x.png (+ scene 1x/3x and before/)",
+ "pieces": [
+  "stairs up stone",
+  "stairs up wood",
+  "stairs down",
+  "stairwell down"
+ ],
+ "rubric": "axis 2 (style/palette/3/4 fit) + axis 6 (1x readability incl. up/down direction)",
+ "majors": 1,
+ "verdict": "FAIL",
+ "summary": "P1 up stone yes/yes: minors (still shutter-like at 1x, dotted opening, rubble vs brick on lower pillars, same dark-north ramp as DOWN).\nP2 up wood yes/yes: minors (dotted opening, right post highlight, uniform risers).\nP3 stairs down yes(3x)/weak at 1x, direction yes: [major] light full-width north rail cap reads as a short wall/counter -> doorway/alcove look like piece 1. minors: south lip tile seam, W/E rails thin.\nP4 stairwell down yes/yes: minors (bright south tread, asymmetric rails, joint spacing). Best of the four.\nAXIS2 7, AXIS6 6. MAJORS 1\n"
+}

@@ -1,0 +1,18 @@
+{
+  "set": "rt-new-game-after-title-return",
+  "projectGenerator": { "game": "preset-adventure-jrpg" },
+  "viewport": { "width": 1280, "height": 720 },
+  "checkpoints": [
+    {
+      "id": "gate",
+      "label": "마을 동쪽 문 앞 — 숲길로 나가면 전이 오토세이브가 쓰인다",
+      "note": "기록 세션(main1/preset-adventure-jrpg__first-run) line 142-147: map_blank_start (53,24) 에서 오른쪽으로 세 칸 걸으면 숲길(map_segment_route 0,9)로 전이하고 전이 오토세이브가 기록된다. 그 뒤 타이틀에서 「이어하기」로 복귀하고 다시 타이틀로 돌아오는 흐름이 F1(게임 오버 뒤 새 게임이 이어하기로 동작)의 재현이다.",
+      "mapId": "map_blank_start",
+      "x": 53,
+      "y": 24,
+      "facing": "right",
+      "switches": {},
+      "variables": {}
+    }
+  ]
+}

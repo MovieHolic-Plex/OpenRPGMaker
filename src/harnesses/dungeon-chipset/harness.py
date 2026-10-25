@@ -224,11 +224,15 @@ def cmd_gate(rid, quiet=False):
     polish = [{'item': i, 'key': K, 'code': r['code'], 'msg': r['msg']} for i, K, r in warns if r['code'] in POLISH_CODES]
     if not quiet:
         print(f'외곽선 규칙 경고(굽기 전에 다듬을 것): OUTLINE {by_code.get("OUTLINE", 0)} · CONTRAST {by_code.get("CONTRAST", 0)}')
+    import fcntl   # 판을 여러 작업자가 동시에 관문에 돌려도 실행 기록이 덮이지 않게(읽기-덧붙이기-쓰기를 잠근다)
+    lock = open(LEDGER + '.lock', 'w')
+    fcntl.flock(lock, fcntl.LOCK_EX)
     L = ledger()
     L['runs'].append({'round': rid, 'at': now(), 'fail': len(fails), 'warn': len(warns), 'warnByCode': by_code, 'polish': polish,
                       'hashes': {i: {k: v['sha256'] for k, v in c.items()} for i, c in man['items'].items()}})
     L['runs'] = L['runs'][-40:]
     save_ledger(L)
+    lock.close()
     return mod, rendered, man, res, fails
 
 
@@ -511,7 +515,9 @@ def current_hash(rid, item, letter):
     return dot.image_hash(im), im
 
 
-def cmd_pick(rid, item, key, sha, note):
+def cmd_pick(rid, item, key, sha, note, by='user', delegated_by='', evidence=''):
+    if by == 'delegated' and not (delegated_by and evidence and os.path.exists(evidence)):
+        raise SystemExit('--by delegated 에는 --delegated-by 문구와 실제 있는 --evidence 경로가 필요하다')
     ln = line_of(key)
     if not ln:
         raise SystemExit(f'후보 {key} 의 줄을 모른다 — 시드 lines: {", ".join(lines())} (화풍 판은 글자, 이후 판은 <줄><번호>)')
@@ -542,7 +548,8 @@ def cmd_pick(rid, item, key, sha, note):
         ln_label = ln
     L = ledger()
     L['picks'] = [p for p in L['picks'] if not (p['item'] == item and pick_line(p) == ln)] + [
-        {'round': rid, 'item': item, 'line': ln, 'letter': key, 'sha256': cur, 'note': note, 'at': now(), 'by': 'user'}]
+        {'round': rid, 'item': item, 'line': ln, 'letter': key, 'sha256': cur, 'note': note, 'at': now(), 'by': by,
+         **({'delegatedBy': delegated_by, 'evidence': os.path.relpath(evidence, REPO) if evidence.startswith(REPO) else evidence} if by == 'delegated' else {})}]
     save_ledger(L)
     print(f'고름 기록: {item} 줄 {ln_label} ← {rid} {key} ({cur[:12]}) → {os.path.relpath(out, REPO)}')
 
@@ -763,6 +770,9 @@ def main(argv=None):
     p.add_argument('letter', metavar='후보', help='화풍 판은 줄 글자(A), 이후 판은 <줄><번호>(A1)')
     p.add_argument('--sha', required=True)
     p.add_argument('--note', default='')
+    p.add_argument('--by', choices=['user', 'delegated'], default='user')
+    p.add_argument('--delegated-by', default='')
+    p.add_argument('--evidence', default='')
     p = sub.add_parser('reject')
     p.add_argument('round')
     p.add_argument('item')
@@ -785,7 +795,7 @@ def main(argv=None):
         cmd_sheet(a.round, a.force)
         return 0
     if a.cmd == 'pick':
-        cmd_pick(a.round, a.item, a.letter, a.sha, a.note)
+        cmd_pick(a.round, a.item, a.letter, a.sha, a.note, a.by, a.delegated_by, a.evidence)
         return 0
     if a.cmd == 'reject':
         cmd_reject(a.round, a.item, a.letter, a.why)

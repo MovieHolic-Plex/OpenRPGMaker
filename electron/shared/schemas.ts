@@ -166,6 +166,51 @@ export const storeConceptsSchema = z.object({
 }).strict();
 export const storeConceptSlugSchema = z.object({ slug: conceptSlug, lang: storeLang.optional() }).strict();
 export const storeConceptMadeSchema = z.object({ slug: conceptSlug }).strict();
+/** 「바로 플레이」 게임. 파일 형식·크기·실행 파일 제한은 스토어 서버(src/games.ts)가 정본으로 다시 검사한다. */
+const storeGameVersion = z.string().regex(/^\d{1,4}\.\d{1,4}$/);
+export const storeGameMineSchema = z.object({ projectKey: z.string().min(1).max(200) }).strict();
+const storeGameChangeSet = z.object({ added: z.array(z.string().max(200)).max(5000), changed: z.array(z.string().max(200)).max(5000), removed: z.array(z.string().max(200)).max(5000) });
+export const storeGamePublishSchema = z.object({
+  projectKey: z.string().min(1).max(200),
+  meta: z.object({
+    title: z.string().max(120), summary: z.string().max(300), description: z.string().max(8000), credits: z.string().max(4000), genre: z.string().max(40),
+    controls: z.array(z.object({ keys: z.string().max(80), action: z.string().max(120) })).max(16),
+  }),
+  files: z.record(z.string().max(400), z.instanceof(Uint8Array)),
+  entry: z.string().max(200),
+  cover: z.string().max(400).nullable(),
+  art: z.array(z.string().max(400)).max(12),
+  changelog: z.string().max(8000),
+  changes: z.record(z.string().max(24), storeGameChangeSet),
+  bump: z.enum(["minor", "major"]),
+  version: storeGameVersion.nullable().optional(),
+  comment: z.string().max(600).optional(),
+  post: z.object({ title: z.string().max(120), body: z.string().max(20000), pinned: z.boolean().optional() }).strict().nullable().optional(),
+}).strict();
+/** 소식 글 올리기(조수 카드·발행 대화상자). 판본 코멘트를 같이 고칠 수 있다(commentVersion 판본에). */
+export const storeGamePostSchema = z.object({
+  slug: storeSlug,
+  title: z.string().min(1).max(120),
+  body: z.string().max(20000),
+  version: storeGameVersion.nullable().optional(),
+  pinned: z.boolean().optional(),
+  comment: z.string().max(600).optional(),
+  commentVersion: storeGameVersion.nullable().optional(),
+}).strict();
+/** 평가 목록 한 쪽(조수 store_game_reviews). */
+export const storeGameReviewsSchema = z.object({
+  slug: storeSlug,
+  sort: z.enum(["helpful", "recent", "funny"]).optional(),
+  filter: z.enum(["all", "up", "down"]).optional(),
+  limit: z.number().int().min(1).max(50).optional(),
+}).strict();
+/** 제작자 답글(빈 글이면 지운다). 조수 답글 카드에서 사용자가 눌렀을 때만. */
+export const storeReviewReplySchema = z.object({
+  slug: storeSlug,
+  reviewId: z.number().int().positive(),
+  reply: z.string().max(2000),
+}).strict();
+export const storeGameCurrentSchema = z.object({ slug: storeSlug, version: storeGameVersion }).strict();
 export const storeUploadSchema = z.object({
   manifest: z.record(z.string(), z.unknown()),
   blobs: z.record(z.string().regex(/^[0-9a-f]{64}$/), z.instanceof(Uint8Array)),

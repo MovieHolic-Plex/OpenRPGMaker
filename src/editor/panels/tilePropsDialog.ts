@@ -13,11 +13,15 @@
 import { renderTileMappingInspector } from "@/editor/panels/tileMappingInspector";
 import { registerModal, unregisterModal } from "@/editor/ui/modalStack";
 import { tilesetTileBackgroundStyle } from "@/editor/tilesetImage";
+import { store } from "@/project/store";
 import type { TilesetDef } from "@/project/types";
 import { el } from "@/util/dom";
 
-export function openTilePropsDialog(selectedTile: number, tileset: TilesetDef): void {
+export function openTilePropsDialog(selectedTile: number, openedTileset: TilesetDef): void {
   if (typeof document === "undefined") return;
+  // 호출 쪽(팔레트 칩)은 맵/타일셋 전환 때만 다시 그려져 옛 스냅숏을 들고 있을 수 있다 — 열 때 최신 값을 다시 읽는다.
+  const latestTileset = (): TilesetDef => store.getCurrent().tilesets[openedTileset.id] ?? openedTileset;
+  let tileset = latestTileset();
   // 이미 열려 있으면 새로 쌓지 않는다 (칩을 두 번 눌러도 창 하나).
   if (document.querySelector('[data-testid="tile-props-dialog"]')) return;
 
@@ -25,7 +29,10 @@ export function openTilePropsDialog(selectedTile: number, tileset: TilesetDef): 
     class: "tile-props-dialog-backdrop",
     dataset: { testid: "tile-props-dialog" },
   });
+  let unsubscribe: (() => void) | null = null;
   const close = (): void => {
+    unsubscribe?.();
+    unsubscribe = null;
     unregisterModal(backdrop);
     backdrop.remove();
   };
@@ -61,6 +68,13 @@ export function openTilePropsDialog(selectedTile: number, tileset: TilesetDef): 
     body.append(el("div", { class: "empty-hint", text: "팔레트에서 타일을 먼저 고르세요." }));
   } else {
     body.append(renderTileMappingInspector(selectedTile, tileset));
+    // 적용·전체 통과/막힘은 store 에 새 타일셋을 쓴다 — 바뀐 값을 바로 보이도록 인스펙터를 다시 그린다.
+    unsubscribe = store.subscribe(() => {
+      const next = latestTileset();
+      if (next === tileset) return;
+      tileset = next;
+      body.replaceChildren(renderTileMappingInspector(selectedTile, tileset));
+    });
   }
 
   backdrop.append(el("div", { class: "tile-props-dialog-panel", children: [header, body] }));

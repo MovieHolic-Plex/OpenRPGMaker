@@ -1,0 +1,470 @@
+{
+ "round": "gap-lava-r2",
+ "panel": 3,
+ "at": "2026-10-23",
+ "item": "gap.lava_edge",
+ "labels": {
+  "K": "C1",
+  "M": "C2",
+  "N": "B1",
+  "W": "B2"
+ },
+ "hashes": {
+  "C1": "e6b05c7f",
+  "C2": "9aa5460d",
+  "B1": "3a9753ac",
+  "B2": "856b99ed"
+ },
+ "boards": "qa-runs/lava/p3/",
+ "prompt": "qa-runs/lava/panel-prompt-3.txt",
+ "raw": {
+  "opusA": {
+   "candidates": {
+    "K": {
+     "majors": [],
+     "minors": [
+      {
+       "id": "repeat-diagonal",
+       "problem": "Crust blobs repeat on a regular diagonal pattern. At 1x the body mosaic shows faint diagonal banding, but inside the irregular pool it mostly breaks up.",
+       "where": "6x6 body mosaic and 1x body copy"
+      },
+      {
+       "id": "edge-fringe-hairy",
+       "problem": "The south and side banks end in a spiky yellow/orange fringe that sticks out onto the floor and reads like grass tufts, not a cooled lava lip. The south bank is not clearly darker than the north bank.",
+       "where": "south and west/east pool edges, the 1-cell stream, the isolated cell"
+      },
+      {
+       "id": "palette-darker-than-ref",
+       "problem": "There is much more dark maroon crust than in the bright Beodeul reference lava, so the two would look slightly different if placed side by side.",
+       "where": "body vs reference panel"
+      },
+      {
+       "id": "sunken-weak",
+       "problem": "The north bank is a thin slate strip with no inner wall face, so the pool sinks into the floor only weakly.",
+       "where": "north rim of the pool"
+      }
+     ]
+    },
+    "M": {
+     "majors": [
+      {
+       "id": "eye-lattice-repeat",
+       "problem": "Dark oval crust 'eyes' sit on a strict regular lattice, giving clearly visible vertical columns and a 16/32px grid at 1x. It reads like a wallpaper of coffee beans or eyes, not lava.",
+       "where": "6x6 body mosaic, 1x body copy, and the wide part of the pool"
+      }
+     ],
+     "minors": [
+      {
+       "id": "edge-fringe-hairy",
+       "problem": "Same spiky grass-like fringe on the south and side banks, with dark maroon corner blobs at the bank edges.",
+       "where": "south and side edges, isolated cell"
+      },
+      {
+       "id": "anim-pattern-swap",
+       "problem": "Between frames the oval lattice moves as a whole, so it reads more like shifting wallpaper than churning lava.",
+       "where": "frames3x 1->2"
+      }
+     ]
+    },
+    "N": {
+     "majors": [],
+     "minors": [
+      {
+       "id": "repeat-diagonal",
+       "problem": "Same body as K: diagonal crust banding is faintly visible at 1x in the mosaic.",
+       "where": "6x6 body mosaic and 1x body copy"
+      },
+      {
+       "id": "edge-fringe-hairy",
+       "problem": "Spiky fringe on the south and side banks reads like grass. The south bank is not darker.",
+       "where": "south and side edges, stream"
+      },
+      {
+       "id": "palette-darker-than-ref",
+       "problem": "Heavier dark crust than the bright reference lava.",
+       "where": "body vs reference"
+      }
+     ]
+    },
+    "W": {
+     "majors": [
+      {
+       "id": "eye-lattice-repeat",
+       "problem": "Same regular oval-crust lattice as M: obvious column/grid repeat at 1x, reads as a patterned wallpaper of eyes.",
+       "where": "6x6 body mosaic, 1x body copy, pool interior"
+      }
+     ],
+     "minors": [
+      {
+       "id": "edge-fringe-hairy",
+       "problem": "Grass-like spiky fringe and dark blob corners on the south and side banks.",
+       "where": "south and side edges, isolated cell"
+      },
+      {
+       "id": "anim-pattern-swap",
+       "problem": "The lattice shifts as a block between frames, so it does not read as flow.",
+       "where": "frames3x"
+      }
+     ]
+    }
+   },
+   "pick": {
+    "blue_black_cave": "K",
+    "brown_cave": "N"
+   },
+   "why": "K and N share a crust body whose irregular blobs and cracks read as churning lava, and they show only faint diagonal repetition. M and W use a strict oval-crust lattice that shows an obvious grid and looks like eyes at 1x. All four still need a calmer, darker south-bank lip instead of the grass-like fringe."
+  },
+  "opusB": {
+   "candidates": {
+    "K": {
+     "majors": [
+      {
+       "id": "south-bank-lit",
+       "problem": "South and lower edges end in a bright yellow spiky fringe, so the near bank looks lit and grass-like. The far-to-near shading is inverted for a sunken pool.",
+       "where": "bottom edges of the main pool, the west spur and the 1-cell stream tip"
+      }
+     ],
+     "minors": [
+      {
+       "id": "diag-repeat-32",
+       "problem": "Dark crust slabs line up in diagonal bands that repeat every 2 cells. This is visible in the 6x6 mosaic, softened in the irregular pool.",
+       "where": "lava body mosaic, wide pool interior"
+      },
+      {
+       "id": "crust-too-dark",
+       "problem": "Crust covers about 40% and is much darker and denser than the reference, which is mostly bright orange with red pockets. It reads heavier than the rest of the game's lava.",
+       "where": "body vs Beodeul reference"
+      },
+      {
+       "id": "anim-uniform-shift",
+       "problem": "Every cell changes in lockstep between frames, so it reads partly as a whole-surface swap, not local churning.",
+       "where": "frames 1->2->3->4"
+      }
+     ]
+    },
+    "M": {
+     "majors": [
+      {
+       "id": "repeat-grid-16",
+       "problem": "Dark eye-shaped crust ovals sit in strict vertical columns and rows, one per cell. At 1x this shows an obvious 16px polka-dot grid.",
+       "where": "6x6 body mosaic, 1x body, pool interior (rows of ovals)"
+      },
+      {
+       "id": "crust-looks-like-eyes",
+       "problem": "The crust pockets read as identical eyes/seeds, not floating slag, which gives a toy/pattern look.",
+       "where": "every body cell"
+      }
+     ],
+     "minors": [
+      {
+       "id": "anim-uniform-shift",
+       "problem": "Ovals pulse and shift in unison on every cell, so the motion is close to a blink.",
+       "where": "frames 1-4"
+      },
+      {
+       "id": "edge-dark-band-heavy",
+       "problem": "The dark maroon inner band on the west/south edges is thick and ragged. Shading direction is right but noisy.",
+       "where": "west spur, south edges"
+      }
+     ]
+    },
+    "N": {
+     "majors": [
+      {
+       "id": "south-bank-lit",
+       "problem": "Same inverted near-bank: bright yellow spiky fringe on the south edges, while the north lip is a brown rim. The near bank should be darker.",
+       "where": "south edges of pool, stream tip, isolated cell"
+      }
+     ],
+     "minors": [
+      {
+       "id": "diag-repeat-32",
+       "problem": "Diagonal crust banding repeats every 2 cells in the body.",
+       "where": "body mosaic, central pool"
+      },
+      {
+       "id": "crust-too-dark",
+       "problem": "Heavy black-maroon crust is darker than the reference lava. It is acceptable against the brown floor but less glowing.",
+       "where": "body vs reference"
+      },
+      {
+       "id": "anim-uniform-shift",
+       "problem": "All cells animate in lockstep.",
+       "where": "frames 1-4"
+      }
+     ]
+    },
+    "W": {
+     "majors": [
+      {
+       "id": "repeat-grid-16",
+       "problem": "Same per-cell eye-oval grid as M, which makes an obvious 16px dotted lattice at 1x.",
+       "where": "body mosaic, 1x body, pool interior"
+      },
+      {
+       "id": "crust-looks-like-eyes",
+       "problem": "Identical oval crust pockets read as a stamped pattern, not slag.",
+       "where": "every body cell"
+      }
+     ],
+     "minors": [
+      {
+       "id": "anim-uniform-shift",
+       "problem": "Lockstep pulsing across cells.",
+       "where": "frames 1-4"
+      },
+      {
+       "id": "edge-dark-band-heavy",
+       "problem": "Thick ragged maroon edge band on the west/south banks.",
+       "where": "west spur, south edges"
+      }
+     ]
+    }
+   },
+   "pick": {
+    "blue_black_cave": "K",
+    "brown_cave": "N"
+   },
+   "why": "M and W use a body that stamps one eye-shaped crust oval per cell, which shows as an unmistakable 16px grid. K and N have a more organic slag surface whose diagonal repeat is mostly hidden in a real pool, but their bright south fringe must be darkened before acceptance."
+  },
+  "opusC": {
+   "candidates": {
+    "K": {
+     "majors": [
+      {
+       "id": "repeat-diagonal-32",
+       "problem": "Dark crust blobs sit on a regular diagonal lattice. At 1x the body reads as diagonal stripes of identical black scales, not random crust.",
+       "where": "6x6 body mosaic and 1x body copy; large left pool lobe in the test map"
+      },
+      {
+       "id": "south-fringe-grass",
+       "problem": "The south and inner-corner edges end in bright yellow spiky teeth that read like grass or fur fringe, not a darker sunken south bank. Depth reads inverted at the bottom.",
+       "where": "south edges of every lobe, the stream tip, the left stub"
+      }
+     ],
+     "minors": [
+      {
+       "id": "crust-looks-like-rocks",
+       "problem": "Crust pieces are uniformly dark maroon ovals with no hot cracks inside, so they read like floating pebbles or fish scales.",
+       "where": "body tiles"
+      },
+      {
+       "id": "denser-than-ref",
+       "problem": "Much denser and darker than the Beodeul reference, which has larger flame shapes and fewer dark tones. Still in the same game, but busier.",
+       "where": "body vs reference panel"
+      },
+      {
+       "id": "anim-reshuffle",
+       "problem": "Frames move the crust, but the change reads more like a boiling reshuffle than directional flow. Acceptable churn, slightly flickery.",
+       "where": "frames3x 1->4"
+      }
+     ]
+    },
+    "M": {
+     "majors": [
+      {
+       "id": "repeat-16-eyes",
+       "problem": "Each 16px cell has one centered dark crust 'eye' in the same place, so the pool shows an obvious 16px grid of eyes at 1x.",
+       "where": "6x6 body mosaic, 1x body copy, whole test pool"
+      },
+      {
+       "id": "edge-dark-band",
+       "problem": "Edge and corner cells use a darker maroon body with spiky dark teeth, so blocky dark patches outline the cell grid around the pool rim.",
+       "where": "left 1-cell stub, west and south edges, isolated cell"
+      }
+     ],
+     "minors": [
+      {
+       "id": "toy-flat",
+       "problem": "Bright orange field with neat round blobs looks soft and bubbly, more like cheese or a toy than the reference's flame streaks.",
+       "where": "body"
+      },
+      {
+       "id": "anim-eye-blink",
+       "problem": "The eyes shift between frames, but the grid regularity makes the animation read partly as tiles pulsing.",
+       "where": "frames3x"
+      }
+     ]
+    },
+    "N": {
+     "majors": [
+      {
+       "id": "repeat-diagonal-32",
+       "problem": "Same body as K: crust scales on a diagonal lattice with visible diagonal banding at 1x.",
+       "where": "6x6 body mosaic, 1x body copy, left lobe"
+      },
+      {
+       "id": "south-fringe-grass",
+       "problem": "The south rim ends in yellow spiky teeth instead of a darker shadowed bank, which weakens the sunken read.",
+       "where": "south edges of lobes and stream"
+      }
+     ],
+     "minors": [
+      {
+       "id": "lip-ok",
+       "problem": "The brown lit north lip harmonizes well with the brown cave floor, but the west and east edges are thin and fringed.",
+       "where": "pool rim"
+      },
+      {
+       "id": "crust-looks-like-rocks",
+       "problem": "Uniform dark ovals read like pebbles.",
+       "where": "body"
+      },
+      {
+       "id": "anim-reshuffle",
+       "problem": "The animation churns but has no directional flow.",
+       "where": "frames3x"
+      }
+     ]
+    },
+    "W": {
+     "majors": [
+      {
+       "id": "repeat-16-eyes",
+       "problem": "Same body as M: one centered crust eye per 16px cell, so the 16px grid is plainly visible at 1x.",
+       "where": "body mosaic, 1x copy, whole pool"
+      },
+      {
+       "id": "edge-dark-band",
+       "problem": "Edge cells are a darker maroon with dark spiky teeth, which makes blocky dark patches at the rim.",
+       "where": "left stub, west and south edges, isolated cell"
+      }
+     ],
+     "minors": [
+      {
+       "id": "toy-flat",
+       "problem": "The soft bubbly orange reads toy-like next to the reference.",
+       "where": "body"
+      },
+      {
+       "id": "anim-eye-blink",
+       "problem": "The grid of eyes makes the animation read partly as pulsing tiles.",
+       "where": "frames3x"
+      }
+     ]
+    }
+   },
+   "pick": {
+    "blue_black_cave": "K",
+    "brown_cave": "N"
+   },
+   "why": "K/N's diagonal crust lattice is a softer repeat than M/W's one-eye-per-cell 16px grid, and it reads more like crusted lava. Both still need crust placement de-regularized and the yellow south-edge fringe replaced by a darker shadowed bank."
+  },
+  "argon": {
+   "candidates": {
+    "K": {
+     "majors": [],
+     "minors": [
+      {
+       "id": "dominant-kidney-crust",
+       "problem": "The largest kidney-shaped dark crust plate is slightly distinctive, making the 32px period faintly noticeable in the 6x6 pure body mosaic, though it disappears inside the irregular pool.",
+       "where": "6x6 lava body mosaic at 1x and 3x"
+      },
+      {
+       "id": "south-rim-teeth-regularity",
+       "problem": "Small 1px dark rock teeth along the south inner rim repeat at a slightly regular cadence on straight horizontal runs.",
+       "where": "South banks of the lava pool at 3x"
+      }
+     ]
+    },
+    "M": {
+     "majors": [
+      {
+       "id": "repeat-32",
+       "problem": "Strong diagonal magma bands and uniform horizontal oval crusts create an obvious 32px diagonal stripe and grid pattern at 1x.",
+       "where": "6x6 lava body mosaic at 1x/3x and main body of the pool"
+      },
+      {
+       "id": "eye-like-crust-blobs",
+       "problem": "The cooled crust pieces are all uniform rounded ovals with bright internal dots, reading like eyeballs or cells rather than fractured volcanic rock.",
+       "where": "Throughout the lava body and bank corners"
+      },
+      {
+       "id": "anim-blink",
+       "problem": "Across the 4 frames, the dark oval crusts near the banks remain pinned in place while yellow highlights mostly pulse in place rather than flowing.",
+       "where": "frames3x-M frames 1 to 4 along bank edges and interior ovals"
+      }
+     ],
+     "minors": [
+      {
+       "id": "corner-crust-clumping",
+       "problem": "Dark crust blobs sit identically in every inner bank corner tile, accentuating tile boundaries along the shoreline.",
+       "where": "Northwest, northeast, and southwest pool corners"
+      }
+     ]
+    },
+    "N": {
+     "majors": [],
+     "minors": [
+      {
+       "id": "dominant-kidney-crust",
+       "problem": "The largest kidney-shaped dark crust plate is slightly distinctive in the 6x6 pure body mosaic, though well broken up in the pool.",
+       "where": "6x6 lava body mosaic at 1x and 3x"
+      },
+      {
+       "id": "north-lip-contrast",
+       "problem": "The tan highlight line on the north bank lip is slightly crisp and bright against the pebbly brown floor, though it aids the 3/4 sunken read.",
+       "where": "North bank top edge of the pool"
+      }
+     ]
+    },
+    "W": {
+     "majors": [
+      {
+       "id": "repeat-32",
+       "problem": "Strong diagonal yellow-orange channels and identical oval crust blobs produce a prominent 32px repeating grid and diagonal striping at 1x.",
+       "where": "6x6 lava body mosaic at 1x/3x and central pool area"
+      },
+      {
+       "id": "eye-like-crust-blobs",
+       "problem": "Crust islands are uniform almond/oval shapes with centered bright speckles that read as eyes or pods instead of jagged cooling slag.",
+       "where": "Lava interior and shoreline corner tiles"
+      },
+      {
+       "id": "anim-blink",
+       "problem": "Shoreline crust ovals stay static across all 4 frames while interior cells mostly toggle brightness instead of convecting.",
+       "where": "frames3x-W frames 1 to 4"
+      }
+     ],
+     "minors": [
+      {
+       "id": "corner-crust-clumping",
+       "problem": "Identical dark oval crusts tucked into every bank corner make the 16px shoreline tile structure visible.",
+       "where": "Pool corner tiles"
+      }
+     ]
+    }
+   },
+   "pick": {
+    "blue_black_cave": "K",
+    "brown_cave": "N"
+   },
+   "why": "K and N read immediately as sunken 3/4 volcanic lava pools with varied, jagged cooling crust plates and convincing 4-frame churning motion, whereas M and W suffer from repetitive eye-like oval blobs, strong diagonal 32px striping at 1x, and static shoreline crusts during animation."
+  }
+ },
+ "counted_majors": {
+  "C1/K": [
+   "south-bank-lit: bright spiky yellow fringe on south edges (B, C)"
+  ],
+  "B1/N": [
+   "south-bank-lit (B, C)"
+  ],
+  "C2/M": [
+   "repeat grid of eye-like crust ovals (A,B,C,argon)",
+   "crust-looks-like-eyes (B,argon)"
+  ],
+  "B2/W": [
+   "same as M"
+  ]
+ },
+ "not_counted": [
+  "repeat-diagonal-32 on K/N (C major only; A,B,argon minor/none)"
+ ],
+ "picks": {
+  "opusA": "K/N",
+  "opusB": "K/N",
+  "opusC": "K/N",
+  "argon": "K/N"
+ },
+ "verdict": "fix south bank comb (per-column wobble -> smooth water wobble); C2/B2 crust plates -> torn skin ribbons over lobes"
+}

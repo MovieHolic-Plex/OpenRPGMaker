@@ -1,3 +1,4 @@
+import { cancelPointerRoute, consumePendingTapAction } from "@/player/playScenePointerMove";
 import { showBattleAdmissionError } from "@/player/playSceneOverlays";
 import { transitBlocksCell, tryBoardTransit } from "@/player/playSceneTransit";
 import { heldInputSnapshot, installHeldKeyTracker } from "@/player/heldKeyTracker";
@@ -13,10 +14,13 @@ import { refreshRuntimeEntities } from "./playSceneMapRuntime";
 import { conditionWaitScenes } from "@/player/runtimeConditionWait";
 import { canMoveFootprint, inBounds, isPassable, ledgeDirectionAt } from "@/project/collision";
 import { slideAfterStep, slideRuleAt } from "@/project/slideTiles";
+import { counterReachTarget } from "@/project/counterTiles";
 import { loopStepTarget, wrapLoopPosition } from "@/project/mapLoop";
 // 경로 세팅은 잎 모듈에 있다(가벼운 소비자가 이 파일 전체를 끌어오지 않도록) — 기존
 // 임포트 경로를 깨지 않기 위해 여기서 다시 내보낸다.
 export { startPlayerRoute } from "@/player/playerRouteState";
+import { expandApproach, turnTowardDir } from "@/player/playSceneApproach";
+import { PLAYER_MOVE_TARGET } from "@/project/moveRouteTarget";
 import { footprintBounds, nearestCellInRect } from "@/project/footprint";
 import { playerPassageRect, resolvePlayerBody, type PlayerBody } from "@/project/playerFootprint";
 import { isSpatialPlacementBlocking } from "@/project/spatialOccupancy";
@@ -43,6 +47,8 @@ import type { EventAnimationType, Trigger } from "@/project/types";
 import { nextSessionRandom } from "@/project/session";
 import { isCutsceneInputLocked } from "@/player/cutsceneControl";
 import { recordFollowerPlayerStep } from "@/project/followers";
+import { beginFollowerStep } from "@/player/playSceneFollowers";
+import { updateAmbientFlyers } from "@/player/playSceneAmbientFlyers";
 import { updateFollowerSpriteMotion } from "@/player/playSceneFollowers";
 import { applyWalkCareTicks } from "@/project/monsterCare";
 import { applyGen1FieldPoisonStep, monsterBattlePartyOf } from "@/project/monsterCollection";
@@ -113,9 +119,6 @@ export function updatePlayScene(scene: PlaySceneContext, deltaMs: number): void 
     return;
   }
   updateDetectionEncounters(scene, deltaMs);
-  // 팔로워 스프라이트 보간은 논리 틱과 무관하게 매 렌더 프레임 이어진다 —
-  // 고주사율(틱 0) 프레임에서도 걸음이 끊기지 않는다.
-  updateFollowerSpriteMotion(scene, deltaMs);
   const world = { project: store.getCurrent(), map: scene.map, session: scene.session, positions: scene.eventPositions };
   if (!scene.running && advancePursuitDoors(world, deltaMs)) refreshRuntimeEntities(scene);
   scene.player.setVisible?.(!isPlayerHiding(world));
@@ -129,6 +132,9 @@ export function updatePlayScene(scene: PlaySceneContext, deltaMs: number): void 
   // 틱이 없는 프레임(고주사율)에서는 입력을 읽지 않는다 — 엣지와 탭이 다음 틱 프레임으로 살아서 간다.
   if (ticks > 0) {
     const pushingAtFrameStart = furniturePushFrames(scene) !== undefined;
+    // 사람·물건을 탭해 곁까지 걸어왔으면 이번 프레임에 말을 건다 — 입력을 읽기 전에 확인 엣지를 넣는다
+    // (프레임 끝 resetEdges 가 소비 안 된 엣지를 지우므로 읽은 뒤에 넣으면 사라진다).
+    if (!scene.running && !isCutsceneInputLocked(scene.session)) consumePendingTapAction(scene);
     const input = scene.input_.update();
     const cutsceneInputLocked = isCutsceneInputLocked(scene.session);
     for (let tick = 0; tick < ticks; tick += 1) tickPlayerMovement(scene, input, cutsceneInputLocked);
@@ -148,9 +154,13 @@ export function updatePlayScene(scene: PlaySceneContext, deltaMs: number): void 
     else if (scene.actionCombatState?.skillCharge) updateActionSkillCharge(scene, ticks * LOGIC_TICK_MS, !cutsceneInputLocked && scene.input_.isSkillHeld());
     scene.input_.resetEdges();
   }
+  // 팔로워 스프라이트 보간은 논리 틱과 무관하게 매 렌더 프레임 이어진다 — 고주사율(틱 0) 프레임에서도 걸음이 끊기지 않는다.
+  // 주인공 틱 **뒤에** 그린다: 주인공과 함께 연 걸음은 이번 프레임의 주인공 진행도를 그대로 쓴다(beginFollowerStep).
+  updateFollowerSpriteMotion(scene, deltaMs);
   // Forced event routes must progress while the interpreter awaits completion.
   // The NPC updater keeps unrelated autonomous routes paused during dialogue.
   scene.updateAutonomousNPCs(deltaMs);
+  updateAmbientFlyers(scene, deltaMs);
   if (canUpdateWaitingEvents(scene) || conditionWaitScenes.has(scene)) {
     scene.updateParallelEvents(deltaMs);
   }
@@ -197,6 +207,8 @@ function stepFrames(scene: Pick<PlaySceneContext, "dashing" | "moveDurationMs" |
 function tickPlayerMovement(scene: PlaySceneContext, input: InputState, cutsceneInputLocked: boolean): void {
   if (scene.session.horror?.hiding) return;
   // 체공 중에는 새 이동을 시작하지 않는다 — 공중에서 입력을 받으면 낙하가 취소된다.
+  // 맵 탭으로 걷는 중에 패드·키로 방향을 넣으면 탭 경로를 그만두고 손 조작으로 넘어간다.
+  if (scene.playerRoute?.pointer === true && !cutsceneInputLocked && (input.x !== 0 || input.y !== 0)) cancelPointerRoute(scene);
   if (!scene.moving && !scene.playerHop) {
     // 주인공 강제 이동 루트가 있으면 입력보다 우선해 자동으로 걷는다.
     if (scene.playerRoute) advancePlayerRoute(scene);
@@ -406,6 +418,9 @@ function beginPlayerStep(scene: PlaySceneContext, toX: number, toY: number): voi
   scene.moving = true;
   scene.moveProgress = 0;
   scene.moveElapsedFrames = 0;
+  // 동료는 주인공이 떠나는 칸으로 같은 박자에 들어선다(HGSS). 걸음이 끝난 뒤 기록하던 옛 경로도 그대로 남아 있지만
+  // 같은 칸은 두 번 쌓이지 않는다(recordFollowerPlayerStep).
+  beginFollowerStep(scene, scene.movingFrom, scene.movingTo, stepFrames(scene) * LOGIC_TICK_MS);
 }
 
 function tryStartMove(scene: PlaySceneContext, input: InputState): void {
@@ -564,6 +579,16 @@ export function tryStartFurniturePush(scene: PlaySceneContext, event: RuntimeEve
 
 
 function advancePlayerRoute(scene: PlaySceneContext): void {
+  const facingBefore = scene.facing;
+  advancePlayerRouteCommands(scene);
+  // 제자리 회전(turn)도 동료가 다시 선다 — 장면 중 동료는 주인공이 보는 쪽을 따라 돌아선다(followers §sceneFacing).
+  if (scene.facing !== facingBefore && !scene.moving) {
+    scene.session.playerFacing = scene.facing;
+    syncFollowerSprites(scene);
+  }
+}
+
+function advancePlayerRouteCommands(scene: PlaySceneContext): void {
   // 이동을 시작하지 않는 명령(회전/스위치 등)은 같은 프레임에 연속 소비한다.
   // repeat + 이동 없는 루트의 프레임당 무한 루프를 막기 위해 상한을 둔다.
   let guard = 0;
@@ -606,6 +631,18 @@ function applyPlayerRouteCommand(scene: PlaySceneContext, route: PlayerRouteStat
     case "turn":
       scene.facing = command.dir;
       return false;
+    case "approach": {
+      // 다가가기: 지금 칸에서 목적 칸까지의 보통 걸음 + 대상 쪽 돌기로 이 단계를 갈아 끼운다(playSceneApproach).
+      const expansion = expandApproach(scene, PLAYER_MOVE_TARGET, { x: scene.tileX, y: scene.tileY }, command);
+      route.moves = [...route.moves.slice(0, route.index - 1), ...expansion, ...route.moves.slice(route.index)];
+      route.index -= 1;
+      return false;
+    }
+    case "turnToward": {
+      const dir = turnTowardDir(scene, { x: scene.tileX, y: scene.tileY }, command);
+      if (dir) scene.facing = dir;
+      return false;
+    }
     case "turnRelative":
       scene.facing = rotatedFacing(scene.facing, command.turn);
       return false;
@@ -623,6 +660,11 @@ function applyPlayerRouteCommand(scene: PlaySceneContext, route: PlayerRouteStat
     // 이 명령을 authoring 하게 열어 두고 있으므로 대상 종류로 효력을 없애면 안 된다.
     case "setThrough":
       route.through = command.enabled;
+      return false;
+    case "exitVia":
+    case "enterVia":
+      // 주인공의 문 출입은 장소 이동(transfer)이다 — 문 연출 단계는 NPC 전용.
+      console.warn(`[player] ${command.kind} 는 NPC 이동 경로 전용이다(주인공은 장소 이동으로 문을 지난다) — 건너뛴다`);
       return false;
     // 주인공에게 의미 없거나 MVP 범위 밖(그래픽/투명도/NPC상대 이동 등) → 조용히 건너뛴다.
     default:
@@ -670,7 +712,7 @@ function startPlayerRouteStep(scene: PlaySceneContext, route: PlayerRouteState, 
   // 걸음 완료 부수효과(지형 피해·인카운터·터치)가 의미를 잃는다.
   if (route.through) {
     if (!inBounds(scene.map, nx, ny)) return false;
-    scene.dashing = false;
+    scene.dashing = route.dash === true;
     beginPlayerStep(scene, nx, ny);
     return true;
   }
@@ -683,7 +725,7 @@ function startPlayerRouteStep(scene: PlaySceneContext, route: PlayerRouteState, 
     firePlayerTouchEvent(scene, blockingEvent.event.id, blockingEvent.trigger.kind);
     return false;
   }
-  scene.dashing = false;
+  scene.dashing = route.dash === true;
   beginPlayerStep(scene, nx, ny);
   return true;
 }
@@ -722,7 +764,7 @@ function performAction(
   const delta = directionDelta(scene.facing);
   const tx = scene.tileX + delta.x;
   const ty = scene.tileY + delta.y;
-  const event = findRuntimeEventInScene(scene, tx, ty, "action");
+  const event = findRuntimeEventInScene(scene, tx, ty, "action") ?? findEventAcrossCounter(scene, world.project, tx, ty, delta);
   if (event) {
     if (event.page?.interaction?.kind === 'hiding') return toggleHiding(world, event);
     if (event.page?.interaction?.kind === 'pushable') {
@@ -769,6 +811,26 @@ function performAction(
   const message = underfootFarm.message ?? facingFarm.message;
   if (message) showFarmFeedbackMessage(scene, message);
   return false;
+}
+
+/**
+ * RPG Maker 카운터 속성: 정면 칸이 카운터·탁자(tileset.counterTiles, 없으면 이름표 기본값)면 그 너머 칸의 조사 이벤트를 찾는다.
+ * 카운터 뒤 상점 주인·식탁 건너편 사람에게 말을 거는 길이다. 연속 카운터는 최대 두 칸 넘는다(`@/project/counterTiles`).
+ */
+function findEventAcrossCounter(
+  scene: ActionEventSceneContext,
+  project: ReturnType<typeof store.getCurrent>,
+  tx: number,
+  ty: number,
+  delta: { readonly x: number; readonly y: number },
+): RuntimeEventView | undefined {
+  const tileset = project.tilesets[scene.map.tilesetId];
+  let found: RuntimeEventView | undefined;
+  counterReachTarget(tileset, scene.map, { x: tx, y: ty }, delta, (x, y) => {
+    found = findRuntimeEventInScene(scene, x, y, "action");
+    return found !== undefined;
+  });
+  return found;
 }
 
 function attemptLifeInteraction(scene: ActionEventSceneContext, x: number, y: number): boolean {

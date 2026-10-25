@@ -1,6 +1,8 @@
 import { renderGrowthTreeTab } from "@/editor/panels/growthTree/studio";
+import { t } from "@/i18n";
 import type { DatabaseCollection } from "@/editor/databaseActions";
 import { renderCommonEventsTab } from "@/editor/panels/databaseCommonEventViews";
+import { dialogueTabCount, renderDialogueTab } from "@/editor/panels/databaseDialogueView";
 import { renderCropTab } from "@/editor/panels/databaseCropView";
 import { renderMonsterSpeciesTab } from "@/editor/panels/databaseMonsterSpeciesView";
 import { renderCharactersTab } from "@/editor/panels/databaseCharacterView";
@@ -66,6 +68,7 @@ import { spatialAllSourceDesignCount } from "@/editor/panels/spatialCatalog";
 import { listUnlabeledTileIds } from "@/editor/panels/tilesetMetadataControls";
 import { renderWorldCanonTab } from "@/editor/panels/databaseWorldCanonView";
 import { renderWorldCodexTab } from "@/editor/panels/databaseWorldCodexView";
+import { comboTechCount, renderComboTechTab } from "@/editor/panels/databaseComboTechView";
 import { renderRetroChoreographyTab, resetRetroChoreographyViewState } from "@/editor/panels/databaseRetroChoreographyView";
 import { worldCanonHasContent } from "@/project/world/canon";
 import {} from "@/editor/uiCopy";
@@ -77,6 +80,7 @@ import { clearChildren, el } from "@/util/dom";
 export type DatabaseTab =
   | "promotionTree"
   | "skillTrees"
+  | "comboTechs"
   | "overview"
   | DatabaseCollection
   | "animations"
@@ -84,6 +88,7 @@ export type DatabaseTab =
   | "battleCommands"
   | "battleScreen"
   | "commonEvents"
+  | "dialogue"
   | "characters"
   | "characterGraphics"
   | "characterAppearances"
@@ -129,6 +134,7 @@ const tabs: readonly { readonly id: DatabaseTab; readonly label: string; readonl
   { id: "characterAppearances", label: "캐릭터 외형", testid: "db-tab-character-appearances" },
   { id: "promotionTree", label: "직업 승급 트리", testid: "db-tab-promotion-tree" },
   { id: "skillTrees", label: "스킬 트리", testid: "db-tab-skill-trees" },
+  { id: "comboTechs", label: "연계기", testid: "db-tab-combo-techs" },
   { id: "classes", label: "직업", testid: "db-tab-classes" },
   { id: "skills", label: "스킬", testid: "db-tab-skills" },
   { id: "items", label: "아이템·장비", testid: "db-tab-items" },
@@ -162,6 +168,7 @@ const tabs: readonly { readonly id: DatabaseTab; readonly label: string; readonl
   { id: "spatialRegions", label: "지역", testid: "db-tab-spatial-regions" },
   { id: "spatialWorlds", label: "세계", testid: "db-tab-spatial-worlds" },
   { id: "commonEvents", label: "공용 이벤트", testid: "db-tab-common-events" },
+  { id: "dialogue", label: "대사", testid: "db-tab-dialogue" },
   { id: "system", label: "게임 설정", testid: "db-tab-system" },
   { id: "menuSystem", label: "메뉴·시스템", testid: "db-tab-menu-system" },
   { id: "opening", label: "오프닝", testid: "db-tab-opening" },
@@ -190,7 +197,7 @@ export const TAB_GROUPS: readonly DatabaseTabGroup[] = [
     label: "이야기",
     slug: "lore",
     description: "무슨 이야기를 쓰나요?",
-    tabs: ["worldCanon", "worldCodex", "characters", "commonEvents", "switches", "variables"],
+    tabs: ["worldCanon", "worldCodex", "characters", "commonEvents", "dialogue", "switches", "variables"],
     subheadings: {
       switches: "진행 값 (고급)",
     },
@@ -263,6 +270,7 @@ export const PARTY_SUBVIEW_PARENT: Partial<Record<DatabaseTab, DatabaseTab>> = {
   characterAppearances: "actors",
   promotionTree: "classes",
   skillTrees: "skills",
+  comboTechs: "skills",
   animations: "retroChoreographies",
 };
 
@@ -278,6 +286,7 @@ const PARTY_SUBVIEWS: Partial<Record<DatabaseTab, readonly { readonly tab: Datab
   skills: [
     { tab: "skills", label: "스킬 편집", slug: "skills" },
     { tab: "skillTrees", label: "성장 트리", slug: "skill-trees" },
+    { tab: "comboTechs", label: "연계기", slug: "combo-techs" },
   ],
   retroChoreographies: [
     { tab: "retroChoreographies", label: "도트 연출", slug: "retro-choreographies" },
@@ -465,7 +474,7 @@ function applyEmptyTabFold(header: HTMLElement): void {
     const [count, text] = Array.from(child.children) as HTMLElement[];
     const hasProfileFold = group.tabs.some((id) => folded.has(id) && profileFolded.includes(id));
     if (count) count.textContent = hasProfileFold ? `숨긴 탭 ${folded.size}개 · 모두 보기` : `빈 탭 ${folded.size}개`;
-    if (text) text.textContent = names.join("·");
+    if (text) text.textContent = names.map((name) => t(name)).join("·");
     child.setAttribute("data-count", String(folded.size));
     child.setAttribute("title", hasProfileFold ? `숨긴 탭 모두 보기 — ${names.join(", ")}` : `비어 있는 탭 펼치기 — ${names.join(", ")}`);
     child.setAttribute("aria-label", hasProfileFold ? `${group.label}: 숨긴 탭 ${folded.size}개 모두 보기` : `${group.label}: 빈 탭 ${folded.size}개 펼치기`);
@@ -687,6 +696,8 @@ function databaseTabCount(tab: DatabaseTab): number | null {
       return database.classes.length;
     case "skillTrees":
       return project.growth?.skillTrees.length ?? 0;
+    case "comboTechs":
+      return comboTechCount(project);
     case "actors":
     case "classes":
     case "skills":
@@ -741,6 +752,8 @@ function databaseTabCount(tab: DatabaseTab): number | null {
       return project.variables.filter((record) => record.name.trim().length > 0).length;
     case "commonEvents":
       return project.commonEvents.length;
+    case "dialogue":
+      return dialogueTabCount(project);
     case "factions":
       return 2 + new Set((project.factions?.defs ?? [])
         .map((def) => def.id)
@@ -814,6 +827,7 @@ const LEGACY_TAB_SEARCH: Partial<Record<DatabaseTab, string>> = {
   structureKits: "구조물",
   tilesetSpaces: "공간 종류",
   // 옛 「전투 애니메이션」 레일 칸은 도트 연출의 하위 보기로 들어갔다(2026-10-02) — 그 이름으로 찾아도 연출 탭이 걸린다.
+  comboTechs: "연계 합체기 듀얼 트리플 테크 combo tech 크로노",
   retroChoreographies: "스킬 이펙트 연출 번개 도트 skillChoreographies 전투 애니메이션 animations",
   spatialTiles: "타일셋 AI 참고문서 MD 이미지 통행 지형 tilesets references",
   spatialObjects: "구조물 부품 보관함 오브젝트 structureKits",
@@ -1430,6 +1444,9 @@ function renderActiveTabUnguarded(
         }
       });
       break;
+    case "comboTechs":
+      renderComboTechTab(body, rerender);
+      break;
     case "actors":
     case "classes":
     case "skills":
@@ -1501,6 +1518,9 @@ function renderActiveTabUnguarded(
       break;
     case "commonEvents":
       renderCommonEventsTab(body, rerender);
+      break;
+    case "dialogue":
+      renderDialogueTab(body, container, rerender);
       break;
     case "tilesets":
     case "tilesetAutotile":

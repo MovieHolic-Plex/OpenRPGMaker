@@ -208,3 +208,6 @@ def main():
 
 if __name__ == "__main__":
     main()
+    # 천장 꼬리 뒤(28,544~)의 마을 성벽 칸은 이 스크립트가 시트를 다시 쓰면 사라진다 — 같은 실행에서 다시 굽는다(멱등).
+    if not any(a.startswith(("--gate-export", "--samples")) for a in sys.argv[1:]):
+        subprocess.run([sys.executable, str(HERE.parent / "beodeul-wall" / "bake_wall.py")], check=True)

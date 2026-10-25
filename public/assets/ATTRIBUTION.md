@@ -177,22 +177,6 @@ source expands mechanically to a complete grid, with no shape generation or twee
   이 환경에 ffmpeg 가 없어 **트랜스코딩하지 않고 원본 바이트를 그대로 커밋했다** — BGM 의 wav
   루프 마스터와 같은 판단이다(sha256 재검증이 가능한 쪽을 택함).
 
-**제외한 61개와 그 근거** (되돌릴 수 있게 이유를 남긴다):
-
-| 개수 | 대상 | 근거 |
-| --- | --- | --- |
-| 38 | `kenney_ui-audio` 의 `switch1`~`switch38` | 이름에 의미 정보가 0이고 `kenney-interface` 의 semantic 세트와 기능이 겹친다. 라벨을 붙일 근거가 없어 보류 — 피커를 "UI 스위치 01~38" 로 도배하면 검색성이 오히려 나빠진다 |
-| 14 | `100-CC0-SFX` 의 `other_*`(7) `weird_*`(5) `noise_*`(2) | 의미 불명 — 라벨 근거 없음 |
-| 2 | `toilet_01` `toilet_02` | RPG 에디터 기본 세트에 부적절 |
-| 2 | `microwave_door_open/close` | 현대 가전 — RPG 무관 |
-| 3 | `Preview.ogg` (ui-audio, music-jingles, rpg-audio) | 팩 전체를 이어붙인 13~26초 프리뷰. 개별 SE 가 아니다 |
-| 2 | `kenney_impact-sounds`의 `footstep_carpet_002`, `004` | 각각 `001`, `003`과 sha256이 같은 완전 중복. 피커에 같은 소리를 두 번 노출하지 않는다 |
-
-- 라벨링 근거의 한계: 라벨은 **원본 파일명 의미 + 원본 팩의 폴더 분류 + 측정값(길이/피크/RMS)**
-  으로만 붙였다. AI 는 소리를 들을 수 없으므로 음색 형용사를 지어내지 않았다. `kenney-jingles` 는
-  파일명이 `jingles_NES00` 처럼 번호뿐이어서 폴더가 주는 음색(8비트/히트/피치카토/색소폰/스틸드럼)
-  까지만 라벨에 반영했다 — 어느 징글이 승리·실패·레벨업인지는 감독이 듣고 배정해야 한다.
-  청취·수정용 페이지를 함께 생성한다(`dist/se-staging/audition.html`, 635개 전곡 재생).
 - EasyRPG RTP SE 96개는 **유지한다.** 피커에서 CC0 카탈로그가 앞에 오고 RTP 가 뒤에 온다
   (BGM 과 같은 서열) — 기존 프로젝트의 `easyrpg-sound-*` 참조가 깨지지 않는다.
 
@@ -261,7 +245,7 @@ earlier forest-village atlas, which itself was assembled from EasyRPG RTP `ChipS
 Sheets that contain EasyRPG RTP pixels (paths under `public/assets/`; RTP cells found by the check on 2026-10-22):
 
 <!-- rtp-derived-sheets:begin -->
-- `beodeul-city/beodeul-city-chipset.png` (Beodeul v6 city): 784 cells, retro_Exterior (walls, roofs, planks, road, plaza, dirt). The bd-house, bd-block and district kits built on them carry the same credit.
+- `beodeul-city/beodeul-city-chipset.png` (Beodeul v6 city): 779 cells, retro_Exterior (walls, roofs, planks, road, plaza, dirt). The bd-house, bd-block and district kits built on them carry the same credit.
 - `beodeul-architecture/chipset.png`: 94 cells, retro_Exterior (brick walls, blue roof tiles)
 - `beodeul-forms/chipset.png`: 86 cells, retro_Exterior (brick, orange roof tiles, planks)
 - `beodeul-reviewed/chipset.png`: 54 cells, retro_Exterior (brick, blue and orange roof tiles)
@@ -271,24 +255,40 @@ Sheets that contain EasyRPG RTP pixels (paths under `public/assets/`; RTP cells 
 
 Learning images and reference renders made from these sheets (`beodeul-*/` PNGs, `tiledata/beodeul-*`) show the same
 pixels and carry the same credit. The raw source copy `scripts/content/lib/city_v6/assets/jungle-chipset-v6.png` is kept
-because the city pipeline reads it. Its RTP cells carry this credit; for its other cells, see the next section.
+because the city pipeline reads it. Its RTP cells carry this credit; its other cells are covered by the next section.
 
-## Beodeul trees and forest ground: earlier image-generation edits, being replaced (2026-10-22)
+## Beodeul trees and forest ground: redrawn by hand (2026-10-22)
 
-The broadleaf trees, canopy and some ground cells in the Beodeul sheets are **not** EasyRPG RTP material. They come
-from the earlier forest-village atlas's vegetation, which the 2026-09-18 entry described as "user-reference-derived forest
-edits made using god-tibo-imagen (vegetation, canopy, trunks and end caps)". The reference image is not recorded, so
-these pixels have no clear licence. They are being replaced by new hand-pixel trees and ground drawn in this
-repository. Until that replacement is merged, the following are **derived from earlier image-generation edits, being replaced**:
+The broadleaf trees, the forest canopy and some ground cells in the Beodeul sheets used to come from the earlier
+forest-village atlas's vegetation, which the 2026-09-18 entry described as "user-reference-derived forest edits made
+using god-tibo-imagen". The reference image was never recorded, so those pixels had no clear licence. On 2026-10-22
+they were replaced by new hand-pixel art drawn in code in this repository (no image-generation service, no third-party
+image):
 
-- the five broadleaf trees and the `bd-tree-*` kits, `bd-mpart-bush-*`, and the woodland and grove stamps in `beodeul-city/beodeul-city-chipset.png`
-- `beodeul-ground/chipset.png` (tree-neck, root and canopy cells) and `beodeul-warm-trees/chipset.png`
-- the broadleaf canopy outlines in `beodeul-nature/chipset.png`
-- jungle ground cells 7, 129, 160, 302, 363, 365, 393, 394 and 423 where they reach the Beodeul sheets, including
-  `city_v6/assets/lawn16.png` and `harness-data/charset-actor/lawn16.png`
-- the leaf texture sampled by `scripts/content/lib/joseon/trees.py` for the Joseon tree crowns
-- `scripts/content/beodeul-foliage/source-tiles.png`, the pre-repaint originals of the foliage cells
-
+- Five broadleaf designs (two oaks, three bushes) and five ground cells: `scripts/content/beodeul-redraw/`
+  (`draw_trees_a.py`, `draw_trees_b.py`, `draw_ground_c.py`, output in `art/`). The ground script samples the credited
+  EasyRPG RTP grass and dirt cells of the Beodeul city sheet (CC BY 4.0, previous section).
+- Every old tree in the Beodeul sheets was found by exact pixel match and replaced in place by the matching new design
+  at the same position, tint and mirror, so saved maps keep their cell numbers: the `bd-tree-*`, `bd-mpart-bush-*`,
+  woodland and grove kits in `beodeul-city/beodeul-city-chipset.png`, the tree cells of `beodeul-ground/chipset.png`,
+  `scripts/content/beodeul-foliage/source-tiles.png`, and the learning images and reference renders made from them.
+- The tree studies (`tiledata/beodeul-ground/tree-studies/`, `tree-palette-studies/`) are regenerated by their own
+  scripts from the new city kits. The four shared woodland groups are rebuilt from the new tree bodies at the catalog
+  anchors (`scripts/content/beodeul-redraw/rebuild_woodland.py`), and `beodeul-warm-trees/chipset.png` is rebuilt from
+  them by `scripts/content/build-beodeul-warm-trees.py` with the warm lookup in
+  `tiledata/beodeul-ground/tree-palette-studies/warm-redrawn-lookup.json` (the user-approved warm look, measured on the
+  earlier lookup and applied to the new colours).
+- The cast shadows of the tree and bush kits in `beodeul-nature/chipset.png` are redrawn from the new silhouettes by
+  `scripts/content/beodeul-redraw/reshadow_trees.py` (same cells).
+- The broadleaf forest canopy in `beodeul-nature/chipset.png` is rebaked from the new bush kits by
+  `scripts/content/append-beodeul-forest-canopy.py` (in place, same cell numbers).
+- Jungle ground cells 7 and 302 became our own lawn tile (`city_v6/assets/lawn16.png`,
+  `harness-data/charset-actor/lawn16.png`); 129 and 160 became the Beodeul cobble cell 544; 363, 365, 393, 394 and
+  423 became the new hand-pixel ground. The other old cells of `city_v6/assets/jungle-chipset-v6.png` that were not
+  RTP were cleared.
+- The Joseon tree crowns now use hand-authored leaf tones (`scripts/content/lib/joseon/leaf_tones.json`) instead of a
+  texture sampled from the old jungle sheet.
+- The world-map sheets are a separate, user-approved exception and were not changed.
 
 ## Opening mood stills (2026-09-22)
 
@@ -321,7 +321,7 @@ other bundled assets documented above.
 `scripts/content/hand-interior/build_tileset.py` from the hand-pixel interior kit in `tiledata/hand-interior/v5`
 (pixels drawn in code in this repository, 2026-09-28; no third-party image). Some floor/wall surface textures in that
 kit sample tile interiors of `atlas-biomes/jungle-chipset.png`. Correction (2026-10-22): that sheet was not purely our own; it repaints
-EasyRPG RTP retro_Exterior/retro_World cells and earlier image-generation forest edits. The RTP attribution check finds no exact
+EasyRPG RTP retro_Exterior/retro_World cells and earlier image-generation forest edits (the Beodeul copies were redrawn; see «Beodeul trees and forest ground»). The RTP attribution check finds no exact
 RTP cells in `atlas-interior/interior-chipset.png`. Its conventions were
 measured from the EasyRPG RTP (CC BY 4.0) as a visual reference only; no RTP pixels are pasted.
 Reference renders in `hand-interior-references/` are renders of the bundled example maps from this sheet (nearest-neighbour only).
@@ -398,7 +398,7 @@ and a separately drawn fallen body across the same nine-cell battle contract.
 - Author: Codex, explicit pixel coordinates, 2026-10-04; no image-generation service.
 - Original house/tree references: this project's Beodeul city hand-pixel artwork.
 - Source: `scripts/content/build-beodeul-ground.py`, `tiledata/beodeul-ground/`.
-- Licensing: see «EasyRPG RTP material in the Beodeul sheets and the vehicle sheet» and «Beodeul trees and forest ground» (2026-10-22): native Beodeul cells are not all project-owned. The tree-neck and root cells derive from the trees being replaced.
+- Licensing: see «EasyRPG RTP material in the Beodeul sheets and the vehicle sheet» and «Beodeul trees and forest ground» (2026-10-22). The tree cells were redrawn by hand on 2026-10-22, and the neck and root cells of the ground sheet now carry the new trunk pixels. `tree-neck.png` and `roots.png` stay as drawn in code by `build-beodeul-ground.py`.
 - Atlas and normal/error images are learning references, not separate game sprites.
 - Later correction: `tree-neck.png` connects the crown and roots; appended source cell 41, preserving cells 0–40. The pack now has 42 painted cells and 16 recipes in the same 48 slots.
 - Further foundation extension preserves all 48 original slots, including padding, and appends five native-house/church foundation recipes. Current sheet: 112 slots, 21 recipes.
@@ -423,16 +423,16 @@ and a separately drawn fallen body across the same nine-cell battle contract.
 
 버들항 공동마당 배치 학습 그림(courtyard-native.png, 2026-10-04)은 공용 원본 민가 5채·교회·나무·지면을 실제 도구로 조립한 표본이다. 새로운 외부 그림 픽셀은 포함하지 않는다. CrossCode 공식 마을 설계 글과 The 5 Ingredients of Game Town Design의 공간 구성 원리를 참고했다.
 
-버들항 식생 깊이 공용 조각(woodland.py, 2026-10-04)은 프로젝트 원본 나무 수관/목/뿌리를 지면 접점 순서로 합성한 것이다. 풀 군락과 연결 울타리/모서리는 코드 손 도트로 추가했다. stone 집 박공은 원본 정면 돌 질감으로 통일했다. 이번 합성에 새 외부 그림 픽셀이나 생성 이미지 서비스는 쓰지 않았다. 다만 원본 나무 자체가 예전 생성 이미지 편집에서 나온 것이라 교체 중이다(2026-10-22 「Beodeul trees and forest ground」 절).
+버들항 식생 깊이 공용 조각(woodland.py, 2026-10-04)은 프로젝트 원본 나무 수관/목/뿌리를 지면 접점 순서로 합성한 것이다. 풀 군락과 연결 울타리/모서리는 코드 손 도트로 추가했다. stone 집 박공은 원본 정면 돌 질감으로 통일했다. 이번 합성에 새 외부 그림 픽셀이나 생성 이미지 서비스는 쓰지 않았다. 원본 나무는 예전 생성 이미지 편집에서 나온 것이라 2026-10-22 에 손 도트로 다시 그려 같은 자리에 바꿨다(「Beodeul trees and forest ground」 절).
 
 Beodeul stone gable correction (2026-10-04): project-authored triangular masonry wall and centred round window from native Beodeul facade pixels; generated by the beodeul-architecture harness. Native roof pixels restored. No additional third-party artwork.
 
 Beodeul river-town learning composition (2026-10-04): 41 native building kits, three native bridges, common ground/forest artwork, assembled by scripts/content/lib/beodeul-river-town.mts. The user-supplied town diagram informed road hierarchy and district relationships only; none of its pixels are included. Rendered learning images follow the existing Beodeul artwork terms.
 
-Beodeul palette standard (2026-10-05): user-selected warm yellow-green from native Beodeul tree RGB variants, with native grass/house/road material roles. Reference comparison and the deliberately recoloured-ground error use native Beodeul source pixels (credited RTP cells and the trees being replaced; see 2026-10-22 sections). scripts/content/prepare-beodeul-palette-standard.mjs; existing Beodeul artwork terms apply.
+Beodeul palette standard (2026-10-05): user-selected warm yellow-green from native Beodeul tree RGB variants, with native grass/house/road material roles. Reference comparison and the deliberately recoloured-ground error use native Beodeul source pixels (credited RTP cells and the redrawn trees; see 2026-10-22 sections). scripts/content/prepare-beodeul-palette-standard.mjs; existing Beodeul artwork terms apply.
 # Beodeul warm tree palette (2026-10-05)
 
-`beodeul-warm-trees/chipset.png` is derived from the native Beodeul trees and shared woodland compositions (derived from earlier image-generation edits, being replaced; see «Beodeul trees and forest ground», 2026-10-22). The user selected the `warm` RGB lookup beside a native house. Pixel positions, alpha, bark, roots and existing ground shadows are preserved. No further external artwork was copied. Reproduction: `scripts/content/build-beodeul-warm-trees.py`; lookup: `tiledata/beodeul-ground/tree-palette-studies/palettes.json`; whole-map learning source: `tiledata/beodeul-ground/VILLAGE50.md`.
+`beodeul-warm-trees/chipset.png` is a recolour of the Beodeul tree bodies and shared woodland compositions, which were redrawn by hand on 2026-10-22 (see «Beodeul trees and forest ground»). The user chose the `warm` look beside a native house. For the new colours that look is kept by `warm-redrawn-lookup.json`. Pixel positions and alpha follow the source groups, the ground shadows are unchanged, and existing cell numbers are kept. No external artwork was copied. Reproduction: `scripts/content/build-beodeul-warm-trees.py`. Lookup: `tiledata/beodeul-ground/tree-palette-studies/palettes.json` (`warm`). Whole-map learning source: `tiledata/beodeul-ground/VILLAGE50.md`.
 
 
 Beodeul structural families (2026-10-05): `beodeul-forms/chipset.png` and six families assemble native Beodeul roof/wall/dormer/porch pixels (including credited EasyRPG RTP retro_Exterior cells) at 1:1 scale, with project-authored local panes, contact foundations and ground shadows. Existing Beodeul attribution terms apply. Source: beodeul-architecture harness `node/forms.py`, seed.structuralFamilies; catalog and reference source: `tiledata/beodeul-forms/`. CrossCode, Stardew Valley and Sea of Stars screenshots informed architecture observations only; no external game artwork is included in these assets.
@@ -508,3 +508,20 @@ Head and body donor (script chips) or base character (Argon chips) per chip are 
 - Sheets 11-13 (22 chips, added 2026-10-17 at the user's decision after review of the char-gen gallery 4): **new sheets are combinations of existing Scarloxy characters' parts with colour shifts only** — the head rows (hair, hat, face) of one Scarloxy People1/People2 character are transplanted onto the body rows (clothes, arms, legs) of another, frame by frame, and hair/hat, top, bottom and shoe colours (and the eye colour, which follows the hair hue) are hue-shifted inside part masks. No model call, no newly drawn pixel; head donor and body donor per chip are recorded in `harness-data/charset-actor/scarloxy-people/gallery4.json` (`head`/`body`), the original recipes in `gallery4-recipes.json`, and the pixel hash of every installed chip in the roster (`source.slotRgbaSha256`). They passed a blind three-reviewer majority vote plus a set-level duplicate check before installation.
 - No image-generation output and no pixel of any other game is used.
 License: Scarloxy parts keep CC BY 4.0; the derived edits follow OPRN default-asset terms (free in games, no standalone redistribution; `openwiki/licensing.md`).
+
+## Workshop character card sample (2026-10-22)
+
+`workshop/char-gen-sample.png` (248×116, shown at 1× on the editor's 공방 「캐릭터」 card) is a composite of real char-gen output:
+- Left, the base bust of the char-gen demo character "Harbor herbalist", reduced by an exact 1/7 block average (portrait drawn by an image model through the char-gen portrait step, then judged and picked; char-gen `docs/img/set-demo.png`).
+- Right, front-facing walking frames (at 2×) of three char-gen chips (the herbalist, a travelling merchant, a harbor sailor). Each chip is a char-gen `edit.json` (written by Claude Opus) applied to a **Scarloxy People1** base chip (`scarloxy/scarloxy-charset-people1.png`) inside part masks; face, skin, hands and walk are pixel-locked to the base.
+- Ground: a crop of `beodeul-ground/courtyard-native.png` at 2× (OPRN hand-pixel 버들항 courtyard).
+- Upstream for the chip bodies: Scarloxy (Ismael Garcia), "Monster Taming Game Essentials" (MyPixelWorld Special Packs #01), https://scarloxy.itch.io/mpwsp01 — Creative Commons Attribution 4.0 International; changes were made (clothes, hair and hats recoloured/repainted).
+License: Scarloxy parts keep CC BY 4.0; the rest follows OPRN default-asset terms (`openwiki/licensing.md`). The image-model portrait is AI-generated.
+
+## Workshop generator stages (2026-10-22)
+
+The editor's 공방 cards and generator windows show these as pixel "stages" (integer scaled):
+- `workshop/char-gen-stage.png` (248×116) — `workshop/char-gen-sample.png` with the three chips removed (same ground and bust, same sources and license as above).
+- `workshop/char-gen-walk.png` (192×192) — the same three char-gen chips' front walking frames (pattern 1·0·1·2, 2×), one row per chip; the card plays them in place. Same sources and license as the character card sample above (Scarloxy parts CC BY 4.0, changes made).
+- `workshop/object-gen-stage.png` (124×62) — the three object-gen items of `workshop/object-gen-sample.png` (object-gen `docs/images/hero.png`, same organisation's art) with their card backing removed, standing on a wall and floor built from OPRN hand-pixel interior v5 tiles (`atlas-interior/interior-chipset.png`). OPRN default-asset terms (`openwiki/licensing.md`).
+No image-generation output and no third-party art other than the Scarloxy chip bases noted above.

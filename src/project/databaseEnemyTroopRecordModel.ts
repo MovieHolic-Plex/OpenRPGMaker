@@ -11,6 +11,7 @@ import type {
   EnemyCritical,
   EnemyOptions,
   EnemyReaction,
+  DamageTypeRates,
   EnemyRecord,
   EnemyRewards,
   EnemyStats,
@@ -21,6 +22,26 @@ import type {
 } from "@/project/types";
 import { normalizeEnemyCollapseEffect } from "@/project/enemyCollapse";
 import { isTeamSwapCost } from "@/project/battleTeamModel";
+
+/** 피해 계열 받는 피해 %(0~1000 정수) · 속성 예외. 모두 비면 생략 — 옛 JSON 바이트를 바꾸지 않는다. 상태 runtimeEffects 도 같은 규칙. */
+export function normalizeDamageTypeRates(value: unknown): DamageTypeRates | undefined {
+  if (!value || typeof value !== "object") return undefined;
+  const clamp = (raw: number) => Math.round(Math.max(0, Math.min(1000, raw)));
+  const out: DamageTypeRates = {};
+  for (const key of ["physical", "magic"] as const) {
+    const raw = (value as Record<string, unknown>)[key];
+    if (typeof raw === "number" && Number.isFinite(raw)) out[key] = clamp(raw);
+  }
+  const elements = (value as Record<string, unknown>).elements;
+  if (elements && typeof elements === "object" && !Array.isArray(elements)) {
+    const kept: Record<string, number> = {};
+    for (const [id, raw] of Object.entries(elements as Record<string, unknown>)) {
+      if (id.trim() && typeof raw === "number" && Number.isFinite(raw)) kept[id.trim()] = clamp(raw);
+    }
+    if (Object.keys(kept).length > 0) out.elements = kept;
+  }
+  return Object.keys(out).length > 0 ? out : undefined;
+}
 
 export function normalizeEnemyRecord(
   record: Partial<Omit<EnemyRecord, "actions">> & { actions?: readonly Partial<EnemyActionPattern>[] } & Pick<EnemyRecord, "id" | "name">,
@@ -39,6 +60,12 @@ export function normalizeEnemyRecord(
     level: typeof record.level === "number" && Number.isFinite(record.level) ? clampInteger(record.level, 1, 99) : undefined,
     monsterResourceId: cleanOptionalId(record.monsterResourceId),
     ...(battleScalePercent === 100 ? {} : { battleScalePercent }),
+    ...(typeof record.lungeSpeedPercent === "number" && Number.isFinite(record.lungeSpeedPercent) && Math.round(record.lungeSpeedPercent) !== 100
+      ? { lungeSpeedPercent: Math.round(Math.max(25, Math.min(300, record.lungeSpeedPercent))) } : {}),
+    ...(() => {
+      const rates = normalizeDamageTypeRates(record.damageTypeRates);
+      return rates ? { damageTypeRates: rates } : {};
+    })(),
     graphicHue: clampInteger(record.graphicHue ?? 0, 0, 360),
     transparent: record.transparent ?? false,
     flying: record.flying ?? false,
@@ -67,6 +94,7 @@ export function normalizeEnemyRecord(
       return stealItems.length > 0 ? { stealItems } : {};
     })(),
     ...(normalizeEnemyCollapseEffect(record.collapseEffect) ? { collapseEffect: normalizeEnemyCollapseEffect(record.collapseEffect) } : {}),
+    ...(record.hideHp === true ? { hideHp: true } : {}),
   };
 }
 

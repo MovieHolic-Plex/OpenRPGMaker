@@ -57,6 +57,8 @@ import {
   applyMapBackgroundMotion,
   MAP_BACKGROUND_MOTIONS,
   MAP_BACKGROUND_MOTION_LABELS,
+  mapBackgroundGameViewport,
+  MAP_VIEW_SCALE_RANGE,
   type MapBackgroundMotion,
 } from "@/project/mapBackground";
 import { craftpixDefaultLayers, OGA_CRAFTPIX_BACKDROP_SETS } from "@/assets/ogaCraftpixBackgrounds";
@@ -1876,6 +1878,30 @@ const BACKGROUND_PRESET_GUIDE = [
   ...OGA_CRAFTPIX_BACKDROP_SETS.map((set) => `${set.id}: ${set.summary}`),
 ].join(" / ");
 
+const MAP_VIEW_SCHEMA: JsonSchema = {
+  type: "object",
+  description: "다른 맵을 줄여 그린 배경(옥상·전망대·언덕에서 내려다본 아래 동네). 그 맵의 타일 층을 scale 배로 줄이고 채도를 빼고 안개를 섞어 멀리 아래로 보이게 한다. 이벤트·사람은 안 그린다. imageId 대신 쓴다. 이 맵의 바닥·난간은 원 크기 그대로라서, 내려다볼 빈 자리는 clearForBackground 로 비워야 보인다.",
+  properties: {
+    mapId: { type: "string", description: "줄여 그릴 맵 id(이 맵 자신은 안 된다)." },
+    scale: { type: "number", minimum: MAP_VIEW_SCALE_RANGE.min, maximum: MAP_VIEW_SCALE_RANGE.max, description: `줄임 배율(기본 ${MAP_VIEW_SCALE_RANGE.default}). 높은 곳일수록 작게: 3~4층 옥상 0.45, 고층 옥상 0.3, 산 위 전망대 0.2.` },
+    haze: { type: "number", minimum: 0, maximum: 1, description: "안개 섞기 0~1(기본 0.25). 멀수록 크게." },
+    desaturate: { type: "number", minimum: 0, maximum: 1, description: "채도 빼기 0~1(기본 0.3)." },
+    hazeColor: { type: "string", description: "안개 색 #rrggbb(기본 #c9d6e3, 저녁엔 #e8b7a0, 밤엔 #1c2433)." },
+    focusX: { type: "number", description: "화면 가운데에 올 그 맵의 칸 x(기본 그린 범위 가운데)." },
+    focusY: { type: "number", description: "화면 가운데에 올 그 맵의 칸 y(기본 그린 범위 가운데). 난간 너머로 띠를 내리려면 범위 아래 끝보다 큰 값." },
+    region: {
+      type: "object",
+      description: "그 맵에서 그릴 칸 범위(기본 전체). 옥상에서는 길·건너편 건물 줄만 띠로 잘라 위쪽 하늘이 남게 한다.",
+      properties: { x: { type: "integer", minimum: 0 }, y: { type: "integer", minimum: 0 }, width: { type: "integer", minimum: 1 }, height: { type: "integer", minimum: 1 } },
+      required: ["x", "y", "width", "height"],
+      additionalProperties: false,
+    },
+    feather: { type: "number", minimum: 0, maximum: 0.5, description: "위·아래 가장자리를 투명으로 녹이는 폭(그림 높이 대비, 기본 0). 반복하지 않는 띠를 뒤 층에 섞을 때 0.15~0.3." },
+  },
+  required: ["mapId"],
+  additionalProperties: false,
+};
+
 const backgroundSchema: JsonSchema = {
   type: "object",
   description:
@@ -1896,6 +1922,12 @@ const backgroundSchema: JsonSchema = {
       enum: [...MAP_BACKGROUND_MOTIONS],
       description: `움직임 프리셋(생략하면 세트 권장값). ${MAP_BACKGROUND_MOTIONS.map((motion) => `${motion}=${MAP_BACKGROUND_MOTION_LABELS[motion].name}(${MAP_BACKGROUND_MOTION_LABELS[motion].hint})`).join(", ")}`,
     },
+    speed: {
+      type: "number",
+      minimum: 0.1,
+      maximum: 4,
+      description: "흐름 속도 배율 — 모든 층의 scrollX·scrollY 에 곱한다(1=세트·프리셋 기본). 「느리게」 0.4~0.6, 「아주 느리게」 0.2~0.3, 「빠르게」 1.5~2. 층마다 빠르기 차이(먼 층이 느림)는 그대로 남는다.",
+    },
     // CraftPix 세트가 하나라도 남아 있을 때만 보인다(2026-10-07 정리 뒤 0개 — 빈 선택지는 조수를 헷갈리게 한다).
     ...(OGA_CRAFTPIX_BACKDROP_SETS.length > 0 ? {
       cloudDrift: {
@@ -1905,7 +1937,8 @@ const backgroundSchema: JsonSchema = {
         description: "CraftPix 세트 전용: 구름·새 층만 이 속도(px/프레임)로 흐른다.",
       },
     } : {}),
-    imageId: { type: "string", description: "직접 고른 첫 장(맨 아래) 그림 — list_resources(kind:\"backdrop\") 의 id 나 올린 그림 id. preset 을 주면 생략." },
+    imageId: { type: "string", description: "직접 고른 첫 장(맨 아래) 그림 — list_resources(kind:\"backdrop\") 의 id 나 올린 그림 id. preset 이나 fromMap 을 주면 생략." },
+    fromMap: MAP_VIEW_SCHEMA,
     // 상한은 편집기 입력·로드 정규화와 같은 값이어야 한다 — 툴로만 들어가는 값이 생기면
     // 저장한 뒤 다시 열 때 조용히 잘린다.
     scrollX: { type: "number", minimum: -MAP_BACKGROUND_SCROLL_LIMIT, maximum: MAP_BACKGROUND_SCROLL_LIMIT },
@@ -1929,7 +1962,8 @@ const backgroundSchema: JsonSchema = {
       items: {
         type: "object",
         properties: {
-          imageId: { type: "string" },
+          imageId: { type: "string", description: "그림 id. fromMap 을 주면 생략." },
+          fromMap: MAP_VIEW_SCHEMA,
           scrollX: { type: "number", minimum: -MAP_BACKGROUND_SCROLL_LIMIT, maximum: MAP_BACKGROUND_SCROLL_LIMIT },
           scrollY: { type: "number", minimum: -MAP_BACKGROUND_SCROLL_LIMIT, maximum: MAP_BACKGROUND_SCROLL_LIMIT },
           loopX: { type: "boolean" },
@@ -1937,7 +1971,6 @@ const backgroundSchema: JsonSchema = {
           fit: BACKGROUND_FIT_SCHEMA,
           cameraFollow: { type: "number", minimum: 0, maximum: MAP_BACKGROUND_CAMERA_FOLLOW_LIMIT },
         },
-        required: ["imageId"],
         additionalProperties: false,
       },
     },
@@ -1999,7 +2032,7 @@ const sunlightSchema: JsonSchema = {
  * 개별 값(scrollX·fit·showInEmptyCells 등)은 첫 장에 덮어쓴다. 없으면 예전처럼 그대로 정규화한다.
  */
 function resolveBackgroundArgs(raw: Record<string, unknown>, mapId: string): MapBackground {
-  const { layerSet, preset, motion, cloudDrift, ...rest } = raw;
+  const { layerSet, preset, motion, speed, cloudDrift, ...rest } = raw;
   const setId = preset ?? layerSet;
   let candidate: Record<string, unknown> = rest;
   if (setId !== undefined) {
@@ -2025,15 +2058,31 @@ function resolveBackgroundArgs(raw: Record<string, unknown>, mapId: string): Map
       ? { layers: candidate.layers.map((layer) => layer && typeof layer === "object" ? { ...layer, imageId: stripKind((layer as { imageId?: unknown }).imageId) } : layer) }
       : {}),
   };
-  if (typeof candidate.imageId !== "string") {
-    throw new ToolError("background 에는 preset 또는 imageId 가 필요합니다.", { code: "invalid-args", mapId });
+  if (typeof candidate.imageId !== "string" && !(candidate.fromMap && typeof candidate.fromMap === "object")) {
+    throw new ToolError("background 에는 preset, imageId 또는 fromMap 이 필요합니다.", { code: "invalid-args", mapId });
   }
   // 창 타일이 있는 칩셋이 남아 있지 않다 — 저자가 일부러 false 를 주지 않으면 빈 칸에도 보이게 한다.
   if (candidate.showInEmptyCells === undefined) candidate = { ...candidate, showInEmptyCells: true };
   let normalized = normalizeMapBackground(candidate);
   if (!normalized) throw new ToolError("background 는 { preset } 또는 { imageId, scrollX?, layers? … } 여야 합니다.", { code: "invalid-args", mapId });
-  if (typeof motion === "string" && (MAP_BACKGROUND_MOTIONS as readonly string[]).includes(motion)) {
-    normalized = applyMapBackgroundMotion(normalized, motion as MapBackgroundMotion);
+  const hasMotion = typeof motion === "string" && (MAP_BACKGROUND_MOTIONS as readonly string[]).includes(motion);
+  if (hasMotion) normalized = applyMapBackgroundMotion(normalized, motion as MapBackgroundMotion);
+  if (typeof speed === "number" && Number.isFinite(speed) && speed > 0 && speed !== 1) {
+    const scale = (value: number | undefined): number | undefined => value === undefined || value === 0 ? value
+      : Math.max(-MAP_BACKGROUND_SCROLL_LIMIT, Math.min(MAP_BACKGROUND_SCROLL_LIMIT, Math.round(value * speed * 100) / 100));
+    const scaled = <T extends { scrollX?: number; scrollY?: number }>(layer: T): T => ({
+      ...layer,
+      ...(layer.scrollX !== undefined ? { scrollX: scale(layer.scrollX) } : {}),
+      ...(layer.scrollY !== undefined ? { scrollY: scale(layer.scrollY) } : {}),
+    });
+    normalized = { ...scaled(normalized), ...(normalized.layers ? { layers: normalized.layers.map(scaled) } : {}) };
+  }
+  if (hasMotion) {
+    // 움직임 프리셋(과 speed)이 층 속도를 다시 쓴다 — 같이 준 첫 장의 scrollX·scrollY·cameraFollow 는 그 위에 그대로 다시 얹는다.
+    // 2026-10-22 조수 시험: 「느리게」 에 scrollX:0.2 + motion:flowX 를 보냈는데 프리셋이 0.25/0.5/0.75 로 덮어 더 빨라졌고, 조수는 「0.2 로 느리게」 라고 보고했다.
+    for (const key of ["scrollX", "scrollY", "cameraFollow"] as const) {
+      if (typeof rest[key] === "number") normalized = { ...normalized, [key]: rest[key] as number };
+    }
   }
   return normalized;
 }
@@ -2184,16 +2233,24 @@ const setMapProperties: ToolDefinition = {
       changed.push("배경=기본");
     } else if (args.background && typeof args.background === "object" && !Array.isArray(args.background)) {
       map.background = resolveBackgroundArgs(args.background as Record<string, unknown>, map.id);
+      for (const layer of [map.background, ...(map.background.layers ?? [])]) {
+        const view = layer.fromMap;
+        if (!view) continue;
+        if (view.mapId === map.id) throw new ToolError("fromMap 에 이 맵 자신은 넣을 수 없습니다 — 내려다볼 아래 맵 id 를 주세요.", { code: "invalid-args", mapId: map.id });
+        if (!draft.maps[view.mapId]) throw new ToolError(`fromMap 의 맵이 없습니다: ${view.mapId} — list_maps 로 id 를 확인하세요.`, { code: "invalid-args", mapId: map.id });
+        changed.push(`배경=${draft.maps[view.mapId]!.name ?? view.mapId} 를 ${Math.round((view.scale ?? MAP_VIEW_SCALE_RANGE.default) * 100)}% 로 줄여 내려다봄`);
+      }
       const layerCount = map.background.layers?.length ?? 0;
       const setId = (args.background as { layerSet?: unknown; preset?: unknown }).preset ?? (args.background as { layerSet?: unknown }).layerSet;
       // 조수가 결과만 보고 시차가 걸렸는지 알 수 있게 층별 깊이·흐름·맞춤을 요약한다(2026-09-27 조수 시험: 「레이어 6장」 만으로는 확인 불가).
       const stack = [map.background, ...(map.background.layers ?? [])];
       const depths = stack.map((layer) => Math.round((layer.cameraFollow ?? 0) * 100));
-      const drifting = stack.filter((layer) => (layer.scrollX ?? 0) !== 0 || (layer.scrollY ?? 0) !== 0).length;
+      const flows = stack.map((layer) => Math.hypot(layer.scrollX ?? 0, layer.scrollY ?? 0));
+      const drifting = flows.filter((flow) => flow !== 0).length;
       const covered = stack.filter((layer) => layer.fit === "cover").length;
       changed.push(
         `배경=${typeof setId === "string" ? `세트 ${setId}` : map.background.imageId}${layerCount > 0 ? ` + 레이어 ${layerCount}장` : ""}`
-        + ` (층별 깊이 ${depths.join("/")}%${drifting > 0 ? `, 흐르는 층 ${drifting}` : ""}${covered > 0 ? `, cover ${covered}/${stack.length}` : ""}`
+        + ` (층별 깊이 ${depths.join("/")}%${drifting > 0 ? `, 흐르는 층 ${drifting}(층별 흐름 ${flows.map((flow) => Math.round(flow * 100) / 100).join("/")}px/프레임)` : ""}${covered > 0 ? `, cover ${covered}/${stack.length}` : ""}`
         + `${map.background.showInEmptyCells ? ", 빈 칸에도 보임" : ""})`,
       );
     }
@@ -2236,7 +2293,28 @@ const setMapProperties: ToolDefinition = {
       } else {
         changed.push(`배경이 보이는 칸 ${visible}`);
         // 지평선 견본은 화면 위쪽 약 112px 안에 해·구름·실루엣이 있다 — 위쪽 빈 줄이 모자라면 하늘 위쪽 색만 보인다.
+        // 한 화면에 들어가는 맵은 카메라가 움직이지 않는다 — 층별 깊이(cameraFollow)는 보이지 않고 흐르는 층만 움직인다.
+        // 2026-10-22 조수 시험: 20×15 맵에서 「걸을 때 깊이가 달라 시차로 움직입니다」 라고 보고했다(편집기 배경 탭은 같은 경고를 띄운다).
+        const viewport = mapBackgroundGameViewport(draft.system);
+        const tile = mapTileSize(map, draft.tilesets[map.tilesetId]);
+        const depthLayers = [map.background, ...(map.background.layers ?? [])].filter((layer) => (layer.cameraFollow ?? 0) > 0 && (layer.cameraFollow ?? 0) < 1);
+        if (depthLayers.length > 0 && map.width * tile <= viewport.width && map.height * tile <= viewport.height) {
+          changed.push("주의: 한 화면 맵이라 시차(깊이) 안 보임 — 흐르는 층만 움직임");
+          backgroundWarnings.push(
+            `이 맵(${map.width}×${map.height}칸)은 게임 화면(${viewport.width}×${viewport.height}px) 한 장에 다 들어가 걸어도 카메라가 움직이지 않습니다 — `
+            + "층별 깊이(시차)는 보이지 않고 흐르는 층(scrollX)만 움직입니다. 사용자에게 그대로 알리고, 시차를 보이려면 맵을 화면보다 크게 해야 합니다.",
+          );
+        }
         const horizonSet = oprnPanoramaSetOfImage(map.background.imageId);
+        // 위에서 본 면(구름 바다·바다)을 지붕·절벽 뒤 «하늘 줄» 에만 비추면 옆에서 본 하늘이 아니라 바닥 무늬처럼 보인다.
+        // 2026-10-22 조수 시험: 「흐르는 구름으로」 에 옥상 맵 위 7줄 하늘을 구름 바다(oprn-clouds)로 바꿨다.
+        const topRowsOnly = emptyTopRows(map) > 0 && emptyTopRows(map) * map.width === visible;
+        if (horizonSet?.view === "surface" && topRowsOnly && horizonSet.id !== "oprn-night-stars") {
+          backgroundWarnings.push(
+            `${horizonSet.name} 견본은 위에서 내려다본 면입니다 — 이 맵은 위쪽 줄만 비어 있어(지붕·절벽 뒤 하늘 자리) 옆에서 본 하늘이 어울립니다. `
+            + "구름이 흐르는 하늘이면 preset oprn-sky-day(+ speed), 저녁이면 oprn-sunset 을 쓰세요.",
+          );
+        }
         const needRows = Math.ceil(HORIZON_PRESET_FEATURE_HEIGHT / mapTileSize(map, draft.tilesets[map.tilesetId]));
         const topRows = emptyTopRows(map);
         if (horizonSet?.view === "horizon" && topRows > 0 && topRows < needRows) {
@@ -2579,7 +2657,7 @@ const removeMapTool: ToolDefinition = {
     // 에이전트 경로는 작업된 시작 맵 삭제를 차단(암묵 재배선 금지) — 먼저 시작 위치를 옮기게 한다.
     // 단, 손대지 않은 빈 시작 맵(isUntouchedMap)이고 다른 맵이 있으면 삭제와 함께 시작 맵을 자동 재배선한다.
     if (draft.startMapId === map.id && (!isUntouchedMap(map) || Object.keys(draft.maps).length <= 1)) {
-      throw new ToolError("시작 맵은 삭제할 수 없습니다 — 먼저 set_start_position으로 시작 맵을 옮기세요.", { code: "start-map" });
+      throw new ToolError("시작 맵은 삭제할 수 없습니다 — 먼저 set_start_position으로 시작 맵을 옮기세요. (빈 시드 맵에서 시작이 자동으로 옮겨진 맵을 다시 지으려는 것이면, 잠깐 옮겼다 지우고 새로 지으면 새 맵이 다시 시작 맵이 된다 — 보고 전 get_project_summary 의 startMapId 로 확인)", { code: "start-map" });
     }
     const wasStartMap = draft.startMapId === map.id;
     const plan = planMapDeletion(draft, map.id);

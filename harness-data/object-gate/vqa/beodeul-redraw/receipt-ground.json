@@ -1,0 +1,19 @@
+{
+  "verdict": "FAIL",
+  "reviewer": "fresh Opus adversarial VQA, 2026-10-22",
+  "images": [
+    "/tmp/bdtrees/vqa/ground_city_beforeafter.png",
+    "/tmp/bdtrees/vqa/ground351.png",
+    "/tmp/bdtrees/vqa/artistC_ground_preview_4x.png"
+  ],
+  "findings": [
+    {"severity": "major", "cell": "ground 351-355", "issue": "The AFTER lawn is an almost flat single green. The 'code-defined dither' cannot be seen at 8x. The BEFORE tonal mottling is gone, so this lawn now reads as an untextured fill. It also does not match the noisy RTP grass used in the new edge cells (preview image), so a lawn cell placed next to an RTP-grass edge cell will show a texture and colour jump at the cell border."},
+    {"severity": "major", "cell": "jungle 393, 394, 423 (preview cells 3-5)", "issue": "The dirt patches have straight, axis-aligned sides with jagged fringes only on one side. The dirt meets the grass with no darker rim or shadowed lip under the grass, so the 3/4 edge shading asked for is missing. Only the first preview cell (363, the round patch) has a believable dark rim. The others read as rectangles cut into the grass, not as a grass lip over dirt."},
+    {"severity": "minor", "cell": "jungle 365", "issue": "In the dirt field, the grass at the corners is isolated 1-2px green specks with no rim or shading. They read as noise, not as corner grass tongues."},
+    {"severity": "minor", "cell": "jungle 365", "issue": "The single dark outline pixels at the patch corners are uneven and look like stray pixels."},
+    {"severity": "minor", "cell": "city 6049, 21065", "issue": "The blue-grey side strips survive in AFTER, but the RTP cobble inside them is slightly lighter and higher in contrast than the neighbouring BEFORE cobble. That is acceptable only if every cobble cell was swapped. A mix of old and new cobble on one map would show a tone shift."},
+    {"severity": "minor", "cell": "city 9132, 11110, 13856, 14053, 15508", "issue": "The dark-blue (shaded) cobble swaps keep their borders and look visually equivalent. No regression found."},
+    {"severity": "minor", "cell": "city 16384-16391, 17408-17415, 23163-23175", "issue": "The grass/dirt and water-edge city cells match BEFORE closely, and nothing is missing. The new dirt is a little busier, but it is consistent."}
+  ],
+  "summary": "The cobble swaps are visually equivalent and the borders are preserved. In the stepping-stone cells 352-355 all stones are present and the cells match each other, so there are no holes or wiped stones. The grass in the preview has no visible seam lines. FAIL on two majors: (1) the flat lawn in 351-355 has lost its texture and does not match the RTP-grass edge cells beside it, which will cause a visible texture jump; (2) most of the new edge cells (393/394/423) have straight-cut dirt shapes with no darker 3/4 rim under the grass lip. Only 363 is shaded believably."
+}

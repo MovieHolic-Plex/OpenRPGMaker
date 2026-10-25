@@ -1,0 +1,48 @@
+{
+ "round": "theme-walls-r5 / theme-walls-r6 / theme-props-r2 / theme-props-r3",
+ "panel": 6,
+ "date": "2026-10-24",
+ "boards": [
+  "qa-runs/walls/theme-walls-r5/board-wall.other_face-p5c.png",
+  "qa-runs/walls/theme-walls-r5/board-wall.tower_face-p5c.png",
+  "qa-runs/walls/theme-walls-r6/board-wall.other_rim-p6.png",
+  "qa-runs/walls/theme-props-r2/board-prop.minecart-p2.png",
+  "qa-runs/walls/theme-props-r2/board-prop.cracked_floor-p2b.png",
+  "qa-runs/walls/theme-props-r3/board-wall.ice_face-p3.png"
+ ],
+ "criteria": "(1) true 3/4 top-down at 1x; (2) same game as Beodeul reference (palette, 4-6 steps, material-tone dark edges, no glow, no toy/flat, no confetti); (3) no seams/16px repeat; (4) fits theme. Blind: only PNG paths and criteria given.",
+ "count_rule": "an item passes only when neither blind reviewer raises a major against the candidate",
+ "reviewers": {
+  "klb-sonnet-5-5": "a2bcdd2dfc56b24b2",
+  "argon": "a57f9fbdd09e51fb7"
+ },
+ "tally": {
+  "wall.other_face": {
+   "A1": "FAIL both (cracks low contrast, 16px pillow repeat)",
+   "A2": "sonnet PASS marginal, argon FAIL (pillowed 16px column repeat) -> redraw"
+  },
+  "wall.tower_face": {
+   "A1": "sonnet PASS; argon FAIL (window reads as flat sticker without recess; pillow repeat) -> redraw",
+   "A2": "FAIL both (sandstone off-theme)"
+  },
+  "wall.other_rim": {
+   "A1": "FAIL both (thin pipe/curb frame, halo)",
+   "A2": "FAIL both"
+  },
+  "prop.minecart": {
+   "A1": "sonnet PASS; argon FAIL (oversized, wheels on one rail, body juts north, 2D side view) -> redraw",
+   "A2": "sonnet PASS; argon FAIL"
+  },
+  "prop.cracked_floor": {
+   "A1": "FAIL both",
+   "A2": "sonnet PASS weak; argon FAIL (patch seam, glass-like radial spikes)"
+  },
+  "wall.ice_face": {
+   "A1": "sonnet PASS; argon FAIL (confetti noise, 16px sawtooth icicle repeat, skirt cutoffs) -> redraw",
+   "A2": "FAIL both"
+  }
+ },
+ "picks": {},
+ "outcome": "no item cleared both reviewers; all redrawn in the next rounds",
+ "answers_source": "verbatim result blocks of the two blind reviewer agents (see task notifications in supervisor transcript 47c7e570, 2026-10-24)"
+}

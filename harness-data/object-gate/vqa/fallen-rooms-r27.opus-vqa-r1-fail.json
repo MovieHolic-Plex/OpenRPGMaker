@@ -1,0 +1,26 @@
+{
+  "schema": "bdg-vqa/1",
+  "judge": "claude-opus-5-5",
+  "date": "2026-10-22",
+  "batch": "fallen-rooms-r27",
+  "commit": "2d0dd28dbc",
+  "overall": "FAIL",
+  "criteriaNotes": {
+    "0_hash_check": "pixel_sha256 of /tmp/fsrooms/gate-r27/stone_brazier.png computed with object_gate.pixel_sha256 = de51bc727022485ad438c34c029d556243632960ed2e797a4b8d65de50ef7128 (16x32 RGBA).",
+    "1_topdown_view": "Bowl rim top plane (rows 10-12, pale ash P/N/S inside dark rim) and front faces of bowl, column and square foot are correct 3/4; no side/iso faces. Bowl/pedestal silhouette matches the approved lit brazier in the shrine. The two logs, however, rise as a steep upright X (rows 1-9, ~8px tall over a 14px bowl) - they read as standing/propped, not 'laid crossed on top' of the heap.",
+    "2_style_fit": "Stone ramps (O/M/I/R/Q/N/P) match the lit brazier and v5 stone; dark outline consistent. Problem: the 'cold' charcoal heap contains saturated hot orange J (168,77,10) at (6,9),(10,9),(7,11) and bright orange L (234,142,63) at (8,9) - this is ember/glow colouring, not cold charcoal/ash. Stray grey-brown F (100,92,84) at (10,6) is a one-off colour used nowhere else.",
+    "3_readability_1x": "Improved over the bollard reading: at 1x and 3x the piece reads as a pedestal brazier with something on top. But the orange dots in the bowl read as live smouldering embers, contradicting the unlit puzzle state (player may think it is already lit), and the tall crisp X reads first as an 'X' mark/crossed sticks glyph rather than fuel laid in a bowl.",
+    "4_placement": "Grounded: square foot rows 24-30 with soft shadow T at bottom-right, same footprint as the lit version; log feet rest on the back rim (x3-4, x11-12 row 9). No clipping.",
+    "5_silhouette_outline": "Stone silhouette clean. Log X: the right outline at (10,6) breaks with the stray F pixel instead of outline A, making the crossing asymmetric versus (5,6)=A. Otherwise no stubs."
+  },
+  "items": [
+    {
+      "id": "atlas_biome_interior/plus/stone brazier",
+      "name": "돌 화로(꺼짐, 버들항 돌 받침 화로) (stone brazier)",
+      "kind": "other",
+      "pixelSha256": "de51bc727022485ad438c34c029d556243632960ed2e797a4b8d65de50ef7128",
+      "verdict": "FAIL",
+      "reasons": "Pedestal/bowl are correct and identical to the lit version, and the piece no longer reads as a bollard, but the unlit state is contradicted and the fuel reads as a glyph. Fixes: (1) Remove hot colours from the cold heap: recolour L (234,142,63) at (8,9) and J (168,77,10) at (6,9),(10,9),(7,11) to charcoal/ash values (e.g. K/H dark brown-black for charcoal lumps, N/P grey for ash) so no pixel in the bowl is warmer/brighter than the log ramp D/E. (2) Fix the stray F (100,92,84) at (10,6): make it outline A (26,14,6) to mirror (5,6). (3) Lay the logs lower: shorten the X so it spans about rows 4-9 instead of 1-9 with a flatter angle (about 2px across per 1px up), cut-end highlights B/C kept at the upper tips, so they sit on the ash heap as laid fuel rather than a standing X; keep the bowl and pedestal pixels (rows 9-31) untouched so the swap with 'stone brazier lit' stays exact."
+    }
+  ]
+}

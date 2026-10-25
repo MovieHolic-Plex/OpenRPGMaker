@@ -4,7 +4,7 @@ import { withJosa } from "@/util/josa";
 import { activeActor } from "@/battle/battlePredict";
 import { expForRewardActor } from "@/battle/rewardPolicy";
 import { normalizeActorRecord, totalExpForLevel } from "@/project/actorModel";
-import { DEFAULT_MONSTER_EXP_CURVE, monsterExpInLevelBand, monsterSpeciesById } from "@/project/monsterCollection";
+import { DEFAULT_MONSTER_EXP_CURVE, monsterExpInLevelBand, monsterSpeciesById, stripWildNamePrefix } from "@/project/monsterCollection";
 import { store } from "@/project/store";
 import { resolveTerms } from "@/project/terms";
 import { CONTINUE_KEY_PROMPT } from "@/player/keyBindings";
@@ -15,6 +15,7 @@ import { rewardActorIds } from "@/battle/rewardPolicy";
 import type { PlaySession } from "@/project/session";
 import type { Project } from "@/project/types";
 import { el } from "@/util/dom";
+import { battleFanfareFor, levelUpBanner, newlyUnlockedCombos, playFanfareCue, skillLearnedCard } from "@/player/battleFanfareDom";
 import { emeraldBattlerName, emeraldMoveLine, emeraldNarrationActive, emeraldOutcomeLine, emeraldResultRows, emeraldShortName, type EmeraldResultRow } from "@/player/emeraldBattleNarration";
 
 export type BattleDirectorStep = "intro" | "command" | "target" | "acting" | "impact" | "result";
@@ -60,16 +61,21 @@ export function introDirectorState(snapshot: BattleSnapshot): BattleDirectorStat
     };
   }
   const living = snapshot.enemies.filter((enemy) => !enemy.defeated);
-  // 같은 이름은 묶어 「초원 슬라임 ×3, 숲 박쥐 ×3」 — 이름을 여섯 번 나열하면 첫 문장이
-  // 소음이 되고 창 폭(560px)을 넘겨 생략됐다(2026-09-14 실측).
-  const counts = new Map<string, number>();
-  const introName = (name: string): string => (emeraldNarrationActive() ? emeraldShortName(name) : name);
-  for (const enemy of living) counts.set(introName(enemy.name), (counts.get(introName(enemy.name)) ?? 0) + 1);
-  const names = [...counts.entries()].map(([name, count]) => (count > 1 ? `${name} ×${count}` : name));
-  const label = names.length > 1 ? `${names.slice(0, -1).join(", ")}, ${names[names.length - 1]}` : names[0] ?? "적";
   // 전원이 몬스터 종(speciesId)인 트룹에만 "야생의"를 붙인다 — 인간형/보스 트룹까지
   // 야생으로 부르지 않게. 파일 서두 주석이 약속해 온 포켓몬식 인트로 문구다.
   const wild = living.length > 0 && living.every((enemy) => enemy.speciesId);
+  // 「야생의」는 이 문장이 소유한다 — 저자가 적 이름에 이미 붙여 둔 접두(「야생 슬라임」)는 떼어
+  // 「야생의 야생 슬라임이 나타났다!」가 되지 않게 한다. 접두 뒤 공백을 요구하므로 「야생화」는 그대로다.
+  const introName = (name: string): string => {
+    const base = wild ? stripWildNamePrefix(name) : name;
+    return emeraldNarrationActive() ? emeraldShortName(base) : base;
+  };
+  // 같은 이름은 묶어 「초원 슬라임 ×3, 숲 박쥐 ×3」 — 이름을 여섯 번 나열하면 첫 문장이
+  // 소음이 되고 창 폭(560px)을 넘겨 생략됐다(2026-09-14 실측).
+  const counts = new Map<string, number>();
+  for (const enemy of living) counts.set(introName(enemy.name), (counts.get(introName(enemy.name)) ?? 0) + 1);
+  const names = [...counts.entries()].map(([name, count]) => (count > 1 ? `${name} ×${count}` : name));
+  const label = names.length > 1 ? `${names.slice(0, -1).join(", ")}, ${names[names.length - 1]}` : names[0] ?? "적";
   return {
     step: "intro",
     lines: [`${wild ? "야생의 " : ""}${withJosa(label, "이/가")} 나타났다!`],
@@ -93,10 +99,13 @@ export function sendOutDirectorState(snapshot: BattleSnapshot): BattleDirectorSt
 
 /** 행동 로그 엔트리 하나를 이름이 드러나는 메시지로 변환(다중 적 턴 개별 연출용). */
 export function enemyActionDirectorState(entry: BattleActionResultSnapshot, snapshot: BattleSnapshot, effect?: { readonly resource: "hp" | "mp"; readonly healing: boolean }): BattleDirectorState {
-  const user = snapshot.enemies.find((enemy) => enemy.recordId === entry.userRecordId)
-    ?? snapshot.actors.find((actor) => actor.recordId === entry.userRecordId);
+  // 이 차례에 쓰러져 교체된 적(departedEnemies)도 찾는다 — 못 찾으면 이름 없이 「상대의 어깨툭!」이 나왔다(2026-10-20 아스트라 관장전).
+  // 어떤 엔트리는 userRecordId 에 레코드 id 대신 전투 개체 id 를 싣는다(runtime 의 side 판정도 둘 다 본다) — 둘 다 맞춰 본다.
+  const isUser = (battler: { readonly recordId: string; readonly id: string }) => battler.recordId === entry.userRecordId || battler.id === entry.userRecordId;
+  const user = snapshot.enemies.find(isUser) ?? snapshot.departedEnemies?.find(isUser) ?? snapshot.actors.find(isUser);
   const target = snapshot.actors.find((actor) => actor.id === entry.targetId)
-    ?? snapshot.enemies.find((enemy) => enemy.id === entry.targetId);
+    ?? snapshot.enemies.find((enemy) => enemy.id === entry.targetId)
+    ?? snapshot.departedEnemies?.find((enemy) => enemy.id === entry.targetId);
   const userName = user?.name ?? "적";
   // 적의 기본 공격은 내부적으로 "공격" 스킬로 굴러가지만, "○○가 공격을 사용했다!"는
   // 아군의 "주인공의 공격!"과 문체가 어긋난다 — 기본 공격은 같은 문형으로 맞춘다.
@@ -142,11 +151,13 @@ function effectivenessPhrase(effectiveness: number | undefined): string {
   return effectiveness > 1 ? "효과가 굉장했다!" : "효과가 별로인 듯하다…";
 }
 
-/** 상성 문장이 있으면 결과 줄은 그 문장만 — 피해 숫자를 앞에 붙이면 메시지 창 한 줄을 넘쳐 셋째 줄이 잘렸다(2026-10-02 실측:
- *  「아쿠아링이 2 피해를 입었다! 효과가 별로인 / 듯하다…」). 3세대도 피해 숫자는 말하지 않는다 — 양은 HP 바·숫자가 센다. */
+/** 상성 문장이 있으면 — 포켓몬 스킨은 결과 줄을 그 문장만으로 바꾼다: 피해 숫자를 앞에 붙이면 메시지 창 한 줄을 넘쳐 셋째 줄이 잘렸다(2026-10-02 실측:
+ *  「아쿠아링이 2 피해를 입었다! 효과가 별로인 / 듯하다…」). 3세대도 피해 숫자는 말하지 않는다 — 양은 HP 바·숫자가 센다.
+ *  그 밖의 스킨(도트 측면 등)은 피해 숫자를 지키고 문장을 뒤에 덧붙인다 — 숫자를 말하는 스킨에서 상성이 보이게(폴른 스타 2026-10-24). */
 function withEffectiveness(damageLine: string, critical: boolean | undefined, effectiveness: number | undefined): string {
   const phrase = effectivenessPhrase(effectiveness);
   if (!phrase) return damageLine;
+  if (store.getCurrent().system.battleUiStyle !== "pokemon") return `${damageLine} ${phrase}`;
   return critical ? `급소에 맞았다! ${phrase}` : phrase;
 }
 
@@ -403,8 +414,11 @@ export function syncBattleMessageWindow(windowNode: HTMLElement, state: BattleDi
   }
   // 같은 문장이면 다시 만들지 않는다(단계가 acting→impact 로 바뀌어도) — 새로 만들면 글자 출력이 처음부터 다시 시작한다.
   const key = state.lines.join("\u0002");
-  if (windowNode.dataset.messageKey === key && lines.childElementCount === state.lines.length) return;
+  if (windowNode.dataset.messageKey === key && lines.querySelectorAll(":scope > .battle-message-line:not(.battle-message-hint)").length === state.lines.length) return;
   windowNode.dataset.messageKey = key;
+  // 질문 줄이 바뀌면(다른 사람 차례·행동 문장) 기술 한 줄 도움말을 거둔다(battleCommandDom.syncBattleSkillHintLine).
+  windowNode.querySelector(".battle-message-hint")?.remove();
+  delete windowNode.dataset.skillHint;
   const previous = messageTypers.get(windowNode);
   if (previous) { window.clearInterval(previous.timer); messageTypers.delete(windowNode); delete windowNode.dataset.messageTyping; }
   lines.replaceChildren();
@@ -493,6 +507,18 @@ export function syncBattleResultPanel(panel: HTMLElement, snapshot: BattleSnapsh
   }
   const nextTitle = resultLine(snapshot.result);
   if (title.textContent !== nextTitle) title.textContent = nextTitle;
+  // 패배 창이 「패배 / 확인」 빈 상자뿐이었다(폴른 스타 가혹 검수 r7) — 무슨 일이 났는지 한 줄을 단다.
+  let subtitle = panel.querySelector<HTMLElement>(".battle-result-subtitle");
+  const nextSubtitle = snapshot.result === "defeat" ? "파티가 모두 쓰러졌다…" : "";
+  if (nextSubtitle && !subtitle) {
+    subtitle = document.createElement("div");
+    subtitle.className = "battle-result-subtitle";
+    title.after(subtitle);
+  }
+  if (subtitle) {
+    if (!nextSubtitle) subtitle.remove();
+    else if (subtitle.textContent !== nextSubtitle) subtitle.textContent = nextSubtitle;
+  }
 
   let cards = panel.querySelector<HTMLElement>(".battle-result-cards");
   if (!cards) {
@@ -651,14 +677,45 @@ function syncPixelResultParty(panel: HTMLElement, snapshot: BattleSnapshot, reve
     const title = panel.querySelector<HTMLElement>(".battle-result-title");
     if (title) head.prepend(title);
     panel.append(head, party);
-    if (levelUps.length > 0) {
+    // 팡파레(system.battleFanfare): 레벨 업 창 → 그 사람의 「새 기술 습득!」 카드들 → (마지막에) 「새 연계기!」 카드.
+    // 확인키 한 번에 한 장씩 넘긴다. 레벨 업 창을 끈 프로젝트도 카드는 따로 켤 수 있다.
+    const fanfare = battleFanfareFor(project);
+    const pages: HTMLElement[] = [];
+    for (const { actor, entry } of levelUps) {
+      if (fanfare.levelUp) pages.push(resultLevelUpWindow(project, context, actor, entry, 0, 0, fanfare));
+      if (fanfare.skillLearned) {
+        for (const skillId of entry.learnedSkillIds) {
+          const skill = project.database.skills.find((record) => record.id === skillId);
+          if (skill) pages.push(skillLearnedCard(project, entry.actorName, entry.actorId, skill, fanfare, "skill"));
+        }
+      }
+    }
+    if (fanfare.skillLearned) {
+      for (const tech of snapshot.rewards.techLearned ?? []) {
+        for (const skillId of tech.skillIds) {
+          const skill = project.database.skills.find((record) => record.id === skillId);
+          if (skill) pages.push(skillLearnedCard(project, tech.actorName, tech.actorId, skill, fanfare, "skill"));
+        }
+      }
+    }
+    if (fanfare.comboUnlocked) {
+      for (const { skill, unlockedBy } of newlyUnlockedCombos(project, snapshot)) {
+        const names = (skill.comboActorIds ?? []).map((id) => actors.find((candidate) => candidate.recordId === id)?.name ?? id);
+        pages.push(skillLearnedCard(project, names.join(" × "), unlockedBy, skill, fanfare, "combo", names));
+      }
+    }
+    pages.forEach((page, index) => {
+      const pager = page.querySelector<HTMLElement>(".battle-result-levelup-page");
+      if (pager) pager.textContent = index + 1 < pages.length ? `${index + 1}/${pages.length} ▼` : `${index + 1}/${pages.length} ▼ 닫기`;
+    });
+    if (pages.length > 0) {
       panel.append(el("div", {
         class: "battle-result-levelup-modal",
-        dataset: { testid: "battle-result-levelups", open: "false", index: "-1" },
-        children: levelUps.map(({ actor, entry }, index) => resultLevelUpWindow(project, context, actor, entry, index, levelUps.length)),
+        dataset: { testid: "battle-result-levelups", open: "false", index: "-1", fanfareStyle: fanfare.style },
+        children: pages,
       }));
       const prompt = panel.querySelector<HTMLElement>(".battle-result-next-prompt");
-      if (prompt) prompt.textContent = `레벨 업 ${levelUps.length}명 · ${CONTINUE_KEY_PROMPT}`;
+      if (prompt) prompt.textContent = `${levelUps.length > 0 ? `레벨 업 ${levelUps.length}명` : "새 기술"} · ${CONTINUE_KEY_PROMPT}`;
     }
   }
   syncPixelLoot(panel, snapshot);
@@ -686,6 +743,7 @@ export function advanceBattleResultLevelUps(panel: HTMLElement): boolean {
   modal.dataset.index = String(next);
   modal.dataset.open = "true";
   windows.forEach((windowNode, index) => { windowNode.dataset.active = index === next ? "true" : "false"; });
+  playFanfareCue(windows[next]!, battleFanfareFor(store.getCurrent()));
   return true;
 }
 
@@ -741,7 +799,8 @@ function resultPartyCard(project: Project, context: BattleResultContext | undefi
   const levelUp = snapshot.rewards.levelUps?.find((entry) => entry.actorId === actor.recordId);
   const fromLevel = snapshot.eventState.actorLevels?.[actor.recordId] ?? actor.level ?? 1;
   const toLevel = levelUp?.toLevel ?? fromLevel;
-  const before = snapshot.eventState.actorExperience?.[actor.recordId] ?? totalExpForLevel(normalized.expCurve, fromLevel);
+  // 세션 경험치가 현재 레벨 바닥보다 낮으면(시작 레벨 > 1·중간 합류) 보상 적립과 같은 바닥에서 센다.
+  const before = Math.max(snapshot.eventState.actorExperience?.[actor.recordId] ?? 0, totalExpForLevel(normalized.expCurve, fromLevel));
   const gained = rewarded ? expForRewardActor(snapshot.rewards.exp, fromLevel, snapshot.rewards.enemyLevel, project.system.rewardPolicy) : 0;
   const after = before + gained;
   const base = totalExpForLevel(normalized.expCurve, toLevel);
@@ -763,7 +822,9 @@ function resultPartyCard(project: Project, context: BattleResultContext | undefi
         class: "battle-result-party-level",
         children: [`Lv ${fromLevel}`, ...(levelUp ? [el("span", { class: "battle-result-party-arrow", text: " → " }), el("span", { class: "battle-result-party-to", text: String(toLevel) })] : [])],
       }),
-      el("span", { class: "battle-result-party-badge", text: levelUp ? "LEVEL UP" : "", attrs: { "aria-hidden": levelUp ? "false" : "true" } }),
+      // 쓰러진 사람은 「쓰러짐」 배지로 읽히게 한다 — 회색 그림만으로는 그림이 깨진 것처럼 보였다(가혹 검수 r1).
+      // 쓰러진 사람은 레벨이 올라도 「쓰러짐」이 먼저다 — 회색 그림 아래 LEVEL UP 만 있으면 그림이 깨진 것처럼 읽혔다(r7). 오른 레벨은 위 「Lv 6 → 7」이 말한다.
+      el("span", { class: "battle-result-party-badge", text: actor.hp <= 0 ? "쓰러짐" : levelUp ? "LEVEL UP" : "", attrs: { "aria-hidden": levelUp || actor.hp <= 0 ? "false" : "true" } }),
       el("span", {
         class: "battle-result-party-track",
         children: [el("span", { class: "battle-result-party-fill", attrs: { style: `width:${fromPct}%` }, dataset: { fromPct: String(fromPct), toPct: String(toPct), shownPct: String(fromPct) } })],
@@ -782,6 +843,7 @@ function resultLevelUpWindow(
   entry: NonNullable<BattleSnapshot["rewards"]["levelUps"]>[number],
   index: number,
   total: number,
+  fanfare = battleFanfareFor(project),
 ): HTMLElement {
   const stats = actor.effectiveStats;
   const terms = resolveTerms(project);
@@ -801,8 +863,9 @@ function resultLevelUpWindow(
   return el("article", {
     class: "battle-result-levelup",
     attrs: { "aria-label": `${entry.actorName} 레벨 업` },
-    dataset: { testid: `battle-result-levelup-${entry.actorId}`, active: "false" },
+    dataset: { testid: `battle-result-levelup-${entry.actorId}`, active: "false", fanfareKind: "levelUp", style: fanfare.style },
     children: [
+      levelUpBanner(fanfare),
       el("div", {
         class: "battle-result-levelup-head",
         children: [
@@ -920,7 +983,8 @@ function commandLine(command: ActorCommand, actor: BattleBattlerSnapshot | undef
       return `${subject} ${withJosa(skillName(command.skillId), "을/를")} 사용했다!`;
     }
     case "item":
-      return `${subject} ${withJosa(itemName(command.itemId), "을/를")} 사용했다!`;
+      // 약을 쓰는 쪽도 트레이너(나)다 — 「토리프가 회복약을 사용했다」는 몬스터가 약을 쓰는 꼴이었다(2026-10-21 적대 검수 m5).
+      return emeraldNarrationActive() ? `${withJosa(itemName(command.itemId), "을/를")} 썼다!` : `${subject} ${withJosa(itemName(command.itemId), "을/를")} 사용했다!`;
     case "capture":
       // 던지는 쪽은 트레이너(나)다 — 몬스터 이름을 주어로 쓰면 「새싹토가 구슬을 던졌다」가 된다(2026-10-15 진단 C1).
       return emeraldNarrationActive() ? `${withJosa(itemName(command.captureItemId), "을/를")} 던졌다!` : `${subject} ${withJosa(itemName(command.captureItemId), "을/를")} 던졌다!`;
@@ -1106,7 +1170,9 @@ function skillName(skillId: string): string {
 }
 
 function itemName(itemId: string): string {
-  return store.getCurrent().database.items.find((item) => item.id === itemId)?.name ?? itemId;
+  const database = store.getCurrent().database;
+  return database.items.find((item) => item.id === itemId)?.name
+    ?? (database.equipment ?? []).find((entry) => entry.id === itemId)?.name ?? itemId;
 }
 
 function markByDataset(root: HTMLElement, key: string, value: string | undefined, className: string): void {

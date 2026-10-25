@@ -1,13 +1,14 @@
 # 손 도트 실내 (atlas_biome_interior) — 읽는 순서
 
 실내(집·가게·여관·저택·교회·성 방·지하)는 이 칩셋 하나로만 짓는다. 옛 실내 칩셋(easyrpg_chipset_interior · tibo_interior_expanded · LPC 가구)은 폐기됐다.
-칩셋: `atlas_biome_interior`, 계열 `oprn-atlas`, 16px, 시트 가로 48칸, 칸 7410개(그림 public/assets/atlas-interior/interior-chipset.png).
+칩셋: `atlas_biome_interior`, 계열 `oprn-atlas`, 16px, 시트 가로 48칸, 칸 7677개(그림 public/assets/atlas-interior/interior-chipset.png).
 원본: tiledata/hand-interior/v5(손 도트 Python, 건물 25동 26맵). 칸은 scripts/content/hand-interior/build_tileset.py 가 잘랐다.
 
 ## 읽는 순서
 1. 이 문서 → 2. `hand-interior-v5-exit-width`(외부 문과 실제 출구 폭), `hand-interior-v5-rules`(구조 규칙·사용자 판정) → 3. `hand-interior-v5-dictionary`(바닥·벽면·천장·탁자·줄·단 칸 번호) →
 4. 짓는 건물과 가장 가까운 예제(`hand-interior-v5-map-*`: 입력 인자 + 네 층 정답 배열 + 그림) → 5. `hand-interior-v5-errors`(오류 그림과 코드).
 박물관·미술관·배 안(선장실·화물칸)·투기장은 `hand-interior-v5-plus`(경계·방 종류·program·배치 규칙)를 먼저 읽는다.
+천문대·의식실·화로 퍼즐 방·성소·지하 신전처럼 **주인공 물건이 있는 큰 방**은 `hand-interior-v5-rules` 의 「주인공 물건이 있는 큰 방」 절(주인공 세트·알코브 쓰임·벽 들여 쌓기·확인 바퀴)을 먼저 읽는다.
 가구는 `list_hand_interior_parts({room:"빵집"})`(방 종류·건물 → 예제에 쓰인 가구를 종류별로)와 `{query:"여관 벽"}`(설명·쓰는 방·놓는 곳·짝 소품까지)으로 찾는다.
 `hand-interior-v5-objects-*`(가구 사전, 칸 번호 포함)는 도구 결과로 모자랄 때만 한 분류씩 읽는다.
 
@@ -20,14 +21,14 @@
 5. `build_hand_interior_room` 을 부른다. 벽면(막힌 칸 바로 아래 두 줄)·천장 띠·바닥 그림자는 도구가 plan 에서 만든다 — 손으로 칠하지 않는다.
 6. 결과의 오류(error)는 맵을 만들지 않는다: 메시지의 좌표를 고쳐 다시 부른다. 경고(unreached-floor·unreachable-piece)는 가구가 길을 막은 것 — 고친다.
 7. 층이 여럿이면 층마다 한 맵. 위로 가는 계단(`stairs up wood/stone`, 북쪽 벽 앞 3칸) 칸에 `links` 로 위층 도착 칸을, 위층의 `stairwell down` 칸에 아래층 도착 칸을 단다(도착 칸은 계단 바로 아래 바닥).
-8. `show_map_region` 으로 그림을 확인하고, 이상한 곳을 고쳐 `replace:true` 로 다시 짓는다.
+8. `show_map_region` 으로 그림을 확인하고, 이상한 곳을 고쳐 `replace:true` 로 다시 짓는다. 요청에 나온 낱말(망원경·화로·사당·벽감…)마다 「1배 그림에서 그것으로 읽히나」를 하나씩 확인하고, 도구 경고(빈 바닥·평면 속 허공·걸이 반복)가 0 이 될 때까지 다시 짓는다(최대 3번).
 
 ## 부품 id 찾기
 `list_hand_interior_parts` — 인자 없이 = 바닥·벽면·천장·탁자·줄·단·탁상 물건 목록 + 가구 분류 + 방 종류·건물 id.
 `{room:"빵집"}`·`{room:"여관 객실"}`·`{room:"부엌"}` = 예제 26맵을 방 단위로 나눠 그 방에 쓰인 가구를 종류(floor·wall·hang·flat·table·line·dais)별로, 쓰인 방 수·개수와 함께.
 `{query:"여관 벽"}` = id·이름·분류·태그·설명을 모두 찾고 모든 낱말이 맞는 것만 준다. 12종 이하면 행마다 desc·tags·place·pair, 많으면 desc 한 줄.
 `{category}` = 한 분류의 가구 행.
-가구 분류(40): veg 채소 23 · fish 생선가게 26 · bake 빵집 24 · pharm 약국 28 · misc 잡화 22 · butcher 정육점 7 · home 가구·살림 105 · smith 대장간 18 · tavern 선술집 5 · church 예배당 22 · study 서재 13 · kitchen 부엌 12 · magic 마법 4 · decor 장식 35 · tailor 재단사 5 · shop 상점 12 · hobbit 호빗 굴 5 · mine 광산 8 · elf 엘프 궁정 5 · hall 연회장·알현실 6 · tower 마법사의 탑 11 · dungeon 지하 감옥 6 · magitek 마도 기관 6 · opera 극장 12 · casino 카지노 7 · stable 마구간 6 · ship 배 선실 35 · gimmick JRPG 장치 26 · horror 폐가 6 · demon 마왕성 8 · inn 여관 6 · farm 농가 7 · crypt 지하묘지 4 · castle 성 8 · story 추억 6 · monster 몬스터 센터 6 · guild 모험가 길드 7 · museum 박물관·미술관 25 · arena 투기장 19 · puzzle 퍼즐 방 11.
+가구 분류(42): veg 채소 23 · fish 생선가게 26 · bake 빵집 24 · pharm 약국 28 · misc 잡화 22 · butcher 정육점 7 · home 가구·살림 105 · smith 대장간 18 · tavern 선술집 5 · church 예배당 22 · study 서재 13 · kitchen 부엌 12 · magic 마법 4 · decor 장식 35 · tailor 재단사 5 · shop 상점 12 · hobbit 호빗 굴 5 · mine 광산 8 · elf 엘프 궁정 5 · hall 연회장·알현실 6 · tower 마법사의 탑 11 · dungeon 지하 감옥 6 · magitek 마도 기관 6 · opera 극장 12 · casino 카지노 7 · stable 마구간 6 · ship 배 선실 35 · gimmick JRPG 장치 26 · horror 폐가 6 · demon 마왕성 8 · inn 여관 6 · farm 농가 7 · crypt 지하묘지 4 · castle 성 8 · story 추억 6 · monster 몬스터 센터 6 · guild 모험가 길드 7 · museum 박물관·미술관 25 · arena 투기장 19 · puzzle 퍼즐 방 22 · observatory 천문대 15 · gimmick gimmick 2.
 
 ## 층과 통행 (엔진 판정)
 - 1층 = 구조: 바닥(밟음 o) · 벽면(막힘 x) · 천장 띠·공허(막힘 x).

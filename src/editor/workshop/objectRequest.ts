@@ -33,15 +33,29 @@ export interface ObjectGenRequest {
   readonly setting?: string;
   /** 3/4 관문 종류(조언 배지용, object-gate rules.ts). 옛 요청엔 없다. */
   readonly gateKind?: string;
+  /** 크기 결정(footprint.ts decideFootprint) — 칸 통행·종류·이유. 옛 요청엔 없다. */
+  readonly footprint?: {
+    readonly cls: string | null;
+    readonly passage: readonly string[];
+    readonly top: string | null;
+    readonly reason: string;
+    readonly adjusted: readonly string[];
+    /** false = 참고 그림 없이 그린다(가는 기둥). 없으면 true. */
+    readonly reference?: boolean;
+  };
 }
 
 export function isObjectGenRequest(value: unknown): value is ObjectGenRequest {
   return (value as { kind?: unknown } | null)?.kind === "workshop-object-request";
 }
 
-/** 칸 상한 — 공방 폼과 같다(실내 가구 3×2, 맵 기물 4×3, 솟는 높이 48px). */
-export function objectGenLimits(harnessId: ObjectGenHarness): { readonly maxW: number; readonly maxH: number; readonly maxRise: number } {
-  return harnessId === "interior-props" ? { maxW: 3, maxH: 2, maxRise: 32 } : { maxW: 4, maxH: 3, maxRise: 48 };
+/**
+ * 칸 상한 — maxW 가로 · maxH 발밑 줄 · maxRise 위로 솟는 px · maxTall 그림 전체 키(칸).
+ * 맵 기물 6×(발밑 4)+64px: 5×4 노점(발밑 2+위 2)·4×3 분수·4칸 키 나무까지(2026-10-22, 버들항 짐마차 4×3·노점 3×4 실측).
+ * 실내 가구 4×(발밑 3)+32px(손 도트 실내 v5 의 큰 침대·식탁 실측).
+ */
+export function objectGenLimits(harnessId: ObjectGenHarness): { readonly maxW: number; readonly maxH: number; readonly maxRise: number; readonly maxTall: number } {
+  return harnessId === "interior-props" ? { maxW: 4, maxH: 3, maxRise: 32, maxTall: 5 } : { maxW: 6, maxH: 4, maxRise: 64, maxTall: 6 };
 }
 
 /**
@@ -65,6 +79,7 @@ export function objectGenDefinition(request: ObjectGenRequest, takenKeys: Readon
     refs: [],
     ...(request.setting ? { setting: request.setting } : {}),
     ...(request.gateKind ? { gateKind: request.gateKind } : {}),
+    ...(request.footprint ? { passage: request.footprint.passage, footprintNote: request.footprint.reason, ...(request.footprint.top ? { refTop: request.footprint.top } : {}), ...(request.footprint.reference === false ? { noReference: true } : {}) } : {}),
   };
   return request.harnessId === "map-objects" ? { ...base, tilesetId: request.tilesetId, palette } : base;
 }

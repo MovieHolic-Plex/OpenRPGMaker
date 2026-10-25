@@ -1,6 +1,6 @@
 {
   "name": "oprn",
-  "version": "0.312.0",
+  "version": "0.335.2",
   "description": "웹 기반 탑뷰 타일 JRPG 메이커 (MVP)",
   "private": true,
   "license": "SEE LICENSE IN LICENSE.md",
@@ -49,7 +49,7 @@
     "release": "node scripts/release.mjs",
     "release:auto": "node scripts/release-auto.mjs",
     "start": "node scripts/start-preview.mjs",
-    "build": "tsc --noEmit -p tsconfig.app.json && vite build --configLoader runner && npm run build:player && npm run build:standalone:bundle && npm run archive:runtime",
+    "build": "tsc --noEmit -p tsconfig.app.json && vite build --configLoader runner && npm run build:player && npm run bake:demos && npm run build:standalone:bundle && npm run archive:runtime",
     "archive:runtime": "vite-node scripts/archive-runtime.mts",
     "build:app": "vite build --configLoader runner",
     "build:fast": "vite build --configLoader runner",
@@ -59,7 +59,9 @@
     "package:dir": "npm run build:packaged && npm run build:electron && electron-builder --config electron-builder.config.mjs --dir",
     "electron:smoke": "npm run build:fast && npm run build:electron && playwright test -c playwright.electron.config.ts",
     "qa:package": "node scripts/qa/verifyPackagedApp.mjs",
-    "build:player": "vite build --config vite.player.config.ts --configLoader runner && node scripts/build-player-sdk.mjs",
+    "build:player": "npm run check:runtime-assets && vite build --config vite.player.config.ts --configLoader runner && node scripts/build-player-sdk.mjs",
+    "check:runtime-assets": "vite-node --script scripts/check-runtime-assets.mts",
+    "bake:demos": "node scripts/content/bake-flagship-demos.mjs",
     "preview": "vite preview --configLoader runner",
     "typecheck": "tsc --noEmit",
     "typecheck:app": "tsc --noEmit -p tsconfig.app.json",
@@ -105,10 +107,12 @@
     "harness": "vite-node --script scripts/harness.mts --",
     "worldmap-kit:sync": "node scripts/worldmap-kit-sync.mjs",
     "gen-kits:sync": "node scripts/gen-kits-sync.mjs",
+    "gen-kits:check": "node scripts/gen-kits-sync.mjs --check --only object-gen --max-behind 10",
     "object-gate:sync": "node scripts/object-gate-sync.mjs",
     "store": "vite-node --script scripts/store/agentStore.mts --",
     "store:publish-buildings": "vite-node --script scripts/store/publish-buildings.mts --",
-    "store:publish-bundle": "vite-node --script scripts/store/publish-bundle.mts --"
+    "store:publish-bundle": "vite-node --script scripts/store/publish-bundle.mts --",
+    "store:publish-game": "node scripts/store/publish-game.mjs"
   },
   "dependencies": {
     "@oh-my-pi/pi-agent-core": "^18.8.4",
@@ -117,23 +121,23 @@
     "node-unrar-js": "2.0.2",
     "phaser": "^4.2.1",
     "tar": "7.5.22",
-    "zod": "^4.6.5"
+    "zod": "^4.6.6"
   },
   "devDependencies": {
-    "@oh-my-pi/pi-ai": "^18.6.3",
-    "@playwright/test": "^1.63.0",
-    "electron": "^44.5.1",
+    "@oh-my-pi/pi-ai": "^18.12.3",
+    "@playwright/test": "^1.64.1",
+    "electron": "^44.9.1",
     "electron-builder": "^26.15.3",
-    "esbuild": "^0.27.2",
-    "fake-indexeddb": "^6.2.5",
+    "esbuild": "^0.28.2",
+    "fake-indexeddb": "^6.2.6",
     "fix-webm-duration": "^1.0.6",
-    "happy-dom": "^20.14.5",
+    "happy-dom": "^21.0.3",
     "pngjs": "7.0.0",
     "ts-ebml": "^3.0.2",
     "typescript": "^7.0.2",
     "vite": "^8.3.3",
     "vite-node": "6.0.0",
-    "vitest": "^5.0.3",
+    "vitest": "^5.0.5",
     "webm-duration-fix": "^1.0.4"
   },
   "overrides": {

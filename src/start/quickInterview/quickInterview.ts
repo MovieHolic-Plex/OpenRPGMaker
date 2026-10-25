@@ -177,7 +177,7 @@ export function createQuickInterview(options: QuickInterviewOptions): QuickInter
       const make = el("button", { class: "qi-make", text: "이 게임 만들기", attrs: { type: "button" }, dataset: { testid: QUICK_INTERVIEW_TESTIDS.make } });
       make.addEventListener("click", () => {
         if (busy) return;
-        busy = true; make.disabled = true; make.textContent = "만드는 중…"; error.textContent = "";
+        busy = true; make.disabled = true; make.textContent = "준비하는 중…"; error.textContent = "";
         root.setAttribute("aria-busy", "true");
         const { brief, title } = buildBrief();
         void options.onMake(brief, title).then((started) => {

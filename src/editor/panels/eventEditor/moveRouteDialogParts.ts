@@ -23,6 +23,8 @@ export type MoveRouteParameterPanel = MoveRouteCommandContext & {
   readonly onHopDy: (value: number) => void;
   readonly onHopHeightPx: (value: number) => void;
   readonly onHopDurationMs: (value: number) => void;
+  readonly onStageTarget?: (value: string) => void;
+  readonly onTalkDistance?: (value: number) => void;
 };
 
 export function renderTopBar(
@@ -138,6 +140,10 @@ function renderParameterPanel(parameters: MoveRouteParameterPanel): HTMLElement 
         parameters.onHopDurationMs,
         { title: "체공 시간. 0 이면 기본값 — 점프 300ms, 낙하 620ms. 이동 속도와 무관하게 이 시간이 쓰인다." }
       ),
+      stageTargetInput(parameters.stageTarget ?? "@player", parameters.onStageTarget ?? (() => undefined)),
+      numberInput("말 거리", "event-page-move-route-talk-distance", parameters.talkDistance ?? 1, parameters.onTalkDistance ?? (() => undefined), {
+        title: "다가가기가 대상에서 몇 칸 떨어져 설지. 1 = 바로 옆(대화).",
+      }),
     ],
   });
 }
@@ -332,4 +338,15 @@ function routeFooterButton(label: string, testId: string, onClick: () => void): 
     dataset: { testid: testId },
     on: { click: onClick },
   });
+}
+
+/** 다가가기·쪽으로 돌기 대상: "@player"(주인공) 또는 이벤트 id. */
+function stageTargetInput(value: string, onChange: (value: string) => void): HTMLElement {
+  const input = el("input", {
+    attrs: { type: "text", placeholder: "@player 또는 이벤트 id", title: "다가가기·쪽으로 향함의 대상. @player = 주인공." },
+    value,
+    dataset: { testid: "event-page-move-route-stage-target" },
+    on: { input: (event) => { if (event.currentTarget instanceof HTMLInputElement) onChange(event.currentTarget.value.trim()); } },
+  });
+  return el("label", { children: [el("span", { text: "대상" }), input] });
 }

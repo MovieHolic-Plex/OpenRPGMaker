@@ -1,0 +1,45 @@
+{
+  "schema": "bdg-vqa/1",
+  "judge": "claude-opus-5-5",
+  "date": "2026-10-22",
+  "batch": "fallen-rooms-r32",
+  "commit": "2d0dd28dbc",
+  "overall": "PASS",
+  "criteriaNotes": {
+    "0_hash_check": "pixel_sha256 computed with src/harnesses/_core/object_gate on both PNGs in /tmp/fsrooms/gate-r32: unlit 2b2d2841…6791 (32x32, 18 colours + shadow), lit b924e320…64bb (32x48). Hashes recorded per item.",
+    "1_topdown_view": "Both: 3/4 top-down. Rim top read as a flattened ellipse (thin 1px back rim row 4, thicker 2-row front rim rows 10-11 unlit / 26-27 lit), bowl front wall, short column and square foot all frontal; foot top face shown as a light row (row 24/40). No side or iso faces. Contents sit inside the rim plane.",
+    "2_style_fit": "Same blue-grey slate ramp as the harbour brazier tiles 7513/7514 (130/118/96/89/52/42 + 165 highlight), dark (30,30,36) outline, left-lit shading (light left, dark right on bowl, column and foot), lip shadow band under the front rim, groove line on the bowl wall, sparse slate specks/crack on the foot. Flame ramp identical to the approved great brazier lit. No flat unbroken fills, no noise. Sits next to existing v5 pillars/statues/braziers without standing out (mock-gate, mock-shrine-lit).",
+    "3_readability_1x": "Unlit: at 1x on the dais the goblet-on-foot silhouette plus a dark charcoal bed with brown logs and pale cut ends reads as a laid, cold brazier; it does not read as a post, table or water basin (compare the blue-water fountain bowl in the same room). Weakest point: the two logs read more as a horizontal brown band than as a slanted cross, but fuel is still legible. Lit: unmistakably a burning brazier; matches the scale and flame of the neighbouring lit braziers in the shrine.",
+    "4_placement": "Grounded: foot bottom outline on the last tile row with a soft 70-alpha contact shadow, no floating or clipping inside the 2-tile footprint. Swap check: lit rows 28-47 are pixel-identical in structure to unlit rows 12-31 (foot, column, groove, lip shadow, outline positions); rim outline columns identical (x1/x29 widest, x3-4/x26-27 at the upper rim). Only the front-rim highlight shifts by ~1px (unlit rows 10-11 vs lit rows 26-27) where fuel pixels are replaced by stone; no visible jump when swapped. Note: in mock-shrine-lit the pasted brazier overlaps the black/purple banner post and the easel foot — that is mockup placement, not the piece.",
+    "5_silhouette_outline": "Symmetric silhouette (centre x15-15.5 on rim, bowl, column, foot), closed outline, no stubs or jaggies. Lit flame tongues have 3 isolated spark pixels (13,4),(20,3),(25,8) — intentional embers inherited from the approved flame, consistent with the other lit braziers."
+  },
+  "items": [
+    {
+      "id": "atlas_biome_interior/plus/great stone brazier",
+      "name": "큰 돌 화로(꺼짐, 2칸, 버들항 돌) (great stone brazier)",
+      "kind": "other",
+      "pixelSha256": "2b2d2841f12d1a0a2e4e4034d3fa9902e48310c0717e82fcbc662d0b91876791",
+      "verdict": "PASS",
+      "reasons": [
+        "3/4 correct: elliptical rim top (thin back rim, thick front rim), frontal bowl wall, column and foot; no side faces.",
+        "Palette/outline/shading match harbour brazier 7513/7514 and the v5 slate pieces; lip shadow and groove present.",
+        "At 1x on the dais it reads as a cold brazier laid with fuel (charcoal bed, brown logs, pale cut ends), not a basin/post/table.",
+        "Grounded with contact shadow; clean symmetric silhouette.",
+        "Non-blocking nit: the logs (rows 6-10) read as a horizontal brown band rather than a slanted cross; tilting the right log end 1px higher would sharpen the 'crossed logs' read."
+      ]
+    },
+    {
+      "id": "atlas_biome_interior/plus/great stone brazier lit",
+      "name": "큰 돌 화로(켜짐, 2칸, 버들항 돌, 불꽃) (great stone brazier lit)",
+      "kind": "other",
+      "pixelSha256": "b924e3201032e9e492183cd6c7f6538117ead7866e6c53366b27e731132f64bb",
+      "verdict": "PASS",
+      "reasons": [
+        "Same foot/column/bowl as the unlit piece (rows 28-47 vs 12-31), outline columns identical — swap does not jump.",
+        "Glowing coals (yellow/orange/brown mix) fill the bowl to the rim; flames use the approved great brazier lit ramp and shape, occluding the back rim plausibly.",
+        "Reads at 1x as a burning brazier, same visual weight as the neighbouring lit braziers in the shrine mock.",
+        "Clean outline; the 3 spark pixels are intentional embers, not strays."
+      ]
+    }
+  ]
+}

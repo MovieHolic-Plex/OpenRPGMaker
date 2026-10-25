@@ -20,6 +20,8 @@ This repository uses a project-local OpenWiki layer so coding agents can underst
   → `assistant-capability` · 시드 `harness-data/assistant-capability/seed.json`
   → `npm run harness -- assistant-capability <단계>` · 문서 `openwiki/harnesses/assistant-capability.md`
   → 실제 입력창의 Pi 경로를 쓴다. 필수 검수 누락은 미검증이며, 조수의 완료 선언이나 캡처만으로 합격시키지 않는다.
+  → **데모 게임을 손으로 고칠 때마다(hard rule, 2026-10-22):** 같은 변경에서 (a) `harness-data/assistant-capability/scene-lessons-seed.json` 에 조수 과제 한 줄을 더하고,
+    (b) 조수가 혼자 못 하는 결함이면 도구·스키마·스킬(`game-scene-polish`)·`scene-*` 경고를 고친다. 데모만 고치고 끝내지 않는다 — 절차는 문서 「장면 교훈 묶음」.
 
 - **버들항 새 건물 후보를 사람이 하나씩 허용/거절할 때** → `beodeul-building-review` · 시드 `harness-data/beodeul-building-review/seed.json` · `npm run harness -- beodeul-building-review produce|build|validate|gate|publish|serve|status|export` · 문서 `openwiki/harnesses/beodeul-building-review.md`. 사용자가 새 지붕·창문·벽 질감 저작을 명시 허용한 후보 경로다. 원본 도트 질감을 보존하고, 독립적인 질감·구조 Visual QA와 숨긴 반려 표본 검사를 모두 통과한 후보만 공개한다. build는 비공개 초안이다. 검사 생략·강제 PASS·점수 완화 금지. 사람이 현재 그림 해시에 대해 허용하기 전에는 번들·지도에 설치하지 않는다. 이전 form-wing/inn/smithy/warehouse는 사용자 반려이며 기준작으로 쓰지 않는다. 기존 원본 보존 보정은 아래 beodeul-architecture 경로를 따른다.
 
@@ -43,6 +45,7 @@ This repository uses a project-local OpenWiki layer so coding agents can underst
   → GPT 6.1 sol high가 자유롭게 픽셀 저작 → 결손 검사 → GIF. 사람이 남기기/폐기를 결정하며 남긴 칩만 팩으로 만든다. `produce --count 100`으로 시작하고 설치는 별도다.
 
 - **전투 화면의 트레이너 그림(상대 앞모습·내 뒷모습·볼 던지기)을 만들 때** → `battle-trainer-sprites` · 시드 `harness-data/battle-trainer-sprites/seed.json` · `npm run harness -- battle-trainer-sprites draw|status|sheet|pick|bake` · 문서 `openwiki/harnesses/battle-trainer-sprites.md`. 몬스터 종 하네스와 같은 「생성형 이미지(이미지 서버) → 격자 도트화 → 사람이 고름」, 몬스터 수집 전용 그림체 샘플을 참고 이미지로 쓴다(Actor1·편집 모드 폐기). 사람이 시트에서 고른 것만 굽는다. object-gate 영수증 없음·사람 선택 경로.
+- **대사 흉상(초상·포트레잇)을 새로 만들거나 다시 그릴 때 — 아스트라 등 캐스트가 있는 프로젝트** → `cast-portrait` · 시드 `harness-data/cast-portrait/seed.json`(프로젝트별 규격 `projects/<project>.json`) · `npm run harness -- cast-portrait calibrate|calibrate-review|draw|import|fix|check|lineup|dialogue|review|verdict|pick|install|status` · 문서 `openwiki/harnesses/cast-portrait.md`. 캐스트를 만든 그 경로로만 그린다(아스트라: char-gen + `bake_astra_busts64`, 64×64·16색·투명·머리 위 1~4·인접색 윤곽 ≥70%·얼굴만 바꾸는 표정). 원본 축소·자르기 금지, 기계 검사 → 캐스트 줄·실제 대사창 → 눈가림 Argon 「같은 작가?」 5번(중앙값 ≥6.5·과반, 실제 캐스트/반려작으로 보정, `review`·`calibrate-review`) → 사람 선택(현재 해시). 에이전트는 고르지 않는다. 다른 방법(코드 손 도트·공용 흉상 재채색)으로 그린 박사 후보는 사용자 반려(2026-10-24).
 - **몬스터 수집(포켓몬류) 게임의 종·스타터·진화 계통 전투 스프라이트(앞모습·뒷모습)를 만들 때**
   → `monster-collect-species` · 시드 `harness-data/monster-collect-species/seed.json`
   → `npm run harness -- monster-collect-species <단계>` · 문서 `openwiki/harnesses/monster-collect-species.md`
@@ -124,6 +127,7 @@ This repository uses a project-local OpenWiki layer so coding agents can underst
    - Editor database: `openwiki/editor-database.md`
    - 세계 생성 규칙 (AI 마을 생성의 물·숲·길 수치와 낱말 판정을 DB 「세계 → 생성 규칙」 탭으로 저작): `openwiki/world-generation-rules.md`
    - 버들항 v6 · 로마풍 항구 도시 (Python 손 도트 100×100 을 칸으로 자른 공용 타일셋 beodeul_city 23,936칸·animationStrips 1,699·구역/건물/소품 키트 120, 참고문서 4용도·정본 저장·조수 시험, 다음 판 참고 그림): `openwiki/beodeul-city.md`
+   - 던전 주제 열넷 (조수 `author_dungeon` 의 숲·늪·피라미드·마법탑·마계·얼음 등 종류, 배치 가족 linear/hub/loop/vertical, 주제 장치 lever·bridge·teleporter·minecart·iceslide·sandpit, 게임 참고 inspiration, 주제 적, 새 그림 키트 이름 `bd-pick-dungeon-theme-*`): `openwiki/dungeon-themes.md`
    - 조선(바람의나라풍) 칩셋 joseon_baram · 손 도트 조각 291종+실내·사냥터·동굴 키트·오토타일 19종을 공용 번들 타일셋으로 (변환기 `build-joseon-tileset.py`, 시트 여러 장 합치기, 칸 통행 X/C/F·꼬리 복사본, 참고문서 6용도, 지도 15장 저장·장소 카드, 재실행 한 줄 `rebuild-joseon.sh`): `openwiki/joseon-baram.md`
    - 열대 군도·해적 항구 pirate_isles (`oprn-pirate`, 16px 코드 손 도트 174조각 → object-gate 통과분만 굽기 `pi_bake.py`, 순수 구성기 `pirateIslesComposer.ts` + 조수 도구 `compose_pirate_isles_map`, 해적·열대·군도 낱말 경로, 참고문서 `pi_refs.py`): `openwiki/pirate-isles.md`
    - 전국·에도 일본 번들 sengoku_edo (성하마을·여관 거리·무가 저택·성·신사/절·농촌 야외 + 다다미 실내, 손 도트 + object-gate 영수증만 굽기, 구성 도구 compose_sengoku_edo_map · link_sengoku_edo_interior, 방 구성 7개, 적대 QA 결함표): `openwiki/sengoku-edo.md`
@@ -135,6 +139,7 @@ This repository uses a project-local OpenWiki layer so coding agents can underst
    - 사막·동양풍 번들 desert_east(계열 oprn-desert-east) · 오아시스 마을·바자르·궁전·피라미드 유적·대상 숙소 + 찻집·가게·알현실·묘실·함맘·여관 실내를 코드 손 도트로 그려 object-gate 영수증 통과분만 굽고(모서리 왕 타일 5벌), 순수 구성기 `compose_desert_east_map`·`compose_desert_east_room`(발 밑 재질·문 접근칸·BFS)로 깐다: `openwiki/desert-east.md`
    - 북방 설원 번들 snow_north · 눈 덮인 북방 마을·얼어붙은 호수 낚시터·얼음 동굴 입구·겨울 장터 + 오두막·회관·선술집·사우나·얼음 동굴 실내 코드 손 도트 131조각(오토타일 6, object-gate 영수증·조립 그림, 프로필 미보정), 구성기 `compose_snow_north_map`, 버들항 눈 기후(theme:"snow")와의 라우팅 경계는 `src/ai/snowNorthPolicy.ts`: `openwiki/snow-north.md`
    - Editor AI panel & tools: `openwiki/editor-ai-panel.md` + `openwiki/editor-ai-tools.md`
+   - 조수 v2 (기본 꺼짐 — 모델은 명세만, 결정론 빌더가 짓고 독립 비평가가 1배 그림을 본다; `?assistant=v2`, v1 비교 결과): `openwiki/assistant-v2.md`
    - Editor misc workflows: `openwiki/editor-workflows-misc.md`
    - 에디터 「공방」 (하네스를 에디터 안에서 사용자 계정 모델로 돌리기 — 왼쪽 막대, 실행기·저장·표면): `openwiki/editor-workshop.md`
    - 코딩 에이전트의 스토어 제출 (`npm run -s store`, 에이전트 토큰·확인 대기·검사 목록): `openwiki/store-agent-contribution.md`
@@ -244,6 +249,10 @@ npm run qa:runtime:gate     # 게이트: 두 시나리오
 `scripts/qa/runtime/<name>.scenario.mjs`. 설계·근거는
 `docs/superpowers/specs/2026-08-28-runtime-vision-qa-design.md`, 함정 목록은
 `openwiki/testing.md`.
+
+**늦은 단계(보스·엔딩·패배 카드·보고 장면 등)는 타이틀부터 다시 플레이하지 말고 체크포인트로 바로 들어간다:**
+`npm run qa:runtime -- --scenario checkpoints --checkpoint-set <데모> --checkpoint <id|all> --parallel 2`.
+세트는 `scripts/qa/runtime/checkpoints/<데모>.json`, 규칙·형식은 `openwiki/testing.md` 「런타임 QA 체크포인트」.
 
 왜 편집기 경로로 하면 안 되는가 (실측):
 - `src/app/mode.ts` 의 `enterMode` 는 play 모드에서도 `renderTopbar()` 를 호출한다 —

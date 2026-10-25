@@ -3,6 +3,7 @@ import { layerSwitcherKey, makeLeftLayerSwitcher } from "./leftLayerSwitcher";
 import { captureFocus, restoreFocus } from "./sidebarFocus";
 import { getMode, toggleMode } from "@/app/mode";
 import { PRODUCT_BRAND, PRODUCT_TAGLINE } from "@/brand";
+import { t } from "@/i18n";
 import { showAlert, showConfirm } from "@/editor/ui/modal";
 import { showBackupRestoreDialog } from "@/editor/ui/backupRestoreDialog";
 import { openAudioTestDialog } from "@/editor/panels/audioTestDialog";
@@ -55,7 +56,7 @@ import { requestCommandPalette } from "@/editor/panels/commandPalette";
 import { makeSvgIcon, type SvgIconName } from "@/editor/panels/tileToolbarIcons";
 import { installToolbarOverflow } from "@/editor/panels/toolbarOverflow";
 import { installTopbarFit } from "@/editor/panels/topbarFit";
-import { renderWorkspaceBar } from "@/editor/panels/workspaceBar";
+import { focusFirstMenuItem, handleMenuArrowKeys, renderWorkspaceBar } from "@/editor/panels/workspaceBar";
 import { toolbarButton } from "./menuToolbar";
 import { renderCommitHistoryButton, renderIdentityTopbarControl } from "@/editor/teamWorkflowUi";
 import { claimTransientLayer, releaseTransientLayer } from "@/editor/ui/transientLayer";
@@ -669,7 +670,9 @@ function openMenuPopup(id: string, button: HTMLElement, commands: readonly MenuC
   activeMenuPopup = popup;
   activeMenuTrigger = button;
   positionMenuPopup(popup, button);
+  focusFirstMenuItem(popup);
   popup.addEventListener("keydown", (event) => {
+    handleMenuArrowKeys(event, popup);
     if (event.key !== "Escape") return;
     event.preventDefault();
     event.stopPropagation();
@@ -777,7 +780,7 @@ function menuCommands(id: MenuId, topbar: HTMLElement): readonly MenuCommand[] {
     case "help":
       return [
         item("단축키 · 도움말", "menu-help-shortcuts", () => openHelpModal()),
-        item("정보", "menu-help-about", () => toast(`${PRODUCT_BRAND} — ${PRODUCT_TAGLINE}`, "ok")),
+        item("정보", "menu-help-about", () => toast(`${PRODUCT_BRAND} — ${t(PRODUCT_TAGLINE)}`, "ok")),
       ];
   }
 }
@@ -940,15 +943,9 @@ async function newScarloxyDemoProject(): Promise<void> {
 }
 
 async function loadFlagshipDemoInEditor(id: FlagshipDemoId, playNow = false): Promise<void> {
-  // 데모 빌더는 예제 그림 수십 MB 를 끌고 온다 — 편집기 첫 화면 번들에 넣지 않고 누를 때 받는다.
-  const { createFlagshipDemoProject } = await import("@/project/flagship");
-  const demo = createFlagshipDemoProject(id);
-  store.replaceProject(demo.project, { label: `${demo.manifest.title} 데모 열기`, origin: "human" });
-  focusLoadedProjectStartMap();
-  toast(`${demo.manifest.title} 데모를 불러왔습니다`, "ok");
-  if (playNow) {
-    void openTestPlayWindow();
-  }
+  // 구운 데모(dist/demos/<id>.project.json)를 읽는다. 열기는 편집 가능한 새 프로젝트 폴더로 만든다.
+  const { openFlagshipDemo } = await import("@/editor/flagshipDemoLoader");
+  await openFlagshipDemo(id, { action: playNow ? "play" : "open" });
 }
 
 function focusLoadedProjectStartMap(): void {
@@ -986,6 +983,8 @@ async function doLoad(): Promise<void> {
     return;
   }
   if (!opened) {
+    // 폴더 선택 창을 닫은 경우(브라우저 폴더 선택 지원 환경)는 조용히 끝낸다.
+    if (!window.oprn?.start && "showDirectoryPicker" in window) return;
     toast("프로젝트 서버에 연결되지 않았습니다. 내부 IP의 프로젝트 호스트 주소로 다시 접속하세요.", "error");
     return;
   }
@@ -1105,7 +1104,7 @@ async function doExportDesktopSteamGame(options: DesktopSteamExportOptions = {})
     );
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
-    toast(`데스크톱 · Steam 패키지 빌드 실패: ${message}`, "error");
+    toast(t(`데스크톱 · Steam 패키지 빌드 실패: ${message}`), "error");
   }
 }
 
@@ -1119,7 +1118,14 @@ async function doExportWebGame(): Promise<void> {
     const project = store.getCurrent();
     const result = await createWebPlayerExportPackage(project);
     downloadBlob(result.blob, webExportFileName(project));
-    toast(`게임 내보내기 완료: 맵 ${result.summary.mapCount}개, 에셋 ${result.summary.assetCount}개`, "ok");
+    const skipped = result.summary.skippedRetiredResources;
+    if (skipped.length > 0) console.warn("[web-export] skipped retired (deleted) art:", skipped);
+    toast(
+      skipped.length === 0
+        ? `게임 내보내기 완료: 맵 ${result.summary.mapCount}개, 에셋 ${result.summary.assetCount}개`
+        : `게임 내보내기 완료(경고): 맵 ${result.summary.mapCount}개, 에셋 ${result.summary.assetCount}개, 삭제된 그림 ${skipped.length}개는 빼고 냈습니다`,
+      skipped.length === 0 ? "ok" : "info",
+    );
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
     toast(`게임 내보내기 실패: ${message}`, "error");
@@ -1141,6 +1147,7 @@ async function doExportStandaloneHtml(): Promise<void> {
     downloadBlob(result.blob, result.fileName);
     const size = (result.summary.htmlBytes / 1048576).toFixed(1);
     const missing = result.summary.missingAssets.length;
+    if (missing > 0) console.warn("[standalone-export] skipped retired (deleted) art:", result.summary.missingAssets);
     toast(
       missing === 0
         ? `실행형 HTML 완료: ${size}MB, 에셋 ${result.summary.assetCount}개`

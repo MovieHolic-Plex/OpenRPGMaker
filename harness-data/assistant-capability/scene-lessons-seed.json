@@ -1,0 +1,480 @@
+{
+ "id": "assistant-capability-scene-lessons-v1",
+ "version": 1,
+ "purpose": "데모 3종(첫사랑·Fallen Star·Astra Horizon)을 손으로 고친 교훈을 편집기 조수가 혼자 지킬 수 있는지 실제 입력창 경로로 잰다. 한 과제 = 빈 프로젝트 하나 + 자연어 한 번. 기계 검사(scene-* 경고·qa-game check·저장/재로드)와 1배 렌더의 새 Opus 판정자 시각 검수를 따로 기록한다.",
+ "internalAi": "조수 엔진은 제품의 로컬 CLI 엔진 스위치(src/ai/localCliEngine.ts) — Claude Code + claude-sonnet-5-5, effort high. 기본 Argon 이 한도 소진이라 대용이다. Argon 점수와 직접 비교하지 않는다.",
+ "assistantEngine": {
+  "kind": "local-cli",
+  "cli": "claude",
+  "routineModel": "claude-sonnet-5-5",
+  "deepModel": "claude-sonnet-5-5",
+  "effort": "high"
+ },
+ "maximumConcurrentEditors": 2,
+ "turnDeadlineMs": 2400000,
+ "maximumRepairTurns": 0,
+ "panoramaCoveredElsewhere": "배경·파노라마(노을 옥상·바다·별밤 창·흐르는 구름·붉은 달 성·모래폭풍·모호한 '배경 예쁘게'·한 화면 시차·다리 밑 물)는 별도 파노라마 시험이 맡는다.",
+ "cases": [
+  {
+   "id": "office-elevator",
+   "label": "로비→엘리베이터→2층 사무실",
+   "port": 19501,
+   "lessons": [
+    "transfer-on-door-art",
+    "transfer-pair",
+    "transfer-facing",
+    "elevator-art-direction"
+   ],
+   "prompt": "회사 1층 로비 맵과 2층 사무실 맵을 만들어 줘. 로비의 엘리베이터를 타면 2층 사무실 엘리베이터 앞에 내리고, 2층 엘리베이터로 다시 1층 로비로 내려올 수 있어야 해. 게임은 로비에서 시작해.",
+   "requirements": [
+    "two interior maps (lobby, office)",
+    "transfer trigger on the elevator art cell, not the floor in front",
+    "landing within 1 tile of the return elevator, facing away from it",
+    "both directions work",
+    "start on lobby"
+   ],
+   "lint0": [
+    "scene-transfer-off-door",
+    "scene-transfer-pair",
+    "scene-transfer-facing",
+    "scene-stair-direction",
+    "scene-ceiling-tile"
+   ]
+  },
+  {
+   "id": "npc-walk-out",
+   "label": "NPC가 문으로 걸어 나감",
+   "port": 19502,
+   "lessons": [
+    "npc-no-vanish",
+    "path-after-events",
+    "switch-registered"
+   ],
+   "prompt": "작은 여관 실내 맵을 만들고 여관 주인 NPC를 놓아 줘. 주인공이 말을 걸면 주인이 \"잠깐 창고에 다녀올게요\"라고 말한 뒤 출입문까지 걸어가서 문 앞에서 문 쪽을 보고 사라지게 해 줘. 제자리에서 갑자기 사라지면 안 돼.",
+   "requirements": [
+    "NPC moveEvent route ends adjacent to the door",
+    "faces the door before erase",
+    "no in-place vanish",
+    "route cells passable"
+   ],
+   "lint0": [
+    "scene-npc-vanish",
+    "scene-actors-stacked"
+   ]
+  },
+  {
+   "id": "walled-town-ne-gate",
+   "label": "성벽 마을, 성문 북동쪽",
+   "port": 19503,
+   "lessons": [
+    "visible-exit",
+    "reachability",
+    "edge-exit"
+   ],
+   "prompt": "성벽으로 빙 둘러싼 작은 마을을 만들어 줘. 성문은 북동쪽에 하나만 두고, 성문을 지나 나가면 바깥 들판 맵으로 이어지고 들판에서 다시 성문으로 돌아올 수 있게 해 줘. 마을 안에는 집 두세 채.",
+   "requirements": [
+    "wall encloses town",
+    "single gate in the NE",
+    "gate exit is visible and reachable",
+    "round trip to field map"
+   ],
+   "lint0": [
+    "scene-transfer-off-door",
+    "scene-transfer-pair",
+    "scene-transfer-facing"
+   ]
+  },
+  {
+   "id": "dark-ceiling-cellar",
+   "label": "지하 창고, 방 밖은 어두운 천장",
+   "port": 19504,
+   "lessons": [
+    "dark-ceiling-only",
+    "interior-padding-dark"
+   ],
+   "prompt": "지하 창고 실내 맵을 방 두 개로 만들어 줘. 두 방은 좁은 통로로 이어지고, 방과 통로 밖은 전부 어두운 천장으로만 채워 줘. 상자와 통 몇 개를 놓아.",
+   "requirements": [
+    "two rooms + corridor",
+    "outside is uniform dark ceiling, no grey dither band, no floor-valued specks",
+    "props on floor"
+   ],
+   "lint0": [
+    "scene-ceiling-tile",
+    "scene-hang-on-floor"
+   ]
+  },
+  {
+   "id": "bust-facing-dialogue",
+   "label": "두 사람 대화, 흉상이 서로 봄",
+   "port": 19505,
+   "lessons": [
+    "bust-facing",
+    "dialogue-position-one",
+    "speaker-has-portrait"
+   ],
+   "prompt": "카페 실내에서 민준과 서연 두 사람이 대화하는 시작 장면을 만들어 줘. 대사는 여섯 줄 정도 주고받고, 대화할 때 두 사람의 흉상(얼굴 그림)이 서로를 바라보게 해 줘.",
+   "requirements": [
+    "cafe interior",
+    "6-ish alternating lines with portraits",
+    "left speaker faces right, right speaker faces left",
+    "dialogue position consistent"
+   ],
+   "lint0": [
+    "scene-dialogue-position-mixed",
+    "scene-dialogue-context-mixed"
+   ]
+  },
+  {
+   "id": "missing-prop-vending",
+   "label": "없는 소품(자판기) 놓기",
+   "port": 19506,
+   "lessons": [
+    "object-by-name",
+    "generate-missing-object"
+   ],
+   "prompt": "작은 지하철역 대합실 실내 맵을 만들고 벽 쪽에 음료 자판기 두 대를 놓아 줘. 칩셋에 자판기가 없으면 새로 그려서라도 넣어 줘.",
+   "requirements": [
+    "station concourse interior",
+    "two vending machines visible against the wall",
+    "if drawn, matches chipset view (3/4)"
+   ],
+   "lint0": [
+    "scene-ceiling-tile",
+    "scene-hang-on-floor"
+   ]
+  },
+  {
+   "id": "boss-checkpoint",
+   "label": "보스전 체크포인트",
+   "port": 19507,
+   "lessons": [
+    "checkpoint-before-boss",
+    "boss-ends-all-paths"
+   ],
+   "prompt": "작은 동굴 던전 맵을 만들고 맨 안쪽에 보스전을 넣어 줘. 보스 방 바로 앞에 체크포인트(세이브 지점)를 두어서, 보스에게 져도 게임 오버 대신 체크포인트에서 다시 도전할 수 있게 해 줘.",
+   "requirements": [
+    "cave map",
+    "boss battle event",
+    "save/checkpoint before boss",
+    "defeat returns to checkpoint, not title"
+   ],
+   "lint0": [
+    "scene-transfer-facing",
+    "scene-ceiling-tile"
+   ]
+  },
+  {
+   "id": "inn-shop-doors",
+   "label": "여관·상점 실내 + 문 연결",
+   "port": 19508,
+   "lessons": [
+    "transfer-on-door-art",
+    "transfer-pair",
+    "door-reachable",
+    "shop"
+   ],
+   "prompt": "작은 마을 맵에 여관과 상점 건물을 하나씩 짓고, 각각의 실내 맵을 만들어서 건물 문으로 들어가고 실내 출구로 나오면 그 문 앞으로 돌아오게 연결해 줘. 상점 주인에게 말을 걸면 포션을 살 수 있게.",
+   "requirements": [
+    "town + inn interior + shop interior",
+    "door triggers on door art cells",
+    "landing in front of the return door",
+    "shop sells potion"
+   ],
+   "lint0": [
+    "scene-transfer-off-door",
+    "scene-transfer-pair",
+    "scene-transfer-facing",
+    "scene-ceiling-tile"
+   ]
+  },
+  {
+   "id": "dialogue-bottom-narration",
+   "label": "대화창 위치 하나 + 내레이션",
+   "port": 19509,
+   "lessons": [
+    "dialogue-position-one",
+    "narration-context",
+    "no-instant-system"
+   ],
+   "prompt": "마을 광장에서 시작하는 첫 장면을 만들어 줘. 먼저 \"그해 봄, 작은 항구 마을.\" 같은 내레이션 한 줄이 나오고, 촌장이 주인공에게 세 줄로 인사해. 대화창은 게임 내내 화면 아래에 같은 모양으로 나와야 해.",
+   "requirements": [
+    "narration line uses narration context",
+    "chief 3 lines with name/face",
+    "all text bottom",
+    "displayTextSettings bottom before first line"
+   ],
+   "lint0": [
+    "scene-dialogue-position-mixed",
+    "scene-dialogue-context-mixed"
+   ]
+  },
+  {
+   "id": "map-bgm-every-map",
+   "label": "맵마다 BGM",
+   "port": 19510,
+   "lessons": [
+    "bgm-every-map"
+   ],
+   "prompt": "숲 필드 맵과 숲속 마을 맵을 만들고 서로 걸어서 오갈 수 있게 이어 줘. 두 맵에 각각 분위기에 맞는 배경 음악을 깔아 줘.",
+   "requirements": [
+    "two maps linked both ways",
+    "each map has BGM set",
+    "BGM fits fantasy forest/village"
+   ],
+   "lint0": [
+    "scene-map-no-bgm",
+    "scene-transfer-pair",
+    "scene-transfer-facing"
+   ]
+  },
+  {
+   "id": "wall-hang-library",
+   "label": "벽 걸이는 벽에",
+   "port": 19511,
+   "lessons": [
+    "wall-hang-on-wall"
+   ],
+   "prompt": "작은 도서관 실내 맵을 만들어 줘. 책장을 줄지어 놓고, 벽에 액자 두 개와 시계 하나를 걸어 줘.",
+   "requirements": [
+    "library interior",
+    "bookshelves",
+    "frames and clock on wall upper row, not floor"
+   ],
+   "lint0": [
+    "scene-hang-on-floor",
+    "scene-ceiling-tile"
+   ]
+  },
+  {
+   "id": "night-village",
+   "label": "밤 마을, 빛은 등불·창에만",
+   "port": 19512,
+   "lessons": [
+    "night-dark-ambient",
+    "light-sources-only"
+   ],
+   "prompt": "밤의 작은 마을 맵을 만들어 줘. 전체는 어둡게 하고, 가로등과 집 창문 주변에만 따뜻한 빛이 나게 해 줘.",
+   "requirements": [
+    "ambient <= 0.5 tinted",
+    "light sources at lamps/windows",
+    "still readable"
+   ],
+   "lint0": []
+  },
+  {
+   "id": "house-stairs",
+   "label": "2층 집 계단 왕복",
+   "port": 19513,
+   "lessons": [
+    "stair-art-direction",
+    "transfer-pair",
+    "transfer-facing"
+   ],
+   "prompt": "2층짜리 집을 만들어 줘. 1층 거실 맵과 2층 침실 맵을 따로 두고, 1층 계단을 오르면 2층 침실 계단 옆에 도착하고, 2층 계단을 내려가면 1층 계단 옆으로 돌아오게 해 줘.",
+   "requirements": [
+    "two floors",
+    "up-stair art on 1F, down-stair art on 2F",
+    "pair landing",
+    "arrival facing"
+   ],
+   "lint0": [
+    "scene-stair-direction",
+    "scene-transfer-pair",
+    "scene-transfer-facing",
+    "scene-transfer-off-door",
+    "scene-ceiling-tile"
+   ]
+  },
+  {
+   "id": "party-enter-cutscene",
+   "label": "동료 둘이 따라 들어오는 컷신",
+   "port": 19514,
+   "lessons": [
+    "actors-not-stacked",
+    "face-by-position",
+    "two-tiles-before-talk"
+   ],
+   "prompt": "성당 실내 맵에서, 주인공이 들어오면 동료 두 명(기사 아린, 마법사 도윤)이 뒤따라 들어와 주인공 옆에 서서 한 마디씩 하는 컷신을 만들어 줘. 세 사람이 한 칸에 겹치면 안 되고, 말할 때 서로를 바라보게 해 줘.",
+   "requirements": [
+    "two companions enter and stand on distinct cells",
+    "no stacking",
+    "facing toward speaker",
+    "runs once"
+   ],
+   "lint0": [
+    "scene-actors-stacked",
+    "scene-npc-vanish",
+    "scene-dialogue-position-mixed"
+   ]
+  },
+  {
+   "id": "quiet-modern-street",
+   "label": "조용한 현대 거리(움직이는 차 없음)",
+   "port": 19515,
+   "lessons": [
+    "no-moving-traffic",
+    "story-map-bgm"
+   ],
+   "prompt": "조용한 현대 일본 주택가 골목 맵을 만들어 줘. 연애 이야기의 첫 만남 장면에 쓸 거라서 지나다니는 차나 버스는 없어야 하고, 잔잔한 음악을 깔아 줘.",
+   "requirements": [
+    "modern residential street",
+    "no moving vehicles/transit",
+    "calm BGM"
+   ],
+   "lint0": [
+    "scene-moving-vehicle",
+    "scene-map-no-bgm"
+   ]
+  },
+  {
+   "id": "decorate-keep-reachable",
+   "label": "소품 몰아 찍어도 NPC 안 갇힘",
+   "port": 19516,
+   "lessons": [
+    "reachability-after-stamping"
+   ],
+   "prompt": "작은 마을 맵을 만들고 빵집 주인 NPC를 광장에 세워 줘. 그다음 마을을 나무·화분·꽃밭으로 풍성하게 꾸며 줘. 꾸민 뒤에도 주인공이 빵집 주인에게 걸어가 말을 걸 수 있어야 해.",
+   "requirements": [
+    "town decorated densely",
+    "baker NPC reachable from start",
+    "no prop on event cells"
+   ],
+   "lint0": [
+    "scene-actors-stacked"
+   ]
+  },
+  {
+   "id": "yes-no-default",
+   "label": "예/아니오 기본 커서는 진행 쪽",
+   "port": 19517,
+   "lessons": [
+    "choice-default-progress",
+    "no-autoadvance-before-choice"
+   ],
+   "prompt": "대장간 실내 맵에 대장장이 NPC를 놓고, 말을 걸면 \"그 검, 강화해 줄까?\" 하고 예/아니오를 묻게 해 줘. 예를 고르면 골드 100을 받고 공격력이 오른 검으로 바꿔 주고, 돈이 모자라면 거절해. 커서는 진행하는 쪽(예)에 먼저 있게 해 줘.",
+   "requirements": [
+    "choice with default on yes",
+    "gold check and refusal",
+    "weapon swap on yes",
+    "cancel = no"
+   ],
+   "lint0": [
+    "scene-dialogue-position-mixed"
+   ]
+  },
+  {
+   "id": "door-visible-exit-sign",
+   "label": "숲 출구 표지",
+   "port": 19518,
+   "lessons": [
+    "visible-exit",
+    "route-to-exit",
+    "settlement-prop-on-route"
+   ],
+   "prompt": "숲길 필드 맵을 만들고 동쪽 끝에 다음 지역(산길) 맵으로 넘어가는 출구를 만들어 줘. 플레이어가 출구를 쉽게 찾을 수 있게 길을 출구까지 잇고 출구 옆에 이정표 같은 표지를 세워 줘. 산길에서 숲길로 돌아올 수도 있어야 해.",
+   "requirements": [
+    "path reaches the east edge exit",
+    "signpost beside exit (forest-family prop)",
+    "exit cell and landing empty",
+    "round trip"
+   ],
+   "lint0": [
+    "scene-transfer-off-door",
+    "scene-transfer-pair",
+    "scene-transfer-facing"
+   ]
+  },
+  {
+   "id": "npc-portrait-match",
+   "label": "칩·초상·이름이 같은 인물",
+   "port": 19519,
+   "lessons": [
+    "bust-matches-chip",
+    "bust-object-npc"
+   ],
+   "prompt": "작은 마을 맵에 이야기용 NPC 세 명을 놓아 줘: 빵집 주인 아저씨 '한결', 고양이 '나비', 성문 경비병 '도겸'. 말을 걸면 각자 한두 줄씩 말하고, 맵 위 캐릭터 그림과 대화창 얼굴 그림이 같은 인물로 보이게 해 줘. 고양이는 고양이 그림이어야 하고 사람 얼굴을 붙이면 안 돼.",
+   "requirements": [
+    "three NPCs with matching chip and portrait",
+    "cat uses an animal chip and no human portrait",
+    "each speaks"
+   ],
+   "lint0": [
+    "scene-dialogue-position-mixed"
+   ]
+  },
+  {
+   "id": "boss-balance-sim",
+   "label": "보스 난이도 시뮬레이션",
+   "port": 19520,
+   "lessons": [
+    "battle-boss-turns",
+    "boss-level-band",
+    "boss-ends-all-paths"
+   ],
+   "prompt": "숲 깊은 곳 맵에 보스 '썩은 뿌리 정령' 전투를 만들어 줘. 레벨 5 주인공 혼자인 파티 기준으로 3~9턴 정도 걸리고 플레이어 승률이 60~85%쯤 되게, 손으로 짐작하지 말고 전투 시뮬레이션으로 맞춰 줘. 보스 레벨은 플레이어보다 낮아 보이면 안 돼.",
+   "requirements": [
+    "boss battle event",
+    "simulate_battle used",
+    "win rate 60-85%, 3-9 turns",
+    "boss level >= player-1"
+   ],
+   "lint0": []
+  },
+  {
+   "id": "background-ambiguous-clarify",
+   "label": "모호한 「배경」 요청은 먼저 되묻기",
+   "port": 19521,
+   "lessons": [
+    "clarify-ambiguous-request"
+   ],
+   "prompt": "배경 좀 예쁘게 해 줘.",
+   "requirements": [
+    "the assistant asks one short question (map background picture vs. decorating the map) before changing anything",
+    "no map content changes before the answer"
+   ],
+   "lint0": []
+  },
+  {
+   "id": "walled-beodeul-town",
+   "label": "버들항 성벽 마을, 남문 지나 나가기",
+   "port": 19522,
+   "lessons": [
+    "town-wall-art",
+    "gate-passable",
+    "reachability"
+   ],
+   "prompt": "성벽으로 빙 둘러싼 버들항 마을을 만들어 줘. 남쪽에 성문 하나를 두고, 성벽에는 망루도 세워 줘. 마을 안에는 집 너댓 채와 작은 광장.",
+   "requirements": [
+    "wall drawn with the bd-wall kit (3/4 wall walk + front face) around the town",
+    "south gate passable from inside to outside",
+    "all house doors reachable from the gate",
+    "towers on the wall"
+   ],
+   "lint0": [
+    "scene-transfer-off-door",
+    "scene-transfer-pair",
+    "scene-transfer-facing"
+   ]
+  },
+  {
+   "id": "venue-room-return-door",
+   "label": "거리에서 들어간 실내 명소, 걸어서 돌아 나오기",
+   "port": 19523,
+   "lessons": [
+    "interior-exit-walk-back",
+    "transfer-facing"
+   ],
+   "prompt": "상점가 거리 맵을 만들어 줘. 거리에 서 있는 학생회장에게 말을 걸면 '학생회실' 실내로 들어갈 수 있고, 학생회실 안에서 걸어서 다시 거리로 나올 수 있어야 해. 게임은 거리에서 시작해.",
+   "requirements": [
+    "the street hub map exists and the game starts there",
+    "talking to the NPC offers a choice that transfers into the interior map",
+    "the interior landing cell is passable floor, not a wall tile",
+    "inside the interior room a playerTouch transfer returns to the street hub",
+    "walking from the landing cell in any direction reaches the return transfer without leaving the room's floor"
+   ],
+   "lint0": [
+    "scene-transfer-facing"
+   ]
+  }
+ ]
+}

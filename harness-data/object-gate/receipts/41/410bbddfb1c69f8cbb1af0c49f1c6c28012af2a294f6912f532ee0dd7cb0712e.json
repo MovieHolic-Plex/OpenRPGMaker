@@ -1,0 +1,287 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "410bbddfb1c69f8cbb1af0c49f1c6c28012af2a294f6912f532ee0dd7cb0712e",
+ "width": 16,
+ "height": 16,
+ "kind": "organic",
+ "name": "grass tuft (grass tuft), natural map prop for the Beodeul 16px chipset, 1x1 tiles, walk-over ground decor (2nd layer), 3/4 top-down, sits on grass between broadleaf trees",
+ "label": "beodeul_organic/grass-tuft-a",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 명암 3단 < 4 (2/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "명암 3단 < 4 (2/4)"
+  ],
+  "styleKind": "tree",
+  "refs": [
+   "tree-1a786c",
+   "tree-d43edd"
+  ],
+  "scale": 2,
+  "score": 6,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_organic",
+   "fallback": true,
+   "reason": "칩셋 beodeul_organic 의 화풍 기준 묶음이 없다",
+   "hash": "bcc19e99327f94ce"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 0,
+  "tileColorsP90": 0,
+  "darkV5": 32,
+  "nearBlackEdge": 0.09,
+  "opaqueTiles": 0
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "grass blades cluster",
+      "rows": "7-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 8,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The tuft is a cluster of pointed grass blades (rows 7-14) with a width profile that grows from 2 at row 7 to 12 at rows 10-11 and then narrows to 6 at row 14. It shows no horizontal top surface: there is no front-edge line, no eave shadow, no ellipse and no visible contents. The light-green tips (rows 8-10) and dark-green bases (rows 11-14) read as blades seen face-on, so it reads as a front elevation, not a 3/4 volume."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "none",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a tiny grass tuft, well under one 16x16 tile, so the per-tile facts read 0 and I judged by eye. It has only 6 distinct colours in total. I see about 3 green steps: a dark base, a mid green and a light blade tip. It has no visible outline and no flat 5x5 areas, because the piece is too small to hold any. Next to the references it looks thin and sparse. The blades are a few single-pixel strokes with little clumping and no highlight variety. The references have 6 or more ramp steps and leaf clumps in several greens. A prop this small cannot carry that density, and sparseness alone is not a fail. Even so, the tuft is clearly shallower than the reference, with only 3 steps and little grain, and could look like a flat sticker on grass. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 9212
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "grass blades (whole tuft)",
+      "rows": "7-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 8,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The tuft is a cluster of upright blades spanning rows 7-14, with a width profile of 2, 5, 8, 12, 12, 10, 8, 6. Light green blade tips sit at rows 8-10, and dark green shadow gaps between blades run through rows 11-14. No row band ends in a front-edge line, there is no eave shadow, no ellipse, and no contents or roof plane. The light tips are the ends of vertical blades, not a horizontal surface. The drawing is a flat front-view silhouette of blades with no top plane, which is natural for a walk-over ground decor plant."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a tiny tuft, smaller than one 16x16 tile, so the per-tile facts read 0 and I judged it by eye. It has only 6 distinct colours in total, against 10 for the simpler reference tree-1a786c and 567 for tree-d43edd. I count about 4 green steps: a dark base, a mid green and one or two lighter blade tips. Beodeul uses 5-6 steps per material. The dark edge pixels are 0% neutral, so the outline is a tinted dark green, which is right for a leaf material. There are no flat 5x5 fills, but at this size the blades are only a few pixels each, with little clump variation or grain. Next to the references it looks thinner and less shaded, closer to a simple sticker-like icon than to the layered leaf clusters. Because it is not clearly equal to a Beodeul tuft, I fail it.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 15652
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "grass blades cluster",
+      "rows": "7-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 8,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "other",
+    "evidence": "The grass tuft is a cluster of pointed blades. The silhouette widens from 2px at row 7 to 12px at rows 10-11, then narrows to 6px at row 14. It has no front-edge line, no eave shadow and no ellipse, and it holds no contents. The lighter blade tips and dark base shading are organic foliage shading, not a horizontal top surface. It is a flat walk-over ground decor sprite with no box-like volume, so the top-surface rule barely applies. It is not a slab, since the blades rise vertically across about 8 rows, and it is not a rigid structure with a missing top."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a tiny tuft of about 12x7 source pixels, smaller than one tile, so the per-tile facts read 0 and I judged by eye. The references are full trees, so the match is loose, but both are plants. The tuft uses only 6 distinct colours, which is about 4 green steps against the references' 6-7 visible tones per tile (tree-1a786c) or 29 (tree-d43edd). Its dark edge pixels carry a green tint (0% neutral), so the outline reads as dark material tone and not a black sticker line. It has no large flat fills (0% near-flat), and the blades show some value variation. Next to the references it still looks thinner and less clustered, with few per-blade highlights and no soil or grain detail. A careful artist would likely ask for more tonal steps and blade clustering, so I fail it on doubt.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 13396
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "grass blades cluster",
+      "rows": "7-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 8,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "other",
+    "evidence": "A small organic grass tuft made of spiky blades, spanning rows 7-14 with a width profile that grows from 2 to 12 and then narrows to 6. It has no built structure, no horizontal top surface, no front-edge line and no eave shadow. The blades are light green at the top and dark green at the base, so it reads as a plant silhouette. It is a flat walk-over ground decor and is not a box-like volume, so the top-surface rules do not apply."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a tiny grass tuft, smaller than one 16x16 tile, so the per-tile tone facts read 0 and I judged by eye. It has only 6 distinct colours and about 3 green steps (dark base, mid, light blade tips). Its dark edge pixels are tinted dark green, not neutral (0% near-neutral), so the outline is a dark material tone. It has no large flat fills, and the blades are separate and legible. Against the references, which have 5-6 steps in clustered leaves and 7 to 29 visible tones per tile, the tuft is thinner and shallower. It has no mid-tone variation within blades, no grain or soil base, and no clump depth. Small props may be simple, but this one still looks a little sparse and sticker-like beside the reference ground foliage. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 9256
+  }
+ ],
+ "decidedAt": "2026-10-24T13:35:28.299Z",
+ "cells": {
+  "16": [
+   "a755b03bcf5e03df"
+  ],
+  "24": [
+   "1dcb452242936702",
+   "4b6ea16adabe3c38",
+   "4e2527d4d8d4349d",
+   "8fc085df74431248",
+   "b176c5cbc908cfb6",
+   "ef677a85e55e4e82"
+  ],
+  "32": [
+   "138eefa533000804",
+   "23fec95cd2b8d0ee",
+   "2c8f06072bc5843e",
+   "57e8ba3006a750d6",
+   "5ec5b457e23a9bf7",
+   "d209929d5a8b7f6b"
+  ],
+  "48": [
+   "04d2d12ade5e39b2",
+   "14ed78a2f52bdb92",
+   "26ac338a2c1db36e",
+   "337ebd4207966793",
+   "c926e338e7418944",
+   "fc65f840607c6495"
+  ]
+ }
+}

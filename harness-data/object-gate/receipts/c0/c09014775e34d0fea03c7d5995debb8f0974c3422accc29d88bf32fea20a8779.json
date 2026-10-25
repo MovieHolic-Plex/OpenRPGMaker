@@ -1,0 +1,369 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "c09014775e34d0fea03c7d5995debb8f0974c3422accc29d88bf32fea20a8779",
+ "width": 48,
+ "height": 48,
+ "kind": "structure",
+ "name": "other.portal",
+ "label": "beodeul_dungeon/other.portal",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "refer",
+ "reasons": [
+  "3/4: 독립 눈이 「3/4 아님」 12/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면"
+ ],
+ "view34": {
+  "verdict": "refer",
+  "reasons": [
+   "독립 눈이 「3/4 아님」 12/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 7,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "5f62fef078ef7661"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 10,
+  "tileColorsP90": 14,
+  "darkV5": 35,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 9
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "lintel/cornice cap",
+      "rows": "1-6",
+      "evidence": "a",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": "7-8"
+     },
+     {
+      "part": "portal front face with sealed gate, gem and side pillars",
+      "rows": "8-35",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "threshold step",
+      "rows": "36-41",
+      "evidence": "a",
+      "front_edge_line_row": 41,
+      "eave_shadow_rows": "43-44"
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 28,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The lintel at rows 1-6 is a light band (rows 1-2, L=197) over a mid-tone band (rows 3-5, L=126). It ends in a 1-row light front-edge line at row 6 (L=197), followed by dark eave shadow at rows 7-8 (L=126 then 66). That fits evidence (a). Below it is a tall vertical face (rows 8-35) holding the sealed door, gem and pillars. A threshold step at rows 36-42 widens from 44 to 48 and then narrows again, with a light front edge at rows 41-42. The lintel top is fairly shallow and could be read as a front-facing cornice, but the edge line and shadow tip it toward a top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a small stone portal frame around a dark interior with a gold-ringed violet gem. It is not a roofed house, so the match to the building references is loose. The stone frame shows about 5 lightness steps (highlight, light, mid, dark, deep), with chiseled block edges and separate highlights on the corner pieces. The interior has diagonal shading lines and a glowing core. Outlines lean purple-grey and blue rather than neutral black, and the measured near-neutral share of dark edge pixels is 0%, so they read as dark material tone. Near-flat coverage is 0%, matching the references, so there are no flat fills. It has 9 visible tones per tile against 10 and 12 for the references, which is slightly lower but close. It does not look like a sticker next to the references and a careful artist would likely accept it. Texture is a little less dense than the tile roofs and plaster of the references, hence 'some'.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19749
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top lintel slab",
+      "rows": "0-5",
+      "evidence": "a",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": "7-8"
+     },
+     {
+      "part": "base step / threshold",
+      "rows": "36-40",
+      "evidence": "a",
+      "front_edge_line_row": 41,
+      "eave_shadow_rows": "43-44"
+     },
+     {
+      "part": "central gem and gold ring on the door",
+      "rows": "17-26",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 28,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The portal is a frontal gate with a dark sealed door face on rows 8-35. The lintel on rows 0-5 is a light-then-mid band (rows 1-2 at L≈197, rows 3-5 at L≈126). It ends in a light front-edge line at row 6, and the dark rows 7-8 below it act as eave shadow. That gives a top slab of about 6 rows over the vertical door face. The base on rows 36-40 widens from 46 to 48 px and has a light front-edge line on rows 41-42. Below it is a short front face on rows 43-45. Both the lintel and the base therefore show a horizontal surface, not just a front-facing strip. The gem and ring are ornaments on the door face. No receding side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The portal is a small stone gate with a glowing core. Its stone frame shows about 4 lightness steps, with visible highlight and shadow on the blocks and corner studs. The reference roofs and walls carry about 6. The measured facts sit close to the references: 9 visible tones per tile against 10 (stone house) and 12 (timber house), 0% near-flat coverage like both references, and 0% neutral dark edge pixels, so the outlines lean toward the material tone rather than a black sticker line. The gold ring and purple core add varied tones. Only 15 distinct colours in total is a restrained ramp, but it still gives visible variation per tile. It is a little less rich than the references but not flat or sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19529
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top lintel/cornice band",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": "7-8"
+     },
+     {
+      "part": "main door/portal face with dark interior and gem",
+      "rows": "8-35",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base step slab",
+      "rows": "36-40",
+      "evidence": "a",
+      "front_edge_line_row": 41,
+      "eave_shadow_rows": "43-44"
+     },
+     {
+      "part": "gold-framed gem on lintel and central gem",
+      "rows": "6-26",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 28,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The lintel at rows 1-5 is a light-to-mid band that ends in a light front-edge line at row 6, followed by darker rows 7-8 (eave shadow). That gives a top band of about 5 rows above the 28-row door face (rows 8-35). The base step (rows 36-42) widens from 46 to 48 px, then has a light edge line at rows 41-42 and tapers, which reads as a top surface and front edge. The drawing is very frontal and symmetric, so the top evidence is moderate rather than strong."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a small stone portal, not a house with roof, walls and door, but it is the same kind of whole-structure piece and is judged at the same scale. Its stone frame has about 5 lightness steps: bevel highlights, mid stone blocks, dark inner edges and a deep recess. The gold ring and glowing purple gem add a separate ramp. The dark edges lean purple-blue and grey-violet, not neutral black, which matches the measured 0% near-neutral share of dark edge pixels. Individual stone blocks are shaded and there are pixel speckles and a bevel, so no 5x5 area is flat, matching the measured 0% near-flat coverage. Visible tones per tile are 9, against 10 for the stone reference and 12 for h101. That is slightly below the references but in the same range, and it is not a sticker look. It has less grain variety than the roof-tile references, which is why density is rated slightly lower and texture 'some'.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18073
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "lintel / top cornice",
+      "rows": "0-7",
+      "evidence": "a",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": "8-9"
+     },
+     {
+      "part": "portal inner face with gold-rimmed purple seal",
+      "rows": "8-35",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "threshold step",
+      "rows": "36-40",
+      "evidence": "a",
+      "front_edge_line_row": 36,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "gold and purple gem and rune ornaments",
+      "rows": "6-26",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 28,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The lintel at rows 0-5 is a band with a 1-row lighter front-edge line at row 6 (L=197). Row 7 is gray and the dark shadow starts at row 8, which gives the lintel a top surface of about 6 rows. The lower threshold widens from 44 to 48 px at rows 36-40, with a lighter edge line at row 36 and a lighter front lip at rows 41-42, so it reads as a step with its own top. The sealed portal face, which is the south face, spans rows 8-35 (about 28 rows). The top is shallow and only moderately convincing, because the whole piece is drawn largely face-on."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a small stone portal: a grey-violet frame with bevelled highlights and shadows, a gold ring and a purple orb on a dark diagonal-patterned floor. Its 9 visible tones per tile are close to the stone house (10) and a little below the timber house (12). Near-flat coverage is 0%, the same as both references, and the picture shows no large flat areas. The dark edge pixels are 0% neutral, so the outlines lean purple or blue-grey and follow the adjacent material rather than being a black sticker line. Shading is about 5 steps on the stone and 3-4 on the orb and gold, a little below the references' 5-6. It has only 15 colours in total, and the stone is less individually shaded than the house walls. That is acceptable for a small prop, so density is slightly lower rather than much lower. A careful artist would accept it next to the stone house.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 22082
+  }
+ ],
+ "decidedAt": "2026-10-23T03:33:17.321Z",
+ "cells": {
+  "16": [
+   "02e2f7bb219deefc",
+   "4a4b9907cddaadd4",
+   "79d7e9650ebf75e6",
+   "89b178d596716f0a",
+   "9519b61ffbf3db7d",
+   "ab01da10dd5604fd",
+   "b7afc49570730cf7",
+   "f4aca9bc1422c32b",
+   "f5ed9a135097cb65"
+  ],
+  "24": [
+   "0693d8ab20b05db4",
+   "64092508e3f15437",
+   "e927f665f9bab4e8",
+   "f7c87411326cbd69"
+  ],
+  "32": [
+   "0e2bb3dd0ee3b524",
+   "1c695c31c92f8d8f",
+   "2f6b40dd61ac2c1c",
+   "348e7de83799e9f7",
+   "361237dffb747e6f",
+   "3e406eb651d216b6",
+   "47554946c10e9e3d",
+   "4c4a1fb358866d9b",
+   "5da595ba5d4d4b09",
+   "5eed521591e53b28",
+   "617f28eb8f50f07f",
+   "6800ef9d3aaa9948",
+   "728f0fc74a313941",
+   "86699cb9a33f329a",
+   "8b2ad9713a5e5a23",
+   "904fa1d53b329764",
+   "94d735df004b6a5d",
+   "b15fc5cb5428d1cf",
+   "c782b6b258616196",
+   "d17198bda1dbfd79",
+   "d18ed46d306a4013",
+   "d66d3ad775183690",
+   "e7c77641d9d019ae",
+   "fca9d94ec02a986d"
+  ],
+  "48": [
+   "fc1393d255a96ab7"
+  ]
+ }
+}

@@ -1,0 +1,19 @@
+{
+ "schema": "oprn-object-gate-hold-decision/1",
+ "pixelSha256": "3d8f9398777aadfec1799598ddb543e3c0c97257f172c79a93b0068a72bf1917",
+ "profileHash": "4d8774b517f41638",
+ "kind": "box",
+ "decision": "allow",
+ "decidedBy": "supervisor (delegated by user 2026-10-22)",
+ "decidedAt": "2026-10-22T11:29:48.859Z",
+ "by": "delegated",
+ "delegatedBy": "user 2026-10-22",
+ "evidence": "harness-data/object-gate/vqa/workshop-objectgen-5.opus-vqa-r4.json",
+ "via": "review-page",
+ "reasons": [
+  "화풍: 화풍 판정이 갈림(걸린 판정 2/4)",
+  "화풍: 판정자 fail (2/4)"
+ ],
+ "note": "묶음 허용: 조수 공방 기물 8 (칸 정하기·큰 물건) — 조수 공방 기물 8 — 사용자 위임·fresh Opus 적대 VQA r4 major 0 (r3 major 4 수정 후) — delegated by user to supervisor 2026-10-22; Opus VQA receipt harness-data/object-",
+ "sig": "4d34cde5bf3f96878a16e0a0be09028fd766e3ab81646204c855f97e147835e4"
+}

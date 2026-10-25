@@ -63,6 +63,7 @@ import {
   transferTo as transferSceneTo,
 } from "@/player/playSceneMapCommands";
 import { findRuntimeEventInScene, resetEncounterCounter, updatePlayScene } from "@/player/playSceneMovement";
+import { prefetchBattleAssetsForMap } from "@/player/battleAssetPrefetch";
 import { recordDungeonEntrance } from "@/project/encounterGuard";
 import { createWorldAtlasController } from './worldAtlasOverlay';
 import { visitAtlasMap } from '@/project/worldAtlas';
@@ -88,7 +89,7 @@ import { installPlaySceneTestHooks } from "@/player/playSceneTestHooks";
 import { applyStoredCameraState, centerRuntimeCamera, panRuntimeCamera } from "@/player/playSceneCamera";
 import { runtimeMapViewZoom, runtimePixelDensity } from "@/player/runtimeViewScale";
 import { hasSessionCheckpoint, restoreSessionCheckpoint, setSessionCheckpoint, getSessionCheckpoint } from "@/player/checkpoints";
-import { syncFollowerSprites } from "@/player/playSceneFollowers";
+import { syncFollowerSceneVisibility, syncFollowerSprites } from "@/player/playSceneFollowers";
 import { syncPartyFollowers } from "@/project/followers";
 import { seedLocationOccupancyForScene } from "@/player/playSceneLocationTransitions";
 import { installLightingLayer, syncLightingLayer, updateLighting } from "@/player/playSceneLighting";
@@ -295,6 +296,8 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
     this.loadMap(this.session.currentMapId, { preserveErasedEvents: true, applyDefaultLighting: false, applyMapBgm: false });
     this.tileX = this.session.x;
     this.tileY = this.session.y;
+    // 저장(또는 QA 체크포인트)에 남은 방향으로 선다. 없으면 기본 아래.
+    if (this.session.playerFacing) this.facing = this.session.playerFacing;
     // 구역 드나듦의 기준선을 심는다. 시작 지점이 어떤 구역 안이라도 «새 게입에 들어왔다»
     // 로 치지 않는다 — 부톨 직후에 트리거가 튰지면 그것은 auto 트리거의 일이지 드나듦이 아니다.
     // 세이브가 이미 기록을 갖고 있으면 같은 값을 다시 쓰는 생개 동작이다.
@@ -401,7 +404,14 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
   }
 
   update(_time: number, deltaMs: number): void {
-    if (this.game.registry.get('initialPresentationPending') === true) return;
+    if (this.game.registry.get('initialPresentationPending') === true) {
+      // Behind the opening cover nothing advances, but the visible tile window must already be built:
+      // otherwise the cover fades onto sprites over a black ground that fills in a few frames later (pop-in).
+      const pendingView = runtimeCameraTileView(this.cameras.main);
+      syncRuntimeTileWindow(this, pendingView);
+      syncTileCulling(this, pendingView, mapTileSize(this.map));
+      return;
+    }
     this.worldAtlasController?.update();
     if (this.worldAtlasController?.isOpen) {
       this.input_.resetEdges();
@@ -411,6 +421,8 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
     this.sunlightLayer?.sync(this.map, store.getCurrent().tilesets[this.map.tilesetId]);
     this.perfCounters.frames += 1;
     updatePlayScene(this, deltaMs);
+    // FF6 식 동료 표시(companions.display "scenesOnly") — 이야기 장면이 열리고 닫힐 때 동료를 세우고 숨긴다.
+    syncFollowerSceneVisibility(this);
     syncTerrainWater(this, this.map);
     syncTerrainVision(this, this.map, this.tileX, this.tileY, store.getCurrent().tilesets[this.map.tilesetId]);
     updateGameTime(this, deltaMs);
@@ -495,6 +507,7 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
     syncCloudShadowLayer(this);
     syncTransitForMap(this);
     void this.syncMinimap();
+    if (this.map) prefetchBattleAssetsForMap(store.getCurrent(), this.map);
   }
 
   renderTiles(): void {
@@ -697,6 +710,7 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
     void this.syncMinimap();
     this.tileX = this.session.x;
     this.tileY = this.session.y;
+    if (this.session.playerFacing) this.facing = this.session.playerFacing;
     // 불러오기는 «그 자리에 서 있는 상태» 를 부활하는 것이다 — 안에서 잡았으면
     // 새로 들어온 것이 아니므로 기준선만 심고 트리거를 돌리지 않는다.
     seedLocationOccupancyForScene(this);

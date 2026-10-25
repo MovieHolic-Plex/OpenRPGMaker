@@ -1,3 +1,4 @@
+import { installTapOrSwipeToClose, isTouchUiHost } from "@/player/touchTap";
 import { getEffectiveReadingPreferences, playerTextDelay, setAuthoredPreferenceDefaults } from '@/player/playerPreferences';
 import { backlogViewIsOpen, backlogRecentlyClosed, closeBacklogView, openBacklogView } from '@/player/dialogueBacklogView';
 import { dialogueUiText } from '@/player/dialogueUiStrings';
@@ -17,7 +18,8 @@ import { resolveAuthoredVnLook, resolveVnLook, vnLookAttributes, vnLookShowsPort
 import { decodeCharsetFrameIndex } from "@/assets/easyrpgRtp";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { reviewedFaceIdForCharset } from "@/assets/reviewedCharsetFaces";
-import { dialogueFaceForEmotion, findSharedPortrait, sharedExpressionSetIdOf, sharedPortraitId, sharedPortraitRendering } from "@/assets/sharedPortraitAssets";
+import { applyPixelBust } from "@/player/bustPixelate";
+import { dialogueFaceForEmotion, findSharedPortrait, sharedExpressionSetIdOf, sharedPortraitId, sharedPortraitNativeGaze, sharedPortraitRendering } from "@/assets/sharedPortraitAssets";
 import { FACE_IMAGE_SIZE } from "@/assets/resourceSlicing";
 import { appearancePortraitForEmotion, faceForDialogueEmotion, resolveActorAppearance, resolveAppearancePortrait } from "@/project/characterAppearances";
 import { facePresentationForResource } from "@/project/facePresentation";
@@ -104,6 +106,10 @@ export type DialogueTextRequest = DialogueSurfaceSettings & {
   readonly speaker?: string;
   readonly body: string;
   readonly face?: FaceGraphic;
+  /** 저작이 대사 앞에 준 듣는 사람 얼굴(화자 반대 자리). 있으면 앞 화자 대신 이 얼굴이 듣는 사람 흉상이다. */
+  readonly listenerFace?: FaceGraphic;
+  /** true 면 듣는 흉상은 listenerFace 하나로만 정한다(없으면 비운다) — 「앞 화자가 남는다」 규칙을 쓰지 않는다(text.bustSide "stage"). */
+  readonly stageListener?: boolean;
   /** true 면 페이지 타이핑 종료 후 키 입력 없이 다음으로. */
   readonly autoAdvance?: boolean;
   /** 엔딩 에필로그의 글. 스킵은 이 글을 절대 건너뛰지 않는다(interpreter text 단계의 endingEpilogue). */
@@ -552,6 +558,7 @@ export function createDialogueUI(
     // 위치가 바뀌는 연속 대사에서 창이 튀지 않게, 지우기 전에 앞 창의 자리를 기억한다(FLIP).
     const prevBox = overlay.querySelector<HTMLElement>(".dialogue-box");
     const savedBoxTop = prevBox ? layoutTop(overlay, prevBox)?.top : undefined;
+    previousTextBox = wasOpen && prevBox && !prevBox.classList.contains("choices") && !prevBox.classList.contains("dialogue-balloon") ? prevBox : undefined;
     cancelActiveText?.();
     cancelActiveChoice?.();
     previousBoxTop = savedBoxTop;
@@ -581,6 +588,8 @@ export function createDialogueUI(
       stageSlots = {};
       lastLineForcedBottom = false;
       previousBoxTop = undefined;
+      sessionPosition = undefined;
+      lastBoxPosition = undefined;
     };
     const cancelTimer = schedule(finish, exitMs);
     // schedule 이 동기로 끝냈으면(node 환경) 예약을 남기지 않는다.
@@ -721,6 +730,13 @@ export function createDialogueUI(
       list.append(item);
     }
     if (logEntries.length === 0) list.append(el("li", { class: "dialogue-log-empty", text: "아직 나눈 대화가 없습니다." }));
+    const closeButton = el("button", {
+      class: "dialogue-log-close",
+      text: "닫기 ✕",
+      attrs: { type: "button", "aria-label": "대화 기록 닫기" },
+      dataset: { testid: "dialogue-log-close" },
+    });
+    closeButton.addEventListener("click", (event) => { event.stopPropagation(); closeLog(); });
     logPanel = el("div", {
       class: "dialogue-log",
       attrs: { role: "dialog", "aria-label": "대화 기록" },
@@ -728,11 +744,14 @@ export function createDialogueUI(
       children: [
         el("div", { class: "dialogue-log-head", children: [
           el("strong", { text: "대화 기록" }),
-          el("span", { text: "L · Esc 닫기 · ↑↓ 넘겨 보기" }),
+          el("span", { class: "dialogue-log-hint", text: isTouchUiHost(host) ? "탭하거나 쓸어서 닫기" : "L · Esc 닫기 · ↑↓ 넘겨 보기" }),
+          closeButton,
         ] }),
         list,
       ],
     });
+    // 폰에는 L·Esc 가 없다 — 보이는 닫기 단추와 탭·쓸기로 닫는다(2026-10-24, 아이폰에서 기록 창에 갇힌 신고).
+    installTapOrSwipeToClose(logPanel, closeLog);
     host.append(logPanel);
     list.scrollTop = list.scrollHeight;
   };
@@ -843,6 +862,14 @@ export function createDialogueUI(
   // 직전 대사가 초상 때문에 아래로 강제됐는가 — 같은 세션의 선택지가 대사창과 같은 자리에 서도록 이어 쓴다.
   let lastLineForcedBottom = false;
   let previousBoxTop: number | undefined;
+  // 고정 틀(2026-10-22): 열려 있는 대화 세션의 창 자리. 「주인공 가림 피하기」(auto)는 세션의 첫 창에서 한 번만 정하고,
+  // 이어지는 줄·선택지는 이 자리를 물려받는다 — 줄마다 다시 판정해 창이 위↔아래로 튀던 결함(아스트라·폴른 데모).
+  // 저자가 그 줄에 자리를 못박았으면(top·center·bottom, 또는 가림 피하기를 끈 문장 표시 설정) 그 자리를 따른다.
+  let sessionPosition: MessageWindowPosition | undefined;
+  // 선택지 직전의 대사 상자(떼어 낸 노드). 선택지는 이 상자를 같은 자리에 「틀」로 남기고 그 위에 선택지 칸을 띄운다.
+  let previousTextBox: HTMLElement | undefined;
+  // 바로 앞 창이 선 자리(저자가 못박은 줄 포함). 선택지는 앞 대사 상자와 같은 자리에 선다.
+  let lastBoxPosition: MessageWindowPosition | undefined;
   let listenerPortrait: { readonly key: string; readonly face: FaceGraphic } | undefined;
   let stageSlots: {
     left?: { readonly key: string; readonly idKey: string; readonly face: FaceGraphic };
@@ -888,6 +915,8 @@ export function createDialogueUI(
       const segmentsAll = parseDialogueText(request.body, request.textContext);
 
       const mount = (balloon: boolean): void => {
+        // 오버레이는 줄마다 재사용된다 — 앞 줄이 맞춘 높이를 지워야 다음 줄이 처음부터 잰다.
+        overlay.style.removeProperty("height");
         const behindPortraits: HTMLElement[] = [];
         let glideFromPrevious = false;
         box = dialogueBox("", "dialogue-box");
@@ -935,7 +964,11 @@ export function createDialogueUI(
         // 같은 세션에서 초상 규칙이 창 자리를 바꾸는 줄에서만 앞 창이 있던 자리에서 미끄러진다(그 밖의 줄은 옛 동작 그대로).
         glideFromPrevious = wasOpen && lastLineForcedBottom !== forceBottom;
         lastLineForcedBottom = forceBottom;
-        position = applyTextSettings(overlay, box, request, undefined, forceBottom);
+        position = applyTextSettings(overlay, box, request, undefined, forceBottom, wasOpen ? sessionPosition : undefined);
+        // 저자가 못박은 한 줄(top·center·bottom)은 세션 자리를 바꾸지 않는다 — 다음 보통 줄은 원래 자리로 돌아간다.
+        if (forceBottom || (request.settings ?? DEFAULT_MESSAGE_WINDOW_SETTINGS).preventObscuringPlayer) sessionPosition = position;
+        lastBoxPosition = position;
+        overlay.classList.toggle("dialogue-continued", wasOpen);
         applyDialoguePresentation(box, profile);
         applyDialogueScrim(scrim, profile, position);
         const content = el("div", {
@@ -1001,6 +1034,15 @@ export function createDialogueUI(
           } else {
             if (wasOpen && lastPortrait && lastPortrait.key !== speakerKey) listenerPortrait = lastPortrait;
             else if (!wasOpen || listenerPortrait?.key === speakerKey) listenerPortrait = undefined;
+            // 저작이 고른 듣는 사람(말을 다른 상대에게 돌린 줄) — 앞 화자보다 우선한다.
+            if (request.listenerFace?.resourceId && (request.listenerFace.position === "right") !== (face.position === "right")) {
+              listenerPortrait = { key: `listener:${request.listenerFace.resourceId}`, face: request.listenerFace };
+            } else if (request.stageListener) listenerPortrait = undefined;
+            // 인물은 저작된 자기 자리(왼쪽/오른쪽)를 장면 내내 지킨다. 듣는 사람이 화자와 같은 쪽 사람이면 반대편으로 옮겨
+            // 그리지 않고 비운다 — 옮기면 그 인물이 대사마다 좌우를 맞바꾼다(첫사랑 r4: 오른쪽 자리 인물끼리의 대화).
+            if (listenerPortrait && (listenerPortrait.face.position === "right" ? "right" : "left") === (face.position === "right" ? "right" : "left")) {
+              listenerPortrait = undefined;
+            }
           }
           // Attach to the message box so left/right tracks the window, not the full screen.
           box.classList.add("has-bust-face", `portrait-${portraitMode}`);
@@ -1108,6 +1150,8 @@ export function createDialogueUI(
           for (let shrink = 1; shrink <= 8 && dialoguePagesOverflowBody(bodyEl, pages); shrink += 1) {
             pages = paginateDialogueSegments(segmentsAll, { maxWidth: Math.max(1, baseWidth - shrink * 4), measure, maxLines, fallbackCharWidth: DIALOGUE_FALLBACK_CHAR_WIDTH });
           }
+          // 페이지를 나눈 **뒤에** 높이를 줄인다 — 줄 수 계산이 상자 높이를 먼저 봐야 하므로 순서가 바뀌면 순환한다.
+          if (!face) fitDialogueBoxToPages(overlay, box, bodyEl, pages);
         }
       };
 
@@ -1671,8 +1715,15 @@ export function createDialogueUI(
         ? resolveAuthoredVnLook({ version: 1, preset: DUAL_FULLBODY_VEIL_PRESET_ID }, "setting-default")
         : rawVnLook;
       const isDualFullbodyVeil = choiceLook.style === DUAL_FULLBODY_VEIL_PRESET_ID || effectiveVnLook?.preset === DUAL_FULLBODY_VEIL_PRESET_ID;
-      // 초상이 선 대사 바로 뒤의 선택지는 그 대사창과 같은 아래 자리에 선다(같은 세션 안에서 창이 위로 뛰지 않게).
-      const position = applyOverlayPosition(overlay, request, (wasOpen && lastLineForcedBottom) || isDualFullbodyVeil);
+      // 선택지는 바로 앞 대사 상자와 같은 자리에 선다(같은 세션 안에서 창이 위로 뛰지 않게). 앞 창이 없으면 대사와 같은 규칙으로 정한다.
+      const anchorPosition = wasOpen ? lastBoxPosition : undefined;
+      const framePrevious = previousTextBox;
+      previousTextBox = undefined;
+      if (anchorPosition) overlay.dataset.dialoguePositionReason = "previous-box";
+      const position = anchorPosition
+        ? (overlay.classList.add(`position-${anchorPosition}`), anchorPosition)
+        : applyOverlayPosition(overlay, request, isDualFullbodyVeil);
+      lastBoxPosition = position;
       overlay.classList.add("choices-active");
       if (request.options.length >= 4) overlay.classList.add("choices-compact");
       const choicesWindow = dialogueBox("choices", "dialogue-box");
@@ -1712,7 +1763,14 @@ export function createDialogueUI(
         }
       }
       const choicesEl = el("div", { class: "choice-list", dataset: { testid: "runtime-choices" } });
-      if (request.prompt) {
+      // 고정 틀: 대사 상자 크기·자리는 그대로 두고, 선택지 칸은 그 위(창이 위에 있으면 아래)에 따로 뜬다.
+      // 틀에는 질문(prompt)이, 질문이 없으면 바로 앞 대사가 그대로 남는다. 둘 다 없으면 빈 틀이다.
+      const frame = choiceFrame(request, framePrevious, choiceLook);
+      if (frame) {
+        overlay.classList.add("choices-framed");
+        applyTextSettings(overlay, frame, request, position);
+      }
+      if (request.prompt && !frame) {
         const promptEl = el("div", {
           class: "choice-prompt-row",
         });
@@ -1744,6 +1802,7 @@ export function createDialogueUI(
         if (settled) return;
         recordChoice(request, index);
         cleanup();
+        if (frame) frame.dataset.dialoguePhase = "exit";
         beginExit(choicesWindow, choicesProfile.exitMs);
         resolve(index);
       };
@@ -1842,8 +1901,11 @@ export function createDialogueUI(
       document.addEventListener("keydown", onKey);
 
       choicesWindow.append(choicesEl);
+      if (frame) overlay.append(frame);
       overlay.append(choicesWindow, ...choiceBehindPortraits);
       if (system) applyWindowOpacity(choicesWindow, getEffectiveReadingPreferences(system.defaults).windowOpacity);
+      if (system && frame) applyWindowOpacity(frame, getEffectiveReadingPreferences(system.defaults).windowOpacity);
+      if (frame) beginEnter(frame, choicesProfile.enterMs, !wasOpen);
       beginEnter(choicesWindow, choicesProfile.enterMs, !wasOpen);
     });
   }
@@ -1865,6 +1927,8 @@ export function createDialogueUI(
     stageSlots = {};
     lastLineForcedBottom = false;
     previousBoxTop = undefined;
+    sessionPosition = undefined;
+    lastBoxPosition = undefined;
   }
 
   /** 퇴장 연출을 재생한 뒤 비운다. 이미 예약이 걸려 있으면 그대로 둔다. */
@@ -1937,7 +2001,13 @@ function setFaceImage(node: HTMLElement, resourceId: string): void {
   const url = safeResourceImageUrl(resolveAssetResourceUrl(resourceId, { project: store.getCurrent() }));
   if (!url) return;
   if (node.classList.contains("dialogue-face-image")) node.style.setProperty("--face-url", `url("${url}")`);
-  else node.style.backgroundImage = `url("${url}")`;
+  else {
+    node.style.backgroundImage = `url("${url}")`;
+    if (node.classList.contains("dialogue-face-bust")) {
+      delete node.dataset.bustPixel;
+      applyPixelBust(node, url);
+    }
+  }
   node.dataset.resourceId = resourceId;
   if (node.dataset.portraitRender) node.dataset.portraitRender = sharedPortraitRendering(resourceId);
 }
@@ -2220,6 +2290,31 @@ function logicalHostWidth(host: HTMLElement): number {
  * 확정돼 있어야 값이 나온다. jsdom 처럼 레이아웃이 없는 환경에서는 0 이 나오므로
  * 그때만 상수로 되돌린다.
  */
+/**
+ * 한 줄짜리 대사가 화면의 22% 를 덮지 않게, 가장 긴 페이지의 줄 수만큼으로 상자 높이를 맞춘다.
+ * 위·아래 자리의 일반 상자만 건드린다. 말풍선·에메랄드·VN 페이지·전신 무대·초상 상자는 저작한 높이를 그대로 둔다.
+ */
+function fitDialogueBoxToPages(
+  overlay: HTMLElement,
+  box: HTMLElement,
+  bodyEl: HTMLElement,
+  pages: ReadonlyArray<{ lines: ReadonlyArray<unknown> }>,
+): void {
+  if (!overlay.classList.contains("position-top") && !overlay.classList.contains("position-bottom")) return;
+  if (bodyEl.closest('[data-monster-style="emerald"], [data-vn-layout="page"]') || overlay.dataset.dialogueStage) return;
+  const view = bodyEl.ownerDocument?.defaultView;
+  if (!view || bodyEl.clientHeight <= 0) return;
+  const needed = Math.max(1, ...pages.map((page) => page.lines.length));
+  const computed = view.getComputedStyle(bodyEl);
+  const lineHeight = parseFloat(computed.lineHeight) || parseFloat(computed.fontSize) * 1.2;
+  if (!Number.isFinite(lineHeight) || lineHeight <= 0) return;
+  if (needed * lineHeight >= bodyEl.clientHeight - 0.5) return;
+  overlay.style.height = "auto";
+  box.style.minHeight = "0";
+  bodyEl.style.flex = "0 0 auto";
+  bodyEl.style.minHeight = `${Math.ceil(needed * lineHeight)}px`;
+}
+
 function dialogueMaxLines(bodyEl: HTMLElement): number {
   // 풀스크린 글 페이지(vnLook layout=page)는 상자가 화면을 채우므로 한 페이지에 여러 줄(상한 9)이 들어간다.
   const cap = bodyEl.closest('[data-monster-style="emerald"]') ? 2 : bodyEl.closest('[data-vn-layout="page"]') ? 9 : DIALOGUE_VISIBLE_LINES;
@@ -2309,6 +2404,35 @@ function dialoguePagesOverflowBody(bodyEl: HTMLElement, pages: readonly Dialogue
   }
 }
 
+/**
+ * 선택지 동안 자리를 지키는 대사 상자 「틀」. 질문이 있으면 질문을 본문으로 쓴 새 상자, 없으면 바로 앞 대사 상자의 사본
+ * (이름표·얼굴·글 그대로, 입력은 받지 않는다). 앞 대사도 질문도 없으면 빈 상자다 — 다음 대사가 이 자리·이 높이로 이어진다.
+ */
+function choiceFrame(request: DialogueChoicesRequest, previous: HTMLElement | undefined, look: DialogueLook): HTMLElement {
+  let frame: HTMLElement;
+  if (!request.prompt && previous) {
+    frame = previous.cloneNode(true) as HTMLElement;
+    frame.querySelectorAll(".dialogue-page-cursor, .continue-hint, .dialogue-log-button").forEach((node) => node.remove());
+    frame.classList.remove("page-ready", "dialogue-beat-shake");
+    for (const key of ["dialogueShake", "dialogueFlash", "dialogueCharReveal", "dialogueBeats"]) delete frame.dataset[key];
+  } else {
+    frame = dialogueBox("", "dialogue-choice-frame");
+    const content = el("div", { class: "dialogue-content" });
+    const column = el("div", { class: "dialogue-text-column" });
+    const body = el("div", { class: "body" });
+    if (request.prompt) renderDialogueSegments(body, parseDialogueText(request.prompt, request.textContext));
+    column.append(body);
+    content.append(column);
+    frame.append(content);
+    frame.dataset.dialogueStyle = look.style;
+  }
+  frame.classList.add("choices-frame");
+  frame.dataset.testid = "dialogue-choice-frame";
+  frame.removeAttribute("data-play-input-owner");
+  frame.setAttribute("aria-hidden", "true");
+  return frame;
+}
+
 function dialogueBox(extraClass: string, testId: string): HTMLElement {
   const box = el("div", {
     class: `dialogue-box${extraClass ? ` ${extraClass}` : ""}`,
@@ -2354,10 +2478,11 @@ function applyTextSettings(
   box: HTMLElement,
   request: DialogueSurfaceSettings,
   appliedPosition?: MessageWindowPosition,
-  forceBottom = false
+  forceBottom = false,
+  sessionAnchor?: MessageWindowPosition
 ): MessageWindowPosition {
   const settings = request.settings ?? DEFAULT_MESSAGE_WINDOW_SETTINGS;
-  const position = appliedPosition ?? applyOverlayPosition(overlay, request, forceBottom);
+  const position = appliedPosition ?? applyOverlayPosition(overlay, request, forceBottom, sessionAnchor);
   box.classList.toggle("transparent", settings.format === "transparent");
   box.dataset.messageFormat = settings.format;
   box.dataset.messagePosition = position;
@@ -2396,17 +2521,36 @@ function applyVnLook(overlay: HTMLElement, look: ResolvedVnLook | undefined): Re
   return look;
 }
 
-function applyOverlayPosition(overlay: HTMLElement, request: DialogueSurfaceSettings, forceBottom = false): MessageWindowPosition {
+/**
+ * 창 자리 하나를 정한다. 순서: 초상 규칙(흉상·전신은 아래) → 열린 세션의 자리(가림 피하기가 켜진 줄만 물려받는다 —
+ * 저자가 못박은 자리는 그대로 따른다) → 가림 피하기 판정 → 저작한 자리.
+ */
+function applyOverlayPosition(
+  overlay: HTMLElement,
+  request: DialogueSurfaceSettings,
+  forceBottom = false,
+  sessionAnchor?: MessageWindowPosition
+): MessageWindowPosition {
   const settings = request.settings ?? DEFAULT_MESSAGE_WINDOW_SETTINGS;
   const position: MessageWindowPosition = forceBottom
     ? "bottom"
-    : effectivePosition({
+    : sessionAnchor && settings.preventObscuringPlayer
+      ? sessionAnchor
+      : effectivePosition({
         settings,
         playerTileY: request.playerTileY,
         mapHeight: request.mapHeight,
         ...(request.playerScreenY === undefined ? {} : { playerScreenY: request.playerScreenY }),
       });
   overlay.classList.add(`position-${position}`);
+  // QA·디버그용 근거(무엇이 이 자리를 정했나). 화면에는 쓰이지 않는다.
+  overlay.dataset.dialoguePositionReason = forceBottom
+    ? "portrait"
+    : sessionAnchor && settings.preventObscuringPlayer
+      ? "session"
+      : !settings.preventObscuringPlayer
+        ? "fixed"
+        : request.playerScreenY !== undefined ? `auto:${request.playerScreenY.toFixed(2)}` : `auto-tile:${request.playerTileY}/${request.mapHeight}`;
   return position;
 }
 
@@ -2466,6 +2610,9 @@ function applyDialoguePresentation(box: HTMLElement, profile: DialoguePresentati
   }
 }
 
+/** 창이 덮는 화면 띠의 높이 비율(창 약 0.29 + 주인공 스프라이트 반 키 여유). 주인공 중심이 이 띠 안이면 가린다. */
+const DIALOGUE_OBSCURE_BAND = 0.36;
+
 function effectivePosition(model: {
   readonly settings: MessageWindowSettings;
   readonly playerTileY: number;
@@ -2474,9 +2621,16 @@ function effectivePosition(model: {
 }): MessageWindowPosition {
   if (!model.settings.preventObscuringPlayer) return model.settings.position;
   const maxY = Math.max(1, model.mapHeight - 1);
-  // 화면 속 높이를 알면(카메라를 거친 값) 가운데 구간 없이 주인공에서 먼 쪽으로 보낸다 — 대사 상자는 화면 약 40%를 덮으므로
-  // 가운데(35~65%)에 선 주인공이 그대로 가려지던 문제(2026-10-02 컷신 시험)를 막는다.
-  if (model.playerScreenY !== undefined) return model.playerScreenY <= 0.5 ? "bottom" : "top";
+  // 화면 속 높이를 알면(카메라를 거친 값) 저작한 자리가 주인공을 **실제로 덮을 때만** 반대쪽으로 보낸다.
+  // 예전 규칙(가운데 0.5 를 넘으면 위)은 화면 가운데 근처에 선 주인공에서 줄마다·세션마다 창을 위↔아래로 뒤집었다
+  // (2026-10-22 아스트라 호라이즌: 덮지도 않는 아래 창이 위로 올라갔다가 선택지에서 다시 아래로). 창 띠는
+  // DIALOGUE_OBSCURE_BAND(창 높이 약 30% + 주인공 반 키) — 그 안에 주인공 중심이 들어와야 가린다고 본다.
+  if (model.playerScreenY !== undefined) {
+    const y = model.playerScreenY;
+    if (model.settings.position === "top") return y < DIALOGUE_OBSCURE_BAND ? "bottom" : "top";
+    if (model.settings.position === "bottom") return y > 1 - DIALOGUE_OBSCURE_BAND ? "top" : "bottom";
+    return y <= 0.5 ? "bottom" : "top";
+  }
   const normalizedY = model.playerTileY / maxY;
   if (normalizedY <= 0.35) return "bottom";
   if (normalizedY >= 0.65) return "top";
@@ -2486,6 +2640,12 @@ function effectivePosition(model: {
 function dialoguePortraitMode(face: FaceGraphic | undefined): "face" | "bust" | "full" {
   if (!face?.resourceId) return "face";
   return face.presentation ?? facePresentationForResource(face.resourceId);
+}
+
+/** 흉상·전신이 그 자리(왼쪽/오른쪽)에서 화면 바깥을 보는가 — 원래 시선을 아는 그림만(모르면 그대로 둔다). */
+function portraitLooksOutward(resourceId: string, side: "left" | "right"): boolean {
+  const gaze = sharedPortraitNativeGaze(resourceId);
+  return gaze !== null && gaze === side;
 }
 
 function renderFace(face: FaceGraphic): HTMLElement {
@@ -2500,13 +2660,15 @@ function renderFace(face: FaceGraphic): HTMLElement {
   const mode = dialoguePortraitMode(face);
   if (mode !== "face") {
     const side = face.position === "right" ? "right" : "left";
-    return el("div", {
+    const bust = el("div", {
       class: [
         "dialogue-face",
         "dialogue-face-bust",
         `dialogue-face-${mode}`,
         `dialogue-face-side-${side}`,
         face.flipHorizontally ? "flipped" : "",
+        // 그림의 원래 시선이 화면 바깥쪽이면 거울로 뒤집어 대화창 가운데(상대)를 보게 한다. 저작된 flipped 는 그 위에서 한 번 더 뒤집는다.
+        portraitLooksOutward(face.resourceId, side) ? "gaze-mirror" : "",
       ]
         .filter(Boolean)
         .join(" "),
@@ -2523,6 +2685,10 @@ function renderFace(face: FaceGraphic): HTMLElement {
         portraitRender: sharedPortraitRendering(face.resourceId),
       },
     });
+    // 그림(또는 에메랄드 화면의 도트 변환본)이 준비될 때까지 숨긴다 — 빈 틀이 먼저 보였다(2026-10-21 아스트라 첫 10분 녹화).
+    bust.style.visibility = "hidden";
+    applyPixelBust(bust, url, () => { bust.style.visibility = ""; });
+    return bust;
   }
   // 얼굴은 낱장 파일(48×48) 한 장이다 — 상자 크기만 정하고 이미지를 통째로 그린다.
   const style = [

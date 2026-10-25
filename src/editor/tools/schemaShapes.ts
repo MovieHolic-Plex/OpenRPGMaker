@@ -210,6 +210,7 @@ const CUTSCENE_BEAT_BASE_SCHEMA: JsonSchema = {
       enum: [
         "say", "moveActor", "camera", "picture", "music", "fade", "tint", "distort", "background", "flash", "animation", "shake", "changeTile", "wait", "parallel",
         "label", "jump", "switch", "transfer", "ending", "letterbox", "particles", "look", "emote", "weather", "text", "narrate",
+        "approach", "faceEachOther", "faceToward", "exitVia", "enterVia",
       ],
     },
     // 선언하지 않은 칸은 일부 공급자(Gemini)가 아예 보내지 않는다 — 비트가 실제로 읽는 칸은 전부 여기 둔다(2026-10-02:
@@ -224,10 +225,20 @@ const CUTSCENE_BEAT_BASE_SCHEMA: JsonSchema = {
     loop: { type: "boolean", description: "music 비트: 반복" },
     moves: {
       type: "array",
-      description: "moveActor 비트: 이동 명령 [{kind:'move',dir:'up'},{kind:'turn',dir:'left'},{kind:'jump',dx,dy}]",
+      description: "moveActor 비트: 이동 명령 [{kind:'move',dir:'up'},{kind:'turn',dir:'left'},{kind:'jump',dx,dy}]. 누구에게 다가가 말 걸기는 걸음을 늘어놓지 말고 approach 비트(또는 {kind:'approach',target:'@player'|이벤트 id,distance})·{kind:'turnToward',target} 를 쓴다",
       items: { type: "object", additionalProperties: true, properties: { kind: { type: "string" }, dir: { type: "string" } } },
     },
-    actor: { type: "string", description: "moveActor 비트: target 대신 인물 이름" },
+    actor: { type: "string", description: "moveActor 비트: target 대신 인물 이름. approach·faceToward·exitVia·enterVia 비트: 움직이는 인물('player' 또는 이벤트 id·이름). say 비트: 말하는 맵 위 인물(비우면 speaker 이름으로 찾음)." },
+    to: { type: "string", description: "say 비트: 듣는 인물('player'·이벤트 id). 비우면 NPC 대사는 주인공, 주인공 대사는 방금 말한 NPC. 말하는 인물이 이쪽으로 자동으로 돈다." },
+    calling: { type: "boolean", description: "say 비트: 멀리서 부르는 한마디(가게 점원 인사·길 건너 이름 부르기). 대화는 approach 로 붙인 뒤에 한다." },
+    autoFace: { type: "boolean", description: "say 비트: false 면 말하는 인물이 듣는 쪽으로 돌지 않는다(등 돌린 채 말하기 같은 의도된 연출만)." },
+    distance: { type: "integer", minimum: 0, maximum: 6, description: "approach 비트: 대상에서 몇 칸 떨어져 설지(기본 1 = 바로 옆, 대화 거리. 0 = 칸 x,y 그 자리로 걸어가기)." },
+    door: { type: "string", description: "exitVia·enterVia 비트: 문(이동) 이벤트 id·이름. 비우고 x,y 를 주면 그 칸, 둘 다 없으면 인물에게서 가장 가까운 문·이동 이벤트." },
+    dir: { type: "string", enum: ["up", "down", "left", "right"], description: "enterVia 비트: 문 칸에서 들어서는 걸음 방향(생략 시 걸을 수 있는 쪽, 아래 우선)." },
+    se: { type: "string", description: "exitVia·enterVia 비트: 문 여는 소리 리소스 id(\"\" = 소리 없음, 생략 = 기본 문 소리)." },
+    closeSe: { type: "string", description: "exitVia·enterVia 비트: 문 닫는 소리 리소스 id(\"\" = 소리 없음)." },
+    a: { type: "string", description: "faceEachOther 비트: 첫 인물('player'·이벤트 id)." },
+    b: { type: "string", description: "faceEachOther 비트: 둘째 인물('player'·이벤트 id)." },
     ms: { type: "integer", description: "wait 비트: 기다릴 밀리초" },
     name: { type: "string", description: "label·jump 비트: 라벨 이름" },
     color: { type: "string", description: "flash 비트: 번쩍일 색(white·red·#rrggbb). tint 비트: 색조 이름(sepia·night·neutral …)." },
@@ -448,7 +459,7 @@ export const NATIVE_EVENT_PAGE_SCHEMA: JsonSchema = {
     movement: {
       type: "object",
       properties: {
-        type: { type: "string", enum: ["fixed", "random", "approach", "custom", "living", "chase"] },
+        type: { type: "string", enum: ["fixed", "random", "approach", "custom", "living", "chase", "fly"], description: "fly = 새·나비 같은 장식이 칸에 묶이지 않고 맵 위를 자유롭게 날다 가끔 지붕·땅에 앉는다(우선순위 above 권장)." },
         speed: { type: "number" },
         frequency: { type: "number" },
         sightRange: { type: "number" },

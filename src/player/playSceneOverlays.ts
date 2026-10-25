@@ -7,7 +7,7 @@ import { store } from "@/project/store";
 import { gameOverOutcome, resolveGameOverSettings, type GameOverSettings, DEFAULT_GAME_OVER_BACKGROUND_RESOURCE_ID } from "@/project/cinematicSettings";
 import { createTerminalScene, type TerminalScene } from "@/player/terminalScene";
 import type { EndingPresentation } from "@/project/cinematicSettings";
-import { isCinematicAdvanceKey, normalizeKey } from "@/player/keyBindings";
+import { isCancelKey, isCinematicAdvanceKey, normalizeKey } from "@/player/keyBindings";
 import type { PlaySceneContext } from "@/player/playSceneTypes";
 import { dialogueHost, dialogueUi } from "@/player/playSceneDom";
 import { attachCursorMenu } from "@/player/runtimeCursorMenu";
@@ -18,6 +18,24 @@ import { resolveEndingCouplePortraits } from "@/player/dialogue";
 import { ANY_FRIENDSHIP_KEY } from "@/project/session";
 import type { FaceGraphic } from "@/project/types";
 import { sharedPortraitRendering } from "@/assets/sharedPortraitAssets";
+import { vnUiText, type VnUiKey } from "@/player/vnExtrasStrings";
+import { vnExtrasLanguage } from "@/project/vnExtras";
+
+/** 엔딩 화면 글자 — 게임 언어(편집기 언어가 아니다: 저작 vnExtras·대사 시스템 언어, 없으면 ko)로 고른다. */
+function endingText(key: VnUiKey, ...args: readonly (string | number)[]): string {
+  return vnUiText(vnExtrasLanguage(store.getCurrent()), key, ...args);
+}
+
+/** 막·장 끝 엔딩 id(end_fs_act1·chapter2_end 등)의 종류와 번호. 이야기가 이어지는 엔딩이다. */
+export function endingSegmentOf(endingId: string | undefined): { readonly kind: "act" | "chapter"; readonly number: number } | undefined {
+  const match = /(?:^|_)(act|chapter)(\d+)/iu.exec(endingId ?? "");
+  if (!match) return undefined;
+  return { kind: match[1]!.toLowerCase() === "act" ? "act" : "chapter", number: Number(match[2]) };
+}
+
+/** Credits read at roughly 24 px/s; holding a confirm key fast-forwards 4x. */
+const CREDITS_SPEED_PX_PER_SEC = 24;
+const CREDITS_FAST_RATE = 4;
 
 export function showRuntimeOverlay(
   scene: PlaySceneContext,
@@ -283,7 +301,7 @@ function emeraldHallOfFame(scene: PlaySceneContext): HTMLElement | undefined {
   if (cards.length === 0) return undefined;
   const hall = textNode("div", "ending-hall", "");
   hall.dataset.testid = "ending-hall";
-  hall.append(textNode("div", "ending-hall-title", "전당 등록!"));
+  hall.append(textNode("div", "ending-hall-title", endingText("ending.hallOfFame")));
   const grid = textNode("div", "ending-hall-grid", "");
   grid.append(...cards);
   hall.append(grid);
@@ -293,8 +311,17 @@ function emeraldHallOfFame(scene: PlaySceneContext): HTMLElement | undefined {
 function endingKicker(presentation?: EndingPresentation): string {
   const own = presentation?.kicker?.trim();
   if (own) return own;
-  if (presentation?.tone === "dark") return "이야기의 끝";
-  return usesRelationshipMenu(store.getCurrent()) ? "두 사람의 이야기" : "우리의 여정";
+  if (presentation?.tone === "dark") return endingText("ending.kicker.dark");
+  return endingText(usesRelationshipMenu(store.getCurrent()) ? "ending.kicker.couple" : "ending.kicker.journey");
+}
+
+/** 마지막 장의 큰 글자. 저작한 finalTitle → 막·장 끝이면 「제1막 끝」 → 「끝」(게임 언어). */
+function endingFinalTitle(presentation: EndingPresentation | undefined, endingId: string | undefined): string {
+  const own = presentation?.finalTitle?.trim();
+  if (own) return own;
+  const segment = endingSegmentOf(endingId);
+  if (segment) return endingText(segment.kind === "act" ? "ending.actEnd" : "ending.chapterEnd", segment.number);
+  return endingText("ending.theEnd");
 }
 
 type EndingCg = { readonly layer: HTMLElement; readonly mode: "couple" | "scene"; readonly badge: string; readonly epilogue: string };
@@ -308,12 +335,14 @@ function endingBackdropResourceId(project: Project, presentation?: EndingPresent
 }
 
 function endingBadge(endingId: string | undefined, hasPartner: boolean, presentation?: EndingPresentation): string {
-  if (hasPartner) return "CHARACTER ENDING";
-  if (/bad/iu.test(endingId ?? "")) return "BAD ENDING";
-  if (/normal|segment/iu.test(endingId ?? "")) return "NORMAL ENDING";
+  const own = presentation?.badge?.trim();
+  if (own) return own;
+  if (hasPartner) return endingText("ending.badge.character");
+  if (/bad/iu.test(endingId ?? "")) return endingText("ending.badge.bad");
+  if (/normal|segment/iu.test(endingId ?? "")) return endingText("ending.badge.normal");
   // 막·장 끝(end_fs_act1 등)은 이야기가 이어진다 — 「해피 엔딩」이라 부르지 않는다(폴른 스타 감사 2차).
-  if (/(?:^|_)(?:act|chapter)\d/iu.test(endingId ?? "")) return "TO BE CONTINUED";
-  return presentation?.tone === "dark" ? "ENDING" : "HAPPY ENDING";
+  if (endingSegmentOf(endingId)) return endingText("ending.badge.continued");
+  return endingText(presentation?.tone === "dark" ? "ending.badge.plain" : "ending.badge.happy");
 }
 
 function endingFigure(project: Project, face: FaceGraphic, role: "hero" | "partner"): HTMLElement | undefined {
@@ -382,8 +411,52 @@ function buildEndingCg(terminal: TerminalScene, project: Project, presentation: 
   return { layer, mode: partnerFigure ? "couple" : "scene", badge: endingBadge(endingId, Boolean(partnerFigure), presentation), epilogue };
 }
 
+/**
+ * 엔딩 그림 카드의 요약 글을 판에 맞는 가장 큰 크기로 — 고정 3.4cqh 는 다섯 줄 요약이 1배 화면에서 8px 로 작았고(첫사랑 VQA r34),
+ * 키우면 여섯 줄 요약이 판 아래로 잘렸다(r31). 큰 크기부터 판(.ending-epilogue)에 다 들어갈 때까지 줄인다. 잴 수 없으면(레이아웃 없음) CSS 값 그대로.
+ */
+function fitEndingMessage(epilogue: HTMLElement): void {
+  const message = epilogue.querySelector<HTMLElement>(".ending-message");
+  if (!message || epilogue.clientHeight <= 0) return;
+  // 요약 글 상자는 자기 max-height 안에서 스크롤하므로 판만 재면 늘 «들어간다» 로 읽혔다 — 마지막 줄이 상자 안에서 잘렸다(첫사랑 VQA r35).
+  // 판과 글 상자 둘 다 넘치지 않는 가장 큰 크기를 고른다.
+  const fits = (): boolean => epilogue.scrollHeight <= epilogue.clientHeight + 1 && message.scrollHeight <= message.clientHeight + 1;
+  const tryMessage = (from: number, to: number): boolean => {
+    for (let size = from; size >= to - 0.01; size -= 0.2) {
+      message.style.fontSize = `${size.toFixed(1)}cqh`;
+      if (fits()) return true;
+    }
+    return false;
+  };
+  if (tryMessage(4.6, 3.4)) return;
+  // 제목이 두 줄이고 요약이 길면 3cqh 에서도 마지막 줄이 잘렸다(장난감 가게 엔딩, 2026-10-25 G52·심판 J3).
+  // 글자를 더 줄이기 전에 판을 넓히고, 그다음 제목을 줄이고, 마지막에만 요약을 2.6cqh 까지 내린다.
+  epilogue.classList.add("ending-epilogue--long");
+  if (tryMessage(3.4, 3)) return;
+  const heading = epilogue.querySelector<HTMLElement>(".ending-heading");
+  for (let size = 6.2; heading && size >= 4.6; size -= 0.8) {
+    heading.style.fontSize = `${size.toFixed(1)}cqh`;
+    if (tryMessage(3.4, 3)) return;
+  }
+  tryMessage(2.8, 2.6);
+}
+
+/**
+ * 마지막 화면의 큰 제목·작은 제목은 따로 절대 위치라 큰 제목이 두 줄로 넘어가면 둘째 줄이 작은 제목을 덮었다
+ * (「마지막 태엽을 감고 끝」의 「끝」, 2026-10-25 G52). 한 줄에 들어갈 때까지 글자를 줄이고, 최소 크기에서도 넘치면 줄바꿈을 허용한다.
+ */
+function fitOneLine(element: HTMLElement, from: number, to: number, unit: string): void {
+  if (element.clientWidth <= 0) return;
+  element.style.whiteSpace = "nowrap";
+  for (let size = from; size >= to - 0.01; size -= from > 20 ? 1 : 0.4) {
+    element.style.fontSize = `${size.toFixed(1)}${unit}`;
+    if (element.scrollWidth <= element.clientWidth + 1) return;
+  }
+  element.style.whiteSpace = "";
+}
+
 export function showEndingScreen(scene: PlaySceneContext, title: string, message: string, presentation?: EndingPresentation, endingId?: string): void {
-  const terminal = createTerminalScene(scene, "ending", title || "엔딩");
+  const terminal = createTerminalScene(scene, "ending", title || endingText("ending.heading"));
   if (!terminal) return;
   terminal.root.dataset.tone = presentation?.tone ?? "warm";
   if (isEmeraldMonsterStyle(store.getCurrent())) terminal.root.dataset.monsterStyle = "emerald";
@@ -402,7 +475,7 @@ export function showEndingScreen(scene: PlaySceneContext, title: string, message
       terminal.root.append(hall);
       terminal.phase("hall");
       if (!await terminal.wait(terminal.reducedMotion ? 0 : 1400)) return;
-      const hallHint = textNode("div", "game-over-hint", "Z / Enter 계속");
+      const hallHint = textNode("div", "game-over-hint", endingText("ending.continue"));
       terminal.root.append(hallHint);
       const advanced = await new Promise<boolean>((resolve) => {
         terminal.signal.addEventListener("abort", () => resolve(false), { once: true });
@@ -413,15 +486,30 @@ export function showEndingScreen(scene: PlaySceneContext, title: string, message
       if (!await terminal.wait(400)) return;
     }
     const epilogue = textNode("div", "ending-epilogue", "");
-    if (cg) epilogue.append(textNode("div", "ending-badge", cg.badge));
+    if (cg) {
+      const badge = textNode("div", "ending-badge", cg.badge);
+      badge.dataset.testid = "ending-badge";
+      epilogue.append(badge);
+    }
     epilogue.append(textNode("div", "ending-kicker", endingKicker(presentation)));
-    epilogue.append(textNode("h1", "ending-heading", title || "The End"));
+    // 「본제 · 부제」 이름은 구분점에서 줄을 나눈다 — 점이 줄 끝에 매달리지 않게 점은 빼고 부제를 둘째 줄로 보낸다.
+    const heading = textNode("h1", "ending-heading", "");
+    (title || endingText("ending.heading")).split(/\s+[·・•]\s+/).forEach((part, index) => {
+      if (index > 0) heading.append(document.createElement("br"));
+      heading.append(document.createTextNode(part));
+    });
+    epilogue.append(heading);
     const body = message || cg?.epilogue;
     if (body) epilogue.append(textNode("div", "ending-message", body));
     terminal.root.append(epilogue);
+    if (cg) {
+      fitEndingMessage(epilogue);
+      // 글꼴이 늦게 들어오면 줄 높이가 바뀐다 — 들어온 뒤 한 번 더 맞춘다.
+      void document.fonts?.ready.then(() => { if (epilogue.isConnected) fitEndingMessage(epilogue); });
+    }
     terminal.phase("epilogue");
     if (!await terminal.wait(1800)) return;
-    const hint = textNode("div", "game-over-hint", "Z / Enter 계속");
+    const hint = textNode("div", "game-over-hint", endingText("ending.continue"));
     terminal.root.append(hint);
     terminal.keys(event => {
       const body = epilogue.querySelector<HTMLElement>(".ending-message");
@@ -435,37 +523,61 @@ export function showEndingScreen(scene: PlaySceneContext, title: string, message
     terminal.root.querySelector(".game-over-hint")?.remove();
     terminal.phase("final");
     const final = textNode("div", "ending-final game-over-content", "");
-    final.append(textNode("div", "ending-final-title", "THE END"));
+    const finalTitle = textNode("div", "ending-final-title", endingFinalTitle(presentation, endingId));
+    finalTitle.dataset.testid = "ending-final-title";
+    final.append(finalTitle);
     final.append(textNode("div", "ending-final-caption", title));
+    const summary = endingSummaryLine(scene);
+    if (summary) final.append(textNode("div", "ending-final-summary", summary));
     const actions = textNode("div", "game-over-actions", "");
-    const button = terminalButton("return-title", "타이틀로 돌아가기", () => { void exitTerminal(terminal, () => scene.returnToTitle()); });
+    const button = terminalButton("return-title", endingText("ending.returnTitle"), () => { void exitTerminal(terminal, () => scene.returnToTitle()); });
     actions.append(button); final.append(actions); terminal.root.append(final);
+    const fitFinal = (): void => {
+      if (!final.isConnected || terminal.root.dataset.monsterStyle === "emerald") return;
+      const scaled = terminal.root.dataset.endingCg !== undefined;
+      fitOneLine(finalTitle, scaled ? 11 : 23, scaled ? 6 : 14, scaled ? "cqh" : "px");
+      const caption = final.querySelector<HTMLElement>(".ending-final-caption");
+      if (caption) fitOneLine(caption, scaled ? 6.4 : 9, scaled ? 3.6 : 7, scaled ? "cqh" : "px");
+    };
+    fitFinal();
+    void document.fonts?.ready.then(fitFinal);
     terminal.menu(() => attachCursorMenu(final, { items: [button], cancelEl: button }));
   };
   const credits = async (): Promise<void> => {
     terminal.phase("credits-transition");
     if (!await terminal.wait(terminal.reducedMotion ? 0 : 500)) return;
     terminal.root.querySelector(".ending-epilogue")?.remove();
-    const copy = presentation?.credits?.trim();
+    // 조수가 줄바꿈을 글자 「\n」로 저장한 크레딧(2026-10-25 G50·심판 J2)도 줄로 보인다.
+    const copy = presentation?.credits?.replace(/(?:\\r)?\\n/gu, "\n").trim();
     if (!copy) { finish(); return; }
     terminal.phase("credits");
     const viewport = textNode("div", "ending-credits", "");
     const roll = textNode("div", "ending-credits-roll", copy);
     viewport.append(roll); terminal.root.append(viewport);
-    const distance = viewport.clientHeight + roll.scrollHeight;
-    const duration = Math.max(12000, distance / 12 * 1000);
+    // 롤 첫 줄이 0초부터 마스크가 불투명한 구간 안에 보이게 아래 가장자리 밖이 아니라 위쪽 1/3 지점에서 출발한다(VQA R8).
+    const startOffset = Math.round(viewport.clientHeight * .3);
+    const distance = startOffset + roll.scrollHeight;
+    const duration = Math.max(8000, distance / CREDITS_SPEED_PX_PER_SEC * 1000);
     terminal.root.style.setProperty("--credits-duration", `${duration}ms`);
-    terminal.root.style.setProperty("--credits-start", `${viewport.clientHeight}px`);
+    terminal.root.style.setProperty("--credits-start", `${startOffset}px`);
     terminal.root.style.setProperty("--credits-end", `${-roll.scrollHeight}px`);
-    const hint = textNode("div", "game-over-hint", terminal.reducedMotion ? "PgUp/PgDn 읽기   ·   Z / Enter 마침" : "Z / Enter 크레딧 건너뛰기");
+    const hint = textNode("div", "game-over-hint", endingText(terminal.reducedMotion ? "ending.creditsRead" : "ending.creditsSkip"));
     terminal.root.append(hint);
     let finished = false;
     const finishOnce = (): void => { if (finished || terminal.signal.aborted) return; finished = true; terminal.keys(); finish(); };
-    if (!terminal.reducedMotion) void terminal.wait(duration).then(alive => { if (alive) finishOnce(); });
+    const rollAnimation = terminal.reducedMotion ? undefined : roll.getAnimations()[0];
+    if (rollAnimation) void rollAnimation.finished.then(() => finishOnce(), () => undefined);
+    else if (!terminal.reducedMotion) void terminal.wait(duration).then(alive => { if (alive) finishOnce(); });
+    // Holding a confirm key fast-forwards the roll; releasing it returns to reading speed.
+    const setFast = (fast: boolean): void => { if (rollAnimation && rollAnimation.playState === "running") rollAnimation.playbackRate = fast ? CREDITS_FAST_RATE : 1; };
+    terminal.root.ownerDocument.addEventListener("keyup", event => { if (isCinematicAdvanceKey(normalizeKey(event.key))) setFast(false); }, { signal: terminal.signal });
     if (!await terminal.wait(800)) return;
     terminal.keys(event => {
       if (["PageDown", "PageUp"].includes(event.key) && terminal.reducedMotion) viewport.scrollTop += (event.key === "PageUp" ? -1 : 1) * viewport.clientHeight * .9;
-      if (isCinematicAdvanceKey(normalizeKey(event.key))) finishOnce();
+      const key = normalizeKey(event.key);
+      if (terminal.reducedMotion) { if (isCinematicAdvanceKey(key)) finishOnce(); return; }
+      if (isCancelKey(key)) finishOnce();
+      else if (isCinematicAdvanceKey(key)) setFast(true);
     });
   };
   void run();
@@ -482,4 +594,22 @@ function playTerminalMusic(terminal: TerminalScene, project: Project, resourceId
   terminal.root.append(music);
   terminal.signal.addEventListener("abort", () => { music.pause(); music.removeAttribute("src"); music.load(); music.remove(); }, { once: true });
   void music.play().catch(() => { /* Unavailable media must not prevent the terminal outcome. */ });
+}
+
+/**
+ * 마지막 카드 아래 한 줄 요약 — 함께한 동료와 플레이 시간. 제목 두 줄만 남던 끝 화면이 여운 없이 끊겼다(폴른 스타 가혹 검수 r5).
+ * 몬스터 파티 게임은 배우 파티가 비어 동료 칸을 빼고 시간만 말한다.
+ */
+function endingSummaryLine(scene: { session: { partyActorIds?: readonly string[]; playTimeSeconds?: number } }): string {
+  const project = store.getCurrent();
+  const names = (scene.session.partyActorIds ?? [])
+    .map((id) => project.database.actors.find((actor) => actor.id === id)?.name)
+    .filter((name): name is string => Boolean(name));
+  const seconds = Math.max(0, Math.floor(scene.session.playTimeSeconds ?? 0));
+  // 「0:07」(시:분)은 7초로 읽혔다(첫사랑 VQA r26) — 단위를 붙여 쓴다.
+  const hours = Math.floor(seconds / 3600), minutes = Math.max(1, Math.floor((seconds % 3600) / 60));
+  const time = hours > 0 ? `${hours}시간 ${minutes}분` : `${minutes}분`;
+  // 혼자인 파티(주인공 하나)는 「함께한 이: 주인공」이 된다 — 함께한 사람이 아니라 자기 이름이다(첫사랑 VQA r23). 둘 이상일 때만 쓴다.
+  const parts = [names.length > 1 ? `함께한 이: ${names.join(" · ")}` : "", seconds > 0 ? `플레이 시간: ${time}` : ""].filter(Boolean);
+  return parts.join("   ·   ");
 }

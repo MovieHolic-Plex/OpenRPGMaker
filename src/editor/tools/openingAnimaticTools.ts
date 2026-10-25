@@ -337,20 +337,27 @@ export const OPENING_ANIMATIC_TOOLS: readonly ToolDefinition[] = [
     if (l.kind === 'image' && l.role === 'actor' && typeof l.resourceId === 'string') {
       l.resourceId = resolveOpeningCharsetForGenre(p, l.resourceId);
     }
+    // 배경은 불투명이어야 한다(check). 어둡게 하려고 0.85 를 주면 거절되고, 같은 턴에 그 레이어를 움직이던 animate 까지 「layerId 없음」으로 줄줄이 실패했다
+    // (2026-10-25 장난감 가게 G40) — 1 로 받아 저장하고 어둡게 하는 길을 알려 준다.
+    let note = '';
+    if (l.kind === 'image' && l.role === 'background' && typeof l.opacity === 'number' && l.opacity < 0.9) {
+      note = ` 배경 ${l.id} opacity ${l.opacity} 는 1 로 맞췄다(배경은 불투명) — 어둡게 하려면 위에 shape 레이어(검정·opacity 0.2~0.5)를 얹는다.`;
+      l.opacity = 1;
+    }
     const rows = s.composition.layers, at = rows.findIndex(row => row.id === l.id);
     if (at >= 0) rows[at] = l; else { const index = args.index === undefined ? rows.length : Number(args.index); if (!Number.isSafeInteger(index) || index < 0 || index > rows.length) throw new ToolError('index 범위 오류.', { code: 'invalid-args' }); rows.splice(index, 0, l); }
-    return commit(p, s, '실제 합성 레이어를 저장했습니다.', l.kind === 'image' && l.role === 'background');
+    return commit(p, s, '실제 합성 레이어를 저장했습니다.' + note, l.kind === 'image' && l.role === 'background');
   }),
   definition('remove_opening_layer', '선택한 레이어만 제거.', 'write', schema({ shotId: str, layerId: str }), (p, args) => {
     const s = shot(p, args.shotId), id = text(args.layerId, 'layerId'); if (!s.composition.layers.some(l => l.id === id)) throw new ToolError('layerId 없음.', { code: 'layer-not-found' });
     s.composition.layers = s.composition.layers.filter(l => l.id !== id); return commit(p, s, '레이어를 제거했습니다.');
   }),
   definition('animate_opening_layer', '지정 속성의 key 배열 교체. 나머지 트랙 유지.', 'write', schema({ shotId: str, layerId: str, keys: obj }), (p, args) => {
-    const s = shot(p, args.shotId), l = s.composition.layers.find(l => l.id === args.layerId); if (!l) throw new ToolError('layerId 없음.', { code: 'layer-not-found' });
+    const s = shot(p, args.shotId), l = s.composition.layers.find(l => l.id === args.layerId); if (!l) throw new ToolError(`layerId 없음: ${String(args.layerId)} — 이 샷의 레이어: ${s.composition.layers.map(x => x.id).join(', ') || '(없음)'}. 같은 턴에 만든 레이어가 실패했으면 그 upsert_opening_layer 를 먼저 고친다.`, { code: 'layer-not-found' });
     l.keys = { ...l.keys, ...structuredClone(args.keys as AnimaticTracks) }; return commit(p, s, '레이어 동작을 저장했습니다.');
   }),
   definition('apply_opening_motion', 'jump/float/pulse/run-across 동작 키 생성. 다른 트랙 유지.', 'write', schema({ shotId: str, layerId: str, preset: { type: 'string', enum: ['jump', 'float', 'pulse', 'run-across'] }, atMs: integer, durationMs: integer, amount: { type: 'number' } }, ['shotId', 'layerId', 'preset']), (p, args) => {
-    const s = shot(p, args.shotId), l = s.composition.layers.find(l => l.id === args.layerId); if (!l) throw new ToolError('layerId 없음.', { code: 'layer-not-found' });
+    const s = shot(p, args.shotId), l = s.composition.layers.find(l => l.id === args.layerId); if (!l) throw new ToolError(`layerId 없음: ${String(args.layerId)} — 이 샷의 레이어: ${s.composition.layers.map(x => x.id).join(', ') || '(없음)'}. 같은 턴에 만든 레이어가 실패했으면 그 upsert_opening_layer 를 먼저 고친다.`, { code: 'layer-not-found' });
     const start = Number(args.atMs ?? 0), duration = Number(args.durationMs ?? s.durationMs), preset = String(args.preset), property = preset === 'run-across' ? 'x' : preset === 'pulse' ? 'scaleX' : 'y';
     const base = sampleAnimaticTrack(l.keys?.[property], start, property === 'scaleX' ? l.scaleX ?? 1 : l[property]), amount = Number(args.amount ?? (property === 'scaleX' ? 0.12 : preset === 'run-across' ? 300 : 35));
     const keys = preset === 'run-across' ? [{ atMs: start, value: base }, { atMs: start + duration, value: base + amount, ease: 'ease-in-out' as const }]
@@ -359,7 +366,8 @@ export const OPENING_ANIMATIC_TOOLS: readonly ToolDefinition[] = [
     return commit(p, s, '동작 키를 저장했습니다. 실제 시간 표본을 검토하세요.');
   }),
   definition('animate_opening_camera', '카메라 위치·줌·회전·키·흔들기 변경. 기존 속성 유지.', 'write', schema({ shotId: str, camera: obj }), (p, args) => {
-    const s = shot(p, args.shotId), camera = args.camera as OpeningAnimatic['camera'];
+    const s = shot(p, args.shotId);
+    const camera = cameraFromTo(args.camera, s.durationMs) as OpeningAnimatic['camera'];
     s.composition.camera = { ...s.composition.camera, ...structuredClone(camera), keys: { ...s.composition.camera?.keys, ...camera?.keys } };
     return commit(p, s, '카메라 타임라인을 저장했습니다.');
   }),
@@ -544,3 +552,23 @@ export const OPENING_ANIMATIC_TOOLS: readonly ToolDefinition[] = [
     return commit(p, s, `픽셀 스프라이트 상태 ${entries.map(([name]) => name).join('/') }를 연결했습니다. 실제 frame strip으로 전환됩니다.`);
   }),
 ];
+
+/**
+ * camera:{from:{x,y,zoom},to:{x,y,zoom}} 를 정본 모양(시작 값 + 샷 길이에 걸친 keys)으로 옮긴다.
+ * 실측(2026-10-22 조용한 현대 거리, Sonnet 5.5): from/to 로 보내 「camera.from: unsupported field」로 거부됐다 — 뜻이 하나뿐인 모양이다.
+ */
+function cameraFromTo(raw: unknown, durationMs: number): unknown {
+  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return raw;
+  const { from, to, ...rest } = raw as Record<string, unknown>;
+  if (!from || typeof from !== 'object' || !to || typeof to !== 'object') return raw;
+  const a = from as Record<string, unknown>, b = to as Record<string, unknown>;
+  const camera: Record<string, unknown> = { ...rest };
+  const keys: Record<string, { atMs: number; value: number; ease?: 'ease-in-out' }[]> = { ...((rest.keys as Record<string, never>) ?? {}) };
+  for (const k of ['x', 'y', 'zoom', 'rotation']) {
+    const start = typeof a[k] === 'number' ? a[k] as number : undefined, end = typeof b[k] === 'number' ? b[k] as number : undefined;
+    if (start !== undefined) camera[k] = start;
+    if (start !== undefined && end !== undefined && start !== end) keys[k] = [{ atMs: 0, value: start }, { atMs: Math.max(1, durationMs), value: end, ease: 'ease-in-out' }];
+  }
+  if (Object.keys(keys).length) camera.keys = keys;
+  return camera;
+}

@@ -1,0 +1,341 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "109b1741b50601d0d9fea1bbcca884055ab0f8d9150a22a695d26856dd1a17da",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "flat mossy stones in the grass (mossy stone), natural map prop for the Beodeul 16px chipset, 1x1 tiles, walk-over ground decor (2nd layer), 3/4 top-down, sits on grass between broadleaf trees",
+ "label": "beodeul_organic/moss-stones-flat",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 명암 3단 < 4 (4/4)",
+  "화풍: 칸 정보량이 기준보다 훨씬 낮음 (3/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "명암 3단 < 4 (4/4)",
+   "칸 정보량이 기준보다 훨씬 낮음 (3/4)"
+  ],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 4,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_organic",
+   "fallback": true,
+   "reason": "칩셋 beodeul_organic 의 화풍 기준 묶음이 없다",
+   "hash": "8cecb3a70460aa86"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 0,
+  "tileColorsP90": 0,
+  "darkV5": 38,
+  "nearBlackEdge": 0.25,
+  "opaqueTiles": 0
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "mossy top of main stone",
+      "rows": "6-8",
+      "evidence": "a",
+      "front_edge_line_row": 9,
+      "eave_shadow_rows": "10-11"
+     },
+     {
+      "part": "grey stone front face of main stone",
+      "rows": "9-11",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "small second stone, moss top",
+      "rows": "12",
+      "evidence": "a",
+      "front_edge_line_row": 13,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 3,
+    "front_face_rows": 3,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main stone has a green moss top in rows 6-8, which widens from 3 to 8 px. Below it the grey-brown stone face runs through rows 9-11, with a light highlight at row 9 and darker shading at rows 10-11. The small stone at rows 12-14 has the same structure: a moss top at row 12 over a dark front face. The face is only about 3 rows, but it is clearly present, so this is not a flat slab. This is a terrain prop (low walk-over ground decor), so it is a small, low-relief object."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a tiny cluster of about 12x6 source pixels, smaller than one tile, so the per-tile facts read 0 and I judged by eye. The whole piece uses only 9 distinct colours. Each material gets about 3 steps: a grey-green stone body, a darker underside and a few moss pixels, against roughly 5-6 steps per material in the references. The dark edge pixels are 55% near-neutral, so the outline is partly a near-black sticker line and not consistently a dark tone of the neighbouring material (the references measure 0% for grass and 80% for paving). The stones are not shaded one by one and have no per-stone highlight or grain. The moss has no clumps in several greens like the grass reference, and the stone surface has none of the paving's speckle. Next to the references it looks thinner, flatter and more sticker-like. I fail it on shallow shading, the mixed outline and much lower density.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 15238
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "large mossy stone, moss-covered top",
+      "rows": "6-9",
+      "evidence": "a",
+      "front_edge_line_row": 9,
+      "eave_shadow_rows": "10-11"
+     },
+     {
+      "part": "large stone front face (grey and brown, dark underside)",
+      "rows": "9-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "small second stone with moss cap",
+      "rows": "12-14",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 3,
+    "front_face_rows": 5,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Column x=4 shows green moss in rows 6-8, then a lighter grey edge at row 9 (#a09088), then darker stone in rows 10-11. That is a moss top with a front-edge line and shadow below it. The width profile grows from 3 to 11 over rows 6-10, so the top is a rounded mass. Rows 9-14 form the stone's front face, which is 5 or more rows, so this is not a flat slab. The small stone at rows 12-14 (x=11) also has a green top over a dark face. The prop is low natural ground decor and not a standing object, so the rule for terrain is only loosely applicable."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 4,
+    "evidence": "The candidate is a tiny sub-tile prop (about 12x6 px) with only 9 distinct colours in total, so the per-tile tone counts are 0 and the density figures cannot be used against it. Judged by eye, each stone and the moss patches show only about 3 steps (a light top, a mid body and a dark base), against roughly 5-6 steps in the references. The edge pixels are 55% near-neutral, so the dark outline is partly a grey/black line and only partly tinted by the neighbouring stone or moss. That leans toward the sticker look, not the dark-material-tone edges the references use. The references carry per-stone shading and grain, such as the cobble highlights in the paving and the grass clumps in several greens. The candidate's stones are small, simple blobs with just a few moss dots and no per-stone shading. It reads thinner and flatter than the references, and the benefit of the doubt goes to fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 14785
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "main mossy stone top (moss cap)",
+      "rows": "6-9",
+      "evidence": "a",
+      "front_edge_line_row": 9,
+      "eave_shadow_rows": "10-11"
+     },
+     {
+      "part": "small second stone with moss top (bottom right)",
+      "rows": "12-13",
+      "evidence": "a",
+      "front_edge_line_row": 13,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 5,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Column x=4 shows green moss at rows 6-8, then a light edge line at row 9 (#a09088), then darker stone at rows 10-11 as eave shadow. The stone's grey front face runs from about row 10 to row 14, with the silhouette widening from 3 px at row 6 to 11 px at row 10 and then narrowing to 6 px at row 14. This gives a moss top of about 4 rows over a front face of about 5 rows. The smaller stone at the lower right has the same structure at a smaller scale. It reads as a low, flat, walk-over ground stone with a visible top and front, so the terrain kind plausibly matches."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a tiny cluster of stones and moss, smaller than one tile, so the per-tile facts are 0 and I judged by eye. It has only 9 distinct colours in total, against 80 for the grass reference and 7 per tile for the paving reference. Each stone shows roughly 2-3 grey steps plus one or two greens for moss. The stones are not shaded individually, and there are no per-stone highlights, grain dots or moss clumps in several greens. 55% of the dark edge pixels are neutral, so the outline sits between a neutral near-black line and a tinted material tone. That gives a slightly sticker-like look compared with the references' tinted, selective edges. There are no large flat fills, but the piece looks thinner and flatter than the references and does not match the Beodeul standard for shading steps or texture.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 13550
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "main mossy stone, moss-covered top",
+      "rows": "6-9",
+      "evidence": "a",
+      "front_edge_line_row": 9,
+      "eave_shadow_rows": "10-11"
+     },
+     {
+      "part": "small second stone at right, moss top",
+      "rows": "12-13",
+      "evidence": "a",
+      "front_edge_line_row": 13,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 5,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main stone widens from 3 px at row 6 to 11 px at row 10. Its green moss top fills rows 6-8 and column x=4 shows moss there. Row 9 is a lighter line (#a09088) that works as the front-edge line, followed by darker rows 10-11 as shadow. Below that, the grey-purple front face runs to row 14 (about 5 rows) and narrows toward the base. The small stone at right (rows 12-14) has the same moss-top-over-dark-front structure. The shape is a low mound with a top and a front, not a flat slab."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a tiny sparse prop, smaller than one tile, so the per-tile facts read 0 and I judged density by eye. It has only 9 distinct colours in total, against 80 for the grass reference. Its stones and moss look like 2-3 flat tones each with little grain, scallop or per-stone shading. 55% of its dark edge pixels are near-neutral, so the outline is mixed and leans toward a dark sticker line rather than a tinted material tone. Next to the grass and paving references, which show 3-7 visible tones per tile with clear texture, it looks thinner, flatter and more sticker-like. A careful artist would not accept it beside the reference as equally rich, so I fail it.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 14643
+  }
+ ],
+ "decidedAt": "2026-10-24T13:35:28.242Z",
+ "cells": {
+  "16": [
+   "0eb2d6f772bcd3e5"
+  ],
+  "24": [
+   "0ca9520c1ac5d04d",
+   "15fe404f2222af47",
+   "224b46297096b372",
+   "833a48fd15e599c0",
+   "ac35bf8255c14e37",
+   "bbab634ba212c4e5"
+  ],
+  "32": [
+   "21734cbdeacbe4aa",
+   "5ae03500711ff2c8",
+   "64cf4de3a600dd9d",
+   "8d22b4280062d5eb",
+   "be28f38f8925ef04",
+   "fde33509d93e5ffd"
+  ],
+  "48": [
+   "04f018d8a9bf15c9",
+   "4fe9fd2e9a306561",
+   "8fe72322b48cc91e",
+   "b7eaa38669c18003",
+   "bb2c2d3848dc9e1f",
+   "ede246020cf1faee"
+  ]
+ }
+}

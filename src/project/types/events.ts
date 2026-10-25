@@ -71,7 +71,8 @@ export type Condition =
   | { kind: "monsterSpecies"; speciesId: MonsterSpeciesId; present: boolean }
   | { kind: "item"; itemId: ItemId; present: boolean }
   | { kind: "gold"; op: ">=" | "<=" | ">" | "<" | "==" | "!="; amount: number }
-  | { kind: "timer"; timerId: "timer1" | "timer2"; seconds: number }
+  /** 남은 시간 비교 — op 를 빼면 «남은 시간 ≤ seconds»(예전 동작). */
+  | { kind: "timer"; timerId: "timer1" | "timer2"; seconds: number; op?: ">=" | "<=" | ">" | "<" | "==" | "!=" }
   | { kind: "timePhase"; phase: TimePhase }
   | { kind: "season"; season: Season }
   | { kind: "npcActivity"; activity: string }
@@ -81,8 +82,10 @@ export type Condition =
    * 로케이션 기하는 `GameMap.locations` 가 소유하므로 좌표를 여기에 복사하지 않는다 —
    * 로케이션을 옮기거나 넓히면 이 조건도 함께 따라온다.
    * 평가에는 로케이션 해석자가 필요하다(`evalCondition` 의 `context.locations`).
+   * eventId 를 주면 주인공 대신 그 이벤트(걷는 NPC 는 실시간 칸)가 로케이션 안에 있는지 본다 —
+   * 「집주인이 지금 어느 방에 있나」로 기척 대사를 고를 때. 위치를 모르는 이벤트는 거짓.
    */
-  | { kind: "insideLocation"; locationId: string; inside: boolean }
+  | { kind: "insideLocation"; locationId: string; inside: boolean; eventId?: string }
   | { kind: "friendshipAtLeast"; npcKey?: string; value: number }
   | RelationshipCondition
   | { kind: "battleResult"; result: "victory" | "defeat" | "escape" }
@@ -136,6 +139,14 @@ export type ActorQueryCondition =
   | { kind: "hiding"; value: boolean }
   /** 추격자 추격 중 여부. eventId 생략 = 누구든. */
   | { kind: "pursuitActive"; eventId?: string; value: boolean }
+  /**
+   * 이 이벤트(eventId)가 지금 주인공을 볼 수 있는가(집주인이 도둑을 본다·경비가 침입자를 본다).
+   * range = 칸 수(체비셰프, 기본 5), sameRoom = 이 맵의 명명 로케이션 중 같은 방일 때만(기본 켜짐 — 방 경계가 벽),
+   * requireFacing = 이벤트가 바라보는 정면 90° 안일 때만(기본 켜짐; 끄면 「가까이 있다」 소리 판정에 쓴다).
+   * value=false 면 「못 본다」. 위치를 모르는 이벤트는 못 본다. 벽(시선 광선)은 늘 막는다 — 다른 방·벽 너머는 못 본다.
+   * hearRange = 소리로 알아차리는 거리(칸; 벽 하나당 +3). 상자 부수기처럼 시끄러운 행동에만. 생략·0 = 듣지 않는다.
+   */
+  | { kind: "eventSeesPlayer"; eventId: string; range?: number; sameRoom?: boolean; requireFacing?: boolean; hearRange?: number; value?: boolean }
   /** 이 기기에서 엔딩을 본 횟수(서로 다른 엔딩 수가 아니라 클리어 횟수). */
   | { kind: "clearCount"; op: ConditionCompareOp; value: number }
   | { kind: "endingSeen"; endingId: string; value: boolean }
@@ -176,6 +187,30 @@ export type MoveCommand =
   | { kind: "turnRandom" }
   | { kind: "turnTowardPlayer" }
   | { kind: "turnAwayFromPlayer" }
+  /**
+   * 대상 곁의 빈 칸까지 길을 찾아 걸어간 뒤 대상을 본다(인물 연출 기본기 — 걸음을 손으로 늘어놓지 않는다).
+   * target: "@player"(주인공)·이벤트 id·"" 또는 생략이면 x,y 칸. distance: 말 거리(칸, 기본 1 = 바로 옆).
+   * 다른 인물·지형을 피하고, 대상과 같은 줄(위·아래·왼쪽·오른쪽)에 서는 칸을 먼저 고른다. 걷는 속도는 그 인물의 보통 속도다.
+   */
+  | { kind: "approach"; target?: string; x?: number; y?: number; distance?: number }
+  /** 대상(주인공 "@player"·이벤트 id·x,y 칸) 쪽으로 돈다. */
+  | { kind: "turnToward"; target?: string; x?: number; y?: number }
+  /**
+   * 문·출구로 나간다: 문 칸까지 길을 찾아 걸어가 문 여는 소리(문 이벤트에 그림이 있으면 여는 프레임) → 문 칸 «위로» 한 걸음
+   * → 사라짐 → 문 닫는 소리. 한 칸 앞에서 사라지지 않는다(2026-10-22 짐꾼). target: 문(이동) 이벤트 id, 또는 x,y 칸,
+   * 둘 다 없으면 가장 가까운 문·이동 이벤트. 사라진 뒤 인물은 투명·통과 상태로 문 칸에 남는다 — 이어서 지우기(Erase)나 «떠남» 스위치.
+   * se/closeSe: 소리 리소스 id(""= 소리 없음). 문 이벤트·문 그림 칸이면 기본 문 소리, 맵 가장자리면 소리 없음.
+   */
+  | { kind: "exitVia"; target?: string; x?: number; y?: number; se?: string; closeSe?: string }
+  /**
+   * 문·출구로 들어온다: 문 칸으로 옮겨(보이지 않게) 문 여는 소리 → 나타남 → 문 밖(방 안)으로 한 걸음 → 문 닫는 소리.
+   * dir: 들어오는 걸음 방향(생략 시 문 칸에서 걸을 수 있는 쪽, 아래 우선). target·x,y·se·closeSe 는 exitVia 와 같다.
+   */
+  | { kind: "enterVia"; target?: string; x?: number; y?: number; dir?: Dir; se?: string; closeSe?: string }
+  /** exitVia·enterVia 가 펼치는 단계: 문 소리와 문 이벤트 프레임(direction 0~3 = 아래·왼쪽·오른쪽·위 = 닫힘→열림). ms 만큼 쉰다. */
+  | { kind: "doorCue"; target?: string; frame?: number; se?: string; ms?: number }
+  /** exitVia·enterVia 가 펼치는 단계: 이 칸으로 순간 이동(enterVia 의 등장 칸). */
+  | { kind: "placeAt"; x: number; y: number }
   | { kind: "setDirectionFix"; enabled: boolean }
   | { kind: "setThrough"; enabled: boolean }
   | { kind: "setAnimation"; enabled: boolean }
@@ -348,6 +383,25 @@ export type Command =
        * auto = 화면 속 주인공을 가리지 않는 쪽으로 자동, top·center·bottom = 고정(주인공이 가려져도 그대로).
        */
       position?: "auto" | "top" | "center" | "bottom";
+      /**
+       * 이 줄을 말하는 인물(맵 위). "@player" 또는 이벤트 id. 비우면 speaker 이름으로 맵의 보이는 인물을 찾는다
+       * (주인공 이름 → 주인공, 이벤트 이름·인물 프로필 이름 → 그 이벤트). project/staging/dialogueActors.ts.
+       */
+      speakerActor?: string;
+      /** 듣는 인물. 비우면 NPC 가 말할 때는 주인공, 주인공이 말할 때는 방금 말한 NPC(없으면 이 이벤트). */
+      addressee?: string;
+      /** false 면 말하는 인물이 듣는 인물 쪽으로 돌지 않는다(등 돌린 채 말하기 같은 의도된 연출). 기본 켬. */
+      autoFace?: boolean;
+      /** 멀리서 부르는 한마디(가게 점원의 인사, 길 건너 이름 부르기). 거리 검사(scene-talk-far)를 하지 않고, 멀어도 듣는 쪽을 돌아본다. */
+      calling?: boolean;
+      /**
+       * "stage" 면 흉상 좌우를 맵 위 자리로 정한다 — 말하는 인물이 듣는 인물보다 왼쪽에 서 있으면 흉상도 왼쪽, 오른쪽이면 오른쪽.
+       * 듣는 흉상(흐리게)도 «듣는 인물이 화면에 있고 그 인물의 흉상을 이미 봤으면 늘» 반대편에 세운다(앞 화자 대신 듣는 사람 기준).
+       * 같은 열(위아래로 선 둘)이면 저작한 자리를 지킨다. player/playSceneDialogueFacing.ts.
+       */
+      bustSide?: "stage";
+      /** bustSide "stage" 에서 듣는 인물의 흉상을 아직 못 봤을 때 쓸 흉상 리소스(그 인물이 한 번 말하면 그 흉상을 기억해 쓴다). */
+      listenerBust?: string;
     }
   | ({ kind: "changeFace"; appearanceId?: string } & FaceGraphic)
   | {
@@ -404,7 +458,8 @@ export type Command =
   | { kind: "advanceCropGrowth"; days: number }
   | { kind: "setTime"; hour: number; minute?: number }
   | { kind: "sleepUntilMorning" }
-  | { kind: "transfer"; mapId: MapId; x: number; y: number; direction?: TransferDirection; fade?: TransferFade; transition?: TransferTransition }
+  /** 문 열림 연출: 생략 = 자동(문 캐릭터 시트이거나 이벤트 칸·바로 윗칸에 여닫는 문 타일일 때만 — 성문·통로·맵 가장자리·계단은 없음), true = 켜기, false = 끄기. */
+  | { kind: "transfer"; mapId: MapId; x: number; y: number; direction?: TransferDirection; fade?: TransferFade; transition?: TransferTransition; door?: boolean }
   | { kind: "moveEvent"; eventId: string; route: MoveRoute }
   | { kind: "setEventGraphicPattern"; eventId: string; pattern: number }
   | {
@@ -644,7 +699,11 @@ export type Command =
   | { kind: "fuseMonsters"; instanceIdA: string; instanceIdB: string };
 
 export type EventPriority = "below" | "same" | "above";
-export type AutonomousMovement = "fixed" | "random" | "approach" | "custom" | "living" | "chase";
+/**
+ * fly: 하늘을 자유롭게 나는 장식(새·나비·박쥐). 칸에 묶이지 않고 픽셀 좌표로 곡선을 그리며 맵 위를 날고,
+ * 가끔 지붕·땅에 내려앉았다 다시 난다(@/player/playSceneAmbientFlyers). 길을 막지 않고 저장하지 않는다.
+ */
+export type AutonomousMovement = "fixed" | "random" | "approach" | "custom" | "living" | "chase" | "fly";
 /** 페이지 애니메이션 유형의 단일 진실 소스 — 툴 스키마 enum 과 로더 정규화도 여기서 가져간다.
  * 2026-09-24 갤러리 도그푸딩: 유니온에 없는 "none" 이 32페이지에 저장돼 런타임 canActionTurn 의
  * exhaustiveness 트립와이어가 첫 조작에서 씬을 통째로 죽였다(브라우저 완주 막힘). */
@@ -713,8 +772,11 @@ export interface NpcScheduleEntry {
 export interface NpcSight {
   range: number;
   lineOfSight: boolean;
-  /** Forward is a same-row/column ray, not a cone. */
-  facing: "any" | "forward";
+  /**
+   * Forward is a same-row/column ray, not a cone. Cone is the 90° view cone of eventSeesPlayer
+   * (conditionEventSight.inViewCone) — a field monster sees what is in front of it, not behind.
+   */
+  facing: "any" | "forward" | "cone";
 }
 export interface DetectionEncounter {
   sight: NpcSight;
@@ -737,11 +799,16 @@ export interface ChaseAcrossMaps {
 }
 
 export interface EventObjectInteraction {
-  kind: "pushable" | "hiding";
+  /** container = 뒤질 수 있는 수납(상자·통·자루·서랍). 연출·흔적은 project/containerFx.ts. */
+  kind: "pushable" | "hiding" | "container";
   /** A push always moves one tile. Omitted directions allow all four directions. */
   directions?: Dir[];
   /** pushable 전용: 밀기가 시작될 때 한 번 울리는 효과음 리소스 id(예: 바위 긁는 소리). 생략하면 무음. */
   sound?: string;
+  /** container 전용: 수납 종류(ContainerStyle — chest·crate·barrel·sack·straw·drawer·jar). 생략 = 이름표로 추정. */
+  style?: string;
+  /** container 전용: 이미 뒤진 페이지. 켜져 있는 동안 칸에 뒤진 흔적을 그린다. */
+  searched?: boolean;
 }
 
 /** 시야에 처음 들어온 순간의 놀람 — 머리 위 말풍선을 띄우고 holdMs 동안 멈췄다가 쫓는다(chase 전용). */

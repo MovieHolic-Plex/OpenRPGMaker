@@ -8,7 +8,7 @@ import { requestsEmeraldMonsterGame, classifyMonsterGameRequest, MONSTER_GAME_IN
 import { conceptCardsForText } from "../conceptCards";
 import { beodeulTownTargetFor } from "./beodeulTownRoute";
 import type { AutonomyResolution } from "@/ai/autonomyLevels";
-import { formatIntentAudit, type IntentSelectionFact } from "@/ai/intentDeclaration";
+import { formatIntentAudit, formatIntentClarifyMessage, type IntentDeclaration, type IntentSelectionFact } from "@/ai/intentDeclaration";
 import { buildIntentFacts, declareIntentCached, type IntentDeclarer } from "@/ai/intentDeclarationClient";
 import type { RoleModel } from "@/ai/modelRoles";
 import { buildSessionRegistryTools, SCENE_SETTING_NOTE, SCENE_SETTING_PATTERN } from "@/ai/sessionToolExposure";
@@ -40,6 +40,7 @@ import { SF_STATION_EXPOSED_TOOLS, sfStationTargetFor } from '../sfStationPolicy
 import { PREHISTORIC_EXPOSED_TOOLS, prehistoricTargetFor } from '../prehistoricPolicy';
 import { DESERT_EAST_EXPOSED_TOOLS, desertEastTargetFor } from '../desertEastPolicy';
 import { SNOW_NORTH_EXPOSED_TOOLS, snowNorthTargetFor } from '../snowNorthPolicy';
+import { villageTypeExposedTools, villageTypeForTurn, villageTypeSuppressesBeodeul, villageTypeSuppressesThemes } from '../villageTypeRoute';
 import { isGenrePresetBriefRequest } from "@/ai/genrePresetBrief";
 import { KIT_AREA_EXPOSED_TOOLS, kitAreaNote } from "@/editor/tools/kitAreaTools";
 import { PLAN_EXECUTION_PREAMBLE, ULTRABRAIN_PLAN_HEADING } from "./planExecution";
@@ -97,6 +98,17 @@ export interface PlainPiTurnClassification {
    * 원인을 코드로 역추적해야 했다. 선언을 부르지 않은 턴(장르 프리셋·읽기 전용)은 그 사실을 적는다.
    */
   readonly routingAudit: string;
+  /**
+   * 선언이 「도구가 갈릴 만큼 모호하다」며 낸 되묻기(선택지 줄 포함). 있으면 호출자(입력창)는 실행하지 않고 이 질문을 사용자에게 보인다.
+   * 2026-10-22 배경 조수 시험: 「배경 좀 예쁘게」 에 선언은 「맵 배경/맵 꾸미기」 를 물었지만 Pi 경로가 이 값을 버려 소품 꾸미기 56호출로 갔다.
+   */
+  readonly clarify?: string;
+}
+
+/** 되묻기에 대한 사용자 답을 원래 요청과 묶은 문장의 표지 — 이 표지가 있는 턴은 다시 되묻지 않는다. */
+export const CLARIFY_ANSWER_MARKER = "[되묻기 답]";
+export function clarifyFollowUpText(original: string, question: string, answer: string): string {
+  return `${original}\n${CLARIFY_ANSWER_MARKER} 질문: ${question.split("\n")[0]} → 답: ${answer} — 이 뜻으로 진행한다. 다시 묻지 않는다.`;
 }
 
 interface SelectedEventSource {
@@ -123,6 +135,7 @@ export async function classifyPlainPiTurn(input: PlainPiTurnInput): Promise<Plai
   let questionPromoted = false;
   let initialToolNames: readonly string[] | undefined;
   let intentNote: string | null = null;
+  let clarifyIntent: IntentDeclaration | null = null;
   // `/goal` is an explicit campaign command. It must bypass both intent routing and
   // the small genre-preset first-build contract, including the headless generator path
   // that calls this classifier before it can build a ParsedPiCommand.
@@ -193,6 +206,7 @@ export async function classifyPlainPiTurn(input: PlainPiTurnInput): Promise<Plai
     }
     if (declared.intent.source === "fallback" && !plan.readOnly) throw new Error(declared.error ?? "요청 범위를 확정하지 못했습니다. 다시 시도해 주세요.");
     plan = { ...plan, viewNavigation: declared.intent.source === "llm" && declared.intent.viewNavigation === true };
+    if (declared.intent.source === "llm" && declared.intent.clarify && declared.intent.mode !== "question") clarifyIntent = declared.intent;
     // 선언이 확정한 것을 본문도 읽게 한다 — 세션 경로의 pushOrchestrationMessage(intentNote) 와 같은 자리.
     // Pi 이관(2026-09-11)에서 빠져 author_village·권장 크기·선택 사각형 지시가 모델에 닿지 않았다(2026-09-17 실측).
     const noteTargetMapId = declared.intent.targetMapId ?? currentMapId;
@@ -204,33 +218,37 @@ export async function classifyPlainPiTurn(input: PlainPiTurnInput): Promise<Plai
     // 시대·세계 낱말이 분명한 테마(전국·에도, 스팀펑크, SF, 선사, 사막·동양풍)는 jp_city 보다 먼저 본다 — «일본 전통 마을»·«증기기관 도시 거리»·«네온 거리»가
     // jp_city 의 «도시 거리» 낱말로 새지 않게. 고딕·해적 군도·하늘섬·캠퍼스·도쿄풍 도시(modern_city)는 jp_city 가 이긴다. 다 아니고 대상 계열이 버들항이면 author_beodeul_town.
     // 전국·에도(sengoku_edo) — 전국시대·에도 시대·사무라이·성하마을·일본 전통 …(sengokuEdoPolicy).
-    const sengoku = sengokuTargetFor(project, declared.intent, text, noteTargetMapId, noteTargetMap ? isLivedMap(noteTargetMap) : false);
+    // 마을 종류 표(villageTypeCatalog) — 「엘프 숲 마을」「해저 돔」처럼 그림이 없는 종류는 어떤 칩셋 노트도 붙이지 않고(짓지 말고 말하게),
+    // 「조선 장터」「달 정착지」처럼 버들항이 아닌 칩셋의 종류는 버들항 마을 노트를 끈다(정책 낱말이 못 잡아도 버들항으로 새지 않게).
+    const villageType = villageTypeForTurn(declared.intent, text);
+    const themesOff = villageTypeSuppressesThemes(villageType);
+    const sengoku = themesOff ? null : sengokuTargetFor(project, declared.intent, text, noteTargetMapId, noteTargetMap ? isLivedMap(noteTargetMap) : false);
     // 스팀펑크 도시(steampunk_city) — 스팀펑크·증기·공장 지대·보일러실 낱말이나 대상 맵이 스팀펑크(steampunkCityPolicy).
-    const steampunk = sengoku ? null : steampunkTargetFor(project, declared.intent, text, noteTargetMapId, noteTargetMap ? isLivedMap(noteTargetMap) : false);
+    const steampunk = themesOff || sengoku ? null : steampunkTargetFor(project, declared.intent, text, noteTargetMapId, noteTargetMap ? isLivedMap(noteTargetMap) : false);
     // SF 정거장·네온 거리(sf_station) — 우주 정거장·연구 기지·달 기지·사이버펑크 거리(sfStationPolicy).
-    const sfStation = sengoku || steampunk ? null : sfStationTargetFor(project, declared.intent, text, noteTargetMapId, noteTargetMap ? isLivedMap(noteTargetMap) : false);
+    const sfStation = themesOff || sengoku || steampunk ? null : sfStationTargetFor(project, declared.intent, text, noteTargetMapId, noteTargetMap ? isLivedMap(noteTargetMap) : false);
     // 선사 원시 세계(prehistoric) — 선사·원시·석기·공룡·동굴 부족 낱말이나 대상 맵이 선사 칩셋(prehistoricPolicy). 그냥 동굴·던전은 잡지 않는다.
-    const prehistoric = sengoku || steampunk || sfStation ? null : prehistoricTargetFor(project, declared.intent, text, noteTargetMapId, noteTargetMap ? isLivedMap(noteTargetMap) : false);
+    const prehistoric = themesOff || sengoku || steampunk || sfStation ? null : prehistoricTargetFor(project, declared.intent, text, noteTargetMapId, noteTargetMap ? isLivedMap(noteTargetMap) : false);
     // 사막·동양풍(desert_east) — 사막·오아시스·바자르·피라미드·아라비안·실크로드 낱말이나 대상 맵이 사막 칩셋(desertEastPolicy). «로마풍·버들항 사막»은 버들항.
-    const desertEast = sengoku || steampunk || sfStation || prehistoric ? null : desertEastTargetFor(project, declared.intent, text, noteTargetMapId, noteTargetMap ? isLivedMap(noteTargetMap) : false);
+    const desertEast = themesOff || sengoku || steampunk || sfStation || prehistoric ? null : desertEastTargetFor(project, declared.intent, text, noteTargetMapId, noteTargetMap ? isLivedMap(noteTargetMap) : false);
     // 북방 설원(snow_north) — 북방·바이킹·설원 마을·얼어붙은 호수·얼음 동굴 입구 낱말이나 대상 맵이 snow_north(snowNorthPolicy).
     // 버들항 문맥(문장이 버들항을 말하거나 지금 맵이 버들항)의 일반 눈 낱말은 잡지 않는다 — 그건 아래 버들항 마을(theme:"snow") 몫이다.
-    const snowNorth = sengoku || steampunk || sfStation || prehistoric || desertEast ? null : snowNorthTargetFor(project, declared.intent, text, noteTargetMapId, noteTargetMap ? isLivedMap(noteTargetMap) : false);
+    const snowNorth = themesOff || sengoku || steampunk || sfStation || prehistoric || desertEast ? null : snowNorthTargetFor(project, declared.intent, text, noteTargetMapId, noteTargetMap ? isLivedMap(noteTargetMap) : false);
     const eraTheme = sengoku || steampunk || sfStation || prehistoric || desertEast || snowNorth;
-    const jpCity = eraTheme ? null : jpCityTargetFor(project, declared.intent, text, noteTargetMapId, noteTargetMap ? isLivedMap(noteTargetMap) : false);
+    const jpCity = themesOff || eraTheme ? null : jpCityTargetFor(project, declared.intent, text, noteTargetMapId, noteTargetMap ? isLivedMap(noteTargetMap) : false);
     // 박물관·배 안·투기장 실내(손 도트 실내 interior-plus) — 호러·고딕 낱말이 없을 때만(interiorPlusPolicy). 고딕 미술관·해적 군도 바깥보다 먼저 본다.
-    const interiorPlus = eraTheme || jpCity ? null : interiorPlusTargetFor(project, declared.intent, text, noteTargetMapId, noteTargetMap ? isLivedMap(noteTargetMap) : false);
+    const interiorPlus = themesOff || eraTheme || jpCity ? null : interiorPlusTargetFor(project, declared.intent, text, noteTargetMapId, noteTargetMap ? isLivedMap(noteTargetMap) : false);
     // 고딕 저택(gothic_manor) — gothicPolicy.
-    const gothic = eraTheme || jpCity || interiorPlus ? null : gothicTargetFor(project, declared.intent, text, noteTargetMapId, noteTargetMap ? isLivedMap(noteTargetMap) : false);
+    const gothic = themesOff || eraTheme || jpCity || interiorPlus ? null : gothicTargetFor(project, declared.intent, text, noteTargetMapId, noteTargetMap ? isLivedMap(noteTargetMap) : false);
     // 해적 군도(pirate_isles) — pirateIslesPolicy.
-    const pirateIsles = eraTheme || jpCity || interiorPlus || gothic ? null : pirateIslesTargetFor(project, declared.intent, text, noteTargetMapId, noteTargetMap ? isLivedMap(noteTargetMap) : false);
+    const pirateIsles = themesOff || eraTheme || jpCity || interiorPlus || gothic ? null : pirateIslesTargetFor(project, declared.intent, text, noteTargetMapId, noteTargetMap ? isLivedMap(noteTargetMap) : false);
     // 하늘섬(sky_island) — 하늘섬·구름 위·비공정 낱말(skyIslandPolicy).
-    const skyIsland = eraTheme || jpCity || interiorPlus || gothic || pirateIsles ? null : skyIslandTargetFor(project, declared.intent, text, noteTargetMapId, noteTargetMap ? isLivedMap(noteTargetMap) : false);
+    const skyIsland = themesOff || eraTheme || jpCity || interiorPlus || gothic || pirateIsles ? null : skyIslandTargetFor(project, declared.intent, text, noteTargetMapId, noteTargetMap ? isLivedMap(noteTargetMap) : false);
     // 캠퍼스(modern_campus) — 일본풍 학교는 jp_city, 마법 학교는 wizarding_world 가 이긴다(campusPolicy).
-    const campus = eraTheme || jpCity || interiorPlus || gothic || pirateIsles || skyIsland ? null : campusTargetFor(project, declared.intent, text, noteTargetMapId, noteTargetMap ? isLivedMap(noteTargetMap) : false);
+    const campus = themesOff || eraTheme || jpCity || interiorPlus || gothic || pirateIsles || skyIsland ? null : campusTargetFor(project, declared.intent, text, noteTargetMapId, noteTargetMap ? isLivedMap(noteTargetMap) : false);
     // 도쿄풍 도시(modern_city) — 보는 맵이 modern_city 이거나 칩셋 이름을 불렀을 때만(거리·편의점 낱말은 jp_city, 학교는 캠퍼스 몫). 앞의 누구도 안 잡았을 때만 본다.
-    const modernCity = eraTheme || jpCity || interiorPlus || gothic || pirateIsles || skyIsland || campus ? null : modernCityTargetFor(project, declared.intent, text, noteTargetMapId, noteTargetMap ? isLivedMap(noteTargetMap) : false);
-    const beodeulTown = eraTheme || jpCity || interiorPlus || gothic || pirateIsles || skyIsland || campus || modernCity ? null
+    const modernCity = themesOff || eraTheme || jpCity || interiorPlus || gothic || pirateIsles || skyIsland || campus ? null : modernCityTargetFor(project, declared.intent, text, noteTargetMapId, noteTargetMap ? isLivedMap(noteTargetMap) : false);
+    const beodeulTown = villageTypeSuppressesBeodeul(villageType) || eraTheme || jpCity || interiorPlus || gothic || pirateIsles || skyIsland || campus || modernCity ? null
       : beodeulTownTargetFor(project, declared.intent, noteTargetMapId, noteTargetMap ? isLivedMap(noteTargetMap) : false);
     intentNote = buildPiIntentNote({
       project,
@@ -248,6 +266,7 @@ export async function classifyPlainPiTurn(input: PlainPiTurnInput): Promise<Plai
       prehistoric,
       desertEast,
       snowNorth,
+      villageType,
       requestText: text,
       intent: declared.intent,
       targetMap: noteTargetMap
@@ -259,12 +278,16 @@ export async function classifyPlainPiTurn(input: PlainPiTurnInput): Promise<Plai
     plan = { ...plan, routineEdit: !declared.error && declared.intent.source === "llm"
       && (declared.intent.mode === "create" || declared.intent.mode === "modify")
       && declared.intent.needsPlan === false
-      && declared.intent.clarify === null };
+      && declared.intent.clarify === null,
+      // 실내 한 건물 짓기는 계획 턴 없이 바로 짓는다(PiRunPlan.skipPlanTurn) — 확인표·1배 검토 루프가 계획과 검증을 맡는다.
+      skipPlanTurn: !declared.error && declared.intent.space === "interior"
+      && (declared.intent.mode === "create" || declared.intent.mode === "modify") && declared.intent.clarify === null };
     // 숲마을 author_village 의 「마을 계약」은 2026-10-07 저작권 정리로 시공기와 함께 지웠다 — 마을은 author_beodeul_town 이 짓는다.
     routingAudit = `${formatIntentAudit(declared.intent, declared.elapsedMs)}${declared.error ? ` — 선언 오류: ${declared.error}` : ""}`
       + (sengoku ? " → 전국·에도 맵" : steampunk ? " → 스팀펑크 도시 맵" : sfStation ? " → SF 맵" : prehistoric ? " → 선사 원시 세계 맵" : desertEast ? " → 사막·동양풍 맵" : snowNorth ? ` → 북방 설원 맵(${snowNorth.room ?? snowNorth.outdoor})`
         : jpCity ? " → 일본 도시 맵" : interiorPlus ? ` → 손 도트 실내(${interiorPlus.themes.join("·")})` : gothic ? " → 고딕 저택 맵" : pirateIsles ? " → 해적 군도 맵" : skyIsland ? ` → 하늘섬 맵(${skyIsland.style})`
-        : campus ? " → 캠퍼스 맵" : modernCity ? (modernCity.indoor ? " → 도쿄풍 도시 실내" : " → 도쿄풍 도시 맵") : beodeulTown ? " → 버들항 마을" : "");
+        : campus ? " → 캠퍼스 맵" : modernCity ? (modernCity.indoor ? " → 도쿄풍 도시 실내" : " → 도쿄풍 도시 맵") : beodeulTown ? " → 버들항 마을" : "")
+      + (villageType ? ` · 마을 종류 ${villageType.id}(${villageType.status})` : "");
     if (declared.intent.mode === "question") {
       plan = { ...plan, readOnly: true };
       questionPromoted = true;
@@ -287,6 +310,7 @@ export async function classifyPlainPiTurn(input: PlainPiTurnInput): Promise<Plai
         ...(prehistoric ? PREHISTORIC_EXPOSED_TOOLS : []),
         ...(desertEast ? DESERT_EAST_EXPOSED_TOOLS : []),
         ...(snowNorth ? SNOW_NORTH_EXPOSED_TOOLS : []),
+        ...villageTypeExposedTools(villageType),
         ...(requestsOpeningProduction(text) || requestsFullGameOpeningProduction(text) || isRomanceGameRequest(text) ? OPENING_ANIMATIC_AUTHORING_TOOLS : []),
       ])];
       if (SCENE_SETTING_PATTERN.test(text)) intentNote = intentNote ? `${intentNote}\n\n${SCENE_SETTING_NOTE}` : SCENE_SETTING_NOTE;
@@ -317,7 +341,9 @@ export async function classifyPlainPiTurn(input: PlainPiTurnInput): Promise<Plai
     routingAudit += " · 몬스터 수집 의도 → 몬스터 키트";
   }
   const team = input.piTeam && !plan.readOnly;
-  return { mode: team ? "team" : "single", plan: { ...plan, routingAudit }, questionPromoted, ...(initialToolNames ? { initialToolNames } : {}), intentNote, routingAudit, ...(monsterKit ? { monsterKit } : {}) };
+  const clarify = clarifyIntent && !plan.readOnly && !input.text.includes(CLARIFY_ANSWER_MARKER) ? formatIntentClarifyMessage(clarifyIntent) : undefined;
+  if (clarify) routingAudit += " · 되묻기";
+  return { mode: team ? "team" : "single", plan: { ...plan, routingAudit }, questionPromoted, ...(initialToolNames ? { initialToolNames } : {}), intentNote, routingAudit, ...(monsterKit ? { monsterKit } : {}), ...(clarify ? { clarify } : {}) };
 }
 
 /** Ultrabrain 계획 턴을 먼저 돌리는가 — 단독·쓰기·비일상 실행만. */
@@ -408,6 +434,8 @@ export function buildPiRunRequest(input: {
   readonly callerThinkingLevel?: PiAgentThinkingLevel;
   /** 다이얼을 역할·Ultrabrain 설정보다 앞세운다. 두 입력을 다 비운 옛 호출자는 예전 그대로 역할 값을 쓴다. */
   readonly preferCallerThinking?: boolean;
+  /** 다듬기 모드 — 그대로 요청에 싣는다(featureReview.ts). */
+  readonly polish?: PiAgentRequest["polish"];
 }): PiAgentRequest {
   const brainRun = input.planOnly || input.team;
   const effectiveProvider = brainRun ? input.brain.providerId! : input.deep.provider;
@@ -440,5 +468,6 @@ export function buildPiRunRequest(input: {
     ...(input.toolDomains && input.toolDomains.length > 0 ? { toolDomains: input.toolDomains } : {}),
     ...(input.initialToolNames ? { initialToolNames: input.initialToolNames } : {}),
     ...(input.teamSpec ? { team: input.teamSpec } : {}),
+    ...(input.polish ? { polish: input.polish } : {}),
   };
 }

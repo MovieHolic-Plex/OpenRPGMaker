@@ -5,10 +5,12 @@ import { uploadedAssetUrl } from "@/project/persistence/assetAccessors";
 import atlasVehicles from "./atlasVehiclesTileset.json";
 import beodeulCitySheet from "./beodeulCitySheet.json";
 import beodeulGroundCatalog from './beodeulGroundCatalog.json';
+import beodeulForestTrunksCatalog from './beodeulForestTrunks.json';
 import beodeulNatureCatalog from './beodeulNatureCatalog.json';
 import beodeulWarmTreesCatalog from './beodeulWarmTreesCatalog.json';
 import beodeulArchitectureCatalog from './beodeulArchitectureCatalog.json';
 import beodeulFormsCatalog from './beodeulFormsCatalog.json';
+import beodeulOrganicCatalog from './beodeulOrganicCatalog.json';
 import beodeulReviewedCatalog from './beodeulReviewedCatalog.json';
 import joseonBaramSheet from "./joseonBaramSheet.json";
 import modernCitySheet from "./modernCitySheet.json";
@@ -60,7 +62,7 @@ import { cropGraphicStages } from "@/project/farmModel";
 import { SCARLOXY_CHIPSET_ASSETS } from "@/assets/scarloxyPack";
 import { EMERALD_MONSTER_KIT_CHIPSET_ASSETS, emeraldMonsterKitSheet } from "@/assets/emeraldMonsterKitAssets";
 import { EMOTE_ASSET_PATH, EMOTE_FRAME_SIZE, EMOTE_KINDS, EMOTE_TEXTURE_KEY } from "@/project/emotes";
-import { PLACEABLE_OVERLAY_TEXTURE_KEYS } from "@/player/placeableOverlayGraphics";
+import { PLACEABLE_OVERLAY_IMAGE_ASSETS, PLACEABLE_OVERLAY_TEXTURE_KEYS, PLACEABLE_TREE_FRAME, PLACEABLE_TREE_TEXTURE_KEY } from "@/player/placeableOverlayGraphics";
 import type { Project } from "@/project/types";
 import { bundledChipsetTileSize, bundledChipsetTilesPerRow } from "./bundledChipsetGeometry";
 export { bundledChipsetTileSize, bundledChipsetTilesPerRow } from "./bundledChipsetGeometry";
@@ -133,11 +135,15 @@ export const BUNDLED_EASYRPG_CHIPSET_ASSETS = [
   {textureKey:'tex_beodeul_warm_trees',path:'assets/beodeul-warm-trees/chipset.png',name:'버들항 · 따뜻한 황록 나무·숲'},
   {textureKey:"tex_beodeul_door",path:"assets/beodeul-door/door-states.png",name:"버들항 · 문 열림 손 도트 시안"},
   {textureKey:"tex_beodeul_ground",path:"assets/beodeul-ground/chipset.png",name:"버들항 · 기초·밑동·잔디 꾸미기"},
+  // 숲 composer 활엽수 줄기 T3(2026-10-24 사용자 선택). 재생성 scripts/content/fallen-forest-trunks/bake.py, 정의 project/defaults/beodeulForestTrunks.ts.
+  {textureKey:"tex_beodeul_forest_trunks",path:"assets/beodeul-forest-trunks/chipset.png",name:"버들항 · 숲 나무 줄기(나무껍질 대비)"},
   // 버들항 자연 덧그림(2026-10-11) — 그림자·자연 물가·풀밭 가장자리 2층 덧그림. 재생성 scripts/content/build-beodeul-nature.py, 정의 project/defaults/beodeulNature.ts.
   {textureKey:"tex_beodeul_nature",path:"assets/beodeul-nature/chipset.png",name:"버들항 · 자연 덧그림(그림자·물가·풀밭 가장자리)"},
   {textureKey:'tex_beodeul_architecture',path:'assets/beodeul-architecture/chipset.png',name:'버들항 · 원본 보존 민가·성당'},
   {textureKey:'tex_beodeul_forms',path:'assets/beodeul-forms/chipset.png',name:'버들항 · 건물 구조 여섯 계열'},
   {textureKey:'tex_beodeul_reviewed',path:'assets/beodeul-reviewed/chipset.png',name:'버들항 · 사람이 허용한 건물'},
+  // 버들항 자연 기물(2026-10-24) — 바위·덤불·통나무·버섯·들꽃·고사리·고목. 굽기 scripts/content/beodeul-organic/bake.py(object-gate 출구), 정의 project/defaults/beodeulOrganic.ts
+  {textureKey:'tex_beodeul_organic',path:'assets/beodeul-organic/chipset.png',name:'버들항 · 자연 기물(바위·덤불·통나무·버섯·들꽃)'},
   // 버들항 v6(2026-09-28) — 로마풍 항구 도시 손 도트 렌더를 16px 칸으로 자른 시트(칸마다 땅/윗부분, 움직임 animationStrips).
   // 재생성: scripts/content/build-beodeul-city.py, 정의는 project/defaults/beodeulCity.ts, openwiki/beodeul-city.md.
   {textureKey:"tex_beodeul_city",path:"assets/beodeul-city/beodeul-city-chipset.png",name:"버들항 v6 · 로마풍 항구 도시 (손 도트)"},
@@ -207,10 +213,12 @@ export function bundledChipsetFrameCount(key: string): number {
   if (key === 'tex_beodeul_warm_trees') return beodeulWarmTreesCatalog.count;
   if (key === "tex_beodeul_door") return 16;
   if (key === "tex_beodeul_ground") return beodeulGroundCatalog.count;
+  if (key === "tex_beodeul_forest_trunks") return beodeulForestTrunksCatalog.count;
   if (key === "tex_beodeul_nature") return beodeulNatureCatalog.count;
   if (key === 'tex_beodeul_architecture') return beodeulArchitectureCatalog.count;
   if (key === 'tex_beodeul_forms') return beodeulFormsCatalog.count;
   if (key === 'tex_beodeul_reviewed') return beodeulReviewedCatalog.count;
+  if (key === 'tex_beodeul_organic') return beodeulOrganicCatalog.count;
   if (key === "tex_oprn_atlas_vehicles") return atlasVehicles.count;
   if (key === "tex_beodeul_city") return beodeulCitySheet.count;
   if (key === "tex_joseon_baram") return joseonBaramSheet.count;
@@ -251,6 +259,7 @@ const EXTRA_BUNDLED_IMAGE_ASSETS = [
   ...BUNDLED_EASYRPG_CHIPSET_ASSETS,
   ...BUNDLED_REFERENCE_CHIPSET_ASSETS,
   ...BUNDLED_EASYRPG_CHARSET_ASSETS,
+  ...PLACEABLE_OVERLAY_IMAGE_ASSETS,
 ] as const satisfies readonly BundledImageAsset[];
 
 export const BUNDLED_IMAGE_ASSETS = [
@@ -289,6 +298,10 @@ export function loadBundledAssets(scene: { readonly load: Pick<Phaser.Loader.Loa
     if (usedTextures && !usedTextures.has(asset.id)) continue;
     scene.load.image(asset.id, withInlineAsset(asset.path));
   }
+  for (const asset of PLACEABLE_OVERLAY_IMAGE_ASSETS) {
+    if (usedTextures && !usedTextures.has(asset.textureKey)) continue;
+    scene.load.image(asset.textureKey, withInlineAsset(asset.path));
+  }
   for (const asset of EASYRPG_PICTURE_ASSETS) {
     if (!usedTextures?.has(asset.id)) continue;
     scene.load.image(asset.id, withInlineAsset(asset.path));
@@ -325,6 +338,11 @@ export function registerBundledFrames(scene: Phaser.Scene, project?: Project): v
     return;
   }
   registerTileFrames(scene, TEX_TILESET);
+  if (scene.textures.exists(PLACEABLE_TREE_TEXTURE_KEY)) {
+    const tree = scene.textures.get(PLACEABLE_TREE_TEXTURE_KEY);
+    const f = PLACEABLE_TREE_FRAME;
+    if (!tree.has(f.name)) tree.add(f.name, 0, f.x, f.y, f.width, f.height);
+  }
   for (const asset of BUNDLED_EASYRPG_CHIPSET_ASSETS) {
     if (usedTextures && !usedTextures.has(asset.textureKey)) continue;
     if (isColorKeyedChipsetTextureKey(asset.textureKey)) {

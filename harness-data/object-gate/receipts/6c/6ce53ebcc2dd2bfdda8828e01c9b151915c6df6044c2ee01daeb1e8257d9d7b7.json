@@ -1,0 +1,460 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "6ce53ebcc2dd2bfdda8828e01c9b151915c6df6044c2ee01daeb1e8257d9d7b7",
+ "width": 16,
+ "height": 48,
+ "kind": "column",
+ "name": "iron street lamp",
+ "label": "workshop-objectgen-3/c8-lamp",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (3/4)",
+  "3/4: 투영이 3/4 아님(front_elevation) (2/4)",
+  "3/4: 윗면 0행 < 4 (2/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (3/4)",
+   "투영이 3/4 아님(front_elevation) (2/4)",
+   "윗면 0행 < 4 (2/4)"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 9,
+  "tileColorsP90": 9,
+  "darkV5": 57,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 2
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "finial spike",
+      "rows": "0-1",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lantern pyramid roof",
+      "rows": "2-7",
+      "evidence": "c",
+      "front_edge_line_row": 7,
+      "eave_shadow_rows": "7"
+     },
+     {
+      "part": "lantern glass body",
+      "rows": "8-17",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lantern base plate",
+      "rows": "18-19",
+      "evidence": "none",
+      "front_edge_line_row": 18,
+      "eave_shadow_rows": "19"
+     },
+     {
+      "part": "pole shaft",
+      "rows": "20-36",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "collar rings",
+      "rows": "28-29, 37-38",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "round ball base",
+      "rows": "39-47",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 40,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": {
+     "cap_rows": 6,
+     "cap_width": 12,
+     "shaft_width": 4,
+     "rounded_at_both_edges": false
+    },
+    "reads_as": "three_quarter",
+    "evidence": "The top is a pyramid roof: rows 2-7 widen from 4 to 12 px, ending in a flat eave at row 7 (dark row, width 12). Row 8 is only slightly narrower (10) because the lantern body starts there, so the roof is a hat-shaped cap with a flat bottom, not an ellipse plate. The roof is read as a sloped roof plane above an eave line (evidence c). The lantern body (rows 8-17) and pole (rows 20-36, width 4) are front faces. The base (rows 39-47, widths 8-12-8) is a rounded ball that widens and narrows again, so it reads as an ellipse-like top."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a thin standing lamp, so I judged it against prop-lamp-crook, the same kind. It has 9 visible tones per full tile and 0% near-flat coverage. Only 1% of its dark edge pixels are neutral, so the outline is a tinted dark tone of the iron and not a black sticker line. By eye, the post has a lit and a shaded side, a stepped base, and a lantern with a glass glow and a cap. That is clearly richer than prop-lamp-crook, which is a nearly flat 1-2 tone pole with a 100% neutral outline. It is on par with prop-hedge (9 tones) but below the stall and well (17-20 tones), which are much bigger objects. The iron ramp has about 4 steps, a little under Beodeul's 5-6, but there are no flat fills and the piece would not look thinner or more sticker-like beside the reference lamp.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 의견이 갈림(분명한 3/4 0/1, 분명한 위반 0/1)",
+    "기둥 머리가 타원 판이 아님(위아래 둥글림 false, 몸통보다 8 튀어나옴 < 6) (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "판정자 의견이 갈림(분명한 3/4 0/1, 분명한 위반 0/1)",
+     "기둥 머리가 타원 판이 아님(위아래 둥글림 false, 몸통보다 8 튀어나옴 < 6) (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 22732
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "lamp roof / hat",
+      "rows": "2-7",
+      "evidence": "none",
+      "front_edge_line_row": 7,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lantern glass box",
+      "rows": "8-17",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lantern base plate",
+      "rows": "18-19",
+      "evidence": "none",
+      "front_edge_line_row": 18,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "shaft with collars",
+      "rows": "20-38",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "domed foot",
+      "rows": "39-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 40,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": {
+     "cap_rows": 6,
+     "cap_width": 12,
+     "shaft_width": 10,
+     "rounded_at_both_edges": false
+    },
+    "reads_as": "front_elevation",
+    "evidence": "The top end (rows 2-7) is a stepped trapezoid hat. Width goes 4, 6, 8, 10, 12, 12 and then ends flat at row 7 on the narrower lantern (width 10). It is rounded only at its upper edge, with a flat bottom edge, so it is not an ellipse. Its colour is nearly uniform (L≈92 at x=8) with no receding top plane. The lantern body (rows 8-17) is a vertical face, and the 1-row plate at row 18 (width 12) is only a rim. The shaft (width 4, rows 20-36) has 2-row collars at rows 28-29 and 37-38 that are rims, not caps. The bulb foot (rows 39-47) widens and narrows like a dome, but it is at the bottom, not a cap on the top end. Every part is drawn as a front elevation with no horizontal top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a thin iron lamp, so I judged it by eye against prop-lamp-crook, the closest reference of the same kind. It has an ornate finial cap, a lantern with a lit glass core and frame, a pole with a collar, and a stepped base. The pole and base show about 4 lightness steps, a little fewer than the reference's 5-6. The measured facts support this: 9 visible tones in a full tile (the hedge reference also has 9), 0% near-flat coverage, and only 1% neutral dark edge pixels. That last figure means the outline is tinted to the iron and not a black sticker line. The crook lamp reference is a plain pole with a 100% neutral outline, so the candidate is at least as rich and its outline is better. It would sit acceptably next to the Beodeul props, though the iron ramp is a little shallow and the texture is modest, limited to a few highlight and shade dots.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 0행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 0행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 24748
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "finial and roof cap",
+      "rows": "0-7",
+      "evidence": "none",
+      "front_edge_line_row": 7,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lantern housing (glass panes)",
+      "rows": "8-17",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lantern bottom ledge",
+      "rows": "18-19",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "collar",
+      "rows": "28-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "domed round base",
+      "rows": "37-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 40,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": {
+     "cap_rows": 6,
+     "cap_width": 12,
+     "shaft_width": 4,
+     "rounded_at_both_edges": false
+    },
+    "reads_as": "front_elevation",
+    "evidence": "The top end is a pointed, hat-shaped roof (rows 0-7). Width grows 2,4,6,8,10,12,12 and then ends flat on the 10-wide lantern housing at row 8. It never narrows again, so it is a hat and not an ellipse plate. Row 7 is a single darker line, which is a rim and not a top surface with an eave shadow. The housing (rows 8-17, with glass panes seen face-on), the thin 4-wide shaft (rows 20-36) and the domed base (rows 37-47) are all drawn as vertical faces. The base widens to 12 and narrows to 8, but it is a ball-shaped foot and not a cap on the column's top. No horizontal top surface is visible anywhere on the main body, so this is a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a thin prop, so I judged it mostly by eye against the same-kind prop-lamp-crook. It has 9 visible tones per tile, level with the hedge reference and well above the lamp-crook's 0, which reflects a thin shape rather than low richness. Near-flat coverage is 0%, so there are no flat fills. Only 1% of its dark edge pixels are neutral, so the outline is a tinted dark iron/green-grey tone, not the neutral black line of the lamp-crook (100% neutral). The form is more developed than the crook lamp, with a finial, a lantern with a lit glass panel, a post with a highlight edge, and a flared base. Shading is about 4 steps on the iron, a little below Beodeul's 5-6, and it has only 9 colours in total against 14 for the crook lamp. It would sit acceptably next to the references without looking flatter or more sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 0행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 0행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 21419
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "lantern roof (pyramid cap)",
+      "rows": "2-7",
+      "evidence": "c",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": "7"
+     },
+     {
+      "part": "lantern glass box (front face)",
+      "rows": "8-17",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lantern bottom ledge",
+      "rows": "18-19",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "pole shaft with collars",
+      "rows": "20-38",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "round base bulb",
+      "rows": "39-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 40,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": {
+     "cap_rows": 6,
+     "cap_width": 12,
+     "shaft_width": 10,
+     "rounded_at_both_edges": false
+    },
+    "reads_as": "three_quarter",
+    "evidence": "The top is a pointed pyramid roof whose width grows steadily from 2 to 12 over rows 0-7, then drops to 10 for the lantern. It is not an ellipse plate. Row 6 has a lighter edge pixel (L=147 at x=5) and row 7 is darker (L=63), which reads as a front-edge line plus eave shadow, so the roof counts as a sloped plane (evidence c). The lantern face (rows 8-17), the thin pole (width 4, rows 20-36) and the round base (rows 39-47) are all vertical or rounded forms with no horizontal top. The cap is a flat-bottomed hat that does not widen and narrow like an ellipse, so rounded_at_both_edges is false."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 4,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a thin, tall lamp, so I compared it mainly with prop-lamp-crook, the closest reference of the same kind. The crook lamp is a nearly flat pole with a neutral near-black outline (100% neutral dark edges, about 3-4 steps). The candidate has more structure: a finial, a lantern with a lit glass panel, a collar, a shaded pole, and a stepped base. It shows about 9 visible tones per full tile, which matches prop-hedge and is well above the crook lamp. Near-flat coverage is 0%, so there are no flat fills. Only 1% of its dark edge pixels are neutral, so the outline is a tinted dark version of the metal, not a sticker line. It is still lighter than the stall and well, which reach 17-20 tones, but for a thin prop it holds up next to the references and does not look thinner or flatter than the crook lamp.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "기둥 머리가 타원 판이 아님(위아래 둥글림 false, 몸통보다 2 튀어나옴 < 6) (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+     "기둥 머리가 타원 판이 아님(위아래 둥글림 false, 몸통보다 2 튀어나옴 < 6) (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 24950
+  }
+ ],
+ "decidedAt": "2026-10-22T06:32:23.001Z",
+ "cells": {
+  "16": [
+   "aa2326b62a5f666a",
+   "bc61ca10be8e53b3",
+   "ef8868d0a47e165b"
+  ],
+  "24": [
+   "0ff06ed2cc05ff1f",
+   "1256ae475e423f8a",
+   "4e9539cf263e0601",
+   "77641867cd380712",
+   "8789448792d55663",
+   "cea157be4eea4893"
+  ],
+  "32": [
+   "07b3fcce27ab3dcf",
+   "0c8cb4b72aed6966",
+   "18feb93634efd886",
+   "1b2fb283b2b0fd0b",
+   "3e3721ea7a2951d0",
+   "4af6b4b618d9a135",
+   "58dfbc8534d084b7",
+   "655ec54cc04a46af",
+   "95372cddb4df3039",
+   "c89c11e4854fe0e9",
+   "ce6481ccc1ea755a",
+   "f68f201f04aa3d22"
+  ],
+  "48": [
+   "853bad7f70dd4030",
+   "8a71146b95be2c47",
+   "f422f270a7c0dcad"
+  ]
+ }
+}

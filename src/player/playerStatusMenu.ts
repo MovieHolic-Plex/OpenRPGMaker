@@ -42,7 +42,6 @@ export function renderPlayerStatusMenu(options: PlayerStatusMenuOptions): HTMLEl
   const mode = options.mode ?? "main";
   const waitModeEnabled = options.waitModeEnabled ?? true;
   const snapshot = createPlayerStatusMenuSnapshot(options.project, options.session, {
-    elapsedMs: options.elapsedMs,
     waitModeEnabled,
   });
   // 스킨(자료집 → 시스템 → 화면)은 DOM 골격을 바꾸지 않는다 — 루트 속성만 쓰고 CSS 가 배치·색·아이콘을 갈아입는다.
@@ -103,6 +102,7 @@ export function renderPlayerStatusMenu(options: PlayerStatusMenuOptions): HTMLEl
     inventoryView: options.inventoryView,
     onInventoryViewChange: options.actions.onInventoryViewChange,
     onOptionsChanged: options.actions.onOptionsChanged,
+    onToggleWait: options.actions.onToggleWait,
     targetItemId: options.targetItemId,
     skillActorId: options.skillActorId,
     selectedSkillId: options.selectedSkillId,
@@ -423,13 +423,13 @@ function runCommand(command: StatusMenuCommand, actions: PlayerStatusMenuActions
     return;
   }
   switch (command.id as StatusMenuCommandId) {
-    case "wait":
-      actions.onToggleWait();
-      return;
     case "to-title":
       actions.onToTitle();
       return;
     case "options":
+    // 「전투 대기」는 목록에서 고르는 순간 값을 뒤집지 않는다 — 화면을 열고 그 화면의 행에서 바꾼다
+    // (열기만 해도 값이 뒤집히고 화면 안에서는 못 바꾸던 결함, 2026-10-23).
+    case "wait":
     case "items":
     case "skills":
     case "equipment":

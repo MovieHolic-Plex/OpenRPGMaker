@@ -1,0 +1,38 @@
+{
+ "schema": "oprn-object-gate-queue/1",
+ "id": "fallen-rooms-r37",
+ "title": "fallen rooms r37: dais riser + steps, ash-bed great stone brazier",
+ "createdAt": "2026-10-22T00:25:23.143Z",
+ "items": [
+  {
+   "sha": "6bca421477f0da872fb65cd780e39e4687ebb207f7e42456c78cd95676290621",
+   "kind": "other",
+   "label": "atlas_biome_interior/plus/great stone brazier",
+   "source": "/tmp/fsrooms/gate-r37/great_stone_brazier.png"
+  },
+  {
+   "sha": "4b3a2a280c19a69c9377fe7c4652b85f5ae680c8a5cb2a30a8b10dc3b1c758d1",
+   "kind": "terrain",
+   "label": "atlas_biome_interior/plus/dais riser stone",
+   "source": "/tmp/fsrooms/gate-r37/dais_riser_stone.png"
+  },
+  {
+   "sha": "9e5e5c5c6c61808a48118047774316a2f4057d18787f2fa1928b849e4bb84caa",
+   "kind": "terrain",
+   "label": "atlas_biome_interior/plus/dais riser stone L",
+   "source": "/tmp/fsrooms/gate-r37/dais_riser_stone_L.png"
+  },
+  {
+   "sha": "81fcffa64921e7cecf4422d9931994c75b9365ee9f37083b3808ae064d7914eb",
+   "kind": "terrain",
+   "label": "atlas_biome_interior/plus/dais riser stone R",
+   "source": "/tmp/fsrooms/gate-r37/dais_riser_stone_R.png"
+  },
+  {
+   "sha": "438bef0d3eb1fd5b40c7ca8bb2ca4ce3b5fdafb6573fe286468a6ccc4daa63ee",
+   "kind": "terrain",
+   "label": "atlas_biome_interior/plus/dais steps stone",
+   "source": "/tmp/fsrooms/gate-r37/dais_steps_stone.png"
+  }
+ ]
+}

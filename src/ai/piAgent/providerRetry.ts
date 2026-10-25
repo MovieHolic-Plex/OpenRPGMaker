@@ -39,6 +39,10 @@ const TRANSIENT_PATTERNS: readonly RegExp[] = [
   // 모델이 부르려던 도구(paint_pack_layout)의 인자 스키마만 바꿔도 8회 중 5회 → 24회 중 1회로 줄었다 — 요청 본문이 아니라
   // 생성 쪽 실패다. 이어 가기 턴을 한 번 더 주면 다시 뽑는다(원 요청: ~/.omp/logs/http-400-requests/).
   /Cloud Code Assist API error \(400\)[\s\S]*INVALID_ARGUMENT/,
+  // 2026-10-25 조수 단독 게임 G12/G14: 제공자 쪽 「첫 응답 대기」 감시가 요청을 끊으면 사유 없는 「Request was aborted」만 남는다
+  // (Argon 이 Flash 의 60초 감시를 물려받아, 읽기가 쌓인 8~9번째 턴에서 네 번 연속 끊겼다). 우리 쪽 중단(턴·시간 상한, 사용자 중단)은
+  // 사유를 실어 이 검사보다 먼저 걸리므로, 여기까지 온 맨 문구는 제공자 쪽 끊김이다 — 이어 가면 다시 요청한다.
+  /^Request was aborted\.?$/,
 ];
 
 /** 같은 대화 기록으로 한 번 더 요청하면 나아질 법한 제공자 오류인가. */

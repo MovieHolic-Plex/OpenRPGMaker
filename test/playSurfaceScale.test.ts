@@ -6,6 +6,12 @@ import {
 } from "@/player/playSurfaceScale";
 
 describe("calculatePlaySurfaceScale", () => {
+  it("allows a 1.5x step when 1x would leave more than 35% of the box empty", () => {
+    expect(calculatePlaySurfaceScale(768, 740, 480, 270)).toBe(1.5); // iPad mini portrait: 1x fills 23%
+    expect(calculatePlaySurfaceScale(863, 316, 480, 270)).toBe(1); // below 1.5x: stays 1x
+    expect(calculatePlaySurfaceScale(1280, 720, 480, 270)).toBe(2); // 2x and up stay integer
+  });
+
   it("uses the largest integer contain scale while the logical stage fits at 1x", () => {
     expect(calculatePlaySurfaceScale(1600, 900)).toBe(3);
     expect(calculatePlaySurfaceScale(1280, 800)).toBe(3);
@@ -113,5 +119,12 @@ describe("calculatePlaySurfacePlacement", () => {
     const placement = calculatePlaySurfacePlacement(1320, 690, scale, 1920, 1080);
     expect(placement.left).toBeCloseTo(140 / 3);
     expect(placement.top).toBe(0);
+  });
+
+  it("keeps an integer-scaled stage on whole screen pixels so pixel text is not shifted half a pixel", () => {
+    // Break named: a 1281×721 window at 2× put the stage at (160.5, 90.5) and blurred the canvas and the dialogue font.
+    const placement = calculatePlaySurfacePlacement(1281, 721, 2, 480, 270);
+    expect(placement.left).toBe(160);
+    expect(placement.top).toBe(90);
   });
 });

@@ -23,7 +23,10 @@ import { isPokemonMoveMotion } from "@/battle/pokemonMoveMotion";
 import { DEFAULT_BATTLE_HIT_FEEL, isBattleHitFeel } from "@/project/battleHitFeel";
 import { normalizeDisplayFilter } from "@/project/displayFilter";
 import { normalizePlaySurfaceScale } from "@/project/playSurfaceScaleMode";
+import { normalizeTouchControls } from "@/project/touchControls";
 import { normalizeBattleLook } from "@/project/battleLook";
+import { normalizeBattleFanfare } from "@/project/battleFanfare";
+import { normalizeBattleStaging, normalizeComboStaging } from "@/project/battleStaging";
 import { DEFAULT_MENU_SKIN_ID, isMenuSkinId } from "@/player/menuSkins/registry";
 import { normalizeBattleAnimationRecord } from "@/project/databaseAnimationRecordModel";
 import { normalizeActionCombatConfig, normalizeActionSkillProfile, normalizeActionWeaponProfile } from "@/project/actionCombat";
@@ -310,6 +313,8 @@ export function normalizeSystemRecords(system: Partial<SystemRecords> & Pick<Sys
   // 진형 굴림·도주 가산 — 기본(굴림 없음·가산 0)은 저장하지 않는다(옛 JSON 바이트 유지).
   if (system.battleFormationRoll === true) records.battleFormationRoll = true;
   if (system.pointerMovement === true) records.pointerMovement = true;
+  const touchControls = normalizeTouchControls(system.touchControls);
+  if (touchControls) records.touchControls = touchControls;
   if (typeof system.escapeBonusPercent === "number" && Number.isFinite(system.escapeBonusPercent) && system.escapeBonusPercent !== 0) {
     records.escapeBonusPercent = clampInteger(system.escapeBonusPercent, 0, 100);
   }
@@ -325,6 +330,12 @@ export function normalizeSystemRecords(system: Partial<SystemRecords> & Pick<Sys
   if (playSurfaceScale) records.playSurfaceScale = playSurfaceScale;
   // 전투 화면 꾸미기도 같은 계약 — 프리셋과 같은 칸·미등록 값은 저장하지 않는다(project/battleLook.ts).
   if (battleLook) records.battleLook = battleLook;
+  // 결과 팡파레 — 기본(전부 켜기·burst)은 저장하지 않는다(project/battleFanfare.ts).
+  const battleFanfare = normalizeBattleFanfare(system.battleFanfare);
+  if (battleFanfare) records.battleFanfare = battleFanfare;
+  // 전투 연출(적 달려들기·연계기 컷인·화려함·한 줄 도움말) — 기본은 저장하지 않는다(project/battleStaging.ts).
+  const battleStaging = normalizeBattleStaging(system.battleStaging);
+  if (battleStaging) records.battleStaging = battleStaging;
   // ESC 메뉴 스킨도 같은 계약 — 기본(workbench)과 미등록 값은 저장하지 않고 명시 선택만 남긴다.
   if (isMenuSkinId(system.menuUiStyle) && system.menuUiStyle !== DEFAULT_MENU_SKIN_ID) records.menuUiStyle = system.menuUiStyle;
   // 대화창 스타일도 같은 계약 — 기본(glass)과 미등록 값은 저장하지 않는다.
@@ -719,6 +730,21 @@ export function normalizeSkillRecord(record: Partial<SkillRecord> & Pick<SkillRe
     ...(record.unforgettable === true ? { unforgettable: true } : {}),
     ...(Number.isFinite(record.hpCostPercent) && record.hpCostPercent! > 0 ? { hpCostPercent: clampInteger(record.hpCostPercent!, 0, 100) } : {}),
     ...(Number.isFinite(record.drainPercent) && record.drainPercent! > 0 ? { drainPercent: clampInteger(record.drainPercent!, 0, 100) } : {}),
+    ...(record.weaponAffinity && Number.isFinite(record.weaponAffinity.bonusPercent) && record.weaponAffinity.bonusPercent > 0
+      ? { weaponAffinity: {
+          bonusPercent: clampInteger(record.weaponAffinity.bonusPercent, 1, 300),
+          ...(Array.isArray(record.weaponAffinity.elementIds) && record.weaponAffinity.elementIds.length
+            ? { elementIds: record.weaponAffinity.elementIds.filter((id): id is string => typeof id === "string" && id.trim().length > 0).slice(0, 8) }
+            : {}),
+        } }
+      : {}),
+    ...(() => {
+      const exploit = record.exploitStates;
+      if (!exploit || !Number.isFinite(exploit.bonusPercent) || exploit.bonusPercent <= 0 || !Array.isArray(exploit.stateIds)) return {};
+      const stateIds = uniqueCleanIds(exploit.stateIds.filter((id): id is string => typeof id === "string")).slice(0, 8);
+      if (stateIds.length === 0) return {};
+      return { exploitStates: { stateIds, bonusPercent: clampInteger(exploit.bonusPercent, 1, 300), ...(exploit.consume === true ? { consume: true as const } : {}) } };
+    })(),
     ...(Number.isFinite(record.recoilPercent) && record.recoilPercent! > 0 ? { recoilPercent: clampInteger(record.recoilPercent!, 0, 100) } : {}),
     ...(normalizeFixedDamage(record.fixedDamage) ? { fixedDamage: normalizeFixedDamage(record.fixedDamage) } : {}),
     ...(normalizeMultiHit(record.multiHit) ? { multiHit: normalizeMultiHit(record.multiHit) } : {}),
@@ -766,6 +792,21 @@ export function normalizeSkillRecord(record: Partial<SkillRecord> & Pick<SkillRe
         ...(comboRequires.length > 0 ? { comboRequires } : {}),
         ...(record.comboCombinedStats === true ? { comboCombinedStats: true as const } : {}),
         ...(typeof record.comboSwitchId === "string" && record.comboSwitchId.trim() ? { comboSwitchId: record.comboSwitchId.trim() } : {}),
+        ...(() => {
+          const staging = normalizeComboStaging(record.comboStaging);
+          return staging ? { comboStaging: staging } : {};
+        })(),
+        ...(() => {
+          const rows = Array.isArray(record.comboMpCosts)
+            ? record.comboMpCosts.flatMap((entry) => {
+                const actorId = typeof entry?.actorId === "string" ? entry.actorId.trim() : "";
+                return actorId && comboActorIds.includes(actorId) && Number.isFinite(entry.mp)
+                  ? [{ actorId, mp: clampInteger(entry.mp, 0, 9999) }] : [];
+              })
+            : [];
+          const unique = rows.filter((row, index) => rows.findIndex((other) => other.actorId === row.actorId) === index);
+          return unique.length > 0 ? { comboMpCosts: unique } : {};
+        })(),
       };
     })(),
     ...(record.area && (record.area.shape === "circle" || record.area.shape === "line")
@@ -866,6 +907,8 @@ export function normalizeEquipmentRecord(record: Partial<EquipmentRecord> & Pick
     stateDefenseIds: cleanIds(record.stateDefenseIds),
     stateDefenseMode: record.stateDefenseMode === "inflict" ? "inflict" : "resist",
     stateResistanceChance: clampInteger(record.stateResistanceChance ?? 0, 0, 100),
+    ...(record.damageDealtPercent ? { damageDealtPercent: clampInteger(record.damageDealtPercent, -90, 300) } : {}),
+    ...(record.damageTakenPercent ? { damageTakenPercent: clampInteger(record.damageTakenPercent, -90, 300) } : {}),
     ...(() => {
       const actionWeapon = normalizeActionWeaponProfile(record.actionWeapon);
       return actionWeapon ? { actionWeapon } : {};
@@ -987,6 +1030,10 @@ function normalizeCompanionConfig(value: CompanionConfig | undefined): Companion
   if (value.formation === "line" || value.formation === "beside") out.formation = value.formation;
   if (value.clearOnTransfer === true) out.clearOnTransfer = true;
   if (value.fromParty === true) out.fromParty = true;
+  if (value.spreadWhenBlocked === true) out.spreadWhenBlocked = true;
+  if (value.fanOutInScenes === true) out.fanOutInScenes = true;
+  if (value.display === "scenesOnly") out.display = "scenesOnly";
+  if (value.monsterFollowers === false) out.monsterFollowers = false;
   return Object.keys(out).length > 0 ? out : undefined;
 }
 

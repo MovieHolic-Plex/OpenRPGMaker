@@ -8,7 +8,7 @@
 | hang-on-floor | 그림(걸이)을 바닥 줄에 걺 | hang-not-on-face, goods-no-layer | 그림(picture) @(6,10) 는 걸이 — 벽면 두 줄 중 윗줄(막힌 칸 바로 아래 줄)에 건다 / 탁상 물건 breadbasket (6,11) — 4층이 이미 다른 조각으로 찼다 |
 | wall-piece-mid-floor | 벽 가구(빵 선반)를 방 가운데에 | wall-piece-needs-face | 빵 선반(bread shelf) @(12,10) 뒤(북쪽)에 벽면이 없다 — 벽 가구는 북쪽 벽면 바로 아래 첫 바닥 줄에 |
 | closed-doorway | 굽는 방으로 가는 칸막이 틈을 막음 — 방에 닿지 못함 | unreached-floor, unreachable-piece | 출입구에서 닿지 못하는 빈 바닥 14칸: (4,3) (5,3) (6,3) (1,4) (2,4) (3,4) (4,4) (5,4) (6,4) (7,4) — 가구가 길을 막았거나 방이 닫혔다 / 빵 화덕(bread oven) @(1,3) 옆에 닿는 칸이 없다 — 쓸 수 없는 가구 / 장작 선반(firewood rack) @(3,3) 옆에 닿는 칸이 없다 — 쓸 수 없는 가구 |
-| stairs-mid-floor | 위로 가는 계단을 방 가운데에 | stairs-not-at-wall, travel-landing-unreached | 나무 계단(stairs up wood) @(10,10) 위로 가는 계단은 북쪽 벽 앞 첫 바닥 줄에 세운다(벽면 두 줄을 덮고 벽 속으로 오른다) — 방 가운데·옆벽 금지 / 나무 계단(stairs up wood) @(10,10) 앞 탈 자리 (10,11) 에 출입구에서 닿지 못한다 — 앞을 막은 가구를 치운다 / 나무 계단(stairs up wood) @(10,10) 앞 탈 자리 (11,11) 에 출입구에서 닿지 못한다 — 앞을 막은 가구를 치운다 |
+| stairs-mid-floor | 위로 가는 계단을 방 가운데에 | stairs-not-at-wall | 올라가는 나무 계단(stairs up wood) @(10,10) 위로 가는 계단은 북쪽 벽 앞 첫 바닥 줄에 세운다(벽면 두 줄을 덮고 벽 속으로 오른다) — 방 가운데·옆벽 금지 |
 | goods-on-floor | 탁상 물건을 바닥에 | goods-needs-surface | 탁상 물건 cashbox (7,11) — 윗면이 있는 가구(탁자·카운터·책상·협탁 등) 칸 위에만 둔다 |
 
 ## 레이어 정정 (옛 정의 → 새 정의, 엔진 판정 기준)

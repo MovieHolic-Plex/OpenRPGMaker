@@ -6,8 +6,27 @@ import { store } from "@/project/store";
 import { dismissToastsByKey, toast } from "@/util/toast";
 
 const recoveryToastKey = Symbol("persistence-recovery");
+// 「저장 중...」은 결과 토스트가 뜨면 걷는다 — 둘이 함께 남아 상태가 모순돼 보였다.
+const saveProgressToastKey = Symbol("save-progress");
 
-export async function saveProjectNow(): Promise<boolean> {
+// 저장 결과 토스트는 한 번에 하나 — Ctrl+S 를 빨리 두 번 누르거나(키 반복 포함) 진행 중에 또 누르면
+// 「저장 완료」「이미 최신 상태입니다」가 겹쳐 쌓였다(2026-10-23 적대 UX 검수). 진행 중 저장은 같은 약속을 돌려주고,
+// 결과 토스트는 같은 키로 앞의 것을 걷어 낸다.
+const saveResultToastKey = Symbol("save-result");
+let saveInFlight: Promise<boolean> | null = null;
+
+function saveToast(message: string, kind: "ok" | "info" | "error"): void {
+  dismissToastsByKey(saveResultToastKey);
+  toast(message, { kind, key: saveResultToastKey });
+}
+
+export function saveProjectNow(): Promise<boolean> {
+  if (saveInFlight) return saveInFlight;
+  saveInFlight = saveProjectOnce().finally(() => { saveInFlight = null; });
+  return saveInFlight;
+}
+
+async function saveProjectOnce(): Promise<boolean> {
   // 공용 데모 세션에서 저장은 "편집용 사본 만들기"로 연결한다 — 원본은 절대 못 바꾼다.
   if (store.isSharedDemoSession()) {
     const { presentSharedDemoSaveHint } = await import("@/editor/sharedDemoIntro");
@@ -16,19 +35,21 @@ export async function saveProjectNow(): Promise<boolean> {
   }
   if (store.isLoaded() && !store.hasUnsavedChanges() && store.getAutoSaveState().kind !== "error"
     && store.getPersistenceRecovery().kind !== "blocked") {
-    toast("이미 최신 상태입니다", "ok");
+    saveToast("이미 최신 상태입니다", "ok");
     return true;
   }
-  toast("저장 중...", "info");
+  dismissToastsByKey(saveResultToastKey);
+  toast("저장 중...", { kind: "info", key: saveProgressToastKey });
   try {
     const result = await store.flush();
+    dismissToastsByKey(saveProgressToastKey);
     switch (result.kind) {
       case "saved": {
         const recovery = store.getPersistenceRecovery();
         if (recovery.kind === "ready" && recovery.mirror?.status === "warning") {
-          toast("저장 완료. 미리보기 동기화는 경고입니다.", "info");
+          saveToast("저장 완료. 미리보기 동기화는 경고입니다.", "info");
         } else {
-          toast("저장 완료", "ok");
+          saveToast("저장 완료", "ok");
         }
         return true;
       }
@@ -36,32 +57,33 @@ export async function saveProjectNow(): Promise<boolean> {
         if (result.written === false) {
           // fresh/blank 같은 임시 세션은 기록을 건너뛴다. 「저장 완료」라고 하면 거짓이다.
           // 호출자(새 프로젝트 만들기 등)는 막지 않는다 — 임시 세션은 원래 저장할 곳이 없다.
-          toast("이 세션은 저장되지 않는 임시 세션입니다 — 아무것도 기록하지 않았습니다.", "info");
+          saveToast("이 세션은 저장되지 않는 임시 세션입니다 — 아무것도 기록하지 않았습니다.", "info");
           return false;
         }
-        toast("저장 완료 (브라우저)", "ok");
+        saveToast("저장 완료 (브라우저)", "ok");
         return true;
       case "not-loaded":
-        toast("아직 프로젝트를 불러오는 중입니다.", "error");
+        saveToast("아직 프로젝트를 불러오는 중입니다.", "error");
         return false;
       case "conflict":
-        toast(`저장 충돌: ${conflictMapNames(result.conflicts)} 맵이 다른 세션에서 먼저 바뀌었습니다.`, "error");
+        saveToast(`저장 충돌: ${conflictMapNames(result.conflicts)} 맵이 다른 세션에서 먼저 바뀌었습니다.`, "error");
         return false;
       case "disabled":
-        toast("이 화면에서는 온라인 저장을 사용할 수 없습니다.", "error");
+        saveToast("이 화면에서는 온라인 저장을 사용할 수 없습니다.", "error");
         return false;
       case "not-configured":
-        toast("온라인 저장 연결이 필요합니다. 상태바의 ‘온라인 저장’을 확인하세요.", "error");
+        saveToast("온라인 저장 연결이 필요합니다. 상태바의 ‘온라인 저장’을 확인하세요.", "error");
         return false;
     }
   } catch (error) {
+    dismissToastsByKey(saveProgressToastKey);
     if (error instanceof SpatialPersistenceError || error instanceof ProjectRoutingError) {
       toast(persistenceRecoveryCopy(error).title, { kind: "error", key: recoveryToastKey });
       openPersistenceRecovery();
       return false;
     }
     if (error instanceof Error) {
-      toast(`저장 실패: ${error.message}`, "error");
+      saveToast(`저장 실패: ${error.message}`, "error");
       return false;
     }
     throw error;

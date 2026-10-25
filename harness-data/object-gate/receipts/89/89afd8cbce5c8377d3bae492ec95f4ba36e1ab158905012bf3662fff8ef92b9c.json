@@ -1,0 +1,423 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "89afd8cbce5c8377d3bae492ec95f4ba36e1ab158905012bf3662fff8ef92b9c",
+ "width": 32,
+ "height": 48,
+ "kind": "structure",
+ "name": "jp-in-cs-stairs-up-bare",
+ "label": "jp_city/interior/jp-in-cs-stairs-up-bare",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 평면 채움 (4/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "평면 채움 (4/4)"
+  ],
+  "styleKind": "building",
+  "refs": [
+   "house-hip2",
+   "house-machiya"
+  ],
+  "scale": 2,
+  "score": 5,
+  "refSet": {
+   "id": "jp_city",
+   "chipset": "jp_city",
+   "fallback": false,
+   "hash": "f038fa1d934bb87c"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 8,
+  "tileColorsP90": 10,
+  "darkV5": 26,
+  "nearBlackEdge": 0.81,
+  "opaqueTiles": 6
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "step 1 (top)",
+      "rows": "12-16",
+      "evidence": "a",
+      "front_edge_line_row": 16,
+      "eave_shadow_rows": "17"
+     },
+     {
+      "part": "step 2",
+      "rows": "18-22",
+      "evidence": "a",
+      "front_edge_line_row": 22,
+      "eave_shadow_rows": "23"
+     },
+     {
+      "part": "step 3",
+      "rows": "24-28",
+      "evidence": "a",
+      "front_edge_line_row": 28,
+      "eave_shadow_rows": "29-30"
+     },
+     {
+      "part": "step 4",
+      "rows": "31-36",
+      "evidence": "a",
+      "front_edge_line_row": 36,
+      "eave_shadow_rows": "37-38"
+     },
+     {
+      "part": "step 5 (bottom)",
+      "rows": "39-44",
+      "evidence": "a",
+      "front_edge_line_row": 44,
+      "eave_shadow_rows": "45-46"
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 6,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The staircase is drawn as five stacked tiers that widen toward the bottom. Each tier is a tread band of about 4-6 rows (rows 12-16, 18-22, 24-28, 31-36, 39-44). Each band ends in a lighter front-edge line (L=181-205 at rows 16, 22, 28, 36 and 44), followed by 1-2 rows of dark shadow (rows 17, 23, 29-30, 37-38, 45-46) that act as the risers. The treads are horizontal surfaces seen from above, and the shadow rows between them form the front face, so the stairs read as a 3/4 view. The front face is thin because the risers are only 1-2 rows each, which is why front_face_rows is a sum of about 6."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small stairwell opening, not a full roof-and-wall building, so it is only loosely comparable to the references. It has 8 visible tones per tile against 9 for both references, so tone count is close. Its near-flat coverage is 34% against 2% for both references, and it has only 13 distinct colours against 45 and 27. The dark upper band is a large flat, near-uniform fill with no grain or dots. The steps carry only about 4 lightness steps (light tread, mid, shadow, dark riser) with little speckle, so they read cleaner and simpler than the references' per-tile scallops, plaster speckle and grain. The dark edge pixels are tinted (0% near-neutral), so this is not a sticker outline, and that part matches the references. The large flat area and thin texture still leave it visibly flatter than the shipped jp_city pieces, so it fails."
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 19047
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top step tread",
+      "rows": "12-16",
+      "evidence": "a",
+      "front_edge_line_row": 16,
+      "eave_shadow_rows": "17"
+     },
+     {
+      "part": "second step tread",
+      "rows": "18-22",
+      "evidence": "a",
+      "front_edge_line_row": 22,
+      "eave_shadow_rows": "23"
+     },
+     {
+      "part": "third step tread",
+      "rows": "24-28",
+      "evidence": "a",
+      "front_edge_line_row": 28,
+      "eave_shadow_rows": "29-30"
+     },
+     {
+      "part": "fourth step tread",
+      "rows": "31-36",
+      "evidence": "a",
+      "front_edge_line_row": 36,
+      "eave_shadow_rows": "37-38"
+     },
+     {
+      "part": "bottom step tread and riser",
+      "rows": "39-46",
+      "evidence": "a",
+      "front_edge_line_row": 44,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 8,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The object is a staircase of five stacked tiers that widen toward the bottom. Each tier has a band of rows that ends in a lighter front-edge line (rows 16, 22, 28, 34-36, 42-44). Each edge line is followed by 1-2 rows of dark shadow (rows 17, 23, 29-30, 37-38), which are the step risers or eaves. The treads therefore read as horizontal surfaces seen from above, with front faces below them. Rows 0-9 are a dark backdrop and the purple strip on the right is shading, not a receding side face. The reading is somewhat ambiguous because the tread and riser bands are close in tone."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small stair alcove, not a roof, wall and door building like the two references, so the comparison is only partly like for like. Per-tile visible tones are close (8 vs 9 and 9), and the dark edge pixels are tinted rather than neutral (0% near-neutral), so the outline reads as a dark material tone. Near-flat coverage is the problem: 34% against 2% for both references. The upper dark band and the dark side areas are large single-colour fills with no grain, and the references have none of that. The stair treads show only about 4 grey-blue lightness steps with sparse speckle, against 5-6 steps with per-tile scallops and plaster grain in the references. It looks thinner and flatter than the references, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 21509
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "north",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top step tread",
+      "rows": "12-16",
+      "evidence": "a",
+      "front_edge_line_row": 16,
+      "eave_shadow_rows": "17"
+     },
+     {
+      "part": "second step tread",
+      "rows": "18-22",
+      "evidence": "a",
+      "front_edge_line_row": 22,
+      "eave_shadow_rows": "23"
+     },
+     {
+      "part": "third step tread",
+      "rows": "24-28",
+      "evidence": "a",
+      "front_edge_line_row": 28,
+      "eave_shadow_rows": "29-30"
+     },
+     {
+      "part": "fourth step tread",
+      "rows": "31-36",
+      "evidence": "a",
+      "front_edge_line_row": 36,
+      "eave_shadow_rows": "37-38"
+     },
+     {
+      "part": "bottom step tread",
+      "rows": "39-46",
+      "evidence": "a",
+      "front_edge_line_row": 45,
+      "eave_shadow_rows": "46"
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 8,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The stair is five stacked steps that widen toward the bottom. Each step has a lighter tread band that ends in a brighter front-edge row (rows 16, 22, 28, 36 and about 45). A dark shadow or riser strip follows directly below (rows 17, 23, 29-30, 37-38, 46). Together the treads make up most of the body's height, so the top surfaces are clearly visible. The risers add up to roughly 8 rows of front face. The darker band on the right edge is a flat shaded wall, not a receding isometric side face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small 2x3-tile stair niche, not a whole building with roof, walls and windows, so the references only loosely match its kind. Per-tile visible tones are 8, close to the references' 9. Its near-flat coverage is 34% against 2% for both references, which is a large gap. The picture shows why: a big dark block at the top (the stair opening) and wide flat dark side areas are plain fills with no grain. The steps have a few gray-blue shades and some speckle, but only about 4 ramp steps, against the references' 5-6 on the roof tiles, plaster and siding. Dark edge pixels are 0% neutral, so the outline is tinted and fits the neighbouring material, which is fine. Overall it is shallower and flatter than house-hip2 and house-machiya, which carry per-tile roof scallops, plaster speckle and lattice detail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 18237
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top step (tread 1)",
+      "rows": "12-16",
+      "evidence": "a",
+      "front_edge_line_row": 16,
+      "eave_shadow_rows": "17"
+     },
+     {
+      "part": "second step tread",
+      "rows": "18-22",
+      "evidence": "a",
+      "front_edge_line_row": 22,
+      "eave_shadow_rows": "23"
+     },
+     {
+      "part": "third step tread",
+      "rows": "24-28",
+      "evidence": "a",
+      "front_edge_line_row": 28,
+      "eave_shadow_rows": "29-30"
+     },
+     {
+      "part": "fourth step tread",
+      "rows": "31-36",
+      "evidence": "a",
+      "front_edge_line_row": 36,
+      "eave_shadow_rows": "37-38"
+     },
+     {
+      "part": "bottom step tread",
+      "rows": "39-44",
+      "evidence": "a",
+      "front_edge_line_row": 44,
+      "eave_shadow_rows": "45-46"
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 3,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The staircase is drawn as five stacked tiers that widen toward the bottom (width profile 12-47). Each tier is a light tread band of 4-6 rows (for example rows 39-44 for the bottom step) that ends in a lightest front-edge row (22, 28, 36, 44) and is followed by 1-3 dark shadow or riser rows (17, 23, 29-30, 37-38, 45-47). The treads are the top surfaces, and the thin risers plus the dark base give a front face of about 3 rows. No isometric side face is drawn. The darker strip at the right edge reads as a wall shadow, not a receding side face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small stair alcove, a simpler subject than the two full houses, so I compared it by eye and by the measured facts. Visible tones per tile are 8 against 9 for both references, so tone count is close. Near-flat coverage is 34% against 2% for each reference, and the picture shows why: the dark top band is one flat void, and several step faces are large unbroken grey blocks. The steps use about 4 lightness levels (light edge, mid face, shadow, deep), while the references use 5-6 per material with per-tile highlights, speckle and scallops. Outline pixels are 0% neutral, so they lean tinted and read as dark material tone, which is acceptable and not a sticker line. Texture is limited to a few dots on the step treads. Next to the roof tiles and plaster speckle of the references it looks thinner and flatter, so I fail it.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 20193
+  }
+ ],
+ "decidedAt": "2026-10-22T16:27:50.801Z",
+ "cells": {
+  "16": [
+   "91063fce5b7a6b15",
+   "99110c7915e94d34",
+   "9c5b476a62a51228",
+   "ab11f907c897902c",
+   "d05ad4059dc8190f",
+   "f80580f607e3d5df"
+  ],
+  "24": [
+   "2b4bb092e681af3b",
+   "2fa9dacb77ca1768",
+   "3fabdd8e4a881dd9",
+   "4a1f58eb736139c9",
+   "60f00964837d62ab",
+   "76143150ebc36ebb",
+   "7a9ab5badd25c645",
+   "891db1b0dcba0575",
+   "a7b477814b32987e",
+   "bafe490bff4aeddb",
+   "d20a2a592b776bce",
+   "e7cb6d63a8f80f8f"
+  ],
+  "32": [
+   "7d894dc59de0a9b6",
+   "ba0bfda60a9daa06",
+   "c4ee8a710f4811e0",
+   "d63c5d4b7d8cd988"
+  ],
+  "48": [
+   "7402b9a9ee070a6d",
+   "ee533f68dad18a85",
+   "f7e3399a4962ef00"
+  ]
+ }
+}

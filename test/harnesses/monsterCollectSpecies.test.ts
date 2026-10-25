@@ -476,7 +476,9 @@ describe("monster-collect-species 시드·레지스트리", () => {
       const stalkBoxes = eyeEntry.anatomy === "stalk" ? [eyeEntry.near, ...(eyeEntry.second ? [eyeEntry.second] : [])] : undefined;
       const front = readPng(join(ROOT, "public/assets/harnesses/monster-collect-species", species.id, "front.png"));
       const back = readPng(join(ROOT, "public/assets/harnesses/monster-collect-species", species.id, "back.png"));
-      expect(checkSprite(front, seed.style.maxColors, "front", stage, stalkBoxes).issues.filter((i) => i.level === "error"), `${species.id} front`).toEqual([]);
+      // 동결 종(사람이 화소 해시로 승인한 기준종)은 눈 자동 검출 대신 해시(V8, 아래 시험)로 막는다
+      const frontErrors = checkSprite(front, seed.style.maxColors, "front", stage, stalkBoxes).issues.filter((i) => i.level === "error" && !(eyeEntry.frozen && i.message.startsWith("눈 규칙")));
+      expect(frontErrors, `${species.id} front`).toEqual([]);
       expect(checkSprite(back, seed.style.maxColors, "back", stage).issues.filter((i) => i.level === "error"), `${species.id} back`).toEqual([]);
       expect(checkEyes(back, "back", stage).pass, `${species.id} 뒷모습에 눈 (V6)`).toBe(true);
       expect(checkPair(front, back), `${species.id} 앞·뒤`).toEqual([]);
@@ -500,7 +502,8 @@ describe("monster-collect-species 시드·레지스트리", () => {
         expect(createHash("sha256").update(back.data).digest("hex"), `${species.id} 동결 뒷모습`).toBe(entry.frozen.back);
       }
     }
-    expect(Object.values(table.species).filter((e) => e.frozen).length).toBe(3);
+    // 동결 기준종: rootpig(R13) + 아스트라 스타터 세 계통 9종(2026-10-24 사용자 승인, astra-starters-5)
+    expect(Object.values(table.species).filter((e) => e.frozen).length).toBe(10);
   });
 
   it("눈 표 repair: 장부 authoredSha256 이 authored 파일 바이트 해시·eyes.json repair.to 와 같다 (손 수정이 장부 밖에서 일어나지 않았다)", () => {

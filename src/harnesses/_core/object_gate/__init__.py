@@ -81,11 +81,15 @@ HOLD_KEY_PATH = Path(os.environ.get("OBJECT_GATE_HOLD_KEY") or Path.home() / ".c
 _HOLD_KEYS = ("schema", "pixelSha256", "profileHash", "kind", "decision", "decidedBy", "decidedAt", "by", "via", "reasons", "note")
 # 위임 결정(by: "delegated")만 서명 대상에 더한다 — 사람 기록의 서명 문자열은 그대로다. TS objectGateHoldPayload 와 같다.
 _HOLD_DELEGATED_KEYS = ("delegatedBy", "evidence")
+# 물러남 표시(다시 그려 대체된 그림, 2026-10-22)는 있을 때만 서명 대상에 더한다. TS 와 같다.
+_HOLD_SUPERSEDED_KEYS = ("supersededBy", "supersededAt")
 
 
 def hold_payload(d: dict) -> str:
     """서명 대상 문자열. TS objectGateHoldPayload 와 같다."""
     keys = _HOLD_KEYS + _HOLD_DELEGATED_KEYS if d.get("by") == "delegated" else _HOLD_KEYS
+    if d.get("supersededBy"):
+        keys = keys + _HOLD_SUPERSEDED_KEYS
     return json.dumps([[k, d.get(k)] for k in keys], ensure_ascii=False, separators=(",", ":"))
 
 
@@ -112,6 +116,9 @@ def human_decision(d: dict | None, receipt: dict | None) -> str | None:
         and d.get("decision") in ("allow", "reject") and d.get("pixelSha256") == receipt.get("pixelSha256") \
         and d.get("kind") == receipt.get("kind") and str(d.get("decidedBy") or "").strip() != "" and bool(d.get("decidedAt")) \
         and bool(d.get("profileHash"))
+    # 물러난(다시 그려 대체된) 그림의 허용은 효력이 없다. 거절은 그대로 최종이다.
+    if ok and d.get("decision") == "allow" and str(d.get("supersededBy") or "").strip():
+        return None
     return d.get("decision") if ok else None
 
 

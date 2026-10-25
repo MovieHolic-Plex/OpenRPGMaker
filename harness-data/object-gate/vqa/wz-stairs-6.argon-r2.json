@@ -1,0 +1,22 @@
+[
+  {
+    "kit": "wz-owl-stair-up",
+    "sha": "475896a59f7253c3642d27303256519bc7b3070570478882580de7feaa211952",
+    "verdict": "pass",
+    "majors": [],
+    "minors": [
+      "Single isolated snow-white pixel (#d6e2e7) at (20,40) above (#a49a87) at (20,41) on the lowest stone tread (owl-dropping detail) is slightly stark at 3x, though intentional for the owlery kit.",
+      "Right-side cast shadow (#292c38 at x=30..31, y=33..35 and x=30, y=36..41) starts 1px below the tile boundary at y=32 (where x=30..31 are transparent), matching sibling UP stairs in the chipset."
+    ]
+  },
+  {
+    "kit": "wz-castle-stair-down",
+    "sha": "193e0e185ccf5038660cf4f36c39247f1056dd5de1180caddb4a074d9eab09a5",
+    "verdict": "pass",
+    "majors": [],
+    "minors": [
+      "Deepest three northern treads (y=10..17, #343338 and #555154 separated by #292c38 at y=12,15,18) have low contrast inside the stairwell shadow at 1x, though the southern four treads (y=19..30) and diagonal west-wall shadow (x=3..6, y=10..26) clearly establish the northward descent.",
+      "Note on prior automated style split: all 48 near-black pixels (#171923) are confined to the recessed stairwell void under the north railing (x=3..26, y=8..9); outer edges use the coloured stone ramp (#d0c3a6, #a49a87, #77716b, #555154, #343338, #292c38)."
+    ]
+  }
+]

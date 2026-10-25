@@ -1,0 +1,26 @@
+{
+  "schema": "bdg-vqa/1",
+  "judge": "claude-opus-5-5",
+  "date": "2026-10-22",
+  "batch": "fallen-rooms-r24",
+  "commit": "2d0dd28dbc",
+  "overall": "FAIL",
+  "criteriaNotes": {
+    "0_hash_check": "pixel_sha256 of /tmp/fsrooms/gate-r24/dome_vault.png (480x128) = 8b239ef07d3d936ba292ca4629bff2284da6f4fcaae190e1063e772eaadc049c, computed with object_gate.pixel_sha256.",
+    "1_topdown_view": "Reads as the inside of a dome over a round room, but the cornice ellipse is flatter than the stepped room plan: drum height runs from ~4 px at centre to ~34 px at the sides, so the base ring does not sit on the wall tops.",
+    "2_style_fit": "Drum brick matches the v5 wall face exactly; rib ramps and brass collars fit. Shoulder bands use a flat striped texture unlike the coursed stone, and the shell has scattered noise pits.",
+    "3_readability_1x": "Good: in mock-obs.png the hall reads as a round domed observatory rather than a boxy hall; slit and stars read clearly.",
+    "4_placement": "Meets wall faces and the slit-tall piece cleanly (brass rail at local y 60..63 joins the lower slit; no gap or float). The cornice/wall-top wedge is the remaining placement fault.",
+    "5_silhouette_outline": "Outer silhouette and transparent corners clean; internal hard vertical seam at local x=48 (and an unmatched one near x~425), and stray 1-px pits/joint jogs."
+  },
+  "items": [
+    {
+      "id": "atlas_biome_interior/plus/dome vault",
+      "name": "천문대 둥근 지붕(큰 방 천장 띠 전체, 30×8) (dome vault)",
+      "kind": "wall_mounted",
+      "pixelSha256": "8b239ef07d3d936ba292ca4629bff2284da6f4fcaae190e1063e772eaadc049c",
+      "verdict": "FAIL",
+      "reasons": "FAIL. Strong overall: at 1x the hall now clearly reads as a round domed observatory (curved cornice, four ribs, starred slit); drum brick is pixel-continuous with the v5 wall faces; ribs lit top-left; slit meets 'dome slit tall' through the brass rail without a gap. Blocking defects: (1) Hard tile-grid seam on the curved shell: a flat (65,65,76) block with a straight vertical left edge at local x=48..52, y~60..78 where the coursed stone meets the shoulder band; the mirrored spot on the right (~x 420..430, y 55..67) is drawn differently, so the dome is visibly asymmetric. Fix: remove the vertical edge, let the course joints and value ramp cross x=48 and x=431 smoothly, and make left/right shoulders mirror. (2) Shoulder bands x 0..48 and 432..479 (y~30..115) switch to a different texture: flat (82,76,81)/(65,65,76) stripes with thin concentric dark lines and no vertical joints, reading as smooth plaster beside coursed stone. Fix: continue the same stone courses (with vertical joints, foreshortened narrower toward the rim) out to the silhouette, keeping only the darker rim outline. (3) 3/4 consistency: the cornice is one smooth flat ellipse while the wall tops below step down by a full row every 3 tiles, so the drum between cornice and wall top is a wedge - about 4 px tall at the centre (x 192..287, cornice y~60 vs wall top y 64) but ~34 px at x 48 (cornice y~78 vs wall top y 112). The dome base therefore does not sit on the room plan. Fix: make the cornice ellipse deeper so it tracks the stepped wall tops at a roughly constant drum height (e.g. 8..12 px above each step's wall top: ~y 54 at centre, ~y 70 at x 144, ~y 86 at x 96, ~y 100 at x 48), redrawing the courses/rib feet to match. (4) Stray dark single-pixel pits scattered in the shell (e.g. local ~x 58..64, y 44..50 beside the left outer rib; ~x 82..87, y 44..46; similar on the right) and a 1-px jog in a vertical joint at ~x 269, y 37..42: read as noise at 1x. Fix: delete isolated pits; keep joints as straight 1-px lines. Minor (fix while there): sky in the dome slit is lighter at the crown and darkens downward, then the slit-tall piece starts dark and brightens downward; and there is a checker dither band at y 12..15 mid-slit - make one monotonic gradient across both pieces."
+    }
+  ]
+}

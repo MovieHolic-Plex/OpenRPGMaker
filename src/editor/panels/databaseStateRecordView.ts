@@ -1,3 +1,4 @@
+import { damageTypeRatesFields } from "@/editor/panels/databaseDamageTypeRatesFields";
 import { BATTLE_AURA_IDS, BATTLE_AURA_LABELS, normalizeBattleAura, resolveStateAura } from "@/assets/battleStateAuras";
 import { partyPixelChoices } from "@/assets/partyPixelSheets";
 import { numberField, selectField, selectLiteral, textField } from "@/editor/panels/databaseControls";
@@ -382,6 +383,7 @@ function retroGimmickControls(
       patchEffects({ invertHealing: invertHealing ? true : undefined })
     ),
     transformControl(fx().transformResourceId, (transformResourceId) => patchEffects({ transformResourceId: transformResourceId || undefined })),
+    ...damageTypeRatesFields("db-state-rt-damage-type", () => fx().damageTypeRates, (damageTypeRates) => patchEffects({ damageTypeRates }), () => undefined),
     multiplier("물리 피해 방어 배율 (프로텍트)", "db-state-rt-physical-defense", "physicalDefenseMultiplier"),
     multiplier("마법 피해 방어 배율 (실드)", "db-state-rt-magic-defense", "magicDefenseMultiplier"),
     ...(elementRows.length

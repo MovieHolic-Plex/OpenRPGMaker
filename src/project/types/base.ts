@@ -544,6 +544,12 @@ export interface TilesetDef {
    * `stop` 칸이나 막힌 칸 앞에서 멈춘다. 생략 = 미끄러짐 없음(기존 동작). 판정은 `@/project/slideTiles`.
    */
   slideTiles?: Record<string, SlideRule>;
+  /**
+   * 카운터 속성(RPG Maker 「카운터」, 2026-10-22). 타일 번호 목록. 주인공 정면 칸이 이 타일이면 조사 버튼이
+   * 그 너머(최대 두 칸 연속 카운터를 넘어) 칸의 이벤트에 닿는다 — 카운터 뒤 상점 주인, 식탁 건너편 사람.
+   * 통행과 별개다. undefined = 시드 전(번들 칩셋은 이름표에서 시드), [] = 없음. 판정은 `@/project/counterTiles`.
+   */
+  counterTiles?: number[];
   priority: ("lower" | "upper")[];
   terrain: number[];
   // 타일 이식 목록. 렌더는 베이크(캔버스 합성)로 처리 — tileGrafts.ts / tilesetImage.ts 참고.

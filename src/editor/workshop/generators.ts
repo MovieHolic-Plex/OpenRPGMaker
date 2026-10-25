@@ -9,11 +9,14 @@
  *   묶음은 `oprn-store-pack/1` tileset 하나 + autotileGroups(·animationStrips) — 가져오기가 그대로 보존한다.
  * - item-gen: 저장소가 없다(2026-10-21 조직·홈 확인) → 「준비 중」. 가짜로 채우지 않는다.
  * 견본 그림(sample)은 그 생성기가 실제로 만든 그림이다: object-gen 은 그 저장소 docs/images/hero.png 의 고른 기물,
- * char-gen 은 그 저장소의 자체 더미 칩(examples/bases/dummy_*)과 같은 칩의 편집 결과. 제3자 그림은 쓰지 않는다.
+ * char-gen 은 실제 결과물(2026-10-22 교체): 데모 캐릭터 상반신(정수 1/7 칸 평균) + char-gen 칩 셋(정수 2배)(Scarloxy People1 바탕, CC BY 4.0 — 출처는
+ * public/assets/ATTRIBUTION.md 「Workshop character card sample」)을 버들항 마당 위에 세운 그림. 전에는 그 저장소의 더미 바탕 칩
+ * (examples/bases/dummy_*, 윤곽·명암 없는 자리표시용)이라 사용자가 「사람이 어색하다」고 했다.
  * tile-gen 견본은 비워 둔다: 첫 풀밭 견본(2026-10-21)은 겨냥한 beodeul_city 의 땅·나무·길·물 칸이 EasyRPG 계열이라 그 화풍 흉내가 돼
  * tile-gen 쪽이 거둬들였다. jp_city·코드 도트 버들항 키트를 겨냥한 결과가 독립 검수를 통과하면 그때 싣는다.
  */
 import { getLocale } from "@/i18n";
+import { genKitPins } from "@/harnesses/_core/workshop/genKits";
 
 export type GeneratorId = "char-gen" | "object-gen" | "tile-gen" | "item-gen";
 /** ready = 편집기 안에서 만든다 · local = 내 컴퓨터에서 만들어 가져온다 · next = 다시 만드는 중, 곧 · soon = 준비 중 */
@@ -26,19 +29,32 @@ export interface WorkshopGenerator {
   readonly makes: string;
   readonly status: GeneratorStatus;
   /** 그 생성기가 실제로 만든 견본 그림(원래 크기 도트, 화면에서 정수 배율로 키운다). 없으면 견본 자리만 비워 둔다. */
-  readonly sample?: { readonly src: string; readonly width: number; readonly height: number; readonly alt: string; readonly caption?: string };
+  readonly sample?: {
+    readonly src: string; readonly width: number; readonly height: number; readonly alt: string; readonly caption?: string;
+    /** 화면 배율(정수, 기본 2). 이미 정수 배율로 짜 맞춘 그림(칩 2배 + 상반신 1/7 칸 평균)은 1. */
+    readonly scale?: number;
+    /** 무대 위에서 제자리 걸음하는 칩(가로 띠 frames 칸 × 칩마다 한 줄, 그림 좌표 = 무대 그림 픽셀). workshopArt.generatorStage 가 그린다. */
+    readonly walkers?: { readonly src: string; readonly frame: readonly [number, number]; readonly frames: number; readonly at: readonly (readonly [number, number])[] };
+    /** 가끔 반짝이는 자리(무대 그림 픽셀) — 「갓 만든 물건」 느낌 */
+    readonly twinkles?: readonly (readonly [number, number])[];
+  };
 }
 
 export const WORKSHOP_GENERATORS: readonly WorkshopGenerator[] = [
   {
     id: "object-gen", title: "물건·가구", status: "ready",
     makes: "가구·상자·표지판 같은 물건을 지금 맵의 그림 느낌에 맞춰 그려요.",
-    sample: { src: "/assets/workshop/object-gen-sample.png", width: 124, height: 58, alt: "물건 생성기가 그린 진열장·냉장고·보관함" },
+    // 무대: object-gen 견본 기물 셋(object-gen-sample.png 에서 뒷판을 뗌)을 손 도트 실내 v5 칩셋의 판자벽·마루 위에(2026-10-22).
+    sample: { src: "/assets/workshop/object-gen-stage.png", width: 124, height: 52, alt: "물건 생성기가 그린 진열장·냉장고·보관함", twinkles: [[11, 4], [75, 10], [112, 5]] },
   },
   {
     id: "char-gen", title: "캐릭터", status: "local",
     makes: "걷는 캐릭터의 옷·머리·색을 바꿔 새 사람을 만들어요.",
-    sample: { src: "/assets/workshop/char-gen-sample.png", width: 124, height: 58, alt: "캐릭터 생성기가 옷을 바꾼 전후 두 쌍" },
+    // 무대: char-gen-sample.png 에서 칩을 뺀 판(char-gen-stage.png) + 같은 자리에서 제자리 걸음하는 칩 셋(char-gen-walk.png, 2배·4칸 1·0·1·2).
+    sample: {
+      src: "/assets/workshop/char-gen-stage.png", width: 248, height: 116, scale: 1, alt: "캐릭터 생성기가 만든 상반신 초상과 걷는 캐릭터 셋",
+      walkers: { src: "/assets/workshop/char-gen-walk.png", frame: [48, 64], frames: 4, at: [[114, 40], [154, 40], [194, 40]] },
+    },
   },
   { id: "tile-gen", title: "지형·바닥", status: "local", makes: "이음매 없는 바닥, 물가·절벽 가장자리, 칠해 넣는 숲과 물을 내 타일셋 색으로 그려요." },
   { id: "item-gen", title: "아이템 아이콘", status: "soon", makes: "물약·열쇠·무기 같은 아이템 아이콘을 그려 줄 거예요." },
@@ -55,10 +71,32 @@ export const GENERATOR_STATUS_LABELS: Readonly<Record<GeneratorStatus, string>> 
    비공개 저장소의 설치 링크는 화면에 내지 않는다(받은 사람 말고는 404). */
 
 /**
+ * 부탁 글 끝에 붙는 「이 편집기가 따르는 생성기 판」 한 줄(2026-10-22). 비공개 생성기(char-gen·tile-gen)는 지시문·판정 기준이
+ * 사용자 컴퓨터의 그 저장소 안에서 돈다 — 글을 공개 모노레포로 옮기지 않으므로, lock(tiledata/gen-kits.lock.json)의 커밋을 적어
+ * 사용자 에이전트가 같은 판으로 맞추게 한다. lock 을 올리면 다음 빌드부터 이 줄이 바뀌어 저장소 갱신이 사용자 쪽에도 닿는다.
+ */
+export function generatorPinLine(kit: "char-gen" | "tile-gen"): string {
+  const commit = genKitPins[kit]?.commit;
+  if (!commit) return "";
+  const short = commit.slice(0, 7);
+  switch (getLocale()) {
+    case "en": return ` Use ${kit} at commit ${short} — the version this editor is checked against (in your ${kit} folder: git fetch && git checkout ${short}).`;
+    case "ja": return ` ${kit} はコミット ${short} の版で使って(このエディターが合わせている版。${kit} フォルダで git fetch && git checkout ${short})。`;
+    case "zh": return ` ${kit} 请用提交 ${short} 的版本(本编辑器对齐的版本:在 ${kit} 文件夹里 git fetch && git checkout ${short})。`;
+    default: return ` ${kit} 는 커밋 ${short} 판으로 써 줘(이 편집기가 맞춰 둔 판 — ${kit} 폴더에서 git fetch && git checkout ${short}).`;
+  }
+}
+
+/**
  * 사용자 컴퓨터의 AI 에이전트(자기 로그인)에게 붙여 넣을 부탁 글. 에이전트에게 가는 글이라 화면 번역 대상이 아니므로
  * 지금 언어로 직접 만든다. char-gen 스킬이 깔려 있으면 에이전트가 단계(만들기·검사·사람 고르기·묶기)를 알아서 한다.
  */
 export function charGenRequest(what: string, count: number): string {
+  return charGenText(what, count) + generatorPinLine("char-gen");
+}
+
+/** 부탁 글 본문(판 고정 줄 없이) — 화면 글칸에 보이는 부분. 복사할 때 generatorPinLine 이 붙는다. */
+export function charGenText(what: string, count: number): string {
   const subject = what.trim() || defaultWhat();
   const n = Math.max(1, Math.min(4, Math.round(count) || 1));
   switch (getLocale()) {
@@ -112,6 +150,10 @@ export const TERRAIN_PRESETS: readonly { readonly mode: TerrainPreset; readonly 
  * 타일셋 그림 파일은 화면의 「지금 맵 칩셋 그림 받기」로 받은 파일 이름이다.
  */
 export function tileGenRequest(mode: TerrainMode | TerrainPreset, brief: string, tilesetFile: string, ref: string): string {
+  return tileGenText(mode, brief, tilesetFile, ref) + generatorPinLine("tile-gen");
+}
+
+export function tileGenText(mode: TerrainMode | TerrainPreset, brief: string, tilesetFile: string, ref: string): string {
   const what = brief.trim() || defaultTerrain(mode);
   const cell = /^\s*\d+\s*,\s*\d+\s*$/.test(ref) ? ref.replace(/\s+/g, "") : "";
   switch (getLocale()) {

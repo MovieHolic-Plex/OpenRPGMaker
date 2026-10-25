@@ -50,6 +50,10 @@ jobs:
       - name: jp_city 핀 불변
         run: node scripts/content/jp-city/check-pins.mjs --base HEAD~1
 
+      # 생성기 고정판(tiledata/gen-kits.lock.json)은 로컬에서만 본다: npm run gen-kits:check.
+      # object-gen 도 char-gen·tile-gen 과 같이 비공개라 호스티드 러너는 복제할 수 없다(2026-10-22 실측:
+      # git clone 이 Username 을 묻다 실패하고, 그 뒤의 타입체크·패리티가 시작도 못 했다).
+      # 공개로 바뀌기 전에는 이 워크플로에 넣지 않는다. 자격 없는 러너에 비공개 지시문을 받지 않는다.
       - name: 캐릭터 하네스 계약
         run: |
           python3 -m venv "$RUNNER_TEMP/charset-harness-venv"
@@ -80,6 +84,11 @@ jobs:
       # 워크플로가 소유자 컴퓨터(self-hosted)로 돌아가지 않는지.
       - name: 호스티드 러너 계약
         run: npm run gates:self-hosted
+
+      # 플레이어·웹 내보내기가 선언한 런타임 에셋이 public/ 에 실제로 있는지(저작권 정리로 지운 그림을
+      # 계속 선언해 모든 Web ZIP 내보내기가 실패했던 회귀를 막는다). 브라우저·빌드 없이 수십 초.
+      - name: 런타임 에셋 존재
+        run: npm run check:runtime-assets
 
       # 에디터↔플레이어 데이터 왕복 계약. 9파일이라 바운드가 확실하다.
       # 잡은 러너마다 격리되므로 호스트 락은 없다.

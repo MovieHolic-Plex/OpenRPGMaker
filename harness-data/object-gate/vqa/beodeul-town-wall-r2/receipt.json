@@ -1,0 +1,44 @@
+{
+  "schema": "bdg-vqa/1",
+  "judge": "claude-opus-5-5 (fresh process, adversarial)",
+  "date": "2026-10-22",
+  "subject": "beodeul_town_wall",
+  "round": 2,
+  "images": [
+    "test-map-1x.png",
+    "test-map-3x.png",
+    "parts-scene-1x.png",
+    "parts-scene-3x.png",
+    "kit-wall_parts-4x.png",
+    "kit-wall_ring-4x.png",
+    "kit-tower-4x.png",
+    "kit-gatehouse_open-4x.png",
+    "kit-gatehouse_closed-4x.png",
+    "beodeul-reference-walled-market-1x.png"
+  ],
+  "criteria": {
+    "same_game": "PASS",
+    "view_34": "PASS",
+    "seamless_joins": "PASS",
+    "gate_readable": "PASS",
+    "readability_1x": "PASS"
+  },
+  "criteriaNotes": {
+    "same_game": "1px dark navy-purple outline matches the outline weight on the house roofs and walls. The stone face has a 3-4 step grey ramp (light bevel top-left, dark mortar bottom) with sparse speckle, the same density as the stone house's masonry. The tower roofs reuse the house roof red/orange tile ramp with orange highlight dots, so they read as the same roof material. The pink-beige wall-walk bricks echo the pinkish stone house. Minor: the face bricks (about 12x5 px) are coarser and lower-contrast than the house stonework and the reference market wall (light top over a darker face). This is a taste difference, not a mismatch.",
+    "view_34": "The wall-walk top is a flat brick plane about 1 cell deep, seen from above, on every run. North wall: the parapet merlons sit on its outer (north) edge at the top, and the inner face (3 brick rows plus a plinth) shows below it, facing into the town. South wall: the merlon row sits on its outer edge directly above its outer face. West and east walls show only their tops, with merlons along the outer edge (x~17-20 at 1x on the west, x~455-460 on the east) and no side face. The gatehouse tops show front and back merlon rows with a stone top between them. The towers' front faces cover the wall-walk and project about half a cell below the wall foot (north towers to y~101 vs the wall foot at y~95 at 1x). No isometric side faces anywhere. The pyramid roof drawn as a front triangle is the accepted RM convention and matches the reference map's towers.",
+    "seamless_joins": "Joins are continuous at all four outer corners and at the NW/SW concave inner corners: the merlon column turns into the merlon row without gaps, and the outline is unbroken (checked at 8x around the NW corner at x 10-90, y 40-110 and SE at x 330-480, y 260-368). T-junctions (the spur from the north wall at x~128 and the spur from the south wall in the kit) carry their walkway top through the parent wall's top with no outline break. End caps (west gap, spur ends) close with a 1-cell front face and plinth. The towers and gatehouses butt cleanly, with a consistent soft shadow on their right side. The stairs are framed by dark verticals and meet the walkway with a lip. Only minor polish issues (see minor).",
+    "gate_readable": "South gate at 1x (x 193-253, y 290-350): a dark arched void with raised portcullis teeth, and the cobble road continuing on both sides. It reads as a walk-through passage. North gate: a full-height brown double door with iron bands, and the road dead-ends at its threshold. It reads as closed. West gap: wall-end faces north of the road (y~120-158) and a clean top edge south of it (y~192). It reads as an opening. Minor: the floor inside the open arch is drawn in the same rectangular wall-brick pattern (pinkish bricks with mortar under a brown band). At 3x it can look like a low wall or step rather than paving.",
+    "readability_1x": "At 1x the whole thing reads as a crenellated stone curtain wall with four red-roofed towers and two gatehouses enclosing a village. The wall face is about 2 cells tall, close to the eave height of the houses. Towers and gatehouses are clearly taller. The scale is plausible and matches the proportions of the reference walled market. The stairs read only weakly at 1x, as pale vertical strips (x~65-78, x~272-285, y~63-95), but are still recognisable."
+  },
+  "overall": "PASS",
+  "fixes": [
+    "Open gatehouse: repaint the passage floor inside the arch (lower ~10 px rows of the opening) as the cobble road texture, or flat flagstones darker than the wall bricks. Drop the rectangular wall-brick pattern there and turn the brown band under the portcullis into a 1-2 px shadow line, so the floor reads as continuous with the road.",
+    "Spur/end-cap transition: remove or widen the short stray 1px light dash where the walkway top meets the end-cap face (1x around x~133-137, y~100 in parts-scene; kit wall_parts 4x at about x 530-555, y 440 and x 1425-1450, y 1540). It should either span the full cap width as a lip highlight or not exist.",
+    "Stairs: add a 1px dark riser shadow under every second tread and a darker landing pixel row at the foot, so they read as steps rather than a pale pilaster at 1x."
+  ],
+  "minor": [
+    "Face bricks are coarser and flatter than the reference market wall. Consider one darker tone on the lower brick row or plinth for more top/face separation.",
+    "In parts-scene, a separate north-facing segment is placed flush under the north wall foot (1x x 225-305, y 63-111). Grass shows between its merlons against the other wall's plinth, which looks odd as composition. This is placement, not a kit defect.",
+    "The tower body has no parapet ring under the roof eave. This is acceptable, but a 1px lighter eave/cornice line would sell the roof overhang."
+  ]
+}

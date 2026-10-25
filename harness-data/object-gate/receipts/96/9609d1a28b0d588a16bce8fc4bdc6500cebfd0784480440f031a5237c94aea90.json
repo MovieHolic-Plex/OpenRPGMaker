@@ -1,0 +1,329 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "9609d1a28b0d588a16bce8fc4bdc6500cebfd0784480440f031a5237c94aea90",
+ "width": 32,
+ "height": 32,
+ "kind": "wall_mounted",
+ "name": "별자리 원판 도표(2칸) (celestial chart)",
+ "label": "atlas_biome_interior/plus/celestial chart",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 18,
+  "tileColorsP90": 18,
+  "darkV5": 26,
+  "nearBlackEdge": 0.49,
+  "opaqueTiles": 4
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "wooden frame top bar (rod/beam)",
+      "rows": "1-3",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "parchment sheet with circular star chart disc",
+      "rows": "4-26",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "wooden frame bottom bar (rod/beam)",
+      "rows": "27-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 29,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The object is a flat wall-mounted chart seen face-on: a parchment panel (rows 4-26) with a dark blue circular star disc and wooden rods at the top (rows 1-3) and bottom (rows 27-29). The silhouette is 28-32 px wide with constant width for rows 5-25, and there is no horizontal top surface, no ellipse, no roof or edge-line band with eave shadow. The rods are 3-row front-facing strips with no top-surface evidence. The circle is a vertical face on the wall (the disc is a painted design). The whole piece is a vertical face, which is appropriate for a wall-mounted plaque or picture."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a framed celestial chart: a wood frame, a cream parchment border and a blue disc with star dots. Measured facts support it. It shows 16 visible tones per tile against 17 for the cheese stall and 20 for the roofed well, so it is close to the references. Near-flat coverage is 0%, so there are no flat fills. The dark edge pixels are 0% neutral, so the outline is tinted dark brown or blue and follows the adjacent material rather than a black sticker line. The frame has a highlight, mid and dark ramp, the parchment has some tonal variation, and the disc has several blue steps plus star dots. It is slightly flatter than the roofed well or the cheese stall, with about 5 steps against their 5-6, and the parchment area is a bit plain. Overall it would sit acceptably next to the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 14978
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top wooden rod/frame beam",
+      "rows": "1-3",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "parchment sheet with blue celestial disc",
+      "rows": "4-26",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "bottom wooden rod",
+      "rows": "27-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 28,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "A flat parchment chart with a circular blue star disc, framed by a top and bottom wooden rod. The whole piece is drawn face-on as a vertical panel. The rods are 1-3 row strips with no edge line or eave shadow, and they are not top surfaces. There is no horizontal surface and no receding side face. This is acceptable for a wall-mounted flat picture, but it reads as front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate has 16 visible tones per 16x16 tile, close to prop-stall-cheese (17) and above prop-hedge (9). Well-roofed is higher at 20. Near-flat coverage is 0%, so there are no big flat fills, and the blue disc carries star dots and ring variation. The dark edge pixels are 0% neutral, so the outline leans brown or blue-navy and follows the neighbouring material, not a sticker-style black line. The cream parchment and gold frame show about 3-4 lightness steps each, a little fewer than Beodeul's 5-6, and the frame grain is modest. That makes it slightly lower than the best references, but a careful artist would still accept it next to them. The board is small, so I judged by the measured facts as well as by eye.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 12030
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "wooden frame top rail (rod)",
+      "rows": "1-3",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "parchment sheet with blue star disc",
+      "rows": "4-26",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "wooden frame bottom rail (rod)",
+      "rows": "27-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 29,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "A flat chart seen face-on. A parchment sheet (rows 4-26) holds a round blue star disc, with a wooden rod at the top (rows 1-3) and bottom (rows 27-29). The rods are 1-3 row front-facing strips with no edge line or eave shadow, and no horizontal top surface appears. The silhouette is a constant width of 28-32 px. This is a flat wall-mounted picture, so it reads as a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a framed disc chart: a cream/gold frame around a blue disc with star dots and ring detail. It sits at the same scale as the references. Measured facts support it: 16 visible tones per tile falls between the hedge (9) and the stall and well (17 and 20), near-flat coverage is 0%, and 0% of dark edge pixels are neutral, so the outline is tinted brown/navy rather than black. By eye, the frame and disc each show about 4-5 steps, with highlight edges, a bevel and varied star and ring dots, so there is no sticker-like flat fill. It is slightly simpler than the well or stall, but a careful artist would accept it next to the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15941
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "wooden frame top beam",
+      "rows": "1-3",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "parchment board with blue star disc",
+      "rows": "4-26",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "wooden frame bottom beam",
+      "rows": "27-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 29,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The chart is a flat plaque seen face-on. The wooden frame (rows 1-3 and 27-29) and parchment (rows 4-26) are all vertical faces, and the blue star disc inside is drawn face-on. The only horizontal strips are 1-3 row frame edges, which are outlines or rims rather than a top surface. The width profile is nearly constant at 28-32 px, with no ellipse and no eave line. Flat wall mounting is expected for this kind."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a framed celestial disc chart. The wood/gold frame has a bevel with about 4-5 tones, the blue disc has several tones with star dots and ring detail, and the parchment margin shows grain. Measured facts back this up: 16 visible tones per tile, close to the stall (17) and well (20) and above the hedge (9). Near-flat coverage is 0%, so there are no flat fills. The dark edge pixels are 0% neutral, which means a tinted brown outline beside the frame rather than a black sticker line. It is slightly leaner than the richest references, with 22 total colours against 38-40 for the stall and well. That is still within what a locked palette produces, and a careful artist would accept it next to them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 13120
+  }
+ ],
+ "decidedAt": "2026-10-21T05:58:00.920Z",
+ "cells": {
+  "16": [
+   "2393ec0cf387a2a5",
+   "334e3498e55f4490",
+   "60b7a1ba3a30e2de",
+   "aca63456c251b19b"
+  ],
+  "24": [
+   "02f5f1bca8d04b23",
+   "16c562d589ca3b8e",
+   "181c2f838b474318",
+   "388a57dceacecc62",
+   "3b201749bef21620",
+   "433c70df63f0a1bf",
+   "459056805c3447de",
+   "4840fd1569910ac5",
+   "4d6311cd8e23c4ac",
+   "67d1f7b0bfd8919a",
+   "69681f830e4fa12c",
+   "753902d4ab5a3121",
+   "76bbeb1e8264d179",
+   "87a7ac5b0bae3cdf",
+   "8cbbf5cbaf3b92fb",
+   "90edcae614880e2b",
+   "a0b5cf1a766518b7",
+   "c80d5a884baa14e1",
+   "cc924fdb2234a944",
+   "da6655001c951a6f",
+   "e53a6d5b5a8cc973",
+   "e587593de6b03142",
+   "ec38cf64eef863ca",
+   "f78e37f84e06c01b"
+  ],
+  "32": [
+   "5383cabe29bd7103"
+  ],
+  "48": [
+   "2e27d2abffe13200",
+   "672dd4a15ce3053d",
+   "97d061dfa006cc1e",
+   "98b0de0f84768679",
+   "e1bb8a57588b9dbf",
+   "eed95b08c0724ff9"
+  ]
+ }
+}

@@ -67,8 +67,24 @@ export function renderBuildPaletteToggle(): HTMLElement {
 // 끄면 그리기 툴로 되돌린다. (이 툴 전환이 없으면 건축을 눌러도 그리기 상태라 "반응 없음"으로 보인다.)
 export function setBuildPaletteEnabled(enabled: boolean): void {
   buildPaletteEnabled = enabled;
+  if (typeof document !== "undefined") {
+    document.removeEventListener("keydown", onBuildPaletteEscape);
+    if (enabled) document.addEventListener("keydown", onBuildPaletteEscape);
+  }
   editorState.set({ tool: enabled ? "select" : "paint" });
   if (typeof window !== "undefined") window.dispatchEvent(new CustomEvent(BUILD_PALETTE_VISIBILITY_EVENT));
+}
+
+// 포커스가 툴바 단추 등에 있으면 Esc 가 캔버스의 선택 해제까지 가지 못해 팝업을 닫을 길이 없었다.
+// 건축 팝업이 떠 있을 때만, 앞선 층(모달·메뉴)이 쓰지 않은 Esc 를 받아 선택을 풀고 건축 모드를 끈다.
+function onBuildPaletteEscape(event: KeyboardEvent): void {
+  if (event.key !== "Escape" || event.defaultPrevented || !buildPaletteEnabled) return;
+  if (!document.querySelector("[data-testid='build-palette-popup']")) return;
+  const target = event.target;
+  if (target instanceof HTMLElement && (target.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(target.tagName))) return;
+  event.preventDefault();
+  editorState.set({ selection: null });
+  setBuildPaletteEnabled(false);
 }
 
 export function isBuildPaletteEnabled(): boolean {

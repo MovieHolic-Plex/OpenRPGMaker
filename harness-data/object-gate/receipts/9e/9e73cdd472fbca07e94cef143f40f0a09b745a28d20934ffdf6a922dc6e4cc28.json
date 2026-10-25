@@ -1,0 +1,315 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "9e73cdd472fbca07e94cef143f40f0a09b745a28d20934ffdf6a922dc6e4cc28",
+ "width": 32,
+ "height": 48,
+ "kind": "terrain",
+ "name": "jp-in-mc-stairwell-down",
+ "label": "jp_city/interior/jp-in-mc-stairwell-down",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "ground",
+  "refs": [
+   "floor-flooring",
+   "floor-tatami"
+  ],
+  "scale": 2,
+  "score": 7,
+  "refSet": {
+   "id": "jp_city",
+   "chipset": "jp_city",
+   "fallback": false,
+   "hash": "d1f5720172be07de"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 9,
+  "tileColorsP90": 10,
+  "darkV5": 26,
+  "nearBlackEdge": 0.2,
+  "opaqueTiles": 4
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top lip / lintel line of the stairwell frame",
+      "rows": "9-10",
+      "evidence": "none",
+      "front_edge_line_row": 9,
+      "eave_shadow_rows": "10-10"
+     },
+     {
+      "part": "back wall above the opening (narrow centre)",
+      "rows": "11-16",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stair opening with descending steps (treads and risers visible inside the open well)",
+      "rows": "17-42",
+      "evidence": "d",
+      "front_edge_line_row": 17,
+      "eave_shadow_rows": "20-23"
+     }
+    ],
+    "main_top_rows": 19,
+    "front_face_rows": 8,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Row 17 is an edge line with the dark shadow in rows 20-23 beneath it. Below that, rows 24-42 show repeated step edge lines (rows 24, 28, 31, 34, 37) with lightness rising from L=32 to L=181. The steps therefore descend inside an open well, and the steps are the contents (d) visible from above. The tread bands are 2-4 rows each, and the frame and side walls give a vertical face of 3+ rows (rows 11-19 centre, rows 39-42 at the edges). It reads as a recessed stairwell seen from above and in front, not a flat slab, though the evidence is moderate because the steps are drawn as shaded bands."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 6,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate has 7 visible tones per tile against 3 for floor-flooring and 6 for floor-tatami, so it is at or above both references on density. Near-flat coverage is 0%, with no 5x5 flat fills. The steps show a graded ramp of about 6 grey levels with a lit tread edge and a darker riser under each one, and the dark recess frame is shaded rather than one flat colour. Only 34% of the dark edge pixels are neutral, so the frame is partly tinted rather than a uniform black sticker line, and I call it mixed. The references have no neutral edge pixels at all. Texture is less grainy than the wood grain on the flooring, but the stepped gradient carries enough variation. A careful artist would accept it beside the jp_city references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16729
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "lintel / top edge strip",
+      "rows": "9-10",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "back wall segment above stair opening",
+      "rows": "11-16",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "descending stair run seen from above (dark deep end at top, light treads toward the bottom)",
+      "rows": "17-42",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": "20-25"
+     }
+    ],
+    "main_top_rows": 26,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "This is a terrain tile showing a stairwell descending away from the viewer. Rows 9-10 are a light 32px lintel strip with a dark line below it. Rows 11-16 are a narrow 11px back-wall segment. Rows 17-42 are the stair opening, about 30px wide, with a dark void at rows 20-25 and step bands that get lighter toward the bottom (L 39 to 181). The steps are stacked horizontal bands seen from above, so the whole opening reads as one flat top-down plane. There is no vertical south face of 3 or more rows and no front-edge line with eave shadow."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 6,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small grey stairwell going down, with a dark frame and a stack of stepped treads. The treads show about 5-6 distinct lightness steps, from a light top edge through mid greys to a dark recess. Measured visible tones per tile are 7, against 3 for floor-flooring and 6 for floor-tatami, so it is at or above both references. Near-flat coverage is 0%, so there are no flat fills. Only 34% of dark edge pixels are neutral, so the outline is partly tinted and partly neutral, which I call mixed rather than a uniform black sticker line. The grey, cool-leaning frame reads as a dark version of the adjacent material. The texture is moderate: the treads have banded steps but little grain dotting. The jp_city references are simple, flat-banded floors with 3-6 tones, so the candidate is not shallower than they are. A careful artist would accept it next to them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18006
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top lintel/edge strip",
+      "rows": "9-10",
+      "evidence": "none",
+      "front_edge_line_row": 10,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stair opening with descending treads",
+      "rows": "18-42",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 25,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "This is a terrain tile, a stairwell seen almost straight down. Rows 9-10 are a light 1-row edge strip with a dark line under it. Rows 11-16 are narrow (width 11), so they are not a wide face. Rows 18-42 are a recessed opening whose horizontal tread bands get lighter toward the bottom, from dark #2c2538 at rows 20-23 to pale #b4b2c7 at rows 39-42. This reads as steps descending into a pit, viewed from above. There is no vertical south face of 3 or more rows, only tread bands, and no ellipse or roof. The result is a flat, plan-like stair tile rather than a standing 3/4 object."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 6,
+    "reference_steps": 4,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a grey stairwell-down opening, about 1.5x2.5 tiles. It is smaller than a full 4x3 patch, but it is still a floor-surface piece, so it can be compared with the floor references. It shows about 6 lightness steps: a light frame edge, mid-grey casing, and a descending ramp of stair treads that darken into a deep shaft. That is more than floor-flooring (3 visible tones) and about the same as floor-tatami (6). Measured facts agree: 7 visible tones per tile against 3 and 6, and 0% near-flat coverage, equal to tatami and below flooring's 2%. The dark edge pixels are only 34% neutral, so the frame outline carries some cool tint rather than being a uniform black line. The outline is therefore mixed, not a sticker-style near-black. The stair treads and the frame bevel give real grain and variation, with no large flat fills. Overall it sits at or above the jp_city references in structure and density.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17121
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top lintel/frame bar",
+      "rows": "9-10",
+      "evidence": "none",
+      "front_edge_line_row": 10,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "back wall above the stairs (vertical face, narrow 11px)",
+      "rows": "11-16",
+      "evidence": "none",
+      "front_edge_line_row": 17,
+      "eave_shadow_rows": "20-23"
+     },
+     {
+      "part": "descending steps inside the opening, with horizontal treads and dark riser lines",
+      "rows": "17-42",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 24,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The tile is a stair opening seen almost straight down. A thin light lintel sits at rows 9-10. Rows 11-16 show a narrow dark back wall. From row 17 down, stacked horizontal bands (rows 20-23 darkest, brightening to L=181 at rows 39-42) read as treads descending into the pit. The treads and the pit contents fill rows 17-42. No south-facing vertical face of 3 or more rows is drawn, and the 1-row riser lines are not a front face. No raised body or ellipse is present, so this is a flat top-down terrain tile."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 6,
+    "reference_steps": 4,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a stairwell going down: a grey metal-and-stone frame with graduated steps. It reads as roughly 6 lightness steps, with banded light-to-dark grey on the steps. Measured visible tones per tile are 7, against 3 for floor-flooring and 6 for floor-tatami, so it is at or above both references. Near-flat coverage is 0%, with no flat fills. The dark edge pixels are only 34% neutral, so the outline is partly tinted and partly near-black. That makes it mixed, but not a uniform black sticker line. Texture is modest, with banding and a few speckles, but no more sparse than the flooring reference. Density and shading match the shipped jp_city references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16799
+  }
+ ],
+ "decidedAt": "2026-10-22T16:07:06.912Z",
+ "cells": {
+  "16": [
+   "43cf9dcefa4d8a72",
+   "8297f32ed3834988",
+   "86f57ee27927b6e0",
+   "901539ea8eae6502",
+   "d19a0d469bbb8964",
+   "ddc0680d0b8f0779"
+  ],
+  "24": [
+   "03e15530efd172af",
+   "05975851cd2e7269",
+   "1daeb59f8740a074",
+   "22b3434dbe6f55d5",
+   "38afff2d3a78181a",
+   "4c0ec806a304f71a",
+   "59bf5d26ccad8b21",
+   "6385109eda7422ad",
+   "68dc7031701e2308",
+   "74e12022ab61a19e",
+   "8eadf76cad895d89",
+   "dd3b348d5d921a16"
+  ],
+  "32": [
+   "6cabc43b1c269f9c",
+   "b22579ba50adfd35",
+   "daa5e1355e919ac1",
+   "f18e0288cee372b6"
+  ],
+  "48": [
+   "6aa9e5c5063c113b",
+   "77936a9fff4aaa58",
+   "861d11931db0db02"
+  ]
+ }
+}

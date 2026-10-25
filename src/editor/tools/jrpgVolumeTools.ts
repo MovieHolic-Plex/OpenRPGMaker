@@ -229,7 +229,9 @@ function shopGoods(project: Project, given: unknown): string[] {
 export function chestLoot(project: Project, salt: number): { itemId?: string; gold?: number } {
   const items = (project.database.items ?? []).filter((i) => (i.price ?? 0) > 0 && (i.type === "medicine" || i.type === "normalGoods")).sort((a, b) => (a.price ?? 0) - (b.price ?? 0));
   const pick = items[Math.min(items.length - 1, 1 + (salt * 3) % Math.max(1, Math.min(items.length, 12)))];
-  return pick && salt % 3 !== 2 ? { itemId: pick.id } : { gold: 150 + 50 * salt };
+  // salt 는 호출자에 따라 시드 해시(수천만)일 수 있다 — 금액은 작은 단계로 접는다(2026-10-24 스위트: 숲 던전 상자 60,685,900G).
+  const step = Math.abs(Math.trunc(salt)) % 8;
+  return pick && Math.abs(salt) % 3 !== 2 ? { itemId: pick.id } : { gold: 150 + 50 * step };
 }
 
 export function sanitizeId(raw: string): string {
@@ -382,7 +384,7 @@ const expandJrpgCampaignVolume: ToolDefinition = {
       dungeonId = freshId(`${prefix}_dungeon`);
       const type = dungeonTypeArg || DUNGEON_BY_LOOK[look ?? "none"];
       const name = dungeonNameArg || `${hub.name.replace(/\s*\(.*\)\s*$/u, "")} 너머의 ${type === "temple" ? "고대 신전" : type === "catacomb" ? "무너진 지하묘지" : type === "castle" ? "마도 연구소" : "동굴"}`;
-      const made = nested(draft, "author_dungeon", { id: dungeonId, name, type, size: "medium", genre: "rpg", seed, entrance: { fromMapId: routeId, x: routeFar.x, y: routeFar.y } });
+      const made = nested(draft, "author_dungeon", { id: dungeonId, name, type, size: "medium", genre: "rpg", seed, populate: false, entrance: { fromMapId: routeId, x: routeFar.x, y: routeFar.y } });
       const rooms = list(made.data, "rooms").map(asRoom).filter((r): r is Room => !!r);
       const bossId = text(field(made.data, "anchors"), "boss");
       const population = field(made.data, "population");

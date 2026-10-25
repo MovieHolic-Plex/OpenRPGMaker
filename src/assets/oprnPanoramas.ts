@@ -57,9 +57,23 @@ export const OPRN_PANORAMA_SETS: readonly OprnPanoramaSet[] = [
     ],
   },
   {
+    id: "oprn-sky-day-city",
+    name: "맑은 하늘·도시",
+    summary: "파란 낮 하늘·구름 아래 빌딩 숲 두 겹(먼 줄은 하늘색에 묻힘, 바닥선은 그림 아래쪽) — 옥상·높은 층 창밖·전망대. 옥상 둘레를 비우면 둘러싼 빌딩이 보여 공중에 뜬 상자로 읽히지 않는다",
+    view: "horizon",
+    tags: ["하늘", "낮", "도시", "빌딩", "옥상", "sky", "city", "rooftop"],
+    layers: [
+      horizon("oprn-pano-sky-day", "맑은 하늘 — 바탕"),
+      horizon("oprn-pano-sky-day-clouds-far", "맑은 하늘 — 먼 구름", { scrollX: 0.15, cameraFollow: 0.1 }),
+      horizon("oprn-pano-sky-day-clouds-near", "맑은 하늘 — 가까운 구름", { scrollX: 0.4, cameraFollow: 0.25 }),
+      horizon("oprn-pano-sky-day-city-far", "낮 도시 — 먼 빌딩", { cameraFollow: 0.15 }),
+      horizon("oprn-pano-sky-day-city-near", "낮 도시 — 가까운 빌딩", { cameraFollow: 0.3 }),
+    ],
+  },
+  {
     id: "oprn-sunset",
     name: "노을",
-    summary: "보라→주황 노을 하늘·지는 해·먼 도시 실루엣, 아래는 노을을 비추는 물(옆에서 본 지평선, 지평선은 화면 위쪽 절반) — 지붕 위·언덕·바닷가의 저녁. 윗줄 몇 칸만 비워도 해가 보인다",
+    summary: "보라→주황 노을 하늘·지는 해·먼 도시 실루엣(옆에서 본 지평선, 지평선은 화면 위쪽 절반 — 그 아래 물은 보통 맵 타일에 가려 안 보인다) — 지붕 위·언덕·바닷가의 저녁. 윗줄 몇 칸만 비워도 해가 보인다",
     view: "horizon",
     tags: ["노을", "저녁", "석양", "해질녘", "sunset", "evening"],
     layers: [

@@ -34,10 +34,12 @@ const ASSET_DIR = "assets/scarloxy";
 // bundled.ts 의 BundledImageAsset 과 구조 동일(순환 import 방지를 위해 구조 타이핑).
 type ScarloxyBundledAsset = { readonly textureKey: string; readonly path: string; readonly name: string };
 
+// 실내 시트(480x256)는 480칸 중 71칸만 그림이 있는 가구 전용이다(침대·소파·카운터 등 8종, 바닥·벽 지형 없음).
+// 단독 그림판 선택지에서 「실내 기본 타일」로 오해하지 않게 이름에 밝힌다(2026-10-22 VQA C03).
 export const SCARLOXY_CHIPSET_ASSETS = [
   { textureKey: "tex_scarloxy_chipset_grassland", path: `${ASSET_DIR}/scarloxy-chipset-grassland.png`, name: "Scarloxy 초원 마을 ChipSet" },
   { textureKey: "tex_scarloxy_chipset_wilds", path: `${ASSET_DIR}/scarloxy-chipset-wilds.png`, name: "Scarloxy 사막/설원 ChipSet" },
-  { textureKey: "tex_scarloxy_chipset_indoor", path: `${ASSET_DIR}/scarloxy-chipset-indoor.png`, name: "Scarloxy 실내 ChipSet" },
+  { textureKey: "tex_scarloxy_chipset_indoor", path: `${ASSET_DIR}/scarloxy-chipset-indoor.png`, name: "Scarloxy 실내 가구 ChipSet (가구만 · 바닥·벽 없음)" },
 ] as const satisfies readonly ScarloxyBundledAsset[];
 
 export const SCARLOXY_CHARSET_ASSETS = [

@@ -1,0 +1,33 @@
+{
+ "queue": "jp-in-stairs-13",
+ "round": 25,
+ "judges": "3x claude-opus-5.5 fresh subagents in parallel, no prior scores; a major counts only if >=2 of 3 raise it",
+ "date": "2026-10-22",
+ "verdict": "fail",
+ "perReviewer": {
+  "A": {
+   "majors": 1,
+   "axis2": 7,
+   "axis6": 6
+  },
+  "B": {
+   "majors": 6,
+   "axis2": 7,
+   "axis6": 5
+  },
+  "C": {
+   "majors": 5,
+   "axis2": 7,
+   "axis6": 5
+  }
+ },
+ "majorityMajors": [
+  "sc/mc/of/as stairwell-down (B+C, A scene on of): large flat near-black upper hole + few stripes + side posts as legs + light south lip -> vent/grill/oven/box on legs"
+ ],
+ "minorityMajors": [
+  "cs-stairs-up-bare shutter (B only)"
+ ],
+ "upStairs": "no major on any up stair from any reviewer",
+ "majoritycount": 1,
+ "action": "grey wells: seven treads fill the hole up to a 2px pit wall (2,2,3,3,3,4,5), no light nose on the nearest tread, wider pit side walls on far treads, side rails as flat strips along the hole edge with no standing post body"
+}

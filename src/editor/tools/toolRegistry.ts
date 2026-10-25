@@ -28,6 +28,7 @@ import { TILESET_REFERENCE_TOOLS, withTilesetReferencePurpose } from "./tilesetR
 // toOpenAiTools()로 OpenAI function calling `tools` 배열을 자동 파생한다.
 
 import { BATTLE_TOOLS } from "./battleTools";
+import { COMBO_TECH_TOOLS } from "./comboTechTools";
 import { TROOP_BATTLE_PAGE_TOOLS } from "./troopBattlePageTools";
 import { CLUSTER_RULE_TOOLS } from "./clusterRuleTools";
 import { DB_TOOLS } from "./dbTools";
@@ -49,6 +50,7 @@ import { BEODEUL_GROUND_TOOLS } from './beodeulGroundTools';
 import { BEODEUL_ARCHITECTURE_TOOLS } from './beodeulArchitectureTools';
 import { DIRECTING_GUIDE_TOOLS } from "./directingGuideTools";
 import { ASSISTANT_SKILL_TOOLS } from "./assistantSkillTools";
+import { DIALOGUE_TOOLS } from "./dialogueTools";
 import { NPC_CAST_TOOLS } from "./npcCastTools";
 import { EXPORT_TOOLS } from "./exportTools";
 import { MAP_GEN_TOOLS } from "./generateMapTool";
@@ -57,6 +59,8 @@ import { GROUP_SAMPLE_TOOLS } from "./groupSampleTool";
 import { HISTORY_TOOLS } from "./historyTools";
 import { HOUSE_VISION_TOOLS } from "./houseVisionTools";
 import { INVESTIGATION_TOOLS } from "./investigationTools";
+import { SEARCH_CONTAINER_TOOLS } from "./searchContainerTools";
+import { FOREST_ROUTE_TOOLS } from "./forestRouteTool";
 import { MYSTERY_CASE_TOOLS } from "./mysteryCaseTool";
 import { NARRATIVE_HORROR_TEMPLATE_TOOLS } from "./narrativeHorrorTemplateTools";
 import { CUTSCENE_ART_TOOLS } from "./cutsceneArtTools";
@@ -118,11 +122,15 @@ import { SF_STATION_TOOLS } from "./sfStationTools";
 import { GOTHIC_PLACE_TOOLS } from "./gothicPlaceTools";
 import { PREHISTORIC_TOOLS } from "./prehistoricTools";
 import { SNOW_NORTH_TOOLS } from "./snowNorthTools";
+import { FIND_VILLAGE_TYPE_TOOL } from "./villageTypeTool";
+import { DRESS_JOSEON_MARKET_TOOL, DRESS_VILLAGE_QUARTER_TOOL } from "./villageQuarterTool";
 import { TRANSIT_TOOLS } from "./transitTools";
+import { ADD_STREET_WALKERS_TOOL } from "./streetWalkersTool";
 import { AI_DOC_TOOLS } from "./aiDocTools";
 import { RETRO_CHOREOGRAPHY_TOOLS } from "./retroChoreographyTools";
 import { CINEMATIC_TOOLS } from "./cinematicTools";
 import { IMAGE_ASSET_TOOLS } from "./imageAssetTools";
+import { MAP_BACKGROUND_GENERATION_TOOLS } from "./mapBackgroundGenerationTool";
 import { TITLE_ART_TOOLS } from "./titleArtTools";
 import { PRESENTATION_TOOLS } from "./presentationTools";
 import { TITLE_IMPROVE_TOOLS } from "./titleImproveTools";
@@ -292,12 +300,19 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   ...withDomain(PREHISTORIC_TOOLS, "tile"),
   // 북방 설원(snow_north) 구성기 — 눈 마을·얼어붙은 호수·얼음 동굴 입구·겨울 장터·실내 다섯을 한 번에 짓고(배치·통행·오토타일 덩이는 구성기), 집 문 ↔ 실내를 잇는다.
   ...withDomain(SNOW_NORTH_TOOLS, "tile"),
+  // 마을 종류 표(시대·세계별 60여 종 → 칩셋·시공 도구·선택지, 그림 없는 종류는 «없다») — src/ai/villageTypeCatalog.ts.
+  FIND_VILLAGE_TYPE_TOOL,
+  // 지은 마을에 쓰임 한 덩이(광산·포도원·신전 폐허·마법사의 탑·장터·조선 장터)를 번들 조각으로(통행 유지).
+  DRESS_VILLAGE_QUARTER_TOOL,
+  DRESS_JOSEON_MARKET_TOOL,
   // 맵 위 탈것(차 흐름·버스·노면전차·전철·지하철) — 길 그림에서 자동으로 또는 칸 경로로 노선을 깐다. 런타임이 실제로 움직인다.
   ...withDomain(TRANSIT_TOOLS, "map"),
+  ...withDomain([ADD_STREET_WALKERS_TOOL], "event"),
   ...withDomain(STRUCTURE_KIT_TOOLS, "tile"),
   ...withDomain(TILESET_OBJECT_TOOLS, "tile"),
   ...withDomain(TILE_QUERY_TOOLS, "tile"),
   ...withDomain(MAP_TOOLS, "map"),
+  ...withDomain(MAP_BACKGROUND_GENERATION_TOOLS, "map"),
   // MZ 4층 쓰기(stamp_layer_block·paint_shadow) — 각 툴이 map·tile 두 도메인을 선언한다.
   ...withDomain(LAYER_TOOLS, "map"),
   ...withDomain(RELIEF_TOOLS, "map"),
@@ -323,6 +338,8 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   ...withDomain(TILE_CHANGE_EFFECT_TOOLS, "event"),
   ...withDomain(VEHICLE_TOOLS, "event"),
   ...withDomain(INVESTIGATION_TOOLS, "event"),
+  ...withDomain(SEARCH_CONTAINER_TOOLS, "event"),
+  ...withDomain(FOREST_ROUTE_TOOLS, "map"),
   ...withDomain(PUZZLE_AUTHORING_TOOLS, "event"),
   ...withDomain(MYSTERY_CASE_TOOLS, "event"),
   ...withDomain(NARRATIVE_HORROR_TEMPLATE_TOOLS, "event"),
@@ -342,6 +359,8 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   ...withDomain(DIRECTING_GUIDE_TOOLS, "event"),
   // 조수 스킬(assistant-skills/*/SKILL.md 번들) — 장면 다듬기 교훈 등. 장면·이벤트 작업에서 읽는다.
   ...withDomain(ASSISTANT_SKILL_TOOLS, "event"),
+  // 대사 관리(윤문) — 대사 색인·문맥·제안/적용·화자 말투 메모. 자료집 「대사」 탭과 같은 색인을 쓴다.
+  ...withDomain(DIALOGUE_TOOLS, "event"),
   ...withDomain(LIFE_FLOWER_TOOLS, "event"),
   ...withDomain(LIGHTING_TOOLS, "event"),
   ...withDomain(ENDING_TOOLS, "event"),
@@ -375,6 +394,7 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   ...withDomain(STORY_ARC_TOOLS, "event"),
   ...withDomain(STORY_TOOLS, "quest"),
   ...withDomain(BATTLE_TOOLS, "battle"),
+  ...withDomain(COMBO_TECH_TOOLS, "battle"),
   ...withDomain(TROOP_BATTLE_PAGE_TOOLS, "battle"),
   ...withDomain(REFACTOR_TOOLS, "system"),
   ...withDomain(QUALITY_EVALUATION_TOOLS, "system"),

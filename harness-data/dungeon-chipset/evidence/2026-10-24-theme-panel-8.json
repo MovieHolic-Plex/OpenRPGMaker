@@ -1,0 +1,66 @@
+{
+ "round": "theme-walls-r8 / theme-props-r5 / theme-props-r6",
+ "panel": 8,
+ "date": "2026-10-24",
+ "boards": [
+  "qa-runs/walls/theme-walls-r8/board-wall.other_face-p8.png",
+  "qa-runs/walls/theme-walls-r8/board-wall.tower_face-p8.png",
+  "qa-runs/walls/theme-walls-r8/board-wall.other_rim-p8.png",
+  "qa-runs/walls/theme-props-r5/board-prop.minecart-p5.png",
+  "qa-runs/walls/theme-props-r6/board-prop.cracked_floor-p6.png",
+  "qa-runs/walls/theme-props-r5/board-wall.ice_face-p5.png"
+ ],
+ "criteria": "(1) true 3/4 top-down at 1x; (2) same game as Beodeul reference (palette, 4-6 steps, material-tone dark edges, no glow/toy/confetti); (3) no seams/16px repeat; (4) fits theme. A MAJOR = a defect a player would notice at 1x in the room view. Blind: only PNG paths and criteria given.",
+ "reviewers": {
+  "klb-sonnet-5-5": "ac0a761da55873dad",
+  "argon": "abadd62c2f94eb015"
+ },
+ "count_rule": "an item passes only when neither blind reviewer raises a major against the candidate",
+ "tally": {
+  "wall.other_face": {
+   "A1": "PASS both (sonnet: minor patchwork value jumps, identical zigzag repeat; argon: minor 16px mottling repeat, uniform crack width)",
+   "A2": "sonnet PASS; argon FAIL (lavender crack clashes with orange floor veins)"
+  },
+  "wall.tower_face": {
+   "A1": "sonnet PASS (minor pale speckled bricks); argon FAIL (blotch noise, 16px column repeat)",
+   "A2": "FAIL both (sandstone)"
+  },
+  "wall.other_rim": {
+   "A1": "argon PASS; sonnet FAIL borderline (rim lighter/more saturated than face -> frame)",
+   "A2": "FAIL both"
+  },
+  "prop.minecart": {
+   "A1": "PASS both (sonnet: sparse gold dots minor; argon: front rim band slightly thick, boxy silhouette minor)",
+   "A2": "PASS both"
+  },
+  "prop.cracked_floor": {
+   "A1": "FAIL both",
+   "A2": "sonnet PASS weak; argon FAIL (32x32 seam, bright scratch cracks)"
+  },
+  "wall.ice_face": {
+   "A1": "sonnet PASS; argon FAIL (blotchy castle brick, 16px repeat, snow band under rim)",
+   "A2": "FAIL both"
+  }
+ },
+ "picks": {
+  "wall.other_face": {
+   "A1": [
+    "klb-sonnet-5-5",
+    "argon"
+   ]
+  },
+  "prop.minecart": {
+   "A1": [
+    "argon (A1 better: warm gold harmonises)"
+   ],
+   "A2": [
+    "klb-sonnet-5-5"
+   ]
+  }
+ },
+ "pickRule": "minecart: both candidates clear; A1 chosen (argon preference, and earlier panels 6/7 both preferred A1 for palette harmony with the warm mine floor)",
+ "gate": {
+  "wall.other_face A1": "PASS c9162c2eba23",
+  "prop.minecart A1": "PASS e142cfc7c42d"
+ }
+}

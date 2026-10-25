@@ -1,0 +1,14 @@
+{
+ "schema": "oprn-object-gate-hold-decision/1",
+ "pixelSha256": "b22ba20ddd8eb3e16607d596c8f3e193a3083344418f0b63c725775b317ce190",
+ "profileHash": "4d8774b517f41638",
+ "kind": "wall_mounted",
+ "decision": "allow",
+ "decidedBy": "supervisor (delegated by user 2026-10-21)",
+ "decidedAt": "2026-10-21T07:05:27.492Z",
+ "by": "human",
+ "via": "review-page",
+ "reasons": [],
+ "note": "묶음 허용: fallen-observatory-r3 dome slit — delegated by user to supervisor 2026-10-21; Opus VQA receipt harness-data/object-gate/vqa/fallen-observatory-r3.opus-vqa-r1-pass.json",
+ "sig": "8b011c745521f95e31f305071f90f46f3761bb6d97ec41ea313f89c56b17dd45"
+}

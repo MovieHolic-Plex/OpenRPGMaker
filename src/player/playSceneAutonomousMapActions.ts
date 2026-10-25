@@ -1,5 +1,6 @@
 import { furniturePushBlocks } from './furniturePushAnimation';
-import { canMoveFootprint, inBounds } from "@/project/collision";
+import { canMoveFootprint, inBounds, isLedgeCell } from "@/project/collision";
+import { transitBlocksCell } from "@/player/playSceneTransit";
 import { UNIT_FOOTPRINT, passageBounds, rectsOverlap } from "@/project/footprint";
 import { isSpatialPlacementBlocking } from "@/project/spatialOccupancy";
 import { resolvePlayerBody, playerPassageRect } from "@/project/playerFootprint";
@@ -72,6 +73,8 @@ export function canNpcMove(
   const self = moverPassSize(request);
   // RM2K3 same-as-characters: player and solid events occupy tiles and block non-through movers.
   if (isCharacterBlockedRect(request, self, request.to.x, request.to.y)) return false;
+  // 지나가는 차·버스 몸 칸에는 들어서지 않는다(주인공과 같은 규칙) — 횡단보도 행인이 차를 뚫지 않게.
+  if (transitBlocksCell(request.scene as Parameters<typeof transitBlocksCell>[0], request.to.x, request.to.y)) return false;
   if (movement.x !== 0 && movement.y !== 0) {
     // 대각은 여기서 L자로 분해한다 — canMoveFootprint 도 분해하지만 그쪽은 중간 칸의
     // **캐릭터** 점유를 모른다. 두 검사를 한 구간씩 교차해야 하므로 분해를 여기 남긴다.
@@ -108,7 +111,8 @@ function leg(
     toX,
     toY,
     self.passRows
-  ) && !isSpatialPlacementBlocking(
+  ) && !isLedgeCell(request.project, request.scene.map, toX, toY)
+    && !isSpatialPlacementBlocking(
     request.project,
     request.scene.session,
     request.scene.map.id,

@@ -1,0 +1,12 @@
+{
+  "item": "tc.pyr_floor",
+  "candidate": "A2",
+  "pixelSha256": "e35dff58586ed44a95c7374b00970323a1f17a2aa9735a10f68eccdfb8246f57",
+  "verdict": "fail",
+  "problems": [
+    "Reads as a vertical running-bond brick wall rather than flat cut sandstone flagstones (3 narrow brick courses per 16px cell with strong top-bevel highlights and dark bottom mortar shadows, matching the vertical brick wall behind it in the room scene)",
+    "Visible 16px repetition and seam artifacts in the random 6x6 mix: the bright sand blotch on one cell clips against the 16px boundary and repeats as an obvious spot pattern, while brick lengths pinch or fuse across vertical cell seams",
+    "Flatter and more mechanical than the Beodeul reference (only 5 colors total, uniform mid-tone brick fills without stone-by-stone tonal variation)"
+  ],
+  "reason": "16px 한 칸에 3단으로 쪼개진 좁은 벽돌과 상단 하이라이트·하단 짙은 줄눈 명암 때문에 바닥 판석이 아니라 수직 벽돌 벽면처럼 읽히며, 6x6 무작위 혼합 시 특정 칸의 밝은 모래 얼룩이 16px 경계에서 잘린 채 반복되고 수직 경계마다 벽돌 폭이 불균일하게 끊어져 버들항 기준작의 석재 바닥 질감에 미달한다."
+}

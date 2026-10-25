@@ -59,6 +59,8 @@ export function createTeamPanel(initialEnabled = false, options: { readonly alwa
   let open = false;
   let editing: string | null = null;
   let draft: PiTeamMember | null = null;
+  // 「팀원 추가」로 연 새 팀원은 「저장」을 누를 때까지 명세에 넣지 않는다 — 취소가 빈 팀원을 남기지 않게.
+  let pendingNew: PiTeamMember | null = null;
   const toggleListeners = new Set<(open: boolean) => void>();
 
   const dot = el("span", { class: "ai-team-panel-dot", attrs: { "aria-hidden": "true" } });
@@ -134,7 +136,7 @@ export function createTeamPanel(initialEnabled = false, options: { readonly alwa
     commit({ ...spec, members: spec.members.map((member) => (member.id === id ? { ...member, ...patch } : member)) });
   };
   const startEdit = (member: PiTeamMember): void => { editing = member.id; draft = { ...member, toolDomains: [...member.toolDomains] }; render(); };
-  const cancelEdit = (): void => { editing = null; draft = null; render(); };
+  const cancelEdit = (): void => { editing = null; draft = null; pendingNew = null; render(); };
 
   const renderForm = (member: PiTeamMember): HTMLElement => {
     const current = draft ?? member;
@@ -189,19 +191,21 @@ export function createTeamPanel(initialEnabled = false, options: { readonly alwa
     cancel.addEventListener("click", cancelEdit);
     const remove = el("button", { class: "ai-team-btn is-danger", text: "삭제", attrs: { type: "button" }, dataset: { testid: "ai-team-form-remove" } });
     remove.addEventListener("click", () => {
-      if (spec.members.length <= 1) return;
+      if (pendingNew || spec.members.length <= 1) return;
       editing = null; draft = null;
       commit({ ...spec, members: spec.members.filter((other) => other.id !== member.id) });
     });
-    remove.disabled = spec.members.length <= 1;
+    remove.disabled = pendingNew !== null || spec.members.length <= 1;
     actions.append(remove, cancel, save);
     form.append(actions);
     form.addEventListener("submit", (event) => {
       event.preventDefault();
       const next = draft ?? current;
       if (!next.label.trim()) { name.focus(); return; }
-      editing = null; draft = null;
-      commit({ ...spec, members: spec.members.map((other) => (other.id === member.id ? { ...next, label: next.label.trim() } : other)) });
+      const saved = { ...next, label: next.label.trim() };
+      const isNew = pendingNew !== null;
+      editing = null; draft = null; pendingNew = null;
+      commit({ ...spec, members: isNew ? [...spec.members, saved] : spec.members.map((other) => (other.id === member.id ? saved : other)) });
     });
     return form;
   };
@@ -209,7 +213,7 @@ export function createTeamPanel(initialEnabled = false, options: { readonly alwa
   const renderRoster = (): HTMLElement => {
     const section = el("div", { class: "ai-team-section ai-team-roster", dataset: { testid: "ai-team-roster" } });
     if (editing) {
-      const member = spec.members.find(m => m.id === editing);
+      const member = pendingNew?.id === editing ? pendingNew : spec.members.find(m => m.id === editing);
       if (member) { section.append(renderForm(member)); return section; }
     }
     const head = el("div", { class: "ai-team-section-head" });
@@ -218,11 +222,11 @@ export function createTeamPanel(initialEnabled = false, options: { readonly alwa
     add.addEventListener("click", () => {
       const id = slugifyMemberId("member", new Set(spec.members.map((member) => member.id)));
       const member: PiTeamMember = { id, label: "새 팀원", kind: "builder", summary: "", prompt: "", toolDomains: [], maxTurns: 300, enabled: true };
-      spec = saveTeamSpec({ ...spec, members: [...spec.members, member] });
+      pendingNew = member;
       startEdit(member);
     });
     const reset = el("button", { class: "ai-team-btn", text: "기본 팀으로", attrs: { type: "button" }, dataset: { testid: "ai-team-reset" } });
-    reset.addEventListener("click", () => { editing = null; draft = null; spec = resetTeamSpec(); render(); });
+    reset.addEventListener("click", () => { editing = null; draft = null; pendingNew = null; spec = resetTeamSpec(); render(); });
     head.append(add);
     section.append(head);
     const list = el("ul", { class: "ai-team-roster-list" });

@@ -1,0 +1,343 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d572cfe3dc843d0853c000a11801f9d00e721d089173bb946356ae3b535ac106",
+ "width": 32,
+ "height": 48,
+ "kind": "terrain",
+ "name": "jp-in-cs-stairwell-down",
+ "label": "jp_city/interior/jp-in-cs-stairwell-down",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "ground",
+  "refs": [
+   "floor-flooring",
+   "floor-tatami"
+  ],
+  "scale": 2,
+  "score": 8,
+  "refSet": {
+   "id": "jp_city",
+   "chipset": "jp_city",
+   "fallback": false,
+   "hash": "d1f5720172be07de"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 13,
+  "tileColorsP90": 13,
+  "darkV5": 26,
+  "nearBlackEdge": 0.54,
+  "opaqueTiles": 4
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "hazard barrier beam with yellow chevrons",
+      "rows": "8-11",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "traffic cones at left and right",
+      "rows": "5-18",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "descending stair treads and risers inside the opening",
+      "rows": "15-42",
+      "evidence": "d",
+      "front_edge_line_row": 16,
+      "eave_shadow_rows": "18-23"
+     }
+    ],
+    "main_top_rows": 27,
+    "front_face_rows": 8,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "This is a terrain stairwell. A barrier with cones sits across the top (rows 5-18). Below it, a bright top-step edge at row 16 is followed by a dark shadow band (rows 18-25). Alternating light treads and darker risers then run to row 42. The opening shows stepped contents (evidence d), so it is not a flat slab. The treads give a horizontal surface seen from above, and the risers give vertical faces. The barrier beam is a front-facing strip, but it is minor next to the stairs."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 4,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a stairwell-down patch with grey metal steps, a hazard-striped header and red/white cones. It measures 12 visible tones per tile against 3 (flooring) and 6 (tatami), so it is richer than both references. Near-flat coverage is 0%, so there are no large flat fills. Only 3% of dark edge pixels are neutral, so the outlines lean toward a tinted dark material tone rather than near-black. The steps ramp shows about 5 lightness steps, with per-step highlights and shadow lines. This matches or exceeds the references' craft. It reads as a stairwell rather than a plain floor, but the structure and shading are sound.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 13483
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "warning barrier beam with hazard stripe",
+      "rows": "8-11",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "traffic cones left and right",
+      "rows": "5-18",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "top landing step",
+      "rows": "16-17",
+      "evidence": "a",
+      "front_edge_line_row": 17,
+      "eave_shadow_rows": "18"
+     },
+     {
+      "part": "descending stair treads",
+      "rows": "19-42",
+      "evidence": "a",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 24,
+    "front_face_rows": 8,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The stairwell is drawn as stair treads seen from above. Light tread bands in rows 16-17, 27-35 and 36-42 alternate with dark riser or shadow bands in rows 18, 20-26 and 28-34. The top landing has a bright edge line at row 16, with shadow at row 18 below it. The treads are horizontal surfaces, and the dark risers between them give the descent depth. The barrier and cones are structure drawn as front faces and are small next to the stair body."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 6,
+    "reference_steps": 4,
+    "outline": "dark_material_tone",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The candidate stairwell has 12 visible tones per tile against 3 and 6 for the references, and 0% near-flat coverage. Its dark edge pixels are only 3% neutral, so the outline is tinted, not a near-black sticker line. The metal steps, hazard stripe and cones show several lightness steps, with per-step highlights and shading on the steps. The references are simpler: the flooring has about 3-4 tones and the tatami about 6. The candidate is at least as rich as both, with no large flat fills.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15558
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "descending stair treads in the floor opening",
+      "rows": "15-42",
+      "evidence": "d",
+      "front_edge_line_row": 16,
+      "eave_shadow_rows": "18-24"
+     },
+     {
+      "part": "warning barrier with yellow chevrons",
+      "rows": "8-11",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "left traffic cone",
+      "rows": "5-18",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "right traffic cone",
+      "rows": "5-18",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 27,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The main body is a stairwell opening (rows 15-42, constant width 28). It is drawn as a floor-level recess with step treads in alternating light and dark bands, getting darker toward the top where the stairs descend into shadow. There is no vertical south face of 3+ rows. The stairs are viewed mostly from above as a flat surface. The cones and the hazard barrier on the far edge (rows 5-18) are decor placed on the floor and are not the main body."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 6,
+    "reference_steps": 4,
+    "outline": "dark_material_tone",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The candidate is a stairwell-down patch with metal steps, a hazard-striped header and red cones. It shows about 12 visible tones per tile against 3 for floor-flooring and 6 for floor-tatami, so it is richer than both references. Near-flat coverage is 0%, with no large flat fills. The steps show several grey lightness levels, which gives about 6 shading steps against 3-5 on the references. Dark edge pixels are only 3% neutral, so the outlines lean toward tinted dark tones and not a uniform black sticker line, as in the references. It is a small prop-like patch rather than a plain floor, but it is acceptable as a ground-kind piece and at least matches the references on the primary facts.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 14281
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "hazard barrier bar",
+      "rows": "8-11",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "traffic cones left and right",
+      "rows": "5-18",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "top landing slab at stair head",
+      "rows": "16-17",
+      "evidence": "a",
+      "front_edge_line_row": 18,
+      "eave_shadow_rows": "19-23"
+     },
+     {
+      "part": "descending stair treads",
+      "rows": "24-42",
+      "evidence": "a",
+      "front_edge_line_row": 25,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 19,
+    "front_face_rows": 4,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is the stairwell opening. A light landing (rows 16-17) ends in a dark front-edge line at row 18, followed by the dark shadow of the drop at rows 19-23 (a). Below that, rows 24-42 alternate light tread rows with darker riser rows (e.g. x=16 rows 26-36), so the stair treads read as horizontal surfaces seen from above. The hazard bar at rows 8-11 is a flat front-facing strip, and the cones at rows 5-18 are placed ornaments, so they are listed as decor. Side walls are thin vertical strips at the edges, and there is no receding isometric side face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 4,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a stairwell with a grey shutter or stair ramp, a hazard-striped lintel and orange cones. It shows about 5 lightness steps on the grey ramp, plus the stripe and cone accents. On the primary facts it reaches 12 visible tones per tile, against 3 for floor-flooring and 6 for floor-tatami. Near-flat coverage is 0%, so there are no flat fills of 5x5 or larger. Only 3% of its dark edge pixels are neutral, so the outlines lean toward the neighbouring material's tone and are not a sticker-style black line. The horizontal grooves on the steps and the per-cone shading give it texture comparable to the references. It is a little smaller and more object-like than the full floor patches, but it is not thinner or flatter than the shipped jp_city floors.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17470
+  }
+ ],
+ "decidedAt": "2026-10-22T16:07:06.928Z",
+ "cells": {
+  "16": [
+   "0394c3a6633146eb",
+   "56e54bb3cac35f20",
+   "7bdf187ce9ab9203",
+   "8208b87110743f24",
+   "ad33ceacc3350587",
+   "ca75ed170fced906"
+  ],
+  "24": [
+   "0f7a926681a27a0e",
+   "3c12e1fe245e714b",
+   "4879d8a5f297e25b",
+   "68ad4fe9b330cd0b",
+   "771e45b2cdda5c13",
+   "a5030437e9727182",
+   "b8a4a1798ce20e13",
+   "c4d38b3ea9f73c78",
+   "cc9f15494210a5b1",
+   "e2db58a0d34371de",
+   "e875cad20e4d1e23",
+   "e92db7d96c6d001d"
+  ],
+  "32": [
+   "20ba973c2d01073d",
+   "26ab9b8496ec28a9",
+   "7a33a2008fea6c8b",
+   "ecd09d511c40115a"
+  ],
+  "48": [
+   "0e68cbc8571803b6",
+   "1df6fb04bb78f641",
+   "d658e0773e6c0883"
+  ]
+ }
+}

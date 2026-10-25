@@ -1,0 +1,486 @@
+{
+ "panel": "theme-climate-r1 blind panel 8 (3 fresh Opus + 1 Argon), 2026-10-23",
+ "rule": "a major counts only if at least 2 of the 4 judges raise the same problem; pick = candidate with 0 counted majors, majority vote among those (Opus majority on ties)",
+ "delegatedBy": "delegated by user to supervisor 2026-10-23",
+ "prompt": "# Blind review panel — dungeon chipset pieces\n\nYou are one independent judge. Do not edit or create any files; only open the PNG boards below with the Read tool\n(they are large; read each one fully). No other context is needed.\n\nEach board is one item for an OPRN 16px RPG chipset in 3/4 top-down view (RPG Maker style: tops are visible planes, fronts below them,\nno side faces, light from top-left). At the top of the board are REFERENCE crops from the existing \"Beodeul\" chipset (the quality\nbar) at 1x and 3x and an RPG Maker person for scale. Below are anonymous candidates labelled X and Y for the same item: the piece at 1x and\n3x, its parts, a small scene at 1x and 2x (animated items show all frames side by side), and extras (tile mosaics / test maps) for\nfloors, walls and autotiles.\n\nJudge each candidate against these criteria:\n1. reads correctly in 3/4 top-down at 1x (top planes visible, fronts below, no side/isometric faces, sits on the floor with contact);\n2. sits in the same game as the Beodeul reference (palette harmony, texture density, number of shading steps, no toy/flat/clip-art look,\n   no black ink outlines);\n3. seamless joins: floors/walls/autotiles show no visible 16px repeat or seams; multi-cell objects join without cuts;\n4. reads as its stated purpose and as its theme (the board title says what it is).\n\nA MAJOR problem = something that would make you refuse to ship it (misreads at 1x, wrong view, clearly below the reference's quality,\nvisible seams/grid, does not read as the item). A MINOR problem = worth polishing but shippable.\n\nReply with ONLY a JSON object, no prose before or after:\n{\"<board file name without .png>\": {\"X\": {\"majors\": [{\"problem\": \"...\", \"where\": \"...\"}], \"minors\": [{\"problem\": \"...\", \"where\": \"...\"}]},\n                                    \"Y\": {\"majors\": [...], \"minors\": [...]},\n                                    \"pick\": \"X\" or \"Y\", \"why\": \"one sentence\"}, ...}\n\nBoards:\n- /home/main/.cache/dungeon-themes/climate-panel/r5-final/theme-climate-r1__tc.fo_boulder.png\n- /home/main/.cache/dungeon-themes/climate-panel/r5-final/theme-climate-r1__tc.fo_ring.png\n- /home/main/.cache/dungeon-themes/climate-panel/r5-final/theme-climate-r1__tc.ice_drift.png\n",
+ "boards": {
+  "theme-climate-r1__tc.ice_drift": {
+   "item": "tc.ice_drift",
+   "labels": {
+    "X": {
+     "key": "A1",
+     "sha256": "9614a4266766560e3f640f4c031669fcb6465eeb129de068b12dfd2ce4acbaec"
+    },
+    "Y": {
+     "key": "A2",
+     "sha256": "fb7c1fd71ffa135ab1c851f332f026c4c8f741967a67f946a795830baff8f2db"
+    }
+   },
+   "votes": {
+    "argon": "A1",
+    "opus1": "A2",
+    "opus2": "A2",
+    "opus3": "A2"
+   },
+   "counted": {
+    "A1": [],
+    "A2": []
+   },
+   "pick": "A2",
+   "note": "3 Opus A2, argon A1"
+  },
+  "theme-climate-r1__tc.fo_ring": {
+   "item": "tc.fo_ring",
+   "labels": {
+    "X": {
+     "key": "A2",
+     "sha256": "ec4715a050aca721e11049b8825c3f671cf1b450f2635ad1eea2fea930808db9"
+    },
+    "Y": {
+     "key": "A1",
+     "sha256": "48eb1d29eb9297c5ca686b177d94ebcb97dbecc3f6577dc2b87f86c774cb584d"
+    }
+   },
+   "votes": {
+    "argon": "A1",
+    "opus1": "A1",
+    "opus2": "A1",
+    "opus3": "A1"
+   },
+   "counted": {
+    "A1": [],
+    "A2": [
+     "pale cyan specks read as sparkles, not mushrooms; off-palette (opus1, opus2, opus3)"
+    ]
+   },
+   "pick": "A1"
+  },
+  "theme-climate-r1__tc.fo_boulder": {
+   "item": "tc.fo_boulder",
+   "labels": {
+    "X": {
+     "key": "A2",
+     "sha256": "d4bae7a16ca586d6a7b276689dedd5d73643c219d89480fc54577cd0a4b64425"
+    },
+    "Y": {
+     "key": "A1",
+     "sha256": "a82d99d59a7fa85e553aabca9e1f3a06a9c31071b3c7e2b50e8bc2e006916c52"
+    }
+   },
+   "votes": {
+    "argon": "A2",
+    "opus1": "A1",
+    "opus2": "A1",
+    "opus3": "A1"
+   },
+   "counted": {
+    "A1": [],
+    "A2": []
+   },
+   "pick": "A2",
+   "note": "vote 3-1 for A1, but A1 (a82d99d5) FAILED the object-gate style check (9a5efc34612b: flat fills); A2 has 0 counted majors and object-gate PASS 5d1b7882d368"
+  }
+ },
+ "raw": {
+  "argon": {
+   "theme-climate-r1__tc.fo_boulder": {
+    "X": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "Single high-contrast pale pixel inside the moss patch draws slightly too much attention at 1x",
+       "where": "upper-left moss overhang on X piece 1x/3x"
+      }
+     ]
+    },
+    "Y": {
+     "majors": [
+      {
+       "problem": "Overly smooth, balloon-like rock shading and uniform green cap lack the faceted pixel cluster texture of the Beodeul stone references",
+       "where": "entire boulder body and top moss cap on Y piece 1x/3x"
+      }
+     ],
+     "minors": [
+      {
+       "problem": "Single diagonal line across the front face reads like a drawn crack rather than volumetric rock planes",
+       "where": "center-left front face of Y piece 3x"
+      }
+     ]
+    },
+    "pick": "X",
+    "why": "X has convincing faceted rock clusters, irregular draping moss, and grounded base tufts that match the Beodeul texture density, whereas Y looks overly smooth and artificial."
+   },
+   "theme-climate-r1__tc.fo_ring": {
+    "X": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "Pale cyanmushroom caps diverge from the warm red-and-cream Beodeul toadstool reference and lack a grounded moss ring base on the grass",
+       "where": "mushroom ring on X scene 1x/2x"
+      }
+     ]
+    },
+    "Y": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "Dark foliage ring underneath the mushrooms is slightly thick along the top arc",
+       "where": "outer upper edge of Y piece 3x and Y scene 2x"
+      }
+     ]
+    },
+    "pick": "Y",
+    "why": "Y matches the Beodeul red-capped toadstool reference palette and grounds the circle with a mossy ring base that reads cohesive and purposeful at 1x."
+   },
+   "theme-climate-r1__tc.ice_drift": {
+    "X": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "The two 1x1 variants have nearly identical overall width and height silhouettes",
+       "where": "X part 1 3x and X part 2 3x"
+      }
+     ]
+    },
+    "Y": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "Detached single white pixels below the dark base shadow read as stray noise rather than settled snow at 1x",
+       "where": "bottom edge below the base shadow on Y part 1 3x and Y part 2 3x"
+      },
+      {
+       "problem": "Slightly banded cyan-blue midtone stripe across the front face compared to X's softer snow shading",
+       "where": "middle band of Y piece 3x"
+      }
+     ]
+    },
+    "pick": "X",
+    "why": "X has a clean grounded base contour and smooth snow plane shading without the stray detached bottom pixels seen on Y."
+   }
+  },
+  "opus1": {
+   "theme-climate-r1__tc.fo_boulder": {
+    "X": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "The grey body has noisy pale stippling, so it looks grainier and less solid than the crisp, clean stone shading in the Beodeul reference",
+       "where": "rock body, 3x piece and 2x scene"
+      },
+      {
+       "problem": "The moss is a jagged cap with a green drip running down the front. At 1x it reads as a splat rather than moss growing on a top plane",
+       "where": "moss on the top front, piece 3x"
+      },
+      {
+       "problem": "The contact shadow is thin, so the rock sits on the grass rather weakly",
+       "where": "bottom edge, scene 1x/2x"
+      }
+     ]
+    },
+    "Y": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "The moss covers almost the whole top plane, so very little stone top shows and the top/front split depends only on the moss edge",
+       "where": "upper half of the piece"
+      },
+      {
+       "problem": "The large flat shading bands on the front look slightly smooth and soft next to the reference stones",
+       "where": "front face, 3x piece"
+      },
+      {
+       "problem": "A small stray moss/grass cluster sits at the bottom-left edge",
+       "where": "lower-left contact edge, 3x piece"
+      }
+     ]
+    },
+    "pick": "Y",
+    "why": "Y reads as a solid mossy boulder with a clear moss-topped top plane and good ground contact, and its shading is cleaner than X's noisy stipple."
+   },
+   "theme-climate-r1__tc.fo_ring": {
+    "X": {
+     "majors": [
+      {
+       "problem": "At 1x the tiny pale-cyan specks read as a sparkle or crystal circle, not as mushrooms. The item does not read as a fairy mushroom ring",
+       "where": "piece 1x and scene 1x"
+      },
+      {
+       "problem": "The pale cyan clashes with the warm red mushroom in the Beodeul reference and the grass palette. It looks thin, like a flat overlay with almost no shading steps",
+       "where": "all mushroom caps"
+      }
+     ],
+     "minors": [
+      {
+       "problem": "The scattered dark-green and white dots inside the ring look like noise",
+       "where": "ring interior"
+      },
+      {
+       "problem": "The stems have no contact shadow on the grass",
+       "where": "mushroom bases"
+      }
+     ]
+    },
+    "Y": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "The dark mossy disc under the ring is dense and blob-like, so at 1x the whole thing can read as a red-dotted bush rather than an open ring on grass",
+       "where": "base disc, scene 1x/2x"
+      },
+      {
+       "problem": "The mushrooms are large and crowded, so the ring shape is only partly legible and the centre is barely open",
+       "where": "ring layout, piece 3x"
+      },
+      {
+       "problem": "The soft outer fringe of the disc stands out slightly against the grass texture",
+       "where": "disc edge vs grass, gate patch"
+      }
+     ]
+    },
+    "pick": "Y",
+    "why": "Y clearly reads as red-capped fairy mushrooms that match the reference's palette and shading, while X reads as faint cyan sparkles."
+   },
+   "theme-climate-r1__tc.ice_drift": {
+    "X": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "The drifts are round and puffy like cotton or clouds, with little sense of a flat top plane or a wind-shaped mound",
+       "where": "both variants, 3x piece"
+      },
+      {
+       "problem": "There is barely any contact shadow under the drifts, so they look pasted onto the floor",
+       "where": "bottom edge, scene 2x"
+      },
+      {
+       "problem": "The two variants are near-identical blobs",
+       "where": "part 1 vs part 2"
+      }
+     ]
+    },
+    "Y": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "The contact shadow is a dotted line of dark pixels that reads slightly as a broken outline at 3x",
+       "where": "bottom edge of both variants"
+      },
+      {
+       "problem": "The shapes are still fairly similar between the two variants, with a low wedge profile",
+       "where": "part 1 vs part 2"
+      }
+     ]
+    },
+    "pick": "Y",
+    "why": "Y's drifts have a clearer lit top plane and a shaded underside, so they read as snow mounds sitting on the floor, while X's look like floating cotton puffs."
+   }
+  },
+  "opus2": {
+   "theme-climate-r1__tc.fo_boulder": {
+    "X": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "The top plane is weak. The moss sits on top as a jagged V-shaped drip instead of a cap that follows the rock's top surface, so at 1x the boulder reads as a front-facing blob more than a 3/4 top-down rock",
+       "where": "moss on top of the piece, 3x and scene 1x"
+      },
+      {
+       "problem": "The rock is busy, salt-and-pepper speckle, and a few orange pixels look like stray noise. It is noisier than the reference stones",
+       "where": "rock body, 3x"
+      },
+      {
+       "problem": "The contact shadow is thin, so the boulder looks slightly pasted onto the grass",
+       "where": "base, scene 2x"
+      }
+     ]
+    },
+    "Y": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "The moss cap is a fairly even dome of a single green family, with little variation in its silhouette",
+       "where": "moss on top, 3x"
+      },
+      {
+       "problem": "A small moss clump on the lower-left base reads like a detached pixel cluster",
+       "where": "lower-left edge, 3x"
+      },
+      {
+       "problem": "The crack lines are a bit straight and graphic compared with the reference rocks' texture",
+       "where": "front face, 3x"
+      }
+     ]
+    },
+    "pick": "Y",
+    "why": "Y has a clear moss top over a darker front face with a solid shadow at the base, so it reads cleanly as a mossy boulder in 3/4 view at 1x, while X's top is muddled and its texture noisy."
+   },
+   "theme-climate-r1__tc.fo_ring": {
+    "X": {
+     "majors": [
+      {
+       "problem": "At 1x the pale cyan dots barely read as mushrooms. They look like scattered sparkles or flowers, and the ring has almost no body or contact with the grass",
+       "where": "scene 1x and gate patch 1x"
+      },
+      {
+       "problem": "The cyan-on-grey colour sits outside the Beodeul palette and next to the red mushroom reference looks clip-art-like and thin",
+       "where": "piece 3x vs REF"
+      }
+     ],
+     "minors": [
+      {
+       "problem": "The loose dots in the centre read as noise rather than trampled or fairy grass",
+       "where": "ring centre, 3x"
+      }
+     ]
+    },
+    "Y": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "A dark green filled disc sits under the mushrooms. It reads as a grass clump or bush patch more than an open ring, and its outer edge shows on the base grass",
+       "where": "backing behind the mushrooms, scene 2x and gate patch"
+      },
+      {
+       "problem": "The front caps are large and crowd the 2x2 footprint. The mushrooms vary in size but there is no gap in the centre",
+       "where": "bottom row of caps, 3x"
+      }
+     ]
+    },
+    "pick": "Y",
+    "why": "Y's shaded red caps on pale stems match the reference mushroom and read clearly as a mushroom ring at 1x, while X dissolves into faint cyan specks."
+   },
+   "theme-climate-r1__tc.ice_drift": {
+    "X": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "The drifts are almost all white with little shading from a top plane down to a front, so they read like cotton or cloud puffs rather than snow heaped on the floor",
+       "where": "piece 3x, parts 1 and 2"
+      },
+      {
+       "problem": "The bright white is a little too strong against the grey cave floor and stands out more than the reference snow",
+       "where": "scene 2x"
+      }
+     ]
+    },
+    "Y": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "A few stray light pixels sit below the drift's base line",
+       "where": "bottom edge of pieces, 3x"
+      },
+      {
+       "problem": "Variant 2 has nearly the same silhouette as variant 1, so the two add little variety",
+       "where": "parts 1 and 2"
+      }
+     ]
+    },
+    "pick": "Y",
+    "why": "Y's drifts have a white top shading into a blue-grey front with contact at the base, which reads as snow piled on the floor in 3/4 view and blends better with the ice-cave palette than X's flat white puffs."
+   }
+  },
+  "opus3": {
+   "theme-climate-r1__tc.fo_boulder": {
+    "X": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "The moss on top is a few spiky leaf shapes standing up, so it looks like a plant sitting on the rock rather than moss growing over it. That flattens the top plane.",
+       "where": "top of the boulder"
+      },
+      {
+       "problem": "The grey stone has noisy, speckled dithering and a stray orange pixel. It is busier than the smooth stepped shading on the reference rocks.",
+       "where": "body of the boulder"
+      },
+      {
+       "problem": "The contact shadow is weak, so the rock sits less firmly on the grass than Y does.",
+       "where": "base of the boulder"
+      }
+     ]
+    },
+    "Y": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "There are stray single pixels and a tiny pebble at the base edges that look like leftover specks.",
+       "where": "bottom-right and bottom-left edges"
+      },
+      {
+       "problem": "The moss cap is a bit uniform and dark, with little light from the top-left.",
+       "where": "moss cap on top"
+      }
+     ]
+    },
+    "pick": "Y",
+    "why": "Y reads clearly at 1x as a mossy dome with a lit top plane, a front below, a clean crack and a contact shadow, and its grey matches the stepped shading of the reference rocks."
+   },
+   "theme-climate-r1__tc.fo_ring": {
+    "X": {
+     "majors": [
+      {
+       "problem": "At 1x the pale cyan mushrooms are tiny and sparse, so the ring reads as scattered glinting dots rather than a mushroom ring.",
+       "where": "piece at 1x and in the scene"
+      },
+      {
+       "problem": "The icy cyan clashes with the warm red mushroom reference and the forest grass, so it does not look like the same game.",
+       "where": "whole piece"
+      }
+     ],
+     "minors": [
+      {
+       "problem": "The scattered green dots in the middle look like noise rather than a trampled grass ring.",
+       "where": "ring interior"
+      }
+     ]
+    },
+    "Y": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "The dark mossy ground patch under the ring is noisier and darker than the surrounding grass, so it reads as a square-ish blot.",
+       "where": "ground patch around and inside the ring"
+      },
+      {
+       "problem": "The front caps are much larger than the back ones and crowd each other, which makes the 2x2 piece look busy.",
+       "where": "bottom row of mushrooms"
+      }
+     ]
+    },
+    "pick": "Y",
+    "why": "Y's red-capped mushrooms match the reference and read immediately as a fairy ring at 1x, while X dissolves into faint dots."
+   },
+   "theme-climate-r1__tc.ice_drift": {
+    "X": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "The drifts are rounded puffy shapes and read slightly like clouds or cotton balls rather than piled snow.",
+       "where": "both variants"
+      },
+      {
+       "problem": "The bottom edge is flat and cut off with almost no contact shadow on the floor.",
+       "where": "base of part 1 and part 2"
+      }
+     ]
+    },
+    "Y": {
+     "majors": [],
+     "minors": [
+      {
+       "problem": "The shadow under the drifts is a row of separated dark dots instead of a continuous contact shadow.",
+       "where": "bottom edge of both variants"
+      },
+      {
+       "problem": "The two variants are very similar in silhouette, which reduces visual variety when they are scattered.",
+       "where": "part 1 vs part 2"
+      }
+     ]
+    },
+    "pick": "Y",
+    "why": "Y's drifts have directional top-left shading and a lower, wind-swept profile that reads as snow piled on the cave floor, while X's look more like floating puffs."
+   }
+  }
+ }
+}

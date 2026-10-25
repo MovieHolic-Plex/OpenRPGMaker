@@ -17,6 +17,7 @@ import campusSpec from "@/assets/modernCampusRoomSpec.json";
 import gothicSpec from "@/assets/gothicManorRoomSpec.json";
 import modernCitySpec from "@/assets/modernCityRoomSpec.json";
 import { passabilityOf } from "@/project/collision";
+import { stairArrivalFacing, stairContractForKit, stairContractForSpecObject, type StairContract } from "@/project/stairs/contract";
 import type { TilesetDef } from "@/project/types";
 
 export const HAND_INTERIOR_TILESET_ID = "atlas_biome_interior";
@@ -137,7 +138,24 @@ export interface HandInteriorLayers {
   readonly reachable: number; readonly floorCells: number; readonly unreachedFloor: { x: number; y: number }[];
   readonly start: { x: number; y: number }[];
   /** 벽면에 박은 엘리베이터 문·계단 앞 탈 자리(첫 바닥 줄, 조각 폭만큼) — 층 이동 출입구(create_transfer_pair)는 이 칸에 둔다. */
-  readonly travel: { label: string; x: number; y: number }[];
+  readonly travel: HandInteriorTravelSpot[];
+}
+/**
+ * 층 이동 탈 자리. 계단 입구 계약(project/stairs/contract.ts)이 있는 계단은 trigger(이동 이벤트를 다는 계단 그림 칸)·facing(도착 방향,
+ * 계단을 등짐)·leads·mode 를 함께 준다. x,y 는 들어서는 앞 칸(도착 칸)이다.
+ */
+export interface HandInteriorTravelSpot {
+  readonly label: string; readonly x: number; readonly y: number;
+  readonly trigger?: { readonly x: number; readonly y: number };
+  readonly facing?: "up" | "down" | "left" | "right";
+  readonly leads?: StairContract["leads"];
+  readonly mode?: StairContract["mode"];
+}
+const SPEC_TILESET = new Map<HandInteriorSpec, string>();
+/** 사양 → 칩셋 id(계단 계약 표의 열쇠). 업로드 칩셋의 사양은 없다. */
+function specTilesetId(S: HandInteriorSpec): string | undefined {
+  if (!SPEC_TILESET.size) for (const [id, spec] of Object.entries(HAND_INTERIOR_SPECS)) SPEC_TILESET.set(spec, id);
+  return SPEC_TILESET.get(S);
 }
 
 /** 평면 분석 결과 — face: 0 바닥 · 1 벽면 윗줄 · 2 벽면 아랫줄. */
@@ -242,6 +260,17 @@ const SEATS = ["chair", "stool", "bar stool", "armchair", "sofa", "bench", "pew"
 export function isSeatId(id: string, d?: Pick<SpecObject, "use">): boolean { return SEATS.some((s) => id.startsWith(s)) || !!d?.use?.includes("sit"); }
 
 /**
+ * 천장 줄에 거는 걸이(천문대 둥근 지붕 조각, 폴른 스타 #3234). 좌표 y 가 벽면 윗줄이 아니라 그 위 천장 줄(막힌 칸)이다.
+ * 일반 걸이 규칙(y = 벽면 윗줄)으로 검사하면 문서대로 놓은 관측 틈이 늘 거부됐다 — 2026-10-22 다듬기 9바퀴 동안 「관측 틈」 확인 항목이 한 번도 못 짓고 끝났다.
+ * "face-below": 맨 윗줄이 천장 줄이고 바로 아랫줄부터 벽면(관측 틈·갈빗대·처마). "ceiling": 천장 띠 안에만 놓인다(지붕 면·갈빗대 끝·둥근 지붕 전체).
+ */
+export function ceilingHang(id: string): "face-below" | "ceiling" | undefined {
+  if (id === "dome slit tall" || id === "dome rib" || id === "dome rib west" || id === "dome rib east" || id === "dome cornice") return "face-below";
+  if (id === "dome shell" || id === "dome rib top west" || id === "dome rib top east" || id === "dome vault") return "ceiling";
+  return undefined;
+}
+
+/**
  * 벽면에 박는 탈것(엘리베이터 문·벽 속 계단) 중 그림이 벽면 두 줄 높이뿐인 것. 첫 바닥 줄에 세우면 벽면 아랫줄과 바닥 줄에 반씩 걸쳐
  * 벽면 윗줄이 비고 문이 바닥으로 튀어나왔다(2026-10-17 r4-rom-d 로비: modern_city mci-elevator·mci-stairs-up, up=16).
  * 이런 조각은 벽면 두 줄에 딱 맞춰 그리고, 준 칸(첫 바닥 줄)은 그림 없이 비워 탈 자리로 둔다. up=32 탈것(다른 칩셋)은 벽면 두 줄 + 바닥 줄을 이미 덮는다.
@@ -250,7 +279,7 @@ export function isFlushTravelPiece(d: Pick<SpecObject, "kind" | "use" | "up" | "
   return d.kind === "wall" && !!d.use?.includes("travel") && d.h === 1 && Math.ceil(d.up / 16) + d.h <= 2;
 }
 
-interface Entry { key: number; order: number; tile: number; layer: 2 | 3; label: string }
+interface Entry { key: number; order: number; tile: number; layer: 2 | 3; label: string; /** 단 윗면 — 같은 칸의 다른 바닥 무늬(마법진·단 앞 턱)는 3층으로 올려 단 위에 얹는다 */ base?: true; /** 줄 자동 타일(깔개·난간) — 단 위로 올리지 않는다(예배당 깔개 끝이 서쪽 계단 단에 닿는 예제 그대로) */ line?: true }
 
 /** 탁자 칸으로 치는 가구: 식탁·책상·회의 탁자(id 의 table·desk 또는 태그 식탁·탁자·책상·회의). 파일 캐비닛·협탁 같은 윗면 가구는 빠진다. */
 const TABLE_ID = /(^|-)(table|desk)(-|$)/u;
@@ -334,19 +363,39 @@ export function buildHandInteriorLayers(input: HandInteriorInput, tileset?: Tile
   const objects = faceSeatsToTables(raw, tables, S);
   /** 벽면에 딱 맞춰 박은 탈것: 벽면 칸 → 이름표(걸이와 겹치면 안 된다), 탈 자리(그 앞 첫 바닥 줄 칸). */
   const flushFace = new Map<number, string>();
-  const landings: { i: number; label: string }[] = [];
+  const landings: { i: number; label: string; trigger?: number; facing?: HandInteriorTravelSpot["facing"]; leads?: StairContract["leads"]; mode?: StairContract["mode"]; stair?: string }[] = [];
+  const stairLabels = new Map<string, { approach: string }>();
+  const specTs = tileset ? (tileset.roomKit?.builtin ?? tileset.id) : specTilesetId(S);
   for (const o of objects) {
     const d = S.objects[o.id];
     if (!d) { issues.push({ severity: "error", code: "unknown-object", message: `물건 "${o.id}" 이 없다 — list_hand_interior_parts 로 id 를 찾는다`, x: o.x, y: o.y }); continue; }
     const label = `${d.ko}(${o.id}) @(${o.x},${o.y})`;
     const flush = isFlushTravelPiece(d);
+    // 계단 입구 계약: 앞 칸(들어서는 쪽)이 바닥이어야 하고, 탈 자리는 그 앞 칸, 이동 칸은 계단 그림 칸이다(추측하지 않는다).
+    // 사양 물건 표에 없고 칩셋 조립 부품에서 온 가구(kitHandObjects: 마법 학교 등)는 키트 계약을 그대로 쓴다 — 키트 원점은 맨 위 칸 줄.
+    const kitStair = specTs && !stairContractForSpecObject(specTs, o.id) ? stairContractForKit(specTs, o.id) : undefined;
+    const stair = specTs ? (stairContractForSpecObject(specTs, o.id) ?? (kitStair ? { contract: kitStair, kit: o.id, lift: -Math.min(0, ...d.cells.map((c) => c[1])) } : undefined)) : undefined;
+    if (stair && stair.contract.leads !== "same") {
+      const c = stair.contract, ox = o.x, oy = o.y - stair.lift;
+      const approach = c.approach.map(([dx, dy]) => ({ x: ox + dx, y: oy + dy }));
+      const floor = approach.filter((p) => A.isFloor(p.x, p.y));
+      const sideKo = c.side === "S" ? "남쪽" : c.side === "N" ? "북쪽" : c.side === "E" ? "동쪽" : c.side === "W" ? "서쪽" : "옆";
+      if (!floor.length) issues.push({ severity: "error", code: "stair-entrance-blocked", message: `${label} 계단 앞 칸(들어서는 쪽 ${sideKo}) ${approach.map((p) => `(${p.x},${p.y})`).join(" ")} 이 바닥이 아니다 — 계단은 앞 칸이 방 바닥으로 열린 자리에 둔다. ${c.note}`, x: o.x, y: o.y });
+      for (const p of floor) {
+        // 앞 칸과 맞닿은 이동 칸(같은 열·같은 줄, side=any 면 아무 이웃)
+        const t = c.trigger.map(([dx, dy]) => ({ x: ox + dx, y: oy + dy })).sort((a, b) => (Math.abs(a.x - p.x) + Math.abs(a.y - p.y)) - (Math.abs(b.x - p.x) + Math.abs(b.y - p.y)))[0];
+        landings.push({ i: p.y * W + p.x, label, ...(t && inBounds(t.x, t.y) ? { trigger: t.y * W + t.x } : {}), facing: stairArrivalFacing(c, p, t), leads: c.leads, mode: c.mode, stair: label });
+      }
+      stairLabels.set(label, { approach: approach.map((p) => `(${p.x},${p.y})`).join(" ") });
+    }
     // footprint rules (room4.check): floor/wall stand on floor; wall pieces need the north face; hangings on the upper face row
     if (d.kind === "floor" || d.kind === "wall") {
       for (let dy = 0; dy < d.h; dy++) for (let dx = 0; dx < d.w; dx++) {
         const x = o.x + dx, y = o.y + dy;
         if (!A.isFloor(x, y) && (flush || d.stairs !== "up")) issues.push({ severity: "error", code: "not-on-floor", message: flush ? `${label} 앞 탈 자리 (${x},${y}) 가 바닥이 아니다 — 벽면 바로 아래 첫 바닥 줄 칸을 준다(그림은 그 위 벽면 두 줄에 박힌다)` : `${label} 발밑 (${x},${y}) 이 바닥이 아니다`, x, y });
         claim(x, y, label);
-        if (flush && inBounds(x, y)) landings.push({ i: y * W + x, label });
+        if (stair && stair.contract.leads !== "same") { /* 계약이 탈 자리를 정했다 */ }
+        else if (flush && inBounds(x, y)) landings.push({ i: y * W + x, label });
         else if ((d.use?.includes("travel") || Boolean(d.stairs)) && dy === d.h - 1 && A.isFloor(x, y + 1)) landings.push({ i: (y + 1) * W + x, label });
         else if ((d.use?.includes("travel") || Boolean(d.stairs)) && dy === d.h - 1 && dx === 0 && A.isFloor(x - 1, y)) landings.push({ i: y * W + (x - 1), label });
         else if ((d.use?.includes("travel") || Boolean(d.stairs)) && dy === d.h - 1 && dx === d.w - 1 && A.isFloor(x + 1, y)) landings.push({ i: y * W + (x + 1), label });
@@ -367,8 +416,25 @@ export function buildHandInteriorLayers(input: HandInteriorInput, tileset?: Tile
       }
     } else if (d.kind === "hang") {
       const cols = Array.from({ length: Math.max(1, d.w) }, (_, dx) => o.x + dx);
-      const ok = o.id === "round arch" ? cols.some((x) => A.face[o.y]?.[x] === 1) : cols.every((x) => A.face[o.y]?.[x] === 1);
-      if (!ok) issues.push({ severity: "error", code: "hang-not-on-face", message: `${label} 는 걸이 — 벽면 두 줄 중 윗줄(막힌 칸 바로 아래 줄)에 건다`, x: o.x, y: o.y });
+      // 벽면 윗줄이 있는 줄(이 열에서 처음 face 1 인 y) — 오류 문구에 맞는 y 를 알려 준다.
+      const faceTop = (x: number) => { for (let y = 0; y < H; y++) if (A.face[y]?.[x] === 1) return y; return -1; };
+      const ceil = ceilingHang(o.id);
+      if (ceil) {
+        // 천장 걸이(천문대 둥근 지붕 조각): 좌표 y = 천장 줄. 모든 조각이 바닥 아닌 칸, 맨 윗줄은 막힌 칸(천장),
+        // 벽면까지 내려오는 조각(관측 틈·갈빗대·처마)은 바로 아랫줄이 벽면 윗줄이어야 한다.
+        const top = Math.min(...d.cells.map(([, dy]) => dy));
+        const bad = d.cells.some(([dx, dy]) => { const x = o.x + dx, y = o.y + dy; return !inBounds(x, y) || A.isFloor(x, y) || (dy === top && A.inn(x, y)); })
+          || (ceil === "face-below" && !cols.every((x) => A.face[o.y + 1]?.[x] === 1));
+        // 맵 맨 윗줄에 붙은 관측 틈은 위로 지붕이 없어 「벽의 창」으로 읽힌다(2026-10-22 다듬기 7바퀴: 틈은 놓였지만 판정자가 매번 「지붕까지 트인 틈이 안 보인다」).
+        if (!bad && ceil === "face-below" && o.id === "dome slit tall" && o.y < 2) issues.push({ severity: "warning", code: "dome-slit-no-roof", message: `${label} 위로 천장 띠가 ${o.y}줄뿐이라 지붕이 보이지 않는다 — 큰 둥근 홀이면 plan 맨 위에 '#' 4줄을 두고 북벽을 3칸마다 한 줄씩 계단식으로 올린 뒤 dome vault(30×8 한 장, x=방 왼쪽 벽 다음 칸, y=0)를 걸고 틈은 그 가운데(dome vault x+14, y=3)에 둔다 — 틈이 둥근 지붕을 가르며 꼭대기까지 이어져 읽힌다(폴른 r28 천문대). 칸 조각 dome cornice·shell 은 1배에서 벽 위 말뚝으로 읽혔다`, x: o.x, y: o.y });
+        if (bad) {
+          const ft = faceTop(o.x);
+          issues.push({ severity: "error", code: "hang-not-on-face", message: `${label} 는 천장 걸이 — y 는 벽면 윗줄 바로 위 천장 줄(막힌 칸)${ceil === "face-below" ? ", 아래 두 줄이 벽면" : ""}${ft > 0 ? ` — 이 열(x=${o.x})은 y=${ft - 1}` : ""}`, x: o.x, y: o.y });
+        }
+      } else {
+        const ok = o.id === "round arch" ? cols.some((x) => A.face[o.y]?.[x] === 1) : cols.every((x) => A.face[o.y]?.[x] === 1);
+        if (!ok) { const ft = faceTop(o.x); issues.push({ severity: "error", code: "hang-not-on-face", message: `${label} 는 걸이 — 벽면 두 줄 중 윗줄(막힌 칸 바로 아래 줄)에 건다${ft >= 0 ? ` — 이 열(x=${o.x})은 y=${ft}` : ""}`, x: o.x, y: o.y }); }
+      }
     } else if (d.kind === "door") {
       // 가로 칸막이(막힌 줄)의 1칸 틈: 좌우가 막혔고, 위(북쪽 방)와 아래 두 줄이 걸을 수 있는 바닥이며, 아래 두 줄 좌우는 벽면·막힘.
       const solid = (x: number, y: number) => !A.inn(x, y);
@@ -385,7 +451,7 @@ export function buildHandInteriorLayers(input: HandInteriorInput, tileset?: Tile
       for (let dy = 0; dy < Math.max(1, d.h); dy++) for (let dx = 0; dx < d.w; dx++) {
         const x = o.x + dx, y = o.y + dy;
         claim(x, y, label);
-        if (dy === Math.max(1, d.h) - 1 && A.isFloor(x, y + 1)) landings.push({ i: (y + 1) * W + x, label });
+        if (!(stair && stair.contract.leads !== "same") && dy === Math.max(1, d.h) - 1 && A.isFloor(x, y + 1)) landings.push({ i: (y + 1) * W + x, label });
       }
     }
     // 벽면 높이 탈것은 한 줄 올려 벽면 두 줄에 그린다 — 준 칸(첫 바닥 줄)은 그림 없이 비어 탈 자리가 된다.
@@ -437,7 +503,7 @@ export function buildHandInteriorLayers(input: HandInteriorInput, tileset?: Tile
       if (!A.isFloor(c.x, c.y)) issues.push({ severity: "error", code: "not-on-floor", message: `${label} 칸 (${c.x},${c.y}) 이 바닥이 아니다${d.kind === "flat" ? " — 밟는 무늬가 벽·천장 위에 오면 엔진이 그 벽을 걸을 수 있게 만든다" : ""}`, x: c.x, y: c.y });
       if (d.kind !== "flat") claim(c.x, c.y, label);
       const key = d.kind === "flat" ? -1 : (c.y + 1) * 16;
-      for (const [dx, dy, tile, layer] of piece) push(c.x + dx, c.y + dy, { key, tile, layer: layer as 2 | 3, label });
+      for (const [dx, dy, tile, layer] of piece) push(c.x + dx, c.y + dy, { key, tile, layer: layer as 2 | 3, label, line: true });
     }
   }
   for (const da of daises) {
@@ -447,7 +513,7 @@ export function buildHandInteriorLayers(input: HandInteriorInput, tileset?: Tile
       const rc = da.h === 1 ? "S" : j === 0 ? "T" : j === da.h - 1 ? "B" : "M";
       const cc = da.w === 1 ? "S" : i === 0 ? "L" : i === da.w - 1 ? "R" : "M";
       const tile = d.pieces[`${cc}${rc}${(i + j) % 2}`];
-      if (tile !== undefined) push(da.x + i, da.y + j, { key: -1, tile, layer: 2, label: `${d.ko} @(${da.x},${da.y})` });
+      if (tile !== undefined) push(da.x + i, da.y + j, { key: -1, tile, layer: 2, label: `${d.ko} @(${da.x},${da.y})`, base: true });
     }
   }
   for (const gd of input.goods ?? []) {
@@ -463,7 +529,11 @@ export function buildHandInteriorLayers(input: HandInteriorInput, tileset?: Tile
   const L2 = new Array<number>(W * H).fill(-1), L3 = new Array<number>(W * H).fill(-1), L4 = new Array<number>(W * H).fill(-1);
   for (const [i, es] of per) {
     es.sort((a, b) => a.key - b.key || a.order - b.order);
-    const flats = es.filter((e) => e.layer === 2), rest = es.filter((e) => e.layer === 3);
+    // 단 위 바닥 무늬(마법진·별 봉인·단 앞 턱·오르는 계단)는 3층 맨 아래로 올려 단 윗면 위에 얹는다 — stamp_object 가 평평한 키트를 3층에 찍는 것과 같다.
+    // (2026-10-22 폴른 스타 시험: 조수가 단 위에 마법진을 두면 「맨 나중 것만 남는다」로 단이나 마법진이 지워졌다.)
+    const base = es.filter((e) => e.base);
+    const lifted = base.length ? es.filter((e) => e.layer === 2 && !e.base && !e.line) : [];
+    const flats = base.length ? es.filter((e) => e.layer === 2 && !lifted.includes(e)) : es.filter((e) => e.layer === 2), rest = [...lifted, ...es.filter((e) => e.layer === 3)];
     if (flats.length) {
       L2[i] = flats[flats.length - 1]!.tile;
       if (flats.length > 1) issues.push({ severity: "warning", code: "flat-stacked", message: `(${i % W},${Math.floor(i / W)}) 바닥 무늬 ${flats.map((e) => e.label).join(" · ")} — 맨 나중 것만 남는다`, x: i % W, y: Math.floor(i / W) });
@@ -512,7 +582,12 @@ export function buildHandInteriorLayers(input: HandInteriorInput, tileset?: Tile
       if (walk(i) && !seen.has(i)) unreachedFloor.push({ x, y });
     }
     if (unreachedFloor.length) issues.push({ severity: "warning", code: "unreached-floor", message: `출입구에서 닿지 못하는 빈 바닥 ${unreachedFloor.length}칸: ${unreachedFloor.slice(0, 10).map((c) => `(${c.x},${c.y})`).join(" ")} — 가구가 길을 막았거나 방이 닫혔다` });
-    for (const l of landings) if (!seen.has(l.i)) issues.push({ severity: "error", code: "travel-landing-unreached", message: `${l.label} 앞 탈 자리 (${l.i % W},${Math.floor(l.i / W)}) 에 출입구에서 닿지 못한다 — 앞을 막은 가구를 치운다`, x: l.i % W, y: Math.floor(l.i / W) });
+    // 계약 계단: 앞 칸 중 하나라도 닿으면 된다(넓은 계단 한쪽을 가구가 막아도 탈 수 있다). 하나도 안 닿으면 막힌 계단.
+    for (const [label, info] of stairLabels) {
+      const mine = landings.filter((l) => l.stair === label);
+      if (mine.length && !mine.some((l) => seen.has(l.i))) issues.push({ severity: "error", code: "stair-entrance-blocked", message: `${label} 계단 앞 칸 ${info.approach} 에 출입구에서 닿지 못한다 — 앞을 막은 가구를 치우거나 계단을 방 쪽으로 연 자리에 둔다`, x: mine[0]!.i % W, y: Math.floor(mine[0]!.i / W) });
+    }
+    for (const l of landings) if (!l.stair && !seen.has(l.i)) issues.push({ severity: "error", code: "travel-landing-unreached", message: `${l.label} 앞 탈 자리 (${l.i % W},${Math.floor(l.i / W)}) 에 출입구에서 닿지 못한다 — 앞을 막은 가구를 치운다`, x: l.i % W, y: Math.floor(l.i / W) });
     // every standing piece needs a reachable side — or a seat beside it that is itself reachable (room4.check seat_ok)
     const byLabel = new Map<string, number[]>();
     for (const [i, label] of footprint) (byLabel.get(label) ?? byLabel.set(label, []).get(label)!).push(i);
@@ -528,5 +603,7 @@ export function buildHandInteriorLayers(input: HandInteriorInput, tileset?: Tile
     }
   }
   return { width: W, height: H, lowerTiles: lower, lowerOverlayTiles: L2, upperTiles: L3, upperOverlayTiles: L4, issues, reachable, floorCells, unreachedFloor, start,
-    travel: landings.map((l) => ({ label: l.label, x: l.i % W, y: Math.floor(l.i / W) })) };
+    travel: landings.map((l) => ({ label: l.label, x: l.i % W, y: Math.floor(l.i / W),
+      ...(l.trigger !== undefined ? { trigger: { x: l.trigger % W, y: Math.floor(l.trigger / W) } } : {}),
+      ...(l.facing ? { facing: l.facing } : {}), ...(l.leads ? { leads: l.leads } : {}), ...(l.mode ? { mode: l.mode } : {}) })) };
 }

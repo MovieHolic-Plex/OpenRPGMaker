@@ -1,0 +1,33 @@
+{
+ "schema": "bdg-vqa/1",
+ "judge": "claude-opus-5-5",
+ "date": "2026-10-21",
+ "batch": "fallen-observatory-r4-ladder",
+ "scope": "observing platform — ladder redrawn only (user: 「사다리가 이상함」); deck, frame and railing pixels unchanged",
+ "evidence": "in-game runtime 1x screenshots old/new (qa:runtime fallen-ladder, fs_observatory), 3x/8x crops, piece 10x old/new, v5 library/ship ladder reference",
+ "overall": "PASS",
+ "criteria": {
+  "1_reads_as_ladder_1x": "PASS — two light rails and four light rungs against the dark frame; not a gate, shelf or crate",
+  "2_rails_rungs": "PASS — constant 4px rails x9-12 and x19-22, vertical y16-47; rungs y25,31,37,43 (even 6px), each touching both rail outlines",
+  "3_top_attachment": "PASS (weak) — rails pass the deck lip and end in brass caps on the deck top, same convention as the v5 library ladder",
+  "4_foot_depth": "PASS — foot ~3px forward of the frame base with floor shadow; 1px drop shadow on the frame right of the right rail",
+  "5_view34_light": "PASS — straight-on, no side/iso faces, highlights left/top, shadow right",
+  "6_outline_palette": "PASS — dark-brown (65,30,5) outline, wood/pine/brass ramps, no near-black or strays",
+  "7_length_proportion": "PASS — lip ~27px above floor (about player height), 4 rungs"
+ },
+ "issues": [
+  "MINOR: brass caps on the deck top have no hook/contact cue at the lip",
+  "MINOR: X-brace shows between rungs as small dark/brown blobs (busy at 3x)",
+  "MINOR: ladder hides the centre of the X-brace",
+  "MINOR: no occlusion shadow where rails cross the deck lip"
+ ],
+ "oldVsNew": "Old ladder was squeezed against the right edge, left rail kinked, top rung at the lip, no foot offset or shadow, read as flat boards on the frame. New ladder is centred, straight constant-width rails, evenly spaced connected rungs, brass caps, foot forward with floor shadow, drop shadow on the frame.",
+ "items": [
+  {
+   "id": "observing_platform",
+   "kind": "other",
+   "pixelSha256": "88376aae1fa9e8411f0e4cee3e100c3e091256d9a46f1f6e59ffee94868f0a3c",
+   "verdict": "PASS"
+  }
+ ]
+}

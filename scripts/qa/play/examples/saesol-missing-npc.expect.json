@@ -1,0 +1,5 @@
+{
+  "stateEquals": { "x": 99, "y": 99 },
+  "textPresent": "이 대사는 새솔 마을에 없다",
+  "note": "일부러 성립하지 않는 기대 — NOT_REPRODUCED 가 나와야 한다"
+}

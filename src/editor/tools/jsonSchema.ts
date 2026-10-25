@@ -187,8 +187,12 @@ function coerceForSchema(schema: JsonSchema, value: unknown, depth = 0): unknown
       }
       return parsed;
     }
-    case "string":
     case "boolean":
+      // 실측(2026-10-22 조용한 현대 거리, Sonnet 5.5 via MCP): configure_time_system({enabled:"true"}) 가 검증에서 떨어지고
+      // 그 뒤 기한 엔딩까지 막혔다. 문자열 "true"/"false" 는 뜻이 하나뿐이라 불리언으로 읽는다.
+      if (typeof parsed === "string" && /^(true|false)$/iu.test(parsed.trim())) return parsed.trim().toLowerCase() === "true";
+      return parsed;
+    case "string":
       return parsed;
   }
   return parsed;

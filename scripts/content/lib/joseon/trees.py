@@ -1,31 +1,24 @@
 """조선 나무 — 버들항 나무와 같은 방식(잎 덩이를 뒤에서 앞으로 겹쳐 칠하고, 덩이마다 왼쪽 위 빛, 사이사이 어두운 틈,
-가지가 잎 사이로 보이고, 줄기는 밑동이 퍼진다)으로 그린다. 잎 질감은 버들항 정글 칩의 잎 조각에서 가져와 7톤 램프에 맞춘다.
+가지가 잎 사이로 보이고, 줄기는 밑동이 퍼진다)으로 그린다. 잎 질감은 leaf_tones.json(손 도트 32×32 톤 판)을 7톤 램프에 맞춘다.
 모든 색은 tk.RGB 램프(= 버들항 시트 잠금 팔레트)에서만 나온다.
 """
-import math, os
+import json, math, os
 from PIL import Image
 from tk import *
 from build import outline
 
 _HERE = os.path.dirname(os.path.abspath(__file__))
-_CHIP = os.path.join(_HERE, '..', 'city_v6', 'assets', 'jungle-chipset-v6.png')
 LEAF = RGB['leaf']                       # 어두움→밝음 7톤
 WOOD = RGB['wood']
 _TEX = None
 
 
 def _tex():
-    """버들항 칩 잎 조각 32×32 → 톤 번호(1..6)."""
+    """잎 질감 32×32 톤 번호(1..6) — leaf_tones.json(2026-10-22 손 도트로 새로 찍은 잎 뭉치 결, 이음매 없이 타일된다)."""
     global _TEX
     if _TEX is None:
-        im = Image.open(_CHIP).convert('RGB').crop((232, 524, 264, 556))
-        px = im.load()
-        t = [[1] * 32 for _ in range(32)]
-        for y in range(32):
-            for x in range(32):
-                c = px[x, y]
-                t[y][x] = 1 + min(range(1, 7), key=lambda i: sum((c[j] - LEAF[i][j]) ** 2 for j in range(3))) - 1
-        _TEX = t
+        with open(os.path.join(_HERE, 'leaf_tones.json')) as f:
+            _TEX = json.load(f)
     return _TEX
 
 

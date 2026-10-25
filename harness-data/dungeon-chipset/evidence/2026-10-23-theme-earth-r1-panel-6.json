@@ -1,0 +1,252 @@
+{
+ "panel": 6,
+ "round": "theme-earth-r1",
+ "rule": "majority of 4; on a 2-2 tie the majority of the 3 Opus judges decides; a major counts when 2 of 4 raise the same problem",
+ "delegatedBy": "delegated by user to supervisor 2026-10-23",
+ "prompt": "You are a blind reviewer of 16px pixel-art game tiles for a SNES-style JRPG (3/4 top-down view). Do not read any code or other files; judge only the PNG boards listed below (open each with the Read tool; crop/zoom with python PIL into /tmp if you need detail). Each board shows: a reference from the existing game (\"Beodeul\", the quality bar) at 1x and 3x, then two candidates X and Y, each as the piece at 1x and 3x (checkerboard = transparent) and in a small scene with a 16x24 character for scale.\n\nCriteria for each candidate:\n(1) reads correctly in 3/4 top-down at 1x (top surfaces seen from above, front faces full height, no oblique/side view, no flat front elevation)\n(2) looks like it belongs to the same game as the Beodeul reference (palette, shading, texture density, outline, pixel density, scale vs the character)\n(3) joins are seamless (rails/carpet/decals line up, no visible 16px repeat, no broken edges)\n(4) reads as its stated purpose and theme (title line on each board)\n\nA \"major\" is a defect that would make you reject the piece for the game; a \"minor\" is polish. Be adversarial and concrete (say where in the picture).\n\nBoards:\n- /home/main/z-project/rpg-zzu-dt-earth/qa-runs/dungeon-themes/panel/r6/throne.png\n- /home/main/z-project/rpg-zzu-dt-earth/qa-runs/dungeon-themes/panel/r6/timber_post.png\n\nWrite your answer as JSON (and nothing else) to /home/main/z-project/rpg-zzu-dt-earth/qa-runs/dungeon-themes/panel/r6/ans-1.json, in this form, then reply with just \"done\":\n{\"items\": {\"<board file name without .png>\": {\"X\": {\"majors\": [\"...\"], \"minors\": [\"...\"]}, \"Y\": {\"majors\": [], \"minors\": []}, \"pick\": \"X\" or \"Y\", \"why\": \"one line\"}}}\n",
+ "results": [
+  {
+   "board": "/home/main/z-project/rpg-zzu-dt-earth/qa-runs/dungeon-themes/panel/r6/timber_post.png",
+   "round": "theme-earth-r1",
+   "item": "earth.timber_post",
+   "labels": {
+    "X": {
+     "key": "A1",
+     "sha256": "e1b79cd4d7035132a068b5fef83becf290c9f58abeecd765f3d5e44aac89838d"
+    },
+    "Y": {
+     "key": "A2",
+     "sha256": "bf581f21cae7ece8c88753ddf8488f13a0b11437499be5c70bc66599fef3c5ba"
+    }
+   },
+   "votes": {
+    "opus1": "Y",
+    "opus2": "Y",
+    "opus3": "Y",
+    "argon": "Y"
+   },
+   "tie": false,
+   "pick": "Y",
+   "pickKey": "A2",
+   "answers": {
+    "opus1": {
+     "X": {
+      "majors": [
+       "The oversized flat cap with a lighter top and a dark underside flare reads as a mushroom or a small side table at 1x, not a mine timber post",
+       "The round, tapered trunk with two steel bands looks like a turned pedestal/bollard. Its silhouette does not read as hewn mine timber"
+      ],
+      "minors": [
+       "The trunk has no base/foot, so it seems to float on the floor in the scene",
+       "The cap's top texture is a different, lighter orange than the trunk, so the two parts look like different materials"
+      ]
+     },
+     "Y": {
+      "majors": [],
+      "minors": [
+       "Top cut face is barely distinguished from the body (one light row), so the top-down read is weak at 1x",
+       "Left edge is a bright 1px highlight stripe with no dark outline, unlike the reference's outlined wood",
+       "Base flare is lopsided (wider on the right)",
+       "Fairly plain. A cross-brace or a lantern hook like the reference would sell 'mine' better"
+      ]
+     },
+     "pick": "Y",
+     "why": "Y reads cleanly as a squared timber post with a proper base and matches the reference wood. X reads as a mushroom/pedestal"
+    },
+    "opus2": {
+     "X": {
+      "majors": [
+       "The wide tan cap with dark underside overhangs the shaft on both sides like a mushroom cap or small table; at 1x and in the scene it reads as a mushroom/pedestal, not a mine timber post (a timber post would be a square beam end or a cap block of similar width)"
+      ],
+      "minors": [
+       "Cap top surface is a speckled orange-tan unlike the darker wood of the shaft, so cap and post look like two materials",
+       "Two grey metal bands are fine but the shaft is very narrow under the big cap, emphasising the mushroom silhouette",
+       "Shadow/base dark flare at the bottom only on the right"
+      ]
+     },
+     "Y": {
+      "majors": [],
+      "minors": [
+       "Very plain: a single brown column with one metal band; slightly thicker and more rounded than the Beodeul lamp post, reads a bit like a stump or bollard",
+       "Top end-grain cap is small (2-3 px light rim) so the 3/4 top surface is weak at 1x",
+       "Base flare/shadow is lopsided to the right; light left edge is a hard 1px stripe running full height",
+       "Free-standing post without a crossbeam gives little mine context on its own"
+      ]
+     },
+     "pick": "Y",
+     "why": "Y reads as a wooden post with a top end visible; X's overhanging cap makes it look like a mushroom."
+    },
+    "opus3": {
+     "X": {
+      "majors": [
+       "The oversized cap slab on top is about twice the post width and has a speckled orange top. At 1x the piece reads as a mushroom, side table or pedestal, not a mine support post. A free-standing post with a wide cap that carries no beam looks like furniture."
+      ],
+      "minors": [
+       "The wood is a brighter orange-tan than the reference's dark red-brown timber (reference lamp post and frame). This is a palette mismatch.",
+       "The cap's underside shading (the dark band below the top) forms a stepped capital that looks like turned furniture.",
+       "The two iron bands are evenly spaced and fine, but the base flare is drawn as a thin flat line rather than a footing."
+      ]
+     },
+     "Y": {
+      "majors": [],
+      "minors": [
+       "The wood is lighter and oranger than the Beodeul reference timber. It needs the reference's darker brown ramp.",
+       "The top face is a lighter rectangle that is only slightly brighter than the front face. The top-down read is weak at 1x, but correct.",
+       "The single iron band sits high. A second band or a few nail dots would add the mine character.",
+       "The flared base shadow is a bit wide and dark on the left-right edges compared with the reference post's tidy base."
+      ]
+     },
+     "pick": "Y",
+     "why": "Y reads cleanly as a free-standing timber post in 3/4 (top face, full-height front, footing) at character scale, while X's wide cap turns it into a mushroom or table."
+    },
+    "argon": {
+     "X": {
+      "majors": [
+       "Oversized 14x7 boxy top cap over a narrow 6px shaft makes the piece read as a wooden mallet, cork, or mushroom at 1x rather than a mine timber post, with noisy speckled dither on the top plane instead of wood grain"
+      ],
+      "minors": [
+       "Two bright grey iron bands jut out past the vertical shaft outline and chop the post into disconnected segments",
+       "Top-heavy silhouette with a narrow base feels unstable on the mine floor"
+      ]
+     },
+     "Y": {
+      "majors": [],
+      "minors": [
+       "Dark pit in the centre of the top end-grain face makes the timber look slightly hollow like a pipe at 3x",
+       "High-contrast white-blue highlight on the upper iron band is slightly bright relative to the Beodeul reference wood/metal contrast"
+      ]
+     },
+     "pick": "Y",
+     "why": "Y reads immediately at 1x as a sturdy 3/4 vertical timber post with clear top end-grain, vertical wood streaking, and a grounded base, while X looks like a top-heavy mallet or mushroom."
+    }
+   }
+  },
+  {
+   "board": "/home/main/z-project/rpg-zzu-dt-earth/qa-runs/dungeon-themes/panel/r6/throne.png",
+   "round": "theme-earth-r1",
+   "item": "earth.throne",
+   "labels": {
+    "X": {
+     "key": "A1",
+     "sha256": "f24673e37b2109df693da42dcd576f2749ee9c27e1f67dc19f609cfb34e9b0e8"
+    },
+    "Y": {
+     "key": "A2",
+     "sha256": "3f97b4bc2b3ccc6555776091344ed814af8fc759ca5fc3c0a767fc27e8479ce1"
+    }
+   },
+   "votes": {
+    "opus1": "X",
+    "opus2": "X",
+    "opus3": "X",
+    "argon": "X"
+   },
+   "tie": false,
+   "pick": "X",
+   "pickKey": "A1",
+   "answers": {
+    "opus1": {
+     "X": {
+      "majors": [
+       "Dais reads as a cream block wall: its front face takes up ~2/3 of the piece height, and the top surface the throne should stand on is missing. Throne and carpet look pasted on a wall face, not set on a stepped platform seen from above",
+       "Throne is drawn at an angle: the right side shows a dark brown side face and an offset back leg (right of the seat, 3x), while the left side is flat front-on. The perspective is mixed and lopsided"
+      ],
+      "minors": [
+       "Carpet runner uses a noisy red/purple checker dither that is much busier than the reference's clean texture density",
+       "Gold frame outline is uneven: the left post is thick yellow and the right post is thin and dark",
+       "The cream sandstone dais clashes with the dark grey dungeon floor in the scene. It matches the reference palette but not the room it sits in",
+       "Steps are only 2 thin bands at the bottom and the carpet does not visibly fold over each step"
+      ]
+     },
+     "Y": {
+      "majors": [
+       "Flat front elevation: the dais is a grey brick wall with no visible top surface, and the throne is a recessed slab inside the wall, not an object standing on a platform",
+       "Does not read as a throne: the pointed grey slab with a red stripe looks like a tombstone/altar or a wall niche, and there is no visible seat or armrests at 1x",
+       "Flat, low-detail grey bricks with regular mortar lines and sparse single-pixel specks. Its texture density and shading are far below the Beodeul reference"
+      ],
+      "minors": [
+       "The red carpet is a flat rectangle with no texture and does not run up the steps",
+       "The gold trim is just a single 1px line across the throne top"
+      ]
+     },
+     "pick": "X",
+     "why": "X is clearly a royal throne with reference-matching sandstone and a richer texture, though its dais lacks a top face. Y reads as a flat brick wall with a tombstone"
+    },
+    "opus2": {
+     "X": {
+      "majors": [
+       "Dais body (rows 2-3 of the 3x3) is drawn as a front elevation of stacked sandstone blocks filling almost the whole height; there is no readable horizontal top surface of the dais for the throne to sit on, so at 1x it reads as a wall/panel with a chair pasted on it rather than a raised platform seen from 3/4 above",
+       "Throne seat is not visible from above: the red back panel and the red runner below it meet with no seat plane, and the throne frame overhangs the dais top edge into the transparent area (top-left gold finial and right dark leg stick out), so it looks floating/stuck on rather than standing on the dais"
+      ],
+      "minors": [
+       "Cream sandstone dais is a different material family from the grey dungeon floor/walls in the scene; reads as pasted in (Beodeul statue base is grey stone that matches)",
+       "Red carpet runner is a noisy red/purple dither checker, much busier than the Beodeul texture density; at 1x it becomes a mottled stripe",
+       "Only the right side of the throne has a dark shadow leg; left side has no matching leg/shadow, so the chair looks lopsided",
+       "Step treads at the bottom are only 3 thin strips and the carpet does not visibly bend over them"
+      ]
+     },
+     "Y": {
+      "majors": [
+       "Throne reads as a gravestone/obelisk (pointed spire slab with a tiny gem) rather than a royal seat; the red cushion is a small horizontal bar in the middle of a flat grey slab and at 1x it is barely recognisable as a throne",
+       "Dais is again a flat front elevation of grey brick courses with mortar lines (same pattern as the wall), no top surface seen from above; with the same grey as the floor it merges into the background in the scene and reads as a wall chunk"
+      ],
+      "minors": [
+       "Flat, low-texture shading with uniform grey and white dot speckles; much simpler than Beodeul's dithered stone",
+       "Gold trim is a single yellow line on top of the slab; little sense of royalty",
+       "Carpet runner is clean but stops abruptly at the bottom step without a lip"
+      ]
+     },
+     "pick": "X",
+     "why": "Both dais read as front-elevation walls, but X at least reads as a throne with gold and red; Y looks like a tombstone on a brick wall."
+    },
+    "opus3": {
+     "X": {
+      "majors": [
+       "The dais has no visible top surface. The cream block is drawn as a flat front elevation (a stone wall face with the steps only along the bottom rows), so at 1x it reads as a wall slab with the throne perched on its top edge, not as a stepped platform seen from above.",
+       "The red carpet runs straight down the vertical stone face of the dais (centre column, from under the seat to the bottom step). It looks painted on a wall instead of lying on the steps and treads."
+      ],
+      "minors": [
+       "A dark brown pixel cluster hangs off the right of the throne below the gold frame (right leg/shadow). It floats over the stone with no seat or leg structure to anchor it.",
+       "The seat cushion is barely separated from the back cushion. The throne reads mostly as a red back panel with no seat depth.",
+       "The carpet's red/purple checker dither is noisier than the reference's calm stone texture.",
+       "The cream dais is high-contrast against the grey dungeon floor in the scene. It is acceptable, but the right edge steps end in a hard vertical cut."
+      ]
+     },
+     "Y": {
+      "majors": [
+       "The throne is a grey stone slab with a pointed top and one red stripe. It reads as a tombstone, obelisk or wall niche, not a throne (no arms, no frame and almost no gold), so the stated purpose fails.",
+       "The dais is a grey brick front elevation that is the same tone and brick pattern as the dungeon wall and floor. In the 1x scene it reads as a chunk of wall, not a raised dais. There is no top surface, and only the bottom rows show steps.",
+       "The throne merges into the brick behind it (same grey, the outline is lost at the sides), so the silhouette disappears at 1x."
+      ],
+      "minors": [
+       "The white speck highlights on the bricks are uniform and repetitive, giving a visible tiling pattern across the 3 columns.",
+       "The carpet appears only on the bottom steps and is cut off above, with no continuation to the seat."
+      ]
+     },
+     "pick": "X",
+     "why": "Both draw the dais as a flat front elevation, but X at least reads unmistakably as a royal throne (gold frame, red cushion) and separates from the grey dungeon; Y reads as a gravestone set into a wall."
+    },
+    "argon": {
+     "X": {
+      "majors": [],
+      "minors": [
+       "The inner seat width between the gold armrests (~10px) is slightly narrower than the 16x24 character sprite's body width",
+       "Warm sandstone dais palette contrasts strongly with the cool grey castle stone floor in the scene, and vertical stone seams at x=16 and x=32 emphasize the 16px grid boundaries"
+      ]
+     },
+     "Y": {
+      "majors": [
+       "The throne is coloured in the same flat grey stone as the dais and floor, blending into the steps at 1x and reading like a gravestone or monument rather than a royal throne",
+       "Pointed triangular backrest reads as a flat front-elevation cutout slab with no visible top plane, and large flat grey surfaces with isolated single-pixel speckles fall below Beodeul texture quality"
+      ],
+      "minors": [
+       "Red carpet runner lacks trim or weave texture and terminates abruptly beneath the seat overhang",
+       "Throne seat is narrower than the character sprite"
+      ]
+     },
+     "pick": "X",
+     "why": "X clearly reads as a royal gold-and-crimson throne on a carved stepped dais with proper 3/4 top planes and Beodeul-grade stone and carpet texture, whereas Y looks like a flat grey tombstone camouflaged against its own dais."
+    }
+   }
+  }
+ ]
+}

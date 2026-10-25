@@ -1,0 +1,1761 @@
+{
+ "panel": "theme-arcane-r1-panel-3",
+ "rule": "major counts if raised by >=2 of 4 blind reviewers (3 opus general-purpose + 1 argon)",
+ "mapping": {
+  "arcane.bookshelf": {
+   "X": {
+    "key": "A2",
+    "sha256": "ee83f75e91a940d0ff7aebfec6edb9d4359afabcb742b3c85a6ee969f9562213"
+   },
+   "Y": {
+    "key": "A1",
+    "sha256": "186467d8846206414250d69e17377f43723eaff742d5bd8a8fa86fcb6a5569b8"
+   }
+  },
+  "arcane.bookshelf_tall": {
+   "X": {
+    "key": "A1",
+    "sha256": "34449748ec6d6e2d56c4d20cd8ffa785bbaf671750180f3a0ad1008182e629e5"
+   },
+   "Y": {
+    "key": "A2",
+    "sha256": "88beebddd0842539e479d263c5f19e944a985f70982525438b1252c809bd369a"
+   }
+  },
+  "arcane.teleport_circle": {
+   "X": {
+    "key": "A1",
+    "sha256": "9d7566524d96213ddf113ee24caef863e119c1d4015d1b2b552669d187c04bbc"
+   },
+   "Y": {
+    "key": "A2",
+    "sha256": "d34940b46d6390c4ab4cd2a6148278ceb7ed5e164851a4679cd2ea71722c9d53"
+   }
+  },
+  "arcane.crystal_pedestal": {
+   "X": {
+    "key": "A1",
+    "sha256": "6bd4686d25fa0a6606afce577cd4abc0625d362733b519b4146da64df7d6c1ab"
+   },
+   "Y": {
+    "key": "A2",
+    "sha256": "548960e9f41a123bd1262b26dc2e8701aea50f474d3fd0c7e05deba6aee2069b"
+   }
+  },
+  "arcane.candelabra": {
+   "X": {
+    "key": "A1",
+    "sha256": "455b4e6543232d482f1bb91de653a98ff0b23e4176f1253e7869ef0d5f331ddc"
+   },
+   "Y": {
+    "key": "A2",
+    "sha256": "5de7d08eed243b176b854e10343e97dc02b1ddf96edab316a0383f8b1aa56363"
+   }
+  },
+  "other.ground": {
+   "X": {
+    "key": "A2",
+    "sha256": "c763cf3ba01d9b273e1eeaf0b773726d05fe2ff46c05a98b6e4e51d22b8b7b43"
+   },
+   "Y": {
+    "key": "A1",
+    "sha256": "6cc4fa21cd2c7c2a06a5a3e0c6f7a9fc5650b7b9e7d25f6304989b199bd8fb61"
+   }
+  },
+  "other.void_edge": {
+   "X": {
+    "key": "A1",
+    "sha256": "df8caf981b2d2dd44ba30c31a991973b28874b695f718d11555ba6f79d4da770"
+   },
+   "Y": {
+    "key": "A2",
+    "sha256": "0b06df9eeb62aa5161396f48f393659041999d731590a31211b5911947cee14d"
+   }
+  },
+  "other.crystal": {
+   "X": {
+    "key": "A2",
+    "sha256": "df7cf5392cbc4fd8ca49b21ad2edda602fa1d522194ab3365592f7375914b33a"
+   },
+   "Y": {
+    "key": "A1",
+    "sha256": "3129203745b08d00b7faff614a87191baa5863a057af309b791c3ab3edd2e693"
+   }
+  },
+  "other.crystal_big": {
+   "X": {
+    "key": "A1",
+    "sha256": "e177795181ec6588d703f7206ce4b97699ddac1c4ec45665d8882bb112e0b752"
+   },
+   "Y": {
+    "key": "A2",
+    "sha256": "53e77689a05800dee4e6dceb2cb86c0511baf7b483ab4db1ca43cd3b44bba9d8"
+   }
+  },
+  "other.throne": {
+   "X": {
+    "key": "A2",
+    "sha256": "23b1bfa88421bf29e4dd9d6a846a405eb7d08e719433bb9d362f2b958398fb0e"
+   },
+   "Y": {
+    "key": "A1",
+    "sha256": "bfd1f94941987d8471822bf837a6cfc3be1d67c981be467220c242c05bd89415"
+   }
+  },
+  "other.bone_pillar": {
+   "X": {
+    "key": "A2",
+    "sha256": "b9d19607baebbdb800db8bd0d2b02fe0a4f93db4b6052c0d39333d9d8cfa4c7f"
+   },
+   "Y": {
+    "key": "A1",
+    "sha256": "17e5f32c0f1a3b441dce83e85ac3ae4aa46230dd61abebfa0c9d90d72660aae0"
+   }
+  },
+  "other.brazier": {
+   "X": {
+    "key": "A1",
+    "sha256": "881fc2b54fa1fe94749a197197d840ed56b63d2d0412e10e00a05bd45af2e0b4"
+   },
+   "Y": {
+    "key": "A2",
+    "sha256": "f33d9e09cb08c7f2af0d7fdd0b9c64d6e2417b9d4116cb4e36a727c4cd09ae73"
+   }
+  },
+  "other.portal": {
+   "X": {
+    "key": "A1",
+    "sha256": "5ad42b2d57a6d254dc2c4bcb27ba100002084492b595b78a0a57add75ed11ce5"
+   },
+   "Y": {
+    "key": "A2",
+    "sha256": "a436301ea7c04df798331cf07355fec52a98f916a1b95ea745909f2e1f823310"
+   }
+  }
+ },
+ "prompt": "You are a blind pixel-art reviewer. Do not read any code or other files; look ONLY at the PNG boards listed below (open each with the Read tool; they are large, look carefully, zoom by reading them, do not skip any).\n\nContext: 16px-cell hand-pixel chipset for a JRPG dungeon, 3/4 top-down view (you see the top surface of things and their front face; NO side faces / no isometric). Two themes: MAGIC TOWER (wizard tower interior) and OTHERWORLD (demon realm, violet-black). Each board shows: the item description (yellow line at top), a Beodeul reference image from the existing chipset that sets the quality bar (shown 1x and 3x) with an Actor1 person for scale, then two anonymous candidates X and Y: piece at 1x and 3x, the piece placed in a scene (animation frames shown side by side), and sometimes extra sheets (autotile 6x6 mosaics, irregular test maps).\n\nCriteria, judge each candidate against them:\n1. Reads instantly as the described object at 1x game scale.\n2. 3/4 top-down view: top surface + front face visible, no side faces, no isometric skew, perspective consistent with the Beodeul reference and the Actor1 person.\n3. Style matches the Beodeul reference: material shading instead of black ink outlines, similar contrast, detail density and pixel cleanliness (no noise, no orphan pixels, no banding).\n4. Scale vs. the person is plausible; the object sits on the floor (contact shadow/base) rather than floating.\n5. Animation frames (if any): change is visible, smooth, loops, no jitter of the static parts.\n6. Autotiles: no visible seams or repeating grid, edges/corners join correctly in the mosaic and irregular map; floating-island underside hangs only below south edges.\n7. Fits its theme (magic tower / demon realm) and is distinct from generic.\n\nA MAJOR is a problem that would make you reject the piece for shipping (misreads, wrong view, broken seams, clashing style, ugly artefact clearly visible at 1x). A MINOR is a polish note.\n\nBoards (directory /home/main/z-project/rpg-zzu-dt-arcane/qa-runs/dungeon-themes/panel/r3/):\narcane.bookshelf.png arcane.bookshelf_tall.png arcane.teleport_circle.png arcane.crystal_pedestal.png arcane.candelabra.png other.ground.png other.void_edge.png other.crystal.png other.crystal_big.png other.throne.png other.bone_pillar.png other.brazier.png other.portal.png\n\nWrite your answer as JSON to /home/main/z-project/rpg-zzu-dt-arcane/qa-runs/dungeon-themes/panel/r3/answer-1.json (use the Write tool) and also return the same JSON as your final message. Format:\n{\"items\":{\"<item id e.g. arcane.lectern>\":{\"X\":{\"majors\":[{\"problem\":\"...\",\"where\":\"...\"}],\"minors\":[{\"problem\":\"...\",\"where\":\"...\"}]},\"Y\":{...},\"pick\":\"X\"|\"Y\",\"why\":\"one line\"}}}\nCover all 13 items. Be specific and honest; do not invent problems, do not be polite. Do not edit anything else.\n",
+ "answers": {
+  "answer-1.json": {
+   "items": {
+    "arcane.bookshelf": {
+     "X": {
+      "majors": [],
+      "minors": [
+       {
+        "problem": "top surface is a thin 1-2px plank; reads almost pure front elevation, less depth than the Beodeul alembic/furnace",
+        "where": "top edge of shelf"
+       },
+       {
+        "problem": "skull row is busy at 1x; three bone-white blobs merge into noise",
+        "where": "upper shelf, 1x"
+       }
+      ]
+     },
+     "Y": {
+      "majors": [],
+      "minors": [
+       {
+        "problem": "only books - generic library shelf, nothing says magic tower",
+        "where": "whole piece"
+       },
+       {
+        "problem": "same thin top plank / weak top surface as X",
+        "where": "top edge"
+       }
+      ]
+     },
+     "pick": "X",
+     "why": "Same build quality, but skulls/potions/red orb make X read as a wizard's shelf rather than a generic bookcase."
+    },
+    "arcane.bookshelf_tall": {
+     "X": {
+      "majors": [],
+      "minors": [
+       {
+        "problem": "two of three shelves are plain coloured book stripes; generic",
+        "where": "middle/upper shelves"
+       },
+       {
+        "problem": "top items (purple book, blue jar) sit on the top board and slightly read as floating flat rectangles",
+        "where": "top surface"
+       }
+      ]
+     },
+     "Y": {
+      "majors": [],
+      "minors": [
+       {
+        "problem": "skull row noisy at 1x, like the 2x2 shelf",
+        "where": "top shelf"
+       },
+       {
+        "problem": "top items same flat-rectangle look as X",
+        "where": "top surface"
+       }
+      ]
+     },
+     "pick": "Y",
+     "why": "Skulls/flask/orb shelf gives theme identity; otherwise identical quality and correct 3/4 against the wall."
+    },
+    "arcane.teleport_circle": {
+     "X": {
+      "majors": [],
+      "minors": [
+       {
+        "problem": "heavy grey stone rim makes it read as a raised disc/manhole lid rather than a floor inscription; contrasts with the flat mosaic reference",
+        "where": "outer ring"
+       },
+       {
+        "problem": "glow pulse is subtle; frame-to-frame change mainly in inner square brightness, barely visible at 1x",
+        "where": "inner pattern, frames 1-4"
+       }
+      ]
+     },
+     "Y": {
+      "majors": [
+       {
+        "problem": "thin 1px violet line art on grey floor nearly vanishes at 1x in frames 1, 2 and 4; does not read as a solid object/circle at game scale",
+        "where": "scene 1x frames"
+       },
+       {
+        "problem": "frame 3 flashes almost white then drops back, a pop rather than a smooth glow loop",
+        "where": "frame 3"
+       }
+      ]
+     },
+     "pick": "X",
+     "why": "X reads instantly and solidly at 1x; Y is too faint and blinks."
+    },
+    "arcane.crystal_pedestal": {
+     "X": {
+      "majors": [],
+      "minors": [
+       {
+        "problem": "animation change is small (crystal brighten + sparkle shift); barely visible at 1x",
+        "where": "frames 1-3"
+       },
+       {
+        "problem": "pedestal is squat and chunky versus slender Beodeul pedestal; gold band highlight only on left edge looks like a stray pixel",
+        "where": "pedestal bands"
+       }
+      ]
+     },
+     "Y": {
+      "majors": [],
+      "minors": [
+       {
+        "problem": "brown pedestal reads as wood/clay, odd material for a crystal plinth",
+        "where": "pedestal"
+       },
+       {
+        "problem": "same subtle animation and left-only gold pixels as X",
+        "where": "frames, bands"
+       }
+      ]
+     },
+     "pick": "X",
+     "why": "Identical shapes; grey stone plinth and pale-blue crystal match the tower stone and Beodeul material better than the brown/violet variant."
+    },
+    "arcane.candelabra": {
+     "X": {
+      "majors": [],
+      "minors": [
+       {
+        "problem": "short for 1x2 - occupies ~1.3 tiles, smaller than the person's head height expectation",
+        "where": "overall height"
+       },
+       {
+        "problem": "flame flicker is 1-2px shifts only",
+        "where": "flames, frames"
+       }
+      ]
+     },
+     "Y": {
+      "majors": [
+       {
+        "problem": "five crowded candles' flames merge into one gold blob at 1x; reads as a fire/crown rather than a candelabra",
+        "where": "top, 1x scene"
+       }
+      ],
+      "minors": [
+       {
+        "problem": "same short height as X",
+        "where": "overall"
+       }
+      ]
+     },
+     "pick": "X",
+     "why": "X's three distinct candles read clean at 1x; Y's crowded flames blob together."
+    },
+    "other.ground": {
+     "X": {
+      "majors": [
+       {
+        "problem": "crack network repeats per 16px cell; the identical cell shape is obvious as a grid in the large mosaic and in the scene",
+        "where": "mosaic / scene floor"
+       },
+       {
+        "problem": "autotile edge variants draw bright straight violet border lines that look like UI frames, not stone edges",
+        "where": "autotile variant sheet"
+       }
+      ],
+      "minors": [
+       {
+        "problem": "base fill is fine-grain noise",
+        "where": "stone fill"
+       }
+      ]
+     },
+     "Y": {
+      "majors": [
+       {
+        "problem": "same diagonal glow streak sits at the same spot in every tile, producing an obvious repeating dot pattern",
+        "where": "mosaic"
+       }
+      ],
+      "minors": [
+       {
+        "problem": "reddish-brown speckle noise across the surface; orphan pixels",
+        "where": "stone fill"
+       },
+       {
+        "problem": "edge variants barely differ from the centre tile",
+        "where": "autotile variant sheet"
+       }
+      ]
+     },
+     "pick": "Y",
+     "why": "Both tile visibly; Y's cracked stone reads more natural and its edges don't draw frame lines, though it needs variation."
+    },
+    "other.void_edge": {
+     "X": {
+      "majors": [],
+      "minors": [
+       {
+        "problem": "ground top is speckle-noisy; cracks read weaker than Y",
+        "where": "walkable top"
+       },
+       {
+        "problem": "W edge lip barely visible compared to N lip",
+        "where": "west edge"
+       },
+       {
+        "problem": "underside cliff face is flat mauve band with little rock modelling",
+        "where": "south underside"
+       }
+      ]
+     },
+     "Y": {
+      "majors": [],
+      "minors": [
+       {
+        "problem": "underside cliff face is a flat band, same as X",
+        "where": "south underside"
+       },
+       {
+        "problem": "crack glow veins repeat per tile",
+        "where": "walkable top"
+       }
+      ]
+     },
+     "pick": "Y",
+     "why": "Both join correctly with underside only below south-facing edges; Y's top surface reads as cracked stone more clearly."
+    },
+    "other.crystal": {
+     "X": {
+      "majors": [
+       {
+        "problem": "orange/red fire-coloured crystal reads as a flame or lava spike, and clashes with the violet-black realm instead of looking corrupted",
+        "where": "whole piece"
+       }
+      ],
+      "minors": [
+       {
+        "problem": "flat pink base slab looks like a tray",
+        "where": "base"
+       }
+      ]
+     },
+     "Y": {
+      "majors": [],
+      "minors": [
+       {
+        "problem": "thin and small for 1x2; a single spire, little mass",
+        "where": "silhouette"
+       },
+       {
+        "problem": "same tray-like base slab",
+        "where": "base"
+       }
+      ]
+     },
+     "pick": "Y",
+     "why": "Violet spire reads as a crystal and fits the realm; X reads as fire."
+    },
+    "other.crystal_big": {
+     "X": {
+      "majors": [],
+      "minors": [
+       {
+        "problem": "base slab is a flat floating-looking plate",
+        "where": "base"
+       },
+       {
+        "problem": "violet crystals are close in value to the violet ground veins; silhouette could pop more",
+        "where": "scene"
+       }
+      ]
+     },
+     "Y": {
+      "majors": [
+       {
+        "problem": "orange spikes read as a campfire/flame burst at 1x, not a crystal cluster",
+        "where": "1x scene"
+       }
+      ],
+      "minors": [
+       {
+        "problem": "same base slab",
+        "where": "base"
+       }
+      ]
+     },
+     "pick": "X",
+     "why": "X reads as a crystal cluster; Y reads as fire."
+    },
+    "other.throne": {
+     "X": {
+      "majors": [],
+      "minors": [
+       {
+        "problem": "heavy dither noise on the violet upholstery and grey stone; noisier than the clean Beodeul dais",
+        "where": "seat back, dais faces"
+       },
+       {
+        "problem": "seat surface is a thin band; throne reads somewhat like a boxed cabinet",
+        "where": "seat"
+       }
+      ]
+     },
+     "Y": {
+      "majors": [
+       {
+        "problem": "mauve dais is almost the same value/hue as the otherworld ground; it dissolves into the floor at 1x and loses the stepped dais read",
+        "where": "1x scene dais"
+       }
+      ],
+      "minors": [
+       {
+        "problem": "red upholstery noisy dither",
+        "where": "seat back"
+       },
+       {
+        "problem": "same thin seat",
+        "where": "seat"
+       }
+      ]
+     },
+     "pick": "X",
+     "why": "Grey stone dais separates from the floor and reads as a throne on steps; Y blends in."
+    },
+    "other.bone_pillar": {
+     "X": {
+      "majors": [
+       {
+        "problem": "column is mauve flesh-coloured with thin dark spikes and a dim purple skull; it does not read as bone at 1x, more like a wooden post",
+        "where": "column and skull"
+       }
+      ],
+      "minors": [
+       {
+        "problem": "spikes are 1px lines that disappear at 1x",
+        "where": "spikes"
+       }
+      ]
+     },
+     "Y": {
+      "majors": [],
+      "minors": [
+       {
+        "problem": "dark violet cap slab between skull and column is heavy and nearly black",
+        "where": "top cap"
+       },
+       {
+        "problem": "spikes look like twigs/branches rather than spikes",
+        "where": "side spikes"
+       }
+      ]
+     },
+     "pick": "Y",
+     "why": "Bone-white column with skull reads instantly as a bone pillar."
+    },
+    "other.brazier": {
+     "X": {
+      "majors": [],
+      "minors": [
+       {
+        "problem": "slender tripod with goblet bowl reads like a birdbath/chalice; light grey metal feels generic",
+        "where": "stand"
+       },
+       {
+        "problem": "flame animation change small",
+        "where": "flame frames"
+       }
+      ]
+     },
+     "Y": {
+      "majors": [],
+      "minors": [
+       {
+        "problem": "vein texture on the pedestal is noisy and slightly greenish",
+        "where": "pedestal body"
+       },
+       {
+        "problem": "flame animation change small",
+        "where": "flame frames"
+       }
+      ]
+     },
+     "pick": "Y",
+     "why": "Solid stone pedestal sits on the floor and feels more demonic and closer to the Beodeul brazier weight."
+    },
+    "other.portal": {
+     "X": {
+      "majors": [],
+      "minors": [
+       {
+        "problem": "scalloped/curved bottom edge of the base step looks odd, like a bent plate",
+        "where": "bottom of frame"
+       },
+       {
+        "problem": "swirl rotation between open frames is modest",
+        "where": "open frames 2-4"
+       }
+      ]
+     },
+     "Y": {
+      "majors": [
+       {
+        "problem": "orange/yellow lava swirl clashes with the violet-black realm and reads as a fire vortex",
+        "where": "open frames"
+       }
+      ],
+      "minors": [
+       {
+        "problem": "mauve frame blends with the ground",
+        "where": "frame in scene"
+       },
+       {
+        "problem": "same scalloped base edge",
+        "where": "bottom"
+       }
+      ]
+     },
+     "pick": "X",
+     "why": "Violet swirl in grey stone frame fits the realm and reads clearly; closed/open states both good."
+    }
+   }
+  },
+  "answer-2.json": {
+   "items": {
+    "arcane.bookshelf": {
+     "X": {
+      "majors": [],
+      "minors": [
+       {
+        "problem": "top surface is only a 1-2px board strip; the shelf reads almost pure front elevation",
+        "where": "top edge of shelf"
+       },
+       {
+        "problem": "skull row slightly busy at 1x, small white blobs",
+        "where": "upper shelf"
+       }
+      ]
+     },
+     "Y": {
+      "majors": [],
+      "minors": [
+       {
+        "problem": "generic library bookshelf, nothing magic-tower about it",
+        "where": "whole piece"
+       },
+       {
+        "problem": "same thin top strip as X",
+        "where": "top edge"
+       }
+      ]
+     },
+     "pick": "X",
+     "why": "Same build quality, but skulls/potions/red orb give the magic-tower identity Y lacks."
+    },
+    "arcane.bookshelf_tall": {
+     "X": {
+      "majors": [],
+      "minors": [
+       {
+        "problem": "mostly generic books; only the potion bottles on the bottom shelf hint at magic",
+        "where": "shelves"
+       },
+       {
+        "problem": "top items (book, box) on top board read flat",
+        "where": "top surface"
+       }
+      ]
+     },
+     "Y": {
+      "majors": [],
+      "minors": [
+       {
+        "problem": "skull shelf slightly noisy at 1x",
+        "where": "upper shelf"
+       }
+      ]
+     },
+     "pick": "Y",
+     "why": "Clean, varied shelves with skulls/orb/potions; reads as a wizard's shelf, X is generic."
+    },
+    "arcane.teleport_circle": {
+     "X": {
+      "majors": [],
+      "minors": [
+       {
+        "problem": "thick grey bevelled rim makes it read as a raised round plate / manhole rather than a floor-inlaid circle",
+        "where": "outer rim"
+       },
+       {
+        "problem": "glow change between frames is subtle at 1x",
+        "where": "inner rings"
+       }
+      ]
+     },
+     "Y": {
+      "majors": [
+       {
+        "problem": "no material at all: thin 1px violet lines over the floor read as a UI/effect overlay, not a chipset floor piece, and are faint at 1x",
+        "where": "whole piece in scene"
+       },
+       {
+        "problem": "frame 3 flashes almost white, so the loop strobes instead of glowing",
+        "where": "third animation frame"
+       }
+      ],
+      "minors": [
+       {
+        "problem": "sparkle pixels jump around between frames",
+        "where": "rim sparkles"
+       }
+      ]
+     },
+     "pick": "X",
+     "why": "X is a solid, readable inlaid circle with a smooth glow; Y is a faint overlay that strobes."
+    },
+    "arcane.crystal_pedestal": {
+     "X": {
+      "majors": [],
+      "minors": [
+       {
+        "problem": "animation only moves a couple of sparkle pixels; glow barely changes",
+        "where": "crystal tips"
+       },
+       {
+        "problem": "ice-blue crystal could read as an ice/frost prop",
+        "where": "crystal"
+       }
+      ]
+     },
+     "Y": {
+      "majors": [],
+      "minors": [
+       {
+        "problem": "brown bulbous pedestal reads like a clay pot or tree stump, not a tower pedestal",
+        "where": "pedestal"
+       },
+       {
+        "problem": "animation equally minimal",
+        "where": "crystal tips"
+       }
+      ]
+     },
+     "pick": "X",
+     "why": "Grey stone pedestal matches the tower and the Beodeul pillar reference; Y's base reads as a pot."
+    },
+    "arcane.candelabra": {
+     "X": {
+      "majors": [],
+      "minors": [
+       {
+        "problem": "flame flicker very small (1-2px shifts)",
+        "where": "flames"
+       },
+       {
+        "problem": "thin stem may look slightly spindly beside the person",
+        "where": "stem"
+       }
+      ]
+     },
+     "Y": {
+      "majors": [],
+      "minors": [
+       {
+        "problem": "seven tightly packed candles merge into a yellow-white crown blob at 1x",
+        "where": "candle cluster"
+       },
+       {
+        "problem": "candle tops overflow the dish width, top-heavy",
+        "where": "top"
+       }
+      ]
+     },
+     "pick": "X",
+     "why": "X's three candles read clearly at 1x; Y's crowded cluster turns into a blob."
+    },
+    "other.ground": {
+     "X": {
+      "majors": [
+       {
+        "problem": "the same crack loop repeats every 16px cell, producing an obvious lattice in the 6x6 mosaic and in the scene",
+        "where": "mosaic / scene floor"
+       }
+      ],
+      "minors": [
+       {
+        "problem": "crack lines are dashed with gaps and single pixels, slightly noisy",
+        "where": "crack lines"
+       }
+      ]
+     },
+     "Y": {
+      "majors": [
+       {
+        "problem": "each cell has the same diagonal glow dash in the same spot, giving a clearly visible repeating grid",
+        "where": "mosaic / scene floor"
+       }
+      ],
+      "minors": [
+       {
+        "problem": "reddish-brown speckle reads as noise and muddies the violet-black",
+        "where": "cell fill"
+       },
+       {
+        "problem": "glow veins are isolated dashes rather than veins",
+        "where": "glow pixels"
+       }
+      ]
+     },
+     "pick": "X",
+     "why": "Both tile visibly; X at least reads as cracked stone with glowing veins and has a cleaner fill."
+    },
+    "other.void_edge": {
+     "X": {
+      "majors": [],
+      "minors": [
+       {
+        "problem": "floor fill repeats the same diagonal glint per cell",
+        "where": "island top"
+       },
+       {
+        "problem": "N/W/E lip is a faint reddish line, barely visible",
+        "where": "island border"
+       },
+       {
+        "problem": "stalactites are hard dark triangles that read a bit cut-out",
+        "where": "underside"
+       }
+      ]
+     },
+     "Y": {
+      "majors": [
+       {
+        "problem": "floor uses a strong repeating C-curve pattern that reads as fish scales / a tiled grid at 1x",
+        "where": "island top in scene and small islands"
+       }
+      ],
+      "minors": [
+       {
+        "problem": "underside is a soft gradient with weak rock form",
+        "where": "underside"
+       }
+      ]
+     },
+     "pick": "X",
+     "why": "Both edges/undersides join correctly and hang only below south edges, but Y's scale-like floor pattern is distracting."
+    },
+    "other.crystal": {
+     "X": {
+      "majors": [
+       {
+        "problem": "red/orange/yellow spikes read as a flame or campfire, not a crystal, and ignore the violet demon-realm palette",
+        "where": "whole piece at 1x"
+       }
+      ],
+      "minors": []
+     },
+     "Y": {
+      "majors": [],
+      "minors": [
+       {
+        "problem": "base plate is a thin flat slab, contact shadow weak",
+        "where": "base"
+       },
+       {
+        "problem": "facet shading is simple; could use one more highlight",
+        "where": "crystal faces"
+       }
+      ]
+     },
+     "pick": "Y",
+     "why": "Y reads instantly as a violet corrupted crystal; X reads as fire."
+    },
+    "other.crystal_big": {
+     "X": {
+      "majors": [],
+      "minors": [
+       {
+        "problem": "base slab is a flat strip; cluster sits slightly stuck-on",
+        "where": "base"
+       },
+       {
+        "problem": "small side shards are somewhat noisy at 1x",
+        "where": "outer shards"
+       }
+      ]
+     },
+     "Y": {
+      "majors": [
+       {
+        "problem": "orange/red cluster reads as a bonfire/flames at 1x, not a crystal",
+        "where": "whole piece"
+       }
+      ],
+      "minors": []
+     },
+     "pick": "X",
+     "why": "X is a readable violet crystal cluster in theme; Y reads as fire."
+    },
+    "other.throne": {
+     "X": {
+      "majors": [],
+      "minors": [
+       {
+        "problem": "seat and back are one purple rectangle; no seat surface or armrests read",
+        "where": "throne seat"
+       },
+       {
+        "problem": "grey stone dais is close to the Beodeul altar but generic for a demon lord",
+        "where": "dais"
+       },
+       {
+        "problem": "skulls on the step corners are blocky",
+        "where": "dais corners"
+       }
+      ]
+     },
+     "Y": {
+      "majors": [
+       {
+        "problem": "maroon dais has nearly the same value/hue as the island rock, so the throne silhouette dissolves into the floor at 1x",
+        "where": "dais in scene"
+       }
+      ],
+      "minors": [
+       {
+        "problem": "saturated red-orange seat clashes with the violet-black palette",
+        "where": "seat and carpet"
+       },
+       {
+        "problem": "same box-shaped seat issue as X",
+        "where": "seat"
+       }
+      ]
+     },
+     "pick": "X",
+     "why": "X separates clearly from the floor and reads as a dais with a throne; Y blends into the ground."
+    },
+    "other.bone_pillar": {
+     "X": {
+      "majors": [
+       {
+        "problem": "reads as a dark purple stone column with pale caps; nothing reads as bone and the 'spikes' are dark nubs invisible at 1x",
+        "where": "shaft"
+       }
+      ],
+      "minors": [
+       {
+        "problem": "purple skull cap is too dark to read",
+        "where": "top"
+       }
+      ]
+     },
+     "Y": {
+      "majors": [],
+      "minors": [
+       {
+        "problem": "spikes are short stubs, more knobby than spiked",
+        "where": "shaft sides"
+       },
+       {
+        "problem": "skull on top sits a bit like a separate object",
+        "where": "top"
+       }
+      ]
+     },
+     "pick": "Y",
+     "why": "Y is unmistakably a bone pillar with a skull; X misreads as a generic column."
+    },
+    "other.brazier": {
+     "X": {
+      "majors": [],
+      "minors": [
+       {
+        "problem": "thin splayed tripod legs look flimsy and slightly front-elevation, light contact with the floor",
+        "where": "legs"
+       },
+       {
+        "problem": "flame animation is a small flicker",
+        "where": "flame"
+       }
+      ]
+     },
+     "Y": {
+      "majors": [],
+      "minors": [
+       {
+        "problem": "flame animation is a small flicker",
+        "where": "flame"
+       },
+       {
+        "problem": "violet cracks on the pillar are a bit noisy",
+        "where": "pillar front"
+       }
+      ]
+     },
+     "pick": "Y",
+     "why": "Y's stone pillar brazier is solid, grounded and themed, closer to the Beodeul pedestal brazier."
+    },
+    "other.portal": {
+     "X": {
+      "majors": [],
+      "minors": [
+       {
+        "problem": "curved flared base looks slightly like a bathtub rim",
+        "where": "base"
+       },
+       {
+        "problem": "swirl rotation is coarse between frames",
+        "where": "swirl"
+       }
+      ]
+     },
+     "Y": {
+      "majors": [],
+      "minors": [
+       {
+        "problem": "orange/yellow lava swirl is off the violet-black palette and reads hellfire rather than otherworld",
+        "where": "swirl"
+       },
+       {
+        "problem": "maroon frame blends with the island rock",
+        "where": "frame in scene"
+       }
+      ]
+     },
+     "pick": "X",
+     "why": "Both read as a sealed then open gate with a visible swirl; X fits the violet realm and stands out from the floor."
+    }
+   }
+  },
+  "answer-3.json": {
+   "items": {
+    "arcane.bookshelf": {
+     "X": {
+      "majors": [],
+      "minors": [
+       {
+        "problem": "top board is a 1-2px strip, almost no top surface; reads nearly flat-front",
+        "where": "top edge of shelf"
+       },
+       {
+        "problem": "red round object on lower shelf reads as an apple/bomb rather than a magic item",
+        "where": "lower shelf, left"
+       }
+      ]
+     },
+     "Y": {
+      "majors": [],
+      "minors": [
+       {
+        "problem": "books only, generic library shelf with no magic-tower identity",
+        "where": "whole piece"
+       },
+       {
+        "problem": "same thin top board as X",
+        "where": "top edge"
+       }
+      ]
+     },
+     "pick": "X",
+     "why": "Same build quality, but skulls/potions on the top shelf make X read as a wizard's shelf instead of a generic bookcase."
+    },
+    "arcane.bookshelf_tall": {
+     "X": {
+      "majors": [],
+      "minors": [
+       {
+        "problem": "two rows of plain books plus one potion row; fairly generic",
+        "where": "upper two shelves"
+       },
+       {
+        "problem": "top surface with a book and a scroll is readable but tight",
+        "where": "top 3px"
+       }
+      ]
+     },
+     "Y": {
+      "majors": [],
+      "minors": [
+       {
+        "problem": "skull row repeats the 2x2 shelf's top row exactly; side-by-side use shows copy-paste",
+        "where": "upper shelf"
+       }
+      ]
+     },
+     "pick": "Y",
+     "why": "Y has skulls, potions and books, so it is more themed. Both are clean and sit correctly against the wall."
+    },
+    "arcane.teleport_circle": {
+     "X": {
+      "majors": [],
+      "minors": [
+       {
+        "problem": "solid disc with thick grey rim reads as a raised metal plate/manhole more than an inscribed floor circle",
+        "where": "outer rim"
+       },
+       {
+        "problem": "glow change between frames is subtle at 1x (mainly the inner square brightening)",
+        "where": "inner square/core"
+       }
+      ]
+     },
+     "Y": {
+      "majors": [
+       {
+        "problem": "thin 1px violet lines on transparent ground almost vanish into the grey floor at 1x; the circle barely reads",
+        "where": "scene 1x frames"
+       }
+      ],
+      "minors": [
+       {
+        "problem": "frame 3 flashes to near-white, so the loop pulses jumpily instead of glowing smoothly",
+        "where": "frame 3"
+       },
+       {
+        "problem": "violet is off-theme for the blue-grey tower; looks like the demon realm",
+        "where": "palette"
+       }
+      ]
+     },
+     "pick": "X",
+     "why": "X reads instantly as a teleport pad at 1x and has density closer to the Beodeul mosaic. Y is too faint."
+    },
+    "arcane.crystal_pedestal": {
+     "X": {
+      "majors": [],
+      "minors": [
+       {
+        "problem": "pale ice-blue crystal could read as ice rather than a magic crystal",
+        "where": "crystal"
+       },
+       {
+        "problem": "glow animation is weak: brightness shift and a moving sparkle pixel only",
+        "where": "frames 1-3"
+       },
+       {
+        "problem": "stray single-pixel sparkles float detached at 1x",
+        "where": "around crystal tips"
+       }
+      ]
+     },
+     "Y": {
+      "majors": [
+       {
+        "problem": "brown brick/wood pedestal reads as a clay pot or tree stump. Its noisy brown texture clashes with the grey stone tower",
+        "where": "pedestal body"
+       }
+      ],
+      "minors": [
+       {
+        "problem": "same weak glow animation and orphan sparkle pixels as X",
+        "where": "frames"
+       }
+      ]
+     },
+     "pick": "X",
+     "why": "Grey stone pedestal matches the tower and the Beodeul pedestal reference. Y's base looks like a flowerpot."
+    },
+    "arcane.candelabra": {
+     "X": {
+      "majors": [],
+      "minors": [
+       {
+        "problem": "no branching arms: candles stand on a dish/cake-stand, so it reads as a candle tray on a stand more than a candelabra",
+        "where": "top dish"
+       },
+       {
+        "problem": "flame flicker is a 1-2px shift and barely visible at 1x",
+        "where": "flames"
+       }
+      ]
+     },
+     "Y": {
+      "majors": [
+       {
+        "problem": "five candles fused into one block on a dish read as a birthday cake/crown at 1x, not a candelabra",
+        "where": "candle cluster"
+       }
+      ],
+      "minors": [
+       {
+        "problem": "flame flicker barely visible",
+        "where": "flames"
+       }
+      ]
+     },
+     "pick": "X",
+     "why": "X's three separated candles read more clearly. Y's candle mass turns into a blob."
+    },
+    "other.ground": {
+     "X": {
+      "majors": [
+       {
+        "problem": "crack network forms an obvious regular ~2-tile lattice of identical cells (scale/giraffe pattern); visible repeating grid over a room",
+        "where": "large mosaic and scene"
+       }
+      ],
+      "minors": [
+       {
+        "problem": "edge variants use a straight 1px bright violet border line that looks drawn-on rather than a stone lip",
+        "where": "autotile edge pieces"
+       }
+      ]
+     },
+     "Y": {
+      "majors": [
+       {
+        "problem": "same regular cell lattice repeats every 2 tiles, and the identical diagonal glint repeats in every tile",
+        "where": "large mosaic, per-tile glint"
+       }
+      ],
+      "minors": [
+       {
+        "problem": "reddish-brown noise fill is speckly and muddy rather than violet-black, so the stone reads as dirt",
+        "where": "cell interiors"
+       },
+       {
+        "problem": "veins are faint, short dashes; the 'glow veins' barely read",
+        "where": "cracks"
+       }
+      ]
+     },
+     "pick": "X",
+     "why": "Both show tiling repetition, but X matches 'violet-black cracked stone with glow veins' and is cleaner. Y is noisy brown dirt."
+    },
+    "other.void_edge": {
+     "X": {
+      "majors": [],
+      "minors": [
+       {
+        "problem": "top surface uses the noisy reddish-brown ground; muddy and does not match the violet-vein ground",
+        "where": "island top"
+       },
+       {
+        "problem": "void background has a regular diagonal streak pattern that reads as a tiled texture",
+        "where": "void"
+       },
+       {
+        "problem": "isolated tile repeats the same diagonal glints mirrored, looks stamped",
+        "where": "small island extra view"
+       }
+      ]
+     },
+     "Y": {
+      "majors": [],
+      "minors": [
+       {
+        "problem": "underside is dark and low-contrast, so it fades into the void at 1x",
+        "where": "south underside"
+       },
+       {
+        "problem": "top surface shows the same repeating cell lattice",
+        "where": "island top"
+       }
+      ]
+     },
+     "pick": "Y",
+     "why": "In both, the underside hangs only below S edges and corners join correctly. Y's violet top and cleaner void read better and fit the realm."
+    },
+    "other.crystal": {
+     "X": {
+      "majors": [
+       {
+        "problem": "orange/red/yellow spikes read as a flame or campfire at 1x, not a crystal",
+        "where": "whole piece"
+       }
+      ],
+      "minors": [
+       {
+        "problem": "base is a flat man-made slab/tray rather than rock it grows from",
+        "where": "base"
+       }
+      ]
+     },
+     "Y": {
+      "majors": [],
+      "minors": [
+       {
+        "problem": "base is a flat slab/tray with a front face, which looks placed rather than grown",
+        "where": "base"
+       },
+       {
+        "problem": "only ~1.3 tiles tall in a 1x2 slot; slim at 1x",
+        "where": "overall"
+       }
+      ]
+     },
+     "pick": "Y",
+     "why": "Y reads instantly as a violet corrupted crystal. X misreads as fire."
+    },
+    "other.crystal_big": {
+     "X": {
+      "majors": [],
+      "minors": [
+       {
+        "problem": "same flat slab base as the 1x2 crystal",
+        "where": "base"
+       },
+       {
+        "problem": "side spikes are thin and 1-2px wide at 1x",
+        "where": "outer spikes"
+       }
+      ]
+     },
+     "Y": {
+      "majors": [
+       {
+        "problem": "orange spikes on a slab read as a bonfire at 1x",
+        "where": "whole piece"
+       }
+      ],
+      "minors": []
+     },
+     "pick": "X",
+     "why": "The violet cluster reads as a crystal and fits the realm. The orange version reads as fire."
+    },
+    "other.throne": {
+     "X": {
+      "majors": [],
+      "minors": [
+       {
+        "problem": "dais stone texture is noisy and speckled, with no lighter step tops like the Beodeul dais; steps read mostly as front faces",
+        "where": "dais steps"
+       },
+       {
+        "problem": "grey stone contrasts with the maroon/violet realm palette (helps readability, but not native)",
+        "where": "dais"
+       },
+       {
+        "problem": "skull blocks read as boxes with faces",
+        "where": "side blocks"
+       }
+      ]
+     },
+     "Y": {
+      "majors": [
+       {
+        "problem": "maroon dais is almost the same value as the floor and melts into it at 1x; only the red seat and carpet read",
+        "where": "dais vs ground in scene"
+       }
+      ],
+      "minors": [
+       {
+        "problem": "bright red seat reads more like a lava/fire block than upholstery",
+        "where": "seat"
+       },
+       {
+        "problem": "same noisy step texture without step tops",
+        "where": "dais"
+       }
+      ]
+     },
+     "pick": "X",
+     "why": "X's throne and dais separate clearly from the floor, and the violet seat fits the realm. Y's dais disappears."
+    },
+    "other.bone_pillar": {
+     "X": {
+      "majors": [
+       {
+        "problem": "shaft is dark maroon wood/flesh with twig-like stubs, so it reads as a wooden post or dead tree, not bone",
+        "where": "shaft"
+       }
+      ],
+      "minors": [
+       {
+        "problem": "dark skull with glowing eyes is almost invisible at 1x",
+        "where": "top"
+       }
+      ]
+     },
+     "Y": {
+      "majors": [],
+      "minors": [
+       {
+        "problem": "'spikes' are 1-2px stubs that read as twigs; not spiky enough",
+        "where": "shaft sides"
+       },
+       {
+        "problem": "thin for a 1x2 pillar, mostly 1 tile wide",
+        "where": "overall"
+       }
+      ]
+     },
+     "pick": "Y",
+     "why": "The bone-white shaft with a skull top reads as a bone pillar. X reads as a wooden post."
+    },
+    "other.brazier": {
+     "X": {
+      "majors": [],
+      "minors": [
+       {
+        "problem": "spindly tripod drawn flat-on with splayed legs; weak floor contact and looks fragile",
+        "where": "legs"
+       },
+       {
+        "problem": "frames 2 and 3 almost identical; flicker is weak",
+        "where": "flame"
+       },
+       {
+        "problem": "light grey metal is off-palette for the demon realm",
+        "where": "bowl/stand"
+       }
+      ]
+     },
+     "Y": {
+      "majors": [],
+      "minors": [
+       {
+        "problem": "flicker is weak (frames 2/3 nearly identical)",
+        "where": "flame"
+       },
+       {
+        "problem": "violet vein flecks on the column are a bit noisy",
+        "where": "column"
+       }
+      ]
+     },
+     "pick": "Y",
+     "why": "Y's solid stone pedestal with violet veins sits firmly on the floor and matches the Beodeul pedestal brazier. X's tripod is flimsy."
+    },
+    "other.portal": {
+     "X": {
+      "majors": [],
+      "minors": [
+       {
+        "problem": "grey stone frame contrasts with the maroon realm",
+        "where": "frame"
+       },
+       {
+        "problem": "swirl rotation between open frames is modest; reads as a slow wobble",
+        "where": "frames 2-4"
+       },
+       {
+        "problem": "bulging rounded base ledge is odd",
+        "where": "bottom corners"
+       }
+      ]
+     },
+     "Y": {
+      "majors": [
+       {
+        "problem": "orange/yellow swirl reads as a fire/lava vortex and is off-theme for the violet demon realm",
+        "where": "open frames"
+       }
+      ],
+      "minors": [
+       {
+        "problem": "maroon frame blends into the floor",
+        "where": "frame"
+       },
+       {
+        "problem": "same rounded base ledge",
+        "where": "bottom corners"
+       }
+      ]
+     },
+     "pick": "X",
+     "why": "Both have clear closed/open states. X's violet vortex fits the otherworld, and its frame reads against the floor."
+    }
+   }
+  },
+  "answer-4.json": {
+   "items": {
+    "arcane.bookshelf": {
+     "X": {
+      "majors": [],
+      "minors": [
+       {
+        "problem": "Upper shelf is filled with a large skull and scroll pile divided by a center partition that stops mid-cabinet, reading more like a curio cabinet than a bookshelf at 1x",
+        "where": "upper shelf"
+       }
+      ]
+     },
+     "Y": {
+      "majors": [],
+      "minors": [
+       {
+        "problem": "Top wooden surface is a flat two-tone strip without texture or props, and the design is slightly generic save for one small blue bottle",
+        "where": "top plane and upper-right shelf"
+       }
+      ]
+     },
+     "pick": "Y",
+     "why": "Y reads unmistakably as a bookshelf at 1x with consistent shelf structure, whereas X devotes half its space to a large skull and scroll rack."
+    },
+    "arcane.bookshelf_tall": {
+     "X": {
+      "majors": [],
+      "minors": [
+       {
+        "problem": "Two books resting on the top surface look slightly flat and pasted-on",
+        "where": "top wooden plane"
+       }
+      ]
+     },
+     "Y": {
+      "majors": [],
+      "minors": [
+       {
+        "problem": "Top shelf has a center vertical divider with a skull and scroll stack that does not align with the two full-width bookshelves below",
+        "where": "top shelf"
+       },
+       {
+        "problem": "Two books resting on the top surface look slightly flat",
+        "where": "top wooden plane"
+       }
+      ]
+     },
+     "pick": "X",
+     "why": "X maintains a coherent three-shelf bookcase structure with arcane props (crystal orb and potions) integrated on the bottom shelf instead of breaking the top shelf with a skull compartment."
+    },
+    "arcane.teleport_circle": {
+     "X": {
+      "majors": [],
+      "minors": [
+       {
+        "problem": "Circle is drawn as a true 1:1 circle rather than slightly foreshortened vertically for 3/4 floor perspective (though consistent with the Beodeul reference)",
+        "where": "overall circular footprint"
+       },
+       {
+        "problem": "4-frame glow animation only pulses the center core and cardinal rune nodes slightly, making motion subtle at 1x",
+        "where": "4-frame animation"
+       }
+      ]
+     },
+     "Y": {
+      "majors": [
+       {
+        "problem": "Thin 1px dark purple lines over a transparent background have poor contrast against the grey stone floor at 1x, and the floor tile mortar lines visibly cut through the rune geometry",
+        "where": "entire circle in scene at 1x and 2x"
+       },
+       {
+        "problem": "Frame 3 abruptly flashes the entire outer ring to near-white while frames 1, 2, and 4 remain dim purple, producing a jarring 1-frame strobe instead of a smooth glow loop",
+        "where": "frame 3 of 4"
+       }
+      ],
+      "minors": []
+     },
+     "pick": "X",
+     "why": "X has a solid dark interior and stone border ring that insulate the glowing cyan runes from the floor grid, while Y washes out against the stone tiles and strobes harshly on frame 3."
+    },
+    "arcane.crystal_pedestal": {
+     "X": {
+      "majors": [],
+      "minors": [
+       {
+        "problem": "Cool grey stone pedestal is close in hue and value to the grey dungeon floor tiles behind it",
+        "where": "pedestal column and base"
+       },
+       {
+        "problem": "3-frame animation only shifts tiny 1px sparkle dots and slight tip highlights, so the glow pulse is subtle at 1x",
+        "where": "crystal cluster top"
+       }
+      ]
+     },
+     "Y": {
+      "majors": [],
+      "minors": [
+       {
+        "problem": "Purple crystal has lower luminance contrast than X and reads less glowing at 1x",
+        "where": "crystal cluster top"
+       },
+       {
+        "problem": "Warm brown pedestal with a dark vertical center slit reads like wood or clay rather than wizard-tower stone",
+        "where": "pedestal shaft"
+       },
+       {
+        "problem": "Animation across the 3 frames only moves a few 1px sparkle specks",
+        "where": "crystal cluster top"
+       }
+      ]
+     },
+     "pick": "X",
+     "why": "X's bright cyan crystal reads as genuinely luminous at 1x and its stone-and-gold pedestal matches the Magic Tower aesthetic better than Y's brown column."
+    },
+    "arcane.candelabra": {
+     "X": {
+      "majors": [],
+      "minors": [
+       {
+        "problem": "Grey metal/stone stand is close in value to the grey stone floor tiles, slightly softening the lower stem silhouette at 1x",
+        "where": "stem and base in scene"
+       }
+      ]
+     },
+     "Y": {
+      "majors": [
+       {
+        "problem": "Cramming 5 candles into a 1-tile width leaves only 1px per candle and 1px gaps, causing the top to fuse into an unreadable yellow-white comb block at 1x",
+        "where": "upper candle row at 1x"
+       }
+      ],
+      "minors": [
+       {
+        "problem": "Grey stand blends slightly with the grey stone floor",
+        "where": "stem and base in scene"
+       }
+      ]
+     },
+     "pick": "X",
+     "why": "X's 3-branch spacing keeps individual candles, branches, and flickering flames clearly legible at 1x, whereas Y's 5 candles merge into a noisy block."
+    },
+    "other.ground": {
+     "X": {
+      "majors": [],
+      "minors": [
+       {
+        "problem": "Brighter violet vein junctions repeat noticeably on the 16px grid across large open areas",
+        "where": "6x6 mosaic and scene interior"
+       }
+      ]
+     },
+     "Y": {
+      "majors": [
+       {
+        "problem": "Identical bright orange glow dots repeat at the exact same coordinates inside every interior tile, creating an obvious grid of orange specks across the floor",
+        "where": "scene floor and 6x6 mosaic"
+       }
+      ],
+      "minors": [
+       {
+        "problem": "Warm brownish-plum stone and orange dots drift away from the violet-black cracked stone specification",
+        "where": "overall palette"
+       }
+      ]
+     },
+     "pick": "X",
+     "why": "X nails the violet-black cracked stone palette and avoids Y's obvious repeating grid of orange dots."
+    },
+    "other.void_edge": {
+     "X": {
+      "majors": [],
+      "minors": [
+       {
+        "problem": "Multi-tile straight south cliff sections terminate in a flat horizontal bottom edge above a thin dark fringe, contrasting with the sharp triangular stalactite points on 1-tile south steps",
+        "where": "bottom-center south cliff underside"
+       }
+      ]
+     },
+     "Y": {
+      "majors": [],
+      "minors": [
+       {
+        "problem": "Walkable surface cracks are over-bright neon lavender, making the floor visually noisy at 1x and reducing figure-ground separation against characters and cliff lips",
+        "where": "interior walkable surface"
+       },
+       {
+        "problem": "Multi-tile straight south cliff sections terminate in a flat horizontal bottom edge compared to the pointed 1-tile side teeth",
+        "where": "bottom-center south cliff underside"
+       }
+      ]
+     },
+     "pick": "X",
+     "why": "X keeps the walkable surface cracks dark enough that the island rim, south cliff underside, and character sprite read clearly at 1x, whereas Y's bright lavender cracks visually clutter the ground."
+    },
+    "other.crystal": {
+     "X": {
+      "majors": [],
+      "minors": [
+       {
+        "problem": "Flat horizontal oval base pad looks slightly like a disc stand rather than natural rock erupting from the ground",
+        "where": "bottom base"
+       },
+       {
+        "problem": "Red-orange palette closely copies the Beodeul cave crystal reference rather than feeling distinctly corrupted/otherworldly",
+        "where": "crystal shards"
+       }
+      ]
+     },
+     "Y": {
+      "majors": [],
+      "minors": [
+       {
+        "problem": "Flat horizontal oval base pad looks slightly like a disc stand rather than natural rock",
+        "where": "bottom base"
+       },
+       {
+        "problem": "Dark violet base pad blends into the violet-black ground, though the bright lavender-white crystal facets remain readable",
+        "where": "bottom base in scene"
+       }
+      ]
+     },
+     "pick": "Y",
+     "why": "Y's amethyst-lavender facets fit the Otherworld demon-realm theme while retaining strong highlight contrast, whereas X looks like a standard orange fire crystal."
+    },
+    "other.crystal_big": {
+     "X": {
+      "majors": [],
+      "minors": [
+       {
+        "problem": "Base is a flat, uniform horizontal slab spanning the full 2-tile width rather than an organic rocky outcrop, and the flanking spires are nearly symmetrical",
+        "where": "bottom base and side spires"
+       }
+      ]
+     },
+     "Y": {
+      "majors": [],
+      "minors": [
+       {
+        "problem": "Base is a flat, uniform horizontal slab spanning the full 2-tile width, and the flanking spires are nearly symmetrical",
+        "where": "bottom base and side spires"
+       },
+       {
+        "problem": "Red-orange palette reuses the standard Beodeul cave crystal colors rather than a corrupted otherworld palette",
+        "where": "crystal shards"
+       }
+      ]
+     },
+     "pick": "X",
+     "why": "X's glowing amethyst-violet cluster fits the demon realm theme and pairs cohesively with the smaller violet crystal while standing out via bright lavender highlights."
+    },
+    "other.throne": {
+     "X": {
+      "majors": [],
+      "minors": [
+       {
+        "problem": "Neutral grey stone dais looks like standard castle masonry and clashes with the violet-black otherworld rock, while the purple carpet and backrest blend into the purple floor tones",
+        "where": "dais steps and throne backrest"
+       },
+       {
+        "problem": "Skull armrests are slightly boxy 5x5 squares",
+        "where": "armrest fronts"
+       }
+      ]
+     },
+     "Y": {
+      "majors": [],
+      "minors": [
+       {
+        "problem": "Skull armrests are slightly boxy 5x5 squares and the wide backrest is somewhat flat",
+        "where": "armrest fronts and backrest"
+       }
+      ]
+     },
+     "pick": "Y",
+     "why": "Y's dark violet-stained dais integrates with the Otherworld ground while its blood-red carpet and backrest create a strong, unmistakable focal point at 1x."
+    },
+    "other.bone_pillar": {
+     "X": {
+      "majors": [
+       {
+        "problem": "Dark purple vertebral shaft and top skull have almost no value or hue contrast against the violet-black floor, causing the middle of the pillar to disappear at 1x so the pale top and bottom slabs look like disconnected floating bars",
+        "where": "pillar shaft and skull in scene at 1x"
+       }
+      ],
+      "minors": []
+     },
+     "Y": {
+      "majors": [],
+      "minors": [
+       {
+        "problem": "Rib spikes protrude strictly sideways in 2D profile rather than wrapping with 3/4 depth",
+        "where": "pillar shaft sides"
+       }
+      ]
+     },
+     "pick": "Y",
+     "why": "Y reads instantly as a bone pillar at 1x thanks to its bone-white contrast against the dark floor, whereas X's dark purple shaft vanishes into the background."
+    },
+    "other.brazier": {
+     "X": {
+      "majors": [],
+      "minors": [
+       {
+        "problem": "3-frame flame animation only shifts the top 1-2 pixels while the main flame mass stays static",
+        "where": "violet flame"
+       },
+       {
+        "problem": "Four 1px light studs on the bowl rim read as slight pixel noise at 1x",
+        "where": "brazier basin rim"
+       }
+      ]
+     },
+     "Y": {
+      "majors": [
+       {
+        "problem": "Thick rectangular stone column silhouette reads as a pedestal or chimney rather than a brazier basin at 1x, and its dark violet-grey body blends into the ground",
+        "where": "brazier body at 1x"
+       }
+      ],
+      "minors": [
+       {
+        "problem": "3-frame flame animation barely moves (only 1-2 pixels at the tip change)",
+        "where": "violet flame"
+       }
+      ]
+     },
+     "pick": "X",
+     "why": "X has a clear fire-bowl silhouette with strong contrast and a larger violet flame, whereas Y looks like a dark stone pillar that blends into the floor."
+    },
+    "other.portal": {
+     "X": {
+      "majors": [],
+      "minors": [
+       {
+        "problem": "Neutral grey stone frame is slightly bright and conventional compared to the violet-black demon realm rock",
+        "where": "stone arch frame"
+       },
+       {
+        "problem": "Across the 3 open frames, the outer spiral arms stay mostly fixed while only the inner core and mid-ring highlights shift, making the swirl rotation subtle",
+        "where": "open portal frames 2-4"
+       }
+      ]
+     },
+     "Y": {
+      "majors": [
+       {
+        "problem": "In the closed state (frame 1), the dark plum-brown stone frame and dark doorway match the value and hue of the violet-black ground so closely that the gate structure nearly vanishes into the floor at 1x",
+        "where": "frame 1 (closed state) in scene at 1x"
+       }
+      ],
+      "minors": [
+       {
+        "problem": "Across the 3 open frames, the outer spiral arms stay mostly static while only the inner hook and highlights shift",
+        "where": "open portal frames 2-4"
+       }
+      ]
+     },
+     "pick": "X",
+     "why": "X's stone frame remains clearly legible against the dark floor in both closed and open states at 1x, whereas Y's closed gate blends into the ground."
+    }
+   }
+  }
+ }
+}

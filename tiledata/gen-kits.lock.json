@@ -1,11 +1,11 @@
 {
-  "note": "생성기 저장소(object-gen·char-gen·tile-gen)를 고정 커밋으로 묶는다. `npm run gen-kits:sync` 가 이 커밋에서 프롬프트·템플릿·시점 필터·팔레트·판정 기준(object-gen, 공개)을 뽑아 src/harnesses/_core/workshop/genKits/ 에 생성하고, 비공개 저장소(char-gen·tile-gen)는 편집기가 기대는 계약(CLI 동사·묶음 형식·지형 종류)만 검사한다 — 비공개 저장소의 글은 공개 모노레포에 옮기지 않는다. `-- --check` 는 생성물이 lock 과 맞는지, `-- --drift` 는 lock 과 각 저장소 main 의 차이를 본다. 저장소를 올리려면 `-- --bump <kit>`.",
+  "note": "생성기 저장소(object-gen·char-gen·tile-gen)를 고정 커밋으로 묶는다. `npm run gen-kits:sync` 가 이 커밋에서 프롬프트·템플릿·시점 필터·팔레트·판정 기준(object-gen, 공개)을 뽑아 src/harnesses/_core/workshop/genKits/ 에 생성하고, 비공개 저장소(char-gen·tile-gen)는 편집기가 기대는 계약(CLI 동사·묶음 형식·지형 종류)만 검사한다 — 비공개 저장소의 글은 공개 모노레포에 옮기지 않는다. `-- --check` 는 생성물이 lock 과 맞는지, `-- --drift` 는 lock 과 각 저장소 main 의 차이를 본다. 저장소를 올리려면 `-- --bump <kit>`. 비공개 저장소는 `fingerprint` 파일(지시문·판정 기준)의 지문만 생성물에 남겨 바뀜을 보인다. 편집기의 부탁 글은 이 lock 커밋을 적어 사용자 에이전트가 같은 판을 쓰게 한다. CI: `npm run gen-kits:check`(object-gen, 10커밋 넘게 뒤처지면 실패).",
   "kits": {
     "object-gen": {
       "repo": "https://github.com/MovieHolic-Plex/object-gen.git",
       "visibility": "public",
       "branch": "main",
-      "commit": "ca9e85c876859c79ccfb764b6a40b5999a10896b",
+      "commit": "8979bbce97b5d55d1df84746ee7160c04abd1225",
       "vendor": {
         "out": "src/harnesses/_core/workshop/genKits/object-gen.json",
         "modules": [
@@ -19,7 +19,8 @@
           "objectgen/spec.py",
           "objectgen/palette.py",
           "objectgen/project34.py",
-          "objectgen/exemplars.py"
+          "objectgen/exemplars.py",
+          "objectgen/footprint.py"
         ],
         "files": [
           "objectgen/palettes/*.pal",
@@ -59,7 +60,7 @@
       "repo": "https://github.com/MovieHolic-Plex/char-gen.git",
       "visibility": "private",
       "branch": "main",
-      "commit": "d5f263904ca2b671ab6d54942b9c3651aa3e9d22",
+      "commit": "39dd8ab31e1d8bd75b4d34b3a9c58436a4a4b06a",
       "contract": [
         {
           "file": "chargen/pack.py",
@@ -73,9 +74,16 @@
             "pack",
             "draw",
             "verify",
-            "set"
+            "set",
+            "photo"
           ]
         }
+      ],
+      "fingerprint": [
+        "chargen/prompts.py",
+        "chargen/judge.py",
+        "chargen/quality.py",
+        "chargen/verify.py"
       ]
     },
     "tile-gen": {
@@ -109,6 +117,12 @@
             "cliff"
           ]
         }
+      ],
+      "fingerprint": [
+        "tilegen/prompts.py",
+        "tilegen/vqa.py",
+        "tilegen/checks.py",
+        "tilegen/gate.py"
       ]
     }
   }

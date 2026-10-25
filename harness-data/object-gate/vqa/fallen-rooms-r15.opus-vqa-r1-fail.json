@@ -1,0 +1,74 @@
+{
+  "schema": "bdg-vqa/1",
+  "judge": "claude-opus-5-5",
+  "date": "2026-10-22",
+  "batch": "fallen-rooms-r15",
+  "commit": "a144f5e8ed",
+  "overall": "FAIL",
+  "criteriaNotes": {
+    "0_hash_check": "All seven hashes computed with object_gate.pixel_sha256 from /tmp/fsrooms/gate-r15/*.png at native size (ribs 16x48, others 16x16).",
+    "1_topdown_view": "All pieces are front-on wall/ceiling elements; no side/iso faces. Rib shafts are front-facing cylinders, brass bands and stone corbels show a lit top row plus front face; cornice ledge shows top+front. View is correct for all seven.",
+    "2_style_fit": "Palette ramps, dark outlines and wood/brass/stone shading match v5. Defects are in tiling: dome_cornice has a two-tone brick at the horizontal seam (x0-3) and a light top course under the darker shell; dome_shell has a broken course at the vertical seam (row 15 joints x2,8,14 vs rows 0-1 x5,11, no mortar). Ribs inherit these backgrounds.",
+    "3_readability_1x": "At 1x the dark brick band and inward-leaning posts give only a weak dome hint: the west/east ribs bend ~4px over 64px using full-column 1px jogs, so they read as thin straight poles with brass caps (lamp-post finials) rather than ribs sweeping into a vault as in ref-op3. East ribs carry an extra mid-wall kink (row 25) the west ribs lack, making the hall asymmetric.",
+    "4_placement": "Grounded: corbels sit at the wall base, wall-face section transparent, top cells sit in the ceiling row and the top_west/top_east bottoms seam exactly with the rib row 0 columns (x7-12 / x2-7). Centre rib correctly has no top tile.",
+    "5_silhouette_outline": "Stray/dent pixels: top_west (13,10) notch in right outline; top_east row 10 wobble (dent at (1,10), jut at (6,10)); dislocation ledges where whole columns shift on one row (west rows 2,9; east rows 2,9,25; tops rows 7,9,12)."
+  },
+  "items": [
+    {
+      "id": "atlas_biome_interior/plus/dome rib",
+      "name": "둥근 지붕 갈빗대(가운데, 1×3) (dome rib)",
+      "kind": "wall_mounted",
+      "pixelSha256": "0e884a863b177373991dc593fd2e6bed2e87c877d362ff02792402a563f4608f",
+      "verdict": "FAIL",
+      "reasons": "FAIL (derived-background defect only). Shaft itself is good: 6px cylinder x5-10 with dark outline, light-left/shadow-right ramp, grain flecks, two 8px brass bands (rows 17-18, 30-31) with highlight/shadow ends, 3/4 stone corbel rows 43-47 (light top row 43, front rows 44-46) - grounded and clean, straight as a north-wall rib should be. But its top 16px reuse the dome_cornice background verbatim, including the cornice's split brick at the tile seam: x0-3 rows 5-6 and 9-10 are (67,63,70) while the rest of those bricks (x11/x13-15) are (55,53,56), so a lighter 4px chunk repeats every 16px; and the lighter top course rows 1-2 (67,63,70) above darker courses. FIX: after fixing dome_cornice, re-paste the corrected cornice pixels into rows 0-15 behind the shaft (shaft pixels unchanged)."
+    },
+    {
+      "id": "atlas_biome_interior/plus/dome rib west",
+      "name": "둥근 지붕 갈빗대(서쪽 벽, 가운데로 휨, 1×3) (dome rib west)",
+      "kind": "wall_mounted",
+      "pixelSha256": "3cbeebc02155ce0672036bbf7769c347cbaef998acbe9ef1faddcfc6efb20827",
+      "verdict": "FAIL",
+      "reasons": "FAIL. (a) The bend is drawn as whole-column dislocations: at row 9 and again at row 2 both outlines, highlight and shadow shift +1px on the same row (rows 9-42 x5-10 -> rows 2-8 x6-11 -> rows 0-1 x7-12), so at 8x/3x the pole looks cracked into offset segments with horizontal outline ledges at (5,8)/(10,9) and (6,1)/(11,2), not a curving rib. (b) Total lean over the 48px piece is only 2px; together with the top tile ~4px over 64px, so at 1x in mock-obs the west ribs read as straight thin poles with brass caps leaning slightly, not as dome ribs sweeping toward the centre like ref-op3. (c) Top 16px inherit the dome_cornice seam defect (x0-3 rows 5-6/9-10 lighter (67,63,70) inside darker bricks; light top course rows 1-2). FIX: keep rows 19-42 straight; put the bend only in rows 0-16 (and the top tile) and make it stronger (aim ~1px per 2-3 rows near the top), staggering each step: move the leading (east) outline one row before the trailing (west) outline and fill the 1px gap with the mid-tone (158,104,75) so the edge reads as a slope; hide the lower step behind the brass band at rows 17-18 if a step is needed there; re-sync top background with the fixed cornice."
+    },
+    {
+      "id": "atlas_biome_interior/plus/dome rib east",
+      "name": "둥근 지붕 갈빗대(동쪽 벽, 가운데로 휨, 1×3) (dome rib east)",
+      "kind": "wall_mounted",
+      "pixelSha256": "a8a9d9df55ebcbb5b49057f4eb6d7eb5fd10e7dc63057e10e12ddebae44dd78f",
+      "verdict": "FAIL",
+      "reasons": "FAIL. Not a mirror of dome_rib_west (ImageOps.mirror(west) != east): it has an extra jog at row 25 (rows 25-42 x5-10, rows 9-24 x4-9) in the middle of the lower wall-face segment between the brass bands, plus jogs at row 9 (x4-9 -> x3-8) and row 2 (-> x2-7). The row-25 jog is a hard full-column offset with outline ledges at (4,24)/(10,25) - in stack-x8 and mock-obs-dome-x3 the east ribs show a visible kink mid-wall that the west ribs do not, so the hall is asymmetric. Same weak total lean and same inherited cornice-seam background as west. FIX: regenerate east as the exact horizontal mirror of the fixed west rib (shaft + bands + corbel), then re-paste the corrected cornice background (cornice is not left-right symmetric, so mirror only the shaft pixels, not the bricks); remove the row-25 jog; apply the same staggered-step curve."
+    },
+    {
+      "id": "atlas_biome_interior/plus/dome rib top west",
+      "name": "둥근 지붕 갈빗대 끝(서쪽, 천장 줄 1칸) (dome rib top west)",
+      "kind": "wall_mounted",
+      "pixelSha256": "39c606c86c9a4ecc83f57e07d6e792e60a098ec84ad560349327b22bf67bd3f3",
+      "verdict": "FAIL",
+      "reasons": "FAIL. (a) Silhouette dent: row 10 shaft is x8-12 while rows 9 and 11 have their right outline at x13, so pixel (13,10) is background - a 1px notch bitten out of the right edge (visible in r15 zoom and stack-x8). (b) Steps again move both outlines on the same row (row 12: x7-12 -> x8-13; row 9; row 7) giving a stair of offset segments. (c) The neck under the knob (rows 6-7, x10-13) is only 2px of colour wide, so at 1x the tip reads as a lamp-post cap/finial rather than a rib tapering into the vault; with only ~4px of travel across 16px the 'curving toward the centre' is barely perceptible in mock-obs. (d) Background is dome_shell, which has the row-15/row-0 course break (see dome_shell) - row 15 joints at x2,8,14 directly under rows 0-1 joints at x5,11 with no mortar row. FIX: fill (13,10) with outline (26,14,6) and shift row 10 interior to l,o,n,m so the right edge is continuous; stagger steps (leading east outline first, mid-tone fill); increase travel to ~6px across the tile so the knob ends clearly east of the shaft base; re-paste background from the fixed dome_shell."
+    },
+    {
+      "id": "atlas_biome_interior/plus/dome rib top east",
+      "name": "둥근 지붕 갈빗대 끝(동쪽, 천장 줄 1칸) (dome rib top east)",
+      "kind": "wall_mounted",
+      "pixelSha256": "1a89a8327936098c5014397e8f6477ee95a5a1ee3e42549d447134147b7ae5ac",
+      "verdict": "FAIL",
+      "reasons": "FAIL. Not a mirror of top_west and has its own kink: row 10 shaft x2-6 while row 9 is x1-5 and row 11 x1-6, so the left edge has a 1px dent at (1,10) and the right edge juts at (6,10) - a sideways wobble in the middle of the tile. Neck rows 6-7 x1-4 is 2px of colour; knob x0-5 butts the tile's west edge. Same weak lean and same inherited dome_shell row-15 course break. FIX: rebuild as the mirror of the fixed top_west shaft/knob (mirror only shaft+knob pixels, then paste the fixed dome_shell background), removing the row-10 wobble; keep the knob 1px clear of x0 or confirm the neighbouring tile is shell so the outline closes."
+    },
+    {
+      "id": "atlas_biome_interior/plus/dome cornice",
+      "name": "둥근 지붕 돌 처마 띠(천장 줄 1칸, 벽면 바로 위) (dome cornice)",
+      "kind": "wall_mounted",
+      "pixelSha256": "06bab46f66b497aa12c03dd469df80c44f55510134070a93e6870129198f4a16",
+      "verdict": "FAIL",
+      "reasons": "FAIL. (a) Horizontal tiling seam: the brick spanning the tile edge in rows 4-6 and 8-10 is two tones - x13-15 / x10-15 are (55,53,56) but x0-3 (rows 5-6) and x0 (rows 9-10) are (67,63,70), so a lighter vertical sliver repeats every 16px along the whole band (clearly visible in a 4x tiled render). (b) Tone order runs the wrong way: top course rows 0-2 is the lighter (67,63,70)/(82,76,81) brick, lower courses rows 4-10 are darker (55,53,56), so directly under the even darker dome_shell (46,38,48) there is a light stripe - the band brightens then drops instead of darkening upward. (c) No mortar line at row 0 meeting shell row 15. Ledge rows 11-15 (light top 11-12, front 13-15) is fine and reads as a cornice at 1x. FIX: make x0-3 rows 5-6 and x0 rows 9-10 (55,53,56) (or move both seam bricks fully to one tone); swap the course tones so rows 1-2 use (55,53,56) and the bottom course rows 9-10 uses (67,63,70) (darkening upward into the shell); then re-sync the rib top cells."
+    },
+    {
+      "id": "atlas_biome_interior/plus/dome shell",
+      "name": "둥근 지붕 안쪽 면(천장 줄 1칸, 처마 위) (dome shell)",
+      "kind": "wall_mounted",
+      "pixelSha256": "1b45180f19923a5dbc94abab91d6942d9a89c7b5c9e3e8fd7df30e5d362a6884",
+      "verdict": "FAIL",
+      "reasons": "FAIL. Vertical tiling seam: 16 rows do not divide into its 2-body+1-mortar course period. Mortar rows are 2,5,8,11,14, so row 15 + rows 0-1 form a 3-row course, but row 15's joints are at x2,8,14 while rows 0-1 joints are at x5,11 - every 16px there is a broken course with misaligned head joints and no mortar line (visible as a jagged band in a 4x3 tiled render and in the ceiling band of mock-obs-x3). Also no mortar between shell row 15 and cornice row 0. Palette (46,38,48)/(46,49,55)/(55,53,56)/(25,23,26) is suitably darker than the cornice and the small bricks do read as a receding vault at 1x. FIX: use a period that divides 16 (e.g. 3 body + 1 mortar = 4 courses with shorter 5-6px bricks to stay 'smaller' than the cornice's 8px bricks, or 1 mortar + 3 body), with the mortar row at row 15 so it also separates shell from cornice; keep alternate courses offset by half a brick; re-paste into both rib top tiles."
+    }
+  ]
+}

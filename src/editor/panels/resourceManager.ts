@@ -203,6 +203,12 @@ export function renderResourceManager(
     try {
       const trimmed = url.trim();
       if (!trimmed) return;
+      let parsed: URL | null = null;
+      try { parsed = new URL(trimmed); } catch { parsed = null; }
+      if (!parsed || (parsed.protocol !== "http:" && parsed.protocol !== "https:")) {
+        toast("http 또는 https 주소만 가져올 수 있습니다", "error");
+        return;
+      }
       toast("URL에서 리소스를 다운로드하는 중...", "ok");
       const res = await fetch(trimmed);
       if (!res.ok) {
@@ -213,8 +219,9 @@ export function renderResourceManager(
       const fileName = trimmed.split("/").pop()?.split("?")[0] || `imported_${Date.now()}`;
       const file = new File([blob], fileName, { type: blob.type });
       onDropFile(file);
-    } catch (err) {
-      toast(err instanceof Error ? err.message : "URL 가져오기 실패", "error");
+    } catch {
+      // 브라우저 예외 원문('Failed to fetch')은 영어라 그대로 보이지 않는다.
+      toast("URL 가져오기 실패: 주소에 접근할 수 없습니다", "error");
     }
   };
   const audioActions: AudioActions = { import: onImport, delete: deleteUploadedAsset };

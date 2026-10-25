@@ -27,7 +27,8 @@
   위상 = (x % P) + P * (y % P).
 멱등: 처음 돌 때의 count 를 forestBase 로 적어 두고 다음부터는 그 뒤만 다시 쓴다. 텍스처는 한 줄 16칸 · 4096px 이하(GPU 한도)여야 한다.
 
-  python3 scripts/content/append-beodeul-forest-canopy.py
+  python3 scripts/content/append-beodeul-forest-canopy.py              (칸 번호 그대로 그림만 다시 굽기 — 이미 덧붙인 뒤의 기본)
+  python3 scripts/content/append-beodeul-forest-canopy.py --renumber   (덧붙인 칸을 처음부터 다시 번호 매김 — 저장된 맵의 숲 칸 번호가 바뀐다)
 """
 import hashlib, json, math
 from pathlib import Path
@@ -108,18 +109,10 @@ BAYER = (np.array([[0, 8, 2, 10], [12, 4, 14, 6], [3, 11, 1, 9], [15, 7, 13, 5]]
 SHADOW_MUL = np.array([0.5, 0.56, 0.7])   # 위 겹 수관이 오른쪽 아래로 드리우는 그림자 — 짙고 푸르게(빛 쪽 누런 기와 색 온도 대비)
 CAST = (4, 3)                             # 드리운 그림자 밀림(아래 px, 오른쪽 px)
 
-# 명암 단(어둠 → 빛). 활엽(참나무 따뜻한·느릅 올리브·라임 싱그러운), 바늘잎(소나무·삼나무 — 더 짙고 차갑다), 덤불, 설원 가문비·눈.
-RAMP = {
-    "oak":    [(12, 34, 34), (22, 58, 44), (36, 88, 50), (62, 122, 52), (110, 160, 58), (176, 204, 88)],
-    "elm":    [(18, 36, 32), (32, 62, 40), (54, 94, 44), (88, 126, 48), (132, 160, 62), (186, 198, 104)],
-    "lime":   [(10, 36, 40), (18, 64, 52), (30, 100, 58), (56, 138, 62), (102, 178, 72), (166, 220, 106)],
-    "pine":   [(10, 30, 36), (18, 50, 50), (30, 74, 60), (46, 100, 70), (76, 130, 80), (128, 168, 100)],
-    "cedar":  [(14, 32, 32), (26, 54, 44), (42, 80, 54), (64, 108, 62), (100, 140, 72), (152, 180, 96)],
-    "shrub":  [(10, 32, 28), (18, 54, 36), (30, 82, 42), (52, 116, 48), (92, 152, 58), (150, 194, 84)],
-    "spruce": [(8, 26, 36), (14, 44, 52), (22, 66, 64), (36, 94, 78), (60, 124, 92), (104, 160, 116)],
-    "fir":    [(10, 24, 34), (18, 40, 50), (28, 60, 62), (44, 84, 74), (70, 112, 86), (112, 148, 108)],
-    "snow":   [(110, 130, 172), (150, 170, 204), (192, 206, 230), (224, 232, 246), (246, 250, 255)],
-}
+# 명암 단(어둠 → 빛). 활엽(참나무·느릅·라임), 바늘잎(소나무·삼나무 — 더 짙고 차갑다), 덤불, 설원 가문비·눈.
+# 색의 정본은 scripts/content/beodeul-redraw/palette.json 의 leaf_ramps 하나다(손 도트 원본 그림·마을 낱 나무·숲 수관이 같은 단을 쓴다).
+# 2026-10-22 활엽 세 단(oak·elm·lime)을 풀밭(칸 737, L*58)과 떨어지게 짙고 차갑게 다시 잡았다 — 옛 단은 4번째 단이 풀 색과 같았다.
+RAMP = {k: [tuple(c) for c in v] for k, v in json.loads((ROOT / "scripts/content/beodeul-redraw/palette.json").read_text())["leaf_ramps"].items()}
 
 STYLES = {
     "leaf": {
@@ -512,8 +505,66 @@ def bake():
         shade[style] = [add(shade_tile(style, phx, nw, ne)) for phx in range(P) for nw in (False, True) for ne in (False, True)]
     return tiles, canopy, shade, period
 
+def main_in_place(cat):
+    """칸 번호 범위를 그대로 두고 그림만 다시 굽는다(2026-10-22 나무 다시 그리기). 저장된 맵이 가리키는 칸 번호가 덧붙인 범위를 벗어나지 않게,
+    새로 구운 칸 그림마다 지금 목록에서 그 그림을 쓰는 (수종, 위상, 이웃 모양) 자리가 가장 많이 가리키던 옛 번호를 하나씩 짝지어(헝가리안) 그 번호에 쓰고,
+    목록은 새 짝에 맞춰 다시 쓴다(새로 깔리는 숲은 정확). 옛 굽기에서 두 자리가 한 번호를 나눠 쓰던 곳은 저장된 맵에서 짝 그림이 보인다."""
+    from scipy.optimize import linear_sum_assignment
+    tiles, canopy, shade, period = bake()
+    assert period == cat["forestPeriod"], "forestPeriod changed — rerun with --renumber"
+    base = cat["forestBase"]
+    sheet = np.array(Image.open(PNG).convert("RGBA"))
+    pairs = []                                          # (옛 번호 - base, 새 칸)
+    for s_, v in canopy.items():
+        for ph, row in enumerate(v):
+            pairs += [(cat["forestCanopy"][s_][ph][m] - base, n) for m, n in enumerate(row) if n >= 0 and cat["forestCanopy"][s_][ph][m] >= 0]
+    for s_, v in shade.items():
+        pairs += [(cat["forestShade"][s_][i] - base, n) for i, n in enumerate(v) if n >= 0 and cat["forestShade"][s_][i] >= 0]
+    olds = sorted({o for o, _ in pairs}); oi = {o: i for i, o in enumerate(olds)}
+    # 새 그림 종류가 옛 번호보다 많으면(옛 프로젝트의 칸 수는 늘릴 수 없다) 가장 닮은 두 그림을 하나로 합쳐 번호 수에 맞춘다.
+    alias = list(range(len(tiles)))
+    if len(tiles) > len(olds):
+        F = np.array([t.astype(np.float32).ravel() for t in tiles]); sq = (F * F).sum(1)
+        D = sq[:, None] + sq[None, :] - 2 * F @ F.T; np.fill_diagonal(D, np.inf)
+        for _ in range(len(tiles) - len(olds)):
+            i, j = np.unravel_index(np.argmin(D), D.shape)
+            alias[j] = i; D[j, :] = np.inf; D[:, j] = np.inf
+        def root(n):
+            while alias[n] != n: n = alias[n]
+            return n
+        alias = [root(n) for n in range(len(tiles))]
+        pairs = [(o, alias[n]) for o, n in pairs]
+        print(f"forest canopy: {len(tiles) - len(olds)} near-identical tiles merged to fit {len(olds)} slots")
+    roots = sorted(set(alias)); ri = {n: j for j, n in enumerate(roots)}
+    w = np.zeros((len(olds), len(roots)))
+    for o, n in pairs: w[oi[o], ri[n]] += 1
+    r, c = linear_sum_assignment(-w)
+    slot = {roots[j]: olds[i] for i, j in zip(r, c)}
+    assert len(slot) == len(roots)
+    kept = sum(w[i, j] for i, j in zip(r, c)); total = len(pairs)
+    used = set(slot.values())
+    for o in olds:                                      # 남는 옛 번호(새 그림이 더 적을 때)도 옛 그림을 남기지 않는다 — 가장 많이 가리키던 새 그림
+        if o in used: continue
+        k = base + o
+        sheet[(k // COLS) * T:(k // COLS + 1) * T, (k % COLS) * T:(k % COLS + 1) * T] = tiles[roots[int(w[oi[o]].argmax())]]
+    for n in range(len(tiles)):
+        if alias[n] != n: slot[n] = slot[alias[n]]
+    for n, o in slot.items():
+        if alias[n] != n: continue
+        k = base + o
+        sheet[(k // COLS) * T:(k // COLS + 1) * T, (k % COLS) * T:(k % COLS + 1) * T] = tiles[n]
+    rel = lambda n: -1 if n < 0 else base + slot[n]
+    cat["forestCanopy"] = {s_: [[rel(n) for n in ph] for ph in v] for s_, v in canopy.items()}
+    cat["forestShade"] = {s_: [rel(n) for n in v] for s_, v in shade.items()}
+    Image.fromarray(sheet, "RGBA").save(PNG, optimize=True)
+    import sys as _s, pathlib as _pl; _s.path.insert(0, str(_pl.Path(__file__).resolve().parents[2] / 'scripts/content/rtp-attribution')); from rtp_check import require_credit; require_credit(PNG)  # EasyRPG RTP CC BY credit check (public/assets/ATTRIBUTION.md)
+    CAT.write_text(json.dumps(cat, ensure_ascii=False, separators=(",", ":")) + "\n", encoding="utf-8")
+    print(f"forest canopy in place: 새 그림 {len(tiles)}종 → 옛 번호 {len(olds)}칸, 저장된 맵 자리 {int(kept)}/{total} 같은 그림 그대로")
+
 def main():
     cat = json.loads(CAT.read_text(encoding="utf-8"))
+    if "forestCanopy" in cat and "--renumber" not in __import__("sys").argv:
+        return main_in_place(cat)
     base = cat.get("forestBase", cat["count"])
     old = Image.open(PNG).convert("RGBA")
     kept = np.array(old)[:(base // COLS) * T]

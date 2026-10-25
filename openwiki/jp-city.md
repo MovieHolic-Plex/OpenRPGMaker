@@ -267,6 +267,8 @@ node scripts/content/jp-city/tamper_builder.mjs               # 조립기 32건 
 
 **시뮬레이션**(순수, `createTransitSim`/`stepTransitSim`): 열린 노선은 간격마다 시작 칸이 비었을 때 한 대, 앞차와 1칸 띄움(다른 노선 탈것 포함), 정류장에서 `waitSec` 동안 문 열기(막혀 있으면 정차 확정 안 함), 주인공 칸은 끝까지 피함. 교차로 교착은 **엇갈린 방향 탈것에만 6초** 막히면 겹쳐 지나간다(`STUCK_RELEASE_SEC`; 같은 방향 줄·버스 뒤·주인공 앞은 그대로 선다). 처음 들어올 때 90초 미리 돌린다.
 
+**장면이 붙잡는 열차**(2026-10-22, 『첫사랑』 막차): 노선 `callSwitch` — 그 스위치가 켜져 있을 때만 새 차가 나온다(꺼져 있으면 미리 돌리기에서도 안 나오고, 켜지는 걸음에 바로 한 대). 정류장 `departSwitch` — 선 차는 그 스위치가 켜질 때까지 문을 연 채 기다리고, 켜지면 `DEPART_DOOR_SEC`(1.5초) 안에 떠난다. 런타임은 세션 스위치를 `stepTransitSim(sim, dt, isBlocked, switchOn)` 에 넘긴다(`player/playSceneTransit.ts`). 사람을 태우는 장면은 안내 방송에서 부르고, 서 있는 열차의 문 칸(몸 칸)으로 걸어 들어가 지운 뒤 `departSwitch` 를 켠다 — `scene-npc-vanish` 는 이때만 열차 몸 칸을 출구로 본다. 자동 운행 열차(붙잡지 않는 정류장)에 사람을 걸어 넣지 않는다.
+
 **런타임**(`src/player/playSceneTransit.ts`): 1/30초 고정 걸음, 스프라이트 원점 = 발자국 왼쪽 아래, 맵 칸 크기 비율로 확대, 깊이 `characterDepth("same", y)`. `playerCanStep` 이 탈것 몸을 막고, `performAction` 이 상자보다 먼저 `tryBoardTransit`(정류장에 문 연 탈것 칸을 보고 「조사」 → `transferTo`). 테스트 훅 `window.__oprnTransit()`(노선·탈것 key·사각·프레임·막힌 초).
 
 **조수 도구**(`src/editor/tools/transitTools.ts`, 도메인 map): `inspect_map_transit`(차도 띠·레일 줄·지하철/전철 선로 띠(1층 `jp-subway-track`, 「경로 머리 행 y=…」)·노선·120초 시험) · `set_map_transit`(auto = 1층 `jp-lane-road` 에서 맵 끝→끝 곧은 띠를 찾아 좌측통행 차 흐름, `busStops` = 버스 머리가 서는 차선 칸, `tram` = 2층 `jp-tram-rail-h/v` 레일 — 6칸 안에 나란한 두 레일이면 복선 양방향, 단선은 한 방향 / routes = 칸 경로 직접 / removeRouteIds / clear). `auto.subway:{board, stopName, centerX, vehicle}` = 1층 선로를 찾아 30칸 열차가 맵 밖에서 들어와 몸 가운데가 `centerX`(기본 맵 가운데)에 서게 한다(선로 둘이 6칸 안이면 양방향, `subway`/`tram` 만 주면 차 흐름은 안 깐다). 정류장은 모두 `at:"center"` 로 **몸 가운데 칸**을 줄 수 있다 — 조수가 머리 칸을 계산하다 정문 옆에 세우던 실측(헤드리스 시험 A: 정문 x33~36 인데 몸 x22~30) 때문. 결과 요약에 정류장마다 「서면 몸 x a~b」 를 돌려준다. 몸이 길 밖이면 거절한다 — 차·버스는 1층 생활도로(`off-road`), 지하철·전철은 1층 선로, 노면전차는 2층 레일(`off-track`; 실측: 조수가 선로 y4~5 를 y=3 으로 줬다). 정류장 몸이 60% 넘게 맵 밖이면 경고. 정류장이 차선 위가 아니면 차선 행을 알려 주며 거절. 헤드리스 조수 시험 픽스처 `scripts/content/jp-city/qa/transit-assist-fixture.mts`(노선 없는 학교·역 맵 + 새 번들 타일셋 — 헤드리스 로드는 `ensureBundledTilesets` 를 안 돈다). 띠 찾기 순수 함수 `src/project/transitAuto.ts`. `jpCityPolicy` 의 노출 도구·상세 순서 ⑤에 들어 있다.
@@ -489,3 +491,18 @@ object-gen 흐름(시점 판정 통과 참고 그림 → Opus 손 도트 A/B →
 - 참고문서 용도 `jp-forest`(4쪽·그림 8장 — 접지 비교 그림은 접지가 늘 켜져 뺐다)는 **따로 굽는다** — `forest_refs_scenes.mts`(실제 도구 결과·변조 검출 JSON) → `bake_forest_refs.py` → `src/assets/jpForestReferences.json` + `public/assets/jp-city-references/forest-*.png`. `jpCity.ts` 가 `jpCityReferences.json` 뒤에 붙여 `ensureJpCityReferences` 로 기존 프로젝트에도 심는다(bake_refs.py 재굽기가 숲 문서를 지우지 않게 파일을 나눴다). 숲 칸이 구워진 시트로만 굽는다(시트 칸 수 확인).
 - 실조수 시험 `scripts/qa/jp-forest-assistant-run.mts`(Pi 실행기, `argonproxy/gemini-4-argon-high` 강도 medium, 새 SQLite 폴더 저장·재로드·1배 그림 → `verify-shots/jp-forest-assistant/<label>/`).
 - **옛 번호는 옛 그림을 지킨다 (2026-10-21):** 핀은 덧붙이기만이다. 같은 키로 그림만 바뀐 칸(예: #3098 깊은 지붕·차량 다시 그리기)이 옛 번호에 덮어써지면 이미 깔린 맵이 바뀐다. `bake_jp.py` 의 `Cells._frozen_key` 가 옛 시트(정의 count 미만 번호)의 화소와 새 그림(야외는 색 계약 적용 후)을 비교해 다르면 키를 `<키>@r<sha8>` 로 바꿔 새 번호를 받게 한다. 굽기 보고 `tiles.rekeyed_art`(바꾼 키 수)·`tiles.old_cells_changed`(옛 번호 중 화소가 바뀐 칸, 0 이 아니면 굽기 거절). 실측(origin/main 핀 기준 임시 굽기): 칸 19,614 · legacy 1,837 · 다시 키 344 · 옛 칸 화소 변경 0 · 핀 이동 0. 전에 적었던 「옛 칸 1,493」은 이동이 아니라 legacy(이번 굽기가 만들지 않는 번호)였고, 그중 344칸이 제자리에서 그림이 바뀌고 있었다 — 이 규칙으로 막았다.
+
+## 거리 계단 — 육교·옆 계단·단상·벽 사다리 (블록 `street_stairs`, `BLOCK_ORDER` 끝, 2026-10-22)
+
+- 원본 `scripts/content/jp-city/blocks/street_stairs.py` (코드 손 도트, modern3 잠긴 팔레트, 빛 왼쪽 위). 칸 20071~20129(59칸, 덧붙이기만 — 옛 핀·화소 불변).
+  사용자 견본(`.herdr-web-ui/paste-…png`)은 **구조만** 읽었다(두 갈래·층계참·그레이팅). 화소·색을 따거나 커밋·게시하지 않는다.
+- 키트 7: `jp-overpass-stair-e/-w`(2×8, 13단 + 2×3 층계참, 가운데 손잡이) · `jp-overpass-deck-red`(2×6 가로 반복: 북 난간·바닥 2줄·남 난간·거더·기둥·그늘) ·
+  `jp-side-stair-l/-r`(3×2, 콘크리트 판 4단, 짝) · `jp-stage-platform`(2×4 가로 반복, 나무 마루 + 옹벽) · `jp-wall-ladder`(1×3, 4층 덧그림).
+  초록 상판(`kokuban`)은 관문 눈이 12/12 「정면 입면」으로 막아 이번에 넣지 않았다.
+- 이름·설명은 모두 «올라가는 계단/사다리 · 들어서는 쪽 · 오를 때 보는 쪽 · 도착»을 적는다. 육교와 옆 계단은 같은 맵 안의 오르내림(`leads: same`, 층 이동 이벤트 없음), 사다리는 다른 맵(옥상)으로 가는 `up`.
+- 통행은 칸 방향(`dirs`)으로 굽는다(`bake_jp.py` 의 dirs 패치): 육교 계단 칸은 위·아래만, 층계참 0줄(먼 난간) 막힘, 상판 2줄은 남쪽으로 못 나간다(남 난간),
+  옆 계단 0줄은 동서만·1줄(앞면) 막힘, 단상 0줄은 북쪽으로 못 나간다. 엔진 `canMove` 가 나가는 칸·들어오는 칸 양쪽 방향을 다 보므로 옆으로 새지 않는다.
+- 3/4 관문: 부품(계단·상판·옆 계단·단상)은 kind `part` 이고 조립 그림 `_gate/jp-overpass-assembled-red.png`·`jp-stage-assembled.png`(kind `structure`)의 영수증이 화소 그대로 덮는다
+  (`_gate/assembled.json` → `gate_rooms.EXTRA_MANIFESTS`). 육교 조립·사다리 PASS(미보정 프로필 임시통과), 단상 조립은 눈 4/12 로 REFER → Opus 적대 VQA r24(major 0) 뒤 위임 허용
+  (`harness-data/object-gate/vqa/jp-street-stairs.opus-vqa-r24.json`).
+- 출하 플레이어 걷기: `scripts/qa/runtime/jp-street-stairs-fixture.mts` → `jp-street-stairs.scenario.mjs`(육교 오르기·층계참 막힘·상판 건너기·내려오기·옆 막힘·옆 계단으로 단상 건너기·사다리).

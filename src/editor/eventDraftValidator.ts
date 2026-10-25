@@ -1,4 +1,5 @@
 import { actorQueryConditionProblems } from "@/editor/panels/eventEditor/actorQueryConditionForm";
+import { isBuiltinFieldFxId } from "@/project/containerFx";
 import { commandReferenceField, m2ReferenceField, withEventDraftIssueDetails } from "./eventDraftIssueDetails";
 import { m2CommandById } from "@/project/eventCommands/m2Catalog";
 import {
@@ -652,6 +653,7 @@ function validateCondition(
     case "relativeFacing":
     case "hiding":
     case "pursuitActive":
+    case "eventSeesPlayer":
     case "clearCount":
     case "endingSeen":
     case "newGamePlus":
@@ -1145,7 +1147,7 @@ function validateCommand(
       }
       return;
     case "showAnimation":
-      require("reference.animation.missing", "전투 애니메이션", command.animationId, refs.animations);
+      if (!isBuiltinFieldFxId(command.animationId)) require("reference.animation.missing", "전투 애니메이션", command.animationId, refs.animations);
       if (typeof command.target === "object") {
         if ("eventId" in command.target) {
           require("reference.event.missing", "애니메이션 대상 이벤트", command.target.eventId, refs.events, true);
@@ -1582,6 +1584,10 @@ function validateMoveRoute(
     }
     if (move.kind === "playSe") {
       requireReference(issues, pageId, "reference.resource.missing", "이동 경로 효과음", move.resourceId, refs.resources, pageField("event-page-move-route-sound-id"), commandPath);
+    }
+    if ((move.kind === "approach" || move.kind === "turnToward" || move.kind === "exitVia" || move.kind === "enterVia") && move.target && !["@player", "player", "@this", "this-event"].includes(move.target)) {
+      const what = move.kind === "approach" ? "다가갈 대상 이벤트" : move.kind === "turnToward" ? "바라볼 대상 이벤트" : "드나들 문 이벤트";
+      requireReference(issues, pageId, "reference.event.missing", what, move.target, refs.events, pageField("event-page-move-route-stage-target"), commandPath);
     }
   }
 }

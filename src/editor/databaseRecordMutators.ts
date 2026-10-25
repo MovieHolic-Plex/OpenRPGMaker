@@ -66,7 +66,7 @@ export function updateSkillRecord(database: DatabaseRecords, id: string, patch: 
   if ("gen1CriticalRate" in patch) record.gen1CriticalRate = patch.gen1CriticalRate;
   if ("actionSkill" in patch) record.actionSkill = patch.actionSkill;
   if ("movePriority" in patch) record.movePriority = patch.movePriority;
-  for (const key of ["damageFormula", "criticalRate", "criticalMultiplier", "cooldownTurns", "oncePerBattle", "hitSequence", "resource2Cost", "limitSkill", "partyGaugeCost", "hpCostPercent", "drainPercent", "recoilPercent", "fixedDamage", "multiHit", "flinchChance", "retroChoreographyId", "area", "comboActorIds", "comboRequires", "comboCombinedStats", "comboSwitchId", "moveMotion", "statStageEffects"] as const) {
+  for (const key of ["damageFormula", "criticalRate", "criticalMultiplier", "cooldownTurns", "oncePerBattle", "hitSequence", "resource2Cost", "limitSkill", "partyGaugeCost", "hpCostPercent", "drainPercent", "recoilPercent", "fixedDamage", "multiHit", "flinchChance", "retroChoreographyId", "area", "comboActorIds", "comboRequires", "comboMpCosts", "comboCombinedStats", "comboSwitchId", "comboStaging", "exploitStates", "moveMotion", "statStageEffects"] as const) {
     if (key in patch) Object.assign(record, { [key]: patch[key] });
   }
   database.skills[index] = normalizeSkillRecord(record);
@@ -142,6 +142,8 @@ export function updateEquipmentRecord(database: DatabaseRecords, id: string, pat
   if ("stateDefenseIds" in patch && patch.stateDefenseIds !== undefined) record.stateDefenseIds = patch.stateDefenseIds;
   if ("stateDefenseMode" in patch && patch.stateDefenseMode !== undefined) record.stateDefenseMode = patch.stateDefenseMode;
   if ("stateResistanceChance" in patch && patch.stateResistanceChance !== undefined) record.stateResistanceChance = patch.stateResistanceChance;
+  if ("damageDealtPercent" in patch) { if (patch.damageDealtPercent) record.damageDealtPercent = patch.damageDealtPercent; else delete record.damageDealtPercent; }
+  if ("damageTakenPercent" in patch) { if (patch.damageTakenPercent) record.damageTakenPercent = patch.damageTakenPercent; else delete record.damageTakenPercent; }
   if ("actionWeapon" in patch) record.actionWeapon = patch.actionWeapon;
   if ("grantsSkillIds" in patch) record.grantsSkillIds = patch.grantsSkillIds;
   if ("grantsCommand" in patch) record.grantsCommand = patch.grantsCommand;
@@ -162,7 +164,10 @@ export function updateEnemyRecord(database: DatabaseRecords, id: string, patch: 
   if ("skillIds" in patch && patch.skillIds !== undefined) record.skillIds = patch.skillIds;
   if ("monsterResourceId" in patch) record.monsterResourceId = patch.monsterResourceId;
   if ("battleScalePercent" in patch) record.battleScalePercent = patch.battleScalePercent;
+  if ("lungeSpeedPercent" in patch) { if (typeof patch.lungeSpeedPercent === "number" && patch.lungeSpeedPercent !== 100) record.lungeSpeedPercent = patch.lungeSpeedPercent; else delete record.lungeSpeedPercent; }
   if ("collapseEffect" in patch) record.collapseEffect = patch.collapseEffect;
+  if ("hideHp" in patch) { if (patch.hideHp === true) record.hideHp = true; else delete record.hideHp; }
+  if ("damageTypeRates" in patch) { if (patch.damageTypeRates) record.damageTypeRates = patch.damageTypeRates; else delete record.damageTypeRates; }
   if ("graphicHue" in patch && patch.graphicHue !== undefined) record.graphicHue = patch.graphicHue;
   if ("transparent" in patch && patch.transparent !== undefined) record.transparent = patch.transparent;
   if ("flying" in patch && patch.flying !== undefined) record.flying = patch.flying;

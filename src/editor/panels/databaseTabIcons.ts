@@ -38,6 +38,7 @@ const TAB_ICONS: Record<DatabaseTab, readonly SvgNodeSpec[]> = {
     { tag: "path", attrs: { d: "M6 18v-1a5 5 0 0 1 10 0v1" } },
   ],
   promotionTree: [{ tag: "path", attrs: { d: "M11 4v7M5 11h12M5 11v6M17 11v6" } }, { tag: "circle", attrs: { cx: "11", cy: "4", r: "2" } }, { tag: "circle", attrs: { cx: "5", cy: "18", r: "2" } }, { tag: "circle", attrs: { cx: "17", cy: "18", r: "2" } }],
+  comboTechs: [{ tag: "path", attrs: { d: "M4 18L12 4l8 14" } }, { tag: "path", attrs: { d: "M8 12h8" } }, { tag: "circle", attrs: { cx: "4", cy: "18", r: "2" } }, { tag: "circle", attrs: { cx: "20", cy: "18", r: "2" } }],
   skillTrees: [{ tag: "path", attrs: { d: "M5 17l6-12 6 12H5zM11 5v12" } }, { tag: "circle", attrs: { cx: "11", cy: "5", r: "2" } }, { tag: "circle", attrs: { cx: "5", cy: "17", r: "2" } }, { tag: "circle", attrs: { cx: "17", cy: "17", r: "2" } }],
   // 그룹 밖 고정 — 대시보드 격자
   overview: [
@@ -271,6 +272,11 @@ const TAB_ICONS: Record<DatabaseTab, readonly SvgNodeSpec[]> = {
     { tag: "circle", attrs: { cx: "16.6", cy: "5.6", r: "2.2" } },
     { tag: "circle", attrs: { cx: "16.6", cy: "16.4", r: "2.2" } },
     { tag: "path", attrs: { d: "M7.5 10.1 14.5 6.5M7.5 11.9l7 3.6" } },
+  ],
+  // 대사 — 말풍선과 글줄
+  dialogue: [
+    { tag: "path", attrs: { d: "M4 4.6h14a1.4 1.4 0 0 1 1.4 1.4v8a1.4 1.4 0 0 1-1.4 1.4H9.4L5.6 18.6v-3.2H4A1.4 1.4 0 0 1 2.6 14V6A1.4 1.4 0 0 1 4 4.6z" } },
+    { tag: "path", attrs: { d: "M6.4 8.6h9.2M6.4 11.6h6" } },
   ],
 
   // ── 시스템 ──

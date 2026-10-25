@@ -1,5 +1,16 @@
 > 저장소 전환 안내(2026-09-21): 아래 옛 원격 DB·설정·명령은 과거 기록이다. 현재 저장·이관 지침은 [프로젝트 저장 전환](storage-retirement.md)과 AGENTS를 따른다.
 
+## 대사 책상 — 선택 필드 `project.dialogueDesk` (2026-10-24)
+
+`{ voices: [{speaker, note, updatedAt?}], proposals: [{id, lineId, baseHash, before, after, reason?, batchId?, instruction?, source: "ai"|"human", createdAt}] }`
+(`src/project/dialogueDesk.ts`). 화자 말투 메모와 아직 받지 않은 윤문 제안. 런타임은 읽지 않는다 — 게임 대사는 제안을 받을 때만 명령 자체가 바뀐다.
+로드(`io/shape.ts`)에서 `normalizeDialogueDesk` 로 다듬고 비면 키를 지운다. 제안은 최대 400, 메모는 800자.
+store.update 안에서 루트 키 **삭제**는 반영되지 않으므로 쓰기 쪽은 빈 책상을 대입한다. 변경 영역 라벨 「대사 책상」.
+
+`window?: {key, variants:[{face, speaker, bodyWidthPx, fontSizePx, maxLines, fontLabel}], measuredAt?}`(2026-10-25) — 편집기가 런타임 CSS 로 잰 대화창 기준. 조수 워커의 창 넘침 판정용 캐시이고 키(해상도·글꼴·대화창 모양)가 다르면 무시한다. 쓰기는 다른 책상 필드를 보존해야 한다(모든 writer 가 `...desk` 로 펼친다).
+
+`sceneNotes?: [{sceneId, summary, source, updatedAt?}]`(2026-10-25) — 「대본」 장면 한 줄 요약(장면 id = `ev/<맵>/<이벤트>/<쪽>` · `ce/…` · `tp/…`, 200자, 최대 2000). 사람(대본 화면)·조수(`set_scene_summaries`)가 쓴다. 빈 요약은 지운다.
+
 ## 세계 지도 연결 정의 — 선택 필드 `project.worldAtlases` (2026-10-05)
 
 6종의 이동 구조·실제 mapId·입구/문·연결·관문 switch id·핀을 보존한다.
@@ -1609,11 +1620,20 @@ DB 시스템 화면: 「보기 범위」(`db-field-system-view-preset`)가 해�
 해상도만 고르는 「빠른 선택」의 「새 프로젝트 기본」 표시도 480×270 에 붙는다. 장르 고정 해상도(몬스터 수집 480×320 등)는 그대로다.
 『폴른 스타』(`createChronoBellFlagshipDemo`, `flagship/chronoBell.ts`, `CHRONO_BELL_STYLE_LOCK`)는 480×270 · 배율 1(30×17칸, 코드 생성이라 저장본 없음 — 640×360·2 는 너무 좁다는 판정).
 - 1막 재구성(2026-10-20, 감사 `~/claude-viz/fallen-star-audit-1.html`): 이야기·대사 사양은 `flagship/fallenStarStory.ts`(장 구성기 `buildJrpgChapter` 입력), 짓기·후처리는 `chronoBell.ts`.
-  맵 5장 = 왕도 → 천문대 → 숲길(`author_wild_route` 막다른 길+공터) → 화로의 방(20×15, `brazier_ignition_order`) → 지하. 오프닝 5컷은 `fallenStarOpening.ts` —
-  게임 맵을 1:1 로 구운 배경(`src/assets/fallenStarOpeningBackdrops.ts`, 굽기 `scripts/content/flagship/bake_fallen_star_backdrops.mts`) 위 1배 칩.
-  통짜 플레이 `scripts/qa/runtime/fallen-audit.scenario.mjs`, 맵 순회 `fallen-tour`, 오프닝 `fallen-opening`(픽스처 `RES_WHICH=fallen res480-fixture.mts`).
+  맵 5장 = 왕도 → 천문대 → 숲길(`author_wild_route` 막다른 길+공터) → 화로의 방(20×15, `brazier_ignition_order`) → 지하.
+- 타이틀·오프닝(3차, 2026-10-21 사용자 「생성 이미지로 제대로」): 이미지 모델(god-tibo-imagen, 유료 대체 끔) 후보를 컷마다 셋 만들어 감독이 골랐고(`by: supervisor`),
+  원본을 화면 배율 64색 도트로 누른 그림이다(`src/assets/fallenStarOpeningBackdrops.ts` — 타이틀 480×270, 오프닝 컷 528×297). 사람·관·별똥별은 그림 안에 있어
+  칩을 얹지 않고, `fallenStarOpening.ts` 는 빛(glow·flicker)·입자·카메라만 준다(관 클로즈업만 정수 2배). 타이틀은 `moonlitCastle` 프리셋 + 그림 좌표에 맞춘 효과
+  (별똥별 꼬리 `glint`, 별 머리·등불 `glow`, 운하 `water`, 하늘 `motes`). 옛 맵 굽기(`bake_fallen_star_backdrops.mts`)는 지웠다.
+- 맵 마감(3차): `flagship/fallenStarMapPolish.ts` — 주인 없는 2층 그림자 지우기(그림자 칸 → 키트 원점을 거꾸로 따라가 키트가 남았는지 본다),
+  화로의 방 「긴 화덕」 띠 걷기, 추락지 구덩이 둑(`rimPit`: 버들항 자연 팩 `bankGrass` 를 흙 칸 둘레 2층에). 숲길 풀숲은 `wildRouteBeodeul.ts` 가
+  타원으로 깎고 칸마다 고사리·헤더 덤불을 채운다(`fringeBeodeulThicket` — 납작한 짙은 깔개로 보이던 것). 꺼진 화로는 `puzzleMechanicsLogic.ts` 에서 석탄통이다.
+  발렌은 필드 칩(actor1 #4)과 같은 걷기 칩 전투 시트(`charset-battler-actor1-4`)로 싸운다.
+  통짜 플레이 `scripts/qa/runtime/fallen-audit.scenario.mjs`, 첫 10분 `fallen-first10`(오프닝을 건너뛰지 않고 컷마다 촬영), 보스 전략별 실플레이 `fallen-boss.probe.mjs`,
+  맵 순회 `fallen-tour`, 오프닝 `fallen-opening`(픽스처 `RES_WHICH=fallen res480-fixture.mts`).
   함정: 새 게임 파티는 `session.partyActorIds` 에서 온다(`system.startActorIds` 만 바꾸면 동료가 대사에만 있다) · 장 구성기가 의뢰 적으로
-  `troop_<prefix>_boss` 를 만들므로 같은 id 로 무리를 미리 만들면 덮인다 · 480×270 에서 질문+보기 셋 선택창은 아래 위치일 때 셋째 보기가 잘린다(엔진 미수정, 내용 쪽에서 질문을 앞 대사로 뺐다).
+  `troop_<prefix>_boss` 를 만들므로 같은 id 로 무리를 미리 만들면 덮인다 · `fill_region` 같은 도구는 맵 객체를 바꿔 끼우므로 도구 뒤에는 `M(id)` 로 다시 집는다 ·
+  타이틀 입장 연출 중 첫 Enter 는 연출만 건너뛴다(QA 는 오프닝이 뜰 때까지 누른다). 질문+보기 셋 선택창은 #3128 로 480×270 에 들어간다 — 질문을 앞 대사로 빼던 우회는 지웠다.
 
 `system.playSurfaceScale?: "integer" | "fit"`(2026-10-20, `src/project/playSurfaceScaleMode.ts`): 플레이 화면을 창에 키우는 방식. 생략값 규칙 `resolvePlaySurfaceScaleMode` —
 몬스터 수집(에메랄드)은 항상 integer, 저작값이 있으면 그 값, 해상도를 저장한 프로젝트는 integer(정수 배율, 남는 창은 여백, 창이 1배보다 작을 때만 비정수 축소),

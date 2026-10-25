@@ -1,0 +1,80 @@
+{
+ "panel": "blind pair panel 2 (3 fresh Opus + 1 Argon), 2026-10-23",
+ "rule": "majority of 4; on a 2-2 tie the majority of the 3 Opus judges decides",
+ "delegatedBy": "delegated by user to supervisor 2026-10-23",
+ "prompt": "# Blind pick panel — dungeon chipset candidates\n\nYou are one judge on an independent panel. Each board shows a Beodeul reference crop (the quality bar, an existing\nOPRN 16px chipset in 3/4 top-down view) and two anonymous candidates labelled X and Y for the same item (scene at 2x, scene at 1x,\npieces magnified). Both candidates already passed a defect review; your job is to choose which one is BETTER to ship\ninto the shared dungeon chipset. Do not edit any files; only read the PNG files with the Read tool.\n\nChoose by, in order: (1) reads correctly in 3/4 top-down view at 1x; (2) sits in the same game as the Beodeul reference\n(palette harmony, texture density, shading steps, no toy look); (3) seamless joins / no visible 16px repeat; (4) how well it\nserves its purpose (rock fill = solid cave rock mass; water edge = water pool edges; tower wall = round-tower inner wall kit with back wall and floor; bone pile = goblin camp bone/loot pile; tent = goblin camp hide tent;\ncampfire = goblin camp fire with 4 frames; door = dungeon door closed/open). Ignore which one is labelled first.\n\nBoards:\n- /home/main/.cache/dgart/panel/gap-props-r1__gap.bone_pile__A1-A2.png\n- /home/main/.cache/dgart/panel/gap-props-r1__gap.goblin_tent__A1-A2.png\n- /home/main/.cache/dgart/panel/gap-tower-r1__gap.tower_wall__A1-A2.png\n\nReply with ONLY a JSON object: {\"<board file name without .png>\": {\"pick\": \"X\" or \"Y\", \"why\": \"one sentence\"}, ...}\n",
+ "results": [
+  {
+   "board": "gap-props-r1__gap.bone_pile__A1-A2",
+   "round": "gap-props-r1",
+   "item": "gap.bone_pile",
+   "labels": {
+    "X": {
+     "key": "A2",
+     "sha256": "b95ecbb39470ac5c7333e6cf08f8b2e8b00df8982221ba3e15ef20aec0ee6005"
+    },
+    "Y": {
+     "key": "A1",
+     "sha256": "548c8256c2e5103f7b78cae0f096b4a97669fe915b38dbdca43710a484bb643c"
+    }
+   },
+   "votes": {
+    "opus1": "Y",
+    "opus2": "Y",
+    "opus3": "Y",
+    "argon": "Y"
+   },
+   "pick": "Y",
+   "pickKey": "A1",
+   "pickArtSha256": "4a7fde0d2db996abf6662cd3ba54549d0e275a744660058782b3f8762c0a2c03"
+  },
+  {
+   "board": "gap-props-r1__gap.goblin_tent__A1-A2",
+   "round": "gap-props-r1",
+   "item": "gap.goblin_tent",
+   "labels": {
+    "X": {
+     "key": "A1",
+     "sha256": "71ba9f5088ebc5392cc97d046572b31aa5b4bffbea4d9e5e589ea3fbbff8a3a9"
+    },
+    "Y": {
+     "key": "A2",
+     "sha256": "551376bcbe583a0d0bf34c93d384976953393e60d156b0b5cd78b0fd803a448c"
+    }
+   },
+   "votes": {
+    "opus1": "X",
+    "opus2": "X",
+    "opus3": "X",
+    "argon": "X"
+   },
+   "pick": "X",
+   "pickKey": "A1",
+   "pickArtSha256": "435b6c8b0eddcb37286cdfa9d6c53eb0476889150fad5e5c3b94c0bdb4722b49"
+  },
+  {
+   "board": "gap-tower-r1__gap.tower_wall__A1-A2",
+   "round": "gap-tower-r1",
+   "item": "gap.tower_wall",
+   "labels": {
+    "X": {
+     "key": "A1",
+     "sha256": "ae545c1a3b0efaa572d7eb5100e46b691256888d3db6b24e39a11bca37866c8d"
+    },
+    "Y": {
+     "key": "A2",
+     "sha256": "aefeef6a6e6966c1207e6d81ef511ea95eced5dde3182cb1d3a42142313af203"
+    }
+   },
+   "votes": {
+    "opus1": "Y",
+    "opus2": "Y",
+    "opus3": "Y",
+    "argon": "X"
+   },
+   "pick": "Y",
+   "pickKey": "A2",
+   "pickArtSha256": "267c7c8d1d4c37790392756bb4d3d612457c15abcc99d11b8b50fb9f8d9d3db2"
+  }
+ ]
+}

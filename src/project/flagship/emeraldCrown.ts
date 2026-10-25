@@ -7,6 +7,8 @@ import { deserialize, serialize } from "@/project/io";
 import type { Command, EventPageMovement, GameEvent, GameMap, Project } from "@/project/types";
 import { FLAGSHIP_BEAT_MANIFESTS } from "./beats";
 import { DAWNING_SKYBIRDS_CHARSET_ID } from "./dawningSkybirdsAsset";
+import { remapAstraBuildingKits } from "./emeraldCrownBuildings";
+import { polishFirstTenMinutes } from "./emeraldCrownFirstTen";
 import type { FlagshipDemoBuildResult } from "./types";
 
 /**
@@ -21,18 +23,25 @@ const SPECIES_NAMES: Readonly<Record<string, string>> = {
   mx_species_spriglet: "토리프",
   mx_species_bramblet: "실바리온",
   mx_species_canopine: "벨데로드",
-  mx_species_coalbit: "파이린",
-  mx_species_kilnclaw: "볼케이건",
+  mx_species_coalbit: "숯꼬미",
+  // 볼케이건은 기존 작품 이름과 소리가 가까웠다(2026-10-21). 2026-10-24 불 계통이 양으로 바뀌어 박치기 양 「불박치」.
+  mx_species_kilnclaw: "불박치",
+  mx_enemy_kilnclaw: "불박치",
   mx_species_pyroscale: "마그렉스",
-  mx_species_rivulet: "아쿠링",
+  mx_species_rivulet: "아가핀",
   mx_species_tideling: "마린웨이",
   mx_species_abyssal: "네레이드",
+  // 헤라크로스와 한 글자 차이라 겹치던 이름 — 과수원 딱정벌레.
+  mx_enemy_coalbit: "숯꼬미",
+  mx_enemy_rivulet: "아가핀",
+  mx_species_orchardant: "과수뿔",
+  mx_enemy_orchardant: "과수뿔",
 };
 
 const PLACE = {
   region: "아스트라 군도",
   home: "다우닝 시티",
-  route1: "1번 도로 · 여명 해안길",
+  route1: "1번 도로 · 새싹 들길",
   town2: "실바나 마을",
   gym: "실바나 체육관",
   route2: "2번 도로 · 솔방울 언덕",
@@ -43,8 +52,13 @@ const PLACE = {
 /** 생성기 고유명 → 이 세계 고유명. 긴 것부터 바꾼다(「새벽섬 마을」이 「새벽섬」보다 먼저). */
 const NAME_SWAPS: ReadonlyArray<readonly [string, string]> = [
   ["꼬마초", "토리프"],
-  ["불씨점", "파이린"],
-  ["물방울", "아쿠링"],
+  ["불씨점", "숯꼬미"],
+  ["물방울", "아가핀"],
+  // 생성기 로스터의 옛 이름이 한글 원작 이름과 한 글자 차이라 먼저 바꾼다.
+  ["파이린", "숯꼬미"],
+  ["아쿠링", "아가핀"],
+  ["볼케이건", "불박치"],
+  ["가마발톱", "불박치"],
   ["1번길 · 별싹 들판", PLACE.route1],
   ["별빛 리그 · 챔피언", PLACE.league],
   ["별빛 리그", "아스트라 리그"],
@@ -84,7 +98,7 @@ function fixJosa(text: string, names: readonly string[]): string {
   return next;
 }
 
-const JOSA_NAMES = [...new Set(NAME_SWAPS.map(([, to]) => to)), "토리프", "파이린", "아쿠링"];
+const JOSA_NAMES = [...new Set(NAME_SWAPS.map(([, to]) => to)), "토리프", "숯꼬미", "아가핀", "과수뿔"];
 
 function rewriteStrings(value: unknown, rewrite: (text: string) => string): void {
   if (Array.isArray(value)) {
@@ -111,11 +125,11 @@ function swapNames(text: string): string {
 /** 생성기 문장 중 이 세계에서 어색하거나 틀린 것 — 문장 그대로 찾아 바꾼다(맵 전체). */
 const LINE_REWRITES: Readonly<Record<string, string>> = {
   "다우닝 시티에 온 걸 환영해요. 북동쪽 집이 천문박사의 연구소예요. 북쪽의 안내원이 다음 길을 알려 줍니다.":
-    "다우닝 시티에 온 걸 환영해요. 광장 오른쪽 위 회색 지붕 건물이 오르비스 천문 연구소예요. 북쪽 길로 나가면 1번 도로예요.",
+    "다우닝 시티에 온 걸 환영해요. 광장 오른쪽 위 초록 지붕의 큰 건물이 오르비스 천문 연구소예요. 북쪽 길로 나가면 1번 도로예요.",
   "새벽이면 언덕의 등대와 몬스터들이 함께 눈을 뜬다.":
-    "요즘 새벽마다 등대 불빛이 깜빡여. 그래서인지 여명의 날개 새들이 바다 위에서 자꾸 길을 잃는대.",
+    "요즘 새벽마다 등대 불빛이 깜빡여. 그래서인지 「여명의 날개」 새들이 바다 위에서 자꾸 길을 잃는대.",
   "연구소 친구가 기다릴 거예요.\n북동쪽 파란 지붕을 찾아보세요.":
-    "나루가 아침부터 연구소 앞을 서성이던데요.\n광장 오른쪽 위 회색 지붕 건물이에요.",
+    "나루가 아침부터 연구소 앞을 서성이던데요.\n광장 오른쪽 위 초록 지붕의 큰 건물이에요.",
   "실바나 마을에 온 걸 환영해요. 북동쪽 건물에서 지역의 관장에게 도전할 수 있어요. 북쪽의 안내원이 다음 길을 알려 줍니다.":
     "실바나 마을에 온 걸 환영해요. 오른쪽 위 유리 지붕 건물이 실바나 체육관이에요. 관장 유림 님은 풀 타입 몬스터를 써요.",
   "숲을 돌보는 사람과 몬스터가 매년 새 나무를 심는다.":
@@ -139,18 +153,18 @@ const LINE_REWRITES: Readonly<Record<string, string>> = {
     "빛은 누군가 가둬 둘 수 있는 게 아니었군. 이제… 나도 이 군도를 처음부터 다시 걸어 봐야겠어.",
   "아스트라 리그의 문이 열렸다. 실바나 마을에서 마지막 도전을 시작하자.":
     "새벽 하늘로 여명의 날개 새떼가 다시 날아올랐다. 실바나 마을 북쪽 끝, 챔피언 전당의 문이 열렸다.",
-  "1번 도로 · 여명 해안길. 야생 몬스터는 포획할 수 있지만 조련사의 몬스터는 포획할 수 없습니다. 길을 걷기 전에 체력과 기술 PP를 확인하세요.":
-    "1번 도로 · 여명 해안길. 키 큰 풀숲에는 야생 몬스터가 숨어 있다. 다른 트레이너의 몬스터는 잡을 수 없다.",
+  "1번 도로 · 새싹 들길. 야생 몬스터는 포획할 수 있지만 조련사의 몬스터는 포획할 수 없습니다. 길을 걷기 전에 체력과 기술 PP를 확인하세요.":
+    "1번 도로 · 새싹 들길. 키 큰 풀숲에는 야생 몬스터가 숨어 있다. 다른 트레이너의 몬스터는 잡을 수 없다.",
   "솔방울 언덕에는 길에서 만나기 힘든 몬스터가 살아요. 도감에 빈칸이 있다면 천천히 탐색해 보세요.":
     "솔방울 언덕에는 1번 도로에서 보기 힘든 몬스터가 살아요. 체육관에 가기 전에 여기서 동료를 단련해도 좋아요.",
-  "북쪽 길: 1번 도로 · 여명 해안길": "북쪽: 1번 도로 · 여명 해안길",
+  "북쪽 길: 1번 도로 · 새싹 들길": "북쪽: 1번 도로 · 새싹 들길",
   "북쪽 길: 솔방울 언덕": "북쪽: 2번 도로 · 솔방울 언덕",
   "북쪽 길: 실바나 마을": "북쪽: 실바나 마을",
   "다우닝 시티 북동쪽 연구소에서 천문박사와 첫 동료를 만나라.": "다우닝 시티의 오르비스 천문 연구소에서 첫 동료를 만나라.",
   "실바나 마을의 별모래 신전에서 밤막회사를 막고 등대를 복구하라.": "별모래 신전에서 밤막회사를 막고 등대의 빛을 되찾아라.",
   "아스트라 리그의 사천왕과 챔피언 나루에게 도전하라.": "챔피언 전당에서 나루와 마지막 승부를 겨뤄라.",
   "포획구슬 세 개와 고급 회복약, 성장 사탕 하나를 찾았다!": "포획 구슬 세 개와 상급 회복약, 성장 사탕 하나를 찾았다!",
-  "몬스터 센터에 어서 오세요! 동료들을 건강하게 해 드릴까요?": "회복 센터에 어서 오세요! 동료들을 건강하게 해 드릴까요?",
+  "몬스터 센터에 어서 오세요! 동료들을 건강하게 해 드릴까요?": "회복 센터에 어서 오세요!\n동료들을 건강하게 해 드릴까요?",
   "리그에서 다시 만나자. 서로 끝까지 동료들을 지키는 거야.": "챔피언 전당에서 다시 만나자. 그때는 내가 이길 거야!",
   "희귀 몬스터가 당신을 기다리고 있다.": "별빛 속으로 사라졌다. 언젠가 다시 나타날 것이다.",
   "빛을 잃은 별무늬가 새겨져 있다. 섬의 등불이 모두 돌아온 뒤 다시 와 보자.": "빛을 잃은 별무늬가 새겨져 있다. 챔피언이 된 뒤에 다시 와 보자.",
@@ -182,15 +196,15 @@ const MAP_TITLES: Readonly<Record<string, string>> = {
   mx_map_home_house_2f: "다우닝 시티 · 내 방",
   mx_map_home_house: "다우닝 시티 · 우리 집",
   mx_map_home: PLACE.home,
-  mx_map_home_center: "다우닝 시티 · 회복 센터",
-  mx_map_home_center_2f: "다우닝 시티 · 회복 센터 2층",
+  mx_map_home_center: "다우닝 · 회복 센터",
+  mx_map_home_center_2f: "다우닝 · 회복 센터 2층",
   mx_map_home_mart: "다우닝 시티 · 도구점",
   mx_map_school: "다우닝 트레이너 학교",
   mx_map_lab: "오르비스 천문 연구소",
   mx_map_meadow: PLACE.route1,
   mx_map_grove: PLACE.town2,
-  mx_map_grove_center: "실바나 마을 · 회복 센터",
-  mx_map_grove_center_2f: "실바나 마을 · 회복 센터 2층",
+  mx_map_grove_center: "실바나 · 회복 센터",
+  mx_map_grove_center_2f: "실바나 · 회복 센터 2층",
   mx_map_grove_mart: "실바나 마을 · 도구점",
   mx_map_grove_house: "실바나 마을 · 주민의 집",
   mx_map_grove_house_2f: "실바나 마을 · 주민의 집 2층",
@@ -200,11 +214,12 @@ const MAP_TITLES: Readonly<Record<string, string>> = {
   mx_map_league_0: PLACE.league,
 };
 
+// 첫 인사는 박사가 선 연구소 컷으로, 꺼져 가는 등대 이야기는 바닷가 컷으로(2026-10-21 적대 검수: 인사하는 박사가 화면에 없었다).
 const OPENING_PAGES: EmeraldOpeningPage[] = [
-  { id: "emerald_intro_welcome", shot: "dawn", text: "안녕! 만나서 반갑구나.\n나는 오르비스 천문 연구소의 천문박사란다." },
+  { id: "emerald_intro_welcome", shot: "lab", text: "안녕! 만나서 반갑구나.\n나는 오르비스 천문 연구소의 천문박사란다." },
   { id: "emerald_intro_world", shot: "route", text: "아스트라 군도의 새벽 하늘에는 「여명의 날개」 새떼가\n등대 불빛을 따라 섬과 섬을 건넌단다." },
-  { id: "emerald_intro_lab", shot: "lab", text: "그런데 요즘 등대가 자꾸 꺼져 가는구나.\n밤막회사가 별모래 신전의 별빛을 모으고 있다더군." },
-  { id: "emerald_intro_companions", shot: "stage", text: "풀의 토리프, 불의 파이린, 물의 아쿠링.\n첫 동료는 네가 직접 고르렴." },
+  { id: "emerald_intro_lab", shot: "dawn", text: "그런데 요즘 등대가 자꾸 꺼져 가는구나.\n밤막회사가 별모래 신전의 별빛을 모으고 있다더군." },
+  { id: "emerald_intro_companions", shot: "stage", text: "풀의 토리프, 불의 숯꼬미, 물의 아가핀.\n첫 동료는 네가 직접 고르렴." },
   { id: "emerald_intro_rival", shot: "gym", text: "실바나 체육관의 관장 유림, 그리고 네 소꿉친구 나루도\n너를 기다리고 있단다." },
   { id: "emerald_intro_departure", shot: "town", text: "다우닝 시티의 네 방에서 모험이 시작된다.\n준비가 되면 연구소로 오렴!" },
 ];
@@ -249,9 +264,9 @@ const DAWNING_CITY_SKETCH: TownSketch = {
     "##.==....==..==.............##",
     "##.====================.....##",
     "##.====================.===.##",
-    "##...f~~~~f..==..T...f......##",
-    "##...F~~~~F..==.............##",
-    "##....~~~~...==.............##",
+    "##.T....U....==..T...f......##",
+    "##...f.......==.............##",
+    "##.....F.....==.............##",
     "##############################",
     "##############################",
     "##############################",
@@ -277,15 +292,13 @@ function retargetReturnPortal(map: GameMap | undefined, toMapId: string, x: numb
   });
 }
 
-/** 하늘을 나는 장식 새 — 위층(above)이라 길을 막지 않고, 두 칸을 오가며 난다. */
+/**
+ * 하늘을 나는 장식 새 — 위층(above)이라 길을 막지 않는다. 비행(fly)이라 칸에 묶이지 않고 맵 위를 호를 그리며 날다가
+ * 가끔 지붕·땅에 앉는다(@/player/playSceneAmbientFlyers). 예전에는 두 칸을 오가는 칸 걸음이라 상자에 갇힌 새처럼 보였다
+ * (2026-10-23 「새들이 공중에 있다기보다 어딘가에 갇혀 있음」).
+ */
 function createSkybirdEvent(id: string, name: string, x: number, y: number, characterIndex: number, direction: "up" | "right" | "down" | "left"): GameEvent {
-  const opposite = { up: "down", down: "up", left: "right", right: "left" } as const;
-  const movement: EventPageMovement = {
-    type: "custom",
-    speed: 3,
-    frequency: 5,
-    route: { repeat: true, skippable: true, moves: [{ kind: "move", dir: direction }, { kind: "move", dir: opposite[direction] }] },
-  };
+  const movement: EventPageMovement = { type: "fly", speed: 3, frequency: 3 };
   return {
     id,
     name,
@@ -357,8 +370,8 @@ function startInBedroom(project: Project, introEvent: GameEvent | undefined): vo
   intro.y = start.y;
   intro.id = "mx_map_home_house_2f_opening";
   const commands: Command[] = [
-    textCommand("오늘은 천문박사님께 첫 동료를 받기로 한 날이다. 창밖에서 여명의 날개 새들이 길을 잃은 듯 빙빙 돌고 있다."),
-    textCommand("방향키로 걷고, Z/Enter로 말을 걸고, X/Esc로 메뉴를 연다. 계단은 방 오른쪽 위에 있다."),
+    textCommand("오늘은 첫 동료를 받는 날!"),
+    textCommand("방향키로 걷고, Z/Enter로 말을 걸고, X/Esc로 메뉴를 연다."),
     { kind: "setSwitch", switchId: "mx_intro", value: true },
   ];
   for (const page of intro.pages ?? []) page.commands = commands;
@@ -375,7 +388,7 @@ function retellMom(project: Project): void {
       kind: "fork",
       condition: { kind: "switch", switchId: "mx_starter", value: true },
       then: [textCommand("모험에서 가장 중요한 건 무사히 돌아오는 일이야. 힘들면 언제든 쉬어 가렴.", "엄마")],
-      else: [textCommand("박사님이 아침부터 기다리셔. 연구소는 광장 오른쪽 위 회색 지붕 건물이야. 나루는 벌써 나갔단다!", "엄마")],
+      else: [textCommand("박사님이 아침부터 기다리셔. 연구소는 광장 오른쪽 위 초록 지붕의 큰 건물이야. 나루는 벌써 나갔단다!", "엄마")],
     },
     ...page.commands.filter((c) => c.kind !== "text"),
   ];
@@ -385,7 +398,7 @@ function retellMom(project: Project): void {
 function retellGymTrainers(project: Project): void {
   const lines: Record<string, [string, string]> = {
     mx_map_grove_gym_grunt_0: ["덩굴지기 하람", "덩굴 문을 연 건 너구나? 그럼 이번엔 내 동료를 넘어 봐!"],
-    mx_map_grove_gym_grunt_1: ["정원사 소이", "가시 덤불을 정리한 솜씨는 봤어. 승부 솜씨도 보여 줄래?"],
+    mx_map_grove_gym_grunt_1: ["정원사 소이", "관장님 정원을 지나가려면 내 승부부터 받아 줘야지!"], // 덤불을 자르기 전에 눈이 마주쳐도 맞는 말(2026-10-21 적대 검수)
     mx_map_grove_gym_grunt_2: ["수련생 도윤", "관장님 앞까지 그냥 보낼 순 없지. 풀 타입의 끈기를 맛봐!"],
   };
   for (const [eventId, [speaker, line]] of Object.entries(lines)) {
@@ -405,8 +418,9 @@ function rebuildDawningCity(project: Project): GameMap {
   composeTown(project, homeMap, overworldTemplate, DAWNING_CITY_SKETCH);
   const portalCoords: Readonly<Record<string, { readonly x: number; readonly y: number; readonly returnMapId?: string; readonly returnX?: number; readonly returnY?: number }>> = {
     mx_map_home_to_mx_map_home_house: { x: 9, y: 9, returnMapId: "mx_map_home_house", returnX: 9, returnY: 10 },
-    mx_map_home_to_mx_map_lab: { x: 18, y: 9, returnMapId: "mx_map_lab", returnX: 18, returnY: 10 },
-    mx_map_home_to_mx_map_school: { x: 24, y: 10, returnMapId: "mx_map_school", returnX: 24, returnY: 11 },
+    // 연구소는 광장 오른쪽 위 가장 큰 초록 지붕 건물(gable_a), 트레이너 학교는 그 왼쪽 회색 지붕 통나무집 — 박사의 연구소가 민가와 똑같은 집이었다(2026-10-20 첫 10분 검수).
+    mx_map_home_to_mx_map_lab: { x: 24, y: 10, returnMapId: "mx_map_lab", returnX: 24, returnY: 11 },
+    mx_map_home_to_mx_map_school: { x: 18, y: 9, returnMapId: "mx_map_school", returnX: 18, returnY: 10 },
     mx_map_home_to_mx_map_home_mart: { x: 3, y: 14, returnMapId: "mx_map_home_mart", returnX: 3, returnY: 15 },
     mx_map_home_to_mx_map_home_center: { x: 9, y: 14, returnMapId: "mx_map_home_center", returnX: 9, returnY: 15 },
     mx_map_home_to_mx_map_meadow: { x: 14, y: 2, returnMapId: "mx_map_meadow", returnX: 14, returnY: 3 },
@@ -422,6 +436,18 @@ function rebuildDawningCity(project: Project): GameMap {
     if (!next) continue;
     ev.x = next.x;
     ev.y = next.y;
+    // 건물 문으로 들어서면 안쪽(위)을 보고 선다 — 「down」 이면 동료가 「뒤」인 앞쪽에 놓여 주인공과 겹친다(r5).
+    if (next.returnMapId) {
+      const faceInward = (value: unknown): void => {
+        if (Array.isArray(value)) { value.forEach(faceInward); return; }
+        if (!value || typeof value !== "object") return;
+        const node = value as { kind?: string; mapId?: string; direction?: string };
+        if (node.kind === "transfer" && node.mapId === next.returnMapId) node.direction = "up";
+        Object.values(node).forEach(faceInward);
+      };
+      faceInward(ev.commands);
+      faceInward(ev.pages);
+    }
     if (next.returnMapId && next.returnX !== undefined && next.returnY !== undefined) {
       retargetReturnPortal(project.maps[next.returnMapId], homeMap.id, next.returnX, next.returnY);
     }
@@ -453,17 +479,89 @@ function rebuildDawningCity(project: Project): GameMap {
         trigger: { kind: "action" },
         commands: [
           textCommand("오늘은 준비 중이에요. 등대가 다시 밝아지면 새벽 바다를 보며 문을 열 거예요.", "전망 카페 바리스타"),
-          textCommand("여명의 날개 새들은 등대 불빛을 보고 섬을 건너요. 불빛이 흐려지니 다들 이 광장 위만 맴돌고 있죠.", "전망 카페 바리스타"),
+          textCommand("「여명의 날개」 새들은 등대 불빛을 보고 섬을 건너요. 불빛이 흐려지니 다들 이 광장 위만 맴돌고 있죠.", "전망 카페 바리스타"),
         ],
       },
     ],
   });
+  tuneTownLife(homeMap);
   homeMap.events.push(
     createSkybirdEvent("ev_dawning_skybird_gull", "광장 연못 여명갈매기", 18, 13, 0, "left"),
-    createSkybirdEvent("ev_dawning_skybird_swallow", "광장 창공제비", 11, 7, 1, "right"),
+    createSkybirdEvent("ev_dawning_skybird_swallow", "광장 창공제비", 13, 7, 1, "right"),
     createSkybirdEvent("ev_dawning_skybird_flock", "여명의 날개 새떼", 20, 5, 3, "left"),
   );
   return homeMap;
+}
+
+/**
+ * 다우닝 시티 주민 셋이 같은 박자로 「한 칸 걷고 1.5초 서기」를 오른쪽 둘·왼쪽 둘로 되풀이했다(2026-10-23 「NPC 걷는 게
+ * 자연스럽지 않다」). 사람마다 다른 하루를 준다 — 걸음은 보통 빠르기(주인공의 절반, 칸당 320ms)로 이어 걷고
+ * 방향을 바꿀 때만 멈춘다(엔진 산책 리듬 @/player/npcStroll).
+ *  - 마을 주민(6,10): 집 앞 마당을 느긋하게 거닐며 가끔 멈춰 둘러본다(무작위 산책, 처음 자리에서 3칸 안).
+ *  - 주민 1(7,16): 광장 앞길을 한 바퀴 — 오른쪽 넷 · 아래 하나 · 왼쪽 넷 · 위 하나, 모퉁이마다 잠깐 선다.
+ *  - 주민 2: 카페 앞에서 바리스타와 이야기한다 — 마주 보고 서서 가끔 고개를 돌렸다 돌아본다.
+ */
+function tuneTownLife(homeMap: GameMap): void {
+  const byId = (id: string) => homeMap.events.find((event) => event.id === id);
+  const setMovement = (id: string, movement: EventPageMovement): void => {
+    for (const page of byId(id)?.pages ?? []) page.movement = movement;
+  };
+  setMovement("mx_map_home_local", { type: "random", speed: 3, frequency: 3, moveIntervalMs: 1700 });
+  setMovement("mx_map_home_ambient_resident_1", {
+    type: "custom", speed: 3, frequency: 3, moveIntervalMs: 1100,
+    route: {
+      repeat: true, skippable: false,
+      moves: [
+        // 가게 앞을 한 바퀴 — 두 칸 가다 서고, 진열창을 잠깐 들여다보고, 돌아온다. 걸음 길이·멈춤이 고르지 않게.
+        { kind: "move", dir: "right" }, { kind: "move", dir: "right" }, { kind: "wait" },
+        { kind: "move", dir: "right" }, { kind: "move", dir: "right" },
+        { kind: "move", dir: "down" },
+        { kind: "move", dir: "left" }, { kind: "turn", dir: "up" }, { kind: "wait" }, { kind: "wait" },
+        { kind: "move", dir: "left" }, { kind: "move", dir: "left" }, { kind: "move", dir: "left" },
+        { kind: "move", dir: "up" }, { kind: "wait" },
+      ],
+    },
+  });
+  const chatter = byId("mx_map_home_ambient_resident_2");
+  const barista = byId("ev_dawning_cafe_barista");
+  if (chatter && barista) {
+    chatter.x = barista.x - 1;
+    chatter.y = barista.y;
+    const face = (event: GameEvent, direction: "left" | "right"): void => {
+      for (const page of event.pages ?? []) {
+        if (!page.graphic) continue;
+        const { characterIndex } = decodeCharsetFrameIndex(page.graphic.pattern ?? 0);
+        page.graphic = { ...page.graphic, direction, pattern: charsetFrameIndex({ characterIndex, direction, pattern: 1 }) };
+      }
+    };
+    face(chatter, "right");
+    face(barista, "left");
+    setMovement("mx_map_home_ambient_resident_2", {
+      type: "custom", speed: 3, frequency: 3, moveIntervalMs: 1300,
+      route: {
+        repeat: true, skippable: true,
+        moves: [
+          { kind: "turn", dir: "right" }, { kind: "wait" }, { kind: "wait" }, { kind: "wait" },
+          { kind: "turn", dir: "down" }, { kind: "wait" },
+          { kind: "turn", dir: "right" }, { kind: "wait" }, { kind: "wait" }, { kind: "wait" }, { kind: "wait" },
+          { kind: "turn", dir: "down" }, { kind: "turn", dir: "right" }, { kind: "wait" },
+        ],
+      },
+    });
+    for (const page of barista.pages ?? []) {
+      page.movement = {
+        type: "custom", speed: 3, frequency: 3, moveIntervalMs: 1500,
+        route: {
+          repeat: true, skippable: true,
+          moves: [
+            { kind: "turn", dir: "left" }, { kind: "wait" }, { kind: "wait" }, { kind: "wait" }, { kind: "wait" },
+            { kind: "turn", dir: "down" }, { kind: "wait" },
+            { kind: "turn", dir: "left" }, { kind: "wait" }, { kind: "wait" }, { kind: "wait" },
+          ],
+        },
+      };
+    }
+  }
 }
 
 function rescaleEnemy(enemy: Project["database"]["enemies"][number], level: number): void {
@@ -478,19 +576,30 @@ function rescaleEnemy(enemy: Project["database"]["enemies"][number], level: numb
 /**
  * 생성기 기본값 위에서 난도·속도를 맞춘다 — 트레이너와 거의 다 싸우는 보통 플레이어가 15~20분에 엔딩.
  * - 연구소 라이벌의 포포비는 첫 턴부터 풀 스타터에 두 배인 벌레 기술을 써서 2턴에 졌다(2026-10-20 실측) → 몸통 기술만.
- * - 실바나 체육관은 수련생 셋·관장 모두 플레이어 스타터 토리프였다 → 같은 풀 계열 다른 종(베르카부·브램보어·헤라크론).
+ * - 실바나 체육관은 수련생 셋·관장 모두 플레이어 스타터 토리프였다 → 같은 풀 계열 다른 종(베르카부·브램보어·과수뿔).
  * - 신전 보스 4마리·챔피언 6마리는 배지 하나짜리 데모에 길다 → 3마리·4마리.
  */
 function tunePacing(project: Project): void {
+  // 정직한 여정에서 신전 보스·리그를 두 번씩 졌다 — 둘째 몬스터가 싸울 일이 없어 Lv5 에 머물렀다(2026-10-21 실측). 경험치 나누기를 켜 벤치도 절반을 받게 한다.
+  project.system.rewardPolicy = { ...(project.system.rewardPolicy ?? {}), expShare: true };
   const enemies = project.database.enemies;
   const byId = (id: string) => enemies.find((e) => e.id === id);
   const reskin: Record<string, { species: string; level?: number }> = {
     // 다 싸운 플레이어가 Lv6 일 때 수련생 Lv6~7 에게 6턴 만에, 관장 Lv8·10 에게 2턴 만에 졌다(2026-10-20 실플레이) → 수련생 5·5·6, 관장 7·8. 다시 재니 Lv7 스타터가 수련생 Lv6 개미(벌레)·관장 7·8 에게 6턴 만에 두 번 졌다 → 수련생 5·5·5, 관장 6·7.
-    mx_enemy_mx_map_grove_gym_grunt_0_0: { species: "mx_enemy_podback", level: 5 },
-    mx_enemy_mx_map_grove_gym_grunt_1_0: { species: "mx_enemy_brambleboar", level: 5 },
-    mx_enemy_mx_map_grove_gym_grunt_2_0: { species: "mx_enemy_orchardant", level: 5 },
+    // 연구소 라이벌의 첫 동료: 포포비(벌레)는 불 스타터에 두 배·풀 스타터에 반감이라 불은 1턴, 풀은 5턴이었다(2026-10-21 적대 검수 r3) →
+    // 세 스타터 모두 보통 상성인 볼트온(전기). 기술은 아래에서 몸통 기술만 남긴다(전기 기술은 물에 두 배).
+    mx_enemy_mx_map_lab_rival_0: { species: "mx_enemy_zaptoe", level: 4 },
+    // 스타터마다 2배 위협이 하나씩 갈린 뒤(아래 nativeMove)로는 세 스타터 모두 관장 Lv6·7 을 Lv9 로 3~4턴에 눌렀다(2026-10-21 적대 검수 r4: 관장이 약하다) → 수련생 6, 관장 8·9.
+    mx_enemy_mx_map_grove_gym_grunt_0_0: { species: "mx_enemy_podback", level: 6 },
+    mx_enemy_mx_map_grove_gym_grunt_1_0: { species: "mx_enemy_brambleboar", level: 6 },
+    mx_enemy_mx_map_grove_gym_grunt_2_0: { species: "mx_enemy_orchardant", level: 6 },
+    // 관장 8·9 는 정직 여정(Lv8~9)에서 5~10턴 승이었지만 첫 10분 길(Lv6~7)로 온 플레이어는 졌다(r24) → 7·8.
+    // 첫 10분 길(Lv7, 동료 없음)의 풀 스타터는 선봉 베르카부 Lv7 의 두 배 더듬이쏘기에 4턴에 졌다(r26) → 선봉 6, 에이스 8 그대로.
     mx_enemy_mx_map_grove_gym_leader_0: { species: "mx_enemy_podback", level: 6 },
-    mx_enemy_mx_map_grove_gym_leader_1: { species: "mx_enemy_brambleboar", level: 7 },
+    // 선봉 6 으로도 첫 10분 길 풀 스타터(Lv7 혼자)는 깃바람 세 방을 버틴 브램보어 Lv8 에게 5턴에 졌다(r27) → 에이스 7. 불은 3턴·물은 서리발 4배라 그대로 이긴다.
+    // 에이스 7 에서는 거꾸로 첫 10분 길 불 스타터(Lv7 혼자)가 흙먼지(땅, 두 배) 두 방에 3턴 만에 졌다(r29) — 두 배 위협이 에이스에 있는 불만 동전 던지기였다 → 에이스 6.
+    // 세 스타터가 저마다 두 배 위협 하나(풀 ← 베르카부, 불 ← 브램보어)·두 배 공격 하나를 갖고 같은 레벨 둘을 상대한다.
+    mx_enemy_mx_map_grove_gym_leader_1: { species: "mx_enemy_brambleboar", level: 6 },
   };
   for (const [enemyId, { species, level }] of Object.entries(reskin)) {
     const enemy = byId(enemyId), template = byId(species);
@@ -509,21 +618,34 @@ function tunePacing(project: Project): void {
     // 풀 스타터는 벌레에게 기술이 반감이라 같은 Lv5 로는 7턴 싸우다 졌다(2026-10-20 실측) → Lv4·몸통 기술만.
     const bug = new Set(project.database.skills.filter((s) => /더듬이/.test(s.name)).map((s) => s.id));
     rival.actions = rival.actions.filter((a) => !a.skillId || !bug.has(a.skillId));
-    rescaleEnemy(rival, 4);
+    const tackle = project.database.skills.find((s) => s.name === "어깨툭")?.id;
+    if (tackle) rival.actions = rival.actions.filter((a) => !a.skillId || a.skillId === tackle);
+    // 볼트온(보통 상성)으로 바꾼 뒤 Lv4 는 2턴에 체력 3/4 를 남기고 끝나 위협이 없었다(r4) → 스타터와 같은 Lv5.
+    rescaleEnemy(rival, 5);
     // 1번 도로 트레이너의 포포비도 같은 벌레 기술로 Lv5 스타터를 3턴에 쓰러뜨렸다(2026-10-20 실플레이) — 첫 도로에서는 몸통 기술만.
     const routeBug = byId("mx_enemy_mx_map_meadow_trainer_1_0");
     if (routeBug) routeBug.actions = routeBug.actions.filter((a) => !a.skillId || !bug.has(a.skillId));
     // 관장의 베르카부가 원래 기술 그대로 더듬이쏘기(벌레)를 써서 풀 스타터를 매번 2~3방에 눕혔다(2026-10-20 실입력 여정, Lv7 로 세 번 패배).
     // 풀 체육관이니 그 자리를 새싹치기(풀)로 바꾼다 — 스타터와 서로 반감이라 어깨툭 싸움이 되고, 잡은 동료가 힘을 쓸 자리가 생긴다.
-    const sprout = project.database.skills.find((s) => s.name === "새싹치기")?.id;
-    const leaderBug = byId("mx_enemy_mx_map_grove_gym_leader_0");
-    if (leaderBug && sprout) leaderBug.actions = leaderBug.actions.map((a) => (a.skillId && bug.has(a.skillId) ? { ...a, skillId: sprout } : a));
+    // 다시(2026-10-21 적대 검수 r3·스타터 3종 봇): 풀 기술만 쓰는 풀 체육관은 물 스타터만 두 배로 맞아 수련생·관장에게 졌고 불은 무패였다.
+    // 풀이 처음부터 깃바람(비행)을 갖게 된 뒤로는, 체육관 몬스터가 제 첫째 타입 기술을 쓰게 한다 — 벌레(베르카부·과수뿔)는 더듬이쏘기, 땅(브램보어)은 흙먼지.
+    // 그러면 두 배로 맞는 스타터가 갈린다(풀 ← 벌레, 불 ← 땅). 물은 보통으로 맞고 서리발로 두 배를 친다.
+    const skillOf = (name: string) => project.database.skills.find((s) => s.name === name)?.id;
+    const nativeMove: Readonly<Record<string, string | undefined>> = { mx_species_podback: skillOf("더듬이쏘기"), mx_species_orchardant: skillOf("더듬이쏘기"), mx_species_brambleboar: skillOf("흙먼지") };
+    const grassMoves = new Set(project.database.skills.filter((s) => s.id.startsWith("mx_skill_grass_")).map((s) => s.id));
+    for (const enemy of enemies) {
+      if (!/^mx_enemy_mx_map_grove_gym_(grunt|leader)_\d+(_\d+)?$/.test(enemy.id)) continue;
+      const native = enemy.speciesId ? nativeMove[enemy.speciesId] : undefined;
+      if (!native) continue;
+      const seen = new Set<string>();
+      enemy.actions = enemy.actions
+        .map((a) => (a.skillId && (grassMoves.has(a.skillId) || bug.has(a.skillId)) ? { ...a, skillId: native } : a))
+        .filter((a) => !a.skillId || (seen.has(a.skillId) ? false : (seen.add(a.skillId), true)));
+    }
     // 신전 보스 선봉도 같은 베르카부라 Lv8 로 내려도 Lv10 풀 스타터가 두 번 졌다(2026-10-20 실입력 여정).
     // 리그 선봉 베르카부도 같다 — 디버그로 Lv20 까지 올린 파티도 한 번 졌다(journey12). 둘 다 같은 자리 바꿈.
-    for (const id of ["mx_enemy_mx_map_observatory_boss_0", "mx_enemy_mx_map_league_0_league_challenge_0"]) {
-      const lead = byId(id);
-      if (lead && sprout) lead.actions = lead.actions.map((a) => (a.skillId && bug.has(a.skillId) ? { ...a, skillId: sprout } : a));
-    }
+    // (신전 선봉은 아래 templeTeam 이 통째로 바꾼다.) 리그 베르카부(에이스)는 새싹치기(풀)로 물 스타터만 두 배로 쳐서 물이 두 번 졌다(2026-10-21 r23) —
+    // 체육관처럼 제 타입 기술(더듬이쏘기, 풀에 두 배)로 둔다. 리그의 두 배 위협이 물 ← 볼트온, 불 ← 로키온, 풀 ← 베르카부로 하나씩 갈린다.
   }
   // 배지 하나짜리 데모라 초반 경험치를 두 배로 — 라이벌·도로 트레이너·수련생을 다 이기면 관장 앞에서 Lv8 안팎이 되게 한다.
   // (rescaleEnemy 가 레벨을 바꾸기 전 보상이 그대로라 레벨을 내린 수련생도 보상은 원래 레벨 몫이다.)
@@ -534,12 +656,165 @@ function tunePacing(project: Project): void {
   }
   // 신전 보스는 배지 하나 직후라 Lv8 셋(Lv9 셋에는 관장을 막 이긴 Lv9+Lv5 파티가 두 번 졌다, 2026-10-20), 챔피언 나루는 Lv10 넷(마지막 승부라 높게).
   for (const enemy of enemies) if (/^mx_enemy_mx_map_observatory_boss_\d+$/.test(enemy.id)) rescaleEnemy(enemy, 8);
+  // 무영의 몬스터가 챔피언 나루와 같은 종(베르카부·피오르·볼트온)이었고, 2단 진화 베르카부를 앞세워 Lv10 풀 스타터가 두 번 졌다(2026-10-21 정직 여정).
+  // 「밤막회사」답게 그림자·독·꿈 계열 기본 종 셋(Lv7, 셋째를 Lv8 로 두니 Lv10 풀 스타터 + Lv5 동료가 둘까지 잡고 졌다)으로 바꾼다 — 불은 셋 모두 보통, 풀은 꿈방울로 독을, 물은 물 기술로 셋 모두를 보통 이상으로 친다.
+  // 경험치 나누기 뒤에도 잡은 동료가 약하면(Lv10 풀 + Lv8 벌레) 두 번 졌다(2026-10-21 r13) → 앞의 둘 Lv6, 마지막 Lv7.
+  const templeTeam: readonly [string, number][] = [["mx_enemy_threadimp", 6], ["mx_enemy_miretail", 6], ["mx_enemy_dozemite", 7]];
+  templeTeam.forEach(([templateId, level], i) => {
+    const enemy = byId(`mx_enemy_mx_map_observatory_boss_${i}`), template = byId(templateId);
+    if (!enemy || !template) return;
+    const rewards = enemy.rewards;
+    Object.assign(enemy, structuredClone({ ...template, id: enemy.id, rewards }));
+    rescaleEnemy(enemy, level);
+  });
   const trim: Record<string, number> = { mx_troop_mx_map_observatory_boss: 3, mx_troop_mx_map_league_0_league_challenge: 4 };
   for (const troop of project.database.troops) {
     const keep = trim[troop.id];
     if (keep !== undefined && troop.members && troop.members.length > keep) troop.members = troop.members.slice(0, keep);
   }
+  // 챔피언 나루: Lv10 넷에 2단 진화 베르카부가 선봉이라 신전 보스를 정직하게 이긴 Lv12·Lv9 파티가 두 번 졌다(2026-10-21 정직 여정).
+  // 나루의 첫 동료(포포비→베르카부)를 마지막 에이스(Lv10)로 돌리고 나머지 셋은 Lv9 — 마지막 승부의 긴장은 에이스에 둔다.
+  const league = project.database.troops.find((t) => t.id === "mx_troop_mx_map_league_0_league_challenge");
+  // 그래도 경험치 나누기를 켠 정직한 여정(Lv12 풀·Lv10 비행)이 선봉 피오르(비행)에게 풀 스타터가 막혀 두 번 졌다(2026-10-21) — 넷은 이 데모의 두 마리 파티에 과하다.
+  // 선봉 피오르를 빼고 셋(Lv9·Lv9·에이스 Lv10)으로 줄인다.
+  if (league?.members?.length === 4) {
+    const [ace, , ...rest] = league.members;
+    league.members = [...rest, ace!];
+    league.enemyIds = league.members.map((m) => m.enemyId);
+    // 셋으로 줄인 뒤에도 Lv12 풀 + Lv9 비행 정직 파티가 두 번 졌다(2026-10-21 r15) → 앞 둘 Lv8, 에이스 Lv10 그대로.
+    for (const m of rest) { const e = byId(m.enemyId); if (e) rescaleEnemy(e, 8); }
+    // 선봉 볼트온(전기)의 두 배 톡번개 세 방에 물 스타터가 리그를 두 번 졌다(2026-10-21 r25, Lv12) → 선봉만 Lv7.
+    const vanguard = byId(rest[0]?.enemyId ?? ""); if (vanguard?.speciesId === "mx_species_zaptoe") rescaleEnemy(vanguard, 7);
+    // 그래도 물 스타터(Lv11)가 에이스 베르카부 Lv10 에게 근소하게 두 번 졌고 풀은 체력 0 직전에 이겼다(r26) → 에이스 Lv9.
+    const aceEnemy = byId(ace!.enemyId); if (aceEnemy) rescaleEnemy(aceEnemy, 9);
+    // 볼트온의 전류실(마비)·로키온의 굳히기 같은 보조 기술로 두 마리 파티가 끌려다니다 졌다(2026-10-21 r24, 물·불 각 두 번) — 챔피언 셋은 공격 기술만.
+    for (const m of league.members) { const e = byId(m.enemyId); if (e) e.actions = e.actions.filter((a) => !a.skillId || !/^mx_skill_[a-z]+_6$/.test(a.skillId)); }
+    // r4 「너무 쉽다」에 신전 8·8·9, 리그 9·9·11 로 올리자 스타터 셋 모두 정직 여정에서 신전에 두 번씩 졌고 불·물은 리그도 두 번 졌다(2026-10-21 r22) →
+    // 신전 6·7·7, 리그 8·8·10. 관장(8·9)만 올린 채 둔다.
+  }
 }
+
+/** 모습·종·상성만 다른 종으로 갈아입힌다(tunePacing 의 reskin 과 같은 몫). */
+function reskinEnemy(project: Project, enemyId: string, templateId: string, level: number, templateStats = false): Project["database"]["enemies"][number] | undefined {
+  const enemies = project.database.enemies;
+  const enemy = enemies.find((e) => e.id === enemyId), template = enemies.find((e) => e.id === templateId);
+  if (!enemy || !template) return enemy;
+  enemy.name = template.name;
+  enemy.speciesId = template.speciesId;
+  enemy.monsterResourceId = template.monsterResourceId;
+  enemy.graphicHue = template.graphicHue;
+  enemy.elementRates = structuredClone(template.elementRates);
+  enemy.stateRates = structuredClone(template.stateRates);
+  // 진화형 에이스는 진화형 능력치(템플릿)를 이 레벨로 줄여 쓴다 — 원래 몬스터 능력치를 늘리면 진화 전과 다를 바가 없었다.
+  if (templateStats && template.level) { enemy.stats = structuredClone(template.stats); enemy.level = template.level; }
+  rescaleEnemy(enemy, level);
+  return enemy;
+}
+
+/**
+ * 관장·신전·챔피언 다시 짜기(2026-10-21 적대 검수 r7·r8 — 손으로 맞추다 세 판 내리 major 였다).
+ * 값은 모의전 탐색으로 골랐다: scripts/qa/astra-horizon/balance-sim.mjs(스타터 3종 × 정직 여정 실측 레벨·동료 포포비/피오르/루미링, 30판).
+ * 목표 띠: 관장 승률 70~90%·4턴 이상·남은 체력 70% 이하, 신전·챔피언 55~80%, 챔피언 최고 레벨 ≥ 플레이어 레벨(12).
+ * 스타터마다 두 배 위협이 한 마리씩 따로 있어(풀 ← 벌레, 불 ← 땅·바위, 물 ← 풀·전기) 그 한 마리 레벨로 그 스타터의 승률을 따로 맞춘다.
+ * - 관장 유림(Lv9+동료 Lv6 상대): 베르카부 Lv6(새싹치기 — 물 위협) · 과수뿔 Lv7(더듬이쏘기 — 풀 위협) · 에이스 가이아돈 Lv10(흙먼지·흙발톡 — 불 위협).
+ *   모의전 표는 scripts/qa/astra-horizon/balance-sim.mjs 를 돌려 본다(값을 바꾸면 다시 돌릴 것).
+ *   (둘만 둔 6·7 은 세 스타터 모두 100%·2~3턴이었다.)
+ * - 신전 무영(Lv11+Lv8): 마리오네 Lv7 · 미르핀 Lv6 · 몽환아 Lv8(꿈방울·톡번개 — 물 위협). (6·6·7 은 셋 모두 100%.)
+ * - 챔피언 나루(Lv12+Lv9): 베르카부 Lv8 · 크래그혼 Lv8(로키온 자리) · 에이스 코일라군 Lv12(볼트온 진화, 진화형 능력치의 8할, 발끝톡·톡번개).
+ *   크래그혼은 능력치 1.06배. 모의전 아래 표. 라이벌·연구원·관장과 같은 종을 돌려 쓰던 것(r7-2)도 풀린다.
+ */
+function scaleStats(enemy: Project["database"]["enemies"][number] | undefined, factor: number): void {
+  if (!enemy || factor === 1) return;
+  const stats = { ...enemy.stats };
+  for (const key of Object.keys(stats) as (keyof typeof stats)[]) stats[key] = Math.max(1, Math.round(stats[key] * factor));
+  enemy.stats = stats;
+}
+
+/** 모의전(balanceSim 덮어쓰기)과 같은 순서로 다듬는다: 능력치 배율 → 레벨(비율로 능력치도) → 능력치 하나씩 더하기. */
+function nudgeEnemy(enemy: Project["database"]["enemies"][number] | undefined, tune: { readonly scale?: number; readonly level?: number; readonly delta?: Readonly<Partial<Record<keyof Project["database"]["enemies"][number]["stats"], number>>> }): void {
+  if (!enemy) return;
+  if (tune.scale) scaleStats(enemy, tune.scale);
+  if (tune.level && enemy.level) { const ratio = tune.level / enemy.level; enemy.level = tune.level; scaleStats(enemy, ratio); }
+  if (tune.delta) {
+    const stats = { ...enemy.stats };
+    for (const [key, d] of Object.entries(tune.delta) as [keyof typeof stats, number][]) stats[key] = Math.max(1, stats[key] + d);
+    enemy.stats = stats;
+  }
+}
+
+function retuneLeaderAndChampion(project: Project): void {
+  const enemies = project.database.enemies;
+  const byId = (id: string) => enemies.find((e) => e.id === id);
+  const skillOf = (name: string) => project.database.skills.find((s) => s.name === name)?.id;
+  const moves = (enemy: Project["database"]["enemies"][number] | undefined, ...names: string[]) => {
+    const base = enemy?.actions.find((a) => a.skillId);
+    const ids = names.map(skillOf).filter((id): id is string => Boolean(id));
+    if (ids.length !== names.length) throw new Error(`retuneLeaderAndChampion: 없는 기술 이름 ${names.filter((n) => !skillOf(n)).join(", ")}`);
+    if (enemy && base) enemy.actions = ids.map((skillId) => ({ ...structuredClone(base), skillId }));
+  };
+  // 관장
+  const gym = project.database.troops.find((t) => t.id === "mx_troop_mx_map_grove_gym_leader");
+  const vanguardSource = byId("mx_enemy_mx_map_grove_gym_grunt_0_0");
+  const vanguardId = "mx_enemy_mx_map_grove_gym_leader_2";
+  if (gym?.members?.length && vanguardSource && !byId(vanguardId)) {
+    const vanguard = { ...structuredClone(vanguardSource), id: vanguardId };
+    enemies.push(vanguard);
+    rescaleEnemy(vanguard, LEADER_LEVELS.vanguard);
+    scaleStats(vanguard, LEADER_STAT_SCALE.vanguard);
+    moves(vanguard, "새싹치기");
+    gym.members = [{ ...structuredClone(gym.members[0]!), enemyId: vanguardId }, ...gym.members];
+    gym.enemyIds = gym.members.map((m) => m.enemyId);
+  }
+  moves(reskinEnemy(project, "mx_enemy_mx_map_grove_gym_leader_0", "mx_enemy_orchardant", LEADER_LEVELS.middle), "더듬이쏘기");
+  const gymAce = reskinEnemy(project, "mx_enemy_mx_map_grove_gym_leader_1", "mx_enemy_briartusk", LEADER_LEVELS.ace);
+  scaleStats(gymAce, LEADER_STAT_SCALE.ace);
+  moves(gymAce, "흙먼지", "어깨툭"); // 어깨툭 → varyTackle 이 땅 타입 「흙발톡」으로 바꾼다
+  // 풀 관장전 93%(띠 70~90 밖) → 에이스 민첩 +1(모의전 풀 86% · 불 82% · 물 89%, 턴 중앙값 9·6·7).
+  nudgeEnemy(gymAce, { delta: { agility: 1 } });
+  // 신전
+  TEMPLE_LEVELS.forEach((level, i) => { const e = byId(`mx_enemy_mx_map_observatory_boss_${i}`); if (e) { rescaleEnemy(e, level); scaleStats(e, TEMPLE_STAT_SCALE[i] ?? 1); } });
+  // 물 위협을 전기(톡번개)에서 풀(잎귀베기)로 — 전기는 1번 도로 새(비행) 동료까지 두 배로 때려 물 + 새 조합이 24%였다(모의전 동료별).
+  moves(byId("mx_enemy_mx_map_observatory_boss_2"), "꿈방울", "잎귀베기");
+  nudgeEnemy(byId("mx_enemy_mx_map_observatory_boss_2"), { delta: { mind: 1 } });
+  // 불 + 새 동료가 마리오네에게 막혀 34% → 민첩 -1(모의전 불 77%, 새 동료 44%).
+  nudgeEnemy(byId("mx_enemy_mx_map_observatory_boss_0"), { delta: { agility: -1 } });
+  // 챔피언
+  const league = project.database.troops.find((t) => t.id === "mx_troop_mx_map_league_0_league_challenge");
+  if (!league?.members) return;
+  const find = (species: string) => league.members!.find((m) => byId(m.enemyId)?.speciesId === species);
+  const bug = find("mx_species_podback"), rock = find("mx_species_pebblekid"), spark = find("mx_species_zaptoe");
+  if (!bug || !rock || !spark) return;
+  rescaleEnemy(byId(bug.enemyId)!, CHAMPION_LEVELS.bug);
+  const rockEnemy = reskinEnemy(project, rock.enemyId, "mx_enemy_craghoof", CHAMPION_LEVELS.rock);
+  // 크래그혼은 불의 두 배 위협 — Lv8 그대로는 불 승률 82~84%, Lv9 는 12%(벼랑)라 Lv8 에 능력치 1.06배(모의전 불 61%).
+  scaleStats(rockEnemy, CHAMPION_ROCK_STAT_SCALE);
+  const ace = reskinEnemy(project, spark.enemyId, "mx_enemy_coilcrest", CHAMPION_LEVELS.ace, true);
+  scaleStats(ace, CHAMPION_ACE_STAT_SCALE);
+  // 물 위협을 전기(톡번개)에서 풀(잎귀베기)로 — 전기는 물 스타터와 1번 도로 새(비행) 동료를 둘 다 두 배로 때려
+  // 물 + 비행 동료 조합이 챔피언에게 21%였다(2026-10-21 모의전 동료별, 실플레이 물 두 판 연속 패배).
+  // 「발끝톡」은 varyTackle 이 나중에 어깨툭에서 만든다 — 여기서는 어깨툭으로 둔다(없는 이름이면 moves 가 통째로 무시된다).
+  moves(ace, "어깨툭", "잎귀베기");
+  // 리그 첫 둘이 Lv8 이라 플레이어 Lv12 앞에서 어색했다(VQA r13) → Lv11 로 올리고 능력치를 깎아 강도는 띠 안에.
+  // 1 단위 능력치 하나가 승률 90% ↔ 10% 벼랑이라(모의전) 배율 뒤에 한 점씩 더한다.
+  nudgeEnemy(byId(bug.enemyId), CHAMPION_BUG_TUNE);
+  nudgeEnemy(rockEnemy, CHAMPION_ROCK_TUNE);
+  league.members = [bug, rock, spark];
+  league.enemyIds = league.members.map((m) => m.enemyId);
+}
+const LEADER_LEVELS = { vanguard: 6, middle: 7, ace: 10 } as const;
+// 레벨 하나 차이가 승률 100% ↔ 10% 벼랑이라(모의전) 능력치를 몇 %씩 더 깎거나 얹어 띠 안에 맞춘다 — 선봉(물 위협) 1.07배, 에이스 0.95배.
+const LEADER_STAT_SCALE = { vanguard: 1.07, ace: 0.95 } as const;
+const TEMPLE_LEVELS = [7, 6, 8] as const;
+/** 미르핀(독 — 풀 위협) 1.04배: 그대로면 풀 82%, 1.08배면 45%. */
+const TEMPLE_STAT_SCALE = [1, 1.04, 1] as const;
+const CHAMPION_LEVELS = { bug: 8, rock: 8, ace: 12 } as const;
+const CHAMPION_ACE_STAT_SCALE = 0.76;
+const CHAMPION_ROCK_STAT_SCALE = 1.06;
+/** 모의전 n=150: 풀 74% · 불 67% · 물 67%, 가장 불리한 동료와도 50% 이상.
+ * 2026-10-23 정직 여정(풀 Lv12 + 1번 도로 새 Lv8)이 선봉 베르카부의 두 배 벌레 기술 한 방에 풀 스타터가 눕혀 두 번 졌다 → 공격 +1 → -1
+ * (모의전 n=80: 풀 83%·새 동료 89%, 불·물은 그대로 69·73%). */
+const CHAMPION_BUG_TUNE = { scale: 0.88, level: 11, delta: { attack: -1, maxHp: 2 } } as const;
+const CHAMPION_ROCK_TUNE = { scale: 0.75, level: 11, delta: { maxHp: 2 } } as const;
 
 /**
  * 사람 칩 다시 입히기 — 생성기는 Scarloxy 원본 두 장의 10명을 돌려 써서 라이벌 나루 = 회복 센터 직원 = 1번 도로 조련사,
@@ -590,12 +865,109 @@ function recastPeople(project: Project): void {
   // 리그 안내원이 결투장 한복판(4,9)에 서 있었다 — 계단 올라온 옆자리로.
   const leagueGuide = project.maps.mx_map_league_0?.events.find((e) => e.id === "mx_map_league_0_return_home");
   if (leagueGuide) { leagueGuide.x = 5; leagueGuide.y = 10; }
+  // 챔피언은 단 위 4번째 줄이라, 문으로 들어서면 카메라가 아래쪽에 붙어 머리·상체가 화면 위로 잘렸다 — 한 칸 내려 바닥(324) 위 5번째 줄에 세운다.
+  if (champion) champion.y = 5;
+  closeVoidEdges(project);
+  fixArrivalFacing(project);
+}
+
+/**
+ * 문·가장자리 이동 도착 방향이 전부 「아래」였다 — 1번 도로에서 북쪽으로 걸어 실바나에 들어서는데 카메라를 보고 서 있었다(2026-10-21 검수).
+ * 야외에서 나가는 문은 도착 칸이 도착 맵 아래쪽 절반이면 위로 걸어 들어온 것이고(건물 안·북쪽 맵 끝), 건물 안에서 나오는 문은 언제나 아래다.
+ */
+function fixArrivalFacing(project: Project): void {
+  const outdoors = new Set(["mx_map_home", "mx_map_grove", "mx_map_meadow", "mx_map_garden"]);
+  const visit = (node: unknown, apply: (command: { mapId: string; x: number; y: number; direction?: string }) => void): void => {
+    if (Array.isArray(node)) { for (const item of node) visit(item, apply); return; }
+    if (!node || typeof node !== "object") return;
+    const record = node as Record<string, unknown>;
+    if (record.kind === "transfer" && typeof record.mapId === "string" && typeof record.x === "number" && typeof record.y === "number") apply(record as { mapId: string; x: number; y: number; direction?: string });
+    for (const value of Object.values(record)) visit(value, apply);
+  };
+  for (const map of Object.values(project.maps)) {
+    for (const event of map.events) {
+      if (!event.id.includes("_to_")) continue;
+      visit(event.pages, (command) => {
+        const dest = project.maps[command.mapId];
+        if (!dest) return;
+        command.direction = outdoors.has(map.id) && command.y > dest.height / 2 ? "up" : "down";
+      });
+    }
+  }
+}
+
+/**
+ * 체육관·연구소·학교·결투장·별모래 신전 가장자리 한 칸 고리는 흰 줄이 그어진 검은 빈 공간 칩(289~293·37, 49~54, 1821~1826)이라
+ * 화면 끝에 검은 띠로 남았다(2026-10-21 검수). 같은 칩셋의 통행 불가 벽·울타리 칩으로 갈아 끼운다(새 그림 없음, 통행 규칙 동일).
+ */
+function closeVoidEdges(project: Project): void {
+  const ring = (id: string, side: { left: number; right: number; bottom: number; topLeft?: number; topRight?: number }, rows?: number) => {
+    const m = project.maps[id];
+    if (!m) return;
+    const W = m.width;
+    const H = m.height;
+    const L = m.lowerTiles;
+    for (let y = 0; y < H; y++) {
+      L[y * W] = y < (rows ?? 0) ? (side.topLeft ?? side.left) : side.left;
+      L[y * W + W - 1] = y < (rows ?? 0) ? (side.topRight ?? side.right) : side.right;
+    }
+    for (let x = 0; x < W; x++) L[(H - 1) * W + x] = side.bottom;
+  };
+  ring("mx_map_grove_gym", { left: 1320, right: 1322, bottom: 1325, topLeft: 1232, topRight: 1232 }, 1);
+  const gym = project.maps.mx_map_grove_gym;
+  if (gym) { gym.lowerTiles[gym.width] = 1235; gym.lowerTiles[2 * gym.width - 1] = 1235; }
+  for (const id of ["mx_map_lab", "mx_map_school", "mx_map_league_0"]) ring(id, { left: 209, right: 210, bottom: 208 });
+  ring("mx_map_observatory", { left: 1811, right: 1811, bottom: 1811 });
+  // 실바나 체육관은 하늘이 트인 정원(덤불·풀밭)인데 체육관 시트라 전투가 실내 벽 배경이었고, 챔피언 전당 전투와 똑같아 보였다(2026-10-23 적대 VQA) → 풀밭 배경.
+  if (gym) gym.battleBackground = "emerald:grass";
 }
 
 /**
  * 1번 도로 꽃밭 세 곳은 나무 밑동 위에 숲 수관 가운데 조각(위층 616·617)을 덮고, 꽃밭에 몬스터 볼처럼 생긴 장식(640)을 얹었다.
  * 밑동 없는 네모 수관이 떠 보이고(2026-10-20 검수), 볼은 주울 수도 없는 장식이었다 → 위층 세 칸씩 비운다(아래층 나무·꽃은 그대로).
  */
+/** 별모래 신전: 맨 모래 바닥을 신전 칩셋의 석판·별 문양·향로·촛대·석상으로 좌우 대칭으로 채운다(새 그림 없음). */
+function decorateTemple(project: Project): void {
+  const m = project.maps.mx_map_observatory;
+  if (!m) return;
+  const W = m.width;
+  const L = m.lowerTiles;
+  const U = m.upperTiles;
+  const at = (x: number, y: number) => y * W + x;
+  const mirror = (x: number) => W - 1 - x;
+  for (let y = 3; y <= 14; y++) {
+    for (let x = 2; x <= mirror(2); x++) {
+      if (x === 10 || x === 11) continue;
+      const t = L[at(x, y)]!;
+      if (t >= 1776 && t <= 1779) L[at(x, y)] = 1780 + (x % 2) + 2 * (y % 2);
+    }
+  }
+  for (let y = 3; y <= 14; y++) {
+    for (let x = 2; x <= 9; x++) {
+      const t = L[at(x, y)]!;
+      if ((x + y) % 2 === 0 && t >= 1780 && t <= 1783) {
+        L[at(x, y)] = 1784;
+        L[at(mirror(x), y)] = 1784;
+      }
+    }
+  }
+  for (const [x, y] of [[6, 9], [19, 9], [15, 11], [3, 13], [14, 13]] as const) {
+    const t = U[at(x, y)];
+    if (t === 1840 || t === 1841) U[at(x, y)] = -1;
+  }
+  const single = (x: number, y: number, tile: number) => { U[at(x, y)] = tile; U[at(mirror(x), y)] = tile; };
+  const pair = (x: number, y: number, top: number, bottom: number) => {
+    for (const xx of [x, mirror(x)]) { U[at(xx, y)] = top; U[at(xx, y + 1)] = bottom; }
+  };
+  for (const y of [3, 7, 10, 12]) single(9, y, 1655);
+  pair(6, 3, 1656, 1657);
+  pair(6, 6, 1652, 1653);
+  pair(6, 10, 1652, 1653);
+  single(7, 4, 1655);
+  for (const [x, y] of [[7, 13], [5, 13], [2, 14], [8, 14]] as const) single(x, y, 1654);
+  for (const [x, y] of [[3, 10], [3, 8], [5, 3], [2, 8], [2, 10], [5, 10]] as const) single(x, y, 1842);
+}
+
 function tidyMeadowDecor(project: Project): void {
   const meadow = project.maps.mx_map_meadow;
   if (!meadow) return;
@@ -603,6 +975,26 @@ function tidyMeadowDecor(project: Project): void {
     const tile = meadow.upperTiles[i];
     if (tile === 616 || tile === 617 || tile === 640) meadow.upperTiles[i] = -1;
   }
+  roundMeadowGrassCorners(meadow);
+}
+
+/**
+ * 1번 도로 풀숲이 모서리 직각의 직사각형 장판으로 깔려 있었다(2026-10-20 검수 R2-5) — 자연 덤불로 보이도록 네 귀퉁이 칸을 맨땅으로 깎는다.
+ * 키큰풀(4·5)과 그 가장자리 변형만 대상이고, 위층 장식과 통행 규칙은 그대로다.
+ */
+const MEADOW_GRASS_TILES = new Set([4, 5, 16, 17, 19, 23, 31, 32, 34, 38]);
+function roundMeadowGrassCorners(meadow: { width: number; height: number; lowerTiles: number[] }): void {
+  const { width: w, height: h, lowerTiles: low } = meadow;
+  const grass = (x: number, y: number): boolean => x >= 0 && y >= 0 && x < w && y < h && MEADOW_GRASS_TILES.has(low[y * w + x]);
+  const corners: Array<[number, number]> = [];
+  for (let y = 0; y < h; y++) {
+    for (let x = 0; x < w; x++) {
+      if (!grass(x, y)) continue;
+      const up = grass(x, y - 1), down = grass(x, y + 1), left = grass(x - 1, y), right = grass(x + 1, y);
+      if ((!up && !left) || (!up && !right) || (!down && !left) || (!down && !right)) corners.push([x, y]);
+    }
+  }
+  for (const [x, y] of corners) low[y * w + x] = (x * 5 + y * 3) % 4;
 }
 
 /** 명령 나무의 모든 하위 목록(분기·선택지·전투 결과)을 돈다. */
@@ -671,6 +1063,58 @@ function softenTrainerDefeats(project: Project): void {
   }
 }
 
+/**
+ * 기본기 이름을 종 첫째 타입에 따라 나눈다 — 모든 종이 「어깨툭!」을 쳐서 전투 글줄이 다 같았다(2026-10-21 적대 검수 r6 minor).
+ * 위력·우선도·속성(보통)은 그대로 두고 이름만 다른 사본을 만든다. 보통·비행은 원래 어깨툭.
+ */
+const TACKLE_NAMES: Readonly<Record<string, string>> = {
+  grass: "줄기후리기", fire: "앞발톡", ice: "앞발톡", water: "지느러미툭", dragon: "지느러미툭", bug: "껍질부딪기",
+  electric: "발끝톡", rock: "바위어깨", ground: "흙발톡", fighting: "바위어깨", poison: "슬쩍밀기", ghost: "슬쩍밀기", psychic: "슬쩍밀기",
+};
+function varyTackle(project: Project): void {
+  const skills = project.database.skills;
+  const base = skills.find((s) => s.id === "mx_skill_normal_1");
+  if (!base) return;
+  const variantFor = new Map<string, string>();
+  const variant = (type: string | undefined): string => {
+    const name = type ? TACKLE_NAMES[type] : undefined;
+    if (!name) return base.id;
+    const known = variantFor.get(name);
+    if (known) return known;
+    const id = `${base.id}_${type}`;
+    skills.push({ ...structuredClone(base), id, name, description: (base.description ?? "").replace(base.name, name) });
+    variantFor.set(name, id);
+    return id;
+  };
+  const speciesType = new Map((project.database.monsterSpecies ?? []).map((sp) => [sp.id, sp.types?.[0]]));
+  for (const sp of project.database.monsterSpecies ?? []) {
+    const id = variant(sp.types?.[0]);
+    for (const entry of sp.skillsByLevel ?? []) if (entry.skillId === base.id) entry.skillId = id;
+  }
+  for (const enemy of project.database.enemies) {
+    const id = variant(enemy.speciesId ? speciesType.get(enemy.speciesId) : undefined);
+    if (id === base.id) continue;
+    for (const action of enemy.actions) if (action.skillId === base.id) action.skillId = id;
+    if (enemy.skillIds) enemy.skillIds = enemy.skillIds.map((sk) => (sk === base.id ? id : sk));
+  }
+}
+
+/**
+ * 아스트라 스타터 세 계통은 2026-10-24 에 다시 그렸다(사용자 승인 astra-starters-5: 잎꼬리 여우원숭이 → 연꽃 현자, 솜털 양 → 불뿔 기사,
+ * 파도 볏 범고래 → 해일 범고래). 공용 탐험 로스터의 도감 문장은 옛 그림(토끼·천산갑·수달)을 말하므로 이 게임에서만 아홉 종 문장을 바꾼다.
+ */
+const STARTER_NOTES: Record<string, string> = {
+  mx_species_spriglet: "둥글게 만 잎줄무늬 꼬리를 베개 삼아 잔다. 이마의 꽃봉오리가 햇볕을 받으면 살짝 벌어진다.",
+  mx_species_frondhare: "꼬리를 물음표처럼 세우고 나뭇가지 사이를 뛰어다닌다. 반쯤 핀 이마 꽃으로 마음을 읽는다.",
+  mx_species_grovewarden: "활짝 핀 이마 연꽃의 보석으로 숲의 생각을 듣는다. 떠다니는 빛구슬로 다친 몬스터를 감싼다.",
+  mx_species_coalbit: "솜털 속에 따뜻한 불씨를 품고 다닌다. 기분이 좋으면 동그란 뿔이 노랗게 달아오른다.",
+  mx_species_kilnclaw: "털끝에서 불꽃이 피어오르면 고개를 숙이고 돌진한다. 박치기 한 번에 바위가 갈라진다.",
+  mx_species_furnscale: "불타는 두 뿔을 투구처럼 두르고 동료 앞을 지킨다. 털 망토에 불이 붙어도 꿈쩍하지 않는다.",
+  mx_species_rivulet: "머리의 파도 볏으로 물결의 방향을 읽는다. 기쁘면 볏이 출렁이며 물보라를 튀긴다.",
+  mx_species_brookraft: "커다란 파도 지느러미를 세우고 바다 위로 뛰어오른다. 높이 뛸수록 볏이 길게 자란다.",
+  mx_species_tidekeeper: "꼬리로 바다 위에 우뚝 서서 해일 같은 볏을 펼친다. 볏 끝의 서리로 거친 파도를 얼려 멈춘다.",
+};
+
 export function createEmeraldCrownFlagshipDemo(): FlagshipDemoBuildResult {
   const { project } = createMonsterExpedition({ firstGymType: "grass", gymCount: 1 });
 
@@ -682,6 +1126,8 @@ export function createEmeraldCrownFlagshipDemo(): FlagshipDemoBuildResult {
     const renamed = SPECIES_NAMES[sp.id];
     if (renamed) sp.name = renamed;
   }
+  const speciesNotes = project.system.monsterCampaign?.speciesNotes;
+  if (speciesNotes) Object.assign(speciesNotes, STARTER_NOTES);
   for (const enemy of project.database.enemies) {
     const renamed = SPECIES_NAMES[enemy.id];
     if (renamed) enemy.name = renamed;
@@ -698,6 +1144,17 @@ export function createEmeraldCrownFlagshipDemo(): FlagshipDemoBuildResult {
   const rewrite = (text: string): string => LINE_REWRITES[swapNames(text)] ?? swapNames(text);
   rewriteStrings(project.maps, rewrite);
   rewriteStrings(project.system.monsterCampaign, rewrite);
+  // 목표 목록은 한 줄 칸이라 긴 문장은 잘린다 — 목록용 짧은 이름을 따로 둔다(전체 문장은 「다음 목표」 칸과 설명에 남는다).
+  for (const objective of project.system.monsterCampaign?.objectives ?? []) {
+    const gym = /^gym_(\d+)$/.exec(objective.id);
+    const badge = gym ? project.system.monsterCampaign?.badges[Number(gym[1]) - 1]?.name : undefined;
+    const summary = objective.id === "starter" ? "첫 동료 만나기"
+      : objective.id === "rescue" ? "갇힌 몬스터 구하기"
+      : objective.id === "beacon" ? "등대의 빛 되찾기"
+      : objective.id === "league" ? "챔피언 나루와 승부"
+      : badge ? `${badge} 받기` : undefined;
+    if (summary) objective.summary = summary;
+  }
   if (project.system.gameOver) rewriteStrings(project.system.gameOver, rewrite);
   for (const [mapId, eventId, from, to] of EVENT_LINE_REWRITES) rewriteEventLine(findEvent(project, mapId, eventId), from, to);
   rewriteLockedRoutes(project);
@@ -712,9 +1169,13 @@ export function createEmeraldCrownFlagshipDemo(): FlagshipDemoBuildResult {
   rebuildDawningCity(project);
   startInBedroom(project, introEvent);
   tunePacing(project);
+  retuneLeaderAndChampion(project);
   softenTrainerDefeats(project);
   recastPeople(project);
   tidyMeadowDecor(project);
+  polishFirstTenMinutes(project);
+  decorateTemple(project);
+  varyTackle(project);
 
   // 1번 도로와 신전에도 여명의 날개 — 길 위를 날 뿐 막지 않는다.
   project.maps["mx_map_meadow"]?.events.push(
@@ -731,7 +1192,23 @@ export function createEmeraldCrownFlagshipDemo(): FlagshipDemoBuildResult {
       priority: 100,
       presentation: {
         tone: "warm",
-        credits: "아스트라 호라이즌: 다우닝 시티와 여명의 날개\n등대가 다시 밝아지고, 여명의 날개 새떼가 군도를 건넌다.\n기획·도트·연출: OPRN Flagship Studio",
+        // 명예의 전당·에필로그·크레딧 뒤를 검은 바탕 대신 오프닝의 별빛 바다 그림으로 채운다(기존 그림 재사용).
+        backgroundResourceId: "mx_opening_starlight",
+        // 크레딧은 고유명사 단위로 직접 줄을 나눈다(자동 줄바꿈이 「다우닝 / 시티」 사이를 끊지 않게). 24px/s 로 구른다(VQA R9-2). 여정 요약·등장인물은 VQA r11 m1. 영어 병기는 VQA r15 로 제거(게임명 한 줄만).
+        credits: [
+          "아스트라 호라이즌", "다우닝 시티와", "여명의 날개", "Astra Horizon", "",
+          "— 여정 —",
+          "다우닝 시티에서 첫 동료를 만나", "새싹 들길을 지나", "실바나 체육관에서 유림을 이기고", "별모래 신전에서 무영을 막아",
+          "챔피언 전당에서 나루와 겨뤘다.", "",
+          "— 등장인물 —",
+          "주인공", "천문박사", "라이벌 나루", "관장 유림",
+          "신전의 무영", "엄마", "센터 직원", "",
+          "등대가 다시 밝아지고,", "여명의 날개 새떼가", "군도를 건넌다.", "",
+          "기획 · 도트 · 연출", "OPRN Flagship Studio", "",
+          "음악", "OPRN 기본 BGM 라이브러리 (CC0)", "",
+          "다우닝 시티를 함께 걸어 준", "모든 트레이너에게", "",
+          "플레이해 주셔서 감사합니다",
+        ].join("\n"),
       },
     },
   ];
@@ -743,6 +1220,7 @@ export function createEmeraldCrownFlagshipDemo(): FlagshipDemoBuildResult {
     project.system.titleScreen.logoSubtitle = "다우닝 시티와 여명의 날개";
   }
 
+  remapAstraBuildingKits(project);
   const serialized = serialize(project);
   const reloaded = deserialize(serialized);
   const manifest = {

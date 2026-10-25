@@ -768,6 +768,21 @@
           "summary": "전용 포트·입력창으로 장르 게임을 제작하고 최초/보수 시도·모델 요청·엄격한 저장 재로드를 각각 보존한다."
         },
         {
+          "id": "scene-score",
+          "title": "장면 교훈 기계 채점",
+          "summary": "scene-lessons-seed 시도(genre-run)의 도구 호출·실패 호출·scene-* 경고·qa-game 막힘·저장 재로드를 채점하고 1배 맵 렌더를 남긴다. 시각 판정은 아니다."
+        },
+        {
+          "id": "scene-film",
+          "title": "장면 교훈 실제 플레이 영상",
+          "summary": "저장본을 출하 player.html 에서 실제 걷기·결정 키로 돌며 MP4 와 4초 간격 프레임을 남긴다. 순간이동·상태 주입 없음."
+        },
+        {
+          "id": "scene-judge-input",
+          "title": "장면 교훈 판정 입력",
+          "summary": "새 판정자에게 줄 요청·요구·그림 목록(해시)을 만든다. 판정 결과는 그 해시와 함께 visual.json 에 남긴다."
+        },
+        {
           "id": "portals",
           "title": "출입구 실제 수행",
           "summary": "격리된 빈 맵에서 집·문·실내·마을 출구를 실제 입력창으로 저작하고 통행·왕복·보존·SQLite 재로드와 PNG를 남긴다."
@@ -871,6 +886,16 @@
           "id": "matrix-native",
           "title": "작은 명령 50개 실제 모델 수행",
           "summary": "50개 프롬프트를 실제 입력창과 실제 provider에 제출하고 tool 호출·정본 SQLite 저장·새 context 재로드를 명령별로 확인한다. scripted transport와 모델 품질 점수는 통과로 세지 않는다."
+        },
+        {
+          "id": "matrix500-spec",
+          "title": "명령 가족 500개 명세 생성",
+          "summary": "families/ 의 가족 100 × 변형 5 로 command-matrix-500.json 을 쓰고 가족·행 수를 센다. 100 가족이 다 구현되기 전에는 complete=false 로 그만큼만 실행한다."
+        },
+        {
+          "id": "matrix500-selfcheck",
+          "title": "명령 가족 판정기 자기검사",
+          "summary": "모델·브라우저 없이 가족마다 정답은 통과, 오답 전부와 무변경 문서는 실패하는지 검사한다. 판정기가 정답/오답을 구분하지 못하면 실모델 점수도 의미가 없다."
         },
         {
           "id": "matrix-score",
@@ -1456,19 +1481,24 @@
           "summary": "조립 레시피대로 부품을 붙여 building.png·kit.json(칸 격자 lower/upper·walkGrid·door)을 만들고 조립 관문 A1~A15(문 하나·지붕/벽 틈 없음·지붕이 벽을 덮음·기단이 바닥에 닿음·맞닿은 조각 이음·지붕 비율 밴드·용마루 하한·같은 땅 행·탑 지붕 폭/재료·박공 정면 용마루 세로선과 왼쪽 밝은 사면·골이 뒤 지붕에 닿음·굴뚝이 지붕 위·requireGableFront 판은 박공 정면 질량 필수)을 건다. 질량 종류 ridge_side·gable_front·lean_to."
         },
         {
+          "id": "finish",
+          "title": "마감(손 디테일)",
+          "summary": "조립 관문을 모두 통과한 건물마다(--line, --building) 새 Opus 5.5 high 프로세스(BUILDING_KIT_FINISH_MODEL/EFFORT, 시간 BUILDING_KIT_FINISH_TIMEOUT 기본 5400s)가 팔레트 글자 격자 pixels.txt 를 finish_draw.py 의 명시 좌표·행 문자열로 고쳐 기와 낱장 변화·처마 밝은 선·회벽 점묘·막돌·창턱/꽃상자/유리 반짝임·아치 문/징·소품을 더한다. check.py (a) 윤곽 그대로 (b) 문 재질 (c) 팔레트만 (d) 처마 선 ±1px (e) 코드 AST(난수·식 채우기 금지) (f) 12% 이상 변화 (g) 16px 자기상관 감소. 하네스가 깨끗한 입력으로 finish_draw.py·check.py 를 다시 돌려 finished/<후보>.<건물>.png|.json 에 쓴다. 통과는 합격이 아니다 — review/sheet/village/pick --finished 로 마감 그림 해시에 묶인 같은 길을 간다."
+        },
+        {
           "id": "review",
           "title": "독립 검수",
-          "summary": "관문을 통과한 조립 건물만. 버들항 기준 건물 + 섞인 후보 + 숨긴 함정(지붕/벽 틈·문 둘·평면 채우기·잡음·얇은 지붕 입면·색만 바꾼 원본, requireGableFront 판은 후보 자기 부품으로 만든 평평한 정면 입면 flat_elevation) 보드를 새 Opus 판정자에게 보인다. 함정을 하나라도 통과시키면 그 회차 무효, 유효 3회 다수결, 영수증은 그림 해시+판정 원문 해시에 묶인다."
+          "summary": "관문을 통과한 조립 건물만. 버들항 기준 건물 + 섞인 후보 + 숨긴 함정(지붕/벽 틈·문 둘·평면 채우기·잡음·얇은 지붕 입면·색만 바꾼 원본, requireGableFront 판은 후보 자기 부품으로 만든 평평한 정면 입면 flat_elevation) 보드를 새 Opus 판정자에게 보인다. --finished 는 마감 그림(함정도 마감 그림에서 만든다)과 review-finished/ 영수증. 함정을 하나라도 통과시키면 그 회차 무효, 유효 3회 다수결, 영수증은 그림 해시+판정 원문 해시에 묶인다."
         },
         {
           "id": "sheet",
           "title": "고르기 시트",
-          "summary": "검수 PASS 후보만 버들항 기준 건물·Actor1·1배/3배·조립 건물·거리 장면과 함께 ~/claude-viz/bk-<테마>-<판>.html 자체완결 시트로 쓴다(--show-failed 는 실패 사유와 함께 회색)."
+          "summary": "검수 PASS 후보만 버들항 기준 건물·Actor1·1배/3배·조립 건물·거리 장면과 함께 ~/claude-viz/bk-<테마>-<판>.html 자체완결 시트로 쓴다(--show-failed 는 실패 사유와 함께 회색). --finished 는 마감 건물(바탕·마감 비교, 마감 해시)을 bk-<테마>-<판>-finished.html 에."
         },
         {
           "id": "pick",
           "title": "고르기(사람)",
-          "summary": "사람이 시트에서 고른 후보를 시트 때 해시(--sha 앞 8자리)와 현재 그림 해시로 대조해 ledger.json 에 (항목, 줄)마다 기록하고 picked/<줄>/<항목>.png 로 복사한다. 에이전트 대리 선택 경로는 없다."
+          "summary": "사람이 시트에서 고른 후보를 시트 때 해시(--sha 앞 8자리)와 현재 그림 해시로 대조해 ledger.json 에 (항목, 줄)마다 기록하고 picked/<줄>/<항목>.png 로 복사한다. 에이전트 대리 선택 경로는 없다. --finished 는 <건물> <후보> 로 마감 시트에 보인 마감 해시를 picked/<줄>/finished/<건물>.png 와 finishedPicks 에 기록한다."
         },
         {
           "id": "reject",
@@ -1483,7 +1513,7 @@
         {
           "id": "village",
           "title": "마을 놓기",
-          "summary": "그 줄의 조립 건물(검수 PASS 영수증이 지금 그림 해시와 맞는 것만, --all 은 전부)을 테마 팔레트 색만으로 그린 잔디(북방은 눈) 바닥·구불구불한 길·광장·우물·나무 위에 놓는다. 문은 길을 향하고 마당 1~2칸을 거쳐 길까지 걸어갈 수 있다(BFS 확인). 건물끼리 겹치지 않고 같은 --seed 면 같은 마을이 나온다. PNG 1배·2배와 ~/claude-viz/bk-village-<테마>-<판>-<줄>.html."
+          "summary": "그 줄의 조립 건물(검수 PASS 영수증이 지금 그림 해시와 맞는 것만, --all 은 전부)을 테마 팔레트 색만으로 그린 잔디(북방은 눈) 바닥·구불구불한 길·광장·우물·나무 위에 놓는다. 문은 길을 향하고 마당 1~2칸을 거쳐 길까지 걸어갈 수 있다(BFS 확인). 건물끼리 겹치지 않고 같은 --seed 면 같은 마을이 나온다. PNG 1배·2배와 ~/claude-viz/bk-village-<테마>-<판>-<줄>.html. --finished 는 마감 검수 PASS 마감 건물로 놓는다."
         },
         {
           "id": "projection",
@@ -1494,6 +1524,97 @@
           "id": "status",
           "title": "현황",
           "summary": "테마별 판·관문·검수·시트·고른 것(현재 해시와 맞는지)·3/4 영수증 유무를 보여 준다."
+        }
+      ],
+      "entrypoints": {
+        "cli": true,
+        "editorUi": false,
+        "assistantTool": false
+      },
+      "workshopRunner": false
+    },
+    {
+      "id": "cast-portrait",
+      "title": "캐스트 대사 흉상 (기존 캐스트와 같은 규격)",
+      "summary": "프로젝트마다 캐스트 규격(harness-data/cast-portrait/projects/<project>.json: 기존 흉상 줄, 캔버스, 규칙, 생성 경로, 대사창 픽스처)을 두고 새 흉상을 그 캐스트와 같은 경로로 만든다(아스트라: char-gen command 엔진 + bake_astra_busts64, 64×64·16색·투명·머리 위 1~4화소·어깨 아래로 잘림·인접색 윤곽·얼굴만 바꾸는 표정). 원본은 줄이거나 자르지 않는다(원래 격자가 캔버스에 안 맞으면 버림). 기계 검사(크기·색 수·자리·윤곽 어둠 ≥70%·두 눈 대칭·캐스트 대비 머리 폭·얼굴 밖 변화 0) → 캐스트 줄 1·3배와 실제 대사창 → 눈가림 Argon 「같은 작가?」 5번(중앙값·과반, 캐스트·반려작으로 보정한 문턱) → 사람 선택(현재 그림 해시) → 설치. 에이전트는 고르지 않는다.",
+      "scope": {},
+      "triggers": [
+        "대사 흉상·초상(포트레잇)을 새로 만들거나 다시 그릴 때 — 아스트라 호라이즌 등 캐스트가 있는 프로젝트",
+        "「다른 포트레잇과 안 어울린다」「괴물같다」는 흉상을 고칠 때",
+        "다른 데모(첫사랑·떨어진 별)는 자기 캐스트 규격 파일로 calibrate·check·lineup·verdict 를 쓴다(생성 경로는 규격에 있을 때만)"
+      ],
+      "seed": "harness-data/cast-portrait/seed.json",
+      "doc": "openwiki/harnesses/cast-portrait.md",
+      "stages": [
+        {
+          "id": "list",
+          "title": "규격 목록",
+          "summary": "프로젝트별 캐스트 규격(줄·생성 경로·역할)을 보여 준다."
+        },
+        {
+          "id": "calibrate",
+          "title": "캐스트 측정",
+          "summary": "기존 캐스트 흉상을 같은 측정기로 재서 baseline.json 에 쓴다(크기·색·머리 위치·윤곽 어둠·머리 폭·눈 대칭)."
+        },
+        {
+          "id": "draw",
+          "title": "후보 그리기",
+          "summary": "규격의 생성 경로(아스트라: char-gen + bake_astra_busts64)로 역할 후보 N개와 표정을 만든다. 원래 격자가 캔버스에 맞지 않으면 버린다(축소·자르기 금지)."
+        },
+        {
+          "id": "import",
+          "title": "가져오기",
+          "summary": "같은 경로로 이미 만든 흉상 폴더를 후보로 등록한다. 캔버스와 다른 크기는 거절한다."
+        },
+        {
+          "id": "fix",
+          "title": "손 보정",
+          "summary": "표정 하나의 화소를 고치고 기록·해시를 다시 잡는다(이전 판정은 무효가 된다)."
+        },
+        {
+          "id": "check",
+          "title": "기계 검사",
+          "summary": "캔버스·색 수·투명 배경·머리 위 여백·어깨 잘림·윤곽 어둠·두 눈 대칭·캐스트 대비 머리 폭·얼굴 밖 변화·원래 격자를 표정마다 검사한다. 실패는 종료 코드 1."
+        },
+        {
+          "id": "lineup",
+          "title": "캐스트 줄 세우기",
+          "summary": "후보마다 기존 캐스트 줄 안(4번째)에 1·3배, 표정 띠 4배를 만들고 글자로 가린 눈가림 묶음과 검수 지시문을 쓴다."
+        },
+        {
+          "id": "dialogue",
+          "title": "실제 대사창",
+          "summary": "qa:runtime 으로 진짜 대사창에서 캐스트 대사와 후보 표정(기본·기쁨·놀람·슬픔)을 한 장씩 찍어 눈가림 묶음에 넣는다."
+        },
+        {
+          "id": "review",
+          "title": "반복 눈가림 검수 (관문)",
+          "summary": "후보마다 새 Argon 호출 N번(기본 5)으로 「같은 작가?」를 묻고 적합도 중앙값·같은 작가 과반·표정별 결함 표·퍼짐을 기록한다. 문턱은 calibrate-review 값."
+        },
+        {
+          "id": "calibrate-review",
+          "title": "검수 보정",
+          "summary": "실제 캐스트(한 명씩 빼서 후보 자리에)=합격, 사용자 반려작=불합격을 같은 묶음으로 N번씩 검수해 둘을 가르는 문턱을 정한다."
+        },
+        {
+          "id": "verdict",
+          "title": "비교 검수 기록 (참고)",
+          "summary": "후보 넷을 한 장에 비교한 독립 검수자 JSON 을 그림 해시에 묶어 기록한다. 관문이 아니다(한 번 호출은 흔들린다)."
+        },
+        {
+          "id": "pick",
+          "title": "사람 선택",
+          "summary": "검사 통과 + 눈가림 「같은 작가, 결함 없음」이 현재 해시에 있을 때만, 사람이 고른 후보를 기록한다."
+        },
+        {
+          "id": "install",
+          "title": "설치",
+          "summary": "현재 해시에 사람 선택이 있는 후보만 규격의 설치 폴더로 복사하고 출처를 남긴다."
+        },
+        {
+          "id": "status",
+          "title": "현황",
+          "summary": "판·후보마다 검사·판정·선택 상태."
         }
       ],
       "entrypoints": {

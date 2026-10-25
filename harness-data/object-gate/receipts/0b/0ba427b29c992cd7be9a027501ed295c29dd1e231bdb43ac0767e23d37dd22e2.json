@@ -1,0 +1,410 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "0ba427b29c992cd7be9a027501ed295c29dd1e231bdb43ac0767e23d37dd22e2",
+ "width": 16,
+ "height": 48,
+ "kind": "structure",
+ "name": "jp-in-mc-stairs-up",
+ "label": "jp_city/interior/jp-in-mc-stairs-up",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 독립 눈이 「3/4 아님」 12/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면",
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 명암 3단 < 4 (3/4)",
+  "화풍: 칸 정보량이 기준보다 훨씬 낮음 (2/4)"
+ ],
+ "view34": {
+  "verdict": "refer",
+  "reasons": [
+   "독립 눈이 「3/4 아님」 12/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면"
+  ]
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "명암 3단 < 4 (3/4)",
+   "칸 정보량이 기준보다 훨씬 낮음 (2/4)"
+  ],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 4
+ },
+ "metrics": {
+  "tileColorsMedian": 9,
+  "tileColorsP90": 10,
+  "darkV5": 26,
+  "nearBlackEdge": 0.88,
+  "opaqueTiles": 3
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "dark upper wall / opening",
+      "rows": "0-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stair tread 1",
+      "rows": "14-15",
+      "evidence": "a",
+      "front_edge_line_row": 15,
+      "eave_shadow_rows": "16"
+     },
+     {
+      "part": "stair tread 2",
+      "rows": "17-19",
+      "evidence": "a",
+      "front_edge_line_row": 19,
+      "eave_shadow_rows": "20-21"
+     },
+     {
+      "part": "stair tread 3",
+      "rows": "22-26",
+      "evidence": "a",
+      "front_edge_line_row": 26,
+      "eave_shadow_rows": "27-28"
+     },
+     {
+      "part": "stair tread 4",
+      "rows": "29-34",
+      "evidence": "a",
+      "front_edge_line_row": 34,
+      "eave_shadow_rows": "35-36"
+     },
+     {
+      "part": "stair tread 5",
+      "rows": "37-46",
+      "evidence": "a",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 8,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The stair is a stack of light tread bands (rows 14-15, 17-19, 22-26, 29-34, 37-46) that grow taller toward the bottom. Each band ends in a lighter front-edge line (rows 15, 19, 26, 34) followed by 1-2 dark shadow or riser rows (16, 20-21, 27-28, 35-36). This gives stepped horizontal top surfaces with front faces between them (evidence a). Rows 0-13 are a dark wall or opening above the stairs. The risers are thin, so the 3/4 reading is moderate rather than strong. There is no isometric side face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a tiny stair-like piece, about one tile wide and two tall, with a grey/white stepped body and a dark frame. It is not a whole building with roof, walls and door/windows, so it does not match the reference kind. It shows about 3 lightness steps on its grey ramp against 5-6 on the references' roofs, plaster and stone. The measured 8 visible tones per tile is below the references' 12 and 10, and it has only 14 distinct colours in total against 185 and 66. Near-flat coverage is 0%, so there are no large flat fills, but there is little tile scalloping, speckle or grain. The dark edge pixels are only 2% neutral, so the outline leans toward a tinted tone, though the object is too small to judge that confidently. Overall it is thinner and simpler than either reference building and would look sticker-like beside them.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 19714
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "dark back wall / stairwell opening",
+      "rows": "0-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "top step tread",
+      "rows": "14-15",
+      "evidence": "a",
+      "front_edge_line_row": 15,
+      "eave_shadow_rows": "16"
+     },
+     {
+      "part": "second step tread",
+      "rows": "17-19",
+      "evidence": "a",
+      "front_edge_line_row": 19,
+      "eave_shadow_rows": "20-21"
+     },
+     {
+      "part": "third step tread (main)",
+      "rows": "22-26",
+      "evidence": "a",
+      "front_edge_line_row": 26,
+      "eave_shadow_rows": "27-28"
+     },
+     {
+      "part": "fourth step tread",
+      "rows": "29-34",
+      "evidence": "a",
+      "front_edge_line_row": 34,
+      "eave_shadow_rows": "35-36"
+     },
+     {
+      "part": "lower step treads with dark inset on right",
+      "rows": "37-45",
+      "evidence": "a",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 10,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "This is a staircase seen from the south. The light tread bands (rows 14-15, 17-19, 22-26, 29-34) each end in a brighter front-edge line (rows 15, 19, 26, 34) and are followed by 1-2 rows of dark riser or shadow (rows 16, 20-21, 27-28, 35-36). The treads are horizontal surfaces and the dark bands are vertical risers, so the stack reads as ascending steps with tops and fronts. The dark back wall (rows 0-13) is a vertical face. The dark notch on the right (rows 32-46) is a recess, not a side face. The tread bands are several rows deep and the risers are only 1-2 rows, which is somewhat flat, but treads with front-edge lines and shadows are present."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a tiny, narrow staircase-like object (about one tile wide, grey and white steps with a dark frame). It is not a whole building with roof, walls and door/windows, so it does not match the reference kind. It has about 3 visible lightness steps on its grey ramp, against 5-6 on the reference roofs, plaster and stone. The measured facts show 8 visible tones per tile, against 10-12 for the references. The tile is small and fully covered with no flat 5x5 blocks, and only 2% of its dark edge pixels are neutral, so the outline leans toward a dark tint of the material rather than black. It has no tile scallops, plaster speckle or per-stone shading like the references, so the shading is shallow and the surface reads as stepped slabs with little grain. A careful artist would find it thinner and flatter next to the reference buildings. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 19686
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "dark back wall / opening above the stairs",
+      "rows": "0-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "upper steps (treads)",
+      "rows": "14-26",
+      "evidence": "a",
+      "front_edge_line_row": 15,
+      "eave_shadow_rows": "16"
+     },
+     {
+      "part": "lower steps (treads)",
+      "rows": "29-46",
+      "evidence": "a",
+      "front_edge_line_row": 34,
+      "eave_shadow_rows": "35-36"
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 14,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 14-46 show repeated light tread bands of about 2-6 rows (14-15, 17-19, 22-26, 29-34). Each band ends in a darker edge line and 1-2 dark shadow rows (16, 20-21, 27-28, 35-36), which meets evidence (a). The dark wall above (rows 0-13) is a vertical face of about 14 rows, so the front face is 3+ rows. The treads show horizontal surfaces, so this is not a flat elevation. The tread bands are fairly thin relative to the wall, but they are present."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small stair-up prop, roughly one tile wide and four tall, while the references are whole timber and stone houses with tiled roofs. The kind comparison is therefore weak. The measured facts are 8 visible tones per tile against 12 and 10 for the references, and 14 distinct colours in total against 185 and 66. Only about 4 lightness steps show on the grey-steel and dark ramps, against 5-6 on the references' roofs, plaster and stone. The edge pixels are only 2% neutral, so the outline leans toward a tinted dark tone rather than pure black. There are no flat 5x5 fills (0%), but the surfaces are mostly stepped bands with little grain, speckle or per-element highlight, unlike the reference tile scallops and stones shaded one by one. It looks thinner and more schematic than the references. Because the surface looks sparse and the shading is shallow, I fail it.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 19838
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "stair treads (stepped flights)",
+      "rows": "14-46",
+      "evidence": "a",
+      "front_edge_line_row": 34,
+      "eave_shadow_rows": "35-36"
+     },
+     {
+      "part": "dark back wall / stairwell opening above the stairs",
+      "rows": "0-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "right side rail / wall strip",
+      "rows": "12-46",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 14,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 14-46 are a stack of light tread bands (rows 14-15, 17-19, 22-26, 29-34, 37+) that each end in a 1-row darker edge line or riser shadow (rows 16, 20-21, 27-28, 35-36). The treads grow taller toward the bottom, which gives foreshortened horizontal surfaces seen from above. The largest tread band is about 6 rows (29-34). The vertical faces are the dark back wall at rows 0-13 and the thin dark risers. A dark notch at x≥11 in rows 32-46 is a gap or pit at the lower right, not a top surface. The overall structure shows treads plus vertical faces, so it reads as three-quarter, though the top surfaces are drawn as many thin bands rather than one large plane."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 4,
+    "evidence": "The candidate is a tiny, narrow stairs-up prop (about 30x60 px at 2x). It is not a whole building with roof, walls and door/windows like the references, so the kind match is doubtful. Measured facts: 8 visible tones per tile against 12 and 10 for the references, 0% near-flat coverage, and only 2% neutral dark edge pixels, so the outline is tinted. By eye, the steps and rail are drawn with about 3 lightness steps in grey-blue and a dark frame. The references carry 5-6 steps per material, with per-tile roof highlights, plaster speckle and individually shaded stones. The candidate shows much less grain and fewer distinct shading steps, so it reads thinner and flatter than the references. Because the object is sparse and the tone count is close to the references, density is only slightly lower. Even so, I would not accept it next to the references: the shading is shallow and the kind does not match.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 17966
+  }
+ ],
+ "decidedAt": "2026-10-22T15:28:03.336Z",
+ "cells": {
+  "16": [
+   "6dd8329b06668277",
+   "dfe1c11213fa05f4",
+   "fc9feced3c001cfd"
+  ],
+  "24": [
+   "11fba7cf0fc04121",
+   "595d245a4dac6ecc",
+   "7d668d69a54231de",
+   "aad339ac44974aaa",
+   "bfe69fd2e22d8f26",
+   "ec008c3797c95443"
+  ],
+  "32": [
+   "12aee120f2abcddc",
+   "250c9fae422059d4",
+   "3f43e904d96abd12",
+   "52fb2ecf8781c426",
+   "851461743ed66e83",
+   "8c99ce9ef1faf4a9",
+   "8d8c9c37340bd6a1",
+   "91c09de9a2527454",
+   "c8cccf2a5dc34165",
+   "ce824a0d0845d9bd",
+   "d37ad78fd540b3a1",
+   "fc3cb20363e60011"
+  ],
+  "48": [
+   "52795dbb019a389e",
+   "c28b1cb107bf82d6",
+   "dc168a7f39ff35c5"
+  ]
+ }
+}

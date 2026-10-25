@@ -79,6 +79,7 @@ const ACTIONS = {
   opening: forms("오프닝을 만드는 중", "오프닝을 만들었어요", "오프닝 만들기를 실패했어요"),
   removeOpening: forms("오프닝을 지우는 중", "오프닝을 지웠어요", "오프닝 지우기를 실패했어요"),
   titleArt: forms("타이틀 화면을 그리는 중", "타이틀 화면을 그렸어요", "타이틀 화면 그리기를 실패했어요"),
+  mapBackgroundImage: forms("맵 배경 그림을 만드는 중", "맵 배경 그림을 만들어 연결했어요", "맵 배경 그림 만들기를 실패했어요"),
   openingImage: forms("오프닝 그림을 만드는 중", "오프닝 그림을 만들었어요", "오프닝 그림 만들기를 실패했어요"),
 } as const;
 
@@ -146,11 +147,12 @@ addFamily(ACTIONS.focusView, "focus_editor_view");
 addFamily(ACTIONS.askTileset, "ask_tileset_change");
 addFamily(ACTIONS.askMissingTiles, "ask_missing_tiles");
 addFamily(ACTIONS.objectGen, "generate_missing_object");
-addFamily(ACTIONS.storeSearch, "store_search store_my_items");
+addFamily(ACTIONS.storeSearch, "store_search store_my_items store_game_changes store_game_reviews");
 addFamily(ACTIONS.storeInstall, "store_install");
-addFamily(ACTIONS.storePropose, "store_publish store_set_visibility");
+addFamily(ACTIONS.storePropose, "store_publish store_set_visibility store_game_post store_review_reply");
 addFamily(ACTIONS.opening, "set_opening edit_opening");
 addFamily(ACTIONS.openingImage, "generate_opening_image");
+addFamily(ACTIONS.mapBackgroundImage, "generate_map_background");
 addFamily(ACTIONS.titleArt, "generate_title_art");
 addFamily(ACTIONS.removeOpening, "remove_opening");
 

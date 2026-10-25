@@ -7,9 +7,9 @@
   "houseGrassRoadFoundationUnchanged": true,
   "baselineMatchesPreviousComparison": true,
   "sourceBodyHashes": [
-    "7708c0cb1ad5611aee15e254c7ceb7fdfae4275a7fd5a00cfcb7a0a465673da8",
-    "6fb361c3a18391e9a089f3c45f90e54a0eda6ff773322798681ff9d61717ff7b",
-    "855aff399fd9473c91a5e2ea7790b95af66a29b996f97feb7747d5951a601842"
+    "a1f43a28aa6c328cd160102a6f4c18799e40387e123728cad64304bbb795c6f8",
+    "d6ebf4b8ff2a6f34daf4a91e5166b15e30447159c7ae90e3feaac33235516381",
+    "259d71447c62726597a337ac12d9a69fcaeece7c6b356fd19fa4afdd933a1043"
   ],
   "variants": [
     {
@@ -18,23 +18,23 @@
     },
     {
       "id": "muted",
-      "changedBodyPixels": 4672
+      "changedBodyPixels": 3214
     },
     {
       "id": "warm",
-      "changedBodyPixels": 4672
+      "changedBodyPixels": 3214
     },
     {
       "id": "cool",
-      "changedBodyPixels": 4672
+      "changedBodyPixels": 3214
     },
     {
       "id": "contrast",
-      "changedBodyPixels": 4672
+      "changedBodyPixels": 3214
     },
     {
       "id": "balanced",
-      "changedBodyPixels": 5243
+      "changedBodyPixels": 3618
     }
   ]
 }

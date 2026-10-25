@@ -4,8 +4,6 @@ import { createConceptFeed } from "@/start/conceptFeed/conceptFeed";
 import { createConceptSource } from "@/concepts/source";
 import { menuBriefHandler, menuMakeHandler, welcomeBriefHandler, welcomeMakeHandler } from "./conceptMake";
 import { registerModal, unregisterModal } from "./ui/modalStack";
-import { focusProjectStartMap } from "@/editor/mapSelection";
-import { store } from "@/project/store";
 import { toast } from "@/util/toast";
 
 export type ConceptFeedOverlayResult = "made" | "closed" | "blank";
@@ -78,6 +76,7 @@ function mountOverlay(mode: "menu" | "welcome", resolve: (result: ConceptFeedOve
       if (blankBusy || feed.busy()) return;
       void openBuiltinDemoFromOverlay(demoId, action, () => finish("closed")).catch((error: unknown) => {
         console.error("[welcome] 기본 데모를 열지 못했습니다:", error);
+        toast("데모를 열지 못했습니다. 잠시 뒤 다시 시도해 주세요.", "error");
       });
     },
     onBlank: mode === "menu"
@@ -109,15 +108,8 @@ async function openBuiltinDemoFromOverlay(
   action: "play" | "open",
   closeOverlay: () => void,
 ): Promise<void> {
-  const { createFlagshipDemoProject } = await import("@/project/flagship");
-  const demo = createFlagshipDemoProject(demoId);
-  store.replaceProject(demo.project, { label: `${demo.manifest.title} 기본 데모 열기`, origin: "human" });
-  focusProjectStartMap();
-  closeOverlay();
-  toast(`${demo.manifest.title} 기본 데모를 불러왔습니다.`, "ok");
-  if (action === "play") {
-    window.dispatchEvent(new CustomEvent("oprn:test-play-window"));
-  }
+  const { openFlagshipDemo } = await import("@/editor/flagshipDemoLoader");
+  await openFlagshipDemo(demoId, { action, closeOverlay });
 }
 /** 메뉴의 「빈 프로젝트로 시작」 — 장르 없이 새 폴더. 예전 다이얼로그의 빈 프로젝트와 같다. */
 async function createBlankFromMenu(): Promise<boolean> {

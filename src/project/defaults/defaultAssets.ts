@@ -3,10 +3,12 @@ import { WORLDMAP_SELECTED_TEXTURE, createWorldmapSelectedTileset, ensureWorldma
 import { WORLDMAP_AUTHORING_TEXTURE, WORLDMAP_AUTHORING_ID, createWorldmapAuthoringTileset, ensureWorldmapAuthoringBrushes } from './worldmapAuthoring';
 import { BEODEUL_CITY_TEXTURE, createBeodeulCityTileset, ensureBeodeulCityReferences, ensureBeodeulCityTileset, beodeulCityBundledReferenceDocuments } from "./beodeulCity";
 import {ensureBeodeulFacilityKits} from './beodeulFacilities';
+import {BEODEUL_ORGANIC_TEXTURE,createBeodeulOrganicTileset,ensureBeodeulOrganicTileset,ensureBeodeulOrganic} from './beodeulOrganic';
 import {BEODEUL_FORMS_TEXTURE,createBeodeulFormsTileset,ensureBeodeulFormsTileset,ensureBeodeulForms} from './beodeulForms';
 import {BEODEUL_REVIEWED_TEXTURE,createBeodeulReviewedTileset,ensureBeodeulReviewedTileset,ensureBeodeulReviewed} from './beodeulReviewed';
 import { BEODEUL_DOOR_TEXTURE, createBeodeulDoorTileset, ensureBeodeulDoorReferences } from "./beodeulDoor";
 import { BEODEUL_GROUND_TEXTURE, createBeodeulGroundTileset, ensureBeodeulGroundReferences } from "./beodeulGround";
+import { BEODEUL_FOREST_TRUNKS_TEXTURE, createBeodeulForestTrunksTileset } from "./beodeulForestTrunks";
 import { BEODEUL_NATURE_TEXTURE, createBeodeulNatureTileset } from "./beodeulNature";
 import { BEODEUL_WARM_TREES_TEXTURE, createBeodeulWarmTreesTileset } from './beodeulWarmTrees';
 import { BEODEUL_ARCHITECTURE_TEXTURE, createBeodeulArchitectureTileset, ensureBeodeulArchitectureTileset } from './beodeulArchitecture';
@@ -26,6 +28,7 @@ import { DESERT_EAST_TEXTURE, createDesertEastTileset, ensureDesertEastReference
 import { SNOW_NORTH_TEXTURE, createSnowNorthTileset, ensureSnowNorthReferences, ensureSnowNorthTileset, snowNorthBundledReferenceDocuments } from "./snowNorth";
 import { createEmeraldMonsterKitTileset, emeraldMonsterKitBundledReferenceDocuments, ensureEmeraldMonsterKitTileset, isEmeraldMonsterKitTexture } from "./emeraldMonsterKit";
 import { createMonsterKitTileset, ensureMonsterKitTileset, isMonsterKitTexture, monsterKitBundledReferenceDocuments } from "./monsterKit";
+import { ensureStairEntranceReferences } from "./stairReferences";
 import { ATLAS_VEHICLES_TEXTURE, createAtlasVehiclesTileset, ensureAtlasVehiclesReferences } from "./atlasVehicles";
 import { ATLAS_BIOME_INTERIOR_TEXTURE, createAtlasBiomeInteriorTileset, ensureAtlasBiomeInteriorCurrent, atlasBiomeInteriorBundledReferenceDocuments } from "./atlasBiomeInterior";
 import { bundledJsonKeyForTexture, bundledJsonLoaded, preloadBundledJson, type BundledJsonKey } from "./bundledJson";
@@ -207,15 +210,17 @@ export function ensureBundledTilesets(project: { tilesets: Record<string, Tilese
       if (asset.textureKey === BEODEUL_ARCHITECTURE_TEXTURE) changed = ensureBeodeulArchitectureTileset(project.tilesets[id]) || changed;
       if (asset.textureKey === BEODEUL_FORMS_TEXTURE) changed = ensureBeodeulFormsTileset(project.tilesets[id]) || changed;
       if (asset.textureKey === BEODEUL_REVIEWED_TEXTURE) changed = ensureBeodeulReviewedTileset(project.tilesets[id]) || changed;
+      if (asset.textureKey === BEODEUL_ORGANIC_TEXTURE) changed = ensureBeodeulOrganicTileset(project.tilesets[id]) || changed;
       if (asset.textureKey === BEODEUL_GROUND_TEXTURE || asset.textureKey === BEODEUL_CITY_TEXTURE)
         changed = ensureBeodeulGroundReferences(project.tilesets[id]) || changed;
       // 버들항 v6 (tiledata/beodeul-city): the shipped city guidance for older copies.
       if (asset.textureKey === BEODEUL_CITY_TEXTURE) {
-        changed = ensureBeodeulCityTileset(project.tilesets[id]) || changed;
+        changed = ensureBeodeulCityTileset(project.tilesets[id], project) || changed;
         changed = ensureBeodeulCityReferences(project.tilesets[id]) || changed;
         changed = ensureBeodeulFacilityKits(project.tilesets[id]) || changed;
         changed = ensureBeodeulForms(project.tilesets[id]) || changed;
         changed = ensureBeodeulReviewed(project.tilesets[id]) || changed;
+        changed = ensureBeodeulOrganic(project.tilesets[id]) || changed;
       }
       // 조선 · 바람의나라풍 (tiledata/joseon-village): 번들 칸 표와 참고문서를 옛 사본에도 맞춘다.
       if (asset.textureKey === JOSEON_BARAM_TEXTURE) {
@@ -300,6 +305,8 @@ export function ensureBundledTilesets(project: { tilesets: Record<string, Tilese
     changed = true;
   }
   changed = ensureTilesetHarnesses(project) || changed;
+  // 계단 입구 참고문서(번들 소유) — 새 사본·옛 사본 모두 빠진 「계단 입구」 용도만 덧붙인다(stairReferences.ts).
+  for (const tileset of Object.values(project.tilesets)) changed = ensureStairEntranceReferences(tileset) || changed;
   for (const tileset of Object.values(project.tilesets)) if (tileset.mvPack) changed = refreshMvPackGuide(tileset) || changed;
   changed = ensureWorldmapAuthoringBrushes(project) || changed;
   return changed;
@@ -441,10 +448,12 @@ function bundledEasyRpgTileset(asset: (typeof BUNDLED_EASYRPG_CHIPSET_ASSETS)[nu
 function bundledEasyRpgTilesetBase(asset: (typeof BUNDLED_EASYRPG_CHIPSET_ASSETS)[number]): TilesetDef {
   if (asset.textureKey === BEODEUL_DOOR_TEXTURE) return createBeodeulDoorTileset();
   if (asset.textureKey === BEODEUL_GROUND_TEXTURE) return createBeodeulGroundTileset();
+  if (asset.textureKey === BEODEUL_FOREST_TRUNKS_TEXTURE) return createBeodeulForestTrunksTileset();
   if (asset.textureKey === BEODEUL_NATURE_TEXTURE) return createBeodeulNatureTileset();
   if (asset.textureKey === BEODEUL_WARM_TREES_TEXTURE) return createBeodeulWarmTreesTileset();
   if (asset.textureKey === BEODEUL_ARCHITECTURE_TEXTURE) return createBeodeulArchitectureTileset();
   if (asset.textureKey === BEODEUL_FORMS_TEXTURE) return createBeodeulFormsTileset();
+  if (asset.textureKey === BEODEUL_ORGANIC_TEXTURE) return createBeodeulOrganicTileset();
   if (asset.textureKey === BEODEUL_REVIEWED_TEXTURE) return createBeodeulReviewedTileset();
   if (asset.textureKey === BEODEUL_CITY_TEXTURE) return createBeodeulCityTileset();
   if (asset.textureKey === JOSEON_BARAM_TEXTURE) return createJoseonBaramTileset();

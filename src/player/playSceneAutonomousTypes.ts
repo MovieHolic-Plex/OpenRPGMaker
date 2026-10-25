@@ -14,7 +14,7 @@ export type AutonomousNpcSceneContext = Pick<
   | "tileX"
   | "tileY"
 > &
-  Partial<Pick<PlaySceneContext, "moving" | "movingTo" | "running">> & {
+  Partial<Pick<PlaySceneContext, "moving" | "movingTo" | "running" | "playerRoute" | "playerSlide" | "playerSlideKind">> & {
   readonly eventSprites: { get(eventId: string): AutonomousNpcSprite | undefined };
   readonly runtimeDom: Pick<PlaySceneContext["runtimeDom"], "upsertEventMarker">;
   readonly showRuntimeOverlay?: PlaySceneContext["showRuntimeOverlay"];

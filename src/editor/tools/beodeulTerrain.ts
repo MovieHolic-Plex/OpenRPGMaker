@@ -6,6 +6,7 @@
 //
 // 지형 이름(terrain)은 AI 가 고르는 선택지이고 모양은 이 함수가 정한다(같은 seed = 같은 지형).
 //   flat      평지.
+//   highland  높은 산비탈(river) — terraces 와 같은 동서 등고선을 7칸 간격으로 세 단까지(산골).
 //   terraces  계단식 비탈 — 큰길 북쪽 집 띠 뒤로 한 단, 그 뒤로 또 한 단. 강은 높은 단을 곧게 깎은 골(0단)로 흐른다.
 //   hillside  설원 비탈 — terraces 와 같은 모양(눈 덮인 계단식 언덕), 얼음 못은 골.
 //   basin     오아시스 골 — 북쪽 모래 단을 오아시스 둘레만 곧게 깎아 낮춘 골.
@@ -15,14 +16,15 @@
 // 사선·둥근 단 가장자리(옛 강 골짜기·분지 고리)는 쓰지 않는다. 1칸 가시·홈은 다듬어 지운다, 물과 그 둑은 0단.
 import type { BeodeulVillageForm, BeodeulVillageTheme } from "./beodeulVillage";
 
-export const VILLAGE_TERRAINS = ["flat", "terraces", "hillside", "basin", "ridge"] as const;
+export const VILLAGE_TERRAINS = ["flat", "terraces", "highland", "hillside", "basin", "ridge"] as const;
 export type VillageTerrain = (typeof VILLAGE_TERRAINS)[number];
-export const TERRAIN_LABEL: Record<VillageTerrain, string> = { flat: "평지", terraces: "계단식 비탈", hillside: "눈 덮인 비탈", basin: "오아시스 골", ridge: "마른 둔덕" };
+export const TERRAIN_LABEL: Record<VillageTerrain, string> = { flat: "평지", terraces: "계단식 비탈", highland: "높은 산비탈", hillside: "눈 덮인 비탈", basin: "오아시스 골", ridge: "마른 둔덕" };
 
 /** theme 에서 고를 수 있는 지형(기본으로 고르는 것 먼저, flat 은 늘 마지막). */
 export function allowedVillageTerrains(theme: BeodeulVillageTheme): VillageTerrain[] {
   switch (theme) {
-    case "river": case "coast": return ["terraces", "flat"];
+    case "river": return ["terraces", "highland", "flat"];
+    case "coast": return ["terraces", "flat"];
     case "desert": return ["basin", "flat"];
     case "snow": return ["hillside", "flat"];
     case "swamp": return ["ridge", "flat"];
@@ -38,7 +40,8 @@ function rng(seed: number): () => number {
 /** 지형을 정한다. 생략하면 seed 로(평지가 아닌 것 중에서 — 늘 평지가 나오지 않게). 마을 본 난수열과 따로 뽑는다. */
 export function resolveVillageTerrain(theme: BeodeulVillageTheme, seed: number, terrain?: string): VillageTerrain {
   const ok = allowedVillageTerrains(theme);
-  if (terrain === undefined || terrain === "") { const xs = ok.filter((t) => t !== "flat"); return xs.length ? xs[Math.floor(rng(seed * 5113 + 31)() * xs.length)]! : "flat"; }
+  // highland(산골) 은 요청할 때만 — 생략하면 예전처럼 계단식 비탈
+  if (terrain === undefined || terrain === "") { const xs = ok.filter((t) => t !== "flat" && t !== "highland"); return xs.length ? xs[Math.floor(rng(seed * 5113 + 31)() * xs.length)]! : "flat"; }
   if (!(VILLAGE_TERRAINS as readonly string[]).includes(terrain)) throw new Error(`terrain 은 ${VILLAGE_TERRAINS.join("|")} 중 하나다(받은 값: ${terrain}).`);
   if (!ok.includes(terrain as VillageTerrain)) throw new Error(`terrain ${terrain} 은 theme ${theme} 에서 고를 수 없다(가능: ${ok.join("|")}).`);
   return terrain as VillageTerrain;
@@ -95,10 +98,17 @@ export function planVillageTerrain(f: TerrainFrame, name: VillageTerrain): Villa
   const s1 = contour(W, yS, rand);
   for (let x = 0; x < W; x += 1) for (let y = 0; y < s1(x); y += 1) lv[idx(x, y)] = 1;
   let note = "한 단";
-  const s2 = contour(W, yS - 11, rand);
+  // highland(산골, 2026-10-22 「산골 마을인데 산이 없다」): 단 사이를 7칸으로 좁혀 세 단까지 — 맵 위쪽이 가파르게 올라간다
+  const gap = name === "highland" ? 7 : 11;
+  const s2 = contour(W, yS - gap, rand);
   if (Math.min(...Array.from({ length: W }, (_, x) => s2(x))) >= 4) {
     for (let x = 0; x < W; x += 1) for (let y = 0; y < s2(x); y += 1) lv[idx(x, y)] = 2;
     note = "두 단";
+    const s3 = name === "highland" ? contour(W, yS - gap * 2, rand) : null;
+    if (s3 && Math.min(...Array.from({ length: W }, (_, x) => s3(x))) >= 4) {
+      for (let x = 0; x < W; x += 1) for (let y = 0; y < s3(x); y += 1) lv[idx(x, y)] = 3;
+      note = "세 단";
+    }
   }
   const coves: { x0: number; x1: number }[] = [];
   const cut = (x0: number, x1: number) => {

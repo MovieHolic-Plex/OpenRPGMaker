@@ -1,0 +1,286 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "9cd8f23dbe1f97d1baa6c8740bef3079bcd59db7331651a55fbfa85e4ab19813",
+ "width": 96,
+ "height": 96,
+ "kind": "terrain",
+ "name": "other.ground",
+ "label": "beodeul_dungeon/other.ground",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 7,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "8cecb3a70460aa86"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 7,
+  "tileColorsP90": 7,
+  "darkV5": 42,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 36
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "ground texture fill (dark purple noise with sparse lighter speckles and thin crack lines)",
+      "rows": "0-95",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The image is a full 96x96 tile with a constant silhouette width of 96 on every row. It is a seamless dark purple ground texture with scattered lighter pixels and thin crack lines. There is no front-edge line, no eave shadow, no ellipse and no roof plane. No front face is drawn, and the column scans show only random speckle. It is a flat terrain fill, which fits the terrain kind, so it reads as a flat top-down surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a dark purple ground patch with scattered speckle dots, small lighter crack or vein marks and a pinkish crack motif. It shows about 7 visible tones per tile, matching the paving reference (7) and exceeding the grass reference (3). Near-flat coverage is 0%, so there are no flat fills, and the speckle is spread evenly across the whole patch. It has no outline, which suits a ground surface, and the dark edge pixels are tinted (0% neutral), so there is no black sticker line. The ramp is a limited set of purple steps (about 5 lightness steps), comparable to the references. The texture reads as grain with clustered dots rather than a flat fill. The patch is plainly a ground texture of the right kind and is acceptable next to the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 9770
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "ground tile texture (dark purple with speckles and a few crack lines)",
+      "rows": "0-95",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "This is a full 96x96 opaque terrain tile: a uniform dark purple speckled ground with a few thin crack lines. The width is 96 for every row, so there is no silhouette, no standing body, no front-edge line, no eave shadow, no ellipse and no front face. It reads as flat top-down ground texture, which is correct for a terrain tile and not a standing object."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a dark purple ground patch with scattered speckles, a few lighter flecks, and faint crack lines. It has about 7 visible tones per tile, matching the paving reference (7) and exceeding the grass reference (3). Near-flat coverage is 0%, so there are no flat fills. There is no outline, which fits a seamless ground surface, and the dark edge pixels are tinted (0% neutral), not black. The texture is dot grain and cracks rather than per-stone or per-tuft shading, so it reads as somewhat uniform noise. It lacks the structured clumps of the references but is at least as dense. A careful artist would accept it next to the references without it looking thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 9731
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "ground tile texture (full 96x96 block)",
+      "rows": "0-95",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The image is a full-bleed 96x96 dark purple ground texture with scattered lighter speckles and a few thin crack lines. The width is constant at 96 for every row, so there is no silhouette, ellipse, edge line, eave shadow or front face. It is a flat terrain tile seen from above, which suits the terrain kind, and it has no standing-object structure."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a dark purple ground patch with scattered speckles, small curved vein marks and a few pinkish streaks. Measured facts: 7 visible tones per tile (the paving reference has 7, the grass reference 3), 0% near-flat coverage, 0% neutral dark edge pixels. The numbers are therefore not shallow. By eye, though, the texture is a uniform scatter of single-pixel dots with no clusters, tufts, or stone-by-stone shaping. The base is one dark tone with 3-4 accent lightness steps, short of the 5-6 steps Beodeul uses per material. Nothing reads as grain or structure in the way the grass tufts and shaded paving stones do, so the patch looks noisier and thinner than the references. It has no outline, which is acceptable for a ground fill. There are no flat fills, but the shading depth and structure fall a little short of the standard, so I am failing it under the 'when in doubt, fail' rule.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 8848
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "ground texture tile",
+      "rows": "0-95",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The image is a full 96x96 opaque tile of dark purple noise with scattered lighter speckles and a few crack lines. The silhouette is 96 wide on every row, with no outline, no front-edge line, no eave shadow and no ellipse. It has no standing body or front face, so it is a flat top-down terrain texture. That is consistent with the terrain kind."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a continuous dark ground patch with no object outlines, so outline is 'none'. Its dark edge pixels are 0% neutral, so there is no black sticker line. It has about 7 visible tones per tile, matching the paving reference (7) and above the grass reference (3). Near-flat coverage is 0%, so there are no flat fills. The surface carries scattered light speckles in several purple steps, plus a few reddish crack or vein strokes, so the base is varied rather than one flat colour. The speckle is fairly even and noise-like, with less structured clumping than the grass tufts, so I rate texture 'some' rather than 'rich'. It is still not thinner or flatter than the references, and a careful artist would accept it beside them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 11182
+  }
+ ],
+ "decidedAt": "2026-10-23T04:03:50.804Z",
+ "cells": {
+  "16": [
+   "08207d73c291e7e9",
+   "34678ef74b71a0ba",
+   "40e1aa06a5b0703b",
+   "46a533eba575a0d9",
+   "4757b8b9bdf44ca5",
+   "63187ddfbcc03961",
+   "6bb9c9dcb84bce00",
+   "71ba2205212a8c6d",
+   "c6f5c1fd9db714f7",
+   "ca96e2f978976d08",
+   "ccda5508d22eb667",
+   "cfd92da6d4d5d685"
+  ],
+  "24": [
+   "17814ee813ee7c00",
+   "17e2c2571d2b53c9",
+   "2f377ca3de5f867e",
+   "367447b1f524ad00",
+   "77a6dfe7aa146a01",
+   "8cc98a08a98a3f95",
+   "986468c52c364c5e",
+   "9b55e9a54a6d5a70",
+   "9b755f14884ad135",
+   "aef2fe4c581df839",
+   "b44545f119b8fc1c",
+   "c38c3a45a35b69d9",
+   "c3f7152c39956394",
+   "d20c706dac8d210c",
+   "e713f5fb3cc0dbf8",
+   "efa23da671fd7546"
+  ],
+  "32": [
+   "08eec50b67fe0823",
+   "230a40d8f6c4dab8",
+   "3a391e8070b92f39",
+   "8ca8778022e3dff5",
+   "8eb45e5e3b4642b8",
+   "aab83389f136435c",
+   "d56fb3d554374e48",
+   "d5f31f9f9b878132",
+   "ed6daf584c431ac9"
+  ],
+  "48": [
+   "282ae68a61ae3769",
+   "4c90cec088d5a42e",
+   "e2c1ddb54f5c6313",
+   "f840b068ee4693f2"
+  ]
+ }
+}

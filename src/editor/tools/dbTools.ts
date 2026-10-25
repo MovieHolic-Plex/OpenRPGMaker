@@ -1,6 +1,9 @@
 import { MULTI_HIT_LIMIT, normalizeFixedDamage } from "@/project/skillBattleRules";
 import { withJosa } from "@/util/josa";
 import { starterChoiceCommands } from "@/project/starterChoice";
+import { resolveGraphic } from "./eventCompile";
+import { withNpcGraphicCatalogFilter } from "@/assets/charsetQuery";
+import { genreLockCharsetCatalogFilter } from "@/project/genreLockCharsets";
 import { ensureNamedSwitch } from "./flagHelpers";
 import { CHARACTER_MOTION_STYLES } from "@/battle/characterMotion";
 import { CAPTURE_CONDITION_KINDS, CAPTURE_CONDITION_MAX_MULTIPLIER, CAPTURE_CONDITION_MIN_MULTIPLIER } from "@/battle/captureBalls";
@@ -48,6 +51,7 @@ import type {
   CropRecord,
   EnemyRecord,
   EquipmentRecord,
+  EventPageGraphic,
   GameEvent,
   ItemRecord,
   MonsterSpeciesRecord,
@@ -515,6 +519,11 @@ const troopMemberSchema = objectSchema({
   partOf: integerSchema("다부위 적: 본체 멤버의 인덱스(0부터). 본체가 쓰러지면 이 부위도 쓰러진다"),
   partTag: stringSchema("부위 태그. 이 부위가 쓰러지면 본체 행동 중 requiresPart 가 같은 것이 막힌다"),
 });
+const damageTypeRatesSchema = objectSchema({
+  physical: integerSchema("받는 물리(공격력 계열) 피해 % 0~1000. 100 보통, 0 무효"),
+  magic: integerSchema("받는 마법(마력 계열) 피해 % 0~1000. 100 보통, 0 무효"),
+  elements: { type: "object", description: "속성 예외 { 속성 id: % } — 맞은 기술의 속성이 여기 있으면 physical/magic 대신 이 값. 예 { thunder: 200 } = 번개는 물리든 마법이든 2배", additionalProperties: true },
+}, "받는 피해 계열 %. 예: 마법 무효 용 { magic: 0 } · 기계 형태 { physical: 0, magic: 25, elements: { thunder: 200 } }");
 const stateRuntimeEffectsSchema = objectSchema({
   restrictsAction: booleanSchema(),
   blocksSkillUse: booleanSchema(),
@@ -540,7 +549,9 @@ const stateRuntimeEffectsSchema = objectSchema({
   reraisePercent: numberSchema("리레이즈 % 1~100 — 쓰러지면 최대 HP 의 이 비율로 한 번 일어나고 상태는 사라진다(아군만)"),
   transformResourceId: stringSchema("변신 — 이 상태인 동안 전투 그림을 이 리소스 id 로 바꾼다. 아군은 9칸 시트 \"party-pixel-<칩>\"(예 party-pixel-monster4-5 이끼 골렘) 또는 전투 시트 id, 적은 몬스터 그림 id. 능력치는 같은 상태의 공격·방어·민첩 배율로. 풀리면 원래 그림. 빈 문자열이면 해제"),
   doomTurns: numberSchema("선고 1~9 — 걸린 뒤 자기 차례가 이만큼 오면 전투 불능. 상태를 풀면 멈춘다"),
+  damageTypeRates: { ...damageTypeRatesSchema, description: "이 상태인 동안 받는 피해 계열 %를 적의 기본 damageTypeRates 대신 쓴다(갈아 끼움, 여러 상태면 큰 값). 예: 「관통상」 { magic: 300 } · 변신 기계 형태 { physical: 0, magic: 25, elements: { thunder: 200 } }(transformResourceId 와 함께)" },
   invertHealing: booleanSchema("좀비 — 이 상태인 동안 받는 HP 회복(회복 스킬·회복 아이템·재생)이 같은 양의 피해가 된다. 기본 상태 id state_zombie"),
+  maxTurns: integerSchema("최대 지속 1~9 — 걸린 뒤 자기 턴이 이만큼 지나면 회복 굴림과 상관없이 풀린다(「독은 최대 3턴」)"),
 });
 
 const heldEffectSchema = objectSchema({
@@ -607,11 +618,14 @@ const enemyRecordSchema = objectSchema({
   speciesId: stringSchema(),
   monsterResourceId: stringSchema(),
   battleScalePercent: integerSchema("전투 표시 크기(%). 10~300으로 제한, 기본 100."),
+  lungeSpeedPercent: integerSchema("도트 측면 전투에서 아군에게 달려드는 속도(%). 25~300, 기본 100. 늑대·맹수처럼 날랜 적 120~160, 굼뜬 거인 70~90. 전역 기본 세기는 set_project_settings battle.staging.enemyLunge"),
   collapseEffect: {
     type: "string",
     enum: ["dissolve", "pixelBreak", "bossSink", "flash", "instant"],
     description: "쓰러지는 연출. dissolve 기본 소멸 · pixelBreak FF6 식 보랏빛 픽셀 분해(잡몹) · bossSink 떨며 땅속으로 가라앉음(보스) · flash 하얀 세 번 점멸 · instant 즉시 사라짐(환영·소환수).",
   },
+  hideHp: booleanSchema("보스 HP 숨김 — true 면 전투에서 이 적의 HP 막대·숫자를 보이지 않는다(대상 선택 목록은 「HP ???」). 보스·중간 보스에"),
+  damageTypeRates: damageTypeRatesSchema,
   criticalHit: objectSchema({ enabled: booleanSchema(), oneIn: integerSchema() }),
   attackOptions: objectSchema({ normalAttacksMiss: booleanSchema() }),
   skillIds: stringArraySchema(),
@@ -652,7 +666,7 @@ const troopRecordSchema = objectSchema({
     paletteCycleSeconds: { type: "number", minimum: 0, maximum: 60, description: "색 순환 한 바퀴 초(0 = 끔)" },
   }, "움직이는 전투 배경(마더식) — 배경 그림 한 장을 움직인다. 0/생략 = 그 효과 끔. 도트 측면 전투(기본)에서는 겹 배경에 가려 보이지 않는다 — 몬스터 대치에서만 보인다. 도트 측면 분위기는 backdropLayers 를 쓴다"),
   backdropLayers: arrayOf(objectSchema({
-    preset: { type: "string", enum: ["fog", "clouds", "mist", "rain", "snow", "embers", "stars", "lightRays"], description: "그림 없이 그리는 겹. fog 안개 · clouds 흐르는 구름 · mist 땅안개 · rain 비 · snow 눈 · embers 불티(더하기) · stars 별 · lightRays 빛줄기" },
+    preset: { type: "string", enum: ["fog", "clouds", "mist", "rain", "snow", "embers", "stars", "lightRays", "glow"], description: "그림 없이 그리는 겹. fog 안개 · clouds 흐르는 구름 · mist 땅안개 · rain 비 · snow 눈 · embers 불티(더하기) · stars 별 · lightRays 빛줄기 · glow 중앙 빛무리(정지·화면 가운데 청백색 빛, 수정·마법진 뒤)" },
     resourceId: stringSchema("바둑판으로 깔 그림 리소스(투명 PNG). 주면 preset 보다 먼저"),
     front: booleanSchema("true = 배틀러·이펙트 앞(앞 덤불·안개 장막, 불투명도 50 이하 권장). 생략 = 배경 바로 위"),
     scrollX: { type: "number", minimum: -1200, maximum: 1200, description: "가로 흐름 px/초. 생략 = 프리셋 기본(구름 22·비 -180)" },
@@ -839,6 +853,28 @@ const skillRecordSchema = objectSchema({
     type: "string",
     description: "연계기가 발동하면 켜지는 스위치 id(전투 이벤트 페이지 조건·이후 이야기 분기). 없는 스위치는 자동 등록된다. 빈 문자열이면 해제",
   },
+  comboStaging: objectSchema(
+    {
+      tint: { type: "string", description: "번쩍임·오라·제목 색 #rrggbb(생략 = 속성 색)" },
+      shake: { type: "string", enum: ["none", "light", "heavy"], description: "착탄 흔들림(생략 = 트리플 heavy · 듀얼 light)" },
+      slowMo: booleanSchema("착탄 순간 느린 화면(생략 = 켜기)"),
+      kicker: { type: "string", description: "제목 카드 위 작은 글(예: 「듀얼 테크」). 생략 = 인원수로" },
+    },
+    "연계기 연출(컷인 얼굴 교차 → 참가자별 빛 → 합쳐진 마무리 → 제목 카드). 전역 세기는 set_project_settings battle.staging. 해제 = null",
+  ),
+  comboMpCosts: {
+    type: "array",
+    description: "연계기 비용 나누기: [{actorId, mp}] — 참가자별 MP 고정 몫(주 시전자 4·보조 8 처럼). 목록에 없는 참가자는 mpCost 를 낸다. actorId 는 comboActorIds 안의 배우. 빈 배열이면 해제",
+    items: objectSchema({ actorId: { type: "string" }, mp: integerSchema("0~9999") }, "{actorId, mp} 두 키만"),
+  },
+  exploitStates: objectSchema(
+    {
+      stateIds: stringArraySchema("노리는 상태 id(1~8). 대상이 이 중 하나에 걸려 있으면 보너스"),
+      bonusPercent: integerSchema("피해 +N% (1~300)"),
+      consume: booleanSchema("true 면 맞힌 순간 그 상태를 풀어 버린다(얼어붙은 적을 깨뜨림·잠든 적을 깨움)"),
+    },
+    "약점 공략(준비 → 마무리 콤보): 대상이 stateIds 중 하나에 걸려 있으면 피해 +bonusPercent%. 숫자 아래 「공략!」 꼬리표. 둔화를 거는 기술 + 둔화 대상 +50% 기술처럼 동료끼리 짝을 만든다. 해제 = null",
+  ),
   area: objectSchema(
     {
       shape: { type: "string", enum: ["circle", "line"] },
@@ -860,6 +896,7 @@ const skillRecordSchema = objectSchema({
   hpCostPercent: integerSchema(
     "시전 대가로 시전자가 최대 HP 의 N% 를 잃는다(0~100, 0=없음, HP 는 1 밑으로 안 내려감). 희생·폭발계 기술의 대가",
   ),
+  weaponAffinity: objectSchema({ elementIds: stringArraySchema("무기 계열(장비 attackElementIds — sword·spear·bow·gun·hit 등). 비우면 기술 자신의 elementId"), bonusPercent: integerSchema("그 계열 무기를 들고 쓰면 피해·회복 +%") }, "무기 공명: 「검을 들고 쓰면 위력 +20%」"),
   drainPercent: integerSchema(
     "준 피해의 N% 만큼 시전자가 회복(0~100, 0=없음, affects mp 면 MP). 흡수·흡혈계 기술. 피해를 주는 기술에만 의미가 있다",
   ),
@@ -950,6 +987,8 @@ const equipmentRecordSchema = objectSchema({
   stateDefenseIds: stringArraySchema(),
   stateDefenseMode: { type: "string", enum: ["resist", "inflict"] },
   stateResistanceChance: integerSchema(),
+  damageDealtPercent: integerSchema("주는 피해 ±% (-90~300, 물리·마법 공통). 30 = 피해 +30%. 여러 장비면 더한다"),
+  damageTakenPercent: integerSchema("받는 피해 ±% (-90~300). -20 = 받는 피해 20% 감소"),
   grantsSkillIds: stringArraySchema("장착 중에만 쓸 수 있는 스킬 id. 배우지 않아도 전투 스킬 목록에 뜬다"),
   apGrants: arrayOf(objectSchema({
     skillId: stringSchema("영구 습득할 스킬 id(먼저 upsert_skill 로 만든다)"),
@@ -1527,6 +1566,34 @@ function validateSkillTechPatch(draft: Project, patch: unknown): void {
       }
     }
   }
+  if (record.comboMpCosts !== undefined && record.comboMpCosts !== null) {
+    const rows = Array.isArray(record.comboMpCosts) ? record.comboMpCosts : null;
+    if (!rows) throw new ToolError("skill.comboMpCosts 는 [{actorId, mp}] 배열이어야 합니다. 예: [{actorId:\"actor_hero\", mp:4}, {actorId:\"actor_mage\", mp:8}]", { code: "invalid-combo-costs" });
+    const comboIds = Array.isArray(record.comboActorIds)
+      ? (record.comboActorIds as string[]).map((id) => String(id).trim())
+      : typeof record.id === "string" ? [...(draft.database.skills.find((skill) => skill.id === record.id)?.comboActorIds ?? [])] : [];
+    for (const [index, row] of rows.entries()) {
+      const entry = row as Record<string, unknown> | null;
+      const unknownKeys = entry && typeof entry === "object" ? Object.keys(entry).filter((key) => key !== "actorId" && key !== "mp") : [];
+      if (!entry || typeof entry !== "object" || typeof entry.actorId !== "string" || typeof entry.mp !== "number" || !Number.isFinite(entry.mp) || entry.mp < 0 || unknownKeys.length > 0) {
+        throw new ToolError(`skill.comboMpCosts[${index}] 는 {actorId, mp(0 이상 정수)} 두 키만 가진 객체여야 합니다${unknownKeys.length ? `(모르는 키: ${unknownKeys.join(", ")})` : ""}.`, { code: "invalid-combo-costs" });
+      }
+      if (!comboIds.includes(entry.actorId)) {
+        throw new ToolError(`comboMpCosts[${index}].actorId ${entry.actorId} 는 연계 참가자(${comboIds.join(", ") || "없음 — comboActorIds 를 먼저 주세요"})가 아닙니다.`, { code: "invalid-combo-costs" });
+      }
+    }
+  }
+  if (record.exploitStates !== undefined && record.exploitStates !== null) {
+    const exploit = record.exploitStates as Record<string, unknown>;
+    const unknownKeys = exploit && typeof exploit === "object" && !Array.isArray(exploit) ? Object.keys(exploit).filter((key) => !["stateIds", "bonusPercent", "consume"].includes(key)) : ["(객체 아님)"];
+    if (unknownKeys.length > 0 || !Array.isArray(exploit.stateIds) || exploit.stateIds.length === 0 || typeof exploit.bonusPercent !== "number" || exploit.bonusPercent < 1 || exploit.bonusPercent > 300) {
+      throw new ToolError(`skill.exploitStates 는 {stateIds:[상태 id 1~8개], bonusPercent:1~300, consume?:boolean} 입니다${unknownKeys.length ? `(모르는 키: ${unknownKeys.join(", ")})` : ""}. 예: {stateIds:["state_agility_down"], bonusPercent:50}`, { code: "invalid-exploit-states" });
+    }
+    const missing = (exploit.stateIds as unknown[]).filter((id) => typeof id !== "string" || !draft.database.states.some((state) => state.id === id));
+    if (missing.length > 0) {
+      throw new ToolError(`exploitStates.stateIds 에 없는 상태: ${missing.map(String).join(", ")} — 허용 예시: ${knownIds(draft.database.states)}`, { code: "state-not-found" });
+    }
+  }
   if (typeof record.comboSwitchId === "string" && record.comboSwitchId.trim()) {
     ensureNamedSwitch(draft, record.comboSwitchId.trim(), `연계기 발동: ${typeof record.name === "string" ? record.name : record.comboSwitchId.trim()}`);
   }
@@ -2082,7 +2149,10 @@ const upsertActor: ToolDefinition = {
         !draft.database.battleCommands?.some((entry) => entry.id === id) && !klass?.battleCommands.some((entry) => entry.id === id));
       if (unknown.length > 0) warnings.push(`battleCommandIds 중 전역·직업 명령에 없는 id 는 전투 메뉴에서 빠집니다: ${unknown.join(", ")}`);
     }
-    const twin = actorCurveTwin(draft.database.actors, record);
+    // 쌍둥이 곡선 갈아끼우기는 새 배우에만 — 이미 있는 배우의 이름만 고치는 부분 수정이 곡선을 바꾸면 안 된다
+    // (2026-10-24 비교: {id,name} 만 보낸 개명이 주인공 maxHp 514→560 으로 바꿨다).
+    const existed = draft.database.actors.some((entry) => entry.id === record.id);
+    const twin = existed ? undefined : actorCurveTwin(draft.database.actors, record);
     if (twin && !("parameterCurves" in actorPatch)) {
       const roleHint = `${record.id} ${record.classId} ${record.name} ${record.nickname ?? ""}`;
       const preset = record.id === "actor_hero" || record.classId === "class_hero"
@@ -2970,6 +3040,9 @@ function starterMonsterEvent(
       { kind: "setSelfSwitch", key: "A", value: true },
     ],
   });
+  // 첫 파트너를 주는 사람은 화면에 보여야 한다 — 예전에는 두 페이지 모두 transparent 라 마을에
+  // 아무도 서 있지 않았고, 플레이어는 빈 타일을 조사해야 대화를 찾았다(2026-10-23 필드 QA F2).
+  const graphic = starterNpcGraphic(project, input.name);
   return {
     id: input.eventId,
     x: Math.max(0, input.x),
@@ -2981,7 +3054,7 @@ function starterMonsterEvent(
         id: `${input.eventId}_choose`,
         name: input.name,
         conditions: [],
-        graphic: { transparent: true },
+        graphic,
         trigger: { kind: "action" },
         priority: "same",
         overlapForbidden: true,
@@ -2992,7 +3065,7 @@ function starterMonsterEvent(
         id: `${input.eventId}_claimed`,
         name: `${input.name} 완료`,
         conditions: [{ kind: "selfSwitch", key: "A", value: true }],
-        graphic: { transparent: true },
+        graphic,
         trigger: { kind: "action" },
         priority: "same",
         overlapForbidden: true,
@@ -3001,6 +3074,22 @@ function starterMonsterEvent(
       },
     ],
   };
+}
+
+/**
+ * 스타팅 NPC 의 걷기 그림. 이름으로 먼저 찾고(「박사」·「간호사」), 못 찾으면 주민 칩으로 물러선다.
+ * 장르 잠금이 켜져 있으면 허용 칩 안에서만 고른다 — 잠금 밖 칩을 넣으면 커밋이 거부된다.
+ * 아무것도 못 고르면 투명으로 물러선다(도구를 실패시키지 않는다 — 예전 동작과 같다).
+ */
+function starterNpcGraphic(project: Project, name: string): EventPageGraphic {
+  const filter = genreLockCharsetCatalogFilter(project);
+  for (const query of [name, "villager"]) {
+    try {
+      const graphic = withNpcGraphicCatalogFilter(filter, () => resolveGraphic({ query }, { overrides: project.charsetLabels, seed: `starter:${name}` }));
+      if (graphic.sprite) return graphic;
+    } catch { /* 다음 후보 */ }
+  }
+  return { transparent: true };
 }
 
 function uniqueEventId(events: readonly GameEvent[], baseId: string): string {

@@ -88,6 +88,15 @@ const PRESET_PAINT: Record<BattleBackdropLayerPreset, { readonly image: string; 
     size: "420px 100%",
     repeat: "repeat-x",
   },
+  // 화면 가운데 청백색 빛무리 — 정지한 한 장(스크롤 0). 수정·마법진 같은 광원 뒤 배경에 깐다.
+  glow: {
+    image: [
+      "radial-gradient(ellipse 30% 40% at 50% 50%, rgb(236 255 255 / 90%), rgb(150 232 255 / 55%) 36%, transparent 78%)",
+      "radial-gradient(ellipse 52% 62% at 50% 50%, rgb(110 200 255 / 35%), transparent 80%)",
+    ].join(", "),
+    size: "100% 100%",
+    repeat: "no-repeat",
+  },
 };
 
 type Running = { readonly node: HTMLElement; readonly scrollX: number; readonly scrollY: number; x: number; y: number };

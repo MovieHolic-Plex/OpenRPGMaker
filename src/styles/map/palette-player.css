@@ -24,7 +24,8 @@
 .toast-stack {
   position: fixed;
   bottom: var(--space-4);
-  left: calc(var(--editor-left-safe, 0px) + var(--space-4));
+  /* 캔버스 좌하단 ≡(저작 진행) 버튼(약 40px)을 덮지 않도록 그 오른쪽부터 쌓는다 — 작업 띠(aiWorkStrip)도 같은 60px 규칙. */
+  left: calc(var(--editor-left-safe, 0px) + var(--space-4) + 44px);
   transform: none;
   /* 앱 모달(테스트 플레이 창) 위에 떠야 한다 — 1000 일 때 테스트 플레이 백드롭(1300)에 가려졌다.
      런타임 디버그 막대(60)는 그 백드롭 안에 있어 직접 이긴 것이 아니다. 순서 근거는
@@ -38,7 +39,7 @@
   /* 유휴 컴포저 열(480px) + 데크 right inset(--space-3) + 스택 left(좌패널 + --space-4) + 간격(--space-2).
      1024 전용 미디어쿼리는 1280에서 가운데 560px 스택이 컴포저를 덮었다. 좌패널만큼 오른쪽으로 옮긴 뒤
      1024 폭에서 남는 칸이 160px 대라 글이 두 줄에서 잘리므로 240px 은 남긴다. */
-  max-width: min(560px, max(240px, calc(100vw - var(--editor-left-safe, 0px) - 480px - var(--space-3) - var(--space-4) - var(--space-2))));
+  max-width: min(560px, max(240px, calc(100vw - var(--editor-left-safe, 0px) - 480px - var(--space-3) - var(--space-4) - var(--space-2) - 44px)));
 }
 
 .toast {
@@ -56,7 +57,7 @@
   pointer-events: none;
   /* 참조 위치 정보가 붙어 메시지가 길어질 수 있다(fix(db)) — 뷰포트 밖으로 새지 않도록
      너비를 제한하고 2줄까지만 보여준 뒤 자른다. 너비 상한은 스택 컨테이너와 같다. */
-  max-width: min(560px, max(240px, calc(100vw - var(--editor-left-safe, 0px) - 480px - var(--space-3) - var(--space-4) - var(--space-2))));
+  max-width: min(560px, max(240px, calc(100vw - var(--editor-left-safe, 0px) - 480px - var(--space-3) - var(--space-4) - var(--space-2) - 44px)));
   display: flex;
   align-items: center;
   gap: 10px;
@@ -67,7 +68,8 @@
   flex: 1 1 auto;
   min-width: 0;
   display: -webkit-box;
-  -webkit-line-clamp: 2;
+  /* 좁은 폭(1024)에서 2줄 뒤가 잘려 안내 문장이 끝까지 읽히지 않았다 — 4줄까지 보이고 전문은 title 로 둔다. */
+  -webkit-line-clamp: 4;
   -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;

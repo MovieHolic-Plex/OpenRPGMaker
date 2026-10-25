@@ -1,0 +1,392 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "bc05701165e5d112a6270925f8476996900894fca0ed7a0e42533e0e4f78dab4",
+ "width": 48,
+ "height": 32,
+ "kind": "flat",
+ "name": "atlas_biome_interior / stairwell down",
+ "label": "abi-stairs-v5:stairwell down",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "refer",
+ "reasons": [
+  "3/4: 종류 판정이 갈림(맞다 2/4) — 면제 종류는 과반이 아니라 3/4 이상이 맞다고 해야 통과"
+ ],
+ "view34": {
+  "verdict": "refer",
+  "reasons": [
+   "종류 판정이 갈림(맞다 2/4) — 면제 종류는 과반이 아니라 3/4 이상이 맞다고 해야 통과"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 9,
+  "tileColorsP90": 12,
+  "darkV5": 10,
+  "nearBlackEdge": 0.02,
+  "opaqueTiles": 6
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "top lintel beam",
+      "rows": "0-2",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "grey stone and brown post band (railing or wall strip)",
+      "rows": "3-5",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower beam with pink-brown edge line",
+      "rows": "6-8",
+      "evidence": "none",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dark void opening",
+      "rows": "9-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "descending steps, drawn as stacked riser bands each with a 1-row edge line",
+      "rows": "13-31",
+      "evidence": "none",
+      "front_edge_line_row": 26,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 1,
+    "front_face_rows": 23,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The object is a front-on view of a staircase going down. It is a stack of horizontal bands: a beam (rows 0-2), a stone strip (3-5), another beam (6-8), a dark void (9-12), then step risers at rows 13-15, 17-19, 21-25 and 27-31. Each step has only a 1-row lighter edge line (rows 13, 17, 21, 26) above a flat face, with no tread plane. Widths are constant at 44 px apart from the strip at rows 3-5. No step shows a horizontal tread of 3 or more rows and there is no ellipse or roof. This is vertical elevation, not a flat plate and not a 3/4 top view. It is a structure rather than a flat floor decal, so the kind plausibly does not match."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The stairwell is a small floor feature: a wooden frame around a descending flight. The dark edge pixels are tinted dark brown beside the wood, with 0% near-neutral, so the outline is dark_material_tone rather than a black sticker line. The measured 9 visible tones per tile beat the grass reference (3) and the paving reference (7), and near-flat coverage is 0%. By eye, the frame has a light top rail, mid wood and a dark underside. The steps alternate lit treads and darker risers, fading to a deep shadow at the top, which gives about 5 brown ramp steps. Texture is more restrained than the paving's per-stone shading, since the steps are mostly clean bands and the frame is smooth. There are no large single-colour fills, though, and a careful artist would accept it beside the references without it looking thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 23851
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "top lintel beam with stone infill",
+      "rows": "0-8",
+      "evidence": "none",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stair step 1 (back, in dark opening)",
+      "rows": "13-16",
+      "evidence": "none",
+      "front_edge_line_row": 13,
+      "eave_shadow_rows": "14-16"
+     },
+     {
+      "part": "stair step 2",
+      "rows": "17-20",
+      "evidence": "none",
+      "front_edge_line_row": 17,
+      "eave_shadow_rows": "20"
+     },
+     {
+      "part": "stair step 3",
+      "rows": "21-25",
+      "evidence": "none",
+      "front_edge_line_row": 21,
+      "eave_shadow_rows": "25"
+     },
+     {
+      "part": "stair step 4 (front, tan)",
+      "rows": "26-31",
+      "evidence": "none",
+      "front_edge_line_row": 26,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 1,
+    "front_face_rows": 23,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The drawing is a vertical front elevation of a stairwell. A lintel/beam runs across rows 0-8. Below it is a dark opening (rows 9-12) with four stacked horizontal step strips (rows 13-31). Each step has only a 1-row lighter edge line (rows 13, 17, 21, 26) followed by a darker vertical riser face. No step shows a tread band deeper than 1 row, and there is no ellipse or roof plane. The object reads as an upright stair facade, not a flat floor plate seen from above, so it does not match kind flat. The 44-px width stays constant from row 6 to row 31, and there is no foreshortened top plane."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a wooden-framed stairwell. Its stair treads step from tan down to dark brown, and the frame has a light top rail, a mid-brown body and a dark interior, which gives about 5 lightness steps. The dark edges lean brown, so they are tinted material tones rather than a neutral black line, and the measured near-neutral share of dark edge pixels is 0%. The candidate shows 9 visible tones per tile against 3 for the grass reference and 7 for the paving reference, and near-flat coverage is 0%. It has less fine grain than the grass reference's tufts, and the frame is fairly clean, so texture is only 'some'. Nothing in the picture reads as a flat fill or a sticker, and the measured density is at or above both references, so it would sit acceptably next to them.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19324
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top lintel beam",
+      "rows": "0-2",
+      "evidence": "none",
+      "front_edge_line_row": 0,
+      "eave_shadow_rows": "1-2"
+     },
+     {
+      "part": "lower frame beam",
+      "rows": "6-8",
+      "evidence": "none",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dark stairwell opening",
+      "rows": "9-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "upper steps (3 stacked bands)",
+      "rows": "13-25",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "bottom step",
+      "rows": "26-31",
+      "evidence": "none",
+      "front_edge_line_row": 26,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 1,
+    "front_face_rows": 20,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The column scan shows the same stack of bands at every x. Rows 0-2 and 6-8 are frame beams. Rows 9-12 are a near-black opening. Rows 13-25 are three step bands, each a 1-row lighter edge (rows 13, 17, 21) over 2-3 darker rows, like face-on risers. Row 26 is a light highlight over a sandy face on rows 27-31. This is a face-on elevation of descending steps, not a plate seen from above. No band reads as a foreshortened horizontal tread. The brightest line, row 26, is only a 1-row lip. No ellipse or roof is present. The object is meant to lie flat but is drawn as a vertical front view with no real top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small wooden-framed stairwell, only about 2.5 x 1.5 tiles, set on an empty background. It does not read as a 4x3 ground patch, and next to the paving and grass it looks like a sticker. The measured facts are fine: 9 visible tones per tile against 7 for paving and 3 for grass, 0% near-flat coverage, and 0% neutral dark edge pixels, so the outline is tinted dark brown beside the wood. By eye, though, the steps are smooth horizontal bands of 3-4 browns with no grain, speckle or per-step highlight. The frame is a simple light/dark pair. That gives about 4 shading steps against the 5-6 Beodeul uses. The paving references have stones shaded one by one, with highlights and cracks, and the candidate has no equivalent surface variation. The tone count comes mostly from the banding, not from texture, so it is not accepted next to the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 27610
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "lintel beam and frame strip",
+      "rows": "0-8",
+      "evidence": "none",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dark pit opening",
+      "rows": "9-12",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "upper step tread",
+      "rows": "13-15",
+      "evidence": "a",
+      "front_edge_line_row": 13,
+      "eave_shadow_rows": "14-16"
+     },
+     {
+      "part": "middle step tread",
+      "rows": "17-19",
+      "evidence": "a",
+      "front_edge_line_row": 17,
+      "eave_shadow_rows": "20"
+     },
+     {
+      "part": "lower step tread",
+      "rows": "21-25",
+      "evidence": "a",
+      "front_edge_line_row": 21,
+      "eave_shadow_rows": "25"
+     },
+     {
+      "part": "nearest step tread",
+      "rows": "26-31",
+      "evidence": "a",
+      "front_edge_line_row": 26,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 1,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The object is a stairwell seen almost from above. The steps are stacked treads that get wider toward the bottom, receding into a dark pit at rows 9-12. Each tread has a light edge line (rows 13, 17, 21, 26) followed by a 1-row dark riser shadow (rows 16, 20, 25). That leaves no front face of 3 or more rows. The nearest tread (rows 26-31) runs to the bottom of the image with no face below it. The lintel and frame strip at rows 0-8 is a flat front-facing band with no edge line or eave shadow. The whole drawing is a flat plate of treads, not a standing volume."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a wooden-framed stairwell. The frame has a light top rail, a mid-brown body and a dark underside. The steps below it are banded in about 4 brown tones, from a lit tread edge to a darker riser and a near-black pit. Together that gives about 5 steps on the main wood ramp, a little under Beodeul's 5-6. The outline is dark brown and tinted, and the measured 0% near-neutral dark edge pixels confirms it is not a black sticker line. Visible tones per tile are 9, against 3 for the grass reference and 7 for the paving reference, and near-flat coverage is 0%, so the density facts are at or above both references. The weak point is the 13 total distinct colours. Each tread is a fairly clean band with little grain or per-plank speckle, so texture is 'some' rather than 'rich'. The facts are not shallow, and by eye the piece would sit acceptably beside the references, so it passes, though it is not as grainy as the grass reference.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 34814
+  }
+ ],
+ "decidedAt": "2026-10-22T12:26:02.509Z",
+ "cells": {
+  "16": [
+   "1d9060836dd2051a",
+   "3da71deea784e026",
+   "7115cf89072227ba",
+   "768e2f3604d90760",
+   "9145c5d97d822bd2",
+   "f022f36efe57d55d"
+  ],
+  "24": [
+   "11472bd7e0702c10",
+   "47e4f1c4a2362667",
+   "59305248650fd18a",
+   "6dd8bf8a3e731010",
+   "74e1673f9ae01bbd",
+   "75d26b6100cfa9df",
+   "78b086589c3ba3a4",
+   "fa618bd7827a31d0"
+  ],
+  "32": [
+   "026abc8a8fe25946",
+   "0a23ed743c87937c",
+   "0cfcd602d5864088",
+   "4555bf5d4620cc49",
+   "d8f75cfafa096039",
+   "dc3fe8971f733b12"
+  ],
+  "48": [
+   "6307bcf80f22ee9d",
+   "8bf3506a0014b6f2"
+  ]
+ }
+}

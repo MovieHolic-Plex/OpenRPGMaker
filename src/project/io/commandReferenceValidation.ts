@@ -1,4 +1,5 @@
 import { BUILTIN_EQUIPMENT_SLOTS } from "@/project/equipmentSlots";
+import { isBuiltinFieldFxId } from "@/project/containerFx";
 import type {
   BattleEventCondition,
   BattleEventPageRecord,
@@ -357,10 +358,13 @@ function validateCommandReferences(command: Command, context: ReferenceContext):
       assert(context.resourceIds.has(command.resourceId), `showPicture: resourceId가 존재하지 않습니다: ${command.resourceId}`);
       return;
     case "playAudio":
-      assert(context.resourceIds.has(command.resourceId), `playAudio: resourceId가 존재하지 않습니다: ${command.resourceId}`);
+      // 빈 id 는 모델이 음악 이름만 쓰고 id 를 빠뜨린 것이다(2026-10-25 조수 단독 게임 G12: 같은 거절 9번) — 고치는 법을 거절문에 싣는다.
+      assert(context.resourceIds.has(command.resourceId), typeof command.resourceId === "string" && command.resourceId.trim()
+        ? `playAudio: resourceId가 존재하지 않습니다: ${command.resourceId} — list_resources{kind:'bgm'|'se', query:'…'} 결과의 id 를 쓴다`
+        : "playAudio: resourceId 가 비었습니다 — 음악 이름만으로는 재생할 수 없다. list_resources{kind:'bgm'(배경음)|'se'(효과음), query:'잔잔한 카페'} 로 찾은 id 를 {kind:'playAudio', resourceId:'<id>', channel:'bgm'|'se', loop:true|false} 에 넣는다(컷신이면 add_event 의 music 비트 {do:'music',action:'bgm',query:'…'} 가 id 를 대신 고른다)");
       return;
     case "showAnimation":
-      assert(context.animationIds.has(command.animationId), `showAnimation: animationId가 존재하지 않습니다: ${command.animationId}`);
+      assert(context.animationIds.has(command.animationId) || isBuiltinFieldFxId(command.animationId), `showAnimation: animationId가 존재하지 않습니다: ${command.animationId}`);
       return;
     case "showEmote":
       return;
@@ -411,6 +415,7 @@ function validatePageCondition(condition: EventPageCondition, context: Reference
     case "relativeFacing":
     case "hiding":
     case "pursuitActive":
+    case "eventSeesPlayer":
     case "clearCount":
     case "endingSeen":
     case "newGamePlus":
@@ -462,6 +467,14 @@ function validateBattleEventCondition(condition: BattleEventCondition, context: 
       return;
     case "enemyTurn":
       assert(context.enemyIds.has(condition.enemyId), `battle condition: enemyId가 존재하지 않습니다: ${condition.enemyId}`);
+      return;
+    case "enemyState":
+      if (condition.enemyId) assert(context.enemyIds.has(condition.enemyId) || (context.enemySlotIds?.has(condition.enemyId) ?? false), `battle condition: enemyId가 존재하지 않습니다: ${condition.enemyId}`);
+      assert(typeof condition.stateId === "string" && condition.stateId.length > 0, "battle condition: enemyState 에 stateId 가 없습니다");
+      return;
+    case "enemiesAlive":
+      if (condition.enemyId) assert(context.enemyIds.has(condition.enemyId), `battle condition: enemyId가 존재하지 않습니다: ${condition.enemyId}`);
+      assert(typeof condition.atMost === "number" && Number.isFinite(condition.atMost) && condition.atMost >= 0, "battle condition: enemiesAlive 의 atMost 는 0 이상 숫자여야 합니다");
       return;
     case "enemyHpBelow":
       if (condition.enemyId) assert(context.enemyIds.has(condition.enemyId) || (context.enemySlotIds?.has(condition.enemyId) ?? false), `battle condition: enemyId가 존재하지 않습니다: ${condition.enemyId}`);

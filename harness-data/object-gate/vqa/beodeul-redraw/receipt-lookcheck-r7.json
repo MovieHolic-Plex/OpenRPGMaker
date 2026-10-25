@@ -1,0 +1,11 @@
+{"reviewer":"fresh Opus look-check","round":7,"date":"2026-10-22","verdict":"PASS",
+"per_map":{
+"facilities-town":{"changed_px":56405,"result":"pass","notes":"Broadleaf rows (top, bottom, single trees) replaced by new rounded crowns on visible trunks with root flare; shadows lower-right and attached; no flat/cut crown edges (6x check at x240-300 y0-75); small diff clusters at y57-59 are old root/contact dashes removed, no stray dashes left."},
+"village50":{"changed_px":56641,"result":"pass","notes":"Same tree layout as facilities-town, same diff signature; clean."},
+"river-town":{"changed_px":124029,"result":"pass","notes":"Rows of trees top/bottom and clusters (x795-925 y640-720, x320-450 y800-870) read as varied crowns with trunks, not identical orchard rows; overlapping trees layer correctly; only 3 single-px diff specks, all inside tree bases."},
+"tool-village":{"changed_px":80015,"result":"pass","notes":"Bushes now lower and wider with matching lower-right shadows; woodland grove (x0-150 y400-630) occluded back-row trunks are hidden by front crowns, not floating; no leftover roots or dashes; olive/warm bushes stay olive-green, not mustard."},
+"forms-town":{"changed_px":0,"result":"unchanged"},
+"reviewed-street":{"changed_px":0,"result":"unchanged"}},
+"previous_findings":{"r6_tool_village_crescent_shadows":"FIXED - checked at 4x x410-610 y0-70, x220-310 y190-260, x470-610 y165-230: shadows now follow the new wide bush silhouettes, attached at lower right, no detached crescents","r6_sprig_x253-263_y83-107":"FIXED - region now shows only the new bush body, no orphan sprig"},
+"blocking_regressions":[],
+"minor":["tool-village top-right woodland dark bush (~x675-700 y100-125) has a slightly jagged, lumpy top silhouette; reads as foliage, not a defect","New crowns are a bit softer/less leaf-detailed than the old ones; a matter of style, not a regression"]}

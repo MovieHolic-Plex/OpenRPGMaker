@@ -19,6 +19,8 @@ OUT = os.path.join(ROOT, 'tiledata', 'jp-city', 'blocks', '_gate_rooms')
 MANIFEST = os.path.join(OUT, 'manifest.json')
 SHOTS = os.path.join(ROOT, 'verify-shots', 'jp-city')
 INST_BLOCKS = ('interior_hospital', 'interior_school2', 'interior_office2')
+# 다른 블록이 직접 내보내는 조립 그림 목록(부품 → 조립 그림). 거리 계단(2026-10-22): 상판·단상·옆 계단·곧은 계단은 육교·단상 조립 그림이 덮는다.
+EXTRA_MANIFESTS = (os.path.join(ROOT, 'tiledata', 'jp-city', 'blocks', 'street_stairs', '_gate', 'assembled.json'),)
 T = 16
 
 
@@ -74,8 +76,13 @@ def build():
 
 def covering(pid: str, png: str, context: str = 'bundle'):
     """문 부품 pid 를 화소 그대로 품은 조각 중 영수증이 통과인 것 → (조각 이름, 상태) 또는 (None, 이유)."""
-    if not os.path.exists(MANIFEST): return None, '조립 방 조각 없음(gate_rooms.py)'
-    man = json.load(open(MANIFEST, encoding='utf-8'))
+    man = {}
+    if os.path.exists(MANIFEST): man.update(json.load(open(MANIFEST, encoding='utf-8')))
+    for extra in EXTRA_MANIFESTS:                 # 다른 블록의 조립 그림 목록(거리 계단 등) — png 는 저장소 상대 경로
+        if os.path.exists(extra):
+            for k, e in json.load(open(extra, encoding='utf-8')).items():
+                man[k] = dict(e, png=e['png'] if os.path.isabs(e['png']) else os.path.join(ROOT, e['png']))
+    if not man: return None, '조립 방 조각 없음(gate_rooms.py)'
     part = np.asarray(Image.open(png).convert('RGBA')); m = part[..., 3] > 0
     why = '이 문을 품은 조립 방 조각이 없다'
     import gate_kinds as GK

@@ -1,0 +1,20 @@
+{
+ "schema": "oprn-object-gate-queue/1",
+ "id": "fallen-rooms-r7",
+ "title": "Fallen Star 방 — 별 봉인 돌뚜껑(닫힘·열림) (r7)",
+ "createdAt": "2026-10-21T13:18:31.860Z",
+ "items": [
+  {
+   "sha": "bd93f1da9bab4fa56a7c7c383aea5f1cd101c3748c3bb3bedb775534e1e40d12",
+   "kind": "flat",
+   "label": "atlas_biome_interior/plus/star seal",
+   "source": "/tmp/fsrooms/gate-r7/star_seal.png"
+  },
+  {
+   "sha": "9a2c65f211f237e51409fc91610293a1e62d169b385a5c45233ad8e26bda587e",
+   "kind": "flat",
+   "label": "atlas_biome_interior/plus/star seal open",
+   "source": "/tmp/fsrooms/gate-r7/star_seal_open.png"
+  }
+ ]
+}

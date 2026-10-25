@@ -15,7 +15,7 @@ import {
   setEffectiveFactionStance,
 } from "@/project/factionRuntime";
 import { resolveFactionTable } from "@/project/factions";
-import type { Command, Condition, EndingDef, GameEvent, M2CommandFields, SwitchValue } from "@/project/types";
+import type { Command, Condition, EndingDef, FaceGraphic, GameEvent, M2CommandFields, SwitchValue } from "@/project/types";
 
 import { clampEmoteDurationMs } from "@/project/emotes";
 import { craftRecipe } from "@/project/craftRecipes";
@@ -69,6 +69,7 @@ import {
   setRoguelikeRunFlag,
   startRoguelikeRun,
 } from "@/project/roguelikeRun";
+import { cachedSightBlocker } from "@/project/sightBlockers";
 import { roguelikeRoomId } from "@/project/roguelikeRooms";
 
 import { setRelationshipState } from "@/project/relationshipState";
@@ -545,6 +546,16 @@ export function executeCommand(
   state.beforeCommand?.(command);
   switch (command.kind) {
     case "changeFace": {
+      // 말을 다른 상대에게 돌릴 때: [듣는 사람 얼굴(반대 자리)] [화자 얼굴] [대사] — 앞 얼굴을 듣는 사람으로 남긴다(첫사랑 r9 편의점:
+      // 점원 다음 지후에게 말하는데 듣는 사람 자리에 점원이 남았다). 대사 사이에 한 번만 바꾸는 보통 흐름에는 영향이 없다.
+      const previousFace = state.currentFace;
+      const hadFaceSinceText = state.faceSinceText === true;
+      state.faceSinceText = true;
+      const keepListener = (next: FaceGraphic | undefined): void => {
+        state.listenerFace = hadFaceSinceText && previousFace && next && (previousFace.position === "right") !== (next.position === "right")
+          ? previousFace
+          : undefined;
+      };
       if (command.appearanceId !== undefined) {
         const face = state.project ? resolveAppearancePortrait(state.project, command.appearanceId, command.presentation ?? "face") : undefined;
         state.currentFace = face
@@ -555,6 +566,7 @@ export function executeCommand(
               flipHorizontally: command.flipHorizontally,
             }
           : undefined;
+        keepListener(state.currentFace);
         return resumeNext(frame);
       }
       state.currentFace = command.resourceId
@@ -566,14 +578,19 @@ export function executeCommand(
             flipHorizontally: command.flipHorizontally,
           }
         : undefined;
+      keepListener(state.currentFace);
       return resumeNext(frame);
     }
-    case "text":
+    case "text": {
+      const listenerFace = state.listenerFace;
+      state.listenerFace = undefined;
+      state.faceSinceText = false;
       return pause("text", {
         kind: "text",
         speaker: command.speaker,
         body: textBodyOf(command),
         face: state.currentFace,
+        ...(listenerFace ? { listenerFace } : {}),
         settings: state.session.messageWindowSettings,
         autoAdvance: command.autoAdvance === true,
         emotion: command.emotion,
@@ -583,7 +600,14 @@ export function executeCommand(
         ...(command.position ? { position: command.position } : {}),
         ...(command.voiceResourceId ? { voiceResourceId: command.voiceResourceId } : {}),
         ...(ENDING_EPILOGUE_TEXT.has(command) ? { endingEpilogue: true } : {}),
+        ...(command.speakerActor ? { speakerActor: command.speakerActor } : {}),
+        ...(command.addressee ? { addressee: command.addressee } : {}),
+        ...(command.autoFace === false ? { autoFace: false } : {}),
+        ...(command.bustSide === "stage" ? { bustSide: "stage" as const } : {}),
+        ...(command.listenerBust ? { listenerBust: command.listenerBust } : {}),
+        ...(command.calling === true ? { calling: true } : {}),
       });
+    }
     case "choices":
       return pause("choices", {
         kind: "choices",
@@ -688,7 +712,7 @@ export function executeCommand(
       if (!breakLoop(state)) return resumeNext(frame);
       return { kind: "continue" };
     case "transfer":
-      return pause("transfer", { kind: "transfer", mapId: command.mapId, x: command.x, y: command.y, direction: command.direction, fade: command.fade, transition: command.transition });
+      return pause("transfer", { kind: "transfer", mapId: command.mapId, x: command.x, y: command.y, direction: command.direction, fade: command.fade, transition: command.transition, ...(typeof command.door === "boolean" ? { door: command.door } : {}) });
     case "wait": {
       const ms =
         command.variableId && command.variableId.trim()
@@ -1326,7 +1350,16 @@ function resolveOpenChestId(state: InterpreterState): string {
  * 프로젝트를 부채로 돌리는 잡트리(단위 테스트 등)에서는 해석 불가 = 거짓이다.
  */
 function locationEvalContext(state: InterpreterState): ConditionEvalContext {
-  return { map: state.project?.maps[state.session.currentMapId], ...partySkillContext(state.project, state.session) };
+  const positions = state.eventPositions;
+  const map = state.project?.maps[state.session.currentMapId];
+  const blocksSight = cachedSightBlocker(state.project, map);
+  return {
+    map,
+    ...(blocksSight ? { blocksSight } : {}),
+    ...partySkillContext(state.project, state.session),
+    // 걷는 NPC 의 실시간 칸은 장면 eventPositions 에 있다(eventSeesPlayer 가 읽는다).
+    ...(positions ? { eventPosition: (eventId: string) => positions[eventId] } : {}),
+  };
 }
 
 /** 조건 트리가 host 의 characterId 를 읽는가(호감도·관계). evalCondition 의 hostSocial 사용처와 맞춘다. */

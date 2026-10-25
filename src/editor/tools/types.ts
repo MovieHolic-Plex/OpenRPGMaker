@@ -116,9 +116,15 @@ export interface ToolDefinition {
    * run(draft,args) 는 ctx 를 받지 못하므로, 「지금 보는 맵」이 필요한 도구(ask_tileset_change)는 이 경로로 받는다.
    */
   readonly fillsCurrentMapId?: boolean;
+  /** 이름을 주면 실행기가 비어 있는 그 인자를 사용자가 보는 맵(ctx.currentMapId)으로 채운다 — 「요청이 온 맵」이 필요한 도구(author_dungeon 의 기본 출구). */
+  readonly fillsCurrentMapIdAs?: string;
   // true 면 Pi 의 캐릭터 그림 선택 검사(charsetSelectionGate)를 건너뛴다 — 사람이 고른 출연진을 통째로 까는 도구(build_monster_game)용.
   // 모델이 칩 번호를 고르지 않으니 「후보 그림을 먼저 봐라」는 계약의 대상이 아니다.
   readonly placesCuratedCast?: boolean;
+  // true(또는 args 를 보고 true)면 그 호출은 도구가 정해진 그림을 스스로 고른다(세이브 크리스탈·보물상자·전투 그림에서 고른
+  // 필드 적) — 모델이 칩을 고르지 않았으므로 charsetSelectionGate 대상이 아니다. 실측(2026-10-22 보스 체크포인트): 세 도구가
+  // 자기 기본 그림 때문에 「캐릭터 그림 선택을 되돌렸습니다」로 거부됐고 조수는 upsert_event 로 흉내 내려 했다.
+  readonly choosesOwnGraphic?: boolean | ((args: Record<string, unknown>) => boolean);
   // true 면 러너의 나무 짝 자동 수리를 건너뛴다 — 검토 끝난 원본 배열을 그대로 옮기는 툴(import_region_reference)용.
   readonly preservesAuthoredRaster?: boolean;
   // write 툴은 draft(구조적 복제본)를 직접 변형한다. read 툴은 project를 읽기만 한다.

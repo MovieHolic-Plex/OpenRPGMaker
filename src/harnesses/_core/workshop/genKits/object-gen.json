@@ -1,7 +1,7 @@
 {
  "kit": "object-gen",
  "repo": "https://github.com/MovieHolic-Plex/object-gen.git",
- "commit": "ca9e85c876859c79ccfb764b6a40b5999a10896b",
+ "commit": "8979bbce97b5d55d1df84746ee7160c04abd1225",
  "constants": {
   "checks": {
    "STANDING": [
@@ -25,6 +25,638 @@
    "FILL_SLACK": 0.08,
    "MARGIN_MAX": 0.97,
    "SLACK": 0.03
+  },
+  "footprint": {
+   "BUILDING": "(?<![가-힣])집$|주택|민가|가게|상점|여관|주점|대장간|교회|성당|신전|사원|탑$|성채|성곽|성문|저택|헛간|창고|오두막|건물|\\bhouse\\b|\\bhome\\b|\\bshop\\b|\\binn\\b|\\btavern\\b|church|temple|tower|castle|manor|barn|warehouse|cabin|building",
+   "CELL": 16,
+   "CLASSES": {
+    "banner": {
+     "grow": "over",
+     "h": [
+      2,
+      4
+     ],
+     "measured": [
+      "beodeul:guild banner pole 1x1+3 [*|*|*|X]"
+     ],
+     "reference": false,
+     "top": "the top of the pole and the upper edge of the cloth",
+     "typ": {
+      "foot": 1,
+      "over": 2,
+      "w": 1
+     },
+     "w": [
+      1,
+      2
+     ],
+     "words": "깃발|깃대|banner|flag ?pole|\\bflag\\b"
+    },
+    "barrel": {
+     "grow": "foot",
+     "h": [
+      1,
+      2
+     ],
+     "measured": [
+      "beodeul:barrel 1x1 [X]",
+      "interior-v5:barrel 1x1 (28 of 38)"
+     ],
+     "top": "the round lid with its hoop",
+     "typ": {
+      "foot": 1,
+      "over": 0,
+      "w": 1
+     },
+     "w": [
+      1,
+      2
+     ],
+     "words": "통$|술통|나무통|양동이|\\bbarrel\\b|\\bkeg\\b|\\bcask\\b|bucket|\\btub\\b"
+    },
+    "bed": {
+     "grow": "foot",
+     "h": [
+      2,
+      3
+     ],
+     "measured": [
+      "interior-v5:bed 1x2 +6px",
+      "interior-v5:double bed 2x2 +6px"
+     ],
+     "rise_px": 6,
+     "top": "the mattress, pillow and blanket seen from above",
+     "typ": {
+      "foot": 2,
+      "over": 0,
+      "w": 1
+     },
+     "w": [
+      1,
+      3
+     ],
+     "words": "(?<!받)침대|\\bbed\\b|hammock|cot\\b"
+    },
+    "bench": {
+     "grow": "over",
+     "h": [
+      1,
+      1
+     ],
+     "measured": [
+      "beodeul:wooden bench 2x1+0 [XX]",
+      "interior-v5:bench 2x1"
+     ],
+     "note": "one foot row; a backrest rises 8 px above that cell (drawn over walkers) - a 2-row bench stands as tall as a person, and squeezing seat, backrest and legs into one 16 px row drew a stack of planks (OPRN editor 2026-10-22, 4 of 4 candidates failed the view check)",
+     "rise_px": 8,
+     "top": "the seat slab",
+     "typ": {
+      "foot": 1,
+      "over": 0,
+      "w": 2
+     },
+     "w": [
+      1,
+      3
+     ],
+     "words": "벤치|걸상|\\bbench\\b|pew"
+    },
+    "boat": {
+     "grow": "foot",
+     "h": [
+      1,
+      3
+     ],
+     "measured": [
+      "beodeul:fishing boat 3x2+1",
+      "beodeul:ferry 2x1+0 [XX]"
+     ],
+     "top": "the open hull with its thwarts seen from above",
+     "typ": {
+      "foot": 2,
+      "over": 0,
+      "w": 3
+     },
+     "w": [
+      2,
+      4
+     ],
+     "words": "보트|나룻배|낚싯배|\\bboat\\b|canoe|rowboat|(?<![가-힣])배$"
+    },
+    "cart": {
+     "grow": "foot",
+     "h": [
+      1,
+      3
+     ],
+     "measured": [
+      "beodeul:flower cart 2x1+1 [**|XX]",
+      "beodeul:vegetable handcart 2x1+1",
+      "beodeul:mine cart 1x1+1"
+     ],
+     "top": "the open cart bed and what is loaded in it",
+     "typ": {
+      "foot": 1,
+      "over": 1,
+      "w": 2
+     },
+     "w": [
+      1,
+      4
+     ],
+     "words": "수레|손수레|광차|\\bcart\\b|barrow|trolley"
+    },
+    "chair": {
+     "grow": "over",
+     "h": [
+      1,
+      2
+     ],
+     "measured": [
+      "interior-v5:chair 1x1",
+      "interior-v5:armchair 1x1"
+     ],
+     "top": "the seat cushion and the arm tops",
+     "typ": {
+      "foot": 1,
+      "over": 0,
+      "w": 1
+     },
+     "w": [
+      1,
+      2
+     ],
+     "words": "의자|\\bchair\\b|stool|throne"
+    },
+    "counter": {
+     "grow": "foot",
+     "h": [
+      1,
+      2
+     ],
+     "measured": [
+      "interior-v5:counter 3x1 +8px"
+     ],
+     "rise_px": 8,
+     "top": "the long counter top",
+     "typ": {
+      "foot": 1,
+      "over": 0,
+      "w": 3
+     },
+     "w": [
+      1,
+      4
+     ],
+     "words": "계산대|카운터|조리대|접수|counter|bar top"
+    },
+    "crate": {
+     "grow": "foot",
+     "h": [
+      1,
+      2
+     ],
+     "measured": [
+      "beodeul:fruit crate 1x1 [X]",
+      "interior-v5:crate 1x1 (37 of 53 crates)"
+     ],
+     "top": "the plank lid",
+     "typ": {
+      "foot": 1,
+      "over": 0,
+      "w": 1
+     },
+     "w": [
+      1,
+      2
+     ],
+     "words": "궤짝|상자|크레이트|\\bcrate\\b|\\bbox\\b|\\bchest\\b|coffer"
+    },
+    "fountain": {
+     "grow": "foot",
+     "h": [
+      2,
+      4
+     ],
+     "measured": [
+      "interior-v5:indoor fountain 2x2+1"
+     ],
+     "note": "basin on the ground (foot rows), the spout or statue rises one row above it",
+     "top": "the water surface inside the basin rim and the top of the spout",
+     "typ": {
+      "foot": 2,
+      "over": 1,
+      "w": 3
+     },
+     "w": [
+      2,
+      5
+     ],
+     "words": "분수|fountain"
+    },
+    "hearth": {
+     "grow": "over",
+     "h": [
+      1,
+      3
+     ],
+     "measured": [
+      "interior-v5:bread oven 2x1 +32px",
+      "interior-v5:stove 1x1 +8px",
+      "beodeul:stone brazier 1x1+1"
+     ],
+     "top": "the stone top or the fire bowl seen from above",
+     "typ": {
+      "foot": 1,
+      "over": 1,
+      "w": 2
+     },
+     "w": [
+      1,
+      4
+     ],
+     "words": "화덕|벽난로|난로|화로|모닥불|stove|hearth|fireplace|oven|brazier|campfire"
+    },
+    "jar": {
+     "grow": "over",
+     "h": [
+      1,
+      2
+     ],
+     "measured": [
+      "interior-v5:water jar 1x1",
+      "interior-v5:tall vase 1x1 +16px"
+     ],
+     "top": "the round mouth of the jar",
+     "typ": {
+      "foot": 1,
+      "over": 0,
+      "w": 1
+     },
+     "w": [
+      1,
+      2
+     ],
+     "words": "항아리|단지|독$|옹기|꽃병|\\bjar\\b|\\bpot\\b|\\burn\\b|amphora|\\bvase\\b"
+    },
+    "lamp": {
+     "grow": "over",
+     "h": [
+      2,
+      4
+     ],
+     "measured": [
+      "beodeul:crooked street lamp 1x1+2 [*|*|X]",
+      "beodeul:double lamp 2x1+2"
+     ],
+     "reference": false,
+     "top": "the lamp head and its cap seen from above",
+     "typ": {
+      "foot": 1,
+      "over": 2,
+      "w": 1
+     },
+     "w": [
+      1,
+      2
+     ],
+     "words": "가로등|등불|등롱|횃불 ?기둥|등 기둥|lamp ?post|lamppost|\\blamp\\b|lantern post|street ?light"
+    },
+    "pile": {
+     "grow": "foot",
+     "h": [
+      1,
+      3
+     ],
+     "measured": [
+      "interior-v5:sack 1x1",
+      "beodeul:hay bale stack 2x1+1 [**|XX]",
+      "beodeul:woodpile 2x1+0"
+     ],
+     "top": "the top of the heap",
+     "typ": {
+      "foot": 1,
+      "over": 0,
+      "w": 1
+     },
+     "w": [
+      1,
+      3
+     ],
+     "words": "더미|무더기|자루|짚가리|건초|장작|\\bpile\\b|\\bstack\\b|\\bsacks?\\b|\\bhay\\b|woodpile"
+    },
+    "plant": {
+     "grow": "over",
+     "h": [
+      1,
+      2
+     ],
+     "measured": [
+      "beodeul:round stone planter 1x1 [X]",
+      "interior-v5:potted fern 1x1"
+     ],
+     "top": "the round top of the leaves or flowers",
+     "typ": {
+      "foot": 1,
+      "over": 0,
+      "w": 1
+     },
+     "w": [
+      1,
+      3
+     ],
+     "words": "화분|관목|덤불|화단|꽃밭|풀숲|\\bplant\\b|shrub|\\bbush\\b|flowerbed|potted"
+    },
+    "rack": {
+     "grow": "over",
+     "h": [
+      1,
+      3
+     ],
+     "measured": [
+      "beodeul:bread rack 1x1+1 [*|X]",
+      "beodeul:net drying rack 2x1+1 [**|XX]"
+     ],
+     "top": "the top bar of the rack",
+     "typ": {
+      "foot": 1,
+      "over": 1,
+      "w": 1
+     },
+     "w": [
+      1,
+      3
+     ],
+     "words": "건조대|거치대|걸이|시렁|진열대|빨래|\\brack\\b|\\bstand\\b|easel"
+    },
+    "signpost": {
+     "grow": "over",
+     "h": [
+      1,
+      3
+     ],
+     "measured": [
+      "beodeul:signpost 1x1+1 [*|X]",
+      "beodeul:chalk sandwich board 1x1+0"
+     ],
+     "reference": false,
+     "top": "the top edge of the board and the post cap",
+     "typ": {
+      "foot": 1,
+      "over": 1,
+      "w": 1
+     },
+     "w": [
+      1,
+      2
+     ],
+     "words": "이정표|표지판|입간판|팻말|게시판|signpost|milestone|notice ?board|\\bsign\\b"
+    },
+    "stall": {
+     "grow": "over",
+     "h": [
+      2,
+      5
+     ],
+     "measured": [
+      "beodeul:market stall 2x2+1 [**|XX|XX]",
+      "beodeul:tent stall 3x2+1 [***|XXX|XXX]",
+      "beodeul:vegetable stall 3x1+2"
+     ],
+     "note": "counter and goods on two foot rows, the awning is drawn above walkers",
+     "top": "the striped awning roof and the goods laid on the counter",
+     "typ": {
+      "foot": 2,
+      "over": 1,
+      "w": 3
+     },
+     "w": [
+      2,
+      6
+     ],
+     "words": "노점|좌판|가판|매대|stall|booth|kiosk"
+    },
+    "statue": {
+     "grow": "over",
+     "h": [
+      2,
+      5
+     ],
+     "measured": [
+      "interior-v5:statue 1x1 +32px",
+      "beodeul:memorial column 1x1+3 [*|*|*|X]",
+      "beodeul:sage statue 2x2+2"
+     ],
+     "top": "the top of the plinth and the head and shoulders of the figure",
+     "typ": {
+      "foot": 1,
+      "over": 2,
+      "w": 1
+     },
+     "w": [
+      1,
+      3
+     ],
+     "words": "석상|동상|조각상|기념비|오벨리스크|원주|statue|monument|obelisk|sculpture"
+    },
+    "table": {
+     "grow": "foot",
+     "h": [
+      1,
+      3
+     ],
+     "measured": [
+      "interior-v5:table 2x1",
+      "beodeul:tavern table 2x1+1 [**|XX]"
+     ],
+     "top": "the table top and what stands on it",
+     "typ": {
+      "foot": 1,
+      "over": 0,
+      "w": 2
+     },
+     "w": [
+      1,
+      4
+     ],
+     "words": "탁자|테이블|책상|식탁|table|desk"
+    },
+    "tent": {
+     "grow": "foot",
+     "h": [
+      2,
+      4
+     ],
+     "measured": [
+      "beodeul:goat-hair tent 4x2+1 [*** |XXXX|XXXX]",
+      "beodeul:sail-cloth tent 3x1+1"
+     ],
+     "top": "the sloping tent roof seen from above",
+     "typ": {
+      "foot": 2,
+      "over": 1,
+      "w": 3
+     },
+     "w": [
+      2,
+      5
+     ],
+     "words": "천막|텐트|\\btent\\b|pavilion"
+    },
+    "tree": {
+     "grow": "over",
+     "h": [
+      2,
+      5
+     ],
+     "measured": [
+      "beodeul:fir 2x1+2 [**|**|XX]",
+      "beodeul:olive tree 3x1+2 [***|***|XXX]",
+      "beodeul:tree in planter 2x1+2"
+     ],
+     "note": "only the trunk row blocks; the crown is drawn above walkers",
+     "top": "the round leafy crown seen from above",
+     "typ": {
+      "foot": 1,
+      "over": 2,
+      "w": 2
+     },
+     "w": [
+      1,
+      4
+     ],
+     "words": "(?<![통장])나무(?! ?(?:벤치|탁자|문|상자|궤짝|통|울타리|간판|의자|더미|다리|수레))|올리브|사이프러스|야자|전나무|소나무|버드나무|단풍|벚나무|\\btree\\b|\\bpalm\\b|\\bfir\\b|\\bpine\\b|\\boak\\b|\\bolive\\b|cypress|willow"
+    },
+    "trough": {
+     "grow": "foot",
+     "h": [
+      1,
+      2
+     ],
+     "measured": [
+      "beodeul:horse trough 2x1+0 [XX]",
+      "beodeul:long flower box 2x1+0"
+     ],
+     "top": "the open trough with water or feed inside",
+     "typ": {
+      "foot": 1,
+      "over": 0,
+      "w": 2
+     },
+     "w": [
+      1,
+      3
+     ],
+     "words": "구유|먹이통|여물통|물통|꽃상자|trough|flower ?box|planter box"
+    },
+    "wagon": {
+     "grow": "foot",
+     "h": [
+      2,
+      4
+     ],
+     "measured": [
+      "beodeul:covered wagon 4x2+1 [****|XXXX|XXXX]",
+      "beodeul:flour cart 4x2+1"
+     ],
+     "note": "wheels and bed on the foot rows, cargo or cover rises one row",
+     "top": "the open load bed and the cargo inside it (or the cloth cover)",
+     "typ": {
+      "foot": 1,
+      "over": 1,
+      "w": 3
+     },
+     "w": [
+      2,
+      5
+     ],
+     "words": "마차|짐마차|짐수레|wagon|carriage|caravan"
+    },
+    "wardrobe": {
+     "grow": "over",
+     "h": [
+      2,
+      3
+     ],
+     "measured": [
+      "interior-v5:wardrobe 1x1 +16px",
+      "interior-v5:bookshelf 2w 2x1 +22px"
+     ],
+     "rise_px": 16,
+     "top": "the deep top board of the cabinet",
+     "typ": {
+      "foot": 1,
+      "over": 1,
+      "w": 1
+     },
+     "w": [
+      1,
+      4
+     ],
+     "words": "옷장|책장|찬장|장식장|서랍장|wardrobe|bookshelf|bookcase|cabinet|cupboard|dresser"
+    },
+    "well": {
+     "grow": "over",
+     "h": [
+      2,
+      4
+     ],
+     "measured": [
+      "beodeul:stone well (roof) 2x2+0 [XX|XX]",
+      "beodeul:snowfield well 3x2+1",
+      "beodeul:oasis well 3x2+1"
+     ],
+     "note": "stone ring blocks; a roofed well may add one over row",
+     "top": "the round opening of the well and the top of its little roof",
+     "typ": {
+      "foot": 2,
+      "over": 0,
+      "w": 2
+     },
+     "w": [
+      1,
+      4
+     ],
+     "words": "우물|\\bwell\\b"
+    }
+   },
+   "GUIDE": "## Footprint - decide it first (cells of 16 px; a standing person is 1 cell wide, 2 cells tall)\n- FOOT rows (bottom) are where the object stands: they block walking. OVER rows above them hold tall parts (awning,\n  crown, lamp head, cover); the character walks there and is drawn behind them.\n- Usual sizes measured in the target chipsets: crate, barrel, jar, chair, potted plant 1x1; bench, trough, table 2x1;\n  bed 1x2 (double 2x2); wardrobe or bookshelf 1x1 + one over row; lamp post 1x1 + two over rows; lone tree 2x1 + two\n  over rows (only the trunk row blocks); hand cart 2x1 + 1; wagon 3-4 wide, 1-2 foot rows + 1; market stall 3x2 + 1\n  (bigger: 5x2 + 2); fountain 3-4 wide, 2 foot rows + 1; statue 1x1 + 2 (large 2x2 + 2).\n- Depth is more FOOT rows; height is more OVER rows. Do not make something tall by stretching its foot.\n- The whole picture fits the footprint: width = cells x 16, height = (foot + over) x 16. Nothing pokes past it.",
+   "ORDER": [
+    "fountain",
+    "well",
+    "stall",
+    "tent",
+    "wagon",
+    "cart",
+    "boat",
+    "tree",
+    "statue",
+    "lamp",
+    "banner",
+    "signpost",
+    "bed",
+    "wardrobe",
+    "counter",
+    "hearth",
+    "bench",
+    "table",
+    "chair",
+    "trough",
+    "crate",
+    "barrel",
+    "jar",
+    "plant",
+    "pile",
+    "rack"
+   ],
+   "PERSON": {
+    "h": 2,
+    "px": [
+     24,
+     32
+    ],
+    "w": 1
+   }
   },
   "gate": {
    "KINDS": [
@@ -109,6 +741,25 @@
    "VIEW": "## View - the chipset's 3/4 top-down view\n- The camera is south of the object looking down. A standing object shows its TOP surfaces seen from above (foreshortened)\n  AND its FRONT (south) face. A pure front elevation (the top only a 1-2 px line) is wrong. A pure plan view is wrong.\n- Every horizontal surface - top, lid, seat, shelf plank, table top, roof, column cap, the inside of an open container -\n  is visible from above: >= 3 rows for furniture, lighter than the front face, with the lightest row at its front lip.\n- Depth (north-south) shows as the number of rows of the top plane, never as a taller front. Something long north-south\n  is long on screen because its top is long.\n- Seats: the SEAT surface is seen from above; a backrest or armrests may be drawn face-on.\n- An object that faces east or west shows its own side profile as its south face; that is normal.\n- The lowest painted row is the ground line (canvas bottom). Do not paint floor, shadows on the floor or background.\n- Unsure about a round or deep shape? `object-gen underdraw` renders boxes, cylinders, tunnels and spheres in this view\n  at 1x (top = yellow, front = blue). Draw over it."
   },
   "reference": {
+   "ASPECT_PX": {
+    "square": [
+     1254,
+     1254
+    ],
+    "tall": [
+     1024,
+     1536
+    ],
+    "wide": [
+     1536,
+     1024
+    ]
+   },
+   "BACKGROUND": [
+    200,
+    200,
+    200
+   ],
    "IP_TERMS": [
     "pokemon",
     "pokémon",
@@ -157,6 +808,7 @@
     "fallback_provider"
    ],
    "REFCOPY_LIMIT": 0.6,
+   "SIZE_NOTE": "Size: on the map it covers {w} by {h} cells (width by height); a standing person is 1 cell wide and 2 cells tall - keep that size relative to a person and that width-to-height proportion ({w}:{h}).",
    "STYLE_NOTE": "The attached image shows finished objects of the target game drawn in exactly this camera angle (top plane large, short front, no side faces). Match that CAMERA ANGLE and level of simplification only; draw the new object described here, do not copy the objects in the attached image.",
    "STYLE_NOTE_LOW": "The attached image shows finished objects of the target game in exactly this proportion (top band about a third of the height, tall front). Match that camera angle and proportion only; draw the new object described here, do not copy the objects in the attached image.",
    "TOP_WORDS": {

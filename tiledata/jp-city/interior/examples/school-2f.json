@@ -602,17 +602,17 @@
    "x": 21,
    "y": 15,
    "toMapId": "jp-city-school-3f",
-   "toX": 22,
-   "toY": 13,
-   "direction": "left"
+   "toX": 23,
+   "toY": 14,
+   "direction": "down"
   },
   {
    "x": 22,
    "y": 15,
    "toMapId": "jp-city-school-3f",
-   "toX": 22,
-   "toY": 13,
-   "direction": "left"
+   "toX": 23,
+   "toY": 14,
+   "direction": "down"
   },
   {
    "x": 23,

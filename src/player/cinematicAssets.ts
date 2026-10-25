@@ -1,5 +1,7 @@
 import { resolveAssetResourceUrl } from '@/assets/generatedAssetResourceResolver';
 import type { CinematicSequence, Project } from '@/project/types';
+import { warmAnimaticImages } from './openingAnimaticRenderer';
+import { preloadedAudioUrl } from './preloadedAudio';
 
 type PreparedImage = { url: string; width: number; height: number };
 export type CinematicAssets = {
@@ -16,6 +18,9 @@ export function createCinematicAssets(): CinematicAssets {
   const audioEntries = new Map<string, { promise: Promise<string>; blobUrl?: string }>();
   const prepareAudio = (url: string): Promise<string> => {
     if (lifetime.signal.aborted) return Promise.reject(new DOMException('Closed', 'AbortError'));
+    // 웹 판본이 시작 전에 받아 쥔 소리(scenePreload.ts)면 다시 받지 않는다.
+    const preloaded = preloadedAudioUrl(url);
+    if (preloaded) return Promise.resolve(preloaded);
     const cached = audioEntries.get(url);
     if (cached) return cached.promise;
     const entry: { promise: Promise<string>; blobUrl?: string } = { promise: Promise.resolve(url) };
@@ -102,6 +107,7 @@ export function createCinematicAssets(): CinematicAssets {
           const url = id && resolveAssetResourceUrl(id, { project });
           if (url) void prepareAudio(url).catch(() => undefined);
         }
+        if (scene.kind === 'animatic') { warmAnimaticImages(project, scene.composition); continue; }
         if (scene.kind !== 'image') continue;
         for (const id of [scene.resourceId, ...(scene.direction?.layers?.map(layer => layer.resourceId) ?? [])]) {
           const url = resolveAssetResourceUrl(id, { project });

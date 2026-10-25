@@ -1,0 +1,386 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "50201ce35d3b0c6921ab9bb586aa1fe61240f359c72e4223e92ea2382b7a6e15",
+ "width": 48,
+ "height": 48,
+ "kind": "seat",
+ "name": "royal throne on a dais",
+ "label": "beodeul_dungeon/earth.throne",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "2ad36264365ed8d5"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 14,
+  "tileColorsP90": 16,
+  "darkV5": 75,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 7
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "tall backrest with gold trim",
+      "rows": "0-15",
+      "evidence": "seat_back",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "throne seat cushion top",
+      "rows": "16-22",
+      "evidence": "a",
+      "front_edge_line_row": 19,
+      "eave_shadow_rows": "20-22"
+     },
+     {
+      "part": "dais top platform with red carpet and stone sides",
+      "rows": "12-35",
+      "evidence": "a",
+      "front_edge_line_row": 36,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 13,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The throne seat has a short top band at rows 16-19 that ends in a gold front-edge line at row 19. Dark shadow follows at rows 20-22, and a red patterned front face runs below it at rows 23-35 (13 rows). The backrest at rows 0-15 is a vertical panel and is exempt for a seat. The dais is also a three-quarter box. Its stone and carpet top spans rows 12-35, with a light edge line at row 36 above a stone-brick front face and stairs at rows 36-46. The wide platform top and the front faces together read as a three-quarter view, not a flat elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate throne has 14 visible tones per tile, which is in line with the hedge (9), cheese stall (17) and well (20). Near-flat coverage is 0% and only 9% of dark edge pixels are neutral, so the outlines lean dark red-brown beside the red cushion and dark stone tone beside the dais rather than a black sticker line. By eye, the red carpet and cushion have stripes and a few highlight dots, and the stone dais has brick-style blocks with light and dark faces. The gold crest and trim add some detail. Each material ramp holds only about 3-4 steps, though. The red is mostly one mid red with a darker band and a single highlight. The stone dais is two or three greys. The gold has a highlight and a base tone. The references use 5-6 steps with per-element scallops and grain, such as the well roof and the cheese stall awning. The throne reads somewhat flatter and more blocky than those, with limited speckle or grain on the large red surfaces. It is close to the bar but still a little shallower in ramp depth, and when in doubt the rule is fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 20288
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "throne backrest (tall red panel with gold frame)",
+      "rows": "0-12",
+      "evidence": "seat_back",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "throne armrests (gold/brown side frames)",
+      "rows": "13-22",
+      "evidence": "seat_back",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "throne seat cushion",
+      "rows": "13-18",
+      "evidence": "a",
+      "front_edge_line_row": 19,
+      "eave_shadow_rows": "20-22"
+     },
+     {
+      "part": "dais top (red patterned carpet and stone rim)",
+      "rows": "12-35",
+      "evidence": "a",
+      "front_edge_line_row": 36,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 11,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The throne seat (rows 13-18) is a lighter red band ending in a gold front-edge line at row 19, followed by dark brown shadow in rows 20-22. This reads as a seat surface seen from above. The backrest (rows 2-12) and armrests are drawn as vertical faces, which is exempt for a seat. The dais under the throne has a large carpeted top (rows 12-35) with a light edge line at row 36. Its stone-brick front face (rows 36-46, about 11 rows) has a red stair carpet. The object has both a top surface and a front face of 3+ rows, so it reads as three-quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The throne reads as a layered piece. The red cushion and back, the gold trim with a jewel, the stone-block dais and the red carpet steps each carry their own ramp of about 4 steps. There are no flat 5x5 areas (0% near-flat coverage). Dark edges are tinted (only 9% near-neutral), so the outline sits in dark red-brown and dark stone tones rather than a black sticker line. Visible tones per tile are 14, above the hedge (9), close to the cheese stall (17) and a little under the roofed well (20). The total palette of 20 colours is thinner than the stall (40) and well (38), and the red and gold ramps are a step shorter than Beodeul's 5-6. That puts it slightly below the best references, but it would sit acceptably next to them without looking flat or sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 22283
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "throne backrest",
+      "rows": "2-15",
+      "evidence": "seat_back",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "throne seat and armrest top",
+      "rows": "16-19",
+      "evidence": "a",
+      "front_edge_line_row": 19,
+      "eave_shadow_rows": "20-22"
+     },
+     {
+      "part": "dais top (red carpet with gold border, left and right wings)",
+      "rows": "16-35",
+      "evidence": "a",
+      "front_edge_line_row": 35,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dais stone front face and carpeted steps",
+      "rows": "36-46",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 20,
+    "front_face_rows": 11,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The dais carries the throne. Its red carpeted top runs from rows 16 to 35 inside a gold border and ends in a dark purple front-edge line at row 35. Below it, a stone front face of 11 rows (36-46) holds a red-striped stair. The throne seat has a gold edge line at row 19 followed by dark shadow at rows 20-22, so it also reads as a surface seen from above. The backrest (rows 2-15) is a vertical face and is exempt as seat_back. The red area at rows 23-35 in the centre is ambiguous: it could be the throne front or the carpet. I counted it as carpet, so the 20-row dais top is the main top. If only the 4-row throne seat were counted, the result would be borderline."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate carries 14 visible tones per 16x16 tile, which is in the range of the references (hedge 9, stall 17, well 20). Near-flat coverage is 0%, so there are no large flat fills. Only 9% of its dark edge pixels are neutral, so the outlines lean toward a tint: dark red-brown beside the red cushion and dais carpet, and dark tones beside the stone. It is not a uniform black sticker line. Shading is about 5 steps: the red cushion and carpet have highlight, mid and dark; the gold trim has light and dark; the stone steps have light, mid and dark with block separation. Texture comes from the carpet stripes, stone brick joints and gold ornament dots. It is a little less grainy than the hedge and stall, but acceptable next to them. A careful artist would accept it beside the references without it looking thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19221
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "tall backrest with gold trim",
+      "rows": "0-21",
+      "evidence": "seat_back",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "left and right armrest panels",
+      "rows": "15-35",
+      "evidence": "seat_back",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "quilted red seat cushion and dais top with carpet",
+      "rows": "22-35",
+      "evidence": "a",
+      "front_edge_line_row": 36,
+      "eave_shadow_rows": "36-37"
+     },
+     {
+      "part": "stone dais top beside the throne",
+      "rows": "12-35",
+      "evidence": "a",
+      "front_edge_line_row": 36,
+      "eave_shadow_rows": "37-38"
+     },
+     {
+      "part": "dais front face with brick and carpeted stairs",
+      "rows": "36-46",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 14,
+    "front_face_rows": 11,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The seat cushion and dais top form a large horizontal red and stone area (seat rows 22-35, dais rows 12-35). It ends at a lighter front-edge line at row 36, and a darker band follows at rows 37-38. Below that is an 11-row front face (rows 36-46) of stone bricks and a striped carpeted staircase. The tall backrest and the armrests are drawn as vertical faces and are exempt as seat_back. The seat surface itself is seen from above, so the object reads as three-quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The measured facts put the candidate inside the reference range. It has 14 visible tones per tile against 9-20 for the hedge, stall and well. Near-flat coverage is 0%, so no 5x5 area is a flat fill. Only 9% of dark edge pixels are neutral, so the outlines are tinted. By eye they are dark red-brown beside the carpet and throne and dark warm grey beside the stone, not a uniform black sticker line. The throne's red cushion and gold trim, the striped red carpet and the brick-coursed stone dais each carry several tones. Stone blocks are separated by value and carry highlight and shadow variation. Ramps run about 4 steps per material, slightly fewer than the 5-6 on the references, and the total palette is small at 20 colours. That is expected with a locked palette, and it does not read as thinner or flatter than the stall or well next to it. It is a rich, structured prop that holds up beside the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17632
+  }
+ ],
+ "decidedAt": "2026-10-23T05:01:19.019Z",
+ "cells": {
+  "16": [
+   "3b1be43ab55898db",
+   "494b05f704f859ae",
+   "4bef5e8cb8be3f2f",
+   "90774a6282292218",
+   "932ce869c778f9f0",
+   "b800097a2bd42d4e",
+   "bbbade6107a40650",
+   "cfae7b6f158e4443",
+   "d5bb0c458cf8bf85"
+  ],
+  "24": [
+   "59bce950807b3519",
+   "99297c8acbbafd23",
+   "b62e7d76d25b05e9",
+   "ca3b1aae852f8176"
+  ],
+  "32": [
+   "355a532bbfbe30b9",
+   "4236c844190256d0",
+   "5764422c43c41c44",
+   "6498fe568bd680bd",
+   "70020ae13003d2ea",
+   "73c6a35dd87e9877",
+   "77f380398ace3084",
+   "7d6f66c825c99ea8",
+   "8274c8d096c3cb22",
+   "8497208d3813e2d3",
+   "8e38cea5b1ac78f1",
+   "99a6f17d4f40b54d",
+   "9e6904aa87ab1944",
+   "bd4d19633f30af3b",
+   "be794caf5dfc70d0",
+   "c61208c9aaf151a5",
+   "c689950d71bd55e6",
+   "c9c30015c3884475",
+   "cc276ff8e4871673",
+   "d13fa9ca2b913c44",
+   "dbb63c68edd1ee55",
+   "dfa1650d5eef3ff4",
+   "ebfe80e18a5ab7b1",
+   "f493b11c6b64cb7d"
+  ],
+  "48": [
+   "b975657e43352b05"
+  ]
+ }
+}

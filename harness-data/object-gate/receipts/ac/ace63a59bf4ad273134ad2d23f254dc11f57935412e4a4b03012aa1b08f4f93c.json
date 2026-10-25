@@ -1,0 +1,311 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ace63a59bf4ad273134ad2d23f254dc11f57935412e4a4b03012aa1b08f4f93c",
+ "width": 48,
+ "height": 32,
+ "kind": "box",
+ "name": "떨어진 별의 관",
+ "label": "beodeul_city/workshop/fallen-star-vessel",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 8,
+  "tileColorsP90": 11,
+  "darkV5": 49,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 5
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "stone lid top with blue glass inset",
+      "rows": "5-16",
+      "evidence": "b",
+      "front_edge_line_row": 17,
+      "eave_shadow_rows": "16"
+     },
+     {
+      "part": "front face of stone body",
+      "rows": "17-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 11,
+    "front_face_rows": 12,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette widens from 4 px at row 4 to 46 px at row 12 and narrows again by row 30, so the top reads as an ellipse-like lid starting at row 5. A blue glass or water oval sits inside it at rows 10-15, and a bright highlight line at row 12 runs along the top. In column x=23 a darker band at rows 16-18 is followed by lighter stone at row 19, which marks the front edge and eave shadow. Below that, rows 17-29 are a stone front face with cracks and speckles. The top is about 11 rows and the front face about 12 rows. The boundary between top and front is soft, but the top plane is still readable."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a stone coffin or basin with a bevelled rim and a pale recessed inner pool. It reads as about 5 lightness steps on the stone (highlight rim, light face, mid, dark side, deep shadow), close to the references' 5-6. The outline is a dark blue-grey tinted to the stone, not black: the measured neutral share of dark edge pixels is 0%, like the hedge and cheese stall, so it is not a sticker line. Near-flat coverage is 0%, with no large single-colour areas. Facet edges, rim highlights and some speckle on the lid give moderate texture, though less per-stone grain than the roofed well. It has 8 visible tones per tile, which matches the hedge (9) but is below the stall (17) and the well (20). Only 13 colours in total is lean, so density is slightly lower than the richest references. The structure and shading are still careful enough to sit next to the references without looking flat or sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16060
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top surface of the star-stone coffin (lighter slab plane with a blue glass or water oval at the left)",
+      "rows": "5-12",
+      "evidence": "a",
+      "front_edge_line_row": 12,
+      "eave_shadow_rows": "13"
+     },
+     {
+      "part": "blue oval window/pool in the top",
+      "rows": "10-15",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "front (south) rock face",
+      "rows": "13-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 8,
+    "front_face_rows": 17,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette widens from 4 px at row 4 to 46 px at row 12, so the top is a foreshortened plane. A bright 1-row edge line sits at row 12 (L=228 at x=23 and x=34). Darker rows follow it at 13-16, and the textured stone front face runs from row 13 to about row 29. The blue oval at rows 10-15 shows contents or water inside the lid. The shape is rounded and rock-like, but it has a clear top plane and a front face of more than 3 rows."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a stone sarcophagus with a bevelled lid and a recessed pale basin. Its stone ramp has about 5 steps: highlight rim, light bevel, mid face, dark side and deep shadow. The dark edge pixels are 0% neutral, so the outline leans blue-grey and follows the stone instead of using a black sticker line. Near-flat coverage is 0%, so there are no large flat fills, and the basin and bevel faces carry some mottling. It has 8 visible tones per tile, close to the hedge reference at 9 and below the stall and well references at 17-20. It is a little lighter on grain and per-stone detail than the richest references, but it is not shallow, and a careful artist would accept it beside the hedge and well.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16325
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "lid / top of star coffin (stone top with blue glass window)",
+      "rows": "5-14",
+      "evidence": "d",
+      "front_edge_line_row": 14,
+      "eave_shadow_rows": "15-16"
+     },
+     {
+      "part": "front face of coffin body",
+      "rows": "17-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 10,
+    "front_face_rows": 13,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette widens from 4 px at row 4 to 46 px by row 12 and narrows again toward row 30, so the whole body is a rounded slab. The top is rows 5-14: light rim rows at the top, a blue water or glass inset at about rows 10-15, and a bright highlight line at row 12. The columns at x=23 and x=34 darken at rows 15-16, which reads as eave shadow under the top's front edge. Rows 17-29 are a darker, textured stone front face of about 13 rows, ending in a dark bottom outline. Top and front face are both clearly present, so this is a three-quarter view. The edge line is soft because the object is an irregular rounded stone."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The stone coffin has a bevelled lid with a light top edge, mid faces, a darker side and a pale inset basin, which reads as about 5 lightness steps on the stone ramp. The outline is a dark bluish-grey tinted to the stone, not black; the measured near-neutral share of dark edge pixels is 0%, which supports this. There are no large flat fills (near-flat coverage 0%), and the facets carry some variation, though the grain is subtler than the tile scallops and stone-by-stone shading on the well and stall. It shows 8 visible tones per tile, close to the hedge reference (9) and below the well (20) and stall (17). With only 13 colours in total it is a bit leaner than the richest references, but a careful artist would accept it beside the hedge and bench without it looking like a sticker or a flat fill.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 22555
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "stone coffin top with blue pool",
+      "rows": "5-16",
+      "evidence": "b",
+      "front_edge_line_row": 17,
+      "eave_shadow_rows": "15-16"
+     },
+     {
+      "part": "stone front face",
+      "rows": "17-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 12,
+    "front_face_rows": 13,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette is a wide lens shape. Its width grows from 4 px at row 4 to 46 px at rows 12-23, then narrows again to row 30. The top plane covers about rows 5-16. It holds a blue pool, an elliptical opening at about rows 10-15 with a light rim, and a bright highlight streak at row 12. Contents are visible inside the opening (evidence b/d). The top ends in a darker band at about rows 15-16, the edge and shadow. Below it, rows 17-30 are a vertical stone face with speckled texture and a dark base. This gives a top surface of 3+ rows and a front face of 3+ rows, so the object reads as three-quarter. It is a fairly organic, rounded sarcophagus, but it still matches the box kind."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The stone coffin has a light rim highlight, a mid bevel, darker side faces and a recessed lid with its own tones, so about 5 steps on the stone. The outline is a dark blue-grey of the stone, not black: 0% of dark edge pixels are neutral, the same as prop-hedge. It measures 8 visible tones per tile against 9 for the hedge, and 0% near-flat coverage, so there are no dead flat fills. It sits below the well (20 tones) and stall (17 tones), but those are far more complex props. Against the simple stone-slab or hedge references the density is comparable, with only slightly less per-stone grain and speckle. It would sit acceptably next to the references and does not read as a sticker.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 20197
+  }
+ ],
+ "decidedAt": "2026-10-21T20:17:31.314Z",
+ "cells": {
+  "16": [
+   "22d462e2a1382609",
+   "38df05e98eb53aab",
+   "404bd507a9686fec",
+   "5f05ac37c0f001ea",
+   "93348de29255f7e4",
+   "c893ed8df04489ab"
+  ],
+  "24": [
+   "0b56c69938f9adf8",
+   "246aec584a3920e9",
+   "43ee23e8f9b0927c",
+   "670b7b94d1a011ae",
+   "aa2c3c3c317b5217",
+   "bceb7cc42563eedb",
+   "d5e420f4952becd9",
+   "e807c14d30d81696"
+  ],
+  "32": [
+   "162b58963b6624fc",
+   "7ded4dc3f973d47a",
+   "ba5b724f2efb9cf3",
+   "bd5b7bf6c08cde0f",
+   "c613b391e6cc5d48",
+   "d9168287dee7b2a9"
+  ],
+  "48": [
+   "1f78743b464dacc8",
+   "3d72f21da62df9ec"
+  ]
+ }
+}

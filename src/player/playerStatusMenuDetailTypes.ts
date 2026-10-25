@@ -106,6 +106,8 @@ export type StatusMenuDetailOptions = {
   readonly inventoryView?: InventoryView;
   readonly onInventoryViewChange?: (view: InventoryView) => void;
   readonly onOptionsChanged?: (message?: string) => void;
+  /** 「전투 대기」 화면의 행을 확정했을 때. 값은 이 콜백이 바꾸고 화면을 다시 그린다. */
+  readonly onToggleWait?: () => void;
   readonly targetItemId?: string;
   readonly skillActorId?: string;
   readonly selectedSkillId?: string;

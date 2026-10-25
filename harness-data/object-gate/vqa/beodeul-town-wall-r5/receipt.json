@@ -1,0 +1,15 @@
+{"schema":"bdg-vqa/1","judge":"claude-opus-5-5 (fresh process, adversarial)","date":"2026-10-22","subject":"beodeul_town_wall/wall_east_gap","round":5,
+"images":["east-gap-1x.png","east-gap-4x.png","context-test-map-3x.png"],
+"criteria":{"view_34":"PASS","seamless_joins":"PASS","gap_readable":"PASS","same_game":"PASS"},
+"criteriaNotes":{
+"view_34":"Classic RM 3/4: wall tops are flat walkable bands seen from above (west/east tops only, 1 cell wide, crenel row on the outer edge), north wall shows its inner face (2 cells of coursed ashlar + plinth row) below its top, south wall shows its outer face below a crenellated top. The east upper segment's end face is a straight-on 1x2-cell front face hanging below the end of the top, same height as the north inner face. No isometric/oblique side planes anywhere; the lower segment's north end correctly shows no face (it would face away from the camera).",
+"seamless_joins":"NE/NW/SW/SE corners: top bands run continuously into each other, the dark inner outline is unbroken along west, east and south tops and frames the north face on both sides. Upper east cap: light cap lip then the face, left/right dark outlines continue straight from the wall top outline down to the road; face bottom sits flush on the road row with no gap or overhang. Lower east cap: dark outline + light lip at the segment start, top resumes with no pixel offset. No stray pixels, half-cells or broken outline runs seen at 4x.",
+"gap_readable":"At 1x the 2-cell cobble band clearly cuts the east wall; the upper face ending on the road and the lower cap make it read as an opening the road passes through, not a missing tile.",
+"same_game":"Same stone greys, pinkish mortar top, dark navy outline and crenel rhythm as the context map ring, which sits naturally next to the original Beodeul half-timbered houses and cobble road; value range and texture density match."},
+"overall":"PASS",
+"fixes":[],
+"minor":[
+"Road stub in the sample ends one cell inside the ring on bare grass (sample composition only, not a kit defect).",
+"End face sits directly on the cobbles with no 1px base shadow/plinth row like the north face's bottom course; a darker bottom row would ground it slightly better.",
+"End-face block pattern (half-block split mid-face) is a different rhythm from the north face's courses; barely visible at 1x."
+]}

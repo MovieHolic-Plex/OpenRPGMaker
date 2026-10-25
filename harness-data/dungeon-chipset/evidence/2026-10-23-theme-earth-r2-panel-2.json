@@ -1,0 +1,571 @@
+{
+ "round": "theme-earth-r2",
+ "panel": 2,
+ "date": "2026-10-23",
+ "boards": [
+  "qa-runs/r2/board-earth.ore_vein-p2.png",
+  "qa-runs/r2/board-earth.overgrown-p2.png",
+  "qa-runs/r2/board-earth.ossuary-p2.png"
+ ],
+ "art": {
+  "earth.ore_vein": {
+   "A1": "6fef73ca",
+   "A2": "5ed50c63"
+  },
+  "earth.overgrown": {
+   "A1": "d16f0da0",
+   "A2": "e68da122"
+  },
+  "earth.ossuary": {
+   "A1": "ace5f8a4",
+   "A2": "1d754bc0"
+  }
+ },
+ "criteria": "(1) reads in 3/4 top-down at 1x; (2) same game as Beodeul reference (palette, density, 4-6 shading steps, material-tone dark edges, no toy/flat look); (3) seamless joins, no 16px repeat; (4) reads as purpose and theme. Blind: only PNG paths and criteria given.",
+ "tally": {
+  "earth.ore_vein": {
+   "A1": "2 counted majors: reads as boulders stuck on the wall, not embedded (opus-a, opus-b, opus-c); near-black rims (opus-a, opus-b)",
+   "A2": "1 counted major: thin bead lines do not read as ore and vanish at 1x (opus-c, argon)"
+  },
+  "earth.overgrown": {
+   "A1": "1 counted major: slabs lighter/outlined, read as rubble or raised obstacle on top of the floor, not aligned to floor joints (4/4)",
+   "A2": "2 counted majors: star/shrub sticker with no broken stones (opus-a, opus-b, opus-c); dark ink edges (opus-b, opus-c)"
+  },
+  "earth.ossuary": {
+   "A1": "2 counted majors: framed plaque whose light frame clashes with the catacomb wall (opus-a, opus-c major; opus-b, argon minor); cream/near-black contrast pops out (opus-c major; opus-a, opus-b minor)",
+   "A2": "2 counted majors: noisy speckle interior (opus-a, opus-b); framed panel (opus-a, opus-c)"
+  }
+ },
+ "picks": {
+  "earth.ore_vein": {
+   "A2": [
+    "opus-a",
+    "opus-b"
+   ],
+   "A1": [
+    "opus-c",
+    "argon"
+   ]
+  },
+  "earth.overgrown": {
+   "A1": [
+    "opus-a",
+    "opus-b",
+    "opus-c"
+   ],
+   "A2": [
+    "argon"
+   ]
+  },
+  "earth.ossuary": {
+   "A1": [
+    "opus-a",
+    "opus-b"
+   ],
+   "A2": [
+    "opus-c",
+    "argon"
+   ]
+  }
+ },
+ "answers": {
+  "opus-a": {
+   "items": [
+    {
+     "item": "earth.ore_vein",
+     "candidates": [
+      {
+       "id": "A1",
+       "majors": [
+        {
+         "problem": "Reads as loose boulder clusters stuck onto the wall, not ore set into the rock. Each lump has its own rounded silhouette, a dark rim and a highlight cap, so it looks like a rock sitting in front of the wall face (sticker look).",
+         "where": "all four decals, most visible on the 2x2 gold and 2x2 iron in the scene"
+        },
+        {
+         "problem": "Lump outlines are near-black and the gold flecks are flat, very saturated yellow. Beodeul's ore rock uses fewer, embedded flecks and material-tone edges. The result looks harsher and more toy-like than the reference.",
+         "where": "outline and gold flecks on the 2x2 gold and 1x1 gold"
+        }
+       ],
+       "minors": [
+        {
+         "problem": "The 2x2 pieces are tiled from repeated identical sub-lumps, so the 16px cell grid shows through.",
+         "where": "2x2 gold and 2x2 iron"
+        }
+       ]
+      },
+      {
+       "id": "A2",
+       "majors": [],
+       "minors": [
+        {
+         "problem": "The veins are thin, 1-2px lines. At 1x they nearly vanish and could be read as cracks instead of ore.",
+         "where": "1x1 gold/iron, and the iron 2x2 at 1x in the scene"
+        },
+        {
+         "problem": "The dark edging along the vein is slightly too dark, close to ink, against the mossy wall.",
+         "where": "underside of the gold 2x2 streak"
+        },
+        {
+         "problem": "The iron streak has little contrast with the gray-green wall, so its silver reads weakly.",
+         "where": "iron 2x2"
+        }
+       ]
+      }
+     ],
+     "pick": "A2",
+     "pick_reason": "A2 reads as a vein embedded in the wall face and sits flat in the wall plane. A1 reads as rocks glued onto the wall."
+    },
+    {
+     "item": "earth.overgrown",
+     "candidates": [
+      {
+       "id": "A1",
+       "majors": [
+        {
+         "problem": "The broken slabs are much lighter and more outlined than the surrounding flagstones, so the piece reads as a pile of rubble stickered on top of the floor rather than the floor breaking up. The decal's edge is a hard rectangle-ish silhouette and does not fade into the existing joints.",
+         "where": "outer edge of the decal, and the slab tops in the scene"
+        }
+       ],
+       "minors": [
+        {
+         "problem": "Root browns are dark and heavy, and the grass is sparse compared with Beodeul's moss and grass tiles.",
+         "where": "central root"
+        },
+        {
+         "problem": "The two placements are identical, which makes the repeat obvious.",
+         "where": "scene"
+        }
+       ]
+      },
+      {
+       "id": "A2",
+       "majors": [
+        {
+         "problem": "A symmetrical, star-like branch stamp with dark brown outlines. It looks like a plant icon pasted on the floor, does not disrupt or lift any flagstones, and does not read as roots breaking through stone.",
+         "where": "whole piece"
+        },
+        {
+         "problem": "There is no grass mass and no stone breakup, so it misses the 'roots and grass breaking up flagstones' purpose.",
+         "where": "whole piece"
+        }
+       ],
+       "minors": []
+      }
+     ],
+     "pick": "A1",
+     "pick_reason": "A1 at least shows displaced flagstones with roots and moss between them. A2 is a flat stamped icon. A1 still needs its edges blended into the floor."
+    },
+    {
+     "item": "earth.ossuary",
+     "candidates": [
+      {
+       "id": "A1",
+       "majors": [
+        {
+         "problem": "The light beige-gray stone frame around the panel clashes with the dark green catacomb brick. The panel reads as a framed picture or plaque hung on the wall, not as part of the wall face.",
+         "where": "frame border in the scene, both the 3-high and 2-high versions"
+        }
+       ],
+       "minors": [
+        {
+         "problem": "Skull and bone rows sit on a rigid, regular grid, so the 16px row repeat is visible, especially in the side-by-side 2-high pair.",
+         "where": "skull rows"
+        },
+        {
+         "problem": "The bones are very light against near-black gaps; the contrast is a little harsher than Beodeul's bone pile.",
+         "where": "interior"
+        }
+       ]
+      },
+      {
+       "id": "A2",
+       "majors": [
+        {
+         "problem": "Same mismatched light frame as A1, so it reads as a hung panel.",
+         "where": "frame border"
+        },
+        {
+         "problem": "The darker purple-black gaps and denser skull packing make it noisy at 1x. It reads as speckle rather than skulls.",
+         "where": "interior at 1x in the scene"
+        }
+       ],
+       "minors": [
+        {
+         "problem": "The regular grid repeat is visible.",
+         "where": "skull rows"
+        }
+       ]
+      }
+     ],
+     "pick": "A1",
+     "pick_reason": "A1 is nearly the same design but cleaner, with readable skull and bone bands at 1x. Both need the frame toned to the catacomb wall."
+    }
+   ]
+  },
+  "opus-b": {
+   "items": [
+    {
+     "item": "earth.ore_vein",
+     "candidates": [
+      {
+       "id": "A1",
+       "majors": [
+        {
+         "problem": "Reads as loose boulders stuck onto the wall, not ore inside the rock. Each cluster is a rounded nodule with its own lit top and a dark rim all the way round, which is the same language as the Beodeul floor ore boulder prop. It does not read as a seam in the wall face.",
+         "where": "all four decals, most visible in the 2x scene"
+        },
+        {
+         "problem": "The rims are near-black blue-grey. Beodeul uses dark edges in the material's own tone, so the clusters look outlined and sticker-like against the muted green-grey cave wall.",
+         "where": "outer edges of every cluster"
+        }
+       ],
+       "minors": [
+        {
+         "problem": "The gold is a flat saturated yellow-orange with about 2 steps. Highlights are blobby rather than glinting facets.",
+         "where": "gold 2x2 and gold 1x1"
+        },
+        {
+         "problem": "The cool white-blue iron sits outside the wall palette and looks like ice or crystal.",
+         "where": "iron 2x2"
+        }
+       ]
+      },
+      {
+       "id": "A2",
+       "majors": [],
+       "minors": [
+        {
+         "problem": "At 1x the iron vein is barely visible against the wall. Its grey and white are too close to the wall's highlight tones, so it is hard to tell apart from wall cracks.",
+         "where": "iron 2x2 and iron 1x1"
+        },
+        {
+         "problem": "The gold vein is a regular zig-zag of beads, like a chain. Varying its thickness and adding a few seed flecks off the main line would read more like natural ore.",
+         "where": "gold 2x2"
+        },
+        {
+         "problem": "The vein ends stop abruptly with a dark tip pixel, with no taper into the rock.",
+         "where": "ends of every vein"
+        }
+       ]
+      }
+     ],
+     "pick": "A2",
+     "pick_reason": "A2 is the only one that reads as ore embedded in the wall face. A1 reads as boulder props pasted onto the wall, with ink-dark outlines."
+    },
+    {
+     "item": "earth.overgrown",
+     "candidates": [
+      {
+       "id": "A1",
+       "majors": [
+        {
+         "problem": "The heaved slabs are a separate lighter cream with a dark outline all round. They read as a rubble pile set on top of the floor, not as the floor's own flagstones being pushed up. Their seams do not line up with the surrounding flagstone joints.",
+         "where": "raised slabs in the 2x scene"
+        }
+       ],
+       "minors": [
+        {
+         "problem": "The roots are a uniform thick brown band with little shading. Beodeul shows growth as moss and grass in the grout, and none comes out along the neighbouring joints here.",
+         "where": "centre root mass"
+        },
+        {
+         "problem": "The decal is a compact island, so its square 2x2 footprint shows. The edges do not fade into the floor.",
+         "where": "decal boundary"
+        }
+       ]
+      },
+      {
+       "id": "A2",
+       "majors": [
+        {
+         "problem": "A symmetric X-shaped root star with no displaced stones. It reads as a dead shrub, a spider or a standing sapling, not as roots breaking flagstones. The floor under it is undisturbed.",
+         "where": "whole decal"
+        },
+        {
+         "problem": "The roots have dark outlines and are spread evenly in all four directions, like a sticker. Also, because the arms are so even it looks like an upright object rather than something lying flat on the floor.",
+         "where": "root arms"
+        }
+       ],
+       "minors": []
+      }
+     ],
+     "pick": "A1",
+     "pick_reason": "A1 at least conveys that the flagstones were pushed up by roots. A2 reads as a plant prop rather than damage to the floor. A1 still needs its slabs re-toned to the floor stone and lined up with the floor joints."
+    },
+    {
+     "item": "earth.ossuary",
+     "candidates": [
+      {
+       "id": "A1",
+       "majors": [],
+       "minors": [
+        {
+         "problem": "The light grey stone frame does not match the dark green catacomb brick, so the panel reads as a framed picture hung on the wall. It does not look built into the wall.",
+         "where": "frame border on both sizes"
+        },
+        {
+         "problem": "The skull and bone rows repeat exactly every tile. The repeat is visible when two 2-high panels sit side by side.",
+         "where": "2-high variant in the side-by-side scene"
+        },
+        {
+         "problem": "The bone cream is much brighter than the surrounding dark wall, so the panel dominates the scene. Dropping the top highlight one step would help.",
+         "where": "bone highlights"
+        }
+       ]
+      },
+      {
+       "id": "A2",
+       "majors": [
+        {
+         "problem": "The skull packing is too dense and noisy. At 1x it breaks into checkered speckle, so the skulls and long bones are not readable as separate shapes. A1 keeps clear skull rows and bone rows.",
+         "where": "all of the panel interior at 1x"
+        }
+       ],
+       "minors": [
+        {
+         "problem": "Same mismatch as A1: the light grey stone frame does not match the dark green wall.",
+         "where": "frame border"
+        },
+        {
+         "problem": "Triangular stacking repeats strictly, producing a diagonal lattice pattern.",
+         "where": "3-high variant"
+        }
+       ]
+      }
+     ],
+     "pick": "A1",
+     "pick_reason": "A1 is the only one where skulls and bones are readable at 1x. Its problems are polish: the frame material and the rows repeating exactly."
+    }
+   ]
+  },
+  "opus-c": {
+   "items": [
+    {
+     "item": "earth.ore_vein",
+     "candidates": [
+      {
+       "id": "A1",
+       "majors": [
+        {
+         "problem": "The ore is drawn as separate blue-black boulder clusters with their own dark outline and drop shadow, stuck on top of the wall face. They look like loose rock props, not ore set into the wall. The rock colour does not match the green-grey cave wall, so they read as stickers.",
+         "where": "all four decals, most visible in the scene where the 2x2 clusters float on the wall band"
+        }
+       ],
+       "minors": [
+        {
+         "problem": "The gold veins are flat saturated yellow with almost no shading steps. They read as glyphs more than metal glints.",
+         "where": "gold 2x2 and gold 1x1"
+        },
+        {
+         "problem": "The 1x1 pieces are near-copies of one boulder lump from the 2x2 piece, so the shape repeats when several are placed.",
+         "where": "gold 1x1, iron 1x1"
+        }
+       ]
+      },
+      {
+       "id": "A2",
+       "majors": [
+        {
+         "problem": "A thin one-pixel zigzag line of yellow or grey dots does not read as ore at 1x. It looks like a crack or a scratch, especially the iron one, which almost vanishes into the wall. Nothing shows the host rock disturbed by the vein, so there is no seam of rock to carry the ore.",
+         "where": "iron 2x2 and iron 1x1 at 1x; gold 1x1"
+        }
+       ],
+       "minors": [
+        {
+         "problem": "Every vein is the same diagonal stroke, and the 2x2 pieces are just longer versions of the 1x1 pieces. Repeated placements look stamped.",
+         "where": "all four decals"
+        },
+        {
+         "problem": "The pieces do not fill their 2x2 area, leaving mostly empty space.",
+         "where": "gold 2x2, iron 2x2"
+        }
+       ]
+      }
+     ],
+     "pick": "A2",
+     "pick_reason": "A2 is embedded in the wall and keeps the wall's palette, so it is at least the right kind of thing. A1 reads as boulders pasted on the wall in a foreign colour. Both are weak. A2 needs thicker veins with shaded rock around them before it reads as ore."
+    },
+    {
+     "item": "earth.overgrown",
+     "candidates": [
+      {
+       "id": "A1",
+       "majors": [
+        {
+         "problem": "The raised slab chunks have a bright top and a side lip, so they read as separate stones or rubble sitting on top of the floor, not as flagstones the roots have pushed up. The pale white-grey slabs do not match the beige flagstone tone. Shapes are blobby, with a dark ink outline under the roots.",
+         "where": "the two raised slabs at the top of the piece and the dark under-edge, visible in the scene"
+        }
+       ],
+       "minors": [
+        {
+         "problem": "There is very little grass. It is mostly roots plus two slabs, so it under-reads as overgrowth compared with the Beodeul grass and moss references.",
+         "where": "whole piece"
+        },
+        {
+         "problem": "Placed twice, the identical silhouette repeats obviously.",
+         "where": "scene"
+        }
+       ]
+      },
+      {
+       "id": "A2",
+       "majors": [
+        {
+         "problem": "A symmetric branching shape like a tree or starfish lies flat on top of the flagstones. The flagstones are not broken up at all: no cracked or lifted stones and no soil showing. It reads as a sticker of a tiny tree or a dead branch, not roots breaking through the floor.",
+         "where": "entire piece, very clear in the scene"
+        },
+        {
+         "problem": "The edges are dark brown or black ink lines heavier than anything in the Beodeul floor references.",
+         "where": "root outlines"
+        }
+       ],
+       "minors": [
+        {
+         "problem": "The silhouette is identical on each placement, which makes the repeat obvious.",
+         "where": "scene, two placements"
+        }
+       ]
+      }
+     ],
+     "pick": "A1",
+     "pick_reason": "A1 at least shows the floor itself disturbed (lifted slabs plus roots), which is the purpose. A2 is a flat branch sticker with no flagstone breakage. A1 still needs the slabs recoloured to the floor beige and blended in rather than sitting on top."
+    },
+    {
+     "item": "earth.ossuary",
+     "candidates": [
+      {
+       "id": "A1",
+       "majors": [
+        {
+         "problem": "There are no 3/4 top-down cues. The bone wall is a flat front-on panel with a beige frame all around. The panel stops short of the wall top: the cave wall cap shows above it, and it does not run all the way down to the floor. So it reads as a framed picture hung on the wall, not bones stacked into the wall face.",
+         "where": "the frame border and the top edge in both the 3-tile and 2-tile scenes"
+        },
+        {
+         "problem": "The palette is cream and near-black with very high contrast. It does not harmonise with the dark green-grey catacomb bricks, so the panel pops out like a sticker.",
+         "where": "the whole panel against the wall"
+        }
+       ],
+       "minors": [
+        {
+         "problem": "The skull row and long-bone row repeat with a visible period and look stamped in the 3-tile version.",
+         "where": "3-tile piece rows"
+        },
+        {
+         "problem": "The femur rows look like letters or railings at 1x.",
+         "where": "long-bone rows"
+        }
+       ]
+      },
+      {
+       "id": "A2",
+       "majors": [
+        {
+         "problem": "Same framed-panel problem as A1. A grey stone frame encloses a flat panel that sits on the wall instead of replacing the wall face, and it does not reach the cap or the floor.",
+         "where": "the frame on all sides in the scene"
+        }
+       ],
+       "minors": [
+        {
+         "problem": "The skull-and-bone pattern is busy and noisy at 1x. The skulls are smaller and blurred into the bone rows, so they read less clearly as skulls than in A1.",
+         "where": "1x pieces and scene"
+        },
+        {
+         "problem": "The tile repeat is visible in the 3-tile version.",
+         "where": "3-tile piece"
+        }
+       ]
+      }
+     ],
+     "pick": "A2",
+     "pick_reason": "A2's grey stone frame and slightly muted bone tones sit better with the catacomb masonry than A1's beige frame. Both share the framed-panel major. The skulls should run edge to edge into the wall face, with the wall's own top edge kept."
+    }
+   ]
+  },
+  "argon": {
+   "items": [
+    {
+     "item": "earth.ore_vein",
+     "candidates": [
+      {
+       "id": "A1",
+       "majors": [],
+       "minors": [
+        {
+         "problem": "The dark slate-blue rock housing around the veins sits like protruding boulders rather than blending into the olive-green cave wall tone.",
+         "where": "outer stone border of both 2x2 and 1x1 pieces in scene"
+        }
+       ]
+      },
+      {
+       "id": "A2",
+       "majors": [
+        {
+         "problem": "Reads as a floating beaded chain or segmented worm rather than ore embedded in rock, and the 1x1 pieces are too tiny to read as ore at 1x.",
+         "where": "diagonal nugget strips on 2x2 and 1x1 pieces"
+        }
+       ],
+       "minors": []
+      }
+     ],
+     "pick": "A1",
+     "pick_reason": "A1 clearly reads as rich gold and iron ore veins at 1x with Beodeul-matching rock shading, whereas A2 collapses into thin beaded lines."
+    },
+    {
+     "item": "earth.overgrown",
+     "candidates": [
+      {
+       "id": "A1",
+       "majors": [
+        {
+         "problem": "Bakes four small raised stone slabs into the decal that clash with the underlying 16px flagstone grid and read as a raised obstacle rather than a floor overlay.",
+         "where": "four light-beige corner stones across the 2x2 piece"
+        }
+       ],
+       "minors": []
+      },
+      {
+       "id": "A2",
+       "majors": [],
+       "minors": [
+        {
+         "problem": "The root network has a slightly stiff, symmetrical X-shaped silhouette when repeated.",
+         "where": "upper-left and upper-right root branches"
+        }
+       ]
+      }
+     ],
+     "pick": "A2",
+     "pick_reason": "A2 uses a transparent root-and-moss overlay that sits naturally over the existing flagstone seams, while A1's baked-in mini slabs fight the floor grid."
+    },
+    {
+     "item": "earth.ossuary",
+     "candidates": [
+      {
+       "id": "A1",
+       "majors": [],
+       "minors": [
+        {
+         "problem": "Warm tan stone frame clashes with the dark green-grey catacomb brick wall, and the left and right 16px skull columns repeat identically inside the frame.",
+         "where": "outer stone border and left/right halves of the bone niche"
+        }
+       ]
+      },
+      {
+       "id": "A2",
+       "majors": [],
+       "minors": [
+        {
+         "problem": "The left and right 16px columns inside the bone recess repeat the exact same two-skull pattern horizontally.",
+         "where": "interior skull columns of both 3-high and 2-high pieces"
+        }
+       ]
+      }
+     ],
+     "pick": "A2",
+     "pick_reason": "A2's cooler stone frame integrates into the dark catacomb wall and its larger, softer-shaded skulls match the Beodeul bone reference better at 1x."
+    }
+   ]
+  }
+ },
+ "answers_source": "verbatim result blocks of the four blind reviewer agents (opus-a a5c0fef1, opus-b a9a52554, opus-c a0b6931f, argon afefe453)"
+}

@@ -3,8 +3,8 @@ import type { BattleBattlerSnapshot, BattleCapturedMonsterSnapshot, BattleEventS
 import { computeActorLevelUp, computeTechPointLearning, type BattleLevelUpResult } from "@/battle/battleLevelUp";
 import { computeApLearning } from "@/battle/battleEsperAp";
 import { effectiveActorEquipment } from "@/project/equipmentRules";
-import { effectiveActorClassId } from "@/project/sessionClass";
-import { normalizeActorRecord } from "@/project/actorModel";
+import { classLearnedSkillIdsUpToLevel, effectiveActorClassId } from "@/project/sessionClass";
+import { normalizeActorRecord, totalExpForLevel } from "@/project/actorModel";
 import { expForRewardActor, monsterExpPlan, rewardActorIds } from "@/battle/rewardPolicy";
 import { changeGold, type PlaySession } from "@/project/session";
 import { setRelationshipState } from "@/project/relationshipState";
@@ -87,7 +87,11 @@ export function applyBattleRewardsToSession(
     for (const actorId of rewardActorIdList) {
       const actorLevel = session.actorLevels[actorId] ?? 1;
       const actorExp = expForRewardActor(earnedExp, actorLevel, outcome.rewards.enemyLevel, project.system.rewardPolicy);
-      session.actorExperience[actorId] = (session.actorExperience[actorId] ?? 0) + actorExp;
+      // 시작 레벨이 1보다 높거나 중간에 합류한 동료는 누적 경험치가 0(또는 없음)으로 남아 있었다 — 그대로 더하면
+      // 레벨 문턱에 영영 못 닿아 Lv6 파티가 보스를 잡아도 오르지 않았다(폴른 스타 가혹 검수). 현재 레벨의 바닥으로 올린 뒤 더한다.
+      const record = project.database.actors.find((entry) => entry.id === actorId);
+      const floor = record ? totalExpForLevel(normalizeActorRecord(record).expCurve, actorLevel) : 0;
+      session.actorExperience[actorId] = Math.max(session.actorExperience[actorId] ?? 0, floor) + actorExp;
       if (processed.has(actorId)) continue;
       processed.add(actorId);
       const levelUp = applyActorLevelUp(session, project, actorId);
@@ -386,10 +390,13 @@ export function applyActorLevelUp(session: PlaySession, project: Project, actorI
   }
 
   // 새로 배우는 직업/레벨 스킬을 세션 스킬 목록에 추가(중복 없이).
-  if (result.learnedSkillIds.length > 0) {
+  // 직업 습득표가 주는 기술은 빼다 — 배틀러가 직업에서 매번 다시 계산한다(세션에 넣으면 직업을 바꿔도 남는다).
+  const classTaught = new Set(classLearnedSkillIdsUpToLevel(project, effectiveActorClassId(project, session, actorId) ?? "", result.toLevel));
+  const sessionLearned = result.learnedSkillIds.filter((skillId) => !classTaught.has(skillId));
+  if (sessionLearned.length > 0) {
     const known = session.actorSkillIds[actorId] ?? [];
     const merged = [...known];
-    for (const skillId of result.learnedSkillIds) {
+    for (const skillId of sessionLearned) {
       if (!merged.includes(skillId)) merged.push(skillId);
     }
     session.actorSkillIds[actorId] = merged;

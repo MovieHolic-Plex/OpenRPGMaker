@@ -5,6 +5,7 @@ import type { StepResult } from "@/player/interpreter/types";
 import { characterSpriteY } from "@/player/characterDepth";
 import { runtimeMapWorldScale } from "@/player/runtimeViewScale";
 import { screenOverlayHost } from "@/player/playSceneScreenEffects";
+import { syncDoors } from "@/player/playSceneDoors";
 import type { PlaySceneContext } from "@/player/playSceneTypes";
 import {
   isEmptySpriteLook,
@@ -363,11 +364,30 @@ function letterboxBar(host: HTMLElement, edge: "top" | "bottom"): HTMLElement {
   return bar;
 }
 
+/**
+ * 대사창이 레터박스 띠 안쪽(보이는 그림 위)에 서도록 띠의 논리 px 높이를 무대에 알린다.
+ * CSS(playSurface.css 「레터박스 안쪽」)가 `--runtime-letterbox-px` 에서 크롭 여백을 뺀 만큼만 창을 띠 밖으로 민다.
+ * 무대 크기가 바뀌어도 맞도록 퍼센트가 같아도 높이를 다시 잰다(값이 같으면 쓰지 않는다).
+ */
+function syncLetterboxInset(host: HTMLElement, percent: number): void {
+  if (percent <= 0) {
+    if (host.dataset.letterbox === undefined) return;
+    delete host.dataset.letterbox;
+    host.style.setProperty("--runtime-letterbox-px", "0px");
+    return;
+  }
+  const px = `${Math.round((host.clientHeight * percent) / 100)}px`;
+  if (host.dataset.letterbox === String(percent) && host.style.getPropertyValue("--runtime-letterbox-px") === px) return;
+  host.dataset.letterbox = String(percent);
+  host.style.setProperty("--runtime-letterbox-px", px);
+}
+
 function syncLetterbox(scene: PlaySceneContext): void {
   const screen = scene.session.m2Runtime?.screen;
   const percent = normalizeLetterboxPercent(screen?.letterbox);
   const host = screenOverlayHost(scene);
   if (!host) return;
+  syncLetterboxInset(host, percent);
   if (letterboxShown.get(host) === percent) return;
   if (percent === 0 && !host.querySelector("[data-testid='runtime-letterbox-top']")) {
     letterboxShown.set(host, 0);
@@ -391,6 +411,7 @@ export function updateFieldStaging(scene: PlaySceneContext): void {
   const now = scene.time?.now ?? 0;
   for (const [sprite, look] of lookTargets(scene)) applyLook(scene, sprite, look, now);
   syncLetterbox(scene);
+  syncDoors(scene);
 }
 
 /** 테스트·QA 가 파티클 그림 없이 레시피를 대조할 수 있게 내보낸다. */

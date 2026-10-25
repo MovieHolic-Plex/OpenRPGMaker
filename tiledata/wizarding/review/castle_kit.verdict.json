@@ -1,6 +1,6 @@
 {
  "module": "castle_kit",
- "sealed": "2026-10-07T10:21:05.297415+09:00",
+ "sealed": "2026-10-23T02:09:47.103911+09:00",
  "reviewer": "sonnet adversarial",
  "pieces": {
   "wz-castle-wall-n": {
@@ -185,13 +185,13 @@
   },
   "wz-castle-stair-up": {
    "verdict": "PASS",
-   "hash": "9ffd31fc3ef701edf71ead47eba18c91eeb7498e2240b3a9136efa96401f6500",
-   "reason": "밝은 디딤판·어두운 챌면이 번갈아 오르는 돌계단으로 읽힘, 2×2, F."
+   "hash": "32a452cdadd33eb075e27e1c315311a25c135eb1761af053e144e5b4c6a136dc",
+   "reason": "2026-10-23 다시 그림(원근 디딤판·얇은 챌판/계단통 얇은 내림 단). Opus 적대 검수 r2 3명 중 다수 major 0 — 올라가는/내려가는 계단으로 1배·3배에서 읽힘, 3/4 윗면 일관, wizarding_world 화풍. {'wz-clock-stair': 'object-gate PASS (wizarding_world refs)', 'wz-castle-stair-up': 'object-gate PASS (wizarding_world refs)', 'wz-hd-stairs-down': 'object-gate PASS (wizarding_world refs)', 'wz-owl-stair-down': 'object-gate PASS (wizarding_world refs, kind flat)', 'wz-owl-stair-up': 'object-gate REFER → fresh Argon adversarial PASS → delegated allow 2026-10-23', 'wz-castle-stair-down': 'object-gate REFER (style split) → fresh Argon adversarial PASS → delegated "
   },
   "wz-castle-stair-down": {
    "verdict": "PASS",
-   "hash": "a62b2d93454f43adcfab2dc9df7f6a0ee1d3a108e3c8bd5431846cc0ce2f34b6",
-   "reason": "위쪽이 어둠으로 내려가는 계단으로 읽혀 오름과 구분됨, F."
+   "hash": "dbe1c702815a12cf87c8e37a1d44041c48767f11a4790b0d2c8470438512adb9",
+   "reason": "2026-10-23 다시 그림(원근 디딤판·얇은 챌판/계단통 얇은 내림 단). Opus 적대 검수 r2 3명 중 다수 major 0 — 올라가는/내려가는 계단으로 1배·3배에서 읽힘, 3/4 윗면 일관, wizarding_world 화풍. {'wz-clock-stair': 'object-gate PASS (wizarding_world refs)', 'wz-castle-stair-up': 'object-gate PASS (wizarding_world refs)', 'wz-hd-stairs-down': 'object-gate PASS (wizarding_world refs)', 'wz-owl-stair-down': 'object-gate PASS (wizarding_world refs, kind flat)', 'wz-owl-stair-up': 'object-gate REFER → fresh Argon adversarial PASS → delegated allow 2026-10-23', 'wz-castle-stair-down': 'object-gate REFER (style split) → fresh Argon adversarial PASS → delegated "
   },
   "wz-castle-floor-stair": {
    "verdict": "PASS",

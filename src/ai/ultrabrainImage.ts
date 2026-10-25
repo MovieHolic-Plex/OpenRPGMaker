@@ -3,6 +3,7 @@ import { drawMapTileLayer } from "@/editor/mapTileDraw";
 import { canvasDataUrl, createCanvas, drawCheckerBackground, keyedTilesetImage, loadTilesetImage, tileDrawSize } from "./toolImageCanvas";
 import { drawRegionEventSprites, resolveRegionEventSprites } from "./toolImageEventSprites";
 import { mapVisualEvidenceUnavailable } from "./mapVisualEvidence";
+import { drawMapBackgroundPreview } from "./mapBackgroundPreview";
 
 export const HARMONY_IMAGE_MAX_EDGE = 1536;
 
@@ -20,11 +21,14 @@ export async function renderHarmonyMapImages(project: Project, map: GameMap) {
   const image = keyedTilesetImage(tileset, await loadTilesetImage(tileset));
   const { context, canvas } = pair;
   drawCheckerBackground(context, canvas.width, canvas.height, Math.max(4, size / 2));
+  const bgNotes: string[] = [];
+  const bgLayers = map.background ? await drawMapBackgroundPreview(context, map, project, size, tileset.tileSize, canvas.width, canvas.height, bgNotes) : 0;
   drawMapTileLayer(context, image, map, tileset, "lower", size / tileset.tileSize);
   await drawRegionEventSprites(context, events.sprites.filter(event => event.priority === "below"));
   drawMapTileLayer(context, image, map, tileset, "upper", size / tileset.tileSize);
   await drawRegionEventSprites(context, events.sprites.filter(event => event.priority !== "below"));
   const dataUrl = canvasDataUrl(canvas, HARMONY_IMAGE_MAX_EDGE);
   if (!dataUrl) throw new Error("Ultrabrain: 맵 이미지를 인코딩하지 못했습니다.");
-  return [{ dataUrl, label: `전체 맵 (0,0) ${map.width}×${map.height}` }];
+  const bgLabel = bgLayers ? ` · 맵 배경 ${bgLayers}층 첫 프레임(빈 칸으로 비침, 스크롤 없음)` : "";
+  return [{ dataUrl, label: `전체 맵 (0,0) ${map.width}×${map.height}${bgLabel}${bgNotes.length ? ` · ${bgNotes.join(", ")}` : ""}` }];
 }

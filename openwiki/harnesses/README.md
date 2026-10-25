@@ -54,6 +54,7 @@ npm run harness -- <id> <단계> [옵션]    # src/harnesses/<id>/node/cli.ts �
 
 - [dungeon-chipset](dungeon-chipset.md) — 공용 던전·동굴 칩셋(beodeul_dungeon · 버들항과 같은 oprn-atlas 계열) 손 도트 후보·관문·사람 고르기
 - [pokemon-character-casting](pokemon-character-casting.md) — native NPC 후보의 사용자 Allow/Deny·SQLite 판정·현재 승인에 묶인 출력과 공용 등록.
+- [cast-portrait](cast-portrait.md) — 대사 흉상을 기존 캐스트와 같은 경로·규격으로: 프로젝트별 캐스트 규격·축소 금지·기계 검사·캐스트 줄과 실제 대사창·눈가림 「같은 작가?」 판정·사람 선택(해시)
 
 
 ## 다른 실행기와 공유하는 하네스 목록

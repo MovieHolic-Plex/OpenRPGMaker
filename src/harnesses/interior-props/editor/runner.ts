@@ -9,9 +9,9 @@ import type {
   AnchorSample, DrawContext, Grid, ItemDefinition, Palette, Rgba, RgbaImage, WorkshopEnv, WorkshopItem, WorkshopRunner,
 } from "@/harnesses/_core/workshop/types";
 import { gateAdviceMessages, parseGateAdvice } from "@/harnesses/_core/workshop/gateAdvice";
-import { REF_DRAW_NOTE, workshopRefDescribe } from "@/harnesses/_core/workshop/referencePrompt";
+import { REF_DRAW_NOTE, refCells, workshopRefDescribe } from "@/harnesses/_core/workshop/referencePrompt";
 import {
-  kitValue, loadAnchors, OG_DIRECTIONS, OG_LOOKS, ogCheck, ogDrawMessages, ogLookMessage, ogReview, type OgAnchors, type OgStyle,
+  aspectOf, aspectSheet, kitValue, loadAnchors, OG_DIRECTIONS, OG_LOOKS, ogCheck, ogDrawMessages, ogLookMessage, ogReview, type OgAnchors, type OgStyle,
 } from "@/harnesses/_core/workshop/objectGenFlow";
 import { interiorGate, interiorHardCheck, parseInteriorVerdict } from "./checks";
 import { cropCells, FLAT_KINDS, itemFromDefinition, itemFromSpec, SHEET_PATH, specObjects, VIEW_FAIL } from "./items";
@@ -169,6 +169,15 @@ export function createInteriorRunner(): WorkshopRunner {
     },
     // 참고 그림(object-gen ref 단계)은 새 기물만 — 있는 그림을 고치는 판은 지금 그림이 모양 기준이다.
     referenceDescribe: (item) => (item.isNew ? workshopRefDescribe(item) : null),
+    // 새 기물 참고 그림 견본: object-gen 견본(손 도트 실내 v5 큰 가구)을 물체 비율 캔버스에(원본 exemplar_sheet aspect).
+    async referenceAnchor(item, env) {
+      if (!og(item)) return null;
+      const anchors = await anchorsFor(env);
+      if (!anchors?.examples.length) return null;
+      const cells = refCells(item);
+      const sheet = aspectSheet(anchors.examples.map((anchor) => anchor.image), aspectOf(cells.w, cells.h), BACKGROUND);
+      return sheet ? env.encodePng(sheet) : null;
+    },
     // 3/4 관문 조언 배지(후보마다 호출 1번 더). 굽기는 막지 않는다.
     async adviseMessages(item, grid, palette, env) { return gateAdviceMessages(item, grid, palette, env); },
     parseAdvice: parseGateAdvice,

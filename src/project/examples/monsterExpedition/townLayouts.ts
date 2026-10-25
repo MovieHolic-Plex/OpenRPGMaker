@@ -689,3 +689,156 @@ export function volcanoRouteSketch(index: number): TownSketch {
   const [rows, flip]: readonly [readonly string[], boolean] = ([[ASH_ROUTE_B, false], [ASH_ROUTE_C, false], [ASH_ROUTE_B, true], [ASH_ROUTE_C, true], [START_ROUTES.volcano!.sketch.rows, true]] as const)[(index - 1) % 5]!;
   return variantSketch(rows, [], {}, flip ? 1 : 0, { stamps: 6, props: 14, big: 9 }, index);
 }
+
+// ─── 시작 마을 판을 판마다 다르게 (2026-10-24 v2 다양성 검수 「몬스터 마을은 늘 같은 19맵」) ───
+// 크기·길 짜임·건물 자리와 킷·연못·나무를 손잡이(모델이 고르면 그대로)와 씨앗으로 정한다. 문 넷(집·연구소·센터·도구점)은 늘 같다 —
+// 문이 더 있으면 들어갈 방이 없는 문이 생긴다. 연구소는 큰 박공(gable_*) 킷이라 world.ts 가 그 문을 연구소로 잇는다.
+export type HomeTownSize = "small" | "medium" | "large";
+export type HomeTownStreets = "cross" | "ladder" | "loop" | "jog";
+export interface HomeTownLayout { readonly size?: HomeTownSize; readonly streets?: HomeTownStreets; readonly pond?: boolean; readonly seed?: number }
+export const HOME_TOWN_SIZES: readonly HomeTownSize[] = ["small", "medium", "large"];
+export const HOME_TOWN_STREETS: readonly HomeTownStreets[] = ["cross", "ladder", "loop", "jog"];
+
+function townRng(seed: number): () => number {
+  let a = (Math.imul(seed, 0x9e3779b1) + 0x51ed27) >>> 0;
+  return () => { a = (a + 0x6d2b79f5) >>> 0; let t = a; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
+}
+export function homeTownSketch(layout: HomeTownLayout = {}): { sketch: TownSketch; used: Required<HomeTownLayout> } {
+  const seed = layout.seed ?? 0;
+  const r = townRng(seed);
+  const pick = <T>(xs: readonly T[]): T => xs[Math.floor(r() * xs.length)]!;
+  const size = layout.size && HOME_TOWN_SIZES.includes(layout.size) ? layout.size : pick(HOME_TOWN_SIZES);
+  const streets = layout.streets && HOME_TOWN_STREETS.includes(layout.streets) ? layout.streets : pick(HOME_TOWN_STREETS);
+  const pond = typeof layout.pond === "boolean" ? layout.pond : r() < 0.5;
+  // 길 자리가 큰 연구소(7×7) 자리를 막으면 다른 길 자리로 다시 짠다. 그래도 안 되면 한 치수 큰 마을로.
+  const sizes = [size, ...HOME_TOWN_SIZES.slice(HOME_TOWN_SIZES.indexOf(size) + 1)];
+  for (const sz of sizes) for (let k = 0; k < 40; k++) {
+    const sketch = homeTownAttempt(sz, streets, pond, seed + k * 7919);
+    if (sketch) return { sketch, used: { size: sz, streets, pond, seed } };
+  }
+  throw Error(`homeTownSketch: no layout for ${size}/${streets} (seed ${seed})`);
+}
+
+function homeTownAttempt(size: HomeTownSize, streets: HomeTownStreets, pond: boolean, salt: number): TownSketch | null {
+  const r = townRng(salt + 1);
+  const pick = <T>(xs: readonly T[]): T => xs[Math.floor(r() * xs.length)]!;
+  const [W, H] = ({ small: [26, 22], medium: [30, 26], large: [34, 30] } as const)[size];
+  const g: string[][] = Array.from({ length: H }, (_, y) => Array.from({ length: W }, (_, x) => (y < 3 || y >= H - 3 || x < 2 || x >= W - 2 ? "#" : ".")));
+  const cx = W >> 1;
+  const inside = (x: number, y: number) => x >= 2 && x < W - 2 && y >= 3 && y < H - 3;
+  const path = (x0: number, y0: number, x1: number, y1: number) => { for (let y = Math.min(y0, y1); y <= Math.max(y0, y1); y++) for (let x = Math.min(x0, x1); x <= Math.max(x0, x1); x++) if (y >= 0 && y < H && x >= 0 && x < W) g[y]![x] = "="; };
+  // 북·남 출구(가운데 두 칸) — world.ts connect 가 (w/2, 2) 근처를 문으로 고른다.
+  path(cx - 1, 0, cx, 2); path(cx - 1, H - 3, cx, H - 1);
+  const rowsAt: number[] = [];
+  const top = 3, bot = H - 4;
+  if (streets === "cross") {
+    const y = top + 4 + Math.floor(r() * (bot - top - 9));
+    path(cx - 1, top, cx, bot); path(4, y, W - 5, y + 1); rowsAt.push(y);
+  } else if (streets === "ladder") {
+    const y1 = top + 3 + Math.floor(r() * 3), y2 = bot - 4 - Math.floor(r() * 3);
+    path(cx - 1, top, cx, bot); path(4, y1, W - 5, y1 + 1); path(4, y2, W - 5, y2 + 1); rowsAt.push(y1, y2);
+  } else if (streets === "loop") {
+    const y1 = top + 3 + Math.floor(r() * 2), y2 = bot - 3 - Math.floor(r() * 2), x1 = 4 + Math.floor(r() * 2), x2 = W - 6 - Math.floor(r() * 2);
+    path(cx - 1, top, cx, y1); path(cx - 1, y2, cx, bot);
+    path(x1, y1, x2 + 1, y1 + 1); path(x1, y2, x2 + 1, y2 + 1); path(x1, y1, x1 + 1, y2 + 1); path(x2, y1, x2 + 1, y2 + 1); rowsAt.push(y1, y2);
+  } else {
+    // 꺾인 길: 북쪽에서 내려와 옆으로 비켰다가 다시 가운데로 — 광장 겸 큰 길이 한쪽으로 치우친다.
+    const dx = (r() < 0.5 ? -1 : 1) * (4 + Math.floor(r() * 3));
+    const y1 = top + 3 + Math.floor(r() * 3), y2 = bot - 3 - Math.floor(r() * 3);
+    path(cx - 1, top, cx, y1 + 1); path(Math.min(cx - 1, cx - 1 + dx), y1, Math.max(cx, cx + dx), y1 + 1);
+    path(cx - 1 + dx, y1, cx + dx, y2 + 1); path(Math.min(cx - 1, cx - 1 + dx), y2, Math.max(cx, cx + dx), y2 + 1); path(cx - 1, y2, cx, bot);
+    rowsAt.push(y1, y2);
+  }
+  const free = (x: number, y: number, w: number, h: number, pad = 1) => {
+    for (let yy = y - pad; yy < y + h + pad; yy++) for (let xx = x - pad; xx < x + w + pad; xx++) {
+      if (yy < 3 || yy >= H - 3 || xx < 2 || xx >= W - 2) { if (yy >= y && yy < y + h && xx >= x && xx < x + w) return false; continue; }
+      const c = g[yy]![xx]!;
+      const inFoot = yy >= y && yy < y + h && xx >= x && xx < x + w;
+      if (inFoot ? c !== "." : c !== "." && c !== "=") return false;   // 둘레 한 칸은 길이어도 된다(길가 집)
+    }
+    return true;
+  };
+  // 북쪽 출구 둘레(문 둘·표지판 자리)는 비워 둔다.
+  const keep = new Set<string>();
+  for (let y = 3; y <= 5; y++) for (let x = cx - 3; x <= cx + 2; x++) keep.add(`${x},${y}`);
+  const clearOfKeep = (x: number, y: number, w: number, h: number) => { for (let yy = y; yy < y + h; yy++) for (let xx = x; xx < x + w; xx++) if (keep.has(`${xx},${yy}`)) return false; return true; };
+  const kits: [string, number, number][] = [];
+  const mark = (x: number, y: number, w: number, h: number) => { for (let yy = y; yy < y + h; yy++) for (let xx = x; xx < x + w; xx++) g[yy]![xx] = "K"; };
+  /** 문 앞(below 줄)에서 길까지 ㄴ자 샛길: 아래로 0~4칸 내려간 뒤 옆으로 길을 만날 때까지(빈 땅만 지난다). 칸 목록 또는 null. */
+  const spurTo = (door: number, below: number): [number, number][] | null => {
+    let best: [number, number][] | null = null;
+    for (let down = 0; down <= 4; down++) {
+      const yy = below + down;
+      if (yy >= H - 3) break;
+      const col: [number, number][] = [];
+      let ok = true;
+      for (let y = below; y <= yy; y++) { const c = g[y]![door]!; if (c === "=") { if (!best || col.length < best.length) best = col.slice(); ok = false; break; } if (c !== ".") { ok = false; break; } col.push([door, y]); }
+      if (!ok) continue;
+      for (const dir of [-1, 1]) {
+        const run: [number, number][] = [];
+        for (let x = door + dir; x >= 2 && x < W - 2; x += dir) {
+          const c = g[yy]![x]!;
+          if (c === "=") { const cells = [...col, ...run]; if (!best || cells.length < best.length) best = cells; break; }
+          if (c !== ".") break;
+          run.push([x, yy]);
+        }
+      }
+    }
+    return best;
+  };
+  const place = (name: string, w: number, h: number): boolean => {
+    const cands: [number, number, number][] = [];
+    for (let y = 3; y + h <= H - 4; y++) for (let x = 2; x + w <= W - 2; x++) {
+      if (!free(x, y, w, h) || !clearOfKeep(x, y, w, h)) continue;
+      const door = x + (w >> 1), below = y + h;
+      const spur = spurTo(door, below);
+      if (!spur || spur.length > 9) continue;
+      cands.push([x, y, spur.length + r() * 4]);
+    }
+    if (!cands.length) return false;
+    cands.sort((p, q) => p[2] - q[2]);
+    const [x, y] = cands[Math.floor(r() * Math.min(5, cands.length))]!;
+    kits.push([name, x, y]); mark(x, y, w, h);
+    for (const [sx, sy] of spurTo(x + (w >> 1), y + h) ?? []) g[sy]![sx] = "=";   // 문 앞에서 길까지 샛길
+    return true;
+  };
+  const labKit = pick(["gable_a", "gable_b"]);
+  const houseKit = pick(["house_a", "house_b", "house_c", "house_d", "house_e", "house_f", "two_a", "two_b"]);
+  const houseH = houseKit.startsWith("two_") ? 6 : 4;
+  for (const [name, w, h] of r() < 0.5
+    ? [[labKit, 7, 7], [houseKit, 4, houseH], ["center", 4, 4], ["mart", 4, 4]] as const
+    : [[labKit, 7, 7], ["center", 4, 4], [houseKit, 4, houseH], ["mart", 4, 4]] as const) {
+    if (!place(name, w, h)) return null;
+  }
+  // 우편함: 집 왼쪽 옆.
+  const home = kits.find(([n]) => n === houseKit)!;
+  const mbx = home[1] - 1, mby = home[2] + houseH - 1;   // 집 왼쪽 벽 끝 — 문 앞 칸은 비워 둔다(문 자리는 킷마다 다르다)
+  if (inside(mbx, mby) && g[mby]![mbx] === ".") g[mby]![mbx] = "M";
+  // 연못(물 오토타일): 빈 자리 한 곳.
+  if (pond) {
+    const pw = 4 + Math.floor(r() * 3), ph = 3 + Math.floor(r() * 2);
+    const spots: [number, number][] = [];
+    for (let y = 3; y + ph <= H - 3; y++) for (let x = 2; x + pw <= W - 2; x++) if (free(x, y, pw, ph) && clearOfKeep(x, y, pw, ph)) spots.push([x, y]);
+    if (spots.length) { const [x, y] = pick(spots); for (let yy = y; yy < y + ph; yy++) for (let xx = x; xx < x + pw; xx++) g[yy]![xx] = "~"; }
+  }
+  // 나무(2×4)·꽃밭·꽃·덤불: 남은 빈 자리에 씨앗으로.
+  const trees = 2 + Math.floor(r() * 4);
+  for (let i = 0, tries = 0; i < trees && tries < 200; tries++) {
+    const x = 2 + Math.floor(r() * (W - 5)), y = 3 + Math.floor(r() * (H - 9));
+    if (!free(x, y, 2, 4) || !clearOfKeep(x, y, 2, 4)) continue;
+    g[y]![x] = r() < 0.6 ? "T" : "U"; for (let yy = y; yy < y + 4; yy++) for (let xx = x; xx < x + 2; xx++) if (!(yy === y && xx === x)) g[yy]![xx] = "_"; i++;
+  }
+  const beds = 1 + Math.floor(r() * 3);
+  for (let i = 0, tries = 0; i < beds && tries < 200; tries++) {
+    const x = 2 + Math.floor(r() * (W - 6)), y = 3 + Math.floor(r() * (H - 7));
+    if (!free(x, y, 3, 2) || !clearOfKeep(x, y, 3, 2)) continue;
+    for (let yy = y; yy < y + 2; yy++) for (let xx = x; xx < x + 3; xx++) g[yy]![xx] = "F"; i++;
+  }
+  for (let i = 0, tries = 0; i < 8 + W / 4 && tries < 400; tries++) {
+    const x = 2 + Math.floor(r() * (W - 4)), y = 3 + Math.floor(r() * (H - 6));
+    if (g[y]![x] !== "." || keep.has(`${x},${y}`) || !free(x, y, 1, 1)) continue;
+    g[y]![x] = pick(["f", "f", "f", "b", "o"]); i++;
+  }
+  for (const row of g) for (let x = 0; x < W; x++) if (row[x] === "K" || row[x] === "_") row[x] = ".";
+  return { ground: GRASS, legend: OVERWORLD, kits, rows: g.map((row) => row.join("")) };
+}

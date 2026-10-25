@@ -83,6 +83,10 @@ GitHub `ubuntu-latest` 도 16GB 라 같은 1×12288 예산이 걸린다. 그 한
 `ci-full.yml` 은 vitest 를 `--shard 1/4`…`4/4` 로 러너 네 대에 나눈다. 힙은 그대로 12GB 다.
 샤드는 자기 실패 파일만 기준선과 대조한다. `--save-baseline` 과 `--shard` 는 함께 쓸 수 없다.
 
+PR 브랜치의 전체 vitest 는 그 브랜치로 수동 실행한다: `gh workflow run ci-full.yml --ref <브랜치>`.
+수동 실행은 브랜치마다 concurrency 그룹이 따로(`ci-full-<브랜치>`)라 main 푸시에 밀려 취소되지 않는다.
+main 푸시·야간 스케줄은 `ci-full-main` 하나를 같이 쓴다(2026-10-24, run 40055350951 이 main 푸시에 밀려 취소된 뒤).
+
 CSS 축은 그 한 잡이 vitest 에서 240분을 넘겨 한 번도 도달하지 못했다. 기준선은 파일 285장 시절에
 멈춰 있었고, 현재 트리는 408장이라 예산·표면·승자·실사용·죽은 클래스 래칫이 전부 빨갰다.
 2026-10-12 에 그 바닥을 현재 트리로 다시 찍었다. 고아 두 장(`tileset-ai-workspace.css`,
@@ -1303,6 +1307,7 @@ Pick validation based on the touched boundary:
 - 조수 패널 레이아웃 회귀는 `test/e2e/assistant-single-dock.spec.ts` 가 지킨다(2026-08-31, 구 `test/e2e/chat-dock-switch.spec.ts` 대체 — 도크 축 glass/side/float 이 삭제돼 「전환」이라는 주제 자체가 없어졌다). 이 스펙이 보는 것: 1600/1100/900 폭과 새로고침에서 입력줄 캡슐이 편집 캔버스 안에 있는지, 로그 마운트가 유리 껍데기 하나이고 상승 오버레이·휘발 존이 없는지(`.ai-chat-log` 는 정확히 1개), 온도 선택이 아이콘 우선이고 닫히는지, 접기↔복귀가 `oprn:ai-panel-collapsed` 로 왕복하는지, 그리고 `chat-side-panel`·`chat-dock-toggle`·`ai-dock-mode-btn`·`ai-chat-detach` 가 **0건**인지. 폭 헬퍼 단위 커버리지는 레이아웃/패널 테스트에 있다. 자동 펼침/접힘(맵 우선 기본 접힘, 턴에서 펼침, 자동 펼침이었으면 유휴 뒤 재접힘)은 `test/aiPanelAutoExpand.test.ts` + `test/aiPanelChrome.test.ts` 가 본다. 조수 UI 를 건드렸으면 태스크 오너가 스펙 작성만 요청한 게 아닌 한 이 묶음을 돌려라.
 - The genre-neutral authoring launcher and collapsed journey chip are covered by `test/authoringTasks.test.ts` and `test/authoringJourney.test.ts`; command reuse, loaded project identity, and player-boot evidence are covered by `test/commandRegistry.test.ts`, `test/loadNewRemoteProject.test.ts`, and `test/selectedEventTestModal.test.ts`. `test/quickBattleAuthoringGate.test.ts` drives the database basic-record button and proves broken references create no Quick Battle modal, session, or runtime. A Test click or synchronous `renderPlayer` return is not completion evidence. Passing coverage must observe actual `PlayScene` readiness, bind the success event to the current project fingerprint, invalidate it after authored changes, fail closed for stale/broken-reference events, keep manual acknowledgement distinct from completion, and exercise the exact issue list/Data repair path. `test/e2e/authoring-journey.spec.ts` proves the journey stays a corner chip, the topbar launcher still reaches Data, and the open popover keeps the 1024px font/target/clipping contract.
 - Runtime/player/battle changes: run focused unit tests plus the smallest e2e or browser scenario that proves the behavior in play mode.
+- **Runtime asset existence (`npm run check:runtime-assets`, also first step of `build:player` and a ci-fast step):** no browser, ~1 min. Fails when a declared runtime file is missing under `public/`: the player inventory `src/player/runtimeAssets.json`, every `BUNDLED_IMAGE_ASSETS` path, public files the runtime CSS references by `url(/assets/...)` (must also be declared in the inventory, or the export does not ship them), runtime-played ids from source tables (`PLAYER_RUNTIME_AUDIO_RESOURCE_IDS`, `retroTimelineSoundIds()`, retro pixel-fx), and the web-export / release-dependency lists of a blank project, a retro-battle blank project and `editor-authored-demo-v3.json`. Art deleted on purpose (2026-10-07 copyright purge) is listed in `src/assets/retiredAssets.ts`: export skips those references and reports them (`summary.skippedRetiredResources`, toast warning) instead of failing. 2026-10-23: every Web ZIP export failed because the deleted combined-town chipset was still declared; the same sweep found Galmuri fonts, emerald battle backdrops, retro battle sounds/pixel-fx and paired dialogue faces missing from exports, and absolute `/assets/` URLs (CSS + battle scenery/trainer art) that 404 when an export is hosted under a sub-path (`rebaseCssAssetUrls.ts`).
 - **Export gameplay acceptance:** start an isolated normal dev server, then run `npm run qa:export -- --editor-url http://127.0.0.1:<port> --out <evidence-dir>`. `scripts/qa-export-playability.mts` imports a test-only deterministic copy of `editor-authored-demo-v3.json` through the real file chooser and downloads ZIP/HTML through the actual project menu. The editor session must have remote persistence disabled; the harness blocks remote writes and never modifies the source fixture.
 - The downloaded ZIP is served at both an origin root and `/games/demo/` with no root-resource fallback; HTML runs via `file://` with HTTP blocked. Required checks are keyboard movement, NPC quest choice, authored battle victory, decoded party images/idle strips, decoded and playing BGM, map transfer, manual save, page reload and manual slot restoration. It also rejects HTML substituted for JS and a missing required image, and opens/closes editor Test Play. Results and cleanup receipts are in `results.json` with named screenshots; neither HTTP 200 nor map-entry-only evidence passes this gate.
 - Use `npm run typecheck:export-qa` for the script's Node/browser type boundary. Focused contracts include `exportAssetResolution`, `webExportBattleDependencies`, `webExportCatalogAudio`, `standaloneExport`, `standaloneCli`, `devPlayerBundles` and `playerManifestContract`; `node --test test/devPlayerDelivery.test.mjs` exercises cold normal-dev delivery on a private cache and ephemeral port.
@@ -1584,13 +1589,74 @@ Playwright 의 `locator.click()` 은 누르기 전에 `scrollIntoViewIfNeeded` �
 `@/project/store`, 내보내기 플레이어는 `exportProjectStoreShim` 을 쓰므로 **편집기
 경로로 하는 런타임 QA 는 출하물을 검증하지 않는다.**
 
+### 바라보는 방향 기록 — `recordUntilJs` (2026-10-21)
+
+대사·연출 장면의 «누가 누구를 보는가» 는 비트 끝 한 장으로는 안 보인다. `recordUntilJs` op 은 `pressUntilJs` 처럼 넘기되
+다 나온 대사마다 한 장, 인물이 걷는 동안 `frameMs`(기본 200ms)마다 한 장을 `<out>/<dir>/NNNN.png` 로 찍고,
+그 순간의 배우 배치(맵·카메라·주인공 칸/방향/보임·보이는 이벤트 칸/방향(스프라이트 프레임 줄에서 읽음)/불투명도)를
+`actors.jsonl` 에 한 줄씩 적는다. 선택지가 뜨면 멈추고 부른 쪽이 고른다.
+
+```bash
+FL_PATH=A FL_VP=480x270 node scripts/qa/runtime/fl-play.mjs --scenario first-love-facing --checkpoint d1-arrive --parallel 1 --out verify-shots/runtime-qa/fl-facing-after-A
+node scripts/qa/runtime/facing-audit.mjs verify-shots/runtime-qa/fl-facing-after-A   # 대사 줄마다 화자·곁 사람 방향 판정
+```
+
+`facing-audit.mjs` 는 화자가 무대의 누구도 보지 않거나(6칸 안), 곁(2칸 안) 사람이 화자·주인공·화자가 보는 상대 어느 쪽도 보지 않으면 적는다.
+기계 판정은 시작점일 뿐 — 탁자 회의·뒷모습 연출은 프레임을 눈으로 본다. 정적 짝은 `scene-speaker-faces-away`(`openwiki/editor-validation.md`).
+
+### 런타임 QA 체크포인트 — 늦은 단계는 타이틀부터 다시 하지 않는다 (2026-10-21, hard rule)
+
+**VQA·런타임 QA 가 게임의 뒤쪽 단계(보스·패배 카드·엔딩·보고 장면·고백·챔피언…)를 볼 때는 체크포인트로
+바로 들어간다. 타이틀부터 다시 플레이해 도달하지 마라.** 실측: 데모 VQA 가 매 판 타이틀에서 출발해
+시간 대부분을 로딩·초반 비트에 쓰고, 부하가 걸리면 늦은 장면 전에 죽었다 — 폴른 스타의 패배 카드·엔딩·보고
+장면이 그 이유로 한 번도 채점되지 않았다. 타이틀 경로는 «처음부터 이어서 진행이 되는가» 를 볼 때만 쓴다.
+
+```bash
+# 세트의 모든 체크포인트를 각자 새 페이지에서(하나가 죽어도 나머지는 간다), 동시에 2개씩
+npm run qa:runtime -- --scenario checkpoints --checkpoint-set fallen-star --checkpoint all --parallel 2
+npm run qa:runtime -- --scenario checkpoints --checkpoint-set first-love --checkpoint ending-a,ending-b
+npm run qa:runtime -- --scenario checkpoints --checkpoint-set astra-horizon --checkpoint 'gym*'
+# 사람이 눈으로: vite dev 서버(qa:runtime 이 띄우는 것과 같은 player.html)에서만 받는 URL 인자
+#   /player.html?demo=fallen-star&qaCheckpoint=fallen-star:boss
+```
+
+- 결과: `verify-shots/runtime-qa/<시나리오>--checkpoints/SUMMARY.md` 가 체크포인트별 통과·부팅 ms·샷을 표로 준다.
+  체크포인트마다 하위 폴더에 보통 시나리오와 같은 SUMMARY/manifest/PNG 가 있다. `--out` 으로 바꾼다.
+- `--parallel` 기본 2, 최대 4. 일꾼 하나가 브라우저 하나다. 1분 load 가 코어 수를 넘으면 스스로 1 로 줄인다(실측: load 200+/32코어에서
+  parallel 2 는 렌더러 «Target crashed», 1 은 통과). 렌더러가 죽은(크래시·부팅 시간 초과) 체크포인트는 끝에 혼자 한 번 더 돈다.
+- 세트 파일: `scripts/qa/runtime/checkpoints/<세트>.json` (데모마다 하나). 부팅은 세트의 `query`(예 `{ "demo": "fallen-star" }`,
+  소스에서 데모를 만드니 늘 현재 분기 내용) 또는 `projectFixture`. 체크포인트 하나의 필드:
+  `mapId x y facing`, `switches variables selfSwitches`, `party: [{ actorId, level }]`(그 레벨 최대 HP/MP 로 채움),
+  `items gold`, `sessionPatch`(호감도 `relationships`·`friendship`, 몬스터 `monsterInstances/monsterParty` 등 세션 최상위 키에
+  깊게 합침, 배열은 통째로 교체), `startEventId`(불러온 직후 실행할 맵 이벤트), `beats`(그 단계에서 할 일 — 없으면 세트의
+  `defaultBeats`, 그것도 없으면 1.5초 뒤 한 장), `snapshot`(실제 저장). 타입 정본은 `src/player/qaCheckpoint.ts` 의 `QaCheckpoint`.
+- **실제 저장이 정본이다.** 손으로 적은 상태는 흐름 코드를 읽고 그 단계에 실제 플레이어가 가진 값을 적은 것이어야 한다
+  (`note` 에 근거 파일:줄). 가능하면 그 지점까지 가는 시나리오에 `{ "kind": "captureCheckpoint", "id": "boss" }` op 을 넣고
+  `--save-checkpoints` 로 돌려 실제 `SaveSnapshot` 을 세트에 넣는다(같은 id 면 `snapshot` 만 바뀌고 선언 필드는 그 위에 덮인다).
+  맵·이벤트 좌표가 바뀌면 저장은 낡는다 — 부팅 오류 패널(«없는 맵…»)이 뜨면 즉시 실패로 끝난다(120초를 기다리지 않는다).
+- **경계(출하물 보호):** 체크포인트는 부팅 설정 `__OPENRPG_BOOT__.qaCheckpoint` 로만 들어가고, `qaInstrumentation: true`
+  일 때만 읽힌다(`src/player/exportEntry.ts` `qaCheckpointStart`). 출하 빌드·호스트 셸은 둘 다 넣지 않는다. URL 인자
+  `qaCheckpoint` 는 `import.meta.env.DEV` 분기 안이라 출하 빌드에서 통째로 빠진다. 프로젝트 데이터는 건드리지 않고 세션만 만든다
+  (새 게임 세션 또는 저장 → 선언 값). 오프닝 시네마틱은 세션이 주어진 부팅이라 건너뛴다.
+- 크로미움이 백지·«QA scene did not become ready» 로 끝나면 `--netns` 를 붙인다. 이 머신의 `net::ERR_NETWORK_CHANGED` 다. 실행기가 이미
+  `--disable-features=NetworkChangeNotifier` 를 주지만 부하 중엔 그래도 끊긴다(2026-10-21 실측) — 네트워크 이름 공간 안에서 돌린다:
+  `unshare -rn bash -c 'ip link set lo up; npm run qa:runtime -- --scenario checkpoints --checkpoint-set astra-horizon'`.
+- 수집 훅: 계측 씬의 `__oprnDebug.captureSave()` 가 지금 세션을 실제 저장 모양(`createSaveSnapshot`)으로 돌려준다.
+- 데모 시나리오가 자기 세트를 쓰게 하려면 시나리오에 `checkpointSet: "<세트>"` 를 두고 `checkpointBeats`(체크포인트 id →
+  비트, 또는 `(checkpoint) => beats` 함수)를 준다. 그러면 `--scenario <그 시나리오> --checkpoint all` 만으로 돈다.
+- 새 체크포인트 추가: 흐름 코드에서 단계 경계(어느 스위치·변수가 언제 켜지는지)를 찾고, 착지 칸은 빌드된 프로젝트에서 읽는다
+  (`createFlagshipDemoProject(id).project` 를 `npx vite-node --script` 로 덤프). 세트에 넣고 그 체크포인트만 돌려 PNG 를 눈으로
+  확인한 뒤 커밋한다. 체크포인트가 통과해도 그림이 그 단계가 아니면 거짓이다 — 샷을 연다.
+
 좁은 예외는 `scripts/qa/testplay-recovery-browser-qa.mts` 하나다. 편집기 **테스트 플레이**
 경로의 게이트라 편집기 셸을 통과한다. 결함이 톱바 `mode-play` 뒤의 저장·예비검사·복구 흐름에
 있어 `player.html` 로는 진입할 수 없기 때문이다. 살아 있는 WebGL 캔버스를 `drawImage` /
 `getImageData` 로 다시 읽으면 플레이 중에도 `distinct=1` 이므로 색 다양성은
 `scripts/lib/runtimeQaRun.mjs:435` 처럼 pngjs 로 스크린샷 PNG 를 읽어 잰다.
 `test/fixtures/projects/battle-v3.json` 은 거의 검으므로 렌더 여부 판정에는
-`editor-authored-demo-v3.json` 을 쓴다.
+`editor-authored-demo-v3.json` 을 쓰지 **않는다** — 2026-10-07 에 지운 EasyRPG ChipSet 을 가리켜 필드 타일이
+전부 `__MISSING` 이다(#2586). 스모크는 커밋된 예제 게임 `examples/saesol-red/project.json.gz` 를 쓴다
+(`runRuntimeQa` 가 `.json.gz` 를 풀어 싣는다).
 
 - 결과는 `verify-shots/runtime-qa/<시나리오>/SUMMARY.md` 를 **먼저** 읽고 "즉시 확인" 으로
   표시된 PNG 만 열어라. `shot` 은 옵트인이고 실패 비트는 자동 캡처된다. 출력 디렉터리는
@@ -1709,9 +1775,14 @@ Playwright 의 `locator.click()` 은 누르기 전에 `scrollIntoViewIfNeeded` �
   상호작용 비트는 취약하다.
 - `__oprnPlayerSprite().resourceId` 가 채워져 있어도 `textureKey` 는 `__MISSING` 일 수 있다
   (Phaser 초록 와이어프레임). 게이트는 `playerSpriteTextureLoaded` 축으로 봐야 한다.
+- **타일까지 `__MISSING` 인지는 `expect.noMissingTextures`** (2026-10-22, #2586). `window.__oprnMissingTextures()`
+  (`src/player/playSceneTestHooks.ts`)가 표시 목록을 컨테이너 안까지 훑어 `{ textured, missing }` 를 돌려준다.
+  플레이어 축(`playerSpriteTextureLoaded`)만 보던 스모크는 지워진 타일셋을 가리키는 픽스처에서 바닥 1,450/1,457 칸이
+  초록 와이어프레임인데도 통과했다. 스모크의 모든 필드 비트가 이 축을 건다.
 - `test/fixtures/projects/oprn-sample-v3.json` 은 플레이어 캐릭셋이 `__MISSING` 으로 그려진다
-  (픽스처 4개 중 이것만, 같은 `resourceId`, 실패 요청 0건). 원인 미규명. 기본 픽스처는
-  `editor-authored-demo-v3.json` 을 쓴다.
+  (픽스처 4개 중 이것만, 같은 `resourceId`, 실패 요청 0건). 원인 미규명. 시나리오 기본값
+  `DEFAULT_PROJECT_FIXTURE` 는 아직 `editor-authored-demo-v3.json` 이지만(위 이유로 타일이 없다), 스모크는
+  `examples/saesol-red/project.json.gz` 를 명시한다.
 
 ## sceneTestRunner 의 자율 이동 관측 공백 (2026-08-27)
 
@@ -2199,3 +2270,48 @@ ct-vehicle 은 별도 작업이 소유한다. 구조 가드(`src/ai/gameStructur
 - 런타임 시각 QA `romance-vn-ui2`(ko·en): 대화로 CG 1장을 열고 → ESC 갤러리(잠긴 칸)·뷰어·엔딩 회상·엔딩 목록·저장·불러오기를 원 해상도로 본다. 이 기기에서 본 엔딩은 `scenario.localStorageSeed` 로 심는다. 타이틀 불러오기 카드는 같은 페이지에서 저장소를 덤프해 다시 심고 `page.reload` 하는 일회용 탐침으로 확인(`/tmp` 스크립트, 보존 안 함 — 증거는 `verify-shots/runtime-qa/romance-vn-ui2/17-title-load-card.png`).
 - 함정: 타이틀로 돌아가기는 ESC 에서 한 번 더 `→` 로 확인 줄에 들어가야 한다. 타이틀 「불러오기」 단추는 오버레이에 가려 Playwright `click` 이 막히니 DOM `click()` 으로.
 - 자료집 「메뉴·시스템」 탭(2026-10-17): 집중 테스트 `node scripts/run-vitest.mjs test/menuSystem.test.ts`(공용 규칙·탭 렌더·되돌리기·SQLite 재로드). 시각 QA 는 `scripts/capture-menu-system-tab.mjs`(편집기 UI 라 `qa:runtime` 이 아니다). `databaseSidebarKeyboard.test.ts` 는 이 환경에서 `window is not defined`(phaser import)로 스위트가 시작하지 못한다 — 탭 맵에 한 줄을 넣었지만 직접 돌리지 못했다.
+
+## 에이전트 플레이 세션 · 재현 · 게임 카탈로그 (2026-10-22)
+
+런타임 QA 가 «한 번 돌고 끝나는 시나리오» 라면, 에이전트가 게임을 **대화처럼 플레이**하며 버그를 잡는 경로는
+`scripts/qa/play/` 다. 정본 문서는 `scripts/qa/play/README.md` — 명령·op/expect 어휘·함정이 전부 거기 있다.
+
+- `node scripts/qa/play/build-games.mjs --out tmp/qp/games` — `games.json` 의 게임을 project.json 으로
+  물질화하고 **부팅 스모크**(타이틀→새 게임→필드)를 돌려 `playable`/`reason` 을 카탈로그에 되쓴다.
+  게임 빌더는 `generate-project.mts` 가 제품과 같은 코드 경로(`createFlagshipDemoProject`,
+  `createProjectStartSeed` …)로 만든다 — 손으로 JSON 을 흉내 내지 않는다.
+- `node scripts/qa/play/qp.mjs serve --game <id>` — 출하 플레이어 + Chromium 을 살려 두고 `state`·`move`·
+  `action`·`shot`·`errors` 같은 짧은 명령을 HTTP 로 받는다. 모든 op 은 `DIR/actions.jsonl` 에 남아
+  **세션이 곧 재생 스크립트**가 된다.
+- `node scripts/qa/play/repro.mjs --game <id> --ops <file> --expect <file>` — 새 브라우저에서 그 로그 토막을
+  재생하고 증상(consoleErrorMatches·textPresent/Absent·stateEquals·testidPresent·stuck)을 판정한다.
+  `--repeat 2` 로 두 번 다 재현돼야 REPRODUCED.
+- `node scripts/qa/play/to-scenario.mjs` — 같은 op·기대를 `scripts/qa/runtime/<id>.scenario.mjs` 로 굽는다.
+  버그가 살아 있는 동안 `npm run qa:runtime -- --scenario <id>` 가 실패하는 것이 회귀 테스트의 뜻이다.
+  `--session <세션폴더> --lines A-B` 로 부으면 **그 토막 앞의 마지막 세이브 스냅샷**을 체크포인트 세트
+  (`scripts/qa/runtime/checkpoints/<id>.json`)로 같이 굽고, 시나리오에 `checkpointSet`+`checkpointBeats` 를 넣는다.
+  그러면 `npm run qa:runtime -- --scenario <id> --checkpoint-set <id> --checkpoint all` 이 타이틀·오프닝을 거치지 않고
+  그 판에서 시작해 실패한다(실측 3건: saesol 야생 몬스터 영문 이름, scarloxy 유적 출구 좌표, 시타마치 실내 출구 없음).
+  기대의 방향이 뒤집힌다 — repro 의 expect 는 증상 서술, 시나리오의 expect 는 고쳐진 뒤의 행동이다(`--symptom-expect`
+  는 글자 축만 뒤집고 좌표 축은 거부한다). 로그의 시간 간격은 `wait` 로 옮기지 않고(게이트 금지) 앞뒤 관측으로
+  조건 대기(`waitFor`/`pressUntil`/`waitForMap`)로 번역하며, 정하지 못한 간격은 버리고 stderr 에 남긴다.
+  프로젝트 재료는 `--fixture` → `scenarioFixture` → `projectGenerator`(실행 시점 생성,
+  `scripts/lib/qaProjectGenerator.mjs`) → 플레이어 데모 분기 `query: { demo }` 순으로 고른다 — 생성기 게임 72MB 는
+  픽스처로 커밋하지 않는다. 생성기가 데모 분기보다 앞인 이유는 데모 분기가 같은 빌더를 **브라우저**에서 돌리기
+  때문이다(실측 2026-10-23: `chronoBell.ts` 의 `process.env` → `player.html?demo=fallen-star` 부팅 사망).
+  판정 축이 부족하면 `expect.pageAssertions`(`{ id, fn }`, `true`=통과·문자열=실패 사유)로 페이지 안에서 직접 잰다 —
+  "커서가 정확히 하나", "시계가 세이브 시간을 잇는다" 같은 불변식은 고정 축으로 표현되지 않는다. 정상 게임도
+  통과하는 검사(부분 문자열 「0:0」, 창이 열리면 나오는 문구)는 회귀로 치지 않는다. 로그에서 유도할 수 없는 판정
+  지점은 `--until <key>:<testid>[:<삽입 위치>]`·`--wait-visible <testid>` 로 조건 고정한다.
+- 도구는 런타임 QA 의 **같은 op 실행기**(`applyOp`/`readObserved`, `scripts/lib/runtimeQaRun.mjs`)를 쓴다.
+  플레이 전용 op(`move`·`clickCanvas`·`waitForBodyText`)는 런타임 op 로 들어가 있어 시나리오로 그대로 옮긴다.
+  `expect` 에 `consoleErrorMatches`·`textPresent`·`textAbsent` 를 더했다(페이지 안 오류 버퍼
+  `window.__oprnConsoleErrors` 를 계측 부팅에서 심는다).
+- 실측 함정: (1) 타이틀 입장 시퀀스가 있는 게임은 Enter 가 **시퀀스 건너뛰기**로 먼저 소비된다 —
+  폴른 스타는 세 번째 Enter 에 필드가 떴다. 스모크는 "메뉴가 보이나"를 보고 누른다. (2) `scripts/` 아래
+  `.mts` 는 `scripts/tsconfig.json` 의 paths 기준 때문에 `@/x` 가 `scripts/src/x` 로 풀린다 —
+  `scripts/qa/play/tsconfig.json` 이 기준을 되돌린다. (3) `page.evaluate` 안에서는 모듈 스코프 상수를 못 본다.
+- **런타임이 노출하지 않는 것**: 저장/불러오기 명령이 없다(메인 메뉴 ESC → 저장 칸을 키 순서로 골라야 하고
+  행에 testid 가 없다). 맵·이벤트 목록 조회도 없다(프로젝트 JSON 에서 읽어라). 대사는 «지금 떠 있는 창» 글자만
+  보인다. 재현 계획을 세울 때 이 제약을 전제로 잡아라.
+

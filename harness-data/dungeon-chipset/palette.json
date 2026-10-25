@@ -69,6 +69,13 @@
    "#78b0c8",
    "#c8e4ec"
   ],
+  "tide": [
+   "#123846",
+   "#1c5462",
+   "#307884",
+   "#60a8ac",
+   "#b0dcd6"
+  ],
   "pool": [
    "#0e2c2e",
    "#16403e",
@@ -144,6 +151,73 @@
    "#84c3bc",
    "#a0fad2"
   ],
+  "sand": [
+   "#6f4725",
+   "#7e4a34",
+   "#ac7044",
+   "#cf9558",
+   "#e8b672",
+   "#f6d498",
+   "#f8e2a4"
+  ],
+  "snow": [
+   "#a6bcdc",
+   "#cadaee",
+   "#e6f0fa",
+   "#ffffff"
+  ],
+  "bog": [
+   "#1c3e28",
+   "#47682a",
+   "#3e6f42",
+   "#77703a",
+   "#978c4c",
+   "#a0a44c",
+   "#c4c46c",
+   "#e4e090"
+  ],
+  "leaf": [
+   "#071d1b",
+   "#0c2222",
+   "#063328",
+   "#104c2f",
+   "#296535",
+   "#497f3c",
+   "#94b353"
+  ],
+  "ostone": [
+   "#1a132a",
+   "#231a37",
+   "#2b203f",
+   "#45273a",
+   "#5b334d",
+   "#703f57"
+  ],
+  "grass": [
+   "#4b8232",
+   "#618c3b",
+   "#6f9a43",
+   "#8bb14e",
+   "#a8ca5c"
+  ],
+  "marble": [
+   "#615759",
+   "#6c5c4c",
+   "#827a78",
+   "#9e8d83",
+   "#bcaaa0",
+   "#d2c6b0",
+   "#e2d6c0"
+  ],
+  "castle": [
+   "#181b19",
+   "#383d3a",
+   "#575b58",
+   "#5f6360",
+   "#757875",
+   "#909390",
+   "#c4c6c3"
+  ],
   "gold": [
    "#431d00",
    "#714210",
@@ -158,6 +232,14 @@
    "#a40100",
    "#dd2912",
    "#e0482a"
+  ],
+  "arcane": [
+   "#2a1a50",
+   "#422a7e",
+   "#5e3eae",
+   "#8462d6",
+   "#b090ee",
+   "#e2d4fc"
   ]
  },
  "sources": {
@@ -221,6 +303,13 @@
    ],
    "pixels": 1198,
    "why": "동굴 바닷물"
+  },
+  "tide": {
+   "from": [
+    "tiledata/beodeul-variants/sea-cave/parts/water_tide.png"
+   ],
+   "pixels": 1248,
+   "why": "동굴 고인 물(버들항 바다 동굴 웅덩이 청록 — 렌더의 웅덩이가 이 조각)"
   },
   "pool": {
    "from": [
@@ -305,6 +394,77 @@
    "pixels": 147,
    "why": "발광 이끼·수정 청록"
   },
+  "sand": {
+   "from": [
+    "tiledata/beodeul-variants/desert-oasis/parts/ground-cliff.png",
+    "tiledata/beodeul-variants/desert-oasis/parts/wall.png",
+    "tiledata/beodeul-variants/desert-oasis/parts/temple.png",
+    "tiledata/beodeul-variants/desert-oasis/parts/n6.png",
+    "tiledata/beodeul-variants/desert-oasis/parts/ground-sand.png"
+   ],
+   "pixels": 15479,
+   "why": "사암·모래(버들항 사막 오아시스 절벽·담·신전·집 벽·모래) — 피라미드 벽·바닥"
+  },
+  "snow": {
+   "from": [
+    "tiledata/beodeul-variants/snowfield/parts/ground-snow.png",
+    "tiledata/beodeul-variants/snowfield/parts/mound.png",
+    "tiledata/beodeul-variants/snowfield/parts/snowman.png",
+    "tiledata/beodeul-variants/snowfield/parts/e1.png"
+   ],
+   "pixels": 4499,
+   "why": "눈(버들항 설원 눈밭·눈 둔덕·지붕 눈) — 눈 더미·서리"
+  },
+  "bog": {
+   "from": [
+    "tiledata/beodeul-variants/swamp-stilt/parts/ground-bog.png",
+    "tiledata/beodeul-variants/swamp-stilt/parts/ground-mud.png",
+    "tiledata/beodeul-variants/swamp-stilt/parts/ground-water.png",
+    "tiledata/beodeul-variants/swamp-stilt/parts/ground-reedbed.png"
+   ],
+   "pixels": 9216,
+   "why": "늪 풀·진흙·검푸른 늪물(버들항 늪 마을 바닥) — 단 0~2 녹색 그늘, 3~ 올리브 진흙·풀빛"
+  },
+  "leaf": {
+   "from": [
+    "src/assets/beodeulCityTileset.json structureKits bd-tree-d43edd",
+    "src/assets/beodeulCityTileset.json structureKits bd-tree-b1d104",
+    "src/assets/beodeulCityTileset.json structureKits bd-tree-1a786c"
+   ],
+   "pixels": 7566,
+   "why": "활엽수 잎(버들항 bd-tree 큰 나무 수관) — 숲 던전 거목·가시덤불"
+  },
+  "ostone": {
+   "from": [
+    "tiledata/beodeul-variants/snowfield/parts/s1.png"
+   ],
+   "pixels": 633,
+   "why": "마계 보라 검은 돌(버들항 설원 s1 저녁 그늘 보라·자주)"
+  },
+  "grass": {
+   "from": [
+    "src/assets/beodeulCityTileset.json structureKits bd-pick-temple-ruins-floor-grass"
+   ],
+   "pixels": 996,
+   "why": "폐허 판석 틈으로 솟은 풀(버들항 신전 폐허 풀 바닥 — 조각 파일 floor_grass.png 는 시트와 색이 달라 시트에 구운 키트에서 뽑는다)"
+  },
+  "marble": {
+   "from": [
+    "tiledata/beodeul-variants/temple-ruins/parts/fallen_column_temple.png",
+    "tiledata/beodeul-variants/temple-ruins/parts/column_temple.png",
+    "tiledata/beodeul-variants/temple-ruins/parts/rubble_temple.png"
+   ],
+   "pixels": 684,
+   "why": "신전 폐허 대리석(기둥·쓰러진 기둥·부스러기)"
+  },
+  "castle": {
+   "from": [
+    "tiledata/beodeul-variants/castle-catacombs/parts/face_castle_3h.png",
+    "tiledata/beodeul-variants/castle-catacombs/parts/face_castle_2h.png"
+   ],
+   "pixels": 3840,
+   "why": "성 지하 벽 앞면 돌(성문·옥좌 단)"
+  },
   "gold": {
    "from": [
     "scripts/content/lib/city_v6/palette.py RAMPS_CHIP"
@@ -316,6 +476,12 @@
     "scripts/content/lib/city_v6/palette.py RAMPS_CHIP"
    ],
    "why": "붉은 천·장식(버들항 칩 red 램프)"
+  },
+  "arcane": {
+   "from": [
+    "palette.py DECLARED (공용 시트에 없음 — 선언)"
+   ],
+   "why": "마계 빛 보라(선언 램프 — 공용 시트에 밝은 보라가 없다, 색상은 시트 #2b203f 에 맞춤)"
   }
  },
  "shadow": {
@@ -328,72 +494,108 @@
   "why": "버들항 조각에서 가장 흔한 반투명 바닥 그림자(윗층 기물 전용)"
  },
  "allowed": [
+  "#063328",
+  "#071d1b",
+  "#0c2222",
   "#0e0a14",
   "#0e2c2e",
+  "#104c2f",
   "#123460",
+  "#123846",
   "#131815",
   "#14101c",
   "#161b23",
   "#16403e",
+  "#181b19",
   "#187878",
+  "#1a132a",
   "#1b1024",
+  "#1c3e28",
+  "#1c5462",
   "#1e161a",
   "#1e5482",
   "#202430",
   "#202825",
+  "#231a37",
   "#242c29",
   "#242c38",
   "#245c58",
+  "#296535",
+  "#2a1a50",
+  "#2b203f",
   "#2b3934",
   "#2c3632",
   "#2e9c9a",
   "#30242a",
+  "#307884",
   "#312210",
   "#313b37",
   "#36beaa",
+  "#383d3a",
   "#384454",
   "#393b36",
   "#3a4050",
   "#3c7aa4",
   "#3e403d",
+  "#3e6f42",
   "#3e84b8",
+  "#422a7e",
   "#428078",
   "#431d00",
   "#434b46",
+  "#45273a",
   "#452a17",
   "#463a3a",
+  "#47682a",
+  "#497f3c",
+  "#4b8232",
   "#4c534f",
   "#525a56",
   "#562945",
   "#565855",
   "#566577",
+  "#575b58",
   "#585a55",
   "#595b58",
   "#595f5c",
   "#5a1410",
   "#5a615e",
+  "#5b334d",
   "#5b5d5a",
+  "#5e3eae",
   "#5e6678",
   "#5f615e",
+  "#5f6360",
   "#604e48",
+  "#60a8ac",
+  "#615759",
+  "#618c3b",
   "#626460",
   "#633712",
   "#696f6a",
+  "#6c5c4c",
   "#6c5c54",
   "#6cb4d8",
   "#6e6264",
   "#6f4725",
   "#6f716e",
+  "#6f9a43",
+  "#703f57",
   "#714210",
+  "#757875",
   "#757a90",
+  "#77703a",
   "#777975",
   "#78b0c8",
   "#7a7f86",
   "#7c875d",
+  "#7e4a34",
   "#806a5d",
   "#80827f",
+  "#827a78",
   "#828987",
   "#845c1f",
+  "#8462d6",
   "#84a3ab",
   "#84c3bc",
   "#885a26",
@@ -402,21 +604,31 @@
   "#89976e",
   "#8a8c89",
   "#8b7868",
+  "#8bb14e",
   "#8c94a6",
   "#8d7766",
   "#8e908d",
+  "#909390",
   "#928489",
   "#929491",
+  "#94b353",
+  "#978c4c",
   "#9c8872",
   "#9ce0ee",
   "#9e2514",
   "#9e8d83",
+  "#a0a44c",
   "#a0fad2",
   "#a28e76",
   "#a40100",
+  "#a6bcdc",
+  "#a8ca5c",
   "#aa7a08",
   "#aa947a",
   "#ab967d",
+  "#ac7044",
+  "#b090ee",
+  "#b0dcd6",
   "#b5aa9a",
   "#b77541",
   "#b8280e",
@@ -424,20 +636,32 @@
   "#bc7a00",
   "#bcaaa0",
   "#bec6d4",
+  "#c4c46c",
   "#c4c6c3",
   "#c8e4ec",
+  "#cadaee",
+  "#cf9558",
   "#cff4f8",
+  "#d2c6b0",
   "#dd2912",
   "#dee0dd",
   "#e0482a",
+  "#e2d4fc",
+  "#e2d6c0",
+  "#e4e090",
+  "#e6f0fa",
+  "#e8b672",
   "#ec9900",
   "#ecd6c6",
   "#ecdb95",
   "#f06a14",
   "#f2ffff",
+  "#f6d498",
+  "#f8e2a4",
   "#fbc10d",
   "#ffc83a",
-  "#ffec96"
+  "#ffec96",
+  "#ffffff"
  ],
- "count": 110
+ "count": 168
 }

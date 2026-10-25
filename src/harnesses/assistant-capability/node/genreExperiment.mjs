@@ -1,5 +1,5 @@
 import { spawn } from 'node:child_process';
-import { readFileSync, writeFileSync, mkdirSync, existsSync, openSync, closeSync, unlinkSync, symlinkSync } from 'node:fs';
+import { readFileSync, writeFileSync, mkdirSync, existsSync, openSync, closeSync, unlinkSync, symlinkSync, createWriteStream } from 'node:fs';
 import { resolve } from 'node:path';
 import { gunzipSync } from 'node:zlib';
 import { createHash } from 'node:crypto';
@@ -14,7 +14,7 @@ const sleep = ms => new Promise(done => setTimeout(done, ms));
 const json = (file, data) => writeFileSync(file, JSON.stringify(data, null, 2));
 process.env.PW_TEST_SCREENSHOT_NO_FONTS_READY = '1';
 
-async function acquireSlot(root, caseId, attempt, cases) {
+async function acquireSlot(root, caseId, attempt, cases, slots = 3) {
   for (;;) {
     // Give queued first submissions a slot before another case's repair.
     const pendingFirst = attempt > 1 && cases.some(entry => {
@@ -22,7 +22,7 @@ async function acquireSlot(root, caseId, attempt, cases) {
       return existsSync(first) && !existsSync(resolve(first, 'host.json')) && !existsSync(resolve(first, 'result.json'));
     });
     if (pendingFirst) { await sleep(10000); continue; }
-    for (let slot = 0; slot < 3; slot++) {
+    for (let slot = 0; slot < Math.min(3, Math.max(1, slots)); slot++) {
       const file = resolve(root, `editor-slot-${slot}.lock`);
       try {
         const fd = openSync(file, 'wx');
@@ -56,10 +56,13 @@ async function startCaseHost(root, entry, out) {
   let started = false;
   await new Promise((done, fail) => {
     const deadline = setTimeout(() => fail(Error('Owned host startup deadline')), 60000);
+    // Local diagnostic log (qa-runs is gitignored). Never print it wholesale; it may echo provider errors.
+    const hostLog = createWriteStream(resolve(out, 'host-log.txt'), { mode: 0o600 });
     child.stdout.on('data', data => {
+      hostLog.write(data);
       if (!started && data.toString().includes('OPRN 로컬 편집기:')) { started = true; clearTimeout(deadline); done(); }
     });
-    child.stderr.on('data', () => {});
+    child.stderr.on('data', data => hostLog.write(data));
     child.once('error', error => { clearTimeout(deadline); fail(error); });
     child.once('exit', code => { if (!started) { clearTimeout(deadline); fail(Error(`Owned host exited ${code}`)); } });
   }).catch(error => { try { process.kill(-child.pid, 'SIGKILL'); } catch {} throw error; });
@@ -98,7 +101,7 @@ export async function runGenreTrial(rootArg, caseId, options = {}) {
   if (presetBoot && (attempt !== 1 || !entry.brief)) throw Error('preset-boot requires an initial saved brief');
   const task = options.prompt ?? entry.prompt ?? entry.brief?.summary;
   writeFileSync(resolve(out, 'task.txt'), task);
-  const releaseSlot = await acquireSlot(root, caseId, attempt, manifest.cases);
+  const releaseSlot = await acquireSlot(root, caseId, attempt, manifest.cases, manifest.maximumConcurrentEditors ?? 3);
   const claim = resolve(caseDir, 'run.lock');
   try {
     const claimFd = openSync(claim, 'wx');
@@ -118,7 +121,7 @@ export async function runGenreTrial(rootArg, caseId, options = {}) {
       page = activePage;
       page.on('pageerror', error => errors.push(error.message));
       // This is the editor-input experiment; the concept feed is not part of the task.
-      await page.addInitScript(() => localStorage.setItem('oprn:editor-welcome-dismissed', '1'));
+      await page.addInitScript((hide) => { localStorage.setItem('oprn:editor-welcome-dismissed', '1'); if (hide) window.__oprnHideStartMarker = true; }, process.env.HARNESS_START_MARKER !== '1');
       page.on('request', request => {
         if (request.method() !== 'POST' || !/\/v1\/(agent\/run|chat\/completions)/.test(request.url())) return;
         try {
@@ -133,7 +136,12 @@ export async function runGenreTrial(rootArg, caseId, options = {}) {
         json(resolve(out, 'requests.json'), requests);
       });
     };
-    let editor = await newEditor(browser, host.url, host.projectDir, {}, { onPage: setup });
+    // Optional assistant model for the trial (experiment.json aiConfig / assistantEngine).
+    // assistantEngine = the product's own local-CLI engine switch (src/ai/localCliEngine.ts),
+    // e.g. Claude Code + claude-sonnet-5-5 high while the default Argon is out of quota.
+    const editorConfig = { ...(manifest.aiConfig ?? {}), ...(manifest.assistantEngine ? { assistantEngine: manifest.assistantEngine } : {}) };
+    result.assistantEngine = manifest.assistantEngine ?? null;
+    let editor = await newEditor(browser, host.url, host.projectDir, editorConfig, { onPage: setup });
     context = editor.context; page = editor.page;
     phase = 'baseline'; if (!presetBoot) await saveEditor(page);
     const before = bootBaseline ?? stored(host.projectDir);
@@ -163,10 +171,28 @@ export async function runGenreTrial(rootArg, caseId, options = {}) {
           progress({ events: value.events.length, nativeRequests: requests.length, status: value.status }); }).catch(() => {});
     }, 15000);
     try {
-      await page.waitForFunction(() => {
-        const events = window.__capEvents ?? [];
-        return events.some(event => ['stream_closed', 'error'].includes(event.type)) && !window.__oprnAiBridge?.status().turnBusy;
-      }, null, { timeout: options.timeoutMs ?? manifest.turnDeadlineMs, polling: 1000 });
+      // Settled = every opened model stream has closed, the editor is not busy, and that holds for
+      // 30 s (a plan turn is followed by an apply turn; a single earlier stream_closed is not the end).
+      const deadlineAt = Date.now() + (options.timeoutMs ?? manifest.turnDeadlineMs);
+      let quiet = 0;
+      for (;;) {
+        if (Date.now() > deadlineAt) throw Error('turn deadline exceeded');
+        const probe = await page.evaluate(() => {
+          const events = window.__capEvents ?? [];
+          const opened = events.filter(event => event.type === 'stream_open').length;
+          const closed = events.filter(event => ['stream_closed', 'stream_error'].includes(event.type)).length;
+          return { opened, closed, busy: Boolean(window.__oprnAiBridge?.status().turnBusy), count: events.length,
+            ended: events.some(event => ['done', 'error', 'cancelled', 'chat_done'].includes(event.type)),
+            // 의도 선언의 되묻기로 멈춘 턴(실행 없음): 선택지 줄이 대화에 보이고 패널이 한가하다.
+            clarified: /\[선택지\]|골라 답해 주세요/u.test(document.body.innerText ?? '') };
+        });
+        const idle = (probe.opened > 0 && probe.closed >= probe.opened && !probe.busy && probe.ended) || (probe.clarified && !probe.busy);
+        if (probe.clarified) result.clarifyAsked = true;
+        quiet = idle && probe.count === result.lastProbeCount ? quiet + 1 : 0;
+        result.lastProbeCount = probe.count;
+        if (quiet >= 6) break;
+        await sleep(5000);
+      }
       result.turnSettled = true;
     } catch (error) {
       result.turnSettled = false; result.turnFailure = error.message.slice(0, 500);
@@ -186,7 +212,7 @@ export async function runGenreTrial(rootArg, caseId, options = {}) {
     writeRuntimeProject(host.projectDir, resolve(out, 'live.json'), applied.project);
     await page.screenshot({ path: resolve(out, 'after.png') });
     phase = 'reload'; await context.close(); context = null;
-    editor = await newEditor(browser, host.url, host.projectDir, {}, { onPage: setup });
+    editor = await newEditor(browser, host.url, host.projectDir, editorConfig, { onPage: setup });
     page = editor.page; context = editor.context;
     const reloaded = stored(host.projectDir), loaded = editor.loads.find(load => load.sha256 === applied.sha256);
     result.persistence = { projectId: before.projectId, projectDir: host.projectDir,
@@ -242,7 +268,8 @@ export async function openGenrePlayer(rootArg, caseId, options = {}) {
   const server = await startPackagedPlayerQaServer({ projectJson: prepared.projectJson });
   const browser = await firefox.launch({ firefoxUserPrefs: { 'network.notify.changed': false,
     'network.captive-portal-service.enabled': false, 'network.connectivity-service.enabled': false } });
-  const context = await browser.newContext({ viewport: { width: 960, height: 720 }, reducedMotion: 'reduce' });
+  const context = await browser.newContext({ viewport: options.viewport ?? { width: 960, height: 720 }, reducedMotion: 'reduce',
+    ...(options.recordVideo ? { recordVideo: { dir: evidenceDir, size: options.viewport ?? { width: 960, height: 720 } } } : {}) });
   const page = await context.newPage(); const errors = [];
   page.on('pageerror', error => errors.push(error.message));
   const assetReceipts = [];

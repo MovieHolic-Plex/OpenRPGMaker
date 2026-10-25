@@ -50,6 +50,7 @@ import {
 } from "@/editor/agentBlueprint";
 import { openHarnessModal } from "@/editor/panels/aiHarnessModal";
 import { COMMAND_PALETTE_OPEN_EVENT, openCommandPalette } from "./commandPalette";
+import { hasOpenModalLayer } from "@/editor/ui/modalStack";
 import { filterToolCategories, openToolBrowserModal } from "@/editor/panels/toolBrowserModal";
 import type { RegionTaskOptions, RegionTaskResult } from "@/editor/regionTask/runRegionTask";
 import { getPendingRegionApply } from "@/editor/regionTask/pendingRegionApply";
@@ -79,8 +80,9 @@ import type { TilesetChangeQuestion } from "@/editor/tools/tilesetChangeTools";
 import { createAssistantWide } from "./aiAssistantWide";
 import { createInlineWorkCard } from "./aiInlineWorkCard";
 import { currentTeamActivity, setTeamStopHandler } from "@/ai/piAgent/teamActivity";
-import { DEFAULT_PI_TEAM, type PiRunPlan } from "@/ai/piAgent/executionRoute";
-import { classifyPlainPiTurn, selectedEventFact } from "@/ai/piAgent/plainTurn";
+import { DEFAULT_PI_TEAM, resolvePiRunPlan, type PiRunPlan } from "@/ai/piAgent/executionRoute";
+import { isAssistantV2Enabled } from "@/ai/v2/switch";
+import { classifyPlainPiTurn, clarifyFollowUpText, selectedEventFact } from "@/ai/piAgent/plainTurn";
 import { applyMonsterIntentStart, needsMonsterKitStart } from "@/project/genrePresets";
 import { resolveContextWindow } from "@/ai/contextCompaction";
 import { modelForRole } from "@/ai/modelRoles";
@@ -91,6 +93,8 @@ import { combineDiffs } from "@/project/projectCommitLog";
 import { el } from "@/util/dom";
 import { mapRunQueue, type MapRunTicket } from "@/editor/aiMapRunQueue";
 import { createMapRunCard, type MapRunCard } from "./aiMapRunCard";
+import { createFeatureChecklistView } from "./aiFeatureChecklist";
+import { FEATURE_POLISH_DEFAULT, FEATURE_POLISH_TOOLS } from "@/ai/piAgent/featureReview";
 import { sideThreads } from "./aiSideThreads";
 import { isGenrePresetBriefRequest } from "@/ai/genrePresetBrief";
 import { genId } from "@/util/id";
@@ -125,7 +129,7 @@ import { aiActivityPersistenceState, extractCommitIdsFromAudit } from "@/ai/acti
 import { recordPiIntentFailure } from "@/ai/piAgent/activityLog";
 import { listAiUiEvents, recordAiUiEvent } from "@/ai/uiEventLog";
 import { AI_UI_ACTIONS } from "@/ai/uiEventTypes";
-import { parseQuickReplies } from "@/ai/interviewPrompt";
+import { parseQuickReplies, QUICK_REPLY_MARKER } from "@/ai/interviewPrompt";
 import { buildClusterEditKickoff, buildUnclassifiedAnalysisKickoff, type ClusterGroupSnapshot } from "@/ai/clusterAssistPrompt";
 import { resolveSurfaceAiConfig } from "@/ai/assistantEndpoint";
 import { AI_STUDIO_TOGGLE_EVENT, publishAiStudioChange } from "@/editor/aiStudioMode";
@@ -288,6 +292,13 @@ export {
   shouldShowStatusInChat,
   type StatusTransition,
 } from "./aiChatPanelHelpers";
+
+/** 되묻기의 선택지 표식 줄(「[선택지] A | B」)은 이 창에 단추가 없어 날것으로 보였다 — 읽히는 한 줄로 바꾼다. */
+function clarifyForChat(text: string): string {
+  return text.split("\n").map((line) => line.startsWith(QUICK_REPLY_MARKER)
+    ? `(골라 답해 주세요: ${line.slice(QUICK_REPLY_MARKER.length).split("|").map((option) => option.trim()).filter(Boolean).join(" · ")})`
+    : line).join("\n");
+}
 
 /** 컴포저가 AI 에게 넘기는 현재 맵/선택 영역 컨텍스트. */
 interface PanelMapContext {
@@ -587,6 +598,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   let autoCollapseTimer: number | null = null;
   // Pending questions keep the conversation engaged even without promoted reply chips.
   let pendingQuestion = false;
+  /** 의도 선언의 되묻기를 보이고 멈춘 턴 — 다음 전송이 그 답이다. */
+  let pendingClarify: { readonly text: string; readonly question: string } | null = null;
   const hasPendingQuestion = (): boolean => pendingQuestion;
   // applyCollapsed 정의 전에 턴이 잡혀도 안전한 바인딩(런타임 호출은 패널 마운트 이후).
   let expandForAiWork: () => void = () => {};
@@ -606,6 +619,13 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     attrs: { placeholder: formatComposerPlaceholder(), rows: "1" },
     dataset: { testid: "ai-input" },
   }) as HTMLTextAreaElement;
+
+  // 조수 워커(DOM 없음)의 대사 창 넘침 판정이 편집기 실측을 쓰도록, 입력을 시작할 때 대화창을 한 번 재 둔다(같은 설정이면 다시 안 잰다).
+  input.addEventListener("focus", () => {
+    void import("@/editor/panels/dialogueViewShared")
+      .then(({ warmDialogueMeasurerForTools }) => warmDialogueMeasurerForTools(store.getCurrent()))
+      .catch(() => undefined);
+  }, { once: true });
 
   const sendButton = el("button", {
     class: "ai-assistant-action ai-chat-send",
@@ -2088,6 +2108,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     viewNavigation: plan.viewNavigation === true,
     readOnly: plan.readOnly,
     routineEdit: plan.routineEdit,
+    ...(plan.skipPlanTurn ? { skipPlanTurn: true } : {}),
     ...(plan.routingAudit ? { routingAudit: plan.routingAudit } : {}),
     planOnly: plan.planOnly,
     maxTurns: plan.maxTurns,
@@ -2107,7 +2128,9 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     /** 평문 턴의 단계 기록기 — 의도 선언까지 한 기록기에 담아야 total 이 턴 벽시계 전체를 덮는다.
      *  단계는 서로 중첩된다(checkpoint 는 exec·review 안에서 돌고, 병렬 그룹은 겹친다) —
      *  단계 합은 total 과 맞지 않는다. 표에서 더하지 마라. */
-    readonly timing?: TurnTimingRecorder }): Promise<void> => {
+    readonly timing?: TurnTimingRecorder;
+    /** 다듬기 실행(확인표의 「다듬기」 단추) — 계획 턴 없이 1배 확인·독립 비평→고치기를 길게 돈다. */
+    readonly polish?: import("@/ai/piAgent/featureReview").FeaturePolishOptions }): Promise<void> => {
     // slotClaimed: 호출자(평문 경로)가 의도 분류 전에 이미 슬롯을 잡았다. 그 경우 turnBusy=true 는
     // «다른 턴이 점유 중» 이 아니라 «이 턴의 분류 단계» 다 — 여기서 다시 거부하면 자기 턴을 죽인다.
     if (turnBusy && opts?.slotClaimed !== true) {
@@ -2144,9 +2167,21 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     // 스토어·없는 기물 카드 — 조수가 generate_missing_object 를 한 턴에 여러 번 부르면 모두 모아 함께 줄 세운다.
     const storeCards: StoreCardRequest[] = [];
     const turnConversation = conversationId;
+    // 요청 특징 확인표 — 짓기 턴에서 조수가 적은 항목과 1배 확인 바퀴별 결과(aiFeatureChecklist.ts).
+    const polishRequest = opts?.polish?.request ?? command.task;
+    const featureChecklist = createFeatureChecklistView((element) => { log.append(element); followConversationLog(log); }, {
+      // 다듬기는 같은 맵 범위로 평소 Pi 턴을 하나 더 보낸다 — 맵 소유권·대기열·중지 단추가 그대로 적용된다.
+      // 다듬을 맵은 앞 턴 확인표가 본 맵이고, 그 맵을 지은 마지막 호출 인자를 함께 넘긴다(다듬기는 새 세션이다).
+      onPolish: ({ mapIds, lastBuilds }) => {
+        if (disposed || turnConversation !== conversationId) return;
+        void runPiTurn({ ...command, task: `[다듬기] ${polishRequest}`, ...(mapIds.length ? { mapIds } : {}) }, "다듬기 — 1배 확인·독립 비평으로 더 고칩니다(최대 30분, 중지 단추로 멈춤)", plan,
+          { polish: { ...FEATURE_POLISH_DEFAULT, request: polishRequest, mapIds, lastBuilds },
+            initialToolNames: [...new Set([...(opts?.initialToolNames ?? []), ...FEATURE_POLISH_TOOLS, ...Object.values(lastBuilds).map((b) => b.tool)])] });
+      },
+    });
     try {
       await runPiCommand(command, {
-        onEvent: event => progress.event(event),
+        onEvent: event => { progress.event(event); featureChecklist.event(event); },
         getApprovedTilesetFamilies: () => approvedTilesetFamilies,
         onTilesetChangeQuestion: (question) => { tilesetQuestion = question; },
         onStoreCard: (request) => { storeCards.push(request); },
@@ -2184,6 +2219,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       }, {
         ...piRunOptionsFor(plan, opts),
         ...(command.goalMode ? { maxTurns: GOAL_MAX_TURNS, timeoutMs: GOAL_TIMEOUT_MS } : {}),
+        // 다듬기: 바퀴마다 모델 차례가 10~20번 든다 — 차례·시간 상한을 다듬기 한도에 맞춘다.
+        ...(opts?.polish ? { polish: opts.polish, timeoutMs: opts.polish.budgetMs + 10 * 60_000, maxTurns: Math.max(plan?.maxTurns ?? 0, 40 + 20 * opts.polish.maxRounds) } : {}),
       });
     } finally {
       progress.finish();
@@ -2239,7 +2276,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   // 분류가 지연·실패하면 다이얼 그대로 두는 쪽이 안전하므로 타임아웃을 짧게 둔다.
   let piIntentDeclarer: { declarer: IntentDeclarer; timeoutMs: number } | null = null;
   /** 평문 한 줄 → Pi 명령 + 실행 계획. 팀 비트는 설정에서, 읽기 전용·계획은 자율성 다이얼에서 온다. */
-  type PlainPiTurn = { readonly command: ParsedPiCommand; readonly plan: PiRunPlan; readonly questionPromoted: boolean; readonly initialToolNames?: readonly string[]; readonly intentNote?: string | null; readonly timing: TurnTimingRecorder };
+  type PlainPiTurn = { readonly command: ParsedPiCommand; readonly plan: PiRunPlan; readonly questionPromoted: boolean; readonly clarify?: string; readonly initialToolNames?: readonly string[]; readonly intentNote?: string | null; readonly timing: TurnTimingRecorder };
   const plainPiTurn = async (text: string, turnOptions?: {
     readonly team?: boolean;
     /** 같이 도는 실행(맵별 대기열)은 보낸 순간의 맵·선택으로 해석한다 — 사용자는 그 사이 다른 맵으로 옮겼을 수 있다. */
@@ -2252,6 +2289,10 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     // 실제로 1.2~7.5s 를 삼킨다(2026-09-16 실측). 이걸 벽시계 밖에 두면 표의 total 이 그만큼 짧게 나와
     // 「어느 단계도 오래 안 걸렸는데 턴은 느렸다」는 모순이 생긴다.
     const timing = createTurnTiming();
+    // 조수 v2(기본 꺼짐): 의도 선언 모델 호출을 건너뛴다 — v2 는 실행 모델이 요청을 짓기 명세로 바로 해석한다(src/ai/v2).
+    if (isAssistantV2Enabled() && turnOptions?.team !== true) {
+      return { command: plainPiCommand(text, "single", turnMapId), plan: { ...resolvePiRunPlan(currentAutonomy()), routingAudit: "assistant-v2" }, questionPromoted: false, intentNote: null, timing };
+    }
     timing.start("intent");
     // 순수 부분(선언 → 계획·노출 툴·의도 노트)은 plainTurn.ts 가 소유한다 — 헤드리스 생성기(scripts/qa-game/gen.mts)와 같은 함수다.
     let classified: Awaited<ReturnType<typeof classifyPlainPiTurn>>;
@@ -2288,6 +2329,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       command: plainPiCommand(text, classified.mode, turnMapId),
       plan: classified.plan,
       questionPromoted: classified.questionPromoted,
+      ...(classified.clarify ? { clarify: classified.clarify } : {}),
       ...(classified.initialToolNames ? { initialToolNames: classified.initialToolNames } : {}),
       intentNote: classified.intentNote,
       timing,
@@ -2320,6 +2362,12 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     if (explicit) command = explicit;
     else {
       const classified = await plainPiTurn(run.text, { ...(run.team ? { team: true } : {}), mapId: run.mapId, selection: run.selection, onDeclaring: () => card.setStatus("의도 읽는 중…") });
+      if (classified.clarify) {
+        pendingClarify = { text: run.text, question: classified.clarify };
+        card.say("assistant", clarifyForChat(classified.clarify));
+        renderQuickReplies(classified.clarify);
+        return;
+      }
       command = classified.command;
       options = piRunOptionsFor(classified.plan, { timing: classified.timing, ...(classified.initialToolNames ? { initialToolNames: classified.initialToolNames } : {}), intentNote: classified.intentNote });
       if (classified.questionPromoted) card.say("system", "프로젝트를 바꾸지 않고 확인해서 답할게요.");
@@ -2389,8 +2437,11 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     const typed = input.value.trim();
     // 입력창에 담긴 핸드오프를 그대로 보낼 때만 전체 지시문으로 바꾼다. 말풍선은 사용자가 본 문장이다.
     const handoff = composerHandoff && composerHandoff.display === typed ? composerHandoff : null;
-    const text = handoff?.full ?? typed;
-    const shown = handoff ? typed : text;
+    // 되묻기에 답한 턴은 원래 요청과 묶어 보낸다 — 답 한 낱말(「맵 배경」)만으로는 무엇을 하라는지 모른다. 말풍선은 사용자가 친 답 그대로.
+    const clarified = pendingClarify && !handoff && typed && !typed.startsWith("/") ? clarifyFollowUpText(pendingClarify.text, pendingClarify.question, typed) : null;
+    pendingClarify = null;
+    const text = clarified ?? handoff?.full ?? typed;
+    const shown = handoff || clarified ? typed : text;
     if (!text && !stampPlaceOn) {
       // 조용한 return 은 "버튼이 고장났나" 로 읽혔다. 무엇이 부족한지 말하고 초점을 준다.
       toast("보낼 지시를 입력하세요", "info");
@@ -2478,6 +2529,15 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
         const reason = error instanceof Error ? error.message : String(error);
         void recordPiIntentFailure({ instruction: text, error: reason, mapId: editorState.get().currentMapId ?? null, model: loadAiConfig().model });
         appendBubble("system", `지시를 해석하지 못했습니다: ${reason}`);
+        return;
+      }
+      if (classified.clarify) {
+        // 선언이 도구가 갈릴 만큼 모호하다고 봤다 — 실행하지 않고 묻는다. 답은 다음 전송에서 원래 요청과 묶인다(clarifyFollowUpText).
+        pendingClarify = { text, question: classified.clarify };
+        appendBubble("assistant", clarifyForChat(classified.clarify));
+        renderQuickReplies(classified.clarify);
+        finishWorkCard({ ok: true, message: "되묻기" });
+        setStatus("대기");
         return;
       }
       await runPiTurn(classified.command, shown, classified.plan, { questionPromoted: classified.questionPromoted, slotClaimed: true, echoed: true, ...(classified.initialToolNames ? { initialToolNames: classified.initialToolNames } : {}), intentNote: classified.intentNote, timing: classified.timing, ...(handoff ? { sentText: text } : {}) });
@@ -3982,6 +4042,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   const onCommandPaletteKeyDown = (event: KeyboardEvent): void => {
     if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "k") {
       event.preventDefault();
+      // 모달(자료집·리소스 관리자 등)이 떠 있으면 열지 않는다 — 입력과 Esc 를 가로채기만 한다.
+      if (hasOpenModalLayer()) return;
       openCommandPalette();
     }
   };

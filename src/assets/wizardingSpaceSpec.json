@@ -1,7 +1,7 @@
 {
  "version": 1,
  "tilesetId": "wizarding_world",
- "tileCount": 2508,
+ "tileCount": 2677,
  "note": "scripts/content/wizarding/space_recipes.py 가 굽는다(손 편집 금지). 조립 규칙 src/editor/wizarding/builder.ts.",
  "wallsets": {
   "castle": {
@@ -942,6 +942,15 @@
      "wallTop": 2
     },
     {
+     "kit": "wz-owl-stair-down",
+     "placement": "corner",
+     "count": [
+      1,
+      1
+     ],
+     "clearance": 1
+    },
+    {
      "kit": "wz-owl-perch-2x3",
      "placement": "grid",
      "count": [
@@ -950,16 +959,6 @@
      ],
      "clearance": 0,
      "gap": 1
-    },
-    {
-     "kit": "wz-owl-stair-up",
-     "placement": "corner",
-     "count": [
-      0,
-      1
-     ],
-     "clearance": 1,
-     "access": false
     },
     {
      "kit": "wz-owl-water-dish",
@@ -1415,13 +1414,14 @@
     },
     {
      "kit": "wz-clock-stair",
-     "placement": "corner",
+     "placement": "north-wall",
      "count": [
-      0,
+      1,
       1
      ],
      "clearance": 1,
-     "access": false
+     "wallTop": 2,
+     "wallMatch": "plain"
     },
     {
      "kit": "wz-clock-toolchest",
@@ -3684,9 +3684,9 @@
    "src": "kit"
   },
   "wz-clock-stair": {
-   "name": "정비 계단(2×2)",
+   "name": "정비 계단(올라가는 계단)",
    "w": 2,
-   "h": 2,
+   "h": 3,
    "src": "kit"
   },
   "wz-clock-stool": {
@@ -4182,7 +4182,7 @@
    "src": "kit"
   },
   "wz-hd-stairs-down": {
-   "name": "창고 내려오는 나무 계단",
+   "name": "창고에서 가게로 올라가는 나무 계단",
    "w": 2,
    "h": 3,
    "src": "kit"
@@ -4715,8 +4715,8 @@
    "h": 3,
    "src": "kit"
   },
-  "wz-owl-stair-up": {
-   "name": "탑 계단(위, 정면)",
+  "wz-owl-stair-down": {
+   "name": "탑 계단통(내려가는 계단)",
    "w": 2,
    "h": 2,
    "src": "kit"

@@ -28,6 +28,7 @@ import { OBJECT_GATE_HARNESS } from "../object-gate/harness";
 import { INTERVIEW_SCENE_BANK_HARNESS } from "../interview-scene-bank/harness";
 import { BATTLE_TRAINER_SPRITES_HARNESS } from "../battle-trainer-sprites/harness";
 import { BUILDING_KIT_HARNESS } from "../building-kit/harness";
+import { CAST_PORTRAIT_HARNESS } from "../cast-portrait/harness";
 
 export const HARNESSES: readonly HarnessManifest[] = [
   MONSTER_COLLECT_SPECIES_HARNESS,
@@ -53,6 +54,7 @@ export const HARNESSES: readonly HarnessManifest[] = [
   INTERVIEW_SCENE_BANK_HARNESS,
   BATTLE_TRAINER_SPRITES_HARNESS,
   BUILDING_KIT_HARNESS,
+  CAST_PORTRAIT_HARNESS,
 ];
 
 export function getHarness(id: string): HarnessManifest | undefined {

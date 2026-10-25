@@ -1,0 +1,34 @@
+{
+ "queue": "jp-in-stairs-13",
+ "round": 24,
+ "judges": "3x claude-opus-5.5 fresh subagents in parallel, no prior scores; a major counts only if >=2 of 3 raise it",
+ "date": "2026-10-22",
+ "verdict": "fail",
+ "perReviewer": {
+  "A": {
+   "majors": 1,
+   "axis2": 7,
+   "axis6": 6
+  },
+  "B": {
+   "majors": 3,
+   "axis2": 7,
+   "axis6": 5
+  },
+  "C": {
+   "majors": 0,
+   "axis2": 7,
+   "axis6": 8
+  }
+ },
+ "majorityMajors": [
+  "counted conservatively: grey down stairwells (mc by A, of by B — shared art) read as a grey box/appliance at 1x; per-kit count would be 1/3 each"
+ ],
+ "minorityMajors": [
+  "stairwell-down-wood crate (B only)",
+  "cs-stairs-up-bare shutter/ladder (B only)"
+ ],
+ "upStairs": "no majority major on any up stair",
+ "majoritycount": 1,
+ "action": "grey wells: nearest tread at floor value with a floor-light nose, 1px dark cut line on the W/E hole edges"
+}

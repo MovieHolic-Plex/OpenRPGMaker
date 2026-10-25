@@ -1,0 +1,345 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "bbb0a5b2eef81cb60c967b3cdfb7cfee39ae6de9861019079f5a2a2457fe8837",
+ "width": 16,
+ "height": 16,
+ "kind": "organic",
+ "name": "red toadstool cluster (mushrooms), natural map prop for the Beodeul 16px chipset, 1x1 tiles, walk-over ground decor (2nd layer), 3/4 top-down, sits on grass between broadleaf trees",
+ "label": "beodeul_organic/shroom-red",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "tree",
+  "refs": [
+   "tree-1a786c",
+   "tree-d43edd"
+  ],
+  "scale": 2,
+  "score": 7,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_organic",
+   "fallback": true,
+   "reason": "칩셋 beodeul_organic 의 화풍 기준 묶음이 없다",
+   "hash": "bcc19e99327f94ce"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 0,
+  "tileColorsP90": 0,
+  "darkV5": 49,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 0
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "central large red cap with white spot",
+      "rows": "4-7",
+      "evidence": "b",
+      "front_edge_line_row": 7,
+      "eave_shadow_rows": "7-8"
+     },
+     {
+      "part": "left red cap",
+      "rows": "8-11",
+      "evidence": "b",
+      "front_edge_line_row": 11,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "right small red cap",
+      "rows": "9-11",
+      "evidence": "b",
+      "front_edge_line_row": 11,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "grey stems under the caps",
+      "rows": "11-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 6,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Three toadstools. The central cap (rows 4-7) is a dome whose width goes 4, 7, 7, 5 and has a white spot on its upper surface (row 6 at x=8). A dark underside row at row 7 sits under that cap's light top. The left and right caps (rows 8-11) both reach width 11 at rows 9-10 and narrow to 7 at row 11. Each cap is a rounded top with a dark underside, so each reads as a top surface and not a flat front strip. The grey stems below (rows 11-13, width 4 then 2) give a short front/support face. The overall impression is a 3/4 view of caps seen from above with stems visible, though the front face is small and organic."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a tiny prop, under one tile, so the per-tile tone count of 0 says nothing and I judged by eye. It has 16 distinct colours across a few caps and stems, which is rich for something this small. Each red cap seems to step through highlight, light, mid and dark red, with white spots and cream stems. That is about 4 steps, a little under the trees' 5-6, which is expected at this size. Only 18% of the dark edge pixels are neutral, so the outline leans dark red-brown beside the caps rather than being a black sticker line. There are no flat 5x5 fills (0% near-flat coverage). It reads as less dense than the full trees, but a careful artist would accept it as a grass-decor prop beside them without it looking flat. The board is very small, so some of this is hard to verify, and the verdict is a marginal pass.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18553
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "central mushroom cap (red dome with white spot)",
+      "rows": "4-8",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": "7-9"
+     },
+     {
+      "part": "left mushroom cap",
+      "rows": "8-11",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": "10-11"
+     },
+     {
+      "part": "right small mushroom cap",
+      "rows": "9-11",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "grey stems",
+      "rows": "12-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 4,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The cluster is three red-capped mushrooms. The width profile (4,7,7,5 for the central cap; 6,11,11,7,4,2 for the left cap and stems) widens and narrows again, so the caps read as rounded top surfaces with a white spot. Dark red shading in rows 7-11 sits under each cap's front edge, and short grey stems show in rows 12-13. The caps have a top and a visible front or underside, so this reads as 3/4 view and not a flat slab or a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a tiny prop, smaller than one 16x16 tile, so the per-tile fact is 0 and I judged it by eye. It has 16 distinct colours in total, more than reference tree-1a786c (10), which supports a modest ramp. The red caps appear to have highlight, mid and dark reds plus pale spots, and the stems have two or three creams or greys, so about 5 steps. Only 18% of the dark edge pixels are neutral, so the outline leans dark red-brown rather than black, and it is not a uniform sticker line. Near-flat coverage is 0%, and there are no 5x5 flat fills. It is thinner than the dense tree canopies, but for a small ground prop it is roughly equal to a simple reference. A careful artist would accept it on grass, so it passes narrowly.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19206
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "central red cap with white spot",
+      "rows": "4-7",
+      "evidence": "b",
+      "front_edge_line_row": 7,
+      "eave_shadow_rows": "7-9"
+     },
+     {
+      "part": "left red cap",
+      "rows": "8-11",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": "10-11"
+     },
+     {
+      "part": "right small red cap",
+      "rows": "9-11",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": "11"
+     },
+     {
+      "part": "grass tuft / stems base",
+      "rows": "11-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 6,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The central cap's width profile goes 4 (row 4), 7 (rows 5-6), then 5 (row 7). It widens and narrows again, so it reads as a rounded cap seen from above, and the white spot sits on its top surface at rows 5-6. Dark underside or gill shadow follows at rows 7-9 (#9e2514, #61160d). Below that are the stems and shadow at rows 9-13, with width falling 11, 7, 4, 2, about 5-6 rows of front face. The left and right caps (rows 8-11 and 9-11) have the same pattern: a red top with a dark underside. The cluster is an organic prop with both a top surface and a front face, so it reads as three_quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a tiny cluster of about 10x7 source pixels, smaller than one tile, so the per-tile tone count is 0 and I judged it by eye. It has 16 distinct colours, which is a lot for a piece this small. The red caps show roughly 4 steps (highlight, mid red, dark red, deep shadow) plus white spots, and the stems carry a separate light-to-shadow ramp. Only 18% of the dark edge pixels are neutral, so the outline leans dark red-brown against the caps and is not a black sticker line. There are no 5x5 flat fills (0% near-flat). It is less layered than the big tree references, which is expected for a ground prop of this size. Next to the references it does not look flat or sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16914
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "central mushroom cap (red dome with white spot)",
+      "rows": "4-7",
+      "evidence": "b",
+      "front_edge_line_row": 7,
+      "eave_shadow_rows": "7-9"
+     },
+     {
+      "part": "left mushroom cap",
+      "rows": "8-11",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": "10-11"
+     },
+     {
+      "part": "right small mushroom cap",
+      "rows": "9-11",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stems",
+      "rows": "11-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 4,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The width profile of the central cap runs 4,7,7,5 over rows 4-7, so it widens and then narrows, which gives a domed top. A pale spot sits on it at row 6 and a dark underside/eave band follows at rows 7-9. The left cap (rows 8-11, width 6 to 11) and the right cap (rows 9-11) are drawn the same way. Under the caps, short stems and shadow at rows 11-13 (width 7, 4, 2) form the front face. The three caps overlap, so the whole cluster is a 3/4 view of caps over stems, not a flat slab and not a pure front elevation. The caps are small, so the top reads at only about 4 rows."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a tiny sub-tile prop of about 10x8 source pixels, so the per-tile tone count of 0 is not used against it. It still carries 16 distinct colours in that small area, more than the 10 total in reference tree-1a786c. The red caps show highlight, mid and dark red steps plus white spots, and the stems have a cream-to-shadow ramp. That makes roughly 4 steps per material against the references' 6-7. Only 18% of dark edge pixels are near-neutral, so the outline is mostly a tinted dark red-brown rather than a black sticker line, and the forms separate by value. Near-flat coverage is 0%, with no large flat fills. It reads slightly less dense than the large trees, which is expected for a small ground prop, and it looks acceptable beside the references rather than flat or sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17353
+  }
+ ],
+ "decidedAt": "2026-10-24T13:35:28.275Z",
+ "cells": {
+  "16": [
+   "27ca823fc3a83d7b"
+  ],
+  "24": [
+   "743ee6a73fb13279",
+   "89dc06bfce10b33e",
+   "bc6b354606044387",
+   "c3a07cdd8f70a6dc",
+   "d69fa092dd9e3164",
+   "d7c26d3e967558ba"
+  ],
+  "32": [
+   "2c890f5f43b1be81",
+   "9ee7746924f52084",
+   "9febe22a18e56b2b",
+   "a0834f8cb06bc7e6",
+   "a95881696d17823a",
+   "e7aa0c53bbdb0d81"
+  ],
+  "48": [
+   "268c5c35025106b2",
+   "3d0185cde7204b58",
+   "65cf21651dbe2cb0",
+   "913622b32a4bd5e1",
+   "dec5a7c85dfc5a2f",
+   "ef1e01651cd22cd6"
+  ]
+ }
+}

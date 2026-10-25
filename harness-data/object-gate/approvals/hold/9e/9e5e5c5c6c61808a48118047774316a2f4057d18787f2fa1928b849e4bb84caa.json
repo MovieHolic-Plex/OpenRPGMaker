@@ -1,0 +1,14 @@
+{
+ "schema": "oprn-object-gate-hold-decision/1",
+ "pixelSha256": "9e5e5c5c6c61808a48118047774316a2f4057d18787f2fa1928b849e4bb84caa",
+ "profileHash": "4d8774b517f41638",
+ "kind": "terrain",
+ "decision": "allow",
+ "decidedBy": "supervisor (delegated by user 2026-10-21)",
+ "decidedAt": "2026-10-22T00:26:55.685Z",
+ "by": "human",
+ "via": "review-page",
+ "reasons": [],
+ "note": "묶음 허용: fallen rooms r37: dais riser + steps, ash-bed great stone brazier — fallen-rooms-r37 (dais riser stone/L/R, dais steps stone, great stone brazier ash bed) — delegated by user to supervisor 2026-10-21; Opus VQA receipt ",
+ "sig": "56dac42e5ae0e39d7e2642bde8ea829d0d3de63b3296868f695b99c22d3e93c7"
+}

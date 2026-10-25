@@ -297,6 +297,12 @@
   width: 100%;
 }
 
+/* 검색칸 필터는 hidden 만 켠다 — 위 display:grid 가 UA 의 [hidden] 을 이겨 숨김이 안 먹었다. */
+.event-custom-select-option[hidden],
+.event-custom-select-group[hidden] {
+  display: none;
+}
+
 .event-custom-select-option:focus-visible {
   box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 55%, transparent) inset;
   outline: 2px solid var(--accent);

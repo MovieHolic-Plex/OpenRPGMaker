@@ -1,3 +1,4 @@
+import { isTouchUiHost } from "@/player/touchTap";
 import { stepStopReason, stopsReading } from "@/project/dialogueSystem";
 import { applySpriteLookStep, playParticleEffect } from "@/player/playSceneFieldStaging";
 import { playQuickTimeEvent, playTeleportMenu, playTimedChoice } from "@/player/playSceneMinigames";
@@ -16,12 +17,16 @@ import {
   showPictureState,
 } from "@/project/session";
 import { playMonsterSfx } from "@/player/monsterSfx";
+import { playDoorOpenBeforeTransfer } from "@/player/playSceneFieldFx";
 import { store } from "@/project/store";
+import { COMPANION_SCENE_FLAG, syncFollowerSceneVisibility } from "@/player/playSceneFollowers";
 import { setEventSpritePattern } from "@/player/eventSpriteResources";
 import { playAudioCommand, stopAudioChannel, stopAudioCommand } from "@/player/audio";
 import { resolveEventPage } from "@/project/io";
 import { createInterpreter, type StepResult } from "@/player/interpreter";
 import type { Interpreter } from "@/player/interpreter";
+import { applyDialogueFacing } from "@/player/playSceneDialogueFacing";
+import { stageBusts } from "@/player/playSceneBustStage";
 import { playInn, playShop } from "@/player/playSceneCommerce";
 import { playOpenChest } from "@/player/playSceneChest";
 import { dialogueHost, dialogueUi } from "@/player/playSceneDom";
@@ -34,11 +39,12 @@ import type { PlaySceneContext } from "@/player/playSceneTypes";
 import { resourceDisplayName } from "@/player/resourceDisplay";
 import { assertNever } from "@/player/playSceneTypes";
 import { tryBoardVehicle, tryGetOffVehicle } from "@/player/playSceneVehicles";
-import type { Command, MessageWindowSettings } from "@/project/types";
+import type { Command, MessageWindowSettings, MoveCommand } from "@/project/types";
 import { characterSpriteY, footprintSpriteX } from "@/player/characterDepth";
 import { waitForEventKey } from "@/player/eventInput";
 import { abortHop, PLAYER_SHADOW_KEY } from "@/player/characterHopRuntime";
-import { applyCameraControl } from "@/player/playSceneCamera";
+import { applyCameraControl, restoreCameraAfterCutsceneSkip } from "@/player/playSceneCamera";
+import { cameraViewOrigin } from "@/player/cameraScreen";
 import { applyLightingStep } from "@/player/playSceneLighting";
 import { playMapAnimation } from "@/player/playSceneMapAnimations";
 import { playPathfindMove } from "@/player/playScenePathfinding";
@@ -299,9 +305,11 @@ export async function runCommands(
   observe("started");
   try {
     let result = interpreter.start(), normalCompletion = true, handledFailure = false, lostBattle = false;
-    scene.refreshRuntimeSurfaces();
+    // 첫 걸음이 다른 맵으로 가는 이동(문·출구 이벤트)이면 지금 맵을 다시 그리지 않는다 — 곧 버릴 맵의 타일·이벤트를
+    // 다시 깔면서 쓰레기 수거까지 겹쳐, 문 칸을 밟는 순간 한 프레임이 100ms 넘게 멈췄다(2026-10-24 프로파일).
+    if (!(result.kind === "transfer" && result.mapId !== scene.map.id)) scene.refreshRuntimeSurfaces();
     while (result.kind !== "done" && current()) {
-      if (isCutsceneSkippable(activeSession)) scene.showRuntimeOverlay("cutscene-skip-hint", "Esc Esc: 컷신 건너뛰기");
+      if (isCutsceneSkippable(activeSession)) scene.showRuntimeOverlay("cutscene-skip-hint", isTouchUiHost(scene.game?.canvas) ? "B 두 번: 컷신 건너뛰기" : "Esc Esc: 컷신 건너뛰기");
       const step = result;
       if (step.kind === "changeTile") changedTerrainMaps.add(step.mapId);
       result = await consumeBlockingStep(scene, interpreter, step, currentEventId, skipController, current, () => { handledFailure = true; });
@@ -359,6 +367,7 @@ function createCutsceneSkipController(scene: PlaySceneContext, interpreter: Inte
     if (!secondEscape) return;
     event.preventDefault();
     result = interpreter.jumpToLabel(CUTSCENE_END_LABEL);
+    restoreCameraAfterCutsceneSkip(scene);
     scene.refreshRuntimeSurfaces();
     notify();
   };
@@ -409,6 +418,11 @@ async function consumeBlockingStep(
         ? runtimeEventViewsForMap(project, scene.map, scene.session, scene.eventPositions).find((view) => view.event.id === currentEventId)?.event
         : undefined;
       const speaker = step.speaker ?? getCharacterProfile(project, event?.characterId)?.displayName;
+      markCompanionSpeaking(project, scene, speaker);
+      // 말하는 인물이 듣는 인물 쪽으로 돈다(둘 다 맵에 있고 가까울 때, text.autoFace=false 면 안 돈다).
+      applyDialogueFacing(scene, step, currentEventId);
+      // 흉상 좌우·듣는 흉상을 맵 위 자리로(text.bustSide = "stage").
+      const staged = stageBusts(scene, step);
       await dialogue.showText({
         speaker,
         look: resolveDialogueLook(project, {
@@ -421,7 +435,8 @@ async function consumeBlockingStep(
         }),
         ...dialogueSceneHooks(scene, { speaker, currentEventId }),
         body: step.body,
-        face: step.face,
+        face: staged ? staged.face : step.face,
+        ...(staged ? { stageListener: true, ...(staged.listenerFace ? { listenerFace: staged.listenerFace } : {}) } : step.listenerFace ? { listenerFace: step.listenerFace } : {}),
         settings: textWindowSettings(scene.session.messageWindowSettings ?? DEFAULT_MESSAGE_WINDOW_SETTINGS, step.position),
         textContext: { session: scene.session, project: store.getCurrent() },
         playerTileY: scene.tileY,
@@ -448,6 +463,8 @@ async function consumeBlockingStep(
           textContext: { session: scene.session, project: store.getCurrent() },
           playerTileY: scene.tileY,
           mapHeight: scene.map.height,
+          // 대사와 같은 화면 속 높이로 가림을 판정한다(타일 높이만 보면 카메라가 맵 끝에 걸릴 때 대사와 다른 쪽을 고른다).
+          ...playerScreenYOf(scene),
         });
         const skipped = skipController.takeResult();
         if (skipped) return skipped;
@@ -525,10 +542,16 @@ async function consumeBlockingStep(
       const finishTransfer = owner?.beginAuthoredTransfer(step.mapId);
       if (owner && !finishTransfer) return { kind: "done" };
       // 몬스터 장르: 다른 맵으로 드나드는 문 소리(체육관 이름이면 무거운 문). 다른 장르는 무음 그대로.
+      let genreDoorSound = false;
       if (step.mapId !== scene.map.id) {
         const project = store.getCurrent();
         const destinationName = project.maps[step.mapId]?.name ?? "";
-        playMonsterSfx(project, /체육관|gym/i.test(destinationName) ? "gym-door" : "door-open");
+        genreDoorSound = playMonsterSfx(project, /체육관|gym/i.test(destinationName) ? "gym-door" : "door-open") === true;
+      }
+      // 문 열림 연출: door 생략 = 자동(문 캐릭터 시트이거나 이벤트 칸·바로 윗칸에 여닫는 문 타일일 때만),
+      // true = 켜기(주인공 앞 문 타일까지 찾는다), false = 끄기. 성문·통로·맵 가장자리·계단은 자동에서 연출이 없다.
+      if (step.mapId !== scene.map.id && step.door !== false) {
+        try { await playDoorOpenBeforeTransfer(scene, currentEventId, { silent: genreDoorSound, mode: step.door === true ? "on" : "auto" }); } catch (error) { console.warn("[player] door open fx", error); }
       }
       try { await scene.transferTo(step); }
       finally { finishTransfer?.(); }
@@ -555,6 +578,8 @@ async function consumeBlockingStep(
     case "tacticsBattle": {
       dialogue.hide();
       const result = await playTacticsBattle(scene, step);
+      // null = 전투 도중 플레이가 끝났다. 이벤트를 더 진행하지 않는다(battleProcessing 의 null 과 같다).
+      if (result === null) return { kind: "done" };
       if (result === undefined) return resumeAfterSurface(scene, interpreter);
       // 패배 불허 전투의 패배는 게임 오버다(battleProcessing 과 같은 규칙).
       if (result === "defeat" && !step.canLose) { applyBattleDefeat(scene); return { kind: "done" }; }
@@ -582,14 +607,15 @@ async function consumeBlockingStep(
     }
     case "moveEvent": {
       const target = resolveMoveEventTarget(step.eventId, currentEventId);
+      const moves = bindStageTargets(step.moves, currentEventId);
       if (target === PLAYER_MOVE_TARGET) {
         // 주인공 강제 이동: 이벤트 무버가 아니라 플레이어를 한 칸씩 걷게 한다.
-        startPlayerRoute(scene, step.moves, step.repeat);
+        startPlayerRoute(scene, moves, step.repeat);
         if (step.wait) {
           await Promise.race([waitForPlayerRouteComplete(scene), skipController.waitForSkip()]);
         }
       } else {
-        scene.registerAutonomousMover(target, step.moves, step.repeat);
+        scene.registerAutonomousMover(target, moves, step.repeat);
         scene.commandMoveRouteEventIds.add(target);
         if (step.wait) {
           await Promise.race([waitForMoverComplete(scene, target), skipController.waitForSkip()]);
@@ -929,6 +955,34 @@ function playerScreenYOf(scene: PlaySceneContext): { playerScreenY?: number } {
   const sprite = scene.player;
   if (!camera || !sprite || !(camera.height > 0)) return {};
   const centerY = sprite.y - (sprite.displayHeight > 0 ? sprite.displayHeight : 0) * (sprite.originY ?? 1) + (sprite.displayHeight > 0 ? sprite.displayHeight : 0) / 2;
-  const ratio = ((centerY - camera.scrollY) * camera.zoom) / camera.height;
+  // 카메라 origin 기준 확대를 반영한다(cameraScreen.ts). 예전 (y - scrollY) * zoom 은 배율 2(아스트라 호라이즌)에서
+  // 화면 가운데 주인공을 1.00(맨 아래)으로 읽어 창을 위로 보냈다.
+  const ratio = ((centerY - cameraViewOrigin(camera).top) * camera.zoom) / camera.height;
   return Number.isFinite(ratio) ? { playerScreenY: Math.max(0, Math.min(1, ratio)) } : {};
+}
+
+/** 다가가기·쪽으로 돌기의 대상 "@this"(이 이벤트)를 실제 id 로 묶는다 — 경로를 받는 인물은 명령을 실행한 이벤트를 모른다. */
+function bindStageTargets(moves: MoveCommand[], currentEventId: string | undefined): MoveCommand[] {
+  if (!moves.some((m) => (m.kind === "approach" || m.kind === "turnToward") && (m.target === "@this" || m.target === "this-event"))) return moves;
+  return moves.map((m) => (m.kind === "approach" || m.kind === "turnToward") && (m.target === "@this" || m.target === "this-event")
+    ? { ...m, target: currentEventId ?? "" } : m);
+}
+
+/**
+ * companions.display "scenesOnly"(FF6 식): 도는 이벤트에서 선두가 아닌 파티원이 말하면 그 이벤트가 끝날 때까지
+ * 동료를 주인공 옆에 세운다. 평범한 NPC 대화에서는 동료가 튀어나오지 않는다.
+ */
+function markCompanionSpeaking(project: ReturnType<typeof store.getCurrent>, scene: PlaySceneContext, speaker: string | undefined): void {
+  if (project.system.companions?.display !== "scenesOnly" || !speaker?.trim()) return;
+  if (scene.session.flags[COMPANION_SCENE_FLAG] === true) return;
+  const name = speaker.trim();
+  const companions = scene.session.partyActorIds.slice(1);
+  const speaks = companions.some((actorId) => {
+    const own = scene.session.actorNames?.[actorId]?.trim();
+    const record = project.database.actors.find((actor) => actor.id === actorId);
+    return name === own || name === record?.name?.trim() || name === record?.nickname?.trim();
+  });
+  if (!speaks) return;
+  scene.session.flags[COMPANION_SCENE_FLAG] = true;
+  syncFollowerSceneVisibility(scene);
 }
