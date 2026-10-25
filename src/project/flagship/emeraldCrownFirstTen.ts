@@ -60,9 +60,11 @@ function heroIntroductionCommands(): Command[] {
   const se = (resourceId: string): Command => ({ kind: "playAudio", resourceId, channel: "se", loop: false });
   const BG = "astra_stage_bg", PROF = "astra_stage_professor", HERO = "astra_stage_hero";
   const lab = emeraldOpeningBackdrop("lab");
-  // 주인공: 24×32 걷기 칸을 4배(96×128), 가운데 (128,154). 박사 흉상: 64×64 를 3배(192×192).
-  const hero = { x: 80, y: 90, scale: 400 }, center = { x: hero.x + 48, y: hero.y + 64 };
-  const shrink = 40, shrunk = { x: Math.round(center.x - (24 * shrink) / 200), y: Math.round(center.y - (32 * shrink) / 200) };
+  // 주인공: 24×32 걷기 칸을 4배(96×128). 박사 흉상: 64×64 를 3배(192×192).
+  const hero = { x: 80, y: 90, scale: 400 };
+  // 줄어든 끝 = 방에 선 주인공 그 자리·그 크기(시작 칸 (5,5), 맵 그림 2배 → 걷기 칸 200%, 놀이 화면 px 실측 2026-10-25).
+  // 무대가 걷히면 그림 주인공이 맵 주인공과 겹친 채 남았다가 지워진다 — 「작아지며 세계로 들어간다」.
+  const inWorld = { x: 184, y: 143, scale: 200 };
   return [
     picture(BG, lab.resourceId, 0, -32, 200),
     picture(PROF, astraCastBustId("professor", "happy"), 264, 26, 300, 0),
@@ -87,8 +89,8 @@ function heroIntroductionCommands(): Command[] {
     // 주인공이 작아지며 세계로 들어간다: 박사가 먼저 걷히고, 주인공이 가운데로 줄어드는 동안 무대(연구소 그림)가 걷힌다.
     picture(PROF, astraCastBustId("professor", "happy"), 264, 26, 300, 0, 300, true),
     se("cc0-sound-monster-evolve-after"),
-    picture(HERO, "actor:actor_hero", shrunk.x, shrunk.y, shrink, 255, 1000, false, "easeIn"),
-    picture(BG, lab.resourceId, 0, -32, 200, 0, 1100, true),
+    picture(HERO, "actor:actor_hero", inWorld.x, inWorld.y, inWorld.scale, 255, 900, true, "easeIn"),
+    picture(BG, lab.resourceId, 0, -32, 200, 0, 700, true),
     { kind: "erasePicture", pictureId: HERO },
     { kind: "erasePicture", pictureId: PROF },
     { kind: "erasePicture", pictureId: BG },

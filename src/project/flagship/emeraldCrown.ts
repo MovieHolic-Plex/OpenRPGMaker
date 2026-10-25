@@ -219,7 +219,7 @@ const MAP_TITLES: Readonly<Record<string, string>> = {
 // 박사 소개(포켓몬 3세대 결, 2026-10-25 다시 짬): 환영 → 구슬에서 튀어나오는 몬스터 → 사람과 몬스터가 함께 사는 세계 → 「네 이야기를 들려주렴」.
 // 한 쪽에 두 줄, 줄마다 22자 안. Enter 로 넘기고 Esc 로 건너뛴다. 성별·이름은 이어서 내 방의 박사 무대(emeraldCrownFirstTen)에서 고른다.
 const OPENING_PAGES: EmeraldOpeningPage[] = [
-  { id: "emerald_intro_welcome", shot: "lab", text: "어서 와! 몬스터의 세계에\n온 걸 환영해!" },
+  { id: "emerald_intro_welcome", shot: "welcome", text: "어서 와! 몬스터의 세계에\n온 걸 환영해!" },
   { id: "emerald_intro_capsule", shot: "capsule", text: "나는 오르비스 연구소의 천문박사.\n몬스터를 연구하고 있단다." },
   { id: "emerald_intro_world", shot: "together", text: "이 세계에선 사람과 몬스터가\n서로 도우며 함께 살아간단다." },
   { id: "emerald_intro_companions", shot: "stage", text: "너도 곧 첫 동료를 만나게 될 거야.\n그 전에, 네 이야기를 들려주겠니?" },
@@ -1130,7 +1130,7 @@ function configureAstraDayTitle(project: Project): void {
   title.runners = astraIntroCast(project).starters.flatMap((starter, i) => starter.chip
     ? [{ resourceId: starter.chip.resourceId, characterIndex: starter.chip.index, direction: "right" as const, y: 230 - i * 2, speed: 58 + i * 4, scale: 2, delayMs: 600 + i * 700, everyMs: 11000, hop: true }]
     : []);
-  title.pressStart = { text: "PRESS START", blinkMs: 700, y: 196 };
+  title.pressStart = { text: "PRESS START", blinkMs: 700, y: 150 };
 }
 
 

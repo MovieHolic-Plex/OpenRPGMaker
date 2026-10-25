@@ -75,7 +75,7 @@ describe("Astra intro and professor shots", () => {
   });
   it("pops a monster out of the professor's capsule and walks people with their monsters", () => {
     const cast = { hero: chip, professor: chip, rival: chip, leader: chip, flyer: chip, wild: chip, starters: [{ frontResourceId: "a", chip, name: "토리프" }] };
-    for (const id of ["capsule", "together"] as const) expect(() => validateOpeningAnimatic(emeraldOpeningShot(id, cast), emeraldOpeningShotMs(id), id)).not.toThrow();
+    for (const id of ["welcome", "capsule", "together"] as const) expect(() => validateOpeningAnimatic(emeraldOpeningShot(id, cast), emeraldOpeningShotMs(id), id)).not.toThrow();
     expect(emeraldOpeningShot("capsule", cast).layers.some((l) => l.id === "starter" && l.resourceId === "a")).toBe(true);
   });
   it("reads actor:<id> as an actor walking-graphic picture", () => {

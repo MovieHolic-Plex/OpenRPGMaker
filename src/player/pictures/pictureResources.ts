@@ -20,14 +20,14 @@ export function resolvePictureSource(
   return resolveAssetResourceUrl(resourceId, project ? { project } : {});
 }
 
-/**
- * 배우 걷기 그림 픽처 — resourceId 를 "actor:<배우 ID>" 로 주면 그 배우가 지금 입은 걷기 그림(아래를 보고 선 칸)을 픽처로 보인다.
- * 성별 선택(Change Actor Graphic)·옷 갈아입기를 따르므로, 「주인공이 작아지며 세계로 들어간다」 같은 연출을 그림 없이 만든다.
- */
-export const ACTOR_PICTURE_PREFIX = "actor:";
 
-export function actorPictureActorId(resourceId: string | undefined): string | null {
-  if (!resourceId?.startsWith(ACTOR_PICTURE_PREFIX)) return null;
-  const id = resourceId.slice(ACTOR_PICTURE_PREFIX.length).trim();
-  return id.length > 0 ? id : null;
+// 배우 걷기 그림 픽처("actor:<배우 ID>") 판독은 프로젝트 층이 소유한다(검증기도 쓴다).
+export { ACTOR_PICTURE_PREFIX, actorPictureActorId } from "@/project/pictureSources";
+import { actorPictureActorId } from "@/project/pictureSources";
+
+/** 픽처로 그릴 수 있는 id 인가 — 배우 걷기 그림(있는 배우)이거나 이미지로 해석되는 리소스. 조수 제안·검증이 같은 판정을 쓴다. */
+export function pictureResourceDrawable(resourceId: string | undefined, project: Pick<Project, "assets"> & { readonly database?: Pick<Project["database"], "actors"> }): boolean {
+  const actorId = actorPictureActorId(resourceId);
+  if (actorId) return project.database?.actors.some((actor) => actor.id === actorId) ?? false;
+  return resolvePictureSource(resourceId, project) !== null;
 }

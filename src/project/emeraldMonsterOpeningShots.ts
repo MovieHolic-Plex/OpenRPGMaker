@@ -6,7 +6,7 @@ import type { AnimaticKey, AnimaticLayer, OpeningAnimatic } from './openingAnima
  * 별빛섬 맵을 구운 배경 위에 RPG Maker 2000 캐릭터 시트(24×32 칸, 12열 8인)와 64×64 몬스터 그림을 얹는다.
  * 무대 480×320 에서 모든 그림을 정확히 2배로 그린다 — 배경·캐릭터·몬스터 도트가 같은 크기로 보인다.
  */
-export type EmeraldOpeningShot = EmeraldOpeningBackdropId | 'region' | 'capsule' | 'together';
+export type EmeraldOpeningShot = EmeraldOpeningBackdropId | 'region' | 'capsule' | 'together' | 'welcome';
 /** 옛 생성기 소개를 고르게 나눠 싣는 기본 컷 순서(region 은 직접 고를 때만 쓴다). */
 export const EMERALD_OPENING_SHOTS: readonly EmeraldOpeningShot[] = ['dawn', 'route', 'lab', 'stage', 'gym', 'town'];
 export const EMERALD_OPENING_SHOT_MS = 4500;
@@ -235,6 +235,18 @@ function regionShot(cast: EmeraldOpeningCast): OpeningAnimatic {
   [{ id: 'wind', resourceId: 'cc0-se-orp-battle-swing', atMs: 200, durationMs: 1200, volume: 0.3 }]);
 }
 
+/** 환영: 연구소 한가운데 박사가 혼자 서서 반긴다(주인공은 아직 없다 — 성별·이름을 고르기 전이다). 반짝이가 흩날린다. */
+function welcomeShot(cast: EmeraldOpeningCast): OpeningAnimatic {
+  const professor = standAt(7, 6);
+  return shot([
+    backdrop('lab'),
+    { id: 'welcome-sparks', kind: 'particles', role: 'effect', space: 'screen', color: '#fff6c0', blend: 'lighter', x: 40, y: 20, width: 400, height: 200, opacity: 0.8,
+      particles: { preset: 'sparks', count: 24, seed: 12, speed: 8, size: 1.4 } },
+    walking('professor', cast.professor, 'down', [{ atMs: 0, x: professor.x, y: standAt(7, 4).y }, { atMs: 900, x: professor.x, y: professor.y }]),
+    emote('professor-emote', 'heart', professor, 1100, 3600),
+  ], { x: 240, y: 192 }, '#0b1420', [{ id: 'hello', resourceId: 'cc0-sound-monster-ui-confirm', atMs: 1100, durationMs: 400, volume: 0.45 }]);
+}
+
 /**
  * 박사가 구슬을 던지고, 터진 빛에서 첫 스타터가 튀어나와 하트를 띄운다(포켓몬 3세대 박사 소개의 「몬스터가 튀어나온다」).
  * 연구소 그림 위에서 박사가 선 채 구슬이 포물선을 그리고, 바닥에 닿는 순간 하얀 빛이 터진다.
@@ -320,7 +332,7 @@ function townShot(cast: EmeraldOpeningCast): OpeningAnimatic {
 }
 
 const BUILDERS: Record<EmeraldOpeningShot, (cast: EmeraldOpeningCast) => OpeningAnimatic> = {
-  dawn: dawnShot, route: routeShot, lab: labShot, stage: stageShot, gym: gymShot, town: townShot, region: regionShot, capsule: capsuleShot, together: togetherShot,
+  dawn: dawnShot, route: routeShot, lab: labShot, stage: stageShot, gym: gymShot, town: townShot, region: regionShot, capsule: capsuleShot, together: togetherShot, welcome: welcomeShot,
 };
 
 export function emeraldOpeningShot(id: EmeraldOpeningShot, cast: EmeraldOpeningCast): OpeningAnimatic {

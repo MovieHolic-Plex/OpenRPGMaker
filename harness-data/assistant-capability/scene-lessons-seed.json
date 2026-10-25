@@ -557,6 +557,30 @@
     "in the shipped player the showcase overlay shows the hero sprite and the confirm burst"
    ],
    "lint0": []
+  },
+  {
+   "id": "pokemon-style-opening",
+   "label": "포켓몬식(3세대) 오프닝 전체: 짧은 밝은 인트로 → 타이틀 → 박사 소개 → 성별·이름 → 작아지며 세계로",
+   "port": 19528,
+   "lessons": [
+    "title-intro-track",
+    "title-runners",
+    "title-press-start",
+    "opening-capsule-pop",
+    "actor-picture",
+    "name-showcase"
+   ],
+   "prompt": "포켓몬식 오프닝 만들어 줘. 전원을 켜면 10초 안쪽으로 맑은 들판에서 스타터들이 뛰노는 짧은 인트로, 그다음 로고와 깜빡이는 PRESS START 타이틀. 새 게임을 누르면 박사가 「어서 와! 몬스터의 세계에 온 걸 환영해」 하며 구슬에서 몬스터를 꺼내 보여 주고, 사람과 몬스터가 함께 사는 세계를 짧게 소개해 줘. 그다음 남자아이/여자아이를 고르고 이름을 지으면, 「모험이 시작된다」 하고 주인공이 작아지며 방으로 들어가게 해 줘. 밤하늘·달·별똥별은 쓰지 마.",
+   "requirements": [
+    "system.titleIntro.enabled and skippable; every scene is an animatic; total durationMs <= 10000",
+    "no titleIntro layer uses particles preset stars or meteors, an image tint, or a night/moon resource",
+    "titleScreen.pressStart present and titleScreen.runners has at least one entry",
+    "system.opening has 3-8 pages, each line <= 22 Korean characters and <= 2 lines, one page shows a monster popping out of a capsule",
+    "the start map's first autorun has a 2-option gender choice that changes the hero graphic and an enterHeroName",
+    "after naming, a showPicture of actor:<hero actor id> shrinks (scale goes down with durationMs >= 500) and the stage pictures are erased",
+    "every animatic composition passes validateOpeningAnimatic and the project saves and reloads"
+   ],
+   "lint0": []
   }
  ]
 }

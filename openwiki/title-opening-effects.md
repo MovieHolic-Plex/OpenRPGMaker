@@ -409,7 +409,13 @@ piano/bell/strings/bass, gain/pan과 MIDI pitch36..96·beat·duration·velocity�
 
 ## 타이틀 앞 인트로 트랙·별·달리기·PRESS START·이름 쇼케이스 (2026-10-25, 아스트라 호라이즌 1.18)
 
-포켓몬 루비·에메랄드식 「전설 추격 인트로 → 타이틀 → 박사 소개 → 이름 짓기」를 엔진 기능만으로 만든다. 데모 구현은 `src/project/flagship/astraTitleIntro.ts`·`emeraldCrown.ts`, 영상 캡처는 `scripts/qa/runtime/astra-opening.capture.mjs <play.json> <outDir>`.
+포켓몬 3세대(루비·사파이어·에메랄드, 파이어레드·리프그린)식 「짧고 밝은 인트로 → 타이틀 → 박사 소개 → 성별·이름 → 주인공이 작아지며 세계로」를 엔진 기능만으로 만든다. 데모 구현은 `src/project/flagship/astraTitleIntro.ts`·`emeraldCrown.ts`·`emeraldCrownFirstTen.ts`(박사 무대), 영상 캡처는 `scripts/qa/runtime/astra-opening.capture.mjs <play.json> <outDir>`.
+
+아스트라 흐름(2026-10-25 다시 짬 — 첫 판의 밤하늘·별·달을 가르는 전설 실루엣은 『폴른 스타』와 너무 닮아 반려됐다):
+1. 인트로 8.6초(`system.titleIntro`, 아무 키나 → 타이틀): 맑은 들판 키아트 위로 스타터 셋이 달려 들어와 깡충 → 정면 그림이 튀어 올라 하트·느낌표 → 같은 들판 위로 로고가 통통 박히고 하얀 섬광.
+2. 타이틀: 같은 들판, 스타터 달리기, 깜빡이는 PRESS START.
+3. 박사 소개(`system.opening`, Enter·Esc): `welcome`(박사 혼자 반김) → `capsule`(구슬이 포물선을 그려 터지고 첫 스타터가 튀어나옴) → `together`(라이벌·관장이 제 몬스터를 데리고 큰길을 오감) → `stage`(스타터 셋).
+4. 박사 무대(내 방 첫 자동 이벤트): 연구소 그림·박사 흉상(cg-nat10)·주인공 그림(`actor:actor_hero`)을 픽처로 띄워 남자아이/여자아이 → 이름 쇼케이스 → 「모험이 시작된단다」 → 주인공 그림이 방에 선 주인공 자리·크기로 줄고 무대가 걷힌다.
 
 | 기능 | 데이터 | 조수 경로 |
 |---|---|---|
@@ -422,9 +428,13 @@ piano/bell/strings/bass, gain/pan과 MIDI pitch36..96·beat·duration·velocity�
 | PRESS START | `titleScreen.pressStart { text?, blinkMs?, y? }` — 첫 입력까지 메뉴를 숨기고 깜빡인다. 입장 시퀀스가 도는 동안의 키는 시퀀스 건너뛰기가 먹는다 | `set_title_screen`(null 이면 지움) |
 | 박사 소개 지역 비행 | 에메랄드 오프닝 컷 `region`(6.5초): 맵 그림 넷을 1배로 바다 위에 띄워 카메라가 날고, 구름이 섬 가장자리를 덮고, 맵 이름표가 차례로 뜬다. `emeraldOpeningShotMs` 가 컷 길이 | 페이지의 `shot:"region"` |
 | 스타터 튀어나옴 | `stage` 컷: 빛 구슬 → 섬광 → 뛰어올라 착지 squash(기준점 발밑) → 반짝이·이름표, 박마다 효과음 | 기본 컷 |
+| 박사 소개 새 컷 | `welcome`(박사 혼자 반김)·`capsule`(구슬 포물선 → 섬광 → 첫 스타터 squash·하트, ball-throw/ball-break 효과음)·`together`(사람과 몬스터가 짝지어 걷기) | 페이지의 `shot` |
+| 배우 그림 픽처 | `showPicture.resourceId: "actor:<배우 ID>"` — 그 배우가 지금 입은 걷기 그림(아래 보기 서 있는 칸, 24×32 = 배율 100%). 성별 선택·옷 갈아입기를 따른다. 기준점은 왼쪽 위라 줄일 때 x·y 를 함께 옮긴다. 검증기(`commandReferenceValidation`·`eventDraftValidator`)는 리소스 대신 배우가 있는지 본다 | 조수 그림 목록(`eventResourceCatalog`)에 배우마다 `actor:` 항목이 뜬다 |
 | 이름 쇼케이스 | `enterHeroName.presentation: "showcase"` — 별빛 배경에서 주인공 걷기 그림(옷 갈아입기 덮어쓰기 반영)이 사방으로 돌고, 확정하면 반짝이가 터진 뒤 닫힌다. 입력 방식은 기본 창과 같다 | 명령 카탈로그 `presentation` enum |
 
 함정:
 - 타이틀 무대는 놀이 해상도(아스트라 480×320)인데 옛 층·입자는 320×240 을 가정한다. 땅 그림을 tile 로 깔면 가로로 반복돼 두 장이 붙어 보였다 → `fit:"cover"`.
 - 애니메틱 층의 기본 기준점은 왼쪽 위(0,0)다. squash 를 발밑에서 하려고 `anchorY:1` 을 주면 y 키도 발끝 자리로 옮겨야 한다.
-- 새 화소 없음: 밤 풀밭은 기존 타이틀 그림에서 하늘을 오리고 밤 색으로 다시 칠한 것(`scripts/content/astra/astra-night-cutouts.py`). 3/4 관문(object-gate) 대상인 새 그림이 아니며 관문 영수증도 없다.
+- 새 화소 없음: 들판 키아트·맵 그림·몬스터 그림·흉상 모두 기존 그림이다. 3/4 관문(object-gate) 대상인 새 그림이 없고 관문 영수증도 없다. 첫 판의 밤 풀밭 재칠 그림은 반려와 함께 지웠다.
+- 박사 무대의 「줄어든 끝」 좌표는 그 방(13×9, 시작 칸 (5,5))의 실측이다 — 방·시작 칸을 바꾸면 다시 잰다.
+- 컷 끝 프레임을 찍으면 다음 컷으로 넘어가는 페이드 중이라 어둡게 찍힌다. 판정은 컷 가운데 프레임으로 한다.
