@@ -84,8 +84,8 @@ const extra = (resource: string, index: number) => ({ resource, index });
 function blossomShot(): OpeningAnimatic {
   return shot([
     mapBackdrop("blossom", { x: 0, y: -6 }, { x: -20, y: -20 }),
-    walker("w1", extra(M.modern3, 0), "right", { x: 180, y: 188 }, { x: 390, y: 188 }),
-    walker("w2", "seoha", "right", { x: 110, y: 200 }, { x: 300, y: 200 }, SHOT_MS, 400),
+    walker("w1", extra(M.modern3, 0), "right", { x: 230, y: 134 }, { x: 420, y: 134 }),
+    walker("w2", "seoha", "right", { x: 190, y: 198 }, { x: 390, y: 198 }, SHOT_MS, 400),
     petals("petals-far", 70, 3, { opacity: 0.7 }),
     petals("petals-near", 40, 11, { particles: { preset: "petals", count: 40, seed: 11, size: 3, speed: 40 } } as Partial<AnimaticLayer>),
     caption("봄. 새 회사로 가는 첫 월요일."),
