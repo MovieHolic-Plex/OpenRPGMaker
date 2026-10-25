@@ -76,7 +76,8 @@ export interface PlainPiTurnInput {
   readonly hasActivePlan: boolean;
   readonly autonomy: AutonomyResolution;
   /** 계획 전용 턴 이외에 요청 의도와 위치 안내 권한을 읽는다. */
-  readonly declarer: () => IntentDeclarer;
+  /** attempt 2 = 시간 초과 뒤 재시도(호출자가 벽시계를 늘린다). */
+  readonly declarer: (attempt?: number) => IntentDeclarer;
   readonly piTeam: boolean;
   /** 선언 호출 직전 — 패널은 「의도 읽는 중…」 을 띄운다. */
   readonly onDeclaring?: () => void;
@@ -198,13 +199,22 @@ export async function classifyPlainPiTurn(input: PlainPiTurnInput): Promise<Plai
       selection,
       hasActivePlan: input.hasActivePlan,
     });
+    let intentTimedOut = false;
     let declared = await declareIntentCached(input.declarer(), declareFacts);
     // 공급자가 한 번 느렸다고 지시 전체를 버리지 않는다 — 시간 초과만 한 번 더 시도한다(분류 호출은 폴백을 캐시하지 않는다).
     // 실측 2026-10-13: 동시 실행 5건 중 2건이 「시간 초과(30000ms)」로 턴이 시작도 못 하고 끝났다.
     if (declared.intent.source === "fallback" && !plan.readOnly && /시간 초과/u.test(declared.error ?? "")) {
-      declared = await declareIntentCached(input.declarer(), declareFacts);
+      declared = await declareIntentCached(input.declarer(2), declareFacts);
+      // 느린 추론 공급자(2026-10-25 Salad DeepSeek: 30초 벽에 턴이 시작도 못 하고 죽었다)는 늘린 재시도도 넘길 수 있다.
+      // 그때는 턴을 버리지 않고 중립 선언(아무 것도 추측하지 않는다 — 노출 툴·계획은 본문 모델이 정한다)으로 간다.
+      if (declared.intent.source === "fallback" && /시간 초과/u.test(declared.error ?? "")) {
+        const { requestRequirements: _unresolved, ...neutral } = declared.intent as typeof declared.intent & { requestRequirements?: unknown };
+        void _unresolved;
+        declared = { ...declared, intent: neutral as typeof declared.intent };
+        intentTimedOut = true;
+      }
     }
-    if (declared.intent.source === "fallback" && !plan.readOnly) throw new Error(declared.error ?? "요청 범위를 확정하지 못했습니다. 다시 시도해 주세요.");
+    if (declared.intent.source === "fallback" && !plan.readOnly && !intentTimedOut) throw new Error(declared.error ?? "요청 범위를 확정하지 못했습니다. 다시 시도해 주세요.");
     plan = { ...plan, viewNavigation: declared.intent.source === "llm" && declared.intent.viewNavigation === true };
     if (declared.intent.source === "llm" && declared.intent.clarify && declared.intent.mode !== "question") clarifyIntent = declared.intent;
     // 선언이 확정한 것을 본문도 읽게 한다 — 세션 경로의 pushOrchestrationMessage(intentNote) 와 같은 자리.

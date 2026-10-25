@@ -358,11 +358,12 @@ function findNpcByName(map: GameMap, name: string): GameEvent | undefined {
 
 /** after NPC 의 어느 페이지에 장면을 이을지. 말 걸기 페이지가 여럿인데 afterPage 가 없으면 problem(페이지 목록). */
 function afterPageChoice(npc: GameEvent, afterPage: number | undefined): { pick?: number; problem?: string } {
-  const talkIdx = npc.pages.map((pg, i) => ({ pg, i })).filter(({ pg }) => { const k = (pg.trigger as { kind?: string } | undefined)?.kind; return k === undefined || k === "action"; }).map(({ i }) => i);
-  if (typeof afterPage === "number" && npc.pages[afterPage]) return { pick: afterPage };
+  const all = npc.pages ?? [];
+  const talkIdx = all.map((pg, i) => ({ pg, i })).filter(({ pg }) => { const k = (pg.trigger as { kind?: string } | undefined)?.kind; return k === undefined || k === "action"; }).map(({ i }) => i);
+  if (typeof afterPage === "number" && all[afterPage]) return { pick: afterPage };
   if (talkIdx.length <= 1) return { pick: talkIdx[0] ?? 0 };
   const list = talkIdx.map((i) => {
-    const pg = npc.pages[i]!;
+    const pg = all[i]!;
     const cond = (pg.conditions ?? []).map((c) => { const o = c as { kind?: string; switchId?: string; key?: string; value?: unknown }; return o.kind === "switch" ? `${o.switchId}=${o.value === false ? "꺼짐" : "켜짐"}` : o.kind === "selfSwitch" ? `셀프 ${o.key}` : String(o.kind); }).join(",") || "조건 없음";
     const line = (pg.commands ?? []).map((c) => (c as { body?: string; text?: string }).body ?? (c as { text?: string }).text).find((t) => typeof t === "string");
     return `${i}) ${cond} «${String(line ?? "").slice(0, 24)}»`;
@@ -914,8 +915,8 @@ export function buildEvent(run: BuildRun, spec: EventSpec): EventBuildResult {
       delete (talked as { id?: string }).id;
       const first = { ...structuredClone(p0), commands: [...(p0.commands ?? []), ...structuredClone(commands), { kind: "setSelfSwitch", key: "D", value: true }] };
       // 「장면 뒤」 페이지는 고른 페이지 바로 뒤에 둔다 — 뒤쪽 페이지(밤·사건 뒤)가 조건이 맞으면 여전히 이긴다.
-      const pages = npc.pages.map((pg) => structuredClone(pg));
-      pages.splice(pick, 1, first, talked as unknown as typeof pages[number]);
+      const pages: unknown[] = npc.pages.map((pg) => structuredClone(pg));
+      pages.splice(pick, 1, first, talked);
       const up = run.call("upsert_event", { mapId, replacePages: true, event: { id: npc.id, pages } });
       if (!up.ok) warnings.push(`after: NPC 에 잇지 못했다 — ${String(up.summary).slice(0, 160)}`);
       else {

@@ -2313,8 +2313,9 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
         hasActivePlan: workPlanSurfaceState?.active === true,
         autonomy: currentAutonomy(),
         // 로컬 CLI 엔진은 차례마다 CLI 프로세스를 새로 띄운다(실측 2026-10-20: codex exec 한 줄 답도 약 17초) — 30초 벽이면 의도 선언이 자주 잘린다.
-        declarer: () => {
-          const timeoutMs = isLocalCliProviderId(loadAiConfig().providerId) ? 120_000 : 30_000;
+        // 재시도(attempt 2)는 벽을 세 배로 — 느린 추론 공급자(DeepSeek 등)가 30초 벽에 턴을 통째로 잃었다(2026-10-25 Salad S2).
+        declarer: (attempt?: number) => {
+          const timeoutMs = (isLocalCliProviderId(loadAiConfig().providerId) ? 120_000 : 30_000) * (attempt && attempt > 1 ? 3 : 1);
           if (piIntentDeclarer?.timeoutMs !== timeoutMs) piIntentDeclarer = { timeoutMs, declarer: createLlmIntentDeclarer({ timeoutMs, coverageAudit: false }) };
           return piIntentDeclarer.declarer;
         },
