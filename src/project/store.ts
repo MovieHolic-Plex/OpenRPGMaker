@@ -349,6 +349,7 @@ class ProjectStore {
           this.persistedBaseline = null;
           throw new DbConnectionRequiredError("온라인 저장 설정이 필요합니다.");
         } else {
+          if (options.deferBootNormalization === true) this.repository.preferDeferredDigests?.();
           const { project, authority, target } = await this.readRemoteProject();
           bootMark("project-read");
           if (!project && target !== null && isLocalTarget(target)) {

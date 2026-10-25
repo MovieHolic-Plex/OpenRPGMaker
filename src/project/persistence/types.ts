@@ -173,6 +173,8 @@ export interface ProjectRepository {
    * 요약은 «호스트 본문 그대로» 의 값이어야 한다. 미루지 않는 어댑터는 두지 않는다.
    */
   settleDeferredDigests?(): Promise<void>;
+  /** 다음 로드 한 번은 정규화기가 돌 문서여도 요약을 미룬다 — 스토어가 정규화를 첫 화면 뒤로 미룰 때만 부르고, 정규화 전에 settleDeferredDigests 를 부른다. */
+  preferDeferredDigests?(): void;
   /** 지금 이 편집기 세션이 향하는 대상. 원격이면 설정·URL·저장된 선택에서 계산한다. */
   currentTarget(): ProjectTarget | null;
   status(disabledReason: DbPersistenceDisabledReason | null): PersistenceStatus;
