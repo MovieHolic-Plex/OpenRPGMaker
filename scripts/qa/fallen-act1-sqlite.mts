@@ -44,7 +44,17 @@ try {
     valenPages: db.troops.find((t) => t.id === "troop_fs_valen_crash")?.battleEventPages?.length ?? 0,
     machine: db.states.find((s) => s.id === "state_fs_valen_machine")?.runtimeEffects?.damageTypeRates ?? null,
     circuit: db.items.some((i) => i.id === "item_fs_circuit"),
-    companions: (p.system as { companions?: { display?: string } }).companions?.display ?? null,
+    companions: (p.system as { companions?: { display?: string; sceneFormation?: string } }).companions ?? null,
+    // 2026-10-25 규칙: 병사 1차 → 발렌 2차, 용 HP 숨김, 승강 장치 드러남, 자동 전투 없음·상태 해제·세이브 포인트 전용, 랜덤 조우 0, 덮치기.
+    squadTroop: db.troops.find((t) => t.id === "troop_fs_valen_squad")?.members.map((m) => m.enemyId) ?? [],
+    dragonHideHp: db.enemies.find((e) => e.id === "enemy_fs_moon_dragon")?.hideHp ?? null,
+    liftEvents: p.maps.fs_vault_b4?.events.filter((e) => e.id.startsWith("ev_fs_b4_lift_")).length ?? 0,
+    revealTiles: JSON.stringify(p.maps.fs_vault_b4?.events ?? []).split('"changeTile"').length - 1,
+    rules: { allowAutoBattle: p.system.allowAutoBattle ?? null, clearStatesAfterBattle: p.system.clearStatesAfterBattle ?? null, saveAccess: p.system.saveAccess ?? null },
+    randomRates: Object.values(p.maps).filter((m) => m.id.startsWith("fs_") && (m.encounterRate ?? 0) > 0).map((m) => m.id),
+    lungeFoes: Object.values(p.maps).reduce((n, m) => n + m.events.filter((e) => e.pages?.some((pg) => pg.movement?.chaseLunge)).length, 0),
+    hubSavepoint: p.maps.fs_hub?.events.some((e) => e.id === "ev_fs_hub_savepoint") ?? false,
+    valenFace: JSON.stringify(p).includes("shared-fs-inquisitor-valen-expressions-bust-base"),
     ending: (p.endings?.find((e) => e.id === "end_fs_act1") as { presentation?: { kicker?: string } } | undefined)?.presentation?.kicker ?? null,
   };
   console.log(JSON.stringify({ reloaded: true, projectDir, ...checks }, null, 1));
