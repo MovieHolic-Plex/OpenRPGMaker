@@ -9,7 +9,7 @@ import type {
   EventPageCondition,
 } from "../types";
 import { assert } from "./guards";
-import { validateOptionalResource } from "./resourceReferenceValidation";
+import { isKnownResourceId, validateOptionalResource } from "./resourceReferenceValidation";
 
 export type ReferenceContext = {
   appearanceIds?: ReadonlySet<string>;
@@ -355,7 +355,7 @@ function validateCommandReferences(command: Command, context: ReferenceContext):
       }
       return;
     case "showPicture":
-      assert(context.resourceIds.has(command.resourceId), `showPicture: resourceId가 존재하지 않습니다: ${command.resourceId}`);
+      assert(isKnownResourceId(context.resourceIds, command.resourceId), `showPicture: resourceId가 존재하지 않습니다: ${command.resourceId}`);
       return;
     case "playAudio":
       // 빈 id 는 모델이 음악 이름만 쓰고 id 를 빠뜨린 것이다(2026-10-25 조수 단독 게임 G12: 같은 거절 9번) — 고치는 법을 거절문에 싣는다.
