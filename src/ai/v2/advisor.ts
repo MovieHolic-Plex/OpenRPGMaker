@@ -8,6 +8,7 @@
 // 순수 모듈: 변경 요약·입력 압축·응답 해석·후속 지시문은 결정적 함수다. 모델 호출은 sideChat 하나로만 한다(워커·재생 하네스가 같이 쓴다).
 import type { Project } from "@/project/types";
 import { battleDataEmptied, placementContentProblems } from "./gameChecks";
+import { unsafeSpawnLines } from "@/project/chaserSpawnSafety";
 
 type Obj = Record<string, unknown>;
 const obj = (v: unknown): Obj | undefined => (v && typeof v === "object" && !Array.isArray(v) ? (v as Obj) : undefined);
@@ -279,6 +280,16 @@ export function summarizeProjectDiff(before: Project, after: Project, maxChars: 
   for (const line of battleDataEmptied(before, after, "").slice(0, 4)) out.push(`⚠ 비운 데이터: ${line.replace(/^\[[^\]]*\]\s*/u, "").split(" — ")[0]}`);
   // 놓기·방 쓰임(J5·J6·J40·J42·J64, 사용자 규칙): 차도 위 사람, 출구 길막, 카운터 손님 쪽 주인, 물건 밖 조사 이벤트, 다른 방 가구 — 「방을 예배당답게 꾸몄다」 같은 주장에 대어 본다.
   for (const line of placementContentProblems(before, after).slice(0, 5)) out.push(`⚠ 놓기: ${clip(line.split(" — ")[0]!, 360)}`);
+
+  // 추격자(J54·J61): 「순찰하다 보면 쫓는다」는 주장에 대어 볼 사실 — 순찰 길 유무·시야, 그리고 태어나자마자 잡히는 시작·체크포인트.
+  for (const map of Object.values(after.maps ?? {})) for (const ev of map.events ?? []) {
+    const mv = (ev.pages ?? []).map((page) => obj((page as unknown as Obj).movement)).find((m) => m?.type === "chase");
+    if (!mv) continue;
+    const steps = Array.isArray(obj(mv.route)?.moves) ? (obj(mv.route)!.moves as unknown[]).filter((m) => obj(m)?.kind === "move").length : 0;
+    const sight = Number(obj(mv.sight)?.range ?? mv.sightRange ?? 0);
+    out.push(`추격자 «${ev.name || ev.id}» ${ev.id} (${ev.x},${ev.y}) @${map.name || map.id}: ${steps ? `순찰 ${steps}걸음` : "순찰 없음(제자리)"} · 시야 ${sight || "기본"}`);
+  }
+  for (const entry of unsafeSpawnLines(after).slice(0, 3)) out.push(`⚠ 위협: ${clip(entry.line.split(" — ")[0]!, 300)}`);
 
   const text = out.join("\n");
   return text.length > maxChars ? `${text.slice(0, maxChars - 40)}\n… (요약 ${text.length}자 중 앞부분)` : text;
