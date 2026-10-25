@@ -8,6 +8,7 @@ import {translateTiles} from '../../src/project/objectStamp.ts';
 import {layerTileAt,setLayerTileAt,compactMapLayers} from '../../src/project/mapLayers.ts';
 import {canMove,isPassable} from '../../src/project/collision.ts';
 import {renderMapPng} from '../qa-game/render.mts';
+import {validateTilesetReferences,REFERENCE_LIMITS} from '../../src/project/tilesetReferences.ts';
 const profileId=process.argv.slice(2).find(a=>!a.startsWith('-'))??'beodeul';
 const profile=(JSON.parse(fs.readFileSync('src/harnesses/beodeul-building-review/profiles.json','utf8')).profiles as any[]).find(x=>x.id===profileId);assert(profile,'unknown profile '+profileId);
 const B=profile.bundle,EX=profile.example,IDS=B.ids as {house:string;shadow:string;foundation:string;docs:string};
@@ -18,14 +19,27 @@ const PROVENANCE=DELEGATED
  ?`**사용자 위임 허용**(2026-10-25)만 들어 있다: 그림 해시마다 3/4 관문(object-gate kind structure) 영수증 + 독립 검수자 둘(argon · klb-sonnet-5-5)의 원문 PASS 가 있고, 설치가 object-gate 출구를 다시 확인했다(결정 로그 ${profile.seedDir}/decisions.json, 프로필 ${profileId}). 반려·미통과 그림은 없다.`
  :`건물 검수 화면에서 **사람이 현재 그림 해시에 허용**한 건물만 들어 있다(결정 로그 harness-data/beodeul-building-review/decisions.json, 프로필 ${profileId}). 거절·미선택 그림은 없다.`;
 const ENSURE=DELEGATED?'ensureBeodeulMassing':'ensureBeodeulReviewed';
-const WALLS=DELEGATED?'벽 칸은 그린 이가 칸마다 적은 walk 격자(X 막힘·D 문·* 지나감)를 그대로 쓴다. 문 칸과 땅에 닿는 칸은 막힘이다(성문·시장홀 통로 칸만 예외).':'${WALLS}';
+const WALLS=DELEGATED?'벽 칸은 그린 이가 칸마다 적은 walk 격자(X 막힘·D 문·* 지나감)를 그대로 쓴다. 문 칸과 땅에 닿는 칸은 막힘이다. 열린 통로 칸은 두지 않는다(그림으로 확인할 수 없어 check 가 막는다).':'${WALLS}';
 const catalog=JSON.parse(fs.readFileSync(B.catalog,'utf8')),groundCatalog=JSON.parse(fs.readFileSync(EX.groundCatalog,'utf8'));
 const data=B.tiledata as string,pub=B.publicDir as string,label=profile.label as string;
 const p=createBlankProject(),ts=p.tilesets[B.hostTilesetId]!;
 const kits=new Map(ts.structureKits!.map(k=>[k.id,k]));
 const kidOf=(id:string)=>id.slice(IDS.house.length);
 const documents:{id:string;name:string;markdown:string}[]=[],images:{id:string;name:string;caption:string;dataUrl:string}[]=[];
-const add=(id:string,name:string,markdown:string)=>{fs.writeFileSync(`${data}/${id}.md`,markdown);documents.push({id,name,markdown});};
+// 문서 한 장은 REFERENCE_LIMITS.markdown(120k) 안이어야 한다 — 넘으면 부팅 정규화가 모든 프로젝트에 넣은 뒤 저장이 전부 거절된다(#3460 → #3473).
+// 여유를 두고 100k 를 쪽 한도로 쓴다. 큰 JSON 은 addJsonPages 가 항목 단위로 쪽을 나누고, 그래도 넘는 문서는 생성을 멈춘다.
+const PAGE=100_000;
+const add=(id:string,name:string,markdown:string)=>{
+ assert(markdown.length<=PAGE,`reference doc ${id} is ${markdown.length} chars (page limit ${PAGE}, hard limit ${REFERENCE_LIMITS.markdown}) — split it`);
+ fs.writeFileSync(`${data}/${id}.md`,markdown);documents.push({id,name,markdown});};
+const addJsonPages=(id:string,name:string,title:string,entries:unknown[])=>{
+ const page=(t:string,items:unknown[])=>`# ${t}\n\n\`\`\`json\n${JSON.stringify(items)}\n\`\`\``;
+ const pages:unknown[][]=[[]];
+ for(const e of entries){const cur=pages[pages.length-1]!;if(cur.length&&page(title+' (00/00)',[...cur,e]).length>PAGE)pages.push([e]);else cur.push(e);}
+ const n=pages.length;
+ pages.forEach((items,i)=>add(i?`${id}-${i+1}`:id,n>1?`${name} (${i+1}/${n})`:name,page(n>1?`${title} (${i+1}/${n})`:title,items)));
+ for(let i=n+1;fs.existsSync(`${data}/${id}-${i}.md`);i++)fs.rmSync(`${data}/${id}-${i}.md`);
+};
 
 // ---- 완전한 조립 예제: 64×22 거리, 건물 8채 --------------------------------------------------
 const W=EX.map.width as number,H=EX.map.height as number,ROAD=EX.map.roadRow as number;   // 건물 맨 아랫줄=ROAD-1, 길 ROAD~ROAD+1
@@ -118,11 +132,19 @@ add(IDS.docs+'street-plan','거리 예제 전체 배치',`# ${W}×${H} 거리 �
 for(const [layer,field] of [[1,'lowerTiles'],[2,'lowerOverlayTiles'],[3,'upperTiles'],[4,'upperOverlayTiles']] as const)
  add(IDS.docs+'street-layer-'+layer,'거리 예제 '+layer+'층 정답',`# target 맵 ${layer}층\n\n이 저장본 예제 전용 ${B.hostTilesetId} 번호(${field}). ${W}×${H}.\n\n\`\`\`json\n${JSON.stringify(Array.from({length:H},(_,y)=>Array.from({length:W},(_,x)=>layerTileAt(m,layer as 1|2|3|4,y*W+x))))}\n\`\`\``);
 const used=[...new Set([1,2,3,4].flatMap(l=>Array.from({length:W*H},(_,i)=>layerTileAt(m,l as 1|2|3|4,i))))].filter(v=>v>=0);
-add(IDS.docs+'street-tiles','예제에 쓴 칸의 출처와 통행',`# 사용한 target 칸\n\n\`\`\`json\n${JSON.stringify(used.map(v=>({targetTile:v,graft:ts.tileGrafts?.find(g=>g.targetTile===v)??null,priority:ts.priority[v],passability:ts.passability[v]})))}\n\`\`\``);
+addJsonPages(IDS.docs+'street-tiles','예제에 쓴 칸의 출처와 통행','사용한 target 칸',used.map(v=>({targetTile:v,graft:ts.tileGrafts?.find(g=>g.targetTile===v)??null,priority:ts.priority[v],passability:ts.passability[v]})));
 const pic=(id:string,name:string,path:string,caption:string)=>images.push({id,name,caption,dataUrl:path});
 pic(IDS.docs+'gallery',`${ALLOWED} 건물 전체 · 원본 해상도`,`${B.publicUrl}/gallery.png`,`${ALLOWED} ${n}채, 그림자·본체·기초를 층 순서대로 1:1 합성(잔디 위). 라벨은 키트 id 의 뒷부분.`);
 pic(IDS.docs+'street',`거리 예제 · ${pick.length}채`,`${B.publicUrl}/street.png`,`실제 mapTileDraw 출력, ${W}×${H}. 건물마다 그림자·기초가 붙어 땅에 선다.`);
 pic(IDS.docs+'error','정상 / 막힌 문 앞',`${B.publicUrl}/normal-error.png`,`왼쪽 정상, 오른쪽은 ${f0.kit} 문 앞(${f0.x},${f0.y})에 anvil 을 놓은 실제 변조.`);
 const refs=[{id:B.referencesId,name:`${label} · ${ALLOWED} 건물 ${n}채`,description:`${DELEGATED?'3/4 관문·독립 검수 둘을 통과하고 사용자 위임으로 허용한 건물만':'검수 화면에서 사람이 허용한 건물만'}. 본체·바닥 그림자·기초 3층 조립, 벽 막힘·처마 통행, 문 앞 접근칸, ${W}×${H} 거리 예제와 막힌 문 앞 오류.`,documents,images}];
+// 생성 시점 관문: 편집기·호스트가 저장 때 쓰는 그 검증기를 그대로 통과해야 하고(문서 길이·용도당 문서 수·이미지 수),
+// 경로로 둔 그림은 실제 파일 크기도 imageBytes 안이어야 한다.
+validateTilesetReferences(refs);
+for(const g of refs){
+ assert(g.documents.length<=REFERENCE_LIMITS.documents,`${g.id}: ${g.documents.length} docs > ${REFERENCE_LIMITS.documents}`);
+ for(const im of g.images){const f=im.dataUrl.startsWith('/')?`public${im.dataUrl}`:null;
+  if(f){assert(fs.existsSync(f),`missing reference image ${f}`);assert(fs.statSync(f).size<=REFERENCE_LIMITS.imageBytes,`${f} is ${fs.statSync(f).size} bytes > ${REFERENCE_LIMITS.imageBytes}`);}}
+}
 fs.writeFileSync(`${data}/references.json`,JSON.stringify(refs,null,2)+'\n');fs.writeFileSync(B.references,JSON.stringify(refs)+'\n');
 console.log(JSON.stringify({documents:documents.length,images:images.length,buildings:n,fronts:fronts.length,doorsSolid:true,wallsSolidAndOverhangWalkable:true,actualMutationBlocksDoor:true}));

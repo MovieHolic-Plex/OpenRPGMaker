@@ -14,34 +14,8 @@
   "*********",
   "XXXXXXXXX",
   "XXXXXXXXX",
-  "X***D***X",
-  "X***D***X"
- ],
- "passages": [
-  [
-   1,
-   8
-  ],
-  [
-   2,
-   8
-  ],
-  [
-   3,
-   8
-  ],
-  [
-   5,
-   8
-  ],
-  [
-   6,
-   8
-  ],
-  [
-   7,
-   8
-  ]
+  "XXXXDXXXX",
+  "XXXXDXXXX"
  ],
  "id": "town-hall"
 }
