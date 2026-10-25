@@ -65,10 +65,14 @@ function heroIntroductionCommands(): Command[] {
   // 줄어든 끝 = 방에 선 주인공 그 자리·그 크기(시작 칸 (5,5), 맵 그림 2배 → 걷기 칸 200%, 놀이 화면 px 실측 2026-10-25).
   // 무대가 걷히면 그림 주인공이 맵 주인공과 겹친 채 남았다가 지워진다 — 「작아지며 세계로 들어간다」.
   const inWorld = { x: 184, y: 143, scale: 200 };
+  // 흉상 64×64 를 3배(192) — 아래 끝이 대화창 윗선(y 240)에 닿게 y 48(적대 검수 r3: 22px 떠 있었다).
+  const bustY = 48;
   return [
+    // 무대 동안은 컷신 잠금 — 필드 HUD(「내 방」 위치 표시)가 무대 그림 위에 뜨지 않는다.
+    { kind: "cutsceneControl", mode: "begin", skippable: false } as Command,
     picture(BG, lab.resourceId, 0, -32, 200),
-    picture(PROF, astraCastBustId("professor", "happy"), 264, 26, 300, 0),
-    picture(PROF, astraCastBustId("professor", "happy"), 264, 26, 300, 255, 300, true),
+    picture(PROF, astraCastBustId("professor", "happy"), 264, bustY, 300, 0),
+    picture(PROF, astraCastBustId("professor", "happy"), 264, bustY, 300, 255, 300, true),
     se("cc0-sound-monster-ui-confirm"),
     text("자, 이제 너에 대해 알려 주겠니?", "천문박사"),
     {
@@ -86,14 +90,16 @@ function heroIntroductionCommands(): Command[] {
     { kind: "enterHeroName", actorId: "actor_hero", maxLength: 6, showInitialName: false, presentation: "showcase" },
     text("\\N[1]! 정말 멋진 이름이구나!", "천문박사"),
     text("\\N[1]! 몬스터와 함께하는\n너의 모험이 지금 시작된단다!", "천문박사"),
-    // 주인공이 작아지며 세계로 들어간다: 박사가 먼저 걷히고, 주인공이 가운데로 줄어드는 동안 무대(연구소 그림)가 걷힌다.
-    picture(PROF, astraCastBustId("professor", "happy"), 264, 26, 300, 0, 300, true),
+    // 주인공이 작아지며 세계로 들어간다: 박사와 무대(연구소 그림)가 먼저 걷히고, 방 위에 남은 큰 주인공이
+    // 방 안 주인공 자리로 줄어든다(적대 검수 r3: 연구소 위에서 줄고 두 방이 겹쳐 보였다).
+    picture(PROF, astraCastBustId("professor", "happy"), 264, bustY, 300, 0, 300, true),
+    picture(BG, lab.resourceId, 0, -32, 200, 0, 450, true),
     se("cc0-sound-monster-evolve-after"),
     picture(HERO, "actor:actor_hero", inWorld.x, inWorld.y, inWorld.scale, 255, 900, true, "easeIn"),
-    picture(BG, lab.resourceId, 0, -32, 200, 0, 700, true),
     { kind: "erasePicture", pictureId: HERO },
     { kind: "erasePicture", pictureId: PROF },
     { kind: "erasePicture", pictureId: BG },
+    { kind: "cutsceneControl", mode: "end" } as Command,
   ];
 }
 

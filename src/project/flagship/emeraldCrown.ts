@@ -1128,9 +1128,10 @@ function configureAstraDayTitle(project: Project): void {
   const title = project.system.titleScreen;
   if (!title) return;
   title.runners = astraIntroCast(project).starters.flatMap((starter, i) => starter.chip
-    ? [{ resourceId: starter.chip.resourceId, characterIndex: starter.chip.index, direction: "right" as const, y: 230 - i * 2, speed: 58 + i * 4, scale: 2, delayMs: 600 + i * 700, everyMs: 11000, hop: true }]
+    ? [{ resourceId: starter.chip.resourceId, characterIndex: starter.chip.index, direction: "right" as const, y: 230 - i * 2, speed: 60, scale: 2, delayMs: 600 + i * 1000, everyMs: 11000, hop: true }]
     : []);
-  title.pressStart = { text: "PRESS START", blinkMs: 700, y: 150 };
+  // 논리 y(240 높이 기준) 112 = 산등성이 위 하늘 — 키아트의 여우(논리 y 129~)와 겹치지 않는다(적대 검수 r3).
+  title.pressStart = { text: "PRESS START", blinkMs: 700, y: 112 };
 }
 
 

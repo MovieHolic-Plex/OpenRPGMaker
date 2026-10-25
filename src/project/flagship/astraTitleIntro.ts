@@ -63,7 +63,6 @@ function meadowShot(cast: AstraIntroCast): OpeningAnimatic {
   });
   return shot([
     meadow(),
-    { id: "sparkle", kind: "particles", role: "effect", color: "#ffffff", blend: "lighter", opacity: 0.6, x: 0, y: 0, width: STAGE.width, height: 180, particles: { preset: "sparks", count: 18, seed: 5, speed: 6, size: 1.2 } },
     ...runners,
     // 첫 장면은 하얗게 밝아지며 열린다.
     { id: "open", kind: "shape", shape: "rect", role: "effect", space: "screen", color: "#ffffff", x: 0, y: 0, width: STAGE.width, height: STAGE.height, opacity: 1, keys: { opacity: [key(0, 1), key(500, 0, "ease-out")] } },

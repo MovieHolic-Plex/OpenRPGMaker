@@ -240,8 +240,6 @@ function welcomeShot(cast: EmeraldOpeningCast): OpeningAnimatic {
   const professor = standAt(7, 6);
   return shot([
     backdrop('lab'),
-    { id: 'welcome-sparks', kind: 'particles', role: 'effect', space: 'screen', color: '#fff6c0', blend: 'lighter', x: 40, y: 20, width: 400, height: 200, opacity: 0.8,
-      particles: { preset: 'sparks', count: 24, seed: 12, speed: 8, size: 1.4 } },
     walking('professor', cast.professor, 'down', [{ atMs: 0, x: professor.x, y: standAt(7, 4).y }, { atMs: 900, x: professor.x, y: professor.y }]),
     emote('professor-emote', 'heart', professor, 1100, 3600),
   ], { x: 240, y: 192 }, '#0b1420', [{ id: 'hello', resourceId: 'cc0-sound-monster-ui-confirm', atMs: 1100, durationMs: 400, volume: 0.45 }]);
@@ -253,7 +251,7 @@ function welcomeShot(cast: EmeraldOpeningCast): OpeningAnimatic {
  */
 function capsuleShot(cast: EmeraldOpeningCast): OpeningAnimatic {
   const professor = standAt(7, 5), starter = cast.starters[0];
-  const land = { x: 330, y: 234 }, throwAt = 500, hitAt = 1150, popAt = hitAt + 60, foot = 266;
+  const land = { x: 330, y: 204 }, throwAt = 500, hitAt = 1150, popAt = hitAt + 60, foot = 236; // 발이 자막 상자(y 242~) 위에 선다(적대 검수 r3)
   const arcX: AnimaticKey[] = [{ atMs: throwAt, value: 268 }, { atMs: hitAt, value: land.x - 10, ease: 'linear' }];
   const arcY: AnimaticKey[] = [{ atMs: throwAt, value: 140 }, { atMs: Math.round((throwAt + hitAt) / 2), value: 84, ease: 'ease-out' }, { atMs: hitAt, value: land.y - 10, ease: 'ease-in' }];
   return shot([
