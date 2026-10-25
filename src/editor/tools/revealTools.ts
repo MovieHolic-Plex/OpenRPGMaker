@@ -139,7 +139,7 @@ const stageMapReveal: ToolDefinition = {
     const changeTiles = changes.map((c) => ({ kind: "changeTile", mapId: map.id, layer: c.layer, x: c.x, y: c.y, tile: c.tile } as unknown as Command));
     const useCamera = args.camera !== false;
     const inserted: Command[] = [
-      ...(useCamera ? [m2("Camera Control", { mode: "panTo", target: "position", x: cx, y: cy, durationMs: "900", wait: "true" }), { kind: "wait", ms: 300 } as Command] : []),
+      ...(useCamera ? [m2("Camera Control", { mode: "panTo", x: cx, y: cy, durationMs: "900", wait: "true" }), { kind: "wait", ms: 300 } as Command] : []),
       ...revealInWaves(changeTiles, theme),
       ...(typeof args.switchId === "string" && args.switchId ? [{ kind: "setSwitch", switchId: args.switchId, value: true } as unknown as Command] : []),
       { kind: "wait", ms: 600 } as Command,
