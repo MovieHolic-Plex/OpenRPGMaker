@@ -399,6 +399,10 @@ export function normalizeSystemRecords(system: Partial<SystemRecords> & Pick<Sys
   if (resource2) records.resource2 = resource2;
   if (partyGauge) records.partyGauge = partyGauge;
   if (system.weaknessExtraAction === true) records.weaknessExtraAction = true;
+  // 자동 전투 끄기·전투 뒤 상태 해제·세이브 포인트 전용(2026-10-25). 화이트리스트 — 빠뜨리면 저장 왕복에 사라진다.
+  if (system.allowAutoBattle === false) records.allowAutoBattle = false;
+  if (system.clearStatesAfterBattle === true) records.clearStatesAfterBattle = true;
+  if (system.saveAccess === "savePoints") records.saveAccess = "savePoints";
   if (emotionCycle) records.emotionCycle = emotionCycle;
   if (actionCombat) records.actionCombat = actionCombat;
   if (Array.isArray(system.toolActions)) records.toolActions = system.toolActions;

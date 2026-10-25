@@ -5,7 +5,8 @@ import type { Project, StateId, StateRecord } from "@/project/types";
 // 전투 불능(state_death)은 HP 와 짝이라 여기서 풀지 않는다(부활은 회복·여관의 몫).
 
 const DEATH_STATE_ID = "state_death";
-const BATTLE_END_TEXT = /전투\s*종료|전투가?\s*끝나|battle\s*end/iu;
+// 「전투 종료」(풀림) 와 「전투 종료 후 유지」(남음)를 가른다.
+const BATTLE_END_TEXT = /(전투\s*종료|전투가?\s*끝나|battle\s*end)(?!\S*\s*(후|뒤|에도)?\s*(유지|남|persist|remain))/iu;
 
 export function stateClearsOnBattleEnd(project: Pick<Project, "system">, state: StateRecord | undefined, stateId: StateId): boolean {
   if (stateId === DEATH_STATE_ID) return false;

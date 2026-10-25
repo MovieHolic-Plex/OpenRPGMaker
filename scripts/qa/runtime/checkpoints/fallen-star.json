@@ -42,6 +42,118 @@
    ]
   },
   {
+   "id": "party-follow",
+   "label": "마을 — 동료가 뒤를 따라 걷는다 · 메뉴에 저장 없음 · 광장 세이브 포인트",
+   "note": "configure_companion_rules display follow · set_project_settings saveAccess savePoints · place_savepoint ev_fs_hub_savepoint",
+   "mapId": "fs_hub",
+   "x": 26,
+   "y": 23,
+   "facing": "down",
+   "party": [
+    {
+     "actorId": "actor_hero",
+     "level": 6
+    },
+    {
+     "actorId": "actor_fs_elena",
+     "level": 6
+    }
+   ],
+   "switches": {
+    "sw_fs_main_started": true,
+    "sw_fs_valen_marched": true
+   },
+   "beats": [
+    {
+     "id": "walk",
+     "ops": [
+      {
+       "kind": "pressUntilJs",
+       "key": "Enter",
+       "fn": "(()=>!document.querySelector(\"[data-testid='dialogue-box']\"))",
+       "maxPresses": 40,
+       "settleMs": 600
+      },
+      {
+       "kind": "hold",
+       "dir": "right",
+       "ms": 1400
+      },
+      {
+       "kind": "hold",
+       "dir": "down",
+       "ms": 900
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 500
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "menu",
+     "ops": [
+      {
+       "kind": "key",
+       "key": "Escape"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 900
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "savepoint",
+     "ops": [
+      {
+       "kind": "key",
+       "key": "Escape"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 500
+      },
+      {
+       "kind": "teleport",
+       "mapId": "fs_hub",
+       "x": 37,
+       "y": 30
+      },
+      {
+       "kind": "face",
+       "dir": "up"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 600
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "save-open",
+     "ops": [
+      {
+       "kind": "action"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1500
+      }
+     ],
+     "shot": true
+    }
+   ]
+  },
+  {
    "id": "observatory-entry",
    "label": "천문대 입구",
    "note": "fallenStarRooms.ts hub->observatory 착지 (15,21) — 거리 문(15,22) 앞",
@@ -375,6 +487,75 @@
    }
   },
   {
+   "id": "chase-lunge",
+   "label": "숲 어귀 — 7칸 밖에서 알아보고 3칸 덮치기",
+   "note": "tune_field_enemies sightRange 7 · lungeSteps 3 · lungeSpeed 6",
+   "mapId": "fs_forest_edge",
+   "x": 18,
+   "y": 22,
+   "facing": "up",
+   "switches": {
+    "sw_fs_main_started": true,
+    "sw_fs_valen_marched": true
+   },
+   "variables": {
+    "var_fs_main_progress": 0
+   },
+   "party": [
+    {
+     "actorId": "actor_hero",
+     "level": 6
+    },
+    {
+     "actorId": "actor_fs_elena",
+     "level": 6
+    }
+   ],
+   "items": {
+    "item_potion": 3
+   },
+   "beats": [
+    {
+     "id": "approach",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": "up",
+       "ms": 500
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 900
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "lunge",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1200
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "dodge",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": "down",
+       "ms": 2400
+      }
+     ],
+     "shot": true
+    }
+   ]
+  },
+  {
    "id": "vault-gate-entry",
    "label": "화로의 방 입구(별빛 열쇠 뒤)",
    "note": "fallenStarRooms.ts observatory->vault_gate 착지 (26,4) — 북동 돌 계단(25~27,3) 아래; 이리스 합류는 숲 관 이벤트(ev_fs_main_inspect1)",
@@ -545,6 +726,104 @@
        "kind": "hold",
        "dir": null,
        "ms": 2500
+      }
+     ],
+     "shot": true
+    }
+   ]
+  },
+  {
+   "id": "combo-cutin",
+   "label": "연계기 「불꽃 십자참」 — 두 사람 얼굴이 교차하는 컷인",
+   "note": "battleComboCutIn faces: 흉상은 project/comboBust.ts (내보내기도 같은 그림을 싣는다)",
+   "mapId": "fs_forest",
+   "x": 15,
+   "y": 9,
+   "facing": "down",
+   "switches": {
+    "sw_fs_main_started": true,
+    "sw_fs_main_step0": true,
+    "sw_fs_valen_marched": true,
+    "sw_fs_main_step1": true,
+    "sw_fs_iris_awake": true,
+    "sw_fs_iris_joined": true,
+    "sw_fs_valen_crash_on": true
+   },
+   "variables": {
+    "var_fs_main_progress": 2
+   },
+   "party": [
+    {
+     "actorId": "actor_hero",
+     "level": 9
+    },
+    {
+     "actorId": "actor_fs_elena",
+     "level": 9
+    },
+    {
+     "actorId": "actor_fs_iris",
+     "level": 9
+    }
+   ],
+   "items": {
+    "item_potion": 3,
+    "item_ether": 3
+   },
+   "beats": [
+    {
+     "id": "battle",
+     "ops": [
+      {
+       "kind": "pressUntilJs",
+       "key": "Enter",
+       "fn": "(()=>!!document.querySelector(\"[data-testid='battle-scene']\"))",
+       "maxPresses": 60,
+       "settleMs": 600
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 2500
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "cutin",
+     "ops": [
+      {
+       "kind": "battle",
+       "plan": {
+        "actor_hero": [
+         "combo:skill_combo_fs_flame_cross"
+        ]
+       },
+       "fallback": "defend",
+       "commands": 1,
+       "timeoutMs": 60000
+      },
+      {
+       "kind": "waitFor",
+       "testid": "battle-combo-faces",
+       "state": "present",
+       "timeoutMs": 20000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 700
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "after",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 3500
       }
      ],
      "shot": true

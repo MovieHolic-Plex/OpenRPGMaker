@@ -1482,7 +1482,7 @@ export function applyFallenFieldRules(project: Project, exec: Exec): void {
     let n = 0;
     for (const cell of cells) {
       if (have >= target || troops.length === 0) break;
-      if (far(cell) < 6) break;
+      if (far(cell) < 4) break;
       try {
         exec(project, "place_field_enemy", {
           mapId, x: cell.x, y: cell.y, troopId: troops[n % troops.length], behavior: "chase", pace: "fast",
