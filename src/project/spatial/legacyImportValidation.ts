@@ -22,7 +22,10 @@ export function validateLegacyImportKits(tilesetId: string, tileset: Pick<Tilese
     // "house" 는 제거된 파라메트릭 집 킷의 잔재 — 구 저장 데이터에 남아 있을 수 있다.
     // 인터트 레코드로 용인한다(오브젝트 등록·래스터화 대상이 아니라 검증할 형상도 없다).
     if (kind === "house") continue;
-    assert(kind === "section", `${path}.kind: unknown kit kind ${kind}`);
+    // "object" 는 번들 칩셋(버들항 던전 문·상태 짝 기물 등, beodeulCityTileset.json 126개)이 쓰는 기물 킷이다.
+    // 모양은 section 과 같은 width·height·rows 라 같은 형상 검사를 거친다. 예전에는 여기서 던져, 버들항 타일셋이 있는
+    // 모든 프로젝트(= 새 프로젝트 전부)의 옛 공간 가져오기가 「unknown kit kind object」로 실패했다(ci-full 40165485978).
+    assert(kind === "section" || kind === "object", `${path}.kind: unknown kit kind ${kind}`);
     const width = integer(`${path}.width`, kit.width, 1);
     const height = integer(`${path}.height`, kit.height, 1);
     const rows = requireArray(`${path}.rows`, kit.rows);
