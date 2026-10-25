@@ -150,9 +150,9 @@
      "id": "mk_street",
      "name": "버들항 · 중세 건물 거리 예제",
      "width": 72,
-     "height": 49,
-     "roadRow": 10,
-     "rowStep": 12
+     "height": 57,
+     "roadRow": 12,
+     "rowStep": 14
     },
     "picks": [
      "cottage",
@@ -177,7 +177,11 @@
      "tithe-barn",
      "tower-house",
      "town-hall",
-     "windmill"
+     "windmill",
+     "dormer-house",
+     "keep-tower",
+     "lighthouse",
+     "wizard-tower"
     ],
     "grassTile": 737,
     "groundTilesetId": "beodeul_ground",

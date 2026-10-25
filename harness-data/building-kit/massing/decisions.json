@@ -368,10 +368,74 @@
    ],
    "note": "object-gate pass/허용 + 독립 검수 둘 PASS(원문 파일)",
    "at": "2026-10-25T09:12:22+00:00"
+  },
+  {
+   "seq": 24,
+   "item": "dormer-house",
+   "sha": "ce8eafef9ed0b596b6abfc31c3d81afeeb6b679a65322d291da29e192b5a5619",
+   "pixelSha256": "7b8e59433a57cc1f738973c62175f8309d731cbdbe6e26800c7f60f5bdd84a91",
+   "decision": "allow",
+   "by": "delegated",
+   "delegatedBy": "user 2026-10-25 (bk-massing-100 → 실제 건물, 머지까지 위임)",
+   "evidence": [
+    "../rpg-zzu-object-gate-holds/harness-data/object-gate/receipts/7b/7b8e59433a57cc1f738973c62175f8309d731cbdbe6e26800c7f60f5bdd84a91.json",
+    "harness-data/building-kit/massing/reviews/dormer-house/7b8e59433a57-argon.md",
+    "harness-data/building-kit/massing/reviews/dormer-house/7b8e59433a57-klb-sonnet-5-5.md"
+   ],
+   "note": "object-gate pass/허용 + 독립 검수 둘 PASS(원문 파일)",
+   "at": "2026-10-25T09:44:33+00:00"
+  },
+  {
+   "seq": 25,
+   "item": "keep-tower",
+   "sha": "fe7e80b8caa5cbc3a91ab0720dde977b794f4803c06a4ad1fbd684da62c46c98",
+   "pixelSha256": "d7b4227dfa90c898e4f9509a407f1d2cd784fbbd7d2e9f122b24843895ea3c80",
+   "decision": "allow",
+   "by": "delegated",
+   "delegatedBy": "user 2026-10-25 (bk-massing-100 → 실제 건물, 머지까지 위임)",
+   "evidence": [
+    "../rpg-zzu-object-gate-holds/harness-data/object-gate/receipts/d7/d7b4227dfa90c898e4f9509a407f1d2cd784fbbd7d2e9f122b24843895ea3c80.json",
+    "harness-data/building-kit/massing/reviews/keep-tower/d7b4227dfa90-argon.md",
+    "harness-data/building-kit/massing/reviews/keep-tower/d7b4227dfa90-klb-sonnet-5-5.md"
+   ],
+   "note": "object-gate pass/허용 + 독립 검수 둘 PASS(원문 파일)",
+   "at": "2026-10-25T09:44:33+00:00"
+  },
+  {
+   "seq": 26,
+   "item": "lighthouse",
+   "sha": "cc40721eb582aedfd877ea76c6bb9894b4302eefb8b3477baf6ee3595f7ee51d",
+   "pixelSha256": "a20e7b1dc045ab597d263c81b9e9a0f15d82eed4b3458da91af5ff51fa922ab1",
+   "decision": "allow",
+   "by": "delegated",
+   "delegatedBy": "user 2026-10-25 (bk-massing-100 → 실제 건물, 머지까지 위임)",
+   "evidence": [
+    "../rpg-zzu-object-gate-holds/harness-data/object-gate/receipts/a2/a20e7b1dc045ab597d263c81b9e9a0f15d82eed4b3458da91af5ff51fa922ab1.json",
+    "harness-data/building-kit/massing/reviews/lighthouse/a20e7b1dc045-argon.md",
+    "harness-data/building-kit/massing/reviews/lighthouse/a20e7b1dc045-klb-sonnet-5-5.md"
+   ],
+   "note": "object-gate pass/허용 + 독립 검수 둘 PASS(원문 파일)",
+   "at": "2026-10-25T09:44:33+00:00"
+  },
+  {
+   "seq": 27,
+   "item": "wizard-tower",
+   "sha": "8bf8521a0b502a6c43e8707fdc3316d187b4a72d67ae6b6ff0a7ec86c60fb161",
+   "pixelSha256": "a6380b9b85d071d06b731f72d1f2023996573c5dc05112b968ece391da541eb9",
+   "decision": "allow",
+   "by": "delegated",
+   "delegatedBy": "user 2026-10-25 (bk-massing-100 → 실제 건물, 머지까지 위임)",
+   "evidence": [
+    "../rpg-zzu-object-gate-holds/harness-data/object-gate/receipts/a6/a6380b9b85d071d06b731f72d1f2023996573c5dc05112b968ece391da541eb9.json",
+    "harness-data/building-kit/massing/reviews/wizard-tower/a6380b9b85d0-argon.md",
+    "harness-data/building-kit/massing/reviews/wizard-tower/a6380b9b85d0-klb-sonnet-5-5.md"
+   ],
+   "note": "object-gate pass/허용 + 독립 검수 둘 PASS(원문 파일)",
+   "at": "2026-10-25T09:44:34+00:00"
   }
  ],
- "exportedAt": "2026-10-25T09:12:22+00:00",
+ "exportedAt": "2026-10-25T09:44:34+00:00",
  "counts": {
-  "allow": 23
+  "allow": 27
  }
 }

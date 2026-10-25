@@ -2,7 +2,7 @@
   "code": "blocked-rv-entrance",
   "kit": "bd-house-mk-chapel",
   "x": 10,
-  "y": 10,
+  "y": 12,
   "normal": true,
   "mutated": false
 }

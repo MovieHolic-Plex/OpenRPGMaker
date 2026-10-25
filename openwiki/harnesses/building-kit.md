@@ -965,3 +965,9 @@ save 되풀이 7회, exit 0. 바탕 `0b9e645e` → 마감 `4eb598be`. 바뀐 불
 ### 조수 배치
 
 `author_beodeul_town` `roofs: "medieval"` — 살림집(main) 목골집·막돌집·탑집, 앵커(accent) 여관·대장간·예배당·비둘기탑·양조장 등. 설치 안 된 id 는 `have()` 가 거른다. 허용 건물 그림자·기초는 `stampReviewedCompanions` 가 `bd-house-rv-*` 와 같은 규칙으로 놓는다. 시연 `npx vite-node scripts/content/build-massing-town.mts '{"seed":7}'`. 시험 `test/beodeulMassingTileset.test.ts`, `src/harnesses/building-kit/tests/test_massing.py`.
+
+### 결과 (2026-10-25, 묶음 p1~p21)
+
+- 그린 건물 32채(seed 32종: 살림집·여관·대장간·예배당·길드 회관·시장홀·시청·창고·양조장·빵집·방앗간·풍차·등대·저택·대회당·사각 성탑·성문루·성벽 토막·무기고 탑·마법사 탑 등). **들어간 것 27채**(관문 pass + 독립 검수 둘 PASS + 18323 위임 허용) → `beodeul_massing` 1,379칸, 성 쪽은 대회당(C07)·사각 성탑.
+- 빠진 5채(마지막 판정 기준): 성문루(검수 둘 PASS, 관문 REFER 「정면 입면 인상」), 성벽 토막(관문 REFER + 검수 FAIL), 무기고 탑(sonnet PASS·argon FAIL), 계단 박공 길드 회관·창고(남북 박공 지붕을 두 검수자가 서로 반대 이유로 떨어뜨림 — argon 「사면 기와 방향」, sonnet 「옆으로 기운 두 면」). 다시 그리면 같은 길로 처음부터.
+- 영수증·서명 허용은 공용 18323 데이터에 기록되고 같은 변경에서 `harness-data/object-gate/{receipts,approvals/hold}` 에 사본을 커밋했다(공용 폴더가 지워진 적이 있다).

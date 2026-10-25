@@ -83,6 +83,20 @@
   "round": 1,
   "material": "plaster"
  },
+ "dormer-house": {
+  "id": "dormer-house",
+  "name": "지붕창 3층 집",
+  "width": 112,
+  "height": 128,
+  "entrance": {
+   "x": 48,
+   "y": 96,
+   "w": 16,
+   "h": 32
+  },
+  "round": 1,
+  "material": "plaster"
+ },
  "dovecote": {
   "id": "dovecote",
   "name": "비둘기탑",
@@ -167,6 +181,20 @@
   "round": 1,
   "material": "plaster"
  },
+ "keep-tower": {
+  "id": "keep-tower",
+  "name": "사각 성탑",
+  "width": 80,
+  "height": 144,
+  "entrance": {
+   "x": 32,
+   "y": 128,
+   "w": 16,
+   "h": 16
+  },
+  "round": 1,
+  "material": "stone"
+ },
  "l-farmhouse": {
   "id": "l-farmhouse",
   "name": "ㄱ자 농가",
@@ -180,6 +208,20 @@
   },
   "round": 1,
   "material": "plaster"
+ },
+ "lighthouse": {
+  "id": "lighthouse",
+  "name": "등대",
+  "width": 80,
+  "height": 160,
+  "entrance": {
+   "x": 32,
+   "y": 128,
+   "w": 16,
+   "h": 32
+  },
+  "round": 1,
+  "material": "stone"
  },
  "longhouse": {
   "id": "longhouse",
@@ -317,6 +359,20 @@
    "y": 112,
    "w": 16,
    "h": 16
+  },
+  "round": 1,
+  "material": "stone"
+ },
+ "wizard-tower": {
+  "id": "wizard-tower",
+  "name": "마법사 탑",
+  "width": 64,
+  "height": 176,
+  "entrance": {
+   "x": 16,
+   "y": 144,
+   "w": 16,
+   "h": 32
   },
   "round": 1,
   "material": "stone"

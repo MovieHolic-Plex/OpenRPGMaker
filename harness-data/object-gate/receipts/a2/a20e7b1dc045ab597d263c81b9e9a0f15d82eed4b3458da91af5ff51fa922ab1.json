@@ -1,0 +1,617 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a20e7b1dc045ab597d263c81b9e9a0f15d82eed4b3458da91af5ff51fa922ab1",
+ "width": 80,
+ "height": 160,
+ "kind": "structure",
+ "name": "등대",
+ "label": "building-kit/massing/lighthouse",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 8,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "5f62fef078ef7661"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 14,
+  "tileColorsP90": 21,
+  "darkV5": 60,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 25
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "conical lantern roof",
+      "rows": "7-21",
+      "evidence": "c",
+      "front_edge_line_row": 21,
+      "eave_shadow_rows": "22-23"
+     },
+     {
+      "part": "lantern glass room",
+      "rows": "22-32",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "gallery platform floor (ellipse)",
+      "rows": "33-41",
+      "evidence": "b",
+      "front_edge_line_row": 42,
+      "eave_shadow_rows": "44-45"
+     },
+     {
+      "part": "gallery balustrade/corbel ring front",
+      "rows": "42-51",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "striped tower shaft",
+      "rows": "52-130",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "rock base with door and steps",
+      "rows": "131-159",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 9,
+    "front_face_rows": 80,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The width profile widens at rows 33-38 (28 to 44), holds, then narrows from row 50 on. That is an ellipse-shaped gallery floor, with a light front-edge line at about rows 42-43 and dark shadow and corbels below it. The conical roof at rows 7-21 is a sloped plane, with tile rows visible. The tower below shows about 80 rows of vertical front face, cylindrical, with brick bands, a door and steps."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The candidate has 12 visible tones per 16x16 tile, the same as house-h101_0 and above house-h112_0-stone at 10. Near-flat coverage is 1%, against 0% for both references, so there are no flat fills. Dark edge pixels are 0% neutral, which means the outline is tinted. By eye it follows the material: dark red-brown beside the red bands and roof, and a darker grey-violet beside the stone. The copper roof cap has tile scallops with highlights. The white bands are shaded stone blocks, the red bands carry brick-like variation, and the rocks at the base are shaded one by one. The glowing lantern has several tones. Shading is about 5 steps per material, slightly below the references' 5-6 but comparable, and the piece would sit next to them without looking flatter or more sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17349
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "conical lantern roof with tile rows",
+      "rows": "0-21",
+      "evidence": "c",
+      "front_edge_line_row": 21,
+      "eave_shadow_rows": "22-23"
+     },
+     {
+      "part": "lantern glass room",
+      "rows": "22-32",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "gallery platform top (elliptical ring seen from above)",
+      "rows": "33-41",
+      "evidence": "b",
+      "front_edge_line_row": 41,
+      "eave_shadow_rows": "42-43"
+     },
+     {
+      "part": "gallery balustrade front face",
+      "rows": "42-51",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "striped tower shaft",
+      "rows": "52-130",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "rock base with door and steps",
+      "rows": "131-159",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 9,
+    "front_face_rows": 89,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": {
+     "cap_rows": 9,
+     "cap_width": 44,
+     "shaft_width": 28,
+     "rounded_at_both_edges": true
+    },
+    "reads_as": "three_quarter",
+    "evidence": "The lantern has a sloped conical tile roof (rows 0-21) over an eave. The gallery is an ellipse: width runs 28, 34, 38, 40, 42, 44 over rows 33-38, then holds near 42-44, and a front-edge line and balustrade follow at rows 41-49. The width then tapers to 26 by rows 55-59, so the gallery is bounded by narrower rows above and below. The tower shaft (rows 52-130) is a tall south face with red and white bands, and the rocky base is a heap at rows 131-159. The main body therefore has both a top surface and a front face of 3+ rows."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The lighthouse reads as a whole building with a roof cap, walls, door and lantern windows, so it matches the reference kind. Measured facts are on par with the references: 12 visible tones per tile against 12 and 10, 1% near-flat coverage against 0%, and 0% neutral dark edge pixels, so the outline carries a tint. By eye the outline is a dark reddish-brown on the copper roof and the red bands, and a darker grey-brown on the stone, which is a material-tone outline rather than a sticker line. The copper cap has per-tile scallops and highlights. The white and red tower bands have speckle and brick-like shading. The rocks at the base are shaded stone by stone with moss tufts. The lantern glow adds a distinct warm ramp. No large flat fills appear. Shading is about 5 steps per material, close to the references' 5-6. Density is comparable to the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16236
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "conical lantern roof (tile rows)",
+      "rows": "0-21",
+      "evidence": "c",
+      "front_edge_line_row": 21,
+      "eave_shadow_rows": "22-23"
+     },
+     {
+      "part": "lantern glass room",
+      "rows": "22-32",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "gallery deck (ellipse platform) with balustrade below",
+      "rows": "33-41",
+      "evidence": "b",
+      "front_edge_line_row": 41,
+      "eave_shadow_rows": "42-43"
+     },
+     {
+      "part": "tower shaft with red and white bands",
+      "rows": "50-130",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "rock base and entry steps",
+      "rows": "131-159",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 9,
+    "front_face_rows": 81,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is a round tower. The gallery deck at rows 33-41 is an ellipse: width runs 28, 34, 38, 40, 42, 44 and then narrows to 42, 41, 42, so it widens and narrows again. It ends in a front-edge line at about row 41, with the balustrade below at rows 42-49. The conical roof (rows 0-21) is a sloped tile plane whose width grows steadily from 2 to 26, so it is a top surface. The tower shaft below is a tall vertical front face of about 80 rows (50-130) with a door, and it carries the gallery deck as its top. The tower reads as a three-quarter object rather than a flat front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The candidate lighthouse matches the references on the primary facts: 12 visible tones per 16x16 tile against 12 and 10, 1% near-flat coverage against 0%, and 0% neutral dark edge pixels, so the outline carries a tint. By eye the outline is a dark red-brown beside the copper roof and the red bands, and a darker grey-brown beside the stone, not a uniform black line. The copper cap has tile-like rows with highlights. The red and white tower bands show brick and stone speckle with shading on the curved side. The gallery, the rocks at the base and the arched wooden door are each shaded in several steps, and the lantern glow adds contrast. The roof and tower ramps have about 5 steps, close to the references' 5-6. I saw no large flat fills. It would sit next to the references without looking thinner or more sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17726
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "lantern conical roof",
+      "rows": "0-25",
+      "evidence": "c",
+      "front_edge_line_row": 25,
+      "eave_shadow_rows": "20-24"
+     },
+     {
+      "part": "gallery platform top (ellipse floor)",
+      "rows": "33-41",
+      "evidence": "b",
+      "front_edge_line_row": 42,
+      "eave_shadow_rows": "44-45"
+     },
+     {
+      "part": "lantern glass room",
+      "rows": "26-39",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "striped tower shaft",
+      "rows": "50-130",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "rock base",
+      "rows": "131-159",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 9,
+    "front_face_rows": 89,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The gallery has an elliptical top: the width profile grows from 20 to 28, 34, 38, 40, 42 and 44 over rows 33-38, then holds at 42-44. A light front-edge line sits at rows 42-43, followed by dark balustrade and eave shadow at rows 44-45. The lantern has a sloped tiled conical roof over rows 7-25 (width 4 to 26), which counts as a top plane. The tower shaft below is a tall front face of about 80 rows with a cylindrical taper. Rocks and steps at the base carry it. The reading is three-quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The lighthouse matches the references on the primary facts: 12 visible tones per tile against 12 and 10, 1% near-flat coverage against 0%, and 0% near-neutral dark edge pixels, so the outline carries a tint. By eye the outline is a tinted dark version of the neighbouring material, a reddish-brown beside the red bands and copper roof and a bluish-grey beside the stone, not a uniform black sticker line. The copper roof has scalloped, per-tile shading with highlights, the stone tower has individually shaded bricks, the red and white bands carry speckle, and the rocks at the base show grass tufts and varied shading. The roof and tower ramps have about 5 steps against the references' 5-6. Nothing reads as a large flat fill. Density matches the references, and a careful artist would accept it next to them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 14820
+  }
+ ],
+ "decidedAt": "2026-10-25T09:14:40.008Z",
+ "cells": {
+  "16": [
+   "15aac05df3917efa",
+   "1b1d1ef570839766",
+   "24c7a00808baa816",
+   "368d35c772e28307",
+   "394be9e0866a10d2",
+   "3c7e1caadd1e36a0",
+   "494afe1036a0aa76",
+   "4c874fdc162c6753",
+   "55d424cb6a2c0f91",
+   "5fa8e25be07638e5",
+   "64d5c67140971e56",
+   "68b1f6128cde998e",
+   "79058693b272da03",
+   "7b0affc7e3c8fa35",
+   "7ed95a0e0ab3757a",
+   "8b2519fed4d81b18",
+   "97492b8a483de73a",
+   "97fe32088c5da0ed",
+   "aec770dff6c4aff5",
+   "afcfdb4affca1a53",
+   "bb79f2bf12c3c7f1",
+   "bbc8996973079c06",
+   "bc5d0455bade28a9",
+   "be3a2133ff0db022",
+   "ca3d9dca457d3a26",
+   "d5d2363f9663fb3e",
+   "d68a5be5ea023b75",
+   "d7324714b80feb49",
+   "e030627b7a83268f",
+   "ee480222cd64c68d",
+   "eeda677c97cb5877",
+   "fe453edfb2ac5e99"
+  ],
+  "24": [
+   "00a9392556a3110f",
+   "093f51f20be63714",
+   "0947a35bf4346809",
+   "0a65c4ae7becd3ca",
+   "0ee09fdd80cdf322",
+   "0f0a032e2c87c0ca",
+   "133c099cc224b68c",
+   "1564e9497928e8ee",
+   "15d1377522f98fb7",
+   "16c2b566f4377090",
+   "1a8dbb915b51a4b2",
+   "1be26ed406b6b3e1",
+   "289447210484ddf5",
+   "2a2b2aa164cb71cc",
+   "2a381043d45b4278",
+   "2aea9c2571dfe3f7",
+   "2bdf9e926e20ff98",
+   "2c85e07dd96ed3d4",
+   "2d767c4b7cdf1cd0",
+   "2db0c21fb4745577",
+   "2dbb2afc531f1d64",
+   "319a5fca41367d26",
+   "327f602a01e06efa",
+   "3469cae80b226669",
+   "34c2eec9ad195b89",
+   "3604db3e07cd8889",
+   "3bab7d9be6af3490",
+   "3be86b2398c30641",
+   "3de85b0956c080fe",
+   "3ee63e9fa4b08c6e",
+   "3f9124ce1e773eb8",
+   "40844c5f8f4938a6",
+   "414f43582b9842bb",
+   "44a6f29e791980bb",
+   "460fca2953dadfcc",
+   "47fe0ed218bf47c9",
+   "481930eb8afade07",
+   "4a8e9fcfda7915c0",
+   "4b5c845867d97b43",
+   "57d00be1b4fa950e",
+   "59e9742dccd2419d",
+   "5b65ae9a81796138",
+   "5ca67ed611b16ce9",
+   "5d1d2e9b0b774935",
+   "5e3e799ed0209991",
+   "6117336e9f95c5ce",
+   "62a19fca7176e5ea",
+   "635ad6d2f9158edc",
+   "636ad56f719c563f",
+   "67b6c5b122cfa81c",
+   "6d39fad489e97218",
+   "6f223c99ed943b0b",
+   "71c0c91c5923c73a",
+   "78b8406e3ff0af7a",
+   "792ea8b08bf02cf0",
+   "7949637bb64ecd93",
+   "79dc7bf0a07c2935",
+   "7b0b8cda172b3dc0",
+   "7be9e8ae4517392d",
+   "8335f1450851abc7",
+   "83fe1ab3504adc6c",
+   "862155a4c6dc5615",
+   "871ec2d56a3ae098",
+   "89f398c2567a76c1",
+   "8a054a91fd92cd72",
+   "8acd863e5ab846cd",
+   "8bd7e2fbc2f0b937",
+   "9061c1f7967644ff",
+   "91ce0bdc55b27c43",
+   "925691717c2c0c46",
+   "97a120e929d1c328",
+   "9a3f8a038f0c5d85",
+   "9a8d18f21ad326a0",
+   "9bc2a87996504434",
+   "9e6279dec23d1785",
+   "a16994c14f16815c",
+   "a44c5c8343cee9b9",
+   "a808d767ce3f66a2",
+   "a85fb9b3aeea0303",
+   "a959772f43332ab2",
+   "aa3d2740444646c8",
+   "b49964a3480c927b",
+   "b641184989335393",
+   "b841b5061ca3a6e8",
+   "bac2ecce686b0c3a",
+   "bbec71661b2c9fd1",
+   "bdab3c3acbe182d8",
+   "bed7ae256cab0393",
+   "c13a044696dd74ca",
+   "c4a6ea4a579e452e",
+   "c8a0b766dfda62eb",
+   "ca15e02677344636",
+   "cb30161d5c4dc56f",
+   "cd2741ccb71d4cb3",
+   "d404cf5bc2ab1311",
+   "db4c3d7f4e05037b",
+   "db935e8ec8c90dc9",
+   "dca4bf31413eeefb",
+   "dd8f20a40d651f6a",
+   "e15d3def67fac9a8",
+   "e964628f4dab68ec",
+   "e96ad3503840aad8",
+   "e998b34b2cd0378a",
+   "ea8058304f4213ad",
+   "eee30dfabc1e85b1",
+   "f074fada744a230e",
+   "f1112e497fc6f858",
+   "f18b29684f8bb666",
+   "f21c4e422c7df3e9",
+   "f2e2ac6824154b0a",
+   "f4e258ef4ed287b7",
+   "f542d83510eaf731",
+   "f793b077d2ea3544",
+   "f963de488f4d80de",
+   "fbbeef43c84a739a",
+   "fd5097cf4f590713",
+   "fe98b7284296e248",
+   "fed6f6489f92505c"
+  ],
+  "32": [
+   "008fe5355abcf46f",
+   "0598c0f06b555716",
+   "066f64ba37528815",
+   "071c0efba316208a",
+   "09920b071bf6fead",
+   "09b9ce57bbb031f9",
+   "0d8aa44118548bff",
+   "0ed096fae6a05e71",
+   "142f53232736933f",
+   "1c3786a1ddde90cd",
+   "46d11896bceb4f92",
+   "51364dd6c49ba5b2",
+   "63741ecfadf30296",
+   "6ed49aa489925cb7",
+   "75a9131b36741f43",
+   "7ad68d9a2187deb4",
+   "7fdba7166e44fd50",
+   "91da2567d75cd5c4",
+   "9b37c56003f47d17",
+   "a1111c7be0481123",
+   "a639f9f732e210a2",
+   "aa4275219e20a547",
+   "b2232086763751c5",
+   "becdbd4f8c361f6c",
+   "bf11e905c5ccb69a",
+   "c8dfba8a7e22e8a6",
+   "d2c66d4d6230311f",
+   "de02ac44fe1240ea",
+   "df537b1e6e081f28",
+   "e002fa70a3a6bee0",
+   "eb6bb09a06fcd557",
+   "ee586856634c4955",
+   "fb7a4205bab2e205"
+  ],
+  "48": [
+   "02bc39766ac11120",
+   "0d619cc140213f13",
+   "117d9875a0682ac9",
+   "199e1631b93587b2",
+   "24a6c60a9e0a2696",
+   "324a8c44a7d3cf8f",
+   "3fd200750b6acf4b",
+   "43c196171daa75d1",
+   "4944f259b9d323d5",
+   "4e29d1e6b6a5345a",
+   "51fb48646ee608f4",
+   "59d7aa39bd7b8b9b",
+   "5b6e75c18c679a98",
+   "64285735b9dc3747",
+   "69a1273413e8c092",
+   "6a5c15ea542aee2b",
+   "6b5beba8dc1498b3",
+   "80620798cf426439",
+   "8b4f14d527cd0b90",
+   "8bafc46173262a50",
+   "95043569cb885f6a",
+   "95dcd02baad54993",
+   "9a31e5dd08a89fff",
+   "9d08f0ba1e72b67a",
+   "a7fe4c157e4e4902",
+   "ab79c86670a6efb3",
+   "b50f67d4ffcb0386",
+   "b67eaf86524520d6",
+   "b76decf9115f9a10",
+   "b7a4734d03f4044b",
+   "bb76ba1ec194dd5d",
+   "c1393d3a04511083",
+   "c6fec397a291f1e6",
+   "c9395f96b3bee504",
+   "d1af7ce9db091379",
+   "d3c174fa26ff2d57",
+   "dc2fad81f20f6b5b",
+   "ddda4e7d815aa02e",
+   "dde55bb47b823834",
+   "de277b642b5d37c5",
+   "e401a448bd64d3be",
+   "e5a18e3771a3733a",
+   "e9d24095285f2695",
+   "eba20170ba498112",
+   "f541fe766f9faef4",
+   "fdc45fe13d81d968"
+  ]
+ }
+}
