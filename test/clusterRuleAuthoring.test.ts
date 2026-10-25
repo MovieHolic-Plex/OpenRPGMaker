@@ -2,9 +2,8 @@ import { describe, expect, it } from "vitest";
 import { buildSystemPrompt } from "@/ai/contextBuilder";
 import { buildClusterEditKickoff } from "@/ai/clusterAssistPrompt";
 import { createBlankProject } from "@/project/defaults";
-import { COMBINED_TOWN_TILESET_ID } from "@/project/defaults/constants";
+import { COMBINED_TOWN_TILESET_ID, DEFAULT_TILESET_ID } from "@/project/defaults/constants";
 import type { TileGroupMetadata } from "@/project/types";
-import { withRetiredEasyRpgTilesets } from "./support/retiredEasyRpgTilesets";
 
 describe("클러스터 규칙 저작", () => {
   it("킥오프가 kind와 강도 원탭 선택, 강도 안내, set_cluster_rule 저장 지시를 포함한다", () => {
@@ -20,8 +19,10 @@ describe("클러스터 규칙 저작", () => {
   });
 
   it("컨텍스트가 soft/medium 규칙을 선호 힌트로 싣고 편집 후 run_lint를 권고한다", () => {
-    const project = withRetiredEasyRpgTilesets(createBlankProject());
-    const tileset = project.tilesets[COMBINED_TOWN_TILESET_ID];
+    // 힌트는 현재(시작) 맵의 타일셋 규칙만 싣는다 — 새 프로젝트 시작 맵은 기본 타일셋(beodeul_city)이다.
+    const project = createBlankProject();
+    const tileset = project.tilesets[project.maps[project.startMapId].tilesetId];
+    expect(tileset?.id).toBe(DEFAULT_TILESET_ID);
     const group = Object.assign(baseGroup(), {
       rules: [
         {
