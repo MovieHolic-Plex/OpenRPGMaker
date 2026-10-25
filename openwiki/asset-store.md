@@ -86,6 +86,26 @@ faceset(48×48 얼굴)·picture(흉상·전신) 에셋을 가리킨다. 표정 �
 후보에는 `music` 칸이 붙는다. 장르 곡이 프로젝트에 없으면 `store_search(kind:"music")` 로 찾아 사용자에게 권하고, 넣기는 허락 뒤 `store_install`.
 값은 팩 제작자가 실제로 들어 보고 적는다 — 이름에서 짐작해 채우지 않는다. 시험: `test/storeMusicPick.test.ts`.
 
+### 조수가 스토어 음악을 찾아 넣는다 (2026-10-25)
+
+「이 마을에 어울리는 BGM 깔아줘」「보스전 음악 긴장감 있게」「승리 팡파르 넣어줘」를 조수가 스토어에서 곡 하나로 끝낸다.
+새 길을 만들지 않고 기존 `store_*` 도구·`applyPackToProject`·카드 규칙을 그대로 쓴다.
+
+- **워커에서 스토어 읽기.** 조수 도구는 Pi 워커(Bun)에서 돌아 `window.oprn.store` 가 없다. 편집기가 실행 요청에 `store:{url,autoInstall}` 을 싣고
+  (`src/editor/assetStore/storeHint.ts` → `PiAgentRequest.store`), 워커가 같은 주소로 로그인 없는 `AssetStoreClient` 를 만든다
+  (`scripts/lib/workerStore.ts` → `setWorkerStoreAccess`, `src/assetStore/storeAccess.ts`). 공개 목록·매니페스트·파일만 읽는다.
+- **`store_find_music`** (`src/editor/tools/storeTools.ts`): `scene`(town·field·dungeon·battle·boss·victory·sad·tense·title·ending) + `query`(장르) + `mood` 로
+  음악 팩 매니페스트를 받아 곡 단위로 순위를 매긴다(`src/assetStore/storeMusicPick.ts` `rankStoreMusic` — 장면이 먼저, 실제로 들리는 장르 `genreKo` 가 팩 줄보다 무겁고, 승리는 징글·그 밖은 루프).
+- **카드 / 바로 넣기.** 「묻지 않고 바로 넣기」(localStorage `oprn:store-auto-install`)가 꺼져 있으면 결과가 음악 카드(`ai-store-music-card`: 미리 듣기 `<audio>`·「넣기」·「건너뛰기」·자동 넣기 확인란)로 뜨고 턴이 멈춘다.
+  「넣기」는 `addStoreItemToProject(slug,{assetIds:[곡]})` 뒤 「원래 요청을 이어서 하라」 후속 요청을 보낸다. 켜져 있으면 조수가 바로 `store_install` 한다.
+  꺼진 상태에서 음악 팩을 `store_install` 하면 `store-ask-first` 로 거절된다(사용자가 스토어를 직접 말했으면 `userAsked:true`).
+- **곡 하나만 넣기.** `store_install({slug,assetIds})` 는 `subsetMusicManifest` 로 고른 곡만 남겨 그 파일 하나만 받는다. 출처(`origin`: 상품·판본·라이선스·`aiGenerated`·크레딧)가 그대로 붙고, 저장하면 호스트가 `assets/` 파일로 뗀다.
+  결과의 `resourceIds` 를 `set_game_audio` 에 넘긴다.
+- **보스전만 다른 곡.** `set_game_audio role:"boss"`(+`troopIds`, 비우면 이름에 보스·마왕·드래곤·관장 등이 든 부대)는 그 `battleProcessing` 앞뒤에 `m2-027-change-system-bgm`(battle set / reset)을 넣는다. 다시 불러도 한 쌍만 남는다.
+- 시험: 단위 `test/storeMusicInstall.test.ts`. 실조수: `bun src/harnesses/assistant-capability/node/musicStorePrepare.ts <dir> <fantasy|joseon|monster> <제목>`(마을·동굴·보스전 시드) →
+  `node src/harnesses/assistant-capability/node/wholeGameSession.mjs --project-dir <dir>/project --out <dir>/session --v2 --store-url <스테이징> [--store-auto-install]`.
+  브라우저 편집기에는 데스크톱 다리가 없어서 드라이버가 읽기 전용 스토어 다리를 붙인다(`storeBridgeShim.mjs`). 요청 목록은 `harness-data/space-craft/seed.json` 의 `g-music-*`.
+
 ## 게시기
 
 주소와 토큰은 코드·문서에 두지 않는다. 환경 변수로만 받고, 없으면 아무것도 보내지 않는다(plan 은 `configured:false`).

@@ -32,6 +32,8 @@ v1 의 `script_cutscene` 비트로 옮긴다(`events.ts`).
 비교 사례 40개는 `harness-data/space-craft/seed.json` 의 `game` 분류다(id `g-*`, 시작은 모두 같은 마을 + 촌장·대장장이).
 출하 플레이어에서 이벤트마다 세 번 말 걸기·선택·전투·상점을 자동으로 해 본 뒤 상태 변화와 대사로 눈가림 채점한다. 결과는 보고서 「게임 요소 비교」 절에 있다.
 못 하는 것: 이미 있는 마을에 강·다리 같은 지형 덧그리기(맵을 새로 짓지 않으면 못 한다).
+음악 낱말(음악·배경음·브금·BGM·팡파르·사운드트랙·OST)이 있으면 `FALLEN_TIERS` 음악 단이 `recommend_bgm`·`store_find_music`·`store_install`·`set_game_audio`·`get_database_records` 를 싣는다.
+맵·시스템 음악 연결이 바뀌었으면 마감 검사가 「playAudio 이벤트」를 더 요구하지 않는다(`gameChecks.ts` `audioBindingsChanged`). 스토어 음악 길은 `openwiki/asset-store.md` 「조수가 스토어 음악을 찾아 넣는다」.
 
 ## 켜는 법
 

@@ -3,7 +3,7 @@
 import { homedir } from "node:os";
 import { join } from "node:path";
 import { AssetStoreClient } from "../../electron/main/assetStoreClient.ts";
-import { setWorkerStoreAccess, type StoreReadAccess } from "../../src/assetStore/storeAccess.ts";
+import { mentionsStore, setWorkerStoreAccess, type StoreReadAccess } from "../../src/assetStore/storeAccess.ts";
 
 const clients = new Map<string, AssetStoreClient>();
 const noToken = { load: () => null, save: () => undefined, persistent: () => false };
@@ -19,12 +19,12 @@ function clientFor(url: string): AssetStoreClient {
 }
 
 /** 실행마다 부른다. 주소가 http(s) 가 아니면 스토어를 끈다. */
-export function configureWorkerStore(hint: { url?: unknown; autoInstall?: unknown } | undefined): void {
+export function configureWorkerStore(hint: { url?: unknown; autoInstall?: unknown } | undefined, task = ""): void {
   const url = typeof hint?.url === "string" && /^https?:\/\/[^\s]+$/u.test(hint.url) ? hint.url.replace(/\/+$/u, "") : "";
   if (!url) { setWorkerStoreAccess(null); return; }
   const client = clientFor(url);
   const access: StoreReadAccess = {
-    url, autoInstall: hint?.autoInstall === true,
+    url, autoInstall: hint?.autoInstall === true, userMentionedStore: mentionsStore(task),
     catalog: (input) => client.catalog(input),
     item: (slug) => client.item(slug),
     manifest: (slug, version) => client.manifest(slug, version),

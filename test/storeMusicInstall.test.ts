@@ -1,7 +1,7 @@
 // 조수가 스토어 음악을 곡 단위로 찾고(store_find_music), 그 곡만 받아 넣고(store_install assetIds), 자리에 거는(set_game_audio boss) 길.
 // 워커 안의 스토어는 가짜 읽기 길(setWorkerStoreAccess)로 바꾼다 — 실제 스테이징 시험은 openwiki/asset-store.md 「조수가 스토어 음악을 넣는다」.
 import { afterEach, describe, expect, it } from "vitest";
-import { setWorkerStoreAccess, type StoreReadAccess } from "@/assetStore/storeAccess";
+import { mentionsStore, setWorkerStoreAccess, type StoreReadAccess } from "@/assetStore/storeAccess";
 import { rankStoreMusic, storeMusicTracks, subsetMusicManifest } from "@/assetStore/storeMusicPick";
 import { storeProjectId, type StorePackManifest } from "@/assetStore/format";
 import { runToolAsync } from "@/editor/tools/asyncToolRunner";
@@ -33,10 +33,10 @@ const MANIFEST = {
   blobs: [1, 2, 3].map((n) => ({ sha256: sha(n), mime: "audio/ogg", bytes: 10 })),
 } as unknown as StorePackManifest;
 
-function fakeStore(autoInstall: boolean, fetched: string[] = []): StoreReadAccess {
+function fakeStore(autoInstall: boolean, fetched: string[] = [], userMentionedStore = true): StoreReadAccess {
   const item = { slug: SLUG, title: MANIFEST.title, summary: "", kind: "music", grade: "single", license: "OPRN-GAME", aiGenerated: true, author: "OPRN 운영", tags: [], latestVersion: 2, cover: null, downloads: 0, updatedAt: "" };
   return {
-    url: "http://store.test", autoInstall,
+    url: "http://store.test", autoInstall, userMentionedStore,
     catalog: async () => ({ items: [item] as never, total: 1, page: 1, pageSize: 24 }),
     item: async () => ({ ...item, description: "", credits: "", previews: [], status: "visible", versions: [], counts: { tilesets: 0, assets: 3, referenceDocuments: 0 } }) as never,
     manifest: async () => MANIFEST,
@@ -95,6 +95,15 @@ describe("store_find_music + store_install in the worker", () => {
     expect(refused.summary).toMatch(/묻지 않고/);
     const asked = await runToolAsync({ project: createEmptyToolProject() }, "store_install", { slug: SLUG, assetIds: ["boss"], userAsked: true }, { dryRun: true });
     expect(asked.ok, asked.summary).toBe(true);
+  });
+
+  it("does not let the model claim userAsked when the user's request never mentioned the store", async () => {
+    expect(mentionsStore("조선풍 게임 음악 전부 맞춰줘")).toBe(false);
+    expect(mentionsStore("스토어에서 보스곡 받아 넣어줘")).toBe(true);
+    setWorkerStoreAccess(fakeStore(false, [], false));
+    const claimed = await runToolAsync({ project: createEmptyToolProject() }, "store_install", { slug: SLUG, assetIds: ["boss"], userAsked: true }, { dryRun: true });
+    expect(claimed.ok).toBe(false);
+    expect(claimed.summary).toMatch(/묻지 않고/);
   });
 });
 

@@ -39,3 +39,6 @@
 .ai-store-result.ai-store-music .ai-store-result-text { grid-column: 1 / -1; }
 .ai-store-result.ai-store-music .ai-store-result-text small { white-space: normal; }
 .ai-store-result.ai-store-music audio { width: 100%; min-width: 0; height: 32px; }
+/* 장면이 여럿인 음악 카드: 장면마다 한 묶음, 사이에 선 */
+.ai-store-music-scene { display: grid; gap: 6px; padding-top: 8px; border-top: 1px solid var(--border-default); }
+.ai-store-music-scene:first-of-type { border-top: 0; padding-top: 0; }

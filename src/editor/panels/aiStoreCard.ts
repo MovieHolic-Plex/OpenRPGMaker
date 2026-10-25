@@ -391,60 +391,109 @@ function reviewReplyCard(proposal: StoreReviewReplyProposal): HTMLElement {
  * store_find_music 카드: 스토어 곡 후보를 미리 듣고 하나를 넣는다. 그 곡만 받아 프로젝트에 넣고(출처·라이선스·AI 표시 그대로),
  * 조수에게 리소스 id 와 원래 요청을 넘겨 맵·전투·보스·승리·타이틀에 연결하게 한다. 「다음부터 묻지 않고 넣기」를 켜면 조수가 직접 넣는다.
  */
-function musicChoiceCard(choice: StoreMusicChoice, followUp: StoreCardFollowUp): HTMLElement {
+type MusicTrack = StoreMusicChoice["tracks"][number];
+
+function musicTrackRow(track: MusicTrack, action: HTMLButtonElement): HTMLElement {
+  const audio = el("audio", { attrs: { controls: "", preload: "none" }, dataset: { testid: "ai-store-music-preview" } }) as HTMLAudioElement;
+  void storeBlobUrl(track.blob).then((url) => { audio.src = url; }).catch(() => { audio.dataset.failed = "1"; });
+  return el("article", {
+    class: "ai-store-result ai-store-music",
+    dataset: { slug: track.slug, asset: track.assetId },
+    children: [
+      el("div", { class: "ai-store-result-text", children: [
+        el("strong", { text: track.title }),
+        el("span", { text: [track.genre, track.scenes.join("·"), track.mood.join("·"), track.loopable ? "루프" : "짧은 곡", track.aiGenerated ? "AI 생성" : ""].filter(Boolean).join(" · ") }),
+        track.summary ? el("small", { text: track.summary }) : null,
+        el("small", { class: "ai-store-music-pack", text: `${track.pack} · ${track.license}` }),
+      ].filter((node): node is HTMLElement => node !== null) }),
+      audio,
+      action,
+    ],
+  });
+}
+
+/**
+ * 스토어 음악 카드. 한 장면이면 곡마다 「넣기」(누르면 바로 받는다). 「게임 음악 전부」처럼 장면이 여럿이면 장면마다 한 곡을 고르고
+ * 「고른 곡 넣기」 한 번으로 받은 뒤 후속 요청 하나로 조수가 자리마다 잇는다(장면마다 카드를 따로 띄우면 넣기마다 턴이 갈라졌다).
+ */
+function musicChoiceCard(choices: readonly StoreMusicChoice[], followUp: StoreCardFollowUp): HTMLElement {
   const all: HTMLButtonElement[] = [];
   let settled = false;
+  const multi = choices.length > 1;
   const auto = el("input", { attrs: { type: "checkbox", ...(storeAutoInstallEnabled() ? { checked: "" } : {}) }, dataset: { testid: "ai-store-music-auto" } });
   auto.addEventListener("change", () => setStoreAutoInstall(auto.checked));
+  const needs = choices.map((choice) => choice.need).join(" / ");
   const skip = button("넣지 않기", "ai-store-music-skip", () => {
     if (settled) return;
     settled = true;
     for (const node of all) node.disabled = true;
     view.status.textContent = "넣지 않았어요.";
-    followUp(`[사용자 선택] 스토어 곡을 넣지 않음: ${choice.need} 프로젝트에 있는 곡(recommend_bgm)으로 가장 맞는 것을 골라 연결하고, 무엇을 골랐는지 짧게 말하라.`);
+    followUp(`[사용자 선택] 스토어 곡을 넣지 않음: ${needs} 프로젝트에 있는 곡(recommend_bgm)으로 가장 맞는 것을 골라 연결하고, 무엇을 골랐는지 짧게 말하라.`);
   });
   all.push(skip);
-  const rows = choice.tracks.map((track) => {
-    const audio = el("audio", { attrs: { controls: "", preload: "none" }, dataset: { testid: "ai-store-music-preview" } }) as HTMLAudioElement;
-    void storeBlobUrl(track.blob).then((url) => { audio.src = url; }).catch(() => { audio.dataset.failed = "1"; });
-    const add = button("넣기", "ai-store-music-add", () => void install(track), true);
-    all.push(add);
-    return el("article", {
-      class: "ai-store-result ai-store-music",
-      dataset: { slug: track.slug, asset: track.assetId },
-      children: [
-        el("div", { class: "ai-store-result-text", children: [
-          el("strong", { text: track.title }),
-          el("span", { text: [track.genre, track.scenes.join("·"), track.mood.join("·"), track.loopable ? "루프" : "짧은 곡", track.aiGenerated ? "AI 생성" : ""].filter(Boolean).join(" · ") }),
-          track.summary ? el("small", { text: track.summary }) : null,
-          el("small", { class: "ai-store-music-pack", text: `${track.pack} · ${track.license}` }),
-        ].filter((node): node is HTMLElement => node !== null) }),
-        audio,
-        add,
-      ],
-    });
-  });
-  const install = async (track: StoreMusicChoice["tracks"][number]): Promise<void> => {
-    if (settled) return;
+  /** 고른 곡들을 상품별로 묶어 받고 후속 요청 하나를 보낸다. */
+  const install = async (picks: readonly { readonly choice: StoreMusicChoice; readonly track: MusicTrack }[]): Promise<void> => {
+    if (settled || !picks.length) return;
     for (const node of all) node.disabled = true;
-    view.status.textContent = `「${track.title}」을(를) 받는 중…`;
+    view.status.textContent = picks.length === 1 ? `「${picks[0]!.track.title}」을(를) 받는 중…` : `곡 ${picks.length}개를 받는 중…`;
     try {
-      const added = await addStoreItemToProject(track.slug, { assetIds: [track.assetId] });
+      const bySlug = new Map<string, string[]>();
+      for (const { track } of picks) bySlug.set(track.slug, [...new Set([...(bySlug.get(track.slug) ?? []), track.assetId])]);
+      for (const [slug, assetIds] of bySlug) await addStoreItemToProject(slug, { assetIds });
       settled = true;
-      const resourceId = storeProjectId(track.slug, track.assetId);
-      view.status.textContent = `「${track.title}」을(를) 프로젝트에 넣었어요.`;
-      followUp(`[사용자가 스토어에서 넣음] 「${track.title}」 (${added.title}) 음악 리소스 id ${resourceId}. 원래 요청을 이어서 하라: ${choice.need} — set_game_audio 로 이 곡을 그 자리에 연결하라(새로 찾지 말 것).`);
+      view.status.textContent = picks.length === 1 ? `「${picks[0]!.track.title}」을(를) 프로젝트에 넣었어요.` : `곡 ${picks.length}개를 프로젝트에 넣었어요.`;
+      const lines = picks.map(({ choice, track }) => `${choice.need} ← 「${track.title}」 리소스 id ${storeProjectId(track.slug, track.assetId)}`);
+      followUp(`[사용자가 스토어에서 넣음] ${lines.join(" / ")}. 원래 요청을 이어서 하라 — set_game_audio 로 곡마다 그 자리에 연결하라(새로 찾지 말 것).`);
     } catch (error) {
       for (const node of all) node.disabled = false;
       view.status.textContent = `넣지 못했어요: ${storeFailure(error).message}`;
     }
   };
+  let body: HTMLElement[];
+  const actions: HTMLButtonElement[] = [skip];
+  if (!multi) {
+    const choice = choices[0]!;
+    const rows = choice.tracks.map((track) => {
+      const add = button("넣기", "ai-store-music-add", () => void install([{ choice, track }]), true);
+      all.push(add);
+      return musicTrackRow(track, add);
+    });
+    body = [
+      el("p", { class: "ai-tileset-change-reason", text: choice.need }),
+      el("p", { class: "ai-tileset-change-detail", text: "들어 보고 마음에 드는 곡을 넣으면 조수가 이어서 연결해요. 고른 곡 한 개만 받아요." }),
+      el("div", { class: "ai-store-results", dataset: { testid: "ai-store-music-results" }, children: rows }),
+    ];
+  } else {
+    const picked = new Map<StoreMusicChoice, MusicTrack>(choices.map((choice) => [choice, choice.tracks[0]!] as const));
+    const sections = choices.map((choice) => {
+      const marks: HTMLButtonElement[] = [];
+      const rows = choice.tracks.map((track, index) => {
+        const mark = button(index === 0 ? "고름" : "고르기", "ai-store-music-pick", () => {
+          picked.set(choice, track);
+          marks.forEach((node, i) => { node.textContent = i === index ? "고름" : "고르기"; node.classList.toggle("is-primary", i === index); node.setAttribute("aria-pressed", String(i === index)); });
+        }, index === 0);
+        mark.setAttribute("aria-pressed", String(index === 0));
+        marks.push(mark);
+        all.push(mark);
+        return musicTrackRow(track, mark);
+      });
+      return el("section", { class: "ai-store-music-scene", dataset: { testid: "ai-store-music-scene" }, children: [
+        el("p", { class: "ai-tileset-change-reason", text: choice.need }),
+        el("div", { class: "ai-store-results", dataset: { testid: "ai-store-music-results" }, children: rows }),
+      ] });
+    });
+    const addAll = button("고른 곡 넣기", "ai-store-music-add", () => void install(choices.map((choice) => ({ choice, track: picked.get(choice)! }))), true);
+    all.push(addAll);
+    actions.unshift(addAll);
+    body = [
+      el("p", { class: "ai-tileset-change-detail", text: `장면 ${choices.length}곳 — 장면마다 들어 보고 한 곡씩 고른 뒤 「고른 곡 넣기」를 누르면 고른 곡만 받아 조수가 자리마다 연결해요.` }),
+      ...sections,
+    ];
+  }
   const view = shell("답변 필요", "스토어 음악을 넣을까요?", "ai-store-music-card", [
-    el("p", { class: "ai-tileset-change-reason", text: choice.need }),
-    el("p", { class: "ai-tileset-change-detail", text: "들어 보고 마음에 드는 곡을 넣으면 조수가 이어서 연결해요. 고른 곡 한 개만 받아요." }),
-    el("div", { class: "ai-store-results", dataset: { testid: "ai-store-music-results" }, children: rows }),
+    ...body,
     el("label", { class: "ai-store-agree", children: [auto, el("span", { text: "다음부터 묻지 않고 조수가 바로 넣기" })] }),
-  ], [skip]);
+  ], actions);
   if (!storeBridge()) {
     for (const node of all) node.disabled = true;
     view.status.textContent = "스토어 곡은 데스크톱 앱에서 넣을 수 있어요.";
@@ -452,10 +501,15 @@ function musicChoiceCard(choice: StoreMusicChoice, followUp: StoreCardFollowUp):
   return view.root;
 }
 
+/** 이 턴의 스토어 음악 카드 요청을 모두 한 카드로. */
+export function createStoreMusicCard(choices: readonly StoreMusicChoice[], followUp: StoreCardFollowUp): HTMLElement {
+  return musicChoiceCard(choices, followUp);
+}
+
 export function createStoreCard(request: StoreCardRequest, followUp: StoreCardFollowUp): HTMLElement {
   if (request.kind === "workshop-object-request") return createObjectGenCard(request, followUp);
   if (request.kind === "store-missing-tiles") return missingTilesCard(request, followUp);
-  if (request.kind === "store-music-choice") return musicChoiceCard(request, followUp);
+  if (request.kind === "store-music-choice") return musicChoiceCard([request], followUp);
   if (request.kind === "store-publish-proposal") return publishCard(request);
   if (request.kind === "store-game-post-proposal") return gamePostCard(request);
   if (request.kind === "store-review-reply-proposal") return reviewReplyCard(request);

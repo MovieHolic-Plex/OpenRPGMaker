@@ -14,9 +14,14 @@ export interface StoreRunHint {
 
 export const STORE_AUTO_INSTALL_KEY = "oprn:store-auto-install";
 
+/** 사용자가 요청에서 스토어를 직접 말했는가. 카드 「넣기」 뒤 후속 요청(「[사용자가 스토어에서 넣음] …」)도 여기 걸린다. */
+export const mentionsStore = (task: string): boolean => /스토어|에셋\s*상점|store/iu.test(task);
+
 export interface StoreReadAccess {
   readonly url: string;
   readonly autoInstall: boolean;
+  /** 이번 요청 글에 사용자가 스토어를 직접 말했는가(「스토어에서 …」). 모델이 userAsked:true 로 카드를 건너뛰지 못하게 한다. */
+  readonly userMentionedStore?: boolean;
   catalog(input: { q?: string; kind?: string; page?: number; lang?: string }): Promise<StoreCatalogPage>;
   item(slug: string): Promise<StoreItemDetail>;
   manifest(slug: string, version: number): Promise<StorePackManifest>;

@@ -123,7 +123,7 @@ async function prepareFromWorker(access: StoreReadAccess, slug: string, assetIds
     return hit;
   };
   const context = { slug, version: item.latestVersion, author: item.author, storeUrl: access.url, itemUrl: `${access.url}/items/${encodeURIComponent(slug)}`, blob };
-  return { manifest, version: item.latestVersion, context, autoInstall: access.autoInstall };
+  return { manifest, version: item.latestVersion, context, autoInstall: access.autoInstall, userMentionedStore: access.userMentionedStore };
 }
 
 const storeInstall: ToolDefinition = {
@@ -158,9 +158,11 @@ const storeInstall: ToolDefinition = {
   },
   run(draft, args): ToolExecResult {
     const slug = String(args.slug ?? "").trim();
-    const prepared = take<PreparedStoreItem & { readonly autoInstall?: boolean }>(installKey(args));
+    const prepared = take<PreparedStoreItem & { readonly autoInstall?: boolean; readonly userMentionedStore?: boolean }>(installKey(args));
     const musicOnly = Object.values(prepared.manifest.content.assets).every((asset) => asset.kind === "music") && !Object.keys(prepared.manifest.content.tilesets).length;
-    if (musicOnly && prepared.autoInstall !== true && args.userAsked !== true) {
+    // userAsked 는 사용자 글에 스토어가 실제로 있을 때만 통한다(2026-10-25 실조수: 「조선풍 음악 전부 맞춰줘」에 카드를 띄운 뒤 userAsked:true 로 넣었다).
+    const asked = args.userAsked === true && prepared.userMentionedStore !== false;
+    if (musicOnly && prepared.autoInstall !== true && !asked) {
       throw new ToolError("「묻지 않고 바로 넣기」가 꺼져 있다. 스토어 음악은 store_find_music 카드로 사용자가 듣고 고르게 하고 이 턴을 끝내라(사용자가 이번 요청에서 스토어에서 넣으라고 직접 말했으면 userAsked:true).", { code: "store-ask-first" });
     }
     const result = applyPackToProject(draft, prepared.manifest, prepared.context);
