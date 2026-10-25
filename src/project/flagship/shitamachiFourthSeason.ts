@@ -97,7 +97,8 @@ function say(who: Who, expr: Expr, ...lines: string[]): Command[] {
 }
 /** 하진의 속마음 — 얼굴 없이. */
 function think(...lines: string[]): Command[] {
-  return [CLEAR_FACE, ...lines.map((body): Command => ({ kind: "text", body, position: "bottom", context: "thought" } as Command))];
+  // 화자를 비우면 그 이벤트 인물(characterId) 이름이 붙는다 — 속마음은 하진의 것이라고 못 박는다.
+  return [CLEAR_FACE, ...lines.map((body): Command => ({ kind: "text", speaker: CAST.hajin.name, body, position: "bottom", context: "thought" } as Command))];
 }
 /** 장면 자막(시간·장소). */
 function caption(...lines: string[]): Command[] {
@@ -331,7 +332,7 @@ function buildHub(project: Project, arrive: Cell): void {
     walk(seoyeonId, ["right", "right", "right", "right"]),
     setSw("sw_sm_seoyeon_hub_off", true),
     setVar(V_STAGE, "=", 2),
-    ...think("소원 등롱 세 개. 베이커리, 센토, 진흥회 사무소."),
+    ...think("소원 등롱 세 개. 베이커리, 센토, 진흥회 사무소.", "…그 전에 집에 들러 가방부터 놓고 갈까. 우리 집은 아케이드 지나 북쪽 뒷길이다."),
   ];
   hub.events.push(event(seoyeonId, "서연", seoyeonAt, [
     page(`${seoyeonId}_intro`, [varIs(V_STAGE, 1)], intro, { who: "seoyeon", dir: "left", trigger: "auto" }),
@@ -423,6 +424,14 @@ function buildHub(project: Project, arrive: Cell): void {
       { name: "하굣길 학생", graphic: { selectionId: "charset:oprn-charset-modern1:1" }, stops: [{ x: 15, y: 3 }, { x: 15, y: 12 }, { x: 30, y: 12 }], lines: ["회장님이 등롱 모으러 다니더라. 너도 도와?"] },
     ],
   });
+}
+
+/** 가구 칸(못 걷는 칸)과 그 곁의 설 칸을 확인한다 — 방 생성 결과가 바뀌면 바로 알린다. */
+function furnitureCell(project: Project, map: GameMap, prop: Cell, stand: Cell): Cell {
+  if (isPassable(project, map, prop.x, prop.y) || !isPassable(project, map, stand.x, stand.y)) {
+    throw new Error(`[shitamachi-fourth-season] ${map.id} 가구 칸 (${prop.x},${prop.y}) / 설 칸 (${stand.x},${stand.y}) 이 맞지 않는다 — 방 생성 결과가 바뀌었다`);
+  }
+  return prop;
 }
 
 /** 실내에서 그 사람이 설 칸 — 방 안 want 근처(입구 발판·출구는 피한다). */
@@ -558,8 +567,11 @@ function buildOffice(project: Project, link: { entry: Cell; exit: Cell }): void 
 
 function buildHouse(project: Project, link: { entry: Cell; exit: Cell }): void {
   const map = project.maps[M.house]!;
-  const noteAt = placeIn(project, M.house, { x: link.entry.x - 6, y: link.entry.y - 4 }, [link.entry, link.exit]);
-  const photoAt = placeIn(project, M.house, { x: noteAt.x - 4, y: noteAt.y }, [link.entry, link.exit, noteAt]);
+  // 쪽지는 식탁 위, 사진은 거실 장식장 위 — 가구 칸(못 걷는 칸)에 두고 곁의 복도에서 바라보고 조사한다.
+  // 바닥 빈 칸에 투명 이벤트를 두면 플레이어가 어디를 조사할지 모르고, 그 칸을 밟고 지나가 버린다(2026-10-25 플레이).
+  const noteAt = furnitureCell(project, map, { x: 15, y: 15 }, { x: 15, y: 14 });
+  const photoAt = furnitureCell(project, map, { x: 8, y: 13 }, { x: 8, y: 14 });
+  void link;
   map.events.push(event("ev_sm_house_note", "식탁 위 쪽지", noteAt, [
     page("ev_sm_house_note_p", [], [
       ...caption("식탁 위에 엄마의 쪽지가 있다."),
@@ -660,11 +672,18 @@ function buildRooftop(project: Project, link: { entry: Cell; exit: Cell }): Cell
   }
   map.events.push(event("ev_sm_roof_scene", "옥상 고백", { x: 1, y: 1 }, pages));
   // 밤 옥상 — 도시 불빛과 난간 등.
+  // 남쪽 난간 너머로 아케이드 등롱 불빛이 올라온다 — 난간 줄을 따라 따뜻한 빛을 깔아 «아래가 거리»로 읽히게 한다.
+  const fenceGlow: LightSource[] = [];
+  for (let x = 3; x < map.width - 2; x += 4) {
+    const y = map.height - 2;
+    fenceGlow.push({ id: `roof_street_${x}`, at: { x, y }, radius: 2.4, intensity: 0.75, color: "#ff9f4a", flicker: true });
+  }
   map.defaultLighting = {
     ambient: 0.55, color: "#121734",
     sources: [
       { id: "roof_glow_a", at: spot, radius: 5, intensity: 0.9, color: "#ffbf73", flicker: false },
       { id: "roof_glow_b", at: arrive, radius: 3, intensity: 0.7, color: "#ffd9a0", flicker: false },
+      ...fenceGlow,
     ],
   };
   map.bgm = { mode: "custom", resourceId: BGM_ROOF } as GameMap["bgm"];
@@ -686,8 +705,9 @@ function buildTitleAndOpening(project: Project, spots: { jiho: Cell; yuna: Cell;
       actors: [{ who: "jiho", at: spots.jiho, dir: "down" }],
     },
     {
-      id: "sm_shot_sento", mapId: M.sento, focus: { x: spots.yuna.x, y: spots.yuna.y - 2 }, caption: "같은 전철, 같은 칸. 필름 카메라를 든 유나.",
-      actors: [{ who: "yuna", at: spots.yuna, dir: "down" }],
+      // 번대(접수대)가 아니라 탕이 보이게 — 센토라는 것이 한눈에 읽힌다.
+      id: "sm_shot_sento", mapId: M.sento, focus: { x: 20, y: 12 }, caption: "같은 전철, 같은 칸. 필름 카메라를 든 유나.",
+      actors: [{ who: "yuna", at: { x: 21, y: 16 }, dir: "down" }],
     },
     {
       id: "sm_shot_office", mapId: M.office, focus: { x: spots.seoyeon.x, y: spots.seoyeon.y + 2 }, caption: "축제를 혼자 떠안은 학생회장, 서연.",
@@ -713,12 +733,6 @@ function buildTitleAndOpening(project: Project, spots: { jiho: Cell; yuna: Cell;
         shotId: s.id, layerId: `actor_${ai}`, charsetResourceId: CAST[a.who].resource, characterIndex: CAST[a.who].index,
         direction: a.dir, scale: 1, x, y,
         ...(a.walk ? { fromX: x, toX: x + a.walk, durationMs: 4800, stride: 8 } : {}),
-      });
-    }
-    if (index === shots.length - 1) {
-      execTool(project, "upsert_opening_light_fx", {
-        shotId: s.id, layerId: "lantern", kind: "glow", x: 15 * 16 - crop.x - 20, y: 9 * 16 + 8 - crop.y - 20, width: 40, height: 40,
-        color: "#ff9a3c", blend: "screen", inner: 0.12, pulse: { hz: 0.5, amount: 0.25, pattern: "pulse", seed: 7 },
       });
     }
     execTool(project, "set_opening_caption", { shotId: s.id, layerId: "caption", letterbox: 0.15, color: "#fff4e6", cues: [{ atMs: 300, text: s.caption, typewriterMs: 900 }] });
