@@ -11,6 +11,10 @@ vi.mock("@/editor/panels/aiRoleMatrixSettings", async (importOriginal) => ({
   ...(await importOriginal<typeof import("@/editor/panels/aiRoleMatrixSettings")>()),
   fetchConnectedRoutes: () => new Promise<never>(() => undefined),
 }));
+// 도구 사용량 패널도 같은 사정이다: 열자마자 IndexedDB·대화 기록을 읽고 나중에 자기 보고서를 그려 넣는다.
+vi.mock("@/editor/panels/aiToolUsagePanel", () => ({
+  renderAiToolUsagePanel: () => document.createElement("div"),
+}));
 
 // 인증 상태 조회는 모킹하지 않는다 — test/aiChatPanelSettings.test.ts 와 같은 방식이다.
 // 모달이 마운트되면 동반 서비스 조회가 실패하고 연결 요약이 오류 문구로 떨어지지만,

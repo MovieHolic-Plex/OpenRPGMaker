@@ -9,6 +9,10 @@ vi.mock("@/editor/panels/aiRoleMatrixSettings", async (importOriginal) => ({
   ...(await importOriginal<typeof import("@/editor/panels/aiRoleMatrixSettings")>()),
   fetchConnectedRoutes: () => new Promise<never>(() => undefined),
 }));
+// 도구 사용량 패널도 같은 사정이다: 열자마자 IndexedDB·대화 기록을 읽고 나중에 자기 보고서를 그려 넣는다.
+vi.mock("@/editor/panels/aiToolUsagePanel", () => ({
+  renderAiToolUsagePanel: () => document.createElement("div"),
+}));
 
 const fetchChatGptAuthStatus = vi.fn();
 vi.mock("@/ai/chatgptOAuthClient", async () => {
