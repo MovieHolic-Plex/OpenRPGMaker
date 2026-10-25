@@ -1,0 +1,527 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "5d0eb63b75ecd8950d308ea74ac9320821e7d6bb2d7ab6de359f47491b69b367",
+ "width": 80,
+ "height": 80,
+ "kind": "structure",
+ "name": "rusted steel shipping container turned into a home, seen from above: flat ribbed container roof as a top plane with corner castings, corrugated front side with a cut-in door under a sagging tarp awning on two poles and a cut-out window with bars",
+ "label": "wasteland_ruins/container-home",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "refer",
+ "reasons": [
+  "화풍: 화풍 판정이 갈림(걸린 판정 2/4)",
+  "화풍: 판정자 fail (2/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "refer",
+  "reasons": [
+   "화풍 판정이 갈림(걸린 판정 2/4)",
+   "판정자 fail (2/4)"
+  ],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 7,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "wasteland_ruins",
+   "fallback": true,
+   "reason": "칩셋 wasteland_ruins 의 화풍 기준 묶음이 없다",
+   "hash": "5f62fef078ef7661"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 13,
+  "tileColorsP90": 18,
+  "darkV5": 33,
+  "nearBlackEdge": 0.02,
+  "opaqueTiles": 21
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "container roof plane with ribs and corner castings",
+      "rows": "13-40",
+      "evidence": "a",
+      "front_edge_line_row": 41,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "tarp awning over the door",
+      "rows": "41-51",
+      "evidence": "c",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "roof vent or chimney cap on the top right",
+      "rows": "3-9",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 28,
+    "front_face_rows": 37,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The roof is a 28-row blue ribbed plane (rows 13-40). It ends in a light front-edge line at row 41 (#a1b2ae), which runs across the full width. Below it is a 37-row corrugated front face (rows 41-78) with the door, the barred window and the teal awning. The awning is a sloped plane at rows 41-51, standing on two poles. The vent at the top right (rows 3-12) has an elliptical cap, about 8 rows tall, narrowing from 16 to 8 px at the top, with a shaft below it. The roof is not a thin rim or a front strip, so the container is a three-quarter view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The measured facts are at or above the references: 13 visible tones per tile against 12 and 10, 5% near-flat coverage, and 0% neutral dark edge pixels. The outlines are therefore tinted dark blue and rust rather than black, and by those numbers alone the piece would not be shallow. By eye it is weaker than the references. The container walls are mostly one mid blue with only a faint rib pattern, and about 4 lightness steps on the main steel ramp against 5-6 on the tile roofs and stone. The rust is sparse orange splotches rather than shading worked into the material. The roof top plane is a thin, barely differentiated band with little ribbing or per-casting highlight, so the 'seen from above' read is weak and the piece looks like a flat front-on sticker. The awning is a flat teal band with little fold or sag shading. The references have per-tile scallops, plaster speckle and stones shaded one by one, and the candidate has no equivalent material grain. Because the call is borderline and the brief says to fail when in doubt, it fails as slightly shallower than the Beodeul bar.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 23980
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "container roof (ribbed flat top plane with corner castings)",
+      "rows": "14-39",
+      "evidence": "a",
+      "front_edge_line_row": 41,
+      "eave_shadow_rows": "40"
+     },
+     {
+      "part": "tarp awning over door on two poles",
+      "rows": "41-51",
+      "evidence": "c",
+      "front_edge_line_row": 51,
+      "eave_shadow_rows": "51-53"
+     },
+     {
+      "part": "rooftop vent/tank box at upper right with oval lid",
+      "rows": "3-9",
+      "evidence": "b",
+      "front_edge_line_row": 9,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "front corrugated wall with door and barred window",
+      "rows": "42-78",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 26,
+    "front_face_rows": 37,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The roof is a large blue ribbed plane (rows 14-39, 26 rows). It ends in a light front-edge line at rows 40-41 (L=172 at x=40 and x=59), with a dark brown line at row 40 as eave shadow. Below it is a front face of about 37 rows (rows 42-78) with a cut-in door, a barred window, and the teal sagging awning (rows 41-51) on two poles. The awning's slope counts as a top surface under rule (c). The vent box at the upper right has an oval lid in rows 3-9. The roof reads as a top surface seen from above, so this is a three-quarter view and not a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a whole building (roof plane, front wall, door, window), so it matches the reference kind. Measured facts: 13 visible tones per tile against 12 and 10 for the references, 5% near-flat coverage against 0%, and 0% neutral dark edge pixels, so the outlines carry a tint. By eye the edges are a dark blue-steel tone, not black. The steel body has about 4 lightness steps (highlight, light, mid, dark), a little shallower than the references' 5-6. Rust patches, rivet-like speckle, the teal awning and the barred window add varied texture. Large areas of the roof and wall are fairly calm but are broken up by rust dots, so they are not true flat fills. The raw colour total is low (38 against 66 and 185), but that follows from the locked palette and the visible tones hold up. A careful artist would accept it next to the references. It is slightly simpler in its ramps, with weakly shown corrugation.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19151
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "container roof (flat ribbed top plane with corner castings)",
+      "rows": "13-40",
+      "evidence": "a",
+      "front_edge_line_row": 41,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "roof vent/chimney box with oval cap",
+      "rows": "3-27",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "tarp awning on two poles",
+      "rows": "41-50",
+      "evidence": "c",
+      "front_edge_line_row": 50,
+      "eave_shadow_rows": "51-52"
+     }
+    ],
+    "main_top_rows": 28,
+    "front_face_rows": 37,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The roof is a large ribbed plane over rows 13-40. It ends in a light front-edge line at row 41 (L=172, #a1b2ae), and the front face with door, window and corrugation runs below it from about row 42 to 78, about 37 rows. The roof vent at upper right has an elliptical cap (rows 3-8, with width growing from 8 to 16). The teal tarp awning (rows 41-50) is a sloped canopy plane with its own lower edge and shadow under it. No receding side face is drawn, so the south face is the only vertical face. The structure shows a top surface plus a front face, which matches the green reference pairs."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The measured facts are at or above the references: 13 visible tones per tile against 12 and 10, 5% near-flat coverage, and 0% neutral dark edges. The outline is a dark blue tint beside the steel, not a black sticker line, so that part is fine. By eye the piece is still shallower than the references. The blue steel ramp has about 3-4 steps, where the tile roofs and plaster/stone walls have 5-6. The roof is a mostly flat blue plane with only faint rib lines, and the front wall shows little real corrugation shading. Most of the texture comes from scattered orange rust blotches placed on top of a fairly uniform base, not from per-rib highlights and shadows or per-element shading. The awning, window and door are readable but simply shaded, with few mid-tones. Total distinct colours (38) are far below the references (185 and 66). The tile-level count is inflated by the rust spots. Next to the references this reads as thinner and flatter, so I fail it on the doubt rule.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 20427
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "container roof plane with corner castings",
+      "rows": "13-39",
+      "evidence": "a",
+      "front_edge_line_row": 41,
+      "eave_shadow_rows": "40"
+     },
+     {
+      "part": "tarp awning over the door",
+      "rows": "41-50",
+      "evidence": "c",
+      "front_edge_line_row": 50,
+      "eave_shadow_rows": "51-53"
+     },
+     {
+      "part": "rooftop box/vent with oval cap at upper right",
+      "rows": "3-9",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 27,
+    "front_face_rows": 37,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The roof is a large blue ribbed plane in rows 13-39. It ends in a dark row 40 and a light front-edge line at row 41 (L=172), and the corrugated front face runs below it in rows 42-78. The front face holds the door cut-in, the barred window, and the teal awning (rows 41-50), whose stripes are a sloped top plane. The roof is about 27 rows tall and the front face about 37 rows, so both a top surface and a front face of 3+ rows are present. The small tank/vent at the upper right has an oval cap in rows 3-9 and is a minor detail."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a whole building like the references. Its measured facts sit at or above them: 13 visible tones per tile against 12 and 10, 5% near-flat coverage against 0%, and 0% neutral dark edge pixels. That last figure means the outline is tinted, a dark blue-steel tone beside the metal, not a black sticker line. By eye, the blue steel has about 4 lightness steps (highlight, light, mid, dark), fewer than the 5-6 on the tile roofs, so the ramp is a little shallow. The surface still carries real variation: rust patches in several oranges and browns, vertical corrugation ribs on the front wall, a roof hatch, a plate and a barrel, a teal tarp awning with a shadow band, a dark door cut-in, and a barred window. No large area is left as a flat fill. The low raw colour count (38 total) reflects the locked palette, not missing texture. A careful artist would accept it next to the references without it looking thinner or more sticker-like, though the roof plane is somewhat plain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19093
+  }
+ ],
+ "decidedAt": "2026-10-25T14:13:51.796Z",
+ "cells": {
+  "16": [
+   "00842c537de01788",
+   "04f4cbcaeb20e565",
+   "18cf64a683214bba",
+   "1e75ebde420123a7",
+   "2163d2c9d8cfa492",
+   "2b0d461ee96574ca",
+   "2c792ef984ba6c0c",
+   "2cf35cb9258dc896",
+   "2ef0c02cf8dbdf8d",
+   "358489cfb842b13a",
+   "4658215dd62cd800",
+   "46e9730808712f3a",
+   "52aa227f48e5b3d5",
+   "598574da97c803f1",
+   "5be2108521a2aeed",
+   "6541f6ff3386b495",
+   "8724711cb97627d8",
+   "906741d884919901",
+   "a4a066c90ad23f29",
+   "ad011537bd71ed3d",
+   "b3ad244974242e2c",
+   "b50b0edfbe8c2f40",
+   "c50fc040f2e32403",
+   "e38a084530326ec1",
+   "f15d0db07b70fcb8"
+  ],
+  "24": [
+   "00b3de78d483d75a",
+   "02fdced395c37d05",
+   "0695246c123b6945",
+   "074918846d84535f",
+   "0848c885d3a9e55a",
+   "0af00ae38ac6fa48",
+   "0e9c98136e3c4910",
+   "0f8dc8559e771e04",
+   "0fd2d2bf752fc326",
+   "1e4876e5c0cba786",
+   "1f92fc155f2c6497",
+   "210315b411981296",
+   "23ad7230a41f3b90",
+   "240d4eb7a9a402b0",
+   "2422d5601e32731b",
+   "29613c80574dc945",
+   "2a32f41a4292eed9",
+   "2cdba8606bdd8023",
+   "2dea31733305680c",
+   "30de719447d354e0",
+   "341755eed7be5f90",
+   "34c64e94b81cbbaa",
+   "351efeabbe48e894",
+   "354b03d4da94dc3c",
+   "360cdfd2fb04e2a4",
+   "39cc3676b27564d6",
+   "39df5ee2243bec44",
+   "3c0cb1a48db5dacb",
+   "3c46341e82971f4f",
+   "3f414d1febefeab9",
+   "42d1507c10a780a5",
+   "44ffe1798662457d",
+   "48100d0c2fbb9a91",
+   "49d45d1aebe4e782",
+   "4d560cf3d930a095",
+   "51b0038e11a5d579",
+   "55b981b44ee1034e",
+   "56d3a5a0fe686ebf",
+   "5f6f329d6fb00d03",
+   "5f899bb3e48118d8",
+   "63c1b774f088e1fc",
+   "65bbd147fb27c1ec",
+   "69545df34c01befd",
+   "695ad5e0c354df0a",
+   "6b1a04f711966a91",
+   "6d9ca16ad39cbbe3",
+   "6f803290b78046d2",
+   "77d575b8d44d2bd0",
+   "7b97ccb4dc1430fe",
+   "7cd955094c181ea6",
+   "7d59f1f6f4aabb69",
+   "7ee568c882e215c0",
+   "81c3c64dd564ec7c",
+   "84f935054945ecf0",
+   "88b5fe22797dcf92",
+   "8f01c4a616fb5825",
+   "947a428e4d9da179",
+   "a286a1c460a13609",
+   "a85d554fce6b5ea8",
+   "a88d5d6d902a7003",
+   "aa03fe1f622a348c",
+   "ace2712d0873b1e0",
+   "ae0663785d1069f1",
+   "b1d946efb1e3d93d",
+   "b3135ea7492f133e",
+   "b340fc6345af4567",
+   "bc1f3a9ba33718c1",
+   "c26069f8848ff0d9",
+   "c51c6f773c3be704",
+   "c9abd8ad0111d054",
+   "c9b1ee6799d491ca",
+   "c9ea0245f2832a2f",
+   "ca607d8fe0e73d20",
+   "cbdaba92d42b3ec3",
+   "cc6834a167166180",
+   "cd947e00a031e60e",
+   "d2397bcdf9b16995",
+   "d3d369366b07827d",
+   "d46b9a16f32908e9",
+   "d4ab6d3a44ddeeca",
+   "d64129825255846b",
+   "db84e81c61230d4a",
+   "dbb07d6b47a236f7",
+   "e3867ca012d254a6",
+   "e3911a27047f658b",
+   "ee3d0c393cbebf0e",
+   "f230e3cb63bf8e4b",
+   "f3c0c34ac5eeefce",
+   "fa395fc8082fb105"
+  ],
+  "32": [
+   "043aa2d19fd678e2",
+   "0503d3ef31030e9f",
+   "09780c7bb3e9ad95",
+   "146ee5d6a493a9a3",
+   "188b82687888f7a5",
+   "2494c0f8097df991",
+   "25f3b23b5d66e591",
+   "26f526811ae86af9",
+   "287f686e5a0f600c",
+   "2cbea03d4488b626",
+   "31d70d48560b85d9",
+   "33db3405b7382f6d",
+   "39ccc36125970318",
+   "3ad02cb064efb523",
+   "3b90a5e802193212",
+   "3bfd89e8f8e71d38",
+   "3cc08012b8432c34",
+   "4105a8c5a287e6a2",
+   "4452f89131832b80",
+   "46c92a1b9918e460",
+   "4a881ae1c76a6b80",
+   "4ed595ce6b729b10",
+   "515d1b142847910f",
+   "600f539ca81e26d7",
+   "6db60b4140627287",
+   "752a280c00b64ed5",
+   "76f238add76d302e",
+   "7b70138a1b5cb489",
+   "7c7fabf8a90451ce",
+   "7ce662cd6c205ae9",
+   "81684d5ea4f881b5",
+   "81981370ee59563a",
+   "85afbdb235250089",
+   "95527a9132ba1b82",
+   "962c9907ebab50ff",
+   "9fee525282ce779c",
+   "a3a64be33f62e995",
+   "a3f2f0fe6f0e7b04",
+   "ad6794be559bb5ba",
+   "aff7ecfd374765a1",
+   "b7e4d6748ab8f342",
+   "bc675e212679139c",
+   "bdf386a774fff9b5",
+   "bf7045b0015e52b1",
+   "c4bcd1224c71bc1b",
+   "c8de76c1a93a4a92",
+   "cc347cb2dc589f0e",
+   "cec9ac649cdbf723",
+   "d1beb1dc79177163",
+   "d9a189e6f5592739",
+   "e2dc1213464d5346",
+   "ea3416f47e2fdf66",
+   "f052719c1ebd3940",
+   "f73c48a3f170026f"
+  ],
+  "48": [
+   "04266ec030b3219f",
+   "0467f64720064b4c",
+   "04d7e299de6abdbb",
+   "0b3f8176c88a4a63",
+   "0ba3eb90adac188a",
+   "0ce6d43c2b42d541",
+   "103a45f56dccdbaa",
+   "1098b75772b6dc42",
+   "159b44c6635435ab",
+   "20173168ad802748",
+   "246ddb02a51e5b40",
+   "2feea297ac37fbad",
+   "4117c74468b28857",
+   "486fb9078b6cf8ce",
+   "499d25ac5f60ddf5",
+   "4ba6fefe221ca6b1",
+   "7135b86a02d624d3",
+   "83b5d670050acd77",
+   "ca76909f28c0f002",
+   "cbac0be458ea322a",
+   "ead8cfbfc8f94971",
+   "f3792fc4663e9624",
+   "f3a1fe8fffe33415",
+   "fcc2fab59e7811a9"
+  ]
+ }
+}

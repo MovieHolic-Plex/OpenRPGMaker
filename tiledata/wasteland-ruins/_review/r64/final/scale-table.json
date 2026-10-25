@@ -1,0 +1,624 @@
+{
+ "hero": {
+  "frame": "Actor1 char 0 down middle",
+  "w": 24,
+  "h": 32,
+  "drawn_h": 24
+ },
+ "wasteland": [
+  {
+   "id": "crop-bed-b",
+   "label": "텃밭 이랑 B",
+   "w_px": 48,
+   "h_px": 32,
+   "drawn_h_px": 29,
+   "hero_h_px": 24,
+   "ratio_to_hero": 1.21
+  },
+  {
+   "id": "crop-bed-c",
+   "label": "텃밭 이랑 C",
+   "w_px": 48,
+   "h_px": 32,
+   "drawn_h_px": 29,
+   "hero_h_px": 24,
+   "ratio_to_hero": 1.21
+  },
+  {
+   "id": "husk-a",
+   "label": "지붕 없는 콘크리트 폐허",
+   "w_px": 96,
+   "h_px": 80,
+   "drawn_h_px": 80,
+   "hero_h_px": 24,
+   "ratio_to_hero": 3.33
+  },
+  {
+   "id": "husk-b",
+   "label": "모서리 무너진 폐허",
+   "w_px": 80,
+   "h_px": 64,
+   "drawn_h_px": 64,
+   "hero_h_px": 24,
+   "ratio_to_hero": 2.67
+  },
+  {
+   "id": "husk-tall",
+   "label": "층 남은 고층 폐허 정면",
+   "w_px": 64,
+   "h_px": 128,
+   "drawn_h_px": 128,
+   "hero_h_px": 24,
+   "ratio_to_hero": 5.33
+  },
+  {
+   "id": "wall-h",
+   "label": "무너진 벽 토막 (가로)",
+   "w_px": 48,
+   "h_px": 32,
+   "drawn_h_px": 27,
+   "hero_h_px": 24,
+   "ratio_to_hero": 1.12
+  },
+  {
+   "id": "wall-v",
+   "label": "무너진 벽 줄 (세로)",
+   "w_px": 16,
+   "h_px": 48,
+   "drawn_h_px": 48,
+   "hero_h_px": 24,
+   "ratio_to_hero": 2.0
+  },
+  {
+   "id": "wall-stub",
+   "label": "벽 그루터기",
+   "w_px": 16,
+   "h_px": 32,
+   "drawn_h_px": 25,
+   "hero_h_px": 24,
+   "ratio_to_hero": 1.04
+  },
+  {
+   "id": "shack-a",
+   "label": "고철 판잣집",
+   "w_px": 64,
+   "h_px": 80,
+   "drawn_h_px": 68,
+   "hero_h_px": 24,
+   "ratio_to_hero": 2.83
+  },
+  {
+   "id": "shack-b",
+   "label": "큰 판잣집",
+   "w_px": 80,
+   "h_px": 80,
+   "drawn_h_px": 80,
+   "hero_h_px": 24,
+   "ratio_to_hero": 3.33
+  },
+  {
+   "id": "lean-to",
+   "label": "방수포 차양 움막",
+   "w_px": 48,
+   "h_px": 48,
+   "drawn_h_px": 47,
+   "hero_h_px": 24,
+   "ratio_to_hero": 1.96
+  },
+  {
+   "id": "shack-c",
+   "label": "조각보 양철 판잣집",
+   "w_px": 64,
+   "h_px": 80,
+   "drawn_h_px": 75,
+   "hero_h_px": 24,
+   "ratio_to_hero": 3.12
+  },
+  {
+   "id": "container-home",
+   "label": "컨테이너 집",
+   "w_px": 80,
+   "h_px": 80,
+   "drawn_h_px": 77,
+   "hero_h_px": 24,
+   "ratio_to_hero": 3.21
+  },
+  {
+   "id": "tent-tarp",
+   "label": "방수포 천막",
+   "w_px": 48,
+   "h_px": 48,
+   "drawn_h_px": 47,
+   "hero_h_px": 24,
+   "ratio_to_hero": 1.96
+  },
+  {
+   "id": "barricade-h",
+   "label": "바리케이드 (가로)",
+   "w_px": 48,
+   "h_px": 32,
+   "drawn_h_px": 24,
+   "hero_h_px": 24,
+   "ratio_to_hero": 1.0
+  },
+  {
+   "id": "fence-h",
+   "label": "고철 울타리 (가로)",
+   "w_px": 16,
+   "h_px": 16,
+   "drawn_h_px": 16,
+   "hero_h_px": 24,
+   "ratio_to_hero": 0.67
+  },
+  {
+   "id": "gate-scrap",
+   "label": "고철 대문",
+   "w_px": 32,
+   "h_px": 32,
+   "drawn_h_px": 32,
+   "hero_h_px": 24,
+   "ratio_to_hero": 1.33
+  },
+  {
+   "id": "car-rust-h",
+   "label": "녹슨 승용차 (가로)",
+   "w_px": 64,
+   "h_px": 48,
+   "drawn_h_px": 43,
+   "hero_h_px": 24,
+   "ratio_to_hero": 1.79
+  },
+  {
+   "id": "car-rust-v",
+   "label": "녹슨 승용차 (세로)",
+   "w_px": 32,
+   "h_px": 64,
+   "drawn_h_px": 62,
+   "hero_h_px": 24,
+   "ratio_to_hero": 2.58
+  },
+  {
+   "id": "van-rust",
+   "label": "녹슨 승합차",
+   "w_px": 80,
+   "h_px": 48,
+   "drawn_h_px": 46,
+   "hero_h_px": 24,
+   "ratio_to_hero": 1.92
+  },
+  {
+   "id": "water-tank",
+   "label": "기둥 위 물탱크",
+   "w_px": 32,
+   "h_px": 48,
+   "drawn_h_px": 45,
+   "hero_h_px": 24,
+   "ratio_to_hero": 1.88
+  },
+  {
+   "id": "generator",
+   "label": "고철 발전기",
+   "w_px": 32,
+   "h_px": 32,
+   "drawn_h_px": 31,
+   "hero_h_px": 24,
+   "ratio_to_hero": 1.29
+  },
+  {
+   "id": "solar-scrap",
+   "label": "주워 온 태양광판",
+   "w_px": 32,
+   "h_px": 16,
+   "drawn_h_px": 16,
+   "hero_h_px": 24,
+   "ratio_to_hero": 0.67
+  },
+  {
+   "id": "campfire",
+   "label": "모닥불",
+   "w_px": 16,
+   "h_px": 16,
+   "drawn_h_px": 14,
+   "hero_h_px": 24,
+   "ratio_to_hero": 0.58
+  },
+  {
+   "id": "log-seat",
+   "label": "통나무 의자",
+   "w_px": 32,
+   "h_px": 16,
+   "drawn_h_px": 13,
+   "hero_h_px": 24,
+   "ratio_to_hero": 0.54
+  },
+  {
+   "id": "stall-a",
+   "label": "고물 노점 A",
+   "w_px": 48,
+   "h_px": 48,
+   "drawn_h_px": 48,
+   "hero_h_px": 24,
+   "ratio_to_hero": 2.0
+  },
+  {
+   "id": "stall-b",
+   "label": "고물 노점 B",
+   "w_px": 48,
+   "h_px": 48,
+   "drawn_h_px": 48,
+   "hero_h_px": 24,
+   "ratio_to_hero": 2.0
+  },
+  {
+   "id": "drums",
+   "label": "녹슨 드럼통",
+   "w_px": 16,
+   "h_px": 16,
+   "drawn_h_px": 16,
+   "hero_h_px": 24,
+   "ratio_to_hero": 0.67
+  },
+  {
+   "id": "tyres",
+   "label": "쌓인 타이어",
+   "w_px": 16,
+   "h_px": 16,
+   "drawn_h_px": 15,
+   "hero_h_px": 24,
+   "ratio_to_hero": 0.62
+  },
+  {
+   "id": "crates",
+   "label": "고물 상자",
+   "w_px": 32,
+   "h_px": 16,
+   "drawn_h_px": 15,
+   "hero_h_px": 24,
+   "ratio_to_hero": 0.62
+  },
+  {
+   "id": "scrap-heap",
+   "label": "고철 더미",
+   "w_px": 48,
+   "h_px": 32,
+   "drawn_h_px": 26,
+   "hero_h_px": 24,
+   "ratio_to_hero": 1.08
+  },
+  {
+   "id": "rubble-pile",
+   "label": "잔해 더미",
+   "w_px": 32,
+   "h_px": 32,
+   "drawn_h_px": 23,
+   "hero_h_px": 24,
+   "ratio_to_hero": 0.96
+  },
+  {
+   "id": "dead-tree",
+   "label": "죽은 나무",
+   "w_px": 48,
+   "h_px": 64,
+   "drawn_h_px": 64,
+   "hero_h_px": 24,
+   "ratio_to_hero": 2.67
+  },
+  {
+   "id": "bush-wild",
+   "label": "야생 덤불",
+   "w_px": 32,
+   "h_px": 32,
+   "drawn_h_px": 31,
+   "hero_h_px": 24,
+   "ratio_to_hero": 1.29
+  },
+  {
+   "id": "vine-wall",
+   "label": "덩굴 덮인 벽 그루터기",
+   "w_px": 16,
+   "h_px": 32,
+   "drawn_h_px": 27,
+   "hero_h_px": 24,
+   "ratio_to_hero": 1.12
+  },
+  {
+   "id": "lamp-broken",
+   "label": "휜 가로등",
+   "w_px": 16,
+   "h_px": 48,
+   "drawn_h_px": 47,
+   "hero_h_px": 24,
+   "ratio_to_hero": 1.96
+  },
+  {
+   "id": "jersey-barrier",
+   "label": "콘크리트 방벽",
+   "w_px": 32,
+   "h_px": 16,
+   "drawn_h_px": 16,
+   "hero_h_px": 24,
+   "ratio_to_hero": 0.67
+  },
+  {
+   "id": "sign-blank",
+   "label": "녹슨 빈 표지판",
+   "w_px": 16,
+   "h_px": 32,
+   "drawn_h_px": 31,
+   "hero_h_px": 24,
+   "ratio_to_hero": 1.29
+  },
+  {
+   "id": "husk-e",
+   "label": "불탄 벽돌 2층 폐허",
+   "w_px": 64,
+   "h_px": 96,
+   "drawn_h_px": 96,
+   "hero_h_px": 24,
+   "ratio_to_hero": 4.0
+  },
+  {
+   "id": "wall-h2",
+   "label": "철근 드러난 높은 벽 토막 (가로)",
+   "w_px": 48,
+   "h_px": 32,
+   "drawn_h_px": 32,
+   "hero_h_px": 24,
+   "ratio_to_hero": 1.33
+  },
+  {
+   "id": "husk-g",
+   "label": "뼈대만 남은 3층 탑",
+   "w_px": 64,
+   "h_px": 144,
+   "drawn_h_px": 144,
+   "hero_h_px": 24,
+   "ratio_to_hero": 6.0
+  },
+  {
+   "id": "husk-h",
+   "label": "위층 무너진 3층 상가",
+   "w_px": 96,
+   "h_px": 144,
+   "drawn_h_px": 144,
+   "hero_h_px": 24,
+   "ratio_to_hero": 6.0
+  },
+  {
+   "id": "hut-sheet",
+   "label": "주황 방수포 골강판 오두막",
+   "w_px": 64,
+   "h_px": 64,
+   "drawn_h_px": 64,
+   "hero_h_px": 24,
+   "ratio_to_hero": 2.67
+  },
+  {
+   "id": "lean-doors",
+   "label": "문짝·팰릿 움막",
+   "w_px": 48,
+   "h_px": 32,
+   "drawn_h_px": 32,
+   "hero_h_px": 24,
+   "ratio_to_hero": 1.33
+  },
+  {
+   "id": "shack-2f",
+   "label": "사다리 2층 판잣집",
+   "w_px": 64,
+   "h_px": 96,
+   "drawn_h_px": 96,
+   "hero_h_px": 24,
+   "ratio_to_hero": 4.0
+  },
+  {
+   "id": "hut-stove",
+   "label": "연통 아연 판 오두막",
+   "w_px": 64,
+   "h_px": 64,
+   "drawn_h_px": 64,
+   "hero_h_px": 24,
+   "ratio_to_hero": 2.67
+  },
+  {
+   "id": "market-shelter",
+   "label": "천 걸린 장터 쉼막",
+   "w_px": 48,
+   "h_px": 64,
+   "drawn_h_px": 63,
+   "hero_h_px": 24,
+   "ratio_to_hero": 2.62
+  },
+  {
+   "id": "wash-line",
+   "label": "넝마 빨랫줄",
+   "w_px": 48,
+   "h_px": 32,
+   "drawn_h_px": 27,
+   "hero_h_px": 24,
+   "ratio_to_hero": 1.12
+  },
+  {
+   "id": "crates-plastic",
+   "label": "플라스틱 상자·양동이 더미",
+   "w_px": 32,
+   "h_px": 16,
+   "drawn_h_px": 16,
+   "hero_h_px": 24,
+   "ratio_to_hero": 0.67
+  }
+ ],
+ "beodeul": [
+  {
+   "id": "bd-out-log-door",
+   "label": "door (log wall door cell)",
+   "w_px": 16,
+   "h_px": 32,
+   "drawn_h_px": 32,
+   "hero_h_px": 24,
+   "ratio_to_hero": 1.33
+  },
+  {
+   "id": "bd-house-h101_2",
+   "label": "house 3x6",
+   "w_px": 48,
+   "h_px": 96,
+   "drawn_h_px": 84,
+   "hero_h_px": 24,
+   "ratio_to_hero": 3.5
+  },
+  {
+   "id": "bd-house-h102_1",
+   "label": "house 5x8",
+   "w_px": 80,
+   "h_px": 128,
+   "drawn_h_px": 108,
+   "hero_h_px": 24,
+   "ratio_to_hero": 4.5
+  },
+  {
+   "id": "bd-out-cabin-small",
+   "label": "log cabin",
+   "w_px": 64,
+   "h_px": 64,
+   "drawn_h_px": 64,
+   "hero_h_px": 24,
+   "ratio_to_hero": 2.67
+  },
+  {
+   "id": "bd-prop-crate_apple",
+   "label": "crate",
+   "w_px": 16,
+   "h_px": 16,
+   "drawn_h_px": 13,
+   "hero_h_px": 24,
+   "ratio_to_hero": 0.54
+  },
+  {
+   "id": "bd-pick-aqueduct-sewer-crate-stack",
+   "label": "crate stack",
+   "w_px": 16,
+   "h_px": 32,
+   "drawn_h_px": 22,
+   "hero_h_px": 24,
+   "ratio_to_hero": 0.92
+  },
+  {
+   "id": "bd-prop-fish_barrel",
+   "label": "barrel",
+   "w_px": 16,
+   "h_px": 16,
+   "drawn_h_px": 14,
+   "hero_h_px": 24,
+   "ratio_to_hero": 0.58
+  },
+  {
+   "id": "bd-pick-mining-valley-barrel",
+   "label": "barrel",
+   "w_px": 16,
+   "h_px": 16,
+   "drawn_h_px": 14,
+   "hero_h_px": 24,
+   "ratio_to_hero": 0.58
+  },
+  {
+   "id": "bd-out-hay-barrels",
+   "label": "hay/barrels/crate",
+   "w_px": 48,
+   "h_px": 16,
+   "drawn_h_px": 14,
+   "hero_h_px": 24,
+   "ratio_to_hero": 0.58
+  },
+  {
+   "id": "bd-prop-goods_pile",
+   "label": "goods pile",
+   "w_px": 32,
+   "h_px": 32,
+   "drawn_h_px": 24,
+   "hero_h_px": 24,
+   "ratio_to_hero": 1.0
+  },
+  {
+   "id": "bd-out-fence-run",
+   "label": "fence",
+   "w_px": 64,
+   "h_px": 16,
+   "drawn_h_px": 15,
+   "hero_h_px": 24,
+   "ratio_to_hero": 0.62
+  },
+  {
+   "id": "bd-farm-fence-run-4",
+   "label": "farm fence",
+   "w_px": 64,
+   "h_px": 16,
+   "drawn_h_px": 16,
+   "hero_h_px": 24,
+   "ratio_to_hero": 0.67
+  },
+  {
+   "id": "bd-prop-veg_cart",
+   "label": "hand cart",
+   "w_px": 32,
+   "h_px": 32,
+   "drawn_h_px": 25,
+   "hero_h_px": 24,
+   "ratio_to_hero": 1.04
+  },
+  {
+   "id": "bd-pick-walled-market-wagon",
+   "label": "covered wagon",
+   "w_px": 64,
+   "h_px": 48,
+   "drawn_h_px": 42,
+   "hero_h_px": 24,
+   "ratio_to_hero": 1.75
+  },
+  {
+   "id": "bd-tree-eef4bc",
+   "label": "tree 1x3",
+   "w_px": 16,
+   "h_px": 48,
+   "drawn_h_px": 47,
+   "hero_h_px": 24,
+   "ratio_to_hero": 1.96
+  },
+  {
+   "id": "bd-tree-d43edd",
+   "label": "tree 4x5",
+   "w_px": 64,
+   "h_px": 80,
+   "drawn_h_px": 79,
+   "hero_h_px": 24,
+   "ratio_to_hero": 3.29
+  },
+  {
+   "id": "bd-pick-mountain-pass-boulder-l",
+   "label": "boulder",
+   "w_px": 32,
+   "h_px": 32,
+   "drawn_h_px": 24,
+   "hero_h_px": 24,
+   "ratio_to_hero": 1.0
+  },
+  {
+   "id": "bd-prop-well_roofed",
+   "label": "roofed well",
+   "w_px": 32,
+   "h_px": 32,
+   "drawn_h_px": 31,
+   "hero_h_px": 24,
+   "ratio_to_hero": 1.29
+  },
+  {
+   "id": "bd-farm-fenced-plot",
+   "label": "fenced field",
+   "w_px": 112,
+   "h_px": 96,
+   "drawn_h_px": 96,
+   "hero_h_px": 24,
+   "ratio_to_hero": 4.0
+  }
+ ]
+}

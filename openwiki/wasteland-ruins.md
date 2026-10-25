@@ -142,6 +142,14 @@ modern 계열이고 팔레트는 modern_city 에 잠겨 있다. 그림은 코드
 - **구성기 밀도:** 덧그림 밀도 settlement·shanty 0.045→0.02, ruined-city 0.09→0.045, 길 금·포트홀 7%→2.5%·서로 6칸, 웅덩이 1~2, 얼룩 상한 절반, 잡초 덩이 속 확률 0.7→0.5.
 - 검수 기록: `_review/r63/review1`(Sonnet·Argon, 둘 다 FAIL) → `review2`(Sonnet 하나 — 사용자 지시로 Argon 생략·2판 상한): 12조각 PASS, 흙 PASS, 길 FAIL. 허용 `_review/r63/allows-r63.json`.
 
+### r64 에서 더한 것 (버들항에서 잰 키로 다시 키움)
+
+사용자: r63 뒤에도 «여전히 좀 작다». 버들항 물건을 같은 주인공 옆에 세워 잰 키를 목표로 삼았다(`wl_scale_sheet.py <out> --pairs` → 분류마다 버들항 | 황무지 한 줄, `pairs.json` 에 키·배수).
+작은 오두막 2.75배(64~66px, 4칸 폭) · 헛간 3.4배 · 집 3.5~4.5배 · 천막 1.6배 · 노점 1.9배 · 수레 1.75배 · 가로등 1.75배 · 마른 나무 1.9배.
+- 키운 것: shack-a·shack-c 4×5, shack-b·container-home 5×5, hut-sheet·hut-stove 4×4, shack-2f 4×6, market-shelter 3×4, husk-g·husk-h 4×9·6×9(지붕 윗면 1/3), car-rust-h 4×3, tent-tarp·lean-to·husk-e 화풍·윗면 보강. 모두 관문 PASS/REFER + Sonnet 분류 PASS → 위임 허용(`_review/r64/allows-r64.json`).
+- 남은 것: husk-b(2.67배, 버들항 집 3.5배보다 작음 — 검수 FAIL), lean-doors(화풍 FAIL)·gate-scrap(검수 안 됨)은 `legacy_r62` 로 옛 그림, 정착지·판잣집촌 맵에 큰 폐허가 거의 안 놓여 버들항 마을보다 낮아 보임(구성기 과제).
+- 관문 묶음 파일: `GATE_ITEMS=<path> wl_all.py gate …` 로 작업자마다 따로 쓴다(동시 실행).
+
 ## 검수 기록
 
 - **증거:** `tiledata/wasteland-ruins/_review/`
