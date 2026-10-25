@@ -1683,7 +1683,11 @@ function runPlan(project: Project, label: string, goals: readonly Goal[], deadli
       return { label, ok: false, steps, failure: firstFailure ?? step, sceneSteps: driver.committed + driver.steps.length, runs: driver.runs, ms: Date.now() - started, partyAtEnd: driver.last.session.partyActorIds.map((id) => (typeof id === "string" ? id : null)) };
     }
   }
-  const reached = driver.last.finalState.endingsReached[0];
+  // 이 경로의 엔딩 — 목표가 이름을 준 엔딩이 도달 목록에 있으면 그것, 없으면 마지막에 켜진 것.
+  // 첫 원소를 쓰면 앞 경로·자동 선택이 먼저 켠 엔딩 플래그(서연)를 지호·유나 경로의 결과로 적었다(2026-10-25 Shitamachi #3512).
+  const allReached = driver.last.finalState.endingsReached;
+  const targeted = queue.map((goal) => goal.visit.command.endingId).filter((id): id is string => typeof id === "string");
+  const reached = [...targeted].reverse().find((id) => allReached.includes(id)) ?? allReached.at(-1);
   return { label, ok: !firstFailure, ...(firstFailure ? { failure: firstFailure } : {}), ...(reached ? { endingReached: reached } : {}), steps, sceneSteps: driver.committed + driver.steps.length, runs: driver.runs, ms: Date.now() - started, partyAtEnd: driver.last.session.partyActorIds.map((id) => (typeof id === "string" ? id : null)) };
 }
 
