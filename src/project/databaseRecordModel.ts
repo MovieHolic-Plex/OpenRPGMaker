@@ -566,8 +566,10 @@ function normalizeTitleBackgroundLayers(
     const scrollYPerSec = normalizeTitleScrollSpeed(layer.scrollYPerSec);
     const parallax = normalizeTitleParallax(layer.parallax);
     const opacity = normalizeTitleLayerOpacity(layer.opacity);
+    const cover = layer.fit === "cover";
     normalized.push({
       resourceId,
+      ...(cover ? { fit: "cover" as const } : {}),
       ...(scrollXPerSec !== undefined ? { scrollXPerSec } : {}),
       ...(scrollYPerSec !== undefined ? { scrollYPerSec } : {}),
       ...(parallax !== undefined ? { parallax } : {}),

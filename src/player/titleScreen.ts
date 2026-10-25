@@ -581,6 +581,12 @@ export function renderTitleBackgroundLayers(
     const url = resolveAssetResourceUrl(layer.resourceId, { project });
     if (url) node.style.backgroundImage = `url("${url}")`;
     if (layer.opacity !== undefined) node.style.opacity = String(layer.opacity);
+    if (layer.fit === "cover") {
+      // 한 장 전경: 화면을 덮고 아래에 붙인다. 스크롤은 하지 않는다.
+      node.classList.add("rm-title-bg-layer-cover");
+      node.dataset.titleLayerFit = "cover";
+      return node;
+    }
     // parallax 는 스크롤 속도 배율(깊이감) — 정지 레이어에는 아무 효과가 없다.
     const factor = layer.parallax ?? 1;
     const vx = (layer.scrollXPerSec ?? 0) * factor;

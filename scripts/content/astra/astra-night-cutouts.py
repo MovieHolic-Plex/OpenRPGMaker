@@ -9,7 +9,6 @@
   python3 scripts/content/astra/astra-night-cutouts.py
 
 출력: public/assets/emerald-monster/astra/meadow-night.png (240×160)
-      public/assets/emerald-monster/astra/title-night.png  (320×240 = 2배 확대 뒤 가운데 아래 창)
 """
 from pathlib import Path
 from PIL import Image
@@ -48,8 +47,6 @@ def main() -> None:
             po[x, y] = (0, 0, 0, 0) if (x, y) in sky else (*night(px[x, y][:3]), 255)
     OUT.mkdir(parents=True, exist_ok=True)
     out.save(OUT / "meadow-night.png")
-    big = out.resize((w * 2, h * 2), Image.NEAREST)
-    big.crop((80, 30, 400, 270)).save(OUT / "title-night.png")
     print(f"sky cut {len(sky)} px of {w * h}")
 
 

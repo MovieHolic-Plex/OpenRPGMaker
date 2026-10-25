@@ -18,6 +18,12 @@
   position: absolute;
 }
 
+.rm-title-screen .rm-title-bg-layer.rm-title-bg-layer-cover {
+  background-position: center bottom;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
 .rm-title-screen .rm-title-particles,
 .rm-title-screen .rm-title-runners {
   height: 100%;

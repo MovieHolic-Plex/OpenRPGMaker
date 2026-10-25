@@ -1,6 +1,7 @@
 import { charsetFrameIndex, decodeCharsetFrameIndex } from "@/assets/easyrpgRtp";
 import { configureEmeraldMonsterOpening, type EmeraldOpeningPage } from "@/project/emeraldMonsterOpening";
 import { astraIntroCast, buildAstraTitleIntro } from "@/project/flagship/astraTitleIntro";
+import { M2_COMMAND_CATALOG } from "@/project/eventCommands/m2Catalog";
 import { astraArt } from "@/assets/astraOpeningArt";
 import { createMonsterExpedition } from "@/project/examples/monsterExpedition";
 import mapTemplates from "@/project/examples/monsterExpedition/mapTemplates.json";
@@ -219,7 +220,7 @@ const MAP_TITLES: Readonly<Record<string, string>> = {
 // 첫 인사는 박사가 선 연구소 컷으로, 꺼져 가는 등대 이야기는 바닷가 컷으로(2026-10-21 적대 검수: 인사하는 박사가 화면에 없었다).
 const OPENING_PAGES: EmeraldOpeningPage[] = [
   { id: "emerald_intro_welcome", shot: "lab", text: "안녕! 만나서 반갑구나.\n나는 오르비스 천문 연구소의 천문박사란다." },
-  { id: "emerald_intro_world", shot: "route", text: "아스트라 군도의 새벽 하늘에는 「여명의 날개」 새떼가\n등대 불빛을 따라 섬과 섬을 건넌단다." },
+  { id: "emerald_intro_world", shot: "region", text: "아스트라 군도의 새벽 하늘에는 「여명의 날개」 새떼가\n등대 불빛을 따라 섬과 섬을 건넌단다." },
   { id: "emerald_intro_lab", shot: "dawn", text: "그런데 요즘 등대가 자꾸 꺼져 가는구나.\n밤막회사가 별모래 신전의 별빛을 모으고 있다더군." },
   { id: "emerald_intro_companions", shot: "stage", text: "풀의 토리프, 불의 숯꼬미, 물의 아가핀.\n첫 동료는 네가 직접 고르렴." },
   { id: "emerald_intro_rival", shot: "gym", text: "실바나 체육관의 관장 유림, 그리고 네 소꿉친구 나루도\n너를 기다리고 있단다." },
@@ -371,7 +372,26 @@ function startInBedroom(project: Project, introEvent: GameEvent | undefined): vo
   intro.x = start.x;
   intro.y = start.y;
   intro.id = "mx_map_home_house_2f_opening";
+  // 박사 소개의 끝(승인안 B): 소년·소녀를 고르고, 별빛 쇼케이스에서 이름을 짓는다. 소녀는 주인공 시트 대신 캡 소녀 칩(마을 NPC 가 쓰지 않는 칸).
+  const changeHeroGraphic = (value: string): Command => {
+    const entry = M2_COMMAND_CATALOG.find((candidate) => candidate.title === "Change Actor Graphic" && candidate.index <= 97);
+    if (!entry) throw new Error("[astra] Change Actor Graphic 명령을 찾지 못했다");
+    return { kind: "m2Command", commandId: entry.id, fields: { target: "actor_hero", value } };
+  };
   const commands: Command[] = [
+    textCommand("그럼, 이제 너에 대해 조금 알려 주겠니?", "천문박사"),
+    {
+      kind: "choices",
+      prompt: "너는 소년이니, 소녀니?",
+      options: [
+        { text: "소년", branch: [changeHeroGraphic("oprn-charset-scarloxy-people14#2")] },
+        { text: "소녀", branch: [changeHeroGraphic("oprn-charset-scarloxy-people10#3")] },
+      ],
+      cancelBehavior: "disallow",
+    },
+    textCommand("좋아. 그럼 이름은 뭐라고 부르면 될까?", "천문박사"),
+    { kind: "enterHeroName", actorId: "actor_hero", maxLength: 6, showInitialName: false, presentation: "showcase" },
+    textCommand("\\N[1]! 멋진 이름이구나.\n자, \\N[1]의 이야기가 이제 막 시작된단다!", "천문박사"),
     textCommand("오늘은 첫 동료를 받는 날!"),
     textCommand("방향키로 걷고, Z/Enter로 말을 걸고, X/Esc로 메뉴를 연다."),
     { kind: "setSwitch", switchId: "mx_intro", value: true },
@@ -1127,10 +1147,12 @@ function configureAstraNightTitle(project: Project): void {
   title.backgroundResourceId = "oprn-pano-night";
   title.backgroundFit = "cover";
   title.backgroundRendering = "pixelated";
+  // 낮 풀밭 키아트에 맞춘 물결·빛 효과 좌표는 밤 그림과 어긋난다 — 지운다.
+  title.effects = [];
   title.backgroundLayers = [
     { resourceId: "oprn-pano-night-stars-far", scrollXPerSec: -3 },
     { resourceId: "oprn-pano-night-stars-near", scrollXPerSec: -8, opacity: 0.85 },
-    { resourceId: astraArt("title-night").resourceId },
+    { resourceId: astraArt("meadow-night").resourceId, fit: "cover" },
   ];
   title.particles = { preset: "stars", density: 60 };
   title.runners = astraIntroCast(project).starters.flatMap((starter, i) => starter.chip

@@ -71,6 +71,10 @@ defineCommand({
     actorId: f.record("대상 주인공", "actor"),
     maxLength: f.number("최대 글자 수", { min: 1, max: 12 }),
     showInitialName: f.bool("기존 이름 채워 두기"),
+    presentation: f.enum("연출", [
+      { value: "window", label: "기본 창", key: "window" },
+      { value: "showcase", label: "별빛 쇼케이스(주인공이 돌고 확정 때 반짝)", key: "showcase" },
+    ], { optional: true }),
   },
   summary: (c, l) => `${l.recordName(str(c.actorId))} 이름 입력 (${num(c.maxLength, 6)}자)`,
 });

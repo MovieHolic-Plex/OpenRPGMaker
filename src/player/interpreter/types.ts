@@ -65,7 +65,7 @@ export type StepResult =
       showPad?: boolean;
       settings: MessageWindowSettings;
     }
-  | { kind: "enterHeroName"; actorId: string; maxLength: number; showInitialName: boolean; currentName: string; prompt?: string }
+  | { kind: "enterHeroName"; actorId: string; maxLength: number; showInitialName: boolean; currentName: string; prompt?: string; presentation?: "window" | "showcase" }
   | { kind: "timer"; action: "set" | "start" | "stop"; seconds?: number; timerId?: "timer1" | "timer2" }
   | { kind: "advanceTime"; minutes?: number; days?: number }
   | { kind: "setTime"; hour: number; minute?: number }

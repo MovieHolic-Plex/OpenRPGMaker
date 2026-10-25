@@ -508,6 +508,11 @@ export type Command =
       stringVariableId?: string;
       /** 문자열 변수 입력일 때 창 위 안내 문구. */
       prompt?: string;
+      /**
+       * 입력 화면 연출. 생략·"window" = 기본 문자표 창. "showcase" = 별빛 배경 위에서 주인공 걷기 그림이 사방으로 돌고,
+       * 확정하면 반짝이 폭발과 함께 이름이 박힌다(포켓몬 오프닝의 이름 짓기처럼). 입력 방식은 같다.
+       */
+      presentation?: "window" | "showcase";
     }
   | { kind: "changeGold"; op: "=" | "+=" | "-="; amount: VariableOperand }
   | { kind: "changeItem"; itemId: ItemId; op: "=" | "+=" | "-="; amount: VariableOperand }

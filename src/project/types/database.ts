@@ -1654,6 +1654,11 @@ export interface TitleBackgroundLayer {
   parallax?: number;
   /** 0..1. 생략 = 1(불투명). */
   opacity?: number;
+  /**
+   * tile(생략) = 320×240 타일로 반복(스크롤 레이어). cover = 화면을 한 장으로 덮고 아래쪽에 붙인다(하늘을 오린 땅·전경 그림).
+   * 화면 비율이 그림과 다르면 위(하늘)부터 잘린다. 스크롤 속도는 tile 에만 쓴다.
+   */
+  fit?: "tile" | "cover";
 }
 
 /** stars = 깜빡이며 천천히 흐르는 밤하늘 별(가끔 별똥별이 지난다). */

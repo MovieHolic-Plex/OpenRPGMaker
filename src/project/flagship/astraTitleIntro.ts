@@ -131,7 +131,7 @@ function skyShot(): OpeningAnimatic {
 function legendShot(): OpeningAnimatic {
   const ms = 3 * BAR, cam: CamKeys = { x: [key(0, 250), key(ms, 222, "ease-in-out")], y: [key(0, 170), key(ms, 160, "ease-in-out")], zoom: [key(0, 1), key(ms, 1.1, "ease-in-out")] };
   const moonAt = { x: 250, y: 150 }, cross = 4 * BEAT + 2 * BEAT; // 지나는 순간(달 한가운데) — 일곱째 박 근처
-  const path = flightKeys({ x: 620, y: 110 }, { x: -160, y: 175 }, BEAT, 5 * BAR / 2 + BAR, 14);
+  const path = flightKeys({ x: 620, y: 110 }, { x: -160, y: 175 }, BEAT, ms - 300, 14);
   return shot([
     ...nightSky(cam),
     ...moon("moon", moonAt, 58, 0.9),
@@ -155,7 +155,7 @@ function legendShot(): OpeningAnimatic {
 function forestShot(cast: AstraIntroCast): OpeningAnimatic {
   const ms = 3 * BAR, cam: CamKeys = { x: [key(0, 240), key(ms, 240)], y: [key(0, 176), key(ms, 160, "ease-in-out")], zoom: [key(0, 1), key(ms, 1.05, "ease-in-out")] };
   const ground = astraArt("meadow-night");
-  const shadowAt = 2 * BEAT, startle = shadowAt + 3 * BEAT, farFrom = 3 * BAR / 2;
+  const shadowAt = 2 * BEAT, startle = shadowAt + 3 * BEAT, farFrom = Math.round(3 * BAR / 2);
   const size = 112, baseY = 300, xs = [118, 240, 362];
   const starters = cast.starters.slice(0, 3).flatMap((starter, i): AnimaticLayer[] => {
     const at = startle + i * 140, x = xs[i]!, top = baseY - size;
@@ -191,7 +191,8 @@ function forestShot(cast: AstraIntroCast): OpeningAnimatic {
 // ── 4. 추격 ─────────────────────────────────────────────────────────────
 /** 셋이 풀밭을 가로질러 달빛 쪽으로 뛴다(필드 칩 2배 + 발밑 먼지). 카메라가 함께 흐른다. */
 function chaseShot(cast: AstraIntroCast): OpeningAnimatic {
-  const ms = 2 * BAR, cam: CamKeys = { x: [key(0, 300), key(ms, 200, "ease-in-out")], y: [key(0, 168), key(ms, 168)] };
+  // 땅 그림은 480 폭 한 장 — 살짝 확대해 그 안에서만 흐른다(밖은 빈 하늘).
+  const ms = 2 * BAR, cam: CamKeys = { x: [key(0, 252), key(ms, 228, "ease-in-out")], y: [key(0, 166), key(ms, 166)], zoom: [key(0, 1.06), key(ms, 1.06)] };
   const ground = astraArt("meadow-night");
   const CELL = { w: 24, h: 32 }, scale = 2;
   const runners = cast.starters.slice(0, 3).flatMap((starter, i): AnimaticLayer[] => {
@@ -282,15 +283,18 @@ export function astraIntroCast(project: Project): AstraIntroCast {
   return { starters };
 }
 
-/** system.titleIntro 를 짓는다. 기존 opening(새 게임 뒤 박사 소개)은 건드리지 않는다. */
-export function buildAstraTitleIntro(project: Project): CinematicSequence {
-  const cast = astraIntroCast(project);
-  const scenes = SHOTS.map(({ id, ms, build }) => {
+/** 인트로 컷들(검증 포함). 테스트·도구가 프로젝트 없이 컷을 볼 수 있게 따로 둔다. */
+export function astraTitleIntroScenes(cast: AstraIntroCast): CinematicSequence["scenes"] {
+  return SHOTS.map(({ id, ms, build }) => {
     const composition = build(cast);
     validateOpeningAnimatic(composition, ms, `titleIntro.${id}`);
     return { id, kind: "animatic" as const, composition, durationMs: ms, narration: "" };
   });
-  const sequence: CinematicSequence = { enabled: true, skippable: true, musicResourceId: ASTRA_INTRO_MUSIC, scenes };
+}
+
+/** system.titleIntro 를 짓는다. 기존 opening(새 게임 뒤 박사 소개)은 건드리지 않는다. */
+export function buildAstraTitleIntro(project: Project): CinematicSequence {
+  const sequence: CinematicSequence = { enabled: true, skippable: true, musicResourceId: ASTRA_INTRO_MUSIC, scenes: astraTitleIntroScenes(astraIntroCast(project)) };
   project.system.titleIntro = sequence;
   return sequence;
 }

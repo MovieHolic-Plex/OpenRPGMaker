@@ -2559,8 +2559,12 @@ function parseTitleBackgroundLayers(value: unknown): TitleBackgroundLayer[] {
     const scrollYPerSec = optionalNumber("scrollYPerSec");
     const parallax = optionalNumber("parallax");
     const opacity = optionalNumber("opacity");
+    if (layer.fit !== undefined && layer.fit !== "tile" && layer.fit !== "cover") {
+      throw new ToolError(`backgroundLayers[${index}].fit 은 "tile" 또는 "cover" 입니다.`, { code: "invalid-args" });
+    }
     return {
       resourceId,
+      ...(layer.fit === "cover" ? { fit: "cover" as const } : {}),
       ...(scrollXPerSec !== undefined ? { scrollXPerSec: Math.max(-480, Math.min(480, scrollXPerSec)) } : {}),
       ...(scrollYPerSec !== undefined ? { scrollYPerSec: Math.max(-480, Math.min(480, scrollYPerSec)) } : {}),
       ...(parallax !== undefined ? { parallax: Math.max(0, Math.min(4, parallax)) } : {}),
@@ -2713,11 +2717,12 @@ const setTitleScreen: ToolDefinition = {
       musicResourceId: { type: "string" },
       backgroundLayers: {
         type: "array",
-        description: `무한 스크롤 배경 레이어. 최대 ${MAX_TITLE_BACKGROUND_LAYERS}개`,
+        description: `배경 레이어(뒤에서 앞 순서). 최대 ${MAX_TITLE_BACKGROUND_LAYERS}개. 별·구름은 scroll 로 흐르는 tile, 하늘을 오린 땅·전경 그림은 fit:"cover"(화면을 한 장으로 덮고 아래에 붙음).`,
         items: {
           type: "object",
           properties: {
             resourceId: { type: "string" },
+            fit: { type: "string", enum: ["tile", "cover"], description: "tile(기본)=320×240 반복·스크롤, cover=한 장 전경(스크롤 무시)" },
             scrollXPerSec: { type: "number", minimum: -480, maximum: 480 },
             scrollYPerSec: { type: "number", minimum: -480, maximum: 480 },
             parallax: { type: "number", minimum: 0, maximum: 4 },

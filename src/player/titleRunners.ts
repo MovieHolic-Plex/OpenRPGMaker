@@ -60,6 +60,17 @@ export function titleRunnerFrameAt(runner: TitleRunner, timeMs: number, width: n
 
 const activeFrames = new WeakMap<HTMLCanvasElement, number>();
 
+/**
+ * 타이틀 화면이 4:3 이 아니면(480×320 같은 놀이 해상도) 320×240 canvas 를 늘린 그림이 옆으로 퍼진다.
+ * 높이 240 논리 px 는 두고 너비를 화면 비율에 맞춘다 — 칩이 정사각 화소로 보이고, 달리기는 화면 끝에서 끝까지 간다.
+ */
+function fitCanvasToStage(canvas: HTMLCanvasElement): void {
+  const box = canvas.parentElement?.getBoundingClientRect();
+  if (!box || box.width <= 0 || box.height <= 0) return;
+  const width = Math.round(TITLE_PARTICLE_STAGE.height * (box.width / box.height));
+  if (width > 0 && width !== canvas.width) canvas.width = width;
+}
+
 /** 달리기 칩 canvas. 같은 설정의 재렌더에서는 fx 스택이 노드를 그대로 옮겨 붙인다. */
 export function createTitleRunnersCanvas(runners: readonly TitleRunner[], project: Project): HTMLCanvasElement {
   const canvas = document.createElement("canvas") as HTMLCanvasElement;
@@ -84,8 +95,10 @@ export function createTitleRunnersCanvas(runners: readonly TitleRunner[], projec
   const startedAt = typeof performance !== "undefined" ? performance.now() : Date.now();
   let seenConnected = false;
   const tick = (): void => {
-    if (canvas.isConnected) seenConnected = true;
-    else if (seenConnected) { activeFrames.delete(canvas); return; }
+    if (canvas.isConnected) {
+      if (!seenConnected) fitCanvasToStage(canvas);
+      seenConnected = true;
+    } else if (seenConnected) { activeFrames.delete(canvas); return; }
     const now = (typeof performance !== "undefined" ? performance.now() : Date.now()) - startedAt;
     context.clearRect(0, 0, canvas.width, canvas.height);
     context.imageSmoothingEnabled = false;
