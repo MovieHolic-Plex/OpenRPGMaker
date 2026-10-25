@@ -318,8 +318,8 @@ export function composeDungeon(ts: TilesetDef, spec: DungeonSpec): DungeonCompos
     let id: string = pick(fl.base);
     const byKindPref = r ? (r.kind === "lake" && profile.lakeFloor ? profile.lakeFloor : fl.byKind?.[r.kind]) : undefined;
     const byKind = byKindPref ? pick(byKindPref) : undefined;
-    if (r?.kind === "cell" && hasKit(K.floorCell) && y < r.y + 3) id = K.floorCell;
-    else if (byKind && hasKit(byKind)) id = byKind;
+    // 감방 윗 3줄만 황토 판(floor-cell)을 깔던 규칙은 뺐다 — 방 위쪽만 덮고 16px 가로선으로 끊긴 「반쪽 바닥」으로 읽혔다(2026-10-25 floor VQA r5 catacomb). 감방 바닥은 프로필 byKind 가 정한다.
+    if (byKind && hasKit(byKind)) id = byKind;
     else {
       for (const [k, p] of fl.patches.entries()) if (hasKit(p.kit) && vnoise(x, y, p.scale ?? 4, seed * 11 + k * 37) > p.at) id = p.kit;
       for (const [k, sc] of (fl.scatter ?? []).entries()) if (sc.p > 0 && hasKit(sc.kit) && hash01(x, y, seed * 17 + k) < sc.p) id = sc.kit;
