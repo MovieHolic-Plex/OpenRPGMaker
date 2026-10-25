@@ -12,6 +12,11 @@ import type { ChatResult } from "@/ai/llmClient";
 import type { Project, TileGroupMetadata } from "@/project/types";
 import { startOnRetiredCombinedTown } from "./support/retiredEasyRpgTilesets";
 
+// 세션 하나가 빈 프로젝트(JSON 약 63MB — 번들 타일셋·참고문서)를 기준선으로 복제·다이제스트한다. CI 에서 세션당 8~15초를 쟀다
+// (ci-vitest-files 40201910250) — 기본 15초 제한은 세션 하나도 빠듯하고 네 세션을 도는 시험은 넘는다.
+const SESSION_TEST_TIMEOUT_MS = 60_000;
+const FOUR_SESSION_TEST_TIMEOUT_MS = 180_000;
+
 const CONFIG = { authMode: "apiKey" as const, baseUrl: "x", model: "stub-model", apiKey: "sk", maxToolCalls: 4, maxTokens: 1024 };
 
 function scriptedChat(steps: readonly ChatResult[]) {
@@ -83,7 +88,7 @@ describe("rule proposal metadata", () => {
 
     expect(call.requiresApproval).toBe(true);
     expect(call.approvalWarning).toContain("강한 규칙");
-  });
+  }, SESSION_TEST_TIMEOUT_MS);
 
   it("rule write tools retain audit metadata without creating an apply gate", async () => {
     const medium = await proposedCall("set_cluster_rule", () => setClusterRuleArgs("medium"));
@@ -101,7 +106,7 @@ describe("rule proposal metadata", () => {
 
     expect([medium, soft, junction, overlay].map((call) => call.requiresApproval)).toEqual([true, true, true, true]);
     expect([medium, soft, junction, overlay].map((call) => call.approvalWarning)).toEqual([undefined, undefined, undefined, undefined]);
-  });
+  }, FOUR_SESSION_TEST_TIMEOUT_MS);
 
   it("ordinary write proposals carry no approval metadata", async () => {
     const call = await proposedCall("paint_tiles", (project) => ({
@@ -113,7 +118,7 @@ describe("rule proposal metadata", () => {
     }), (project) => `일반 페인트를 제안해줘\n\n[컨텍스트] 현재 맵: 테스트 (${project.startMapId}) · 사용자 선택 영역: (1,1) 1×1`);
 
     expect(call.requiresApproval).toBeFalsy();
-  });
+  }, SESSION_TEST_TIMEOUT_MS);
 
   it("proposal approval helpers detect required approval and dedupe warnings", () => {
     const warning = "강한 규칙 경고";
