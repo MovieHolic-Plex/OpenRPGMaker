@@ -5,6 +5,12 @@
 
 <!-- releases -->
 
+## 0.346.5 — 2026-10-26
+
+### 수정
+
+- **desktop** — attach folder dialogs to the editor window (#3579) (`4479f19`)
+
 ## 0.346.4 — 2026-10-26
 
 ### 수정
