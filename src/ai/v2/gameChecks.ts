@@ -14,6 +14,7 @@ import { wantsWholeGame } from "./shipChecks";
 import { lookMismatches, oversizedSprites, pristineFantasyHero, titleBackdropMismatch } from "./lookChecks";
 import { placementProblems, type PlacementProblem } from "./placementRules";
 import { offPurposeProps } from "./roomPurpose";
+import { unsafeSpawnLines } from "@/project/chaserSpawnSafety";
 
 type Obj = Record<string, unknown>;
 const obj = (v: unknown): Obj | undefined => (v && typeof v === "object" && !Array.isArray(v) ? (v as Obj) : undefined);
@@ -569,6 +570,22 @@ export function gameContentProblems(before: Project, after: Project, task: strin
     }
     const chasers = vanishingChasers(after).filter((line) => [...changedIds].some((id) => line.includes(`(${id})`)));
     if (chasers.length) problems.push(`[게임 검사 위협] ${chasers.slice(0, 3).join(" / ")}. 숨기가 «이번 한 번» 지나가게 하는 것이면 그 스위치를 다시 끈다(예: 옷장에서 나온 뒤 기다렸다 setSwitch false, 또는 맵을 나갈 때), 영영 사라지는 것이 요청이면 보고에 적는다.`);
+  }
+  // 말로만 쫓는 추격자(2026-10-25 심판 J54): 요청이 「시야·추격·순찰·느낌표」인데 바뀐 이벤트 어디에도 쫓는 움직임·순찰 길·시야가 없다.
+  {
+    const asked = /시야|추격|쫓|순찰|느낌표|「!」|patrol|chase|line of sight/iu.test(task);
+    const built = changed.some((ev) => ev.pages.some((pg) => {
+      const mv = obj(pg.movement) ?? obj(pg.moveRoute);
+      return !!mv && (mv.type === "chase" || !!obj(mv.route) || !!obj(mv.sight) || typeof mv.sightRange === "number");
+    }));
+    if (asked && !built) problems.push(`[게임 검사 위협] 요청은 시야·추격·순찰인데 이번에 바꾼 이벤트에 쫓는 움직임(movement.type 'chase')·순찰 길(movement.route)·시야가 하나도 없다 — make_chase_scene{mapId, chaser, patrol:{mode:'auto'}} 로 실제 추격자를 만들거나(이미 있으면 configure_npc_patrol 로 순찰 길을 더한다), 못 지었으면 보고에 「추격 없음」이라고 적는다. 대사·느낌표 말풍선만으로는 쫓아오지 않는다.`);
+  }
+  // 태어나자마자 잡히는 시작·체크포인트(2026-10-25 심판 J61).
+  {
+    const changedIds = new Set(changed.map((ev) => ev.id));
+    const startTouched = after.startMapId !== before.startMapId || JSON.stringify(after.startPos) !== JSON.stringify(before.startPos);
+    const unsafe = unsafeSpawnLines(after).filter((entry) => startTouched || changedIds.has(entry.eventId) || (!!entry.spotEventId && changedIds.has(entry.spotEventId)));
+    if (unsafe.length) problems.push(`[게임 검사 위협] ${unsafe.slice(0, 3).map((entry) => entry.line).join(" / ")}. 추격자를 시야 밖(벽 너머·다른 방)에 두거나, set_start_position 으로 시작을 옮기거나, 체크포인트를 추격 구역 앞(문 밖)으로 옮긴다.`);
   }
   // 사슬 전체 검사(2026-10-25 판정 J11~J14): 잠긴 방이 벽 틈으로 열림·자물쇠가 답을 말함·자리 표시 글·파티에 없는 동료.
   {
