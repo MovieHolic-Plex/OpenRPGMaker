@@ -306,7 +306,7 @@ const CAPS: Record<string, number> = { "car-rust-h": 1, "car-rust-v": 1, "van-ru
   // r61(C): 같은 회색 담 판(벙커처럼 읽힘)이 길 양쪽에 거울로 — wall-h 는 맵에 하나.
   "wall-h": 1, "wall-h2": 2, "wall-h3": 2, "barricade-h": 3 };
 const VEHICLES = new Set(["car-rust-h", "car-rust-v", "van-rust", "car-burnt"]);
-const TWIN_OK = new Set(["wall-v", "wall-stub", "fence-h", "barricade-h", "jersey-barrier", "gate-scrap", "log-seat", "campfire"]);
+const TWIN_OK = new Set(["wall-v", "wall-stub", "fence-h", "barricade-h", "jersey-barrier", "gate-scrap", "log-seat", "campfire", "crop-bed-b", "crop-bed-c"]);
 const SLAB = ["slab-a", "slab-b", "slab-c"];
 /** 종류별 거처(r61): 정착지 = 판잣집 a·b·컨테이너 집·천막, 판잣집 촌 = 함석·문짝·2층·난로 오두막·차양·판잣집 c. */
 const SETTLE_HOMES = ["shack-a", "shack-b", "container-home", "tent-tarp", "shack-a", "container-home"];
@@ -507,10 +507,14 @@ function scatterDecals(b: Board, density: number, road: readonly boolean[]): voi
   // 기름 얼룩·불탄 자리(r61): 바닥 닳음이 없어 «벽지 위 기물»로 읽혔다 — 차·발전기·드럼통 곁엔 기름, 모닥불·불탄 차·무너진 건물 곁엔 그을음.
   const oil = ["oil-stain-a", "oil-stain-b"].flatMap((id) => b.cells(id)), scorch = ["scorch-a", "scorch-b"].flatMap((id) => b.cells(id));
   const OILY = new Set(["car-rust-h", "car-rust-v", "van-rust", "car-burnt", "generator", "drums", "scrap-heap"]), SOOTY = new Set(["campfire", "car-burnt", "husk-a", "husk-b", "husk-e", "rubble-pile"]);
+  // r62: 껍데기 발치마다 그을음이 붙어 같은 덧그림이 한 줄로 섰다(검수 A «row y=25») — 얼룩끼리 4칸 이상 띄우고 맵당 상한, 모닥불은 늘, 껍데기는 셋에 하나.
+  const stains: number[] = []; const stainCap = Math.max(4, Math.round(b.w * b.h / 160));
   const stainAt = (pool: number[], ids: Set<string>, salt: number) => {
     if (!pool.length) return;
     for (const p of b.placed) {
-      if (!ids.has(p.id) || hash2(p.x, p.y, b.seed + salt) < 0.35) continue;
+      if (!ids.has(p.id) || stains.length >= stainCap) continue;
+      const odds = p.id === "campfire" ? 1 : p.id.startsWith("husk-") || p.id === "rubble-pile" ? 0.33 : 0.6;
+      if (hash2(p.x, p.y, b.seed + salt) >= odds) continue;
       const z = b.kitSize(p.id); if (!z) continue;
       for (let t = 0; t < 8; t++) {
         // 맞닿은 칸(발 줄 옆·앞 1칸)만 — r61 검수: 빈 흙·길 위에 떨어진 얼룩이 «웅덩이·구멍»으로 읽혔다.
@@ -518,11 +522,12 @@ function scatterDecals(b: Board, density: number, road: readonly boolean[]): voi
         if (!b.inb(x, y) || x === 0 || y === 0 || x === b.w - 1 || y === b.h - 1) continue;
         const i = b.idx(x, y);
         if (b.taken[i] || b.slab[i] || b.track[i] || road[i] || layerTileAt(b.map, 2, i) >= 0) continue;
-        b.setDecal(x, y, pool[Math.floor(hash2(x * 3, y * 7, b.seed + salt) * pool.length)]!); break;
+        if (stains.some((j) => Math.abs(j % b.w - x) + Math.abs(Math.floor(j / b.w) - y) < 4)) continue;
+        b.setDecal(x, y, pool[(stains.length + Math.floor(hash2(x * 3, y * 7, b.seed + salt) * 2)) % pool.length]!); stains.push(i); break;
       }
     }
   };
-  stainAt(oil, OILY, 503); stainAt(scorch, SOOTY, 509);
+  stainAt(scorch, SOOTY, 509); stainAt(oil, OILY, 503);
   // r11: 값 잡음 덩이는 격자 축을 따라 가늘게 남아 잡초가 «한 칸 폭 곧은 기둥·ㄱ자»로 섰다 — 무작위 중심의 흔들린 타원 덩이로.
   const patches: { x: number; y: number; rx: number; ry: number }[] = [];
   for (let k = Math.max(3, Math.round(b.w * b.h * density * 0.03)); k > 0; k--) patches.push({ x: b.int(1, b.w - 2), y: b.int(1, b.h - 2), rx: 1.3 + b.int(0, 12) / 10, ry: 1 + b.int(0, 8) / 10 });
@@ -780,10 +785,11 @@ function roadsideGravel(b: Board, road: readonly boolean[]): void {
 
 /** 텃밭(정착지 표지, r61): 울 친 터 안에 이랑 판(crop-bed, 3×2) 2~4장을 1칸 고랑을 두고 붙이고, 한쪽에 물통·연장 헛간. */
 function farmPlot(b: Board, x0: number, y0: number, x1: number, y1: number, spawn: Pt, must: Pt[], areas: WlArea[]): boolean {
-  // 이랑 판은 관문·검수를 통과한 crop-bed-c 하나뿐(b 는 화풍 fail) — 같은 판이 맞붙어 «도장»으로 읽히지 않게 두 판 사이에 물통·상자 칸을 둔다.
+  // 이랑 판 둘(r62: b·c 는 같은 짜임의 다른 판) — 두 판 사이에 물통·상자 칸을 두고 세로로 엇갈린다. 굽힌 판이 하나뿐이면 같은 판을 두 번(TWIN_OK).
   const beds = ["crop-bed-c", "crop-bed-b"].filter((id) => b.kit(id));
   if (!beds.length) return false;
-  const cols = beds.length > 1 ? 2 : 1, rows = 1, w = cols === 2 ? 13 : 9, h = 6;
+  // r62: 판이 하나뿐이어도 두 판(사이에 물통·상자 칸, 세로로 엇갈림) — 한 판만 둔 울 터는 «3/4 이 빈 흙»으로 읽혔다(검수 A).
+  const cols = 2, rows = 1, w = 13, h = 7;
   for (let t = 0; t < 60; t++) {
     const fx = b.int(x0, Math.max(x0, x1 - w + 1)), fy = b.int(y0, Math.max(y0, y1 - h + 1));
     if (!b.free(fx - 1, fy - 1, w + 2, h + 2)) continue;
@@ -799,7 +805,7 @@ function farmPlot(b: Board, x0: number, y0: number, x1: number, y1: number, spaw
     let k = 0;
     void rows;
     for (let c = 0; c < cols; c++) {
-      const id = beds[c % beds.length]!, bx = fx + 2 + c * 6, by = fy + 1 + (c === 1 ? b.int(1, 2) : 0);
+      const id = beds[c % beds.length]!, bx = fx + 2 + c * 6, by = fy + 1 + (c === 1 ? 2 : 0);
       if (b.stamp(id, bx, by)) k++;
       for (let dx = 0; dx < 3; dx++) for (let dy = 0; dy < 2; dy++) b.markKeep(bx + dx, by + dy);
     }

@@ -1,7 +1,7 @@
 {
 "version": 1,
 "tilesPerRow": 48,
-"count": 2552,
+"count": 2568,
 "cells": {
 "dirt-a/0.0": 1,
 "dirt-b/0.0": 2,
@@ -2553,6 +2553,22 @@
 "slab-joints/2.30": 2548,
 "slab-joints/3.30": 2549,
 "slab-joints/4.30": 2550,
-"slab-joints/5.30": 2551
+"slab-joints/5.30": 2551,
+"oil-stain-a/0.0": 2552,
+"oil-stain-b/0.0": 2553,
+"scorch-a/0.0": 2554,
+"scorch-b/0.0": 2555,
+"crop-bed-b/0.0": 2556,
+"crop-bed-b/1.0": 2557,
+"crop-bed-b/2.0": 2558,
+"crop-bed-b/0.1": 2559,
+"crop-bed-b/1.1": 2560,
+"crop-bed-b/2.1": 2561,
+"crop-bed-c/0.0": 2562,
+"crop-bed-c/1.0": 2563,
+"crop-bed-c/2.0": 2564,
+"crop-bed-c/0.1": 2565,
+"crop-bed-c/1.1": 2566,
+"crop-bed-c/2.1": 2567
 }
 }

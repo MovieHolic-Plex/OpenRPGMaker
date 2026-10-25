@@ -1923,62 +1923,135 @@ def _despeckle(c, keep=()):
                 best = max(set(nb), key=nb.count); c.a[y, x, :3] = best
 
 
-def _oil(v):
-    """기름 얼룩: 흙에 밴 따뜻한 갈흑. a = 한쪽으로 흘러내린 긴 혹(r61 판 그대로 — 화소 해시가 영수증에 묶였다).
-    b(r61 2판) = 혹 셋이 엇물린 넓은 자국: 속은 가장 어두운 단보다 한 단 밝은 bark 1(구멍으로 읽히지 않게), 몸 roof 1 → 흙 그늘 2 로 번지고,
-    바깥 1~2화소는 2화소 무리로 흙에 녹는다. 속에 휜 광택 활(slate 2·1, 3화소) + 떨어진 광택 한 점."""
+# r62: 손 행 문자열로 다시 찍었다. r61 의 동심 띠(속 가장 어둡고 테가 밝은 원)는 «판 구덩이»로 읽혔다(검수 A·B).
+# 기름 = 한쪽으로 번진 얼룩(가장 어두운 곳이 가운데가 아니라 한쪽), 바깥 bark 2 가 흙 얼룩 속으로 군데군데 끊겨 녹고 떨어진 방울 몇,
+# 광택은 짙은 청회 짧은 휜 줄 하나(밝은 테 없음). 불탄 자리 = 숯 그을음이 바퀴살처럼 뻗고, 가운데 회색 재 무더기 위에 숯 막대·불씨.
+_DLEG = {'.': None, 'h': S['bark'][2], 'b': S['bark'][1], 'k': S['bark'][0], 'r': S['roof'][0], 'g': S['roof'][1],
+       'A': S['roof'][2], 'a': S['roof'][3], 's': S['slate'][1], 'S': S['slate'][2], 'e': S['brick'][1], 'E': S['brick'][2], 'W': S['roof'][4]}
+OIL_A = [
+"................",
+"................",
+"................",
+"....h..hh.......",
+"..hhbbbbbhh..h..",
+".hbbkkkbbbbh....",
+"hbkrrsskkbbbh...",
+".hbkrrrrkkbbbhh.",
+"..hbkkkrkbbkbbh.",
+"...hhbbkkbbbkbbh",
+".h...hhbbhhbbkbh",
+"........h...hbh.",
+"...h.........h..",
+"................",
+"................",
+"................",
+]
+OIL_B = [
+"................",
+"................",
+"................",
+"..h.............",
+".....hhbbhh..h..",
+"...hbbbkkbbbh...",
+"..hbkkrsSsrkbbh.",
+".hbbkrrrkrkkbbh.",
+"..hbbkkkbbkbbh..",
+"...hhbbbhhbkbh..",
+".h...hh....hbh..",
+"............hh..",
+"..........h.....",
+"................",
+"................",
+"................",
+]
+SC_A = [
+"................",
+"................",
+".....hhhh..h....",
+"..hhhbbbbhh.....",
+"..hbbbrbrbbbhh..",
+".hbbrrgrrrbbbh..",
+"hbbrrrkkrrrrbbh.",
+".hbrrkkkkkrrgbbh",
+"hbbrkkrkkkrrbbh.",
+".hbbrrkrkrrrbbh.",
+"..hbbrrgrrbbbh..",
+"..hhbbbrbbbhh...",
+"...hhhhbhhhh....",
+"......hh........",
+"................",
+"................",
+]
+SC_B = [
+"................",
+"................",
+"................",
+"....hhhhh.......",
+"..hhbbrbbhh.....",
+".hbbrrgrrbbhh...",
+"hbbrrkkkrrbbbhh.",
+".hbrkkkkkkrrbbh.",
+"hbbrkkrkkrrrgbh.",
+".hbbrrkkrrrbbhh.",
+"..hhbbrrrbbbh...",
+"....hhhbbhhh....",
+".......hh.......",
+"................",
+"................",
+"................",
+]
+def _rows(R, extra=None):
     def draw(c):
-        if v == 0:
-            D = _blob_mask(6.5, 7.0, 6.0, 4.4, 901, 0.45, lobes=((12.0, 11.0, 3.4, 2.2),))
-            _bands(c, D, [K('bark', 0), K('bark', 1), K('dirt', 1), K('dirt', 2)], [0.3, 0.7, 0.92, 1.12], 911 + v)
-            _despeckle(c)
-            for (x, y) in ((5, 5), (6, 5), (7, 5)): c.P(x, y, K('roof', 1)) if c.get(x, y) == K('bark', 0) or c.get(x, y) == K('bark', 1) else None
-            return
-        D = _blob_mask(7.0, 7.0, 4.6, 3.6, 951, 0.4, lobes=((10.5, 9.5, 3.2, 2.6), (4.2, 10.0, 2.2, 1.8), (10.0, 4.4, 2.0, 1.5)))
-        _bands(c, D, [K('bark', 1), SRC['roof'][1], K('dirt', 2)], [0.45, 0.8, 1.02], 957)
-        for (x, y), d in D.items():                                   # 밴 테: 2화소 무리로만 흙에 녹는다(외톨이 점 없음)
-            if 1.02 <= d < 1.3 and 1 <= x <= 14 and 1 <= y <= 14 and field(x * 3, y * 3, 963, 32) > 0.52: c.P(x, y, K('dirt', 2))
-        _despeckle(c)
-        for (x, y) in ((6, 6), (7, 5), (8, 5)): c.P(x, y, SRC['slate'][2])   # 휜 광택 활(왼쪽 위로 굽는다)
-        for (x, y) in ((6, 7), (9, 5)): c.P(x, y, SRC['slate'][1])
-        c.P(11, 10, SRC['slate'][1])                                    # 둘째 광택 한 점(오른쪽 아래 혹)
+        for y, r in enumerate(R):
+            for x, ch in enumerate(r):
+                if _DLEG[ch] is not None: c.P(x, y, _DLEG[ch])
+        if extra: extra(c)
     return draw
+def _stick_ex(sticks, embers, ash=()):
+    """숯 막대(bark 0 줄 + 위쪽 한 화소 빛 roof 2) · 불씨 한 점 · 재 무리(roof 4 + roof 3, 2화소)."""
+    def f(c):
+        for (a, b) in sticks:
+            c.line(a[0], a[1], b[0], b[1], S['bark'][0]); c.P(a[0], a[1] - 1, S['roof'][2])
+        for (x, y) in embers: c.P(x, y, S['brick'][1])
+        for (x, y) in ash: c.P(x, y, S['roof'][4]); c.P(x + 1, y, S['roof'][3])
+    return f
+_OIL_DRAW = [_rows(OIL_A), _rows(OIL_B)]
+_SC_A = _rows(SC_A, _stick_ex([((4, 8), (7, 7)), ((9, 9), (12, 8))], [(12, 8)], ash=((5, 5), (9, 6), (7, 10))))
+_SC_B = _rows(SC_B, _stick_ex([((5, 9), (8, 8))], [(8, 8)], ash=((4, 6), (10, 7), (9, 9))))
+
+
+def _oil(v): return _OIL_DRAW[v]
 
 
 for _v, _l in enumerate('ab'):
     piece('oil-stain-' + _l, '기름 얼룩 ' + 'AB'[_v], 1, 1, FLAT,
-          en=['a dark brown engine-oil stain soaked into packed earth, an irregular blot with a long run-off lobe to one side, warm brown-black core fading through three steps into the dirt, a tiny dull sheen at the upper left',
-              'a rounder dark brown oil stain soaked into packed earth with a small drip lobe and two stray drops, warm brown-black core fading through three steps into the dirt, a tiny dull sheen'][_v],
+          en=['a flat engine-oil stain soaked into packed earth seen from above: a lopsided smear spreading to the lower right, darkest on one side, its brown edge breaking up into the dirt with a few stray drops, one short dull blue-grey sheen streak',
+              'a flat engine-oil stain soaked into packed earth seen from above: two joined lopsided splats, darkest at the upper one, brown edges breaking up into the dirt, stray drops, one short dull blue-grey sheen streak'][_v],
           group='ground', tags=['기름', '얼룩', '덧그림'], desc='흙에 밴 기름 얼룩 덧그림 — 폐차·발전기·드럼통 곁 1~2칸 안에만. 걷는다.',
           sample=decal_sample('oil-stain-' + _l))(_oil(_v))
 
 
-def _scorch(v):
-    """불탄 자리(r61 2판): 기름과 다른 따뜻하고 마른 램프 — 속 숯 bark 0 → 붉은 갈 그을음 brick 0 → 어두운 재 roof 1 → 재 roof 2,
-    바깥 재 테 roof 3 은 2화소 무리로 흙에 녹는다(굳은 어두운 테 없음, 젖은 광택 없음). 밝은 재 무리(body 2·roof 4) 3~4 곳,
-    숯 막대 2~3(1×3 · 1×4, 각도 서로 다름, 끝에 불씨 brick 2). a = 가로로 찢긴 넓은 자국, b = 세로로 길고 혹이 비낀 자국(실루엣이 다르다)."""
-    def draw(c):
-        if v == 0: D = _blob_mask(8.0, 7.6, 5.4, 4.0, 971, 0.55, lobes=((12.2, 5.2, 1.8, 1.4), (3.6, 10.6, 2.0, 1.5)))
-        else: D = _blob_mask(7.4, 8.0, 3.8, 5.0, 983, 0.55, lobes=((10.6, 11.2, 2.0, 1.8), (4.6, 4.4, 1.6, 1.4)))
-        _bands(c, D, [K('bark', 0), SRC['brick'][0], SRC['roof'][1], SRC['roof'][2]], [0.22, 0.5, 0.78, 1.0], 977 + v)
-        for (x, y), d in D.items():                                   # 바깥 재 테: 2화소 무리로만(외톨이 점 없음)
-            if 1.0 <= d < 1.32 and 1 <= x <= 14 and 1 <= y <= 14 and field(x * 3, y * 3, 991 + v, 32) > 0.5: c.P(x, y, SRC['roof'][3])
-        _despeckle(c)
-        ash = ((4, 6), (11, 9), (6, 11), (12, 4)) if v == 0 else ((5, 6), (9, 12), (10, 6))
-        for (x, y) in ash:                                            # 밝은 재 무리(2화소)
-            if c.has(x, y): c.P(x, y, SRC['body'][2]); c.P(x + 1, y, SRC['roof'][4])
-        sticks = (((6, 8), (8, 8)), ((9, 5), (10, 8))) if v == 0 else (((6, 7), (8, 9)), ((8, 4), (8, 7)), ((5, 11), (7, 10)))
-        for (a, b) in sticks:                                         # 숯 막대 + 불씨 끝
-            c.line(a[0], a[1], b[0], b[1], K('bark', 0)); c.P(b[0], b[1], SRC['brick'][2])
-    return draw
+def _scorch(v): return (_SC_A, _SC_B)[v]
 
 
 for _v, _l in enumerate('ab'):
     piece('scorch-' + _l, '불탄 자리 ' + 'AB'[_v], 1, 1, FLAT,
-          en=['a scorched burnt patch on packed earth: torn irregular silhouette, brown-black charcoal centre in four steps, a feathered ash-grey halo in small clusters, three charred sticks with faint ember-brown tips',
-              'a smaller scorched burnt patch on packed earth: torn silhouette, brown-black charcoal centre, ash-grey halo clusters, two charred sticks with ember tips'][_v],
+          en=['a flat burnt patch on packed earth seen from above: a lobed soot stain, darkest black-brown in the middle and greyer soot towards a dithered brown edge, a few light grey ash flecks and two short charred sticks, one dim ember',
+              'a smaller flat burnt patch on packed earth seen from above: a lobed soot stain, darkest in the middle and greyer towards a dithered brown edge, light grey ash flecks and one charred stick with a dim ember'][_v],
           group='ground', tags=['불탄', '재', '덧그림'], desc='흙 위 불탄 자리 덧그림 — 모닥불·불탄 차·무너진 건물 곁에만. 걷는다.',
           sample=decal_sample('scorch-' + _l))(_scorch(_v))
+
+
+def field_decal_sample(pid, at, w=5, h=4, ground='dirt-c'):
+    """여러 칸 덧그림 표본(r62): 실제로 맵에 깔리는 흙(dirt-c 128 판, 굽는 조각)을 w×h 칸 깔고 at 칸 자리에 조각을 얹는다."""
+    def mk(f=0):
+        g = render(PIECES[ground])[:h * 16, :w * 16].copy()
+        d = render(PIECES[pid], f); op = d[..., 3] == 255
+        x0, y0 = at[0] * 16, at[1] * 16
+        blk = g[y0:y0 + d.shape[0], x0:x0 + d.shape[1]]
+        blk[op] = d[op]
+        return g
+    return mk
 
 
 def big_decal_sample(pid, at, grid=('aaaaa', 'aaaaa', 'aaaaa', 'aaaaa')):
@@ -1991,6 +2064,93 @@ def big_decal_sample(pid, at, grid=('aaaaa', 'aaaaa', 'aaaaa', 'aaaaa')):
         blk[op] = d[op]
         return a
     return mk
+
+
+# r62 텃밭 이랑 C: 테를 안쪽으로(울 가로대에 붙지 않게), 바랜 회색 판자(흙과 대비) + 결, 이랑 경계 흔들림, 잎 꼴 다섯 가지(따뜻한 초록 램프), 바깥 화소 없음.
+PL = [   # 잎 포기 꼴(위에서 본 7×6): W 반짝 · H 빛 · L 몸 · m 그늘 · d 가장 어두운 잎 · s 흙 위 그림자
+ ["..WH...", ".HHLH..", "HLHLLm.", "LLmLmmd", ".mmdmd.", "..dds.."],
+ [".H..WH.", "HLH.HLm", "LmLHLmd", ".mdLmd.", "..ddds.", "...ss.."],
+ ["...H...", "..WHL..", ".HLHLm.", "HLmLmmd", "mmdmdd.", ".ss.s.."],
+ ["W.H....", "HLHLH..", "LmLHLm.", ".mLmLmd", "..ddmd.", "...sss."],
+ ["..H.H..", ".HWHLm.", "HLLmLmd", "LmdLmd.", ".dmdd..", "..sss.."],
+]
+
+
+def _bed(sd):
+    """텃밭 이랑 판(48×32, r62): 바랜 회색 판자 테(4화소, 빛 5단 · 결 · 이음 · 녹슨 못) 안에 이랑 셋(7행: 고랑 젖은 흙 → 마루 빛 5단),
+    마루마다 잎 포기(7×6, 초록 5단 + 흙 위 그림자). 테는 판 가장자리에서 1~2화소 안쪽(울 가로대에 붙지 않는다)."""
+    def bed_c(c):
+        x0, x1, y0, y1 = 1, 46, 2, 30
+        WD = dict(W=S['body'][3], hi=S['roof'][4], mid=S['roof'][3], lo=S['roof'][2], dk=S['roof'][1], sh=S['roof'][0])
+        SOIL = [S['brick'][0], S['bark'][0], S['bark'][1], S['bark'][2], S['bark'][3], S['bark'][4]]
+        for y in range(y0 + 4, y1 - 3):
+            for x in range(x0 + 4, x1 - 3):
+                wob = (h2(x // 4, y // 7, 1401 + sd) % 3) - 1 if (x // 4) % 3 == 0 else 0
+                ry = (y - (y0 + 4) + wob) % 7
+                t = (1, 2, 3, 5, 4, 3, 2)[ry]
+                r = h2(x, y, 1403 + sd) % 11
+                if r == 0 and ry == 0: t = 0
+                elif r == 1 and ry in (2, 5): t = 4
+                c.P(x, y, SOIL[t])
+        for k in range(12):                                            # 흙덩이: 마루 위 2화소 밝은 덩이
+            x = x0 + 6 + h2(k, 3, 1407 + sd) % (x1 - x0 - 12); y = y0 + 4 + 7 * (h2(k, 5, 1409 + sd) % 3) + 3
+            if c.get(x, y) == SOIL[5]: c.P(x, y, S['roof'][4]); c.P(x + 1, y + 1, SOIL[3])
+        RAMPS = [WD, dict(W=S['body'][4], hi=S['body'][2], mid=S['bark'][4], lo=S['bark'][3], dk=S['roof'][1], sh=S['roof'][0]),
+                 dict(W=S['body'][2], hi=S['roof'][3], mid=S['slate'][3], lo=S['slate'][2], dk=S['slate'][1], sh=S['slate'][0])]
+        def ramp_at(i): return RAMPS[(i + h2(i, 3, 1451 + sd)) % 3]
+        def hplank(y, front):
+            for x in range(x0, x1 + 1):
+                seg = 0 if x < x0 + 15 else 1 if x < x0 + 30 else 2
+                R = ramp_at(seg + (3 if front else 0))
+                j = x in (x0 + 15, x0 + 30)
+                c.P(x, y, WD['sh'] if j else (R['W'] if h2(x, y, 1411 + sd) % 5 == 0 else R['hi']))
+                c.P(x, y + 1, WD['sh'] if j else R['mid'])
+                c.P(x, y + 2, WD['sh'] if j else (R['lo'] if front else R['mid']))
+                c.P(x, y + 3, R['sh'] if front else R['dk'])
+        def vplank(x, west):
+            R = ramp_at(7 if west else 8)
+            for y in range(y0 + 4, y1 - 3):
+                j = y == (y0 + y1) // 2
+                c.P(x, y, WD['sh'] if j else (R['W'] if (west and h2(x, y, 1413 + sd) % 5 == 0) else R['hi'] if west else R['mid']))
+                c.P(x + 1, y, WD['sh'] if j else R['mid'])
+                c.P(x + 2, y, WD['sh'] if j else R['lo'])
+                c.P(x + 3, y, R['dk'])
+        hplank(y0, False); hplank(y1 - 3, True); vplank(x0, True); vplank(x1 - 3, False)
+        for k in range(12):                                            # 길이 방향 결(2~5화소)
+            x = x0 + 2 + h2(k, 11, 1431 + sd) % (x1 - x0 - 7); y = (y0 + 1) if k % 2 == 0 else (y1 - 2)
+            for i in range(2 + h2(k, 13, 1433 + sd) % 4):
+                for R in RAMPS:
+                    if c.get(x + i, y) == R['mid']: c.P(x + i, y, R['lo']); break
+        for k in range(6):
+            y = y0 + 5 + h2(k, 17, 1435 + sd) % (y1 - y0 - 10); xx = (x0 + 1) if k % 2 == 0 else (x1 - 2)
+            for i in range(2 + h2(k, 19, 1437 + sd) % 3):
+                for R in RAMPS:
+                    if c.get(xx, y + i) == R['mid']: c.P(xx, y + i, R['lo']); break
+        for (x, y) in ((x0 + 1, y0 + 1), (x1 - 2, y0 + 1), (x0 + 1, y1 - 2), (x1 - 2, y1 - 2), (x0 + 16, y0 + 1), (x0 + 31, y1 - 2)):
+            c.P(x, y, S['brick'][1]); c.P(x + 1, y, S['brick'][0])           # 녹슨 못 머리
+        c.clear(x0, y0); c.clear(x1, y1); c.clear(x1, y0)                  # 판 끝이 엇물린 귀
+        LEAF = dict(W=S['lawn'][6], H=S['lawn'][4], L=S['lawn'][2], M=S['lawn'][1], m=S['lawn'][0], d=S['grove'][2], s=S['bark'][0])
+        for r in range(3):
+            cy = y0 + 4 + 7 * r
+            x = x0 + 5 + h2(r, 1, 1421 + sd) % 3
+            while x < x1 - 10:
+                if h2(x, r, 1423 + sd) % 7 == 0: x += 5; continue          # 빈 자리
+                sh = PL[h2(x, r, 1425 + sd) % len(PL)]
+                dy = h2(x, r, 1427 + sd) % 2
+                for yy, row in enumerate(sh):
+                    for xx, ch in enumerate(row):
+                        if ch == '.': continue
+                        if ch == 's' and c.get(x + xx, cy + dy + yy) not in SOIL: continue
+                        if ch == 'L' and h2(x + xx, cy + yy, 1453 + sd) % 3 == 0: ch = 'M'
+                        c.P(x + xx, cy + dy + yy, LEAF[ch])
+                kind = h2(x, r, 1455 + sd) % 4
+                if kind == 0:                                              # 익은 열매 둘(빛 · 그늘)
+                    for (fx, fy) in ((x + 1, cy + dy + 2), (x + 4, cy + dy + 3)):
+                        c.P(fx, fy, S['brick'][4]); c.P(fx + 1, fy, S['brick'][2]); c.P(fx, fy + 1, S['brick'][2]); c.P(fx + 1, fy + 1, S['brick'][0])
+                elif kind == 1:                                            # 받침 막대 끝(나무 2단)
+                    c.P(x + 5, cy + dy, S['bark'][4]); c.P(x + 5, cy + dy + 1, S['bark'][2])
+                x += 8 + h2(x, r, 1429 + sd) % 3
+    return bed_c
 
 
 def _crop_bed(v):
@@ -2059,8 +2219,8 @@ def _crop_bed(v):
 for _v, _l in enumerate('abc'):
     piece('crop-bed-' + _l, '텃밭 이랑 ' + 'ABC'[_v], 3, 2, FLAT,
           en=['a small vegetable garden bed seen from above: a weathered plank frame around four tilled soil ridges with leafy cabbage-like plants in rows, a few gaps and one wilted plant',
-              'a small garden bed seen from above: a thick weathered plank frame (lit top edge, dark underside, plank-end joints, overlapping broken corners) around four tilled soil ridges in three tones, bean plants climbing short stakes in rows with lit leaves, some empty spots',
-              'a small garden bed seen from above: a thick weathered plank frame (lit top edge, dark underside, plank-end joints, overlapping broken corners) around four tilled soil ridges in three tones, wider-spaced bean plants on stakes with lit leaves and a few missing plants'][_v],
+              'a small raised garden bed seen from above: a frame of grey weathered planks with lengthwise grain, plank joints and rusty corner nails, around four tilled soil ridges in three tones, rows of leafy green vegetable plants of several shapes with a few gaps',
+              'a small raised garden bed seen from above: a frame of grey weathered planks with lengthwise grain, plank joints and rusty corner nails, around four tilled soil ridges in three tones, rows of leafy green vegetable plants of several shapes with a few gaps'][_v],
           group='ground', tags=['텃밭', '밭', '덧그림'], desc='생존자 정착지 텃밭 이랑 — 판자 테 안 고랑·마루와 작물. 울 안에 두세 판을 붙여 둔다. 걷는다.',
-          sample=big_decal_sample('crop-bed-' + _l, (1, 1)))(_crop_bed(_v))
+          sample=(field_decal_sample if _v >= 1 else big_decal_sample)('crop-bed-' + _l, (1, 1)))(_bed((0, 40, 0)[_v]) if _v >= 1 else _crop_bed(_v))
 

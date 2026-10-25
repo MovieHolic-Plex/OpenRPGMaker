@@ -1,0 +1,13 @@
+{
+ "id": "chatcmpl-446ee002dcc5",
+ "type": "message",
+ "role": "assistant",
+ "model": "gemini-4-argon",
+ "content": [],
+ "stop_reason": "end_turn",
+ "stop_sequence": null,
+ "usage": {
+  "input_tokens": 1172,
+  "output_tokens": 0
+ }
+}
