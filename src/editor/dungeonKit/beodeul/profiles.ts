@@ -130,7 +130,7 @@ export const PROFILES: Record<BeodeulDungeonType, TypeProfile> = {
   swamp: {
     ...GRAMMAR.swamp,
     face: { h3: C("face-cave-3h"), h2: C("face-cave-2h") },
-    floor: { base: SWP("ground-mud"), mix: true, patches: [] },
+    floor: { base: SWP("ground-mud"), mix: true, mixCells: [0, 2, 3, 6, 8], patches: [] },   // 결이 잔잔한 칸만(밝은 점 8~12개) — 칸 1·4·5·7(15~26개)이 넓은 진흙에 「잔 점 소음」으로 읽혔다(2026-10-25 floor VQA r5 swamp)
     bank: "bog", canopy: "leaf",
     bridge: { ew: SWP("ground-deck"), ns: SWP("ground-deck") },
   },
