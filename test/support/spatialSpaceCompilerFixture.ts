@@ -8,6 +8,7 @@ import { sha256HexTextSync } from "../../src/util/sha256";
 import { resolveMaterialSlots } from "../../src/editor/operators/materialSlots";
 import type { SpaceDesign, SpatialAuthoringDocument, SpatialOccurrence } from "../../src/project/spatial/types";
 import type { Project } from "../../src/project/types";
+import { withRetiredEasyRpgTilesets } from "./retiredEasyRpgTilesets";
 
 export const spaceRoot = spatialId("compiler-room");
 export const spaceDesign = spatialId("room-design");
@@ -15,7 +16,7 @@ export const interiorAtlas = "easyrpg_chipset_interior";
 
 /** Numeric regression fixture only: shipped beds plus an authored asymmetric hearth assembly. */
 export function spaceCompilerFixture(seed = 7, shape: SpaceDesign["shape"] = "rect"): Project {
-  const project = createBlankProject();
+  const project = withRetiredEasyRpgTilesets(createBlankProject());
   const tileset = project.tilesets[interiorAtlas];
   if (!tileset) throw new TypeError("Missing shipped interior atlas");
   tileset.structureKits = [...(tileset.structureKits ?? []), {
