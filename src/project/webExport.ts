@@ -13,6 +13,7 @@ import {
   type WebPlayerBundleFile,
 } from "@/project/playerDeploymentManifest";
 import type { Project } from "@/project/types";
+import { withBundledTilesetRefs } from "@/project/bundledTilesetRefs";
 import type { SpatialLibrary } from "@/project/spatial/types";
 import {
   collectRetiredExportReferences,
@@ -104,7 +105,9 @@ function exportProjection(project: Project): Project {
 
 export function prepareWebExport(project: Project): PreparedWebExport {
   const exportProject = exportProjection(project);
-  const projectJson = serialize(exportProject);
+  // 번들 정의와 같은 타일셋은 참조로 싣는다 — 플레이어 번들이 같은 정의를 이미 갖고 있다(bundledTilesetRefs.ts, S4).
+  // 출판 판본(meta.publication)은 보관된 옛 런타임이 읽을 수 있으니 예전처럼 통째로 싣는다.
+  const projectJson = serialize(project.meta.publication ? exportProject : withBundledTilesetRefs(exportProject));
   deserialize(projectJson);
   const assets = collectWebExportAssets(exportProject);
   const projectJsonBytes = encoder.encode(projectJson).length;
