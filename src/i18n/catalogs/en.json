@@ -18133,8 +18133,6 @@
 "사진이 너무 커요(12MB 까지).":"The photo is too large (up to 12 MB).",
 "사진을 읽지 못했어요.":"Could not read the photo.",
 "고른 캐릭터를 묶는 중…":"Packing the chosen character…",
-"사진에 맞는 머리·몸을 고르고 색을 칠하는 중… (약 {0}분 남음)":"Choosing a head and body for the photo and colouring them… (about {0} min left)",
-"사진에 맞는 머리·몸을 고르고 색을 칠하는 중…":"Choosing a head and body for the photo and colouring them…",
 "묶었어요. 아래 「이 게임에 넣기」를 눌러 넣어요.":"Packed. Press “Add to this game” below to add it.",
 "만들지 못했어요. 다시 해 주세요.":"Could not make it. Please try again.",
 "후보 {0}명이에요. 마음에 드는 하나를 골라 주세요. 눈이 자연스럽고 오류 없는 것이 앞에 있어요.":"{0} candidates. Pick the one you like. Those with natural eyes and no errors come first.",
@@ -18208,4 +18206,8 @@
 "이야기 · 대본":"Story · Script",
 "{0} 와 대사가 같습니다(같은 이벤트를 여러 칸에 둔 것) — 펼쳐서 따로 고치기":"Same lines as {0} (the same event placed on several tiles) — expand to edit separately",
 "다음 제안으로":"Next suggestion",
-"대본 읽는 순서로 다음 제안 줄로 갑니다(접힌 곁가지는 펼칩니다)":"Go to the next suggestion in reading order (opens collapsed side scenes)"}
+"대본 읽는 순서로 다음 제안 줄로 갑니다(접힌 곁가지는 펼칩니다)":"Go to the next suggestion in reading order (opens collapsed side scenes)",
+"사진을 그림으로 옮기고 맞는 머리·몸을 고르는 중… (약 {0}분 남음)":"Turning the photo into a picture and choosing a head and body… (about {0} min left)",
+"사진을 그림으로 옮기고 맞는 머리·몸을 고르는 중…":"Turning the photo into a picture and choosing a head and body…",
+"그림 도구가 이 사진을 그대로 그리지 않아서(유명인 사진 등), 사진 속 모습을 글로 옮겨 그린 그림으로 골랐어요.":"The drawing tool would not draw this photo as it is (a famous person, for example), so the candidates were chosen from a picture drawn from a description of how the person looks.",
+"그림 도구가 없어 사진의 특징만 보고 골랐어요. 내 컴퓨터에 Codex CLI 를 설치하고 로그인하면 사진을 그림으로 옮겨 더 비슷하게 골라요.":"No drawing tool was found, so the candidates were chosen from the photo's features alone. Install and log in to the Codex CLI on your computer to turn the photo into a picture and get closer matches."}
