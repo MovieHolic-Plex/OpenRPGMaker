@@ -48,29 +48,17 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 
 ## 한국어 산문이 깨진 페이지
 
-EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿지 말고** 같은 줄의 파일 경로·식별자만 쓰고, 의미는 해당 소스 파일에서 직접 확인하라. 복원은 불가능하다(원본 바이트가 소실).
+EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿지 말고** 같은 줄의 파일 경로·식별자만 쓰고, 의미는 해당 소스 파일에서 직접 확인하라. 복원은 불가능하다(원본 바이트가 소실). 문장 끝 물음표(「만들까요?」, “뭔가요?”)는 깨진 줄이 아니므로 이 목록에 없다.
 
 | 페이지 | 깨진 줄 수 | 예시 줄 번호 |
 |---|---|---|
-| `openwiki/asset-store.md` | 1 | 197 |
-| `openwiki/atlas-biome-interior.md` | 1 | 384 |
-| `openwiki/chipset-gap-inventory.md` | 1 | 20 |
-| `openwiki/editor-ai-panel.md` | 26 | 3093, 3094, 3095, 3096, 3097, 3098, 3112, 3122 |
-| `openwiki/editor-ai-tools.md` | 8 | 22, 2365, 2366, 2370, 2372, 2374, 2562, 3500 |
-| `openwiki/editor-database.md` | 14 | 131, 132, 133, 134, 135, 136, 1184, 1188 |
-| `openwiki/editor-event-authoring.md` | 16 | 525, 526, 529, 534, 535, 536, 537, 538 |
+| `openwiki/editor-ai-panel.md` | 24 | 3093, 3094, 3095, 3096, 3097, 3098, 3112, 3172 |
+| `openwiki/editor-ai-tools.md` | 5 | 2380, 2381, 2385, 2387, 2389 |
+| `openwiki/editor-database.md` | 6 | 1184, 1191, 1192, 1201, 1227, 1230 |
+| `openwiki/editor-event-authoring.md` | 16 | 535, 536, 539, 544, 545, 546, 547, 548 |
 | `openwiki/editor-event-command-fixes.md` | 11 | 11, 12, 14, 15, 16, 17, 18, 19 |
 | `openwiki/editor-event-commands.md` | 6 | 142, 155, 156, 158, 161, 162 |
-| `openwiki/editor-observability.md` | 1 | 401 |
-| `openwiki/editor-pre-edit-routing.md` | 4 | 919, 928, 941, 965 |
-| `openwiki/emerald-runtime-surfaces.md` | 1 | 115 |
-| `openwiki/getting-started.ko.md` | 1 | 30 |
-| `openwiki/harnesses/README.md` | 1 | 57 |
-| `openwiki/harnesses/dungeon-chipset.md` | 1 | 23 |
-| `openwiki/monster-campaign-menu.md` | 1 | 155 |
-| `openwiki/monster-expedition.md` | 1 | 297 |
-| `openwiki/runtime-battle.md` | 2 | 2243, 2362 |
-| `openwiki/state-system.md` | 2 | 5, 92 |
+| `openwiki/editor-pre-edit-routing.md` | 3 | 919, 928, 941 |
 
 ## 없는 파일을 가리키는 참조
 
@@ -306,7 +294,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 
 절 제목 없음 (평면 목록 페이지).
 
-### `openwiki/asset-store.md` — 41KB · 315줄 · ~12,271 토큰 · 깨진 줄 1
+### `openwiki/asset-store.md` — 41KB · 315줄 · ~12,271 토큰
 
 - `L6` 어디에 무엇이 있나
 - `L25` 계약 동기화 절차
@@ -335,7 +323,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L97` 시험
 - `L105` v1 비교 결과 (2026-10-23, 코드 e06766bd8d)
 
-### `openwiki/atlas-biome-interior.md` — 77KB · 439줄 · ~23,044 토큰 · 통째읽기 잘림 · 깨진 줄 1
+### `openwiki/atlas-biome-interior.md` — 77KB · 439줄 · ~23,044 토큰 · 통째읽기 잘림
 
 - `L8` 원본과 칸
 - `L37` 코드
@@ -535,7 +523,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L452` 동물 기반 필드 몬스터 (2026-10-05)
 - `L469` 바람의나라를 떠올리는 고전 RPG 8종 (2026-10-03 사용자 요청)
 
-### `openwiki/chipset-gap-inventory.md` — 22KB · 100줄 · ~6,434 토큰 · 깨진 줄 1
+### `openwiki/chipset-gap-inventory.md` — 22KB · 100줄 · ~6,434 토큰
 
 - `L3` 0. 기준과 주의
 - `L16` 표 A — 배송 칩셋 (origin/main)
@@ -606,7 +594,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L110` 주제 적 (`dungeonThemeTroops.ts`)
 - `L115` 시험
 
-### `openwiki/editor-ai-panel.md` — 714KB · 4618줄 · ~209,752 토큰 · 통째읽기 잘림 · 깨진 줄 26
+### `openwiki/editor-ai-panel.md` — 714KB · 4618줄 · ~209,752 토큰 · 통째읽기 잘림 · 깨진 줄 24
 
 - `L3` 조수 v2 스위치 (2026-10-23, 기본 꺼짐)
 - `L10` 로컬 에이전트 CLI 엔진 — `local-cli:claude|codex|gemini` (2026-10-20, opt-in)
@@ -771,7 +759,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L4605` 왼쪽 사이드바(그리기·지형·활동 막대) 탭 전환 계약 (2026-10-17)
 - `L4613` UX 2차 — 도크 배치·서버 AI 꺼짐 문구 (2026-10-21, F24)
 
-### `openwiki/editor-ai-tools.md` — 539KB · 3774줄 · ~157,624 토큰 · 통째읽기 잘림 · 깨진 줄 8
+### `openwiki/editor-ai-tools.md` — 539KB · 3774줄 · ~157,624 토큰 · 통째읽기 잘림 · 깨진 줄 5
 
 - `L3` 「드러났다」를 지도에 보이기 `stage_map_reveal` · 장면 대형 `sceneFormation` · 보스 HP 숨김 (2026-10-25)
 - `L30` 이야기 흐름 읽기 `get_story_outline` · `read_story_script` · `set_scene_summaries` (2026-10-25)
@@ -966,7 +954,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L3751` 연계기·기술 정체성·결과 팡파레 — `list_combo_techs` · `upsert_combo_tech` · `battle.fanfare` (2026-10-24, fs-battle-2)
 - `L3761` 폴른 스타 제작을 조수 도구로 (2026-10-25, 폴른 재현 트랙)
 
-### `openwiki/editor-database.md` — 454KB · 2660줄 · ~133,372 토큰 · 통째읽기 잘림 · 깨진 줄 14
+### `openwiki/editor-database.md` — 454KB · 2660줄 · ~133,372 토큰 · 통째읽기 잘림 · 깨진 줄 6
 
 - `L3` 이야기 › 대사 탭 「대본」 보기 — 이야기 순서 시나리오 (2026-10-25)
 - `L29` 이야기 › 대사 탭 — 모든 대사 한 화면, 창 넘침, 말투 메모, 조수 윤문 받기 (2026-10-24)
@@ -1268,7 +1256,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L426` Reference-house correction: no shrub pots, cooking supports, inset cabinets (2026-09-14)
   - `L436` All-interior review (2026-09-15)
 
-### `openwiki/editor-observability.md` — 64KB · 725줄 · ~18,890 토큰 · 통째읽기 잘림 · 깨진 줄 1
+### `openwiki/editor-observability.md` — 64KB · 725줄 · ~18,890 토큰 · 통째읽기 잘림
 
 - `L5` 여러 단계 되돌리기와 초안 보관 비용 (2026-10-04)
 - `L21` 지형 조수의 실제 UI 검증 (2026-10-04)
@@ -1302,7 +1290,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L714` 편집기 UX 지연 조사 (2026-10-04)
   - `L722` 2026-10-04: 제출 중 추가 지형 편집과 초안 목록
 
-### `openwiki/editor-pre-edit-routing.md` — 189KB · 1171줄 · ~55,451 토큰 · 통째읽기 잘림 · 깨진 줄 4
+### `openwiki/editor-pre-edit-routing.md` — 189KB · 1171줄 · ~55,451 토큰 · 통째읽기 잘림 · 깨진 줄 3
 
 - `L5` 태양과 그림자 (2026-10-04)
 - `L11` 공식 맵 상한 1024×1024 (2026-10-01)
@@ -1454,7 +1442,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L110` Existing authored animation compatibility
 - `L127` 2026-10-04 canonical adoption and publication
 
-### `openwiki/emerald-runtime-surfaces.md` — 17KB · 145줄 · ~4,515 토큰 · 깨진 줄 1
+### `openwiki/emerald-runtime-surfaces.md` — 17KB · 145줄 · ~4,515 토큰
 
 - `L5` Owners
 - `L14` Geometry and reference
@@ -1486,7 +1474,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L81` 안전 장치 (도구가 거절하는 것)
 - `L89` 알려진 한계
 
-### `openwiki/getting-started.ko.md` — 20KB · 307줄 · ~6,290 토큰 · 깨진 줄 1
+### `openwiki/getting-started.ko.md` — 20KB · 307줄 · ~6,290 토큰
 
 - `L5` 처음 시작하기
   - `L23` AI와 함께 만들기
@@ -1528,7 +1516,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L192` 연결 프리셋과 그래프 (2026-09-06)
 - `L226` 검증
 
-### `openwiki/harnesses/README.md` — 6KB · 69줄 · ~1,795 토큰 · 깨진 줄 1
+### `openwiki/harnesses/README.md` — 6KB · 69줄 · ~1,795 토큰
 
 - `L6` 위치 (저장소 루트 기준)
 - `L27` 규칙
@@ -1721,7 +1709,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L172` 몬스터 세계 사람 칩 3차 — 1차 스크립트 칩 12종 재제작 (2026-10-16)
 - `L190` 몬스터 세계 사람 칩 4차 — char-gen 갤러리 4 합성 22종, ScarloxyPeople11~13 (2026-10-17)
 
-### `openwiki/harnesses/dungeon-chipset.md` — 42KB · 309줄 · ~12,639 토큰 · 깨진 줄 1
+### `openwiki/harnesses/dungeon-chipset.md` — 42KB · 309줄 · ~12,639 토큰
 
 - `L3` 왜
 - `L13` 흐름
@@ -2318,7 +2306,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L20` 3. 원작식 복종 레벨 상한 `obedienceLevelCaps`
 - `L25` QA
 
-### `openwiki/monster-campaign-menu.md` — 21KB · 184줄 · ~6,105 토큰 · 깨진 줄 1
+### `openwiki/monster-campaign-menu.md` — 21KB · 184줄 · ~6,105 토큰
 
 - `L10` Ownership and receipts
 - `L35` UI data and map
@@ -2333,7 +2321,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L161` 개체 정체성: 별명·성별·색이 다른 개체 (2026-10-16, poke-sys-collect)
 - `L173` 성격·노력치 (옵트인, 2026-10-16)
 
-### `openwiki/monster-expedition.md` — 37KB · 320줄 · ~10,676 토큰 · 깨진 줄 1
+### `openwiki/monster-expedition.md` — 37KB · 320줄 · ~10,676 토큰
 
 - `L6` Source and regeneration
 - `L41` Campaign metadata contract
@@ -2705,7 +2693,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L15` Quick routing
 - `L24` For AI agents
 
-### `openwiki/runtime-battle.md` — 429KB · 2386줄 · ~125,926 토큰 · 통째읽기 잘림 · 깨진 줄 2
+### `openwiki/runtime-battle.md` — 429KB · 2386줄 · ~125,926 토큰 · 통째읽기 잘림
 
 - `L1` 피해 계열 받는 피해 %(물리·마법) · 상태가 바꿔 쓰는 값 · 「적이 상태에 걸렸다」 전투 조건 (2026-10-24)
 - `L15` 장비 「주는 피해 ±%」·「받는 피해 ±%」 (2026-10-24)
@@ -3245,7 +3233,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L108` Implementation invariants
 - `L119` Sources
 
-### `openwiki/state-system.md` — 13KB · 139줄 · ~3,715 토큰 · 깨진 줄 2
+### `openwiki/state-system.md` — 13KB · 139줄 · ~3,715 토큰
 
 - `L7` TL;DR (use this when explaining to a user)
 - `L15` Layers and ownership
