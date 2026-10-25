@@ -3,8 +3,8 @@
  "massing": "10",
  "material": "stone",
  "refs": [
-  "bd-house-cathedral",
-  "bd-house-h124_0"
+  "bd-house-h124_0",
+  "bd-house-cathedral"
  ],
  "walk": [
   ".****.",

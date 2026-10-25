@@ -71,27 +71,20 @@ def roof_px(x, y):
 
 
 # 버들항 앞박공 집(h124_0)처럼: 박공 뒤 지붕은 가로 기와 줄 — 위에서 보는 두 사면이 화면 위(북)로 물러난다.
-import slate2  # noqa: E402
-slate2.slate_roof(c, lambda x, y: X0 <= x <= RL and back_top(x) + 4 <= y < parapet_top(x), X0, RL, 0, CAP_Y,
-                  th=3, vshift=1, bands=slate2.LIT_BANDS)
-slate2.slate_roof(c, lambda x, y: RL < x <= X1 and back_top(x) + 4 <= y < parapet_top(x), RL + 1, X1, 0, CAP_Y,
-                  th=3, vshift=5, bands=slate2.DRK_BANDS)
+# ㉚ 버들항 h124_0 규약: 세로 열 기와 · 가운데 용마루 · 바깥 2px 테. 길드 회관은 차분한 회청 석판으로 옮겨 칠한다.
+import h124roof as HR  # noqa: E402
+HR.paint(c, lambda x, y: X0 <= x <= X1 and back_top(x) + 3 <= y < parapet_top(x), RL, X0, X1, 0, WALL_Y,
+         ox=3, oy=1, cmap=HR.SLATE)
+# 바깥 테: 서·동 세로 끝 + 뒤 박공 처마(비스듬)
+_L, _R = [], []
+for y in range(back_top(X0) + 3, parapet_top(X0)):
+    _L.append((X0, y, 1))
+    _R.append((X1, y, -1))
 for x in range(X0, X1 + 1):
-    bt = back_top(x) + 4                         # 뒤 박공과 만나는 물막이 그늘
-    c.put(x, bt, 'a' if x <= RL else 'X')
-# 용마루(앞 박공 꼭대기 → 뒤 박공 꼭대기): 마루 석판 두 줄, 왼쪽 빛 · 오른쪽 그늘
-for y in range(back_top(CX) + 4, CAP_Y):
-    c.put(RL - 1, y, 'n' if y % 4 else 'k')
-    c.put(RL, y, 'r' if y % 4 else 'n')
-    c.put(RL + 1, y, 'W')
-    c.put(RL + 2, y, 'X' if y % 3 == 0 else 'a')
-# 지붕 양 끝(서·동): 벽 위 갓기와 — 서쪽 밝은 테, 동쪽 짙은 테
-for y in range(back_top(X0) + 4, parapet_top(X0)):
-    c.put(X0, y, 'a')
-    c.put(X0 + 1, y, 'k' if y % 3 else 'h')
-for y in range(back_top(X1) + 4, parapet_top(X1)):
-    c.put(X1, y, 'X')
-    c.put(X1 - 1, y, 'b')
+    bt = back_top(x) + 3
+    (_L if x <= RL else _R).append((x, bt, 0))
+    c.put(x, bt + 1, 'b' if x <= RL else 'X')
+HR.rake(c, _L, _R, cmap=HR.SLATE)
 # 앞 박공에 붙은 물막이 + 오른쪽 사면에 지는 계단 그림자
 DK = {'k': 'h', 'n': 'k', 'h': 'e', 'e': 'a', 'a': 'X', 'b': 'X', 'X': 'X'}
 for x in range(X0, X1 + 1):
@@ -142,22 +135,17 @@ def wall_shade(x, y):
 for (ya, yb, sd, vy) in ((0, WALL_Y + 2, 2, 0), (WALL_Y + 2, 88, 5, 1), (88, 116, 7, 2), (116, GY - 3, 3, 1)):
     dense_rubble(c, X0, ya, X1 - X0 + 1, yb - ya, seed=sd, shade=wall_shade,
                  mask=lambda x, y: wall_mask(x, y), vy0=ya - vy)   # 층마다 다른 결(위아래 같은 무늬 금지)
-# 뒤 끝 갓기와(곧은 박공 처마선 2px: 위 밝음 · 아래 그늘)
-for x in range(X0, X1 + 1):
-    bt = back_top(x) + 3
-    c.put(x, bt, 'k' if x <= RL else 'e')
-    c.put(x, bt + 1, 'h' if x <= RL else 'b')
 copings(parapet_top)
 # 계단 바깥 끝 세로 모서리(한 단 높은 계단의 옆구리): 왼쪽 반은 밝은 돌 테, 오른쪽 반은 짙은 테
 for x in range(X0, X1):
-    for top_fn in (parapet_top,):
-        a, b = top_fn(x), top_fn(x + 1)
-        if b < a and x < CX:       # 오른쪽이 높다
-            for y in range(b + 3, a):
-                c.put(x + 1, y, 'm' if top_fn is parapet_top else 'k')
-        if a < b and x >= CX:      # 왼쪽이 높다
-            for y in range(a + 3, b):
-                c.put(x, y, 'Y' if top_fn is parapet_top else 'a')
+    a, b = parapet_top(x), parapet_top(x + 1)
+    if b < a and x < CX:
+        for y in range(b + 3, a):
+            c.put(x + 1, y, 'm')
+    if a < b and x >= CX:
+        for y in range(a + 3, b):
+            c.put(x, y, 'Y')
+
 
 # 꼭대기 돌 구(피니얼)
 c.rows(CX - 3, CAP_Y - 9, [
@@ -348,6 +336,6 @@ print('  윤곽 색조', TN.tint_edges(c, 48), '· 무채 가장자리', TN.neut
 
 walk = ['******', '******', '******', '******', '******', 'XXXXXX', 'XXXXXX', 'XXDXXX', 'XXDXXX']
 meta = {'name': '계단 박공 길드 회관', 'massing': '10', 'material': 'stone',
-        'refs': ['bd-house-cathedral', 'bd-house-h124_0'], 'walk': fill_walk(c, walk)}
+        'refs': ['bd-house-h124_0', 'bd-house-cathedral'], 'walk': fill_walk(c, walk)}
 fails, warns = c.save('guildhall', meta)
 print('fails', fails, 'warns', warns)
