@@ -27,6 +27,7 @@ function startPointerRoute(scene: PlaySceneContext, moves: MoveCommand[]): void 
   startPlayerRoute(scene, moves, false);
   if (!scene.playerRoute) return;
   scene.playerRoute.pointer = true;
+  scene.playerRoute.yieldsToEvents = true;
   const steps = moves.filter((move) => move.kind === "move" || move.kind === "stepForward").length;
   scene.playerRoute.dash = playerAlwaysRun() || steps >= TAP_RUN_MIN_STEPS;
 }
