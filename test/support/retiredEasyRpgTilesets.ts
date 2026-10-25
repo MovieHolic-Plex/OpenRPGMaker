@@ -1,4 +1,5 @@
 import { retiredEasyRpgChipsetTileset } from "../../src/project/defaults/defaultAssets";
+import { ensureTilesetHarnesses } from "../../src/project/tilesetHarness";
 import { ensureInteriorRoomHarness } from "../../src/editor/interiorRoomPipeline";
 import type { Project, TilesetDef } from "../../src/project/types";
 
@@ -25,6 +26,9 @@ export function withRetiredEasyRpgTilesets<T extends { tilesets: Record<string, 
     if (project.tilesets[sheet.id]) continue;
     const tileset = retiredEasyRpgChipsetTileset(sheet.textureKey, sheet.name);
     if (tileset.id !== sheet.id) throw new Error(`retired tileset id drift: ${tileset.id} != ${sheet.id}`);
+    // 옛 저장본을 열면 로드 정규화(ensureTilesetHarnesses)가 합본 마을 하네스 그룹(벽 9분할·나무·꽃 …)을 다시 심는다.
+    // 표준 시트 경로는 tileGroups 를 비우므로, 로드 뒤 상태를 재현하려면 같은 정규화를 한 번 돌린다.
+    ensureTilesetHarnesses({ tilesets: { [sheet.id]: tileset } });
     project.tilesets[sheet.id] = tileset;
   }
   if (addedInterior) ensureInteriorRoomHarness(project as unknown as Project);
