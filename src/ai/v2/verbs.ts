@@ -21,9 +21,10 @@ import { mapBundleIds } from "@/ai/piAgent/mapBundle";
 import { buildEvent } from "./events";
 import { drawObject } from "./drawObject";
 import { buildScene, SCENE_SCHEMA, type SceneSpec } from "./scene";
+import { buildPuzzleChain, sealLockedRoom, type ChainArgs } from "./puzzle";
 // 콘텐츠 동사(컷신 무대·연출 비평·물건 자리 계획) — finishContent·addEvent·drawObjectVerb·placeObject 가 쓴다.
 import { critiqueStaging } from "./critic";
-import { createGameTools, wantsGameTools, wantsStoreTools, wantsTerrainTools } from "./game";
+import { createGameTools, wantsPuzzle, wantsGameTools, wantsStoreTools, wantsTerrainTools } from "./game";
 import { gameContentProblems, unaskedChanges } from "./gameChecks";
 import { edgeCell, eventBeats, isInside, isOutdoor, oppositeSide, makeGameOn, orderPlaces, pickDoor, villageDoors, walkGame, wantsMakeGame, type GameSpec } from "./makeGame";
 import { pickStageFrames, stageFrameProject, type EventBuildResult } from "./events";
@@ -545,6 +546,40 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
     },
   };
 
+  // 퍼즐 사슬·잠긴 방 막기(2026-10-25 공포 판정 J12/J13): 조각을 따로 지으면 답이 새고 잠긴 방에 벽 틈이 남는다.
+  const LINES = { type: "array", items: { type: "string" } } as const;
+  const authorPuzzleChain: PiToolShape = {
+    name: "author_puzzle_chain", label: "퍼즐 사슬", concurrency: "exclusive",
+    description: "단서 → 자물쇠(비밀번호·선택) → 보상 → 잠긴 문을 한 번에 짓는다. 고리는 순서대로: 앞 고리의 learn·reward.flag·reward.item 이름만 뒤 고리의 needs 가 된다. 답(code)은 clue 의 lines 에만 두고 자물쇠 대사에는 쓰지 않는다(새면 거부). door 는 지은 뒤 문 칸을 막고 걸어 보아 문 너머가 다른 길로 닿으면 그 틈을 벽으로 메운다. 있는 이벤트는 eventId 로 고쳐 쓰고, 새 것은 at{x,y}·name 을 준다.",
+    parameters: { type: "object", properties: {
+      mapId: { type: "string" }, name: { type: "string", description: "사슬 이름(예: 서재의 비밀)" },
+      links: { type: "array", items: { type: "object", properties: {
+        role: { type: "string", enum: ["clue", "code", "door", "pickup"] },
+        eventId: { type: "string" }, name: { type: "string" }, mapId: { type: "string" },
+        at: { type: "object", properties: { x: { type: "number" }, y: { type: "number" } } },
+        learn: { type: "string", description: "clue: 읽으면 알게 되는 것(뒤 고리 needs 이름)" },
+        needs: { type: "string", description: "먼저 있어야 하는 것 — 앞 고리 learn·reward.flag·reward.item 이름" },
+        code: { type: "string", description: "code: 숫자 답 또는 options 중 정답" },
+        options: LINES, lines: LINES, lockedLines: LINES, wrongLines: LINES, doneLines: LINES,
+        reward: { type: "object", properties: { item: { type: "string" }, flag: { type: "string" }, lines: LINES } },
+        seal: { type: "boolean", description: "door: 문 너머 틈 막기(기본 true)" },
+      }, required: ["role"] } },
+    }, required: ["mapId", "name", "links"] },
+    async execute(id, params) {
+      const args = params as unknown as ChainArgs;
+      return finishContent(id, "author_puzzle_chain", params, buildPuzzleChain(run, { ...args, mapId: args.mapId || env.ctx.currentMapId || "" }));
+    },
+  };
+  const sealLockedRoomVerb: PiToolShape = {
+    name: "seal_locked_room", label: "잠긴 방 막기", concurrency: "exclusive",
+    description: "잠긴 문(eventId) 너머 방에 문을 거치지 않고 걸어 닿는 틈이 있으면 옆 벽 타일로 메운다(문 칸을 막고 시작·착지점에서 걸어 본다). 게임 검사 「잠긴 방」이 짚으면 쓴다.",
+    parameters: { type: "object", properties: { mapId: { type: "string" }, eventId: { type: "string" } }, required: ["mapId", "eventId"] },
+    async execute(id, params) {
+      const p = params as { mapId: string; eventId: string };
+      return finishContent(id, "seal_locked_room", params, sealLockedRoom(run, p.mapId, p.eventId));
+    },
+  };
+
   const drawObjectVerb: PiToolShape = {
     name: "draw_object", label: "없는 물건 그리기", concurrency: "exclusive",
     description: "칩셋에 없는 물건을 공방 원클릭 그리기 경로로 맡긴다. 결과의 summary 가 놓였는지·대기인지를 정직하게 말한다.",
@@ -767,7 +802,7 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
     }
     return result;
   } });
-  const verbs = [makePlace, ...(makeGameOn() && wantsMakeGame(String(task ?? "")) ? [makeGame] : []), editPlace, addPeople, addEvent, addScene, drawObjectVerb, placeObject, inspect, askUser].map(guard);
+  const verbs = [makePlace, ...(makeGameOn() && wantsMakeGame(String(task ?? "")) ? [makeGame] : []), editPlace, addPeople, addEvent, addScene, ...(wantsPuzzle(String(task ?? "")) ? [authorPuzzleChain] : []), sealLockedRoomVerb, drawObjectVerb, placeObject, inspect, askUser].map(guard);
   // 게임 요소(퀘스트·아이템·전투·파티) 요청이면 v1 게임 도구를 덧붙인다 — 기록은 도구 묶음이 env.record 로 직접 남긴다.
   const t = String(task ?? "");
   // 같은 Command·페이지 스키마의 설명은 처음 한 번만 보낸다(schemaDedupe.ts — 매 턴 다시 가는 도구 목록이 21만 자였다).
