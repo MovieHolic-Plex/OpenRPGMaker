@@ -28,6 +28,16 @@ import {
   type StorageChestTab,
 } from "@/project/storageChest";
 
+/** 한 번에 상자 창은 하나다. 제목·수량 칸을 이 id 로 묶는다. */
+const CHEST_TITLE_ID = "runtime-chest-title";
+const CHEST_QTY_ID = "runtime-chest-qty";
+
+function nameChestDialog(overlay: HTMLElement): void {
+  overlay.setAttribute("role", "dialog");
+  overlay.setAttribute("aria-modal", "true");
+  overlay.setAttribute("aria-labelledby", CHEST_TITLE_ID);
+}
+
 export type OpenChestRequest = OpenChestFields & {
   readonly chestId?: string;
   readonly mapId?: string;
@@ -77,25 +87,34 @@ function showLockedChest(scene: PlaySceneContext, title: string, reason: string)
     const overlay = document.createElement("section");
     overlay.className = "runtime-overlay runtime-chest-overlay is-center";
     overlay.dataset.testid = "chest-locked";
+    nameChestDialog(overlay);
+    let detachCursor: (() => void) | null = null;
     const close = el("button", {
       class: "runtime-chest-cancel",
       text: "닫기",
       attrs: { type: "button" },
       dataset: { testid: "chest-close" },
-      on: { click: () => { overlay.remove(); resolve(); } },
+      on: {
+        click: () => {
+          detachCursor?.();
+          detachCursor = null;
+          overlay.remove();
+          resolve();
+        },
+      },
     });
     const window = el("div", {
       class: "runtime-chest-window",
       children: [
-        el("div", { class: "runtime-chest-title", text: title }),
-        el("div", { class: "runtime-chest-status", dataset: { testid: "chest-status" }, text: reason }),
+        el("div", { class: "runtime-chest-title", text: title, attrs: { id: CHEST_TITLE_ID } }),
+        el("div", { class: "runtime-chest-status", dataset: { testid: "chest-status" }, attrs: { role: "status" }, text: reason }),
         close,
       ],
     });
     applyWindowSkinGraphic(window as HTMLElement);
     overlay.append(window);
     mountChestOverlay(scene, overlay);
-    attachCursorMenu(overlay, { items: [close as HTMLElement], cancelEl: close as HTMLElement, initialIndex: 0 });
+    detachCursor = attachCursorMenu(overlay, { items: [close as HTMLElement], cancelEl: close as HTMLElement, initialIndex: 0 });
   });
 }
 
@@ -105,10 +124,12 @@ function openChestUi(scene: PlaySceneContext, chest: ChestState, presentation: R
     overlay.className = `runtime-overlay runtime-chest-overlay is-${presentation.layout}`;
     overlay.dataset.testid = "chest-scene";
     overlay.dataset.chestTemplate = presentation.template ?? "legacy";
+    nameChestDialog(overlay);
 
     const status = el("div", {
       class: "runtime-chest-status",
       dataset: { testid: "chest-status" },
+      attrs: { role: "status" },
     });
     const playerList = el("div", { class: "runtime-chest-list", dataset: { testid: "chest-player-list" } });
     const chestList = el("div", { class: "runtime-chest-list", dataset: { testid: "chest-storage-list" } });
@@ -116,12 +137,12 @@ function openChestUi(scene: PlaySceneContext, chest: ChestState, presentation: R
     const tabs = el("div", { class: "runtime-chest-tabs", dataset: { testid: "chest-tabs" } });
     const search = el("input", {
       class: "runtime-chest-search",
-      attrs: { type: "search", placeholder: "검색", autocomplete: "off" },
+      attrs: { type: "search", placeholder: "검색", autocomplete: "off", "aria-label": "검색" },
       dataset: { testid: "chest-search" },
     }) as HTMLInputElement;
     const qty = el("input", {
       class: "runtime-chest-qty",
-      attrs: { type: "number", min: "1", value: "1" },
+      attrs: { type: "number", min: "1", value: "1", id: CHEST_QTY_ID },
       dataset: { testid: "chest-qty" },
     }) as HTMLInputElement;
     const cancel = el("button", {
@@ -139,7 +160,7 @@ function openChestUi(scene: PlaySceneContext, chest: ChestState, presentation: R
     const window = el("div", { class: "runtime-chest-window" });
     applyWindowSkinGraphic(window as HTMLElement, undefined);
     window.append(
-      el("div", { class: "runtime-chest-title", text: presentation.displayName }),
+      el("div", { class: "runtime-chest-title", text: presentation.displayName, attrs: { id: CHEST_TITLE_ID } }),
       status,
     );
     if (presentation.showCategories) {
@@ -163,7 +184,7 @@ function openChestUi(scene: PlaySceneContext, chest: ChestState, presentation: R
       el("div", {
         class: "runtime-chest-toolbar",
         children: [
-          el("label", { class: "runtime-chest-qty-label", text: "수량" }),
+          el("label", { class: "runtime-chest-qty-label", text: "수량", attrs: { for: CHEST_QTY_ID } }),
           qty,
           ...(presentation.allowBulk
             ? [
@@ -172,7 +193,7 @@ function openChestUi(scene: PlaySceneContext, chest: ChestState, presentation: R
                 el("button", {
                   class: "runtime-chest-tool",
                   text: "전부",
-                  attrs: { type: "button" },
+                  attrs: { type: "button", "aria-label": "수량 전부" },
                   dataset: { testid: "chest-qty-all" },
                   on: { click: () => { qty.value = "all"; } },
                 }),
@@ -198,7 +219,7 @@ function openChestUi(scene: PlaySceneContext, chest: ChestState, presentation: R
       return el("button", {
         class: "runtime-chest-tool",
         text: label,
-        attrs: { type: "button" },
+        attrs: { type: "button", "aria-label": `수량 ${label}` },
         dataset: { testid: `chest-qty-${value}` },
         on: { click: () => { qty.value = String(value); selectedAmount = value; } },
       });
@@ -251,7 +272,7 @@ function openChestUi(scene: PlaySceneContext, chest: ChestState, presentation: R
         tabs.append(el("button", {
           class: `runtime-chest-tab${tab === id ? " selected" : ""}`,
           text: storageChestTabLabel(id),
-          attrs: { type: "button" },
+          attrs: { type: "button", "aria-pressed": String(tab === id) },
           dataset: { testid: `chest-tab-${id}` },
           on: { click: () => { tab = id; rebuild(); } },
         }));
