@@ -1,0 +1,110 @@
+{
+ "n": 5,
+ "model": "gemini-4-argon-high",
+ "subjects": {
+  "hanel": {
+   "kind": "positive",
+   "dir": "public/assets/shared/portraits/people2-white-elder",
+   "aggregate": {
+    "n": 5,
+    "scores": [
+     8.0,
+     8.0,
+     8.0,
+     8.0,
+     7.0
+    ],
+    "median": 8.0,
+    "min": 7.0,
+    "max": 8.0,
+    "sameArtistVotes": 4,
+    "defectVotes": {
+     "base": 5,
+     "happy": 5,
+     "sad": 5,
+     "angry": 5,
+     "surprised": 5
+    },
+    "worstDefectVotes": 5
+   },
+   "runs": [
+    {
+     "castFit": 8,
+     "sameArtist": true,
+     "defects": {
+      "base": "isolated pale/grey stray pixels on both cheeks",
+      "happy": "head height shrinks vs base, jagged 1px spikes on back-left hair outline, right moustache tip breaks past cheek outline, stray pale pixels on cheeks",
+      "sad": "jagged 1px stray spikes along back-left hair outline, grey smudge pixels on cheeks, hair and collar clusters shift from base",
+      "angry": "head height shrinks vs base, stray grey pixels scattered on cheeks and nose, inconsistent hair silhouette vs base",
+      "surprised": "smeared/low-contrast grey eyes, stray white pixels on cheeks, inconsistent hair outline vs base"
+     },
+     "notes": "The base portrait blends seamlessly into the cast's outline weight, palette ramps, and facial shading (especially alongside #3). However, the expressions were not edited on a locked base sprite, causing noticeable head-size bobbing, spiky hair-outline artifacts, and stray grey/white cheek pixels across variants.",
+     "position": 5,
+     "seed": 101,
+     "model": "gemini-4-argon-high"
+    },
+    {
+     "castFit": 8,
+     "sameArtist": true,
+     "defects": {
+      "base": "Stray light-grey pixels isolated on both cheeks above the beard line.",
+      "happy": "Head and shoulders shift downward relative to base, jagged stray pixels appear along the back hair outline and right mustache tip, and the closed eyes smear into surrounding shading.",
+      "sad": "Spiky stray outline pixels protrude from the back of the hair, noisy grey artifact pixels sit on both cheeks, and collar/hair pixels shift from the base bust.",
+      "angry": "Head sits noticeably lower and smaller than base, with stray pixels on the back hair outline and misplaced white/grey pixels on the cheeks under both eyes.",
+      "surprised": "Back hair outline is ragged, stray white/grey pixels appear on both cheeks, eyes are washed-out grey smears without clear pupils, and bust alignment shifts from base."
+     },
+     "notes": "In the lineup, the base portrait matches the cast's dark 1px outlines, soft multi-step shading, hair clustering, and framing range well enough to pass as the same hand. However, the expression set fails to keep the bust fixed—regenerating the whole portrait per emotion causes vertical head shifts, ragged hair outlines, smeared eyes, and stray grey cheek pixels.",
+     "position": 2,
+     "seed": 102,
+     "model": "gemini-4-argon-high"
+    },
+    {
+     "castFit": 8,
+     "sameArtist": true,
+     "defects": {
+      "base": "stray light-grey pixels on both cheeks below the eyes",
+      "happy": "head and bust shift noticeably downward/smaller compared to base, jagged spikes on back-left hair outline, stray pale pixel on right cheek, and clothing/hair redraw breaks frame consistency",
+      "sad": "jagged stray pixel spikes on the back-left hair outline and grey pixel smears under both eyes on upper cheeks",
+      "angry": "head shifts downward/smaller relative to base, with noisy grey/white stray pixels smeared across the cheeks and nose bridge",
+      "surprised": "stray light-grey pixels on both cheeks, smeared/indistinct eye detail, and shifting hair/coat silhouette relative to base"
+     },
+     "notes": "In the main lineup, the subject blends well with the existing cast's outline weight, soft shading ramps, and head scale range (matching portraits 2 and 3 closely). However, the expression sheet suffers from stray grey cheek pixels across all variants and inconsistent sprite registration where the head height and hair/jacket outlines shift between expressions.",
+     "position": 6,
+     "seed": 103,
+     "model": "gemini-4-argon-high"
+    },
+    {
+     "castFit": 8,
+     "sameArtist": true,
+     "defects": {
+      "base": "isolated stray light-grey pixels on both upper cheeks",
+      "happy": "bust shifts downward ~2px relative to base, jagged 1px spikes on back hair outline, mustache protrudes past right face outline, stray grey cheek pixels",
+      "sad": "frayed 1px spikes on back hair outline and stray grey pixels under eyes/cheeks",
+      "angry": "bust shifts downward relative to base, altered back-hair silhouette, noisy grey pixels smeared around eyes and nose",
+      "surprised": "smeared/washed-out grey eyes with indistinct pupils, altered back-hair outline, stray grey pixels on cheeks"
+     },
+     "notes": "In the lineup, the base portrait matches the cast's dark 1px outline, soft multi-step shading, hair clustering, and framing closely enough to pass as the same hand. However, the expression sheet does not lock the base bust—vertical alignment, coat details, and back-hair outlines shift across expressions alongside stray grey cheek pixels.",
+     "position": 1,
+     "seed": 104,
+     "model": "gemini-4-argon-high"
+    },
+    {
+     "castFit": 7,
+     "sameArtist": false,
+     "defects": {
+      "base": "stray light-grey pixels on both cheeks and slightly muddy eye definition",
+      "happy": "head shifts downward, sawtooth 1px spikes on left hair outline, moustache pokes through right jaw outline, stray grey pixels on cheeks",
+      "sad": "jagged 1px stray spikes along back hair outline and grey palette bleed on cheeks under eyes",
+      "angry": "head/crown squashed downward relative to base, jagged back-hair outline, stray grey/white pixels under eyes",
+      "surprised": "washed-out smeared eyes lacking clear pupils, stray grey pixels on cheeks, jagged back-hair outline"
+     },
+     "notes": "In the static lineup the subject matches the cast's outline weight, framing, and #3's white-hair shading closely, marred mainly by grey palette bleed on the cheeks. However, the expression sheet reveals inconsistent head height/silhouettes, jagged hair outlines, and smeared facial features across variants rather than clean pixel-level expression edits.",
+     "position": 5,
+     "seed": 105,
+     "model": "gemini-4-argon-high"
+    }
+   ]
+  }
+ },
+ "at": "2026-10-25T12:04:35"
+}
