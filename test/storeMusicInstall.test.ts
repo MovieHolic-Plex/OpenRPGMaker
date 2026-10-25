@@ -10,6 +10,7 @@ import { createEmptyToolProject } from "@/editor/tools/emptyProject";
 import { createBlankProject } from "@/project/defaults";
 import { isStoreCardRequest } from "@/editor/tools/storeTools";
 import { gameContentProblems } from "@/ai/v2/gameChecks";
+import { PiGameSystemProduction } from "@/ai/piAgent/gameSystemProduction";
 import type { Project } from "@/project/types";
 
 const ogg = (n: number): Uint8Array => new Uint8Array([0x4f, 0x67, 0x67, 0x53, 0, 2, n, 0, 0, 0]);
@@ -189,6 +190,13 @@ describe("set_game_audio with a file-backed store track", () => {
 });
 
 describe("v2 finish check", () => {
+  it("v2 does not report the v1 game-system review as unfinished after set_game_audio (it has no review tool)", () => {
+    const project = createEmptyToolProject();
+    const v1 = new PiGameSystemProduction(), v2 = new PiGameSystemProduction(false);
+    for (const p of [v1, v2]) p.record("set_game_audio", { ok: true, summary: "ok" } as never, project);
+    expect(v1.inspect(project).length).toBeGreaterThan(0);
+    expect(v2.inspect(project)).toEqual([]);
+  });
   it("does not re-balance a boss that was already there when only its music changed", () => {
     const ctx = { project: createBlankProject() };
     expect(runTool(ctx, "create_map", { id: "m_cave", name: "동굴", width: 8, height: 8 }, { dryRun: false }).ok).toBe(true);
