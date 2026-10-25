@@ -24,11 +24,11 @@ describe("resolveAssistantRoles — 연결 조합", () => {
 
   it("Claude 만: 그림 생성은 없다고 말하고, 나머지는 로컬 Claude Code 로 채운다", () => {
     const t = table("claude");
-    expect(t.main).toBe("local-cli:claude/opus");
+    expect(t.main).toBe("local-cli:claude/claude-opus-5-5");
     expect(t.smol).toBe("local-cli:claude/haiku");
     expect(t.advisor).toBe("local-cli:claude/sonnet");
     expect(t.vision).toBe("local-cli:claude/sonnet");
-    expect(t.pixel).toBe("local-cli:claude/opus");
+    expect(t.pixel).toBe("local-cli:claude/claude-opus-5-5");
     expect(t.image).toMatch(/^missing: 새 그림 생성 없음/u);
   });
 
@@ -42,13 +42,19 @@ describe("resolveAssistantRoles — 연결 조합", () => {
     expect(t.pixel).toBe("openai-codex/gpt-6.1-sol");
   });
 
-  it("넷 다: 주는 Gemini Argon, 검토자는 다른 계열(GPT), 그림은 GPT Image 를 먼저", () => {
+  it("넷 다: 주는 Claude Opus 5.5 medium, 검토자는 다른 계열(Gemini Argon), 잔일은 같은 계정의 Haiku, 그림은 GPT Image", () => {
+    const roles = resolveAssistantRoles(mockConnectedRoutes("gemini,gpt,claude,deepseek"));
+    expect(roles.main).toMatchObject({ status: "ok", model: { provider: "local-cli:claude", model: "claude-opus-5-5", thinkingLevel: "medium" } });
     const t = table("gemini,gpt,claude,deepseek");
-    expect(t.main).toBe("google-antigravity/gemini-4-argon");
-    expect(t.advisor).toBe("openai-codex/gpt-6.1-sol");
-    expect(t.smol).toBe("google-antigravity/gemini-3.8-flash");
+    expect(t.advisor).toBe("google-antigravity/gemini-4-argon");
+    expect(t.smol).toBe("local-cli:claude/haiku");
     expect(t.image).toBe("openai-codex/codex-image-default");
-    expect(t.vision).toBe("google-antigravity/gemini-4-argon");
+    expect(t.vision).toBe("local-cli:claude/sonnet");
+  });
+
+  it("Claude 가 없으면 주 작업은 Argon medium 으로 물러난다", () => {
+    const roles = resolveAssistantRoles(mockConnectedRoutes("gemini,gpt"));
+    expect(roles.main).toMatchObject({ status: "ok", model: { provider: "google-antigravity", model: "gemini-4-argon", thinkingLevel: "medium" } });
   });
 
   it("연결 없음: 여섯 다 missing 이고 각자 물러나는 말을 한다", () => {

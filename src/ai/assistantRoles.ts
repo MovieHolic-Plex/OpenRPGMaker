@@ -43,6 +43,7 @@ interface RoleCopy { readonly label: string; readonly desc: string; readonly mis
 const MATRIX = matrix as unknown as {
   readonly roles: Record<AssistantRole, RoleCopy>;
   readonly familyOrder: readonly ModelFamily[];
+  readonly mainFamilyOrder: readonly ModelFamily[];
   readonly families: Record<ModelFamily, MatrixFamily>;
 };
 
@@ -51,7 +52,8 @@ export const FAMILY_LABEL: Readonly<Record<ModelFamily, string>> = Object.fromEn
   MODEL_FAMILIES.map((family) => [family, MATRIX.families[family].label])) as Record<ModelFamily, string>;
 
 /** 그림 생성은 GPT Image 를 먼저 권한다(src/ai/imageModelCatalog.ts RECOMMENDED_IMAGE_PROVIDER_ID). 나머지는 표 순서. */
-const ROLE_FAMILY_ORDER: Partial<Record<AssistantRole, readonly ModelFamily[]>> = { image: ["gpt", "gemini", "claude", "deepseek"] };
+// 주 작업은 Claude(Opus 5.5 medium)를 먼저 본다 — 사용자 결정(2026-10-25). Claude 가 없으면 Gemini Argon medium.
+const ROLE_FAMILY_ORDER: Partial<Record<AssistantRole, readonly ModelFamily[]>> = { image: ["gpt", "gemini", "claude", "deepseek"], main: MATRIX.mainFamilyOrder };
 
 interface Candidate { readonly family: ModelFamily; readonly providerId: string; readonly entry: MatrixEntry }
 

@@ -8,7 +8,9 @@
     "image": { "label": "그림 생성", "desc": "타이틀·배경·컷신·초상 한 장 통째로", "needs": ["imageOutput"], "missing": "새 그림 생성 없음 — 기존 그림만" },
     "pixel": { "label": "도트", "desc": "타일·캐릭터·기물을 격자 문자열로 찍음(텍스트 모델)", "needs": ["text"], "missing": "주 모델이 찍음" }
   },
+  "$mainOrder": "주 작업은 Claude 가 연결돼 있으면 Opus 5.5 medium(사용자 결정 2026-10-25), 없으면 Gemini Argon medium.",
   "familyOrder": ["gemini", "gpt", "claude", "deepseek"],
+  "mainFamilyOrder": ["claude", "gemini", "gpt", "deepseek"],
   "families": {
     "gemini": {
       "label": "Gemini",
@@ -60,11 +62,11 @@
       "label": "Claude",
       "routes": [
         { "providerId": "local-cli:claude", "roles": {
-          "main": [{ "model": "opus", "thinkingLevel": "medium" }, { "model": "sonnet", "thinkingLevel": "medium" }],
+          "main": [{ "model": "claude-opus-5-5", "thinkingLevel": "medium" }, { "model": "opus", "thinkingLevel": "medium" }, { "model": "sonnet", "thinkingLevel": "medium" }],
           "smol": [{ "model": "haiku", "thinkingLevel": "low" }],
           "advisor": [{ "model": "sonnet", "thinkingLevel": "medium" }, { "model": "opus", "thinkingLevel": "medium" }],
           "vision": [{ "model": "sonnet", "thinkingLevel": "medium" }],
-          "pixel": [{ "model": "opus", "thinkingLevel": "medium" }, { "model": "sonnet", "thinkingLevel": "medium" }]
+          "pixel": [{ "model": "claude-opus-5-5", "thinkingLevel": "medium" }, { "model": "opus", "thinkingLevel": "medium" }]
         } }
       ]
     },

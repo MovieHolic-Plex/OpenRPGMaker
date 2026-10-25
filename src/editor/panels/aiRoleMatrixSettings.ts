@@ -30,8 +30,7 @@ function overridesFromConfig(config: AiConfig, available: readonly AvailableRout
   const connected = new Set(available.map((route) => route.providerId));
   const pick = (model: RoleModel | undefined): RoleModel | undefined => (model && connected.has(model.provider) ? model : undefined);
   const out: RoleOverrides = {};
-  const main = pick(modelForRole(config, "deep"));
-  if (main) out.main = main;
+  // 주 작업은 표가 추천을 계산한다(Claude 가 있으면 Opus 5.5 medium). 지금 쓰는 값과 다르면 줄에 「맞추기」 단추가 뜬다.
   const vision = pick(modelForRole(config, "vision"));
   if (vision && config.modelSelectionOverrides?.vision) out.vision = vision;
   const pixel = resolvePixelModel(config);
@@ -62,7 +61,11 @@ export function availableRoutesFrom(rows: ReadonlyArray<{ readonly providerId: s
   });
 }
 
-export function renderAiRoleMatrixSettings(onChange: () => void): AiRoleMatrixView {
+/**
+ * onApplyMain: 주 작업 추천을 실제 설정에 넣는다. 로컬 CLI(예: Claude Code)면 조수 엔진을 그 CLI 로, 계정 모델이면 실행·계획 칸을 그 모델로.
+ * 호출자(설정 모달)가 저장까지 맡는다.
+ */
+export function renderAiRoleMatrixSettings(onChange: () => void, onApplyMain?: (model: RoleModel) => void): AiRoleMatrixView {
   let available: readonly AvailableRoute[] = [];
   let config: AiConfig | undefined;
   const pinned: Partial<Record<"smol" | "advisor", true>> = {};
@@ -104,6 +107,13 @@ export function renderAiRoleMatrixSettings(onChange: () => void): AiRoleMatrixVi
       modelCells.get(role)!.textContent = shown.model;
       noteCells.get(role)!.textContent = shown.note;
       rows.get(role)!.dataset.tone = shown.tone;
+      if (role === "main") {
+        const current = modelForRole(config, "deep");
+        const rec = resolved.main;
+        const differs = rec.status === "ok" && (rec.model.provider !== current.provider || rec.model.model !== current.model);
+        mainApply.hidden = !differs;
+        if (differs) noteCells.get(role)!.textContent = `${shown.note} · 지금은 ${current.model}`;
+      }
       const select = selects.get(role);
       if (select) {
         const value = pinned[role as "smol" | "advisor"] ? (chosen[role as "smol" | "advisor"] === "off" ? OFF : key(chosen[role as "smol" | "advisor"] as RoleModel)) : AUTO;
@@ -118,6 +128,11 @@ export function renderAiRoleMatrixSettings(onChange: () => void): AiRoleMatrixVi
       : "연결된 계정이 없습니다 — 「연결」 탭에서 계정을 하나 연결하면 역할이 자동으로 채워집니다.";
   };
 
+  const mainApply = el("button", { class: "ai-assistant-action", text: "맞추기", attrs: { type: "button", hidden: "" }, dataset: { testid: "ai-role-matrix-main-apply" } }) as HTMLButtonElement;
+  mainApply.addEventListener("click", () => {
+    const rec = resolved?.main;
+    if (rec?.status === "ok") onApplyMain?.(rec.model);
+  });
   const table = el("div", {
     class: "ai-roles-table ai-role-matrix",
     dataset: { testid: "ai-role-matrix" },
@@ -130,6 +145,7 @@ export function renderAiRoleMatrixSettings(onChange: () => void): AiRoleMatrixVi
         modelCells.set(role, modelCell);
         noteCells.set(role, noteCell);
         let control: HTMLElement = el("small", { class: "ai-role-matrix-elsewhere", text: role === "image" || role === "pixel" ? "아래 「그림·도트 모델」" : "위 「역할별 모델」" });
+        if (role === "main") control = el("div", { children: [mainApply, control] });
         if (EDITABLE.includes(role)) {
           const select = el("select", { class: "ai-config-select", attrs: { "aria-label": `${copy.label} 모델` }, dataset: { testid: `ai-role-matrix-${role}-select` } }) as HTMLSelectElement;
           select.addEventListener("change", () => {

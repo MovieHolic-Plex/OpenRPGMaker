@@ -378,6 +378,18 @@ export async function adviseTurn(input: AdvisorInput, sideChat: (messages: reado
   }
 }
 
+/**
+ * 출하 검사(src/ai/v2/shipChecks.ts shipBlockers — 편집기 기본값이 남음·한 줄 엔딩·제목 스포일러)를 막는 메모로 붙인다.
+ * 모델 판단이 아니라 코드 검사라 항상 blocker 다. 같은 id 를 두 번 넣지 않는다.
+ */
+export function withShipBlockers(verdict: AdvisorVerdict, blockers: readonly { readonly id: string; readonly message: string; readonly evidence: string }[]): AdvisorVerdict {
+  if (!blockers.length) return verdict;
+  const seen = new Set(verdict.notes.map((n) => n.what));
+  const extra = blockers.map((b): AdvisorNote => ({ level: "blocker", what: `[출하 차단 ${b.id}] ${b.message}`, evidence: b.evidence }))
+    .filter((n) => !seen.has(n.what));
+  return { ...verdict, notes: [...verdict.notes, ...extra] };
+}
+
 /** 막는 메모가 있으면 한 차례 더 돌릴 지시문. 없으면 undefined(검토 메모는 조수 기록에만 남는다). */
 export function advisorFollowUp(verdict: AdvisorVerdict): string | undefined {
   const blockers = verdict.notes.filter((n) => n.level === "blocker");

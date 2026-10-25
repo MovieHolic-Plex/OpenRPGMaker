@@ -52,6 +52,8 @@ import { renderAiAuthSettings, type AiAuthStatusSnapshot } from "./aiAuthSetting
 import { renderAiCompatSettings, type AiCompatRoleSlot } from "./aiCompatSettings";
 import { renderAiToolUsagePanel } from "./aiToolUsagePanel";
 import { fetchConnectedRoutes, renderAiRoleMatrixSettings } from "./aiRoleMatrixSettings";
+import { localCliOfProvider } from "@/ai/localCliEngine";
+import { saveEngineChoice } from "@/start/settings/localAgents";
 import { deckIcon } from "./aiDeckIcons";
 import { installEventEditorCustomSelects } from "./eventEditor/customSelect";
 
@@ -904,7 +906,26 @@ export function renderAiSettingsForm(options: {
     authSettings.recheck();
   });
   // ── 역할 배정(연결된 계정으로 자동) ─────────────────────────────────────────
-  roleMatrix = renderAiRoleMatrixSettings(() => persist(false));
+  roleMatrix = renderAiRoleMatrixSettings(() => persist(false), (recommended) => {
+    // 로컬 CLI 추천(Claude 가 연결돼 있으면 Opus 5.5 medium)은 조수 엔진 선택으로 넣는다 — 그래야 실제 실행이 그 모델로 간다.
+    const cli = localCliOfProvider(recommended.provider);
+    if (cli) {
+      saveEngineChoice({ kind: "local-cli", cli, routineModel: recommended.model, deepModel: recommended.model, effort: recommended.thinkingLevel === "low" || recommended.thinkingLevel === "high" ? recommended.thinkingLevel : "medium" });
+      toast(`조수 엔진을 ${recommended.model} (${recommended.thinkingLevel})로 맞췄습니다.`, "ok");
+    } else {
+      saveEngineChoice(null);
+      for (const c of specialistControls.filter((entry) => entry.role === "deep" || entry.role === "build")) {
+        fillProviderOptions(c.provider, recommended.provider);
+        c.provider.value = recommended.provider;
+        c.field.refresh(authMode, recommended.provider);
+        c.field.setValue(recommended.model, authMode, recommended.provider);
+        c.effort.value = recommended.thinkingLevel;
+        modelSelectionOverrides[c.role] = true;
+      }
+      persist(false);
+    }
+    refreshRoleMatrix();
+  });
   let connectedRoutes: Awaited<ReturnType<typeof fetchConnectedRoutes>> = [];
   const refreshRoleMatrix = (): void => roleMatrix?.refresh(collect(), connectedRoutes);
   const reloadConnectedRoutes = (): void => {

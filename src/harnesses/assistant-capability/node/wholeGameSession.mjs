@@ -41,12 +41,15 @@ const useV2 = argv.includes('--v2');
 // --store-url <스토어>: 브라우저 편집기에 읽기 전용 스토어 다리를 붙인다(storeBridgeShim.mjs). --store-ask-first: 「넣기 전에 먼저 묻기」를 켠 사용자(기본은 조수가 묻지 않고 넣고 「넣었어요 (바꾸기)」 쪽지를 띄운다).
 const storeUrl = option('store-url');
 const storeAutoInstall = !argv.includes('--store-ask-first');
+// --engine claude:claude-opus-5-5:medium → 조수 엔진을 로컬 CLI 로(제품 설정 「조수 엔진」 칸과 같은 저장값, src/ai/localCliEngine.ts). 비우면 계정 기본(Argon).
+const engineSpec = option('engine');
+const assistantEngine = engineSpec ? (() => { const [cli, model, effort] = engineSpec.split(':'); return { kind: 'local-cli', cli, ...(model ? { routineModel: model, deepModel: model } : {}), effort: effort || 'medium' }; })() : undefined;
 const turnTimeoutMs = Number(option('turn-timeout-ms') ?? 45 * 60_000);
 const sleep = ms => new Promise(done => setTimeout(done, ms));
 const json = (file, data) => writeFileSync(file, JSON.stringify(data, null, 2));
 for (const sub of ['inbox', 'done', 'turns']) mkdirSync(resolve(out, sub), { recursive: true });
 const transcript = resolve(out, 'transcript.md');
-if (!existsSync(transcript)) writeFileSync(transcript, `# Whole-game session transcript\n\nproject: ${projectDir}\nassistant: ${useV2 ? 'v2 (localStorage oprn:assistant-v2=1)' : 'v1 (product default)'}\n\n`);
+if (!existsSync(transcript)) writeFileSync(transcript, `# Whole-game session transcript\n\nproject: ${projectDir}\nassistant: ${useV2 ? 'v2 (localStorage oprn:assistant-v2=1)' : 'v1 (product default)'}${engineSpec ? ` · engine ${engineSpec}` : ''}\n\n`);
 const log = text => appendFileSync(transcript, text + '\n');
 
 // Cards that need a user answer. Their text is dumped so the operator can decide like a user.
@@ -66,7 +69,7 @@ const browser = await firefox.launch({ firefoxUserPrefs: { 'network.notify.chang
 const requests = [], pageErrors = [];
 let editor, page;
 async function open() {
-  editor = await newEditor(browser, host.url, projectDir, {}, { async onPage(p) {
+  editor = await newEditor(browser, host.url, projectDir, assistantEngine ? { assistantEngine } : {}, { async onPage(p) {
     p.on('pageerror', error => pageErrors.push({ at: new Date().toISOString(), message: error.message.slice(0, 500) }));
     if (storeUrl) await installStoreBridge(p, storeUrl, { autoInstall: storeAutoInstall });
     await p.addInitScript(v2 => {
