@@ -2647,9 +2647,9 @@
    "label": "덤불 숲 — 거미는 웅크렸다 아치로 뛰어든다",
    "note": "movement.approachStyle · tune_field_enemies approachStyle auto",
    "mapId": "fs_forest_thicket",
-   "x": 14,
-   "y": 25,
-   "facing": "up",
+   "x": 10,
+   "y": 21,
+   "facing": "right",
    "switches": {
     "sw_fs_main_started": true,
     "sw_fs_valen_marched": true
@@ -2731,8 +2731,8 @@
    "label": "숲 — 도깨비불은 둥실 떠서 미끄러지듯 온다",
    "note": "movement.approachStyle · tune_field_enemies approachStyle auto",
    "mapId": "fs_forest",
-   "x": 11,
-   "y": 23,
+   "x": 14,
+   "y": 21,
    "facing": "up",
    "switches": {
     "sw_fs_main_started": true,
