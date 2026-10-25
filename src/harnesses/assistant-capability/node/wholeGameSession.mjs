@@ -7,7 +7,7 @@
 // own question cards. It never calls editor tools or edits content.
 //
 // Usage:
-//   node src/harnesses/assistant-capability/node/wholeGameSession.mjs --project-dir <dir> --out <session dir> [--v2] [--turn-timeout-ms N] [--store-url <store> [--store-auto-install]]
+//   node src/harnesses/assistant-capability/node/wholeGameSession.mjs --project-dir <dir> --out <session dir> [--v2] [--turn-timeout-ms N] [--store-url <store> [--store-ask-first]]
 // Control files (written by the operator into <out>/inbox/, processed in name order):
 //   NNN.txt    -> a natural-language request typed into ai-input and sent
 //   NNN.click  -> one data-testid (first line) of a visible assistant card button to click
@@ -38,9 +38,9 @@ const projectDir = resolve(option('project-dir') ?? '');
 const out = resolve(option('out') ?? '');
 if (!option('project-dir') || !option('out')) throw Error('wholeGameSession --project-dir <dir> --out <session dir> [--v2]');
 const useV2 = argv.includes('--v2');
-// --store-url <스토어>: 브라우저 편집기에 읽기 전용 스토어 다리를 붙인다(storeBridgeShim.mjs). --store-auto-install: 「묻지 않고 넣기」를 켠 사용자.
+// --store-url <스토어>: 브라우저 편집기에 읽기 전용 스토어 다리를 붙인다(storeBridgeShim.mjs). --store-ask-first: 「넣기 전에 먼저 묻기」를 켠 사용자(기본은 조수가 묻지 않고 넣고 「넣었어요 (바꾸기)」 쪽지를 띄운다).
 const storeUrl = option('store-url');
-const storeAutoInstall = argv.includes('--store-auto-install');
+const storeAutoInstall = !argv.includes('--store-ask-first');
 const turnTimeoutMs = Number(option('turn-timeout-ms') ?? 45 * 60_000);
 const sleep = ms => new Promise(done => setTimeout(done, ms));
 const json = (file, data) => writeFileSync(file, JSON.stringify(data, null, 2));
@@ -54,7 +54,7 @@ const log = text => appendFileSync(transcript, text + '\n');
 // reported (INFO_SELECTOR) but never treated as awaiting an answer.
 const CARD_SELECTOR = ['ai-decision-prompt', 'ai-tileset-change-card', 'ai-creation-choice', 'ai-pending-review', 'ai-store-music-card']
   .map(id => `[data-testid="${id}"]`).join(',');
-const INFO_SELECTOR = ['ai-objectgen-card', 'ai-store-missing-card'].map(id => `[data-testid="${id}"]`).join(',');
+const INFO_SELECTOR = ['ai-objectgen-card', 'ai-store-missing-card', 'ai-store-music-note'].map(id => `[data-testid="${id}"]`).join(',');
 
 let state = { phase: 'startup', startedAt: new Date().toISOString(), turns: 0 };
 const writeState = extra => { state = { ...state, ...extra, updatedAt: new Date().toISOString() }; json(resolve(out, 'state.json'), state); };
@@ -178,7 +178,7 @@ try {
     } else {
       // 가장 최근 카드 안의 첫 단추(앞 카드의 같은 단추는 이미 끝났다; 곡마다 「넣기」가 있는 카드에서는 맨 위 = 1순위 곡).
       const testid = body.split('\n')[0].trim();
-      const inCard = page.locator(CARD_SELECTOR).last().locator(`[data-testid="${testid}"]:not([disabled])`);
+      const inCard = page.locator(`${CARD_SELECTOR},[data-testid="ai-store-music-note"]`).last().locator(`[data-testid="${testid}"]:not([disabled])`);
       const button = (await inCard.count()) ? inCard.first() : page.locator(`[data-testid="${testid}"]:not([disabled])`).last();
       await button.click();
       log(`\n## ${step} USER CLICK (${new Date().toISOString()}) ${body.split('\n')[0]}\n`);

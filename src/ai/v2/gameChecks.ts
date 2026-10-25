@@ -356,7 +356,7 @@ export function gameContentProblems(before: Project, after: Project, task: strin
   const m2Has = (re: RegExp) => cmds.some((r) => r.cmd.kind === "m2Command" && re.test(String(r.cmd.commandId)));
   if (SHAKE_WORDS.test(task) && !m2Has(/m2-048/u)) problems.push("[게임 검사 화면] 요청에 흔들림·지진이 있는데 실제 화면 흔들기 명령이 없다(카메라 이동은 흔들림이 아니다). add_event 의 shake 비트({do:'shake',strength:'strong',axis:'vertical'})로 넣는다.");
   if (FLASH_WORDS.test(task) && !m2Has(/m2-047/u) && !cmds.some((r) => r.cmd.kind === "setWeather" && r.cmd.weather === "storm")) problems.push("[게임 검사 화면] 요청에 번쩍임·번개가 있는데 실제 화면 번쩍 명령이 없다(페이드 아웃은 번쩍이 아니다). add_event 의 flash 비트({do:'flash',color:'white'})로 넣는다.");
-  if (MUSIC_WORDS.test(task) && !audioBindingsChanged(before, after) && !kinds.has("playAudio") && !kinds.has("stopAudio") && !m2Has(/bgm|audio|music/iu)) problems.push("[게임 검사 음악] 요청에 음악·BGM 이 있는데 바꾼 이벤트에 음악 명령(playAudio)이 없다. add_event 의 music 비트({do:'music',action:'bgm',query:'festival'})로 넣는다.");
+  if (MUSIC_WORDS.test(task) && !audioBindingsChanged(before, after) && !kinds.has("playAudio") && !kinds.has("stopAudio") && !m2Has(/bgm|audio|music/iu)) problems.push("[게임 검사 음악] 요청에 음악·BGM 이 있는데 어느 자리에도 곡을 걸지 않았다. 맵·전투·보스·승리·타이틀 곡은 set_game_audio 로 건다(맞는 곡이 프로젝트에 없으면 store_find_music → 묻지 말고 store_install 로 넣은 뒤). 장면 도중 잠깐 바뀌는 곡만 add_event 의 music 비트({do:'music',action:'bgm',query:'festival'}).");
   // 1c) 눈에 안 보이는 «조사하는» 물건: 새로 만든 결정 키(action) 이벤트에 그림도 없고 그 칸에 물건 타일도 없다(이동석·덤불·표지판이 맨땅으로 보였다).
   if (!HIDDEN_WORDS.test(task)) {
     for (const ev of changed) {

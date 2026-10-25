@@ -99,7 +99,7 @@ export interface PiAgentRequest {
    */
   readonly assistantVersion?: "v2";
   /**
-   * 편집기가 쓰는 스토어 주소와 「묻지 않고 바로 넣기」 설정(src/assetStore/storeAccess.ts). 워커는 이 주소로 읽기 전용 스토어 클라이언트를 만들어
+   * 편집기가 쓰는 스토어 주소와 「먼저 묻기」 설정(autoInstall 기본 true)(src/assetStore/storeAccess.ts). 워커는 이 주소로 읽기 전용 스토어 클라이언트를 만들어
    * store_find_music·store_install 이 워커 안에서도 상품을 찾고 받게 한다. 데스크톱 다리가 없는 편집기(브라우저)는 싣지 않는다.
    */
   readonly store?: { readonly url: string; readonly autoInstall: boolean };

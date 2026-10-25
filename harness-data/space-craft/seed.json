@@ -63,7 +63,7 @@
   "music": {
    "label": "스토어 음악 찾기·넣기·자리 걸기",
    "families": [],
-   "note": "조수가 스토어 음악 팩에서 장면·장르·분위기로 곡을 찾아(store_find_music) 받아 넣고(store_install, 출처·라이선스·AI 표시 유지) 맵·전투·보스·승리·타이틀 자리에 거는지 본다(2026-10-25). 스토어 주소가 필요하다 — wholeGameSession.mjs --store-url <스테이징> [--store-auto-install]. 판정: assets/ 에 파일이 생겼는지, 자리 연결, 저장 뒤 재로드, 출하 플레이어 재생, Argon 이 곡을 듣고 맞는지."
+   "note": "조수가 스토어 음악 팩에서 장면·장르·분위기로 곡을 찾아(store_find_music) 받아 넣고(store_install, 출처·라이선스·AI 표시 유지) 맵·전투·보스·승리·타이틀 자리에 거는지 본다(2026-10-25). 스토어 주소가 필요하다 — wholeGameSession.mjs --store-url <스테이징> [--store-ask-first]. 판정: assets/ 에 파일이 생겼는지, 자리 연결, 저장 뒤 재로드, 출하 플레이어 재생, Argon 이 곡을 듣고 맞는지."
   }
  },
  "forbiddenFamilies": [

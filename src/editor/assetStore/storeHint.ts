@@ -2,8 +2,9 @@
 import { STORE_AUTO_INSTALL_KEY, type StoreRunHint } from "@/assetStore/storeAccess";
 import { storeBridge } from "./storeBridge";
 
+/** 기본은 켜짐 — 사용자가 음악을 청하면 조수가 찾아 넣고 잇는다. 「넣기 전에 먼저 묻기」를 켠 사용자만 "0". */
 export function storeAutoInstallEnabled(): boolean {
-  try { return typeof localStorage !== "undefined" && localStorage.getItem(STORE_AUTO_INSTALL_KEY) === "1"; } catch { return false; }
+  try { return typeof localStorage === "undefined" || localStorage.getItem(STORE_AUTO_INSTALL_KEY) !== "0"; } catch { return true; }
 }
 
 export function setStoreAutoInstall(on: boolean): void {

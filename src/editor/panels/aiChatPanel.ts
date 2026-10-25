@@ -72,7 +72,7 @@ import { markDragOrigin, reportBackgroundBoard } from "./aiPresence";
 import { createJobEntry } from "./aiJobEntry";
 import { mountAiMapPresence } from "@/editor/aiMapPresence";
 import { createTilesetChangeCard } from "./aiTilesetChangeCard";
-import { createStoreCard, createStoreMusicCard } from "./aiStoreCard";
+import { createStoreCard, createStoreMusicCard, createStoreMusicNote } from "./aiStoreCard";
 import { createObjectGenBatch } from "./aiObjectGenCard";
 import { isObjectGenRequest } from "@/editor/workshop/objectRequest";
 import type { StoreCardRequest, StoreMusicChoice } from "@/editor/tools/storeTools";
@@ -2256,7 +2256,11 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     const musicChoices = requests.filter((request): request is StoreMusicChoice => request.kind === "store-music-choice");
     const other = requests.filter((request) => !isObjectGenRequest(request) && request.kind !== "store-music-choice").at(-1);
     if (objectRequests.length) log.append(createObjectGenBatch(objectRequests, followUp));
-    if (musicChoices.length) log.append(createStoreMusicCard(musicChoices, followUp));
+    // 기본: 조수가 이미 넣었다 → 「넣었어요 (바꾸기)」 쪽지. 「먼저 묻기」를 켠 사용자에게만 고르는 카드.
+    const askChoices = musicChoices.filter((choice) => !choice.autoInstall);
+    const note = createStoreMusicNote(musicChoices.filter((choice) => choice.autoInstall), followUp);
+    if (note) log.append(note);
+    if (askChoices.length) log.append(createStoreMusicCard(askChoices, followUp));
     if (other) log.append(createStoreCard(other, followUp));
     followConversationLog(log);
   };

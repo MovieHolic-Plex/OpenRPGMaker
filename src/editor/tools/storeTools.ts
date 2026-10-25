@@ -138,7 +138,7 @@ const storeInstall: ToolDefinition = {
     properties: {
       slug: { type: "string", description: "store_search·store_find_music 결과의 slug" },
       assetIds: { type: "array", items: { type: "string" }, description: "음악 팩에서 넣을 곡(store_find_music 의 assetId). 비우면 팩 전체" },
-      userAsked: { type: "boolean", description: "사용자가 이번 요청에서 스토어에서 받아 넣으라고 직접 말했으면 true(「묻지 않고 넣기」가 꺼져 있어도 넣는다)" },
+      userAsked: { type: "boolean", description: "사용자가 이번 요청에서 스토어에서 받아 넣으라고 직접 말했으면 true(「먼저 묻기」가 켜져 있어도 넣는다)" },
     },
     required: ["slug"],
     additionalProperties: false,
@@ -163,7 +163,7 @@ const storeInstall: ToolDefinition = {
     // userAsked 는 사용자 글에 스토어가 실제로 있을 때만 통한다(2026-10-25 실조수: 「조선풍 음악 전부 맞춰줘」에 카드를 띄운 뒤 userAsked:true 로 넣었다).
     const asked = args.userAsked === true && prepared.userMentionedStore !== false;
     if (musicOnly && prepared.autoInstall !== true && !asked) {
-      throw new ToolError("「묻지 않고 바로 넣기」가 꺼져 있다. 스토어 음악은 store_find_music 카드로 사용자가 듣고 고르게 하고 이 턴을 끝내라(사용자가 이번 요청에서 스토어에서 넣으라고 직접 말했으면 userAsked:true).", { code: "store-ask-first" });
+      throw new ToolError("사용자가 「먼저 묻기」를 켰다. 스토어 음악은 store_find_music 카드로 사용자가 듣고 고르게 하고 이 턴을 끝내라(사용자가 이번 요청에서 스토어에서 넣으라고 직접 말했으면 userAsked:true).", { code: "store-ask-first" });
     }
     const result = applyPackToProject(draft, prepared.manifest, prepared.context);
     addStoreProfiles(draft, result.assetIds);
@@ -184,7 +184,7 @@ const storeInstall: ToolDefinition = {
   },
 };
 
-/** store_find_music 이 돌려주는 data. 「묻지 않고 넣기」가 꺼져 있으면 패널이 미리듣기 카드를 띄운다(aiStoreCard.ts). */
+/** store_find_music 이 돌려주는 data. 기본은 조수가 넣고 패널이 「넣었어요 (바꾸기)」 쪽지를, 「먼저 묻기」면 미리듣기 카드를 띄운다(aiStoreCard.ts). */
 export interface StoreMusicChoice {
   readonly kind: "store-music-choice";
   readonly need: string;
@@ -230,8 +230,8 @@ const storeFindMusic: ToolDefinition = {
   name: "store_find_music",
   description: "에셋 스토어의 음악 팩에서 장면(scene)·장르(query)·분위기(mood)에 맞는 곡을 곡 단위로 찾는다. 곡마다 실제로 들어 보고 적은 장르·장면·분위기·빠르기·루프 여부가 있다. "
     + "프로젝트에 있는 곡(recommend_bgm)으로 요청에 꼭 맞는 것이 없을 때, 특히 장르 곡(조선풍·무협·호러 …)이 필요할 때 쓴다. "
-    + "결과 autoInstall:true 면 사용자가 「묻지 않고 넣기」를 켠 것이다 — 가장 맞는 곡을 store_install{slug, assetIds:[assetId]} 로 넣고 set_game_audio 로 연결한다. "
-    + "false 면 화면에 미리듣기 카드가 뜬다 — 넣지 말고 이 턴을 끝내라(사용자가 곡을 골라 넣으면 리소스 id 와 함께 후속 요청이 온다).",
+    + "결과 autoInstall:true(기본)면 묻지 말고 가장 맞는 곡을 store_install{slug, assetIds:[assetId]} 로 넣고 set_game_audio 로 연결한다 — 화면에 「넣었어요 (바꾸기)」 쪽지가 뜬다. "
+    + "false 면 사용자가 「먼저 묻기」를 켠 것이다 — 미리듣기 카드가 뜨니 넣지 말고 이 턴을 끝내라(고르면 리소스 id 와 함께 후속 요청이 온다).",
   mode: "read",
   domains: ["core"],
   parameters: {
@@ -272,8 +272,8 @@ const storeFindMusic: ToolDefinition = {
     const head = sceneOnly ? `이 장면(${scene})으로 적힌 곡이 없어 장르·분위기만 맞는 곡을 골랐다. ` : "";
     return {
       summary: head + (choice.autoInstall
-        ? `스토어 곡 ${picked.length}개를 찾았다. 「묻지 않고 넣기」가 켜져 있다 — 가장 맞는 곡을 store_install{slug, assetIds:[assetId]} 로 넣고 set_game_audio 로 연결하라.`
-        : `스토어 곡 ${picked.length}개를 미리듣기 카드로 보여 준다. 넣지 말고 이 턴을 끝내라 — 사용자가 고르면 후속 요청이 온다.`),
+        ? `스토어 곡 ${picked.length}개를 찾았다. 묻지 말고 가장 맞는 곡을 store_install{slug, assetIds:[assetId]} 로 넣고 set_game_audio 로 연결하라.`
+        : `사용자가 「먼저 묻기」를 켰다. 스토어 곡 ${picked.length}개를 미리듣기 카드로 보여 준다. 넣지 말고 이 턴을 끝내라 — 사용자가 고르면 후속 요청이 온다.`),
       data: { ...choice, note: UNTRUSTED_NOTE },
     };
   },

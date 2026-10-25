@@ -12,6 +12,10 @@ import { isStoreCardRequest } from "@/editor/tools/storeTools";
 import { gameContentProblems } from "@/ai/v2/gameChecks";
 import { PiGameSystemProduction } from "@/ai/piAgent/gameSystemProduction";
 import type { Project } from "@/project/types";
+import { installedMusicSwaps, isAutoMusicChoice, storeCardFromEvent } from "@/editor/panels/aiStoreCard";
+import { storeAutoInstallEnabled } from "@/editor/assetStore/storeHint";
+import type { StoreMusicChoice } from "@/editor/tools/storeTools";
+import type { PiAgentEvent } from "@/ai/piAgent/protocol";
 
 const ogg = (n: number): Uint8Array => new Uint8Array([0x4f, 0x67, 0x67, 0x53, 0, 2, n, 0, 0, 0]);
 const sha = (n: number): string => n.toString(16).padStart(64, "0");
@@ -116,7 +120,7 @@ describe("store_find_music + store_install in the worker", () => {
     setWorkerStoreAccess(fakeStore(false));
     const refused = await runToolAsync({ project: createEmptyToolProject() }, "store_install", { slug: SLUG, assetIds: ["boss"] }, { dryRun: true });
     expect(refused.ok).toBe(false);
-    expect(refused.summary).toMatch(/묻지 않고/);
+    expect(refused.summary).toMatch(/먼저 묻기/);
     const asked = await runToolAsync({ project: createEmptyToolProject() }, "store_install", { slug: SLUG, assetIds: ["boss"], userAsked: true }, { dryRun: true });
     expect(asked.ok, asked.summary).toBe(true);
   });
@@ -127,7 +131,7 @@ describe("store_find_music + store_install in the worker", () => {
     setWorkerStoreAccess(fakeStore(false, [], false));
     const claimed = await runToolAsync({ project: createEmptyToolProject() }, "store_install", { slug: SLUG, assetIds: ["boss"], userAsked: true }, { dryRun: true });
     expect(claimed.ok).toBe(false);
-    expect(claimed.summary).toMatch(/묻지 않고/);
+    expect(claimed.summary).toMatch(/먼저 묻기/);
   });
 });
 
@@ -218,5 +222,40 @@ describe("v2 finish check", () => {
     after.system.battleBgmResourceId = "store_x__boss";
     expect(gameContentProblems(before, after, "보스전 음악 바꿔줘").join("\n")).not.toMatch(/게임 검사 음악/);
     expect(gameContentProblems(before, structuredClone(before), "보스전 음악 바꿔줘").join("\n")).toMatch(/게임 검사 음악/);
+  });
+});
+
+describe("auto-install is the default; the note offers a swap", () => {
+  it("auto-installs unless the user turned on ask-first", () => {
+    const held = new Map<string, string>();
+    const original = globalThis.localStorage;
+    Object.defineProperty(globalThis, "localStorage", { configurable: true, value: { getItem: (k: string) => held.get(k) ?? null, setItem: (k: string, v: string) => held.set(k, v) } });
+    try {
+      expect(storeAutoInstallEnabled()).toBe(true);
+      held.set("oprn:store-auto-install", "0");
+      expect(storeAutoInstallEnabled()).toBe(false);
+      held.set("oprn:store-auto-install", "1");
+      expect(storeAutoInstallEnabled()).toBe(true);
+    } finally {
+      Object.defineProperty(globalThis, "localStorage", { configurable: true, value: original });
+    }
+  });
+
+  it("passes an auto-installed music result to the panel as a note, not as a question", async () => {
+    setWorkerStoreAccess(fakeStore(true));
+    const result = await runToolAsync({ project: createEmptyToolProject() }, "store_find_music", { scene: "town", query: "조선", need: "마을 배경음악" }, { dryRun: true });
+    const found = result.data as StoreMusicChoice;
+    const data: StoreMusicChoice = { ...found, tracks: [...found.tracks, { ...found.tracks[0]!, assetId: "town2", title: "둘째 마을 곡" }] };
+    expect(isStoreCardRequest(data)).toBe(false);
+    expect(isAutoMusicChoice(data)).toBe(true);
+    const event = { type: "tool_end", name: "store_find_music", ok: true, result: { data } } as unknown as PiAgentEvent;
+    expect(storeCardFromEvent(event)).toBe(data);
+    // 어느 후보가 들어갔는지 찾고 나머지를 바꿀 곡으로 준다. 아무 후보도 안 들어갔으면 쪽지가 없다.
+    const installed = data.tracks[1]!;
+    const swaps = installedMusicSwaps([data, data], { [storeProjectId(installed.slug, installed.assetId)]: {} });
+    expect(swaps).toHaveLength(1);
+    expect(swaps[0]!.installed.assetId).toBe(installed.assetId);
+    expect(swaps[0]!.others.map((t) => t.assetId)).not.toContain(installed.assetId);
+    expect(installedMusicSwaps([data], {})).toEqual([]);
   });
 });

@@ -42,3 +42,8 @@
 /* 장면이 여럿인 음악 카드: 장면마다 한 묶음, 사이에 선 */
 .ai-store-music-scene { display: grid; gap: 6px; padding-top: 8px; border-top: 1px solid var(--border-default); }
 .ai-store-music-scene:first-of-type { border-top: 0; padding-top: 0; }
+.ai-store-music-note { display: grid; gap: 6px; padding: 8px 10px; border: 1px solid var(--border-default); border-radius: 8px; font-size: 13px; }
+.ai-store-music-note p { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: 0; }
+.ai-store-music-note small { color: var(--text-muted); }
+.ai-store-music-note button { margin-left: auto; }
+.ai-store-music-note .ai-store-result button { margin-left: 0; }

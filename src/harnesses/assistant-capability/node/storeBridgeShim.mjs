@@ -61,7 +61,7 @@ export function nodeStoreBridge(storeUrl) {
 }
 
 /** page 에 window.oprn.store 를 붙인다. 호스트 다리(electron/browser/bridge.ts)가 window.oprn 을 만들 때 store 를 끼워 넣는다. */
-export async function installStoreBridge(page, storeUrl, { autoInstall = false } = {}) {
+export async function installStoreBridge(page, storeUrl, { autoInstall = true } = {}) {
   const call = nodeStoreBridge(storeUrl);
   await page.exposeFunction('__oprnStoreCall', (method, payload) => call(method, payload));
   await page.addInitScript(auto => {

@@ -8,7 +8,7 @@ import type { StoreCatalogPage, StoreItemDetail, StorePackManifest } from "./for
 export interface StoreRunHint {
   /** 지금 편집기가 쓰는 스토어 주소(스토어 창 설정). */
   readonly url: string;
-  /** 사용자가 「묻지 않고 바로 넣기」를 켰는가(음악 카드의 확인란, localStorage STORE_AUTO_INSTALL_KEY). */
+  /** 조수가 묻지 않고 넣는가. 기본 true, 사용자가 「넣기 전에 먼저 묻기」를 켜면 false(localStorage STORE_AUTO_INSTALL_KEY = "0"). */
   readonly autoInstall: boolean;
 }
 
