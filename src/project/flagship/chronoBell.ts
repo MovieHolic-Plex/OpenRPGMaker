@@ -2448,8 +2448,8 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
     엘레나: actorFace("actor_fs_elena"),
     이리스: actorFace("actor_fs_iris"),
     "천문대장 하넬": "easyrpg-faceset-people2-04",
-    // 발렌 — 칩 짝 얼굴(푸른 머리띠)의 흉상은 광대 모자라 다른 사람으로 읽힌다. 수염 난 검은 머리 흉상(작은 얼굴 칸 대신).
-    "심문관 발렌": "shared-actor2-mustache-expressions-bust-base",
+    // 발렌 — 칩(푸른 장발·금테·검은 갑옷·남색 망토)에 맞춰 같은 화풍으로 새로 그린 흉상(cast-portrait 하네스, 2026-10-25).
+    "심문관 발렌": "shared-fs-inquisitor-valen-expressions-bust-base",
     // 두건 쓴 광신도 — 복면 흉상.
     "교단 광신도": "shared-actor2-masked-expressions-bust-base",
     "광신도 설교자": "shared-actor2-masked-expressions-bust-base",
