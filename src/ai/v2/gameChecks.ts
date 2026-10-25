@@ -8,7 +8,7 @@ import { choiceMetaTag } from "@/project/choiceText";
 import { fieldMenu } from "@/project/fieldMenu";
 import { usesRelationshipMenu } from "@/project/relationshipMenu";
 import { simulateBattle } from "@/battle/simulate";
-import { lockBypasses, placeholderTexts, selfRevealingLocks, unjoinedFollowers } from "./puzzleChecks";
+import { gatesThatOpenNothing, lockBypasses, placeholderTexts, selfRevealingLocks, unjoinedFollowers } from "./puzzleChecks";
 import { splitScriptSpeaker } from "@/project/endingSummary";
 import { wantsWholeGame } from "./shipChecks";
 import { lookMismatches, oversizedSprites, pristineFantasyHero, titleBackdropMismatch } from "./lookChecks";
@@ -593,6 +593,8 @@ export function gameContentProblems(before: Project, after: Project, task: strin
     const changedIds = new Set(changed.map((ev) => ev.id));
     const bypass = lockBypasses(after, changedIds);
     if (bypass.length) problems.push(`[게임 검사 잠긴 방] ${bypass.slice(0, 3).join(" / ")}. seal_locked_room{mapId, eventId} 로 문 말고 다른 길(벽 틈)을 막거나, 퍼즐 전체를 author_puzzle_chain 으로 다시 묶는다.`);
+    const idle = gatesThatOpenNothing(after, changedIds);
+    if (idle.length) problems.push(`[게임 검사 퍼즐] ${idle.slice(0, 3).join(" / ")}. 장치가 연 칸 말고 다른 길(벽 틈·옆 통로)을 막아 그 칸이 유일한 길이 되게 하거나(seal_locked_room), 보스 방 앞 진짜 외길에 장치를 다시 둔다.`);
     const leaks = selfRevealingLocks(after, changedIds);
     if (leaks.length) problems.push(`[게임 검사 퍼즐] ${leaks.slice(0, 3).join(" / ")}. 자물쇠 대사에서 답을 빼고(「번호를 모르겠다」), 답은 단서(일기·쪽지)에만 두고 단서를 읽으면 켜지는 스위치 조건 페이지에서만 입력받는다 — author_puzzle_chain 이 이 순서로 짓는다.`);
     const holes = placeholderTexts(after, changedIds, JSON.stringify(after.system.opening ?? null) !== JSON.stringify(before.system.opening ?? null) || JSON.stringify(after.endings ?? []) !== JSON.stringify(before.endings ?? []));
