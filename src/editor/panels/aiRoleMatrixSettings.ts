@@ -54,10 +54,11 @@ function describe(role: AssistantRole, assignment: RoleAssignment): { readonly m
 }
 
 /** 연결된 경로를 표가 읽는 모양으로. 사용자 지정 엔드포인트는 모델 목록이 계열을 정한다. */
-export function availableRoutesFrom(rows: ReadonlyArray<{ readonly providerId: string; readonly models?: readonly string[]; readonly supportsImages?: boolean }>): AvailableRoute[] {
+export function availableRoutesFrom(rows: ReadonlyArray<{ readonly providerId: string; readonly models?: readonly string[]; readonly supportsImages?: boolean; readonly imageModels?: readonly string[]; readonly imageBlindModels?: readonly string[] }>): AvailableRoute[] {
   return rows.flatMap((row) => {
     const family = familyOfProviderId(row.providerId, row.models ?? []);
-    return family ? [{ provider: family, providerId: row.providerId, ...(row.models?.length ? { models: row.models } : {}), ...(row.supportsImages !== undefined ? { supportsImages: row.supportsImages } : {}) }] : [];
+    return family ? [{ provider: family, providerId: row.providerId, ...(row.models?.length ? { models: row.models } : {}), ...(row.supportsImages !== undefined ? { supportsImages: row.supportsImages } : {}),
+      ...(row.imageModels?.length ? { imageModels: row.imageModels } : {}), ...(row.imageBlindModels?.length ? { imageBlindModels: row.imageBlindModels } : {}) }] : [];
   });
 }
 
@@ -211,7 +212,7 @@ export async function fetchConnectedRoutes(): Promise<AvailableRoute[]> {
   const [{ fetchChatGptAuthStatus, hasUsableCompanionCredential, fetchOpenAiCompatEndpoints }, { createLocalAgentsApi, localAgentsEnabled }, { OH_MY_PI_PROVIDERS }] = await Promise.all([
     import("@/ai/chatgptOAuthClient"), import("@/start/settings/localAgents"), import("@/ai/ohMyPiProviders"),
   ]);
-  const rows: { providerId: string; models?: readonly string[]; supportsImages?: boolean }[] = [];
+  const rows: { providerId: string; models?: readonly string[]; supportsImages?: boolean; imageModels?: readonly string[]; imageBlindModels?: readonly string[] }[] = [];
   await Promise.all([
     ...OH_MY_PI_PROVIDERS.map(async (provider) => {
       try { if (hasUsableCompanionCredential(await fetchChatGptAuthStatus(provider.id))) rows.push({ providerId: provider.id }); } catch { /* 닿지 못함 = 연결 안 됨 */ }
@@ -219,7 +220,8 @@ export async function fetchConnectedRoutes(): Promise<AvailableRoute[]> {
     (async () => {
       try {
         for (const endpoint of await fetchOpenAiCompatEndpoints()) {
-          if (endpoint.lastTest?.ok) rows.push({ providerId: endpoint.id, models: endpoint.models, supportsImages: endpoint.supportsImages });
+          if (endpoint.lastTest?.ok) rows.push({ providerId: endpoint.id, models: endpoint.models, supportsImages: endpoint.supportsImages,
+            ...(endpoint.imageModels ? { imageModels: endpoint.imageModels } : {}), ...(endpoint.imageBlindModels ? { imageBlindModels: endpoint.imageBlindModels } : {}) });
         }
       } catch { /* 엔드포인트 목록 없음 */ }
     })(),
@@ -236,7 +238,7 @@ export async function fetchConnectedRoutes(): Promise<AvailableRoute[]> {
 /** 화면 확인·시험용 조합. 이름: gemini · gpt · claude · deepseek (쉼표로). 빈 값 = 연결 없음. */
 export function mockConnectedRoutes(spec: string): AvailableRoute[] {
   const names = spec.split(",").map((name) => name.trim()).filter(Boolean);
-  const rows: { providerId: string; models?: readonly string[]; supportsImages?: boolean }[] = [];
+  const rows: { providerId: string; models?: readonly string[]; supportsImages?: boolean; imageModels?: readonly string[]; imageBlindModels?: readonly string[] }[] = [];
   if (names.includes("gemini")) rows.push({ providerId: "google-antigravity" });
   if (names.includes("gpt")) rows.push({ providerId: "openai-codex" });
   if (names.includes("claude")) rows.push({ providerId: "local-cli:claude" });

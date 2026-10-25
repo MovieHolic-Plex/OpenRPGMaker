@@ -42,6 +42,10 @@ export interface StoredOpenAiCompatEndpoint {
   allowModels: string[];
   blockModels: string[];
   supportsImages: boolean;
+  /** 그림을 보는 모델 패턴(최종 모델 ID). 비우면 supportsImages 가 모든 모델에 적용된다. */
+  imageModels: string[];
+  /** 마지막 그림 시험(1화소 그림) — blind 의 모델에는 그림을 보내지 않는다. */
+  imageProbe?: OpenAiCompatImageProbe;
   maxOutputTokens: number;
   contextWindow: number;
   firstTokenTimeoutSec: number;
@@ -49,6 +53,14 @@ export interface StoredOpenAiCompatEndpoint {
   models: string[];
   defaultModel: string;
   lastTest?: OpenAiCompatLastTest;
+}
+
+export interface OpenAiCompatImageProbe {
+  readonly at: number;
+  /** 빈 답·오류를 낸 모델(최종 ID). */
+  readonly blind: string[];
+  /** 그림에 글로 답한 모델. */
+  readonly sees: string[];
 }
 
 export interface OpenAiCompatSaveInput {
@@ -67,6 +79,8 @@ export interface OpenAiCompatSaveInput {
   readonly allowModels?: unknown;
   readonly blockModels?: unknown;
   readonly supportsImages?: unknown;
+  /** 그림을 보는 모델 패턴. undefined = 그대로 둔다. */
+  readonly imageModels?: unknown;
   readonly maxOutputTokens?: unknown;
   readonly contextWindow?: unknown;
   readonly firstTokenTimeoutSec?: unknown;
@@ -104,6 +118,14 @@ function normalizePatterns(value: unknown, label: string): string[] {
   return out;
 }
 
+function readImageProbe(raw: unknown): OpenAiCompatImageProbe | undefined {
+  if (!raw || typeof raw !== "object") return undefined;
+  const r = raw as { at?: unknown; blind?: unknown; sees?: unknown };
+  if (typeof r.at !== "number") return undefined;
+  const ids = (v: unknown): string[] => (Array.isArray(v) ? v.filter((m): m is string => typeof m === "string").slice(0, 50) : []);
+  return { at: r.at, blind: ids(r.blind), sees: ids(r.sees) };
+}
+
 function readDoc(path: string): Doc {
   try {
     const raw = JSON.parse(readFileSync(path, "utf8")) as { endpoints?: unknown };
@@ -113,6 +135,7 @@ function readDoc(path: string): Doc {
         if (!isOpenAiCompatProviderId(id) || !row || typeof row !== "object") continue;
         const r = row as Partial<StoredOpenAiCompatEndpoint>;
         if (typeof r.baseUrl !== "string" || typeof r.name !== "string") continue;
+        const imageProbe = readImageProbe(r.imageProbe);
         endpoints[id] = {
           name: r.name,
           baseUrl: r.baseUrl,
@@ -125,6 +148,8 @@ function readDoc(path: string): Doc {
           allowModels: Array.isArray(r.allowModels) ? r.allowModels.filter((p): p is string => typeof p === "string" && !checkOpenAiCompatPattern(p)).slice(0, OPENAI_COMPAT_MAX_PATTERNS) : [],
           blockModels: Array.isArray(r.blockModels) ? r.blockModels.filter((p): p is string => typeof p === "string" && !checkOpenAiCompatPattern(p)).slice(0, OPENAI_COMPAT_MAX_PATTERNS) : [],
           supportsImages: r.supportsImages === true,
+          imageModels: Array.isArray(r.imageModels) ? r.imageModels.filter((p): p is string => typeof p === "string" && !checkOpenAiCompatPattern(p)).slice(0, OPENAI_COMPAT_MAX_PATTERNS) : [],
+          ...(imageProbe ? { imageProbe } : {}),
           maxOutputTokens: clampInt(r.maxOutputTokens, OPENAI_COMPAT_DEFAULT_MAX_OUTPUT_TOKENS, 256, 1_000_000),
           contextWindow: clampInt(r.contextWindow, OPENAI_COMPAT_DEFAULT_CONTEXT_WINDOW, 2048, 4_000_000),
           firstTokenTimeoutSec: clampInt(r.firstTokenTimeoutSec, OPENAI_COMPAT_DEFAULT_FIRST_TOKEN_TIMEOUT_SEC, 10, 3600),
@@ -169,6 +194,8 @@ export function openAiCompatPublicView(id: string, row: StoredOpenAiCompatEndpoi
     allowModels: row.allowModels,
     blockModels: row.blockModels,
     supportsImages: row.supportsImages,
+    imageModels: row.imageModels,
+    imageBlindModels: row.imageProbe?.blind ?? [],
     maxOutputTokens: row.maxOutputTokens,
     contextWindow: row.contextWindow,
     firstTokenTimeoutSec: row.firstTokenTimeoutSec,
@@ -253,6 +280,7 @@ export function createOpenAiCompatStore(filePath: string = defaultOpenAiCompatPa
         reasoningMode: input.reasoningMode === undefined
           ? existing?.reasoningMode ?? "none" : parseOpenAiCompatReasoningMode(input.reasoningMode),
         supportsImages: typeof input.supportsImages === "boolean" ? input.supportsImages : existing?.supportsImages ?? false,
+        imageModels: input.imageModels === undefined ? existing?.imageModels ?? [] : normalizePatterns(input.imageModels, "그림 모델 패턴"),
         maxOutputTokens: clampInt(input.maxOutputTokens, existing?.maxOutputTokens ?? OPENAI_COMPAT_DEFAULT_MAX_OUTPUT_TOKENS, 256, 1_000_000),
         contextWindow: clampInt(input.contextWindow, existing?.contextWindow ?? OPENAI_COMPAT_DEFAULT_CONTEXT_WINDOW, 2048, 4_000_000),
         firstTokenTimeoutSec: clampInt(input.firstTokenTimeoutSec, existing?.firstTokenTimeoutSec ?? OPENAI_COMPAT_DEFAULT_FIRST_TOKEN_TIMEOUT_SEC, 10, 3600),
@@ -261,6 +289,7 @@ export function createOpenAiCompatStore(filePath: string = defaultOpenAiCompatPa
         defaultModel,
         // 주소·키·헤더가 바뀌면 이전 시험 결과는 더 이상 이 엔드포인트의 것이 아니다.
         ...(existing?.lastTest && existing.baseUrl === check.url && existing.apiKey === apiKey ? { lastTest: existing.lastTest } : {}),
+        ...(existing?.imageProbe && existing.baseUrl === check.url && existing.apiKey === apiKey ? { imageProbe: existing.imageProbe } : {}),
       };
       doc.endpoints[id] = row;
       writeDoc(filePath, doc);
@@ -273,6 +302,20 @@ export function createOpenAiCompatStore(filePath: string = defaultOpenAiCompatPa
       if (!row) return;
       if (result.models && result.models.length) row.models = result.models.slice(0, 500);
       row.lastTest = result.lastTest;
+      writeDoc(filePath, doc);
+    },
+    /** 그림 시험 결과를 남긴다. 이번에 시험한 모델만 갈아 끼우고, 시험하지 않은 모델의 이전 판정은 둔다. */
+    recordImageProbe(id: string, probe: OpenAiCompatImageProbe): void {
+      const doc = load();
+      const row = doc.endpoints[id];
+      if (!row) return;
+      const tested = new Set([...probe.blind, ...probe.sees].map((m) => m.toLowerCase()));
+      const keep = (list: readonly string[] | undefined) => (list ?? []).filter((m) => !tested.has(m.toLowerCase()));
+      row.imageProbe = {
+        at: probe.at,
+        blind: [...keep(row.imageProbe?.blind), ...probe.blind].slice(0, 50),
+        sees: [...keep(row.imageProbe?.sees), ...probe.sees].slice(0, 50),
+      };
       writeDoc(filePath, doc);
     },
     setDefaultModel(id: string, model: string): void {

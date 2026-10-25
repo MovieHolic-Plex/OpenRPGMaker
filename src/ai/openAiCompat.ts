@@ -94,13 +94,16 @@ export interface OpenAiCompatPreset {
   readonly blockModels?: readonly string[];
   /** 이미지 입력을 받는 모델이면 true — 켜 두지 않으면 타일셋 참고문서의 그림이 모델에 가지 않는다. */
   readonly supportsImages?: boolean;
+  /** 그림을 실제로 보는 모델 패턴(최종 모델 ID 기준). 비우면 supportsImages 가 엔드포인트 전체에 적용된다. */
+  readonly imageModels?: readonly string[];
 }
 
 /** 폼의 「프리셋」 — 주소·허용 패턴의 출발값일 뿐이고 모두 바꿀 수 있다. */
 export const OPENAI_COMPAT_PRESETS: readonly OpenAiCompatPreset[] = [
   { id: "cliproxy-argon", label: "CLIProxyAPI · mdc-server (Argon 만)", name: "CLIProxyAPI Argon", baseUrl: "http://mdc-server:8318/v1",
     hint: "gemini-4-argon 계열만 허용합니다. claude-* 같은 비싼 모델은 목록에서 숨기고 호출도 거절해요. 패턴은 아래에서 바꿀 수 있어요.",
-    allowModels: ["gemini-4-argon*"], blockModels: ["claude-*"], supportsImages: true },
+    // 2026-10-25 실측: 이 프록시에서 그림을 실제로 보는 것은 gemini-4-argon-high 뿐이다(argon·flash 는 빈 답, argon-medium 은 400).
+    allowModels: ["gemini-4-argon*"], blockModels: ["claude-*"], supportsImages: true, imageModels: ["gemini-4-argon-high"] },
   { id: "cliproxy", label: "CLIProxyAPI (로컬)", name: "CLIProxyAPI", baseUrl: "http://127.0.0.1:8317/v1", hint: "CLI Proxy API 서버. 기본 포트는 8317 입니다. API 키는 서버 설정의 access 키예요." },
   { id: "litellm", label: "LiteLLM", name: "LiteLLM", baseUrl: "http://127.0.0.1:4000/v1", hint: "LiteLLM 프록시. 마스터 키가 있으면 API 키에 넣으세요." },
   { id: "ollama", label: "Ollama", name: "Ollama", baseUrl: "http://127.0.0.1:11434/v1", hint: "키가 필요 없어요. 모델이 도구 호출(tools)을 지원해야 조수에 쓸 수 있어요." },
@@ -116,6 +119,28 @@ const EFFORT_SUFFIX = /-(?:minimal|low|medium|high|xhigh)$/u;
 export function openAiCompatSuffixedModelId(modelId: string, level: string | undefined): string {
   if (level !== "low" && level !== "medium" && level !== "high") return modelId;
   return EFFORT_SUFFIX.test(modelId) ? modelId : `${modelId}-${level}`;
+}
+
+/** 강도 접미사를 뗀 기본 ID(gemini-4-argon-high → gemini-4-argon). */
+export function openAiCompatBaseModelId(modelId: string): string {
+  return modelId.replace(EFFORT_SUFFIX, "");
+}
+
+/**
+ * 이 모델(접미사가 붙은 최종 ID)에 그림을 보내도 되는가.
+ * 엔드포인트 스위치(supportsImages)가 켜졌고, 그림 시험이 「못 본다」고 적지 않았고, imageModels 가 있으면 그 패턴에 맞아야 한다.
+ * 2026-10-25 실측: 같은 프록시에서도 모델마다 다르다 — 못 보는 모델은 그림이 든 요청에 빈 답을 돌려준다.
+ */
+export function openAiCompatModelSeesImages(
+  endpoint: { readonly supportsImages: boolean; readonly imageModels?: readonly string[]; readonly imageBlindModels?: readonly string[] },
+  modelId: string,
+): boolean {
+  if (!endpoint.supportsImages) return false;
+  const id = modelId.trim().toLowerCase();
+  if (!id) return false;
+  if (endpoint.imageBlindModels?.some((blind) => blind.toLowerCase() === id)) return false;
+  if (endpoint.imageModels?.length) return endpoint.imageModels.some((pattern) => openAiCompatPatternMatches(pattern, modelId.trim()));
+  return true;
 }
 
 export function isOpenAiCompatProviderId(id: unknown): id is string {
@@ -160,6 +185,10 @@ export interface OpenAiCompatEndpointPublic {
   readonly blockModels: readonly string[];
   /** 이미지(content parts)를 받는 모델인지 — Vision 역할이 이 엔드포인트를 쓸 때만 의미가 있다. */
   readonly supportsImages: boolean;
+  /** 그림을 보는 모델 패턴. 비우면 supportsImages 가 모든 모델에 적용된다(openAiCompatModelSeesImages). */
+  readonly imageModels?: readonly string[];
+  /** 그림 시험(1화소 그림)에서 빈 답·오류를 낸 모델 — 그림을 보내지 않는다. */
+  readonly imageBlindModels?: readonly string[];
   readonly maxOutputTokens: number;
   /** 모델의 컨텍스트 창(토큰). 서버가 알려 주지 않는 값이라 사용자가 맞춘다 — 에디터의 컨텍스트 압축 기준이 된다. */
   readonly contextWindow: number;
@@ -370,6 +399,8 @@ export interface OpenAiCompatWorkerEndpoint {
   readonly allowModels: readonly string[];
   readonly blockModels: readonly string[];
   readonly supportsImages: boolean;
+  readonly imageModels?: readonly string[];
+  readonly imageBlindModels?: readonly string[];
   readonly maxOutputTokens: number;
   readonly contextWindow: number;
   readonly firstTokenTimeoutSec: number;

@@ -26,8 +26,8 @@
         { "providerId": "openai-compat:*", "match": "gemini-4-argon", "roles": {
           "main": [{ "model": "gemini-4-argon", "thinkingLevel": "medium" }],
           "smol": [{ "model": "gemini-4-argon", "thinkingLevel": "low" }],
-          "advisor": [{ "model": "gemini-4-argon", "thinkingLevel": "medium" }],
-          "vision": [{ "model": "gemini-4-argon", "thinkingLevel": "medium" }],
+          "advisor": [{ "model": "gemini-4-argon-high", "thinkingLevel": "high" }, { "model": "gemini-4-argon", "thinkingLevel": "medium" }],
+          "vision": [{ "model": "gemini-4-argon-high", "thinkingLevel": "high", "requiresEndpointImages": true }],
           "pixel": [{ "model": "gemini-4-argon", "thinkingLevel": "medium" }]
         } },
         { "providerId": "local-cli:gemini", "roles": {
