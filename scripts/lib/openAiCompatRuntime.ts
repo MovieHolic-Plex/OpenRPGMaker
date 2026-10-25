@@ -349,14 +349,28 @@ export async function testOpenAiCompat(input: OpenAiCompatTestInput, fetchImpl: 
   const check = checkOpenAiCompatBaseUrl(input.baseUrl ?? stored?.baseUrl);
   if (!check.ok || !check.url) return done({ ok: false, code: "invalid", message: check.error ?? "기본 주소가 올바르지 않아요." });
   warnings.push(...check.warnings);
+  // 저장된 설정 그대로 시험했는가(폼에 새로 넣은 주소·키가 없다) — 그때만 실패도 카드에 남긴다. 예전에는 성공만 남겨서
+  // 키 없이 저장한 엔드포인트가 401 로 실패해도 카드는 「아직 시험 안 함」 이었다(2026-10-25 Windows 앱 실측).
+  const storedCheck = stored ? checkOpenAiCompatBaseUrl(stored.baseUrl) : null;
+  const keyOverride = typeof input.apiKey === "string" && input.apiKey.trim().length > 0;
+  const testsStoredConfig = Boolean(stored && storedCheck?.url === check.url && !keyOverride);
+  const fail = (partial: Parameters<typeof done>[0]): OpenAiCompatTestResult => {
+    const result = done(partial);
+    if (testsStoredConfig && typeof input.id === "string") {
+      openAiCompatStore.recordTest(input.id, {
+        lastTest: { at: Date.now(), ok: false, ...(result.status ? { status: result.status } : {}), toolsOk: null, message: result.message.slice(0, 200) },
+      });
+    }
+    return result;
+  };
   const allowInsecure = input.allowInsecurePublic === true || (input.allowInsecurePublic === undefined && stored?.allowInsecurePublic === true);
   if (check.insecurePublic && !allowInsecure) {
-    return done({ ok: false, code: "insecure", message: "공개 인터넷 주소에 http(암호화 없음)로는 시험하지 않아요. https 주소를 쓰거나 「그래도 사용」을 확인하세요." });
+    return fail({ ok: false, code: "insecure", message: "공개 인터넷 주소에 http(암호화 없음)로는 시험하지 않아요. https 주소를 쓰거나 「그래도 사용」을 확인하세요." });
   }
   try {
     await assertOpenAiCompatHostSafe(check.url);
   } catch (error) {
-    return done({ ok: false, code: "blocked", message: error instanceof Error ? error.message : "허용되지 않는 주소예요." });
+    return fail({ ok: false, code: "blocked", message: error instanceof Error ? error.message : "허용되지 않는 주소예요." });
   }
 
   // 시험에 쓸 자격: 입력한 값이 이기고, 없으면 저장된 값을 쓴다(저장된 키를 다시 입력하지 않아도 된다).
@@ -378,6 +392,9 @@ export async function testOpenAiCompat(input: OpenAiCompatTestInput, fetchImpl: 
   const hide = redactor([apiKey, ...Object.values(headers)]);
   const requestHeaders = authHeaders({ apiKey, headers });
   const explain = (raw: string) => hide(explainOpenAiCompatError(raw, { name, baseUrl: check.url }));
+  // 어느 단계에서 막혔는지 앞에 붙인다 — 「이름 풀이·연결 / 인증 / 빈 답」 중 어디인지 사용자가 바로 안다.
+  const modelsStep = "모델 목록 받기(GET /models)";
+  const keyHint = apiKey ? "" : " 지금 API 키가 비어 있어요 — CLIProxyAPI 같은 서버는 키가 있어야 해요.";
 
   // 1) GET {base}/models
   let models: string[] = [];
@@ -386,22 +403,22 @@ export async function testOpenAiCompat(input: OpenAiCompatTestInput, fetchImpl: 
   try {
     const response = await boundedFetch(fetchImpl, `${check.url}/models`, { method: "GET", headers: requestHeaders }, OPENAI_COMPAT_MODELS_TIMEOUT_MS);
     if (response.status >= 300 && response.status < 400) {
-      return done({ ok: false, code: "redirect", status: response.status,
+      return fail({ ok: false, code: "redirect", status: response.status,
         message: `서버가 다른 주소로 넘기려 해요(${response.status}${response.location ? ` → ${hide(response.location).slice(0, 120)}` : ""}). 보안상 따라가지 않아요. 넘겨 주는 최종 주소를 기본 주소로 넣으세요.` });
     }
     if (response.status === 401 || response.status === 403) {
-      return done({ ok: false, code: "auth", status: response.status, message: explain(`${response.status} ${errorTextOf(response.text)}`) });
+      return fail({ ok: false, code: "auth", status: response.status, message: `${modelsStep}: ${explain(`${response.status} ${errorTextOf(response.text)}`)}${keyHint}` });
     }
     if (response.status === 404 || response.status === 405) {
       modelsNote = explain(`${response.status} ${errorTextOf(response.text) || "not found"}`);
     } else if (response.status >= 500) {
-      return done({ ok: false, code: "server", status: response.status, message: explain(`${response.status} ${errorTextOf(response.text)}`) });
+      return fail({ ok: false, code: "server", status: response.status, message: `${modelsStep}: ${explain(`${response.status} ${errorTextOf(response.text)}`)}` });
     } else if (response.status >= 400) {
       modelsNote = explain(`${response.status} ${errorTextOf(response.text)}`);
     } else {
       const ids = modelIdsOf(response.text);
       if (ids === null) {
-        return done({ ok: false, code: "not-json", status: response.status,
+        return fail({ ok: false, code: "not-json", status: response.status,
           message: "주소는 열렸지만 모델 목록 형식이 아니에요. 웹 화면 주소가 아니라 API 주소(보통 …/v1)를 넣으세요." });
       }
       models = ids;
@@ -410,7 +427,7 @@ export async function testOpenAiCompat(input: OpenAiCompatTestInput, fetchImpl: 
   } catch (error) {
     const aborted = error instanceof Error && error.name === "AbortError";
     const raw = aborted ? "timed out" : `${(error as { cause?: { code?: string } })?.cause?.code ?? ""} ${error instanceof Error ? error.message : String(error)}`;
-    return done({ ok: false, code: aborted ? "timeout" : "network", message: explain(raw) });
+    return fail({ ok: false, code: aborted ? "timeout" : "network", message: `${modelsStep}: ${explain(raw)}` });
   }
 
   // 허용/차단 패턴은 목록에서 먼저 걷는다 — 차단된 모델은 사용자에게 아예 보이지 않는다(몇 개를 숨겼는지만 알린다).

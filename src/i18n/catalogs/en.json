@@ -18208,4 +18208,8 @@
 "이야기 · 대본":"Story · Script",
 "{0} 와 대사가 같습니다(같은 이벤트를 여러 칸에 둔 것) — 펼쳐서 따로 고치기":"Same lines as {0} (the same event placed on several tiles) — expand to edit separately",
 "다음 제안으로":"Next suggestion",
-"대본 읽는 순서로 다음 제안 줄로 갑니다(접힌 곁가지는 펼칩니다)":"Go to the next suggestion in reading order (opens collapsed side scenes)"}
+"대본 읽는 순서로 다음 제안 줄로 갑니다(접힌 곁가지는 펼칩니다)":"Go to the next suggestion in reading order (opens collapsed side scenes)",
+"API 키가 필요해요(서버 설정의 api-keys 값) — 비워 두면 「Missing API key」(401)로 거절돼요. gemini-4-argon 계열만 허용하고 claude-* 같은 비싼 모델은 목록에서 숨기고 호출도 거절해요. 패턴은 아래에서 바꿀 수 있어요.":"An API key is required (the api-keys value in the server config) — left empty, the server refuses with “Missing API key” (401). Only the gemini-4-argon family is allowed. Expensive models such as claude-* are hidden from the list and calls are refused. You can change the patterns below.",
+"{0} 의 호스트 이름을 찾지 못했어요. 주소 철자나 네트워크(Tailscale 등)를 확인하세요. Tailscale 이름이 안 되면 100.x 주소나 전체 이름(*.ts.net)을 써 보세요. (원문: {1})":"Could not resolve the host name of {0}. Check the address spelling or the network (Tailscale, etc.). If the Tailscale name does not work, try the 100.x address or the full name (*.ts.net). (original: {1})",
+"{0} 이(가) 빈 답을 돌려줬어요(글도 도구 호출도 없음). 서버나 모델이 이 요청을 처리하지 못한 거예요 — 이미지가 든 요청이면 연결 설정의 「이미지 입력」을 끄거나, 서버 로그를 확인하세요.":"{0} returned an empty reply (no text and no tool call). The server or model could not handle this request — if it carried images, turn off “Image input” in the connection settings, or check the server log.",
+"{0} 이(가) 빈 답을 돌려줬어요(글도 도구 호출도 없음). 서버나 모델이 이 요청을 처리하지 못한 거예요 — 이미지가 든 요청이면 연결 설정의 「이미지 입력」을 끄거나, 서버 로그를 확인하세요. (원문: {1})":"{0} returned an empty reply (no text and no tool call). The server or model could not handle this request — if it carried images, turn off “Image input” in the connection settings, or check the server log. (original: {1})"}

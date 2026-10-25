@@ -101,7 +101,7 @@ export interface OpenAiCompatPreset {
 /** 폼의 「프리셋」 — 주소·허용 패턴의 출발값일 뿐이고 모두 바꿀 수 있다. */
 export const OPENAI_COMPAT_PRESETS: readonly OpenAiCompatPreset[] = [
   { id: "cliproxy-argon", label: "CLIProxyAPI · mdc-server (Argon 만)", name: "CLIProxyAPI Argon", baseUrl: "http://mdc-server:8318/v1",
-    hint: "gemini-4-argon 계열만 허용합니다. claude-* 같은 비싼 모델은 목록에서 숨기고 호출도 거절해요. 패턴은 아래에서 바꿀 수 있어요.",
+    hint: "API 키가 필요해요(서버 설정의 api-keys 값) — 비워 두면 「Missing API key」(401)로 거절돼요. gemini-4-argon 계열만 허용하고 claude-* 같은 비싼 모델은 목록에서 숨기고 호출도 거절해요. 패턴은 아래에서 바꿀 수 있어요.",
     // 2026-10-25 실측: 이 프록시에서 그림을 실제로 보는 것은 gemini-4-argon-high 뿐이다(argon·flash 는 빈 답, argon-medium 은 400).
     allowModels: ["gemini-4-argon*"], blockModels: ["claude-*"], supportsImages: true, imageModels: ["gemini-4-argon-high"] },
   { id: "cliproxy", label: "CLIProxyAPI (로컬)", name: "CLIProxyAPI", baseUrl: "http://127.0.0.1:8317/v1", hint: "CLI Proxy API 서버. 기본 포트는 8317 입니다. API 키는 서버 설정의 access 키예요." },
@@ -342,11 +342,14 @@ export function explainOpenAiCompatError(raw: string, endpoint: { readonly name:
   if (/reasoning_effort|unrecognized request argument|unknown (?:parameter|field)|unsupported (?:parameter|field)/iu.test(text)) {
     return `${name} 이(가) 요청의 일부 필드를 모른다고 해요. 연결 설정의 「추론 강도」 방식을 「보내지 않음」으로 바꾸고 다시 시도하세요.${tail}`;
   }
+  if (/empty reply|빈 답/iu.test(text)) {
+    return `${name} 이(가) 빈 답을 돌려줬어요(글도 도구 호출도 없음). 서버나 모델이 이 요청을 처리하지 못한 거예요 — 이미지가 든 요청이면 연결 설정의 「이미지 입력」을 끄거나, 서버 로그를 확인하세요.${tail}`;
+  }
   if (/ECONNREFUSED|connection refused/iu.test(text)) {
     return `${name} 에 연결하지 못했어요(연결 거부). 서버가 켜져 있는지, 주소와 포트가 맞는지 확인하세요.${tail}`;
   }
   if (/ENOTFOUND|getaddrinfo|dns/iu.test(text)) {
-    return `${name} 의 호스트 이름을 찾지 못했어요. 주소 철자나 네트워크(Tailscale 등)를 확인하세요.${tail}`;
+    return `${name} 의 호스트 이름을 찾지 못했어요. 주소 철자나 네트워크(Tailscale 등)를 확인하세요. Tailscale 이름이 안 되면 100.x 주소나 전체 이름(*.ts.net)을 써 보세요.${tail}`;
   }
   if (/ETIMEDOUT|timed out|timeout|aborted due to timeout/iu.test(text)) {
     return `${name} 의 응답이 너무 늦어요. 서버가 모델을 올리는 중이거나 멈췄을 수 있어요. 연결 설정에서 대기 시간을 늘려 보세요.${tail}`;
