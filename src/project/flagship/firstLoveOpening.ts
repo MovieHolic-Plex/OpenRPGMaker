@@ -129,7 +129,7 @@ function rooftopShot(): OpeningAnimatic {
     { id: "skyline", kind: "image", role: "background", resourceId: "oprn-pano-sunset-skyline", sampling: "nearest", x: -20, y: 10, width: 640, height: 240,
       keys: { x: [key(0, -20), key(SHOT_MS, -60)] } } as AnimaticLayer,
     // 옥상 아랫부분(난간·데크)만 — 하늘 자리는 노을 파노라마가 맡는다. 두 사람은 난간 앞에서 노을을 본다.
-    { ...mapBackdrop("rooftop", { x: 0, y: 80 }, { x: 0, y: 70 }), id: "deck" } as AnimaticLayer,
+    { ...mapBackdrop("rooftop", { x: 0, y: 94 }, { x: 0, y: 84 }), id: "deck" } as AnimaticLayer,
     { ...standing("seoha", "seoha", "up", { x: 212, y: 116 }), keys: { y: [key(0, 116), key(SHOT_MS, 106)], frame: [{ atMs: 0, value: charsetFrameIndex({ characterIndex: CAST.seoha.index, direction: "up", pattern: 1 }) }] } } as AnimaticLayer,
     { ...standing("jihu", "jihu", "up", { x: 238, y: 116 }), keys: { y: [key(0, 116), key(SHOT_MS, 106)], frame: [{ atMs: 0, value: charsetFrameIndex({ characterIndex: CAST.jihu.index, direction: "up", pattern: 1 }) }] } } as AnimaticLayer,
     { id: "sun", kind: "glow", role: "effect", color: "#ffb36b", blend: "lighter", x: 300, y: 30, width: 180, height: 180, opacity: 0.55,

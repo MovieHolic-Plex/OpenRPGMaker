@@ -27,7 +27,7 @@ export const FIRST_LOVE_OPENING_BACKDROPS: readonly FirstLoveOpeningBackdrop[] =
   // 사무층 — 자리 무리·엘리베이터 홀.
   backdrop('office', 'fl_office', { x: 0, y: 0, width: 416, height: 368 }),
   // 옥상 — 넓은 하늘과 난간, 데크.
-  backdrop('rooftop', 'fl_rooftop', { x: 0, y: 270, width: 480, height: 200 }),
+  backdrop('rooftop', 'fl_rooftop', { x: 0, y: 284, width: 480, height: 186 }),
 ];
 
 export const FIRST_LOVE_OPENING_BACKDROP_URLS: Readonly<Record<string, string>> = Object.fromEntries(
