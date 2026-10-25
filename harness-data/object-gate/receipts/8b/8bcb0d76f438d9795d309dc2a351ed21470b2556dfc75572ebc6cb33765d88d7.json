@@ -1,0 +1,337 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "8bcb0d76f438d9795d309dc2a351ed21470b2556dfc75572ebc6cb33765d88d7",
+ "width": 16,
+ "height": 32,
+ "kind": "other",
+ "name": "세로 입간판 「국밥」",
+ "label": "modern_city/street-kr/mc-prop-kr-sign-food",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "bus-shelter-a",
+   "kiosk-a",
+   "vending-a"
+  ],
+  "scale": 2,
+  "score": 7,
+  "refSet": {
+   "id": "modern_city",
+   "chipset": "modern_city",
+   "fallback": false,
+   "hash": "dc20de17343e77e8"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 17,
+  "tileColorsP90": 17,
+  "darkV5": 27,
+  "nearBlackEdge": 1,
+  "opaqueTiles": 2
+ },
+ "eye": {
+  "verdicts": [
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "right",
+   "borderline",
+   "borderline"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top cap of sign board (white band)",
+      "rows": "0-4",
+      "evidence": "a",
+      "front_edge_line_row": 4,
+      "eave_shadow_rows": "5"
+     },
+     {
+      "part": "red sign face with 국밥 lettering",
+      "rows": "5-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "grey base strip",
+      "rows": "30-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 26,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-3 are a near-white band (L~238) whose silhouette tapers at the back (widths 10, 12, 14, then 15). Row 4 is a grey-blue front-edge line (#738a90), and row 5 is a dark outline row that works as eave shadow. This is a top surface of about 4 rows, per evidence (a). Below it, rows 5-29 are the vertical red sign face with the lettering, and rows 30-31 are a grey base strip. The front face is about 26 rows. No receding side face is drawn. The darker right-hand columns are shading on the face, not an isometric side. The top is shallow, but it has an edge line and a tapered back, so it reads as three_quarter and not as a rim only."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a vertical standing sign with a dark red-maroon body, a lighter cream/pink panel and the Korean text 국밥. Per 16x16 tile it shows 14 visible tones, between kiosk-a (12) and vending-a (20) and well above bus-shelter-a (6). Near-flat coverage is 0%, matching kiosk-a and vending-a, so there are no large flat fills. The dark edge pixels have 0% near-neutral share, so the outline is tinted dark red-brown rather than black, which matches the references. The body has about 5 lightness steps (highlight, light, mid, dark, deep) and the lettering and frame add some variation. It is a small, simple prop, but it holds its own next to the shipped modern_city references without looking thinner or more sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15773
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "sign board top cap",
+      "rows": "1-4",
+      "evidence": "a",
+      "front_edge_line_row": 4,
+      "eave_shadow_rows": "5"
+     },
+     {
+      "part": "red panel with 국밥 lettering (front face)",
+      "rows": "6-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base strip",
+      "rows": "30-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 26,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The sign is a tall slab with a front face of about 26 rows. At the top, rows 1-3 are a light band (L≈238) whose silhouette widens 10→12→14→15. Row 4 is a grey-blue front-edge line (#738a90), and row 5 is a dark row that acts as eave shadow. Below that, the red panel with the cream lettering runs from row 6 to row 29, with a grey base strip at rows 30-31. The top band is a short horizontal surface with an edge line and shadow, so it is more than a 1-2 row rim. No receding side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a vertical sign with a dark red-maroon body, a lighter red/cream panel and the hangul 국밥. Measured facts: 14 visible tones per tile, which is above bus-shelter (6) and kiosk (12) and below vending (20). Near-flat coverage is 0%, below bus-shelter's 9% and equal to the other two. The dark edge pixels are 0% neutral, so the outline is tinted dark red-brown rather than black. That matches the references' treatment of dark material tone. Shading on the red body has about 4 steps (highlight, mid, dark, deep) against roughly 5 on the references. The panel has some grain and lettering detail. The piece is small and simple but sits within the density range of the shipped modern_city props and does not look like a flat sticker.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 13961
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "sign frame top cap",
+      "rows": "1-4",
+      "evidence": "a",
+      "front_edge_line_row": 4,
+      "eave_shadow_rows": "5"
+     },
+     {
+      "part": "red text panel (front face)",
+      "rows": "5-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base strip",
+      "rows": "30-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 27,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-3 are a light band (L about 238) that tapers from width 10 to 14 to 15 at the top. Row 4 is a mid-gray front-edge line (#738a90), and row 5 is a dark shadow row directly below it, so the band counts as a top surface under evidence (a). Rows 5-29 are the vertical red panel with cream lettering, a front face of about 27 rows. Row 30 is a gray base strip. No side face is drawn. The top is thin (4 rows) but has an edge line and shadow, so it is more than a 1-2 row rim."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a vertical red signboard with white Korean text (국밥) and a dark red-brown border. Its measured 14 visible tones per tile sit between kiosk-a (12) and vending-a (20) and well above bus-shelter-a (6). Near-flat coverage is 0%, so no large flat fills; the references show 0-9%. Dark edge pixels are 0% neutral, matching the references, so the outline is a tinted dark red-brown rather than near-black. The sign face shows a gradient with highlight and shadow steps, about 4 on the red body plus the lettering, a little shallower than the 5-6 steps in the references. It is small and simple, but at this scale a careful artist would accept it beside the references without it looking thinner or more sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 13068
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "sign top (light slab with trapezoid outline)",
+      "rows": "0-4",
+      "evidence": "a",
+      "front_edge_line_row": 4,
+      "eave_shadow_rows": "5"
+     },
+     {
+      "part": "sign board face with red panel and lettering",
+      "rows": "5-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "gray base strip",
+      "rows": "30-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 27,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The top is a light band in rows 1-3 with a darker gray-blue front-edge line at row 4. The silhouette widens from 10 to 15 px over rows 0-3, which gives a foreshortened top plane. Row 5 is a dark row directly under the edge line and acts as eave shadow. Below it the red lettered board face runs rows 5-29, and a gray base strip sits at rows 30-31. The darker right-hand strip at x=11 is shading on the south face, not a receding side face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 4,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a vertical red-maroon signboard with cream hangul and a lighter frame. It measures 14 visible tones per 16x16 tile, which is above bus-shelter-a (6) and kiosk-a (12) and below vending-a (20). Near-flat coverage is 0%, against 9% for bus-shelter-a and 0% for the other two references. Dark edge pixels are 0% neutral, so the outline is tinted, a dark maroon-brown beside the red body, matching the references' dark_material_tone treatment. The sign shows a lit left edge, a mid body and a darker right and bottom side, which is about 4 steps on the main ramp. That is comparable to the references on their larger material ramps, though it is a smaller object and slightly simpler than vending-a. There are no flat fills. The text and frame bevel add texture. It would sit acceptably next to the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 14038
+  }
+ ],
+ "decidedAt": "2026-10-25T04:47:30.151Z",
+ "cells": {
+  "16": [
+   "324b060854bc7cde",
+   "d56304dc12199f5e"
+  ],
+  "24": [
+   "1d5fcb4b90bba55b",
+   "3114a15f9380f453",
+   "38d5fcbe96e96d07",
+   "4625d424661128bf",
+   "4bb2edb26b3c3b06",
+   "50375e17261fe651",
+   "58c04ae4aead1998",
+   "63f12d96561391bc",
+   "d46d1160bf250adb",
+   "e260ec96c864f3b5",
+   "e64b4e967c38dcd9",
+   "e651a20005977564"
+  ],
+  "32": [
+   "1f223e4ca9bb5721",
+   "6d1d3c5d8be2f874",
+   "8d411de718929e48"
+  ],
+  "48": [
+   "36bd12f67fcc1b9b",
+   "41d1dff483722826",
+   "98fd60f6696c2505",
+   "9f207c21927037ff",
+   "acb9c53a118c105b",
+   "e08b7cadc7f5830b"
+  ]
+ }
+}

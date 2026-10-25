@@ -321,6 +321,7 @@ function conditionReferencesDatabase(condition: Condition | BattleEventCondition
     case "enemyTurn":
       return collection === "enemies" && condition.enemyId === id;
     case "enemyHpBelow":
+    case "enemiesAlive":
       return collection === "enemies" && condition.enemyId === id;
     case "enemyState":
       return (collection === "enemies" && condition.enemyId === id) || (collection === "states" && condition.stateId === id);

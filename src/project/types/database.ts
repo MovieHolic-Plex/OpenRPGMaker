@@ -350,6 +350,13 @@ export interface SkillRecord {
   comboCombinedStats?: boolean;
   /** 연계기가 발동할 때 켜지는 스위치(전투 이벤트 페이지 조건·전투 뒤 이야기 분기에 쓴다). */
   comboSwitchId?: string;
+  /**
+   * 연계기 비용 나누기: 참가 배우별 MP 고정 소모(halfMpCost 장비는 절반). 목록에 없는 참가자는 mpCost 를 그대로 낸다.
+   * 「카엘 MP 4 · 엘레나 MP 8」처럼 주 시전자와 보조가 다른 몫을 낸다. 생략 = 전원이 mpCost.
+   */
+  comboMpCosts?: readonly { readonly actorId: ActorId; readonly mp: number }[];
+  /** 연계기 연출 — 색·착탄 흔들림·느린 화면·제목 위 글(project/battleStaging.ts ComboStaging). 생략 = 속성 색·인원수 기본. */
+  comboStaging?: import("@/project/battleStaging").ComboStaging;
   /** 위치 범위기: 단일 대상 스코프에서 주 대상 둘레의 같은 편도 함께 맞힌다(전투장 픽셀). */
   area?: SkillArea;
   /**
@@ -380,6 +387,11 @@ export interface SkillRecord {
    * elementIds 를 비우면 기술 자신의 elementId 를 계열로 본다. 「검을 든 카엘의 검 기술이 더 세다」. 생략 = 없음.
    */
   weaponAffinity?: { readonly elementIds?: readonly string[]; readonly bonusPercent: number };
+  /**
+   * 약점 공략(set-up → payoff): 맞는 대상이 stateIds 중 하나에 걸려 있으면 피해 +bonusPercent%(1~300).
+   * consume 이면 공략한 상태를 그 타격으로 풀어 버린다(「얼어붙은 적을 깨뜨린다」). 숫자 아래 「공략!」 꼬리표. 생략 = 없음.
+   */
+  exploitStates?: { readonly stateIds: readonly string[]; readonly bonusPercent: number; readonly consume?: boolean };
   /**
    * 반동(0~100): 준 피해의 N% 를 시전자도 입는다(몸통박치기·이판사판). 피해가 1 이상일 때만, 최소 1. 타마다 적용한다.
    * 타임라인에 시전자 자신을 대상으로 한 damage 엔트리(aside recoil)를 남긴다. 생략 = 반동 없음.
@@ -763,6 +775,11 @@ export interface EnemyRecord {
   /** 전투 이미지 표시 크기(10~300%, 정수). 생략 시 기존 크기 100%. */
   battleScalePercent?: number;
   /**
+   * 도트 측면 전투에서 아군에게 달려드는 속도 %(생략 = 100, 25~300). 전역 기본은 system.battleStaging.enemyLunge(기본 fast).
+   * 늑대·맹수처럼 날랜 적은 120~160, 굼뜬 거인은 70~90. `project/battleStaging.ts` · `player/battleRetroMotion.measureEnemyReach`.
+   */
+  lungeSpeedPercent?: number;
+  /**
    * 피해 계열별 받는 피해 %(생략 = 100). physical = 공격력 계열(statistic attack) 피해, magic = 마력 계열(statistic mind) 피해.
    * 0 = 그 계열 무효(「무효」 꼬리표), 300 = 세 배. 상태의 runtimeEffects.damageTypeRates 가 걸려 있으면 그 값이 이 값을 대신한다
    * (예: 마법 무효인 용에 「관통상」이 걸린 동안만 마법 ×3). `battle/battleElementModifiers.damageTypeMultiplier`.
@@ -789,6 +806,11 @@ export interface EnemyRecord {
   stealItems?: EnemyStealItem[];
   /** 쓰러지는 연출(project/enemyCollapse.ts). 생략 = 스킨 기본 소멸. */
   collapseEffect?: "pixelBreak" | "bossSink" | "flash" | "instant";
+  /**
+   * 보스 HP 숨김. true 면 전투 화면에 이 적의 HP 막대·숫자를 끝까지 보이지 않는다(스캔·라이브러·스킨 무관).
+   * 생략 = 스킨 규칙대로 보인다.
+   */
+  hideHp?: boolean;
 }
 
 export interface EnemyStealItem {
@@ -1012,7 +1034,12 @@ export type BattleEventCondition =
   | { kind: "actorTurn"; actorId: ActorId; turn: number }
   | { kind: "actorCommand"; actorId: ActorId; commandId: string }
   /** 적(생략 = 아무 적)이 이 상태에 걸려 있다(present 생략 = true) / 걸려 있지 않다(false). 쓰러진 적은 세지 않는다. */
-  | { kind: "enemyState"; enemyId?: EnemyId; stateId: string; present?: boolean };
+  | { kind: "enemyState"; enemyId?: EnemyId; stateId: string; present?: boolean }
+  /**
+   * 살아 있는(HP>0) · 숨지 않은 적 수가 atMost 이하. enemyId 를 주면 그 적 기록만 센다.
+   * 예: 졸병 8명이 모두 쓰러지면 2막 — { kind: "enemiesAlive", enemyId: "enemy_soldier", atMost: 0 }.
+   */
+  | { kind: "enemiesAlive"; enemyId?: EnemyId; atMost: number };
 
 export interface BattleEventPageRecord {
   id: string;
@@ -1147,12 +1174,23 @@ export interface StateRecord {
   disablesEquipSlot?: string;
   /** retro2003 전투에서 이 상태가 걸린 동안 몸 위에 남는 오라 프리셋 id(src/assets/battleStateAuras.ts). "none" = 끔, 없으면 기본 상태 id 표. */
   battleAura?: string;
+  /**
+   * 전투가 끝나면 이 상태가 풀리는가. true = 풀린다, false = 남는다(system.clearStatesAfterBattle 이 켜져 있어도).
+   * 생략 = system.clearStatesAfterBattle 을 따르고, 그것도 없으면 removalCondition 이 「전투 종료」일 때만 풀린다.
+   */
+  clearOnBattleEnd?: boolean;
 }
 
 /** 피해 계열별 받는 피해 %(100 = 보통, 0 = 무효). */
 export interface DamageTypeRates {
   physical?: number;
   magic?: number;
+  /**
+   * 속성 예외(속성 id → %). 맞은 기술·공격의 속성이 여기 있으면 physical/magic 값 **대신** 이 값을 쓴다.
+   * 예: 기계 형태 { physical: 0, magic: 25, elements: { thunder: 200 } } — 번개는 물리든 마법이든 정확히 2배.
+   * 속성 등급(elementRates)·상성표 배율과는 따로 곱해진다.
+   */
+  elements?: Record<string, number>;
 }
 
 export interface StateEmotion {
@@ -1929,6 +1967,11 @@ export interface SystemRecords {
   /** 맵을 클릭(탭)하면 주인공이 경로를 찾아 걸어간다(명작 공백 #32). 생략 = 꺼짐. */
   pointerMovement?: boolean;
   /**
+   * 휴대폰·태블릿 조작(터치 UI): 맵 탭 걷기·조이스틱 방식·진동·달리기 단추. 생략 = 기본(모두 켬, 조이스틱 auto).
+   * 데스크톱 플레이는 읽지 않는다. project/touchControls.ts.
+   */
+  touchControls?: import("@/project/touchControls").TouchControlSettings;
+  /**
    * 몸 사각 **하단 몇 행**이 지형·이벤트에 막히는가. 생략하면 몸 높이 전체(= 통행 사각 === 몸 사각).
    * 3x3 주인공에 1 이면 발밑 한 줄만 막혀 상체가 벽을 스치며 지나갈 수 있다.
    */
@@ -1966,11 +2009,25 @@ export interface SystemRecords {
   /** onField 면 전투가 **필드 위에서** 벌어진다(크로노식): 전환 연출 없이, 적은 부딪힌 심볼 자리에, 아군은 파티가 선 자리에
    *  선다. 배경은 필드 스냅샷 그대로(확대·자르기 없음). battleBackdrop 과 무관하게 필드 배경을 쓴다. 생략 = 전환 후 전투장. */
   battlePresentation?: "onField";
+  /** false 면 플레이어 자동 전투(F 키 토글·상태 표시)가 없다 — 명령은 늘 직접 고른다. 생략 = 켤 수 있다(기존). 배우별 자동 전투(ActorOptions.autoBattle)와 별개. */
+  allowAutoBattle?: boolean;
+  /**
+   * true 면 전투가 끝날 때(승리·도주·지는 전투 뒤 이어지는 경우) 파티의 상태 이상이 모두 풀린다 — 독·수면·마비 등.
+   * 상태 하나가 StateRecord.clearOnBattleEnd:false 면 그 상태만 남는다. 생략 = 상태별 규칙만(clearOnBattleEnd:true 이거나
+   * removalCondition 이 「전투 종료」인 상태만 풀린다).
+   */
+  clearStatesAfterBattle?: boolean;
+  /** "savePoints" 면 메뉴의 「저장」이 사라지고 세이브 포인트(place_savepoint 의 openSaveMenu)에서만 저장한다. 생략 = 어디서나. */
+  saveAccess?: "anywhere" | "savePoints";
   battleUiStyle?: BattleUiStyle;
   /** 전투 타격감 프리셋(project/battleHitFeel.ts). 생략 = impact(묵직하게). 스킨과 별개 축이다. */
   battleHitFeel?: import("@/project/battleHitFeel").BattleHitFeel;
   /** 전투 화면 꾸미기(project/battleLook.ts) — 프리셋 + 바꾼 칸. 생략 = 「도트 창」 프리셋. 스킨(전투 방식)과 별개 축이다. */
   battleLook?: import("@/project/battleLook").BattleLookSettings;
+  /** 전투 결과 팡파레 — 레벨 업 배너·새 기술/연계기 카드·소리(project/battleFanfare.ts). 생략 = 전부 켜기·화려하게. */
+  battleFanfare?: import("@/project/battleFanfare").BattleFanfareSettings;
+  /** 전투 연출 — 적 달려들기 속도·연계기 컷인·연계기 화려함·기술 한 줄 도움말(project/battleStaging.ts). 생략 = 빠르게·얼굴 교차·화려하게·한 줄. */
+  battleStaging?: import("@/project/battleStaging").BattleStagingSettings;
   /** 화면 표시 필터(project/displayFilter.ts) — 주사선·브라운관. 생략 = 없음. */
   displayFilter?: "scanlines" | "crt";
   /**
@@ -1988,6 +2045,11 @@ export interface SystemRecords {
   dialogueSpeed?: number;
   /** false 면 구두점 뒤에 쉬지 않는다. 생략 = 쉰다. */
   dialoguePunctuationPause?: boolean;
+  /**
+   * true 면 필드 대화창·선택지가 열려 있는 동안 카메라를 내려 주인공(과 마주 선 상대)을 창 위 빈 화면에 둔다
+   * (player/dialogueCameraLift.ts). 생략 = 끔 — 카메라는 늘 주인공을 화면 가운데에 둔다.
+   */
+  dialogueKeepActorsVisible?: boolean;
   /** 하단 대사창 뒤 전신 초상의 크기·내림(%). 생략 = 높이 125·내림 20. */
   dialogueFullPortrait?: import("@/project/dialogueStyles").DialogueFullPortraitSettings;
   fieldHud?: import("../fieldHud").FieldHudConfig;
@@ -2239,6 +2301,19 @@ export interface CompanionConfig {
    * ㄴ자 두 줄 대형. 장면이 끝나고 주인공이 걸으면 궤적 자리로 돌아온다(폴른 스타 가혹 검수 r11). 생략 = 기존 동작.
    */
   fanOutInScenes?: boolean;
+  /**
+   * 동료 표시 방식. "follow"(기본·생략) = 크로노 트리거식 — 파티 동료가 필드에서 주인공 뒤를 따라 걷는다.
+   * "scenesOnly" = FF6 식 — 필드에서는 선두만 걷고, 동료(fromParty·addFollower)는 숨는다. 이야기 장면
+   * (컷신 제어가 켜졌거나, 도는 이벤트 안에서 선두가 아닌 파티원이 대사를 하는 동안)에만 주인공 바로 옆에 나타났다가
+   * 장면이 끝나면 다시 숨는다. 몬스터 동행(포켓몬식)은 monsterFollowers 로 따로 정한다.
+   */
+  display?: "follow" | "scenesOnly";
+  /**
+   * 이야기 장면(컷신 잠금; scenesOnly 는 동료가 말할 때도)에서 동료가 서는 자리 — display "follow" 든 "scenesOnly" 든. "nearest"(기본·생략) = 주인공에게서 가장 가까운 빈 칸(앞을 막을 수 있다).
+   * "abreast" = 고정 횡대 — 주인공이 보는 방향의 좌우(몸 길이만큼 떨어진 칸)에 첫째·둘째, 그 바깥에 셋째·넷째가 서고 모두 주인공과 같은 쪽을 본다.
+   * 주인공이 상대(보스 등)를 바라보게 돌려 두면 일행이 한 줄로 그 상대를 마주한다. 자리가 막히면 그 동료만 가장 가까운 빈 칸으로.
+   */
+  sceneFormation?: "nearest" | "abreast";
   /**
    * false 면 파티 몬스터가 필드에서 주인공을 따라 걷지 않는다(HGSS 식 동행 끄기). 생략 = 따라온다 — 몬스터 동료는 주인공이
    * 떠난 칸으로 같은 박자에 한 칸 뒤를 걷는다(@/player/playSceneFollowers beginFollowerStep).

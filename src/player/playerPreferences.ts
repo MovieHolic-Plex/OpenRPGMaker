@@ -1,4 +1,5 @@
 /** Device preferences deliberately live outside project/session/save codecs. */
+import { isTouchStickMode, type TouchStickMode } from '@/project/touchControls';
 import { DIALOGUE_SPEEDS, SKIP_SCOPES, WINDOW_OPACITY_MAX, WINDOW_OPACITY_MIN, type AuthoredDialogueSystem, type DialogueSpeed, type SkipScope } from '@/project/dialogueSystem';
 export const PLAYER_PREFERENCES_KEY = 'oprn:player-preferences:v1';
 export type PlayerPreferences = {
@@ -16,6 +17,14 @@ export type PlayerPreferences = {
   skipScope?: SkipScope;
   /** 대사창 투명도(0.4~1). 생략 = 게임 저작 값(기본 1 = 현행 그대로). */
   windowOpacity?: number;
+  /** 항상 달리기(RPG Maker MZ 「항상 대시」). 달리기 키(Shift)·터치 달리기 단추는 이 값을 뒤집는다. */
+  alwaysRun?: boolean;
+  /** 터치: 맵을 탭해 걷기. 생략 = 게임 저작 값(system.touchControls.tapToMove, 기본 켬). */
+  touchTapToMove?: boolean;
+  /** 터치: 조이스틱 방식. 생략 = 게임 저작 값(기본 auto). */
+  touchStick?: TouchStickMode;
+  /** 터치: 진동. 생략 = 게임 저작 값(기본 켬). */
+  touchHaptics?: boolean;
   /** 플레이어가 대사 속도를 직접 골랐다. 이게 없으면 게임 저작 값이 시작값이다(textSpeed 는 늘 값이 있어 따로 표시한다). */
   textSpeedChosen?: true;
 };
@@ -36,6 +45,10 @@ export function normalizePlayerPreferences(value: unknown): PlayerPreferences {
     ...(SKIP_SCOPES.includes(input.skipScope as SkipScope) ? { skipScope: input.skipScope as SkipScope } : {}),
     ...(typeof input.windowOpacity === 'number' && Number.isFinite(input.windowOpacity)
       ? { windowOpacity: Math.round(Math.max(WINDOW_OPACITY_MIN, Math.min(WINDOW_OPACITY_MAX, input.windowOpacity)) * 100) / 100 } : {}),
+    ...(input.alwaysRun === true ? { alwaysRun: true } : {}),
+    ...(typeof input.touchTapToMove === 'boolean' ? { touchTapToMove: input.touchTapToMove } : {}),
+    ...(isTouchStickMode(input.touchStick) ? { touchStick: input.touchStick } : {}),
+    ...(typeof input.touchHaptics === 'boolean' ? { touchHaptics: input.touchHaptics } : {}),
     // 표식이 없던 예전 저장본(이 필드가 생기기 전)에서 보통이 아닌 속도는 플레이어가 직접 고른 값이다 — 한 번 승격해 연애 게임의 저작 시작값에 덮이지 않게 한다.
     ...(input.textSpeedChosen === true || input.textSpeed === 'slow' || input.textSpeed === 'fast' ? { textSpeedChosen: true as const } : {}),
   };
@@ -51,9 +64,15 @@ let current: PlayerPreferences | undefined;
 export function getPlayerPreferences(): PlayerPreferences {
   return { ...(current ??= readPlayerPreferences()) };
 }
+/** 매 프레임 읽는다 — 복사본을 만들지 않는다. */
+export function playerAlwaysRun(): boolean {
+  return (current ??= readPlayerPreferences()).alwaysRun === true;
+}
 export function updatePlayerPreferences(patch: Partial<PlayerPreferences>, storage = deviceStorage()): boolean {
   // textSpeed 를 주면 플레이어가 직접 고른 것이다(게임 저작 시작값보다 우선). 호출자가 textSpeedChosen 을 직접 주면(초기화 등) 그 값을 따른다.
   current = normalizePlayerPreferences({ ...getPlayerPreferences(), ...patch, ...(patch.textSpeed !== undefined && !('textSpeedChosen' in patch) ? { textSpeedChosen: true } : {}) });
+  // 같은 창의 다른 UI(터치 달리기 단추 등)가 바뀐 값을 바로 그리게 알린다.
+  try { if (typeof window !== 'undefined') window.dispatchEvent(new CustomEvent('oprn:player-preferences')); } catch { /* 이벤트 없음 */ }
   try {
     if (!storage) return false;
     storage.setItem(PLAYER_PREFERENCES_KEY, JSON.stringify(current));

@@ -34,6 +34,36 @@ export type ScrollMapPanTarget = {
  * 맵 보기 배율(runtimeViewScale)을 곱한 값이라, 맵을 옮기면 저작값을 그대로 두고 곱만 바꾼다.
  */
 const authoredZooms = new WeakMap<Phaser.Cameras.Scene2D.Camera, number>();
+/**
+ * 컷신 건너뛰기 세대. 건너뛰면 하나 오른다 — 이미 걸려 있던 카메라 명령(이동 중인 pan)이 끝나며
+ * 「고정」 상태를 써 넣어 방금 되돌린 카메라를 다시 빼앗지 않게, 명령은 시작 때 세대를 잡아 두고 끝날 때 비교한다.
+ */
+const cameraSkipGeneration = new WeakMap<Phaser.Cameras.Scene2D.Camera, number>();
+const skipGeneration = (camera: Phaser.Cameras.Scene2D.Camera): number => cameraSkipGeneration.get(camera) ?? 0;
+
+/**
+ * 컷신을 건너뛰었을 때(Esc 두 번·터치 B 두 번) 카메라를 플레이 상태로 되돌린다(2026-10-25).
+ * 건너뛰기는 `cutscene_end` 라벨로 바로 뛰므로 컷신 끝의 「카메라 → 주인공」·배율·레터박스 해제 명령이 실행되지 않아
+ * 카메라가 행렬 쪽에 멈춰 있었다. 진행 중인 pan/zoom 효과는 끝낸 것으로 치고(기다리던 명령이 풀리게),
+ * 연출 카메라 상태를 지워 프로젝트 기본 배율 + 주인공 따라가기로, 레터박스는 즉시 걷는다.
+ * 라벨 뒤 정리 구간이 카메라를 다시 정하면 그 명령이 이긴다(이 함수 다음에 실행된다).
+ */
+export function restoreCameraAfterCutsceneSkip(scene: PlaySceneContext): void {
+  const camera = scene.cameras?.main;
+  if (!camera) return;
+  cameraSkipGeneration.set(camera, skipGeneration(camera) + 1);
+  for (const effect of [camera.panEffect, camera.zoomEffect] as Array<{ isRunning?: boolean; effectComplete?: () => void } | undefined>) {
+    if (effect?.isRunning) effect.effectComplete?.();
+  }
+  scene.session.camera = undefined;
+  const screen = scene.session.m2Runtime?.screen;
+  if (screen && screen.letterbox) {
+    screen.letterbox = 0;
+    screen.letterboxDurationMs = 0;
+  }
+  applyStoredCameraState(scene);
+  scene.syncRuntimeState();
+}
 
 /** `viewZoom` 은 이 맵의 보기 배율이다. 저작 배율은 뒤이은 applyStoredCameraState 가 얹는다. */
 export function centerRuntimeCamera(
@@ -123,8 +153,10 @@ export function panRuntimeCamera(scene: PlaySceneContext, step: ScrollMapStep): 
     tileSize: mapTileSize(scene.map),
   });
   camera.stopFollow();
+  const generation = skipGeneration(camera);
   const sequence = async (): Promise<void> => {
     await panCamera(camera, target.x, target.y, step.durationMs);
+    if (skipGeneration(camera) !== generation) return;
     if (step.returnToPlayer) {
       await panCamera(camera, scene.player.x, scene.player.y, step.durationMs);
     }
@@ -172,6 +204,8 @@ export function applyStoredCameraState(scene: PlaySceneContext): void {
 
 export function applyCameraControl(scene: PlaySceneContext, step: CameraControlStep): Promise<void> {
   applyCameraZoom(scene, step.zoom);
+  const generation = skipGeneration(scene.cameras.main);
+  const skipped = (): boolean => skipGeneration(scene.cameras.main) !== generation;
   const run = async (): Promise<void> => {
     if (step.mode === "follow") {
       followCameraTarget(scene, step.target);
@@ -182,6 +216,7 @@ export function applyCameraControl(scene: PlaySceneContext, step: CameraControlS
     if (step.mode === "return" || step.returnToPlayer) {
       scene.cameras.main.stopFollow();
       await panToTarget(scene, { kind: "player" }, step.durationMs, step.offsetX, step.offsetY, step.easing);
+      if (skipped()) return;
       followCameraTarget(scene, { kind: "player" });
       scene.session.camera = { mode: "follow", target: { kind: "player" }, zoom: step.zoom };
       scene.syncRuntimeState();
@@ -189,6 +224,7 @@ export function applyCameraControl(scene: PlaySceneContext, step: CameraControlS
     }
     scene.cameras.main.stopFollow();
     await panToTarget(scene, step.target, step.durationMs, step.offsetX, step.offsetY, step.easing);
+    if (skipped()) return;
     scene.session.camera = cameraState("fixed", step);
     scene.syncRuntimeState();
   };

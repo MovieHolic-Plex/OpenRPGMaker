@@ -1,0 +1,363 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "749965572a29714d9ee2b0668dcee0f33cd24ffc3a19baa4cefad03e5fbe849d",
+ "width": 16,
+ "height": 32,
+ "kind": "other",
+ "name": "세로 입간판 「약국」",
+ "label": "modern_city/street-kr/mc-prop-kr-sign-pharm",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "refer",
+ "reasons": [
+  "3/4: 판정자 의견이 갈림(분명한 3/4 2/4, 분명한 위반 2/4)",
+  "3/4: 투영이 3/4 아님(front_elevation) (2/4)",
+  "3/4: 윗면 2행 < 3 (2/4)",
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (2/4)"
+ ],
+ "view34": {
+  "verdict": "refer",
+  "reasons": [
+   "판정자 의견이 갈림(분명한 3/4 2/4, 분명한 위반 2/4)",
+   "투영이 3/4 아님(front_elevation) (2/4)",
+   "윗면 2행 < 3 (2/4)",
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (2/4)"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "bus-shelter-a",
+   "kiosk-a",
+   "vending-a"
+  ],
+  "scale": 2,
+  "score": 7,
+  "refSet": {
+   "id": "modern_city",
+   "chipset": "modern_city",
+   "fallback": false,
+   "hash": "dc20de17343e77e8"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 7,
+  "tileColorsP90": 7,
+  "darkV5": 37,
+  "nearBlackEdge": 1,
+  "opaqueTiles": 2
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "borderline",
+   "wrong",
+   "borderline",
+   "borderline",
+   "wrong",
+   "borderline",
+   "wrong",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "header cap of sign",
+      "rows": "1-5",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "sign board panel with 약국 text",
+      "rows": "7-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base strip",
+      "rows": "30-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 25,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The sign is a tall, flat board seen face-on. Rows 1-5 are a header cap with a small highlight and corner taper (widths 10, 12, 14 over rows 0-2). It has no ellipse and no separate front-edge line with eave shadow, so it reads as a front-facing band or bevel, not a horizontal top surface. Row 6 is a dark outline that frames the panel. The panel in rows 7-29 is a vertical face with white lettering, and rows 30-31 are a base strip. No receding top plane or side face is drawn, so the whole piece reads as a front elevation, like the 'rim only' and 'front elevation' red references."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a vertical green sign with a dark green rim, a lighter inner panel with a light edge, and white Korean lettering. It reads as a prop of the same kind as the references. The measured facts support it: 7 visible tones per tile against 6 for bus-shelter-a, 12 for kiosk-a and 20 for vending-a. Near-flat coverage is 0%, below bus-shelter-a's 9%. The dark edge pixels are 0% neutral, so the outline is a tinted dark green, not a black sticker line. It is simpler than kiosk-a and vending-a, with about 4-5 tones on the green body against 6+ on the references, and no grain or speckle. A sign face is naturally plain, though. It matches bus-shelter-a, which is also accepted shipped art, in tone count and outline treatment. I judge it acceptable beside the references, only slightly lighter in density.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 27386
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top cap of the sign box",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": "5"
+     },
+     {
+      "part": "front panel with white Korean text",
+      "rows": "7-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base strip",
+      "rows": "30-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 25,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-5 form a lighter green cap band with highlight stripes (L about 91-130). The width narrows to 10-12 px at rows 0-2 for the rounded corners. Row 5 is a darker eave-shadow row (L=68) and row 6 is a near-black front-edge line (L=17). Below that the dark green front panel runs rows 7-29 with white text pixels, and a lighter gray base strip sits at rows 30-31. The cap is a modest, somewhat ambiguous top surface, but it is bounded by an edge line and a shadow row above a tall front face of 3+ rows, so I read it as three-quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a vertical sign with a dark green frame, a mid-green panel, a lighter edge highlight and light Hangul text. It reads as about 5 lightness steps. Its dark edge pixels are 0% neutral, so the outline leans green and is a dark tone of the adjacent material, not a black sticker line. It has 7 visible tones per tile, above bus-shelter-a (6) and below kiosk-a (12) and vending-a (20). Near-flat coverage is 0%, against 9% for the bus shelter, so no large area is a flat fill. The object is simple and sparse, like the bus shelter, and is not thinner or flatter than that reference. It is less detailed than the vending machine, but it is a plain signboard. A careful artist would accept it next to the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16916
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "sign head cap (green band above the panel)",
+      "rows": "1-4",
+      "evidence": "a",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": "5"
+     },
+     {
+      "part": "sign board panel with Korean text (vertical face)",
+      "rows": "7-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base strip",
+      "rows": "30-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 24,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "This is a tall standing signboard. Its head, rows 1-4, is a lighter green band with highlights on rows 1 and 3 and rounded top corners (width 10, then 12, then 14). Row 5 is a darker shadow and row 6 is a dark outline line, so the head reads as a weak top or cap surface above the front face. The panel front face, rows 7-29, carries the white text, and rows 30-31 form the base. The front edge line under the cap is not crisp, so the top reading is marginal. The front face is clearly 3+ rows and no side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a vertical green pharmacy sign with white Hangul text. It has a tinted dark-green outline (0% near-neutral dark edge pixels, the same as all three references), a lighter edge highlight, and a body with a few green steps. It measures 7 visible tones per tile, above bus-shelter-a (6) but below kiosk-a (12) and vending-a (20). Near-flat coverage is 0%, against 9% for bus-shelter-a. By eye it looks a little simpler than kiosk-a and vending-a, but about as rich as the bus shelter, and it does not read as a flat black-outlined sticker. It is a simple single-panel prop, and a careful artist would accept it beside the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16206
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "header cap of sign",
+      "rows": "1-5",
+      "evidence": "none",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": "5"
+     },
+     {
+      "part": "sign board face with 약국 lettering",
+      "rows": "7-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "bottom base strip",
+      "rows": "30-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 24,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The sign is a tall board seen face-on. Rows 7-29 are a flat dark-green face with white 약국 lettering. Rows 1-5 form a lighter header band. It narrows at the top (width 10, then 12, then 14) and has highlight strokes on rows 1 and 3. It reads as a front-facing, rounded header strip, not a receding horizontal plane. It has no ellipse and no contents. Row 5 is slightly darker and row 6 is a dark outline, which is a weak edge and shadow cue at most. The base on row 30 is a 1-row grey-blue strip. Overall it is a front elevation with at most a 1-2 row top rim."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a vertical green sign with a pale 약국 glyph, a lighter rim, and a darker body edge. It measures 7 visible tones per tile, 0% near-flat coverage and 0% neutral dark edge pixels, so the outline is tinted dark green rather than near-black. That is on par with bus-shelter-a (6 tones, 9% flat) but well below kiosk-a (12) and vending-a (20). By eye the sign is a simple slab with 3-4 green steps and little grain, and it lacks the small details the richer references carry, such as stripes, panels, buttons and highlights. It is a thin single-tile-wide prop, so the low per-tile count is not held against it. The shading is shallower than the references, but it is a plausible and acceptable shipped-level sign next to bus-shelter-a, and it does not look sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16893
+  }
+ ],
+ "decidedAt": "2026-10-24T17:34:41.200Z",
+ "cells": {
+  "16": [
+   "351f8fc452165029",
+   "8a24575c27301118"
+  ],
+  "24": [
+   "07614e10cc9a5c03",
+   "096c03f9bf0aecb7",
+   "447fb0c6831570ee",
+   "4d386210aca6f28b",
+   "6924bb539ea7a187",
+   "74b3fe75372294b4",
+   "9aca6c0d6fda157d",
+   "a5bab13d613a7ada",
+   "b803accf9d072f21",
+   "d13667d7d8ebe0ca",
+   "e90e97f2cca78230",
+   "eaa7634a36aa2dba"
+  ],
+  "32": [
+   "a96dacb280293aec",
+   "c1ab92fd376d71fd",
+   "d3456ba5c1cd47d5"
+  ],
+  "48": [
+   "432391d191384ee4",
+   "4fa5aaa9373050c9",
+   "a93f2887ade7826d",
+   "cb7a21e9341be221",
+   "e09f26b871eb760e",
+   "fa3c9a47ac02ad81"
+  ]
+ }
+}

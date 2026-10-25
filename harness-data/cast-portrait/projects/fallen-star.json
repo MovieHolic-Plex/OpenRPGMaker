@@ -1,0 +1,87 @@
+{
+ "project": "fallen-star",
+ "title": "Fallen Star speaker busts (shared portrait sets)",
+ "note": "This cast came from the shared portrait library (high-resolution illustrations shown through src/player/bustPixelate.ts), not from char-gen + bake_astra_busts64. New members are made the same way (pipeline below) and imported; the blind review sees the on-screen pixelation (reviewView). Rules are derived from `calibrate` (cast range). Valen's old stand-in bust (shared blue-headband, jester-like) was rejected by the user on 2026-10-25 and is no longer in the lineup.",
+ "lineup": [
+  {
+   "id": "hanel",
+   "dir": "public/assets/shared/portraits/people2-white-elder",
+   "resource": "shared-people2-white-elder-expressions-bust-{expr}"
+  },
+  {
+   "id": "knight",
+   "dir": "public/assets/shared/portraits/helmet-guard",
+   "resource": "shared-helmet-guard-expressions-bust-{expr}"
+  },
+  {
+   "id": "bram",
+   "dir": "public/assets/shared/portraits/green-scholar",
+   "resource": "shared-green-scholar-expressions-bust-{expr}"
+  },
+  {
+   "id": "grandma",
+   "dir": "public/assets/shared/portraits/people1-old-woman",
+   "resource": "shared-people1-old-woman-expressions-bust-{expr}"
+  },
+  {
+   "id": "tobi",
+   "dir": "public/assets/shared/portraits/people1-boy",
+   "resource": "shared-people1-boy-expressions-bust-{expr}"
+  },
+  {
+   "id": "baker",
+   "dir": "public/assets/shared/portraits/people1-blonde-woman",
+   "resource": "shared-people1-blonde-woman-expressions-bust-{expr}"
+  }
+ ],
+ "expressions": [
+  "base",
+  "happy",
+  "sad",
+  "angry",
+  "surprised"
+ ],
+ "openEyeExpressions": [
+  "base",
+  "sad",
+  "surprised"
+ ],
+ "dialogueExpressions": [
+  "base",
+  "happy",
+  "surprised",
+  "sad"
+ ],
+ "canvas": null,
+ "displayScale": null,
+ "rules": "calibrate",
+ "pipeline": {
+  "kind": "shared-portrait-sheet",
+  "script": "scripts/content/portraits/fallen_valen.py",
+  "how": "portraits2.py sheet (full + bust on magenta, one image call) with the shared-library style panel public/assets/generated/faces/actor1-bust.png, the role's walking chip (front+side) and an 8-head mannequin; expressions = whole-sheet edits; finalize.clean + quant(128). Same path as the 76 shared portraits; only the identity comes from text + chip because the role has no face set.",
+  "steps": [
+   "fallen_valen.py base --round rN --n 4",
+   "fallen_valen.py emo --round rN",
+   "fallen_valen.py finalize --round rN",
+   "harness import fallen-star valen rN valen-vK .omo/asset-gen-tmp/portraits/fallen-valen/rN/vK/final"
+  ]
+ },
+ "dialogue": null,
+ "roles": {
+  "valen": {
+   "name": "심문관 발렌",
+   "identity": "Inquisitor Valen: stern man in his early fifties, long straight steel-blue hair, thin gold circlet, black armored coat, navy cape, clean-shaven, no hat (see fallen_valen.py IDENTITY)",
+   "identityImage": "src/project/flagship/fallenValenChip.ts (character 0)",
+   "lines": {
+    "base": "…그 인형을 넘겨라.",
+    "happy": "…그 정도인가.",
+    "sad": "내가 지키려던 건 이런 게 아니었다.",
+    "angry": "비켜라. 내가 나선다.",
+    "surprised": "…무슨 짓을 한 거냐."
+   },
+   "installDir": "public/assets/shared/portraits/fs-inquisitor-valen",
+   "selectableIn": "src/assets/sharedPortraitAssets.ts (FALLEN cast set) + chronoBell.ts speakerFaces 「심문관 발렌」"
+  }
+ },
+ "reviewView": "bustPixelate"
+}

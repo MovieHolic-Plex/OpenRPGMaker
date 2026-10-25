@@ -515,6 +515,7 @@
 
 /* Compact viewport keeps one-dimensional stock navigation and a real display. */
 @media (max-width: 860px), (max-height: 600px) {
+  @scope (:root) to (.player-layout .play-viewport) {
   /* The overlay padding supplies the compact gutter; do not subtract the
      legacy stage margin a second time before laying out the shop. */
   .player-layout .play-viewport > .runtime-overlay.runtime-shop-overlay {
@@ -550,8 +551,149 @@
   .runtime-shop-detail:has(.runtime-shop-comparison-stats) > :is(
     [data-testid="shop-hero-slot"], .runtime-shop-help-line, .runtime-shop-owned-panel
   ) { display: none; }
+  }
+}
+/* 플레이어 안: 같은 규칙을 화면 크기가 아니라 논리 해상도(data-shop-fit, playSurface)로 고른다. 뿌리는 뷰포트다 —
+   @scope 안 선택자는 뿌리의 자손만 잡으므로 뿌리를 상점 창으로 두면 창 자신을 겨눈 규칙이 안 걸린다. 에메랄드 상점은 자기 판형이라 뺀다. */
+@scope (.player-layout .play-viewport:is([data-shop-fit="compact"], [data-shop-fit="tiny"])) to (.emerald-shop-overlay) {
+  .runtime-shop-overlay {
+    --shop-art-row: 32px;
+    --shop-art-display: 96px;
+    --shop-text-title: 16px;
+    --shop-text-entry: 24px;
+    --shop-text-body: 12px;
+    --shop-text-section: 14px;
+    padding: var(--shop-space-2);
+  }
+  .runtime-shop-topbar { padding: var(--shop-space-2) var(--shop-space-3); gap: var(--shop-space-2); }
+  .runtime-shop-list-panel { padding: var(--shop-space-2); gap: var(--shop-space-1); }
+  .runtime-shop-item-row { column-gap: var(--shop-space-2); }
+  .runtime-shop-detail-panel { padding: var(--shop-space-3); }
+  .runtime-shop-detail-hero { flex-direction: column; align-items: stretch; }
+  .runtime-shop-detail-icon { width: 100%; }
+  .runtime-shop-comparison { padding: var(--shop-space-2); gap: var(--shop-space-2); }
+  .runtime-shop-detail,
+  .runtime-shop-detail-hero { gap: var(--shop-space-2); }
+  .runtime-shop-catbar { padding-bottom: var(--shop-space-2); }
+  .runtime-shop-chip { padding: var(--shop-space-1); }
+  .runtime-shop-party-panel { display: none; }
+  .runtime-shop-prompt-panel { padding: var(--shop-space-2) var(--shop-space-3); }
+  .runtime-shop-status { flex-basis: 100%; }
+  .runtime-shop-prompt-actions { margin-left: auto; }
+  .runtime-shop-keyhints { gap: var(--shop-space-2); }
+  /* Comparison must fit before optional duplicated item presentation. */
+  .runtime-shop-detail:has(.runtime-shop-comparison-stats) > :is(
+    [data-testid="shop-hero-slot"], .runtime-shop-help-line, .runtime-shop-owned-panel
+  ) { display: none; }
 }
 @media (max-width: 460px), (max-height: 360px) {
+  @scope (:root) to (.player-layout .play-viewport) {
+  .runtime-shop-overlay {
+    --shop-text-small: 10px;
+    --shop-text-title: 14px;
+    --shop-art-row: 24px;
+    --shop-control: 24px;
+    padding: var(--shop-space-1);
+  }
+  .runtime-shop-topbar { gap: var(--shop-space-1); padding: var(--shop-space-1) var(--shop-space-2); }
+  .runtime-shop-topbar .runtime-shop-merchant-avatar { display: none; }
+  .runtime-shop-topbar .runtime-shop-brand-sub { font-size: var(--shop-text-small); }
+  .runtime-shop-tab { padding: var(--shop-space-1); }
+  .runtime-shop-gold-panel { padding-left: var(--shop-space-1); }
+  .runtime-shop-gold-line { gap: var(--shop-space-1); }
+  .runtime-shop-list-panel { padding: var(--shop-space-1); gap: 0; }
+  .runtime-shop-catbar { padding-bottom: 0; }
+  .runtime-shop-main { flex-direction: column; }
+  /* 본문이 세로로 쌓이는 크기에서는 상세 패널이 목록을 짓누르면 선택 행이 한 줄도 안 보인다
+     (320x240 실측: 'selected row clipped by list viewport'). 목록에 최소 두 행 분량을
+     보장하고 상세는 나머지에서 잘린다 — 상세는 요약 슬롯만 보이면 충분하다. */
+  .runtime-shop-side { flex: 0 1 auto; max-height: 42%; overflow: hidden; border-left: 0; border-top: var(--shop-line-width) solid var(--shop-line); }
+  .runtime-shop-item-list { min-height: calc(var(--shop-art-row) * 2 + var(--shop-space-1)); }
+  .runtime-shop-detail-panel { padding: var(--shop-space-1) var(--shop-space-2); overflow: hidden; }
+  .runtime-shop-detail { display: grid; grid-template-columns: 1fr 1fr; gap: var(--shop-space-2); align-items: center; }
+  .runtime-shop-detail-hero { flex-direction: row; align-items: center; gap: var(--shop-space-2); }
+  .runtime-shop-detail-icon { width: var(--shop-art-row); height: var(--shop-art-row); background-size: 85%; box-shadow: none; }
+  .runtime-shop-detail-icon::after { display: none; }
+  .runtime-shop-detail-name { font-size: var(--shop-text-body); }
+  .runtime-shop-help-line { border: 0; padding: 0; margin: 0; font-size: var(--shop-text-small); line-height: 1.3; max-height: 2.6em; overflow: hidden; }
+  .runtime-shop-owned-panel,
+  .runtime-shop-detail [data-testid="shop-stat-slot"] { display: none; }
+  .runtime-shop-item-row { padding-block: 0; line-height: 1.2; }
+  .runtime-shop-item-type { display: none; }
+  .runtime-shop-prompt-panel { padding: var(--shop-space-1) var(--shop-space-2); }
+  .runtime-shop-prompt { gap: var(--shop-space-1); }
+  .runtime-shop-status { font-size: var(--shop-text-small); }
+  .runtime-shop-confirm,
+  .runtime-shop-detail-open,
+  .runtime-shop-cancel { padding: var(--shop-space-1) var(--shop-space-2); }
+  .runtime-shop-quantity-label { display: none; }
+  .runtime-shop-quantity-total { font-size: var(--shop-text-body); margin-left: var(--shop-space-1); }
+  .runtime-shop-keyhints { padding-top: var(--shop-space-1); gap: var(--shop-space-1); }
+  .runtime-shop-keyhint { gap: 0; }
+  .runtime-shop-greeting-panel { padding: var(--shop-space-3); }
+  .runtime-shop-menu { gap: var(--shop-space-3); }
+  .runtime-shop-menu-choice { padding-block: var(--shop-space-2); }
+  .runtime-shop-topbar .runtime-shop-brand { overflow: hidden; }
+  .runtime-shop-topbar .runtime-shop-brand-title,
+  .runtime-shop-topbar .runtime-shop-brand-sub { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .runtime-shop-prompt-actions { margin-left: 0; }
+  /* 이 크기에서 프롬프트 패널은 이미 화면의 1/3 이상 — 키 힌트는 입구 메뉴가 이미 가르쳤다. */
+  .runtime-shop-prompt-panel .runtime-shop-keyhints { display: none; }
+  /* 상인 지갑은 보조 정보 — 한 줄이라도 아끼는 크기에서는 버린다. */
+  .runtime-shop-merchant-gold { display: none; }
+  .runtime-shop-comparison { --shop-text-small: 12px; }
+  .runtime-shop-comparison .runtime-shop-key { font-size: var(--shop-text-small); }
+  .runtime-shop-comparison > .runtime-shop-keyhints { display: grid; grid-template-columns: minmax(0, 1fr) auto; }
+  .runtime-shop-comparison .runtime-shop-keyhint:nth-child(2) { grid-column: 1 / -1; grid-row: 2; }
+  .runtime-shop-comparison .runtime-shop-keyhint-label { display: none; }
+  .runtime-shop-detail:has(.runtime-shop-comparison-stats),
+  .runtime-shop-detail:has(.runtime-shop-comparison-stats) > [data-testid="shop-stat-slot"] { display: block; }
+  .runtime-shop-detail .runtime-shop-comparison-summary { gap: 0; }
+  .runtime-shop-detail :is(.runtime-shop-comparison-heading, .runtime-shop-preview-reason) {
+    font-size: var(--shop-text-small);
+    line-height: 1.2;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .runtime-shop-detail :is(.runtime-shop-replacement, .runtime-shop-same-equipment) { display: none; }
+  .runtime-shop-detail .runtime-shop-comparison-stats {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: var(--shop-space-1);
+  }
+  .runtime-shop-detail .runtime-shop-comparison-stats > .runtime-shop-stat {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    padding: 0;
+    border: 0;
+    font-size: var(--shop-text-small);
+    line-height: 1.2;
+  }
+  .runtime-shop-detail .runtime-shop-comparison-stats > .runtime-shop-stat > span { text-align: center; }
+  .runtime-shop-items-shell:has(.runtime-shop-comparison-stats) .runtime-shop-prompt-panel {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: var(--shop-space-1);
+    align-items: center;
+  }
+  .runtime-shop-items-shell:has(.runtime-shop-comparison-stats) .runtime-shop-prompt { display: contents; }
+  .runtime-shop-items-shell:has(.runtime-shop-comparison-stats) .runtime-shop-status { grid-column: 1 / -1; }
+  .runtime-shop-items-shell:has(.runtime-shop-comparison-stats) .runtime-shop-quantity-wrap { grid-column: 1; grid-row: 2; }
+  .runtime-shop-items-shell:has(.runtime-shop-comparison-stats) .runtime-shop-balance-after { grid-column: 2; grid-row: 2; }
+  .runtime-shop-items-shell:has(.runtime-shop-comparison-stats) .runtime-shop-prompt-actions { grid-column: 1; grid-row: 3; }
+  .runtime-shop-items-shell:has(.runtime-shop-comparison-stats) .runtime-shop-keyhints {
+    grid-column: 2;
+    grid-row: 3;
+    padding-top: 0;
+    justify-self: end;
+  }
+  .runtime-shop-items-shell:has(.runtime-shop-comparison-stats) .runtime-shop-keyhint-label { display: none; }
+  }
+}
+/* 플레이어 안: 같은 규칙을 화면 크기가 아니라 논리 해상도(data-shop-fit, playSurface)로 고른다. 뿌리는 뷰포트다 —
+   @scope 안 선택자는 뿌리의 자손만 잡으므로 뿌리를 상점 창으로 두면 창 자신을 겨눈 규칙이 안 걸린다. 에메랄드 상점은 자기 판형이라 뺀다. */
+@scope (.player-layout .play-viewport[data-shop-fit="tiny"]) to (.emerald-shop-overlay) {
   .runtime-shop-overlay {
     --shop-text-small: 10px;
     --shop-text-title: 14px;
@@ -995,6 +1137,16 @@
 }
 .runtime-shop-overlay.runtime-shop-preset-pixel .runtime-shop-party-sprite { width: 24px; height: 24px; border: 0; background-color: var(--shop-inset); }
 @media (max-width: 860px), (max-height: 600px) {
+  @scope (:root) to (.player-layout .play-viewport) {
+  /* 공용 압축 규칙(.runtime-shop-party-panel { display: none })을 이긴다 — 이 프리셋의 비교는 파티 창이 주인공이다. */
+  .runtime-shop-overlay.runtime-shop-preset-pixel .runtime-shop-party-panel { display: block; }
+  .runtime-shop-overlay.runtime-shop-preset-pixel .runtime-shop-party-walker { zoom: 1; }
+  .runtime-shop-overlay.runtime-shop-preset-pixel .runtime-shop-statement-portrait { display: none; }
+  }
+}
+/* 플레이어 안: 같은 규칙을 화면 크기가 아니라 논리 해상도(data-shop-fit, playSurface)로 고른다. 뿌리는 뷰포트다 —
+   @scope 안 선택자는 뿌리의 자손만 잡으므로 뿌리를 상점 창으로 두면 창 자신을 겨눈 규칙이 안 걸린다. 에메랄드 상점은 자기 판형이라 뺀다. */
+@scope (.player-layout .play-viewport:is([data-shop-fit="compact"], [data-shop-fit="tiny"])) to (.emerald-shop-overlay) {
   /* 공용 압축 규칙(.runtime-shop-party-panel { display: none })을 이긴다 — 이 프리셋의 비교는 파티 창이 주인공이다. */
   .runtime-shop-overlay.runtime-shop-preset-pixel .runtime-shop-party-panel { display: block; }
   .runtime-shop-overlay.runtime-shop-preset-pixel .runtime-shop-party-walker { zoom: 1; }
@@ -1045,7 +1197,12 @@
 
 /* 아래 창 — 설명 + 보유/장착 수, 소지금. */
 .runtime-shop-desc-panel { display: flex; flex-direction: column; justify-content: center; gap: 0.3em; min-width: 0; padding: 0.6em 1.1em; }
-.runtime-shop-desc-text { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+/* 설명은 줄 바꿈한다(한글은 낱말 단위) — 높이·글자 크기 맞춤은 runtimeTextFit.fitTextToLines 가 잰다(J21: nowrap 말줄임이라 능력치가 안 보였다). */
+.runtime-shop-desc-text { min-width: 0; overflow: hidden; white-space: normal; word-break: keep-all; overflow-wrap: anywhere; line-height: 1.2; }
+/* 도트 상점 설명창은 두 줄 자리를 늘 잡아 둔다 — 커서가 한 줄짜리 ↔ 두 줄짜리 설명을 오갈 때 위 목록 창 높이(보이는 행 수)가 출렁이지 않게. */
+.runtime-shop-overlay.runtime-shop-preset-pixel .runtime-shop-desc-text { min-height: 2.4em; }
+.runtime-shop-desc-text.is-text-clamped { display: -webkit-box; -webkit-box-orient: vertical; text-overflow: ellipsis; }
+.runtime-shop-desc-stats { color: var(--shop-accent); }
 .runtime-shop-desc-owned { color: var(--shop-ink-dim); font-size: var(--shop-text-small); }
 .runtime-shop-purse-panel { display: flex; flex-direction: column; justify-content: center; align-items: flex-end; padding: 0.5em 1.1em; }
 .runtime-shop-purse-label { color: var(--shop-ink-dim); font-size: var(--shop-text-small); }
@@ -1074,6 +1231,33 @@
 
 /* 320×240 급 — 파티 창을 한 줄(걷는 그림 + 한 마디)로, 명세서는 「상세 / 장비 비교」 창에 맡긴다. */
 @media (max-width: 460px), (max-height: 360px) {
+  @scope (:root) to (.player-layout .play-viewport) {
+  .runtime-shop-overlay.runtime-shop-preset-pixel { --shop-gap: 2px; padding: 2px; }
+  .runtime-shop-overlay.runtime-shop-preset-pixel .runtime-shop-party-walker { zoom: 0.75; }
+  .runtime-shop-overlay.runtime-shop-preset-pixel .runtime-shop-items-shell { grid-template-columns: 1fr; grid-template-rows: minmax(0, 1fr) auto auto; }
+  .runtime-shop-overlay.runtime-shop-preset-pixel .runtime-shop-side { grid-column: 1; grid-row: 2; display: block; min-height: 38px; overflow: visible; }
+  /* 파티 창은 줄어들지 않는다 — 목록이 남는 높이를 가져간다(320x240 실측: 창이 테두리만 남았다). */
+  .runtime-shop-overlay.runtime-shop-preset-pixel .runtime-shop-party-panel { flex: none; min-height: 34px; }
+  .runtime-shop-overlay.runtime-shop-preset-pixel .runtime-shop-list-panel { overflow: hidden; }
+  .runtime-shop-overlay.runtime-shop-preset-pixel .runtime-shop-footer { grid-row: 3; min-height: 0; }
+  .runtime-shop-overlay.runtime-shop-preset-pixel .runtime-shop-detail-panel,
+  .runtime-shop-overlay.runtime-shop-preset-pixel .runtime-shop-desc-owned,
+  .runtime-shop-overlay.runtime-shop-preset-pixel .runtime-shop-purse-label,
+  .runtime-shop-overlay.runtime-shop-preset-pixel .runtime-shop-list-caption,
+  .runtime-shop-overlay.runtime-shop-preset-pixel .runtime-shop-party-name,
+  .runtime-shop-overlay.runtime-shop-preset-pixel .runtime-shop-party-fit.is-second { display: none; }
+  .runtime-shop-overlay.runtime-shop-preset-pixel .runtime-shop-party-card { grid-template-columns: 1fr; grid-template-rows: auto auto; justify-items: center; padding: 0 1px; }
+  .runtime-shop-overlay.runtime-shop-preset-pixel .runtime-shop-party-card > .runtime-shop-party-walker { grid-row: auto; }
+  .runtime-shop-overlay.runtime-shop-preset-pixel .runtime-shop-party-fit { max-width: 100%; min-height: 1.1em; }
+  .runtime-shop-overlay.runtime-shop-preset-pixel :is(.runtime-shop-desc-panel, .runtime-shop-purse-panel) { padding: 2px 6px; }
+  .runtime-shop-overlay.runtime-shop-preset-pixel .runtime-shop-purse-value { font-size: var(--shop-text-body); }
+  .runtime-shop-overlay.runtime-shop-preset-pixel .runtime-shop-item-row,
+  .runtime-shop-overlay.runtime-shop-preset-pixel .runtime-shop-item-row.rm-nav-item { padding: 0 6px 0 22px; min-height: var(--shop-art-row); }
+  }
+}
+/* 플레이어 안: 같은 규칙을 화면 크기가 아니라 논리 해상도(data-shop-fit, playSurface)로 고른다. 뿌리는 뷰포트다 —
+   @scope 안 선택자는 뿌리의 자손만 잡으므로 뿌리를 상점 창으로 두면 창 자신을 겨눈 규칙이 안 걸린다. 에메랄드 상점은 자기 판형이라 뺀다. */
+@scope (.player-layout .play-viewport[data-shop-fit="tiny"]) to (.emerald-shop-overlay) {
   .runtime-shop-overlay.runtime-shop-preset-pixel { --shop-gap: 2px; padding: 2px; }
   .runtime-shop-overlay.runtime-shop-preset-pixel .runtime-shop-party-walker { zoom: 0.75; }
   .runtime-shop-overlay.runtime-shop-preset-pixel .runtime-shop-items-shell { grid-template-columns: 1fr; grid-template-rows: minmax(0, 1fr) auto auto; }
@@ -1144,4 +1328,43 @@
  .runtime-shop-preset-collector .runtime-shop-detail-type{display:none;}
  .runtime-shop-preset-collector .runtime-shop-help-line{max-height:none;overflow:visible;font-size:10px;line-height:1.3;word-break:keep-all;overflow-wrap:anywhere;}
  .runtime-shop-preset-collector .runtime-shop-owned-panel{display:block;font-size:10px;}
+}
+
+/* ── 플레이어 안 상점 = 게임 화소 틀 (2026-10-24) ─────────────────────────────────────────
+   상점 창은 스테이지 변환 밖(.play-viewport)에 붙지만, 논리 해상도 크기의 틀로 놓고 게임 배율로 통째 키운다.
+   그래서 기기·방향이 달라도 같은 배치가 크거나 작게 보일 뿐이다. 틀 안은 --play-scale: 1 — 글자·간격이 게임 화소다.
+   배치(넓은·압축·작은)는 위 @scope 블록이 data-shop-fit(논리 해상도)으로 고른다. 에메랄드 상점은 자기 480×320 틀을 쓴다. */
+.player-layout .play-viewport > .runtime-overlay.runtime-shop-overlay:not(.emerald-shop-overlay) {
+  --play-scale: 1;
+  inset: auto;
+  left: calc(var(--play-stage-left, 0px) + var(--play-logical-half-width) * var(--play-scale-x, 1));
+  top: calc(var(--play-stage-top, 0px) + var(--play-logical-half-height) * var(--play-scale-y, 1));
+  width: var(--play-logical-width);
+  height: var(--play-logical-height);
+  max-width: none;
+  max-height: none;
+  transform: translate(-50%, -50%) scale(var(--play-scale-x, 1), var(--play-scale-y, 1));
+  transform-origin: 50% 50%;
+}
+.player-layout .play-viewport > .runtime-overlay.runtime-shop-overlay.runtime-shop-preset-pixel {
+  --shop-ui-font: "Galmuri11 Regular", var(--runtime-pixel-font);
+  --shop-text-body: 12px;
+  --shop-text-title: 12px;
+  --shop-text-small: 12px;
+  --shop-art-row: 16px;
+}
+/* 에메랄드 상점도 뷰포트 한가운데가 아니라 게임 화면 한가운데에 놓는다(세로 터치는 화면이 위에 붙는다). */
+.player-layout .play-viewport > .runtime-shop-overlay.emerald-shop-overlay {
+  left: calc(var(--play-stage-left, 0px) + var(--play-logical-half-width) * var(--play-scale-x, 1));
+  top: calc(var(--play-stage-top, 0px) + var(--play-logical-half-height) * var(--play-scale-y, 1));
+}
+/* 압축 배치(480×270 급)의 입구 창 — 예전엔 화면 px 압축 규칙만 걸려 넓은 여백(32px)이 270 높이를 넘겼다. 작은 배치와 같은 간격을 쓴다. */
+.player-layout .play-viewport[data-shop-fit="compact"] > .runtime-shop-overlay:not(.emerald-shop-overlay) .runtime-shop-greeting-panel { padding: var(--shop-space-3); }
+.player-layout .play-viewport[data-shop-fit="compact"] > .runtime-shop-overlay:not(.emerald-shop-overlay) .runtime-shop-menu { gap: var(--shop-space-3); }
+.player-layout .play-viewport[data-shop-fit="compact"] > .runtime-shop-overlay:not(.emerald-shop-overlay) .runtime-shop-menu-choice { padding-block: var(--shop-space-2); }
+/* 파티 창 카드는 네 칸 고정이라, 게임 px 12px 글자에서 두 명이면 이름이 「엘…」로 잘렸다(1.15 이후). 있는 사람 수만큼 폭을 나눈다. */
+.player-layout .play-viewport > .runtime-shop-overlay.runtime-shop-preset-pixel .runtime-shop-party-cards {
+  grid-template-columns: none;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(0, 1fr);
 }

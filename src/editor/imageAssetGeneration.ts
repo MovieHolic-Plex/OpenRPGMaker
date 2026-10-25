@@ -1,4 +1,5 @@
 import { generateAiImage, ImageGenerationError, type GenerateAiImageRequest, type GeneratedImageAsset } from "@/ai/imageGenerationClient";
+import { imageFailureNextStep } from "./imageGenerationFallback";
 import { generateDotArt, type GenerateDotArtRequest } from "@/ai/dotTextArt";
 import type { DotTextImage } from "@/ai/dotTextImage";
 import { imageAssetDotPrompt, imageAssetPrompt, prepareImageAssetRequest, type ImageAssetKind } from "@/editor/tools/imageAssetTools";
@@ -53,7 +54,7 @@ export async function generateImageAsset(
       dataUrl: image.dataUrl,
     };
   } catch (error) {
-    if (error instanceof ImageGenerationError) return { ok: false, summary: `그림 생성에 실패했습니다: ${error.message}`, code: "image-generation-failed" };
+    if (error instanceof ImageGenerationError) return { ok: false, summary: `그림 생성에 실패했습니다: ${error.message} ${imageFailureNextStep(request.kind === "title" ? "title" : request.kind === "backdrop" ? "backdrop" : "picture", request.prompt, error)}`, code: "image-generation-failed" };
     if (error instanceof DOMException && error.name === "AbortError") throw error;
     return { ok: false, summary: `그림 생성에 실패했습니다: ${error instanceof Error ? error.message : String(error)}`, code: "image-generation-failed" };
   }

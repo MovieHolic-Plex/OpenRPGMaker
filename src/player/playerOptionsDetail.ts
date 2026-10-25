@@ -4,6 +4,15 @@ import { dialogueUiText } from '@/player/dialogueUiStrings';
 import { resolveDialogueSystem, type DialogueSpeed } from '@/project/dialogueSystem';
 import type { StatusMenuDetail, StatusMenuDetailEntry } from '@/player/playerStatusMenuDetailTypes';
 import type { Project } from '@/project/types';
+import { resolveTouchControls, type TouchStickMode } from '@/project/touchControls';
+
+const NEXT_STICK: Record<TouchStickMode, TouchStickMode> = { auto: 'fixed', fixed: 'floating', floating: 'auto' };
+const STICK_VALUE = { auto: 'value.stickAuto', fixed: 'value.stickFixed', floating: 'value.stickFloating' } as const;
+
+/** 터치 UI 로 열린 플레이 화면인가(playSurface 가 data-touch-ui 를 단다). */
+function touchUiActive(): boolean {
+  return typeof document !== 'undefined' && document.querySelector('.play-viewport[data-touch-ui="true"]') !== null;
+}
 
 const NEXT_SPEED: Record<DialogueSpeed, DialogueSpeed> = { normal: 'fast', fast: 'slow', slow: 'normal' };
 const OPACITY_STEPS = [1, 0.9, 0.8, 0.7, 0.6, 0.5, 0.4] as const;
@@ -62,6 +71,33 @@ export function createPlayerOptionsDetail(onChanged?: (message?: string) => void
       label: text('option.windowOpacity'), value: `${Math.round(effective.windowOpacity * 100)}%`,
       description: text('option.windowOpacityHint'), testId: 'player-option-window-opacity',
       onActivate: () => change({ windowOpacity: OPACITY_STEPS[(Math.max(0, index) + 1) % OPACITY_STEPS.length] }),
+    });
+  }
+  entries.push({
+    label: text('option.alwaysRun'), value: prefs.alwaysRun ? text('value.on') : text('value.off'),
+    description: text('option.alwaysRunHint'), testId: 'player-option-always-run',
+    onActivate: () => change({ alwaysRun: !prefs.alwaysRun }),
+  });
+  if (touchUiActive()) {
+    const touch = resolveTouchControls(project?.system.touchControls, {
+      ...(prefs.touchTapToMove !== undefined ? { tapToMove: prefs.touchTapToMove } : {}),
+      ...(prefs.touchStick !== undefined ? { stick: prefs.touchStick } : {}),
+      ...(prefs.touchHaptics !== undefined ? { haptics: prefs.touchHaptics } : {}),
+    });
+    entries.push({
+      label: text('option.tapToMove'), value: touch.tapToMove ? text('value.on') : text('value.off'),
+      description: text('option.tapToMoveHint'), testId: 'player-option-tap-to-move',
+      onActivate: () => change({ touchTapToMove: !touch.tapToMove }),
+    });
+    entries.push({
+      label: text('option.stick'), value: text(STICK_VALUE[touch.stick]),
+      description: text('option.stickHint'), testId: 'player-option-stick',
+      onActivate: () => change({ touchStick: NEXT_STICK[touch.stick] }),
+    });
+    entries.push({
+      label: text('option.haptics'), value: touch.haptics ? text('value.on') : text('value.off'),
+      description: text('option.hapticsHint'), testId: 'player-option-haptics',
+      onActivate: () => change({ touchHaptics: !touch.haptics }),
     });
   }
   entries.push({

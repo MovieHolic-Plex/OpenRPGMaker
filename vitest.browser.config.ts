@@ -5,6 +5,9 @@
 // verify-gates 의 `browser` 스테이지가 이 설정을 쓴다.
 import { defineConfig } from "vitest/config";
 import { fileURLToPath, URL } from "node:url";
+import { assertCiOnlyTests } from "./scripts/lib/ciOnlyTests.mjs";
+
+assertCiOnlyTests("vitest");
 
 export default defineConfig({
   resolve: {

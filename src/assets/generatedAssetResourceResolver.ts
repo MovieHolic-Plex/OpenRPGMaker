@@ -7,6 +7,7 @@ import { RETRO_PIXEL_FX_URLS } from "./retroPixelAnimations";
 import { EMERALD_OPENING_BACKDROP_URLS } from "./emeraldOpeningBackdrops";
 import { ASTRA_CAST_URLS } from "./astraCast";
 import { FALLEN_STAR_BACKDROP_URLS } from "./fallenStarOpeningBackdrops";
+import { FIRST_LOVE_OPENING_BACKDROP_URLS } from "./firstLoveOpeningBackdrops";
 import { uploadedAssetUrl } from "@/project/persistence/assetAccessors";
 import { withInlineAsset } from "./inlineAssetStore";
 import { resolveCc0IconAssetUrl } from "./cc0IconAssets";
@@ -60,6 +61,8 @@ const BUILTIN_GENERATED_RESOURCE_URLS: Record<string, string | null> = {
   ...ASTRA_CAST_URLS,
   // 『폴른 스타』 오프닝·타이틀 배경(게임 맵을 1:1 로 구운 그림).
   ...FALLEN_STAR_BACKDROP_URLS,
+  // 『첫사랑』 오프닝 몽타주 배경(게임 맵을 1:1 로 구운 그림).
+  ...FIRST_LOVE_OPENING_BACKDROP_URLS,
   hero: null,
   "oprn-title-bright": "/assets/generated/title/oprn-title-bright-v2.png",
   "oprn-title-blue": "/assets/generated/title/default-title-blue.png",
@@ -71,6 +74,11 @@ const BUILTIN_GENERATED_RESOURCE_URLS: Record<string, string | null> = {
   "oprn-title-romance-school": "/assets/generated/title/romance-school.jpg",
   "oprn-title-romance-office": "/assets/generated/title/romance-office.jpg",
   "oprn-title-romance-town": "/assets/generated/title/romance-town.jpg",
+  // 『첫사랑』 엔딩 B·C 카드 — 서하 혼자, 밤 도시(맑음·비). 위 사무실 타이틀 그림의 사람 없는 쪽 + 공용 전신 초상을 합성(새 생성 아님).
+  // 생성기 scripts/content/first-love/bake_ending_cards.py.
+  "oprn-first-love-ending-a": "/assets/generated/title/first-love-ending-a.jpg",
+  "oprn-first-love-ending-b": "/assets/generated/title/first-love-ending-b.jpg",
+  "oprn-first-love-ending-c": "/assets/generated/title/first-love-ending-c.jpg",
   // 몬스터 수집 프리셋 오프닝 박사 반신상(2026-10-16) — gpt-image-2.5-sunburst 생성 → 격자 복원 도트화. 출처·프롬프트: public/assets/emerald-monster/professor-bust-provenance.json.
   "oprn_emerald_professor_bust": "/assets/emerald-monster/professor-bust.png",
   "horror-mystery-blue-gallery": "/assets/generated/title/horror-mystery-blue-gallery.png",

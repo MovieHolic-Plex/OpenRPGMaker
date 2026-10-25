@@ -3,6 +3,7 @@
 // 가장자리에서 이어진 밝은 무채색만 투명으로 지운 뒤(글자 속 흰색은 남는다) 여백을 잘라 낸다.
 // 등록·연결은 키아트와 같이 기존 쓰기 툴(upsert_resource → set_title_screen) 묶음으로 한다.
 import { generateAiImage, ImageGenerationError, type GenerateAiImageRequest, type GeneratedImageAsset } from "@/ai/imageGenerationClient";
+import { imageFailureNextStep } from "./imageGenerationFallback";
 import { genId } from "@/util/id";
 
 const IMAGE_DATA_URL = /^data:image\/(?:png|jpeg|webp);base64,[A-Za-z0-9+/]+=*$/u;
@@ -54,7 +55,7 @@ export async function generateTitleLogo(
   } catch (error) {
     if (error instanceof DOMException && error.name === "AbortError") throw error;
     const reason = error instanceof ImageGenerationError || error instanceof Error ? error.message : String(error);
-    return { ok: false, summary: `타이틀 로고 생성에 실패했습니다: ${reason}`, code: "image-generation-failed" };
+    return { ok: false, summary: `타이틀 로고 생성에 실패했습니다: ${reason} ${imageFailureNextStep("logo", "", error)}`, code: "image-generation-failed" };
   }
 }
 

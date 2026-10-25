@@ -45,8 +45,8 @@ export interface StateBehavior {
   readonly magicDefenseMultiplier: number;
   readonly forcedAction?: "attackRandom" | "rage";
   readonly elementRates?: Readonly<Record<string, string>>;
-  /** 피해 계열별 받는 피해 %를 바꿔 쓰는 값(physical/magic). 생략 = 바꾸지 않음. */
-  readonly damageTypeRates?: Readonly<{ physical?: number; magic?: number }>;
+  /** 피해 계열별 받는 피해 %를 바꿔 쓰는 값(physical/magic · 속성 예외 elements). 생략 = 바꾸지 않음. */
+  readonly damageTypeRates?: Readonly<{ physical?: number; magic?: number; elements?: Readonly<Record<string, number>> }>;
   // 반격·도발·감싸기·회피·리플렉·리레이즈·선고(2026-10-01). 모두 runtimeEffects 에서만 온다.
   readonly counterChance: number;
   readonly taunt: boolean;
@@ -427,14 +427,22 @@ export function reraiseForStates(project: Project, battler: { readonly stateIds:
  * 걸린 상태가 정한 피해 계열 받는 피해 %(가장 큰 값). 어느 상태도 그 계열을 정하지 않으면 undefined —
  * 그때는 배틀러의 기본값(적 damageTypeRates)을 쓴다. 바꿔 쓰는 값이라 「마법 무효」 적도 상태 하나로 열 수 있다.
  */
-export function stateDamageTypeRateOverride(project: Project, battler: { readonly stateIds: readonly string[] }, kind: "physical" | "magic"): number | undefined {
+export function stateDamageTypeRateOverride(project: Project, battler: { readonly stateIds: readonly string[] }, kind: "physical" | "magic", elementId?: string): number | undefined {
   let rate: number | undefined;
   for (const stateId of battler.stateIds) {
-    const value = behaviorFor(project, stateId)?.damageTypeRates?.[kind];
-    if (typeof value !== "number" || !Number.isFinite(value)) continue;
+    const value = resolveDamageTypeRate(behaviorFor(project, stateId)?.damageTypeRates, kind, elementId);
+    if (value === undefined) continue;
     rate = rate === undefined ? value : Math.max(rate, value);
   }
   return rate;
+}
+
+/** 한 출처(적 기록 또는 상태 하나)의 받는 피해 % — 맞은 속성의 예외(elements)가 있으면 그것, 없으면 계열 값. */
+export function resolveDamageTypeRate(rates: { readonly physical?: number; readonly magic?: number; readonly elements?: Readonly<Record<string, number>> } | undefined, kind: "physical" | "magic", elementId?: string): number | undefined {
+  if (!rates) return undefined;
+  const fromElement = elementId ? rates.elements?.[elementId] : undefined;
+  const value = typeof fromElement === "number" && Number.isFinite(fromElement) ? fromElement : rates[kind];
+  return typeof value === "number" && Number.isFinite(value) ? value : undefined;
 }
 
 export function stateElementRateOverride(project: Project, battler: { readonly stateIds: readonly string[] }, elementId: string): string | undefined {

@@ -1,4 +1,5 @@
 import { isParticlePreset, normalizeParticleDurationMs, normalizeShakeDirection } from "@/project/eventCommands/cinematicStaging";
+import { playerChoiceText } from "@/project/choiceText";
 import { playMonsterSfx } from "@/player/monsterSfx";
 import { monsterCampaign } from "@/project/monsterJournal";
 import { normalizeBlendMode } from "@/project/blendMode";
@@ -15,7 +16,7 @@ import {
   setEffectiveFactionStance,
 } from "@/project/factionRuntime";
 import { resolveFactionTable } from "@/project/factions";
-import type { Command, Condition, EndingDef, GameEvent, M2CommandFields, SwitchValue } from "@/project/types";
+import type { Command, Condition, EndingDef, FaceGraphic, GameEvent, M2CommandFields, SwitchValue } from "@/project/types";
 
 import { clampEmoteDurationMs } from "@/project/emotes";
 import { craftRecipe } from "@/project/craftRecipes";
@@ -546,6 +547,16 @@ export function executeCommand(
   state.beforeCommand?.(command);
   switch (command.kind) {
     case "changeFace": {
+      // 말을 다른 상대에게 돌릴 때: [듣는 사람 얼굴(반대 자리)] [화자 얼굴] [대사] — 앞 얼굴을 듣는 사람으로 남긴다(첫사랑 r9 편의점:
+      // 점원 다음 지후에게 말하는데 듣는 사람 자리에 점원이 남았다). 대사 사이에 한 번만 바꾸는 보통 흐름에는 영향이 없다.
+      const previousFace = state.currentFace;
+      const hadFaceSinceText = state.faceSinceText === true;
+      state.faceSinceText = true;
+      const keepListener = (next: FaceGraphic | undefined): void => {
+        state.listenerFace = hadFaceSinceText && previousFace && next && (previousFace.position === "right") !== (next.position === "right")
+          ? previousFace
+          : undefined;
+      };
       if (command.appearanceId !== undefined) {
         const face = state.project ? resolveAppearancePortrait(state.project, command.appearanceId, command.presentation ?? "face") : undefined;
         state.currentFace = face
@@ -556,6 +567,7 @@ export function executeCommand(
               flipHorizontally: command.flipHorizontally,
             }
           : undefined;
+        keepListener(state.currentFace);
         return resumeNext(frame);
       }
       state.currentFace = command.resourceId
@@ -567,14 +579,20 @@ export function executeCommand(
             flipHorizontally: command.flipHorizontally,
           }
         : undefined;
+      keepListener(state.currentFace);
       return resumeNext(frame);
     }
-    case "text":
+    case "text": {
+      const listenerFace = state.listenerFace;
+      const speaker = resolveSpeakerToken(state, command.speaker);
+      state.listenerFace = undefined;
+      state.faceSinceText = false;
       return pause("text", {
         kind: "text",
-        speaker: command.speaker,
+        speaker,
         body: textBodyOf(command),
         face: state.currentFace,
+        ...(listenerFace ? { listenerFace } : {}),
         settings: state.session.messageWindowSettings,
         autoAdvance: command.autoAdvance === true,
         emotion: command.emotion,
@@ -587,13 +605,16 @@ export function executeCommand(
         ...(command.speakerActor ? { speakerActor: command.speakerActor } : {}),
         ...(command.addressee ? { addressee: command.addressee } : {}),
         ...(command.autoFace === false ? { autoFace: false } : {}),
+        ...(command.bustSide === "stage" ? { bustSide: "stage" as const } : {}),
+        ...(command.listenerBust ? { listenerBust: command.listenerBust } : {}),
         ...(command.calling === true ? { calling: true } : {}),
       });
+    }
     case "choices":
       return pause("choices", {
         kind: "choices",
         prompt: command.prompt,
-        options: command.options.slice(0, 5).map((option) => ({ text: option.text })),
+        options: command.options.slice(0, 5).map((option) => ({ text: playerChoiceText(option.text) })),
         settings: state.session.messageWindowSettings ?? DEFAULT_MESSAGE_WINDOW_SETTINGS,
         cancelBehavior: command.cancelBehavior,
       });
@@ -693,7 +714,7 @@ export function executeCommand(
       if (!breakLoop(state)) return resumeNext(frame);
       return { kind: "continue" };
     case "transfer":
-      return pause("transfer", { kind: "transfer", mapId: command.mapId, x: command.x, y: command.y, direction: command.direction, fade: command.fade, transition: command.transition, ...(command.door === false ? { door: false } : {}) });
+      return pause("transfer", { kind: "transfer", mapId: command.mapId, x: command.x, y: command.y, direction: command.direction, fade: command.fade, transition: command.transition, ...(typeof command.door === "boolean" ? { door: command.door } : {}) });
     case "wait": {
       const ms =
         command.variableId && command.variableId.trim()
@@ -1385,4 +1406,16 @@ function resolveSwitchValue(session: { switches: Record<string, boolean>; variab
   if (typeof value === "boolean") return value;
   if (value === "toggle") return !getSwitch(session as any, switchId);
   return (session.variables[value.id] ?? 0) !== 0;
+}
+
+/**
+ * 화자 칸에 남은 이동 대상 토큰(「@player」·「player」)을 주인공 이름으로 — 조수 컷신이 말하는 사람을 이동 대상 id 로 적어
+ * 공포 저택 오프닝 이름표에 「@player」가 그대로 떴다(2026-10-25 판정 J11). 주인공 = 파티 맨 앞 배우.
+ */
+function resolveSpeakerToken(state: { readonly session: { readonly partyActorIds: readonly string[]; readonly actorNames?: Readonly<Record<string, string>> }; readonly project?: { readonly database: { readonly actors: readonly { readonly id: string; readonly name: string }[] } } }, speaker: string | undefined): string | undefined {
+  const raw = speaker?.trim();
+  if (!raw || !/^@?(player|hero)$/iu.test(raw)) return speaker;
+  const leaderId = state.session.partyActorIds[0];
+  const actor = leaderId ? state.project?.database.actors.find((entry) => entry.id === leaderId) : undefined;
+  return (leaderId && state.session.actorNames?.[leaderId]) || actor?.name || undefined;
 }

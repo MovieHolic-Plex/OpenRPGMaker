@@ -1,0 +1,6 @@
+castle: PASS — majors: none; minors: large rooms read sparse with uniform flagstone floor (seed1 south hall, seed2 central hall), few props in open floor
+catacomb: PASS — majors: none; minors: hard-edged gold-dotted floor patch in north alcove (seed1, x~290-430,y~140-190) and rubble-speckled patch in upper-right room (seed2), moss speckle slightly noisy
+cave: PASS — majors: none; minors: outer rock mass shows a visible repeating bump pattern (both seeds), stepped diagonal cliff edges on seed1 west/east, stalagmites close to walkway edges
+forest: PASS — majors: none; minors: very flat grass clearings with sparse speckle (seed1 center, seed2 south), repeated tree canopy tiles in the border mass
+ice: PASS — majors: none; minors: cracked-ice sheets are busy (seed1 both lakes, seed2 west lakes), brown cone stalagmites slightly off-theme on snow, repeating dark rock border texture
+mine: PASS — majors: none; minors: long straight plank walkway is monotonous (both seeds), boulder pile overlaps wall base (seed1 top, x~340,y~108), crates hug the far-left edge (seed2), repeating rock border texture

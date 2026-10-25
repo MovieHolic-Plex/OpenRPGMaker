@@ -315,6 +315,8 @@ export interface PlaySession {
   learnedViaAp?: Record<ActorId, SkillId[]>;
   /** 폭주(rage 기술) 배우가 승리 때마다 모은 몬스터 목록(몬스터 레코드 id, 배우당 최대 64). 생략 = 없음. */
   actorRageEnemyIds?: Record<ActorId, string[]>;
+  /** 알아낸 적 약점·저항(적 레코드 id → `element:<id>`|`type:physical|magic` → 배율). 처음 맞힌 타격에서 적힌다(src/battle/weaknessDiscovery.ts). 생략 = 아직 없음. */
+  knownWeaknesses?: Record<string, Record<string, number>>;
   actorLevels: Record<string, number>;
   actorVitals: Record<string, ActorVitals>;
   eventLocations: Record<string, RuntimeEventLocation>;

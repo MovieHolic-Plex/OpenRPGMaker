@@ -1,3 +1,4 @@
+import { enemyHidesHp } from "@/project/enemyHpVisibility";
 import { withInlineAsset } from "@/assets/inlineAssetStore";
 import { STAT_STAGE_ABBREVIATIONS, STAT_STAGE_KEYS, STAT_STAGE_LABELS } from "@/battle/statStages";
 import { beginEnemyCollapse, markEnemyCollapsed } from "@/player/battleEnemyCollapse";
@@ -820,13 +821,19 @@ function syncEnemyNode(node: HTMLElement, enemy: BattleBattlerSnapshot, snapshot
     // chrome 겹 안에 넣는다 — 노드 직계로 붙이면 흐름 높이가 늘어 발 위치가 흔들린다.
     (node.querySelector<HTMLElement>(".battle-enemy-chrome") ?? node).append(enemyHpHud(enemy));
   }
+  // 보스 HP 숨김(EnemyRecord.hideHp): HP·MP 막대와 숫자를 아예 떼어 낸다 — 스킨·룩 CSS 가 무엇을 펼치든 보이지 않는다.
+  const hideHp = enemyHidesHp(store.getCurrent(), enemy.recordId);
+  if (hideHp) {
+    node.dataset.hideHp = "true";
+    for (const part of node.querySelectorAll(".battle-enemy-hp-bar, .battle-enemy-mp-bar, .battle-enemy-hp-text")) part.remove();
+  }
   // 한 번이라도 피해를 입은 적은 HP 를 계속 보여준다.
   //
   // rm2000 스킨은 원작 고증을 이유로 적 HUD 를 targetSelect 중 선택된 적에게만 펼쳤다.
   // 그 결과 "한 방 더면 죽는다" 는 판단이 구조적으로 불가능해 모든 턴이 같은 무게가
   // 됐다. 아직 안 때린 적은 그대로 감추고(정보 수집도 플레이다), 때린 순간부터 남은
   // 체력을 노출한다. CSS 가 [data-battle-hp-revealed="true"] 로 HUD 를 펼친다.
-  node.dataset.battleHpRevealed = presented.hp < enemy.maxHp || enemy.scanned ? "true" : "false";
+  node.dataset.battleHpRevealed = !hideHp && (presented.hp < enemy.maxHp || enemy.scanned) ? "true" : "false";
   const hpText = node.querySelector<HTMLElement>(".battle-enemy-hp-text");
   if (hpText) hpText.textContent = `${presented.hp}/${enemy.maxHp}`;
   const hpBar = node.querySelector<HTMLElement>(".battle-enemy-hp-bar");
@@ -1006,9 +1013,12 @@ function showDamageFeedback(field: HTMLElement, feedback: DamageFeedback): void 
     if (feedback.critical) tags.push({ kind: "critical", text: "치명타!" });
     const effectiveness = feedback.effectiveness;
     if (effectiveness !== undefined && effectiveness !== 1) {
-      tags.push(effectiveness <= 0 ? { kind: "immune", text: "무효" } : effectiveness > 1 ? { kind: "weak", text: "약점!" } : { kind: "resist", text: "저항" });
+      // 처음 알아낸 타격(weaknessDiscovery.ts)은 「약점 발견!」 — 이 순간이 플레이어가 약점을 아는 유일한 길이다(공개 전 미리보기 없음).
+      const found = feedback.weaknessDiscovered ? " 발견!" : "";
+      tags.push(effectiveness <= 0 ? { kind: "immune", text: found ? "무효 발견!" : "무효" } : effectiveness > 1 ? { kind: "weak", text: found ? "약점 발견!" : "약점!" } : { kind: "resist", text: found ? "저항 발견!" : "저항" });
     }
     if (feedback.weaponAffinity) tags.push({ kind: "affinity", text: "무기↑" });
+    if (feedback.exploit) tags.push({ kind: "exploit", text: "공략!" });
     if (tags.length > 0) {
       const tag = document.createElement("span");
       tag.className = "battle-damage-popup-tag";
@@ -1017,6 +1027,7 @@ function showDamageFeedback(field: HTMLElement, feedback: DamageFeedback): void 
       tag.textContent = tags.map((row) => row.text).join(" ");
       const effective = tags.find((row) => row.kind === "weak" || row.kind === "resist" || row.kind === "immune");
       if (effective) popup.dataset.effectiveness = effective.kind;
+      if (effective && feedback.weaknessDiscovered) { popup.dataset.weaknessDiscovered = "true"; tag.dataset.weaknessDiscovered = "true"; }
       // 숫자 아래에 단다 — 위에 달면 화면 위쪽 적에서 메시지 창 뒤로 숨었다(2026-10-24 영상 실측).
       popup.append(tag);
     }

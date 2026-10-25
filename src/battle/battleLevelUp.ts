@@ -55,9 +55,14 @@ export function computeActorLevelUp(
       .filter((entry) => entry.tp === undefined && entry.level > fromLevel && entry.level <= level)
       .map((entry) => entry.skillId)
   );
-  if (useClassGrowth && klass) {
-    for (const skillId of classLearnedSkillIdsUpToLevel(project, klass.id, level)) {
-      if (!classLearnedSkillIdsUpToLevel(project, klass.id, fromLevel).includes(skillId)) learnedSkillIds.add(skillId);
+  // 직업 습득표 — 전투 배틀러(battleBattlers.learnedSkillIds)와 같게, 전직이 없으면 배우 본래 직업의 표를 본다.
+  // 예전에는 전직했을 때만 봐서 직업이 가르치는 기술(폴른 스타의 화염검·연쇄 번개 등)이 레벨 업 결과에 한 번도 안 떴다(fs-battle-2 녹화).
+  const skillClassId = useClassGrowth && klass ? klass.id : actor.classId;
+  if (skillClassId) {
+    const before = new Set(classLearnedSkillIdsUpToLevel(project, skillClassId, fromLevel));
+    const known = new Set(actor.learnedSkills.filter((entry) => entry.tp === undefined && entry.level <= fromLevel).map((entry) => entry.skillId));
+    for (const skillId of classLearnedSkillIdsUpToLevel(project, skillClassId, level)) {
+      if (!before.has(skillId) && !known.has(skillId)) learnedSkillIds.add(skillId);
     }
   }
 

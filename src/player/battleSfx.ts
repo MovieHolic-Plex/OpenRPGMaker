@@ -20,7 +20,12 @@ export type BattleSfxKind =
   | "escape"
   | "defeat"
   // 도감 등록 문장 징글(2026-10-16). 던지기·흔들림·잡힘·탈출 소리는 monster-sfx 세트(playMonsterSfxNow)가 맡는다.
-  | "dex";
+  | "dex"
+  // 연계기 발동·레벨 업·새 기술 습득 팡파레(2026-10-24).
+  | "combo"
+  | "comboImpact"
+  | "levelUp"
+  | "skillLearned";
 
 let ctx: AudioContext | undefined;
 let master: GainNode | undefined;
@@ -167,6 +172,30 @@ export function playBattleSfx(kind: BattleSfxKind): void {
     case "dex":
       [784, 988, 784, 1175].forEach((freq, index) => tone({ freq, type: "triangle", at: index * 0.1, duration: 0.12, gain: 0.26 }));
       tone({ freq: 1568, type: "sine", at: 0.42, duration: 0.28, gain: 0.2 });
+      return;
+    case "combo":
+      // 두 음이 겹쳐 오르는 「합체」 화음 + 끝의 반짝임.
+      [392, 523, 659].forEach((freq, index) => tone({ freq, type: "sawtooth", at: index * 0.06, duration: 0.22, gain: 0.18, slideTo: freq * 1.5 }));
+      [784, 1046, 1318, 1568].forEach((freq, index) => tone({ freq, type: "triangle", at: 0.24 + index * 0.05, duration: 0.12, gain: 0.22 }));
+      noise({ at: 0.2, duration: 0.25, gain: 0.18, filterFrom: 6000, filterTo: 1800, seed: 0x434f4d42 });
+      return;
+    case "comboImpact":
+      // 연계기 착탄 — 낮은 쿵 + 쓸어 올리는 잡음 + 높은 종소리(느린 화면과 함께 길게 끈다).
+      tone({ freq: 90, type: "sine", duration: 0.5, gain: 0.42, slideTo: 42 });
+      noise({ duration: 0.45, gain: 0.3, filterFrom: 400, filterTo: 5200, seed: 0x434d4249 });
+      [1318, 1760, 2349].forEach((freq, index) => tone({ freq, type: "triangle", at: 0.12 + index * 0.07, duration: 0.4, gain: 0.14 }));
+      return;
+    case "levelUp": {
+      // 레벨 업 징글 — 장조 아르페지오 두 단과 길게 끄는 으뜸화음.
+      const run = [523, 659, 784, 1046, 784, 1046, 1318];
+      run.forEach((freq, index) => tone({ freq, type: "square", at: index * 0.075, duration: 0.1, gain: 0.24 }));
+      [1046, 1318, 1568].forEach((freq) => tone({ freq, type: "triangle", at: 0.56, duration: 0.55, gain: 0.2 }));
+      return;
+    }
+    case "skillLearned":
+      // 새 기술 — 반짝이는 올림 세 음.
+      [880, 1175, 1568].forEach((freq, index) => tone({ freq, type: "sine", at: index * 0.09, duration: 0.16, gain: 0.26 }));
+      tone({ freq: 2093, type: "triangle", at: 0.3, duration: 0.35, gain: 0.16 });
       return;
     case "defeat":
       tone({ freq: 220, type: "triangle", duration: 0.3, gain: 0.3 });

@@ -6,6 +6,7 @@
 // 실내는 등록 장소 id(place — 여러 층이면 층마다 새 맵, 첫 층에 잇는다) 또는 이미 있는 실내 맵(interiorMapId).
 import { isJpCityTileset, JP_CITY_ID } from "@/project/defaults/jpCity";
 import { isPassable } from "@/project/collision";
+import { inMainWalkComponent, mainWalkComponent } from "@/project/walkComponent";
 import { extractTreeNode, insertTreeNode } from "@/project/mapTree";
 import { importReferenceScene, preloadRegionReferenceScene, regionReferenceScene } from "@/project/regionReferenceImport";
 import type { GameEvent, GameMap, MapId, Project } from "@/project/types";
@@ -144,6 +145,15 @@ export const LINK_JP_CITY_INTERIOR_TOOL: ToolDefinition = {
     if (doors.some((e) => e.front.y !== doors[0]!.front.y)) throw new ToolError("문 칸들이 한 줄에 있지 않다 — width 를 줄인다", { code: "invalid-args", mapId });
     const fronts = doors.map((e) => e.front);
     const front = fronts[Math.floor((fronts.length - 1) / 2)]!;
+    // 문 앞 칸이 거리 주 동선(걸어서 이어진 가장 큰 덩이) 밖이면 플레이어가 그 문에 갈 수 없다 — 잇지 않고 닿는 문을 알려 준다.
+    const walk = mainWalkComponent(draft, street);
+    if (!fronts.some((c) => inMainWalkComponent(walk, street, c))) {
+      const reachable = (street.locations ?? []).filter((l) => (l.tags ?? []).includes("jp-building")).map((l) => {
+        const m = /문 앞 접근칸 \((\d+),(\d+)\)/u.exec(l.note ?? "");
+        return m && inMainWalkComponent(walk, street, { x: Number(m[1]), y: Number(m[2]) }) ? `${l.name} 문 (${m[1]},${Number(m[2]) - 1})` : null;
+      }).filter((v): v is string => !!v);
+      throw new ToolError(`문 (${door.x},${door.y}) 앞 (${front.x},${front.y}) 은 거리 큰길에서 걸어서 닿지 않는다(막힌 뒷골목) — 이 문에 실내를 이으면 플레이어가 들어갈 수 없다. ${reachable.length ? `닿는 문: ${reachable.join(" · ")}` : "길을 먼저 이어 준다"}`, { code: "door-unreachable", mapId, x: front.x, y: front.y });
+    }
     const olds = fronts.map((c) => eventAt(street, c)).filter((e): e is GameEvent => !!e);
     if (olds.length && !replace) {
       throw new ToolError(`문 앞 ${olds.map((e) => `(${e.x},${e.y}) ${e.name ?? e.id}`).join(" ")} 에 이미 이벤트가 있다 — 이미 이어졌으면 그대로 두고, 바꾸려면 replace:true`, { code: "door-event-exists", mapId, x: olds[0]!.x, y: olds[0]!.y });

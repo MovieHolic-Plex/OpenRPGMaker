@@ -50,6 +50,14 @@
 `.omo/gates-vitest-report.json` 에서 **오래 걸린 파일 상위**를 뽑아 `/usr/bin/time -v` 로 단독 실행해
 피크 RSS 를 재는 쪽이 빠르다(이번에도 그렇게 찾았다).
 
+## PR 판정 = ci-fast(pull_request), 머지 = scripts/merge-pr.mjs, ci-full = 4시간 cron (2026-10-25)
+
+- ci-fast 는 `push`(main·release) 와 `pull_request`(→ main) 에 돈다. 전에는 push 뿐이라 PR 에 체크가 없었다.
+- 머지는 `node scripts/merge-pr.mjs <번호>` 로만 한다. 머리 커밋의 `fast` 체크가 초록이어야 `--match-head-commit` 으로 머지한다.
+- ci-full 은 main 푸시마다가 아니라 `17 */4 * * *` cron 이다. 푸시마다 걸면 한 판(약 4시간) 동안 대기 자리를 새 푸시가
+  계속 빼앗아 60판 중 51판이 cancelled 였다. 판정 논리(기준선 대비 회귀만 실패)는 그대로다.
+- 브랜치 보호(필수 체크 `fast`)는 저장소 설정이라 소유자가 켠다. 켜기 전에는 도우미 규칙이 유일한 방어다.
+
 ## main 의 ci-fast 는 다음 머지가 진행 중 잡을 끊지 않는다 (2026-09-26)
 
 `concurrency.cancel-in-progress` 가 main 에서도 true 이면, 머지가 잡보다 빠를 때 앞선 main 실행이
@@ -985,6 +993,8 @@ PR678의 고정 리비전별 원본·영수증·검사기는 `output/evidence/mo
 
 # Testing
 
+> **2026-10-25 hard rule:** 테스트 러너(vitest·bun test·playwright test·gates)는 GitHub CI 에서만 돈다. 로컬에서는 `scripts/lib/ciOnlyTests.mjs` 가 막는다. 아래 명령 표는 CI 가 무엇을 돌리는지 설명하는 참고이고, 로컬 실행 지시가 아니다. AGENTS.md 「테스트는 GitHub CI 에서만」.
+
 ## Completed-house Phase 2 verification (2026-09-06)
 
 Primary command:
@@ -1588,6 +1598,21 @@ Playwright 의 `locator.click()` 은 누르기 전에 `scrollIntoViewIfNeeded` �
 편집기 크롬 0, HMR 유지, 출하 shim 경로를 그대로 통과한다. 편집기 play 모드는 실제
 `@/project/store`, 내보내기 플레이어는 `exportProjectStoreShim` 을 쓰므로 **편집기
 경로로 하는 런타임 QA 는 출하물을 검증하지 않는다.**
+
+### 바라보는 방향 기록 — `recordUntilJs` (2026-10-21)
+
+대사·연출 장면의 «누가 누구를 보는가» 는 비트 끝 한 장으로는 안 보인다. `recordUntilJs` op 은 `pressUntilJs` 처럼 넘기되
+다 나온 대사마다 한 장, 인물이 걷는 동안 `frameMs`(기본 200ms)마다 한 장을 `<out>/<dir>/NNNN.png` 로 찍고,
+그 순간의 배우 배치(맵·카메라·주인공 칸/방향/보임·보이는 이벤트 칸/방향(스프라이트 프레임 줄에서 읽음)/불투명도)를
+`actors.jsonl` 에 한 줄씩 적는다. 선택지가 뜨면 멈추고 부른 쪽이 고른다.
+
+```bash
+FL_PATH=A FL_VP=480x270 node scripts/qa/runtime/fl-play.mjs --scenario first-love-facing --checkpoint d1-arrive --parallel 1 --out verify-shots/runtime-qa/fl-facing-after-A
+node scripts/qa/runtime/facing-audit.mjs verify-shots/runtime-qa/fl-facing-after-A   # 대사 줄마다 화자·곁 사람 방향 판정
+```
+
+`facing-audit.mjs` 는 화자가 무대의 누구도 보지 않거나(6칸 안), 곁(2칸 안) 사람이 화자·주인공·화자가 보는 상대 어느 쪽도 보지 않으면 적는다.
+기계 판정은 시작점일 뿐 — 탁자 회의·뒷모습 연출은 프레임을 눈으로 본다. 정적 짝은 `scene-speaker-faces-away`(`openwiki/editor-validation.md`).
 
 ### 런타임 QA 체크포인트 — 늦은 단계는 타이틀부터 다시 하지 않는다 (2026-10-21, hard rule)
 

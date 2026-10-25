@@ -1,3 +1,4 @@
+import { TOUCH_STICK_MODES, isTouchStickMode, normalizeTouchControls, resolveTouchControls, type ResolvedTouchControls, type TouchStickMode } from "@/project/touchControls";
 import { normalizeGallerySettings } from "@/project/gallery";
 import { fieldHudEditor } from "./databaseFieldHud";
 import { battleTeamsSection } from "@/editor/panels/databaseBattleTeamsSection";
@@ -451,6 +452,23 @@ function systemSectionNodes(
             draft.system.activeSlots = optionalPositiveInteger(value);
           }, "system:active-slots");
         }),
+        companionDisplayField(project),
+        checkboxField("파티원을 필드 동료로 (fromParty)", "db-field-system-companions-from-party", project.system.companions?.fromParty === true, (checked) => {
+          updateSystem((draft) => {
+            const next = { ...(draft.system.companions ?? {}) };
+            if (checked) next.fromParty = true;
+            else delete next.fromParty;
+            draft.system.companions = next;
+          });
+        }),
+        checkboxField("몬스터 동행 (포켓몬식, 동료 표시와 별개)", "db-field-system-companions-monster-followers", project.system.companions?.monsterFollowers !== false, (checked) => {
+          updateSystem((draft) => {
+            const next = { ...(draft.system.companions ?? {}) };
+            if (checked) delete next.monsterFollowers;
+            else next.monsterFollowers = false;
+            draft.system.companions = next;
+          });
+        }),
         checkboxField("선제·기습 개시 굴림 (심볼 접촉 방향 포함)", "db-field-system-battle-formation-roll", project.system.battleFormationRoll === true, (checked) => {
           updateSystem((draft) => {
             if (checked) draft.system.battleFormationRoll = true;
@@ -484,6 +502,7 @@ function systemSectionNodes(
             else delete draft.system.pointerMovement;
           });
         }),
+        ...touchControlFields(project),
         // 마더식 롤링 HP: 표시 HP 가 서서히 흐르고, 치명타를 받아도 미터가 0 에 닿기 전에 이기면 살아남는다.
         checkboxField("롤링 HP 미터", "db-field-system-rolling-hp", project.system.battleRollingHp === true, (checked) => {
           updateSystem((draft) => {
@@ -923,6 +942,30 @@ function veilResolutionNote(project: Project): HTMLElement {
   });
   note.hidden = project.system.dialogueStyle !== "dual-fullbody-veil";
   return note;
+}
+
+/** 동료 표시 — 크로노 트리거식(뒤따라 걷기) 또는 FF6 식(필드엔 선두만, 이야기 장면에서만 옆에 선다). 생략 = 따라오기. */
+function companionDisplayField(project: Project): HTMLElement {
+  const select = el("select", { dataset: { testid: "db-field-system-companions-display" } }) as HTMLSelectElement;
+  select.append(
+    el("option", { text: "따라오기 (크로노 트리거식)", attrs: { value: "follow" } }),
+    el("option", { text: "선두만 (FF6식)", attrs: { value: "scenesOnly" } }),
+  );
+  select.value = project.system.companions?.display === "scenesOnly" ? "scenesOnly" : "follow";
+  select.addEventListener("change", () => {
+    updateSystem((draft) => {
+      const next = { ...(draft.system.companions ?? {}) };
+      if (select.value === "scenesOnly") next.display = "scenesOnly";
+      else delete next.display;
+      draft.system.companions = next;
+    }, "system:companions-display");
+  });
+  return el("div", {
+    children: [
+      field("동료 표시", select),
+      systemHelp("선두만(FF6식)이면 필드에서는 주인공만 걷고, 동료는 컷신이나 동료가 말하는 이벤트 동안에만 주인공 옆에 섭니다. 몬스터 동행은 아래 「몬스터 동행」으로 따로 켜고 끕니다."),
+    ],
+  });
 }
 
 /** 화면 맞춤 — 정수 배율(도트 굵기 고름, 남는 창은 여백) 또는 창에 꽉 맞춤. 생략 = 프로젝트 규칙(resolvePlaySurfaceScaleMode). */
@@ -1914,6 +1957,30 @@ function obedienceCapFields(project: Project, rerender: () => void): HTMLElement
     );
   }
   return out;
+}
+
+/** 휴대폰·태블릿 조작(system.touchControls) — 데스크톱 플레이에는 영향이 없다. 기본은 모두 켬, 조이스틱 자동. */
+function touchControlFields(project: Project): HTMLElement[] {
+  const current = resolveTouchControls(project.system.touchControls);
+  const patch = (next: Partial<ResolvedTouchControls>): void => {
+    updateSystem((draft) => {
+      const merged = normalizeTouchControls({ ...resolveTouchControls(draft.system.touchControls), ...next });
+      if (merged) draft.system.touchControls = merged;
+      else delete draft.system.touchControls;
+    }, "system:touch-controls");
+  };
+  const stick = el("select", { dataset: { testid: "db-field-system-touch-stick" } }) as HTMLSelectElement;
+  const stickLabels: Record<TouchStickMode, string> = { auto: "자동(판 곁은 바로 방향, 먼 곳은 엄지 밑으로)", fixed: "고정", floating: "떠다님(누른 자리가 중심)" };
+  for (const mode of TOUCH_STICK_MODES) stick.append(el("option", { text: stickLabels[mode], attrs: { value: mode } }));
+  stick.value = current.stick;
+  stick.style.maxWidth = "340px";
+  stick.addEventListener("change", () => patch({ stick: isTouchStickMode(stick.value) ? stick.value : "auto" }));
+  return [
+    checkboxField("휴대폰: 맵을 탭해서 걷기", "db-field-system-touch-tap-to-move", current.tapToMove, (checked) => patch({ tapToMove: checked })),
+    field("휴대폰: 조이스틱", stick),
+    checkboxField("휴대폰: 진동", "db-field-system-touch-haptics", current.haptics, (checked) => patch({ haptics: checked })),
+    checkboxField("휴대폰: 따로 달리기 단추(끄면 조이스틱을 끝까지 밀어 달린다)", "db-field-system-touch-run-button", current.runButton, (checked) => patch({ runButton: checked })),
+  ];
 }
 
 function checkboxField(label: string, testid: string, checked: boolean, onChange: (checked: boolean) => void): HTMLElement {

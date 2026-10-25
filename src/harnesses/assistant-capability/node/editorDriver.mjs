@@ -1,6 +1,6 @@
 import { spawn } from 'node:child_process';
 import { createServer } from 'node:net';
-import { readFileSync, writeFileSync, existsSync } from 'node:fs';
+import { readFileSync, writeFileSync, existsSync, openSync, writeSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { DatabaseSync } from 'node:sqlite';
 import { gunzipSync } from 'node:zlib';
@@ -52,6 +52,8 @@ export async function startHost(projectDir, dir) {
   });
   let log=''; const append = data => { log += data.toString(); };
   child.stdout.on('data', append); child.stderr.on('data', append);
+  // HARNESS_HOST_LOG=<file>: 진단용으로 호스트 출력을 그 파일(0600)에 남긴다. 제공자 오류에 자격 정보가 섞일 수 있으니 저장소·증거 폴더에 두지 말 것.
+  if (process.env.HARNESS_HOST_LOG) { const fd = openSync(process.env.HARNESS_HOST_LOG, 'a', 0o600); const tee = data => writeSync(fd, data); child.stdout.on('data', tee); child.stderr.on('data', tee); }
   const url=await new Promise((done, fail)=>{
     const timer=setTimeout(()=>fail(Error('Project host startup deadline')),60000);
     child.on('error', error=>{clearTimeout(timer);fail(error);});
@@ -107,15 +109,22 @@ export async function newEditor(browser, url, projectDir, config, captureOptions
       if(endpoint.includes('/v1/agent/run') && response.body){
         window.__capEvents.push({type:'stream_open',endpoint:'agent',at:Date.now()});
         const reader=response.clone().body.getReader(),decoder=new TextDecoder();let pending='';
+        // An idle resume re-sends the run as GET; the cloned original stream keeps going too. Skip
+        // lines whose outer seq was already seen so events are not counted twice (ledger G20).
+        // A POST starts a new run whose seq restarts at 0; only the GET resume of the same run shares the counter.
+        // (Keying by outer.runId alone dropped every event of turn 2 when lines carry no runId.)
+        const method=String((args[1]&&args[1].method)||(args[0]&&args[0].method)||'GET').toUpperCase();
+        if(method==='POST'||!window.__capLastSeq)window.__capLastSeq={};
         const consume=line=>{try{
           const outer=JSON.parse(line.replace(/^data:\s*/,'')),event=outer.type==='agent_event'?outer.event:outer;
+          if(typeof outer.seq==='number'){const key=outer.runId??'_';if(outer.seq<=(window.__capLastSeq[key]??-1))return;window.__capLastSeq[key]=outer.seq;}
           if(['assistant','tool_start','tool_end','error','execution_status','done','cancelled','prompt_inspection'].includes(event?.type)){
             // Never persist reasoning, auth headers or system prompt payloads. A prompt_inspection keeps only its
             // scalar receipt (model·max_tokens·reasoning_effort) — the sections are the whole prompt and stay out.
             window.__capEvents.push({type:event.type,name:event.name??event.toolName,id:event.id,ok:event.ok,
               text:event.type==='assistant'?event.text:undefined,summary:event.summary,message:event.message,args:event.args,
               data:event.type==='prompt_inspection'?(event.snapshot?{boundary:event.snapshot.boundary,model:event.snapshot.model,scalars:event.snapshot.scalars}:undefined)
-                :['charset.image.delivered','charset.image.received','feature_checklist','feature_review','feature_review.critic','feature_review.repair','cutscene.review','cutscene.review.judged'].includes(event.name)?event.data:undefined,
+                :['charset.image.delivered','charset.image.received','feature_checklist','feature_review','feature_review.critic','feature_review.repair','cutscene.review','cutscene.review.judged','v2.advisor','v2.advisor.recheck'].includes(event.name)?event.data:undefined,
               runId:outer.runId,usage:event.usage,stats:event.type==='done'?event.stats:undefined,at:Date.now()});
           }
           if(outer.type==='done'&&event.type!=='done')window.__capEvents.push({type:'done',runId:outer.runId,at:Date.now()});

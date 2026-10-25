@@ -3,9 +3,13 @@
  * 주소·토큰은 환경 변수로만 받는다(storePublish.mts). 플레이어는 먼저 `npm run build:player` 로 dist/export-player 에 만든다.
  *
  *   npm run -s store:publish-game -- --demo chrono-bell --dry
- *   npm run -s store:publish-game -- --demo chrono-bell --target staging [--major] [--changelog "…"] [--version 1.4]
+ *   npm run -s store:publish-game -- --demo chrono-bell --target staging [--major] [--changelog "…" | --changelog-file notes.txt] [--version 1.4]
+ * 바뀐 점은 여러 줄 글이다: 첫 줄 = 한 줄 제목, `+ ` 새 기능 · `~ ` 개선 · `! ` 버그 수정(openwiki/asset-store.md 「바뀐 점 쓰는 법」).
+ * --changelog 안의 글자 `\n` 은 줄바꿈으로 읽는다.
  *   STORE_LINK_TOKEN=… npm run -s store:publish-game -- --demo chrono-bell --target production --confirm <contentHash>
  *   npm run -s store:publish-game -- --rollback fallen-star@1.0 --target staging
+ * 제작자 목소리(스토어 「소식」 탭·판본 카드): 올릴 때 [--comment "…"] [--post-title "…" (--post-body "…" | --post-file post.md) [--post-pin]].
+ * 판본 없이 소식만: --news <slug> --post-title "…" --post-file post.md [--post-version 1.17] [--post-pin] [--comment "…" --comment-version 1.17].
  * 마지막 줄은 한 줄 JSON 결과다. 그림·BGM 이 이 체크아웃 public/ 에 없으면 OPRN_ASSET_ROOTS(콜론 구분)의 public 폴더에서 찾는다.
  */
 import { createHash } from "node:crypto";
@@ -28,7 +32,7 @@ function out(value: object, code = 0): never {
 const DEMOS: Record<string, { readonly slug: string; readonly builtin: string; readonly description: string; readonly pointer?: boolean }> = {
   "chrono-bell": {
     slug: "fallen-star", builtin: "chrono-bell",
-    description: "OPRN 에디터의 대표 데모 JRPG 입니다. 동쪽 숲에 떨어진 별, 그 속에서 깨어난 기계 소녀, 그리고 별을 쫓는 심문관.\n제1막(약 20분)을 처음부터 끝까지 플레이할 수 있습니다. 전투·대화·컷신·세이브가 모두 들어 있습니다.",
+    description: "OPRN 에디터의 대표 데모 JRPG 입니다. 북쪽 숲에 떨어진 별, 그 속에서 깨어난 기계 소녀, 그리고 별을 쫓는 심문관.\n제1막(약 20분)을 처음부터 끝까지 플레이할 수 있습니다. 전투·대화·컷신·세이브가 모두 들어 있습니다.",
   },
   "emerald-crown": {
     slug: "astra-horizon", builtin: "emerald-crown", pointer: true,
@@ -53,6 +57,8 @@ const CONTROLS = (pointer: boolean) => [
   { keys: "Esc · X", action: "취소 · 메뉴" },
   { keys: "Shift", action: "누르고 있으면 달리기" },
   ...(pointer ? [{ keys: "마우스 클릭", action: "메뉴·전투 명령 고르기 (오른쪽 클릭 = 취소)" }] : []),
+  { keys: "휴대폰: 맵 탭", action: "그곳까지 걷기 · 사람을 탭하면 다가가 말 걸기" },
+  { keys: "휴대폰: 왼쪽 패드 · A · B", action: "이동 · 확인 · 취소 (「달리기」 단추로 걷기/달리기)" },
 ];
 
 /** dist/export-player 는 이 체크아웃에서, 공용 그림·소리는 public/(없으면 OPRN_ASSET_ROOTS). */
@@ -102,6 +108,33 @@ if (rollback) {
   try {
     const result = await sessionTransport(session).json("POST", `/api/v1/games/${encodeURIComponent(slug)}/current`, { version });
     out({ ok: true, target, action: "rollback", slug, ...(result as object) });
+  } finally { await closeSession(session); }
+}
+
+/** --post-title·--post-body/--post-file·--post-pin → 소식 글(없으면 null). 본문 안의 글자 `\n` 은 줄바꿈. */
+function postFromArgs(): { title: string; body: string; pinned: boolean } | null {
+  const title = arg("--post-title")?.trim();
+  if (!title) return null;
+  const file = arg("--post-file");
+  const body = file ? readFileSync(resolve(file), "utf8") : (arg("--post-body") ?? "").replace(/\\n/g, "\n");
+  return { title, body, pinned: process.argv.includes("--post-pin") };
+}
+const commentArg = arg("--comment")?.replace(/\\n/g, "\n").trim() ?? "";
+
+const news = arg("--news");
+if (news) {
+  const post = postFromArgs();
+  if (!post && !commentArg) out({ ok: false, error: "--news <slug> 에는 --post-title(+ --post-body|--post-file) 이나 --comment 가 필요합니다" }, 2);
+  if (target !== "staging" && target !== "production") out({ ok: false, error: "--target staging|production" }, 2);
+  const session = await openSession(target, requireTargetBase(target));
+  try {
+    const transport = sessionTransport(session);
+    const slug = encodeURIComponent(news);
+    const version = arg("--post-version") ?? null;
+    const made = post ? await transport.json("POST", `/api/v1/games/${slug}/posts`, { ...post, version }) : null;
+    const label = arg("--comment-version") ?? version ?? (await transport.json("GET", `/api/v1/games/${slug}`) as { currentVersion?: string }).currentVersion;
+    const comment = commentArg && label ? await transport.json("PUT", `/api/v1/games/${slug}/versions/${encodeURIComponent(label)}/comment`, { comment: commentArg }) : null;
+    out({ ok: true, target, action: "news", slug: news, post: made, comment });
   } finally { await closeSession(session); }
 }
 
@@ -189,11 +222,13 @@ try {
       if (response.ok) previous = await response.json();
     }
     const changes = projectChangeSummary(previous as never, JSON.parse(built.projectJson));
-    const changelog = arg("--changelog") ?? changelogFromChanges(changes, mine.baseline?.version ?? null);
+    const changelogFile = arg("--changelog-file");
+    const changelog = (changelogFile ? readFileSync(resolve(changelogFile), "utf8").trim() : arg("--changelog")?.replace(/\\n/g, "\n")) ?? changelogFromChanges(changes, mine.baseline?.version ?? null);
     let lastLine = 0;
     const result = await publishStoreGame(transport, {
       projectKey, slug: demo.slug, meta, files, entry: built.entry, cover, art, changelog, changes,
       bump: process.argv.includes("--major") ? "major" : "minor", version: arg("--version") ?? null,
+      ...(commentArg ? { comment: commentArg } : {}), post: postFromArgs(),
     }, (progress) => {
       if (progress.phase === "upload" && (progress.done === progress.total || Date.now() - lastLine > 5000)) {
         lastLine = Date.now();

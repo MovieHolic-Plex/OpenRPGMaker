@@ -527,7 +527,7 @@ def main():
     _SH.clear()
     write_tables()
     print(json.dumps(dict(count=COUNT, pieces=len(PIECES), kits=[k["id"] for k in kits()]), ensure_ascii=False))
-    # 다음 꼬리: 던전 gap(29,568~) → 주제(30,848~) → 마당 바닥(33,024~). 아래 bake_gap --from-store 가 주제를, 주제가 마당을 잇는다.
+    # 다음 꼬리: 던전 gap(29,568~) → 주제(30,848~) → 마당 바닥(33,152~). 아래 bake_gap --from-store 가 주제를, 주제가 마당을 잇는다.
 
 
 if __name__ == "__main__":

@@ -7,11 +7,12 @@ import { createHash } from "node:crypto";
 import { existsSync, mkdirSync, readFileSync, readdirSync, renameSync, rmSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { gunzipSync } from "node:zlib";
-import { isSha256, STORE_LIMITS, validateManifest, type StoreCatalogPage, type StoreItemDetail, type StorePackManifest } from "../../src/assetStore/format";
+import { isSha256, STORE_LIMITS, STORE_SLUG, validateManifest, type StoreCatalogPage, type StoreItemDetail, type StorePackManifest } from "../../src/assetStore/format";
 import { decodePackBundle, type DecodedPackBundle } from "../../src/assetStore/pack";
 import { sniffMime } from "../../src/assetStore/sniff";
 import { normalizeGameConcept, type GameConcept } from "../../src/concepts/format";
 import { publishStoreGame, type StoreGameMine, type StoreGamePublishRequest, type StoreGamePublishResult } from "../../src/assetStore/gamePublish";
+import type { StoreReviewsPage } from "../../src/assetStore/bridgeTypes";
 
 export const DEFAULT_STORE_URL = "https://store.openrpgmaker.com";
 
@@ -168,6 +169,23 @@ export class AssetStoreClient {
 
   private manifestPath(slug: string, version: number): string { return join(this.root, "manifests", `${slug}@${version}.json`); }
   private indexPath(): string { return join(this.root, "installed.json"); }
+
+  /**
+   * 매니페스트만 받는다(파일은 받지 않는다). 조수가 음악 팩의 곡별 설명을 읽고 고를 때 쓴다(src/assetStore/storeMusicPick.ts).
+   * 판본 매니페스트는 바뀌지 않으므로 받은 것은 manifests/ 에 두고 다시 쓴다.
+   */
+  async manifest(slug: string, version: number): Promise<StorePackManifest> {
+    if (!STORE_SLUG.test(slug) || !Number.isSafeInteger(version) || version < 1) throw new StoreError("상품 주소나 판본 번호가 올바르지 않습니다.");
+    const path = this.manifestPath(slug, version);
+    if (existsSync(path)) {
+      const cached = validateManifest(JSON.parse(readFileSync(path, "utf8")));
+      if (cached.ok) return cached.value;
+    }
+    const checked = validateManifest(await this.json<unknown>(`/api/v1/items/${encodeURIComponent(slug)}/versions/${version}/manifest`));
+    if (!checked.ok) throw new StoreError("팩 형식이 올바르지 않아 받지 않았습니다.", 0, checked.errors);
+    writeAtomic(path, JSON.stringify(checked.value));
+    return checked.value;
+  }
 
   /**
    * 받아 둔 초안의 상태를 다시 본다(D2). 공개(visible)되면 초안 표시를 뗀다. 확인할 수 없으면(오프라인·로그아웃) 그대로 둔다.
@@ -383,6 +401,33 @@ export class AssetStoreClient {
     }, { ...input, files: new Map(Object.entries(input.files)) }, (event) => {
       if (event.phase === "upload") progress({ slug: label, phase: "upload", done: event.done, total: event.total });
     });
+  }
+
+  /** 소식 글 올리기(+ 판본 코멘트). 작가만 — 서버가 판단한다. */
+  async gamePost(input: { slug: string; title: string; body: string; version?: string | null; pinned?: boolean; comment?: string; commentVersion?: string | null }): Promise<{ id: number; status: string; url: string; held: string[]; comment?: { status: string | null; held: string[] } }> {
+    if (!this.token) throw new StoreError("스토어에 글을 올리려면 먼저 로그인해 주세요.", 401);
+    const slug = encodeURIComponent(input.slug);
+    const made = await this.json<{ id: number; status: string; url: string; held: string[] }>(`/api/v1/games/${slug}/posts`, {
+      method: "POST", json: { title: input.title, body: input.body, version: input.version ?? null, pinned: input.pinned === true },
+    });
+    const label = input.commentVersion ?? input.version ?? null;
+    if (input.comment !== undefined && label) {
+      const comment = await this.json<{ status: string | null; held: string[] }>(`/api/v1/games/${slug}/versions/${encodeURIComponent(label)}/comment`, { method: "PUT", json: { comment: input.comment } });
+      return { ...made, comment };
+    }
+    return made;
+  }
+
+  /** 게임 평가 한 쪽. 공개 목록이지만 로그인돼 있으면 토큰을 같이 보낸다. */
+  gameReviews(input: { slug: string; sort?: "helpful" | "recent" | "funny"; filter?: "all" | "up" | "down"; limit?: number }): Promise<StoreReviewsPage> {
+    const params = new URLSearchParams({ rsort: input.sort ?? "recent", rfilter: input.filter ?? "all", limit: String(input.limit ?? 30) });
+    return this.json<StoreReviewsPage>(`/api/v1/games/${encodeURIComponent(input.slug)}/reviews?${params}`);
+  }
+
+  /** 제작자 답글. 작가만 — 서버가 판단한다. */
+  async reviewReply(input: { slug: string; reviewId: number; reply: string }): Promise<{ status: string | null; held: string[] }> {
+    if (!this.token) throw new StoreError("답글을 달려면 먼저 스토어에 로그인해 주세요.", 401);
+    return this.json(`/api/v1/games/${encodeURIComponent(input.slug)}/reviews/${input.reviewId}/reply`, { method: "PUT", json: { reply: input.reply } });
   }
 
   /** 되돌리기: 「지금 판본」을 옛 판본으로. */

@@ -1,0 +1,68 @@
+{
+ "schema": "oprn-supervisor-vqa/1",
+ "subject": "beodeul_city broadleaf composer trunks, T3 bark contrast r8 (forest-trunks)",
+ "reviewer": "argon (Gemini 4 Argon high), independent adversarial subagent",
+ "decidedAt": "2026-10-24T13:17:33.101653Z",
+ "delegation": "delegated by user to supervisor (standing policy: user delegates decisions; supervisor records allow only after independent adversarial VQA)",
+ "questions": [
+  "Q1: at 1x does each T3 trunk read clearly as a trunk?",
+  "Q2: does each match the Beodeul chipset pixel style (palette, shading depth, outline)?"
+ ],
+ "rounds": [
+  {
+   "round": "r4 (t3f4)",
+   "result": "7/7 FAIL",
+   "notes": "orange-rust ramp, 1px vertical groove banding, near-black collar, stamped 3-prong roots"
+  },
+  {
+   "round": "r7 (t3r7)",
+   "result": "7/7 FAIL",
+   "notes": "flat row-76 cutoff over dark-green cutout, continuous 1px #967042 stripe, tree 6 horizontal dark band"
+  },
+  {
+   "round": "r8 (t3r8)",
+   "result": "7/7 PASS (Q1 and Q2)",
+   "notes": "4 Beodeul trunk browns only, staggered bark clusters, solid root apron, #2e2016 shaded right outline"
+  }
+ ],
+ "images": ".scratch board/strip/zoom images (not committed); judged pictures = object-gate held-images below",
+ "trees": {
+  "bd-tree-d43edd": {
+   "pixelSha256": "74a4e236c6a631afaf964af6c2024cbd0c4d9eadf5ac5ac1c2c5cc051fc5d104",
+   "q1": "PASS",
+   "q2": "PASS"
+  },
+  "bd-tree-5844f6": {
+   "pixelSha256": "191034e6f44e5455d3ec95e408809468b2ee167f41d01842eabd10aafc0e82b8",
+   "q1": "PASS",
+   "q2": "PASS"
+  },
+  "bd-tree-b1d104": {
+   "pixelSha256": "f1c4232d8009c652cd3b17970489519c6c6ac57b32f99152384917ac8de5e52b",
+   "q1": "PASS",
+   "q2": "PASS"
+  },
+  "bd-tree-1a786c": {
+   "pixelSha256": "7b145a78f27b7716bd1293fe50ec8af9e91b0d709f0bb9bd9e76d2d60a17c79e",
+   "q1": "PASS",
+   "q2": "PASS"
+  },
+  "bd-tree-d61d7e": {
+   "pixelSha256": "42cbbd82b8a35e8dbf1a345e4759a4fed80e6a987d2389ca33f2278fcef3f2f3",
+   "q1": "PASS",
+   "q2": "PASS"
+  },
+  "bd-tree-bdd36e": {
+   "pixelSha256": "927cb797d0fa74e0bcb620057ded4580c72637dc7e424673390ff73908027eb6",
+   "q1": "PASS",
+   "q2": "PASS"
+  },
+  "bd-tree-1e09f0": {
+   "pixelSha256": "83ad3c3070cd0cf5e57dd61e0e994d92c9cc0f78507a87b6ea24ca78377b41e9",
+   "q1": "PASS",
+   "q2": "PASS"
+  }
+ },
+ "objectGate": "uncalibrated profile (advice only): r8 = 4 PASS (b1d104, 1a786c, d61d7e, 1e09f0) + 3 REFER (d43edd, 5844f6, bdd36e), 3/4 view 7/7",
+ "verdictText": "TREE 1 d43edd PASS/PASS; TREE 2 5844f6 PASS/PASS; TREE 3 b1d104 PASS/PASS; TREE 4 1a786c PASS/PASS; TREE 5 d61d7e PASS/PASS; TREE 6 bdd36e PASS/PASS; TREE 7 1e09f0 PASS/PASS — 0 trees fail, no further trunk fixes required."
+}

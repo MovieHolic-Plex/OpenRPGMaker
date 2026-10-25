@@ -15,7 +15,9 @@ export interface FloorSpec {
   readonly base: KitPref;
   /** 바닥 칸을 키트 대신 이 칸 번호 하나로(숲 = 버들항 숲 풀 칸). 덩이·흩뿌림 키트는 그 위에 그대로. */
   readonly tile?: number;
-  /** 잡음 무늬로 군데군데 바꾸는 바닥(웅덩이 모양 덩이). at = 잡음 문턱(0..1, 위로). */
+  /** 잡음 무늬로 군데군데 바꾸는 바닥(웅덩이 모양 덩이). at = 잡음 문턱(0..1, 위로).
+   *  가장자리 그림이 없어 덩이 둘레는 16px 네모로 끊긴다 — 밝기·결이 바탕과 가까운 키트만 쓴다(2026-10-25 floor VQA: 대비 큰 덩이 = 「딱딱한 네모 얼룩」).
+   *  scale 은 크게(6~8): 적고 큰 덩이가 「바닥 결의 변화」로 읽힌다. */
   readonly patches: readonly { readonly kit: string; readonly at: number; readonly scale?: number }[];
   /** 칸마다 흩뿌리는 바닥(금·이끼·뼈 박힌 칸). p = 확률. */
   readonly scatter?: readonly { readonly kit: string; readonly p: number }[];
@@ -23,8 +25,10 @@ export interface FloorSpec {
   readonly byKind?: Partial<Record<DungeonRoomKind, KitPref>>;
   /** 물·용암 바로 옆 칸 바닥. */
   readonly shore?: string;
-  /** true 면 2×2·3×3 무늬를 칸마다 무작위 한 칸으로 고른다(타일 반복 격자가 눈에 띄는 마른 바닥용). */
+  /** true 면 2×2·3×3 무늬를 칸마다 무작위 한 칸으로 고른다(타일 반복 격자가 눈에 띄는 마른 바닥용). 무작위 이웃의 이음매가 작가 배치와 같은 키트에만. */
   readonly mix?: boolean;
+  /** mix 로 고를 칸 번호(키트 행 우선 평면 번호). 비우면 전부 — 한 칸만 튀는 무늬(금·불씨 줄)가 칸마다 되풀이되던 것을 뺀다(2026-10-25 floor VQA). */
+  readonly mixCells?: readonly number[];
 }
 
 export interface TypeProfile extends GrammarInfo {
@@ -61,12 +65,13 @@ export const PROFILES: Record<BeodeulDungeonType, TypeProfile> = {
   catacomb: {
     ...GRAMMAR.catacomb,
     face: { h3: S("face-cata-3h"), h2: S("face-cata-2h") },
-    floor: { base: S("floor-cata"), patches: [{ kit: S("floor-darkcata"), at: 0.7 }, { kit: S("floor-sewer"), at: 0.82, scale: 3 }], scatter: [{ kit: S("floor-bone"), p: 0.025 }], byKind: { crypt: S("floor-bone"), cell: K("floor-cell") } },
+    // 2×2 판석 키트는 칸을 섞어도 이음 대비가 같다(맞붙인 그대로 40.6 · 아무 순서 40.6) — 섞어서 2칸 주기 반복을 없앤다(2026-10-25 floor VQA r4 「16px 반복」).
+    floor: { base: S("floor-cata"), mix: true, patches: [{ kit: S("floor-sewer"), at: 0.74, scale: 7 }], byKind: { crypt: S("floor-bone"), cell: S("floor-darkcata") } },   // 성 감방 황토 판(floor-cell)은 지하묘지 회색 판석 사이에서 격자 무늬 방으로 튀었다(2026-10-25 floor VQA r4 catacomb 「ochre scratch tile repeat」)
   },
   castle: {
     ...GRAMMAR.castle,
     face: { h3: K("face-castle-3h"), h2: K("face-castle-2h") },
-    floor: { base: K("floor-castle"), patches: [{ kit: S("floor-cata"), at: 0.72 }, { kit: S("floor-darkcata"), at: 0.85, scale: 3 }], scatter: [{ kit: K("floor-cell"), p: 0.02 }], byKind: { cell: K("floor-cell") } },
+    floor: { base: K("floor-castle"), mix: true, patches: [], byKind: { cell: K("floor-cell") } },
   },
   labyrinth: {
     ...GRAMMAR.labyrinth,
@@ -81,64 +86,71 @@ export const PROFILES: Record<BeodeulDungeonType, TypeProfile> = {
   cave: {
     ...GRAMMAR.cave,
     face: { h3: C("face-cave-3h"), h2: C("face-cave-2h") },
-    floor: { base: C("floor-cave"), patches: [{ kit: C("floor-wetsand"), at: 0.66 }, { kit: C("floor-sand"), at: 0.84, scale: 3 }], scatter: [{ kit: C("glow-moss-floor"), p: 0.0 }], shore: C("floor-wetsand"), mix: true },
+    floor: { base: M("ground-road"), patches: [], mix: true, mixCells: [1, 3, 6, 7, 8] },
+    // 물줄기 다리 = 광산 골짜기 널 — 돌다리 홑칸(난간 회색 네모)이 흙굴 물 위에 따로 떨어진 네모 판으로 읽혔다(2026-10-25 floor VQA r4 cave).
+    bridge: { ew: M("ground-deck"), ns: M("ground-deck") },   // 회색 긁힌 자국이 적은 칸(3~7점)만 — 칸 0·2·5(12~16점)가 「잔 점」으로 읽혔다(2026-10-25 floor VQA r2)   // 바다 동굴 모래 바닥은 칸마다 얼룩 결이라(결 11~18) 잔잔한 회갈색 흙바닥. 젖은 모래 물가 띠는 네모 고리로 읽혀 뺐다
   },
   temple: {
     ...GRAMMAR.temple,
     face: { h3: T("face-temple-3h"), h2: T("face-temple-2h") },
-    floor: { base: T("floor-ruin"), patches: [{ kit: T("floor-trav"), at: 0.66 }], byKind: { boss: T("floor-trav"), vault: T("floor-trav") } },
+    // 이끼 판석(floor-ruin)은 두 칸뿐이고 이끼가 칸마다 같은 자리라 16px 격자로 되풀이됐다(2026-10-25 floor VQA r3) — 신랑(큰 홀) 한 방만, 나머지는 잔잔한 석회 판석.
+    floor: { base: T("floor-trav"), mix: true, patches: [] },   // 신랑 이끼 판석도 뺐다 — 한 칸이 신랑 전체에 약 200번 되풀이됐다(2026-10-25 floor VQA r4 ruins)
   },
   mine: {
     ...GRAMMAR.mine,
     face: { h3: C("face-cave-3h"), h2: C("face-cave-2h") },
-    floor: { base: C("floor-cave"), patches: [{ kit: M("ground-rock"), at: 0.7, scale: 4 }, { kit: C("floor-wetsand"), at: 0.86, scale: 3 }], scatter: [{ kit: M("ground-rock"), p: 0.02 }], mix: true },
+    floor: { base: M("ground-yard"), mix: true, patches: [{ kit: M("ground-yard2"), at: 0.62, scale: 6 }] },
   },
   volcano: {
     ...GRAMMAR.volcano,
     face: { h3: K("face-castle-3h"), h2: K("face-castle-2h") },
-    floor: { base: M("ground-slagg"), patches: [{ kit: C("floor-cave"), at: 0.74, scale: 4 }], shore: C("floor-cave"), mix: true },
+    floor: { base: M("ground-slagg"), patches: [], mix: true, mixCells: [0, 1, 3, 4, 5, 6, 7, 8] },   // 칸 2 = 갈색 금 줄(3칸마다 격자로 되풀이됐다)
     bank: "lava",
   },
   // ---- 2026-10-23 dungeon-themes: 새 주제 ----
   ice: {
     ...GRAMMAR.ice,
     face: { h3: [TK("ice-face-3h"), C("face-cave-3h")], h2: [TK("ice-face-2h"), C("face-cave-2h")] },
-    floor: { base: SN("ground-snow"), patches: [{ kit: SN("ground-ice"), at: 0.78, scale: 5 }, { kit: SN("ground-plat"), at: 0.86, scale: 3 }], mix: true },
+    floor: { base: SN("ground-snow"), mix: true, patches: [] },
     ceiling: ["beodeul_dungeon_ceiling_ice"],
     lakeFloor: [TK("ice-floor"), SN("ground-ice")],
     // gap 얼음굴 바닥(ice_floor A1, #3283): 얼음굴 돌바닥 오토타일 + 호수 방·덩이는 빙판 오토타일. 벽·천장은 검푸른 심층굴 바위(줄 C).
-    autoFloor: { ground: "beodeul_dungeon_ice_ground", sheet: "beodeul_dungeon_ice", sheetAt: 0.74, sheetScale: 5 },
+    // 빙판은 얼어붙은 호수 방에만(sheetAt 1 = 잡음 덩이 없음) — 금 간 빙판은 결이 커서(22~27) 눈 바닥 곳곳의 덩이가 계단 모양 네모 얼룩으로 읽혔다(2026-10-25 floor VQA r0·r2).
+    autoFloor: { ground: "beodeul_dungeon_ice_ground", sheet: "beodeul_dungeon_ice", sheetAt: 1, sheetScale: 8 },
   },
   forest: {
     ...GRAMMAR.forest,
     face: { h3: C("face-cave-3h"), h2: C("face-cave-2h") },
-    // 숲 바닥 = 버들항 공용 잔디 칸 737(BEODEUL_PLAIN_GRASS) + 흙길 덩이. 벽 칸은 수관 숲(writeBeodeulCanopy)이 덮는다.
-    floor: { base: T("floor-grass"), tile: 737, patches: [], mix: true },   // 흙 덩이는 가장자리 그림이 없어 네모 얼룩으로 읽혔다 — 맨 잔디 + 풀·고사리 장식으로 결을 낸다
+    // 벽 칸은 수관 숲(writeBeodeulCanopy)이 덮는다.
+    // 숲 바닥 잔디: 공용 잔디 737 은 칸마다 같은 풀 무늬가 박혀 16px 격자로 되풀이됐다(2026-10-25 floor VQA r0·r1) — 같은 색(평균 RGB 차 1)의 잔잔한 3×3 오아시스 잔디. 737 그림은 마을·길이 쓰니 건드리지 않는다.
+    floor: { base: [D("ground-lawn"), T("floor-grass")], mix: true, patches: [] },   // 흙 덩이는 가장자리 그림이 없어 네모 얼룩으로 읽혔다 — 맨 잔디 + 풀·고사리 장식으로 결을 낸다
     bank: "grass", canopy: "leaf",
     bridge: { ew: SWP("ground-deck"), ns: SWP("ground-deck") },
   },
   swamp: {
     ...GRAMMAR.swamp,
     face: { h3: C("face-cave-3h"), h2: C("face-cave-2h") },
-    floor: { base: SWP("ground-mud"), patches: [{ kit: SWP("ground-reedbed"), at: 0.82, scale: 3 }], mix: true },
+    floor: { base: SWP("ground-mud"), mix: true, mixCells: [0, 2, 3, 6, 8], patches: [] },   // 결이 잔잔한 칸만(밝은 점 8~12개) — 칸 1·4·5·7(15~26개)이 넓은 진흙에 「잔 점 소음」으로 읽혔다(2026-10-25 floor VQA r5 swamp)
     bank: "bog", canopy: "leaf",
     bridge: { ew: SWP("ground-deck"), ns: SWP("ground-deck") },
   },
   pyramid: {
     ...GRAMMAR.pyramid,
     face: { h3: [TK("sandstone-face-3h"), T("face-temple-3h")], h2: [TK("sandstone-face-2h"), T("face-temple-2h")] },
-    floor: { base: [TK("sandstone-floor"), D("ground-plaza")], patches: [{ kit: D("ground-sand"), at: 0.74, scale: 4 }], byKind: { boss: [TK("sandstone-floor"), D("ground-plaza")] }, mix: true },
+    // 모래 바닥: 칸 0·3·6 = 밝은 세로 줄(3칸마다 되풀이) — 나머지 칸만 섞는다.
+    floor: { base: D("ground-camp"), mix: true, mixCells: [1, 2, 4, 5, 7, 8], patches: [{ kit: D("ground-road"), at: 0.68, scale: 7 }], byKind: { boss: [TK("sandstone-floor"), D("ground-plaza")] } },   // 금 간 사암 판석(결 29)은 파라오 묘실 한 방만 — 여러 방이면 모래 통로와 직선으로 맞닿는 산만한 방이 됐다(r3)
     ceiling: ["beodeul_dungeon_ceiling_sand"],
   },
   tower: {
     ...GRAMMAR.tower,
     face: { h3: [TK("tower-face-3h"), K("face-castle-3h")], h2: [TK("tower-face-2h"), K("face-castle-2h")] },
-    floor: { base: [TK("tower-floor"), K("floor-castle")], patches: [{ kit: T("floor-trav"), at: 0.8, scale: 4 }], byKind: { library: [TK("tower-floor-wood"), S("floor-plank")] } },
+    floor: { base: [TK("tower-floor"), K("floor-castle")], patches: [], byKind: { library: [TK("tower-floor-wood"), S("floor-plank")] } },
+    ceiling: ["beodeul_dungeon_ceiling_tower"],
   },
   otherworld: {
     ...GRAMMAR.otherworld,
     face: { h3: [TK("otherworld-face-3h"), C("face-cave-3h")], h2: [TK("otherworld-face-2h"), C("face-cave-2h")] },
-    floor: { base: [TK("otherworld-floor"), M("ground-slagg")], patches: [{ kit: S("floor-darkcata"), at: 0.7, scale: 4 }], mix: true },
+    floor: { base: [TK("otherworld-floor"), M("ground-slagg")], patches: [], mix: true, mixCells: [1, 5, 7, 10, 14, 17] },   // 분홍 점이 가장 적은 칸(6~7점)만 — 칸 13 붉은 사선 금·점 많은 칸은 「분홍 소금·후추」로 읽혔다(2026-10-25 floor VQA r1)
     ceiling: ["beodeul_dungeon_ceiling_void"],
   },
 };

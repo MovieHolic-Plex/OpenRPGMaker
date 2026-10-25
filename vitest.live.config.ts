@@ -3,6 +3,9 @@
 //   npx vitest run --config vitest.live.config.ts
 import { defineConfig } from "vitest/config";
 import { fileURLToPath, URL } from "node:url";
+import { assertCiOnlyTests } from "./scripts/lib/ciOnlyTests.mjs";
+
+assertCiOnlyTests("vitest");
 
 export default defineConfig({
   resolve: {

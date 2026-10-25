@@ -537,14 +537,25 @@ function stalkEyeBoxes(): Map<string, [number, number, number, number][]> {
   return out;
 }
 
+/** eyes.json 의 동결 종 id — 앞·뒤 화소 해시로 사람이 승인한 기준종 */
+export function frozenSpecies(): Set<string> {
+  const file = join(PATHS.data, "eyes.json");
+  if (!existsSync(file)) return new Set();
+  const table = JSON.parse(readFileSync(file, "utf8")) as { species: Record<string, { frozen?: unknown }> };
+  return new Set(Object.entries(table.species).filter(([, e]) => e.frozen).map(([id]) => id));
+}
+
 function stageCheck(): number {
   const seed = loadSeed();
   const stalks = stalkEyeBoxes();
+  const frozen = frozenSpecies();
   let errors = 0;
   for (const species of seed.species) {
     const front = existsSync(bundlePath(species.id, "front")) ? readPng(bundlePath(species.id, "front")) : null;
     const back = existsSync(bundlePath(species.id, "back")) ? readPng(bundlePath(species.id, "back")) : null;
-    if (front) errors += printIssues(`${species.id} front`, checkSprite(front, seed.style.maxColors, "front", species.stage as 1 | 2 | 3, stalks.get(species.id)).issues);
+    // 동결 종(사람이 그림 해시로 승인한 기준종)은 그림이 곧 기준이다 — 눈 자동 검출 실패는 경고로만 남기고, 화소 해시(V8)가 막는다.
+    const frontIssues = front ? checkSprite(front, seed.style.maxColors, "front", species.stage as 1 | 2 | 3, stalks.get(species.id)).issues : [];
+    if (front) errors += printIssues(`${species.id} front`, frozen.has(species.id) ? frontIssues.map((i) => (i.message.startsWith("눈 규칙") ? { ...i, level: "warn" as const, message: `${i.message} (동결 종)` } : i)) : frontIssues);
     if (back) errors += printIssues(`${species.id} back`, checkSprite(back, seed.style.maxColors, "back", species.stage as 1 | 2 | 3).issues);
     if (front && back) errors += printIssues(`${species.id} 앞·뒤`, checkPair(front, back));
     const manifestPath = join(PATHS.bundle, species.id, "anim.json");

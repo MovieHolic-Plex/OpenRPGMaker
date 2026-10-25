@@ -1,0 +1,346 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a9653802d12b59453d9344f306071cb68db55739135f7cd7901ba2810399b218",
+ "width": 32,
+ "height": 48,
+ "kind": "organic",
+ "name": "mossy standing shrine stone with a carved star mark and a small offering at its foot (forest landmark), natural map prop for the Beodeul 16px chipset, 2x3 tiles, standing object (3rd layer), 3/4 top-down, sits on grass between broadleaf trees",
+ "label": "beodeul_organic/shrine-stone",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 명암 3단 < 4 (1/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "명암 3단 < 4 (1/4)"
+  ],
+  "styleKind": "tree",
+  "refs": [
+   "tree-1a786c",
+   "tree-d43edd"
+  ],
+  "scale": 2,
+  "score": 5,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_organic",
+   "fallback": true,
+   "reason": "칩셋 beodeul_organic 의 화풍 기준 묶음이 없다",
+   "hash": "bcc19e99327f94ce"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 12,
+  "tileColorsP90": 12,
+  "darkV5": 38,
+  "nearBlackEdge": 0.45,
+  "opaqueTiles": 2
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "stone top (pale mossy and lit cap)",
+      "rows": "7-13",
+      "evidence": "a",
+      "front_edge_line_row": 14,
+      "eave_shadow_rows": "18-19"
+     },
+     {
+      "part": "stone front face with star mark",
+      "rows": "14-44",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "offering at foot (yellow and pink flowers, green leaves)",
+      "rows": "38-41",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 7,
+    "front_face_rows": 31,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The tall boulder has a pale lit band on top (rows 7-13, L=197 at x=12). It widens from 2 px at row 6 to 13-14 px by rows 10-16, so it reads as a rounded top plane seen from above. At row 14 the colour changes to the mid-tone stone face (L=144, then 111 at rows 18-19). The transition is soft and there is no crisp 1-row front-edge line, so the top evidence is moderate. Below it the front face runs about 30 rows, down to the base at rows 42-45. The dark right-hand columns (x=17, L=51-79) are light-direction shading on the same south face, not a receding side face. The offering at the foot (rows 38-41) is decor. The overall silhouette is a top plus a tall front face, which fits the three-quarter view for an organic rock."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small grey standing stone with a tiny orange offering at its foot. At board scale it reads clearly smaller and thinner than the 2x3-tile references. The stone shows only about 3 lightness steps (a light left face, a mid body and a dark right side), against roughly 5-6 steps in the tree canopies. The carved star mark and the moss are barely readable, and the surface has little per-stone grain or moss clumping, so it looks smooth and sticker-like. The measured 12 visible tones per tile sit between the references (7 and 29). Near-flat coverage is 0%, so there are no literal flat fills. However, 54% of the dark edge pixels are neutral, so the outline is mixed. The references have 0% neutral edges and carry tinted dark-green outlines. The rendering is cleaner but shallower than the richer reference, and it does not carry the foliage-like texture variety expected of a mossy forest landmark. A careful artist would find it thinner and flatter next to tree-d43edd.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 18191
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "stone top (pale lit upper plane)",
+      "rows": "7-13",
+      "evidence": "a",
+      "front_edge_line_row": 14,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stone front face with star carving",
+      "rows": "14-42",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "offering at foot (yellow/pink flowers, green leaves)",
+      "rows": "38-42",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 31,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The tall rounded boulder has a pale lit plane at the top (rows 7-13, light #c4c6c3). The silhouette widens from 2 to 14 px over those rows, and the plane gives way to the darker #a09088 front face at row 14. There is no hard front-edge line and no eave shadow, so the top evidence is weak, but the lit upper plane reads as a sloping top surface. Below it the front face runs about rows 14-45, with a darker shaded right flank (x=17, L=51-79) that is value shading and not a receding side face. The offering at the foot (rows 38-42) is decor."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small grey standing stone with a tiny offering, and it reads thinner next to the big leafy tree references. Its measured 12 visible tones per tile beats tree-1a786c (7) but is well below tree-d43edd (29). Near-flat coverage is 0%, so there are no big flat fills. The stone shows about 4 lightness steps (light face, mid, dark side, deep shadow), against 5-6 in the references. The dark edge pixels are 54% neutral, so the outline leans towards a grey-black line and is not clearly the dark tone of the neighbouring material, which makes it mixed. The mossy texture and the star carving are hard to see at this size, so the surface looks fairly smooth and sticker-like, with less grain, clumping and per-form value separation than the references. A careful artist would likely see it as flatter and thinner than the Beodeul reference.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 16481
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "stone top (pale mossy/lit crown)",
+      "rows": "7-13",
+      "evidence": "a",
+      "front_edge_line_row": 13,
+      "eave_shadow_rows": "14-15"
+     },
+     {
+      "part": "stone body front face with carved star",
+      "rows": "14-45",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "offering at foot (yellow/pink/green items)",
+      "rows": "38-41",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 7,
+    "front_face_rows": 31,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 7-13 form a light, pale crown (L~197 at x=12) that widens from 2 to 14 px and ends at a lighter-to-darker change around rows 13-14. That change is the front edge of the top, with a darker band below it, and it reads as the stone's top surface. Below it, rows 14-45 are a tall front face about 31 rows high, shaded from light on the left to dark on the right. The dark right side looks like rounded-rock shading, not a receding side plane. The offering at rows 38-41 sits on the stone's foot and counts as decor. The edge line is soft, so the top evidence is moderate rather than strong."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate has 12 visible tones per tile, between the two references (7 and 29), and 0% near-flat coverage, so the numbers alone would not fail it. By eye it is weaker than the references. The stone is a small, narrow gray form with only about 4 lightness steps on its body. The faces are smooth planes with little grain, no per-stone shading, and almost no visible moss clumps in several greens. 54% of the dark edge pixels are near-neutral, so the edge is a partly neutral dark line rather than a consistent dark material tone, unlike the references at 0%. The tiny offering at the foot adds little. Next to the leafy, clustered references the piece looks flatter and more sticker-like, and it does not fill its 2x3 tile footprint. Given the doubt, it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 17030
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "stone top (pale lit cap, moss tuft at row 7)",
+      "rows": "7-13",
+      "evidence": "a",
+      "front_edge_line_row": 13,
+      "eave_shadow_rows": "14-15"
+     },
+     {
+      "part": "stone front face with carved star and moss patches",
+      "rows": "14-42",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "offering (yellow and pink flowers, green leaves) at the foot",
+      "rows": "38-41",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 7,
+    "front_face_rows": 29,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette narrows to 2-8 px at rows 6-7 and widens to 13-14 px by rows 10-16. Column x=12 shows a pale top band at rows 8-13 (L=197). It changes to a mid tan at row 14 and a darker tone at rows 18-19, which reads as a front-edge transition with a shadowed face below. This is a rounded boulder top, so the edge line is soft, but the lit cap is clearly separate from the front face. The front face runs from about row 14 to row 42 and gets steadily darker toward the right (x=17 is L=51-79). That darkening is shading on the south face, not a receding side face. The offering at rows 38-41 is decor and does not count as the main body."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The stone reads as a smooth grey slab with about 4 lightness steps: a light top edge, a mid face and a dark right side. The references have 5-6 steps per material, with leaf clumps in several greens and a shaded trunk. The moss is barely visible and has no clumped texture. The carved star is not legible at this scale, and the offering is only a couple of yellow pixels. The dark edge pixels are 54% near-neutral, so the outline is mixed and leans toward the grey-black sticker look. The references are 0% neutral and use tinted dark-material edges. The 12 visible tones per tile fall between the two references (7 and 29) and far below the richer tree-d43edd. By eye the piece is flatter and simpler than that reference, with no grain, cracks or per-facet shading. Near-flat coverage is 0%, so there are no large flat fills. It does not match the Beodeul craft standard, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 18749
+  }
+ ],
+ "decidedAt": "2026-10-24T13:35:28.328Z",
+ "cells": {
+  "16": [
+   "09230dd90f46214f",
+   "601ef9d3eb718dfb",
+   "90b683ef0811e846",
+   "ab0a3ca2d5f2f1d7",
+   "d5b4756642bbf95d",
+   "fdbd5c17a6df8370"
+  ],
+  "24": [
+   "158740a201a96693",
+   "22af52f183fde96b",
+   "34cd5c573ca416eb",
+   "3ccb56c9142a3f0e",
+   "6261cdc6a313e3dc",
+   "67833f1656ce30ff",
+   "67d5356b5054d4e1",
+   "7716c144aeb638d1",
+   "7edda55585562a62",
+   "9a84145e340bef7a",
+   "cb75ecd4ab64d3d4"
+  ],
+  "32": [
+   "bf89e19c7a630028",
+   "cb62461853b81f27",
+   "d36072586dd2dac1",
+   "e216dbb1f5522085"
+  ],
+  "48": [
+   "7626a7b8fe3e9275",
+   "ea3395d27dc7971a",
+   "fa2b7348ac1208a3"
+  ]
+ }
+}

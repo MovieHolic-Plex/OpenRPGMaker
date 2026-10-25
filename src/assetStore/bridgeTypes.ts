@@ -28,12 +28,28 @@ export type MyStoreItem = StoreItemSummary & { readonly status: StoreItemStatus;
 export const STORE_REPORT_REASONS = ["copyright", "inappropriate", "broken", "spam", "other"] as const;
 export type StoreReportReason = (typeof STORE_REPORT_REASONS)[number];
 
+/** 스팀식 평가 요약(서버 reviews.ts reviewLabel). */
+export type StoreReviewLabel = "none" | "few" | "overwhelmingly_positive" | "very_positive" | "positive" | "mostly_positive" | "mixed"
+  | "mostly_negative" | "negative" | "very_negative" | "overwhelmingly_negative";
+export interface StoreReviewTally { readonly total: number; readonly positive: number; readonly pct: number; readonly label: StoreReviewLabel }
+export interface StoreReview {
+  readonly id: number; readonly recommended: boolean; readonly body: string; readonly version: string | null; readonly status: string;
+  readonly helpful: number; readonly unhelpful: number; readonly funny: number; readonly author: string; readonly handle: string | null;
+  readonly createdAt: string; readonly updatedAt: string; readonly reply: { readonly text: string; readonly status: string; readonly at: string } | null;
+}
+export interface StoreReviewsPage {
+  readonly summary: { readonly all: StoreReviewTally; readonly recent: StoreReviewTally };
+  readonly matched: number; readonly items: readonly StoreReview[];
+}
+
 export interface OprnStoreBridge {
   status(): Promise<StoreStatus>;
   setUrl(input: { url: string }): Promise<StoreStatus>;
   catalog(input: { q?: string; kind?: string; grade?: "" | "single" | "pack"; sort?: "" | "new" | "popular"; page?: number; lang?: StoreLocale }): Promise<StoreCatalogPage>;
   item(input: { slug: string; lang?: StoreLocale }): Promise<StoreItemDetail>;
   blob(input: { sha256: string }): Promise<Uint8Array>;
+  /** 판본 매니페스트만 받는다(팩 전체를 받지 않음). 옛 데스크톱 앱에는 없다. */
+  manifest?(input: { slug: string; version: number }): Promise<StorePackManifest>;
   installed(): Promise<InstalledStoreItem[]>;
   install(input: { slug: string; version?: number }): Promise<InstalledStoreItem>;
   uninstall(input: { slug: string }): Promise<boolean>;
@@ -52,7 +68,14 @@ export interface OprnStoreBridge {
   gamePublish(input: {
     projectKey: string; meta: StoreGameMeta; files: Record<string, Uint8Array>; entry: string; cover: string | null; art: string[];
     changelog: string; changes: Record<string, { added: string[]; changed: string[]; removed: string[] }>; bump: "minor" | "major"; version?: string | null;
+    comment?: string; post?: { title: string; body: string; pinned?: boolean } | null;
   }): Promise<StoreGamePublishResult>;
+  /** 소식 글 올리기(그 게임 작가만 — 서버가 판단). comment 를 주면 commentVersion(없으면 version, 그것도 없으면 지금 판본) 판본 코멘트도 고친다. */
+  gamePost?(input: { slug: string; title: string; body: string; version?: string | null; pinned?: boolean; comment?: string; commentVersion?: string | null }): Promise<{ id: number; status: string; url: string; held: string[]; comment?: { status: string | null; held: string[] } }>;
+  /** 내 게임 플레이어 평가 한 쪽(요약 라벨 + 평가). 평가 글은 플레이어가 쓴 것이다. */
+  gameReviews?(input: { slug: string; sort?: "helpful" | "recent" | "funny"; filter?: "all" | "up" | "down"; limit?: number }): Promise<StoreReviewsPage>;
+  /** 평가에 제작자 답글(그 게임 작가만 — 서버가 판단). 빈 reply 는 답글을 지운다. */
+  reviewReply?(input: { slug: string; reviewId: number; reply: string }): Promise<{ status: string | null; held: string[] }>;
   /** 지금 판본 바꾸기(되돌리기). */
   gameCurrent(input: { slug: string; version: string }): Promise<{ from: string | null; to: string }>;
   /** 컨셉 피드 한 쪽(24개). cursor 는 앞 쪽의 nextCursor. 썸네일 thumb.full·card 는 blob sha256 이라 blob() 으로 받는다. */

@@ -155,7 +155,8 @@ function requireExistingItem(project: Project, itemId: string, label: string): v
 
 function commandsForHotspot(project: Project, map: GameMap, hotspot: RecordValue, eventId: string): Command[] {
   const name = cleanName(hotspot.name, "조사");
-  const commands: Command[] = [...textCommands(hotspot.lines, name)];
+  // readable: 책·비석·편지·일지 — 양피지 「편지·책」 대화창(이름·얼굴 없이 한 번에)으로 쪽마다 한 줄 명령.
+  const commands: Command[] = textCommands(hotspot.lines, name).map((c) => (hotspot.readable === true && c.kind === "text" ? { ...c, style: "letter" } as Command : c));
   commands.push(...compileBeats(project, map, mapEventIds(map, [eventId]), hotspot.beats, `${name}.beats`));
   if (typeof hotspot.itemId === "string" && hotspot.itemId.trim().length > 0) {
     const itemId = hotspot.itemId.trim();
@@ -194,6 +195,7 @@ const placeExamineHotspots: ToolDefinition = {
             lines: { type: "array", items: { type: "string" } },
             beats: { type: "array", items: CUTSCENE_BEAT_SCHEMA },
             once: { type: "boolean" },
+            readable: { type: "boolean", description: "책·비석·편지·일지 — lines 를 양피지 읽을거리 창(편지·책 스타일)으로. lines 한 줄 = 한 쪽" },
             itemId: { type: "string" },
             setSwitch: { type: "string" },
             graphic: GRAPHIC_SPEC_SCHEMA,

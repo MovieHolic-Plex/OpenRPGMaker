@@ -220,8 +220,8 @@ function addRunningKids(project: Project, hub: GameMap): Cell[] | null {
   const moves = ring.map((c, i) => step(c, ring[(i + 1) % ring.length]!));
   const kids: [string, string, number, string, string][] = [
     ["kid_run_a", "tex_easyrpg_charset_people1", 1, "술래 아이", "잡았다…! 아니, 놓쳤다! 거기 서!"],
-    ["kid_run_b", "tex_easyrpg_charset_people4", 0, "도망치는 아이", "약 오르지~ 별지기 형도 술래 할래?"],
-    ["kid_run_c", "tex_easyrpg_charset_people5", 1, "도망치는 아이", "심문관님 갔다! 이제 뛰어도 돼!"],
+    ["kid_run_b", "tex_easyrpg_charset_people4", 0, "도망치는 아이", "못 잡겠지~ 별지기 형도 같이 뛸래?"],
+    ["kid_run_c", "tex_easyrpg_charset_people5", 1, "도망치는 아이", "심문관님들 다 갔다! 이제 뛰어도 돼!"],
   ];
   kids.forEach(([key, tex, index, name, line], k) => {
     const id = `ev_${FS_PREFIX}_${key}`;
@@ -340,7 +340,7 @@ function hiddenNecklace(project: Project, hub: GameMap): Cell | null {
     id, name: "수납 · 이끼 낀 상자", x: spot.x, y: spot.y, trigger: { kind: "action" }, commands: [],
     pages: [
       pg(`${id}_p0`, "뒤지기", [], [
-        { kind: "text", body: "골목 끝, 이끼가 덮인 상자다.\n못이 녹슬어 뚜껑이 쉽게 들린다." },
+        { kind: "text", body: "골목 끝에 놓인 이끼 낀 상자다.\n못이 녹슬어 뚜껑이 쉽게 들린다." },
         { kind: "text", body: "기름 먹인 천에 싸인 목걸이 하나.\n작은 돌이 별빛처럼 희미하게 빛난다." },
         { kind: "text", body: "천에 바늘땀으로 「새벽샘」.\n서른 해 전, 별이 떨어진 마을의 이름이다." },
         { kind: "changeItem", itemId: FS_DAWNWELL_NECKLACE, op: "+=", amount: 1 },

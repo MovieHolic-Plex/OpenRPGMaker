@@ -1,5 +1,66 @@
 > 저장소 전환 안내(2026-09-21): 아래 옛 원격 DB·설정·명령은 과거 기록이다. 현재 저장·이관 지침은 [프로젝트 저장 전환](storage-retirement.md)과 AGENTS를 따른다.
 
+## 「드러났다」를 지도에 보이기 `stage_map_reveal` · 장면 대형 `sceneFormation` · 보스 HP 숨김 (2026-10-25)
+
+사용자 지적(폴른 스타 1막): 「승강 장치가 드러났다」는 대사뿐이고 지도에는 아무것도 나타나지 않았다. 일반 도구로 푼다.
+
+- `stage_map_reveal` (write, `src/editor/tools/revealTools.ts`, 도메인 event·map) `{mapId, eventId, pageId?, objectId+x+y | tiles[], afterText?, theme?(stone·machine·magic·fire), camera?(기본 true), switchId?}`.
+  `objectId` 는 `stamp_object` 와 같은 공용 오브젝트 id 다. 초안에 한 번 찍어 보고 4층의 차이만 뽑은 뒤 맵을 되돌린다(이식된 그림 칸은 칩셋에 남는다).
+  그 차이를 이벤트 페이지 안 `afterText` 가 든 첫 대사 바로 뒤(갈래·선택지 안까지 찾는다)에 끼운다:
+  카메라 `panTo`(좌표, `target` 은 주지 않는다 — 카탈로그에 `position` 이 없어 굽기가 거절한다) → `revealInWaves`(세 물결 changeTile·먼지·흔들림·색조) → `switchId` 켬 → 카메라 `return`.
+  changeTile 은 세션 칸 덮어쓰기라 저장·불러오기에 남는다. 드러난 것을 쓰게 하려면 그 칸에 같은 `switchId` 조건 페이지를 가진 이벤트를 따로 둔다.
+  노출: 「드러나·나타나게·숨은 문/통로/계단·승강 장치·비밀 문·reveal」 낱말이면 `sessionToolExposure` 가 `stage_map_reveal`·`list_spatial_designs`·`find_events`·`get_event`·`show_map_region` 을 함께 연다.
+- `configure_companion_rules {sceneFormation: "nearest"|"abreast"}` → `system.companions.sceneFormation`. `display:"scenesOnly"` 의 장면에서 동료가 서는 자리다.
+  `abreast` = 주인공이 보는 방향에 수직으로 나란히(첫째 화면 왼쪽, 둘째 오른쪽, 그 바깥), 칸이 막히면 옛 `nearest` 로 떨어진다(`followers.ts abreastCell`).
+  옛 `nearest` 는 빈 칸 중 가장 가까운 곳이라, 적이 걸어오는 쪽(주인공 앞)에 동료가 서는 일이 있었다.
+- 보스 HP 숨김은 이미 있던 적 단위 `upsert_enemy {enemy:{id, hideHp:true}}` 를 쓴다(새 필드 없음). 「대형·횡대·보스 HP·체력 숨김」 낱말이면 `configure_companion_rules`·`upsert_enemy`·`upsert_troop`·`get_database_records` 를 연다.
+- 「대형」은 뒤따르기(`display:"follow"`)에서도 컷신 동안 횡대로 선다(장면이 끝나 걸으면 궤적으로). 폴른 스타는 10-24 의 FF6 식 `scenesOnly`(필드에서 동료 숨김)를 걷어 다시 뒤따른다.
+- 전투·저장·필드 규칙(같은 날, 사용자 7건):
+  - `set_project_settings battle.allowAutoBattle:false` → `system.allowAutoBattle` — F 키 토글·「자동」 표시가 사라진다(`battleDom.ts`). 배우별 `ActorOptions.autoBattle` 과 별개.
+  - `battle.clearStatesAfterBattle:true` → 전투가 끝나면 파티 상태 이상이 풀린다. 상태 하나는 `upsert_state clearOnBattleEnd:true|false` 가 이긴다.
+    둘 다 없으면 `removalCondition` 글이 「전투 종료」일 때만 풀린다(「전투 종료 후 유지」는 남는다). 전투 불능은 풀지 않는다. 판정 `src/project/battleEndStates.ts`, 적용 `battleRewardsToSession.ts`.
+  - `set_project_settings saveAccess:"savePoints"` → 메뉴 「저장」이 사라지고 자동 저장도 멈춘다. `place_savepoint`(openSaveMenu)는 그대로 저장한다. 눈에 띄게 하려면 `place_savepoint objectId:"kit:beodeul_city/bd-pick-dungeon-theme-crystal-pedestal"` — 오브젝트를 x,y(왼쪽 위)에 찍고 이벤트는 그림 맨 아래 줄 가운데에 투명하게 둔다(기본 크리스탈 칩은 회색 돌처럼 보여 눈에 안 띈다). `prompt:"기록하시겠습니까?"` 를 주면 예/아니오 뒤에만 저장 칸을 열고, `sparkleRadius`(objectId 를 주면 기본 2)는 페이지 `nearSparkle` 로 플레이어가 그 반경에 들어올 때 반짝임을 한 번 터뜨린다(런타임 `playSceneFieldStaging.syncNearSparkles`).
+  - `tune_field_enemies {mapIds?, sightRange, vision, pace, lungeSteps, lungeSpeed}` — 이미 놓인 보이는 적을 한꺼번에 추격형으로. 덮치기는 `movement.chaseLunge {steps, speed}`:
+    놀람(`sightAlert`) 멈춤이 끝난 뒤 첫 steps 칸을 speed 랭크 걸음으로 쉬지 않고(`playSceneAutonomous.ts`). speed 는 6(주인공 걷기 160ms/칸)까지만 받는다 — 계속 걸으면 피할 수 있다.
+  - 랜덤 조우 끄기는 `set_encounter_table {entries:[], encounterRate:0}`. 보이는 적으로 레벨을 올리게 하려면 `place_field_enemy respawnSec` 로 다시 나타나는 적을 둔다.
+  - 연계기 「얼굴 교차」 컷인의 흉상(결의 표정)은 런타임이 고르는 그림이라 데이터에 이름이 없어 스토어 판본에 빠졌다(폴른 스타 1.20). 고르는 순서를 `src/project/comboBust.ts` 하나로 모으고 `webExportAssets` 가 같은 그림을 싣는다.
+  - 노출: 「자동 전투·상태 이상 풀림·세이브 포인트·메뉴 저장」 → set_project_settings·upsert_state·place_savepoint, 「랜덤 조우·보이는 적·덮치·멀리서」 → set_encounter_table·tune_field_enemies·place_field_enemy.
+- 조수 트랙 과제: `harness-data/space-craft/seed.json` 의 `fs-boss-squad-first`·`fs-boss-hidehp`·`fs-reveal-lift`·`fs-battle-noauto`·`fs-battle-combo-faces`·`fs-state-clear-after`·`fs-foe-lunge`·`fs-foe-no-random`·`fs-save-points`·`fs-party-follow`.
+
+## 이야기 흐름 읽기 `get_story_outline` · `read_story_script` · `set_scene_summaries` (2026-10-25)
+
+같은 파일 `dialogueTools.ts`. 모델은 자료집 「대사 › 대본」 과 같은 `buildStory`([editor-database.md](editor-database.md) 「대본」 절). 별칭 「이야기 흐름·대본 읽기」(줄거리·전체 흐름·1막·대본…)와 「대사 관리·윤문」 양쪽에 걸린다.
+윤문 순서(레시피 `dialogue-polish`·Pi 프롬프트): **개요 → 장면 본문 → 고치기 → 요약 남기기**.
+
+- `get_story_outline` (read) `{chapter?, includeSide?}` — 막·장·장면(본줄 S…, 곁가지 B…)마다 장소·발동·조건·줄 수·한 줄 요약(저장된 것 또는 «(자동)»), `cast`(화자·줄 수·장면 수·말투 메모), `styleRules`.
+- `read_story_script` (read) `{chapter?, from?, to?, scenes?[], speaker?, includeSide?, maxChars?(기본 14000, ≤40000)}` — 대본 글:
+  `### S12. 장소 — 제목` · `(발동 · 조건)` · `요약` · `화자: 대사 ⟨S12.3·a1b2c3⟩` · `(내레이션): …` · `[지문]` · `[선택지]` + `> 갈래` · `{조건}`. 쌍둥이 장면은 한 줄로 줄인다. 넘치면 `nextFrom`.
+  폴른 스타 1막 본줄 전체 ≈ 16.5k자.
+- `rewrite_dialogue` 는 이제 `{ref:"S12.3", hash:"a1b2c3"}`(꼬리표 그대로)도 받는다 — `id` 대신 `ref`, 해시는 6자 이상 앞부분이면 원문 해시로 푼다(원문이 바뀌었으면 그대로 거절). 받은 줄 결과에 `ref` 를 붙인다.
+- `set_scene_summaries` (write) `{items:[{scene:"S3", summary}]}`(≤60, 200자, 빈 글은 지움) → `project.dialogueDesk.sceneNotes`. 개요와 화면이 자동 요약 대신 이것을 보인다.
+- 장면 번호는 프로젝트가 바뀌면 다시 매겨진다 — 저장 키는 장면 id(`ev/<맵>/<이벤트>/<쪽>`)이고 번호는 읽을 때마다 새로 받는다.
+
+## 대사 관리·윤문 `list_dialogue` · `get_dialogue_context` · `rewrite_dialogue` · `set_speaker_voice` (2026-10-24)
+
+파일 `src/editor/tools/dialogueTools.ts`(도메인 event), 별칭 「대사 관리·윤문」, 레시피 `dialogue-polish`, Pi 시스템 프롬프트 한 줄.
+색인·검사는 자료집 「대사」 탭과 같은 `src/editor/dialogue/*` 를 쓴다([editor-database.md](editor-database.md) 같은 날 절).
+
+- `list_dialogue` (read) — 거르개 query·speaker·mapId·scope(all/map/common/troop/database)·kind(all/line/choice/description)·overflowOnly·minChars, offset/limit(≤200).
+  줄마다 `{id, hash, speaker, text, where, lines "쓴줄/한장", overflow, locked, pendingProposal}`. 첫 쪽에는 화자 목록(수·말투 메모)·`styleRules`·걸린 제안 수.
+  화자는 자유 문자열이라 정확히 같은 이름이 없으면 낱말 포함으로 넓히고 요약에 그 사실을 적는다(「발렌」→「심문관 발렌」).
+- `get_dialogue_context` (read) — 같은 이벤트 쪽 안의 앞뒤 줄, 화자 말투 메모, 창 맞춤 추정, 걸린 제안.
+- `rewrite_dialogue` (write) — `edits:[{id,hash,text,reason}]`(≤80), `mode: propose(기본)|apply`, `instruction`, `allowOverflow`.
+  propose 는 게임 대사를 바꾸지 않고 `project.dialogueDesk.proposals` 에 남긴다(같은 줄의 옛 제안은 대체) — 사람이 「대사」 탭에서 받는다.
+  거절 사유: unknown-line · stale-hash · drafted · control-codes · too-long · overflow · empty · unchanged. 한 줄도 못 받으면 `ToolError dialogue-rewrite-rejected`.
+- `set_speaker_voice` (write) — `{speaker, note}`(빈 note 는 지움, 800자).
+- 스키마: 자유 키 객체·빈 enum 없음, 배열은 `items` 를 단다(Gemini 400 규칙).
+- 도구 창 넘침: 도구는 Pi 워커(bun, DOM 없음)에서 돈다. 그래서 편집기가 런타임 CSS 로 잰 대화창 기준(글 폭·글꼴 크기·한 장 줄 수, 얼굴×이름표 4가지)을
+  `project.dialogueDesk.window` 에 남기고(`persistWindowMetrics`, 라벨 「대화창 실측 기록」, 되돌리기 없음), `estimateLineFit`·`checkDialogueEdit`·`read_story_script` 의 «창 넘침 3/2줄» 이
+  키(해상도·글꼴·대화창 모양)가 맞을 때 그 기준으로 잰다(글자 폭은 가중 추정). 재는 때: 조수 입력창에 처음 들어갈 때, 「대사」 탭을 열 때. 편집기 안 화면은 캔버스 실측(`registerMeasuredDialogueFit`).
+  기준이 없거나 키가 다르면 **추정**(9px·한 장 3줄). 도구 결과의 `windowNote`/`windowCheck` 가 어느 쪽인지 밝힌다.
+  실측(2026-10-25 폴른 스타): 추정은 한 장 3줄, 실측은 2줄(Galmuri11 12px) — 조수가 추정만 보고 3줄로 줄인 기록 패널 26줄이 실제로는 넘쳤다. 그래서 실측을 워커까지 넘긴다.
+  워커는 편집기 패널 모듈을 import 하지 못한다(동적 import 도 bun 컴파일이 런타임 CSS 를 끌어와 실패한다).
+
 ## 계단 입구 계약 — 조립기·stamp_object·create_transfer_pair (2026-10-22)
 
 계단 키트는 앞 칸(approach)이 빈 바닥이어야 찍히고, 층 이동은 이동 칸(trigger)에, 도착은 앞 칸에 계단을 등지고 둔다. `list_hand_interior_parts`·`list_spatial_designs` 행의 `entrance`, 칩셋 참고문서 「계단 입구」. 상세 `openwiki/stair-entrance-contract.md`.
@@ -3538,6 +3599,17 @@ r8~r11 실편집기 녹화에서 조수는 도구를 찾지 않고 paint_tiles �
 - 도망 성공 뒤 무적 걸음은 `configure_monster_system {escapeGraceSteps: 0~99}`(생략 시 몬스터 파티 게임 4, 0 = 끔).
 - 낚싯대는 새 도구가 아니다: `configure_fishing` 의 몬스터 어획(`catches[] {speciesId,…}`) + `upsert_tool_action {action:"fish", itemId}` 로 잇고, NPC `changeItem` 으로 낚싯대를 준다. 기본 `build_monster_game` 캠페인에는 이미 들어 있다. 능력 색인 `monster-field-items`, 별칭 「벌레퇴치·탈출 로프·도망 무적·낚싯대」. 자세한 런타임 동작은 `openwiki/monster-expedition.md` 「야생 조우 보호·필드 도구·낚시」.
 
+## 이야기형 연애 기본값 `apply_romance_preset` (2026-10-25, 시타마치)
+
+인터뷰로 시작하지 않은 프로젝트(대표 데모·빈 프로젝트에서 조수가 연애 게임을 짓는 경우)에는 `applyRomanceDefaults` 가 아무 일도 하지 않아 체력 하트 「514/514」 HUD 가 그대로 남았다. `applyRomanceDefaults(project, {force, dayLoop})` 가 생겼다: `force:true` 면 인터뷰 장르가 아니어도 깔고, `dayLoop:false` 면 시간·소셜 루프(기한 결말)를 깔지 않으며 HUD 는 시계 없이 호감 위젯 하나(`storyRomanceHudConfig`)다. 조수 도구 `apply_romance_preset({dayLoop?})`(`gameSystemToggleTools.ts`, 이름표 「연애 기본값 깔기」). 엔딩 화면은 캡션·요약을 `.ending-final-meta` 세로 묶음에 넣어 긴 엔딩 이름이 두 줄이 되어도 「플레이 시간」 줄과 겹치지 않는다(`playSceneOverlays.ts`, `gameOver.css`).
+
+### 대화 중 인물 보이기 `system.dialogueKeepActorsVisible` (2026-10-25)
+
+시타마치 after VQA 두 검수자가 모두 1순위로 짚은 결함: 필드 대사창(아래)과 선택지 창(가운데)이 화면 아래 절반을 덮고 카메라는 주인공을 화면 가운데에 두므로, 마주 서서 말하는 두 사람이 창 뒤에 숨는다. 이 설정을 켜면 `src/player/dialogueCameraLift.ts` 가 프레임마다 덮개(`.dialogue-overlay .dialogue-box`·`runtime-choices`) 윗변을 재고, 주인공을 따르는 카메라의 추적 오프셋을 내려 주인공을 빈 띠의 55% 높이(최소 20%)에 둔다. 맵 아래 끝·화면보다 작은 방(전철 칸)에서는 그 동안만 카메라 경계 아래를 같은 만큼 늘리고(늘어난 곳은 창 밑), 창이 닫히면 오프셋과 경계를 되돌린다 — 경계는 그 사이 맵 이동이 바꾸지 않았을 때만 되돌린다. 카메라 고정·이동 연출 중에는 손대지 않는다.
+- 조수: `set_project_settings({dialogue:{keepActorsVisible:true}})`. `apply_romance_preset` 도 값이 없을 때 켠다. false 도 저장한다(연애 기본값이 저작자가 끈 값을 다시 켜지 않게).
+- 시험: `test/dialogueCameraLift.test.ts`, 하네스 과제 `dialogue-keeps-speakers-visible`(scene-lessons-seed, 19528).
+헤드리스 러너(`sceneTestRunner`): 선택 → 장소 이동으로 끝나는 이벤트 뒤, 도착 맵 자동 실행이 선택지에서 기다리면 그 안쪽 해석기를 그대로 들고 간다(예전에는 «Nested interaction still waiting» 실패로 자동 플레이가 첫 장면에서 멈췄다).
+
 ## 연애 3차 수리 — 칩·ESC 메뉴·뼈대·완료 문 (2026-10-16, romance-fix-3)
 
 - **인물 칩 = Modern1~3(24칸).** 장르 잠금 `romance` 에 `charsets`(families `modern`·`object`·`uploaded`, 주인공 기본 `oprn-charset-modern2` 칸 2)가 생겼고 `enableGenreLockSettled` 로 켠다(`romancePreset.ts`) — 켜는 순간 기본 로스터·주인공이 Modern 칩으로 옮겨진다. `charsetQuery.categoryOf()` 는 `tex_oprn_charset_modern*` 을 `people` 로 센다(이게 `object` 로 새서 「villager」「npc」 같은 일반 질의와 place_npc 기본값이 잠금 아래 0건이었다). `list_npc_graphics` 가 0건이면 `data.hint` 에 낱말 하나로 줄이라고 적는다(공백으로 이은 여러 낱말은 모두 맞아야 한다).
@@ -3623,7 +3695,7 @@ r8~r11 실편집기 녹화에서 조수는 도구를 찾지 않고 paint_tiles �
     해당 종류는 로마 도시와 폐허 셋(포스트아포칼립스·좀비 도시·황무지)이다.
     실측: 대안이 다른 종류 맵의 복사본(공장 도시 판박이)이거나 흩뿌린 소품 마을로 읽혔다.
   - ~~버들항 쓰임 덩이 종류는 needs-art~~ → **2026-10-23 ready (village-art).** 마당 바닥 오토타일 셋을 그렸다.
-    - 그림: 버들항 시트 줄 258, 칸 33024~33094(2026-10-24 던전 꼬리 뒤로 옮김; 포도나무 줄 33095~, 판석→흙 33111~).
+    - 그림: 버들항 시트 줄 259, 칸 33152~33222(2026-10-24 던전 꼬리 뒤로 옮김; 포도나무 줄 33223~, 판석→흙 33239~).
     - 오토타일: `beodeul_yard_cobble`(자갈) · `beodeul_yard_dirt`(다진 흙) · `beodeul_yard_flag`(판석).
     - 견본 킷: `bd-yard-*-sample`. `mergeShippedFarm`·`mergeShippedKits` 가 붙인다.
     - `dress_village_quarter` 가 마당을 개간해 깔고, 덩이를 그 안에 앉힌다.
@@ -3653,7 +3725,7 @@ r8~r11 실편집기 녹화에서 조수는 도구를 찾지 않고 paint_tiles �
           - 둔덕을 못 올리면(relief 없음·자리 없음) 갱구에 맞붙인 서로 다른 큰 더미·작은 더미 둘로 대신한다. 더미는 GAP 여백 대신 실제 조각 상자로만 겹침을 본다.
           - 더미는 id 마다 맵에 한 번이다(`UNIQUE_SPOIL`). 둘레 흙 칸 돌 부스러기 덧칠(`screeAround`)은 30%이고 둔덕 칸은 건너뛴다.
           - 왜: 갱구가 평지에 선 돌 상자로 읽혔다(r5~r8). 바위 땅 칸은 회색 콘크리트 판, 한 칸 띄운 더미는 따로 놓인 돌, 둔덕 흙 윗면은 오각형 받침대로 읽혀 바꿨다.
-        - **포도나무 줄(`fillVineRows`, 포도원, r10~r11):** 8×4 이랑 키트 대신 조각을 다 놓은 뒤 남은 마당을 두 칸 높이 포도나무 줄로 채운다. 위 칸은 잎 지붕 윗면(33,095~33,102, 걸음, 위층), 아래 칸은 앞면(+8, 막힘, 위층)이다. 줄마다 아래로 한 칸씩 훑어 둘 수 있는 곳에 두고, 바로 위 칸에 다른 줄이 없어야 한다(고랑 길 한 칸). 빈 구간은 12칸이 넘으면 고르게 나눠 나란한 줄로 만든다. 가운데 칸은 같은 것을 잇달아 두지 않고 기둥 칸은 2~3칸마다다. 줄 하나가 통행을 끊으면 걷는다. 포도원 조각은 창고(맵 열에 넷은 농장 헛간 `faces`) + 덤 2~4개(압착기·시렁·술통·바구니·짐수레·자루·장작 헛간·빨랫줄·닭장)다. 옛 이랑 키트는 16px 되풀이·죽은 칸·「맨흙 마당에 떨군 모듈 격자」로 읽혔다.
+        - **포도나무 줄(`fillVineRows`, 포도원, r10~r11):** 8×4 이랑 키트 대신 조각을 다 놓은 뒤 남은 마당을 두 칸 높이 포도나무 줄로 채운다. 위 칸은 잎 지붕 윗면(33,223~33,102, 걸음, 위층), 아래 칸은 앞면(+8, 막힘, 위층)이다. 줄마다 아래로 한 칸씩 훑어 둘 수 있는 곳에 두고, 바로 위 칸에 다른 줄이 없어야 한다(고랑 길 한 칸). 빈 구간은 12칸이 넘으면 고르게 나눠 나란한 줄로 만든다. 가운데 칸은 같은 것을 잇달아 두지 않고 기둥 칸은 2~3칸마다다. 줄 하나가 통행을 끊으면 걷는다. 포도원 조각은 창고(맵 열에 넷은 농장 헛간 `faces`) + 덤 2~4개(압착기·시렁·술통·바구니·짐수레·자루·장작 헛간·빨랫줄·닭장)다. 옛 이랑 키트는 16px 되풀이·죽은 칸·「맨흙 마당에 떨군 모듈 격자」로 읽혔다.
         - **광산 집·조각(r11):** 집은 제련 오두막·판자 광부집·돌 기초 창고·통나무 오두막 중 하나, 나머지 마당 조각은 맵마다 4~6개를 섞어 고른다. 갱구 둘레 자갈 덧칠은 갱구 발치 두세 무더기(맵당 여섯 칸까지)다. 두 seed 가 같은 오두막·둔덕 거울 도장이었고, 30% 로 흩은 같은 자갈이 열다섯 번 찍혔다. 덩이 난수는 fmix32 로 씨앗을 섞은 mulberry32 다(LCG 첫 값이 씨앗을 따라가 두 맵이 같은 것을 골랐다).
         - **둔덕 다듬기(r10):** 한 줄만 삐져나온 둔덕 칸은 「흙 위에 뜬 풀 네모」로 그려져 위·아래 또는 좌·우 이웃이 없는 칸을 두 번 깎는다(갱구는 이웃으로 친다). 둔덕에 셋 이상 둘린 풀 홈은 마당 흙으로 메우고 `shapeYard` 로 다시 맞춘다. 둔덕은 갱구 킷의 빈 윗줄이 아니라 보이는 윗변(갱구 y+1)에 맞춘다. 뒤 칸 윗면에는 고사리·헤더 덤불·자갈 덧칠을 45% 흩는다.
     - 장터 마을은 아직 walled-market 덩이 없이 광장 마을만 짓는다.
@@ -3665,3 +3737,27 @@ r8~r11 실편집기 녹화에서 조수는 도구를 찾지 않고 paint_tiles �
   - 바이킹은 partial이다. 롱십·용머리 회관 그림이 없다.
   - needs-art 대안은 seed를 1 이상으로 준다. 기본 seed 0이면 대안 맵이 그 종류를 직접 요청한 맵과 바이트까지 같았다.
 - **시험 시드:** `harness-data/assistant-capability/village-eras-seed.json`(v2 23건, 조수 대용 Sonnet 5.5 high, 포트 19640~19662). era-ruins-village·era-mining·era-vineyard·era-ruined-city·era-wasteland·era-postapoc 가 village-art 로 새로 지을 수 있게 된 종류다.
+
+## 연계기·기술 정체성·결과 팡파레 — `list_combo_techs` · `upsert_combo_tech` · `battle.fanfare` (2026-10-24, fs-battle-2)
+
+- `list_combo_techs {actorId?}` (읽기): 연계기마다 참가자·비용 몫·꼬리표(전투 도움말과 같은 문장 `skillHelp`)·해금 조건·연출·지금 파티로 열렸는지(`unlockedAtStart`, 못 채운 조건 `missing`).
+- `upsert_combo_tech` (쓰기, 도메인 database·battle): 듀얼·트리플 테크를 한 번에 — `actorIds`(첫째가 시전자)·`requires [{actorId, skillId}]`·`mpCosts [{actorId, mp}]`·scope·kind·statistic·power·elementId·hits·`combinedStats`·stateEffects·`exploitStates`·drainPercent·gaugeShift·`choreographyId`(→ retroChoreographyId)·switchId.
+  저장은 `upsert_skill` 실행을 그대로 지난다(같은 검증·정규화). 연출이 없거나 참가자가 파티에 없으면 경고. 폴른 스타의 연계기 셋도 이 도구로 저작한다(`battleDepth.ts`).
+- `upsert_skill` 스키마에 `comboMpCosts`·`exploitStates`(약점 공략: 대상이 그 상태면 +N%, consume 이면 지움) 추가. 없는 상태 id 는 `state-not-found`.
+- `set_project_settings {battle: {fanfare: {levelUp, skillLearned, comboUnlocked, style: burst|classic|minimal, sound}}}` — 결과 화면 팡파레.
+- 레시피 `combo-techs`(`toolCapabilityIndex`) 정책: 기술마다 「센 한 방」 말고 한 가지 쓰임(깔기→거두기·지키기·시간·지속 피해·정화)을 엔진 수단으로 주고 설명에 그 쓰임을 쓴다. 연계기는 해금 조건을 레벨 업 기술에 걸어 「새 연계기!」 카드가 뜨게 한다. 별칭: 연계기·합체기·듀얼 테크 → 이 도구들, 팡파레·레벨 업 연출 → set_project_settings.
+- (2026-10-25, fs-battle-3) `set_project_settings {battle: {staging: {enemyLunge: fast|normal|classic, comboCutIn: faces|band|off, comboFx: spectacular|simple, skillHint: line|window}}}` — 전투 연출(모르는 값은 ToolError, 기본값은 저장 안 함). `upsert_enemy.lungeSpeedPercent`(25~300, 100 = 기본) — 그 적만 더 빠르게/느리게 달려든다. `upsert_skill.comboStaging` · `upsert_combo_tech.staging` `{tint:"#rrggbb", shake: none|light|heavy, slowMo, kicker}` — 연계기 하나의 색·착탄 흔들림·느린 화면·제목 위 작은 글. 런타임 의미는 [runtime-battle.md](runtime-battle.md) 「전투 연출 설정」.
+
+## 폴른 스타 제작을 조수 도구로 (2026-10-25, 폴른 재현 트랙)
+
+폴른 스타를 만들며 손으로(플래그십 코드로) 하던 일을 자연어 요청으로 할 수 있게 연 도구들. v2 조수는 요청 낱말이 맞을 때만 싣는다(`src/ai/v2/game.ts` `FALLEN_TIERS`).
+
+- `author_forest_route{fromMapId, side, count 1~5, terrain:'forest'|'field', moods[], hiddenPerMap}` — `flagship/fallen/woodland.ts` 화가(B1 활엽 composer)로 구불구불한 숲길(또는 트인 들판) 맵을 여러 장 짓고 시작 맵 가장자리 ↔ 숲1 ↔ 숲2 … 를 잇는다. 마지막 맵은 막다른 빈터. 나무 사이 틈에 숨은 물건. 새 맵은 시작 맵 밑으로 옮긴다(범위 체크포인트 보존).
+- `place_search_containers{mapId, containers[]}` — `project/containerSearchPattern.ts` 패턴. 여는 연출·전리품 떠오르기·한 번만·「이미 뒤짐」, `ownerId` 면 `eventSeesPlayer` 시선 분기(벽·방 경계), 시끄러운 수납은 「?」 들음. `caughtTakesLoot`(기본 false)·`caughtVariableId`(들킨 횟수). 칸이 비었으면 칩셋의 1칸 물건을 찍어 보이게 한다. `eventSeesPlayer` 는 **분기(fork) 조건 전용** — 페이지 조건으로 쓰면 직렬화가 거부한다.
+- `replace_text_in_project{find, replace, scope?, mapIds?, dryRun?}` — 대사·화자·이벤트/맵 이름·퀘스트·공통 이벤트·DB 글의 일괄 바꾸기(폴른 `applyNorthForest` 일반화). id·그림·조건 제외, 뒤 조사(은/는·이/가·을/를·와/과·으로/로)를 받침에 맞춘다.
+- 스키마가 막던 엔진 필드 개방: `upsert_equipment` `damageDealtPercent`/`damageTakenPercent`, `upsert_skill` `weaponAffinity`, `upsert_enemy` `damageTypeRates`, `upsert_state` `runtimeEffects.maxTurns`/`damageTypeRates`.
+- `place_field_enemy` `vision:'cone'`(앞만 봄)·`giveUpRange`. `place_examine_hotspots` `readable:true`(양피지 「편지·책」 창, 한 줄 = 한 쪽).
+- 몬스터 수집 잠금: 이벤트·배우가 **이미 쓰던** 칩은 페이지를 갈아 끼워도 유지된다(새로 고른 칩만 막는다).
+- v2 마무리 검사(`gameChecks.ts`): 같은 두 맵 사이 떨어진 문 둘 이상(짓기 도구 자동 연결 + 다시 잇기), 숲·들판 요청인데 새 맵 없이 마을 맵에 둔 필드 적.
+- (2026-10-25) `set_project_settings {battle: {revealWeakness: never|afterDiscovery|always}}`(= `battle.staging.revealWeakness`) — 적 약점·저항을 대상 고르기에서 보이는가. 기본 afterDiscovery: 처음 맞힌 타격의 「약점 발견!」 뒤로만. 도구 설명이 「기술 설명에 ○○ 약점처럼 적 이름을 쓰지 말 것」을 함께 말한다.
+- (2026-10-25 데모 기능 묶음) v2 `FALLEN_TIERS` 에 데모 기능 묶음을 더했다 — 연계기(`upsert_combo_tech`)·전투 연출/팡파레/휴대폰 조작(`set_project_settings`)·대사 책상(`list_dialogue`·`rewrite_dialogue`·`set_speaker_voice`·`read_story_script`…)·거리 행인(`add_street_walkers`)·현대 거리(`compose_modern_city_street`)·옥상 배경(`set_map_properties` background.fromMap). 묶음마다 한 줄 사용법(`fallenTierCard`)이 게임 카드 뒤에 붙는다. 마무리 관문의 «아무것도 안 바뀜» 비교에 `system`·`dialogueDesk` 를 넣었고(설정·윤문 제안만 바꾼 요청이 거짓 「안 바뀜」으로 되돌아가지 않게), 기본값이 이미 켜진 설정 요청은 그 검사를 건너뛴다. 연계기 요청인데 연계 기록이 없으면 게임 검사가 돌려보낸다. 자연 기물은 `list_spatial_designs` query 「버들항 자연」(bd-org-*).

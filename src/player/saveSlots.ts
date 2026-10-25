@@ -200,6 +200,7 @@ export type SaveSnapshot = {
     readonly actorApProgress?: PlaySession["actorApProgress"];
     readonly learnedViaAp?: PlaySession["learnedViaAp"];
     readonly actorRageEnemyIds?: PlaySession["actorRageEnemyIds"];
+    readonly knownWeaknesses?: PlaySession["knownWeaknesses"];
     readonly actorLevels?: Record<string, number>;
     readonly actorVitals?: Record<string, ActorVitals>;
     readonly horror?: PlaySession["horror"];
@@ -344,9 +345,30 @@ export function clearRecordKey(): string {
   return `${saveSlotStorageNamespace ?? "oprn"}:clear-record:v1`;
 }
 
+/**
+ * 저장 JSON. 숫자 아닌 수(NaN·Infinity — 0으로 나눈 변수 등)는 JSON 에서 null 이 되어 읽기 검사가 슬롯 전체를 「손상됨」으로 본다 — 0 으로 적는다.
+ * (2026-10-25 Salad story-letter: 「1번 저장 칸에 저장했습니다」 바로 뒤 같은 칸이 「손상됨」.)
+ */
+function saveJson(snapshot: SaveSnapshot): string {
+  return JSON.stringify(snapshot, (_key, value: unknown) => (typeof value === "number" && !Number.isFinite(value) ? 0 : value));
+}
+
+/** 적은 저장을 곧바로 다시 읽어 본다. 못 읽으면 이전 값으로 되돌리고 이유를 돌려준다(성공이면 null). */
+function writeVerified(storage: Storage, key: string, text: string, reread: () => { readonly kind: string; readonly message?: string }): string | null {
+  const previous = storage.getItem(key);
+  storage.setItem(key, text);
+  const back = reread();
+  if (back.kind === "present") return null;
+  if (previous === null) storage.removeItem(key);
+  else storage.setItem(key, previous);
+  console.warn("[save] wrote a save that does not read back — kept the previous one:", back.message);
+  return back.message ?? "unreadable";
+}
+
 export function writeAutosave(storage: Storage, snapshot: SaveSnapshot): void {
   if (saveScopeBlocker(snapshot.identity)) throw new PublicationError("save-incompatible");
-  storage.setItem(autosaveKey(), JSON.stringify(snapshot));
+  const bad = writeVerified(storage, autosaveKey(), saveJson(snapshot), () => readAutosave(storage));
+  if (bad) throw new Error(`autosave does not read back: ${bad}`);
 }
 
 export function readAutosave(storage: Storage): AutosaveReadResult {
@@ -481,6 +503,7 @@ export function createSaveSnapshot(project: Project, input: PlaySession): SaveSn
       ...(session.actorApProgress && Object.keys(session.actorApProgress).length > 0 ? { actorApProgress: structuredClone(session.actorApProgress) } : {}),
       ...(session.learnedViaAp && Object.keys(session.learnedViaAp).length > 0 ? { learnedViaAp: structuredClone(session.learnedViaAp) } : {}),
       ...(session.actorRageEnemyIds && Object.keys(session.actorRageEnemyIds).length > 0 ? { actorRageEnemyIds: structuredClone(session.actorRageEnemyIds) } : {}),
+      ...(session.knownWeaknesses && Object.keys(session.knownWeaknesses).length > 0 ? { knownWeaknesses: structuredClone(session.knownWeaknesses) } : {}),
       actorLevels: structuredClone(session.actorLevels),
       actorVitals: structuredClone(session.actorVitals),
       horror: session.horror ? structuredClone(session.horror) : undefined,
@@ -591,7 +614,8 @@ export function saveToSlot(storage: Storage, slot: SaveSlotIndex, snapshot: Save
   const blocker = saveScopeBlocker(snapshot.identity);
   if (blocker) return { ok: false, message: blocker };
   try {
-    storage.setItem(saveSlotKey(slot), JSON.stringify(snapshot));
+    const bad = writeVerified(storage, saveSlotKey(slot), saveJson(snapshot), () => readSaveSlot(storage, slot));
+    if (bad) return { ok: false, message: `저장한 내용을 다시 읽지 못해 이전 저장을 남겼습니다(${bad})` };
     return { ok: true };
   } catch (error) {
     console.warn("[save] failed to write save slot:", error);
@@ -761,6 +785,7 @@ export function applySaveSnapshot(project: Project, input: SaveSnapshot): PlaySe
   if (snapshot.session.actorApProgress) session.actorApProgress = structuredClone(snapshot.session.actorApProgress);
   if (snapshot.session.learnedViaAp) session.learnedViaAp = structuredClone(snapshot.session.learnedViaAp);
   if (snapshot.session.actorRageEnemyIds) session.actorRageEnemyIds = structuredClone(snapshot.session.actorRageEnemyIds);
+  if (snapshot.session.knownWeaknesses) session.knownWeaknesses = structuredClone(snapshot.session.knownWeaknesses);
   if (snapshot.session.actorLevels) session.actorLevels = structuredClone(snapshot.session.actorLevels);
   if (snapshot.session.actorVitals) session.actorVitals = structuredClone(snapshot.session.actorVitals);
   if (snapshot.session.horror) session.horror = structuredClone(snapshot.session.horror);
@@ -1273,6 +1298,7 @@ function parseSessionRecord(session: Record<string, unknown>): ParsedSessionResu
       actorApProgress: isActorSkillPpRecord(session.actorApProgress) ? session.actorApProgress : undefined,
       learnedViaAp: isActorSkillIdsRecord(session.learnedViaAp) ? session.learnedViaAp : undefined,
       actorRageEnemyIds: isActorSkillIdsRecord(session.actorRageEnemyIds) ? session.actorRageEnemyIds : undefined,
+      knownWeaknesses: isActorSkillPpRecord(session.knownWeaknesses) ? session.knownWeaknesses : undefined,
       actorLevels: isNumberRecord(session.actorLevels) ? session.actorLevels : undefined,
       actorVitals: isActorVitalsRecord(session.actorVitals) ? session.actorVitals : undefined,
       horror: isHorrorState(session.horror) ? session.horror : undefined,

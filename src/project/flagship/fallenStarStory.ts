@@ -1,7 +1,7 @@
 /**
  * 『폴른 스타』 제1막 이야기 사양 — 장 구성기(buildJrpgChapter)에 그대로 넘긴다.
  *
- * 줄거리: 왕도 아스텔의 견습 별지기 카엘과 마도학자 엘레나가, 밤사이 동쪽 숲에 떨어진 「별」을 찾아간다.
+ * 줄거리: 왕도 아스텔의 견습 별지기 카엘과 마도학자 엘레나가, 밤사이 북쪽 숲에 떨어진 「별」을 찾아간다.
  * 별은 배였고 안에는 사람을 닮은 기계 이리스가 잠들어 있었다. 이리스는 집에 신호를 보내야 하고,
  * 신호를 보낼 옛 렌즈는 천문대 지하에 봉인돼 있다. 하늘에서 온 것을 모두 거두려는 심문관 발렌이 그 앞을 막는다.
  *
@@ -74,18 +74,18 @@ export const FALLEN_STAR_ACT1: ChapterSpec = {
     ],
   },
   npcs: [
-    { key: "valen", name: FS_NAMES.inquisitor, query: "젊은 남성 마법사", lines: ["심문관 발렌: 어린 별지기로군. 하늘에서 떨어진 것은 교단의 몫이다. 잊지 마라."] },
-    { key: "knight", name: "심문회 기사", query: "붉은 갑옷 기사", lines: ["심문회 기사: 심문관님 말씀 못 들었나? 물러서라."] },
+    { key: "valen", name: FS_NAMES.inquisitor, query: "젊은 남성 마법사", lines: ["심문관 발렌: 어린 별지기로군.\n하늘에서 떨어진 것은 교단의 몫이다. 잊지 마라."] },
+    { key: "knight", name: "심문회 기사", query: "붉은 갑옷 기사", lines: ["심문회 기사: 심문관님 말씀 못 들었나. 물러서라."] },
     { key: "baker", name: "빵집 아주머니", query: "여성 상인", roam: true, lines: ["빵집 아주머니: 어젯밤 하늘이 대낮처럼 밝았지 뭐니. 놀라서 반죽을 다 망쳤어."] },
     { key: "kid", name: "꼬마 토비", query: "아이", roam: true, lines: ["꼬마 토비: 형도 별똥별 봤어? 나 소원 빌었다! 뭘 빌었는지는 비밀이야."] },
-    { key: "gate", name: "동문 문지기", query: "청년 병사", lines: ["동문 문지기: 문 밖이 바로 동쪽 숲이다. 심문관들은 남쪽 골짜기부터 뒤진다더군.", "동문 문지기: 숲길은 숲지기 브람 영감이 훤하다. 들어가면 찾아봐."] },
+    { key: "gate", name: "동문 문지기", query: "청년 병사", lines: ["동문 문지기: 문 밖에서 북쪽으로 돌면 바로 숲이다. 심문관들은 남쪽 골짜기부터 뒤진다더군.", "동문 문지기: 숲길은 숲지기 브람 영감이 훤하다. 들어가면 찾아봐."] },
     { key: "elder", name: "광장의 할머니", query: "노인", lines: ["광장의 할머니: 별이 떨어지면 큰일 난다는 옛말이 있지. 이번엔 영 마음이 쓰이는구먼."] },
     { key: "hanel", name: "천문대장 하넬", query: "노학자", map: "observatory", lines: ["천문대장 하넬: 왔느냐. 기다리고 있었다."] },
-    { key: "bram", name: "숲지기 브람", query: "녹색 망토 레인저", map: "forest", lines: ["숲지기 브람: 숲에서는 길을 벗어나지 마라. 늑대들이 예민해졌다."] },
+    { key: "bram", name: "숲지기 브람", query: "녹색 망토 레인저", map: "forest", lines: ["숲지기 브람: 길에서 벗어나지 마라. 늑대들이 사납다."] },
   ],
   quest: {
     title: "떨어진 별",
-    summary: "어젯밤 동쪽 숲에 떨어진 별을 심문관보다 먼저 찾는다.",
+    summary: "어젯밤 북쪽 숲에 떨어진 별을 심문관보다 먼저 찾는다.",
     giver: "hanel",
     ask: "천문대장 하넬: 어젯밤 그 별은 떨어지기 직전에 방향을 틀었다.\n엘레나: 방향을요? 별똥별은 그럴 수 없잖아요.\n천문대장 하넬: 그렇지. 무언가가 그것을 몰았다는 뜻이다.\n천문대장 하넬: 심문관보다 먼저 가 보거라. 숲길은 숲지기 브람이 안다.",
     helper: {
@@ -157,7 +157,7 @@ export const FALLEN_STAR_ACT1: ChapterSpec = {
       },
       {
         prompt: "떨리는 목소리다. 뭐라고 답할까?",
-        options: ["누구냐! 정체를 밝혀라!", "괜찮아. 우리가 지켜 줄게.", "심문관이 오기 전에 빨리 나와!"],
+        options: ["거기 누구야? 정체부터 밝혀!", "괜찮아. 우리가 지켜 줄게.", "심문관이 오기 전에 빨리 나와!"],
         answer: 1,
         hit: { lines: ["알 속의 목소리: …믿을게요. 지금, 관을 열게요."] },
         miss: { lines: ["목소리가 뚝 끊겼다. 관이 다시 차갑게 식는다."] },
@@ -175,7 +175,7 @@ export const FALLEN_STAR_ACT1: ChapterSpec = {
     {
       map: "observatory", mark: "scope", name: "망원경",
       fx: ["se:chime2", "particles:sparkle"],
-      lines: ["망원경 너머, 동쪽 숲 위로 연기가 아직 가늘게 피어오른다."],
+      lines: ["망원경 너머, 북쪽 숲 위로 연기가 아직 가늘게 피어오른다."],
       done: ["렌즈가 깨끗하게 닦여 있다. 하넬 선생님이 밤새 들여다보신 모양이다."],
     },
   ],
@@ -183,8 +183,8 @@ export const FALLEN_STAR_ACT1: ChapterSpec = {
   lock: {
     site: "vault",
     item: FS_STAR_KEY_ITEM,
-    locked: ["봉인석 사이 바닥 돌뚜껑에 별 모양 홈이 파여 있다. 꿈쩍도 하지 않는다."],
-    opened: ["별빛 열쇠를 홈에 대자, 딸깍— 돌뚜껑이 가라앉고 아래로 내려가는 돌계단이 드러났다."],
+    locked: ["봉인석 사이 돌뚜껑에 별 모양 홈이 파여 있다.\n꿈쩍도 하지 않는다."],
+    opened: ["별빛 열쇠를 홈에 대자, 딸깍—\n돌뚜껑이 가라앉고 돌계단이 드러났다."],
     fx: ["se:key", "shake:3"],
   },
   event: {
@@ -192,10 +192,10 @@ export const FALLEN_STAR_ACT1: ChapterSpec = {
     title: "심문관의 포고",
     beats: [
       { kind: "letterbox", show: true },
-      { kind: "say", speaker: "심문관 발렌", text: "왕도 아스텔의 백성은 들어라." },
-      { kind: "say", speaker: "심문관 발렌", text: "어젯밤 동쪽 숲에 떨어진 것은 별이 아니다. 불경한 하늘의 물건이다." },
+      { kind: "say", speaker: "심문관 발렌", text: "모두 듣거라." },
+      { kind: "say", speaker: "심문관 발렌", text: "어젯밤 북쪽 숲에 떨어진 건 별이 아니다.\n불경한 하늘의 물건이다." },
       { kind: "say", speaker: "심문관 발렌", text: "그것에 손대는 자는, 누구든 이단으로 다스린다." },
-      { kind: "say", speaker: "심문관 발렌", text: "교단보다 먼저 그것을 본 자도, 마찬가지다." },
+      { kind: "say", speaker: "심문관 발렌", text: "교단보다 먼저 본 자도 마찬가지다." },
       { kind: "emote", target: "player", emote: "ellipsis", durationMs: 900, wait: true },
       { kind: "say", speaker: "엘레나", text: "…들었지, 카엘? 선생님이 천문대에서 기다리셔. 어서 가자." },
     ],

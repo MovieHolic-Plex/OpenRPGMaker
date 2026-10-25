@@ -163,6 +163,8 @@ export async function playBattle(
         actorApProgress: scene.session.actorApProgress,
         learnedViaAp: scene.session.learnedViaAp,
         actorRageEnemyIds: scene.session.actorRageEnemyIds,
+        // 약점 발견은 전투가 이 객체에 바로 적는다 — 져도·도망쳐도 알아낸 것은 남는다.
+        knownWeaknesses: (scene.session.knownWeaknesses ??= {}),
         actorLevels: scene.session.actorLevels,
         actorBattleCommands: scene.session.actorBattleCommands,
         difficultyId: scene.session.difficultyId,

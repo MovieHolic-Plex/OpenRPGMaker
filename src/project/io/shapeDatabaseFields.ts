@@ -160,6 +160,14 @@ export function validateSystem(value: unknown): void {
   }
   if (system.shinyRate !== undefined) requireNumber("system.shinyRate", system.shinyRate);
   if (system.pointerMovement !== undefined) requireBoolean("system.pointerMovement", system.pointerMovement);
+  if (system.touchControls !== undefined) {
+    const touchControls = requireRecord("system.touchControls", system.touchControls);
+    requireOnlyFields("system.touchControls", touchControls, ["tapToMove", "stick", "haptics", "runButton"]);
+    for (const key of ["tapToMove", "haptics", "runButton"] as const) {
+      if (touchControls[key] !== undefined) requireBoolean(`system.touchControls.${key}`, touchControls[key]);
+    }
+    if (touchControls.stick !== undefined) requireString("system.touchControls.stick", touchControls.stick);
+  }
   if (system.monsterBattleParty !== undefined) requireBoolean("system.monsterBattleParty", system.monsterBattleParty);
   if (system.giftSystem !== undefined) requireBoolean("system.giftSystem", system.giftSystem);
   if (system.socialLoop !== undefined) {
@@ -226,6 +234,9 @@ export function validateSystem(value: unknown): void {
     requireBoolean(`system.${key}.enabled`, config.enabled);
   }
   if (system.weaknessExtraAction !== undefined) requireBoolean("system.weaknessExtraAction", system.weaknessExtraAction);
+  if (system.allowAutoBattle !== undefined) requireBoolean("system.allowAutoBattle", system.allowAutoBattle);
+  if (system.clearStatesAfterBattle !== undefined) requireBoolean("system.clearStatesAfterBattle", system.clearStatesAfterBattle);
+  if (system.saveAccess !== undefined) assert(system.saveAccess === "anywhere" || system.saveAccess === "savePoints", "system.saveAccess 는 anywhere | savePoints");
   if (system.emotionCycle !== undefined) {
     for (const [index, raw] of requireArray("system.emotionCycle", system.emotionCycle).entries()) {
       const rule = requireRecord(`system.emotionCycle[${index}]`, raw);

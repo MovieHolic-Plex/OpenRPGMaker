@@ -1,6 +1,9 @@
 import { configDefaults, defineConfig } from "vitest/config";
 import { fileURLToPath, URL } from "node:url";
 import { applyLegacyEnvAliases } from "./scripts/lib/oprnEnv.mjs";
+import { assertCiOnlyTests } from "./scripts/lib/ciOnlyTests.mjs";
+
+assertCiOnlyTests("vitest");
 
 applyLegacyEnvAliases();
 

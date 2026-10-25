@@ -9,6 +9,7 @@ import { roomTemplates } from "@/editor/handInterior/templates";
 import { INTERIOR_BARE_FLOOR_LIMIT, measureInteriorBareFloor } from "@/editor/handInterior/bareFloor";
 import type { BuildRun, PlaceBuilder, PlaceBuildResult, PlaceRecord, PlaceSpec, ZoneSpec } from "../types";
 import { interiorVenues, type InteriorVenue, type VenueStamp } from "./interiorVenues";
+import { kindServesPurpose, purposeOf, purposeSwap } from "../roomPurpose";
 
 type Obj = { id: string; x: number; y: number };
 type Room = { id: string; x0: number; y0: number; x1: number; y1: number; floor?: string; wall?: string };
@@ -53,14 +54,52 @@ const KIND_WORDS: readonly [RegExp, string[]][] = [
   [/빵/iu, ["bakery_shop", "bakery_oven"]],
 ];
 
-function resolveKind(tilesetId: string, zone: ZoneSpec, notes: string[]): string {
+/** 쓰임 안의 방 낱말 → 방 종류 id 조각(학교의 교무실 → school-staffroom, 병원의 진료실 → cl-exam). */
+const SUBKIND_WORDS: readonly [RegExp, string][] = [
+  [/교무실|staff ?room/iu, "staff"], [/보건실|양호실|infirmary/iu, "infirmary"], [/음악실|밴드|band|music/iu, "band"], [/과학실|실험실|science|lab/iu, "sci"],
+  [/교실|classroom/iu, "class"], [/현관|신발장|genkan/iu, "genkan"], [/계단|stair/iu, "stair"], [/복도|corridor|hall ?way/iu, "corridor"],
+  [/병실|병동|ward/iu, "ward"], [/간호|nurse/iu, "nurse"], [/응급|emergency|er/iu, "er"], [/진료|진찰|exam/iu, "exam"], [/대기|waiting|lobby/iu, "wait"],
+  [/제의실|vestry/iu, "vestry"], [/서재|study/iu, "study"],
+];
+/** 목적 문장이 집 방 자체를 말하는가(「주인 침실」「뒤쪽 부엌」) — 그러면 집 방 kind 를 그대로 둔다. */
+const HOME_ROOM_WORDS = /침실|침대|잠자|부엌|주방|창고|광|지하실|욕실|화장실|식당|bed ?room|kitchen|storage|store ?room|cellar|bath|dining/iu;
+/** 집 방 종류 중 «어느 건물에나 있는» 것 — 구역 목적 낱말이 다른 쓰임(가게·교실·예배당)을 말하면 그 쓰임이 이긴다. 침실·부엌·창고는 그대로 둔다. */
+const GENERIC_KINDS = /^(entrance|living|hall|corridor|study|dining|great_hall|lobby|waiting_room|room|main|common)$/u;
+
+function resolveKind(tilesetId: string, zone: ZoneSpec, notes: string[], placeName = "", single = false): string {
   const kinds = new Set(roomTemplates(tilesetId).map((t) => t.kind));
   const raw = zone.kind.trim();
+  // 쓰임 낱말이 집 방 종류보다 먼저다 — 장난감 가게 홀이 «entrance», 교실이 «study» 로 와서 그 방의 견본 가구와 거실 한 벌을 받았고,
+  // 현대 학교는 방 다섯이 living·bedroom 이 됐다(2026-10-25 J31·J42·J64).
+  //  · 구역 kind·id 의 낱말이 쓰임이면 언제나 그 쓰임 견본.
+  //  · 구역 목적(purpose) 문장이 쓰임이면 kind 가 일반 방(현관·거실·복도·서재…)이거나 이 칩셋에 없을 때만(«가게 뒤 침실»은 침실).
+  //  · 구역에 쓰임이 없으면 장소 이름의 쓰임(학교 본관의 «복도» → school-corridor) — kind 가 이 칩셋에 없을 때만.
+  //  · kind 가 일반 방(study·hall…)이면 목적 문장이 kind 낱말보다 먼저다 — 「study / 교무실」이 서고가 됐다.
+  //  · kind 가 집 방(bedroom·kitchen…)이어도 목적 문장이 그 집 방을 말하지 않으면(「bedroom / 보건실」) 목적 문장의 쓰임 — 학교에 더블 침대가 깔렸다(J64).
+  const sentence = purposeOf(zone.purpose ?? "");
+  const named = purposeOf(`${raw} ${zone.id ?? ""}`.replace(/[_-]/gu, " "));
+  const homeSaid = HOME_ROOM_WORDS.test(zone.purpose ?? "");
+  const sentenceWins = !!sentence && (GENERIC_KINDS.test(raw) || !kinds.has(raw) || (GENERIC_HOME.test(raw) && !homeSaid));
+  const told = sentenceWins ? sentence : named ?? (sentence && !GENERIC_HOME.test(raw) ? sentence : undefined);
+  const ctx = told ? undefined : purposeOf(placeName);
+  const purpose = told ?? (ctx && (!kinds.has(raw) || (single && GENERIC_KINDS.test(raw))) ? ctx : undefined);
+  if (purpose && !kindServesPurpose(raw, purpose, tilesetId)) {
+    const list = (purpose.kinds[tilesetId] ?? []).filter((k) => kinds.has(k));
+    const token = raw.toLowerCase().replace(/[^a-z]/gu, "");
+    const said = `${zone.purpose ?? ""} ${zone.id ?? ""} ${raw}`;
+    const sub = SUBKIND_WORDS.filter(([re]) => re.test(said)).map(([, t]) => t);
+    const hit = sub.map((t) => list.find((k) => k.includes(t))).find(Boolean)
+      ?? (token.length >= 4 ? list.find((k) => k.replace(/[^a-z]/gu, "").includes(token)) : undefined) ?? list[0];
+    if (hit) { if (hit !== raw) notes.push(`구역 「${zone.id ?? raw}」은 ${purpose.ko} 쓰임이라 방 종류 ${raw} 대신 ${hit} 견본으로 지었다`); return hit; }
+  }
   if (kinds.has(raw)) return raw;
   const text = `${raw} ${zone.purpose ?? ""}`;
   for (const [re, options] of KIND_WORDS) if (re.test(text)) { const hit = options.find((k) => kinds.has(k)); if (hit) return hit; }
-  const fallback = kinds.has("living") ? "living" : [...kinds][0] ?? "living";
-  notes.push(`방 종류 「${raw}」의 견본이 없어 ${fallback} 견본으로 지었다`);
+  // 쓰임을 아는데 이 칩셋에 그 견본이 없으면 거실로 떨어지지 않게 가장 덜 «집» 같은 방(현관·복도)으로 — 거실 견본은 소파·냉장고를 깐다.
+  const known = told ?? ctx;
+  const neutral = known ? ["entrance", "corridor", "hall", "lobby", "waiting_room", "storeroom"].find((k) => kinds.has(k)) : undefined;
+  const fallback = neutral ?? (kinds.has("living") ? "living" : [...kinds][0] ?? "living");
+  notes.push(`방 종류 「${raw}」의 견본이 없어 ${fallback} 견본으로 지었다${known ? ` — ${known.ko} 견본이 이 칩셋에 없다` : ""}`);
   return fallback;
 }
 
@@ -245,16 +284,30 @@ const SETS: readonly [RegExp, readonly (readonly Obj[])[]][] = [
     [{ id: "barrel", x: 0, y: 0 }, { id: "crate", x: 1, y: 0 }, { id: "barrel", x: 0, y: 1 }],
     [{ id: "crate", x: 0, y: 0 }, { id: "crate", x: 1, y: 0 }, { id: "barrel", x: 2, y: 0 }],
   ]],
-  [/.*/u, [[{ id: "rug red", x: 0, y: 0 }, { id: "armchair", x: 3, y: 0 }], [{ id: "potted fern", x: 0, y: 0 }, { id: "armchair", x: 1, y: 0 }]]],
+  // 가게·예배당·공방은 방 종류 낱말로도 쓰임 한 벌을 준다(쓰임 낱말이 없을 때).
+  [/_shop$|^shop$/u, [[{ id: "display 2x1", x: 0, y: 0 }, { id: "crate", x: 3, y: 0 }], [{ id: "display 1x1", x: 0, y: 0 }, { id: "barrel", x: 2, y: 0 }, { id: "display 1x1", x: 3, y: 0 }]]],
+  [/chapel|vestry/u, [[{ id: "pew", x: 0, y: 0 }, { id: "pew", x: 0, y: 2 }], [{ id: "votive stand", x: 0, y: 0 }, { id: "candelabra", x: 2, y: 0 }]]],
+  [/workshop|forge|tailor_work|alchemy/u, [[{ id: "work 2x1", x: 0, y: 0 }, { id: "stool", x: 0, y: 1 }, { id: "crate", x: 3, y: 0 }], [{ id: "crate", x: 0, y: 0 }, { id: "barrel", x: 1, y: 0 }, { id: "sack", x: 2, y: 0 }]]],
 ];
+/** 쓰임을 모르는 방의 한 벌 — 어느 방에 있어도 어색하지 않은 것만(거실 안락의자·양탄자는 집 방에만). 2026-10-25 J42: 예배당·가게까지 이 거실 한 벌을 받았다. */
+const NEUTRAL_SETS: readonly (readonly Obj[])[] = [[{ id: "tall vase red", x: 0, y: 0 }, { id: "candelabra", x: 2, y: 0 }], [{ id: "crate", x: 0, y: 0 }, { id: "barrel", x: 1, y: 0 }]];
 
-/** 방 종류의 「쓰임 한 벌」 후보들(덧찍기 고치기도 쓴다). */
-export function roomSetsFor(kind: string): readonly (readonly Obj[])[] {
-  return (SETS.find(([re]) => re.test(kind)) ?? SETS[SETS.length - 1]!)[1];
+/**
+ * 방의 「쓰임 한 벌」 후보들(덧찍기 고치기도 쓴다). 쓰임(방 이름·장소 이름의 낱말: 예배당·장난감 가게·공방·교실)이 먼저,
+ * 그다음 방 종류, 둘 다 모르면 중립 한 벌. 쓰임은 알지만 한 벌이 없으면(병원·학교 — 현대 칩셋 부품이 v5 와 다르다) 빈 배열 = 메우지 않는다.
+ */
+export function roomSetsFor(kind: string, context = ""): readonly (readonly Obj[])[] {
+  const purpose = purposeOf(`${kind.replace(/[_-]/gu, " ")} ${context}`);
+  if (purpose && !GENERIC_HOME.test(kind)) return purpose.sets ?? [];
+  const byKind = SETS.find(([re]) => re.test(kind));
+  if (byKind) return byKind[1];
+  return purpose ? purpose.sets ?? [] : NEUTRAL_SETS;
 }
+/** 집 방 — 그 방 종류의 한 벌(침실은 침실 한 벌)을 쓴다. 가게 건물 안 침실이 가게 한 벌을 받지 않게. */
+const GENERIC_HOME = /^(bedroom|inn_room|master_bedroom|kitchen|pantry|storeroom|cellar|bathroom|dining)$/u;
 
 /** 빈 바닥 덩이(1배 2×2 이상 맨바닥)를 그 방의 쓰임 한 벌로 메운다. 측정은 v1 의 보정된 자(bareFloor.ts). */
-function fillBare(run: BuildRun, spec: HandInteriorSpec, args: Record<string, unknown>, rb: Rebuild, roomKinds: Map<string, string>, limit: number): { args: Record<string, unknown>; rb: Rebuild; filled: number } {
+function fillBare(run: BuildRun, spec: HandInteriorSpec, args: Record<string, unknown>, rb: Rebuild, roomKinds: Map<string, string>, limit: number, context = ""): { args: Record<string, unknown>; rb: Rebuild; filled: number } {
   let filled = 0;
   // 한 덩이에 한 벌이 안 들어가면(길 막힘·겹침) 다른 벌·다른 자리를 시험하고, 그래도 안 되면 그 덩이는 건너뛰고 다음 덩이로(2026-10-23: 첫 덩이 실패로 멈춰 위층 맨바닥 45%).
   const tried = new Set<string>();
@@ -271,7 +324,7 @@ function fillBare(run: BuildRun, spec: HandInteriorSpec, args: Record<string, un
     const room = rb.rooms.find((r) => cx >= r.x0 && cx <= r.x1 && cy >= r.y0 && cy <= r.y1);
     if (!room) continue;
     const kind = roomKinds.get(room.id) ?? room.id;
-    const sets = (SETS.find(([re]) => re.test(kind)) ?? SETS[SETS.length - 1]!)[1];
+    const sets = roomSetsFor(kind, roomKinds.size === 1 ? context : "");
     let placed = false;
     for (let k = 0; k < sets.length && !placed; k++) {
       const set = sets[(filled + k) % sets.length]!.filter((o) => spec.objects[o.id]);
@@ -281,7 +334,12 @@ function fillBare(run: BuildRun, spec: HandInteriorSpec, args: Record<string, un
       for (let y = region.y; y < region.y + region.h; y++) for (let x = region.x; x < region.x + region.w; x++) spots.push([x - cx, y - cy]);
       spots.sort((a, b) => Math.abs(a[0]) + Math.abs(a[1]) - Math.abs(b[0]) - Math.abs(b[1]));
       const occupied = (x: number, y: number) => rb.objects.some((o) => { const d = spec.objects[o.id.split(":")[0]!]; return !!d && x >= o.x && x < o.x + d.w && y >= o.y - 1 && y < o.y + Math.max(1, d.h) + 1; });
-      for (const [dx, dy] of spots.filter(([dx, dy]) => set.every((o) => !occupied(cx + dx + o.x, cy + dy + o.y))).slice(0, 24)) {
+      // 한 벌의 가구가 모두 이 방 바닥(벽면 두 줄 아래 ~ 남쪽 끝 줄) 안에 든다 — 남쪽 끝의 2×2 양탄자가 벽·허공으로 넘쳤다(2026-10-25 J42).
+      const inside = (dx: number, dy: number) => set.every((o) => {
+        const d = spec.objects[o.id]!, x = cx + dx + o.x, y = cy + dy + o.y;
+        return x >= room.x0 && x + d.w - 1 <= room.x1 && y >= room.y0 + 2 && y + Math.max(1, d.h) - 1 <= room.y1;
+      });
+      for (const [dx, dy] of spots.filter(([dx, dy]) => inside(dx, dy) && set.every((o) => !occupied(cx + dx + o.x, cy + dy + o.y))).slice(0, 24)) {
         const objects = [...rb.objects, ...set.map((o) => ({ id: o.id, x: cx + dx + o.x, y: cy + dy + o.y }))];
         const next = { ...args, objects };
         const res = build(run, next);
@@ -362,12 +420,12 @@ function applyStamps(run: BuildRun, tilesetId: string, mapId: string, stamps: re
 }
 
 /** 장소 견본(천문대 등)으로 짓기. 요청 앵커 중 견본이 갖춘 것은 그대로, 없는 것은 평면 빈 자리에 더한다. */
-function buildVenue(run: BuildRun, spec: PlaceSpec, venue: InteriorVenue, roomSpec: HandInteriorSpec, tilesetId: string, mapId: string, prev: InteriorState | undefined): PlaceBuildResult | undefined {
+function buildVenue(run: BuildRun, spec: PlaceSpec, venue: InteriorVenue, roomSpec: HandInteriorSpec, tilesetId: string, mapId: string | undefined, prev: InteriorState | undefined): PlaceBuildResult | undefined {
   const variant = typeof spec.hints?.variant === "number" ? spec.hints.variant : (spec.salt ?? 0) % 4;
   const words = (spec.zones ?? []).flatMap((z) => z.anchors ?? []);
   const withStairs = !!venue.stairs && ((spec.floors ?? 1) >= 2 || words.some((w) => /계단|stair|2층|위층/iu.test(w)) || (spec.zones ?? []).some((z) => z.floor === 2));
   const vb = venue.build(variant, withStairs);
-  let args: Record<string, unknown> = { tileset: tilesetId, mapId: prev?.mapId ?? mapId, name: spec.name, replace: true, ...vb.args };
+  let args: Record<string, unknown> = { tileset: tilesetId, mapId: prev?.mapId ?? mapId, name: spec.name, replace: (prev?.mapId ?? mapId) ? true : undefined, ...vb.args };
   let res = build(run, args);
   if (!res.ok) { args = { ...args, mapId: undefined, replace: undefined }; res = build(run, args); }
   if (!res.ok) return undefined;
@@ -454,6 +512,11 @@ function addBackDoor(run: BuildRun, roomSpec: HandInteriorSpec, tilesetId: strin
   return { args, note: "북쪽 뒷문 — 맨 북쪽 방 북벽에 문을 낼 자리가 없다" };
 }
 
+/** 위층 맵 이름 — 「저택 1층」이면 「저택 2층」(「저택 1층 2층」이 되지 않게). */
+function upperName(name: string): string {
+  return /\s*(1층|일층|1F|1st floor)\s*$/iu.test(name) ? name.replace(/\s*(1층|일층|1F|1st floor)\s*$/iu, " 2층") : `${name} 2층`;
+}
+
 /** 위층: 올라가는 계단이 놓인 아래층(builtMapId)에 위층을 짓고 계단끼리 잇는다. 아래층에 붙일 이동(lowerLink)을 돌려준다. */
 function buildUpperFloor(run: BuildRun, roomSpec: HandInteriorSpec, tilesetId: string, spec: PlaceSpec, builtMapId: string, stairsUp: { id: string; x: number; y: number; w: number }, prevUpper: string | undefined, missing: string[], notes: string[], placed: { zone: string; what: string; id: string }[]): { upperMapId?: string; upperArgs?: Record<string, unknown>; lowerLink?: Record<string, unknown> } {
   let upperMapId = prevUpper;
@@ -461,14 +524,14 @@ function buildUpperFloor(run: BuildRun, roomSpec: HandInteriorSpec, tilesetId: s
   let lowerLink: Record<string, unknown> | undefined;
     const upperZones = (spec.zones ?? []).filter((z) => z.floor === 2);
     const known = (k: string) => roomTemplates(tilesetId).some((t) => t.kind === k);
-    let upKinds = upperZones.length ? upperZones.map((z) => resolveKind(tilesetId, z, notes)) : ["inn_room", "inn_room", "corridor"].filter(known);
+    let upKinds = upperZones.length ? upperZones.map((z) => resolveKind(tilesetId, z, notes, spec.name)) : ["inn_room", "inn_room", "corridor"].filter(known);
     // 위층에는 계단통을 놓을 복도·홀이 있어야 한다 — 방 하나(객실)만 달라고 해도 복도를 붙인다(2026-10-23 실조수: 객실 하나뿐이라 내려가는 계단 자리가 없었다).
     if (!upKinds.some((k) => /corridor|hall|landing/u.test(k)) && known("corridor")) {
       // 방 하나 + 복도면 견본이 2칸 폭 복도를 골라 계단통이 안 들어간다 — 방을 둘 이상으로 채워 넓은 복도 견본을 받는다.
       while (upKinds.length < 2) upKinds = [...upKinds, upKinds[0] ?? "inn_room"];
       upKinds = [...upKinds, "corridor"];
     }
-    const upBase: Record<string, unknown> = { tileset: tilesetId, ...(upperMapId ? { mapId: upperMapId, replace: true } : {}), name: `${spec.name} 2층`,
+    const upBase: Record<string, unknown> = { tileset: tilesetId, ...(upperMapId ? { mapId: upperMapId, replace: true } : {}), name: upperName(spec.name),
       // 복도는 방 수에 맞춘 작은 계단참(방마다 4칸 + 1, 높이 5) — 견본 크기 그대로면 38칸짜리 빈 홀이 됐다.
       layout: { rooms: (upKinds.length ? upKinds : ["bedroom"]).map((kind, i, all) => ({ id: `${kind}${i + 1}`, kind, ...(/corridor/u.test(kind) ? { w: Math.max(9, 4 * (all.length - 1) + 1), h: 5 } : {}) })) } };
     // 위층은 배치 후보 넷 중 맵 틀 안 검은 바깥이 가장 적은 것(방 넓이 ÷ 맵 넓이 최대) — 객실 둘 + 긴 복도가 ㄱ자로 앉아 왼쪽 위가 통째로 검었다(비평 major).
@@ -490,7 +553,7 @@ function buildUpperFloor(run: BuildRun, roomSpec: HandInteriorSpec, tilesetId: s
       upperMapId = String(up.data?.mapId);
       let urb = up.data?.rebuild as Rebuild;
       // 위층은 바깥으로 나가는 남쪽 문이 없다(계단으로만 오간다).
-      let uargs: Record<string, unknown> = { ...argsFromRebuild({ tileset: tilesetId, mapId: upperMapId, name: `${spec.name} 2층` }, urb), exitWidth: 0, exit: { ...(urb.exit as object), width: 0 } };
+      let uargs: Record<string, unknown> = { ...argsFromRebuild({ tileset: tilesetId, mapId: upperMapId, name: upperName(spec.name) }, urb), exitWidth: 0, exit: { ...(urb.exit as object), width: 0 } };
       urb = { ...urb, exit: uargs.exit, objects: urb.objects.filter((o) => !/doormat|door mat/u.test(o.id)) };
       uargs = { ...uargs, objects: urb.objects };
       const down = findPart(roomSpec, "stairwell down");
@@ -510,14 +573,14 @@ function buildUpperFloor(run: BuildRun, roomSpec: HandInteriorSpec, tilesetId: s
           if (/계단|stair/iu.test(what)) continue;
           const part = findPart(roomSpec, what);
           if (!part) { missing.push(`${what}(위층) — 부품 사전에 없다`); continue; }
-          const host = urb.rooms.find((r) => r.id.startsWith(resolveKind(tilesetId, zone, []))) ?? urb.rooms[0]!;
+          const host = urb.rooms.find((r) => r.id.startsWith(resolveKind(tilesetId, zone, [], spec.name))) ?? urb.rooms[0]!;
           const done = placeAnchor(run, roomSpec, uargs, urb, host.id, part, undefined, true, new Set(), openingColumns(urb, up.data));
           if (done) { uargs = done.args; urb = done.rb; placed.push({ zone: `2층 ${host.id}`, what, id: part.id }); }
           else missing.push(`${what}(위층 ${host.id}) — 놓을 빈 자리가 없다`);
         }
         build(run, uargs);
         // 위층은 기준보다 낮게(8%) 메운다 — 객실 벽면이 분모를 키워 15% 안이어도 계단참 아래 절반이 비어 보였다.
-        const ufill = fillBare(run, roomSpec, uargs, urb, new Map(urb.rooms.map((r) => [r.id, r.id.replace(/\d+$/u, "")] as const)), 8);
+        const ufill = fillBare(run, roomSpec, uargs, urb, new Map(urb.rooms.map((r) => [r.id, r.id.replace(/\d+$/u, "")] as const)), 8, spec.name);
         uargs = ufill.args; urb = ufill.rb;
         const upFinal = build(run, uargs);
         if (upFinal.ok) {
@@ -580,7 +643,8 @@ export function interiorEditFromArgs(run: BuildRun, spec: PlaceSpec, base: { til
   }
   if (req.dressing > 0) {
     let added = 0;
-    for (const room of [...rb.rooms].sort((a, b) => (b.x1 - b.x0) * (b.y1 - b.y0) - (a.x1 - a.x0) * (a.y1 - a.y0))) for (const word of COSY) {
+    const kindOf = new Map(base.rooms.map((r) => [r.id, r.kind] as const));
+    for (const room of [...rb.rooms].sort((a, b) => (b.x1 - b.x0) * (b.y1 - b.y0) - (a.x1 - a.x0) * (a.y1 - a.y0))) for (const word of cosyFor(kindOf.get(room.id) ?? room.id, base.rooms.length === 1 ? spec.name : "")) {
       if (added >= req.dressing * 3) break;
       const part = roomSpec.objects[word] ? { id: word, kind: roomSpec.objects[word]!.kind, w: roomSpec.objects[word]!.w, h: roomSpec.objects[word]!.h } : findPart(roomSpec, word);
       if (!part) continue;
@@ -589,7 +653,7 @@ export function interiorEditFromArgs(run: BuildRun, spec: PlaceSpec, base: { til
     }
     const kinds = new Map(base.rooms.map((r) => [r.id, r.kind] as const));
     build(run, args);
-    const filled = fillBare(run, roomSpec, args, rb, kinds, INTERIOR_BARE_FLOOR_LIMIT);
+    const filled = fillBare(run, roomSpec, args, rb, kinds, INTERIOR_BARE_FLOOR_LIMIT, spec.name);
     args = filled.args; rb = filled.rb;
     notes.push(`원래 방 배치·바닥은 그대로 두고 아늑한 소품 ${added}점${filled.filled ? `, 빈 바닥 ${filled.filled}곳에 쓰임 한 벌` : ""}을 더했다`);
   }
@@ -609,6 +673,43 @@ export function interiorEditFromArgs(run: BuildRun, spec: PlaceSpec, base: { til
 }
 
 const COSY = ["fur rug", "armchair", "potted plant", "candle stand", "round rug", "tall vase red", "bookshelf 1w", "firewood bundle"];
+/** 「아늑하게」 소품 — 집 방은 위 거실 소품, 쓰임이 있는 방은 그 쓰임에 맞는 소품만(예배당 안락의자·장난감 가게 모피 깔개 금지, J42). */
+const COSY_BY_PURPOSE: Readonly<Record<string, readonly string[]>> = {
+  chapel: ["votive stand", "candelabra", "holy water font", "tall stained window"],
+  toyshop: ["shelf:toy", "cabinet:toy", "rocking horse", "music box", "wall clock"],
+  shop: ["cabinet:candle", "shelf:jar+jarb+jarg", "crate", "wall clock"],
+  weaponshop: ["weapon rack", "shield", "armor stand", "weapon barrel"],
+  workshop: ["tool wall", "crate", "barrel", "sack"],
+  library: ["bookshelf 1w", "candelabra", "globe", "book pile"],
+};
+/** 방마다 그 쓰임의 swaps 표로 견본 가구를 바꾼다 — 같은 크기·같은 종류(벽·바닥·걸이) 부품만(배치가 그대로 맞는다). */
+function swapForPurpose(spec: HandInteriorSpec, rb: Rebuild, kinds: ReadonlyMap<string, string>, context: string, zoneOf: (roomId: string) => ZoneSpec | undefined): { rb: Rebuild; count: number } {
+  let count = 0;
+  const turn = new Map<string, number>();
+  const objects = rb.objects.map((o) => {
+    const room = rb.rooms.find((r) => o.x >= r.x0 && o.x <= r.x1 && o.y >= r.y0 && o.y <= r.y1);
+    if (!room) return o;
+    const kind = kinds.get(room.id) ?? room.id;
+    if (GENERIC_HOME.test(kind)) return o;
+    const zone = zoneOf(room.id);
+    const purpose = purposeOf(`${kind.replace(/[_-]/gu, " ")} ${zone?.id ?? ""} ${zone?.purpose ?? ""} ${context}`);
+    if (!purpose?.swaps) return o;
+    const base = o.id.split("@")[0]!;
+    const from = spec.objects[base];
+    if (!from) return o;
+    const n = turn.get(base) ?? 0;
+    const to = purposeSwap(purpose, base, n, (id) => { const d = spec.objects[id]; return !!d && d.kind === from.kind && d.w === from.w && d.h === from.h; });
+    if (!to || to === base) return o;
+    turn.set(base, n + 1);
+    count++;
+    return { ...o, id: to };
+  });
+  return { rb: { ...rb, objects }, count };
+}
+function cosyFor(kind: string, context: string): readonly string[] {
+  const purpose = GENERIC_HOME.test(kind) ? undefined : purposeOf(`${kind.replace(/[_-]/gu, " ")} ${context}`);
+  return purpose ? COSY_BY_PURPOSE[purpose.id] ?? [] : COSY;
+}
 
 export const INTERIOR_CARD = `[실내 interior] make_place({type:"interior", name, style?, size?, zones:[{kind, purpose, anchors?}], floors?}).
 - zones = 방 하나하나(칸막이로 나뉜 방). kind 낱말: tavern(선술집 홀)·kitchen·storeroom·cellar·bedroom·inn_room(객실)·study(서재)·library(서고)·living·dining·forge(대장간)·workshop·alchemy·chapel·treasury·armory·throne_room·great_hall·entrance·corridor·bathroom·cell. 한국어 낱말도 된다.
@@ -636,7 +737,8 @@ export const interiorBuilder: PlaceBuilder = {
     }
     const roomSpec = roomSpecOf(run.ctx.project.tilesets[tilesetId]);
     if (!roomSpec) return { ok: false, mapIds: [], summary: `실내 칩셋 ${tilesetId} 이 이 프로젝트에 없다`, warnings: [], missingArt: [spec.name], calls: run.calls };
-    const mapId = prev?.mapId ?? spec.mapId ?? run.ctx.currentMapId ?? run.ctx.project.startMapId;
+    // hints.newMap: make_place 가 「이번에 지은 다른 장소」를 덮지 않게 새 맵을 요구했다(2026-10-25 G27: 지하 예배당을 지은 맵에 저택을 다시 지어 예배당이 사라졌다).
+    const mapId: string | undefined = prev?.mapId ?? spec.mapId ?? (spec.hints?.newMap === true ? undefined : run.ctx.currentMapId ?? run.ctx.project.startMapId);
     // 장소 견본(천문대 등) — 방 종류 견본으로는 주인공 물건이 방을 정하지 못한다(2026-10-23 비교: 천문대가 평범한 서재로 읽혀 v1 8 · v2 3.5).
     const venueText = `${spec.name} ${spec.theme ?? ""} ${(spec.zones ?? []).map((z) => `${z.kind} ${z.purpose ?? ""}`).join(" ")}`;
     const venue = tilesetId === HAND_INTERIOR_TILESET_ID && (spec.zones ?? []).filter((z) => (z.floor ?? 1) === 1).length <= 1 && (!prev || prev.venue)
@@ -649,8 +751,9 @@ export const interiorBuilder: PlaceBuilder = {
     const zones = spec.zones?.length ? spec.zones : [{ kind: spec.name, purpose: spec.name }];
     const scale = SCALE[spec.size ?? "medium"] ?? 1;
     const used = new Map<string, number>();
-    const rooms = zones.filter((z) => !z.floor || z.floor === 1).map((zone) => {
-      const kind = resolveKind(tilesetId, zone, notes);
+    const firstFloor = zones.filter((z) => !z.floor || z.floor === 1);
+    const rooms = firstFloor.map((zone) => {
+      const kind = resolveKind(tilesetId, zone, notes, `${spec.name} ${spec.theme ?? ""}`, firstFloor.length === 1);
       const n = (used.get(kind) ?? 0) + 1; used.set(kind, n);
       // 크기: small = 가장 작은 견본, medium = 가운데, large = 가장 큰 견본 × 1.3. 큰 주인공 물건이 들어갈 만큼은 넓힌다.
       const t = zone.keep?.w && zone.keep.h ? { w: zone.keep.w, h: zone.keep.h } : pickTemplate(tilesetId, kind, zone.size ?? spec.size);
@@ -664,7 +767,7 @@ export const interiorBuilder: PlaceBuilder = {
     const variant = typeof hints.variant === "number" ? hints.variant : (spec.salt ?? 0) % 4;
     const seed = typeof hints.seed === "number" ? hints.seed : undefined;
     const layoutSeed = seed ?? (spec.salt ? 1 + (spec.salt % 99991) : undefined);
-    const base: Record<string, unknown> = { tileset: tilesetId, mapId, name: spec.name, replace: true,
+    const base: Record<string, unknown> = { tileset: tilesetId, mapId, name: spec.name, replace: mapId ? true : undefined,
       layout: { rooms: rooms.map((r) => clean({ id: r.id, kind: r.kind, w: r.w, h: r.h, floor: (r as { floor?: string }).floor, wall: (r as { wall?: string }).wall })), ...(variant ? { variant } : {}), ...(layoutSeed ? { seed: layoutSeed } : {}) } };
     let first = build(run, base);
     if (!first.ok) {
@@ -682,13 +785,22 @@ export const interiorBuilder: PlaceBuilder = {
     };
     if (stairZone && first.ok && !northmost(first) && !seed) {
       for (let v = 1; v <= 3; v++) {
-        const alt = build(run, { ...base, mapId: String(first.data?.mapId ?? mapId), layout: { ...(base.layout as object), variant: (variant + v) % 4 } });
+        const alt = build(run, { ...base, mapId: String(first.data?.mapId ?? mapId), replace: true, layout: { ...(base.layout as object), variant: (variant + v) % 4 } });
         if (alt.ok && northmost(alt)) { first = alt; break; }
       }
-      if (!northmost(first)) first = build(run, { ...base, mapId: String(first.data?.mapId ?? mapId) });
+      if (!northmost(first)) first = build(run, { ...base, mapId: String(first.data?.mapId ?? mapId), replace: true });
     }
     const builtMapId = String(first.data?.mapId ?? mapId);
     let rb = first.data?.rebuild as Rebuild;
+    // 빌린 견본의 가구를 그 방 쓰임의 가구로(장난감 가게가 빌린 재봉 가게 견본의 옷감 선반·마네킹 → 인형 진열장·흔들 목마, J31).
+    {
+      const swapped = swapForPurpose(roomSpec, rb, new Map(rooms.map((r) => [r.id, r.kind] as const)), rooms.length === 1 ? `${spec.name} ${spec.theme ?? ""}` : "", (id) => rooms.find((r) => r.id === id)?.zone);
+      if (swapped.count) {
+        const next = build(run, argsFromRebuild({ tileset: tilesetId, mapId: builtMapId, name: spec.name }, swapped.rb));
+        if (next.ok && reachOk(next)) { first = next; rb = (next.data?.rebuild as Rebuild | undefined) ?? swapped.rb; notes.push(`빌린 견본 가구 ${swapped.count}점을 방 쓰임 가구로 바꿨다`); }
+        else build(run, argsFromRebuild({ tileset: tilesetId, mapId: builtMapId, name: spec.name }, rb));
+      }
+    }
     let args = argsFromRebuild({ tileset: tilesetId, mapId: builtMapId, name: spec.name }, rb);
     const placed: { zone: string; what: string; id: string }[] = [];
     const openings = openingColumns(rb, first.data);
@@ -715,7 +827,7 @@ export const interiorBuilder: PlaceBuilder = {
     const dressing = typeof hints.dressing === "number" ? hints.dressing : 0;
     if (dressing > 0) for (const room of rooms) {
       let added = 0;
-      for (const word of COSY) {
+      for (const word of cosyFor(room.kind, rooms.length === 1 ? `${spec.name} ${spec.theme ?? ""}` : "")) {
         if (added >= dressing * 2) break;
         const part = roomSpec.objects[word] ? { id: word, kind: roomSpec.objects[word]!.kind, w: roomSpec.objects[word]!.w, h: roomSpec.objects[word]!.h } : findPart(roomSpec, word);
         if (!part) continue;
@@ -726,7 +838,7 @@ export const interiorBuilder: PlaceBuilder = {
     // 빈 바닥 덩이 메우기(쓰임 한 벌) — 1배에서 「휑한 홀」이 v1 의 가장 흔한 major 였다.
     const kinds = new Map(rooms.map((r) => [r.id, r.kind] as const));
     build(run, args);
-    const filled = fillBare(run, roomSpec, args, rb, kinds, INTERIOR_BARE_FLOOR_LIMIT);
+    const filled = fillBare(run, roomSpec, args, rb, kinds, INTERIOR_BARE_FLOOR_LIMIT, `${spec.name} ${spec.theme ?? ""}`);
     args = filled.args; rb = filled.rb;
     if (filled.filled) notes.push(`빈 바닥 덩이 ${filled.filled}곳을 방 쓰임에 맞는 가구 한 벌로 채웠다`);
     // 위층과 계단.

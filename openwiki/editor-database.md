@@ -1,5 +1,54 @@
 > 저장소 전환 안내(2026-09-21): 아래 옛 원격 DB·설정·명령은 과거 기록이다. 현재 저장·이관 지침은 [프로젝트 저장 전환](storage-retirement.md)과 AGENTS를 따른다.
 
+## 이야기 › 대사 탭 「대본」 보기 — 이야기 순서 시나리오 (2026-10-25)
+
+「대사」 탭은 보기가 둘이다. 위 단추 `db-dialogue-mode-script`(기본) / `db-dialogue-mode-list`(아래 절의 표 — 창 넘침을 한꺼번에 고칠 때).
+렌더 `src/editor/panels/databaseStoryScriptView.ts`, 두 보기가 같이 쓰는 조각(실측기·맞춤 배지·이동·글자 차이·그 자리 편집기) `src/editor/panels/dialogueViewShared.ts`,
+CSS 는 `dialogue-desk.css` 아래 「대본 보기」 묶음.
+
+- **모델** `src/editor/dialogue/storyScript.ts` `buildStory(project)` — 조수 도구 `get_story_outline`·`read_story_script` 와 같은 것. 장면 = 이벤트 쪽 하나(공용 이벤트·적 그룹 전투 쪽도).
+  - **순서**: 쪽 조건(스위치 켬·변수·아이템 가짐)과 쪽 본문을 통째로 감싼 조건 분기 → 그 값을 켜는 장면 뒤. 전투·공용 이벤트 → 부른 장면 뒤(부르면 바로).
+    같은 이벤트의 앞 쪽 → 뒤 쪽. 본줄 장면은 그 맵에 «들어가는 길»(잠긴 문·대사 없는 출입구) 뒤. 시작 맵·제자리 이동·자식 맵 → 조상 맵(되돌아 나감)은 길이 아니다.
+    맵 트리에 같은 맵이 두 번 있으면 첫 부모만 쓴다.
+  - 순환(숲길 출입구끼리, 계산대 쌍둥이 퀘스트)은 강결합 덩이(Tarjan)로 묶어 덩이 안 간선을 버린다. 그다음 위상 정렬:
+    본줄(과 본줄을 막는 곁 장면) 먼저 → 부른 전투·공용 이벤트 → **깊이**(시작에서 가장 긴 사슬)가 얕은 것 → 자동 시작 → 방금 꺼낸 장면에 이어지는 것 → 맵 순서. 엔딩은 맨 끝.
+    깊이를 안 쓰면 한 실(숲 → 지하 → 용)을 끝까지 따라가 다른 갈래(숲의 발렌)가 통째로 뒤로 밀린다(실측).
+  - **본줄** = 엔딩(`triggerEnding`·`ending`)까지 문 간선과 들어가는 길을 거꾸로 걸어 닿는 장면 + 그 맵들의 자동 시작/병렬 + 그것들이 부르는 전투·공용 이벤트. 나머지는 곁가지(B…) — 가장 늦은 본줄 조상 장면 뒤에 붙는다.
+    엔딩이 없는 프로젝트는 자동 시작 + 다른 이벤트의 조건을 켜는 장면이 본줄.
+  - **막** = 엔딩 장면에서 끊는다(제목 = 엔딩 이름). 장(section) = 장소가 바뀌는 곳(두 장면 미만은 앞 장에 붙임).
+  - 대사가 똑같은 쌍둥이(같은 문을 칸마다 둔 것)는 원본 바로 뒤로 모으고 `sameAs` 로 «S5 와 같다» 를 단다.
+  - 지문: 이동·전투·아이템·파티·감정·엔딩·진행(다른 장면의 조건이 되는 이름 있는 스위치를 켤 때)·흔들림/번쩍. 이어진 «누가 움직인다» 는 한 줄로 합치고,
+    대사·전투·진행·엔딩이 없는 조건 갈래(바라보는 방향 맞추기 등)는 뺀다.
+  - 실측 폴른 스타 1막(2026-10-25, 하넬 이후 막 재구성 전 사본): 오프닝 → 하넬 → 브람 → 추락지·열쇠 → 발렌+전투 → 천문대 문 → 렌즈 → 회랑 → 용 깨움+전투 → 패널 → 승강 장치 → 광장 포위(엔딩). 본줄 25·곁가지 287, 계산 약 110ms.
+- **화면**: 왼쪽 개요(막 → 장 → `S12 제목`, 줄 수·제안 수, 검색 `db-script-search`), 오른쪽 대본 종이 — 장면 머리(번호·장소 — 제목, 발동·조건, 한 줄 요약 + 「요약 쓰기/고치기」, 「이벤트 열기」),
+  화자 칸 + 대사(누르면 그 자리 편집, 넘치면 배지), `[지문]`, 선택지/조건 갈래(`details`, 펼쳐 둠). 본줄 장면 뒤에 그 무렵 들을 수 있는 곁가지가 접혀 붙는다(펼칠 때 그린다).
+  조수 제안은 해당 줄 바로 아래에 「제안」 줄(바뀐 글자 밑색·이유·받기/버리기), 위에 붙어 다니는 막대(`db-script-proposal-bar`)에 「다음 제안으로」(읽는 순서, 접힌 곁가지는 그때 펼침)·모두 받기/버리기. 곁가지는 제안이 있어도 저절로 펼치지 않는다(본줄 대본이 밀려 내려가지 않게).
+  받기·고치기로 다시 그려도 스크롤 자리를 지킨다. 장면 요약 쓰기는 `setSceneSummary`(라벨 `장면 요약: …`).
+- 테스트 id: `db-script-outline-row`(`data-ref`), `db-script-scene`(`data-ref`), `db-script-line`(`data-ref` = S12.3), `db-script-proposal`, `db-script-accept`, `db-script-accept-all`, `db-script-summary-edit`.
+
+## 이야기 › 대사 탭 — 모든 대사 한 화면, 창 넘침, 말투 메모, 조수 윤문 받기 (2026-10-24)
+
+자료집 「이야기」 그룹의 `dialogue` 탭(`db-tab-dialogue`, 렌더 `src/editor/panels/databaseDialogueView.ts`, CSS `src/styles/database/dialogue-desk.css`).
+레일 배지 = 대사 명령·선택지 수(설명 제외, 프로젝트 판본마다 한 번 셈).
+
+- **색인** `src/editor/dialogue/dialogueIndex.ts` `collectDialogueLines(project)` — 맵 이벤트(쪽마다, 쪽 없는 옛 `event.commands` 포함)·공용 이벤트·
+  적 그룹 전투 쪽/전투 뒤·아이템/장비/스킬 설명. `eventCommandBranches` 로 모든 가지를 걷는다. 줄 id 는 자리 그대로라 안정적이다:
+  `ev/<맵>/<이벤트>/<쪽|_>/<명령 경로 점>#<칸>` · `ce/…` · `tp/…` · `ta/…` · `db/<items|equipment|skills>/<id>#description`
+  (칸 = `body` `prompt` `opt<i>` `title` `message` `description`). 각 줄은 내용 해시(12자)를 같이 갖는다 — 쓰기는 해시가 맞을 때만.
+  이벤트 편집기에 초안(`event.draft`)이 열려 있으면 그 이벤트 줄은 잠긴다(`drafted`).
+- **창 넘침** `src/editor/dialogue/dialogueWindowMeasure.ts` — 런타임 대화창과 같은 클래스(`.dialogue-overlay.position-bottom > .dialogue-box > .body`)를
+  런타임 CSS(`preloadRuntimeStyles`)로 보이지 않게 붙여 **실제 글 폭·글꼴·한 장 줄 수**를 재고, 런타임과 같은 `paginateDialogueSegments` 로 장을 나눈다.
+  화자 스타일·글꼴·얼굴 칸 조합마다 한 번 잰다. 판정 = 한 장을 넘어 다음 장으로 넘겨야 하는가. 측정 전에는 추정치(점선 배지).
+  실측 폴른 스타: `글 폭 432px · Galmuri11 12px · 한 장 2줄 (480×270)`, 넘침 28줄.
+- **고치기** 글을 누르면 그 자리 textarea(Ctrl+Enter 저장·Esc 취소, 입력하는 동안 맞춤 배지가 바뀐다). 「이동」은 맵 이벤트 편집기(그 쪽)·공용 이벤트·적 그룹·아이템/스킬 레코드로 연다.
+- **말투 메모** 왼쪽 화자를 고르면 메모 칸. `project.dialogueDesk.voices` 에 남고 조수 도구가 문체 지침으로 읽는다.
+- **윤문 제안 받기** 조수가 `rewrite_dialogue` (기본 propose)로 남긴 제안이 위에 뜬다: 전/후 글자 차이(`textDiff.ts`, 지운 글자 취소선·넣은 글자 밑색),
+  전/후 창 맞춤, 이유, 요청 문장. 줄마다 받기/버리기, 모두 받기/버리기. 원문이 그 사이 바뀐 제안은 「받을 수 없음」으로 남는다.
+- 쓰기는 전부 `src/editor/dialogue/dialogueActions.ts` — `recordProjectSnapshot` + `store.update` 한 번(라벨 `대사 고치기: …` · `대사 제안 N줄 받기` ·
+  `말투 메모: <화자>`, `fields` 에 줄 id·전·후). 되돌리기와 편집 감사 로그에 그대로 잡힌다.
+- 검사 공통(`dialogueEdits.ts`): 제어 코드(`\C[n]` `\N[n]` `\.` `\|` `[흔들]…[/]` `{name}` …) 개수가 원문과 같아야 하고, 2000자 한도, 빈 글 금지.
+  사람 편집은 넘침을 허용(배지로만 알림), 조수는 원문보다 더 넘기면 거절(`allowOverflow` 로만 허용).
+
 ## 주인공 마법 5종 · 노출 시간과 앞뒤 층 (2026-10-05)
 
 공용 화염/빙결/번개/심판의 빛은 직접 도트 시트, 용권 본체는 기존 히드라 원화 재사용을 사용한다.
@@ -2598,3 +2647,13 @@ CSS로 접힌 작은 창·도크 상태에서는 참조 변경을 계속 반영�
 - **세계 개요**는 레일 대신 한 줄 바(작성 상태·공개 범위·「AI 미리보기」 칩).
 - **측정(1440×900 / 1100×700, 문서 40개):** 한 화면 문서 6→17 / 3→11, 본문 칸 면적 31.5%→64% / 22.4%→52.3%.
 - 검증: 범위 tsc 0, 임시 SQLite 호스트 프로젝트에서 AI 숨김·공개 범위·연결·태그·세계 개요 비밀 저장→새 브라우저 재로드 일치. vitest·gates·e2e 미실행(`world-authoring-regression.spec.ts` 는 절차만 고쳐 두었고 실행하지 않음).
+
+## 스킬 → 「연계기」 하위 보기 · 약점 공략 칸 · 결과 연출 카드 (2026-10-24, fs-battle-2)
+
+- **연계기** 탭 id `comboTechs`(testid `db-tab-combo-techs`, 레일에는 없고 스킬 탭 보기 전환 줄의 세 번째 — 스킬 편집 · 성장 트리 · 연계기). `src/editor/panels/databaseComboTechView.ts`.
+  연계기(`comboActorIds` 2명 이상)마다 카드: 미리보기 줄(참가자 · 몫 · 전투 도움말 꼬리표), 참가자 칸 셋(시전자·동료 1·동료 2(없음=듀얼)) 각각 MP 몫과 「배워야 하는 기술」(그 배우·직업 습득표), 이름·설명·대상·속성·위력·타수·합체 능력치, 접힌 「도트 연출」 고르기(`retroChoreographyPicker`). 「새 연계기」(`db-combo-add`)는 시작 파티 앞 둘로 만든다.
+  저장은 `updateDatabaseRecord("skills", …)` — `updateSkillRecord` 화이트리스트에 `comboMpCosts`·`exploitStates` 추가.
+- 스킬 「전투 규칙」 카드에 **약점 공략** 셋(`feature16-exploit-state`·`-bonus`·`-consume`). 상태 하나 고르기 UI 이고, 여러 상태는 조수 도구로(카드가 「외 N개」를 보인다).
+- 「전투 화면」 탭에 **레벨 업 · 기술 습득 연출** 카드(`db-battle-fanfare-card`): 세기·LEVEL UP 배너·새 기술 카드·새 연계기 카드·소리 → `system.battleFanfare`.
+- (2026-10-25, fs-battle-3) 「전투 화면」 탭 **전투 연출** 카드(`db-battle-staging-card`): `db-battle-staging-lunge`·`-cutin`·`-fx`·`-hint` → `system.battleStaging`. 적 탭 「달려드는 속도 (%)」 슬라이더(`db-field-enemy-lunge-speed`, 25~300, 100 이면 필드 삭제). 연계기 카드 안 접힌 「컷인 · 착탄 연출」(`db-combo-tint-<id>` 색, 흔들림, 느린 화면, 작은 글) → `SkillRecord.comboStaging`(`updateSkillRecord` 화이트리스트).
+- (2026-10-25) 「전투 연출」 카드에 **적 약점 표시** 고르기(`db-battle-staging-reveal-weakness`: 안 보임 · 알아낸 뒤에만(기본) · 처음부터) → `system.battleStaging.revealWeakness`.

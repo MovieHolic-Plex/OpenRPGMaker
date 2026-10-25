@@ -180,8 +180,37 @@ function textMatchScore(term: string, entry: CharsetSemanticEntry): number {
     if (tagLower === normalized) score += 45;
     else if (partial && tagLower.includes(normalized)) score += 20;
   }
-  if (partial && entry.appearance?.toLowerCase().includes(normalized)) score += 12;
+  if (entry.appearance && appearanceHits(normalized, entry.appearance)) score += 12;
   return score;
+}
+
+/**
+ * 외형 문장(그림을 보고 적은 머리·옷·색)에서 찾는다. 색 낱말은 한 글자(흰·검은)거나 말이 달라(하얀·새하얀·백색) 그대로는 안 맞는다 —
+ * 「하얀 드레스」 질의가 0건이라 조수가 이름 비슷한 분홍 드레스 공주를 골랐다(2026-10-25 심사 J41). 색은 같은 무리 낱말이면 맞는다.
+ */
+const COLOUR_GROUPS: readonly (readonly string[])[] = [
+  ["흰", "하얀", "새하얀", "흰색", "하양", "백색", "white"],
+  ["검은", "까만", "새까만", "검정", "흑색", "black"],
+  ["빨간", "붉은", "빨강", "적색", "red"],
+  ["파란", "푸른", "파랑", "청색", "blue"],
+  ["노란", "노랑", "황색", "yellow"],
+  ["초록", "녹색", "연두", "green"],
+  ["분홍", "핑크", "pink"],
+  ["보라", "자주", "자줏빛", "purple"],
+  ["갈색", "밤색", "brown"],
+  ["회색", "잿빛", "grey", "gray"],
+  ["금발", "노란 머리", "blonde"],
+];
+export function colourGroupOf(word: string): readonly string[] | undefined {
+  const w = word.toLowerCase();
+  return COLOUR_GROUPS.find((group) => group.includes(w));
+}
+function appearanceHits(term: string, appearance: string): boolean {
+  const text = appearance.toLowerCase();
+  const words = text.split(/[\s,.·()/]+/u).filter(Boolean);
+  const group = colourGroupOf(term);
+  if (group) return group.some((colour) => colour.length >= 2 ? text.includes(colour) : words.some((word) => word === colour || word.startsWith(colour)));
+  return term.length >= 2 ? text.includes(term) : words.includes(term);
 }
 
 /** 질의에서 성별·나이·역할 같은 의도로 읽힌 낱말 — 라벨에 없어도 의도 검사를 통과했으면 맞은 것으로 친다. */

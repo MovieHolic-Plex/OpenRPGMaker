@@ -198,6 +198,8 @@ export interface BattleSessionState {
   readonly learnedViaAp?: Readonly<Record<string, readonly SkillId[]>>;
   /** 폭주(가우)가 모은 몬스터 목록(배우 → 몬스터 레코드 id). 폭주 기술이 이 목록에서 몬스터를 고른다. */
   readonly actorRageEnemyIds?: Readonly<Record<string, readonly string[]>>;
+  /** 알아낸 적 약점·저항(적 레코드 id → key → 배율). 전투가 **이 객체에 직접** 새 발견을 적는다(지거나 도망쳐도 남는다). */
+  readonly knownWeaknesses?: import("@/battle/weaknessDiscovery").KnownWeaknesses;
   readonly actorBattleCommands?: Readonly<Record<string, readonly string[]>>;
   /** 현재 난이도 id — 적 HP/공격력·보상 배율(project/difficulty.ts). 생략 = 기본 난이도. */
   readonly difficultyId?: string;
@@ -364,6 +366,10 @@ export interface BattleActionResultSnapshot {
   readonly effectiveness?: number;
   /** 장비한 무기 계열이 기술과 맞아 위력이 올랐다(SkillRecord.weaponAffinity). */
   readonly weaponAffinity?: boolean;
+  /** 대상이 노린 상태에 걸려 있어 위력이 올랐다(SkillRecord.exploitStates). */
+  readonly exploit?: boolean;
+  /** 상성 배율을 속성·피해 종류로 나눈 것(배율 1 은 빠짐). 약점 발견 기록(weaknessDiscovery.ts)의 재료. */
+  readonly effectivenessParts?: readonly import("@/battle/weaknessDiscovery").EffectivenessPart[];
 }
 
 export type BattleTimelineEntryKind =
@@ -405,10 +411,16 @@ export interface BattleTimelineEntrySnapshot {
   readonly skillName?: string;
   /** Stable executed identity; skillName is presentation and legacy fallback only. */
   readonly skillId?: SkillId;
+  /** 연계기 엔트리면 참가 배우 전원(시전자 포함) — 표시 계층이 「연계!」 띠와 참가자 모션을 띄운다. */
+  readonly comboActorIds?: readonly string[];
   /** 속성·타입 상성 배율(감정 배율 제외). 1 이면 생략 — 표시 계층이 「효과가 굉장했다」·상성별 타격음을 고른다. */
   readonly effectiveness?: number;
   /** 장비한 무기 계열이 기술과 맞아 위력이 오른 타격(SkillRecord.weaponAffinity). */
   readonly weaponAffinity?: boolean;
+  /** 약점 공략 타격(SkillRecord.exploitStates) — 숫자 아래 「공략!」. */
+  readonly exploit?: boolean;
+  /** 이 타격으로 이 적 종류의 약점·저항을 처음 알았다(session.knownWeaknesses 에 새 칸). 숫자 위 「약점 발견!」. */
+  readonly weaknessDiscovered?: boolean;
   /** 한 명령(배우 명령 1회·적 행동 1회)의 번호. 같은 행동의 엔트리(대상 여럿 × 타수)를 연출 하나로 묶는 열쇠다. */
   readonly actionId?: number;
   /** 시전자 자신에게 붙는 부수 엔트리 — HP 대가(hpCost)·흡수 회복(drain). 연출의 대상·타수로 세지 않는다. */
@@ -600,6 +612,8 @@ export interface BattleEventStateSnapshot {
 }
 
 export interface BattleSnapshot {
+  /** 알아낸 적 약점(세션 객체 그대로). 대상 고르기 표시가 revealWeakness 설정과 함께 읽는다. */
+  readonly knownWeaknesses?: Readonly<Record<string, Readonly<Record<string, number>>>>;
   /** 지금 전투 날씨(없으면 생략). 표시 계층이 날씨 배지를 그린다. 저장하지 않는다. */
   readonly weather?: { readonly kind: import("@/project/types").SkillWeatherKind; readonly turnsLeft: number };
   /** 한 마리씩 내보내는 전투(gen1·몬스터 트레이너)에서 쓰러져 물러난 적. 표시 계층이 쓰러짐 비트를 재생하는 동안만 쓴다. */
@@ -612,6 +626,8 @@ export interface BattleSnapshot {
   readonly battleFlow: BattleFlow;
   /** 이번 전투에 실제로 적용된 ATB 방식(플레이어 설정 > 저작 설정 > wait). gauge 흐름에서만 active 가 의미 있다. */
   readonly atbMode: "active" | "wait";
+  /** 연계 대기(holdForCombo)로 게이지를 채운 채 동료를 기다리는 배우 recordId. 비면 생략. */
+  readonly heldActorIds?: readonly string[];
   readonly activeActorId?: ActorId;
   readonly activeSlots: number;
   readonly forcedSwitchActorId?: ActorId;
@@ -675,6 +691,12 @@ export interface BattleRuntime {
   performActorCommand(command: ActorCommand): void;
   /** 팀 교대 전투(system.battleTeams)에서 지금 명령을 고르는 배우의 차례로 활성 팀을 바꾼다. 팀 설정이 없으면 아무 일도 없다. */
   performTeamSwap?(command: TeamSwapCommand): void;
+  /**
+   * 연계 대기(gauge 흐름) — 지금 명령을 고르는 배우가 차례를 미루고 게이지를 채운 채 기다린다.
+   * 다른 아군의 차례가 오면 함께 「준비」 상태라 연계기를 고를 수 있다(크로노 트리거의 「다음 사람으로 넘기기」).
+   * 성공하면 true. strict·연계기 없는 배우·혼자 남은 배우는 false.
+   */
+  holdForCombo?(): boolean;
   chooseAutoCommand(): ActorCommand | undefined;
   executeEquipmentUse(actorId: ActorId, equipmentId: string, target: EquipmentUseTarget): EquipmentUseResult;
   snapshot(): BattleSnapshot;

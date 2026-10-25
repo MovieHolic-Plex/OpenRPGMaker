@@ -337,7 +337,13 @@ export function playCinematicSequence(options: {
       // Book overlays live on the root so they survive page changes.
       if (atmosphere) root.append(atmosphere.layer);
       if (portraitMotion) root.append(portraitMotion.element);
-      if (!isBook && sequence.skippable && !root.querySelector('.cinematic-skip-hint')) root.append(el('div', { class: 'cinematic-skip-hint', text: isTouchUiHost(root) ? 'B 건너뛰기' : 'Esc 건너뛰기', attrs: { 'aria-hidden': 'true' } }));
+      // Touch has no Esc — the hint itself is the skip button (tap/click), so a phone can skip the same way.
+      // play-ui owner: the sequence's pointer blocker (installPlayPointerBlocker) lets this one button through.
+      if (!isBook && sequence.skippable && !root.querySelector('.cinematic-skip-hint')) {
+        const skip = el('button', { class: 'cinematic-skip-hint', text: isTouchUiHost(root) ? 'B · 탭 건너뛰기' : 'Esc · 탭 건너뛰기', attrs: { type: 'button', 'aria-label': '건너뛰기', tabindex: '-1', 'data-play-input-owner': 'play-ui' }, dataset: { testid: 'cinematic-skip' } });
+        skip.addEventListener('pointerup', (event) => { event.preventDefault(); event.stopPropagation(); finish('skipped'); }, { signal });
+        root.append(skip);
+      }
       if (isBook) frame.append(el('div',{class:'cinematic-book-hint',text:`${index+1} / ${sequence.scenes.length}   ${isTouchUiHost(root)?'A 다음':'Enter 다음'}${sequence.skippable?(isTouchUiHost(root)?' · B 건너뛰기':' · Esc 건너뛰기'):''}`}));
       root.dataset.page = String(index + 1);
       if (previous) {
@@ -529,13 +535,20 @@ export function playCinematicSequence(options: {
         break;
       }
       case "animatic": {
+        // 샷에 자막 트랙(set_opening_caption)이 있으면 그 자막이 글을 맡는다 — 내레이션 상자까지 그리면 같은 줄이 두 번, 아래 것은 반쯤 가려 보였다
+        // (2026-10-25 장난감 가게 G49). 화면 읽기용 글은 상자 안에 남기되 보이지 않게 한다.
+        if (scene.composition.layers.some(layer => (layer as { caption?: unknown }).caption)) narration.classList.add('cinematic-narration--captioned');
         const canvas = el("canvas", { class: "cinematic-animatic", dataset: { testid: "opening-animatic-stage" } });
-        canvas.setAttribute('aria-label', '레이어와 카메라로 구성한 오프닝');
+        // 컷에 자막 층(caption)이 있으면 그 글자가 캔버스 안에 이미 그려진다. 같은 글을 담은 DOM 내레이션까지 띄우면
+        // 자막이 두 겹으로 보였다(시타마치 VQA before 02·03 「유령 글자」) — 내레이션은 화면에서 숨기고 캔버스 설명으로 옮긴다.
+        const canvasCaptions = scene.composition.layers.some(layer => layer.kind === 'caption' && (layer.caption?.cues?.length ?? 0) > 0);
+        if (canvasCaptions && scene.narration.trim()) { narration.hidden = true; narration.dataset.captionedOnCanvas = 'true'; }
+        canvas.setAttribute('aria-label', canvasCaptions && scene.narration.trim() ? scene.narration : '레이어와 카메라로 구성한 오프닝');
         canvas.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#000';
         ready(canvas); beginLoading();
         playOpeningAnimatic({ project, canvas, composition: scene.composition, durationMs: scene.durationMs, signal: lifetime.signal, reducedMotion,
           onReady: () => { if (!alive || !mediaActive) return; clearTimeout(loadTimer); root.dataset.mediaState = 'ready'; status.textContent = ''; },
-          onError: message => { if (!alive || !mediaActive) return; fail('error'); status.textContent = message; }, onDone: () => { if (alive) next(); } });
+          onError: message => { if (!alive || !mediaActive) return; console.warn('[opening animatic]', message); fail('error'); status.textContent = '장면을 그리지 못했어요. Enter로 넘어가세요.'; }, onDone: () => { if (alive) next(); } });
         break;
       }
       case "video": {

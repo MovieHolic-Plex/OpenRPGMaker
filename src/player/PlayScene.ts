@@ -89,7 +89,7 @@ import { installPlaySceneTestHooks } from "@/player/playSceneTestHooks";
 import { applyStoredCameraState, centerRuntimeCamera, panRuntimeCamera } from "@/player/playSceneCamera";
 import { runtimeMapViewZoom, runtimePixelDensity } from "@/player/runtimeViewScale";
 import { hasSessionCheckpoint, restoreSessionCheckpoint, setSessionCheckpoint, getSessionCheckpoint } from "@/player/checkpoints";
-import { syncFollowerSprites } from "@/player/playSceneFollowers";
+import { syncFollowerSceneVisibility, syncFollowerSprites } from "@/player/playSceneFollowers";
 import { syncPartyFollowers } from "@/project/followers";
 import { seedLocationOccupancyForScene } from "@/player/playSceneLocationTransitions";
 import { installLightingLayer, syncLightingLayer, updateLighting } from "@/player/playSceneLighting";
@@ -128,6 +128,7 @@ import { recordPlayBootDiagnostic } from "@/player/playBootDiagnostics";
 import { diagnosticToken } from "@/util/diagnosticObserver";
 import { createRuntimePerfCounters, type RuntimePerfCounters } from "@/player/runtimePerfCounters";
 import { onRegistryValue } from "@/player/registryReady";
+import { syncDialogueCameraLift } from "@/player/dialogueCameraLift";
 
 const PhaserRuntime = getLoadedPhaser();
 const MAX_FAILED_ASSETS = 20;
@@ -188,6 +189,8 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
   private handSlotChip: HandSlotChip | null = null;
   private handSlotHost: HTMLElement | null = null;
   private minimapUserHidden = false;
+  /** 대화 중 인물 보이기(system.dialogueKeepActorsVisible) 가 카메라 추적 오프셋을 걸어 두었는가. */
+  private dialogueCameraLifted = false;
   private worldAtlasController: ReturnType<typeof createWorldAtlasController> | null = null;
   lightingOverlayImage?: Phaser.GameObjects.Image;
   lightingMaskTexture?: Phaser.Textures.CanvasTexture;
@@ -404,7 +407,14 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
   }
 
   update(_time: number, deltaMs: number): void {
-    if (this.game.registry.get('initialPresentationPending') === true) return;
+    if (this.game.registry.get('initialPresentationPending') === true) {
+      // Behind the opening cover nothing advances, but the visible tile window must already be built:
+      // otherwise the cover fades onto sprites over a black ground that fills in a few frames later (pop-in).
+      const pendingView = runtimeCameraTileView(this.cameras.main);
+      syncRuntimeTileWindow(this, pendingView);
+      syncTileCulling(this, pendingView, mapTileSize(this.map));
+      return;
+    }
     this.worldAtlasController?.update();
     if (this.worldAtlasController?.isOpen) {
       this.input_.resetEdges();
@@ -414,6 +424,8 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
     this.sunlightLayer?.sync(this.map, store.getCurrent().tilesets[this.map.tilesetId]);
     this.perfCounters.frames += 1;
     updatePlayScene(this, deltaMs);
+    // FF6 식 동료 표시(companions.display "scenesOnly") — 이야기 장면이 열리고 닫힐 때 동료를 세우고 숨긴다.
+    syncFollowerSceneVisibility(this);
     syncTerrainWater(this, this.map);
     syncTerrainVision(this, this.map, this.tileX, this.tileY, store.getCurrent().tilesets[this.map.tilesetId]);
     updateGameTime(this, deltaMs);
@@ -427,6 +439,12 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
     updateScreenDistortion(this);
     updateMode7(this, deltaMs);
     updateFieldStaging(this);
+    this.dialogueCameraLifted = syncDialogueCameraLift(
+      this,
+      this.game.registry.get("dialogueHost") as HTMLElement | undefined,
+      store.getCurrent().system.dialogueKeepActorsVisible === true,
+      this.dialogueCameraLifted,
+    );
     const tileView = runtimeCameraTileView(this.cameras.main);
     syncRuntimeTileWindow(this, tileView);
     syncTileCulling(this, tileView, mapTileSize(this.map));

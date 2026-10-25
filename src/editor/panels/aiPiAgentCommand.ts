@@ -8,7 +8,7 @@ import { prepareProjectInterviewBootAssets } from "../projectInterviewBootPrepar
 import { isLiveApplyMode, normalizePiApplyMode } from "@/ai/piAgent/applyMode";
 import { createPendingReviewPrompt } from "./aiPendingReview";
 import { completionHeadline, createRefineFindings, plainMadeSummary, refineFindingsText } from "./aiPiCompletionReport";
-import { friendlyApplyFailure, friendlyExecutionError } from "@/ai/piAgent/userFacingCopy";
+import { describeAppliedWrites, friendlyApplyFailure, friendlyExecutionError, GENERIC_EXECUTION_ERROR } from "@/ai/piAgent/userFacingCopy";
 import { configForUltrabrain } from "@/ai/ultrabrainConfig";
 import { modelForRole } from "@/ai/modelRoles";
 import { executionRoleFor } from "@/ai/buildRole";
@@ -555,11 +555,14 @@ async function runPiCommandProtected(command: ParsedPiCommand, surface: PiComman
   const navigateView = createAssistantViewNavigation(() => options.viewNavigation === true, {
     background: surface.background, signal: surface.signal,
   });
+  /** 성공한 도구 이름(쓰기 도구만 골라 끊긴 실행의 보고에 쓴다, G43). */
+  const succeededTools: string[] = [];
   const showConstructionEvent = (event: PiAgentEvent): void => {
     surface.onEvent?.(event);
     let nested = event;
     while (nested.type === "agent_event") nested = nested.event;
     if (nested.type === "tool_end" && nested.ok) {
+      succeededTools.push(nested.name);
       const result = nested.result as { data?: unknown } | undefined;
       navigateView(nested.name, result?.data);
       // 워커의 revert_last_edit 는 초안을 건드리지 않고 되돌림만 요청한다 — 실행이 끝난 뒤 아래에서 편집기 스택으로 실행한다.
@@ -759,7 +762,7 @@ async function runPiCommandProtected(command: ParsedPiCommand, surface: PiComman
     finishLog({ applied: publication.count > 0, changedCount: publication.count, error: message });
     surface.setStatus("작업을 마치지 못했어요.");
     surface.appendProcess?.(message);
-    surface.appendBubble("system", `${friendlyExecutionError(message)} ${segmentReverted ? "" : publication.count ? "이미 반영한 변경은 남아 있으며 되돌릴 수 있어요." : "변경한 내용은 적용하지 않았어요."}`.trim());
+    surface.appendBubble("system", `${friendlyExecutionError(message)} ${segmentReverted ? "" : publication.count ? `이미 반영한 변경은 남아 있으며 되돌릴 수 있어요. ${describeAppliedWrites(succeededTools)}` : "변경한 내용은 적용하지 않았어요."}`.trim());
     return false;
   }
   if (surface.signal?.aborted) {
@@ -929,6 +932,9 @@ async function runPiCommandProtected(command: ParsedPiCommand, surface: PiComman
     if (streamErrors.length) {
       surface.appendProcess?.(streamErrors.join("\n"));
       surface.appendBubble("system", stoppedByLimit ? "작업 한도에 도달해 끝까지 마치지 못했어요. 작업 범위를 줄이거나 자율성 설정을 조정해 다시 요청해 주세요." : "작업 중 일부 문제가 있었어요. 작업 과정을 확인해 주세요.");
+      // 왜 멈췄는지 한 줄 — 「작업 과정을 확인」만 남기면 끊긴 턴이 사용자에게는 침묵이다(2026-10-25 조수 단독 게임 G12: 네 번 연속 아무 설명 없음).
+      const reason = friendlyExecutionError(streamErrors[0]!);
+      if (!stoppedByLimit && reason !== GENERIC_EXECUTION_ERROR) surface.appendBubble("system", reason);
     }
     if (droppedEverything) surface.appendProcess?.(spillReason);
     surface.appendBubble("system", droppedEverything ? "요청한 변경이 선택한 작업 범위를 벗어나 적용하지 않았어요. 작업 범위를 바꿔 다시 요청해 주세요." : caption);
@@ -1206,7 +1212,7 @@ async function runPiCommandProtected(command: ParsedPiCommand, surface: PiComman
     }
     finishLog({ applied: true, changedCount, stoppedReason: "적용됨" });
     surface.setStatus(streamErrors.length ? "변경 반영됨 · 응답 중 오류" : (harmonyManualReview && applyMode !== "yolo") ? "반영됨 · 확인할 문제 있음" : saveAccepted ? "적용·저장 완료" : "적용됨 · 저장 확인 필요");
-    if (streamErrors.length) surface.appendBubble("system", `${friendlyExecutionError(streamErrors[0]!)} 이미 반영한 변경은 남아 있으며 되돌릴 수 있어요. 저장 상태는 저장 표시에서 확인해 주세요.`);
+    if (streamErrors.length) surface.appendBubble("system", `${friendlyExecutionError(streamErrors[0]!)} 이미 반영한 변경은 남아 있으며 되돌릴 수 있어요. ${lastAssistantText.trim() ? "" : `${describeAppliedWrites(succeededTools)} `}저장 상태는 저장 표시에서 확인해 주세요.`);
     if (lastAssistantText.trim()) surface.appendBubble("assistant", lastAssistantText);
     if (team || !surface.showChangeReceipt || !receiptMapId) surface.appendBubble("system", `변경 내용을 적용했어요.${spilledKeys.length ? " 선택한 범위를 벗어난 변경은 제외했어요." : ""}${streamErrors.length ? " 작업 중 일부 문제가 있었어요. 작업 과정을 확인해 주세요." : ""}`);
     surface.showChangeReceipt?.({

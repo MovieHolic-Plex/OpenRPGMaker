@@ -23,7 +23,10 @@ import { isPokemonMoveMotion } from "@/battle/pokemonMoveMotion";
 import { DEFAULT_BATTLE_HIT_FEEL, isBattleHitFeel } from "@/project/battleHitFeel";
 import { normalizeDisplayFilter } from "@/project/displayFilter";
 import { normalizePlaySurfaceScale } from "@/project/playSurfaceScaleMode";
+import { normalizeTouchControls } from "@/project/touchControls";
 import { normalizeBattleLook } from "@/project/battleLook";
+import { normalizeBattleFanfare } from "@/project/battleFanfare";
+import { normalizeBattleStaging, normalizeComboStaging } from "@/project/battleStaging";
 import { DEFAULT_MENU_SKIN_ID, isMenuSkinId } from "@/player/menuSkins/registry";
 import { normalizeBattleAnimationRecord } from "@/project/databaseAnimationRecordModel";
 import { normalizeActionCombatConfig, normalizeActionSkillProfile, normalizeActionWeaponProfile } from "@/project/actionCombat";
@@ -103,6 +106,7 @@ export function normalizeStateRecord(record: Partial<StateRecord> & Pick<StateRe
     ...(isGen1MajorStatus(record.gen1MajorStatus) ? { gen1MajorStatus: record.gen1MajorStatus } : {}),
     ...(record.volatileStatus === "confusion" ? { volatileStatus: record.volatileStatus } : {}),
     ...(record.removalCondition !== undefined ? { removalCondition: optionalString(record.removalCondition) } : {}),
+    ...(typeof record.clearOnBattleEnd === "boolean" ? { clearOnBattleEnd: record.clearOnBattleEnd } : {}),
     ...(record.restriction !== undefined ? { restriction: optionalString(record.restriction) } : {}),
     ...(record.priority !== undefined ? { priority: optionalNumber(record.priority) } : {}),
     ...(record.accuracyModifier !== undefined ? { accuracyModifier: optionalNumber(record.accuracyModifier) } : {}),
@@ -310,6 +314,8 @@ export function normalizeSystemRecords(system: Partial<SystemRecords> & Pick<Sys
   // 진형 굴림·도주 가산 — 기본(굴림 없음·가산 0)은 저장하지 않는다(옛 JSON 바이트 유지).
   if (system.battleFormationRoll === true) records.battleFormationRoll = true;
   if (system.pointerMovement === true) records.pointerMovement = true;
+  const touchControls = normalizeTouchControls(system.touchControls);
+  if (touchControls) records.touchControls = touchControls;
   if (typeof system.escapeBonusPercent === "number" && Number.isFinite(system.escapeBonusPercent) && system.escapeBonusPercent !== 0) {
     records.escapeBonusPercent = clampInteger(system.escapeBonusPercent, 0, 100);
   }
@@ -325,6 +331,12 @@ export function normalizeSystemRecords(system: Partial<SystemRecords> & Pick<Sys
   if (playSurfaceScale) records.playSurfaceScale = playSurfaceScale;
   // 전투 화면 꾸미기도 같은 계약 — 프리셋과 같은 칸·미등록 값은 저장하지 않는다(project/battleLook.ts).
   if (battleLook) records.battleLook = battleLook;
+  // 결과 팡파레 — 기본(전부 켜기·burst)은 저장하지 않는다(project/battleFanfare.ts).
+  const battleFanfare = normalizeBattleFanfare(system.battleFanfare);
+  if (battleFanfare) records.battleFanfare = battleFanfare;
+  // 전투 연출(적 달려들기·연계기 컷인·화려함·한 줄 도움말) — 기본은 저장하지 않는다(project/battleStaging.ts).
+  const battleStaging = normalizeBattleStaging(system.battleStaging);
+  if (battleStaging) records.battleStaging = battleStaging;
   // ESC 메뉴 스킨도 같은 계약 — 기본(workbench)과 미등록 값은 저장하지 않고 명시 선택만 남긴다.
   if (isMenuSkinId(system.menuUiStyle) && system.menuUiStyle !== DEFAULT_MENU_SKIN_ID) records.menuUiStyle = system.menuUiStyle;
   // 대화창 스타일도 같은 계약 — 기본(glass)과 미등록 값은 저장하지 않는다.
@@ -334,6 +346,7 @@ export function normalizeSystemRecords(system: Partial<SystemRecords> & Pick<Sys
     records.dialogueSpeed = Math.round(Math.min(DIALOGUE_PROJECT_SPEED_LIMITS.max, Math.max(DIALOGUE_PROJECT_SPEED_LIMITS.min, system.dialogueSpeed)) * 100) / 100;
   }
   if (system.dialoguePunctuationPause === false) records.dialoguePunctuationPause = false;
+  if (typeof system.dialogueKeepActorsVisible === "boolean") records.dialogueKeepActorsVisible = system.dialogueKeepActorsVisible;
   if (fullPortrait) records.dialogueFullPortrait = fullPortrait;
   // 기본(actors)은 저장하지 않고, 명시적 monsters 선택만 보존한다.
   if (system.battleParty === "monsters") records.battleParty = "monsters";
@@ -387,6 +400,10 @@ export function normalizeSystemRecords(system: Partial<SystemRecords> & Pick<Sys
   if (resource2) records.resource2 = resource2;
   if (partyGauge) records.partyGauge = partyGauge;
   if (system.weaknessExtraAction === true) records.weaknessExtraAction = true;
+  // 자동 전투 끄기·전투 뒤 상태 해제·세이브 포인트 전용(2026-10-25). 화이트리스트 — 빠뜨리면 저장 왕복에 사라진다.
+  if (system.allowAutoBattle === false) records.allowAutoBattle = false;
+  if (system.clearStatesAfterBattle === true) records.clearStatesAfterBattle = true;
+  if (system.saveAccess === "savePoints") records.saveAccess = "savePoints";
   if (emotionCycle) records.emotionCycle = emotionCycle;
   if (actionCombat) records.actionCombat = actionCombat;
   if (Array.isArray(system.toolActions)) records.toolActions = system.toolActions;
@@ -727,6 +744,13 @@ export function normalizeSkillRecord(record: Partial<SkillRecord> & Pick<SkillRe
             : {}),
         } }
       : {}),
+    ...(() => {
+      const exploit = record.exploitStates;
+      if (!exploit || !Number.isFinite(exploit.bonusPercent) || exploit.bonusPercent <= 0 || !Array.isArray(exploit.stateIds)) return {};
+      const stateIds = uniqueCleanIds(exploit.stateIds.filter((id): id is string => typeof id === "string")).slice(0, 8);
+      if (stateIds.length === 0) return {};
+      return { exploitStates: { stateIds, bonusPercent: clampInteger(exploit.bonusPercent, 1, 300), ...(exploit.consume === true ? { consume: true as const } : {}) } };
+    })(),
     ...(Number.isFinite(record.recoilPercent) && record.recoilPercent! > 0 ? { recoilPercent: clampInteger(record.recoilPercent!, 0, 100) } : {}),
     ...(normalizeFixedDamage(record.fixedDamage) ? { fixedDamage: normalizeFixedDamage(record.fixedDamage) } : {}),
     ...(normalizeMultiHit(record.multiHit) ? { multiHit: normalizeMultiHit(record.multiHit) } : {}),
@@ -774,6 +798,21 @@ export function normalizeSkillRecord(record: Partial<SkillRecord> & Pick<SkillRe
         ...(comboRequires.length > 0 ? { comboRequires } : {}),
         ...(record.comboCombinedStats === true ? { comboCombinedStats: true as const } : {}),
         ...(typeof record.comboSwitchId === "string" && record.comboSwitchId.trim() ? { comboSwitchId: record.comboSwitchId.trim() } : {}),
+        ...(() => {
+          const staging = normalizeComboStaging(record.comboStaging);
+          return staging ? { comboStaging: staging } : {};
+        })(),
+        ...(() => {
+          const rows = Array.isArray(record.comboMpCosts)
+            ? record.comboMpCosts.flatMap((entry) => {
+                const actorId = typeof entry?.actorId === "string" ? entry.actorId.trim() : "";
+                return actorId && comboActorIds.includes(actorId) && Number.isFinite(entry.mp)
+                  ? [{ actorId, mp: clampInteger(entry.mp, 0, 9999) }] : [];
+              })
+            : [];
+          const unique = rows.filter((row, index) => rows.findIndex((other) => other.actorId === row.actorId) === index);
+          return unique.length > 0 ? { comboMpCosts: unique } : {};
+        })(),
       };
     })(),
     ...(record.area && (record.area.shape === "circle" || record.area.shape === "line")
@@ -999,6 +1038,8 @@ function normalizeCompanionConfig(value: CompanionConfig | undefined): Companion
   if (value.fromParty === true) out.fromParty = true;
   if (value.spreadWhenBlocked === true) out.spreadWhenBlocked = true;
   if (value.fanOutInScenes === true) out.fanOutInScenes = true;
+  if (value.display === "scenesOnly") out.display = "scenesOnly";
+  if (value.sceneFormation === "abreast") out.sceneFormation = "abreast";
   if (value.monsterFollowers === false) out.monsterFollowers = false;
   return Object.keys(out).length > 0 ? out : undefined;
 }

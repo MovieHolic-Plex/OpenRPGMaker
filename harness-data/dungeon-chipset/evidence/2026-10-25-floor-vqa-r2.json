@@ -1,0 +1,25 @@
+{
+ "date": "2026-10-25",
+ "round": "floor-vqa-r2",
+ "boards": "qa-runs/floors/vqa-r2s (samples qa-runs/floors/after2 at f42f930423)",
+ "reviewers": {
+  "sonnet": {
+   "agents": [
+    "A: castle..mine",
+    "B: otherworld..volcano (pending)"
+   ],
+   "verdicts": {
+    "castle": "PASS — majors: none; minors: faint brick-row repeat at 3x; large flat grey rooms; a few bone/rubble decals on room edges",
+    "catacomb": "PASS — majors: none; minors: moss speckle near candelabra (organic); gold cracked crypt chamber reads deliberate; coffins/bones along walls",
+    "cave": "FAIL — majors: flat tan floor dotted with tiny grey tick marks (sparse speckle) while the rock mass is far busier; minors: white bone/skull litter in walkways; logs at the shore look floating",
+    "forest": "PASS — majors: none; minors: faint uniform dither in grass; dense tree wall; repeated cairn/mushroom sprites; small arbitrary pond s2",
+    "ice": "FAIL — majors: cracked ice sheet is the loudest texture and repeats on a 16px grid over huge areas; snow floor carries white-dot speckle; minors: ice/snow meet with stair-step square edges",
+    "mine": "PASS — majors: none; minors: low-contrast scratch marks; repeated ore/boulder groups; a few barrels/chests scattered in passages"
+   }
+  }
+ },
+ "fixed": {
+  "cave": "yes (02cc2faea6): road dirt mixes only the 5 cleanest cells; pale rubble pebbles rarer",
+  "ice": "yes (02cc2faea6): cracked-ice sheet only in the frozen-lake room (no snow-floor blobs); snow ground interior cells unchanged"
+ }
+}

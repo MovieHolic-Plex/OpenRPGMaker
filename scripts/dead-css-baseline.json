@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-12T16:15:06.377Z",
+  "generatedAt": "2026-10-25T06:50:58.826Z",
   "tokens": [
     "actor-command-row",
     "actor-face-image",
@@ -30,6 +30,11 @@
     "db-common-event-guide-label",
     "db-common-event-guide-row",
     "db-cx-frame-field",
+    "db-dialogue-diff-after",
+    "db-dialogue-diff-before",
+    "db-dialogue-group-label",
+    "db-dialogue-measure-host",
+    "db-dialogue-where",
     "db-el-grade",
     "db-el-reference",
     "db-enemy-action-skill-host",
@@ -61,7 +66,7 @@
     "db-neutral-resource-slot",
     "db-overview-issue-icon",
     "db-retro-choreo-axis-host",
-    "db-search-dest-sep",
+    "db-script-side-label",
     "db-skill-card-has-retro",
     "db-skill-class-chips",
     "db-skill-mon-browser-list",
@@ -80,6 +85,7 @@
     "db-story-flag-row",
     "db-system-dialogue-tag-card",
     "db-system-difficulty-row",
+    "db-system-emotion-cycle",
     "db-system-fusion-row",
     "db-system-graphic-details",
     "db-system-resolution-help",
@@ -98,7 +104,6 @@
     "db-title-opening-entrance",
     "db-title-preset-description",
     "db-title-variant-row",
-    "db-toggle-thumb",
     "db-troop-after-battle-panel",
     "db-troop-backdrop-motion",
     "db-troop-event-tool",
@@ -113,6 +118,8 @@
     "db-world-canon-absences",
     "db-ws-btn-ghost",
     "db-ws-section-tab-label",
+    "oprn-boot-loader",
+    "oprn-cloud-status",
     "oprn-load-slot-chapter",
     "oprn-load-slot-head"
   ]

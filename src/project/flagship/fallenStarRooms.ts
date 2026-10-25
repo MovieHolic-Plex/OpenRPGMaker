@@ -16,7 +16,7 @@ import type { Command, EventPage, GameEvent, GameMap, Project } from "@/project/
 type Exec = (project: Project, name: string, args: Record<string, unknown>) => void;
 type Dir = "up" | "down" | "left" | "right";
 type Cell = { x: number; y: number };
-type RoomSpec = {
+export type RoomSpec = {
   plan: string[];
   floor: string;
   wall: string;
@@ -160,7 +160,7 @@ const OBS_ROOM: RoomSpec = {
   ],
 };
 
-/** 네 화로의 방(32×18) — 본당: 북벽 쇠창살 문(풀면 열린다)과 그 앞 붉은 깔개·사자 수호상·열주, 8×4 밝은 돌 단 네 모서리의 큰 돌 화로(great stone brazier, 2칸)와 가운데 룬 비석 둘·별 원.
+/** 네 화로의 방(32×18) — 본당: 북벽 쇠창살 문(풀면 열린다)과 그 앞 붉은 깔개·사자 수호상·열주, 가운데 네 모서리의 큰 돌 화로(great stone brazier, 2칸)와 가운데 룬 비석 둘·별 원.
  * 남쪽 칸막이 뒤 불씨 사당(좌우 대칭: 켜진 큰 돌 화로 둘 = 화로에 옮길 불, 봉인석 둘, 별 그림 둘, 횃불 둘).
  * VQA r11: 빈 바닥 35% → 가운데·남쪽 벽감 바깥 두 줄(x1~2·x29~30)과 맨 아랫줄을 벽으로 메워 십자형 평면을 좁히고 벽감마다 깔개.
  * VQA r12: 돌 의자가 건초 더미·방석으로 읽혔다 → 나무 의자, 사당 아래 허공 줄을 뺐다(32×18).
@@ -194,9 +194,7 @@ const GATE_ROOM: RoomSpec = {
   zones: [
     {x0: 9, y0: 1, x1: 22, y1: 17, floor: "grey"},
   ],
-  daises: [
-    {id: "dais stone", x: 11, y: 7, w: 10, h: 6},
-  ],
+  // 밝은 돌 단(dais stone)은 뺐다 — 연한 바둑판 무늬가 투명 자리표시처럼 읽혔다(용의 전당·숲 사당 모자이크와 같은 지적).
   objects: [
     {id: "portcullis", x: 15, y: 1},
     {id: "wall torch", x: 13, y: 1},
@@ -319,9 +317,7 @@ const VAULT_ROOM: RoomSpec = {
   zones: [
     {x0: 1, y0: 1, x1: 30, y1: 10, floor: "grey", wall: "stone"},
   ],
-  daises: [
-    {id: "dais stone", x: 10, y: 3, w: 12, h: 5},
-  ],
+  // 밝은 돌 단(dais stone)은 뺐다 — 연한 바둑판 무늬가 투명 자리표시처럼 읽혔다(용의 전당·숲 사당 모자이크와 같은 지적).
   objects: [
     {id: "bookshelf 2w", x: 2, y: 4},
     {id: "relic cabinet", x: 4, y: 4},
@@ -441,7 +437,7 @@ const PORTCULLIS_OPEN = [7116, 7117, 7118, 7119];
 const GATE_STAIRS: readonly Cell[] = [{ x: 25, y: 3 }, { x: 26, y: 3 }, { x: 27, y: 3 }];   // 돌 계단 밟는 줄(천문대로)
 const OBS_STAIRS: readonly Cell[] = [{ x: 3, y: 19 }, { x: 4, y: 19 }, { x: 3, y: 20 }, { x: 4, y: 20 }];   // 별 봉인 돌뚜껑 2×2
 
-function kitTile(project: Project, name: string, dx = 0, dy = 0): number {
+export function kitTile(project: Project, name: string, dx = 0, dy = 0): number {
   const kit = project.tilesets[TILESET]?.structureKits?.find((k) => k.id === `hand-interior:${name}`);
   const row = kit?.rows?.[dy] as { upperTiles?: number[] } | undefined;
   const tile = row?.upperTiles?.[dx];
@@ -481,7 +477,7 @@ function touchDoor(id: string, at: Cell, to: { mapId: string } & Cell & { direct
   } as unknown as GameEvent;
 }
 
-function build(project: Project, exec: Exec, mapId: string, spec: RoomSpec): GameMap {
+export function build(project: Project, exec: Exec, mapId: string, spec: RoomSpec): GameMap {
   const before = project.maps[mapId];
   if (!before) throw new Error(`[fallen-star] 맵 ${mapId} 이 없다`);
   // 옛 지하 묘소는 버들항 칩셋이었다 — 같은 실내 칩셋으로 바꿔 다시 짓는다(도구는 같은 칩셋 맵만 replace 한다).
@@ -510,7 +506,7 @@ const LIGHTS: Record<string, { radius: number; dy: number; w?: number; flicker?:
   "paschal candle": { radius: 1.8, dy: 0, flicker: true },
   "candle": { radius: 1.4, dy: 0, flicker: true },
 };
-function lightRoom(project: Project, exec: Exec, mapId: string, spec: RoomSpec, ambient: number, color: string, extra: Array<Cell & { radius: number; color: string; intensity?: number }> = []): void {
+export function lightRoom(project: Project, exec: Exec, mapId: string, spec: RoomSpec, ambient: number, color: string, extra: Array<Cell & { radius: number; color: string; intensity?: number }> = []): void {
   const sources: Array<Record<string, unknown>> = [];
   spec.objects.forEach((o, i) => {
     const l = LIGHTS[o.id];
@@ -612,20 +608,10 @@ export function rebuildFallenRooms(project: Project, exec: Exec, ids: { hub: str
   build(project, exec, ids.gate, GATE_ROOM);
   exec(project, "stamp_object", { objectId: KIT("magic circle"), mapId: ids.gate, x: 15, y: 10 });   // 두 비석 앞 별 원
   build(project, exec, ids.vault, VAULT_ROOM);
-  exec(project, "stamp_object", { objectId: KIT("magic circle"), mapId: ids.vault, x: 26, y: 7 });   // 성소 동쪽 별 원
-  // VQA r16~r22: 단이 바닥 무늬로만 읽혔다 → 단 맨 아랫줄에 앞 턱(가장자리·앞면·그림자)과 가운데 두 계단을 덧찍는다.
-  const riser = (mapId: string, x0: number, x1: number, y: number, stepsX: number): void => {
-    for (let x = x0; x <= x1; x++) {
-      if (x === stepsX || x === stepsX + 1) continue;
-      const piece = x === x0 ? "dais riser stone L" : x === x1 ? "dais riser stone R" : "dais riser stone";
-      exec(project, "stamp_object", { objectId: KIT(piece), mapId, x, y });
-    }
-    exec(project, "stamp_object", { objectId: KIT("dais steps stone"), mapId, x: stepsX, y });
-  };
-  riser(ids.gate, 11, 20, 12, 15);
-  riser(ids.vault, 10, 21, 7, 15);
+  exec(project, "stamp_object", { objectId: KIT("star seal"), mapId: ids.vault, x: 26, y: 7 });   // 성소 동쪽 별 봉인(렌즈 빛이 열면 아래층 미궁으로)
+  // 단(dais stone)과 그 앞 턱·계단(dais riser/steps stone)은 뺐다 — 바둑판 단이 투명 자리표시처럼 읽혔다.
   lightRoom(project, exec, ids.observatory, OBS_ROOM, 0.45, "#1c1830");
-  // VQA r10: 0.55 는 꺼진 화로가 검은 기둥으로 묻혔다. VQA r16: 꺼진 화로가 빈 검은 항아리로 읽혔다 → 단 가운데 별 원의 옅은 빛이 장작을 비춘다.
+  // VQA r10: 0.55 는 꺼진 화로가 검은 기둥으로 묻혔다. VQA r16: 꺼진 화로가 빈 검은 항아리로 읽혔다 → 가운데 별 원의 옅은 빛이 장작을 비춘다.
   lightRoom(project, exec, ids.gate, GATE_ROOM, 0.72, "#141420", [{ x: 15, y: 9, radius: 4.2, color: "#c8d4ff", intensity: 0.5 }]);
   lightRoom(project, exec, ids.vault, VAULT_ROOM, 0.62, "#141c40", [{ x: 15, y: 5, radius: 4.5, color: "#a8d8f0" }, { x: 10, y: 15, radius: 2.5, color: "#88b3ca" }, { x: 27, y: 8, radius: 2.2, color: "#c8a8f0" }]);
 
@@ -676,7 +662,7 @@ export function rebuildFallenRooms(project: Project, exec: Exec, ids: { hub: str
       id: `ev_fs_vault_gate_bars${dx}`, name: "쇠창살 문", x, y: PORTCULLIS.y + 1, trigger: { kind: "action" }, commands: [],
       pages: [
         quietPage(`ev_fs_vault_gate_bars${dx}_shut`, "닫힘", [], "action", [
-          { kind: "text", body: "굵은 쇠창살이 바닥까지 내려와 있다. 손으로는 꿈쩍도 하지 않는다." } as unknown as Command,
+          { kind: "text", body: "굵은 쇠창살이 바닥까지 내려와 있다.\n손으로는 꿈쩍도 하지 않는다." } as unknown as Command,
         ], "same"),
         quietPage(`ev_fs_vault_gate_bars${dx}_open`, "열림", [solved], "action", []),
       ],

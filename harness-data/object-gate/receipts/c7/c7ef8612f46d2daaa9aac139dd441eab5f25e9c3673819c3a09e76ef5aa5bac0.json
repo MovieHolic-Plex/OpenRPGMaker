@@ -1,0 +1,412 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "c7ef8612f46d2daaa9aac139dd441eab5f25e9c3673819c3a09e76ef5aa5bac0",
+ "width": 96,
+ "height": 80,
+ "kind": "structure",
+ "name": "빵집",
+ "label": "building-kit/massing/bakery",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 8,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "5f62fef078ef7661"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 21,
+  "tileColorsP90": 32,
+  "darkV5": 55,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 21
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "main tiled roof (hipped, with hip slopes at left and right)",
+      "rows": "9-42",
+      "evidence": "c",
+      "front_edge_line_row": 43,
+      "eave_shadow_rows": "42-43"
+     },
+     {
+      "part": "brick oven dome on left",
+      "rows": "49-70",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "hanging bread sign",
+      "rows": "51-56",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 34,
+    "front_face_rows": 34,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The tiled roof fills rows 9-42, and its width grows from 33 to 74 px as the slope widens. It ends in a dark eave line at row 43 with shadow at rows 42-43, then a gray fascia at rows 44-45. Below that, a cream plaster front wall (rows 45-78) carries a door, a window and a shop window. The roof is a clear sloped plane above an eave line, so the building has a top surface as well as a front face. The oven dome on the left is a small side structure and does not change the reading."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The candidate's roof has scalloped tile rows with per-tile highlights in about 5 steps, from light orange to dark red-brown. The plaster wall is speckled, the brick oven is shaded dome by dome with a glowing fire, and the door, shutters and sign have wood grain. Outlines lean dark brown or red-brown next to the roof, wood and oven, and only 13% of dark edge pixels are neutral, so the line is not a near-black sticker outline. Measured facts: 17 visible tones per tile against 12 and 10 for the references, and 0% near-flat coverage, the same as the references. It matches the references on structure, texture and density. It is slightly simpler than the references in the wall (no timber framing or stone-by-stone work), but this is not a shallow piece.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 14463
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "main tiled roof (front slope plus hipped side slopes)",
+      "rows": "9-42",
+      "evidence": "c",
+      "front_edge_line_row": 43,
+      "eave_shadow_rows": "43-44"
+     },
+     {
+      "part": "brick oven dome on left",
+      "rows": "49-78",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "chimney pipe",
+      "rows": "41-52",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "hanging bread sign",
+      "rows": "48-55",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 34,
+    "front_face_rows": 34,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is a house with a large tiled roof over rows 9-42. The roof is a sloped plane with tile rows, and the hipped side slope on the right recedes. Its width grows from 33 px at row 9 to 74 px at row 26, then 77 px at rows 41-42. A dark eave line at row 43 and a grey fascia at rows 44-45 mark its front edge. Below it is a plaster front wall from rows 45 to 78 with a door, window and shop sign. This gives a roof top surface of about 34 rows over a front face of about 34 rows. The oven dome at the lower left is a rounded attached volume and does not undermine the main building."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The candidate bakery has a scalloped tile roof with per-tile highlights in about 5 steps, from light orange to deep red-brown. The plaster wall is speckled, the brick oven dome has several shaded tones, and the fire glow, sign and window details add variety. Outlines lean red-brown beside the roof and brown beside wood, and are not neutral black; only 13% of dark edge pixels are near-neutral, close to the references' 7% and 9%. Measured facts match the picture: 17 visible tones per tile against 12 and 10 in the references, and 0% near-flat coverage like both references. Nothing reads as a flat fill or a sticker. It would sit next to the references without looking thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15826
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "main tiled hip roof",
+      "rows": "9-42",
+      "evidence": "c",
+      "front_edge_line_row": 43,
+      "eave_shadow_rows": "43-44"
+     },
+     {
+      "part": "brick oven dome (left annex)",
+      "rows": "49-70",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "chimney",
+      "rows": "41-52",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "hanging bread sign",
+      "rows": "49-56",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 34,
+    "front_face_rows": 32,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is a house with a large tiled roof plane over rows 9-42. The roof widens from 33 to 74 px and has tile rows plus hip ridge lines. A dark brown front-edge line sits at row 43, followed by eave shadow at rows 43-44 and a gray fascia strip at rows 44-46. Below it is a plaster front face of about 32 rows (rows 46-78) with a door, window and shutters. The roof is clearly a sloped top surface above the eave line, as in the cabinet reference for a right drawing. The oven dome and chimney are small annexes and the sign is decor, so none of them changes the reading."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The candidate's roof has per-tile scallops with highlights and darker rows in about 5 steps, which is comparable to the references. The plaster wall is speckled, the brick oven dome has a stone-by-stone ramp, and the fire glow, shutters, sign and bread in the window add detail. Measured facts: 17 visible tones per tile against 12 and 10 for the references, 0% near-flat coverage like the references, and only 13% neutral dark edge pixels, so the outlines lean brown/red-brown and follow the adjacent material rather than forming a black sticker line. Roof shading is a little less deep than the h101 reference, but nothing is flat or sticker-like. A careful artist would accept it next to the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 14737
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "hipped tile roof",
+      "rows": "9-42",
+      "evidence": "c",
+      "front_edge_line_row": 43,
+      "eave_shadow_rows": "43-45"
+     },
+     {
+      "part": "front wall with door and window",
+      "rows": "46-79",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dome oven at left",
+      "rows": "49-79",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "hanging bread sign",
+      "rows": "48-56",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 34,
+    "front_face_rows": 34,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is a house. Its tiled roof plane spans rows 9-42 and widens from 33 to 94 px. A dark edge line at row 43 and a grey eave band at rows 44-45 mark its front edge, and the roof carries the strongest top-surface evidence (c). Below the eave the cream front wall runs rows 46-79 (about 34 rows) with a door, window and sign. The dome oven on the left is rounded brick with no flat top, but it is a small secondary part."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The candidate has a scalloped tile roof with per-tile highlights and about 5 lightness steps. The plaster wall is speckled, the brick oven dome is shaded in several tones, and the window, door and sign details are clearly drawn. Edges lean dark brown or red-brown, and only 13% of dark edge pixels are near-neutral, so this is not a black sticker outline. Measured facts: 17 visible tones per tile against 12 and 10 for the references, and 0% near-flat coverage, the same as the references. Density is at or above the references, with no flat fills. The roof ramp is slightly less deep than h101's, but it is acceptable beside the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15238
+  }
+ ],
+ "decidedAt": "2026-10-25T08:37:34.721Z",
+ "cells": {
+  "16": [
+   "12f1bbd203e28e2e",
+   "1b71f8cb1b420b91",
+   "2291db83dc7e0c23",
+   "2d7dace8f204e944",
+   "305fdf275848eb2d",
+   "42bfc35631cf1ae9",
+   "67db8e8da3274b6d",
+   "813c24c09790de8e",
+   "82e83943288eb9f6",
+   "8b1669d89e2ee2df",
+   "93acbc59ccc1dad5",
+   "94230fa73fa13bb3",
+   "aa9679bda523d9ff",
+   "aca231b8565b5e1a",
+   "b8e4cd118b60581a",
+   "b938ae26e3311583",
+   "bd9fa16fd41657fa",
+   "d441fc5e74b5dd4a",
+   "d5708acef3e402a8",
+   "d69c9d31016d3437",
+   "d9ea9334c6e0a708",
+   "de0df72c30c9b247",
+   "e2043d6dfdbfe1a2",
+   "f25f0a63ebd4a1ca",
+   "f9025c5b10c05c20",
+   "fac3886d8adf539a"
+  ],
+  "24": [
+   "115feff45d3e3e8b",
+   "1900444f4c6e7de1",
+   "2a0d41222972cbbc",
+   "384af87bea3d85c0",
+   "3b40eb2513bfd7c1",
+   "5140c0a098344b9f",
+   "550fdc7649f3cf1f",
+   "59af79fd3f2ef1eb",
+   "65b55ffdc630e3f9",
+   "6f701d6e49033fc6",
+   "7bf0082284a4373a",
+   "805bb800b4f7a4a3",
+   "81a8c2153a28cc9a",
+   "81caefd9e49bfef8",
+   "83d9f6c10e2b6512",
+   "8d6efe183591f821",
+   "b59a7ca15d40ea21",
+   "c372b6a07d488617",
+   "c6fd67d3dcf4c8d7",
+   "c87832c9313471c9",
+   "ce8c4a1368924c28",
+   "d36dcde8be21f0d0",
+   "d9a3ce466050f068",
+   "ddb03360295b6d76",
+   "efee5945879fd1d2",
+   "f0c2945aec8c73e7",
+   "f5db5955970df61e"
+  ],
+  "32": [
+   "027520fc2116472f",
+   "124fdef9db38f5b4",
+   "1806c8c2afac94b4",
+   "1ef1007b0a654ec2",
+   "3c302e8e8a980f70",
+   "671e7631869c3ec6",
+   "67c5ea7b3fffdf89",
+   "6924c5cd9a0bb256",
+   "6cfdae7aca70d4f1",
+   "879363b578e774e5",
+   "8bdba726266a24fe",
+   "90dc2230b31546d0",
+   "a158ba9499bc7b1b",
+   "b2a7272eb012f6ab",
+   "c809181275784f4e",
+   "da63e88ead96ca6a",
+   "e6c6ee773b611d34"
+  ],
+  "48": [
+   "18df9c52d071ef11",
+   "20727d7397b9987b",
+   "21232a4ea7d900ea",
+   "24afd61f9061f8c4",
+   "2df41dca2fc8a5db",
+   "72cff067e32999ce",
+   "9e2ee429da4ae81a",
+   "f4b54850766d315d"
+  ]
+ }
+}

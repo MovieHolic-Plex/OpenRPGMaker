@@ -11,6 +11,8 @@ export interface BuildingCatalog{count:number;priority:unknown[];passability:unk
 export interface BuildingBundleConfig{
  tilesetId:string;texture:string;name:string;label:string;catalog:BuildingCatalog;references:unknown;
  hostTilesetId:string;hostTexture:string;ids:{house:string;shadow:string;foundation:string;docs:string};tags:string[];
+ /** 허용 출처 문구(없으면 「사람이 허용」). building-kit massing 은 사용자 위임 + 독립 검수 둘 + object-gate. */
+ approval?:{tag:string;text:string};
 }
 
 export function defineBuildingBundle(cfg:BuildingBundleConfig){
@@ -22,8 +24,8 @@ export function defineBuildingBundle(cfg:BuildingBundleConfig){
  function createTileset():TilesetDef{
   const structureKits:StructureKitDef[]=catalog.buildings.map(b=>({id:b.id,name:b.name,kind:'section',learnedFrom:'pack-preset',
    width:b.width,height:b.height,tileSize:16,rows:b.rows.map(r=>({tiles:r.map(()=>-1),upperTiles:[...r]})),parts:structuredClone(b.parts) as StructureKitDef['parts'],
-   ai:{role:'building',repeatability:'fixed',layerHome:'upper',tags:[...cfg.tags,'사람이 허용',b.material==='log'?'통나무':'목골·돌','문 1개'],
-    description:`${b.name}. 사람이 검수 화면에서 허용한 그림(${b.source}). 집당 한 입구, 벽은 막히고 지붕 처마는 걸을 수 있다.`,
+   ai:{role:'building',repeatability:'fixed',layerHome:'upper',tags:[...cfg.tags,cfg.approval?.tag??'사람이 허용',b.material==='log'?'통나무':'목골·돌','문 1개'],
+    description:`${b.name}. ${cfg.approval?.text??'사람이 검수 화면에서 허용한 그림'}(${b.source}). 집당 한 입구, 벽은 막히고 지붕 처마는 걸을 수 있다.`,
     placementRules:`전체 ${b.width}×${b.height}와 문 앞 접근칸(문 아래 한 칸)을 예약한다. 같은 키트를 연속으로 놓지 말고 크기·지붕을 섞는다. ${ids.shadow}${kidOf(b.id)}를 2층, 본체를 3층, ${ids.foundation}${kidOf(b.id)}를 4층에 같은 원점으로 함께 놓는다.`}}));
   for(const b of catalog.buildings)for(const [kind,rows] of [['shadow',b.shadowRows],['foundation',b.foundationRows]] as const){
    structureKits.push({id:`${kind==='shadow'?ids.shadow:ids.foundation}${kidOf(b.id)}`,name:`${b.name} · ${kind==='shadow'?'바닥 그림자':'기초'}`,kind:'section',learnedFrom:'pack-preset',

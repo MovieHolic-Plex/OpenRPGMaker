@@ -11,13 +11,76 @@
 // 않아 영향이 0 이다.
 
 import { el } from "@/util/dom";
+import { getPlayerPreferences, playerAlwaysRun, updatePlayerPreferences } from "@/player/playerPreferences";
+import { DEFAULT_TOUCH_CONTROLS, type ResolvedTouchControls } from "@/project/touchControls";
 
 export interface TouchPadHandle {
   readonly cleanup: () => void;
 }
 
 const DIRECTION_KEYS = ["ArrowRight", "ArrowLeft", "ArrowDown", "ArrowUp"] as const;
-const DIRECTION_THRESHOLD = 0.35;
+/** 달리기 키(데스크톱 Shift 와 같은 길 — input.ts 의 dashKey). */
+const RUN_KEY = "Shift";
+
+// 8방향 구역(화면 좌표: y 아래가 +). 2026-10-24 모바일 조작감: 예전에는 축마다 0.35 문턱이라 대각선이 구역의 54%(20.5°~69.5°)를
+// 차지했다 — 「오른쪽」으로 밀었는데 엄지가 25°만 기울어도 대각선으로 걸어 칸 게임에서 지그재그·벽 미끄럼이 났다.
+// 이제 상하좌우가 넓고(각 56°) 대각선은 좁다(각 34°). 한 번 고른 구역은 경계를 8° 넘어야 바뀐다(떨림 방지).
+const STICK_SECTORS: readonly { readonly center: number; readonly keys: readonly string[] }[] = [
+  { center: 0, keys: ["ArrowRight"] },
+  { center: 45, keys: ["ArrowRight", "ArrowDown"] },
+  { center: 90, keys: ["ArrowDown"] },
+  { center: 135, keys: ["ArrowLeft", "ArrowDown"] },
+  { center: 180, keys: ["ArrowLeft"] },
+  { center: -135, keys: ["ArrowLeft", "ArrowUp"] },
+  { center: -90, keys: ["ArrowUp"] },
+  { center: -45, keys: ["ArrowRight", "ArrowUp"] },
+];
+const DIAGONAL_HALF_WIDTH = 17;
+const CARDINAL_HALF_WIDTH = 28;
+const SECTOR_HYSTERESIS = 8;
+/** 중립 → 방향은 이 거리(px)를 넘어야, 방향 → 중립은 HOLD 아래로 내려와야. */
+export const STICK_DEADZONE = 12;
+const STICK_DEADZONE_HOLD = 8;
+
+/**
+ * 조이스틱을 판 반지름의 70% 넘게 밀면 달리고, 60% 밑으로 돌아오면 다시 걷는다(2026-10-25 — 따로 달리기 단추 대신).
+ * 크로노 트리거 모바일(판 끝까지 밀면 달리기)·아날로그 스틱 관례와 같다. 「항상 달리기」 옵션이 켜져 있으면 늘 달린다.
+ */
+export const STICK_RUN_ENTER = 0.7;
+const STICK_RUN_EXIT = 0.6;
+
+/** 이 밀림(중심에서 px)이면 달리는가. radius 는 판 반지름(px). wasRunning 으로 경계 떨림을 막는다. */
+export function stickRuns(distance: number, radius: number, wasRunning: boolean): boolean {
+  if (!(radius > 0)) return false;
+  return distance >= radius * (wasRunning ? STICK_RUN_EXIT : STICK_RUN_ENTER);
+}
+
+function angleGap(a: number, b: number): number {
+  const d = Math.abs(a - b) % 360;
+  return d > 180 ? 360 - d : d;
+}
+
+/** 손가락 위치(중심 기준 dx,dy) → 8방향 구역 번호(STICK_SECTORS 색인) 또는 null(중립). previous 는 직전 구역(떨림 방지). */
+export function stickSector(dx: number, dy: number, previous: number | null): number | null {
+  const distance = Math.hypot(dx, dy);
+  if (!Number.isFinite(distance)) return null;
+  if (distance <= (previous === null ? STICK_DEADZONE : STICK_DEADZONE_HOLD)) return null;
+  const angle = (Math.atan2(dy, dx) * 180) / Math.PI;
+  const halfWidth = (index: number): number => (index % 2 === 1 ? DIAGONAL_HALF_WIDTH : CARDINAL_HALF_WIDTH);
+  if (previous !== null && angleGap(angle, STICK_SECTORS[previous]!.center) <= halfWidth(previous) + SECTOR_HYSTERESIS) return previous;
+  for (let index = 1; index < STICK_SECTORS.length; index += 2) {
+    if (angleGap(angle, STICK_SECTORS[index]!.center) <= DIAGONAL_HALF_WIDTH) return index;
+  }
+  let best = 0;
+  for (let index = 0; index < STICK_SECTORS.length; index += 2) {
+    if (angleGap(angle, STICK_SECTORS[index]!.center) < angleGap(angle, STICK_SECTORS[best]!.center)) best = index;
+  }
+  return best;
+}
+
+export function stickSectorKeys(sector: number | null): readonly string[] {
+  return sector === null ? [] : STICK_SECTORS[sector]!.keys;
+}
 
 function safeKnobTravel(baseElement: HTMLElement, knobElement: HTMLElement): number {
   const baseDiameter = Math.min(baseElement.offsetWidth, baseElement.offsetHeight);
@@ -80,12 +143,27 @@ export function isTouchDevice(): boolean {
   return "ontouchstart" in window || touchPoints > 0;
 }
 
-function menuLabel(): string {
+function localized(ko: string, ja: string, zh: string, en: string): string {
   const lang = (typeof navigator !== "undefined" ? navigator.language : "en").toLowerCase();
-  if (lang.startsWith("ko")) return "메뉴";
-  if (lang.startsWith("ja")) return "メニュー";
-  if (lang.startsWith("zh")) return "菜单";
-  return "Menu";
+  if (lang.startsWith("ko")) return ko;
+  if (lang.startsWith("ja")) return ja;
+  if (lang.startsWith("zh")) return zh;
+  return en;
+}
+
+function menuLabel(): string {
+  return localized("메뉴", "メニュー", "菜单", "Menu");
+}
+
+function runLabel(): string {
+  return localized("달리기", "ダッシュ", "奔跑", "Run");
+}
+
+/** 짧은 진동(지원 기기만). iOS 사파리는 navigator.vibrate 가 없다 — 조용히 넘어간다. */
+function buzz(ms: number): void {
+  try {
+    if (typeof navigator !== "undefined" && typeof navigator.vibrate === "function") navigator.vibrate(ms);
+  } catch { /* 권한·정책 */ }
 }
 
 /** 키보드와 같은 곳(초점 요소)에 보낸다 — 상점처럼 자기 상자에 keydown 을 거는 화면도 패드를 받는다. 거품은 document 까지 올라간다. */
@@ -107,6 +185,8 @@ export interface TouchPadOptions {
   /** `gba`: 480×320 스테이지에 맞춘 작은 패드(D15). */
   readonly skin?: "gba" | "touch";
   /** `touch`: 일반 게임용 — gba 와 같은 뷰포트 배치, 손가락 크기. */
+  /** 조이스틱 방식·진동·달리기 단추. 매 누름마다 다시 읽는다(옵션을 바꾸면 바로 듣는다). 없으면 기본값. */
+  readonly settings?: () => ResolvedTouchControls;
 }
 
 export function createTouchPad(host: HTMLElement, options?: TouchPadOptions): TouchPadHandle {
@@ -116,6 +196,8 @@ export function createTouchPad(host: HTMLElement, options?: TouchPadOptions): To
 
   const controller = new AbortController();
   const listenerOptions = { signal: controller.signal };
+  const settings = (): ResolvedTouchControls => options?.settings?.() ?? DEFAULT_TOUCH_CONTROLS;
+  const haptic = (ms: number): void => { if (settings().haptics) buzz(ms); };
   const heldKeys = new Set<string>();
   const setKeyHeld = (key: string, held: boolean): void => {
     if (held && !heldKeys.has(key)) {
@@ -131,6 +213,7 @@ export function createTouchPad(host: HTMLElement, options?: TouchPadOptions): To
   };
   const releaseDirectionKeys = (): void => {
     for (const key of DIRECTION_KEYS) setKeyHeld(key, false);
+    setKeyHeld(RUN_KEY, false);
   };
 
   // ── 조이스틱(왼쪽) ──
@@ -145,9 +228,11 @@ export function createTouchPad(host: HTMLElement, options?: TouchPadOptions): To
     children: [base],
   });
 
-  const DEADZONE = 12; // px: 중앙 근처는 중립(방향 없음)
   let dpadPointerId: number | null = null;
   let center: { x: number; y: number } | null = null;
+  let sector: number | null = null;
+  /** fixed 방식: 판은 쉬는 자리에 그대로 있고 손가락이 멀리 가도 따라오지 않는다. */
+  let anchored = false;
 
   const applyPointer = (clientX: number, clientY: number): void => {
     let cx: number;
@@ -166,22 +251,31 @@ export function createTouchPad(host: HTMLElement, options?: TouchPadOptions): To
     const distance = Number.isFinite(measuredDistance) ? measuredDistance : 0;
     const unitX = distance > 0 ? dx / distance : 0;
     const unitY = distance > 0 ? dy / distance : 0;
-    const outsideDeadzone = distance > DEADZONE;
-    // 축별 데드존 판정 → 상/하/좌/우 조합으로 8방향.
-    const right = outsideDeadzone && unitX > DIRECTION_THRESHOLD;
-    const left = outsideDeadzone && unitX < -DIRECTION_THRESHOLD;
-    const down = outsideDeadzone && unitY > DIRECTION_THRESHOLD;
-    const up = outsideDeadzone && unitY < -DIRECTION_THRESHOLD;
-    setKeyHeld("ArrowRight", right);
-    setKeyHeld("ArrowLeft", left);
-    setKeyHeld("ArrowDown", down);
-    setKeyHeld("ArrowUp", up);
+    const next = stickSector(dx, dy, sector);
+    if (next !== sector) {
+      // 방향이 처음 잡히거나 바뀔 때 짧게 떤다 — 눈을 화면에 둔 채 엄지로 방향을 느낀다.
+      if (next !== null) haptic(sector === null ? 8 : 5);
+      sector = next;
+    }
+    const held = stickSectorKeys(sector);
+    for (const key of DIRECTION_KEYS) if (!held.includes(key)) setKeyHeld(key, false);
+    for (const key of held) setKeyHeld(key, true);
+    // 끝까지 밀면 달린다(Shift 를 누른 것과 같다). 「항상 달리기」면 Shift 가 걷기로 뒤집으니 보내지 않는다.
+    const radius = Math.min(base.offsetWidth, base.offsetHeight) / 2;
+    const runs = sector !== null && !playerAlwaysRun() && stickRuns(distance, radius, heldKeys.has(RUN_KEY));
+    if (runs !== heldKeys.has(RUN_KEY)) {
+      if (runs) haptic(6);
+      setKeyHeld(RUN_KEY, runs);
+    }
+    if (runs) zone.dataset.run = "true";
+    else delete zone.dataset.run;
     // knob 시각 이동(반경 제한).
     const maxTravel = safeKnobTravel(base, knob);
-    const visualTravel = Math.min(distance, maxTravel);
+    // 손잡이는 달리기 고리(반지름 70%)를 넘어갈 만큼 움직인다 — 손잡이가 고리 밖에 있으면 달리는 중이다.
+    const visualTravel = Math.min(distance, Math.max(maxTravel, (Math.min(base.offsetWidth, base.offsetHeight) / 2) * 0.78));
     knob.style.transform = `translate(${unitX * visualTravel}px, ${unitY * visualTravel}px)`;
     // 손가락이 반경 밖으로 멀리 끌면 조이스틱 중심이 따라온다(엄지가 미끄러져도 방향이 살아 있다).
-    if (center && maxTravel > 0 && distance > maxTravel * 1.6) {
+    if (center && !anchored && maxTravel > 0 && distance > maxTravel * 1.6) {
       const pull = distance - maxTravel * 1.6;
       center = { x: center.x + unitX * pull, y: center.y + unitY * pull };
       placeBase(center.x, center.y);
@@ -208,7 +302,10 @@ export function createTouchPad(host: HTMLElement, options?: TouchPadOptions): To
     dpad.style.removeProperty("top");
     delete dpad.dataset.floating;
     delete zone.dataset.active;
+    delete zone.dataset.run;
     center = null;
+    sector = null;
+    anchored = false;
   };
 
   const releaseDpadPointer = (): void => {
@@ -227,11 +324,20 @@ export function createTouchPad(host: HTMLElement, options?: TouchPadOptions): To
     dpadPointerId = event.pointerId;
     try { zone.setPointerCapture(event.pointerId); } catch { /* 합성 이벤트 */ }
     zone.dataset.active = "true";
-    // 조이스틱 위를 눌렀으면 그 자리 그대로, 영역의 다른 곳이면 조이스틱이 엄지 밑으로 온다.
+    // 방식(system.touchControls.stick / 플레이어 옵션):
+    //  auto — 판 위나 판 곁(반지름 1.7배 안)을 누르면 판 중심 기준으로 곧장 방향이 나간다. 판에서 먼 곳이면 엄지 밑으로 판이 온다.
+    //         (예전에는 판 밖을 누르면 늘 그 자리가 중심이 돼 「오른쪽을 눌렀는데 안 움직인다」 — 손가락을 다시 밀어야 했다.)
+    //  fixed — 영역 어디를 눌러도 판 중심 기준. 판은 움직이지 않는다.
+    //  floating — 누른 자리가 늘 중심.
+    const mode = settings().stick;
     const rect = base.getBoundingClientRect();
-    const onBase = Math.hypot(event.clientX - (rect.left + rect.width / 2), event.clientY - (rect.top + rect.height / 2)) <= rect.width / 2;
-    if (onBase || !zone.isConnected || zone.getBoundingClientRect().width <= 0) {
-      center = { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 };
+    const baseCenter = { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 };
+    const fromBase = Math.hypot(event.clientX - baseCenter.x, event.clientY - baseCenter.y);
+    const nearBase = fromBase <= (rect.width / 2) * 1.7;
+    const canFloat = zone.isConnected && zone.getBoundingClientRect().width > 0;
+    if (!canFloat || mode === "fixed" || (mode === "auto" && nearBase)) {
+      center = baseCenter;
+      anchored = mode === "fixed";
     } else {
       center = { x: event.clientX, y: event.clientY };
       placeBase(event.clientX, event.clientY);
@@ -285,6 +391,7 @@ export function createTouchPad(host: HTMLElement, options?: TouchPadOptions): To
       pointerId = event.pointerId;
       try { btn.setPointerCapture(event.pointerId); } catch { /* 합성 이벤트 */ }
       btn.classList.add("active");
+      haptic(10);
       setKeyHeld(key, true);
     };
     const release = (event: PointerEvent): void => {
@@ -320,10 +427,33 @@ export function createTouchPad(host: HTMLElement, options?: TouchPadOptions): To
   const menuButton = makeActionButton(menuLabel(), "Escape", "touch-menu");
   menuButton.classList.add("touch-menu-btn");
 
+  // 달리기 단추 — 누를 때마다 걷기/달리기(플레이어 옵션 「항상 달리기」와 같은 값). 키보드의 Shift 는 이 값을 뒤집는다.
+  const runButton = el("button", {
+    class: "touch-run-btn",
+    text: runLabel(),
+    attrs: { type: "button", "aria-label": runLabel() },
+    dataset: { testid: "touch-run" },
+  });
+  const syncRun = (): void => {
+    const on = getPlayerPreferences().alwaysRun === true;
+    runButton.setAttribute("aria-pressed", on ? "true" : "false");
+    runButton.classList.toggle("on", on);
+  };
+  syncRun();
+  window.addEventListener("oprn:player-preferences", syncRun, listenerOptions);
+  runButton.addEventListener("pointerdown", (event) => {
+    event.preventDefault();
+    updatePlayerPreferences({ alwaysRun: getPlayerPreferences().alwaysRun !== true });
+    haptic(10);
+    syncRun();
+  }, listenerOptions);
+  const runVisible = settings().runButton;
+  if (!runVisible) runButton.hidden = true;
+
   const pad = el("div", {
     class: "touch-pad",
     dataset: { testid: "touch-pad", playInputOwner: "touch-controls", ...(options?.skin ? { skin: options.skin } : {}) },
-    children: [zone, actions, menuButton],
+    children: [zone, actions, menuButton, runButton],
   });
   host.append(pad);
 

@@ -43,13 +43,56 @@ export function bustId(who: Who, expr: Expr): string {
 
 const CLEAR_FACE: Command = { kind: "changeFace", resourceId: "", position: "left", flipHorizontally: false };
 
-/** 인물 대사 — 흉상(표정)을 바꾸고 이름과 함께 말한다. */
+/**
+ * 인물 대사 — 흉상(표정)을 바꾸고 이름과 함께 말한다. 흉상 좌우는 맵 위 자리로 정한다(bustSide "stage": 듣는 사람보다 왼쪽에 선
+ * 화자는 왼쪽 흉상). 듣는 흉상은 듣는 인물이 화면에 있으면 늘 반대편에 — 기본 청자(주인공)면 서하 흉상(VQA r22: 좌우가 서 있는
+ * 자리와 반대, 듣는 흉상이 장면마다 들쭉날쭉). NPC 끼리(sayTo)의 듣는 흉상은 fillListenerBusts 가 그 이벤트의 인물로 채운다.
+ */
 export function say(who: Who, expr: Expr, ...lines: string[]): Command[] {
   const c = CAST[who];
+  const hero = who === "seoha" || who === "seohaYoung";
   return [
     { kind: "changeFace", resourceId: bustId(who, expr), presentation: "bust", position: c.side, flipHorizontally: false },
-    ...lines.map((body): Command => ({ kind: "text", speaker: c.name, body })),
+    ...lines.map((body): Command => ({ kind: "text", speaker: c.name, body, position: "bottom", bustSide: "stage", ...(hero ? {} : { listenerBust: bustId("seoha", "base") }) } as Command)),
   ];
+}
+
+/** 페이지 그림의 인물 — fillListenerBusts 가 이벤트 id → 인물을 찾는다(페이지 객체에 필드를 더하지 않는다). */
+const PAGE_WHO = new WeakMap<object, Who>();
+
+/** sayTo 로 NPC 끼리 말하는 줄의 듣는 흉상을 듣는 이벤트의 인물 흉상으로 채운다(데모를 다 지은 뒤 한 번). */
+export function fillListenerBusts(maps: Iterable<{ events?: GameEvent[] }>): void {
+  const visit = (cmds: unknown, whoOf: Map<string, Who>): void => {
+    if (!Array.isArray(cmds)) return;
+    for (const c of cmds as Record<string, unknown>[]) {
+      if (!c || typeof c !== "object") continue;
+      if (c.kind === "text" && c.bustSide === "stage" && typeof c.addressee === "string" && c.addressee !== "@player") {
+        const w = whoOf.get(c.addressee);
+        if (w) c.listenerBust = bustId(w, "base"); else delete c.listenerBust;
+      }
+      for (const v of Object.values(c)) {
+        if (Array.isArray(v)) visit(v, whoOf);
+        else if (v && typeof v === "object") for (const vv of Object.values(v as Record<string, unknown>)) if (Array.isArray(vv)) visit(vv, whoOf);
+      }
+    }
+  };
+  for (const m of maps) {
+    const whoOf = new Map<string, Who>();
+    for (const e of m.events ?? []) for (const pg of (e as { pages?: object[] }).pages ?? []) { const w = PAGE_WHO.get(pg); if (w) { whoOf.set(e.id, w); break; } }
+    for (const e of m.events ?? []) for (const pg of (e as { pages?: { commands?: unknown }[] }).pages ?? []) visit(pg.commands, whoOf);
+  }
+}
+
+/** 자리를 바꿔 말한다 — NPC 끼리 마주 말하는 장면에서 한쪽을 왼쪽에 앉혀 두 흉상이 서로를 보게 한다(VQA r8: 둘 다 오른쪽).
+ *  한 장면 안에서는 그 인물의 모든 대사에 같은 자리를 쓴다. */
+export function sayAt(who: Who, side: "left" | "right", expr: Expr, ...lines: string[]): Command[] {
+  const [face, ...rest] = say(who, expr, ...lines);
+  return [{ ...(face as Extract<Command, { kind: "changeFace" }>), position: side } as Command, ...rest];
+}
+
+/** 듣는 사람 흉상만 바꾼다 — 말하는 쪽이 다른 상대에게 말을 돌릴 때 반대편에 앞 상대(예: 점원)가 남아 있지 않게(VQA r9). */
+export function listenTo(who: Who, expr: Expr = "base", side: "left" | "right" = CAST[who].side): Command {
+  return { kind: "changeFace", resourceId: bustId(who, expr), presentation: "bust", position: side, flipHorizontally: false };
 }
 
 /** 듣는 사람을 못박은 대사 — 기본(NPC → 주인공)이 아닌 상대에게 말할 때. to: 이벤트 id 또는 "@player". */
@@ -67,21 +110,30 @@ export function callTo(who: Who, expr: Expr, to: string, ...lines: string[]): Co
   return sayTo(who, expr, to, ...lines).map((c) => (c.kind === "text" ? { ...c, calling: true } : c));
 }
 
-/** 서하의 속마음 — 얼굴 없이 괄호 대신 흐린 독백으로. */
-export function think(...lines: string[]): Command[] {
-  return [CLEAR_FACE, ...lines.map((body): Command => ({ kind: "text", body }))];
+/** 화면 가득 그림(CG·회상 그림) 위의 대사 — 이름만, 흉상 없이. 흉상이 그림 속 두 사람을 덮었다(첫사랑 VQA r23). */
+export function sayOver(who: Who, ...lines: string[]): Command[] {
+  return [CLEAR_FACE, ...lines.map((body): Command => ({ kind: "text", speaker: CAST[who].name, body, position: "bottom" }))];
 }
 
-/** 장면 자막(시간·장소) — 위. 가운데 자막은 인물을 가린다(VQA 5차). 이름·얼굴 없는 위 상자는 내용 높이만 쓴다(playSurface.css, VQA 8차).
- *  한 번에 표시하는 맥락(system 등)은 쓰지 않는다 — 앞 대사를 넘기던 Enter 가 나타나는 순간의 자막을 바로 닫아 버린다. */
+/** 서하의 속마음 — 얼굴 없이 괄호 대신 흐린 독백으로. */
+export function think(...lines: string[]): Command[] {
+  return [CLEAR_FACE, ...lines.map((body): Command => ({ kind: "text", body, position: "bottom" }))];
+}
+
+/** 장면 자막(시간·장소) — 대사와 같은 아래 자리, 모양만 다르다(테두리 없는 짙은 띠·가운데 기울임, 내레이션 맥락).
+ *  창이 위아래로 뛰지 않게 모든 글은 아래다(사용자 지적 r2). 한 번에 표시하는 맥락(system 등)은 쓰지 않는다 —
+ *  앞 대사를 넘기던 Enter 가 나타나는 순간의 자막을 바로 닫아 버린다. narration 은 타자기로 나온다. */
 export function caption(...lines: string[]): Command[] {
-  return [CLEAR_FACE, ...lines.map((body): Command => ({ kind: "text", body, position: "top" }))];
+  return [CLEAR_FACE, ...lines.map((body): Command => ({ kind: "text", body, position: "bottom", context: "narration" }))];
 }
 
 /** 이름 없는 목소리(방송·안내). */
 export function voice(speaker: string, ...lines: string[]): Command[] {
-  return [CLEAR_FACE, ...lines.map((body): Command => ({ kind: "text", speaker, body }))];
+  return [CLEAR_FACE, ...lines.map((body): Command => ({ kind: "text", speaker, body, position: "bottom" }))];
 }
+
+/** 창 자리 고정 — 선택지 창도 세션 설정을 따르므로, 주인공이 화면 아래에 있어도 위로 뛰지 않게 끈다. */
+export const textAtBottom = (): Command => ({ kind: "displayTextSettings", format: "normal", position: "bottom", preventObscuringPlayer: false, allowEventMovementDuringWait: false } as Command);
 
 export function m2(title: string, fields: Record<string, unknown> = {}): Command {
   const entry = M2_COMMAND_CATALOG.find((c) => c.title === title);
@@ -100,6 +152,9 @@ export const tint = (value: string, ms = 0): Command => m2("Tint Screen", { colo
 /** 회상 색 — 화면 색 필터(세피아·채도 낮춤). 색 덮개가 아니라 아래 그림의 색을 바꾼다. */
 export const memoryTint = (ms = 0): Command => m2("Tint Screen", { color: "neutral", value: "", sepia: 70, saturation: 70, durationMs: ms });
 export const clearTint = (ms = 0): Command => m2("Tint Screen", { color: "neutral", value: "", durationMs: ms });
+/** 검게 덮인(fadeOut) 화면에서 회상 세피아만 걷는다. 「Tint Screen」은 페이드와 같은 색조 칸을 쓰므로 neutral 로 걷으면
+ *  검은 덮개까지 걷혀 옮기기 전 한 장면이 원색으로 드러난다(VQA r6: 10년 전 복도에 어른 서하). 검정을 그대로 다시 칠한다. */
+export const clearTintKeepBlack = (): Command => m2("Tint Screen", { color: "neutral", value: "0,0,0,1", durationMs: 0 });
 export const shake = (ms = 300): Command => m2("Shake Screen", { value: 1, intensity: "1", durationMs: ms, direction: "horizontal" });
 export const flash = (color = "white", ms = 300): Command => m2("Flash Screen", { color, durationMs: ms, value: "flash" });
 /** 회상 그림 겹침 — 10년 전 교복의 두 사람을 화면 가득 반투명으로 띄웠다 거둔다(고백 정점). 그림은 앱에 든 연애 타이틀 그림. */
@@ -120,8 +175,10 @@ export const memoryPictureErase = (): Command => ({ kind: "erasePicture", pictur
 export const hidePlayer = (): Command => m2("Sprite Look", { target: "player", opacity: "0" });
 export const showPlayer = (): Command => m2("Sprite Look", { target: "player", reset: true });
 
-export function emote(target: "player" | string, kind: EmoteKind, ms = 1100): Command[] {
-  return [{ kind: "showEmote", target: target === "player" ? "player" : { eventId: target }, emote: kind, durationMs: ms }, wait(Math.min(ms, 900))];
+/** 머리 위 말풍선 아이콘(! ♥ … 땀) — 이 데모는 쓰지 않는다(사용자 r2: 「말풍선을 전부 대화창으로」). 감정은 대사·표정 흉상이 맡는다.
+ *  장면 글에 남은 호출은 반 박자 쉼으로만 남긴다(대사 사이 호흡). 탐침이 showEmote 0 을 검사한다. */
+export function emote(_target: "player" | string, _kind: EmoteKind, ms = 1100): Command[] {
+  return [wait(Math.min(ms, 400))];
 }
 
 /** 이벤트(또는 주인공 "@player")를 한 칸씩 걷게 한다. */
@@ -169,6 +226,11 @@ export function face(eventId: string, dir: Dir): Command {
   return { kind: "moveEvent", eventId, route: { moves: [{ kind: "turn", dir }], repeat: false, wait: true, skippable: true } } as Command;
 }
 
+/** 그 인물이 주인공을 보게 돌린다(주인공이 어느 칸에서 말을 걸었든). */
+export function faceHero(eventId: string): Command {
+  return { kind: "moveEvent", eventId, route: { moves: [{ kind: "turnTowardPlayer" }], repeat: false, wait: true, skippable: true } } as Command;
+}
+
 export function playSe(resourceId: string): Command {
   return { kind: "playAudio", resourceId, loop: false, channel: "se" } as Command;
 }
@@ -213,19 +275,23 @@ type PageOpts = {
 export function page(id: string, conditions: EventPageCondition[], commands: Command[], opts: PageOpts = {}): EventPage {
   const who = opts.who ? CAST[opts.who] : undefined;
   const dir = opts.dir ?? "down";
-  return {
+  const built = {
     id,
     name: id,
     conditions,
     graphic: who
       ? { sprite: { type: "bundled", id: who.tex }, direction: dir, pattern: charsetFrameIndex({ characterIndex: who.index, direction: dir, pattern: 1 }), transparent: false }
       : { direction: dir, pattern: 0, transparent: true },
-    movement: { type: "fixed", speed: 3, frequency: 3 },
+    // 사용자 r2: 「팀장이 너무 느리게 걷는다」 — 걷는 사람은 주인공과 같은 보통 속도(4)로 걷는다.
+    movement: { type: "fixed", speed: who ? 4 : 3, frequency: 3 },
     priority: opts.priority ?? (who ? "same" : "below"),
-    overlapForbidden: !!who,
+    // 「같은 층」을 명시한 빈 그림 이벤트(문)는 몸이 있다 — 막고, 부딪히면 발동한다.
+    overlapForbidden: !!who || opts.priority === "same",
     trigger: { kind: opts.trigger ?? "action" },
     commands,
   } as unknown as EventPage;
+  if (opts.who) PAGE_WHO.set(built, opts.who);
+  return built;
 }
 
 export function event(id: string, name: string, at: { x: number; y: number }, pages: EventPage[]): GameEvent {

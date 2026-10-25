@@ -47,6 +47,45 @@ describe("run_scene_test", () => {
     evidence.observe("run_scene_test", args, { ok: true, data: { ok: true } });
     expect(evidence.snapshot().findings).toHaveLength(1);
   });
+  it("keeps an arrival autorun's choices when the choice that moved the player ends its own event", () => {
+    // 2026-10-25 시타마치: 전철 컷신의 선택 → 장소 이동으로 끝 → 도착 맵 자동 실행이 선택지에서 기다린다.
+    // 예전 러너는 바깥 해석기가 끝난 자리에서 «안쪽이 기다린다»를 실패로 보고 자동 플레이가 첫 장면에서 멈췄다.
+    const project = createBlankProject();
+    const a = project.maps[project.startMapId]!;
+    const b = structuredClone(a);
+    b.id = "map_arrival"; b.name = "Arrival"; b.events = [];
+    project.maps[b.id] = b;
+    project.switches.push({ id: "sw_arrival_pick", name: "Arrival pick" });
+    project.variables.push({ id: "var_arrival_stage", name: "Arrival stage" });
+    a.events.push({
+      id: "ev_leave", x: 2, y: 3, trigger: { kind: "action" }, commands: [
+        { kind: "choices", options: [{ text: "Go", branch: [
+          { kind: "setVariable", variableId: "var_arrival_stage", op: "=", value: 1 },
+          { kind: "transfer", mapId: b.id, x: 4, y: 4, direction: "down" },
+        ] }] },
+      ],
+    } as GameEvent);
+    b.events.push({
+      id: "ev_arrival", x: 1, y: 1, trigger: { kind: "auto" }, commands: [],
+      pages: [{
+        id: "arrival-page", name: "Arrival", conditions: [{ kind: "variable", variableId: "var_arrival_stage", op: "==", value: 1 }],
+        graphic: { transparent: true }, trigger: { kind: "auto" }, priority: "below", overlapForbidden: false,
+        movement: { type: "fixed", speed: 3, frequency: 3 },
+        commands: [
+          { kind: "choices", options: [{ text: "A", branch: [] }, { text: "B", branch: [{ kind: "setSwitch", switchId: "sw_arrival_pick", value: true }] }] },
+          { kind: "setVariable", variableId: "var_arrival_stage", op: "=", value: 2 },
+        ],
+      }],
+    } as GameEvent);
+
+    const result = runSceneTest(project, {
+      mapId: a.id, start: { x: 2, y: 2 },
+      steps: [{ kind: "interact" }, { kind: "choose", index: 0 }, { kind: "choose", index: 1 }, { kind: "expect", mapId: b.id, switchOn: "sw_arrival_pick" }],
+    });
+
+    expect(result.ok, result.failureReason).toBe(true);
+  });
+
   it("executes the existing choice cancellation branch for index minus one", () => {
     const project = createBlankProject();
     const map = project.maps[project.startMapId];

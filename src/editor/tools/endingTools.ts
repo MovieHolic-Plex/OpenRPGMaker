@@ -146,7 +146,9 @@ const defineEnding: ToolDefinition = {
     const epilogueWarnings: string[] = [];
     const epilogue = parseEpilogue(draft, args.epilogue, epilogueWarnings);
     const prior = draft.endings?.find(entry => entry.id === id);
-    const presentation = args.presentation === undefined ? prior?.presentation : args.presentation as EndingPresentation;
+    let presentation = args.presentation === undefined ? prior?.presentation : args.presentation as EndingPresentation;
+    // 크레딧·엔딩 글에 줄바꿈을 글자 「\n」로 두 번 이스케이프해 보내면 화면에 「\n」이 그대로 찍혔다(2026-10-25 G50·심판 J2).
+    if (presentation && typeof presentation.credits === "string" && /(?:\\r)?\\n/u.test(presentation.credits)) presentation = { ...presentation, credits: presentation.credits.replace(/(?:\\r)?\\n/gu, "\n") };
     if (presentation !== undefined) {
       try { validateEndingPresentation(presentation); } catch (error) { throw new ToolError(String(error), { code: "invalid-args" }); }
       if (presentation.musicResourceId && !collectResourceIds(draft).has(presentation.musicResourceId)) throw new ToolError("엔딩 음악 리소스를 찾을 수 없습니다.", { code: "invalid-args" });
@@ -410,12 +412,14 @@ function parseEpilogue(project: Project, value: unknown, warnings: string[] = []
   const { beats: kept, removed } = withoutEndingBeats(raw as unknown as CutsceneBeat[]);
   if (removed > 0) warnings.push(`epilogue 의 ending beat ${removed}개를 뺐다 — 에필로그는 이미 엔딩 안에서 돌고, 끝나면 엔딩 화면이 자동으로 뜬다(다시 부르면 에필로그가 무한 반복된다).`);
   const beats = kept as unknown as Record<string, unknown>[];
+  // 에필로그가 암전으로 끝나도 엔딩 화면이 바로 이어지니 «검은 화면에 조작이 돌아오는» 일이 없다 — 컷신 검사는 그래서 거절했다(2026-10-24 g2-two-endings·g3-bad-ending).
+  // 검사에만 끝에 fade in 을 덧대 그 규칙을 비켜 간다(저장하는 비트는 그대로).
   const eventIds = new Set<string>();
   for (const map of Object.values(project.maps)) {
     for (const event of map.events) eventIds.add(event.id);
   }
   try {
-    compileCutscene(beats as CutsceneBeat[], { context: { eventIds, resourceIds: collectResourceIds(project) } });
+    compileCutscene([...beats, { kind: "fade", direction: "in", durationMs: 1 }] as unknown as CutsceneBeat[], { context: { eventIds, resourceIds: collectResourceIds(project) } });
   } catch (cause) {
     if (cause instanceof CutsceneValidationError) {
       throw new ToolError(`epilogue 검증 실패: ${cause.reasons.join(" / ")}`, { code: "ending-epilogue-validation" });

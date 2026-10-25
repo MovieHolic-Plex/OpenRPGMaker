@@ -1,0 +1,141 @@
+{
+  "set": "fallen-battle-depth-landscape",
+  "note": "fs-battle-2 모바일 가로",
+  "projectFixture": ".omo/fs-battle/fixture.json",
+  "viewport": {
+    "width": 844,
+    "height": 390
+  },
+  "context": {
+    "hasTouch": true,
+    "isMobile": true,
+    "deviceScaleFactor": 2
+  },
+  "checkpoints": [
+    {
+      "id": "help-landscape",
+      "label": "가로 화면 — 도움말 창",
+      "mapId": "fs_forest_edge",
+      "x": 14,
+      "y": 22,
+      "facing": "up",
+      "switches": {
+        "sw_fs_main_started": true,
+        "sw_fs_valen_marched": true
+      },
+      "party": [
+        {
+          "actorId": "actor_hero",
+          "level": 6
+        },
+        {
+          "actorId": "actor_fs_elena",
+          "level": 6
+        }
+      ],
+      "startEventId": "qa_fight_wolves",
+      "beats": [
+        {
+          "id": "battle",
+          "note": "전투 시작",
+          "ops": [
+            {
+              "kind": "waitFor",
+              "testid": "battle-scene",
+              "timeoutMs": 60000
+            }
+          ],
+          "shot": true
+        },
+        {
+          "id": "open",
+          "note": "기술 열기(첫 탭 커서, 둘째 탭 열기 — 전역 목록 탭 규칙)",
+          "ops": [
+            {
+              "kind": "waitFor",
+              "testid": "actor-command-skill",
+              "timeoutMs": 60000
+            },
+            {
+              "kind": "hold",
+              "dir": null,
+              "ms": 800
+            },
+            {
+              "kind": "tap",
+              "testid": "actor-command-skill"
+            },
+            {
+              "kind": "hold",
+              "dir": null,
+              "ms": 500
+            },
+            {
+              "kind": "tap",
+              "testid": "actor-command-skill"
+            },
+            {
+              "kind": "waitFor",
+              "testid": "battle-skill-hint",
+              "timeoutMs": 10000
+            },
+            {
+              "kind": "hold",
+              "dir": null,
+              "ms": 1500
+            }
+          ],
+          "shot": true
+        },
+        {
+          "id": "tap1",
+          "note": "십자베기 첫 탭 — 쓰지 않고 설명만",
+          "ops": [
+            {
+              "kind": "tap",
+              "testid": "actor-skill-skill_hero_cross_slash"
+            },
+            {
+              "kind": "hold",
+              "dir": null,
+              "ms": 1800
+            }
+          ],
+          "shot": true
+        },
+        {
+          "id": "tap-other",
+          "note": "집중 첫 탭",
+          "ops": [
+            {
+              "kind": "tap",
+              "testid": "actor-skill-skill_focus"
+            },
+            {
+              "kind": "hold",
+              "dir": null,
+              "ms": 1800
+            }
+          ],
+          "shot": true
+        },
+        {
+          "id": "tap2",
+          "note": "같은 칸 두 번째 탭 — 사용(집중)",
+          "ops": [
+            {
+              "kind": "tap",
+              "testid": "actor-skill-skill_focus"
+            },
+            {
+              "kind": "hold",
+              "dir": null,
+              "ms": 1800
+            }
+          ],
+          "shot": true
+        }
+      ]
+    }
+  ]
+}

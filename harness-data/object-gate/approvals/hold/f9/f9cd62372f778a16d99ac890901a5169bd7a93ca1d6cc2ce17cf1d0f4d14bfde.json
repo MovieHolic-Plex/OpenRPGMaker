@@ -1,0 +1,16 @@
+{
+ "schema": "oprn-object-gate-hold-decision/1",
+ "pixelSha256": "f9cd62372f778a16d99ac890901a5169bd7a93ca1d6cc2ce17cf1d0f4d14bfde",
+ "profileHash": "4d8774b517f41638",
+ "kind": "structure",
+ "decision": "allow",
+ "decidedBy": "supervisor (building-kit massing)",
+ "decidedAt": "2026-10-25T09:00:20.247Z",
+ "by": "delegated",
+ "delegatedBy": "user 2026-10-25 (bk-massing-100 → 실제 건물, 머지까지 위임)",
+ "evidence": "/home/main/z-project/rpg-zzu-building-kit/harness-data/building-kit/massing/reviews/tithe-barn/f9cd62372f77-evidence.json",
+ "via": "review-page",
+ "reasons": [],
+ "note": "object-gate pass + argon PASS + klb-sonnet-5-5 PASS (원문 파일)",
+ "sig": "6c10ae4ae782ba72e8d9b59dfca0f1eeda17af3458beb4526ad3409cf4d36ab9"
+}

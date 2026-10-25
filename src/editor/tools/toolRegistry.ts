@@ -28,6 +28,7 @@ import { TILESET_REFERENCE_TOOLS, withTilesetReferencePurpose } from "./tilesetR
 // toOpenAiTools()로 OpenAI function calling `tools` 배열을 자동 파생한다.
 
 import { BATTLE_TOOLS } from "./battleTools";
+import { COMBO_TECH_TOOLS } from "./comboTechTools";
 import { TROOP_BATTLE_PAGE_TOOLS } from "./troopBattlePageTools";
 import { CLUSTER_RULE_TOOLS } from "./clusterRuleTools";
 import { DB_TOOLS } from "./dbTools";
@@ -49,6 +50,7 @@ import { BEODEUL_GROUND_TOOLS } from './beodeulGroundTools';
 import { BEODEUL_ARCHITECTURE_TOOLS } from './beodeulArchitectureTools';
 import { DIRECTING_GUIDE_TOOLS } from "./directingGuideTools";
 import { ASSISTANT_SKILL_TOOLS } from "./assistantSkillTools";
+import { DIALOGUE_TOOLS } from "./dialogueTools";
 import { NPC_CAST_TOOLS } from "./npcCastTools";
 import { EXPORT_TOOLS } from "./exportTools";
 import { MAP_GEN_TOOLS } from "./generateMapTool";
@@ -57,6 +59,8 @@ import { GROUP_SAMPLE_TOOLS } from "./groupSampleTool";
 import { HISTORY_TOOLS } from "./historyTools";
 import { HOUSE_VISION_TOOLS } from "./houseVisionTools";
 import { INVESTIGATION_TOOLS } from "./investigationTools";
+import { SEARCH_CONTAINER_TOOLS } from "./searchContainerTools";
+import { FOREST_ROUTE_TOOLS } from "./forestRouteTool";
 import { MYSTERY_CASE_TOOLS } from "./mysteryCaseTool";
 import { NARRATIVE_HORROR_TEMPLATE_TOOLS } from "./narrativeHorrorTemplateTools";
 import { CUTSCENE_ART_TOOLS } from "./cutsceneArtTools";
@@ -122,6 +126,7 @@ import { SNOW_NORTH_TOOLS } from "./snowNorthTools";
 import { FIND_VILLAGE_TYPE_TOOL } from "./villageTypeTool";
 import { DRESS_JOSEON_MARKET_TOOL, DRESS_VILLAGE_QUARTER_TOOL } from "./villageQuarterTool";
 import { TRANSIT_TOOLS } from "./transitTools";
+import { ADD_STREET_WALKERS_TOOL } from "./streetWalkersTool";
 import { AI_DOC_TOOLS } from "./aiDocTools";
 import { RETRO_CHOREOGRAPHY_TOOLS } from "./retroChoreographyTools";
 import { CINEMATIC_TOOLS } from "./cinematicTools";
@@ -158,6 +163,7 @@ import { SPATIAL_TOOLS } from "./spatialTools";
 import { BUILD_CONCEPT_EXAMPLE_TOOL } from "./conceptExampleTool";
 import { SHARED_SCENE_TOOLS } from "./sharedSceneTools";
 import { SHARED_OBJECT_TOOLS } from "./sharedObjectTools";
+import { REVEAL_TOOLS } from "./revealTools";
 import { WEB_SEARCH_TOOLS } from "./webSearchTool";
 import { TILESET_CHANGE_TOOLS } from "./tilesetChangeTools";
 import { STORE_TOOLS } from "./storeTools";
@@ -259,6 +265,7 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   BUILD_CONCEPT_EXAMPLE_TOOL,
   ...SHARED_SCENE_TOOLS,
   ...SHARED_OBJECT_TOOLS,
+  ...REVEAL_TOOLS,
   ...SCENE_SETTING_TOOLS,
   ...withDomain(CONSTRUCTION_TOOLS_V3, "tile"),
   ...withDomain(HOUSE_VISION_TOOLS, "tile"),
@@ -305,6 +312,7 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   DRESS_JOSEON_MARKET_TOOL,
   // 맵 위 탈것(차 흐름·버스·노면전차·전철·지하철) — 길 그림에서 자동으로 또는 칸 경로로 노선을 깐다. 런타임이 실제로 움직인다.
   ...withDomain(TRANSIT_TOOLS, "map"),
+  ...withDomain([ADD_STREET_WALKERS_TOOL], "event"),
   ...withDomain(STRUCTURE_KIT_TOOLS, "tile"),
   ...withDomain(TILESET_OBJECT_TOOLS, "tile"),
   ...withDomain(TILE_QUERY_TOOLS, "tile"),
@@ -335,6 +343,8 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   ...withDomain(TILE_CHANGE_EFFECT_TOOLS, "event"),
   ...withDomain(VEHICLE_TOOLS, "event"),
   ...withDomain(INVESTIGATION_TOOLS, "event"),
+  ...withDomain(SEARCH_CONTAINER_TOOLS, "event"),
+  ...withDomain(FOREST_ROUTE_TOOLS, "map"),
   ...withDomain(PUZZLE_AUTHORING_TOOLS, "event"),
   ...withDomain(MYSTERY_CASE_TOOLS, "event"),
   ...withDomain(NARRATIVE_HORROR_TEMPLATE_TOOLS, "event"),
@@ -354,6 +364,8 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   ...withDomain(DIRECTING_GUIDE_TOOLS, "event"),
   // 조수 스킬(assistant-skills/*/SKILL.md 번들) — 장면 다듬기 교훈 등. 장면·이벤트 작업에서 읽는다.
   ...withDomain(ASSISTANT_SKILL_TOOLS, "event"),
+  // 대사 관리(윤문) — 대사 색인·문맥·제안/적용·화자 말투 메모. 자료집 「대사」 탭과 같은 색인을 쓴다.
+  ...withDomain(DIALOGUE_TOOLS, "event"),
   ...withDomain(LIFE_FLOWER_TOOLS, "event"),
   ...withDomain(LIGHTING_TOOLS, "event"),
   ...withDomain(ENDING_TOOLS, "event"),
@@ -387,6 +399,7 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   ...withDomain(STORY_ARC_TOOLS, "event"),
   ...withDomain(STORY_TOOLS, "quest"),
   ...withDomain(BATTLE_TOOLS, "battle"),
+  ...withDomain(COMBO_TECH_TOOLS, "battle"),
   ...withDomain(TROOP_BATTLE_PAGE_TOOLS, "battle"),
   ...withDomain(REFACTOR_TOOLS, "system"),
   ...withDomain(QUALITY_EVALUATION_TOOLS, "system"),

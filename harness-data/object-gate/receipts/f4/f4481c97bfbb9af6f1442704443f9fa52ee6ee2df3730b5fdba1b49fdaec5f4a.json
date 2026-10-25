@@ -1,0 +1,357 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f4481c97bfbb9af6f1442704443f9fa52ee6ee2df3730b5fdba1b49fdaec5f4a",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "지하철 출구 번호 표지 4",
+ "label": "modern_city/street-kr/mc-prop-kr-exit-4",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "bus-shelter-a",
+   "kiosk-a",
+   "vending-a"
+  ],
+  "scale": 2,
+  "score": 7,
+  "refSet": {
+   "id": "modern_city",
+   "chipset": "modern_city",
+   "fallback": false,
+   "hash": "dc20de17343e77e8"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 12,
+  "tileColorsP90": 12,
+  "darkV5": 36,
+  "nearBlackEdge": 1,
+  "opaqueTiles": 2
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "white cap plate on top of the sign post",
+      "rows": "0-9",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": "8-9"
+     },
+     {
+      "part": "orange number panel with a 4 on the shaft",
+      "rows": "11-20",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "grey base with a flared foot",
+      "rows": "22-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 10,
+    "front_face_rows": 20,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": {
+     "cap_rows": 10,
+     "cap_width": 15,
+     "shaft_width": 9,
+     "rounded_at_both_edges": true
+    },
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette width profile runs 5, 11, 13, 15, 15, 13, 15, 15, 13, 11 over rows 0-9, then narrows to the 9-wide shaft at row 10. That is an ellipse plate that widens and narrows again and overhangs the shaft on both sides. Rows 8-9 are darker teal and act as the underside or eave shadow below the white top (rows 0-7). Below it the shaft runs from row 10 to row 29, about 20 rows of front face. It holds the orange panel with a '4' in rows 11-20 and a grey lower body in rows 22-29, with a flared foot at rows 26-29 (width 11-13). The cap is bounded by narrower rows above and below, so it is not a flat band or a hat."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a small bollard-style sign post with a round lamp head and a numbered plate. It reads at about 11 visible tones per tile, which is level with kiosk-a (12) and well above bus-shelter-a (6), though below vending-a (20). Near-flat coverage is 0% and the dark edge pixels are 0% neutral, so the outlines carry a tint (dark blue-grey and brown) and not a black sticker line. The post shows 3-4 lightness steps with a highlight edge, and the head has a light cap with a shaded rim. This is a little shallower than the 5-step ramps on the kiosk and vending machine, and the narrow post body is plainer than the references' panels. It is thin, so I judge density by eye rather than by the per-tile count. Next to the shipped modern_city props it sits at the lower end of the range but is not flatter than bus-shelter-a, so an artist would accept it.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19696
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top sign cap (white oval plate with teal underside)",
+      "rows": "0-9",
+      "evidence": "b",
+      "front_edge_line_row": 9,
+      "eave_shadow_rows": "10-11"
+     },
+     {
+      "part": "shaft with number panel",
+      "rows": "10-21",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "grey lower shaft and flared base",
+      "rows": "22-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 10,
+    "front_face_rows": 20,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": {
+     "cap_rows": 10,
+     "cap_width": 15,
+     "shaft_width": 9,
+     "rounded_at_both_edges": true
+    },
+    "reads_as": "three_quarter",
+    "evidence": "The width profile at the top runs 5, 11, 13, 15, 15, 13, 15, 15, 13, 11 across rows 0-9 and then drops to 9 for the shaft from row 10. This is an ellipse-like plate, narrower above and below its widest rows (15 at rows 3-4 and 6-7), that overhangs the 9-wide shaft by 3 px per side. Its light face has teal shading on the lower rows, with a dark navy eave band on rows 10-11 beneath it. The front face is the shaft on rows 10-29, with a tan number panel on rows 12-20 and grey lower shaft on rows 22-26. A slightly wider base (13 px) sits on rows 27-29. The cap reads as an elliptical top surface, not a flat band."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a small bollard-style sign post with a round lamp cap and a numbered panel, with 11 visible tones per full tile. That is about level with kiosk-a (12) and above bus-shelter-a (6), though below vending-a (20). Near-flat coverage is 0%, so there are no flat fills. 0% of the dark edge pixels are neutral, so the outline is tinted, a dark blue-grey or brown tone matching the adjacent material rather than a black sticker line. Each material (the cap, the post body and the sign panel) shows about 3-4 steps, which is slightly shallower than the references' 5. The piece is thin and small, and by eye it holds up beside the shipped modern_city props without looking flatter or more sticker-like. It would be accepted next to bus-shelter-a and kiosk-a.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 39968
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "white and teal rounded cap plate (sign lamp top)",
+      "rows": "0-9",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "shaft with yellow panel showing the number 4",
+      "rows": "10-21",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "grey lower shaft and flared base",
+      "rows": "22-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 10,
+    "front_face_rows": 20,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": {
+     "cap_rows": 10,
+     "cap_width": 15,
+     "shaft_width": 9,
+     "rounded_at_both_edges": true
+    },
+    "reads_as": "three_quarter",
+    "evidence": "The width profile runs 5, 11, 13, 15, 15, 13, 15, 15, 13, 11 over rows 0-9, then drops to 9 for the shaft in rows 10-25. The cap therefore widens and narrows again, and it overhangs the shaft by about 3 px per side. It reads as an ellipse plate with a bright top (white at x=7, rows 1-7) and a teal shaded front curve. The inner teal oval at rows 2-4 supports a top-surface reading. Below it, a dark line at row 10 and the yellow panel with the 4 form the front face, followed by the grey lower shaft and a flared base at rows 26-29. That gives about 20 rows of front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a small bollard-style sign post with a round lamp head and a yellow number plate. It has 11 visible tones per full tile, which is close to kiosk-a (12) and above bus-shelter-a (6), but well below vending-a (20). Near-flat coverage is 0%, so there are no flat fills. 0% of dark edge pixels are neutral, so the outline is tinted dark blue-grey and follows the adjacent material instead of a uniform black line. Shading is about 4 steps on the head and post, against 5-6 on the references, and the post body is somewhat smooth. This is a thin, single-object prop, and by eye it holds up beside the shipped references and does not look sticker-like. It is slightly less textured than kiosk-a and vending-a. On the whole it is acceptable next to the bus shelter and kiosk.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 39306
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "white cloud-like cap plate on top of the post",
+      "rows": "0-9",
+      "evidence": "b",
+      "front_edge_line_row": 9,
+      "eave_shadow_rows": "8-9"
+     },
+     {
+      "part": "orange number sign panel with '4' on the shaft",
+      "rows": "11-20",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "grey lower shaft and flared foot",
+      "rows": "22-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 10,
+    "front_face_rows": 20,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": {
+     "cap_rows": 10,
+     "cap_width": 15,
+     "shaft_width": 9,
+     "rounded_at_both_edges": true
+    },
+    "reads_as": "three_quarter",
+    "evidence": "The width profile runs 5,11,13,15,15,13,15,15,13,11 over rows 0-9 and then drops to the 9px shaft at rows 10-25. So the cap widens from a narrow back rim, reaches its widest at rows 3-7, and narrows again at the front rim. That is an ellipse-like plate overhanging the shaft by about 3px per side, and it is bounded by narrower rows above and below. The white top with a teal shaded lower edge (rows 2-8) reads as a horizontal top surface. Below it the shaft is a vertical front face of about 20 rows: a dark band, the orange '4' sign at rows 11-20, and a grey lower shaft at rows 22-29 that flares into a foot at rows 26-29 (width 13). The cap is somewhat cloud-shaped, but its widest rows are bounded by narrower rows on both sides, so it is not a flat hat."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a small pillar sign with a round cap and a yellow number panel, and it is a standing prop like the references. Measured facts: 11 visible tones per tile, against 6 (bus-shelter), 12 (kiosk) and 20 (vending). That is level with the kiosk and well above the bus shelter. Near-flat coverage is 0%, with no 5x5 flat fills. Dark edge pixels are 0% neutral, so the outline is a tinted dark material tone, matching all three references. Shading is 4 or so steps on the pillar and cap, a little shallower than the vending machine's 5-6 steps. It is a thin, small prop, so the density gap against the vending machine does not count against it. A careful artist would accept it next to the kiosk and bus shelter without it looking flatter or more sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16172
+  }
+ ],
+ "decidedAt": "2026-10-25T03:24:54.119Z",
+ "cells": {
+  "16": [
+   "512df72cc2051cda",
+   "9d9b612a9e4de96e"
+  ],
+  "24": [
+   "1614465b535e874e",
+   "2e50f4428357779a",
+   "42913b8e0746a02e",
+   "4f1c014d9e6562f2",
+   "6b8ffe981a1f6fea",
+   "7513e62065f83d08",
+   "7f3a2ab6b9ecd17a",
+   "87cb879bf1017a02",
+   "89e2f468d83bf120",
+   "9368affc68353257",
+   "be84a6bdf94b2568",
+   "e16106aadfbe6c66"
+  ],
+  "32": [
+   "5750c60893212d8f",
+   "81b1bfd565687f2b",
+   "960c942e369f9af7"
+  ],
+  "48": [
+   "0f499ab8ee0c3b95",
+   "0fcd7d7fcc43d4d3",
+   "2a16b8a3c6daeb8a",
+   "61c4626fa8bf4b42",
+   "8337d178718c588d",
+   "d1e7c7ce0782a28a"
+  ]
+ }
+}

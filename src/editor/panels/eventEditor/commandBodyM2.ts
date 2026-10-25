@@ -212,13 +212,16 @@ const SCREEN_EFFECT_DURATION_PRESETS = [
  * fadeIn/fadeOut 은 도착 색이 고정(투명/검정)이라 값을 보지 않는다 — 입력을 보여주면
  * 감독은 "여기에 뭘 넣어야 하나" 를 고민하고, 넣어도 아무 일도 일어나지 않는다(D9).
  */
-const SCREEN_EFFECT_VALUE_USERS: ReadonlySet<string> = new Set(["tint", "flash", "weather", "wave", "mosaic", "rotate", "letterbox"]);
+const SCREEN_EFFECT_VALUE_USERS: ReadonlySet<string> = new Set(["tint", "flash", "weather", "wave", "mosaic", "rotate", "letterbox", "freeze", "doorOpen", "doorClose"]);
 /** 값이 색이 아니라 숫자(세기·두께)인 효과 — 색 피커·견본을 숨기고 자리표시를 바꾼다. */
 const SCREEN_EFFECT_NUMBER_VALUES: Readonly<Record<string, string>> = {
   wave: "물결 세기 px 0~16 (비우면 4)",
   mosaic: "모자이크 칸 px 0~32 (비우면 8)",
   rotate: "기울기 도 -180~180 (비우면 8)",
   letterbox: "띠 두께 % 0~25 (비우면 12)",
+  freeze: "색감 warm·mono·sepia·cool·none (비우면 warm)",
+  doorOpen: "x,y,너비,높이,slide|swing,left|right",
+  doorClose: "x,y,너비,높이,slide|swing,left|right",
 };
 
 /**
@@ -311,6 +314,10 @@ function screenEffectIntentTitle(effect: string): string {
     case "clearDistortion": return "왜곡 모두 끄기";
     case "letterbox": return "레터박스";
     case "clearLetterbox": return "레터박스 걷기";
+    case "freeze": return "정지 화면";
+    case "unfreeze": return "정지 화면 풀기";
+    case "doorOpen": return "문 열기";
+    case "doorClose": return "문 닫기";
     default: return effect;
   }
 }
@@ -343,6 +350,13 @@ function screenEffectIntentCopy(effect: string, value: string, durationMs: numbe
       return `화면 위아래에 ${color || "12"}% 두께 검은 띠가 ${durationMs}ms 동안 들어온다. 대화창은 띠 위에 그대로 뜬다. 걷을 때까지 남는다.`;
     case "clearLetterbox":
       return `위아래 검은 띠를 ${durationMs}ms 동안 걷는다.`;
+    case "freeze":
+      return `지금 화면을 한 장 찍어 멈춘 그림으로 세운다(색감 ${color || "warm"}: warm·mono·sepia·cool·none). 하얗게 번쩍인 뒤 ${durationMs}ms 동안 멈춘다. 대사창은 그 위에 뜬다. 풀 때까지 남는다.`;
+    case "unfreeze":
+      return `정지 화면을 ${durationMs}ms 동안 걷어 움직이는 화면으로 돌아온다.`;
+    case "doorOpen":
+    case "doorClose":
+      return `${color || "x,y,너비,높이"} 칸의 문 그림을 ${durationMs}ms 동안 ${effect === "doorOpen" ? "연다(미닫이 slide 는 가운데서 갈라지고, 여닫이 swing 은 경첩 쪽으로 접힌다). 닫을 때까지 열린 채로 남는다" : "닫는다"}. 소리는 효과음 명령으로 같이 낸다.`;
     default:
       return `'${effect}' 는 런타임에 렌더러가 없어 실행되지 않는다(${durationMs}ms 도 무시된다).`;
   }

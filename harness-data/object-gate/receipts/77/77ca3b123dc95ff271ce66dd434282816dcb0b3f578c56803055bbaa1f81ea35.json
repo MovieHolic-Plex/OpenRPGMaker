@@ -1,0 +1,317 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "77ca3b123dc95ff271ce66dd434282816dcb0b3f578c56803055bbaa1f81ea35",
+ "width": 16,
+ "height": 16,
+ "kind": "organic",
+ "name": "small mossy stone (mossy stone), natural map prop for the Beodeul 16px chipset, 1x1 tiles, standing object (3rd layer), 3/4 top-down, sits on grass between broadleaf trees",
+ "label": "beodeul_organic/moss-stone",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 질감 없음 (1/4)",
+  "화풍: 칸 정보량이 기준보다 훨씬 낮음 (1/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "질감 없음 (1/4)",
+   "칸 정보량이 기준보다 훨씬 낮음 (1/4)"
+  ],
+  "styleKind": "tree",
+  "refs": [
+   "tree-1a786c",
+   "tree-d43edd"
+  ],
+  "scale": 2,
+  "score": 5,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_organic",
+   "fallback": true,
+   "reason": "칩셋 beodeul_organic 의 화풍 기준 묶음이 없다",
+   "hash": "bcc19e99327f94ce"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 0,
+  "tileColorsP90": 0,
+  "darkV5": 38,
+  "nearBlackEdge": 0.37,
+  "opaqueTiles": 0
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "mossy cap on top of stone",
+      "rows": "5-9",
+      "evidence": "a",
+      "front_edge_line_row": 10,
+      "eave_shadow_rows": "8-9"
+     },
+     {
+      "part": "stone body front face",
+      "rows": "10-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 5,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The width profile grows from 3 to 14 px over rows 5-10 and then narrows to 4 px by row 14, so the silhouette is a rounded blob. The green moss occupies rows 5-9. Its lower edge is dark green at x=4 row 9 and at x=8 row 8, which acts as shadow under the moss. Row 10 is a lighter gray (#a09088 at x=4), which acts as the front-edge line. Below it, rows 10-14 are a gray stone face that darkens toward the bottom (L 148 to 31 at x=4). That gives a top of about 5 rows over a front face of about 5 rows, which reads as three-quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a sub-tile stone, about 12x8 source pixels, so the per-tile tone count is 0 and I judged by eye. It reads as a grey stone with a green moss cap and a dark rim. I count about 4 lightness steps across the stone and moss, against about 6 on the references. 9 distinct colours total is close to tree-1a786c (10), but that reference carries 7 visible tones per tile and tree-d43edd carries 29. Half of the candidate's dark edge pixels are near-neutral, so the outline is mixed: the underside looks close to a black rim, and only part of it leans toward the stone or moss tone. That edges toward the sticker look. Moss clumps and stone facets are only hinted at, with no per-stone grain or multi-green clumps. There are no large flat fills (0% near-flat). The piece is not clearly at the references' level of tinted outlines and layered shading, and when in doubt I fail it.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 17267
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "moss-covered top of the stone",
+      "rows": "5-9",
+      "evidence": "a",
+      "front_edge_line_row": 10,
+      "eave_shadow_rows": "8-9"
+     },
+     {
+      "part": "stone front face",
+      "rows": "10-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 5,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette is a rounded boulder that widens from 3px at row 5 to 14px at row 10 and narrows to 4px at row 14. Rows 5-9 are a green moss top surface seen from above. In the column scans (x=4 and x=8) the moss darkens to #104c2f at rows 8-9 as a shadow under its lower edge. Row 10 is then a lighter grey-brown stone row (#a09088 at x=4, #7a6a6c at x=8), which acts as the front-edge line. Rows 10-14 are the grey stone front face, about 5 rows, shading darker toward the base (#231c26 at row 13-14). This gives a top surface of about 5 rows plus a front face of 3 or more rows, so it reads as three-quarter view rather than a flat slab or a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a tiny stone, about 12x8 source pixels, so it is smaller than one tile and the per-tile facts read 0. I judged it by eye. It has 9 distinct colours in total: a grey stone ramp of about 3-4 steps and a green moss cap of about 2-3 greens. The references carry 5-6 steps per material (7 and 29 visible tones per tile). Half of the dark edge pixels are near-neutral (50%), so the outline leans black-grey in places instead of being a tinted dark tone of the neighbouring stone or moss. The references measure 0% there. The small silhouette has no flat 5x5 fills, but it also shows little per-stone grain, no moss clumps and no cast shadow or grass blending. Next to the references it looks thinner and more sticker-like. A careful artist would want a tinted outline, 5-6 steps on the stone, and more varied moss clusters.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 69140
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "moss cap on top of stone",
+      "rows": "5-9",
+      "evidence": "a",
+      "front_edge_line_row": 9,
+      "eave_shadow_rows": "8-9"
+     },
+     {
+      "part": "stone body front face",
+      "rows": "10-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 5,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette widens from 3 px at row 5 to 14 px at row 10, then narrows to 4 px at row 14, which gives a rounded boulder shape. Rows 5-9 are a green moss mass seen from above. Its lower edge is a darker green band (#296535 and #104c2f) that works as the front-edge line and eave shadow. Rows 10-14 are a grey-brown stone face that darkens toward the bottom (L 148 down to 31). That is a top surface of about 5 rows over a front face of about 5 rows, so it reads as three-quarter view, not as a flat slab or a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The stone is under one tile (about 10x7 source px), so the per-tile tone counts are 0 and I judged it by eye. It has 9 colours in total: a grey body, a green moss cap and a dark rim. The moss and stone read as roughly 3-4 steps each, against 5-6 on the references' foliage and trunk ramps. 50% of the dark edge pixels are neutral, while the references have 0%. The dark rim around the base looks closer to a neutral dark-grey sticker outline than a dark tone of the adjacent material, so I call it mixed. The surface has no per-stone highlight clusters or grain, and the moss is a few dots rather than clumps in several tones. Nothing is a large flat fill, but it looks thinner and more sticker-like than the references, so I fail it.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 58562
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "moss cap on top of the stone",
+      "rows": "5-9",
+      "evidence": "a",
+      "front_edge_line_row": 9,
+      "eave_shadow_rows": "8-9"
+     },
+     {
+      "part": "grey stone body (front face)",
+      "rows": "9-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 5,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette is a rounded boulder, widening from 3px at row 5 to 14px at row 10, then narrowing to 4px at row 14. The bright green moss at rows 5-9 is a foreshortened top surface. It ends in a dark green line at rows 8-9, which acts as the front edge and shadow. Below that, the grey stone face runs from about row 9/10 to row 14 and darkens toward the bottom. That gives roughly 5 rows of top and 5 rows of front face, so it reads as a 3/4 view and not as a flat elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a tiny stone about 12x8 px with 9 distinct colours in total. It is smaller than one full tile, so the per-tile tone count is 0 and I judged by eye. At board scale it reads as a dark grey-green blob with a small moss cap. I can see roughly 3 lightness steps on the stone and moss, against 5-6 on the references. Half of the dark edge pixels are neutral, so the outline is partly near-black and partly tinted. That is a mixed result, and it leans toward the sticker look instead of the dark material tone the references use. The stone has no stone-by-stone shading, no cracks or facets, and no clump texture in the moss. The reference trees show leaf clumps in several greens, and the candidate has nothing comparable. It also sits much lower than the references on information per tile. A careful artist would not accept it next to the reference because it looks thinner and flatter. It is a small prop, but it is still shallow.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 12281
+  }
+ ],
+ "decidedAt": "2026-10-24T13:35:28.241Z",
+ "cells": {
+  "16": [
+   "8817290c5d8e70fb"
+  ],
+  "24": [
+   "02a404e73144267c",
+   "0a7448f20cd6a6bf",
+   "559d96fa2a86aa9d",
+   "562530c64f2aa518",
+   "c5f1cf0725eda59f",
+   "cfe9ed89c85fdc7e"
+  ],
+  "32": [
+   "0ebf33ccf31297d8",
+   "44215edaaf238163",
+   "46bcdd3c4566e881",
+   "6132cdfe312b2615",
+   "6147f332050dcf96",
+   "cb1c2d04fe46e2f5"
+  ],
+  "48": [
+   "19d1434ba15248b6",
+   "1d8bcc131f89fe51",
+   "88f36250ed622547",
+   "8ec2b5aa8212bb3e",
+   "a6962c0687da07c3",
+   "dc836dc0cb39ed16"
+  ]
+ }
+}

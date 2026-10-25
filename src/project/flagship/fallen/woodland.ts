@@ -9,7 +9,8 @@
 import { runTool } from "@/editor/tools/toolRunner";
 import { CONSTRUCTION_TOOLS_V3 } from "@/editor/tools/v3/constructionTools";
 import { BEODEUL_PLAIN_GRASS } from "@/editor/tools/wildRouteBeodeul";
-import { beodeulNatureTileset, beodeulWoodlandGrass, composeBeodeulForest } from "@/editor/tools/beodeulForest";
+import { beodeulForestComposer, beodeulNatureTileset, beodeulWoodlandGrass, composeBeodeulForest, type BeodeulForestLook, type BeodeulForestPlan } from "@/editor/tools/beodeulForest";
+import { composeTreesPlaced, type TreePlacement } from "@/project/defaults/treeComposer";
 import { BEODEUL_NATURE } from "@/project/defaults/beodeulNature";
 import { translateTiles } from "@/project/objectStamp";
 import { layerTileAt, setLayerTileAt } from "@/project/mapLayers";
@@ -47,6 +48,26 @@ export interface WoodSpec {
   readonly undergrowth?: number;
   /** 나무 사이 틈 — 길 칸 from 에서 to 까지 한 칸 폭 샛길, to 에 2×2 주머니. */
   readonly nooks?: readonly { from: Cell; to: Cell }[];
+  /** 숲 모양 시안(forest-trunks-1, 2026-10-24). 실제 숲 맵 정의에는 없다 — 비교 그림 전용. */
+  readonly look?: WoodLook;
+}
+
+/**
+ * 「나무 줄기가 안 보여 풀 덩이 같다」(2026-10-24) 시안 손잡이. 모두 원본 버들항 그림(나무 키트·beodeul_nature 그림자·이끼 치마·고사리 소품)만 쓴다.
+ *  forest: 밑동 고르기 규칙(앞줄 모양·속 바둑판·간격) · castShadows: 나무마다 원본 낙하 그림자(2층) · plainGround: 트인 땅을 밝은 잔디로
+ *  loose: 숲 가장자리 밖 풀밭에 낱 나무(밑동+그림자) · skirt: 숲 남쪽 끝 아래 이끼 치마 + 줄기 선 고사리.
+ */
+export interface WoodLook {
+  readonly forest?: BeodeulForestLook;
+  readonly castShadows?: "all" | "outside";
+  readonly plainGround?: boolean;
+  readonly loose?: { readonly every: number; readonly reach: number };
+  readonly skirt?: boolean;
+  /**
+   * 줄기 다시 그린 나무(scripts/content/fallen-forest-trunks): 시안 칸 시트(16칸 폭 PNG dataUrl)와 그 시트 칸 번호로 쓴 그림 정의.
+   * 시트는 업로드 그림판으로 넣고 translateTiles 로 대상 칩셋에 이식한다. 그림 정의에 없는 이름(덤불 B2·D2)은 원본 그대로.
+   */
+  readonly trunks?: { readonly id: string; readonly sheet: string; readonly sprites: readonly import("@/project/types").TreeComposerSprite[] };
 }
 
 export interface WoodResult {
@@ -253,11 +274,18 @@ export function paintWoodlandOnto(project: Project, map0: GameMap, spec: WoodSpe
   }
   // 나무 — B1 활엽 composer. 숲 칸 안에만 서고 쓴다(길·빈터·물에 수관이 넘치지 않는다).
   const isF = (x: number, y: number) => inMap(x, y) && forest.has(idx(x, y));
-  composeBeodeulForest(project, map, tileset, "broadleaf", isF, isF, seed, isF, "woodland");
+  const look = spec.look ?? {};
+  let plan: BeodeulForestPlan | null = null;
+  const forestLook: BeodeulForestLook = { ...(look.forest ?? {}), ...(look.trunks ? { sprites: trunkSprites(project, tileset, look.trunks) } : {}) };
+  const def = composeBeodeulForest(project, map, tileset, "broadleaf", isF, isF, seed, isF, "woodland", forestLook, (p) => { plan = p; });
   map = project.maps[map0.id]!;
+  const placements: TreePlacement[] = [...((plan as BeodeulForestPlan | null)?.placements ?? [])];
+  if (look.loose) placements.push(...plantLooseTrees(map, def.sprites, spec, { path, water, nookCells, forest, open }, look.loose, editable));
   const woodland = beodeulWoodlandGrass(project, tileset);
-  if (woodland >= 0) for (let i = 0; i < map.lowerTiles.length; i += 1) if (map.lowerTiles[i] === BEODEUL_PLAIN_GRASS && editable(i % W, Math.floor(i / W))) map.lowerTiles[i] = woodland;
+  if (woodland >= 0 && !look.plainGround) for (let i = 0; i < map.lowerTiles.length; i += 1) if (map.lowerTiles[i] === BEODEUL_PLAIN_GRASS && editable(i % W, Math.floor(i / W))) map.lowerTiles[i] = woodland;
 
+  if (look.castShadows) castTreeShadows(project, map, tileset, placements, look.castShadows === "outside" ? (c) => !forest.has(c) : () => true, water);
+  if (look.skirt) mossSkirt(project, map, tileset, forest, (c) => !path.has(c) && !water.has(c) && editable(c % W, Math.floor(c / W)));
   // 길섶·빈터 덤불 — 길 곁 풀밭에 드문드문, 빈터엔 덩이로. 걷는 칸을 막지 않는 1×1 깊은 숲길 소품만.
   // 1×1 키트라 키트 칸 번호를 3층에 바로 쓴다(같은 칩셋 — 도장 도구를 칸마다 부르면 맵 한 장에 수십 초가 걸렸다). 걸을 수 있는 그림만.
   const decor = (tileset.structureKits ?? [])
@@ -272,11 +300,127 @@ export function paintWoodlandOnto(project: Project, map0: GameMap, spec: WoodSpe
     const x = c % W, y = (c - x) / W;
     if (layerTileAt(map, 3, c) >= 0 || layerTileAt(map, 2, c) >= 0 || layerTileAt(map, 4, c) >= 0) continue;
     const nextToPath = [c - 1, c + 1, c - W, c + W].some((n) => path.has(n));
-    const p = (nextToPath ? 0.05 : 0.09 + 0.06 * noise2(x * 1.7, y * 1.3, seed + 3)) * (spec.undergrowth ?? 1);
+    const trunkLine = look.skirt && forest.has(c - W) && !nextToPath;
+    const p = trunkLine ? 0.45 : (nextToPath ? 0.05 : 0.09 + 0.06 * noise2(x * 1.7, y * 1.3, seed + 3)) * (spec.undergrowth ?? 1);
     if (rng() > p) continue;
     setLayerTileAt(map, 3, c, decor[Math.floor(rng() * decor.length)]!);
   }
   map = project.maps[map0.id]!;
   void isPassable;
   return { map, path, open, forest, water, pockets };
+}
+
+/** 줄기 시안 시트를 업로드 그림판으로 넣고 칸을 대상 칩셋에 이식한 그림 정의. 원본 정의에서 이름이 같은 그림을 바꿔 끼운다. */
+function trunkSprites(project: Project, tileset: Project["tilesets"][string],
+  t: NonNullable<WoodLook["trunks"]>): import("@/project/types").TreeComposerSprite[] {
+  const sheetId = `fs_trunks_${t.id}`;
+  const maxTile = Math.max(...t.sprites.flatMap((s) => s.tiles));
+  project.assets.uploaded[sheetId] ??= { id: sheetId, name: `폴른 스타 줄기 시안 ${t.id} (3/4 관문 통과 전)`, kind: "tileset", dataUrl: t.sheet, meta: { tileSize: 16 } } as never;
+  const n = Math.ceil((maxTile + 1) / 16) * 16;
+  const src = {
+    id: sheetId, name: sheetId, image: { type: "uploaded", id: sheetId }, kind: "custom", tileSize: 16, tilesPerRow: 16, count: n,
+    passability: Array.from({ length: n }, () => ({ up: false, down: false, left: false, right: false })),
+    priority: Array.from({ length: n }, () => "upper"), terrain: Array.from({ length: n }, () => 0),
+    tileMeta: Array.from({ length: n }, () => ({ label: "폴른 스타 줄기 시안", description: "3/4 관문 통과 전", tags: ["tree"] })),
+  } as unknown as Project["tilesets"][string];
+  project.tilesets[sheetId] ??= src;
+  const tr = translateTiles(project.tilesets[sheetId]!, tileset, new Set(t.sprites.flatMap((s) => s.tiles.filter((x) => x >= 0))));
+  const swapped = new Map(t.sprites.map((s) => [`${s.name}|${s.dark ? 1 : 0}`, { ...s, tiles: s.tiles.map((x) => (x < 0 ? -1 : tr.map.get(x)!)) }]));
+  const base = beodeulForestComposer(project, tileset, "broadleaf").sprites;
+  return base.map((s) => swapped.get(`${s.name}|${s.dark ? 1 : 0}`) ?? s);
+}
+
+/** 원본 나무 키트 낙하 그림자(beodeul_nature shadows, 마을 시공기와 같은 표)를 키트 원점 기준으로 2층 빈 칸에 얹는다. */
+function castTreeShadows(project: Project, map: GameMap, tileset: Project["tilesets"][string], placements: readonly TreePlacement[],
+  ok: (c: number) => boolean, water: ReadonlySet<number>): void {
+  const W = map.width, H = map.height;
+  const want = new Map<number, number>();
+  for (const p of [...placements].sort((a, b) => a.z - b.z)) {
+    const sh = BEODEUL_NATURE.shadows[p.sprite.name];
+    if (!sh) continue;
+    // 그림자 칸이 반 넘게 숲·물에 막히면 통째로 건너뛴다 — 조각만 남으면 풀밭 위 회색 막대로 읽혔다(시안 r1).
+    const cells: [number, number][] = [];
+    let total = 0;
+    sh.rows.forEach((row, j) => row.forEach((t, i) => {
+      if (t < 0) return;
+      total++;
+      const x = p.x0 + sh.dx + i, y = p.y0 + sh.dy + j;
+      if (x < 0 || y < 0 || x >= W || y >= H) return;
+      const c = y * W + x;
+      if (!ok(c) || water.has(c) || want.has(c)) return;
+      cells.push([c, t]);
+    }));
+    if (cells.length * 10 < total * 6) continue;
+    for (const [c, t] of cells) want.set(c, t);
+  }
+  if (!want.size) return;
+  const tr = translateTiles(beodeulNatureTileset(project), tileset, new Set(want.values()));
+  for (const to of tr.map.values()) { tileset.priority[to] = "lower"; tileset.passability[to] = { up: true, down: true, left: true, right: true }; }
+  for (const [c, t] of want) if (layerTileAt(map, 2, c) < 0) setLayerTileAt(map, 2, c, tr.map.get(t)!);
+}
+
+/** 숲 남쪽 끝 바로 아래 칸에 원본 숲 그늘(이끼 치마) — planBeodeulCanopy 와 같은 칸 고르기. */
+function mossSkirt(project: Project, map: GameMap, tileset: Project["tilesets"][string], forest: ReadonlySet<number>, ok: (c: number) => boolean): void {
+  const W = map.width, H = map.height, P = BEODEUL_NATURE.forestPeriod.leaf, shades = BEODEUL_NATURE.forestShade.leaf;
+  const want = new Map<number, number>();
+  for (const c of forest) {
+    const x = c % W, y = (c - x) / W, s = c + W;
+    if (y + 1 >= H || forest.has(s) || !ok(s)) continue;
+    const nw = x > 0 && forest.has(c - 1), ne = x + 1 < W && forest.has(c + 1);
+    const t = shades[(x % P) * 4 + (nw ? 2 : 0) + (ne ? 1 : 0)];
+    if (t !== undefined && t >= 0) want.set(s, t);
+  }
+  if (!want.size) return;
+  const tr = translateTiles(beodeulNatureTileset(project), tileset, new Set(want.values()));
+  for (const to of tr.map.values()) { tileset.priority[to] = "lower"; tileset.passability[to] = { up: true, down: true, left: true, right: true }; }
+  for (const [c, t] of want) if (layerTileAt(map, 2, c) < 0) setLayerTileAt(map, 2, c, tr.map.get(t)!);
+}
+
+/**
+ * 숲 가장자리 밖 풀밭에 낱 나무(T3·T4 원본 키트, 밑동이 보이는 온 나무). 그림 칸 전부가 트인 풀밭이고 길·물·틈·출구에서 한 칸 이상 떨어진 자리만,
+ * 숲에서 reach 칸 안. every = 후보 칸 중 몇 칸에 하나 꼴. 막는 칸은 나무 그림 칸(원본 키트 통행표 그대로).
+ */
+function plantLooseTrees(map: GameMap, sprites: readonly import("@/project/types").TreeComposerSprite[], spec: WoodSpec,
+  m: { path: Set<number>; water: Set<number>; nookCells: Set<number>; forest: Set<number>; open: Set<number> },
+  opt: { every: number; reach: number }, editable: (x: number, y: number) => boolean): TreePlacement[] {
+  const W = map.width, H = map.height;
+  const pool = sprites.filter((sp) => !sp.dark && (sp.shape === "T3" || sp.shape === "T4"));
+  const busy = new Set<number>();
+  const near = (x: number, y: number, set: ReadonlySet<number>, r: number) => {
+    for (let dy = -r; dy <= r; dy++) for (let dx = -r; dx <= r; dx++) { const nx = x + dx, ny = y + dy; if (nx >= 0 && ny >= 0 && nx < W && ny < H && set.has(ny * W + nx)) return true; }
+    return false;
+  };
+  const guard = new Set<number>([...m.path, ...m.water, ...m.nookCells]);
+  for (const e of spec.exits) for (let dy = -3; dy <= 3; dy++) for (let dx = -3; dx <= 4; dx++) { const x = e.x + dx, y = e.y + dy; if (x >= 0 && y >= 0 && x < W && y < H) guard.add(y * W + x); }
+  for (const e of map.events) guard.add(e.y * W + e.x);
+  const out: TreePlacement[] = [];
+  const cand: number[] = [];
+  for (let c = 0; c < W * H; c++) if (m.open.has(c) && !guard.has(c)) cand.push(c);
+  cand.sort((a, b) => ((a * 2654435761) >>> 0) % 1009 - ((b * 2654435761) >>> 0) % 1009);
+  let k = 0;
+  for (const c of cand) {
+    const ax = c % W, ay = (c - ax) / W;
+    if (!near(ax, ay, m.forest, opt.reach)) continue;
+    if ((k++ % opt.every) !== 0) continue;
+    const sp = pool[(ax * 7 + ay * 13) % pool.length]!;
+    const tc = sp.shape === "T4" ? 1 : 1;
+    const x0 = ax - tc, y0 = ay - sp.h + 1;
+    let ok = x0 >= 1 && y0 >= 0 && x0 + sp.w < W && ay + 1 < H;
+    for (let j = -1; ok && j <= sp.h; j++) for (let i = -1; i <= sp.w; i++) {
+      const x = x0 + i, y = y0 + j;
+      if (x < 0 || y < 0 || x >= W || y >= H) continue;
+      const cc = y * W + x;
+      const inside = i >= 0 && j >= 0 && i < sp.w && j < sp.h;
+      if (inside && (!m.open.has(cc) || guard.has(cc) || busy.has(cc) || !editable(x, y))) { ok = false; break; }
+      if (!inside && (m.path.has(cc) || busy.has(cc))) { ok = false; break; }
+    }
+    if (!ok) continue;
+    for (let j = 0; j < sp.h; j++) for (let i = 0; i < sp.w; i++) busy.add((y0 + j) * W + x0 + i);
+    out.push({ sprite: sp, x0, y0, z: ay * 4096 + 2048 });
+  }
+  if (!out.length) return out;
+  const cells = new Set<number>(busy);
+  const isL = (x: number, y: number) => x >= 0 && y >= 0 && x < W && y < H && cells.has(y * W + x);
+  composeTreesPlaced(map, { kind: "trees", layers: [4, 3, 2], sprites: pool, trunkCols: {} } as never, out, new Uint8Array(W * H), isL, isL, isL);
+  return out;
 }

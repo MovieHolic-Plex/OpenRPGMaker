@@ -29,3 +29,9 @@ export function romanceFieldMenu(): AuthoredFieldMenu { return { version:1, entr
   {command:'relationships',label:'호감도'}, {command:'quests',label:'일정'}, {command:'items',label:'소지품'}, {command:'gallery',label:'갤러리'}, {command:'endings',label:'엔딩'}, {command:'backlog',label:'백로그'},
   {command:'save',label:'저장'}, {command:'load',label:'불러오기'}, {command:'options',label:'설정'}, {command:'to-title',label:'타이틀로'},
 ] }; }
+/** 전투 없는 이야기 게임(공포·회상·추리 이야기)의 ESC 메뉴 — 스킬·장비·파티·진형 없이 소지품·기록·저장·설정만(2026-10-25 판정 J39).
+    갤러리·엔딩·백로그는 그 기능을 켠 게임에서만 보인다(listStatusMenuCommandIds 가 거른다). */
+export function storyFieldMenu(): AuthoredFieldMenu { return { version:1, entries: [
+  {command:'items',label:'소지품'}, {command:'gallery',label:'갤러리'}, {command:'endings',label:'엔딩'}, {command:'backlog',label:'대화 기록'},
+  {command:'save',label:'저장'}, {command:'load',label:'불러오기'}, {command:'options',label:'설정'}, {command:'to-title',label:'타이틀로'},
+] }; }

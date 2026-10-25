@@ -10,7 +10,7 @@ import type { GameMap, Project } from "@/project/types";
 import { isPassable } from "@/project/collision";
 import { CONSTRUCTION_TOOLS_V3 } from "./v3/constructionTools";
 import { assertMapIdAvailable } from "./mapHelpers";
-import { MAP_TOOLS } from "./mapTools";
+import { MAP_TOOLS, assignCreatedMapBgm } from "./mapTools";
 import { SHARED_OBJECT_TOOLS } from "./sharedObjectTools";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
 import { BEODEUL_YARD_QUARTERS, beodeulYardReserve } from "./villageQuarterTool";
@@ -78,7 +78,7 @@ export const AUTHOR_BEODEUL_TOWN_TOOL: ToolDefinition = {
       water: { type: "string", enum: [...BEODEUL_VILLAGE_WATERS], description: "강가 마을(theme river)의 물: river 강이 맵을 세로로 지나고 다리(방앗간·나루 마을) · none 강 없는 마을(숲 빈터·언덕·산골·성벽 안 마을 — 큰길이 가로지르고 일터는 타작마당). riverbank 형태는 늘 river. 생략하면 도구가 고른다(결과 data.water)." },
       quarter: { type: "string", enum: [...BEODEUL_YARD_QUARTERS], description: "이 마을에 곧 dress_village_quarter 로 앉힐 마당 덩이(mining 광산촌 · vineyard 포도원 · temple-ruins 신전 폐허). 주면 숲·밭을 놓기 전에 길가 풀밭에 그 마당 자리를 비워 둔다 — 그다음 dress_village_quarter({mapId, quarter}) 를 같은 값으로 부른다." },
       woods: { type: "string", enum: [...BEODEUL_VILLAGE_WOODS], description: "숲(theme river·coast·snow): edge 마을 둘레에 숲 덩이(기본) · dense 숲속 빈터 마을 — 집·길 사이를 숲이 메우고 밭은 둘까지(숲속 마을·숲 깊은 곳)." },
-      roofs: { type: "string", enum: [...BEODEUL_ROOF_PALETTES], description: "지붕 팔레트(theme river·coast 마을만 — 사막·설원·늪은 자기 집): red 붉은 기와 목골집 · slate 청회색 슬레이트 · moss 이끼 낀 초가·너와(농가·숲 마을) · log 통나무집(산골·숲속). 집의 80%가 이 지붕, 나머지는 돌벽 작은 집. 생략하면 도구가 고른다(결과 data.roofs)." },
+      roofs: { type: "string", enum: [...BEODEUL_ROOF_PALETTES], description: "지붕 팔레트(theme river·coast 마을만 — 사막·설원·늪은 자기 집): red 붉은 기와 목골집 · slate 청회색 슬레이트 · moss 이끼 낀 초가·너와(농가·숲 마을) · log 통나무집(산골·숲속) · medieval 중세 건물(목골집·막돌집·탑집에 여관·대장간·예배당·비둘기탑 같은 앵커, 3/4 관문과 독립 검수 둘을 통과한 bd-house-mk-*). 집의 80%가 이 지붕, 나머지는 돌벽 작은 집. 생략하면 도구가 고른다(결과 data.roofs)." },
       church: {type:'boolean',description:'houseCount 와 함께 true 이면 옛 예제 작은 마을(고정 배치 40×30 + 석조 교회와 마당, 폭 54칸)을 짓는다. 기본 false — 새 마을에는 쓰지 말 것.'},
       form: { type: "string", enum: [...BEODEUL_VILLAGE_FORMS], description: "마을 형태(theme 마을만, city 에는 없음): street 길가 · riverbank 물가 띠(river 만) · scatter 흩어진 · plaza 광장(장터일 때만). 생략하면 seed 로 고른다." },
       terrain: { type: "string", enum: [...VILLAGE_TERRAINS], description: "지형(theme 마을만) — 마을보다 먼저 정하는 땅 모양: terraces 계단식 비탈(river·coast, 큰길 북쪽 집 띠 뒤로 한두 단, 강은 곧은 골) · highland 높은 산비탈(river, 7칸 간격 세 단 — 산골, 요청할 때만) · hillside 눈 덮인 비탈(snow) · basin 오아시스 골(desert) · ridge 마른 둔덕(swamp, 북쪽 높은 마른 땅·늪물은 낮은 땅에만) · flat 평지. 생략하면 seed 로 고른다(결과 data.terrain)." },
@@ -154,6 +154,14 @@ function normalizeTownArgs(draft: Project, raw: Record<string, unknown>): { args
     const before = `${map.width}×${map.height}`;
     requireTool(MAP_TOOLS, "resize_map").run(draft, { mapId: map.id, width, height });
     notes.push(`빈 맵 ${map.id}(${before})을 ${width}×${height} 로 넓혀 그 자리에 지었다.`);
+  }
+  // 빈 시작 맵 위에 지으면 그 맵이 곧 이 마을이다 — 이름(「빈 맵」 그대로였다)과 마을 BGM(없었다)을 새 맵처럼 준다(2026-10-25 조수 단독 게임 시험 G1·G2).
+  if (map && isBlankMap(map)) {
+    const name = typeof args.name === "string" && args.name.trim() ? args.name.trim() : "버들 마을";
+    if (/^(빈 맵|새 맵|맵\s*\d*|map\s*\d*|untitled)$/iu.test(map.name.trim()) || !map.name.trim()) { map.name = name; notes.push(`맵 이름을 「${name}」 로 바꿨다.`); }
+    if (!map.bgm || (map.bgm.mode === "custom" && !map.bgm.resourceId)) {
+      try { const bgm = assignCreatedMapBgm(map, {}, { themeOrName: `${name} 마을 town village peaceful`, fallbackTheme: "town", draft }); notes.push(`마을 BGM ${bgm}.`); } catch { /* 곡이 없으면 그대로 */ }
+    }
   }
   return { args, notes };
 }

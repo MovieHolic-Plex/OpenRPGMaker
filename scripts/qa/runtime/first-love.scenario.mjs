@@ -53,8 +53,9 @@ function talkTo(mapId, cell, dir = "up") {
     { kind: "teleport", mapId, x: from.x, y: from.y },
     { kind: "hold", dir: null, ms: 300 },
     { kind: "face", dir },
-    { kind: "action" },
-    { kind: "hold", dir: null, ms: 600 },
+    // 순간이동 직후 한 번의 조사는 이벤트 갱신 중이라 삼켜질 수 있다 — 대사가 열릴 때까지 Z 를 다시 누른다.
+    { kind: "pressUntilJs", key: "z", fn: "() => !!document.querySelector(\"[data-testid='dialogue-box']\") || !!document.querySelector(\"[data-testid='runtime-choices']\")", maxPresses: 4, settleMs: 500 },
+    { kind: "hold", dir: null, ms: 300 },
   ];
 }
 /** 콘솔 오류·경고와 페이지 재적재를 모은다(마지막 state 비트가 함께 적는다). */
@@ -75,9 +76,8 @@ const pickNote = A ? 1 : 0;
 const pickC6 = A ? 0 : 1;
 const pickC7 = A ? 0 : 1;
 
-const exitCell = at("fl_platform_am", "ev_fl_plat_exit");
 const officeDoor = at("fl_street", "ev_fl_office_door");
-const stairs = at("fl_office", "ev_fl_stairs");
+const elevator = at("fl_office", "ev_fl_elev");
 const minho = at("fl_office", "ev_fl_minho");
 const konDoorPm = at("fl_street_pm", "ev_fl_konbini_pm");
 const cooler = at("fl_konbini", "ev_fl_cooler");
@@ -102,11 +102,11 @@ export default {
       { kind: "waitFor", testid: "dialogue-box", state: "present", timeoutMs: 30000 },
       shotPause(1500),
     ], shot: true },
-    { id: "intro-bust", note: "서하 흉상 대사", ops: [{ kind: "pressUntilJs", key: "Enter", fn: "() => /할 수 있어/.test(document.querySelector(\"[data-testid='dialogue-box']\")?.textContent ?? '')", maxPresses: 10 }, shotPause(900)], shot: true },
-    { id: "platform", note: "승강장 — 조작 가능", ops: [untilStage(1), shotPause(600)], shot: true },
-    { id: "street", note: "역 밖 거리(낮)", ops: [...stepInto("fl_platform_am", exitCell, "down"), untilStage(2), shotPause(600)], shot: true },
+    { id: "intro-bust", note: "서하 흉상 대사(출구 앞)", ops: [{ kind: "pressUntilJs", key: "Enter", fn: "() => /할 수 있어/.test(document.querySelector(\"[data-testid='dialogue-box']\")?.textContent ?? '')", maxPresses: 10 }, shotPause(900)], shot: true },
+    { id: "freeze", note: "횡단보도에서 부딪힘 — 정지 화면", ops: [{ kind: "key", key: "Enter" }, { kind: "waitFor", testid: "runtime-freeze-frame", state: "present", timeoutMs: 20000 }, shotPause(700)], shot: true },
+    { id: "street", note: "부딪힌 뒤 거리(낮) — 조작 가능", ops: [untilStage(2), shotPause(600)], shot: true },
     { id: "office-arrive", note: "사무실 도착 — 팀장 인사", ops: [...stepInto("fl_street", officeDoor, "up"), { kind: "waitFor", testid: "dialogue-box", state: "present", timeoutMs: 20000 }, shotPause(1200)], shot: true },
-    { id: "meet", note: "처음 뵙겠습니다", ops: [{ kind: "pressUntilJs", key: "Enter", fn: "() => /강지후입니다/.test(document.querySelector(\"[data-testid='dialogue-box']\")?.textContent ?? '')", maxPresses: 40, settleMs: 500 }, shotPause(1200)], shot: true },
+    { id: "meet", note: "처음 뵙겠습니다", ops: [{ kind: "pressUntilJs", key: "Enter", fn: "() => /강지후입니다/.test(document.querySelector(\"[data-testid='dialogue-box']\")?.textContent ?? '')", maxPresses: 90, settleMs: 500 }, shotPause(1200)], shot: true },
     { id: "c1", note: "선택 1", ops: [toChoice(), shotPause(500)], shot: true },
     { id: "after-c1", note: "선택 1 결과", ops: [...pick(pickC1), shotPause(900)], shot: true },
     ...(A ? [{ id: "pulse", note: "호감 알림 — 오른쪽 위 ♥", ops: [{ kind: "pressUntilJs", key: "Enter", fn: "() => !!document.querySelector(\"[data-testid='relationship-pulse']\")", maxPresses: 12, settleMs: 250 }, shotPause(300)], shot: true }] : []),
@@ -115,15 +115,15 @@ export default {
     closeMenu("menu-mon-close"),
     { id: "pantry", note: "탕비실 민호", ops: [...talkTo("fl_office", minho, "up"), toChoice(), shotPause(500)], shot: true },
     { id: "after-pantry", note: "선택 2 → 옥상 힌트", ops: [...pick(pickC2), untilStage(4), shotPause(500)], shot: true },
-    { id: "rooftop", note: "옥상의 지후", ops: [...stepInto("fl_office", stairs, "up"), { kind: "waitFor", testid: "dialogue-box", state: "present", timeoutMs: 20000 }, shotPause(1500)], shot: true },
+    { id: "rooftop", note: "엘리베이터로 옥상 — 옥상의 지후", ops: [...stepInto("fl_office", elevator, "up"), { kind: "waitFor", testid: "dialogue-box", state: "present", timeoutMs: 30000 }, { kind: "pressUntilJs", key: "Enter", fn: "() => /있다\\./.test(document.querySelector(\"[data-testid='dialogue-box']\")?.textContent ?? '')", maxPresses: 8, settleMs: 900 }, shotPause(1500)], shot: true },
     { id: "c3", note: "옥상 선택", ops: [toChoice(), shotPause(500)], shot: true },
     { id: "after-c3", note: "옥상 선택 결과", ops: [...pick(pickC3), shotPause(1000)], shot: true },
     { id: "night-street", note: "밤거리", ops: [untilStage(6), shotPause(1200)], shot: true },
     { id: "konbini", note: "편의점", ops: [...stepInto("fl_street_pm", konDoorPm, "up"), untilStage(7), shotPause(800)], shot: true },
     { id: "konbini-jihu", note: "편의점의 지후", ops: [...talkTo("fl_konbini", cooler, "up"), toChoice(), shotPause(500)], shot: true },
     { id: "flashback", note: "회상 — 방송실", ops: [...pick(pickC4), { kind: "pressUntilJs", key: "Enter", fn: "() => /성하고등학교/.test(document.querySelector(\"[data-testid='dialogue-box']\")?.textContent ?? '')", maxPresses: 30, settleMs: 600 }, shotPause(1500)], shot: true },
-    { id: "flashback-2", note: "회상 — 어린 지후", ops: [{ kind: "pressUntilJs", key: "Enter", fn: "() => /서성이는/.test(document.querySelector(\"[data-testid='dialogue-box']\")?.textContent ?? '')", maxPresses: 30, settleMs: 600 }, shotPause(900)], shot: true },
-    { id: "wednesday", note: "수요일 야근 — 실수", ops: [{ kind: "pressUntilJs", key: "Enter", fn: "() => /지난주 버전/.test(document.querySelector(\"[data-testid='dialogue-box']\")?.textContent ?? '')", maxPresses: 40, settleMs: 600 }, shotPause(900)], shot: true },
+    { id: "flashback-2", note: "회상 — 어린 지후", ops: [{ kind: "pressUntilJs", key: "Enter", fn: "() => /서성이는/.test(document.querySelector(\"[data-testid='dialogue-box']\")?.textContent ?? '')", maxPresses: 90, settleMs: 600 }, shotPause(900)], shot: true },
+    { id: "wednesday", note: "수요일 야근 — 실수", ops: [{ kind: "pressUntilJs", key: "Enter", fn: "() => /수정 전 버전/.test(document.querySelector(\"[data-testid='dialogue-box']\")?.textContent ?? '')", maxPresses: 90, settleMs: 600 }, shotPause(900)], shot: true },
     { id: "c5", note: "선택 5", ops: [toChoice(), ...pick(pickC5), shotPause(600)], shot: true },
     { id: "c5b", note: "수요일 밤 — 시안 이야기(선택지)", ops: [toChoice(), shotPause(500)], shot: true },
     { id: "after-c5b", note: "시안 이야기 결과", ops: [...pick(A ? 0 : 1), untilStage(9), shotPause(600)], shot: true },
@@ -131,7 +131,7 @@ export default {
     closeMenu("menu-wed-close"),
     { id: "notebook", note: "지후 수첩", ops: [...talkTo("fl_office_pm", notebook, "up"), toChoice(), shotPause(500)], shot: true },
     { id: "ramen", note: "탕비실 라면", ops: [...pick(pickNote), closeDialogue(), ...talkTo("fl_office_pm", jihuPantry, "down"), toChoice(), shotPause(500)], shot: true },
-    { id: "friday", note: "금요일 발표", ops: [...pick(pickC6), { kind: "pressUntilJs", key: "Enter", fn: "() => /핵심이 뭡니까/.test(document.querySelector(\"[data-testid='dialogue-box']\")?.textContent ?? '')", maxPresses: 40, settleMs: 600 }, shotPause(1200)], shot: true },
+    { id: "friday", note: "금요일 발표", ops: [...pick(pickC6), { kind: "pressUntilJs", key: "Enter", fn: "() => /핵심이 뭡니까/.test(document.querySelector(\"[data-testid='dialogue-box']\")?.textContent ?? '')", maxPresses: 90, settleMs: 600 }, shotPause(1200)], shot: true },
     { id: "c7", note: "발표 선택", ops: [toChoice(), ...pick(pickC7), shotPause(900)], shot: true },
     { id: "c8", note: "역으로 / 회식", ops: [toChoice(), shotPause(500)], shot: true },
     ...(C

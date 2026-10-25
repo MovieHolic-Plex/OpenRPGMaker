@@ -8,6 +8,7 @@ import {
 import { ProjectFormatError } from "@/project/io/errors";
 import type { AudioDescriptionOverrides, Project } from "@/project/types";
 import { resolveMapBgm } from '@/project/mapMusic';
+import { readStoreMusicMeta, type StoreMusicScene } from "@/assets/storeMusicMeta";
 import { ToolError, type JsonSchema, type ToolDefinition } from "./types";
 
 export function parseAudioResourceRef(kind: unknown, resourceId: unknown): AudioResourceRef {
@@ -85,6 +86,12 @@ const BGM_SCENES = [
   "village",
   "forest",
   "field",
+  "town",
+  "boss",
+  "victory",
+  "sad",
+  "tense",
+  "ending",
 ] as const;
 
 type BgmScene = (typeof BGM_SCENES)[number];
@@ -97,7 +104,24 @@ const BGM_SCENE_NEEDLES: Readonly<Record<BgmScene, readonly string[]>> = {
   village: ["마을", "광장", "길드", "회관", "시장 · 아침 생활", "축제", "과수원", "어촌", "찻집", "공원", "양봉"],
   forest: ["숲 · 탐험", "잎다리", "소나무", "양치식물", "사과꽃"],
   field: ["필드", "초원", "장거리"],
+  town: ["마을", "광장", "길드", "회관", "시장 · 아침 생활", "축제", "과수원", "어촌", "찻집", "공원", "양봉"],
+  boss: ["보스"],
+  victory: ["승리", "팡파레", "팡파르"],
+  sad: ["슬픔", "이별", "애도"],
+  tense: ["긴장", "위기", "미스터리"],
+  ending: ["엔딩", "결말", "에필로그"],
 };
+// 스토어 음악 팩 곡은 이름이 아니라 실은 장면(storeMusicMeta.ts)으로 맞춘다.
+const BGM_SCENE_STORE: Readonly<Record<BgmScene, readonly StoreMusicScene[]>> = {
+  title: ["title"], battle: ["battle", "boss"], night: [], dungeon: ["dungeon"], village: ["town"], forest: ["field"], field: ["field"],
+  town: ["town"], boss: ["boss"], victory: ["victory"], sad: ["sad"], tense: ["tense"], ending: ["ending"],
+};
+
+function inScene(project: Project, resource: { id: string; name: string }, scene: BgmScene): boolean {
+  const music = readStoreMusicMeta(project.assets.uploaded[resource.id]?.meta);
+  if (music) return music.scenes.some((entry) => BGM_SCENE_STORE[scene].includes(entry));
+  return BGM_SCENE_NEEDLES[scene].some((needle) => resource.name.includes(needle));
+}
 
 function searchBgmMatches(project: Project, query: string): Array<{ resourceId: string; score: number }> {
   return searchResources("bgm", query, { audioProject: project }).map((match) => ({
@@ -106,15 +130,22 @@ function searchBgmMatches(project: Project, query: string): Array<{ resourceId: 
   }));
 }
 
+function storeMusicFacts(project: Project, resourceId: string) {
+  const music = readStoreMusicMeta(project.assets.uploaded[resourceId]?.meta);
+  if (!music) return {};
+  return { music: { genre: music.genreKo || music.genreLabel || music.genre, scenes: music.scenes, mood: music.mood, energy: music.energy, bpm: music.bpm, tempo: music.tempo, loopable: music.loopable, lengthSec: music.lengthSec } };
+}
+
 const recommendBgm: ToolDefinition = {
   name: "recommend_bgm",
-  description: "분위기/장면 질의로 BGM 후보를 고른다. 제목 목록이 아니라 후보마다 전체 설명을 함께 돌려주므로, 이 결과를 보고 bgmResourceId를 정한다. 자동 선택(create_map/generate_map) 대신 곡을 고를 때 쓴다.",
+  description: "분위기/장면 질의로 BGM 후보를 고른다. 제목 목록이 아니라 후보마다 전체 설명을 함께 돌려주므로, 이 결과를 보고 bgmResourceId를 정한다. 자동 선택(create_map/generate_map) 대신 곡을 고를 때 쓴다. "
+    + "scene 과 query 를 같이 주면 그 장면 곡 안에서 분위기·장르(예: scene:boss, query:\"조선 비장한\")로 고른다. 스토어 음악 팩에서 넣은 곡은 music 칸(장르·장면·분위기·빠르기·루프)이 붙는다.",
   mode: "read",
   parameters: {
     type: "object",
     properties: {
       query: { type: "string", description: "분위기/장면 질의(예: 슬픈 마을, 밤 숲). scene과 둘 중 하나는 필수." },
-      scene: { type: "string", enum: [...BGM_SCENES], description: "query 없이 장면만으로 고를 때. query가 있으면 query가 우선." },
+      scene: { type: "string", enum: [...BGM_SCENES], description: "장면으로 거르기(town·field·dungeon·battle·boss·victory·sad·tense·title·ending 등). query 와 같이 주면 그 장면 곡만 query 로 순위를 매긴다." },
       limit: { type: "integer", minimum: 1, maximum: 20, description: "후보 수(기본 10, 최대 20)" },
     },
     additionalProperties: false,
@@ -131,12 +162,17 @@ const recommendBgm: ToolDefinition = {
     }
     const catalog = listAudioResources("music", project);
     const byId = new Map(catalog.map((resource) => [resource.id, resource]));
-    // scene만 있으면 카테고리 바늘로 모으고, query가 있으면 의미 검색 점수로 세운다.
-    const ordered: Array<{ resourceId: string; score: number }> = hasQuery
+    // scene만 있으면 장면으로 모으고, query가 있으면 의미 검색 점수로 세운다. 둘 다 있으면 장면 안에서 query 순위.
+    const sceneIds = scene === undefined ? null : new Set(catalog.filter((resource) => inScene(project, resource, scene)).map((resource) => resource.id));
+    let ordered: Array<{ resourceId: string; score: number }> = hasQuery
       ? searchBgmMatches(project, args.query as string)
-      : catalog
-        .filter((resource) => BGM_SCENE_NEEDLES[scene as BgmScene].some((needle) => resource.name.includes(needle)))
-        .map((resource) => ({ resourceId: resource.id, score: 1 }));
+      : [...sceneIds!].map((resourceId) => ({ resourceId, score: 1 }));
+    let sceneFallback = false;
+    if (hasQuery && sceneIds) {
+      const narrowed = ordered.filter((match) => sceneIds.has(match.resourceId));
+      if (narrowed.length) ordered = narrowed;
+      else sceneFallback = true;
+    }
     const usedOnMaps = new Map<string, string[]>();
     for (const map of Object.values(project.maps)) {
       const effective = resolveMapBgm(project, map.id);
@@ -161,12 +197,18 @@ const recommendBgm: ToolDefinition = {
         descriptionSource: resource.descriptionSource,
         score,
         usedOnMaps: usedOnMaps.get(resourceId) ?? [],
+        ...storeMusicFacts(project, resource.id),
       });
     }
     // 검색 0건이면 장면 폴백이 아니라 빈 목록 — 엉뚱한 1등을 "추천"으로 착각하게 하지 않는다.
     return {
       summary: `BGM 후보 ${candidates.length}건${hasQuery ? `("${(args.query as string).trim()}")` : `(${scene})`}`,
-      data: { candidates, total, originalCompositionTool: "generate_original_bgm", guidance: "같은 분위기의 동점 후보는 미사용 곡 우선. 원곡 요청/장면 변화/부적합한 반복은 직접 작곡하고 맵에 연결하세요." },
+      data: {
+        candidates, total, ...(sceneFallback ? { sceneFallback: true } : {}), originalCompositionTool: "generate_original_bgm",
+        guidance: "같은 분위기의 동점 후보는 미사용 곡 우선. music 칸이 있는 곡은 장르·장면·분위기를 대조해 고르고, loopable:false(징글)는 맵 BGM 말고 승리 음악(set_game_audio role victory)에 쓴다. "
+          + "후보가 기본 내장곡(cc0-·rtp 계열, music 칸 없음)뿐이거나 원하는 장르(조선풍·무협 …)·장면에 꼭 맞는 곡이 없으면 store_find_music{scene, query, mood, need}로 스토어 음악 팩에서 곡 단위로 찾는다(기본은 묻지 않고 store_install 로 넣는다, 사용자가 「먼저 묻기」를 켰으면 카드가 묻는다). "
+          + "연결은 set_game_audio — 맵 배경음 role:maps+mapIds, 모든 전투 battle-default, 보스전만 boss(+troopIds), 승리 victory, 타이틀 title. 원곡 요청/장면 변화/부적합한 반복은 직접 작곡하고 맵에 연결하세요.",
+      },
     };
   },
 };

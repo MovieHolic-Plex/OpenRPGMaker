@@ -1,0 +1,323 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "cfd0cf2cb6831804f7a86d426f6c7e0138594d8c39165b45b9712e88bd93d846",
+ "width": 16,
+ "height": 32,
+ "kind": "other",
+ "name": "세로 입간판 「편의」",
+ "label": "modern_city/street-kr/mc-prop-kr-sign-conv",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "bus-shelter-a",
+   "kiosk-a",
+   "vending-a"
+  ],
+  "scale": 2,
+  "score": 7,
+  "refSet": {
+   "id": "modern_city",
+   "chipset": "modern_city",
+   "fallback": false,
+   "hash": "dc20de17343e77e8"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 9,
+  "tileColorsP90": 9,
+  "darkV5": 37,
+  "nearBlackEdge": 1,
+  "opaqueTiles": 2
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "grey cap/roof slab on top of sign",
+      "rows": "1-7",
+      "evidence": "a",
+      "front_edge_line_row": 7,
+      "eave_shadow_rows": "8"
+     },
+     {
+      "part": "blue sign board front face with white characters",
+      "rows": "8-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 23,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The width profile goes 8, 12, then 16 across rows 2-6, so the cap overhangs the 14-wide board below. The cap is a grey-green band (rows 1-6) with a lighter highlight patch in rows 2-4. It ends in a darker front-edge line at row 7 (L=71), followed by a dark outline at row 8 that works as eave shadow. Below that, the blue board face (rows 8-30) carries the white characters and is a vertical front face of about 23 rows. The cap does not read as a rounded hat on a narrower shaft, because it is wider than the board and has a front-edge line. No side face is drawn. This is a sign, not a column, so round_cap is null."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a tall narrow standing sign in dark blue-grey with a pale sign face and glyph marks. It shows 9 visible tones per full tile, above bus-shelter-a (6) and kiosk-a (12 is higher, but the sign is a thin, sparse object) and below vending-a (20). It has 0% near-flat coverage, so there are no large flat fills, and its dark edge pixels are 0% neutral, so the outline carries a tint. The outline reads as a dark blue-toned edge that follows the body material, matching the vending-a treatment, not a uniform black sticker line. The body has a highlight rim, mid and dark tones, with the face glyphs adding detail, so shading is close to the references at about 5 steps. Its density is comparable to the shipped modern_city props at the same scale, and a careful artist would accept it next to them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 14150
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "gray-green cap/top slab of the sign",
+      "rows": "1-7",
+      "evidence": "a",
+      "front_edge_line_row": 7,
+      "eave_shadow_rows": "8-8"
+     },
+     {
+      "part": "blue signboard front panel with white text",
+      "rows": "8-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 23,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The top cap occupies rows 1-6. Its width grows from 8 to 12 to 16 and it overhangs the 14-wide body. It has a pale highlight patch at rows 2-4 and a darker front-edge line at row 7 (L=71, against L=113 above). The dark outline at row 8 acts as eave shadow. Below that, the blue panel with white lettering is a vertical front face of rows 8-30 (23 rows), with a dark base band at rows 27-30. The top band is only about 6 rows and is rounded at the top, so it is a weaker top surface than a clear ellipse. The edge line and shadow still make it count as evidence (a), so it reads as three_quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a tall, narrow standing sign in dark navy/blue with a light sign face and glyph marks. It has 9 visible tones per 16x16 tile, which is above bus-shelter-a (6) and close to kiosk-a (12), but below vending-a (20). Near-flat coverage is 0%, so there are no large flat fills. The dark edge pixels are 0% neutral, so the outline is tinted a dark blue rather than black, matching the references' dark-material-tone approach. The body shading is a handful of steps: a highlight edge, a mid body, and a dark side, with the lit panel face carrying the glyph detail. It is a thin, sparse object, so I judge density by eye. It sits comfortably beside the vending machine and kiosk without looking sticker-like, but it is a bit simpler than the richest reference, with fewer shading steps on the body.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 14369
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top cap/lid of the sign",
+      "rows": "1-7",
+      "evidence": "a",
+      "front_edge_line_row": 7,
+      "eave_shadow_rows": "8-8"
+     },
+     {
+      "part": "sign panel face with 편의 lettering",
+      "rows": "9-26",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base plinth",
+      "rows": "28-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 7,
+    "front_face_rows": 22,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-7 form a gray-green cap band, 12-16 px wide, with a light highlight oval in rows 2-4. Row 7 is a darker front-edge line (L=71), followed by the dark outline in row 8. The width profile 8, 12, 16, then 14 shows the cap overhanging the 14 px body. It is rounded only at its upper edge and ends flat, so it is not a true ellipse, but the band with its edge line and shadow still counts as evidence (a). Below it the navy panel face runs rows 9-26 and a base runs rows 28-30. That gives about 22 rows of front face. No receding side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a tall, narrow blue sign board with a lit, light-coloured panel and sign glyphs. Measured facts: 9 visible tones per tile, 0% near-flat coverage, 0% neutral dark edge pixels. That is above bus-shelter-a (6 tones, 9% flat) and below kiosk-a (12) and vending-a (20). The outline is a dark navy tint of the body, not neutral black, so it counts as dark_material_tone. It has about 4 lightness steps (highlight edge, body, shade, dark outline, plus the light panel), slightly fewer than the vending-a and kiosk-a references. The glyph panel gives some texture, but the dark body is smooth with little grain. Overall it is an acceptable thin prop. It is on par with bus-shelter-a, a little thinner than the richer references, but it does not read as a flat sticker.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17566
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top cap of the sign",
+      "rows": "1-6",
+      "evidence": "a",
+      "front_edge_line_row": 7,
+      "eave_shadow_rows": "8"
+     },
+     {
+      "part": "sign panel with text (front face)",
+      "rows": "9-26",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base plinth",
+      "rows": "28-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 22,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The sign has a cap in rows 1-6 that is 16 px wide and overhangs the 14 px body. It has a lit highlight patch and a darker front-edge line at row 7 (L=71). Row 8 is a dark outline that acts as eave shadow. Below it, the front face (the navy panel with the character glyph, rows 9-26, plus the base band in rows 28-30) runs about 22 rows. The cap's upper corners are rounded (widths 8, 12, 16) and its bottom edge is flat. That could be read as a hat, but the highlight and the front-edge line make it read as a top surface seen from above. No isometric side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a tall dark-blue standing sign with a lighter rounded top and a glyph panel. It is drawn at the same scale as the references. The measured facts support it: 9 visible tones per 16x16 tile against 6 (bus shelter), 12 (kiosk) and 20 (vending). Near-flat coverage is 0%, which is at or below every reference. The dark edge pixels are 0% neutral, so the outline carries a blue tint and reads as a dark version of the body material, not a black sticker line. By eye, the body has a lit left edge and a darker right edge, plus panel detail and glyph marks, so it is not a flat fill. Shading is a little shallower than the vending machine, at about 4 steps on the body, but it is comparable to the bus shelter and kiosk. A careful artist would accept it next to these references without it looking thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17891
+  }
+ ],
+ "decidedAt": "2026-10-24T14:33:09.515Z",
+ "cells": {
+  "16": [
+   "0cceb1eb55802b32",
+   "d3b514c14ebe3930"
+  ],
+  "24": [
+   "04a828511c00ee8a",
+   "06ec6d9205c29ab5",
+   "1f9f33b1bdb247bc",
+   "26713f2155e705e6",
+   "44248ffc4b7d2c4c",
+   "4f6f1e59b642872d",
+   "740f1e5af2237aea",
+   "8ada719d123f10bd",
+   "8e0ae264f747bcb9",
+   "ab98e64be74fcab6",
+   "b3944b982d3ffdfd",
+   "e93fdab7fd7f0f12"
+  ],
+  "32": [
+   "0d6318e65919486b",
+   "2ad9d2a66dcef163",
+   "fd39ca2691a8abb0"
+  ],
+  "48": [
+   "a2551113b1237658",
+   "c943bef410a4979b",
+   "cecb022c827e1c15",
+   "e01071032e048e29",
+   "f9a8b60ed6ab658a",
+   "fa6657f8222cebb6"
+  ]
+ }
+}

@@ -58,6 +58,7 @@ import {
   MAP_BACKGROUND_MOTIONS,
   MAP_BACKGROUND_MOTION_LABELS,
   mapBackgroundGameViewport,
+  MAP_VIEW_SCALE_RANGE,
   type MapBackgroundMotion,
 } from "@/project/mapBackground";
 import { craftpixDefaultLayers, OGA_CRAFTPIX_BACKDROP_SETS } from "@/assets/ogaCraftpixBackgrounds";
@@ -1877,6 +1878,30 @@ const BACKGROUND_PRESET_GUIDE = [
   ...OGA_CRAFTPIX_BACKDROP_SETS.map((set) => `${set.id}: ${set.summary}`),
 ].join(" / ");
 
+const MAP_VIEW_SCHEMA: JsonSchema = {
+  type: "object",
+  description: "다른 맵을 줄여 그린 배경(옥상·전망대·언덕에서 내려다본 아래 동네). 그 맵의 타일 층을 scale 배로 줄이고 채도를 빼고 안개를 섞어 멀리 아래로 보이게 한다. 이벤트·사람은 안 그린다. imageId 대신 쓴다. 이 맵의 바닥·난간은 원 크기 그대로라서, 내려다볼 빈 자리는 clearForBackground 로 비워야 보인다.",
+  properties: {
+    mapId: { type: "string", description: "줄여 그릴 맵 id(이 맵 자신은 안 된다)." },
+    scale: { type: "number", minimum: MAP_VIEW_SCALE_RANGE.min, maximum: MAP_VIEW_SCALE_RANGE.max, description: `줄임 배율(기본 ${MAP_VIEW_SCALE_RANGE.default}). 높은 곳일수록 작게: 3~4층 옥상 0.45, 고층 옥상 0.3, 산 위 전망대 0.2.` },
+    haze: { type: "number", minimum: 0, maximum: 1, description: "안개 섞기 0~1(기본 0.25). 멀수록 크게." },
+    desaturate: { type: "number", minimum: 0, maximum: 1, description: "채도 빼기 0~1(기본 0.3)." },
+    hazeColor: { type: "string", description: "안개 색 #rrggbb(기본 #c9d6e3, 저녁엔 #e8b7a0, 밤엔 #1c2433)." },
+    focusX: { type: "number", description: "화면 가운데에 올 그 맵의 칸 x(기본 그린 범위 가운데)." },
+    focusY: { type: "number", description: "화면 가운데에 올 그 맵의 칸 y(기본 그린 범위 가운데). 난간 너머로 띠를 내리려면 범위 아래 끝보다 큰 값." },
+    region: {
+      type: "object",
+      description: "그 맵에서 그릴 칸 범위(기본 전체). 옥상에서는 길·건너편 건물 줄만 띠로 잘라 위쪽 하늘이 남게 한다.",
+      properties: { x: { type: "integer", minimum: 0 }, y: { type: "integer", minimum: 0 }, width: { type: "integer", minimum: 1 }, height: { type: "integer", minimum: 1 } },
+      required: ["x", "y", "width", "height"],
+      additionalProperties: false,
+    },
+    feather: { type: "number", minimum: 0, maximum: 0.5, description: "위·아래 가장자리를 투명으로 녹이는 폭(그림 높이 대비, 기본 0). 반복하지 않는 띠를 뒤 층에 섞을 때 0.15~0.3." },
+  },
+  required: ["mapId"],
+  additionalProperties: false,
+};
+
 const backgroundSchema: JsonSchema = {
   type: "object",
   description:
@@ -1912,7 +1937,8 @@ const backgroundSchema: JsonSchema = {
         description: "CraftPix 세트 전용: 구름·새 층만 이 속도(px/프레임)로 흐른다.",
       },
     } : {}),
-    imageId: { type: "string", description: "직접 고른 첫 장(맨 아래) 그림 — list_resources(kind:\"backdrop\") 의 id 나 올린 그림 id. preset 을 주면 생략." },
+    imageId: { type: "string", description: "직접 고른 첫 장(맨 아래) 그림 — list_resources(kind:\"backdrop\") 의 id 나 올린 그림 id. preset 이나 fromMap 을 주면 생략." },
+    fromMap: MAP_VIEW_SCHEMA,
     // 상한은 편집기 입력·로드 정규화와 같은 값이어야 한다 — 툴로만 들어가는 값이 생기면
     // 저장한 뒤 다시 열 때 조용히 잘린다.
     scrollX: { type: "number", minimum: -MAP_BACKGROUND_SCROLL_LIMIT, maximum: MAP_BACKGROUND_SCROLL_LIMIT },
@@ -1936,7 +1962,8 @@ const backgroundSchema: JsonSchema = {
       items: {
         type: "object",
         properties: {
-          imageId: { type: "string" },
+          imageId: { type: "string", description: "그림 id. fromMap 을 주면 생략." },
+          fromMap: MAP_VIEW_SCHEMA,
           scrollX: { type: "number", minimum: -MAP_BACKGROUND_SCROLL_LIMIT, maximum: MAP_BACKGROUND_SCROLL_LIMIT },
           scrollY: { type: "number", minimum: -MAP_BACKGROUND_SCROLL_LIMIT, maximum: MAP_BACKGROUND_SCROLL_LIMIT },
           loopX: { type: "boolean" },
@@ -1944,7 +1971,6 @@ const backgroundSchema: JsonSchema = {
           fit: BACKGROUND_FIT_SCHEMA,
           cameraFollow: { type: "number", minimum: 0, maximum: MAP_BACKGROUND_CAMERA_FOLLOW_LIMIT },
         },
-        required: ["imageId"],
         additionalProperties: false,
       },
     },
@@ -2032,8 +2058,8 @@ function resolveBackgroundArgs(raw: Record<string, unknown>, mapId: string): Map
       ? { layers: candidate.layers.map((layer) => layer && typeof layer === "object" ? { ...layer, imageId: stripKind((layer as { imageId?: unknown }).imageId) } : layer) }
       : {}),
   };
-  if (typeof candidate.imageId !== "string") {
-    throw new ToolError("background 에는 preset 또는 imageId 가 필요합니다.", { code: "invalid-args", mapId });
+  if (typeof candidate.imageId !== "string" && !(candidate.fromMap && typeof candidate.fromMap === "object")) {
+    throw new ToolError("background 에는 preset, imageId 또는 fromMap 이 필요합니다.", { code: "invalid-args", mapId });
   }
   // 창 타일이 있는 칩셋이 남아 있지 않다 — 저자가 일부러 false 를 주지 않으면 빈 칸에도 보이게 한다.
   if (candidate.showInEmptyCells === undefined) candidate = { ...candidate, showInEmptyCells: true };
@@ -2207,6 +2233,13 @@ const setMapProperties: ToolDefinition = {
       changed.push("배경=기본");
     } else if (args.background && typeof args.background === "object" && !Array.isArray(args.background)) {
       map.background = resolveBackgroundArgs(args.background as Record<string, unknown>, map.id);
+      for (const layer of [map.background, ...(map.background.layers ?? [])]) {
+        const view = layer.fromMap;
+        if (!view) continue;
+        if (view.mapId === map.id) throw new ToolError("fromMap 에 이 맵 자신은 넣을 수 없습니다 — 내려다볼 아래 맵 id 를 주세요.", { code: "invalid-args", mapId: map.id });
+        if (!draft.maps[view.mapId]) throw new ToolError(`fromMap 의 맵이 없습니다: ${view.mapId} — list_maps 로 id 를 확인하세요.`, { code: "invalid-args", mapId: map.id });
+        changed.push(`배경=${draft.maps[view.mapId]!.name ?? view.mapId} 를 ${Math.round((view.scale ?? MAP_VIEW_SCALE_RANGE.default) * 100)}% 로 줄여 내려다봄`);
+      }
       const layerCount = map.background.layers?.length ?? 0;
       const setId = (args.background as { layerSet?: unknown; preset?: unknown }).preset ?? (args.background as { layerSet?: unknown }).layerSet;
       // 조수가 결과만 보고 시차가 걸렸는지 알 수 있게 층별 깊이·흐름·맞춤을 요약한다(2026-09-27 조수 시험: 「레이어 6장」 만으로는 확인 불가).

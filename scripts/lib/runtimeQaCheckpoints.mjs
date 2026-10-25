@@ -5,6 +5,7 @@
 //     "query": { "demo": "fallen-star" },      // 플레이어 URL 쿼리(데모 부팅). 생략 가능
 //     "projectFixture": ".omo/fs/v1.json",     // 픽스처 JSON 으로 부팅할 때. 생략 가능
 //     "viewport": { "width": 480, "height": 270 },
+//     "context": { "hasTouch": true, "isMobile": true },   // 브라우저 컨텍스트 옵션(모바일 터치). 생략 가능
 //     "defaultBeats": [ …비트… ],               // 체크포인트에 beats 가 없을 때
 //     "checkpoints": [ { "id": "boss", "mapId": "…", "x": 3, "y": 4, "switches": {…}, "beats": [ … ] } ] }
 // 체크포인트 하나의 상태 필드는 src/player/qaCheckpoint.ts 의 QaCheckpoint 와 같다.
@@ -119,10 +120,20 @@ export async function runCheckpoints({ scenario, set, checkpoints, parallel = 2,
           // QA_RECORD_VIDEO=<폴더> — 체크포인트마다 <폴더>/<체크포인트 id>/ 에 webm 하나. 컨텍스트를 닫아야 파일로 끝난다.
           const videoDir = process.env.QA_RECORD_VIDEO;
           const size = checkpointScenario.viewport;
+          // 시나리오 deviceScaleFactor — 소수 배율 화면(Windows 125%·150%)의 도트 정렬을 잴 때.
+          const dsf = checkpointScenario.deviceScaleFactor ? { deviceScaleFactor: checkpointScenario.deviceScaleFactor } : {};
+          // 세트 context — 브라우저 컨텍스트 옵션(예: 모바일 { "hasTouch": true, "isMobile": true }). 터치 탭 op(tap)이 이것을 쓴다.
+          const extra = set.context ?? {};
           context = await browser.newContext(videoDir
-            ? { ...(size ? { viewport: size } : {}), recordVideo: { dir: resolve(REPO_ROOT, videoDir, checkpoint.id), ...(size ? { size } : {}) } }
-            : {});
+            ? { ...extra, ...dsf, ...(size ? { viewport: size } : {}), recordVideo: { dir: resolve(REPO_ROOT, videoDir, checkpoint.id), ...(size ? { size } : {}) } }
+            : { ...extra, ...dsf, ...(size ? { viewport: size } : {}) });
           const page = await context.newPage();
+          // 영상 시작 시각 — actors.jsonl 의 t(ms) 와 빼면 영상 안 위치(초)가 된다. 움직임 구간을 잘라 낼 때 쓴다.
+          if (videoDir) {
+            const dir = resolve(REPO_ROOT, videoDir, checkpoint.id);
+            await mkdir(dir, { recursive: true });
+            await writeFile(join(dir, "start.json"), JSON.stringify({ startedAt: Date.now() }));
+          }
           const report = await runRuntimeQa(page, checkpointScenario, {
             serverUrl,
             outDir,

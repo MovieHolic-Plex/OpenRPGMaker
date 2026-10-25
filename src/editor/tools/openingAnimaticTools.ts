@@ -9,6 +9,7 @@ import { resolveAssetResourceUrl } from '@/assets/generatedAssetResourceResolver
 import { findCharsetAsset } from '@/assets/charsetCatalog';
 import { CHARSET_CHARACTER_COUNT, CHARSET_FRAME_COUNT, CHARSET_FRAME_HEIGHT, CHARSET_FRAME_WIDTH, CHARSET_SHEET_COLUMNS, charsetFrameIndex, type CharsetDirection } from '@/assets/easyrpgRtp';
 import { isTitleCardNarration } from '@/project/defaults/defaultOpeningSequence';
+import { openingMapViewCrop, openingMapViewMapId, openingMapViewResourceId } from '@/project/openingMapView';
 type Shot = Extract<CinematicScene, { kind: 'animatic' }>;
 function text(v: unknown, label: string): string { if (typeof v !== 'string' || !v.trim()) throw new ToolError(label + ' 문자열이 필요합니다.', { code: 'invalid-args' }); return v.trim(); }
 function shot(project: Project, raw: unknown): Shot {
@@ -53,11 +54,19 @@ function check(project: Project, s: Shot, enforceBackdrop = false): void {
   }
   for (const c of s.composition.audioCues ?? []) if (!known('sound', c.resourceId) && !known('music', c.resourceId)) throw new ToolError('오디오 리소스 없음: ' + c.resourceId, { code: 'resource-not-found' });
 }
+// 같은 그림을 두 컷에 깔면 같은 화면이 반복된다. 맵 그대로(map-view:<mapId>)는 맵의 다른 곳을 오려 쓰므로
+// «그림 + 오려 낸 자리»가 같을 때만 재사용으로 본다(한 거리의 정문·가게 앞은 다른 장면이다).
+function backdropKey(l: { resourceId?: string; crop?: { x: number; y: number; width: number; height: number } }): string {
+  const id = l.resourceId!;
+  if (!openingMapViewMapId(id)) return id;
+  const c = l.crop;
+  return c ? `${id}@${Math.round(c.x / 32)},${Math.round(c.y / 32)}` : id;
+}
 function backdropConflict(project: Project, s: Shot): string | null {
-  const ids = s.composition.layers.filter(l => l.kind === 'image' && l.role === 'background').map(l => l.resourceId!);
+  const keys = s.composition.layers.filter(l => l.kind === 'image' && l.role === 'background').map(backdropKey);
   for (const other of project.system.opening?.scenes ?? []) {
     if (other.kind !== 'animatic' || other.id === s.id) continue;
-    if (other.composition.layers.some(l => l.kind === 'image' && l.role === 'background' && ids.includes(l.resourceId!))) return other.id;
+    if (other.composition.layers.some(l => l.kind === 'image' && l.role === 'background' && keys.includes(backdropKey(l)))) return other.id;
   }
   return null;
 }
@@ -216,7 +225,7 @@ export const OPENING_ANIMATIC_TOOLS: readonly ToolDefinition[] = [
       optional: 'role(background/actor/foreground/prop/effect/credit), resourceId(image), text(text), color, shape(rect/ellipse/line), anchorX/Y, scaleX/Y(negative mirrors), rotation,opacity,startMs,endMs,space(world/screen),parallax(0..2),blend(source-over/lighter/screen/multiply)',
       keys: '{x/y/scaleX/scaleY/rotation/opacity/frame:[{atMs,value,ease?}]}',
       sampling: 'nearest/linear; sheets default nearest, other images default linear', crop: '{x,y,width,height} source pixels', sheet: '{frameWidth,frameHeight,columns,count,fps,loop?}; frame keys select poses; crop and sheet exclusive',
-      typography: '{fontSize?,weight?,align:left/center/right,typewriterMs?}', particles: '{preset:rain/snow/sparks/dust/stars,count,seed,speed?,size?}',
+      typography: '{fontSize?,weight?,align:left/center/right,typewriterMs?}', particles: '{preset:rain/snow/sparks/dust/stars/petals/paper,count,seed,speed?,size?}; petals = cherry-blossom petals drifting down and sideways (colour = petal pink), paper = fluttering paper sheets (colour = white)',
       region: 'image-only masked loop: {x,y,width,height,mode:scroll-x/scroll-y/palette-cycle/strip,pixels?,everyTicks?,tickMs?,wrap?,colors?,frames?}; layer-local pixels, so with no crop they are source-image pixels; only that window animates',
       shaft: 'kind:shaft: {spread(0..0.95),softness(0..1),dust:{count,seed,speed?,size?},pulse}; angled beam drawn as dithered pixel cells, dust only inside the beam mask',
       glow: 'kind:glow: {inner(0..0.95),pulse}; radial light in the layer box',
@@ -337,20 +346,27 @@ export const OPENING_ANIMATIC_TOOLS: readonly ToolDefinition[] = [
     if (l.kind === 'image' && l.role === 'actor' && typeof l.resourceId === 'string') {
       l.resourceId = resolveOpeningCharsetForGenre(p, l.resourceId);
     }
+    // 배경은 불투명이어야 한다(check). 어둡게 하려고 0.85 를 주면 거절되고, 같은 턴에 그 레이어를 움직이던 animate 까지 「layerId 없음」으로 줄줄이 실패했다
+    // (2026-10-25 장난감 가게 G40) — 1 로 받아 저장하고 어둡게 하는 길을 알려 준다.
+    let note = '';
+    if (l.kind === 'image' && l.role === 'background' && typeof l.opacity === 'number' && l.opacity < 0.9) {
+      note = ` 배경 ${l.id} opacity ${l.opacity} 는 1 로 맞췄다(배경은 불투명) — 어둡게 하려면 위에 shape 레이어(검정·opacity 0.2~0.5)를 얹는다.`;
+      l.opacity = 1;
+    }
     const rows = s.composition.layers, at = rows.findIndex(row => row.id === l.id);
     if (at >= 0) rows[at] = l; else { const index = args.index === undefined ? rows.length : Number(args.index); if (!Number.isSafeInteger(index) || index < 0 || index > rows.length) throw new ToolError('index 범위 오류.', { code: 'invalid-args' }); rows.splice(index, 0, l); }
-    return commit(p, s, '실제 합성 레이어를 저장했습니다.', l.kind === 'image' && l.role === 'background');
+    return commit(p, s, '실제 합성 레이어를 저장했습니다.' + note, l.kind === 'image' && l.role === 'background');
   }),
   definition('remove_opening_layer', '선택한 레이어만 제거.', 'write', schema({ shotId: str, layerId: str }), (p, args) => {
     const s = shot(p, args.shotId), id = text(args.layerId, 'layerId'); if (!s.composition.layers.some(l => l.id === id)) throw new ToolError('layerId 없음.', { code: 'layer-not-found' });
     s.composition.layers = s.composition.layers.filter(l => l.id !== id); return commit(p, s, '레이어를 제거했습니다.');
   }),
   definition('animate_opening_layer', '지정 속성의 key 배열 교체. 나머지 트랙 유지.', 'write', schema({ shotId: str, layerId: str, keys: obj }), (p, args) => {
-    const s = shot(p, args.shotId), l = s.composition.layers.find(l => l.id === args.layerId); if (!l) throw new ToolError('layerId 없음.', { code: 'layer-not-found' });
+    const s = shot(p, args.shotId), l = s.composition.layers.find(l => l.id === args.layerId); if (!l) throw new ToolError(`layerId 없음: ${String(args.layerId)} — 이 샷의 레이어: ${s.composition.layers.map(x => x.id).join(', ') || '(없음)'}. 같은 턴에 만든 레이어가 실패했으면 그 upsert_opening_layer 를 먼저 고친다.`, { code: 'layer-not-found' });
     l.keys = { ...l.keys, ...structuredClone(args.keys as AnimaticTracks) }; return commit(p, s, '레이어 동작을 저장했습니다.');
   }),
   definition('apply_opening_motion', 'jump/float/pulse/run-across 동작 키 생성. 다른 트랙 유지.', 'write', schema({ shotId: str, layerId: str, preset: { type: 'string', enum: ['jump', 'float', 'pulse', 'run-across'] }, atMs: integer, durationMs: integer, amount: { type: 'number' } }, ['shotId', 'layerId', 'preset']), (p, args) => {
-    const s = shot(p, args.shotId), l = s.composition.layers.find(l => l.id === args.layerId); if (!l) throw new ToolError('layerId 없음.', { code: 'layer-not-found' });
+    const s = shot(p, args.shotId), l = s.composition.layers.find(l => l.id === args.layerId); if (!l) throw new ToolError(`layerId 없음: ${String(args.layerId)} — 이 샷의 레이어: ${s.composition.layers.map(x => x.id).join(', ') || '(없음)'}. 같은 턴에 만든 레이어가 실패했으면 그 upsert_opening_layer 를 먼저 고친다.`, { code: 'layer-not-found' });
     const start = Number(args.atMs ?? 0), duration = Number(args.durationMs ?? s.durationMs), preset = String(args.preset), property = preset === 'run-across' ? 'x' : preset === 'pulse' ? 'scaleX' : 'y';
     const base = sampleAnimaticTrack(l.keys?.[property], start, property === 'scaleX' ? l.scaleX ?? 1 : l[property]), amount = Number(args.amount ?? (property === 'scaleX' ? 0.12 : preset === 'run-across' ? 300 : 35));
     const keys = preset === 'run-across' ? [{ atMs: start, value: base }, { atMs: start + duration, value: base + amount, ease: 'ease-in-out' as const }]
@@ -483,16 +499,35 @@ export const OPENING_ANIMATIC_TOOLS: readonly ToolDefinition[] = [
     if (at >= 0) s.composition.layers[at] = layer; else s.composition.layers.push(layer);
     return commit(p, s, '자막 트랙을 저장했습니다. letterbox가 있으면 막대 안에, 없으면 하단 안전 영역에 놓인다.');
   }),
-  definition('place_opening_background', '무대 전체를 덮는 배경 그림 레이어를 정확히 깔아 준다(x,y는 «앵커 점»이므로 손으로 채우면 어긋난다).', 'write', schema({ shotId: str, layerId: str, resourceId: str, opacity: num, index: integer }, ['shotId', 'layerId', 'resourceId']), (p, args) => {
-    const s = shot(p, args.shotId), id = text(args.layerId, 'layerId'), resourceId = text(args.resourceId, 'resourceId');
-    if (!hasOpeningImage(p, resourceId)) throw new ToolError(`배경 그림을 찾을 수 없습니다: ${resourceId}`, { code: 'resource-not-found' });
+  definition('place_opening_background', '무대 전체를 덮는 배경 그림 레이어를 정확히 깔아 준다(x,y는 «앵커 점»이므로 손으로 채우면 어긋난다). '
+    + '그림 대신 mapId 를 주면 그 게임 맵을 그대로 배경으로 쓴다(맞는 오프닝 그림이 없을 때 — 엉뚱한 스틸 대신 실제 무대). focus {x,y} = 가운데에 올 맵 칸(기본 맵 가운데), zoom 1 = 맵 화소 1:1(384×216 무대면 칸 24×13.5개), 2 = 두 배로 당김. 인물은 그려지지 않으니 place_opening_charset_actor 로 얹는다.',
+  'write', schema({ shotId: str, layerId: str, resourceId: str, mapId: str, focus: { type: 'object', properties: { x: num, y: num }, required: ['x', 'y'], additionalProperties: false }, zoom: num, opacity: num, index: integer }, ['shotId', 'layerId']), (p, args) => {
+    const s = shot(p, args.shotId), id = text(args.layerId, 'layerId');
     const width = s.composition.width, height = s.composition.height;
+    const mapId = typeof args.mapId === 'string' && args.mapId.trim() ? args.mapId.trim() : '';
+    if (!!mapId === (typeof args.resourceId === 'string' && !!args.resourceId.trim())) throw new ToolError('resourceId(그림) 와 mapId(게임 맵 그대로) 중 정확히 하나를 줍니다.', { code: 'invalid-args' });
+    let resourceId: string, crop: AnimaticLayer['crop'];
+    if (mapId) {
+      const map = p.maps[mapId];
+      if (!map) throw new ToolError(`맵을 찾을 수 없습니다: ${mapId}`, { code: 'map-not-found' });
+      const focus = args.focus as { x: number; y: number } | undefined;
+      const zoom = args.zoom === undefined ? 1 : Number(args.zoom);
+      if (!Number.isFinite(zoom) || zoom < 0.25 || zoom > 4) throw new ToolError('zoom 은 0.25~4 입니다.', { code: 'invalid-args' });
+      resourceId = openingMapViewResourceId(mapId);
+      crop = openingMapViewCrop(map, { width, height }, focus ? { x: Number(focus.x), y: Number(focus.y) } : undefined, zoom);
+    } else {
+      resourceId = text(args.resourceId, 'resourceId');
+      if (!hasOpeningImage(p, resourceId)) throw new ToolError(`배경 그림을 찾을 수 없습니다: ${resourceId}`, { code: 'resource-not-found' });
+    }
     const layer: AnimaticLayer = { id, kind: 'image', role: 'background', resourceId, x: 0, y: 0, width, height, anchorX: 0, anchorY: 0, sampling: 'nearest',
+      ...(crop ? { crop } : {}),
       ...(args.opacity !== undefined ? { opacity: Number(args.opacity) } : {}) };
     const rows = s.composition.layers, at = rows.findIndex(row => row.id === id);
     if (at >= 0) rows[at] = layer;
     else { const index = args.index === undefined ? 0 : Number(args.index); if (!Number.isSafeInteger(index) || index < 0 || index > rows.length) throw new ToolError('index 범위 오류.', { code: 'invalid-args' }); rows.splice(index, 0, layer); }
-    return commit(p, s, `배경 ${resourceId} 를 무대 ${width}×${height} 에 정확히 깔았습니다(anchorX/Y:0, x:0, y:0). 다른 그림은 이 레이어의 자식처럼 그 위에 얹으세요.`, true);
+    return commit(p, s, mapId
+      ? `맵 ${mapId} 를 배경으로 무대 ${width}×${height} 에 깔았습니다(맵 화소 ${crop!.x},${crop!.y} 부터 ${crop!.width}×${crop!.height}). 인물은 place_opening_charset_actor 로 얹으세요.`
+      : `배경 ${resourceId} 를 무대 ${width}×${height} 에 정확히 깔았습니다(anchorX/Y:0, x:0, y:0). 다른 그림은 이 레이어의 자식처럼 그 위에 얹으세요.`, true);
   }),
   definition('place_opening_charset_actor', '번들 24×32 캐릭터 칩을 배우로 놓고 보폭 걷기를 붙인다. 장면 역할 태그를 지정한다.', 'write', schema({ shotId: str, layerId: str, charsetResourceId: str, resourceId: str, characterRole: { type: 'string', enum: ['knight', 'villager', 'mage', 'hero', 'monster', 'crowd'] }, x: num, y: num, characterIndex: integer, direction: { type: 'string', enum: ['down', 'left', 'right', 'up'] }, scale: integer, fromX: num, toX: num, fromY: num, toY: num, startMs: integer, durationMs: integer, stride: integer }, ['shotId', 'layerId', 'x', 'y']), (p, args) => {
     const s = shot(p, args.shotId), id = text(args.layerId, 'layerId'), layer = charsetActorLayer(p, s, args);

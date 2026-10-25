@@ -23,11 +23,11 @@
  "checkpoints": [
   {
    "id": "d1-arrive",
-   "label": "월요일 승강장 도착",
-   "note": "src/project/flagship/firstLove.ts: START 0, ev_fl_intro auto at (1,1); arrive=nearestFree(8,8) firstLoveMaps.ts:190",
-   "mapId": "fl_platform_am",
-   "x": 8,
-   "y": 8,
+   "label": "월요일 출근길 — 출구에서 시작(오프닝 A)",
+   "note": "START 0: ev_fl_cold_open auto in fl_street; startPos = main exit step (3,34); crowd pours out, bump at the crosswalk, paper + freeze",
+   "mapId": "fl_street",
+   "x": 3,
+   "y": 34,
    "facing": "down",
    "switches": {},
    "variables": {
@@ -35,23 +35,51 @@
    },
    "beats": [
     {
-     "id": "intro",
+     "id": "crowd",
      "ops": [
       {
        "kind": "hold",
        "dir": null,
-       "ms": 1500
+       "ms": 2600
       }
      ],
      "shot": true
     },
     {
-     "id": "intro2",
+     "id": "walk",
      "ops": [
+      {
+       "kind": "pressUntilJs",
+       "key": "Enter",
+       "fn": "() => /할 수 있어/.test(document.querySelector(\"[data-testid='dialogue-box']\")?.textContent ?? '')",
+       "maxPresses": 12,
+       "settleMs": 500
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
       {
        "kind": "hold",
        "dir": null,
-       "ms": 3500
+       "ms": 4200
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "freeze",
+     "ops": [
+      {
+       "kind": "waitFor",
+       "testid": "runtime-freeze-frame",
+       "state": "present",
+       "timeoutMs": 15000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 700
       }
      ],
      "shot": true
@@ -61,14 +89,16 @@
   {
    "id": "d1-street",
    "label": "월요일 아침 거리",
-   "note": "ARRIVED 1: ev_fl_street_am auto; arrive=subwayStep (18,11) after ev_fl_plat_exit",
+   "note": "STREET 2 after the cold open (bump done); walk to the office door",
    "mapId": "fl_street",
-   "x": 18,
-   "y": 11,
+   "x": 3,
+   "y": 34,
    "facing": "down",
-   "switches": {},
+   "switches": {
+    "sw_fl_bumped": true
+   },
    "variables": {
-    "var_fl_stage": 1
+    "var_fl_stage": 2
    },
    "beats": [
     {
@@ -98,11 +128,11 @@
   {
    "id": "d1-meet-choice",
    "label": "첫 만남 선택",
-   "note": "STREET 2: ev_fl_meet auto in fl_office, arrive (24,15) via ev_fl_office_door (real arrival cell)",
+   "note": "STREET 2: ev_fl_meet auto in fl_office, arrive (16,4) via ev_fl_office_door",
    "mapId": "fl_office",
-   "x": 24,
-   "y": 15,
-   "facing": "up",
+   "x": 16,
+   "y": 4,
+   "facing": "down",
    "switches": {},
    "variables": {
     "var_fl_stage": 2
@@ -251,10 +281,10 @@
   {
    "id": "d1-street-pm",
    "label": "월요일 퇴근길 거리",
-   "note": "ROOF 5: ev_fl_street_pm auto; arrive (3,34) from rooftop",
+   "note": "ROOF 5: ev_fl_street_pm auto; arrive konbiniOut (41,13) from office",
    "mapId": "fl_street_pm",
-   "x": 3,
-   "y": 34,
+   "x": 41,
+   "y": 13,
    "facing": "down",
    "switches": {},
    "variables": {
@@ -288,10 +318,10 @@
   {
    "id": "d1-konbini-enter",
    "label": "편의점 입장",
-   "note": "EVENING 6: ev_fl_kon_enter auto; arrive (14,11) via ev_fl_konbini_pm (real arrival cell)",
+   "note": "EVENING 6: ev_fl_kon_enter auto; arrive (12,13) via ev_fl_konbini_pm",
    "mapId": "fl_konbini",
-   "x": 14,
-   "y": 11,
+   "x": 12,
+   "y": 13,
    "facing": "up",
    "switches": {},
    "variables": {
@@ -429,10 +459,10 @@
   {
    "id": "d3-wed-choice1",
    "label": "수요일 팀장 선택",
-   "note": "FLASH 8: ev_fl_wed auto in fl_office_pm, arrive (13,7) = hero desk via ev_fl_flashback (real arrival cell)",
+   "note": "FLASH 8: ev_fl_wed auto in fl_office_pm, arrive (13,9)",
    "mapId": "fl_office_pm",
    "x": 13,
-   "y": 7,
+   "y": 9,
    "facing": "up",
    "switches": {},
    "variables": {
@@ -667,11 +697,11 @@
   {
    "id": "d4-fri-choice",
    "label": "금요일 발표 선택",
-   "note": "WED_TALK 10: ev_fl_fri auto in fl_office_fri, arrive (8,15) = meeting seat via ev_fl_w_jihu_pantry (real arrival cell; (8,18) was Minho's cell)",
+   "note": "WED_TALK 10: ev_fl_fri auto in fl_office_fri, arrive (8,18) left",
    "mapId": "fl_office_fri",
    "x": 8,
-   "y": 15,
-   "facing": "up",
+   "y": 18,
+   "facing": "left",
    "switches": {},
    "variables": {
     "var_fl_stage": 10,
@@ -712,11 +742,11 @@
   {
    "id": "d4-fri-c8",
    "label": "금요일 역/회식 선택",
-   "note": "WED_TALK 10: ev_fl_fri after presentation choice, c8 역으로 vs 회식",
+   "note": "WED_TALK 10: ev_fl_fri after presentation choice, c8 역으로 vs 회식 — r2: 발표자 (8,16)·(9,16), 듣는 셋 (8..10,18)",
    "mapId": "fl_office_fri",
    "x": 8,
-   "y": 18,
-   "facing": "left",
+   "y": 16,
+   "facing": "down",
    "switches": {},
    "variables": {
     "var_fl_stage": 10,
@@ -773,10 +803,10 @@
   {
    "id": "d5-run",
    "label": "금요일 역으로 달리기",
-   "note": "FRI 11: ev_fl_run auto (stage==FRI) in fl_street_pm; arrive (41,11) down",
+   "note": "FRI 11: ev_fl_run auto (stage==FRI) in fl_street_pm; arrive officeOut (9,13) down",
    "mapId": "fl_street_pm",
-   "x": 41,
-   "y": 11,
+   "x": 9,
+   "y": 13,
    "facing": "down",
    "switches": {},
    "variables": {
@@ -811,11 +841,11 @@
   {
    "id": "d5-platform",
    "label": "저녁 승강장 고백",
-   "note": "RUN 12: ev_fl_platform auto in fl_platform_pm, arrive (8,8) up",
+   "note": "RUN 12: ev_fl_platform auto in fl_platform_pm, arrive exitOut (46,4) — 50칸 승강장 동쪽 끝 계단",
    "mapId": "fl_platform_pm",
-   "x": 7,
-   "y": 6,
-   "facing": "up",
+   "x": 46,
+   "y": 4,
+   "facing": "down",
    "switches": {},
    "variables": {
     "var_fl_stage": 12,
@@ -858,9 +888,9 @@
    "label": "엔딩 A (다시 시작)",
    "note": "END_A: jihu>=6 and confession option 0 (ev_fl_p_jihu)",
    "mapId": "fl_platform_pm",
-   "x": 8,
-   "y": 8,
-   "facing": "up",
+   "x": 23,
+   "y": 7,
+   "facing": "right",
    "switches": {},
    "variables": {
     "var_fl_stage": 12,
@@ -919,9 +949,9 @@
    "label": "엔딩 B (늦은 답장)",
    "note": "END_B: jihu<6 and confession option 0",
    "mapId": "fl_platform_pm",
-   "x": 8,
-   "y": 8,
-   "facing": "up",
+   "x": 23,
+   "y": 7,
+   "facing": "right",
    "switches": {},
    "variables": {
     "var_fl_stage": 12,
@@ -978,11 +1008,11 @@
   {
    "id": "end-c",
    "label": "엔딩 C (회식)",
-   "note": "END_C: fl_office_fri c8 option 1 (회식에 간다)",
+   "note": "END_C: fl_office_fri c8 option 1 (회식에 간다) — r2: 발표자 (8,16)·(9,16), 듣는 셋 (8..10,18)",
    "mapId": "fl_office_fri",
    "x": 8,
-   "y": 18,
-   "facing": "left",
+   "y": 16,
+   "facing": "down",
    "switches": {},
    "variables": {
     "var_fl_stage": 10,

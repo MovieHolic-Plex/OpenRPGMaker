@@ -1,4 +1,5 @@
 import { letterboxPercentFromValue } from "@/project/eventCommands/cinematicStaging";
+import { DOOR_DEFAULT_MS, parseDoorValue, type DoorSpec } from "@/project/eventCommands/doorAnimation";
 /**
  * 모던 `Screen Effect` 커맨드의 옵션을 **이미 존재하는 화면효과 경로**로 옮기는 매핑.
  *
@@ -39,7 +40,18 @@ export type ScreenEffectPlan =
     }
   /** 위아래 검은 띠. percent = 띠 하나의 두께(화면 높이 %), 0 = 걷기. */
   | { readonly kind: "letterbox"; readonly percent: number; readonly durationMs: number }
+  /** 타일 그림 문을 열고 닫는다(playSceneDoors 가 그 칸 타일을 복사한 문짝을 움직인다). */
+  | { readonly kind: "door"; readonly door: DoorSpec; readonly open: boolean; readonly durationMs: number }
+  /** 정지 화면(만화식 «프리즈 프레임») — 지금 필드 그림을 한 장 찍어 그 위에 세운다. style = none·mono·sepia·warm·cool. on false = 풀기. */
+  | { readonly kind: "freeze"; readonly on: boolean; readonly style: FreezeStyle; readonly durationMs: number }
   | { readonly kind: "unsupported"; readonly effect: string };
+
+export const FREEZE_STYLES = ["none", "mono", "sepia", "warm", "cool"] as const;
+export type FreezeStyle = (typeof FREEZE_STYLES)[number];
+export function normalizeFreezeStyle(value: unknown): FreezeStyle {
+  const v = typeof value === "string" ? value.trim().toLowerCase() : "";
+  return (FREEZE_STYLES as readonly string[]).includes(v) ? (v as FreezeStyle) : v === "" ? "warm" : "none";
+}
 
 /**
  * `Screen Effect` 필드 3개를 실행 계획으로 바꾼다.
@@ -76,6 +88,16 @@ export function planScreenEffect(effect: string, value: string, durationMs: numb
       return { kind: "letterbox", percent: letterboxPercentFromValue(trimmed), durationMs: duration };
     case "clearLetterbox":
       return { kind: "letterbox", percent: 0, durationMs: duration };
+    case "freeze":
+      return { kind: "freeze", on: true, style: normalizeFreezeStyle(trimmed), durationMs: duration };
+    case "unfreeze":
+      return { kind: "freeze", on: false, style: "none", durationMs: duration };
+    case "doorOpen":
+    case "doorClose": {
+      const door = parseDoorValue(trimmed);
+      if (!door) return { kind: "unsupported", effect };
+      return { kind: "door", door, open: effect === "doorOpen", durationMs: Number.isFinite(durationMs) && durationMs > 0 ? duration : DOOR_DEFAULT_MS };
+    }
     default:
       // blur 등 렌더러가 없는 옵션. 삼키지 말고 기록해서 감독이 알 수 있게 한다.
       return { kind: "unsupported", effect };

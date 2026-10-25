@@ -3,6 +3,8 @@
 import { isBlankMap } from "@/editor/tools/mapEmptiness";
 import { cloneProjectSharingSharedDictionaries } from "@/project/projectClone";
 import { createBuildRun } from "../buildRun";
+import { isPassable } from "@/project/collision";
+import { eventsOf, roadCellSet, tileLabel } from "../people";
 import type { BuildRun, BuilderCall, PlaceBuildResult, PlaceBuilder, PlaceRecord, PlaceSpec } from "../types";
 
 /** v2 계획 모델에게 주는 유일한 마을 지식(≤900자). */
@@ -19,7 +21,7 @@ export const VILLAGE_CARD =
 const KNOWN_HINTS = new Set(["houseCount", "roofs", "water", "woods", "form", "terrain", "theme", "forestType", "walls", "wallGate", "wallSideGaps", "width", "height", "seed", "variant", "harbour"]);
 const BEODEUL_TILESET = "beodeul_city";
 
-interface VillageState { readonly args: Record<string, unknown>; readonly seed?: number; readonly variant?: number }
+interface VillageState { readonly args: Record<string, unknown>; readonly seed?: number; readonly variant?: number; readonly doors?: readonly { x: number; y: number; kit?: string }[] }
 
 const words = (spec: PlaceSpec): string => [spec.name, spec.style, spec.theme, ...(spec.features ?? []), ...(spec.zones ?? []).map((z) => `${z.kind} ${z.purpose ?? ""}`)].join(" ").toLowerCase();
 const has = (text: string, re: RegExp): boolean => re.test(text);
@@ -116,6 +118,16 @@ function build(run: BuildRun, spec: PlaceSpec, previous?: PlaceRecord): PlaceBui
   }
   const base: Record<string, unknown> = { name: spec.name, ...args };
   if (mapId) base.mapId = mapId;
+  // 이미 지은 마을에 게임 내용(사람·문·이벤트)이 붙었으면 다시 짓지 않는다 — 다시 지으면 그것이 다 지워지고, 시작 맵은 지울 수도 없어
+  // 「완성된 집 보호」 거절이 되풀이됐다(2026-10-25 조수 단독 게임 G4: 같은 거절 2번 + 되돌림 4번).
+  const existingMap = prev && mapId ? run.ctx.project.maps[mapId] : undefined;
+  if (existingMap && existingMap.events.length > 0) {
+    return {
+      ok: false, mapIds: [mapId!],
+      summary: `마을 다시 짓기 안 함: ${existingMap.name} 에 이미 이벤트·사람 ${existingMap.events.length}개가 있다${run.ctx.project.startMapId === mapId ? "(시작 맵)" : ""} — 다시 지으면 다 지워진다. 같은 edit_place 를 되풀이하지 말고, 남은 그림 문제는 덧그리기(stamp_object·fill_region)나 add_people·move_event 로 고치거나 보고에 그대로 적는다.`,
+      warnings, missingArt: missing, calls: [], state: prev,
+    };
+  }
   const firstCall = run.calls.length;
   let result = run.call("author_beodeul_town", base);
   // 완성된 집 보호: 집이 선 맵은 덮어 짓기가 거절된다 → 지우고 같은 id 로 다시 짓는다.
@@ -139,9 +151,150 @@ function build(run: BuildRun, spec: PlaceSpec, previous?: PlaceRecord): PlaceBui
   const entrance = run.ctx.project.startMapId === builtId && start
     ? { mapId: builtId, x: start.x, y: start.y }
     : { mapId: builtId, x: ent?.x ?? Math.floor((num(data.width) ?? 40) / 2), y: ent?.y ?? Math.floor((num(data.height) ?? 32) / 2) };
-  const parts = [`${String(data.theme ?? "")} ${String(data.form ?? "")} 마을`, `집 ${houses ?? "?"}채`, data.gathering ? `모이는 곳 ${(data.gathering as { why?: string }).why ?? ""}` : "", data.walls ? "성벽" : "", data.bridge ? "다리" : ""].filter(Boolean);
-  const state: VillageState = { args, seed, variant };
+  const farm = farmAddons(run, builtId, words(spec), warnings, missing);
+  calls.push(...run.calls.slice(firstCall + calls.length));
+  const parts = [`${String(data.theme ?? "")} ${String(data.form ?? "")} 마을`, farm.length ? `농가 ${farm.join("·")}` : "", `집 ${houses ?? "?"}채`, data.gathering ? `모이는 곳 ${(data.gathering as { why?: string }).why ?? ""}` : "", data.walls ? "성벽" : "", data.bridge ? "다리" : ""].filter(Boolean);
+  const state: VillageState = { args, seed, variant, ...(Array.isArray(data.doors) ? { doors: data.doors as VillageState["doors"] } : {}) };
   return { ok: true, mapIds: [builtId], entrance, summary: `${spec.name}: ${parts.join(" · ")} (${num(data.width)}×${num(data.height)}, seed ${seed})`, warnings, missingArt: missing, calls, state };
+}
+
+/**
+ * 농가 덧붙이기: 요청에 밭·헛간·농장이 있으면 지은 마을의 빈 풀밭에 농장 키트(bd-farm-*)를 찍는다.
+ * 2026-10-24 스위트: 「밭이 있는 강가 마을」에 밭이 없고, 「헛간 있는 농촌 마을」에 헛간이 없었다(마을 도구는 농장 키트를 안 놓는다).
+ * 자리: 키트 칸 + 둘레 한 칸이 모두 풀밭(길·물·물건·이벤트·건물 도장 아님)이고 걸을 수 있는 곳 — 둘레가 비어 길이 끊기지 않는다.
+ */
+function farmAddons(run: BuildRun, mapId: string, text: string, warnings: string[], missing: string[]): string[] {
+  const wantBarn = /barn|헛간|곳간|축사|농장|farm/.test(text);
+  const wantFields = /\bfields?\b|밭|농경|경작|crop|농장|farm|농촌|농가/.test(text);
+  if (!wantBarn && !wantFields) return [];
+  const kits: { id: string; w: number; h: number; label: string }[] = [];
+  const map0 = run.ctx.project.maps[mapId];
+  // 마을 도구가 이미 그린 밭(위층 「밀밭 칸·이랑」)이 넉넉하면 밭은 더 놓지 않는다.
+  const cropCells = map0 ? ((map0 as unknown as { upperTiles?: number[] }).upperTiles ?? []).filter((t) => t >= 0 && /밀밭|밭 칸|이랑|작물|crop/i.test(tileLabel(run.ctx.project, map0, t))).length : 0;
+  const done: string[] = cropCells >= 20 ? [`이미 그린 밭 ${cropCells}칸`] : [];
+  if (wantBarn) kits.push({ id: "bd-farm-barn", w: 6, h: 6, label: "헛간" });
+  if (wantFields && cropCells < 20) kits.push({ id: "bd-farm-fenced-plot", w: 7, h: 6, label: "울타리 밭" }, { id: "bd-farm-plot-cabbage", w: 0, h: 0, label: "작물 밭" });
+  const taken = new Set<number>();
+  for (const kit of kits) {
+    const map = run.ctx.project.maps[mapId];
+    if (!map) break;
+    // 작물 밭 키트 크기는 모른다 — 울타리 밭과 같은 자리 찾기로 7×5 를 쓴다.
+    const w = kit.w || 7, h = kit.h || 5;
+    const roads = roadCellSet(run.ctx.project, map);
+    const evCells = new Set(eventsOf(map).map((e) => e.y * map.width + e.x));
+    const stamps = ((map as unknown as { structurePlacements?: { x: number; y: number; w: number; h: number }[] }).structurePlacements ?? []);
+    const lower = (map as unknown as { lowerTiles?: number[] }).lowerTiles ?? [];
+    const upper = (map as unknown as { upperTiles?: number[] }).upperTiles ?? [];
+    const grassCache = new Map<number, boolean>();
+    // 걷어 내도 되는 작은 풀밭 장식(들꽃·고사리·낮은 덤불·징검돌·짚가리) — 나무는 반쪽이 남으니 안 걷는다.
+    const decoCache = new Map<number, boolean>();
+    const deco = (t: number): boolean => {
+      let d = decoCache.get(t);
+      if (d === undefined) { d = /들꽃|고사리|헤더 덤불|꽃 무더기|풀덩이|별꽃|징검돌|짚가리|밀 단|곡식 자루/.test(tileLabel(run.ctx.project, map, t)); decoCache.set(t, d); }
+      return d;
+    };
+    const grass = (i: number): boolean => {
+      const t = lower[i];
+      if (typeof t !== "number" || t < 0) return false;
+      let g = grassCache.get(t);
+      if (g === undefined) { g = /풀|잔디|grass/i.test(tileLabel(run.ctx.project, map, t)); grassCache.set(t, g); }
+      return g;
+    };
+    // 「나무·덤불」 칸 하나가 홀로 있으면(위아래·좌우에 같은 이름 없음) 한 칸 덤불이다 — 큰 나무는 여러 칸이 붙어 있다.
+    const bushy = (x: number, y: number): boolean => {
+      if (x < 0 || y < 0 || x >= map.width || y >= map.height) return false;
+      const t = upper[y * map.width + x] ?? -1;
+      return t >= 0 && /나무·덤불/.test(tileLabel(run.ctx.project, map, t));
+    };
+    // 붙은 「나무·덤불」 덩이가 16칸 이하면(덤불·측백·작은 나무) 통째로 걷을 수 있다 — 걷을 때 덩이 전체가 걷는 칸 안에 들어야 한다(아래 후보 검사).
+    const loneCache = new Map<number, boolean>();
+    const compOf = new Map<number, Set<number>>();
+    const loneBush = (x: number, y: number): boolean => {
+      if (!bushy(x, y)) return false;
+      const k = y * map.width + x;
+      const hit = loneCache.get(k);
+      if (hit !== undefined) return hit;
+      const seen = new Set<number>([k]); const stack = [[x, y]];
+      while (stack.length && seen.size <= 16) {
+        const [cx0, cy0] = stack.pop()!;
+        for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
+          const nx = cx0! + dx!, ny = cy0! + dy!, nk = ny * map.width + nx;
+          if (!seen.has(nk) && bushy(nx, ny)) { seen.add(nk); stack.push([nx, ny]); }
+        }
+      }
+      const ok = seen.size <= 16;
+      for (const c of seen) { loneCache.set(c, ok); if (ok) compOf.set(c, seen); }
+      return ok;
+    };
+    const inStamp = (x: number, y: number) => stamps.some((sp) => x >= sp.x && x < sp.x + sp.w && y >= sp.y && y < sp.y + sp.h);
+    const free = (x: number, y: number): boolean => {
+      if (x < 1 || y < 1 || x >= map.width - 1 || y >= map.height - 1) return false;
+      const i = y * map.width + x;
+      if (!grass(i) || roads.has(i) || evCells.has(i) || taken.has(i) || inStamp(x, y)) return false;
+      // 빈 칸은 실제로 걸을 수 있어야 하고, 걷을 장식·덤불 칸은 풀밭 바닥이면 걷은 뒤 걸을 수 있다(덤불이 막던 칸).
+      return (upper[i] ?? -1) < 0 ? isPassable(run.ctx.project, map, x, y) : deco(upper[i]!) || loneBush(x, y);
+    };
+    const cands: { x: number; y: number; d: number }[] = [];
+    const cx = map.width / 2, cy = map.height / 2;
+    for (let y = 1; y + h + 1 < map.height; y++) for (let x = 1; x + w + 1 < map.width; x++) {
+      let ok = true;
+      for (let yy = y - 1; yy <= y + h && ok; yy++) for (let xx = x - 1; xx <= x + w && ok; xx++) if (!free(xx, yy)) ok = false;
+      // 걷을 덤불 덩이가 걷는 칸(키트+둘레 한 칸) 밖으로 삐져나가면 반쪽 덤불이 남는다 — 그런 자리는 뺀다.
+      if (ok) for (let yy = y - 1; yy <= y + h && ok; yy++) for (let xx = x - 1; xx <= x + w && ok; xx++) {
+        const comp = compOf.get(yy * map.width + xx);
+        if (comp) for (const c of comp) { const cx2 = c % map.width, cy2 = Math.floor(c / map.width); if (cx2 < x - 1 || cx2 > x + w || cy2 < y - 1 || cy2 > y + h) { ok = false; break; } }
+      }
+      if (ok) cands.push({ x, y, d: Math.abs(x + w / 2 - cx) + Math.abs(y + h / 2 - cy) });
+    }
+    // 마을 가까이(가운데 쪽)부터 — 맵 끝 구석에 홀로 떨어진 헛간이 되지 않게.
+    cands.sort((a, b) => a.d - b.d);
+    let placed = false;
+    for (const c of cands.slice(0, 12)) {
+      run.call("clear_region", { mapId, x: c.x - 1, y: c.y - 1, w: w + 2, h: h + 2, layer: "upper" });
+      const r = run.call("stamp_object", { objectId: `kit:beodeul_city/${kit.id}`, mapId, x: c.x, y: c.y });
+      if (r.ok) {
+        placed = true;
+        for (let yy = c.y - 1; yy <= c.y + h; yy++) for (let xx = c.x - 1; xx <= c.x + w; xx++) taken.add(yy * map.width + xx);
+        done.push(`${kit.label}(${c.x},${c.y})`);
+        break;
+      }
+    }
+    // 헛간 자리가 없으면 마을 도구가 그린 울타리 밭 하나(울타리째)를 헛간 마당으로 바꾼다 — 농가 마을은 밭이 넉넉하다.
+    if (!placed && kit.id === "bd-farm-barn" && cropCells >= 40) {
+      const farmish = (x: number, y: number): boolean => {
+        if (x < 0 || y < 0 || x >= map.width || y >= map.height) return false;
+        const t = upper[y * map.width + x] ?? -1;
+        if (t < 0) return false;
+        // 울타리 칸은 이름표가 비어 있다(실측 34560~34567) — 이름 없는 칸도 잇고, 덩이에 밭 칸이 8개 이상일 때만 밭으로 본다.
+        const l = tileLabel(run.ctx.project, map, t);
+        return !l || /밀밭|밭 칸|이랑|울타리|fence|허수아비/i.test(l);
+      };
+      const crop = (x: number, y: number): boolean => /밀밭|밭 칸|이랑/.test(tileLabel(run.ctx.project, map, upper[y * map.width + x] ?? -1));
+      const seenF = new Set<number>();
+      const boxes: { x0: number; y0: number; x1: number; y1: number; n: number; crops: number }[] = [];
+      for (let y = 0; y < map.height; y++) for (let x = 0; x < map.width; x++) {
+        const k = y * map.width + x;
+        if (seenF.has(k) || !farmish(x, y)) continue;
+        const box = { x0: x, y0: y, x1: x, y1: y, n: 0, crops: 0 }; const st = [[x, y]]; seenF.add(k);
+        while (st.length) {
+          const [a, b] = st.pop()!; box.n++; if (crop(a!, b!)) box.crops++;
+          box.x0 = Math.min(box.x0, a!); box.x1 = Math.max(box.x1, a!); box.y0 = Math.min(box.y0, b!); box.y1 = Math.max(box.y1, b!);
+          for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) { const nx = a! + dx!, ny = b! + dy!, nk = ny * map.width + nx; if (!seenF.has(nk) && farmish(nx, ny)) { seenF.add(nk); st.push([nx, ny]); } }
+        }
+        if (box.crops >= 8 && box.x1 - box.x0 + 1 >= w && box.y1 - box.y0 + 1 >= h && box.x1 - box.x0 < 14 && box.y1 - box.y0 < 12) boxes.push(box);
+      }
+      boxes.sort((a, b) => a.n - b.n);
+      for (const b of boxes) {
+        const bw = b.x1 - b.x0 + 1, bh = b.y1 - b.y0 + 1;
+        const x = b.x0 + Math.floor((bw - w) / 2), y = b.y1 - h + 1;
+        run.call("clear_region", { mapId, x: b.x0, y: b.y0, w: bw, h: bh, layer: "upper" });
+        const r = run.call("stamp_object", { objectId: `kit:beodeul_city/${kit.id}`, mapId, x, y });
+        if (r.ok) { placed = true; done.push(`${kit.label}(${x},${y}, 울타리 밭 하나를 헛간 마당으로)`); break; }
+      }
+    }
+    if (!placed) (kit.id === "bd-farm-barn" ? missing : warnings).push(`${kit.label}(${kit.id}) — 마을에 ${w}×${h} 빈 풀밭이 없어 못 놓음(size 를 키우거나 variant 를 바꾼다)`);
+  }
+  return done;
 }
 
 export const VILLAGE_BUILDER: PlaceBuilder = {

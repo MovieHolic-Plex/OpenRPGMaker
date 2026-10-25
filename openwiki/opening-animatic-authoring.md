@@ -22,7 +22,7 @@ Research responses distinguish `conceptualRequirements` (study labels, never cal
 
 Runtime starts its clock after images load. Sequence music remains outside shot DOM replacement. Shot cues use their own elements, synchronize metadata-delayed seeks against current elapsed time, and stop on next/Skip/abort/load error. Canvas state restores even when a crop fails. Reduced motion freezes positional/camera/particle/sprite motion and retains timing/opacity/narration. In the pixel-grid vocabulary it freezes region loops, dust drift, the glow pulse, the stride walk and the dither reveal, while caption/emote **visibility timing** still follows the clock. Cues and narration cannot be proved through a silent frame preview.
 
-Entry transitions reveal from the stage background: cut/fade/wipe/iris/flash/dither. They are not a cross-dissolve of the previous shot. `dither` is an ordered 4×4 Bayer dissolve from the stage background (17 coverage steps, pixel-art vocabulary) — it still knocks the incoming shot out of the background, so it is *not* a blend with the previous shot; a true cross-dissolve remains unimplemented and is stated as such in `get_animatic_capabilities`. Particle presets are seeded rain/snow/sparks/dust/stars. No live map-session mutation is used to author a montage.
+Entry transitions reveal from the stage background: cut/fade/wipe/iris/flash/dither. They are not a cross-dissolve of the previous shot. `dither` is an ordered 4×4 Bayer dissolve from the stage background (17 coverage steps, pixel-art vocabulary) — it still knocks the incoming shot out of the background, so it is *not* a blend with the previous shot; a true cross-dissolve remains unimplemented and is stated as such in `get_animatic_capabilities`. Particle presets are seeded rain/snow/sparks/dust/stars/petals/paper (petals = tumbling cherry-blossom flakes drifting sideways, paper = rotating paper sheets fluttering down). No live map-session mutation is used to author a montage.
 
 ## Pixel-grid stage and alive-viewport primitives (2026-10-15)
 
@@ -182,6 +182,12 @@ pixel-animatic request as an in-game cutscene request and sent the assistant to 
   `pixelizeOpeningImage` for one file (also covers the JPEG-in-worker case).
 - `node scripts/qa/opening-pixel-compare.mjs <name> --ref <dir> --run <label>=<outDir> …` — one self-contained page with
   the reference capture beside every iteration's contact sheet, both videos and shot table.
+
+## Game map as the opening background (2026-10-25, Shitamachi)
+
+When there is no matching still, an image layer may use `resourceId: "map-view:<mapId>"` — the player draws that map's tile layers once at 1 map pixel = 1 stage pixel (`src/player/mapBackgroundMapView.ts` `renderMapViewCanvas`, cached per project in `openingAnimaticRenderer.ts`) and the layer `crop` (map pixels) chooses the part shown. Events are not drawn; put people on top with `place_opening_charset_actor` (stage px = map px − crop origin).
+The tool surface is `place_opening_background({shotId, layerId, mapId, focus:{x,y}, zoom})` — it computes the stage-ratio crop around the focus cell (`src/project/openingMapView.ts` `openingMapViewCrop`). The «one backdrop per shot» rule counts a map-view background as reused only when the crop origin is the same (two different streets corners of one map are different shots). Resource validation lists `map-view:<id>` for every map (`openingMapViewResourceIds`).
+Captions: when an animatic shot has a caption layer with cues, the DOM narration line is hidden (`data-captioned-on-canvas`), so a tool-made shot that also kept `narration` no longer shows the same sentence twice; the narration still becomes the canvas aria-label.
 
 ## Entry timing
 
@@ -386,3 +392,16 @@ hides the campaign and causes unrelated repair attempts in system tasks.
   stale zero-duration scenes, and a real player handoff with input changing
   the start-map position. Detailed shots still need neighbour-equality and
   hue-error refinement before visual parity with the crimson-oath reference.
+
+## Fallen Star cinematic cold open (2026-10-24)
+
+`src/project/flagship/fallenStarOpening.ts` is the reference for a movie-like opening built only from animatic primitives: six shots, 39 s, cut on the opening theme's bars (`cc0-bgm-rtp-flt-002`, measured 80 BPM — beat 750 ms, first beat 0.05 s; the catalog says 84). Hits (crack, impact, bell) sit on beats; SFX are shot-local `audioCues`, so they stay locked to the picture even when a shot's image load delays its clock.
+
+- **Parallax sky.** The OPRN night panorama layers (`oprn-pano-night`, `-stars-far`, `-stars-near`) are seamless tiles; `tiled()` lays just enough copies for the camera's whole travel at each depth (`x ∈ [(cmin−240)·p, 480+(cmax−240)·p]`). Ground layers are the existing opening art with only the sky cut out (`town-ground`, `fall-ground`, `scripts/content/fallen-star-opening-cutouts.py` — flood the navy sky from the top edge, keep what connects to the bottom edge; no new pixels).
+- **Camera-value trap.** The renderer treats camera `x`/`y` with `|x| ≤ width/4` or `|y| ≤ height/4` as offsets from the centre and adds half the stage. A tween that passes through that band jumps by half a screen. Keep world coordinates away from it (the falling-star tilt runs y 230→500 over a ground layer placed at y 400).
+- **Follow cam.** `follow()` converts a desired screen path into world keys by sampling the camera track at 125 ms, so the fireball stays framed while the camera tilts 270 px; trail glows are the same path delayed.
+- **Hide the boot stall.** On New Game the real engine boots during the first shot; in the shipped player under swiftshader the first ~2.3 s of the opening freeze. The fall lands in the forest **north** of the town (top treeline of the fall art). The first shot holds black (screen-space fill) until 2.6 s and is three bars long.
+- **Crisp pixels per sequence.** Composition field `upscale: 'nearest'` sizes the playback canvas to the largest integer multiple of the stage that fits the displayed box (× devicePixelRatio) and sets `image-rendering: pixelated`, so nearest-sampled art keeps square pixels while text and glows render at that resolution. Default (`smooth`/absent) is unchanged: stage-sized canvas, browser upscale.
+- **Skip by tap.** The sequence's skip hint is now a `button` (`data-testid="cinematic-skip"`, `data-play-input-owner="play-ui"` so `installPlayPointerBlocker` lets it through); `pointerup` finishes the sequence as `skipped`, same as Esc. It is visible from the first frame (no delayed fade-in: the hint is re-created every shot, so the old 3 s delay hid it for 3 s of each shot).
+- **No black ground at handoff.** `PlayScene.update` returned early while `initialPresentationPending`, so the tile window (`syncRuntimeTileWindow` / `syncTileCulling`) was first built after the cover faded — sprites appeared over a black ground for ~0.6 s. The pending branch now builds the visible tile window (visual only; no time, events or input advance). The first movement after the handoff is the proclamation's authored pan to Valen (`chronoBell.ts`); at 0.7 s it read as a jump, now 1.4 s.
+- **Evidence.** `node scripts/qa/runtime/fallen-opening.capture.mjs <play.json> <out> --skip-test` boots the shipped `player.html`, starts a new game and writes `opening.webm`/`opening.mp4` (1x, trimmed to the opening), `timeline.json` and frames; `--skip-test` taps the skip button in a second boot and checks the map is reached. Playwright video has no audio.

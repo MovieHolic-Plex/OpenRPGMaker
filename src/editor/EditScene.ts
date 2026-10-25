@@ -2696,7 +2696,7 @@ export class EditScene extends PhaserRuntime.Scene {
     if (!mapBackgroundPreviewEnabled()) return false;
     const mapId = this.mapId();
     const background = mapId ? store.getCurrent().maps[mapId]?.background : undefined;
-    return background?.showInEmptyCells === true && Boolean(background.imageId || background.layers?.length);
+    return background?.showInEmptyCells === true && Boolean(background.imageId || background.fromMap || background.layers?.length);
   }
 
   private clearMapBackgroundPreview(): void {

@@ -169,6 +169,10 @@ export interface FieldEnemyChaseOptions {
   readonly alert?: Exclude<(typeof ALERTS)[number], 'none'>;
   /** 시야에서 놓친 뒤 마지막 목격 자리를 뒤지는 시간(기본 2500ms) — 그 뒤 출발 칸으로 돌아가 다시 순찰한다. */
   readonly searchMs?: number;
+  /** 발견 직후 덮치기 칸 수(0 = 없음, 기본 0). 그 칸들은 lungeSpeed 랭크로 쉬지 않고 달려든다. */
+  readonly lungeSteps?: number;
+  /** 덮치기 걸음 랭크(1~6, 기본 6 = 주인공 걷기와 같은 160ms/칸 — 계속 걸으면 따라잡히지 않는다). */
+  readonly lungeSpeed?: number;
 }
 
 /**
@@ -196,6 +200,9 @@ export function makeFieldEnemyChase(project: Project, map: GameMap, event: GameE
     pursuit: { scope: 'map', doorDelayMs: 0, searchMs: options.searchMs ?? 2500, onLost: 'return' },
     ...(dirs.length ? { route: { repeat: true, skippable: false, moves: dirs.flatMap((dir) => [{ kind: 'move' as const, dir }, { kind: 'wait' as const }, { kind: 'wait' as const }]) } } : {}),
     sightAlert: { emote: options.alert ?? 'exclamation', holdMs: ALERT_HOLD_MS },
+    ...(options.lungeSteps && options.lungeSteps > 0
+      ? { chaseLunge: { steps: Math.max(1, Math.min(8, Math.round(options.lungeSteps))), speed: Math.max(1, Math.min(6, Math.round(options.lungeSpeed ?? 6))) } }
+      : {}),
   };
   fight.animationType = 'normal';
   // 시야에 든 순간 이미 놀람을 냈다 — 닿을 때 또 띄우지 않는다(fieldEnemyPages 와 같은 규칙).
@@ -225,6 +232,8 @@ export const FIELD_ENEMY_TOOLS: readonly ToolDefinition[] = [
       behavior: { type: 'string', enum: [...BEHAVIORS], description: '기본 stationary' },
       patrol: { type: 'object', description: 'behavior:patrol 또는 chase(순찰+추격) 일 때. {length?:1..8 칸 왕복(기본 3), axis?:horizontal|vertical} 또는 {directions:[up|down|left|right..]} 출발 칸으로 돌아오는 닫힌 경로', properties: { length: { type: 'integer' }, axis: { type: 'string', enum: ['horizontal', 'vertical'] }, directions: { type: 'array', items: { type: 'string', enum: ['up', 'down', 'left', 'right'] } } } },
       sightRange: { type: 'integer', description: 'behavior:chase 시야(칸, 2..8, 기본 4). 이 안에서 벽에 안 가리면 쫓는다' },
+      vision: { type: 'string', enum: ['any', 'cone'], description: "behavior:chase 시야 모양. any(기본)=사방, cone=바라보는 방향 앞 부채꼴만(등 뒤로 몰래 지나가면 못 본다)" },
+      giveUpRange: { type: 'integer', description: 'behavior:chase 이만큼(칸) 멀어지면 포기하고 출발 칸으로 돌아간다(기본 시야+4, 시야+1..20)' },
       pace: { type: 'string', enum: [...PACES], description: 'slow(기본)|normal|fast — 셋 다 주인공 걷기보다 느리다' },
       graphic: { ...GRAPHIC_SPEC_SCHEMA, description: '생략 시 적 그룹 선두 몬스터 이름으로 검색한 기존 도트' },
       alert: { type: 'string', enum: [...ALERTS], description: '머리 위 말풍선(chase=시야에 든 순간, 그 외=닿기 직전). 기본 exclamation, none 이면 말풍선 없이 바로' },
@@ -351,10 +360,11 @@ export const FIELD_ENEMY_TOOLS: readonly ToolDefinition[] = [
       } : undefined;
       const movement: EventPage['movement'] = behavior === 'chase'
         ? {
-          type: 'chase', speed: chase.speed, frequency: chase.frequency, sightRange: sightRaw, giveUpRange: sightRaw + 4, pathfind: true,
+          type: 'chase', speed: chase.speed, frequency: chase.frequency, sightRange: sightRaw,
+          giveUpRange: Number.isFinite(Number(args.giveUpRange)) ? Math.max(sightRaw + 1, Math.min(20, Math.round(Number(args.giveUpRange)))) : sightRaw + 4, pathfind: true,
           // 시야·수색·복귀는 기존 추격 정책(sight+pursuit)을 쓴다: 시야(벽 가림) 안이면 쫓고, 놓치면 마지막 목격 자리를 뒤지다
           // 출발 칸으로 돌아간다(onLost:'return'). 순찰 경로가 있으면 돌아온 뒤 처음부터 다시 순찰한다.
-          sight: { range: sightRaw, lineOfSight: true, facing: 'any' },
+          sight: { range: sightRaw, lineOfSight: true, facing: args.vision === 'cone' ? 'cone' : 'any' },
           pursuit: { scope: 'map', doorDelayMs: 0, searchMs: SEARCH_BEFORE_RETURN_MS, onLost: 'return' },
           ...(patrol ? { route: patrolRoute(true) } : {}),
           ...(alert === 'none' ? {} : { sightAlert: { emote: alert, holdMs: ALERT_HOLD_MS } }),
@@ -383,6 +393,53 @@ export const FIELD_ENEMY_TOOLS: readonly ToolDefinition[] = [
         summary: `${map.name} (${start.x}, ${start.y}) 에 필드 적 '${troopId}' — ${behavior}${patrol ? ` ${patrol.dirs.length}걸음 왕복` : ''}${behavior === 'chase' ? ` 시야 ${sightRaw}칸${patrol ? '(시야 밖 순찰)' : ''}·놓치면 복귀` : ''}`,
         data: { eventId: id, clearSwitchId, behavior, x: start.x, y: start.y, cells: patrol ? cells : undefined, adjusted: placement.adjusted },
         ...(warnings.length > 0 ? { warnings } : {}),
+      };
+    },
+  },
+  {
+    name: 'tune_field_enemies',
+    mode: 'write',
+    domains: ['event'],
+    description:
+      '이미 놓인 「보이는 적」(place_field_enemy 의 필드 적 페이지)을 한꺼번에 「보면 달려드는」 적으로 맞춘다 — 시야(칸)·시야 모양·추격 걸음과 발견 직후 「덮치기」(lungeSteps 칸을 lungeSpeed 랭크로 쉬지 않고 달려듦). ' +
+      '「적이 더 멀리서 알아보고 빠르게 덮치게」「추격을 세게」 요청의 정본. mapIds 를 주면 그 맵만, 생략하면 필드 적이 있는 모든 맵. 순찰 경로는 시야 밖 걸음으로 그대로 살리고, 입구에서 시야 안이면 그 맵의 시야를 줄인다(들어서자마자 덮치지 않게). ' +
+      '덮치기 걸음은 주인공 걷기(랭크 6)보다 빠르게 할 수 없다 — 계속 걸으면 피할 수 있어야 한다. 보스·이야기 전투(조사 전투)는 건드리지 않는다.',
+    parameters: schema({
+      mapIds: { type: 'array', items: { type: 'string' }, description: '고칠 맵(생략 = 필드 적이 있는 모든 맵)' },
+      sightRange: { type: 'integer', description: '시야(칸, 2..8, 기본 5)' },
+      vision: { type: 'string', enum: ['any', 'cone'], description: 'cone(기본) = 앞쪽 부채꼴, any = 사방' },
+      pace: { type: 'string', enum: [...PACES], description: '덮치기 뒤 평소 추격 걸음(기본 fast)' },
+      lungeSteps: { type: 'integer', description: '발견 직후 덮치는 칸 수(0..8, 0 = 없음)' },
+      lungeSpeed: { type: 'integer', description: '덮치기 걸음 랭크(1..6, 기본 6 = 주인공 걷기와 같은 빠르기)' },
+    }, []),
+    invalidArgsExample: { sightRange: 7, lungeSteps: 3, lungeSpeed: 6 },
+    run(draft, args): ToolExecResult {
+      const sight = args.sightRange === undefined ? undefined : Number(args.sightRange);
+      if (sight !== undefined && (!Number.isInteger(sight) || sight < 2 || sight > 8)) throw new ToolError('sightRange 는 2..8 칸입니다.', { code: 'invalid-args' });
+      const steps = args.lungeSteps === undefined ? 0 : Number(args.lungeSteps);
+      if (!Number.isInteger(steps) || steps < 0 || steps > 8) throw new ToolError('lungeSteps 는 0..8 입니다.', { code: 'invalid-args' });
+      const speed = args.lungeSpeed === undefined ? 6 : Number(args.lungeSpeed);
+      if (!Number.isInteger(speed) || speed < 1 || speed > 6) throw new ToolError('lungeSpeed 는 1..6 입니다(주인공 걷기 6 보다 빠르면 피할 수 없다).', { code: 'invalid-args' });
+      if (args.pace !== undefined && !(PACES as readonly string[]).includes(String(args.pace))) throw new ToolError(`pace 는 ${PACES.join('|')} 입니다.`, { code: 'invalid-args' });
+      const wanted = Array.isArray(args.mapIds) ? (args.mapIds as unknown[]).map(String) : undefined;
+      for (const id of wanted ?? []) if (!draft.maps[id]) throw new ToolError(`맵을 찾을 수 없습니다: ${id}`, { code: 'map-not-found' });
+      const maps = wanted ? wanted.map((id) => draft.maps[id]!) : Object.values(draft.maps);
+      const tuned: string[] = []; const skipped: string[] = [];
+      for (const map of maps) for (const event of map.events) {
+        const result = makeFieldEnemyChase(draft, map, event, {
+          ...(sight !== undefined ? { sightRange: sight } : {}),
+          ...(args.vision === 'any' || args.vision === 'cone' ? { vision: args.vision } : {}),
+          ...(args.pace !== undefined ? { pace: args.pace as Pace } : {}),
+          ...(steps > 0 ? { lungeSteps: steps, lungeSpeed: speed } : {}),
+        });
+        if (result.ok) tuned.push(`${map.id}/${event.id}(시야 ${result.sightRange})`);
+        else if (result.reason !== 'not-field-enemy') skipped.push(`${map.id}/${event.id}: ${result.reason}`);
+      }
+      if (tuned.length === 0) throw new ToolError('고칠 필드 적이 없습니다 — place_field_enemy 로 먼저 놓으세요.', { code: 'field-enemy-none' });
+      return {
+        summary: `필드 적 ${tuned.length}마리를 추격형으로 맞췄다(시야 ${sight ?? 5}칸${steps > 0 ? `, 발견 뒤 ${steps}칸 덮치기 랭크 ${speed}` : ''}).`,
+        data: { tuned, skipped },
+        ...(skipped.length ? { warnings: skipped.slice(0, 12) } : {}),
       };
     },
   },

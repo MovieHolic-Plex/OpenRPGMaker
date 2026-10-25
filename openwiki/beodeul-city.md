@@ -954,12 +954,23 @@ revision 16 기와 변경은 사용자 지적을 오해한 것이며 철회했�
 ## 마당 바닥 오토타일 (2026-10-23, village-art)
 
 - **오토타일 셋:** `beodeul_yard_cobble`(자갈) · `beodeul_yard_dirt`(다진 흙) · `beodeul_yard_flag`(판석).
-  - 위치: 시트 줄 258, `BEODEUL_YARD_BASE` = 33024, 칸 33024~33094(던전 주제 꼬리 30,848~33,023 바로 뒤). 2026-10-24 main 의 던전 gap(29,568~)·주제(30,848~) 꼬리와 겹쳐 29,568 에서 옮겼다(이전 판의 마당 칸 번호는 main 에 나간 적이 없다).
+  - 위치: 시트 줄 259, `BEODEUL_YARD_BASE` = 33152, 칸 33152~33222(던전 주제 꼬리 30,848~33,151 바로 뒤). 2026-10-24 main 의 던전 gap(29,568~)·주제(30,848~) 꼬리와 겹쳐 29,568 에서 옮겼다(이전 판의 마당 칸 번호는 main 에 나간 적이 없다).
   - 한 면은 21칸이다: 몸 8, 변 4, 모서리 4, 외딴 1, 안쪽 모서리 4. 자갈·판석은 변 칸이 둘씩 있다.
-- **굽기:** 시트 순서 성벽(`bake_wall.py`) → 던전 gap(`bake_gap.py --from-store`) → 던전 주제(`bake_theme.py`) → 마당(`bake_yard.py`). `bake_theme.py` 가 끝에서 `bake_yard.py` 를 잇는다. 마당 꼬리는 두 행 33,024~33,279(마당 셋 71칸, 포도나무 줄 16칸 33,095~, 판석→흙 가장자리 129칸 33,111~), 시트 33,280칸.
+- **굽기:** 시트 순서 성벽(`bake_wall.py`) → 던전 gap(`bake_gap.py --from-store`) → 던전 주제(`bake_theme.py`) → 마당(`bake_yard.py`). `bake_theme.py` 가 끝에서 `bake_yard.py` 를 잇는다. 마당 꼬리는 두 행 33,152~33,407(마당 셋 71칸, 포도나무 줄 16칸 33,223~, 판석→흙 가장자리 129칸 33,239~), 시트 33,408칸.
 - **이식 칸 이동:** 기존 사본의 이식 칸은 `relocateLocalTail` 이 새 번들 끝(`beodeulCitySheet.count`) 뒤로 민다. 증명: `scripts/qa/beodeul-graft-relocation-proof.mts`(옛 증명 28800→29696 은 마당이 29,568 이던 판의 기록이다).
   - 증명: `scripts/qa/beodeul-graft-relocation-proof.mts`. 기존 프로젝트 사본으로 이동 후 모든 맵이 화소까지 같음을 보였다.
 - **배선:** `src/project/defaults/beodeulCity.ts` 의 `mergeShippedFarm(…, withYard)` · `mergeShippedKits(…, withYard)`.
   - 타일 묶음은 `beodeul:yard_*`, 견본 킷은 `bd-yard-*-sample` 이다.
 - **쓰는 곳:** `dress_village_quarter` 의 temple-ruins(판석) · mining · vineyard(다진 흙) 마당. `author_beodeul_town({quarter})` 가 빌더 `yard` 옵션으로 마당 자리를 먼저 비운다(다른 마을은 옵션이 없어 그대로). 규칙은 `openwiki/editor-ai-tools.md` 「마을 종류 표」 절에 있다.
 - **검수 증거:** `tiledata/beodeul-yard/_gate/`
+
+## 자연 기물 beodeul_organic (2026-10-24) — 숲·들판의 바위·덤불·통나무·버섯·들꽃·고사리·풀·이끼 돌·고목·사당 돌
+
+버들항 B1 활엽 숲(낙성 숲 화풍) 나무 사이에 놓는 자연 기물 37종. 버들항 잠금 팔레트(원본 키트에서 뽑은 137색) 코드 손 도트다. 생성 이미지·object-gen 은 쓰지 않았다.
+
+- **원본:** `scripts/content/beodeul-organic/` — `spec.json`(37종: id·크기·층·막힌 칸·관문 종류·갈래), `art/<갈래>.py`(행 문자열 그림), `draw.py`→`out/<id>.png`, `check.py`(크기·팔레트·반투명은 그림자색만·윗줄 비움·막힌 칸에 그림), `preview.py`/`scene.py`(버들항 원본 옆 같은 배율), `qa/`(블라인드 검수).
+- **굽기:** `python3 scripts/content/beodeul-organic/bake.py` — 그림마다 `object_gate.require_all(context="bundle")` 를 지나야 `public/assets/beodeul-organic/chipset.png`(16열) + `src/assets/beodeulOrganicCatalog.json` 을 쓴다. `--draft` 는 /tmp 미리보기만.
+- **배선:** `src/project/defaults/beodeulOrganic.ts` — 독립 타일셋 `beodeul_organic`(tex_beodeul_organic) + beodeul_city 에 `translateTiles` 로 이식한 kit `bd-org-<id>`(learnedFrom pack-preset, 조수 `list_tileset_objects`/`stamp_tileset_object` 로 놓는다). 층 3 = 서 있는 기물(upperTiles, 막힌 칸만 통행 금지·priority lower, 나머지 칸은 사람 위), 층 2 = 밟고 지나가는 바닥 꾸미기(lowerOverlayTiles). `bundled.ts`·`bundledChipsetGeometry.ts`·`defaultAssets.ts`(새 프로젝트 + `ensureBundledTilesets` 기존 프로젝트)·`createBeodeulCityTileset` 에 걸렸다. 같은 칸 그림은 한 번만 이식된다(두 번째 호출부터 변화 없음).
+- **견본 지도:** `scripts/content/beodeul-organic/sample-map.mts <out.project.json>` — 빈 프로젝트에 `paintWoodland(SHRINE_SPEC + 빈터 3곳)` 을 칠하고 37종을 한 번씩 + 바닥 꾸미기 40개를 길·출구·물을 피해 놓은 뒤 모든 출구가 서로 닿는지 BFS 로 확인한다. 화면은 `bun scripts/qa-game/render.mts --project … --out …`.
+- **검수(qa/protocol.md):** 판정자 둘(argon, klb-sonnet-5-5)에게 새 그림 37 + 버들항 원본 16 을 이름 없는 번호로 섞은 블라인드 시트(`qa/blind.py <dir> <seed>`, 열쇠는 저장소 밖)를 매 판 새 프로세스로 보인다. 원본도 판정자마다 4~10/16 만 통과한다(엄격함의 대조군). 판정은 같은 화소에도 판마다 흔들려서, 합격 = **지금 화소 해시 그대로 2장 이상 시트에 나와 한 번 이상 두 판정자 모두 통과, 판정자마다 2/3 이상 통과**. 기록 `qa/ledger.json`, 확인 `python3 qa/ledger.py status`. 판정자들이 되풀이 지적한 결함(바닥 빗살 1px 다리·홀로 찍힌 점·자로 그은 듯한 긴 변)은 `qa/edges.py` 로 미리 잰다(합격 판정이 아니다).
+- **함정:** 그림 함수가 `max(set(nb), key=nb.count)` 처럼 set 순서에 기대면 실행마다 화소가 바뀌어 검수가 무효가 된다(사당 돌에서 실측, 고침). 여러 그림이 공유하는 보조 함수를 고치면 이미 합격한 그림의 화소가 바뀔 수 있다 — 고목은 r7 화소를 행 문자열로 얼려 두었다. `qa/blind.py` 는 쪽 넘김에서 줄 하나를 잘라 먹던 결함이 있었고(r8 P38), 이제 모든 카드가 쪽 안에 있는지 단언한다.

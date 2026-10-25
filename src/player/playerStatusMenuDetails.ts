@@ -1,4 +1,5 @@
 import { isEmeraldMonsterStyle } from "@/project/emeraldMonsterStyle";
+import { skillHelp, skillHelpTagLine } from "@/battle/skillHelp";
 import { withCloudStatus } from "@/player/cloudOtherSaves";
 import { captureConditionLabel } from "@/battle/captureBalls";
 import { roJosa, withJosa } from "@/util/josa";
@@ -31,6 +32,7 @@ import { resolveActorName, resolveActorFaceResourceId } from "@/project/sessionA
 import { defaultActorFaceResourceId, normalizeActorRecord } from "@/project/actorModel";
 import type { StatusMenuStatDelta } from "@/player/playerStatusMenuDetailTypes";
 import { effectiveActorClassId } from "@/project/sessionClass";
+import { actorFieldStateNames, KNOCKED_OUT_STATE_NAME } from "@/player/actorFieldStates";
 import type { PlaySession } from "@/project/session";
 import type {
   ActorInitialEquipment,
@@ -398,8 +400,11 @@ function itemDetail(options: StatusMenuDetailOptions): StatusMenuDetail {
       entries: partyActors(project, session).map((actor) => {
         const preview = previewMenuItemTarget(project, session, item, actor.id);
         const stateName = (stateId: string) => project.database.states.find((state) => state.id === stateId)?.name;
-        const stateNames = preview.stateIds.map(stateName).filter((name): name is string => Boolean(name));
+        // HP 0 이면 「전투불능」 — 회복약 대상 목록에서 쓰러진 동료가 「정상」으로 보이면 안 된다(J7).
+        const stateNames = actorFieldStateNames(project, session, actor.id);
         const curedStateNames = preview.curedStateIds.map(stateName).filter((name): name is string => Boolean(name));
+        // 되살리는 아이템(HP 0 → 1 이상)은 「전투불능 → 정상」을 미리 보인다.
+        if (!preview.reason && preview.hp <= 0 && preview.hpAfter > 0 && stateNames.includes(KNOCKED_OUT_STATE_NAME)) curedStateNames.push(KNOCKED_OUT_STATE_NAME);
         const anyTarget = item.scope === "allAllies" && session.partyActorIds.some((id) => canUseMenuItemOnActor(project, session, item, id));
         const eligible = anyTarget || canUseMenuItemOnActor(project, session, item, actor.id);
         return {
@@ -550,7 +555,7 @@ function skillDetail(options: StatusMenuDetailOptions): StatusMenuDetail {
           label: `${equipped.has(skill.id) ? "● " : "○ "}${skill.name}`,
           icon: skillEntryIcon(project, skill),
           value: equipped.has(skill.id) ? "장착" : `MP ${skill.mpCost.flat}`,
-          description: `${skill.description || skillKindLabel(skill)} / 위력 ${skill.power} / 성공 ${skill.successRate}%`,
+          description: fieldSkillDescription(project, skill),
           testId: `status-menu-skill-${actor.id}-${skill.id}`,
           attributes: { loadoutEquipped: equipped.has(skill.id) ? "true" : "false" },
           onActivate: options.onToggleSkillLoadout
@@ -568,7 +573,7 @@ function skillDetail(options: StatusMenuDetailOptions): StatusMenuDetail {
         label: skill.name,
         icon: skillEntryIcon(project, skill),
         value: skill.fieldCommonEventId ? `MP ${skill.mpCost.flat} · 필드에서 사용` : `MP ${skill.mpCost.flat}`,
-        description: `${skill.description || skillKindLabel(skill)} / 위력 ${skill.power} / 성공 ${skill.successRate}%`,
+        description: fieldSkillDescription(project, skill),
         testId: `status-menu-skill-${actor.id}-${skill.id}`,
         onActivate: options.onSelectSkill ? () => options.onSelectSkill?.(skill.id) : undefined,
       })),
@@ -739,7 +744,7 @@ function statusDetail(project: Project, session: PlaySession): StatusMenuDetail 
       // 구분자를 "/" 로 쓰면 HP 510/514 의 분수 슬래시와 뒤섞여 어디까지가 한 항목인지
       // 읽히지 않는다. 가운뎃점으로 갈라 분수 슬래시만 슬래시로 남긴다.
       description: vitals
-        ? `HP ${vitals.hp}/${vitals.maxHp} · MP ${vitals.mp}/${vitals.maxMp} · 정상`
+        ? `HP ${vitals.hp}/${vitals.maxHp} · MP ${vitals.mp}/${vitals.maxMp} · ${actorFieldStateNames(project, session, actor.id).join(" · ") || "정상"}`
         : "HP 0/0 · MP 0/0 · 정상",
     };
   });
@@ -1192,6 +1197,12 @@ function equipmentEntryIcon(equipment: EquipmentRecord | undefined): NonNullable
 }
 
 // 스킬은 애니메이션 시트의 첫 셀을 썸네일로 쓴다. 시트 전체를 축소하지 않도록 규격도 넘긴다.
+/** 필드 스킬 화면의 설명 — 전투 도움말 창과 같은 문장(battle/skillHelp): 한 줄 설명 + 꼬리표 줄. */
+function fieldSkillDescription(project: Project, skill: SkillRecord): string {
+  const help = skillHelp(project, skill);
+  return [help.description || skillKindLabel(skill), skillHelpTagLine(help), help.comboNames ? `연계: ${help.comboNames.join(" × ")} · ${help.cost}` : ""].filter(Boolean).join("\n");
+}
+
 function skillEntryIcon(project: Project, skill: SkillRecord): NonNullable<StatusMenuDetailEntry["icon"]> {
   const animation = skill.animationId
     ? project.database.battleAnimations.find((entry) => entry.id === skill.animationId)

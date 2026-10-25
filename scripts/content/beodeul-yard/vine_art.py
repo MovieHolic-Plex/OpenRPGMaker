@@ -360,7 +360,7 @@ def preview(out):
 
 
 # ---------------------------------------------------------------- 표본: 다진 흙 마당 위 세 줄(길이 다름) + 낱 조각
-DIRT_BODY = [33024 + 21 + i for i in range(8)]     # 마당 꼬리 BASE(33,024)+21 = beodeul_yard_dirt 몸통 + 변형 일곱(bake_yard tid('dirt', body..body8))
+DIRT_BODY = [33152 + 21 + i for i in range(8)]     # 마당 꼬리 BASE(33,152)+21 = beodeul_yard_dirt 몸통 + 변형 일곱(bake_yard tid('dirt', body..body8))
 
 
 def _cell(sh, t):

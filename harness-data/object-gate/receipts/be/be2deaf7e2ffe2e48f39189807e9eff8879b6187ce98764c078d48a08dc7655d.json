@@ -1,0 +1,350 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "be2deaf7e2ffe2e48f39189807e9eff8879b6187ce98764c078d48a08dc7655d",
+ "width": 16,
+ "height": 32,
+ "kind": "organic",
+ "name": "tall narrow shrub (bush), natural map prop for the Beodeul 16px chipset, 1x2 tiles, standing object (3rd layer), 3/4 top-down, sits on grass between broadleaf trees",
+ "label": "beodeul_organic/shrub-tall",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (3/4)",
+  "화풍: 칸 정보량이 기준보다 훨씬 낮음 (2/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (3/4)",
+   "칸 정보량이 기준보다 훨씬 낮음 (2/4)"
+  ],
+  "styleKind": "tree",
+  "refs": [
+   "tree-1a786c",
+   "tree-d43edd"
+  ],
+  "scale": 2,
+  "score": 5,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_organic",
+   "fallback": true,
+   "reason": "칩셋 beodeul_organic 의 화풍 기준 묶음이 없다",
+   "hash": "bcc19e99327f94ce"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 7,
+  "tileColorsP90": 7,
+  "darkV5": 29,
+  "nearBlackEdge": 0.33,
+  "opaqueTiles": 1
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top foliage clump (peak)",
+      "rows": "2-8",
+      "evidence": "a",
+      "front_edge_line_row": 7,
+      "eave_shadow_rows": "8-11"
+     },
+     {
+      "part": "middle foliage clump",
+      "rows": "12-19",
+      "evidence": "a",
+      "front_edge_line_row": 12,
+      "eave_shadow_rows": "16-19"
+     },
+     {
+      "part": "lower foliage clump",
+      "rows": "20-27",
+      "evidence": "a",
+      "front_edge_line_row": 20,
+      "eave_shadow_rows": "24-27"
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 18,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette is a tapering stack of rounded leaf clumps, widening from 1 px at row 2 to 16 px at rows 23-24. Each clump has a light highlighted upper surface followed by darker underside rows. The light rows are 5, 7, 12 and 20 (#94b353), and dark shadow rows follow them (rows 11-14, 16-17, 24-27). That reads as lit tops over shaded front faces, not a flat front elevation. The top tier (rows 3-8) is the main top surface at about 5 rows. Below it, rows 9-27 form the south-facing foliage mass of 3+ rows, so this is not a flat top-down slab. No receding side face is drawn. The shape is organic and not a column, so there is no round cap."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a small, tall conical shrub drawn with only 7 raw colours and 7 visible tones per tile. That matches tree-1a786c on tone count, but tree-d43edd reaches 29 visible tones and 109 raw colours, and the candidate is far below it. Its ramp reads as about 4 green steps (dark outline green, mid, light, highlight) with a few tier-like clumps. The outline is dark green, tinted rather than neutral (0% neutral edge pixels), so it is a material tone and not a sticker line. The silhouette is a simple stacked-cone shape with little leaf clumping, no per-clump highlights and no visible trunk or grass grounding. Next to the leafy, multi-tone references, which have broken, scalloped canopy edges and 5-6 shading steps, it looks thinner and more simplified. Shallower shading and lower density than the references, so a careful artist would not accept it beside them.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 15318
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top foliage tier (conical peak)",
+      "rows": "3-10",
+      "evidence": "a",
+      "front_edge_line_row": 10,
+      "eave_shadow_rows": "11-12"
+     },
+     {
+      "part": "middle foliage tier",
+      "rows": "13-19",
+      "evidence": "a",
+      "front_edge_line_row": 19,
+      "eave_shadow_rows": "20"
+     },
+     {
+      "part": "lower foliage tier / base",
+      "rows": "20-27",
+      "evidence": "a",
+      "front_edge_line_row": 22,
+      "eave_shadow_rows": "23-27"
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 14,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The shrub is built from stacked leaf clumps. Each clump has a light highlight on its upper rows, for example x=8 row 7 (#94b353) and x=11 row 20, then mid-green rows, then a darker underside. At x=8 the darker underside runs rows 10-14, and at x=11 rows 15-19. This reads as lit upper surfaces over shaded front faces. The width profile widens steadily from 1px at row 2 to 16px at rows 23-24, then tapers to 8px at row 27, giving a rounded, tiered mass with volume and a visible front body of about 14 rows. No isometric side face is drawn. The shape is organic and does not match any flat-slab or front-elevation failure."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a small conical shrub of about 7 distinct tones, with a dark green outline on the edges and some leaf-clump stepping. Its measured tone count (7) matches tree-1a786c (7), but the stronger reference, tree-d43edd, carries 29 visible tones per tile. By eye, the shrub is small, simple and nearly symmetric. It has only about 4 readable green ramp steps, with a pale highlight band and a dark base that stay close in value. It lacks the layered leaf clumps, internal shadow pockets and per-cluster highlights of the references, and it reads thinner and flatter next to both. No flat fills (0% near-flat) and no neutral black outline (0% neutral edge pixels), so it avoids the sticker look, but its density and shading depth sit below the Beodeul bar.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 14018
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top foliage tier (apex clump)",
+      "rows": "2-6",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "upper-mid foliage clumps with lit tops",
+      "rows": "7-10",
+      "evidence": "a",
+      "front_edge_line_row": 10,
+      "eave_shadow_rows": "11-12"
+     },
+     {
+      "part": "mid foliage tier, lit top band",
+      "rows": "12-15",
+      "evidence": "a",
+      "front_edge_line_row": 15,
+      "eave_shadow_rows": "16-17"
+     },
+     {
+      "part": "lower foliage tier, lit tops with dark under-shadow",
+      "rows": "19-23",
+      "evidence": "a",
+      "front_edge_line_row": 23,
+      "eave_shadow_rows": "24-26"
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 20,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The shrub is a conical stack of leaf clumps (width grows from 1 px at row 2 to 16 px at rows 23-24, then 8 px at row 27). Each clump has a light green top (#94b353 / #497f3c, for example at rows 5, 7, 12 and 20) above darker green and near-black shadow (#063328 / #071d1b) below it. That reads as lit upper surfaces over shaded front masses, so the body shows tops plus a tall front, not a flat slab or a pure front elevation. The tops are broken, organic clump highlights rather than one clean band. The shadow at rows 24-27 grounds the base. No isometric side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a small, narrow shrub built from stacked leaf clumps. It shows about 5 green steps, from a dark base through mid greens to a light highlight on the clump tops, and the clumps are shaded individually. The outline is a dark green tint beside the leaves, not neutral black, which matches the 0% near-neutral edge share. Near-flat coverage is 0%, with no 5x5 flat fills. Its 7 visible tones per tile equal tree-1a786c (7) but fall well short of tree-d43edd (29). That is expected for a small 1x2 prop, so I judge density by eye. It reads as slightly lower than the references rather than shallow or sticker-like. The pointed, cone-like silhouette is a shape choice, not a style fault. It would sit acceptably next to tree-1a786c, so I pass it, though it is not as rich as the best reference.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 20983
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top foliage tier (apex clump)",
+      "rows": "2-6",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "upper leaf mound with lit top and dark underside",
+      "rows": "7-12",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": "11-12"
+     },
+     {
+      "part": "middle and lower leaf mounds with lit tops and dark undersides",
+      "rows": "13-27",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": "16-19"
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 15,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The bush is a stack of rounded leaf clumps. Each clump has a lit top row (x=8 row 7 L=159, x=4 rows 5 and 12 L=159, x=11 row 20 L=159) with mid-green below and a dark underside. The width profile (rows 7-12: 8,10,11,10,7) widens and then narrows again, so the upper mound reads as an ellipse-like top. Dark shadow bands sit under the tiers (x=8 rows 11-14, x=11 rows 17-19). A tall body of about 15 rows of foliage remains below the apex, so there is a clear front mass and it is not a flat slab. The tiers are organic and have no hard front-edge lines, so the top surface is only moderately defined."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small conical shrub built from 7 colours in total, about 5 greens plus a dark green edge. Its outline is a tinted dark green, which matches the facts (0% neutral edge pixels), and it has no flat 5x5 fills. It reads as stacked scalloped tufts with a lit left side. It matches tree-1a786c on the 7 visible tones per tile, but tree-d43edd carries 29 visible tones and 567 distinct colours, with individual leaf clumps, branch detail and a shaded trunk. Next to that reference the candidate looks thinner and more uniform. Each tuft is a single step with little variation inside it, and there are no highlight dots or clump texture in several greens. The silhouette is a tidy, symmetric cone that looks more like a conifer than a broadleaf bush. The candidate is clean and not a sticker, but a careful artist would likely see it as shallower than the best reference. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 21689
+  }
+ ],
+ "decidedAt": "2026-10-24T13:35:28.256Z",
+ "cells": {
+  "16": [
+   "7486ab6f2fce408f",
+   "ea15fdc0301cf48d"
+  ],
+  "24": [
+   "05770df18aed2d1e",
+   "0da098dbf6d7f072",
+   "2131c6fd721d4cd6",
+   "2d209d722fc95afb",
+   "3b7550a7a3e16ffd",
+   "4efc1106cc5ee413",
+   "8e027a3e2fad15f7",
+   "8e5919d7d6325851",
+   "a343e84e59624e41",
+   "cc2a293dc9cdb706",
+   "ea90f0c0dd427097",
+   "ee88db2460be791e"
+  ],
+  "32": [
+   "158c78c5d30f6854",
+   "161f98cdffc7e68d",
+   "9f9cc1f12d8c5dd5"
+  ],
+  "48": [
+   "2bccf571dc3267ae",
+   "328636ae0a48360b",
+   "70ed0d7250dc7727",
+   "a70a3c1e9ea49f3f",
+   "eeba47faaed744a9",
+   "fb96f0db885855f5"
+  ]
+ }
+}

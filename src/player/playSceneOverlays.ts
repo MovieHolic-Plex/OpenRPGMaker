@@ -20,6 +20,7 @@ import type { FaceGraphic } from "@/project/types";
 import { sharedPortraitRendering } from "@/assets/sharedPortraitAssets";
 import { vnUiText, type VnUiKey } from "@/player/vnExtrasStrings";
 import { vnExtrasLanguage } from "@/project/vnExtras";
+import { endingSummaryText } from "@/project/endingSummary";
 
 /** 엔딩 화면 글자 — 게임 언어(편집기 언어가 아니다: 저작 vnExtras·대사 시스템 언어, 없으면 ko)로 고른다. */
 function endingText(key: VnUiKey, ...args: readonly (string | number)[]): string {
@@ -399,16 +400,53 @@ function buildEndingCg(terminal: TerminalScene, project: Project, presentation: 
     layer.append(pair);
   }
   layer.append(textNode("div", "ending-cg-frame", ""));
-  const epilogue = (ending?.epilogue ?? [])
-    // 말한 사람이 있는 줄은 이름을 붙인다 — 이름 없이 존댓말·반말 두 줄이 붙으면 누가 한 말인지 모른다.
-    .map((beat) => {
-      const text = typeof beat.text === "string" ? beat.text.trim() : "";
-      const speaker = "speaker" in beat && typeof beat.speaker === "string" ? beat.speaker.trim() : "";
-      return text && speaker ? `${speaker}: ${text}` : text;
-    })
-    .filter(Boolean)
-    .join("\n");
+  // 카드는 내레이션 — 말한 사람이 있는 줄은 「이름: …」 대본이 아니라 「」 인용으로 보인다(J36).
+  const epilogue = endingSummaryText(ending?.epilogue ?? []);
   return { layer, mode: partnerFigure ? "couple" : "scene", badge: endingBadge(endingId, Boolean(partnerFigure), presentation), epilogue };
+}
+
+/**
+ * 엔딩 그림 카드의 요약 글을 판에 맞는 가장 큰 크기로 — 고정 3.4cqh 는 다섯 줄 요약이 1배 화면에서 8px 로 작았고(첫사랑 VQA r34),
+ * 키우면 여섯 줄 요약이 판 아래로 잘렸다(r31). 큰 크기부터 판(.ending-epilogue)에 다 들어갈 때까지 줄인다. 잴 수 없으면(레이아웃 없음) CSS 값 그대로.
+ */
+function fitEndingMessage(epilogue: HTMLElement): void {
+  const message = epilogue.querySelector<HTMLElement>(".ending-message");
+  if (!message || epilogue.clientHeight <= 0) return;
+  // 요약 글 상자는 자기 max-height 안에서 스크롤하므로 판만 재면 늘 «들어간다» 로 읽혔다 — 마지막 줄이 상자 안에서 잘렸다(첫사랑 VQA r35).
+  // 판과 글 상자 둘 다 넘치지 않는 가장 큰 크기를 고른다.
+  const fits = (): boolean => epilogue.scrollHeight <= epilogue.clientHeight + 1 && message.scrollHeight <= message.clientHeight + 1;
+  const tryMessage = (from: number, to: number): boolean => {
+    for (let size = from; size >= to - 0.01; size -= 0.2) {
+      message.style.fontSize = `${size.toFixed(1)}cqh`;
+      if (fits()) return true;
+    }
+    return false;
+  };
+  if (tryMessage(4.6, 3.4)) return;
+  // 제목이 두 줄이고 요약이 길면 3cqh 에서도 마지막 줄이 잘렸다(장난감 가게 엔딩, 2026-10-25 G52·심판 J3).
+  // 글자를 더 줄이기 전에 판을 넓히고, 그다음 제목을 줄이고, 마지막에만 요약을 2.6cqh 까지 내린다.
+  epilogue.classList.add("ending-epilogue--long");
+  if (tryMessage(3.4, 3)) return;
+  const heading = epilogue.querySelector<HTMLElement>(".ending-heading");
+  for (let size = 6.2; heading && size >= 4.6; size -= 0.8) {
+    heading.style.fontSize = `${size.toFixed(1)}cqh`;
+    if (tryMessage(3.4, 3)) return;
+  }
+  tryMessage(2.8, 2.6);
+}
+
+/**
+ * 마지막 화면의 큰 제목·작은 제목은 따로 절대 위치라 큰 제목이 두 줄로 넘어가면 둘째 줄이 작은 제목을 덮었다
+ * (「마지막 태엽을 감고 끝」의 「끝」, 2026-10-25 G52). 한 줄에 들어갈 때까지 글자를 줄이고, 최소 크기에서도 넘치면 줄바꿈을 허용한다.
+ */
+function fitOneLine(element: HTMLElement, from: number, to: number, unit: string): void {
+  if (element.clientWidth <= 0) return;
+  element.style.whiteSpace = "nowrap";
+  for (let size = from; size >= to - 0.01; size -= from > 20 ? 1 : 0.4) {
+    element.style.fontSize = `${size.toFixed(1)}${unit}`;
+    if (element.scrollWidth <= element.clientWidth + 1) return;
+  }
+  element.style.whiteSpace = "";
 }
 
 export function showEndingScreen(scene: PlaySceneContext, title: string, message: string, presentation?: EndingPresentation, endingId?: string): void {
@@ -458,6 +496,11 @@ export function showEndingScreen(scene: PlaySceneContext, title: string, message
     const body = message || cg?.epilogue;
     if (body) epilogue.append(textNode("div", "ending-message", body));
     terminal.root.append(epilogue);
+    if (cg) {
+      fitEndingMessage(epilogue);
+      // 글꼴이 늦게 들어오면 줄 높이가 바뀐다 — 들어온 뒤 한 번 더 맞춘다.
+      void document.fonts?.ready.then(() => { if (epilogue.isConnected) fitEndingMessage(epilogue); });
+    }
     terminal.phase("epilogue");
     if (!await terminal.wait(1800)) return;
     const hint = textNode("div", "game-over-hint", endingText("ending.continue"));
@@ -477,19 +520,33 @@ export function showEndingScreen(scene: PlaySceneContext, title: string, message
     const finalTitle = textNode("div", "ending-final-title", endingFinalTitle(presentation, endingId));
     finalTitle.dataset.testid = "ending-final-title";
     final.append(finalTitle);
-    final.append(textNode("div", "ending-final-caption", title));
+    // 부제와 요약 줄은 한 기둥 안에 흐른다 — 둘 다 절대 위치(55%·63%)였을 때 두 줄로 넘어간 엔딩 이름이
+    // 「플레이 시간」 줄과 겹쳤다(시타마치 VQA before 12-ending-final).
+    const meta = textNode("div", "ending-final-meta", "");
+    meta.append(textNode("div", "ending-final-caption", title));
     const summary = endingSummaryLine(scene);
-    if (summary) final.append(textNode("div", "ending-final-summary", summary));
+    if (summary) meta.append(textNode("div", "ending-final-summary", summary));
+    final.append(meta);
     const actions = textNode("div", "game-over-actions", "");
     const button = terminalButton("return-title", endingText("ending.returnTitle"), () => { void exitTerminal(terminal, () => scene.returnToTitle()); });
     actions.append(button); final.append(actions); terminal.root.append(final);
+    const fitFinal = (): void => {
+      if (!final.isConnected || terminal.root.dataset.monsterStyle === "emerald") return;
+      const scaled = terminal.root.dataset.endingCg !== undefined;
+      fitOneLine(finalTitle, scaled ? 11 : 23, scaled ? 6 : 14, scaled ? "cqh" : "px");
+      const caption = final.querySelector<HTMLElement>(".ending-final-caption");
+      if (caption) fitOneLine(caption, scaled ? 6.4 : 9, scaled ? 3.6 : 7, scaled ? "cqh" : "px");
+    };
+    fitFinal();
+    void document.fonts?.ready.then(fitFinal);
     terminal.menu(() => attachCursorMenu(final, { items: [button], cancelEl: button }));
   };
   const credits = async (): Promise<void> => {
     terminal.phase("credits-transition");
     if (!await terminal.wait(terminal.reducedMotion ? 0 : 500)) return;
     terminal.root.querySelector(".ending-epilogue")?.remove();
-    const copy = presentation?.credits?.trim();
+    // 조수가 줄바꿈을 글자 「\n」로 저장한 크레딧(2026-10-25 G50·심판 J2)도 줄로 보인다.
+    const copy = presentation?.credits?.replace(/(?:\\r)?\\n/gu, "\n").trim();
     if (!copy) { finish(); return; }
     terminal.phase("credits");
     const viewport = textNode("div", "ending-credits", "");
@@ -547,7 +604,10 @@ function endingSummaryLine(scene: { session: { partyActorIds?: readonly string[]
     .map((id) => project.database.actors.find((actor) => actor.id === id)?.name)
     .filter((name): name is string => Boolean(name));
   const seconds = Math.max(0, Math.floor(scene.session.playTimeSeconds ?? 0));
-  const time = `${Math.floor(seconds / 3600)}:${String(Math.floor((seconds % 3600) / 60)).padStart(2, "0")}`;
-  const parts = [names.length ? `함께한 이 ${names.join(" · ")}` : "", seconds > 0 ? `플레이 시간 ${time}` : ""].filter(Boolean);
+  // 「0:07」(시:분)은 7초로 읽혔다(첫사랑 VQA r26) — 단위를 붙여 쓴다.
+  const hours = Math.floor(seconds / 3600), minutes = Math.max(1, Math.floor((seconds % 3600) / 60));
+  const time = hours > 0 ? `${hours}시간 ${minutes}분` : `${minutes}분`;
+  // 혼자인 파티(주인공 하나)는 「함께한 이: 주인공」이 된다 — 함께한 사람이 아니라 자기 이름이다(첫사랑 VQA r23). 둘 이상일 때만 쓴다.
+  const parts = [names.length > 1 ? `함께한 이: ${names.join(" · ")}` : "", seconds > 0 ? `플레이 시간: ${time}` : ""].filter(Boolean);
   return parts.join("   ·   ");
 }

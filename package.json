@@ -1,6 +1,6 @@
 {
   "name": "oprn",
-  "version": "0.329.0",
+  "version": "0.340.0",
   "description": "웹 기반 탑뷰 타일 JRPG 메이커 (MVP)",
   "private": true,
   "license": "SEE LICENSE IN LICENSE.md",
@@ -30,6 +30,7 @@
     "audit:db-css-ownership": "node scripts/audit-db-css-ownership.mjs",
     "gates:barrel": "node scripts/check-barrel-imports.mjs",
     "gates:self-hosted": "node scripts/check-self-hosted-workflows.mjs",
+    "merge-pr": "node scripts/merge-pr.mjs",
     "gates:surface": "node scripts/check-surface-gates.mjs",
     "gates:surface:audit": "node scripts/audit-gate-mutations.mjs",
     "gates:dead-css": "node scripts/check-dead-css-classes.mjs",
@@ -115,29 +116,29 @@
     "store:publish-game": "node scripts/store/publish-game.mjs"
   },
   "dependencies": {
-    "@oh-my-pi/pi-agent-core": "^18.8.4",
+    "@oh-my-pi/pi-agent-core": "^18.12.3",
     "god-tibo-imagen": "^0.4.1",
     "jimp": "^1.6.1",
     "node-unrar-js": "2.0.2",
     "phaser": "^4.2.1",
     "tar": "7.5.22",
-    "zod": "^4.6.5"
+    "zod": "^4.6.7"
   },
   "devDependencies": {
-    "@oh-my-pi/pi-ai": "^18.6.3",
-    "@playwright/test": "^1.63.0",
-    "electron": "^44.5.1",
+    "@oh-my-pi/pi-ai": "^18.12.3",
+    "@playwright/test": "^1.64.1",
+    "electron": "^44.9.1",
     "electron-builder": "^26.15.3",
-    "esbuild": "^0.27.2",
-    "fake-indexeddb": "^6.2.5",
+    "esbuild": "^0.28.2",
+    "fake-indexeddb": "^6.2.6",
     "fix-webm-duration": "^1.0.6",
-    "happy-dom": "^20.14.5",
+    "happy-dom": "^21.0.4",
     "pngjs": "7.0.0",
     "ts-ebml": "^3.0.2",
     "typescript": "^7.0.2",
     "vite": "^8.3.3",
     "vite-node": "6.0.0",
-    "vitest": "^5.0.3",
+    "vitest": "^5.0.5",
     "webm-duration-fix": "^1.0.4"
   },
   "overrides": {

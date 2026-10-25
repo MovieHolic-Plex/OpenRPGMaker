@@ -2,23 +2,33 @@
 // 고치기는 모델이 비평 결과(칸 좌표 major)를 보고 edit_place 패치로 한다(맵당 V2_MAX_REPAIR_ROUNDS 바퀴 상한). 끝맺음 관문(afterMain)이
 // 「비평 major 0 + 기계 검사 통과」가 아닌 장소를 남긴 채 「다 됐다」고 말하지 못하게 한다.
 import type { PiToolShape, PiToolExecResult } from "@/ai/piAgent/toolAdapter";
+import { shipBlockers } from "./shipChecks";
 import type { PiAssistantV2Env } from "./env";
 import { roomSpecOf } from "@/editor/handInterior/builder";
 import { createBuildRun, type RecordingBuildRun } from "./buildRun";
 import { builderFor } from "./builders";
+import { localizePlaceSpec } from "./builders/modernCity";
+import { applyModernSetupDefaults, applyStorySetupDefaults, isFreshProject } from "./genreDefaults";
+import { dedupeToolSchemas } from "./schemaDedupe";
 import { adoptExactInterior, interiorAddAnchors, interiorBuilder, interiorEditFromArgs, roomMaterials } from "./builders/interior";
 import { interiorStampEdit, type StampEditState } from "./builders/interiorEdit";
 import { fixPlayerStart, runMachineChecks, summarizeChecks, type MachineCheck } from "./checks";
 import { critique } from "./critic";
 import type { CriticVerdict } from "@/ai/piAgent/featureReview";
 import type { ContentBuildResult, EventSpec, ObjectSpec, PersonSpec, PlaceBuildResult, PlacePatch, PlaceRecord, PlaceSpec, PlaceType } from "./types";
+import type { Project } from "@/project/types";
 import { buildPeople, findMap, resolveWhere } from "./people";
+import { mapBundleIds } from "@/ai/piAgent/mapBundle";
 import { buildEvent } from "./events";
 import { drawObject } from "./drawObject";
 import { buildScene, SCENE_SCHEMA, type SceneSpec } from "./scene";
+import { buildPuzzleChain, sealLockedRoom, type ChainArgs } from "./puzzle";
 // 콘텐츠 동사(컷신 무대·연출 비평·물건 자리 계획) — finishContent·addEvent·drawObjectVerb·placeObject 가 쓴다.
 import { critiqueStaging } from "./critic";
-import { createGameTools, wantsGameTools, wantsTerrainTools } from "./game";
+import { createGameTools, wantsPuzzle, wantsGameTools, wantsStoreTools, wantsTerrainTools } from "./game";
+import { gameContentProblems, unaskedChanges } from "./gameChecks";
+import { isStoreCardRequest } from "@/editor/tools/storeTools";
+import { edgeCell, eventBeats, isInside, isOutdoor, oppositeSide, makeGameOn, orderPlaces, pickDoor, villageDoors, walkGame, wantsMakeGame, type GameSpec } from "./makeGame";
 import { pickStageFrames, stageFrameProject, type EventBuildResult } from "./events";
 import { rememberObjectPlan, takeObjectPlan, type DrawObjectResult } from "./drawObject";
 
@@ -40,7 +50,11 @@ export class V2Session {
   readonly seen = new Map<string, Seen>();
   readonly content: { verb: string; result: ContentBuildResult }[] = [];
   readonly missingArt = new Set<string>();
+  /** 컷신 무대(맵별) — 무대 검사·연출 비평 major 가 남았는지(G39: 비평이 짚은 겹침을 보고만 하고 끝냈다). */
+  readonly stages = new Map<string, { name: string; rounds: number; problems: string[] }>();
   readonly questions: string[] = [];
+  /** ask_user 를 한 번 되돌려 보냈는가(아무것도 짓지 않고 물었을 때). */
+  askBounced = false;
   criticCalls = 0;
   criticMs = 0;
   /** 모델 입장에서 「아직 안 끝난 것」 — 끝맺음 관문이 읽는다. */
@@ -57,6 +71,7 @@ export class V2Session {
       ];
       if (problems.length) out.push({ mapId, name: record.spec.name, rounds: record.rounds, problems });
     }
+    for (const [mapId, st] of this.stages) if (st.problems.length) out.push({ mapId, name: `${st.name} 컷신(add_event 를 같은 kind·when 으로 다시)`, rounds: st.rounds, problems: st.problems });
     return out;
   }
 }
@@ -95,6 +110,16 @@ const HINTS_SCHEMA = {
     wallGate: { type: "string" },
     width: { type: "number" },
     height: { type: "number" },
+    length: { type: "string", description: "거리 길이 short|medium|long(카드가 말한 빌더만)" },
+    plaza: { type: "string" },
+    landmark: { type: "string" },
+    shops: { type: "string", description: "가게 짧은 이름을 쉼표로, 왼쪽부터 순서대로" },
+    mirror: { type: "boolean" },
+    floorShapes: { type: "string", description: "층마다 꼴을 쉼표로(아래층부터)" },
+    floorGimmicks: { type: "string", description: "층마다 장치를 쉼표로(아래층부터, 없으면 none)" },
+    townSize: { type: "string" },
+    streets: { type: "string" },
+    pond: { type: "boolean" },
   },
 };
 const PLACE_SPEC_SCHEMA = {
@@ -223,9 +248,18 @@ export function applyPatch(spec: PlaceSpec, patch: PlacePatch, floor = 1): Place
   return { ...spec, ...(patch.set ?? {}), type: spec.type, ...(zones.length ? { zones } : {}), ...(features.length ? { features } : {}), hints };
 }
 
+/** 현대(한국·일본 도시) 장소를 처음 지은 게임 요청이면 장르 기본값(주인공 현대 칩·체력 HUD 끄기·연애 기본값)을 깔고 보고에 한 줄 남긴다. */
+function withSetupDefaults(result: PlaceBuildResult, builderId: string, project: Project, task: string, freshStart = false): PlaceBuildResult {
+  if (!result.ok) return result;
+  const set = builderId === "kr-modern" || builderId === "jp-city" ? applyModernSetupDefaults(project, task, freshStart) : applyStorySetupDefaults(project, task, freshStart);
+  return set.length ? { ...result, warnings: [...result.warnings, `게임 기본값을 깔았다: ${set.join(" · ")} — 사용자가 다른 것을 원하면 바꾼다`] } : result;
+}
+
 export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiToolShape[] {
   const task = env.request.task;
   const run = createBuildRun(env.ctx);
+  // 이 차례를 시작할 때 빈 프로젝트였나 — 첫 장소를 짓는 요청은 「게임」 낱말이 없어도 게임 시작으로 보고 장르 기본값을 깐다(G51).
+  const freshStart = isFreshProject(env.ctx.project);
 
   const problemCount = (seen: Seen | undefined, mapIds: readonly string[]) => !seen ? Infinity
     : seen.checks.filter((c) => !c.ok && mapIds.includes(c.mapId)).length + seen.critics.filter((v) => mapIds.includes(v.mapId)).reduce((n, v) => n + v.majors.length, 0);
@@ -235,6 +269,21 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
     recordWrite(env, run, toolCallId, verb, args, result.ok, result.summary, { mapIds: result.mapIds });
     for (const m of result.missingArt) session.missingArt.add(m);
     if (!result.ok) return text({ ok: false, summary: result.summary, warnings: result.warnings, missingArt: result.missingArt, next: "명세를 바꿔 다시 하거나(다른 type·style), 할 수 없으면 사용자에게 그대로 알린다." });
+    // 맵 범위가 있는 실행은 체크포인트가 범위 맵의 «트리 묶음»만 싣는다 — 트리 맨 위에 따로 생긴 새 맵(마을 옆 들판)은
+    // 다음 체크포인트에서 통째로 사라졌다(2026-10-24 g3-random-field: make_place 성공 → 맵 목록에 없음 → 잇기·조우 모두 실패).
+    // 새 맵을 범위 맵 아래로 옮겨 묶음에 넣는다.
+    {
+      const roots = [...(env.toolsetOptions?.scopeMapIds ?? (env.request as { mapIds?: readonly string[] }).mapIds ?? [])].filter((id) => env.ctx.project.maps[id]);
+      const parent = roots[0];
+      if (parent) {
+        const inBundle = new Set(roots.flatMap((r) => mapBundleIds(env.ctx.project, r)));
+        for (const mapId of result.mapIds) {
+          if (inBundle.has(mapId) || !env.ctx.project.maps[mapId]) continue;
+          const moved = run.call("manage_map_tree", { operation: "move", mapId, parentId: parent });
+          if (!moved.ok) result = { ...result, warnings: [...result.warnings, `새 맵 ${mapId} 를 ${parent} 아래로 옮기지 못했다 — 저장에서 빠질 수 있다: ${String(moved.summary).slice(0, 120)}`] };
+        }
+      }
+    }
     if (spec.type !== "interior" && spec.type !== "house") {
       const fixed = fixPlayerStart(env.ctx.project, result.mapIds);
       if (fixed.note) { env.ctx.project = fixed.project; result = { ...result, warnings: [...result.warnings, fixed.note], ...(result.entrance && result.entrance.mapId === fixed.project.startMapId ? { entrance: { mapId: fixed.project.startMapId, x: fixed.project.startPos.x, y: fixed.project.startPos.y } } : {}) }; }
@@ -257,12 +306,16 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
       if (now > was) {
         env.ctx.project = before.project;
         for (const mapId of result.mapIds) { session.places.delete(mapId); session.seen.delete(mapId); }
-        const kept: PlaceRecord = { ...before.record, rounds };
+        // 첫 되돌림은 한 번 더 기회를 준다 — 큰 패치가 바닥 무늬를 더 어지럽혀 되돌렸고, 비평 메모(바닥 무늬·복도 나무 타일·벽 밖 러그)는
+        // 그대로 남아 보고만 됐다(2026-10-25 G28 장난감 가게). 다음 시도는 비평 하나씩, 좌표가 있는 것만 작게.
+        const reverts = (before.record.reverts ?? 0) + 1;
+        const keptRounds = reverts === 1 ? before.record.rounds : rounds;
+        const kept: PlaceRecord = { ...before.record, rounds: keptRounds, reverts };
         for (const mapId of oldIds) { session.places.set(mapId, kept); const old = before.seen.get(mapId); if (old) session.seen.set(mapId, old); }
         env.record({ toolCallId, name: verb, args, result: { ok: false, summary: `고친 결과가 더 나빠(문제 ${was}→${now}) 되돌렸다` } });
         await env.checkpoint(`${verb}-revert`);
         return withImages({ ok: false, reverted: true, summary: `고친 결과의 문제(${now})가 앞(${was})보다 많아 앞 상태로 되돌렸다 — 이 패치는 버렸다.`, triedResult: { ...seenPayload(seen), summary: result.summary.slice(0, 300) }, round: rounds,
-          next: rounds >= V2_MAX_REPAIR_ROUNDS ? "고치기 상한 — 남은 문제를 보고한다." : "다른 패치(더 작은 변화)를 한 번 더 시도하거나, 남은 문제를 보고한다." }, before.seen.get(oldIds[0]!));
+          next: keptRounds >= V2_MAX_REPAIR_ROUNDS ? "고치기 상한 — 남은 문제를 보고한다." : "더 작은 패치로 한 번 더 고친다 — 비평 major 중 좌표가 있는 것 하나·둘만 그 칸 범위로 고치고(바닥 전체·방 구조는 건드리지 않는다), 나머지는 보고한다." }, before.seen.get(oldIds[0]!));
       }
     }
     return withImages({ ok: true, mapIds: result.mapIds, summary: result.summary, warnings: result.warnings, missingArt: result.missingArt, ...seenPayload(seen), round: rounds, next: nextStep(seen, rounds) }, seen);
@@ -310,8 +363,13 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
       const npcProblems = seen?.checks.filter((c) => !c.ok && (c.id === "npc-reachable" || c.id.startsWith("exit"))) ?? [];
       const stageBad = stage.checks.filter((c) => !c.ok);
       const majors = critics.reduce((n, v) => n + v.majors.length, 0);
-      const rounds = session.content.filter((c) => c.verb === verb && (c.result as EventBuildResult).stage?.mapId === stage.mapId).length;
+      // 고친 횟수 = 같은 맵 컷신을 다시 부른 횟수(첫 짓기는 빼고). 첫 짓기를 세면 상한 1 에서 고치기가 한 번도 없었다(2026-10-25 G39).
+      const rounds = session.content.filter((c) => c.verb === verb && (c.result as EventBuildResult).stage?.mapId === stage.mapId).length - 1;
       const clean = !stageBad.length && !npcProblems.length && !majors && !critics.some((v) => v.problem);
+      session.stages.set(stage.mapId, { name: map?.name ?? stage.mapId, rounds, problems: clean ? [] : [
+        ...stageBad.map((c) => `[무대 ${c.id}] ${c.detail}`),
+        ...critics.flatMap((v) => v.majors.map((m) => `[연출 비평] ${m.what}${m.fix ? ` → ${m.fix}` : ""}`)),
+      ] });
       const payload = {
         ok: true, summary: result.summary, warnings: result.warnings, missingArt: result.missingArt, eventIds: result.eventIds,
         machineChecks: [...stage.checks.map((c) => `[${c.id}] ${c.ok ? "통과" : "문제"} — ${c.detail}`), ...(npcProblems.length ? npcProblems.map((c) => c.detail) : ["사람·출입 검사 통과"])],
@@ -340,7 +398,19 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
     async execute(id, params) {
       // 같은 요청 → 같은 맵을 막는다(2026-10-23 다양성: 역전 상점가가 v1·v2·4차·5차 모두 화소까지 같았다). 고치기는 기록된 명세의 salt 를 물려받는다.
       const raw = (params as { spec: PlaceSpec }).spec;
-      const spec: PlaceSpec = { ...raw, salt: Math.floor(Math.random() * 1_000_000) };
+      let spec: PlaceSpec = localizePlaceSpec({ ...raw, salt: Math.floor(Math.random() * 1_000_000) }, String(task ?? ""));
+      // 이번 실행에서 이미 다른 장소를 지은 맵 위에 새 장소를 짓지 않는다 — 「지하 예배당」을 지은 맵에 「검은 장미 저택」을 다시 지어
+      // 예배당이 1층 한 구석으로 사라졌다(2026-10-25 조수 단독 게임 G27). 같은 장소를 다시 짓는 것(이름이 같거나 한쪽이 다른 쪽을 품음)은 그대로 둔다.
+      const target = spec.mapId ?? (spec.type === "interior" ? (run.ctx.currentMapId ?? run.ctx.project.startMapId) : undefined);
+      const other = target ? session.places.get(target) : undefined;
+      const norm = (s: string) => s.replace(/\s+/gu, "");
+      const samePlace = (a: string, b: string) => { const [x, y] = norm(a).length <= norm(b).length ? [norm(a), norm(b)] : [norm(b), norm(a)]; return !!x && (y === x || y.startsWith(x) || y.endsWith(x)); };
+      let keptNote = "";
+      if (other && !samePlace(other.spec.name, spec.name)) {
+        const { mapId: _drop, ...rest } = spec;
+        spec = { ...rest, hints: { ...(spec.hints ?? {}), newMap: true } };
+        keptNote = `「${other.spec.name}」(${target}) 는 이번에 지은 다른 장소라 덮지 않고 「${spec.name}」을 새 맵에 지었다 — 두 장소를 create_transfer_pair 로 잇는다(계단·문).`;
+      }
       const builder = builderFor(spec);
       if (!builder) {
         session.missingArt.add(`${spec.name}(${spec.type}${spec.style ? `·${spec.style}` : ""}) — 이 종류를 짓는 빌더가 없다`);
@@ -348,7 +418,9 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
       }
       env.emit({ type: "execution_status", name: "v2.build", ok: true, summary: `${spec.name} 짓는 중(${builder.id})` });
       await builder.prepare?.(spec);
-      const result = builder.build(run, spec);
+      let result = builder.build(run, spec);
+      result = withSetupDefaults(result, builder.id, run.ctx.project, String(task ?? ""), freshStart);
+      if (keptNote) result = { ...result, warnings: [keptNote, ...result.warnings] };
       return finishPlace(id, "make_place", params, spec, builder.id, result, 0);
     },
   };
@@ -400,6 +472,11 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
         record = adoptInterior(run, patch.mapId);
         if (record) for (const mapId of record.result.mapIds) session.places.set(mapId, record);
       }
+      // 다시 짓기로 위층 id 가 바뀌었는데 옛 id 로 고치려 했다(2026-10-24 cmp-dungeon-floors) — 지금 있는 층 id 를 알려 준다.
+      if (!record && !env.ctx.project.maps[patch.mapId]) {
+        const now = [...new Set([...session.places.values()].flatMap((r) => r.result.mapIds))].filter((id) => env.ctx.project.maps[id]).map((id) => `${id}(${env.ctx.project.maps[id]!.name ?? ""})`);
+        return text({ ok: false, summary: `${patch.mapId} 는 이제 없는 맵이다(앞의 다시 짓기로 층이 새 id 로 바뀌었다). 지금 v2 가 지은 맵: ${now.join(", ") || "없음"} — 이 id 로 고친다.` });
+      }
       if (!record) return text({ ok: false, summary: `${patch.mapId} 는 v2 가 지은 기록이 없고 다시 지을 방 구성도 읽지 못했다. make_place(spec.mapId=${patch.mapId}) 로 그 자리에 새로 짓거나 못 한다고 알린다.` });
       if (record.rounds >= V2_MAX_REPAIR_ROUNDS) return text({ ok: false, summary: `고치기 상한(${V2_MAX_REPAIR_ROUNDS}바퀴)에 닿았다. 남은 문제를 사용자에게 보고한다.` });
       const builder = builderFor(record.spec)!;
@@ -445,17 +522,21 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
 
   const addEvent: PiToolShape = {
     name: "add_event", label: "사건·컷신", concurrency: "exclusive",
-    description: "컷신·대화 사건을 비트 목록으로 만든다(walk/say/appear/face/wait/fade/tint/camera/look/vanish). 함수가 걸을 수 있는 길·자리를 정하고 미리보기 탐침으로 검사한다.",
+    description: "컷신·대화 사건을 비트 목록으로 만든다(walk/say/appear/face/wait/fade/tint/weather/shake/flash/music/emote/camera/look/vanish). 함수가 걸을 수 있는 길·자리를 정하고 미리보기 탐침으로 검사한다.",
     parameters: { type: "object", properties: { event: { type: "object", properties: {
       kind: { type: "string", enum: ["cutscene", "talk", "trigger"] }, mapId: { type: "string" },
       when: { type: "string", enum: ["game-start", "touch", "talk"] }, where: { type: "string" }, at: POINT,
       after: { type: "string", description: "이 NPC 이름과 대화가 끝나면 이어서 재생(그 NPC 대화 끝에 붙는다, 한 번만)" },
       afterTalk: { type: "array", items: { type: "string" }, description: "after 장면이 끝난 뒤 그 NPC 에게 다시 말 걸면 할 말(밤이 됐다·사건 뒤처럼 상황이 바뀌었으면). 없으면 원래 대사" },
+      afterPage: { type: "integer", description: "after NPC 의 말 걸기 페이지가 여럿일 때 장면을 이을 페이지 번호(0부터). 낮·밤처럼 페이지가 갈리면 장면이 일어나는 쪽 페이지 — 모르면 비우고 부르면 페이지 목록을 돌려준다" },
       beats: { type: "array", items: { type: "object", properties: {
-        do: { type: "string", enum: ["walk", "say", "appear", "face", "wait", "fade", "tint", "camera", "look", "vanish"] },
+        do: { type: "string", enum: ["walk", "say", "appear", "face", "wait", "fade", "tint", "weather", "shake", "flash", "music", "emote", "camera", "look", "vanish"] },
         who: { type: "string" }, to: { type: "string", description: "자리 낱말(또는 'x,y')" }, text: { type: "string" },
         where: { type: "string" }, looks: { type: "string" }, toward: { type: "string" }, ms: { type: "number" }, dir: { type: "string", enum: ["in", "out"] },
         tone: { type: "string", enum: ["night", "dusk", "dawn", "sepia", "clear"] }, as: { type: "string", enum: ["shadow", "ghost", "normal"] },
+        weather: { type: "string", enum: ["rain", "storm", "snow", "fog", "none"] }, intensity: { type: "number" },
+        strength: { type: "string", enum: ["weak", "medium", "strong"] }, axis: { type: "string", enum: ["both", "horizontal", "vertical"] }, color: { type: "string" },
+        action: { type: "string", enum: ["bgm", "se", "bgs", "stop", "fade"] }, emote: { type: "string", description: "emote: ! ? ♥ 땀 화 … zzz 반짝 전구 또는 exclamation·question·heart·sweat·anger·ellipsis·sleep·sparkle·idea·music·smile" }, query: { type: "string", description: "music: 음원 찾을 낱말(festival·battle·town·sad·boss·door…; 공포 비명·심장·삐걱·물방울·웅웅·속삭임·쾅·발소리)" },
       }, required: ["do"] } },
     }, required: ["kind", "beats"] } }, required: ["event"] },
     async execute(id, params) {
@@ -477,6 +558,40 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
     async execute(id, params) {
       const scene = (params as { scene: SceneSpec }).scene;
       return finishContent(id, "add_scene", params, buildScene(run, { ...scene, ...(scene.mapId || !env.ctx.currentMapId ? {} : { mapId: env.ctx.currentMapId }) }));
+    },
+  };
+
+  // 퍼즐 사슬·잠긴 방 막기(2026-10-25 공포 판정 J12/J13): 조각을 따로 지으면 답이 새고 잠긴 방에 벽 틈이 남는다.
+  const LINES = { type: "array", items: { type: "string" } } as const;
+  const authorPuzzleChain: PiToolShape = {
+    name: "author_puzzle_chain", label: "퍼즐 사슬", concurrency: "exclusive",
+    description: "단서 → 자물쇠(비밀번호·선택) → 보상 → 잠긴 문을 한 번에 짓는다. 고리는 순서대로: 앞 고리의 learn·reward.flag·reward.item 이름만 뒤 고리의 needs 가 된다. 답(code)은 clue 의 lines 에만 두고 자물쇠 대사에는 쓰지 않는다(새면 거부). door 는 지은 뒤 문 칸을 막고 걸어 보아 문 너머가 다른 길로 닿으면 그 틈을 벽으로 메운다. 있는 이벤트는 eventId 로 고쳐 쓰고, 새 것은 at{x,y}·name 을 준다.",
+    parameters: { type: "object", properties: {
+      mapId: { type: "string" }, name: { type: "string", description: "사슬 이름(예: 서재의 비밀)" },
+      links: { type: "array", items: { type: "object", properties: {
+        role: { type: "string", enum: ["clue", "code", "door", "pickup"] },
+        eventId: { type: "string" }, name: { type: "string" }, mapId: { type: "string" },
+        at: { type: "object", properties: { x: { type: "number" }, y: { type: "number" } } },
+        learn: { type: "string", description: "clue: 읽으면 알게 되는 것(뒤 고리 needs 이름)" },
+        needs: { type: "string", description: "먼저 있어야 하는 것 — 앞 고리 learn·reward.flag·reward.item 이름" },
+        code: { type: "string", description: "code: 숫자 답 또는 options 중 정답" },
+        options: LINES, lines: LINES, lockedLines: LINES, wrongLines: LINES, doneLines: LINES,
+        reward: { type: "object", properties: { item: { type: "string" }, flag: { type: "string" }, lines: LINES } },
+        seal: { type: "boolean", description: "door: 문 너머 틈 막기(기본 true)" },
+      }, required: ["role"] } },
+    }, required: ["mapId", "name", "links"] },
+    async execute(id, params) {
+      const args = params as unknown as ChainArgs;
+      return finishContent(id, "author_puzzle_chain", params, buildPuzzleChain(run, { ...args, mapId: args.mapId || env.ctx.currentMapId || "" }));
+    },
+  };
+  const sealLockedRoomVerb: PiToolShape = {
+    name: "seal_locked_room", label: "잠긴 방 막기", concurrency: "exclusive",
+    description: "잠긴 문(eventId) 너머 방에 문을 거치지 않고 걸어 닿는 틈이 있으면 옆 벽 타일로 메운다(문 칸을 막고 시작·착지점에서 걸어 본다). 게임 검사 「잠긴 방」이 짚으면 쓴다.",
+    parameters: { type: "object", properties: { mapId: { type: "string" }, eventId: { type: "string" } }, required: ["mapId", "eventId"] },
+    async execute(id, params) {
+      const p = params as { mapId: string; eventId: string };
+      return finishContent(id, "seal_locked_room", params, sealLockedRoom(run, p.mapId, p.eventId));
     },
   };
 
@@ -521,6 +636,144 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
     },
   };
 
+  // ───── make_game: 작은 게임 한 판(맵 5~8장·잇기·사람·사건)을 계획 한 번으로 ─────
+  const personItem = (addPeople.parameters as { properties: { people: { items: { properties: Record<string, unknown>; required: string[] } } } }).properties.people.items;
+  const eventItem = (addEvent.parameters as { properties: { event: { properties: Record<string, unknown>; required: string[] } } }).properties.event;
+  const hasTransferTo = (fromId: string, toId: string): boolean => {
+    const walk = (node: unknown): boolean => Array.isArray(node) ? node.some(walk) : !!node && typeof node === "object" && (((node as { kind?: string; mapId?: string }).kind === "transfer" && (node as { mapId?: string }).mapId === toId) || Object.values(node).some(walk));
+    return (env.ctx.project.maps[fromId]?.events ?? []).some((e) => walk(e.commands ?? []) || walk(e.pages ?? []));
+  };
+  const makeGame: PiToolShape = {
+    name: "make_game", label: "작은 게임 짓기", concurrency: "exclusive",
+    description: "작은 게임 한 판 — 장소 여러 곳(5~8)을 짓고 부모-자식으로 잇고(마을 집 문↔실내, 바깥 가장자리끼리, 던전 입구), 사람·사건을 둔 뒤, 시작에서 모든 맵에 갔다 돌아오는 길을 기계로 걸어 보고 맵마다 비평을 돌려준다. 맵마다 make_place 를 따로 부르지 않는다.",
+    parameters: { type: "object", properties: { game: { type: "object", properties: {
+      title: { type: "string" },
+      start: { type: "string", description: "시작 장소 key(생략하면 첫 장소)" },
+      places: { type: "array", maxItems: 8, items: { type: "object", properties: {
+        key: { type: "string" }, spec: PLACE_SPEC_SCHEMA, from: { type: "string", description: "들어오는 부모 장소 key(시작 장소는 생략)" },
+        side: { type: "string", enum: ["north", "south", "east", "west"], description: "바깥끼리 잇는 쪽(부모에서 본 방향)" },
+      }, required: ["key", "spec"] } },
+      people: { type: "array", items: { ...personItem, properties: { ...personItem.properties, place: { type: "string", description: "장소 key" } }, required: [...personItem.required, "place"] } },
+      events: { type: "array", items: { ...eventItem, properties: { ...eventItem.properties, place: { type: "string", description: "장소 key" } }, required: [...eventItem.required, "place"] } },
+    }, required: ["places"] } }, required: ["game"] },
+    async execute(id, params) {
+      const game = (params as { game: GameSpec }).game;
+      const { order, warnings } = orderPlaces(game);
+      if (order.length < 2) return text({ ok: false, summary: "장소가 둘 이상이어야 한다 — 하나면 make_place 를 쓴다." });
+      const built = new Map<string, { spec: PlaceSpec; builderId: string; result: PlaceBuildResult }>();
+      const lines: string[] = [];
+      const linkNotes: string[] = [];
+      for (const [i, place] of order.entries()) {
+        const spec0: PlaceSpec = localizePlaceSpec({ ...place.spec, salt: Math.floor(Math.random() * 1_000_000) }, String(task ?? ""));
+        const parent = place.from ? built.get(place.from) : undefined;
+        const parentMap = parent?.result.mapIds[0];
+        // 실내는 새 맵 id 로(지금 맵을 덮어쓰지 않게), 나머지는 부모 맵을 「지금 맵」으로 — 빌더가 새 맵을 만들고 던전은 부모와 입구를 잇는다.
+        const spec: PlaceSpec = i > 0 && isInside(spec0) && !spec0.mapId ? { ...spec0, mapId: `map_${place.key.replace(/[^A-Za-z0-9_]/gu, "") || "room"}_${Math.floor(Math.random() * 1e6).toString(36)}` } : spec0;
+        const builder = builderFor(spec);
+        if (!builder) { session.missingArt.add(`${spec.name}(${spec.type}) — 이 종류를 짓는 빌더가 없다`); lines.push(`${place.key}: 짓는 빌더 없음`); continue; }
+        env.emit({ type: "execution_status", name: "v2.build", ok: true, summary: `${spec.name} 짓는 중(${i + 1}/${order.length}, ${builder.id})` });
+        await builder.prepare?.(spec);
+        const sub = i === 0 ? env.ctx : { ...env.ctx, project: env.ctx.project, currentMapId: parentMap ?? env.ctx.currentMapId };
+        const subRun = i === 0 ? run : createBuildRun(sub);
+        let result = withSetupDefaults(builder.build(subRun, spec), builder.id, sub.project, String(task ?? ""), freshStart);
+        if (sub !== env.ctx) env.ctx.project = sub.project;
+        recordWrite(env, subRun, `${id}:${place.key}`, "make_game", { place: place.key, spec }, result.ok, result.summary, { mapIds: result.mapIds });
+        for (const m of result.missingArt) session.missingArt.add(m);
+        if (!result.ok) { lines.push(`${place.key}: 실패 — ${result.summary.slice(0, 160)}`); continue; }
+        if (i === 0) {
+          if (!isInside(spec)) { const fixed = fixPlayerStart(env.ctx.project, result.mapIds); if (fixed.note) env.ctx.project = fixed.project; }
+          const ent = result.entrance;
+          if (ent && env.ctx.project.startMapId !== result.mapIds[0]) run.call("set_start_position", { mapId: ent.mapId, x: ent.x, y: ent.y });
+        }
+        const first = env.ctx.project.maps[result.mapIds[0]!];
+        if (first && first.name !== spec.name && !isInside(spec) && spec.type !== "dungeon" && spec.type !== "cave") run.call("set_map_properties", { mapId: first.id, name: spec.name });
+        built.set(place.key, { spec, builderId: builder.id, result });
+        const record: PlaceRecord = { builder: builder.id, spec, result, rounds: 0 };
+        for (const mapId of result.mapIds) session.places.set(mapId, record);
+        lines.push(`${place.key}: ${result.summary.slice(0, 200)}`);
+        // 잇기
+        if (!parent || !parentMap) continue;
+        const childMap = result.mapIds[0]!;
+        const pName = env.ctx.project.maps[parentMap]?.name ?? parentMap, cName = env.ctx.project.maps[childMap]?.name ?? childMap;
+        if (hasTransferTo(parentMap, childMap)) { linkNotes.push(`${pName} ↔ ${cName}: 짓기에서 이어짐`); continue; }
+        const usedDoors = new Set<string>((env.ctx.project.maps[parentMap]?.events ?? []).map((e) => `${e.x},${e.y + 1}`));
+        let linked = false;
+        if (isInside(spec) && result.entrance) {
+          const door = pickDoor(villageDoors(parent.result), spec.name, usedDoors, env.ctx.project.maps[parentMap]!);
+          if (door) {
+            const r = run.call("create_transfer_pair", { a: { mapId: parentMap, x: door.x, y: door.y, doorAt: { x: door.x, y: door.y - 1 } }, b: { mapId: childMap, x: result.entrance.x, y: result.entrance.y } });
+            linked = r.ok; linkNotes.push(r.ok ? `${pName} 집 문(${door.x},${door.y - 1}${door.kit ? ` ${door.kit}` : ""}) ↔ ${cName}` : `${pName} 집 문 잇기 실패: ${r.summary.slice(0, 160)}`);
+          }
+        } else if (spec.type === "dungeon" || spec.type === "cave") {
+          // 던전: 부모 맵의 걸어 닿는 칸 ↔ 던전 입구 계단(자리표시 출구가 있으면 그것을 바꾼다).
+          const at = edgeCell(env.ctx.project, env.ctx.project.maps[parentMap]!, place.side ?? "north");
+          const r = at ? run.call("link_world_entrance", { worldMapId: parentMap, links: [{ x: at.x, y: at.y, toMapId: childMap }] }) : undefined;
+          linked = !!r?.ok && hasTransferTo(parentMap, childMap);
+          if (linked) linkNotes.push(`${pName}(${at!.x},${at!.y}) ↔ ${cName} 입구`);
+        } else if (isOutdoor(spec) && isOutdoor(parent.spec)) {
+          const side = place.side ?? "north";
+          const r = run.call("link_maps", { from: { mapId: parentMap, exit: { side } }, to: { mapId: childMap, entry: { side: oppositeSide(side) } } });
+          linked = r.ok; if (r.ok) linkNotes.push(`${pName} ${side} 가장자리 ↔ ${cName}`);
+        }
+        if (!linked) {
+          // 대신 걸어 닿는 칸끼리 문을 둔다(그림 없는 이동 칸) — 못 이은 채 두지 않는다.
+          const side = place.side ?? "north";
+          const a = edgeCell(env.ctx.project, env.ctx.project.maps[parentMap]!, side);
+          const b = result.entrance && result.entrance.mapId === childMap ? { x: result.entrance.x, y: result.entrance.y } : edgeCell(env.ctx.project, env.ctx.project.maps[childMap]!, oppositeSide(side));
+          const r = a && b ? run.call("create_transfer_pair", { a: { mapId: parentMap, ...a }, b: { mapId: childMap, ...b } }) : undefined;
+          if (r?.ok) linkNotes.push(`${pName}(${a!.x},${a!.y}) ↔ ${cName}(${b!.x},${b!.y}) — 문 그림 없이 이동 칸으로 이었다`);
+          else linkNotes.push(`${pName} ↔ ${cName}: 잇지 못했다(${r?.summary.slice(0, 120) ?? "걸어 닿는 칸이 없다"})`);
+        }
+      }
+      recordWrite(env, run, `${id}:links`, "make_game", { links: true }, true, linkNotes.join(" / ").slice(0, 400));
+      // 사람·사건
+      const content: string[] = [];
+      const mapOf = (key: string) => built.get(key)?.result.mapIds[0];
+      const byPlace = new Map<string, PersonSpec[]>();
+      for (const p of game.people ?? []) { const list = byPlace.get(p.place) ?? []; const { place: _place, ...person } = p; list.push(person); byPlace.set(p.place, list); }
+      for (const [key, people] of byPlace) {
+        const mapId = mapOf(key);
+        if (!mapId) { content.push(`사람 ${people.length}명: 장소 「${key}」가 없다`); continue; }
+        const r = buildPeople(run, people, mapId);
+        session.content.push({ verb: "add_people", result: r });
+        recordWrite(env, run, `${id}:people:${key}`, "add_people", { mapId, people }, r.ok, r.summary);
+        content.push(`사람(${key}): ${r.summary.slice(0, 160)}`);
+      }
+      for (const ev of game.events ?? []) {
+        const mapId = mapOf(ev.place);
+        if (!mapId) { content.push(`사건: 장소 「${ev.place}」가 없다`); continue; }
+        const { place: _place, ...event } = ev;
+        const r = buildEvent(run, { ...event, mapId, beats: eventBeats(event) });
+        session.content.push({ verb: "add_event", result: r });
+        recordWrite(env, run, `${id}:event:${ev.place}`, "add_event", { ...event, mapId }, r.ok, r.summary);
+        content.push(`사건(${ev.place}): ${r.summary.slice(0, 160)}`);
+      }
+      await env.checkpoint("make_game");
+      // 길 검사 + 맵마다 보기(비평은 장소마다 첫 맵, 6곳까지 함께)
+      const allMaps = [...built.values()].flatMap((b) => b.result.mapIds).filter((m) => env.ctx.project.maps[m]);
+      const path = walkGame(env.ctx.project, allMaps);
+      const views = await Promise.all([...built.values()].map(async (b, i) => {
+        const ids = b.result.mapIds.filter((m) => env.ctx.project.maps[m]);
+        const seen = await see(env, session, task, b.spec.type, ids.slice(0, i < 6 ? 3 : 1), b.result.entrance, i < 6);
+        for (const mapId of ids) session.seen.set(mapId, seen);
+        return { b, seen };
+      }));
+      const problems = views.flatMap(({ b, seen }) => [
+        ...seen.checks.filter((c) => !c.ok).map((c) => `${b.spec.name} [기계 ${c.id}] ${c.detail}`),
+        ...seen.critics.flatMap((v) => v.majors.map((m) => `${b.spec.name} [비평] ${m.what}${m.fix ? ` → ${m.fix}` : ""}`)),
+      ]);
+      const shots: Seen = { checks: [], critics: views.flatMap((v) => v.seen.critics), images: views.flatMap((v) => v.seen.images.slice(0, 1)) };
+      return withImages({
+        ok: built.size > 0, title: game.title, places: lines, links: linkNotes, warnings, content,
+        path: path.lines, mapIds: Object.fromEntries([...built].map(([k, b]) => [k, b.result.mapIds])),
+        problems: problems.slice(0, 20), missingArt: [...session.missingArt],
+        next: path.unreached.length || path.noWayBack.length ? "닿지 않는 맵·돌아가는 문 없는 맵이 있다 — 그 맵 문을 create_transfer_pair 로 잇거나 보고에 적는다."
+          : problems.length ? "고칠 major 는 edit_place 로 장소마다 한 번, 게임 요소(퀘스트·아이템·전투)는 게임 도구로 덧붙인 뒤 보고한다."
+          : "길·검사 통과 — 남은 게임 요소가 있으면 덧붙이고 보고한다.",
+      }, shots, 4);
+    },
+  };
+
   const inspect: PiToolShape = {
     name: "inspect", label: "맵 보기", concurrency: "shared",
     description: "맵 하나의 1배 그림·기계 검사·사람/이벤트 목록을 본다(비평가 없이). 고치기 전에 지금 상태를 확인할 때.",
@@ -541,6 +794,11 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
     parameters: { type: "object", properties: { question: { type: "string" }, choices: { type: "array", items: { type: "string" } } }, required: ["question"] },
     async execute(_id, params) {
       const p = params as { question: string; choices?: string[] };
+      // 아직 아무것도 안 바꿨으면 한 번은 되돌려 보낸다 — 「다리가 없어 어디에?」처럼 고칠 수 있는 빈칸은 가장 그럴듯하게 지어 보고하는 편이 낫다(2026-10-24 g2-toll).
+      if (!session.askBounced && JSON.stringify(env.ctx.project.maps) === JSON.stringify(env.request.project.maps) && JSON.stringify(env.ctx.project.database) === JSON.stringify(env.request.project.database)) {
+        session.askBounced = true;
+        return text({ ok: false, summary: "아직 아무것도 짓지 않았다. 요청이 가리키는 자리·물건이 맵에 없으면 묻지 말고 가장 그럴듯한 자리에 만들어(덧그리기·make_place·add_people) 짓고, 보고에 「~가 없어 ~로 정했다」고 쓴다. 그래도 정말 두 갈래로 갈려 잘못 고르면 다시 지어야 하는 경우에만 다시 ask_user 를 부른다." });
+      }
       session.questions.push(p.question);
       return text({ ok: true, summary: "질문을 기록했다. 지금 응답 끝에 이 질문(과 고를 거리)을 그대로 쓰고 턴을 끝낸다.", question: p.question, choices: p.choices ?? [] });
     },
@@ -559,25 +817,49 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
     }
     return result;
   } });
-  const verbs = [makePlace, editPlace, addPeople, addEvent, addScene, drawObjectVerb, placeObject, inspect, askUser].map(guard);
+  const verbs = [makePlace, ...(makeGameOn() && wantsMakeGame(String(task ?? "")) ? [makeGame] : []), editPlace, addPeople, addEvent, addScene, ...(wantsPuzzle(String(task ?? "")) ? [authorPuzzleChain] : []), sealLockedRoomVerb, drawObjectVerb, placeObject, inspect, askUser].map(guard);
   // 게임 요소(퀘스트·아이템·전투·파티) 요청이면 v1 게임 도구를 덧붙인다 — 기록은 도구 묶음이 env.record 로 직접 남긴다.
   const t = String(task ?? "");
-  return wantsGameTools(t) || wantsTerrainTools(t) ? [...verbs, ...createGameTools(env, t)] : verbs;
+  // 스토어 음악 카드(사용자가 듣고 고른다)를 띄웠으면 사용자 질문과 같다 — 끝맺음 관문이 «음악을 안 걸었다»며 넣기를 재촉하지 않게 한다.
+  const gameEnv: PiAssistantV2Env = { ...env, record: (r) => {
+    if (r.name === "store_find_music" && r.result.ok && isStoreCardRequest(r.result.data)) session.questions.push("스토어 음악 카드: 사용자가 듣고 고른다");
+    env.record(r);
+  } };
+  // 같은 Command·페이지 스키마의 설명은 처음 한 번만 보낸다(schemaDedupe.ts — 매 턴 다시 가는 도구 목록이 21만 자였다).
+  return wantsGameTools(t) || wantsTerrainTools(t) || wantsStoreTools(t) ? dedupeToolSchemas([...verbs, ...createGameTools(gameEnv, t)]) : verbs;
 }
 
 /** 끝맺음 관문 — 남은 문제가 있으면 한 번 더 돌게 하는 글. 다 통과면 undefined. */
-export function v2FinishGate(session: V2Session): string | undefined {
+export function v2FinishGate(session: V2Session, env?: PiAssistantV2Env): string | undefined {
   if (session.questions.length) return undefined;
   const open = session.unresolved();
   const missing = [...session.missingArt];
   const fixable = open.filter((o) => o.rounds < V2_MAX_REPAIR_ROUNDS);
+  // 게임 내용 검사(날씨·엔딩·상태·물건 고르기·깃발·부작용) — 요청 낱말과 실제로 바뀐 이벤트를 맞댄다.
+  let game: string[] = [];
+  if (env) { try { game = [...gameContentProblems(env.request.project, env.ctx.project, env.request.task), ...unaskedChanges(env.request.project, env.ctx.project, env.request.task)]; } catch { game = []; } }
+  // 출하 차단(2026-10-25 사용자 규칙): 게임을 만드는 요청이면 편집기 기본값·한 줄 엔딩이 남은 채 «다 됐다»고 하지 못한다.
+  if (env) { try { game.push(...shipBlockers(env.ctx.project, env.request.task).map((b) => `[출하 차단 ${b.id}] ${b.message} 고치지 못하면 «완성»이라고 쓰지 말고 남은 기본값으로 보고한다.`)); } catch { /* 검사 실패는 무시 */ } }
+  // 아무것도 안 바꾸고 «도구가 없다»며 끝내기(2026-10-24 g3-edit-move: 대장장이 옮기기를 묻기만 했다, g3-apple-count: 그림 카드만 남겼다).
+  // 설정이 이미 기본값(켜짐)이면 set_project_settings 가 아무것도 안 바꾸는 것이 맞다(2026-10-25 데모 과업: 탭 걷기·팡파레·빠른 달려들기는 기본 켜짐).
+  const settingOnly = /휴대폰|모바일|터치|탭하면|진동|조이스틱|달리기 단추|레벨 ?업|팡파레|달려들|도움말/u.test(env?.request.task ?? "") && !/만들|두고|세워|놓아|놔|추가/u.test(env?.request.task ?? "");
+  // 스토어 평가 읽기·답글·소식 카드는 프로젝트를 바꾸지 않는 것이 맞다(2026-10-25).
+  // «내 게임 평가에 답글 달아 줘»처럼 «게임» 낱말이 섞여도 만들기·고치기 동사가 없으면 스토어 일로 본다.
+  const storeOnly = wantsStoreTools(env?.request.task ?? "") && !/만들|추가|넣어|놓아|세워|지어|고쳐|바꿔|옮겨|줄여|늘려/u.test(env?.request.task ?? "");
+  if (env && !settingOnly && !storeOnly && !/\?\s*$|알려\s*줘|뭐야|어디|있어\?|보여\s*줘|설명|정리해서|요약/u.test(env.request.task.trim())) {
+    const pick = (p: typeof env.ctx.project) => JSON.stringify([p.maps, p.database, p.endings ?? null, p.commonEvents ?? null, p.switches, p.variables, p.startMapId, p.startPos ?? null, p.system ?? null, p.dialogueDesk ?? null]);
+    try {
+      if (pick(env.request.project) === pick(env.ctx.project)) game.push("[게임 검사 실행] 이 요청으로 맵·데이터가 하나도 바뀌지 않았다. 묻거나 «도구가 없다»고 끝내지 말고 실행한다: 있는 NPC·물건은 move_event·upsert_event·patch_event_page 로 고치고, 새 것은 add_people·add_event·upsert_event 로 만든다. 꼭 맞는 그림이 없으면 가장 비슷한 기존 그림·물건으로 두고 보고에 적는다(아이템·이벤트·대사는 그림과 상관없이 만든다).");
+    } catch { /* 비교 실패는 무시 */ }
+  }
   // 고칠 것이 없으면 한 바퀴를 더 쓰지 않는다 — 남은 문제·「그림 없음」은 동사 결과가 이미 보고하라고 일렀다.
-  if (!fixable.length) return undefined;
+  if (!fixable.length && !game.length) return undefined;
   return [
     "[v2 끝맺음 관문] 「다 됐다」고 말하기 전에:",
-    ...(fixable.length ? [`아직 고칠 수 있는 장소 ${fixable.length}곳 — edit_place 로 고친다:`, ...fixable.map((o) => `- ${o.name}(${o.mapId}, ${o.rounds}바퀴): ${o.problems.slice(0, 5).join(" / ")}`)] : []),
+    ...(game.length ? ["게임 검사가 짚은 것 — 고친 뒤 get_event 로 다시 읽어 확인한다(고칠 수 없으면 보고에 그대로 적는다):", ...game.map((g) => `- ${g}`)] : []),
+    ...(fixable.length ? [`아직 고칠 수 있는 곳 ${fixable.length}곳 — 장소는 edit_place, 컷신은 add_event 로 고친다:`, ...fixable.map((o) => `- ${o.name}(${o.mapId}, ${o.rounds}바퀴): ${o.problems.slice(0, 5).join(" / ")}`)] : []),
     ...(open.length > fixable.length ? ["고치기 상한에 닿은 장소의 남은 문제는 사용자 보고에 그대로 적는다:", ...open.filter((o) => o.rounds >= V2_MAX_REPAIR_ROUNDS).map((o) => `- ${o.name}: ${o.problems.slice(0, 4).join(" / ")}`)] : []),
     ...(missing.length ? [`그림·부품이 없어 못 한 것(보고에 반드시 적는다, 대체물로 지어내지 않는다): ${missing.join(" / ")}`] : []),
-    "고칠 것을 고친 뒤(또는 고칠 수 없으면 바로) 사용자에게 짧게 보고한다: 지은 것, 통과 여부, 못 한 것.",
+    "고칠 것을 고친 뒤(또는 고칠 수 없으면 바로) 앞 보고를 대신하는 최종 보고 하나를 다시 쓴다 — 첫 줄을 「최종 보고(앞 보고를 고침):」로 시작하고, 지은 것·통과 여부·못 한 것을 처음부터 다시 적되 앞 보고와 달라진 것(고친 것·되돌린 것)을 분명히 밝힌다. 앞 보고에서 «했다»고 한 것을 되돌렸으면 반드시 그렇다고 쓴다(사용자는 두 보고를 다 본다).",
   ].join("\n");
 }

@@ -8,6 +8,7 @@ import { fieldBoolean, fieldNumber, fieldString } from "./m2RuntimeFields";
 import { coordinateAxisSpec, resolveDestination } from "@/project/eventCommands/coordinateDestination";
 import { beginCutsceneControl, endCutsceneControl } from "@/player/cutsceneControl";
 import { planScreenEffect } from "./screenEffectPlan";
+import { doorKey } from "@/project/eventCommands/doorAnimation";
 import { pushM2History } from "./m2RuntimeState";
 import { calendarOptionsOf, sessionQueryValue } from "@/project/conditionActorQueries";
 
@@ -232,10 +233,20 @@ function applyScreenEffect(session: PlaySessionLike, runtime: M2RuntimeState, fi
       runtime.screen.distortionDurationMs = plan.durationMs;
       return true;
     }
+    case "door": {
+      const key = doorKey(session.currentMapId, plan.door.x, plan.door.y);
+      runtime.screen.doors = { ...(runtime.screen.doors ?? {}), [key]: { ...plan.door, mapId: session.currentMapId, open: plan.open, durationMs: plan.durationMs } };
+      return true;
+    }
     case "letterbox":
       if (plan.percent > 0) runtime.screen.letterbox = plan.percent;
       else delete runtime.screen.letterbox;
       runtime.screen.letterboxDurationMs = plan.durationMs;
+      return true;
+    case "freeze":
+      if (plan.on) runtime.screen.freeze = { style: plan.style, at: (runtime.screen.freeze?.at ?? 0) + 1 };
+      else delete runtime.screen.freeze;
+      runtime.screen.freezeDurationMs = plan.durationMs;
       return true;
     case "unsupported":
       return false;

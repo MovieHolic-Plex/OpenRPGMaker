@@ -5,11 +5,14 @@ import { uploadedAssetUrl } from "@/project/persistence/assetAccessors";
 import atlasVehicles from "./atlasVehiclesTileset.json";
 import beodeulCitySheet from "./beodeulCitySheet.json";
 import beodeulGroundCatalog from './beodeulGroundCatalog.json';
+import beodeulForestTrunksCatalog from './beodeulForestTrunks.json';
 import beodeulNatureCatalog from './beodeulNatureCatalog.json';
 import beodeulWarmTreesCatalog from './beodeulWarmTreesCatalog.json';
 import beodeulArchitectureCatalog from './beodeulArchitectureCatalog.json';
 import beodeulFormsCatalog from './beodeulFormsCatalog.json';
+import beodeulOrganicCatalog from './beodeulOrganicCatalog.json';
 import beodeulReviewedCatalog from './beodeulReviewedCatalog.json';
+import beodeulMassingCatalog from './beodeulMassingCatalog.json';
 import joseonBaramSheet from "./joseonBaramSheet.json";
 import modernCitySheet from "./modernCitySheet.json";
 import jpCitySheet from "./jpCitySheet.json";
@@ -134,11 +137,16 @@ export const BUNDLED_EASYRPG_CHIPSET_ASSETS = [
   {textureKey:'tex_beodeul_warm_trees',path:'assets/beodeul-warm-trees/chipset.png',name:'버들항 · 따뜻한 황록 나무·숲'},
   {textureKey:"tex_beodeul_door",path:"assets/beodeul-door/door-states.png",name:"버들항 · 문 열림 손 도트 시안"},
   {textureKey:"tex_beodeul_ground",path:"assets/beodeul-ground/chipset.png",name:"버들항 · 기초·밑동·잔디 꾸미기"},
+  // 숲 composer 활엽수 줄기 T3(2026-10-24 사용자 선택). 재생성 scripts/content/fallen-forest-trunks/bake.py, 정의 project/defaults/beodeulForestTrunks.ts.
+  {textureKey:"tex_beodeul_forest_trunks",path:"assets/beodeul-forest-trunks/chipset.png",name:"버들항 · 숲 나무 줄기(나무껍질 대비)"},
   // 버들항 자연 덧그림(2026-10-11) — 그림자·자연 물가·풀밭 가장자리 2층 덧그림. 재생성 scripts/content/build-beodeul-nature.py, 정의 project/defaults/beodeulNature.ts.
   {textureKey:"tex_beodeul_nature",path:"assets/beodeul-nature/chipset.png",name:"버들항 · 자연 덧그림(그림자·물가·풀밭 가장자리)"},
   {textureKey:'tex_beodeul_architecture',path:'assets/beodeul-architecture/chipset.png',name:'버들항 · 원본 보존 민가·성당'},
   {textureKey:'tex_beodeul_forms',path:'assets/beodeul-forms/chipset.png',name:'버들항 · 건물 구조 여섯 계열'},
   {textureKey:'tex_beodeul_reviewed',path:'assets/beodeul-reviewed/chipset.png',name:'버들항 · 사람이 허용한 건물'},
+  {textureKey:'tex_beodeul_massing',path:'assets/beodeul-massing/chipset.png',name:'버들항 · 중세 건물(덩어리 모형)'},
+  // 버들항 자연 기물(2026-10-24) — 바위·덤불·통나무·버섯·들꽃·고사리·고목. 굽기 scripts/content/beodeul-organic/bake.py(object-gate 출구), 정의 project/defaults/beodeulOrganic.ts
+  {textureKey:'tex_beodeul_organic',path:'assets/beodeul-organic/chipset.png',name:'버들항 · 자연 기물(바위·덤불·통나무·버섯·들꽃)'},
   // 버들항 v6(2026-09-28) — 로마풍 항구 도시 손 도트 렌더를 16px 칸으로 자른 시트(칸마다 땅/윗부분, 움직임 animationStrips).
   // 재생성: scripts/content/build-beodeul-city.py, 정의는 project/defaults/beodeulCity.ts, openwiki/beodeul-city.md.
   {textureKey:"tex_beodeul_city",path:"assets/beodeul-city/beodeul-city-chipset.png",name:"버들항 v6 · 로마풍 항구 도시 (손 도트)"},
@@ -211,10 +219,13 @@ export function bundledChipsetFrameCount(key: string): number {
   if (key === 'tex_beodeul_warm_trees') return beodeulWarmTreesCatalog.count;
   if (key === "tex_beodeul_door") return 16;
   if (key === "tex_beodeul_ground") return beodeulGroundCatalog.count;
+  if (key === "tex_beodeul_forest_trunks") return beodeulForestTrunksCatalog.count;
   if (key === "tex_beodeul_nature") return beodeulNatureCatalog.count;
   if (key === 'tex_beodeul_architecture') return beodeulArchitectureCatalog.count;
   if (key === 'tex_beodeul_forms') return beodeulFormsCatalog.count;
   if (key === 'tex_beodeul_reviewed') return beodeulReviewedCatalog.count;
+  if (key === 'tex_beodeul_massing') return beodeulMassingCatalog.count;
+  if (key === 'tex_beodeul_organic') return beodeulOrganicCatalog.count;
   if (key === "tex_oprn_atlas_vehicles") return atlasVehicles.count;
   if (key === "tex_beodeul_city") return beodeulCitySheet.count;
   if (key === "tex_joseon_baram") return joseonBaramSheet.count;

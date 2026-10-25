@@ -11,6 +11,7 @@ import { OGA_BACKDROP_ASSETS } from "@/assets/ogaBackdropAssets";
 import { OGA_CRAFTPIX_BACKDROP_ASSETS } from "@/assets/ogaCraftpixBackgrounds";
 import { oprnPanoramaSetOfImage, OPRN_PANORAMA_ASSETS } from "@/assets/oprnPanoramas";
 import { moodTagsForAsset } from "@/assets/resourceMoodTags";
+import { listOpeningStillMoods } from "@/assets/openingStillMoods";
 import { COMBINED_TOWN_TILE_SEMANTICS } from "@/project/defaults/tileSemanticsCombinedTown";
 import { DUNGEON_TILE_SEMANTICS } from "@/project/defaults/tileSemanticsDungeon";
 import { INTERIOR_TILE_SEMANTICS } from "@/project/defaults/tileSemanticsInterior";
@@ -233,11 +234,21 @@ function candidatesForKind(kind: Exclude<ResourceSearchKind, "charset">, options
       }));
     case "backdrop":
       return [
+        // 그림에 실제로 보이는 것(세트 summary)을 description 으로 — 이름(「노을」)만 보고 현대 고층 도시 노을을 동화 공방 타이틀에 깔았다(2026-10-25 심사 J38).
         ...OPRN_PANORAMA_ASSETS.map((asset) => ({
           id: `backdrop:${asset.id}`,
           resourceId: asset.id,
           label: asset.name,
           tags: ["backdrop", "panorama", "파노라마", "맵 배경", ...(oprnPanoramaSetOfImage(asset.id)?.tags ?? []), ...idWords(asset.id)],
+          ...(oprnPanoramaSetOfImage(asset.id) ? { description: `${/city|skyline|도시/u.test(`${asset.id} ${asset.name}`) ? "[현대 도시 빌딩 실루엣 — 판타지·동화·사극에는 맞지 않는다] " : ""}그림: ${oprnPanoramaSetOfImage(asset.id)!.summary}` } : {}),
+        })),
+        // 전체 화면 장면 그림(오프닝 스틸) — 타이틀·엔딩·오프닝 배경으로 쓸 수 있다. 검수한 그림 설명이 붙는다.
+        ...listOpeningStillMoods().filter((mood) => mood.suitableForOpening).map((mood) => ({
+          id: `backdrop:${mood.id}`,
+          resourceId: mood.id,
+          label: mood.name,
+          tags: ["backdrop", "still", "장면", "타이틀", "엔딩", ...mood.tags, ...mood.mood, ...mood.useCases],
+          description: `그림: ${mood.description}${mood.cautions.length ? ` 주의: ${mood.cautions.join(", ")}` : ""}`,
         })),
         ...EASYRPG_BACKDROP_ASSETS.map((asset) => ({
           id: `backdrop:${asset.id}`,

@@ -109,7 +109,26 @@ const modernPortraits = MODERN_PORTRAIT_SETS.flatMap((set) => {
     rendering: "smooth" as const,
   })));
 });
-export const SHARED_PORTRAIT_ASSETS: readonly SharedPortraitAsset[] = [...faceSetPortraits, ...modernPortraits];
+/**
+ * 한 게임의 캐스트를 위해 같은 경로(portraits2 시트 → 정리)로 새로 그린 흉상 세트. 대사 표정 5개·흉상만.
+ * 폴른 스타 심문관 발렌(2026-10-25, scripts/content/portraits/fallen_valen.py → cast-portrait 하네스 눈가림 검수 통과).
+ */
+export const CAST_PORTRAIT_SETS: readonly { readonly stem: string; readonly name: string }[] = [
+  { stem: "fs-inquisitor-valen", name: "심문관 · 푸른 장발 금테" },
+];
+const castPortraits = CAST_PORTRAIT_SETS.flatMap((set) => {
+  const setId = `shared-${set.stem}-expressions`;
+  return SHARED_PORTRAIT_DIALOGUE_EXPRESSIONS.map((expression) => ({
+    id: sharedPortraitId(setId, "bust", expression),
+    name: `${set.name} · ${MODE_LABELS.bust} ${SHARED_PORTRAIT_EXPRESSION_LABELS[expression]}`,
+    path: `assets/shared/portraits/${set.stem}/bust-${expression}.png`,
+    setId,
+    mode: "bust" as const,
+    expression,
+    rendering: "pixel" as const,
+  }));
+});
+export const SHARED_PORTRAIT_ASSETS: readonly SharedPortraitAsset[] = [...faceSetPortraits, ...modernPortraits, ...castPortraits];
 
 const BY_ID = new Map(SHARED_PORTRAIT_ASSETS.map((asset) => [asset.id, asset]));
 const ORIGINAL_FACE_SETS = new Map(expressionSources.map(source => [
@@ -205,4 +224,14 @@ export function dialogueFaceForEmotion(
   const next = sharedPortraitId(base.setId, base.mode, emotion as SharedPortraitExpression);
   // 표정이 일부만 그려진 세트(현대 연애 5표정 — 분노 없음)는 없는 표정에서 기본 그림에 머문다(깨진 이미지 금지).
   return BY_ID.has(next) ? next : baseResourceId;
+}
+
+/**
+ * 초상 그림의 원래 시선(화면 기준). 현대 연애 흉상·전신(modern-*)은 모두 화면 오른쪽(→)을 보게 그렸다(2026-10-21 실측, 24종).
+ * 대화창은 이 값으로 오른쪽 자리의 초상을 거울로 뒤집어 두 사람이 마주 보게 한다. 모르는 그림은 null(뒤집지 않는다).
+ */
+export function sharedPortraitNativeGaze(resourceId: string | undefined): "left" | "right" | null {
+  if (!resourceId) return null;
+  if (/^shared-modern-.+-expressions-(?:bust|full)-[a-z]+$/u.test(resourceId)) return "right";
+  return null;
 }

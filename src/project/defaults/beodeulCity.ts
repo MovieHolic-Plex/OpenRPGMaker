@@ -12,7 +12,9 @@ import references from "@/assets/beodeulCityReferences.json";
 import { beodeulGroundReferences } from './beodeulGround';
 import {beodeulFacilityReferences,ensureBeodeulFacilityKits} from './beodeulFacilities';
 import {beodeulFormsHostReferences,ensureBeodeulForms} from './beodeulForms';
+import {ensureBeodeulOrganic} from './beodeulOrganic';
 import {beodeulReviewedHostReferences,ensureBeodeulReviewed} from './beodeulReviewed';
+import {beodeulMassingHostReferences,ensureBeodeulMassing} from './beodeulMassing';
 import type { AutotileGroup, PassFlag, StructureKitDef, TileAiMetadata, TileGroupMetadata, TilesetDef } from "../types";
 import type { TilesetReferenceCategory } from "../tilesetReferences";
 import { copyBundleEnd, relocateLocalTail, type LocalTailRelocation, type RelocationProject } from "./localTailRelocation";
@@ -68,12 +70,12 @@ export const isBeodeulDungeonGapAutotile = (id: string): boolean => /^beodeul_du
 export const BEODEUL_DUNGEON_THEME_BASE = 30848;
 export const BEODEUL_DUNGEON_THEME_KIT_PREFIX = "bd-pick-dungeon-theme-";
 /**
- * 쓰임 마당 바닥(2026-10-22 village-art, scripts/content/beodeul-yard/bake_yard.py · yard_art.py): 던전 주제 꼬리(~33,023) 바로 뒤 두 행 256칸(33,024~33,279: 마당 71칸, 포도나무 줄 16칸 33,095~, 판석→흙 가장자리 129칸 33,111~ `beodeul_yard_flag_dirt`).
- * 2026-10-24 main 의 던전 gap·주제 꼬리가 29,568~ 를 먼저 차지해 29,568 에서 33,024 로 옮겼다(덧붙이기 전용).
+ * 쓰임 마당 바닥(2026-10-22 village-art, scripts/content/beodeul-yard/bake_yard.py · yard_art.py): 던전 주제 꼬리(~33,151) 바로 뒤 두 행 256칸(33,152~33,407: 마당 71칸, 포도나무 줄 16칸 33,223~, 판석→흙 가장자리 129칸 33,239~ `beodeul_yard_flag_dirt`).
+ * 2026-10-24 main 의 던전 gap·주제 꼬리가 29,568~ 를 먼저 차지해 29,568 에서 33,024 로, 2026-10-25 main 의 주제 꼬리가 33,151 까지 늘어 다시 33,152 로 옮겼다(덧붙이기 전용, main 에 나간 적 없는 번호).
  * 8방 오토타일 셋 — 자갈 마당 `beodeul_yard_cobble`·다진 흙 마당 `beodeul_yard_dirt`·판석 마당 `beodeul_yard_flag`(속 변형 8, 가장자리·바깥/안쪽 모서리).
  * dress_village_quarter 가 광산·포도원·신전 폐허·성벽 장터 덩이 밑에 깐다. 키트 `bd-yard-*`, 칸 묶음 `beodeul:yard_*`. 번들 소유.
  */
-export const BEODEUL_YARD_BASE = 33024;
+export const BEODEUL_YARD_BASE = 33152;
 export const BEODEUL_YARD_KIT_PREFIX = "bd-yard-";
 export const BEODEUL_YARD_AUTOTILE_IDS: readonly string[] = ["beodeul_yard_cobble", "beodeul_yard_dirt", "beodeul_yard_flag"];
 /** 고른 조각 키트 id 머리. 번들이 소유한다(기존 사본에서 같은 id 는 번들 것으로 바꾼다). */
@@ -98,7 +100,7 @@ function baseReferenceDocuments(): TilesetReferenceCategory[] {
 export function beodeulCityBundledReferenceDocuments(): TilesetReferenceCategory[] {
   const docs = baseReferenceDocuments();
   const ids = new Set(docs.map((category) => category.id));
-  for (const category of [...beodeulFacilityReferences(), ...beodeulFormsHostReferences(), ...beodeulReviewedHostReferences()]) {
+  for (const category of [...beodeulFacilityReferences(), ...beodeulFormsHostReferences(), ...beodeulReviewedHostReferences(), ...beodeulMassingHostReferences()]) {
     if (ids.has(category.id)) return createBeodeulCityTileset().referenceDocuments ?? [];
     ids.add(category.id);
     docs.push(structuredClone(category));
@@ -130,6 +132,8 @@ export function createBeodeulCityTileset(): TilesetDef {
   ensureBeodeulFacilityKits(tileset);
   ensureBeodeulForms(tileset);
   ensureBeodeulReviewed(tileset);
+  ensureBeodeulMassing(tileset);
+  ensureBeodeulOrganic(tileset);
   return tileset;
 }
 
@@ -199,7 +203,7 @@ export function ensureBeodeulCityTileset(tileset: TilesetDef, project?: Relocati
     const wallBlocked = dungeonBlocked || grafts.some(graft => graft.targetTile >= BEODEUL_TOWN_WALL_BASE && graft.targetTile < BEODEUL_DUNGEON_GAP_BASE);
     // 던전 gap 꼬리(29,568~)도 같다: 그 자리에 이식 칸을 쓴 사본은 성벽 끝까지만 받고 bd-dg 키트·gap 오토타일도 받지 않는다(시공기는 옛 천장·물로 물러선다).
     const gapBlocked = wallBlocked || grafts.some(graft => graft.targetTile >= BEODEUL_DUNGEON_GAP_BASE && graft.targetTile < BEODEUL_YARD_BASE);
-    // 마당 바닥 꼬리(33,024~)도 같다: 그 자리에 이식 칸을 쓴 사본은 던전 주제 끝까지만 받고 마당 오토타일·키트를 받지 않는다(쓰임 덩이는 마당 없이 풀밭에 앉는다).
+    // 마당 바닥 꼬리(33,152~)도 같다: 그 자리에 이식 칸을 쓴 사본은 던전 주제 끝까지만 받고 마당 오토타일·키트를 받지 않는다(쓰임 덩이는 마당 없이 풀밭에 앉는다).
     const yardBlocked = gapBlocked || grafts.some(graft => graft.targetTile >= BEODEUL_YARD_BASE && graft.targetTile < sheet.count);
     const limit = dungeonBlocked ? BEODEUL_DUNGEON_CEILING_BASE : wallBlocked ? BEODEUL_TOWN_WALL_BASE : gapBlocked ? BEODEUL_DUNGEON_GAP_BASE : yardBlocked ? BEODEUL_YARD_BASE : sheet.count;
     const extended = extendPickedParts(tileset, limit);

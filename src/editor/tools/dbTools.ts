@@ -519,6 +519,11 @@ const troopMemberSchema = objectSchema({
   partOf: integerSchema("다부위 적: 본체 멤버의 인덱스(0부터). 본체가 쓰러지면 이 부위도 쓰러진다"),
   partTag: stringSchema("부위 태그. 이 부위가 쓰러지면 본체 행동 중 requiresPart 가 같은 것이 막힌다"),
 });
+const damageTypeRatesSchema = objectSchema({
+  physical: integerSchema("받는 물리(공격력 계열) 피해 % 0~1000. 100 보통, 0 무효"),
+  magic: integerSchema("받는 마법(마력 계열) 피해 % 0~1000. 100 보통, 0 무효"),
+  elements: { type: "object", description: "속성 예외 { 속성 id: % } — 맞은 기술의 속성이 여기 있으면 physical/magic 대신 이 값. 예 { thunder: 200 } = 번개는 물리든 마법이든 2배", additionalProperties: true },
+}, "받는 피해 계열 %. 예: 마법 무효 용 { magic: 0 } · 기계 형태 { physical: 0, magic: 25, elements: { thunder: 200 } }");
 const stateRuntimeEffectsSchema = objectSchema({
   restrictsAction: booleanSchema(),
   blocksSkillUse: booleanSchema(),
@@ -544,7 +549,9 @@ const stateRuntimeEffectsSchema = objectSchema({
   reraisePercent: numberSchema("리레이즈 % 1~100 — 쓰러지면 최대 HP 의 이 비율로 한 번 일어나고 상태는 사라진다(아군만)"),
   transformResourceId: stringSchema("변신 — 이 상태인 동안 전투 그림을 이 리소스 id 로 바꾼다. 아군은 9칸 시트 \"party-pixel-<칩>\"(예 party-pixel-monster4-5 이끼 골렘) 또는 전투 시트 id, 적은 몬스터 그림 id. 능력치는 같은 상태의 공격·방어·민첩 배율로. 풀리면 원래 그림. 빈 문자열이면 해제"),
   doomTurns: numberSchema("선고 1~9 — 걸린 뒤 자기 차례가 이만큼 오면 전투 불능. 상태를 풀면 멈춘다"),
+  damageTypeRates: { ...damageTypeRatesSchema, description: "이 상태인 동안 받는 피해 계열 %를 적의 기본 damageTypeRates 대신 쓴다(갈아 끼움, 여러 상태면 큰 값). 예: 「관통상」 { magic: 300 } · 변신 기계 형태 { physical: 0, magic: 25, elements: { thunder: 200 } }(transformResourceId 와 함께)" },
   invertHealing: booleanSchema("좀비 — 이 상태인 동안 받는 HP 회복(회복 스킬·회복 아이템·재생)이 같은 양의 피해가 된다. 기본 상태 id state_zombie"),
+  maxTurns: integerSchema("최대 지속 1~9 — 걸린 뒤 자기 턴이 이만큼 지나면 회복 굴림과 상관없이 풀린다(「독은 최대 3턴」)"),
 });
 
 const heldEffectSchema = objectSchema({
@@ -611,11 +618,14 @@ const enemyRecordSchema = objectSchema({
   speciesId: stringSchema(),
   monsterResourceId: stringSchema(),
   battleScalePercent: integerSchema("전투 표시 크기(%). 10~300으로 제한, 기본 100."),
+  lungeSpeedPercent: integerSchema("도트 측면 전투에서 아군에게 달려드는 속도(%). 25~300, 기본 100. 늑대·맹수처럼 날랜 적 120~160, 굼뜬 거인 70~90. 전역 기본 세기는 set_project_settings battle.staging.enemyLunge"),
   collapseEffect: {
     type: "string",
     enum: ["dissolve", "pixelBreak", "bossSink", "flash", "instant"],
     description: "쓰러지는 연출. dissolve 기본 소멸 · pixelBreak FF6 식 보랏빛 픽셀 분해(잡몹) · bossSink 떨며 땅속으로 가라앉음(보스) · flash 하얀 세 번 점멸 · instant 즉시 사라짐(환영·소환수).",
   },
+  hideHp: booleanSchema("보스 HP 숨김 — true 면 전투에서 이 적의 HP 막대·숫자를 보이지 않는다(대상 선택 목록은 「HP ???」). 보스·중간 보스에"),
+  damageTypeRates: damageTypeRatesSchema,
   criticalHit: objectSchema({ enabled: booleanSchema(), oneIn: integerSchema() }),
   attackOptions: objectSchema({ normalAttacksMiss: booleanSchema() }),
   skillIds: stringArraySchema(),
@@ -843,6 +853,28 @@ const skillRecordSchema = objectSchema({
     type: "string",
     description: "연계기가 발동하면 켜지는 스위치 id(전투 이벤트 페이지 조건·이후 이야기 분기). 없는 스위치는 자동 등록된다. 빈 문자열이면 해제",
   },
+  comboStaging: objectSchema(
+    {
+      tint: { type: "string", description: "번쩍임·오라·제목 색 #rrggbb(생략 = 속성 색)" },
+      shake: { type: "string", enum: ["none", "light", "heavy"], description: "착탄 흔들림(생략 = 트리플 heavy · 듀얼 light)" },
+      slowMo: booleanSchema("착탄 순간 느린 화면(생략 = 켜기)"),
+      kicker: { type: "string", description: "제목 카드 위 작은 글(예: 「듀얼 테크」). 생략 = 인원수로" },
+    },
+    "연계기 연출(컷인 얼굴 교차 → 참가자별 빛 → 합쳐진 마무리 → 제목 카드). 전역 세기는 set_project_settings battle.staging. 해제 = null",
+  ),
+  comboMpCosts: {
+    type: "array",
+    description: "연계기 비용 나누기: [{actorId, mp}] — 참가자별 MP 고정 몫(주 시전자 4·보조 8 처럼). 목록에 없는 참가자는 mpCost 를 낸다. actorId 는 comboActorIds 안의 배우. 빈 배열이면 해제",
+    items: objectSchema({ actorId: { type: "string" }, mp: integerSchema("0~9999") }, "{actorId, mp} 두 키만"),
+  },
+  exploitStates: objectSchema(
+    {
+      stateIds: stringArraySchema("노리는 상태 id(1~8). 대상이 이 중 하나에 걸려 있으면 보너스"),
+      bonusPercent: integerSchema("피해 +N% (1~300)"),
+      consume: booleanSchema("true 면 맞힌 순간 그 상태를 풀어 버린다(얼어붙은 적을 깨뜨림·잠든 적을 깨움)"),
+    },
+    "약점 공략(준비 → 마무리 콤보): 대상이 stateIds 중 하나에 걸려 있으면 피해 +bonusPercent%. 숫자 아래 「공략!」 꼬리표. 둔화를 거는 기술 + 둔화 대상 +50% 기술처럼 동료끼리 짝을 만든다. 해제 = null",
+  ),
   area: objectSchema(
     {
       shape: { type: "string", enum: ["circle", "line"] },
@@ -864,6 +896,7 @@ const skillRecordSchema = objectSchema({
   hpCostPercent: integerSchema(
     "시전 대가로 시전자가 최대 HP 의 N% 를 잃는다(0~100, 0=없음, HP 는 1 밑으로 안 내려감). 희생·폭발계 기술의 대가",
   ),
+  weaponAffinity: objectSchema({ elementIds: stringArraySchema("무기 계열(장비 attackElementIds — sword·spear·bow·gun·hit 등). 비우면 기술 자신의 elementId"), bonusPercent: integerSchema("그 계열 무기를 들고 쓰면 피해·회복 +%") }, "무기 공명: 「검을 들고 쓰면 위력 +20%」"),
   drainPercent: integerSchema(
     "준 피해의 N% 만큼 시전자가 회복(0~100, 0=없음, affects mp 면 MP). 흡수·흡혈계 기술. 피해를 주는 기술에만 의미가 있다",
   ),
@@ -954,6 +987,8 @@ const equipmentRecordSchema = objectSchema({
   stateDefenseIds: stringArraySchema(),
   stateDefenseMode: { type: "string", enum: ["resist", "inflict"] },
   stateResistanceChance: integerSchema(),
+  damageDealtPercent: integerSchema("주는 피해 ±% (-90~300, 물리·마법 공통). 30 = 피해 +30%. 여러 장비면 더한다"),
+  damageTakenPercent: integerSchema("받는 피해 ±% (-90~300). -20 = 받는 피해 20% 감소"),
   grantsSkillIds: stringArraySchema("장착 중에만 쓸 수 있는 스킬 id. 배우지 않아도 전투 스킬 목록에 뜬다"),
   apGrants: arrayOf(objectSchema({
     skillId: stringSchema("영구 습득할 스킬 id(먼저 upsert_skill 로 만든다)"),
@@ -999,6 +1034,7 @@ const stateRecordSchema = objectSchema({
   gen1MajorStatus: { type: "string", enum: ["poison", "toxic", "burn", "sleep", "freeze", "paralysis"] },
   volatileStatus: { type: "string", enum: ["confusion"] },
   removalCondition: stringSchema(),
+  clearOnBattleEnd: booleanSchema("true = 전투가 끝나면 풀린다(독·수면을 전투 밖으로 끌고 가지 않는 게임), false = 남는다. 생략 = set_project_settings battle.clearStatesAfterBattle 을 따른다"),
   restriction: stringSchema(),
   priority: integerSchema(),
   accuracyModifier: integerSchema(),
@@ -1529,6 +1565,34 @@ function validateSkillTechPatch(draft: Project, patch: unknown): void {
       if (!draft.database.skills.some((skill) => skill.id === entry.skillId)) {
         throw new ToolError(`comboRequires[${index}].skillId 가 없는 기술: ${entry.skillId} — 먼저 upsert_skill 로 만드세요.`, { code: "skill-not-found" });
       }
+    }
+  }
+  if (record.comboMpCosts !== undefined && record.comboMpCosts !== null) {
+    const rows = Array.isArray(record.comboMpCosts) ? record.comboMpCosts : null;
+    if (!rows) throw new ToolError("skill.comboMpCosts 는 [{actorId, mp}] 배열이어야 합니다. 예: [{actorId:\"actor_hero\", mp:4}, {actorId:\"actor_mage\", mp:8}]", { code: "invalid-combo-costs" });
+    const comboIds = Array.isArray(record.comboActorIds)
+      ? (record.comboActorIds as string[]).map((id) => String(id).trim())
+      : typeof record.id === "string" ? [...(draft.database.skills.find((skill) => skill.id === record.id)?.comboActorIds ?? [])] : [];
+    for (const [index, row] of rows.entries()) {
+      const entry = row as Record<string, unknown> | null;
+      const unknownKeys = entry && typeof entry === "object" ? Object.keys(entry).filter((key) => key !== "actorId" && key !== "mp") : [];
+      if (!entry || typeof entry !== "object" || typeof entry.actorId !== "string" || typeof entry.mp !== "number" || !Number.isFinite(entry.mp) || entry.mp < 0 || unknownKeys.length > 0) {
+        throw new ToolError(`skill.comboMpCosts[${index}] 는 {actorId, mp(0 이상 정수)} 두 키만 가진 객체여야 합니다${unknownKeys.length ? `(모르는 키: ${unknownKeys.join(", ")})` : ""}.`, { code: "invalid-combo-costs" });
+      }
+      if (!comboIds.includes(entry.actorId)) {
+        throw new ToolError(`comboMpCosts[${index}].actorId ${entry.actorId} 는 연계 참가자(${comboIds.join(", ") || "없음 — comboActorIds 를 먼저 주세요"})가 아닙니다.`, { code: "invalid-combo-costs" });
+      }
+    }
+  }
+  if (record.exploitStates !== undefined && record.exploitStates !== null) {
+    const exploit = record.exploitStates as Record<string, unknown>;
+    const unknownKeys = exploit && typeof exploit === "object" && !Array.isArray(exploit) ? Object.keys(exploit).filter((key) => !["stateIds", "bonusPercent", "consume"].includes(key)) : ["(객체 아님)"];
+    if (unknownKeys.length > 0 || !Array.isArray(exploit.stateIds) || exploit.stateIds.length === 0 || typeof exploit.bonusPercent !== "number" || exploit.bonusPercent < 1 || exploit.bonusPercent > 300) {
+      throw new ToolError(`skill.exploitStates 는 {stateIds:[상태 id 1~8개], bonusPercent:1~300, consume?:boolean} 입니다${unknownKeys.length ? `(모르는 키: ${unknownKeys.join(", ")})` : ""}. 예: {stateIds:["state_agility_down"], bonusPercent:50}`, { code: "invalid-exploit-states" });
+    }
+    const missing = (exploit.stateIds as unknown[]).filter((id) => typeof id !== "string" || !draft.database.states.some((state) => state.id === id));
+    if (missing.length > 0) {
+      throw new ToolError(`exploitStates.stateIds 에 없는 상태: ${missing.map(String).join(", ")} — 허용 예시: ${knownIds(draft.database.states)}`, { code: "state-not-found" });
     }
   }
   if (typeof record.comboSwitchId === "string" && record.comboSwitchId.trim()) {
@@ -2599,7 +2663,7 @@ const setTitleScreen: ToolDefinition = {
       title: { type: "string" },
       menuLabels: {
         type: "object",
-        description: "{ newGame, continueGame, resume, credits, quit } — credits 는 저작자 표기 창을 여는 항목(항상 보임)",
+        description: "{ newGame, continueGame, resume, credits, quit } — credits 는 저작자 표기 창을 여는 항목(항상 보임). continueGame=저장 슬롯에서 불러오기, resume=자동 저장에서 바로 이어하기(자동 저장이 있을 때만 보임) — 둘은 함께, 서로 다른 말로 바꾼다(한쪽만 「…이어하기」로 바꾸면 타이틀에 「이어하기」가 두 줄 뜬다).",
         properties: {
           newGame: { type: "string" },
           continueGame: { type: "string" },
@@ -2765,6 +2829,13 @@ const setTitleScreen: ToolDefinition = {
 
     const labels = args.menuLabels as Partial<typeof current.menuLabels> | undefined;
     if (labels) current.menuLabels = { ...current.menuLabels, ...labels };
+    // 불러오기(continueGame)만 「…이어하기」로 바꾸면 자동 저장 재개(resume, 기본 「이어하기」)와 두 줄이 같은 말이 된다(2026-10-25 J34
+    // 「이어하기」·「기억 이어하기」). resume 을 따로 주지 않았으면 겹치지 않는 말로 채운다.
+    const labelNotes: string[] = [];
+    if (labels?.continueGame && !labels.resume && !current.menuLabels.resume?.trim() && /이어/u.test(labels.continueGame)) {
+      current.menuLabels = { ...current.menuLabels, resume: "방금 하던 곳부터" };
+      labelNotes.push("불러오기 이름이 「이어하기」와 겹쳐 자동 저장 재개 이름을 「방금 하던 곳부터」로 정했다 — 바꾸려면 menuLabels.resume 을 함께 준다");
+    }
 
     const visibility = args.menuVisibility as Partial<{ newGame: boolean; continueGame: boolean; quit: boolean }> | undefined;
     if (visibility) {
@@ -2870,14 +2941,14 @@ const setTitleScreen: ToolDefinition = {
       else current.intro = intro;
     }
 
-    const opening = applyTitleOpeningArgs(current, args);
+    const opening = applyTitleOpeningArgs(current, args, draft);
 
-    return { summary: `타이틀 화면 설정: "${current.title}"${opening}` };
+    return { summary: `타이틀 화면 설정: "${current.title}"${opening}${labelNotes.length ? ` · ${labelNotes.join(" · ")}` : ""}` };
   },
 };
 
 /** set_title_screen 의 오프닝 인자(프리셋·효과·로고/메뉴 질감·배경 맞춤). 요약 꼬리 문자열을 돌려준다. */
-function applyTitleOpeningArgs(current: TitleScreenSettings, args: Record<string, unknown>): string {
+function applyTitleOpeningArgs(current: TitleScreenSettings, args: Record<string, unknown>, project?: Project): string {
   const notes: string[] = [];
   if (typeof args.openingPreset === "string") {
     const preset = findTitleOpeningPreset(args.openingPreset);
@@ -2887,7 +2958,14 @@ function applyTitleOpeningArgs(current: TitleScreenSettings, args: Record<string
         { code: "invalid-args" },
       );
     }
-    current.effects = titleOpeningPresetEffects(preset);
+    // 프리셋 효과(물·안개·빛내림 자리)는 그 프리셋으로 그린 키아트의 구도 좌표다. 배경이 다른 그림이면 엉뚱한 곳에 물결·안개가 뜬다
+    // (2026-10-25 G41: 장난감 가게 게임에 「달밤 성」 해자 물결이 기본 들판 그림 위에 깔렸다) — 그때는 자리 없는 효과만 남긴다.
+    const bg = current.backgroundResourceId;
+    const bgName = bg ? String(project?.assets.uploaded[bg]?.name ?? "") : "";
+    const drawnForPreset = bgName.includes(preset.label) || bgName.includes(preset.id);
+    const presetEffects = titleOpeningPresetEffects(preset);
+    current.effects = drawnForPreset ? presetEffects : presetEffects.filter((effect) => effect.kind === "camera" || effect.kind === "parallax");
+    if (!drawnForPreset) notes.push(`배경이 「${preset.label}」 프리셋 그림이 아니라 물결·안개·빛내림 자리를 뺐다(구도가 다르다) — 게임 주제에 맞는 배경을 깔고, 효과는 그 그림을 보고 effects 로 직접 준다. 주제와 다른 프리셋(성·항구·사막…)을 고르지 않는다`);
     current.logoStyle = preset.logoStyle;
     current.menuStyle = preset.menuStyle;
     current.sequence = { ...preset.sequence };

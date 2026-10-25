@@ -20,9 +20,9 @@ export const DUNGEON_CARD =
   "mine 광산 · sewer 하수도 · labyrinth 미궁 · cave 동굴. size small|medium|large, floors 1~5(탑·마법탑은 위로, 나머지는 아래로; 보스는 마지막 층 맨 안쪽 방). " +
   "features: 원문의 적 낱말(늑대·유령·미라·전갈·도마뱀 인간·눈알·갑옷·악마·박쥐…)과 보스 낱말(히드라·붉은 용·얼음 용·대마법사·마계의 군주…)을 그대로, " +
   "boss·chests·enemies, 장치 함정(모래 함정)·다리·마법진·레버·얼음 미끄럼·광차, flooded(물에 잠긴 방), goblin lair. 적 낱말 → 보이는 적 그림, 보스 낱말 → 보스 그림. " +
-  "hints: variant(다른 배치)·seed·direction(up|down)·gimmick·inspiration(「엘든링 같은」 게임 이름). 고치기는 variant·features·size·floors 만 — 방·소품 하나하나는 못 한다.";
+  "hints: variant(다른 배치)·seed·direction(up|down)·gimmick·inspiration(「엘든링 같은」 게임 이름). 탑은 층마다 직접 고른다: floorShapes 「cross,spiral,hall」(아래층부터 — 중간 ring·gallery·cross·spiral·twin, 꼭대기 ring·hall·observatory), floorGimmicks 「none,teleporter」(중간 층 장치 lever·bridge·teleporter·minecart·iceslide·sandpit·none). 고치기는 variant·features·size·floors 만 — 방·소품 하나하나는 못 한다.";
 
-const KNOWN_HINTS = new Set(["type", "size", "floors", "direction", "seed", "variant", "width", "height", "populate", "flooded", "lair", "puzzle", "style", "gimmick", "inspiration", "layout"]);
+const KNOWN_HINTS = new Set(["type", "size", "floors", "direction", "seed", "variant", "width", "height", "populate", "flooded", "lair", "puzzle", "style", "gimmick", "inspiration", "layout", "floorShapes", "floorGimmicks"]);
 const BEODEUL_TILESET = "beodeul_city";
 const TYPES: readonly DungeonType[] = DUNGEON_TYPES;
 
@@ -155,6 +155,7 @@ export function dungeonArgs(spec: PlaceSpec, keepType?: DungeonType): DungeonPla
     if (!KNOWN_HINTS.has(key)) { warnings.push(`알 수 없는 hints.${key} 는 무시했다`); continue; }
     if (key === "variant" || key === "style") continue;
     if (key === "type" && !(TYPES as readonly string[]).includes(String(value))) { warnings.push(`알 수 없는 type ${String(value)} → ${type}`); continue; }
+    if (key === "floorShapes" || key === "floorGimmicks") { args[key] = String(value).split(/[,\s·]+/).map((x) => x.trim().toLowerCase()).filter(Boolean); continue; }
     args[key] = value;
   }
   // 적·보스 낱말. 보스 낱말을 먼저 지워야 「얼음 용」의 「용」이 잡몹으로 안 잡힌다.
@@ -455,6 +456,45 @@ function build(run: BuildRun, spec: PlaceSpec, previous?: PlaceRecord): PlaceBui
   const { args, type, missing, warnings } = plan;
   const prev = previous?.result.state as DungeonState | undefined;
   const mapId = targetMapId(run, spec, previous);
+  // 다시 짓기 전에: 던전 밖 맵(숲·마을)에서 이 던전 층으로 들어오는 이동을 조수가 따로 이었으면, 층을 다시 지으면 크기가 바뀌어
+  // 그 이동 좌표가 맵 밖이 되고 커밋이 거부된다(2026-10-25 조수 단독 게임 G5: 「transfer 목적지가 맵 경계 밖 (29,50)」).
+  // 다시 짓기 전에: 던전 밖 맵(숲·마을)에서 이 던전 층으로 들어오는 문이 이미 이어져 있으면, 층을 다시 지을 때 크기가 바뀌어
+  // 그 이동 좌표가 맵 밖이 되고 커밋이 거부된다(2026-10-25 G5). 1층으로 들어오는 바깥 문이 한 맵에서 하나면 그 문을 지우고
+  // 같은 칸에 다시 잇는다(author_dungeon entrance) — 짓기가 문을 잇고 나면 던전을 못 고치던 것(G26)을 푼다. 더 깊은 층으로 들어오는 문은 그대로 거절.
+  let relink: { readonly fromMapId: string; readonly x: number; readonly y: number; readonly eventIds: readonly string[] } | undefined;
+  if (previous) {
+    const floorList = [...(prev?.floors ?? previous.result.mapIds)];
+    const floors = new Set<string>(floorList);
+    const linked: { mapId: string; mapName: string; event: { id: string; name?: string; x: number; y: number }; floor: string }[] = [];
+    for (const m of Object.values(run.ctx.project.maps)) {
+      if (floors.has(m.id)) continue;
+      for (const ev of m.events) {
+        const text = JSON.stringify(ev.pages ?? []);
+        for (const hit of text.matchAll(/\{[^{}]*"kind":"transfer"[^{}]*\}/gu)) {
+          const to = /"mapId":"([^"]+)"/u.exec(hit[0])?.[1] ?? "";
+          if (floors.has(to)) { linked.push({ mapId: m.id, mapName: m.name, event: ev, floor: to }); break; }
+        }
+      }
+    }
+    const outside = new Set(linked.map((l) => l.mapId));
+    const deep = linked.filter((l) => l.floor !== floorList[0]);
+    if (linked.length && (deep.length || outside.size > 1)) {
+      return { ok: false, mapIds: [...floors], summary: `던전 다시 짓기 안 함: 바깥에서 이 던전으로 들어오는 문(${linked.slice(0, 3).map((l) => `${l.mapName}의 ${l.event.name ?? l.event.id}`).join(", ")})이 ${deep.length ? "아래층으로도" : "여러 맵에서"} 이어져 있다 — 다시 지으면 그 문이 맵 밖을 가리켜 거부된다. 같은 edit_place 를 되풀이하지 말고, 남은 문제는 덧그리기(stamp_object·fill_region)·move_event 로 고치거나 보고에 적는다.`, warnings, missingArt: missing, calls: [], state: prev };
+    }
+    if (linked.length) {
+      const gate = linked[0]!.event;
+      relink = { fromMapId: linked[0]!.mapId, x: gate.x, y: gate.y, eventIds: linked.map((l) => l.event.id) };
+      warnings.push(`바깥 ${linked[0]!.mapName}(${gate.x},${gate.y})의 던전 문을 다시 지은 입구와 다시 이었다`);
+    }
+  }
+  /** 사본에서 바깥 문과 이 던전 층을 가리키는 월드 그래프 연결을 지운다 — 다시 지은 던전에 새로 잇는다(옛 착지 좌표가 새 맵 밖·벽이 된다). */
+  const oldFloors = new Set<string>(previous ? [...(prev?.floors ?? previous.result.mapIds)] : []);
+  const dropOldGate = (trial: BuildRun) => {
+    if (!previous) return;
+    if (relink) { const m = trial.ctx.project.maps[relink.fromMapId]; if (m) m.events = m.events.filter((e) => !relink!.eventIds.includes(e.id)); }
+    const graph = (trial.ctx.project as unknown as { worldGraph?: { edges?: { from?: { mapId?: string }; to?: { mapId?: string } }[] } }).worldGraph;
+    if (graph?.edges) graph.edges = graph.edges.filter((e) => !oldFloors.has(String(e.to?.mapId)) && !oldFloors.has(String(e.from?.mapId)));
+  };
   const variant = num(spec.hints?.variant);
   // 다른 배치(variant): 앞 씨앗이 없으면(도구가 맵 id 로 정함) 이름에서 씨앗을 만들어 variant 만큼 민다 — 안 그러면 세 번 고쳐도 같은 모양이었다(2026-10-23 v2 실조수).
   if (args.seed === undefined && (prev || variant)) {
@@ -488,6 +528,7 @@ function build(run: BuildRun, spec: PlaceSpec, previous?: PlaceRecord): PlaceBui
       const trial = createBuildRun({ ...run.ctx, project: cloneProjectSharingSharedDictionaries(run.ctx.project) });
       if (previous) {
         for (const id of [...(prev?.floors ?? previous.result.mapIds)].slice(1).reverse()) if (trial.ctx.project.maps[id]) trial.call("remove_map", { mapId: id });
+        dropOldGate(trial);
       }
       const r = exec(trial, { seed, ...(mapId ? { mapId } : {}), ...(previous && mapId ? { rebuild: true } : {}) }, []);
       const score = r.ok ? layoutScore(r.data as Record<string, unknown>, type, args) : -Infinity;
@@ -505,8 +546,20 @@ function build(run: BuildRun, spec: PlaceSpec, previous?: PlaceRecord): PlaceBui
     const trial = createBuildRun({ ...run.ctx, project: cloneProjectSharingSharedDictionaries(run.ctx.project) });
     const old = prev?.floors ?? previous.result.mapIds;
     for (const id of [...old].slice(1).reverse()) if (trial.ctx.project.maps[id]) trial.call("remove_map", { mapId: id });
+    dropOldGate(trial);
     if (mapId) { base.mapId = mapId; base.rebuild = true; }
     result = exec(trial);
+    // 지운 바깥 문을 다시 지은 1층 입구와 다시 잇는다 — 짓기(make_game)가 처음 이은 방식(create_transfer_pair, 던전 쪽은 입구 칸) 그대로.
+    if (result.ok && relink) {
+      const d = (result.data ?? {}) as { floors?: string[]; entrance?: { x: number; y: number } };
+      const first = d.floors?.[0];
+      const fm = first ? trial.ctx.project.maps[first] : undefined;
+      if (fm && d.entrance) {
+        fm.events = fm.events.filter((e) => e.id !== `ev_${fm.id}_exit_placeholder`);
+        const pair = trial.call("create_transfer_pair", { a: { mapId: relink.fromMapId, x: relink.x, y: relink.y }, b: { mapId: first, x: d.entrance.x, y: d.entrance.y } });
+        if (!pair.ok) result = { ...result, ok: false, summary: `다시 지은 던전을 바깥 문과 다시 잇지 못했다: ${pair.summary}` };
+      } else result = { ...result, ok: false, summary: "다시 지은 던전의 입구 칸을 몰라 바깥 문과 다시 잇지 못했다" };
+    }
     if (result.ok) into = trial;
     else run.calls.push(...trial.calls);
   } else {
@@ -530,13 +583,12 @@ function build(run: BuildRun, spec: PlaceSpec, previous?: PlaceRecord): PlaceBui
   if (!fieldTroops.length && /박쥐|bat|해골|거미|고블린|슬라임|늑대|좀비|유령/u.test(wanted)) warnings.push("요청한 적 그룹을 찾지 못했다");
   topUp(into, floors, floorData, fieldTroops, wantsFoes, wantsChest, type === "tower" || (args.direction === "up" && floors.length > 1), warnings);
   if (into !== run) { run.calls.push(...into.calls); run.ctx.project = into.ctx.project; }
-  // 보스·수문장을 크게 — 보스 2.5배, 중간 수문장 2배.
+  // 보스만 크게(2.5배). 중간 수문장은 파티와 같은 크기로 둔다 — 2배로 키운 24px 칩은 도트가 뭉툭해져
+  // 16px 파티 옆에서 확대한 그림으로 읽혔다(2026-10-25 심사 J23 jrpg-herb 동굴 수문장).
   {
     const lastIdx = floors.length - 1;
     const big = enlargeBoss(run, floors[lastIdx]!, floorData[lastIdx], /_boss$/, 2.5, warnings);
     if (big) warnings.push(`보스를 크게: ${big}`);
-    // 수문장은 길목을 지키므로 옮기지 않는다 — 안 맞으면 조용히 그대로.
-    floors.forEach((id, i) => { const g = enlargeBoss(run, id, floorData[i], /_guardian$/, 2, [], false); if (g) warnings.push(`수문장을 크게: ${g}`); });
   }
   // 보스 그림 확인: 보스가 잡몹·수문장과 같은 그림이면 보고한다.
   const last = floors[floors.length - 1]!;

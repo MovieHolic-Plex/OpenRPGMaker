@@ -2,7 +2,8 @@ import { enemyDropFields, enemyStealFields } from "@/editor/panels/databaseComba
 import { renderEnemyStudio } from "@/editor/panels/databaseEnemyStudio";
 import { recordProjectSnapshot } from "@/editor/mapEditHistory";
 import { updateDatabaseRecord } from "@/editor/databaseActions";
-import { emptyToUndefined, field, numberField, selectField, sliderStepperField, textField } from "@/editor/panels/databaseControls";
+import { emptyToUndefined, field, numberField, selectField, sliderStepperField, textField, toggleSwitch } from "@/editor/panels/databaseControls";
+import { damageTypeRatesFields } from "@/editor/panels/databaseDamageTypeRatesFields";
 import { ENEMY_COLLAPSE_EFFECTS, ENEMY_COLLAPSE_LABELS, normalizeEnemyCollapseEffect } from "@/project/enemyCollapse";
 import { capturePreviewLine } from "@/editor/panels/databaseCapturePreview";
 import { switchDatabaseActiveTab } from "@/editor/panels/database";
@@ -681,12 +682,26 @@ function graphicFields(record: EnemyRecord, rerender: () => void): HTMLElement[]
       updateDatabaseRecord("enemies", record.id, { battleScalePercent }),
       { min: 10, max: 300, step: 1, unit: "%" }
     ),
+    // 도트 측면 전투에서 아군에게 달려드는 속도(EnemyRecord.lungeSpeedPercent). 전역 세기는 「전투 화면 › 전투 연출」.
+    sliderStepperField("달려드는 속도 (%)", "db-field-enemy-lunge-speed", record.lungeSpeedPercent ?? 100, (lungeSpeedPercent) =>
+      updateDatabaseRecord("enemies", record.id, { lungeSpeedPercent: lungeSpeedPercent === 100 ? undefined : lungeSpeedPercent }),
+      { min: 25, max: 300, step: 5, unit: "%" }
+    ),
     selectField(
       "쓰러지는 연출",
       "db-field-enemy-collapse",
       record.collapseEffect ?? "dissolve",
       ENEMY_COLLAPSE_EFFECTS.map((id) => ({ id, name: ENEMY_COLLAPSE_LABELS[id] })),
       (value) => updateDatabaseRecord("enemies", record.id, { collapseEffect: normalizeEnemyCollapseEffect(value) })
+    ),
+    toggleSwitch("HP 숨김 (보스) — 전투에서 HP 막대·숫자를 보이지 않는다", "db-field-enemy-hide-hp", record.hideHp === true, (hideHp) =>
+      updateDatabaseRecord("enemies", record.id, { hideHp: hideHp ? true : undefined })
+    ),
+    ...damageTypeRatesFields(
+      "db-field-enemy-damage-type",
+      () => store.getCurrent().database.enemies.find((entry) => entry.id === record.id)?.damageTypeRates,
+      (damageTypeRates) => updateDatabaseRecord("enemies", record.id, { damageTypeRates }),
+      rerender,
     ),
     el("div", {
       class: "db-enemy-graphic-actions",

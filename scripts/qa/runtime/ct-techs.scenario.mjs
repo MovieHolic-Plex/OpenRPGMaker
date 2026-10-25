@@ -13,7 +13,7 @@ writeFileSync(fixture, execFileSync(process.execPath, ["node_modules/vite-node/d
 
 const revealed = (testid, value) => ({ kind: "waitForAttr", testid, attr: "data-battle-hp-revealed", value, timeoutMs: 30_000 });
 // 화면이 그리는 커서(data-battle-command-cursor)를 방향키로 옮긴다 — 이 스킨은 명령 그리드가 포인터를 가린다.
-const cursorTo = (testid) => ({ kind: "pressUntil", key: testid === "actor-command-skill" ? "ArrowRight" : "ArrowDown", testid, state: "present", attr: "data-battle-command-cursor", value: "true", maxPresses: 8, timeoutMs: 1500 });
+const cursorTo = (testid) => ({ kind: "pressUntil", key: testid === "actor-command-skill" || testid === "actor-command-combo" ? "ArrowRight" : "ArrowDown", testid, state: "present", attr: "data-battle-command-cursor", value: "true", maxPresses: 8, timeoutMs: 1500 });
 const idle = { kind: "waitForAttr", testid: "battle-scene", attr: "data-battle-sequence-busy", value: "false", timeoutMs: 30_000 };
 
 export default {
@@ -33,14 +33,14 @@ export default {
       { kind: "waitFor", testid: "actor-command-skill", state: "present", timeoutMs: 40_000 },
       idle,
     ], expect: { testidPresent: ["battle-scene", "enemy-1", "enemy-2", "enemy-3"] }, shot: true },
-    { id: "combo-listed", note: "크로's tech list shows the dual tech X베기 with partner 루카", ops: [
-      cursorTo("actor-command-skill"),
+    { id: "combo-listed", note: "크로's 「연계」 command lists the dual tech X베기 with partner 루카 (2026-10-24: techs moved out of the skill list)", ops: [
+      cursorTo("actor-command-combo"),
       { kind: "key", key: "z" },
       { kind: "waitForVisible", testid: "actor-skill-skill_x_strike", timeoutMs: 10_000 },
     ], expect: {
-      testidAbsent: ["actor-skill-skill_ct_tp_tech"],
-      // 버튼 글자 = 이름(X베기) + 상세(MP n · 루카와 연계). 동료 이름이 보여야 연계기로 읽힌다.
-      visibleText: { "actor-skill-skill_x_strike": "루카와 연계", "actor-skill-skill_ct_blast": "회오리참" },
+      testidAbsent: ["actor-skill-skill_ct_tp_tech", "actor-skill-skill_ct_blast"],
+      // 버튼 글자 = 이름(X베기) + 상세(MP n · + 루카). 동료 이름이 보여야 연계기로 읽힌다.
+      visibleText: { "actor-skill-skill_x_strike": "루카", "battle-skill-help": "X베기" },
     }, shot: true },
     { id: "combo-hit", note: "X베기 on log 1 — damages it and consumes 루카's turn (round resolves)", ops: [
       cursorTo("actor-skill-skill_x_strike"),
