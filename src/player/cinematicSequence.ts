@@ -535,6 +535,9 @@ export function playCinematicSequence(options: {
         break;
       }
       case "animatic": {
+        // 샷에 자막 트랙(set_opening_caption)이 있으면 그 자막이 글을 맡는다 — 내레이션 상자까지 그리면 같은 줄이 두 번, 아래 것은 반쯤 가려 보였다
+        // (2026-10-25 장난감 가게 G49). 화면 읽기용 글은 상자 안에 남기되 보이지 않게 한다.
+        if (scene.composition.layers.some(layer => (layer as { caption?: unknown }).caption)) narration.classList.add('cinematic-narration--captioned');
         const canvas = el("canvas", { class: "cinematic-animatic", dataset: { testid: "opening-animatic-stage" } });
         canvas.setAttribute('aria-label', '레이어와 카메라로 구성한 오프닝');
         canvas.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#000';
