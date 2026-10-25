@@ -5,6 +5,17 @@
 
 <!-- releases -->
 
+## 0.346.0 — 2026-10-26
+
+### 기능
+
+- **desktop** — open a project folder given on the command line (#3566) (`1398063`)
+
+### 수정
+
+- **player** — a gamepad press sends one confirm, not two (#3564) (`c2fbd40`)
+- **export** — warn when single-file HTML exceeds GitHub's file limit (#3563) (`6d3e566`)
+
 ## 0.345.0 — 2026-10-26
 
 ### 기능
