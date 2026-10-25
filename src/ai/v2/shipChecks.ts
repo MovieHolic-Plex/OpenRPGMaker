@@ -108,6 +108,10 @@ export function editorDefaultsLeft(project: Project): ShipBlocker[] {
 
   // 8) 엔딩 화면: 연출(presentation) 없이 기본 카드
   const bareEndings = (project.endings ?? []).filter((e) => !e.presentation || !Object.keys(e.presentation).length);
+  // 자리표시 크레딧: 모델이 「기획·제작 / 당신」 같은 빈칸 이름을 지어 넣었다(2026-10-25 horror-mansion-v2 Sonnet VQA).
+  const PLACEHOLDER_CREDIT = /(?:^|\n)\s*(?:당신|너|플레이어|제작자 ?이름|이름|you|your name|author|tbd|xxx|\?\?\?)\s*(?:\n|$)/iu;
+  const placeholderCredits = (project.endings ?? []).filter((e) => PLACEHOLDER_CREDIT.test(String((e.presentation as { credits?: unknown } | undefined)?.credits ?? "")));
+  if (placeholderCredits.length) add("placeholder-text", `엔딩 ${placeholderCredits.length}개(${placeholderCredits.slice(0, 3).map((e) => e.name).join("·")})의 크레딧에 「당신」 같은 자리표시 이름이 있다 — 만든 사람 이름을 모르면 이름 줄을 빼고 게임 제목·감사 문구만 둔다(define_ending presentation.credits).`, placeholderCredits.map((e) => e.id).join(","));
   if (bareEndings.length) add("ending-screen", `엔딩 ${bareEndings.length}개(${bareEndings.slice(0, 3).map((e) => e.name).join("·")})가 편집기 기본 엔딩 카드다 — define_ending 의 presentation{backgroundResourceId, finalTitle, credits, musicResourceId} 를 채운다.`, bareEndings.map((e) => e.id).join(","));
 
   // 9) 파티: 기본 이름·기본 얼굴·기본 모습
