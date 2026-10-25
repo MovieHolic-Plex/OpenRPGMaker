@@ -261,7 +261,7 @@ export const B4_ROOM: RoomSpec = {
     { id: "drip puddle", x: 4, y: 16 },
     { id: "drip puddle", x: 25, y: 17 },
     // 쉼터 — 푸른 결정·치유의 샘·돌 의자, 다친 광신도가 기댄 벽.
-    { id: "save crystal", x: 10, y: 27 },
+    // 기록 결정은 마을·사당과 같은 「받침 위 수정 덩이」 키트로 따로 찍는다(act1Finale applyFallenFieldRules).
     { id: "healing spring", x: 18, y: 27 },
     { id: "wall torch", x: 9, y: 24 },
     { id: "wall torch", x: 20, y: 24 },

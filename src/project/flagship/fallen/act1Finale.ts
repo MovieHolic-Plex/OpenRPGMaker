@@ -21,6 +21,8 @@ import { build, lightRoom } from "../fallenStarRooms";
 import { FS_VALEN_CHARSET_ID, FS_VALEN_CHARSET_INDEX } from "../fallenValenChip";
 import { B3, B3_ROOM, B4, B4_ROOM, FS_B3_ID, FS_B3_NAME, FS_B4_ID, FS_B4_NAME } from "./vaultLabyrinthRooms";
 
+const SAVE_PROMPT = "기록하시겠습니까?";
+
 type Exec = (project: Project, name: string, args: Record<string, unknown>) => void;
 type Cell = { x: number; y: number };
 type Dir = "up" | "down" | "left" | "right";
@@ -951,9 +953,9 @@ function floorB4(project: Project): GameMap {
     se("easyrpg-sound-recovery7"), flash("blue", 300), m2("m2-224-particle-effect", { preset: "heal", target: "player", durationMs: 800, wait: false }),
     narrate("푸른 결정에 손을 대자, 지친 몸에 힘이 차올랐다."),
     { kind: "recoverAll" } as unknown as Command,
-    { kind: "choices", prompt: "여기까지를 기록할까?", cancelBehavior: "branch", options: [
-      { text: "기록한다", branch: [{ kind: "openSaveMenu" } as unknown as Command] },
-      { text: "그만둔다", branch: [] },
+    { kind: "choices", prompt: SAVE_PROMPT, cancelBehavior: "branch", options: [
+      { text: "예", branch: [{ kind: "openSaveMenu" } as unknown as Command] },
+      { text: "아니오", branch: [] },
     ], cancelBranch: [] } as unknown as Command,
   ], { overlapForbidden: true })]);
   const springId = `ev_${FS_PREFIX}_b4_spring`;
@@ -1467,6 +1469,8 @@ function foeTroops(map: GameMap): string[] {
   return [...new Set([...fromTable, ...fromFoes])].filter((id) => id && id !== "undefined");
 }
 
+const SAVE_CRYSTAL_KIT = "kit:beodeul_city/bd-pick-dungeon-theme-crystal-pedestal";
+
 export function applyFallenFieldRules(project: Project, exec: Exec): void {
   for (const [mapId, target] of LEVELING_FOES) {
     const map = project.maps[mapId];
@@ -1502,6 +1506,30 @@ export function applyFallenFieldRules(project: Project, exec: Exec): void {
   exec(project, "set_project_settings", { battle: { allowAutoBattle: false, clearStatesAfterBattle: true }, saveAccess: "savePoints" });
   // 마을 세이브 포인트 — 광장 분수 곁 별빛 결정(사당 제단·지하 4층 푸른 결정과 같은 결정 모양).
   exec(project, "place_savepoint", { mapId: "fs_hub", x: 37, y: 28, id: "ev_fs_hub_savepoint", name: "별빛 기록석", mode: "slot",
-    objectId: "kit:beodeul_city/bd-pick-dungeon-theme-crystal-pedestal" });
+    objectId: SAVE_CRYSTAL_KIT, prompt: SAVE_PROMPT, sparkleRadius: 2 });
+  // 세 세이브 포인트(마을·숲 사당·지하 4층)는 같은 모습이다 — 받침 위 수정 덩이(빛 3장면), 다가가면 반짝임, 「기록하시겠습니까?」.
+  exec(project, "stamp_object", { objectId: SAVE_CRYSTAL_KIT, mapId: "fs_vault_b4", x: 10, y: 26 });
+  for (const [mapId, eventId] of [["fs_vault_b4", "ev_fs_b4_crystal"], ["fs_forest_shrine", "ev_fs_forest_shrine_rest"]] as const) {
+    const page = project.maps[mapId]?.events.find((event) => event.id === eventId)?.pages?.[0];
+    if (page) page.nearSparkle = { radius: 2 };
+  }
+  // 사당 결정처럼 쉬지 않고 은은히 반짝인다 — 마을·지하 4층 결정에도 같은 투명 병렬 이벤트.
+  for (const [mapId, x, y] of [["fs_hub", 37, 28], ["fs_vault_b4", 10, 26]] as const) {
+    const map = project.maps[mapId];
+    if (!map) continue;
+    const glowId = `ev_${mapId}_save_glow`;
+    map.events = map.events.filter((event) => event.id !== glowId);
+    map.events.push({
+      id: glowId, name: "기록 결정 반짝임", x, y, trigger: { kind: "parallel" }, commands: [],
+      pages: [{
+        id: `${glowId}_page`, name: "반짝임", conditions: [], graphic: { transparent: true },
+        movement: { type: "fixed", speed: 3, frequency: 3 }, priority: "below", trigger: { kind: "parallel" },
+        commands: [
+          m2("m2-224-particle-effect", { preset: "sparkle", target: "tile", x, y, durationMs: 1400, wait: false }),
+          { kind: "wait", ms: 2200 } as unknown as Command,
+        ],
+      } as unknown as EventPage],
+    } as unknown as GameEvent);
+  }
 }
 

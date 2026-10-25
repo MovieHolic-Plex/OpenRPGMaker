@@ -17,6 +17,8 @@ import {
   type SpriteLook,
 } from "@/project/eventCommands/cinematicStaging";
 import { mapTileSize } from "@/project/tileGeometry";
+import { store } from "@/project/store";
+import { runtimeEventViewById } from "@/project/runtimeEventState";
 
 /**
  * 필드 연출 렌더러 — 파티클 · 캐릭터 모습 효과 · 레터박스.
@@ -412,6 +414,36 @@ export function updateFieldStaging(scene: PlaySceneContext): void {
   for (const [sprite, look] of lookTargets(scene)) applyLook(scene, sprite, look, now);
   syncLetterbox(scene);
   syncDoors(scene);
+  syncNearSparkles(scene, now);
+}
+
+// ── 가까이 오면 반짝임(page.nearSparkle) ────────────────────────────────
+
+type NearSparkleState = { mapId: string; ids: readonly string[]; inside: Set<string>; nextCheck: number };
+const nearSparkleStates = new WeakMap<PlaySceneContext, NearSparkleState>();
+
+/** 세이브 포인트처럼 page.nearSparkle 이 있는 이벤트 — 플레이어가 반경 안으로 들어오는 순간 그 칸에 반짝임 한 번. */
+function syncNearSparkles(scene: PlaySceneContext, now: number): void {
+  const map = scene.map;
+  if (!map || !scene.session) return;
+  let state = nearSparkleStates.get(scene);
+  if (!state || state.mapId !== map.id) {
+    state = { mapId: map.id, ids: map.events.filter((event) => event.pages?.some((page) => page.nearSparkle)).map((event) => event.id), inside: new Set(), nextCheck: 0 };
+    nearSparkleStates.set(scene, state);
+  }
+  if (state.ids.length === 0 || now < state.nextCheck) return;
+  state.nextCheck = now + 150;
+  const project = store.getCurrent();
+  for (const id of state.ids) {
+    const view = runtimeEventViewById(project, map, scene.session, scene.eventPositions, id);
+    const near = view?.page?.nearSparkle;
+    if (!view || !near) { state.inside.delete(id); continue; }
+    const distance = Math.max(Math.abs(view.x - scene.tileX), Math.abs(view.y - scene.tileY));
+    if (distance > near.radius) { state.inside.delete(id); continue; }
+    if (state.inside.has(id)) continue;
+    state.inside.add(id);
+    void playParticleEffect(scene, { kind: "particleEffect", preset: near.preset ?? "sparkle", target: { kind: "tile", x: view.x, y: view.y }, durationMs: 900, wait: false });
+  }
 }
 
 /** 테스트·QA 가 파티클 그림 없이 레시피를 대조할 수 있게 내보낸다. */

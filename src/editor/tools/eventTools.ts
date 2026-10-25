@@ -3512,6 +3512,8 @@ const placeSavepoint: ToolDefinition = {
       id: { type: "string" },
       heal: { type: "boolean", description: "true 면 저장 전에 파티 전원 회복(recoverAll). 기본 false — 크로노 트리거의 세이브 포인트는 회복하지 않는다." },
       mode: { type: "string", enum: ["both", "slot", "checkpoint"], description: "both(기본): 체크포인트 + 저장 칸 메뉴 · slot: 저장 칸 메뉴만 · checkpoint: 사망 재시도용 메모리 체크포인트만" },
+      prompt: { type: "string", description: "조사하면 먼저 묻는 말(예: 「기록하시겠습니까?」). 주면 예/아니오 선택지가 뜨고 「예」일 때만 저장 칸을 연다." },
+      sparkleRadius: { type: "integer", minimum: 0, maximum: 6, description: "플레이어가 이 칸 수 안으로 다가오면 세이브 포인트에 반짝임이 한 번 터진다(page.nearSparkle). 0 이면 끔. objectId 를 주면 기본 2." },
       objectId: { type: "string", description: "세이브 포인트를 눈에 띄는 공용 오브젝트 그림(stamp_object 와 같은 id, 예: 받침 위 수정 덩이)으로 세운다. x,y 를 그림의 왼쪽 위로 찍고, 이벤트는 그림 맨 아래 줄 가운데 칸에 투명하게 둔다. 생략하면 기본 크리스탈 걷기 칩." },
     },
     required: ["mapId", "x", "y"],
@@ -3562,6 +3564,8 @@ const placeSavepoint: ToolDefinition = {
       replacesAutoInspect: true,
     });
     const { x, y, adjusted } = placement;
+    const prompt = typeof args.prompt === "string" && args.prompt.trim() ? args.prompt.trim() : undefined;
+    const sparkleRadius = Math.max(0, Math.min(6, Math.round(Number(args.sparkleRadius ?? (objectFootprint ? 2 : 0)) || 0)));
     const graphic = objectFootprint
       ? ({ transparent: true } as EventPageGraphic)
       : resolveGraphic({ query: "크리스탈" }, { overrides: draft.charsetLabels });
@@ -3585,11 +3589,20 @@ const placeSavepoint: ToolDefinition = {
           overlapForbidden: false,
           animationType: "fixedGraphic",
           movement: PASSIVE,
+          ...(sparkleRadius > 0 ? { nearSparkle: { radius: sparkleRadius } } : {}),
           commands: [
             ...(heal ? [{ kind: "recoverAll" } as Command] : []),
             ...(saveMode !== "slot" ? [{ kind: "checkpointSave", label: "savepoint" } as Command] : []),
-            { kind: "text", body: heal ? "기운이 돌아왔다. 이곳에 모험을 기록했다." : saveMode === "checkpoint" ? "이곳에 모험을 기록했다." : "이곳에 모험을 기록할 수 있다." },
-            ...(saveMode !== "checkpoint" ? [{ kind: "openSaveMenu" } as Command] : []),
+            ...(prompt && saveMode !== "checkpoint"
+              ? [...(heal ? [{ kind: "text", body: "기운이 돌아왔다." } as Command] : []),
+                { kind: "choices", prompt, cancelBehavior: "branch", options: [
+                  { text: "예", branch: [{ kind: "openSaveMenu" }] },
+                  { text: "아니오", branch: [] },
+                ], cancelBranch: [] } as unknown as Command]
+              : [
+                { kind: "text", body: heal ? "기운이 돌아왔다. 이곳에 모험을 기록했다." : saveMode === "checkpoint" ? "이곳에 모험을 기록했다." : "이곳에 모험을 기록할 수 있다." } as Command,
+                ...(saveMode !== "checkpoint" ? [{ kind: "openSaveMenu" } as Command] : []),
+              ]),
           ],
         },
       ],

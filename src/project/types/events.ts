@@ -871,8 +871,20 @@ export interface EventPage {
   passRows?: number;
   interaction?: EventObjectInteraction;
   detectionEncounter?: DetectionEncounter;
+  /**
+   * 플레이어가 이 이벤트에서 radius 칸(체비셰프) 안으로 들어오는 순간 그 자리에 짧은 반짝임 — 세이브 포인트·
+   * 조사할 것을 멀리서도 알아보게 한다. 안에 머무는 동안은 다시 터지지 않고, 나갔다 들어오면 또 터진다.
+   */
+  nearSparkle?: NearSparkle;
   movement: EventPageMovement;
   commands: Command[];
+}
+
+export interface NearSparkle {
+  /** 1..6 칸 */
+  radius: number;
+  /** 입자 묶음. 기본 sparkle */
+  preset?: "sparkle" | "magic";
 }
 
 /** Serializable field-level writes owned by an event editor transaction. null means absent. */
