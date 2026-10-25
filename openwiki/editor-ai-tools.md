@@ -1,5 +1,19 @@
 > 저장소 전환 안내(2026-09-21): 아래 옛 원격 DB·설정·명령은 과거 기록이다. 현재 저장·이관 지침은 [프로젝트 저장 전환](storage-retirement.md)과 AGENTS를 따른다.
 
+## 파티원 유대 `configure_party_bonds` · 「관계」에 유대 (2026-10-25)
+
+- **한 콜:** `members [{actorId, talk, choiceText?, variableId?}]` → 동료마다 유대 변수(기본 `var_bond_<배우>`, 0~`max` 기본 5).
+  공용 이벤트 `ce_party_bond_talk` = intro → 「누구와 이야기할까?」 선택지(동료당 하나) → 고른 동료가 파티에 있으면 대화 줄 + 상한 아래면 +1 → `ce_party_bond_check` 호출.
+  없으면 「지금 곁에 없다」.
+- **문턱 해금:** `unlocks [{actorId, atLeast(기본 3), comboTechId | learn | switchId, message?}]` → `ce_party_bond_check` 에 「유대 ≥ N 이고 해금 스위치 꺼짐」 fork 하나씩.
+  `comboTechId` 는 그 연계기 `comboRequires` 중 **이 동료 줄의 기술을 learnSkill** 해 연계기를 연다(연계기에 그 줄이 없으면 거절 — upsert_combo_tech 로 requires 부터).
+  시작할 때 이미 아는 기술이면 경고한다(해금이 아무것도 막지 않음). 스위치는 늘 켠다(생략하면 `sw_bond_<배우>_<N>`) — 대사 분기는 이 스위치나 변수 비교로.
+- **모닥불:** `campfires [{mapId,x,y}]` → 칸마다 투명 조사 이벤트(셀프 스위치 A 로 한 번, 뒤로는 불씨 한 줄). 그림은 따로 찍는다.
+- **다른 장면에서 올리기:** `setVariable += 1` 뒤 `callCommonEvent ce_party_bond_check`. 다시 부르면 두 공용 이벤트와 `system.partyBonds` 를 통째로 덮어쓴다.
+- **엔진:** `system.partyBonds {max?, members[{actorId, variableId}]}` (`src/project/partyBonds.ts`) — 화이트리스트(`databaseRecordModel.ts`)·형태 검사(`shapeDatabaseFields.ts`)에 넣어 저장 왕복에 남는다.
+  상태 메뉴 「관계」는 NPC 호감(friendship) 위에 유대 줄(「♥♥♥♡♡ 3/5」, 파티에 없으면 표시)을 먼저 보이고, 유대가 정의된 게임은 호감 기록이 없어도 「관계」 항목이 뜬다(`playerStatusMenuModel.ts`·`playerStatusMenuDetails.ts`).
+- 시험 과제: `harness-data/space-craft/seed.json` `fs2-party-bonds`.
+
 ## 「드러났다」를 지도에 보이기 `stage_map_reveal` · 장면 대형 `sceneFormation` · 보스 HP 숨김 (2026-10-25)
 
 사용자 지적(폴른 스타 1막): 「승강 장치가 드러났다」는 대사뿐이고 지도에는 아무것도 나타나지 않았다. 일반 도구로 푼다.

@@ -29,6 +29,7 @@ import { machineSkillOf, menuItemUnavailableReason, previewEvolutionStoneTarget,
 import type { SaveSlotIndex, SaveSlotReadResult } from "@/player/saveSlots";
 import { canEquip, effectiveActorEquipment, equipmentSlotAccepts } from "@/project/equipmentRules";
 import { resolveActorName, resolveActorFaceResourceId } from "@/project/sessionActorCommands";
+import { listPartyBondEntries, partyBondMeter } from "@/project/partyBonds";
 import { defaultActorFaceResourceId, normalizeActorRecord } from "@/project/actorModel";
 import type { StatusMenuStatDelta } from "@/player/playerStatusMenuDetailTypes";
 import { effectiveActorClassId } from "@/project/sessionClass";
@@ -1031,6 +1032,13 @@ function backlogDetail(project: Project, session: PlaySession): StatusMenuDetail
 }
 
 function relationshipsDetail(project: Project, session: PlaySession): StatusMenuDetail {
+  // 파티원 유대(system.partyBonds)가 먼저, 그 아래 NPC 호감. 유대는 0 이어도 늘 보인다 — 「아직 가깝지 않다」도 정보다.
+  const bonds = listPartyBondEntries(project, session).map((entry) => ({
+    label: entry.name,
+    value: `${partyBondMeter(entry.value, entry.max)} ${entry.value}/${entry.max}`,
+    description: entry.inParty ? "동료와의 유대" : "동료와의 유대 · 지금 파티에 없음",
+    testId: `status-menu-bond-${entry.actorId}`,
+  }));
   const entries = listFriendshipEntries(session.friendship, friendshipDisplayMax(project), undefined, project).map((entry) => ({
     label: entry.displayName ?? entry.key,
     value: entry.secondary,
@@ -1039,9 +1047,9 @@ function relationshipsDetail(project: Project, session: PlaySession): StatusMenu
   }));
   return {
     title: "관계",
-    entries,
+    entries: [...bonds, ...entries],
     emptyLabel: "알려진 관계가 없습니다.",
-    hint: "호감이 기록된 관계만 표시됩니다.",
+    hint: bonds.length > 0 ? "동료와의 유대와 호감이 기록된 관계를 표시합니다." : "호감이 기록된 관계만 표시됩니다.",
   };
 }
 

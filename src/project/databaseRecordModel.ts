@@ -1,3 +1,4 @@
+import { normalizePartyBonds } from "@/project/partyBonds";
 import { normalizeChargeBreak, normalizeFixedDamage, normalizeMultiHit } from "@/project/skillBattleRules";
 import { normalizeShinyRate } from "@/project/monsterIdentity";
 import { CHARACTER_MOTION_STYLES } from "@/battle/characterMotion";
@@ -388,6 +389,8 @@ export function normalizeSystemRecords(system: Partial<SystemRecords> & Pick<Sys
       ...(typeof dailyFriendshipCap === "number" && Number.isFinite(dailyFriendshipCap) ? { dailyFriendshipCap: Math.trunc(dailyFriendshipCap) } : {}),
     };
   }
+  // 파티원 유대(옵트인) — 화이트리스트라 여기 없으면 저장/로드 1회 왕복에 사라진다.
+  { const partyBonds = normalizePartyBonds(system.partyBonds); if (partyBonds) records.partyBonds = partyBonds; }
   if (gallery) records.gallery = gallery;
   if (newGamePlus) records.newGamePlus = newGamePlus;
   if (chapter) records.chapter = chapter;

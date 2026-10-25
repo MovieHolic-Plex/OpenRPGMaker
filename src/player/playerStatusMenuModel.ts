@@ -10,6 +10,7 @@ import { currentChapterLabel } from "@/project/newGamePlus";
 import { DEFAULT_FRIENDSHIP_MAX, isGiftSystemEnabled, listFriendshipEntries } from "@/project/friendship";
 import { friendshipDisplayMax, socialLoopSummary } from "@/project/socialLoop";
 import { usesRelationshipMenu } from "@/project/relationshipMenu";
+import { hasPartyBonds } from "@/project/partyBonds";
 import { backlogEnabled, normalizeBacklog, resolveDialogueSystem } from "@/project/dialogueSystem";
 import { dialogueUiText } from "@/player/dialogueUiStrings";
 import { vnGalleryLabel, vnUiText, type VnUiKey } from "@/player/vnExtrasStrings";
@@ -240,10 +241,10 @@ export type PlayerStatusMenuSnapshot = {
 export type StatusMenuSnapshotOptions = {
   readonly waitModeEnabled?: boolean;
 };
-/** O3: hide 관계 rail unless giftSystem or any known friendship keys. */
+/** O3: hide 관계 rail unless giftSystem, any known friendship keys, or party bonds (system.partyBonds). */
 export function listStatusMenuCommandIds(project: Project, session: PlaySession): StatusMenuCommandId[] {
   const showRelationships =
-    isGiftSystemEnabled(project) || Object.keys(session.friendship ?? {}).length > 0;
+    isGiftSystemEnabled(project) || Object.keys(session.friendship ?? {}).length > 0 || hasPartyBonds(project);
   const relationship = usesRelationshipMenu(project);
   // Change Save Access: false면 메뉴의 저장 항목을 숨긴다(세이브 포인트 전용 설계).
   // system.saveAccess "savePoints": 세이브 포인트(openSaveMenu)에서만 저장 — 메뉴 항목은 없다.

@@ -2155,6 +2155,8 @@ export interface SystemRecords {
   giftSystem?: boolean;
   /** 관계·연애 하루 루프(옵트인): 호감 대화가 시간대 칸을 쓰고 사람별 하루 호감 상한이 있다. project/socialLoop.ts. 생략 = 기존 동작 그대로. */
   socialLoop?: import("@/project/socialLoop").SocialLoopConfig;
+  /** 파티원 유대(옵트인): 동료별 유대 점수 변수 목록 + 상한. 상태 메뉴 「관계」에 함께 보인다. project/partyBonds.ts · 저작 configure_party_bonds. */
+  partyBonds?: import("@/project/partyBonds").PartyBondsConfig;
   /**
    * 갤러리. enabled 가 아니면 메뉴에 나오지 않는다.
    * label 을 비우면 메뉴 이름은 「갤러리」. 다른 낱말을 적어 두면 그 이름으로 보인다.
