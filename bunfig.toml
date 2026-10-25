@@ -1,0 +1,3 @@
+# 테스트는 GitHub CI 에서만 (AGENTS.md hard rule) — 로컬 `bun test` 는 막는다.
+[test]
+preload = ["./scripts/lib/ciOnlyTestsBunPreload.mjs"]

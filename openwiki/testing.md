@@ -985,6 +985,8 @@ PR678의 고정 리비전별 원본·영수증·검사기는 `output/evidence/mo
 
 # Testing
 
+> **2026-10-25 hard rule:** 테스트 러너(vitest·bun test·playwright test·gates)는 GitHub CI 에서만 돈다. 로컬에서는 `scripts/lib/ciOnlyTests.mjs` 가 막는다. 아래 명령 표는 CI 가 무엇을 돌리는지 설명하는 참고이고, 로컬 실행 지시가 아니다. AGENTS.md 「테스트는 GitHub CI 에서만」.
+
 ## Completed-house Phase 2 verification (2026-09-06)
 
 Primary command:
