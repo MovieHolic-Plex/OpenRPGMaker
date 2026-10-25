@@ -135,8 +135,8 @@ export async function runAssistantV2(request: PiAgentRequest, options: RunPiAgen
     const round = await runVqaRound(env);
     const noRenderPath = !env.render && !env.renderArt;
     if (!noRenderPath && !vqaClean(round) && vqaShouldContinue(vqaRounds)) {
-      fixFromCalls = calls.length;
-      env.requireToolNextTurn?.();
+      // 검수 못 한 판(결함 0, problem)은 고칠 것이 없다 — 도구 강제·0회 감시는 결함이 있는 판에만.
+      if (round.defects.length) { fixFromCalls = calls.length; env.requireToolNextTurn?.(); }
       return vqaFollowUp(round);
     }
     // 결함이 남은 채 끝나면 조수가 최종 보고에 남은 목록을 쓰게 한 번 더 돌린다(고치지 말고 정직하게). 그 보고는 검토자가 실제 변경에 대어 본다.
