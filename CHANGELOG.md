@@ -5,6 +5,20 @@
 
 <!-- releases -->
 
+## 0.338.0 — 2026-10-25
+
+### 기능
+
+- rebuild Shitamachi flagship demo + speakers-visible dialogue camera, map-view openings, romance story preset (#3445) (`4a87b28`)
+- **save-points** — sparkle on approach and 「기록하시겠습니까?」 prompt; Fallen's three save points share one look (#3441) (`55a0f95`)
+
+### 수정
+
+- **space-craft** — judge edited maps against their start state, not only absolute gates (#3439) (`f3c3ec7`)
+- **test** — 가짜 DOM 의 DocumentFragment·getComputedStyle 구멍과 dialogue sentinel (surface 축) (#3443) (`8473772`)
+- **ai** — choice text never shows design tags like (엔딩)/(+1일); non-combat games get a story ESC menu without skills/equipment/party (J37, J39) (#3442) (`a260f85`)
+- **runtime** — opening audio never freezes the animatic; title menu under the logo; distinct resume label (#3440) (`3fa4f02`)
+
 ## 0.337.0 — 2026-10-25
 
 ### 기능
