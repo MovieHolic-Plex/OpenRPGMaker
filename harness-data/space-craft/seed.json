@@ -9614,6 +9614,34 @@
    ],
    "verify": "configure_companion_rules(followMode breadcrumb — 기본) / spaced 로 바꾸지 않음",
    "suiteCategory": "fs-follow"
+  },
+  {
+   "category": "game",
+   "kind": "logic",
+   "mode": "balanced",
+   "startTileset": "beodeul_city",
+   "startBuild": [
+    {
+     "tool": "author_beodeul_town",
+     "args": {
+      "mapId": "map_blank_start",
+      "name": "버들 마을",
+      "houseCount": 4,
+      "theme": "river",
+      "seed": 11
+     }
+    }
+   ],
+   "id": "fs2-gap-vault",
+   "prompt": "서리 가도 얼음 틈 두 곳을 새라가 창으로 뛰어넘게 해 줘. 새라 없으면 못 건너게. (마을 북쪽 길에 폭 1~2칸 얼음 틈 두 곳을 내고, 창잡이 동료 새라가 없으면 동료로 만들어 줘.)",
+   "requires": [
+    "place_field_obstacle kind gap 두 번",
+    "requiresActorId = 새라 배우",
+    "다리·통로 타일을 깔지 않음",
+    "양쪽 조사 이벤트(점프 이동 경로)"
+   ],
+   "verify": "place_field_obstacle(kind:'gap', requiresActorId:<새라 id>) 두 곳 / 각 틈의 양쪽 가장자리 칸에 이벤트(id, id_far)가 있고 능력 페이지 조건 actor present + 이동 경로 jump / 틈 칸은 여전히 통행 막힘(다리 없음) / data.bypass:false",
+   "suiteCategory": "fs2-gap"
   }
  ],
  "gates": {
