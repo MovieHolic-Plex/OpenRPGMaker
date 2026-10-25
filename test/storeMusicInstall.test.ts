@@ -2,7 +2,7 @@
 // 워커 안의 스토어는 가짜 읽기 길(setWorkerStoreAccess)로 바꾼다 — 실제 스테이징 시험은 openwiki/asset-store.md 「조수가 스토어 음악을 넣는다」.
 import { afterEach, describe, expect, it } from "vitest";
 import { mentionsStore, setWorkerStoreAccess, type StoreReadAccess } from "@/assetStore/storeAccess";
-import { projectMusicLines, rankStoreMusic, storeMusicTracks, subsetMusicManifest } from "@/assetStore/storeMusicPick";
+import { projectHintLines, projectMusicLines, rankStoreMusic, storeMusicTracks, subsetMusicManifest } from "@/assetStore/storeMusicPick";
 import { storeProjectId, type StorePackManifest } from "@/assetStore/format";
 import { runToolAsync } from "@/editor/tools/asyncToolRunner";
 import { runTool } from "@/editor/tools/toolRunner";
@@ -80,6 +80,18 @@ describe("store music pick by scene", () => {
     ];
     expect(rankStoreMusic(pool, { scene: "title", query: "판타지" })[0]?.assetId).toBe("ft");
     expect(rankStoreMusic(pool, { scene: "title", query: "몬스터 웅장한", mood: "웅장한" })[0]?.assetId).toBe("mt");
+  });
+  it("a new game with no store music yet follows the genre its title and map names name", () => {
+    const pack = (slug: string, assets: Record<string, unknown>) => storeMusicTracks({ slug, latestVersion: 1, title: slug }, { ...MANIFEST, content: { ...MANIFEST.content, assets } } as unknown as StorePackManifest);
+    const pool = [
+      ...pack("fantasy", { ft: track(6, "ft", { genreLine: "fantasy", genreKo: "판타지 오케스트라", sceneRoles: ["title"], mood: ["웅장한"], loopable: true, lengthSec: 60, summaryKo: "웅장한 곡." }) }),
+      ...pack("monster", { mt: track(8, "mt", { genreLine: "monster", genreKo: "몬스터 수집", sceneRoles: ["title"], mood: ["희망찬"], loopable: true, lengthSec: 60, summaryKo: "모험 시작." }) }),
+    ];
+    expect(rankStoreMusic(pool, { scene: "title", mood: "웅장한" })[0]?.assetId).toBe("ft");
+    const lines = projectHintLines(["몬스터 콜렉터", "새싹 마을", "바위 체육관"]);
+    expect(lines).toEqual({ monster: 0.5 });
+    expect(rankStoreMusic(pool, { scene: "title", mood: "웅장한", projectLines: lines })[0]?.assetId).toBe("mt");
+    expect(projectHintLines(["새 게임", "마을"])).toEqual({});
   });
   it("keeps only the chosen track in a subset manifest", () => {
     const subset = subsetMusicManifest(MANIFEST, ["win"]);

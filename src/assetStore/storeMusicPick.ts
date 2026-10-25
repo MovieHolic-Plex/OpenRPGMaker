@@ -73,6 +73,25 @@ export function projectMusicLines(uploaded: Readonly<Record<string, { readonly k
   return Object.fromEntries(Object.entries(counts).map(([line, n]) => [line, n / total]));
 }
 
+/** 게임 이름·맵 이름에서 읽는 장르 낱말(스토어 곡이 아직 없는 새 게임). 팩 줄 낱말에 세계 낱말을 더한다. */
+const HINT_WORDS: Readonly<Record<string, readonly string[]>> = {
+  ...LINE_WORDS,
+  joseon: [...LINE_WORDS.joseon!, "한양", "한옥", "저잣거리", "도깨비", "구미호", "선비", "양반", "궁궐"],
+  wuxia: [...LINE_WORDS.wuxia!, "강호", "문파", "객잔", "협객"],
+  fantasy: [...LINE_WORDS.fantasy!, "용사", "드래곤", "마왕", "기사", "마법사", "엘프"],
+  monster: [...LINE_WORDS.monster!, "체육관", "관장", "트레이너", "도감"],
+};
+
+/**
+ * 스토어 곡이 없는 프로젝트의 장르 줄 추정: 게임 이름·맵 이름에 든 세계 낱말(새 프로젝트 기본 부대에는 드래곤이 있어 부대 이름은 보지 않는다). 합이 0.5 라 한 줄만 걸리면
+ * 「장르를 안 말한 요청」에서 다른 줄 곡이 깎인다(몬스터 게임의 「웅장한 타이틀」에 판타지 타이틀이 붙던 것, 2026-10-25 실조수).
+ */
+export function projectHintLines(texts: readonly string[]): Record<string, number> {
+  const text = texts.join(" ").toLowerCase();
+  const hits = Object.entries(HINT_WORDS).filter(([, words]) => words.some((word) => text.includes(word))).map(([line]) => line);
+  return Object.fromEntries(hits.map((line) => [line, 0.5 / hits.length]));
+}
+
 /** 점수: 장면이 맞아야 높다. 장르는 실제로 들리는 장르(genreKo)가 팩 줄보다 무겁다. 승리는 짧은 곡, 그 밖은 루프. */
 export function scoreStoreMusic(track: StoreMusicTrack, want: StoreMusicQuery): number {
   const m = track.music;

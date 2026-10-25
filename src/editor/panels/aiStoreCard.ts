@@ -400,7 +400,7 @@ function reviewReplyCard(proposal: StoreReviewReplyProposal): HTMLElement {
  */
 type MusicTrack = StoreMusicChoice["tracks"][number];
 
-const short = (text: string, max = 40): string => (text.length > max ? `${text.slice(0, max - 1)}…` : text);
+const short = (text: string, max = 30): string => (text.length > max ? `${text.slice(0, max - 1)}…` : text);
 
 function musicTrackRow(track: MusicTrack, action: HTMLButtonElement | null): HTMLElement {
   const audio = el("audio", { attrs: { controls: "", preload: "none" }, dataset: { testid: "ai-store-music-preview" } }) as HTMLAudioElement;
