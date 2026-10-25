@@ -206,6 +206,17 @@ export const SHITAMACHI_FOURTH_SEASON_BEATS: readonly FlagshipBeat[] = [
   { id: "sf-05", atMinute: 13, act: "밤", mapKey: "map_venue_rooftop", sceneTitle: "옥상의 고백", playerFeel: "쌓인 마음 점수가 진심 결말과 청춘 결말을 가른다", mechanics: ["fork", "triggerEnding", "define_ending"], sharedAssets: [] },
 ];
 
+
+const FIRST_LOVE_BEATS: readonly FlagshipBeat[] = [
+  { id: "fl-01", atMinute: 0, act: "월요일", mapKey: "fl_platform_am", sceneTitle: "첫 출근", playerFeel: "아침 승강장에서 회사까지 걸어간다", mechanics: ["autorun", "letterbox"], sharedAssets: ["oprn-charset-modern2"] },
+  { id: "fl-02", atMinute: 2, act: "월요일", mapKey: "fl_office", sceneTitle: "처음 뵙겠습니다", playerFeel: "사수로 온 첫사랑이 모르는 척한다", mechanics: ["choices", "bust-expression"], sharedAssets: ["shared-modern-casual-boy-hoodie-expressions-bust-base"] },
+  { id: "fl-03", atMinute: 6, act: "월요일", mapKey: "fl_rooftop", sceneTitle: "옥상", playerFeel: "모르는 사이로 하자는 부탁", mechanics: ["choices", "affection"], sharedAssets: [] },
+  { id: "fl-04", atMinute: 8, act: "월요일 밤", mapKey: "fl_broadcast", sceneTitle: "금요일의 방송실", playerFeel: "세피아 회상 — 이름을 쓴 마지막 사연", mechanics: ["tint", "letterbox", "original-bgm"], sharedAssets: [] },
+  { id: "fl-05", atMinute: 11, act: "수요일", mapKey: "fl_office_pm", sceneTitle: "야근", playerFeel: "실수를 숨길지 말할지, 수첩 속 편지", mechanics: ["choices", "switch"], sharedAssets: [] },
+  { id: "fl-06", atMinute: 15, act: "금요일", mapKey: "fl_office_fri", sceneTitle: "발표와 발령", playerFeel: "늦은 답장 — 그리고 또 떠나는 사람", mechanics: ["choices", "fork"], sharedAssets: [] },
+  { id: "fl-07", atMinute: 17, act: "금요일 밤", mapKey: "fl_platform_pm", sceneTitle: "막차", playerFeel: "이번엔 먼저 말할까", mechanics: ["triggerEnding", "affection"], sharedAssets: [] },
+];
+
 export const FLAGSHIP_BEAT_MANIFESTS: Readonly<Record<FlagshipDemoId, FlagshipBeatManifest>> = {
   "chrono-bell": {
     id: "chrono-bell",
