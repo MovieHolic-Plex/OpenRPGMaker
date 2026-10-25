@@ -5,6 +5,13 @@
 
 <!-- releases -->
 
+## 0.346.8 — 2026-10-26
+
+### 수정
+
+- **player** — keep message-window settings across save and load (#3589) (`aa674c7`)
+- **editor** — jump to difficulty and item-used page conditions (#3588) (`168b066`)
+
 ## 0.346.7 — 2026-10-26
 
 ### 수정
