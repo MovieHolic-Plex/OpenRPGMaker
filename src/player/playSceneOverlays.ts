@@ -498,9 +498,13 @@ export function showEndingScreen(scene: PlaySceneContext, title: string, message
     const finalTitle = textNode("div", "ending-final-title", endingFinalTitle(presentation, endingId));
     finalTitle.dataset.testid = "ending-final-title";
     final.append(finalTitle);
-    final.append(textNode("div", "ending-final-caption", title));
+    // 부제와 요약 줄은 한 기둥 안에 흐른다 — 둘 다 절대 위치(55%·63%)였을 때 두 줄로 넘어간 엔딩 이름이
+    // 「플레이 시간」 줄과 겹쳤다(시타마치 VQA before 12-ending-final).
+    const meta = textNode("div", "ending-final-meta", "");
+    meta.append(textNode("div", "ending-final-caption", title));
     const summary = endingSummaryLine(scene);
-    if (summary) final.append(textNode("div", "ending-final-summary", summary));
+    if (summary) meta.append(textNode("div", "ending-final-summary", summary));
+    final.append(meta);
     const actions = textNode("div", "game-over-actions", "");
     const button = terminalButton("return-title", endingText("ending.returnTitle"), () => { void exitTerminal(terminal, () => scene.returnToTitle()); });
     actions.append(button); final.append(actions); terminal.root.append(final);

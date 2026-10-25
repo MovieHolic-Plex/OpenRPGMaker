@@ -1,6 +1,8 @@
 import { resolveAssetResourceUrl } from '@/assets/generatedAssetResourceResolver';
 import { parseCssColor, sampleAnimaticTrack, animaticCueVolume, animaticPulseValue, type OpeningAnimatic, type AnimaticLayer, type AnimaticRegionLoop } from '@/project/openingAnimatic';
 import type { Project } from '@/project/types';
+import { openingMapViewMapId } from '@/project/openingMapView';
+import { renderMapViewCanvas } from '@/player/mapBackgroundMapView';
 
 export type AnimaticImages = Map<string, HTMLImageElement>;
 
@@ -61,15 +63,39 @@ function decodedImage(url: string): Promise<HTMLImageElement> {
 export function warmAnimaticImages(project: Project, a: OpeningAnimatic): void {
   for (const l of a.layers) {
     if (l.kind !== 'image' || !l.resourceId) continue;
+    const mapId = openingMapViewMapId(l.resourceId);
+    if (mapId) { void mapViewImage(project, mapId).catch(() => undefined); continue; }
     const url = resolveAssetResourceUrl(l.resourceId, { project });
     if (url) void decodedImage(url).catch(() => undefined);
   }
+}
+/**
+ * 「게임 속 맵 그대로」 배경(map-view:<mapId>) — 맵 타일 층을 원 크기로 한 번 그려 그림으로 쓴다(openingMapView.ts).
+ * 같은 맵 객체면 다시 그리지 않는다(편집기에서 맵을 고치면 새 객체라 새로 그린다).
+ */
+const mapViewImages = new WeakMap<object, Promise<HTMLImageElement>>();
+function mapViewImage(project: Project, mapId: string): Promise<HTMLImageElement> {
+  const map = project.maps[mapId];
+  if (!map) return Promise.reject(Error(`애니메틱 맵 배경 없음: ${mapId}`));
+  const cached = mapViewImages.get(map);
+  if (cached) return cached;
+  const promise = (async () => {
+    const canvas = await renderMapViewCanvas(project, { mapId, scale: 1, haze: 0, desaturate: 0 });
+    if (!canvas) throw Error(`애니메틱 맵 배경을 그릴 수 없음: ${mapId}`);
+    const image = new Image(); image.src = canvas.toDataURL('image/png'); await image.decode(); return image;
+  })();
+  promise.catch(() => { if (mapViewImages.get(map) === promise) mapViewImages.delete(map); });
+  mapViewImages.set(map, promise);
+  return promise;
 }
 export async function loadAnimaticImages(project: Project, a: OpeningAnimatic, signal: AbortSignal): Promise<AnimaticImages> {
   const ids = [...new Set(a.layers.flatMap(l => l.kind === 'image' ? [l.resourceId!] : []))];
   keyedCache.clear();
   return new Map(await Promise.all(ids.map(async id => {
-    signal.throwIfAborted(); const url = resolveAssetResourceUrl(id, { project }); if (!url) throw Error(`애니메틱 그림 없음: ${id}`);
+    signal.throwIfAborted();
+    const mapId = openingMapViewMapId(id);
+    if (mapId) { const image = await mapViewImage(project, mapId); signal.throwIfAborted(); return [id, image] as const; }
+    const url = resolveAssetResourceUrl(id, { project }); if (!url) throw Error(`애니메틱 그림 없음: ${id}`);
     const image = await decodedImage(url); signal.throwIfAborted(); return [id, image] as const;
   })));
 }

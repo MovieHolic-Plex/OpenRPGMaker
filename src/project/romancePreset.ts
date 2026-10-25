@@ -60,6 +60,12 @@ export function romanceHudConfig(previous: FieldHudConfig | undefined): FieldHud
   };
 }
 
+/** 이야기형 연애의 HUD — 하루 루프가 없으니 시계·남은 대화 칸 없이 호감 하트만(값이 바뀐 뒤 잠깐). */
+export function storyRomanceHudConfig(previous: FieldHudConfig | undefined): FieldHudConfig {
+  const base = romanceHudConfig(previous);
+  return { ...base, clock: false, widgets: (base.widgets ?? []).filter((widget) => widget.id === "affection").map((widget) => ({ ...widget, y: 6 })) };
+}
+
 /** 2026-10-16 이전 기본 HUD(호감 목록·남은 시간이 항상 떠 지도를 덮던 배치)인가. 저작자가 손댄 위젯 수·id·조건이 다르면 아니다. */
 export function isLegacyRomanceHud(hud: FieldHudConfig | undefined): boolean {
   const widgets = hud?.widgets;
@@ -71,12 +77,15 @@ export function isLegacyRomanceHud(hud: FieldHudConfig | undefined): boolean {
 }
 
 /** 연애 프로젝트에 결정론 기본값을 깐다. 깐 항목 이름을 돌려준다(이미 있던 것은 목록에 없다). */
-export function applyRomanceDefaults(project: Project, options: { readonly force?: boolean } = {}): string[] {
+export function applyRomanceDefaults(project: Project, options: { readonly force?: boolean; readonly dayLoop?: boolean } = {}): string[] {
   // force: 인터뷰 없이 채팅 한 줄(「연애 게임을 만들고 싶어」)로 시작한 게임 — 조수 v2 가 첫 장소를 지은 뒤 부른다(2026-10-25 조수 단독 게임 G17/G18).
   if (!options.force && !isRomanceInterviewProject(project)) return [];
+  // dayLoop:false — 이야기형 연애(장면이 정해진 순서로 흐르는 데모·비주얼 노벨). 하루 루프(시간·대화 칸·기한 엔딩)와 시계 HUD 없이
+  // 호감 하트·관계 메뉴·대사 읽기 보조·장르 잠금만 깐다. 시타마치 VQA before: 기본값을 하나도 못 받아 「514/514」 체력 하트가 떴다.
+  const dayLoop = options.dayLoop !== false;
   const applied: string[] = [];
   const { system } = project;
-  if (!system.timeSystem) {
+  if (dayLoop && !system.timeSystem) {
     system.timeSystem = {
       enabled: true,
       // 연애 루프의 시간은 대화 칸이 움직인다 — 자연 시계는 거의 멈춘 듯 느리게(0.1분/초 = 하루 3시간 20분).
@@ -89,7 +98,7 @@ export function applyRomanceDefaults(project: Project, options: { readonly force
     };
     applied.push("timeSystem");
   }
-  if (!system.socialLoop) {
+  if (dayLoop && !system.socialLoop) {
     system.socialLoop = { slotsPerDay: DEFAULT_SOCIAL_SLOTS_PER_DAY, dailyFriendshipCap: DEFAULT_SOCIAL_DAILY_FRIENDSHIP_CAP };
     applied.push("socialLoop");
   }
@@ -106,7 +115,7 @@ export function applyRomanceDefaults(project: Project, options: { readonly force
   }
   // HUD: 저작자가 위젯을 직접 정하지 않았을 때만. 지도를 덮던 옛 기본 배치(조건 없는 세 판)는 새 배치로 바꾼다.
   if (system.fieldHud?.widgets === undefined || isLegacyRomanceHud(system.fieldHud)) {
-    system.fieldHud = romanceHudConfig(system.fieldHud);
+    system.fieldHud = dayLoop ? romanceHudConfig(system.fieldHud) : storyRomanceHudConfig(system.fieldHud);
     applied.push("fieldHud");
   }
   // 타이틀: 코드 기본값(눈 덮인 마을)일 때만.
