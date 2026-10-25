@@ -28,8 +28,12 @@ function layerTiles(map: GameMap, i: number): (number | undefined)[] {
 /** 차가 다니는 칸(차도·차선·아스팔트·횡단보도)과 선로 — 사람이 서서 말하는 자리가 아니다. 보도·인도·광장·흙길·참배길·생활도로는 걷는 길이다. */
 const LANE_WORD = /차도|차선|아스팔트|횡단보도|중앙선|도로 구간|도로 위쪽|도로 아래쪽|도로 중앙|교차로|선로|철도|레일|\b(roadway|carriageway|asphalt|crosswalk|rail|railway|track)\b/iu;
 const LANE_TAG = /^(차도|차선|아스팔트|횡단보도|선로|철도|레일|crosswalk|rail|railway|asphalt|roadway)$/iu;
-/** 걷는 길(보도 등) — 라벨에 «도로»가 섞여도 사람이 서도 되는 칸. */
-const WALK_WORD = /보도|인도|연석|광장|참배길|생활도로|흙길|산책길|공원 ?길|정류장 유도|sidewalk|pavement|plaza|walk/iu;
+/**
+ * 걷는 길(보도 등) — 라벨에 «도로»가 섞여도 사람이 서도 되는 칸.
+ * «보도»는 «횡단보도»(차도 위 줄)와 «…보도 쪽»(차도 가장자리 흰 선 칸의 방향 설명)을 빼고 센다 — 시타마치 큰길 칸
+ * 「따뜻한 아스팔트(路側帯 흰 선, 위 보도 쪽)」이 보도로 읽혀 사람이 차도 가장자리에 섰다(2026-10-25 J71).
+ */
+const WALK_WORD = /(?<!횡단)보도(?!\s*쪽)|인도|연석|광장|참배길|생활도로|흙길|산책길|공원 ?길|정류장 유도|sidewalk|pavement|plaza|walk/iu;
 
 function isLaneMeta(m: Meta): boolean {
   if (!m) return false;
