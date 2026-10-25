@@ -72,6 +72,8 @@ export function allWallSlots(c: DressCtx): Slot[] {
 }
 
 /** 물가(액체에 붙은 걸을 수 있는 칸). */
+/** 사방이 물인 물 칸 — 물 가장자리 칸은 둑(진흙)이 덮어 그려 연잎·말뚝이 마른 땅에 놓인 것처럼 보였다(2026-10-25 floor VQA r5 swamp). */
+const openWater = (c: DressCtx, x: number, y: number): boolean => [[0, 0], [1, 0], [-1, 0], [0, 1], [0, -1]].every(([dx, dy]) => c.liquid[c.idx(x + dx!, y + dy!)] === 1);
 function shoreCells(c: DressCtx, r: PlacedRoom): [number, number][] {
   return c.floorCells(r).filter(([x, y]) => [[1, 0], [-1, 0], [0, 1], [0, -1]].some(([dx, dy]) => c.liquid[c.idx(x + dx!, y + dy!)] === 1));
 }
@@ -271,7 +273,7 @@ function dressTemple(c: DressCtx, r: PlacedRoom, rs: () => number, s: Slot | nul
       }
       const my = r.y + Math.floor(r.h / 2);
       if (c.hasKit(TP("mosaic-medallion-7x7"))) c.put(TP("mosaic-medallion-7x7"), cx - 3, my - 3, { free: true });
-      for (const dx of [2, 5]) { const q = slots.find((t) => t.x === cx - dx), q2 = slots.find((t) => t.x === cx + dx); if (q && q2 && c.put(dx === 2 ? TORCH : SW("banner-cult"), q.x, q.y)) c.put(dx === 2 ? TORCH : SW("banner-cult"), q2.x, q2.y); }
+      for (const dx of [2, 5]) { const q = slots.find((t) => t.x === cx - dx), q2 = slots.find((t) => t.x === cx + dx); if (q && q2 && c.put(dx === 2 ? TORCH : VINES, q.x, q.y)) c.put(dx === 2 ? TORCH : VINES, q2.x, q2.y); }
       mirrorPut(c, SW("brazier"), cx, 2, r.y + 2);
       mirrorPut(c, SW("brazier"), cx, 2, r.y + r.h - 2);
       ruin(r, 2);
@@ -282,8 +284,8 @@ function dressTemple(c: DressCtx, r: PlacedRoom, rs: () => number, s: Slot | nul
       const ax = cx - 1;
       const altar = c.putAny(CC("altar-stone"), [0, 1, -1].map((d) => [ax + d, r.y] as [number, number]));
       if (altar) {
-        for (const d of [2, 4]) { const l = slots.find((q) => q.x === altar[0] - d + 0), rr = slots.find((q) => q.x === altar[0] + 1 + d); if (l && rr && c.put(SW("banner-cult"), l.x, l.y)) c.put(SW("banner-cult"), rr.x, rr.y); }
-        c.put(SW("candles"), altar[0] - 1, altar[1] + 1); c.put(SW("candles"), altar[0] + 2, altar[1] + 1);
+        for (const d of [2, 4]) { const l = slots.find((q) => q.x === altar[0] - d + 0), rr = slots.find((q) => q.x === altar[0] + 1 + d); if (l && rr && c.put(VINES, l.x, l.y)) c.put(VINES, rr.x, rr.y); }
+        c.put(SW("brazier"), altar[0] - 1, altar[1] + 1); c.put(SW("brazier"), altar[0] + 2, altar[1] + 1);
         mirrorPut(c, SW("brazier"), altar[0] + 1, 3, altar[1] + 2);
       }
       // 보스가 설 무대: 가운데 의식 원(모자이크) — 둥근 탑 방처럼 북벽이 통로로 갈려 제단이 못 서면 화로 한 쌍이 원을 감싼다.
@@ -303,9 +305,10 @@ function dressTemple(c: DressCtx, r: PlacedRoom, rs: () => number, s: Slot | nul
     case "shrine": {
       // 곁 예배당: 벽감 항아리 줄, 가운데 작은 제단, 기둥 한 쌍
       for (const q of centerFirst.slice(0, 5)) if (rs() < 0.7) c.put(CC("niche-urn"), q.x, q.y);
-      c.putAny(SW("altar-cult"), [0, -1, 1].map((d) => [cx - 1 + d, r.y] as [number, number]));
+      // 돌 제단 + 화로 — 하수도 사교 제단(붉은 눈)·핏빛 촛농이 고전 신전과 안 맞았다(2026-10-25 floor VQA r5 ruins).
+      const alt = c.putAny(CC("altar-stone"), [0, -1, 1].map((d) => [cx - 1 + d, r.y] as [number, number]));
       mirrorPut(c, TEMPLE_COL, cx, 3, r.y + r.h - 3);
-      c.put(SW("candles"), cx - 3, r.y + 1); c.put(SW("candles"), cx + 2, r.y + 1);
+      if (alt) { c.put(SW("brazier"), alt[0] - 1, alt[1] + 1); c.put(SW("brazier"), alt[0] + 2, alt[1] + 1); }
       ruin(r, 1);
       return true;
     }
@@ -533,7 +536,9 @@ function dressCave(c: DressCtx, r: PlacedRoom, rs: () => number, s: Slot | null,
       const shore = c.shuffle(rs, shoreCells(c, r));
       let boat = false;
       for (const [x, y] of shore) {
-        if (!boat && lonely(c, x, y, 2) && c.isWalk(x + 1, y) && stand(c, CV("boat"), x, y)) { boat = true; continue; }
+        // 배는 물가 바로 옆 물 위에(2×2 전부 물) — 뭍에 얹힌 배로 읽혔다(2026-10-25 floor VQA r5 cave).
+        if (!boat) for (const [dx, dy] of [[0, 1], [0, -2], [1, 0], [-2, 0]] as const) if (!boat && c.put(CV("boat"), x + dx, y + dy, { liquidOk: true, free: true })) boat = true;
+        if (boat) continue;
       }
       let n = 0; for (const [x, y] of shore) { if (n >= 6) break; if (rs() < 0.45 && lonely(c, x, y, 1) && stand(c, c.weighted(rs, [[MUSH, 4], [CV("driftwood"), 1], [CV("dock-post"), 1], [CV("rubble-cave"), 2]]), x, y)) n += 1; }
       const e = c.edgeCells(r, rs);
@@ -703,6 +708,8 @@ const FF = (id: string) => P("deep-forest-path", id);
 const SP = (id: string) => P("swamp-stilt", id);
 const DS = (id: string) => P("desert-oasis", id);
 const SF = (id: string) => P("snowfield", id);
+// 늪 갈대 = 살아 있는 갈대 무더기(오아시스·늪 공용) — 묶은 갈대 단(reed-stack)은 노란 막대라 마른 진흙 위 「널판·말뚝」으로 읽혔다(2026-10-25 floor VQA r5 swamp).
+const REEDS = DS("reed");
 const WZ = (id: string) => P("wizard-tower", id);
 /** 후보 중 이 타일셋에 있는 첫 키트. */
 function pickKit(c: DressCtx, ids: readonly string[]): string { return ids.find((id) => c.hasKit(id)) ?? ids[ids.length - 1]!; }
@@ -764,9 +771,9 @@ function dressForest(c: DressCtx, r: PlacedRoom, rs: () => number): boolean {
     }
     case "lake": {
       // 연못: 물가 갈대·돌, 물 위 연잎
-      for (const [x, y] of c.shuffle(rs, shoreCells(c, r)).slice(0, 8)) if (rs() < 0.6 && lonely(c, x, y, 1)) stand(c, c.weighted(rs, [[FF("fern-b"), 2], [FF("stones-c"), 1], [FF("wild-c"), 1], [SP("reed-stack"), 1]]), x, y);
+      for (const [x, y] of c.shuffle(rs, shoreCells(c, r)).slice(0, 8)) if (rs() < 0.6 && lonely(c, x, y, 1)) stand(c, c.weighted(rs, [[FF("fern-b"), 2], [FF("stones-c"), 1], [FF("wild-c"), 1], [REEDS, 1]]), x, y);
       let lily = 0;
-      for (const [x, y] of c.shuffle(rs, c.floorCells(r, 0).concat(waterCells(c, r)))) { if (lily >= 4) break; if (c.liquid[c.idx(x, y)] && rs() < 0.2 && c.put(pickKit(c, [TK("lily-pads"), DS("lily")]), x, y, { liquidOk: true })) lily += 1; }
+      for (const [x, y] of c.shuffle(rs, c.floorCells(r, 0).concat(waterCells(c, r)))) { if (lily >= 4) break; if (openWater(c, x, y) && rs() < 0.2 && c.put(pickKit(c, [TK("lily-pads"), DS("lily")]), x, y, { liquidOk: true })) lily += 1; }
       edgeBits(6);
       return true;
     }
@@ -834,12 +841,12 @@ function fillVoids(c: DressCtx, r: PlacedRoom, rs: () => number, pick: () => str
 function dressSwamp(c: DressCtx, r: PlacedRoom, rs: () => number): boolean {
   if (!dressSwampRoom(c, r, rs)) return false;
   const moss = pickKit(c, [TK("swamp-moss"), SP("snag")]);
-  fillVoids(c, r, rs, () => c.weighted(rs, [[SP("snag"), 2], [moss, 2], [SP("reed-stack"), 2], [SP("moss-log"), 1], [FF("fern-c"), 1]]));
+  fillVoids(c, r, rs, () => c.weighted(rs, [[SP("snag"), 2], [moss, 2], [REEDS, 2], [SP("moss-log"), 1], [FF("fern-c"), 1]]));
   return true;
 }
 
 function dressSwampRoom(c: DressCtx, r: PlacedRoom, rs: () => number): boolean {
-  const bits = () => c.weighted(rs, [[SP("reed-stack"), 2], [FF("fern-c"), 2], [FF("toadstools-b"), 2], [SP("crab-trap"), 1], [SW("bones"), 1], [MUSH, 2]]);
+  const bits = () => c.weighted(rs, [[REEDS, 2], [FF("fern-c"), 2], [FF("toadstools-b"), 2], [SP("crab-trap"), 1], [SW("bones"), 1], [MUSH, 2]]);
   const e = c.edgeCells(r, rs);
   const edgeBits = (n: number) => { let k = 0; for (const [x, y] of e) { if (k >= n) break; if (rs() < 0.5 && lonely(c, x, y, 1) && stand(c, bits(), x, y)) k += 1; } };
   const wisp = pickKit(c, [TK("will-o-wisp"), MUSH]);
@@ -863,9 +870,12 @@ function dressSwampRoom(c: DressCtx, r: PlacedRoom, rs: () => number): boolean {
       let boat = false;
       for (const [x, y] of c.shuffle(rs, waterCells(c, r))) {
         if (!boat && c.liquid[c.idx(x + 1, y)] && c.put(SP("rowboat"), x, y, { liquidOk: true })) { boat = true; continue; }
-        if (rs() < 0.08) c.put(pickKit(c, [TK("lily-pads"), DS("lily")]), x, y, { liquidOk: true });
+        if (rs() < 0.08 && openWater(c, x, y)) c.put(pickKit(c, [TK("lily-pads"), DS("lily")]), x, y, { liquidOk: true });
       }
-      for (const [x, y] of c.shuffle(rs, shoreCells(c, r)).slice(0, 5)) if (rs() < 0.5 && lonely(c, x, y, 1)) stand(c, c.weighted(rs, [[SP("pilings"), 2], [SP("reed-stack"), 2], [SP("ducks"), 1]]), x, y);
+      // 말뚝은 물 속에(물가 바로 앞 물 칸), 갈대·오리만 물가 뭍에 — 말뚝이 마른 진흙에 박혀 「뭍의 계류 말뚝」으로 읽혔다(2026-10-25 floor VQA r5 swamp).
+      let pile = 0;
+      for (const [x, y] of c.shuffle(rs, waterCells(c, r))) { if (pile >= 2) break; if (openWater(c, x, y) && openWater(c, x, y + 1) && [[1, 0], [-1, 0], [0, -1]].some(([dx, dy]) => !c.liquid[c.idx(x + dx!, y + dy!)]) && c.put(SP("pilings"), x, y, { liquidOk: true, free: true })) pile += 1; }
+      for (const [x, y] of c.shuffle(rs, shoreCells(c, r)).slice(0, 5)) if (rs() < 0.5 && lonely(c, x, y, 1)) stand(c, c.weighted(rs, [[REEDS, 2], [SP("ducks"), 1]]), x, y);
       edgeBits(5);
       return true;
     }

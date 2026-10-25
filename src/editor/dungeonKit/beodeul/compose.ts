@@ -499,7 +499,8 @@ export function composeDungeon(ts: TilesetDef, spec: DungeonSpec): DungeonCompos
       const X = x + dx, Y = y + dy;
       // 물·용암·다리 위에는 아무것도 놓지 않는다(액체는 걸을 수 없는 칸, 다리는 길이다)
       if (inb(X, Y) && (liquid[idx(X, Y)] || bridge[idx(X, Y)]) && !opts.liquidOk) return false;
-      if (ownSupport && up >= 0) {
+      if (opts.liquidOk && /boat/.test(kitId) && !liquid[idx(X, Y)]) return false;   // 배는 물 위에만 — 바닥에 얹힌 배가 「뭍에 오른 배」로 읽혔다(2026-10-25 floor VQA r5 cave)
+      if (ownSupport && up >= 0 && !opts.liquidOk) {
         const bottom = dy === def.height - 1;
         if (bottom ? !isWalk(X, Y) : !(isWalk(X, Y) || isWall(X, Y))) return false;
       }
