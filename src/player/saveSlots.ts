@@ -345,9 +345,30 @@ export function clearRecordKey(): string {
   return `${saveSlotStorageNamespace ?? "oprn"}:clear-record:v1`;
 }
 
+/**
+ * 저장 JSON. 숫자 아닌 수(NaN·Infinity — 0으로 나눈 변수 등)는 JSON 에서 null 이 되어 읽기 검사가 슬롯 전체를 「손상됨」으로 본다 — 0 으로 적는다.
+ * (2026-10-25 Salad story-letter: 「1번 저장 칸에 저장했습니다」 바로 뒤 같은 칸이 「손상됨」.)
+ */
+function saveJson(snapshot: SaveSnapshot): string {
+  return JSON.stringify(snapshot, (_key, value: unknown) => (typeof value === "number" && !Number.isFinite(value) ? 0 : value));
+}
+
+/** 적은 저장을 곧바로 다시 읽어 본다. 못 읽으면 이전 값으로 되돌리고 이유를 돌려준다(성공이면 null). */
+function writeVerified(storage: Storage, key: string, text: string, reread: () => { readonly kind: string; readonly message?: string }): string | null {
+  const previous = storage.getItem(key);
+  storage.setItem(key, text);
+  const back = reread();
+  if (back.kind === "present") return null;
+  if (previous === null) storage.removeItem(key);
+  else storage.setItem(key, previous);
+  console.warn("[save] wrote a save that does not read back — kept the previous one:", back.message);
+  return back.message ?? "unreadable";
+}
+
 export function writeAutosave(storage: Storage, snapshot: SaveSnapshot): void {
   if (saveScopeBlocker(snapshot.identity)) throw new PublicationError("save-incompatible");
-  storage.setItem(autosaveKey(), JSON.stringify(snapshot));
+  const bad = writeVerified(storage, autosaveKey(), saveJson(snapshot), () => readAutosave(storage));
+  if (bad) throw new Error(`autosave does not read back: ${bad}`);
 }
 
 export function readAutosave(storage: Storage): AutosaveReadResult {
@@ -593,7 +614,8 @@ export function saveToSlot(storage: Storage, slot: SaveSlotIndex, snapshot: Save
   const blocker = saveScopeBlocker(snapshot.identity);
   if (blocker) return { ok: false, message: blocker };
   try {
-    storage.setItem(saveSlotKey(slot), JSON.stringify(snapshot));
+    const bad = writeVerified(storage, saveSlotKey(slot), saveJson(snapshot), () => readSaveSlot(storage, slot));
+    if (bad) return { ok: false, message: `저장한 내용을 다시 읽지 못해 이전 저장을 남겼습니다(${bad})` };
     return { ok: true };
   } catch (error) {
     console.warn("[save] failed to write save slot:", error);
