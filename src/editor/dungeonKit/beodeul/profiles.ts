@@ -66,7 +66,7 @@ export const PROFILES: Record<BeodeulDungeonType, TypeProfile> = {
     ...GRAMMAR.catacomb,
     face: { h3: S("face-cata-3h"), h2: S("face-cata-2h") },
     // 2×2 판석 키트는 칸을 섞어도 이음 대비가 같다(맞붙인 그대로 40.6 · 아무 순서 40.6) — 섞어서 2칸 주기 반복을 없앤다(2026-10-25 floor VQA r4 「16px 반복」).
-    floor: { base: S("floor-cata"), mix: true, patches: [{ kit: S("floor-sewer"), at: 0.74, scale: 7 }], byKind: { crypt: S("floor-bone"), cell: K("floor-cell") } },
+    floor: { base: S("floor-cata"), mix: true, patches: [{ kit: S("floor-sewer"), at: 0.74, scale: 7 }], byKind: { crypt: S("floor-bone"), cell: S("floor-darkcata") } },   // 성 감방 황토 판(floor-cell)은 지하묘지 회색 판석 사이에서 격자 무늬 방으로 튀었다(2026-10-25 floor VQA r4 catacomb 「ochre scratch tile repeat」)
   },
   castle: {
     ...GRAMMAR.castle,

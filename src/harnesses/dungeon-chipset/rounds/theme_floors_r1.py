@@ -27,7 +27,9 @@ LEG = {'A1': L('b:ostone1 c:ostone2 m:ostone3 d:ostone0 e:ostone0 k:ostone0 v:ar
        'A2': L('b:ostone1 c:ostone2 m:ostone3 d:ostone0 e:ostone0 k:ostone0 v:arcane1 V:arcane2')}
 
 # 가장자리 틀: 빛 쪽(북·서 d) = 밝은 턱 ostone2, 그늘 쪽(동·남 k) = ostone0 — 먹 윤곽 대신 재질 명암
-FRAME_LEG = L('d:ostone2 k:ostone0')
+FRAME_LEG = L('d:ostone2 k:ostone0 c:ostone1')
+# A1: 북변 둘째 줄을 그늘 대신 바탕 한 단(빛 쪽에 0단이 몰리지 않게)
+A1_FRAME = [R1.GROUND_FRAME[0], 'd' + 'c' * 31] + list(R1.GROUND_FRAME[2:])
 
 FREQS = [(1, 0), (0, 1), (1, 1), (1, -1), (2, 1), (1, 2)]
 AMPS = [1.0, 1.0, 0.8, 0.8, 0.45, 0.45]
@@ -102,6 +104,8 @@ GLOW = [((5, 9), (7, 8), (9, 8), (11, 6))]
 
 
 def body(key, i, crack=None, glow=False):
+    if key == 'A1':
+        return a1_body(i)
     g = [list(r) for r in plate(key, i)]
     if crack is not None:
         for x, y in {p for seg in CRACKS[crack] for p in poly(*seg)}:
@@ -115,9 +119,49 @@ def body(key, i, crack=None, glow=False):
     return [''.join(r) for r in g]
 
 
+# ---------------------------------------------------------------- A1 = 판석(2026-10-25 다시): 큰 불규칙 판 + 판마다 위·왼 빛 1화소, 홈 ostone0.
+# 홈은 칸 경계를 네 곳(위·아래 x=4, 왼·오른 y=9)에서만 건너고 칸 안 길은 몸통마다 달라 판이 칸을 넘어 이어진다.
+A1_LAYOUTS = [
+    [((4, 0), (5, 4), (9, 6), (15, 9)), ((0, 9), (3, 11), (4, 15))],
+    [((4, 0), (3, 5), (0, 9)), ((15, 9), (11, 10), (6, 13), (4, 15)), ((11, 10), (12, 4), (10, 1))],
+    [((4, 0), (4, 15)), ((0, 9), (4, 9)), ((4, 6), (10, 5), (12, 9), (15, 9))],
+    [((4, 0), (7, 3), (8, 9), (4, 15)), ((0, 9), (8, 9)), ((8, 9), (15, 9))],
+    [((4, 0), (2, 6), (0, 9)), ((2, 6), (9, 8), (15, 9)), ((9, 8), (7, 13), (4, 15))],
+    [((4, 0), (6, 6), (4, 15)), ((0, 9), (2, 9)), ((15, 9), (13, 6), (6, 6))],
+    [((4, 0), (8, 2), (13, 3)), ((0, 9), (5, 8), (4, 15)), ((5, 8), (11, 11), (15, 9))],
+    [((4, 0), (4, 4), (0, 9)), ((15, 9), (10, 12), (4, 15)), ((4, 4), (11, 5), (10, 12))],
+]
+A1_CRACKS = {2: [((9, 11), (11, 13))], 5: [((9, 9), (12, 12))], 7: [((6, 9), (8, 11))]}
+A1_VEIN = {3: [((10, 3), (12, 5), (13, 7))]}
+
+
+def a1_body(i):
+    f = [[_wave(x, y, _phase(0)) * (1 - min(1.0, max(0, min(x, y, 15 - x, 15 - y) - 1) / 3.0))
+          + _wave(x, y, _phase(i + 5)) * min(1.0, max(0, min(x, y, 15 - x, 15 - y) - 1) / 3.0)
+          for x in range(16)] for y in range(16)]
+    g = [['c' if f[y][x] > 0.6 else 'b' for x in range(16)] for y in range(16)]
+    g = _clean(g, 6)
+    G = {p for seg in A1_LAYOUTS[i] for p in poly(*seg)}
+    for x, y in G:
+        g[y][x] = 'd'
+    for x, y in G:                                   # 판 위·왼 모서리 빛(홈 아래·오른)
+        X, Y = x, (y + 1) % 16
+        if (X, Y) not in G:
+            g[Y][X] = 'c'
+    for seg in A1_CRACKS.get(i, []):
+        for x, y in poly(*seg):
+            g[y][x] = 'k'
+    pts = [p for seg in A1_VEIN.get(i, []) for p in poly(*seg)]
+    for x, y in pts:
+        g[y][x] = 'v'
+    if pts:
+        x, y = pts[len(pts) // 2]
+        g[y][x] = 'V'
+    return [''.join(r) for r in g]
+
+
 # (변형, 금, 핏줄)
-LIST = {'A1': [(0, None, 0), (1, None, 0), (2, 0, 0), (3, None, 0), (4, None, 0), (5, 1, 0), (6, None, 0), (7, None, 1),
-               (8, None, 0), (9, 2, 0), (10, None, 0), (11, None, 0), (12, None, 0), (13, None, 0)],
+LIST = {'A1': [(i, None, 0) for i in range(8)],
         'A2': [(6, None, 0), (7, None, 0), (2, None, 0), (6, None, 0), (7, None, 0), (0, None, 0), (1, 3, 0), (2, None, 0), (3, None, 0), (4, 0, 0), (5, None, 0),
                (1, None, 0), (2, 2, 0), (3, None, 1), (4, None, 0), (5, 1, 0), (0, None, 0)]}
 
@@ -125,7 +169,7 @@ LIST = {'A1': [(0, None, 0), (1, None, 0), (2, 0, 0), (3, None, 0), (4, None, 0)
 def ground_at(key):
     leg = LEG[key]
     bs = [grid(body(key, m, c, bool(gl)), leg) for m, c, gl in LIST[key]]
-    return autotile_cv(bs[0], grid(R1.GROUND_FRAME, FRAME_LEG, 32, 32), grid(R1.GROUND_INNER, FRAME_LEG, 16, 16), bs[1:])
+    return autotile_cv(bs[0], grid(A1_FRAME if key == 'A1' else R1.GROUND_FRAME, FRAME_LEG, 32, 32), grid(R1.GROUND_INNER, FRAME_LEG, 16, 16), bs[1:])
 
 
 def c_ground(key):
