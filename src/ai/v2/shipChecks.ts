@@ -6,6 +6,7 @@
 // 순수 함수(프로젝트만 읽는다). v2FinishGate 가 출하 차단으로, 조언자가 막는 항목(shipBlockers)으로 같이 부른다.
 import { createBlankProject } from "@/project/defaults";
 import type { Project } from "@/project/types";
+import { findOpeningStillMood } from "@/assets/openingStillMoods";
 
 type Obj = Record<string, unknown>;
 export interface ShipBlocker { readonly id: string; readonly message: string; readonly evidence: string }
@@ -107,6 +108,10 @@ export function editorDefaultsLeft(project: Project): ShipBlocker[] {
 
   // 8) 엔딩 화면: 연출(presentation) 없이 기본 카드
   const bareEndings = (project.endings ?? []).filter((e) => !e.presentation || !Object.keys(e.presentation).length);
+  // 자리표시 크레딧: 모델이 「기획·제작 / 당신」 같은 빈칸 이름을 지어 넣었다(2026-10-25 horror-mansion-v2 Sonnet VQA).
+  const PLACEHOLDER_CREDIT = /(?:^|\n)\s*(?:당신|너|플레이어|제작자 ?이름|이름|you|your name|author|tbd|xxx|\?\?\?)\s*(?:\n|$)/iu;
+  const placeholderCredits = (project.endings ?? []).filter((e) => PLACEHOLDER_CREDIT.test(String((e.presentation as { credits?: unknown } | undefined)?.credits ?? "")));
+  if (placeholderCredits.length) add("placeholder-text", `엔딩 ${placeholderCredits.length}개(${placeholderCredits.slice(0, 3).map((e) => e.name).join("·")})의 크레딧에 「당신」 같은 자리표시 이름이 있다 — 만든 사람 이름을 모르면 이름 줄을 빼고 게임 제목·감사 문구만 둔다(define_ending presentation.credits).`, placeholderCredits.map((e) => e.id).join(","));
   if (bareEndings.length) add("ending-screen", `엔딩 ${bareEndings.length}개(${bareEndings.slice(0, 3).map((e) => e.name).join("·")})가 편집기 기본 엔딩 카드다 — define_ending 의 presentation{backgroundResourceId, finalTitle, credits, musicResourceId} 를 채운다.`, bareEndings.map((e) => e.id).join(","));
 
   // 9) 파티: 기본 이름·기본 얼굴·기본 모습
@@ -169,11 +174,97 @@ export function titleSpoilers(project: Project): ShipBlocker[] {
   return hit ? [{ id: "title-spoiler", message: `게임 제목 「${title}」이 퍼즐 답(${hit})을 말한다 — 제목에서 숫자를 빼거나 다른 제목으로 바꾼다(set_title_screen{title}).`, evidence: `title=${title} code=${hit}` }] : [];
 }
 
+/**
+ * 하늘만 있는 일반 배경 층(oprn-pano-*·편집기 기본 타이틀) — 장소가 아니다. 밤하늘·별·노을·맑은 하늘·구름·바다 수면뿐이다.
+ * 도시 실루엣 층(skyline·city)은 장소로 친다.
+ */
+const SKY_ONLY = /^oprn-pano-(night|sky-day(?!-city)|sunset(?!-skyline)|clouds|sea)/u;
+export function isSkyOnlyImage(id: string | undefined): boolean {
+  return !!id && SKY_ONLY.test(id) && !/city|skyline/u.test(id);
+}
+
+/** 오프닝 장면 하나가 «장소»를 보이는가: 맵 그대로(map-view)·장소 스틸·올린 그림이면 그렇다, 하늘 층·글 장면뿐이면 아니다. */
+function sceneImages(scene: Obj): string[] {
+  if (scene.kind === "image" || scene.kind === "video") {
+    const layers = (((scene.direction as Obj | undefined)?.layers as Obj[] | undefined) ?? []).map((l) => String(l.resourceId ?? ""));
+    return [String(scene.resourceId ?? ""), ...layers].filter(Boolean);
+  }
+  if (scene.kind === "animatic") {
+    const layers = (((scene.composition as Obj | undefined)?.layers as Obj[] | undefined) ?? []);
+    return layers.filter((l) => l.kind === "image" && (l.role === "background" || l.role === undefined)).map((l) => String(l.resourceId ?? "")).filter(Boolean);
+  }
+  return [];
+}
+
+/**
+ * 오프닝에 장소가 한 번도 안 나온다(2026-10-25 판정 J24·J65): 약초 숲 오프닝은 노을·밤·맑은 하늘 층 셋, 공포 저택은 밤하늘·별 층과
+ * 어두운 상자, 폐교는 별이 뜬 하늘뿐이었다. 플레이어는 어디서 무슨 일이 나는지 모른 채 시작한다. 장면 하나 이상이 그 게임의 장소
+ * (맵 그대로 map-view·장소 스틸·올린 그림)를 보여야 한다.
+ */
+export function openingWithoutPlace(project: Project): ShipBlocker[] {
+  const op = (project.system as unknown as Obj).opening as Obj | undefined;
+  if (!op || op.enabled === false) return [];
+  const scenes = ((op.scenes as Obj[] | undefined) ?? []);
+  // 글만 있는 프롤로그(그림 장면 0개)는 따로 고른 연출이다 — 그림을 깐 오프닝만 본다.
+  if (!scenes.some((sc) => sceneImages(sc).length)) return [];
+  const placeShot = scenes.some((sc) => sceneImages(sc).some((id) => !isSkyOnlyImage(id) && id !== "oprn-title-field"));
+  if (placeShot) return [];
+  const used = [...new Set(scenes.flatMap(sceneImages))];
+  const firstMap = project.maps[project.startMapId];
+  return [{
+    id: "opening-no-place",
+    message: `오프닝 ${scenes.length}장면이 하늘·별·구름 같은 일반 배경(${used.slice(0, 4).join(", ")})만 보이고 이 게임의 장소가 한 번도 안 나온다 — 어디서 일이 나는지 모른 채 시작한다. `
+      + `맞는 장소 그림이 없으면 게임 맵을 그대로 쓴다: create_opening_animatic_shot{shotId} 뒤 place_opening_background{shotId, layerId:'bg', mapId:'${firstMap?.id ?? "<무대 맵 id>"}', focus:{x,y}}(${firstMap?.name ?? "무대"}의 대표 자리 — 건물 정문·광장), 인물은 place_opening_charset_actor. `
+      + `맞는 스틸이 있으면 list_opening_media{kind:'image', query:<장소 낱말>} 로 골라 그 장면에 쓴다. 하늘 층은 장소 장면 뒤 겹으로만.`,
+    evidence: `opening images=${used.join(",") || "none"}`,
+  }];
+}
+
+/** 그림 설명·태그가 말하는 계절·풍토 낱말 — 요청·게임 글에 같은 계열 낱말이 없으면 «다른 이야기 그림»이다. */
+const SETTING_WORDS: readonly { readonly key: string; readonly art: RegExp; readonly premise: RegExp }[] = [
+  { key: "눈·겨울", art: /눈 덮인|설원|겨울|눈 쌓인|winter|snow|얼음|오로라/iu, premise: /눈|겨울|설원|얼음|빙|크리스마스|winter|snow|ice/iu },
+  { key: "사막", art: /사막|모래|피라미드|desert|오아시스/iu, premise: /사막|모래|피라미드|오아시스|desert/iu },
+  { key: "바다·해저", art: /해저|바다|항구|ocean|harbor/iu, premise: /바다|해저|항구|섬|배를|해변|ocean|sea|harbor/iu },
+];
+function artText(id: string | undefined): string {
+  if (!id) return "";
+  const still = findOpeningStillMood(id);
+  if (still) return `${still.name} ${still.description} ${still.tags.join(" ")}`;
+  return id === "oprn-title-field" ? "별빛 아래 눈 덮인 산과 소나무, 등불 켜진 눈 마을(편집기 기본 타이틀)" : "";
+}
+
+/**
+ * 타이틀·엔딩 그림이 이야기와 다른 곳이다(2026-10-25 판정 J10·J17): 약초 숲 JRPG 타이틀에 눈 내리는 기본 마을, 서울 연애 엔딩 셋이
+ * 눈 덮인 산골 마을(엔딩 그림이 비어 타이틀 그림을 이어 썼다). 그림 설명의 계절·풍토 낱말이 요청·게임 글에 없으면 짚는다.
+ */
+export function offPremiseArt(project: Project, task: string): ShipBlocker[] {
+  const s = project.system as unknown as Obj;
+  const title = (s.titleScreen ?? {}) as Obj;
+  const titleBg = (title.backgroundResourceId ?? s.titleResourceId) as string | undefined;
+  const premise = [task, project.meta.title, String(title.title ?? ""), ...(project.endings ?? []).map((e) => e.name), ...Object.values(project.maps).map((m) => m.name)].join(" ");
+  const clash = (id: string | undefined): string | undefined => {
+    const text = artText(id);
+    return SETTING_WORDS.find((w) => w.art.test(text) && !w.premise.test(premise))?.key;
+  };
+  const out: ShipBlocker[] = [];
+  // 편집기 기본 타이틀 그림은 title-image 가 이미 짚는다.
+  const tKey = titleBg === "oprn-title-field" ? undefined : clash(titleBg);
+  if (tKey) out.push({ id: "title-off-premise", message: `타이틀 그림(${titleBg}: ${artText(titleBg).slice(0, 40)}…)이 ${tKey} 풍경인데 이 게임 이야기에는 ${tKey}이 없다 — list_resources{kind:'backdrop', query:<무대 낱말>}·list_opening_media{kind:'image', query:<무대 낱말>} 로 이야기의 장소 그림을 골라 set_title_screen{backgroundResourceId} 로 바꾼다.`, evidence: `title=${titleBg}` });
+  const bare = (project.endings ?? []).filter((e) => !e.presentation?.backgroundResourceId);
+  const fallKey = clash(titleBg);
+  if (bare.length && (fallKey || titleBg === "oprn-title-field")) out.push({ id: "ending-off-premise", message: `엔딩 ${bare.length}개(${bare.slice(0, 3).map((e) => e.name).join("·")})에 마지막 그림이 없어 타이틀 그림(${titleBg})이 깔린다 — ${fallKey ? `${fallKey} 풍경이라 이 이야기와 다르다` : "편집기 기본 눈 마을이다"}. define_ending 의 presentation.backgroundResourceId 에 그 엔딩의 장소 그림(list_resources{kind:'backdrop', query:<장소 낱말>} 에서 가장 가까운 것)을 준다.`, evidence: bare.map((e) => e.id).join(",") });
+  for (const e of project.endings ?? []) {
+    const key = clash(e.presentation?.backgroundResourceId);
+    if (key) out.push({ id: "ending-off-premise", message: `엔딩 「${e.name}」 그림(${e.presentation!.backgroundResourceId})이 ${key} 풍경인데 이야기에는 ${key}이 없다 — 이 엔딩의 장소 그림으로 바꾼다.`, evidence: `${e.id}=${e.presentation!.backgroundResourceId}` });
+  }
+  return out;
+}
+
 /** 조언자·끝맺음 관문이 같이 쓰는 출하 차단 목록(게임을 만드는 요청일 때만). 제목 스포일러는 어느 요청이든. */
 export function shipBlockers(project: Project, task: string): ShipBlocker[] {
   const spoilers = titleSpoilers(project);
   if (!wantsWholeGame(task)) return spoilers;
-  return [...editorDefaultsLeft(project), ...endingClosureProblems(project), ...spoilers];
+  return [...editorDefaultsLeft(project), ...endingClosureProblems(project), ...openingWithoutPlace(project), ...offPremiseArt(project, task), ...spoilers];
 }
 
 /** 게임이 «아직 안 지어졌다»는 신호 — 뼈대 자리표시만 남았거나 엔딩이 없다(편집기 기본 HUD·창 같은 마감 항목은 여기서 보지 않는다). */

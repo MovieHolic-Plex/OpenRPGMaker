@@ -23,6 +23,29 @@
   modulepreload 수십 개 뒤라 HTTP/1.1 연결을 기다려 첫 화면을 늦췄다 — `electron/serve/runtime.ts` 가 `<meta charset>` 바로 뒤에 심는다.
   Electron 창은 `backgroundColor: #F7F8F8`(스플래시 바탕색)이고 `ready-to-show` 가 첫 프레임 뒤라 흰 화면이 안 보인다. 시작 화면(`start-screen.html`)도 인라인 로고 뼈대를 먼저 그린다.
 
+- **셸 먼저 보이기 (2026-10-25):** 첫 부팅에서 `enterMode("edit")` 가 `renderEditor` 로 셸 DOM 을 붙인 직후 `revealShellEarly()`(src/app/bootLoader.ts, 마크 `shell-visible`)로 로더를 걷는다 —
+  맵 판(Phaser 기동·텍스처·`EditScene.preload` 의 팔레트 프레임 약 1s)을 기다리지 않는다. 그동안 맵 칸에는 글자 없는 도는 표시(`[data-map-loading]`, `aria-busy`)가 있고 `EditScene.create` 가 걷는다.
+  첫 화면 신호(`markBootSettled` — 미뤄 둔 한가한 일·부팅 정규화의 출발)와 마크 `settled`·데스크톱 `editorReady` 는 예전처럼 마운트를 다 끝낸 `dismissBootLoader` 가 낸다. 브리핑(웰컴)이 첫 화면을 맡을 때·플레이 부팅은 예전 그대로.
+  실측(웜, 2회 중앙값, 부하 46): 편집기 단계 시작 → 셸 보임 2.3s, → settled 3.2s(셸이 약 0.9s 먼저 보인다). 셸 보임 앞의 2.3s 는 편집기 청크(조수 도구 목록 toolRegistry 9.7MB 포함) 받기·평가와 renderEditor 다.
+- **새 빌드 첫 실행의 부팅 정규화는 첫 화면 뒤 (2026-10-25):** 편집기 부팅(`src/app/mode.ts`)은 `store.load({ deferBootNormalization: true })` 를 부른다.
+  표식(`bootNormalization.ts`)이 지금 빌드와 안 맞는 문서는 load 가 정규화하지 않고 `deferredBootNormalization` 에 남긴 채 돌아오며(마크 `project-normalization-deferred`),
+  첫 화면 뒤(`afterBootSettled`) `store.whenBootNormalized()` 가 정규화를 돌린다(마크 `deferred-normalization-start/done`, 바뀌면 `emit({scope:"project"})` 로 다시 그림).
+  **저장 관문:** 유일한 쓰기 지점 `persistCurrent` 가 먼저 `whenBootNormalized()` 를 기다린다 — 정규화 안 된 문서는 정본에 쓰이지 않는다. 정규화가 실패하면 그 오류가 남아 저장이 계속 거절된다.
+  조수 채팅 실행(`aiPiAgentCommand.runPiCommandProtected`)도 기준 문서를 잡기 전에 기다린다(정규화 전 기준은 곧 낡은 기준). 문서가 통째로 바뀌면(lineage) 미룬 정규화는 버린다.
+  같이 미루는 것: 로드의 타일셋 재사용 요약 — `preferDeferredDigests()`(electronRepository) 로 다음 로드 한 번은 정규화기가 돌 문서도 요약을 미루고,
+  `normalizeCurrentProject` 가 정규화기 직전에 `settleDeferredDigests()`(하나마다 양보)로 끝낸다 — 요약은 여전히 «정규화가 고치기 전» 값이다.
+  정규화기 전후 문서 요약 두 번은 표식을 새기는 빌드에서는 건너뛴다(어차피 표식 때문에 저장한다 — 요약은 이름표에만 쓰였다; 정규화기 자신의 applied 보고로 이름표를 단다).
+  테스트·헤드리스의 `store.load()`(옵션 없음)는 예전처럼 정규화까지 마친다.
+  창을 일찍 닫아도 미룬 정규화가 버려지지 않게 `store.flush()`(닫기·메뉴 저장)가 먼저 `whenBootNormalized()` 를 끝낸다 — 안 그러면 dirty 가 아니라 아무것도 안 쓰고 닫혀, 다음 실행도 또 «새 빌드 첫 부팅»이 됐다(실측).
+  실측(표식을 지운 같은 프로젝트, 부하 57~58, 2회 중앙값): 클릭 → 편집 화면 19.9s → 11.3s(project-read 8.5 → 2.4s, 정규화 7.1s → 첫 화면 뒤). 웜 부팅은 변화 없음(9.2s). 정규화 뒤 저장으로 표식이 새겨짐을 SQLite 에서 확인.
+- **마지막 편집 화면 자리표시 (2026-10-25, 데스크톱):** 「계속」·프로젝트 열기 뒤 편집기가 준비되기까지(평소 9~13s, 새 빌드 첫 실행 30s+) 흰 로더만 보이던 자리에
+  지난번 그 프로젝트를 닫을 때의 편집기 그림을 읽기 전용으로 깔고, 단계 글자를 아래 가운데 작은 칩(「프로젝트 여는 중… (3/4)」)으로 바꾼다. 편집기가 로더를 걷으면 그림도 함께 걷힌다.
+  찍기: `electron/main/lastView.ts` — 창을 닫을 때(숨기기 전, 상한 250ms) 그리고 저장이 끝난 뒤(1.5s 디바운스, 최소 20s 간격) `webContents.capturePage()` →
+  `userData/last-view/<폴더 해시>.jpg/.json`(긴 변 1600, JPEG 80). 렌더러가 로더를 걷을 때 `oprn.resume.editorReady()`(src/app/bootLoader.ts)로 알린 창만 찍는다 —
+  닫기 직전 렌더러는 저장으로 바빠 `executeJavaScript` 로 상태를 물으면 상한 안에 안 돌아왔다(실측). 문서를 떠나면(`did-start-navigation`) 다시 신호를 기다린다.
+  보이기: `public/boot-splash.js` 가 `oprn.resume.lastView()`(IPC, 이 창이 연 프로젝트 것만 — 다른 프로젝트 그림은 절대 안 준다)를 묻고, 묻는 동안(최대 400ms) 로고·줄을 숨긴다(`data-resume-pending`),
+  그림이 오면 `data-resume` + `<img class="oprn-boot-resume">`. 실패 화면(`data-failed`)이 뜨면 그림 대신 평소 오류 화면. `?play=`·`?demo=` 문서와 웹(프리로드 없음)은 예전 로더.
+  부팅 마크 `resume-shown`. 실측(부하 57~60, 3회 중앙값): 편집기 문서 시작 뒤 0.36s(클릭 뒤 약 0.64s)에 지난 화면이 보인다 — 예전에는 settled(클릭 뒤 12~13s)까지 로더만.
 - **웜 부팅 시간 줄이기 (2026-10-15, 웜 = 표식이 맞는 두 번째 부팅. 정상 상태 CPU 프로필로 큰 것부터):** 다섯 가지와, 해 보고 버린 것.
   ① 저장 기준본(`store.load` 의 `baselineFrom`)은 부팅 정규화를 건너뛰는 문서(표식 일치 · 대기 중인 얼굴 시트 보정 없음)에서만 타일셋·업로드 자산
   항목을 공유한다(`projectWithoutEventDraftsSharingSharedDictionaries`, 복제 1.5s 절약) — 정규화기가 돌 문서는 예전처럼 통째 복제한다(정규화기는 항목을 제자리에서 고친다).

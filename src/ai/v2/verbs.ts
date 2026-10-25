@@ -10,7 +10,7 @@ import { builderFor } from "./builders";
 import { localizePlaceSpec } from "./builders/modernCity";
 import { applyModernSetupDefaults, applyStorySetupDefaults, isFreshProject } from "./genreDefaults";
 import { dedupeToolSchemas } from "./schemaDedupe";
-import { adoptExactInterior, interiorAddAnchors, interiorBuilder, interiorEditFromArgs, roomMaterials } from "./builders/interior";
+import { adoptExactInterior, interiorAddAnchors, interiorBuilder, interiorEditFromArgs, interiorMoveObjects, roomMaterials, type ObjectEdit } from "./builders/interior";
 import { interiorStampEdit, type StampEditState } from "./builders/interiorEdit";
 import { fixPlayerStart, runMachineChecks, summarizeChecks, type MachineCheck } from "./checks";
 import { critique } from "./critic";
@@ -29,6 +29,7 @@ import { createGameTools, wantsPuzzle, wantsGameTools, wantsStoreTools, wantsTer
 import { gameContentProblems, unaskedChanges } from "./gameChecks";
 import { HELPER_LIMITS, helpersOn, runHelperJobs, type HelperJob } from "./helpers";
 import { isStoreCardRequest } from "@/editor/tools/storeTools";
+import { combatProblems } from "./combatChecks";
 import { edgeCell, eventBeats, isInside, isOutdoor, oppositeSide, makeGameOn, orderPlaces, pickDoor, villageDoors, walkGame, wantsMakeGame, type GameSpec } from "./makeGame";
 import { pickStageFrames, stageFrameProject, type EventBuildResult } from "./events";
 import { rememberObjectPlan, takeObjectPlan, type DrawObjectResult } from "./drawObject";
@@ -206,8 +207,9 @@ function recordWrite(env: PiAssistantV2Env, run: RecordingBuildRun, toolCallId: 
 function nextStep(seen: Seen, rounds: number): string {
   const bad = seen.checks.filter((c) => !c.ok).length + seen.critics.reduce((n, v) => n + v.majors.length, 0);
   if (!bad && !seen.critics.some((v) => v.problem)) return "통과 — 비평 major 0, 기계 검사 통과. 다른 요청 부분이 남았으면 이어서, 아니면 사용자에게 보고한다.";
-  if (rounds >= V2_MAX_REPAIR_ROUNDS) return `고치기 상한(${V2_MAX_REPAIR_ROUNDS}바퀴)에 닿았다 — 더 고치지 말고 남은 문제를 사용자에게 그대로 보고한다.`;
-  return `문제 ${bad}건 — 고칠 수 있으면 edit_place 패치(구역 더하기·주인공 물건 near 좌표·크기·variant·dressing)로 한 번에 고친다(남은 바퀴 ${V2_MAX_REPAIR_ROUNDS - rounds}). 패치로 못 고치는 것(그림이 없는 물건 등)은 보고에 적는다.`;
+  const furniture = "놓인 가구 하나가 문·길을 막거나 방향이 틀린 major 는 move_object(그 칸 at → to·face·remove)로 고친다 — 바퀴를 쓰지 않는다.";
+  if (rounds >= V2_MAX_REPAIR_ROUNDS) return `고치기 상한(${V2_MAX_REPAIR_ROUNDS}바퀴)에 닿았다 — 다시 짓는 고치기는 더 하지 않는다. ${furniture} 그 밖의 남은 문제는 사용자에게 그대로 보고한다.`;
+  return `문제 ${bad}건 — 고칠 수 있으면 edit_place 패치(구역 더하기·주인공 물건 near 좌표·크기·variant·dressing)로 한 번에 고친다(남은 바퀴 ${V2_MAX_REPAIR_ROUNDS - rounds}). ${furniture} 패치로 못 고치는 것(그림이 없는 물건 등)은 보고에 적는다.`;
 }
 
 /** 빌더 기록이 없는 손 도트 실내(이전 실행이나 사람이 layout 으로 지은 방)를 같은 방 구성으로 다시 지어 기록을 만든다. */
@@ -637,6 +639,50 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
     },
   };
 
+  // ───── move_object: 놓인 가구 하나 옮기기·돌리기·빼기(손 도트 실내). 다시 짓지 않으므로 고치기 바퀴를 쓰지 않는다 ─────
+  const moveBudget = new Map<string, number>();
+  const MOVE_OBJECT_LIMIT = 6;
+  const moveObject: PiToolShape = {
+    name: "move_object", label: "가구 옮기기", concurrency: "exclusive",
+    description: "손 도트 실내에 이미 놓인 가구를 하나씩 옮기거나(to), 다른 방향 그림으로 돌리거나(face), 뺀다(remove). at 은 그 가구가 덮는 칸(비평이 짚은 칸). to 는 at 칸이 갈 자리 — 가구 전체가 같은 만큼 밀린다. 방의 나머지는 그대로이고 고치기 바퀴를 쓰지 않는다(맵당 6번). 길을 막거나 지을 수 없는 자리면 되돌리고 이유를 말한다. 탁자·상품·단상·벽·바닥은 못 옮긴다.",
+    parameters: { type: "object", properties: {
+      mapId: { type: "string" },
+      edits: { type: "array", minItems: 1, maxItems: 8, items: { type: "object", properties: {
+        at: POINT, to: POINT, face: { type: "string", enum: ["N", "S", "E", "W"] }, remove: { type: "boolean" },
+      }, required: ["at"] } },
+    }, required: ["mapId", "edits"] },
+    async execute(id, params) {
+      const p = params as { mapId: string; edits: ObjectEdit[] };
+      const map = env.ctx.project.maps[p.mapId];
+      if (!map) return text({ ok: false, summary: `맵 ${p.mapId} 이 없다` });
+      const used = moveBudget.get(p.mapId) ?? 0;
+      if (used >= MOVE_OBJECT_LIMIT) return text({ ok: false, summary: `${p.mapId} 의 가구 옮기기 상한(${MOVE_OBJECT_LIMIT}번)에 닿았다 — 남은 문제를 사용자에게 보고한다.` });
+      const edits = (p.edits ?? []).filter((e) => e && e.at && (e.to || e.face || e.remove));
+      if (!edits.length) return text({ ok: false, summary: "edits 마다 at 과 함께 to·face·remove 중 하나가 필요하다" });
+      const record = session.places.get(p.mapId);
+      type ArgsState = { tilesetId?: string; mapId?: string; args?: Record<string, unknown>; stampEdit?: boolean; adopted?: { tilesetId: string; args: Record<string, unknown> } };
+      const state = record?.result.state as ArgsState | undefined;
+      let base: { tilesetId: string; args: Record<string, unknown> } | undefined;
+      let prev: ArgsState | undefined;
+      if (state?.args && !state.stampEdit && String(state.args.mapId ?? state.mapId) === p.mapId) { base = { tilesetId: state.tilesetId ?? map.tilesetId, args: state.args }; prev = state; }
+      else {
+        if (state?.args && !state.stampEdit && state.mapId !== p.mapId) return text({ ok: false, summary: `${p.mapId} 는 위층·딸린 맵이라 아직 가구를 옮기지 못한다 — 보고에 적는다.` });
+        // 이 실행이 짓지 않은 방: 지금 그림과 똑같이 다시 지어지는 인자를 찾는다(못 찾으면 옮기지 않는다 — 방이 견본으로 바뀌면 안 된다).
+        const exact = adoptExactInterior(run, p.mapId);
+        if (!exact) return text({ ok: false, summary: `${p.mapId} 의 가구 목록을 읽지 못했다(손 도트 실내가 아니거나 손으로 고친 방) — 옮기지 않았다. 보고에 적는다.` });
+        base = exact;
+        prev = { tilesetId: exact.tilesetId, mapId: p.mapId, args: exact.args, adopted: exact };
+      }
+      const spec: PlaceSpec = record?.spec ?? { type: "interior", name: map.name, mapId: p.mapId };
+      const before = record ? { project: env.ctx.project, record, seen: new Map(record.result.mapIds.map((m) => [m, session.seen.get(m)!] as const).filter(([, v]) => !!v)) } : undefined;
+      env.emit({ type: "execution_status", name: "v2.move_object", ok: true, summary: `${spec.name}: 가구 ${edits.length}개 고치는 중` });
+      const moved = interiorMoveObjects(run, spec, base, edits, prev as never);
+      moveBudget.set(p.mapId, used + 1);
+      const result = moved.ok && record ? { ...moved, mapIds: record.result.mapIds, ...(record.result.entrance ? { entrance: record.result.entrance } : {}) } : moved;
+      return finishPlace(id, "move_object", params, spec, interiorBuilder.id, result, record?.rounds ?? 0, before?.seen.size ? before : undefined);
+    },
+  };
+
   // ───── make_game: 작은 게임 한 판(맵 5~8장·잇기·사람·사건)을 계획 한 번으로 ─────
   const personItem = (addPeople.parameters as { properties: { people: { items: { properties: Record<string, unknown>; required: string[] } } } }).properties.people.items;
   const eventItem = (addEvent.parameters as { properties: { event: { properties: Record<string, unknown>; required: string[] } } }).properties.event;
@@ -844,7 +890,7 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
     }
     return result;
   } });
-  const verbs = [makePlace, ...(makeGameOn() && wantsMakeGame(String(task ?? "")) ? [makeGame] : []), editPlace, addPeople, addEvent, addScene, ...(wantsPuzzle(String(task ?? "")) ? [authorPuzzleChain] : []), sealLockedRoomVerb, drawObjectVerb, placeObject, inspect, ...(helpersOn() ? [askHelpers] : []), askUser].map(guard);
+  const verbs = [makePlace, ...(makeGameOn() && wantsMakeGame(String(task ?? "")) ? [makeGame] : []), editPlace, moveObject, addPeople, addEvent, addScene, ...(wantsPuzzle(String(task ?? "")) ? [authorPuzzleChain] : []), sealLockedRoomVerb, drawObjectVerb, placeObject, inspect, ...(helpersOn() ? [askHelpers] : []), askUser].map(guard);
   // 게임 요소(퀘스트·아이템·전투·파티) 요청이면 v1 게임 도구를 덧붙인다 — 기록은 도구 묶음이 env.record 로 직접 남긴다.
   const t = String(task ?? "");
   // 스토어 음악 카드(사용자가 듣고 고른다)를 띄웠으면 사용자 질문과 같다 — 끝맺음 관문이 «음악을 안 걸었다»며 넣기를 재촉하지 않게 한다.
@@ -865,6 +911,8 @@ export function v2FinishGate(session: V2Session, env?: PiAssistantV2Env): string
   // 게임 내용 검사(날씨·엔딩·상태·물건 고르기·깃발·부작용) — 요청 낱말과 실제로 바뀐 이벤트를 맞댄다.
   let game: string[] = [];
   if (env) { try { game = [...gameContentProblems(env.request.project, env.ctx.project, env.request.task), ...unaskedChanges(env.request.project, env.ctx.project, env.request.task)]; } catch { game = []; } }
+  // 끝까지 깰 수 있는 전투인가(2026-10-25 판정 J55·J4): 회복 수단 없음·시키지 않은 무작위 조우·첫 구역이 너무 센 조우.
+  if (env) { try { game.push(...combatProblems(env.request.project, env.ctx.project, env.request.task)); } catch { /* 검사 실패는 무시 */ } }
   // 출하 차단(2026-10-25 사용자 규칙): 게임을 만드는 요청이면 편집기 기본값·한 줄 엔딩이 남은 채 «다 됐다»고 하지 못한다.
   if (env) { try { game.push(...shipBlockers(env.ctx.project, env.request.task).map((b) => `[출하 차단 ${b.id}] ${b.message} 고치지 못하면 «완성»이라고 쓰지 말고 남은 기본값으로 보고한다.`)); } catch { /* 검사 실패는 무시 */ } }
   // 아무것도 안 바꾸고 «도구가 없다»며 끝내기(2026-10-24 g3-edit-move: 대장장이 옮기기를 묻기만 했다, g3-apple-count: 그림 카드만 남겼다).

@@ -3,11 +3,11 @@
  "massing": "M13",
  "material": "stone",
  "refs": [
-  "bd-house-ware0",
-  "bd-house-cathedral"
+  "bd-house-h124_0",
+  "bd-house-ware0"
  ],
  "walk": [
-  "*****",
+  ".***.",
   "*****",
   "*****",
   "XXXXX",

@@ -58,6 +58,14 @@
   계속 빼앗아 60판 중 51판이 cancelled 였다. 판정 논리(기준선 대비 회귀만 실패)는 그대로다.
 - 브랜치 보호(필수 체크 `fast`)는 저장소 설정이라 소유자가 켠다. 켜기 전에는 도우미 규칙이 유일한 방어다.
 
+## 그림 블라인드 검수의 Argon 은 `scripts/qa/argon-vqa.py` 로 (2026-10-25)
+
+Claude Code 의 `argon` 서브에이전트(`~/.claude/agents/argon.md`)는 **그림을 보지 못한다** — 그 판정은 눈 감은 판정이라 근거로 쓰지 않는다.
+그림 판정(적대 VQA·바닥/벽 블라인드 검수)은 `python3 scripts/qa/argon-vqa.py <out.txt> <prompt.txt> <img...>` 로 한다.
+로컬 프록시(기본 `http://127.0.0.1:8318`, `ARGON_VQA_BASE`)에 `gemini-4-argon-high`(`ARGON_VQA_MODEL`)로 그림을 data URI 로 직접 넣고,
+답을 고치지 않고 `<out.txt>` 에 쓴다(첫 줄 = 모델·그림 경로). 키는 이 박스의 `ANTHROPIC_AUTH_TOKEN` 을 읽기만 하고 출력·기록하지 않는다.
+`/tmp` 사본은 쓰지 않는다 — 이 박스의 `/tmp` 작업 폴더는 통째로 사라진 적이 있다.
+
 ## main 의 ci-fast 는 다음 머지가 진행 중 잡을 끊지 않는다 (2026-09-26)
 
 `concurrency.cancel-in-progress` 가 main 에서도 true 이면, 머지가 잡보다 빠를 때 앞선 main 실행이

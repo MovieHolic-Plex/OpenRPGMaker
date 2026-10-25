@@ -58,6 +58,14 @@ export function retroMotionPose(node: HTMLElement, pose: Pose, paint: PaintPose)
 
 function paint(node: HTMLElement, pose: Pose): void { painters.get(node)?.(node, pose); }
 
+/** 연계기 동료(battleComboPartners)가 비트 밖에서 칸을 고른다. undefined 면 놓아 준다. */
+export function setRetroPartnerFrame(node: HTMLElement, frame: Pose | undefined): void {
+  if (frame) node.dataset.retroTransient = frame;
+  else delete node.dataset.retroTransient;
+  transientGenerations.set(node, (transientGenerations.get(node) ?? 0) + 1);
+  paint(node, "idle");
+}
+
 /** 표시 계층이 이미 한 번 그린 배틀러를 현재 연출 상태로 다시 그린다. */
 export function repaintRetroBattler(node: HTMLElement): void { paint(node, "idle"); }
 

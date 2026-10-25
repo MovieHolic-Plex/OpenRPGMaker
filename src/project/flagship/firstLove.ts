@@ -371,15 +371,17 @@ function buildMondayMorning(project: Project, a: FirstLoveAnchors): void {
   const nearBump: Cell = bumpAt;
   const rusher: Cell = nearestFree(project, street, { x: 21, y: 14 }, 1);   // 북쪽 보도, 횡단보도 머리
   const rushStop: Cell = { x: bumpAt.x + 1, y: bumpAt.y };                   // 횡단보도를 뛰어 내려와 보도에 닿는 칸 — 서하 바로 오른쪽
-  // 출구에서 나온 사람들은 빈 보도에서 사라지지 않는다 — 둘은 늘봄 빌딩 문으로 들어가고, 둘은 동쪽 보도 끝(화면 밖)으로 걸어간다.
+  // 출구에서 나온 사람들은 빈 보도에서 사라지지 않는다 — 차례로 나와 횡단보도를 건너 늘봄 빌딩 문으로 들어간다.
   const crowd = [
     { id: "ev_fl_crowd_1", tex: "tex_oprn_charset_modern3", index: 0, delay: 0, exit: "ev_fl_office_door" },
-    { id: "ev_fl_crowd_2", tex: "tex_oprn_charset_modern3", index: 2, delay: 2, far: { x: 47, y: 25 } },
-    { id: "ev_fl_crowd_3", tex: "tex_oprn_charset_modern2", index: 7, delay: 5, exit: "ev_fl_office_door" },
-    { id: "ev_fl_crowd_4", tex: "tex_oprn_charset_modern1", index: 1, delay: 7, far: { x: 47, y: 24 } },
+    { id: "ev_fl_crowd_2", tex: "tex_oprn_charset_modern3", index: 2, delay: 6, exit: "ev_fl_office_door" },
+    { id: "ev_fl_crowd_3", tex: "tex_oprn_charset_modern2", index: 7, delay: 12, exit: "ev_fl_office_door" },
+    { id: "ev_fl_crowd_4", tex: "tex_oprn_charset_modern1", index: 1, delay: 18, exit: "ev_fl_office_door" },
   ];
   for (const c of crowd) {
-    add(street, event(c.id, "출근하는 사람", s.subway, [page(`${c.id}_p`, [stageIs(V_STAGE, S.START)], [], { dir: "down" })]));
+    // 처음엔 화면 밖 구석(맵 맨 윗줄)에 둔다 — 계단 칸에 세워 두면 차례가 늦은 사람이 경로가 닿을 때까지 계단에 보였다(Argon op4).
+    // enterVia 가 출구 칸으로 옮겨 나타나게 한다.
+    add(street, event(c.id, "출근하는 사람", { x: crowd.indexOf(c), y: 0 }, [page(`${c.id}_p`, [stageIs(V_STAGE, S.START)], [], { dir: "down" })]));
     const pg = street.events.find((e) => e.id === c.id)!.pages![0]! as unknown as { graphic: Record<string, unknown>; priority: string; overlapForbidden: boolean; movement: Record<string, unknown> };
     pg.graphic = { sprite: { type: "bundled", id: c.tex }, direction: "down", pattern: charsetFrameIndex({ characterIndex: c.index, direction: "down", pattern: 1 }), transparent: false };
     pg.priority = "same"; pg.overlapForbidden = false; pg.movement = { type: "fixed", speed: 4, frequency: 3 };
@@ -389,8 +391,9 @@ function buildMondayMorning(project: Project, a: FirstLoveAnchors): void {
     { kind: "changeOpacity", delta: -255 },
     ...Array.from({ length: c.delay }, () => ({ kind: "wait" })),
     { kind: "enterVia", x: s.subway.x, y: s.subway.y, dir: "down", se: "", closeSe: "" },
-    c.exit ? [{ kind: "approach", x: 21, y: 22, distance: 0 }, { kind: "approach", x: 21, y: 14, distance: 0 }, { kind: "exitVia", target: c.exit, se: "", closeSe: "" }] : { kind: "approach", x: c.far!.x, y: c.far!.y, distance: 0 },
-  ].flat(), repeat: false, wait: false, skippable: true } } as unknown as Command);
+    // 모두 세로 횡단보도로 길을 건너 늘봄 빌딩으로 — 동쪽 보도 끝으로 가던 사람은 차도에 멈춰 섰다(Argon op3).
+    { kind: "approach", x: 21, y: 22, distance: 0 }, { kind: "approach", x: 21, y: 14, distance: 0 }, { kind: "exitVia", target: c.exit, se: "", closeSe: "" },
+  ], repeat: false, wait: false, skippable: true } } as unknown as Command);
   add(street, event("ev_fl_rusher", "서두르는 남자", rusher, [
     page("rusher_p", [stageIs(V_STAGE, S.START)], [], { who: "jihu", dir: "down" }),
   ]));
@@ -415,8 +418,8 @@ function buildMondayMorning(project: Project, a: FirstLoveAnchors): void {
     // 서하가 횡단보도를 건너기 시작한다. 반쯤 왔을 때 길 건너에서 남자가 휴대폰을 보며 뛰어 내려오다 서하 쪽으로 꺾는다.
     // 부딪힘은 보도 위(횡단보도 발치)에서 — 차도에서 부딪히면 선 차와 겹쳐 서류가 보닛 위에 떴다(Argon op2).
     walkRoute(project, FL_MAP.street, "@player", s.arrive, nearBump, [], true, "right"),
-    walkRoute(project, FL_MAP.street, "ev_fl_rusher", rusher, rushStop, [bumpAt], false, "left"),
-    waitMoves(),
+    // 남자 걸음만 기다린다 — 모든 이동을 기다리면 아직 걷는 출근 인파를 기다리느라 둘이 4초 마주 서 있었다(Argon op3).
+    walkRoute(project, FL_MAP.street, "ev_fl_rusher", rusher, rushStop, [bumpAt], true, "left"),
     quiet("cc0-se-orp-inventory-cloth-heavy", 0.8),
     shake(260),
     { kind: "moveEvent", eventId: "@player", route: { moves: [{ kind: "setDirectionFix", enabled: true }, { kind: "jump", dx: -1, dy: 0, heightPx: 4, durationMs: 220 }, { kind: "setDirectionFix", enabled: false }], repeat: false, wait: true, skippable: true } } as unknown as Command,

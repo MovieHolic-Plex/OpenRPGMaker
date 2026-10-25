@@ -90,6 +90,7 @@ import { applyStoredCameraState, centerRuntimeCamera, panRuntimeCamera } from "@
 import { runtimeMapViewZoom, runtimePixelDensity } from "@/player/runtimeViewScale";
 import { hasSessionCheckpoint, restoreSessionCheckpoint, setSessionCheckpoint, getSessionCheckpoint } from "@/player/checkpoints";
 import { syncFollowerSceneVisibility, syncFollowerSprites } from "@/player/playSceneFollowers";
+import { startChaseSpawnGrace } from "@/player/chaseSpawnGrace";
 import { syncPartyFollowers } from "@/project/followers";
 import { seedLocationOccupancyForScene } from "@/player/playSceneLocationTransitions";
 import { installLightingLayer, syncLightingLayer, updateLighting } from "@/player/playSceneLighting";
@@ -291,6 +292,7 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
       return host instanceof HTMLElement ? host : undefined;
     }, { qaInstrumentation, playResolution });
     this.session = this.initialSession(project);
+    startChaseSpawnGrace(this);
     this.zoneFeedback = createPlaySceneZoneFeedback(this.session);
     // dialogueHost 는 player.ts 가 게임 생성 후 registry 에 넣으므로 여기선 아직 없을 수 있다.
     // zoneFeedback 과 동일하게 update 에서 host 를 다시 해석해 붙인다.
@@ -707,6 +709,8 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
   applySession(session: PlaySession): void {
     this.battleAbortController?.abort();
     this.session = structuredClone(session);
+    // 불러오기·체크포인트·패배 복구는 주인공을 새로 세운다 — 추격자가 곧바로 잡지 않게 은총 시간을 다시 준다(J61).
+    startChaseSpawnGrace(this);
     // 엔딩·CG 해금은 세이브가 아니라 이 기기 기록이다 — 불러오기·체크포인트·패배 복구로 세션을 갈아 끼워도 목록이 0 으로 돌아가지 않게 다시 비춘다.
     if (typeof window !== "undefined" && window.localStorage) syncSessionWithDeviceRecords(window.localStorage, store.getCurrent(), this.session);
     this.clearRuntimeOverlay("runtime-error");

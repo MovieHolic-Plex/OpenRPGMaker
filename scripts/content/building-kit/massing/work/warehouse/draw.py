@@ -18,9 +18,14 @@ GY = H - 1
 CX = 40                      # 가운데(39|40 사이)
 WX0, WX1 = 2, 77
 
-# ---------------------------------------------------------------- 지붕(박공 뒤): 버들항 박공집처럼 위에서 본 한 장의 사면
-# 용마루가 화면 위로 물러나 꼭짓점이 되고, 사면 하나에 가로 기와 줄(버들항 앞 사면 결). 왼끝은 빛 받는 마구리, 오른끝은 그늘.
-ROOF_KNEE = 18
+# ---------------------------------------------------------------- 지붕(박공 뒤): 버들항 bd-house-h124_0 규약(BRIEF ㉚)
+# 앞 박공 뒤로 오각형 지붕이 화면 위로 물러난다. 기와는 용마루와 나란한 세로 열(왼 밝음 · 오른 그늘), 가운데 세로 용마루.
+import importlib.util as _ilu  # noqa: E402
+_sp = _ilu.spec_from_file_location('wh_h124roof', os.path.join(os.path.dirname(os.path.abspath(__file__)), 'h124roof.py'))
+HR = _ilu.module_from_spec(_sp)
+_sp.loader.exec_module(HR)
+ROOF_KNEE = 30
+RL = CX - 1
 
 
 def roof_in(x, y):
@@ -28,17 +33,22 @@ def roof_in(x, y):
     return abs(x + 0.5 - CX) <= hw
 
 
-btiles(c, roof_in, WX0, WX1, 1, 63, 'front', seed=6)
+HR.paint(c, roof_in, RL, WX0, WX1, 0, 63, ox=5, oy=2)
+_L, _R = [], []
+for x in range(WX0, WX1 + 1):
+    ys = [y for y in range(0, 64) if roof_in(x, y)]
+    if not ys:
+        continue
+    _t = ys[0]
+    (_L if x <= RL else _R).append((x, _t, 0))
+    if x not in (RL, RL + 1):
+        c.put(x, _t + 1, 'β' if x <= RL else '_')
 for y in range(0, 64):
     xs = [x for x in range(WX0, WX1 + 1) if roof_in(x, y)]
-    if not xs:
-        continue
-    l, r = xs[0], xs[-1]
-    btiles(c, lambda x, yy: l < x <= l + 3 and roof_in(x, yy), l, l + 3, y, y, 'lit', seed=2)
-    btiles(c, lambda x, yy: r - 3 <= x < r and roof_in(x, yy), r - 3, r, y, y, 'dark', seed=4)
-    c.put(l, y, 'α' if y % 2 else 'δ')
-    c.put(r, y, '9' if y % 3 else '7')
-c.rows(int(CX) - 2, 0, ['.ξσ.', 'ησLξ', 'ζηξη'])   # 꼭대기 마룻기와(짧게, 꼭짓점에 닿는다)
+    if xs and y > ROOF_KNEE - 2:
+        _L.append((xs[0], y, 1))
+        _R.append((xs[-1], y, -1))
+HR.rake(c, _L, _R)
 
 # ---------------------------------------------------------------- 벽돌(손 벽돌: 너비·밝기 제각각, 줄마다 어긋남)
 BW = [7, 5, 8, 6, 7, 9, 5, 6, 8, 7, 6, 5, 9, 7, 6, 8, 5, 7]
@@ -104,14 +114,42 @@ def wall_shade(x, y):
 
 
 brick(WX0, 18, WX1, GY - 2, start=3, shade=wall_shade, skip=lambda x, y: y < gable_top(x) + 4)
+# 벽돌 면 손질: 층마다 결이 다르게 — 덧댄 벽돌 자리·햇볕 바랜 자리·물 먹은 아랫단·그을음 줄(손으로 쓴 표)
+REPAIR = [(8, 46, 9, 6, '&'), (55, 74, 10, 7, '%'), (20, 96, 9, 6, '?'), (58, 120, 11, 8, '&'), (4, 126, 8, 6, '%'),
+          (48, 52, 12, 5, '?'), (22, 70, 8, 8, '%'), (50, 98, 8, 6, '<'), (24, 140, 6, 8, '&'), (68, 140, 8, 6, '?')]
+for (rx, ry, rw, rh, tone) in REPAIR:
+    for y in range(ry, ry + rh):
+        for x in range(rx, rx + rw):
+            if c.get(x, y) in '=+&?%<':
+                c.put(x, y, tone if (x + y) % 5 else c.get(x, y))
+for y in range(GY - 14, GY - 1):                       # 물 먹은 아랫단: 위로 갈수록 성기게
+    for x in range(WX0, WX1 + 1):
+        if c.get(x, y) in '=+&?' and (x * 3 + y * 5) % (2 + (GY - y) // 4 + 1) == 0:
+            darken(c, x, y, 1)
+for y in range(30, 62):                                 # 박공 왼쪽 위 햇볕 바랜 자리
+    for x in range(WX0 + 4, WX0 + 22):
+        if c.get(x, y) == '=' and (x + 2 * y) % 3 == 0:
+            c.put(x, y, '?')
 # 층계 갓돌: 윗면 4줄(위에서 본 갓돌 — 밝은 회색, 뒤로 물러난 면) + 앞면 2줄 + 밑 그늘 1줄
 for x in range(WX0, WX1 + 1):
     t = gable_top(x)
     edge_r = x > CX
+    blk = (x - WX0 + (3 if edge_r else 0)) // 5         # 갓돌 한 덩이 = 5px, 덩이마다 밝기·결이 다르다
+    joint = (x - WX0 + (3 if edge_r else 0)) % 5 == 0
+    tone = 'abcab'[blk % 5] if blk % 5 < 5 else 'a'
     for j, (lc, rc) in enumerate((('n', 'k'), ('r', 'm'), ('s', 'n'), ('r', 'm'))):
-        c.put(x, t + j, rc if edge_r else lc)
-    c.put(x, t + 4, 'j' if not edge_r else 'e')
-    c.put(x, t + 5, 'e' if not edge_r else 'a')
+        ch = rc if edge_r else lc
+        if tone == 'b' and j in (1, 3):
+            ch = 'm' if not edge_r else 'k'
+        if tone == 'c' and j == 2:
+            ch = 'r' if not edge_r else 'm'
+        if (x * 7 + j * 3 + blk) % 11 == 0:
+            ch = 'k' if not edge_r else 'j'                 # 돌 낱알(흠)
+        if joint and j > 0:
+            ch = 'j' if not edge_r else 'e'                 # 덩이 이음
+        c.put(x, t + j, ch)
+    c.put(x, t + 4, ('j' if not edge_r else 'e') if not joint else 'e')
+    c.put(x, t + 5, ('e' if not edge_r else 'a') if not joint else 'a')
     darken(c, x, t + 6, 1)
 # 층계 옆 마구리(층계 끝 세로면: 왼쪽 층계는 밝은 끝, 오른쪽은 그늘 끝)
 for x in range(WX0 + 1, WX1):
@@ -190,14 +228,19 @@ shutter(LD_X - 5, y, 3, 11)
 c.rows(LD_X, y + 2, ['.ζζζζ.', 'ζσξξηβ', 'ηξξηηβ', 'XkkkeX', 'ηθεηεβ', 'ηθεηεβ', 'XkkkeX', 'δθεηεβ', '.δδδδ.'])
 
 # 작은 창: 층마다 좌우, 띠 사이에만(저마다 다른 모양)
-cwin(c, 12, 67, w=6, h=12, glint=0)
-cwin(c, 63, 67, w=6, h=12, glint=2, transom=True, sill=2)
-cwin(c, 12, 90, w=6, h=13, glint=1, curtain=True)
-cwin(c, 62, 90, w=6, h=13, glint=3, box=True)
-cwin(c, 12, 113, w=6, h=12, lit=True)
-cwin(c, 63, 113, w=6, h=12, glint=1, shutters='left')
-cwin(c, 12, 138, w=6, h=12, glint=0, transom=True, sill=2)
-cwin(c, 63, 138, w=6, h=12, glint=2, box=True, shutters='right')
+cwin(c, 11, 67, w=8, h=12, glint=0, arch=True, shutters='none', sill=2)
+cwin(c, 63, 66, w=6, h=13, glint=2, transom=True, shutters='right')
+cwin(c, 13, 91, w=5, h=11, glint=1, curtain=True, shutters='left')
+cwin(c, 61, 90, w=8, h=13, glint=3, box=True, shutters='none', frame='wood')
+cwin(c, 12, 113, w=6, h=12, lit=True, shutters='none', arch=True)
+cwin(c, 63, 114, w=6, h=10, glint=1, shutters='both')
+cwin(c, 11, 137, w=8, h=13, glint=0, transom=True, sill=2, shutters='none', frame='wood')
+cwin(c, 64, 139, w=5, h=11, glint=2, box=True, shutters='left')
+# 창 아래 그을음·빗물 자국(창마다 길이가 다르다)
+for (sx, sy, n) in [(14, 81, 6), (66, 81, 3), (15, 104, 4), (65, 105, 7), (66, 126, 5)]:
+    for y in range(sy, sy + n):
+        if c.get(sx, y) in '=+&?%<':
+            darken(c, sx, y, 1)
 # 아래 큰 아치 문(열 2): 홍예석 + 두 짝 판자문 + 징
 DX, DW = 33, 14
 for y in range(135, GY - 1):
@@ -238,6 +281,11 @@ outline(c, 2)
 print('pinholes', fill_pinholes(c))
 from edgefix import lift_edges  # noqa: E402
 print('edges lifted', lift_edges(c))
+_tsp = _ilu.spec_from_file_location('wh_tint', os.path.join(os.path.dirname(os.path.abspath(__file__)), 'tint.py'))
+TN = _ilu.module_from_spec(_tsp)
+_tsp.loader.exec_module(TN)
+TN.tint_edges(c, CX)
+print('neutral', TN.neutral_share(c))
 
 walk = []
 for cy in range(10):
@@ -252,6 +300,6 @@ for cy in range(10):
             r += '*' if cy < 3 else 'X'
     walk.append(r)
 print('\n'.join(walk))
-meta = dict(name='계단 박공 창고', massing='M13', material='stone', refs=['bd-house-ware0', 'bd-house-cathedral'], walk=walk)
+meta = dict(name='계단 박공 창고', massing='M13', material='stone', refs=['bd-house-h124_0', 'bd-house-ware0'], walk=walk)
 f, w = c.save('warehouse', meta)
 print('FAIL', f, 'WARN', w)

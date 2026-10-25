@@ -24,8 +24,8 @@ function withUploads(): Project {
 describe("시네마틱 스틸 카탈로그", () => {
   it("전체화면 아트를 아이템 아이콘보다 먼저 제안한다", () => {
     const still = ids("still", createBlankProject());
-    expect(still).toContain("easyrpg-backdrop-cosmos1");
-    expect(still).toContain("easyrpg-title-title1");
+    expect(still).toContain("oprn-pano-sky-day");
+    expect(still).toContain("oprn-still-corridor");
     expect(still.slice(0, 40).filter(id => id.startsWith("cc0-jetrel-"))).toEqual([]);
   });
 
@@ -40,9 +40,9 @@ describe("시네마틱 스틸 카탈로그", () => {
     const project = createBlankProject();
     const image = ids("image", project);
     expect(image.length).toBeGreaterThan(400);
-    expect(image).not.toContain("easyrpg-backdrop-cosmos1");
-    expect(image).not.toContain("easyrpg-title-title1");
-    expect(ids("icon", project)).not.toContain("easyrpg-backdrop-cosmos1");
+    expect(image).not.toContain("oprn-pano-sky-day");
+    expect(image).not.toContain("oprn-still-corridor");
+    expect(ids("icon", project)).not.toContain("oprn-pano-sky-day");
   });
 
   it("AI 생성·업로드 스틸을 아이콘보다 앞에 둔다", () => {

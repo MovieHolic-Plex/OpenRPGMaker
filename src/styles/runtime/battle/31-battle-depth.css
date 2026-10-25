@@ -599,3 +599,16 @@
 }
 .battle-scene .battle-weakness-row[data-reveal="resist"] { color: #a9c4d8; }
 .battle-scene .battle-weakness-row[data-reveal="immune"] { color: #c0c0c0; }
+
+/* 연계기 마무리 — 참가자 모두(시전자·동료)가 같은 순간 빛난다(battleComboPartners). */
+.battle-combo-finisher-glow {
+  animation: battle-combo-finisher-glow 520ms ease-out both;
+}
+@keyframes battle-combo-finisher-glow {
+  0% { filter: brightness(1) drop-shadow(0 0 0 var(--combo-tint, #ffd76a)); }
+  25% { filter: brightness(2.1) drop-shadow(0 0 6px var(--combo-tint, #ffd76a)); }
+  100% { filter: brightness(1) drop-shadow(0 0 2px var(--combo-tint, #ffd76a)); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .battle-combo-finisher-glow { animation: none; filter: brightness(1.4); }
+}

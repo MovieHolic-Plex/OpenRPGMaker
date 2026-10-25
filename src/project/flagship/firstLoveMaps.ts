@@ -562,7 +562,8 @@ function addStreetWalkers(project: Project, exec: ExecTool, data: { propList: { 
     { name: "바쁜 직장인", graphic: CASUAL_M, speed: 5, stops: [{ ...free(street, { x: ex(1).step.x + 2, y: ex(1).step.y + 1 }) }, { ...free(street, { x: W - 3, y: nWalk + 1 }) }, { ...free(street, { x: 2, y: nWalk + 1 }) }, { ...ex(1).stair, vanish: true, waitSec: 8 }] },
     // 정류장: 쉘터 앞에서 버스 쪽(위, 차도)을 보고 한참 기다렸다가 다른 데로.
     ...(shelter ? [{ name: "정류장에서 기다리는 학생", graphic: STUDENT_W, speed: 2, stops: [{ ...free(street, { x: shelter.x + 1, y: shelter.y + 2 }), waitSec: 28, face: "up" as const }, { ...free(street, { x: 12, y: sWalk + 1 }) }, { ...ex(2).stair, vanish: true, waitSec: 10 }, { ...ex(2).step }] }] : []),
-    { name: "가방을 멘 학생", graphic: STUDENT_M, speed: 3, stops: [{ ...free(street, { x: 4, y: sWalk + 1 }) }, { ...free(street, { x: 19, y: sWalk + 1 }) }, { ...free(street, { x: 19, y: sWalk + 12 }), waitSec: 2 }, { ...free(street, { x: 4, y: sWalk + 11 }) }] },
+    // 첫 장면 부딪힘 자리(얼룩말 발치 20~21열)를 피해 15열로 건넌다 — 19열로 건너던 학생이 정지 화면에 끼어들었다(VQA op4).
+    { name: "가방을 멘 학생", graphic: STUDENT_M, speed: 3, stops: [{ ...free(street, { x: 4, y: sWalk + 1 }) }, { ...free(street, { x: 15, y: sWalk + 1 }) }, { ...free(street, { x: 15, y: sWalk + 12 }), waitSec: 2 }, { ...free(street, { x: 4, y: sWalk + 11 }) }] },
     { name: "산책하는 사람", graphic: CASUAL_W, speed: 2, stops: [{ ...free(street, { x: 34, y: sWalk + 1 }) }, { ...free(street, { x: W - 3, y: sWalk + 1 }), waitSec: 4 }, { ...free(street, { x: 33, y: sWalk }) }] },
     { name: "통화하며 걷는 회사원", graphic: SUIT_W, speed: 3, stops: [{ ...free(street, { x: 33, y: nWalk }) }, { ...free(street, { x: 33, y: nWalk + 11 }) }, { ...free(street, { x: 45, y: nWalk + 10 }), waitSec: 3 }, { ...free(street, { x: 45, y: nWalk + 1 }) }] },
     // 서하가 내리는 출구(ex 0)로는 드나들지 않는다 — 나오는 칸이 하나뿐이라 서하가 서 있으면 행인이 옆에서 기다리며 길을 막았다(VQA r39).

@@ -31,9 +31,13 @@ export async function checkVisualVoids(project: Project, log: (line: string) => 
         count += 1;
       }
       const flags = cellPassability(tileset, map, i);
+      // 빈 칸에 맵 배경(그림·다른 맵 줄여 깔기)이 비치는 맵이면 빈 칸은 구멍이 아니라 배경 창이다(옥상 난간 너머 동네, 2026-10-25).
+      // 이 렌더러는 배경을 그리지 않으므로 그 빈 칸은 검사에서 뺀다.
+      const showsBackground = Boolean(map.background?.showInEmptyCells && (map.background.imageId || map.background.fromMap));
+      const empty = emptyCell(map, i);
       cells.push({
-        dark: count > 0 && sum / count < VOID_DARK_LUMA,
-        empty: emptyCell(map, i),
+        dark: !(showsBackground && empty) && count > 0 && sum / count < VOID_DARK_LUMA,
+        empty: empty && !showsBackground,
         passable: flags.up || flags.down || flags.left || flags.right,
       });
     }

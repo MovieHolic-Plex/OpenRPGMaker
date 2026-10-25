@@ -164,7 +164,6 @@
      "smithy",
      "bakery",
      "barracks",
-     "brewery",
      "cross-house",
      "gable-cottage",
      "granary-mill",
@@ -177,11 +176,9 @@
      "tithe-barn",
      "tower-house",
      "town-hall",
-     "windmill",
-     "dormer-house",
-     "keep-tower",
      "lighthouse",
-     "wizard-tower"
+     "wizard-tower",
+     "warehouse"
     ],
     "grassTile": 737,
     "groundTilesetId": "beodeul_ground",

@@ -52,7 +52,8 @@ import { presentationArtIds, presentationArtImages } from '../../src/editor/tool
 // 이 파일 하나를 다시 쓰면 된다.
 
 import { Agent, type StreamFn } from "@oh-my-pi/pi-agent-core";
-import { streamSimple } from "@oh-my-pi/pi-ai";
+import { streamSimple, validateToolArguments } from "@oh-my-pi/pi-ai";
+import { repairToolArgs, repeatedShapeHint, shapeErrorSignature, shapeLoopRefusal } from "../../src/ai/piAgent/argRepair.ts";
 import type { RoleModel } from "../../src/ai/modelRoles.ts";
 import { resolveOhMyPiModel } from "./ohMyPiModel.ts";
 import { codexVersionFetch } from "./codexClientVersion.ts";
@@ -544,15 +545,54 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
       if (note) result.content.unshift({ type: "text", text: `[${note}]` });
       return result;
     } });
+  // 인자 모양 고치기(src/ai/piAgent/argRepair.ts) — 코어 검증을 느슨하게 하고 여기서 검증한다. 맞는 호출은 그대로 지나가고,
+  // 실패한 호출만 뜻이 분명한 모양 실수(감싸는 객체 빠뜨림·안쪽 칸 바깥에 둠·목록 항목 id 빠뜨림)를 고쳐 한 번 더 검증한다.
+  // 같은 도구가 연달아 모양 오류를 내면 오류 끝에 필수 칸 모양을 붙인다(2026-10-25: 같은 인자로 13번 실패).
+  // 도구마다 연달아 난 모양 오류 수와 마지막 오류 줄(같은 오류가 되풀이되는지).
+  const shapeFailures = new Map<string, { count: number; same: number; sig: string }>();
+  const withArgRepair = (tool: PiToolShape): PiToolShape => (!tool.parameters ? tool : { ...tool, lenientArgValidation: true, async execute(id, params, signal) {
+    const check = (args: unknown) => validateToolArguments(tool as never, { type: "toolCall", id, name: tool.name, arguments: args as Record<string, unknown> } as never);
+    let valid: unknown;
+    try {
+      valid = check(params);
+    } catch (error) {
+      const repaired = repairToolArgs(tool.parameters, params);
+      let fixed: unknown;
+      let repairedError: unknown;
+      if (repaired.changes.length) { try { fixed = check(repaired.args); } catch (again) { repairedError = again; } }
+      if (fixed === undefined) {
+        const rawMessage = repairedError instanceof Error ? repairedError.message : error instanceof Error ? error.message : String(repairedError ?? error);
+        const sig = shapeErrorSignature(rawMessage);
+        const prior = shapeFailures.get(tool.name);
+        const failures = (prior?.count ?? 0) + 1;
+        const same = prior && prior.sig === sig ? prior.same + 1 : 1;
+        shapeFailures.set(tool.name, { count: failures, same, sig });
+        // 같은 오류 세 번째 — 긴 오류를 또 돌려주면 모델이 같은 호출을 되풀이했다(set_lighting_volume 13번). 거절하고 방법을 바꾸라고 한다.
+        if (same >= 3) {
+          emit({ type: 'execution_status', name: 'tool.args.loop', ok: false, summary: `${tool.name}: 같은 인자 모양 오류 ${same}번째 — 거절` });
+          throw new Error(shapeLoopRefusal(tool.name, tool.parameters, sig, same));
+        }
+        // 모양을 고친 뒤에도 틀리면 고친 쪽 오류가 더 가깝다(남은 빈칸만 말한다) — 무엇을 고쳤는지 함께 알린다.
+        const message = repairedError
+          ? `[인자 모양 고침: ${repaired.changes.join(" · ")} — 그래도 남은 오류]\n${repairedError instanceof Error ? repairedError.message : String(repairedError)}`
+          : error instanceof Error ? error.message : String(error);
+        throw new Error(failures >= 2 ? `${message}${repeatedShapeHint(tool.name, tool.parameters, failures)}` : message);
+      }
+      valid = fixed;
+      emit({ type: 'execution_status', name: 'tool.args.repaired', ok: true, summary: `${tool.name}: 인자 모양을 고쳐 실행 — ${repaired.changes.join(" · ")}`, data: { toolCallId: id, tool: tool.name, changes: repaired.changes } });
+    }
+    shapeFailures.delete(tool.name);
+    return tool.execute(id, valid, signal);
+  } });
   const wrapTool = (tool: PiToolShape): PiToolShape => {
     const wrapped = wrapCoreTool(withHandInteriorEdits(tool));
     const live = options.liveProject;
-    return live ? { ...wrapped, async execute(id, params, signal) {
+    return withArgRepair(live ? { ...wrapped, async execute(id, params, signal) {
       if (liveDepth++ === 0) ownProject = ctx.project;
       ctx.project = cloneProjectSharingSharedDictionaries(live());
       try { return await wrapped.execute(id, params, signal); }
       finally { if (--liveDepth === 0) ctx.project = ownProject; }
-    } } : wrapped;
+    } } : wrapped);
   };
   const wrapCoreTool = (tool: PiToolShape): PiToolShape => !incremental && !['show_map_region', 'inspect_interior_layout', 'show_opening_image', 'generate_opening_image', 'generate_map_background', 'generate_image_asset', 'run_ffmpeg', 'generate_opening_layer', 'preview_opening_animatic', 'preview_opening_reference', 'show_title_opening', 'list_npc_graphics', 'list_resources'].includes(tool.name) ? tool : ({ ...tool,
     async execute(id, params, signal) {
@@ -1012,6 +1052,8 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   let imagesStripped = false;
   let lastRequestHadImages = false;
   let emptyRetries = 0;
+  // 이 실행이 사용자에게 글로 된 답을 한 번이라도 냈나 — 없이 «정상» 끝나면 빈 보고로 정착시키지 않는다.
+  let answered = false;
   const agent: PiLoopDriver = localLoop ?? new Agent({
     transformContext: async (messages: unknown[]) => {
       lastRequestHadImages = messagesHaveImages(messages);
@@ -1160,10 +1202,11 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
         .filter((part): part is { type: "text"; text: string } => !!part && typeof part === "object" && (part as { type?: string }).type === "text")
         .map((part) => part.text)
         .join("");
-      if (text.trim()) emit({ type: "assistant", text });
+      if (text.trim()) { emit({ type: "assistant", text }); answered = true; }
       usage = addPiAgentUsage(usage, message.usage);
       // 글도 도구 호출도 없는 «정상 끝» = 제공자가 답을 못 만든 것. 끝난 차례로 두지 않고 한 번 더 묻는다(그림이 원인이면 그림을 빼고).
-      if (!fatal && !options.signal?.aborted && isEmptyAssistantReply(message)) {
+      // 로컬 CLI 는 도구 호출 블록·사용량 결과를 내용 없는 message_end 로 알린다 — 빈 답으로 보지 않는다(끝에 보고가 없으면 아래 run.no_answer).
+      if (!localLoop && !fatal && !options.signal?.aborted && isEmptyAssistantReply(message)) {
         const imageCause = lastRequestHadImages && !imagesStripped;
         if (imageCause) imagesStripped = true;
         if (imageCause || emptyRetries < 1) {
@@ -1520,6 +1563,15 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   }
   emitMapDelta();
   if (fatal && toolCalls === 0) throw Object.assign(new Error(fatal), { status: 502 });
+  // 글 답 없이 끝난 실행(2026-10-25 romance-seoul-v2: 적용 대기 46분 중단 뒤 다음 차례들이 20초 만에 빈 답으로 «정착»했다).
+  // 빈 보고로 두지 않고, 무엇을 했는지와 함께 «보고 없이 끝났다»고 정직하게 남긴다.
+  if (!fatal && !answered && !options.signal?.aborted) {
+    const note = toolCalls
+      ? `AI 가 도구를 ${toolCalls}번 쓴 뒤 보고 없이 끝났습니다(오류 ${toolErrors}번). 요청이 다 됐는지 확인되지 않았습니다 — 결과를 확인하거나 다시 보내 주세요.`
+      : "AI 가 아무 일도 하지 않고 보고 없이 끝났습니다. 요청은 처리되지 않았습니다 — 다시 보내 주세요(같으면 모델을 바꿔 보세요).";
+    emit({ type: "execution_status", name: "run.no_answer", ok: false, summary: note });
+    emit({ type: "assistant", text: note });
+  }
   const interiorProblems = interiorCompletion.inspect(ctx.project, base);
   if (interiorProblems.length) emit({ type: 'error', message: '실내 미완료: ' + JSON.stringify(interiorProblems) });
   const done: PiAgentDoneEvent = {

@@ -31,7 +31,7 @@ describe("web player export", () => {
 
     expect(zipPaths).toContain("assets/uploaded/used_picture.png");
     expect(zipPaths).not.toContain("assets/uploaded/unused_picture.png");
-    expect(zipPaths).toContain("assets/easyrpg-chipset-exterior.png");
+    expect(zipPaths).toContain("assets/blank-chipset.png");
   });
 
   it("칩셋 카탈로그 행만으로는 칩셋 그림을 싣지 않는다 — 맵이 쓰는 칩셋은 타일셋으로 실린다", () => {

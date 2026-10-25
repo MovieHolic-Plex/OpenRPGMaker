@@ -190,6 +190,36 @@
     leave: function () { finished = true; }
   };
 
+  /* 마지막 편집 화면(데스크톱만 — 프리로드가 window.oprn.resume 을 준다, electron/main/lastView.ts).
+   * 지난번 닫을 때의 편집기 그림을 읽기 전용 자리표시로 깔고 단계 글자를 작은 칩으로 바꾼다. 편집기가 준비되면 로더째 걷힌다.
+   * 묻는 동안(최대 400ms) 로고·줄을 숨긴다(data-resume-pending) — 그림이 있으면 흰 로더가 한 프레임도 비치지 않게. 없으면 평소 로더. */
+  var resume = null;
+  try { resume = w.oprn && w.oprn.resume && typeof w.oprn.resume.lastView === "function" ? w.oprn.resume : null; } catch (e) { resume = null; }
+  // 편집기 문서만 — 플레이·데모 보기는 같은 index.html 을 쓰지만 편집기 그림을 깔면 안 된다.
+  if (resume && /[?&](play|demo)=/.test(w.location.search)) resume = null;
+  if (resume) {
+    root.setAttribute("data-resume-pending", "");
+    var clearPending = function () { root.removeAttribute("data-resume-pending"); };
+    var pendingTimer = w.setTimeout(clearPending, 400);
+    try {
+      resume.lastView().then(function (view) {
+        w.clearTimeout(pendingTimer);
+        if (view && typeof view.dataUrl === "string" && view.dataUrl.indexOf("data:image/") === 0 && !finished && !root.hasAttribute("data-failed")) {
+          var img = d.createElement("img");
+          img.className = "oprn-boot-resume";
+          img.alt = "";
+          img.setAttribute("aria-hidden", "true");
+          img.draggable = false;
+          img.src = view.dataUrl;
+          root.insertBefore(img, root.firstChild);
+          root.setAttribute("data-resume", "");
+          mark("resume-shown");
+        }
+        clearPending();
+      }, function () { w.clearTimeout(pendingTimer); clearPending(); });
+    } catch (e) { w.clearTimeout(pendingTimer); clearPending(); }
+  }
+
   /* 번들 로드 실패(주 모듈 <script> 의 error 이벤트는 버블하지 않는다 → capture)와 번들 평가 중 예외.
    * 평가 중 예외는 같은 출처 스크립트의 것만 센다 — 브라우저 확장이 던지는 «Script error.» 로 실패 화면을 띄우지 않는다. */
   w.addEventListener("error", function (event) {

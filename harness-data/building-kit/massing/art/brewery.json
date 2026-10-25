@@ -3,17 +3,17 @@
  "massing": "M32",
  "material": "plaster",
  "refs": [
-  "bd-house-ware0",
-  "bd-house-smithy_town"
+  "bd-house-smithy_town",
+  "bd-house-ware0"
  ],
  "walk": [
-  "..*****..",
-  "*******..",
-  "*******..",
+  ".....**..",
+  ".....**..",
+  "*********",
+  "*********",
   "XXXXXXXXX",
-  "XXXXXXXXX",
-  "XXDXXXXXX",
-  "XXDXXXXXX"
+  "XXXDXXXXX",
+  "XXXDXXXXX"
  ],
  "id": "brewery"
 }

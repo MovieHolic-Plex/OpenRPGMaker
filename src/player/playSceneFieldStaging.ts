@@ -1,3 +1,4 @@
+import { syncLiftRide } from "@/player/playSceneLiftRide";
 import { characterBaseOrigin } from "./characterOrigin";
 // 타입만 가져온다. 값 import 는 phaser.esm.js 를 끌어와 모듈 평가 때 `window` 를 읽는다 —
 // 노드 vitest 에서 이 파일을 거치는 테스트 약 200개가 「window is not defined」로 수집조차 안 됐다(ci-full 40165485978).
@@ -456,6 +457,123 @@ export function updateFieldStaging(scene: PlaySceneContext): void {
   syncDoors(scene);
   syncFreezeFrame(scene);
   syncNearSparkles(scene, now);
+  syncEventGlows(scene, now);
+  syncLiftRide(scene);
+}
+
+// ── 늘 빛나는 표지(page.glow) ────────────────────────────────────────────
+
+const GLOW_TEX = { halo: "oprn-fx-glow-halo", ring: "oprn-fx-glow-ring" } as const;
+const GLOW_HALO_DEPTH = 150_000;
+const DEFAULT_GLOW_COLOR = 0x8fd8ff;
+
+type GlowParts = {
+  readonly halo: Phaser.GameObjects.Image;
+  readonly core: Phaser.GameObjects.Image;
+  readonly twinkles: Phaser.GameObjects.Particles.ParticleEmitter;
+  readonly motes: Phaser.GameObjects.Particles.ParticleEmitter;
+  readonly ring: Phaser.GameObjects.Image;
+  readonly radiusPx: number;
+  readonly phase: number;
+  x: number;
+  y: number;
+};
+type GlowState = { mapId: string; ids: readonly string[]; parts: Map<string, GlowParts>; nextCheck: number };
+const glowStates = new WeakMap<PlaySceneContext, GlowState>();
+
+function ensureGlowTextures(scene: PlaySceneContext): void {
+  canvasTexture(scene, GLOW_TEX.halo, 64, (ctx, size) => softCircle(ctx, size, 0.05));
+  canvasTexture(scene, GLOW_TEX.ring, 64, (ctx, size) => {
+    ctx.strokeStyle = "#fff";
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.arc(size / 2, size / 2, size / 2 - 3, 0, Math.PI * 2);
+    ctx.stroke();
+  });
+}
+
+function destroyGlow(parts: GlowParts): void {
+  parts.halo.destroy();
+  parts.core.destroy();
+  parts.ring.destroy();
+  parts.twinkles.destroy();
+  parts.motes.destroy();
+}
+
+function glowColor(hex: string | undefined): number {
+  return typeof hex === "string" && /^#[0-9a-f]{6}$/i.test(hex) ? Number.parseInt(hex.slice(1), 16) : DEFAULT_GLOW_COLOR;
+}
+
+/** 세이브 포인트처럼 page.glow 가 있는 이벤트 — 거리와 무관하게 늘 숨 쉬는 빛무리·반짝임·오르는 빛 알갱이·퍼지는 고리. */
+function syncEventGlows(scene: PlaySceneContext, now: number): void {
+  const map = scene.map;
+  if (!map || !scene.session || !scene.add) return;
+  let state = glowStates.get(scene);
+  if (!state || state.mapId !== map.id) {
+    for (const parts of state?.parts.values() ?? []) destroyGlow(parts);
+    state = { mapId: map.id, ids: map.events.filter((event) => event.pages?.some((page) => page.glow)).map((event) => event.id), parts: new Map(), nextCheck: 0 };
+    glowStates.set(scene, state);
+  }
+  if (state.ids.length === 0) return;
+  if (now >= state.nextCheck) {
+    state.nextCheck = now + 300;
+    const project = store.getCurrent();
+    const size = mapTileSize(map);
+    const s = runtimeMapWorldScale(scene);
+    for (const id of state.ids) {
+      const view = runtimeEventViewById(project, map, scene.session, scene.eventPositions, id);
+      const glow = view?.page?.glow;
+      const existing = state.parts.get(id);
+      if (!view || !glow) {
+        if (existing) { destroyGlow(existing); state.parts.delete(id); }
+        continue;
+      }
+      const x = (view.x + 0.5 + (glow.offsetX ?? 0)) * size;
+      const y = (view.y + 0.35 + (glow.offsetY ?? 0)) * size;
+      if (existing) { existing.x = x; existing.y = y; continue; }
+      ensureFxTextures(scene);
+      ensureGlowTextures(scene);
+      const color = glowColor(glow.color);
+      const radiusPx = Math.max(1, Math.min(3, glow.radius ?? 2)) * size;
+      const halo = scene.add.image(x, y, GLOW_TEX.halo).setBlendMode("ADD").setTint(color).setDepth(GLOW_HALO_DEPTH);
+      const core = scene.add.image(x, y, GLOW_TEX.halo).setBlendMode("ADD").setTint(0xffffff).setDepth(GLOW_HALO_DEPTH + 1);
+      const ring = scene.add.image(x, y, GLOW_TEX.ring).setBlendMode("ADD").setTint(color).setDepth(GLOW_HALO_DEPTH + 2);
+      const twinkles = scene.add.particles(x, y, TEX.star, {
+        x: { min: -radiusPx * 0.75, max: radiusPx * 0.75 }, y: { min: -radiusPx * 0.9, max: radiusPx * 0.35 },
+        lifespan: 650, frequency: 170, quantity: 1, speed: 0,
+        scale: { start: 1.2 * s, end: 0 }, alpha: { start: 1, end: 0 },
+        tint: [0xffffff, color, 0xfff6c0], blendMode: "ADD",
+      });
+      twinkles.setDepth(PARTICLE_DEPTH);
+      const motes = scene.add.particles(x, y, TEX.dot, {
+        x: { min: -size * 0.55, max: size * 0.55 }, y: { min: -size * 0.1, max: size * 0.3 },
+        speedX: { min: -3 * s, max: 3 * s }, speedY: { min: -30 * s, max: -16 * s },
+        lifespan: 1500, frequency: 110, quantity: 1,
+        scale: { start: 0.8 * s, end: 0.1 * s }, alpha: { start: 0.95, end: 0 },
+        tint: [color, 0xffffff], blendMode: "ADD",
+      });
+      motes.setDepth(PARTICLE_DEPTH);
+      state.parts.set(id, { halo, core, ring, twinkles, motes, radiusPx, phase: (state.parts.size * 0.37) % 1, x, y });
+    }
+  }
+  // 숨 쉬는 빛: 1.8초 주기로 빛무리가 커졌다 작아지고, 2.4초마다 고리가 퍼진다.
+  for (const parts of state.parts.values()) {
+    const breath = 0.5 + 0.5 * Math.sin((now / 1800 + parts.phase) * Math.PI * 2);
+    const haloSize = parts.radiusPx * 2 * (0.85 + 0.25 * breath);
+    parts.halo.setPosition(parts.x, parts.y).setDisplaySize(haloSize, haloSize * 0.8).setAlpha(0.35 + 0.4 * breath);
+    const coreSize = parts.radiusPx * (0.55 + 0.2 * (1 - breath));
+    parts.core.setPosition(parts.x, parts.y).setDisplaySize(coreSize, coreSize).setAlpha(0.25 + 0.35 * breath);
+    const ringT = ((now / 2400 + parts.phase) % 1);
+    const ringSize = parts.radiusPx * (0.4 + 1.9 * ringT);
+    parts.ring.setPosition(parts.x, parts.y + parts.radiusPx * 0.2).setDisplaySize(ringSize, ringSize * 0.5).setAlpha(0.7 * (1 - ringT));
+    parts.twinkles.setPosition(parts.x, parts.y);
+    parts.motes.setPosition(parts.x, parts.y);
+  }
+}
+
+/** QA: 지금 빛나는 표지 수. */
+export function eventGlowCount(scene: PlaySceneContext): number {
+  return glowStates.get(scene)?.parts.size ?? 0;
 }
 
 // ── 가까이 오면 반짝임(page.nearSparkle) ────────────────────────────────

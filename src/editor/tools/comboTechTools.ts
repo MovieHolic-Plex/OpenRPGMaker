@@ -111,12 +111,13 @@ const upsertComboTech: ToolDefinition = {
       switchId: { type: "string", description: "발동하면 켜지는 스위치(이야기 분기)" },
       staging: {
         type: "object",
-        description: "이 연계기의 연출 — tint(#rrggbb 번쩍임·오라·제목 색, 생략 = 속성 색) · shake(none/light/heavy) · slowMo(착탄 느린 화면, 기본 켜기) · kicker(제목 위 작은 글). 컷인은 참가자 흉상이 양쪽에서 엇갈리고, 참가자별 빛 → 합쳐진 마무리 → 제목 카드 → 피해 숫자 폭발 순. 전역 세기는 set_project_settings battle.staging",
+        description: "이 연계기의 연출 — tint(#rrggbb 번쩍임·오라·제목 색, 생략 = 속성 색) · shake(none/light/heavy) · slowMo(착탄 느린 화면, 기본 켜기) · kicker(제목 위 작은 글) · partners(다른 참가자 동작). 컷인은 참가자 흉상이 양쪽에서 엇갈리고, 참가자별 빛 → 합쳐진 마무리 → 제목 카드 → 피해 숫자 폭발 순. 전역 세기는 set_project_settings battle.staging",
         properties: {
           tint: { type: "string" },
           shake: { type: "string", enum: ["none", "light", "heavy"] },
           slowMo: { type: "boolean" },
           kicker: { type: "string" },
+          partners: { type: "string", enum: ["auto", "rush", "cast", "ranged"], description: "시전자 말고 다른 참가자가 하는 일 — rush 달려가 차례로 베기 · cast 반 걸음 나와 시전 · ranged 쏘기 · auto(기본) 그 동료의 요구 기술로. 참가자 전원이 움직이고 마지막엔 함께 마무리 자세" },
         },
         additionalProperties: false,
       },

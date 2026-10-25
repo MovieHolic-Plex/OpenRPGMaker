@@ -4,18 +4,18 @@
  "material": "stone",
  "refs": [
   "bd-house-cathedral",
-  "bd-mpart-tower"
+  "bd-house-h124_0"
  ],
  "walk": [
   ".........*.",
   "........***",
   "........***",
-  "***********",
+  ".**********",
   "***********",
   "***********",
   "XXXXXXXXXXX",
-  "XXXDXXXXXXX",
-  "..XDX......"
+  "XXDXXXXXXXX",
+  ".XDX......."
  ],
  "id": "chapel"
 }

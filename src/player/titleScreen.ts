@@ -810,6 +810,8 @@ function renderMenu(
   });
   if (settings.menuStyle) menu.dataset.menuStyle = settings.menuStyle;
   if (settings.menuFontPx) menu.style.setProperty("--rm-title-menu-font", `${settings.menuFontPx}px`);
+  // 터치 세로 메뉴 칸(mobileUi.css)이 줄 높이를 나눌 때 쓴다. 데스크톱 모양에는 영향이 없다.
+  menu.style.setProperty("--title-option-count", String(Math.max(1, options.length)));
   menu.style.left = logicalX(settings.layout.menuX);
   let top = titleMenuTop(settings.layout.menuY, options.length, hintVisible);
   if (minTop !== undefined && top < minTop) {
@@ -825,6 +827,7 @@ function renderMenu(
     menu.dataset.belowLogo = "true";
   }
   menu.style.top = logicalY(top);
+  menu.style.setProperty("--title-menu-top", logicalY(top));
   for (const [index, option] of options.entries()) {
     menu.append(
       titleOption(

@@ -85,6 +85,8 @@ const bridge = {
       ipcRenderer.on(OPRN_CHANNELS.lifecycleSave, () => callback());
     },
   },
+  /** 편집기 부팅 동안 보일 마지막 편집 화면 그림. 없으면 null. public/boot-splash.js 가 부른다. */
+  resume: { lastView: invoke(OPRN_CHANNELS.resumeLastView), editorReady: (): void => ipcRenderer.send(OPRN_CHANNELS.resumeEditorReady) },
   start: {
     recentProjects: invoke(OPRN_CHANNELS.startRecentProjects),
     openFolder: invoke(OPRN_CHANNELS.startOpenFolder),

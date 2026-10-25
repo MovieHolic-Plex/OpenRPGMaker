@@ -2372,6 +2372,13 @@ export interface CompanionConfig {
    * 떠난 칸으로 같은 박자에 한 칸 뒤를 걷는다(@/player/playSceneFollowers beginFollowerStep).
    */
   monsterFollowers?: boolean;
+  /**
+   * 뒤따르는 방식. "breadcrumb"(기본·생략) = 고전 빵부스러기 — 동료마다 앞사람이 밟은 칸을 **그대로** 한 칸씩 밟는다
+   * (포켓몬·마더·크로노 트리거). 길 찾기·모퉁이 가로지르기·기다렸다 몰려오기가 없고, 주인공이 서면 그 자리에 선다.
+   * 맵을 옮기면 주인공 칸에 겹쳐 같은 쪽을 보고 섰다가 걸으면 한 명씩 풀려 나온다.
+   * "spaced" = 옛 동작 — 몸 길이만큼 떨어지려고 기다리거나 궤적 뒤 칸으로 건너뛴다.
+   */
+  followMode?: "breadcrumb" | "spaced";
 }
 
 export interface MonsterCareConfig {

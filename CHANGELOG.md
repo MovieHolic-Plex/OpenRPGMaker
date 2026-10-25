@@ -5,6 +5,51 @@
 
 <!-- releases -->
 
+## 0.343.0 — 2026-10-25
+
+### 기능
+
+- **shitamachi** — story-authored opening/title/ending, confession CGs, lantern HUD, sidewalk NPCs, room preset fixes (#3512) (`4c0e034`)
+- **astra** — generated day key art for the title screen (supervisor pick of 4, downscaled to 480x320 / 64 colours); runners move to the bottom grass (#3517) (`cea62ac`)
+- **building-kit** — VQA redraw of the medieval bundle (24 buildings) + town layout fixes (#3514) (`641a162`)
+- **runtime** — breadcrumb follow, lift ride, all-member combos, field approach styles, save glow (Fallen Star 1.22) (#3509) (`b5eb7fd`)
+
+### 수정
+
+- **ai** — ship check flags placeholder credit names like 「기획 · 제작 / 당신」 (#3518) (`88abe7c`)
+- **ai** — a run that ends without any answer says so; empty-reply guard skips the local CLI loop (#3516) (`f7fbc89`)
+- **runtime** — tap/QA walks stop when an event starts, so text never shows while the hero keeps walking (J62) (#3504) (`0c1ba78`)
+- **first-love** — opening and cold-open VQA fixes (op3/op4) (#3513) (`7f17f78`)
+- **ai** — ship check flags an opening with no shot of the place and title/ending art off the premise (J24, J65, J10, J17) (#3510) (`51b9675`)
+- **export** — ship bundled tilesets as references; qp boots the export projection (S4) (#3508) (`ea8c1cb`)
+
+### 성능
+
+- **boot** — reveal the editor shell before the map canvas boots (#3520) (`ff4ca86`)
+- **boot** — first-launch boot normalisation runs after the editor shell; saves wait for it (#3511) (`aa10acc`)
+
+### 테스트
+
+- fix 16 stale vitest files after EasyRPG art purge (#3515) (`66b1716`)
+
+## 0.342.0 — 2026-10-25
+
+### 기능
+
+- **ai** — v2 move_object moves, turns or removes one placed piece of furniture (#3505) (`e95a467`)
+- **store** — news posts show real game screenshots — CDN upload script for shipped-player shots; assistant post guide asks for them (#3506) (`f0dd6f9`)
+- **qa** — scripts/qa/argon-vqa.py — image-capable Argon blind reviewer (gemini-4-argon-high, images inline) (#3503) (`2a7627d`)
+- **desktop** — show the last editor view instantly while the editor boots (#3501) (`e0071ba`)
+
+### 수정
+
+- **ai** — repair obvious tool-argument shape slips before failing validation (#3502) (`bda3a3f`)
+- **ai** — compat endpoints explain why they fail (key missing, step, DNS) and empty image replies no longer end the turn silently (#3499) (`3a416a3`)
+- **ai** — route images per model on openai-compat endpoints; 1-px image probe marks blind models (#3498) (`2af2138`)
+- **dungeon** — cave maps get no tower windows, dry bridges/boats are flagged, entrances get a cave mouth and avoid props (J25) (#3500) (`00dd4de`)
+- **ai** — v2 blocks combat games with no healing; encounters off unless asked (J55, J4) (#3494) (`532757b`)
+- **ai** — chasers patrol, spawn never inside chaser sight (J54, J61) (#3495) (`0825f19`)
+
 ## 0.341.0 — 2026-10-25
 
 ### 기능

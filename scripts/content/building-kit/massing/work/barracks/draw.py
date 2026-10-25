@@ -1,84 +1,94 @@
 """barracks — 병영(덩어리 모형 C10). 10×6 칸(160×96), 건물은 0..147(문이 칸 4 한 열에 들도록 가운데를 74 에 둔다).
-2층 마름돌 긴 몸채 · 청석 모임지붕(양 끝 모임) · 돌 굴뚝 셋 · 좁은 아치창 두 줄 · 가운데 아치문 하나."""
+모형대로 1층 긴 마름돌 병영. 버들항 병영처럼 청석 모임지붕(비늘, 갈색 모임 갈빗대) · 용마루 곁 돌 굴뚝 셋(모양 제각각, 윗면 보임) ·
+따뜻한 흰 마름돌 벽 · 창 한 줄(남빛 유리, 덧창·창턱 제각각) · 가운데 아치문 하나. 난수 없음."""
 import os
 import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import pix  # noqa: E402
-from pix import Ashlar, sclamp  # noqa: E402
 from common import Canvas, moss, door  # noqa: E402
-from slate import slate_hip_roof, slate_eave  # noqa: E402
 from gf import auto_walk  # noqa: E402
+from bd import WarmAshlar, warm_region, slate, shift  # noqa: E402
 
 W, H = 160, 96
 c = Canvas(10, 6)
-BX0, BX1 = 0, 147          # 지붕 폭
-WX0, WX1 = 2, 145          # 벽 폭
-CX = 74                    # 가운데
-R_Y, E_Y = 4, 37
+BX0, BX1 = 0, 147
+WX0, WX1 = 2, 145
+CX = 74
+R_Y, E_Y = 11, 53
 GY = 95
+RL, RR = 42, 105
 
 
-# ---------------------------------------------------------------- 돌 굴뚝(지붕보다 먼저 아래 몸, 지붕 뒤 → 지붕 위에 다시)
-def stone_chimney(c, x, top, base, w=9):
-    ash = Ashlar([4, 3, 4, 3], seed=x % 7, widths=[5, 4, 6, 3, 5, 4], warm=False)
-    for y in range(top + 3, base + 1):
-        for i in range(w):
-            s = 1 if i < 2 else (-2 if i >= w - 2 else 0)
-            ch = ash.color(x + i + 50, y - top, s)
-            if i == 0:
-                ch = 'e'
-            if i == w - 1:
-                ch = 'Y'
-            c.put(x + i, y, ch)
-    # 갓돌(내민 판석) 3줄 + 연기 구멍
-    for i in range(-1, w + 1):
-        c.put(x + i, top, 'r' if i < w // 2 else 'm')
-        c.put(x + i, top + 1, 'k' if 0 < i < w - 1 else 'e')
-        c.put(x + i, top + 2, 'a' if i in (-1, w) else ('U' if i < w - 1 else 'W'))
-    for i in range(2, w - 2):
-        c.put(x + i, top, 'T' if i % 2 else 'U')
-    # 밑동 납 물막이 + 오른쪽으로 지붕에 지는 그늘
-    for i in range(-1, w + 1):
-        c.put(x + i, base + 1, 'i' if i < w // 2 else 'a')
-        c.put(x + i, base + 2, 'Y' if i in (-1, w) else 'W')
-    DK = {'I': 'G', 'H': 'G', 'G': 'F', 'F': 'E', 'E': 'B', 'B': 'C', 'σ': 'ξ', 'ξ': 'η'}
-    for y in range(top + 5, base + 4):
-        for k in (w + 1, w + 2):
-            g = c.get(x + k - (0 if y < base + 2 else -1), y)
-            if g in DK:
-                c.put(x + k - (0 if y < base + 2 else -1), y, DK[g])
+def rib_l(y): return RL - (RL - 11) * (y - R_Y) / (E_Y - R_Y)
+def rib_r(y): return RR + (136 - RR) * (y - R_Y) / (E_Y - R_Y)
+def edge_l(y): return RL - 2 - (RL - 2) * (y - R_Y) / (E_Y - R_Y)
+def edge_r(y): return RR + 2 + (BX1 - RR - 2) * (y - R_Y) / (E_Y - R_Y)
+def in_roof(x, y): return R_Y <= y <= E_Y and edge_l(y) <= x <= edge_r(y)
 
 
-# ---------------------------------------------------------------- 지붕
-def front_shade(x, y):
-    # 손으로 정한 큰 결: 지붕 가운데 아래쪽이 조금 밝고, 굴뚝 뒤 그늘은 굴뚝이 따로 준다
-    # 굴뚝 오른쪽 아래·처마 쪽만 조금 어둡게(넓은 밝은 덩이는 두지 않는다)
+def roof_shade(x, y):
+    if x < rib_l(y):
+        return 1
+    if x > rib_r(y):
+        return -1 if y > 30 else 0
     return 0
 
 
-lx, rx, out_l, out_r = slate_hip_roof(c, BX0, BX1, R_Y, E_Y, 36, 111, seed=3, front_shade=front_shade)
-# 앞 사면을 버들항 성 지붕 결(둥근 윗머리 반짝 + 두 줄 겹침 그늘, 5×6 장)로 다시 깐다. 처마 쪽 두 줄은 한 단 그늘.
-import slate2  # noqa: E402
-slate2.slate_roof(c, lambda x, y: lx(y) + 1 < x < rx(y) - 1, BX0, BX1, R_Y + 2, E_Y - 1, th=4, vshift=2)
-for _y in range(0, E_Y + 2):            # 왼쪽 모임 사면 흰 줄무늬를 한 단 낮춘다
-    for _x in range(0, 60):
-        _g = c.get(_x, _y)
-        if _g in ('I', 'H'):
-            c.put(_x, _y, {'I': 'H', 'H': 'G'}[_g])
-slate_eave(c, BX0, BX1, E_Y + 1)
-for cx_ in (30, CX - 4, 110):
-    stone_chimney(c, cx_, 0, 17, w=8)
+# ---------------------------------------------------------------- 지붕(버들항 병영 결 청석, 이 건물은 3px 엇갈림·세 켜 주기)
+slate(c, in_roof, BX0, BX1, R_Y, E_Y, split=33, var='anaacanoaanac', stagger=(1, 3, 0), shade=roof_shade, ox=2)
+for y in range(R_Y, E_Y + 1):
+    xl, xr = int(round(rib_l(y))), int(round(rib_r(y)))
+    c.put(xl, y, 'η'); c.put(xl + 1, y, 'η' if y % 6 else 'ξ')
+    c.put(xr, y, '_'); c.put(xr - 1, y, '_' if y % 6 else '-')
+for x in range(RL - 1, RR + 2):
+    c.put(x, R_Y - 1, '-')
+    c.put(x, R_Y, 'ε' if x % 5 else 'δ')
+for x in range(BX0, BX1 + 1):
+    if in_roof(x, E_Y):
+        c.put(x, E_Y, 'B' if x % 4 else 'C')
+        c.put(x, E_Y + 1, 'C')
 
-# ---------------------------------------------------------------- 벽(2층 마름돌)
-WY0 = E_Y + 4                                   # 38
-ash = Ashlar([6, 5, 6, 5, 6, 6, 5, 6, 5, 6], seed=2, warm=True)
+
+# ---------------------------------------------------------------- 굴뚝(용마루 곁, 위에서 본 갓돌 고리 + 연기 구멍)
+def chimney(x, top, base, w, holes=1, tall=0):
+    ash = WarmAshlar([4, 3, 4], seed=x % 5, widths=[4, 5, 3, 6, 4], mortar=4)
+    for y in range(top + 4, base + 1):
+        for i in range(w):
+            s = 1 if i < 2 else (-2 if i >= w - 2 else 0)
+            ch = ash.color(x + i + 40, y - top, s)
+            if i == 0: ch = 'z'
+            if i == w - 1: ch = 'f'
+            c.put(x + i, y, ch)
+    for i in range(-1, w + 1):                       # 갓돌: 윗면 고리 + 앞면 띠
+        c.put(x + i, top, '0' if i < w - 1 else 'z')
+        c.put(x + i, top + 1, 'p' if i in (-1, 0) else ('z' if i >= w - 1 else 'C'))
+        c.put(x + i, top + 2, '0' if i < w - 1 else 'z')
+        c.put(x + i, top + 3, 'l' if i < w - 1 else 'f')
+    if holes == 2:
+        c.put(x + w // 2, top + 1, 'p')
+    for y in range(top + 3, base + 3):              # 지붕에 지는 그늘
+        for k, n in ((w + 1, 2), (w + 2, 1)):
+            if in_roof(x + k, y):
+                c.put(x + k, y, shift(c.get(x + k, y), -n))
+    for i in range(0, w + 2):
+        if in_roof(x + i, base + 1):
+            c.put(x + i, base + 1, shift(c.get(x + i, base + 1), -2))
+
+
+chimney(47, 0, 16, 9, holes=2)
+chimney(76, 2, 15, 7)
+chimney(96, 1, 16, 8)
+
+# ---------------------------------------------------------------- 벽(따뜻한 흰 마름돌, 1층)
+WY0 = E_Y + 2
+ash = WarmAshlar([6, 5, 6, 5, 6, 5, 6], seed=4, widths=[12, 9, 14, 8, 11, 13, 7, 10, 15, 9, 12, 8])
 
 
 def wall_shade(x, y):
     s = 0
     if y < WY0 + 3:
-        s -= 2 if y < WY0 + 1 else 1           # 처마 밑 그늘
+        s -= 2 if y < WY0 + 1 else 1
     if x < WX0 + 3:
         s += 1
     if x > WX1 - 3:
@@ -86,100 +96,95 @@ def wall_shade(x, y):
     return s
 
 
-pix.flat_wall(c, WX0, WY0, WX1 - WX0 + 1, GY - 2 - WY0 + 1, ash, shade=wall_shade)
-# 층 사이 돌림띠(내민 돌: 밝은 윗면 · 짙은 아랫그늘)
-SC = 64
+pix.flat_wall(c, WX0, WY0, WX1 - WX0 + 1, GY - 3 - WY0 + 1, ash, shade=wall_shade)
+base = WarmAshlar([3, 3], seed=7, widths=[13, 10, 15, 11, 9, 14, 12], dark=2)
+pix.flat_wall(c, WX0, GY - 5, WX1 - WX0 + 1, 4, base, shade=lambda x, y: -1 if x > WX1 - 3 else 0)
 for x in range(WX0, WX1 + 1):
-    c.put(x, SC, 'r' if x % 11 else 'n')
-    c.put(x, SC + 1, 'm' if x % 7 else 'k')
-    c.put(x, SC + 2, 'e' if x % 5 else 'a')
-    c.put(x, SC + 3, sclamp(4 if x % 9 else 3))
-# 기초 받침(어두운 큰 돌 + 땅 닿는 줄)
-base = Ashlar([3, 3], seed=7, widths=[13, 10, 15, 11, 9, 14, 12], dark=2)
-pix.flat_wall(c, WX0, GY - 7, WX1 - WX0 + 1, 6, base, shade=lambda x, y: -1 if x > WX1 - 3 else 0)
-for x in range(WX0, WX1 + 1):
-    c.put(x, GY - 1, 'a' if x % 7 else 'Y')
-    c.put(x, GY, 'W' if x % 6 else 'U')
-# 모서리 귀돌(밝은 왼쪽 · 그늘 오른쪽, 큰 돌·작은 돌 번갈아)
+    c.put(x, GY - 1, 'f' if x % 7 else 't')
+    c.put(x, GY, 'c' if x % 6 else 'W')
+# 모서리 귀돌
 for (x0, lit) in ((WX0, True), (WX1 - 6, False)):
-    y = WY0 + 2
-    k = 0
-    while y < GY - 8:
+    y, k = WY0 + 2, 0
+    while y < GY - 7:
         hh = 6 if k % 2 == 0 else 5
         ww = 7 if k % 2 == 0 else 5
         xs = x0 if lit else x0 + (7 - ww)
         for j in range(hh):
             for i in range(ww):
-                if y + j in (SC, SC + 1, SC + 2, SC + 3):
-                    continue
                 if j == hh - 1 or (i == ww - 1 and lit) or (i == 0 and not lit):
-                    ch = 'Y' if lit else 'W'
+                    ch = 'f' if lit else 'c'
                 elif j == 0 or (i == 0 and lit):
-                    ch = 's' if lit else 'k'
+                    ch = '5' if lit else 'y'
                 else:
-                    ch = 'r' if lit else 'i'
-                c.put(xs + i, y + j, ch)
+                    ch = '3' if lit else 'l'
+                if y + j < GY - 5:
+                    c.put(xs + i, y + j, ch)
         y += hh
         k += 1
 
+# ---------------------------------------------------------------- 창 한 줄(돌 상인방 + 남빛 유리 + 덧창·창턱 제각각)
+GLINT = [((1, 2), (2, 3), (1, 9)), ((3, 2), (3, 3), (2, 11)), ((1, 3), (1, 4), (3, 12)), ((2, 2), (1, 10), (1, 11))]
 
-# ---------------------------------------------------------------- 좁은 아치창(버들항 성 결: 밝은 돌 테 + 짙은 남빛 유리 + 하늘 반짝)
-UP = {  # 2층 좁은 아치창 — 반짝 자리·덧창·불빛이 창마다 다르다
-    0: ['.rmmj.', 'rDDDAi', 'mF^DAi', 'mE^AAi', 'mDAABi', 'mDAABi', 'mYaaai', 'mE^AAi', 'mDAABi', 'mDAABi', 'mBAABi', 'mBBBAi', 'nmmmie', 'aYYYYa'],
-    1: ['.rmmj.', 'rDDDAi', 'mDDF^i', 'mDAE^i', 'mAAABi', 'mAABBi', 'mYaaai', 'mDAAAi', 'mAA^Bi', 'mAABBi', 'mBABBi', 'mBBBBi', 'nmmmie', 'aYYYYa'],
-    2: ['.rmmj.', 'rDLKAi', 'mLKKτi', 'mKKτAi', 'mKτττi', 'mτττBi', 'mYaaai', 'mDAABi', 'mDAABi', 'mE^ABi', 'mBAABi', 'mBBBAi', 'nmmmie', 'aYYYYa'],
-    3: ['.rmmj.', 'rDDDAi', 'mF^DAi', 'mDAAAi', 'mDAABi', 'mDABBi', 'mYaaai', 'mqoqoi', 'mολοli'.replace('ο','o').replace('λ','l'), 'mololi', 'mlllli', 'mBBBAi', 'nmmmie', 'aYYYYa'],
-    4: ['.rmmj.', 'rDDDAi', 'mDAADi', 'mD^AAi', 'mF^ABi', 'mDAABi', 'mYaaai', 'mDAABi', 'mDAABi', 'mAAABi', 'mBA^Bi', 'mBBBAi', 'nmmmie', 'aYYYYa'],
-}
-LO = {  # 1층은 네모 머리(돌 상인방) — 2층과 모양부터 다르다, 창마다 또 다르다
-    0: ['knnnmj', 'aYYYYa', 'mDDDAi', 'mF^DAi', 'mE^AAi', 'mYaaai', 'mDAABi', 'mDAABi', 'mBAABi', 'mBBBAi', 'kmmmie', 'aYYYYa'],
-    1: ['knnnmj', 'aYYYYa', 'mDDDAi', 'mDDF^i', 'mAAABi', 'mYaaai', 'mAA^Bi', 'mAABBi', 'mBBBBi', 'mBBBBi', 'NOkmie', 'aYYYYa'],
-    2: ['knnnmj', 'aYYYYa', 'mτKKτi', 'mKLKτi', 'mKKττi', 'mYaaai', 'mτKτ7i', 'mKττ7i', 'mτττ7i', 'mτ777i', 'kmmmie', 'aYYYYa'],
-    3: ['knnnmj', 'aYYYYa', 'mDDDAi', 'mD^AAi', 'mDAAAi', 'mYaaai', 'mqoolι'.replace('ι','i'), 'moolli', 'mollli', 'mBBBAi', 'kONmie', 'aYYYYa'],
-    4: ['knnnmj', 'aYYYYa', 'mDDDAi', 'mDAADi', 'mF^ABi', 'mYaaai', 'mDAABi', 'mDA^Bi', 'mBAABi', 'mBBBAi', 'kmmmie', 'aYYYYa'],
-}
-UP_ORDER = [0, 1, 4, 2, 3, 1, 4]
-LO_ORDER = [1, 3, 0, None, 4, 2, 0]
-UP_Y, LO_Y = WY0 + 6, SC + 7
-for k, wx in enumerate((17, 36, 55, 74, 93, 112, 131)):
-    c.rows(wx - 2, UP_Y, UP[UP_ORDER[k]])
-    for yy in (UP_Y - 1,):                     # 2층 아치 위 쐐기돌
-        c.put(wx, yy, 's')
-        c.put(wx + 1, yy, 'n')
-        c.put(wx - 1, yy, 'r')
-        c.put(wx + 2, yy, 'j')
-    if LO_ORDER[k] is not None:
-        c.rows(wx - 2, LO_Y, LO[LO_ORDER[k]])
 
-# ---------------------------------------------------------------- 가운데 아치문(돌 홍예 + 징 판자 + 계단 돌)
-DXX, DW = 68, 12
-# 홍예(밝은 쐐기돌 테)
-for (dx, dy, ch) in [(-3, 4, 'r'), (-3, 5, 'n'), (-3, 6, 'r'), (-2, 2, 's'), (-2, 3, 'r'), (-1, 1, 's'), (0, 0, 'r'),
-                     (1, -1, 's'), (2, -1, 'r'), (3, -2, 's'), (4, -2, 'r'), (5, -2, 's'), (6, -2, 's'),
-                     (7, -2, 'n'), (8, -2, 'm'), (9, -1, 'm'), (10, -1, 'k'), (11, 0, 'k'), (12, 1, 'j'),
-                     (13, 2, 'i'), (13, 3, 'j'), (14, 4, 'i'), (14, 5, 'j'), (14, 6, 'i')]:
-    c.put(DXX + dx, 70 + dy, ch)
-for y in range(70 + 7, GY - 1):
-    c.put(DXX - 3, y, 'r' if y % 5 else 'n')
-    c.put(DXX - 2, y, 'm')
-    c.put(DXX + DW, y, 'e')
-    c.put(DXX + DW + 1, y, 'i' if y % 5 else 'j')
-door(c, DXX, 70, DW, GY - 1 - 70)
-for x in range(DXX - 3, DXX + DW + 2):             # 문 앞 디딤돌
-    c.put(x, GY - 1, 'r' if x % 4 else 'm')
-    c.put(x, GY, 'i' if x % 3 else 'Z')
-# 양쪽 깃발(남빛 천 + 금 별 모양 점, 글자 없음) — 2층 창 사이에 건다
-for bx in (44, 101):
-    for j, row in enumerate(['τXXXXτ', '.FGGE.', '.FGGE.', '.FKKE.', '.FLKE.', '.FGGE.', '.FGGE.', '.FG.E.', '.F..E.']):
-        for i, ch in enumerate(row):
-            if ch != '.':
-                c.put(bx + i, WY0 + 6 + j, ch)
+def window(wx, wy, g, curtain=False, box=False):
+    """돌 상인방 + 좁고 긴 남빛 유리(가운데 문설·가로살) + 창턱. g = 반짝 자리 표 번호."""
+    rows = ['zp00pll', 'fffffcc']
+    for j in range(15):
+        r = 'p'
+        for i in range(5):
+            ch = 'D' if j < 5 else ('A' if (i + j) % 4 else 'B')
+            if j > 11:
+                ch = 'B'
+            if i == 2:
+                ch = 'E'
+            if j == 6:
+                ch = 'f'
+            r += ch
+        rows.append(r + 'y')
+    rows += ['z0000pl', 'cfffffc']
+    c.rows(wx - 3, wy, rows)
+    for (i, j) in GLINT[g]:
+        c.put(wx - 3 + i, wy + 2 + j, '^' if j < 6 else 'F')
+    if curtain:
+        for j in range(8, 14):
+            c.put(wx - 2, wy + 2 + j, 'q' if j % 2 else 'o')
+            c.put(wx - 1, wy + 2 + j, 'o')
+    if box:
+        c.rows(wx - 3, wy + 17, ['zMNON0l', 'βηηηηηβ'])
 
-# ---------------------------------------------------------------- 풍화·이끼(손 좌표)
-for (x, y, ch) in [(4, 92, 'N'), (5, 92, 'O'), (30, 92, 'N'), (118, 92, 'O'), (143, 92, 'N'), (60, 91, 'N'),
-                   (88, 92, 'O'), (20, 80, 'e'), (128, 50, 'e'), (50, 85, 'e')]:
+
+for k, (wx, g, sh, cu, bx) in enumerate([(14, 0, 1, 0, 0), (34, 2, 0, 1, 0), (53, 1, 1, 0, 1),
+                                         (95, 3, 0, 0, 1), (114, 0, 0, 1, 0), (133, 2, 1, 0, 0)]):
+    wy = WY0 + 7 + (k % 2)
+    window(wx, wy, g, cu, bx)
+    if sh:                                            # 나무 덧창 한 쌍(창 테에 붙는다)
+        for j in range(2, 17):
+            c.put(wx - 5, wy + j, 'η' if j % 4 else 'ε')
+            c.put(wx - 4, wy + j, 'ε' if j % 4 else 'β')
+            c.put(wx + 4, wy + j, 'ε' if j % 4 else 'β')
+            c.put(wx + 5, wy + j, 'β')
+
+# ---------------------------------------------------------------- 가운데 아치문
+DXX, DW, DY = 68, 12, 69
+for (dx, dy, ch) in [(-3, 4, '3'), (-3, 5, '0'), (-3, 6, '3'), (-2, 2, '5'), (-2, 3, '3'), (-1, 1, '5'), (0, 0, '3'),
+                     (1, -1, '5'), (2, -1, '3'), (3, -2, '5'), (4, -2, '3'), (5, -2, '5'), (6, -2, '5'),
+                     (7, -2, '0'), (8, -2, 'p'), (9, -1, 'p'), (10, -1, 'z'), (11, 0, 'z'), (12, 1, 'l'),
+                     (13, 2, 'y'), (13, 3, 'l'), (14, 4, 'y'), (14, 5, 'l'), (14, 6, 'y')]:
+    c.put(DXX + dx, DY + dy, ch)
+for y in range(DY + 7, GY - 1):
+    c.put(DXX - 3, y, '3' if y % 5 else '0')
+    c.put(DXX - 2, y, 'p')
+    c.put(DXX + DW, y, 'f')
+    c.put(DXX + DW + 1, y, 'y' if y % 5 else 'l')
+door(c, DXX, DY, DW, GY - 1 - DY)
+for x in range(DXX - 3, DXX + DW + 2):
+    c.put(x, GY - 1, '3' if x % 4 else 'p')
+    c.put(x, GY, 'y' if x % 3 else 'f')
+
+warm_region(c, 0, WY0, W - 1, GY)
+for (x, y, ch) in [(4, 91, 'N'), (5, 91, 'O'), (30, 91, 'N'), (118, 91, 'O'), (143, 91, 'N'), (60, 90, 'N'), (88, 91, 'O')]:
     c.put(x, y, ch)
-moss(c, [(10, 30, 2), (130, 28, 2), (60, 22, 2)])
+moss(c, [(10, 46, 2), (134, 44, 2)])
 
 import importlib.util as _iu  # noqa: E402
 for _n in ('fixups', 'edgefix'):

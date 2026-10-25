@@ -1,3 +1,4 @@
+import { normalizeLiftRide } from "@/project/eventCommands/liftRide";
 import { isParticlePreset, normalizeParticleDurationMs, normalizeShakeDirection } from "@/project/eventCommands/cinematicStaging";
 import { playerChoiceText } from "@/project/choiceText";
 import { playMonsterSfx } from "@/player/monsterSfx";
@@ -381,6 +382,9 @@ function executeM2Command(
       durationMs: normalizeParticleDurationMs(command.fields.durationMs),
       wait: fieldBoolean(command.fields, "wait", false),
     });
+  }
+  if (entry.title === "Lift Ride") {
+    return pause("liftRide", { kind: "liftRide", ...normalizeLiftRide(command.fields) });
   }
   if (entry.title === "Sprite Look") {
     const target = stagingTarget(command.fields, state.currentEventId, false);

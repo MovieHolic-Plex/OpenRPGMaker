@@ -24,6 +24,7 @@ import type { BattleAnimationPlayback } from "@/player/battleAnimationDom";
 import { battleAnimationImpactMs, battleAnimationLeadPlan, preloadAllBattleAnimationSounds, preloadBattleAnimationSounds, syncBattleAnimationLayer } from "@/player/battleAnimationDom";
 import { createPresentationLedger, type BattlePresentationLedger } from "@/player/battlePresentation";
 import { comboImpact, endComboAction, playComboCutIn, preloadComboBusts } from "@/player/battleComboCutIn";
+import { comboPartnersStrike, finishComboPartners, startComboPartners } from "@/player/battleComboPartners";
 import { commandPanel, enemyListPanel, syncEnemyListPanel, syncBattleSkillHelp, type BattleCommandSubmenu } from "@/player/battleCommandDom";
 import {
   advanceBattleResultLevelUps,
@@ -552,8 +553,10 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
           skillName: (row) => store.getCurrent().database.skills.find((skill) => skill.id === row.skillId)?.name ?? row.skillName ?? "",
           speed: sequencer.speedMultiplier,
         });
-      } else if (root.dataset.battleComboActive && entry.side === "enemy") endComboAction(root);
-      else if (root.dataset.battleComboActive && entry.actionId !== undefined && !root.dataset.battleComboActive.startsWith(`${entry.actionId}:`)) endComboAction(root);
+        // 참가자 모두가 움직인다 — 동료는 컷인 뒤 달려가거나 시전 자세, 착탄마다 차례로 치고 마지막에 함께 마무리.
+        startComboPartners(root, entry, store.getCurrent(), comboLeadMs / Math.max(0.25, sequencer.speedMultiplier || 1), sequencer.speedMultiplier);
+      } else if (root.dataset.battleComboActive && entry.side === "enemy") { finishComboPartners(root); endComboAction(root); }
+      else if (root.dataset.battleComboActive && entry.actionId !== undefined && !root.dataset.battleComboActive.startsWith(`${entry.actionId}:`)) { finishComboPartners(root); endComboAction(root); }
       // 훔치기처럼 결과가 특수 메시지 한 줄뿐인 직업 스킬은 시각 비트가 없다 — 그 메시지에서 연출을 시작한다.
       if (retroMotion && entry.kind === "special") {
         const pending = entry.side === "actor" && entry.userRecordId === pendingRetroSkillUserId ? pendingRetroSkillId : undefined;
@@ -615,6 +618,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
         // 연계기 착탄: 첫 타 번쩍임·합쳐진 마무리·흔들림·느린 화면, 타마다 피해 숫자 폭발(battleComboCutIn).
         if (root.dataset.battleComboActive && !feedback.miss && !feedback.healing && feedback.amount > 0) {
           comboImpact(root, store.getCurrent(), targetNode, feedback.amount, feedback.critical, sequencer.speedMultiplier);
+          comboPartnersStrike(root);
         }
         if (retroMotion && hitFeel === "impact" && intensity && targetNode && !prefersReducedMotion()) {
           impactContact.strike(targetNode, intensity, recoil);

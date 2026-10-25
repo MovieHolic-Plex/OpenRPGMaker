@@ -1,4 +1,5 @@
 import { mapCharacterSizeFactor } from "@/project/characterScale";
+import { CHASER_SPAWN_MIN_STEPS, chaserThreatLine, chaserThreatsAt } from "@/project/chaserSpawnSafety";
 import { patchSunlight, type MapSunlight } from "@/project/sunlight";
 import { isRetiredInteriorTileset, retiredInteriorMessage } from "@/project/retiredInteriorTilesets";
 import { isMapLoop, mapLoopLabel, mapLoopsX, mapLoopsY, MAP_LOOP_VALUES } from "@/project/mapLoop";
@@ -1340,6 +1341,8 @@ const setStartPosition: ToolDefinition = {
     if (previous && previous.id !== map.id && (previous.events?.length ?? 0) > 0 && !reachableMapIdsFromStart(draft).has(previous.id)) {
       warnings.push(`이전 시작 맵 '${previous.name}'(${previous.id}, 이벤트 ${previous.events.length}개)은 새 시작 맵에서 문으로 닿지 않습니다 — create_transfer_pair 나 이동 선택지로 이어야 거기 만든 것이 플레이에 나옵니다.`);
     }
+    // 추격자 시야 안·바로 곁이면 시작하자마자 잡힌다(J61).
+    for (const threat of chaserThreatsAt(draft, map.id, x, y, CHASER_SPAWN_MIN_STEPS, { skipGated: true })) warnings.push(`${chaserThreatLine(`시작 위치 (${x}, ${y})`, threat)}. 추격자 시야 밖(벽 너머·다른 방) 칸으로 옮기거나, 추격자를 스위치로 나중에 깨우세요(make_chase_scene activateSwitch).`);
     return { summary: `시작 위치 설정: ${map.name} (${x}, ${y})`, ...(warnings.length > 0 ? { warnings } : {}) };
   },
 };

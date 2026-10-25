@@ -1,3 +1,4 @@
+import { playLiftRide } from "@/player/playSceneLiftRide";
 import { isTouchUiHost } from "@/player/touchTap";
 import { stepStopReason, stopsReading } from "@/project/dialogueSystem";
 import { applySpriteLookStep, playParticleEffect } from "@/player/playSceneFieldStaging";
@@ -697,6 +698,11 @@ async function consumeBlockingStep(
     case "spriteLook":
       applySpriteLookStep(scene, step, currentEventId);
       return resumeAfterSurface(scene, interpreter);
+    case "liftRide": {
+      const done = playLiftRide(scene, step);
+      if (step.wait) await done;
+      return resumeAfterSurface(scene, interpreter);
+    }
     case "scrollMap":
       await scene.panScreen(step);
       return resumeAfterSurface(scene, interpreter);

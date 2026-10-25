@@ -19,6 +19,7 @@ import { loopStepTarget, wrapLoopPosition } from "@/project/mapLoop";
 // 경로 세팅은 잎 모듈에 있다(가벼운 소비자가 이 파일 전체를 끌어오지 않도록) — 기존
 // 임포트 경로를 깨지 않기 위해 여기서 다시 내보낸다.
 export { startPlayerRoute } from "@/player/playerRouteState";
+import { yieldPlayerRouteToEvents } from "@/player/playerRouteState";
 import { expandApproach, turnTowardDir } from "@/player/playSceneApproach";
 import { PLAYER_MOVE_TARGET } from "@/project/moveRouteTarget";
 import { footprintBounds, nearestCellInRect } from "@/project/footprint";
@@ -210,6 +211,8 @@ function tickPlayerMovement(scene: PlaySceneContext, input: InputState, cutscene
   // 맵 탭으로 걷는 중에 패드·키로 방향을 넣으면 탭 경로를 그만두고 손 조작으로 넘어간다.
   if (scene.playerRoute?.pointer === true && !cutsceneInputLocked && (input.x !== 0 || input.y !== 0)) cancelPointerRoute(scene);
   if (!scene.moving && !scene.playerHop) {
+    // 자유 걷기(맵 탭·QA 걷기)는 이벤트가 돌면 칸 경계에서 그만둔다 — 대사·놀래킴 동안 주인공이 계속 걸어가지 않는다(J62).
+    yieldPlayerRouteToEvents(scene, cutsceneInputLocked);
     // 주인공 강제 이동 루트가 있으면 입력보다 우선해 자동으로 걷는다.
     if (scene.playerRoute) advancePlayerRoute(scene);
     // Sliding owns the next free step; a dialogue/cutscene pauses it at the tile boundary.

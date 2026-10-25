@@ -7,8 +7,8 @@ import { deserialize, serialize } from "@/project/io";
 import { collectUsedUploadedAssetIds, collectWebExportAssets } from "@/project/webExportAssets";
 import type { CinematicSequence, Project } from "@/project/types";
 
-const BACKDROP = "easyrpg-backdrop-cosmos1";
-const TITLE_ART = "easyrpg-title-title1";
+const BACKDROP = "oprn-pano-sky-day";
+const TITLE_ART = "oprn-still-corridor";
 const MUSIC = "cc0-bgm-rtp-ttl-001";
 const MOVIE = "movie-upload";
 const VOICE = "voice-upload";

@@ -46,3 +46,17 @@ export function startPlayerRoute(
 export function clearPlayerRouteThrough(scene: Pick<PlaySceneContext, "playerRoute">): void {
   if (scene.playerRoute) scene.playerRoute.through = false;
 }
+
+/**
+ * 사람이 시킨 자유 걷기(맵 탭·QA 걷기 훅, `yieldsToEvents`)는 이벤트가 돌거나 컷신이 입력을 잠그면 칸 경계에서 그만둔다.
+ * 이벤트가 시킨 강제 이동(moveEvent·길찾기)은 표시가 없어 해석기가 기다리는 동안에도 계속 걷는다.
+ * 없으면 닿기(playerTouch) 놀래킴의 대사창이 떠 있는데 주인공이 목적지까지 계속 걸었다(2026-10-25 심판 J62, 공포 학교).
+ */
+export function yieldPlayerRouteToEvents(
+  scene: Pick<PlaySceneContext, "playerRoute" | "running">,
+  cutsceneInputLocked: boolean,
+): boolean {
+  if (scene.playerRoute?.yieldsToEvents !== true || (!scene.running && !cutsceneInputLocked)) return false;
+  scene.playerRoute = null;
+  return true;
+}

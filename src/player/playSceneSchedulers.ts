@@ -1,3 +1,4 @@
+import { playLiftRide } from "@/player/playSceneLiftRide";
 import { applySpriteLookStep, playParticleEffect } from "@/player/playSceneFieldStaging";
 import { queueScheduledBattle, resumeScheduledBattle } from "./scheduledBattle";
 import { isRuntimeEventIdle } from "@/player/runtimeConditionWait";
@@ -376,6 +377,9 @@ export function applyNonBlockingStep(scene: PlaySceneContext, step: StepResult, 
       return true;
     case "spriteLook":
       applySpriteLookStep(scene, step, currentEventId);
+      return true;
+    case "liftRide":
+      void playLiftRide(scene, step);
       return true;
     case "showEmote":
       showSceneEmote(

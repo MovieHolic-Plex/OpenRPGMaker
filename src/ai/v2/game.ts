@@ -7,6 +7,7 @@ import { createPiToolset, type PiToolShape } from "@/ai/piAgent/toolAdapter";
 import { WHOLE_GAME_WORDS } from "./shipChecks";
 import { getTool } from "@/editor/tools/toolRegistry";
 import type { PiAssistantV2Env } from "./env";
+import { ENCOUNTER_ASK } from "./combatChecks";
 
 export const GAME_WORDS = /퀘스트|의뢰|심부름|부탁|아이템|회복약|포션|무기|갑옷|방패|장비|장신구|상점|가게|팔게|팔기|열쇠|잠긴|보물|상자|제작|만들어 주는|주인공|이름|직업|레벨|능력치|체력|동료|파티|합류|떠나|스킬|기술|전투|싸우|보스|적\b|몬스터|무리|선택지|호감|기억|스위치|변수|횟수|레버|여관|묵으|저장|회복|치료|신부|골드|돈|엔딩|결말|게임|일지|제한 시간|타이머|낮에|밤에|시간대|아침|저녁|팻말|표지판|우물|동전|암호|비밀번호|통행료|경비|문지기|함정|독|중독|마비|수면|상태 ?이상|날씨|비가|비 ?오|무작위|랜덤|인카운터|조우|마주치|늑대|멧돼지|슬라임|고블린|얻게|얻는|얻을|모으|모았|모아|줍|주워|개수|몇 개|조사하면|조사할|입력|자물쇠|숫자|비밀번호|옮겨|옮기|묘비|회상|따라오|따라와|따라다|도망|사라지|나타나|말 걸|말을 걸|대사|다가가|밟으면|들어가면|문을|잇|이어 줘|이어줘|연결|follow|random|encounter|지진|흔들|번쩍|번개|음악|배경음|브금|bgm|팡파르|사운드트랙|약초|광맥|이동석|눈이|눈 ?내|폭풍|안개|대화|표정|얼굴|초상|흉상|웃으|걱정|장면|뛰어다|돌아다|걸어 다|순찰|쫓아|쫓다|추격|발견|뒤지|뒤져|뒤질|수납|항아리|서랍|옷장|들키|들켜|몰래|숲|사당|오프닝|제목|타이틀|레터박스|검은 띠|카메라|연기|막 끝|막이|제\s*\d+\s*막|카드|페이즈|소환|불러|예고|힘을 모|꿰뚫|속성|약하게|약점|치명타|반지|목걸이|마나|에테르|\bMP\b|화상|기절|잠 |잠은|책장|비석|역사|망원경|이름을|줄여|절반|추가해|연계|합체|협동|콤보|레벨 ?업|팡파레|습득|달려들|돌진|느릿|컷인|도움말|말투|존댓말|반말|다듬|윤문|호칭|대화창|넘치|줄거리|대본|휴대폰|모바일|폰에서|터치|탭하면|탭해서|진동|조이스틱|달리기 단추|들판|초원|필드|바위|버섯|들꽃|고사리|그루터기|통나무|덤불|풀숲|행인|오가|출근|지나다니|옥상|내려다|전망|황무지|문 열리|여는 효과|문 효과|한 명만|두 명|중복|겹쳐|남겨|지워|없애|삭제|빼 줘|치워|combo|touch|mobile|quest|item|shop|weapon|armor|battle|enemy|party|skill|inn|save|gold|ending|poison|weather/iu;
 
@@ -39,7 +40,7 @@ export const FALLEN_TIERS: readonly { readonly words: RegExp; readonly tools: re
   { words: /옥상|내려다|전망대|전망|아래 거리|배경으로|rooftop/iu, tools: ["set_map_properties"], card: "· 옥상·전망대에서 아래 동네가 보이는 배경: set_map_properties{mapId:옥상 맵, background:{fromMap:{mapId:아래 거리 맵, scale:0.33, haze:0.3}, showInEmptyCells:true}} — 그림을 지어내지 않는다. 옥상 맵 가장자리(울타리 밖)는 빈 칸으로 둬야 배경이 보인다." },
   // 2026-10-25 공포 트랙(판정 J11~J15): 어둠·손전등·추격·숨기·게임 오버·퍼즐 — v1 에 있던 일반 기능을 공포 낱말에 싣는다.
   // 2026-10-25 사용자 규칙: 다 지은 게임에 편집기 기본 타이틀·오프닝·HUD·창·음악·이름·얼굴·엔딩 카드를 남기지 않는다(J59: 첫 턴에 오프닝 도구가 없어 「새 프로젝트」 타이틀이 남았다).
-  { words: WHOLE_GAME_WORDS, tools: ["set_title_screen", "plan_opening", "set_opening", "list_opening_media", "list_resources", "set_field_hud", "set_game_over", "define_ending", "set_vn_look", "set_project_settings", "set_map_properties", "upsert_actor", "list_npc_graphics"], card: "· 출하 전 기본값 바꾸기(게임 하나를 만들 때 반드시): 편집기 기본값을 그대로 두면 끝맺음 관문이 막는다. ① 제목·타이틀 그림 = set_title_screen{title, backgroundResourceId}(그림은 list_resources{kind:'backdrop',query:<배경 낱말>}). 제목에 퍼즐 답·암호·결말을 쓰지 않는다. ② 오프닝 = plan_opening → set_opening(이 게임의 장면) 또는 set_opening{enabled:false}. ③ HUD = set_field_hud{theme:<장르>} 또는 {off:true}. ④ 대사창·메뉴 = set_vn_look{preset} 또는 set_project_settings{resources:{systemResourceId}}. ⑤ 맵마다 곡 = set_map_properties{mapId,bgm}, 전투가 있으면 전투 곡·전투 배경(set_map_properties{battleBackground}). ⑥ 주인공·동료 이름·모습·얼굴 = upsert_actor(list_npc_graphics 로 외형 고르기). ⑦ 질 수 있으면 set_game_over. ⑧ 엔딩 = define_ending 의 epilogue 3줄 이상(무슨 일이 어떻게 끝났는지·인물의 매듭) + presentation{backgroundResourceId(마지막 그림), finalTitle, credits}. 대사 한 줄 엔딩은 엔딩이 아니다." },
+  { words: WHOLE_GAME_WORDS, tools: ["set_title_screen", "plan_opening", "set_opening", "list_opening_media", "create_opening_animatic_shot", "place_opening_background", "place_opening_charset_actor", "list_resources", "set_field_hud", "set_game_over", "define_ending", "set_vn_look", "set_project_settings", "set_map_properties", "upsert_actor", "list_npc_graphics"], card: "· 출하 전 기본값 바꾸기(게임 하나를 만들 때 반드시): 편집기 기본값을 그대로 두면 끝맺음 관문이 막는다. ① 제목·타이틀 그림 = set_title_screen{title, backgroundResourceId}(그림은 list_resources{kind:'backdrop',query:<배경 낱말>}). 제목에 퍼즐 답·암호·결말을 쓰지 않는다. ② 오프닝 = plan_opening → set_opening(이 게임의 장면) 또는 set_opening{enabled:false}. 그림 장면 하나 이상은 이 게임의 장소를 보인다 — 맞는 스틸이 없으면 하늘·별 배경(oprn-pano-*)만 깔지 말고 place_opening_background{shotId, layerId:'bg', mapId:<무대 맵>, focus:{x,y}} 로 게임 맵을 그대로 쓴다. 엔딩마다 presentation.backgroundResourceId 를 준다(비우면 타이틀 그림이 깔린다). ③ HUD = set_field_hud{theme:<장르>} 또는 {off:true}. ④ 대사창·메뉴 = set_vn_look{preset} 또는 set_project_settings{resources:{systemResourceId}}. ⑤ 맵마다 곡 = set_map_properties{mapId,bgm}, 전투가 있으면 전투 곡·전투 배경(set_map_properties{battleBackground}). ⑥ 주인공·동료 이름·모습·얼굴 = upsert_actor(list_npc_graphics 로 외형 고르기). ⑦ 질 수 있으면 set_game_over. ⑧ 엔딩 = define_ending 의 epilogue 3줄 이상(무슨 일이 어떻게 끝났는지·인물의 매듭) + presentation{backgroundResourceId(마지막 그림), finalTitle, credits}. 크레딧에 「당신」 같은 자리표시 이름을 지어 넣지 않는다(만든 사람을 모르면 제목·감사 문구만). 대사 한 줄 엔딩은 엔딩이 아니다." },
   // 2026-10-25 장난감 가게 고치기 4턴: 「HUD 를 끄고 메뉴의 스킬·장비를 빼 줘」에 HUD·메뉴 도구가 실리지 않아 «도구가 없어 못 끈다»로 끝났다.
   { words: /HUD|허드|체력 ?표시|체력 ?바|하트|514|메뉴|ESC|스킬·장비|상태 ?창|화면 ?구석|field ?hud|menu/iu, tools: ["set_field_hud", "configure_field_menu", "set_vn_look"], card: "· HUD·메뉴: 필드 HUD = set_field_hud{theme:<장르>} 또는 {off:true}(체력 하트·숫자를 끈다). ESC 메뉴 = configure_field_menu{preset:'story'}(전투 없는 이야기 게임: 소지품·갤러리·엔딩·대화 기록·저장) 또는 항목 목록 — 쓰지 않는 스킬·장비·직업 칸을 남기지 않는다. 메뉴·HUD 에서 빼는 것은 화면 설정이다 — 배우·직업의 기술·장비·전투 명령(upsert_actor·upsert_class)은 건드리지 않는다." },
   { words: HORROR_WORDS, tools: ["make_chase_scene", "configure_object_behavior", "make_horror_loop", "set_lighting_volume", "set_scene_mood", "set_game_over", "set_life_flower", "compile_puzzle", "make_gallery_room"], card: "· 공포: 어둠·손전등 = set_lighting_volume{mapId, ambient:0.15~0.3, sources:[{at:{kind:'player'}, radius:3~4}]}(손전등은 플레이어를 따라간다 — at 은 늘 객체). 쫓아오는 것 = make_chase_scene(순찰하다 보면 쫓고, 놓치면 돌아간다: pursuit{searchMs, onLost:'return'}, hidingSpots, killOnTouch, safeZone). 옷장·침대 밑 숨기 = configure_object_behavior{mapId, eventId, pageId, kind:'hiding'}(또는 make_chase_scene 의 hidingSpots). 잡히면 = set_game_over{presentation:'horror'}. 단서→금고→열쇠→잠긴 방 = author_puzzle_chain 하나로(답은 단서에만). 잠긴 방은 seal_locked_room 이 벽 틈을 막는다. 깜짝 놀람은 add_event 비트(화면 흔들림·번쩍임·효과음)로, 대사에 「@player」·{name} 을 쓰지 않는다 — 주인공 이름을 쓴다. 동료가 «합류»하면 changeParty{action:'add'}." },
@@ -93,7 +94,8 @@ export const GAME_CARD = `[게임 요소 — 퀘스트·아이템·상점·전�
 - 플레이어가 «조사하는» 물건(비석·이동석·분수·약초 자리·광맥·표지판·덤불)은 눈에 보여야 한다: list_spatial_designs{kind:'object',query:'비석'|'돌'|'분수'|'나무'|'덤불'} 로 물건 id 를 찾아 stamp_object{mapId,objectId,x,y} 로 그 칸(또는 바로 위 칸)에 찍고, 이벤트는 그 물건 칸 앞에 둔다. 이미 있는 물건 칸을 써도 된다. 투명 이벤트를 맨땅에 두지 않는다(숨기라는 요청만 예외).
 - 꼭 맞는 그림이 없는 물건(사과나무·묘비·상자 더미)은 draw_object 카드만 남기고 멈추지 않는다: 가장 비슷한 기존 물건(나무·돌·표지판) 칸 위에 조사 이벤트를 두고 아이템·대사·스위치는 그대로 만든다. 그림이 대체물이면 보고에 적는다.
 - 숫자 자물쇠·암호 입력은 {kind:'inputNumber',variableId,digits:4} 로 변수에 받고 fork 조건 {kind:'variable',variableId,op:'==',value:1024} 으로 연다(조건의 kind 는 'variable' — 'var' 는 setVariable 의 피연산자 {kind:'var',id} 에만 쓴다). 자물쇠가 달린 창고·문이 없으면 그 건물·문을 먼저 만든다(add_event·create_transfer_pair).
-- 새 맵(실내·필드)을 만들면 반드시 들어가는 길을 단다: 집 문 칸 ↔ 실내 입구는 create_transfer_pair, 마을 가장자리 ↔ 필드도 create_transfer_pair. 무작위로 나오는 적은 set_encounter_table(보이는 적 이벤트가 아니다).
+- 새 맵(실내·필드)을 만들면 반드시 들어가는 길을 단다: 집 문 칸 ↔ 실내 입구는 create_transfer_pair, 마을 가장자리 ↔ 필드도 create_transfer_pair. 무작위로 나오는 적은 set_encounter_table(보이는 적 이벤트가 아니다) — 요청에 무작위 조우가 있을 때만 켠다.
+- 전투가 있는 게임에는 HP 를 되찾을 길을 반드시 둔다: 여관(recoverAll)·상점 포션(set_shop_stock)·회복약 상자(place_chest)·보스 앞 place_savepoint{heal:true}·회복 기술 동료 중 하나 이상. 없으면 끝맺음 관문이 막는다. 첫 숲·첫 동굴 적은 시작 파티가 대개 이기게(simulate_battle 승률 80%↑) 맞춘다.
 - 회상(과거 장면)은 add_event 컷신으로: when:'talk'·after:'<말 거는 대상>' 에 tint sepia → appear 과거 인물 → walk·say → vanish → tint clear. 화면 색 + 지금 인물의 독백만으로 흉내 내지 않는다(과거 인물은 장면 뒤 사라진다).
 - 한 번만 주는 보상·동료(addFollower)·회상은 셀프 스위치를 켜고 그 조건의 「이미 했다」 페이지를 둔다. 머리 위 「!」 같은 감정은 add_event 의 emote 비트(대사로 쓰지 않는다).
 - 난수(확률 70%·무작위 보상) 명령은 엔진에 없다(setVariable 의 value 는 숫자나 {kind:'var',id} 뿐) — 여러 번 시도하지 말고, 순서로 돌아가는 결과(예: 세 번에 한 번 실패)로 대신하고 보고에 «확률 대신 순서»라고 적는다.
@@ -165,7 +167,7 @@ export function storeTierCard(task: string): string {
  */
 export const GAME_TOOL_GROUPS: readonly { readonly words: RegExp; readonly tools: readonly string[] }[] = [
   { words: /전투|싸우|싸움|싸워|보스|적\b|적이|적을|적의|적과|적들|적 |몬스터|마물|무리|스킬|기술|마법|주문|레벨|능력치|직업|공격|방어|피해|데미지|체력|\bHP\b|\bMP\b|마나|에테르|약점|약하게|속성|치명타|상태|독|중독|마비|수면|화상|기절|인카운터|조우|마주치|늑대|멧돼지|슬라임|고블린|드래곤|도마뱀|박쥐|무기|칼|검을|검이|검과|검 |활|창을|갑옷|방패|장비|장신구|반지|목걸이|연계|합체|협동|콤보|부하|소환|페이즈|레벨 ?업|팡파레|습득|달려들|돌진|동료|파티|합류|battle|enemy|skill|boss|monster|weapon|armor|class|level|party/iu,
-    tools: ["upsert_class", "upsert_skill", "upsert_enemy", "upsert_troop", "upsert_troop_battle_page", "set_encounter_table", "place_field_enemy", "upsert_equipment"] },
+    tools: ["upsert_class", "upsert_skill", "upsert_enemy", "upsert_troop", "upsert_troop_battle_page", "set_encounter_table", "place_field_enemy", "upsert_equipment", "simulate_battle"] },
   { words: /상점|가게|팔게|팔기|파는|팔아|판매|구입|사는|살 수|가격|값|골드|돈|무기|갑옷|방패|장비|장신구|반지|목걸이|shop|price|equipment/iu, tools: ["upsert_equipment"] },
   { words: /엔딩|결말|끝나|끝내|끝이|끝에|마지막 날|마지막에|마지막 장면|막 끝|막이|제\s*\d+\s*막|에필로그|타이틀로|게임 오버|게임이 끝|ending|epilogue/iu, tools: ["list_endings", "define_ending"] },
   { words: /퀘스트|의뢰|심부름|부탁|임무|보상|일지|할 일|모으|모아|모았|수집|가져가|가져오|가져다|찾아 ?(주|오|와)|구해 ?(오|와)|quest/iu, tools: ["create_quest"] },
@@ -180,7 +182,26 @@ export function createGameTools(env: PiAssistantV2Env, task = ""): PiToolShape[]
   // 게임 요청도 «조사하는 물건»(비석·이동석·분수)을 보이게 찍어야 해서 물건 찾기·찍기를 같이 준다(2026-10-24: 투명 이벤트가 맨땅에 남았다).
   const want = [...(wantsGameTools(task) ? [...gameToolNames(task), "list_spatial_designs", "stamp_object", ...fallenTierTools(task)] : []), ...(wantsTerrainTools(task) ? V2_TERRAIN_TOOLS : []), ...storeTierTools(task)];
   const names = [...new Set(want)].filter((name) => getTool(name));
-  return withPictureSearchBudget(createPiToolset(env.ctx, { ...(env.toolsetOptions ?? {}), toolNames: names, onCall: env.record }));
+  return withEncountersOnlyWhenAsked(withPictureSearchBudget(createPiToolset(env.ctx, { ...(env.toolsetOptions ?? {}), toolNames: names, onCall: env.record })), task);
+}
+
+/**
+ * 무작위 조우는 요청이 말할 때만 켠다(2026-10-25 판정 J55): 견습 기사·던전·마법 시험 게임에서 조수가 시키지 않은 조우표를 깔았고
+ * set_encounter_table 이 발생률 0 을 기본값으로 올려 회복 수단 없는 파티가 길에서 전멸했다. 요청에 조우 낱말이 없고 encounterRate 를
+ * 주지 않았으면 0(꺼짐)으로 넘긴다 — 표는 남아 나중에 켤 수 있다. 일부러 켜려면 encounterRate 를 숫자로 준다(끝맺음 검사가 보고를 요구한다).
+ */
+export function withEncountersOnlyWhenAsked(tools: PiToolShape[], task: string): PiToolShape[] {
+  if (ENCOUNTER_ASK.test(task)) return tools;
+  return tools.map((tool) => tool.name !== "set_encounter_table" ? tool : {
+    ...tool,
+    async execute(id, params, signal) {
+      const args = (params && typeof params === "object" ? params : {}) as Record<string, unknown>;
+      if (args.encounterRate !== undefined) return tool.execute(id, params, signal);
+      const result = await tool.execute(id, { ...args, encounterRate: 0 }, signal);
+      const note = "요청에 무작위 조우가 없어 발생률 0(꺼짐)으로 두었다 — 걷다가 저절로 싸우지 않는다. 싸움은 보이는 적(place_field_enemy)·이벤트 전투로 두고, 정말 켜야 하면 encounterRate 를 숫자로 다시 준다(6~10 이 보통).";
+      return { ...result, content: [...result.content, { type: "text", text: note }] } as Awaited<ReturnType<PiToolShape["execute"]>>;
+    },
+  });
 }
 
 /**

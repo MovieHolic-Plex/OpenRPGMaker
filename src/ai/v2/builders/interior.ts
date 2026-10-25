@@ -913,3 +913,80 @@ export function interiorAddAnchors(run: BuildRun, record: PlaceRecord, adds: rea
     summary: `${record.spec.name}: 더한 물건 ${placed.slice(state.placed.length).map((p) => p.id).join(", ") || "없음"} — ${final.summary.slice(0, 160)}`,
     warnings: [], missingArt: missing, calls: run.calls, state: { ...state, args, placed } };
 }
+
+// ───── 놓인 가구 하나 옮기기·돌리기·빼기(move_object) ─────
+// 비평(VQA)이 「침대가 문을 막는다」「의자가 벽을 본다」를 짚어도 고칠 길이 다시 짓기뿐이었다 — 다시 지으면 견본 가구가 다시 나와
+// 같은 결함이 남았다(2026-10-25 빌더 보고: VQA 결함 6건이 끝까지 그대로). 마지막 도구 인자(args.objects)에서 그 물건만 바꿔 다시 짓는다.
+
+export interface ObjectEdit {
+  /** 그 물건이 덮는 칸 하나(비평이 짚은 칸). */
+  readonly at: { readonly x: number; readonly y: number };
+  /** 옮길 칸 — at 이 가리킨 칸이 이 칸으로 가게 통째로 민다. */
+  readonly to?: { readonly x: number; readonly y: number };
+  /** 바라보는 쪽 — 같은 물건의 다른 방향 그림으로 바꾼다(그림이 있을 때만). */
+  readonly face?: "N" | "S" | "E" | "W";
+  readonly remove?: boolean;
+}
+
+const FACE_WORD = /\s+(?:N|S|E|W|north|south|east|west)$/iu;
+
+/** 그 칸을 덮는 물건(원점이 같으면 그것, 아니면 몸체가 덮는 것). */
+function objectAt(spec: HandInteriorSpec, objects: readonly Obj[], at: { x: number; y: number }): number {
+  const exact = objects.findIndex((o) => o.x === at.x && o.y === at.y);
+  if (exact >= 0) return exact;
+  return objects.findIndex((o) => {
+    const def = spec.objects[o.id.split(":")[0]!];
+    const w = Math.max(1, def?.w ?? 1), h = Math.max(1, def?.h ?? 1);
+    return at.x >= o.x && at.x < o.x + w && at.y >= o.y && at.y < o.y + h;
+  });
+}
+
+/** 같은 물건의 다른 방향 그림 id(「chair S」 → 「chair E」). 없으면 undefined. */
+function facedPart(spec: HandInteriorSpec, id: string, face: string): string | undefined {
+  const [base, ...rest] = id.split(":");
+  const family = base!.replace(FACE_WORD, "");
+  const hit = Object.keys(spec.objects).find((k) => k !== base && k.replace(FACE_WORD, "") === family && (spec.objects[k] as { facing?: string }).facing === face);
+  return hit ? [hit, ...rest].join(":") : undefined;
+}
+
+export function interiorMoveObjects(run: BuildRun, spec: PlaceSpec, base: { tilesetId: string; args: Record<string, unknown> }, edits: readonly ObjectEdit[], prev?: InteriorState): PlaceBuildResult {
+  const roomSpec = roomSpecOf(run.ctx.project.tilesets[base.tilesetId]);
+  const mapId = String(base.args.mapId ?? spec.mapId ?? "");
+  const fail = (summary: string): PlaceBuildResult => ({ ok: false, mapIds: [mapId], summary, warnings: [], missingArt: [], calls: run.calls });
+  if (!roomSpec) return fail("이 맵의 칩셋에는 손 도트 실내 부품 사전이 없다 — 가구 옮기기는 손 도트 실내만 된다");
+  const objects: Obj[] = [...((base.args.objects as Obj[] | undefined) ?? [])];
+  const done: string[] = [];
+  const problems: string[] = [];
+  for (const edit of edits) {
+    const i = objectAt(roomSpec, objects, edit.at);
+    if (i < 0) {
+      const near = objects.filter((o) => Math.abs(o.x - edit.at.x) <= 3 && Math.abs(o.y - edit.at.y) <= 3).slice(0, 6).map((o) => `${o.id}(${o.x},${o.y})`);
+      problems.push(`(${edit.at.x},${edit.at.y}) 에 놓인 가구가 없다${near.length ? ` — 가까운 가구: ${near.join(", ")}` : ""}(탁자·상품·단상은 이 동사로 못 옮긴다)`);
+      continue;
+    }
+    const o = objects[i]!;
+    const name = `${roomSpec.objects[o.id.split(":")[0]!]?.ko ?? o.id}(${o.x},${o.y})`;
+    if (edit.remove) { objects.splice(i, 1); done.push(`${name} 뺌`); continue; }
+    let next: Obj = o;
+    if (edit.face) {
+      const turned = facedPart(roomSpec, o.id, edit.face);
+      if (turned) next = { ...next, id: turned };
+      else problems.push(`${name} — ${edit.face} 쪽을 보는 그림이 없다(그대로 둠)`);
+    }
+    if (edit.to) next = { ...next, x: o.x + edit.to.x - edit.at.x, y: o.y + edit.to.y - edit.at.y };
+    if (next !== o) { objects[i] = next; done.push(`${name} → ${next.id === o.id ? "" : `${next.id} `}(${next.x},${next.y})`); }
+  }
+  if (!done.length) return fail(`바꾼 가구가 없다: ${problems.join(" · ")}`);
+  const args = { ...base.args, objects };
+  const attempt = build(run, args);
+  const revert = () => { build(run, base.args); if (prev?.stamps) applyStamps(run, base.tilesetId, mapId, prev.stamps); };
+  if (!attempt.ok) { revert(); return fail(`그렇게 놓으면 방을 지을 수 없어 되돌렸다(${attempt.summary.slice(0, 160)}) — 다른 칸으로`); }
+  if (Array.isArray(attempt.data?.unreachedFloor) && (attempt.data!.unreachedFloor as unknown[]).length > 0) {
+    revert();
+    return fail(`그렇게 놓으면 바닥 ${(attempt.data!.unreachedFloor as unknown[]).length}칸에 갈 수 없게 돼 되돌렸다 — 길을 막지 않는 칸으로`);
+  }
+  if (prev?.stamps) applyStamps(run, base.tilesetId, mapId, prev.stamps);
+  const placed = prev?.placed ?? [];
+  const state: InteriorState = { ...(prev ?? {}), tilesetId: base.tilesetId, mapId, args, placed };
+  return { ok: true, mapIds: [mapId], summary: `${spec.name ?? mapId}: ${done.join(" · ")}`, warnings: problems, missingArt: [], calls: run.calls, state };
+}

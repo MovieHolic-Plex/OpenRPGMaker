@@ -140,7 +140,7 @@ export const CHRONO_BELL_BEATS: readonly FlagshipBeat[] = [
     sceneTitle: "발렌과 별지기의 수호상 · 렌즈의 신호 · 북쪽의 답",
     playerFeel: "렌즈 앞에서 발렌과 수호상을 쓰러뜨리면 이리스가 신호를 보내 북쪽에서 답을 받는다. 하넬에게 알리면 제1막이 끝난다.",
     mechanics: ["battleProcessing", "define_ending", "triggerEnding"],
-    sharedAssets: ["charset-battler-actor1-4", "generated-enemy-golem-crystal"],
+    sharedAssets: ["charset-battler-fs-valen", "generated-enemy-golem-crystal"],
   },
 ] as const;
 
@@ -236,7 +236,7 @@ export const FLAGSHIP_BEAT_MANIFESTS: Readonly<Record<FlagshipDemoId, FlagshipBe
       { id: "actor_fs_iris", name: "이리스", role: "별에서 온 기계 소녀", assetId: "easyrpg-charset-actor4" },
       { id: "npc_fs_hanel", name: "하넬", role: "천문대장", assetId: "easyrpg-charset-people3" },
       { id: "npc_fs_bram", name: "브람", role: "숲지기", assetId: "easyrpg-charset-actor2" },
-      { id: "enemy_fs_valen", name: "심문관 발렌", role: "제1막 보스", assetId: "charset-battler-actor1-4" },
+      { id: "enemy_fs_valen", name: "심문관 발렌", role: "제1막 보스", assetId: "charset-battler-fs-valen" },
       { id: "enemy_fs_guardian", name: "별지기의 수호상", role: "제1막 보스와 함께 깨어나는 수호상", assetId: "generated-enemy-golem-crystal" },
     ],
     beats: CHRONO_BELL_BEATS,
