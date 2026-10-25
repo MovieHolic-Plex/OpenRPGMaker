@@ -16,10 +16,106 @@
    ],
    "note": "object-gate pass/허용 + 독립 검수 둘 PASS(원문 파일)",
    "at": "2026-10-25T06:47:01+00:00"
+  },
+  {
+   "seq": 2,
+   "item": "chapel",
+   "sha": "e9f42570ff5b594b1db192f57056addab3e45aaefb2c2d142e1b1573861e2b4b",
+   "pixelSha256": "4fe5b4ffefda6a70bb5bc6ee2fa11325761f5919ed25493701130bb5e102ce76",
+   "decision": "allow",
+   "by": "delegated",
+   "delegatedBy": "user 2026-10-25 (bk-massing-100 → 실제 건물, 머지까지 위임)",
+   "evidence": [
+    "../rpg-zzu-object-gate-holds/harness-data/object-gate/receipts/4f/4fe5b4ffefda6a70bb5bc6ee2fa11325761f5919ed25493701130bb5e102ce76.json",
+    "harness-data/building-kit/massing/reviews/chapel/4fe5b4ffefda-argon.md",
+    "harness-data/building-kit/massing/reviews/chapel/4fe5b4ffefda-klb-sonnet-5-5.md"
+   ],
+   "note": "object-gate pass/허용 + 독립 검수 둘 PASS(원문 파일)",
+   "at": "2026-10-25T08:18:19+00:00"
+  },
+  {
+   "seq": 3,
+   "item": "dovecote",
+   "sha": "35c9666c5a5fd181069f8c67f00792278151c53285579f8b805220eb2fe43cbd",
+   "pixelSha256": "361b06d439c192605e6cb53bf3f3fd00e43693d513711fb0cb2c09bd64d1e21a",
+   "decision": "allow",
+   "by": "delegated",
+   "delegatedBy": "user 2026-10-25 (bk-massing-100 → 실제 건물, 머지까지 위임)",
+   "evidence": [
+    "../rpg-zzu-object-gate-holds/harness-data/object-gate/receipts/36/361b06d439c192605e6cb53bf3f3fd00e43693d513711fb0cb2c09bd64d1e21a.json",
+    "harness-data/building-kit/massing/reviews/dovecote/361b06d439c1-argon.md",
+    "harness-data/building-kit/massing/reviews/dovecote/361b06d439c1-klb-sonnet-5-5.md"
+   ],
+   "note": "object-gate pass/허용 + 독립 검수 둘 PASS(원문 파일)",
+   "at": "2026-10-25T08:18:19+00:00"
+  },
+  {
+   "seq": 4,
+   "item": "inn",
+   "sha": "13303ceccbe70c4927082bd0aa5b4d22c53aebf8e9ab39f818b90f832a483c01",
+   "pixelSha256": "5aa44f88e586329a1f48b11af9aa765c7b938d0cffa741130a65943b6681ce38",
+   "decision": "allow",
+   "by": "delegated",
+   "delegatedBy": "user 2026-10-25 (bk-massing-100 → 실제 건물, 머지까지 위임)",
+   "evidence": [
+    "../rpg-zzu-object-gate-holds/harness-data/object-gate/receipts/5a/5aa44f88e586329a1f48b11af9aa765c7b938d0cffa741130a65943b6681ce38.json",
+    "harness-data/building-kit/massing/reviews/inn/5aa44f88e586-argon.md",
+    "harness-data/building-kit/massing/reviews/inn/5aa44f88e586-klb-sonnet-5-5.md"
+   ],
+   "note": "object-gate pass/허용 + 독립 검수 둘 PASS(원문 파일)",
+   "at": "2026-10-25T08:18:19+00:00"
+  },
+  {
+   "seq": 5,
+   "item": "l-farmhouse",
+   "sha": "18949f01494551472a62252d35ff30b40a6484b14c47862aae1ceb1a57fe6d35",
+   "pixelSha256": "56cbeeb983a3a2c0faf3273b6cbf9b3e4c271f80ba005916ceb7db3403cb461b",
+   "decision": "allow",
+   "by": "delegated",
+   "delegatedBy": "user 2026-10-25 (bk-massing-100 → 실제 건물, 머지까지 위임)",
+   "evidence": [
+    "../rpg-zzu-object-gate-holds/harness-data/object-gate/receipts/56/56cbeeb983a3a2c0faf3273b6cbf9b3e4c271f80ba005916ceb7db3403cb461b.json",
+    "harness-data/building-kit/massing/reviews/l-farmhouse/56cbeeb983a3-argon.md",
+    "harness-data/building-kit/massing/reviews/l-farmhouse/56cbeeb983a3-klb-sonnet-5-5.md"
+   ],
+   "note": "object-gate pass/허용 + 독립 검수 둘 PASS(원문 파일)",
+   "at": "2026-10-25T08:18:20+00:00"
+  },
+  {
+   "seq": 6,
+   "item": "longhouse",
+   "sha": "67e998eca43365c398d85488d61f4b3c8e33eecced2e109195419ea5e3349cf9",
+   "pixelSha256": "211a49135d85d267f6587883529b2fb2e52b17770b8fc9de3875c88f355b9890",
+   "decision": "allow",
+   "by": "delegated",
+   "delegatedBy": "user 2026-10-25 (bk-massing-100 → 실제 건물, 머지까지 위임)",
+   "evidence": [
+    "../rpg-zzu-object-gate-holds/harness-data/object-gate/receipts/21/211a49135d85d267f6587883529b2fb2e52b17770b8fc9de3875c88f355b9890.json",
+    "harness-data/building-kit/massing/reviews/longhouse/211a49135d85-argon.md",
+    "harness-data/building-kit/massing/reviews/longhouse/211a49135d85-klb-sonnet-5-5.md"
+   ],
+   "note": "object-gate pass/허용 + 독립 검수 둘 PASS(원문 파일)",
+   "at": "2026-10-25T08:18:20+00:00"
+  },
+  {
+   "seq": 7,
+   "item": "smithy",
+   "sha": "490a2228a000a1483020d56786086d889a50d8eb00cb232340c478458633ccb9",
+   "pixelSha256": "116f08ed09921540d33014a7977a599e63bbcc3c07fb41be62f52a9be26a15c1",
+   "decision": "allow",
+   "by": "delegated",
+   "delegatedBy": "user 2026-10-25 (bk-massing-100 → 실제 건물, 머지까지 위임)",
+   "evidence": [
+    "../rpg-zzu-object-gate-holds/harness-data/object-gate/receipts/11/116f08ed09921540d33014a7977a599e63bbcc3c07fb41be62f52a9be26a15c1.json",
+    "harness-data/building-kit/massing/reviews/smithy/116f08ed0992-argon.md",
+    "harness-data/building-kit/massing/reviews/smithy/116f08ed0992-klb-sonnet-5-5.md"
+   ],
+   "note": "object-gate pass/허용 + 독립 검수 둘 PASS(원문 파일)",
+   "at": "2026-10-25T08:18:20+00:00"
   }
  ],
- "exportedAt": "2026-10-25T06:47:02+00:00",
+ "exportedAt": "2026-10-25T08:18:20+00:00",
  "counts": {
-  "allow": 1
+  "allow": 7
  }
 }

@@ -149,11 +149,20 @@
     "map": {
      "id": "mk_street",
      "name": "버들항 · 중세 건물 거리 예제",
-     "width": 100,
-     "height": 26,
-     "roadRow": 22
+     "width": 72,
+     "height": 13,
+     "roadRow": 10,
+     "rowStep": 12
     },
-    "picks": [],
+    "picks": [
+     "cottage",
+     "chapel",
+     "dovecote",
+     "inn",
+     "l-farmhouse",
+     "longhouse",
+     "smithy"
+    ],
     "grassTile": 737,
     "groundTilesetId": "beodeul_ground",
     "groundCatalog": "src/assets/beodeulGroundCatalog.json",

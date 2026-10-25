@@ -1,0 +1,23 @@
+{
+ "schema": "oprn-building-kit-massing-evidence/1",
+ "id": "inn",
+ "pixelSha256": "5aa44f88e586329a1f48b11af9aa765c7b938d0cffa741130a65943b6681ce38",
+ "kind": "structure",
+ "objectGate": {
+  "receipt": "/home/main/z-project/rpg-zzu-object-gate-holds/harness-data/object-gate/receipts/5a/5aa44f88e586329a1f48b11af9aa765c7b938d0cffa741130a65943b6681ce38.json",
+  "verdict": "pass",
+  "profile": "4d8774b517f41638",
+  "profileCalibrated": false
+ },
+ "reviews": {
+  "argon": {
+   "verdict": "PASS",
+   "file": "harness-data/building-kit/massing/reviews/inn/5aa44f88e586-argon.md"
+  },
+  "klb-sonnet-5-5": {
+   "verdict": "PASS",
+   "file": "harness-data/building-kit/massing/reviews/inn/5aa44f88e586-klb-sonnet-5-5.md"
+  }
+ },
+ "delegatedBy": "user 2026-10-25 (bk-massing-100 → 실제 건물, 머지까지 위임)"
+}

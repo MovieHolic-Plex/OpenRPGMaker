@@ -1,6 +1,23 @@
 {
  "buildings": [
   {
+   "id": "chapel",
+   "kit": "bd-house-mk-chapel",
+   "sha256": "e9f42570ff5b594b1db192f57056addab3e45aaefb2c2d142e1b1573861e2b4b",
+   "size": [
+    11,
+    9
+   ],
+   "blockedCells": 25,
+   "overhangCells": 40,
+   "entrance": [
+    3,
+    7,
+    1,
+    2
+   ]
+  },
+  {
    "id": "cottage",
    "kit": "bd-house-mk-cottage",
    "sha256": "58707f18ffdc4b94643c0ff6fe398fe19ba92ea75f141bd19bbefdca6d19ce00",
@@ -16,11 +33,96 @@
     1,
     1
    ]
+  },
+  {
+   "id": "dovecote",
+   "kit": "bd-house-mk-dovecote",
+   "sha256": "35c9666c5a5fd181069f8c67f00792278151c53285579f8b805220eb2fe43cbd",
+   "size": [
+    3,
+    5
+   ],
+   "blockedCells": 6,
+   "overhangCells": 9,
+   "entrance": [
+    1,
+    4,
+    1,
+    1
+   ]
+  },
+  {
+   "id": "inn",
+   "kit": "bd-house-mk-inn",
+   "sha256": "13303ceccbe70c4927082bd0aa5b4d22c53aebf8e9ab39f818b90f832a483c01",
+   "size": [
+    10,
+    7
+   ],
+   "blockedCells": 40,
+   "overhangCells": 19,
+   "entrance": [
+    2,
+    5,
+    1,
+    2
+   ]
+  },
+  {
+   "id": "l-farmhouse",
+   "kit": "bd-house-mk-l-farmhouse",
+   "sha256": "18949f01494551472a62252d35ff30b40a6484b14c47862aae1ceb1a57fe6d35",
+   "size": [
+    9,
+    6
+   ],
+   "blockedCells": 19,
+   "overhangCells": 28,
+   "entrance": [
+    7,
+    4,
+    1,
+    2
+   ]
+  },
+  {
+   "id": "longhouse",
+   "kit": "bd-house-mk-longhouse",
+   "sha256": "67e998eca43365c398d85488d61f4b3c8e33eecced2e109195419ea5e3349cf9",
+   "size": [
+    11,
+    5
+   ],
+   "blockedCells": 22,
+   "overhangCells": 30,
+   "entrance": [
+    1,
+    3,
+    1,
+    2
+   ]
+  },
+  {
+   "id": "smithy",
+   "kit": "bd-house-mk-smithy",
+   "sha256": "490a2228a000a1483020d56786086d889a50d8eb00cb232340c478458633ccb9",
+   "size": [
+    7,
+    5
+   ],
+   "blockedCells": 14,
+   "overhangCells": 16,
+   "entrance": [
+    1,
+    3,
+    1,
+    2
+   ]
   }
  ],
- "installed": 1,
- "tiles": 39,
- "sheetTiles": 48,
+ "installed": 7,
+ "tiles": 313,
+ "sheetTiles": 320,
  "decisionLog": "harness-data/building-kit/massing/decisions.json",
  "visualVerdict": "requires actual image review (gallery.png)"
 }

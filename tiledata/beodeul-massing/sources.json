@@ -1,4 +1,18 @@
 {
+ "chapel": {
+  "id": "chapel",
+  "name": "예배당",
+  "width": 176,
+  "height": 144,
+  "entrance": {
+   "x": 48,
+   "y": 112,
+   "w": 16,
+   "h": 32
+  },
+  "round": 1,
+  "material": "stone"
+ },
  "cottage": {
   "id": "cottage",
   "name": "단층 오두막",
@@ -12,5 +26,75 @@
   },
   "round": 1,
   "material": "plaster"
+ },
+ "dovecote": {
+  "id": "dovecote",
+  "name": "비둘기탑",
+  "width": 48,
+  "height": 80,
+  "entrance": {
+   "x": 16,
+   "y": 64,
+   "w": 16,
+   "h": 16
+  },
+  "round": 1,
+  "material": "stone"
+ },
+ "inn": {
+  "id": "inn",
+  "name": "여관",
+  "width": 160,
+  "height": 112,
+  "entrance": {
+   "x": 32,
+   "y": 80,
+   "w": 16,
+   "h": 32
+  },
+  "round": 1,
+  "material": "plaster"
+ },
+ "l-farmhouse": {
+  "id": "l-farmhouse",
+  "name": "ㄱ자 농가",
+  "width": 144,
+  "height": 96,
+  "entrance": {
+   "x": 112,
+   "y": 64,
+   "w": 16,
+   "h": 32
+  },
+  "round": 1,
+  "material": "plaster"
+ },
+ "longhouse": {
+  "id": "longhouse",
+  "name": "롱하우스",
+  "width": 176,
+  "height": 80,
+  "entrance": {
+   "x": 16,
+   "y": 48,
+   "w": 16,
+   "h": 32
+  },
+  "round": 1,
+  "material": "plaster"
+ },
+ "smithy": {
+  "id": "smithy",
+  "name": "대장간",
+  "width": 112,
+  "height": 80,
+  "entrance": {
+   "x": 16,
+   "y": 48,
+   "w": 16,
+   "h": 32
+  },
+  "round": 1,
+  "material": "stone"
  }
 }
