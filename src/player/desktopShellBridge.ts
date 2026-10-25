@@ -326,11 +326,33 @@ function startGamepadPolling(state: DesktopShellRuntimeState): () => void {
     }));
   };
 
+  const readConnectedGamepad = (): Gamepad | undefined => {
+    const pads = navigator.getGamepads ? navigator.getGamepads() : [];
+    return Array.from(pads ?? []).find((item): item is Gamepad => Boolean(item && item.connected));
+  };
+
+  // Dropping the pad does not deliver keyup. Release every key we synthesized,
+  // or the last direction/dash stays down and the character keeps walking.
+  const releasePressedKeys = (): void => {
+    if (pressedKeys.size === 0) return;
+    const tokens = [...pressedKeys];
+    pressedKeys.clear();
+    for (const token of tokens) {
+      const [key, code] = token.split("|");
+      if (key && code) dispatchSyntheticKey("keyup", key, code);
+    }
+  };
+
+  const markDisconnected = (): void => {
+    state.gamepadConnected = false;
+    state.gamepadId = null;
+    releasePressedKeys();
+  };
+
   const poll = (): void => {
     if (!active) return;
     try {
-      const pads = navigator.getGamepads ? navigator.getGamepads() : [];
-      const pad = Array.from(pads ?? []).find((item): item is Gamepad => Boolean(item && item.connected));
+      const pad = readConnectedGamepad();
       if (pad) {
         state.gamepadConnected = true;
         state.gamepadId = pad.id || "Xbox / Steam Input Controller";
@@ -362,14 +384,10 @@ function startGamepadPolling(state: DesktopShellRuntimeState): () => void {
         }
         pressedKeys.clear();
         for (const token of nextPressed) pressedKeys.add(token);
-      } else if (state.gamepadConnected) {
-        state.gamepadConnected = false;
-        state.gamepadId = null;
-        for (const token of pressedKeys) {
-          const [key, code] = token.split("|");
-          if (key && code) dispatchSyntheticKey("keyup", key, code);
-        }
-        pressedKeys.clear();
+      } else if (state.gamepadConnected || pressedKeys.size > 0) {
+        // `gamepaddisconnected` clears the flag before this poll. Releasing
+        // only while the flag is still true left the held key stuck.
+        markDisconnected();
       }
     } catch {
       // Ignore gamepad SecurityError in sandboxed contexts
@@ -384,8 +402,13 @@ function startGamepadPolling(state: DesktopShellRuntimeState): () => void {
     state.gamepadId = event.gamepad?.id || "Steam Input Gamepad";
   };
   const onGamepadDisconnected = (): void => {
-    state.gamepadConnected = false;
-    state.gamepadId = null;
+    // Another pad may still be held. Let the next poll reconcile that one.
+    try {
+      if (readConnectedGamepad()) return;
+    } catch {
+      // Same sandbox miss as the poll: treat the pad as gone.
+    }
+    markDisconnected();
   };
   window.addEventListener("gamepadconnected", onGamepadConnected as EventListener);
   window.addEventListener("gamepaddisconnected", onGamepadDisconnected as EventListener);
@@ -399,6 +422,7 @@ function startGamepadPolling(state: DesktopShellRuntimeState): () => void {
     if (rafId && typeof window.cancelAnimationFrame === "function") {
       window.cancelAnimationFrame(rafId);
     }
+    releasePressedKeys();
     window.removeEventListener("gamepadconnected", onGamepadConnected as EventListener);
     window.removeEventListener("gamepaddisconnected", onGamepadDisconnected as EventListener);
   };
