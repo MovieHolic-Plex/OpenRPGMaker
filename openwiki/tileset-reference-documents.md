@@ -133,6 +133,7 @@ LegacyDb 별도 테이블 마이그레이션은 필요 없다. `src/project/webE
 참고문서와 공유 포인터만 내보내기 사본에서 제외한다. 편집 프로젝트 원본은 보존한다.
 
 용도 32개, 용도당 MD 64개·이미지 256개, MD 120,000자, 이미지 4MB 제한.
+**빌드 검사 (2026-10-25):** 번들 참고문서(`src/assets/**/*.json` 안의 용도 묶음)는 `scripts/lib/referenceLimitsGuard.mjs` 가 빌드 시작 때 `REFERENCE_LIMITS` 로 검사한다(vite 플러그인 → ci-fast 의 `build:app`). 넘으면 빌드가 실패하고, 상한의 95% 를 넘으면 경고만 찍는다(현재 `bd-facility-catalog-3` 117,533자 = 98%). 혼자 돌리기: `node scripts/lib/referenceLimitsGuard.mjs`. 왜: 런타임 검사는 저장 때만 돌아서 상한을 넘은 번들 문서(262k, #3473)가 모든 프로젝트의 저장을 막고 매 부팅을 «첫 부팅»으로 만들었다.
 ID는 중복 불가. 업로드 이미지는 실제 디코딩 후 반영한다. MD와 이미지는 한 번의 변경으로 가져온다.
 UI 저장 성공 문구는 원격 저장 영수증이 아니다. 원격 완료는 기존 footer와 store flush 결과로 판단한다.
 
