@@ -580,6 +580,17 @@ export function gameContentProblems(before: Project, after: Project, task: strin
     }));
     if (asked && !built) problems.push(`[게임 검사 위협] 요청은 시야·추격·순찰인데 이번에 바꾼 이벤트에 쫓는 움직임(movement.type 'chase')·순찰 길(movement.route)·시야가 하나도 없다 — make_chase_scene{mapId, chaser, patrol:{mode:'auto'}} 로 실제 추격자를 만들거나(이미 있으면 configure_npc_patrol 로 순찰 길을 더한다), 못 지었으면 보고에 「추격 없음」이라고 적는다. 대사·느낌표 말풍선만으로는 쫓아오지 않는다.`);
   }
+  // 맵 기본 배율을 이벤트로 켜고 끄기(2026-10-25 J69): 자동 실행 페이지가 카메라 배율만 건다 — 저장·불러오기·맵 재진입에서 어긋나고 매번 한 박자 늦게 걸린다.
+  {
+    const zoomOnly = changed.filter((ev) => ev.mapId !== "common" && ev.pages.some((pg) => {
+      const trig = String(obj(pg.trigger)?.kind ?? pg.trigger ?? "");
+      if (trig !== "auto" && trig !== "parallel") return false;
+      const cmds = Array.isArray(pg.commands) ? (pg.commands as Obj[]) : [];
+      const zoom = cmds.some((c) => c.kind === "m2Command" && c.commandId === "m2-201-camera-control" && obj(c.fields)?.zoom !== undefined || c.kind === "cameraControl" && c.zoom !== undefined);
+      return zoom && cmds.every((c) => ["m2Command", "cameraControl", "setSelfSwitch", "eraseEvent", "wait", "comment"].includes(String(c.kind)) && (c.kind !== "m2Command" || c.commandId === "m2-201-camera-control"));
+    }));
+    if (zoomOnly.length) problems.push(`[게임 검사 카메라] 자동 실행 이벤트가 맵 카메라 배율만 건다: ${zoomOnly.slice(0, 3).map((ev) => `「${ev.name}」(${ev.id}) @${ev.mapId}`).join(", ")} — 맵 기본 배율은 set_map_properties{mapId, zoom} 로 맵에 두고 그 이벤트는 지운다(들어올 때마다 바로 걸리고 저장·불러오기에서도 맞다). 장면 중 잠깐 당기는 줌만 연출 명령으로 둔다.`);
+  }
   // 태어나자마자 잡히는 시작·체크포인트(2026-10-25 심판 J61).
   {
     const changedIds = new Set(changed.map((ev) => ev.id));
