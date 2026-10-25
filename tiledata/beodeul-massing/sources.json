@@ -1,4 +1,46 @@
 {
+ "bakery": {
+  "id": "bakery",
+  "name": "빵집",
+  "width": 96,
+  "height": 80,
+  "entrance": {
+   "x": 48,
+   "y": 48,
+   "w": 16,
+   "h": 32
+  },
+  "round": 1,
+  "material": "plaster"
+ },
+ "barracks": {
+  "id": "barracks",
+  "name": "병영",
+  "width": 160,
+  "height": 96,
+  "entrance": {
+   "x": 64,
+   "y": 64,
+   "w": 16,
+   "h": 32
+  },
+  "round": 1,
+  "material": "stone"
+ },
+ "brewery": {
+  "id": "brewery",
+  "name": "양조장",
+  "width": 144,
+  "height": 112,
+  "entrance": {
+   "x": 32,
+   "y": 80,
+   "w": 16,
+   "h": 32
+  },
+  "round": 1,
+  "material": "plaster"
+ },
  "chapel": {
   "id": "chapel",
   "name": "예배당",
@@ -27,6 +69,20 @@
   "round": 1,
   "material": "plaster"
  },
+ "cross-house": {
+  "id": "cross-house",
+  "name": "교차 박공 십자형 집",
+  "width": 144,
+  "height": 128,
+  "entrance": {
+   "x": 64,
+   "y": 96,
+   "w": 16,
+   "h": 32
+  },
+  "round": 1,
+  "material": "plaster"
+ },
  "dovecote": {
   "id": "dovecote",
   "name": "비둘기탑",
@@ -41,10 +97,66 @@
   "round": 1,
   "material": "stone"
  },
+ "gable-cottage": {
+  "id": "gable-cottage",
+  "name": "박공 정면 오두막",
+  "width": 64,
+  "height": 96,
+  "entrance": {
+   "x": 16,
+   "y": 80,
+   "w": 16,
+   "h": 16
+  },
+  "round": 1,
+  "material": "plaster"
+ },
+ "granary-mill": {
+  "id": "granary-mill",
+  "name": "방앗간",
+  "width": 160,
+  "height": 112,
+  "entrance": {
+   "x": 48,
+   "y": 80,
+   "w": 16,
+   "h": 32
+  },
+  "round": 1,
+  "material": "plaster"
+ },
+ "great-hall": {
+  "id": "great-hall",
+  "name": "대회당",
+  "width": 176,
+  "height": 128,
+  "entrance": {
+   "x": 80,
+   "y": 96,
+   "w": 16,
+   "h": 32
+  },
+  "round": 1,
+  "material": "stone"
+ },
  "inn": {
   "id": "inn",
   "name": "여관",
   "width": 160,
+  "height": 112,
+  "entrance": {
+   "x": 32,
+   "y": 80,
+   "w": 16,
+   "h": 32
+  },
+  "round": 1,
+  "material": "plaster"
+ },
+ "jetty-house": {
+  "id": "jetty-house",
+  "name": "위층이 튀어나온 2층 집",
+  "width": 80,
   "height": 112,
   "entrance": {
    "x": 32,
@@ -83,6 +195,48 @@
   "round": 1,
   "material": "plaster"
  },
+ "manor": {
+  "id": "manor",
+  "name": "저택",
+  "width": 192,
+  "height": 128,
+  "entrance": {
+   "x": 80,
+   "y": 96,
+   "w": 16,
+   "h": 32
+  },
+  "round": 1,
+  "material": "stone"
+ },
+ "market-hall": {
+  "id": "market-hall",
+  "name": "기둥 위 시장홀",
+  "width": 128,
+  "height": 96,
+  "entrance": {
+   "x": 112,
+   "y": 80,
+   "w": 16,
+   "h": 16
+  },
+  "round": 1,
+  "material": "plaster"
+ },
+ "merchant-house": {
+  "id": "merchant-house",
+  "name": "모임지붕 2층 상인 집",
+  "width": 112,
+  "height": 112,
+  "entrance": {
+   "x": 48,
+   "y": 80,
+   "w": 16,
+   "h": 32
+  },
+  "round": 1,
+  "material": "plaster"
+ },
  "smithy": {
   "id": "smithy",
   "name": "대장간",
@@ -93,6 +247,76 @@
    "y": 48,
    "w": 16,
    "h": 32
+  },
+  "round": 1,
+  "material": "stone"
+ },
+ "thouse": {
+  "id": "thouse",
+  "name": "ㅜ자 집",
+  "width": 144,
+  "height": 128,
+  "entrance": {
+   "x": 64,
+   "y": 96,
+   "w": 16,
+   "h": 32
+  },
+  "round": 1,
+  "material": "plaster"
+ },
+ "tithe-barn": {
+  "id": "tithe-barn",
+  "name": "십일조 헛간",
+  "width": 192,
+  "height": 96,
+  "entrance": {
+   "x": 96,
+   "y": 80,
+   "w": 16,
+   "h": 16
+  },
+  "round": 1,
+  "material": "wood"
+ },
+ "tower-house": {
+  "id": "tower-house",
+  "name": "원통 망루가 붙은 집",
+  "width": 144,
+  "height": 128,
+  "entrance": {
+   "x": 32,
+   "y": 96,
+   "w": 16,
+   "h": 32
+  },
+  "round": 1,
+  "material": "plaster"
+ },
+ "town-hall": {
+  "id": "town-hall",
+  "name": "시청",
+  "width": 144,
+  "height": 144,
+  "entrance": {
+   "x": 64,
+   "y": 112,
+   "w": 16,
+   "h": 32
+  },
+  "round": 1,
+  "material": "stone"
+ },
+ "windmill": {
+  "id": "windmill",
+  "name": "탑 풍차",
+  "width": 96,
+  "height": 128,
+  "entrance": {
+   "x": 32,
+   "y": 112,
+   "w": 16,
+   "h": 16
   },
   "round": 1,
   "material": "stone"
