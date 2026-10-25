@@ -96,7 +96,8 @@ export function listTitleMenuOptions(settings: TitleScreenSettings, context?: Ti
       id: "resume",
       testId: "title-resume-game",
       elementId: "title-option-resume-game",
-      label: settings.menuLabels.resume?.trim() || DEFAULT_RESUME_LABEL,
+      // 저자가 불러오기만 「…이어하기」로 바꾼 옛 프로젝트도 두 줄이 같은 말로 뜨지 않게(J34).
+      label: settings.menuLabels.resume?.trim() || (/이어/u.test(settings.menuLabels.continueGame ?? "") ? "방금 하던 곳부터" : DEFAULT_RESUME_LABEL),
     });
   }
   if (visibility?.continueGame !== false) {

@@ -650,7 +650,11 @@ export function playOpeningAnimatic(options: { project: Project; canvas: HTMLCan
             audio = canvas.ownerDocument.createElement('audio'); audio.src = url; audio.loop = cue.loop ?? false; audio.dataset.testid = 'animatic-audio-cue'; audio.dataset.cueId = cue.id; audio.volume = animaticCueVolume(cue, t); canvas.parentElement?.append(audio); cues.set(cue.id, audio);
             audio.addEventListener('loadedmetadata', () => { if (!stopped && audio!.duration > 0 && Number.isFinite(audio!.duration)) { const offset = (cue.offsetMs ?? 0) / 1000 + Math.max(0, view.performance.now() - started - cue.atMs) / 1000; audio!.currentTime = audio!.loop ? offset % audio!.duration : Math.min(offset, audio!.duration); } }, { once: true, signal });
             audio.addEventListener('error', () => { if (!stopped) console.warn('[animatic] audio cue failed to load:', cue.resourceId); }, { once: true, signal });
-            void audio.play().catch(() => { if (!stopped) blocked.add(audio!); armRetry(); });
+            void audio.play().catch((error: unknown) => {
+              // 짧은 큐(0.5초 시계 소리)는 play() 가 끝나기 전에 pause() 되어 AbortError 로 거절된다 — 정상이다(판정자 J26 근본 원인). 무시한다.
+              // 자동재생 막힘(NotAllowedError)만 첫 입력에 다시 튼다. 어떤 소리 실패도 그림을 멈추지 않는다.
+              if (!stopped && (error as { name?: string } | null)?.name === 'NotAllowedError') { blocked.add(audio!); armRetry(); }
+            });
           }
           if (audio) { audio.volume = animaticCueVolume(cue, t); if (!active) audio.pause(); }
         }
