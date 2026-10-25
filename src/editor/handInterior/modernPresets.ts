@@ -36,6 +36,8 @@ export interface ModernProgramVariation {
   readonly sealed?: readonly (readonly [string, string])[];
   /** 바닥·벽 재질을 시드 화풍 바꿈(remap)·대비 맞춤(contrastPair) 없이 견본 그대로 두는 방 종류 — 옥상 콘크리트처럼 재질이 곧 장소인 곳(2026-10-25: 옥상 데크가 병원 연녹 바닥이 됐다). */
   readonly keepMaterials?: readonly string[];
+  /** 문 표(DOOR_OF)에 없는 방 사이 이음은 문짝 없이 트인 문틀로 낸다 — 기본 문짝(열린 나무 문)이 칸막이 틈 옆에 붙은 문처럼 읽혔다(시타마치 VQA r1: 「틈 아래 문을 찍었다」). 화장실·욕실처럼 표에 문이 있는 방은 그대로. */
+  readonly plainDoorways?: boolean;
   /** 줄 사이에 깔린 복도(arch-hall) - rows 에 복도 줄(`arch-hall`)이 있을 때 그 복도의 꾸밈 묶음(archHall.ts). */
   readonly hall?: "school" | "hospital" | "office" | "hotel" | "public";
   /** 참이면 남쪽 외벽 출구 틈을 열지 않는다(2층·3층처럼 계단·엘리베이터로만 오가는 상층). */

@@ -566,7 +566,7 @@
 
 .dialogue-overlay .dialogue-face.dialogue-face-behind.dialogue-portrait-listener {
   filter: brightness(0.82) saturate(0.92);
-  opacity: 0.96;
+  opacity: 1;
   z-index: 0;
 }
 

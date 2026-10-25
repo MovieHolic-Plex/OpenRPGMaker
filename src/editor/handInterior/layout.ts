@@ -768,7 +768,7 @@ function buildCandidatesForVariant(
         return e.kind === "h" && !/^(genkan|entrance)$/u.test(lower.kind) ? { a: e.a, b: e.b, open: true, span } : { a: e.a, b: e.b, open: true };
       }
       const door = DOOR_OF[A.kind]?.[e.kind] ?? DOOR_OF[B.kind]?.[e.kind];
-      return { a: e.a, b: e.b, ...(door && S.objects[door] ? { door } : {}) };
+      return { a: e.a, b: e.b, ...(door && S.objects[door] ? { door } : vary?.v.plainDoorways ? { door: "none" } : {}) };
     });
     // 변주 seed 의 동↔서 뒤집기는 점수를 다 매긴 뒤 결과 좌표에만 한다 — 왼·오른 쌍 규칙까지 거울로 뒤집힌 배치가 된다.
     const rooms: LayoutRoom[] = wants.map((w) => {

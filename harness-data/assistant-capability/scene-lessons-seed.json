@@ -611,6 +611,35 @@
     "no NPC event's standing cell or street-walker stop on the town map has a lower tile labelled as asphalt road or crosswalk",
     "the gather-scene NPCs remain reachable and the town routes still complete (endings reachable headlessly)"
    ]
+  },
+  {
+   "id": "confession-cg-over-dialogue",
+   "label": "고백 순간 한 장면 그림(CG)을 대사 아래로 띄웠다 걷기",
+   "port": 19533,
+   "lessons": [
+    "story-cg-mid-scene"
+   ],
+   "prompt": "옥상 고백이 받아들여지는 순간에 두 사람 그림이 서서히 떠오르게 하고, 그림이 떠 있는 동안 나누는 대사에는 얼굴 흉상을 띄우지 말아 줘. 집에서 옛 사진을 볼 때도 그 사진이 화면에 보였다가 사라지게 해 줘.",
+   "requirements": [
+    "the accepted branch shows a picture with opacity 0 then the same picture at opacity 255 with durationMs > 0 before the post-confession lines",
+    "while that picture is shown, no changeFace command sets a non-empty bust",
+    "the photo event fades the picture in, runs the thought lines, then fades it to 0 and erases it",
+    "in the shipped player, a frame during the post-confession lines shows the picture behind the dialogue box and no bust over it"
+   ]
+  },
+  {
+   "id": "lanterns-visibly-light",
+   "label": "점등: 등롱 칸마다 작은 따뜻한 불",
+   "port": 19534,
+   "lessons": [
+    "lighting-small-warm-sources"
+   ],
+   "prompt": "점등식에서 등롱이 켜졌는데 화면엔 차가운 큰 원 하나만 보여. 칩셋에서 초롱·등롱이 그려진 칸마다 작은 따뜻한 불을 하나씩 켜고, 가게 문 앞에도 처마 등 불을 달아 줘. 어둠은 너무 짙지 않게.",
+   "requirements": [
+    "the lighting command list adds a light at or next to every tile whose tileMeta label mentions 초롱 or 등롱 (one per lantern object)",
+    "no single added light has radius above 3 tiles; ambient after the lighting change is at most 0.65",
+    "in the shipped player, a frame after the lighting shows several separate warm glows along the arcade instead of one large disc"
+   ]
   }
  ]
 }

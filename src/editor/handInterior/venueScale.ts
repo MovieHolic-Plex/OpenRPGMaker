@@ -25,6 +25,7 @@ export const VENUE_SCALE_CONTRACT: Readonly<Record<string, VenueScale>> = {
   mc_office: { tier: "L", w: 46, h: 32, ko: "대형 오피스 층(리셉션·마주 보는 책상 업무홀·대회의실·임원실·탕비 라운지)" },
   mc_lecture_hall: { tier: "L", w: 42, h: 30, ko: "대학 강의동(계단식 대강의실·과학 실험실·준비실·로비)" },
   mc_sento: { tier: "L", w: 40, h: 30, ko: "센토·스파(카운터·탈의실·씻는 자리 열·탕 셋·사우나·노천탕)" },
+  mc_sento_machi: { tier: "M", w: 40, h: 20, ko: "동네 센토(번대 로비·남녀 탈의실·남녀 목욕 홀 — 사우나·노천탕 없음)" },
   mc_game_center: { tier: "L", w: 40, h: 28, ko: "게임센터·노래방·만화카페(인형뽑기·리듬·대전 캐비닛·노래방 둘·만화 서가)" },
   mc_restaurant: { tier: "M", w: 38, h: 28, ko: "레스토랑·다이닝 바(오픈 키친·바 라운지·피아노 무대·4방향 식탁·부스석)" },
   mc_izakaya: { tier: "M", w: 36, h: 26, ko: "이자카야·라멘(주방 다찌 카운터·다다미 룸 둘·홀)" },

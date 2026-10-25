@@ -145,6 +145,21 @@ const epiloguePicture = (resourceId: string) => ({ kind: "picture", action: "sho
 const ART = {
   seoyeon: "oprn-shitamachi-end-seoyeon", jiho: "oprn-shitamachi-end-jiho", yuna: "oprn-shitamachi-yuna", friends: "oprn-shitamachi-end-friends",
 } as const;
+/** 이야기 중간의 한 장면 그림(고백 순간·옛 사진) — 대사창 아래에 서서히 떠올랐다가, 다음 장면 전에 서서히 걷힌다. */
+const CG_PICTURE = "sm_cg";
+const CG = {
+  seoyeon: "oprn-shitamachi-roof-seoyeon", jiho: "oprn-shitamachi-roof-jiho", yuna: "oprn-shitamachi-roof-yuna", photo: "oprn-shitamachi-photo",
+} as const;
+const cgIn = (resourceId: string): Command[] => [
+  { kind: "showPicture", pictureId: CG_PICTURE, resourceId, x: -4, y: -3, scale: 29, opacity: 0, waitForPicture: false } as Command,
+  { kind: "showPicture", pictureId: CG_PICTURE, resourceId, x: -4, y: -3, scale: 29, opacity: 255, durationMs: 1200, easing: "easeOut", waitForPicture: true } as Command,
+];
+/** 그림이 화면을 채운 동안에는 흉상을 띄우지 않는다 — 그림 속 인물 위에 같은 사람 흉상이 겹친다. 이름표만 남긴다. */
+const overCg = (commands: Command[]): Command[] => [CLEAR_FACE, ...commands.filter((c) => c.kind !== "changeFace")];
+const cgOut = (resourceId: string): Command[] => [
+  { kind: "showPicture", pictureId: CG_PICTURE, resourceId, x: -4, y: -3, scale: 29, opacity: 0, durationMs: 700, easing: "easeIn", waitForPicture: true } as Command,
+  { kind: "erasePicture", pictureId: CG_PICTURE } as Command,
+];
 
 /** 그 사람과의 마음이 n 만큼 닿았다 — 결말 판정은 변수, ESC 「호감도」 하트는 관계 기록(최대 1000, 한 점 = 100). */
 function like(who: "seoyeon" | "jiho" | "yuna", n: number): Command[] {
@@ -225,8 +240,8 @@ function buildMaps(project: Project): { arrive: Cell; links: Record<"house" | "b
     { mapId: M.train, name: "통학 전철 · 저녁", tileset: JP_CITY_ID, room: "train-car", seed: 1 },
     { mapId: M.house, name: "하진의 집", tileset: "modern_city", room: "mc_house", seed: 1 },
     { mapId: M.bakery, name: "코하루 베이커리", tileset: "modern_city", room: "mc_bakery_cafe", seed: 7 },
-    { mapId: M.sento, name: "센토 마츠노유", tileset: "modern_city", room: "mc_sento", seed: 8 },
-    { mapId: M.office, name: "상점가 진흥회 사무소", tileset: "modern_city", room: "mc_office", seed: 1 },
+    { mapId: M.sento, name: "센토 마츠노유", tileset: "modern_city", room: "mc_sento_machi", seed: 1 },
+    { mapId: M.office, name: "상점가 진흥회 사무소", tileset: "modern_city", room: "mc_realty", seed: 1 },
     { mapId: M.rooftop, name: "히카리 맨션 옥상", tileset: "modern_city", room: "mc_rooftop", seed: 6 },
   ] as const;
   for (const r of rooms) {
@@ -265,7 +280,10 @@ function buildTrain(project: Project, arrive: Cell): Cell {
   const heroAt = nearestFree(project, map, { x: 7, y: 4 });
   const yunaAt = nearestFree(project, map, { x: 12, y: 4 }, [heroAt]);
   const yunaId = "ev_sm_train_yuna";
+  // 전철 칸은 화면보다 훨씬 작다 — 배율 1 이면 칸이 갈색 빈 바탕 한가운데 작게 떠 있었다(VQA r1). 이 장면 동안만 당겨 찍고, 내리기 전에 프로젝트 기본 배율로 돌린다.
+  const camera = (fields: Record<string, string>): Command => ({ kind: "m2Command", commandId: "m2-201-camera-control", fields } as unknown as Command);
   const scene: Command[] = [
+    camera({ mode: "follow", zoom: "1.5", durationMs: "1", wait: "true" }),
     ...fadeIn(800),
     ...caption("가을의 끝, 저녁 통학 전철."),
     ...think(
@@ -274,7 +292,8 @@ function buildTrain(project: Project, arrive: Cell): Cell {
       "…저 애, 오늘도 같은 칸이네.",
     ),
     faceHero(yunaId),
-    ...say("yuna", "base", "…….", "(낡은 필름 카메라를 두 손으로 감싸 쥐고 창밖을 보고 있다.)"),
+    ...say("yuna", "base", "……."),
+    ...caption("유나는 낡은 필름 카메라를 두 손으로 감싸 쥐고 창밖을 보고 있다."), // 지문은 유나의 대사가 아니라 장면 자막이다(VQA r1)
     choices([
       { text: "카메라에 대해 묻는다", then: [
         ...say("hajin", "base", "그거, 필름 카메라지? 요즘 보기 드문데."),
@@ -297,6 +316,7 @@ function buildTrain(project: Project, arrive: Cell): Cell {
     setSw("sw_sm_train_yuna_off", true),
     setVar(V_STAGE, "=", 1),
     ...fadeOut(700),
+    camera({ mode: "return", durationMs: "1", wait: "true" }),
     transfer(M.hub, arrive, "right"),
   ];
   // 자동 실행 장면은 주인공 칸이 아닌 벽 칸에 둔다(주인공이 이벤트 칸 위에서 시작하면 헤드리스 자동 플레이가 길을 못 잡는다).
@@ -352,32 +372,44 @@ function buildHub(project: Project, arrive: Cell): void {
   ], "seoyeon"));
 
   // 등롱지기 아저씨(진흥회 — 공용 흉상에 노인이 없어 삼사십 대 어른으로 쓴다) — 북쪽 아케이드 정문(지붕 덮인 길) 옆.
-  const keeperAt = nearestFree(project, hub, { x: 12, y: 12 });
+  // 가게 벽에 붙은 보도 줄(y 11)에 세운다 — 한 줄 아래(y 12)에 두면 말을 걸러 온 하진이 차도(y 13)에 섰다(VQA r1).
+  const keeperAt = nearestFree(project, hub, { x: 12, y: 11 });
   const keeperId = "ev_sm_keeper";
   const remaining = (n: number): Command => ifCond(varIs(V_LANTERNS, n), say("keeper", "base", `소원 등롱이 ${n}개 모였네. ${3 - n}개 더 부탁해. 베이커리, 센토, 진흥회 사무소야.`));
-  // 점등식에 모인 셋은 정문 기둥 동쪽 보도에 정문을 보고 선다(앞은 차도 한가운데였다).
+  // 점등식에 모인 셋은 정문 기둥 동쪽 보도(y 12)에 아저씨 쪽을 보고 선다. 머리 위 칸이 비어 있는 칸만 쓴다 —
+  // 고양이·신호등 기둥 바로 아래 칸에 세우면 32px 키 캐릭터 머리가 그 소품을 덮었다(VQA r1).
   const heroines = [
-    { who: "seoyeon" as const, at: { x: keeperAt.x + 4, y: keeperAt.y } },
-    { who: "jiho" as const, at: { x: keeperAt.x + 6, y: keeperAt.y } },
-    { who: "yuna" as const, at: { x: keeperAt.x + 5, y: keeperAt.y - 1 } },
-  ].map((h) => ({ ...h, at: nearestFree(project, hub, h.at, [keeperAt]) }));
-  // 등롱 불빛 — 정문 등롱과 가게 앞 처마 등롱. 칸은 거리 건물 문 칸(맨 아래 줄)이라 그 바로 위에 단다.
-  // 등롱 불빛 — 정문(지붕 덮인 길 입구)과 가게마다 문 앞 보도(처마 등롱 아래). 건물 벽 칸이 아니라 걷는 칸에 단다 —
-  // 벽 칸 빛은 밤 막 아래에서 거의 보이지 않았다(2026-10-25 플레이 캡처).
-  const lampCells: Cell[] = [
-    { x: 14, y: 11 }, { x: 15, y: 11 },
-    ...(hub.locations ?? []).filter((l) => (l.tags ?? []).includes("jp-building") && !(l.note ?? "").includes("닿지 않음")).map((l) => {
-      const m = /문 앞 접근칸 \((\d+),(\d+)\)/u.exec(l.note ?? "");
-      return m ? { x: Number(m[1]), y: Number(m[2]) } : null;
-    }).filter((c): c is Cell => !!c),
-  ];
+    { who: "seoyeon" as const, at: { x: 17, y: 12 } },
+    { who: "yuna" as const, at: { x: 19, y: 12 } },
+    { who: "jiho" as const, at: { x: 20, y: 12 } },
+  ].map((h) => ({ ...h, at: nearestFree(project, hub, h.at, [keeperAt, { x: keeperAt.x, y: keeperAt.y + 1 }]) }));
+  // 등롱 불빛 — 칩셋이 «초롱»이라고 이름 붙인 칸(아케이드 어귀 아치·지붕 트러스)마다 작고 진한 불, 그리고 가게 문 앞 보도에 처마 등롱 불.
+  // 정문 한 곳에 큰 원(반경 5)을 두면 «차가운 스포트라이트»로 읽혔다(VQA r1, Argon·Sonnet 둘 다). 작은 불을 여러 개 켜서 «등롱이 켜졌다»로 읽히게 한다.
+  const tileMeta = project.tilesets[hub.tilesetId]?.tileMeta ?? [];
+  const lanternRow = new Map<string, Cell>();
+  hub.upperTiles?.forEach((t, i) => {
+    const label = (typeof t === "number" && t >= 0 ? tileMeta[t]?.label : "") ?? "";
+    if (!label.includes("초롱")) return;
+    const x = i % hub.width, y = Math.floor(i / hub.width);
+    // 4칸 짜리 아치·트러스 한 줄에 등롱 하나(가운데 두 칸 사이) — 같은 줄의 왼쪽 끝(칸 (0,*))에서만 센다.
+    if (!/칸 \(0,(0|1)\)/u.test(label)) return;
+    if (/칸 \(0,0\)/u.test(label) && label.includes("어귀")) return; // 아치는 등롱이 달린 가운데 줄((0,1))만
+    lanternRow.set(`${x},${y}`, { x: x + 1.5, y });
+  });
+  const doorCells: Cell[] = (hub.locations ?? []).filter((l) => (l.tags ?? []).includes("jp-building") && !(l.note ?? "").includes("닿지 않음")).map((l) => {
+    const m = /문 앞 접근칸 \((\d+),(\d+)\)/u.exec(l.note ?? "");
+    return m ? { x: Number(m[1]), y: Number(m[2]) - 0.6 } : null;
+  }).filter((c): c is Cell => !!c);
+  const lanterns = [...lanternRow.values()];
   const lightUp: Command[] = [
-    { kind: "setLighting", ambient: 0.72, color: "#0e1430", transitionMs: 1800 } as Command,
+    { kind: "setLighting", ambient: 0.62, color: "#141433", transitionMs: 1800 } as Command,
     wait(1800),
-    ...lampCells.flatMap((c, i): Command[] => [
-      { kind: "addLight", source: { id: `sm_lantern_${i}`, at: c, radius: i < 2 ? 5 : 3.2, intensity: 1, color: "#ffad4f", flicker: true } satisfies LightSource } as Command,
-      ...(i < 2 || i % 3 === 0 ? [playSe(SE_LANTERN), wait(220)] : [wait(90)]),
+    ...lanterns.flatMap((c, i): Command[] => [
+      { kind: "addLight", source: { id: `sm_lantern_${i}`, at: c, radius: 2.4, intensity: 1, color: "#ff9a3c", flicker: true } satisfies LightSource } as Command,
+      { kind: "addLight", source: { id: `sm_lantern_core_${i}`, at: c, radius: 1.1, intensity: 1, color: "#ffc76a" } satisfies LightSource } as Command,
+      ...(i % 2 === 0 ? [playSe(SE_LANTERN), wait(260)] : [wait(120)]),
     ]),
+    ...doorCells.map((c, i): Command => ({ kind: "addLight", source: { id: `sm_eave_${i}`, at: c, radius: 2.2, intensity: 0.9, color: "#ffa04a", flicker: true } satisfies LightSource } as Command)),
   ];
   const finale: Command[] = [
     ...say("keeper", "happy", "오, 세 개 다 모였네! 서연이 말대로 든든한데."),
@@ -437,7 +469,7 @@ function buildHub(project: Project, arrive: Cell): void {
     mapId: M.hub,
     walkers: [
       { name: "장 보는 아주머니", graphic: { selectionId: "charset:oprn-charset-modern3:2" }, stops: [{ x: 2, y: 17 }, { x: 12, y: 17 }, { x: 12, y: 18 }, { x: 2, y: 18 }], lines: ["내일 등롱 축제지? 우리 가게도 등롱 달았어."] },
-      { name: "퇴근길 회사원", graphic: { selectionId: "charset:oprn-charset-modern3:0" }, stops: [{ x: 38, y: 18 }, { x: 6, y: 18 }], lines: ["역 앞 고로케집, 오늘도 줄이 길더라."] },
+      { name: "퇴근길 회사원", graphic: { selectionId: "charset:oprn-charset-modern3:0" }, stops: [{ x: 38, y: 18 }, { x: 20, y: 18 }], lines: ["역 앞 고로케집, 오늘도 줄이 길더라."] },
       { name: "하굣길 학생", graphic: { selectionId: "charset:oprn-charset-modern1:1" }, stops: [{ x: 15, y: 3 }, { x: 15, y: 12 }, { x: 30, y: 12 }], lines: ["회장님이 등롱 모으러 다니더라. 너도 도와?"] },
     ],
   });
@@ -600,7 +632,9 @@ function buildHouse(project: Project, link: { entry: Cell; exit: Cell }): void {
   map.events.push(event("ev_sm_house_photo", "책장 위 사진", photoAt, [
     page("ev_sm_house_photo_p", [], [
       ...caption("책장 위에 낡은 사진 한 장."),
+      ...cgIn(CG.photo),
       ...think("코하루 베이커리 앞. 등롱을 든 채 울고 있는 꼬마 지호와, 그 옆에서 어쩔 줄 모르는 나.", "…이사 가던 날이다. 내년엔 같이 등롱 보자고, 그렇게 말했었지."),
+      ...cgOut(CG.photo),
       setSw(SW_PHOTO, true),
     ], { priority: "same" }),
   ]));
@@ -705,8 +739,10 @@ function buildRooftop(project: Project, link: { entry: Cell; exit: Cell }): Cell
           ifCond(varAtLeast(s.variable, TRUE_AT), [
             ...s.yes,
             playSe(SE_HEART),
-            ...s.after,
+            ...cgIn(CG[s.who]),
+            ...overCg(s.after),
             ...fadeOut(1400),
+            { kind: "erasePicture", pictureId: CG_PICTURE } as Command,
             ...endingPicture(ART[s.who]),
             { kind: "triggerEnding", endingId: s.ending } as Command,
           ], [
@@ -771,15 +807,15 @@ function buildRooftop(project: Project, link: { entry: Cell; exit: Cell }): Cell
   for (let y = deckTop + 1; y < map.height; y++) for (let x = 0; x < map.width; x++) { const i = y * map.width + x; if (isBand(i)) clearCell(i); }
   map.background = {
     imageId: "",
-    fromMap: { mapId: M.hub, scale: 0.5, haze: 0.3, hazeColor: "#1b2246", desaturate: 0.15, focusX: 14, focusY: 12 },
+    fromMap: { mapId: M.hub, scale: 0.34, haze: 0.12, hazeColor: "#2a1d36", desaturate: 0, focusX: 14, focusY: 12 }, // 작게(멀리) — 0.5 는 «옆 마당»처럼 1:1 로 읽혔다(VQA r1)
     cameraFollow: 0.35,
     showInEmptyCells: true,
   };
   map.defaultLighting = {
-    ambient: 0.55, color: "#121734",
+    ambient: 0.45, color: "#121734",
     sources: [
-      { id: "roof_glow_a", at: spot, radius: 5, intensity: 0.9, color: "#ffbf73", flicker: false },
-      { id: "roof_glow_b", at: arrive, radius: 3, intensity: 0.7, color: "#ffd9a0", flicker: false },
+      // 두 사람 자리에 큰 원 하나(반경 5)는 «차가운 스포트라이트»로 읽혔다(VQA r1) — 계단 탑옥 문등 하나와 난간 너머 거리 불빛만 둔다.
+      { id: "roof_door_lamp", at: arrive, radius: 2.6, intensity: 0.75, color: "#ffd9a0", flicker: false },
       ...fenceGlow,
       ...viewLights,
     ],
@@ -938,7 +974,7 @@ export function createShitamachiFourthSeasonFlagshipDemo(): FlagshipDemoBuildRes
     }
   };
   for (const e of project.maps[M.hub]!.events) for (const p of e.pages ?? []) fillRoofTransfer(p.commands);
-  execTool(project, "set_title_screen", { title: "시타마치의 네 번째 계절", logoSubtitle: "등롱이 켜지는 밤", backgroundResourceId: "oprn-shitamachi-title", logoStyle: "glow", musicResourceId: BGM_MEMORY });
+  execTool(project, "set_title_screen", { title: "시타마치의 네 번째 계절", logoSubtitle: "등롱이 켜지는 밤", backgroundResourceId: "oprn-shitamachi-title", logoStyle: "gold", menuStyle: "plain", musicResourceId: BGM_MEMORY }); // glow·창 메뉴는 에디터 기본(차가운 파란 창)으로 읽혔다(VQA r1) — 등롱 빛 금빛 글자, 창 없는 글자 메뉴
   defineEndings(project);
 
   buildTitleAndOpening(project);

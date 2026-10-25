@@ -88,6 +88,10 @@ const BUILTIN_GENERATED_RESOURCE_URLS: Record<string, string | null> = {
   "oprn-shitamachi-end-seoyeon": "/assets/generated/title/shitamachi-end-seoyeon.jpg",
   "oprn-shitamachi-end-jiho": "/assets/generated/title/shitamachi-end-jiho.jpg",
   "oprn-shitamachi-end-friends": "/assets/generated/title/shitamachi-end-friends.jpg",
+  "oprn-shitamachi-roof-seoyeon": "/assets/generated/title/shitamachi-roof-seoyeon.jpg",
+  "oprn-shitamachi-roof-jiho": "/assets/generated/title/shitamachi-roof-jiho.jpg",
+  "oprn-shitamachi-roof-yuna": "/assets/generated/title/shitamachi-roof-yuna.jpg",
+  "oprn-shitamachi-photo": "/assets/generated/title/shitamachi-photo.jpg",
   // 몬스터 수집 프리셋 오프닝 박사 반신상(2026-10-16) — gpt-image-2.5-sunburst 생성 → 격자 복원 도트화. 출처·프롬프트: public/assets/emerald-monster/professor-bust-provenance.json.
   "oprn_emerald_professor_bust": "/assets/emerald-monster/professor-bust.png",
   "horror-mystery-blue-gallery": "/assets/generated/title/horror-mystery-blue-gallery.png",
