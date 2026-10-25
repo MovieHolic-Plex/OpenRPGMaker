@@ -75,7 +75,7 @@ export function applyFallenBattleDepth(project: Project, exec: ToolExec): void {
   });
   tune("skill_hero_flame_sword", {
     stateEffects: [{ stateId: FS_BURN_STATE, chance: 60, operation: "add" }],
-    description: "불 속성 베기 + 60% 화상(매 차례 HP 3%). 늑대 약점. 도깨비불엔 무효.",
+    description: "불 속성 베기 + 60% 화상(매 차례 HP 3%).",
   });
   make("skill_focus", FS_TAUNT_SKILL, {
     name: "도발", scope: "self", power: 0, mpCost: { flat: 3, percentMax: 0 },
@@ -126,6 +126,10 @@ export function applyFallenBattleDepth(project: Project, exec: ToolExec): void {
     description: "약한 빛 네 발(사출봉 +40%). 맞힐 때마다 적의 다음 행동을 늦춘다. 잠든 적은 깬다.",
   });
 
+  // ── 달려드는 속도(2026-10-25 「늑대가 고블린보다 느리네」) — 전역 기본(fast)에서 짐승은 이미 사람 적보다 빠르다.
+  // 숲늑대는 한 번 더 날래게. 조수와 같은 칸(upsert_enemy lungeSpeedPercent).
+  for (const enemy of db.enemies) if (enemy.id === "enemy_fs_wolf" || enemy.id === "enemy_wolf_grey") enemy.lungeSpeedPercent = 130;
+
   // ── 연계기(크로노 트리거식) — 조수와 같은 도구로 저작한다 ─────────────────────────────
   exec(project, "upsert_combo_tech", {
     id: FS_COMBO_FLAME_CROSS,
@@ -163,4 +167,65 @@ export function applyFallenBattleDepth(project: Project, exec: ToolExec): void {
     scope: "allEnemies", kind: "damage", statistic: "attack", power: 40, elementId: "holy", combinedStats: true,
     choreographyId: "skill_mage_starfall",
   });
+}
+
+/**
+ * 『폴른 스타』 성장 곡선(2026-10-25, 사용자 「레벨 오르면 왜 체력밖에 안 오름..?」).
+ *
+ * 세 동료는 기본 곡선(Lv1 HP 514·공 45)을 그대로 쓰고 있어 1막 레벨대(6~9)에서 공격·방어·마력·민첩이 몇 레벨에 1 오를까 말까였다 —
+ * 레벨 업 창에 HP 줄만 떴다. 전투 능력치의 정본은 배우 parameterCurves 다(battleBattlers.actorDerivedStats, 직업 곡선은 직업 변경 뒤에만).
+ * 역할별로 **매 레벨 모든 능력치가 오르게** 다시 짠다. 1막 시작(Lv6) 값은 예전과 같게 묶어(보스 균형 유지)
+ * 그 앞뒤로 역할별 증가폭을 준다: 카엘 = 체력·공격·방어, 엘레나 = MP·마력, 이리스 = 공격·민첩.
+ * 운(LUK)·마법 방어(MDF)는 엔진에 따로 없다 — 마력(mind)이 마법 공격과 마법 피해 경감을 함께 맡는다.
+ */
+const GROWTH_ANCHOR_LEVEL = 6;
+/** [기준 레벨 값, 1막 레벨당 증가, 2막 이후 레벨당 증가] — 1막(Lv6~9)은 모든 능력치 +1·HP +7 정도(예전 곡선의 보스 균형에 가깝게), Lv17 까지 역할 폭으로 벌어진다. */
+type GrowthRow = readonly [anchor: number, early: number, late: number];
+// 기준값 = 예전(기본 곡선) Lv6 값(1막 시작 레벨). 역할 차이는 레벨이 오를수록 증가폭에서 난다.
+const FS_GROWTH: Readonly<Record<string, Readonly<Record<"maxHp" | "maxMp" | "attack" | "defense" | "mind" | "agility", GrowthRow>>>> = {
+  [KAEL]: { maxHp: [526, 5, 26], maxMp: [43, 1, 2], attack: [45, 1, 3.2], defense: [57, 1, 2.6], mind: [45, 1, 1.2], agility: [43, 1, 1.6] },
+  [ELENA]: { maxHp: [526, 5, 17], maxMp: [43, 1, 4.4], attack: [45, 1, 1.2], defense: [57, 1, 1.5], mind: [45, 1, 3.4], agility: [43, 1, 1.6] },
+  [IRIS]: { maxHp: [447, 5, 20], maxMp: [39, 1, 2.2], attack: [54, 1, 3.2], defense: [39, 1, 1.5], mind: [38, 1, 1.2], agility: [47, 1, 2.8] },
+};
+
+/** 99칸 곡선 — 기준 레벨 위로는 레벨마다 early → late 로 벌어지는 증가(Lv18 에서 late), 아래로는 early 폭(최소 1)으로 내려가되 기준값의 35% 아래로는 안 내려간다. 매 레벨 반드시 오른다. */
+export function fallenGrowthCurve([anchor, early, late]: GrowthRow): number[] {
+  const values: number[] = new Array(99);
+  values[GROWTH_ANCHOR_LEVEL - 1] = anchor;
+  for (let level = GROWTH_ANCHOR_LEVEL + 1; level <= 99; level += 1) {
+    const t = Math.max(0, Math.min(1, (level - GROWTH_ANCHOR_LEVEL - 1) / 10));
+    values[level - 1] = values[level - 2]! + early + (late - early) * t;
+  }
+  for (let level = GROWTH_ANCHOR_LEVEL - 1; level >= 1; level -= 1) values[level - 1] = Math.max(anchor * 0.35, values[level]! - Math.max(1, early));
+  const out = values.map((value) => Math.max(1, Math.round(value)));
+  for (let i = 1; i < out.length; i += 1) if (out[i]! <= out[i - 1]!) out[i] = out[i - 1]! + 1;
+  return out;
+}
+
+export function applyFallenGrowthCurves(project: Project): void {
+  for (const [actorId, rows] of Object.entries(FS_GROWTH)) {
+    const actor = project.database.actors.find((record) => record.id === actorId);
+    if (!actor) throw new Error(`[fallen-star] 성장 곡선: ${actorId} 이 없다`);
+    // 기준 레벨까지는 예전 곡선보다 약해지지 않는다(1막 초반 싸움 균형 — 모의전에서 도깨비불전이 몇 점 차이로 뒤집혔다).
+    const keep = (key: keyof typeof rows): number[] => {
+      const previous = actor.parameterCurves[key] ?? [];
+      const curve = fallenGrowthCurve(rows[key]);
+      for (let index = 0; index < GROWTH_ANCHOR_LEVEL - 1; index += 1) curve[index] = Math.max(curve[index]!, previous[index] ?? 0);
+      // 기준 레벨 아래는 예전 곡선처럼 제자리여도 된다(밀어 올리면 Lv1 부터 쌓여 1막 값이 부푼다). 그 위로는 매 레벨 오른다.
+      for (let index = 1; index < curve.length; index += 1) {
+        if (curve[index]! < curve[index - 1]!) curve[index] = curve[index - 1]!;
+        if (index >= GROWTH_ANCHOR_LEVEL - 1 && curve[index]! <= curve[index - 1]!) curve[index] = curve[index - 1]! + 1;
+      }
+      return curve;
+    };
+    actor.parameterCurves = {
+      ...actor.parameterCurves,
+      maxHp: keep("maxHp"),
+      maxMp: keep("maxMp"),
+      attack: keep("attack"),
+      defense: keep("defense"),
+      mind: keep("mind"),
+      agility: keep("agility"),
+    };
+  }
 }

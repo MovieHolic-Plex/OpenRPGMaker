@@ -570,6 +570,20 @@ export async function applyOp(page, op, runState) {
       await page.waitForTimeout(200);
       return;
     }
+    case "measureLayout": {
+      // 화면 배치 실측(모바일 가로 전투 크기 등) — 선택자마다 화면 px 상자와 글자 크기를 표준 출력에 한 줄 JSON 으로 남긴다.
+      const measured = await page.evaluate((selectors) => Object.fromEntries(selectors.map((selector) => {
+        const node = document.querySelector(selector);
+        if (!node) return [selector, null];
+        const rect = node.getBoundingClientRect();
+        const style = getComputedStyle(node);
+        return [selector, { x: Math.round(rect.left), y: Math.round(rect.top), w: Math.round(rect.width), h: Math.round(rect.height), font: style.fontSize }];
+      })), op.selectors ?? []);
+      const viewport = page.viewportSize();
+      const enemyLunges = await page.evaluate(() => document.querySelector(".battle-scene")?.dataset.enemyLunges ?? null);
+      console.log(`[measureLayout] ${op.label ?? ""} ${JSON.stringify({ viewport, measured, ...(enemyLunges ? { enemyLunges } : {}) })}`);
+      return;
+    }
     case "click":
       // DOM 단추 누르기(element.click — 전투 QA 의 press 와 같다). 가려짐 검사가 필요하면 pointerClick.
       await page.waitForSelector(`[data-testid="${op.testid}"]`, { timeout: op.timeoutMs ?? 10_000 });

@@ -10,7 +10,7 @@ import type { GameMap, Project } from "@/project/types";
 import { isPassable } from "@/project/collision";
 import { CONSTRUCTION_TOOLS_V3 } from "./v3/constructionTools";
 import { assertMapIdAvailable } from "./mapHelpers";
-import { MAP_TOOLS } from "./mapTools";
+import { MAP_TOOLS, assignCreatedMapBgm } from "./mapTools";
 import { SHARED_OBJECT_TOOLS } from "./sharedObjectTools";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
 import { BEODEUL_FOREST_TYPES, parseBeodeulForestType, type BeodeulForestType } from "./beodeulForest";
@@ -152,6 +152,14 @@ function normalizeTownArgs(draft: Project, raw: Record<string, unknown>): { args
     const before = `${map.width}×${map.height}`;
     requireTool(MAP_TOOLS, "resize_map").run(draft, { mapId: map.id, width, height });
     notes.push(`빈 맵 ${map.id}(${before})을 ${width}×${height} 로 넓혀 그 자리에 지었다.`);
+  }
+  // 빈 시작 맵 위에 지으면 그 맵이 곧 이 마을이다 — 이름(「빈 맵」 그대로였다)과 마을 BGM(없었다)을 새 맵처럼 준다(2026-10-25 조수 단독 게임 시험 G1·G2).
+  if (map && isBlankMap(map)) {
+    const name = typeof args.name === "string" && args.name.trim() ? args.name.trim() : "버들 마을";
+    if (/^(빈 맵|새 맵|맵\s*\d*|map\s*\d*|untitled)$/iu.test(map.name.trim()) || !map.name.trim()) { map.name = name; notes.push(`맵 이름을 「${name}」 로 바꿨다.`); }
+    if (!map.bgm || (map.bgm.mode === "custom" && !map.bgm.resourceId)) {
+      try { const bgm = assignCreatedMapBgm(map, {}, { themeOrName: `${name} 마을 town village peaceful`, fallbackTheme: "town", draft }); notes.push(`마을 BGM ${bgm}.`); } catch { /* 곡이 없으면 그대로 */ }
+    }
   }
   return { args, notes };
 }

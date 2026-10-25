@@ -1013,7 +1013,9 @@ function showDamageFeedback(field: HTMLElement, feedback: DamageFeedback): void 
     if (feedback.critical) tags.push({ kind: "critical", text: "치명타!" });
     const effectiveness = feedback.effectiveness;
     if (effectiveness !== undefined && effectiveness !== 1) {
-      tags.push(effectiveness <= 0 ? { kind: "immune", text: "무효" } : effectiveness > 1 ? { kind: "weak", text: "약점!" } : { kind: "resist", text: "저항" });
+      // 처음 알아낸 타격(weaknessDiscovery.ts)은 「약점 발견!」 — 이 순간이 플레이어가 약점을 아는 유일한 길이다(공개 전 미리보기 없음).
+      const found = feedback.weaknessDiscovered ? " 발견!" : "";
+      tags.push(effectiveness <= 0 ? { kind: "immune", text: found ? "무효 발견!" : "무효" } : effectiveness > 1 ? { kind: "weak", text: found ? "약점 발견!" : "약점!" } : { kind: "resist", text: found ? "저항 발견!" : "저항" });
     }
     if (feedback.weaponAffinity) tags.push({ kind: "affinity", text: "무기↑" });
     if (feedback.exploit) tags.push({ kind: "exploit", text: "공략!" });
@@ -1025,6 +1027,7 @@ function showDamageFeedback(field: HTMLElement, feedback: DamageFeedback): void 
       tag.textContent = tags.map((row) => row.text).join(" ");
       const effective = tags.find((row) => row.kind === "weak" || row.kind === "resist" || row.kind === "immune");
       if (effective) popup.dataset.effectiveness = effective.kind;
+      if (effective && feedback.weaknessDiscovered) { popup.dataset.weaknessDiscovered = "true"; tag.dataset.weaknessDiscovered = "true"; }
       // 숫자 아래에 단다 — 위에 달면 화면 위쪽 적에서 메시지 창 뒤로 숨었다(2026-10-24 영상 실측).
       popup.append(tag);
     }

@@ -5,7 +5,7 @@ import { applyLegacyEnvAliases } from "./oprnEnv.mjs";
 import { cancelRelayedRun, resumeRelayedRun, startRelayedRun } from "./piRunRelay.mjs";
 // 정적 import — vite 설정 로드 뒤 모듈 러너가 닫혀 요청 처리 중 동적 import 가 「Vite module runner has been closed」 로 죽었다.
 import { buildWorldmap } from "./worldmapBuild.mjs";
-import { cancelWorkshopGen, startWorkshopGen, workshopGenStatus } from "./workshopGen.mjs";
+import { cancelWorkshopGen, pickWorkshopGen, startWorkshopGen, workshopGenStatus } from "./workshopGen.mjs";
 import { cancelWorkshopGate, startWorkshopGate, workshopGateStatus } from "./workshopGate.mjs";
 
 applyLegacyEnvAliases();
@@ -51,6 +51,7 @@ export function isCompanionPath(url = "") {
     || path === "/v1/worldmap/build"
     || path === "/v1/workshop/gen"
     || path === "/v1/workshop/gen/cancel"
+    || path === "/v1/workshop/gen/pick"
     || path === "/v1/workshop/gate"
     || path === "/v1/workshop/gate/cancel"
     || path === "/v1/local-agents"
@@ -281,6 +282,10 @@ export async function handleCompanionRequest(req, adapters) {
     return json(200, workshopGenStatus(query.get("jobId")));
   }
   if (method === "POST" && path === "/v1/workshop/gen/cancel") return json(200, cancelWorkshopGen(body.jobId));
+  if (method === "POST" && path === "/v1/workshop/gen/pick") {
+    const picked = pickWorkshopGen(body);
+    return json(picked.ok ? 200 : 400, picked);
+  }
   // 공방 물건의 3/4 관문 — 영수증 판정기(object-gate judge.mts workshop 단계)를 호스트에서(scripts/lib/workshopGate.mjs).
   if (method === "POST" && path === "/v1/workshop/gate") {
     const started = startWorkshopGate(body);

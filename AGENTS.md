@@ -45,6 +45,7 @@ This repository uses a project-local OpenWiki layer so coding agents can underst
   → GPT 6.1 sol high가 자유롭게 픽셀 저작 → 결손 검사 → GIF. 사람이 남기기/폐기를 결정하며 남긴 칩만 팩으로 만든다. `produce --count 100`으로 시작하고 설치는 별도다.
 
 - **전투 화면의 트레이너 그림(상대 앞모습·내 뒷모습·볼 던지기)을 만들 때** → `battle-trainer-sprites` · 시드 `harness-data/battle-trainer-sprites/seed.json` · `npm run harness -- battle-trainer-sprites draw|status|sheet|pick|bake` · 문서 `openwiki/harnesses/battle-trainer-sprites.md`. 몬스터 종 하네스와 같은 「생성형 이미지(이미지 서버) → 격자 도트화 → 사람이 고름」, 몬스터 수집 전용 그림체 샘플을 참고 이미지로 쓴다(Actor1·편집 모드 폐기). 사람이 시트에서 고른 것만 굽는다. object-gate 영수증 없음·사람 선택 경로.
+- **대사 흉상(초상·포트레잇)을 새로 만들거나 다시 그릴 때 — 아스트라 등 캐스트가 있는 프로젝트** → `cast-portrait` · 시드 `harness-data/cast-portrait/seed.json`(프로젝트별 규격 `projects/<project>.json`) · `npm run harness -- cast-portrait calibrate|calibrate-review|draw|import|fix|check|lineup|dialogue|review|verdict|pick|install|status` · 문서 `openwiki/harnesses/cast-portrait.md`. 캐스트를 만든 그 경로로만 그린다(아스트라: char-gen + `bake_astra_busts64`, 64×64·16색·투명·머리 위 1~4·인접색 윤곽 ≥70%·얼굴만 바꾸는 표정). 원본 축소·자르기 금지, 기계 검사 → 캐스트 줄·실제 대사창 → 눈가림 Argon 「같은 작가?」 5번(중앙값 ≥6.5·과반, 실제 캐스트/반려작으로 보정, `review`·`calibrate-review`) → 사람 선택(현재 해시). 에이전트는 고르지 않는다. 다른 방법(코드 손 도트·공용 흉상 재채색)으로 그린 박사 후보는 사용자 반려(2026-10-24).
 - **몬스터 수집(포켓몬류) 게임의 종·스타터·진화 계통 전투 스프라이트(앞모습·뒷모습)를 만들 때**
   → `monster-collect-species` · 시드 `harness-data/monster-collect-species/seed.json`
   → `npm run harness -- monster-collect-species <단계>` · 문서 `openwiki/harnesses/monster-collect-species.md`

@@ -14,27 +14,318 @@
   "bust-base.png": {
    "source": "professor-nat10.png",
    "sourceSha256": "0daa70bd44e81524562faae1bfa5fa9e5ffdc790cf61755c26fdeb718d9c7c11",
-   "pixelSha256": "42bf8cdffd312f380c4f999ec910f0ca5d8f14cd2f9646ce6e79d3762fe9900c"
+   "pixelSha256": "795a162707d9e8fff3c74b083f4a0fa0efc1b0526a8f35f914a059f80c2f94b2"
   },
   "bust-happy.png": {
    "source": "professor-nat10-happy-t1.png",
    "sourceSha256": "7cf79c9095e155856da11a7b15009d23ee64ea5cce208d3c8de18204045eed7c",
-   "pixelSha256": "f91d3d267bddfac993a8043339e6b5b5887fa06b304903e73afe4b5a2192ee3c"
+   "pixelSha256": "441a0ffdb5e6b190d105c25bd82861c87f718f74fc44825608763599195c6487"
   },
   "bust-sad.png": {
    "source": "professor-nat10-sad-t1.png",
    "sourceSha256": "4ffe97ceb9600d13741565d44bcf6b53c1d060f90a95c32b096297bfa827a98b",
-   "pixelSha256": "7191afd7255bd909934449dd131680e60623031cac4b0c57c7961037eae6f574"
+   "pixelSha256": "eb3691a753765e9a64ad53033360d5d193c5d74925212cf7c5fa232fabd290d9"
   },
   "bust-angry.png": {
    "source": "professor-nat10-angry-t1.png",
    "sourceSha256": "c198042a2424bc3d4b9d912b5ca22abdf331f2953c716e3a01b9d1abca306b55",
-   "pixelSha256": "03b21f1bc18a23dd42fd8972a861b979ae10419ed92b9dc7b652cacdf9c15458"
+   "pixelSha256": "3862b4f68b16e61d836c3f9892bbb7457df3dd128c81c321d486164ae54e4459"
   },
   "bust-surprised.png": {
    "source": "professor-nat10-surprised-t1.png",
    "sourceSha256": "94fe454c335229bec57922d2e063820be7cfa24316934d93194bb99505a8adf9",
-   "pixelSha256": "01a78ebe052d5da27d48f11f2157ac8f446aabca0ecad474ac0bf64ab79dc268"
+   "pixelSha256": "ac823b4359fd529df82c126ee523dda9fe7ce1666105316dc3d1fc4ff7ef81b6"
   }
+ },
+ "castPortraitHarness": {
+  "pick": {
+   "project": "astra-horizon",
+   "role": "professor",
+   "round": "r3-chargen",
+   "candidate": "professor-cg-nat10",
+   "by": "user (2026-10-25, relayed by the coordinator): 「이거는 꽤 규격이 괜찮네. 앞으로 이렇게 하도록 하네싱을 꽉 잡도록」",
+   "at": "2026-10-25T04:25:42",
+   "basis": "check PASS + repeated blind review median 9.0 (spread 9.0-10.0), same artist 5/5",
+   "hashes": {
+    "base": "795a162707d9e8fff3c74b083f4a0fa0efc1b0526a8f35f914a059f80c2f94b2",
+    "happy": "441a0ffdb5e6b190d105c25bd82861c87f718f74fc44825608763599195c6487",
+    "sad": "eb3691a753765e9a64ad53033360d5d193c5d74925212cf7c5fa232fabd290d9",
+    "angry": "3862b4f68b16e61d836c3f9892bbb7457df3dd128c81c321d486164ae54e4459",
+    "surprised": "ac823b4359fd529df82c126ee523dda9fe7ce1666105316dc3d1fc4ff7ef81b6"
+   },
+   "review": {
+    "aggregate": {
+     "n": 5,
+     "scores": [
+      9.0,
+      9.0,
+      10.0,
+      9.0,
+      9.0
+     ],
+     "median": 9.0,
+     "min": 9.0,
+     "max": 10.0,
+     "sameArtistVotes": 5,
+     "defectVotes": {
+      "base": 0,
+      "happy": 0,
+      "sad": 0,
+      "angry": 0,
+      "surprised": 0
+     },
+     "worstDefectVotes": 0
+    },
+    "pass": true,
+    "why": [],
+    "thresholds": {
+     "fitMin": 6.5,
+     "sameArtistMin": 3,
+     "defectMaxVotes": 5
+    }
+   },
+   "fixes": [
+    {
+     "expr": "base",
+     "pixels": {
+      "35,32": "#f3f5f4",
+      "36,32": "#0f1330",
+      "38,33": "#2f467e",
+      "39,33": "#0f1330",
+      "39,34": "#2f467e",
+      "39,35": "#2f467e"
+     },
+     "before": "42bf8cdffd312f380c4f999ec910f0ca5d8f14cd2f9646ce6e79d3762fe9900c",
+     "after": "9be36ed1a8ad08f19529a458459827989ceeefb0268cfc0956c048ddd1566445",
+     "why": "mirror the left eye onto the right (blind review: iris 4 px left vs 3 px right)",
+     "at": "2026-10-25T03:15:09"
+    },
+    {
+     "expr": "sad",
+     "pixels": {
+      "36,33": "#0f1330",
+      "38,33": "#f3f5f4",
+      "38,34": "#2f467e",
+      "39,34": "#0f1330",
+      "39,35": "#2f467e"
+     },
+     "before": "7191afd7255bd909934449dd131680e60623031cac4b0c57c7961037eae6f574",
+     "after": "31f0fef2589a70ab487c315d13ec516f382afa17988df7f1c27f7bc4065351b4",
+     "why": "mirror the left eye onto the right (blind review: iris 4 px left vs 3 px right)",
+     "at": "2026-10-25T03:15:10"
+    },
+    {
+     "expr": "angry",
+     "pixels": {
+      "37,29": "#4e2315",
+      "37,30": "#4e2315",
+      "36,32": "#0f1330",
+      "38,33": "#2f467e",
+      "39,34": "#2f467e",
+      "39,35": "#f9c485"
+     },
+     "before": "03b21f1bc18a23dd42fd8972a861b979ae10419ed92b9dc7b652cacdf9c15458",
+     "after": "734a9084f8813657c86410e14ddda3f3b7f75580ac453acbf899f3062876e51d",
+     "why": "mirror the left eye onto the right (blind review: iris 4 px left vs 3 px right)",
+     "at": "2026-10-25T03:15:10"
+    },
+    {
+     "expr": "angry",
+     "pixels": {
+      "26,40": "#b36434",
+      "37,40": "#b36434",
+      "25,41": "#b36434",
+      "38,41": "#b36434",
+      "25,42": "#b36434",
+      "38,42": "#b36434"
+     },
+     "before": "734a9084f8813657c86410e14ddda3f3b7f75580ac453acbf899f3062876e51d",
+     "after": "3862b4f68b16e61d836c3f9892bbb7457df3dd128c81c321d486164ae54e4459",
+     "why": "keep the smile-line age pixels of base (blind review: lines vanish only in angry)",
+     "at": "2026-10-25T03:15:10"
+    },
+    {
+     "expr": "surprised",
+     "pixels": {
+      "32,44": "#ec4e38",
+      "33,44": "#ec4e38"
+     },
+     "before": "01a78ebe052d5da27d48f11f2157ac8f446aabca0ecad474ac0bf64ab79dc268",
+     "after": "d377417174590707c405b0e2b0655eb78beeb3816bb7c3ccf89e24c0d3a64ce8",
+     "why": "open mouth interior red like happy (blind review: brown inside read as hair colour)",
+     "at": "2026-10-25T03:15:11"
+    },
+    {
+     "expr": "surprised",
+     "pixels": {
+      "31,44": "#ec4e38",
+      "33,44": "#662f1a",
+      "30,45": "#f9c485",
+      "32,45": "#662f1a"
+     },
+     "before": "d377417174590707c405b0e2b0655eb78beeb3816bb7c3ccf89e24c0d3a64ce8",
+     "after": "ac823b4359fd529df82c126ee523dda9fe7ce1666105316dc3d1fc4ff7ef81b6",
+     "why": "open mouth: symmetric O with dark rim all round (blind review r2: un-outlined red, bottom rim shifted left)",
+     "at": "2026-10-25T03:41:43"
+    },
+    {
+     "expr": "sad",
+     "pixels": {
+      "37,40": "#b36434"
+     },
+     "before": "31f0fef2589a70ab487c315d13ec516f382afa17988df7f1c27f7bc4065351b4",
+     "after": "eb3691a753765e9a64ad53033360d5d193c5d74925212cf7c5fa232fabd290d9",
+     "why": "right smile line top pixel like base (blind review r2: crease 3 px left vs 2 px right)",
+     "at": "2026-10-25T03:41:44"
+    },
+    {
+     "expr": "happy",
+     "pixels": {
+      "35,41": "#2e140f",
+      "28,42": "#2e140f",
+      "35,42": "#2e140f",
+      "39,34": "#1d0e0d"
+     },
+     "before": "f91d3d267bddfac993a8043339e6b5b5887fa06b304903e73afe4b5a2192ee3c",
+     "after": "441a0ffdb5e6b190d105c25bd82861c87f718f74fc44825608763599195c6487",
+     "why": "mouth dark rim on both sides; closed-eye arc mirrored (blind review r2)",
+     "at": "2026-10-25T03:41:44"
+    },
+    {
+     "expr": "base",
+     "pixels": {
+      "30,44": "#f9c485",
+      "31,44": "#f9c485",
+      "32,44": "#f9c485",
+      "33,44": "#f9c485"
+     },
+     "before": "9be36ed1a8ad08f19529a458459827989ceeefb0268cfc0956c048ddd1566445",
+     "after": "795a162707d9e8fff3c74b083f4a0fa0efc1b0526a8f35f914a059f80c2f94b2",
+     "why": "drop the base-only chin bar under the mouth (blind review r2: reads as double lips, absent in every other expression)",
+     "at": "2026-10-25T03:41:45"
+    }
+   ]
+  },
+  "fixes": [
+   {
+    "expr": "base",
+    "pixels": {
+     "35,32": "#f3f5f4",
+     "36,32": "#0f1330",
+     "38,33": "#2f467e",
+     "39,33": "#0f1330",
+     "39,34": "#2f467e",
+     "39,35": "#2f467e"
+    },
+    "before": "42bf8cdffd312f380c4f999ec910f0ca5d8f14cd2f9646ce6e79d3762fe9900c",
+    "after": "9be36ed1a8ad08f19529a458459827989ceeefb0268cfc0956c048ddd1566445",
+    "why": "mirror the left eye onto the right (blind review: iris 4 px left vs 3 px right)",
+    "at": "2026-10-25T03:15:09"
+   },
+   {
+    "expr": "sad",
+    "pixels": {
+     "36,33": "#0f1330",
+     "38,33": "#f3f5f4",
+     "38,34": "#2f467e",
+     "39,34": "#0f1330",
+     "39,35": "#2f467e"
+    },
+    "before": "7191afd7255bd909934449dd131680e60623031cac4b0c57c7961037eae6f574",
+    "after": "31f0fef2589a70ab487c315d13ec516f382afa17988df7f1c27f7bc4065351b4",
+    "why": "mirror the left eye onto the right (blind review: iris 4 px left vs 3 px right)",
+    "at": "2026-10-25T03:15:10"
+   },
+   {
+    "expr": "angry",
+    "pixels": {
+     "37,29": "#4e2315",
+     "37,30": "#4e2315",
+     "36,32": "#0f1330",
+     "38,33": "#2f467e",
+     "39,34": "#2f467e",
+     "39,35": "#f9c485"
+    },
+    "before": "03b21f1bc18a23dd42fd8972a861b979ae10419ed92b9dc7b652cacdf9c15458",
+    "after": "734a9084f8813657c86410e14ddda3f3b7f75580ac453acbf899f3062876e51d",
+    "why": "mirror the left eye onto the right (blind review: iris 4 px left vs 3 px right)",
+    "at": "2026-10-25T03:15:10"
+   },
+   {
+    "expr": "angry",
+    "pixels": {
+     "26,40": "#b36434",
+     "37,40": "#b36434",
+     "25,41": "#b36434",
+     "38,41": "#b36434",
+     "25,42": "#b36434",
+     "38,42": "#b36434"
+    },
+    "before": "734a9084f8813657c86410e14ddda3f3b7f75580ac453acbf899f3062876e51d",
+    "after": "3862b4f68b16e61d836c3f9892bbb7457df3dd128c81c321d486164ae54e4459",
+    "why": "keep the smile-line age pixels of base (blind review: lines vanish only in angry)",
+    "at": "2026-10-25T03:15:10"
+   },
+   {
+    "expr": "surprised",
+    "pixels": {
+     "32,44": "#ec4e38",
+     "33,44": "#ec4e38"
+    },
+    "before": "01a78ebe052d5da27d48f11f2157ac8f446aabca0ecad474ac0bf64ab79dc268",
+    "after": "d377417174590707c405b0e2b0655eb78beeb3816bb7c3ccf89e24c0d3a64ce8",
+    "why": "open mouth interior red like happy (blind review: brown inside read as hair colour)",
+    "at": "2026-10-25T03:15:11"
+   },
+   {
+    "expr": "surprised",
+    "pixels": {
+     "31,44": "#ec4e38",
+     "33,44": "#662f1a",
+     "30,45": "#f9c485",
+     "32,45": "#662f1a"
+    },
+    "before": "d377417174590707c405b0e2b0655eb78beeb3816bb7c3ccf89e24c0d3a64ce8",
+    "after": "ac823b4359fd529df82c126ee523dda9fe7ce1666105316dc3d1fc4ff7ef81b6",
+    "why": "open mouth: symmetric O with dark rim all round (blind review r2: un-outlined red, bottom rim shifted left)",
+    "at": "2026-10-25T03:41:43"
+   },
+   {
+    "expr": "sad",
+    "pixels": {
+     "37,40": "#b36434"
+    },
+    "before": "31f0fef2589a70ab487c315d13ec516f382afa17988df7f1c27f7bc4065351b4",
+    "after": "eb3691a753765e9a64ad53033360d5d193c5d74925212cf7c5fa232fabd290d9",
+    "why": "right smile line top pixel like base (blind review r2: crease 3 px left vs 2 px right)",
+    "at": "2026-10-25T03:41:44"
+   },
+   {
+    "expr": "happy",
+    "pixels": {
+     "35,41": "#2e140f",
+     "28,42": "#2e140f",
+     "35,42": "#2e140f",
+     "39,34": "#1d0e0d"
+    },
+    "before": "f91d3d267bddfac993a8043339e6b5b5887fa06b304903e73afe4b5a2192ee3c",
+    "after": "441a0ffdb5e6b190d105c25bd82861c87f718f74fc44825608763599195c6487",
+    "why": "mouth dark rim on both sides; closed-eye arc mirrored (blind review r2)",
+    "at": "2026-10-25T03:41:44"
+   },
+   {
+    "expr": "base",
+    "pixels": {
+     "30,44": "#f9c485",
+     "31,44": "#f9c485",
+     "32,44": "#f9c485",
+     "33,44": "#f9c485"
+    },
+    "before": "9be36ed1a8ad08f19529a458459827989ceeefb0268cfc0956c048ddd1566445",
+    "after": "795a162707d9e8fff3c74b083f4a0fa0efc1b0526a8f35f914a059f80c2f94b2",
+    "why": "drop the base-only chin bar under the mouth (blind review r2: reads as double lips, absent in every other expression)",
+    "at": "2026-10-25T03:41:45"
+   }
+  ]
  }
 }

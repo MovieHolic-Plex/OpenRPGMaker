@@ -107,6 +107,8 @@ const SCREEN_COLOR_OPTIONS: readonly M2CommandFieldOption[] = [
   { value: "purple", label: "보라" },
   { value: "black", label: "검정" },
   { value: "neutral", label: "중립" },
+  // 회상 색조 — 런타임 SCREEN_COLOR_RGB 가 이미 받는다(commandCatalog.ts). 선택지에 없어 「sepia」가 거절되고 조수가 몇 번씩 다시 썼다(2026-10-25 G30).
+  { value: "sepia", label: "세피아(회상)" },
 ];
 
 const SHAKE_INTENSITY_OPTIONS: readonly M2CommandFieldOption[] = [

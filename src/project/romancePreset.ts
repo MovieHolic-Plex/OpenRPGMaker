@@ -71,8 +71,9 @@ export function isLegacyRomanceHud(hud: FieldHudConfig | undefined): boolean {
 }
 
 /** 연애 프로젝트에 결정론 기본값을 깐다. 깐 항목 이름을 돌려준다(이미 있던 것은 목록에 없다). */
-export function applyRomanceDefaults(project: Project): string[] {
-  if (!isRomanceInterviewProject(project)) return [];
+export function applyRomanceDefaults(project: Project, options: { readonly force?: boolean } = {}): string[] {
+  // force: 인터뷰 없이 채팅 한 줄(「연애 게임을 만들고 싶어」)로 시작한 게임 — 조수 v2 가 첫 장소를 지은 뒤 부른다(2026-10-25 조수 단독 게임 G17/G18).
+  if (!options.force && !isRomanceInterviewProject(project)) return [];
   const applied: string[] = [];
   const { system } = project;
   if (!system.timeSystem) {

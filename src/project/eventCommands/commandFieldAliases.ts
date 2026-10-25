@@ -303,7 +303,21 @@ export function canonicalizeCommandFieldAlias(raw: unknown): string | undefined 
       const v = fields[f.key];
       if ((f.type === "text" || f.type === "textarea" || f.type === "select") && (typeof v === "number" || typeof v === "boolean")) { fields[f.key] = String(v); fixed.push(f.key); }
     }
-    if (fixed.length) return `m2Command ${command.commandId} 의 ${fixed.join(",")} 숫자를 글자로 바꿨습니다.`;
+    // 고르기 칸에 선택지 밖 값(2026-10-25 장난감 가게 G29·G30: color "#ffffff"·"sepia")을 주면 이벤트 전체가 거절됐다.
+    //   대소문자·한글 이름이 맞으면 그 선택지로, 색 칸의 색 값(hex·r,g,b·이름)은 같은 명령의 value 칸으로 옮긴다(런타임은 value 를 먼저 읽는다).
+    const moved: string[] = [];
+    for (const f of spec?.fields ?? []) {
+      const v = fields[f.key];
+      if (f.type !== "select" || !f.options?.length || typeof v !== "string" || f.options.some((o) => o.value === v)) continue;
+      const hit = f.options.find((o) => o.value.toLowerCase() === v.trim().toLowerCase() || o.label === v.trim());
+      if (hit) { fields[f.key] = hit.value; moved.push(`${f.key}:"${v}"→"${hit.value}"`); continue; }
+      const valueSpec = spec?.fields.find((x) => x.key === "value" && x.type === "text");
+      if (f.key === "color" && valueSpec && (fields.value === undefined || fields.value === "")) {
+        fields.value = v.trim(); fields.color = String(f.defaultValue ?? f.options[0]!.value);
+        moved.push(`color:"${v}" 를 value 로 옮김`);
+      }
+    }
+    if (fixed.length || moved.length) return `m2Command ${command.commandId}: ${[...(fixed.length ? [`${fixed.join(",")} 숫자를 글자로 바꿈`] : []), ...moved].join(", ")}.`;
   }
   // 함정·독초 이벤트가 showAnimation/showEmote 에 target 을 빠뜨려 「target가 객체가 아닙니다」로 거절됐다(2026-10-24 g2-poison-trap·g3-sleep-gas).
   //   빠졌거나 "party"·"hero" 같은 주인공 낱말이면 주인공("player")으로 받는다. showEmote 의 text 는 emote 별칭.

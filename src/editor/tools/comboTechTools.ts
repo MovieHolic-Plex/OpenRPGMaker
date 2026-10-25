@@ -37,6 +37,7 @@ function techRow(project: Project, skill: SkillRecord) {
     requires: skill.comboRequires ?? [],
     combinedStats: skill.comboCombinedStats === true,
     choreographyId: skill.retroChoreographyId,
+    ...(skill.comboStaging ? { staging: skill.comboStaging } : {}),
     inParty: (skill.comboActorIds ?? []).every((id) => party.includes(id)),
     unlockedAtStart: locked.length === 0,
     ...(locked.length ? { missing: locked } : {}),
@@ -108,6 +109,17 @@ const upsertComboTech: ToolDefinition = {
       gaugeShift: { type: "integer", minimum: -100, maximum: 100, description: "맞은 적 행동 게이지 밀기(음수 = 늦추기)" },
       choreographyId: { type: "string", description: "도트 연출 — 계약 스킬 id 나 프로젝트 연출 chor_* (list_retro_choreographies). 연계기답게 큰 연출을 고른다" },
       switchId: { type: "string", description: "발동하면 켜지는 스위치(이야기 분기)" },
+      staging: {
+        type: "object",
+        description: "이 연계기의 연출 — tint(#rrggbb 번쩍임·오라·제목 색, 생략 = 속성 색) · shake(none/light/heavy) · slowMo(착탄 느린 화면, 기본 켜기) · kicker(제목 위 작은 글). 컷인은 참가자 흉상이 양쪽에서 엇갈리고, 참가자별 빛 → 합쳐진 마무리 → 제목 카드 → 피해 숫자 폭발 순. 전역 세기는 set_project_settings battle.staging",
+        properties: {
+          tint: { type: "string" },
+          shake: { type: "string", enum: ["none", "light", "heavy"] },
+          slowMo: { type: "boolean" },
+          kicker: { type: "string" },
+        },
+        additionalProperties: false,
+      },
     },
     required: ["id"],
     additionalProperties: false,
@@ -161,6 +173,7 @@ const upsertComboTech: ToolDefinition = {
     if (typeof args.gaugeShift === "number") skill.gaugeShift = args.gaugeShift;
     if (typeof args.choreographyId === "string") skill.retroChoreographyId = args.choreographyId;
     if (typeof args.switchId === "string") skill.comboSwitchId = args.switchId;
+    if (args.staging !== undefined) skill.comboStaging = args.staging;
     if (!existing) {
       skill.type = "normal";
       skill.successRate = 100;

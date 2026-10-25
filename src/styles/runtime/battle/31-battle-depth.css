@@ -114,9 +114,9 @@
 /* 참가자 발밑 빛 고리 + 솟는 별빛. */
 .battle-scene .battle-combo-aura {
   animation: battle-combo-aura var(--combo-member-ms, 1300ms) ease-out var(--combo-delay, 0ms) both;
-  border: 3px solid rgb(255 220 120);
+  border: 3px solid var(--aura-tint, rgb(255 220 120));
   border-radius: 50%;
-  box-shadow: 0 0 12px rgb(255 200 90), inset 0 0 10px rgb(255 230 150 / 0.7);
+  box-shadow: 0 0 12px var(--aura-tint, rgb(255 200 90)), inset 0 0 10px color-mix(in srgb, var(--aura-tint, rgb(255 230 150)) 70%, transparent);
   height: calc(var(--aura-w) * 0.38);
   pointer-events: none;
   position: absolute;
@@ -126,10 +126,10 @@
 }
 .battle-scene .battle-combo-aura i {
   animation: battle-combo-mote 1000ms ease-out calc(var(--combo-delay, 0ms) + var(--mote-i) * 90ms) both;
-  background: rgb(255 240 170);
-  box-shadow: 0 0 6px rgb(255 214 110);
+  background: color-mix(in srgb, var(--aura-tint, rgb(255 240 170)) 45%, white);
+  box-shadow: 0 0 6px var(--aura-tint, rgb(255 214 110));
   height: 4px;
-  left: calc(10% + var(--mote-i) * 15%);
+  left: calc(6% + var(--mote-i) * 9%);
   position: absolute;
   top: 40%;
   width: 4px;
@@ -287,4 +287,332 @@
   0%, 100% { filter: drop-shadow(0 0 2px rgb(255 214 110 / 0.5)); }
   50% { filter: drop-shadow(0 0 7px rgb(255 214 110)) brightness(1.15); }
 }
+@media (prefers-reduced-motion: reduce) { .battle-scene :is(.battle-combo-faces-lines, .battle-combo-finisher, .battle-combo-number) { display: none; } }
 @media (prefers-reduced-motion: reduce) { .battle-scene [data-combo-held="true"] { animation: none; filter: drop-shadow(0 0 4px rgb(255 214 110)); } }
+
+/* ── 한 줄 기술 도움말(fs-battle-3) — 질문 줄 「카엘은 무엇을 할까?」 자리에 「MP6 · 적 전체 · 냉기 · 둔화」 ── */
+.battle-scene .battle-message-window[data-skill-hint="true"] .battle-message-line:not(.battle-message-hint) { display: none !important; }
+.battle-scene .battle-message-window .battle-message-hint {
+  color: rgb(190 238 170);
+  display: block !important;
+  font-variant-numeric: tabular-nums;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.battle-scene .battle-message-window .battle-message-hint[data-inert="true"] { color: rgb(255 170 160); }
+
+
+/* ── 연계기 얼굴 교차 컷인(fs-battle-3) — 참가자 흉상이 기운 판에 실려 양쪽에서 들어와 엇갈리고, 제목 카드가 튀어나온다 ── */
+.battle-scene .battle-combo-faces { inset: 0; overflow: hidden; pointer-events: none; position: absolute; z-index: 60; }
+.battle-scene .battle-combo-faces-dim {
+  animation: battle-combo-faces-dim var(--combo-ms, 1650ms) ease both;
+  background: radial-gradient(ellipse at 50% 50%, color-mix(in srgb, var(--combo-tint) 22%, rgb(14 8 34 / 0.6)), rgb(0 0 0 / 0.88) 80%);
+  inset: 0;
+  position: absolute;
+}
+@keyframes battle-combo-faces-dim { 0% { opacity: 0; } 8% { opacity: 1; } 84% { opacity: 1; } 100% { opacity: 0; } }
+.battle-scene .battle-combo-faces-lines { inset: 0; position: absolute; }
+.battle-scene .battle-combo-faces-lines i {
+  animation: battle-combo-faces-line 380ms linear var(--line-d) infinite;
+  background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--combo-tint) 70%, white), white, transparent);
+  height: 2px;
+  left: -40%;
+  opacity: 0;
+  position: absolute;
+  rotate: -14deg;
+  top: var(--line-y);
+  width: 55%;
+}
+.battle-scene .battle-combo-faces-lines i:nth-child(odd) { animation-direction: reverse; height: 3px; }
+@keyframes battle-combo-faces-line { 0% { opacity: 0; translate: 0 0; } 25% { opacity: 0.85; } 100% { opacity: 0; translate: 300% 0; } }
+.battle-scene .battle-combo-face {
+  --face-h: 58%;
+  animation: battle-combo-face-left var(--combo-ms, 1650ms) cubic-bezier(0.2, 0.8, 0.3, 1) both;
+  background:
+    linear-gradient(180deg, transparent 55%, rgb(0 0 0 / 0.55)),
+    linear-gradient(120deg, color-mix(in srgb, var(--member-tint) 85%, black), rgb(18 12 40) 70%);
+  clip-path: polygon(16% 0, 100% 0, 84% 100%, 0 100%);
+  height: var(--face-h);
+  position: absolute;
+  width: 64%;
+}
+.battle-scene .battle-combo-face::before {
+  /* 판 가장자리 빛 — clip-path 안쪽 테두리. */
+  background: linear-gradient(120deg, white, var(--member-tint));
+  clip-path: polygon(16% 0, 100% 0, 84% 100%, 0 100%, 0 calc(100% - 4px), calc(84% - 2px) calc(100% - 4px), calc(100% - 5px) 4px, calc(16% + 2px) 4px, 4px calc(100% - 4px), 0 100%);
+  content: "";
+  inset: 0;
+  opacity: 0.95;
+  position: absolute;
+  z-index: 2;
+}
+.battle-scene .battle-combo-face[data-from="left"] { left: 0; }
+.battle-scene .battle-combo-face[data-from="right"] { animation-name: battle-combo-face-right; right: 0; }
+.battle-scene .battle-combo-faces[data-members="2"] .battle-combo-face[data-slot="0"] { top: 6%; }
+.battle-scene .battle-combo-faces[data-members="2"] .battle-combo-face[data-slot="1"] { top: 36%; z-index: 1; }
+.battle-scene .battle-combo-faces[data-members="3"] .battle-combo-face { --face-h: 40%; }
+.battle-scene .battle-combo-faces[data-members="3"] .battle-combo-face[data-slot="0"] { top: 2%; }
+.battle-scene .battle-combo-faces[data-members="3"] .battle-combo-face[data-slot="1"] { top: 30%; z-index: 1; }
+.battle-scene .battle-combo-faces[data-members="3"] .battle-combo-face[data-slot="2"] { top: 58%; z-index: 2; }
+.battle-scene .battle-combo-faces[data-members="3"] .battle-combo-face[data-slot="2"] { animation-delay: 70ms; }
+.battle-scene .battle-combo-faces[data-members="3"] .battle-combo-face[data-slot="1"] { animation-delay: 35ms; }
+/* 들어옴(0~22%) → 서로를 향해 천천히 밀며 겹침(22~74%) → 서로를 지나쳐 반대편으로 빠짐(74~100%). */
+@keyframes battle-combo-face-left {
+  0% { opacity: 0; translate: -115% 0; }
+  12% { opacity: 1; }
+  22% { translate: -6% 0; }
+  74% { translate: 10% 0; }
+  100% { opacity: 1; translate: 140% 0; }
+}
+@keyframes battle-combo-face-right {
+  0% { opacity: 0; translate: 115% 0; }
+  12% { opacity: 1; }
+  22% { translate: 6% 0; }
+  74% { translate: -10% 0; }
+  100% { opacity: 1; translate: -140% 0; }
+}
+.battle-scene .battle-combo-face-art {
+  background-position: center 18%;
+  background-repeat: no-repeat;
+  background-size: auto 150%;
+  image-rendering: pixelated;
+  inset: 0;
+  position: absolute;
+}
+.battle-scene .battle-combo-face[data-from="left"] .battle-combo-face-art { background-position: 62% 18%; }
+.battle-scene .battle-combo-face[data-from="right"] .battle-combo-face-art { background-position: 38% 18%; transform: scaleX(-1); }
+.battle-scene .battle-combo-face-art[data-kind="face"] { background-position: center 40%; background-size: auto 92%; }
+.battle-scene .battle-combo-face-name {
+  bottom: 8%;
+  color: white;
+  font-size: 18px;
+  font-weight: 900;
+  left: 20%;
+  letter-spacing: 1px;
+  position: absolute;
+  text-shadow: 0 0 6px var(--member-tint), 2px 2px 0 rgb(0 0 0 / 0.8);
+  z-index: 3;
+}
+.battle-scene .battle-combo-face[data-from="right"] .battle-combo-face-name { left: auto; right: 20%; }
+.battle-scene .battle-combo-faces-slash {
+  animation: battle-combo-faces-slash var(--combo-ms, 1650ms) ease-out both;
+  background: linear-gradient(90deg, transparent, white 45%, color-mix(in srgb, var(--combo-tint) 60%, white) 55%, transparent);
+  box-shadow: 0 0 18px var(--combo-tint);
+  height: 6px;
+  left: -10%;
+  position: absolute;
+  rotate: -24deg;
+  top: 50%;
+  width: 120%;
+  z-index: 4;
+}
+@keyframes battle-combo-faces-slash { 0%, 18% { opacity: 0; scale: 0 1; } 26% { opacity: 1; scale: 1 1; } 40% { opacity: 0.8; scale: 1 0.5; } 60%, 100% { opacity: 0; scale: 1 0.2; } }
+.battle-scene .battle-combo-title {
+  align-items: center;
+  animation: battle-combo-title var(--combo-ms, 1650ms) cubic-bezier(0.2, 1.4, 0.4, 1) both;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  background: linear-gradient(90deg, transparent, rgb(6 4 18 / 0.82) 14%, rgb(6 4 18 / 0.82) 86%, transparent);
+  left: 50%;
+  padding: 6px 70px 8px;
+  position: absolute;
+  top: 50%;
+  translate: -50% -50%;
+  z-index: 5;
+}
+.battle-scene .battle-combo-title-kicker {
+  background: color-mix(in srgb, var(--combo-tint) 85%, black);
+  color: white;
+  font-size: 14px;
+  font-weight: 900;
+  letter-spacing: 6px;
+  padding: 2px 14px 2px 20px;
+  text-shadow: 1px 1px 0 rgb(0 0 0 / 0.6);
+}
+.battle-scene .battle-combo-title-name {
+  color: white;
+  font-size: 46px;
+  font-weight: 900;
+  letter-spacing: 3px;
+  -webkit-text-stroke: 1px rgb(0 0 0 / 0.6);
+  text-shadow: 0 0 10px var(--combo-tint), 0 0 26px color-mix(in srgb, var(--combo-tint) 60%, transparent), 3px 3px 0 rgb(0 0 0 / 0.85);
+  white-space: nowrap;
+}
+@keyframes battle-combo-title {
+  0%, 36% { opacity: 0; scale: 2.6; }
+  46% { opacity: 1; scale: 0.92; }
+  52% { scale: 1.04; }
+  58% { scale: 1; }
+  88% { opacity: 1; scale: 1.02; }
+  100% { opacity: 0; scale: 1.25; }
+}
+.battle-scene .battle-combo-faces[data-fx="simple"] .battle-combo-faces-lines,
+.battle-scene .battle-combo-faces[data-fx="simple"] .battle-combo-faces-slash { display: none; }
+@media (max-width: 640px), (max-height: 460px) {
+  .battle-scene .battle-combo-title-name { font-size: 30px; }
+  .battle-scene .battle-combo-title-kicker { font-size: 11px; letter-spacing: 4px; }
+  .battle-scene .battle-combo-face-name { font-size: 14px; }
+}
+
+/* 시작·착탄 번쩍임: 씬 전체. 착탄은 흰빛 → 연계기 색. */
+.battle-scene > .battle-combo-flash { z-index: 70; }
+.battle-scene .battle-combo-flash-impact {
+  animation: battle-combo-flash-impact 560ms ease-out both;
+  background: radial-gradient(circle at 35% 50%, white, color-mix(in srgb, var(--combo-tint, #ffd76a) 70%, white) 40%, color-mix(in srgb, var(--combo-tint, #ffd76a) 30%, transparent) 75%);
+}
+@keyframes battle-combo-flash-impact { 0% { opacity: 1; } 30% { opacity: 0.9; } 100% { opacity: 0; } }
+
+/* 무대 확대 — 컷인 동안 들어가고 착탄 뒤 돌아온다(scale 만 쓴다: 도트 연출의 transform·translate 와 겹치지 않게). */
+.battle-scene .battle-field.battle-combo-zoom { animation: battle-combo-zoom var(--combo-zoom-ms, 2500ms) ease-in-out both; }
+@keyframes battle-combo-zoom { 0% { scale: 1; } 55% { scale: 1.07; } 72% { scale: 1.1; } 100% { scale: 1; } }
+/* 착탄 흔들림 — 무대만. */
+.battle-scene.battle-combo-shake-light .battle-field { animation: battle-combo-shake-light 420ms linear both; }
+.battle-scene.battle-combo-shake-heavy .battle-field { animation: battle-combo-shake-heavy 540ms linear both; }
+.battle-scene.battle-combo-shake-light .battle-field.battle-combo-zoom { animation: battle-combo-zoom var(--combo-zoom-ms, 2500ms) ease-in-out both, battle-combo-shake-light 420ms linear both; }
+.battle-scene.battle-combo-shake-heavy .battle-field.battle-combo-zoom { animation: battle-combo-zoom var(--combo-zoom-ms, 2500ms) ease-in-out both, battle-combo-shake-heavy 540ms linear both; }
+@keyframes battle-combo-shake-light { 0%, 100% { translate: 0 0; } 20% { translate: -5px 2px; } 40% { translate: 4px -3px; } 60% { translate: -3px 2px; } 80% { translate: 2px -1px; } }
+@keyframes battle-combo-shake-heavy { 0%, 100% { translate: 0 0; } 10% { translate: -12px 5px; } 25% { translate: 10px -7px; } 40% { translate: -8px 6px; } 55% { translate: 7px -4px; } 70% { translate: -4px 3px; } 85% { translate: 2px -2px; } }
+
+/* 합쳐진 마무리 — 참가자 색 고리가 모여 한 점 → 큰 고리 두 겹 + 파편. */
+.battle-scene .battle-combo-finisher { height: 0; pointer-events: none; position: absolute; width: 0; z-index: 45; }
+.battle-scene .battle-combo-finisher-gather {
+  animation: battle-combo-gather calc(var(--finisher-ms, 900ms) * 0.35) ease-in both;
+  border: 3px solid var(--member-tint);
+  border-radius: 50%;
+  box-shadow: 0 0 10px var(--member-tint);
+  height: 26px;
+  left: -13px;
+  position: absolute;
+  rotate: var(--gather-angle);
+  top: -13px;
+  transform-origin: 13px 13px;
+  width: 26px;
+}
+@keyframes battle-combo-gather { 0% { opacity: 0; translate: 0 -70px; } 30% { opacity: 1; } 100% { opacity: 0.2; translate: 0 0; } }
+.battle-scene .battle-combo-finisher-core {
+  animation: battle-combo-core var(--finisher-ms, 900ms) ease-out both;
+  background: radial-gradient(circle, white 0 30%, var(--combo-tint) 55%, transparent 72%);
+  border-radius: 50%;
+  height: 120px;
+  left: -60px;
+  position: absolute;
+  top: -60px;
+  width: 120px;
+}
+@keyframes battle-combo-core { 0%, 25% { opacity: 0; scale: 0.1; } 38% { opacity: 1; scale: 1.2; } 100% { opacity: 0; scale: 1.8; } }
+.battle-scene .battle-combo-finisher-ring {
+  animation: battle-combo-ring var(--finisher-ms, 900ms) ease-out both;
+  border: 5px solid color-mix(in srgb, var(--combo-tint) 60%, white);
+  border-radius: 50%;
+  box-shadow: 0 0 16px var(--combo-tint), inset 0 0 12px var(--combo-tint);
+  height: 60px;
+  left: -30px;
+  position: absolute;
+  top: -30px;
+  width: 60px;
+}
+.battle-scene .battle-combo-finisher-ring-2 { animation-delay: 120ms; border-width: 3px; }
+@keyframes battle-combo-ring { 0%, 28% { opacity: 0; scale: 0.2; } 40% { opacity: 1; } 100% { opacity: 0; scale: 4.2; } }
+.battle-scene .battle-combo-finisher i {
+  animation: battle-combo-shard var(--finisher-ms, 900ms) cubic-bezier(0.1, 0.8, 0.3, 1) both;
+  background: linear-gradient(90deg, white, var(--shard-tint));
+  box-shadow: 0 0 6px var(--shard-tint);
+  height: 3px;
+  left: 0;
+  position: absolute;
+  rotate: var(--shard-a);
+  top: 0;
+  transform-origin: 0 50%;
+  width: 18px;
+}
+@keyframes battle-combo-shard { 0%, 30% { opacity: 0; translate: 0 0; } 40% { opacity: 1; } 100% { opacity: 0; translate: var(--shard-d) 0; } }
+
+/* 피해 숫자 폭발 — 큰 숫자가 튀어 오르고 방사 파편. */
+.battle-scene .battle-combo-number { height: 0; pointer-events: none; position: absolute; width: 0; z-index: 46; }
+.battle-scene .battle-combo-number-value {
+  animation: battle-combo-number var(--number-ms, 950ms) cubic-bezier(0.2, 1.5, 0.4, 1) both;
+  color: white;
+  font-size: 34px;
+  font-variant-numeric: tabular-nums;
+  font-weight: 900;
+  left: 0;
+  position: absolute;
+  -webkit-text-stroke: 2px color-mix(in srgb, var(--combo-tint) 60%, black);
+  text-shadow: 0 0 10px var(--combo-tint), 3px 3px 0 rgb(0 0 0 / 0.7);
+  top: 0;
+  translate: calc(-50% + var(--number-dx, 0px)) calc(-120% + var(--number-dy, 0px));
+  white-space: nowrap;
+}
+.battle-scene .battle-combo-number[data-critical="true"] .battle-combo-number-value { color: rgb(255 236 140); font-size: 40px; }
+@keyframes battle-combo-number {
+  0% { opacity: 0; scale: 0.2; }
+  18% { opacity: 1; scale: 1.45; }
+  30% { scale: 1; }
+  80% { opacity: 1; }
+  100% { opacity: 0; scale: 1; translate: calc(-50% + var(--number-dx, 0px)) calc(-190% + var(--number-dy, 0px)); }
+}
+.battle-scene .battle-combo-number i {
+  animation: battle-combo-shard 700ms cubic-bezier(0.1, 0.8, 0.3, 1) both;
+  --shard-d: 54px;
+  background: linear-gradient(90deg, white, var(--combo-tint));
+  height: 2px;
+  left: 0;
+  position: absolute;
+  rotate: var(--shard-a);
+  top: -20px;
+  transform-origin: 0 50%;
+  width: 12px;
+}
+
+/* ── 약점 발견(2026-10-25) — 처음 알아낸 타격의 꼬리표는 크게, 대상 고르기에서는 알아낸 것만 작은 칩 ───────── */
+.battle-scene .battle-damage-popup-tag[data-weakness-discovered="true"] {
+  font-size: 1.25em;
+  letter-spacing: 0.02em;
+  padding: 1px 5px;
+  border-radius: 3px;
+  background: rgb(20 16 40 / 0.78);
+  box-shadow: 0 0 0 1px currentColor, 0 0 10px currentColor;
+  animation: battle-weakness-found 900ms ease-out both;
+}
+@keyframes battle-weakness-found {
+  0% { transform: scale(0.4); opacity: 0; }
+  25% { transform: scale(1.35); opacity: 1; }
+  45% { transform: scale(0.95); }
+  60%, 100% { transform: scale(1); opacity: 1; }
+}
+.battle-scene .battle-enemy .battle-weakness-reveal {
+  position: absolute;
+  left: 50%;
+  top: -2px;
+  transform: translateX(-50%);
+  z-index: 6;
+  pointer-events: none;
+  padding: 0 4px;
+  border-radius: 3px;
+  font-size: 12px;
+  line-height: 16px;
+  white-space: nowrap;
+  color: #ffd23f;
+  background: rgb(20 16 40 / 0.82);
+  box-shadow: 0 0 0 1px currentColor;
+}
+.battle-scene .battle-enemy[data-weakness-reveal="resist"] .battle-weakness-reveal { color: #a9c4d8; }
+.battle-scene .battle-enemy[data-weakness-reveal="immune"] .battle-weakness-reveal { color: #c0c0c0; }
+@media (prefers-reduced-motion: reduce) {
+  .battle-scene .battle-damage-popup-tag[data-weakness-discovered="true"] { animation: none; }
+}
+.battle-scene .battle-weakness-row {
+  margin-left: 10px;
+  padding: 0 5px;
+  border-radius: 3px;
+  font-size: 0.8em;
+  line-height: 1.35;
+  color: #ffd23f;
+  box-shadow: inset 0 0 0 1px currentColor;
+  vertical-align: middle;
+  white-space: nowrap;
+}
+.battle-scene .battle-weakness-row[data-reveal="resist"] { color: #a9c4d8; }
+.battle-scene .battle-weakness-row[data-reveal="immune"] { color: #c0c0c0; }

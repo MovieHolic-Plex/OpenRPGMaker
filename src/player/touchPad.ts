@@ -11,7 +11,7 @@
 // 않아 영향이 0 이다.
 
 import { el } from "@/util/dom";
-import { getPlayerPreferences, updatePlayerPreferences } from "@/player/playerPreferences";
+import { getPlayerPreferences, playerAlwaysRun, updatePlayerPreferences } from "@/player/playerPreferences";
 import { DEFAULT_TOUCH_CONTROLS, type ResolvedTouchControls } from "@/project/touchControls";
 
 export interface TouchPadHandle {
@@ -19,6 +19,8 @@ export interface TouchPadHandle {
 }
 
 const DIRECTION_KEYS = ["ArrowRight", "ArrowLeft", "ArrowDown", "ArrowUp"] as const;
+/** 달리기 키(데스크톱 Shift 와 같은 길 — input.ts 의 dashKey). */
+const RUN_KEY = "Shift";
 
 // 8방향 구역(화면 좌표: y 아래가 +). 2026-10-24 모바일 조작감: 예전에는 축마다 0.35 문턱이라 대각선이 구역의 54%(20.5°~69.5°)를
 // 차지했다 — 「오른쪽」으로 밀었는데 엄지가 25°만 기울어도 대각선으로 걸어 칸 게임에서 지그재그·벽 미끄럼이 났다.
@@ -39,6 +41,19 @@ const SECTOR_HYSTERESIS = 8;
 /** 중립 → 방향은 이 거리(px)를 넘어야, 방향 → 중립은 HOLD 아래로 내려와야. */
 export const STICK_DEADZONE = 12;
 const STICK_DEADZONE_HOLD = 8;
+
+/**
+ * 조이스틱을 판 반지름의 70% 넘게 밀면 달리고, 60% 밑으로 돌아오면 다시 걷는다(2026-10-25 — 따로 달리기 단추 대신).
+ * 크로노 트리거 모바일(판 끝까지 밀면 달리기)·아날로그 스틱 관례와 같다. 「항상 달리기」 옵션이 켜져 있으면 늘 달린다.
+ */
+export const STICK_RUN_ENTER = 0.7;
+const STICK_RUN_EXIT = 0.6;
+
+/** 이 밀림(중심에서 px)이면 달리는가. radius 는 판 반지름(px). wasRunning 으로 경계 떨림을 막는다. */
+export function stickRuns(distance: number, radius: number, wasRunning: boolean): boolean {
+  if (!(radius > 0)) return false;
+  return distance >= radius * (wasRunning ? STICK_RUN_EXIT : STICK_RUN_ENTER);
+}
 
 function angleGap(a: number, b: number): number {
   const d = Math.abs(a - b) % 360;
@@ -198,6 +213,7 @@ export function createTouchPad(host: HTMLElement, options?: TouchPadOptions): To
   };
   const releaseDirectionKeys = (): void => {
     for (const key of DIRECTION_KEYS) setKeyHeld(key, false);
+    setKeyHeld(RUN_KEY, false);
   };
 
   // ── 조이스틱(왼쪽) ──
@@ -244,9 +260,19 @@ export function createTouchPad(host: HTMLElement, options?: TouchPadOptions): To
     const held = stickSectorKeys(sector);
     for (const key of DIRECTION_KEYS) if (!held.includes(key)) setKeyHeld(key, false);
     for (const key of held) setKeyHeld(key, true);
+    // 끝까지 밀면 달린다(Shift 를 누른 것과 같다). 「항상 달리기」면 Shift 가 걷기로 뒤집으니 보내지 않는다.
+    const radius = Math.min(base.offsetWidth, base.offsetHeight) / 2;
+    const runs = sector !== null && !playerAlwaysRun() && stickRuns(distance, radius, heldKeys.has(RUN_KEY));
+    if (runs !== heldKeys.has(RUN_KEY)) {
+      if (runs) haptic(6);
+      setKeyHeld(RUN_KEY, runs);
+    }
+    if (runs) zone.dataset.run = "true";
+    else delete zone.dataset.run;
     // knob 시각 이동(반경 제한).
     const maxTravel = safeKnobTravel(base, knob);
-    const visualTravel = Math.min(distance, maxTravel);
+    // 손잡이는 달리기 고리(반지름 70%)를 넘어갈 만큼 움직인다 — 손잡이가 고리 밖에 있으면 달리는 중이다.
+    const visualTravel = Math.min(distance, Math.max(maxTravel, (Math.min(base.offsetWidth, base.offsetHeight) / 2) * 0.78));
     knob.style.transform = `translate(${unitX * visualTravel}px, ${unitY * visualTravel}px)`;
     // 손가락이 반경 밖으로 멀리 끌면 조이스틱 중심이 따라온다(엄지가 미끄러져도 방향이 살아 있다).
     if (center && !anchored && maxTravel > 0 && distance > maxTravel * 1.6) {
@@ -276,6 +302,7 @@ export function createTouchPad(host: HTMLElement, options?: TouchPadOptions): To
     dpad.style.removeProperty("top");
     delete dpad.dataset.floating;
     delete zone.dataset.active;
+    delete zone.dataset.run;
     center = null;
     sector = null;
     anchored = false;

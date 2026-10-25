@@ -16,6 +16,7 @@ import { builtinGeneratedResourceIds } from "./generatedAssetResourceResolver";
 import { GENERATED_ASSET_PLAN } from "./oprnGeneratedAssetPlan";
 import { moodTagsForAsset } from "./resourceMoodTags";
 import { SE_CATALOG } from "./seCatalog";
+import { readStoreMusicMeta, storeMusicDescription, storeMusicTags } from "./storeMusicMeta";
 
 export function isCatalogBgmAvailable(resourceId: string): boolean {
   const bgm = findBgmRuntimeEntry(resourceId);
@@ -26,7 +27,7 @@ export type AudioResourceProject = {
   readonly audioDescriptions?: AudioDescriptionOverrides;
   readonly resourceProfiles: readonly Pick<ResourceProfile, "kind" | "name" | "assetId">[];
   readonly assets: {
-    readonly uploaded: Readonly<Record<string, Pick<UploadedAsset, "kind" | "name">>>;
+    readonly uploaded: Readonly<Record<string, Pick<UploadedAsset, "kind" | "name"> & { readonly meta?: UploadedAsset["meta"] }>>;
   };
 };
 
@@ -150,7 +151,11 @@ export function listAudioResources(
   }
   for (const [id, uploaded] of Object.entries(project.assets.uploaded)) {
     // Unlike legacy prefix inference, an upload's explicit kind is authoritative.
-    if (uploaded.kind === kind) add(id, uploaded.name);
+    if (uploaded.kind !== kind) continue;
+    // 스토어 음악 팩은 곡마다 들어 보고 적은 장면·분위기를 싣는다(storeMusicMeta.ts).
+    const music = kind === "music" ? readStoreMusicMeta(uploaded.meta) : null;
+    if (music) add(id, uploaded.name, { tags: storeMusicTags(music), description: storeMusicDescription(music), descriptionSource: "ai-listening" });
+    else add(id, uploaded.name);
   }
 
   return [...resources.values()].map(resource => {

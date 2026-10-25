@@ -8,6 +8,7 @@ import { animateRetroSkillFx, battleEntrySkillRecord, clearRetroSkillFx, driveRe
 import { CAST_TYPES, EXTENDED_POSE_FRAME, castTypeForSkill, type CastType, type ExtendedBattlerPose } from "@/battle/battlePose";
 import type { PartyPixelCell, PixelEnemyCell, RetroMonsterCell } from "@/assets/pixelEnemySheets";
 import { store } from "@/project/store";
+import { enemyLungeOwnFactor, pixelEnemyLungeProfile, resolveBattleStaging } from "@/project/battleStaging";
 import { retroRosterClass } from "@/assets/retroRoster";
 import type { BattleTimelineEntrySnapshot } from "@/battle/types";
 import type { BattleSnapshot } from "@/battle/runtime";
@@ -881,20 +882,26 @@ function measureEnemyReach(field: HTMLElement, entry: BattleTimelineEntrySnapsho
   const clamp = (value: number, min: number, max: number) => Math.round(Math.max(min, Math.min(max, value)));
   // 사람 적(걷기 칩)은 아군 배우처럼 걷는다 — 아군 근접 걸음(approachMsFor walk · RETURN_PX_PER_MS)과 같은 박자.
   // 도트 괴물 속도(0.3px/ms + 정지)를 쓰면 같은 사람 몸이 아군보다 두 배 느리게 다가가 「굼뜬 보스」로 읽혔다(2026-10-24).
+  // 2026-10-25 「늑대가 고블린보다 느리네 — 빠른 것을 기준으로」: 전역 system.battleStaging.enemyLunge(기본 fast) +
+  // 적 하나의 lungeSpeedPercent. fast 에선 짐승(dash)이 사람 적보다 늘 빠르다(pixelEnemyLungeProfile).
+  const project = store.getCurrent();
+  const lunge = resolveBattleStaging(project.system.battleStaging).enemyLunge;
+  const own = enemyLungeOwnFactor(project.database.enemies.find((record) => record.id === (entry.userRecordId ?? user.dataset.recordId))?.lungeSpeedPercent);
   if (charset) {
     return {
       dx,
       dy,
-      approachMs: approachMsFor("dash", distance),
-      recoverMs: clamp(distance / RETURN_PX_PER_MS, 280, 480),
+      approachMs: Math.round(approachMsFor("dash", distance) / own),
+      recoverMs: Math.round(clamp(distance / RETURN_PX_PER_MS, 280, 480) / Math.sqrt(own)),
     };
   }
-  const speed = motion === "dash" ? 0.65 : motion === "stomp" ? 0.34 : hovering ? 0.42 : 0.3;
+  const profile = pixelEnemyLungeProfile(lunge, motion);
+  const recoverScale = lunge === "classic" ? 1 : lunge === "normal" ? 0.8 : 0.65;
   return {
     dx,
     dy,
-    approachMs: ENEMY_HOLD_MS + clamp(distance / speed, motion === "stomp" ? 440 : 300, 900),
-    recoverMs: clamp(160 + distance / (motion === "stomp" ? 0.38 : motion === "dash" ? 0.7 : 0.42), 420, 900),
+    approachMs: Math.round((profile.holdMs + clamp(distance / profile.pxPerMs, profile.minMs, profile.maxMs)) / own),
+    recoverMs: Math.round(clamp(160 + distance / (motion === "stomp" ? 0.38 : motion === "dash" ? 0.7 : 0.42), 420, 900) * recoverScale / Math.sqrt(own)),
   };
 }
 
@@ -928,7 +935,9 @@ function animatePixelEnemyBeat(node: HTMLElement, beat: BattleActionBeat): void 
       cues.push([0, motion === "breath" ? "enemy-breath" : "enemy-shoot"]);
     } else cells = [[0, "recover"], [0.8, "idle_b"]];
   } else if (melee && beat.kind === "approach") {
-    const hold = Math.min(0.45, ENEMY_HOLD_MS / Math.max(1, length));
+    // 멈춤 길이는 모드(system.battleStaging.enemyLunge)를 따른다 — fast 면 90ms(거구 170ms), classic 이면 예전 260ms.
+    const holdMs = pixelEnemyLungeProfile(resolveBattleStaging(store.getCurrent().system.battleStaging).enemyLunge, motion).holdMs;
+    const hold = Math.min(0.45, holdMs / Math.max(1, length));
     const travel = 1 - hold;
     if (motion === "stomp") {
       const first = hold + travel * 0.42;

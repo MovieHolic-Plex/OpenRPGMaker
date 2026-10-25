@@ -11,6 +11,7 @@ import { sectionCard } from "@/editor/panels/databaseWorkspace";
 import { store } from "@/project/store";
 import type { Project, SkillRecord } from "@/project/types";
 import { el } from "@/util/dom";
+import { comboTint, normalizeComboStaging, type ComboStaging } from "@/project/battleStaging";
 
 const NONE = "";
 
@@ -118,6 +119,29 @@ function techCard(project: Project, skill: SkillRecord, rerender: () => void): H
       }),
     ],
   });
+  // 연계기 연출(comboStaging) — 색·착탄 흔들림·느린 화면·제목 위 글. 전역 세기는 「전투 화면 › 전투 연출」.
+  const staging = skill.comboStaging ?? {};
+  const saveStaging = (patch: Partial<ComboStaging>): void => {
+    const next = normalizeComboStaging({ ...staging, ...patch });
+    updateDatabaseRecord("skills", skill.id, { comboStaging: next });
+    rerender();
+  };
+  const tintInput = el("input", { attrs: { type: "color", value: comboTint(skill) }, dataset: { testid: `db-combo-tint-${skill.id}` } }) as HTMLInputElement;
+  tintInput.addEventListener("change", () => saveStaging({ tint: tintInput.value }));
+  const stagingCard = sectionCard({
+    title: "컷인 · 착탄 연출",
+    hint: "얼굴 교차 → 참가자별 빛 → 합쳐진 마무리",
+    collapsible: true,
+    collapsed: true,
+    children: [
+      el("label", { class: "db-combo-tint", children: [el("span", { text: "색(번쩍임·오라·제목)" }), tintInput] }),
+      selectField("착탄 흔들림", `db-combo-shake-${skill.id}`, staging.shake ?? "", [
+        { id: "", name: "기본(트리플 강하게·듀얼 약하게)" }, { id: "none", name: "없음" }, { id: "light", name: "약하게" }, { id: "heavy", name: "강하게" },
+      ], (value) => saveStaging({ shake: (value || undefined) as ComboStaging["shake"] })),
+      toggleSwitch("착탄 순간 느린 화면", `db-combo-slowmo-${skill.id}`, staging.slowMo !== false, (checked) => saveStaging({ slowMo: checked ? undefined : false })),
+      textField("제목 위 작은 글", `db-combo-kicker-${skill.id}`, staging.kicker ?? "", (value) => saveStaging({ kicker: value || undefined })),
+    ],
+  });
   const choreography = sectionCard({
     title: "도트 연출",
     hint: "연계기답게 큰 연출을 고른다",
@@ -129,7 +153,7 @@ function techCard(project: Project, skill: SkillRecord, rerender: () => void): H
     title: skill.name,
     hint: skill.id,
     testid: `db-combo-tech-${skill.id}`,
-    children: [preview, members, body, choreography],
+    children: [preview, members, body, stagingCard, choreography],
   });
 }
 

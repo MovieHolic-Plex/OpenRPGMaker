@@ -83,22 +83,22 @@ export function buildFallenTownInteriors(project: Project, hubId: string, ids: {
       people: [
         {
           id: "ev_fs_inn_keeper", name: "여관 주인 마르타", query: "젊은 여성", chip: ["tex_easyrpg_charset_people1", 5], behindCounter: true,
-          lines: ["어서 와요, 카엘. 어젯밤 별똥별 봤어요? 손님들이 밤새 창가에 붙어 있었다니까.", "하룻밤 30골드. 푹 쉬고 가요."],
-          after: ["그 아이… 이리스라고 했죠? 방은 넉넉해요. 교단 사람들 눈에 안 띄게 안쪽 방을 써요.", "하룻밤 30골드. 푹 쉬고 가요."],
+          lines: ["어서 와요, 카엘. 어젯밤 별똥별 봤어요? 손님들이 밤새 창가에 붙어 있었다니까.", "하룻밤에 30골드예요. 푹 쉬고 가요."],
+          after: ["그 아이… 이리스라고 했죠? 방은 넉넉해요. 교단 사람들 눈에 안 띄게 안쪽 방을 써요.", "하룻밤에 30골드예요. 푹 쉬고 가요."],
           commands: [{ kind: "inn", price: 30 }],
         },
         {
           id: "ev_fs_inn_bard", name: "떠돌이 악사", query: "젊은 남성", chip: ["tex_easyrpg_charset_people2", 0],
           // 벽난로 앞 — 자동 자리는 짐을 쌓은 뒷광 통로 입구(30,10)에 서서 길을 막았다.
           at: { x: 27, y: 8 },
-          lines: ["별이 떨어진 밤의 노래를 짓는 중이오. 「북쪽 숲에 은빛 알이 내려앉았네」… 운이 안 맞는군."],
-          after: ["은빛 머리 아가씨라… 노래 속 별의 딸 같구려. 걱정 마시오, 교단 앞에선 이 노래 안 부르리다."],
+          lines: ["별이 떨어진 밤의 노래를 짓는 중이오.\n「북쪽 숲에 은빛 알이 내려앉았네」… 운이 안 맞는군."],
+          after: ["은빛 머리 아가씨라… 노래 속 별의 딸 같구려.\n걱정 마시오, 교단 앞에선 이 노래 안 부르리다."],
         },
         {
           id: "ev_fs_inn_guest", name: "길손", query: "중년 남성 주민", chip: ["tex_easyrpg_charset_people4", 3],
           at: { x: 14, y: 5 },
-          lines: ["북쪽 숲 위로 빛기둥이 솟는 걸 봤소. 새벽부터 교단 기사들이 성문을 지키더군."],
-          after: ["심문관 발렌이 숲으로 갔다지. 별에서 떨어진 걸 찾는 거라고들 하던데… 찾으면 어쩔 셈인지."],
+          lines: ["북쪽 숲 위로 빛기둥이 솟는 걸 봤소.\n새벽부터 교단 기사들이 성문을 지키더군."],
+          after: ["심문관 발렌이 숲으로 갔다더군.\n별에서 떨어진 걸 찾는다는데… 찾으면 어쩔 셈이오."],
         },
       ],
     },
@@ -118,7 +118,7 @@ export function buildFallenTownInteriors(project: Project, hubId: string, ids: {
       people: [
         {
           id: "ev_fs_apothecary", name: "약재상 오든", query: "노인 남성", chip: ["tex_easyrpg_charset_people5", 7], behindCounter: true,
-          lines: ["회복약이랑 약초는 여기서 사고팔지. 숲에 간다고? 요즘 늑대가 유난히 사나워."],
+          lines: ["회복약이랑 약초는 여기서 사고팔지.\n숲에 간다고? 요즘 늑대가 유난히 사나워."],
           after: ["심문관이 약방까지 와서 「하늘에서 떨어진 것」을 본 사람 없냐고 묻고 갔어. 난 아무것도 못 봤다고 했지."],
           commands: [{ kind: "shop", shopType: "normal", itemIds: shopItems, allowSell: true }],
         },
@@ -136,7 +136,7 @@ export function buildFallenTownInteriors(project: Project, hubId: string, ids: {
       people: [
         {
           id: "ev_fs_baker_husband", name: "빵집 아저씨 토마", query: "중년 남성 주민", chip: ["tex_easyrpg_charset_people1", 4], behindCounter: true, roam: ["bakery_oven"],
-          lines: ["아내는 광장에 나가 있어요. 별이 떨어진 밤엔 반죽이 안 부푼다던데… 미신이겠죠.", "그래도 오늘 새벽 반죽은 정말 안 부풀었어요."],
+          lines: ["아내는 광장에 나가 있어요. 별이 떨어진 밤엔 반죽이 안 부푼다던데… 미신이겠죠.", "설마 했는데 오늘 새벽엔\n반죽이 정말 안 부풀었어요."],
           after: ["기계 아가씨가 빵을 먹나요? …먹는 흉내라도 낸다면 하나 싸 줄게요."],
           commands: [{ kind: "shop", shopType: "normal", itemIds: fallenBakeryStock(project), allowSell: true }],
         },
@@ -191,8 +191,8 @@ export function buildFallenTownInteriors(project: Project, hubId: string, ids: {
       people: [
         {
           id: "ev_fs_lisa", name: "리사", query: "젊은 여성", chip: ["tex_easyrpg_charset_people3", 3], at: { x: 9, y: 14 }, roam: ["living", "kitchen"],
-          lines: ["심문관 발렌이 왔다면서요. 교단은 그 별을 「불경한 하늘의 물건」이라 부른대요.", "우리 애가 밤새 창밖만 보더라고요. 별이 노래를 부른다나요.", "…그리고 손님, 서랍이나 옷장은 건드리지 마세요. 집 안을 돌아다니다가도 눈이 마주치면 알아요, 나는."],
-          after: ["그 은빛 머리 아가씨, 숨기는 게 좋을 거예요. 심문관은 한 번 본 얼굴은 잊지 않는대요."],
+          lines: ["심문관 발렌이 왔다면서요.\n교단은 그 별을 「불경한 하늘의 물건」이라 부른대요.", "우리 애가 밤새 창밖만 보더라고요.\n별이 노래를 부른다나요.", "…그리고 손님, 남의 서랍이나 옷장은 손대지 마세요.\n집 안 어디에 있든 눈이 마주치면 다 알아요."],
+          after: ["그 은빛 머리 아가씨, 숨기는 게 좋을 거예요.\n심문관은 한 번 본 얼굴은 잊지 않는대요."],
         },
       ],
     },
@@ -392,7 +392,7 @@ export function buildFallenTownInteriors(project: Project, hubId: string, ids: {
   const LOCKED = [
     "문이 굳게 잠겨 있다. 안에서는 아무 대답이 없다.",
     "문이 잠겨 있다. 창틈으로 빵 굽는 냄새만 새어 나온다.",
-    "문이 잠겨 있다. 「교단 행렬이 지나갈 때까지 문을 열지 마시오」라는 쪽지가 붙어 있다.",
+    "문이 잠겨 있다.\n「교단 행렬이 지나갈 때까지 문을 열지 마시오」라는 쪽지가 붙어 있다.",
   ];
   const locked: Cell[] = [];
   // 도구를 부를 때마다 맵 객체가 새로 만들어진다 — 앞에서 잡은 hub 가 아니라 지금 맵에 단다.
@@ -572,25 +572,15 @@ function counterSpot(project: Project, map: GameMap, exit: Cell): { counter: Cel
 }
 
 /**
- * 집마다 수납(궤짝·여행 가방·통·자루·바구니)을 더 둔다 — 뒤지기 이벤트는 townLife.ts 가 가구 라벨로 자동으로 단다(주인 시야·경고 규칙 적용).
+ * 보상 자리에 수납(여행 가방·상자)을 하나씩 더 둔다 — 뒤지기 이벤트는 townLife.ts 가 가구 라벨로 자동으로 단다(주인 시야·경고 규칙 적용).
  * 방 배치가 바뀌어 바닥이 아닌 칸이면 아래 stamp 가드가 되돌리므로 후보를 넉넉히 적는다.
  */
 const EXTRA_STORAGE: Record<string, readonly (readonly [string, number, number])[]> = {
-  fs_lisa_home: [
-    ["chest", 17, 6], ["basket:herb", 11, 6], ["luggage trunk", 21, 6], ["chest", 2, 14], ["luggage trunk", 11, 14],
-    ["basket:herb", 15, 14], ["chest", 25, 14], ["luggage trunk", 27, 13], ["barrel", 7, 3],
-  ],
-  fs_stargazer_home: [
-    ["book pile", 2, 13], ["chest", 11, 13], ["chest", 20, 4], ["luggage trunk", 26, 4], ["chest", 24, 4],
-    ["crate", 11, 5], ["basket:herb", 15, 13], ["chest", 24, 13],
-  ],
-  fs_bakery_home: [
-    ["sack", 10, 4], ["sack", 11, 4], ["barrel", 15, 4], ["barrel", 23, 4], ["crate", 26, 4], ["sack", 24, 4],
-    ["barrel", 19, 4], ["chest", 2, 4], ["basket:loaf", 21, 12], ["sack", 3, 12],
-  ],
-  fs_apothecary: [["chest", 20, 5], ["basket:herb", 7, 6], ["luggage trunk", 3, 12], ["crate", 12, 4]],
-  fs_inn: [["barrel", 25, 4], ["crate", 27, 4], ["chest", 3, 4], ["luggage trunk", 5, 12], ["sack", 12, 4]],
-  fs_smithy: [["crate", 3, 4], ["barrel", 5, 4], ["chest", 10, 4], ["sack", 12, 6]],
+  // 방마다 수납 하나(사용자 2026-10-24 「상자가 너무 많다」) — 집 꾸밈에 없는 보상 자리만 더한다.
+  // 리사: 옷방 상자(60G) · 오스본: 침실 여행 가방(80G) · 여관: 지하 창고 상자(은수저 단서).
+  fs_lisa_home: [["chest", 25, 14]],
+  fs_stargazer_home: [["luggage trunk", 26, 4]],
+  fs_inn: [["chest", 3, 4]],
 };
 
 /**

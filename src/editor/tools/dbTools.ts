@@ -551,6 +551,7 @@ const stateRuntimeEffectsSchema = objectSchema({
   doomTurns: numberSchema("선고 1~9 — 걸린 뒤 자기 차례가 이만큼 오면 전투 불능. 상태를 풀면 멈춘다"),
   damageTypeRates: { ...damageTypeRatesSchema, description: "이 상태인 동안 받는 피해 계열 %를 적의 기본 damageTypeRates 대신 쓴다(갈아 끼움, 여러 상태면 큰 값). 예: 「관통상」 { magic: 300 } · 변신 기계 형태 { physical: 0, magic: 25, elements: { thunder: 200 } }(transformResourceId 와 함께)" },
   invertHealing: booleanSchema("좀비 — 이 상태인 동안 받는 HP 회복(회복 스킬·회복 아이템·재생)이 같은 양의 피해가 된다. 기본 상태 id state_zombie"),
+  maxTurns: integerSchema("최대 지속 1~9 — 걸린 뒤 자기 턴이 이만큼 지나면 회복 굴림과 상관없이 풀린다(「독은 최대 3턴」)"),
 });
 
 const heldEffectSchema = objectSchema({
@@ -617,6 +618,7 @@ const enemyRecordSchema = objectSchema({
   speciesId: stringSchema(),
   monsterResourceId: stringSchema(),
   battleScalePercent: integerSchema("전투 표시 크기(%). 10~300으로 제한, 기본 100."),
+  lungeSpeedPercent: integerSchema("도트 측면 전투에서 아군에게 달려드는 속도(%). 25~300, 기본 100. 늑대·맹수처럼 날랜 적 120~160, 굼뜬 거인 70~90. 전역 기본 세기는 set_project_settings battle.staging.enemyLunge"),
   collapseEffect: {
     type: "string",
     enum: ["dissolve", "pixelBreak", "bossSink", "flash", "instant"],
@@ -851,6 +853,15 @@ const skillRecordSchema = objectSchema({
     type: "string",
     description: "연계기가 발동하면 켜지는 스위치 id(전투 이벤트 페이지 조건·이후 이야기 분기). 없는 스위치는 자동 등록된다. 빈 문자열이면 해제",
   },
+  comboStaging: objectSchema(
+    {
+      tint: { type: "string", description: "번쩍임·오라·제목 색 #rrggbb(생략 = 속성 색)" },
+      shake: { type: "string", enum: ["none", "light", "heavy"], description: "착탄 흔들림(생략 = 트리플 heavy · 듀얼 light)" },
+      slowMo: booleanSchema("착탄 순간 느린 화면(생략 = 켜기)"),
+      kicker: { type: "string", description: "제목 카드 위 작은 글(예: 「듀얼 테크」). 생략 = 인원수로" },
+    },
+    "연계기 연출(컷인 얼굴 교차 → 참가자별 빛 → 합쳐진 마무리 → 제목 카드). 전역 세기는 set_project_settings battle.staging. 해제 = null",
+  ),
   comboMpCosts: {
     type: "array",
     description: "연계기 비용 나누기: [{actorId, mp}] — 참가자별 MP 고정 몫(주 시전자 4·보조 8 처럼). 목록에 없는 참가자는 mpCost 를 낸다. actorId 는 comboActorIds 안의 배우. 빈 배열이면 해제",
@@ -885,6 +896,7 @@ const skillRecordSchema = objectSchema({
   hpCostPercent: integerSchema(
     "시전 대가로 시전자가 최대 HP 의 N% 를 잃는다(0~100, 0=없음, HP 는 1 밑으로 안 내려감). 희생·폭발계 기술의 대가",
   ),
+  weaponAffinity: objectSchema({ elementIds: stringArraySchema("무기 계열(장비 attackElementIds — sword·spear·bow·gun·hit 등). 비우면 기술 자신의 elementId"), bonusPercent: integerSchema("그 계열 무기를 들고 쓰면 피해·회복 +%") }, "무기 공명: 「검을 들고 쓰면 위력 +20%」"),
   drainPercent: integerSchema(
     "준 피해의 N% 만큼 시전자가 회복(0~100, 0=없음, affects mp 면 MP). 흡수·흡혈계 기술. 피해를 주는 기술에만 의미가 있다",
   ),
@@ -975,6 +987,8 @@ const equipmentRecordSchema = objectSchema({
   stateDefenseIds: stringArraySchema(),
   stateDefenseMode: { type: "string", enum: ["resist", "inflict"] },
   stateResistanceChance: integerSchema(),
+  damageDealtPercent: integerSchema("주는 피해 ±% (-90~300, 물리·마법 공통). 30 = 피해 +30%. 여러 장비면 더한다"),
+  damageTakenPercent: integerSchema("받는 피해 ±% (-90~300). -20 = 받는 피해 20% 감소"),
   grantsSkillIds: stringArraySchema("장착 중에만 쓸 수 있는 스킬 id. 배우지 않아도 전투 스킬 목록에 뜬다"),
   apGrants: arrayOf(objectSchema({
     skillId: stringSchema("영구 습득할 스킬 id(먼저 upsert_skill 로 만든다)"),

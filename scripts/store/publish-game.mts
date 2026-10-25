@@ -3,9 +3,13 @@
  * 주소·토큰은 환경 변수로만 받는다(storePublish.mts). 플레이어는 먼저 `npm run build:player` 로 dist/export-player 에 만든다.
  *
  *   npm run -s store:publish-game -- --demo chrono-bell --dry
- *   npm run -s store:publish-game -- --demo chrono-bell --target staging [--major] [--changelog "…"] [--version 1.4]
+ *   npm run -s store:publish-game -- --demo chrono-bell --target staging [--major] [--changelog "…" | --changelog-file notes.txt] [--version 1.4]
+ * 바뀐 점은 여러 줄 글이다: 첫 줄 = 한 줄 제목, `+ ` 새 기능 · `~ ` 개선 · `! ` 버그 수정(openwiki/asset-store.md 「바뀐 점 쓰는 법」).
+ * --changelog 안의 글자 `\n` 은 줄바꿈으로 읽는다.
  *   STORE_LINK_TOKEN=… npm run -s store:publish-game -- --demo chrono-bell --target production --confirm <contentHash>
  *   npm run -s store:publish-game -- --rollback fallen-star@1.0 --target staging
+ * 제작자 목소리(스토어 「소식」 탭·판본 카드): 올릴 때 [--comment "…"] [--post-title "…" (--post-body "…" | --post-file post.md) [--post-pin]].
+ * 판본 없이 소식만: --news <slug> --post-title "…" --post-file post.md [--post-version 1.17] [--post-pin] [--comment "…" --comment-version 1.17].
  * 마지막 줄은 한 줄 JSON 결과다. 그림·BGM 이 이 체크아웃 public/ 에 없으면 OPRN_ASSET_ROOTS(콜론 구분)의 public 폴더에서 찾는다.
  */
 import { createHash } from "node:crypto";
@@ -107,6 +111,33 @@ if (rollback) {
   } finally { await closeSession(session); }
 }
 
+/** --post-title·--post-body/--post-file·--post-pin → 소식 글(없으면 null). 본문 안의 글자 `\n` 은 줄바꿈. */
+function postFromArgs(): { title: string; body: string; pinned: boolean } | null {
+  const title = arg("--post-title")?.trim();
+  if (!title) return null;
+  const file = arg("--post-file");
+  const body = file ? readFileSync(resolve(file), "utf8") : (arg("--post-body") ?? "").replace(/\\n/g, "\n");
+  return { title, body, pinned: process.argv.includes("--post-pin") };
+}
+const commentArg = arg("--comment")?.replace(/\\n/g, "\n").trim() ?? "";
+
+const news = arg("--news");
+if (news) {
+  const post = postFromArgs();
+  if (!post && !commentArg) out({ ok: false, error: "--news <slug> 에는 --post-title(+ --post-body|--post-file) 이나 --comment 가 필요합니다" }, 2);
+  if (target !== "staging" && target !== "production") out({ ok: false, error: "--target staging|production" }, 2);
+  const session = await openSession(target, requireTargetBase(target));
+  try {
+    const transport = sessionTransport(session);
+    const slug = encodeURIComponent(news);
+    const version = arg("--post-version") ?? null;
+    const made = post ? await transport.json("POST", `/api/v1/games/${slug}/posts`, { ...post, version }) : null;
+    const label = arg("--comment-version") ?? version ?? (await transport.json("GET", `/api/v1/games/${slug}`) as { currentVersion?: string }).currentVersion;
+    const comment = commentArg && label ? await transport.json("PUT", `/api/v1/games/${slug}/versions/${encodeURIComponent(label)}/comment`, { comment: commentArg }) : null;
+    out({ ok: true, target, action: "news", slug: news, post: made, comment });
+  } finally { await closeSession(session); }
+}
+
 // 무거운 모듈(데모 빌더·내보내기)은 되돌리기에는 필요 없다 — 여기서부터 읽는다.
 const { FLAGSHIP_DEMO_IDS, createFlagshipDemoProject } = await import("@/project/flagship");
 const { deserialize } = await import("@/project/io");
@@ -191,11 +222,13 @@ try {
       if (response.ok) previous = await response.json();
     }
     const changes = projectChangeSummary(previous as never, JSON.parse(built.projectJson));
-    const changelog = arg("--changelog") ?? changelogFromChanges(changes, mine.baseline?.version ?? null);
+    const changelogFile = arg("--changelog-file");
+    const changelog = (changelogFile ? readFileSync(resolve(changelogFile), "utf8").trim() : arg("--changelog")?.replace(/\\n/g, "\n")) ?? changelogFromChanges(changes, mine.baseline?.version ?? null);
     let lastLine = 0;
     const result = await publishStoreGame(transport, {
       projectKey, slug: demo.slug, meta, files, entry: built.entry, cover, art, changelog, changes,
       bump: process.argv.includes("--major") ? "major" : "minor", version: arg("--version") ?? null,
+      ...(commentArg ? { comment: commentArg } : {}), post: postFromArgs(),
     }, (progress) => {
       if (progress.phase === "upload" && (progress.done === progress.total || Date.now() - lastLine > 5000)) {
         lastLine = Date.now();

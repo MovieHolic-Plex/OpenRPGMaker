@@ -4,12 +4,13 @@ import { INTERIOR_CARD } from "./builders/interior";
 import { VILLAGE_CARD } from "./builders/village";
 import { DUNGEON_CARD } from "./builders/dungeon";
 import { JP_CITY_CARD } from "./builders/jpCity";
+import { MODERN_KR_CARD } from "./builders/modernCity";
 import { PEOPLE_CARD } from "./people";
 import { EVENT_CARD } from "./events";
 import { DRAW_OBJECT_CARD } from "./drawObject";
 import { MONSTER_TOWN_CARD } from "./builders/monsterTown";
 import { SCENE_CARD } from "./scene";
-import { GAME_CARD, TERRAIN_CARD, wantsGameTools, wantsTerrainTools } from "./game";
+import { GAME_CARD, TERRAIN_CARD, fallenTierCard, storeTierCard, wantsGameTools, wantsStoreTools, wantsTerrainTools } from "./game";
 import { MAKE_GAME_CARD, makeGameOn, wantsMakeGame } from "./makeGame";
 
 export const V2_CORE_PROMPT = [
@@ -25,7 +26,7 @@ export const V2_CORE_PROMPT = [
   "- 보고는 한국어 3~6줄: 지은 것(맵 이름), 검사 결과(통과/남은 문제), 못 한 것.",
 ].join("\n");
 
-export const V2_CARDS: readonly string[] = [INTERIOR_CARD, VILLAGE_CARD, DUNGEON_CARD, JP_CITY_CARD, PEOPLE_CARD, EVENT_CARD, DRAW_OBJECT_CARD];
+export const V2_CARDS: readonly string[] = [INTERIOR_CARD, VILLAGE_CARD, DUNGEON_CARD, JP_CITY_CARD, MODERN_KR_CARD, PEOPLE_CARD, EVENT_CARD, DRAW_OBJECT_CARD];
 
 /** 지금 프로젝트를 모델이 알 만큼만 — 맵(이름·칩셋·크기·사람 수·비었는지), 지금 보는 맵, 시작 맵. */
 export function projectBrief(project: Project, currentMapId?: string): string {
@@ -44,7 +45,7 @@ export function conditionalCards(project: Project, currentMapId?: string, task =
   const tileset = project.tilesets[project.maps[currentMapId ?? project.startMapId]?.tilesetId ?? ""];
   const monster = MONSTER_WORDS.test(task) || /^oprn-monster/u.test(tileset?.family ?? "");
   const contract = project.gameDesignBrief?.implementation?.harnessId === "romance-scene";
-  return [...(monster ? [MONSTER_TOWN_CARD] : []), ...(contract || SCENE_WORDS.test(task) ? [SCENE_CARD] : []), ...(wantsGameTools(task) ? [GAME_CARD] : []), ...(wantsTerrainTools(task) ? [TERRAIN_CARD] : []), ...(makeGameOn() && wantsMakeGame(task) ? [MAKE_GAME_CARD] : [])];
+  return [...(monster ? [MONSTER_TOWN_CARD] : []), ...(contract || SCENE_WORDS.test(task) ? [SCENE_CARD] : []), ...(wantsGameTools(task) ? [GAME_CARD, ...[fallenTierCard(task)].filter(Boolean)] : []), ...(wantsTerrainTools(task) ? [TERRAIN_CARD] : []), ...(wantsStoreTools(task) ? [storeTierCard(task)] : []), ...(makeGameOn() && wantsMakeGame(task) ? [MAKE_GAME_CARD] : [])];
 }
 
 export function buildV2SystemPrompt(project: Project, currentMapId?: string, task?: string): string[] {

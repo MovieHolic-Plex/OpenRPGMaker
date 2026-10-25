@@ -362,12 +362,12 @@ function applyStamps(run: BuildRun, tilesetId: string, mapId: string, stamps: re
 }
 
 /** 장소 견본(천문대 등)으로 짓기. 요청 앵커 중 견본이 갖춘 것은 그대로, 없는 것은 평면 빈 자리에 더한다. */
-function buildVenue(run: BuildRun, spec: PlaceSpec, venue: InteriorVenue, roomSpec: HandInteriorSpec, tilesetId: string, mapId: string, prev: InteriorState | undefined): PlaceBuildResult | undefined {
+function buildVenue(run: BuildRun, spec: PlaceSpec, venue: InteriorVenue, roomSpec: HandInteriorSpec, tilesetId: string, mapId: string | undefined, prev: InteriorState | undefined): PlaceBuildResult | undefined {
   const variant = typeof spec.hints?.variant === "number" ? spec.hints.variant : (spec.salt ?? 0) % 4;
   const words = (spec.zones ?? []).flatMap((z) => z.anchors ?? []);
   const withStairs = !!venue.stairs && ((spec.floors ?? 1) >= 2 || words.some((w) => /계단|stair|2층|위층/iu.test(w)) || (spec.zones ?? []).some((z) => z.floor === 2));
   const vb = venue.build(variant, withStairs);
-  let args: Record<string, unknown> = { tileset: tilesetId, mapId: prev?.mapId ?? mapId, name: spec.name, replace: true, ...vb.args };
+  let args: Record<string, unknown> = { tileset: tilesetId, mapId: prev?.mapId ?? mapId, name: spec.name, replace: (prev?.mapId ?? mapId) ? true : undefined, ...vb.args };
   let res = build(run, args);
   if (!res.ok) { args = { ...args, mapId: undefined, replace: undefined }; res = build(run, args); }
   if (!res.ok) return undefined;
@@ -454,6 +454,11 @@ function addBackDoor(run: BuildRun, roomSpec: HandInteriorSpec, tilesetId: strin
   return { args, note: "북쪽 뒷문 — 맨 북쪽 방 북벽에 문을 낼 자리가 없다" };
 }
 
+/** 위층 맵 이름 — 「저택 1층」이면 「저택 2층」(「저택 1층 2층」이 되지 않게). */
+function upperName(name: string): string {
+  return /\s*(1층|일층|1F|1st floor)\s*$/iu.test(name) ? name.replace(/\s*(1층|일층|1F|1st floor)\s*$/iu, " 2층") : `${name} 2층`;
+}
+
 /** 위층: 올라가는 계단이 놓인 아래층(builtMapId)에 위층을 짓고 계단끼리 잇는다. 아래층에 붙일 이동(lowerLink)을 돌려준다. */
 function buildUpperFloor(run: BuildRun, roomSpec: HandInteriorSpec, tilesetId: string, spec: PlaceSpec, builtMapId: string, stairsUp: { id: string; x: number; y: number; w: number }, prevUpper: string | undefined, missing: string[], notes: string[], placed: { zone: string; what: string; id: string }[]): { upperMapId?: string; upperArgs?: Record<string, unknown>; lowerLink?: Record<string, unknown> } {
   let upperMapId = prevUpper;
@@ -468,7 +473,7 @@ function buildUpperFloor(run: BuildRun, roomSpec: HandInteriorSpec, tilesetId: s
       while (upKinds.length < 2) upKinds = [...upKinds, upKinds[0] ?? "inn_room"];
       upKinds = [...upKinds, "corridor"];
     }
-    const upBase: Record<string, unknown> = { tileset: tilesetId, ...(upperMapId ? { mapId: upperMapId, replace: true } : {}), name: `${spec.name} 2층`,
+    const upBase: Record<string, unknown> = { tileset: tilesetId, ...(upperMapId ? { mapId: upperMapId, replace: true } : {}), name: upperName(spec.name),
       // 복도는 방 수에 맞춘 작은 계단참(방마다 4칸 + 1, 높이 5) — 견본 크기 그대로면 38칸짜리 빈 홀이 됐다.
       layout: { rooms: (upKinds.length ? upKinds : ["bedroom"]).map((kind, i, all) => ({ id: `${kind}${i + 1}`, kind, ...(/corridor/u.test(kind) ? { w: Math.max(9, 4 * (all.length - 1) + 1), h: 5 } : {}) })) } };
     // 위층은 배치 후보 넷 중 맵 틀 안 검은 바깥이 가장 적은 것(방 넓이 ÷ 맵 넓이 최대) — 객실 둘 + 긴 복도가 ㄱ자로 앉아 왼쪽 위가 통째로 검었다(비평 major).
@@ -490,7 +495,7 @@ function buildUpperFloor(run: BuildRun, roomSpec: HandInteriorSpec, tilesetId: s
       upperMapId = String(up.data?.mapId);
       let urb = up.data?.rebuild as Rebuild;
       // 위층은 바깥으로 나가는 남쪽 문이 없다(계단으로만 오간다).
-      let uargs: Record<string, unknown> = { ...argsFromRebuild({ tileset: tilesetId, mapId: upperMapId, name: `${spec.name} 2층` }, urb), exitWidth: 0, exit: { ...(urb.exit as object), width: 0 } };
+      let uargs: Record<string, unknown> = { ...argsFromRebuild({ tileset: tilesetId, mapId: upperMapId, name: upperName(spec.name) }, urb), exitWidth: 0, exit: { ...(urb.exit as object), width: 0 } };
       urb = { ...urb, exit: uargs.exit, objects: urb.objects.filter((o) => !/doormat|door mat/u.test(o.id)) };
       uargs = { ...uargs, objects: urb.objects };
       const down = findPart(roomSpec, "stairwell down");
@@ -636,7 +641,8 @@ export const interiorBuilder: PlaceBuilder = {
     }
     const roomSpec = roomSpecOf(run.ctx.project.tilesets[tilesetId]);
     if (!roomSpec) return { ok: false, mapIds: [], summary: `실내 칩셋 ${tilesetId} 이 이 프로젝트에 없다`, warnings: [], missingArt: [spec.name], calls: run.calls };
-    const mapId = prev?.mapId ?? spec.mapId ?? run.ctx.currentMapId ?? run.ctx.project.startMapId;
+    // hints.newMap: make_place 가 「이번에 지은 다른 장소」를 덮지 않게 새 맵을 요구했다(2026-10-25 G27: 지하 예배당을 지은 맵에 저택을 다시 지어 예배당이 사라졌다).
+    const mapId: string | undefined = prev?.mapId ?? spec.mapId ?? (spec.hints?.newMap === true ? undefined : run.ctx.currentMapId ?? run.ctx.project.startMapId);
     // 장소 견본(천문대 등) — 방 종류 견본으로는 주인공 물건이 방을 정하지 못한다(2026-10-23 비교: 천문대가 평범한 서재로 읽혀 v1 8 · v2 3.5).
     const venueText = `${spec.name} ${spec.theme ?? ""} ${(spec.zones ?? []).map((z) => `${z.kind} ${z.purpose ?? ""}`).join(" ")}`;
     const venue = tilesetId === HAND_INTERIOR_TILESET_ID && (spec.zones ?? []).filter((z) => (z.floor ?? 1) === 1).length <= 1 && (!prev || prev.venue)
@@ -664,7 +670,7 @@ export const interiorBuilder: PlaceBuilder = {
     const variant = typeof hints.variant === "number" ? hints.variant : (spec.salt ?? 0) % 4;
     const seed = typeof hints.seed === "number" ? hints.seed : undefined;
     const layoutSeed = seed ?? (spec.salt ? 1 + (spec.salt % 99991) : undefined);
-    const base: Record<string, unknown> = { tileset: tilesetId, mapId, name: spec.name, replace: true,
+    const base: Record<string, unknown> = { tileset: tilesetId, mapId, name: spec.name, replace: mapId ? true : undefined,
       layout: { rooms: rooms.map((r) => clean({ id: r.id, kind: r.kind, w: r.w, h: r.h, floor: (r as { floor?: string }).floor, wall: (r as { wall?: string }).wall })), ...(variant ? { variant } : {}), ...(layoutSeed ? { seed: layoutSeed } : {}) } };
     let first = build(run, base);
     if (!first.ok) {
@@ -682,10 +688,10 @@ export const interiorBuilder: PlaceBuilder = {
     };
     if (stairZone && first.ok && !northmost(first) && !seed) {
       for (let v = 1; v <= 3; v++) {
-        const alt = build(run, { ...base, mapId: String(first.data?.mapId ?? mapId), layout: { ...(base.layout as object), variant: (variant + v) % 4 } });
+        const alt = build(run, { ...base, mapId: String(first.data?.mapId ?? mapId), replace: true, layout: { ...(base.layout as object), variant: (variant + v) % 4 } });
         if (alt.ok && northmost(alt)) { first = alt; break; }
       }
-      if (!northmost(first)) first = build(run, { ...base, mapId: String(first.data?.mapId ?? mapId) });
+      if (!northmost(first)) first = build(run, { ...base, mapId: String(first.data?.mapId ?? mapId), replace: true });
     }
     const builtMapId = String(first.data?.mapId ?? mapId);
     let rb = first.data?.rebuild as Rebuild;

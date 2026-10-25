@@ -490,6 +490,9 @@ export interface ChatRequest {
   onToken?: (delta: string) => void;
   onReasoning?: (delta: string) => void;
   signal?: AbortSignal;
+  // 이 요청 하나의 수명 상한(ms). 없으면 LLM_REQUEST_TIMEOUT_MS. 공방 도트 그리기처럼 응답 한 번이
+  // 수 분 걸리는 호출만 늘린다(2026-10-25 G10: 한글 현판 후보 둘 다 180초에 끊겼다).
+  timeoutMs?: number;
   // AssistantSession처럼 상위 계층이 라운드 단위 재시도를 맡을 때 llmClient의 1회 재시도를 끈다.
   disableTransientRetry?: boolean;
   // JSON 전용 응답 강제(OpenAI 호환). 타일셋 매핑·성향 증류처럼 산출물이 JSON 객체 하나인 호출용.
@@ -942,6 +945,11 @@ export const LLM_REQUEST_TIMEOUT_MS = 180_000;
  * (2026-10-23 공방 실화면: Sonnet high 그리기가 180초에서 504 로 잘려 한 장도 못 그렸다). 그 경로만 10분. */
 export const LLM_LOCAL_CLI_TIMEOUT_MS = 600_000;
 
+function requestTimeoutMs(config: AiConfig, req: ChatRequest): number {
+  const base = isLocalCliProviderId(config.providerId) ? LLM_LOCAL_CLI_TIMEOUT_MS : LLM_REQUEST_TIMEOUT_MS;
+  return typeof req.timeoutMs === "number" && req.timeoutMs > base ? req.timeoutMs : base;
+}
+
 // 재시도해 볼 만한 오류인가 — 네트워크(상태 없음)/요청 한도(429)/서버 오류(5xx).
 // 인증(401)/크레딧(402) 같은 영구 오류는 재시도하지 않는다.
 export function isRetryableLlmError(error: unknown): boolean {
@@ -1099,7 +1107,7 @@ async function chatCompletionOnce(config: AiConfig, req: ChatRequest, captureEpo
     // 매달림을 일시 오류로 바꾸고 기존 재시도 경로로 넘긴다(공급자 상한 — 게이트웨이는 느려도
     // 정상 응답이 50초 안팎이라 넉넉히 잡는다). 호출자 signal(중단)과 합성한다.
     const controller = new AbortController();
-    const timeoutMs = isLocalCliProviderId(config.providerId) ? LLM_LOCAL_CLI_TIMEOUT_MS : LLM_REQUEST_TIMEOUT_MS;
+    const timeoutMs = requestTimeoutMs(config, req);
     const timeoutTimer = setTimeout(() => controller.abort(), timeoutMs);
     const onCallerAbort = () => controller.abort();
     req.signal?.addEventListener("abort", onCallerAbort, { once: true });
@@ -1121,7 +1129,7 @@ async function chatCompletionOnce(config: AiConfig, req: ChatRequest, captureEpo
     if (isLlmTimeoutError(cause) && !req.signal?.aborted) {
       // 공급자 일시 오류로 취급해 재시도 가능하게 한다.
       reportTransportHealth(false, 504, "요청 시간 초과");
-      throw new LlmError(`요청 시간 초과(${(isLocalCliProviderId(config.providerId) ? LLM_LOCAL_CLI_TIMEOUT_MS : LLM_REQUEST_TIMEOUT_MS) / 1000}s): 공급자가 응답하지 않았습니다.`, 504);
+      throw new LlmError(`요청 시간 초과(${requestTimeoutMs(config, req) / 1000}s): 공급자가 응답하지 않았습니다.`, 504);
     }
     if (req.signal?.aborted || isLlmAbortError(cause)) throw new LlmAbortError();
     const target = usesOhMyPiCompanion(config) ? companionRequestBaseUrl() : config.baseUrl;

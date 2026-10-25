@@ -1,0 +1,1331 @@
+{
+ "measuredAt": "2026-10-25T02:49:50",
+ "summary": {
+  "sizes": [
+   [
+    512,
+    512
+   ]
+  ],
+  "colours": [
+   24251,
+   44551
+  ],
+  "top": [
+   21,
+   23
+  ],
+  "bottomCover": [
+   0.652,
+   0.867
+  ],
+  "outlineDark": [
+   0.727,
+   0.992
+  ],
+  "headWidth": [
+   249,
+   277
+  ],
+  "headWidthRel": [
+   0.486,
+   0.541
+  ],
+  "eyesSymmetric": {
+   "seoha": false,
+   "jihu": false,
+   "minho": false,
+   "lead": false,
+   "client": null,
+   "clerk": false,
+   "seohaYoung": false,
+   "jihuYoung": false
+  }
+ },
+ "members": {
+  "seoha": {
+   "base": {
+    "size": [
+     512,
+     512
+    ],
+    "colours": 30189,
+    "partialAlpha": 133545,
+    "cornersTransparent": true,
+    "outlineDark": 0.992,
+    "mirrorScore": 0.422,
+    "eyes": [
+     [
+      59,
+      45,
+      160,
+      204
+     ],
+     [
+      41,
+      18,
+      160,
+      177
+     ]
+    ],
+    "eyesSymmetric": false,
+    "top": 21,
+    "bottomCover": 0.672,
+    "sideTouch": false,
+    "headTouchesSide": false,
+    "headWidth": 277,
+    "headCentreOffset": -15.5,
+    "fill": 0.493
+   },
+   "happy": {
+    "size": [
+     512,
+     512
+    ],
+    "colours": 36011,
+    "partialAlpha": 9421,
+    "cornersTransparent": true,
+    "outlineDark": 0.947,
+    "mirrorScore": 0.403,
+    "eyes": [
+     [
+      93,
+      44,
+      158,
+      201
+     ],
+     [
+      36,
+      23,
+      205,
+      227
+     ]
+    ],
+    "eyesSymmetric": false,
+    "top": 21,
+    "bottomCover": 0.67,
+    "sideTouch": false,
+    "headTouchesSide": false,
+    "headWidth": 277,
+    "headCentreOffset": -16.5,
+    "fill": 0.493
+   },
+   "surprised": {
+    "size": [
+     512,
+     512
+    ],
+    "colours": 39879,
+    "partialAlpha": 8264,
+    "cornersTransparent": true,
+    "outlineDark": 0.96,
+    "mirrorScore": 0.434,
+    "eyes": [
+     [
+      58,
+      47,
+      158,
+      204
+     ],
+     [
+      48,
+      26,
+      153,
+      178
+     ]
+    ],
+    "eyesSymmetric": false,
+    "top": 21,
+    "bottomCover": 0.672,
+    "sideTouch": false,
+    "headTouchesSide": false,
+    "headWidth": 278,
+    "headCentreOffset": -16.0,
+    "fill": 0.499
+   },
+   "sad": {
+    "size": [
+     512,
+     512
+    ],
+    "colours": 35227,
+    "partialAlpha": 8825,
+    "cornersTransparent": true,
+    "outlineDark": 0.97,
+    "mirrorScore": 0.434,
+    "eyes": [
+     [
+      102,
+      52,
+      153,
+      204
+     ],
+     [
+      21,
+      15,
+      153,
+      167
+     ]
+    ],
+    "eyesSymmetric": false,
+    "top": 21,
+    "bottomCover": 0.67,
+    "sideTouch": false,
+    "headTouchesSide": false,
+    "headWidth": 277,
+    "headCentreOffset": -15.5,
+    "fill": 0.496
+   },
+   "embarrassed": {
+    "size": [
+     512,
+     512
+    ],
+    "colours": 39177,
+    "partialAlpha": 8406,
+    "cornersTransparent": true,
+    "outlineDark": 0.961,
+    "mirrorScore": 0.357,
+    "eyes": [
+     [
+      127,
+      46,
+      158,
+      203
+     ],
+     [
+      33,
+      9,
+      211,
+      219
+     ]
+    ],
+    "eyesSymmetric": false,
+    "top": 21,
+    "bottomCover": 0.672,
+    "sideTouch": false,
+    "headTouchesSide": false,
+    "headWidth": 280,
+    "headCentreOffset": -17.0,
+    "fill": 0.501
+   }
+  },
+  "jihu": {
+   "base": {
+    "size": [
+     512,
+     512
+    ],
+    "colours": 24251,
+    "partialAlpha": 133287,
+    "cornersTransparent": true,
+    "outlineDark": 0.727,
+    "mirrorScore": 0.11,
+    "eyes": [
+     [
+      60,
+      37,
+      153,
+      189
+     ],
+     [
+      46,
+      14,
+      153,
+      166
+     ]
+    ],
+    "eyesSymmetric": false,
+    "top": 23,
+    "bottomCover": 0.82,
+    "sideTouch": false,
+    "headTouchesSide": false,
+    "headWidth": 271,
+    "headCentreOffset": -15.5,
+    "fill": 0.497
+   },
+   "happy": {
+    "size": [
+     512,
+     512
+    ],
+    "colours": 30986,
+    "partialAlpha": 6532,
+    "cornersTransparent": true,
+    "outlineDark": 0.713,
+    "mirrorScore": 0.251,
+    "eyes": [
+     [
+      60,
+      38,
+      153,
+      190
+     ],
+     [
+      39,
+      26,
+      201,
+      226
+     ]
+    ],
+    "eyesSymmetric": false,
+    "top": 23,
+    "bottomCover": 0.82,
+    "sideTouch": false,
+    "headTouchesSide": false,
+    "headWidth": 273,
+    "headCentreOffset": -14.5,
+    "fill": 0.497
+   },
+   "surprised": {
+    "size": [
+     512,
+     512
+    ],
+    "colours": 30471,
+    "partialAlpha": 6481,
+    "cornersTransparent": true,
+    "outlineDark": 0.73,
+    "mirrorScore": 0.292,
+    "eyes": [
+     [
+      60,
+      38,
+      153,
+      190
+     ],
+     [
+      39,
+      18,
+      153,
+      170
+     ]
+    ],
+    "eyesSymmetric": false,
+    "top": 23,
+    "bottomCover": 0.82,
+    "sideTouch": false,
+    "headTouchesSide": false,
+    "headWidth": 272,
+    "headCentreOffset": -15.0,
+    "fill": 0.497
+   },
+   "sad": {
+    "size": [
+     512,
+     512
+    ],
+    "colours": 28892,
+    "partialAlpha": 6528,
+    "cornersTransparent": true,
+    "outlineDark": 0.724,
+    "mirrorScore": 0.209,
+    "eyes": [
+     [
+      134,
+      39,
+      153,
+      191
+     ],
+     [
+      10,
+      13,
+      179,
+      191
+     ]
+    ],
+    "eyesSymmetric": false,
+    "top": 22,
+    "bottomCover": 0.82,
+    "sideTouch": false,
+    "headTouchesSide": false,
+    "headWidth": 272,
+    "headCentreOffset": -16.0,
+    "fill": 0.497
+   },
+   "embarrassed": {
+    "size": [
+     512,
+     512
+    ],
+    "colours": 31004,
+    "partialAlpha": 6404,
+    "cornersTransparent": true,
+    "outlineDark": 0.696,
+    "mirrorScore": 0.112,
+    "eyes": [
+     [
+      137,
+      37,
+      153,
+      189
+     ],
+     [
+      11,
+      8,
+      195,
+      202
+     ]
+    ],
+    "eyesSymmetric": false,
+    "top": 22,
+    "bottomCover": 0.818,
+    "sideTouch": true,
+    "headTouchesSide": false,
+    "headWidth": 273,
+    "headCentreOffset": -18.5,
+    "fill": 0.499
+   }
+  },
+  "minho": {
+   "base": {
+    "size": [
+     512,
+     512
+    ],
+    "colours": 32786,
+    "partialAlpha": 131333,
+    "cornersTransparent": true,
+    "outlineDark": 0.899,
+    "mirrorScore": 0.092,
+    "eyes": [
+     [
+      61,
+      40,
+      165,
+      204
+     ],
+     [
+      54,
+      30,
+      153,
+      182
+     ]
+    ],
+    "eyesSymmetric": false,
+    "top": 22,
+    "bottomCover": 0.867,
+    "sideTouch": true,
+    "headTouchesSide": false,
+    "headWidth": 268,
+    "headCentreOffset": 1.0,
+    "fill": 0.488
+   },
+   "happy": {
+    "size": [
+     512,
+     512
+    ],
+    "colours": 38088,
+    "partialAlpha": 7426,
+    "cornersTransparent": true,
+    "outlineDark": 0.902,
+    "mirrorScore": 0.379,
+    "eyes": [
+     [
+      62,
+      39,
+      165,
+      203
+     ],
+     [
+      44,
+      29,
+      215,
+      243
+     ]
+    ],
+    "eyesSymmetric": false,
+    "top": 22,
+    "bottomCover": 0.867,
+    "sideTouch": true,
+    "headTouchesSide": false,
+    "headWidth": 269,
+    "headCentreOffset": 1.5,
+    "fill": 0.489
+   },
+   "surprised": {
+    "size": [
+     512,
+     512
+    ],
+    "colours": 38487,
+    "partialAlpha": 7381,
+    "cornersTransparent": true,
+    "outlineDark": 0.852,
+    "mirrorScore": 0.203,
+    "eyes": [
+     [
+      62,
+      40,
+      165,
+      204
+     ],
+     [
+      52,
+      24,
+      162,
+      185
+     ]
+    ],
+    "eyesSymmetric": false,
+    "top": 22,
+    "bottomCover": 0.867,
+    "sideTouch": true,
+    "headTouchesSide": false,
+    "headWidth": 268,
+    "headCentreOffset": 1.0,
+    "fill": 0.489
+   },
+   "sad": {
+    "size": [
+     512,
+     512
+    ],
+    "colours": 37426,
+    "partialAlpha": 7545,
+    "cornersTransparent": true,
+    "outlineDark": 0.879,
+    "mirrorScore": 0.203,
+    "eyes": [
+     [
+      63,
+      48,
+      158,
+      205
+     ],
+     [
+      53,
+      32,
+      156,
+      187
+     ]
+    ],
+    "eyesSymmetric": false,
+    "top": 22,
+    "bottomCover": 0.865,
+    "sideTouch": true,
+    "headTouchesSide": false,
+    "headWidth": 268,
+    "headCentreOffset": 1.0,
+    "fill": 0.488
+   },
+   "embarrassed": {
+    "size": [
+     512,
+     512
+    ],
+    "colours": 36772,
+    "partialAlpha": 7377,
+    "cornersTransparent": true,
+    "outlineDark": 0.868,
+    "mirrorScore": 0.292,
+    "eyes": [
+     [
+      138,
+      52,
+      153,
+      204
+     ],
+     [
+      39,
+      12,
+      224,
+      235
+     ]
+    ],
+    "eyesSymmetric": false,
+    "top": 22,
+    "bottomCover": 0.867,
+    "sideTouch": true,
+    "headTouchesSide": false,
+    "headWidth": 269,
+    "headCentreOffset": 1.5,
+    "fill": 0.488
+   }
+  },
+  "lead": {
+   "base": {
+    "size": [
+     512,
+     512
+    ],
+    "colours": 38140,
+    "partialAlpha": 147183,
+    "cornersTransparent": true,
+    "outlineDark": 0.868,
+    "mirrorScore": 0.27,
+    "eyes": [
+     [
+      57,
+      52,
+      163,
+      214
+     ],
+     [
+      251,
+      72,
+      265,
+      336
+     ]
+    ],
+    "eyesSymmetric": false,
+    "top": 21,
+    "bottomCover": 0.834,
+    "sideTouch": true,
+    "headTouchesSide": false,
+    "headWidth": 272,
+    "headCentreOffset": -11.0,
+    "fill": 0.545
+   },
+   "happy": {
+    "size": [
+     512,
+     512
+    ],
+    "colours": 44418,
+    "partialAlpha": 8865,
+    "cornersTransparent": true,
+    "outlineDark": 0.88,
+    "mirrorScore": 0.358,
+    "eyes": [
+     [
+      103,
+      62,
+      153,
+      214
+     ],
+     [
+      275,
+      81,
+      256,
+      336
+     ]
+    ],
+    "eyesSymmetric": false,
+    "top": 21,
+    "bottomCover": 0.834,
+    "sideTouch": true,
+    "headTouchesSide": false,
+    "headWidth": 271,
+    "headCentreOffset": -10.5,
+    "fill": 0.548
+   },
+   "surprised": {
+    "size": [
+     512,
+     512
+    ],
+    "colours": 42404,
+    "partialAlpha": 8694,
+    "cornersTransparent": true,
+    "outlineDark": 0.883,
+    "mirrorScore": 0.286,
+    "eyes": [
+     [
+      104,
+      62,
+      153,
+      214
+     ],
+     [
+      251,
+      36,
+      301,
+      336
+     ]
+    ],
+    "eyesSymmetric": false,
+    "top": 21,
+    "bottomCover": 0.836,
+    "sideTouch": true,
+    "headTouchesSide": false,
+    "headWidth": 274,
+    "headCentreOffset": -11.0,
+    "fill": 0.55
+   },
+   "sad": {
+    "size": [
+     512,
+     512
+    ],
+    "colours": 41772,
+    "partialAlpha": 9118,
+    "cornersTransparent": true,
+    "outlineDark": 0.899,
+    "mirrorScore": 0.356,
+    "eyes": [
+     [
+      107,
+      62,
+      153,
+      214
+     ],
+     [
+      251,
+      43,
+      294,
+      336
+     ]
+    ],
+    "eyesSymmetric": false,
+    "top": 21,
+    "bottomCover": 0.836,
+    "sideTouch": true,
+    "headTouchesSide": false,
+    "headWidth": 273,
+    "headCentreOffset": -10.5,
+    "fill": 0.548
+   },
+   "embarrassed": {
+    "size": [
+     512,
+     512
+    ],
+    "colours": 43027,
+    "partialAlpha": 8953,
+    "cornersTransparent": true,
+    "outlineDark": 0.889,
+    "mirrorScore": 0.346,
+    "eyes": [
+     [
+      108,
+      62,
+      153,
+      214
+     ],
+     [
+      275,
+      79,
+      258,
+      336
+     ]
+    ],
+    "eyesSymmetric": false,
+    "top": 21,
+    "bottomCover": 0.836,
+    "sideTouch": true,
+    "headTouchesSide": false,
+    "headWidth": 273,
+    "headCentreOffset": -10.5,
+    "fill": 0.548
+   }
+  },
+  "client": {
+   "base": {
+    "size": [
+     512,
+     512
+    ],
+    "colours": 27138,
+    "partialAlpha": 9057,
+    "cornersTransparent": true,
+    "outlineDark": 0.98,
+    "mirrorScore": 0.413,
+    "eyes": null,
+    "eyesSymmetric": null,
+    "top": 21,
+    "bottomCover": 0.66,
+    "sideTouch": true,
+    "headTouchesSide": false,
+    "headWidth": 266,
+    "headCentreOffset": -4.0,
+    "fill": 0.565
+   },
+   "happy": {
+    "size": [
+     512,
+     512
+    ],
+    "colours": 27626,
+    "partialAlpha": 9162,
+    "cornersTransparent": true,
+    "outlineDark": 0.978,
+    "mirrorScore": 0.416,
+    "eyes": null,
+    "eyesSymmetric": null,
+    "top": 21,
+    "bottomCover": 0.658,
+    "sideTouch": true,
+    "headTouchesSide": false,
+    "headWidth": 266,
+    "headCentreOffset": -4.0,
+    "fill": 0.564
+   },
+   "surprised": {
+    "size": [
+     512,
+     512
+    ],
+    "colours": 27906,
+    "partialAlpha": 9172,
+    "cornersTransparent": true,
+    "outlineDark": 0.978,
+    "mirrorScore": 0.414,
+    "eyes": null,
+    "eyesSymmetric": null,
+    "top": 21,
+    "bottomCover": 0.66,
+    "sideTouch": true,
+    "headTouchesSide": false,
+    "headWidth": 266,
+    "headCentreOffset": -4.0,
+    "fill": 0.564
+   },
+   "sad": {
+    "size": [
+     512,
+     512
+    ],
+    "colours": 26165,
+    "partialAlpha": 9148,
+    "cornersTransparent": true,
+    "outlineDark": 0.976,
+    "mirrorScore": 0.387,
+    "eyes": [
+     [
+      48,
+      1,
+      155,
+      155
+     ],
+     [
+      79,
+      81,
+      256,
+      336
+     ]
+    ],
+    "eyesSymmetric": false,
+    "top": 21,
+    "bottomCover": 0.66,
+    "sideTouch": true,
+    "headTouchesSide": false,
+    "headWidth": 266,
+    "headCentreOffset": -4.0,
+    "fill": 0.564
+   },
+   "embarrassed": {
+    "size": [
+     512,
+     512
+    ],
+    "colours": 27901,
+    "partialAlpha": 9138,
+    "cornersTransparent": true,
+    "outlineDark": 0.977,
+    "mirrorScore": 0.386,
+    "eyes": null,
+    "eyesSymmetric": null,
+    "top": 21,
+    "bottomCover": 0.66,
+    "sideTouch": true,
+    "headTouchesSide": false,
+    "headWidth": 266,
+    "headCentreOffset": -4.0,
+    "fill": 0.564
+   }
+  },
+  "clerk": {
+   "base": {
+    "size": [
+     512,
+     512
+    ],
+    "colours": 37356,
+    "partialAlpha": 8796,
+    "cornersTransparent": true,
+    "outlineDark": 0.822,
+    "mirrorScore": 0.151,
+    "eyes": [
+     [
+      93,
+      55,
+      282,
+      336
+     ],
+     [
+      58,
+      57,
+      280,
+      336
+     ]
+    ],
+    "eyesSymmetric": false,
+    "top": 21,
+    "bottomCover": 0.66,
+    "sideTouch": true,
+    "headTouchesSide": false,
+    "headWidth": 255,
+    "headCentreOffset": 1.5,
+    "fill": 0.423
+   },
+   "happy": {
+    "size": [
+     512,
+     512
+    ],
+    "colours": 39021,
+    "partialAlpha": 8916,
+    "cornersTransparent": true,
+    "outlineDark": 0.794,
+    "mirrorScore": 0.183,
+    "eyes": [
+     [
+      71,
+      66,
+      271,
+      336
+     ],
+     [
+      125,
+      14,
+      177,
+      190
+     ]
+    ],
+    "eyesSymmetric": false,
+    "top": 21,
+    "bottomCover": 0.656,
+    "sideTouch": true,
+    "headTouchesSide": false,
+    "headWidth": 254,
+    "headCentreOffset": 2.0,
+    "fill": 0.423
+   },
+   "surprised": {
+    "size": [
+     512,
+     512
+    ],
+    "colours": 38973,
+    "partialAlpha": 8903,
+    "cornersTransparent": true,
+    "outlineDark": 0.802,
+    "mirrorScore": 0.235,
+    "eyes": [
+     [
+      93,
+      55,
+      282,
+      336
+     ],
+     [
+      69,
+      65,
+      272,
+      336
+     ]
+    ],
+    "eyesSymmetric": false,
+    "top": 21,
+    "bottomCover": 0.66,
+    "sideTouch": true,
+    "headTouchesSide": false,
+    "headWidth": 254,
+    "headCentreOffset": 2.0,
+    "fill": 0.423
+   },
+   "sad": {
+    "size": [
+     512,
+     512
+    ],
+    "colours": 39283,
+    "partialAlpha": 8891,
+    "cornersTransparent": true,
+    "outlineDark": 0.805,
+    "mirrorScore": 0.151,
+    "eyes": [
+     [
+      70,
+      65,
+      272,
+      336
+     ],
+     [
+      46,
+      39,
+      298,
+      336
+     ]
+    ],
+    "eyesSymmetric": false,
+    "top": 21,
+    "bottomCover": 0.658,
+    "sideTouch": true,
+    "headTouchesSide": false,
+    "headWidth": 254,
+    "headCentreOffset": 2.0,
+    "fill": 0.423
+   },
+   "embarrassed": {
+    "size": [
+     512,
+     512
+    ],
+    "colours": 39942,
+    "partialAlpha": 8862,
+    "cornersTransparent": true,
+    "outlineDark": 0.788,
+    "mirrorScore": 0.15,
+    "eyes": [
+     [
+      132,
+      55,
+      282,
+      336
+     ],
+     [
+      45,
+      39,
+      298,
+      336
+     ]
+    ],
+    "eyesSymmetric": false,
+    "top": 21,
+    "bottomCover": 0.656,
+    "sideTouch": true,
+    "headTouchesSide": false,
+    "headWidth": 254,
+    "headCentreOffset": 3.0,
+    "fill": 0.423
+   }
+  },
+  "seohaYoung": {
+   "base": {
+    "size": [
+     512,
+     512
+    ],
+    "colours": 44551,
+    "partialAlpha": 11720,
+    "cornersTransparent": true,
+    "outlineDark": 0.937,
+    "mirrorScore": 0.307,
+    "eyes": [
+     [
+      80,
+      32,
+      280,
+      311
+     ],
+     [
+      80,
+      40,
+      275,
+      314
+     ]
+    ],
+    "eyesSymmetric": false,
+    "top": 21,
+    "bottomCover": 0.76,
+    "sideTouch": false,
+    "headTouchesSide": false,
+    "headWidth": 275,
+    "headCentreOffset": -4.5,
+    "fill": 0.54
+   },
+   "happy": {
+    "size": [
+     512,
+     512
+    ],
+    "colours": 45685,
+    "partialAlpha": 11755,
+    "cornersTransparent": true,
+    "outlineDark": 0.922,
+    "mirrorScore": 0.366,
+    "eyes": [
+     [
+      77,
+      34,
+      277,
+      310
+     ],
+     [
+      79,
+      40,
+      275,
+      314
+     ]
+    ],
+    "eyesSymmetric": false,
+    "top": 21,
+    "bottomCover": 0.758,
+    "sideTouch": false,
+    "headTouchesSide": false,
+    "headWidth": 275,
+    "headCentreOffset": -4.5,
+    "fill": 0.539
+   },
+   "surprised": {
+    "size": [
+     512,
+     512
+    ],
+    "colours": 45011,
+    "partialAlpha": 11713,
+    "cornersTransparent": true,
+    "outlineDark": 0.918,
+    "mirrorScore": 0.327,
+    "eyes": [
+     [
+      78,
+      35,
+      277,
+      311
+     ],
+     [
+      78,
+      40,
+      275,
+      314
+     ]
+    ],
+    "eyesSymmetric": false,
+    "top": 21,
+    "bottomCover": 0.756,
+    "sideTouch": false,
+    "headTouchesSide": false,
+    "headWidth": 275,
+    "headCentreOffset": -4.5,
+    "fill": 0.539
+   },
+   "sad": {
+    "size": [
+     512,
+     512
+    ],
+    "colours": 46447,
+    "partialAlpha": 11682,
+    "cornersTransparent": true,
+    "outlineDark": 0.93,
+    "mirrorScore": 0.25,
+    "eyes": [
+     [
+      79,
+      32,
+      280,
+      311
+     ],
+     [
+      82,
+      41,
+      275,
+      315
+     ]
+    ],
+    "eyesSymmetric": false,
+    "top": 21,
+    "bottomCover": 0.76,
+    "sideTouch": false,
+    "headTouchesSide": false,
+    "headWidth": 275,
+    "headCentreOffset": -4.5,
+    "fill": 0.54
+   },
+   "embarrassed": {
+    "size": [
+     512,
+     512
+    ],
+    "colours": 47739,
+    "partialAlpha": 11761,
+    "cornersTransparent": true,
+    "outlineDark": 0.929,
+    "mirrorScore": 0.31,
+    "eyes": [
+     [
+      80,
+      32,
+      280,
+      311
+     ],
+     [
+      80,
+      40,
+      275,
+      314
+     ]
+    ],
+    "eyesSymmetric": false,
+    "top": 21,
+    "bottomCover": 0.758,
+    "sideTouch": false,
+    "headTouchesSide": false,
+    "headWidth": 275,
+    "headCentreOffset": -4.5,
+    "fill": 0.539
+   }
+  },
+  "jihuYoung": {
+   "base": {
+    "size": [
+     512,
+     512
+    ],
+    "colours": 25734,
+    "partialAlpha": 134898,
+    "cornersTransparent": true,
+    "outlineDark": 0.939,
+    "mirrorScore": 0.438,
+    "eyes": [
+     [
+      111,
+      70,
+      210,
+      279
+     ],
+     [
+      19,
+      37,
+      175,
+      211
+     ]
+    ],
+    "eyesSymmetric": false,
+    "top": 23,
+    "bottomCover": 0.652,
+    "sideTouch": false,
+    "headTouchesSide": false,
+    "headWidth": 249,
+    "headCentreOffset": 0.5,
+    "fill": 0.502
+   },
+   "happy": {
+    "size": [
+     512,
+     512
+    ],
+    "colours": 33147,
+    "partialAlpha": 7562,
+    "cornersTransparent": true,
+    "outlineDark": 0.913,
+    "mirrorScore": 0.499,
+    "eyes": [
+     [
+      113,
+      72,
+      210,
+      281
+     ],
+     [
+      39,
+      19,
+      218,
+      236
+     ]
+    ],
+    "eyesSymmetric": false,
+    "top": 23,
+    "bottomCover": 0.652,
+    "sideTouch": false,
+    "headTouchesSide": false,
+    "headWidth": 250,
+    "headCentreOffset": 1.0,
+    "fill": 0.502
+   },
+   "surprised": {
+    "size": [
+     512,
+     512
+    ],
+    "colours": 33726,
+    "partialAlpha": 7294,
+    "cornersTransparent": true,
+    "outlineDark": 0.907,
+    "mirrorScore": 0.493,
+    "eyes": [
+     [
+      156,
+      86,
+      210,
+      295
+     ],
+     [
+      53,
+      32,
+      153,
+      184
+     ]
+    ],
+    "eyesSymmetric": false,
+    "top": 22,
+    "bottomCover": 0.654,
+    "sideTouch": false,
+    "headTouchesSide": false,
+    "headWidth": 248,
+    "headCentreOffset": 1.0,
+    "fill": 0.502
+   },
+   "sad": {
+    "size": [
+     512,
+     512
+    ],
+    "colours": 33511,
+    "partialAlpha": 7162,
+    "cornersTransparent": true,
+    "outlineDark": 0.939,
+    "mirrorScore": 0.507,
+    "eyes": [
+     [
+      106,
+      70,
+      211,
+      280
+     ],
+     [
+      53,
+      29,
+      162,
+      190
+     ]
+    ],
+    "eyesSymmetric": false,
+    "top": 23,
+    "bottomCover": 0.654,
+    "sideTouch": false,
+    "headTouchesSide": false,
+    "headWidth": 248,
+    "headCentreOffset": 1.0,
+    "fill": 0.502
+   },
+   "embarrassed": {
+    "size": [
+     512,
+     512
+    ],
+    "colours": 33190,
+    "partialAlpha": 7576,
+    "cornersTransparent": true,
+    "outlineDark": 0.918,
+    "mirrorScore": 0.466,
+    "eyes": [
+     [
+      107,
+      53,
+      155,
+      207
+     ],
+     [
+      32,
+      6,
+      161,
+      166
+     ]
+    ],
+    "eyesSymmetric": false,
+    "top": 23,
+    "bottomCover": 0.652,
+    "sideTouch": false,
+    "headTouchesSide": false,
+    "headWidth": 249,
+    "headCentreOffset": 0.5,
+    "fill": 0.501
+   }
+  }
+ }
+}

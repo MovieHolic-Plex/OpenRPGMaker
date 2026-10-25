@@ -27,7 +27,8 @@ import { BATTLE_KEY_PROMPT } from "@/player/keyBindings";
 import { mountBattleCommandCss } from "@/project/battleCommandCss";
 import { withJosa } from "@/util/josa";
 import { teamSwapCommandNodes } from "@/player/battleTeamSwapDom";
-import { elementDisplayName, skillHelp, skillHelpTagLine } from "@/battle/skillHelp";
+import { elementDisplayName, skillHelp, skillHelpOneLiner, skillHelpTagLine } from "@/battle/skillHelp";
+import { resolveBattleStaging } from "@/project/battleStaging";
 
 export type BattleCommandSubmenu =
   | { readonly kind: "skill"; readonly command: RuntimeBattleCommand }
@@ -92,8 +93,11 @@ export function commandPanel(snapshot: BattleSnapshot, options: BattleCommandPan
   attachScrollCue(menu);
   panel.append(menu);
   if (options.submenu?.kind === "skill" || options.submenu?.kind === "combo") {
-    panel.dataset.skillHelp = "true";
-    panel.append(skillHelpBox());
+    // 기본(line)은 큰 창 없이 질문 줄(「카엘은 무엇을 할까?」) 자리에 한 줄 — syncBattleSkillHelp 가 문장 창에 쓴다.
+    if (resolveBattleStaging(store.getCurrent().system.battleStaging).skillHint === "window") {
+      panel.dataset.skillHelp = "true";
+      panel.append(skillHelpBox());
+    } else panel.dataset.skillHint = "line";
   }
   panel.append(keyPrompts());
   return panel;
@@ -115,6 +119,7 @@ function skillHelpBox(): HTMLElement {
  * 터치는 첫 탭이 커서만 옮기고(이 창이 뜬다) 같은 행을 한 번 더 누르면 쓴다 — battleDom 의 터치 가드.
  */
 export function syncBattleSkillHelp(host: HTMLElement, selected: HTMLElement | undefined, actor: BattleBattlerSnapshot | undefined): void {
+  syncBattleSkillHintLine(host, selected, actor);
   const box = host.querySelector<HTMLElement>(".battle-skill-help");
   if (!box) return;
   const skillId = selected?.dataset.skillHelpId;
@@ -158,6 +163,42 @@ export function syncBattleSkillHelp(host: HTMLElement, selected: HTMLElement | u
   }
   box.replaceChildren(...children);
   box.hidden = false;
+}
+
+/**
+ * 한 줄 도움말(system.battleStaging.skillHint = line, 기본) — 기술·연계 목록에서 커서가 선 기술을
+ * 문장 창의 질문 줄(「카엘은 무엇을 할까?」) 자리에 「MP6 · 적 전체 · 냉기 · 둔화」 한 줄로 바꿔 쓴다.
+ * 문장 창의 줄은 건드리지 않고 위에 겹치는 한 줄만 붙였다 뗀다 — 목록을 닫으면 원래 질문이 그대로 보인다.
+ */
+function syncBattleSkillHintLine(host: HTMLElement, selected: HTMLElement | undefined, actor: BattleBattlerSnapshot | undefined): void {
+  const scene = host.closest<HTMLElement>(".battle-scene") ?? host.ownerDocument;
+  const windowNode = scene.querySelector<HTMLElement>(".battle-message-window");
+  if (!windowNode) return;
+  const lineMode = Boolean(host.querySelector("[data-skill-hint='line']"));
+  const project = store.getCurrent();
+  const skillId = lineMode ? selected?.dataset.skillHelpId : undefined;
+  const skill = skillId ? project.database.skills.find((record) => record.id === skillId) : undefined;
+  let hint = windowNode.querySelector<HTMLElement>(".battle-message-hint");
+  if (!skill) {
+    hint?.remove();
+    delete windowNode.dataset.skillHint;
+    return;
+  }
+  if (!hint) {
+    // 문장 줄과 같은 칸·같은 글꼴로 보이도록 줄 목록 맨 앞에 끼운다(원래 질문 줄은 CSS 가 잠시 숨긴다).
+    hint = document.createElement("div");
+    hint.className = "battle-message-line battle-message-hint";
+    hint.dataset.testid = "battle-skill-hint";
+    const lines = windowNode.querySelector<HTMLElement>(".battle-message-lines") ?? windowNode;
+    lines.prepend(hint);
+  }
+  const inert = selected?.dataset.battleCommandInert === "true" ? selected.dataset.battleCommandInertReason : undefined;
+  const text = skillHelpOneLiner(project, skill, actor ? { recordId: actor.recordId, maxMp: actor.maxMp, ...(actor.equipmentEffects ? { equipmentEffects: actor.equipmentEffects } : {}) } : undefined);
+  hint.dataset.skillId = skill.id;
+  hint.dataset.inert = inert ? "true" : "false";
+  hint.textContent = inert ? `${text} — ${inert}` : text;
+  hint.title = skill.description;
+  windowNode.dataset.skillHint = "true";
 }
 
 /**

@@ -73,7 +73,8 @@ export const DIALOGUE_SCENE_NOTE_LIMIT = 200;
 export const DIALOGUE_SCENE_NOTES_MAX = 2000;
 
 export const DIALOGUE_VOICE_NOTE_LIMIT = 800;
-export const DIALOGUE_PROPOSAL_LIMIT = 400;
+/** 한 프로젝트에 걸어 둘 수 있는 윤문 제안 수. 한 막 전체(곁가지 포함 약 1,000줄)를 한 번에 검토할 수 있게 넉넉히 둔다. */
+export const DIALOGUE_PROPOSAL_LIMIT = 2000;
 const TEXT_LIMIT = 4000;
 
 export function emptyDialogueDesk(): DialogueDesk {
@@ -212,12 +213,18 @@ export function writeSpeakerVoice(project: DeskHost, speaker: string, note: stri
   return "set";
 }
 
-/** 같은 줄의 기존 제안은 새 제안이 대신한다. */
-export function upsertDialogueProposals(project: DeskHost, next: readonly DialogueProposal[]): void {
+/**
+ * 같은 줄의 기존 제안은 새 제안이 대신한다. 칸이 모자라면 오래된 제안을 말없이 밀어내지 않고 넘친 새 제안을 버린다 —
+ * 돌려준 수가 실제로 건 수다(2026-10-25 폴른 스타 1막 윤문: 상한 400 에서 앞 턴의 본줄 제안 35개가 말없이 사라졌다).
+ */
+export function upsertDialogueProposals(project: DeskHost, next: readonly DialogueProposal[]): number {
   const desk = readDialogueDesk(project);
   const replaced = new Set(next.map((proposal) => proposal.lineId));
-  const proposals = [...desk.proposals.filter((proposal) => !replaced.has(proposal.lineId)), ...next].slice(-DIALOGUE_PROPOSAL_LIMIT);
-  setDesk(project, { voices: [...desk.voices], proposals });
+  const kept = desk.proposals.filter((proposal) => !replaced.has(proposal.lineId));
+  const room = Math.max(0, DIALOGUE_PROPOSAL_LIMIT - kept.length);
+  const added = next.slice(0, room);
+  setDesk(project, { voices: [...desk.voices], proposals: [...kept, ...added] });
+  return added.length;
 }
 
 export function removeDialogueProposals(project: DeskHost, proposalIds: ReadonlySet<string>): number {

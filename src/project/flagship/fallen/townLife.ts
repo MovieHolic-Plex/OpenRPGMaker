@@ -159,11 +159,13 @@ const HOUSE_FINDS: Readonly<Record<string, readonly { label: RegExp; loot: Loot 
     { label: /왕실 상자/, loot: { kind: "item", itemId: "item_hi_potion" } },
     { label: /약재 서랍장/, loot: { kind: "item", itemId: "item_wake_herb", amount: 2 } },
   ],
-  fs_bakery_home: [{ label: /사과 통/, loot: { kind: "item", itemId: "fs_bread_warm" } }],
+  // 통은 흔들어 뒤지는 수납이라 보상을 식당 찬장(여닫는 것)으로 옮긴다.
+  fs_bakery_home: [{ label: /찬장/, loot: { kind: "item", itemId: "fs_bread_warm" } }],
   fs_stargazer_home: [{ label: /여행 가방/, loot: { kind: "gold", amount: 80 } }],
   fs_lisa_home: [
     { label: /화장대/, loot: { kind: "item", itemId: "item_potion", amount: 2 } },
-    { label: /여행 가방/, loot: { kind: "gold", amount: 60 } },
+    // 안방에는 화장대 하나 — 60G 는 옷방 상자에 둔다(방마다 수납 하나).
+    { label: /^상자$/, loot: { kind: "gold", amount: 60 } },
   ],
   fs_smithy: [{ label: /^궤짝$/, loot: { kind: "gold", amount: 40 } }],
 };
@@ -180,7 +182,7 @@ const FLAVOR: readonly [RegExp, string][] = [
   [/곡식 자루/, "곡식이 가득 차 있다. 누군가의 한 철 양식이다."],
   [/밀가루 자루/, "밀가루가 가득하다. 손을 넣었다가 소매만 하얘졌다."],
   [/술통 선반/, "술통마다 날짜가 적혀 있다. 반듯한 글씨다."],
-  [/약재 서랍장/, "서랍마다 약초 이름이 적혀 있다. 함부로 섞으면 안 될 것 같다."],
+  [/약재 서랍장/, "서랍마다 약초 이름이 적혀 있다.\n함부로 섞으면 안 될 것 같다."],
   [/약초 바구니/, "말린 약초 냄새가 코를 찌른다."],
   [/양모 바구니/, "털실 뭉치가 굴러다닌다. 뜨다 만 목도리가 걸려 있다."],
   [/사과 통/, "사과가 반쯤 남아 있다. 하나같이 멍이 들었다."],
@@ -193,10 +195,10 @@ const FLAVOR: readonly [RegExp, string][] = [
   [/협탁/, "협탁 위에 누가 두고 간 빗 하나가 놓여 있다."],
   [/여행 가방/, "가방은 비어 있다. 오래 쓰지 않은 것 같다."],
   [/왕실 상자/, "장식만 화려하고 속은 비었다."],
-  [/궤짝/, "궤짝 속에는 접힌 이불뿐이다."],
-  [/자루/, "자루 속은 마른 콩이다."],
+  [/궤짝/, "궤짝 속엔 개어 둔 이불뿐이다."],
+  [/자루/, "자루 안엔 마른 콩이 가득하다."],
   [/통/, "통 안에는 빗물만 고여 있다."],
-  [/상자/, "상자 안에는 낡은 천 조각뿐이다."],
+  [/상자/, "상자 안엔 낡은 천 조각뿐이다."],
 ];
 function flavorLine(label: string): string {
   return FLAVOR.find(([re]) => re.test(label))?.[1] ?? `${label}에는 눈여겨볼 것이 없다.`;
@@ -282,8 +284,8 @@ const OWNERS: readonly Owner[] = [
     mapId: "fs_lisa_home", person: "ev_fs_lisa", name: "리사", warnVar: VAR_LISA_WARNED, banSwitch: SW_LISA_BANNED,
     cue: "부엌 쪽에서 달그락 소리가 난다. 리사가 가까이 있는 것 같다.",
     lines: {
-      warn: ["…방금 거기, 손댔죠? 이번 한 번만 못 본 걸로 해 줄게요.", "한 번만 더 내 물건에 손대면 그땐 문밖으로 내쫓을 거예요. 이 집 문도 다시는 안 열어 줄 거고요."],
-      expel: ["내가 분명히 말했죠! 남의 집 서랍을 또 뒤져요?", "나가요, 당장! 그리고 다시는 이 집 문턱도 넘지 말아요!"],
+      warn: ["…방금 거기, 손댔죠?\n이번 한 번만 못 본 걸로 해 줄게요.", "한 번만 더 내 물건에 손대면 당장 내쫓을 거예요.\n다시는 문도 안 열어 줄 거고요."],
+      expel: ["내가 분명히 말했죠!\n남의 집 서랍을 또 뒤져요?", "당장 나가요!\n다시는 이 집 문턱도 넘지 말아요!"],
       shove: "리사에게 등을 떠밀려 집 밖으로 쫓겨났다.",
       banned: "문 안쪽에서 리사의 목소리가 날카롭게 울린다. 「남의 서랍 뒤지는 사람은 들이지 않아요! 돌아가요!」",
     },
@@ -292,17 +294,17 @@ const OWNERS: readonly Owner[] = [
     mapId: "fs_stargazer_home", person: "ev_fs_old_stargazer", name: "오스본", warnVar: "var_fs_osborn_warned", banSwitch: "sw_fs_osborn_banned",
     cue: "서재 쪽에서 책장 넘기는 소리와 낮은 헛기침이 들린다. 노인이 가까이 있다.",
     lines: {
-      warn: ["…이보게, 지금 내 궤짝에 손을 넣지 않았나. 별 보는 늙은이도 눈은 멀쩡하다네.", "이번만은 넘어가겠네. 하지만 또 그러면 이 문을 다시는 열지 않을 걸세."],
-      expel: ["내가 분명히 일렀네! 또 남의 물건에 손을 대다니!", "나가게. 이 천문대 문턱을 다시 넘을 생각은 말게!"],
+      warn: ["…이보게, 지금 내 궤짝에 손대지 않았나.\n별 보는 늙은이도 눈은 멀쩡하다네.", "이번만은 넘어가겠네.\n또 그러면 이 문을 다시는 열지 않을 걸세."],
+      expel: ["내가 분명히 일렀네!\n또 남의 물건에 손을 대다니!", "나가게! 이 천문대 문턱을\n다시 넘을 생각도 말게!"],
       shove: "오스본의 지팡이에 떠밀려 집 밖으로 쫓겨났다.",
-      banned: "문 너머에서 오스본의 지팡이 소리가 울린다. 「도둑 손버릇은 들이지 않네. 돌아가게!」",
+      banned: "문 너머에서 오스본의 지팡이 소리가 울린다.\n「손버릇 나쁜 이는 들이지 않네. 돌아가게!」",
     },
   },
   {
     mapId: "fs_bakery_home", person: "ev_fs_baker_husband", name: "토마", warnVar: "var_fs_toma_warned", banSwitch: null,
     cue: "오븐 쪽에서 반죽을 두드리는 소리가 난다. 토마가 멀지 않은 곳에 있다.",
     lines: {
-      warn: ["어이쿠, 손님! 내 빵 궤짝에 손댔소? 이번엔 못 본 걸로 하겠소.", "하지만 한 번 더 그러면 가게 밖으로 끌어낼 거요. 알겠소?"],
+      warn: ["어이쿠, 손님! 내 빵 궤짝에 손댔소?\n이번 한 번은 못 본 걸로 하겠소.", "한 번만 더 그러면 가게 밖으로\n끌어낼 거요. 알겠소?"],
       expel: ["내가 말했잖소! 또 뒤졌소?!", "나가시오! 오늘은 더 팔 빵 없소!"],
       shove: "토마에게 어깨를 잡혀 가게 밖으로 끌려 나왔다.",
       banned: "",
@@ -466,9 +468,9 @@ function placeStreetContainers(project: Project, hubId: string): number {
       const sideOpen = [[1, 0], [-1, 0], [0, 1], [0, -1]].some(([dx, dy]) => after.has(`${c.x + dx!},${c.y + dy!}`));
       if (!sideOpen || !connectedFronts.every((f) => after.has(`${f.x},${f.y}`))) { placed.delete(`${c.x},${c.y}`); continue; }
       hub.upperTiles[at(c.x, c.y)] = tile;
+      // 보상이 정해진 칸만 뒤지는 수납이다 — 나머지 거리 통·상자는 부두 살림 그림일 뿐(사용자 2026-10-24 「상자가 너무 많다」).
       const find = streetFinds.findIndex((f) => f.label.test(name) && (f.loot.kind !== "item" || knownIds(project).has(f.loot.itemId)));
-      const loot: Loot = find >= 0 ? streetFinds.splice(find, 1)[0]!.loot : { kind: "flavor" };
-      hub.events.push(containerEvent(project, hubId, c, name, loot, null, null));
+      if (find >= 0) hub.events.push(containerEvent(project, hubId, c, name, streetFinds.splice(find, 1)[0]!.loot, null, null));
       n++;
     }
     return n;
@@ -482,15 +484,13 @@ function placeStreetContainers(project: Project, hubId: string): number {
       if (x < 0 || y < 0 || x >= W || y >= H) continue;
       if (Math.max(Math.abs(x - g.x), Math.abs(y - g.y)) >= 2) cands.push({ x, y });
     }
-    total += pickZone(cands, SHOP_ART, 2, `shop_${g.id}`);
+    total += pickZone(cands, SHOP_ART, 0, `shop_${g.id}`);
   }
   // 남쪽 부두·창고: 아랫 3분의 1.
   const dock: Cell[] = [];
   for (let y = Math.floor(H * 0.62); y < H - 3; y += 1) for (let x = 2; x < W - 2; x += 1) dock.push({ x, y });
-  total += pickZone(dock, DOCK_ART, 8, "dock");
-  // 부두의 한 켠 — 창고 그늘(남서쪽 둘레)과 동쪽 선착장에도 한 무더기씩.
-  total += pickZone(dock.filter((c) => c.x < W / 2), ["barrel", "crate"], 2, "dock_w");
-  total += pickZone(dock.filter((c) => c.x >= W / 2), ["fish", "stack"], 2, "dock_e");
+  // 가게 문 곁은 가게 앞 꾸밈(dressShopFronts)이 맡는다 — 거리 수납은 부두에만 몇 개(그림, 뒤지지 않는다).
+  total += pickZone(dock, DOCK_ART, 3, "dock");
   return total;
 }
 

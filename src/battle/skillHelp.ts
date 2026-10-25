@@ -130,3 +130,52 @@ export function skillHelp(project: Project, skill: SkillRecord, user?: SkillHelp
 export function skillHelpTagLine(help: Pick<SkillHelp, "tags">): string {
   return help.tags.join(" · ");
 }
+
+const SHORT_SCOPE: Record<SkillRecord["scope"], string> = {
+  self: "자신", ally: "아군 1", allAllies: "아군 전체", enemy: "적 1", allEnemies: "적 전체",
+};
+
+/**
+ * 전투 한 줄 도움말(2026-10-25, 사용자 「기술 도움말은 '카엘은 무엇을 할까?' 자리에 1줄로 짧게」) —
+ * 「MP6 · 적 전체 · 냉기 · 둔화」. 비용 → 대상 → 속성 → 특징(가장 고유한 것 최대 둘). 위력·급소 같은 수치는 뺀다.
+ * 연계기 비용은 「MP3+5」(참가자 순). 긴 설명은 필드 메뉴 「스킬」 화면과 결과 카드에만 있다.
+ */
+export function skillHelpOneLiner(project: Project, skill: SkillRecord, user?: SkillHelpUser): string {
+  const mpLabel = resolveTerms(project).mp || "MP";
+  const combo = skill.comboActorIds && skill.comboActorIds.length >= 2 ? skill.comboActorIds : undefined;
+  const parts: string[] = [];
+  if (combo) {
+    parts.push(`${mpLabel}${combo.map((actorId) => battleSkillMpCostFor(skill, { recordId: actorId, maxMp: user?.recordId === actorId ? user.maxMp : 0 })).join("+")}`);
+  } else {
+    const mp = user ? battleSkillMpCostFor(skill, user) : battleSkillMpCostFor(skill, { maxMp: 0 });
+    if (mp > 0) parts.push(`${mpLabel}${mp}`);
+  }
+  parts.push(SHORT_SCOPE[skill.scope] + (skill.area ? "+주변" : ""));
+  if (skill.elementId) parts.push(elementName(project, skill.elementId));
+  const hooks: string[] = [];
+  const effect = skill.effect;
+  // 기술 자신의 조건부 위력(「둔해진 적 +50%」)이다 — 지금 대상이 무엇에 약한지는 절대 말하지 않는다(약점은 처음 맞혀서 알게 된다, weaknessDiscovery.ts).
+  if (skill.exploitStates?.stateIds.length) hooks.push(`${stateName(project, skill.exploitStates.stateIds[0]!)} +${skill.exploitStates.bonusPercent}%`);
+  const added = (skill.stateEffects ?? []).filter((row) => row.operation === "add");
+  const removed = (skill.stateEffects ?? []).filter((row) => row.operation === "remove");
+  for (const row of added.slice(0, 2)) hooks.push(stateName(project, row.stateId));
+  if (removed.length) hooks.push(removed.length > 2 ? "상태 해제" : `${removed.map((row) => stateName(project, row.stateId)).join("·")} 해제`);
+  for (const row of (skill.statStageEffects ?? []).slice(0, 1)) hooks.push(statStageEffectText(row));
+  if (skill.drainPercent) hooks.push("흡수");
+  if (skill.gaugeShift) hooks.push(skill.gaugeShift < 0 ? "행동 지연" : "행동 앞당김");
+  const hits = skill.hitSequence?.length ?? 0;
+  if (hits > 1) hooks.push(`${hits}연타`);
+  else if (skill.multiHit) hooks.push(`${skill.multiHit.min}~${skill.multiHit.max}연타`);
+  if (skill.comboCombinedStats) hooks.push("합체");
+  if (ignoresDefense(skill)) hooks.push("방어 무시");
+  if (skill.criticalRate !== undefined && skill.criticalRate >= 30) hooks.push("급소↑");
+  if (skill.weaponAffinity) hooks.push("무기 공명");
+  if (!hooks.length) {
+    if (effect.kind === "healing") hooks.push(effect.affects === "mp" ? "MP 회복" : "회복");
+    else if (effect.kind === "steal") hooks.push("훔치기");
+    else if (effect.kind === "scan") hooks.push("정보 보기");
+    else if (effect.kind === "damage" && skill.power > 0) hooks.push(`위력 ${skill.power}`);
+  }
+  parts.push(...hooks.slice(0, 2));
+  return parts.join(" · ");
+}

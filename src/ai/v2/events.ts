@@ -750,6 +750,24 @@ export function buildEvent(run: BuildRun, spec: EventSpec): EventBuildResult {
       }
     } else warnings.push("장면 전 숨김 스위치를 못 만들어 나타나는 사람이 장면 전에도 보인다.");
   }
+  // 장면에서 사라진(vanish) 새 사람은 장면이 끝난 뒤에도 맵에서 없어야 한다 — 투명도는 실행 중에만 남아 다시 들어오거나 불러오면
+  // 회상 속 인물이 가게에 말 없는 손님처럼 다시 섰다(2026-10-25 장난감 가게 G37). 「사라짐」 스위치를 장면 끝에 켜고, 그 사람 페이지는 꺼져 있을 때만 보인다.
+  const shownHandled = gateSwitch !== undefined && gated.every((id) => vanished.has(id));
+  const gone = [...vanished].filter((id) => createdActors.has(id) && !(shownHandled && gated.includes(id)));
+  let goneSwitch: string | undefined;
+  if (gone.length > 0) {
+    const key = `v2gone_${(run.calls.length * 7919 + gone.length * 104729 + Date.now()) % 1_000_000}`;
+    const fl = run.call("declare_story_flag", { action: "declare", id: key.replace(/_/gu, "-"), kind: "switch", targetId: `sw_${key}`, description: "장면에서 사라진 사람(장면 끝에 켜면 맵에서 없어진다)" });
+    goneSwitch = fl.ok ? ((fl.data ?? {}) as { flag?: { targetId?: string } }).flag?.targetId : /이미 등록/u.test(String(fl.summary)) ? `sw_${key}` : undefined;
+    if (goneSwitch) {
+      const cur = findMap(run.ctx.project, mapId);
+      for (const id of gone) {
+        const e = cur ? eventsOf(cur).find((x) => x.id === id) : undefined;
+        if (!e?.pages?.length) continue;
+        run.call("upsert_event", { mapId, replacePages: true, event: { id, pages: e.pages.map((pg) => ({ ...structuredClone(pg), conditions: [...(pg.conditions ?? []), { kind: "switch", switchId: goneSwitch, value: false }] })) } });
+      }
+    } else warnings.push("장면에서 사라진 사람을 장면 뒤에도 숨길 스위치를 못 만들어, 다시 들어오면 그 사람이 다시 보일 수 있다.");
+  }
   const beats: Record<string, unknown>[] = [
     ...(gateSwitch ? [{ kind: "switch", switchId: gateSwitch, value: true }] : []),
     ...hiddenFromStart.map((id) => ({ kind: "look", target: id, alpha: 0 })),
@@ -757,7 +775,8 @@ export function buildEvent(run: BuildRun, spec: EventSpec): EventBuildResult {
     ...out,
     ...(letterbox ? [{ kind: "letterbox", show: false, durationMs: 400 }] : []),
     // 장면 전용 사람이 모두 사라졌으면 스위치를 다시 꺼서 맵에서 아주 없앤다(다시 들어와도 안 보이게).
-    ...(gateSwitch && gated.every((id) => vanished.has(id)) ? [{ kind: "switch", switchId: gateSwitch, value: false }] : []),
+    ...(shownHandled ? [{ kind: "switch", switchId: gateSwitch, value: false }] : []),
+    ...(goneSwitch ? [{ kind: "switch", switchId: goneSwitch, value: true }] : []),
   ];
 
   // 4) 기계 검사 — 걷기마다 3칸 이상·목적지 도착, 대사는 듣는 사람 곁(2칸)에서.

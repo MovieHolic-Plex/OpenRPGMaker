@@ -107,8 +107,15 @@ export async function newEditor(browser, url, projectDir, config, captureOptions
       if(endpoint.includes('/v1/agent/run') && response.body){
         window.__capEvents.push({type:'stream_open',endpoint:'agent',at:Date.now()});
         const reader=response.clone().body.getReader(),decoder=new TextDecoder();let pending='';
+        // An idle resume re-sends the run as GET; the cloned original stream keeps going too. Skip
+        // lines whose outer seq was already seen so events are not counted twice (ledger G20).
+        // A POST starts a new run whose seq restarts at 0; only the GET resume of the same run shares the counter.
+        // (Keying by outer.runId alone dropped every event of turn 2 when lines carry no runId.)
+        const method=String((args[1]&&args[1].method)||(args[0]&&args[0].method)||'GET').toUpperCase();
+        if(method==='POST'||!window.__capLastSeq)window.__capLastSeq={};
         const consume=line=>{try{
           const outer=JSON.parse(line.replace(/^data:\s*/,'')),event=outer.type==='agent_event'?outer.event:outer;
+          if(typeof outer.seq==='number'){const key=outer.runId??'_';if(outer.seq<=(window.__capLastSeq[key]??-1))return;window.__capLastSeq[key]=outer.seq;}
           if(['assistant','tool_start','tool_end','error','execution_status','done','cancelled','prompt_inspection'].includes(event?.type)){
             // Never persist reasoning, auth headers or system prompt payloads. A prompt_inspection keeps only its
             // scalar receipt (model·max_tokens·reasoning_effort) — the sections are the whole prompt and stay out.

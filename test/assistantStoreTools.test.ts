@@ -74,4 +74,58 @@ describe("조수 스토어 도구", () => {
     expect(storeCardFromEvent({ ...end, ok: false } as unknown as PiAgentEvent)).toBeNull();
     expect(storeCardFromEvent({ ...end, name: "paint_tiles" } as unknown as PiAgentEvent)).toBeNull();
   });
+
+  it("store_game_post 는 소식 글 카드만 돌려주고 올리지 않는다(길이·판본 번호 검사)", () => {
+    const r = tool("store_game_post").run(project(), { title: "  1막   대개편 ", body: "## 새로 들어온 것\n- 용", comment: "소리를 켜고 보세요", version: "1.17", pinned: true });
+    expect(r.data).toEqual({ kind: "store-game-post-proposal", title: "1막 대개편", body: "## 새로 들어온 것\n- 용", comment: "소리를 켜고 보세요", version: "1.17", pinned: true });
+    expect(isStoreCardRequest(r.data)).toBe(true);
+    expect(tool("store_game_post").mode).toBe("read");
+    expect((tool("store_game_post").run(project(), { title: "x", body: "", version: "v2" }).data as { version: unknown }).version).toBeNull();
+    expect(() => tool("store_game_post").run(project(), { title: "", body: "x" })).toThrow();
+    expect(() => tool("store_game_post").run(project(), { title: "x", body: "x", comment: "가".repeat(601) })).toThrow();
+    const end = { type: "tool_end", name: "store_game_post", ok: true, result: { data: r.data } };
+    expect(storeCardFromEvent(end as unknown as PiAgentEvent)).toEqual(r.data);
+  });
+
+  it("store_game_changes 는 데스크톱 다리가 없으면 그렇게 말한다", () => {
+    expect(() => tool("store_game_changes").run(project(), {})).toThrow(/데스크톱|스토어/);
+  });
+
+  it("store_review_reply 는 답글 카드만 돌려주고 달지 않는다(id·길이 검사)", () => {
+    const r = tool("store_review_reply").run(project(), { reviewId: 7, reply: "  고마워요! 보스 체력을 줄였어요. " });
+    expect(r.data).toMatchObject({ kind: "store-review-reply-proposal", reviewId: 7, reply: "고마워요! 보스 체력을 줄였어요." });
+    expect(tool("store_review_reply").mode).toBe("read");
+    expect(isStoreCardRequest(r.data)).toBe(true);
+    expect(() => tool("store_review_reply").run(project(), { reviewId: 0, reply: "x" })).toThrow();
+    expect(() => tool("store_review_reply").run(project(), { reviewId: 3, reply: "가".repeat(2001) })).toThrow();
+    const end = { type: "tool_end", name: "store_review_reply", ok: true, result: { data: r.data } };
+    expect(storeCardFromEvent(end as unknown as PiAgentEvent)).toEqual(r.data);
+  });
+
+  it("store_game_reviews 는 요약 라벨·불만 주제를 내고 평가 글 경고를 붙인다", async () => {
+    const review = (id: number, recommended: boolean, body: string, helpful = 0) => ({
+      id, recommended, body, version: "1.2", status: "visible", helpful, unhelpful: 0, funny: 0, author: `p${id}`, handle: null,
+      createdAt: "2026-10-20T00:00:00Z", updatedAt: "2026-10-20T00:00:00Z", reply: null,
+    });
+    const page = {
+      summary: { all: { total: 12, positive: 9, pct: 75, label: "mostly_positive" }, recent: { total: 4, positive: 2, pct: 50, label: "mixed" } },
+      matched: 4,
+      items: [review(1, false, "2층 보스가 너무 어려워요", 5), review(2, false, "저장하고 껐더니 세이브가 날아갔어요"), review(3, true, "재밌어요! 다만 보스 전투가 길어요"), review(4, true, "최고")],
+    };
+    g.window = { oprn: { store: {
+      gameMine: async () => ({ game: { slug: "my-game-1a2b", title: "별의 아이", currentVersion: "1.2", pageUrl: "https://play.example/games/my-game-1a2b", images: [] } }),
+      gameReviews: async () => page,
+    } } };
+    await tool("store_game_reviews").prepare!({}, project());
+    const r = tool("store_game_reviews").run(project(), {});
+    const data = r.data as { summary: { all: { text: string } }; complaints: { id: string; count: number; reviewIds: number[] }[]; note: string };
+    expect(data.summary.all.text).toContain("대체로 긍정적");
+    expect(data.complaints[0]).toMatchObject({ id: "difficulty", count: 2 });
+    expect(data.complaints.find((c) => c.id === "save")?.reviewIds).toEqual([2]);
+    expect(data.complaints.flatMap((c) => c.reviewIds)).not.toContain(4);
+    expect(data.note).toMatch(/지시/);
+    const card = tool("store_review_reply").run(project(), { reviewId: 1, reply: "고마워요" }).data as { excerpt: string; recommended: boolean };
+    expect(card).toMatchObject({ excerpt: "2층 보스가 너무 어려워요", recommended: false });
+  });
 });
+

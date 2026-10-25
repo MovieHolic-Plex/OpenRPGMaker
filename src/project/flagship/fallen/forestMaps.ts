@@ -386,15 +386,15 @@ export function buildFallenForestMaps(project: Project, ids: { hub: string; fore
   }
   // ③ 가시덤불 샛길: 서쪽 곁길 끝 작은 빈터의 상자(불꽃 병 — 거미줄에 잘 든다).
   chest(M.thicket, { x: 4, y: 11 }, { itemId: FS_FIRE_FLASK, gold: 60 }, "덤불 속 상자");
-  // ④ 사당 터: 무너진 성문·별 무늬 바닥·사당·부러진 기둥, 사당 앞 상자, 회복 세이브. 짐승이 들지 않는 쉼터(조우 없음).
+  // ④ 별지기 사당 터: 무너진 성문·옛 별지기의 길가 사당·부러진 기둥. 사당 제단의 별 조각 결정이 쉼터(회복·기록)다.
+  //   하넬이 말한 「옛 별지기」의 자리 — 새긴 글이 달의 아이·지워진 기록·문을 지키는 비늘을 귀띔한다. 짐승이 들지 않는다(조우 없음).
   {
     const id = M.shrine, guard = pathGuard(project, project.maps[id]!);
-    const mosaic = placeKit(project, id, "bd-pick-temple-ruins-mosaic-medallion-5x5", { x: 13, y: 9 }, guard, 2);
-    // 무너진 성문(4×4) — 빈터 가장자리 몇 곳 중 들어가는 자리. 별 무늬 바닥(걸을 수 있는 칸이라 막힘 판정에 안 걸린다)과 그 둘레 한 칸은 비킨다.
     const keepOff = new Set(guard);
-    if (mosaic) for (let dy = -1; dy <= 5; dy += 1) for (let dx = -1; dx <= 5; dx += 1) keepOff.add((mosaic.y + dy) * project.maps[id]!.width + mosaic.x + dx);
     const gate = [{ x: 25, y: 17 }, { x: 9, y: 16 }, { x: 26, y: 5 }, { x: 12, y: 4 }].reduce<Cell | undefined>((got, at) => got ?? placeKit(project, id, "bd-pick-deep-forest-path-ruin-gate", at, keepOff, 3), undefined);
     const shrineAt = placeKit(project, id, "bd-pick-mountain-pass-shrine", { x: 25, y: 9 }, keepOff, 3);
+    // 제단의 별 조각 — 받침 위 수정 덩이(빛 3장면). 사당 바로 왼쪽 칸에 세운다(이벤트를 세우기 전에 — placeKit 은 이벤트 곁을 비킨다).
+    const crystal = shrineAt ? placeKit(project, id, "bd-pick-dungeon-theme-crystal-pedestal", { x: shrineAt.x - 1, y: shrineAt.y + 1 }, keepOff, 2) : undefined;
     placeKit(project, id, "bd-pick-temple-ruins-column-temple-broken", { x: 13, y: 17 }, keepOff, 2);
     placeKit(project, id, "bd-pick-temple-ruins-fallen-column-temple", { x: 15, y: 19 }, keepOff, 2);
     placeKit(project, id, "bd-pick-temple-ruins-rubble-temple", { x: 27, y: 13 }, keepOff, 2);
@@ -402,20 +402,58 @@ export function buildFallenForestMaps(project: Project, ids: { hub: string; fore
     const lights: Array<Record<string, unknown>> = [{ id: `light_${id}_gap`, at: { x: 20, y: 13 }, radius: 6, intensity: 0.45, color: "#fff1c4", flicker: false }];
     if (shrineAt) {
       readable(project.maps[id]!, "shrine", "별지기 사당", { x: shrineAt.x, y: shrineAt.y + 2 }, [
-        narrate("(사당) 이끼 낀 돌 사당. 지붕 밑에 별 무늬가 새겨져 있다."),
-        say("엘레나", "이 별 무늬, 천문대 서고 바닥에서 본 것 같아."),
+        narrate("(사당) 이끼 낀 돌 사당이다.\n지붕 밑에 옛 별지기들의 별 무늬가 새겨져 있다."),
+        narrate("(새긴 글) 빌린 불을 꺼뜨리지 말 것.\n달의 아이가 오거든 답할 것──「잘 지내나요?」"),
+        narrate("(새긴 글) 그 아래 몇 줄은 정으로 쪼아 지웠다.\n남은 획은 둘. 「문」, 그리고 「비늘」."),
+        say("엘레나", "이 별 무늬, 천문대 서고 바닥에서 본 것 같아.\n누가 일부러 지운 거네."),
         narrate("(사당) 향 주머니가 놓여 있다. 누군가 아직 이곳을 돌본다."),
       ]);
-      chest(id, { x: shrineAt.x - 1, y: shrineAt.y + 3 }, { itemId: FS_STAR_SCENT }, "사당 공물 상자");
+      chest(id, { x: shrineAt.x + 2, y: shrineAt.y + 2 }, { itemId: FS_STAR_SCENT }, "사당 공물 상자");
       lights.push({ id: `light_${id}_shrine`, at: { x: shrineAt.x, y: shrineAt.y + 1 }, radius: 3, intensity: 0.8, color: "#a0c8ff", flicker: true });
     }
     if (gate) lights.push({ id: `light_${id}_gate`, at: { x: gate.x + 1, y: gate.y + 2 }, radius: 2, intensity: 0.5, color: "#c8dcff", flicker: false });
-    // 쉼터 — 사당 곁 맑은 샘(세이브 포인트, 체력·마력 회복). 길이 아니고 장식과 겹치지 않는 공터 칸.
+    // 쉼터 — 제단의 별 조각 결정(받침 칸). 결정이 서지 못하면 사당 앞 공터에 둔다.
     const map = project.maps[id]!;
-    const restAt = [{ x: 17, y: 12 }, { x: 22, y: 12 }, { x: 16, y: 15 }, { x: 24, y: 14 }, { x: 18, y: 17 }]
+    const restAt = crystal ? { x: crystal.x, y: crystal.y + 1 } : [{ x: 17, y: 12 }, { x: 22, y: 12 }, { x: 16, y: 15 }, { x: 24, y: 14 }, { x: 18, y: 17 }]
       .find((c) => isPassable(project, map, c.x, c.y) && !guard.has(c.y * map.width + c.x) && !map.events.some((e) => Math.abs(e.x - c.x) + Math.abs(e.y - c.y) <= 1)) ?? { x: 17, y: 12 };
-    tool(project, "place_savepoint", { mapId: id, x: restAt.x, y: restAt.y, heal: true, name: "별지기 쉼터", id: `ev_${id}_rest` });
-    lights.push({ id: `light_${id}_rest`, at: restAt, radius: 2, intensity: 0.6, color: "#bfe8ff", flicker: true });
+    const restId = `ev_${id}_rest`;
+    tool(project, "place_savepoint", { mapId: id, x: restAt.x, y: restAt.y, heal: true, name: "별지기 제단의 별 조각", id: restId });
+    const live = project.maps[id]!; // 도구가 맵을 새로 쓴다 — 위의 map 은 낡았다.
+    const rest = live.events.find((e) => e.id === restId);
+    const restPage = rest?.pages?.[0];
+    if (rest && restPage && crystal) {
+      // 결정 그림은 칸에 깔린 받침 수정이 맡는다 — 이벤트는 투명하게, 조사 문장은 세계 안의 말로.
+      restPage.graphic = { transparent: true } as EventPage["graphic"];
+      restPage.priority = "same";
+      const m2 = (commandId: string, fields: Record<string, unknown>): Command => ({ kind: "m2Command", commandId, fields } as unknown as Command);
+      restPage.commands = [
+        { kind: "playAudio", resourceId: "easyrpg-sound-recovery7", loop: false, channel: "se" } as unknown as Command,
+        m2("m2-224-particle-effect", { preset: "sparkle", target: "tile", x: crystal.x, y: crystal.y, durationMs: 1000, wait: false }),
+        m2("m2-224-particle-effect", { preset: "heal", target: "player", durationMs: 800, wait: false }),
+        narrate("제단 위 별 조각이 푸르게 맥박친다.\n손을 얹자 지친 몸에 온기가 번진다."),
+        { kind: "recoverAll" } as unknown as Command,
+        { kind: "checkpointSave", label: "savepoint" } as unknown as Command,
+        { kind: "choices", prompt: "별 조각에 여기까지를 새겨 둘까?", cancelBehavior: "branch", options: [
+          { text: "새겨 둔다", branch: [{ kind: "openSaveMenu" } as unknown as Command] },
+          { text: "그만둔다", branch: [] },
+        ], cancelBranch: [] } as unknown as Command,
+      ];
+      // 제단의 별 조각은 쉬지 않고 반짝인다 — 투명 병렬 이벤트가 결정 칸에 반짝이를 띄운다.
+      const glowId = `ev_${id}_rest_glow`;
+      live.events = live.events.filter((e) => e.id !== glowId);
+      live.events.push({
+        id: glowId, name: "별 조각 반짝임", x: crystal.x, y: crystal.y, trigger: { kind: "parallel" }, commands: [],
+        pages: [{
+          id: `${glowId}_page`, name: "반짝임", conditions: [], graphic: { transparent: true },
+          movement: { type: "fixed", speed: 3, frequency: 3 }, priority: "below", trigger: { kind: "parallel" },
+          commands: [
+            m2("m2-224-particle-effect", { preset: "sparkle", target: "tile", x: crystal.x, y: crystal.y, durationMs: 1400, wait: false }),
+            { kind: "wait", ms: 2200 } as unknown as Command,
+          ],
+        } as unknown as EventPage],
+      } as unknown as GameEvent);
+    }
+    lights.push({ id: `light_${id}_rest`, at: crystal ?? restAt, radius: 3, intensity: 0.85, color: "#bfe8ff", flicker: true });
     setMood(project, id, mood, lights);
   }
   // ⑥ 사냥꾼 쉼터: 모닥불·사냥 표지 기둥, 막다른 끝 상자와 브람의 쪽지.
@@ -427,7 +465,7 @@ export function buildFallenForestMaps(project: Project, ids: { hub: string; fore
     placeKit(project, id, "bd-pick-deep-forest-path-log-fallen", { x: 19, y: 10 }, guard, 2);
     placeKit(project, id, "bd-pick-deep-forest-path-hide-rack", { x: 18, y: 15 }, guard, 2);
     if (post) readable(project.maps[id]!, "hunter_note", "사냥꾼의 쪽지", { x: post.x, y: post.y + 1 }, [
-      narrate("(쪽지) 별 떨어진 밤부터 늑대가 북쪽으로 몰린다.\n당분간 쉼터는 비워 둔다. 필요한 건 가져가라. — 브람"),
+      narrate("(쪽지) 별 떨어진 밤부터 늑대가 북쪽으로 몰린다.\n당분간 쉼터는 비운다. 필요한 건 챙겨 가라. — 브람"),
     ]);
   }
   // ⑤ 깊은 숲: 브람 곁 모닥불, 두 번째 별 표지석(돌무덤), 숨은 물건.

@@ -12,7 +12,8 @@ const out = resolve(process.env.QA_OUT_DIR ?? "verify-shots/runtime-qa/fallen-ac
 await mkdir(out, { recursive: true });
 const fixture = JSON.parse(await readFile(resolve(process.env.FS_FIXTURE ?? "dist/demos/chrono-bell.project.json"), "utf8"));
 const project = fixture.project ?? fixture;
-const only = new Set((process.argv[2] ?? "valen,dragon,panel").split(","));
+const only = new Set((process.argv[2] ?? "valen,lose,hanel,dragon,panel").split(","));
+const withSiege = !process.env.FS_NO_SIEGE;
 const facts = { segments: {}, errors: [] };
 const log = (...a) => console.error("[act1]", ...a);
 
@@ -20,8 +21,11 @@ const BASE = { sw_fs_main_started: true, sw_fs_main_step0: true, sw_fs_valen_mar
 const trio = (level) => ["actor_hero", "actor_fs_elena", "actor_fs_iris"].map((actorId) => ({ actorId, level }));
 const AFTER_CRASH = { ...BASE, sw_fs_valen_crash_on: true, sw_fs_valen_crash_met: true, sw_fs_main_step2: true, sw_fs_vault_seal_open: true, sw_fs_b3_west_lever: true, sw_fs_b3_sun_lever: true, sw_fs_b3_moon_lever: true };
 const SEGMENTS = {
-  valen: { id: "fs-act1-valen", mapId: "fs_forest", x: 15, y: 9, facing: "down", switches: { ...BASE, sw_fs_valen_crash_on: true }, party: trio(7), items: { item_potion: 3 } },
-  dragon: { id: "fs-act1-dragon", mapId: "fs_vault_b4", x: 14, y: 21, facing: "up", switches: { ...AFTER_CRASH }, party: trio(8), items: { item_potion: 6, item_hi_potion: 3, item_ether: 4 } },
+  // 세 단계 전부 + 회로까지 보이게 Lv10 로 녹화한다(헤드리스 승률 표는 Lv6~7).
+  valen: { id: "fs-act1-valen", mapId: "fs_forest", x: 15, y: 9, facing: "down", switches: { ...BASE, sw_fs_valen_crash_on: true }, party: trio(12), items: { item_potion: 6, item_hi_potion: 3, item_ether: 4 } },
+  lose: { id: "fs-act1-lose", mapId: "fs_forest", x: 15, y: 9, facing: "down", switches: { ...BASE, sw_fs_valen_crash_on: true }, party: trio(6), items: { item_potion: 3 } },
+  hanel: { id: "fs-act1-hanel", mapId: "fs_observatory", x: 12, y: 13, facing: "up", switches: { ...BASE, sw_fs_valen_crash_on: true, sw_fs_valen_crash_met: true, sw_fs_valen_soldiers_gone: true, sw_fs_main_step2: true }, variables: { var_fs_main_progress: 3 }, party: trio(8), items: { item_potion: 3, item_fs_star_key: 1, item_fs_circuit: 1 } },
+  dragon: { id: "fs-act1-dragon", mapId: "fs_vault_b4", x: 14, y: 26, facing: "up", switches: { ...AFTER_CRASH }, party: trio(8), items: { item_potion: 6, item_hi_potion: 3, item_ether: 4 } },
   panel: { id: "fs-act1-panel", mapId: "fs_vault_b4", x: 14, y: 4, facing: "up", switches: { ...AFTER_CRASH, sw_fs_dragon_met: true, sw_fs_dragon_down: true }, party: trio(9), items: { item_potion: 3 } },
 };
 
@@ -65,15 +69,36 @@ async function read(page, texts, until, { maxMs = 240_000 } = {}) {
 const battleStep = (page, plan) => page.evaluate((plan) => {
   const live = [...document.querySelectorAll("button")].filter((n) => !n.disabled && n.offsetParent !== null && n.dataset.previewOnly !== "true");
   const by = (t) => live.find((n) => n.dataset.testid === t);
-  const target = live.find((n) => (n.dataset.testid || "").startsWith("battle-target-") && n.dataset.testid !== "battle-target-cancel");
+  const targets = live.filter((n) => (n.dataset.testid || "").startsWith("battle-target-") && n.dataset.testid !== "battle-target-cancel");
+  const w = (window.__qp ??= { potions: plan.__potions ?? 0 });
+  const ratio = (t) => { const m = /(\d+)\s*\/\s*(\d+)/.exec(t || ""); return m ? Number(m[1]) / Math.max(1, Number(m[2])) : 1; };
+  // 물약 대상(아군) — 체력 비율이 가장 낮은 쪽.
+  if (w.healing && targets.length) {
+    const ally = [...targets].sort((a, b) => ratio(a.innerText) - ratio(b.innerText))[0];
+    w.healing = false; ally.click(); return "heal-target";
+  }
+  const target = (plan.__target && targets.find((n) => (n.innerText || n.getAttribute("aria-label") || "").includes(plan.__target))) ?? targets[0];
   if (target) { target.click(); return "target"; }
+  // 아군 체력이 40% 아래면 물약을 먼저 쓴다(사람이 하듯).
+  const hps = [...document.querySelectorAll(".battle-actor-hp")].map((n) => ratio(n.innerText)).filter((r) => r > 0);
+  const potion = by("actor-item-item_hi_potion") ?? by("actor-item-item_potion");
+  if (potion && w.wantPotion) { w.wantPotion = false; w.healing = true; potion.click(); return "potion"; }
+  const bag = by("actor-command-item");
+  if (bag && hps.length && Math.min(...hps) < 0.4 && w.potions > 0) { w.potions -= 1; w.wantPotion = true; bag.click(); return "bag"; }
   const name = document.querySelector("[data-actor-name]")?.dataset.actorName ?? "";
-  const want = plan[name] ?? "attack";
+  let want = w.dry?.[name] ? "attack" : plan[name] ?? "attack";
+  // 엘레나는 사람처럼 — 누가 절반 아래면 치유부터.
+  if (name === "엘레나" && hps.length && Math.min(...hps) < 0.5 && plan.__heal) want = plan.__heal;
   if (want !== "attack") {
     const skill = by(`actor-skill-${want}`) ?? by(`actor-command-skill-${want}`);
-    if (skill) { skill.click(); return `skill:${want}`; }
+    if (skill) { if (want === plan.__heal) w.healing = true; skill.click(); return `skill:${want}`; }
     const menu = by("actor-command-skill");
     if (menu) { menu.click(); return `menu:${name}`; }
+    // 기술 창은 열렸는데 MP 가 모자라 원하는 기술이 꺼져 있다 — 창 안 「공격」 또는 뒤로.
+    const rest = plan.__rest && by(`actor-skill-${plan.__rest}`);
+    if (rest) { rest.click(); return `rest:${name}`; }
+    const fallback = by("actor-skill-skill_attack") ?? live.find((n) => (n.dataset.testid || "").startsWith("actor-skill-") && /공격/.test(n.innerText || "")) ?? by("actor-command-back");
+    if (fallback) { (w.dry ??= {})[name] = true; fallback.click(); return `fallback:${name}`; }
   }
   const attack = by("actor-command-attack");
   if (attack) { attack.click(); return `attack:${name}`; }
@@ -138,7 +163,7 @@ async function segment(browser, server, key, run) {
   }, ["/__runtime-qa/project.json", `fs-act1-${key}-${Date.now()}`, SEGMENTS[key]]);
   await page.route("**/__runtime-qa/project.json", (route) => route.fulfill({ contentType: "application/json", body: JSON.stringify(project) }));
   await page.goto(`${server.url}/player.html?e2eVitals=1`, { waitUntil: "domcontentloaded", timeout: 180_000 });
-  await page.waitForFunction(() => !!window.__oprnDebug && !!document.querySelector('[data-testid="runtime-state-json"]'), null, { timeout: 360_000 });
+  await page.waitForFunction(() => !!window.__oprnDebug && !!document.querySelector('[data-testid="runtime-state-json"]'), null, { timeout: 900_000 });
   await page.waitForTimeout(2000);
   const seg = { marks, texts: [] };
   try { await run(page, mark, seg); } catch (e) { seg.error = String(e); log(key, "ERR", e); }
@@ -159,27 +184,96 @@ try {
     // 체크포인트가 「발렌이 올라온다」 스위치를 켠 채로 맵에 들어온다 — 자동 실행 인트로가 곧바로 돈다.
     shot(page, "valen-walk", 4200);
     await read(page, seg.texts, (s) => s.battle);
-    shot(page, "valen-battle", 3000);
-    await page.waitForTimeout(2500);
-    // 첫 두 바퀴 — 소환·예고(심판의 빛)가 보일 만큼만 싸운다.
+    shot(page, "valen-p1", 3500);
+    await page.waitForTimeout(2000);
+    // 게임의 자동 전투(F)로 싸운다 — 헤드리스 승률 시뮬과 같은 AI. 자동은 1.8배로 켜지므로 Shift 두 번으로 1배로 되돌린다.
+    await page.keyboard.press("f"); await page.waitForTimeout(300);
+    await page.keyboard.press("Shift"); await page.waitForTimeout(200); await page.keyboard.press("Shift");
+    seg.battleMode = await page.evaluate(() => { const r = document.querySelector('[data-testid="battle-scene"]'); return { auto: r?.dataset.battleAuto ?? null, speed: r?.dataset.battleSpeed ?? null }; });
+    // 1단계 병사 → 2단계 발렌 → 3단계 기계(번개로). 끝나면 연막·회로까지.
+    const plan = { 카엘: "attack", 엘레나: "skill_mage_chain_lightning", 이리스: "attack", __target: "심문회", __potions: 8, __heal: "skill_heal", __rest: "skill_fs_meditate" };
     const msgs = [];
-    const tEnd = Date.now() + 45_000;
-    let idle = 0;
+    let idle = 0, p2 = false, p3 = false, bolts = 0;
+    const tEnd = Date.now() + 420_000;
     while (Date.now() < tEnd) {
       const s = await ui(page);
+      if (!s.battle) break;
+      const line = s.box ? `[대사] ${s.box.replace(/\s+/g, " ").trim()}` : s.msg;
+      if (line && line !== msgs.at(-1)) {
+        msgs.push(line);
+        if (!p2 && /쓸모없는 것들/.test(line)) { p2 = true; mark("valen_p2"); plan.__target = "발렌"; shot(page, "valen-p2", 1200); }
+        if (!p3 && /금단의 주술/.test(line)) { p3 = true; mark("valen_p3"); shot(page, "valen-transform", 2500); }
+        if (p3 && /전기로 태워요/.test(line)) { Object.assign(plan, { 이리스: "skill_fs_iris_shock", 엘레나: "skill_mage_chain_lightning", 카엘: "attack" }); }
+        if (p3 && /전격탄|연쇄 번개/.test(line) && bolts < 3) { bolts += 1; shot(page, `valen-bolt-${bolts}`, 900); }
+      }
+      // 배속은 전투 이벤트가 멈춰 있는 동안 바뀌지 않는다 — 1배가 될 때까지 Shift 를 다시 누른다.
+      const speed = await page.evaluate(() => document.querySelector('[data-testid="battle-scene"]')?.dataset.battleSpeed ?? null);
+      if (speed !== seg.speedLog?.at(-1)?.[1]) (seg.speedLog ??= []).push([msgs.length, speed]);
+      if (speed && speed !== "1.0" && speed !== "5.0") { await page.keyboard.press("Shift"); await page.waitForTimeout(250); }
+      // 자동 전투는 스스로 돈다. Enter 는 전투 이벤트 대사가 떠 있을 때만(빈 대사 칸에 누르면 연출 건너뛰기 5배가 된다).
+      const result = await page.evaluate(() => !!document.querySelector('[data-testid="battle-result-panel"]'));
+      if ((s.box && s.box.trim()) || result) await page.keyboard.press("Enter", { delay: 80 });
+      await page.waitForTimeout(300);
+    }
+    seg.battleMessages = msgs;
+    mark("valen_won");
+    await read(page, seg.texts, (s) => /회로.*손에 넣었다/.test(s.box ?? "") , { maxMs: 120_000 });
+    shot(page, "valen-circuit", 300);
+    await read(page, seg.texts, async () => false, { maxMs: 9_000 });
+    mark("valen_end");
+  });
+  if (only.has("lose")) await segment(browser, server, "lose", async (page, mark, seg) => {
+    mark("lose_start");
+    // 진 갈래: 일행 체력을 1 로 깎아 두고 막기만 한다 — 게임 오버 없이 브람의 기습으로 이어지는지 본다.
+    await page.evaluate(() => { for (const id of window.__oprnDebug.readState().partyActorIds) window.__oprnSetActorVitals(id, 1, 999); });
+    await read(page, seg.texts, (s) => s.battle);
+    await page.waitForTimeout(1500);
+    mark("lose_battle");
+    const msgs = [];
+    let idle = 0;
+    const tEnd = Date.now() + 180_000;
+    while (Date.now() < tEnd) {
+      const s = await ui(page);
+      if (!s.battle) break;
       const line = s.box ? `[대사] ${s.box.replace(/\s+/g, " ").trim()}` : s.msg;
       if (line && line !== msgs.at(-1)) msgs.push(line);
-      if (/심판의 빛/.test(line ?? "") && !msgs.some((m) => m === "#shot")) { msgs.push("#shot"); shot(page, "valen-judgement", 300); }
-      const step = await battleStep(page, {});
+      const step = await page.evaluate(() => {
+        const live = [...document.querySelectorAll("button")].filter((n) => !n.disabled && n.offsetParent !== null && n.dataset.previewOnly !== "true");
+        const ok = live.find((n) => n.dataset.testid === "battle-result-confirm"); if (ok) { ok.click(); return "confirm"; }
+        const d = live.find((n) => n.dataset.testid === "actor-command-defend"); if (d) { d.click(); return "defend"; }
+        return null;
+      });
       if (step) idle = 0; else if (s.box !== null || ++idle > 8) { await page.keyboard.press("Enter", { delay: 80 }); idle = 0; }
       await page.waitForTimeout(step ? 450 : 300);
     }
-    seg.battleMessages = msgs.filter((m) => m !== "#shot");
-    mark("valen_end");
+    seg.battleMessages = msgs;
+    mark("lose_lost");
+    await read(page, seg.texts, (s) => /연기 터진다/.test(s.box ?? ""), { maxMs: 60_000 });
+    mark("lose_ambush");
+    shot(page, "lose-ambush", 400);
+    await read(page, seg.texts, (s) => /회로/.test(s.box ?? "") && /손에 넣었다|하넬/.test(s.box ?? ""), { maxMs: 90_000 });
+    shot(page, "lose-circuit", 300);
+    await read(page, seg.texts, async () => false, { maxMs: 12_000 });
+    seg.after = await page.evaluate(() => { const s = window.__oprnDebug.readState(); return { lost: s.switches.sw_fs_valen_lost === true, circuit: s.inventory.item_fs_circuit ?? 0, map: s.currentMapId, over: !!document.querySelector('[data-testid="game-over-screen"]') }; });
+    mark("lose_end");
+  });
+  if (only.has("hanel")) await segment(browser, server, "hanel", async (page, mark, seg) => {
+    mark("hanel_start");
+    await page.evaluate(() => window.__oprnInput.action());
+    await read(page, seg.texts, (s) => /렌즈가 문을 열거든/.test(s.box ?? ""), { maxMs: 180_000 });
+    shot(page, "hanel-circuit", 300);
+    await page.waitForTimeout(2500);
+    mark("hanel_end");
   });
   if (only.has("dragon")) await segment(browser, server, "dragon", async (page, mark, seg) => {
     mark("dragon_start");
-    await page.keyboard.down("ArrowUp"); await page.waitForTimeout(700); await page.keyboard.up("ArrowUp");
+    shot(page, "dragon-start", 1500);
+    await page.waitForTimeout(2500);
+    await page.keyboard.down("ArrowUp"); await page.waitForTimeout(2200); await page.keyboard.up("ArrowUp");
+    // 깨우는 줄을 밟으면 카메라가 홀 북쪽의 잠든 용으로 간다 — 그 화면을 남긴다.
+    await read(page, seg.texts, (s) => /바스락/.test(s.box ?? ""), { maxMs: 20_000 });
+    shot(page, "dragon-map", 1900);
+    await page.waitForTimeout(2200);
     await read(page, seg.texts, (s) => s.battle);
     await page.waitForTimeout(2500);
     const plan = { 카엘: "skill_hero_rush_pierce", 엘레나: "skill_mage_fireball", 이리스: "attack" };
@@ -207,6 +301,7 @@ try {
     await page.evaluate(() => window.__oprnInput.action());
     await read(page, seg.texts, async () => (await state(page)).map !== "fs_vault_b4", { maxMs: 300_000 });
     mark("panel_end");
+    if (!withSiege) return;
     mark("siege_start");
     await read(page, seg.texts, (s) => s.ending, { maxMs: 300_000 });
     shot(page, "ending-card", 2500);

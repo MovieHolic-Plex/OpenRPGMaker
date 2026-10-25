@@ -8,7 +8,7 @@ import { prepareProjectInterviewBootAssets } from "../projectInterviewBootPrepar
 import { isLiveApplyMode, normalizePiApplyMode } from "@/ai/piAgent/applyMode";
 import { createPendingReviewPrompt } from "./aiPendingReview";
 import { completionHeadline, createRefineFindings, plainMadeSummary, refineFindingsText } from "./aiPiCompletionReport";
-import { friendlyApplyFailure, friendlyExecutionError } from "@/ai/piAgent/userFacingCopy";
+import { friendlyApplyFailure, friendlyExecutionError, GENERIC_EXECUTION_ERROR } from "@/ai/piAgent/userFacingCopy";
 import { configForUltrabrain } from "@/ai/ultrabrainConfig";
 import { modelForRole } from "@/ai/modelRoles";
 import { executionRoleFor } from "@/ai/buildRole";
@@ -929,6 +929,9 @@ async function runPiCommandProtected(command: ParsedPiCommand, surface: PiComman
     if (streamErrors.length) {
       surface.appendProcess?.(streamErrors.join("\n"));
       surface.appendBubble("system", stoppedByLimit ? "작업 한도에 도달해 끝까지 마치지 못했어요. 작업 범위를 줄이거나 자율성 설정을 조정해 다시 요청해 주세요." : "작업 중 일부 문제가 있었어요. 작업 과정을 확인해 주세요.");
+      // 왜 멈췄는지 한 줄 — 「작업 과정을 확인」만 남기면 끊긴 턴이 사용자에게는 침묵이다(2026-10-25 조수 단독 게임 G12: 네 번 연속 아무 설명 없음).
+      const reason = friendlyExecutionError(streamErrors[0]!);
+      if (!stoppedByLimit && reason !== GENERIC_EXECUTION_ERROR) surface.appendBubble("system", reason);
     }
     if (droppedEverything) surface.appendProcess?.(spillReason);
     surface.appendBubble("system", droppedEverything ? "요청한 변경이 선택한 작업 범위를 벗어나 적용하지 않았어요. 작업 범위를 바꿔 다시 요청해 주세요." : caption);

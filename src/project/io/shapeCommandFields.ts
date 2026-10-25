@@ -8,7 +8,7 @@ import { ProjectFormatError } from "./errors";
 import { assert, commandKinds, requireArray, requireBoolean, requireNumber, requireRecord, requireString } from "./guards";
 import { validateLightSource } from "./shapeLightingFields";
 import { isSeason, isTimePhase } from "@/project/gameTime";
-import { m2CommandById } from "@/project/eventCommands/m2Catalog";
+import { m2CommandById, M2_COMMAND_CATALOG } from "@/project/eventCommands/m2Catalog";
 
 import { isRelationshipState } from "@/project/relationshipState";
 export function validateCommandArray(label: string, value: unknown): void {
@@ -507,7 +507,14 @@ function validateCommandShape(label: string, value: unknown): void {
 function validateM2CommandShape(label: string, command: Record<string, unknown>): void {
   const commandId = requireString(`${label}.commandId`, command.commandId);
   const catalog = m2CommandById(commandId);
-  if (!catalog) throw new ProjectFormatError(`${label}.commandId를 카탈로그에서 찾을 수 없습니다: ${commandId}`);
+  if (!catalog) {
+    // 비슷한 id 를 붙여 준다(2026-10-25 G30: 없는 m2-045-fade-screen 을 쓰고 한 번 더 돌았다 — 화면 페이드는 m2-202-screen-effect).
+    const words = commandId.toLowerCase().split(/[^a-z0-9]+/u).filter((w) => w.length > 2 && w !== "m2");
+    const num = commandId.match(/^m2-(\d+)/u)?.[1];
+    const near = M2_COMMAND_CATALOG.filter((e) => (num && e.id.startsWith(`m2-${num}-`)) || words.some((w) => e.id.includes(w))).slice(0, 5).map((e) => `${e.id}(${e.title})`);
+    const fade = /fade|페이드/iu.test(commandId) ? " 화면 페이드는 m2-202-screen-effect {effect:'fadeOut'|'fadeIn',durationMs}." : "";
+    throw new ProjectFormatError(`${label}.commandId를 카탈로그에서 찾을 수 없습니다: ${commandId}${near.length ? ` — 비슷한 것: ${near.join(", ")}.` : ""}${fade}`);
+  }
   const fields = requireRecord(`${label}.fields`, command.fields);
   for (const [key, value] of Object.entries(fields)) {
     if (typeof value !== "string" && typeof value !== "number" && typeof value !== "boolean") {
@@ -537,7 +544,7 @@ function validateM2CommandShape(label: string, command: Record<string, unknown>)
         break;
     }
     if (spec.options && typeof value === "string" && !spec.options.some((option) => option.value === value)) {
-      throw new ProjectFormatError(`${label}.fields.${spec.key} 값이 카탈로그 옵션에 없습니다: ${value}`);
+      throw new ProjectFormatError(`${label}.fields.${spec.key} 값이 카탈로그 옵션에 없습니다: ${value} — 고를 수 있는 값: ${spec.options.map((o) => o.value).join(", ")}.`);
     }
   }
 }
