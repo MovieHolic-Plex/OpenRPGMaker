@@ -509,7 +509,8 @@ export function syncBattleResultPanel(panel: HTMLElement, snapshot: BattleSnapsh
   if (title.textContent !== nextTitle) title.textContent = nextTitle;
   // 패배 창이 「패배 / 확인」 빈 상자뿐이었다(폴른 스타 가혹 검수 r7) — 무슨 일이 났는지 한 줄을 단다.
   let subtitle = panel.querySelector<HTMLElement>(".battle-result-subtitle");
-  const nextSubtitle = snapshot.result === "defeat" ? "파티가 모두 쓰러졌다…" : "";
+  // 에메랄드(몬스터) 문장 창은 결과 쪽(emeraldResultRows)이 패배를 두 줄로 말한다 — 이 줄까지 얹으면 2줄 창에 3줄이 되어 셋째 줄이 잘렸다(2026-10-25 Salad mon-forest).
+  const nextSubtitle = snapshot.result === "defeat" && !emeraldNarrationActive() ? "파티가 모두 쓰러졌다…" : "";
   if (nextSubtitle && !subtitle) {
     subtitle = document.createElement("div");
     subtitle.className = "battle-result-subtitle";
