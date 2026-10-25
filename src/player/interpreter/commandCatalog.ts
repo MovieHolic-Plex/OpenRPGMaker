@@ -1145,7 +1145,7 @@ export function executeCommand(
       if (state.project) setSessionDifficulty(state.project.system, state.session, command.difficultyId);
       return resumeNext(frame);
     case "storeParty":
-      storePartySet(state.session as PlaySession, command.partySetId);
+      storePartySet(state.session as PlaySession, command.partySetId, command);
       return resumeNext(frame);
     case "recallParty": {
       if (!state.project) return resumeNext(frame);

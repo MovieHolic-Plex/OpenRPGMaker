@@ -3800,3 +3800,11 @@ r8~r11 실편집기 녹화에서 조수는 도구를 찾지 않고 paint_tiles �
   적은 기본으로 다음 자기 차례 하나를 「휘청거린다」로 쉰다(`stagger:false` 로 끔, 아군은 휘청거리지 않음). 속성은 맞힌 기술의 `elementId` 만 본다(통상 공격 무기 속성은 안 봄).
 - 표시: 모으는 중엔 기존 머리 위 「기술 · 남은 차례」 표식, 끊기면 표식이 사라지고 대상 위 「끊김!」 글자 + 「X가 모으던 Y가 끊겼다!」 + `message` 한 줄(`battleSequencer`).
 - `simulate_battle` 결과 `data.chargeBreaks {started, broken, bySkill}`, 요약에 「힘 모으기 N회 중 끊김 M회」. 시험 시드 `fs2-chargebreak`.
+
+## `author_party_split` — FF6 식 파티 나누기·전환·레버 짝·합류 + 풀이 검사 (2026-10-25, 폴른 2막 과제 4)
+
+- 파일 `src/editor/tools/partySplitTools.ts`. 인자 `{mapId, splitAt, groups:[{actorIds,x,y[,mapId,name,switchAt]}×2], levers:[{lever,door[,name]}], rejoin, id?, splitText?, rejoinText?}`. 알 수 없는 칸은 거절한다.
+- 짓는 것(이벤트 id 머리 = `id`, 기본 `split`): `splitAt` 밟기 → 두 묶음 미리 저장(`storeParty` + `actorIds/mapId/x/y`) 뒤 첫 묶음 `recallParty`; 묶음마다 「전환」 구슬(조사 → 다른 묶음으로); 레버(object2#0) → 짝 철문(object1#3, 닫힘=막음·열림=below); 합류 칸 — 먼저 온 묶음은 기다리고 조작이 넘어가며, 둘 다 오면 `changeParty add`+`lead` 로 「첫 묶음 → 둘째 묶음」 순서로 합친다. 스위치 `<id>_split/_ctrl_b/_arrived_a/_arrived_b/_done/_lever_n`, 파티 묶음 `<id>_a/_b`.
+- **풀이 검사가 쓰기 전 관문이다.** 두 묶음의 출발 칸에서 칸 단위로 걷고(타일 `canMove`, 이동 이벤트는 건너편으로, 늘 막는 이벤트·닫힌 문·레버·구슬은 못 지남), 닿는 레버를 당겨 문을 여는 것을 고정점까지 되풀이한다. 두 묶음이 모두 합류 칸에 닿지 못하면 `party-split-unsolvable` 로 거절한다. 경고: 문이 다 닫혀도 풀림(문이 길목이 아님), 문 하나가 아무것도 안 막음, 모든 레버를 자기 문 앞 묶음이 스스로 당김(짝이 아님), 두 길이 안 갈라짐, 전환 구슬 곁에 설 수 없음.
+- 엔진 변경은 하나: `storeParty` 에 선택 칸 `actorIds·mapId·x·y`(`partySets.ts storePartySet(session, id, preset)`). 미리 만들기는 지금 파티·`activePartySetId` 를 건드리지 않는다 — 건드리면 다음 `recallParty` 가 지금 파티로 그 묶음을 덮는다.
+- 못 하는 것: ESC 메뉴 단추로 묶음 바꾸기(메뉴에 공통 이벤트를 다는 길이 없어 조사 구슬만), 기다리는 묶음을 맵에 그려 두기, 지형 칠하기(길·벽은 먼저 있어야 한다). 하네스 사례 `fs2-party-split`.

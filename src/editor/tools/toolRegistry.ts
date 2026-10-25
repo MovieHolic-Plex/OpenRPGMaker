@@ -166,6 +166,7 @@ import { BUILD_CONCEPT_EXAMPLE_TOOL } from "./conceptExampleTool";
 import { SHARED_SCENE_TOOLS } from "./sharedSceneTools";
 import { SHARED_OBJECT_TOOLS } from "./sharedObjectTools";
 import { REVEAL_TOOLS } from "./revealTools";
+import { PARTY_SPLIT_TOOLS } from "./partySplitTools";
 import { WEB_SEARCH_TOOLS } from "./webSearchTool";
 import { TILESET_CHANGE_TOOLS } from "./tilesetChangeTools";
 import { STORE_TOOLS } from "./storeTools";
@@ -268,6 +269,7 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   ...SHARED_SCENE_TOOLS,
   ...SHARED_OBJECT_TOOLS,
   ...REVEAL_TOOLS,
+  ...PARTY_SPLIT_TOOLS,
   ...SCENE_SETTING_TOOLS,
   ...withDomain(CONSTRUCTION_TOOLS_V3, "tile"),
   ...withDomain(HOUSE_VISION_TOOLS, "tile"),

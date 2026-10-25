@@ -339,7 +339,7 @@ const commandSummaryPartHandlers: CommandSummaryPartHandlers = {
   tradeMonster: (cmd) => commandLine("몬스터 교환", valuePart(monsterSpeciesName(cmd.fromSpeciesId)), plainPart(" → "), valuePart(monsterSpeciesName(cmd.toSpeciesId))),
   fuseMonsters: (cmd) => commandLine("몬스터 합성", valuePart(monsterInstanceLabel(cmd.instanceIdA)), plainPart(" + "), valuePart(monsterInstanceLabel(cmd.instanceIdB))),
   setDifficulty: (cmd) => commandLine("난이도 변경", valuePart(difficultyDisplayName(store.getCurrent().system, cmd.difficultyId))),
-  storeParty: (cmd) => commandLine("파티 저장", valuePart(cmd.partySetId || "(이름 없음)")),
+  storeParty: (cmd) => commandLine("파티 저장", valuePart(`${cmd.partySetId || "(이름 없음)"}${cmd.actorIds?.length ? ` · ${cmd.actorIds.join(", ")}` : ""}${cmd.mapId || cmd.x !== undefined ? ` @ ${cmd.mapId ?? ""}(${cmd.x ?? "?"}, ${cmd.y ?? "?"})` : ""}`)),
   recallParty: (cmd) => commandLine("파티 전환", valuePart(cmd.partySetId || "(이름 없음)")),
   addFollower: (cmd) => commandLine("동료 추가", valuePart(cmd.name || (cmd.actorId ? actorName(cmd.actorId) : cmd.graphic?.sprite?.id ?? "그래픽"))),
   removeFollower: (cmd) => commandLine("동료 제거", valuePart(cmd.all === true ? "전체" : cmd.name || "이름 없음")),
