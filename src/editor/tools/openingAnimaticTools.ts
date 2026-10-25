@@ -9,7 +9,7 @@ import { resolveAssetResourceUrl } from '@/assets/generatedAssetResourceResolver
 import { findCharsetAsset } from '@/assets/charsetCatalog';
 import { CHARSET_CHARACTER_COUNT, CHARSET_FRAME_COUNT, CHARSET_FRAME_HEIGHT, CHARSET_FRAME_WIDTH, CHARSET_SHEET_COLUMNS, charsetFrameIndex, type CharsetDirection } from '@/assets/easyrpgRtp';
 import { isTitleCardNarration } from '@/project/defaults/defaultOpeningSequence';
-import { openingMapViewCrop, openingMapViewResourceId } from '@/project/openingMapView';
+import { openingMapViewCrop, openingMapViewMapId, openingMapViewResourceId } from '@/project/openingMapView';
 type Shot = Extract<CinematicScene, { kind: 'animatic' }>;
 function text(v: unknown, label: string): string { if (typeof v !== 'string' || !v.trim()) throw new ToolError(label + ' 문자열이 필요합니다.', { code: 'invalid-args' }); return v.trim(); }
 function shot(project: Project, raw: unknown): Shot {
@@ -54,11 +54,19 @@ function check(project: Project, s: Shot, enforceBackdrop = false): void {
   }
   for (const c of s.composition.audioCues ?? []) if (!known('sound', c.resourceId) && !known('music', c.resourceId)) throw new ToolError('오디오 리소스 없음: ' + c.resourceId, { code: 'resource-not-found' });
 }
+// 같은 그림을 두 컷에 깔면 같은 화면이 반복된다. 맵 그대로(map-view:<mapId>)는 맵의 다른 곳을 오려 쓰므로
+// «그림 + 오려 낸 자리»가 같을 때만 재사용으로 본다(한 거리의 정문·가게 앞은 다른 장면이다).
+function backdropKey(l: { resourceId?: string; crop?: { x: number; y: number; width: number; height: number } }): string {
+  const id = l.resourceId!;
+  if (!openingMapViewMapId(id)) return id;
+  const c = l.crop;
+  return c ? `${id}@${Math.round(c.x / 32)},${Math.round(c.y / 32)}` : id;
+}
 function backdropConflict(project: Project, s: Shot): string | null {
-  const ids = s.composition.layers.filter(l => l.kind === 'image' && l.role === 'background').map(l => l.resourceId!);
+  const keys = s.composition.layers.filter(l => l.kind === 'image' && l.role === 'background').map(backdropKey);
   for (const other of project.system.opening?.scenes ?? []) {
     if (other.kind !== 'animatic' || other.id === s.id) continue;
-    if (other.composition.layers.some(l => l.kind === 'image' && l.role === 'background' && ids.includes(l.resourceId!))) return other.id;
+    if (other.composition.layers.some(l => l.kind === 'image' && l.role === 'background' && keys.includes(backdropKey(l)))) return other.id;
   }
   return null;
 }
