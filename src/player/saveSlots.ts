@@ -23,6 +23,7 @@ import { normalizeRelationships } from "@/project/relationshipState";
 import { normalizeCharacterFootprint } from "@/project/footprint";
 import {
   clampFriendship,
+  DEFAULT_MESSAGE_WINDOW_SETTINGS,
   startSession,
   type AudioCommandState,
   type PictureState,
@@ -226,6 +227,8 @@ export type SaveSnapshot = {
     readonly galleryUnlocks?: PlaySession["galleryUnlocks"];
     readonly dialogueBacklog?: PlaySession["dialogueBacklog"];
     readonly dialogueRead?: PlaySession["dialogueRead"];
+    /** «문장 표시 설정». 기본 창이면 생략 — 옛 세이브는 불러올 때 기본 창이다. */
+    readonly messageWindowSettings?: PlaySession["messageWindowSettings"];
     readonly dailyGifts?: PlaySession["dailyGifts"];
     readonly dailyTalks?: PlaySession["dailyTalks"];
     readonly socialLoop?: PlaySession["socialLoop"];
@@ -440,6 +443,7 @@ export function createSaveSnapshot(project: Project, input: PlaySession): SaveSn
   const session = prepareLifeSnapshot(project, input);
   const normalizedItems = normalizeItemTransitionState(session, project.database.items);
   const bundleReceiptIds = normalizedBundleReceiptIds(session.completedBundleIds, session.bundleRewardAppliedIds);
+  const messageWindowSettings = persistedMessageWindowSettings(session.messageWindowSettings);
   return {
     schemaVersion: project.meta.publication ? 6 : SAVE_SCHEMA_VERSION,
     ...(project.meta.publication ? { identity: saveIdentity(project.meta.publication) } : {}),
@@ -540,6 +544,7 @@ export function createSaveSnapshot(project: Project, input: PlaySession): SaveSn
       galleryUnlocks: normalizeGalleryUnlocks(session.galleryUnlocks),
       dialogueBacklog: normalizeBacklog(session.dialogueBacklog),
       dialogueRead: normalizeReadKeys(session.dialogueRead),
+      ...(messageWindowSettings ? { messageWindowSettings } : {}),
       dailyGifts: structuredClone(session.dailyGifts ?? {}),
       dailyTalks: structuredClone(session.dailyTalks ?? {}),
       ...(session.socialLoop ? { socialLoop: structuredClone(session.socialLoop) } : {}),
@@ -903,6 +908,8 @@ export function applySaveSnapshot(project: Project, input: SaveSnapshot): PlaySe
   const dialogueRead = normalizeReadKeys(snapshot.session.dialogueRead);
   if (dialogueRead) session.dialogueRead = dialogueRead;
   else delete session.dialogueRead;
+  const messageWindowSettings = parseMessageWindowSettings(snapshot.session.messageWindowSettings);
+  if (messageWindowSettings) session.messageWindowSettings = messageWindowSettings;
   session.dailyGifts = structuredClone(snapshot.session.dailyGifts ?? {});
   session.dailyTalks = structuredClone(snapshot.session.dailyTalks ?? {});
   if (snapshot.session.socialLoop) session.socialLoop = structuredClone(snapshot.session.socialLoop);
@@ -1409,6 +1416,7 @@ function parseSessionRecord(session: Record<string, unknown>): ParsedSessionResu
       galleryUnlocks: normalizeGalleryUnlocks(session.galleryUnlocks),
       dialogueBacklog: normalizeBacklog(session.dialogueBacklog),
       dialogueRead: normalizeReadKeys(session.dialogueRead),
+      messageWindowSettings: parseMessageWindowSettings(session.messageWindowSettings),
       dailyGifts: isStringRecord(session.dailyGifts) ? session.dailyGifts : undefined,
       dailyTalks: isStringRecord(session.dailyTalks) ? session.dailyTalks : undefined,
       ...(isSocialLoopDayState(session.socialLoop) ? { socialLoop: session.socialLoop } : {}),
@@ -1488,6 +1496,34 @@ function parsePartySets(value: unknown): PlaySession["partySets"] {
     sets[id] = { actorIds: [...entry.actorIds], mapId: entry.mapId, x: Math.trunc(entry.x), y: Math.trunc(entry.y) };
   }
   return Object.keys(sets).length > 0 ? sets : undefined;
+}
+
+/** 기본 대사창은 적지 않는다. 깨진 값은 버린다 — 그 칸 때문에 세이브 전체를 거절하지 않는다. */
+function persistedMessageWindowSettings(value: unknown): PlaySession["messageWindowSettings"] | undefined {
+  const parsed = parseMessageWindowSettings(value);
+  if (!parsed) return undefined;
+  const defaults = DEFAULT_MESSAGE_WINDOW_SETTINGS;
+  if (parsed.format === defaults.format
+    && parsed.position === defaults.position
+    && parsed.preventObscuringPlayer === defaults.preventObscuringPlayer
+    && parsed.allowEventMovementDuringWait === defaults.allowEventMovementDuringWait) {
+    return undefined;
+  }
+  return parsed;
+}
+
+function parseMessageWindowSettings(value: unknown): PlaySession["messageWindowSettings"] | undefined {
+  if (!isRecord(value)) return undefined;
+  const format = value.format === "transparent" ? "transparent" : value.format === "normal" ? "normal" : undefined;
+  const position = value.position === "top" || value.position === "center" || value.position === "bottom" ? value.position : undefined;
+  if (!format || !position) return undefined;
+  if (typeof value.preventObscuringPlayer !== "boolean" || typeof value.allowEventMovementDuringWait !== "boolean") return undefined;
+  return {
+    format,
+    position,
+    preventObscuringPlayer: value.preventObscuringPlayer,
+    allowEventMovementDuringWait: value.allowEventMovementDuringWait,
+  };
 }
 
 function parseItemUseCharges(value: unknown): Record<string, number> {
