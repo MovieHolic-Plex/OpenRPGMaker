@@ -52,6 +52,10 @@ export const OPRN_CHANNELS = {
   lifecycleFlushBeforeClose: "oprn:lifecycle.flush-before-close",
   lifecycleFlushDone: "oprn:lifecycle.flush-done",
   lifecycleSave: "oprn:lifecycle.save",
+  /** 이 창이 연 프로젝트의 «마지막 편집 화면» 그림(편집기 부팅 동안 읽기 전용 자리표시). electron/main/lastView.ts */
+  resumeLastView: "oprn:resume.lastView",
+  /** 편집기가 부팅 로더를 걷었다 — 이제 이 창을 마지막 편집 화면으로 찍어도 된다. */
+  resumeEditorReady: "oprn:resume.editorReady",
   startRecentProjects: "oprn:start.recentProjects",
   startOpenFolder: "oprn:start.openFolder",
   startCreateProject: "oprn:start.createProject",

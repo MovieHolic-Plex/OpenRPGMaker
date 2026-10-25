@@ -23,6 +23,14 @@
   modulepreload 수십 개 뒤라 HTTP/1.1 연결을 기다려 첫 화면을 늦췄다 — `electron/serve/runtime.ts` 가 `<meta charset>` 바로 뒤에 심는다.
   Electron 창은 `backgroundColor: #F7F8F8`(스플래시 바탕색)이고 `ready-to-show` 가 첫 프레임 뒤라 흰 화면이 안 보인다. 시작 화면(`start-screen.html`)도 인라인 로고 뼈대를 먼저 그린다.
 
+- **마지막 편집 화면 자리표시 (2026-10-25, 데스크톱):** 「계속」·프로젝트 열기 뒤 편집기가 준비되기까지(평소 9~13s, 새 빌드 첫 실행 30s+) 흰 로더만 보이던 자리에
+  지난번 그 프로젝트를 닫을 때의 편집기 그림을 읽기 전용으로 깔고, 단계 글자를 아래 가운데 작은 칩(「프로젝트 여는 중… (3/4)」)으로 바꾼다. 편집기가 로더를 걷으면 그림도 함께 걷힌다.
+  찍기: `electron/main/lastView.ts` — 창을 닫을 때(숨기기 전, 상한 250ms) 그리고 저장이 끝난 뒤(1.5s 디바운스, 최소 20s 간격) `webContents.capturePage()` →
+  `userData/last-view/<폴더 해시>.jpg/.json`(긴 변 1600, JPEG 80). 렌더러가 로더를 걷을 때 `oprn.resume.editorReady()`(src/app/bootLoader.ts)로 알린 창만 찍는다 —
+  닫기 직전 렌더러는 저장으로 바빠 `executeJavaScript` 로 상태를 물으면 상한 안에 안 돌아왔다(실측). 문서를 떠나면(`did-start-navigation`) 다시 신호를 기다린다.
+  보이기: `public/boot-splash.js` 가 `oprn.resume.lastView()`(IPC, 이 창이 연 프로젝트 것만 — 다른 프로젝트 그림은 절대 안 준다)를 묻고, 묻는 동안(최대 400ms) 로고·줄을 숨긴다(`data-resume-pending`),
+  그림이 오면 `data-resume` + `<img class="oprn-boot-resume">`. 실패 화면(`data-failed`)이 뜨면 그림 대신 평소 오류 화면. `?play=`·`?demo=` 문서와 웹(프리로드 없음)은 예전 로더.
+  부팅 마크 `resume-shown`. 실측(부하 57~60, 3회 중앙값): 편집기 문서 시작 뒤 0.36s(클릭 뒤 약 0.64s)에 지난 화면이 보인다 — 예전에는 settled(클릭 뒤 12~13s)까지 로더만.
 - **웜 부팅 시간 줄이기 (2026-10-15, 웜 = 표식이 맞는 두 번째 부팅. 정상 상태 CPU 프로필로 큰 것부터):** 다섯 가지와, 해 보고 버린 것.
   ① 저장 기준본(`store.load` 의 `baselineFrom`)은 부팅 정규화를 건너뛰는 문서(표식 일치 · 대기 중인 얼굴 시트 보정 없음)에서만 타일셋·업로드 자산
   항목을 공유한다(`projectWithoutEventDraftsSharingSharedDictionaries`, 복제 1.5s 절약) — 정규화기가 돌 문서는 예전처럼 통째 복제한다(정규화기는 항목을 제자리에서 고친다).

@@ -63,6 +63,8 @@ export function dismissBootLoader(): void {
   if (loader.hasAttribute("data-failed")) return;
   bootMark("settled");
   splashApi()?.leave();
+  // 데스크톱: 이제 이 화면을 «마지막 편집 화면»으로 찍어도 된다(electron/main/lastView.ts — 다음 부팅의 자리표시).
+  (window as unknown as { oprn?: { resume?: { editorReady?: () => void } } }).oprn?.resume?.editorReady?.();
   loader.dataset.leaving = "";
   // 페이드아웃 뒤 DOM 에서 뺀다. reduced-motion(transition:none)이면 transitionend 가 안 오므로 시간으로.
   setTimeout(() => loader.remove(), 200);

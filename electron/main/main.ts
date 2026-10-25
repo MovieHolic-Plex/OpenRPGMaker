@@ -12,6 +12,7 @@ import { registerAssetBrowser } from "./assetBrowser";
 import { acceptStoreDeepLink, registerAssetStore } from "./assetStore";
 import { findStoreDeepLinkArg } from "../../src/assetStore/deepLink";
 import { registerAppProtocol, registerAssetProtocol } from "./protocols";
+import { captureLastViewBeforeClose, forgetLastViewWindow, markEditorLeft, markEditorSettled, readLastView, scheduleLastViewAfterSave } from "./lastView";
 import { createProjectSessionRegistry } from "./sessions";
 import { startCompanionServer, type CompanionServer } from "./companion";
 import { describeRecentProjects, listRecentTeams, prepareNewProjectDir, recentProjectCoverSource, rememberRecentProject, rememberRecentTeam, suggestProjectDir, writeRecentProjectCover } from "./recent";
@@ -74,15 +75,18 @@ function installCloseFlow(window: BrowserWindow): void {
   const id = window.webContents.id;
   window.on("close", (event) => {
     if (closing.has(id)) return;
-    if (!sessions.get(id)) return;
+    const session = sessions.get(id);
+    if (!session) return;
     event.preventDefault();
     closing.add(id);
-    // 저장이 끝날 때까지 창을 잡아 두되 화면에서는 바로 치운다 — 닫기 단추가 «바로» 먹는다.
-    window.hide();
     window.webContents.send(OPRN_CHANNELS.lifecycleFlushBeforeClose);
     closeTimers.set(id, setTimeout(() => destroyWindow(window), CLOSE_FLUSH_TIMEOUT_MS));
+    // 저장이 끝날 때까지 창을 잡아 두되 화면에서는 곧 치운다 — 숨기기 전에 마지막 편집 화면을 찍는다(상한 250ms, lastView.ts).
+    // 다음 실행에서 이 프로젝트를 열면 편집기가 부팅하는 동안 이 그림이 바로 보인다.
+    void captureLastViewBeforeClose(window, session.projectDir).finally(() => { if (!window.isDestroyed()) window.hide(); });
   });
   window.on("closed", () => {
+    forgetLastViewWindow(id);
     closing.delete(id);
     const timer = closeTimers.get(id);
     if (timer) clearTimeout(timer);
@@ -208,6 +212,8 @@ function createWindow(options: { readonly splash?: () => Splash | undefined; rea
   window.on("restore", broadcastState);
   window.on("minimize", broadcastState);
   window.on("closed", () => revealOnStartReady.delete(id));
+  // 문서를 떠나면(시작 화면 ↔ 편집기·새로고침) 다시 «부팅을 마쳤다» 신호가 올 때까지 찍지 않는다.
+  window.webContents.on("did-start-navigation", (details) => { if (details.isMainFrame && !details.isSameDocument) markEditorLeft(id); });
   window.webContents.on("will-navigate", (event, url) => {
     if (!url.startsWith(`${OPRN_APP_SCHEME}://`)) event.preventDefault();
   });
@@ -466,6 +472,14 @@ export async function startApp(boot: BootContext): Promise<void> {
     if (window) destroyWindow(window);
     return true;
   });
+  ipcMain.on(OPRN_CHANNELS.resumeEditorReady, (event) => {
+    if (event.senderFrame?.url.startsWith(`${OPRN_APP_SCHEME}://`)) markEditorSettled(event.sender.id);
+  });
+  // 편집기 부팅 동안 보일 마지막 편집 화면(public/boot-splash.js). 이 창이 연 프로젝트 것만 준다.
+  ipcMain.handle(OPRN_CHANNELS.resumeLastView, (event) => {
+    if (!event.senderFrame?.url.startsWith(`${OPRN_APP_SCHEME}://`)) return null;
+    return readLastView(sessions.get(event.sender.id)?.projectDir);
+  });
   ipcMain.handle(OPRN_CHANNELS.windowControl, (event, action: unknown) => {
     const window = BrowserWindow.fromWebContents(event.sender);
     if (!window || !event.senderFrame?.url.startsWith(`${OPRN_APP_SCHEME}://`)) return false;
@@ -576,7 +590,11 @@ export async function startApp(boot: BootContext): Promise<void> {
     mainMark("startScreenReady");
     revealOnStartReady.get(event.sender.id)?.();
   });
-  registerIpcHandlers(sessions);
+  registerIpcHandlers(sessions, (webContentsId) => {
+    const window = BrowserWindow.getAllWindows().find((candidate) => !candidate.isDestroyed() && candidate.webContents.id === webContentsId);
+    const projectDir = sessions.get(webContentsId)?.projectDir;
+    if (window && projectDir) scheduleLastViewAfterSave(window, projectDir);
+  });
   registerAssetBrowser();
   registerAssetStore({ hasProject: (webContentsId) => sessions.get(webContentsId) !== null });
   registerDeepLinkProtocol();
