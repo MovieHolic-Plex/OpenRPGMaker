@@ -115,13 +115,20 @@ def main():
     sources={}
     for item,sha,meta,im in items:
         w,h=im.width//16,im.height//16;mask,opaque=wall_mask(im,meta)
+        if meta.get('blocked') is not None:   # profile authored its own cell walk grid (building-kit massing): use it verbatim
+            mask=np.zeros((h,w),bool)
+            for bx,by in meta['blocked']:mask[by,bx]=True
+            mask&=opaque
+        if B.get('objectGate'):   # AGENTS.md 3/4 gate: bundle exit refuses unless object-gate passes this exact picture
+            sys.path.insert(0,str(ROOT/'src/harnesses/_core'));from object_gate import require_pass
+            require_pass(im,kind=B['objectGate'],context='bundle',label=f'{P["id"]}/{item}')
         e=meta['entrance'];dx,dy,ew,eh=e['x']//16,e['y']//16,max(1,e['w']//16),max(1,e['h']//16)
         for yy in range(dy,dy+eh):
             for xx in range(dx,dx+ew):
                 assert opaque[yy,xx],f'{item}: entrance cell {xx},{yy} is empty';mask[yy,xx]=True
         for x in range(w):
             ys=[y for y in range(h) if opaque[y,x]]
-            if ys:assert mask[max(ys),x],f'{item}: bottom cell {x},{max(ys)} not solid'
+            if ys and [x,max(ys)] not in meta.get('passages',[]):assert mask[max(ys),x],f'{item}: bottom cell {x},{max(ys)} not solid'
         lines=ground_lines(mask)
         shadow=Image.new('RGBA',((w+1)*16,(h+1)*16));foundation=Image.new('RGBA',shadow.size)
         ds=ImageDraw.Draw(shadow);df=ImageDraw.Draw(foundation)

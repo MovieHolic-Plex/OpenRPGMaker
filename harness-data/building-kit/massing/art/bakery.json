@@ -1,0 +1,17 @@
+{
+ "name": "빵집",
+ "massing": "M33",
+ "material": "plaster",
+ "refs": [
+  "bd-house-h106_1",
+  "bd-house-cafe"
+ ],
+ "walk": [
+  "..****",
+  ".*****",
+  ".XXXXX",
+  "XXXDXX",
+  "XXXDXX"
+ ],
+ "id": "bakery"
+}

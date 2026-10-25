@@ -1,0 +1,19 @@
+{
+ "name": "양조장",
+ "massing": "M32",
+ "material": "plaster",
+ "refs": [
+  "bd-house-ware0",
+  "bd-house-smithy_town"
+ ],
+ "walk": [
+  "..*****..",
+  "*******..",
+  "*******..",
+  "XXXXXXXXX",
+  "XXXXXXXXX",
+  "XXDXXXXXX",
+  "XXDXXXXXX"
+ ],
+ "id": "brewery"
+}

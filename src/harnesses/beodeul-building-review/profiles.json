@@ -104,6 +104,92 @@
    "dataDir": "~/.local/share/oprn/beodeul-props-review",
    "seedDir": "harness-data/beodeul-props-review",
    "_doc": "건물 말고 타일셋으로 놓는 것들(울타리·소품·나무·가로등…). 기계 게이트 없이 사람이 모두 결정한다. 번들 설치·스토어는 허용이 쌓인 뒤(아직 bundle 없음)."
+  },
+  {
+   "id": "building-kit-massing",
+   "label": "버들항 중세 건물(덩어리 모형)",
+   "gate": false,
+   "_doc": "building-kit massing 단계(덩어리 모형 → 손 도트 건물). 허용은 사람 클릭이 아니라 사용자 위임(2026-10-25): object-gate 영수증 + 독립 검수자 둘(argon · klb-sonnet-5-5)의 원문 PASS 가 지금 그림 해시와 맞을 때만 massing.py decide 가 decisions.json 에 by delegated 로 적는다. 설치는 object-gate require_pass(kind structure, bundle)를 다시 확인한다.",
+   "dataEnv": "BUILDING_KIT_MASSING_DATA",
+   "dataDir": "~/.local/share/oprn/building-kit-massing",
+   "seedDir": "harness-data/building-kit/massing",
+   "bundle": {
+    "tilesetId": "beodeul_massing",
+    "texture": "tex_beodeul_massing",
+    "name": "버들항 · 중세 건물(덩어리 모형)",
+    "publicDir": "public/assets/beodeul-massing",
+    "publicUrl": "/assets/beodeul-massing",
+    "tiledata": "tiledata/beodeul-massing",
+    "catalog": "src/assets/beodeulMassingCatalog.json",
+    "references": "src/assets/beodeulMassingReferences.json",
+    "referencesId": "beodeul-massing",
+    "hostTilesetId": "beodeul_city",
+    "hostTexture": "tex_beodeul_city",
+    "ids": {
+     "house": "bd-house-mk-",
+     "shadow": "bd-mk-shadow-",
+     "foundation": "bd-mk-foundation-",
+     "docs": "bd-mk-"
+    },
+    "tags": [
+     "버들항",
+     "3/4 탑뷰",
+     "중세"
+    ],
+    "groundSurface": [
+     136,
+     177,
+     77
+    ],
+    "objectGate": "structure",
+    "approval": "delegated"
+   },
+   "example": {
+    "_doc": "참고문서의 거리 예제: 건물 여러 채, 길, 문 앞을 막는 실제 소품(정상/오류 그림). picks 는 massing.py publish 가 고른다.",
+    "map": {
+     "id": "mk_street",
+     "name": "버들항 · 중세 건물 거리 예제",
+     "width": 72,
+     "height": 57,
+     "roadRow": 12,
+     "rowStep": 14
+    },
+    "picks": [
+     "cottage",
+     "chapel",
+     "dovecote",
+     "inn",
+     "l-farmhouse",
+     "longhouse",
+     "smithy",
+     "bakery",
+     "barracks",
+     "brewery",
+     "cross-house",
+     "gable-cottage",
+     "granary-mill",
+     "great-hall",
+     "jetty-house",
+     "manor",
+     "market-hall",
+     "merchant-house",
+     "thouse",
+     "tithe-barn",
+     "tower-house",
+     "town-hall",
+     "windmill",
+     "dormer-house",
+     "keep-tower",
+     "lighthouse",
+     "wizard-tower"
+    ],
+    "grassTile": 737,
+    "groundTilesetId": "beodeul_ground",
+    "groundCatalog": "src/assets/beodeulGroundCatalog.json",
+    "roadRecipePattern": "^bdg-hamlet-soil-\\d+$",
+    "roadRecipePrefix": "bdg-hamlet-soil-",
+    "blockerKit": "bd-pick-volcano-cave-anvil"
+   }
   }
  ]
 }

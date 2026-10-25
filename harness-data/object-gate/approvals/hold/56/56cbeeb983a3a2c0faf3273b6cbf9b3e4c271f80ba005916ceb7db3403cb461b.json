@@ -1,0 +1,16 @@
+{
+ "schema": "oprn-object-gate-hold-decision/1",
+ "pixelSha256": "56cbeeb983a3a2c0faf3273b6cbf9b3e4c271f80ba005916ceb7db3403cb461b",
+ "profileHash": "4d8774b517f41638",
+ "kind": "structure",
+ "decision": "allow",
+ "decidedBy": "supervisor (building-kit massing)",
+ "decidedAt": "2026-10-25T08:07:05.072Z",
+ "by": "delegated",
+ "delegatedBy": "user 2026-10-25 (bk-massing-100 → 실제 건물, 머지까지 위임)",
+ "evidence": "/home/main/z-project/rpg-zzu-building-kit/harness-data/building-kit/massing/reviews/l-farmhouse/56cbeeb983a3-evidence.json",
+ "via": "review-page",
+ "reasons": [],
+ "note": "object-gate pass + argon PASS + klb-sonnet-5-5 PASS (원문 파일)",
+ "sig": "6a6ba65d2d8c1af49dd518f2c7803151e1c8d9020729a1e6f46499f60b7c65c5"
+}

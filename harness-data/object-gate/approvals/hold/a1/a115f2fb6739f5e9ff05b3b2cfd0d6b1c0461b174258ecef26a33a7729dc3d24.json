@@ -1,0 +1,16 @@
+{
+ "schema": "oprn-object-gate-hold-decision/1",
+ "pixelSha256": "a115f2fb6739f5e9ff05b3b2cfd0d6b1c0461b174258ecef26a33a7729dc3d24",
+ "profileHash": "4d8774b517f41638",
+ "kind": "structure",
+ "decision": "allow",
+ "decidedBy": "supervisor (building-kit massing)",
+ "decidedAt": "2026-10-25T09:11:19.228Z",
+ "by": "delegated",
+ "delegatedBy": "user 2026-10-25 (bk-massing-100 → 실제 건물, 머지까지 위임)",
+ "evidence": "/home/main/z-project/rpg-zzu-building-kit/harness-data/building-kit/massing/reviews/brewery/a115f2fb6739-evidence.json",
+ "via": "review-page",
+ "reasons": [],
+ "note": "object-gate pass + argon PASS + klb-sonnet-5-5 PASS (원문 파일)",
+ "sig": "56262ef815cf70e44bf241a012011868aa98208381ed1ef4024f9465cc560c65"
+}

@@ -1,0 +1,2378 @@
+{
+ "harness": "building-kit",
+ "note": "style-r3 시드 — 사용자 2026-10-22 반려(「그나마 괜찮은데 접지면이 좀 — 보도블록까지 그릴 필요가 있나」) 뒤 문법을 고쳤다: 기단 행 없음 · 모임 사선 2칸 끝 · 질량 합성(본채 + 헛간/현관 날개).",
+ "theme": {
+  "id": "northern-snow",
+  "name": "설원 북방 마을",
+  "concept": "눈 덮인 가파른 지붕, 짙은 널 지붕 끝, 통나무 벽과 반목조 회벽, 돌 기단·굴뚝 연기. 버들항 설원 변형과 같은 재료.",
+  "decision": "사용자 2026-10-22: 테마 넷(중세 판타지 왕국·사막 오아시스·설원 북방·버들항 귀족 구역), 방식 「버들항식 부품 조립」"
+ },
+ "family": "oprn-atlas",
+ "tileset": {
+  "id": "bk_northern_snow",
+  "family": "oprn-atlas",
+  "status": "골격 — 후보 없음. 번들에 굽지 않는다."
+ },
+ "rules": {
+  "tile": 16,
+  "family": "oprn-atlas",
+  "light": "왼쪽 위",
+  "view": "3/4 탑뷰 — 지붕 윗면이 면으로 보이고(건물 높이의 30~50%) 남쪽 정면이 보인다. 옆면·아이소 금지. 정면 입면도(지붕이 얇은 띠)도 금지.",
+  "outline": "던전·무림과 같은 외곽선 규칙 — 먹 윤곽(밝기 ≤ 0.12) 없음, 재질 자신의 명암(빛 받는 위·왼 = 밝은 단, 그늘 아래·오른 = 어두운 단). 큰 구조 바깥은 재질 어두운 단.",
+  "paletteLock": "불투명은 palette.json 색만, 반투명은 버들항 그림자 (12,14,20,α88) 하나만. 후보 코드에 hex 색 금지.",
+  "door": "건물 하나에 문은 정확히 하나(시드가 doorTwice 를 명시한 레시피만 예외), 문은 맨 아래 층, 문 앞 칸은 걸음.",
+  "storey": "벽 한 층 = 2칸(32px), 지붕 = 3행(2층은 4행 .tall), 기단은 선택(기본 없음). 문은 32px 높이(Actor1 24×32 와 같은 키).",
+  "seam": "가운데 조각은 가로로 1~6번 반복된다 — 기와 줄·줄눈·기둥 박자가 조각 경계를 넘어 이어져야 한다(16 주기 바탕).",
+  "eave": "처마는 지붕 l·r 조각의 바깥 2~3px 에 그린다 — 지붕 폭 = 벽 폭(overhang 0칸). 지붕 맨 아래 2행은 칸 경계까지 불투명하게 찍는다('~' 반투명을 쓰면 바닥이 비쳐 지붕·벽 사이가 벌어진다).",
+  "eaveShadow": "처마 그늘은 벽 조각 맨 위 1~2행에 벽 재질의 어두운 단으로 불투명하게 그린다. 벽 l·r 조각은 바깥 2~3px 을 투명(inset 2)으로 두어 처마가 벽보다 튀어나와 보이게 한다. '~' 는 건물 발치 바닥 그림자에만.",
+  "forbidden": [
+   "생성 이미지·트레이스",
+   "사람(캐릭터) 그리기 — 크기 비교는 Actor1",
+   "글자·상표가 있는 간판",
+   "원·다각형 마스크로 본체 만들기·잡음 채우기·난수",
+   "먹 윤곽"
+  ],
+  "ground": "건물은 땅에 바로 닿는다 — 전폭 기단·보도블록 행을 깔지 않는다(사용자 2026-10-22: 「접지면이 어긋나다」·「보도블록까지 그릴 필요가 있나」). 기초는 벽 조각 맨 아래 1~3px 의 어두운 단·돌이고, 기단(base)은 계단이 있는 대좌처럼 레시피가 명시할 때만 쓴다.",
+  "roof": "모임지붕(hip): 지붕 세트의 왼끝·오른끝 조각이 2칸이고 그 안에 처마 모서리→용마루 끝 사선이 들어간다. 용마루는 짧고 밝은 선, 사면은 2행 이상, 처마는 가장 어두운 띠. 1층은 3행, 2층은 4행(.tall). 처마는 끝 조각 바깥 2~3px 돌출, 벽 끝 조각은 inset 2 로 비운다. 건물 최소 폭 4칸.",
+  "colour": "지붕은 중간·어두운 단이 대부분이고 가장 밝은 단은 한 화소 하이라이트로 드문드문 — 밝은 단을 넓게 깔면 지붕이 떠 보인다(사용자 2026-10-22 「색감이 어색하다」). refs/ 의 버들항 기준 건물과 같은 배율로 견준다.",
+  "massing": "한 채는 질량(masses)을 합쳐 만든다 — 앞줄(depth 0)이 뒤 질량(depth 1)을 덮는다. 질량은 가로로 닿거나 겹치고, 문은 건물 전체에 하나. 층마다 벽 재질을 바꿀 수 있다(돌 1층 + 목조 2층).",
+  "projection": "박공 정면(gable-front) 투영 — 사용자 판정 2026-10-22: 「집이 이 각도로 보여야 한다 — 지금은 전혀 아니다」. style-r1~r4 의 '정면과 나란한 용마루 지붕 + 평평한 정면 입면'은 반려됐다. ① 박공 끝(삼각 벽, 계단 박공이면 크로스텝)이 남쪽(보는 쪽)을 본다 — 앞 박공 삼각형은 질량 아래 벽 띠 바로 위에 선다. ② 용마루는 북쪽으로 물러난다 — 화면에서는 앞 박공 꼭대기에서 위로 뒤 꼭대기까지 곧은 세로선(질량 가운데 2px)이다. ③ 용마루 왼쪽·오른쪽에 두 사면이 세로로 긴 면으로 보인다(사면 길이 = depth_rows = 지붕이 물러나는 깊이). ④ 뒤 끝은 맨 위의 ^ 모양 — 가운데 용마루 끝이 가장 높고 양 처마 쪽으로 내려간다. 다른 지붕에 박히면 그 ^ 선이 골(valley)이다. ⑤ 높은 3/4 카메라: 지붕이 실루엣의 대부분(질량 높이의 50~85%)이고 벽은 질량 아래 띠다. 옆벽은 처마에 가려 거의 안 보인다. ⑥ 조합: L·T 평면 — 정면과 나란한 용마루의 본채 앞에 박공 정면 날개, 지붕이 만나는 골, 작은 박공 현관, 지붕에서 솟는 굴뚝, 옆의 외쪽(한쪽 경사) 지붕."
+ },
+ "palette": {
+  "note": "공유 램프(grass·cobble·stone·wood·iron)는 palette.py 가 모든 테마에 똑같이 뽑는다. 여기는 테마 램프만. 2026-10-22 사용자 비교(버들항 설원 마을 tiledata/beodeul-variants/snowfield 가 우리 북방 마을보다 낫다) 뒤 설원 부품 파일에서 water·ice·pine·roofred·roofslate·brick·plaster·plaza·dirt 를 더했다. hplaster 는 옛 판(style-r1~r5) 그림이 쓰므로 남긴다.",
+  "ramps": {
+   "snow": {
+    "from": "beodeul",
+    "cells": [
+     {
+      "file": "tiledata/beodeul-variants/snowfield/parts/ground-snow.png"
+     },
+     {
+      "kit": "bd-pick-snowfield-hall",
+      "rows": [
+       0,
+       1,
+       2
+      ]
+     },
+     {
+      "kit": "bd-pick-snowfield-hut",
+      "rows": [
+       0,
+       1,
+       2
+      ]
+     }
+    ],
+    "k": 7,
+    "pred": "snowy",
+    "why": "눈 — 버들항 설원 눈 바닥(ground-snow)과 설원 회관·오두막 지붕 위 눈(밝은 단·푸른 그늘·고드름 빛)"
+   },
+   "shake": {
+    "from": "beodeul",
+    "cells": [
+     {
+      "kit": "bd-pick-snowfield-hall",
+      "rows": [
+       1,
+       2
+      ]
+     },
+     {
+      "kit": "bd-pick-snowfield-hut",
+      "rows": [
+       1,
+       2
+      ]
+     }
+    ],
+    "k": 7,
+    "pred": "darkwarm",
+    "why": "눈 아래 짙은 널 지붕 — 버들항 설원 지붕 처마"
+   },
+   "log": {
+    "from": "beodeul",
+    "cells": [
+     {
+      "kit": "bd-pick-snowfield-hut",
+      "rows": [
+       2,
+       3,
+       4
+      ]
+     }
+    ],
+    "k": 7,
+    "pred": "warm",
+    "why": "통나무 벽 — 버들항 설원 오두막 벽"
+   },
+   "hplaster": {
+    "from": "beodeul",
+    "cells": [
+     {
+      "kit": "bd-pick-snowfield-hall",
+      "rows": [
+       3,
+       4,
+       5,
+       6
+      ]
+     }
+    ],
+    "k": 7,
+    "pred": "warmcream",
+    "why": "반목조 회벽 — 버들항 설원 회관 벽(고드름 빛은 뺀다)"
+   },
+   "water": {
+    "from": "beodeul",
+    "cells": [
+     {
+      "file": "tiledata/beodeul-variants/snowfield/parts/ground-hot.png"
+     }
+    ],
+    "k": 7,
+    "pred": "teal",
+    "why": "연못 물 — 버들항 설원 마을 왼쪽 위 짙은 청록 연못(ground-hot 물 표본, 가장자리 눈은 teal 조건으로 뺀다)"
+   },
+   "ice": {
+    "from": "beodeul",
+    "cells": [
+     {
+      "file": "tiledata/beodeul-variants/snowfield/parts/ground-ice.png"
+     }
+    ],
+    "k": 7,
+    "why": "푸른 얼음 — 버들항 설원 얼어붙은 항구(ground-ice: 짙은 금·물빛·흰 반사)"
+   },
+   "pine": {
+    "from": "beodeul",
+    "cells": [
+     {
+      "file": "tiledata/beodeul-variants/snowfield/parts/pine.png",
+      "pred": "green",
+      "k": 7
+     },
+     {
+      "file": "tiledata/beodeul-variants/snowfield/parts/pine.png",
+      "pred": "darkwarm",
+      "k": 2
+     }
+    ],
+    "k": 7,
+    "why": "전나무 — 버들항 설원 전나무의 청록 바늘잎 7단 + 짙은 줄기 2단(줄기는 화소가 적어 따로 뽑는다, 잎 눈은 뺀다)"
+   },
+   "roofred": {
+    "from": "beodeul",
+    "cells": [
+     {
+      "file": "tiledata/beodeul-variants/snowfield/parts/w2.png"
+     },
+     {
+      "file": "tiledata/beodeul-variants/snowfield/parts/s1.png"
+     },
+     {
+      "file": "tiledata/beodeul-variants/snowfield/parts/n2.png"
+     }
+    ],
+    "k": 7,
+    "pred": "roofred",
+    "why": "붉은 기와 지붕 — 버들항 설원 반목조 집(w2)·벽돌 집(s1·n2) 지붕(눈·벽돌 면·나무는 roofred 조건으로 뺀다)"
+   },
+   "roofslate": {
+    "from": "beodeul",
+    "cells": [
+     {
+      "file": "tiledata/beodeul-variants/snowfield/parts/w1.png"
+     },
+     {
+      "file": "tiledata/beodeul-variants/snowfield/parts/e1.png"
+     }
+    ],
+    "k": 7,
+    "pred": "slate",
+    "why": "푸른 슬레이트 지붕 — 버들항 설원 벽돌 집(w1·e1) 청회색 지붕(창 유리·벽돌 줄눈·눈 그늘은 slate 조건으로 뺀다)"
+   },
+   "brick": {
+    "from": "beodeul",
+    "cells": [
+     {
+      "file": "tiledata/beodeul-variants/snowfield/parts/w1.png"
+     },
+     {
+      "file": "tiledata/beodeul-variants/snowfield/parts/e1.png"
+     }
+    ],
+    "k": 7,
+    "pred": "brick",
+    "why": "분홍 벽돌 벽 — 버들항 설원 벽돌 집(w1·e1)의 분홍 벽돌 면과 자주 줄눈(문·창틀 나무와 지붕은 brick 조건으로 뺀다)"
+   },
+   "plaster": {
+    "from": "beodeul",
+    "cells": [
+     {
+      "file": "tiledata/beodeul-variants/snowfield/parts/w2.png"
+     },
+     {
+      "file": "tiledata/beodeul-variants/snowfield/parts/e2.png"
+     }
+    ],
+    "k": 7,
+    "pred": "plasterish",
+    "why": "흰 회벽 — 버들항 설원 반목조 집(w2·e2) 기둥 사이 흰 회벽과 그 그늘(눈·회색 기초돌·갈색 지붕은 뺀다)"
+   },
+   "plaza": {
+    "from": "beodeul",
+    "cells": [
+     {
+      "file": "tiledata/beodeul-variants/snowfield/parts/ground-plaza.png"
+     }
+    ],
+    "k": 7,
+    "why": "광장 판석 — 버들항 설원 마을 가운데 푸른 회색 판석(ground-plaza)"
+   },
+   "dirt": {
+    "from": "beodeul",
+    "cells": [
+     {
+      "file": "tiledata/beodeul-variants/snowfield/parts/ground-road.png"
+     }
+    ],
+    "k": 7,
+    "pred": "warm",
+    "why": "다져진 흙길 — 버들항 설원 마을 길(ground-road, 길 가장자리 눈은 warm 조건으로 뺀다)"
+   }
+  }
+ },
+ "characters": {
+  "sheet": "public/assets/easyrpg/charset/Actor1.png",
+  "note": "크기 비교 전용. 그리지 않는다."
+ },
+ "refs": [
+  {
+   "kit": "bd-pick-snowfield-hall",
+   "label": "버들항 설원 회관 8×7 — 눈 지붕·반목조 (parts/hall.png 와 같은 화소)",
+   "use": "hall"
+  },
+  {
+   "kit": "bd-pick-snowfield-hut",
+   "label": "버들항 설원 오두막 4×5 — 눈 지붕·통나무 (parts/hut.png 와 같은 화소)",
+   "use": "home"
+  },
+  {
+   "file": "tiledata/beodeul-variants/snowfield/parts/w2.png",
+   "id": "snowfield-w2",
+   "label": "버들항 설원 w2 — 반목조 흰 회벽 + 붉은 지붕(줄 B)",
+   "use": "home"
+  },
+  {
+   "file": "tiledata/beodeul-variants/snowfield/parts/w1.png",
+   "id": "snowfield-w1",
+   "label": "버들항 설원 w1 — 분홍 벽돌 + 슬레이트 지붕(줄 C)",
+   "use": "home"
+  },
+  {
+   "file": "tiledata/beodeul-variants/snowfield/parts/s1.png",
+   "id": "snowfield-s1",
+   "label": "버들항 설원 s1 — 분홍 벽돌 + 붉은 지붕(줄 C)",
+   "use": "home"
+  },
+  {
+   "file": "tiledata/beodeul-variants/snowfield/render-1x.png",
+   "crop": [
+    200,
+    215,
+    472,
+    285
+   ],
+   "id": "snowfield-village-houses",
+   "label": "버들항 설원 마을 렌더 일부 — 회관·벽돌·반목조·통나무 집, 광장 판석·흙길·전나무",
+   "use": "village"
+  }
+ ],
+ "lines": {
+  "note": "줄 = 화풍 하나. style-r6 부터 줄은 버들항 설원 마을(tiledata/beodeul-variants/snowfield)의 세 집 계열이다 — A 통나무 오두막 · B 반목조 흰 회벽 + 붉은 지붕 · C 분홍 벽돌 + 붉은/슬레이트 지붕. 옛 줄 C(돌 장벽)는 style-r5 까지.",
+  "A": {
+   "name": "눈 지붕 통나무 오두막",
+   "concept": "굵은 통나무(log) 벽과 마구리, 너와(shake) 지붕 — 지붕 위에 눈이 두껍게 얹히고(snow 밝은 단 + 푸른 그늘) 처마 끝에 고드름이 늘어진다. 돌 굴뚝(stone)·쇠 문고리(iron). 버들항 설원 오두막(hut·w3)처럼. 램프: log · shake · snow · stone · iron.",
+   "materials": [
+    "log",
+    "shake",
+    "snow",
+    "stone",
+    "iron"
+   ],
+   "origin": {
+    "round": "style-r6",
+    "key": "A"
+   }
+  },
+  "B": {
+   "name": "반목조 흰 회벽 + 붉은 지붕",
+   "concept": "흰 회벽(plaster) 사이로 짙은 나무 기둥·가새(wood), 붉은 기와 지붕(roofred) — 지붕 위에 눈이 두껍게 얹히고(snow 밝은 단 + 푸른 그늘) 처마 끝에 고드름이 늘어진다. 벽돌 굴뚝(brick). 버들항 설원 회관(hall)의 반목조와 w2 집처럼. 램프: plaster · wood · roofred · snow · brick · stone.",
+   "materials": [
+    "plaster",
+    "wood",
+    "roofred",
+    "snow",
+    "brick",
+    "stone"
+   ],
+   "origin": {
+    "round": "style-r6",
+    "key": "B"
+   }
+  },
+  "C": {
+   "name": "분홍 벽돌 + 붉은·슬레이트 지붕",
+   "concept": "분홍 벽돌(brick) 벽과 자주 줄눈, 나무 창틀·문(wood), 붉은 기와(roofred) 또는 푸른 슬레이트(roofslate) 지붕 — 지붕 위에 눈이 두껍게 얹히고(snow 밝은 단 + 푸른 그늘) 처마 끝에 고드름이 늘어진다. 버들항 설원 벽돌 집(w1·e1 슬레이트, s1·n2 붉은 지붕)처럼. 램프: brick · wood · roofred · roofslate · snow · stone.",
+   "materials": [
+    "brick",
+    "wood",
+    "roofred",
+    "roofslate",
+    "snow",
+    "stone"
+   ],
+   "origin": {
+    "round": "style-r6",
+    "key": "C"
+   }
+  }
+ },
+ "waves": {
+  "roof": "지붕 세트 — 왼끝 2칸·가운데 1칸 반복·오른끝 2칸(모임 사선 자리), 3행(1층)·4행(2층 .tall). 평지붕은 끝 1칸",
+  "wall": "벽 세트 — 층마다 왼끝·가운데(반복)·창·문(1층만)·오른끝, 2행",
+  "band": "층 띠(처마돌림 선반) — 2층 이상에서 층 사이",
+  "base": "기단(선택) — 계단 있는 대좌가 필요할 때만. 기본 레시피는 기단 없이 벽이 땅에 닿는다",
+  "extra": "굴뚝·지붕창·옆 탑·현관·간판 걸이(글자 없음) — anchor 좌표에 얹는다"
+ },
+ "items": [
+  {
+   "id": "roof.steep",
+   "wave": "roof",
+   "kind": "set",
+   "title": "눈 모임지붕 세트(1층 3행)",
+   "size": [
+    5,
+    3
+   ],
+   "layer": "upper",
+   "walk": "★ 사람 뒤로 지나감(그림이 사람 위)",
+   "brief": "눈이 쌓인 가파른 모임지붕 3행 × 왼끝 2칸 · 가운데 1칸 · 오른끝 2칸. 용마루는 눈이 얹힌 밝은 선, 그 아래 눈 사면이 면으로 보이고 널 끝이 처마에서 보인다. 왼끝·오른끝 2칸 안에 처마 모서리→용마루 끝 모임 사선을 어두운 단 (눈 그늘)으로 긋는다 — 사선이 없으면 눈 판으로 읽힌다. 사면은 중간·어두운 단 위주, 밝은 단은 한 화소 하이라이트. 처마는 끝 조각 바깥 2~3px, 맨 아래 2행은 칸 경계까지 불투명.",
+   "accept": [
+    "모임 사선(hip edge)이 처마 모서리에서 용마루 끝까지 대각선으로 보인다",
+    "용마루가 짧고 밝으며 사면이 2행 이상 면으로 보인다",
+    "지붕은 중간·어두운 단이 대부분이고 가장 밝은 단은 한 화소 하이라이트로 드문드문하다",
+    "가운데를 1~6번 반복해도 기와 줄이 끝 조각까지 이어진다",
+    "맨 아래 2행이 칸 경계까지 불투명하고 처마가 끝 조각 바깥 2~3px 에 있다",
+    "버들항 기준 지붕과 같은 배율로 나란히 놓아 같은 게임으로 보인다"
+   ],
+   "pieces": [
+    {
+     "id": "l",
+     "role": "l",
+     "title": "왼끝(모임 사선)",
+     "at": [
+      0,
+      0
+     ],
+     "size": [
+      2,
+      3
+     ],
+     "kind": "roof",
+     "qMin": 0.6,
+     "qTopRow": false
+    },
+    {
+     "id": "m",
+     "role": "m",
+     "title": "가운데(반복)",
+     "at": [
+      2,
+      0
+     ],
+     "size": [
+      1,
+      3
+     ],
+     "kind": "roof",
+     "tileable": "x"
+    },
+    {
+     "id": "r",
+     "role": "r",
+     "title": "오른끝(모임 사선)",
+     "at": [
+      3,
+      0
+     ],
+     "size": [
+      2,
+      3
+     ],
+     "kind": "roof",
+     "qMin": 0.6,
+     "qTopRow": false
+    }
+   ],
+   "joins": [
+    [
+     "l",
+     "m",
+     "x"
+    ],
+    [
+     "m",
+     "m",
+     "x"
+    ],
+    [
+     "m",
+     "r",
+     "x"
+    ],
+    [
+     "l",
+     "r",
+     "x"
+    ]
+   ],
+   "end": 2
+  },
+  {
+   "id": "roof.steep.tall",
+   "wave": "roof",
+   "kind": "set",
+   "title": "눈 모임지붕 세트(2층 4행)",
+   "size": [
+    5,
+    4
+   ],
+   "layer": "upper",
+   "walk": "★ 사람 뒤로 지나감(그림이 사람 위)",
+   "brief": "2층용 4행 눈 모임지붕 — 3행은 2층에서 얇은 띠로 읽힌다. 용마루·눈 사면 2행·고드름 처마. 왼끝·오른끝 2칸 안의 모임 사선, 중간·어두운 단 위주 사면, 한 화소 하이라이트, 바깥 2~3px 처마, 맨 아래 2행 불투명.",
+   "accept": [
+    "모임 사선(hip edge)이 처마 모서리에서 용마루 끝까지 대각선으로 보인다",
+    "용마루가 짧고 밝으며 사면이 2행 이상 면으로 보인다",
+    "지붕은 중간·어두운 단이 대부분이고 가장 밝은 단은 한 화소 하이라이트로 드문드문하다",
+    "가운데를 1~6번 반복해도 기와 줄이 끝 조각까지 이어진다",
+    "맨 아래 2행이 칸 경계까지 불투명하고 처마가 끝 조각 바깥 2~3px 에 있다",
+    "버들항 기준 지붕과 같은 배율로 나란히 놓아 같은 게임으로 보인다"
+   ],
+   "pieces": [
+    {
+     "id": "l",
+     "role": "l",
+     "title": "왼끝(모임 사선)",
+     "at": [
+      0,
+      0
+     ],
+     "size": [
+      2,
+      4
+     ],
+     "kind": "roof",
+     "qMin": 0.6,
+     "qTopRow": false
+    },
+    {
+     "id": "m",
+     "role": "m",
+     "title": "가운데(반복)",
+     "at": [
+      2,
+      0
+     ],
+     "size": [
+      1,
+      4
+     ],
+     "kind": "roof",
+     "tileable": "x"
+    },
+    {
+     "id": "r",
+     "role": "r",
+     "title": "오른끝(모임 사선)",
+     "at": [
+      3,
+      0
+     ],
+     "size": [
+      2,
+      4
+     ],
+     "kind": "roof",
+     "qMin": 0.6,
+     "qTopRow": false
+    }
+   ],
+   "joins": [
+    [
+     "l",
+     "m",
+     "x"
+    ],
+    [
+     "m",
+     "m",
+     "x"
+    ],
+    [
+     "m",
+     "r",
+     "x"
+    ],
+    [
+     "l",
+     "r",
+     "x"
+    ]
+   ],
+   "end": 2
+  },
+  {
+   "id": "wall.log",
+   "wave": "wall",
+   "kind": "set",
+   "title": "통나무 벽 한 층 세트",
+   "size": [
+    5,
+    2
+   ],
+   "layer": "lower",
+   "walk": "X 막힘 · 문 칸만 o",
+   "brief": "통나무 단 한 층(2행). 왼끝(통나무 끝 마구리)·가운데·창·문·오른끝. 처마 그늘은 맨 위 1~2행에 통나무의 어두운 단으로 불투명하게. 왼끝·오른끝 조각은 바깥 2~3px 을 투명(inset 2)으로 둔다. 벽 조각의 맨 아래 1~3px 은 그 벽 재질의 어두운 단(또는 돌)으로 그린 기초다 — 건물은 땅에 바로 닿고 별도 기단 행을 두지 않는다.",
+   "accept": [
+    "통나무 단이 조각 경계를 넘어 이어진다",
+    "끝 마구리 단면이 보인다",
+    "처마 그늘이 맨 위 1~2행에 불투명하게 있고, 왼끝·오른끝 바깥 2~3px 은 투명이다"
+   ],
+   "pieces": [
+    {
+     "id": "l",
+     "role": "l",
+     "title": "왼끝",
+     "at": [
+      0,
+      0
+     ],
+     "size": [
+      1,
+      2
+     ],
+     "kind": "wall",
+     "inset": 2
+    },
+    {
+     "id": "m",
+     "role": "m",
+     "title": "가운데(반복)",
+     "at": [
+      1,
+      0
+     ],
+     "size": [
+      1,
+      2
+     ],
+     "kind": "wall",
+     "tileable": "x"
+    },
+    {
+     "id": "w",
+     "role": "w",
+     "title": "창 칸",
+     "at": [
+      2,
+      0
+     ],
+     "size": [
+      1,
+      2
+     ],
+     "kind": "wall"
+    },
+    {
+     "id": "d",
+     "role": "d",
+     "title": "문 칸",
+     "at": [
+      3,
+      0
+     ],
+     "size": [
+      1,
+      2
+     ],
+     "kind": "wall"
+    },
+    {
+     "id": "r",
+     "role": "r",
+     "title": "오른끝",
+     "at": [
+      4,
+      0
+     ],
+     "size": [
+      1,
+      2
+     ],
+     "kind": "wall",
+     "inset": 2
+    }
+   ],
+   "joins": [
+    [
+     "l",
+     "m",
+     "x"
+    ],
+    [
+     "m",
+     "m",
+     "x"
+    ],
+    [
+     "m",
+     "w",
+     "x"
+    ],
+    [
+     "w",
+     "m",
+     "x"
+    ],
+    [
+     "m",
+     "d",
+     "x"
+    ],
+    [
+     "d",
+     "m",
+     "x"
+    ],
+    [
+     "w",
+     "d",
+     "x"
+    ],
+    [
+     "d",
+     "w",
+     "x"
+    ],
+    [
+     "l",
+     "w",
+     "x"
+    ],
+    [
+     "w",
+     "r",
+     "x"
+    ],
+    [
+     "m",
+     "r",
+     "x"
+    ],
+    [
+     "l",
+     "d",
+     "x"
+    ],
+    [
+     "d",
+     "r",
+     "x"
+    ]
+   ]
+  },
+  {
+   "id": "wall.storey",
+   "wave": "wall",
+   "kind": "set",
+   "title": "벽 한 층 세트 — 줄 재질",
+   "size": [
+    5,
+    2
+   ],
+   "layer": "lower",
+   "walk": "X 막힘 · 문 칸만 o",
+   "brief": "한 층(2행). 왼끝·가운데(반복)·창·문·오른끝. **재질은 줄을 따른다** — 줄 A 통나무(log 단·마구리), 줄 B 반목조(plaster 흰 회벽 + wood 기둥·가새), 줄 C 분홍 벽돌(brick 벽돌 면·자주 줄눈, wood 창틀·문). style-r5 까지의 줄 B 는 hplaster, 줄 C 는 돌(stone)이었다. 처마 그늘은 맨 위 1~2행에 벽 재질의 어두운 단으로 불투명하게. 왼끝·오른끝 조각은 바깥 2~3px 을 투명(inset 2)으로 둔다. 창은 틀·유리·창턱이 1배에서 읽히게(작은 점 금지). 벽 조각의 맨 아래 1~3px 은 그 벽 재질의 어두운 단(또는 돌)으로 그린 기초다 — 건물은 땅에 바로 닿고 별도 기단 행을 두지 않는다.",
+   "accept": [
+    "줄 재질(A 통나무 단과 마구리 · B 흰 회벽과 나무 기둥·가새 · C 벽돌 줄눈)이 조각 경계를 넘어 이어진다",
+    "처마 그늘이 맨 위 1~2행에 불투명하게 있고, 왼끝·오른끝 바깥 2~3px 은 투명이다"
+   ],
+   "pieces": [
+    {
+     "id": "l",
+     "role": "l",
+     "title": "왼끝",
+     "at": [
+      0,
+      0
+     ],
+     "size": [
+      1,
+      2
+     ],
+     "kind": "wall",
+     "inset": 2
+    },
+    {
+     "id": "m",
+     "role": "m",
+     "title": "가운데(반복)",
+     "at": [
+      1,
+      0
+     ],
+     "size": [
+      1,
+      2
+     ],
+     "kind": "wall",
+     "tileable": "x"
+    },
+    {
+     "id": "w",
+     "role": "w",
+     "title": "창 칸",
+     "at": [
+      2,
+      0
+     ],
+     "size": [
+      1,
+      2
+     ],
+     "kind": "wall"
+    },
+    {
+     "id": "d",
+     "role": "d",
+     "title": "문 칸",
+     "at": [
+      3,
+      0
+     ],
+     "size": [
+      1,
+      2
+     ],
+     "kind": "wall"
+    },
+    {
+     "id": "r",
+     "role": "r",
+     "title": "오른끝",
+     "at": [
+      4,
+      0
+     ],
+     "size": [
+      1,
+      2
+     ],
+     "kind": "wall",
+     "inset": 2
+    }
+   ],
+   "joins": [
+    [
+     "l",
+     "m",
+     "x"
+    ],
+    [
+     "m",
+     "m",
+     "x"
+    ],
+    [
+     "m",
+     "w",
+     "x"
+    ],
+    [
+     "w",
+     "m",
+     "x"
+    ],
+    [
+     "m",
+     "d",
+     "x"
+    ],
+    [
+     "d",
+     "m",
+     "x"
+    ],
+    [
+     "w",
+     "d",
+     "x"
+    ],
+    [
+     "d",
+     "w",
+     "x"
+    ],
+    [
+     "l",
+     "w",
+     "x"
+    ],
+    [
+     "w",
+     "r",
+     "x"
+    ],
+    [
+     "m",
+     "r",
+     "x"
+    ],
+    [
+     "l",
+     "d",
+     "x"
+    ],
+    [
+     "d",
+     "r",
+     "x"
+    ]
+   ]
+  },
+  {
+   "id": "base.stone",
+   "wave": "base",
+   "kind": "set",
+   "title": "기단 세트",
+   "size": [
+    3,
+    1
+   ],
+   "layer": "lower",
+   "walk": "X 막힘",
+   "brief": "기단(대좌) 세트. 1행 — **선택 부품**이다. 기본 레시피는 기단을 쓰지 않고 벽이 땅에 바로 닿는다. 레시피가 계단 있는 대좌(사원 대좌 같은 것)를 명시할 때만 깐다. 전폭 보도블록처럼 읽히면 실패다.",
+   "accept": [
+    "계단·대좌로 읽힌다(보도블록 띠가 아니다)",
+    "건물이 땅에 앉아 보인다(뜨지 않는다)",
+    "가운데 반복 이음이 안 보인다"
+   ],
+   "pieces": [
+    {
+     "id": "l",
+     "role": "l",
+     "title": "왼끝",
+     "at": [
+      0,
+      0
+     ],
+     "size": [
+      1,
+      1
+     ],
+     "kind": "base",
+     "foot": true
+    },
+    {
+     "id": "m",
+     "role": "m",
+     "title": "가운데(반복)",
+     "at": [
+      1,
+      0
+     ],
+     "size": [
+      1,
+      1
+     ],
+     "kind": "base",
+     "tileable": "x",
+     "foot": true
+    },
+    {
+     "id": "r",
+     "role": "r",
+     "title": "오른끝",
+     "at": [
+      2,
+      0
+     ],
+     "size": [
+      1,
+      1
+     ],
+     "kind": "base",
+     "foot": true
+    }
+   ],
+   "joins": [
+    [
+     "l",
+     "m",
+     "x"
+    ],
+    [
+     "m",
+     "m",
+     "x"
+    ],
+    [
+     "m",
+     "r",
+     "x"
+    ]
+   ]
+  },
+  {
+   "id": "extra.chimney",
+   "wave": "extra",
+   "kind": "set",
+   "title": "굴뚝",
+   "size": [
+    1,
+    2
+   ],
+   "layer": "upper",
+   "walk": "★",
+   "brief": "눈 지붕 위 굴뚝 — 줄 A 돌(stone), 줄 B·C 벽돌(brick, 버들항 설원 집의 붉은 벽돌 굴뚝처럼). 갓돌 윗면에 눈(snow)이 얹힌다. 밑동은 지붕 사면 위에 앉는다(A14).",
+   "accept": [
+    "갓돌 윗면이 보인다",
+    "갓돌 위에 눈이 얹힌다"
+   ],
+   "pieces": [
+    {
+     "id": "x",
+     "role": "x",
+     "title": "돌 굴뚝",
+     "at": [
+      0,
+      0
+     ],
+     "size": [
+      1,
+      2
+     ],
+     "kind": "extra",
+     "top": [
+      0,
+      1
+     ]
+    }
+   ],
+   "joins": []
+  },
+  {
+   "id": "roof.lean",
+   "wave": "roof",
+   "kind": "set",
+   "title": "외쪽지붕(lean-to) 세트",
+   "size": [
+    3,
+    3
+   ],
+   "layer": "upper",
+   "walk": "★ 사람 뒤로 지나감(그림이 사람 위)",
+   "brief": "외쪽지붕 3행 × 끝 1칸. 한쪽으로만 흐르는 단사면 — 높은 쪽(안쪽)은 벽에 붙고 낮은 쪽이 처마다. 눈이 얹힌 사면이 기울어진 면으로 보이고, 낮은 쪽 처마에 눈 처마·고드름이 맺힌다. 헛간 날개에 쓴다. 맨 아래 2행 불투명, 처마는 바깥 2~3px.",
+   "accept": [
+    "사면이 한 방향으로 기울어 보인다(좌우 대칭 아님)",
+    "높은 쪽이 벽에 붙어 있고 낮은 쪽이 처마다",
+    "눈이 중간·어두운 단 위주이고 밝은 단은 드문드문하다",
+    "맨 아래 2행이 불투명하다"
+   ],
+   "pieces": [
+    {
+     "id": "l",
+     "role": "l",
+     "title": "왼끝(모임 사선)",
+     "at": [
+      0,
+      0
+     ],
+     "size": [
+      1,
+      3
+     ],
+     "kind": "roof",
+     "qMin": 0.6,
+     "qTopRow": false
+    },
+    {
+     "id": "m",
+     "role": "m",
+     "title": "가운데(반복)",
+     "at": [
+      1,
+      0
+     ],
+     "size": [
+      1,
+      3
+     ],
+     "kind": "roof",
+     "tileable": "x"
+    },
+    {
+     "id": "r",
+     "role": "r",
+     "title": "오른끝(모임 사선)",
+     "at": [
+      2,
+      0
+     ],
+     "size": [
+      1,
+      3
+     ],
+     "kind": "roof",
+     "qMin": 0.6,
+     "qTopRow": false
+    }
+   ],
+   "joins": [
+    [
+     "l",
+     "m",
+     "x"
+    ],
+    [
+     "m",
+     "m",
+     "x"
+    ],
+    [
+     "m",
+     "r",
+     "x"
+    ],
+    [
+     "l",
+     "r",
+     "x"
+    ]
+   ],
+   "end": 1
+  },
+  {
+   "id": "gable.front",
+   "wave": "gable",
+   "form": "gable_front",
+   "kind": "set",
+   "title": "앞 박공(폭별)",
+   "size": [
+    7,
+    2
+   ],
+   "layer": "upper",
+   "walk": "★ 사람 뒤로 지나감(그림이 사람 위)",
+   "brief": "박공 정면 질량의 앞 끝 — 폭마다 한 조각(g3 = 3칸 1행, g4 = 4칸 2행). 아래 가운데에 남쪽을 보는 삼각 박공 벽(벽 재질, 작은 환기창 하나 가능), 삼각형 꼭대기는 조각 맨 윗행 가운데(용마루 자리, 가운데 2px)에 닿는다. 삼각형 양 빗변은 지붕 끝(바지보드·기와 끝)으로 어두운 단 띠, 빗변 바깥 위 두 귀퉁이는 사면의 앞 끝이다 — 왼쪽 귀퉁이는 왼쪽 사면(밝은 단), 오른쪽 귀퉁이는 오른쪽 사면(어두운 단). 조각 전체가 불투명하고 맨 아래 2행은 아래 벽 맨 위 들보와 이어진다. 빛은 왼쪽 위 — 왼쪽 사면이 밝은 단, 오른쪽 사면이 어두운 단(조립 A12 가 사면 띠의 평균 밝기를 재서 왼쪽이 8 이상 밝아야 통과). 용마루는 가운데 2px 의 곧은 세로선으로, 모든 행에서 양옆 사면과 밝기가 6 이상 다르다(보통 가장 밝은 단 한 줄 + 그늘 쪽 어두운 단).",
+   "accept": [
+    "삼각 박공 벽이 남쪽을 보고 꼭대기가 조각 맨 윗행 가운데에 닿는다",
+    "빗변 바깥 귀퉁이가 왼쪽 밝은 사면·오른쪽 어두운 사면으로 위 사면 띠와 이어진다",
+    "맨 아래 행이 벽 들보와 이음 없이 만난다"
+   ],
+   "pieces": [
+    {
+     "id": "g3",
+     "role": "g3",
+     "title": "앞 박공 3칸",
+     "at": [
+      0,
+      0
+     ],
+     "size": [
+      3,
+      1
+     ],
+     "kind": "gable"
+    },
+    {
+     "id": "g4",
+     "role": "g4",
+     "title": "앞 박공 4칸",
+     "at": [
+      3,
+      0
+     ],
+     "size": [
+      4,
+      2
+     ],
+     "kind": "gable"
+    }
+   ],
+   "joins": []
+  },
+  {
+   "id": "gable.step",
+   "wave": "gable",
+   "form": "gable_front",
+   "kind": "set",
+   "title": "계단 박공(크로스텝) 앞·뒤",
+   "size": [
+    10,
+    2
+   ],
+   "layer": "upper",
+   "walk": "★ 사람 뒤로 지나감(그림이 사람 위)",
+   "brief": "큰 회관의 계단 박공 — g5(5칸 2행)는 앞 끝: 남쪽을 보는 삼각 벽의 빗변이 계단(크로스텝)으로 올라가며 계단마다 밝은 갓돌 윗면이 1~2px 보인다. 계단 바깥 위 귀퉁이는 사면 앞 끝(왼쪽 밝은 단, 오른쪽 어두운 단). b5(5칸 2행)는 같은 계단 박공의 뒤 끝: 맨 위 가운데 계단이 가장 높고 양쪽으로 계단처럼 내려가며(위 귀퉁이 투명), 그 아래는 사면 위쪽 끝이다. 용마루 가운데 2px 는 b5 꼭대기에서 시작해 사면 띠로 이어진다. 빛은 왼쪽 위 — 왼쪽 사면이 밝은 단, 오른쪽 사면이 어두운 단(조립 A12 가 사면 띠의 평균 밝기를 재서 왼쪽이 8 이상 밝아야 통과). 용마루는 가운데 2px 의 곧은 세로선으로, 모든 행에서 양옆 사면과 밝기가 6 이상 다르다(보통 가장 밝은 단 한 줄 + 그늘 쪽 어두운 단).",
+   "accept": [
+    "앞 박공 계단이 좌우 대칭이고 갓돌 윗면이 보인다",
+    "뒤 끝 계단 박공의 꼭대기가 용마루 자리(가운데)다",
+    "벽 재질은 그 줄의 돌·벽 램프"
+   ],
+   "pieces": [
+    {
+     "id": "g5",
+     "role": "g5",
+     "title": "계단 박공 앞 5칸",
+     "at": [
+      0,
+      0
+     ],
+     "size": [
+      5,
+      2
+     ],
+     "kind": "gable"
+    },
+    {
+     "id": "b5",
+     "role": "b5",
+     "title": "계단 박공 뒤 5칸",
+     "at": [
+      5,
+      0
+     ],
+     "size": [
+      5,
+      2
+     ],
+     "kind": "roofend"
+    }
+   ],
+   "joins": []
+  },
+  {
+   "id": "roof.gf.slope",
+   "wave": "roof",
+   "form": "gf_slope",
+   "kind": "set",
+   "title": "박공 정면 사면 띠",
+   "size": [
+    7,
+    1
+   ],
+   "layer": "upper",
+   "walk": "★ 사람 뒤로 지나감(그림이 사람 위)",
+   "brief": "박공 정면 질량의 지붕 몸통 한 행 — depth_rows 번 세로로 쌓는다(조각마다 tileable y: 맨 아래 행과 맨 윗행이 이어진다). l = 왼쪽 처마 끝(왼쪽 사면, 바깥 2~3px 처마 그늘), ml = 왼쪽 사면 채움(가로로도 반복), k = 1칸 용마루(가운데 2px 세로선, 왼쪽 반은 왼 사면, 오른쪽 반은 오른 사면), k2 = 2칸 용마루(경계의 가운데 2px 세로선), mr = 오른쪽 사면 채움, r = 오른쪽 처마 끝. 조립 순서: 3칸 l k r · 4칸 l k2 r · 5칸 l ml k mr r · 6칸 l ml k2 mr r. 기와·널 줄은 사면 방향으로 흐른다 — 용마루에 수직인 짧은 가로 줄눈이 사면을 따라 세로로 쌓인다(지붕이 북쪽으로 물러나는 깊이가 읽혀야 한다). 빛은 왼쪽 위 — 왼쪽 사면이 밝은 단, 오른쪽 사면이 어두운 단(조립 A12 가 사면 띠의 평균 밝기를 재서 왼쪽이 8 이상 밝아야 통과). 용마루는 가운데 2px 의 곧은 세로선으로, 모든 행에서 양옆 사면과 밝기가 6 이상 다르다(보통 가장 밝은 단 한 줄 + 그늘 쪽 어두운 단).",
+   "accept": [
+    "세로로 3~4번 쌓아도 행 경계가 안 보인다",
+    "가운데 2px 용마루가 모든 행에서 곧은 세로선이다",
+    "왼쪽 사면이 오른쪽 사면보다 밝다"
+   ],
+   "pieces": [
+    {
+     "id": "l",
+     "role": "l",
+     "title": "왼 처마 끝",
+     "at": [
+      0,
+      0
+     ],
+     "size": [
+      1,
+      1
+     ],
+     "kind": "slope",
+     "tileable": "y"
+    },
+    {
+     "id": "ml",
+     "role": "ml",
+     "title": "왼 사면 채움",
+     "at": [
+      1,
+      0
+     ],
+     "size": [
+      1,
+      1
+     ],
+     "kind": "slope",
+     "tileable": "xy"
+    },
+    {
+     "id": "k",
+     "role": "k",
+     "title": "용마루 1칸",
+     "at": [
+      2,
+      0
+     ],
+     "size": [
+      1,
+      1
+     ],
+     "kind": "slope",
+     "tileable": "y"
+    },
+    {
+     "id": "k2",
+     "role": "k2",
+     "title": "용마루 2칸",
+     "at": [
+      3,
+      0
+     ],
+     "size": [
+      2,
+      1
+     ],
+     "kind": "slope",
+     "tileable": "y"
+    },
+    {
+     "id": "mr",
+     "role": "mr",
+     "title": "오른 사면 채움",
+     "at": [
+      5,
+      0
+     ],
+     "size": [
+      1,
+      1
+     ],
+     "kind": "slope",
+     "tileable": "xy"
+    },
+    {
+     "id": "r",
+     "role": "r",
+     "title": "오른 처마 끝",
+     "at": [
+      6,
+      0
+     ],
+     "size": [
+      1,
+      1
+     ],
+     "kind": "slope",
+     "tileable": "y"
+    }
+   ],
+   "joins": [
+    [
+     "l",
+     "k",
+     "x"
+    ],
+    [
+     "k",
+     "r",
+     "x"
+    ],
+    [
+     "l",
+     "k2",
+     "x"
+    ],
+    [
+     "k2",
+     "r",
+     "x"
+    ],
+    [
+     "l",
+     "ml",
+     "x"
+    ],
+    [
+     "ml",
+     "k",
+     "x"
+    ],
+    [
+     "k",
+     "mr",
+     "x"
+    ],
+    [
+     "mr",
+     "r",
+     "x"
+    ],
+    [
+     "ml",
+     "k2",
+     "x"
+    ],
+    [
+     "k2",
+     "mr",
+     "x"
+    ]
+   ]
+  },
+  {
+   "id": "roof.gf.back",
+   "wave": "roof",
+   "form": "gf_back",
+   "kind": "set",
+   "title": "박공 정면 뒤 끝·골",
+   "size": [
+    7,
+    2
+   ],
+   "layer": "upper",
+   "walk": "★ 사람 뒤로 지나감(그림이 사람 위)",
+   "brief": "박공 정면 질량의 맨 위 — b4(4칸 2행)는 혼자 선 뒤 끝: 위 가장자리가 ^ 모양(가운데 용마루 끝이 가장 높고 양 처마로 내려간다, 위 귀퉁이 투명), ^ 선은 뒤 박공의 지붕 끝(어두운 단 1~2px), 그 아래는 사면 위쪽 끝(왼쪽 밝은·오른쪽 어두운 단)과 가운데 용마루. v3(3칸 1행)는 골(valley): 이 날개 지붕이 더 뒤 본채 지붕 면에 박히는 곳이다. 같은 ^ 모양이되 ^ 선은 두 지붕이 만나는 골 — 가장 어두운 단 1px 의 접힘선, 투명한 위 귀퉁이로 본채 지붕이 비친다(조립 A13 이 골 바로 위가 본채 지붕인지 본다). 맨 아래 행은 전부 불투명. 빛은 왼쪽 위 — 왼쪽 사면이 밝은 단, 오른쪽 사면이 어두운 단(조립 A12 가 사면 띠의 평균 밝기를 재서 왼쪽이 8 이상 밝아야 통과). 용마루는 가운데 2px 의 곧은 세로선으로, 모든 행에서 양옆 사면과 밝기가 6 이상 다르다(보통 가장 밝은 단 한 줄 + 그늘 쪽 어두운 단).",
+   "accept": [
+    "^ 꼭대기가 가운데(용마루 자리)다",
+    "골 선이 본채 지붕 위에서 접힘선으로 읽힌다",
+    "맨 아래 행이 사면 띠와 이음 없이 만난다"
+   ],
+   "pieces": [
+    {
+     "id": "b4",
+     "role": "b4",
+     "title": "뒤 끝 4칸",
+     "at": [
+      0,
+      0
+     ],
+     "size": [
+      4,
+      2
+     ],
+     "kind": "roofend"
+    },
+    {
+     "id": "v3",
+     "role": "v3",
+     "title": "골 3칸",
+     "at": [
+      4,
+      0
+     ],
+     "size": [
+      3,
+      1
+     ],
+     "kind": "roofend"
+    }
+   ],
+   "joins": []
+  },
+  {
+   "id": "roof.gf.valley",
+   "wave": "roof",
+   "form": "gf_back",
+   "kind": "set",
+   "title": "박공 정면 날개 골(v4·v5·v6)",
+   "size": [
+    15,
+    2
+   ],
+   "layer": "upper",
+   "walk": "★ 사람 뒤로 지나감(그림이 사람 위)",
+   "brief": "날개(박공 정면 질량)의 맨 위 — 날개 지붕이 본채 지붕 속으로 올라가 V자 골에서 만나는 뒤 끝이다(사용자 판정 2026-10-22 「ㅜ자 집이 한 채로 안 보인다」, 승인안 bk-thouse-joined). v4(4칸)·v5(5칸)·v6(6칸) 모두 2행 — 앞 박공 g4·g5 와 같은 물매. 위 가장자리가 ^ 모양: 가운데 꼭대기(용마루 끝)가 가장 높고 양 끝은 맨 아래 행까지 내려간다. ^ 선은 두 지붕이 만나는 골 — 가장 어두운 단 1px 의 접힘선이고, 선 위 귀퉁이는 투명이라 본채 지붕이 비친다. 선 아래는 사면 띠의 위쪽 끝(왼쪽 밝은 단·오른쪽 어두운 단)과 가운데 2px 용마루. 맨 아래 행은 전부 불투명, 사면 띠와 이음 없이 만난다. 뒤 박공(b4)과 달리 날개 혼자 서는 끝이 아니다 — 조립에서 날개는 본채 바로 앞(본채 depth = 날개 depth + 1)에 붙고, 이 골은 본채 처마보다 위, 본채 지붕 면 안에서 끝난다(A13·A16). 빛은 왼쪽 위.",
+   "accept": [
+    "^ 꼭대기가 가운데(용마루 자리)이고 양 끝이 맨 아래 행까지 내려간다",
+    "골 선이 본채 지붕 위에서 가장 어두운 1px 접힘선으로 읽힌다(뒤 박공 끝처럼 두꺼운 박공널이 아니다)",
+    "맨 아래 행이 사면 띠와 이음 없이 만난다",
+    "세 폭(v4·v5·v6)이 같은 색·결·물매다"
+   ],
+   "pieces": [
+    {
+     "id": "v4",
+     "role": "v4",
+     "title": "골 4칸",
+     "at": [
+      0,
+      0
+     ],
+     "size": [
+      4,
+      2
+     ],
+     "kind": "roofend"
+    },
+    {
+     "id": "v5",
+     "role": "v5",
+     "title": "골 5칸",
+     "at": [
+      4,
+      0
+     ],
+     "size": [
+      5,
+      2
+     ],
+     "kind": "roofend"
+    },
+    {
+     "id": "v6",
+     "role": "v6",
+     "title": "골 6칸",
+     "at": [
+      9,
+      0
+     ],
+     "size": [
+      6,
+      2
+     ],
+     "kind": "roofend"
+    }
+   ],
+   "joins": []
+  },
+  {
+   "id": "roof.lean.side",
+   "wave": "roof",
+   "form": "lean_to",
+   "low": "right",
+   "kind": "set",
+   "title": "옆 외쪽 지붕(오른쪽이 낮다)",
+   "size": [
+    7,
+    1
+   ],
+   "layer": "upper",
+   "walk": "★ 사람 뒤로 지나감(그림이 사람 위)",
+   "brief": "큰 질량 오른쪽 옆에 붙는 외쪽(한쪽 경사) 헛간 지붕 — 높은 쪽(hi)이 본 질량 벽에 붙고 낮은 처마(lo)가 오른쪽 바깥이다. 지붕 면은 북쪽으로 물러나는 평행사변형으로, 오른쪽으로 내려가는 면이라 본 질량 왼쪽 사면보다 어둡다(그늘 쪽). hi·m·lo 는 1칸 사면 띠(세로 반복, m 은 가로도 반복) — 널·기와 줄은 경사 방향(왼→오)으로 흐른다. lb2(2칸 1행)는 뒤 끝: 위 가장자리가 왼쪽 높고 오른쪽 낮은 빗선(오른쪽 위 귀퉁이 투명). lf2(2칸 1행)는 앞 끝: 지붕 앞 처마가 왼쪽 높게 오른쪽으로 내려가는 빗선이고 그 아래는 벽 재질(사다리꼴 벽 윗부분), 전부 불투명, 맨 아래 2행은 벽 들보와 이어진다.",
+   "accept": [
+    "높은 쪽이 본 질량에 붙고 처마가 오른쪽으로 내려간다",
+    "세로로 쌓아도 행 경계가 안 보인다",
+    "본 질량 지붕과 같은 재료 램프"
+   ],
+   "pieces": [
+    {
+     "id": "lb2",
+     "role": "lb2",
+     "title": "외쪽 뒤 끝 2칸",
+     "at": [
+      0,
+      0
+     ],
+     "size": [
+      2,
+      1
+     ],
+     "kind": "roofend"
+    },
+    {
+     "id": "hi",
+     "role": "hi",
+     "title": "높은 쪽",
+     "at": [
+      2,
+      0
+     ],
+     "size": [
+      1,
+      1
+     ],
+     "kind": "slope",
+     "tileable": "y"
+    },
+    {
+     "id": "m",
+     "role": "m",
+     "title": "가운데",
+     "at": [
+      3,
+      0
+     ],
+     "size": [
+      1,
+      1
+     ],
+     "kind": "slope",
+     "tileable": "xy"
+    },
+    {
+     "id": "lo",
+     "role": "lo",
+     "title": "낮은 처마 쪽",
+     "at": [
+      4,
+      0
+     ],
+     "size": [
+      1,
+      1
+     ],
+     "kind": "slope",
+     "tileable": "y"
+    },
+    {
+     "id": "lf2",
+     "role": "lf2",
+     "title": "외쪽 앞 끝 2칸",
+     "at": [
+      5,
+      0
+     ],
+     "size": [
+      2,
+      1
+     ],
+     "kind": "gable"
+    }
+   ],
+   "joins": [
+    [
+     "hi",
+     "lo",
+     "x"
+    ],
+    [
+     "hi",
+     "m",
+     "x"
+    ],
+    [
+     "m",
+     "lo",
+     "x"
+    ]
+   ]
+  },
+  {
+   "id": "roof.lean.left",
+   "wave": "roof",
+   "form": "lean_to",
+   "low": "left",
+   "kind": "set",
+   "title": "옆 외쪽 지붕(왼쪽이 낮다 — 빛 쪽)",
+   "size": [
+    7,
+    1
+   ],
+   "layer": "upper",
+   "walk": "★ 사람 뒤로 지나감(그림이 사람 위)",
+   "brief": "큰 질량 왼쪽 옆(빛 쪽)에 붙는 외쪽(한쪽 경사) 헛간 지붕 — 높은 쪽(hi)이 오른쪽 본 질량 벽에 붙고 낮은 처마(lo)가 왼쪽 바깥이다. 지붕 면은 북쪽으로 물러나는 평행사변형으로, 왼쪽으로 내려가는 면이라 빛(왼쪽 위)을 받아 본 질량 오른쪽 사면보다 밝다. hi·m·lo 는 1칸 사면 띠(세로 반복, m 은 가로도 반복) — 널·기와 줄은 경사 방향(오→왼)으로 흐른다. lb2(2칸 1행)는 뒤 끝: 위 가장자리가 오른쪽 높고 왼쪽 낮은 빗선(왼쪽 위 귀퉁이 투명). lf2(2칸 1행)는 앞 끝: 지붕 앞 처마가 오른쪽 높게 왼쪽으로 내려가는 빗선이고 그 아래는 벽 재질(사다리꼴 벽 윗부분), 맨 아래 행은 전부 불투명. 처마 높이는 붙는 질량의 처마보다 낮다(1층 헛간). style-r7 깊이 땅 문법의 회관 왼쪽 외쪽 — roof.lean.side(오른쪽이 낮다)를 뒤집어 쓰면 빛 방향이 뒤집히므로 따로 그린다.",
+   "accept": [
+    "높은 쪽이 오른쪽 본 질량에 붙고 처마가 왼쪽으로 내려간다",
+    "세로로 쌓아도 행 경계가 안 보인다",
+    "본 질량 지붕과 같은 재료 램프",
+    "왼쪽으로 내려가는 면이 본 질량 오른쪽 사면보다 밝다"
+   ],
+   "pieces": [
+    {
+     "id": "lb2",
+     "role": "lb2",
+     "title": "외쪽 뒤 끝 2칸",
+     "at": [
+      0,
+      0
+     ],
+     "size": [
+      2,
+      1
+     ],
+     "kind": "roofend"
+    },
+    {
+     "id": "hi",
+     "role": "hi",
+     "title": "높은 쪽",
+     "at": [
+      2,
+      0
+     ],
+     "size": [
+      1,
+      1
+     ],
+     "kind": "slope",
+     "tileable": "y"
+    },
+    {
+     "id": "m",
+     "role": "m",
+     "title": "가운데",
+     "at": [
+      3,
+      0
+     ],
+     "size": [
+      1,
+      1
+     ],
+     "kind": "slope",
+     "tileable": "xy"
+    },
+    {
+     "id": "lo",
+     "role": "lo",
+     "title": "낮은 처마 쪽",
+     "at": [
+      4,
+      0
+     ],
+     "size": [
+      1,
+      1
+     ],
+     "kind": "slope",
+     "tileable": "y"
+    },
+    {
+     "id": "lf2",
+     "role": "lf2",
+     "title": "외쪽 앞 끝 2칸",
+     "at": [
+      5,
+      0
+     ],
+     "size": [
+      2,
+      1
+     ],
+     "kind": "gable"
+    }
+   ],
+   "joins": [
+    [
+     "hi",
+     "lo",
+     "x"
+    ],
+    [
+     "hi",
+     "m",
+     "x"
+    ],
+    [
+     "m",
+     "lo",
+     "x"
+    ]
+   ]
+  }
+ ],
+ "buildings": [
+  {
+   "id": "loghut",
+   "title": "통나무 오두막",
+   "use": "home",
+   "cols": 4,
+   "storeys": 1,
+   "roof": "roof.steep",
+   "wall": "wall.log",
+   "walls": [
+    "L W D R"
+   ],
+   "note": "style-r3 — 4칸 폭 1층, 기단 행 없이 통나무가 눈에 닿는다"
+  },
+  {
+   "id": "longhouse",
+   "title": "긴 집",
+   "use": "home",
+   "masses": [
+    {
+     "id": "main",
+     "cols": 4,
+     "storeys": 2,
+     "x": 0,
+     "depth": 0,
+     "roof": "roof.steep.tall",
+     "walls": [
+      {
+       "item": "wall.log",
+       "letters": "L W M R"
+      },
+      {
+       "item": "wall.log",
+       "letters": "L W D R"
+      }
+     ]
+    },
+    {
+     "id": "shed",
+     "cols": 4,
+     "storeys": 1,
+     "x": 4,
+     "depth": 0,
+     "roof": "roof.lean",
+     "walls": [
+      {
+       "item": "wall.log",
+       "letters": "L W M R"
+      }
+     ]
+    }
+   ],
+   "note": "2층 본채 + 외쪽지붕 장작 헛간 날개(한쪽으로만 흐르는 단사면)"
+  },
+  {
+   "id": "hall",
+   "title": "돌 회관",
+   "use": "hall",
+   "masses": [
+    {
+     "id": "body",
+     "cols": 5,
+     "storeys": 2,
+     "x": 0,
+     "depth": 1,
+     "roof": "roof.steep.tall",
+     "walls": [
+      {
+       "item": "wall.storey",
+       "letters": "L W M W R"
+      },
+      {
+       "item": "wall.storey",
+       "letters": "L W M W R"
+      }
+     ]
+    },
+    {
+     "id": "porch",
+     "cols": 4,
+     "storeys": 1,
+     "x": 3,
+     "depth": 0,
+     "roof": "roof.steep",
+     "walls": [
+      {
+       "item": "wall.log",
+       "letters": "L W D R"
+      }
+     ]
+    }
+   ],
+   "note": "돌 회관 앞으로 내민 박공 현관 날개 — 문은 현관에 하나"
+  },
+  {
+   "id": "cottage.r5",
+   "title": "박공 정면 오두막",
+   "use": "home",
+   "masses": [
+    {
+     "id": "house",
+     "kind": "gable_front",
+     "cols": 4,
+     "depth_rows": 3,
+     "storeys": 1,
+     "x": 0,
+     "depth": 0,
+     "gable": "gable.front",
+     "roof": "roof.gf.slope",
+     "back": "roof.gf.back",
+     "back_end": "gable",
+     "walls": [
+      {
+       "item": "wall.log",
+       "letters": "L W D R"
+      }
+     ]
+    }
+   ],
+   "note": "박공 끝이 남쪽을 보고 용마루가 북쪽으로 물러나는 가장 단순한 한 채 — 뒤 끝 b4, 사면 3행, 앞 박공 g4, 1층 벽"
+  },
+  {
+   "id": "lhouse.r5",
+   "title": "ㄱ자 집(본채 + 박공 날개 + 굴뚝)",
+   "use": "home",
+   "masses": [
+    {
+     "id": "main",
+     "kind": "ridge_side",
+     "cols": 7,
+     "storeys": 2,
+     "x": 0,
+     "depth": 1,
+     "roof": "roof.steep",
+     "walls": [
+      {
+       "item": "wall.log",
+       "letters": "L W M W M W R"
+      },
+      {
+       "item": "wall.storey",
+       "letters": "L W M W M W R"
+      }
+     ],
+     "extras": [
+      {
+       "part": "extra.chimney",
+       "at": [
+        5,
+        -1
+       ],
+       "on": "roof"
+      }
+     ]
+    },
+    {
+     "id": "wing",
+     "kind": "gable_front",
+     "cols": 3,
+     "depth_rows": 2,
+     "storeys": 1,
+     "x": 2,
+     "depth": 0,
+     "gable": "gable.front",
+     "roof": "roof.gf.slope",
+     "back": "roof.gf.back",
+     "back_end": "valley",
+     "walls": [
+      {
+       "item": "wall.log",
+       "letters": "L D R"
+      }
+     ]
+    }
+   ],
+   "note": "정면과 나란한 용마루의 2층 본채(뒤) 앞에 3칸 박공 정면 날개 — 날개 지붕이 본채 지붕에 박히는 ^ 선이 골(v3, 날개 조각의 화소). 굴뚝은 본채 지붕 위(on roof). 문은 날개"
+  },
+  {
+   "id": "hall.r5",
+   "title": "계단 박공 회관 + 옆 외쪽",
+   "use": "hall",
+   "masses": [
+    {
+     "id": "hall",
+     "kind": "gable_front",
+     "cols": 5,
+     "depth_rows": 4,
+     "storeys": 2,
+     "x": 0,
+     "depth": 0,
+     "gable": "gable.step",
+     "roof": "roof.gf.slope",
+     "back": "gable.step",
+     "back_end": "gable",
+     "walls": [
+      {
+       "item": "wall.storey",
+       "letters": "L W M W R"
+      },
+      {
+       "item": "wall.storey",
+       "letters": "L W D W R"
+      }
+     ]
+    },
+    {
+     "id": "shed",
+     "kind": "lean_to",
+     "cols": 2,
+     "depth_rows": 2,
+     "storeys": 1,
+     "x": 5,
+     "depth": 0,
+     "low": "right",
+     "roof": "roof.lean.side",
+     "walls": [
+      {
+       "item": "wall.log",
+       "letters": "M R"
+      }
+     ]
+    }
+   ],
+   "note": "5칸 계단 박공(크로스텝) 회관 — 앞 g5·뒤 b5 가 계단 박공, 사면 4행, 2층 돌벽. 오른쪽에 낮은 외쪽 헛간(높은 쪽이 회관 벽에 붙는다)"
+  },
+  {
+   "id": "cottage.r6",
+   "title": "박공 정면 집 + 굴뚝",
+   "use": "home",
+   "masses": [
+    {
+     "id": "house",
+     "kind": "gable_front",
+     "cols": 4,
+     "depth_rows": 3,
+     "storeys": 1,
+     "x": 0,
+     "depth": 0,
+     "gable": "gable.front",
+     "roof": "roof.gf.slope",
+     "back": "roof.gf.back",
+     "back_end": "gable",
+     "walls": [
+      {
+       "item": "wall.storey",
+       "letters": "L W D R"
+      }
+     ],
+     "extras": [
+      {
+       "part": "extra.chimney",
+       "at": [
+        1,
+        1
+       ],
+       "on": "roof"
+      }
+     ]
+    }
+   ],
+   "note": "style-r5 cottage 와 같은 질량(b4·사면 3행·g4·1층), 벽은 줄 재질(wall.storey), 왼쪽 사면 위 굴뚝"
+  },
+  {
+   "id": "lhouse.r6",
+   "title": "ㄱ자 집(본채 + 박공 날개 + 굴뚝)",
+   "use": "home",
+   "masses": [
+    {
+     "id": "main",
+     "kind": "ridge_side",
+     "cols": 7,
+     "storeys": 2,
+     "x": 0,
+     "depth": 1,
+     "roof": "roof.steep",
+     "walls": [
+      {
+       "item": "wall.storey",
+       "letters": "L W M W M W R"
+      },
+      {
+       "item": "wall.storey",
+       "letters": "L W M W M W R"
+      }
+     ],
+     "extras": [
+      {
+       "part": "extra.chimney",
+       "at": [
+        5,
+        -1
+       ],
+       "on": "roof"
+      }
+     ]
+    },
+    {
+     "id": "wing",
+     "kind": "gable_front",
+     "cols": 3,
+     "depth_rows": 2,
+     "storeys": 1,
+     "x": 2,
+     "depth": 0,
+     "gable": "gable.front",
+     "roof": "roof.gf.slope",
+     "back": "roof.gf.back",
+     "back_end": "valley",
+     "walls": [
+      {
+       "item": "wall.storey",
+       "letters": "L D R"
+      }
+     ]
+    }
+   ],
+   "note": "style-r5 lhouse 와 같은 질량, 벽은 줄 재질(wall.storey) — 굴뚝은 본채 지붕 위"
+  },
+  {
+   "id": "hall.r6",
+   "title": "계단 박공 회관 + 옆 외쪽 + 굴뚝",
+   "use": "hall",
+   "masses": [
+    {
+     "id": "hall",
+     "kind": "gable_front",
+     "cols": 5,
+     "depth_rows": 4,
+     "storeys": 2,
+     "x": 0,
+     "depth": 0,
+     "gable": "gable.step",
+     "roof": "roof.gf.slope",
+     "back": "gable.step",
+     "back_end": "gable",
+     "walls": [
+      {
+       "item": "wall.storey",
+       "letters": "L W M W R"
+      },
+      {
+       "item": "wall.storey",
+       "letters": "L W D W R"
+      }
+     ],
+     "extras": [
+      {
+       "part": "extra.chimney",
+       "at": [
+        1,
+        1
+       ],
+       "on": "roof"
+      }
+     ]
+    },
+    {
+     "id": "shed",
+     "kind": "lean_to",
+     "cols": 2,
+     "depth_rows": 2,
+     "storeys": 1,
+     "x": 5,
+     "depth": 0,
+     "low": "right",
+     "roof": "roof.lean.side",
+     "walls": [
+      {
+       "item": "wall.log",
+       "letters": "M R"
+      }
+     ]
+    }
+   ],
+   "note": "style-r5 hall 과 같은 질량(5칸 계단 박공 2층 + 오른쪽 통나무 외쪽 헛간), 회관 왼쪽 사면 위 굴뚝"
+  },
+  {
+   "id": "cottage.r7",
+   "title": "박공 정면 오두막(짧은 지붕)",
+   "use": "home",
+   "masses": [
+    {
+     "id": "house",
+     "kind": "gable_front",
+     "cols": 4,
+     "depth_rows": 2,
+     "storeys": 1,
+     "x": 0,
+     "depth": 0,
+     "gable": "gable.front",
+     "roof": "roof.gf.slope",
+     "back": "roof.gf.back",
+     "back_end": "gable",
+     "walls": [
+      {
+       "item": "wall.storey",
+       "letters": "L W D R"
+      }
+     ],
+     "extras": [
+      {
+       "part": "extra.chimney",
+       "at": [
+        1,
+        1
+       ],
+       "on": "roof"
+      }
+     ]
+    }
+   ],
+   "note": "style-r7 깊이 땅 문법 — 박공 정면 지붕 2행(사용자 2026-10-22 「머리가 길다」), 뒤 끝 b4·사면 2행·앞 박공 g4·1층. style-r5/r6 부품 그대로 조립된다"
+  },
+  {
+   "id": "thouse.r7",
+   "title": "ㅜ자 집(앞 날개 + 물러난 본채 + 굴뚝)",
+   "use": "home",
+   "masses": [
+    {
+     "id": "main",
+     "kind": "ridge_side",
+     "cols": 8,
+     "storeys": 2,
+     "x": 0,
+     "depth": 1,
+     "roof": "roof.steep",
+     "walls": [
+      {
+       "item": "wall.storey",
+       "letters": "L W M W W M W R"
+      },
+      {
+       "item": "wall.storey",
+       "letters": "L W M M M M W R"
+      }
+     ],
+     "extras": [
+      {
+       "part": "extra.chimney",
+       "at": [
+        6,
+        -1
+       ],
+       "on": "roof"
+      }
+     ]
+    },
+    {
+     "id": "wing",
+     "kind": "gable_front",
+     "cols": 4,
+     "depth_rows": 2,
+     "storeys": 1,
+     "x": 2,
+     "depth": 0,
+     "gable": "gable.front",
+     "roof": "roof.gf.slope",
+     "back": "roof.gf.valley",
+     "back_end": "valley",
+     "walls": [
+      {
+       "item": "wall.storey",
+       "letters": "L W D R"
+      }
+     ]
+    }
+   ],
+   "note": "사용자 판정(2026-10-22 「ㅜ자 집이 한 채로 안 보인다 — 날개와 본채 사이에 풀이 보이고 날개 뒤 박공 꼭지가 본채 벽 앞에서 끝난다」, 승인안 bk-thouse-joined)으로 고친 판 — 앞으로 튀어나온 4칸 날개(depth 0, 문) 바로 뒤에 본채(depth 1: 날개 뒤 끝 = 본채 앞벽). 날개 지붕(골 v4·사면 2행·g4, 6행)이 본채 처마보다 올라가 본채 지붕 속 V자 골에서 만난다 — 위에서 보면 한 윤곽, 날개 벽이 본채 벽에 붙고 사이에 땅이 없다(A16). 그림자는 날개 오른쪽 본채 벽에만. 옛 판(depth 4~5, 뒤 박공 b4)은 반려"
+  },
+  {
+   "id": "hall.r7",
+   "title": "계단 박공 회관 + 왼쪽 외쪽",
+   "use": "hall",
+   "masses": [
+    {
+     "id": "hall",
+     "kind": "gable_front",
+     "cols": 5,
+     "depth_rows": 3,
+     "storeys": 2,
+     "x": 2,
+     "depth": 0,
+     "gable": "gable.step",
+     "roof": "roof.gf.slope",
+     "back": "gable.step",
+     "back_end": "gable",
+     "walls": [
+      {
+       "item": "wall.storey",
+       "letters": "L W W W R"
+      },
+      {
+       "item": "wall.storey",
+       "letters": "L W D W R"
+      }
+     ],
+     "extras": [
+      {
+       "part": "extra.chimney",
+       "at": [
+        1,
+        1
+       ],
+       "on": "roof"
+      }
+     ]
+    },
+    {
+     "id": "shed",
+     "kind": "lean_to",
+     "cols": 2,
+     "depth_rows": 2,
+     "storeys": 1,
+     "x": 0,
+     "depth": 0,
+     "low": "left",
+     "roof": "roof.lean.left",
+     "walls": [
+      {
+       "item": "wall.log",
+       "letters": "L M"
+      }
+     ]
+    }
+   ],
+   "note": "5칸 계단 박공 회관 — 사면 3행(짧은 지붕), 박공 정면 위층 창 셋(L W W W R). 외쪽 헛간은 왼쪽(빛 쪽)에 1층으로 붙어 회관 처마보다 낮다(roof.lean.left — 새로 그린다). 박공 다락 창은 r7 에서 gable.step 을 다시 그릴 때 g5 에 넣는다(reuseParts 로 옛 g5 를 쓰면 다락 창은 없다)"
+  }
+ ],
+ "rounds": {
+  "style-r1": {
+   "wave": "style",
+   "title": "화풍 판 — 줄 A·B·C × 부품 최소 세트 + 조립 건물 둘",
+   "module": "src/harnesses/building-kit/rounds/northern-snow/style_r1.py",
+   "keys": "letter",
+   "items": [
+    "roof.steep",
+    "wall.log",
+    "base.stone"
+   ],
+   "lead": "줄마다 지붕 1변형·벽 1층(창·문)·기단을 그리고 작은 집·긴 집으로 조립해 본다. 사람이 줄을 고르거나 여럿 남긴다.",
+   "superseded": "style-r3"
+  },
+  "style-r2": {
+   "wave": "style",
+   "title": "화풍 판 2 — 2층용 높은 지붕 · 줄별 벽 재질",
+   "module": "src/harnesses/building-kit/rounds/northern-snow/style_r2.py",
+   "keys": "letter",
+   "items": [
+    "roof.steep",
+    "roof.steep.tall",
+    "wall.storey",
+    "base.stone"
+   ],
+   "lead": "style-r1 독립 검수: 오두막은 모임지붕이 읽혔지만 2층 긴 집은 지붕이 22~24% 로 얇았고(셋 다 FAIL), 줄 B·C 도 벽이 통나무였다. 긴 집은 4행 지붕, 벽은 줄 재질로 다시 그린다.",
+   "superseded": "style-r3"
+  },
+  "style-r3": {
+   "wave": "style",
+   "title": "화풍 판 3 — 기단 없는 접지 · 2칸 모임 사선 지붕 · 질량 합성",
+   "module": "src/harnesses/building-kit/rounds/northern-snow/style_r3.py",
+   "keys": "letter",
+   "items": [
+    "roof.steep",
+    "roof.steep.tall",
+    "roof.lean",
+    "wall.log",
+    "wall.storey"
+   ],
+   "buildings": [
+    "loghut",
+    "longhouse",
+    "hall"
+   ],
+   "lead": "줄 A·B·C 마다 부품 전부를 한 에이전트가 그리고, 이번 판의 건물 전부(여러 질량 포함)를 dry 로 조립해 refs/ 와 나란히 본다. 사용자 반려(지붕·접지면·색감·ㅁ자)를 문법으로 고친 판이다.",
+   "superseded": "style-r6",
+   "supersededWhy": "줄 C 가 돌 장벽 → 분홍 벽돌로 바뀌고 북방 팔레트에 버들항 설원 램프가 더해졌다(사용자 2026-10-22, 버들항 설원 마을 비교). 그린 그림·원장 해시는 옛 판 기록으로만 남는다"
+  },
+  "style-r5": {
+   "wave": "style",
+   "title": "화풍 판 5 — 박공 정면 투영(용마루가 북쪽으로 물러난다) · ㄱ자 골 · 계단 박공 · 외쪽",
+   "module": "src/harnesses/building-kit/rounds/northern-snow/style_r5.py",
+   "keys": "letter",
+   "items": [
+    "gable.front",
+    "gable.step",
+    "roof.gf.slope",
+    "roof.gf.back",
+    "roof.lean.side",
+    "roof.steep",
+    "wall.log",
+    "wall.storey",
+    "extra.chimney"
+   ],
+   "buildings": [
+    "cottage.r5",
+    "lhouse.r5",
+    "hall.r5"
+   ],
+   "grammar": "r5",
+   "requireGableFront": true,
+   "projection": "박공 정면(gable-front) 투영 — 사용자 판정 2026-10-22: 「집이 이 각도로 보여야 한다 — 지금은 전혀 아니다」. style-r1~r4 의 '정면과 나란한 용마루 지붕 + 평평한 정면 입면'은 반려됐다. ① 박공 끝(삼각 벽, 계단 박공이면 크로스텝)이 남쪽(보는 쪽)을 본다 — 앞 박공 삼각형은 질량 아래 벽 띠 바로 위에 선다. ② 용마루는 북쪽으로 물러난다 — 화면에서는 앞 박공 꼭대기에서 위로 뒤 꼭대기까지 곧은 세로선(질량 가운데 2px)이다. ③ 용마루 왼쪽·오른쪽에 두 사면이 세로로 긴 면으로 보인다(사면 길이 = depth_rows = 지붕이 물러나는 깊이). ④ 뒤 끝은 맨 위의 ^ 모양 — 가운데 용마루 끝이 가장 높고 양 처마 쪽으로 내려간다. 다른 지붕에 박히면 그 ^ 선이 골(valley)이다. ⑤ 높은 3/4 카메라: 지붕이 실루엣의 대부분(질량 높이의 50~85%)이고 벽은 질량 아래 띠다. 옆벽은 처마에 가려 거의 안 보인다. ⑥ 조합: L·T 평면 — 정면과 나란한 용마루의 본채 앞에 박공 정면 날개, 지붕이 만나는 골, 작은 박공 현관, 지붕에서 솟는 굴뚝, 옆의 외쪽(한쪽 경사) 지붕.",
+   "light": "빛은 왼쪽 위 — 왼쪽 사면이 밝은 단, 오른쪽 사면이 어두운 단(조립 A12 가 사면 띠의 평균 밝기를 재서 왼쪽이 8 이상 밝아야 통과). 용마루는 가운데 2px 의 곧은 세로선으로, 모든 행에서 양옆 사면과 밝기가 6 이상 다르다(보통 가장 밝은 단 한 줄 + 그늘 쪽 어두운 단).",
+   "compare": "끝내기 전에 preview/compare.png 를 refs/ 의 버들항 기준 건물과, 그리고 refs/projection-gable-front-4x.png · refs/projection-l-combo-4x.png 투영 안내도(회색 도형 — 하네스가 그린 구조 안내, 화풍 기준 아님)와 나란히 견준다.",
+   "lead": "r1~r4 의 정면과 나란한 용마루 + 평평한 정면 입면은 사용자 반려(2026-10-22). 모든 건물이 박공 정면 질량을 하나 이상 갖고(A15), 용마루 세로선·사면 빛(A12)·골(A13)·지붕 위 굴뚝(A14)을 조립 관문이 잰다. 사용자가 준 참고 그림은 저장소·샌드박스에 넣지 않는다 — 구조 안내는 하네스가 그린 회색 투영 안내도(projection.py).",
+   "superseded": "style-r6",
+   "supersededWhy": "줄 C 가 돌 장벽 → 분홍 벽돌로 바뀌고 북방 팔레트에 버들항 설원 램프가 더해졌다(사용자 2026-10-22, 버들항 설원 마을 비교). 그린 그림·원장 해시는 옛 판 기록으로만 남는다"
+  },
+  "style-r6": {
+   "wave": "style",
+   "title": "화풍 판 6 — 버들항 설원 세 집 계열(통나무 · 반목조 붉은 지붕 · 분홍 벽돌) × 박공 정면 투영 · 모든 집 굴뚝",
+   "module": "src/harnesses/building-kit/rounds/northern-snow/style_r6.py",
+   "keys": "letter",
+   "items": [
+    "gable.front",
+    "gable.step",
+    "roof.gf.slope",
+    "roof.gf.back",
+    "roof.lean.side",
+    "roof.steep",
+    "wall.log",
+    "wall.storey",
+    "extra.chimney"
+   ],
+   "buildings": [
+    "cottage.r6",
+    "lhouse.r6",
+    "hall.r6"
+   ],
+   "grammar": "r5",
+   "requireGableFront": true,
+   "projection": "박공 정면(gable-front) 투영 — 사용자 판정 2026-10-22: 「집이 이 각도로 보여야 한다 — 지금은 전혀 아니다」. style-r1~r4 의 '정면과 나란한 용마루 지붕 + 평평한 정면 입면'은 반려됐다. ① 박공 끝(삼각 벽, 계단 박공이면 크로스텝)이 남쪽(보는 쪽)을 본다 — 앞 박공 삼각형은 질량 아래 벽 띠 바로 위에 선다. ② 용마루는 북쪽으로 물러난다 — 화면에서는 앞 박공 꼭대기에서 위로 뒤 꼭대기까지 곧은 세로선(질량 가운데 2px)이다. ③ 용마루 왼쪽·오른쪽에 두 사면이 세로로 긴 면으로 보인다(사면 길이 = depth_rows = 지붕이 물러나는 깊이). ④ 뒤 끝은 맨 위의 ^ 모양 — 가운데 용마루 끝이 가장 높고 양 처마 쪽으로 내려간다. 다른 지붕에 박히면 그 ^ 선이 골(valley)이다. ⑤ 높은 3/4 카메라: 지붕이 실루엣의 대부분(질량 높이의 50~85%)이고 벽은 질량 아래 띠다. 옆벽은 처마에 가려 거의 안 보인다. ⑥ 조합: L·T 평면 — 정면과 나란한 용마루의 본채 앞에 박공 정면 날개, 지붕이 만나는 골, 작은 박공 현관, 지붕에서 솟는 굴뚝, 옆의 외쪽(한쪽 경사) 지붕.",
+   "light": "빛은 왼쪽 위 — 왼쪽 사면이 밝은 단, 오른쪽 사면이 어두운 단(조립 A12 가 사면 띠의 평균 밝기를 재서 왼쪽이 8 이상 밝아야 통과). 용마루는 가운데 2px 의 곧은 세로선으로, 모든 행에서 양옆 사면과 밝기가 6 이상 다르다(보통 가장 밝은 단 한 줄 + 그늘 쪽 어두운 단).",
+   "compare": "끝내기 전에 preview/compare.png 를 refs/ 의 버들항 설원 기준 그림과 견준다 — refs/bd-pick-snowfield-hall·bd-pick-snowfield-hut(설원 회관·오두막), refs/snowfield-w2·snowfield-w1·snowfield-s1(반목조 붉은 지붕·벽돌 슬레이트·벽돌 붉은 지붕 집), refs/snowfield-village-houses(설원 마을 렌더의 집들). 눈이 지붕에 두껍게 얹히고 처마에 고드름이 늘어졌는지, 지붕 색(roofred·roofslate·shake)과 벽 재질(log·plaster+wood·brick)이 그 그림과 같은 비율로 읽히는지 본다. 그리고 refs/projection-gable-front-4x.png · refs/projection-l-combo-4x.png 투영 안내도(회색 도형 — 하네스가 그린 구조 안내, 화풍 기준 아님)와 나란히 견준다.",
+   "lead": "사용자 2026-10-22: 우리 북방 마을보다 버들항 설원 마을(tiledata/beodeul-variants/snowfield)이 확실히 낫다 — 원인은 팔레트(청록 물·푸른 얼음·청록 전나무·붉은/슬레이트 지붕·분홍 벽돌·푸른 회색 판석·흙길이 없었다)와 통나무 오두막뿐인 집. style-r6 은 설원 부품에서 램프를 뽑아 더하고 줄을 세 집 계열로 바꾼다. 문법은 style-r5 와 같다(박공 정면 · requireGableFront). 모든 건물에 굴뚝이 있고, 지붕 위에 눈이 두껍게 얹히고(snow 밝은 단 + 푸른 그늘) 처마 끝에 고드름이 늘어진다."
+  },
+  "style-r7": {
+   "wave": "style",
+   "title": "화풍 판 7 — 깊이 땅(물러난 질량은 화면에서 더 높이 선다) · 날개 골 이음(한 채) · 본채 벽 그림자 · 짧은 박공 지붕",
+   "module": "src/harnesses/building-kit/rounds/northern-snow/style_r7.py",
+   "keys": "letter",
+   "items": [
+    "gable.front",
+    "gable.step",
+    "roof.gf.slope",
+    "roof.gf.back",
+    "roof.gf.valley",
+    "roof.lean.left",
+    "roof.steep",
+    "wall.log",
+    "wall.storey",
+    "extra.chimney"
+   ],
+   "buildings": [
+    "cottage.r7",
+    "thouse.r7",
+    "hall.r7"
+   ],
+   "grammar": "r7",
+   "requireGableFront": true,
+   "reuseParts": "style-r6",
+   "projection": "박공 정면(gable-front) 투영 — 사용자 판정 2026-10-22: 「집이 이 각도로 보여야 한다 — 지금은 전혀 아니다」. style-r1~r4 의 '정면과 나란한 용마루 지붕 + 평평한 정면 입면'은 반려됐다. ① 박공 끝(삼각 벽, 계단 박공이면 크로스텝)이 남쪽(보는 쪽)을 본다 — 앞 박공 삼각형은 질량 아래 벽 띠 바로 위에 선다. ② 용마루는 북쪽으로 물러난다 — 화면에서는 앞 박공 꼭대기에서 위로 뒤 꼭대기까지 곧은 세로선(질량 가운데 2px)이다. ③ 용마루 왼쪽·오른쪽에 두 사면이 세로로 긴 면으로 보인다(사면 길이 = depth_rows = 지붕이 물러나는 깊이). ④ 뒤 끝은 맨 위의 ^ 모양 — 가운데 용마루 끝이 가장 높고 양 처마 쪽으로 내려간다. 다른 지붕에 박히면 그 ^ 선이 골(valley)이다. ⑤ 높은 3/4 카메라: 지붕이 실루엣의 대부분(질량 높이의 50~85%)이고 벽은 질량 아래 띠다. 옆벽은 처마에 가려 거의 안 보인다. ⑥ 조합: L·T 평면 — 정면과 나란한 용마루의 본채 앞에 박공 정면 날개, 지붕이 만나는 골, 작은 박공 현관, 지붕에서 솟는 굴뚝, 옆의 외쪽(한쪽 경사) 지붕.",
+   "depth": "깊이 땅 문법(사용자 반려 2026-10-22 「ㅜ자 집 — 공간감이 전혀 없다」): depth d 인 질량의 벽 바닥은 앞 땅 행보다 정확히 d 칸 위에 선다. 앞으로 튀어나온 날개 = depth 0, 본채 = depth 1. 날개 이음(사용자 판정 2026-10-22 「ㅜ자 집이 한 채로 안 보인다 — 날개와 본채 사이에 풀이 보이고 날개 뒤 박공이 본채 벽 앞에서 끝난다」, 승인안 http://mdc-server:18301/bk-thouse-joined.html): 날개 뒤 끝이 본채 앞벽이다 — 본채 depth = 날개 depth + 1, 날개 지붕은 본채 처마보다 올라가 본채 지붕 속 V자 골(roof.gf.valley v<폭>, back_end valley)에서 만난다. 위에서 보면 한 윤곽, 날개와 본채 사이에 땅이 없다(A16). 날개 옆 본채 벽 밑 한 줄만 투명(지도 바닥). 조립이 앞 질량 오른쪽·처마 아래 그림자(12,14,20,α88)를 뒤 질량 벽에만 얹는다. 문은 가장 앞 질량, 문 앞 칸은 땅.",
+   "light": "빛은 왼쪽 위 — 왼쪽 사면이 밝은 단, 오른쪽 사면이 어두운 단(조립 A12 가 사면 띠의 평균 밝기를 재서 왼쪽이 8 이상 밝아야 통과). 용마루는 가운데 2px 의 곧은 세로선으로, 모든 행에서 양옆 사면과 밝기가 6 이상 다르다(보통 가장 밝은 단 한 줄 + 그늘 쪽 어두운 단).",
+   "compare": "끝내기 전에 preview/compare.png 를 refs/ 의 버들항 기준 건물과, refs/projection-gable-front-4x.png · refs/projection-wing-depth-4x.png 투영 안내도(회색 도형 — 깊이 계단·마당 띠·그림자 구조 안내, 화풍 기준 아님)와 나란히 견준다.",
+   "redraw": {
+    "roof.lean.left": "새 항목 — 회관 왼쪽(빛 쪽) 외쪽. 옛 판에 없다",
+    "gable.step": "(선택) g5 박공 정면에 다락 창 — 다시 그리면 이 판 모듈 것이 옛 판 것을 이긴다",
+    "roof.gf.valley": "새 항목 — 날개 골 v4·v5·v6(2행). 날개 지붕이 본채 지붕 속으로 올라가 V자 골에서 만나는 뒤 끝. 옛 판에 없어 그리기 전까지 ㅜ자 집·타운하우스는 「needs drawing: roof.gf.valley v4」로 조립을 건너뛴다(다른 건물은 그대로 조립)"
+   },
+   "lead": "style-r5/r6 부품을 reuseParts(style-r6)로 다시 조립해 깊이를 먼저 본다 — 이 판 모듈에 (항목, 줄) 함수가 있으면 그것이, 없으면 style-r6 의 같은 항목 함수가 쓰인다. 다시 그릴 것은 redraw 의 항목뿐이다. 박공 정면 지붕은 짧게(오두막·날개 depth_rows 2, 회관 3), 날개는 4칸 이상."
+  },
+  "style-r8": {
+   "wave": "style",
+   "title": "판 8 — 날개 골 roof.gf.valley(v4·v5·v6)만 새로 그린다 · 나머지 부품은 style-r7(→r5/r6) 그대로",
+   "module": "src/harnesses/building-kit/rounds/northern-snow/style_r8.py",
+   "keys": "letter",
+   "items": [
+    "gable.front",
+    "roof.gf.slope",
+    "roof.gf.valley",
+    "roof.steep",
+    "wall.storey",
+    "extra.chimney"
+   ],
+   "buildings": [
+    "thouse.r7"
+   ],
+   "grammar": "r7",
+   "requireGableFront": true,
+   "reuseParts": "style-r7",
+   "projection": "박공 정면(gable-front) 투영 — 사용자 판정 2026-10-22: 「집이 이 각도로 보여야 한다 — 지금은 전혀 아니다」. style-r1~r4 의 '정면과 나란한 용마루 지붕 + 평평한 정면 입면'은 반려됐다. ① 박공 끝(삼각 벽, 계단 박공이면 크로스텝)이 남쪽(보는 쪽)을 본다 — 앞 박공 삼각형은 질량 아래 벽 띠 바로 위에 선다. ② 용마루는 북쪽으로 물러난다 — 화면에서는 앞 박공 꼭대기에서 위로 뒤 꼭대기까지 곧은 세로선(질량 가운데 2px)이다. ③ 용마루 왼쪽·오른쪽에 두 사면이 세로로 긴 면으로 보인다(사면 길이 = depth_rows = 지붕이 물러나는 깊이). ④ 뒤 끝은 맨 위의 ^ 모양 — 가운데 용마루 끝이 가장 높고 양 처마 쪽으로 내려간다. 다른 지붕에 박히면 그 ^ 선이 골(valley)이다. ⑤ 높은 3/4 카메라: 지붕이 실루엣의 대부분(질량 높이의 50~85%)이고 벽은 질량 아래 띠다. 옆벽은 처마에 가려 거의 안 보인다. ⑥ 조합: L·T 평면 — 정면과 나란한 용마루의 본채 앞에 박공 정면 날개, 지붕이 만나는 골, 작은 박공 현관, 지붕에서 솟는 굴뚝, 옆의 외쪽(한쪽 경사) 지붕.",
+   "depth": "깊이 땅 문법(사용자 반려 2026-10-22 「ㅜ자 집 — 공간감이 전혀 없다」): depth d 인 질량의 벽 바닥은 앞 땅 행보다 정확히 d 칸 위에 선다. 앞으로 튀어나온 날개 = depth 0, 본채 = depth 1. 날개 이음(사용자 판정 2026-10-22 「ㅜ자 집이 한 채로 안 보인다 — 날개와 본채 사이에 풀이 보이고 날개 뒤 박공이 본채 벽 앞에서 끝난다」, 승인안 http://mdc-server:18301/bk-thouse-joined.html): 날개 뒤 끝이 본채 앞벽이다 — 본채 depth = 날개 depth + 1, 날개 지붕은 본채 처마보다 올라가 본채 지붕 속 V자 골(roof.gf.valley v<폭>, back_end valley)에서 만난다. 위에서 보면 한 윤곽, 날개와 본채 사이에 땅이 없다(A16). 날개 옆 본채 벽 밑 한 줄만 투명(지도 바닥). 조립이 앞 질량 오른쪽·처마 아래 그림자(12,14,20,α88)를 뒤 질량 벽에만 얹는다. 문은 가장 앞 질량, 문 앞 칸은 땅.",
+   "light": "빛은 왼쪽 위 — 왼쪽 사면이 밝은 단, 오른쪽 사면이 어두운 단(조립 A12 가 사면 띠의 평균 밝기를 재서 왼쪽이 8 이상 밝아야 통과). 용마루는 가운데 2px 의 곧은 세로선으로, 모든 행에서 양옆 사면과 밝기가 6 이상 다르다(보통 가장 밝은 단 한 줄 + 그늘 쪽 어두운 단).",
+   "compare": "끝내기 전에 preview/compare.png 를 refs/ 의 버들항 기준 건물과, refs/projection-gable-front-4x.png · refs/projection-wing-depth-4x.png 투영 안내도(회색 도형 — 깊이 계단·마당 띠·그림자 구조 안내, 화풍 기준 아님)와 나란히 견준다.",
+   "redraw": {
+    "roof.gf.valley": "새 항목 — 날개 골 v4·v5·v6(2행). 날개 지붕이 본채 지붕 속으로 올라가 V자 골에서 만나는 뒤 끝. 이 판에서 처음 그린다 — 다른 항목은 style-r7 그림(reuseParts 연쇄)을 화소 그대로 쓴다"
+   },
+   "lead": "style-r7 의 ㅜ자 집 이 「needs drawing: roof.gf.valley v4」로 막혀 있다. 이 판은 골 조각만 그리고(drawer 가 reuseParts 로 가져오는 항목은 그리지 않는다), 같은 레시피를 조립·검수(detached_wing 함정 포함)·시트로 낸다."
+  }
+ },
+ "plan": {
+  "style-r1": "줄 A·B·C × 눈 지붕·통나무 벽 한 층·기단 + 통나무 오두막",
+  "civic-r1": "장작 헛간·롱하우스·망루",
+  "style-r3": "기단 없는 접지 · 2칸 끝 모임지붕 · 층별 벽 재질 · 질량 합성 (사용자 2026-10-22 반려 뒤)",
+  "frame-r2": "남긴 줄마다 후보 2: 지붕 변형 전부 · 층별 벽 재질 변형 · 층 띠 · 굴뚝/돔/탑 같은 extras",
+  "style-r6": "버들항 설원 세 집 계열 줄 A 통나무 · B 반목조 흰 회벽 + 붉은 지붕 · C 분홍 벽돌 + 붉은/슬레이트 지붕, 박공 정면 문법, 모든 집 굴뚝"
+ }
+}

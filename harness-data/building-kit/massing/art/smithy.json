@@ -1,0 +1,17 @@
+{
+ "name": "대장간",
+ "massing": "12",
+ "material": "stone",
+ "refs": [
+  "bd-house-smithy_town",
+  "bd-house-smithy"
+ ],
+ "walk": [
+  "****...",
+  "*****..",
+  "*******",
+  "XDXXXXX",
+  "XDXXXXX"
+ ],
+ "id": "smithy"
+}
