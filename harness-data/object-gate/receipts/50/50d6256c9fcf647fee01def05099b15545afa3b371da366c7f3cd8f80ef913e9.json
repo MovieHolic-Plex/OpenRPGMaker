@@ -1,0 +1,395 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "50d6256c9fcf647fee01def05099b15545afa3b371da366c7f3cd8f80ef913e9",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "지하철 출구 번호 표지 1",
+ "label": "modern_city/street-kr/mc-prop-kr-exit-1",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "refer",
+ "reasons": [
+  "3/4: 판정자 의견이 갈림(분명한 3/4 0/4, 분명한 위반 2/4)",
+  "3/4: 기둥 머리가 타원 판이 아님(위아래 둥글림 false, 몸통보다 6 튀어나옴 < 6) (4/4)",
+  "3/4: 투영이 3/4 아님(front_elevation) (2/4)",
+  "3/4: 윗면 2행 < 4 (2/4)"
+ ],
+ "view34": {
+  "verdict": "refer",
+  "reasons": [
+   "판정자 의견이 갈림(분명한 3/4 0/4, 분명한 위반 2/4)",
+   "기둥 머리가 타원 판이 아님(위아래 둥글림 false, 몸통보다 6 튀어나옴 < 6) (4/4)",
+   "투영이 3/4 아님(front_elevation) (2/4)",
+   "윗면 2행 < 4 (2/4)"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "bus-shelter-a",
+   "kiosk-a",
+   "vending-a"
+  ],
+  "scale": 2,
+  "score": 7,
+  "refSet": {
+   "id": "modern_city",
+   "chipset": "modern_city",
+   "fallback": false,
+   "hash": "dc20de17343e77e8"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 13,
+  "tileColorsP90": 13,
+  "darkV5": 36,
+  "nearBlackEdge": 1,
+  "opaqueTiles": 2
+ },
+ "eye": {
+  "verdicts": [
+   "borderline",
+   "borderline",
+   "wrong",
+   "borderline",
+   "wrong",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top cap (white dome with teal underside)",
+      "rows": "1-6",
+      "evidence": "a",
+      "front_edge_line_row": 7,
+      "eave_shadow_rows": "7-8"
+     },
+     {
+      "part": "shaft with yellow number plate",
+      "rows": "9-22",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "grey lower shaft and flared base",
+      "rows": "23-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 22,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": {
+     "cap_rows": 8,
+     "cap_width": 13,
+     "shaft_width": 7,
+     "rounded_at_both_edges": false
+    },
+    "reads_as": "three_quarter",
+    "evidence": "The cap spans rows 1-8. Its width goes 5, 9, 11, then 13 for rows 4-8, and then drops straight to 9 at row 9 and 7 for the shaft, so it is rounded only at the upper edge and ends flat on the shaft. That is a hat/dome shape, not an ellipse plate. The near-white band at rows 2-6 does read as a top surface. It ends in a teal front edge at row 7, and rows 7-8 act as the eave and front rim. The shaft below (rows 9-30, about 22 rows) is a clear front face, with a number plate at rows 11-21 and a slightly flared base at rows 27-30."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small bollard-style exit sign: a rounded cap, a pole body and a numbered '1' plate. It carries 12 visible tones per full tile, level with kiosk-a (12), above bus-shelter-a (6) and below vending-a (20). Near-flat coverage is 0%, so there are no flat fills (bus-shelter-a has 9%). Dark edge pixels are 0% neutral, so the outline is tinted. It reads as a dark cool tone of the neighbouring material, not a uniform black sticker line. The cap and pole show about 5 lightness steps with highlight and shadow sides, comparable to the references. The piece is thin, so density is judged by eye. It does not look thinner or flatter than the references and sits comfortably next to them. Texture is modest, with no grain dots, but the references are similarly clean-shaded.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 의견이 갈림(분명한 3/4 0/1, 분명한 위반 0/1)",
+    "기둥 머리가 타원 판이 아님(위아래 둥글림 false, 몸통보다 6 튀어나옴 < 6) (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "판정자 의견이 갈림(분명한 3/4 0/1, 분명한 위반 0/1)",
+     "기둥 머리가 타원 판이 아님(위아래 둥글림 false, 몸통보다 6 튀어나옴 < 6) (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18812
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top cap (white dome with teal underside)",
+      "rows": "1-8",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": "7-8"
+     },
+     {
+      "part": "orange number panel on shaft",
+      "rows": "10-22",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "flared gray base",
+      "rows": "23-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 22,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": {
+     "cap_rows": 8,
+     "cap_width": 13,
+     "shaft_width": 7,
+     "rounded_at_both_edges": false
+    },
+    "reads_as": "front_elevation",
+    "evidence": "The width profile of the cap is 5, 9, 11, then 13 for rows 4-8. It drops straight to 9 at row 9 and 7 at row 10. The cap is rounded only along its upper edge and ends flat on the narrower shaft, so it is a dome or hat, not an ellipse plate. The white rows 3-6 and teal rows 7-8 read as a shaded dome front, with no front-edge line. No bounding narrower row sits below the widest rows, so rounded_at_both_edges is false. The shaft (rows 9-26) is a flat vertical face with an orange number panel on rows 10-22. The base flares to 11 wide on rows 27-30 and has no top ellipse. The drawing shows a front face of about 22 rows with no real top surface, so it reads as front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a bollard-style exit sign: a rounded light-grey cap, a pale pole with side shading, and a yellow number plate with a dark digit. It carries 12 visible tones per 16x16 tile, level with kiosk-a (12), above bus-shelter-a (6) and below vending-a (20). Near-flat coverage is 0%, so there are no large flat fills. The dark edge pixels are 0% neutral, so the outline is tinted (a dark blue-grey/brown lean) and follows the adjacent material. That matches the references, which also use tinted outlines. Shading is about 4 steps on the pole and cap, a little below the 5 steps on the references. It is thin and sparse, but the cap highlight, the pole shading and the plate details keep it from looking flatter or more sticker-like than the references. A careful artist would accept it beside kiosk-a and bus-shelter-a.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18760
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top cap (white dome with teal underside)",
+      "rows": "1-8",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": "7-8"
+     },
+     {
+      "part": "shaft with number plate",
+      "rows": "9-26",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base flare",
+      "rows": "27-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 22,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": {
+     "cap_rows": 8,
+     "cap_width": 13,
+     "shaft_width": 7,
+     "rounded_at_both_edges": false
+    },
+    "reads_as": "front_elevation",
+    "evidence": "The width profile of the cap is 1:5, 2:9, 3:11, then 13 for rows 4-8, and it drops straight to 9 at row 9 and 7 on the shaft. The cap is rounded only at its upper edge and has a flat bottom edge sitting on the narrower shaft, so it is a dome or hat, not an ellipse plate. The widest rows are not bounded by narrower rows below. The white rows 2-6 and the teal rows 7-8 read as a lit dome and its vertical underside, with no 1-row front-edge line. The shaft (rows 10-26, width 7) and the base (rows 27-30) are drawn as vertical faces only. The base flare has no visible top plane."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small bollard-style sign post: a domed cap, a grey body with a light-to-dark ramp, and a yellow number plate with a dark digit. Measured facts: 12 visible tones per 16x16 tile, which matches kiosk-a (12) and is well above bus-shelter-a (6). Near-flat coverage is 0%, so there are no flat fills of 5x5 or larger. The dark edge pixels are 0% neutral, so the outline is tinted (bluish/dark material tone) and not a black sticker line, the same as every reference. Shading on the body is roughly 4 steps, slightly fewer than the vending machine, but comparable to the shipped bus shelter and kiosk. The object is thin, so the density facts are not held against it, and by eye it looks no thinner or flatter than the references. A careful artist would accept it next to them.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18754
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "white cap on top of pole",
+      "rows": "1-8",
+      "evidence": "a",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": "7-8"
+     },
+     {
+      "part": "shaft with tan number sign",
+      "rows": "10-26",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "flared base",
+      "rows": "27-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 22,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": {
+     "cap_rows": 8,
+     "cap_width": 13,
+     "shaft_width": 7,
+     "rounded_at_both_edges": false
+    },
+    "reads_as": "three_quarter",
+    "evidence": "The width profile of the cap runs 5, 9, 11, then 13 held for rows 4-8. It then drops straight to 9 at row 9 and 7 on the shaft. The cap is rounded only at its upper edge and ends flat on the narrower neck, so it is a dome or hat, not an ellipse plate that narrows again below. The white rows 3-6 read as a top surface, with teal rows 7-8 as its underside shadow. Below it the shaft (width 7, rows 10-26) carries a tan sign with the number 1 drawn face-on, then an 11-wide flared base at rows 27-30. The front face is about 22 rows."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a small bollard-style exit sign: a rounded white/grey cap, a pole body and a yellow panel with the number 1. It has about 4 lightness steps on the pole and cap, with a highlight edge and a shaded side. The dark edge pixels are 0% neutral, so the outline is tinted toward the material and not a black sticker line. Measured density is 12 visible tones per tile, equal to kiosk-a (12), above bus-shelter-a (6) and below vending-a (20). Near-flat coverage is 0%, so there are no flat fills. By eye, the piece is thin and sparse, with a smooth pole and little grain, so it looks a little simpler than the kiosk and vending references. It reads as accepted shipped art of this chipset but sits at the lower end.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 의견이 갈림(분명한 3/4 0/1, 분명한 위반 0/1)",
+    "기둥 머리가 타원 판이 아님(위아래 둥글림 false, 몸통보다 6 튀어나옴 < 6) (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "판정자 의견이 갈림(분명한 3/4 0/1, 분명한 위반 0/1)",
+     "기둥 머리가 타원 판이 아님(위아래 둥글림 false, 몸통보다 6 튀어나옴 < 6) (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 22897
+  }
+ ],
+ "decidedAt": "2026-10-25T07:58:29.300Z",
+ "cells": {
+  "16": [
+   "64fbe1ef91654e02",
+   "9e512f64009de0cf"
+  ],
+  "24": [
+   "00e0264e3977c555",
+   "0555dbe99217a4f9",
+   "1ba2af616f3ceeef",
+   "47e8be167f13d991",
+   "67775c733ca33e33",
+   "891b4330d0476747",
+   "9dbde781a85e542d",
+   "a127de479bee14ee",
+   "bad9aa36c7a89916",
+   "d26c5df19027eecb",
+   "ebbff62a79d64e54",
+   "f9b97539fafc25aa"
+  ],
+  "32": [
+   "30142a6b2da5bb44",
+   "6306e81208fea28b",
+   "77e6b8a3e350aed3"
+  ],
+  "48": [
+   "25c98c31c4ea9ea4",
+   "71937ed21c49d04d",
+   "7f7cf41f57720991",
+   "9cbc163bf3e45a95",
+   "cbd6e1bf2bd1c3a6",
+   "cf52cd7633086a59"
+  ]
+ }
+}

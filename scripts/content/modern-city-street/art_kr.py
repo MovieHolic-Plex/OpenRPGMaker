@@ -159,9 +159,9 @@ def subway_exit(n):
     """지하철 출구 기둥 3/4 (r13 = r7 구성, Argon r9 지적 고침: 받침 밖 허공에 칠한 그늘 제거·몸통 9칸으로 넓혀 갓 비율 줄임·숫자 4×6 획 정리) — 몸통보다 양옆 4칸 넓은 타원 갓: 위에서 본 윗판(뒤쪽 밝게, 좌상 빛)과 앞 두께 3줄(청록 노선 띠,
     오른쪽 끝 그늘)·처마 그늘. 가는 몸통에 노란 번호판, 땅에는 윗면이 앞 모서리보다 밝은 타원 받침(Argon r6: 받침 명암 역전·갓 앞 두께 1줄)."""
     a = canvas(16, 32)
-    x0, x1 = 4, 10                                            # r18: 몸통 7칸(Argon r17: 갓 15칸이 자판기보다 넓어 버섯·나사 머리로 읽혔다) — 갓 13칸, 6칸 튀어나옴
+    x0, x1 = 3, 10                                            # r18: 몸통 7칸(Argon r17: 갓 15칸이 자판기보다 넓어 버섯·나사 머리로 읽혔다) — 갓 13칸, 6칸 튀어나옴
     # 받침 먼저(몸통이 위를 덮는다): 윗면 SLATE 4(뒤)·3(앞), 앞 두께 SLATE 1, 윤곽.
-    b = canvas(16, 32); ellipse_plate(b, 7.5, 27.6, 5.8, 2.3, SLATE[3], SLATE[4], SLATE[1], thick=1)
+    b = canvas(16, 32); ellipse_plate(b, 7.0, 27.6, 6.2, 2.3, SLATE[3], SLATE[4], SLATE[1], thick=1)
     m = b[..., 3] > 0; a[m] = b[m]
     for y in range(10, 27):
         put(a, x0, y, O); put(a, x1, y, O)
@@ -170,13 +170,13 @@ def subway_exit(n):
             else: c = SLATE[4] if x == x0 + 1 else SLATE[3] if x == x0 + 2 else SLATE[2] if x < x1 - 1 else SLATE[1]
             put(a, x, y, c)
     for x in range(x0 + 1, x1): put(a, x, 21, O)
-    stamp(a, digit_mask(n), 5 if n != 4 else 5, 13, INK[1])
+    stamp(a, digit_mask(n), 5, 13, INK[1])   # 몸통 안 6칸에 숫자 4칸 — 양옆 1칸 여백(Argon r17: «3» 이 윤곽에 붙어 «B» 로 읽혔다)
     for y in range(22, 29):                                   # 몸통 오른쪽 그늘이 받침 윗면에 진다(받침 윗면 칸에만)
         if a[y, x1 + 1, 3] and tuple(a[y, x1 + 1, :3]) in (tuple(SLATE[3]), tuple(SLATE[4])): put(a, x1 + 1, y, SLATE[2])
     # 갓: 위에서 본 타원 윗판(뒤 WHITE 2·앞 WHITE 1) + 곧은 옆면 3줄(청록 띠, 오른쪽 끝 그늘) + 평평한 아래 윤곽 — 기둥 축(x=7)에 맞춘 원판.
     # Argon r14: 두 타원을 겹친 갓은 y=5 에서 허리가 잘록해 «구름 두 덩이»로 읽혔고, 표지 고리는 축에서 반 칸 밀렸고, 아래 윤곽이 목에 홈을 냈다.
     # 관문 r15: 아래가 평평하게 끝난 갓은 «타원 판»이 아니다(위아래 둥글림 false) — 곧은 옆면 아래를 낮은 반타원으로 다시 오므린다(렌즈형 원판, 허리 잘록 없음).
-    cx, rx, ry, top_y, rim, ry2 = 7.5, 6.45, 4.0, 0, 2, 1.8
+    cx, rx, ry, top_y, rim, ry2 = 7.0, 7.0, 4.8, 0, 1, 3.0
     cy = top_y + ry
     reg = np.zeros((32, 16), bool)
     for y in range(top_y, 12):

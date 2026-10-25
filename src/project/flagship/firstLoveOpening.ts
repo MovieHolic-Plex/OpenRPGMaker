@@ -55,7 +55,12 @@ function walker(id: string, who: Who | { resource: string; index: number }, dir:
     sheet: { ...SHEET },
     x: from.x, y: from.y, width: CHIP.w, height: CHIP.h,
     walk: { stride: 8, frames, holdFrame: frames[0]! },
-    keys: { x: [key(startMs, from.x, "linear"), key(startMs + ms, to.x, "linear")], y: [key(startMs, from.y, "linear"), key(startMs + ms, to.y, "linear")] },
+    // 끝 키는 컷 길이를 넘지 않는다(늦게 출발한 사람은 컷이 끝날 때 그 비율만큼만 간다).
+    keys: (() => {
+      const end = Math.min(SHOT_MS, startMs + ms), t = (end - startMs) / ms;
+      const ex = Math.round(from.x + (to.x - from.x) * t), ey = Math.round(from.y + (to.y - from.y) * t);
+      return { x: [key(startMs, from.x, "linear"), key(end, ex, "linear")], y: [key(startMs, from.y, "linear"), key(end, ey, "linear")] };
+    })(),
   } as AnimaticLayer;
 }
 

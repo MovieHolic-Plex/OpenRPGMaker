@@ -23,11 +23,11 @@
  "checkpoints": [
   {
    "id": "d1-arrive",
-   "label": "월요일 승강장 도착",
-   "note": "src/project/flagship/firstLove.ts: START 0, ev_fl_intro auto at (1,1); arrive=nearestFree(14,8) firstLoveMaps.ts:190",
-   "mapId": "fl_platform_am",
-   "x": 14,
-   "y": 8,
+   "label": "월요일 출근길 — 출구에서 시작(오프닝 A)",
+   "note": "START 0: ev_fl_cold_open auto in fl_street; startPos = main exit step (3,34); crowd pours out, bump at the crosswalk, paper + freeze",
+   "mapId": "fl_street",
+   "x": 3,
+   "y": 34,
    "facing": "down",
    "switches": {},
    "variables": {
@@ -35,23 +35,51 @@
    },
    "beats": [
     {
-     "id": "intro",
+     "id": "crowd",
      "ops": [
       {
        "kind": "hold",
        "dir": null,
-       "ms": 1500
+       "ms": 2600
       }
      ],
      "shot": true
     },
     {
-     "id": "intro2",
+     "id": "walk",
      "ops": [
+      {
+       "kind": "pressUntilJs",
+       "key": "Enter",
+       "fn": "() => /할 수 있어/.test(document.querySelector(\"[data-testid='dialogue-box']\")?.textContent ?? '')",
+       "maxPresses": 12,
+       "settleMs": 500
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
       {
        "kind": "hold",
        "dir": null,
-       "ms": 3500
+       "ms": 4200
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "freeze",
+     "ops": [
+      {
+       "kind": "waitFor",
+       "testid": "runtime-freeze-frame",
+       "state": "present",
+       "timeoutMs": 15000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 700
       }
      ],
      "shot": true
@@ -61,14 +89,16 @@
   {
    "id": "d1-street",
    "label": "월요일 아침 거리",
-   "note": "ARRIVED 1: ev_fl_street_am auto; arrive=main exit step (3,34) after ev_fl_plat_exit",
+   "note": "STREET 2 after the cold open (bump done); walk to the office door",
    "mapId": "fl_street",
    "x": 3,
    "y": 34,
    "facing": "down",
-   "switches": {},
+   "switches": {
+    "sw_fl_bumped": true
+   },
    "variables": {
-    "var_fl_stage": 1
+    "var_fl_stage": 2
    },
    "beats": [
     {
