@@ -11,6 +11,11 @@ export const GAME_WORDS = /퀘스트|의뢰|심부름|부탁|아이템|회복약
 
 
 /** 폴른 스타 제작에서 나온 일 묶음 — 요청 낱말이 있을 때만 그 도구를 더 싣는다(첫 턴을 무겁게 하지 않는다). */
+export const HORROR_WORDS = /공포|호러|무서|오싹|귀신|유령|괴물|좀비|저택|폐교|폐병원|병원|추격|쫓아|쫓기|숨어|숨을 곳|옷장|손전등|어둠|비명|깜짝|horror|scary|ghost|haunted/iu;
+/** 퍼즐 사슬 동사를 실을 요청 — 단서·자물쇠·잠긴 방·탈출. */
+export function wantsPuzzle(task: string): boolean {
+  return HORROR_WORDS.test(task) || /퍼즐|단서|금고|비밀번호|암호|열쇠|잠긴|잠겨|탈출|수수께끼|puzzle|clue|escape|riddle/iu.test(task);
+}
 export const FALLEN_TIERS: readonly { readonly words: RegExp; readonly tools: readonly string[]; readonly card?: string }[] = [
   { words: /숲|들판|필드|초원|forest|woods?\b|field|meadow/iu, tools: ["author_forest_route"] },
   { words: /뒤지|뒤져|뒤질|수납|항아리|통을|통이랑|통과 상자|서랍|옷장|들키|들켜|몰래|search/iu, tools: ["place_search_containers"] },
@@ -29,6 +34,8 @@ export const FALLEN_TIERS: readonly { readonly words: RegExp; readonly tools: re
   { words: /행인|오가|출근|퇴근|지나다니|사람들이 (걸|다니|오|지나)|walkers?\b|pedestrian/iu, tools: ["add_street_walkers"], card: "· 거리를 오가는 행인: add_street_walkers{mapId, walkers:[{name, graphic:{query:'회사원'}, stops:[{x,y},{x,y,waitSec}](들를 칸 2곳 이상 — 정류장·횡단보도 건너편·건물 문 앞·지하철 계단), speed 2~4 를 사람마다 다르게}]} — 길찾기·차 양보는 함수가 한다. 좌표는 read_npc_layout/find_empty_ground 나 거리 도구 결과(문·정류장·출구 칸)에서." },
   { words: /회사 거리|오피스|빌딩 거리|지하철 출구|도시 거리|도심|modern city|office street/iu, tools: ["resize_map", "create_map", "compose_modern_city_street", "link_modern_city_interior", "add_street_walkers", "set_map_properties"], card: "· 현대 도시 거리(modern_city 칩셋): compose_modern_city_street{mapId, seed, shops, landmark:'tower10'(큰 빌딩), subwayExits:1~4(번호 출구), korean:true(한국 거리)} — 맵은 60×50 권장(작으면 먼저 resize_map{mapId,width:60,height:50}; 새 거리 맵이면 create_map{tilesetId:'modern_city',width:60,height:50}). 결과 data.subwayExits·buildings 의 칸으로 행인 stops·이동 이벤트를 단다." },
   { words: /옥상|내려다|전망대|전망|아래 거리|배경으로|rooftop/iu, tools: ["set_map_properties"], card: "· 옥상·전망대에서 아래 동네가 보이는 배경: set_map_properties{mapId:옥상 맵, background:{fromMap:{mapId:아래 거리 맵, scale:0.33, haze:0.3}, showInEmptyCells:true}} — 그림을 지어내지 않는다. 옥상 맵 가장자리(울타리 밖)는 빈 칸으로 둬야 배경이 보인다." },
+  // 2026-10-25 공포 트랙(판정 J11~J15): 어둠·손전등·추격·숨기·게임 오버·퍼즐 — v1 에 있던 일반 기능을 공포 낱말에 싣는다.
+  { words: HORROR_WORDS, tools: ["make_chase_scene", "configure_object_behavior", "make_horror_loop", "set_lighting_volume", "set_scene_mood", "set_game_over", "set_life_flower", "compile_puzzle", "make_gallery_room"], card: "· 공포: 어둠·손전등 = set_lighting_volume{mapId, ambient:0.15~0.3, sources:[{at:'player', radius:3~4}]}(손전등은 플레이어를 따라간다). 쫓아오는 것 = make_chase_scene(순찰하다 보면 쫓고, 놓치면 돌아간다: pursuit{searchMs, onLost:'return'}, hidingSpots, killOnTouch, safeZone). 옷장·침대 밑 숨기 = configure_object_behavior{mapId, eventId, pageId, kind:'hiding'}(또는 make_chase_scene 의 hidingSpots). 잡히면 = set_game_over{presentation:'horror'}. 단서→금고→열쇠→잠긴 방 = author_puzzle_chain 하나로(답은 단서에만). 잠긴 방은 seal_locked_room 이 벽 틈을 막는다. 깜짝 놀람은 add_event 비트(화면 흔들림·번쩍임·효과음)로, 대사에 「@player」·{name} 을 쓰지 않는다 — 주인공 이름을 쓴다. 동료가 «합류»하면 changeParty{action:'add'}." },
 ];
 export function fallenTierTools(task: string): string[] {
   return FALLEN_TIERS.filter((tier) => tier.words.test(task)).flatMap((tier) => tier.tools);
@@ -106,7 +113,7 @@ export const GAME_CARD = `[게임 요소 — 퀘스트·아이템·상점·전�
 - 도구가 거절하면 이유를 읽고 고쳐 다시 부른다. 같은 거절이 두 번이면 방법을 바꾼다. 할 수 없는 것은 보고에 적는다.`;
 
 export function wantsGameTools(task: string): boolean {
-  return GAME_WORDS.test(task);
+  return GAME_WORDS.test(task) || HORROR_WORDS.test(task);
 }
 
 /** 이미 있는 맵에 물길·다리·작은 물건을 덧그리는 요청(맵을 새로 짓지 않는다) — v1 결정론 덧그리기 도구 셋. */

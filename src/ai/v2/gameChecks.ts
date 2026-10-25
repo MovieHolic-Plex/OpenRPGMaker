@@ -5,6 +5,7 @@
 // 순수 함수(before·after·요청 글) — 워커·테스트가 같이 부른다.
 import type { Command, Project } from "@/project/types";
 import { simulateBattle } from "@/battle/simulate";
+import { lockBypasses, placeholderTexts, selfRevealingLocks, unjoinedFollowers } from "./puzzleChecks";
 
 type Obj = Record<string, unknown>;
 const obj = (v: unknown): Obj | undefined => (v && typeof v === "object" && !Array.isArray(v) ? (v as Obj) : undefined);
@@ -523,6 +524,18 @@ export function gameContentProblems(before: Project, after: Project, task: strin
     }
     const chasers = vanishingChasers(after).filter((line) => [...changedIds].some((id) => line.includes(`(${id})`)));
     if (chasers.length) problems.push(`[게임 검사 위협] ${chasers.slice(0, 3).join(" / ")}. 숨기가 «이번 한 번» 지나가게 하는 것이면 그 스위치를 다시 끈다(예: 옷장에서 나온 뒤 기다렸다 setSwitch false, 또는 맵을 나갈 때), 영영 사라지는 것이 요청이면 보고에 적는다.`);
+  }
+  // 사슬 전체 검사(2026-10-25 판정 J11~J14): 잠긴 방이 벽 틈으로 열림·자물쇠가 답을 말함·자리 표시 글·파티에 없는 동료.
+  {
+    const changedIds = new Set(changed.map((ev) => ev.id));
+    const bypass = lockBypasses(after, changedIds);
+    if (bypass.length) problems.push(`[게임 검사 잠긴 방] ${bypass.slice(0, 3).join(" / ")}. seal_locked_room{mapId, eventId} 로 문 말고 다른 길(벽 틈)을 막거나, 퍼즐 전체를 author_puzzle_chain 으로 다시 묶는다.`);
+    const leaks = selfRevealingLocks(after, changedIds);
+    if (leaks.length) problems.push(`[게임 검사 퍼즐] ${leaks.slice(0, 3).join(" / ")}. 자물쇠 대사에서 답을 빼고(「번호를 모르겠다」), 답은 단서(일기·쪽지)에만 두고 단서를 읽으면 켜지는 스위치 조건 페이지에서만 입력받는다 — author_puzzle_chain 이 이 순서로 짓는다.`);
+    const holes = placeholderTexts(after, changedIds, JSON.stringify(after.system.opening ?? null) !== JSON.stringify(before.system.opening ?? null) || JSON.stringify(after.endings ?? []) !== JSON.stringify(before.endings ?? []));
+    if (holes.length) problems.push(`[게임 검사 글] 화면에 그대로 보이는 자리 표시가 남았다: ${holes.slice(0, 4).join(" / ")} — 주인공 이름은 실제 이름(또는 \\N[1])으로, 줄바꿈 「\\n」 글자는 실제 줄바꿈으로 고친다.`);
+    const loners = unjoinedFollowers(after, changedIds, task);
+    if (loners.length) problems.push(`[게임 검사 동료] ${loners.slice(0, 3).join(", ")} 가 그림만 따라오고 파티에는 없다(메뉴에 안 보인다) — 이야기가 「함께 간다」면 upsert_actor 로 배우를 만들고 {kind:'changeParty',actorId,action:'add'} 와 {kind:'addFollower',actorId} 를 같이 넣는다(또는 add_companion). 잠깐 따라오는 것뿐이면 보고에 적는다.`);
   }
   // 같은 역할의 맵이 둘(G19: 「저택 2층」 두 장, 「지하 예배당」 두 장 — 계단이 2층→2층으로 이어졌다).
   {
