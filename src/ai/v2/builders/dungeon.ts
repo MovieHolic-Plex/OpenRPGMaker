@@ -583,13 +583,12 @@ function build(run: BuildRun, spec: PlaceSpec, previous?: PlaceRecord): PlaceBui
   if (!fieldTroops.length && /박쥐|bat|해골|거미|고블린|슬라임|늑대|좀비|유령/u.test(wanted)) warnings.push("요청한 적 그룹을 찾지 못했다");
   topUp(into, floors, floorData, fieldTroops, wantsFoes, wantsChest, type === "tower" || (args.direction === "up" && floors.length > 1), warnings);
   if (into !== run) { run.calls.push(...into.calls); run.ctx.project = into.ctx.project; }
-  // 보스·수문장을 크게 — 보스 2.5배, 중간 수문장 2배.
+  // 보스만 크게(2.5배). 중간 수문장은 파티와 같은 크기로 둔다 — 2배로 키운 24px 칩은 도트가 뭉툭해져
+  // 16px 파티 옆에서 확대한 그림으로 읽혔다(2026-10-25 심사 J23 jrpg-herb 동굴 수문장).
   {
     const lastIdx = floors.length - 1;
     const big = enlargeBoss(run, floors[lastIdx]!, floorData[lastIdx], /_boss$/, 2.5, warnings);
     if (big) warnings.push(`보스를 크게: ${big}`);
-    // 수문장은 길목을 지키므로 옮기지 않는다 — 안 맞으면 조용히 그대로.
-    floors.forEach((id, i) => { const g = enlargeBoss(run, id, floorData[i], /_guardian$/, 2, [], false); if (g) warnings.push(`수문장을 크게: ${g}`); });
   }
   // 보스 그림 확인: 보스가 잡몹·수문장과 같은 그림이면 보고한다.
   const last = floors[floors.length - 1]!;
