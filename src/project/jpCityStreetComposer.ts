@@ -249,6 +249,8 @@ export interface ComposeOptions {
   readonly style?: JpStreetStyle;
   /** 거리에 꼭 넣을 가게(순서대로 건물에 배정). 나머지는 style 의 기본 구성이 채운다. */
   readonly shops?: readonly string[];
+  /** 동서 큰길 횡단보도 덧그림 칸(흰 줄이 동서로 나란한 투명 칸). 주면 변형 골목 횡단보도를 2층에 이것으로 칠한다 — 없으면 옛 세로 줄 jp-gnd-zebra. */
+  readonly crosswalkTile?: number;
 }
 
 export type JpBlockZone = "shop" | "house" | "park" | "parking";
@@ -474,7 +476,12 @@ export function planJpCityStreet(opts: ComposeOptions): JpStreetPlan {
       if (obstacles.some((s) => x < s.x + s.w + 1 && x + 6 > s.x - 1)) continue;
       crossings.push({ x, road: i });
       if (flavor) {                                                   // 변형: 따뜻한 아스팔트 위 4칸 폭 줄무늬(얼음색 키트 대신)
-        for (let cx = x + 1; cx < x + 5; cx++) for (let y = b.gap.road0; y <= b.gap.road1; y++) stamp(GND.zebra, cx, y, "road");
+        // 동서 길이라 흰 줄이 차 진행 방향(동서)과 나란해야 한다 — 옛 jp-gnd-zebra 는 세로 줄이라 방향이 틀렸다(2026-10-25 J44).
+        if (opts.crosswalkTile !== undefined && opts.crosswalkTile >= 0) {
+          const cells: { x: number; y: number }[] = [];
+          for (let cx = x + 1; cx < x + 5; cx++) for (let y = b.gap.road0; y <= b.gap.road1; y++) cells.push({ x: cx, y });
+          steps.push({ tool: "paint_tiles", args: { mapId, layer: "2", mode: "cells", tile: opts.crosswalkTile, cells }, optional: true, note: "road" });
+        } else for (let cx = x + 1; cx < x + 5; cx++) for (let y = b.gap.road0; y <= b.gap.road1; y++) stamp(GND.zebra, cx, y, "road");
       } else stamp("jp-road-lane-crosswalk-h", x, b.gap.road0, "road");
       break;
     }
