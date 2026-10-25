@@ -8,13 +8,13 @@ import { COMBINED_TOWN_HARNESS_PREFIX } from "@/project/tilesetHarness/combinedT
 import { verifyPostTilePlacement } from "@/project/lint/postTileVerify";
 import type { LintIssue } from "@/project/lint/projectLint";
 import type { TileGroupMetadata, TilesetDef } from "@/project/types";
-import { withRetiredEasyRpgTilesets } from "./support/retiredEasyRpgTilesets";
+import { withRetiredCombinedTownMaps } from "./support/retiredCombinedTownMaps";
 
 const MAP_ID = "map_blank_start";
 const WALL_GROUP_ID = `${COMBINED_TOWN_HARNESS_PREFIX}plaster-wall-9slice`;
 
 function context(): { ctx: ToolContext; tileset: () => TilesetDef } {
-  const ctx: ToolContext = { project: withRetiredEasyRpgTilesets(createBlankProject()) };
+  const ctx: ToolContext = { project: withRetiredCombinedTownMaps(createBlankProject()) };
   return { ctx, tileset: () => ctx.project.tilesets[COMBINED_TOWN_TILESET_ID] };
 }
 
@@ -111,7 +111,7 @@ describe("post-roof-incomplete (지붕 완결성 후검증)", () => {
 
 describe("post-tree-only-undergrowth (나무가 풀로 깔림 후검증)", () => {
   it("숲 합성이 나무 없이 덤불만 깔면 경고를 낸다", () => {
-    const project = withRetiredEasyRpgTilesets(createBlankProject());
+    const project = withRetiredCombinedTownMaps(createBlankProject());
     const map = project.maps[MAP_ID];
     map.upperTiles[3 * map.width + 3] = 289;
     map.upperTiles[3 * map.width + 4] = 289;
@@ -126,7 +126,7 @@ describe("post-tree-only-undergrowth (나무가 풀로 깔림 후검증)", () =>
   });
 
   it("숲 합성에 나무가 포함되면 조용하다", () => {
-    const project = withRetiredEasyRpgTilesets(createBlankProject());
+    const project = withRetiredCombinedTownMaps(createBlankProject());
     const map = project.maps[MAP_ID];
     map.lowerTiles[3 * map.width + 3] = 290;
     map.upperTiles[2 * map.width + 3] = 260;
@@ -139,7 +139,7 @@ describe("post-tree-only-undergrowth (나무가 풀로 깔림 후검증)", () =>
   });
 
   it("나무를 요청했는데 영역에 나무 타일이 하나도 없으면 경고를 낸다", () => {
-    const project = withRetiredEasyRpgTilesets(createBlankProject());
+    const project = withRetiredCombinedTownMaps(createBlankProject());
     const issues = verifyPostTilePlacement(project, {
       name: "place_props",
       args: { mapId: MAP_ID, area: { x: 2, y: 2, w: 4, h: 4 }, material: "침엽수", count: 4 },
@@ -149,7 +149,7 @@ describe("post-tree-only-undergrowth (나무가 풀로 깔림 후검증)", () =>
   });
 
   it("덤불만 있으면 나무 타일로 세지 않는다", () => {
-    const project = withRetiredEasyRpgTilesets(createBlankProject());
+    const project = withRetiredCombinedTownMaps(createBlankProject());
     const map = project.maps[MAP_ID];
     map.upperTiles[3 * map.width + 3] = 289;
     const issues = verifyPostTilePlacement(project, {
@@ -161,7 +161,7 @@ describe("post-tree-only-undergrowth (나무가 풀로 깔림 후검증)", () =>
   });
 
   it("나무 상자 같은 가구는 나무 기대치 검사에서 제외한다", () => {
-    const project = withRetiredEasyRpgTilesets(createBlankProject());
+    const project = withRetiredCombinedTownMaps(createBlankProject());
     const issues = verifyPostTilePlacement(project, {
       name: "place_props",
       args: { mapId: MAP_ID, area: { x: 2, y: 2, w: 4, h: 4 }, material: "나무 상자", count: 2 },
@@ -171,7 +171,7 @@ describe("post-tree-only-undergrowth (나무가 풀로 깔림 후검증)", () =>
   });
 
   it("영역에 실제 나무가 있으면 조용하다", () => {
-    const project = withRetiredEasyRpgTilesets(createBlankProject());
+    const project = withRetiredCombinedTownMaps(createBlankProject());
     const map = project.maps[MAP_ID];
     map.lowerTiles[3 * map.width + 3] = 290;
     map.upperTiles[2 * map.width + 3] = 260;
@@ -185,7 +185,7 @@ describe("post-tree-only-undergrowth (나무가 풀로 깔림 후검증)", () =>
   });
 
   it("타일 쓰기 외의 툴에는 아무것도 말하지 않는다", () => {
-    const project = withRetiredEasyRpgTilesets(createBlankProject());
+    const project = withRetiredCombinedTownMaps(createBlankProject());
     expect(verifyPostTilePlacement(project, { name: "place_npc", args: {}, data: undefined })).toEqual([]);
     expect(project.maps[MAP_ID].upperTiles.length).toBeGreaterThan(0);
     void TILE.EMPTY;

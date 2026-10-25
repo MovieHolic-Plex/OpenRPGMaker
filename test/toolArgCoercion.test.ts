@@ -5,7 +5,7 @@ import { createBlankProject } from "@/project/defaults";
 import { COMBINED_TOWN_TILESET_ID } from "@/project/defaults/constants";
 import { COMBINED_TOWN_HARNESS_PREFIX } from "@/project/tilesetHarness/combinedTownGroups";
 import type { ToolContext } from "@/editor/tools";
-import { withRetiredEasyRpgTilesets } from "./support/retiredEasyRpgTilesets";
+import { withRetiredCombinedTownMaps } from "./support/retiredCombinedTownMaps";
 
 const MAP_ID = "map_blank_start";
 const WALL_GROUP_ID = `${COMBINED_TOWN_HARNESS_PREFIX}plaster-wall-9slice`;
@@ -29,7 +29,7 @@ describe("tool argument coercion", () => {
   });
 
   it("coerces numeric strings before schema validation and execution", () => {
-    const ctx: ToolContext = { project: withRetiredEasyRpgTilesets(createBlankProject()) };
+    const ctx: ToolContext = { project: withRetiredCombinedTownMaps(createBlankProject()) };
 
     const result = runTool(ctx, "create_map", {
       id: "map_numeric_strings",
@@ -45,7 +45,7 @@ describe("tool argument coercion", () => {
   });
 
   it("coerces JSON-string object arguments and nested numeric strings", () => {
-    const ctx: ToolContext = { project: withRetiredEasyRpgTilesets(createBlankProject()) };
+    const ctx: ToolContext = { project: withRetiredCombinedTownMaps(createBlankProject()) };
 
     const result = runTool(ctx, "upsert_item", {
       item: "{\"id\":\"item_json_string\",\"name\":\"JSON 약\",\"price\":\"14\"}",
@@ -58,7 +58,7 @@ describe("tool argument coercion", () => {
   });
 
   it("unwraps a single object array for object fields", () => {
-    const ctx: ToolContext = { project: withRetiredEasyRpgTilesets(createBlankProject()) };
+    const ctx: ToolContext = { project: withRetiredCombinedTownMaps(createBlankProject()) };
 
     const result = runTool(ctx, "upsert_item", {
       item: [{ id: "item_wrapped", name: "래핑 약", price: "7" }],
@@ -71,7 +71,7 @@ describe("tool argument coercion", () => {
   });
 
   it("flattens rect wrapper coordinates for get_map_region", () => {
-    const ctx: ToolContext = { project: withRetiredEasyRpgTilesets(createBlankProject()) };
+    const ctx: ToolContext = { project: withRetiredCombinedTownMaps(createBlankProject()) };
 
     const result = runTool(ctx, "get_map_region", {
       mapId: MAP_ID,
@@ -83,7 +83,7 @@ describe("tool argument coercion", () => {
   });
 
   it("flattens rect wrapper coordinates for clear_region", () => {
-    const ctx: ToolContext = { project: withRetiredEasyRpgTilesets(createBlankProject()) };
+    const ctx: ToolContext = { project: withRetiredCombinedTownMaps(createBlankProject()) };
 
     const result = runTool(ctx, "clear_region", {
       mapId: MAP_ID,
@@ -96,7 +96,7 @@ describe("tool argument coercion", () => {
   });
 
   it("flattens width/height aliases from wrappers for show_map_region", () => {
-    const ctx: ToolContext = { project: withRetiredEasyRpgTilesets(createBlankProject()) };
+    const ctx: ToolContext = { project: withRetiredCombinedTownMaps(createBlankProject()) };
 
     const result = runTool(ctx, "show_map_region", {
       mapId: MAP_ID,
@@ -108,7 +108,7 @@ describe("tool argument coercion", () => {
   });
 
   it("wraps flat coordinates into build_wall rect", () => {
-    const ctx: ToolContext = { project: withRetiredEasyRpgTilesets(createBlankProject()) };
+    const ctx: ToolContext = { project: withRetiredCombinedTownMaps(createBlankProject()) };
     approveDefaultWallVocabulary(ctx);
 
     const result = runTool(ctx, "build_wall", {
@@ -125,7 +125,7 @@ describe("tool argument coercion", () => {
   });
 
   it("maps width/height aliases to wrapped w/h coordinates", () => {
-    const ctx: ToolContext = { project: withRetiredEasyRpgTilesets(createBlankProject()) };
+    const ctx: ToolContext = { project: withRetiredCombinedTownMaps(createBlankProject()) };
     approveDefaultWallVocabulary(ctx);
 
     const result = runTool(ctx, "build_wall", {
@@ -164,7 +164,7 @@ describe("tool argument coercion", () => {
   });
 
   it("adds a retry example to v1 region schema validation errors", () => {
-    const ctx: ToolContext = { project: withRetiredEasyRpgTilesets(createBlankProject()) };
+    const ctx: ToolContext = { project: withRetiredCombinedTownMaps(createBlankProject()) };
 
     const result = runTool(ctx, "get_map_region", { mapId: MAP_ID });
 
