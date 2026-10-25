@@ -112,6 +112,7 @@ import { placeableDropItemId, placeableKey, type PlaceableObjectState } from "@/
 import { parseVehicleSessionState } from "@/project/vehicles";
 import { normalizeSceneLine, resolveVnExtras, saveSceneLine } from "@/project/vnExtras";
 import { normalizeJournalLines } from "@/project/storyJournal";
+import { decodeMapBackgroundFlow, encodeMapBackgroundFlow } from "@/project/mapBackground";
 export {
   createSystemShellState,
   reduceSystemShell,
@@ -279,10 +280,21 @@ export type SaveSnapshot = {
     readonly actorSkillLoadouts?: PlaySession["actorSkillLoadouts"];
     // 화면 색조/날씨/숨김 상태(m2Runtime.screen 의 지속형 효과). 세이브 복원 대상.
     readonly screen?: SaveScreenState;
+    /**
+     * 「먼 배경 변경」이 그 맵에 남긴 그림·흐름. 스키마 버전은 그대로라 필드가 없는 옛 세이브는
+     * 저작 배경 그대로 불러온다. 타일셋·인카운터율처럼 소비자가 없는 m2Runtime.map 기록은 넣지 않는다.
+     */
+    readonly mapBackground?: SaveMapBackground;
     // Change Save Access 등 접근 플래그(m2Runtime.access). 세이브 복원 대상.
     readonly access?: Partial<Record<"escape" | "menu" | "save" | "teleportation", boolean>>;
     readonly systemAudio?: Record<string, string>;
   };
+};
+
+/** 세이브에 남는 먼 배경 명령. mapId 가 빈 문자열이면 모든 맵에 적용한다(맵을 적기 전의 기록). */
+export type SaveMapBackground = {
+  readonly override?: { readonly mapId: string; readonly value: string };
+  readonly flow?: { readonly mapId: string; readonly value: string };
 };
 
 export type SaveScreenState = {
@@ -584,6 +596,7 @@ export function createSaveSnapshot(project: Project, input: PlaySession): SaveSn
       ...(session.activePartySetId ? { activePartySetId: session.activePartySetId } : {}),
       ...(session.actorSkillLoadouts && Object.keys(session.actorSkillLoadouts).length > 0 ? { actorSkillLoadouts: structuredClone(session.actorSkillLoadouts) } : {}),
       screen: pickScreenState(session),
+      mapBackground: pickMapBackground(session),
       systemAudio: parseSystemAudioState(session.m2Runtime?.system),
       access: session.m2Runtime?.access && Object.keys(session.m2Runtime.access).length > 0 ? { ...session.m2Runtime.access } : undefined,
     },
@@ -609,6 +622,76 @@ function pickScreenState(session: PlaySession): SaveScreenState | undefined {
     ...(letterbox !== undefined ? { letterbox } : {}),
     ...(spriteLooks ? { spriteLooks } : {}),
   };
+}
+
+const MAP_BACKGROUND_ID_LIMIT = 200;
+
+/**
+ * 「먼 배경 변경」만 추린다. 그림이 비었거나 흐름이 저작 속도(100%)면 적지 않는다 —
+ * 불러온 새 세션은 그 맵의 저작 배경과 같다. 전환 중간의 보간은 장면에만 있고, 불러오면
+ * 목표 배율로 바로 선다.
+ */
+function pickMapBackground(session: PlaySession): SaveMapBackground | undefined {
+  const map = session.m2Runtime?.map;
+  if (!map) return undefined;
+  const override = savedParallaxOverride(map.parallax_override);
+  const flow = savedParallaxFlow(map.parallax_flow);
+  if (!override && !flow) return undefined;
+  return { ...(override ? { override } : {}), ...(flow ? { flow } : {}) };
+}
+
+function savedParallaxOverride(record: { mapId?: string; value?: string } | undefined): SaveMapBackground["override"] {
+  if (!record || typeof record.value !== "string") return undefined;
+  const value = record.value.trim();
+  const mapId = typeof record.mapId === "string" ? record.mapId.trim() : "";
+  if (!value || value.length > MAP_BACKGROUND_ID_LIMIT || mapId.length > MAP_BACKGROUND_ID_LIMIT) return undefined;
+  return { mapId, value };
+}
+
+function savedParallaxFlow(record: { mapId?: string; value?: string } | undefined): SaveMapBackground["flow"] {
+  if (!record || typeof record.value !== "string") return undefined;
+  const decoded = decodeMapBackgroundFlow(record.value.trim());
+  if (!decoded || decoded.percent === 100) return undefined;
+  const mapId = typeof record.mapId === "string" ? record.mapId.trim() : "";
+  if (mapId.length > MAP_BACKGROUND_ID_LIMIT) return undefined;
+  return { mapId, value: encodeMapBackgroundFlow(decoded.percent, decoded.durationMs) };
+}
+
+function parseMapBackground(value: unknown): SaveMapBackground | undefined {
+  if (!isRecord(value)) return undefined;
+  const override = parseSavedParallaxOverride(value.override);
+  const flow = parseSavedParallaxFlow(value.flow);
+  if (!override && !flow) return undefined;
+  return { ...(override ? { override } : {}), ...(flow ? { flow } : {}) };
+}
+
+function parseSavedMapId(value: unknown): string | undefined {
+  if (value === undefined) return "";
+  if (typeof value !== "string" || value.length > MAP_BACKGROUND_ID_LIMIT || value !== value.trim()) return undefined;
+  return value;
+}
+
+function parseSavedParallaxOverride(value: unknown): SaveMapBackground["override"] {
+  if (!isRecord(value) || typeof value.value !== "string") return undefined;
+  const mapId = parseSavedMapId(value.mapId);
+  const imageId = value.value.trim();
+  if (mapId === undefined || !imageId || imageId.length > MAP_BACKGROUND_ID_LIMIT) return undefined;
+  return { mapId, value: imageId };
+}
+
+function parseSavedParallaxFlow(value: unknown): SaveMapBackground["flow"] {
+  if (!isRecord(value) || typeof value.value !== "string") return undefined;
+  const mapId = parseSavedMapId(value.mapId);
+  const decoded = decodeMapBackgroundFlow(value.value.trim());
+  if (mapId === undefined || !decoded) return undefined;
+  return { mapId, value: encodeMapBackgroundFlow(decoded.percent, decoded.durationMs) };
+}
+
+function applyMapBackground(session: PlaySession, background: SaveMapBackground | undefined): void {
+  if (!background) return;
+  const map = ensureM2Runtime(session).map;
+  if (background.override) map.parallax_override = { mapId: background.override.mapId, x: 0, y: 0, value: background.override.value };
+  if (background.flow) map.parallax_flow = { mapId: background.flow.mapId, x: 0, y: 0, value: background.flow.value };
 }
 
 // 저장 실패(quota 초과·프라이빗 모드)를 던지면 호출부의 클릭 핸들러가 그대로 끊겨
@@ -911,6 +994,7 @@ export function applySaveSnapshot(project: Project, input: SaveSnapshot): PlaySe
   if (snapshot.session.actorSkillLoadouts) session.actorSkillLoadouts = structuredClone(snapshot.session.actorSkillLoadouts);
   else delete session.actorSkillLoadouts;
   if (snapshot.session.screen) applyScreenState(session, snapshot.session.screen);
+  applyMapBackground(session, parseMapBackground(snapshot.session.mapBackground));
   if (snapshot.session.systemAudio) Object.assign(ensureM2Runtime(session).system, snapshot.session.systemAudio);
   if (snapshot.session.access) {
     const runtime = ensureM2Runtime(session);
@@ -1386,6 +1470,7 @@ function parseSessionRecord(session: Record<string, unknown>): ParsedSessionResu
       activePartySetId: typeof session.activePartySetId === "string" && session.activePartySetId ? session.activePartySetId : undefined,
       actorSkillLoadouts: isActorSkillIdsRecord(session.actorSkillLoadouts) ? session.actorSkillLoadouts : undefined,
       screen: parseScreenState(session.screen),
+      mapBackground: parseMapBackground(session.mapBackground),
       systemAudio: parseSystemAudioState(session.systemAudio),
       access: parseAccessState(session.access),
     },

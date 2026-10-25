@@ -775,6 +775,9 @@ Do not use matching map IDs or a canvas-export PNG alone as evidence for Phaser 
   `m2Runtime.map.parallax_flow`(값 `"<percent>|<ms>"`, 그 맵 한정 — `parallax_override` 와 같은 규칙). 렌더러가 지금 배율에서
   목표까지 선형 전환한다(`scene.mapBackgroundFlow`). 흐름 필드가 있는 명령에서 그림을 비우면 **그림 유지**(속도만 바꾸기),
   흐름 필드가 없는 예전 명령은 예전 그대로 빈 그림 = 저작 그림으로 복귀. 흐름은 자동 흐름(scrollX/Y)에만 걸리고 깊이에는 안 걸린다.
+  세이브 슬롯은 이 그림·흐름 두 기록만 싣는다(`session.mapBackground`, 2026-10-25). 흐름 100%와 빈 그림은 적지 않고,
+  깨진 값은 슬롯을 손상으로 보지 않고 그 필드만 버린다. 불러오면 장면 보간이 없으므로 목표 배율로 바로 선다.
+  타일셋 변경·인카운터율처럼 소비자가 없는 `m2Runtime.map` 기록은 여전히 세이브에 넣지 않는다.
 - **고친 기존 결함: `fit:"cover"` 가 플레이에서 한 번도 적용되지 않았다.** Phaser 3.60+ TileSprite 는 `texture` 가 자기 채움
   캔버스(키 uuid, 스프라이트 크기 320×240)이고 원본은 `displayTexture` 다. `texture.key` 로 원본 크기를 읽어 cover 배율이
   늘 1 이었다(1920×1080 아트의 좌상단만 확대되어 보임). 같은 이유로 「그림이 바뀌었나」 비교가 늘 참이라 맵을 다시 실을 때마다
