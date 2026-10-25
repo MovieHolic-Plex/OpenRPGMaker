@@ -9,6 +9,7 @@ import type { Project } from "@/project/types";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { parseImageReferences } from "@/ai/imageReferences";
 import { readAppearanceReference, type AppearanceReferenceReader } from "./characterAppearanceReferences";
+import { imageFailureNextStep } from "./imageGenerationFallback";
 
 const IMAGE_DATA_URL = /^data:image\/(?:png|jpeg|webp);base64,[A-Za-z0-9+/]+=*$/u;
 
@@ -84,10 +85,9 @@ export async function generateCinematicStill(
       .filter(id => /^opening_still_[0-9a-f-]+$/iu.test(id) && !used.has(id))
       .slice(0, 8);
   };
-  const failureSummary = (message: string): string => {
-    const fallback = unusedGeneratedBackdrops();
-    return `${message} 생성 실패를 성공으로 보고하거나 번들 스틸로 대체하지 마세요. ${fallback.length ? `사용하지 않은 전용 그림 후보를 먼저 검토하세요: ${fallback.join(', ')}.` : '사용하지 않은 전용 그림 후보가 없습니다.'} 후보도 없으면 제작을 멈추고 실패 원인을 보고하세요.`;
-  };
+  // 실패를 성공으로 보고하지 않되 턴은 멈추지 않는다 — 안 쓴 전용 그림 → 그림 설명이 가장 가까운 라이브러리 그림 → 그림 없이 계속(imageGenerationFallback.ts).
+  const failureSummary = (message: string, error: unknown): string =>
+    `${message} 생성 실패를 성공으로 보고하지 마라. ${imageFailureNextStep(purpose === "gameOver" ? "gameOver" : "opening", typeof args.prompt === "string" ? args.prompt : "", error, unusedGeneratedBackdrops())}`;
   let prompt: string;
   let name: string;
   let brief: OpeningImageBrief | undefined;
@@ -147,12 +147,12 @@ export async function generateCinematicStill(
     return { ok: true, resourceId: genId(purpose === "gameOver" ? "gameover_still" : brief?.layerRole ? "opening_layer" : "opening_still"), name, prompt, dataUrl };
   } catch (error) {
     if (error instanceof ImageGenerationError) {
-      return { ok: false, summary: failureSummary(`${purpose === "gameOver" ? "게임오버" : "오프닝"} 그림 생성에 실패했습니다: ${error.message}`), code: "image-generation-failed" };
+      return { ok: false, summary: failureSummary(`${purpose === "gameOver" ? "게임오버" : "오프닝"} 그림 생성에 실패했습니다: ${error.message}`, error), code: "image-generation-failed" };
     }
     if (error instanceof DOMException && error.name === "AbortError") throw error;
     return {
       ok: false,
-      summary: failureSummary(`${purpose === "gameOver" ? "게임오버" : "오프닝"} 그림 생성에 실패했습니다: ${error instanceof Error ? error.message : String(error)}`),
+      summary: failureSummary(`${purpose === "gameOver" ? "게임오버" : "오프닝"} 그림 생성에 실패했습니다: ${error instanceof Error ? error.message : String(error)}`, error),
       code: "image-generation-failed",
     };
   }
