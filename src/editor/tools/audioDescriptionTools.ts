@@ -206,7 +206,8 @@ const recommendBgm: ToolDefinition = {
       data: {
         candidates, total, ...(sceneFallback ? { sceneFallback: true } : {}), originalCompositionTool: "generate_original_bgm",
         guidance: "같은 분위기의 동점 후보는 미사용 곡 우선. music 칸이 있는 곡은 장르·장면·분위기를 대조해 고르고, loopable:false(징글)는 맵 BGM 말고 승리 음악(set_game_audio role victory)에 쓴다. "
-          + "원하는 장르의 곡이 없으면 store_search(kind:\"music\", query:장르·장면)로 스토어 음악 팩을 찾아 사용자에게 권한다(넣기는 사용자가 허락한 뒤 store_install). 원곡 요청/장면 변화/부적합한 반복은 직접 작곡하고 맵에 연결하세요.",
+          + "원하는 장르(조선풍·무협 …)나 장면에 꼭 맞는 곡이 없으면 store_find_music{scene, query, mood, need}로 스토어 음악 팩에서 곡 단위로 찾는다(넣기는 「묻지 않고 넣기」가 켜졌을 때만 store_install, 아니면 카드가 묻는다). "
+          + "연결은 set_game_audio — 맵 배경음 role:maps+mapIds, 모든 전투 battle-default, 보스전만 boss(+troopIds), 승리 victory, 타이틀 title. 원곡 요청/장면 변화/부적합한 반복은 직접 작곡하고 맵에 연결하세요.",
       },
     };
   },

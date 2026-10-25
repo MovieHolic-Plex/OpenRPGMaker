@@ -57,6 +57,7 @@ export const TOOL_LABELS: Readonly<Record<string, ToolLabelEntry>> = {
   ask_missing_tiles: inspect("없는 타일 묻기", "grid"),
   generate_missing_object: inspect("없는 기물 그리기 요청", "box"),
   store_search: inspect("스토어 찾기"),
+  store_find_music: inspect("스토어 음악 찾기"),
   store_install: build("스토어에서 넣기", "box"),
   store_my_items: inspect("내 스토어 상품 보기"),
   store_publish: inspect("스토어에 올리기 제안", "box"),

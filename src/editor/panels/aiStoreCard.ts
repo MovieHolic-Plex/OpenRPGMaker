@@ -12,19 +12,21 @@
 import type { PiAgentEvent } from "@/ai/piAgent/protocol";
 import { STORE_KIND_LABELS, STORE_LICENSE_LABELS, type StoreItemKind, type StoreItemSummary } from "@/assetStore/format";
 import { addStoreItemToProject } from "@/editor/assetStore/storeApply";
-import { fillStoreImage, storeBridge, storeFailure } from "@/editor/assetStore/storeBridge";
+import { fillStoreImage, storeBlobUrl, storeBridge, storeFailure } from "@/editor/assetStore/storeBridge";
+import { setStoreAutoInstall, storeAutoInstallEnabled } from "@/editor/assetStore/storeHint";
+import { storeProjectId } from "@/assetStore/format";
 import { aiMadeNote, buildUploadPack, uploadCandidates } from "@/editor/assetStore/storeUpload";
 import { aiMadeAssets } from "@/assetStore/pack";
 import { WORKSHOP_BAKED_EVENT, type WorkshopBakedDetail } from "@/editor/workshop/workshopEvents";
 import { currentDrawTarget } from "@/editor/workshop/mapObjectTarget";
 import { createObjectGenCard } from "./aiObjectGenCard";
-import { isStoreCardRequest, type MissingTilesQuestion, type StoreCardRequest, type StoreGamePostProposal, type StorePublishProposal, type StoreReviewReplyProposal, type StoreVisibilityProposal } from "@/editor/tools/storeTools";
+import { isStoreCardRequest, type MissingTilesQuestion, type StoreCardRequest, type StoreMusicChoice, type StoreGamePostProposal, type StorePublishProposal, type StoreReviewReplyProposal, type StoreVisibilityProposal } from "@/editor/tools/storeTools";
 import { storeGameProjectKey } from "@/project/storeGameRelease";
 import { getLocale } from "@/i18n";
 import { store } from "@/project/store";
 import { clearChildren, el } from "@/util/dom";
 
-const STORE_CARD_TOOLS: ReadonlySet<string> = new Set(["ask_missing_tiles", "store_publish", "store_set_visibility", "store_game_post", "store_review_reply", "generate_missing_object", "draw_object"]); // draw_object = 조수 v2 동사(같은 그리기 카드)
+const STORE_CARD_TOOLS: ReadonlySet<string> = new Set(["ask_missing_tiles", "store_publish", "store_set_visibility", "store_game_post", "store_review_reply", "generate_missing_object", "draw_object", "store_find_music"]); // draw_object = 조수 v2 동사(같은 그리기 카드)
 
 /** Pi 이벤트(팀 모드의 agent_event 포장 포함)에서 스토어 카드 요청을 꺼낸다. */
 export function storeCardFromEvent(raw: PiAgentEvent): StoreCardRequest | null {
@@ -385,9 +387,75 @@ function reviewReplyCard(proposal: StoreReviewReplyProposal): HTMLElement {
   return view.root;
 }
 
+/**
+ * store_find_music 카드: 스토어 곡 후보를 미리 듣고 하나를 넣는다. 그 곡만 받아 프로젝트에 넣고(출처·라이선스·AI 표시 그대로),
+ * 조수에게 리소스 id 와 원래 요청을 넘겨 맵·전투·보스·승리·타이틀에 연결하게 한다. 「다음부터 묻지 않고 넣기」를 켜면 조수가 직접 넣는다.
+ */
+function musicChoiceCard(choice: StoreMusicChoice, followUp: StoreCardFollowUp): HTMLElement {
+  const all: HTMLButtonElement[] = [];
+  let settled = false;
+  const auto = el("input", { attrs: { type: "checkbox", ...(storeAutoInstallEnabled() ? { checked: "" } : {}) }, dataset: { testid: "ai-store-music-auto" } });
+  auto.addEventListener("change", () => setStoreAutoInstall(auto.checked));
+  const skip = button("넣지 않기", "ai-store-music-skip", () => {
+    if (settled) return;
+    settled = true;
+    for (const node of all) node.disabled = true;
+    view.status.textContent = "넣지 않았어요.";
+    followUp(`[사용자 선택] 스토어 곡을 넣지 않음: ${choice.need} 프로젝트에 있는 곡(recommend_bgm)으로 가장 맞는 것을 골라 연결하고, 무엇을 골랐는지 짧게 말하라.`);
+  });
+  all.push(skip);
+  const rows = choice.tracks.map((track) => {
+    const audio = el("audio", { attrs: { controls: "", preload: "none" }, dataset: { testid: "ai-store-music-preview" } }) as HTMLAudioElement;
+    void storeBlobUrl(track.blob).then((url) => { audio.src = url; }).catch(() => { audio.dataset.failed = "1"; });
+    const add = button("넣기", "ai-store-music-add", () => void install(track), true);
+    all.push(add);
+    return el("article", {
+      class: "ai-store-result ai-store-music",
+      dataset: { slug: track.slug, asset: track.assetId },
+      children: [
+        el("div", { class: "ai-store-result-text", children: [
+          el("strong", { text: track.title }),
+          el("span", { text: [track.genre, track.scenes.join("·"), track.mood.join("·"), track.loopable ? "루프" : "짧은 곡", track.aiGenerated ? "AI 생성" : ""].filter(Boolean).join(" · ") }),
+          track.summary ? el("small", { text: track.summary }) : null,
+          el("small", { class: "ai-store-music-pack", text: `${track.pack} · ${track.license}` }),
+        ].filter((node): node is HTMLElement => node !== null) }),
+        audio,
+        add,
+      ],
+    });
+  });
+  const install = async (track: StoreMusicChoice["tracks"][number]): Promise<void> => {
+    if (settled) return;
+    for (const node of all) node.disabled = true;
+    view.status.textContent = `「${track.title}」을(를) 받는 중…`;
+    try {
+      const added = await addStoreItemToProject(track.slug, { assetIds: [track.assetId] });
+      settled = true;
+      const resourceId = storeProjectId(track.slug, track.assetId);
+      view.status.textContent = `「${track.title}」을(를) 프로젝트에 넣었어요.`;
+      followUp(`[사용자가 스토어에서 넣음] 「${track.title}」 (${added.title}) 음악 리소스 id ${resourceId}. 원래 요청을 이어서 하라: ${choice.need} — set_game_audio 로 이 곡을 그 자리에 연결하라(새로 찾지 말 것).`);
+    } catch (error) {
+      for (const node of all) node.disabled = false;
+      view.status.textContent = `넣지 못했어요: ${storeFailure(error).message}`;
+    }
+  };
+  const view = shell("답변 필요", "스토어 음악을 넣을까요?", "ai-store-music-card", [
+    el("p", { class: "ai-tileset-change-reason", text: choice.need }),
+    el("p", { class: "ai-tileset-change-detail", text: "들어 보고 마음에 드는 곡을 넣으면 조수가 이어서 연결해요. 고른 곡 한 개만 받아요." }),
+    el("div", { class: "ai-store-results", dataset: { testid: "ai-store-music-results" }, children: rows }),
+    el("label", { class: "ai-store-agree", children: [auto, el("span", { text: "다음부터 묻지 않고 조수가 바로 넣기" })] }),
+  ], [skip]);
+  if (!storeBridge()) {
+    for (const node of all) node.disabled = true;
+    view.status.textContent = "스토어 곡은 데스크톱 앱에서 넣을 수 있어요.";
+  }
+  return view.root;
+}
+
 export function createStoreCard(request: StoreCardRequest, followUp: StoreCardFollowUp): HTMLElement {
   if (request.kind === "workshop-object-request") return createObjectGenCard(request, followUp);
   if (request.kind === "store-missing-tiles") return missingTilesCard(request, followUp);
+  if (request.kind === "store-music-choice") return musicChoiceCard(request, followUp);
   if (request.kind === "store-publish-proposal") return publishCard(request);
   if (request.kind === "store-game-post-proposal") return gamePostCard(request);
   if (request.kind === "store-review-reply-proposal") return reviewReplyCard(request);

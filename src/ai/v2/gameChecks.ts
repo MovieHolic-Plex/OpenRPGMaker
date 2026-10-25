@@ -319,6 +319,16 @@ const HIDDEN_WORDS = /숨겨|숨은|몰래|보이지\s*않|투명|비밀|hidden|
 const ENDING_WORDS = /엔딩|결말|ending/iu;
 const STATE_WORDS = /독초|독에|독이|독을|독\s*상태|중독|맹독|마비|수면\s*상태|잠\s*상태|상태\s*이상|혼란|침묵|poison|paraly|stun/iu;
 
+/** 맵 배경음·기본 전투곡·승리 팡파르·타이틀·오프닝 곡 연결이 바뀌었나(set_game_audio) — 그러면 음악 요청은 이벤트 명령 없이도 채워졌다. */
+function audioBindingsChanged(before: Project, after: Project): boolean {
+  const pick = (p: Project) => JSON.stringify([
+    Object.entries(p.maps).map(([id, map]) => [id, map.bgm ?? null]),
+    p.system.defaultBgmResourceId ?? null, p.system.battleBgmResourceId ?? null, p.system.battleVictoryMeResourceId ?? null,
+    p.system.titleScreen?.musicResourceId ?? null, p.system.opening?.musicResourceId ?? null,
+  ]);
+  return pick(before) !== pick(after);
+}
+
 /** 데이터베이스에서 새로 생기거나 바뀐 레코드만 JSON 으로(기본 데이터의 독 기술 등이 섞이지 않게). */
 function changedRecordsJson(before: Project, after: Project): string {
   const out: unknown[] = [];
@@ -346,7 +356,7 @@ export function gameContentProblems(before: Project, after: Project, task: strin
   const m2Has = (re: RegExp) => cmds.some((r) => r.cmd.kind === "m2Command" && re.test(String(r.cmd.commandId)));
   if (SHAKE_WORDS.test(task) && !m2Has(/m2-048/u)) problems.push("[게임 검사 화면] 요청에 흔들림·지진이 있는데 실제 화면 흔들기 명령이 없다(카메라 이동은 흔들림이 아니다). add_event 의 shake 비트({do:'shake',strength:'strong',axis:'vertical'})로 넣는다.");
   if (FLASH_WORDS.test(task) && !m2Has(/m2-047/u) && !cmds.some((r) => r.cmd.kind === "setWeather" && r.cmd.weather === "storm")) problems.push("[게임 검사 화면] 요청에 번쩍임·번개가 있는데 실제 화면 번쩍 명령이 없다(페이드 아웃은 번쩍이 아니다). add_event 의 flash 비트({do:'flash',color:'white'})로 넣는다.");
-  if (MUSIC_WORDS.test(task) && !kinds.has("playAudio") && !kinds.has("stopAudio") && !m2Has(/bgm|audio|music/iu)) problems.push("[게임 검사 음악] 요청에 음악·BGM 이 있는데 바꾼 이벤트에 음악 명령(playAudio)이 없다. add_event 의 music 비트({do:'music',action:'bgm',query:'festival'})로 넣는다.");
+  if (MUSIC_WORDS.test(task) && !audioBindingsChanged(before, after) && !kinds.has("playAudio") && !kinds.has("stopAudio") && !m2Has(/bgm|audio|music/iu)) problems.push("[게임 검사 음악] 요청에 음악·BGM 이 있는데 바꾼 이벤트에 음악 명령(playAudio)이 없다. add_event 의 music 비트({do:'music',action:'bgm',query:'festival'})로 넣는다.");
   // 1c) 눈에 안 보이는 «조사하는» 물건: 새로 만든 결정 키(action) 이벤트에 그림도 없고 그 칸에 물건 타일도 없다(이동석·덤불·표지판이 맨땅으로 보였다).
   if (!HIDDEN_WORDS.test(task)) {
     for (const ev of changed) {

@@ -4,6 +4,7 @@
  * 문서에는 내용 주소와 출처(origin)만 남긴다. 같은 상품의 새 판본은 같은 id 를 덮어써 맵 참조가 유지된다.
  */
 import type { StorePackManifest } from "@/assetStore/format";
+import { subsetMusicManifest } from "@/assetStore/storeMusicPick";
 import { applyPackToProject, packAssetTargets, type ApplyContext, type ApplyResult } from "@/assetStore/pack";
 import { MIME_EXTENSIONS, sniffMime } from "@/assetStore/sniff";
 import { recordProjectSnapshot } from "@/editor/mapEditHistory";
@@ -32,13 +33,15 @@ export interface PreparedStoreItem {
 }
 
 /** 받기 → 깨진 팩인지 빈 문서로 먼저 넣어 보기 → 그림·소리를 프로젝트 저장소에 넣기. 문서는 아직 건드리지 않는다. */
-export async function prepareStoreItem(slug: string): Promise<PreparedStoreItem> {
+export async function prepareStoreItem(slug: string, options: { readonly assetIds?: readonly string[] } = {}): Promise<PreparedStoreItem> {
   const bridge = storeBridge();
   if (!bridge) throw new Error("스토어는 데스크톱 앱에서만 쓸 수 있습니다.");
   // 아직 받지 않은 상품이면 받는다(스토어 창은 미리 받고 들어오고, 조수 도구는 여기서 받는다).
   if (!(await bridge.installed()).some((item) => item.slug === slug)) await bridge.install({ slug });
   const pkg = await bridge.package({ slug });
-  return prepareManifestItem(pkg.manifest, {
+  // 음악 팩에서 곡만 고르면 그 곡만 넣는다(조수 음악 카드·store_install assetIds).
+  const manifest = options.assetIds?.length ? subsetMusicManifest(pkg.manifest, options.assetIds) : pkg.manifest;
+  return prepareManifestItem(manifest, {
     slug,
     version: pkg.version,
     author: pkg.author,
@@ -100,10 +103,10 @@ export function applyPreparedStoreItem(project: Project, prepared: PreparedStore
   return result;
 }
 
-export async function addStoreItemToProject(slug: string): Promise<AddResult> {
+export async function addStoreItemToProject(slug: string, options: { readonly assetIds?: readonly string[] } = {}): Promise<AddResult> {
   // 보기 전용 팀 세션에서는 store.update 가 조용히 무시된다 — 빈 되돌리기 기록을 남기기 전에 막는다.
   if (!canWriteTeamProject()) throw new Error("읽기 전용 프로젝트라 넣을 수 없습니다.");
-  const prepared = await prepareStoreItem(slug);
+  const prepared = await prepareStoreItem(slug, options);
   const out: { result?: ApplyResult; snapshot?: StoreAddSnapshot } = {};
   recordProjectSnapshot("스토어 에셋 넣기");
   store.update((project) => {
