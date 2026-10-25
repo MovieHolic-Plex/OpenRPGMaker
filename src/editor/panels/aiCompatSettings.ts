@@ -221,6 +221,11 @@ export function renderAiCompatSettings(options: AiCompatSettingsOptions): AiComp
         .catch((error: unknown) => { loadError = describeError(error); loadErrorDetail = ""; renderList(); });
     });
 
+    // 마지막 시험이 실패했으면 그 이유(어느 단계·무엇을 고칠지)를 카드에 남긴다. 예전에는 「마지막 시험 실패」 알약만 있어서
+    // 키 없이 저장한 엔드포인트가 왜 안 되는지 카드에서 알 수 없었다.
+    const failureNote = endpoint.lastTest && !endpoint.lastTest.ok && endpoint.lastTest.message
+      ? el("p", { class: "ai-compat-warning", text: endpoint.lastTest.message, attrs: { role: "status" }, dataset: { testid: `ai-compat-last-error-${endpoint.id}` } })
+      : null;
     const toolsWarning = endpoint.lastTest?.toolsOk === false
       ? el("p", {
         class: "ai-compat-warning",
@@ -242,6 +247,7 @@ export function renderAiCompatSettings(options: AiCompatSettingsOptions): AiComp
         ] }),
         el("div", { class: "ai-compat-pills", children: [keyPill, testPill] }),
         ...(flags.length ? [el("small", { class: "ai-config-help", text: flags.join(" · ") })] : []),
+        ...(failureNote ? [failureNote] : []),
         ...(toolsWarning ? [toolsWarning] : []),
         cardResult,
         renderRoleAssigner(endpoint),
