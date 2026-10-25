@@ -357,6 +357,9 @@
 .oprn-status-menu.main-menu[data-menu-skin="pixel"] .status-menu-detail { bottom: 36px; gap: 3px; left: 6px; padding: 5px 7px; right: 88px; top: 6px; }
 .oprn-status-menu.main-menu[data-menu-skin="pixel"] .status-menu-detail.has-showcase { column-gap: 7px; grid-template-columns: minmax(0, 1fr) 128px; }
 .oprn-status-menu.main-menu[data-menu-skin="pixel"] .status-menu-detail.life-ledger-detail.has-showcase[data-status-menu-command="skills"] { grid-template-columns: minmax(0, 1fr) 128px; }
+/* 저장/로드는 쇼케이스를 목록 아래 전체 폭에 둔다(statusMenuEdgeDock.css 같은 규칙의 도트 스킨판 — 위 128px 고정 열·세로 줄보다 구체적이어야 이긴다). */
+.oprn-status-menu.main-menu[data-menu-skin="pixel"] .status-menu-detail.has-showcase:not(.has-side):is([data-status-menu-command="save"], [data-status-menu-command="load"]) { grid-template-columns: minmax(0, 1fr); }
+.oprn-status-menu.main-menu[data-menu-skin="pixel"] .status-menu-detail.has-showcase:not(.has-side):is([data-status-menu-command="save"], [data-status-menu-command="load"]) > .status-menu-detail-showcase { border-left: 0; border-top: 1px solid var(--px-line); padding: 4px 0 0; }
 .oprn-status-menu.main-menu[data-menu-skin="pixel"] .status-menu-detail-title { color: var(--px-ink-dim); font-size: 10px; font-family: var(--px-small-font); }
 .oprn-status-menu.main-menu[data-menu-skin="pixel"] .status-menu-detail-list { gap: 0; }
 .oprn-status-menu.main-menu[data-menu-skin="pixel"] .status-menu-detail-list:not(:has(.with-vitals, .has-description)) { --oprn-menu-row-step: 16px; }
