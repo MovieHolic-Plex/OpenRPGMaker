@@ -145,7 +145,7 @@ export function renderAiRoleMatrixSettings(onChange: () => void, onApplyMain?: (
         modelCells.set(role, modelCell);
         noteCells.set(role, noteCell);
         let control: HTMLElement = el("small", { class: "ai-role-matrix-elsewhere", text: role === "image" || role === "pixel" ? "아래 「그림·도트 모델」" : "위 「역할별 모델」" });
-        if (role === "main") control = el("div", { children: [mainApply, control] });
+        if (role === "main") control = el("div", { class: "ai-role-matrix-main-control", children: [mainApply, control] });
         if (EDITABLE.includes(role)) {
           const select = el("select", { class: "ai-config-select", attrs: { "aria-label": `${copy.label} 모델` }, dataset: { testid: `ai-role-matrix-${role}-select` } }) as HTMLSelectElement;
           select.addEventListener("change", () => {

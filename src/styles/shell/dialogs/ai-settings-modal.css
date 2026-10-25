@@ -1529,3 +1529,9 @@
 .ai-role-matrix-summary {
   margin: 0 var(--space-2) var(--space-1);
 }
+
+.ai-role-matrix-main-control {
+  display: grid;
+  gap: var(--space-1);
+  justify-items: start;
+}
