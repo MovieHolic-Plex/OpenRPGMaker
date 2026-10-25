@@ -123,6 +123,9 @@ export function pageConditionField(
       case "friendshipAtLeast": return field("friendship-npc-key");
       case "relationshipAtLeast": return field("relationship-npc-key");
       case "run": return { testId: "event-condition-run-flag", scopeTestId: `${prefix}-row-${advancedSuffix}` };
+      // 간단 행이 없는 종류. 여기서 안 돌리면 아래 간단 행 스위치로 떨어져 검토 종 초점이 명령 폼 id 에 남는다.
+      case "difficulty": return field("difficulty");
+      case "itemUsed": return field("item-used");
       case "selfSwitch": case "battleResult": return undefined;
     case "actorStat":
     case "actorState":
