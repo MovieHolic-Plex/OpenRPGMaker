@@ -1157,10 +1157,12 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
       emit({ type: "execution_status", name: "plan_execution_rekick", ok: false, summary: "계획만 다시 쓰고 바뀐 것 없이 끝나 실행을 한 번 더 요청합니다." });
       await promptResuming(PLAN_EXECUTION_REKICK);
     }
-    // v2 완료 조건(비평 통과·기계 검사 통과) — 못 채웠으면 한 차례 더 돌며 사실대로 보고하게 한다.
-    if (options.v2?.afterMain && v2Env && !fatal && !rejected && !options.signal?.aborted && turns < maxTurns) {
-      const followUp = await options.v2.afterMain(v2Env);
-      if (followUp && !fatal && !rejected && !options.signal?.aborted) await promptResuming(followUp);
+    // v2 완료 조건(비평 통과·기계 검사 통과·독립 검토자) — 못 채웠으면 한 차례 더 돌며 사실대로 보고하게 한다.
+    // 두 번째 차례는 첫 후속이 쓴 «최종 보고»를 검토자가 다시 대어 보는 자리다(최대 2차례 — 끝없이 돌지 않는다).
+    for (let round = 0; options.v2?.afterMain && v2Env && round < 2 && !fatal && !rejected && !options.signal?.aborted && turns < maxTurns; round++) {
+      const followUp = await options.v2.afterMain(v2Env, round);
+      if (!followUp || fatal || rejected || options.signal?.aborted) break;
+      await promptResuming(followUp);
     }
     // 인게임 컷신은 조수의 보고가 아니라 객관 측정 + 독립 판정자로 검증한다(openingProduction.recordCutsceneReview).
     const reviewInGameCutscene = async (): Promise<void> => {
