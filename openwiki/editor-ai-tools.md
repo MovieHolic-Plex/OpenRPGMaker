@@ -3773,3 +3773,14 @@ r8~r11 실편집기 녹화에서 조수는 도구를 찾지 않고 paint_tiles �
 - v2 마무리 검사(`gameChecks.ts`): 같은 두 맵 사이 떨어진 문 둘 이상(짓기 도구 자동 연결 + 다시 잇기), 숲·들판 요청인데 새 맵 없이 마을 맵에 둔 필드 적.
 - (2026-10-25) `set_project_settings {battle: {revealWeakness: never|afterDiscovery|always}}`(= `battle.staging.revealWeakness`) — 적 약점·저항을 대상 고르기에서 보이는가. 기본 afterDiscovery: 처음 맞힌 타격의 「약점 발견!」 뒤로만. 도구 설명이 「기술 설명에 ○○ 약점처럼 적 이름을 쓰지 말 것」을 함께 말한다.
 - (2026-10-25 데모 기능 묶음) v2 `FALLEN_TIERS` 에 데모 기능 묶음을 더했다 — 연계기(`upsert_combo_tech`)·전투 연출/팡파레/휴대폰 조작(`set_project_settings`)·대사 책상(`list_dialogue`·`rewrite_dialogue`·`set_speaker_voice`·`read_story_script`…)·거리 행인(`add_street_walkers`)·현대 거리(`compose_modern_city_street`)·옥상 배경(`set_map_properties` background.fromMap). 묶음마다 한 줄 사용법(`fallenTierCard`)이 게임 카드 뒤에 붙는다. 마무리 관문의 «아무것도 안 바뀜» 비교에 `system`·`dialogueDesk` 를 넣었고(설정·윤문 제안만 바꾼 요청이 거짓 「안 바뀜」으로 되돌아가지 않게), 기본값이 이미 켜진 설정 요청은 그 검사를 건너뛴다. 연계기 요청인데 연계 기록이 없으면 게임 검사가 돌려보낸다. 자연 기물은 `list_spatial_designs` query 「버들항 자연」(bd-org-*).
+
+## 충전 끊기 — `upsert_skill chargeBreak` (2026-10-25, fs2 과제 9)
+
+- 힘 모으기 기술(`chargeTurns` 1~3)에 `chargeBreak {damage?, elementIds?, stateIds?, message?, stagger?}` 를 단다. 모으는 동안
+  받은 HP 피해 누계가 `damage` 이상이거나, `elementIds` 속성 기술에 맞거나, `stateIds` 상태가 걸리면(「또는」) 모으던 기술이 취소된다.
+  `chargeTurns` 없이 주면 `invalid-charge-break`, 없는 상태·속성은 `state-not-found`·`element-not-found`.
+- 런타임(`battle/runtime.ts` `noteChargeBreak`): `recordTimeline` 이 기록마다 장부 `pendingCharges` 의 `damageTaken` 을 올리고 판정한다.
+  끊김 줄(`kind:"special", charge, chargeBroken, chargeSkillId, chargeBreakLine`)은 타격 묶음을 깨지 않게 다음 명령 시작·스냅숏 때 제 actionId 로 나온다.
+  적은 기본으로 다음 자기 차례 하나를 「휘청거린다」로 쉰다(`stagger:false` 로 끔, 아군은 휘청거리지 않음). 속성은 맞힌 기술의 `elementId` 만 본다(통상 공격 무기 속성은 안 봄).
+- 표시: 모으는 중엔 기존 머리 위 「기술 · 남은 차례」 표식, 끊기면 표식이 사라지고 대상 위 「끊김!」 글자 + 「X가 모으던 Y가 끊겼다!」 + `message` 한 줄(`battleSequencer`).
+- `simulate_battle` 결과 `data.chargeBreaks {started, broken, bySkill}`, 요약에 「힘 모으기 N회 중 끊김 M회」. 시험 시드 `fs2-chargebreak`.

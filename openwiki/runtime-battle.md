@@ -511,7 +511,7 @@ SQLite 저장소를 자동 변경하는 이관은 수행하지 않는다.
 
 ## 힘 모으기 · 게이지 밀기 · 변신 · 소환 (2026-10-01, B)
 
-- **힘 모으기 `SkillRecord.chargeTurns`(1~3)** — 런타임 장부 `pendingCharges`(runtime.ts). 정한 차례엔 `kind:"special", charge:true` 예고 줄만 남기고(「X가 Y를 준비한다! (N턴 뒤)」), 자기 차례가 N 번 더 오면 저장한 명령/행동을 발동한다. 아군은 `applyActorCommandEffect` 앞의 `actorChargeStep`, 적은 `executeEnemyTurnAction`(gauge·strict 둘 다 이 길). 반격·최후의 일격(drainCounters)은 모으지 않는다. 모으는 동안 아군 메뉴는 열리지 않는다(gauge: tick 의 분기, strict: `queueBerserkStrictCommands` 가 저장 명령을 넣는다). 발동 때 MP·봉인으로 못 쓰면 「모은 힘이 흩어졌다」. 쓰러지면 장부에서 지운다(`dropDefeatedCharges`).
+- **힘 모으기 `SkillRecord.chargeTurns`(1~3)** — 런타임 장부 `pendingCharges`(runtime.ts). 정한 차례엔 `kind:"special", charge:true` 예고 줄만 남기고(「X가 Y를 준비한다! (N턴 뒤)」), 자기 차례가 N 번 더 오면 저장한 명령/행동을 발동한다. 아군은 `applyActorCommandEffect` 앞의 `actorChargeStep`, 적은 `executeEnemyTurnAction`(gauge·strict 둘 다 이 길). 반격·최후의 일격(drainCounters)은 모으지 않는다. 모으는 동안 아군 메뉴는 열리지 않는다(gauge: tick 의 분기, strict: `queueBerserkStrictCommands` 가 저장 명령을 넣는다). 발동 때 MP·봉인으로 못 쓰면 「모은 힘이 흩어졌다」. 쓰러지면 장부에서 지운다(`dropDefeatedCharges`). 충전 끊기 `SkillRecord.chargeBreak`(피해 누계·속성·상태) — `noteChargeBreak` 가 `recordTimeline` 에서 판정해 장부를 지우고 `chargeBroken` 줄을 다음 명령 앞에 낸다, 적은 다음 차례 휘청거림(`chargeStaggeredIds`). 자세히는 `editor-ai-tools.md` 「충전 끊기」.
   - 예고 줄에 **skillId 를 싣지 않는다** — 실으면 연출 재생기가 시전으로 보고 시전자 위에 착탄 연출을 튼다(녹화 실측). 시퀀서는 `charge` 줄이면 명령 줄(「…을 사용했다!」) 없이 예고 문장만 읽는다.
   - 스냅숏 `BattleBattlerSnapshot.charging {skillId, skillName, turnsLeft}` → DOM `data-charging` + `.battle-charge-mark`(머리 위 「기술 · 남은 차례」 띠), 몸은 금빛 떨림(28-retro-state-aura.css, 모든 스킨).
 - **게이지 밀기 `SkillRecord.gaugeShift`(-100~100)** — ATB(gauge) 흐름에서 명중한 대상의 `gauge` 를 타마다 옮긴다(`shiftGauge`). 음수 = 늦추기, 양수 = 아군 앞당기기. 대상당 「행동이 늦춰졌다/빨라졌다」 special 한 줄. strict 는 무시.

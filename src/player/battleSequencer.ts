@@ -527,6 +527,23 @@ export function createBattleSequencer(
     // 훔치기처럼 action 없이 special 한 줄만 남기는 명령은 명령 대사가 그 엔트리를 차지해 결과(「…을 훔쳤다!」)가
     // 사라지고 「효과가 충분하지 않았다」가 남았다 — 명령 줄 다음에 special 줄을 따로 읽힌다.
     // 힘 모으기 예고는 명령 줄(「…을 사용했다!」) 없이 예고 문장만 — 아직 쓰지 않았다.
+    // 충전 끊기(SkillRecord.chargeBreak): 대상 위에 「끊김!」 글자가 튀고, 시스템 문장 다음에 시전자의 한 줄(「송신 실패」)을 읽힌다.
+    if (entry.kind === "special" && entry.chargeBroken && entry.message && entry.targetId) {
+      const targetId = entry.targetId;
+      hooks.onDirectorState({ step: "acting", lines: [entry.message], targetId });
+      hooks.onDamageFeedback({ targetId, amount: 0, critical: false, healing: false, label: "끊김!" });
+      hooks.onSyncView();
+      delay(() => {
+        hooks.onDamageFeedback(undefined);
+        if (!entry.chargeBreakLine) {
+          continueNext();
+          return;
+        }
+        hooks.onDirectorState({ step: "acting", lines: [entry.chargeBreakLine], targetId });
+        delay(continueNext, BATTLE_LOG_MS);
+      }, BATTLE_LOG_MS);
+      return;
+    }
     if (entry.kind === "special" && entry.charge && entry.message) {
       hooks.onDirectorState({ step: "acting", lines: [entry.message], targetId: entry.targetId });
       hooks.onSyncView();

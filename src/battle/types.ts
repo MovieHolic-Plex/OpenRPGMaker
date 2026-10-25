@@ -433,6 +433,14 @@ export interface BattleTimelineEntrySnapshot {
   readonly flinch?: true;
   /** 힘 모으기 예고(SkillRecord.chargeTurns)의 special 줄. 연출 없이 문장만 — 명령 줄(「…을 사용했다!」)도 띄우지 않는다. */
   readonly charge?: true;
+  /** 힘 모으기 시작 줄(「…을 준비한다!」). simulate_battle 이 모으기 횟수를 센다. */
+  readonly chargeStart?: true;
+  /** 힘 모으기가 끊긴 줄(SkillRecord.chargeBreak). 표시 계층이 「끊김!」 글자를 띄우고 chargeBreakLine 을 이어 읽는다. */
+  readonly chargeBroken?: true;
+  /** 모으기 시작·끊긴 기술 id(연출 재생기가 시전으로 보지 않게 skillId 대신 따로 싣는다). */
+  readonly chargeSkillId?: SkillId;
+  /** 끊겼을 때 시전자의 한 줄(SkillChargeBreak.message). */
+  readonly chargeBreakLine?: string;
   readonly stateId?: string;
   readonly reason?: "natural" | "hit" | "battleEnd" | "effect" | "strictCap";
   readonly success?: boolean;

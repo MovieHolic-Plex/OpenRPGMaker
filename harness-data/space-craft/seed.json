@@ -9642,6 +9642,77 @@
    ],
    "verify": "place_field_obstacle(kind:'gap', requiresActorId:<새라 id>) 두 곳 / 각 틈의 양쪽 가장자리 칸에 이벤트(id, id_far)가 있고 능력 페이지 조건 actor present + 이동 경로 jump / 틈 칸은 여전히 통행 막힘(다리 없음) / data.bypass:false",
    "suiteCategory": "fs2-gap"
+  },
+  {
+   "category": "game",
+   "kind": "logic",
+   "mode": "balanced",
+   "startTileset": "beodeul_city",
+   "startBuild": [
+    {
+     "tool": "author_beodeul_town",
+     "args": {
+      "mapId": "map_blank_start",
+      "name": "버들 마을",
+      "houseCount": 4,
+      "theme": "river",
+      "seed": 11
+     }
+    },
+    {
+     "tool": "place_npc",
+     "args": {
+      "mapId": "map_blank_start",
+      "id": "npc_chief",
+      "name": "촌장",
+      "x": 20,
+      "y": 16,
+      "movement": "fixed",
+      "graphic": {
+       "query": "노인 남성"
+      },
+      "pages": [
+       {
+        "lines": [
+         "어서 오게, 버들 마을일세."
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "tool": "place_npc",
+     "args": {
+      "mapId": "map_blank_start",
+      "id": "npc_smith",
+      "name": "대장장이",
+      "x": 14,
+      "y": 20,
+      "movement": "fixed",
+      "graphic": {
+       "query": "아저씨"
+      },
+      "pages": [
+       {
+        "lines": [
+         "망치 소리 좋지?"
+        ]
+       }
+      ]
+     }
+    }
+   ],
+   "id": "fs2-chargebreak",
+   "prompt": "보스 「회수자」를 만들고, 회수자가 「회수 송신」을 세 턴 모을 때 그 사이 300 넘게 때리면 송신이 끊기게 해 줘. 끊기면 『송신 실패』라고 말하게.",
+   "requires": [
+    "upsert_skill chargeTurns 3",
+    "chargeBreak.damage 300",
+    "chargeBreak.message 송신 실패",
+    "회수자 적·트룹이 그 기술을 씀",
+    "simulate_battle chargeBreaks 확인"
+   ],
+   "verify": "upsert_skill(chargeTurns 3, chargeBreak {damage 300, message 「송신 실패」}) / 회수자 enemy actions 에 그 기술 / simulate_battle data.chargeBreaks.started>0 이고 끊김 횟수를 보고 / 행동 늦추기(gaugeShift)로 흉내내지 않음",
+   "suiteCategory": "fs-chargebreak"
   }
  ],
  "gates": {
