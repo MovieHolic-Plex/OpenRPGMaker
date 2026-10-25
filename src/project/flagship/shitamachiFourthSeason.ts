@@ -188,7 +188,7 @@ function nearestFree(project: Project, map: GameMap, want: Cell, avoid: readonly
 
 /** 거리 건물 이름표(compose_jp_city_street 가 단 locations)에서 그 종류의 문 칸. */
 function doorOf(map: GameMap, kind: string, nth = 0): Cell {
-  const hits = (map.locations ?? []).filter((l) => (l.tags ?? []).includes("jp-building") && (l.tags ?? []).includes(kind));
+  const hits = (map.locations ?? []).filter((l) => (l.tags ?? []).includes("jp-building") && (l.tags ?? []).includes(kind) && !(l.note ?? "").includes("닿지 않음"));
   const loc = hits[nth];
   const m = loc ? /문 \((\d+),(\d+)\)/u.exec(loc.note ?? "") : null;
   if (!m) throw new Error(`[shitamachi-fourth-season] 거리에 ${kind} 건물(${nth})이 없다 — compose_jp_city_street 결과가 바뀌었다`);
@@ -226,7 +226,8 @@ function buildMaps(project: Project): { arrive: Cell; links: Record<"house" | "b
     bakery: { kind: "shop", nth: 0, mapId: M.bakery },
     office: { kind: "office", nth: 0, mapId: M.office },
     rooftop: { kind: "apartment", nth: 0, mapId: M.rooftop },
-    house: { kind: "house", nth: 0, mapId: M.house },
+    // 남쪽 줄 건물 문은 맵 끝 뒷골목에 갇혀 큰길에서 닿지 않는다(compose 경고) — 북쪽 뒷길의 마치야 둘을 집·센토로 쓴다.
+    house: { kind: "machiya", nth: 0, mapId: M.house },
     sento: { kind: "machiya", nth: 1, mapId: M.sento },
   } as const;
   const links = {} as Record<keyof typeof linkSpec, { entry: Cell; exit: Cell; streetLanding: Cell }>;
@@ -285,7 +286,8 @@ function buildTrain(project: Project, arrive: Cell): Cell {
     ...fadeOut(700),
     transfer(M.hub, arrive, "right"),
   ];
-  map.events.push(event("ev_sm_train_scene", "저녁 전철", heroAt, [
+  // 자동 실행 장면은 주인공 칸이 아닌 벽 칸에 둔다(주인공이 이벤트 칸 위에서 시작하면 헤드리스 자동 플레이가 길을 못 잡는다).
+  map.events.push(event("ev_sm_train_scene", "저녁 전철", { x: 0, y: 0 }, [
     page("ev_sm_train_scene_p", [varIs(V_STAGE, 0)], scene, { trigger: "auto" }),
     gone("ev_sm_train_scene_done", [varAtLeast(V_STAGE, 1)]),
   ]));
@@ -325,7 +327,7 @@ function buildHub(project: Project, arrive: Cell): void {
         ...say("seoyeon", "sad", "…그러게. 미안, 부탁할 사람이 너밖에 생각이 안 났어."),
       ] },
     ]),
-    ...say("seoyeon", "base", "베이커리는 지호네잖아. 네 소꿉친구. 센토는 큰길 건너 남쪽 줄이고. 그럼, 사무소에서 기다릴게!"),
+    ...say("seoyeon", "base", "베이커리는 지호네잖아. 네 소꿉친구. 센토는 아케이드 지나 북쪽 뒷길이고. 그럼, 사무소에서 기다릴게!"),
     walk(seoyeonId, ["right", "right", "right", "right"]),
     setSw("sw_sm_seoyeon_hub_off", true),
     setVar(V_STAGE, "=", 2),
@@ -458,13 +460,35 @@ function buildBakery(project: Project, link: { entry: Cell; exit: Cell }): void 
       ...say("jiho", "embarrassed", "으아, 그 사진! …그날 너 이사 가는 날이었잖아. 내년 등롱은 같이 보자고, 네가 약속했어."),
       ...like("jiho", 1),
     ]),
+    ifCond(swOn(SW_NOTE), [
+      ...say("hajin", "base", "아, 엄마가 안부 전해 달래. 내가 어릴 때 여기서 살다시피 했다고."),
+      ...say("jiho", "happy", "아줌마가? 헤헤. 우리 할머니도 네 얘기 자주 해. 그 반죽 도둑은 잘 크고 있냐고."),
+      ...like("jiho", 1),
+    ]),
     ...say("jiho", "base", "자, 코하루 베이커리 소원 등롱. 안에 뭐 적었는지는 보지 마!"),
     ...lanternGiven(SW_L_JIHO),
   ];
-  const after: Command[] = [faceHero(id), ...say("jiho", "happy", "등롱빵 하나 먹고 갈래? 시식은 공짜야. 오늘만!")];
+  // 등롱을 받은 뒤 다시 말을 걸면 한 번, 내일 팔 등롱빵 시식 — 지호와의 두 번째 장면.
+  const taste: Command[] = [
+    faceHero(id),
+    ...say("jiho", "happy", "잠깐! 내일 팔 등롱빵 첫 판이 나왔어. 시식해 줘. 솔직하게!"),
+    ...caption("주황색 등롱 모양 빵. 겉은 바삭하고, 안에는 따뜻한 커스터드."),
+    choices([
+      { text: "「옛날 그 맛이다. 할머니 빵이랑 똑같아.」", then: [
+        ...say("jiho", "embarrassed", "…그거 내가 제일 듣고 싶던 말이야. 할머니 레시피, 나 혼자 다시 맞춘 거거든."),
+        ...like("jiho", 1),
+      ] },
+      { text: "「맛있다. 근데 조금 달아.」", then: [
+        ...say("jiho", "base", "흐음, 설탕 조금 줄여 볼게. 역시 넌 솔직하다니까."),
+      ] },
+    ]),
+    setSw("sw_sm_jiho_taste", true),
+  ];
+  const after: Command[] = [faceHero(id), ...say("jiho", "happy", "내일 축제 끝나면 남은 등롱빵 다 같이 먹자. 약속!")];
   project.maps[M.bakery]!.events.push(event(id, "지호", at, [
     page(`${id}_p1`, [], first, { who: "jiho" }),
-    page(`${id}_p2`, [swOn(SW_L_JIHO)], after, { who: "jiho" }),
+    page(`${id}_p2`, [swOn(SW_L_JIHO)], taste, { who: "jiho" }),
+    page(`${id}_p3`, [swOn("sw_sm_jiho_taste")], after, { who: "jiho" }),
   ], "jiho"));
 }
 
@@ -707,7 +731,7 @@ function buildTitleAndOpening(project: Project, spots: { jiho: Cell; yuna: Cell;
 function defineEndings(project: Project): void {
   const credits = "시타마치의 네 번째 계절\n\nOPRN 에디터 공식 데모\n그림: OPRN 기본 에셋(jp_city · 현대 칩셋 · 공용 흉상)\n음악·효과음: CC0 카탈로그";
   execTool(project, "define_ending", {
-    id: END_SEOYEON, name: "서연 · 학생회장이 아닌 날", conditions: [varAtLeast(V_SEOYEON, TRUE_AT)],
+    id: END_SEOYEON, name: "서연 · 학생회장이 아닌 날", priority: 10, conditions: [{ kind: "friendshipAtLeast", npcKey: "seoyeon", value: TRUE_AT * 100 }],
     presentation: { kicker: "두 사람의 이야기", musicResourceId: BGM_HAPPY, tone: "warm", backgroundResourceId: "oprn-title-romance-school", credits },
     epilogue: [
       { kind: "say", speaker: "서연", text: "축제 다음 날, 사무소 책상 위에 순서표가 두 장 놓여 있었다. 내 글씨와, 네 글씨." },
@@ -715,7 +739,7 @@ function defineEndings(project: Project): void {
     ],
   });
   execTool(project, "define_ending", {
-    id: END_JIHO, name: "지호 · 십 년 늦은 약속", conditions: [varAtLeast(V_JIHO, TRUE_AT)],
+    id: END_JIHO, name: "지호 · 십 년 늦은 약속", priority: 10, conditions: [{ kind: "friendshipAtLeast", npcKey: "jiho", value: TRUE_AT * 100 }],
     presentation: { kicker: "두 사람의 이야기", musicResourceId: BGM_HAPPY, tone: "warm", backgroundResourceId: "oprn-title-romance-cafe", credits },
     epilogue: [
       { kind: "say", speaker: "지호", text: "코하루 베이커리 진열대에 새 빵이 생겼다. 이름은 「약속빵」. 모양이 좀 이상한 건 반죽 담당 탓이다." },
@@ -723,8 +747,8 @@ function defineEndings(project: Project): void {
     ],
   });
   execTool(project, "define_ending", {
-    id: END_YUNA, name: "유나 · 마지막 한 장", conditions: [varAtLeast(V_YUNA, TRUE_AT)],
-    presentation: { kicker: "두 사람의 이야기", musicResourceId: BGM_HAPPY, tone: "warm", backgroundResourceId: "oprn-title-romance-campus", credits },
+    id: END_YUNA, name: "유나 · 마지막 한 장", priority: 10, conditions: [{ kind: "friendshipAtLeast", npcKey: "yuna", value: TRUE_AT * 100 }],
+    presentation: { kicker: "두 사람의 이야기", musicResourceId: BGM_HAPPY, tone: "warm", backgroundResourceId: "oprn-title-romance-town", credits },
     epilogue: [
       { kind: "say", speaker: "유나", text: "현상한 사진은 마츠노유 번대 옆에 걸렸다. 등롱 불빛 앞에서 웃는 사람 하나." },
       { kind: "say", speaker: "하진", text: "내일 아침 전철에서 봐. 같은 칸에서." },
@@ -766,7 +790,7 @@ export function createShitamachiFourthSeasonFlagshipDemo(): FlagshipDemoBuildRes
   for (const [id, name] of [[V_STAGE, "시타마치 진행 단계"], [V_DATE, "등롱 길을 함께 걷는 사람"], [V_LANTERNS, "모은 소원 등롱"],
     [V_SEOYEON, "서연 마음 점수"], [V_JIHO, "지호 마음 점수"], [V_YUNA, "유나 마음 점수"]] as const) ensureVar(id, name);
   for (const [id, name] of [[SW_L_SEOYEON, "서연의 소원 등롱"], [SW_L_JIHO, "지호의 소원 등롱"], [SW_L_YUNA, "유나의 소원 등롱"],
-    [SW_LIT, "아케이드 등롱 점등"], [SW_PHOTO, "옛 사진을 봄"], [SW_NOTE, "엄마 쪽지를 읽음"], ["sw_sm_gather", "점등식에 셋이 모임"],
+    [SW_LIT, "아케이드 등롱 점등"], [SW_PHOTO, "옛 사진을 봄"], [SW_NOTE, "엄마 쪽지를 읽음"], ["sw_sm_gather", "점등식에 셋이 모임"], ["sw_sm_jiho_taste", "지호: 등롱빵 시식"],
     ["sw_sm_train_yuna_off", "전철: 유나 하차"], ["sw_sm_seoyeon_hub_off", "상점가: 서연 사무소로"]] as const) ensureSw(id, name);
 
   const { arrive, links } = buildMaps(project);
@@ -786,7 +810,7 @@ export function createShitamachiFourthSeasonFlagshipDemo(): FlagshipDemoBuildRes
     }
   };
   for (const e of project.maps[M.hub]!.events) for (const p of e.pages ?? []) fillRoofTransfer(p.commands);
-  execTool(project, "set_title_screen", { title: "시타마치의 네 번째 계절", logoSubtitle: "등롱이 켜지는 밤", backgroundResourceId: "oprn-title-romance-school", logoStyle: "glow", musicResourceId: BGM_MEMORY });
+  execTool(project, "set_title_screen", { title: "시타마치의 네 번째 계절", logoSubtitle: "등롱이 켜지는 밤", backgroundResourceId: "oprn-title-romance-campus", logoStyle: "glow", musicResourceId: BGM_MEMORY });
   defineEndings(project);
 
   const spot = (mapId: string, eventId: string): Cell => {
