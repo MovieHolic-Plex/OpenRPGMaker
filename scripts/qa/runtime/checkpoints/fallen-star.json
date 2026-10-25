@@ -43,12 +43,12 @@
   },
   {
    "id": "party-follow",
-   "label": "마을 — 동료가 뒤를 따라 걷는다 · 메뉴에 저장 없음 · 광장 세이브 포인트",
+   "label": "숲 어귀 — 동료가 뒤를 따라 걷는다 · 메뉴에 저장 없음 · 사당 세이브 포인트",
    "note": "configure_companion_rules display follow · set_project_settings saveAccess savePoints · place_savepoint ev_fs_hub_savepoint",
-   "mapId": "fs_hub",
-   "x": 26,
-   "y": 23,
-   "facing": "down",
+   "mapId": "fs_forest_edge",
+   "x": 15,
+   "y": 38,
+   "facing": "up",
    "party": [
     {
      "actorId": "actor_hero",
@@ -56,6 +56,10 @@
     },
     {
      "actorId": "actor_fs_elena",
+     "level": 6
+    },
+    {
+     "actorId": "actor_fs_iris",
      "level": 6
     }
    ],
@@ -68,26 +72,19 @@
      "id": "walk",
      "ops": [
       {
-       "kind": "pressUntilJs",
-       "key": "Enter",
-       "fn": "(()=>!document.querySelector(\"[data-testid='dialogue-box']\"))",
-       "maxPresses": 40,
-       "settleMs": 600
+       "kind": "hold",
+       "dir": "up",
+       "ms": 1600
       },
       {
        "kind": "hold",
        "dir": "right",
-       "ms": 1400
-      },
-      {
-       "kind": "hold",
-       "dir": "down",
-       "ms": 900
+       "ms": 700
       },
       {
        "kind": "hold",
        "dir": null,
-       "ms": 500
+       "ms": 400
       }
      ],
      "shot": true
@@ -121,9 +118,9 @@
       },
       {
        "kind": "teleport",
-       "mapId": "fs_hub",
-       "x": 37,
-       "y": 30
+       "mapId": "fs_forest_shrine",
+       "x": 24,
+       "y": 12
       },
       {
        "kind": "face",
@@ -132,7 +129,7 @@
       {
        "kind": "hold",
        "dir": null,
-       "ms": 600
+       "ms": 900
       }
      ],
      "shot": true
@@ -144,14 +141,31 @@
        "kind": "action"
       },
       {
+       "kind": "pressUntilJs",
+       "key": "Enter",
+       "fn": "(()=>!!document.querySelector(\"[data-testid='runtime-choices'], [data-testid*='save-slot'], [data-testid*='save']\"))",
+       "maxPresses": 8,
+       "settleMs": 700
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
        "kind": "hold",
        "dir": null,
-       "ms": 1500
+       "ms": 1200
       }
      ],
      "shot": true
     }
-   ]
+   ],
+   "variables": {
+    "var_fs_main_progress": 0
+   },
+   "items": {
+    "item_potion": 3
+   }
   },
   {
    "id": "observatory-entry",
@@ -488,11 +502,11 @@
   },
   {
    "id": "chase-lunge",
-   "label": "숲 어귀 — 7칸 밖에서 알아보고 3칸 덮치기",
+   "label": "숲 어귀 — 늑대가 7칸 밖에서 알아보고 3칸 덮친다(가만히 서면 잡힌다)",
    "note": "tune_field_enemies sightRange 7 · lungeSteps 3 · lungeSpeed 6",
    "mapId": "fs_forest_edge",
-   "x": 18,
-   "y": 22,
+   "x": 11,
+   "y": 24,
    "facing": "up",
    "switches": {
     "sw_fs_main_started": true,
@@ -516,17 +530,12 @@
    },
    "beats": [
     {
-     "id": "approach",
+     "id": "spotted",
      "ops": [
       {
        "kind": "hold",
-       "dir": "up",
-       "ms": 500
-      },
-      {
-       "kind": "hold",
        "dir": null,
-       "ms": 900
+       "ms": 2600
       }
      ],
      "shot": true
@@ -537,18 +546,87 @@
       {
        "kind": "hold",
        "dir": null,
-       "ms": 1200
+       "ms": 1400
       }
      ],
      "shot": true
     },
     {
-     "id": "dodge",
+     "id": "caught",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 2500
+      }
+     ],
+     "shot": true
+    }
+   ]
+  },
+  {
+   "id": "chase-dodge",
+   "label": "숲 어귀 — 덮치기를 보고 계속 걸어 내려가면 따돌린다",
+   "note": "tune_field_enemies sightRange 7 · lungeSteps 3 · lungeSpeed 6",
+   "mapId": "fs_forest_edge",
+   "x": 11,
+   "y": 24,
+   "facing": "up",
+   "switches": {
+    "sw_fs_main_started": true,
+    "sw_fs_valen_marched": true
+   },
+   "variables": {
+    "var_fs_main_progress": 0
+   },
+   "party": [
+    {
+     "actorId": "actor_hero",
+     "level": 6
+    },
+    {
+     "actorId": "actor_fs_elena",
+     "level": 6
+    }
+   ],
+   "items": {
+    "item_potion": 3
+   },
+   "beats": [
+    {
+     "id": "spotted",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 2300
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "run",
      "ops": [
       {
        "kind": "hold",
        "dir": "down",
-       "ms": 2400
+       "ms": 1600
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "escaped",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": "down",
+       "ms": 1600
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1500
       }
      ],
      "shot": true
@@ -797,10 +875,13 @@
        "plan": {
         "actor_hero": [
          "combo:skill_combo_fs_flame_cross"
+        ],
+        "actor_fs_elena": [
+         "combo:skill_combo_fs_flame_cross"
         ]
        },
        "fallback": "defend",
-       "commands": 1,
+       "commands": 3,
        "timeoutMs": 60000
       },
       {
@@ -812,7 +893,7 @@
       {
        "kind": "hold",
        "dir": null,
-       "ms": 700
+       "ms": 2500
       }
      ],
      "shot": true
