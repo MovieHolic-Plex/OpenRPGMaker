@@ -19,7 +19,7 @@ function withAtlas(): ToolContext {
   const created = runTool(ctx, "create_tileset", {
     id: ATLAS_ID,
     name: "시험 아틀라스",
-    image: { type: "bundled", id: "tex_easyrpg_chipset_interior" },
+    image: { type: "bundled", id: "tex_beodeul_city" },
     kind: "custom",
     tileSize: 16,
     tilesPerRow: 8,
@@ -35,7 +35,7 @@ describe("create_tileset — project.tilesets 슬롯 생성", () => {
     const tileset = ctx.project.tilesets[ATLAS_ID];
     expect(tileset).toBeDefined();
     expect(tileset.name).toBe("시험 아틀라스");
-    expect(tileset.image).toEqual({ type: "bundled", id: "tex_easyrpg_chipset_interior" });
+    expect(tileset.image).toEqual({ type: "bundled", id: "tex_beodeul_city" });
     expect(tileset.kind).toBe("custom");
     expect(tileset.tileSize).toBe(16);
     expect(tileset.tilesPerRow).toBe(8);
@@ -60,7 +60,7 @@ describe("create_tileset — project.tilesets 슬롯 생성", () => {
     const rejected = runTool(ctx, "create_tileset", {
       id: ATLAS_ID,
       name: "중복",
-      image: { type: "bundled", id: "tex_easyrpg_chipset_interior" },
+      image: { type: "bundled", id: "tex_beodeul_city" },
     }, { dryRun: false });
     expect(rejected.ok).toBe(false);
     expect(rejected.issues?.[0]?.message).toContain(ATLAS_ID);
@@ -75,7 +75,7 @@ describe("create_tileset — project.tilesets 슬롯 생성", () => {
     expect(rejected.ok).toBe(false);
     const message = rejected.issues?.[0]?.message ?? "";
     expect(message).toContain("tex_does_not_exist");
-    expect(message).toContain("tex_easyrpg_chipset_interior");
+    expect(message).toContain("tex_beodeul_city");
   });
 });
 
@@ -300,20 +300,20 @@ describe("set_tile_grafts — tilesets[*].tileGrafts", () => {
     const added = runTool(ctx, "set_tile_grafts", {
       tilesetId: ATLAS_ID,
       grafts: [
-        { targetTile: 4, sourceChipset: "tex_easyrpg_chipset_retro_house", sourceTile: 100 },
-        { targetTile: 5, sourceChipset: "tex_easyrpg_chipset_retro_house", sourceTile: 101 },
+        { targetTile: 4, sourceChipset: "tex_beodeul_city", sourceTile: 100 },
+        { targetTile: 5, sourceChipset: "tex_beodeul_city", sourceTile: 101 },
       ],
     }, { dryRun: false });
     expect(added.ok, JSON.stringify(added.issues)).toBe(true);
     expect(ctx.project.tilesets[ATLAS_ID].tileGrafts).toEqual([
-      { targetTile: 4, sourceChipset: "tex_easyrpg_chipset_retro_house", sourceTile: 100 },
-      { targetTile: 5, sourceChipset: "tex_easyrpg_chipset_retro_house", sourceTile: 101 },
+      { targetTile: 4, sourceChipset: "tex_beodeul_city", sourceTile: 100 },
+      { targetTile: 5, sourceChipset: "tex_beodeul_city", sourceTile: 101 },
     ]);
 
     const removed = runTool(ctx, "set_tile_grafts", { tilesetId: ATLAS_ID, remove: [4] }, { dryRun: false });
     expect(removed.ok, JSON.stringify(removed.issues)).toBe(true);
     expect(ctx.project.tilesets[ATLAS_ID].tileGrafts).toEqual([
-      { targetTile: 5, sourceChipset: "tex_easyrpg_chipset_retro_house", sourceTile: 101 },
+      { targetTile: 5, sourceChipset: "tex_beodeul_city", sourceTile: 101 },
     ]);
   });
 
@@ -326,7 +326,7 @@ describe("set_tile_grafts — tilesets[*].tileGrafts", () => {
     expect(rejected.ok).toBe(false);
     const message = rejected.issues?.[0]?.message ?? "";
     expect(message).toContain("chipset_없음");
-    expect(message).toContain("tex_easyrpg_chipset_interior");
+    expect(message).toContain("tex_beodeul_city");
     expect(ctx.project.tilesets[ATLAS_ID].tileGrafts).toBeUndefined();
   });
 
@@ -334,7 +334,7 @@ describe("set_tile_grafts — tilesets[*].tileGrafts", () => {
     const ctx = withAtlas();
     const rejected = runTool(ctx, "set_tile_grafts", {
       tilesetId: ATLAS_ID,
-      grafts: [{ targetTile: 64, sourceChipset: "tex_easyrpg_chipset_retro_house", sourceTile: 3 }],
+      grafts: [{ targetTile: 64, sourceChipset: "tex_beodeul_city", sourceTile: 3 }],
     }, { dryRun: false });
     expect(rejected.ok).toBe(false);
     expect(rejected.issues?.[0]?.message ?? "").toContain("0~31");
