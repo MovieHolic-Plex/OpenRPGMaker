@@ -5,6 +5,19 @@
 
 <!-- releases -->
 
+## 0.337.0 — 2026-10-25
+
+### 기능
+
+- **fallen-star** — act-1 battle, field and save fixes for 1.21 (general tools) (#3435) (`24526a3`)
+
+### 수정
+
+- **editor** — move_event 길막힘 경고가 pages 없는 이벤트에서 죽지 않게 (#3437) (`a405302`)
+- **ai** — cutscene critic gets a real repair round, first place revert keeps a retry, move_event warns when it cuts a path (#3436) (`523ed7f`)
+- **ci** — css 게이트를 초록으로 — 죽은 규칙·표면 소유 누락을 고치고 래칫을 현재 트리로 올린다 (#3434) (`86bd519`)
+- **ai** — stop picture searches after 3 misses, keep title preset effects off foreign art, name a dead worker (#3433) (`3a758ca`)
+
 ## 0.336.0 — 2026-10-25
 
 ### 기능
