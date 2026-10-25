@@ -8,11 +8,12 @@ import { emptySpatialLibrary } from "../../src/project/spatial/resolve";
 import seed7 from "../fixtures/spatial-projections/seed-7.json";
 import seed19 from "../fixtures/spatial-projections/seed-19.json";
 import seed31 from "../fixtures/spatial-projections/seed-31.json";
+import { withRetiredEasyRpgTilesets } from "./retiredEasyRpgTilesets";
 
 /** Saved parent probe output, never compiler-shaped output manufactured by this test. */
 export function savedProjectionInput(seed: 7 | 19 | 31 = 7) {
   const saved = { 7: seed7, 19: seed19, 31: seed31 }[seed];
-  const blank = createBlankProject();
+  const blank = withRetiredEasyRpgTilesets(createBlankProject());
   const project = deserialize(JSON.stringify({ ...blank, maps: { ...blank.maps, [saved.map.id]: saved.map }, spatialAuthoring: saved.spatialAuthoring }));
   const document = project.spatialAuthoring;
   assert.ok(document);

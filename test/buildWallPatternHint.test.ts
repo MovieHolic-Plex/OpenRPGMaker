@@ -2,10 +2,11 @@
 import { describe, expect, it } from "vitest";
 import { runTool } from "@/editor/tools/toolRunner";
 import { createBlankProject } from "@/project/defaults";
+import { withRetiredEasyRpgTilesets } from "./support/retiredEasyRpgTilesets";
 
 describe("build_wall 패턴 없는 벽 재료", () => {
   it("쓸 수 있는 경로(place_concept)를 짚고 같은 재료 재시도를 막는다", () => {
-    const ctx = { project: createBlankProject() };
+    const ctx = { project: withRetiredEasyRpgTilesets(createBlankProject()) };
     const mapId = ctx.project.startMapId;
     const set = runTool(ctx, "set_map_properties", { mapId, tilesetId: "easyrpg_chipset_interior" });
     expect(set.ok, set.summary).toBe(true);

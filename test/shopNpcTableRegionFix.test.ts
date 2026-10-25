@@ -4,9 +4,10 @@ import { runTool, type ToolContext } from "@/editor/tools";
 import { createBlankProject } from "@/project/defaults";
 import { INTERIOR_ROOM_TILESET_ID } from "@/editor/interiorRoomPipeline";
 import { TILE } from "@/project/defaults/constants";
+import { withRetiredEasyRpgTilesets } from "./support/retiredEasyRpgTilesets";
 
 function interiorHutContext(): ToolContext {
-  const project = createBlankProject();
+  const project = withRetiredEasyRpgTilesets(createBlankProject());
   const mapId = "map_rp_hut_v1";
   const w = 10;
   const h = 9;
