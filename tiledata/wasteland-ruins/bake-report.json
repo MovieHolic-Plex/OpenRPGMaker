@@ -3,7 +3,7 @@
   "violations": 0,
   "by_code": {},
   "examples": {},
-  "tiles_checked": 2568,
+  "tiles_checked": 2636,
   "kits_checked": 70,
   "groups_checked": 27,
   "autotiles_checked": 1
@@ -17,8 +17,8 @@
   "cells_off_palette": 0
  },
  "tiles": {
-  "count": 2568,
-  "rows": 54,
+  "count": 2636,
+  "rows": 55,
   "kits": 70,
   "groups": 27,
   "autotiles": 1,
@@ -64,9 +64,29 @@
    "why": "감독 결정으로 키트에서 뺌"
   },
   {
+   "id": "dirt-b62",
+   "status": "skipped",
+   "why": "감독 결정으로 키트에서 뺌"
+  },
+  {
+   "id": "dirt-c62",
+   "status": "skipped",
+   "why": "감독 결정으로 키트에서 뺌"
+  },
+  {
+   "id": "dirt-d62",
+   "status": "skipped",
+   "why": "감독 결정으로 키트에서 뺌"
+  },
+  {
    "id": "asphalt",
-   "status": "pass",
-   "why": "판정 프로필 4d8774b517f41638 가 보정되지 않았다 — AI 판정(pass)은 조언일 뿐이다. Opus 최종 판정(object-gate final-review)을 받아라"
+   "status": "none",
+   "why": "3/4·화풍 판정 영수증이 없다 — object-gate final-review 로 Opus 최종 판정을 받아라"
+  },
+  {
+   "id": "asphalt-ph62",
+   "status": "skipped",
+   "why": "감독 결정으로 키트에서 뺌"
   },
   {
    "id": "asphalt-in-ne",

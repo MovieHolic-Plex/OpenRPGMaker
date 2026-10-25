@@ -1,0 +1,444 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ce9133a73550068864fb038b6c4ea4d704719b26d24feb5023a3412739c52716",
+ "width": 48,
+ "height": 80,
+ "kind": "structure",
+ "name": "two-level scrap shack seen from above: a small upper room with a blue tarp roof and its own front wall with a window and a doorway sits on the back of the flat plywood roof of the lower room, the lower roof forms a walkable deck in front of it with a short rail and a water drum, a wooden ladder leans on the lower front wall of rusty sheets and planks with a door and a window",
+ "label": "wasteland_ruins/shack-2f",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 독립 눈이 「3/4 아님」 2/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면",
+  "화풍: 판정자 fail (3/4)"
+ ],
+ "view34": {
+  "verdict": "refer",
+  "reasons": [
+   "독립 눈이 「3/4 아님」 2/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면"
+  ]
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (3/4)"
+  ],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 6,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "wasteland_ruins",
+   "fallback": true,
+   "reason": "칩셋 wasteland_ruins 의 화풍 기준 묶음이 없다",
+   "hash": "5f62fef078ef7661"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 13,
+  "tileColorsP90": 18,
+  "darkV5": 35,
+  "nearBlackEdge": 0.03,
+  "opaqueTiles": 13
+ },
+ "eye": {
+  "verdicts": [
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "wrong",
+   "borderline",
+   "borderline",
+   "wrong",
+   "borderline",
+   "borderline",
+   "borderline",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "blue tarp roof of upper room",
+      "rows": "0-9",
+      "evidence": "c",
+      "front_edge_line_row": 9,
+      "eave_shadow_rows": "10-12"
+     },
+     {
+      "part": "upper room front wall with window and doorway",
+      "rows": "13-39",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower plywood roof deck (walkable)",
+      "rows": "25-46",
+      "evidence": "a",
+      "front_edge_line_row": 45,
+      "eave_shadow_rows": "47-48"
+     },
+     {
+      "part": "water drum on deck",
+      "rows": "29-39",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "short rail on deck",
+      "rows": "35-42",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower front wall with door, window, rusty sheets and ladder",
+      "rows": "48-77",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 21,
+    "front_face_rows": 30,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The lower room's plywood roof forms a deck of about 21 rows (25-46). It ends in a light front-edge line at row 45, with dark shadow at rows 47-48 above the lower front wall (rows 48-77, about 30 rows). The upper room has a sloped blue tarp roof at rows 0-9, with a light edge line at row 9 and eave shadow at rows 10-12, above its own front wall. Both major volumes show a top surface and a front face. The water drum and rail are decor on the deck."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The measured facts are close to the references: 13 visible tones per tile against 12 and 10, 5% near-flat coverage against 0%, and 0% neutral dark edge pixels, so the outlines are tinted (dark brown beside wood, dark blue beside the tarp) rather than near-black. By eye, the candidate is a small, busy two-level prop-like building. The tarp roof, plywood deck, and planks show about 3-4 lightness steps each, against the 5-6 steps of the reference tile roofs and plaster. Texture is present as plank grain, rust patches and tarp folds, but it is coarser and less varied than the per-tile scallops and per-stone shading of the references. There are no large flat fills, though the plywood deck and parts of the lower wall come close. Overall it is competent and rich enough in tones, but the shading ramps are shallower than Beodeul and the material detail is less refined, so it does not quite match the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 14982
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "upper room blue tarp roof",
+      "rows": "0-9",
+      "evidence": "c",
+      "front_edge_line_row": 9,
+      "eave_shadow_rows": "10-12"
+     },
+     {
+      "part": "lower room plywood roof / walkable deck",
+      "rows": "25-46",
+      "evidence": "a",
+      "front_edge_line_row": 45,
+      "eave_shadow_rows": "47-48"
+     },
+     {
+      "part": "water drum on deck",
+      "rows": "29-38",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "short rail on deck",
+      "rows": "35-39",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 21,
+    "front_face_rows": 30,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is the lower room. Its flat plywood roof is a deck that runs from about row 25 to row 46, about 21 rows. A light front-edge line sits at row 45 (#ddbf91), and a dark eave shadow follows at rows 47-48. Below it the front wall of rusty sheets and planks, with a door and a window, runs from row 49 to row 78, about 30 rows. The upper room has a blue tarp roof plane at rows 0-9. Its edge line is at row 9 (#a1b2ae) with a dark shadow at rows 10-12, and its front wall is below that. Both volumes therefore show a top surface and a front face. The water drum and rail sit on the deck and are decor. The ladder is a vertical attachment on the front wall."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The measured facts are close to the references: 13 visible tones per tile against 12 and 10, 5% near-flat coverage against 0%, and 0% neutral dark edge pixels, so the outlines are tinted (dark brown beside wood, dark blue beside the tarp) and not a black sticker line. Even so, by eye the candidate is shallower than the references. Each material ramp has about 3-4 steps (tarp, plywood deck, rusty sheets, planks) against 5-6 for the roof tiles and plaster in the references. The plywood deck and lower wall have only light grain and little per-plank or per-sheet highlighting. The tarp is a fairly flat blue with a few highlights, with no tile-like scallop or clump texture. The small props (drum, rail, ladder) are readable but simple. The candidate is a smaller, busier piece, so per-tile tone counts hold up, but the shading craft is a step below Beodeul's roof and wall rendering. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 14245
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "upper room blue tarp roof",
+      "rows": "0-10",
+      "evidence": "c",
+      "front_edge_line_row": 9,
+      "eave_shadow_rows": "10-12"
+     },
+     {
+      "part": "lower room plywood roof deck (walkable, with rail)",
+      "rows": "25-46",
+      "evidence": "a",
+      "front_edge_line_row": 45,
+      "eave_shadow_rows": "47-49"
+     },
+     {
+      "part": "water drum on deck",
+      "rows": "29-38",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 21,
+    "front_face_rows": 29,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is the lower room. Its plywood roof deck covers rows 25-46 and the width jumps from 28 to 46-48 at row 25. The deck ends in a light front-edge line at row 45, with dark eave shadow at rows 47-49. Below that the rusty front wall (door, window, planks) runs rows 48-77, about 29 rows. The upper room also has a sloped blue tarp roof at rows 0-10, with a light edge line at row 9 and shadow at rows 10-12, above its own front wall at rows 13-39. Both volumes show a top surface and a front face, so this is a three-quarter view. No receding side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The measured facts put the candidate at or above both references. It has 13 visible tones per 16x16 tile against 12 and 10 for the references. Near-flat coverage is 5% against 0%, which is only a small flat area, probably on the plywood deck. Its dark edge pixels are 0% neutral, so the outlines lean brown, rust or blue-dark rather than black, and I read them as dark material tones. By eye, the rusty sheets, planks, ladder, rail, drum and tarp are each separated by value, with plank grain and rust variation. Each material ramp has about 4 steps, a little shallower than the references' 5-6, and there are no tile scallops. That is reasonable for scrap-metal and tarp materials at this small size. It is not a sticker-look piece and would sit acceptably next to the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17720
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "blue tarp roof of upper room",
+      "rows": "0-10",
+      "evidence": "c",
+      "front_edge_line_row": 9,
+      "eave_shadow_rows": "10-12"
+     },
+     {
+      "part": "lower plywood roof deck (walkable top of lower room)",
+      "rows": "25-45",
+      "evidence": "a",
+      "front_edge_line_row": 45,
+      "eave_shadow_rows": "48-49"
+     },
+     {
+      "part": "water drum on deck",
+      "rows": "29-38",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "upper room front wall with window and doorway",
+      "rows": "13-39",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower front wall (rusty sheets and planks, door, window)",
+      "rows": "50-77",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 21,
+    "front_face_rows": 28,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is the lower room. Its plywood roof deck covers rows 25-45, about 21 rows. It is seen from above and ends in a light front-edge line at row 45. Rows 46-47 are a thin edge face, and rows 48-49 are dark eave shadow. Below that, the vertical front wall runs rows 50-77 (28 rows) with a door and window. The upper room has its own sloped blue tarp roof at rows 0-10, which ends in a light edge line at row 9 and a dark shadow at rows 10-12. Its front wall is drawn below that. The water drum on the deck is decor. Both roofs read as top surfaces, so the structure is three-quarter view. The silhouette shows no receding side face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "Measured facts are on par with the references: 13 visible tones per tile against 12 and 10, 5% near-flat coverage, and 0% neutral dark edge pixels. That makes the outlines tinted (dark brown beside wood, dark blue beside the tarp) rather than a black sticker line. By eye the candidate is a small, busy two-level composition. The plywood deck, rusty sheets and planks show some grain and variation, but each material ramp has only about 4 steps, against the 5-6 steps in the references' tile roofs, plaster speckle and stones shaded one by one. The blue tarp and the ladder are fairly simple. The candidate is smaller and sparser than the references, with no per-tile highlights or speckle, so it reads a little thinner and flatter than the Beodeul standard even though it is not a flat fill. Under the when-in-doubt-fail rule it falls just short.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 15035
+  }
+ ],
+ "decidedAt": "2026-10-25T13:02:59.382Z",
+ "cells": {
+  "16": [
+   "268681c6d92ac73b",
+   "29c54f75ee2379d6",
+   "62003c14d07395d4",
+   "722fdf149560b73d",
+   "7ba431388353ece3",
+   "8c10d9a6bbf87839",
+   "9696e11e09e5b51c",
+   "a7d8b3dfd4cc7f4e",
+   "cf58073fd06c3ac2",
+   "d2f29295782f5137",
+   "d33db4a225f0037b",
+   "db9d0669c9d6140a",
+   "ec16aa835df421e0",
+   "f1e5640500fc9bb0"
+  ],
+  "24": [
+   "030bbff46c77db37",
+   "23411c13ae62325c",
+   "28666abc3276a2d1",
+   "3b059a648be114ea",
+   "5337a6924861b74c",
+   "5a4aabea1d0a28c6",
+   "626c519a5c32db48",
+   "66c8ef5e6e811430",
+   "773a2e6a9a43b465",
+   "77a7316b4df0794a",
+   "7a6f3de1c5a43248",
+   "7cbd1b79fff00a73",
+   "83b0083c2a633f12",
+   "88da2fadb28ac425",
+   "ea39c4dc0fd70803",
+   "fde0bd1a05ff26a7"
+  ],
+  "32": [
+   "1953e2caa111f214",
+   "1c6c4090acd3df1b",
+   "22783ac5829e84a8",
+   "276ad10a7fedc7c8",
+   "2d11ae2e9a5a4fe5",
+   "2d722de0d97b6dc6",
+   "2f9245cb0adb4238",
+   "32256cfa94cdf05d",
+   "410de0da68c5b059",
+   "41c47c48cb96e998",
+   "5bd1b52a96c8d5c6",
+   "6993ca924267c486",
+   "731e0528e2fb6ead",
+   "7a528946e7bf992e",
+   "7ff2e29dffba9ef4",
+   "842d6e6550cd50a9",
+   "889daf39b635ef10",
+   "92a5643ce9effa26",
+   "962d2c06a4893a97",
+   "a70f4b5caf758cee",
+   "a9023cb745dded08",
+   "bdedc77b0d7939ea",
+   "bed8cb0983722124",
+   "c477f264c42d9bcc",
+   "cb46040b4503707e",
+   "cbb7315778aa7550",
+   "d697b92e4533ae25",
+   "dfc25ba3098cf5d1",
+   "e135217c6fc09c76",
+   "ea00efd5d9c71c10",
+   "ebe1862aa2266cfa",
+   "edf2f3d07b730b9c",
+   "f0e95a1e2cd266d2",
+   "f5ac71d053b3e5f6",
+   "fbcea34b2401ac6d"
+  ],
+  "48": [
+   "01990effef431427",
+   "4da4507cbbd0adfe",
+   "65f89283e25c66d0",
+   "86252f37e91d03d4"
+  ]
+ }
+}

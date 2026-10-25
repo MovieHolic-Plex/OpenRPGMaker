@@ -58,7 +58,7 @@ def cell_pcs(p, a):
     return out
 
 
-SKIP = {'dirt-a', 'dirt-b45', 'dirt-b64', 'dirt-c64', 'dirt-d64', 'asphalt-b', 'asphalt-c', 'track', 'slab-edge', 'slab-break'} | {'asphalt-in-' + '-'.join(c) for n in range(1, 5) for c in __import__('itertools').combinations(('ne', 'nw', 'se', 'sw'), n)} | {'wall-h3', 'rubble-pile-b', 'husk-f', 'hut-tyre'}  # r57: hut-tyre 검수자 FAIL(다시 그리기 3번 소진, 타이어 벽이 돌담으로 읽힘) · r54 실패: 안쪽 귀 15조각 전부 뺌(감독 지시 「귀 없는 편이 낫다」) · r55: 관문 통과지만 검수자 FAIL 이라 굽지 않음 · r56: husk-f 관문 PASS 지만 검수자 FAIL(다시 그리기 3번 소진)          # 키트에서 뺀 조각(감독 결정) — 표본 바탕으로만 남고 굽지 않는다(번호도 새로 잡지 않는다)
+SKIP = {'dirt-a', 'dirt-b45', 'dirt-b62', 'dirt-c62', 'dirt-d62', 'asphalt-ph62', 'dirt-b64', 'dirt-c64', 'dirt-d64', 'asphalt-b', 'asphalt-c', 'track', 'slab-edge', 'slab-break'} | {'asphalt-in-' + '-'.join(c) for n in range(1, 5) for c in __import__('itertools').combinations(('ne', 'nw', 'se', 'sw'), n)} | {'wall-h3', 'rubble-pile-b', 'husk-f', 'hut-tyre'}  # r57: hut-tyre 검수자 FAIL(다시 그리기 3번 소진, 타이어 벽이 돌담으로 읽힘) · r54 실패: 안쪽 귀 15조각 전부 뺌(감독 지시 「귀 없는 편이 낫다」) · r55: 관문 통과지만 검수자 FAIL 이라 굽지 않음 · r56: husk-f 관문 PASS 지만 검수자 FAIL(다시 그리기 3번 소진)          # 키트에서 뺀 조각(감독 결정) — 표본 바탕으로만 남고 굽지 않는다(번호도 새로 잡지 않는다)
 
 
 def adopt(dev):

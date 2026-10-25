@@ -1,0 +1,419 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f17f11e6fce25dce6ac4adfa3dcb8bcd59aa84b6d81a094d346837f140cef33f",
+ "width": 48,
+ "height": 48,
+ "kind": "structure",
+ "name": "ragged tarp tent seen from above: a patched tarp thrown over a ridge pole on two upright poles, both sloped tarp planes visible from above, open front end showing a crate inside, guy ropes to stakes",
+ "label": "wasteland_ruins/tent-tarp",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 독립 눈이 「3/4 아님」 7/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면",
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 평면 채움 (4/4)",
+  "화풍: 명암 3단 < 4 (2/4)"
+ ],
+ "view34": {
+  "verdict": "refer",
+  "reasons": [
+   "독립 눈이 「3/4 아님」 7/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면"
+  ]
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "평면 채움 (4/4)",
+   "명암 3단 < 4 (2/4)"
+  ],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 5,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "wasteland_ruins",
+   "fallback": true,
+   "reason": "칩셋 wasteland_ruins 의 화풍 기준 묶음이 없다",
+   "hash": "5f62fef078ef7661"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 12,
+  "tileColorsP90": 16,
+  "darkV5": 32,
+  "nearBlackEdge": 0.41,
+  "opaqueTiles": 6
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "borderline",
+   "borderline",
+   "wrong",
+   "borderline",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "borderline",
+   "wrong",
+   "borderline"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "left tarp slope",
+      "rows": "10-40",
+      "evidence": "c",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": "22-31"
+     },
+     {
+      "part": "right tarp slope",
+      "rows": "10-40",
+      "evidence": "c",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": "22-31"
+     },
+     {
+      "part": "ridge pole tip",
+      "rows": "5-9",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "crate inside the open front",
+      "rows": "30-40",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 20,
+    "front_face_rows": 12,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette widens steadily from the ridge at rows 10-21 (width 6 to 43). Two large sloped tarp planes with patches and a light ridge highlight run down both sides to about row 40, which is a roof/canopy top surface (c). Below the sloped edges at rows 22-42 the dark open front shows the crate and the upright pole, which is the south face (about 12+ rows). Guy ropes and stakes are small details at rows 43-47. The tarp planes are clearly visible from above, so this is not a flat front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate's dark edge pixels are 0% neutral, so the outline is a tinted dark teal/brown rather than a black sticker line. Its 11 visible tones per tile match the references (12 and 10), so tile density is close. The weaker points are shading depth and flat areas. The two tarp planes carry only about 3-4 teal steps, against 5-6 per material on the references, and the planes read as broad smooth fills with a few patch and seam marks. 20% of its pixels sit in flat 5x5 blocks, against 0% on both references. It has only 21 distinct colours in total, against 66 and 185, so it has no per-tile highlights, speckle or grain like the reference roof tiles, plaster and stone. The crate and poles are small and simple. Overall it is clean and not sticker-like, but it is flatter and shallower than the Beodeul standard. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 18559
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "left tarp slope",
+      "rows": "10-40",
+      "evidence": "c",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "right tarp slope",
+      "rows": "10-40",
+      "evidence": "c",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "ridge pole tip and upright pole",
+      "rows": "5-40",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "crate inside open front",
+      "rows": "29-40",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 30,
+    "front_face_rows": 19,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette widens steadily from the ridge at rows 10-21 and then holds near 40-43 px wide through row 42. This is a pitched tarp roof with two sloped planes meeting at the ridge pole (rows 5-9) and split by the ridge line at x~24-28. The planes carry patches, folds and a teal light/dark shading difference, so they read as roof planes (evidence c) rather than a vertical face. Below, the open triangular front (rows ~22-40) shows the dark interior, the upright pole and a crate, which is about 19 rows of front face. The bottom edge at rows 40-42 is a dark line, and the guy ropes and stakes at rows 43-47 are minor details. Because the roof planes are large and clearly drawn above a front face, this is a 3/4 view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small tent on the board, much smaller than the references. Its measured numbers are close to the references: 11 visible tones per tile against 12 and 10, and dark edge pixels are 0% neutral, so the outline leans teal/dark material and is not a black sticker line. But the measured near-flat coverage is 20% against 0% for both references, and the picture agrees. The two tarp planes read as broad teal fills with only about 3 lightness steps, where Beodeul roofs use 5-6 with per-tile scallops and highlights. There is some patch and crate detail and the guy ropes are thin, but the tarp surfaces lack grain, speckle or per-patch shading. Raw colours total only 21 against 66 and 185. It is clean and tinted but flatter and shallower than the references, and when in doubt it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 18002
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "left tarp plane",
+      "rows": "10-40",
+      "evidence": "c",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "right tarp plane",
+      "rows": "10-40",
+      "evidence": "c",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "ridge pole tip",
+      "rows": "5-9",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "crate inside opening",
+      "rows": "30-40",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 20,
+    "front_face_rows": 19,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette widens from a ridge at rows 5-10 to full width at row 21. Two sloped tarp planes (rows 10-40, teal with patches and a lighter ridge highlight at x=24 rows 9-22) are drawn as roof surfaces on either side of the ridge pole. The dark triangular opening at rows 22-42 (about 19 rows) is the south front face, with the upright pole and a crate inside. The roof planes are diagonal and have no horizontal front-edge line, but they are sloped planes above the opening, so they count as evidence (c)."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small teal tarp tent with two sloped planes, an open front showing a crate, and guy ropes. Measured facts are close to the references: 11 visible tones per tile against 12 and 10, and dark edge pixels are 0% neutral, so the outline is tinted (dark teal and brown) rather than black. That part passes. The weaknesses are structural. The tarp planes show only about 3 teal steps, where the references use 5-6 per material. There are no per-tile highlights or scallops, only a few patch marks and seam lines. 20% near-flat coverage against 0% in both references means visible flat teal areas on the tarp. The piece is small and simple, which is acceptable for a tent, but the shading is shallower and flatter than the roofs in the references. A careful artist would likely see it as thinner than the reference when placed next to it.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 20264
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "left tarp slope",
+      "rows": "10-40",
+      "evidence": "c",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "right tarp slope",
+      "rows": "10-40",
+      "evidence": "c",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "ridge pole and upright pole",
+      "rows": "5-40",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "crate inside the open front",
+      "rows": "29-40",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 20,
+    "front_face_rows": 14,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette widens steadily from 3 px at row 5 to 43 px at row 21. This is a roof that recedes from the ridge at the back toward the viewer, so the tarp planes are seen from above. Both sloped tarp planes show their own tile and patch rows and a light ridge line down x=24 at rows 9-22. Their lower edges run diagonally down to the stakes at rows 22-40 and enclose a dark triangular opening. The opening is the front (south) face, about rows 26-42, and shows the crate. The tarp planes are the main top surface and are clearly more than a rim. The crate is treated as decor."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The outline is a dark teal/brown lean with 0% neutral edge pixels, so it is tinted by material and not a black sticker line. Visible tones per tile are 11 against 12 and 10 for the references, so density is nearly level on that count. The tarp planes are weaker: each has only about 3-4 lightness steps (light plane, dark plane, a few patch accents) against the roughly 6 per material on the tile roofs. The two big sloped planes read as mostly flat teal with sparse patch and seam dots, with no per-tile highlight or grain rhythm. Near-flat coverage is 20% against 0% for both references, and the exact 5x5 flat fill is 17% against 0%. With so few raw colours (21 in total against 66 and 185), the piece is clearly flatter and simpler than the references. When in doubt, fail, so this fails narrowly on shallow ramps and flat tarp areas despite the tinted outline and comparable tone count.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 22567
+  }
+ ],
+ "decidedAt": "2026-10-25T13:02:59.306Z",
+ "cells": {
+  "16": [
+   "47bd8f06d26142c6",
+   "5ec6182f0463f9fe",
+   "7372950e60203c71",
+   "b40590257dce13e7",
+   "dce0535ca0396a5d",
+   "de46f9f6d3208232",
+   "e284464c2425cc91",
+   "f610e41d0c1d19a3",
+   "f65ce595b7156039"
+  ],
+  "24": [
+   "0f8e6cb172ae9611",
+   "3d7acc69e53eef25",
+   "3e8f30831013c3d8",
+   "ef45612293d54cf7"
+  ],
+  "32": [
+   "069594e61b63c71e",
+   "0803563890393da1",
+   "11893a2c34263069",
+   "11a4e139af3462d8",
+   "3f52b4f1fb5cf60c",
+   "4eee5b1dac2bf7ab",
+   "54fd4549045db7d9",
+   "6562d8d1ebb7415c",
+   "6f5cfee586e7dcaf",
+   "71be5097b034fd1e",
+   "7812e24ef5e8bca9",
+   "7d7c1cba166e781c",
+   "8697e72b32983e76",
+   "8ca0c0729f5f2ac5",
+   "95b451c07a741c82",
+   "96ea1d1d7dcadacf",
+   "a13d820941e28c95",
+   "c868d2df450b699a",
+   "d7096008cc5b1c9f",
+   "e102241af7c8df37",
+   "e3c96464f9fa7efc",
+   "ea3ae3cbafed046d",
+   "edf6ef00c2d64680",
+   "ef6527dba857fdf6"
+  ],
+  "48": [
+   "4dcfb1a3b5aad1f4"
+  ]
+ }
+}

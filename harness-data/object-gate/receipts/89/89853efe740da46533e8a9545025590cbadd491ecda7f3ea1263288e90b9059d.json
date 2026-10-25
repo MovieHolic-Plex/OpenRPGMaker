@@ -1,0 +1,372 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "89853efe740da46533e8a9545025590cbadd491ecda7f3ea1263288e90b9059d",
+ "width": 16,
+ "height": 48,
+ "kind": "column",
+ "name": "bent broken street lamp: round concrete base plate seen from above, rusty pole bent over to the side, with a wide oval lamp hood plate hanging at the end",
+ "label": "wasteland_ruins/lamp-broken",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "wasteland_ruins",
+   "fallback": true,
+   "reason": "칩셋 wasteland_ruins 의 화풍 기준 묶음이 없다",
+   "hash": "2ad36264365ed8d5"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 18,
+  "tileColorsP90": 18,
+  "darkV5": 33,
+  "nearBlackEdge": 0.25,
+  "opaqueTiles": 1
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "east",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "lamp hood oval plate at the end of the bent arm",
+      "rows": "6-13",
+      "evidence": "b",
+      "front_edge_line_row": 13,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "round concrete base plate",
+      "rows": "41-46",
+      "evidence": "b",
+      "front_edge_line_row": 46,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "rusty bent pole with rust bands",
+      "rows": "14-40",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 8,
+    "front_face_rows": 27,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": {
+     "cap_rows": 8,
+     "cap_width": 14,
+     "shaft_width": 5,
+     "rounded_at_both_edges": true
+    },
+    "reads_as": "three_quarter",
+    "evidence": "The hood at rows 6-13 has a width profile of 11,13,14,14,14,13,10,8. It widens and then narrows again, so it reads as an oval plate overhanging the 5px shaft, though its top edge joins the arm and starts fairly wide. The base at rows 41-46 has widths 6,12,11,14,14,11, which is an ellipse seen from above. The pole runs about 27 rows (14-40) with rust bands and reads as a vertical face, so the object has top surfaces and a front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate measures 17 visible tones per tile against 17-20 for the stall and well references. Near-flat coverage is 0% and 0% of its dark edge pixels are neutral, so the outline is tinted and not a black sticker line. By eye the piece is a thin pole with a small base plate and a lamp hood. The pole shows only about 3-4 steps of rust and grey, with a few grain dots. The concrete base reads as a mostly smooth disc with limited stone-by-stone shading, and the hood plate is simple. It is cleanly drawn but looks a bit thinner and flatter than the well and stall references, which carry per-plank, per-stone and per-tile texture. On a thin prop I would not fail it for sparseness alone, but the shading ramps are shallower than Beodeul's 5-6 steps per material. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 18184
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "lamp hood oval plate (top right)",
+      "rows": "6-13",
+      "evidence": "b",
+      "front_edge_line_row": 11,
+      "eave_shadow_rows": "12-13"
+     },
+     {
+      "part": "concrete base plate",
+      "rows": "41-46",
+      "evidence": "b",
+      "front_edge_line_row": 44,
+      "eave_shadow_rows": "46-46"
+     },
+     {
+      "part": "bent rusty pole",
+      "rows": "2-40",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 7,
+    "front_face_rows": 27,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": {
+     "cap_rows": 7,
+     "cap_width": 14,
+     "shaft_width": 5,
+     "rounded_at_both_edges": true
+    },
+    "reads_as": "three_quarter",
+    "evidence": "The width profile at the lamp hood runs 11,13,14,14,14,13,10,8 over rows 6-13. It widens and narrows again, so it is an ellipse plate that overhangs the 5px pole, which is 4-6 px wide over rows 18-40. The hood shows a lighter top surface at rows 6-8, an edge line near row 11 and darker shadow rows 12-13. The base plate (rows 41-46) widens 6,12,11,14,14,11 and shows a lighter top face over rows 41-43 and a darker front rim at rows 44-46. The pole is a vertical face of about 27 rows (rows 13-40) with rust bands. The hood hangs to the side rather than sitting on top of the shaft, but it still reads as an elliptical cap plate."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate has about 17 visible tones per tile, level with the richest references (stall 17, well 20) and well above the hedge (9). Its near-flat coverage is 0% and none of its dark edge pixels are neutral, so the outlines carry a tint (dark rusty or teal-grey) instead of a black sticker line. The pole is shaded with highlight, mid, dark and rust-band steps, and the base plate and hood plate show grain and variation rather than flat fills. It is clearly richer than the thin prop-lamp-crook reference, which has a fully neutral outline. It is slightly less textured than the well or stall, but a careful artist would accept it next to the references. Hue is not judged.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16800
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "lamp hood plate (oval, hanging at the bent end)",
+      "rows": "6-13",
+      "evidence": "b",
+      "front_edge_line_row": 11,
+      "eave_shadow_rows": "12-13"
+     },
+     {
+      "part": "bent upper pole arch",
+      "rows": "1-5",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "pole shaft with rust bands",
+      "rows": "14-40",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "round concrete base plate",
+      "rows": "41-46",
+      "evidence": "b",
+      "front_edge_line_row": 45,
+      "eave_shadow_rows": "46"
+     }
+    ],
+    "main_top_rows": 8,
+    "front_face_rows": 27,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": {
+     "cap_rows": 8,
+     "cap_width": 14,
+     "shaft_width": 5,
+     "rounded_at_both_edges": true
+    },
+    "reads_as": "three_quarter",
+    "evidence": "The hood (rows 6-13) overhangs the 5px shaft. Its width profile runs 5, 11, 13, 14, 14, 14, 13, 10, 8, 7, so it widens and then narrows again, an ellipse-like plate with a light top at rows 6-8 and a dark underside at rows 10-13. The shaft (rows 14-40, width 4-6) is a vertical front face with rust bands. The base plate (rows 41-46) is also an ellipse: widths 6, 12, 11, 14, 14, 11 with a light top and a dark lower edge at row 46. The pole bends at the top (rows 1-5) and is drawn as a vertical strip."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate has 17 visible tones per 16x16 tile, level with the cheese stall (17) and close to the well (20), and above the hedge (9). The thin lamp-crook reference measures 0 on this fact, so it is no use as a comparison. Near-flat coverage is 0%, so there are no flat fills. The 0% near-neutral dark edge share means the outline is tinted (rust-brown and grey-blue), not a uniform black sticker line. By eye, the pole, rust bands, concrete base plate and oval hood are each shaded in roughly 4-5 steps with rust speckle and highlight/shadow sides, which is a similar craft level to the references. The texture is somewhat less rich than the stall and well, and the image is small, so my judgment of fine detail is limited. A careful artist would accept it next to the references without it looking flatter or more sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18872
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "lamp hood plate (oval, at the bent end of the pole)",
+      "rows": "6-12",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "rusty pole bent over to the side",
+      "rows": "2-40",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "round concrete base plate",
+      "rows": "42-46",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 7,
+    "front_face_rows": 28,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": {
+     "cap_rows": 7,
+     "cap_width": 14,
+     "shaft_width": 5,
+     "rounded_at_both_edges": true
+    },
+    "reads_as": "three_quarter",
+    "evidence": "The width profile of the hood runs 5, 11, 13, 14, 14, 14, 13, 10, 8 over rows 5-13. It widens and then narrows again, which makes an oval plate about 7 rows tall and 14 wide, overhanging the 5-wide pole. The narrowing below it is gradual where it joins the bent pole, so the lower edge is less crisply rounded than the upper edge, but the plate still reads as an ellipse. The base widens and narrows over rows 41-46 (6, 12, 11, 14, 14, 11), which reads as a round plate seen from above. The pole is a 5-wide vertical shaft spanning about rows 13-40, which gives a front face of well over 3 rows."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate carries 17 visible tones per 16x16 tile, the same as prop-stall-cheese and close to prop-well-roofed (20), and well above the thin prop-lamp-crook, which measures 0 because it is sparse. Near-flat coverage is 0%. Dark edge pixels are 0% neutral, so the outline leans toward the material (dark rust-brown and blue-grey beside the pole and hood) rather than a black sticker line. By eye, the pole has a lit and a shadowed side with rust patches breaking up the grey. The round base plate has visible rim and top-face steps. The hood plate is shaded in several steps, not drawn as a flat oval. Shading is slightly shallower than the best references, at about 4 steps per material, but there are no large flat fills. A careful artist would accept it beside the lamp-crook reference and it does not look thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 25167
+  }
+ ],
+ "decidedAt": "2026-10-25T13:02:59.343Z",
+ "cells": {
+  "16": [
+   "63521a68d7f59b42",
+   "7aab2569824f2d7e",
+   "9f5c244184940812"
+  ],
+  "24": [
+   "215fd4272d8cccb3",
+   "2201fd94477c4126",
+   "2c374701e37167de",
+   "9806bebaf359ead5",
+   "b2017ea3cf05530b",
+   "f4fc2ea578a3f88d"
+  ],
+  "32": [
+   "25110c3e7f0c44c3",
+   "300b8ca213221020",
+   "390b2740e732729d",
+   "414f13eac8d3e8b4",
+   "48929568431b5a70",
+   "5290841253abf18b",
+   "52a85cba28412487",
+   "5868d6151f64f48c",
+   "7a13c865b28f405c",
+   "96241ef303a8ba4b",
+   "a1a51028d2fa1d33",
+   "d64f61c76852a6be"
+  ],
+  "48": [
+   "0bad9f2993d88e66",
+   "1a0b4d78c7b3d96e",
+   "e89a7e33762ab87b"
+  ]
+ }
+}

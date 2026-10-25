@@ -1,0 +1,92 @@
+[
+ {
+  "sha": "3165d9da74f438267550b3889e2f346866b3f3be2ef5aa058a7d285ee881ebb4",
+  "id": "dirt-b",
+  "evidence": "/home/main/z-project/rpg-zzu-village-art/tiledata/wasteland-ruins/_review/r63/review2/verdict-S.md",
+  "note": "wasteland_ruins/dirt-b r63; object-gate PASS; r63 scale/floor fix; independent adversarial reviewer Sonnet 5.5 review2 PASS for this piece (verdict-S.md); review limited to one Sonnet reviewer by user"
+ },
+ {
+  "sha": "27dc397807ca748f398ad527bf4c92407daa2ca68a4093d4e1373536b757a865",
+  "id": "dirt-c",
+  "evidence": "/home/main/z-project/rpg-zzu-village-art/tiledata/wasteland-ruins/_review/r63/review2/verdict-S.md",
+  "note": "wasteland_ruins/dirt-c r63; object-gate PASS; r63 scale/floor fix; independent adversarial reviewer Sonnet 5.5 review2 PASS for this piece (verdict-S.md); review limited to one Sonnet reviewer by user"
+ },
+ {
+  "sha": "1ca511455a45fc54f25493fd5cae751b1cceedd55a406e6c96ce438ad890fa4f",
+  "id": "dirt-d",
+  "evidence": "/home/main/z-project/rpg-zzu-village-art/tiledata/wasteland-ruins/_review/r63/review2/verdict-S.md",
+  "note": "wasteland_ruins/dirt-d r63; object-gate PASS; r63 scale/floor fix; independent adversarial reviewer Sonnet 5.5 review2 PASS for this piece (verdict-S.md); review limited to one Sonnet reviewer by user"
+ },
+ {
+  "sha": "4bca64923d5ba45b2c388c947a652ab440bdd717f69b4cb3fceed8f129a9e6ee",
+  "id": "husk-a",
+  "evidence": "/home/main/z-project/rpg-zzu-village-art/tiledata/wasteland-ruins/_review/r63/review2/verdict-S.md",
+  "note": "wasteland_ruins/husk-a r63; object-gate PASS; r63 scale/floor fix; independent adversarial reviewer Sonnet 5.5 review2 PASS for this piece (verdict-S.md); review limited to one Sonnet reviewer by user"
+ },
+ {
+  "sha": "d23920ec80823656d78cf54175eae25efdefd966b946821a46d2dcfe69dcfaf8",
+  "id": "husk-b",
+  "evidence": "/home/main/z-project/rpg-zzu-village-art/tiledata/wasteland-ruins/_review/r63/review2/verdict-S.md",
+  "note": "wasteland_ruins/husk-b r63; object-gate PASS; r63 scale/floor fix; independent adversarial reviewer Sonnet 5.5 review2 PASS for this piece (verdict-S.md); review limited to one Sonnet reviewer by user"
+ },
+ {
+  "sha": "8a0ae033617434c76b385b251c2a26eddd85e5cd98a86815b6b7deffef5afaae",
+  "id": "husk-tall",
+  "evidence": "/home/main/z-project/rpg-zzu-village-art/tiledata/wasteland-ruins/_review/r63/review2/verdict-S.md",
+  "note": "wasteland_ruins/husk-tall r63; object-gate PASS; r63 scale/floor fix; independent adversarial reviewer Sonnet 5.5 review2 PASS for this piece (verdict-S.md); review limited to one Sonnet reviewer by user"
+ },
+ {
+  "sha": "ed94a53e2a3456332ee0f277639cadbe8ed418d07024dd4afaa701b2d7ddcdde",
+  "id": "shack-b",
+  "evidence": "/home/main/z-project/rpg-zzu-village-art/tiledata/wasteland-ruins/_review/r63/review2/verdict-S.md",
+  "note": "wasteland_ruins/shack-b r63; object-gate PASS; r63 scale/floor fix; independent adversarial reviewer Sonnet 5.5 review2 PASS for this piece (verdict-S.md); review limited to one Sonnet reviewer by user"
+ },
+ {
+  "sha": "0037d0c86b4d456602eb9bb7394d2cb564ef61293d265bb4a6527d5062ac3bdb",
+  "id": "shack-c",
+  "evidence": "/home/main/z-project/rpg-zzu-village-art/tiledata/wasteland-ruins/_review/r63/review2/verdict-S.md",
+  "note": "wasteland_ruins/shack-c r63; object-gate PASS; r63 scale/floor fix; independent adversarial reviewer Sonnet 5.5 review2 PASS for this piece (verdict-S.md); review limited to one Sonnet reviewer by user"
+ },
+ {
+  "sha": "2130859a3f0a4004fc04ac5bc22bda42140e1dc707ccfe44a30ee3136cabef4b",
+  "id": "container-home",
+  "evidence": "/home/main/z-project/rpg-zzu-village-art/tiledata/wasteland-ruins/_review/r63/review2/verdict-S.md",
+  "note": "wasteland_ruins/container-home r63; object-gate PASS; r63 scale/floor fix; independent adversarial reviewer Sonnet 5.5 review2 PASS for this piece (verdict-S.md); review limited to one Sonnet reviewer by user"
+ },
+ {
+  "sha": "c8df1acc6aacfe1418aeb48945b6d89f906780b89b80a4ad8f3838bbe822ac1f",
+  "id": "stall-a",
+  "evidence": "/home/main/z-project/rpg-zzu-village-art/tiledata/wasteland-ruins/_review/r63/review2/verdict-S.md",
+  "note": "wasteland_ruins/stall-a r63; object-gate PASS; r63 scale/floor fix; independent adversarial reviewer Sonnet 5.5 review2 PASS for this piece (verdict-S.md); review limited to one Sonnet reviewer by user"
+ },
+ {
+  "sha": "d24b01158ecbe2184e7ac80c9806b0371e63115a39af7534cdea9ae932c47b06",
+  "id": "stall-b",
+  "evidence": "/home/main/z-project/rpg-zzu-village-art/tiledata/wasteland-ruins/_review/r63/review2/verdict-S.md",
+  "note": "wasteland_ruins/stall-b r63; object-gate PASS; r63 scale/floor fix; independent adversarial reviewer Sonnet 5.5 review2 PASS for this piece (verdict-S.md); review limited to one Sonnet reviewer by user"
+ },
+ {
+  "sha": "955ad75199dfa3656809c5f64f6c26506b15f6e078e1734dad097114e7f17f74",
+  "id": "dead-tree",
+  "evidence": "/home/main/z-project/rpg-zzu-village-art/tiledata/wasteland-ruins/_review/r63/review2/verdict-S.md",
+  "note": "wasteland_ruins/dead-tree r63; object-gate PASS; r63 scale/floor fix; independent adversarial reviewer Sonnet 5.5 review2 PASS for this piece (verdict-S.md); review limited to one Sonnet reviewer by user"
+ },
+ {
+  "sha": "89853efe740da46533e8a9545025590cbadd491ecda7f3ea1263288e90b9059d",
+  "id": "lamp-broken",
+  "evidence": "/home/main/z-project/rpg-zzu-village-art/tiledata/wasteland-ruins/_review/r63/review2/verdict-S.md",
+  "note": "wasteland_ruins/lamp-broken r63; object-gate PASS; r63 scale/floor fix; independent adversarial reviewer Sonnet 5.5 review2 PASS for this piece (verdict-S.md); review limited to one Sonnet reviewer by user"
+ },
+ {
+  "sha": "d352376536ef8e8fcb6ebc260b5ec74d7892f25b9de25e8fc93a5492887fb528",
+  "id": "hut-sheet",
+  "evidence": "/home/main/z-project/rpg-zzu-village-art/tiledata/wasteland-ruins/_review/r63/review2/verdict-S.md",
+  "note": "wasteland_ruins/hut-sheet r63; object-gate PASS; r63 scale/floor fix; independent adversarial reviewer Sonnet 5.5 review2 PASS for this piece (verdict-S.md); review limited to one Sonnet reviewer by user"
+ },
+ {
+  "sha": "00f641bd9a8b356a57902ca5f288d3be93d664c0112556f038efb2bf8fb4841e",
+  "id": "wash-line",
+  "evidence": "/home/main/z-project/rpg-zzu-village-art/tiledata/wasteland-ruins/_review/r63/review2/verdict-S.md",
+  "note": "wasteland_ruins/wash-line r63; object-gate PASS; r63 scale/floor fix; independent adversarial reviewer Sonnet 5.5 review2 PASS for this piece (verdict-S.md); review limited to one Sonnet reviewer by user"
+ }
+]

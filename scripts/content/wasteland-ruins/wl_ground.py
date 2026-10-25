@@ -142,13 +142,41 @@ def _dirt_tones():
     return _DT
 
 
+def dirt_base_r62(x, y):
+    """r62 까지의 흙 바탕 단(덩이 바탕) — 지금은 굽지 않는 표본 바탕(dirt-a·*64·b45·c62·b62)에만 쓴다: 덧그림 관문 표본의 sha 를 지킨다."""
+    k, edge, lit = blobs(FP, 521, 3)[(x % FP, y % FP)]
+    t = _dirt_tones()[k]
+    if edge and t == 5 and h2(k[0], k[1], 507) % 4: t = 3
+    return t
+
+
+def dirt8_base_r62(x, y):
+    k, edge, lit = blobs(DP, 621, 3)[(x % DP, y % DP)]
+    t = _dirt_tones8()[k]
+    if edge and t == 5 and h2(k[0], k[1], 607) % 4: t = 3
+    return t
+
+
 def dirt_base(x, y):
     """새 흙 바탕 단(주기 64): 흙덩이(2~4화소)마다 한 단 — 가운데 3 · 밝은 5 덩이(아래·오른 그늘 3 → 솟은 흙덩이) · 드문 어두운 2 덩이.
     큰 흐름(32화소 잡음)은 밝은 덩이 몫만 조금 바꾼다(어두운 얼룩 판·테두리 그물 없음). 낱화소 잡음 없음."""
-    k, edge, lit = blobs(FP, 521, 3)[(x % FP, y % FP)]
-    t = _dirt_tones()[k]
-    if edge and t == 5 and h2(k[0], k[1], 507) % 4: t = 3     # 밝은 흙덩이 아래·오른 그늘(넷 중 셋)
-    return t
+    return calm_tone(x, y)                                    # r63: 덩이 바탕(±18 단 덩이 38%) 대신 고요한 낱알 결
+
+
+def calm_tone(x, y):
+    """r63 고요한 흙 바탕 단(주기 64 — 128 판과도 맞물린다): 거의 다 바탕 3(7b5d48). 밝은 5·어두운 2 는 낱화소 알로만(덩이·얼룩 없음),
+    알 밀도는 아주 낮은 흐름(32화소)으로 3~12% 사이를 오간다 — 넓은 고요한 자리가 남는다. 밝은 알 바로 아래 어두운 알이 붙으면 솟은 잔흙으로 읽힌다.
+    검수(r63): 옛 바탕은 ±18 단 2~4화소 덩이가 판의 38% — «위장무늬 잡음». 버들항 흙은 바탕 49% + 낱알 결."""
+    xx, yy = x % FP, y % FP
+    f = wrapnoise(xx, yy, 1201, 32)
+    dens = 14 + int(f * 14)                                   # 14..28 % (r63 관문: 3..14 % 는 «평면 채움·질감 없음» — 버들항 흙 낱알 결 약 29%)
+    r = h2(xx, yy, 1203) % 100
+    if r < dens * 0.45: return 5
+    if r < dens: return 2
+    up = h2(xx, (yy - 1) % FP, 1203) % 100                    # 위 화소가 밝은 알이면 그 그늘(넷에 하나)
+    if up < (14 + int(wrapnoise(xx, (yy - 1) % FP, 1201, 32) * 14)) * 0.45 and h2(xx, yy, 1205) % 4 == 0: return 1 if h2(xx, yy, 1207) % 3 == 0 else 2
+    if h2(xx, yy, 1209) % 100 == 0: return 1                  # 드문 짙은 알(관문: 명암 4단)
+    return 3
 
 
 def dirt_col(t):
@@ -159,7 +187,7 @@ def dirt_field(c, ox, oy):
     """64×64 흙 이음 판: 덩이 바탕(낱화소 잡음 없음, 큰 흐름 낮게) + 솟은 흙덩이 14 + 잔돌·부스러기 무리 5 — 바퀴 자국은 64 주기로 줄지어 보여 뺐다(발길 오토타일이 맡는다)."""
     for y in range(FP):
         for x in range(FP):
-            c.P(ox + x, oy + y, dirt_col(dirt_base(x, y)))
+            c.P(ox + x, oy + y, dirt_col(dirt_base_r62(x, y)))          # 옛 64 판(표본 바탕 전용) — r62 바탕 그대로
     def P(x, y, col): c.P(ox + x % FP, oy + y % FP, col)
     for i in range(9):                                        # 솟은 흙덩이(3×2~4×3): 윗면 빛 5 · 몸 3 · 앞 그늘 2 · 밑 그림자 1(가운데 0) — 덩이마다 5단 명암
         x0 = h2(i, 1, 531) % FP; y0 = h2(i, 2, 531) % FP; w = 3 + h2(i, 3, 531) % 2; hh = 2 + h2(i, 4, 531) % 2
@@ -260,30 +288,29 @@ def _dirt_tones8():
 
 
 def dirt8_base(x, y):
-    k, edge, lit = blobs(DP, 621, 3)[(x % DP, y % DP)]
-    t = _dirt_tones8()[k]
-    if edge and t == 5 and h2(k[0], k[1], 607) % 4: t = 3
-    return t
+    return calm_tone(x, y)                                    # r63: 길 가장자리 흙(dirt_base)과 같은 고요한 결
 
 
-def dirt128_field(c, ox, oy):
+def dirt128_field(c, ox, oy, r62=False):
     """128×128 흙 이음 판: 덩이 바탕(낮은 대비) + 솟은 흙덩이 30(서로 13 이상 떨어져 아무렇게나 — 줄·격자 없음, 그늘은 2단으로 옅게) + 잔돌 무리 16."""
     for y in range(DP):
         for x in range(DP):
-            t = dirt8_base(x, y); k = h2(x, y, 615) % 71
-            if k == 0 and t == 5: t = 6                               # 드문 밝은 먼지 알
-            elif k == 1 and t != 5: t = 1                             # 드문 어두운 구멍 알
-            c.P(ox + x, oy + y, K('dirt', t))
+            if r62:
+                t = dirt8_base_r62(x, y); k = h2(x, y, 615) % 71
+                if k == 0 and t == 5: t = 6
+                elif k == 1 and t != 5: t = 1
+                c.P(ox + x, oy + y, K('dirt', t)); continue
+            c.P(ox + x, oy + y, K('dirt', dirt8_base(x, y)))          # r63: 밝은 먼지 알·어두운 구멍 알 뺐다(낱점 대비)
     def P(x, y, col): c.P(ox + x % DP, oy + y % DP, col)
-    for i, (x0, y0) in enumerate(_scatter(30, 631, 13)):
+    for i, (x0, y0) in enumerate(_scatter(30, 631, 13) if r62 else _scatter(16, 631, 24)):         # r63: 30 → 16(서로 24 이상) — 낱알 결 위 드문 솟은 흙덩이
         w = 3 + h2(i, 3, 631) % 2; hh = 2 + h2(i, 4, 631) % 2
         for dx in range(w):
             for dy in range(hh):
                 if (dx in (0, w - 1)) and dy == 0: continue
                 P(x0 + dx, y0 + dy, K('dirt', 5 if dy == 0 else 3 if dy < hh - 1 else 2))
         for dx in range(1 if w > 3 else 0, w):
-            if h2(i, dx, 633) % 3: P(x0 + dx, y0 + hh, K('dirt', 1 if dx == w - 2 else 2))
-    for i, (cx0, cy0) in enumerate(_scatter(16, 641, 22)):
+            if h2(i, dx, 633) % 3: P(x0 + dx, y0 + hh, K('dirt', (1 if dx == w - 2 else 2) if r62 else 1))                       # r63: 흙덩이 발치 그늘 한 단 더(4단 명암)
+    for i, (cx0, cy0) in enumerate(_scatter(16, 641, 22) if r62 else _scatter(5, 641, 40)):         # r63: 16 → 5
         for j in range(4 + h2(i, 7, 641) % 3):
             x = cx0 + h2(i, j, 643) % 8; y = cy0 + h2(j, i, 645) % 6
             stone = (i + j) % 3 == 0
@@ -291,10 +318,10 @@ def dirt128_field(c, ox, oy):
             if stone and j % 2: P(x + 1, y, K('conc', 3))
 
 
-DAMP_CELLS = ((2, 1), (6, 4), (0, 6))                     # dirt-b 옅은 젖은 우묵한 자리 3곳(r50: 128 판에 줄·열이 겹치지 않게, 칸 안 자리도 제각각 — 칸 안에서 끝난다)
+DAMP_CELLS = ((2, 1), (6, 5))                     # dirt-b 옅은 젖은 우묵한 자리 3곳(r50: 128 판에 줄·열이 겹치지 않게, 칸 안 자리도 제각각 — 칸 안에서 끝난다)
 
 
-def damp_patch(c, ox, oy, i):
+def damp_patch(c, ox, oy, i, r62=False):
     """옅은 젖은 우묵한 자리 하나(r50, 8~10×6화소): 덩이 경계를 따라 들쭉날쭉한 윤곽, 가장자리 dirt 2·3 섞임 → 속 dirt 2(드문 dirt 1 알). 파란 물 없음.
     가운데 자리는 칸마다 ±2~3 어긋난다(줄 맞춤 없음)."""
     cxm = 5 + h2(i, 1, 771) % 6; cym = 5 + h2(i, 2, 771) % 5
@@ -309,15 +336,15 @@ def damp_patch(c, ox, oy, i):
             elif d < 1.25 and y > cym and h2(x, y, 779 + i) % 3 == 0: c.P(ox + x, oy + y, K('dirt', 5))          # 아래쪽 마른 테(드문드문)
 
 
-def _dirt128(v):
+def _dirt128(v, r62=False):
     """dirt-b/c/d: 같은 128 바탕 + 일부 칸(아무렇게나 고른 18~24%)에만 칸 안에서 끝나는 낱칸 결(자리·크기 칸마다 다름) —
     b 얕은 젖은 자국(낮은 대비) · c 자갈·녹 조각 · d 마른 풀 포기. 같은 (x mod 8, y mod 8) 자리에서 셋을 섞어도 바탕이 이어진다."""
-    pct = {1: 18, 2: 24, 3: 24, 4: 0}[v]
+    pct = ({1: 18, 2: 24, 3: 24, 4: 0} if r62 else {1: 18, 2: 13, 3: 10, 4: 0})[v]                      # r63: c·d 변형 칸 24% → 10%
     def draw(c):
-        dirt128_field(c, 0, 0)
+        dirt128_field(c, 0, 0, r62)
         sh = K('dirt', 2)
         if v == 4:
-            for i, (cx, cy) in enumerate(DAMP_CELLS): damp_patch(c, cx * 16, cy * 16, i)
+            for i, (cx, cy) in enumerate(((2, 1), (6, 4), (0, 6)) if r62 else DAMP_CELLS): damp_patch(c, cx * 16, cy * 16, i)
             return
         for cy in range(8):
             for cx in range(8):
@@ -356,14 +383,18 @@ for _y in range(9):                                                         # �
     _g8.append(''.join('b' if h2(_x, _y, 6) % 16 < 10 else 'c' if h2(_x, _y, 6) % 16 < 13 else 'd' for _x in range(12)))
 # 표본: b 는 실제 깔기 비율(10:3:3), c·d 는 같은 판에 자기 칸을 더 섞어(약 40%) 그 변형 칸이 잘 보이게
 piece('dirt-b45', '황무지 흙 B (r45, 표본 바탕용)', 8, 8, TERRAIN, en='legacy dirt field kept only as a sample background', group='ground', tags=['흙'],
-      desc='굽지 않는다 — dirt-c·dirt-d 표본의 b 칸(영수증 sha 를 그대로 두려고 얼린 r45 판).', sample=tiled(DIRT8_IDS, _g8))(_dirt128(1))
+      desc='굽지 않는다 — dirt-c·dirt-d 표본의 b 칸(영수증 sha 를 그대로 두려고 얼린 r45 판).', sample=tiled(DIRT8_IDS, _g8))(_dirt128(1, r62=True))
 for _v, _l in ((4, 'b'), (2, 'c'), (3, 'd')):
     piece('dirt-' + _l, '황무지 흙 ' + _l.upper(), 8, 8, TERRAIN,
-          en='dusty packed wasteland earth ground, a seamless 8x8-tile field (128px period) of soft low-contrast clumped earth with irregularly scattered raised clods and small grit clusters, no rows or grid alignment' +
-             {4: ', with four clearly visible darker damp hollows (irregular, 10-14px, dark brown, no water)', 2: ', a few tiles with gravel and rust flakes', 3: ', a few tiles with dry grass tufts'}[_v],
+          en='calm packed wasteland earth ground, a seamless 8x8-tile field (128px period): a quiet mid-brown base with a fine even 1-pixel grain of lighter and darker earth (deliberately low contrast so buildings and the hero read clearly, like the Beodeul village ground), with a few small shaded raised clods scattered far apart, no rows or grid alignment' +
+             {4: ', and two faint darker damp hollows (irregular, about 10px, no water)', 2: ', a few tiles with small gravel and rust flakes', 3: ', a few tiles with small dry grass tufts'}[_v],
           group='ground', tags=['흙', '황무지', '바닥'],
           desc='먼지 낀 다져진 황무지 흙 이음 판(8×8칸, 주기 128화소) — 맵 칸 (x,y) 에는 판의 (x mod 8, y mod 8) 칸을 깐다. B(바탕, 판에 4곳 어두운 젖은 우묵한 자리)·C(드문 자갈·녹)·D(드문 마른 풀)는 같은 바탕이라 같은 자리 칸끼리 섞어 깐다(10:3:3).',
           sample=tiled(DIRT8_IDS if _l == 'b' else DIRT8_IDS_CD, _g8 if _l == 'b' else [''.join(_l if (ch != 'b' or h2(i, j, 9) % 4 == 0) else 'b' for i, ch in enumerate(r)) for j, r in enumerate(_g8)]))(_dirt128(_v))
+
+for _v, _l in ((4, 'b'), (2, 'c'), (3, 'd')):                                # r63: r62 흙 판(굽지 않는다) — 덧그림 표본 바탕(영수증 sha 유지)
+    piece('dirt-' + _l + '62', '황무지 흙 ' + _l.upper() + ' r62 (표본 바탕 전용)', 8, 8, TERRAIN, en='legacy r62 dirt field kept only as a sample background', group='ground', tags=['흙'],
+          desc='굽지 않는다 — 덧그림·텃밭 관문 표본 바탕(r62 판 그대로).')(_dirt128(_v, r62=True))
 
 
 # ------------------------------------------------------------------ 아스팔트
@@ -780,7 +811,10 @@ APH = AP // 16
 AP_DARK = K('asph', 2)                                    # 3d4b51: 드문 어두운 골재 알(낱화소·2화소)
 
 
-def _ap_tex():
+_R62 = [False]                                              # r63: 굽지 않는 r62 표본 바탕(asphalt-ph62)을 그리는 동안만 켠다
+
+
+def _ap_tex(r62=False):
     """128×128 이음 결 T(r52): 2~4화소 골재 덩이마다 한 단 — 어두운 숯빛 524b49 가 주인(약 63%), 가운데 단 68605e 덩이 약 25%, 밝은 7b7270 덩이 약 7%,
     짙은 타르 덩이 3d4b51 약 5%. 닳은 자리(주기 128)는 대비를 낮게만 바꾼다(줄무늬·판 전체 기울기 없음). 낱화소 소금·후추 없음 — 평평한 5×5 창은 2화소 낟알로 깬다.
     밝은 골재 8d8482 는 포아송(서로 18 이상) 2화소 알 14개."""
@@ -793,16 +827,20 @@ def _ap_tex():
             k = B3[(x, y)][0]
             w = 0.5 * vnoise(x, y, 1873, 32, AP) + 0.5 * vnoise(x, y, 1875, 16, AP)
             r = R[k]
-            p6 = 0.045 + 0.03 * (w - 0.5) * 2
-            pHI = 0.20 + 0.08 * (w - 0.5) * 2
-            col = K('asph', 6) if r < p6 else TAR_HI if r < p6 + pHI else K('dirt', 1) if r > 0.975 else TAR      # 짙은 타르 덩이는 따뜻한 4a3828(차가운 남빛 알 없음)
+            # r63 검수: 밝은 덩이 25%(+21)·7%(+39) 가 «굵은 자갈»로 읽혔다 — 한 단 밝은 덩이만 약 8%, 가장 밝은 단·짙은 덩이는 뺐다.
+            if r62:
+                p6 = 0.045 + 0.03 * (w - 0.5) * 2; pHI = 0.20 + 0.08 * (w - 0.5) * 2
+                col = K('asph', 6) if r < p6 else TAR_HI if r < p6 + pHI else K('dirt', 1) if r > 0.975 else TAR
+            else:
+                pHI = 0.17 + 0.05 * (w - 0.5) * 2
+                col = K('asph', 6) if r < 0.025 else TAR_HI if r < 0.025 + pHI else K('dirt', 1) if r > 0.98 else TAR
             T[(x, y)] = col
     for it in range(6):                                   # 평평한 5×5 창 깨기: 2화소 낟알(가로 또는 세로)
         fixed = 0
         for y in range(AP):
             for x in range(AP):
                 c0 = T[(x, y)]
-                if all(T[((x + i) % AP, (y + j) % AP)] == c0 for j in range(5) for i in range(5)):
+                if all(T[((x + i) % AP, (y + j) % AP)] == c0 for j in range(5 if r62 else 6) for i in range(5 if r62 else 6)):     # r63: 5×5 → 6×6 창만 깬다(고요한 판)
                     i, j = 1 + h2(x, y, 1879 + it) % 3, 1 + h2(y, x, 1881 + it) % 3
                     col = TAR_HI if c0 != TAR_HI else TAR
                     T[((x + i) % AP, (y + j) % AP)] = col
@@ -812,7 +850,7 @@ def _ap_tex():
         if not fixed: break
     pts = []
     for k in range(6000):
-        if len(pts) >= 14: break
+        if len(pts) >= (14 if r62 else 5): break          # r63: 밝은 골재 14 → 5
         x = h2(k, 1, 1885) % AP; y = h2(k, 2, 1885) % AP
         if all(min(abs(x - a), AP - abs(x - a)) ** 2 + min(abs(y - b), AP - abs(y - b)) ** 2 >= 324 for a, b in pts): pts.append((x, y))
     for x, y in pts:
@@ -821,9 +859,13 @@ def _ap_tex():
 
 
 _APT = {}
+_APT62 = {}
 
 
 def ap_tex(x, y):
+    if _R62[0]:
+        if not _APT62: _APT62.update(_ap_tex(True))
+        return _APT62[(x % AP, y % AP)]
     if not _APT: _APT.update(_ap_tex())
     return _APT[(x % AP, y % AP)]
 
@@ -889,7 +931,7 @@ def at_asphalt_phase(c, m, ph, ox, oy):
     for y in range(16):
         for x in range(16):
             if soil(x, y):
-                col = dirt_col(dirt_base(x, y))
+                col = dirt_col(dirt_base_r62(x, y) if _R62[0] else dirt_base(x, y))
                 near = [(dx, dy) for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1)) if road(x + dx, y + dy)]
                 if near and h2(gx0 + x, gy0 + y, 1841) % 7 == 0: col = TAR_HI               # 떨어져 나온 아스팔트 부스러기(흙 위, 가장자리 곁)
                 elif near and (0, 1) in near: col = K('dirt', 2)                             # 북쪽 가장자리 위 흙: 길 턱 그늘이 살짝
@@ -920,11 +962,11 @@ AP_LAYOUT = [r[:17] + ('#' if 1 <= i <= 12 else '.') + '.' + ('###' if 1 <= i <=
     ['.' + '#' * 12 + '.' * 10, '.' * 23, '.' + '#' * 12 + '.' * 10, '.' + '#' * 12 + '.' * 10, '.' + '#' * 12 + '.' * 10, '.' * 23]
 
 
-def ap_board(lay, marks=()):
+def ap_board(lay, marks=(), r62=False):
     """길 판(조합기처럼): 칸 (x,y) 는 위상 (x%8, y%8) 칸, 길이 아닌 칸은 dirt-b. marks = ((x, y, 덧그림 id), …) 는 길 속 칸 위에 얹는다."""
     H, Wd = len(lay), len(lay[0])
     a = np.zeros((H * 16, Wd * 16, 4), np.uint8)
-    ms = auto_masks(lay); da = render(PIECES['dirt-b']); at = render(PIECES['asphalt-ph'])
+    ms = auto_masks(lay); da = render(PIECES['dirt-b62' if r62 else 'dirt-b']); at = render(PIECES['asphalt-ph62' if r62 else 'asphalt-ph'])
     for y in range(H):
         for x in range(Wd):
             if (x, y) in ms:
@@ -939,15 +981,26 @@ def ap_board(lay, marks=()):
 
 
 def ap_sample(_=0):
-    """표본: 교차로·T·굽이·막다른 길·외딴 칸·2×2 판·넓은 판 + 1칸 폭·3칸 폭 12칸 직선(가로·세로)."""
-    return ap_board(AP_LAYOUT)
+    """표본: 교차로·T·굽이·막다른 길·외딴 칸·2×2 판·넓은 판 + 1칸 폭·3칸 폭 12칸 직선(가로·세로).
+    r63: 길은 r62 판 그대로 굽는다(고요하게 다시 그린 판은 검수자가 «여전히 가장 시끄러운 바닥»으로 FAIL — 다음 판 과제). 표본도 r62 바탕."""
+    return ap_board(AP_LAYOUT, r62=True)
 
 
 piece('asphalt-ph', '금 간 아스팔트 (위상 오토타일)', APH * APH, 16, TERRAIN,
-      en='old asphalt road: mostly one dark warm charcoal tone with an even fine grain of mid-grey aggregate, soft low-frequency paler wheel-worn zones that flow across tiles, rare dark and rare light aggregate pixels; its unconnected edges are a chipped broken rim 1 to 3 pixels deep that varies continuously along the road, lighter broken faces on the far (north) rim, irregular rounded-off ends at dead ends and outer corners, and a dry dark-brown ledge 1 to 2 pixels thick with a broken soil shadow on the south side; laid as a road network with crossroads, dead ends and long straight 1-wide and 3-wide runs (cracks and potholes are separate decals)',
+      en='old asphalt road: a calm, deliberately low-contrast surface (so the hero and objects read clearly) of one dark warm charcoal tone with a fine sparse grain of mid-grey aggregate clumps whose density drifts gently across tiles, rare light grey stones and rare dark tar spots; its unconnected edges are a chipped broken rim 1 to 3 pixels deep that varies continuously along the road, lighter broken faces on the far (north) rim, irregular rounded-off ends at dead ends and outer corners, and a dry dark-brown ledge 1 to 2 pixels thick with a broken soil shadow on the south side; laid as a road network with crossroads, dead ends and long straight 1-wide and 3-wide runs (cracks and potholes are separate decals)',
       group='ground', tags=['아스팔트', '도로', '오토타일'],
       desc='낡은 옛 아스팔트 도로 — 위상 오토타일(주기 128): 칸 (위상 ph, 마스크 m), ph = (x mod 8) + 8·(y mod 8). 결·깨진 가장자리가 전역 좌표로 이어진다. 금·포트홀은 road-crack-*/pothole-* 덧그림(길 속 칸에 드물게). 남쪽은 마른 흙빛 턱.',
-      sample=ap_sample)(asphalt_phase_sheet)
+      sample=ap_sample)(lambda c: _asphalt_phase_sheet_r62(c))
+
+
+def _asphalt_phase_sheet_r62(c):
+    _R62[0] = True
+    try: asphalt_phase_sheet(c)
+    finally: _R62[0] = False
+
+
+piece('asphalt-ph62', '금 간 아스팔트 r62 (표본 바탕 전용)', APH * APH, 16, TERRAIN, en='legacy r62 asphalt kept only as a sample background', group='ground', tags=['아스팔트'],
+      desc='굽지 않는다 — 길 덧그림(금·포트홀) 관문 표본 바탕. r62 판 그대로라 그 덧그림 영수증 sha 를 지킨다.')(_asphalt_phase_sheet_r62)
 
 
 # ------------------------------------------------------------------ 길 속 덧그림(r51): 금 3 · 포트홀 2 — 조합기가 길 속 칸(네 이웃이 다 길)에 해시로 약 7%, 서로 3칸 이상 떨어뜨려 얹는다.
@@ -1098,7 +1151,7 @@ def mark_sample(pid, frozen=None):
     frozen = tiledata/wasteland-ruins/_frozen/ 안 바탕 그림 이름 — 이미 관문을 통과한 덧그림(r51c 금 A·C)은 그때 아스팔트 바탕에 얹어 영수증 sha 를 지킨다."""
     lay = ['###', '###', '###']
     def mk(_=0):
-        if not frozen: return ap_board(lay, ((1, 1, pid),))
+        if not frozen: return ap_board(lay, ((1, 1, pid),), r62=True)     # r63: 덧그림 표본은 r62 길·흙 바탕(영수증 sha 유지)
         from PIL import Image as _Im
         a = np.array(_Im.open(os.path.join(OUT, '_frozen', frozen)).convert('RGBA'))
         d = render(PIECES[pid]); op = d[..., 3] == 255
@@ -2042,7 +2095,7 @@ for _v, _l in enumerate('ab'):
           sample=decal_sample('scorch-' + _l))(_scorch(_v))
 
 
-def field_decal_sample(pid, at, w=5, h=4, ground='dirt-c'):
+def field_decal_sample(pid, at, w=5, h=4, ground='dirt-c62'):
     """여러 칸 덧그림 표본(r62): 실제로 맵에 깔리는 흙(dirt-c 128 판, 굽는 조각)을 w×h 칸 깔고 at 칸 자리에 조각을 얹는다."""
     def mk(f=0):
         g = render(PIECES[ground])[:h * 16, :w * 16].copy()

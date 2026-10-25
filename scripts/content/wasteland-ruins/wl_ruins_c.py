@@ -289,41 +289,40 @@ def _husk_f(c):
     c.outline()
 
 
-# ------------------------------------------------------------------ husk-g: 5층 좁은 탑, 위 두 층은 벽이 떨어져 뼈대만
-@piece('husk-g', '뼈대만 남은 5층 탑', 4, 8, STRUCT,
-       en='narrow five-storey ruined office tower seen from above: the roof slab half gone, the remaining slab and the exposed top floor seen as planes with column stubs and bent rebar; '
-          'the top two storeys stripped to a bare concrete frame of columns and floor slab edges with dark gutted floors, the three lower storeys keep long strip windows with broken glass',
-       group='ruins', tags=['폐허', '건물', '고층', '탑'], desc='5층 좁은 사무 탑. 지붕판이 반쯤 사라져 위층 바닥과 기둥 머리·철근이 보이고, 위 두 층은 벽이 떨어져 기둥과 바닥판 뼈대만, 아래 세 층은 깨진 띠창.',
+# ------------------------------------------------------------------ husk-g: 3층 좁은 탑, 맨 위 층은 벽이 떨어져 뼈대만
+@piece('husk-g', '뼈대만 남은 3층 탑', 4, 8, STRUCT,
+       en='narrow three-storey ruined office tower seen from above: the roof slab half gone, the remaining slab and the exposed top floor seen as planes with column stubs and bent rebar; '
+          'the top storey stripped to a bare concrete frame of columns and floor slab edge with a dark gutted floor, the two lower storeys keep broken glass windows and a smashed double glass entrance door',
+       group='ruins', tags=['폐허', '건물', '고층', '탑'], desc='3층 좁은 사무 탑. 지붕판이 반쯤 사라져 위층 바닥과 기둥 머리·철근이 보이고, 맨 위 층은 벽이 떨어져 기둥과 바닥판 뼈대만, 아래 두 층은 깨진 큰 창, 1층은 깨진 유리 겹문.',
        solid=[(x, y) for y in (6, 7) for x in range(4)], door=(1, 7))
 def _husk_g(c):
     W, H, t = 64, 128, 3
-    ty = 44                                                    # 앞면 윗줄(앞면 84행 = 5층 × 16 + 4)
+    ty = 32                                                    # 앞면 윗줄(앞면 96행 = 3층 × 32)
     cols = [(1, 6), (29, 35), (57, 63)]                        # 기둥 x 범위
-    # --- 윗면: 벽 윗면 테(북·서·동·남 띠, 군데군데 깨짐) 안에 서쪽 = 남은 지붕판(갈회 방수층, 깨진 구멍) · 동쪽 = 지붕이 없어 드러난 5층 바닥 + 기둥 머리
-    def sb(y):                                                  # 남은 지붕판 동쪽 끝(부러진 선)
-        return 30 + (y // 3) % 3 + (h2(y // 2, 3, 34) % 4) - (6 if 14 < y < 24 else 0)
-    for y in range(1, ty):                                      # 5층 바닥(지붕 없는 쪽): 고른 판 + 성긴 줄눈 + 북벽 그늘
+    # --- 윗면: 벽 윗면 테 안에 서쪽 = 남은 지붕판(깨진 구멍) · 동쪽 = 지붕이 없어 드러난 3층 바닥 + 기둥 머리
+    def sb(y):
+        return 30 + (y // 3) % 3 + (h2(y // 2, 3, 34) % 4) - (6 if 10 < y < 18 else 0)
+    for y in range(1, ty):
         for x in range(0, W):
             tt = 3 if field(x, y, 30, 32) < 0.62 else 2
             if (x % 10 == 4 or y % 10 == 6) and h2(x // 3, y // 3, 32) % 3: tt -= 1
             c.P(x, y, K('mintc', max(1, tt)))
-    for x in range(t, W - t):                                   # 북벽 안쪽 면(남향 그늘 4행)
+    for x in range(t, W - t):
         for j, tt in enumerate((2, 2, 1, 1)): c.P(x, 1 + t + j, K('mintc', tt))
-    for (cx, by, rx, ry) in ((47, 34, 6, 3), (54, 15, 4, 2)):   # 잔해 두 무더기(덩이 모아)
+    for (cx, by, rx, ry) in ((47, 24, 6, 3), (54, 12, 4, 2)):
         mound(c, cx, by, rx, ry, seed=cx, mats=('conc', 'conc', 'brick'))
-    tuft(c, 40, 37, 'grass'); tuft(c, 58, 33, 'dry')
-    roof_deck(c, t, 1 + t, 34, ty - 2 * t - 1, seed=35)           # 남은 지붕판(서쪽): 방수층
+    tuft(c, 40, 26, 'grass'); tuft(c, 58, 23, 'dry')
+    roof_deck(c, t, 1 + t, 34, ty - 2 * t - 1, seed=35)
     shade_rect(c, t, 1 + t, 34, 2, 1); shade_rect(c, t, 1 + t, 2, ty - 2 * t - 1, 1)
-    for y in range(1, ty - t):                                  # 지붕판 동쪽 끝: 끝 너머는 5층 바닥, 끝은 빛 턱 + 바닥에 지는 그림자 2
+    for y in range(1, ty - t):
         e = sb(y)
         if y > t:
             for x in range(e, t + 34): c.P(x, y, K('mintc', 3 if field(x, y, 30, 32) < 0.62 else 2))
-        if y > t:
             c.P(e - 1, y, K('roof', 4)); c.P(e, y, K('mintc', 0)); c.P(e + 1, y, K('mintc', 1))
             if y % 5 == 2: rebar(c, e + 1, y + 1, 3, 2)
-    for (pts, rb) in (([(6, 10), (10, 8), (14, 9), (13, 12), (9, 14), (5, 13)], (8, 13)),
-                      ([(15, 24), (19, 22), (22, 25), (21, 29), (16, 30), (14, 27)], (18, 29)),
-                      ([(23, 13), (26, 12), (27, 15), (24, 17)], None)):          # 깨진 구멍: 북 테 = 빛 턱 + 판 두께, 남쪽 = 어둠으로 떨어짐
+    for (pts, rb) in (([(6, 8), (10, 6), (14, 7), (13, 10), (9, 11), (5, 10)], (8, 10)),
+                      ([(15, 17), (19, 16), (22, 18), (21, 21), (16, 22), (14, 20)], (18, 21)),
+                      ([(23, 10), (26, 9), (27, 12), (24, 13)], None)):
         fill_poly(c, pts, lambda x, y: K('soot', 0))
         ys = [q[1] for q in pts]; y0 = min(ys)
         for x in range(min(q[0] for q in pts), max(q[0] for q in pts) + 1):
@@ -333,125 +332,138 @@ def _husk_g(c):
             if len(col) > 2: c.P(x, col[0] + 1, K('mintc', 1))
             c.P(x, col[-1], K('soot', 1))
         if rb: c.line(rb[0] - 3, rb[1] - 3, rb[0] + 2, rb[1] - 1, K('rust', 3))
-    for (x0, x1) in cols[1:]:                                   # 지붕 없는 쪽 기둥 머리(윗면 밝은 네모) + 솟은 철근
-        for (yy, hh) in ((7, 5), (22, 5)):
+    for (x0, x1) in cols[1:]:                                   # 지붕 없는 쪽 기둥 머리 + 솟은 철근
+        for (yy, hh) in ((7, 5), (18, 5)):
             c.R(x0, yy, x1 - x0, hh - 1, K('mintc', 6)); c.HL(x0, yy, x1 - x0, K('mintc', 5)); c.HL(x0, yy + hh - 2, x1 - x0, K('mintc', 7))
             c.R(x0, yy + hh - 1, x1 - x0, 3, K('mintc', 3)); c.HL(x0, yy + hh + 1, x1 - x0, K('mintc', 1))
             rebar(c, x0 + 1, yy, 3, -1); rebar(c, x1 - 2, yy, 4, 1)
-    band_top(c, 0, 1, W, t, 'mintc', seed=36)                     # 벽 윗면 테
+    band_top(c, 0, 1, W, t, 'mintc', seed=36)
     band_top(c, 0, 1, t, ty, 'mintc', seed=37, vertical=True)
     band_top(c, W - t, 1, t, ty, 'mintc', seed=38, vertical=True)
     band_top(c, 0, ty - 4, W, 4, 'mintc', seed=39)
     for (x, d) in ((12, 1), (13, 2), (14, 2), (44, 2), (45, 3), (46, 3), (47, 2)): c.clear(x, 1, 1, d); c.P(x, 1 + d, K('mintc', 7))
-    for y in range(14, 22): c.clear(W - 1, y); c.P(W - 2, y, K('mintc', 4))
-    # --- 앞면: 5층(16행), 위 두 층 = 기둥+바닥판 뼈대, 아래 세 층 = 판 + 띠창
-    floors = [ty + 16 * k for k in range(5)]
+    for y in range(11, 17): c.clear(W - 1, y); c.P(W - 2, y, K('mintc', 4))
+    # --- 앞면: 3층(32행). 맨 위 = 기둥+바닥판 뼈대, 아래 두 층 = 판 + 큰 창(칸 10×10), 1층 서쪽 칸 = 유리 겹문
+    SH = 32
+    floors = [ty + SH * k for k in range(3)]
+    panes = [(7, 10), (18, 10), (36, 10), (47, 9)]              # 창 칸(x, 폭); 사이 6·17·28 / 35·46·56 = 틀
     for fi, fy in enumerate(floors):
-        if fi < 2:                                              # 뼈대 층: 속(어둠 · 바닥판 윗면 3행 · 뒤 기둥 그림자)
-            for y in range(fy, fy + 16):
+        if fi == 0:                                             # 뼈대 층: 속 어둠 · 아래 바닥판 윗면 5행 · 뒤 기둥
+            for y in range(fy, fy + SH):
                 for x in range(W):
                     j = y - fy
-                    if j >= 12: c.P(x, y, K('mintc', 4 if j < 15 else 6) if h2(x, y, 38) % 7 else K('mintc', 3))
-                    else: c.P(x, y, K('soot', 0 if j < 7 else 1) if h2(x // 6, j, 39 + fi) % 6 else K('soot', 2))
-            for x in range(8, W - 8, 11):                       # 속 뒤 기둥(더 어둡게)
-                c.R(x, fy + 1, 3, 11, K('teal', 1)); c.VL(x, fy + 1, 11, K('teal', 2))
-            rubble_scatter(c, 7, fy + 12, W - 14, 3, 4, seed=40 + fi, mats=('conc', 'brick'), glass=False)
+                    if j >= 26: c.P(x, y, K('mintc', 4 if j < 31 else 6) if h2(x, y, 38) % 7 else K('mintc', 3))
+                    else: c.P(x, y, K('soot', 0 if j < 16 else 1) if h2(x // 6, j // 2, 39) % 6 else K('soot', 2))
+            for x in range(8, W - 8, 11):
+                c.R(x, fy + 4, 3, 22, K('teal', 1)); c.VL(x, fy + 4, 22, K('teal', 2))
+            rubble_scatter(c, 7, fy + 26, W - 14, 5, 5, seed=40, mats=('conc', 'brick'), glass=False)
         else:
-            face(c, 0, fy, W, 16, 'mintc', 4, seed=41 + fi, grime=0)
-            gy = fy + 4                                         # 띠창(가로 긴 유리, 깨진 칸 검게)
-            for x in range(3, W - 3):
-                if any(a <= x < b for (a, b) in cols): continue
-                for j in range(7):
-                    br = h2(x // 7, fi, 42) % 3 == 0
-                    c.P(x, gy + j, K('soot', 0 if j < 5 else 1) if br else K('teal', 1 if j < 2 else 2 if j < 5 else 1))
-                if (x - 3) % 7 == 0: c.VL(x, gy, 7, K('metal', 4))          # 창살 기둥
-                elif not h2(x // 7, fi, 42) % 3 == 0 and (x - 3) % 14 == 2: c.P(x, gy + 1, K('teal', 4))
-            c.HL(3, gy - 1, W - 6, K('mintc', 2)); c.HL(2, gy + 7, W - 4, K('mintc', 7)); c.HL(3, gy + 8, W - 6, K('mintc', 1))
-        for (x0, x1) in cols:                                   # 기둥 앞면(왼 빛 · 몸 · 오른 그늘)
-            for y in range(fy, fy + 16):
+            face(c, 0, fy, W, SH, 'mintc', 4, seed=41 + fi, grime=0)
+            gy = fy + 9
+            for k, (px, pw) in enumerate(panes):
+                if fi == 2 and px < 29: continue                # 1층 서쪽 칸은 문
+                br = h2(k, fi, 42) % 3 == 0
+                for j in range(10):
+                    for i in range(pw):
+                        c.P(px + i, gy + j, K('soot', 0 if j < 7 else 1) if br else K('teal', 1 if j < 3 else 2 if j < 7 else 1))
+                if br:
+                    c.P(px + 1, gy + 1, K('glass', 5)); c.P(px + 2, gy + 1, K('glass', 3)); c.P(px + 1, gy + 2, K('glass', 3))
+                    for q in range(3): c.P(px + pw - 3 - q, gy + 7 + q, K('soot', 2))
+                else:
+                    c.P(px + 1, gy + 1, K('teal', 4)); c.P(px + 2, gy + 2, K('teal', 4)); c.line(px + 2, gy + 8, px + pw - 2, gy + 3, K('teal', 3))
+            for (a, b) in ((6, 29), (35, 57)):
+                if fi == 2 and a == 6: continue
+                c.HL(a, gy - 1, b - a, K('mintc', 2)); c.HL(a - 1, gy + 10, b - a + 2, K('mintc', 7)); c.HL(a, gy + 11, b - a, K('mintc', 1))
+                for mx in (a, (a + b) // 2 if a == 6 else 46, b - 1): c.VL(mx, gy, 10, K('metal', 4))
+        for (x0, x1) in cols:
+            for y in range(fy, fy + SH):
                 for x in range(x0, x1):
                     c.P(x, y, K('mintc', 6 if x == x0 else 3 if x == x1 - 1 else 5 - (1 if h2(x, y, 43) % 7 == 0 else 0)))
         slab_edge(c, 0, fy, W, 'mintc', seed=fy)
-    # 뼈대 층 손상: 동쪽 4층 바닥판 끝이 부러져 떨어짐(들쭉날쭉 끝 + 늘어진 철근), 서쪽 뼈대 칸에 남은 벽 조각
+    # 손상: 2층 위 바닥판 동쪽 끝이 부러짐(들쭉날쭉 + 늘어진 철근), 뼈대 층 서쪽에 남은 벽 조각
     for x in range(50, 57):
         d = 3 if x > 51 else 1 + (x - 50)
         c.clear(x, floors[1], 1, d)
-        for y in range(floors[1], floors[1] + d):
-            c.P(x, y, K('soot', 0))
+        for y in range(floors[1], floors[1] + d): c.P(x, y, K('soot', 0))
         c.P(x, floors[1] + d, K('mintc', 2))
-    rebar(c, 51, floors[1] + 4, 4, -1); c.line(54, floors[1] + 1, 55, floors[1] + 7, K('rust', 3)); c.P(55, floors[1] + 7, K('rust', 5))
-    face(c, 7, floors[1] + 3, 14, 9, 'mintc', 4, seed=44, grime=0)
-    for (x, d) in ((7, 2), (8, 1), (19, 3), (20, 4)): c.clear(x, floors[1] + 3, 1, d)
-    c.HL(9, floors[1] + 3, 10, K('mintc', 7))
-    win(c, 10, floors[1] + 5, 7, 5, 'mintc', seed=3, kind=3, sill=False)
-    for x in range(36, 46):                                     # 5층 바닥판 앞 턱 깨진 홈
+    rebar(c, 51, floors[1] + 4, 4, -1); c.line(54, floors[1] + 1, 55, floors[1] + 8, K('rust', 3)); c.P(55, floors[1] + 8, K('rust', 5))
+    face(c, 7, floors[0] + 5, 20, 21, 'mintc', 4, seed=44, grime=0)
+    for (x, d) in ((7, 3), (8, 1), (24, 3), (25, 4), (26, 6)): c.clear(x, floors[0] + 5, 1, d)
+    c.HL(9, floors[0] + 5, 14, K('mintc', 7))
+    win(c, 11, floors[0] + 9, 10, 10, 'mintc', seed=3, kind=3, sill=True)
+    for x in range(36, 46):                                     # 지붕판 앞 턱 깨진 홈 + 늘어진 철근
         if 38 <= x <= 42: c.clear(x, floors[0]); c.P(x, floors[0] + 1, K('mintc', 6))
-    c.line(40, floors[0] + 2, 44, floors[0] + 12, K('rust', 3))                          # 늘어진 철근
-    # 1층 출입구(깨진 유리문 칸) + 아래 때
-    gy = floors[4]
-    for x in range(9, 26):
-        for y in range(gy + 3, H - 1):
-            c.P(x, y, K('soot', 0 if y < H - 5 else 1))
-    for x in (9, 17, 25): c.VL(x, gy + 3, H - gy - 4, K('metal', 4))
-    c.HL(9, gy + 3, 17, K('metal', 5)); c.P(11, gy + 5, K('glass', 5)); c.P(12, gy + 6, K('glass', 3)); c.P(23, H - 4, K('glass', 4))
-    c.HL(8, H - 1, 19, K('dirt', 2))
-    for y in range(floors[2], H - 1):                           # 기둥 아래 녹물·때
+    c.line(40, floors[0] + 2, 44, floors[0] + 16, K('rust', 3))
+    # 1층 출입구: 깨진 유리 겹문(폭 20, 높이 25) + 위 문틀 띠
+    gy = floors[2]; dy = gy + 6
+    for x in range(8, 28):
+        for y in range(dy, H - 1):
+            c.P(x, y, K('soot', 0 if y < H - 6 else 1))
+    for x in (8, 17, 18, 27): c.VL(x, dy, H - 1 - dy, K('metal', 4 if x in (8, 18) else 3))
+    c.HL(7, dy - 1, 22, K('metal', 5)); c.HL(8, dy, 20, K('metal', 2))
+    c.HL(9, dy + 12, 8, K('metal', 3)); c.HL(19, dy + 12, 8, K('metal', 3))     # 밀대
+    for (x, y) in ((10, dy + 2), (11, dy + 3), (10, dy + 4), (25, dy + 2), (24, dy + 3), (20, dy + 18), (14, H - 4), (23, H - 3)): c.P(x, y, K('glass', 4))
+    c.P(11, dy + 2, K('glass', 5)); c.P(26, dy + 5, K('glass', 3))
+    for k in range(4): c.P(15 - k, dy + 15 + k, K('soot', 2))
+    c.HL(7, H - 1, 22, K('dirt', 2))
+    for y in range(floors[1], H - 1):
         if h2(33, y, 45) % 3 == 0 and c.get(33, y) in MAT['mintc']: c.P(33, y, K('mintc', 2))
     for x in range(W):
         for y in range(H - 4, H):
             col = c.get(x, y)
             if col in MAT['mintc']: c.P(x, y, K('mintc', max(1, MAT['mintc'].index(col) - 2)))
-    for (x, y) in ((7, floors[3] + 13), (50, floors[2] + 13), (40, floors[4] + 13)): drips(c, x, y, 6)
-    leaves(c, 58, floors[2] + 2, H - 2, seed=4, spread=2)
+    for (x, y) in ((7, floors[1] + 22), (50, floors[1] + 22), (40, floors[2] + 22)): drips(c, x, y, 6)
+    leaves(c, 58, floors[1] + 2, H - 2, seed=4, spread=2)
     mound(c, 48, H - 1, 9, 4, seed=46)
-    grit(c, 0, floors[2], W, H - floors[2], mat='mintc', seed=47, rate=25, cracks=2)
+    grit(c, 0, floors[1], W, H - floors[1], mat='mintc', seed=47, rate=25, cracks=2)
     c.clear(0, 0, 1, H); c.clear(W - 1, 0, 1, H)
     c.outline()
 
 
 # ------------------------------------------------------------------ husk-h: 넓은 3층 상가 블록, 아래 가게 셋 + 위층 동쪽 내려앉음
-@piece('husk-h', '위층 무너진 3층 상가', 6, 6, STRUCT,
+@piece('husk-h', '위층 무너진 3층 상가', 6, 8, STRUCT,
        en='wide three-storey ruined shop block seen from above: flat roof with a parapet and air-con boxes, the east half of the roof fallen in so a tilted roof slab lies inside the open top floor; '
-          'faded yellow plaster upper floors with dark empty windows, the top floor front broken down at the east, and a row of three ground-floor shops with a half-open rolling shutter, a closed dented shutter and a smashed display window under a bare awning frame',
-       group='ruins', tags=['폐허', '건물', '상가', '고층'], desc='3층 상가 블록. 지붕 동쪽 반이 내려앉아 기운 지붕판이 3층 속에 걸렸고, 3층 앞벽 동쪽이 무너졌다. 아래는 가게 셋(반쯤 올린 셔터·닫힌 셔터·깨진 진열창).',
-       solid=[(x, y) for y in (4, 5) for x in range(6)], door=(1, 5))
+          'faded yellow plaster upper floors with dark empty windows, the top floor front broken down at the east, and a row of three tall ground-floor shops with a rolled-up shutter over a dark doorway, a closed dented shutter and a smashed display window under a bare awning frame',
+       group='ruins', tags=['폐허', '건물', '상가', '고층'], desc='3층 상가 블록. 지붕 동쪽 반이 내려앉아 기운 지붕판이 3층 속에 걸렸고, 3층 앞벽 동쪽이 무너졌다. 아래는 가게 셋(말아 올린 셔터 아래 어두운 입구·닫힌 셔터·깨진 진열창).',
+       solid=[(x, y) for y in (6, 7) for x in range(6)], door=(1, 7))
 def _husk_h(c):
-    W, H, t = 96, 96, 4
-    ty = 36                                                    # 앞면 윗줄(앞면 60행 = 3층 16 + 2층 16 + 가게 24 + 4)
+    W, H, t = 96, 128, 4
+    ty = 32                                                    # 앞면 윗줄(앞면 96행 = 3층 30 + 2층 30 + 처마 5 + 가게 31)
+    SH = 30
     # --- 윗면: 서쪽 평지붕(방수층 + 실외기) · 동쪽 내려앉은 지붕(3층 속이 보이고 기운 판이 걸림)
     roof_deck(c, t, 1 + t, W - 2 * t, ty - 2 * t - 1, seed=51)
     shade_rect(c, t, 1 + t, W - 2 * t, 2, 1)
-    X1 = 52                                                    # 여기서부터 동쪽 지붕이 내려앉음
-    def edge(y): return X1 + (h2(y // 3, 2, 52) % 4) - (3 if 12 < y < 20 else 0)
+    X1 = 52
+    def edge(y): return X1 + (h2(y // 3, 2, 52) % 4) - (3 if 11 < y < 18 else 0)
     for y in range(1 + t, ty - t):
         e = edge(y)
-        for x in range(e, W - t):                              # 3층 속: 위 = 북벽 안쪽(그늘), 아래 = 바닥 윗면(잔해·먼지)
+        for x in range(e, W - t):
             j = y - (1 + t)
-            if j < 7: c.P(x, y, K('plas', 1 if j < 5 else 0))
+            if j < 6: c.P(x, y, K('plas', 1 if j < 4 else 0))
             else:
                 n = h2(x, y, 54) % 7
                 c.P(x, y, K('dirt', 3 + (1 if n == 0 else 0) - (1 if n == 1 else 0)) if field(x, y, 55, 32) > 0.45 else K('roof', 2 + (n == 2)))
-        c.P(e, y, K('roof', 4)); c.P(e - 1, y, K('roof', 3))   # 부러진 지붕 끝(빛 턱)
+        c.P(e, y, K('roof', 4)); c.P(e - 1, y, K('roof', 3))
         if y % 5 == 2: rebar(c, e, y + 1, 3, 2)
-    fill_poly(c, [(58, 8), (82, 12), (80, 18), (60, 27)], lambda x, y: K('roof', 3 if h2(x, y, 56) % 6 else 2))   # 북벽에 기대 기운 지붕판
-    for k in (1, 2): c.line(60, 27 + k, 80, 18 + k, K('plas', 1 if k == 1 else 0))
-    c.line(58, 8, 82, 12, K('roof', 4))
-    rubble_scatter(c, 56, 26, 34, 5, 6, seed=57, mats=('conc', 'brick'), shade=K('dirt', 1))
-    for (x, y, l, d) in ((70, 13, 4, 1), (78, 15, 3, 2), (63, 20, 4, -1)): rebar(c, x, y, l, d)
-    for (x, y) in ((10, 9), (24, 9), (10, 21)):                # 실외기(작은 3/4 상자)
+    fill_poly(c, [(58, 7), (82, 11), (80, 16), (60, 24)], lambda x, y: K('roof', 3 if h2(x, y, 56) % 6 else 2))
+    for k in (1, 2): c.line(60, 24 + k, 80, 16 + k, K('plas', 1 if k == 1 else 0))
+    c.line(58, 7, 82, 11, K('roof', 4))
+    rubble_scatter(c, 56, 23, 34, 4, 6, seed=57, mats=('conc', 'brick'), shade=K('dirt', 1))
+    for (x, y, l, d) in ((70, 12, 4, 1), (78, 14, 3, 2), (63, 18, 4, -1)): rebar(c, x, y, l, d)
+    for (x, y) in ((8, 8), (22, 8), (8, 18)):
         roof_box(c, x, y, 9, 4, 5, 'pan', seed=x)
-        if x == 10 and y == 9: c.HL(x + 2, y + 6, 5, K('metal', 2)); c.HL(x + 2, y + 7, 5, K('metal', 1))
-        elif x == 24: c.P(x + 3, y + 6, K('soot', 1)); c.P(x + 5, y + 6, K('soot', 1)); c.P(x + 4, y + 7, K('soot', 1))
-    c.R(38, 8, 2, 20, K('metal', 3)); c.VL(38, 8, 20, K('metal', 5))                    # 지붕 위 배관
+        if x == 8 and y == 8: c.HL(x + 2, y + 6, 5, K('metal', 2)); c.HL(x + 2, y + 7, 5, K('metal', 1))
+        elif x == 22: c.P(x + 3, y + 6, K('soot', 1)); c.P(x + 5, y + 6, K('soot', 1)); c.P(x + 4, y + 7, K('soot', 1))
+    c.R(38, 8, 2, 18, K('metal', 3)); c.VL(38, 8, 18, K('metal', 5))
     band_top(c, 0, 1, W, t, 'plas', seed=58)
     band_top(c, 0, 1, t, ty, 'plas', seed=59, vertical=True)
     band_top(c, W - t, 1, t, ty, 'plas', seed=60, vertical=True)
     band_top(c, 0, ty - t, W, t, 'plas', seed=61)
     for (x, d) in ((64, 1), (65, 2), (66, 2), (80, 1), (81, 2)): c.clear(x, 1, 1, d); c.P(x, 1 + d, K('plas', 6))
     for (gx, gy_, gw, gh) in ((0, 1, W, t), (0, 1, t, ty), (W - t, 1, t, ty), (0, ty - t, W, t)): grit(c, gx, gy_, gw, gh, mat='plas', seed=72, rate=11)
-    # --- 앞면: 3층·2층 회벽(층 16) + 층 띠 + 가게 층(24)
-    face(c, 0, ty, W, 32, 'plas', 5, seed=62, grime=0, rmin=1)
-    for y in range(ty, ty + 32):                                # 회벽 결: 흙손 자국 얼룩(2단 어둡게)과 밝은 덧칠 조각, 낱점 아닌 2~3화소 덩이
+    # --- 앞면: 3층·2층 회벽(층 30) + 층 띠 + 가게 층
+    face(c, 0, ty, W, 2 * SH, 'plas', 5, seed=62, grime=0, rmin=1)
+    for y in range(ty, ty + 2 * SH):
         for x in range(W):
             col = c.get(x, y)
             if col not in MAT['plas']: continue
@@ -459,91 +471,91 @@ def _husk_h(c):
             if v > 0.86: c.P(x, y, K('plas', i - 2))
             elif v > 0.78: c.P(x, y, K('plas', i - 1))
             elif v < 0.1: c.P(x, y, K('plas', 6))
-    for fy in (ty + 16,): slab_edge(c, 0, fy - 1, W, 'plas', seed=fy)
-    wins = [(6, 0), (22, 0), (38, 0), (6, 1), (22, 1), (38, 1), (54, 1), (70, 1), (86 - 4, 1)]
+    slab_edge(c, 0, ty + SH - 1, W, 'plas', seed=ty + SH)
+    wins = [(6, 0), (24, 0), (42, 0), (6, 1), (24, 1), (42, 1), (60, 1), (78, 1)]
     for k, (wx, fl) in enumerate(wins):
-        win(c, wx, ty + 16 * fl + 4, 8, 8, 'plas', seed=k, kind=k % 4)
-    for (wx, fl) in ((22, 0), (54, 1)): plume(c, wx, ty + 16 * fl + 4, 8, 10, ('plas',), seed=wx)
+        win(c, wx, ty + SH * fl + 9, 10, 10, 'plas', seed=k, kind=k % 4)
+    for (wx, fl) in ((24, 0), (60, 1)): plume(c, wx, ty + SH * fl + 9, 10, 12, ('plas',), seed=wx)
     # 3층 동쪽 앞벽 무너짐(들쭉날쭉 아래로), 그 자리에 방 바닥 윗면이 보임
     def br(x):
-        if x < 50: return None
-        return ty + (5 if x < 62 else 9 if x < 76 else 12 if x < 88 else 7) + (h2(x, 9, 63) % 2) + (1 if x in (61, 75, 87) else 0)
-    for x in range(50, W):
+        return ty + (8 if x < 62 else 14 if x < 76 else 19 if x < 88 else 11) + (h2(x, 9, 63) % 2) + (1 if x in (61, 75, 87) else 0)
+    for x in range(54, W):
         yb = br(x)
         for y in range(ty - t, yb):
             c.clear(x, y)
             c.P(x, y, (K('soot', 0) if x % 18 in (4, 5, 6, 7, 8) and y > ty - t + 1 else K('plas', 1)) if y < yb - 4 else K('roof', 3 if h2(x, y, 64) % 6 else 2) if y < yb - 1 else K('roof', 4))
         c.P(x, yb, K('plas', 1)); c.P(x, yb + 1, K('plas', 2))
         if x % 4 == 1: rebar(c, x, yb, 3, 1 if x % 8 == 1 else -1)
-    for (x, y) in ((56, ty + 3), (70, ty + 6), (82, ty + 4)): chunk5(c, x, y, 4, 3, 'plas', seed=x)
+    for (x, y) in ((58, ty + 10), (70, ty + 16), (82, ty + 13)): chunk5(c, x, y, 4, 3, 'plas', seed=x)
     for x in range(W):                                          # 2층 창 줄 아래 페인트 벗겨진 띠 + 때
-        for y in range(ty + 28, ty + 32):
+        for y in range(ty + 2 * SH - 5, ty + 2 * SH):
             col = c.get(x, y)
             if col in MAT['plas'] and h2(x, y, 65) % 3: c.P(x, y, K('plas', max(1, MAT['plas'].index(col) - 1)))
-    for (x, y, w, h) in ((30, ty + 7, 7, 4), (75, ty + 22, 6, 5)):          # 회벽이 떨어져 드러난 벽돌
+    for (x, y, w, h) in ((17, ty + 12, 6, 5), (52, ty + SH + 12, 6, 5)):          # 회벽이 떨어져 드러난 벽돌
         for j in range(h):
             for i in range(w):
                 if (i in (0, w - 1)) and (j in (0, h - 1)): continue
                 c.P(x + i, y + j, K('brick', 1 if (j % 2 == 1 or (i + (j // 2) * 2) % 4 == 0) else 3))
         c.HL(x + 1, y - 1, w - 2, K('plas', 6))
     # 가게 층 위 처마(콘크리트 턱, 3/4: 윗면 3 + 앞 두께 2)
-    gy = ty + 32
+    gy = ty + 2 * SH
     c.R(0, gy, W, 3, K('conc', 6)); c.HL(0, gy, W, K('conc', 5)); c.HL(0, gy + 2, W, K('conc', 7))
     c.R(0, gy + 3, W, 2, K('conc', 3)); c.HL(0, gy + 4, W, K('conc', 1))
     for (x, d) in ((12, 1), (13, 2), (47, 2), (48, 2), (49, 1), (79, 2), (80, 1)): c.clear(x, gy, 1, d); c.P(x, gy + d, K('conc', 7))
     for x in range(58, 70): c.P(x, gy + 3, K('conc', 2)) if h2(x, 1, 69) % 2 else None
-    # 가게 셋(각 30 폭, 사이 기둥 3)
+    # 가게 셋(각 28 폭, 사이 기둥 3) — 칸 높이 30
     sy = gy + 5
     face(c, 0, sy, W, H - sy, 'conc', 3, seed=66, grime=3)
-    for x0 in (0, 31, 63, 93):                                  # 가게 사이 기둥(콘크리트, 왼 빛)
+    for x0 in (0, 31, 63, 93):
         c.R(x0, sy, 3, H - sy, K('conc', 4)); c.VL(x0, sy, H - sy, K('conc', 6)); c.VL(x0 + 2, sy, H - sy, K('conc', 2))
-    # 가게 1: 반쯤 올린 셔터 + 아래 어두운 속 + 앞 맨 차양 틀
+    # 가게 1: 말아 올린 셔터(위 통 4행) + 아래 어두운 입구(높이 26)
     for y in range(sy, H - 1):
         for x in range(3, 31):
             j = y - sy
-            if j < 10: c.P(x, y, K('metal', (6 if j % 4 == 0 else 4 if j % 4 == 1 else 3 if j % 4 == 2 else 1) - (1 if x > 26 and j % 4 else 0)))
-            else: c.P(x, y, K('soot', 0 if j < H - sy - 4 else 1))
-    c.HL(3, sy + 10, 28, K('metal', 6)); c.HL(3, sy + 11, 28, K('metal', 1))
-    c.HL(5, H - 7, 22, K('soot', 2)); c.HL(5, H - 6, 22, K('soot', 1))                  # 안 진열 선반(어둠 속 희미하게)
-    for x in (8, 15, 22): c.VL(x, H - 9, 2, K('soot', 2))
-    for k in range(4): c.P(25 - k, sy + 13 + k, K('soot', 3))                          # 비친 빛
-    for (x, y) in ((4, sy + 12), (5, sy + 13), (29, sy + 12), (28, sy + 14), (12, H - 2), (20, H - 3)): c.P(x, y, K('glass', 4))
+            if j < 3: c.P(x, y, K('metal', (6 if j == 0 else 4 if j == 1 else 2) - (1 if x > 26 and j else 0)))
+            else: c.P(x, y, K('soot', 0 if y < H - 5 else 1))
+    c.HL(3, sy + 3, 28, K('metal', 6)); c.HL(3, sy + 4, 28, K('metal', 1))
+    c.HL(5, H - 9, 22, K('soot', 2)); c.HL(5, H - 8, 22, K('soot', 1))                  # 안 진열 선반
+    c.HL(5, H - 17, 22, K('soot', 2)); c.HL(5, H - 16, 22, K('soot', 1))
+    for x in (8, 15, 22): c.VL(x, H - 11, 2, K('soot', 2)); c.VL(x + 2, H - 19, 2, K('soot', 2))
+    for k in range(5): c.P(25 - k, sy + 9 + k, K('soot', 3))
+    for (x, y) in ((4, sy + 7), (5, sy + 8), (29, sy + 7), (28, sy + 9), (12, H - 2), (20, H - 3)): c.P(x, y, K('glass', 4))
     c.P(13, H - 2, K('glass', 2)); c.P(8, H - 4, K('wood', 3)); c.P(9, H - 4, K('wood', 2))
     # 가게 2: 닫힌 셔터(찌그러짐 + 녹 줄)
     for y in range(sy, H - 1):
         for x in range(34, 63):
             k = (y - sy) % 4
-            dent = 44 <= x <= 52 and sy + 8 <= y <= sy + 13
+            dent = 44 <= x <= 52 and sy + 10 <= y <= sy + 17
             c.P(x, y, K('metal', (6 if k == 0 else 4 if k == 1 else 3 if k == 2 else 1) - (1 if dent else 0) - (1 if x > 58 and k else 0)))
-    for (x, ln) in ((39, 3), (55, 5)): drips(c, x, sy + 1 + (x % 3), ln)
-    for x in range(40, 47): c.P(x, sy + 7 + (x - 40) // 3, K('metal', 6))
+    for (x, ln) in ((39, 4), (55, 6)): drips(c, x, sy + 1 + (x % 3), ln)
+    for x in range(40, 47): c.P(x, sy + 9 + (x - 40) // 3, K('metal', 6))
     c.R(34, H - 4, 29, 3, K('metal', 1)); c.P(46, H - 3, K('soot', 0)); c.P(47, H - 3, K('soot', 0))
-    # 가게 3: 깨진 진열창(빈 틀 + 남은 유리 조각) + 출입구
+    # 가게 3: 깨진 진열창(빈 틀 + 남은 유리 조각) + 진열대 턱(높이 13)
     for y in range(sy, H - 1):
         for x in range(66, 93):
             c.P(x, y, K('soot', 0 if y < H - 6 else 1))
     c.HL(66, sy, 27, K('metal', 5)); c.VL(66, sy, H - sy - 1, K('metal', 4)); c.VL(80, sy, H - sy - 1, K('metal', 3)); c.VL(92, sy, H - sy - 1, K('metal', 2))
-    for k in range(5): c.P(76 - k, sy + 6 + k, K('soot', 3)); c.P(89 - k, sy + 4 + k, K('soot', 2))   # 비친 빛
-    for (x, y) in ((79, sy + 3), (79, sy + 4), (78, sy + 5), (81, H - 8), (81, H - 9), (91, sy + 9), (90, sy + 10)): c.P(x, y, K('glass', 4))
-    for (x, y, l) in ((67, sy + 1, 4), (67, sy + 2, 2), (78, sy + 1, 2), (81, sy + 1, 5), (90, H - 6, 2)):
+    for k in range(6): c.P(76 - k, sy + 6 + k, K('soot', 3)); c.P(89 - k, sy + 4 + k, K('soot', 2))
+    for (x, y) in ((79, sy + 3), (79, sy + 4), (78, sy + 5), (81, H - 15), (81, H - 16), (91, sy + 9), (90, sy + 10)): c.P(x, y, K('glass', 4))
+    for (x, y, l) in ((67, sy + 1, 4), (67, sy + 2, 2), (78, sy + 1, 2), (81, sy + 1, 5), (90, H - 14, 2)):
         c.HL(x, y, l, K('glass', 4)); c.P(x, y + 1, K('glass', 2))
-    c.HL(66, H - 6, 14, K('conc', 5)); c.R(66, H - 5, 14, 4, K('conc', 2))             # 진열대 턱
+    c.HL(66, H - 13, 14, K('conc', 6)); c.HL(66, H - 12, 14, K('conc', 5)); c.R(66, H - 11, 14, 10, K('conc', 2)); c.HL(66, H - 11, 14, K('conc', 3))
     for (x, y) in ((70, H - 2), (74, H - 1), (86, H - 2)): c.P(x, y, K('glass', 5)); c.P(x + 1, y, K('glass', 3))
-    # 맨 차양 틀(가게 1 앞): 가로 쇠파이프(윗면 빛) + 찢긴 천 토막
-    c.HL(2, sy + 1, 30, K('metal', 6)); c.HL(2, sy + 2, 30, K('metal', 2))
-    for x in (4, 16, 29): c.VL(x, sy + 1, 6, K('metal', 3))
-    for (x, y, ln) in ((9, ty + 14, 5), (41, ty + 30, 4), (25, ty + 30, 6)):            # 창턱 밑 빗물·그을음 자국
+    # 맨 차양 틀(가게 1 앞, 처마 아래 높이 29): 가로 쇠파이프 + 기둥
+    c.HL(2, sy - 1, 30, K('metal', 6)); c.HL(2, sy, 30, K('metal', 2))
+    for x in (4, 29): c.VL(x, sy, 5, K('metal', 3))
+    for (x, y, ln) in ((9, ty + 21, 5), (43, ty + SH + 21, 4), (25, ty + SH + 21, 6)):
         for j in range(ln):
             for i in range(2):
                 col = c.get(x + i, y + j)
                 if col in MAT['plas']: c.P(x + i, y + j, K('plas', max(1, MAT['plas'].index(col) - 2 + (j > ln // 2))))
-    for x in range(46, 52):                                     # 무너진 자리 옆 때
-        for y in range(ty, ty + 14):
+    for x in range(48, 54):
+        for y in range(ty, ty + 20):
             col = c.get(x, y)
             if col in MAT['plas'] and h2(x, y, 70) % 3 == 0: c.P(x, y, K('plas', max(1, MAT['plas'].index(col) - 2)))
-    leaves(c, 92, ty + 2, ty + 30, seed=6, spread=2)
-    leaves(c, 2, ty + 18, gy, seed=1, spread=1)
+    leaves(c, 92, ty + 2, ty + 2 * SH - 2, seed=6, spread=2)
+    leaves(c, 2, ty + SH + 4, gy, seed=1, spread=1)
     mound(c, 80, H - 1, 10, 4, seed=67)
-    grit(c, 0, ty, W, 32, mat='plas', seed=68, rate=41, cracks=2)
+    grit(c, 0, ty, W, 2 * SH, mat='plas', seed=68, rate=41, cracks=2)
     c.clear(0, 0, 1, H); c.clear(W - 1, 0, 1, H)
     c.outline()
