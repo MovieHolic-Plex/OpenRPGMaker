@@ -3,6 +3,8 @@ export const USER_FACING_REPORT_RULE = "사용자에게 보내는 최종 답변�
 
 export function friendlyExecutionError(message: string): string {
   // 제공자 쪽 끊김은 사용자가 멈춘 것이 아니다 — 「중단했어요」라고 하면 사용자가 자기가 멈춘 줄 안다(G12).
+  // 같은 맵의 앞선 작업이 아직 예약을 쥐고 있다 — 이유를 말하지 않으면 「실행 실패 · 변경 없음」만 보였다(2026-10-25 G46).
+  if (/이미 실행 중입니다|map-busy/u.test(message)) return "이 맵에서 앞선 조수 작업이 아직 끝나지 않았어요. 그 작업이 끝나거나 멈춘 뒤(최대 몇 분) 다시 보내 주세요.";
   if (/^Request was aborted\.?$|첫 응답이 늦어/i.test(message)) return "AI 모델의 첫 응답이 너무 늦어 요청이 끊겼어요. 같은 요청을 다시 보내면 이어서 해요.";
   if (/중단했습니다|aborted/i.test(message)) return "작업을 중단했어요.";
   if (/PROHIBITED_CONTENT|content.filter|safety/i.test(message)) return "AI 제공자가 응답을 중단했어요. 답변을 끝까지 받지 못했어요.";
