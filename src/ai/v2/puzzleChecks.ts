@@ -6,6 +6,7 @@
 import { canMove, isPassable } from "@/project/collision";
 import type { GameMap, Project } from "@/project/types";
 import { playerAnchors } from "@/editor/tools/transferReachability";
+import { trivialCode } from "./puzzle";
 
 type Obj = Record<string, unknown>;
 const obj = (v: unknown): Obj | undefined => (v && typeof v === "object" && !Array.isArray(v) ? (v as Obj) : undefined);
@@ -212,6 +213,39 @@ export function gatesThatOpenNothing(project: Project, changedIds?: ReadonlySet<
       const cells = [...freed].slice(0, 3).map((k) => `(${k})`).join("·");
       out.push(`${map.name}의 「${ev.name || ev.id}」(${ev.id})가 ${cells} 칸을 열지만 그 너머는 이미 다른 길로 걸어 닿는다 — 장치를 안 써도 끝까지 간다`);
     }
+  }
+  return out;
+}
+
+/**
+ * 너무 쉬운 자물쇠(2026-10-25 판정 J63): 번호 자물쇠 답이 1024·1234·0000 처럼 아무나 먼저 쳐 보는 번호이거나,
+ * 고르기 자물쇠의 정답이 첫 보기라 첫 칸만 누르면 풀린다. 정답 보기 = 스위치를 켜거나 아이템을 주는 유일한 보기.
+ */
+export function weakPuzzleLocks(project: Project, changedIds?: ReadonlySet<string>): string[] {
+  const out: string[] = [];
+  const pays = (branch: unknown): boolean => {
+    let hit = false;
+    walk(branch, (cmd) => { if ((cmd.kind === "setSwitch" && cmd.value !== false) || (cmd.kind === "changeItem" && Number(cmd.amount ?? cmd.value ?? 1) > 0)) hit = true; });
+    return hit;
+  };
+  for (const map of Object.values(project.maps)) for (const ev of map.events ?? []) {
+    if (changedIds && !changedIds.has(ev.id)) continue;
+    let found = "";
+    for (const page of (ev.pages ?? []) as unknown as Obj[]) {
+      let input = false;
+      walk(page.commands, (cmd) => {
+        if (found) return;
+        if (/^input/u.test(String(cmd.kind))) input = true;
+        const c = obj(cmd.condition);
+        if (input && cmd.kind === "fork" && c?.kind === "variable" && (c.op === "==" || c.op === undefined) && trivialCode(String(c.value ?? ""))) found = `번호 자물쇠 답 ${String(c.value)} 은 누구나 먼저 쳐 보는 번호다`;
+        if (cmd.kind === "choices" && Array.isArray(cmd.options) && cmd.options.length >= 3) {
+          const paid = cmd.options.map((o) => pays(obj(o)?.branch));
+          if (paid[0] && paid.filter(Boolean).length === 1) found = `고르기 자물쇠의 정답 「${String(obj(cmd.options[0])?.text ?? "")}」이 첫 보기다 — 첫 칸만 눌러도 풀린다`;
+        }
+      });
+      if (found) break;
+    }
+    if (found) out.push(`「${ev.name || ev.id}」(${ev.id}): ${found}`);
   }
   return out;
 }
