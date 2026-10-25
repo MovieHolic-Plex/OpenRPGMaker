@@ -13,13 +13,22 @@ function slots(p: Project): { target: string; sequence: CinematicSequence | unde
     ...(p.system.gameOvers ?? []).map(row => ({ target: 'game-over:' + row.id, sequence: row.settings.sequence, set: (s: CinematicSequence) => { row.settings.sequence = s; } })),
   ];
 }
+/** 이미 선 형태(저장본을 그대로 읽은 JSON)로 들어온 슬롯 — 대체 시퀀스가 그대로면 캡슐 행을 그대로 이어 간다.
+ * 이게 없으면 저장본 JSON 을 바로 내보내기에 넣을 때 캡슐이 지워져 저작한 애니메틱 대신 대체 그림이 재생된다(G42). */
+function carried(project: Project, target: string, sequence: CinematicSequence | undefined) {
+  if (!sequence) return undefined;
+  const row = project.meta.oprnCinematicTimelines?.entries?.find(r => r?.target === target);
+  return row && stable(sequence) === stable(row.fallback) ? row : undefined;
+}
 export function encodeCinematicWire(project: Project): Project {
-  const candidates = slots(project).filter(s => s.sequence?.entry || s.sequence?.scenes.some(s => s.kind === 'animatic'));
+  const candidates = slots(project).filter(s => s.sequence?.entry || s.sequence?.scenes.some(s => s.kind === 'animatic') || carried(project, s.target, s.sequence));
   if (!candidates.length && !project.system.monsterCampaign && !project.meta.oprnCinematicTimelines) return project;
   const next = { ...project, meta: { ...project.meta }, system: { ...project.system, ...(project.system.gameOver ? { gameOver: { ...project.system.gameOver } } : {}), ...(project.system.gameOvers ? { gameOvers: project.system.gameOvers.map(r => ({ ...r, settings: { ...r.settings } })) } : {}) } };
   const entries: CinematicWireCapsule['entries'] = [];
   for (const slot of slots(next)) {
     const authored = slot.sequence;
+    const prior = carried(project, slot.target, authored);
+    if (prior) { entries.push(structuredClone(prior)); continue; }
     if (!authored || !authored.entry && !authored.scenes.some(s => s.kind === 'animatic')) continue;
     const { entry: _entry, ...fields } = authored;
     const fallback: CinematicSequence = { ...fields, enabled: authored.enabled && (!authored.entry || authored.entry.mode === 'new-game'), scenes: authored.scenes.map(s => {
