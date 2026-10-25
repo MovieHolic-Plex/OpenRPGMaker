@@ -8,7 +8,7 @@ import { parseStoreDeepLink } from "../../src/assetStore/deepLink";
 import { OPRN_CHANNELS } from "../shared/channels";
 import {
   storeCatalogSchema, storeConceptMadeSchema, storeConceptSlugSchema, storeConceptsSchema, storeLoginSchema, storeSlugSchema, storeUploadSchema, storeUrlSchema,
-  storeBlobSchema, storeReportSchema, storeVisibilitySchema, storeGameMineSchema, storeGamePublishSchema, storeGamePostSchema, storeGameCurrentSchema, storeGameReviewsSchema, storeReviewReplySchema,
+  storeBlobSchema, storeManifestSchema, storeReportSchema, storeVisibilitySchema, storeGameMineSchema, storeGamePublishSchema, storeGamePostSchema, storeGameCurrentSchema, storeGameReviewsSchema, storeReviewReplySchema,
 } from "../shared/schemas";
 import { AssetStoreClient, sameOriginUrl, StoreError } from "./assetStoreClient";
 
@@ -135,6 +135,8 @@ export function registerAssetStore(host?: StoreLinkHost): void {
   ipcMain.handle(OPRN_CHANNELS.storeConcept, (_event, payload: unknown) => wrap(() => storeClient().concept(storeConceptSlugSchema.parse(payload))));
   ipcMain.handle(OPRN_CHANNELS.storeConceptMade, (_event, payload: unknown) => wrap(() => storeClient().conceptMade(storeConceptMadeSchema.parse(payload))));
   ipcMain.handle(OPRN_CHANNELS.storeBlob,(_event, payload: unknown) => wrap(() => storeClient().blob(storeBlobSchema.parse(payload).sha256)));
+  // 판본 매니페스트만(팩을 통째로 받지 않는다) — 음악 팩에서 곡 하나만 넣을 때 그 곡 파일만 받는다.
+  ipcMain.handle(OPRN_CHANNELS.storeManifest, (_event, payload: unknown) => wrap(() => { const input = storeManifestSchema.parse(payload); return storeClient().manifest(input.slug, input.version); }));
   ipcMain.handle(OPRN_CHANNELS.storeInstalled, () => wrap(() => {
     const store = storeClient();
     // 받아 둔 초안이 그사이 공개됐으면 초안 표시를 뗀다(D2). 목록은 기다리지 않고 바로 돌려준다.

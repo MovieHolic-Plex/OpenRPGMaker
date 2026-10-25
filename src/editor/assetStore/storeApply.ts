@@ -36,6 +36,22 @@ export interface PreparedStoreItem {
 export async function prepareStoreItem(slug: string, options: { readonly assetIds?: readonly string[] } = {}): Promise<PreparedStoreItem> {
   const bridge = storeBridge();
   if (!bridge) throw new Error("스토어는 데스크톱 앱에서만 쓸 수 있습니다.");
+  // 음악 팩에서 곡만 고르면 팩을 통째로 받지 않고 매니페스트와 그 곡 파일만 받는다(조수 음악 카드·store_install assetIds).
+  if (options.assetIds?.length && bridge.manifest) {
+    const item = await bridge.item({ slug });
+    const manifest = subsetMusicManifest(await bridge.manifest({ slug, version: item.latestVersion }), options.assetIds);
+    const blobs = new Map<string, Uint8Array>();
+    for (const ref of manifest.blobs) blobs.set(ref.sha256, await bridge.blob({ sha256: ref.sha256 }));
+    const storeUrl = (await bridge.status()).url;
+    return prepareManifestItem(manifest, {
+      slug, version: item.latestVersion, author: item.author, storeUrl, itemUrl: `${storeUrl}/items/${encodeURIComponent(slug)}`,
+      blob: (sha: string): Uint8Array => {
+        const bytes = blobs.get(sha);
+        if (!bytes) throw new Error(`받은 곡 파일이 빠졌습니다(${sha.slice(0, 12)}). 다시 받아 주세요.`);
+        return bytes;
+      },
+    });
+  }
   // 아직 받지 않은 상품이면 받는다(스토어 창은 미리 받고 들어오고, 조수 도구는 여기서 받는다).
   if (!(await bridge.installed()).some((item) => item.slug === slug)) await bridge.install({ slug });
   const pkg = await bridge.package({ slug });

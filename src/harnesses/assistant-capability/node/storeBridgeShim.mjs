@@ -32,6 +32,7 @@ export function nodeStoreBridge(storeUrl) {
     catalog: async input => json(`/api/v1/items?${query(input)}`),
     item: async input => json(`/api/v1/items/${encodeURIComponent(input.slug)}${input.lang ? `?lang=${encodeURIComponent(input.lang)}` : ''}`),
     blob: async input => (await blob(input.sha256)).toString('base64'),
+    manifest: async input => json(`/api/v1/items/${encodeURIComponent(input.slug)}/versions/${Number(input.version)}/manifest`),
     installed: async () => [...installed.values()].map(entry => entry.record),
     install: async input => {
       const item = await json(`/api/v1/items/${encodeURIComponent(input.slug)}`);
@@ -69,7 +70,7 @@ export async function installStoreBridge(page, storeUrl, { autoInstall = false }
     const call = (method, payload) => window.__oprnStoreCall(method, payload);
     const store = {
       status: () => call('status'), setUrl: () => call('status'), catalog: input => call('catalog', input), item: input => call('item', input),
-      blob: async input => toBytes(await call('blob', input)), installed: () => call('installed'), install: input => call('install', input),
+      blob: async input => toBytes(await call('blob', input)), manifest: input => call('manifest', input), installed: () => call('installed'), install: input => call('install', input),
       uninstall: input => call('uninstall', input),
       package: async input => { const pkg = await call('package', input); return { ...pkg, blobs: Object.fromEntries(Object.entries(pkg.blobs).map(([sha, b64]) => [sha, toBytes(b64)])) }; },
       mine: () => Promise.reject(Error('로그인하지 않았습니다.')), login: () => Promise.reject(Error('시험 다리는 로그인하지 않는다')), logout: async () => true,

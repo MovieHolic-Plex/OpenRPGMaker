@@ -98,14 +98,14 @@ async function cards(selector = CARD_SELECTOR) {
     buttons: [...node.querySelectorAll('button')].filter(b => !b.disabled).map(b => ({ testid: b.dataset.testid ?? null, text: b.innerText.trim().slice(0, 80) })),
   })), selector).catch(() => []);
 }
-async function waitSettle(mark, startedAt) {
+async function waitSettle(mark, startedAt, graceMs = 20000) {
   // A turn is over when the stream closed after the mark and the bridge is idle, or a card waits for an answer.
   for (;;) {
     if (Date.now() - startedAt > turnTimeoutMs) return 'timeout';
     const value = await page.evaluate(m => ({ events: (window.__capEvents ?? []).slice(m), busy: Boolean(window.__oprnAiBridge?.status().turnBusy) }), mark).catch(() => null);
     if (value) {
       const closed = value.events.some(e => ['stream_closed', 'error', 'stream_error'].includes(e.type));
-      if (!value.busy && (closed || Date.now() - startedAt > 20000)) return 'settled';
+      if (!value.busy && (closed || Date.now() - startedAt > graceMs)) return 'settled';
       if ((await cards()).length && value.busy) {
         // A pending question card holds the turn. Give the operator the decision.
         await sleep(5000);
@@ -179,7 +179,8 @@ try {
       log(`\n## ${step} USER CLICK (${new Date().toISOString()}) ${body.split('\n')[0]}\n`);
     }
     writeState({ phase: 'turn', step });
-    const outcome = await waitSettle(mark, startedAt);
+    // 카드 단추(예: 스토어 음악 「넣기」)는 받기가 끝난 뒤에야 후속 요청을 보낸다 — 그 턴이 시작될 때까지 더 기다린다.
+    const outcome = await waitSettle(mark, startedAt, kind === 'click' ? 5 * 60_000 : 20000);
     if (outcome === 'timeout') {
       await page.evaluate(() => window.__oprnAiBridge?.abort()).catch(() => {});
       await page.waitForFunction(() => !window.__oprnAiBridge?.status().turnBusy, null, { timeout: 60000 }).catch(() => {});
