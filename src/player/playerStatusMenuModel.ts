@@ -23,6 +23,7 @@ import { actorFieldStateNames } from "@/player/actorFieldStates";
 import { buildQuestLog } from "@/player/questLog";
 import type { SaveSlotReadResult } from "@/player/saveSlots";
 import type { MenuSkinRailStyle } from "@/player/menuSkins/types";
+import { STORY_JOURNAL_DEFAULT_TITLE, storyJournal } from "@/project/storyJournal";
 
 export const STATUS_MENU_COMMAND_IDS = FIELD_MENU_COMMANDS;
 
@@ -42,7 +43,7 @@ const STATUS_MENU_COMMAND_GROUPS: readonly {
 }[] = [
   { id: "action", label: "행동", commandIds: ["items", "skills", "equipment"] },
   { id: "party", label: "파티", commandIds: ["status", "row", "formation", "monsters"] },
-  { id: "record", label: "기록", commandIds: ["monster-dex", "region-map", "campaign-progress", "trainer-card", "battle-reports", "quests", "relationships", "gallery", "endings", "life-ledger", "backlog"] },
+  { id: "record", label: "기록", commandIds: ["monster-dex", "region-map", "campaign-progress", "trainer-card", "battle-reports", "quests", "journal", "relationships", "gallery", "endings", "life-ledger", "backlog"] },
   // to-title 은 진행 손실 위험이 있는 파괴적 액션이므로 항상 마지막.
   { id: "system", label: "시스템", commandIds: ["save", "load", "wait", "options", "to-title"] },
 ];
@@ -269,6 +270,8 @@ export function listStatusMenuCommandIds(project: Project, session: PlaySession)
     if (id === "life-ledger") return hasLifeLedgerData(project, session);
     // 백로그는 저작된 대사 시스템에서 켠 게임에만 — 그 밖의 메뉴(옛 프로젝트 포함)는 그대로다.
     if (id === "backlog") return backlogEnabled(project);
+    // 이야기 일지는 저작했거나(configure_story_journal) 이미 줄이 적힌 게임에만.
+    if (id === "journal") return Boolean(storyJournal(project)) || (session.storyJournal?.length ?? 0) > 0;
     if (id === "save") return !saveDisabled;
     return true;
   });
@@ -423,6 +426,7 @@ export function statusMenuCommandLabel(commandId: StatusMenuCommandId, waitModeE
     case "formation": return "진형";
     case "battle-reports": return "전투 기록";
     case "quests": return "임무";
+    case "journal": return (project && storyJournal(project)?.title) || STORY_JOURNAL_DEFAULT_TITLE;
     case "relationships": return "관계";
     case "gallery": return project && resolveVnExtras(project)?.gallery.enabled ? vnGalleryLabel(project) : galleryMenuLabel(project);
     case "endings": return vnUiText(vnExtrasLanguage(project), "menu.endings");
@@ -503,6 +507,8 @@ export function statusMenuCommandSummary(
       return `${session.battleReports?.length ?? 0}전투`;
     case "quests":
       return `${buildQuestLog(project, session).length}건`;
+    case "journal":
+      return `${session.storyJournal?.length ?? 0}줄`;
     case "save":
     case "load":
       return `${slots.filter((slot) => slot.kind === "present").length}/${Math.max(slots.length, 1)}칸`;

@@ -58,6 +58,7 @@ import { resourceDisplayName } from "@/player/resourceDisplay";
 import { friendshipDisplayName, listFriendshipEntries } from "@/project/friendship";
 import { friendshipDisplayMax } from "@/project/socialLoop";
 import { createLifeLedgerDetail } from "@/player/lifeLedger";
+import { STORY_JOURNAL_DEFAULT_TITLE, journalLineStateLabel, journalWriterName, storyJournal } from "@/project/storyJournal";
 import {
   isStatusMenuGroupEntryId,
   listStatusMenuGroupCommandIds,
@@ -113,6 +114,7 @@ export function createStatusMenuDetail(options: StatusMenuDetailOptions): Status
     case "gallery": return galleryDetail(options.project, options.session);
     case "endings": return endingsDetail(options.project, options.session);
     case "backlog": return backlogDetail(options.project, options.session);
+    case "journal": return journalDetail(options.project, options.session);
     case "life-ledger": return createLifeLedgerDetail({
       project: options.project,
       session: options.session,
@@ -156,6 +158,7 @@ const GROUP_COMMAND_DESCRIPTIONS: Partial<Record<StatusMenuCommandId, string>> =
   relationships: "동료·주민과의 관계를 봅니다.",
   gallery: "모아 둔 그림을 다시 봅니다.",
   backlog: "지난 대사와 고른 선택지를 다시 읽습니다.",
+  journal: "이야기 일지에 적힌 줄을 다시 읽습니다.",
   "life-ledger": "출하·꾸러미·생활 기술·가공 설비·수집 도감·박물관 기록을 관리합니다.",
   options: "음량·대사 속도·메뉴 움직임을 이 기기에 설정합니다.",
   save: "현재 진행을 슬롯에 저장합니다.",
@@ -1028,6 +1031,28 @@ function backlogDetail(project: Project, session: PlaySession): StatusMenuDetail
     ],
     emptyLabel: text("backlog.empty"),
     hint: text("menu.backlogHint"),
+  };
+}
+
+/** 이야기 일지 — 적힌 순서대로, 날짜·필체 머리 + 본문. 지워진 줄은 흐리게(본문을 가린다), 다시 읽은 줄은 표시를 단다. */
+function journalDetail(project: Project, session: PlaySession): StatusMenuDetail {
+  const lines = session.storyJournal ?? [];
+  const title = storyJournal(project)?.title ?? STORY_JOURNAL_DEFAULT_TITLE;
+  return {
+    title,
+    entries: lines.map((line) => {
+      const head = [line.date, line.writer ? journalWriterName(project, line.writer) : ""].filter(Boolean).join(" · ");
+      const mark = journalLineStateLabel(line.state);
+      return {
+        label: head || "—",
+        value: mark,
+        description: line.state === "erased" ? line.text.replace(/\S/gu, "·") : line.text,
+        testId: `status-menu-journal-${line.id}`,
+        attributes: { "data-journal-state": line.state },
+      };
+    }),
+    emptyLabel: "아직 적힌 줄이 없습니다.",
+    hint: lines.some((line) => line.state === "erased") ? "흐린 줄은 지워진 줄입니다. 누군가 다시 읽어 주면 돌아옵니다." : undefined,
   };
 }
 

@@ -338,6 +338,7 @@ export interface PlaySessionLike {
   stepCount?: number;
   teleportPoints?: import("./teleportPoints").TeleportPoint[];
   highScores?: Record<string, number>;
+  storyJournal?: import("./storyJournal").JournalLine[];
   /** 키 폴링(Key Poll) 이 매 프레임 쓰는 현재 입력. 세이브에 넣지 않는다. */
   heldInput?: { readonly dir: number; readonly confirm: boolean; readonly cancel: boolean; readonly dash: boolean };
   clearHistory?: { count: number; endingIds: string[] };

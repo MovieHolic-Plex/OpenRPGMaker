@@ -382,6 +382,7 @@ function statusMenuCommandIcon(commandId: StatusMenuRailId): string {
     case "life-ledger": return "▦";
     case "endings": return "★";
     case "backlog": return "≡";
+    case "journal": return "✎";
     case "save": return "↓";
     case "load": return "↑";
     case "wait": return "Ⅱ";
@@ -416,6 +417,7 @@ function statusMenuCommandIconName(commandId: StatusMenuRailId): string {
     case "life-ledger": return "book-magic";
     case "endings": return "badge";
     case "backlog": return "book-magic";
+    case "journal": return "book-magic";
     case "save": return "crystal";
     case "load": return "warp-scroll";
     case "wait": return "clock";
@@ -458,6 +460,7 @@ function runCommand(command: StatusMenuCommand, actions: PlayerStatusMenuActions
     case "endings":
     case "life-ledger":
     case "backlog":
+    case "journal":
       actions.onCommand(command.id as StatusMenuCommandId);
       return;
     default:

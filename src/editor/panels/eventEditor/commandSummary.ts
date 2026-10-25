@@ -926,6 +926,15 @@ function page3M2SummaryParts(
         valuePart(`${str("durationMs") || "1200"}ms`)
       );
     }
+    case "Journal Line": {
+      const action = str("action") || "write";
+      const line = str("lineId");
+      if (action === "erase" || action === "reread") {
+        return commandLine(labelOf("일지"), valuePart(action === "erase" ? "줄 지우기" : "다시 읽어 주기"), plainPart(" · "), valuePart(line || "(줄 id 없음)"));
+      }
+      const head = [str("date"), str("writer")].filter(Boolean).join(" · ");
+      return commandLine(labelOf("일지"), ...(head ? [valuePart(head), plainPart(" — ")] : []), valuePart(str("text") || "(내용 없음)"));
+    }
     case "Lift Ride": {
       const mode = str("mode") || "depart";
       const modeLabel = mode === "arrive" ? "도착" : mode === "move" ? "층 이동" : "떠나기";

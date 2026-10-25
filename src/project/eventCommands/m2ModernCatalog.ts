@@ -61,6 +61,12 @@ export const PARTICLE_PRESET_OPTIONS: readonly M2CommandFieldOption[] = PARTICLE
   label: PARTICLE_PRESET_LABELS[value],
 }));
 
+const JOURNAL_ACTION_OPTIONS: readonly M2CommandFieldOption[] = [
+  { value: "write", label: "한 줄 쓰기(같은 줄 id 면 고쳐 쓰기)" },
+  { value: "erase", label: "줄 지우기(메뉴에서 흐리게)" },
+  { value: "reread", label: "지워진 줄 다시 읽어 주기(되살리기)" },
+];
+
 const LIFT_MODE_OPTIONS: readonly M2CommandFieldOption[] = [
   { value: "depart", label: "떠나기(움직인 채로 — 뒤에 장소 이동)" },
   { value: "arrive", label: "도착하기(반대쪽에서 지금 자리로)" },
@@ -451,6 +457,17 @@ export function modernFieldsFor(title: string): readonly M2CommandFieldSpec[] | 
         { key: "depth", label: "발판 깊이(칸)", type: "number", defaultValue: 2, min: 1, max: 4, step: 1 },
         { key: "se", label: "기계음 효과음", type: "text", defaultValue: "cc0-se-osx-machine-02" },
         { key: "wait", label: "끝날 때까지 대기", type: "boolean", defaultValue: true },
+      ];
+    case "Journal Line":
+      return [
+        { key: "action", label: "동작", type: "select", defaultValue: "write", options: JOURNAL_ACTION_OPTIONS },
+        { key: "lineId", label: "줄 id(지우기·다시 읽기가 가리킨다, 쓰기는 비우면 자동)", type: "text", defaultValue: "" },
+        { key: "writer", label: "필체(일지 필체 id 또는 이름)", type: "text", defaultValue: "" },
+        { key: "date", label: "날짜 칸", type: "text", defaultValue: "" },
+        { key: "text", label: "내용", type: "textarea", defaultValue: "" },
+        { key: "learnActorId", label: "다시 읽을 때 기술을 배울 배우", type: "text", defaultValue: "" },
+        { key: "learnSkillId", label: "다시 읽을 때 배울 기술", type: "text", defaultValue: "" },
+        { key: "resultSwitchId", label: "실제로 바뀌면 켤 스위치", type: "text", defaultValue: "" },
       ];
     case "Data Query":
       return [

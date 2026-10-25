@@ -3809,3 +3809,12 @@ r8~r11 실편집기 녹화에서 조수는 도구를 찾지 않고 paint_tiles �
 - **풀이 검사가 쓰기 전 관문이다.** 두 묶음의 출발 칸에서 칸 단위로 걷고(타일 `canMove`, 이동 이벤트는 건너편으로, 늘 막는 이벤트·닫힌 문·레버·구슬은 못 지남), 닿는 레버를 당겨 문을 여는 것을 고정점까지 되풀이한다. 두 묶음이 모두 합류 칸에 닿지 못하면 `party-split-unsolvable` 로 거절한다. 경고: 문이 다 닫혀도 풀림(문이 길목이 아님), 문 하나가 아무것도 안 막음, 모든 레버를 자기 문 앞 묶음이 스스로 당김(짝이 아님), 두 길이 안 갈라짐, 전환 구슬 곁에 설 수 없음.
 - 엔진 변경은 하나: `storeParty` 에 선택 칸 `actorIds·mapId·x·y`(`partySets.ts storePartySet(session, id, preset)`). 미리 만들기는 지금 파티·`activePartySetId` 를 건드리지 않는다 — 건드리면 다음 `recallParty` 가 지금 파티로 그 묶음을 덮는다.
 - 못 하는 것: ESC 메뉴 단추로 묶음 바꾸기(메뉴에 공통 이벤트를 다는 길이 없어 조사 구슬만), 기다리는 묶음을 맵에 그려 두기, 지형 칠하기(길·벽은 먼저 있어야 한다). 하네스 사례 `fs2-party-split`.
+
+## 이야기 일지 — `configure_story_journal` · m2 «Journal Line»(일지에 한 줄 쓰기) (2026-10-25, 폴른 2막 과제 7)
+
+- **설정**은 `meta.oprnStoryJournal {version:1, title, writers:[{id,name}]}`(`src/project/storyJournal.ts`, 검증은 `shapeResourceFields`). **줄**은 세이브에 들어가는 `session.storyJournal`(`saveSlots` 직렬화·복원·파싱).
+- 명령 `m2-227-journal-line` 필드: `action write|erase|reread`, `lineId`, `writer`, `date`, `text`, `learnActorId`, `learnSkillId`, `resultSwitchId`. 즉시 끝나는 기록 명령이다(해석 `player/interpreter/journalCommands.ts`, StepResult 없음).
+  write 는 같은 lineId 를 고쳐 쓰고(보통 상태로) 없으면 덧붙인다. erase 는 「지워진 줄」(메뉴에서 흐리게, 본문은 점으로 가린다), reread 는 지워진 줄만 「다시 읽은 줄」로 되살리고 묶인 배우가 기술을 배운다.
+- ESC 메뉴 항목 id `journal`(「기록」 묶음). 기본 메뉴는 설정이 있거나 줄이 하나라도 적혔을 때만 보인다. 저작된 메뉴(`oprnFieldMenu`)에는 도구가 저장 앞에 항목을 넣는다(12칸이 차 있으면 알리기만).
+- 도구 `configure_story_journal {title, writers, lines:[{mapId,eventId|commonEventId, pageId?, afterText?, action, lineId, writer, date, text, learnActorId, learnSkillId, say?, resultSwitchId?}], remove?}` — 일지 설정과 이벤트 안 명령을 한 번에 넣는다. say 는 명령 앞 대사 한 줄(다시 읽어 주는 말).
+- 시험 과제: `harness-data/space-craft/seed.json` `fs2-journal`.

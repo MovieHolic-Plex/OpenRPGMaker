@@ -123,6 +123,7 @@ const QUICK_AUTHORING_PAGE_TITLES: ReadonlySet<string> = new Set([
   "Wait Until",
   "Weighted Branch",
   "Quest Objective",
+  "Journal Line",
   "Advanced Dialogue",
   "Sound Layer",
 ]);
@@ -388,7 +389,8 @@ function isDialogueInputCommand(title: string): boolean {
     title === "Show Choices" ||
     title === "Input Number" ||
     title === "Name Input Processing" ||
-    title === "Advanced Dialogue"
+    title === "Advanced Dialogue" ||
+    title === "Journal Line"
   );
 }
 

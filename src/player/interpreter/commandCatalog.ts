@@ -1,3 +1,4 @@
+import { applyJournalLine } from "./journalCommands";
 import { normalizeLiftRide } from "@/project/eventCommands/liftRide";
 import { isParticlePreset, normalizeParticleDurationMs, normalizeShakeDirection } from "@/project/eventCommands/cinematicStaging";
 import { playerChoiceText } from "@/project/choiceText";
@@ -158,6 +159,11 @@ function executeM2Command(
   }
   if (entry.title === "High Score") {
     applyHighScore(state.session, command.fields);
+    return resumeNext(frame);
+  }
+  // 이야기 일지 — 즉시 끝나는 기록 명령(ESC 메뉴 「일지」 가 읽는다).
+  if (entry.title === "Journal Line") {
+    applyJournalLine(state.session, command.fields);
     return resumeNext(frame);
   }
   if (entry.title === "Timed Choice") return pause("timedChoice", timedChoiceStep(command.fields));
