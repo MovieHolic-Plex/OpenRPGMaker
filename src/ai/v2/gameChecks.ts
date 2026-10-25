@@ -10,6 +10,7 @@ import { usesRelationshipMenu } from "@/project/relationshipMenu";
 import { simulateBattle } from "@/battle/simulate";
 import { lockBypasses, placeholderTexts, selfRevealingLocks, unjoinedFollowers } from "./puzzleChecks";
 import { splitScriptSpeaker } from "@/project/endingSummary";
+import { oversizedSprites } from "./lookChecks";
 
 type Obj = Record<string, unknown>;
 const obj = (v: unknown): Obj | undefined => (v && typeof v === "object" && !Array.isArray(v) ? (v as Obj) : undefined);
@@ -681,6 +682,8 @@ export function gameContentProblems(before: Project, after: Project, task: strin
     const combo = after.database.skills.some((sk) => (sk.comboActorIds?.length ?? 0) >= 2 && prior.get(sk.id) !== JSON.stringify(sk));
     if (!combo) problems.push("[게임 검사 연계기] 요청에 연계기가 있는데 새로 만든 연계 기록이 없다(평범한 기술은 「연계」 명령에 안 뜬다). upsert_combo_tech{id:'skill_combo_…', name, actorIds:[두 배우], mpCosts, scope, power} 로 만들고, 참가 배우가 파티에 없으면 set_party 로 넣는다.");
   }
+  // 그림 크기(J23): 보스가 아닌데 파티보다 훨씬 크게 그린 칩.
+  problems.push(...oversizedSprites(before, after));
   return problems;
 }
 
