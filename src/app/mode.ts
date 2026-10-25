@@ -130,7 +130,8 @@ export async function bootApp(root: HTMLElement): Promise<void> {
     // 못 찾아 DB 연결 설정 화면으로 떨어진다(로컬 폴더 정본인데도).
     await attachElectronFolderAtBoot();
     // P6: 온라인 저장이 없다 — 첫 방문에 열 원격 데모 행도, 발급할 행도 없다. 항상 기존 로드 경로다.
-    await store.load();
+    // 새 빌드 첫 실행의 부팅 정규화는 첫 화면 뒤로 미룬다 — 저장·조수 실행은 끝날 때까지 기다린다(store.whenBootNormalized).
+    await store.load({ deferBootNormalization: true });
     bootMark("project-loaded");
     rememberBootBrief(store.getCurrent(), getAiConnectionStatus().kind === "ready");
   } catch (error) {

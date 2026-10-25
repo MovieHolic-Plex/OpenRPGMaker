@@ -303,6 +303,12 @@ class ProjectStore {
   private readOnlyProjectSnapshot: Project | null = null;
   private loadedRemoteProjectId: string | null = null;
   private localProjectSessionId = randomUuid();
+  /**
+   * 첫 화면 뒤로 미룬 부팅 정규화(load({ deferBootNormalization: true }) — 표식이 지금 빌드와 안 맞는 문서).
+   * 끝날 때까지 모든 저장(persistCurrent)과 조수 기준 캡처(whenBootNormalized)는 기다린다 — 정규화 안 된 문서는 저장되지 않는다.
+   * 실패하면 `failed` 가 남아 저장이 계속 거절된다(정규화 안 된 문서를 덮어쓰지 않는다).
+   */
+  private deferredBootNormalization: { readonly lineage: number; promise: Promise<void> | null; failed: unknown } | null = null;
 
   /** 부를 때마다 고른다 — 테스트가 import 뒤 setProjectRepositoryForTest 로 바꿔 끼우기 때문이다. */
   private get repository(): ProjectRepository {
@@ -320,8 +326,14 @@ class ProjectStore {
     }
   }
 
-  async load(): Promise<Project> {
+  /**
+   * `deferBootNormalization`: 편집기 부팅(src/app/mode.ts)만 켠다. 표식이 안 맞는 문서(새 빌드 첫 실행)의 정규화를 첫 화면 뒤로 미룬다 —
+   * 새 빌드 첫 실행마다 정규화기·내용 요약이 편집 화면 앞에서 7~10s 를 막았다(2026-10-25 실측, ~/claude-viz/app-startup-audit.html).
+   * 저장·조수 기준 캡처는 정규화가 끝날 때까지 기다린다(whenBootNormalized). 끄면(기본, 테스트·헤드리스) 예전처럼 load 가 정규화까지 마친다.
+   */
+  async load(options: { readonly deferBootNormalization?: boolean } = {}): Promise<Project> {
     let seededNewLocalProject = false;
+    let mayDeferNormalization = false;
     try {
       const devShowcaseProject = devProjectFactory?.() ?? null;
       if (devShowcaseProject) {
@@ -362,6 +374,7 @@ class ProjectStore {
             throw new DbConnectionRequiredError("선택한 작업을 찾지 못했습니다.");
           } else {
             this.adoptProject(project, { restoreVault: true });
+            mayDeferNormalization = options.deferBootNormalization === true;
             const loadedProjectId = target?.projectId;
             const sharedDemo = isSharedDemoProjectId(loadedProjectId);
             // 공용 데모 행은 어떤 경로로 열리든 읽기 전용이다 — ?project= 딥링크나
@@ -386,7 +399,15 @@ class ProjectStore {
       this.dirtySinceLastPersist = false;
       // 방금 채택한 새 로컬 프로젝트는 폴더에 문서가 없다 — 첫 flush 대상으로 dirty 를 되돌린다.
       if (seededNewLocalProject && canWriteTeamProject()) this.dirtySinceLastPersist = true;
-      await this.normalizeCurrentProject({ persistIfChanged: false });
+      if (mayDeferNormalization && canWriteTeamProject() && !bootNormalizationMatches(this.current, currentBootNormalizationMarker())) {
+        // 첫 화면 뒤에 돈다. 그 전에 저장·조수 실행이 오면 그쪽이 먼저 시작시키고 기다린다.
+        const pending = { lineage: this.contentLineage, promise: null, failed: undefined };
+        this.deferredBootNormalization = pending;
+        bootMark("project-normalization-deferred");
+        afterBootSettled(() => { void this.whenBootNormalized().catch(() => undefined); });
+      } else {
+        await this.normalizeCurrentProject({ persistIfChanged: false });
+      }
       bootMark("project-normalized");
     } catch (error) {
       if (error instanceof DbConnectionRequiredError) {
@@ -409,6 +430,44 @@ class ProjectStore {
 
   isLoaded(): boolean {
     return this.loaded;
+  }
+
+  /** 미룬 부팅 정규화가 없거나 끝났으면 바로 풀린다. 아직이면 시작시키고 끝날 때까지 기다린다. 실패했으면 그 오류로 거절한다. */
+  whenBootNormalized(): Promise<void> {
+    const pending = this.deferredBootNormalization;
+    if (!pending) return Promise.resolve();
+    if (pending.lineage !== this.contentLineage) {
+      // 문서가 통째로 바뀌었다(재연결·전체 교체) — 그 경로가 자기 정규화를 맡는다.
+      this.deferredBootNormalization = null;
+      return Promise.resolve();
+    }
+    if (pending.failed !== undefined) return Promise.reject(pending.failed);
+    pending.promise ??= this.runDeferredBootNormalization(pending);
+    return pending.promise;
+  }
+
+  private async runDeferredBootNormalization(pending: { readonly lineage: number; promise: Promise<void> | null; failed: unknown }): Promise<void> {
+    // 같은 틱에 끝내지 않는다 — 부르는 쪽(첫 화면 콜백·저장)이 먼저 자기 일을 마치게.
+    await Promise.resolve();
+    if (pending.lineage !== this.contentLineage) {
+      if (this.deferredBootNormalization === pending) this.deferredBootNormalization = null;
+      return;
+    }
+    bootMark("deferred-normalization-start");
+    try {
+      const generation = this.mutationGeneration;
+      await this.normalizeCurrentProject({ persistIfChanged: false });
+      bootMark("deferred-normalization-done");
+      if (this.deferredBootNormalization === pending) this.deferredBootNormalization = null;
+      // 편집 화면은 정규화 전 문서로 그려졌다 — 바뀐 것이 있으면 다시 그리게 알린다.
+      if (this.mutationGeneration !== generation) this.emit({ scope: "project" });
+    } catch (error) {
+      pending.failed = error;
+      log.error("Deferred boot normalization failed — saves stay blocked", error);
+      throw error;
+    } finally {
+      if (this.deferredBootNormalization === pending && pending.failed === undefined && pending.lineage !== this.contentLineage) this.deferredBootNormalization = null;
+    }
   }
 
   /**
@@ -1531,6 +1590,8 @@ class ProjectStore {
 
   private async persistCurrent(): Promise<ProjectFlushResult> {
     if (!canWriteTeamProject()) return { kind: "disabled" };
+    // 미룬 부팅 정규화가 끝나기 전에는 쓰지 않는다 — 정규화 안 된 문서가 정본이 되면 안 된다(실패면 여기서 던진다).
+    if (this.deferredBootNormalization) await this.whenBootNormalized();
     // Always checkpoint open drafts to localStorage before remote I/O so a
     // tab crash mid-save can still recover the event editor session.
     syncEventDraftVaultFromProject(this.current);
@@ -1753,8 +1814,14 @@ class ProjectStore {
     // 돌리기 전에 한꺼번에 읽어 둔다 — 건너뛰는 웜 부팅은 읽지 않는다. 기다리는 동안 문서가 바뀌면 아래는 새 문서를 정규화한다.
     const definitions = skipNormalizers ? null : preloadAllBundledTilesetDefinitions();
     if (definitions) await definitions;
+    // 로드가 미룬 타일셋 요약은 정규화기가 고치기 전에 끝나 있어야 한다(electronRepository).
+    if (!skipNormalizers) await this.repository.settleDeferredDigests?.();
     if (!skipNormalizers) forgetTrustedSharedEntries();
-    const before = skipNormalizers ? null : jsonContentDigest(this.current);
+    // 표식을 새길 수 있는 빌드(bootMarker 있음)는 정규화 뒤 어차피 «바뀜»으로 저장한다 — 전후 문서 요약은 이름표(어느 정규화기가
+    // 손댔나)에만 쓰였다. 문서 전체 요약 두 번이 새 빌드 첫 부팅의 정규화 단계 CPU 의 약 60%(3.9s / 6.3s)였다(2026-10-25 프로필).
+    // 그 경우 정규화기 자신의 보고(applied)로 이름표를 단다. 표식이 없는 빌드(수정된 트리·개발)만 예전처럼 요약으로 판정한다.
+    const digestChanges = !skipNormalizers && bootMarker === null;
+    const before = digestChanges ? jsonContentDigest(this.current) : null;
     // 어느 정규화기가 실제로 손을 댔는지 이름으로 남긴다.
     // 실측(2026-08-29): 이 13개는 `this.current` 를 in-place 로 고치면서 markLocalMutation 을
     // 부르지 않는다 — 프로젝트가 로드 중에 조용히 바뀌는데 그 사실이 어디에도 안 남아서
@@ -1783,7 +1850,7 @@ class ProjectStore {
       ["faceMatches", faceMatchesRepaired(repairFaceMatches(this.current))],
     ];
     const appliedNormalizers = normalizers.filter(([, applied]) => applied).map(([name]) => name);
-    const changed = !skipNormalizers && before !== jsonContentDigest(this.current);
+    const changed = digestChanges ? before !== jsonContentDigest(this.current) : !skipNormalizers && appliedNormalizers.length > 0;
     if (!skipNormalizers) forgetTrustedSharedEntries();
     // 표식은 변경 판정(요약 대조) 뒤에 새긴다 — 표식 때문에 «정규화기가 손댔다»고 오판하지 않는다.
     const stamped = !skipNormalizers && bootMarker !== null;

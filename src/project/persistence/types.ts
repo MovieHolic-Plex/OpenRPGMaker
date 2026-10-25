@@ -168,6 +168,11 @@ export interface ProjectRepository {
    * 가지를 교체만 하므로 보기가 가리키는 내용은 제출 때 그대로다. 없으면 제출 전에 복제한다.
    */
   readonly returnsSubmittedCopy?: boolean;
+  /**
+   * 로드가 미뤄 둔 내용 요약(재사용 판정용)을 지금 끝낸다. 정규화기가 문서를 제자리에서 고치기 전에 스토어가 부른다 —
+   * 요약은 «호스트 본문 그대로» 의 값이어야 한다. 미루지 않는 어댑터는 두지 않는다.
+   */
+  settleDeferredDigests?(): Promise<void>;
   /** 지금 이 편집기 세션이 향하는 대상. 원격이면 설정·URL·저장된 선택에서 계산한다. */
   currentTarget(): ProjectTarget | null;
   status(disabledReason: DbPersistenceDisabledReason | null): PersistenceStatus;

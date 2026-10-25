@@ -356,6 +356,9 @@ async function runPiCommandProtected(command: ParsedPiCommand, surface: PiComman
     }
     if (identity !== JSON.stringify(store.getProjectIdentity())) return false;
   }
+  // 부팅 정규화를 첫 화면 뒤로 미뤘으면(새 빌드 첫 실행) 끝난 문서를 기준으로 잡는다 — 정규화 전 기준은 곧 낡은 기준이 된다.
+  await store.whenBootNormalized();
+  surface.signal?.throwIfAborted();
   const base = store.getCurrent();
   const { base: proposalBase, baseline } = captureApplyAuthority(base);
   const config = loadAiConfig();

@@ -5,7 +5,6 @@ import { deserializeParsed, projectWireView } from "../io/serialize";
 import { assetBlobOwners, parseFoldedDocument, restoreAssetBlobs, unfoldedDocumentTree } from "./core/foldedProject";
 import { jsonContentDigest } from "./core/contentDigest";
 import { sharedDefaultAssetDataUrl } from "../sharedContent";
-import { bootNormalizationMatches, currentBootNormalizationMarker } from "../bootNormalization";
 import { readTilesetBlobs, writeTilesetBlobs } from "./tilesetBlobCache";
 import { applyProjectDocumentPatch, diffProjectDocumentsSliced, withWirePatchValuesSliced, type ProjectDocumentPatch } from "./core/projectPatch";
 import { projectWithoutEventDrafts } from "../eventDrafts";
@@ -240,6 +239,8 @@ export function createElectronRepository(): ElectronRepository {
     };
   };
 
+  /** 아직 요약이 없는 타일셋(로드가 미뤘다). 정규화 전에 settleDeferredDigests 가 비운다. */
+  let unsettledDigests: ParsedTileset[] = [];
   /** 재사용 판정용 요약을 한가할 때 타일셋 하나씩 센다. 새 로드가 지도를 바꿨으면 멈춘다. */
   const digestParsedTilesetsWhenIdle = (owner: Map<string, ParsedTileset>, entries: readonly ParsedTileset[]): void => {
     const schedule = (run: () => void): void => {
@@ -322,8 +323,9 @@ export function createElectronRepository(): ElectronRepository {
       // 부팅 정규화가 건너뛰어지는 문서(표식이 지금 빌드·공용 판본과 짝)는 정규화기가 타일셋을 제자리에서 고치지 않는다 —
       // 요약을 «그 순간» 세지 않아도 나중에 센 값이 같다. 그 요약은 다음 재로드의 재사용 판정에만 쓰이므로(첫 로드는 재사용할 것이 없다)
       // 편집 화면이 뜬 뒤 한가할 때 타일셋 하나씩 센다. 실측(2026-10-14, 타일셋 379칸 98MB): 이 요약이 첫 화면 전 critical path 4.9s 였다.
-      // 정규화기가 돌 문서는 예전처럼 지금 센다(정규화가 같은 객체를 고치기 전의 값이어야 한다).
-      const deferDigests = bootNormalizationMatches(project, currentBootNormalizationMarker());
+      // (예전에는 정규화기가 돌 문서만 여기서 바로 셌다 — 정규화가 같은 객체를 고치기 전의 값이어야 해서.)
+      // 2026-10-25: 정규화기가 돌 문서도 미룬다 — 스토어가 정규화 직전에 `settleDeferredDigests` 로 남은 요약을 (양보하며) 끝낸다.
+      // 그래서 요약은 여전히 «정규화가 고치기 전» 값이고, 새 빌드 첫 부팅의 편집 화면 앞 critical path 에서 약 5s 가 빠진다.
       const next = new Map<string, ParsedTileset>();
       const lazyDigests: ParsedTileset[] = [];
       for (const [id, sha] of folded.tilesetShas) {
@@ -331,11 +333,12 @@ export function createElectronRepository(): ElectronRepository {
         if (tileset === undefined) continue;
         const previous = parsedTilesets.get(id);
         if (previous && previous.tileset === tileset) { next.set(id, previous); continue; }
-        const entry: ParsedTileset = { sha, tileset, digest: deferDigests ? undefined : jsonContentDigest(tileset) };
-        if (deferDigests) lazyDigests.push(entry);
+        const entry: ParsedTileset = { sha, tileset, digest: undefined };
+        lazyDigests.push(entry);
         next.set(id, entry);
       }
       parsedTilesets = next;
+      unsettledDigests = lazyDigests;
       if (lazyDigests.length > 0) digestParsedTilesetsWhenIdle(next, lazyDigests);
       loadedSha = loaded.sha256;
       return {
@@ -357,6 +360,16 @@ export function createElectronRepository(): ElectronRepository {
     kind: "local",
     returnsSubmittedCopy: true,
     supportsAssetRefs: true,
+    /** 로드가 미룬 타일셋 요약을 지금 끝낸다(하나마다 양보). 정규화기가 타일셋을 제자리에서 고치기 전에 스토어가 부른다. */
+    async settleDeferredDigests(): Promise<void> {
+      const entries = unsettledDigests;
+      for (const entry of entries) {
+        if (entry.digest !== undefined) continue;
+        entry.digest = jsonContentDigest(entry.tileset);
+        await yieldToTask();
+      }
+      if (unsettledDigests === entries) unsettledDigests = [];
+    },
     async open(projectDir: string): Promise<LocalProjectTarget> {
       const result = await electronBridge().project.open({ projectDir });
       loadedSha = null;
