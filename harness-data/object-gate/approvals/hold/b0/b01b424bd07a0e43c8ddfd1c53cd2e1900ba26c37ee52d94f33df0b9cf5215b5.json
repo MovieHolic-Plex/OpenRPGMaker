@@ -1,0 +1,16 @@
+{
+ "schema": "oprn-object-gate-hold-decision/1",
+ "pixelSha256": "b01b424bd07a0e43c8ddfd1c53cd2e1900ba26c37ee52d94f33df0b9cf5215b5",
+ "profileHash": "4d8774b517f41638",
+ "kind": "flat",
+ "decision": "allow",
+ "decidedBy": "supervisor (village-art)",
+ "decidedAt": "2026-10-23T01:21:26.535Z",
+ "by": "delegated",
+ "delegatedBy": "user",
+ "evidence": "tiledata/wasteland-ruins/_review/vqa-r7/pieces-verdict.json",
+ "via": "review-page",
+ "reasons": [],
+ "note": "delegated by user to supervisor 2026-10-23 — wasteland_ruins/pothole-b: gate PASS + 3 fresh Opus reviewers majority pass",
+ "sig": "cfdda29dfcc9348d53956a93d6bc0d7d896b2a0bec9703e840a5100a6134bd98"
+}

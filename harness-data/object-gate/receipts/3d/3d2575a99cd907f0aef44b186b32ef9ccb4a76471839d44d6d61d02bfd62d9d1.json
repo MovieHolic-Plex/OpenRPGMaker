@@ -1,0 +1,290 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "3d2575a99cd907f0aef44b186b32ef9ccb4a76471839d44d6d61d02bfd62d9d1",
+ "width": 64,
+ "height": 48,
+ "kind": "flat",
+ "name": "a dark spilled engine-oil stain soaked into packed earth, irregular blot with a faint rainbow sheen and a thin run-off trail",
+ "label": "wasteland_ruins/oil-stain-a",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 7,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "wasteland_ruins",
+   "fallback": true,
+   "reason": "칩셋 wasteland_ruins 의 화풍 기준 묶음이 없다",
+   "hash": "8cecb3a70460aa86"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 5,
+  "tileColorsP90": 10,
+  "darkV5": 41,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 12
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "packed-earth ground patch with oil blots (whole sprite)",
+      "rows": "0-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 48,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The sprite is a full 64x48 rectangle of earth texture with no transparent rows. Rows 0-47 are brown noise, and the column scans at x=16, 32 and 47 show only mottled earth tones. The three dark oil blots sit near rows 5-12, 20-28 and 37-44, with a small grey and red trail fragment near rows 38-43 at x=47. All of these lie on the ground plane. No front-edge line, eave shadow, ellipse rim or vertical face appears anywhere, so there is no front face (0 rows). This is a flat top-down decal, as expected for kind flat."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate's packed-earth soil is mottled across several brown steps, with patchy lighter and darker clumps and dark oil blots that sit in the soil by value instead of being ringed by a line. It has about 5 visible tones per tile, which is above the grass reference (3) and a little below the paving reference (7). Near-flat coverage is 0%, so there are no flat fills. Dark edge pixels are 0% neutral, so they lean brown and read as dark material tone, not a sticker outline. It is a little thinner than the references: only 16 colours in total, and the blots are small and fairly uniform, with little visible sheen. Still, a careful artist would accept it next to the grass and paving without it looking flat or sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 14302
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "packed earth ground tile with dark oil blots, a small run-off trail and a faint rainbow sheen, seen from above",
+      "rows": "0-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 48,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The image is a full 64x48 opaque earth-textured tile with scattered dark blots. Rows 6-11, 21-28 and 38-43 hold dark patches with blue-teal sheen pixels, and rows 38-43 near x=47 hold a grey-pink trail. There is no front face, no front-edge line, no eave shadow and no silhouette. The width is 64 across every row, so it is a flat ground texture seen from above, not an object. The 'flat' kind plausibly fits a floor decal, but the drawing fills the whole tile instead of showing an irregular stain with a transparent border, so kind_matches is set to false."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate measures 5 visible tones per tile, above the grass reference (3) and below the paving reference (7). Near-flat coverage is 0%, the same as both references, and the soil is mottled with several brown steps, so there are no flat fills. The 0% near-neutral share of dark edge pixels means the dark blots lean brown rather than black, so there is no sticker outline. It is somewhat thinner than the references. Only 16 colours in total, the blot clusters are small and low in contrast, and the rainbow sheen is barely visible. These weaknesses are not enough to call it shallow when the measured facts match the references, so it passes narrowly.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 12511
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "packed-earth ground patch with three dark oil blots and a small run-off trail",
+      "rows": "0-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 48,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The drawing fills a 64x48 rectangle (width 64 on every row) with a mottled brown earth texture. Dark blots with blue-black and teal sheen pixels sit at about rows 5-12, 20-28 and 36-44, and a small grey and pink trail is at rows 38-43. The column scans show no front-edge line, eave shadow, ellipse or vertical face. It is a uniformly top-down surface with no front face (0 rows), which suits a flat floor decal."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a brown packed-earth ground with mottled soil patches, speckle dots, and dark oil blots that have brown-tinted edges. Measured facts: 5 visible tones per tile, which is above the grass reference (3) and below the paving reference (7). Near-flat coverage is 0%, so there are no flat 5x5 fills. Dark edge pixels are 0% neutral, so the outlines lean brown rather than black, which fits dark_material_tone. Shading is about 4 soil steps plus 2-3 for the blots, roughly 5 overall and close to the reference ramps. The blots look somewhat scattered, and the rainbow sheen is not visible, but those are subject and palette matters, not shading craft. The patch is a bit simpler than the paving reference but not a flat sticker, so it holds up beside the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16767
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "packed-earth ground tile with oil blots (three dark blots at about rows 5-13, 19-28 and 36-44, plus a small run-off trail at rows 38-44)",
+      "rows": "0-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 48,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The drawing is a full-bleed 64x48 patch of earth texture seen straight from above. Every row has the same width of 64 and the column scans show only mottled earth tones with dark blots. There is no front-edge line, eave shadow, vertical face or height cue. The oil blots and the trail are flat surface marks. No front face is drawn (0 rows), which matches a flat decal lying on the ground."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a ground patch, the same kind as the grass and paving references. The earth carries about 4-5 brown tones, with grain, crack lines and speckle, so no area reads as a flat fill (near-flat coverage 0%). It shows 5 visible tones per tile, between the grass reference (3) and the paving reference (7). The dark oil blots have no hard outline and sit in the earth by value alone, with tinted dark edge pixels (0% neutral), so it does not look like a sticker. It is slightly less varied than the references in total palette (16 colours against 80 for the grass), so texture is 'some' rather than 'rich'. The sheen and run-off trail are barely readable, but that is about the object, not style craft. Its structure and density are acceptable beside the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 12589
+  }
+ ],
+ "decidedAt": "2026-10-24T16:18:26.755Z",
+ "cells": {
+  "16": [
+   "085be42defcbb8de",
+   "162055c4d8513e37",
+   "2c89a48922e7d60d",
+   "363dae9191616c1e",
+   "44473a9dc0405027",
+   "49c7cf0745670afc",
+   "5d83a9a744a0db71",
+   "86321864d112f0e8",
+   "9dcaf49a4c52984b",
+   "a5a5143982bbc314",
+   "d464b16dff957a89",
+   "efe044aa04cf6c04"
+  ],
+  "24": [
+   "0393243029e741d3",
+   "1a2ab9f05dc38f9b",
+   "23ee54658454c0df",
+   "2bf2826d422d165b",
+   "381825146b6c4364",
+   "4f41d547531b713b",
+   "687e84f81f8292e3",
+   "6cdd21122da0964a",
+   "800d13e944097701",
+   "8497205247a71b81",
+   "a083127c7148f060",
+   "a986cbd63b693120",
+   "c1aacb478141dde2",
+   "c7492f8afb29d42f",
+   "c7836ef85ce0eea6",
+   "d0dfc77f38ed61c9",
+   "dc333a17659a3283",
+   "dd151fe53e1a963d"
+  ],
+  "32": [
+   "12ff8272c9909b14",
+   "6bf6bd0405942c40",
+   "800ba92e8d2cf559",
+   "86a8ebb84e0c5de2",
+   "8ed19249745d7c9e",
+   "b088dfa07ba3ebe6",
+   "c6b002fe70ce501c",
+   "ce8256d72221c930"
+  ],
+  "48": [
+   "5f24a4796e283e2c",
+   "a2d9ae922c8c00dc",
+   "c5f26ff3c1348acc",
+   "d3e599efb2dbb922",
+   "f0d89782f8debae9",
+   "f5975919d1911134"
+  ]
+ }
+}

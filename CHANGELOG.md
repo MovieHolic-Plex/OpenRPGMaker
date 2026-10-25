@@ -5,6 +5,75 @@
 
 <!-- releases -->
 
+## 0.340.0 — 2026-10-25
+
+### 기능
+
+- **ai/v2** — 3-round adversarial visual QA loop for whole-game builds (#3475) (`da31ef9`)
+- **ai** — assistant role matrix with auto-assignment and per-role override (#3456) (`7a6d818`)
+- **ai** — assistant finds, installs and wires store music (auto by default, swap note) (#3465) (`f6fefeb`)
+- **beodeul-massing** — 27 hand-pixel medieval buildings from bk-massing-100 (gate + two independent reviews) (#3460) (`29c6f68`)
+
+### 수정
+
+- **ai-v2** — a missing image login no longer stops the turn — use the closest library picture and keep building (#3481) (`9ec1834`)
+- **ai-v2** — dress rooms by purpose, keep NPCs off lanes/exits and behind counters, check object events (#3480) (`fa463d3`)
+- **building-kit** — walk masks match the art (town-hall/market-hall/tithe-barn), check rejects passages and wall pockets; reference generator auto-splits docs >100k and validates REFERENCE_LIMITS (#3479) (`e208f31`)
+- **player** — monster-style defeat box shows two lines, not three (#3477) (`aad4ee3`)
+- **ai-v2** — pick faces, chips and title art by what they look like (J35 J30 J41 J38 J43) (#3476) (`083e985`)
+- **player** — a save that cannot be read back is never reported as saved (#3474) (`48b5266`)
+- **beodeul** — split the 262k street-tiles reference doc into 3 pages under the 120k limit (#3473) (`2464d1c`)
+- **ai** — type errors from #3464; slow providers don't kill the turn at the intent step; moderation 400 in plain Korean (#3471) (`1178029`)
+- **ai-v2** — menu/HUD requests never empty actor or class battle data (#3467) (`121405d`)
+- **ai-v2** — add_event after: picks the NPC talk page; HUD/menu words load HUD and menu tools (#3464) (`a6a8ccf`)
+- **ai-v2** — mid-floor guardians stay party size; finish check flags non-boss sprites drawn far larger than the party (J23) (#3459) (`b9811cf`)
+- **runtime** — KO state in menus, door-entry followers, ending quotes, phone 4:3 dock, pixel list width (#3458) (`1f8a101`)
+- **ai** — whole-game turns that stop on the skeleton (「기억의 조각 → 첫 구간 끝」) or with no ending are re-kicked up to 3 times (Salad S3) (#3457) (`9f67d9b`)
+
+### CI
+
+- **surface** — 스냅샷 6축 갱신 + eventSeesPlayer 픽스처 누락 수리 (#3461) (`8049a23`)
+- ci-fast on PRs, ci-full on a 4h cron, merge helper that waits for ci-fast (#3478) (`1201f18`)
+
+### 잡무
+
+- **deps** — bump @oh-my-pi/pi-agent-core 18.9.1 -> 18.12.3 and zod 4.6.6 -> 4.6.7 (#3470) (`46bdcdc`)
+- **agents** — tests run only on GitHub CI — local vitest, bun test, playwright test and gates exit 1 outside CI (#3468) (`fa40ff6`)
+- **building-kit** — commit massing drawing scripts and fantasy-kingdom round modules; regen.py --check reproduces all 32 pictures byte-identically (#3466) (`88e19b2`)
+- **dungeon** — drop unused resolveGraphic import (`95ea0ed`)
+- **dungeon** — remove floor VQA verdicts that no reviewer returned (r1 Sonnet, r3 Argon A) (`b7ef16f`)
+- **dungeon** — floor VQA r3 Argon A verdicts (`ec3291f`)
+- **dungeon** — floor VQA r1-r3 evidence (`868e5a4`)
+
+### 기타
+
+- **dungeon** — floor VQA r4-r6 evidence (sonnet 12/12, argon 4/12 at r6) (`b285e00`)
+- **dungeon** — r6 raw reviewer verdicts (sonnet 12/12 pass, argon 4/12) (`74ea58c`)
+- **dungeon** — r5 raw reviewer verdicts (`84e0de6`)
+- **dungeon** — otherworld void edges get the same majority smoothing as lava (`7c54633`)
+- **dungeon** — swamp mud mixes only its calm cells (`de9c679`)
+- **dungeon** — banked ponds use gap water interior variants (no 16px sparkle grid) (`541b917`)
+- **dungeon** — mine rail is one continuous row per room and corridor (`637e879`)
+- **dungeon** — drop the half-room ochre cell floor strip (`ba0fdd9`)
+- **dungeon** — choke bars only in wall-flanked horizontal necks in built dungeons (`2e1b53f`)
+- **dungeon** — wall face edge pieces only where the wall row really ends (stepped walls no longer show inner seams) (`115023d`)
+- **dungeon** — r5 fixes - cave boats on water, swamp pads/pilings on open water and living reeds, temple stone altar and braziers instead of cult kit (`78d29fb`)
+- **dungeon** — temple nave drops the single repeated moss slab (`38d8112`)
+- **dungeon** — catacomb cells use dark catacomb slab instead of ochre castle cell floor (`b504c3c`)
+- **dungeon** — wall-backed north standing props (thrones) first (`7800e76`)
+- **dungeon** — natural caves block the lever path with a boulder (no bars on open dirt); clutter only beside walls or other props; cave plank bridges; smoother cave outline (3 passes + single-column notch levelling) (`a76b702`)
+- **dungeon** — swamp water only in rooms, shade off water, one-rim thin ceilings, thickness fix for room layouts, mixed floor cells; theme-floors-r1 otherworld floor round; raw floor VQA r0-r4 outputs (`474c9c2`)
+- Revert "chore(dungeon): floor VQA r3 Argon A verdicts" (`7831dab`)
+- **dungeon** — ruins calm limestone with moss flagstone only in the nave; rubble at walls; gimmick circles avoid floor decals; cracked sandstone only in the pharaoh room (`fe48e7e`)
+- **dungeon** — ice sheet only in the frozen-lake room; cave floor mixes only clean cells, fewer pale pebbles (`d2f1cb0`)
+- **dungeon** — otherworld fewer bones/skulls at room edges (`8f998b8`)
+- **dungeon** — swamp mud bank instead of moss squares; pyramid/otherworld mix only calm cells (`0651764`)
+- **dungeon** — forest clearings use calm oasis lawn (737 grass glyph tiled as a 16px grid) (`c486652`)
+- **dungeon** — calmer floors — close-tone patches only, no per-cell mix on seamed kits, debris near walls; tower observatory reachability fix (`58fc3a3`)
+- **dungeon** — ice face r10d — seamless slab order, teal second ramp, grain, irregular ledge; compose uses <face>-mid 3-tile slab when baked (`2295ba9`)
+- **dungeon** — ice face r10 — 48px facet slab, translucent ice ladder, hard top/left light edges (`8a6ed39`)
+- **dungeon** — ice face r9 fresh start — Beodeul cave face frame, three facet concepts (`a2d3de7`)
+
 ## 0.339.0 — 2026-10-25
 
 ### 기능

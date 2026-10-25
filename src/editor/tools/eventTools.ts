@@ -30,6 +30,7 @@ import { countLimitedRuntimeSupportCommandsForEvent } from "@/project/lint/proje
 import { genId } from "@/util/id";
 import { chestOpenCommands, chestOpenedGraphic, lootGrantCommands } from "@/editor/lootFeedback";
 import { buildMapPlacementContext } from "@/ai/mapPlacementContext";
+import { laneCells } from "@/ai/v2/placementRules";
 import type { Command, Condition, Dir, EventPage, EventPageCondition, EventPageGraphic, FaceGraphic, GameEvent, GameMap, GiftPrefs, GiftResponses, NpcScheduleEntry, NpcScheduleWhen, Project, SelfSwitchKey, ShopStockEntry, TransferFade, Trigger } from "@/project/types";
 import {
   canonicalizeSayBeatAliases,
@@ -1353,7 +1354,7 @@ const placeNpc: ToolDefinition = {
     `${PLACE_NPC_OBJECT_GIMMICK_HINT} NPC 이벤트를 배치한다. 쓰기 전 find_events/get_event/get_story_state 로 기존 NPC·플래그를 읽고, 상태별 페이지(기본 + 조건이 다른 뒤 페이지)로 구성하라.  페이지는 조건이 서로 다른 상태 변형이어야 한다 — 한 줄 인사 한 페이지만 놓고 끝내지 말 것. graphic 은 query 로 외형을 고르고 생략하면 villager 기본. 물 위·통행 불가 칸 금지. 상점 NPC 는 make_villager({shop}) 1회 또는 이 툴 1회 — 같은 역할을 중복 배치하지 말 것. 순찰·시간표는 set_npc_schedule, 재고는 set_shop_stock.`
     + "한 줄 인사만 놓고 끝내지 마라. graphic은 {query} 또는 {textureKey,characterIndex}. query는 기존 별칭(villager|people|npc|human|사람|주민|actor|hero|animal|monster)과 자유 질의를 허용한다: 예 '할머니', 'old woman', '노인 남성'. "
     + "pages는 SimplePage로 EventPage로 컴파일된다. 페이지마다 name/graphic/conditions 를 줄 수 있다. 호감/선물은 characterId 를 명시. "
-    + "**대사가 있으면 charset에 대응하는 faceset changeFace를 자동 삽입**한다(page.face로 덮어쓰기 가능). page.conditions 단수 객체/null, page.commands 단수 객체, command→kind alias는 warning과 함께 정규화한다. 통행 불가/점유 칸이면 근처 통행 가능 칸으로 자동 착지한다. "
+    + "**대사가 있으면 charset에 대응하는 faceset changeFace를 자동 삽입**한다(page.face로 덮어쓰기 가능). page.conditions 단수 객체/null, page.commands 단수 객체, command→kind alias는 warning과 함께 정규화한다. 통행 불가/점유 칸이면 근처 통행 가능 칸으로 자동 착지한다. 사람은 차도·횡단보도·선로 한가운데 세우지 않는다 — 보도·가게 안·벤치 옆·카운터 뒤·문 앞에 세우고, 하나뿐인 출구 길목에는 세우거나 배회시키지 않는다(끝맺음 검사가 짚는다). "
     + "상점·여관 주인은 카운터 뒤 칸(카운터 윗면 칸)에 세워라: 카운터·탁자 칸은 카운터 속성(set_tile_rules counter, 손 도트 실내·버들항의 카운터/탁자/책상 칸은 기본으로 켜짐)이라 주인공이 카운터 앞에서 마주 보고 조사하면 너머 사람에게 말이 걸린다(연속 카운터 2칸까지). 카운터 앞 칸이 주인공이 설 수 있는 바닥인지 확인하라. "
     + "guide:'action-controls'는 예외: pages 없이 실제 키 계약의 조작 안내 한 페이지만 만든다. 맵마다 같은 안내를 재사용하며 재시도 시 기존 위치를 유지한다. 명시 id가 우선한다.",
   mode: "write",
@@ -2200,6 +2201,8 @@ function nearestPassableCell(
     return { bad: false, curb: false };
   };
   const totalWalkableEstimate = map.width * map.height > 25 ? 5 : 1;
+  // 차도·선로 칸(칩셋 이름표·태그) — 사람은 그 한가운데 서서 말하지 않는다(2026-10-25 사용자 규칙, 시타마치 판정).
+  const lanes = laneCells(project, map);
   const searchRadius = Math.max(maxRadius, 5);
   const candidates: Point[] = [];
   for (let radius = 0; radius <= searchRadius; radius += 1) {
@@ -2214,6 +2217,7 @@ function nearestPassableCell(
         if (!isPassable(project, map, cx, cy)) continue;
         if (componentSize(cx, cy) < totalWalkableEstimate) continue;
         if (isFurnitureOrRoadwayCell(cx, cy).bad) continue;
+        if (lanes.has(cy * map.width + cx)) continue;
         candidates.push({ x: cx, y: cy });
       }
     }

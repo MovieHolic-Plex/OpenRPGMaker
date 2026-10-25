@@ -1,0 +1,293 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "709d27d441a286767db89a36bbd390a4c0c8cb5a822e70b9efbfd6c4b0c8e46f",
+ "width": 64,
+ "height": 48,
+ "kind": "flat",
+ "name": "a smaller scorched burnt patch on packed earth: torn silhouette, brown-black charcoal centre, ash-grey halo clusters, two charred sticks with ember tips",
+ "label": "wasteland_ruins/scorch-b",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 7,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "wasteland_ruins",
+   "fallback": true,
+   "reason": "칩셋 wasteland_ruins 의 화풍 기준 묶음이 없다",
+   "hash": "8cecb3a70460aa86"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 5,
+  "tileColorsP90": 11,
+  "darkV5": 67,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 12
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "packed earth ground with scorched patches, ash halos and charred sticks, seen from above as a flat decal",
+      "rows": "0-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 48,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The silhouette is a full 64-wide rectangle across rows 0-47 and is filled with earth texture. The column scans show only mottled brown noise, with no front-edge line, no eave shadow and no vertical face. The scorched patches (charcoal centres, grey ash halos, and sticks with ember tips near rows 38-44) are flat ground marks seen from above. This is a flat decal with no front face, so it reads as a top-down slab, which is the intended reading for kind flat."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate has 5 visible tones per 16x16 tile, against 3 for the grass reference and 7 for the paving. Near-flat coverage is 0%, the same as both references, so the packed earth carries grain and speckle with no 5x5 flat fills. The earth ramp, the charcoal centre, the ash-grey halo clusters and the ember-tipped sticks give about 5 lightness steps, close to the references. Dark edge pixels are 0% neutral, so the charcoal and brown darks lean toward the neighbouring earth and are not a black sticker line. The torn, clustered patch reads as varied ground, not an outlined shape. Total colours are low (15), which is expected for a locked palette and does not lower the visible tone count. The texture is somewhat subtler and sparser than the grass tufts and the per-stone shading of the paving, so I rate it 'some' and not 'rich'. A careful artist would still accept it next to the references without it looking flatter or thinner.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 13904
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "packed earth ground tile with scorch patches",
+      "rows": "0-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "scorched burnt patches with ash halos and charred sticks",
+      "rows": "4-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 48,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The silhouette is a full 64x48 rectangle of earth texture, so it has no outline and no height profile. Brown-black charcoal blotches with grey ash halos and small ember-coloured stick tips are drawn flat, as seen from straight above. There is no front-edge line, no eave shadow, no ellipse and no vertical south face, so the whole thing is a flat plate. That matches the flat kind, and the drawing has no front face rows."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate has 5 visible tones per tile, between the grass reference (3) and the paving reference (7). Near-flat coverage is 0%, the same as both references, so the packed earth carries mottled grain and speckle with no large flat areas. The dark edge pixels are 0% neutral, so the charcoal and stick edges lean brown rather than black. That matches the dark-material-tone outline rule and avoids the sticker look. The main ramps run about 4 steps (earth light, mid, dark, plus charcoal and ash accents), slightly under Beodeul's 5-6. Only 15 distinct colours in total makes it a bit leaner than the grass reference's texture richness. Even so, it is not flat or sticker-like beside the references, so it is acceptable at this scale.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 14137
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "packed earth ground fill with scorched patches and charred sticks",
+      "rows": "0-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The image is a full 64x48 opaque tile of mottled brown earth with several dark charcoal and ash-grey scorch clusters and small ember-tipped sticks. The silhouette is a uniform 64 wide on all rows 0-47, so there is no torn outline. There is no front-edge line, no eave shadow, no ellipse and no vertical face. Everything is seen from above as a flat decal or ground texture. This fits a flat kind and has no front face (0 rows), so it reads as a top-down slab."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate shows about 5 visible tones per tile, against 3 for the grass reference and 7 for the paving. Near-flat coverage is 0%, the same as both references. The earth is speckled with grain dots and the scorch smudges are shaded in several steps, from charcoal through brown to ash-grey. Dark edge pixels are 0% neutral, so they lean brown and read as dark material tone, not a black sticker outline. Raw colour count is low (15 total), but the visible texture matches the grass reference, and the candidate has no large flat areas. It is a little sparse and soft next to the paving reference, and the scorch clusters are small, but a careful artist would accept it beside the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 13171
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "packed-earth ground tile with scorched patches (charcoal centres, ash-grey halos) and charred sticks with ember tips",
+      "rows": "0-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 48,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The silhouette is a uniform 64-px-wide block over rows 0-47. It is a seen-from-above ground texture of earth with several scorched patches. The patches are dark charcoal clusters with ash-grey rims, for example around rows 4-13, 20-29 and 36-46. Two charred sticks have ember tips near rows 37-44 on the right. Column scans show only brown earth tones with small dark or grey spots. There is no front-edge line, no eave shadow, no vertical face and no receding side face. This is a flat decal with no front face (0 rows), which is the correct look for a flat kind, so it reads as a top-down slab."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate has 5 visible tones per tile. That is above the grass reference (3) and below the paving reference (7), so it sits inside the reference range. Near-flat coverage is 0%, the same as both references. The earth is speckled with grain dots in a few brown steps, and the charcoal clusters are dark brown with no neutral black line (0% neutral dark edge pixels). I count about 4 lightness steps on the main earth and char ramps against 5-6 in the references, which is slightly leaner. The scorch halo is low-contrast and the ash-grey clusters are small. Only 15 distinct colours are used, but the visible texture is comparable to the grass reference and no large area is a flat fill. A careful artist would accept it next to the grass tile without it reading as thinner or more sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16585
+  }
+ ],
+ "decidedAt": "2026-10-24T17:25:51.761Z",
+ "cells": {
+  "16": [
+   "085be42defcbb8de",
+   "2c89a48922e7d60d",
+   "363dae9191616c1e",
+   "44473a9dc0405027",
+   "69ecc843df9a2001",
+   "86321864d112f0e8",
+   "9dcaf49a4c52984b",
+   "a5a5143982bbc314",
+   "aa53fad5196e4f29",
+   "d464b16dff957a89",
+   "e999d88c84cd8bd7",
+   "efe044aa04cf6c04"
+  ],
+  "24": [
+   "19e19dcd493e3615",
+   "1a2ab9f05dc38f9b",
+   "23ee54658454c0df",
+   "2bf2826d422d165b",
+   "37751860708f2ccd",
+   "3dc35212ad756e8a",
+   "431e2b8e09f57854",
+   "608868bf6c08a125",
+   "652ea6b9617e3575",
+   "687e84f81f8292e3",
+   "87540cf0ba71b6a6",
+   "91e95f966f867776",
+   "a63f33645ef07b1c",
+   "a986cbd63b693120",
+   "abdb0a105b66ac44",
+   "c4ce635fe6e62ab0",
+   "d405155b33916abc",
+   "dd151fe53e1a963d"
+  ],
+  "32": [
+   "1bfe45e2c3914906",
+   "6c792dff6ee79f14",
+   "6dddaa3679b016bf",
+   "7c8ae4d7d525feab",
+   "b088dfa07ba3ebe6",
+   "c6b002fe70ce501c",
+   "ce8256d72221c930",
+   "f9a8b09e6beb6d58"
+  ],
+  "48": [
+   "13ab8382cbb0734e",
+   "6c91b04f97d110de",
+   "8946780a3f899fad",
+   "89c8ac96b925dcd4",
+   "c3f3690cda5d68a0",
+   "d508d8e199b0c1d7"
+  ]
+ }
+}

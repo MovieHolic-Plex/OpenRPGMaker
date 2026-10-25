@@ -1,0 +1,336 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "11385b75dd47e1b0079addb49607c1d75baa348d548a6b7809803ccc7d21dfa2",
+ "width": 48,
+ "height": 32,
+ "kind": "structure",
+ "name": "market stall of scavenged goods: patched tarp roof seen from above on poles, crate counter with tins and bottles",
+ "label": "wasteland_ruins/stall-a",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 14,
+  "tileColorsP90": 14,
+  "darkV5": 34,
+  "nearBlackEdge": 0.45,
+  "opaqueTiles": 6
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "patched tarp roof",
+      "rows": "1-13",
+      "evidence": "c",
+      "front_edge_line_row": 13,
+      "eave_shadow_rows": "14-15"
+     },
+     {
+      "part": "crate counter top",
+      "rows": "18-22",
+      "evidence": "a",
+      "front_edge_line_row": 22,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "tins and bottles on the counter",
+      "rows": "18-22",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 13,
+    "front_face_rows": 15,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The tarp roof fills rows 1-13 as a large sloped plane with diagonal seams and patches. A light front-edge line sits at row 13 (L=135), followed by dark eave shadow at rows 14-15 (L=70, 46, 26). Below the roof, poles and a crate counter form the front face from about row 16 to row 31. The counter has a lighter top band at rows 18-22, ending in a light edge line at row 22 (#d6b073). The crate front (rows 23-31) shows plank and brace divisions. The tins and bottles on the counter are decor. The silhouette narrows to 30 px at row 16, which separates the roof from the counter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a stall prop, the same kind as the prop-stall-cheese and prop-well-roofed references. The measured facts are close to those references. It has 14 visible tones per tile against 17 for the cheese stall, 20 for the well and 9 for the hedge. Near-flat coverage is 2%, below the cheese stall's 13%. By eye, the tarp roof has several teal steps, with a lighter top edge, darker lower folds and patch variations, and the wood counter has plank grain and small goods on it. The dark edge pixels are 0% neutral, so the outlines lean toward the material (dark teal beside the tarp, dark brown beside the wood) and are not sticker-style black. The candidate is slightly less dense and has somewhat fewer shading steps than the best references, and the tarp is a little smooth in places. It is still equal to the cheese stall in structure and shading craft and shows no large flat fills.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15973
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "patched tarp roof/canopy",
+      "rows": "1-13",
+      "evidence": "c",
+      "front_edge_line_row": 13,
+      "eave_shadow_rows": "14-15"
+     },
+     {
+      "part": "crate counter top",
+      "rows": "18-22",
+      "evidence": "a",
+      "front_edge_line_row": 22,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "tins and bottles on counter",
+      "rows": "18-22",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 13,
+    "front_face_rows": 9,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The tarp roof fills rows 1-12 as a large sloped plane with diagonal fold lines and patches. It ends in a light front-edge line at row 13 (#73908a), followed by dark eave shadow at rows 14-15. A gap at row 16 (width 30) separates the roof from the counter. The counter has a top band at rows 17-22 that ends in a light edge line at row 22 (#d6b073 at x=35), with goods on it listed as decor. Below that is a crate front face with plank and band lines at rows 23-31 (9 rows). Both the roof and the counter show top surfaces above vertical faces, so the stall reads as three-quarter view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a stall of the same kind as prop-stall-cheese and prop-well-roofed. Its dark edge pixels are 0% neutral, so the outline is tinted: dark teal beside the tarp and dark brown beside the crate wood. That fits the Beodeul habit of using the adjacent material's dark tone, not a black sticker line. It has 14 visible tones per 16x16 tile against 17 for the cheese stall and 20 for the roofed well, and only 2% near-flat coverage against 13% for the cheese stall. The tarp shows about 4 lightness steps (highlight rim, light, mid, dark fold) with patch and stitch variation, and the crate front has plank grain with small tin and bottle clusters. It has fewer total colours (24 against 40 and 38), and its material ramps are slightly shallower than the references' 5-6 steps. It is a little less rich than the best references but is not flat or sticker-like, and a careful artist would accept it next to them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16279
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "patched tarp roof/awning",
+      "rows": "1-12",
+      "evidence": "c",
+      "front_edge_line_row": 13,
+      "eave_shadow_rows": "14-15"
+     },
+     {
+      "part": "crate counter top",
+      "rows": "18-21",
+      "evidence": "a",
+      "front_edge_line_row": 22,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "tins and bottles on counter",
+      "rows": "18-22",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 12,
+    "front_face_rows": 15,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The tarp roof fills rows 1-12 as a large sloped plane with diagonal seams and patches. A light front-edge line at row 13 follows it, then dark eave shadow in rows 14-15, which shows a top surface. Below, the crate counter has a light edge line at row 22 and a plank front face from about row 23 to row 31 with dark slat dividers. The tins and bottles on the counter are decor. The 3/4 view reads clearly: roof top plane, then front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate carries 14 visible tones per 16x16 tile. That is close to the cheese stall (17) and the well (20), and above the hedge (9). Near-flat coverage is 2%, so it has no large flat fills, against 13% for the cheese stall. The tarp roof shows about 4-5 teal steps, with a lighter top band, darker folds and patch and wear marks. The crate counter has distinct goods (tins, bottles) and plank shading. Dark edge pixels are 0% neutral, so the outline leans dark teal or brown by material rather than black, and it is not a sticker line. It falls a little short of the references in total palette depth (24 colours against 38-40) and in the number of tones per ramp. That makes it slightly lower in density, but it is not shallow or flat, and a careful artist would accept it beside the cheese stall.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16462
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "tarp roof on poles (sloped plane with patches and diagonal seams)",
+      "rows": "0-15",
+      "evidence": "c",
+      "front_edge_line_row": 13,
+      "eave_shadow_rows": "14-15"
+     },
+     {
+      "part": "crate counter top behind the goods",
+      "rows": "17-22",
+      "evidence": "a",
+      "front_edge_line_row": 22,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "tins and bottles on the counter",
+      "rows": "19-22",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 13,
+    "front_face_rows": 16,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The tarp roof fills rows 1-13 as a large sloped plane with diagonal seams. A light front-edge line at row 13 (L=135) is followed by dark eave shadow in rows 14-15, and the stall front opens below it. The counter has a back band at rows 17-18, goods on it, and a light front-edge line at row 22 (#d6b073 at x=35). Below that is a crate front of rows 23-31 with plank lines at row 27 and pole posts at the sides, so the front face totals about 16 rows from row 16. No isometric side face is drawn. This matches the green cabinet/seat references (top surface, edge line, then front face), not the red front-elevation ones."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate has a teal tarp roof with a lighter top edge, patch marks and a few highlight dots, over a brown crate counter with small tins and bottles. Measured facts: 14 visible tones per tile against 17 (cheese stall) and 20 (well) for the full-size references. Near-flat coverage is 2%, close to the references (0-13%). The dark edge pixels are 0% neutral, so the outline is tinted, dark teal beside the roof and dark brown beside the wood, not a black sticker line. Weaknesses: the roof reads as 3-4 steps, a mostly flat teal slab with few per-patch variations and no scalloped or fold detail, compared with the cheese stall's striped awning and shaded goods. The counter front is a fairly uniform brown with a thin row of goods, so the stall is thinner than the cheese stall. The kind matches and the style is consistent, but shading depth and detail fall a bit short of the Beodeul bar, and when in doubt it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 15921
+  }
+ ],
+ "decidedAt": "2026-10-22T14:22:06.833Z",
+ "cells": {
+  "16": [
+   "1c8946b3582a9539",
+   "5779521497b00e29",
+   "8d4f838d4c707e20",
+   "979dc2691361744c",
+   "db0593ae412cdc8b",
+   "ea79016e00eb6edd"
+  ],
+  "24": [
+   "15c038a3fa8718c9",
+   "1dedb59b0db56822",
+   "298612b874d223db",
+   "2b8e3bf80d05ada6",
+   "93b3d169a6ac0514",
+   "9cb3b9d006c1fcc2",
+   "a1043404cdcd1298",
+   "a567a7297cbc2afc"
+  ],
+  "32": [
+   "0bbe35249a2d3b28",
+   "16df66a2b4f5f582",
+   "896246a6aec5f2c0",
+   "a00fbcb2061c7344",
+   "a9f55a5c7efa4298",
+   "bbcb07dc3317eebf"
+  ],
+  "48": [
+   "ec91c985ecb7f75b",
+   "f50bf893ae4ed610"
+  ]
+ }
+}

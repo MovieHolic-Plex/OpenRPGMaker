@@ -3151,9 +3151,6 @@ Pi의 `generate_title_art`·`generate_opening_image`는 UI 핸드오프를 실�
 - **의도 메모는 몬스터 판정에서 뺀다(jrpg-loop-1)**: `composePiTask` 가 사용자 글과 의도 메모 사이에 `INTENT_NOTE_BOUNDARY`(monsterGameRequest.ts)를 끼우고, `hasMonsterCollectIntent`·`classifyMonsterGameRequest`·`requestsEmeraldMonsterGame` 은 경계 앞(사용자 글)만 본다. 메모(모험 지침·던전 노트의 「몬스터 키트」「포켓몬풍」「트레이너」)를 신호로 읽어 「FF6 같은 게임…동료들을 다시 모으는 이야기」가 포켓몬형 캠페인(build_monster_game 완료 검사)으로 납치되던 결함 수정.
 - `derive_map_variant {sourceMapId, variants:[{id,name?,era?,tilesetId?,tileRemap?,tileOverrides?,removeEvents?}], timeGates?:drop|keep, relinkDoors?, gates?:[create_time_gate 인자], resync?}` (`src/editor/tools/mapVariantTools.ts`): 같은 지리의 시대 변형(중세·현대·미래)을 한 번에 파생한다. 복제는 `cloneMapIntoProject`(`src/project/mapClone.ts`)를 거치며 **이벤트 id 를 새로 매기고 명령 트리·조건·빛 앵커·M2 이벤트 참조의 맵 안 이벤트 참조를 함께 고친다**(예전 `duplicate_map` 은 깨진 참조를 남겼다). `resync` 는 이미 만든 변형의 영역을 원본 지리로 다시 맞춘다. 모르는 키(`tile_overrides` 등)는 거절하고 올바른 이름을 알려 준다.
   - **시대 강도(jrpg-loop-1 D8·D16)**: `mapVariantLook.ts` LOOKS — ruin 철거 75%·어둠 0.5, past 철거 60%·소품 2~4개·옅은 안개 0.25, future 철거 55%·소품 2~3개. 시대 변형이 색조뿐이라 같은 마을로 읽히던 문제를 새 그림 없이 철거·소품 킷 밀도로 완화한다(칩셋이 다른 건물 그림을 못 주는 한계는 그대로). 폐허 조각은 물 칸 위에 놓지 않는다(`isWaterCell`) — 해안 건물 자리에 놓으면 받침 없는 물체로 커밋이 거절돼 `derive_map_variant` 가 통째로 실패했다(ff1 원본 맵에 변형 id 7개를 시험하면 옛 코드는 5개 거절, 새 코드는 0개).
-  - **철거 뒤 덧그림(jrpg-loop-1)**: 건물 철거는 1·3층만 `before` 로 되돌려 덧그림(2·4층)에 올라간 지붕 조각이 허공에 남았다. `clearDemolishedOverlays`(`mapVariantLook.ts`)가 철거 영역(4층은 오른쪽 한 칸 더)의 2·4층을 지운다.
-||||||| parent of 895e395c52 (fix(ai): demolition also clears the building shadow strips (BEODEUL_NATURE.shadows cells))
-  - **철거 뒤 덧그림(jrpg-loop-1)**: 건물 철거는 1·3층만 `before` 로 되돌려 덧그림(2·4층)에 올라간 지붕 조각이 허공에 남았다. `clearDemolishedOverlays`(`mapVariantLook.ts`)가 철거 영역(4층은 오른쪽 한 칸 더)의 2·4층을 지운다.
   - **철거 뒤 덧그림(jrpg-loop-1)**: 건물 철거는 1·3층만 `before` 로 되돌려 덧그림(2·4층)에 올라간 지붕 조각이 허공에 남았다. `clearDemolishedOverlays`(`mapVariantLook.ts`)가 철거 영역(4층은 오른쪽 한 칸 더)의 2·4층과, 마을 시공기가 얹은 건물 그림자 띠(`BEODEUL_NATURE.shadows[kitId]` 칸)를 지운다 — 그림자 띠는 원해상도 렌더에서 철거 자리에 남은 어두운 세로·가로 줄의 정체였다.
   - **땅·숲 시대 팔레트(jrpg-loop-4 R5.1)**: 철거·소품만으로는 맵 90%가 같은 초록 풀(737)·나무·포석 광장이라 「시대가 달라진 마을이 다 똑같다」로 반려됐다. `applyVariantTerrain`(`src/editor/tools/mapVariantTerrain.ts`)이 맵 전체를 바꾼다 — ruin·future 는 `wasteland`(풀 → 광재 땅·자갈·흙 얼룩, 길·광장 → 깨진 돌 부스러기, 나무 → 고사목·광재 더미·바위·뼈 더미), past 는 `primeval`(길·광장 → 흙길, 원시림 추가, 고사리·버섯·들꽃·돌). 버들항 칩셋 킷만 쓰고(그 외 칩셋은 손대지 않음), 새 나무는 둘레 한 칸이 모두 통행 가능할 때만 심어 연결을 끊지 않는다. LOOKS 는 ruin·past 철거 100%, past 는 철거 자리마다 통나무 오두막·헛간(`maxLandmarks`), ruin 조명 `#3a2016`·0.52 + 안개 0.35(0.9 는 `fogOpacity` 0.555 로 화면을 덮어 주인공이 안 보였다). `scripts/qa-game/render.mts` 는 `defaultLighting` 색조를 게임 오버레이 식(최대 0.55)으로 섞어 정적 그림에도 시대 색이 보인다.
   - **황무지 숲 덩어리(jrpg-loop-4 R6)**: 나무를 고사목 한두 개로만 바꾸면 덩어리가 통째로 빈 땅이 되어 가도의 숲 벽이 사라졌다. 남은 칸은 네 방향 모두 막힌 바위·광재·그루터기(`WASTELAND_WALLS`)로 메우되, 덩어리 속(네 이웃이 모두 숲) 칸의 4할은 잿빛 맨땅 웅덩이로 비워 바위 융단이 되지 않게 한다. 테두리가 그대로 막히므로 통행은 나무 때와 같다.
@@ -3694,14 +3691,49 @@ r8~r11 실편집기 녹화에서 조수는 도구를 찾지 않고 paint_tiles �
   - 대안 `nearest` 가 빈 needs-art 종류는 맵을 만들지 않는다. 답 첫 문장에 빠진 그림을 말하고, 같은 시대의 지을 수 있는 종류 2~3개만 알린다.
     해당 종류는 로마 도시와 폐허 셋(포스트아포칼립스·좀비 도시·황무지)이다.
     실측: 대안이 다른 종류 맵의 복사본(공장 도시 판박이)이거나 흩뿌린 소품 마을로 읽혔다.
-  - 버들항 쓰임 덩이 종류(신전 폐허·광산촌·포도원)는 needs-art(`beodeul-quarter-yard`)다. 조각이 마당 바닥·길 없이 덤불 사이에 흩어진다.
-    `dress_village_quarter` 의 그 덩이들은 도구에 남아 있지만 표의 recipe 는 부르지 않는다. 장터 마을도 walled-market 덩이 없이 광장 마을만 짓는다.
+  - ~~버들항 쓰임 덩이 종류는 needs-art~~ → **2026-10-23 ready (village-art).** 마당 바닥 오토타일 셋을 그렸다.
+    - 그림: 버들항 시트 줄 259, 칸 33152~33222(2026-10-24 던전 꼬리 뒤로 옮김; 포도나무 줄 33223~, 판석→흙 33239~).
+    - 오토타일: `beodeul_yard_cobble`(자갈) · `beodeul_yard_dirt`(다진 흙) · `beodeul_yard_flag`(판석).
+    - 견본 킷: `bd-yard-*-sample`. `mergeShippedFarm`·`mergeShippedKits` 가 붙인다.
+    - `dress_village_quarter` 가 마당을 개간해 깔고, 덩이를 그 안에 앉힌다.
+    - recipe: 셋 다 `author_beodeul_town({quarter:"<종류>", ...})` 로 시작한다.
+      - `quarter` 를 주면 빌더(`beodeulVillage.ts` 의 `yard` 옵션)가 집·밭을 놓기 전에 마당 자리(마당 가로+3 × 세로+3, 안 되면 3×2·6×3 줄여 재시도)를 단이 같은 빈 땅에 먼저 비워 둔다. 길에 붙은 자리를 우선한다.
+      - 신전 폐허: `terrain flat, form scatter`
+      - 광산촌: `terrain terraces, form scatter`, 60×48. woods 는 기본(가장자리)이다. dense 는 마당 자리를 없앴다.
+      - 포도원: `terrain terraces, form scatter`
+    - 마당 규칙(검수 r1~r4):
+      - 개간 칸·위 1줄·아래 2줄·좌우 1열이 모두 같은 단이어야 한다.
+      - 숲 덩이(`FOREST` = 90칸)보다 큰 덩이에는 마당이 들어가지 않는다. 테두리가 큰 덩이에 걸리면 그 칸은 베지 않고 건너뛴다. 90칸 이하 덩이는 통째로 걷는다. 줄기가 남지 않게 아래 겹 있는 칸 옆이 큰 숲이면 그 칸도 뺀다.
+      - 마당 네 귀는 원래 바닥으로 둥글린다. 샛길은 2칸 폭이다. 마당이 이미 길에 닿으면 마당 가운데에 가까운 길 2칸을 마당 바닥으로 칠해 입구로 쓴다.
+      - 귀 채우기가 아닌 마당(신전 폐허, 광산)은 맵마다 크기를 −2~+1 / −1~0 흔든다. 덩이 중심도 마당 안 아무 자리로 잡고, 조각 순서를 섞고, 되풀이 조각을 몇 개 뺀다. 두 맵이 한 도장으로 읽혔기 때문이다.
+      - 포도원은 26×15 마당 북서·북동 귀부터 채운다(`packSlot`). 올리브는 마당 밖 반경 20에 둔다. 찍은 뒤 `varyVineRows` 가 포도 칸을 자리마다 같은 갈래(위 줄·속·아래 줄·좌우 끝) 안에서 바꾼다 — 같은 밭 넷이 도장으로 읽혔다(r4).
+      - r5~r7 에서 더한 것 (검수 과반 major 대응):
+        - **바뀌는 정면·덤:** 덩이마다 `faces`(정면 조각 대안, 40% 확률로 바꿈)와 `extras`(맵마다 2~4개 골라 더함)를 둔다. 크기 정렬에 0.4~1.6 무작위 곱을 섞고, 귀 채우기가 아닌 마당은 조각 1~3개를 더 뺀다. 두 seed 가 같은 배치로 읽혔다.
+        - **마당 가장자리 깎기(`roughenYard`):** 변마다 폭 2~3, 깊이 1 홈을 낸다(신전 폐허는 1~3개·폭 4까지). 샛길이 닿는 칸은 깎지 않는다. 마당 속 구멍은 연석 두른 화단으로 읽혀 뺐다.
+        - **무너진 판석 섬(`layFlagIsland`, 신전 폐허, r11):** 신전 폐허 마당은 다진 흙(`beodeul_yard_dirt`)이고, 그 안에 판석 섬을 `beodeul_yard_flag_dirt` 로 깐다. 이 그룹은 버들항 판석→흙 가장자리 129칸(29,655~, `flag_dirt_art.py` r7, 연석 없이 판 단위로 깨져 흙으로 무너짐, 몸통은 판석 몸통 칸)이다. 섬은 풀에서 두 칸 이상 안쪽 칸이고, 바깥 두세 줄은 값 잡음 덩이로 들쭉날쭉 깎은 뒤 외톨이 칸·한 칸 구멍을 메운다. 가장자리 칸 벌은 `fdTile` 이 `flag_dirt_art.phase_role`(fmix32 탐욕 수열)을 그대로 옮겨 고른다(파이썬과 4,368 경우 일치 확인). 흙 그룹의 connect 에 섬 칸이 들어 있어 흙 가장자리가 섬 쪽에 잔디 테를 그리지 않는다. 옛 판석 마당은 연석 테가 「갓 깐 광장」, 흙으로 바꾼 칸이 「네모 구멍」으로 읽혀(r8~r10) 이렇게 바꿨다. 그룹이 없는 옛 사본은 흙 마당만 깐다.
+        - **풀 덮기(`overgrowYard`, 신전 폐허):** `crumbleFlag` 뒤에 돈다. 버들항 decal 칸(26956·26666·27542·27511~27513·27598)을 위 층에 깐다. 가장자리는 상자가 아니라 남은 판석의 실제 윤곽으로 잰다. 확률은 가장자리 0.7, 한 칸 안 0.3, 더 안 0.08이다. 덩이 씨앗 4~6개 둘레는 0.35를 더한다. 조각 자리와 그 앞 줄은 건너뛴다.
+        - **갱도 둔덕(`planMound`·`wrapAdit`, 광산):** 갱구 뒤와 양 어깨를 높이 지형 2단 풀 언덕으로 감싼다.
+          - 자리 찾기: 마당 안 빈 자리(최대 60곳, 섞어서)마다 둔덕을 4→3→2줄로 계획해 본다. 둔덕이 서는 자리를 먼저 시도한다. r9 에서 갱구가 마당 윗변에 붙어 둔덕을 못 올리고 평지에 홀로 섰다.
+          - 모양: 뒤 줄은 갱구 x−2 ~ x+폭+1 에서 시작해 뒤로 갈수록 좌우를 −1~+1칸 흔든다. 첫 줄은 폭+2칸 이상이어야 한다. 어깨는 갱구 윗부분 두 줄 높이에서 좌우 1~2칸이다.
+          - 칸 조건: 마당 또는 빈 바닥이고, 조각 상자 밖이고, 갱구 바닥과 같은 단.
+          - 통행: 둔덕+갱구 상자를 막힌 칸으로 친 BFS 로 원래 통행 칸이 하나도 끊기지 않을 때만 쓴다.
+          - 윗면: 맵에서 가장 흔한 바닥(풀)을 갱구 윗줄보다 뒤 칸에만 깐다. 어깨 칸까지 풀로 덮으면 렌더러가 매끈하게 내린 칸이 연한 풀 네모로 보였다(r9).
+          - 발치 한쪽에만 작은 버력 하나를 둔다(광석·중간 바위·버력 돌 중). 양옆 같은 자리 바위 둘은 대칭 도장으로 읽혔다.
+          - 둔덕을 못 올리면(relief 없음·자리 없음) 갱구에 맞붙인 서로 다른 큰 더미·작은 더미 둘로 대신한다. 더미는 GAP 여백 대신 실제 조각 상자로만 겹침을 본다.
+          - 더미는 id 마다 맵에 한 번이다(`UNIQUE_SPOIL`). 둘레 흙 칸 돌 부스러기 덧칠(`screeAround`)은 30%이고 둔덕 칸은 건너뛴다.
+          - 왜: 갱구가 평지에 선 돌 상자로 읽혔다(r5~r8). 바위 땅 칸은 회색 콘크리트 판, 한 칸 띄운 더미는 따로 놓인 돌, 둔덕 흙 윗면은 오각형 받침대로 읽혀 바꿨다.
+        - **포도나무 줄(`fillVineRows`, 포도원, r10~r11):** 8×4 이랑 키트 대신 조각을 다 놓은 뒤 남은 마당을 두 칸 높이 포도나무 줄로 채운다. 위 칸은 잎 지붕 윗면(33,223~33,102, 걸음, 위층), 아래 칸은 앞면(+8, 막힘, 위층)이다. 줄마다 아래로 한 칸씩 훑어 둘 수 있는 곳에 두고, 바로 위 칸에 다른 줄이 없어야 한다(고랑 길 한 칸). 빈 구간은 12칸이 넘으면 고르게 나눠 나란한 줄로 만든다. 가운데 칸은 같은 것을 잇달아 두지 않고 기둥 칸은 2~3칸마다다. 줄 하나가 통행을 끊으면 걷는다. 포도원 조각은 창고(맵 열에 넷은 농장 헛간 `faces`) + 덤 2~4개(압착기·시렁·술통·바구니·짐수레·자루·장작 헛간·빨랫줄·닭장)다. 옛 이랑 키트는 16px 되풀이·죽은 칸·「맨흙 마당에 떨군 모듈 격자」로 읽혔다.
+        - **광산 집·조각(r11):** 집은 제련 오두막·판자 광부집·돌 기초 창고·통나무 오두막 중 하나, 나머지 마당 조각은 맵마다 4~6개를 섞어 고른다. 갱구 둘레 자갈 덧칠은 갱구 발치 두세 무더기(맵당 여섯 칸까지)다. 두 seed 가 같은 오두막·둔덕 거울 도장이었고, 30% 로 흩은 같은 자갈이 열다섯 번 찍혔다. 덩이 난수는 fmix32 로 씨앗을 섞은 mulberry32 다(LCG 첫 값이 씨앗을 따라가 두 맵이 같은 것을 골랐다).
+        - **둔덕 다듬기(r10):** 한 줄만 삐져나온 둔덕 칸은 「흙 위에 뜬 풀 네모」로 그려져 위·아래 또는 좌·우 이웃이 없는 칸을 두 번 깎는다(갱구는 이웃으로 친다). 둔덕에 셋 이상 둘린 풀 홈은 마당 흙으로 메우고 `shapeYard` 로 다시 맞춘다. 둔덕은 갱구 킷의 빈 윗줄이 아니라 보이는 윗변(갱구 y+1)에 맞춘다. 뒤 칸 윗면에는 고사리·헤더 덤불·자갈 덧칠을 45% 흩는다.
+    - 장터 마을은 아직 walled-market 덩이 없이 광장 마을만 짓는다.
+  - ~~폐허 셋(포스트아포칼립스·좀비 도시·황무지)은 needs-art~~ → **2026-10-23 ready.** 새 칩셋 `wasteland_ruins` + `compose_wasteland_map` 을 쓴다. `openwiki/wasteland-ruins.md` 참고.
+  - 마당 꼬리 뒤 이식 칸 이동(증명 사본 28800→29696, 2560칸, `verify-shots/beodeul-yard-graft-relocation/proof.json`; 꼬리가 두 행으로 자란 뒤 29696→29824, `verify-shots/beodeul-yard-graft-relocation-2/proof.json`) 증명은 `scripts/qa/beodeul-graft-relocation-proof.mts` 에 있다. 기존 프로젝트 사본에서 맵 화소가 같은지를 본다.
   - 달 기지 작곡기(`sfStationComposer` composeMoonbase)를 다시 짰다. 지붕을 1줄에 붙인 건물 줄 → 큰길 → 세로 연결 둘 → 설비 길 순서다.
     설비 길 위·아래에 전력·연료·화물·통신 마당과 착륙장을 둔다. 크레이터·바위는 놓인 기물 둘레 1칸을 피한다.
     기본 크기는 38×22, 하한은 34×20 이다.
   - 바이킹은 partial이다. 롱십·용머리 회관 그림이 없다.
   - needs-art 대안은 seed를 1 이상으로 준다. 기본 seed 0이면 대안 맵이 그 종류를 직접 요청한 맵과 바이트까지 같았다.
-- **시험 시드:** `harness-data/assistant-capability/village-eras-seed.json`(18건, 조수 대용 Sonnet 5.5 high, 포트 19640~19657).
+- **시험 시드:** `harness-data/assistant-capability/village-eras-seed.json`(v2 23건, 조수 대용 Sonnet 5.5 high, 포트 19640~19662). era-ruins-village·era-mining·era-vineyard·era-ruined-city·era-wasteland·era-postapoc 가 village-art 로 새로 지을 수 있게 된 종류다.
 
 ## 연계기·기술 정체성·결과 팡파레 — `list_combo_techs` · `upsert_combo_tech` · `battle.fanfare` (2026-10-24, fs-battle-2)
 

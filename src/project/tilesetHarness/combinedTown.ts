@@ -95,6 +95,8 @@ function applyCustomChipsetMinimalHarness(tileset: TilesetDef): boolean {
       || tileset.image.id === "tex_desert_east"
       // 북방 설원: 칸마다 통행·레이어를 굽기(bake_sn.py)에서 정해 둔 정의다
       || tileset.image.id === "tex_snow_north"
+      // 폐허·황무지: 칸마다 통행·레이어를 굽기(wl_bake.py)에서 정해 둔 정의다
+      || tileset.image.id === "tex_wasteland_ruins"
       // 생성 칩셋 공용 실내(손 도트 v5)·배·던전: 칸마다 통행·레이어를 구워 둔 정의라 RM2k3 표를 들이대지 않는다
       || tileset.image.id === "tex_atlas_biome_interior" || tileset.image.id === "tex_atlas_biome_dungeon")
   ) return false;

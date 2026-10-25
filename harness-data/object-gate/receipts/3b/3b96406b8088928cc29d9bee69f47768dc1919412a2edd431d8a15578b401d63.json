@@ -1,0 +1,279 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "3b96406b8088928cc29d9bee69f47768dc1919412a2edd431d8a15578b401d63",
+ "width": 64,
+ "height": 48,
+ "kind": "terrain",
+ "name": "asphalt road tile with a long crack, weeds growing in it and a faded lane-paint fragment, laid among plain asphalt",
+ "label": "wasteland_ruins/asphalt-c",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 6,
+  "tileColorsP90": 17,
+  "darkV5": 46,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 12
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "north",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "asphalt ground surface with crack, weeds, lane paint fragment",
+      "rows": "0-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 48,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The image is a full 64x48 flat ground tile. The silhouette is 64 wide on every row, and the column scans show only repeating asphalt texture with a crack, weeds and a paint fragment. There is no front face, eave, edge line or standing volume. For a terrain tile this is a flat top-down surface, with no 3/4 object structure."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a speckled asphalt ground with about 5 lightness steps: dark, mid and light grey-blue plus warm brown-grey grain dots. The crack and weeds are small dark, green-tinted clusters, and there is a faded yellowish lane-paint fragment. Measured facts support a pass. It shows 6 visible tones per tile against 7 for the paving reference and 3 for the grass reference. Near-flat coverage is 0%, the same as both references. Only 17% of its dark edge pixels are neutral, so the dark pixels beside the weeds and crack carry a material tint rather than a sticker-like black line. It has no flat fills, and the grain is distributed across the whole patch like the references. It is a little less structured than the paving reference, which has shaded individual stones, and the crack and weeds are small and sparse. Overall it would sit acceptably next to the references at the same scale.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 11881
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "asphalt ground tile with crack, weeds, lane paint fragment",
+      "rows": "0-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "A full 64x48 opaque ground texture of asphalt speckle with a crack, weeds and a paint fragment. It has no silhouette edge, no front face, no eave, and no standing volume. The column scan shows only repeating texture bands (rows 0-47 at constant width 64). This is a flat terrain tile seen from above, which is the expected form for the terrain kind."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate shows about 6 visible tones per 16x16 tile, against 7 for the paving reference and 3 for the grass reference. Its near-flat coverage is 0%, the same as both references, so there are no flat 5x5 fills. Asphalt is stippled in several grey-violet steps, with darker crack runs and small green weed clumps that have yellow flecks. Only 17% of its dark edge pixels are neutral, so the dark pixels lean toward the surrounding material tone instead of forming a uniform black sticker line. The paving reference is 80% neutral, so the candidate is better on that point. Weaknesses: the speckle is somewhat even and noise-like, and the crack and lane-paint fragment read faintly at this scale. The surface still carries enough varied grain and tone structure to sit next to the references without looking flatter or thinner, so it passes on structure and shading craft.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 12969
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "asphalt ground tile with crack, weeds and lane-paint fragment",
+      "rows": "0-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "Terrain ground tile seen from above: a flat mottled asphalt texture fills all 64x48 pixels, with a crack, a pothole-like dark patch, weeds and a faded paint fragment as surface detail. The column scans show only repeating texture bands (rows 0-6, 7-15, etc.) with no front-edge line, no eave shadow and no vertical face. This is a flat ground tile, not a standing object, so there is no front face and no top-surface band to measure."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate asphalt carries about 5 lightness steps in mottled grey, blue-grey and mauve speckle, with no flat 5x5 areas (0% near-flat, matching both references). It has 6 visible tones per tile against 7 for the paving reference and 3 for the grass reference, so it is close to the paving and well above the grass. Only 17% of its dark edge pixels are neutral, so the dark crack and weed pixels lean toward the material (dark green beside the weeds, dark warm-grey in the crack) rather than a black sticker line. The weeds use several greens and the lane fragment is a small warm-yellow patch. The speckle is somewhat uniform and noisy, and the crack and paint read less structurally than the reference's stone-by-stone shading, which is why density is slightly lower and texture is only 'some'. It is still not shallow or flat, and a careful artist could place it next to the paving reference.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 13589
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "asphalt ground tile with crack, weeds and lane paint fragment",
+      "rows": "0-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "weeds and paint fragment",
+      "rows": "19-31",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The image is a full 64x48 flat ground tile of asphalt texture. Silhouette width is a constant 64 across all rows, with no outline, no eave line, and no front face. The column scans show only repeating speckled texture bands, with no front-edge line or shadow band. It is a seamless ground texture with a crack, weeds and a paint fragment, so it is a flat terrain tile with no standing volume."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate has 6 visible tones per tile, close to the paving reference (7) and above the grass reference (3). Near-flat coverage is 0%, so the speckled asphalt has no flat fills. Only 17% of dark edge pixels are neutral, so the crack and weed edges lean tinted rather than a uniform black sticker line. The asphalt is a mottled grey-blue and pink-grey speckle, but it is fairly uniform noise with no clearly shaded stones or clumps. The crack is thin and the weeds and lane-paint fragment are tiny and sparse, so the details read as scattered dots rather than a structured, hand-shaded surface. The weed clumps have only 2-3 greens each, thinner than the leaf ramps in the reference. Overall it is slightly less rich and structured than the paving reference. Nothing is bad enough to call it much lower, but it is not clearly at the Beodeul level either. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 9746
+  }
+ ],
+ "decidedAt": "2026-10-22T15:51:55.339Z",
+ "cells": {
+  "16": [
+   "3cc825096bc4beb4",
+   "3d3b5b1cb9287a76",
+   "be32b3ecac07f5ed"
+  ],
+  "24": [
+   "046ca520e192b80a",
+   "090240668f2873b3",
+   "18e5c4498a8a411f",
+   "2d4511198a76b79f",
+   "2deacdfcb5a8116d",
+   "53a39783a3289a5d",
+   "5488664251566629",
+   "55ee624ab69365db",
+   "57f6bd2d9892590f",
+   "69fcec684670c3d9",
+   "74ea19b20a19263f",
+   "8ce86f46779c77b3",
+   "9e62c02eebbaa684",
+   "a29469947514ed1f",
+   "b239763cf1581d2f",
+   "c09ac5cfa7218aed",
+   "cddca94817768947",
+   "e26614a1700fa35e"
+  ],
+  "32": [
+   "1a392afa7f9b2a24",
+   "3bcd03466a9648ce",
+   "495b5c449fa4447b",
+   "58067de305c7a448",
+   "65648a3256a6a61d",
+   "7be3a0de96078826"
+  ],
+  "48": [
+   "3460316e8c924eed",
+   "69ae4ab630c098cb",
+   "8cfdd26b8870de12",
+   "c55a4486b387c4d4",
+   "d46cc2d5ec28485c",
+   "d68a20d00b018600"
+  ]
+ }
+}

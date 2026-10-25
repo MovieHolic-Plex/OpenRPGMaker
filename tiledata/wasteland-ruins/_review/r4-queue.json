@@ -1,0 +1,100 @@
+[
+ {
+  "id": "weeds-a",
+  "label": "wasteland_ruins/weeds-a",
+  "kind": "flat",
+  "name": "a thick clump of green weeds and two broad-leaved rosettes growing from a damp patch of earth",
+  "png": "/home/main/z-project/rpg-zzu-village-art/tiledata/wasteland-ruins/_gate/weeds-a.png",
+  "sha": "a6d19b070a956116590649ffd369067089a38b52111da666257b3f07f557e378",
+  "receipt": "/home/main/z-project/rpg-zzu-village-art/harness-data/object-gate/receipts/a6/a6d19b070a956116590649ffd369067089a38b52111da666257b3f07f557e378.json",
+  "verdict": "refer",
+  "reasons": [
+   "3/4: 종류 판정이 갈림(맞다 2/4) — 면제 종류는 과반이 아니라 3/4 이상이 맞다고 해야 통과",
+   "화풍: 화풍 판정이 갈림(걸린 판정 2/4)",
+   "화풍: 판정자 fail (2/4)"
+  ]
+ },
+ {
+  "id": "weeds-b",
+  "label": "wasteland_ruins/weeds-b",
+  "kind": "flat",
+  "name": "a clump of dry yellow-brown grass with seed heads and a few green shoots on a dry patch of earth",
+  "png": "/home/main/z-project/rpg-zzu-village-art/tiledata/wasteland-ruins/_gate/weeds-b.png",
+  "sha": "f9dab8047d4cb1d8cbcb59145527afe89ae43e7cf24f2a090e82a8c1f18fe0d7",
+  "receipt": "/home/main/z-project/rpg-zzu-village-art/harness-data/object-gate/receipts/f9/f9dab8047d4cb1d8cbcb59145527afe89ae43e7cf24f2a090e82a8c1f18fe0d7.json",
+  "verdict": "refer",
+  "reasons": [
+   "화풍: 화풍 판정이 갈림(걸린 판정 2/4)",
+   "화풍: 판정자 fail (2/4)"
+  ]
+ },
+ {
+  "id": "car-burnt",
+  "label": "wasteland_ruins/car-burnt",
+  "kind": "other",
+  "name": "burnt-out car wreck lying east-west seen from above: charred roof and hood, empty window frames, scorched rusty body on flat tyres",
+  "png": "/home/main/z-project/rpg-zzu-village-art/tiledata/wasteland-ruins/_gate/car-burnt.png",
+  "sha": "995a58c70db8299d89336ec378f04f6a4b44d29085ff19dc895aad2e53269105",
+  "receipt": "/home/main/z-project/rpg-zzu-village-art/harness-data/object-gate/receipts/99/995a58c70db8299d89336ec378f04f6a4b44d29085ff19dc895aad2e53269105.json",
+  "verdict": "refer",
+  "reasons": [
+   "3/4: 독립 눈이 「3/4 아님」 3/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면",
+   "화풍: 화풍 판정이 갈림(걸린 판정 2/4)",
+   "화풍: 판정자 fail (2/4)"
+  ]
+ },
+ {
+  "id": "van-rust",
+  "label": "wasteland_ruins/van-rust",
+  "kind": "other",
+  "name": "abandoned rusty box van lying east-west seen from above: long flat roof top, cab windshield, side with sliding door and flat tyres",
+  "png": "/home/main/z-project/rpg-zzu-village-art/tiledata/wasteland-ruins/_gate/van-rust.png",
+  "sha": "670e0e52376f4d12214bd6644abe3a1679997fad83763594b4961a9f335d92ed",
+  "receipt": "/home/main/z-project/rpg-zzu-village-art/harness-data/object-gate/receipts/67/670e0e52376f4d12214bd6644abe3a1679997fad83763594b4961a9f335d92ed.json",
+  "verdict": "refer",
+  "reasons": [
+   "3/4: 독립 눈이 「3/4 아님」 2/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면"
+  ]
+ },
+ {
+  "id": "watchtower",
+  "label": "wasteland_ruins/watchtower",
+  "kind": "structure",
+  "name": "scrap scaffold watchtower seen from above: sloped corrugated tin roof with a tarp patch and rust, lit plank lookout floor with sandbag parapet, braced wooden legs, ladder and concrete footings",
+  "png": "/home/main/z-project/rpg-zzu-village-art/tiledata/wasteland-ruins/_gate/watchtower.png",
+  "sha": "83f6a1c95ce9c62881a50d7bd97343d669300dcf9a3706586f452600acf5c584",
+  "receipt": "/home/main/z-project/rpg-zzu-village-art/harness-data/object-gate/receipts/83/83f6a1c95ce9c62881a50d7bd97343d669300dcf9a3706586f452600acf5c584.json",
+  "verdict": "refer",
+  "reasons": [
+   "화풍: 화풍 판정이 갈림(걸린 판정 2/4)",
+   "화풍: 판정자 fail (2/4)"
+  ]
+ },
+ {
+  "id": "log-seat",
+  "label": "wasteland_ruins/log-seat",
+  "kind": "seat",
+  "name": "fallen log used as a bench seen from above: long bark top surface, sawn end showing rings, lying on the ground",
+  "png": "/home/main/z-project/rpg-zzu-village-art/tiledata/wasteland-ruins/_gate/log-seat.png",
+  "sha": "d53aeea93a7c0ce981243287b5f5eb54c3df25eb1d6fc82f1a551129f3ad5116",
+  "receipt": "/home/main/z-project/rpg-zzu-village-art/harness-data/object-gate/receipts/d5/d53aeea93a7c0ce981243287b5f5eb54c3df25eb1d6fc82f1a551129f3ad5116.json",
+  "verdict": "refer",
+  "reasons": [
+   "3/4: 판정자 의견이 갈림(분명한 3/4 4/4, 분명한 위반 0/4)",
+   "3/4: 옆면(아이소)이 보인다는 판정이 과반"
+  ]
+ },
+ {
+  "id": "stall-b",
+  "label": "wasteland_ruins/stall-b",
+  "kind": "structure",
+  "name": "market stall of scavenged goods: sagging patched blue tarp roof seen from above on poles and battens, lit plank counter top with scrap parts, tins, bottles, a wire coil and a rusty can",
+  "png": "/home/main/z-project/rpg-zzu-village-art/tiledata/wasteland-ruins/_gate/stall-b.png",
+  "sha": "b0df1c6b4344aca941fa33374692a9a3e20599486966f247c6d507e13f21be07",
+  "receipt": "/home/main/z-project/rpg-zzu-village-art/harness-data/object-gate/receipts/b0/b0df1c6b4344aca941fa33374692a9a3e20599486966f247c6d507e13f21be07.json",
+  "verdict": "refer",
+  "reasons": [
+   "3/4: 독립 눈이 「3/4 아님」 10/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면"
+  ]
+ }
+]

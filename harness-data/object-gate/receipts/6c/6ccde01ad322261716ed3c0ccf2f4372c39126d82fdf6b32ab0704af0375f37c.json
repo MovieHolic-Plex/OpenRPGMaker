@@ -1,0 +1,359 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "6ccde01ad322261716ed3c0ccf2f4372c39126d82fdf6b32ab0704af0375f37c",
+ "width": 48,
+ "height": 32,
+ "kind": "structure",
+ "name": "market stall of scavenged goods: faded army-green tarp roof seen from above, crate counter with scrap parts, folded cloth and a rusty can",
+ "label": "wasteland_ruins/stall-b",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 6
+ },
+ "metrics": {
+  "tileColorsMedian": 11,
+  "tileColorsP90": 11,
+  "darkV5": 47,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 6
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "tarp roof",
+      "rows": "0-13",
+      "evidence": "c",
+      "front_edge_line_row": 13,
+      "eave_shadow_rows": "14-15"
+     },
+     {
+      "part": "crate counter top with goods area",
+      "rows": "17-22",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "scrap parts, folded cloth, rusty can",
+      "rows": "16-23",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "crate counter front",
+      "rows": "23-31",
+      "evidence": "none",
+      "front_edge_line_row": 27,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 14,
+    "front_face_rows": 16,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The tarp roof fills rows 0-13 with diagonal seams. A light front-edge line at row 13 (L=130) is followed by dark eave shadow at rows 14-15, so it reads as a sloped roof plane seen from above (evidence c). Below it the stall front runs rows 16-31: posts, a counter with goods in rows 16-23, and a crate front with plank bands in rows 23-31. The counter shows its back area at rows 17-22. No receding side face is drawn, and the narrow brown strips at the left and right edges are posts."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate has 11 visible tones per tile against 17 for the cheese stall and 20 for the roofed well, so it is in range with the hedge at 9 but below the closest same-kind references. Near-flat coverage is 6%, between the stall's 13% and the hedge's 0%, so there are no large flat fills. Dark edge pixels are 0% neutral, which means the outline is tinted. It reads as dark green beside the tarp and dark brown beside the crates, not a black sticker line. The tarp roof has about 4 green steps with some fold and seam variation, and a highlight band. The crate counter below is more compressed: the crate face and the scrap, cloth and can items are small, with few steps and little grain. They look flatter than the cheese stall's goods and awning, which carry per-item shading and stripes. Overall it is clean and consistent but thinner in shading depth (about 4 steps against 5-6) and in texture than the best references. Because of that shortfall, I fail it.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 13710
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "green tarp roof",
+      "rows": "1-12",
+      "evidence": "c",
+      "front_edge_line_row": 13,
+      "eave_shadow_rows": "14-15"
+     },
+     {
+      "part": "crate counter top with goods (scrap parts, cloth, can)",
+      "rows": "16-22",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "crate counter front",
+      "rows": "23-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 12,
+    "front_face_rows": 16,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The tarp roof fills rows 1-12 as a sloped canopy plane with diagonal seams and a patch. A light front-edge line at row 13 follows it, then dark eave shadow in rows 14-15. Below, the crate counter shows a front face of about 15-16 rows (rows 16-31) with plank and beam divisions. Goods sit on the counter in rows 16-22 and count as decor. The structure has a clear top surface and a front face, so it reads as three-quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The outline is tinted: 0% of dark edge pixels are neutral, and the edges lean dark green beside the tarp and dark brown beside the crate, so it is not a sticker line. The tarp has about 4 green steps (highlight edge, light, mid, dark) with some fold and stripe detail, but fewer than the 5-6 steps on the cheese-stall awning and well roof. The crate counter below is a large, dark, low-contrast block with few per-plank highlights or grain. The scrap parts, cloth and can are tiny and read as a few pixels each. Measured facts agree: 11 visible tones per tile against 17 for the cheese stall and 20 for the roofed well (the hedge has 9), and 22 total colours against 38-40 for those two. Near-flat coverage is low at 6%, so the weakness is shallow shading and a plain counter rather than large flat fills. A careful artist would likely call it thinner than the stall reference, and when in doubt it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 15316
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "green tarp roof",
+      "rows": "0-13",
+      "evidence": "c",
+      "front_edge_line_row": 13,
+      "eave_shadow_rows": "14-15"
+     },
+     {
+      "part": "goods on counter (scrap parts, cloth, rusty can)",
+      "rows": "16-23",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "crate counter front",
+      "rows": "24-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 14,
+    "front_face_rows": 16,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The tarp roof fills rows 0-12 as a large sloped plane with diagonal fold lines. A light front-edge line sits at row 13 (L=130), followed by dark eave shadow at rows 14-15. Below it the open stall shows goods on the counter and a crate front with plank and brace lines down to row 31, which gives about 16 rows of front face. The roof is the main top surface, so the structure reads as three-quarter view, not a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a stall, so prop-stall-cheese and prop-well-roofed are the fair comparisons. Its outlines are tinted (0% near-neutral dark edges), a dark green against the tarp and a dark brown against the counter, so it avoids the black sticker look. Flat coverage is low at 6%, so there are no big flat fills. The weaknesses are depth and richness. The tarp reads as about 4 greens (a light top edge, mid, dark, and seam lines), against the references' 5-6 steps per material. The crate counter below is a dark, fairly uniform block with only a few small items, and the scrap, cloth and can read as small blobs with little grain. It has 11 visible tones per tile, against 17 for the cheese stall and 20 for the well, and only 22 distinct colours overall, against 40 and 38. That is above the hedge (9) but clearly below the stall references. It is competent but a step shallower than the Beodeul stall, and I would not accept it beside the reference without it looking thinner.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 17498
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "tarp roof / canopy plane",
+      "rows": "1-12",
+      "evidence": "c",
+      "front_edge_line_row": 13,
+      "eave_shadow_rows": "14-15"
+     },
+     {
+      "part": "crate counter top with goods (scrap parts, cloth, can)",
+      "rows": "16-22",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "crate counter front face",
+      "rows": "23-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 12,
+    "front_face_rows": 9,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The green tarp occupies rows 1-12 as a sloped canopy plane, with diagonal fold lines and a patch. It ends in a light front-edge line at row 13 (L=130) followed by dark eave shadow at rows 14-15 (L=68, 45). Below it, the crate counter has goods at rows 16-22 and a plank front face at rows 23-31. The roof is the main top surface and the front face is more than 3 rows, so it reads as three-quarter view, not a flat elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is the same kind as the references (a stall) and is drawn at the same scale. Outline: the edges lean dark green and teal beside the tarp and dark brown beside the crate, and 0% of dark edge pixels are neutral. That reads as dark material tone, not a sticker line. Shading: the tarp has about 4 greens (a light top edge, a mid, a dark band and a seam), and the counter has about 3 tones. That is below the 5-6 steps in the cheese stall and well. Texture: the tarp has some seams and fold variation, and the items on the counter (scrap, cloth, can) are small and read as only a few pixels each. The wide dark front of the counter is close to a flat mass. Density: 11 visible tones per tile is above the hedge (9) but well below the cheese stall (17) and the roofed well (20), which are the closest references in size and complexity. Flat coverage is 6%, so there are no large flat fills, but the piece is visibly less detailed than the cheese stall. A careful artist would likely ask for more tile-by-tile highlights on the tarp and more shading and variation on the crate counter before accepting it next to the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 16323
+  }
+ ],
+ "decidedAt": "2026-10-22T14:22:06.870Z",
+ "cells": {
+  "16": [
+   "2e49a85b4ae28168",
+   "960d952de60ee196",
+   "9a9aa219ca82863b",
+   "ac2b4f3716c20785",
+   "e37c0f702cb07394",
+   "fb9280a196fcd43b"
+  ],
+  "24": [
+   "24d8ff27f2a3c923",
+   "298612b874d223db",
+   "689a3105a94a72cc",
+   "72f15c4f6f94f93a",
+   "7beedfcc1efa8971",
+   "93b3d169a6ac0514",
+   "a686948c9c372e3c",
+   "bc72199ea591e359"
+  ],
+  "32": [
+   "084c5b65bdb8177e",
+   "27008b87c5391d35",
+   "a473461efa2b24c6",
+   "a878616ea1533819",
+   "bfcc0f15816247d5",
+   "efa083c7d0f79e56"
+  ],
+  "48": [
+   "9f797894bc196324",
+   "ff2a6fcee6d19f55"
+  ]
+ }
+}

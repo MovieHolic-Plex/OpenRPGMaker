@@ -1,0 +1,304 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "65e058b2b449745ae133739bc4f5e70bf47d6f4ba6bf651585aec1f396fd043d",
+ "width": 32,
+ "height": 16,
+ "kind": "seat",
+ "name": "fallen log used as a bench seen from above: long bark top surface, sawn end showing rings, lying on the ground",
+ "label": "wasteland_ruins/log-seat",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 9,
+  "tileColorsP90": 9,
+  "darkV5": 47,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 2
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "log bark top surface",
+      "rows": "3-7",
+      "evidence": "a",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": "10-11"
+     },
+     {
+      "part": "log front/lower bark face",
+      "rows": "8-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 6,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The log is a horizontal cylinder, 30 px wide. In columns x=9, 17 and 24 the top band of rows 3-7 is lighter, with grey and tan highlights. Row 8 shifts to a mid-brown edge (#7b5d48), which acts as the front-edge line. Below it the front face darkens in steps: rows 8-9 mid-brown, rows 10-11 darker (#4a3828) as shadow, and rows 12-13 darkest (#2f2418) for the underside and ground shadow. The silhouette widens from 3 px at row 2 to 30 px at rows 6-10, then narrows to 24 px at row 13. That gives a top surface of about 5 rows above a front face of about 6 rows, so it reads as three_quarter rather than a flat slab or a front elevation. The sawn end on the left is a small detail."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate measures 9 visible tones per full tile, the same as prop-hedge (9) and above the thin bench (0, too sparse to count) and lamp (0). Its near-flat coverage is 0%, so there are no large flat fills. The dark edge pixels are 0% neutral, so the outline leans brown beside the bark rather than being a black sticker line. By eye, the bark top has several brown steps with grain streaks. The sawn end is lighter with ring marks, and the end is separated from the bark by value. It is a small, simple prop and is not richer than the well or stall, but it is not thinner or flatter than the hedge or bench references. With only 9 colours in total, the ramps are compact, at roughly 4-5 usable steps on the bark. That is comparable to the bench's wood ramp, so it is acceptable beside the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16916
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "log bark top surface with sawn end",
+      "rows": "3-9",
+      "evidence": "a",
+      "front_edge_line_row": 9,
+      "eave_shadow_rows": "10-11"
+     },
+     {
+      "part": "log front/lower curved face",
+      "rows": "10-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 4,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette widens from 3 px at row 2 to 30 px by row 6 and holds until row 10, then narrows to 24 px at row 13. This matches a lying cylinder. In the x=24 scan, rows 4-7 are a lighter bark top, and rows 8-9 are a mid-tone transition that acts as the front edge. Rows 10-11 are darker, like an eave shadow, and rows 12-13 are the darkest, forming the shaded front face. The top band is about 6 rows and the front face is 4 rows. The darkest front rows are thin, so the three-quarter reading is only moderately strong."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate has 9 visible tones per 16x16 tile, equal to the hedge reference (9) and in line with the bench, which has 14 colours in total. Near-flat coverage is 0%, so there are no large flat fills. 0% of the dark edge pixels are neutral, so the outline carries a brown tint, as the references do, rather than a black sticker line. The bark has a lightness ramp of about 4-5 steps with grain streaks and highlights. The sawn end shows ring detail in a lighter tone. The piece is small and simple, with a slightly lower tonal range than the larger props, but it does not look thinner or flatter than the bench or hedge beside it.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15187
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "log bark top surface",
+      "rows": "4-7",
+      "evidence": "a",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": "10-11"
+     },
+     {
+      "part": "log front/bark side face",
+      "rows": "8-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 6,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette is a horizontal log 30 px wide, rows 3-13. At x=24 and x=9 the light, grey-brown top band covers rows 4-7. Row 8 is a mid-tone step (#7b5d48) that works as the front-edge line. Below it the face darkens in steps (rows 10-11 L=60, rows 12-13 L=38), which acts as eave shadow and underside shading. That leaves a front face of about 6 rows. The top band is only 4 rows and the edge line is weak, so this is borderline, but the top surface plus front face reads as 3/4. The sawn ring end at the left is a small detail and not a separate receding side face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The log has a dark brown outline that leans toward the bark colour. The measured near-neutral share of dark edge pixels is 0%, so this is not a black sticker line. Bark shows about 5 lightness steps with lengthwise grain streaks, and the sawn end has ring detail. Near-flat coverage is 0%, so there are no flat fills. Visible tones per tile are 9, equal to the prop-hedge reference (9) and below the stall (17) and well (20), which are more complex builds. The bench and lamp references score 0 on tones because they are thin pieces. The total palette is only 9 colours, which is a little leaner than the references, but the grain, ring and highlight variation keeps it from looking flat or sticker-like next to the hedge and bench. It would be accepted beside them, though it is slightly less rich than the best references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16568
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "log bark top surface",
+      "rows": "4-7",
+      "evidence": "a",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": "8-9"
+     },
+     {
+      "part": "log front face (bark side, shaded)",
+      "rows": "8-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 6,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The log is a horizontal body spanning rows 3-13. Rows 4-7 are a lighter bark band, seen from above, about 4 rows tall (L about 126-134 at x=17 and x=24). Below it the tone steps down through L=100 at rows 8-9, L=60 at rows 10-11 and L=38 at rows 12-13. That gives a darker front face of about 6 rows, which reads as the rounded south side with ground shadow. The tone change at row 8 acts as the front-edge line. The width profile (24, 25, 28, 30 ... 29, 27, 24) shows a rounded cylinder silhouette. The sawn ring end is at the left, drawn as the body's own end profile rather than a receding side face. It is a fallen-log bench with a visible top surface and a front face, not a rim-only strip or a flat slab."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The log has a bark ramp of about 5 steps, from a light top highlight through mid browns to a dark underside. The sawn end shows ring detail, and there are grain streaks along the bark. Its dark edge pixels are 0% near-neutral, so the outline is a tinted dark brown that reads as the material's own dark tone, not a black sticker line. It measures 9 visible tones per tile, matching the hedge reference (9) and above the bench and lamp references (0, i.e. smaller than one tile). Near-flat coverage is 0%, so there are no large flat fills. It is a little simpler than the roofed well (20) and cheese stall (17), but that is fair for a single plain log prop. A careful artist would accept it beside the bench and hedge without it looking flatter or thinner.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17631
+  }
+ ],
+ "decidedAt": "2026-10-22T16:17:40.912Z",
+ "cells": {
+  "16": [
+   "4aa75909b8a7faab",
+   "ab3081fb9b8f03bc"
+  ],
+  "24": [
+   "16d129989e081954",
+   "374fbcaa059da4e9",
+   "42d154e279d10ebb",
+   "4df83947eb9b9933",
+   "7bc0be7977f31513",
+   "b6bd81cf2c330a5c",
+   "bd73eefe65b4ff4f",
+   "bfc7b6c84445e8b1",
+   "e7cc5b908ebd7952",
+   "efe4c63dd2bc59e9",
+   "f1eb18807d9205f3",
+   "fc98db94fcdbe88f"
+  ],
+  "32": [
+   "642ca4812ad2a8aa",
+   "d84bc9e8c7865fc0"
+  ],
+  "48": [
+   "184accb0382585f6",
+   "251ef1318616bcda",
+   "42471ed6519d5f0c",
+   "7755d8d08bab3fa4",
+   "ccdd6c67d6a7a961",
+   "ef311940ee43265c"
+  ]
+ }
+}

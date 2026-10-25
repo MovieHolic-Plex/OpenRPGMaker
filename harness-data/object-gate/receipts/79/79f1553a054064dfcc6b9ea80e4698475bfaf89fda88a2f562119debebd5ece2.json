@@ -1,0 +1,377 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "79f1553a054064dfcc6b9ea80e4698475bfaf89fda88a2f562119debebd5ece2",
+ "width": 32,
+ "height": 32,
+ "kind": "structure",
+ "name": "open scrap-metal gateway seen from above: two heavy posts with their top caps, a crossbeam with its top surface between them, two corrugated gate leaves swung open flat, walkable opening in the middle",
+ "label": "wasteland_ruins/gate-scrap",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 14,
+  "tileColorsP90": 16,
+  "darkV5": 42,
+  "nearBlackEdge": 0.08,
+  "opaqueTiles": 4
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "borderline",
+   "right",
+   "right",
+   "borderline",
+   "borderline",
+   "borderline",
+   "right",
+   "borderline",
+   "right",
+   "right",
+   "borderline"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "left post cap",
+      "rows": "0-4",
+      "evidence": "a",
+      "front_edge_line_row": 4,
+      "eave_shadow_rows": "5"
+     },
+     {
+      "part": "right post cap",
+      "rows": "0-4",
+      "evidence": "a",
+      "front_edge_line_row": 4,
+      "eave_shadow_rows": "5"
+     },
+     {
+      "part": "crossbeam top surface",
+      "rows": "6-11",
+      "evidence": "a",
+      "front_edge_line_row": 11,
+      "eave_shadow_rows": "13-15"
+     },
+     {
+      "part": "open gate leaves (flat corrugated)",
+      "rows": "18-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 25,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The crossbeam shows a tan top band at rows 6-11, ending in a darker edge line at row 11. Below it is a reddish front face with dark shadow at rows 12-15. Both posts have tan cap tops at rows 0-4 above vertical faces that run down to row 30. The gate leaves at rows 18-29 are drawn as flat corrugated panels swung open, a deliberate top-down read for open leaves. The posts and beam keep a south front face of 3+ rows, so the structure reads as three-quarter view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small prop, so I judged it mainly against the measured facts and the tinted outline. It measures 14 visible tones per 16x16 tile, against 12 and 10 for the two references. Near-flat coverage is 0%, the same as both references. Dark edge pixels are 0% neutral, so the outline carries a tint: dark brown beside the wood posts and beam, and dark blue-grey beside the metal leaves. The wooden beam and posts show several lightness steps, with lit top caps and a lit beam top surface. The corrugated leaves have ribbing and highlight/shadow banding. Texture is less dense than the roof-tile scallops and plaster speckle on the houses, and the raw palette is small (18 colours in total), so I rate texture 'some' rather than 'rich'. It does not read as a flat sticker, and a careful artist would accept it beside the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17738
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "left and right post caps",
+      "rows": "0-4",
+      "evidence": "a",
+      "front_edge_line_row": 4,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "crossbeam top surface (tan planks)",
+      "rows": "6-11",
+      "evidence": "a",
+      "front_edge_line_row": 11,
+      "eave_shadow_rows": "12-14"
+     },
+     {
+      "part": "post front faces",
+      "rows": "5-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "open corrugated gate leaves lying flat",
+      "rows": "18-29",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 26,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The crossbeam has a tan plank band at rows 6-10 that ends in a darker edge line at row 11, then shadow and a front face at rows 12-14. The posts have small tan caps at rows 0-4 and front faces running down to row 30. The two gate leaves at rows 18-29 are drawn as flat corrugated plates seen from above beside a walkable opening. There is no separate side face, only a darker shade on one side of each post. The beam top is moderate (6 rows), so the drawing reads as three-quarter, not a pure front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small prop, about one tile wide, set beside two full houses. Measured facts favour it. It has 14 visible tones per tile against 12 and 10 for the references. Near-flat coverage is 0%, the same as the references. Neutral dark edge pixels are 0%, so the outlines carry a tint. By eye, the outlines are dark brown beside the wooden posts and beam and dark blue-grey beside the corrugated leaves, so they follow the adjacent material rather than forming a black sticker line. The posts show a lighter cap, a mid body and a dark side, and the beam top is separated by value. The gate leaves carry corrugation ridges with light and dark alternation and a few speckle dots. Each material has about 4 steps, a little below the references' 5-6, but nothing is a flat fill and it would not look thinner or flatter beside the reference at this scale.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 21571
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "crossbeam top surface (tan planked band)",
+      "rows": "6-10",
+      "evidence": "a",
+      "front_edge_line_row": 11,
+      "eave_shadow_rows": "12-14"
+     },
+     {
+      "part": "left and right post caps (tan diagonal-shaded tops)",
+      "rows": "1-4",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "post front faces (brown vertical shafts)",
+      "rows": "5-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "open corrugated gate leaves",
+      "rows": "18-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 26,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The crossbeam has a tan top band in rows 6-10 (about 5 rows). Row 11 is a darker front-edge line (L=100), and rows 12-14 are the darker front face and shadow, including the reddish centre piece. The two posts have 4-row tan caps in rows 1-4, closed by an outline row at 5, and their shafts run down to row 30 as 26 rows of front face. The gate leaves in rows 18-29 are flat corrugated panels with a dark outline, so they add front-face area and are not a separate volume. Overall the object has a top surface and a front face of 3+ rows, so it reads as three_quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small prop, but the measured facts support it. It has 14 visible tones per 16x16 tile against 12 and 10 for the references, and 0% near-flat coverage, the same as both. 0% of its dark edge pixels are neutral, so the outline carries a tint rather than being a black sticker line. By eye, the brown outline sits against the wood posts and crossbeam. The wood posts, caps and beam show about 4-5 steps (light cap, mid, dark, deep edge). The grey-blue corrugated leaves have ridge highlights and rust or speckle dots. It is a bit thinner than the full roof ramps in the references, and the leaf texture is less rich than the tile scallops, so texture is 'some' rather than 'rich'. A careful artist would still accept it next to the references without it looking flatter or more sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 21427
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "left post cap",
+      "rows": "0-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "right post cap",
+      "rows": "0-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "crossbeam top surface",
+      "rows": "6-10",
+      "evidence": "a",
+      "front_edge_line_row": 11,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "crossbeam front face",
+      "rows": "12-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "open corrugated gate leaves",
+      "rows": "18-30",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 25,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The crossbeam has a tan top band at rows 6-10 with a darker edge line at row 11. A reddish front face follows at rows 12-14, below the top band. The two posts have lighter cap faces at rows 0-5 above long brown front faces running to about row 30. The gate leaves at rows 18-30 are corrugated panels seen from above and swung open, with a walkable gap between them. The caps are small and drawn as diagonal wedges, so the beam top is the clearest top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 6,
+    "evidence": "The candidate is a small gateway and the references are whole houses, so this is a loose kind match. On the measured facts it holds up: 14 visible tones per 16x16 tile against 12 and 10 for the references, 0% near-flat coverage like both references, and 0% neutral dark edge pixels, so the outlines are tinted. By eye the posts and crossbeam have dark brown edges and lighter caps, and the corrugated leaves show grey-blue ridges with rust flecks, so there are no large flat fills. It uses only 18 colours in total, so each material ramp has about 4 steps against the references' 5-6. That is somewhat leaner than the houses but not shallow. The piece is small and cleanly shaded, and it would not look flatter or more sticker-like next to the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 32254
+  }
+ ],
+ "decidedAt": "2026-10-22T15:35:18.405Z",
+ "cells": {
+  "16": [
+   "4e1326ad339250c0",
+   "7e2dd5d5bbbbd018",
+   "c364da88b6939772",
+   "ff2a18b0036964bc"
+  ],
+  "24": [
+   "0b7fe3def3b6f937",
+   "1180ea4af33daca7",
+   "11bf826443f26470",
+   "11f54c4e6570c4f0",
+   "132f87664932ed18",
+   "2b585fd1b217f818",
+   "4b6d9029ade8d9d9",
+   "502dbcfbca134156",
+   "5f2d14a6516b361b",
+   "7e2b820084d05461",
+   "81bbb0943fdf3318",
+   "84936b7de0b6a770",
+   "853ccad5279dbe2f",
+   "8864de608a03b826",
+   "8906aa9195b2921f",
+   "a11fc2cc2a556834",
+   "af05395fdd9bd6b8",
+   "b14fa1270fc78801",
+   "ca18c735a00f650c",
+   "cc00c12b14f73d34",
+   "cdcee050da7f4a48",
+   "f79ff8db9f816f4d",
+   "fcc205f5fd1ca409",
+   "ff281ce05dc24bbc"
+  ],
+  "32": [
+   "58bbf68a281e67f7"
+  ],
+  "48": [
+   "0409542a5d75ccb2",
+   "442b489373486628",
+   "69bb9faf24f5e672",
+   "6e7afdb15bb92850",
+   "7ae1a76bde2e6da2",
+   "c4ed2ab525e58a6c"
+  ]
+ }
+}

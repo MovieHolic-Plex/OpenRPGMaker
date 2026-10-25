@@ -1,0 +1,365 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "61bbfaa35a2ab7097bd8b9e531800c406ba7e73349893ba879297fa8f9b50bf8",
+ "width": 48,
+ "height": 32,
+ "kind": "structure",
+ "name": "low freestanding broken brick wall running east-west: concrete coping on top seen from above, red brick courses on the front face, a taller pier at the east end, the west half crumbled to a few courses with loose bricks on the ground",
+ "label": "wasteland_ruins/wall-h3",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 7,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "wasteland_ruins",
+   "fallback": true,
+   "reason": "칩셋 wasteland_ruins 의 화풍 기준 묶음이 없다",
+   "hash": "5f62fef078ef7661"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 16,
+  "tileColorsP90": 19,
+  "darkV5": 45,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 3
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "borderline",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "concrete coping on the middle and east wall",
+      "rows": "16-20",
+      "evidence": "a",
+      "front_edge_line_row": 20,
+      "eave_shadow_rows": "21-22"
+     },
+     {
+      "part": "east pier cap",
+      "rows": "11-16",
+      "evidence": "a",
+      "front_edge_line_row": 16,
+      "eave_shadow_rows": "17"
+     },
+     {
+      "part": "crumbled west brick top (irregular broken courses)",
+      "rows": "19-23",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "moss/plant tufts and loose bricks",
+      "rows": "16-18, 28-31",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 11,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "At x=24 and x=35 the light-gray coping band (rows 16-20 and 17-21) ends in a darker front-edge line at row 20/21. Dark brown eave shadow follows, then the red brick front face runs to row 31, about 10-11 rows. The east pier has its own gray cap (rows 11-16) and a brick face below. The west half is crumbled with a jagged top and no flat surface, which fits the broken-wall description. The coping and pier cap carry the top-surface reading, so the object reads as three-quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small low wall, drawn at the same scale as the house references. Measured facts are at or above the references: 15 visible tones per tile against 12 and 10, 0% near-flat coverage like both references, and 0% neutral dark edge pixels, so the outlines are tinted. Visually the edges are dark red-brown beside the brick and the coping, not black. The brick face has about 5 steps (highlight, light, mid, dark, deep) with course lines and individual loose bricks. The pale coping is shaded separately, and the crumbled west half and the ground show small grain and moss-like dots. It has fewer raw colours overall (24, against 66 and 185) but no large flat areas. It looks slightly simpler than the house roofs, which have per-tile scallops, but a careful artist would accept it next to the references without it looking like a sticker.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16871
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "concrete coping on the middle wall",
+      "rows": "16-20",
+      "evidence": "a",
+      "front_edge_line_row": 20,
+      "eave_shadow_rows": "21-22"
+     },
+     {
+      "part": "east pier cap",
+      "rows": "11-16",
+      "evidence": "a",
+      "front_edge_line_row": 16,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "crumbled west brick courses (broken top edge, lighter brick tops)",
+      "rows": "19-24",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "loose bricks, moss and a yellow patch at the base",
+      "rows": "27-31",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 11,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "At x=24 the grey coping runs rows 16-20, a 5-row band with a light-to-dark gradient. Row 20 (L=98) is the darker front-edge line, and rows 21-22 (L=57) are dark eave shadow. Red brick courses form the front face from row 21 to 31, which is 11 rows. The east pier has a grey cap at rows 11-16 above its brick face, and a second grey coping step sits at x~35 on rows 18-21. The west half is crumbled, with a stepped silhouette and light brick tops at rows 19-24. That broken edge has no separate flat top, but it reads as the ruined end of the wall, not a missing top. The overall read is a 3/4 view with a visible top and a front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small wall prop set beside whole houses, so I judged it by material craft and not by size. It has 15 visible tones per full tile against 12 and 10 for the references, and 0% near-flat coverage. Its dark edge pixels are 0% neutral, so the outline is tinted. By eye the outline reads as dark red-brown beside the brick and a darker tone beside the coping, not a black sticker line. The brick courses have per-brick variation and the pale coping has its own highlight and shadow. There are loose bricks and small green moss dots on the ground. The brick ramp shows about 4 steps, a little under the references' 5-6, and the total of 24 distinct colours is low. Even so, it carries no flat fills, and a careful artist would accept it next to the references without it looking thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18446
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "concrete coping on the standing middle section",
+      "rows": "16-20",
+      "evidence": "a",
+      "front_edge_line_row": 20,
+      "eave_shadow_rows": "21-22"
+     },
+     {
+      "part": "east pier cap",
+      "rows": "11-16",
+      "evidence": "a",
+      "front_edge_line_row": 16,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "crumbled west brick stub",
+      "rows": "19-24",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "moss and loose bricks on the ground",
+      "rows": "28-31",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 11,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The standing middle section has a grey coping band at rows 16-20, with the lighter rows 18-19 above a darker front-edge line at row 20 (#68605e). Rows 21-22 are dark eave shadow (L=57), and the red brick front face runs from row 21 to 31 (11 rows). The east pier has a grey cap at rows 11-16 on a brick face below. The west half is a jagged brick stub, rows 19-31, whose broken top is only an irregular silhouette with no coping band or edge line. This is a rubble edge, not a clear top surface, so that part is marked as having no top. The main body still reads as three-quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small prop set beside two whole houses, so I compared tile density and material craft rather than size. It has 15 visible tones per 16x16 tile against 12 and 10 for the references, and 0% near-flat coverage like both references. Its dark edge pixels are 0% neutral, so the outline is tinted. By eye it is a dark red-brown beside the brick and a warm dark tone beside the coping, which matches the references' material-tone outlines rather than a black sticker line. The brick courses show per-brick tone variation. The coping and the taller pier have a pale highlight and a shadowed face. The crumbled west half has loose bricks and small moss or grass dots on the ground. The brick ramp has about 5 steps, slightly below the references' 5-6. The total of 24 distinct colours is low, but the per-tile count (16) matches the references (18 and 11). A careful artist would accept it next to the references without it looking flatter or more sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19026
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "concrete coping on the standing middle/east wall",
+      "rows": "17-20",
+      "evidence": "a",
+      "front_edge_line_row": 20,
+      "eave_shadow_rows": "21-22"
+     },
+     {
+      "part": "taller east pier cap",
+      "rows": "11-16",
+      "evidence": "a",
+      "front_edge_line_row": 16,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "crumbled west brick courses with jagged lit tops",
+      "rows": "19-23",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "loose bricks and moss tufts",
+      "rows": "28-31",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 11,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "In columns x=24 and x=35 the grey concrete coping covers rows 17-19 (L 134-189), with a darker front-edge line at row 20 (x=24) or row 21 (x=35, L=98). Dark brick rows (L=57) directly below act as eave shadow. The brick courses on the front face run to row 31, about 11 rows. The east pier has its own grey cap on rows 11-16 above its brick face. The west half is stepped, crumbled brick whose lit tops (rows 19-23) are irregular rather than a clean top plane. It reads as broken masonry, not a missing top. The overall read is a top surface over a front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small prop set against two whole houses, but the kind label is 'building', so I compared it with them. The brick face shows about 5 steps: pale coping highlight, light and mid red-brown, dark mortar and shadow, and deep base. Brick courses have individual bricks, and there are loose bricks and a few green moss or weed dots on the ground. The outlines lean brown and red-brown, not neutral black, which matches the 0% near-neutral share of dark edge pixels. Measured facts are at or above both references: 15 visible tones per tile against 12 and 10, and 0% near-flat coverage, the same as the references. The piece is small and the crumbled west half has less surface, but nothing reads as a flat fill or a sticker. It would sit acceptably beside the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17752
+  }
+ ],
+ "decidedAt": "2026-10-23T03:30:44.483Z",
+ "cells": {
+  "16": [
+   "2995fe84adb8d4b3",
+   "59aecc167cfac82f",
+   "62ee1a0679ed7076",
+   "810305f3b9483774",
+   "a0c8c75da972bbb3"
+  ],
+  "24": [
+   "82099c9a8b3cf640",
+   "8b11787c10a27780",
+   "8fa93cfaf89640c6",
+   "cb79ee702fe939ff",
+   "d87aee7677d60fc7",
+   "f1d3052504f36268"
+  ],
+  "32": [
+   "64b48f6efb648fa1",
+   "688244940cbe7a97",
+   "7ea336088db3e996",
+   "82874082f5cc9c6f",
+   "8825a57081c2cf34",
+   "c1900938acbbc59e"
+  ],
+  "48": [
+   "866eae7b8c11da1c",
+   "a428175cb5868601"
+  ]
+ }
+}

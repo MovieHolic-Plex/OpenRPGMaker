@@ -1,0 +1,287 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "65aaacb1670b252cc102675450ee4595fcf0e5f93bb1fdda4202fb88536f2e4a",
+ "width": 64,
+ "height": 48,
+ "kind": "terrain",
+ "name": "asphalt road tile with smooth worn tar, a long branching crack with weeds, a small water-filled pothole and a worn lane-paint dash, laid among plain asphalt",
+ "label": "wasteland_ruins/asphalt-c",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)"
+  ],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 5
+ },
+ "metrics": {
+  "tileColorsMedian": 5,
+  "tileColorsP90": 16,
+  "darkV5": 62,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 12
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "asphalt ground surface with crack, weeds, pothole and lane dash",
+      "rows": "0-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 48,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The tile is a full-bleed 64x48 rectangle with a uniform two-tone mottled asphalt pattern. The column scans at x=16, 32 and 47 show the same repeating 2-4 row light and dark noise from row 0 to row 47. There is no front-edge line, no eave shadow and no vertical south face. The crack, weeds, water-filled pothole and yellow lane dash are flat surface details seen from above. It is a flat ground texture with no front face, which is normal for a terrain tile."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "none",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a blue-grey mottled tar field with only two tiny weed tufts. It measures 5 visible tones per tile, above the grass reference (3) but below the paving reference (7), with 16 colours in total against 80 for the grass. Nothing is flat: near-flat coverage is 0%, but the variation is a fairly uniform speckle that reads as noise. The asphalt ramp has about 4 steps, short of Beodeul's 5-6. The crack, pothole and lane-paint dash are barely legible at this scale, and I see no clear branching crack, water highlight or paint dash. Individual stones or tar patches are not shaded one by one, and the paving reference's per-stone highlight and shadow structure is missing. There are no hard outlines, and the edge pixels are tinted rather than neutral. It is clean and not a sticker, but it is shallower and less structured than the paving reference, so I fail it on the doubt rule.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 16769
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "asphalt ground plane with noise texture, crack, pothole, weeds and lane-paint dash",
+      "rows": "0-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The tile is a full-bleed 64x48 opaque rectangle (width 64 on every row) filled with a mottled dark blue-grey texture. The column scans show only alternating light and dark noise bands every 2-4 rows, with no front-edge line, eave shadow, ellipse or raised silhouette. The crack, weeds, pothole and paint dash are flat ground details. It is a flat terrain tile seen from above with no standing volume and no front face, so it reads as a top-down slab, which is expected for kind terrain."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a mottled blue-grey asphalt with speckle noise and no flat 5x5 areas (0% near-flat). Its dark edge pixels are tinted blue-grey (0% neutral), so the outline reads as dark material tone, not a black sticker line. The material ramp is only about 4 steps, against 6 for the paving reference. The 5 visible tones per tile are below paving's 7 and above grass's 3. Only 16 colours in total is a thin palette. The speckle looks like uniform noise, with no stone-by-stone or tile-by-tile shading like the references. The crack, weeds and any pothole or lane dash are tiny and low-contrast, so they add little structure or variation across the patch. The surface mostly repeats the same speckle at the same value, which looks flatter and less crafted than the paving reference. This is a borderline case, and with doubt it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 13813
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "asphalt ground surface with crack, pothole and lane-paint dash",
+      "rows": "0-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "This is a flat terrain tile filling the full 64x48 area with a repeating tar texture. The column scan shows the same alternating light and dark bands at every sampled x, so there is no front-edge line, eave shadow, ellipse, or standing front face. The crack, pothole, weeds and paint dash are surface details drawn on the ground plane. The kind is terrain, so it is not a standing object, and it reads as a flat top-down ground tile with no front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a blue-grey mottled noise field with 5 visible tones per tile, against 7 for the paving reference and 3 for the grass. Near-flat coverage is 0%, so there are no big flat fills, and its dark edge pixels are tinted (0% neutral), so no sticker outline. However, the mottling is a uniform speckle with about 4 lightness steps and no per-stone or per-tile shading, highlights or grain structure like the paving reference's individually shaded stones. The requested features barely show: no long branching crack, no readable water-filled pothole and no lane-paint dash. Only two tiny weed or crack tufts with yellow tops appear, and they read as small stickers on a flat-ish noise ground. Overall it is thinner and less structured than the reference, and when in doubt this fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 12220
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "north",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "asphalt ground surface with crack, pothole and lane-paint dash",
+      "rows": "0-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "This is a flat terrain tile, a seamless asphalt texture filling a 64-wide, 48-row area with uniform width in every row. There is no silhouette, front face, edge line, eave shadow or ellipse, and the column scans show only alternating noise bands of similar lightness. The crack, pothole, weeds and paint dash are surface details painted on the ground plane. Ground terrain is viewed from above, so no standing front face is expected."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate's ground is an even, mottled blue-grey speckle with about 4-5 visible tones per tile. That is above the grass reference (3) but below the paving reference (7). Its 16 total colours are far fewer than the references' 80 for grass and 7 per tile for paving, and nothing is shaded piece by piece the way the paving stones are. Near-flat coverage is 0% and the dark crack pixels are tinted, not neutral (0% near-neutral), so there is no sticker outline and no flat fill. But the speckle is a uniform noise layer with little structure. The only features visible at this scale are two tiny crack-and-weed clusters. I see no long branching crack, no water-filled pothole and no lane-paint dash, so the tile carries less information than the paving reference and its material ramp is shallower. A careful artist would likely see it as flatter and sparser than the reference.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 12710
+  }
+ ],
+ "decidedAt": "2026-10-22T17:08:40.406Z",
+ "cells": {
+  "16": [
+   "613c9984280d8439",
+   "e7485af320cde41d"
+  ],
+  "24": [
+   "137979626eff4882",
+   "1740378ba701832b",
+   "212105d844be696a",
+   "223e03b746c88740",
+   "602184c9272de81c",
+   "61d59668f956eefc",
+   "674edb6dce85829b",
+   "6aeae6dc10883578",
+   "723f166e0160e2d3",
+   "7fb6221b7ecc4b1a",
+   "87054f2549476211",
+   "88b26c541b4f036e",
+   "8d9779bbbc184896",
+   "91ed75e699bd67ce",
+   "9248b91ae7747975",
+   "929e5739377f3491",
+   "d7a6041dbd571e02",
+   "f3c9e8a8be272620"
+  ],
+  "32": [
+   "0098e72032e869da",
+   "8585be86817ad649",
+   "b1ae9134ff1d430b",
+   "c6b0f4912162fb10",
+   "e15ba03744937413",
+   "f6864434f52c4ae0"
+  ],
+  "48": [
+   "323c9bc2cb670969",
+   "665c63706ccead93",
+   "66f6dc35b9e1d0e0",
+   "d4e2047c188e56f3",
+   "ddc0a3ab1b30451d",
+   "f344338fc19cd036"
+  ]
+ }
+}

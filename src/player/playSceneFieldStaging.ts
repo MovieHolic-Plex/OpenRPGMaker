@@ -1,5 +1,8 @@
 import { characterBaseOrigin } from "./characterOrigin";
-import Phaser from "phaser";
+// 타입만 가져온다. 값 import 는 phaser.esm.js 를 끌어와 모듈 평가 때 `window` 를 읽는다 —
+// 노드 vitest 에서 이 파일을 거치는 테스트 약 200개가 「window is not defined」로 수집조차 안 됐다(ci-full 40165485978).
+// 런타임에는 phaserRuntime 이 window.Phaser 를 꽂으므로 값은 전역 이름공간으로 읽는다(playSceneActionCombat 과 같다).
+import type Phaser from "phaser";
 import { ensureM2Runtime } from "@/player/interpreter/m2RuntimeState";
 import type { StepResult } from "@/player/interpreter/types";
 import { characterSpriteY } from "@/player/characterDepth";
@@ -20,6 +23,9 @@ import {
 import { mapTileSize } from "@/project/tileGeometry";
 import { store } from "@/project/store";
 import { runtimeEventViewById } from "@/project/runtimeEventState";
+
+/** Phaser.TintModes.FILL (Phaser 4). 값 import 없이 쓰려고 숫자로 둔다. */
+const TINT_MODE_FILL = 1;
 
 /**
  * 필드 연출 렌더러 — 파티클 · 캐릭터 모습 효과 · 레터박스.
@@ -333,7 +339,7 @@ function applyLook(scene: PlaySceneContext, sprite: Phaser.GameObjects.Sprite, r
   const definite = look as SpriteLook;
 
   if (definite.tint) {
-    if (definite.tintFill) sprite.setTint(hexToInt(definite.tint)).setTintMode(Phaser.TintModes.FILL);
+    if (definite.tintFill) sprite.setTint(hexToInt(definite.tint)).setTintMode(TINT_MODE_FILL);
     else sprite.setTint(hexToInt(definite.tint));
   } else sprite.clearTint();
   sprite.setFlipX(definite.flip === true);
@@ -366,7 +372,7 @@ function spawnAfterimage(scene: PlaySceneContext, sprite: Phaser.GameObjects.Spr
   ghost.setScale(sprite.scaleX, sprite.scaleY);
   ghost.setAngle(sprite.angle);
   ghost.setFlipX(sprite.flipX);
-  ghost.setTint(0x9ec8ff).setTintMode(Phaser.TintModes.FILL);
+  ghost.setTint(0x9ec8ff).setTintMode(TINT_MODE_FILL);
   ghost.setAlpha(0.45);
   ghost.setDepth(sprite.depth - 1);
   scene.tweens.add({ targets: ghost, alpha: 0, duration: 300, onComplete: () => ghost.destroy() });

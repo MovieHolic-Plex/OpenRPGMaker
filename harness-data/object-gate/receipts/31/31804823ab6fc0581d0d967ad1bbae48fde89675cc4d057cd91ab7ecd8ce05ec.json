@@ -1,0 +1,334 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "31804823ab6fc0581d0d967ad1bbae48fde89675cc4d057cd91ab7ecd8ce05ec",
+ "width": 96,
+ "height": 80,
+ "kind": "terrain",
+ "name": "broken old concrete pavement: irregular large pads with seams every two to three tiles, long cracks and missing chunks crossing tile borders, a seamless 4x4-tile field, mixed with tiles of weeds in small cracks",
+ "label": "wasteland_ruins/slab-b",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (3/4)",
+  "화풍: 평면 채움 (3/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (3/4)",
+   "평면 채움 (3/4)"
+  ],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 6
+ },
+ "metrics": {
+  "tileColorsMedian": 7,
+  "tileColorsP90": 14,
+  "darkV5": 79,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 30
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "concrete pavement field with seams, cracks, missing chunks and weed tufts (flat ground, seen from above)",
+      "rows": "0-79",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 80,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The candidate is a full-frame 96x80 seamless terrain field with an opaque width of 96 on every row. It is flat ground, not a standing object. The dark seam lines (e.g. rows 3, 18, 33, 67) are thin crack/joint lines between pads, not front-edge lines with eave shadow. No front face or vertical south face is drawn. The weed tufts and cracks lie on the ground plane. As terrain it reads as a flat top-down ground surface, with no object volume to measure."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate matches the paving reference on visible tones per tile (7 vs 7) and is well above the grass reference (3). Its dark edge pixels are mostly tinted (only 17% neutral), so cracks and seams read as dark grey-brown rather than a black sticker outline. The weeds, brown stains and chipped chunks add real variety. However, the concrete pads are mostly one mid-grey with sparse speckle and about 4 grey steps (light, mid, dark, crack), against the reference's roughly 6 steps. Near-flat coverage is 21% where both references are 0%, and the large grey pad interiors show as flat fills with no per-stone shading or grain. The reference paving is textured everywhere, so the candidate looks slightly thinner and flatter next to it. With that flatness and shallower ramp, and the rule to fail when in doubt, it does not clearly reach the Beodeul bar.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 12275
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "concrete pavement field (flat ground, seams, cracks, weeds, missing chunks)",
+      "rows": "0-79",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The image is a seamless 96x80 flat ground field of grey concrete pads with dark seam lines, cracks, brown stains and weed tufts. The silhouette is a full-width rectangle (width 96 on every row). There is no standing body, no front face, no eave or edge shadow and no ellipse. The dark horizontal lines at rows 3, 18, 33, 50 and 67 are pad seams, not front-edge lines of a raised top. It is a flat terrain tile with no vertical south face, so it reads as a top-down slab, which is expected for terrain."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate has 7 visible tones per tile, the same as the paving reference and well above the grass reference's 3. Only 17% of its dark edge pixels are neutral, so the seams and cracks are tinted dark grey-brown rather than a black sticker outline. The pads use about 5 grey steps: a light top, mid body, darker seam, and crack shadow. They also carry brown stain patches, chipped corners, speckle, and small green weed clumps in the cracks, with seams and cracks that run across tile borders. Near-flat coverage is 21% against 0% for the references, and some pad interiors are somewhat smooth grey. These patches are small and broken up by speckle and stains, so I don't count them as flat fills. It is a little less gritty than the reference's stone-by-stone shading, but a careful artist would accept it next to the reference.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 13903
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "concrete pavement field (flat ground, seams, cracks, weeds)",
+      "rows": "0-79",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 80,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "This is a seamless terrain tile field of cracked concrete, 96 px wide across all 80 rows with no silhouette change. It is seen from straight above: the dark seam lines, cracks, missing chunks and weed tufts lie on a flat plane. No front face, eave, lid or ellipse is drawn. The seams are flat joint lines, not front-edge lines with a vertical face below. As ground terrain it is a flat surface, so it reads as a top-down slab with no front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a gray concrete pavement with seams, cracks, brown stain patches and small green weeds. It has about 4 visible lightness steps (light gray, mid gray, dark gray crack, brown stain), against 5-6 in the paving reference. Measured tones per tile are 7, equal to the paving reference, and the dark edge pixels are only 17% neutral, so the cracks and seams lean tinted rather than neutral black. That supports dark_material_tone. The weakness is that near-flat coverage is 21% against 0% for both references: the pads have visible large flat gray areas with no grain or speckle, and the texture is sparse (a few cracks and stain blotches) compared with the reference's per-stone shading. The pads read as somewhat flat slabs. Density is slightly lower than the reference by eye, and the flat fills are a real issue, so when in doubt this fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 9431
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "concrete pavement field (flat ground tiles seen from above, with seams, cracks, missing chunks and weed tufts)",
+      "rows": "0-79",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 80,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The candidate is a seamless 4x4-tile ground field that fills the full 96x80 frame. It has no silhouette, no standing body and no south face. Seams (dark lines at rows 3, 18, 33, 67), zigzag cracks, brown missing-chunk patches and green weed tufts are all drawn flat on the ground plane. This is what terrain should look like, so kind matches. Since it is not a standing object, there is no front face (0 rows) and it reads as a flat top-down surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate measures 7 visible tones per tile, equal to the paving reference and above the grass reference's 3, so tone count is not the problem. Near-flat coverage is 21% against 0% for both references, and the board shows it: the grey pad interiors are large smooth areas with only sparse crack lines, a few brown stain blotches and tiny weed dots. The reference paving has per-stone shading and grain across the whole surface. The candidate's grey pad has about 3-4 lightness steps (light grey, mid grey, dark crack, brown stain), fewer than the reference's 5-6. Only 17% of dark edge pixels are neutral, so the cracks and seams lean tinted and are not a pure black sticker line. The seams are dark grey-brown with a lighter edge, which is acceptable. Weed tufts are small and sparse. The layout of large pads with seams and cracks matches the brief, but the pad interiors read flat next to the reference's dense per-stone texture.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 10296
+  }
+ ],
+ "decidedAt": "2026-10-22T16:59:41.732Z",
+ "cells": {
+  "16": [
+   "05e300bd935e1945",
+   "0e4402ec0c541435",
+   "1adf2b0fa095c078",
+   "236c1a960be88d4c",
+   "3864079fb1d1981e",
+   "39615fc26eb41b86",
+   "42724530afb6cb5e",
+   "5078ec7bf9a6c978",
+   "5bea3f9d927ea5ad",
+   "64b49d4d0a4eed91",
+   "9c5d5763cbea0bee",
+   "9eca98df8bda0c9a",
+   "b1b2048347b35845",
+   "b4a5c17bfa9e8b61",
+   "b4e241a31b53d8e8",
+   "bc451d35738ab07f",
+   "ccfe8a43f69ead12",
+   "dc14da8ff814dea3",
+   "eb479791c045204b",
+   "eef49e58945e6d4d"
+  ],
+  "24": [
+   "07d964b531b74fe8",
+   "10b9a514ad6b6799",
+   "32e94dfafc68b828",
+   "3a155a19b9489942",
+   "49bb70b38c141712",
+   "4aab62021311f2df",
+   "4ac8958459abba2c",
+   "57c7e381f78ff69b",
+   "5be80774fd17b21c",
+   "6978c1c07e337c0f",
+   "69a52ba93ea08a01",
+   "6d2d9e3cfaf8c08c",
+   "6da781323b4018bc",
+   "7a0541c2484da5b2",
+   "7cbe2f5fe8902617",
+   "812fe59707977d4e",
+   "8f059e197076aa01",
+   "9438b2672f345ac1",
+   "9b51b62000e985d3",
+   "9ba518b5da385206",
+   "9bffe49977dd1e6f",
+   "ae2f9f4a60683b0f",
+   "b2d0e5ef2a94fd9d",
+   "bfa5a5b41f17ca34",
+   "c37b91749ccd553f",
+   "cbf81c445d0dafd3",
+   "da0ff3c2a6fba3c2",
+   "e9efe274a945c66a",
+   "f44c31f329c55e56",
+   "f7dd8133489ca001",
+   "fbb795c8d1e6dacc",
+   "fdf2c08be0aa00cc"
+  ],
+  "32": [
+   "058a231cbf46e095",
+   "1a3408a7095aed6d",
+   "3263a0b23cec1d21",
+   "3683505402e67a1b",
+   "3a1d161b3a404130",
+   "4786b9b8b1007d30",
+   "5464a5ba885ea002",
+   "5a924ae8cc9c4dbe",
+   "6e0f98f7e84a8a55",
+   "8a71e52b404e7dd0",
+   "93ba086c2eee6491",
+   "b28cce28a42e088f",
+   "c8a52440f5008742",
+   "f78aee0be4b2fefb",
+   "f81e2ff80307af76"
+  ],
+  "48": [
+   "19ac7167923bbc95",
+   "74e949d3cb4590b5",
+   "811304b0d3b96898",
+   "a28bcc712bf8cd4f",
+   "a4a3ca217e654d4e",
+   "dc10eee11c260e24",
+   "ddab45bb90764521",
+   "fe2be4a52b33885a"
+  ]
+ }
+}

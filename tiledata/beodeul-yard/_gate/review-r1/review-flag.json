@@ -1,0 +1,18 @@
+{
+  "surface": "flag",
+  "image": "/home/main/z-project/rpg-zzu-village-art/tiledata/beodeul-yard/_gate/yard_flag.png",
+  "verdict": "fail",
+  "view34": "pass",
+  "autotile": "fail",
+  "quality": "fail",
+  "material": "fail",
+  "defects": [
+    "Every NE convex corner: dark mitre 'X' inside the kerb and a 1px dark joint pixel poking above the kerb top into grass (1x approx (123,17), (139,33), (171,49)).",
+    "Isolated single cell (1x ~(150-158,0-10)): pentagon kerb with notched NW corner, spike at (155,1), interior is a 2x2 grid of tiny slabs - reads as a little window, not a slab.",
+    "Body repeats almost exactly every 16px (adjacent body cells ~80% identical pixels): the same white triangular slab and tan oval recur on a visible grid across the whole court.",
+    "Slabs are ~5-8px irregular polygons - this is crazy paving/cobble scale, not 'large irregular limestone slabs'; the claimed cracked and sunken slabs are barely legible (only a few grey-tinted slabs).",
+    "Joints are drawn as uniform 1px dark lines around every small stone, giving a busy net; next to Beodeul plaza in compare-3x it reads as a pale cobble rather than flagstone."
+  ],
+  "evidence": "The flat court reads top-down with a pale kerb, north catch-light and a 2px south face, so the view is fine. The NE convex corner piece has the same stray dark pixel and mitre cross as cobble. The body tiles as an obvious 16px wallpaper and the stones are too small to read as temple flagstones; in compare-3x it looks like a lighter version of the yard cobble rather than a distinct flag surface.",
+  "reviewer": "claude-opus independent adversarial review 2026-10-23"
+}

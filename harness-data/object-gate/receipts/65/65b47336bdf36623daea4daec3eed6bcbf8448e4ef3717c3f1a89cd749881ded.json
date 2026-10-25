@@ -1,0 +1,433 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "65b47336bdf36623daea4daec3eed6bcbf8448e4ef3717c3f1a89cd749881ded",
+ "width": 80,
+ "height": 64,
+ "kind": "flat",
+ "name": "a small vegetable garden bed seen from above: a weathered plank frame around four tilled soil ridges with leafy cabbage-like plants in rows, a few gaps and one wilted plant",
+ "label": "wasteland_ruins/crop-bed-a",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 명암 3단 < 4 (2/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "명암 3단 < 4 (2/4)"
+  ],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 6,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "wasteland_ruins",
+   "fallback": true,
+   "reason": "칩셋 wasteland_ruins 의 화풍 기준 묶음이 없다",
+   "hash": "8cecb3a70460aa86"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 5,
+  "tileColorsP90": 18,
+  "darkV5": 49,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 20
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "north",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "plank frame around bed",
+      "rows": "16-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "tilled soil ridges (4 dark furrows)",
+      "rows": "18-44",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "cabbage plants and one wilted yellow plant",
+      "rows": "18-43",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 32,
+    "front_face_rows": 2,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The bed is drawn straight down. The plank frame is a thin outline of 1-2 rows on every side. The soil ridges run as horizontal stripes, and the plants are seen from above as round leaf clusters. The bottom plank at rows 45-47 is a flat strip with a 1-row shadow, not a vertical south face of 3 or more rows. There is no eave or front-edge line and no receding side face. The background ground texture fills the whole 80x64 canvas, so the object's own footprint is only about rows 16-47. This matches a flat floor-decal object with no front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate shows 5 visible tones per tile, which is above the grass reference (3) and below the paving reference (7). Near-flat coverage is 0% and the dark edge pixels are tinted (0% neutral), so the outline reads as dark brown beside the wood and soil rather than a black sticker line. The soil has speckle and ridge shading, and the cabbages show two to three greens each. Structurally, though, it is thinner than the references. The cabbage leaves have only about 3 steps and little per-leaf highlight clustering. The plank frame is a thin, mostly uniform line with limited grain. The surrounding soil is a mid-brown with sparse dots and no stone or clod shading. Raw colours total only 23, against 80 in the grass reference. The wilted plant and the gaps are barely visible at this scale. A careful artist would probably ask for richer foliage shading and soil grain before placing it next to the references, so I am failing it on the doubtful side.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 13668
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "plank frame and tilled soil bed seen from above",
+      "rows": "16-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "cabbage plants in rows (including one wilted yellow plant)",
+      "rows": "18-43",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 32,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The garden bed (rows 16-47) is drawn straight from above: the plank frame is a thin 1-2 row outline around four soil ridges with plants in rows. There is no vertical front face of 3 or more rows, no front-edge line with eave shadow, and no side face. The surrounding ground texture fills rows 0-63 at full width 80. The object is a flat plate seen from above, which matches the flat kind. With no front face, it is a top-down slab."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a brown soil patch with a small plank-framed bed. Measured facts: 5 visible tones per tile, 0% near-flat coverage and 0% neutral dark edge pixels, so the outlines are tinted and not near-black. The numbers sit between the grass reference (3 tones) and the paving reference (7). By eye the picture is weaker than that. The soil is mottled in only 2-3 browns with sparse speckle. The cabbages are small, with about 3 greens each and little leaf-clump modelling. The plank frame is thin, about 1-2 tones, with little grain. The wilted plant and the gaps are barely readable at this scale. The Beodeul references show more per-material ramps (about 5-6 steps), per-stone shading and grass tufts. The raw 5 colours per tile and 23 colours in total suggest a limited ramp. Overall it is tidy and not sticker-like, but shallower than the references in shading steps and texture richness, so it does not clearly reach the standard.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 10853
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "plank frame and tilled soil bed (seen from above)",
+      "rows": "16-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "cabbage plants in four rows, one wilted yellow plant",
+      "rows": "18-43",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 32,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The bed is drawn straight down. Rows 16-47 show a plank frame, four horizontal soil ridges (dark furrow lines at rows 24-25, 31-32, 38-39) and plants viewed from above. The bottom plank at rows 45-46 is a frame edge seen from above. It has no vertical south face, only a thin dark shadow line below it at rows 47-48. The surrounding ground fills the rest of the 80x64 canvas. No front face of 3 or more rows and no eave or front-edge structure, so it is a flat top-down plate, which fits the flat kind."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a brown soil patch with a small plank-framed bed holding rows of green cabbage plants. The measured facts are 5 visible tones per tile, 0% near-flat coverage and 0% neutral dark edge pixels. That is above the grass reference (3 tones) and below the paving reference (7), so the density numbers alone do not condemn it. By eye, though, the shading is shallow. The soil has only about 3 brown steps, mostly mottled noise, with no clear ridges or per-clod highlights. Each cabbage is a small 2-3 tone green blob with no leaf-clump layering. The plank frame is thin and has little grain or per-plank shading. The wilted plant and the gaps are barely readable at this scale. Outlines are tinted dark brown or green rather than black, which is a plus. The four tilled ridges are not clearly legible as ridges. Beodeul pieces carry about 5-6 steps per material, and this one reads simpler and flatter than the references, so it falls short of that bar.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 13387
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "plank frame and tilled soil ridges (main body, seen from above)",
+      "rows": "16-47",
+      "evidence": "d",
+      "front_edge_line_row": 45,
+      "eave_shadow_rows": "46-47"
+     },
+     {
+      "part": "cabbage plants and one wilted yellow plant",
+      "rows": "18-43",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 30,
+    "front_face_rows": 2,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The bed is a flat plan view. The soil ridges and plants fill rows 16-47 and are seen from straight above, and the frame is a thin plank outline all round. The only south-facing part is the bottom plank at rows 45-47, a light line at about row 45 with a darker shadow beneath it, which is under 3 rows of front face. No receding side face is drawn, so it is a flat top-down plate, which matches the flat kind. The remaining 80x64 canvas is dirt background texture, not part of the object."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate has tinted outlines (0% neutral dark edge pixels), so it avoids the sticker look. It also has no flat 5x5 areas, and 5 visible tones per tile sits between the grass reference (3) and the paving reference (7). The structure is still thinner than the references. The whole 4x3 patch uses only 23 colours, against about 80 for the grass. The soil is a mottled brown with only about 3-4 steps. The cabbages are small green clumps with 2-3 greens and little per-leaf highlight. The plank frame reads as a thin one-tone line with almost no grain, weathering or per-plank shading. A careful artist would find it flatter and sparser than the Beodeul grass and paving, which have clump and stone-by-stone shading. The tones per tile are adequate, but the material ramps are shallow for the garden bed, so it fails narrowly.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 18062
+  }
+ ],
+ "decidedAt": "2026-10-24T16:39:31.770Z",
+ "cells": {
+  "16": [
+   "0bca46be8c1bf24d",
+   "135601f58dc12d78",
+   "2874620db6e7d039",
+   "3f823a32e08c6e2b",
+   "41d0c2cbb1e2d856",
+   "52ed6c4a8dc84626",
+   "60ed277fd039c497",
+   "7f4211b803aa0a9f",
+   "809ff769c4b69a0a",
+   "86321864d112f0e8",
+   "a5a5143982bbc314",
+   "b47ab801b394980a",
+   "c42d6feed36ac99d",
+   "d555970c8f324e77",
+   "e45f363a5b731bf9",
+   "efe044aa04cf6c04"
+  ],
+  "24": [
+   "025521a233892dc9",
+   "07194534a418322c",
+   "07245a0155ff86e0",
+   "089602c53b9a52cc",
+   "0e43b1fd3bae12ab",
+   "108d55eebaa0ff36",
+   "23b94207a14fe0cf",
+   "286cc74f485229b6",
+   "2a53137624d24d7e",
+   "2a9ec6780a2b76bb",
+   "2b7eea95bad027da",
+   "2bf2826d422d165b",
+   "2cbbbe91bfb80382",
+   "32361dd4c341bdaa",
+   "3e028f1e3e6208c6",
+   "3f1e71faccc2b36f",
+   "4050d0099274e2a6",
+   "40d1688fbd7fae05",
+   "4222533fce6b20ee",
+   "4256d18163f33812",
+   "4a2514c31d22075a",
+   "4b6fd97b8c0954ce",
+   "4ec3d1b0faf57835",
+   "4f103f068f3f4ff3",
+   "4f490f11450701be",
+   "4f95a6fc94d87560",
+   "50bc3fb2d1853259",
+   "56f17503fe2dc2c0",
+   "5d3fed54fe16c5a5",
+   "5db0b53c06ddbb40",
+   "661104b8a2ff0724",
+   "6841c4f62d598f3f",
+   "6c56552893931dcb",
+   "6c7424724d4ee789",
+   "71bbb147b4f150cf",
+   "725ca3b872169b7c",
+   "76f65c42aef0c493",
+   "7c2b8195a6cb0a05",
+   "7cfd519e803665f0",
+   "8792b990053e5efd",
+   "8e9f9e3bd6c91e68",
+   "8f7daa31a927de61",
+   "8fb8d6e380cad634",
+   "931d66ed9d6ae420",
+   "97bf0cab83065c05",
+   "a474daf74eb46a14",
+   "a5b0acd26ea90687",
+   "a74926e94a4620d1",
+   "abd67240b310f642",
+   "acd52f7f5e2a1125",
+   "ae28584a4cbd97df",
+   "ae7ccbe463869d34",
+   "b1585df71fa4d9e2",
+   "b53ee4623e5ec3d2",
+   "bb9ae115769e02ca",
+   "c5d068edcf96851e",
+   "c897d8704142ab95",
+   "ceb2a610802e549e",
+   "d0173a56d5e9e489",
+   "d331569cbcff1765",
+   "db802f8d6fec4bb5",
+   "dc3bcf5111a740e9",
+   "ddd3d83c163b816c",
+   "e35c00d163560ef0",
+   "e5e7e6ceb549e99c",
+   "ec9389070de4b660",
+   "ed271701e4323f2b",
+   "f636d37cb9db2d1b",
+   "f68b3361ff00d559",
+   "fa8af98f7d2169f1",
+   "fb7d5f51f0df34d3",
+   "fb995c59799b05a8"
+  ],
+  "32": [
+   "043f52ca574491b9",
+   "178d8a181ff73311",
+   "36491f8684591aa7",
+   "460b85cd4b9f8e57",
+   "47f7d6c402b2217b",
+   "54fd3dc504ab3c36",
+   "5dabd2139ee2d338",
+   "6127a4eabd0fe902",
+   "6b24de0d751dba9f",
+   "88abe293e53e8d9f",
+   "a9e7d73d37e42800",
+   "b627c7028bb49546",
+   "cd823cf8ea37e450",
+   "d97659993774b2ce",
+   "e919e2a2bf100ac9",
+   "f2228fa54d5106cb",
+   "f5f90cf13dbbd87c",
+   "fa6ac8211a7a3bf4"
+  ],
+  "48": [
+   "03ff7f47273f3928",
+   "0bd3daeff1586fbc",
+   "1b39219abbe96ed0",
+   "1dfe8bee73772357",
+   "1f5214fc468548fe",
+   "2ac38dc502c25e91",
+   "33700761337f868f",
+   "37e88bf6b661e0b5",
+   "4548f26f66756576",
+   "5105228943fe5e7e",
+   "572990d06ffce24f",
+   "90a963b67f91dfd7",
+   "aeb4c722fece2f4c",
+   "b259217e7e424a5e",
+   "ba5123e8c647b7c6",
+   "be0de0bbd05dadf2",
+   "c1f0a32961e9c8d4",
+   "c5e55ac397ab0331",
+   "c91c8c0e58079893",
+   "d0ca3febecf207fe",
+   "d8a12e4d32170027",
+   "e280b9d52e630a9d",
+   "efdc7fe86c60c7a0",
+   "f4031caebadf15c2"
+  ]
+ }
+}

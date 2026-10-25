@@ -1,6 +1,6 @@
 {
   "name": "oprn",
-  "version": "0.339.0",
+  "version": "0.340.0",
   "description": "웹 기반 탑뷰 타일 JRPG 메이커 (MVP)",
   "private": true,
   "license": "SEE LICENSE IN LICENSE.md",
@@ -30,6 +30,7 @@
     "audit:db-css-ownership": "node scripts/audit-db-css-ownership.mjs",
     "gates:barrel": "node scripts/check-barrel-imports.mjs",
     "gates:self-hosted": "node scripts/check-self-hosted-workflows.mjs",
+    "merge-pr": "node scripts/merge-pr.mjs",
     "gates:surface": "node scripts/check-surface-gates.mjs",
     "gates:surface:audit": "node scripts/audit-gate-mutations.mjs",
     "gates:dead-css": "node scripts/check-dead-css-classes.mjs",

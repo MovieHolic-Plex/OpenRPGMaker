@@ -9,6 +9,7 @@ import { PNG } from "pngjs";
 import { openLocalProjectStore } from "../../electron/local-store/store.ts";
 import { ensureBundledTilesets } from "../../src/project/defaults/defaultAssets.ts";
 import { beodeulTailRelocations, BEODEUL_TOWN_WALL_BASE } from "../../src/project/defaults/beodeulCity.ts";
+import beodeulCitySheet from "../../src/assets/beodeulCitySheet.json" with { type: "json" };
 import { townWallAvailable } from "../../src/editor/tools/beodeulTownWall.ts";
 import { runTool } from "../../src/editor/tools/index.ts";
 import { renderMapPng } from "../qa-game/render.mts";
@@ -49,7 +50,7 @@ for (const projectDir of dirs) {
   const lostPictures = new Set(grafts0.map((g) => `${g.sourceChipset}:${g.sourceTile}`));
   for (const g of grafts) lostPictures.delete(`${g.sourceChipset}:${g.sourceTile}`);
   assert.equal(lostPictures.size, 0, `${name}: 이식 그림이 사라졌다 ${[...lostPictures].slice(0, 5)}`);
-  assert(!grafts.some((g) => g.targetTile >= 23936 && g.targetTile < 28672), `${name}: 번들 꼬리 안에 이식 칸이 남았다`);
+  assert(!grafts.some((g) => g.targetTile >= 23936 && g.targetTile < beodeulCitySheet.count), `${name}: 번들 꼬리 안에 이식 칸이 남았다`);
   assert(townWallAvailable(ts), `${name}: 성벽 칸이 실리지 않았다`);
   const mapDiffs: Record<string, string> = {};
   for (const map of Object.values(p.maps)) {
@@ -59,7 +60,7 @@ for (const projectDir of dirs) {
   }
   // 성벽 마을 하나를 새 맵에 짓는다
   const ctx: { project: Project } = { project: p };
-  const town = runTool(ctx as never, "author_beodeul_town", { id: "map_wall_relocation_proof", name: "성벽 마을 (이식 칸 옮김 증명)", walls: true, houseCount: 5, seed: 7 }, { dryRun: false }) as { ok: boolean; summary: string; data?: { mapId: string; walls?: unknown; houses?: number } };
+  const town = runTool(ctx as never, "author_beodeul_town", { id: ["map_wall_relocation_proof", "map_wall_relocation_proof_2", "map_wall_relocation_proof_b", "map_wall_relocation_proof_c", "map_wall_relocation_proof_d"].find((id) => !(id in p.maps)) ?? "map_wall_relocation_proof_e", name: "성벽 마을 (이식 칸 옮김 증명)", walls: true, houseCount: 5, seed: 7 }, { dryRun: false }) as { ok: boolean; summary: string; data?: { mapId: string; walls?: unknown; houses?: number } };
   assert(town.ok, `${name}: 성벽 마을 실패 ${town.summary}`);
   const townMap = ctx.project.maps[town.data!.mapId]!;
   const wallCells = (townMap.upperTiles ?? []).filter((t) => t >= BEODEUL_TOWN_WALL_BASE && t < BEODEUL_TOWN_WALL_BASE + 128).length;

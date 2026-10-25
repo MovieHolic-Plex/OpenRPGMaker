@@ -1,0 +1,324 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "107592392cf0f0b074263db81f62ff2e9c2a58016fb4a64e76a89a7b1180345b",
+ "width": 96,
+ "height": 80,
+ "kind": "terrain",
+ "name": "dusty packed wasteland earth ground, a seamless 4x4-tile field with soft tonal patches, long dry cracks and pebbles running across tile borders, mixed with tiles of shallow damp hollows",
+ "label": "wasteland_ruins/dirt-b",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "refer",
+ "reasons": [
+  "화풍: 화풍 판정이 갈림(걸린 판정 2/4)",
+  "화풍: 판정자 fail (2/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "refer",
+  "reasons": [
+   "화풍 판정이 갈림(걸린 판정 2/4)",
+   "판정자 fail (2/4)"
+  ],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 5,
+  "tileColorsP90": 5,
+  "darkV5": 90,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 30
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "ground field (entire 96x80 tile block)",
+      "rows": "0-79",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 80,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The image is a seamless terrain tile field with a full-width silhouette of 96 px across all 80 rows. It has mottled brown earth, dark crack lines, pebbles and darker damp hollows, and no standing object, front face, edge line, eave shadow or side face. For terrain this flat top-down ground texture is the expected presentation, but by the structural definitions it has no front face, so it reads as a flat top-down surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a brown packed-earth field with mottled speckle, small pebble clusters and dark hollow marks. It has about 4-5 visible tones per tile, against 3 for the grass reference and 7 for the paving reference. Near-flat coverage is 1%, so there are no large flat fills. There are no outlines, and the dark edge pixels are tinted (0% neutral), so there is no sticker look. The weaknesses: the board shows no clear long dry cracks running across tile borders, only scattered dark pebble blobs. The tonal patches are soft and low-contrast, so the shading reads as one noisy ramp rather than 5-6 deliberate steps. Texture is evenly sprinkled, with little of the per-clump or per-stone shading Beodeul has. Overall the piece is a bit thinner than the paving reference and not clearly richer than the grass reference. It is not clearly Beodeul quality, so with doubt it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 10298
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "ground texture field filling the whole 96x80 tile area",
+      "rows": "0-79",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 80,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The image is a seamless terrain tile field. Every row 0-79 is a full 96 px wide with no silhouette change, no front-edge line, no eave shadow and no vertical face. The mottled earth patches, cracks and pebbles are surface texture seen from above, and the column scans show only irregular tonal runs, not a structured edge. It is flat ground with no standing volume, so there is no front face (0 rows). This is consistent with the terrain kind."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "Ground has no outline to speak of. The few dark pixels around the pebbles and hollows are tinted brown, and the measured neutral share is 0%, so there is no sticker line. The earth ramp has about 5 visible steps, from light dusty tan to deep brown. That matches the grass reference (3 visible tones per tile) and sits just below paving (7). Near-flat coverage is 1%, against 0% for both references, so the mottled grain and dither speckle cover the whole field and there are no flat fills. The soft tonal patches and small dark pebble or hollow clusters read as hand-placed texture comparable to the grass tile. The weak point is that the long cracks are faint and the palette is only 5 colours. For a ground tile this is still at the level of the references, so a careful artist would accept it next to them without it looking thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 12509
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "ground field (entire 96x80 tile block)",
+      "rows": "0-79",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 80,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The image is a seamless terrain texture that fills the whole 96x80 frame, with width 96 on every row and no silhouette. It has mottled brown patches, cracks and pebbles, and no front-edge line, eave shadow, vertical face or ellipse. It is a flat top-down ground field, which is normal for a terrain tile. There is no standing object and no front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a ground field like the grass and paving references, with no object outlines. Its dark edge pixels are 0% neutral, so any dark marks lean brown rather than black, and there is no sticker line. It has 5 visible tones per tile, above the grass reference (3) and a little below paving (7). Near-flat coverage is 1%, against 0% for both references. By eye, the surface carries grain and speckle across the whole field, soft lighter and darker patches, and small dark pebble and hollow clusters. The cracks and damp hollows are subtle, not strongly drawn. The 5-step brown ramp is close to Beodeul's step count, and nothing reads as a flat fill. A careful artist would accept it next to the grass reference without it looking thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 11053
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "ground texture field filling the whole 96x80 tile",
+      "rows": "0-79",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The image is a seamless, full-bleed ground texture. Every row from 0 to 79 is 96 px wide, so there is no silhouette, no standing object, no front face and no edge line or eave shadow. It is a flat top-down surface with patches, cracks and pebbles, which fits the terrain kind. No vertical face, side face or cap is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a brown earth field with 5 visible tones per tile. That is above the grass reference (3) and a little below the paving reference (7). Near-flat coverage is 1%, so there are no big flat fills. Dark edge pixels are 0% neutral, so any dark marks are tinted brown rather than black. The grain is a fine mottle with small pebble clusters and dark crack marks. It reads as fairly uniform noise: the soft tonal patches, long cracks running across tile borders and damp hollows are weak at this scale. The cracks look like short dark specks, not continuous cracks. Only 5 raw colours are used, against 26 raw colours per tile in the grass reference. Texture is therefore thinner and more repetitive than Beodeul's clumped, per-element shading. The damp hollows are barely distinguishable from the dry ground. Structure is acceptable but not clearly at reference richness, so with doubt it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 8372
+  }
+ ],
+ "decidedAt": "2026-10-22T17:22:29.496Z",
+ "cells": {
+  "16": [
+   "153d5435ba6b6bcb",
+   "1c2210ce5984b025",
+   "37570c0d01c67e57",
+   "39ac3b750e8c7263",
+   "3ae3b38831e1e6df",
+   "3d5c3618ee8a7850",
+   "3d64299f3778bc2e",
+   "4e956ae2d8182f32",
+   "4fd0d091d5de0911",
+   "5723125a0402306b",
+   "6d507c8bf575da7c",
+   "72e18bb2565903f7",
+   "780417a0dcb7222f",
+   "79bd5a526f35fa82",
+   "aa2f9f3a6fd54b46",
+   "aab490dabe713206",
+   "b079ed9c9fcf9113",
+   "c650994ee2efc202",
+   "cfc7f4e381b48df7",
+   "e215bf2cfe6db03c"
+  ],
+  "24": [
+   "128026e0c9e3b860",
+   "12b58755b4a9710e",
+   "14d1a8b44072d2db",
+   "166beb19cc350517",
+   "27e889c168230009",
+   "358df5d6aad34219",
+   "424dc504e351d4a3",
+   "4f8e59ff59a623a3",
+   "649e75569d93f1f8",
+   "685fdc59f193651b",
+   "6ce5f3a8d530c7ca",
+   "737e613fbbbf04f3",
+   "752fb383f3ccf724",
+   "7ac4e8377b8718c1",
+   "7baaec24e9fbfd9b",
+   "7c08c84c3385400a",
+   "8a88d0b1bf3dfbf8",
+   "8ac0d4730cfd1ab2",
+   "961836621e620dc9",
+   "97ccc08098e796b4",
+   "9ac1225f363dc7e0",
+   "9b3d48557387d1b5",
+   "a071d363b390448f",
+   "ae0d568aa630ff06",
+   "c27bcf6e60c960de",
+   "c3b0b8a26b81af89",
+   "c71858b5a8821189",
+   "dc6f7738c845026b",
+   "e5821cb09240284c",
+   "eb2cb7d709f892b3",
+   "ed3771786d61e024",
+   "ffb968b8fc265d2f"
+  ],
+  "32": [
+   "0037994eb377d4eb",
+   "03876d53e7b3d562",
+   "184cd28811d1ffd5",
+   "4033301c9aeda99e",
+   "4acbc5bc3fddb702",
+   "4de29a07b26f6d7b",
+   "5984293c111d6592",
+   "68b195071be6ed68",
+   "6f162e0e416124ce",
+   "76ef8f49c871e632",
+   "96eeaad6436b6cd3",
+   "992306e1231bf64b",
+   "b3d1515172f7fc78",
+   "cf18baed1e9421c5",
+   "e1c4b866d0b7356f"
+  ],
+  "48": [
+   "19932ea065f2bd20",
+   "900f5dad65e97bae",
+   "caba743ae59fd6b8",
+   "d50de9b1347fe1dc",
+   "e0a653bca07953ed",
+   "e3606da4bd10935b",
+   "e49465c14bbacc74",
+   "f2cc7bb497468e54"
+  ]
+ }
+}

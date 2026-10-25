@@ -1,0 +1,324 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b397f9953833381a7a164256b92d44f4901bbeecb5c6965b738db4d440127d96",
+ "width": 96,
+ "height": 96,
+ "kind": "flat",
+ "name": "a soft chipped bite of dirt in the south-east corner of an old asphalt road tile, rounding off the inside corner where two roads meet: an irregular quarter-blob of dirt about 4 px across with a broken lighter asphalt edge (or a dry dark ledge on its south side), a couple of loose asphalt crumbs on the dirt and a dirt fleck on the road; transparent elsewhere, shown on a bend of road",
+ "label": "wasteland_ruins/asphalt-in-se",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 7,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "wasteland_ruins",
+   "fallback": true,
+   "reason": "칩셋 wasteland_ruins 의 화풍 기준 묶음이 없다",
+   "hash": "8cecb3a70460aa86"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 5,
+  "tileColorsP90": 8,
+  "darkV5": 77,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 36
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "asphalt road bend (L-shaped patch) on dirt ground",
+      "rows": "18-78",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The image is a full 96x96 ground tile: dirt background with an L-shaped asphalt road patch (rows 18-78) seen straight from above. There is no raised body, no vertical south face, and no top/front split. The thin dark ledge lines at rows 43-45 and 77-78 are ground-level edge shading, not a front face of 3 or more rows. It reads as a flat decal or ground tile. The brief describes a small dirt bite in the SE corner, but the tile shows a broad road bend, so the crop may not match. As a flat kind, the lack of a front face is expected."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate shows speckled dirt grain and mottled asphalt with lighter chip highlights, where the grass reference is only a few tones with tufts. The asphalt reads in about 3-4 steps (light edge, mid, dark, crumbs) and the dirt in about 3, which is slightly shallower than the 5-6 step paving. Measured facts support this: 5 visible tones per tile, above grass (3) and below paving (7); near-flat coverage is 1%, so there are no flat fills. 0% of the dark edge pixels are neutral, so the edge/ledge pixels lean brown or grey-brown rather than black, which fits a dark material-tone edge. It does not look like a sticker next to the references. It is a little less rich than the paving, but it holds up as an irregular, textured ground piece for a 4x3 layout.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15230
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "dirt ground with L-shaped asphalt road bend, seen from above",
+      "rows": "0-95",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 96,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The whole 96x96 tile is a flat plan view: mottled dirt with an L-shaped asphalt region (rows 18-78). The only edge features are thin 1-2 row dark ledges at rows 43-45 (the road's south edge on the right arm) and rows 77-78 (the bottom of the left arm). These are ground-level edge shading, not a vertical face. The column scans show only alternating dirt and asphalt colour runs, with no front face of 3 or more rows. The object is a flat ground decal with no standing volume, so it reads as a top-down slab, which is expected for kind flat."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate's dirt and asphalt both carry speckle, grain and crumbs, so there are no large flat fills (near-flat coverage 1%, against 0% for both references). It shows 5 visible tones per tile, above the grass reference (3) and a bit below the paving reference (7). The dark edge pixels are 0% neutral, so the broken asphalt edge and dark ledge lean brown or grey-brown rather than black; they are not a uniform sticker outline. Each material has about 4 value steps, slightly fewer than the paving's 5-6, but a careful artist would accept it next to the grass ground reference. It is a bit simple, but the palette is locked and the piece is small.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18408
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "asphalt road bend (L-shaped patch) on dirt ground, seen from above",
+      "rows": "18-78",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The image is a flat top-down ground tile of 96x96 px. It shows an L-shaped asphalt patch (rows 18-78) on dirt, with thin dark ledge lines at rows ~44 and ~77-78 that are only 1-2 row edge outlines, not a front face. There is no vertical south face of 3+ rows, no eave shadow, no ellipse and no roof. The object lies flat as a decal, matching the kind 'flat'. It reads as a flat plate with no front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate has 5 visible tones per tile, above the grass reference (3) and a little below the paving reference (7). Near-flat coverage is 1%, so there are no flat fills. The dirt carries light and dark grain, and the asphalt carries speckle with a darker ledge along its edge. The dark edge pixels are 0% neutral, so the outline leans brown or grey-brown, matching the adjacent material rather than sticker-style black. There are only 9 colours in total, so each material ramp is about 3-4 steps against the references' 5-6. That is slightly shallow, but the grain reads clearly and the patch sits at the level of the grass reference, so I accept it as ground."
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 15089
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "dirt ground fill with asphalt L-shaped road patch",
+      "rows": "0-95",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "thin dark ledge under asphalt edges",
+      "rows": "43-45",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "thin dark ledge under asphalt bottom edge",
+      "rows": "77-78",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 96,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The tile is fully opaque (width 96 on every row). It is a flat top-down ground texture: brown dirt with a grey asphalt L-shaped road area at rows 18-78. The only vertical-looking features are 1-2 row dark ledge lines at rows 43-45 and 77-78, which are edge shadows, not a front face. No front face of 3 or more rows exists, so this is a flat decal seen from above and fits the flat kind."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is shown on a bend of road. The dirt has speckled grain in about 3-4 browns, and the asphalt has crumb and speckle texture in about 3-4 greys. The asphalt edge is separated by a dark brown ledge, so the outline is tinted (0% neutral dark edge pixels) and is not a sticker line. Visible tones per tile are 5, above the grass reference (3) and a little below the paving reference (7). Near-flat coverage is 1%, against 0% for both references, and I see no large flat areas. The ramps are a little shallower than Beodeul's 5-6 steps per material, and the palette is small at 9 colours. That is on par with the paving reference's 7 colours, so I judge the piece acceptable next to the references, not thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17282
+  }
+ ],
+ "decidedAt": "2026-10-22T23:42:45.245Z",
+ "cells": {
+  "16": [
+   "325f9d03f6670acf",
+   "36ff7638df8673e5",
+   "37f4e5b841628cb6",
+   "391e96d4e5cbb034",
+   "3c91cb1744fc6cc0",
+   "435ee95a98daa034",
+   "460e4a8ec76bd231",
+   "4d8e107c842cbd64",
+   "4dd6a88c3decae3f",
+   "54cfdd48cdd84bbf",
+   "55ca2b999cb2777f",
+   "57a01a5ce41b8fcf",
+   "57b8fa4d1eb95887",
+   "57fc98f3f560dfdf",
+   "592fb3651515ca56",
+   "6a142c36774956a4",
+   "701963da1546c5a0",
+   "75aadca9e96e6830",
+   "7653395b609fc3d8",
+   "822299b1e77d6905",
+   "87ebaacfb06760b3",
+   "884e030657d25edb",
+   "9f5af927f0af984a",
+   "a7c18212f3871d37",
+   "a8d3332b1fee2ebf",
+   "bf4d1cbcd45adc03",
+   "bf951a18dddfa779",
+   "c2f6cebe48735da0",
+   "ca3f76d628f12761",
+   "d82cb25ff82bdf1e",
+   "df93164b87e89113",
+   "e2745db7140954d1",
+   "e3ed4c9f8703f2c8",
+   "e41293d8fa5ea4ae",
+   "e431f93def2daa34",
+   "ff8ca0c34ec4faed"
+  ],
+  "24": [
+   "0b6ed51baa2d956e",
+   "13af392d337a3491",
+   "14ca8f8c29f7732a",
+   "153169f1f38dde44",
+   "201a098e40327304",
+   "2110b5b8b40cf9a3",
+   "3189c4e0625f18ec",
+   "3197f2fb124c9470",
+   "67c8461835f88e14",
+   "7ee02e0ffd65cf6f",
+   "9197e22b2b2cd0c5",
+   "c621e2a27a1f5102",
+   "cafdf8bcb81be3a1",
+   "e0ef3ebda8781dd5",
+   "ebcb1786f9bbf9ae",
+   "fd053032ebd36de7"
+  ],
+  "32": [
+   "0d849e89978a30a4",
+   "10d135a33826c255",
+   "34bfa832a24403bb",
+   "480f8f6c8694b6cb",
+   "4b4dabad105ab8dd",
+   "50e954a6a9ad883e",
+   "918a2b9d713d2600",
+   "a9f9accf8f96d880",
+   "c730054dcf5efea8"
+  ],
+  "48": [
+   "6a6471bdd46b94e3",
+   "8559ee65f9a950c6",
+   "e1495d245d6a841f",
+   "fa325fed99f2ccfb"
+  ]
+ }
+}

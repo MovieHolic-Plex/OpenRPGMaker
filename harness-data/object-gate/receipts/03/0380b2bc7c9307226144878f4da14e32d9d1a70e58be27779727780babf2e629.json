@@ -1,0 +1,374 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "0380b2bc7c9307226144878f4da14e32d9d1a70e58be27779727780babf2e629",
+ "width": 32,
+ "height": 16,
+ "kind": "seat",
+ "name": "fallen log used as a bench seen from above: long bark top surface, sawn end showing rings, lying on the ground",
+ "label": "wasteland_ruins/log-seat",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "refer",
+ "reasons": [
+  "3/4: 판정자 의견이 갈림(분명한 3/4 3/4, 분명한 위반 1/4)",
+  "3/4: 옆·뒤를 보는 의자는 사용자 정의 영역이라 자동 통과시키지 않는다",
+  "3/4: 투영이 3/4 아님(front_elevation) (1/4)",
+  "3/4: 윗면 1행 < 4 (1/4)",
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/4)"
+ ],
+ "view34": {
+  "verdict": "refer",
+  "reasons": [
+   "판정자 의견이 갈림(분명한 3/4 3/4, 분명한 위반 1/4)",
+   "옆·뒤를 보는 의자는 사용자 정의 영역이라 자동 통과시키지 않는다",
+   "투영이 3/4 아님(front_elevation) (1/4)",
+   "윗면 1행 < 4 (1/4)",
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/4)"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 11,
+  "tileColorsP90": 11,
+  "darkV5": 47,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 2
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "borderline",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "west",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "log trunk (bark body)",
+      "rows": "3-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "sawn end with rings (left, vertical oval)",
+      "rows": "6-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "leaf sprig at lower right",
+      "rows": "12-14",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 1,
+    "front_face_rows": 8,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The log is drawn as a cylinder seen side-on. Row 3 is the outline and row 4 is a single light highlight line (L=180). Rows 5-9 are speckled bark in one tone, and rows 10-12 darken toward the underside (L=60-81), with the dark outline and shadow at rows 13-14. That is ordinary cylinder shading, not a flat horizontal seat plane. There is no band that ends in a front-edge line and eave shadow, and no ellipse on top. The only ellipse-like shape is the sawn end with its rings, which is a vertical face spanning rows 6-12 on the left. The seat surface therefore shows at most a 1-row highlight and reads as front elevation / side profile rather than a seat seen from above."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate has about 5 brown steps on the bark: highlight along the top, mid, shadow underside and a dark brown edge. The sawn end has a lighter ring face with 2-3 ring tones, plus a small green moss/leaf accent. The dark edge pixels are 0% neutral, so the outline is a tinted dark brown beside the wood, not a black sticker line. Measured facts: 11 visible tones per tile against 9 for the hedge reference, 0% near-flat coverage, and 11 total distinct colours, the same as the hedge. It sits at the density of the bench-wood and hedge references. The bark grain lines and ring detail keep large areas from being flat fills. It is slightly simpler than the well and stall references, but this is a small single-tile-height prop, so that does not count against it. It would sit acceptably next to the references.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 1행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 1행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 25234
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "west",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "bark top surface of log (seat surface)",
+      "rows": "4-9",
+      "evidence": "a",
+      "front_edge_line_row": 10,
+      "eave_shadow_rows": "10-10"
+     },
+     {
+      "part": "sawn end with rings, drawn as a vertical oval face on the left",
+      "rows": "5-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "moss/leaves at bottom right",
+      "rows": "12-14",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 3,
+    "side_face_visible": true,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Column scans at x=8, 15 and 23 show a 1-row dark outline at row 3 and a light highlight at row 4. Rows 5-9 are a 5-row speckled bark band (L about 105), which I read as the top surface. Row 10 is a darker line (L=60) that acts as the front-edge line, followed by a 3-row front/underside face at rows 10-12. Rows 13-14 are dark ground shadow. The sawn end with rings is a vertical oval on the left and counts as the log's end face, not a top. The result is borderline: the cylindrical log could also read as a side profile, but the bark band with texture and an edge line gives a modest top plus a front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The log has about 5 brown steps on the bark: a highlight along the top, mid bark, dark grain streaks and a deep underside. The sawn end shows concentric ring tones, and a small green leaf adds variety. The outline leans dark brown against the wood, and the measured 0% near-neutral dark edge pixels confirms it is tinted, not a black sticker line. Measured facts are 11 visible tones per tile and 0% near-flat coverage. That is at or above the prop-hedge reference (9 tones, 0% flat) and below only the heavily detailed stall and well. The bench and lamp references measure 0 tones per tile because they are thin, so they are no use for density. No large flat fills appear. It is a little simpler than the richest references, but a careful artist would accept it beside the hedge and bench.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 의견이 갈림(분명한 3/4 1/1, 분명한 위반 0/1)",
+    "옆·뒤를 보는 의자는 사용자 정의 영역이라 자동 통과시키지 않는다",
+    "옆면(아이소)이 보인다는 판정이 과반"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "판정자 의견이 갈림(분명한 3/4 1/1, 분명한 위반 0/1)",
+     "옆·뒤를 보는 의자는 사용자 정의 영역이라 자동 통과시키지 않는다",
+     "옆면(아이소)이 보인다는 판정이 과반"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 25459
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "west",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "bark top of log (seat surface)",
+      "rows": "4-9",
+      "evidence": "a",
+      "front_edge_line_row": 10,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "sawn end with rings at left",
+      "rows": "5-12",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "leaf sprig at bottom right",
+      "rows": "11-14",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 3,
+    "side_face_visible": true,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "In the column scans (x=8, 15, 23), row 3 is the outline and row 4 is a light highlight line (L=180). Rows 5-9 are textured mid-brown bark, which gives a top band of about 6 rows (4-9). Row 10 is a dark line (L=60) that acts as the front-edge line. Rows 11-12 are the front underside of the log (3 rows with the edge line). Rows 13-14 are the darkest rows (L=38), a ground shadow. The sawn end at the left is an ellipse with rings spanning about rows 5-12. The log is lying along its length with the end facing west. The bark band is a real top surface seen from above, not a 1-2 row rim, so the seat surface reads as three-quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate has 11 visible tones per tile, against 9 for the hedge and 17-20 for the stall and well. It has 0% near-flat coverage and 0% neutral dark edge pixels, so the outline is tinted, not a black line. By eye the outline is a dark brown that follows the bark. The bark body shows about 5 steps (highlight, light, mid, dark, deep) with lengthwise grain streaks. The sawn end has concentric ring tones and a small green moss touch. It is a small, simple prop, and it is on par with the bench and hedge references for craft. It is a little less rich than the stall and well, but it has no sticker look and no flat fills.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 의견이 갈림(분명한 3/4 1/1, 분명한 위반 0/1)",
+    "옆·뒤를 보는 의자는 사용자 정의 영역이라 자동 통과시키지 않는다",
+    "옆면(아이소)이 보인다는 판정이 과반"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "판정자 의견이 갈림(분명한 3/4 1/1, 분명한 위반 0/1)",
+     "옆·뒤를 보는 의자는 사용자 정의 영역이라 자동 통과시키지 않는다",
+     "옆면(아이소)이 보인다는 판정이 과반"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 20971
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "west",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "bark top of log",
+      "rows": "4-9",
+      "evidence": "a",
+      "front_edge_line_row": 10,
+      "eave_shadow_rows": "10-12"
+     },
+     {
+      "part": "sawn end with rings (vertical face at west end)",
+      "rows": "5-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "moss/leaves at bottom right",
+      "rows": "12-14",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 5,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Every column scan shows a light highlight line at row 4 and a mid-brown bark band at rows 5-9, so the top band is about 6 rows (4-9). A darker line at row 10 acts as the front-edge line, followed by shadow at rows 10-12 and the darkest base at rows 13-14. This leaves about 5 rows of front face below the top. The structure matches the cabinet and seat references (top band, edge line, shadow, front). The vertical ring ellipse is the sawn end face, not the sitting surface. The moss at the bottom right is decor. The call is borderline because the log could also be read as a shaded cylinder side profile."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The log has a dark brown outline that leans toward the bark colour; the measured near-neutral edge share is 0%, so it is not a black sticker line. The bark carries about 4-5 brown steps (highlight along the top, mid body, dark underside) with grain streaks, and the sawn end shows concentric rings in lighter tones. A small green moss or leaf accent adds variation. Measured facts: 11 visible tones per tile, which is above the prop-hedge reference (9) and comparable to the other references, and 0% near-flat coverage. The bench-wood reference is smaller and has 14 colours in total against the candidate's 11, so the candidate is at least as rich as that same-kind reference. It is somewhat less textured than the well and stall, which are larger and more complex pieces. No large flat fills. A careful artist would accept it next to the references.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 의견이 갈림(분명한 3/4 1/1, 분명한 위반 0/1)",
+    "옆·뒤를 보는 의자는 사용자 정의 영역이라 자동 통과시키지 않는다"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "판정자 의견이 갈림(분명한 3/4 1/1, 분명한 위반 0/1)",
+     "옆·뒤를 보는 의자는 사용자 정의 영역이라 자동 통과시키지 않는다"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19541
+  }
+ ],
+ "decidedAt": "2026-10-22T14:22:06.821Z",
+ "cells": {
+  "16": [
+   "798a11dedb003b75",
+   "823b8ad0400fb173"
+  ],
+  "24": [
+   "07bc9d06fb732c9e",
+   "17dd7af06a88ab65",
+   "221fea3dba1f5e92",
+   "265661e6c760e859",
+   "2a35bd1370e9f6cf",
+   "4ad90d6fecceb799",
+   "55abed1342f7331f",
+   "60e920e63da5dcae",
+   "9c5b201e4d00698f",
+   "aa248a39b5b8b49e",
+   "cc47cd5d8ddb1f38",
+   "df517eeff03070af"
+  ],
+  "32": [
+   "0a309466dc164154",
+   "6c035cb6c51850b8"
+  ],
+  "48": [
+   "32d1cfa50d939860",
+   "6ce3228a79a0ba68",
+   "a7bb585f17c11b0a",
+   "f25f12b7ced8e161",
+   "f6ec8e63bd296b78",
+   "fb0bb473ca456435"
+  ]
+ }
+}

@@ -1,0 +1,301 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ba5e56983cc1bae6a3cff8581fbb61d9ca4ddbb6c3c864b22b8d19ca3bd20034",
+ "width": 16,
+ "height": 16,
+ "kind": "flat",
+ "name": "a Y-shaped dark grey-black crack whose stem splits into two wandering branches, with a dirt-filled opening, drawn as a transparent decal on old asphalt",
+ "label": "wasteland_ruins/road-crack-b",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 질감 없음 (4/4)",
+  "화풍: 칸 정보량이 기준보다 훨씬 낮음 (4/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "질감 없음 (4/4)",
+   "칸 정보량이 기준보다 훨씬 낮음 (4/4)"
+  ],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 3,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "wasteland_ruins",
+   "fallback": true,
+   "reason": "칩셋 wasteland_ruins 의 화풍 기준 묶음이 없다",
+   "hash": "8cecb3a70460aa86"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 0,
+  "tileColorsP90": 0,
+  "darkV5": 57,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 0
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "Y-shaped crack decal with stem and two branches, drawn flat on the ground",
+      "rows": "2-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 12,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The silhouette is a thin 1-7 px wide Y-shaped crack spanning rows 2-13. It widens at row 7 where the branches meet and narrows again to a 1 px tail at rows 11-13. It has no front face, no front-edge line, no eave shadow and no vertical face. It is a flat ground decal seen from above, which matches the flat kind. It is not a standing object, so no front face is expected."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "none",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a tiny Y-shaped crack, smaller than one 16x16 tile, with only 5 distinct colours in total. It reads as a thin 1-2 px line in about 2-3 dark tones. It has no highlight edge, no dirt grain in the opening, no asphalt speckle and no chipped edges. The references show 3 visible tones (grass) and 7 (paving) per tile, with clustered grain, per-stone shading and light edges, about 5-6 steps. The candidate is far sparser and flatter than either. The per-tile facts are 0 because the piece is smaller than a tile, so I judged by eye. It would look thinner and more sticker-like beside the reference, and nothing in it shows the shading craft of the Beodeul standard, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 12785
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "Y-shaped crack decal with dirt-filled opening, drawn flat on the ground",
+      "rows": "2-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 12,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The object is a thin, sparse Y-shaped crack decal, 1-7 px wide, spanning rows 2-13. It has no raised volume: there is no front face, no front-edge line, no eave shadow and no ellipse. The width profile only traces the branching lines (1, 2, 4, 7, 4, 2, 1 px wide). It is a flat ground decal seen from above, which fits the flat kind, so it reads as a top-down slab with no front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a tiny, sparse crack decal with only 5 distinct colours in total, against 80 for the grass and 7 per tile for the paving. The per-tile facts read 0 because the piece is smaller than a tile, so I judged by eye. The Y crack is a thin 1-2 px line in about 3 tones (dark grey-black, a mid grey and a brownish dirt pixel). It has no per-pixel grain, no chipped asphalt edges, no highlight lip along the crack, and no shaded soil clumps in the dirt opening. Next to the paving reference, which has stones shaded one by one with highlight, mid and dark steps, it looks thinner, flatter and more sticker-like. It also does not fill a 4x3-tile patch the way the references fill their tiles. Its edge tint measures 0% neutral, but the dark line is basically the whole crack and has no separate material-tone ramp. A careful artist would not accept it next to the reference.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 12102
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "Y-shaped crack decal with dirt-filled opening, drawn flat on the ground (rows 2-13)",
+      "rows": "2-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 12,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The decal is a thin crack seen straight from above. Silhouette widths run 1-2-4-7-4-2-1 px over rows 2-13, with no front face, no front-edge line and no eave shadow. The Y shape has a stem and two branches, and rows 7-8 hold the lighter dirt-filled opening. It is a flat ground decal with no vertical face, so it reads as a top-down slab. That is the expected reading for a flat kind."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 2,
+    "reference_steps": 6,
+    "outline": "none",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a small, thin Y-shaped crack on a transparent background, about 20x15 px at board scale. It is drawn with only 5 distinct colours, and it is smaller than one full tile, so the per-tile facts read 0 and I judged by eye. The crack is a thin dark grey line with one or two lighter pixels and no visible dirt-filled opening, so it has roughly 2 shading steps. It has no stone-by-stone shading, no grain and no dirt texture. Beodeul's paving reference has about 7 visible tones per tile, with each stone shaded individually and its edges lit, and the grass reference has about 3 tones with tufts. Even allowing for a sparse decal, this reads as a thin sticker-like scribble that is flatter and poorer than the references. It would not hold up next to them, and the dirt fill described in the object name is missing.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 8986
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "Y-shaped crack decal with dirt-filled opening",
+      "rows": "2-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 12,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The silhouette is a thin Y-shaped crack, 1-2 px wide for most rows. It widens to 7 px only at row 7, where the two branches meet the dirt opening. The stem runs down to row 13, and the branches go up and out to rows 2-6. There is no front-edge line, no eave shadow and no vertical face. The column scans show only dark #2a3539 line pixels with one lighter dirt pixel. It is drawn as a flat decal seen from above, so it has no front face (0 rows). That matches the flat kind."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a tiny, sparse crack decal. It is thin dark lines with a few dirt pixels, built from only 5 distinct colours, so I see about 3 lightness steps against roughly 5-6 in the paving reference. The tile facts are 0 because the piece is smaller than one tile, so I judged by eye. There are no per-stone highlights, no grain and no clustered dirt texture in the opening. The branches read as a thin one-tone stroke, flatter and thinner than the paving reference (7 visible tones, every stone shaded) and the grass reference (grain and tufts). The measured 0% near-neutral edge share suggests some tint, but the lines look grey-black at this scale, so I call the outline mixed. Nothing ties the crack into the asphalt surface with chipped edges or shaded lips, so it looks like a sticker. A careful artist would not accept it next to the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 12917
+  }
+ ],
+ "decidedAt": "2026-10-22T23:08:27.563Z",
+ "cells": {
+  "16": [
+   "258b9abdea307dab"
+  ],
+  "24": [
+   "272f88c165d6caa3",
+   "5d9b27f999b7fa97",
+   "9fbd018d4d8bd0da",
+   "b3a13d2f34a54dc2",
+   "c8b00e52fc9190c7",
+   "f9adcc2eacb38dbe"
+  ],
+  "32": [
+   "40c4f64242f1fbaa",
+   "54e486ba9f0a3ce2",
+   "a6e594145a89107d",
+   "b129cdc12ac71ff2",
+   "b1ee66d0b14185ae",
+   "e704d90624c1c71c"
+  ],
+  "48": [
+   "63f4afb7ab5619c7",
+   "89de1d59a3159c41",
+   "8aa78e2157c05e45",
+   "c1588439a3ac072d",
+   "db6249fe98b6ab02",
+   "ea1e096586dd79ef"
+  ]
+ }
+}

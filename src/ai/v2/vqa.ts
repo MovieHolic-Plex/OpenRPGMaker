@@ -149,11 +149,11 @@ export function vqaSummary(rounds: readonly VqaRound[]): { readonly clean: boole
 }
 
 /** 결함이 남은 채 고리가 끝났을 때 조수에게 줄 마지막 지시 — 더 고치지 말고 남은 목록을 보고에 그대로 쓴다. */
-export function vqaLeftoverInstruction(rounds: readonly VqaRound[]): string {
+export function vqaLeftoverInstruction(rounds: readonly VqaRound[], why?: string): string {
   const summary = vqaSummary(rounds);
   const problem = rounds.at(-1)?.problem;
   return [
-    `[화면 검수 끝 — ${summary.text}] 더 고치지 말고, 앞 보고를 대신하는 최종 보고를 「최종 보고(앞 보고를 고침):」로 시작해 쓴다. 끝에 아래 남은 것을 그대로 적는다(«다 됐다»고 쓰지 않는다):`,
+    `[화면 검수 끝 — ${summary.text}${why ? ` · ${why}` : ""}] 더 고치지 말고, 앞 보고를 대신하는 최종 보고를 「최종 보고(앞 보고를 고침):」로 시작해 쓴다. 끝에 아래 남은 것을 그대로 적는다(«다 됐다»고 쓰지 않는다):`,
     ...(summary.leftover.length ? summary.leftover.map((d) => `- ${d.where}: ${d.what}`) : [`- 화면 검수 미완료${problem ? `(${problem})` : ""}`]),
   ].join("\n");
 }

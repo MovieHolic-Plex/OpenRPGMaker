@@ -1,0 +1,26 @@
+{
+  "surface": "cobble",
+  "image": "tiledata/beodeul-yard/_gate/yard_cobble.png",
+  "pixel_sha256": "4f5c78131169debb2483ddb0cf2226f9dfa2ad10002df3718184e90308218a55",
+  "verdict": "pass",
+  "view34": "pass",
+  "autotile": "pass",
+  "quality": "pass",
+  "material": "pass",
+  "defects": [
+    "minor, non-blocking: /home/main/.cache/yard/vqa-r6/cobble_innercorner16x.png (16x (90-130,95-125), 1x ~(106,18)): stepped inner corner where the east kerb meets the next step's north kerb is closed by a 2px mid/dark grey stub instead of a light kerb mitre; invisible at 4x.",
+    "minor, non-blocking: /home/main/.cache/yard/vqa-r6/cobble_body8x.png: earth fraction in the 2 columns/rows at each cell border is ~0.6-0.7 vs ~0.3 elsewhere and the top row of each cell is ~90% stone, so stones fall into loose 16px courses; at 4x (/home/main/.cache/yard/vqa-r6/cobble_west4x.png) this reads as naturally coursed cobble, not as a grid."
+  ],
+  "evidence": "r5 defects are gone: the fixed-pitch pebble lattice is replaced by mixed rounded warm/grey stones of 2-6px with irregular earth joints and small pebbles (cobble_body8x.png); 16px pixel-identity fell from 59%/50% to 32%/24% (4px/8px: 16%/19%), 26 distinct cell images with interior variants scattered (no visible stamped stone). Flat 3/4 plane lit upper-left, stones shaded top-light/bottom-dark, kerb with light top and 2px south face; outer/inner corners, grass hole, 2-wide neck and isolated cell close cleanly with no stones cut at cell borders (cobble_south8x.png, cobble_ne8x.png, cobble_hole8x.png). Reads as a rural river-cobble yard, clearly distinct from Beodeul's grey sett road and sand. Note compare-3x.png appears to show older art and was not used as evidence of the current tiles.",
+  "crops": [
+    "/home/main/.cache/yard/vqa-r6/cobble_full8x.png",
+    "/home/main/.cache/yard/vqa-r6/cobble_body8x.png",
+    "/home/main/.cache/yard/vqa-r6/cobble_south8x.png",
+    "/home/main/.cache/yard/vqa-r6/cobble_hole8x.png",
+    "/home/main/.cache/yard/vqa-r6/cobble_iso8x.png",
+    "/home/main/.cache/yard/vqa-r6/cobble_ne8x.png",
+    "/home/main/.cache/yard/vqa-r6/cobble_innercorner16x.png",
+    "/home/main/.cache/yard/vqa-r6/cobble_west4x.png"
+  ],
+  "reviewer": "claude-opus independent adversarial review 2026-10-23 r6"
+}

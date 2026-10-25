@@ -10,7 +10,7 @@ import type {
   EventPageCondition,
 } from "../types";
 import { assert } from "./guards";
-import { validateOptionalResource } from "./resourceReferenceValidation";
+import { isKnownResourceId, validateOptionalResource } from "./resourceReferenceValidation";
 
 export type ReferenceContext = {
   appearanceIds?: ReadonlySet<string>;
@@ -359,7 +359,7 @@ function validateCommandReferences(command: Command, context: ReferenceContext):
       // "actor:<배우 ID>" 는 그 배우의 걷기 그림이다 — 리소스 대신 배우가 있어야 한다.
       const pictureActor = actorPictureActorId(command.resourceId);
       if (pictureActor) assert(context.actorIds.has(pictureActor), `showPicture: 배우 그림의 actorId가 존재하지 않습니다: ${pictureActor}`);
-      else assert(context.resourceIds.has(command.resourceId), `showPicture: resourceId가 존재하지 않습니다: ${command.resourceId}`);
+      else assert(isKnownResourceId(context.resourceIds, command.resourceId), `showPicture: resourceId가 존재하지 않습니다: ${command.resourceId}`);
       return;
     }
     case "playAudio":

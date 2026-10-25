@@ -1,0 +1,54 @@
+[
+ {
+  "copy": "<copy>/field-enemy",
+  "projectId": "aa8e3857-2ba5-43d9-9211-f7a30a8f143e",
+  "revisionBefore": 37,
+  "revisionAfter": 38,
+  "sha256": "7dea6eb0f56b5295cd151c5c19ea6a60dbe8f997332e7a41b9b8bbd9aa1391a5",
+  "countBefore": 31360,
+  "countAfter": 32256,
+  "graftsBefore": 2062,
+  "graftsAfter": 2062,
+  "graftRangeBefore": [
+   28800,
+   31317
+  ],
+  "graftRangeAfter": [
+   29696,
+   32213
+  ],
+  "relocations": [
+   {
+    "projectTileset": "beodeul_city",
+    "from": 28800,
+    "to": 29696,
+    "shift": 896,
+    "cells": 2560,
+    "maps": 2
+   }
+  ],
+  "beodeulMaps": 2,
+  "mapsCompared": 2,
+  "mapDiffsAfterNormalize": {
+   "map_blank_start": "same",
+   "map_wall_relocation_proof": "same"
+  },
+  "mapDiffsAfterReload": {
+   "map_blank_start": "same",
+   "map_wall_relocation_proof": "same"
+  },
+  "sampleRenumbered": {
+   "map": "map_wall_relocation_proof",
+   "cell": 997,
+   "before": 30336,
+   "after": 31232
+  },
+  "walledTown": {
+   "mapId": "map_wall_relocation_proof_2",
+   "size": "48x47",
+   "wallCells": 286,
+   "houses": 5,
+   "summary": "버들항 숲 빈터 마을 · 길가 마을(form street) · 지형 평지(terrain flat) 48×47 (맵 map_wall_relocation_proof_2, seed 7): 큰길 하나(굽은 폭 2)·6개 갈래길, 광장 없음, 모이는 곳 = 큰길이 마을로 드는 어귀(9,22), 집 5채(4종, 지붕 붉은 기와(roofs red)), 앵커 inn, 일터 「타작마당」, 밭 2(울타리 50칸), 나무 0, 모이는 곳 소품 1. 문 앞 6/6 도달. 성벽 둘레: 성문루 1·틈 0·망루 8·계단 1(data.walls). 다음: ch"
+  }
+ }
+]

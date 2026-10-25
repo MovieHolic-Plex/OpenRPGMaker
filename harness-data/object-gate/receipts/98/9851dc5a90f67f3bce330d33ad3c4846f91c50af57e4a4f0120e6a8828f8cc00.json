@@ -1,0 +1,315 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "9851dc5a90f67f3bce330d33ad3c4846f91c50af57e4a4f0120e6a8828f8cc00",
+ "width": 16,
+ "height": 16,
+ "kind": "flat",
+ "name": "a line of weeds growing along a crack with tiny wild flowers",
+ "label": "wasteland_ruins/weeds-c",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 칸 정보량이 기준보다 훨씬 낮음 (4/4)",
+  "화풍: 명암 3단 < 4 (4/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "칸 정보량이 기준보다 훨씬 낮음 (4/4)",
+   "명암 3단 < 4 (4/4)"
+  ],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 3
+ },
+ "metrics": {
+  "tileColorsMedian": 0,
+  "tileColorsP90": 0,
+  "darkV5": 105,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 0
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "line of weeds along a crack, drawn as a sparse diagonal scatter of green blades",
+      "rows": "1-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "tiny wild flowers (pink, yellow, white dots)",
+      "rows": "1-10",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The drawing is a sparse diagonal scatter of weed blades with a few flower pixels, running from the lower left (rows 11-14) up to the upper right (rows 1-5). It has no solid body, no front-edge line, no eave shadow and no ellipse. There is no vertical front face of 3 or more rows; the silhouette widths (0-8 px) show only a ground decal seen from above. This fits the flat kind, so it reads as top_down_slab."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a tiny diagonal sprite (about 20x20 px at 2x) on a dark transparent/grey background, far smaller than one 16x16 tile and nowhere near a 4x3-tile ground patch. The measured tone facts are 0 because the piece is smaller than a tile, so I judged by eye. It shows only about 3 shades of green plus a few flower dots, with 11 distinct colours in total, against 80 for the grass reference. It has no ground base, no soil or crack grain, and no tiling surface, so it does not read as a laid ground patch. Beodeul grass and paving refs fill full tiles with varied tufts and stone shading. Next to them the candidate looks thin and sticker-like, and its outline cannot be judged reliably at this size. Fails for the wrong kind and scale and for much lower density.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 9272
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "weed strand along a crack, drawn as a sparse diagonal scatter of green pixels",
+      "rows": "1-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "tiny wild flowers (yellow, pink and white dots)",
+      "rows": "1-10",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The object is a sparse diagonal scatter of green weed pixels with a few flower dots, from about row 1 to row 14 and at most 8 px wide. It has no front-edge line, no eave shadow, no ellipse and no roof plane. It has no vertical front face of 3 or more rows, only a ground-hugging plant decal. That fits the flat kind, so it reads as a top-down decal with no front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a tiny diagonal sprite of a weed stem with a few flowers, set on a transparent/empty background. It is not a 4x3-tile ground patch like the grass and paving references, which fill their whole area. The piece is smaller than one tile, so the per-tile facts read 0 and carry no weight. By eye it has only about 3 green steps and a few flower dots, with 11 distinct colours in total against 80 for the grass. It has no surrounding ground, soil grain or crack texture, so it looks thinner and more sticker-like than either reference. The outline cannot be judged reliably at this size and reads as mixed.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 9521
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "weed stems and leaves along a crack, drawn as a diagonal strip",
+      "rows": "3-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "tiny wild flowers (pink, yellow, white dots)",
+      "rows": "1-9",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The object is a sparse diagonal scatter of green weed pixels with a few flower dots, running from the lower left (rows 13-14) to the upper right (rows 1-3). It lies flat on the ground like a decal. It has no front face, no front-edge line, no eave shadow, no ellipse and no volume. The silhouette widths of 1-8 px change irregularly with no body structure. This matches the flat kind and reads as a flat top-down plate with no front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a tiny sprite (smaller than one 16x16 tile, 11 distinct colours) showing a short diagonal green sprig with a few specks of flowers on a transparent background. It is not a 4x3 ground patch, so it does not match the reference kind (grass and paving surfaces that fill whole tiles). The visible-tone count per tile is 0, so I judged by eye. It has only about 3 green steps, against roughly 3 visible tones with fine grass-tuft texture in the grass reference and 7 in the paving reference. There is no outline, no ground texture, no soil or crack, and no coverage of a tile area. A careful artist would not accept it next to the references, because it looks thinner and more sticker-like than the references' dense tiled surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 9460
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "weed line with small flowers lying along a crack, drawn as scattered blades and dots",
+      "rows": "1-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The object is a sparse diagonal scatter of green weed pixels with a few flower dots (pink at rows 9-10, yellow near rows 1-3, grey-white near row 6). The silhouette is 0-8 px wide and has no solid body, no front-edge line, no eave shadow, and no vertical face of 3 or more rows. It is a flat ground decal seen from above, which fits the flat kind and has no front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a tiny diagonal weed sprite, smaller than one 16x16 tile, on a dark background. It is not the 4x3-tile ground patch the kind requires, and it has no ground surface at all, whereas both references are fully covered tiling surfaces. The measured per-tile facts are 0 because the piece is smaller than a tile, so I judged by eye. It uses 11 colours in total, with roughly 3 green steps on the stems and a few flower dots. The grass reference shows about 3 visible tones per tile over 80 colours with tufts, and the paving reference shows 7 tones with stones shaded one by one. The candidate has no outline, so there is no tinted outline to credit. It is a sparse, thin sprite with no ground texture, soil grain, crack or grass clumps, so it reads thinner and flatter than either reference. It would not sit next to them as a ground patch.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 11734
+  }
+ ],
+ "decidedAt": "2026-10-22T15:08:30.342Z",
+ "cells": {
+  "16": [
+   "810120b7651d2f39"
+  ],
+  "24": [
+   "03c197f286132005",
+   "8ecd3df9f8087ccb",
+   "a25402f06e4f932d",
+   "adbec2794ffc3071",
+   "cd8d7fc1a2d465ab",
+   "dfaf05dac410dddc"
+  ],
+  "32": [
+   "2371261ded402f04",
+   "8e9e9aaa540e407f",
+   "9087cc6bd8902cff",
+   "9a053bb3c355cea5",
+   "bf2cf46b9f022ede",
+   "ddda196eca2139c8"
+  ],
+  "48": [
+   "18ba74f390a7990d",
+   "1b886cc865102ae8",
+   "3c10e9f19213b645",
+   "4d2a026583b7094d",
+   "7d0f7639c545ab2d",
+   "7fb09ab9b2845a85"
+  ]
+ }
+}

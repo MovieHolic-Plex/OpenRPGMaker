@@ -1,0 +1,328 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "92b2232d54b743d87cf0522dd85406c2ed6c3f2f69a01d7b4166caf07afab4c0",
+ "width": 64,
+ "height": 48,
+ "kind": "flat",
+ "name": "a shallow rain puddle lying on the ground, reflecting a pale sky band, with a soft damp earth halo and only a faint low bank shadow along its far edge",
+ "label": "wasteland_ruins/puddle",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "refer",
+ "reasons": [
+  "화풍: 화풍 판정이 갈림(걸린 판정 2/4)",
+  "화풍: 판정자 fail (2/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "refer",
+  "reasons": [
+   "화풍 판정이 갈림(걸린 판정 2/4)",
+   "판정자 fail (2/4)"
+  ],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 6
+ },
+ "metrics": {
+  "tileColorsMedian": 5,
+  "tileColorsP90": 6,
+  "darkV5": 74,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 12
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "puddle water ellipse with pale sky reflection band",
+      "rows": "20-28",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "damp earth halo and faint far-edge bank shadow around the puddle",
+      "rows": "19-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 9,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The whole 64x48 sprite is a ground texture of brown dirt. The puddle is a small teal ellipse at about rows 20-28, with a pale blue reflection streak at rows 24-26 and a darker rim along its upper (far) edge at rows 20-22. It is seen straight from above. There is no vertical front face, no front-edge line and no eave shadow. This is a flat decal lying on the ground, so it reads as a top-down slab. That is correct for kind flat."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a brown soil patch with a small blue puddle in the middle. Soil is mottled with speckle and grain, with about 5 brown steps and 2-3 blue steps in the puddle and its damp halo. There are no large flat areas: near-flat coverage is 1%, against 0% for both references. Visible tones per tile are 5, between grass (3) and paving (7), so density holds up. Dark edge pixels are 0% neutral, so the darker soil and puddle rim lean brown or blue rather than black, which is the material-tone treatment. It is a little simpler than the references, with only 10 colours in total. The puddle is small and its reflection band is minimal, but the ground reads as shaded, textured soil and not a sticker. A careful artist would accept it next to the grass.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 14680
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "puddle (water ellipse with pale sky band)",
+      "rows": "20-28",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "damp earth ground tile around puddle",
+      "rows": "0-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 9,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The image is a full 64x48 ground-texture tile (width 64 on every row) with a small teal puddle ellipse at about rows 20-28. The puddle widens and narrows, and the bank shadow is only a faint dark rim. No vertical front face is drawn; there are no eave, edge-line or leg rows. Everything is seen flat from above, as a flat decal should be, so it reads as a top-down slab with no front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a brown soil patch with a small blue puddle in the middle. Measured facts: 5 visible tones per tile, against 3 for the grass reference and 7 for the paving. Near-flat coverage is 1%, so the dirt carries grain and speckle and there are no large flat fills. Dark edge pixels are 0% neutral, so nothing reads as a black sticker outline. Weaknesses: the puddle is tiny and has about 2-3 tones (a blue body with a lighter highlight), with no visible pale sky band. The damp halo is faint and the bank shadow barely shows. The soil ramp has about 4 steps against 5-6 in Beodeul. Raw colours are only 10 in total, so the dirt texture is repetitive and a little noisy and uniform, with fewer clump and pebble variations than the references. It sits close to the references on density but is not clearly equal to them, and the puddle itself is under-developed for the brief.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 11382
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "puddle water ellipse with pale sky reflection band",
+      "rows": "20-28",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "faint dark bank shadow along far edge",
+      "rows": "20-21",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "damp earth halo and ground texture",
+      "rows": "0-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 9,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The 64x48 tile is full-bleed earth texture. Near the centre, rows 20-28, is a small teal water ellipse. Its width grows and then shrinks, with a dark far-edge shadow at rows 20-21 and a pale blue reflection streak at rows 24-26. It is a flat ground decal seen from above. There is no front face (0 rows), no vertical south face and no side face. This is what a flat kind should look like, so it reads as a top-down slab."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a brown soil patch with a small blue puddle and a damp halo. The soil has visible grain: speckles, pebbles and darker clumps in about 4 tones. The puddle has a highlight band, a mid tone and a dark rim, so it is simple but not a flat fill. Measured facts: 5 visible tones per tile, above the grass reference (3) and below the paving reference (7). Near-flat coverage is 1%, close to the references' 0%. The dark edge pixels are 0% neutral, so any edge darkening is tinted brown and reads as dark_material_tone, not a black sticker line. The palette is thin at 10 total colours, so the ramps are somewhat shallower than Beodeul's 5-6 steps. Overall it is comparable to the grass reference in density and texture and would sit acceptably beside it.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 14300
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "puddle water ellipse with pale sky reflection band and a dark far-edge bank shadow",
+      "rows": "20-28",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "damp earth ground tile and halo around the puddle",
+      "rows": "0-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 9,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The object is a full 64x48 earth ground tile with a small oval puddle at rows 20-28, about 12 px wide. The oval is seen from above with a pale reflection band at rows 24-26 and a darker far-edge shadow at rows 20-22. It has no vertical front face and no edge line. This is a flat decal with no front face (0 rows), which is correct for a flat kind and reads as a top-down slab."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is brown soil with a small blue puddle. Measured facts: 5 visible tones per tile (grass reference 3, paving 7), 1% near-flat coverage, and 0% neutral dark edge pixels, so any dark edges are tinted and there is no sticker outline. The soil has mottled speckle, so it is not a flat fill. But the whole piece has only 10 distinct colours against 80 for the grass reference. The soil ramp is about 3-4 steps with sparse speckle and no per-clump highlights or tufts. The puddle is tiny and has only 2-3 steps (a body and a pale sky band), with a thin damp halo and almost no bank shadow. The tile-level tone count is roughly on par with grass, but the shading ramps are shallower than the Beodeul 5-6 steps per material and the surface variation is sparse. Placed next to the references it would look thinner and simpler, so I fail it on doubt.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 13819
+  }
+ ],
+ "decidedAt": "2026-10-22T18:24:38.064Z",
+ "cells": {
+  "16": [
+   "0432334bd291276d",
+   "1ac958fbdfd5fe61",
+   "2011e22fbc0e2b34",
+   "35fcfc64f8ff0065",
+   "416dc2ab4a9e59a4",
+   "4aa2f579948701a8",
+   "4e060cbf43e32170",
+   "4e4e5a1aa702afcc",
+   "8eddf2e0ecf7fd7c",
+   "d1d3ec7e160fab10",
+   "d78bf80d0380154f",
+   "eb077994616c8a8f"
+  ],
+  "24": [
+   "27c7af672e75e0be",
+   "35afc8d79452ce44",
+   "4068fb97d4b444bd",
+   "430a08193a2991bd",
+   "45098ff358014cb1",
+   "57ff20785c0bec03",
+   "58a7f77c8822d244",
+   "69e4a150f6f97c02",
+   "7015111629cf6d90",
+   "72232ec2003062c7",
+   "77165421c81382de",
+   "78fa6d5b3ac0ec35",
+   "897e68b12a7217fe",
+   "9879f1b3da44375f",
+   "bf309690e7b9f93c",
+   "ca80271ed77b41fa",
+   "d3a7cea6843921f7",
+   "edf79a51009d276f"
+  ],
+  "32": [
+   "01faad80351c7ae2",
+   "2739c7750a8599a9",
+   "586851b44a998f9d",
+   "6b516ead75ed2ebe",
+   "7150dcf7539b21ad",
+   "7d611e41f6796b9c",
+   "ba96f047afc3fbb5",
+   "f7ee3eee92559c43"
+  ],
+  "48": [
+   "0e8afc1e4e25808b",
+   "64040a8d5977483a",
+   "948922b831a12ec4",
+   "c87f3869495f93fd",
+   "f3ecaef974710ef3",
+   "fba2f1e589dde060"
+  ]
+ }
+}

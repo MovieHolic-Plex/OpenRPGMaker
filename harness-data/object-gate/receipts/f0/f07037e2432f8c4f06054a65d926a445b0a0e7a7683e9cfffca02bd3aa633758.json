@@ -1,0 +1,387 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f07037e2432f8c4f06054a65d926a445b0a0e7a7683e9cfffca02bd3aa633758",
+ "width": 16,
+ "height": 32,
+ "kind": "other",
+ "name": "rusty blank sign board on a thick post: board top edge seen from above, weathered blank face, no text",
+ "label": "wasteland_ruins/sign-blank",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 투영이 3/4 아님(front_elevation) (4/4)",
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)",
+  "3/4: 맨 위의 큰 부분(16행)이 윗면 없이 세로 면뿐 — 윗끝이 3/4 가 아님 (3/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "투영이 3/4 아님(front_elevation) (4/4)",
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)",
+   "맨 위의 큰 부분(16행)이 윗면 없이 세로 면뿐 — 윗끝이 3/4 가 아님 (3/4)"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 13,
+  "tileColorsP90": 13,
+  "darkV5": 42,
+  "nearBlackEdge": 0.02,
+  "opaqueTiles": 1
+ },
+ "eye": {
+  "verdicts": [
+   "borderline",
+   "borderline",
+   "borderline",
+   "right",
+   "right",
+   "wrong",
+   "right",
+   "borderline",
+   "borderline",
+   "right",
+   "right",
+   "borderline"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "sign board (rusty face with grey-blue frame)",
+      "rows": "1-16",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "post",
+      "rows": "17-26",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "foot/base plate",
+      "rows": "27-29",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 1,
+    "front_face_rows": 15,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The board is rows 1-16 and 16 px wide. Row 1 is a dark outline 14 px wide. Rows 2-5 at the top are only a grey-blue frame highlight, and the frame continues down the right edge (x=11, rows 2-12), so it is a frame and not a horizontal band. The rusty face runs from the top down to row 15 with no front-edge line and no eave shadow, so the board is a vertical face with at most a 1-row rim on top. The post (rows 17-26, 5 px wide) is a vertical shaft. The small 7-9-7 px foot at rows 27-29 is a minor ellipse and is not the main body. The reference guide's 'front elevation' and 'rim only' examples match this drawing."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate shows 12 visible tones per 16x16 tile. That is above the hedge reference (9) and below the cheese stall (17) and the roofed well (20), which are larger, busier props. Near-flat coverage is 0%, so there are no flat fills. The dark edge pixels are 0% neutral, so the outline leans brown or rust and reads as a dark version of the adjacent material, not a black sticker line. The board face has mottled rust speckle with a lighter top edge, and the post has its own darker value. That gives roughly 5 steps on the rust and wood ramps against about 6 on the references. It is small and simple, but a careful artist would accept it beside the hedge and the stall without it looking flatter. It is slightly less rich than the best references, but not enough to fail.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 1행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 1행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17362
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "board top edge",
+      "rows": "1-3",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "board face (rust, blank)",
+      "rows": "4-16",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "post",
+      "rows": "17-26",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "post foot",
+      "rows": "27-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 14,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The board spans rows 1-16 at a constant width of 16. Only a 1-row dark outline at row 1 and a few teal-grey highlight pixels at rows 2-5 on the left sit at the top. There is no front-edge line, no eave shadow and no widening-then-narrowing ellipse. The rest is a mottled rust face drawn straight on, with a dark outline at row 16. The post below (rows 17-26, width 5) and its small foot (rows 27-30) are also vertical faces, and the post meets the board's underside without a visible top surface. The top edge is at most a 1-2 row rim, so the object reads as a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a small single-tile prop. It carries 12 visible tones per tile, which is above prop-hedge (9) and below prop-stall-cheese (17) and prop-well-roofed (20). Near-flat coverage is 0%, so there are no flat fills. The rusty board has mottled, weathered variation in several rust tones, and the thick post has its own few brown steps. By eye the dark edge pixels lean brown and red-brown, matching the 0% near-neutral share, so the outline follows the adjacent material rather than a sticker-style black line. The main ramps have about 4 steps against 5-6 in the references, and the post is plainer than the board, so density is slightly lower. For a simple one-tile prop this would sit acceptably next to the hedge and bench references without looking sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18830
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "sign board (main body, rust face with patchy teal weathering)",
+      "rows": "1-16",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "teal strip at the top-left of the board",
+      "rows": "2-5",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "post",
+      "rows": "17-26",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "small foot at the post base",
+      "rows": "27-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 14,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The board is a flat vertical face spanning rows 2-15 at a constant width of 16. Row 1 is only the 14px outline. The teal patch in rows 2-5 is on the left only; at x=8 the same rows are rust brown, so it is weathering, not a top plane. There is no front-edge line across the board and no eave shadow beneath a top band. The teal along the right (x=11, rows 2-12) is a vertical side strip. Rows 15-16 are a dark bottom shadow and outline. The post (width 5, rows 17-26) is a vertical shaft. Its small foot (widths 7-9-7 at rows 27-29) is a minor detail. Nothing shows a horizontal top surface seen from above, so the object reads as a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The board face is mottled with rust speckle and a lighter top edge, and the post has a highlight and shadow side. The outline is a dark red-brown that leans toward the material, not a neutral black line. The measured facts agree: 0% neutral dark edge pixels, 0% near-flat coverage, and 12 visible tones per tile. That is above prop-hedge (9) and below prop-well-roofed (20) and prop-stall-cheese (17). Total distinct colours (15) is in line with the bench, lamp and hedge references. It is a thin, simple single-tile-wide prop, so the lower count against the stall and well is expected. A careful artist would accept it next to the references, although the post has fewer steps than the board and the shading is slightly less layered than on the best references.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 0행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 0행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19758
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "sign board panel",
+      "rows": "1-16",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "thick post",
+      "rows": "17-26",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "post foot/base",
+      "rows": "27-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 1,
+    "front_face_rows": 29,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The board is a flat rectangle 16 wide in rows 2-15, with a 1-row dark outline at row 1 and tapered corners at rows 1 and 16. Columns x=4, 8 and 11 show mottled rust and blue-grey patches down the whole board, with no band that ends in a front-edge line and no eave shadow. The light patch at rows 2-5 on the left is weathering on the face, not a horizontal surface. The post (rows 17-26, 5 wide) and its small foot (rows 27-30) are vertical. The sign reads as a face-on panel on a post, so the top surface is at most a 1-row rim."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate has 12 visible tones per 16x16 tile, above prop-hedge (9) and below only the well (20) and cheese stall (17). Near-flat coverage is 0%, so there are no large flat fills. The dark edge pixels are 0% near-neutral, which fits a tinted dark red-brown outline beside the rusty board and wood post rather than a black sticker line. The board face shows mottled rust speckle and blotchy variation, and the post carries a few wood shades. It is smaller and a little simpler than the stall and well, with about 5 steps against their 5-6. As a single small prop it is not thinner or flatter than the hedge reference, and it would sit acceptably next to it.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 1행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 1행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 83094
+  }
+ ],
+ "decidedAt": "2026-10-22T14:22:07.143Z",
+ "cells": {
+  "16": [
+   "20ba25cfb5691031",
+   "5aa10515d81ced5b"
+  ],
+  "24": [
+   "06ce6b528123b078",
+   "42d4f86bd9224ecb",
+   "4ba4065aa4e977de",
+   "8384f33adb52c3a0",
+   "a3a6f386811454a1",
+   "a42addc1a0042067",
+   "a4879ec6ae26c53c",
+   "b307bc5895e4c51c",
+   "ddc0a83def765b6d",
+   "e2b093b7624a529a",
+   "e6f6a0e06a183664",
+   "eddebba80fe77392"
+  ],
+  "32": [
+   "54cb2f4ce37be5d7",
+   "8d822b41e347b34a",
+   "c2d5880fe46ad452"
+  ],
+  "48": [
+   "2853bc9382adcc53",
+   "4e83c09a2cc7f6ae",
+   "74840ab109149059",
+   "c53fbb952dcf0844",
+   "c81258df0a3c8a0a",
+   "f4d0da425b0f7074"
+  ]
+ }
+}

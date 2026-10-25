@@ -1,0 +1,649 @@
+{
+ "round": 1,
+ "reviewers": "3 fresh independent Opus 5.5 adversarial reviewers, majority rules (2026-10-23)",
+ "files": [
+  "tiledata/wasteland-ruins/_review/vqa-r1/review-A.json",
+  "tiledata/wasteland-ruins/_review/vqa-r1/review-B.json",
+  "tiledata/wasteland-ruins/_review/vqa-r1/review-C.json"
+ ],
+ "majors": {
+  "A": [
+   {
+    "target": "wasteland_ruins/asphalt-c (all wasteland roads: settlement-1, settlement-4, ruined-city-2, shanty-3)",
+    "issue": "The road crack/weed decal carries a hard-edged 7x7 grey square slab with a bevel highlight, plus a yellow pixel mark that reads like a glyph. On every road it is stamped in identical side-by-side pairs, so it reads as pasted grey boxes with weeds stuck to them, not as cracked asphalt. At the 1x scale it shows as a regular dotted chain of dark squares along each road.",
+    "evidence": "/tmp/vqa-r1-A/asphalt-c-10x.png (square block above the weed at the left); /tmp/vqa-r1-A/s1-road-junction.png (two identical square+weed pairs at top-left and again at middle-right, the second partly under the scrap heap); /tmp/vqa-r1-A/sh-road.png (pairs on every road segment)",
+    "fix": "Remove the square chunk or redraw it as an irregular broken asphalt fragment with a jagged outline. Draw at least 3 non-mirrored crack/weed variants and stop the placer from putting the same decal on adjacent cells."
+   },
+   {
+    "target": "wasteland_ruins/dirt-a, wasteland_ruins/dirt-b (ground of all 4 wasteland maps)",
+    "issue": "The base ground is a high-frequency brown/grey dither with evenly spaced single light-grey speckle pixels. The 'Y' crack motif sits at the same spot in each 16px cell, so across the map the cracks form a visible diagonal lattice and the 16px grid shows through. Beodeul's yard dirt, and the flat modern-city ground it should be family-compatible with, are much calmer. This reads as noise, not a texture ramp.",
+    "evidence": "/tmp/vqa-r1-A/s4-ground.png (open dirt top half: the crack marks repeat in rows/columns on the 16px pitch); /tmp/vqa-r1-A/dirt-b-tiled-6x.png (2x2 tiling of dirt-b, same cracks in the same cell positions); /tmp/vqa-r1-A/g0.png (dirt-a: even speckle)",
+    "fix": "Lower the contrast and density of the base dither and use 2-3 large soft value clusters per 32px instead of per-pixel speckle. Make the cracks multi-cell, sparse decals with random offsets rather than a fixed per-cell motif."
+   },
+   {
+    "target": "settlement-1.png vs settlement-4.png (and shanty-3.png)",
+    "issue": "The two survivor-settlement seeds use the same template: the same road cross at the same x/y, the same fenced compound in the same place, the slab plaza, three shacks in a row, stalls along the plaza's bottom row, a water tank in the upper-right and lower-left of the compound, the same row of ruined husks along the north road, and a barricade pair at the same top gaps. shanty-3 reuses the same fenced shack-compound recipe without the plaza. A player who sees two of these will recognise the stamp.",
+    "evidence": "Compare /home/main/z-project/rpg-zzu-village-art/qa-runs/vqa1/settlement-1.png with settlement-4.png at 1x: the compound rectangle at about x 35-445, y 260-555 is identical in both, as are the road cross at x about 480-525 and y about 195-235 and the husk row at y about 80-175. shanty-3.png has the same fenced rectangle of shacks.",
+    "fix": "Randomise the compound shape (irregular, not a rectangle) and its position and road layout per seed. Give shanty towns a dense, organic cluster of shacks with alleys and no enclosing rectangle, and give settlements a walled perimeter with a gate."
+   },
+   {
+    "target": "settlement-1.png / ruined-city-2.png (vehicle placement)",
+    "issue": "The identical green jeep (car-rust-v) is stamped five times in settlement-1, every one facing the same way. Three of them sit in the open dirt in a loose grid, and two sit in the middle of the north-south road, blocking it. In ruined-city-2 a jeep also sits mid-lane on the vertical road. The repetition and the arbitrary orientation read as copy-paste, not as abandoned traffic.",
+    "evidence": "/tmp/vqa-r1-A/s1-se.png (five identical jeeps: two on the road strip at the left, three on dirt); /tmp/vqa-r1-A/s1-ne.png (jeep in the road at the top)",
+    "fix": "Limit the number of identical vehicles per map. Mix in car-rust-h and van-rust. Place wrecks along road edges or in groups at a crash point and keep one passable lane."
+   },
+   {
+    "target": "settlement-1.png / settlement-4.png / shanty-3.png (compound perimeter)",
+    "issue": "The perimeter mixes materials: wooden-post pipe fence on the north and south sides, a column of grey concrete wall-v slabs on the east and west sides. The corners do not join. The fence ends and the slab column starts one cell lower with dirt showing between them, so every corner is open and the two materials never meet. In shanty-3 one fence stub sits a row below the main fence line, out of alignment.",
+    "evidence": "/tmp/vqa-r1-A/s1-fence-corner.png (top-left corner: fence rail above, slab column below, not connected); /tmp/vqa-r1-A/s1-compound.png (the full perimeter); /tmp/vqa-r1-A/sh-west.png (fence stub at the top-left, below the fence row)",
+    "fix": "Use one perimeter material per side set and give it real corner pieces (fence corner post, or wall corner). Snap the fence ends to the wall column, and keep the gaps only as deliberate gates, using gate-scrap."
+   },
+   {
+    "target": "shanty-3.png (road)",
+    "issue": "The only road is three separate asphalt rectangles. Each has square-cut ends in open dirt, and between them are gaps of bare dirt. The road goes nowhere and connects to nothing, so it reads as stray asphalt patches.",
+    "evidence": "/tmp/vqa-r1-A/sh-road.png (two rectangles with hard vertical ends and a dirt gap between them); shanty-3.png at 1x, y about 85-125",
+    "fix": "Make the road continuous edge to edge, or break it with rubble or crater pieces that have ragged autotile ends, not square cuts."
+   },
+   {
+    "target": "ruined-city-2.png (vine-wall / wall-v placement)",
+    "issue": "Single vine-wall blocks (16x32 grey-capped green slabs) are dropped as free-standing objects in open dirt, three in a row near a ruin and others scattered. Detached from any wall, they read as green fridges or gravestones. Lone wall-v columns likewise stand in the middle of the central block.",
+    "evidence": "/tmp/vqa-r1-A/rc-top.png (four free-standing vine-wall blocks around the husk); ruined-city-2.png at 1x, x about 300-360, y about 270-370 (lone wall-v columns)",
+    "fix": "Place vine-wall only as a segment of a wall run, attached to husks or wall-h, or drop it from free scatter."
+   },
+   {
+    "target": "mining-2.png (mine entrance)",
+    "issue": "The mine portal is placed on the upper terrace with its door row directly on the cliff lip. The cliff face starts in the row below the doorway, so no walkable cell exists in front of the door, and the entrance opens onto a drop. The crate stack to the right also sits on the lip.",
+    "evidence": "/tmp/vqa-r1-A/m2-yard.png (portal at the centre: its bottom edge touches the cliff top band at about y 380-390 in the 3x crop)",
+    "fix": "Require at least one free walkable cell in front of door-bearing props. Move the portal up one or two rows, or place it on the lower terrace facing the open yard."
+   },
+   {
+    "target": "mining-7.png / mining-2.png / vineyard-3.png / vineyard-8.png / temple-ruins-5.png (village identity)",
+    "issue": "Outside the one yard patch, all five Beodeul villages are the same farm template: the same log or half-timber house set in a row along an east-west path, fenced wheat and tilled plots with scarecrows, a dirt cliff band with a bench at the path notch, a well, and hay. The 'vineyard' has only two small vine blocks inside one yard; the rest of the village is grain fields. The vineyard-3 and vineyard-8 yards have the same contents in the same relative positions: winery, two vine blocks, baskets at the bottom-left. Remove the yard and the village type cannot be told.",
+    "evidence": "/tmp/vqa-r1-A/v3-yard.png vs /tmp/vqa-r1-A/v8-yard.png (identical yard composition); vineyard-3.png and temple-ruins-5.png at 1x (the same house and field layout pattern)",
+    "fix": "Make the type drive the whole map. Vineyard: terraced vine rows over most of the slopes, with a press and cellar. Mining: spoil heaps, ore carts, rails, and timber stacks across the map. Temple ruins: a broken colonnade and scattered fallen columns beyond the yard. Randomise the yard's internal arrangement per seed."
+   }
+  ],
+  "B": [
+   {
+    "target": "wasteland_ruins/dirt-a (and dirt-b/c/d base, all 4 wasteland maps)",
+    "issue": "The ground is one 16x16 tile repeated. All 12 cells of dirt-a are pixel-identical. The same white-dot plus crack-decal pattern forms a regular lattice that shows even at 1x over the whole map, the most visible surface in every wasteland village. dirt-b/c/d only add sparse decals on the same base.",
+    "evidence": "/tmp/vqa-r1-B/c_shanty_dirt.png (the identical 'crack' mark in the same spot in every cell); /tmp/vqa-r1-B/pieces0.png dirt-a; numeric: 12/12 cells identical",
+    "fix": "Draw at least 4-6 body variants with different speckle and crack placement, plus larger multi-cell stains and drift patches. Scatter the decals off-grid and lower the regular white-dot density."
+   },
+   {
+    "target": "wasteland_ruins/slab-a, slab-b, slab-c (settlement compound plaza, ruined-city pads)",
+    "issue": "Every slab is the same 16px square with a hard dark border and the same diagonal crack. Pads read as a bathroom-tile grid, not broken concrete. 8/12 cells of slab-a are identical.",
+    "evidence": "/tmp/vqa-r1-B/c_set1_compound.png (plaza between stalls); /tmp/vqa-r1-B/c_rc_mid.png (pad behind husk)",
+    "fix": "Use larger 2x2/3x2 slab modules with varied crack paths, missing or tilted slabs and dirt-filled joints. Break up the uniform border, and give the pad edges a broken border instead of a clean square."
+   },
+   {
+    "target": "settlement-1.png vs settlement-4.png (and shanty-3.png)",
+    "issue": "Both settlement seeds have the same layout: a cross road at the same x, a husk row on top, and a fenced compound bottom-left with the same slab plaza, 3 shacks, 3 stalls, a log seat, a campfire and a water tank. Shanty-3 reuses the same fence-top/bottom and wall-v-sides compound template, only bigger. The seeds and the shanty/settlement types do not read as different places.",
+    "evidence": "compare settlement-1.png and settlement-4.png at 1x; shanty-3.png compound frame",
+    "fix": "Vary the compound position, shape and enclosure type per seed (scrap barricade ring, wall husk reuse, organic shanty clusters with alleys). Give the shanty no formal rectangular fence."
+   },
+   {
+    "target": "settlement-1.png (also settlement-4, ruined-city-2)",
+    "issue": "car-rust-v is stamped 6 times in settlement-1, all facing the same way. Three sit in a column on the vertical road at equal spacing and three are parked in open dirt, a clear copy-paste convoy. ruined-city-2 also has rows of the same jeep and the same blue car.",
+    "evidence": "/tmp/vqa-r1-B/c_set1_right.png",
+    "fix": "Cap each vehicle sprite at 1-2 per map. Mix car-rust-h, van and a wreck, flip or rotate where valid, and place wrecks at angles or crashed into things rather than in neat lines."
+   },
+   {
+    "target": "shanty-3.png",
+    "issue": "The asphalt road is cut into 3-4 separate rectangles with square blunt ends and bare dirt gaps between them. It reads as missing tiles, not a broken road, and the segments lead nowhere.",
+    "evidence": "/tmp/vqa-r1-B/c_shanty_road.png",
+    "fix": "Make one continuous road with ragged, crumbled ends and partial dirt overgrowth (asphalt-to-dirt broken edge tiles), or remove it."
+   },
+   {
+    "target": "ruined-city-2.png",
+    "issue": "Pieces sit in nonsense places. vine-wall blocks stand alone in open dirt like random green monoliths (6 in the top middle block). wall-v segments stand as isolated pillars, and scrap-heap is dropped on top of a slab pad overlapping its tiles. Nothing ties them to a building footprint.",
+    "evidence": "/tmp/vqa-r1-B/c_rc_top.png (green vine boxes right of husk); /tmp/vqa-r1-B/c_rc_mid.png (two free wall-v pillars left, scrap-heap on pad)",
+    "fix": "Place vine-wall and wall-v only as the remains of a footprint: aligned to a husk or forming a broken rectangle. Keep debris off pads, or give it a matching rubble spill."
+   },
+   {
+    "target": "mining-7.png, mining-2.png (beodeul_yard/dirt usage)",
+    "issue": "The packed-dirt mine yard straddles a terrace cliff. The earth-bank cliff lip runs straight through the middle of the yard, so the yard surface sits on two levels with no ramp. In mining-2 the mine entrance is set on the cliff lip, with its base merging into the bank.",
+    "evidence": "/tmp/vqa-r1-B/m7_yard.png (cliff band crossing the yard at mid-height); /tmp/vqa-r1-B/m2_yard.png (mine entrance base on cliff lip)",
+    "fix": "Keep the yard footprint inside one terrace level, or carve a ramp or stairs where the yard crosses. Keep the entrance at least 1 cell clear of the cliff edge."
+   }
+  ],
+  "C": [
+   {
+    "target": "wasteland_ruins/slab-a, slab-b, slab-c (settlement-1, settlement-4, ruined-city-2)",
+    "issue": "Every 16px slab cell has a full dark grout frame and the same 2-3 crack motifs, so any slab area reads as a bathroom-tile grid of identical squares, not broken concrete. Visible 16px repetition (check 3) and toy look (check 4).",
+    "evidence": "/tmp/vqa-r1-C/g0.png / g1.png (slab sheets: identical framed cells); /tmp/vqa-r1-C/s1-compound.png (plaza under stalls); /tmp/vqa-r1-C/r2-botmid.png and r2-tl.png (slab pads)",
+    "fix": "Draw slabs as 32x32/48x32 panels with irregular joints, shared edges between neighbours, break-up variants (missing slab, dirt showing, offset joints); drop the per-cell frame."
+   },
+   {
+    "target": "wasteland_ruins/dirt-a..dirt-d (all four wasteland maps)",
+    "issue": "Dirt base is per-pixel speckle with the same diagonal brown blot in every 16px cell; crack decal (dirt-b) recurs on a near-regular lattice. Across a whole map this produces an obvious 16px wallpaper and speckle noise below the Beodeul dirt yard's smooth ramps.",
+    "evidence": "/tmp/vqa-r1-C/g0.png (dirt-a: same blot every 16px); /tmp/vqa-r1-C/s1-right.png and /tmp/vqa-r1-C/sh-mid.png (lattice of identical blots/cracks over the open ground)",
+    "fix": "Lower speckle contrast, use 2-3 large-scale tone patches spanning several cells, more body variants with random selection, crack decals placed sparsely and not every few cells."
+   },
+   {
+    "target": "shanty-3.png",
+    "issue": "Road is four disconnected asphalt rectangles with straight hard-cut ends floating in dirt; they lead nowhere. The car and scrap-heap sit across a segment end, and the road's right segment runs off-map. This reads as a placement bug, not a ruined road.",
+    "evidence": "/tmp/vqa-r1-C/sh-top.png (gaps at x~380-515, ~765-835, ~1210-1345 at 2x)",
+    "fix": "Make one continuous road with broken edges, and use crack/rubble/sand-over decals for the decay. If the road must end, end it with a ragged autotile edge, not a straight cut."
+   },
+   {
+    "target": "shanty-3.png",
+    "issue": "The shanty is copy-paste: shack-b is stamped 4x, shack-a 3x and lean-to 4x on an almost regular grid, all facing the same way with identical rust and patches. A shanty town should look improvised and dense.",
+    "evidence": "/tmp/vqa-r1-C/sh-mid.png (the four identical shack-b at the corners and the lean-tos on the same rows)",
+    "fix": "Add more shack variants or colour/patch swaps, jitter positions off the grid, pack them tighter with shared walls, and put alleys and laundry/scrap clutter between them."
+   },
+   {
+    "target": "ruined-city-2.png",
+    "issue": "vine-wall pieces stand alone in open dirt and on the plaza edge. They read as fridges or gravestones, not wall remnants. In the top-left block two identical husk-tall buildings sit side by side with matching vines and windows.",
+    "evidence": "/tmp/vqa-r1-C/r2-topmid.png (green-front blocks at ~(390,160), (485,160), (775,110), (775,255), (580,350) at 3x); /tmp/vqa-r1-C/r2-tl.png (twin husk-tall)",
+    "fix": "Place vine-wall only attached to wall-h/husk runs. Never place two identical tall husks next to each other; mirror them or vary floors, windows and vines."
+   },
+   {
+    "target": "settlement-1.png / settlement-4.png",
+    "issue": "The two seeds are near-identical: the compound sits in the same spot with the same fence gap, the same row of four husks along the top and the same crossroads x. Inside each map the same green car-rust-v sprite is repeated 4-6 times, all facing south, two or three parked in the middle of the vertical road. In settlement-1 a bush-wild grows in the middle of the asphalt.",
+    "evidence": "/tmp/vqa-r1-C/s1-right.png (identical trucks); /tmp/vqa-r1-C/s1-top.png (bush-wild on the road at ~(1250,490) at 3x); compare settlement-1.png and settlement-4.png overviews",
+    "fix": "Vary the compound position and shape per seed. Cap each vehicle sprite at 1-2 per map and mix orientations (h/v/van). Keep organic pieces off asphalt or replace them with a crack-weed decal."
+   },
+   {
+    "target": "vineyard-3.png / vineyard-8.png (beodeul_yard/dirt usage)",
+    "issue": "The vineyard yard is a pixel-identical stamp in both seeds: the same winery at the same offset, the same vine block duplicated twice, and the same two baskets bottom-left. Beyond that stamp the map is a generic farm village (wheat, plowed beds, haystacks), so the vineyard reads as a single small lot.",
+    "evidence": "/tmp/vqa-r1-C/v3-yard.png vs /tmp/vqa-r1-C/v8-yard.png (same layout); vineyard-3.png overview",
+    "fix": "Generate the yard contents per seed. Use many long vine rows across terraced slopes or the cliff tiers instead of wheat and plowed beds, and add a press, barrels and a cellar door."
+   },
+   {
+    "target": "mining-2.png",
+    "issue": "The mine entrance is on the upper tier and its opening sits directly on the cliff lip, so the door faces a drop with no walkable tile in front. A mine shaft should be cut into the cliff face or have ground in front.",
+    "evidence": "/tmp/vqa-r1-C/m2-yard.png (mine entrance bottom at ~y380, cliff lip just below at 3x)",
+    "fix": "Move the entrance one tier down with its back against the cliff face, or leave at least one walkable dirt row before the ledge."
+   },
+   {
+    "target": "mining-7, mining-2, vineyard-3, vineyard-8, temple-ruins-5 (check 5)",
+    "issue": "All five Beodeul quarter villages share the same skeleton: two cliff ledges across the top, a central N-S path, a row of 5 houses across the middle and fenced wheat/plowed plots. The only quarter-specific content is one yard rectangle. Temple-ruins reads as a farm village with a plaza in the corner.",
+    "evidence": "Compare overviews mining-7.png, vineyard-3.png, temple-ruins-5.png side by side",
+    "fix": "Let the quarter type drive the layout: temple yard central with the processional path as the main axis, mining with spoil heaps, tracks and fewer fields, vineyard with terraced vine rows dominating."
+   }
+  ]
+ },
+ "pieces": {
+  "wasteland_ruins/dirt-a": {
+   "sha": "46a4259929188e1c19c1e9a65fcbddfef926f83c526fbe19e5f7826505dec68c",
+   "votes": {
+    "A": "fail",
+    "B": "fail",
+    "C": "fail"
+   },
+   "majority": "fail"
+  },
+  "wasteland_ruins/dirt-b": {
+   "sha": "0911443f290b3294891716bf49f97fcc555f17704d0738e6f04a26df427075f8",
+   "votes": {
+    "A": "fail",
+    "B": "fail",
+    "C": "fail"
+   },
+   "majority": "fail"
+  },
+  "wasteland_ruins/dirt-c": {
+   "sha": "8e799665e39aa7bea28cb14586ecb7152553bccf21f487880f3ba70449d63d5f",
+   "votes": {
+    "A": "pass",
+    "B": "fail",
+    "C": "fail"
+   },
+   "majority": "fail"
+  },
+  "wasteland_ruins/dirt-d": {
+   "sha": "63303708a5d15daf9e6d06330e8117a5e0fa5c228b297d50be105890094ff0b8",
+   "votes": {
+    "A": "pass",
+    "B": "fail",
+    "C": "fail"
+   },
+   "majority": "fail"
+  },
+  "wasteland_ruins/asphalt": {
+   "sha": "1e66f86f4a92e7fbc3cda673c766aede04a95908196f3da830f6b10fd2ae6452",
+   "votes": {
+    "A": "pass",
+    "B": "pass",
+    "C": "pass"
+   },
+   "majority": "pass"
+  },
+  "wasteland_ruins/asphalt-c": {
+   "sha": "3b96406b8088928cc29d9bee69f47768dc1919412a2edd431d8a15578b401d63",
+   "votes": {
+    "A": "fail",
+    "B": "fail",
+    "C": "pass"
+   },
+   "majority": "fail"
+  },
+  "wasteland_ruins/slab-a": {
+   "sha": "f3bd2bd102655f7235096e495badb0b1a5a25a3224217534b085ae7bf670f30b",
+   "votes": {
+    "A": "pass",
+    "B": "fail",
+    "C": "fail"
+   },
+   "majority": "fail"
+  },
+  "wasteland_ruins/slab-b": {
+   "sha": "d9aaace1470122aab83f48ce488f4e62f4ff6026280f1d2967508c78ca68ec6e",
+   "votes": {
+    "A": "pass",
+    "B": "fail",
+    "C": "fail"
+   },
+   "majority": "fail"
+  },
+  "wasteland_ruins/slab-c": {
+   "sha": "c156d2703928285ed7ed08a2e9acab38ae3378438872af8d88d6794eeb6b0cb7",
+   "votes": {
+    "A": "pass",
+    "B": "fail",
+    "C": "fail"
+   },
+   "majority": "fail"
+  },
+  "wasteland_ruins/rubble-a": {
+   "sha": "a99079d4b1759cc85b960c2fc78822847d2f3932a9a20a0dae6540c4d85eb864",
+   "votes": {
+    "A": "pass",
+    "B": "pass",
+    "C": "pass"
+   },
+   "majority": "pass"
+  },
+  "wasteland_ruins/rubble-b": {
+   "sha": "fad6f244ce0c6ceb1f979383815f283f397aec8ab9ce4e17ae3b341861b3aea9",
+   "votes": {
+    "A": "pass",
+    "B": "pass",
+    "C": "pass"
+   },
+   "majority": "pass"
+  },
+  "wasteland_ruins/rubble-c": {
+   "sha": "22fbbbb1d89ec0a8093eda6ab7e95bb5d15da792e5f0be91d23a6cecf74fc353",
+   "votes": {
+    "A": "pass",
+    "B": "pass",
+    "C": "pass"
+   },
+   "majority": "pass"
+  },
+  "wasteland_ruins/weeds-a": {
+   "sha": "d8ab697ef4dae90a3f815ed8c87cc0a5abd46925c6c06aed64eec20727dcedd7",
+   "votes": {
+    "A": "pass",
+    "B": "pass",
+    "C": "pass"
+   },
+   "majority": "pass"
+  },
+  "wasteland_ruins/weeds-b": {
+   "sha": "8a08543540e9b5f61ba715575ec4a7cd547dfc24818b681fb575ad6defcf282e",
+   "votes": {
+    "A": "pass",
+    "B": "pass",
+    "C": "pass"
+   },
+   "majority": "pass"
+  },
+  "wasteland_ruins/weeds-c": {
+   "sha": "e012eb6e1bb4cb74d15a59ddb40006db34b058d76e5f2cb2be5e210889d88500",
+   "votes": {
+    "A": "pass",
+    "B": "pass",
+    "C": "pass"
+   },
+   "majority": "pass"
+  },
+  "wasteland_ruins/puddle": {
+   "sha": "215b59fbac6c2bb54d3590ac9138e4977870dfbf4202a695ddf0ad91e3d47f8e",
+   "votes": {
+    "A": "pass",
+    "B": "pass",
+    "C": "pass"
+   },
+   "majority": "pass"
+  },
+  "wasteland_ruins/husk-a": {
+   "sha": "ef221ae01da69a33ef88e65da927812a110e507ba6d960a2587e0e948ecfca89",
+   "votes": {
+    "A": "pass",
+    "B": "pass",
+    "C": "pass"
+   },
+   "majority": "pass"
+  },
+  "wasteland_ruins/husk-b": {
+   "sha": "ed709ca585e857ccb3a0d2b07ec307730f7ccc024504cf4c1c275faffd6ce9a5",
+   "votes": {
+    "A": "pass",
+    "B": "pass",
+    "C": "pass"
+   },
+   "majority": "pass"
+  },
+  "wasteland_ruins/husk-tall": {
+   "sha": "b130375e7d628d4a9e3f99dbd5fc449313d122f0cecda85c12fa1af29244db0a",
+   "votes": {
+    "A": "pass",
+    "B": "pass",
+    "C": "pass"
+   },
+   "majority": "pass"
+  },
+  "wasteland_ruins/wall-h": {
+   "sha": "8ac1033f9c909f2dbcfeb864fd122151bce3760a923577784725ca12f882e08e",
+   "votes": {
+    "A": "pass",
+    "B": "pass",
+    "C": "pass"
+   },
+   "majority": "pass"
+  },
+  "wasteland_ruins/wall-v": {
+   "sha": "a19637a4dca0c6668b2407ff846cc24d0d314cb522a99d84e1993be509310234",
+   "votes": {
+    "A": "pass",
+    "B": "pass",
+    "C": "pass"
+   },
+   "majority": "pass"
+  },
+  "wasteland_ruins/wall-stub": {
+   "sha": "3c8a7f0a043cdf7b028e74238cae6fd7f5af044e4808e93beb3c4fceed6e2204",
+   "votes": {
+    "A": "pass",
+    "B": "pass",
+    "C": "pass"
+   },
+   "majority": "pass"
+  },
+  "wasteland_ruins/shack-a": {
+   "sha": "797913ebfa99aadd3e7d356cad01321d7726f0e6ccac7210b651acb44c1c725e",
+   "votes": {
+    "A": "pass",
+    "B": "pass",
+    "C": "pass"
+   },
+   "majority": "pass"
+  },
+  "wasteland_ruins/shack-b": {
+   "sha": "ced9719ce741eed4355b5a12da7bf4d0cf77117240064f566401891d4d2cc1b9",
+   "votes": {
+    "A": "pass",
+    "B": "pass",
+    "C": "pass"
+   },
+   "majority": "pass"
+  },
+  "wasteland_ruins/lean-to": {
+   "sha": "07c51c90aff860b36fa91f05ad50bc90119d4e9f94ab162cb3e497d7ec0b82ce",
+   "votes": {
+    "A": "pass",
+    "B": "pass",
+    "C": "pass"
+   },
+   "majority": "pass"
+  },
+  "wasteland_ruins/barricade-h": {
+   "sha": "3fbbf49984792116df33e78fef874b9bc2834842a383641f5d1a56e9b562bf1b",
+   "votes": {
+    "A": "pass",
+    "B": "pass",
+    "C": "pass"
+   },
+   "majority": "pass"
+  },
+  "wasteland_ruins/fence-h": {
+   "sha": "8de70a65f066674cef9c16dc21e70d92eaff79f59263dfb18b8d789c0eaa5364",
+   "votes": {
+    "A": "pass",
+    "B": "pass",
+    "C": "pass"
+   },
+   "majority": "pass"
+  },
+  "wasteland_ruins/gate-scrap": {
+   "sha": "79f1553a054064dfcc6b9ea80e4698475bfaf89fda88a2f562119debebd5ece2",
+   "votes": {
+    "A": "pass",
+    "B": "pass",
+    "C": "fail"
+   },
+   "majority": "pass"
+  },
+  "wasteland_ruins/car-rust-h": {
+   "sha": "38b7b48d8710a67399a7af21dab2025fc5892971fc2c05499e584565865327b3",
+   "votes": {
+    "A": "pass",
+    "B": "pass",
+    "C": "pass"
+   },
+   "majority": "pass"
+  },
+  "wasteland_ruins/car-rust-v": {
+   "sha": "ba8747f36a0f540342883eca6b2badab970499efce30ed33cc0a567d7a4300a2",
+   "votes": {
+    "A": "pass",
+    "B": "pass",
+    "C": "pass"
+   },
+   "majority": "pass"
+  },
+  "wasteland_ruins/van-rust": {
+   "sha": "19673fec2d17a18f0a3d05930d94e61c1d26035561d0ce93b8b88084e8fd1065",
+   "votes": {
+    "A": "pass",
+    "B": "pass",
+    "C": "pass"
+   },
+   "majority": "pass"
+  },
+  "wasteland_ruins/water-tank": {
+   "sha": "d829c80dbf94b79c58562aa7cdbe733c1eddde8b43227a2694b0e9f1dee5780f",
+   "votes": {
+    "A": "pass",
+    "B": "pass",
+    "C": "pass"
+   },
+   "majority": "pass"
+  },
+  "wasteland_ruins/generator": {
+   "sha": "9d93910bf821eb0eb6fa83a634b07cf3fd934f58ae2bb780669d0c1dbb4df975",
+   "votes": {
+    "A": "pass",
+    "B": "pass",
+    "C": "pass"
+   },
+   "majority": "pass"
+  },
+  "wasteland_ruins/solar-scrap": {
+   "sha": "8d107b79ae19d9531928fbd795b70c1157213085db3e090bf68aa5e6dabe8a9c",
+   "votes": {
+    "A": "pass",
+    "B": "pass",
+    "C": "pass"
+   },
+   "majority": "pass"
+  },
+  "wasteland_ruins/campfire-f1": {
+   "sha": "3f5f583343d073e84ca03606bc29df5104737d399432ea495da78c12c68d3e54",
+   "votes": {
+    "A": "pass",
+    "B": "pass",
+    "C": "pass"
+   },
+   "majority": "pass"
+  },
+  "wasteland_ruins/campfire-f2": {
+   "sha": "5615772579b552b608ec00325e747fac6cc1883d108c93c0c2e087f0d9778de5",
+   "votes": {
+    "A": "pass",
+    "B": "pass",
+    "C": "pass"
+   },
+   "majority": "pass"
+  },
+  "wasteland_ruins/campfire-f3": {
+   "sha": "87962959355d7eb6d371ec022fc68f5d3d8a3cca383c5110298114655d01ec71",
+   "votes": {
+    "A": "pass",
+    "B": "pass",
+    "C": "pass"
+   },
+   "majority": "pass"
+  },
+  "wasteland_ruins/log-seat": {
+   "sha": "65e058b2b449745ae133739bc4f5e70bf47d6f4ba6bf651585aec1f396fd043d",
+   "votes": {
+    "A": "pass",
+    "B": "pass",
+    "C": "pass"
+   },
+   "majority": "pass"
+  },
+  "wasteland_ruins/stall-a": {
+   "sha": "63ba7d90aa577779698ab9204e4d1fe28ef61911e2e811ef198fc7e76f97a65f",
+   "votes": {
+    "A": "pass",
+    "B": "pass",
+    "C": "pass"
+   },
+   "majority": "pass"
+  },
+  "wasteland_ruins/stall-b": {
+   "sha": "29c84e80f69727859e821c9ee01c51caf19c9122f8059253d7ea0f17a1f1d37b",
+   "votes": {
+    "A": "pass",
+    "B": "pass",
+    "C": "pass"
+   },
+   "majority": "pass"
+  },
+  "wasteland_ruins/drums": {
+   "sha": "f38b8da5fce8e5ab5c831ae8fa29699007ab5cc70d23a9be18d65767e4d0d8c9",
+   "votes": {
+    "A": "pass",
+    "B": "pass",
+    "C": "pass"
+   },
+   "majority": "pass"
+  },
+  "wasteland_ruins/tyres": {
+   "sha": "7a1e2295e5f1650144bc4572dba0939fac82dcbaacfadc2981b40764f0aaf82f",
+   "votes": {
+    "A": "pass",
+    "B": "pass",
+    "C": "pass"
+   },
+   "majority": "pass"
+  },
+  "wasteland_ruins/crates": {
+   "sha": "75db6a291e4c1db45abe1cc4a6b1e0ef2e961ff7d53f5c99ed2696e112e35410",
+   "votes": {
+    "A": "pass",
+    "B": "pass",
+    "C": "pass"
+   },
+   "majority": "pass"
+  },
+  "wasteland_ruins/scrap-heap": {
+   "sha": "d8222dc51859e08819dc4dd9ddbc22ab6a0b6c0440c68f07fd4a41cc4b1fea36",
+   "votes": {
+    "A": "pass",
+    "B": "pass",
+    "C": "pass"
+   },
+   "majority": "pass"
+  },
+  "wasteland_ruins/rubble-pile": {
+   "sha": "1e42f66cd315d5c68e46f832d10dd9958ef629444fefef16ad1980b89a362791",
+   "votes": {
+    "A": "pass",
+    "B": "pass",
+    "C": "pass"
+   },
+   "majority": "pass"
+  },
+  "wasteland_ruins/dead-tree": {
+   "sha": "fa6f0ccf055cfa040a659d251d002c3537519ba256198a7ef3718fa8c9b44f63",
+   "votes": {
+    "A": "pass",
+    "B": "pass",
+    "C": "pass"
+   },
+   "majority": "pass"
+  },
+  "wasteland_ruins/bush-wild": {
+   "sha": "eab1de98dbe61ec24f67fc442ff7af70cf0f1a15a762fc07771d8f2ae3fdbe86",
+   "votes": {
+    "A": "pass",
+    "B": "pass",
+    "C": "pass"
+   },
+   "majority": "pass"
+  },
+  "wasteland_ruins/vine-wall": {
+   "sha": "090756a8dec49c1427bf449dda9f4efe30ea559eaa8957d7c53912271b3a5fa7",
+   "votes": {
+    "A": "pass",
+    "B": "pass",
+    "C": "fail"
+   },
+   "majority": "pass"
+  },
+  "wasteland_ruins/lamp-broken": {
+   "sha": "b1ec8ac7b20b3ae8665a1e0d15bfa305ae3c008bbea9590b37a908be13e6b615",
+   "votes": {
+    "A": "pass",
+    "B": "pass",
+    "C": "pass"
+   },
+   "majority": "pass"
+  },
+  "wasteland_ruins/jersey-barrier": {
+   "sha": "077e43ea119e67aa6b740faf6e48e171d242ae18135b87414b062b27ef92dc66",
+   "votes": {
+    "A": "pass",
+    "B": "pass",
+    "C": "pass"
+   },
+   "majority": "pass"
+  },
+  "wasteland_ruins/sign-blank": {
+   "sha": "e619e7b8c26414cb3eb9ac6a64b381b9fcf39b581afe9e2c252d201521642435",
+   "votes": {
+    "A": "pass",
+    "B": "pass",
+    "C": "pass"
+   },
+   "majority": "pass"
+  },
+  "beodeul_yard/cobble": {
+   "votes": {
+    "A": "pass",
+    "B": "pass",
+    "C": "pass"
+   }
+  },
+  "beodeul_yard/dirt": {
+   "votes": {
+    "A": "pass",
+    "B": "pass",
+    "C": "pass"
+   }
+  },
+  "beodeul_yard/flag": {
+   "votes": {
+    "A": "pass",
+    "B": "pass",
+    "C": "pass"
+   }
+  }
+ }
+}

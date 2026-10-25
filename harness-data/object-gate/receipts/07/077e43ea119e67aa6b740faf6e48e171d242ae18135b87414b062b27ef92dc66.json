@@ -1,0 +1,304 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "077e43ea119e67aa6b740faf6e48e171d242ae18135b87414b062b27ef92dc66",
+ "width": 32,
+ "height": 16,
+ "kind": "box",
+ "name": "concrete jersey road barrier block lying east-west: narrow top ridge seen from above, sloped front face, chipped and stained",
+ "label": "wasteland_ruins/jersey-barrier",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 11,
+  "tileColorsP90": 11,
+  "darkV5": 57,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 2
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "barrier top ridge",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-6"
+     },
+     {
+      "part": "sloped front face with chips and stains",
+      "rows": "6-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 9,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-4 form a gray top band that ends in a light front-edge line at row 5 (L=189). Row 6 (L=163) is a slightly darker strip below it that works as the eave shadow. Below that, rows 7-13 are the front face, drawn in two tones (L=140 on rows 7-9, L=107 on rows 10-13) that read as a sloped face. Row 14 is a dark base and row 15 is the outline. The top surface is about 5 rows and the front face is about 8-9 rows, so it reads as a 3/4 view and not a rim-only front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a small, simple concrete block. Its grey ramp runs from a light top ridge through a mid sloped face to a dark base, with chips and a brownish stain as extra variation, which I count as about 5 steps. The measured facts support it: 11 visible tones per 16x16 tile, above the hedge reference at 9 and below the stall at 17 and the well at 20. Near-flat coverage is 0%, so there are no large flat fills. The dark edge pixels are 0% neutral, so the outline leans toward the material's tint and is not a uniform black sticker line, though it is somewhat uniform around the shape. The surface carries speckle and chip marks but is less richly textured than the stall or well. That puts density slightly below the best references but about level with the hedge, and a careful artist would accept it beside the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 25675
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "barrier top ridge",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "sloped front face",
+      "rows": "6-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 9,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-4 form a top band of similar lightness (L about 150-155) that ends in a bright 1-row front-edge line at row 5 (L=189). Row 6 is a slightly lighter transition row, and there is no distinct darker eave shadow. Below it the front face runs rows 6-14 (about 9 rows), with an upper band at rows 7-9 (L=140) and a darker lower band at rows 10-13 (L=107). The top is a band bounded by an edge line, not just a 1-2 row rim, and the front face is well over 3 rows, so it reads as a three-quarter view. The object is a single long block, so there are no other major parts to check."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a small, simple concrete block. It has a light top ridge, a mid-grey sloped face, a darker lower edge, and stain and chip dots, which gives about 5 lightness steps. The measured facts support this. It shows 11 visible tones per tile, above prop-hedge (9) and below the stall (17) and well (20). Near-flat coverage is 0%, so there are no large flat fills. The dark edge pixels are 0% neutral, so the outline leans toward the material's tint rather than being a black sticker line. It is somewhat plainer than the stall and well, which is expected for a basic concrete object. By eye it is not thinner or flatter than the hedge reference, so a careful artist would accept it beside the hedge and bench.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 24253
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top ridge of barrier",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6"
+     },
+     {
+      "part": "sloped front face",
+      "rows": "6-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 8,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-4 form a top band (L about 150) that ends in a light front-edge line at row 5 (L=189). Row 6 (L=163) is slightly darker and acts as a weak eave shadow. Below it, rows 6-13 are a front face that steps darker (L 140 then 107), about 8 rows tall. Rows 14-15 are the outline. The silhouette is a wide rectangle, 30 px wide and 16 rows tall, so the block reads as a top surface over a front face, not a flat slab."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a small grey jersey barrier with a light top ridge, a mid sloped face, a darker base, and chip and stain specks. I count about 5 grey steps, close to Beodeul's 5-6 but a little shallower than the richer props such as the well and stall. The measured facts support it: 11 visible tones per tile is above prop-hedge (9) and below the well (20) and stall (17). Near-flat coverage is 0%, so there are no flat 5x5 fills. The dark edge pixels are 0% neutral, so the outline carries a tint and reads as a darker version of the concrete, not a black sticker line. The sloped face is somewhat banded and the texture is sparser than in the best references. That is acceptable for a simple concrete object and sits at the level of the hedge reference, so I pass it narrowly.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 20957
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top ridge of barrier",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6"
+     },
+     {
+      "part": "sloped front face with chips and stains",
+      "rows": "6-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 8,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Column scan shows a lighter grey band at rows 1-4 that ends in a bright 1-row front-edge line at row 5 (L=189). Row 6 is a slightly darker step. Below that is a front face of two tones, rows 7-9 and rows 10-13, ending in a dark base line at row 14. The top band, edge line and 8-9 row front face give a top surface above a front face, so the block reads as three-quarter view. The top is a narrow ridge and the front is a sloped face, which fits a jersey barrier. No isometric side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The measured facts support the candidate. It has 11 visible tones per 16x16 tile, above the hedge reference at 9 and below the stall (17) and well (20). Near-flat coverage is 0%, so no 5x5 area is a single flat colour. Dark edge pixels are 0% neutral, so the outline leans toward the stone tone rather than being a black sticker line. By eye the barrier reads as a light top ridge, a mid sloped face and a darker base, with chips and stains breaking up the surface. That is about 5 shading steps, slightly fewer than the richest references. It is a plain, small prop, but it sits next to the hedge without looking thinner or flatter, so a careful artist would accept it.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 26204
+  }
+ ],
+ "decidedAt": "2026-10-22T14:22:07.133Z",
+ "cells": {
+  "16": [
+   "0df4a18b2d92e2e8",
+   "6b353742fbc910a3"
+  ],
+  "24": [
+   "082fe803c9e5e3e8",
+   "2a0a5e727365c794",
+   "3590a15b77cbc625",
+   "3af95a9df94d75ad",
+   "4e51ab8b79b2aac1",
+   "5115904453774a87",
+   "5e7f418451efc9f6",
+   "6d96a297c1193872",
+   "91936e8086e213a6",
+   "a80a9693f9dbd421",
+   "d2c7662ef8215de5",
+   "fe1df53bdc91508b"
+  ],
+  "32": [
+   "727aebc017784f91",
+   "dbc716d6790e75d2"
+  ],
+  "48": [
+   "56703b6e0b74db28",
+   "6ec94a806db8d085",
+   "71774bad733cb45f",
+   "8ff88ea6abec67c5",
+   "af4b3c4ed66745e2",
+   "ed0f8368d414697a"
+  ]
+ }
+}

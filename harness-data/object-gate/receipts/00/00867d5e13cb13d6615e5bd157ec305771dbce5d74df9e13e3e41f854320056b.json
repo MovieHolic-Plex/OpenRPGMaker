@@ -1,0 +1,353 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "00867d5e13cb13d6615e5bd157ec305771dbce5d74df9e13e3e41f854320056b",
+ "width": 16,
+ "height": 16,
+ "kind": "flat",
+ "name": "small broken concrete chunks with a rebar stub lying on the ground",
+ "label": "wasteland_ruins/rubble-a",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 명암 3단 < 4 (4/4)",
+  "화풍: 평면 채움 (2/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "명암 3단 < 4 (4/4)",
+   "평면 채움 (2/4)"
+  ],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 5
+ },
+ "metrics": {
+  "tileColorsMedian": 0,
+  "tileColorsP90": 0,
+  "darkV5": 45,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 0
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "concrete chunks (main mass, seen from above as a flat scatter)",
+      "rows": "3-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "rebar stub (rust-red, upper middle)",
+      "rows": "2-6",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 11,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The object is a low scatter of broken concrete pieces with a small rebar stub, about 11 rows tall and 11-12 px wide. The column scans show light grey faces (rows 4-6, 8-11) bounded by dark outline runs, with no front-edge line, no eave shadow and no tall vertical face. It reads as a flat decal seen from above, with no distinct front face of 3+ rows. That is consistent with the flat kind, so kind_matches is true."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a tiny single prop of about 16x16 px, with grey chunks and a small red rebar stub, on a plain backdrop. The brief asks for a 4x3-tile ground patch, and the references are full-tile grass and paving, so the kind does not match. The measured facts show 0 visible tones per tile because the piece is smaller than one tile, so I judged by eye. Only about 3 grey steps are visible on the concrete, with little grain or per-chunk shading. The paving reference has about 7 tones per tile and the grass about 3, each with dense dot texture across the whole tile. The candidate has only 11 distinct colours in total, against 80 for the grass reference. Its dark edge pixels are not neutral (0% near-neutral), so the outline leans toward a tinted material tone. That does not make up for the shallow ramp, the lack of texture, and the missing ground surface. It reads as a sticker-like sprite beside the dense references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 12344
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "left concrete chunk",
+      "rows": "5-6",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "center-right concrete chunks",
+      "rows": "8-9",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "rebar stub (rust-red)",
+      "rows": "2-6",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 3,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "other",
+    "evidence": "The silhouette is an irregular scatter of rubble, 11 px wide over rows 4-12, with a dark outline. Each chunk has a 2-row light gray patch (x=4 rows 5-6, x=11 rows 8-9, x=8 row 10) over a 2-row darker gray face (x=4 rows 7-8, x=11 rows 10-11, x=8 rows 11-12) and a 1-row outline. That is a tiny lit top over a short face, not a clear top-surface band with an edge line and eave shadow. There is no ellipse, roof or open-container contents. The rust-red rebar stub at rows 2-6 is a small attached detail. The object reads as low rubble lying on the ground, with only slight shading that hints at height, so it fits neither a clean 3/4 body nor a pure flat slab."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a tiny sprite, smaller than one 16x16 tile, with only 11 distinct colours in total, so the per-tile facts read 0 and I judged by eye. The concrete chunks show about 3 grey steps (light top, mid body, dark underside) plus a small red-brown rebar stub. The paving reference carries about 7 visible tones, with per-stone shading, mortar lines and speckle, and the grass reference carries about 3 visible tones with tufts. The 0% near-neutral edge share and the visible tint suggest the outline leans toward the material tone rather than pure black, which is fine. However, the chunks are a few flat grey blobs with little grain, no per-fragment highlights, no cracks or aggregate speckle, and no soil or ground blending. Next to the reference it reads as a thin, sticker-like prop with a shallow ramp, not a piece with Beodeul-level shading depth. Tinted outlines are a point in its favour, but they do not offset the shallow ramp and thin texture.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 21247
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "upper-left concrete chunk",
+      "rows": "4-9",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower-right concrete chunk",
+      "rows": "7-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "rebar stub (red-brown)",
+      "rows": "2-6",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 2,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "Low rubble pile, 11 px wide and about 13 rows tall (rows 2-14), seen mostly from above. Each chunk has only a thin light-gray top patch of 2 rows (column x=4 rows 5-6, L=143; column x=11 rows 8-9, L=143). Directly below is a 2-row darker gray face (x=4 rows 7-8; x=11 rows 10-11), then a dark outline. No front-edge line, eave shadow, ellipse or deep south face appears, so this is a flat floor decal and not a standing volume. The red-brown rebar stub at rows 2-6 is a small detail on top."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a sub-tile prop of about 12x12 source pixels with only 11 distinct colours in total. Its grey chunks show about 3 lightness steps, against the roughly 5-6 steps of the paving reference's cobbles. The only shaded detail is a small red rebar tip. The measured per-tile facts are 0 because the piece is smaller than a tile, so I judged by eye. The 0% neutral-edge figure suggests the outline is tinted, but at this size it reads as a fairly uniform dark line around the chunks. That gives it a somewhat sticker-like look rather than the value-separated forms of the references. The chunks have little per-stone highlighting or grain compared with the paving reference, where each stone is shaded individually. It reads thinner and flatter than the reference, and a careful artist would not accept it beside the reference without more shading steps and surface texture. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 17352
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "left concrete chunk, light top patch",
+      "rows": "5-6",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "left concrete chunk, darker lower face",
+      "rows": "7-8",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "right concrete chunk, light top patch",
+      "rows": "8-9",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "right concrete chunk, darker lower face",
+      "rows": "10-11",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "rebar stub (red-brown)",
+      "rows": "2-6",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 2,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The object is a low, 11-12 px wide scatter, 13 rows tall (rows 2-14), lying on the ground. Each chunk has a dark outline, then a light gray patch of 2 rows (left chunk rows 5-6, right chunk rows 8-9). Below each patch is a 2-row darker gray band (rows 7-8 and 10-11), then the outline. These bands are under 3 rows and have no front-edge line or eave shadow. This reads as a flat decal-like plate with a little shading, not a standing volume with a 3+ row front face. The red-brown rebar stub at rows 2-6 sticks out at the top and is drawn as a small, flat detail."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a tiny single prop of about one tile or less, sitting on a dark background. It is not the 4x3-tile ground patch the brief asks for, so it does not match the reference kind (grass and paving surfaces). The facts show 0 full tiles, so I judged by eye. It has only 11 distinct colours in total, against 80 for the grass reference. The concrete chunks look like 2-3 grey steps with a small red rebar accent and no per-chunk highlights, grain or speckle. The outline is tinted rather than neutral (0% near-neutral dark edge pixels), but the shading is shallow and the surface is flat. It looks thinner and more sticker-like than either the grass or the paving reference, which carry 3 and 7 visible tones per tile with clear texture. It would not sit credibly next to those references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 17060
+  }
+ ],
+ "decidedAt": "2026-10-22T14:22:06.132Z",
+ "cells": {
+  "16": [
+   "91f457b27aba77f8"
+  ],
+  "24": [
+   "088f5306e6bcdbb3",
+   "6af3f68da987cb46",
+   "76a5c7b2b95dac8c",
+   "910f2e9f91c3e682",
+   "c4e1f5c222370a86",
+   "cb099fafee9d6121"
+  ],
+  "32": [
+   "01263e2ae6764c29",
+   "2dc3f7cd3d49348a",
+   "30baf82c589de1f0",
+   "c070aaa64a01ac1f",
+   "ed769e158eae9d78",
+   "fe7dea2dd3156cb2"
+  ],
+  "48": [
+   "15cb5d5e14b5cb66",
+   "2d9649d56482b309",
+   "66ff5f40446f9514",
+   "6c20c592eca89c1c",
+   "76e7b469b7795b71",
+   "992d8a2ee9834f3b"
+  ]
+ }
+}

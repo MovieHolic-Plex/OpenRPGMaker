@@ -1,0 +1,22 @@
+[
+ {
+  "id": "rubble-c",
+  "label": "wasteland_ruins/rubble-c",
+  "kind": "flat",
+  "name": "a bent rusty metal sheet, broken concrete lumps, glass shards and a torn cable lying on an oil-stained patch of earth",
+  "png": "/home/main/z-project/rpg-zzu-village-art/tiledata/wasteland-ruins/_gate/rubble-c.png",
+  "sha": "9672a66ed3b43b3fded339f164b1bf42c69288625f22780dfc1a59d300d0e4b3",
+  "receipt": "/home/main/z-project/rpg-zzu-village-art/harness-data/object-gate/receipts/96/9672a66ed3b43b3fded339f164b1bf42c69288625f22780dfc1a59d300d0e4b3.json",
+  "verdict": "pass"
+ },
+ {
+  "id": "puddle",
+  "label": "wasteland_ruins/puddle",
+  "kind": "flat",
+  "name": "a flat dark rain puddle in a muddy hollow on the ground, with a damp dark earth margin and a faint sky reflection",
+  "png": "/home/main/z-project/rpg-zzu-village-art/tiledata/wasteland-ruins/_gate/puddle.png",
+  "sha": "4d124b81134a3fa590580d170b162f76216e32e7b1d36062dfd742c9e1f56509",
+  "receipt": "/home/main/z-project/rpg-zzu-village-art/harness-data/object-gate/receipts/4d/4d124b81134a3fa590580d170b162f76216e32e7b1d36062dfd742c9e1f56509.json",
+  "verdict": "pass"
+ }
+]

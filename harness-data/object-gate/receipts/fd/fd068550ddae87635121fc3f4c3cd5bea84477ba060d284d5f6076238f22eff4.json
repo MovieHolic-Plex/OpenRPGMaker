@@ -1,0 +1,388 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "fd068550ddae87635121fc3f4c3cd5bea84477ba060d284d5f6076238f22eff4",
+ "width": 16,
+ "height": 48,
+ "kind": "structure",
+ "name": "north-south barricade line of stacked sandbags seen from above: rows of bags each showing a bulging top and a short front, end face at the bottom",
+ "label": "wasteland_ruins/barricade-v",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 투영이 3/4 아님(front_elevation) (3/4)",
+  "3/4: 윗면 2행 < 3 (3/4)",
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (3/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "투영이 3/4 아님(front_elevation) (3/4)",
+   "윗면 2행 < 3 (3/4)",
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (3/4)"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 15,
+  "tileColorsP90": 20,
+  "darkV5": 47,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 3
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "borderline",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top end strip of the barricade (yellow/red band)",
+      "rows": "0-3",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "sandbag rows 1 to 7, each a face-on bag with a 1-row highlight, a body and a dark bottom line (rows 4-9, 10-16, 17-23, 24-30, 31-37, 38-46)",
+      "rows": "4-46",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 40,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The object is a vertical stack of bag rows, each about 6-7 rows tall. Every bag is a face-on rounded block with a 1-row light highlight at its upper edge (rows 4, 18, 32, 39), a flat mid-tone body, and a dark 1-row bottom line (rows 9, 16, 23, 30, 37). The highlight is a rim, not a top plane. No bag has a band ending in a front-edge line with eave shadow below it, no ellipse, and no visible contents. The yellow/red strip at rows 0-3 is a flat band with no edge line, so it is not a convincing top surface. The repeated rows read as stacked front elevations with at most a 1-2 row rim on top, not as a 3/4 top plus front."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "evidence": "The candidate is a narrow sandbag column about one tile wide, set beside two much larger house references. Measured facts favour it: 15 visible tones per tile against 12 and 10 for the references, 0% near-flat coverage like both references, and only 6% neutral dark edge pixels, so the outlines are tinted. By eye, each bag has a lit bulging top, a mid body, a darker front and a tinted dark edge. The bags are separated by value rather than a uniform black line. There is some grain and per-bag variation, though less than the roof tiles and plaster of the houses. The five or so shading steps per bag are slightly below the 6 on the references' main materials, but this is a small prop and is not flat or sticker-like beside them.",
+    "score": 7,
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18674
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top strip (yellow and red bands) above the first bag row",
+      "rows": "0-3",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "bag rows 1-2 (brown and gray bags)",
+      "rows": "4-9",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": "8-9"
+     },
+     {
+      "part": "bag rows 3-4 (gray and green bags)",
+      "rows": "10-23",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": "16, 22-23"
+     },
+     {
+      "part": "bag rows 5-7 (green, gray and brown bags)",
+      "rows": "24-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": "30, 37"
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 44,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The drawing is a stack of bag rows, each about 6-7 rows tall. Each bag is a flat front-facing block with a small 1-2 px highlight patch and a dark bottom edge. The width profile stays at 16 with only 1-row notches between bag rows, so there is no ellipse or widen-then-narrow profile. No row band ends in a front-edge line followed by eave shadow. The only top-like element is the 2-3 row yellow/red strip at rows 0-3, which is a thin rim and not a top surface. Each bag has a bulging look but no horizontal top plane, so the structure reads as a front elevation, not three-quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The references are whole houses and the candidate is a narrow sandbag column, so the comparison is on material craft rather than form. Each bag has a lit bulging top, a mid tone, a darker front and a shadow seam, which gives about 5 steps per bag. The bags alternate between grey-stone, green-grey and brown tones with per-bag variation, much like the stone-wall tones on house-h112. Measured facts support this: 15 visible tones per tile against 12 and 10 for the references, 0% near-flat coverage, and only 6% neutral dark edge pixels. The edges are therefore tinted dark material tones rather than a black sticker line. No large flat fills are visible. The piece is small, but a careful artist would accept it next to the reference without it looking thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 21562
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "top strip (yellow/red band along the top)",
+      "rows": "0-2",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "sandbag course 1 (brown and grey bags)",
+      "rows": "3-9",
+      "evidence": "a",
+      "front_edge_line_row": 9,
+      "eave_shadow_rows": "7-8"
+     },
+     {
+      "part": "sandbag course 2 (grey and green bags)",
+      "rows": "10-16",
+      "evidence": "a",
+      "front_edge_line_row": 16,
+      "eave_shadow_rows": "14-15"
+     },
+     {
+      "part": "sandbag course 3 (brown bags)",
+      "rows": "17-23",
+      "evidence": "a",
+      "front_edge_line_row": 23,
+      "eave_shadow_rows": "21-22"
+     },
+     {
+      "part": "sandbag course 4 (green and grey bags)",
+      "rows": "24-30",
+      "evidence": "a",
+      "front_edge_line_row": 30,
+      "eave_shadow_rows": "28-29"
+     },
+     {
+      "part": "sandbag course 5 (grey and brown bags)",
+      "rows": "31-37",
+      "evidence": "a",
+      "front_edge_line_row": 37,
+      "eave_shadow_rows": "35-36"
+     },
+     {
+      "part": "sandbag course 6 (brown and grey bags)",
+      "rows": "38-46",
+      "evidence": "a",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": "43-46"
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 3,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The object is a vertical stack of about six sandbag courses, each 7 rows tall. In every course a lit bulging top of about 4 rows (for example rows 10-13) is followed by 2 rows of darker shade (rows 14-15) and a 1-row dark edge line (row 16). Corner rows are narrower (widths 10, 14 and 8 at the course boundaries), which gives rounded bag ends. This is a top band, then a front-edge line, then a short front, repeated. The front is short, only about 3 rows per course, so the drawing leans toward top-down. There is no roof, lintel or gate structure, so the object is a barricade rather than a large structure. The 3-row strip at rows 0-2 is a flat front-facing band with no edge line."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a narrow column of stacked bags. Each bag has a lit bulging top, a mid-tone body and a darker short front face. This gives about 4-5 lightness steps per bag, a little below the references' 5-6. The outlines lean brown or green to match the neighbouring bag rather than forming a neutral black line, which agrees with the measured 6% near-neutral dark edge pixels (references 7-9%). Bags are separated by value changes and tinted edges. There are no flat fills: near-flat coverage is 0% and there are no 5x5 single-colour blocks. Visible tones per tile are 15, against 12 and 10 for the references, so density is at or above the references. Texture is moderate, with per-bag highlights and speckle but no extensive grain like the roof tile scallops. A careful artist would accept it next to the stone-wall reference without it looking thinner or more sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 25944
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top cap strip of barricade",
+      "rows": "0-1",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "sandbag courses (stacked rows of bags, each with a tan tie highlight, body and dark bottom line)",
+      "rows": "2-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 46,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The top 2 rows (0-1, yellow then pink-red, width 14) form only a thin rim. Below, the image is a repeating stack of bag courses about 7 rows tall. Each course has a 1-row tan tie highlight, a flat colored body of brown, grey or green, and a 1-2 row dark line at its base (rows 8-9, 16-17, 23-24, 30-31, 37-38). The courses are drawn face-on, with no ellipse and no band ending in a front-edge line. The bags' bulging tops are not shown as horizontal surfaces, so the whole drawing reads as a front elevation of stacked bags."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a narrow stack of sandbags, drawn at the reference scale. Each bag has a lit bulging top, a mid tone and a darker front, so I count about 4 lightness steps per material against roughly 5 on the references' roofs and walls. The measured facts back this up. It has 15 visible tones per tile against 12 and 10 for the references. Near-flat coverage is 0%, the same as the references, so there are no flat fills. Only 6% of its dark edge pixels are neutral, which is in line with the references' 7% and 9%. By eye the outlines lean brown or green with the bag colour, not black, so I call them dark material tone. The bags are shaded one by one, much like the stones on the stone house. It is small and a prop, so the lack of roof-scallop texture is not held against it. A careful artist would accept it beside the references without it looking thinner or more sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19833
+  }
+ ],
+ "decidedAt": "2026-10-22T16:09:42.217Z",
+ "cells": {
+  "16": [
+   "7f4f0680b1cc1f5f",
+   "8756d04a18b4a08f",
+   "eb4b8c0f13ee5ab8"
+  ],
+  "24": [
+   "003ee8fbd53fc37d",
+   "0edba2046a6631f0",
+   "39f2630ce76be589",
+   "7e4e26f092d2506d",
+   "aaed6a75a4f028d7",
+   "e532062d3e6d49f5"
+  ],
+  "32": [
+   "15fdc4be41a683a9",
+   "24ae7b36e05e28c8",
+   "455ae74a76570770",
+   "555a6506f443442a",
+   "648258353293dbc7",
+   "6926c0e6cd961a57",
+   "c8eba00df82050ac",
+   "e083c4a6640477ea",
+   "e93efaee52a7bbfe",
+   "ea05a4e93ccc88d3",
+   "eb065aea3ef2fde7",
+   "ed88d012e2648da3"
+  ],
+  "48": [
+   "634ae6de39f49a31",
+   "f7cf1df7fa94b1ee",
+   "f82bfb4c72f36579"
+  ]
+ }
+}

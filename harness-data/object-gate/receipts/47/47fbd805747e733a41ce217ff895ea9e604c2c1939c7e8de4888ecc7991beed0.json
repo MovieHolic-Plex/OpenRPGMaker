@@ -1,0 +1,290 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "47fbd805747e733a41ce217ff895ea9e604c2c1939c7e8de4888ecc7991beed0",
+ "width": 64,
+ "height": 48,
+ "kind": "flat",
+ "name": "a smaller flat burnt patch on packed earth seen from above: a lobed soot stain, darkest in the middle and greyer towards a dithered brown edge, light grey ash flecks and one charred stick with a dim ember",
+ "label": "wasteland_ruins/scorch-b",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 7,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "wasteland_ruins",
+   "fallback": true,
+   "reason": "칩셋 wasteland_ruins 의 화풍 기준 묶음이 없다",
+   "hash": "8cecb3a70460aa86"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 5,
+  "tileColorsP90": 10,
+  "darkV5": 60,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 12
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "packed earth ground with soot stains, ash flecks and a charred stick, seen from above",
+      "rows": "0-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 48,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The image is a full 64x48 opaque rectangle of brown earth texture with dark soot patches. There is no silhouette shape, no front-edge line, no eave shadow and no vertical south face. Column scans show only texture variation with no band structure. It is a flat top-down ground decal, which matches the flat kind, and it has no front face (fewer than 3 rows)."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a ground patch of the same kind as the grass and paving references. It has 5 visible tones per tile, against 3 for grass and 7 for paving, so it sits between them. Near-flat coverage is 0%, the same as both references, and the brown base carries dithered grain with no 5x5 flat areas. The ramp runs from a mid-brown base through darker soot to grey ash flecks and dim ember tones, about 5 steps. There is no hard outline. The soot lobes blend into the earth by value alone, and the dark edge pixels are 0% neutral, so they carry a tint rather than a black line. The grain is modest and the blotches are fairly small, so the texture is 'some' rather than 'rich'. It still reads as at least as dense as the grass reference and would not look thinner or more sticker-like beside it.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 26071
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "packed earth ground with soot stain, ash flecks and charred stick, seen from above",
+      "rows": "0-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 48,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The image is a full-bleed 64x48 earth texture with dark soot patches, grey ash flecks and a charred stick with a reddish ember. All rows have the same width (64) and there is no silhouette, front-edge line, eave shadow or vertical face. It is a flat decal seen from above with no front face (0 rows), as expected for a flat kind."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The measured facts are acceptable: 5 visible tones per tile (grass reference 3, paving 7), 0% near-flat coverage, and 0% neutral dark edge pixels, so the darks lean brown rather than black. The picture is weaker than the numbers. The brown earth has only about 4 lightness steps and a thin dither. The soot stain does not read as one lobed shape that is darkest in the middle and greyer toward the edge. It shows as a few small, near-black, hole-like specks scattered on mostly even brown, with little grey transition ramp. The ash flecks and the charred stick with its ember are barely visible at this scale. Next to the grass and paving references, which carry clustered tufts and stones shaded one by one, the candidate looks sparser and flatter, with a shallower ramp on the main burnt material. It has no flat fills, but its richness is below the Beodeul bar, and I am failing it because of that doubt.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 17398
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "packed earth ground with soot stains, ash flecks and charred stick",
+      "rows": "0-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 48,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The drawing is a full-bleed 64x48 top-down texture of brown earth. Its silhouette is 64 wide on every row, with no outline or edge line. It shows three dark lobed soot stains with grey ash flecks (around rows 3-9, 19-25 and 35-42) and a charred stick with an ember near rows 38-43 at the right. Column scans show only mottled earth tones, with no front-edge line, eave shadow, or vertical face. There is no front face, so it reads as a flat decal seen from directly above, as the flat kind expects."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "none",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate has about 5 visible tones per tile, above the grass reference (3) and below the paving reference (7). Near-flat coverage is 0%, the same as both references, so there are no flat fills. The brown earth is mottled and dithered, with grain dots and darker soot specks. It has no hard outline, and its dark edge pixels are tinted rather than neutral (0% near-neutral), so there is no sticker look. The soot stain reads fairly small and low-contrast at this scale, and the ash flecks and ember are faint. That keeps it slightly below the richest reference, but it is comparable to the grass reference on structure and texture and is not shallow.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16377
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "packed earth ground with lobed soot stains, ash flecks and a charred stick",
+      "rows": "0-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 48,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The image is a full 64x48 opaque tile of packed earth seen straight down. It contains three dark soot blotches (around rows 3-9, 19-25 and 36-42), grey ash flecks, and a charred stick with an ember near rows 37-44. The width profile is a constant 64 across rows 0-47, with no silhouette narrowing, no front-edge line, no eave shadow and no vertical face. This is a flat decal that reads as top-down, which matches the flat kind. It has no front face of 3 or more rows."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate earth ground has about 4 visible brown steps with dithered grain and speckle. It measures 5 visible tones per tile, between the grass reference (3) and the paving reference (7). Near-flat coverage is 0%, so there are no flat fills. There is no sticker outline: the dark soot marks are tinted brown, and the measured neutral share of dark edge pixels is 0%. The soot and ember marks read as a few small dark clumps rather than one clear lobed stain with a grey gradient, and the whole patch is a bit sparser than the references. That is a content weakness rather than a structural or shading failure, and the style holds up next to the grass reference at the same scale.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 13753
+  }
+ ],
+ "decidedAt": "2026-10-25T11:19:24.281Z",
+ "cells": {
+  "16": [
+   "085be42defcbb8de",
+   "2c89a48922e7d60d",
+   "363dae9191616c1e",
+   "44473a9dc0405027",
+   "86321864d112f0e8",
+   "9dcaf49a4c52984b",
+   "a5a5143982bbc314",
+   "bc232f0e41520727",
+   "be23fb84d8d442dd",
+   "d138b07a8791258b",
+   "d464b16dff957a89",
+   "efe044aa04cf6c04"
+  ],
+  "24": [
+   "1a2ab9f05dc38f9b",
+   "1dc75847b241b551",
+   "23ee54658454c0df",
+   "2bf2826d422d165b",
+   "6160c62acb02d5f2",
+   "67dd3d3259a867ce",
+   "687e84f81f8292e3",
+   "7da7052c8006d37d",
+   "a986cbd63b693120",
+   "ae1a0698f60aca40",
+   "b365964878450026",
+   "c1abd41a3c03d132",
+   "d04f30be67def196",
+   "d9ffb5e7bfadf2bb",
+   "dd151fe53e1a963d",
+   "e5ba64c375e0f404",
+   "e9e1f068946856a9",
+   "f07eb8eb623e0a0f"
+  ],
+  "32": [
+   "07a8466d33e71c5d",
+   "5f4e8a317a7a0249",
+   "612dc2f92665a0d6",
+   "b088dfa07ba3ebe6",
+   "b9481d8cf19ab2d0",
+   "bc508d7127ba42ac",
+   "c6b002fe70ce501c",
+   "ce8256d72221c930"
+  ],
+  "48": [
+   "6d8b765e23a4c47f",
+   "94b4a5bf5a5ce06b",
+   "98fd1e66322a5d8a",
+   "b09336824c843922",
+   "dfc676f49fb77351",
+   "f6c42e7d348b9c2d"
+  ]
+ }
+}

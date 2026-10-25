@@ -1,0 +1,19 @@
+{
+ "schema": "oprn-object-gate-hold-decision/1",
+ "pixelSha256": "5164d549f7d1fba80f4bd7e0bbb04c219b0c2767fc8aadfffe32e42fb91f6980",
+ "profileHash": "4d8774b517f41638",
+ "kind": "flat",
+ "decision": "allow",
+ "decidedBy": "supervisor (village-art)",
+ "decidedAt": "2026-10-22T18:49:42.371Z",
+ "by": "delegated",
+ "delegatedBy": "user",
+ "evidence": "/home/main/z-project/rpg-zzu-village-art/tiledata/wasteland-ruins/_review/r18/opus-reviewer-verdict.md",
+ "via": "review-page",
+ "reasons": [
+  "화풍: 화풍 판정이 갈림(걸린 판정 2/4)",
+  "화풍: 판정자 fail (2/4)"
+ ],
+ "note": "delegated by user to supervisor 2026-10-23 — wasteland_ruins/weeds-a; gate refer; fresh Opus adversarial reviewer r18 (round 3) pass; delegated by user to supervisor 2026-10-23",
+ "sig": "571b21b6ed8be1b24ee0e44292e778fa97d1652facb401c527fa71fa4e839975"
+}

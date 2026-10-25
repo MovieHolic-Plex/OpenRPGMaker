@@ -1,0 +1,312 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "425c51f2f80aa7f131303db30b6908698bd78693e1de82370d2f91de93e84800",
+ "width": 48,
+ "height": 32,
+ "kind": "structure",
+ "name": "lean-to built from salvaged doors and pallets seen from above: roof of three old paneled doors in faded blue, green and white laid side by side as a sloped top plane, front wall of stood-up wooden pallets with a dark gap entrance hung with a sack",
+ "label": "wasteland_ruins/lean-doors",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "refer",
+ "reasons": [
+  "3/4: 독립 눈이 「3/4 아님」 4/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면"
+ ],
+ "view34": {
+  "verdict": "refer",
+  "reasons": [
+   "독립 눈이 「3/4 아님」 4/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 7,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "wasteland_ruins",
+   "fallback": true,
+   "reason": "칩셋 wasteland_ruins 의 화풍 기준 묶음이 없다",
+   "hash": "5f62fef078ef7661"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 18,
+  "tileColorsP90": 22,
+  "darkV5": 33,
+  "nearBlackEdge": 0.17,
+  "opaqueTiles": 6
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "right",
+   "borderline",
+   "right",
+   "wrong",
+   "borderline",
+   "right",
+   "right",
+   "borderline",
+   "borderline"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "door roof (blue, green and white-red doors laid side by side as a sloped plane)",
+      "rows": "0-14",
+      "evidence": "c",
+      "front_edge_line_row": 15,
+      "eave_shadow_rows": "16-16"
+     },
+     {
+      "part": "pallet front wall with dark entrance gap and sack",
+      "rows": "17-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 15,
+    "front_face_rows": 14,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 0-14 hold the roof of three paneled doors (blue, green, pale grey and salmon). Their panels, handles and inset rectangles read as a sloped top plane. The roof ends in a brown beam line at rows 15-16 (L=81 then L=60), which works as the front-edge line with its eave shadow. Below it, rows 17-30 show the vertical pallet front wall: slats with light cross-bars, a dark entrance gap and a green sack. The silhouette is about 46 px wide throughout, with no receding side face. The roof is a large top surface of 15 rows above a front face of 14 rows."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The measured facts favour the candidate. It has 18 visible tones per 16x16 tile against 12 and 10 for the references. Near-flat coverage is 4% against 0%, so only a few small flat patches. Dark edge pixels are 0% neutral, so the outlines carry a tint, and by eye they read as dark brown next to the pallet wood and dark blue-grey next to the door panels, not a uniform black sticker line. The three door panels (blue, green, white) show panel inset lines and wear, and the pallet wall shows slat and gap structure with a dark entrance and a hanging sack. It is a small prop-like building, so shading is shallower than the references' 5-6 step tile roofs, at about 4 steps per material, and it lacks per-tile scallops. It is still dense and tinted enough to sit next to the references without looking flatter or more sticker-like. Borderline on shading depth, but it passes on the primary facts.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16411
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "roof of three paneled doors (blue, green, white/orange) laid side by side",
+      "rows": "0-15",
+      "evidence": "c",
+      "front_edge_line_row": 16,
+      "eave_shadow_rows": "16-17"
+     },
+     {
+      "part": "pallet front wall with dark entrance gap and sack",
+      "rows": "17-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 15,
+    "front_face_rows": 14,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 0-15 are a tall roof plane made of three door panels with panel inset lines, wear marks and a handle. It ends at a brown beam row at 15-16, with a dark edge line at row 16 and a dark band at row 17 acting as eave shadow. Below that, rows 17-30 (14 rows) are the vertical pallet front wall with slats, a dark entrance gap and a hanging sack. The roof is 15 rows and the front face is 14 rows, so the structure shows both a top surface and a front face. No receding side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a much smaller, simpler prop-like building than the references, so I judged it mainly on the measured facts and what I can see of its structure. The facts favour it: 18 visible tones per 16x16 tile against 12 and 10 for the references, 4% near-flat coverage against 0%, and 0% neutral dark edge pixels, so the outlines carry a tint rather than being near-black. By eye, the three door panels in blue, green and white each show a base tone, inset panel shading and a darker edge. The pallet wall has slat and gap shading in brown tones, and the dark entrance with its hanging sack reads clearly. There is no uniform black sticker outline. It has fewer ramp steps per material than the references' 5-6 roof tile steps, and no per-tile scallop texture, but that fits a salvaged-door roof. A careful artist would accept it next to the references without it looking flatter or thinner.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15973
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "door roof plane (blue, green, white/salmon doors side by side)",
+      "rows": "0-14",
+      "evidence": "c",
+      "front_edge_line_row": 15,
+      "eave_shadow_rows": "16-17"
+     },
+     {
+      "part": "pallet front wall with dark entrance and sack",
+      "rows": "16-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 15,
+    "front_face_rows": 15,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 0-14 form a roof plane of three door panels. Each panel has its own paneling, and the full width of the plane is 46-47 px. It ends in a brown front-edge beam at rows 15-16 (L=81-124 at row 15, then L=60 at row 16), followed by dark shadow at row 17. Below that, the pallet wall's vertical slats, the dark gap entrance and the sack run from row 17 to row 30, so the front face is about 15 rows. The roof is clearly a top surface that is taller than a rim, so the structure reads as three-quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is much smaller than the references, but it is a compact prop-scale building, so size alone is not a fault. The measured facts favour it: 18 visible tones per 16x16 tile against 12 and 10 for the references, and 4% near-flat coverage against 0%, which is only slightly higher. Its dark edge pixels are 0% neutral, so the outlines lean toward the material tone (dark brown on the pallets, dark blue-green on the doors) rather than a black sticker line. By eye, the three door panels (blue, green, white) each show a highlight, a body tone and a dark edge, with panel recesses and weathering specks. The pallet wall has slat gaps and a dark entrance with a hanging sack. Shading depth is about 4 steps per material, a little shallower than Beodeul's 5-6, and there are no per-tile scallops. It still reads as richly detailed and would sit acceptably next to the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18949
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "door roof plane (blue, green, white/salmon doors)",
+      "rows": "0-15",
+      "evidence": "c",
+      "front_edge_line_row": 16,
+      "eave_shadow_rows": "16-17"
+     },
+     {
+      "part": "pallet front wall with dark entrance and sack",
+      "rows": "17-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 16,
+    "front_face_rows": 14,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 0-15 form a wide roof plane made of three door panels, with panel detail and tonal changes. It ends in a dark brown beam or edge line at rows 15-16, which also acts as eave shadow. Below it, rows 17-30 show a vertical pallet front wall with slats, a dark entrance gap and a hanging sack. That gives a top surface of about 16 rows and a front face of about 14 rows."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 6,
+    "evidence": "The candidate is a small building, about 48x30 source pixels, so it cannot match the full 5-6 step ramps of the larger references. Each material still reads in about 4 steps: the three door panels have a base tone, inset panel lines and a lighter top edge, and the pallet wall has slat highlights, mid tones and dark gaps. The measured facts support this. It has 18 visible tones per 16x16 tile against 12 and 10 for the references. Only 4% of it is near-flat, and 0% of its dark edge pixels are neutral, so the outlines carry a tint rather than being a black sticker line. Its total of 37 colours is low next to the references (185 and 66), and the shading is shallower than theirs with less per-tile scallop detail. But it is not plainly flat or sticker-like, and the dark sack-hung entrance gives it real structure. It is acceptable next to the references, though not at their level.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 22025
+  }
+ ],
+ "decidedAt": "2026-10-23T06:32:53.291Z",
+ "cells": {
+  "16": [
+   "666af7e0c267948f",
+   "6aca8621a60a8ff1",
+   "a6f3938735422833",
+   "bf5905ad70026fbd",
+   "e78122168cb62c1a",
+   "f1b7a9e0220fe8da"
+  ],
+  "24": [
+   "04e0b141b2d40c91",
+   "0bffad25fbc464ac",
+   "3b4028bd496fcddd",
+   "5563303fbe40a24f",
+   "75ae97fb53baf625",
+   "8f6e180fb84fc12a",
+   "e4eadea615fc15ce",
+   "eeb9ed279502e99f"
+  ],
+  "32": [
+   "151d091e7f1243c3",
+   "4aa109b66769dfe2",
+   "57deeaf504beadb5",
+   "972f72f45615c818",
+   "9b1fe33b922eab51",
+   "d2d15a7403747c0b"
+  ],
+  "48": [
+   "a8d90c0acc2dfe2b",
+   "d99b4d835e73fd40"
+  ]
+ }
+}

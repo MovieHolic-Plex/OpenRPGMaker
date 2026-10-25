@@ -1,0 +1,156 @@
+[
+ {
+  "id": "dirt-a",
+  "label": "wasteland_ruins/dirt-a",
+  "kind": "terrain",
+  "name": "dusty packed wasteland earth ground, a seamless 4x4-tile field with soft tonal patches, long dry cracks and pebbles running across tile borders",
+  "png": "/home/main/z-project/rpg-zzu-village-art/tiledata/wasteland-ruins/_gate/dirt-a.png",
+  "piece_png": null,
+  "sha": "dc350aecf15720243e639a1d565d70beff9c7a601613c53e5b0d52ddf29833ed",
+  "receipt": "/home/main/z-project/rpg-zzu-village-art/harness-data/object-gate/receipts/dc/dc350aecf15720243e639a1d565d70beff9c7a601613c53e5b0d52ddf29833ed.json",
+  "verdict": "pass"
+ },
+ {
+  "id": "dirt-b",
+  "label": "wasteland_ruins/dirt-b",
+  "kind": "terrain",
+  "name": "dusty packed wasteland earth ground, a seamless 4x4-tile field with soft tonal patches, long dry cracks and pebbles running across tile borders, mixed with tiles of dried mud cracks",
+  "png": "/home/main/z-project/rpg-zzu-village-art/tiledata/wasteland-ruins/_gate/dirt-b.png",
+  "piece_png": null,
+  "sha": "98d0735b94f4ff8c4f94f867b41b374eae11cc216f8989d48030237511bc792d",
+  "receipt": "/home/main/z-project/rpg-zzu-village-art/harness-data/object-gate/receipts/98/98d0735b94f4ff8c4f94f867b41b374eae11cc216f8989d48030237511bc792d.json",
+  "verdict": "pass"
+ },
+ {
+  "id": "dirt-c",
+  "label": "wasteland_ruins/dirt-c",
+  "kind": "terrain",
+  "name": "dusty packed wasteland earth ground, a seamless 4x4-tile field with soft tonal patches, long dry cracks and pebbles running across tile borders, mixed with tiles of gravel and rust flakes",
+  "png": "/home/main/z-project/rpg-zzu-village-art/tiledata/wasteland-ruins/_gate/dirt-c.png",
+  "piece_png": null,
+  "sha": "b3f58cbaed4834c4d31707ea0700684e67f78cf555dbb5bfe63f7296004ec7e8",
+  "receipt": "/home/main/z-project/rpg-zzu-village-art/harness-data/object-gate/receipts/b3/b3f58cbaed4834c4d31707ea0700684e67f78cf555dbb5bfe63f7296004ec7e8.json",
+  "verdict": "pass"
+ },
+ {
+  "id": "dirt-d",
+  "label": "wasteland_ruins/dirt-d",
+  "kind": "terrain",
+  "name": "dusty packed wasteland earth ground, a seamless 4x4-tile field with soft tonal patches, long dry cracks and pebbles running across tile borders, mixed with tiles of dry grass tufts",
+  "png": "/home/main/z-project/rpg-zzu-village-art/tiledata/wasteland-ruins/_gate/dirt-d.png",
+  "piece_png": null,
+  "sha": "ade010c424a8a33e7bb11fc83c15b5bddbb2915f4019aa4dd44a44a3f979c588",
+  "receipt": "/home/main/z-project/rpg-zzu-village-art/harness-data/object-gate/receipts/ad/ade010c424a8a33e7bb11fc83c15b5bddbb2915f4019aa4dd44a44a3f979c588.json",
+  "verdict": "pass"
+ },
+ {
+  "id": "slab-a",
+  "label": "wasteland_ruins/slab-a",
+  "kind": "terrain",
+  "name": "broken old concrete pavement: irregular large pads with seams every two to three tiles, long cracks and missing chunks crossing tile borders, a seamless 4x4-tile field",
+  "png": "/home/main/z-project/rpg-zzu-village-art/tiledata/wasteland-ruins/_gate/slab-a.png",
+  "piece_png": null,
+  "sha": "f39cc685b8c62296f8c96ff12c2e1df5457b6c34bd532c7564ae64b869f6c634",
+  "receipt": "/home/main/z-project/rpg-zzu-village-art/harness-data/object-gate/receipts/f3/f39cc685b8c62296f8c96ff12c2e1df5457b6c34bd532c7564ae64b869f6c634.json",
+  "verdict": "pass"
+ },
+ {
+  "id": "slab-b",
+  "label": "wasteland_ruins/slab-b",
+  "kind": "terrain",
+  "name": "broken old concrete pavement: irregular large pads with seams every two to three tiles, long cracks and missing chunks crossing tile borders, a seamless 4x4-tile field, mixed with tiles of weeds in small cracks",
+  "png": "/home/main/z-project/rpg-zzu-village-art/tiledata/wasteland-ruins/_gate/slab-b.png",
+  "piece_png": null,
+  "sha": "3f6d520bad953158e97564928fbb534dd9cb2eadb8ac9677d00cc8c445ebe3d1",
+  "receipt": "/home/main/z-project/rpg-zzu-village-art/harness-data/object-gate/receipts/3f/3f6d520bad953158e97564928fbb534dd9cb2eadb8ac9677d00cc8c445ebe3d1.json",
+  "verdict": "pass"
+ },
+ {
+  "id": "slab-c",
+  "label": "wasteland_ruins/slab-c",
+  "kind": "terrain",
+  "name": "broken old concrete pavement: irregular large pads with seams every two to three tiles, long cracks and missing chunks crossing tile borders, a seamless 4x4-tile field, mixed with tiles of oil stains and grit",
+  "png": "/home/main/z-project/rpg-zzu-village-art/tiledata/wasteland-ruins/_gate/slab-c.png",
+  "piece_png": null,
+  "sha": "08cbde09fdd76cffa903c43c0b658a343ff9b8f0fd90a134beba8e08a6ce3f97",
+  "receipt": "/home/main/z-project/rpg-zzu-village-art/harness-data/object-gate/receipts/08/08cbde09fdd76cffa903c43c0b658a343ff9b8f0fd90a134beba8e08a6ce3f97.json",
+  "verdict": "pass"
+ },
+ {
+  "id": "asphalt",
+  "label": "wasteland_ruins/asphalt",
+  "kind": "terrain",
+  "name": "cracked broken asphalt road crumbling into dirt, laid as a road network with crossroads and dead ends",
+  "png": "/home/main/z-project/rpg-zzu-village-art/tiledata/wasteland-ruins/_gate/asphalt.png",
+  "piece_png": null,
+  "sha": "09dc59cef02c22d89be0291c6e306cad7db30898daf41d1a0b1359deb481b89b",
+  "receipt": "/home/main/z-project/rpg-zzu-village-art/harness-data/object-gate/receipts/09/09dc59cef02c22d89be0291c6e306cad7db30898daf41d1a0b1359deb481b89b.json",
+  "verdict": "pass"
+ },
+ {
+  "id": "rubble-b",
+  "label": "wasteland_ruins/rubble-b",
+  "kind": "flat",
+  "name": "scattered broken bricks and mortar lumps lying on a patch of red brick dust on the ground",
+  "png": "/home/main/z-project/rpg-zzu-village-art/tiledata/wasteland-ruins/_gate/rubble-b.png",
+  "piece_png": null,
+  "sha": "dc211db2a4a6162dc581a46bf1cc6a084af74cd8b5bb14236febb5c14c491b35",
+  "receipt": "/home/main/z-project/rpg-zzu-village-art/harness-data/object-gate/receipts/dc/dc211db2a4a6162dc581a46bf1cc6a084af74cd8b5bb14236febb5c14c491b35.json",
+  "verdict": "pass"
+ },
+ {
+  "id": "rubble-c",
+  "label": "wasteland_ruins/rubble-c",
+  "kind": "flat",
+  "name": "a bent rusty metal sheet, broken concrete lumps, glass shards and a torn cable lying on an oil-stained patch of earth",
+  "png": "/home/main/z-project/rpg-zzu-village-art/tiledata/wasteland-ruins/_gate/rubble-c.png",
+  "piece_png": null,
+  "sha": "20940f2b15ac5fba3c9bb9045e953c18e13b66e77add71e8a777f1a7cafe3a53",
+  "receipt": "/home/main/z-project/rpg-zzu-village-art/harness-data/object-gate/receipts/20/20940f2b15ac5fba3c9bb9045e953c18e13b66e77add71e8a777f1a7cafe3a53.json",
+  "verdict": "pass"
+ },
+ {
+  "id": "weeds-a",
+  "label": "wasteland_ruins/weeds-a",
+  "kind": "flat",
+  "name": "scattered small tufts of green weeds and two broad-leaved rosettes growing from bare earth",
+  "png": "/home/main/z-project/rpg-zzu-village-art/tiledata/wasteland-ruins/_gate/weeds-a.png",
+  "piece_png": null,
+  "sha": "1852872c0524956e1c2e7d17363eaff262b66bd994007d0d0b4f16ebf96ac217",
+  "receipt": "/home/main/z-project/rpg-zzu-village-art/harness-data/object-gate/receipts/18/1852872c0524956e1c2e7d17363eaff262b66bd994007d0d0b4f16ebf96ac217.json",
+  "verdict": "pass"
+ },
+ {
+  "id": "weeds-b",
+  "label": "wasteland_ruins/weeds-b",
+  "kind": "flat",
+  "name": "scattered tufts of dry yellow-brown grass with drooping seed heads and a few green shoots on bare earth",
+  "png": "/home/main/z-project/rpg-zzu-village-art/tiledata/wasteland-ruins/_gate/weeds-b.png",
+  "piece_png": null,
+  "sha": "f96ce95c3a88efbb3706be2186d955ddd9fed336bac98880d7a0f8d382fdb403",
+  "receipt": "/home/main/z-project/rpg-zzu-village-art/harness-data/object-gate/receipts/f9/f96ce95c3a88efbb3706be2186d955ddd9fed336bac98880d7a0f8d382fdb403.json",
+  "verdict": "pass"
+ },
+ {
+  "id": "weeds-c",
+  "label": "wasteland_ruins/weeds-c",
+  "kind": "flat",
+  "name": "a line of weeds, rosettes and tiny wild flowers growing along a diagonal crack of earth",
+  "png": "/home/main/z-project/rpg-zzu-village-art/tiledata/wasteland-ruins/_gate/weeds-c.png",
+  "piece_png": null,
+  "sha": "3ee477a7d62b152bc542b24d6e830116b08b3831163f9df517cc27858dedc238",
+  "receipt": "/home/main/z-project/rpg-zzu-village-art/harness-data/object-gate/receipts/3e/3ee477a7d62b152bc542b24d6e830116b08b3831163f9df517cc27858dedc238.json",
+  "verdict": "pass"
+ },
+ {
+  "id": "puddle",
+  "label": "wasteland_ruins/puddle",
+  "kind": "flat",
+  "name": "oily rain puddle in a churned muddy hollow on the ground with tyre ruts, a rainbow sheen and sky reflections",
+  "png": "/home/main/z-project/rpg-zzu-village-art/tiledata/wasteland-ruins/_gate/puddle.png",
+  "piece_png": null,
+  "sha": "16f16c94d2152bae28806235f5484884117b9f803d4db8f8a80175e53ad7ae2a",
+  "receipt": "/home/main/z-project/rpg-zzu-village-art/harness-data/object-gate/receipts/16/16f16c94d2152bae28806235f5484884117b9f803d4db8f8a80175e53ad7ae2a.json",
+  "verdict": "pass"
+ }
+]

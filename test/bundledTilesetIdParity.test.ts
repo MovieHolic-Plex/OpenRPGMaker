@@ -21,6 +21,7 @@ describe("bundled tileset id parity", () => {
     const { createPrehistoricTileset } = await import("@/project/defaults/prehistoric");
     const { createDesertEastTileset } = await import("@/project/defaults/desertEast");
     const { createSnowNorthTileset } = await import("@/project/defaults/snowNorth");
+    const { createWastelandRuinsTileset } = await import("@/project/defaults/wastelandRuins");
     const { createBeodeulMassingTileset } = await import("@/project/defaults/beodeulMassing");
 
     const creators: Record<string, () => { id: string }> = {
@@ -35,6 +36,7 @@ describe("bundled tileset id parity", () => {
       tex_prehistoric: createPrehistoricTileset,
       tex_desert_east: createDesertEastTileset,
       tex_snow_north: createSnowNorthTileset,
+      tex_wasteland_ruins: createWastelandRuinsTileset,
       tex_beodeul_massing: createBeodeulMassingTileset,
     };
     const byKey = new Map(BUNDLED_EASYRPG_CHIPSET_ASSETS.map((a) => [a.textureKey, a]));

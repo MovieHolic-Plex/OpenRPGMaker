@@ -1,0 +1,301 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "7a1e2295e5f1650144bc4572dba0939fac82dcbaacfadc2981b40764f0aaf82f",
+ "width": 16,
+ "height": 16,
+ "kind": "round_body",
+ "name": "stack of three old worn tyres seen from above: top tyre as an elliptical grey rubber ring with rainwater in its hole, offset tread bands of the lower tyres below",
+ "label": "wasteland_ruins/tyres",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 12,
+  "tileColorsP90": 12,
+  "darkV5": 32,
+  "nearBlackEdge": 0.45,
+  "opaqueTiles": 1
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top tyre ring with rainwater in the hole",
+      "rows": "1-9",
+      "evidence": "b",
+      "front_edge_line_row": 9,
+      "eave_shadow_rows": "9"
+     },
+     {
+      "part": "lower tyre tread bands",
+      "rows": "10-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 9,
+    "front_face_rows": 6,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The width profile runs 7, 11, 13, then 16 across rows 4-8, then 14 at row 9. That is an ellipse of about 9 rows, from the back rim at row 1 to the front rim at row 9. The tyre ring is grey (L about 75-98) and the hole holds blue-grey water at rows 4-6. Row 9 is a darker front-edge line (x=4 reads #0e1720 there). Below it, rows 10-15 show offset dark and mid-tone tread bands (alternating #0e1720 and #3d4b51), which read as the front faces of the lower tyres. That gives about 6 front rows, so the drawing has a clear top ellipse and a front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small prop, about one tile in size. Its rubber ring, water hole and offset tread bands show roughly 5 distinct lightness steps. The measured facts support this: 12 visible tones per tile against 9 for the hedge and 17-20 for the stall and well. Near-flat coverage is 0%, so there are no flat fills of 5x5 or larger. Only 13% of dark edge pixels are neutral, so the outline is a tinted dark tone of the neighbouring material rather than a uniform black sticker line. The tread bands and water highlight give some grain, though less than the well or stall. It would sit acceptably next to the hedge and the other references without looking thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 14023
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top tyre ring with rainwater in its hole",
+      "rows": "1-9",
+      "evidence": "b",
+      "front_edge_line_row": 9,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower tyres, offset tread bands",
+      "rows": "10-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 9,
+    "front_face_rows": 6,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The width profile rises 7, 11, 13, 16 over rows 1-3 and stays at 16 through row 8. It narrows to 14 at row 9, then widens again to 16 at rows 10-11 where the lower tyre begins. That is an ellipse about 9 rows tall: the grey rubber ring has a blue-grey water hole at rows 4-6 and a dark rim line at row 9. Below it, rows 10-15 show dark tread bands of the lower tyres as the front face. The silhouette narrows at the bottom (15:9) because the tyres are rounded. The front face is 6 rows, so the stack reads as a top plus a front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is about one tile in size. It has 12 visible tones in a 16x16 tile, which is above prop-hedge (9) and below the stall (17) and well (20). Near-flat coverage is 0%, so there are no flat fills. Only 13% of its dark edge pixels are neutral, so the outline is a tinted dark grey-brown. That is consistent with a dark material tone rather than a black sticker line. The rubber ramp reads as roughly 5 steps, from highlight to deep shadow, with offset tread bands that are shaded separately. The rainwater hole has its own lighter tone. The piece is simple and small, and slightly thinner than the larger references. A careful artist would still accept it beside prop-hedge, which has a similarly small colour count.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15924
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top tyre ring with rainwater in the hole (elliptical top)",
+      "rows": "1-9",
+      "evidence": "b",
+      "front_edge_line_row": 9,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower tyres, offset tread bands (front face)",
+      "rows": "10-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 9,
+    "front_face_rows": 6,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The width profile (rows 1-9: 7, 11, 13, 16 for rows 4-8, then 14 at row 9) widens and then narrows again, which is an ellipse for the top tyre. Its hole holds blue-teal water, visible at x=8 and x=11 around rows 4-6. Row 9 is a darker rim row at the front. Below it, rows 10-15 are dark tread bands, 6 rows tall, widening again to 16 at rows 10-11 and then tapering to 9. These read as the vertical front face of the lower tyres. The shape has both an elliptical top and a front face of 3+ rows, so it reads as three-quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a small stack of grey tyres. Its 12 visible tones per tile are above prop-hedge (9) and below the stall (17) and well (20). Near-flat coverage is 0%, so there are no flat fills. Only 13% of its dark edge pixels are neutral, so the outline leans to a dark tint of the neighbouring material rather than a sticker-style black line. The top tyre has a light rim, mid rubber, dark hole and a water highlight, and the offset lower tread bands add separate value steps. The grey ramps have about 4 steps against Beodeul's 5-6, and texture is moderate (some grain and tread variation, no per-element clusters). The facts match the hedge reference, which is also small and uses few colours, so a careful artist would accept it next to the references. It is somewhat simpler than the richest references but not flat or sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15784
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top tyre ellipse with rainwater in the hole",
+      "rows": "1-9",
+      "evidence": "b",
+      "front_edge_line_row": 9,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower tyre tread bands (offset, dark)",
+      "rows": "10-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 9,
+    "front_face_rows": 6,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The width profile runs 7, 11, 13, 16 across rows 1-4, holds at 16 through row 8, then narrows to 14 at row 9. That is an ellipse of about 9 rows, with the grey rubber ring and a blue-green water hole at rows 4-6 (the water is also visible contents, evidence d). Below it, rows 10-15 widen again to 16 and then taper (15, 14, 13, 9). These are dark offset tread bands, which read as the vertical front face of the lower tyres, 6 rows tall. The top is a real ellipse, not a 1-2 row rim, so this matches the green barrel and column-ellipse references rather than the red flat-lid ones."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small prop of about one tile. It has 12 visible tones per tile, between the hedge (9) and the stall (17) and well (20) references. Near-flat coverage is 0%, so there are no large flat fills. Only 13% of its dark edge pixels are near-neutral, so the edges carry a tint rather than a uniform black sticker line. The rubber rings are separated mostly by value steps (about 5 grey steps), with a lighter rim highlight and a distinct water patch in the top hole. The offset tread bands below add structure. It is a little less textured than the well and stall, but it matches the hedge and is not thin or sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 14899
+  }
+ ],
+ "decidedAt": "2026-10-22T16:00:54.435Z",
+ "cells": {
+  "16": [
+   "fe2868a27d8ff5bf"
+  ],
+  "24": [
+   "3ba890988be5d370",
+   "45c3fbfe448fd6c7",
+   "991454b207103f26",
+   "ad27831abe0c17b5",
+   "b712fe55d9c6ba16",
+   "f6ef06497d4eeb2b"
+  ],
+  "32": [
+   "1bcf96974c204729",
+   "413af58a2371fc6a",
+   "4c02824a88ecd9e7",
+   "4d018e8058c758b1",
+   "cddd8c19ba11a4ae",
+   "f8644c44f35d59ed"
+  ],
+  "48": [
+   "03e55ad6690da4a1",
+   "050caf3bb4086501",
+   "4c2fedfb3d11b4b0",
+   "660c076fd3603365",
+   "95a62728b75daf00",
+   "edc0cf231d6acab4"
+  ]
+ }
+}

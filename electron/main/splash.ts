@@ -105,18 +105,21 @@ export function openSplash(options: { readonly rendererDir: string; readonly ico
     maximizable: false,
     minimizable: true,
     fullscreenable: false,
-    // 내용이 그려진 뒤 보인다(ready-to-show) — 빈 상자가 먼저 비치지 않게. data: 문서라 수십 ms 다.
-    show: false,
+    // 만들자마자 보인다. 첫 프레임은 바탕색(#111214, 문서 바탕과 같은 색)이고 아이콘·이름은 렌더러가 뜨면 얹힌다.
+    // 예전에는 ready-to-show 까지 숨겼는데, 스플래시 렌더러 프로세스를 띄우는 데만 평소 0.38s, 부하 59 에서 1.2s 가
+    // 걸려 그동안 화면에 아무것도 없었다(2026-10-25 실측, openwiki/app-startup.md). 같은 색 빈 상자는 깜빡임이 아니다.
+    show: true,
     backgroundColor: "#111214",
     title: PRODUCT_BRAND,
     ...(options.icon ? { icon: options.icon } : {}),
     webPreferences: { sandbox: true, contextIsolation: true, nodeIntegration: false, javascript: true, spellcheck: false },
   });
   mainMark("splashCreated");
+  mainMark("firstPixel");
   let markPainted: () => void = () => {};
   const painted = new Promise<void>((resolvePainted) => { markPainted = resolvePainted; });
   window.once("ready-to-show", () => {
-    window.show();
+    if (!window.isVisible()) window.show();
     mainMark("splashShown");
     markPainted();
   });

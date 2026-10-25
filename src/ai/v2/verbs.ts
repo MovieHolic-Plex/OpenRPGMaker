@@ -27,6 +27,7 @@ import { buildPuzzleChain, sealLockedRoom, type ChainArgs } from "./puzzle";
 import { critiqueStaging } from "./critic";
 import { createGameTools, wantsPuzzle, wantsGameTools, wantsStoreTools, wantsTerrainTools } from "./game";
 import { gameContentProblems, unaskedChanges } from "./gameChecks";
+import { HELPER_LIMITS, helpersOn, runHelperJobs, type HelperJob } from "./helpers";
 import { isStoreCardRequest } from "@/editor/tools/storeTools";
 import { edgeCell, eventBeats, isInside, isOutdoor, oppositeSide, makeGameOn, orderPlaces, pickDoor, villageDoors, walkGame, wantsMakeGame, type GameSpec } from "./makeGame";
 import { pickStageFrames, stageFrameProject, type EventBuildResult } from "./events";
@@ -804,6 +805,32 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
     },
   };
 
+  // 잔일 일꾼 — 주 모델이 계획·검수하고, 틀이 정해진 글 일은 잔일 모델(assistantRoles.smol, 예: Flash)이 나눠 한다. 일꾼은 도구가 없다(읽기·쓰기 없음).
+  const askHelpers: PiToolShape = {
+    name: "ask_helpers", label: "잔일 맡기기", concurrency: "shared",
+    description: `짧고 틀이 정해진 글 일을 싼 일꾼 모델에게 한꺼번에 맡긴다(동시에 ${HELPER_LIMITS.parallel}개씩, 최대 ${HELPER_LIMITS.jobs}개). 예: NPC 여럿의 대사 초안, 이름 후보, 아이템·스킬 설명, 긴 대본 요약, 말투 다듬기. 일꾼은 프로젝트를 못 본다 — 필요한 인물·장면·말투를 context 에 넣는다. fields(+count)를 주면 그 열쇠를 가진 JSON 을 검사해 돌려준다. 결과는 초안이다: 맞는지 보고 쓰기 도구(add_people·add_event·upsert_* 등)로 직접 넣는다. 맵·이벤트를 짓거나 고치는 일, 판단이 필요한 일은 맡기지 않는다.`,
+    parameters: { type: "object", properties: { jobs: { type: "array", maxItems: HELPER_LIMITS.jobs, items: { type: "object", properties: {
+      id: { type: "string", description: "결과를 가려 볼 이름(예: npc_baker)" },
+      task: { type: "string", description: "해 달라는 일 한두 문장" },
+      context: { type: "string", description: "일꾼이 볼 재료(인물 설명·장면·말투 예시). 프로젝트를 못 보므로 필요한 것은 다 여기에" },
+      fields: { type: "array", items: { type: "string" }, description: "JSON 으로 받을 열쇠들(예: [\"speaker\",\"line\"])" },
+      count: { type: "integer", description: "fields 모양 객체를 몇 개(배열로) 받을지" },
+    }, required: ["task"] } } }, required: ["jobs"] },
+    async execute(_id, params, signal) {
+      const jobs = ((params as { jobs?: HelperJob[] }).jobs ?? []).filter(Boolean);
+      if (!jobs.length) return text({ ok: false, summary: "jobs 가 비었다" });
+      const smol = env.request.assistantRoles?.smol;
+      const usable = smol && smol !== "off" && env.roleChat && (smol.provider.startsWith("local-cli:") || env.keyedProviders?.has(smol.provider));
+      const chat = usable ? (messages: readonly unknown[], s?: AbortSignal) => env.roleChat!(smol, messages, s) : env.sideChat;
+      const model = usable ? `${smol.provider}/${smol.model}` : "주 모델(잔일 칸이 비었거나 그 계정 키가 없음)";
+      env.emit({ type: "execution_status", name: "v2.helpers", ok: true, summary: `잔일 ${Math.min(jobs.length, HELPER_LIMITS.jobs)}개를 일꾼(${model})에게 맡기는 중` });
+      const results = await runHelperJobs(jobs, chat, signal ?? env.signal);
+      const failed = results.filter((r) => !r.ok).length;
+      env.emit({ type: "execution_status", name: "v2.helpers", ok: failed === 0, summary: `잔일 ${results.length}개 끝(실패 ${failed}) · ${model}`, data: { model, jobs: results.map((r) => ({ id: r.id, ok: r.ok, ms: r.ms, ...(r.problem ? { problem: r.problem } : {}) })) } });
+      return text({ ok: failed < results.length, summary: `잔일 ${results.length}개 중 ${results.length - failed}개 받음${jobs.length > HELPER_LIMITS.jobs ? ` (앞 ${HELPER_LIMITS.jobs}개만)` : ""}`, model, results, next: "초안이다 — 맞는지 보고 쓰기 도구로 직접 넣는다. 실패한 일은 고쳐 다시 맡기거나 직접 쓴다." });
+    },
+  };
+
   // 기록 없이 끝난 실패(빌더 없음·맵 없음·상한)와 예외도 tool_end 에 ok:false·이유가 실리게 한다 — 안 그러면 편집기에 빈 「성공」 줄이 남는다.
   const guard = (tool: PiToolShape): PiToolShape => ({ ...tool, async execute(id, params, signal) {
     let result: PiToolExecResult;
@@ -817,7 +844,7 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
     }
     return result;
   } });
-  const verbs = [makePlace, ...(makeGameOn() && wantsMakeGame(String(task ?? "")) ? [makeGame] : []), editPlace, addPeople, addEvent, addScene, ...(wantsPuzzle(String(task ?? "")) ? [authorPuzzleChain] : []), sealLockedRoomVerb, drawObjectVerb, placeObject, inspect, askUser].map(guard);
+  const verbs = [makePlace, ...(makeGameOn() && wantsMakeGame(String(task ?? "")) ? [makeGame] : []), editPlace, addPeople, addEvent, addScene, ...(wantsPuzzle(String(task ?? "")) ? [authorPuzzleChain] : []), sealLockedRoomVerb, drawObjectVerb, placeObject, inspect, ...(helpersOn() ? [askHelpers] : []), askUser].map(guard);
   // 게임 요소(퀘스트·아이템·전투·파티) 요청이면 v1 게임 도구를 덧붙인다 — 기록은 도구 묶음이 env.record 로 직접 남긴다.
   const t = String(task ?? "");
   // 스토어 음악 카드(사용자가 듣고 고른다)를 띄웠으면 사용자 질문과 같다 — 끝맺음 관문이 «음악을 안 걸었다»며 넣기를 재촉하지 않게 한다.

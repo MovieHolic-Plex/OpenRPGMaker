@@ -386,6 +386,7 @@ export const TOOL_LABELS: Readonly<Record<string, ToolLabelEntry>> = {
   edit_enemy_pixel_sheet: build("몬스터 도트 시트 고치기", "spark"),
   set_enemy_skill_choreography: build("몬스터 전용 스킬 연출 잇기", "spark"),
   compose_sf_station_map: build("SF 정거장 맵 짜기", "map"),
+  compose_wasteland_map: build("폐허·황무지 맵 짜기", "map"),
   list_gothic_places: inspect("고딕 장소 찾기", "house"),
   build_gothic_place: build("고딕 장소 짓기", "house"),
   compose_prehistoric_map: build("선사 시대 맵 짜기", "map"),

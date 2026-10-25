@@ -1,0 +1,363 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "995a58c70db8299d89336ec378f04f6a4b44d29085ff19dc895aad2e53269105",
+ "width": 48,
+ "height": 32,
+ "kind": "other",
+ "name": "burnt-out car wreck lying east-west seen from above: charred roof and hood, empty window frames, scorched rusty body on flat tyres",
+ "label": "wasteland_ruins/car-burnt",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "refer",
+ "reasons": [
+  "3/4: 독립 눈이 「3/4 아님」 3/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면",
+  "화풍: 화풍 판정이 갈림(걸린 판정 2/4)",
+  "화풍: 판정자 fail (2/4)"
+ ],
+ "view34": {
+  "verdict": "refer",
+  "reasons": [
+   "독립 눈이 「3/4 아님」 3/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면"
+  ]
+ },
+ "style": {
+  "verdict": "refer",
+  "reasons": [
+   "화풍 판정이 갈림(걸린 판정 2/4)",
+   "판정자 fail (2/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 6
+ },
+ "metrics": {
+  "tileColorsMedian": 13,
+  "tileColorsP90": 15,
+  "darkV5": 32,
+  "nearBlackEdge": 0.5,
+  "opaqueTiles": 4
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "wrong",
+   "borderline",
+   "borderline",
+   "right",
+   "right",
+   "wrong",
+   "right",
+   "wrong",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "east",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "charred roof (cabin top)",
+      "rows": "4-14",
+      "evidence": "c",
+      "front_edge_line_row": 14,
+      "eave_shadow_rows": "15-17"
+     },
+     {
+      "part": "hood (left) and trunk (right) top plates",
+      "rows": "9-17",
+      "evidence": "a",
+      "front_edge_line_row": 18,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "body side panel / sill with window frames",
+      "rows": "18-21",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "flat tyres and wheel wells",
+      "rows": "22-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 9,
+    "front_face_rows": 10,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The roof block (rows 4-14, x about 21-33) is a lighter plane with a lighter edge row at 12-14, followed by dark window-frame rows 15-17 that work as eave shadow. The hood and trunk (rows 9-17) are rust-brown top plates that end at a lighter body line at rows 18-19. Below that, the south face runs from the side panel (rows 18-21) through the dark tyres (rows 22-27), about 10 rows. There is no isometric side face. The top plates are not ellipses, but they are several rows tall and end in an edge line, so the car shows both top surfaces and a front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate has 12 visible tones per 16x16 tile, between the hedge (9) and the stall (17) and well (20). Near-flat coverage is 0%, so it has no flat fills. Only 3% of its dark edge pixels are near-neutral, so the outline is tinted dark brown/rust beside the body, not a black sticker line. The body ramps run about 4 steps (charred roof top, rust mid, dark underside, tyres), with mottled scorch and rust grain on the hood and roof and visible window frames. It uses 20 distinct colours against 38-40 for the richest references, so it is somewhat leaner than the stall and well. That is plausible for a charred, monochrome object. The primary facts are at or above the hedge reference and the tinted outline is correct, so it holds up next to the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17310
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "east",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cabin roof",
+      "rows": "4-14",
+      "evidence": "a",
+      "front_edge_line_row": 14,
+      "eave_shadow_rows": "15-17"
+     },
+     {
+      "part": "hood and trunk decks (left and right)",
+      "rows": "9-17",
+      "evidence": "a",
+      "front_edge_line_row": 18,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "body side panel with wheels",
+      "rows": "18-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 11,
+    "front_face_rows": 11,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The car is wider than it is tall, in side profile with its roof, hood and trunk seen from above. The lighter roof (rows 4-14) ends in a light edge row at 14, followed by dark window and shadow rows 15-17. The hood and trunk decks (rows 9-17) end at a lighter body-line row near 18. Below them the body side (rows 18-22) and the dark tyres (rows 22-28) form a front face of about 11 rows. So there is both a top surface and a front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a small, roughly 2-tile-wide car wreck. It reads as a burnt vehicle: scorched brown body, a rusty roof panel, dark tyres and window openings. Measured facts: 12 visible tones per tile against 9 (hedge), 17 (cheese stall) and 20 (roofed well), so it sits in the reference range. Near-flat coverage is 0%, and only 3% of dark edge pixels are neutral, so the outline is tinted dark brown rather than a black sticker line. Weaknesses: the main body and roof ramps have only about 4 steps against the 5-6 of the stall and well. The hood, doors and tyres are fairly smooth with little per-panel grain, rust speckle or scorch variation. It is also somewhat low in internal detail next to the roofed well and the cheese stall, so it looks slightly thinner, though not flat or sticker-like. It is borderline, and when in doubt it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 12171
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "east",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "charred roof / cabin",
+      "rows": "4-14",
+      "evidence": "a",
+      "front_edge_line_row": 14,
+      "eave_shadow_rows": "15-17"
+     },
+     {
+      "part": "hood and trunk (left and right ends)",
+      "rows": "9-17",
+      "evidence": "a",
+      "front_edge_line_row": 18,
+      "eave_shadow_rows": "20-21"
+     },
+     {
+      "part": "body side panel and sill",
+      "rows": "18-21",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "wheels and underbody shadow",
+      "rows": "22-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 11,
+    "front_face_rows": 11,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The central roof block (rows 4-14, widths 10 to 20) has a lighter front-edge row at 14 (#b27361). Dark window-frame and shadow rows 15-17 sit below it. The hood and trunk plateaus (rows 9-17, full width 40-48) end in a lighter edge strip at rows 18-19, followed by a darker band at rows 20-21. Below that, the dark wheel and underbody mass in rows 22-28 acts as the south face, at about 11 rows. So there is a top surface of 9-11 rows plus a front face of 3+ rows. The subject is described as seen from above, but the drawn structure is three-quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate has 12 visible tones per 16x16 tile. That sits between the hedge (9) and the stall (17) and well (20), and well above the bench and lamp, which are too thin to measure. Near-flat coverage is 0%, so no 5x5 area is a flat fill. Only 3% of its dark edge pixels are neutral, so the outline is a dark rust/brown tint beside the body and not a black sticker line. The body, roof and hood show scorch and rust variation, with the roof panel, window frames and tyres separated by value. It has about 4 visible ramp steps against the references' 5-6, so it is slightly shallower than the best references. It is still not flat or sticker-like and would sit acceptably next to the hedge and stall at the same scale.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16749
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "charred roof/cabin block",
+      "rows": "4-14",
+      "evidence": "a",
+      "front_edge_line_row": 14,
+      "eave_shadow_rows": "15-17"
+     },
+     {
+      "part": "hood and trunk decks (left and right)",
+      "rows": "9-17",
+      "evidence": "a",
+      "front_edge_line_row": 18,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "flat tyres",
+      "rows": "22-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 11,
+    "front_face_rows": 10,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The cabin roof is a lighter salmon block in rows 4-14, with a lighter front-edge line at row 14 and dark window/shadow rows 15-17 under it. The hood and trunk decks at rows 9-17 are also horizontal surfaces, ending at the lighter body-side line near row 18. Below them the scorched body side (rows 18-22) and the dark tyres (rows 22-28) form a front face of about 10 rows. The silhouette widens from 10 to 48 and then narrows again at the wheels. The drawing leans toward top-down, but the roof band with its edge line and eave shadow plus a front face of 3+ rows is enough to read as three-quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate has 12 visible tones per 16x16 tile, 0% near-flat coverage and only 3% neutral dark edge pixels, so its outlines are tinted dark brown or rust rather than a black sticker line. That is in the range of prop-hedge (9 tones) and below prop-well-roofed (20) and prop-stall-cheese (17). By eye, the body is a rusty brown ramp with a charred top, but the ramp is about 4 steps against the references' 5-6. The roof, hood and tyres are mostly broad shapes with limited grain, scorch speckle or per-panel highlights, and the empty window frames read as dark blocks. The tyres are near-uniform dark with little shading. It is competently built and not a flat fill, but it looks a little thinner and simpler than the well and stall, and the small size means few tiles to compare. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 12344
+  }
+ ],
+ "decidedAt": "2026-10-22T16:00:54.421Z",
+ "cells": {
+  "16": [
+   "3949b4f5210c67cf",
+   "675c2e6fa37063b7",
+   "80fbde95956574b9",
+   "ae701d4da99ba062",
+   "cad94635a1fe9f84",
+   "e28bd94bfa38267a"
+  ],
+  "24": [
+   "23810c1068e8d1dc",
+   "3229647eb6a83e32",
+   "6342a5f7ad97d664",
+   "a14f8cf29fb7cb4a",
+   "ac3948001ad16058",
+   "af645e4418f9234c",
+   "b6fbbb615241f0e2",
+   "fd7c1f4df376ad2c"
+  ],
+  "32": [
+   "2ccbcb954c1e332e",
+   "3fa4a35de33a01a9",
+   "ba8b79e121115a35",
+   "ce0cb2c4e998771f",
+   "ef2bd50aae31cb1d",
+   "f7cef118d31f4f9c"
+  ],
+  "48": [
+   "47d81ed94b406404",
+   "5558713e9dffd466"
+  ]
+ }
+}

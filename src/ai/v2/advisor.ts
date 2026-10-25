@@ -7,7 +7,7 @@
 //
 // 순수 모듈: 변경 요약·입력 압축·응답 해석·후속 지시문은 결정적 함수다. 모델 호출은 sideChat 하나로만 한다(워커·재생 하네스가 같이 쓴다).
 import type { Project } from "@/project/types";
-import { battleDataEmptied } from "./gameChecks";
+import { battleDataEmptied, placementContentProblems } from "./gameChecks";
 
 type Obj = Record<string, unknown>;
 const obj = (v: unknown): Obj | undefined => (v && typeof v === "object" && !Array.isArray(v) ? (v as Obj) : undefined);
@@ -277,6 +277,8 @@ export function summarizeProjectDiff(before: Project, after: Project, maxChars: 
   if (dbChanged.length) out.push(`## 데이터베이스 바뀜: ${dbChanged.slice(0, 12).join(", ")}`);
   // 개수만으로는 «주인공 기술·직업 전투 데이터를 비웠다»가 안 보인다(2026-10-25 장난감 가게 고치기 4턴: actors 136→136).
   for (const line of battleDataEmptied(before, after, "").slice(0, 4)) out.push(`⚠ 비운 데이터: ${line.replace(/^\[[^\]]*\]\s*/u, "").split(" — ")[0]}`);
+  // 놓기·방 쓰임(J5·J6·J40·J42·J64, 사용자 규칙): 차도 위 사람, 출구 길막, 카운터 손님 쪽 주인, 물건 밖 조사 이벤트, 다른 방 가구 — 「방을 예배당답게 꾸몄다」 같은 주장에 대어 본다.
+  for (const line of placementContentProblems(before, after).slice(0, 5)) out.push(`⚠ 놓기: ${clip(line.split(" — ")[0]!, 360)}`);
 
   const text = out.join("\n");
   return text.length > maxChars ? `${text.slice(0, maxChars - 40)}\n… (요약 ${text.length}자 중 앞부분)` : text;
