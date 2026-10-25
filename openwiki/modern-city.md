@@ -95,6 +95,13 @@ modern-chipset 하네스가 합성한 도시(건물·도로·소품·차량)를 
 - 의자 방향: 탁자 둘레 의자는 탁자를 본다 — 북쪽 `-s`·남쪽 `-n`·서쪽 `-e`·동쪽 `-w`(`mci-chair-office-*`·`mci-chair-wood-*`·`mci-armchair-*`·`mci-sofa-*`). `builder.ts faceSeatsToTables` 가 견본·조수·청사진 어느 길로 온 남향 좌석이든 붙은 탁자 쪽 그림으로 바꾼다. 체육관 골대는 동서 양 끝 `gym-hoop-e`·`gym-hoop-w` 한 쌍.
 - 주차장 차는 새로 그리지 않고 거리 차량 `mc-veh-car-front-a-*`·`mc-veh-car-back-a-*` 칸을 그대로 쓴다(`park-car-*`). 통학 전동차는 modern_city 로 따로 짓지 않는다 — jp_city 손 도트 견본(`build_hand_interior_room({tileset:"jp_city", layout:{program:"train-car"}})`, 21×8 롱시트·우선석·출입문 둘·손잡이·봉)을 그대로 쓴다(2026-10-19 사용자 「전철은 기존에 만들던 게 있는데 그걸 그대로 쓰면 되는데」).
 
+## 막힌 이웃 `variation.sealed` · 남녀 센토 · 옥상 (2026-10-25, 시타마치 VQA)
+
+- `ModernProgramVariation.sealed: [[a,b],…]` — `layout.ts` 는 연결을 입구에서 인접 간선 BFS 로 짓는데, 이웃이라고 다 이어지면 안 되는 방이 있다(남탕↔여탕, 로비↔탕). `sealed` 쌍의 간선은 BFS 전에 빠진다. 문·트인 칸막이 어느 쪽도 그 사이에 생기지 않는다.
+- `mc_sento` = 번대 로비(가운데 아래) → 남/여 탈의실(양옆, 옆문) → 남탕/여탕(각자) → 사우나(남)·노천탕(여). 로비↔탕·남↔여 쌍은 sealed. 앞 판은 탕 하나에 남녀가 섞여 검수자 둘이 짚었다.
+- `mc_rooftop` = 콘크리트 데크 + 물탱크 기계실 + 사방 난간(남쪽은 출입구 틈). 데크 밖 «건물 밖» 칸(`modernCityRoomSpec.void`)은 저작자가 -1 로 비우고 `map.background.fromMap`(아래 거리 맵을 반 배율·안개)로 채우면 난간 너머로 동네가 보인다(시타마치 `buildRooftop`). 옥상 정원(마루)은 뺐다 — 옥상이 안뜰로 읽혔다.
+- 사무소는 `mc_office`(밴드 연습실이 붙는 `mc_council_room` 시드 4 대신).
+
 ## 실조수 시험에서 나온 결함 (2026-10-14, gpt-6.1-sol — gemini-3.8-flash 는 할당량 429)
 
 - **거리를 로비로 덮음:** 배치 품질 권고(`src/ai/piAgent/layoutQuality.ts`)가 도로·교차로를 «빈 바닥 66%·빈 정사각형 12»로 세고, 칩셋에 방 사양이 있어 그 맵을 «실내»로 보고 `build_hand_interior_room replace:true` 를 시켰다 → 60×48 거리가 10×8 로비가 됐다.

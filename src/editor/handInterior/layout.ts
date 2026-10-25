@@ -634,8 +634,10 @@ function buildCandidatesForVariant(
   const baseWants = [...layoutWants(tilesetId, req), ...hallWants];
   const vary = programVariation(tilesetId, req);
   const entrance = pickEntrance(baseWants, req.entrance || !vary?.v.entrance ? req : { ...req, entrance: vary.v.entrance });
-  const explicitFloorIds = new Set((req.rooms ?? []).filter((q) => q.floor).map((q) => q.id ?? q.kind));
-  const explicitWallIds = new Set((req.rooms ?? []).filter((q) => q.wall).map((q) => q.id ?? q.kind));
+  const keepKinds = new Set(vary?.v.keepMaterials ?? []);
+  const keptIds = baseWants.filter((w) => keepKinds.has(w.kind)).map((w) => w.id);
+  const explicitFloorIds = new Set([...(req.rooms ?? []).filter((q) => q.floor).map((q) => q.id ?? q.kind), ...keptIds]);
+  const explicitWallIds = new Set([...(req.rooms ?? []).filter((q) => q.wall).map((q) => q.id ?? q.kind), ...keptIds]);
   const wants: Want[] = baseWants.map((w, idx) => {
     const isEnt = w.id === entrance;
     const fixed = Boolean(vary?.v.fixed?.includes(w.kind));

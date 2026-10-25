@@ -556,6 +556,61 @@
     "the friend NPC event has a page with text then a showChoices with three options",
     "in the shipped player, a screenshot taken while the choices are open shows both the hero and the friend sprites above the top edge of the choice window"
    ]
+  },
+  {
+   "id": "story-hud-replaces-genre-default",
+   "label": "장르 기본 HUD 대신 이 게임의 목표 카운터",
+   "port": 19529,
+   "lessons": [
+    "field-hud-authoring"
+   ],
+   "prompt": "연애 게임인데 화면 위에 뜨는 호감 하트 판은 빼 줘. 대신 이 게임 목표인 「소원 등롱」 모은 개수를 왼쪽 위에 3개 중 몇 개인지 작게 보여 주고, 아직 하나도 없을 땐 안 보이게 해 줘.",
+   "requirements": [
+    "project.system.fieldHud.widgets has exactly one widget and no friendship hearts widget (set via set_project_settings fieldHud.widgets)",
+    "that widget reads a project variable holding the lantern count with max 3, anchor top-left, condition nonzero",
+    "in the shipped player the counter is hidden at start and shows 1 / 3 after the variable becomes 1"
+   ]
+  },
+  {
+   "id": "painted-opening-from-story-stills",
+   "label": "이 이야기 전용 그림 다섯 장으로 오프닝",
+   "port": 19530,
+   "lessons": [
+    "opening-painted-stills"
+   ],
+   "prompt": "오프닝을 게임 맵 잘라 붙인 것 말고, 이 이야기용으로 그린 일러스트 다섯 장(전철·상점가·빵집·사무소·정문 등롱)으로 다시 만들어 줘. 컷마다 천천히 밀고 들어가고, 자막은 그 컷에 보이는 것만 한 문장씩.",
+   "requirements": [
+    "five animatic shots whose background layer is a painted still (resourceId, not map-view) placed with place_opening_background sampling:linear",
+    "each shot has a camera zoom/position track (animate_opening_camera) and a caption track with one or two cues",
+    "in the shipped player, frames from each shot show the painting edge to edge without stair-step aliasing and with faces not cut by the letterbox"
+   ]
+  },
+  {
+   "id": "ending-scene-then-final-image",
+   "label": "결말: 맵 위 마지막 장면 → 결말 그림 → 각자의 매듭 → 엔딩 카드",
+   "port": 19531,
+   "lessons": [
+    "ending-epilogue-beats"
+   ],
+   "prompt": "고백 결말이 너무 짧아. 고백이 받아들여지면 옥상에서 한두 마디 더 나누고, 화면이 어두워졌다가 두 사람 그림이 화면 가득 뜬 다음, 그 위로 그 뒤 이야기와 다른 친구들이 각자 어떻게 됐는지 몇 줄 보여 주고 엔딩 카드로 끝내 줘.",
+   "requirements": [
+    "the accepted-confession branch runs extra dialogue, a fadeOut, a full-screen showPicture of an ending still, then triggerEnding",
+    "define_ending epilogue starts with a picture beat and contains at least five say beats including one line for each other heroine",
+    "in the shipped player, the epilogue frames show the ending still behind the dialogue box and the ending card appears after it"
+   ]
+  },
+  {
+   "id": "npcs-stand-on-sidewalks",
+   "label": "거리 NPC 는 차도가 아니라 보도·가게 앞에",
+   "port": 19532,
+   "lessons": [
+    "npc-placement-sidewalk"
+   ],
+   "prompt": "상점가 맵에서 사람들이 차도 한가운데 서 있어 이상해. 서 있는 사람과 모이는 장면 인물은 보도나 가게 문 앞에, 걸어 다니는 행인도 보도로만 다니게 옮겨 줘.",
+   "requirements": [
+    "no NPC event's standing cell or street-walker stop on the town map has a lower tile labelled as asphalt road or crosswalk",
+    "the gather-scene NPCs remain reachable and the town routes still complete (endings reachable headlessly)"
+   ]
   }
  ]
 }

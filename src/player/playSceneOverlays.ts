@@ -363,7 +363,7 @@ function endingFigure(project: Project, face: FaceGraphic, role: "hero" | "partn
 function buildEndingCg(terminal: TerminalScene, project: Project, presentation: EndingPresentation | undefined, endingId: string | undefined): EndingCg | undefined {
   const ending = endingId ? project.endings?.find((entry) => entry.id === endingId) : undefined;
   const partnerKey = ending?.conditions.find((condition) => condition.kind === "friendshipAtLeast" && condition.npcKey !== ANY_FRIENDSHIP_KEY);
-  const couple = resolveEndingCouplePortraits(project, partnerKey?.kind === "friendshipAtLeast" ? partnerKey.npcKey : undefined);
+  const couple = presentation?.portraits === "none" ? {} as ReturnType<typeof resolveEndingCouplePortraits> : resolveEndingCouplePortraits(project, partnerKey?.kind === "friendshipAtLeast" ? partnerKey.npcKey : undefined);
   const backdropId = endingBackdropResourceId(project, presentation);
   const backdropUrl = backdropId ? resolveAssetResourceUrl(backdropId, { project }) : null;
   const partnerFigure = couple.partner && endingFigure(project, couple.partner, "partner");

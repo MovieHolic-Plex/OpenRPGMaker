@@ -350,6 +350,7 @@ const VENUES: readonly Venue[] = [
   { program: "mc_rooftop", map: "rooftop", variation: {
     rows: [["void:21", "roof-machine"], ["rooftop-deck"]], ragged: true,
     entrance: "rooftop-deck", hubs: ["rooftop-deck"],
+    keepMaterials: ["rooftop-deck", "roof-machine"],
     above: [["roof-machine", "rooftop-deck"]],
     palettes: [
       { "rooftop-deck": ["mci-concrete", "mci-wall-metal"] },

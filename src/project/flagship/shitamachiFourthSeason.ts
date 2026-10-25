@@ -135,6 +135,16 @@ const walk = (eventId: string, dirs: readonly Dir[], waitDone = true): Command =
 const approach = (eventId: string, target: string, distance = 1): Command => route(eventId, [{ kind: "approach", target, ...(distance !== 1 ? { distance } : {}) }]);
 const faceHero = (eventId: string): Command => route(eventId, [{ kind: "turnTowardPlayer" }]);
 const turn = (eventId: string, dir: Dir): Command => route(eventId, [{ kind: "turn", dir }]);
+/** 엔딩 그림 — 대사창 뒤로 화면 가득(480×270 무대에 1672×941 그림 = 29%). 맵 위 마지막 장면이 끝나면 이 그림으로 넘어가 엔딩 카드가 뜬다. */
+const ENDING_PICTURE = "sm_ending";
+const endingPicture = (resourceId: string): Command[] => [
+  { kind: "showPicture", pictureId: ENDING_PICTURE, resourceId, x: -4, y: -3, scale: 29, opacity: 255, waitForPicture: false } as Command,
+  ...fadeIn(1100),
+];
+const epiloguePicture = (resourceId: string) => ({ kind: "picture", action: "show", pictureId: ENDING_PICTURE, resourceId, x: -4, y: -3, scale: 29, opacity: 255, durationMs: 1400 });
+const ART = {
+  seoyeon: "oprn-shitamachi-end-seoyeon", jiho: "oprn-shitamachi-end-jiho", yuna: "oprn-shitamachi-yuna", friends: "oprn-shitamachi-end-friends",
+} as const;
 
 /** 그 사람과의 마음이 n 만큼 닿았다 — 결말 판정은 변수, ESC 「호감도」 하트는 관계 기록(최대 1000, 한 점 = 100). */
 function like(who: "seoyeon" | "jiho" | "yuna", n: number): Command[] {
@@ -242,7 +252,8 @@ function buildMaps(project: Project): { arrive: Cell; links: Record<"house" | "b
   for (const id of Object.keys(project.maps)) if (!(Object.values(M) as string[]).includes(id)) delete project.maps[id];
 
   // 큰길 서쪽 끝 = 역 방면. 전철에서 내리면 여기 선다.
-  const arrive = nearestFree(project, project.maps[M.hub]!, { x: 1, y: 15 });
+  // 역에서 걸어 들어오는 자리 — 차도(13~16줄)가 아니라 북쪽 보도(11~12줄) 서쪽 끝. 사람은 보도·가게 앞·문 앞에 선다(2026-10-25 사용자: 길 한가운데 선 NPC).
+  const arrive = nearestFree(project, project.maps[M.hub]!, { x: 1, y: 12 });
   return { arrive, links };
 }
 
@@ -344,10 +355,11 @@ function buildHub(project: Project, arrive: Cell): void {
   const keeperAt = nearestFree(project, hub, { x: 12, y: 12 });
   const keeperId = "ev_sm_keeper";
   const remaining = (n: number): Command => ifCond(varIs(V_LANTERNS, n), say("keeper", "base", `소원 등롱이 ${n}개 모였네. ${3 - n}개 더 부탁해. 베이커리, 센토, 진흥회 사무소야.`));
+  // 점등식에 모인 셋은 정문 기둥 동쪽 보도에 정문을 보고 선다(앞은 차도 한가운데였다).
   const heroines = [
-    { who: "seoyeon" as const, at: { x: keeperAt.x - 1, y: keeperAt.y + 2 } },
-    { who: "jiho" as const, at: { x: keeperAt.x + 1, y: keeperAt.y + 2 } },
-    { who: "yuna" as const, at: { x: keeperAt.x + 3, y: keeperAt.y + 2 } },
+    { who: "seoyeon" as const, at: { x: keeperAt.x + 4, y: keeperAt.y } },
+    { who: "jiho" as const, at: { x: keeperAt.x + 6, y: keeperAt.y } },
+    { who: "yuna" as const, at: { x: keeperAt.x + 5, y: keeperAt.y - 1 } },
   ].map((h) => ({ ...h, at: nearestFree(project, hub, h.at, [keeperAt]) }));
   // 등롱 불빛 — 정문 등롱과 가게 앞 처마 등롱. 칸은 거리 건물 문 칸(맨 아래 줄)이라 그 바로 위에 단다.
   // 등롱 불빛 — 정문(지붕 덮인 길 입구)과 가게마다 문 앞 보도(처마 등롱 아래). 건물 벽 칸이 아니라 걷는 칸에 단다 —
@@ -391,7 +403,9 @@ function buildHub(project: Project, arrive: Cell): void {
     ifCond(varIs(V_DATE, 4), [
       ...say("seoyeon", "happy", "그래, 오늘은 다 같이!"),
       ...say("jiho", "happy", "그럼 등롱빵 남은 거 다 같이 먹자!"),
-      ...say("yuna", "happy", "…넷이서 한 장 찍어요."),
+      ...say("yuna", "happy", "…넷이서 한 장 찍어요. 마츠노유 계단에서."),
+      ...fadeOut(1400),
+      ...endingPicture(ART.friends),
       { kind: "triggerEnding", endingId: END_FRIENDS } as Command,
     ], [
       ...say("keeper", "happy", "히카리 맨션 옥상에 올라가 봐. 아케이드 등롱이 한눈에 보이는 자리야."),
@@ -415,14 +429,14 @@ function buildHub(project: Project, arrive: Cell): void {
   for (const h of heroines) {
     hub.events.push(event(`ev_sm_gather_${h.who}`, CAST[h.who].name, h.at, [
       gone(`ev_sm_gather_${h.who}_off`, []),
-      page(`ev_sm_gather_${h.who}_on`, [swOn("sw_sm_gather")], [...say(h.who, "happy", "등롱, 예쁘다.")], { who: h.who, dir: "up" }),
+      page(`ev_sm_gather_${h.who}_on`, [swOn("sw_sm_gather")], [...say(h.who, "happy", "등롱, 예쁘다.")], { who: h.who, dir: "left" }),
     ], h.who));
   }
   // 거리 행인 — 저녁 장을 보는 사람들(현대 칩, 사람을 새로 만들지 않는다).
   execTool(project, "add_street_walkers", {
     mapId: M.hub,
     walkers: [
-      { name: "장 보는 아주머니", graphic: { selectionId: "charset:oprn-charset-modern3:2" }, stops: [{ x: 3, y: 12 }, { x: 25, y: 12 }], lines: ["내일 등롱 축제지? 우리 가게도 등롱 달았어."] },
+      { name: "장 보는 아주머니", graphic: { selectionId: "charset:oprn-charset-modern3:2" }, stops: [{ x: 2, y: 17 }, { x: 12, y: 17 }, { x: 12, y: 18 }, { x: 2, y: 18 }], lines: ["내일 등롱 축제지? 우리 가게도 등롱 달았어."] },
       { name: "퇴근길 회사원", graphic: { selectionId: "charset:oprn-charset-modern3:0" }, stops: [{ x: 38, y: 18 }, { x: 6, y: 18 }], lines: ["역 앞 고로케집, 오늘도 줄이 길더라."] },
       { name: "하굣길 학생", graphic: { selectionId: "charset:oprn-charset-modern1:1" }, stops: [{ x: 15, y: 3 }, { x: 15, y: 12 }, { x: 30, y: 12 }], lines: ["회장님이 등롱 모으러 다니더라. 너도 도와?"] },
     ],
@@ -592,11 +606,22 @@ function buildHouse(project: Project, link: { entry: Cell; exit: Cell }): void {
   ]));
 }
 
+/** 우정 결말로 가는 맵 위 마지막 장면 — 옥상에서 거리로 내려가 넷이 모인다(글), 그다음 마츠노유 계단의 넷 그림. */
+function friendsClose(): Command[] {
+  return [
+    ...caption("휴대폰에 단체 메시지가 뜬다. 「다들 마츠노유 앞 계단으로! 등롱빵 남았대!」"),
+    ...think("…가자. 오늘 밤은 넷이서다."),
+    ...fadeOut(1400),
+    ...endingPicture(ART.friends),
+    { kind: "triggerEnding", endingId: END_FRIENDS } as Command,
+  ];
+}
+
 function buildRooftop(project: Project, link: { entry: Cell; exit: Cell }): Cell {
   const map = project.maps[M.rooftop]!;
   const arrive = link.entry;
   const spot = placeIn(project, M.rooftop, { x: arrive.x, y: arrive.y - 6 }, [link.entry, link.exit]);
-  const scenes: Record<1 | 2 | 3, { who: "seoyeon" | "jiho" | "yuna"; variable: string; ending: string; open: Command[]; yes: Command[]; no: Command[] }> = {
+  const scenes: Record<1 | 2 | 3, { who: "seoyeon" | "jiho" | "yuna"; variable: string; ending: string; open: Command[]; yes: Command[]; after: Command[]; no: Command[] }> = {
     1: {
       who: "seoyeon", variable: V_SEOYEON, ending: END_SEOYEON,
       open: [
@@ -606,6 +631,11 @@ function buildRooftop(project: Project, link: { entry: Cell; exit: Cell }): Cell
       yes: [
         ...say("seoyeon", "embarrassed", "…바보. 등롱에 적은 내 소원, 지금 이뤄졌어."),
         ...say("seoyeon", "happy", "좋아해. 나도. 다음 계절에도, 그다음에도."),
+      ],
+      after: [
+        ...caption("서연이 주머니에서 접힌 진행표를 꺼낸다. 「담당: 김서연」 옆에, 빈칸이 하나."),
+        ...say("seoyeon", "happy", "여기. 네 이름 써. …내일부터는 반씩이야."),
+        ...think("아래 거리에서 축제 북소리가 올라온다. 등롱 강이 조금 더 밝아진 것 같았다."),
       ],
       no: [
         ...say("seoyeon", "sad", "…고마워. 근데 미안. 아직 나, 너를 잘 몰라."),
@@ -622,6 +652,11 @@ function buildRooftop(project: Project, link: { entry: Cell; exit: Cell }): Cell
         ...say("jiho", "embarrassed", "…늦었잖아, 바보. 십 년이나."),
         ...say("jiho", "happy", "그래도 돌아왔으니까 봐줄게. 내일 아침부터 빵 반죽은 네 담당이야."),
       ],
+      after: [
+        ...caption("지호가 앞치마 주머니에서 종이봉투를 꺼낸다. 아직 따뜻하다."),
+        ...say("jiho", "happy", "등롱빵. 하나 남겨 뒀어. 십 년 전에 너 주려던 거랑 같은 모양으로."),
+        ...think("반죽이 조금 찌그러져 있었다. 그때도 그랬다."),
+      ],
       no: [
         ...say("jiho", "sad", "…그치. 너한텐 그냥 옛날 일이지."),
         ...say("jiho", "happy", "괜찮아! 소꿉친구 자리는 아무한테도 안 뺏길 거니까."),
@@ -636,6 +671,12 @@ function buildRooftop(project: Project, link: { entry: Cell; exit: Cell }): Cell
       yes: [
         ...say("yuna", "embarrassed", "……찰칵."),
         ...say("yuna", "happy", "등롱보다, 이 얼굴이 더 남기고 싶었어요. 매일 같은 전철에서, 매일."),
+      ],
+      after: [
+        playSe(SE_CHIME),
+        ...caption("셔터 소리. 필름 카운터가 0 으로 넘어간다."),
+        ...say("yuna", "base", "현상하면, 제일 먼저 보여 줄게요. 할머니 다음으로."),
+        ...think("내일 아침 전철. 같은 칸. 이제는 말을 걸 수 있다."),
       ],
       no: [
         ...say("yuna", "sad", "……그렇구나."),
@@ -663,15 +704,19 @@ function buildRooftop(project: Project, link: { entry: Cell; exit: Cell }): Cell
         { text: "「좋아해. 이번 계절도, 다음 계절도 너랑 걷고 싶어.」", then: [
           ifCond(varAtLeast(s.variable, TRUE_AT), [
             ...s.yes,
+            playSe(SE_HEART),
+            ...s.after,
+            ...fadeOut(1400),
+            ...endingPicture(ART[s.who]),
             { kind: "triggerEnding", endingId: s.ending } as Command,
           ], [
             ...s.no,
-            { kind: "triggerEnding", endingId: END_FRIENDS } as Command,
+            ...friendsClose(),
           ]),
         ] },
         { text: "「오늘은 그냥, 같이 등롱을 보자.」", then: [
           ...say(s.who, "happy", "…응. 그것도 좋다."),
-          { kind: "triggerEnding", endingId: END_FRIENDS } as Command,
+          ...friendsClose(),
         ] },
       ]),
     ], { trigger: "auto" }));
@@ -696,6 +741,34 @@ function buildRooftop(project: Project, link: { entry: Cell; exit: Cell }): Cell
       viewLights.push({ id: `roof_town_${x}_${y}`, at: { x, y }, radius: 1.6, intensity: 0.85, color: (x + y) % 2 ? "#ffb35a" : "#ff7a4a", flicker: true });
     }
   }
+  // 데크 둘레의 천장 띠(실내 벽 윗면)와, 지붕 밖에 면한 북쪽 벽면도 비운다 — 데크가 벽에 둘러싸인 방이 아니라 난간 너머가 트인 옥상으로 읽히게.
+  // 탑옥(기계실) 벽은 남긴다. 이름표로 가린다(천장 띠·벽면). 데크 윗줄 = 오른쪽 끝 열에서 바로 위가 빈 칸인 첫 천장 띠 줄.
+  const tmeta = project.tilesets[map.tilesetId]?.tileMeta ?? [];
+  const labelAt = (i: number): string => { const t = map.lowerTiles[i] ?? -1; return t >= 0 ? tmeta[t]?.label ?? "" : ""; };
+  const isBand = (i: number): boolean => labelAt(i).includes("천장 띠");
+  const isFace = (i: number): boolean => labelAt(i).includes("벽면");
+  let deckTop = -1;
+  for (let y = 1; y < map.height && deckTop < 0; y++) if (isBand(y * map.width + map.width - 1) && map.lowerTiles[(y - 1) * map.width + map.width - 1] === -1) deckTop = y;
+  if (deckTop < 0) throw new Error("[shitamachi-fourth-season] 옥상 데크 윗줄을 찾지 못했다 — 방 생성 결과가 바뀌었다");
+  const clearCell = (i: number): void => { map.lowerTiles[i] = -1; if (map.lowerOverlayTiles) map.lowerOverlayTiles[i] = -1; };
+  // 벽을 걷어 낸 칸의 데크 첫 줄에는 난간을 잇는다 — 이미 있는 북쪽 철망 펜스(두 칸 높이)의 위·아래 조각을 그대로 옮겨 찍는다.
+  const upperLabel = (i: number): string => { const t = map.upperTiles[i] ?? -1; return t >= 0 ? tmeta[t]?.label ?? "" : ""; };
+  let fence: { top: number; base: number } | null = null;
+  for (let i = map.width; i < map.lowerTiles.length && !fence; i++) {
+    if (upperLabel(i - map.width).includes("철망 펜스") && upperLabel(i).includes("철망 펜스") && i - map.width * 2 >= 0 && !upperLabel(i - map.width * 2).includes("철망 펜스")) {
+      fence = { top: map.upperTiles[i - map.width]!, base: map.upperTiles[i]! };
+    }
+  }
+  for (let x = 0; x < map.width; x++) {
+    if (map.lowerTiles[(deckTop - 1) * map.width + x] !== -1) continue;
+    let y = deckTop;
+    for (; y < map.height; y++) { const i = y * map.width + x; if (isBand(i) || isFace(i)) clearCell(i); else break; }
+    const base = y * map.width + x, top = base - map.width;
+    if (fence && y > deckTop && y < map.height - 1 && (map.upperTiles[base] ?? -1) < 0 && (map.upperTiles[top] ?? -1) < 0) {
+      map.upperTiles[top] = fence.top; map.upperTiles[base] = fence.base;
+    }
+  }
+  for (let y = deckTop + 1; y < map.height; y++) for (let x = 0; x < map.width; x++) { const i = y * map.width + x; if (isBand(i)) clearCell(i); }
   map.background = {
     imageId: "",
     fromMap: { mapId: M.hub, scale: 0.5, haze: 0.3, hazeColor: "#1b2246", desaturate: 0.15, focusX: 14, focusY: 12 },
@@ -716,91 +789,107 @@ function buildRooftop(project: Project, link: { entry: Cell; exit: Cell }): Cell
 }
 
 // ── 타이틀·오프닝·엔딩 ──
-function buildTitleAndOpening(project: Project, spots: { jiho: Cell; yuna: Cell; seoyeon: Cell; keeper: Cell }): void {
+/**
+ * 오프닝 — 이 이야기 전용으로 그린 다섯 장(전철의 유나 → 등롱을 다는 상점가 → 빵집의 지호 → 서류 더미 속 서연 → 불 꺼진 정문 등롱).
+ * 2026-10-25 사용자: 게임 맵을 그대로 잘라 보이던 앞 오프닝은 「에디터 기본 오프닝 같다·헷갈린다」. 그림은 조수 도구로 깔고(place_opening_background
+ * sampling:linear), 카메라는 천천히 밀고(animate_opening_camera), 자막은 한 컷에 한 문장(그 컷에 보이는 것만).
+ */
+function buildTitleAndOpening(project: Project): void {
   if (project.system.titleScreen) project.system.titleScreen.backgroundFit = "cover";
   project.system.opening = { enabled: true, skippable: true, scenes: [] };
-  const STAGE = { width: 384, height: 216 };
-  const shots: { id: string; mapId: string; focus: Cell; caption: string; actors: { who: Who; at: Cell; dir: "down" | "left" | "right" | "up"; walk?: number }[] }[] = [
-    {
-      id: "sm_shot_arcade", mapId: M.hub, focus: { x: 14, y: 8 }, caption: "도쿄 시타마치. 지붕 덮인 상점가, 가을의 끝.",
-      actors: [{ who: "hajin", at: { x: 9, y: 12 }, dir: "right", walk: 72 }],
-    },
-    {
-      id: "sm_shot_bakery", mapId: M.bakery, focus: { x: spots.jiho.x, y: spots.jiho.y + 4 }, caption: "어릴 적 약속을 기억하는 소꿉친구, 지호.",
-      actors: [{ who: "jiho", at: spots.jiho, dir: "down" }],
-    },
-    {
-      // 위쪽에 탕, 아래쪽에 번대(접수대) — 센토라는 것과 유나의 자리가 한 화면에 읽힌다(VQA after: 교복 차림으로 탕 바닥에 세웠었다).
-      id: "sm_shot_sento", mapId: M.sento, focus: { x: spots.yuna.x - 2, y: spots.yuna.y - 5 }, caption: "센토 마츠노유의 손녀. 같은 전철, 같은 칸의 유나.",
-      actors: [{ who: "yuna", at: spots.yuna, dir: "down" }],
-    },
-    {
-      id: "sm_shot_office", mapId: M.office, focus: { x: spots.seoyeon.x, y: spots.seoyeon.y + 2 }, caption: "축제를 혼자 떠안은 학생회장, 서연.",
-      actors: [{ who: "seoyeon", at: spots.seoyeon, dir: "down" }],
-    },
-    {
-      id: "sm_shot_gate", mapId: M.hub, focus: { x: 14, y: 11 }, caption: "내일 밤, 아케이드에 등롱이 켜진다.",
-      actors: [{ who: "keeper", at: spots.keeper, dir: "down" }, { who: "hajin", at: { x: spots.keeper.x + 2, y: spots.keeper.y + 1 }, dir: "up" }],
-    },
+  const STAGE = { width: 480, height: 270 };
+  const shots: { id: string; art: string; ms: number; from: { x: number; y: number; zoom: number }; to: { x: number; y: number; zoom: number }; cues: { atMs: number; text: string }[] }[] = [
+    { id: "sm_op_train", art: "oprn-shitamachi-op-train", ms: 7200, from: { x: 240, y: 128, zoom: 1 }, to: { x: 262, y: 126, zoom: 1.08 },
+      cues: [{ atMs: 400, text: "십 년 만에 돌아온 동네, 도쿄 시타마치." }, { atMs: 3800, text: "같은 칸에는 늘 필름 카메라를 든 애가 있다. 유나." }] },
+    { id: "sm_op_arcade", art: "oprn-shitamachi-op-arcade", ms: 6800, from: { x: 240, y: 140, zoom: 1.1 }, to: { x: 240, y: 128, zoom: 1.02 },
+      cues: [{ atMs: 400, text: "내일 밤은 등롱 축제. 상점가가 등롱을 단다." }] },
+    { id: "sm_op_bakery", art: "oprn-shitamachi-op-bakery", ms: 6800, from: { x: 232, y: 135, zoom: 1.02 }, to: { x: 214, y: 132, zoom: 1.1 },
+      cues: [{ atMs: 400, text: "코하루 베이커리의 지호." }, { atMs: 3200, text: "십 년 전의 약속을, 지호는 아직 기억할까." }] },
+    { id: "sm_op_office", art: "oprn-shitamachi-op-office", ms: 6800, from: { x: 240, y: 132, zoom: 1.04 }, to: { x: 232, y: 124, zoom: 1.12 },
+      cues: [{ atMs: 400, text: "축제 준비를 혼자 떠안은 학생회장, 서연." }] },
+    { id: "sm_op_gate", art: "oprn-shitamachi-op-gate", ms: 8200, from: { x: 240, y: 140, zoom: 1.08 }, to: { x: 240, y: 128, zoom: 1 },
+      cues: [{ atMs: 400, text: "정문 큰 등롱에 소원 등롱 세 개가 모이면, 불이 켜진다." }, { atMs: 4600, text: "시타마치의 네 번째 계절." }] },
   ];
-  for (const [index, s] of shots.entries()) {
-    execTool(project, "create_opening_animatic_shot", { shotId: s.id, durationMs: 5200, width: STAGE.width, height: STAGE.height, replace: true, clearLayers: true });
-    execTool(project, "set_opening_pixel_grid", { shotId: s.id, width: STAGE.width, height: STAGE.height });
-    execTool(project, "place_opening_background", { shotId: s.id, layerId: "bg", mapId: s.mapId, focus: s.focus });
-    const scene = project.system.opening!.scenes.find((sc) => sc.id === s.id);
-    const crop = scene?.kind === "animatic" ? scene.composition.layers.find((l) => l.id === "bg")?.crop : undefined;
-    if (!crop) throw new Error(`[shitamachi-fourth-season] 오프닝 ${s.id} 배경 crop 이 없다`);
-    // 무대 화소 = 맵 화소 - crop 왼쪽 위(1:1). 배우 발은 칸 아랫변에.
-    for (const [ai, a] of s.actors.entries()) {
-      const x = a.at.x * 16 + 8 - crop.x;
-      const y = (a.at.y + 1) * 16 - crop.y;
-      execTool(project, "place_opening_charset_actor", {
-        shotId: s.id, layerId: `actor_${ai}`, charsetResourceId: CAST[a.who].resource, characterIndex: CAST[a.who].index,
-        direction: a.dir, scale: 1, x, y,
-        ...(a.walk ? { fromX: x, toX: x + a.walk, durationMs: 4800, stride: 8 } : {}),
-      });
-    }
-    execTool(project, "set_opening_caption", { shotId: s.id, layerId: "caption", letterbox: 0.15, color: "#fff4e6", cues: [{ atMs: 300, text: s.caption, typewriterMs: 900 }] });
+  for (const s of shots) {
+    execTool(project, "create_opening_animatic_shot", { shotId: s.id, durationMs: s.ms, width: STAGE.width, height: STAGE.height, background: "#0b0a14", replace: true, clearLayers: true });
+    execTool(project, "place_opening_background", { shotId: s.id, layerId: "art", resourceId: s.art, sampling: "linear" });
+    execTool(project, "animate_opening_camera", { shotId: s.id, camera: { from: s.from, to: s.to } });
+    execTool(project, "set_opening_transition", { shotId: s.id, transition: { kind: "fade", durationMs: 900 }, letterbox: 0.11 });
+    execTool(project, "set_opening_caption", { shotId: s.id, layerId: "caption", letterbox: 0.11, color: "#fff4e6", fontSize: 13, fadeOutMs: 500, cues: s.cues.map((c) => ({ ...c, typewriterMs: 900 })) });
   }
   const opening = project.system.opening!;
   opening.musicResourceId = BGM_MEMORY;
   for (const scene of opening.scenes) if (scene.kind === "animatic") scene.narration = "";
 }
 
+/**
+ * 엔딩 — 맵 위 마지막 장면(옥상·거리) → 그 결말 전용 그림 → 에필로그(그림 위 대사창: 그날 이후 + 네 사람 각자의 매듭) → 엔딩 카드.
+ * 2026-10-25 사용자: 앞 엔딩은 대사 두 줄과 다른 게임 그림(서울 사옥·교실)뿐이라 「약하다」.
+ */
 function defineEndings(project: Project): void {
-  const credits = "시타마치의 네 번째 계절\n\nOPRN 에디터 공식 데모\n그림: OPRN 기본 에셋(jp_city · 현대 칩셋 · 공용 흉상)\n음악·효과음: CC0 카탈로그";
+  const credits = [
+    "『시타마치의 네 번째 계절』",
+    "",
+    "이야기 · 연출   OPRN Flagship Studio",
+    "도트 · 인물   OPRN 시타마치 거리 · 현대 실내 · 공용 초상",
+    "타이틀 · 오프닝 · 엔딩 그림   OPRN 생성 일러스트(감독 선택)",
+    "음악 · 효과음   CC0 음원",
+    "",
+    "만든 도구   OPRN Studio",
+    "",
+    "등롱 길을 함께 걸어 주셔서 고맙습니다.",
+  ].join("\n");
+  const n = (text: string) => ({ kind: "say", text });
+  const v = (speaker: string, text: string) => ({ kind: "say", speaker, text });
   execTool(project, "define_ending", {
     id: END_SEOYEON, name: "서연 · 학생회장이 아닌 날", priority: 10, conditions: [{ kind: "friendshipAtLeast", npcKey: "seoyeon", value: TRUE_AT * 100 }],
-    presentation: { kicker: "두 사람의 이야기", musicResourceId: BGM_HAPPY, tone: "warm", backgroundResourceId: "oprn-title-romance-school", credits },
+    presentation: { kicker: "두 사람의 이야기", musicResourceId: BGM_HAPPY, tone: "warm", portraits: "none", backgroundResourceId: ART.seoyeon, credits },
     epilogue: [
-      { kind: "say", speaker: "서연", text: "축제 다음 날, 사무소 책상 위에 순서표가 두 장 놓여 있었다. 내 글씨와, 네 글씨." },
-      { kind: "say", speaker: "하진", text: "다음 계절에도 반씩 나누자. 서류도, 등롱도." },
+      epiloguePicture(ART.seoyeon),
+      n("다음 날, 축제 본 행사의 밤. 정문 큰 등롱 아래로 사람들이 끝없이 지나간다."),
+      v("서연", "진행표, 반은 네 이름으로 써 뒀어. 도망 못 가."),
+      v("하진", "도망 안 가. 다음 계절에도 반씩 나누자. 서류도, 등롱도."),
+      n("지호는 등롱빵 삼백 개를 다 팔았다. 내년엔 사백 개라고 벼른다."),
+      n("유나의 마지막 필름에는 진행표를 들고 웃는 학생회장이 찍혀 있었다."),
+      n("시타마치의 네 번째 계절. 서연은 처음으로, 혼자가 아니었다."),
     ],
   });
   execTool(project, "define_ending", {
     id: END_JIHO, name: "지호 · 십 년 늦은 약속", priority: 10, conditions: [{ kind: "friendshipAtLeast", npcKey: "jiho", value: TRUE_AT * 100 }],
-    presentation: { kicker: "두 사람의 이야기", musicResourceId: BGM_HAPPY, tone: "warm", backgroundResourceId: "oprn-title-romance-cafe", credits },
+    presentation: { kicker: "두 사람의 이야기", musicResourceId: BGM_HAPPY, tone: "warm", portraits: "none", backgroundResourceId: ART.jiho, credits },
     epilogue: [
-      { kind: "say", speaker: "지호", text: "코하루 베이커리 진열대에 새 빵이 생겼다. 이름은 「약속빵」. 모양이 좀 이상한 건 반죽 담당 탓이다." },
-      { kind: "say", speaker: "하진", text: "내년 등롱도, 그다음 해도. 이번엔 약속 지킬게." },
+      epiloguePicture(ART.jiho),
+      n("축제 다음 날 아침, 코하루 베이커리."),
+      v("지호", "자, 약속빵. 십 년 치 이자까지 쳐서 두 개."),
+      v("하진", "내년 등롱도, 그다음 해도. 이번엔 약속 지킬게."),
+      n("서연은 축제 보고서를 하룻밤에 끝냈다. 이번엔 진흥회 어른들과 나눠서."),
+      n("유나는 첫 전철 창밖으로, 아직 걸려 있는 등롱을 찍었다."),
+      n("진열대에 새 빵이 생겼다. 이름은 「약속빵」. 모양이 좀 이상한 건 반죽 담당 탓이다."),
     ],
   });
   execTool(project, "define_ending", {
     id: END_YUNA, name: "유나 · 마지막 한 장", priority: 10, conditions: [{ kind: "friendshipAtLeast", npcKey: "yuna", value: TRUE_AT * 100 }],
-    presentation: { kicker: "두 사람의 이야기", musicResourceId: BGM_HAPPY, tone: "warm", backgroundResourceId: "oprn-title-romance-office", credits },
+    presentation: { kicker: "두 사람의 이야기", musicResourceId: BGM_HAPPY, tone: "warm", portraits: "none", backgroundResourceId: ART.yuna, credits },
     epilogue: [
-      { kind: "say", speaker: "유나", text: "현상한 사진은 마츠노유 번대 옆에 걸렸다. 등롱 불빛 앞에서 웃는 사람 하나." },
-      { kind: "say", speaker: "하진", text: "내일 아침 전철에서 봐. 같은 칸에서." },
+      epiloguePicture(ART.yuna),
+      n("일주일 뒤, 마츠노유 번대 옆에 현상한 사진 한 장이 걸렸다."),
+      v("유나", "할머니가, 잘 찍었대요. 등롱보다 사람이 더 밝게 나왔다고."),
+      v("하진", "내일 아침 전철에서 봐. 같은 칸에서."),
+      n("서연은 내년 축제 사진 담당으로 유나의 이름을 적었다."),
+      n("지호는 사진 속 등롱빵이 제일 잘 나왔다고 우겼다."),
+      n("같은 전철, 같은 칸. 이제 둘은 창밖 대신 서로를 본다."),
     ],
   });
   execTool(project, "define_ending", {
     id: END_FRIENDS, name: "청춘 · 넷이서 본 등롱", conditions: [],
-    presentation: { kicker: "우리들의 이야기", musicResourceId: BGM_FRIENDS, tone: "warm", backgroundResourceId: "oprn-title-romance-school", credits },
+    presentation: { kicker: "우리들의 이야기", musicResourceId: BGM_FRIENDS, tone: "warm", portraits: "none", backgroundResourceId: ART.friends, credits },
     epilogue: [
-      { kind: "say", speaker: "서연", text: "축제는 무사히 끝났다. 정리는 넷이서 하니 금방이었다." },
-      { kind: "say", speaker: "지호", text: "남은 등롱빵은 우리가 다 먹었고," },
-      { kind: "say", speaker: "유나", text: "…넷이서 찍은 사진은, 생각보다 잘 나왔어요." },
-      { kind: "say", speaker: "하진", text: "시타마치에서 맞는 네 번째 계절은, 혼자가 아니다." },
+      epiloguePicture(ART.friends),
+      n("마츠노유 앞 나무 계단. 남은 등롱빵 여섯 개를 넷이서 나눴다."),
+      v("서연", "축제는 무사히 끝났어. 정리도 넷이서 하니 금방이었고."),
+      v("지호", "내년엔 등롱빵 사백 개야. 다들 반죽 도와!"),
+      v("유나", "…넷이서 찍은 사진, 생각보다 잘 나왔어요. 번대 옆에 걸어 둘게요."),
+      v("하진", "시타마치에서 맞는 네 번째 계절은, 혼자가 아니다."),
     ],
   });
 }
@@ -849,17 +938,10 @@ export function createShitamachiFourthSeasonFlagshipDemo(): FlagshipDemoBuildRes
     }
   };
   for (const e of project.maps[M.hub]!.events) for (const p of e.pages ?? []) fillRoofTransfer(p.commands);
-  execTool(project, "set_title_screen", { title: "시타마치의 네 번째 계절", logoSubtitle: "등롱이 켜지는 밤", backgroundResourceId: "oprn-title-romance-office", logoStyle: "glow", musicResourceId: BGM_MEMORY });
+  execTool(project, "set_title_screen", { title: "시타마치의 네 번째 계절", logoSubtitle: "등롱이 켜지는 밤", backgroundResourceId: "oprn-shitamachi-title", logoStyle: "glow", musicResourceId: BGM_MEMORY });
   defineEndings(project);
 
-  const spot = (mapId: string, eventId: string): Cell => {
-    const e = project.maps[mapId]!.events.find((ev) => ev.id === eventId);
-    if (!e) throw new Error(`[shitamachi-fourth-season] ${eventId} 가 없다`);
-    return { x: e.x, y: e.y };
-  };
-  buildTitleAndOpening(project, {
-    jiho: spot(M.bakery, "ev_sm_jiho"), yuna: spot(M.sento, "ev_sm_yuna"), seoyeon: spot(M.office, "ev_sm_seoyeon_office"), keeper: spot(M.hub, "ev_sm_keeper"),
-  });
+  buildTitleAndOpening(project);
 
   // 맵 BGM·조명(조명이 없는 맵은 앞 맵의 조명을 이어 받는다 — 낮 맵은 모두 못 박는다).
   const mapBgm: Record<string, string> = { [M.train]: BGM_CALM, [M.hub]: BGM_DAY, [M.house]: BGM_CALM, [M.bakery]: BGM_DAY, [M.sento]: BGM_CALM, [M.office]: BGM_CALM };
@@ -888,6 +970,14 @@ export function createShitamachiFourthSeasonFlagshipDemo(): FlagshipDemoBuildRes
 
   // 이야기형 연애 기본값 — 체력 하트 대신 호감 하트, 관계 메뉴, 대사 읽기 보조, 장르 잠금. 하루 루프는 없다.
   applyRomanceDefaults(project, { force: true, dayLoop: false });
+  // HUD — 연애 기본(호감 하트 판)이 아니라 이 이야기의 목표 하나: 모은 소원 등롱 n/3. 처음 하나를 받기 전에는 숨는다(nonzero).
+  // 2026-10-25 사용자: 「기본 HUD 쓰지 말고 어울리는 걸 만들거나 꺼라」. 조수 도구 set_project_settings.fieldHud 로 깐다.
+  execTool(project, "set_project_settings", { fieldHud: { widgets: [
+    { id: "lanterns", kind: "gauge", source: "variable", variableId: V_LANTERNS, max: 3, shape: "number", label: "소원 등롱", anchor: "top-left", x: 6, y: 6, width: 96, height: 26, panel: "paper", color: "#e8823a", condition: "nonzero" },
+  ] } });
+  // 남은 편집기 기본값 — 시스템 타이틀 그림(눈 덮인 들판)·기본 필드 곡을 이 게임 것으로. 대사창·ESC 메뉴는 따뜻한 종이 노트 룩 한 벌(set_vn_look).
+  execTool(project, "set_project_settings", { resources: { titleResourceId: "oprn-shitamachi-title", defaultBgmResourceId: BGM_DAY } });
+  execTool(project, "set_vn_look", { setting: "cafe", uiTheme: "match" });
 
   // 새 프로젝트는 번들 칩셋 46개(참고문서 포함 약 70MB)를 모두 들고 태어난다. 이 데모가 쓰는 칩셋(맵 칩셋과 그 이식 원본)만 남긴다 —
   // 편집기에서 열면 ensureBundledTilesets 가 나머지를 다시 붙이므로 저자는 잃는 것이 없다(데모 project.json 61MB 실측).

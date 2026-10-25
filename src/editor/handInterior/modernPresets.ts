@@ -34,6 +34,8 @@ export interface ModernProgramVariation {
   readonly open?: readonly (readonly [string, string])[];
   /** 붙어 있어도 문을 내지 않는 방 쌍(남탕↔여탕, 로비↔목욕 홀처럼 지나가면 안 되는 이웃). 종류 또는 id. */
   readonly sealed?: readonly (readonly [string, string])[];
+  /** 바닥·벽 재질을 시드 화풍 바꿈(remap)·대비 맞춤(contrastPair) 없이 견본 그대로 두는 방 종류 — 옥상 콘크리트처럼 재질이 곧 장소인 곳(2026-10-25: 옥상 데크가 병원 연녹 바닥이 됐다). */
+  readonly keepMaterials?: readonly string[];
   /** 줄 사이에 깔린 복도(arch-hall) - rows 에 복도 줄(`arch-hall`)이 있을 때 그 복도의 꾸밈 묶음(archHall.ts). */
   readonly hall?: "school" | "hospital" | "office" | "hotel" | "public";
   /** 참이면 남쪽 외벽 출구 틈을 열지 않는다(2층·3층처럼 계단·엘리베이터로만 오가는 상층). */
