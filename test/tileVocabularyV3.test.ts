@@ -22,10 +22,11 @@ import {
   unapprovedVocabulary,
 } from "@/project/tileVocabulary";
 import type { TileGroupMetadata, TilesetDef } from "@/project/types";
-import { withRetiredEasyRpgTilesets } from "./support/retiredEasyRpgTilesets";
+import { startOnRetiredCombinedTown } from "./support/retiredEasyRpgTilesets";
 
 function context(): { ctx: ToolContext; tileset: () => TilesetDef } {
-  const ctx: ToolContext = { project: withRetiredEasyRpgTilesets(createBlankProject()) };
+  // tilesetId 를 생략한 어휘 도구는 시작 맵의 칩셋을 쓴다 — 합본 마을 그룹을 겨냥하므로 시작 맵을 그 칩셋 위에 둔다.
+  const ctx: ToolContext = { project: startOnRetiredCombinedTown(createBlankProject()) };
   return { ctx, tileset: () => ctx.project.tilesets[COMBINED_TOWN_TILESET_ID] };
 }
 
@@ -270,7 +271,7 @@ describe("suggestVocabGroups", () => {
 describe("assistantSession 어휘 제안", () => {
   it("propose_tile_vocabulary 커밋이 그룹을 origin:user 로 합의 표시한다", () => {
     expect(VOCABULARY_PROPOSAL_TOOLS.has("propose_tile_vocabulary")).toBe(true);
-    const project = withRetiredEasyRpgTilesets(createBlankProject());
+    const project = startOnRetiredCombinedTown(createBlankProject());
     const groupId = "session-unapproved-wall";
     project.tilesets[COMBINED_TOWN_TILESET_ID].tileGroups!.push({
       id: groupId,

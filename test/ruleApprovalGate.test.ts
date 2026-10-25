@@ -10,7 +10,7 @@ import { createBlankProject } from "@/project/defaults";
 import { COMBINED_TOWN_TILESET_ID } from "@/project/defaults/constants";
 import type { ChatResult } from "@/ai/llmClient";
 import type { Project, TileGroupMetadata } from "@/project/types";
-import { withRetiredEasyRpgTilesets } from "./support/retiredEasyRpgTilesets";
+import { startOnRetiredCombinedTown } from "./support/retiredEasyRpgTilesets";
 
 const CONFIG = { authMode: "apiKey" as const, baseUrl: "x", model: "stub-model", apiKey: "sk", maxToolCalls: 4, maxTokens: 1024 };
 
@@ -34,7 +34,9 @@ function finalMsg(text: string): ChatResult {
 }
 
 function projectWithGroup(): Project {
-  const project = withRetiredEasyRpgTilesets(createBlankProject());
+  // 그룹·칠하기(tile 1)가 합본 마을 칩 번호다 — 시작 맵을 그 칩셋 위에 둔다. 버들항 시작 맵이면 paint_tiles 가
+  // 참고문서 선행 읽기 관문에 막혀 제안이 0건이 된다.
+  const project = startOnRetiredCombinedTown(createBlankProject());
   project.tilesets[COMBINED_TOWN_TILESET_ID].tileGroups = [ruleGroup()];
   return project;
 }
