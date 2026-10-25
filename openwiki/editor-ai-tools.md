@@ -198,6 +198,7 @@
 - **find_tools 순위**(`src/editor/tools/discoveryTools.ts`): 낱말 희귀도(IDF) 가중 + 이름 조각 일치 + 첫 문장 우대 + **용어 별칭 사전**(`toolAliases.ts` — 「마석·에스퍼→upsert_equipment/upsert_skill」「시간문→create_time_gate」「필드 적→place_field_enemy」「월드맵→edit_world_terrain」 …).
   결과마다 `data.matches[].why` 와 요약의 `이름 [이유]` 로 왜 골랐는지 보인다. 아무것도 안 맞으면 글자 쌍 겹침이 가장 큰 3개(`data.nearest`)를 준다. `matchScore` 는 자연어 승격(`capabilityEscalation`)이 계속 쓴다.
   **별칭을 추가할 땐 도구 이름이 실제 레지스트리에 있어야 한다**(없으면 조용히 무시). 낱말이 너무 흔하면(「적」「배」「벽」) 다른 말에 끼어드니 두 글자 이상 구로 쓴다.
+  짧은 낱말이 긴 질의에 끼면(「파티」가 「파티 분할」에) 두 별칭의 보너스가 같아지므로, 그 질의의 정본 도구만 긴 구 별칭에 둔다. 2026-10-25: 맵을 나눠 걷는 파티 분할은 `author_party_split`(전투 팀 교대 `set_party` 와 별개), 설원 고갯길은 `author_snow_route`(「설원」만으로는 마을 구성기 `compose_snow_north_map`), 이야기 일지는 `configure_story_journal`, 제한 시간 탈출은 `make_timed_escape`.
 - **재생 코퍼스**: `scripts/qa/fixtures/find-tools-corpus.json`(감사 역할극 3판의 find_tools 질의 107건 + 이후 실제 호출 도구) → `bun scripts/qa/find-tools-replay.mts [--verbose]`.
   적중(hit@5) = 이후 실제로 호출된 도구가 상위 5개 안. 실측: 자연어 질의 62건 hit@5 **48.4% → 79.0%**, 정밀도@5 0.155 → 0.26.
 - **인자 교정·거절 공통 헬퍼**: `argRepair.ts`(최상위 인자: `table→collection`·`actors→actorIds`·snake/kebab/대소문자 → 옮기고 「'X' 는 'Y' 입니다」 경고, 못 옮기면 가장 가까운 이름·허용 목록·예시 호출 JSON 을 붙여 거절), `dbRecordAliases.ts`(레코드 안쪽: `enemy.maxHp→stats.maxHp`·`exp/gold→rewards`·`role→도구 최상위 role`·`actor.class→classId`, 자유 서술 칸 `description` 은 「저장 안 했다」 경고). `toolRunner.runToolDefinition` 이 둘을 부르고, `upsert_actor`·`upsert_enemy` 가 레코드 교정을 쓴다. 새 별칭은 이 두 표에 한 줄씩.

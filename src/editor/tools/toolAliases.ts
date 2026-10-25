@@ -34,7 +34,9 @@ export const TOOL_ALIASES: readonly ToolAlias[] = [
   // ── 파티 ──
   { terms: ["파티", "party", "편성", "동료", "합류", "이탈", "companion", "recruit", "join", "changeparty", "recallparty", "storeparty"], tools: ["set_party", "add_companion", "configure_companion_rules"], label: "파티·동료" },
   { terms: ["파티 선택", "멤버 고르", "파티 편성 화면", "formation menu", "party select", "choose members"], tools: ["configure_companion_rules", "set_party", "configure_field_menu"], label: "파티 편성" },
-  { terms: ["분할 파티", "파티 분할", "여러 팀", "split party", "multiple teams", "3팀", "세 팀"], tools: ["set_party", "configure_companion_rules", "run_scene_test"], label: "파티 분할" },
+  // 맵을 나눠 걷는 FF6 식 분할과 전투 팀 교대는 다른 도구다. 「파티」 별칭이 set_party 에 보너스를 주므로, 분할 질의는 author_party_split 만 가리킨다.
+  { terms: ["분할 파티", "파티 분할", "파티 나누", "파티를 나눠", "갈라진 파티", "split party", "party split"], tools: ["author_party_split"], label: "맵을 나눠 걷는 파티 분할" },
+  { terms: ["여러 팀", "multiple teams", "3팀", "세 팀", "팀 교대", "교대 전투"], tools: ["set_party", "configure_companion_rules"], label: "전투 팀 교대" },
   // ── 적·전투 ──
   { terms: ["적군", "적 몬스터", "적 만들", "적 추가", "몬스터 만들", "몬스터 추가", "보스", "enemy", "monster", "boss"], tools: ["upsert_enemy", "upsert_troop", "author_boss_phases"], label: "적" },
   { terms: ["트룹", "적 구성", "전투 구성", "무리", "troop", "encounter group", "battle group"], tools: ["upsert_troop", "upsert_troop_battle_page"], label: "트룹" },
@@ -72,7 +74,9 @@ export const TOOL_ALIASES: readonly ToolAlias[] = [
   { terms: ["비행선", "비공정", "배 타", "배를", "탈것", "초코보", "뗏목", "airship", "vehicle", "ship", "boat", "mount"], tools: ["place_vehicle", "set_street_traffic", "set_map_transit"], label: "탈것" },
   { terms: ["자동차", "승용차", "차 다니", "차가 다니", "차량 흐름", "움직이는 차", "차 깔", "도로에 차", "회전하는 차", "교차로 회전", "경찰차", "택시", "기차", "지하철", "열차", "버스", "교통", "street traffic", "moving cars", "traffic", "train", "subway", "transit"], tools: ["set_street_traffic", "set_map_transit", "inspect_map_transit", "compose_modern_city_street"], label: "거리 주행 차량·교통(직진·교차로 90° 회전·버스·지하철)" },
   { terms: ["빈 맵", "텅 빈", "빈칸", "단색", "단색 잔디", "잔디 평지", "비어 있", "empty map", "blank", "flat grass", "채우기", "꾸미기", "decorate", "fill"], tools: ["check_map_emptiness", "create_map", "find_empty_ground", "furnish_outdoor_area", "place_props"], label: "맵 채우기" },
-  { terms: ["눈 마을", "설원", "북방", "눈덮인", "snow village", "snow north", "눈 맵"], tools: ["compose_snow_north_map", "link_snow_north_interior"], label: "설원 테마" },
+  // 「설원」만 두면 「설원 길」까지 마을 구성기로 간다. 고갯길은 author_snow_route.
+  { terms: ["눈 마을", "설원 마을", "북방", "눈덮인", "snow village", "snow north", "눈 맵"], tools: ["compose_snow_north_map", "link_snow_north_interior"], label: "설원 마을" },
+  { terms: ["설원 길", "고갯길", "서리 가도", "얼음 들판", "눈보라", "snow route", "snow path", "blizzard path"], tools: ["author_snow_route"], label: "설원 고갯길" },
   { terms: ["사막", "오아시스", "바자르", "피라미드", "desert", "oasis", "bazaar"], tools: ["compose_desert_east_map", "compose_desert_east_room"], label: "사막 테마" },
   { terms: ["증기", "스팀펑크", "기계 도시", "제국 도시", "steampunk", "industrial city"], tools: ["compose_steampunk_city_map", "link_steampunk_interior"], label: "스팀펑크 테마" },
   { terms: ["천공", "하늘섬", "공중", "sky island", "floating island"], tools: ["compose_sky_island_map", "link_sky_island_interior"], label: "천공섬 테마" },
@@ -106,6 +110,8 @@ export const TOOL_ALIASES: readonly ToolAlias[] = [
   { terms: ["센터", "포켓몬 센터", "몬스터 센터", "회복 센터", "간호사", "병원", "pokemon center", "monster center", "nurse", "heal center"], tools: ["place_monster_center", "place_savepoint"], label: "몬스터 센터(회복 연출)" },
   { terms: ["보물상자", "상자", "chest", "treasure"], tools: ["place_chest", "place_storage_chest"], label: "상자" },
   { terms: ["함정", "trap", "spike"], tools: ["place_trap"], label: "함정" },
+  { terms: ["제한 시간 탈출", "무너지는 얼음", "갈라지는 얼음", "무너지는 탑", "가라앉는 다리", "갈라지는 바닥", "timed escape", "collapsing floor", "countdown escape"], tools: ["make_timed_escape"], label: "제한 시간 탈출" },
+  { terms: ["이야기 일지", "일지", "story journal", "journal line"], tools: ["configure_story_journal"], label: "이야기 일지" },
   { terms: ["공통 이벤트", "common event", "field skill", "필드 스킬", "필드 기술", "field ability"], tools: ["upsert_common_event", "upsert_skill", "upsert_event"], label: "공통 이벤트·필드 스킬" },
   // ── 시스템·검사·기타 ──
   { terms: ["검사", "점검", "린트", "lint", "validate", "check"], tools: ["run_lint", "check_reachability", "evaluate_game_quality", "check_export_readiness"], label: "검사" },

@@ -155,7 +155,7 @@ export const PARTY_SPLIT_TOOLS: readonly ToolDefinition[] = [
     name: 'author_party_split',
     mode: 'write',
     description:
-      'FF6 식 파티 나누기를 한 호출로 짓는다: splitAt 칸을 밟으면 파티가 groups 두 묶음으로 갈라져(엔진 storeParty·recallParty) 첫 묶음을 조작하게 되고, ' +
+      'FF6 식 파티 분할(두 갈래로 나눠 걷기)을 한 호출로 짓는다: splitAt 칸을 밟으면 파티가 groups 두 묶음으로 갈라져(엔진 storeParty·recallParty) 첫 묶음을 조작하게 되고, ' +
       '각 묶음 곁의 「전환」 조사 지점(빛나는 구슬)에서 다른 묶음으로 조작을 바꾼다. levers 의 레버를 당기면 짝 문이 열린다(보통 한쪽 레버가 다른 쪽 문을 연다). ' +
       'rejoin 칸에 먼저 닿은 묶음은 그 자리에서 기다리고 조작이 자동으로 다른 묶음으로 넘어가며, 둘 다 닿으면 하나로 합쳐진다. 묶음은 한 맵이든 두 맵이든 된다(그룹마다 mapId). ' +
       '쓰기 전에 끝까지 풀리는지 칸 단위로 검사한다(타일 통행·이동 이벤트·늘 막는 이벤트를 보고, 닿는 레버를 당겨 문을 여는 것을 되풀이) — 안 풀리면 거절하고 어느 묶음이 어디서 막혔는지 돌려준다. ' +
