@@ -20,6 +20,9 @@ async function freshStore() {
   return (await import("@/project/store")).store;
 }
 
+const T0 = process.hrtime.bigint();
+const lap = (label: string) => console.log(`[lap] ${label} ${Number((process.hrtime.bigint() - T0) / 1_000_000n)}ms`);
+
 afterEach(() => { session?.dispose(); session = null; vi.unstubAllEnvs(); vi.unstubAllGlobals(); vi.useRealTimers(); });
 
 describe("generator real store palette identity", () => {
@@ -29,8 +32,10 @@ describe("generator real store palette identity", () => {
       vi.useFakeTimers();
       wire.current = serialize(createBlankProject());
       const store = await freshStore();
+      lap("fresh1 " + mode);
       await store.load();
       await store.flush();
+      lap("load1+flush1 " + mode);
       const ctx = { project: structuredClone(store.getCurrent()) };
       // 2026-10-07 정리 뒤 generate_map 프로필은 Scarloxy 셋만 남았다(mapGenerationProfiles.ts). 옛 합본 마을 자리는
       // wilds(동굴=wilds 배치)가, native-upper 는 grassland(장애물 48 이 upper 고체)가 맡는다. 385 는 두 프로필 모두 쓰지 않는 칸이다.
@@ -42,6 +47,7 @@ describe("generator real store palette identity", () => {
         markUserTileRuntimeMetadata(ts, 385, { passage: lower ? "passable" : "solid" });
       }
       const rulesBefore = structuredClone(ctx.project.tilesets);
+      lap("pre-generate " + mode);
       const result = runTool(ctx, "generate_map", {
         name: "지하실", theme: "cave", id: "map_cellar", entrance: { y: 8, x: 1 },
         pois: [{ x: 9, y: 2 }], border: "wall", height: 10, width: 12,
@@ -49,22 +55,31 @@ describe("generator real store palette identity", () => {
       });
       expect(result.ok, result.summary).toBe(true);
       expect(ctx.project.tilesets).toEqual(rulesBefore);
+      lap("tilesets-equal " + mode);
       store.replace(ctx.project);
       const identity = await sha256HexText(serializeForComparison(store.getCurrent()));
       const saved = await store.flush();
+      lap("flush2 " + mode);
       expect(saved.kind).toBe("saved");
       if (saved.kind !== "saved") throw new Error("save failed");
       expect(saved.receipt?.contentIdentity).toBe(identity);
       const fresh = await freshStore();
+      lap("fresh2 " + mode);
       await fresh.load();
+      lap("load2 " + mode);
       expect(fresh.getCurrent().maps.map_cellar).toEqual(deserialize(serialize(ctx.project)).maps.map_cellar);
+      lap("map-equal " + mode);
       expect(fresh.getCurrent().tilesets).toEqual(deserialize(serialize(ctx.project)).tilesets);
+      lap("tilesets-equal2 " + mode);
       expect(await sha256HexText(serializeForComparison(fresh.getCurrent()))).toBe(identity);
       expect(fresh.hasUnsavedChanges()).toBe(false);
+      lap("identity " + mode);
       expect(fresh.getAutoSaveState().kind).toBe("idle");
       const writes = session?.calls.save ?? 0;
       await fresh.flush();
       expect(session?.calls.save ?? 0).toBe(writes);
+      lap("done " + mode);
     },
+    120_000,
   );
 });
