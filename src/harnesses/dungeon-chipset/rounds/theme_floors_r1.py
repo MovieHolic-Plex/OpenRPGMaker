@@ -104,8 +104,7 @@ GLOW = [((5, 9), (7, 8), (9, 8), (11, 6))]
 
 
 def body(key, i, crack=None, glow=False):
-    if key == 'A1':
-        return a1_body(i)
+    return a1_body(i, key)
     g = [list(r) for r in plate(key, i)]
     if crack is not None:
         for x, y in {p for seg in CRACKS[crack] for p in poly(*seg)}:
@@ -135,84 +134,85 @@ A1_CRACKS = {2: [((9, 11), (11, 13))], 5: [((9, 9), (12, 12))], 7: [((6, 9), (8,
 A1_VEIN = {3: [((10, 3), (12, 5), (13, 7))]}
 
 
-def a1_body(i):
-    """판마다 바탕 한 단(둘레에 닿는 판은 모든 몸통이 같은 1단 — 이음 없음, 속 판은 2·3단 번갈아),
-    위·왼 홈 밑 = 빛 한 단 위(2화소 이상 줄), 아래·오른 홈 위 = 그늘 한 단 아래, 판 속 2×2 결(한 단 차)."""
-    G = {p for seg in A1_LAYOUTS[i] for p in poly(*seg)}
-    reg = [[-1] * 16 for _ in range(16)]
-    n = 0
-    tone = {}
-    for sy in range(16):
-        for sx in range(16):
-            if (sx, sy) in G or reg[sy][sx] >= 0:
-                continue
-            st, cells, edge = [(sx, sy)], [], False
-            reg[sy][sx] = n
-            while st:
-                x, y = st.pop()
-                cells.append((x, y))
-                edge |= x in (0, 15) or y in (0, 15)
-                for X, Y in ((x + 1, y), (x - 1, y), (x, y + 1), (x, y - 1)):
-                    if 0 <= X < 16 and 0 <= Y < 16 and (X, Y) not in G and reg[Y][X] < 0:
-                        reg[Y][X] = n
-                        st.append((X, Y))
-            tone[n] = 1 if edge else (2 if (n + i) % 3 else 3)
-            n += 1
-    t = [[0 if (x, y) in G else tone[reg[y][x]] for x in range(16)] for y in range(16)]
-    base = [r[:] for r in t]
+# 판석 색(2026-10-25 다시, 화풍 「평면 채움」 대응): ostone 은 어두운 끝(홈·그늘)만, 판 바탕은 차가운 셋을 판마다 번갈아.
+#   d 홈 ostone0 · s 판 그늘 변 ostone1 · b 바탕 ostone2 · q 바탕 vrock1 · a 바탕 arcane0 · Q 결 vrock2 · l 빛 변 arcane1(2화소 이상 줄)
+#   arcane2 이상은 쓰지 않는다(밝은 보라 줄기 반려).
+FLAG_LEG = L('d:ostone0 k:ostone0 s:ostone1 b:ostone2 q:vrock1 a:arcane0 Q:vrock2 l:arcane1 n:vrock0 o:ostone1')
+# 판마다 네 띠: 위·왼 빛 1화소(l, vrock 판은 Q) · 몸통(바탕) · 아래 몸통 2화소 한 단 어둡게(DARK) · 아래·오른 그늘 1화소(s). 홈 d.
+# 몸통 속 결 = 2~3화소 덩이 한 색(GRAIN), 약 10%.
+FLAG_DARK = {'b': 'n', 'q': 'n', 'a': 'b'}
+FLAG_GRAIN = {'b': 'a', 'q': 'Q', 'a': 'b'}
+FLAG_LIT = {'b': 'l', 'q': 'Q', 'a': 'l'}
+FLAG_BORDER = {'A1': 'b', 'A2': 'q'}
+FLAG_INNER = {'A1': 'qa', 'A2': 'ab'}
+
+
+# 작은 판(약 4~6화소) = 16 주기로 감긴 보로노이. 둘레 3화소 띠는 모든 몸통이 같은 씨앗(BORDER_SEEDS)만 보고 나뉘어
+# 어떤 몸통끼리 붙어도 홈이 이어진다. 가운데는 몸통마다 다른 씨앗이 더해져 판 모양이 바뀐다.
+BORDER_SEEDS = [(2, 1), (10, 0), (15, 7), (8, 14), (1, 10)]
+
+
+def _inner_seeds(i):
+    out = []
+    for k in range(2):
+        out.append((5 + (i * 5 + k * 3) % 6, 5 + (i * 3 + k * 4) % 6))
+    return out
+
+
+def _d2(x, y, sx, sy):
+    dx = min(abs(x - sx), 16 - abs(x - sx))
+    dy = min(abs(y - sy), 16 - abs(y - sy))
+    return dx * dx * 1.0 + dy * dy * 1.3 + ((x * 7 + y * 3 + sx + sy) % 5) * 0.15
+
+
+def a1_body(i, key='A1'):
+    seeds = BORDER_SEEDS + _inner_seeds(i)
+    lab = [[0] * 16 for _ in range(16)]
     for y in range(16):
         for x in range(16):
-            b = base[y][x]
-            if not b:
-                continue
-            up = (x, (y - 1) % 16) in G or (x, (y - 2) % 16) in G and b == 3
-            lf = ((x - 1) % 16, y) in G
-            dn = (x, (y + 1) % 16) in G
-            rt = ((x + 1) % 16, y) in G
-            if up or lf:
-                t[y][x] = b + 1
-            elif dn or rt:
-                t[y][x] = b - 1 if b > 1 else 0 if False else max(b - 1, 1) if b > 1 else 1
-    for k in range(5):                                # 판 속 2×2 결(위치는 몸통마다 다름)
-        gx = (i * 5 + k * 7) % 12 + 2
-        gy = (i * 3 + k * 11) % 12 + 2
-        d = 1 if k % 2 else -1
-        cells = [(gx, gy), (gx + 1, gy), (gx, gy + 1), (gx + 1, gy + 1), (gx + 2, gy)]
-        if all(base[Y][X] and t[Y][X] == base[Y][X] for X, Y in cells):
-            for X, Y in cells:
-                t[Y][X] = max(1, min(4, base[Y][X] + d))
-    for _ in range(2):                                # 외톨이 한 화소 → 이웃 다수
-        h = [r[:] for r in t]
-        for y in range(16):
-            for x in range(16):
-                if not t[y][x]:
-                    continue
-                nb = [t[(y + dy) % 16][(x + dx) % 16] for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1))]
-                if t[y][x] not in nb:
-                    h[y][x] = max(sorted(set(v for v in nb if v)), key=nb.count)
-        t = h
-    g = [['deb' 'cmh'[0:0] + 'dbcmh'[v] if False else 'dbcmh'[v] for v in r] for r in t]
+            band = min(x, y, 15 - x, 15 - y) < 2
+            pool = range(len(BORDER_SEEDS)) if band else range(len(seeds))
+            lab[y][x] = min(pool, key=lambda n: _d2(x, y, *seeds[n]))
+    L_ = lambda x, y: lab[y % 16][x % 16]   # noqa: E731
+    G = {(x, y) for y in range(16) for x in range(16) if L_(x + 1, y) != lab[y][x] or L_(x, y + 1) != lab[y][x]}
     for seg in A1_CRACKS.get(i, []):
-        for x, y in poly(*seg):
-            if (x, y) not in G:
-                g[y][x] = 'k'
-    pts = [p for seg in A1_VEIN.get(i, []) for p in poly(*seg)]
-    for x, y in pts:
-        g[y][x] = 'v'
-    if pts:
-        x, y = pts[len(pts) // 2]
-        g[y][x] = 'V'
+        G |= {(x, y) for x, y in poly(*seg) if 3 <= x <= 12 and 3 <= y <= 12}
+    order = {n: m for m, n in enumerate(sorted(set(v for r in lab for v in r)))}
+    def base_of(n):
+        if n < len(BORDER_SEEDS):
+            return FLAG_BORDER[key] if n % 2 == 0 else FLAG_INNER[key][0]
+        return FLAG_INNER[key][(n + i) % 2]
+    B = [['d' if (x, y) in G else base_of(lab[y][x]) for x in range(16)] for y in range(16)]
+    g = [r[:] for r in B]
+    ing = lambda x, y: (x % 16, y % 16) in G   # noqa: E731
+    for y in range(16):
+        for x in range(16):
+            b = B[y][x]
+            if b == 'd':
+                continue
+            if ing(x, y - 1) or ing(x - 1, y):
+                g[y][x] = FLAG_LIT[b]
+            elif ing(x, y + 1) or ing(x + 1, y):
+                g[y][x] = 's'
+            elif ing(x, y + 2):
+                g[y][x] = FLAG_DARK[b]
+    for k in range(5):                                # 결 덩이 2~3화소, 몸통 자리만
+        gx = (i * 5 + k * 7) % 14 + 1
+        gy = (i * 7 + k * 5) % 14 + 1
+        cells = [(gx, gy), (gx + 1, gy)] + ([(gx, gy + 1)] if k % 2 else [])
+        if all(0 <= X < 16 and 0 <= Y < 16 and g[Y][X] == B[Y][X] != 'd' for X, Y in cells):
+            for X, Y in cells:
+                g[Y][X] = FLAG_GRAIN[B[Y][X]]
     return [''.join(r) for r in g]
 
 
 # (변형, 금, 핏줄)
 LIST = {'A1': [(i, None, 0) for i in range(8)],
-        'A2': [(6, None, 0), (7, None, 0), (2, None, 0), (6, None, 0), (7, None, 0), (0, None, 0), (1, 3, 0), (2, None, 0), (3, None, 0), (4, 0, 0), (5, None, 0),
-               (1, None, 0), (2, 2, 0), (3, None, 1), (4, None, 0), (5, 1, 0), (0, None, 0)]}
+        'A2': [(i, None, 0) for i in range(8)]}
 
 
 def ground_at(key):
-    leg = LEG[key]
+    leg = FLAG_LEG
     bs = [grid(body(key, m, c, bool(gl)), leg) for m, c, gl in LIST[key]]
     return autotile_cv(bs[0], grid(A1_FRAME if key == 'A1' else R1.GROUND_FRAME, FRAME_LEG, 32, 32), grid(R1.GROUND_INNER, FRAME_LEG, 16, 16), bs[1:])
 
