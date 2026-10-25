@@ -5,6 +5,13 @@
 
 <!-- releases -->
 
+## 0.346.3 — 2026-10-26
+
+### 수정
+
+- **battle** — revive downed allies in enemy AI and auto-battle (#3574) (`46b7114`)
+- **editor** — don't stack an event on a cell another event already covers (#3573) (`4ce70c2`)
+
 ## 0.346.2 — 2026-10-26
 
 ### 수정
