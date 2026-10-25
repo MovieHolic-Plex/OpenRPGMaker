@@ -125,6 +125,10 @@ for (const attempt of attempts) {
     console.log(`${attempt}: 측정 안 함(실행 오류)`); continue;
   }
   const before = readJson(resolve(dir, 'before.json')) as Project;
+  // 시작 상태 기준선(2026-10-25): 이미 있던 맵을 고친 과제는 시작 맵이 이미 문턱 밖일 수 있다 — Fallen 시작 마을(author_beodeul_town seed 11)은
+  // 손대기 전에도 통행 863칸 중 816칸(94.6%)만 닿아 reachable(≥95%)에서 떨어졌고, 그래서 게임 과제 28/28 이 조수와 무관하게 machine-fail 이었다.
+  // 문턱을 못 넘어도 시작 상태보다 나빠지지 않았으면 통과로 본다. 새로 만든 맵은 절대 문턱 그대로다.
+  const start = readProject(resolve(dir, 'before.json'));
   // 공용 DB 기물 아틀라스처럼 ref 로만 저장된 그림판은 실행 프로젝트 폴더의 assets/ 에서 읽는다.
   addRenderAssetRoot(resolve(dir, 'project', 'assets'));
   const after = readProject(resolve(dir, 'live.json'));
@@ -139,6 +143,13 @@ for (const attempt of attempts) {
     // 실내 빈 바닥(1배 눈 기준 자, bareFloor.ts) — 기록만. 옛 empty 와 나란히 둔다.
     const bareFloor = measureInteriorBareFloor(current, map);
     const reach = reachability(current, map);
+    // before.json 의 칩셋은 통행표가 빠진 얇은 사본이다 — 시작 맵들은 before 것으로, 칩셋은 불러온 현재 프로젝트 것으로 잰다.
+    const startMap = start.maps[mapId];
+    const startProject = startMap ? { ...current, maps: start.maps, startMapId: start.startMapId, startPos: start.startPos } as Project : null;
+    const startReach = startMap && startProject ? reachability(startProject, startMap) : null;
+    const startLayout = startMap && startProject ? measureLayoutQuality(startProject, startMap) : null;
+    const notWorse = (now: number, then: number | undefined, slack: number) => then !== undefined && now <= then + slack;
+    const baselineNote = (then: string | null) => then === null ? '' : ` · 시작 상태 ${then}`;
     // 검수용 그림(기본) — 편집기 전용 표시(시작 위치 초록 테두리)를 뺀다. 2026-10-22 적대 검수자 둘이 초록 시작 표시를 이동 칸으로 읽어
     // 「출구가 문이 아니라 방 한가운데」 major 를 매겼다. 이동 이벤트(파란 테두리)는 문 자리 판정에 쓰므로 둔다.
     // render.file·사분면·시트가 모두 이 그림을 쓴다. 시작 표시가 있는 그림은 render.marker 로만 남긴다(HARNESS_START_MARKER=1 이면 주 그림도 표시 포함).
@@ -163,15 +174,19 @@ for (const attempt of attempts) {
         detail: `${map.tilesetId} → ${family}${category.families.length ? ` (기대 ${category.families.join('/')})` : ' (무림: 기대 계열 없음 — 기록만)'}` },
       // 참고만: 과제가 연결을 요구하지 않는다. 판정(pass)에는 넣지 않는다.
       { id: 'entry-exists', ok: reach.entryFound, advisory: true, detail: reach.entryFound ? `입구 ${reach.entry!.x},${reach.entry!.y}` : '들어오는 이동·시작 위치 없음(참고 — 가장 큰 통행 덩어리에서 측정)' },
-      { id: 'reachable', ok: reach.ratio >= g.reachableRatioMin, detail: `통행 ${reach.passable}칸 중 ${reach.reachable}칸 도달 (${(reach.ratio * 100).toFixed(0)}%)` },
+      { id: 'reachable', ok: reach.ratio >= g.reachableRatioMin || (startReach !== null && reach.ratio >= startReach.ratio - 0.01),
+        detail: `통행 ${reach.passable}칸 중 ${reach.reachable}칸 도달 (${(reach.ratio * 100).toFixed(0)}%)${baselineNote(startReach ? `${(startReach.ratio * 100).toFixed(0)}%` : null)}` },
       ...(layout ? [
-        { id: 'empty-floor', ok: layout.empty <= g.emptyPctMax, detail: `빈 바닥 ${layout.empty.toFixed(0)}% (≤${g.emptyPctMax})` },
-        { id: 'empty-square', ok: layout.square <= g.emptySquareMax, detail: `빈 정사각형 ${layout.square}칸 (≤${g.emptySquareMax})` },
-        { id: 'mirror', ok: layout.mirror <= g.mirrorMax, detail: `좌우 대칭 배수 ${layout.mirror.toFixed(2)} (≤${g.mirrorMax})` },
+        { id: 'empty-floor', ok: layout.empty <= g.emptyPctMax || notWorse(layout.empty, startLayout?.empty, 1),
+          detail: `빈 바닥 ${layout.empty.toFixed(0)}% (≤${g.emptyPctMax})${baselineNote(startLayout ? `${startLayout.empty.toFixed(0)}%` : null)}` },
+        { id: 'empty-square', ok: layout.square <= g.emptySquareMax || notWorse(layout.square, startLayout?.square, 0),
+          detail: `빈 정사각형 ${layout.square}칸 (≤${g.emptySquareMax})${baselineNote(startLayout ? `${startLayout.square}칸` : null)}` },
+        { id: 'mirror', ok: layout.mirror <= g.mirrorMax || notWorse(layout.mirror, startLayout?.mirror, 0.05),
+          detail: `좌우 대칭 배수 ${layout.mirror.toFixed(2)} (≤${g.mirrorMax})${baselineNote(startLayout ? startLayout.mirror.toFixed(2) : null)}` },
       ] : []),
     ];
     return { mapId, name: map.name, tilesetId: map.tilesetId, family, size: [map.width, map.height], events: map.events.length, npcs,
-      layout, ...(bareFloor ? { bareFloor } : {}), reach, render: { file, clean, marker, startMarkerHidden: process.env.HARNESS_START_MARKER !== '1', sha256: sha(png), width: decoded.width, height: decoded.height }, quadrants, checks,
+      layout, ...(bareFloor ? { bareFloor } : {}), reach, ...(startReach ? { baseline: { reach: startReach, layout: startLayout } } : {}), render: { file, clean, marker, startMarkerHidden: process.env.HARNESS_START_MARKER !== '1', sha256: sha(png), width: decoded.width, height: decoded.height }, quadrants, checks,
       pass: checks.every(check => check.ok || ('advisory' in check && check.advisory)) };
   });
   const measure = { schemaVersion: 1, attempt, caseId: result.caseId, category: result.category, measuredAt: new Date().toISOString(),
