@@ -122,4 +122,28 @@ describe("shipped catalogs", () => {
     expect(ja[note]).toContain("マス");
     expect(zh[note]).toContain("图块");
   });
+
+  it("calls the ground layer 地上 in Japanese, not battle or a garbled reading", () => {
+    // 바닥과 배틀은 글자가 비슷해 명령 팔레트·레이어 필터·타일 변경 안내가 バトル / バーゾリアル 로 나갔다.
+    // 짧은 라벨 「바닥」과 같은 낱말(地上)을 쓴다.
+    expect(ja["바닥"]).toBe("地上");
+    expect(ja["레이어: 바닥"]).toBe("レイヤー: 地上");
+    expect(ja["레이어 필터: 바닥(하위) 타일만"]).toBe("レイヤーフィルター: 地上(下位)タイルのみ");
+    expect(ja["맵 한 칸의 바닥이나 상위 타일을 바꿉니다."]).toBe("マップ1マスの地上または上部タイルを変更します。");
+    expect(ja["맵 한 칸의 바닥이나 상위 타일을 바꿉니다. 비우기를 누르면 그 칸을 지웁니다."]).toBe(
+      "マップ1マスの地上または上部タイルを変更します。クリアを押すとそのマスを消します。",
+    );
+    for (const value of [
+      ja["레이어: 바닥"],
+      ja["레이어 필터: 바닥(하위) 타일만"],
+      ja["맵 한 칸의 바닥이나 상위 타일을 바꿉니다."],
+      ja["맵 한 칸의 바닥이나 상위 타일을 바꿉니다. 비우기를 누르면 그 칸을 지웁니다."],
+    ]) {
+      expect(value).not.toMatch(/バトル|バーゾリアル/);
+    }
+    expect(createTranslator(ja).translate("레이어: 바닥")).toBe("レイヤー: 地上");
+    expect(createTranslator(ja).translate("맵 한 칸의 바닥이나 상위 타일을 바꿉니다.")).toBe(
+      "マップ1マスの地上または上部タイルを変更します。",
+    );
+  });
 });
