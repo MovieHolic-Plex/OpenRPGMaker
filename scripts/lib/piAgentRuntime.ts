@@ -53,7 +53,7 @@ import { presentationArtIds, presentationArtImages } from '../../src/editor/tool
 
 import { Agent, type StreamFn } from "@oh-my-pi/pi-agent-core";
 import { streamSimple, validateToolArguments } from "@oh-my-pi/pi-ai";
-import { repairToolArgs, repeatedShapeHint } from "../../src/ai/piAgent/argRepair.ts";
+import { repairToolArgs, repeatedShapeHint, shapeErrorSignature, shapeLoopRefusal } from "../../src/ai/piAgent/argRepair.ts";
 import type { RoleModel } from "../../src/ai/modelRoles.ts";
 import { resolveOhMyPiModel } from "./ohMyPiModel.ts";
 import { codexVersionFetch } from "./codexClientVersion.ts";
@@ -548,7 +548,8 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   // 인자 모양 고치기(src/ai/piAgent/argRepair.ts) — 코어 검증을 느슨하게 하고 여기서 검증한다. 맞는 호출은 그대로 지나가고,
   // 실패한 호출만 뜻이 분명한 모양 실수(감싸는 객체 빠뜨림·안쪽 칸 바깥에 둠·목록 항목 id 빠뜨림)를 고쳐 한 번 더 검증한다.
   // 같은 도구가 연달아 모양 오류를 내면 오류 끝에 필수 칸 모양을 붙인다(2026-10-25: 같은 인자로 13번 실패).
-  const shapeFailures = new Map<string, number>();
+  // 도구마다 연달아 난 모양 오류 수와 마지막 오류 줄(같은 오류가 되풀이되는지).
+  const shapeFailures = new Map<string, { count: number; same: number; sig: string }>();
   const withArgRepair = (tool: PiToolShape): PiToolShape => (!tool.parameters ? tool : { ...tool, lenientArgValidation: true, async execute(id, params, signal) {
     const check = (args: unknown) => validateToolArguments(tool as never, { type: "toolCall", id, name: tool.name, arguments: args as Record<string, unknown> } as never);
     let valid: unknown;
@@ -560,8 +561,17 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
       let repairedError: unknown;
       if (repaired.changes.length) { try { fixed = check(repaired.args); } catch (again) { repairedError = again; } }
       if (fixed === undefined) {
-        const failures = (shapeFailures.get(tool.name) ?? 0) + 1;
-        shapeFailures.set(tool.name, failures);
+        const rawMessage = repairedError instanceof Error ? repairedError.message : error instanceof Error ? error.message : String(repairedError ?? error);
+        const sig = shapeErrorSignature(rawMessage);
+        const prior = shapeFailures.get(tool.name);
+        const failures = (prior?.count ?? 0) + 1;
+        const same = prior && prior.sig === sig ? prior.same + 1 : 1;
+        shapeFailures.set(tool.name, { count: failures, same, sig });
+        // 같은 오류 세 번째 — 긴 오류를 또 돌려주면 모델이 같은 호출을 되풀이했다(set_lighting_volume 13번). 거절하고 방법을 바꾸라고 한다.
+        if (same >= 3) {
+          emit({ type: 'execution_status', name: 'tool.args.loop', ok: false, summary: `${tool.name}: 같은 인자 모양 오류 ${same}번째 — 거절` });
+          throw new Error(shapeLoopRefusal(tool.name, tool.parameters, sig, same));
+        }
         // 모양을 고친 뒤에도 틀리면 고친 쪽 오류가 더 가깝다(남은 빈칸만 말한다) — 무엇을 고쳤는지 함께 알린다.
         const message = repairedError
           ? `[인자 모양 고침: ${repaired.changes.join(" · ")} — 그래도 남은 오류]\n${repairedError instanceof Error ? repairedError.message : String(repairedError)}`
