@@ -13,11 +13,9 @@ import { startOnRetiredCombinedTown, withRetiredEasyRpgTilesets } from "./suppor
 
 const SETTER = "set_tile_passability";
 const TILESET = "passage_fixture";
-// 첫 요청이 전체 카탈로그를 싣는 경로를 잰다 — 카탈로그(약 460개·25만 토큰 추정)는 기본 창 128k 에 안 들어가
-// 좁힌 목록으로 바뀐다(sessionToolExposure fullCatalogFitsWindow). 그래서 창이 넉넉한 모델 id 를 쓴다(gpt-5 접두사 = 400k).
 const CONFIG = {
   authMode: "apiKey" as const, agentMode: "chat" as const,
-  baseUrl: "x", model: "gpt-5-fixture", liteModel: "fixture", apiKey: "sk",
+  baseUrl: "x", model: "fixture", liteModel: "fixture", apiKey: "sk",
   maxToolCalls: 4, maxTokens: 512,
 };
 const SEMANTIC_TOOLS = [
