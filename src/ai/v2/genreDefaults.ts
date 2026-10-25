@@ -16,9 +16,9 @@ const BATTLE_WORDS = /전투|싸우|싸움|싸워|보스|적\b|적이|적을|적
 const PRISTINE_HERO = new Set([undefined, "easyrpg-charset-actor1"]);
 
 /** 첫 현대 장소를 지은 뒤 한 번. 깐 것 이름 목록(보고용). */
-export function applyModernSetupDefaults(project: Project, task: string): string[] {
+export function applyModernSetupDefaults(project: Project, task: string, freshStart = false): string[] {
   const applied: string[] = [];
-  const setup = GAME_SETUP_WORDS.test(task);
+  const setup = freshStart || GAME_SETUP_WORDS.test(task);
   if (setup && ROMANCE_SETUP_WORDS.test(task) && !project.system.genreLock) {
     applied.push(...applyRomanceDefaults(project, { force: true }).map((name) => `연애 기본값 ${name}`));
   }
@@ -30,10 +30,23 @@ export function applyModernSetupDefaults(project: Project, task: string): string
     if (hero.faceResourceId === "easyrpg-faceset-actor1-00") delete hero.faceResourceId;
     applied.push("주인공 현대 칩");
   }
-  // 전투를 말하지 않은 현대 게임: 체력 HUD 를 끈다(연애 기본값이 이미 호감 HUD 를 깔았으면 그대로).
-  if (setup && project.system.fieldHud === undefined && !BATTLE_WORDS.test(task)) {
-    project.system.fieldHud = { theme: "minimal", vitals: false, clock: true, tools: false, objective: false, hideEmpty: true };
-    applied.push("체력 HUD 끔");
-  }
+  applied.push(...applyStorySetupDefaults(project, task, freshStart));
   return applied;
+}
+
+/**
+ * 전투를 말하지 않은 게임(현대든 판타지든): 체력 HUD 를 끈다(연애 기본값이 이미 호감 HUD 를 깔았으면 그대로).
+ * 처음엔 현대 장소에만 깔아서 판타지 풍 이야기 게임(장난감 가게 회상)에 하트 다섯 개와 「514/514」가 남았다(2026-10-25 G51).
+ * freshStart: 빈 프로젝트에서 처음 장소를 짓는 요청 — 「게임」이라는 낱말이 없어도 게임을 시작하는 것이다(「폐업 직전 장난감 가게 (회상 스토리)」).
+ */
+export function applyStorySetupDefaults(project: Project, task: string, freshStart = false): string[] {
+  const setup = freshStart || GAME_SETUP_WORDS.test(task);
+  if (!setup || project.system.fieldHud !== undefined || BATTLE_WORDS.test(task)) return [];
+  project.system.fieldHud = { theme: "minimal", vitals: false, clock: true, tools: false, objective: false, hideEmpty: true };
+  return ["체력 HUD 끔"];
+}
+
+/** 빈 프로젝트(이벤트·엔딩 없음)인가 — 첫 장소를 짓는 요청을 게임 시작으로 본다. */
+export function isFreshProject(project: Project): boolean {
+  return (project.endings ?? []).length === 0 && Object.values(project.maps).every((map) => (map.events ?? []).length === 0);
 }

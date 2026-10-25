@@ -7,7 +7,7 @@ import { roomSpecOf } from "@/editor/handInterior/builder";
 import { createBuildRun, type RecordingBuildRun } from "./buildRun";
 import { builderFor } from "./builders";
 import { localizePlaceSpec } from "./builders/modernCity";
-import { applyModernSetupDefaults } from "./genreDefaults";
+import { applyModernSetupDefaults, applyStorySetupDefaults, isFreshProject } from "./genreDefaults";
 import { dedupeToolSchemas } from "./schemaDedupe";
 import { adoptExactInterior, interiorAddAnchors, interiorBuilder, interiorEditFromArgs, roomMaterials } from "./builders/interior";
 import { interiorStampEdit, type StampEditState } from "./builders/interiorEdit";
@@ -243,15 +243,17 @@ export function applyPatch(spec: PlaceSpec, patch: PlacePatch, floor = 1): Place
 }
 
 /** 현대(한국·일본 도시) 장소를 처음 지은 게임 요청이면 장르 기본값(주인공 현대 칩·체력 HUD 끄기·연애 기본값)을 깔고 보고에 한 줄 남긴다. */
-function withSetupDefaults(result: PlaceBuildResult, builderId: string, project: Project, task: string): PlaceBuildResult {
-  if (!result.ok || (builderId !== "kr-modern" && builderId !== "jp-city")) return result;
-  const set = applyModernSetupDefaults(project, task);
+function withSetupDefaults(result: PlaceBuildResult, builderId: string, project: Project, task: string, freshStart = false): PlaceBuildResult {
+  if (!result.ok) return result;
+  const set = builderId === "kr-modern" || builderId === "jp-city" ? applyModernSetupDefaults(project, task, freshStart) : applyStorySetupDefaults(project, task, freshStart);
   return set.length ? { ...result, warnings: [...result.warnings, `게임 기본값을 깔았다: ${set.join(" · ")} — 사용자가 다른 것을 원하면 바꾼다`] } : result;
 }
 
 export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiToolShape[] {
   const task = env.request.task;
   const run = createBuildRun(env.ctx);
+  // 이 차례를 시작할 때 빈 프로젝트였나 — 첫 장소를 짓는 요청은 「게임」 낱말이 없어도 게임 시작으로 보고 장르 기본값을 깐다(G51).
+  const freshStart = isFreshProject(env.ctx.project);
 
   const problemCount = (seen: Seen | undefined, mapIds: readonly string[]) => !seen ? Infinity
     : seen.checks.filter((c) => !c.ok && mapIds.includes(c.mapId)).length + seen.critics.filter((v) => mapIds.includes(v.mapId)).reduce((n, v) => n + v.majors.length, 0);
@@ -402,7 +404,7 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
       env.emit({ type: "execution_status", name: "v2.build", ok: true, summary: `${spec.name} 짓는 중(${builder.id})` });
       await builder.prepare?.(spec);
       let result = builder.build(run, spec);
-      result = withSetupDefaults(result, builder.id, run.ctx.project, String(task ?? ""));
+      result = withSetupDefaults(result, builder.id, run.ctx.project, String(task ?? ""), freshStart);
       if (keptNote) result = { ...result, warnings: [keptNote, ...result.warnings] };
       return finishPlace(id, "make_place", params, spec, builder.id, result, 0);
     },
@@ -623,7 +625,7 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
         await builder.prepare?.(spec);
         const sub = i === 0 ? env.ctx : { ...env.ctx, project: env.ctx.project, currentMapId: parentMap ?? env.ctx.currentMapId };
         const subRun = i === 0 ? run : createBuildRun(sub);
-        let result = withSetupDefaults(builder.build(subRun, spec), builder.id, sub.project, String(task ?? ""));
+        let result = withSetupDefaults(builder.build(subRun, spec), builder.id, sub.project, String(task ?? ""), freshStart);
         if (sub !== env.ctx) env.ctx.project = sub.project;
         recordWrite(env, subRun, `${id}:${place.key}`, "make_game", { place: place.key, spec }, result.ok, result.summary, { mapIds: result.mapIds });
         for (const m of result.missingArt) session.missingArt.add(m);

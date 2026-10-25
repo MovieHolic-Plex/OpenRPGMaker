@@ -575,6 +575,27 @@ export function gameContentProblems(before: Project, after: Project, task: strin
       problems.push("[게임 검사 회상] 요청은 과거 장면이 화면에 보이는 회상인데, 바꾼 이벤트는 화면 색만 바꾸고 지금 인물이 옛이야기를 말한다 — 과거 인물이 나오지 않는다. add_event{kind:'cutscene',when:'talk',after:'<말 거는 대상 이름>',beats:[{do:'tint',tone:'sepia'},{do:'appear',who:'<과거 인물>'},{do:'walk',…},{do:'say',who:'<과거 인물>',text:…},{do:'vanish',who:'<과거 인물>'},{do:'tint',tone:'clear'}]} 로 과거 인물을 세워 움직이고 말하게 한다(장면 뒤에는 사라진다).");
     }
   }
+  // 밤·낮을 스위치와 화면 색으로만 바꾸는데 시간 체계가 켜져 있으면 HUD 시계는 따로 흘러 「자정」 뒤에도 「06:16」을 보인다
+  // (2026-10-25 장난감 가게 G51). 그 갈래에 setTime 을 같이 넣거나, 시계를 안 쓰면 시간 체계를 끈다.
+  if ((after.system.timeSystem as { enabled?: boolean } | undefined)?.enabled) {
+    const nightTint = (cmd: Obj): boolean => {
+      const fields = (cmd.fields ?? {}) as Obj;
+      const text = `${String(fields.value ?? "")} ${String(fields.color ?? "")} ${String(cmd.tone ?? cmd.color ?? "")}`;
+      if (/night|밤|dusk|midnight/iu.test(text)) return true;
+      const rgba = String(fields.value ?? "").split(",").map(Number);
+      return rgba.length >= 3 && rgba.slice(0, 3).every((v) => Number.isFinite(v) && v <= 90) && (rgba[3] === undefined || rgba[3] >= 0.25);
+    };
+    const timeKinds = new Set(["setTime", "advanceTime", "sleepUntilMorning"]);
+    const off: string[] = [];
+    for (const ev of changed) {
+      const rows = allCommands(ev);
+      const tints = rows.filter((r) => (r.cmd.kind === "tint" || (r.cmd.kind === "m2Command" && /m2-046/u.test(String(r.cmd.commandId)))) && nightTint(r.cmd));
+      if (!tints.length || !rows.some((r) => r.cmd.kind === "setSwitch")) continue;
+      if (rows.some((r) => timeKinds.has(String(r.cmd.kind)))) continue;
+      off.push(`「${ev.name}」(${ev.id})`);
+    }
+    if (off.length) problems.push(`[게임 검사 시계] 시간 체계가 켜져 있어 화면 시계(HUD)가 따로 흐르는데, ${off.slice(0, 3).join(", ")} 은 밤을 스위치와 화면 색으로만 만든다 — 「자정」 뒤에도 시계는 아침 시각을 보인다. 밤으로 바꾸는 갈래에 {kind:'setTime',hour:24,minute:0}(자정), 낮으로 돌리는 갈래에 {kind:'setTime',hour:6,minute:0} 을 같이 넣는다. 시계가 필요 없는 이야기면 configure_time_system{enabled:false} 로 끈다.`);
+  }
   // 「제1막 끝」 카드: 대사 한 줄로 흉내 내면 게임이 그대로 이어진다 — 진짜 엔딩(막 끝 화면)이어야 한다(fs-end-act).
   if (/제\s*\d+\s*막\s*끝|막이?\s*끝나|막 끝/u.test(task) && !kinds.has("triggerEnding")) {
     problems.push("[게임 검사 엔딩] 요청에 「막 끝」 화면이 있는데 바꾼 이벤트에 진짜 엔딩 명령이 없다 — 대사 「제1막 끝」만으로는 게임이 그대로 이어진다. define_ending{id:'ending_act1',presentation:{finalTitle:'제1막 끝',badge:'제2막으로 이어집니다'}} 뒤 그 장면 끝에 {kind:'triggerEnding',endingId:'ending_act1'} 를 넣는다.");
