@@ -256,7 +256,8 @@ export function composeDungeon(ts: TilesetDef, spec: DungeonSpec): DungeonCompos
     const faceId = pick(h >= 3 ? face.h3 : face.h2);
     const rows = kit(faceId).rows;
     const row = rows[(h >= 3 ? 3 : 2) - 1 - b]!.tiles;
-    const left = x > 0 && wallB[idx(x - 1, y)] === b, right = x + 1 < W && wallB[idx(x + 1, y)] === b;
+    // 이웃 열도 같은 줄이 벽 앞면이면(단 번호가 달라도) 이어진 벽 — 단만 보고 끝 칸(테두리)을 고르면 1칸 계단진 벽 한가운데에 세로 테두리 줄이 섰다(2026-10-25 floor VQA r5 「stepped walls with vertical shadow seams」).
+    const left = x > 0 && wallB[idx(x - 1, y)]! >= 0, right = x + 1 < W && wallB[idx(x + 1, y)]! >= 0;
     // 새김 가운데 열(`<앞면 키트>-glyph`, 1칸 폭 같은 높이)이 구워져 있으면 벽 가운데 칸을 드문드문 그것으로 — 같은 열의 단끼리는 같은 해시라 새김이 끊기지 않는다.
     const glyph = left && right && hasKit(`${faceId}-glyph`) && hash01(x, y + b, seed * 13 + 5) < 0.14 ? kit(`${faceId}-glyph`) : undefined;
     if (glyph && glyph.rows.length === rows.length) { lower[idx(x, y)] = glyph.rows[rows.length - 1 - b]!.tiles[0]!; continue; }
