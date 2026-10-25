@@ -103,7 +103,7 @@ describe("editorAssetWarmup", () => {
   it("picker tier covers faceset and chipset catalogs as root-absolute urls", () => {
     const urls = editorWarmupUrls("picker");
     expect(urls).toContain("/assets/easyrpg/faceset/Actor1/00.png");
-    expect(urls).toContain("/assets/easyrpg-chipset-interior-transparent.png");
+    expect(urls).toContain("/assets/beodeul-warm-trees/chipset.png");
     expect(urls.every((url) => url.startsWith("/"))).toBe(true);
     expect(new Set(urls).size).toBe(urls.length);
   });
