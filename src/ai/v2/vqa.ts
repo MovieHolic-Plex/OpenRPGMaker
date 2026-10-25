@@ -23,6 +23,8 @@ export interface VqaDefect {
   readonly what: string;
   /** 「blocker」 = 플레이에 지장·약속과 다름·임시 그림. 「polish」 = 눈에 띄지만 쓸 수는 있음. 둘 다 결함이다. */
   readonly severity: "blocker" | "polish";
+  /** 결함이 난 그림의 대상 — 맵이면 mapId, 타이틀·오프닝이면 그림 자원 id. 고치기 지시가 «어디를 고칠지»를 정확히 짚게. */
+  readonly target?: { readonly kind: VqaShot["kind"]; readonly ref?: string };
 }
 
 export interface VqaRound {
@@ -86,7 +88,8 @@ export function parseVqaReply(text: string, shots: readonly VqaShot[]): { defect
     if (!what) return [];
     const shot = typeof item.image === "number" ? shots[item.image - 1] : undefined;
     const spot = typeof item.where === "string" && item.where.trim() ? item.where.trim() : "";
-    return [{ where: [shot?.where, spot].filter(Boolean).join(" · ") || spot || "(자리 없음)", what, severity: item.severity === "polish" ? "polish" : "blocker" }];
+    return [{ where: [shot?.where, spot].filter(Boolean).join(" · ") || spot || "(자리 없음)", what, severity: item.severity === "polish" ? "polish" : "blocker",
+      ...(shot ? { target: { kind: shot.kind, ...(shot.ref ? { ref: shot.ref } : {}) } } : {}) }];
   }).slice(0, 12);
   return { defects };
 }
@@ -128,6 +131,26 @@ export function vqaShouldContinue(rounds: readonly VqaRound[]): boolean {
   return true;
 }
 
+/** 결함 한 줄 — 고칠 대상(mapId·그림)을 같이 적는다. */
+export function vqaDefectLine(d: VqaDefect, index: number): string {
+  const target = d.target?.kind === "map" && d.target.ref ? ` (mapId: ${d.target.ref})`
+    : d.target?.kind === "title" ? " (타이틀 화면 — set_title_screen)"
+    : d.target?.kind === "opening" ? " (오프닝 — 오프닝 장면 다시 그리기)" : "";
+  return `${index + 1}. [${d.severity === "blocker" ? "막음" : "다듬기"}] ${d.where}${target} — ${d.what}`;
+}
+
+/**
+ * 고치기 차례가 도구를 하나도 부르지 않고 글만 쓰고 끝났을 때(2026-10-25 실측: 결함 9→9→9, 판마다 도구 0회) — 그 차례는 판으로 세지 않고,
+ * 결함 목록을 다시 주며 한 번 더 고치게 한다. 이 지시와 함께 첫 모델 호출에 tool_choice required 가 걸린다.
+ */
+export function vqaFixRetry(round: VqaRound): string {
+  return [
+    `[화면 검수 ${round.round}/${VQA_MAX_ROUNDS} — 고치기 다시] 앞 차례에서 도구를 하나도 부르지 않고 보고만 고쳤다. 보고를 고치는 것은 고치기가 아니다. 지금 도구로 아래 결함을 하나씩 고친다 — 결함마다 대상 맵·그림을 바꾸는 도구를 부른다.`,
+    ...round.defects.map(vqaDefectLine),
+    "정말 고칠 수 없는 결함은 고치지 말고 최종 보고에 «미해결»로 남긴다. 고치지 않은 결함을 «고쳤다»고 쓰지 않는다.",
+  ].join("\n");
+}
+
 /** 조수에게 줄 고치기 지시(판 사이). */
 export function vqaFollowUp(round: VqaRound): string {
   if (round.problem && !round.defects.length) {
@@ -135,7 +158,8 @@ export function vqaFollowUp(round: VqaRound): string {
   }
   return [
     `[화면 검수 ${round.round}/${VQA_MAX_ROUNDS}] 다른 모델의 검수자(${round.reviewer})가 실제 그림에서 아래 결함을 찾았다. 각각 고친다 — 맵은 show_map_region 으로 다시 보고, 타이틀·오프닝은 다시 그려 확인한다. 고칠 수 없으면 고치지 말고 최종 보고에 남은 결함으로 쓴다.`,
-    ...round.defects.map((d, i) => `${i + 1}. [${d.severity === "blocker" ? "막음" : "다듬기"}] ${d.where} — ${d.what}`),
+    ...round.defects.map(vqaDefectLine),
+    "보고만 다시 쓰는 것은 고치기가 아니다 — 이 차례에는 도구로 그림을 바꾼다(도구를 하나도 부르지 않으면 이 판은 세지 않고 한 번 더 시킨 뒤, 그래도 안 하면 «미해결»로 끝난다). 고치지 않은 결함을 «고쳤다»고 쓰지 않는다.",
     "다 고친 뒤 「최종 보고(앞 보고를 고침):」로 시작하는 보고 하나로 앞 보고를 대신한다. 검수자가 다음 판에서 같은 그림을 다시 본다.",
   ].join("\n");
 }

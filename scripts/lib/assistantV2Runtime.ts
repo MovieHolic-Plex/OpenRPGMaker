@@ -7,7 +7,7 @@ import type { PiAgentDoneEvent, PiAgentEvent, PiAgentRequest } from "../../src/a
 import { buildV2SystemPrompt } from "../../src/ai/v2/prompt.ts";
 import { createV2Tools, V2Session, v2FinishGate } from "../../src/ai/v2/verbs.ts";
 import { shipBlockers } from "../../src/ai/v2/shipChecks.ts";
-import { pickVqaReviewer, reviewVqaRound, vqaClean, vqaFollowUp, vqaLeftoverInstruction, vqaShotPlan, vqaReviewerLabel, vqaShouldContinue, vqaSummary, wantsWholeGame, VQA_MAX_ROUNDS, type VqaReviewerPick, type VqaRound, type VqaShot } from "../../src/ai/v2/vqa.ts";
+import { pickVqaReviewer, reviewVqaRound, vqaClean, vqaFixRetry, vqaFollowUp, vqaLeftoverInstruction, vqaShotPlan, vqaReviewerLabel, vqaShouldContinue, vqaSummary, wantsWholeGame, VQA_MAX_ROUNDS, type VqaReviewerPick, type VqaRound, type VqaShot } from "../../src/ai/v2/vqa.ts";
 import { familyOfProviderId } from "../../src/ai/assistantRoles.ts";
 import type { PiAssistantV2Env } from "../../src/ai/v2/env.ts";
 import { adviseTurn, advisorFollowUp, withShipBlockers, advisorSummary, compactToolLog, summarizeProjectDiff, type AdvisorToolCall, type AdvisorVerdict } from "../../src/ai/v2/advisor.ts";
@@ -68,7 +68,10 @@ export async function runAssistantV2(request: PiAgentRequest, options: RunPiAgen
   let followFrom = 0, followMs = 0;
   // 화면 검수 고리 상태 — 판 기록, 다음 afterMain 차례가 무엇을 할지.
   const vqaRounds: VqaRound[] = [];
-  let vqaPhase: "advisor" | "advisor-recheck" | "vqa" | "done" = "advisor";
+  let vqaPhase: "advisor" | "advisor-recheck" | "vqa" | "final-check" | "done" = "advisor";
+  // 고치기 차례 감시: 고치기 지시를 낼 때의 도구 기록 길이. 다음 걸음에서 그대로면 그 차례는 도구 0회 — 판으로 세지 않는다.
+  let fixFromCalls: number | undefined;
+  let fixRetried = false;
   let vqaReviewer: VqaReviewerPick | undefined;
   let vqaMs = 0;
   let vqaReviewedFingerprint: string | undefined;
@@ -105,21 +108,41 @@ export async function runAssistantV2(request: PiAgentRequest, options: RunPiAgen
   /** 화면 검수 한 걸음: 판 하나를 돌고, 결함이 있으면 고치기 지시, 끝났으면 (남은 결함이 있을 때) 정직한 최종 보고 지시. */
   const vqaStep = async (env: PiAssistantV2Env): Promise<string | undefined> => {
     if (!vqaEnabled(env.request) || (vqaRounds.length && !vqaShouldContinue(vqaRounds))) { vqaPhase = "done"; return undefined; }
-    // 고치기 차례에 프로젝트 내용이 하나도 바뀌지 않았으면 같은 그림을 다시 검수하지 않는다 — 결함이 그대로 남았다고 적고 끝낸다.
     const previous = vqaRounds.at(-1);
+    // 고치기 차례가 도구를 하나도 부르지 않았다(보고만 고쳐 씀) — 판으로 세지 않는다. 결함 목록을 다시 주고 도구 호출을 강제해 한 번 더,
+    // 그래도 0회면 «미해결 N건»으로 끝낸다(2026-10-25 hf2 실측: 결함 9→9→9, 판마다 도구 0회).
+    if (previous && fixFromCalls !== undefined && calls.length === fixFromCalls) {
+      if (!fixRetried) {
+        fixRetried = true;
+        env.emit({ type: "execution_status", name: "v2.vqa.fix_retry", ok: false, summary: `화면 검수 ${previous.round}/${VQA_MAX_ROUNDS} 고치기 차례에 도구 0회 — 판으로 세지 않고 결함 ${previous.defects.length}건을 다시 주며 도구 호출을 강제`, data: { round: previous.round, defects: previous.defects.length } });
+        env.requireToolNextTurn?.();
+        return vqaFixRetry(previous);
+      }
+      fixFromCalls = undefined;
+      vqaPhase = "final-check";
+      env.emit({ type: "execution_status", name: "v2.vqa", ok: false, summary: `화면 검수 끝 — 고치기 차례 두 번 다 도구 0회, 미해결 결함 ${previous.defects.length}건`, data: { unresolved: previous.defects.length, round: previous.round } });
+      return vqaLeftoverInstruction(vqaRounds, `고치기 차례에 도구를 하나도 부르지 않았다 — 미해결: 결함 ${previous.defects.length}건`);
+    }
+    fixFromCalls = undefined;
+    // 고치기 차례에 프로젝트 내용이 하나도 바뀌지 않았으면 같은 그림을 다시 검수하지 않는다 — 결함이 그대로 남았다고 적고 끝낸다.
     const fingerprint = projectFingerprint(env.ctx.project);
     if (previous && !previous.problem && fingerprint && fingerprint === vqaReviewedFingerprint) {
-      vqaPhase = "done";
+      vqaPhase = "final-check";
       env.emit({ type: "execution_status", name: "v2.vqa", ok: false, summary: `화면 검수 ${previous.round + 1}/${VQA_MAX_ROUNDS} 건너뜀 — 앞 판 뒤로 바뀐 것이 없음, 결함 ${previous.defects.length}건 그대로`, data: { skipped: true, round: previous.round + 1 } });
       return vqaLeftoverInstruction(vqaRounds, "앞 판 결함을 고치는 동안 프로젝트가 하나도 바뀌지 않았다");
     }
     vqaReviewedFingerprint = fingerprint;
     const round = await runVqaRound(env);
     const noRenderPath = !env.render && !env.renderArt;
-    if (!noRenderPath && !vqaClean(round) && vqaShouldContinue(vqaRounds)) return vqaFollowUp(round);
-    vqaPhase = "done";
-    // 결함이 남은 채 끝나면 조수가 최종 보고에 남은 목록을 쓰게 한 번 더 돌린다(고치지 말고 정직하게).
-    return vqaClean(round) ? undefined : vqaLeftoverInstruction(vqaRounds);
+    if (!noRenderPath && !vqaClean(round) && vqaShouldContinue(vqaRounds)) {
+      fixFromCalls = calls.length;
+      env.requireToolNextTurn?.();
+      return vqaFollowUp(round);
+    }
+    // 결함이 남은 채 끝나면 조수가 최종 보고에 남은 목록을 쓰게 한 번 더 돌린다(고치지 말고 정직하게). 그 보고는 검토자가 실제 변경에 대어 본다.
+    if (vqaClean(round)) { vqaPhase = "done"; return undefined; }
+    vqaPhase = "final-check";
+    return vqaLeftoverInstruction(vqaRounds);
   };
   const done = await runPiAgent({
     ...request,
@@ -134,7 +157,8 @@ export async function runAssistantV2(request: PiAgentRequest, options: RunPiAgen
     v2: {
       tools: (env) => createV2Tools(env, session),
       // 차례 순서: ① 끝맺음 관문 + 검토자 → (막음이면) ② 재검토(기록만) → ③ 화면 검수 1~3판(게임 전체 요청만). 판마다 결함이 있으면 고치는 한 바퀴.
-      maxRounds: 2 + VQA_MAX_ROUNDS + 1,
+      // 화면 검수: 판마다 한 차례 + 고치기 다시 한 번 + 남은 결함 보고 + 그 보고의 최종 검토 후속.
+      maxRounds: 2 + VQA_MAX_ROUNDS + 3,
       afterMain: async (env) => {
         if (vqaPhase === "advisor-recheck") {
           if (followFrom) followMs = Date.now() - followFrom;
@@ -146,6 +170,15 @@ export async function runAssistantV2(request: PiAgentRequest, options: RunPiAgen
           }
         }
         if (vqaPhase === "vqa") return vqaStep(env);
+        if (vqaPhase === "final-check") {
+          // 남은 결함을 적은 최종 보고를 검토자가 실제 변경(diff)에 대어 본다 — 바꾸지 않은 것을 «고쳤다»고 쓴 보고는 막음 한 번으로 고치게 한다.
+          vqaPhase = "done";
+          if (!advisorEnabled(env.request)) return undefined;
+          const final = withShipBlockers(await adviseTurn({ task: env.request.task, toolLog: compactToolLog(calls), diff: safeDiff(env), report: draft }, advisorChatOf(env), env.signal), safeShip(env));
+          advice = advice ? { ...final, ms: advice.ms + final.ms, inputChars: advice.inputChars + final.inputChars } : final;
+          env.emit({ type: "execution_status", name: "v2.advisor.final", ok: !final.notes.some((n) => n.level === "blocker"), summary: `화면 검수 뒤 최종 보고 검토 — ${advisorSummary(final)}`, data: final });
+          return advisorFollowUp(final);
+        }
         if (vqaPhase === "done") return undefined;
         // ① 끝맺음 관문 + 검토자. 보고 초안을 «실제로 바뀐 것»에 대어 본다. 막는 메모는 끝맺음 관문 글과 함께 한 차례 더 돌린다.
         // 우려·참고는 조수에게만(관문 글에 붙거나 실행 기록 v2.advisor) — 사용자 대화창에는 싣지 않는다.

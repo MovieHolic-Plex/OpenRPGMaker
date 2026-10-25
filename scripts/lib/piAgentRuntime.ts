@@ -846,8 +846,11 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
       return typeof content === "string" ? content : "";
     } finally { sideUsage.ms += Date.now() - t0; }
   } : undefined;
+  // 화면 검수 고치기 차례: 다음 지시의 첫 모델 호출 하나만 도구 호출을 강제한다(아래 Agent 의 getToolChoice 가 한 번 쓰고 내린다).
+  let forceToolTurn = false;
   const v2Env: PiAssistantV2Env | undefined = options.v2 ? {
     ctx, request, emit, record: recordCall,
+    requireToolNextTurn: () => { forceToolTurn = true; },
     checkpoint: (label: string) => request.applyMode !== "step" ? checkpoint(label, label, options.signal) : Promise.resolve(),
     sideChat: async (messages, signal) => {
       const reply = await eventAssistChat(null, { messages, ...(signal ?? options.signal ? { signal: signal ?? options.signal } : {}) });
@@ -1055,6 +1058,11 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   // 이 실행이 사용자에게 글로 된 답을 한 번이라도 냈나 — 없이 «정상» 끝나면 빈 보고로 정착시키지 않는다.
   let answered = false;
   const agent: PiLoopDriver = localLoop ?? new Agent({
+    getToolChoice: () => {
+      if (!forceToolTurn) return undefined;
+      forceToolTurn = false;
+      return "required";
+    },
     transformContext: async (messages: unknown[]) => {
       lastRequestHadImages = messagesHaveImages(messages);
       return (imagesStripped && lastRequestHadImages ? stripImages(messages) : messages) as never;
