@@ -1,4 +1,6 @@
 import { retiredEasyRpgChipsetTileset } from "../../src/project/defaults/defaultAssets";
+import { TILE } from "../../src/project/defaults/constants";
+import { blankFillTileFor } from "../../src/project/defaults/defaultMaps";
 import { ensureTilesetHarnesses } from "../../src/project/tilesetHarness";
 import { ensureInteriorRoomHarness } from "../../src/editor/interiorRoomPipeline";
 import type { Project, TilesetDef } from "../../src/project/types";
@@ -49,4 +51,22 @@ export function retiredEasyRpgTileset(id: string): TilesetDef {
   const tileset = holder.tilesets[id];
   if (!tileset) throw new Error(`retired tileset not built: ${id}`);
   return tileset;
+}
+
+/**
+ * 옛 저장본처럼 시작 맵이 합본 마을 칩셋 위에 있는 프로젝트를 만든다.
+ *
+ * 왜: tilesetId 를 생략한 타일 도구는 시작 맵의 타일셋(defaultToolTilesetId)을 쓴다. 정리 뒤 새 프로젝트의 시작 맵은
+ * beodeul_city 라, 합본 마을 그룹·타일 번호를 겨냥한 시험이 엉뚱한 칩셋에서 「그룹을 찾을 수 없습니다」로 끝났다.
+ * 빈 맵 바닥은 createBlankMap 이 그 칩셋에 깔았을 기본 풀로 다시 채운다(버들항 칩 번호가 남지 않게).
+ */
+export function startOnRetiredCombinedTown<T extends Project>(project: T, options: { readonly interiorHarness?: boolean } = {}): T {
+  withRetiredEasyRpgTilesets(project, options);
+  const tileset = project.tilesets[RETIRED_COMBINED_TOWN_TILESET_ID];
+  const map = project.maps[project.startMapId];
+  if (!tileset || !map) throw new Error("startOnRetiredCombinedTown: missing combined town tileset or start map");
+  map.tilesetId = tileset.id;
+  map.tileSize = tileset.tileSize;
+  map.lowerTiles = map.lowerTiles.map(() => blankFillTileFor(tileset.id, TILE.GRASS, tileset));
+  return project;
 }
