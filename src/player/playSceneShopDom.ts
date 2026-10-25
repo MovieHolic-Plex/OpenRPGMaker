@@ -34,6 +34,7 @@ import { partyFit, recoveryPreview } from "@/player/shopPartyFit";
 import type { ShopStep } from "@/player/playSceneShop";
 import type { PlaySceneContext } from "@/player/playSceneTypes";
 import type { ResolvedTerms } from "@/project/terms";
+import { fitTextToLines, keepWholeRows } from "@/player/runtimeTextFit";
 
 export type { ShopMode } from "@/player/playSceneShopParts";
 export type ShopView = "menu" | "items" | "haggle";
@@ -205,7 +206,7 @@ export function renderShopItems(request: ShopItemsRenderRequest): HTMLElement {
     const footer = el("div", { class: "runtime-shop-footer" });
     footer.append(
       shopWindow("runtime-shop-desc-panel", [
-        el("div", { class: "runtime-shop-desc-text", dataset: { testid: "shop-desc-text" }, text: helpLineText(request.step, first) }),
+        descTextNode(request.step, first),
         el("div", { class: "runtime-shop-desc-owned", dataset: { testid: "shop-desc-owned" }, text: ownedLine(request.scene, first) }),
       ]),
       shopWindow("runtime-shop-purse-panel", [
@@ -335,7 +336,7 @@ export function updateShopHelpLine(overlay: HTMLElement, step: ShopStep, item: S
   const node = overlay.querySelector<HTMLElement>("[data-testid='shop-help-line']");
   if (node) node.textContent = helpLineText(step, goods);
   const desc = overlay.querySelector<HTMLElement>("[data-testid='shop-desc-text']");
-  if (desc) desc.textContent = helpLineText(step, goods);
+  if (desc) fillDescText(desc, step, goods);
   const heroSlot = overlay.querySelector<HTMLElement>("[data-testid='shop-hero-slot']");
   if (heroSlot) {
     clear(heroSlot);
@@ -441,6 +442,8 @@ export function updateShopConfirmLabel(overlay: HTMLElement, terms: ResolvedTerm
 function shopItemList(request: ShopItemsRenderRequest, goods: readonly ShopGoods[]): HTMLElement {
   // 행을 고르고 결정키로 활성하는 패턴 — role=listbox 가 정확하다(행은 role=option).
   const wrap = el("div", { class: "runtime-shop-item-list", attrs: { role: "listbox", "aria-label": "상품 목록" } });
+  // 창 테두리에 반쯤 걸린 마지막 행을 없앤다 — 남는 높이를 행 경계로 자른다(J21 「회복약 60G」 반토막).
+  if (shopUiPresetOf(request.step) === "pixel") keepWholeRows(wrap);
   if (goods.length === 0) {
     wrap.append(
       el("div", {
@@ -487,6 +490,39 @@ function detailCard(scene: PlaySceneContext, step: ShopStep, goods: ShopGoods | 
   const statSlot = el("div", { class: "runtime-shop-slot", dataset: { testid: "shop-stat-slot" } });
   card.append(heroSlot, helpLine, ...(shopUiPresetOf(step)==="collector"?[]:[statSlot]), ownedSlot);
   return card;
+}
+
+/** 설명창 문장의 맞춤 — 두 줄을 먼저(글자를 한두 px 줄여서라도), 안 되면 세 줄, 그래도 넘치면 온 글자 말줄임 + title 전문. */
+const DESC_FIT = { preferLines: 2, maxLines: 3, minFontPx: 10 } as const;
+
+/**
+ * 도트 상점 설명창 문장. 장비면 능력치(「공격 +8」)를 문장 앞에 붙인다 — 칸이 좁은 배치(320×240)는
+ * 비교 창을 숨기므로 이 줄이 능력치를 보는 유일한 자리다. 예전엔 nowrap 말줄임이라 「…초보 …」에서 끊겼다(J21).
+ */
+function descTextNode(step: ShopStep, goods: ShopGoods | undefined): HTMLElement {
+  const node = el("div", { class: "runtime-shop-desc-text", dataset: { testid: "shop-desc-text" } });
+  fillDescText(node, step, goods);
+  if (typeof ResizeObserver !== "undefined") new ResizeObserver(() => fitTextToLines(node, DESC_FIT)).observe(node);
+  return node;
+}
+
+function fillDescText(node: HTMLElement, step: ShopStep, goods: ShopGoods | undefined): void {
+  node.replaceChildren();
+  const stats = statSummary(goods);
+  if (stats) node.append(el("span", { class: "runtime-shop-desc-stats", dataset: { testid: "shop-desc-stats" }, text: stats }), " ");
+  node.append(helpLineText(step, goods));
+  fitTextToLines(node, DESC_FIT);
+}
+
+/** 장비 자체 보너스 한 줄 — 「공격 +8 · 정신 +7」. 0 은 뺀다. */
+function statSummary(goods: ShopGoods | undefined): string {
+  const bonuses = goods?.statBonuses;
+  if (!bonuses) return "";
+  const labels = [["attack", "공격"], ["defense", "방어"], ["mind", "정신"], ["agility", "민첩"]] as const;
+  return labels
+    .filter(([key]) => (bonuses[key] ?? 0) !== 0)
+    .map(([key, label]) => `${label} ${(bonuses[key] ?? 0) > 0 ? "+" : ""}${bonuses[key]}`)
+    .join(" · ");
 }
 
 function helpLineText(step: ShopStep, goods: ShopGoods | undefined): string {
