@@ -1429,7 +1429,8 @@ export function applyFallenAct1Finale(project: Project, exec: Exec, ids: FallenA
   // 보스 HP 숨김 — 용(발렌은 이미 숨김). 조수 도구 upsert_enemy 의 hideHp.
   exec(project, "upsert_enemy", { enemy: { id: FS_DRAGON_ENEMY, hideHp: true } });
   // 보스와 마주 서는 장면 — 동료가 주인공 좌우 한 줄로 서서 같은 쪽(발렌)을 본다. 조수 도구 configure_companion_rules.
-  exec(project, "configure_companion_rules", { sceneFormation: "abreast" });
+  // 동료는 주인공 뒤를 따라 걷고(10-24 의 FF6 식 숨김을 걷음, 사용자 2026-10-25 「동료가 사라졌다」), 컷신에서는 횡대로 선다.
+  exec(project, "configure_companion_rules", { display: "follow", sceneFormation: "abreast" });
   hanelAfterCrash(project, ids.observatory);
   const door = M(project, ids.hub).events.find((e) => JSON.stringify(e).includes(`"mapId":"${ids.observatory}"`));
   if (!door) throw new Error("[fallen-star act1] 광장의 천문대 문이 없다");
@@ -1443,3 +1444,63 @@ export function applyFallenAct1Finale(project: Project, exec: Exec, ids: FallenA
 
 /** 시뮬레이터용 — 관통상을 거는 기술 id. */
 export const FS_PIERCE_SKILL_IDS = PIERCE_SKILLS;
+
+// ════════════════════════════════════════════════════════════════════
+// 필드 규칙(사용자 2026-10-25) — 랜덤 조우 없음·보이는 적만, 적은 멀리서 알아보고 덮친다, 자동 전투 없음,
+// 전투 뒤 상태 이상 해제, 저장은 세이브 포인트(마을·사당·지하)에서만. 모두 조수 도구로 — 구역 조우 표가 다 깔린 뒤에 부른다.
+// ════════════════════════════════════════════════════════════════════
+
+/** 레벨을 올릴 만큼 보이는 적을 채울 맵과 목표 마릿수(기존 + 다시 나타나는 적). */
+const LEVELING_FOES: ReadonlyArray<readonly [string, number]> = [
+  ["fs_forest_edge", 5], ["fs_forest_stream", 5], ["fs_forest_thicket", 5], ["fs_forest_glade", 4], ["fs_forest", 4],
+  ["fs_vault", 4], ["fs_vault_b3", 5],
+];
+const FOE_RESPAWN_SEC = 45;
+
+function isFieldFoe(event: GameMap["events"][number]): boolean {
+  return (event.pages ?? []).some((page) => page.trigger.kind === "eventTouch" && page.commands.some((c) => c.kind === "battleProcessing"));
+}
+
+function foeTroops(map: GameMap): string[] {
+  const fromTable = (map.encounterTable ?? []).map((row) => row.troopId).filter((id): id is string => typeof id === "string");
+  const fromFoes = map.events.filter(isFieldFoe).flatMap((event) => (event.pages ?? []).flatMap((page) => page.commands.flatMap((c) => (c as unknown as Rec).kind === "battleProcessing" ? [String((c as unknown as Rec).troopId)] : [])));
+  return [...new Set([...fromTable, ...fromFoes])].filter((id) => id && id !== "undefined");
+}
+
+export function applyFallenFieldRules(project: Project, exec: Exec): void {
+  for (const [mapId, target] of LEVELING_FOES) {
+    const map = project.maps[mapId];
+    if (!map) continue;
+    const troops = foeTroops(map);
+    let have = map.events.filter(isFieldFoe).length;
+    // 빈 칸을 맵 전체에 고르게 훑는다(기존 적에게서 먼 칸부터). 도구가 입구 근처·닿지 않는 칸은 거절한다.
+    const foes = map.events.filter(isFieldFoe).map((e) => ({ x: e.x, y: e.y }));
+    const cells: Cell[] = [];
+    for (let y = 2; y < map.height - 2; y += 3) for (let x = 2; x < map.width - 2; x += 3) cells.push({ x, y });
+    const far = (c: Cell): number => Math.min(99, ...foes.map((f) => Math.abs(f.x - c.x) + Math.abs(f.y - c.y)));
+    cells.sort((a, b) => far(b) - far(a) || a.y - b.y || a.x - b.x);
+    let n = 0;
+    for (const cell of cells) {
+      if (have >= target || troops.length === 0) break;
+      if (far(cell) < 6) break;
+      try {
+        exec(project, "place_field_enemy", {
+          mapId, x: cell.x, y: cell.y, troopId: troops[n % troops.length], behavior: "chase", pace: "fast",
+          patrol: { length: 2, axis: n % 2 === 0 ? "horizontal" : "vertical" }, respawnSec: FOE_RESPAWN_SEC,
+        });
+        have += 1; n += 1; foes.push(cell);
+      } catch { /* 그 칸은 도구가 거절 — 다음 칸 */ }
+    }
+  }
+  // 랜덤 조우를 끈다 — 표를 비우고 발생률 0(set_encounter_table 의 「끄기」).
+  for (const map of Object.values(project.maps)) {
+    if (!map.id.startsWith("fs_") || (!(map.encounterTable?.length) && !(map.encounterRate ?? 0) && !(map.troopIds?.length))) continue;
+    exec(project, "set_encounter_table", { mapId: map.id, entries: [], encounterRate: 0 });
+  }
+  // 보이는 적은 더 멀리서(7칸) 알아보고, 발견 직후 3칸을 주인공 걷기와 같은 빠르기로 덮친다 — 계속 걸으면 피할 수 있다.
+  exec(project, "tune_field_enemies", { sightRange: 7, vision: "cone", pace: "fast", lungeSteps: 3, lungeSpeed: 6 });
+  exec(project, "set_project_settings", { battle: { allowAutoBattle: false, clearStatesAfterBattle: true }, saveAccess: "savePoints" });
+  // 마을 세이브 포인트 — 광장 분수 곁 별빛 결정(사당 제단·지하 4층 푸른 결정과 같은 결정 모양).
+  exec(project, "place_savepoint", { mapId: "fs_hub", x: 37, y: 29, id: "ev_fs_hub_savepoint", name: "별빛 기록석", mode: "slot" });
+}
+

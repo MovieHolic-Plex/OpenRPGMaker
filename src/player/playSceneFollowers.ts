@@ -164,12 +164,16 @@ const lastStoryScene = new WeakMap<object, boolean>();
  * 매 프레임 불러도 장면 상태가 바뀔 때만 syncFollowerSprites 를 돈다.
  */
 export function syncFollowerSceneVisibility(scene: PlaySceneContext): void {
-  if (store.getCurrent().system.companions?.display !== "scenesOnly") return;
+  const companions = store.getCurrent().system.companions;
+  // scenesOnly(FF6 식)는 장면에서만 나타나고, 뒤따르기(follow)라도 sceneFormation "abreast" 면 장면에서 횡대로 선다.
+  const scenesOnly = companions?.display === "scenesOnly";
+  if (!scenesOnly && companions?.sceneFormation !== "abreast") return;
   if ((scene.session.followers?.length ?? 0) === 0) return;
   const now = followerStoryScene(scene);
   if (lastStoryScene.get(scene) === now) return;
   lastStoryScene.set(scene, now);
-  syncFollowerSprites(scene, { snap: true });
+  // 숨었다 나타나는 FF6 식은 그 자리에 세우고, 따라 걷던 동료는 횡대 자리로 걸어 들어간다.
+  syncFollowerSprites(scene, { snap: scenesOnly });
 }
 
 /** 몬스터만 따라오는 열차인가 — HGSS 처럼 한 칸 뒤에 붙는다(몸 길이로 띄우지 않는다). */

@@ -514,6 +514,12 @@ function validatePageShape(label: string, value: unknown): void {
     const holdMs = requireNumber(`${label}.movement.sightAlert.holdMs`, alert.holdMs);
     assert(Number.isFinite(holdMs) && holdMs >= 0 && holdMs <= 5000, `${label}: 시야 놀람 멈춤은 0~5000ms`);
   }
+  if (movement.chaseLunge !== undefined) {
+    const lunge = requireRecord(`${label}.movement.chaseLunge`, movement.chaseLunge);
+    const steps = requireNumber(`${label}.movement.chaseLunge.steps`, lunge.steps);
+    const speed = requireNumber(`${label}.movement.chaseLunge.speed`, lunge.speed);
+    assert(Number.isInteger(steps) && steps >= 1 && steps <= 8 && Number.isInteger(speed) && speed >= 1 && speed <= 8, `${label}: 덮치기는 steps 1~8 · speed 1~8`);
+  }
   if (movement.pursuit !== undefined) {
     const pursuit = requireRecord(`${label}.movement.pursuit`, movement.pursuit);
     assert(pursuit.scope === "map" || pursuit.scope === "connected", `${label}: 추격 범위 오류`);

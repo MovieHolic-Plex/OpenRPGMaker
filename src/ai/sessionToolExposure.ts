@@ -153,6 +153,13 @@ function buildSessionRegistryToolsUnfiltered(input: SessionToolExposureInput): O
   if (/(대형|횡대|마주\s*(서|보)|일행.*(줄|나란히)|보스\s*HP|HP\s*(숨|가리)|체력\s*(숨|가리))/iu.test(input.requestText)) {
     appendUnique(tools, seen, toolSchemasForNames(["configure_companion_rules", "upsert_enemy", "upsert_troop", "get_database_records"]) as OpenAiTool[]);
   }
+  // 전투·저장·필드 적 규칙(폴른 스타 2026-10-25): 자동 전투 끄기·전투 뒤 상태 해제·세이브 포인트 전용·랜덤 조우 끄기·추격 세기·연계기 얼굴.
+  if (/(자동\s*전투|오토\s*배틀|auto[-\s]?battle|상태\s*이상.*(풀|해제|남)|전투\s*(뒤|후|끝).*(독|수면|상태)|세이브\s*포인트|저장.*(만|금지|막)|메뉴.*저장)/iu.test(input.requestText)) {
+    appendUnique(tools, seen, toolSchemasForNames(["set_project_settings", "upsert_state", "place_savepoint", "set_map_properties", "get_database_records"]) as OpenAiTool[]);
+  }
+  if (/(랜덤\s*(인카운터|조우)|무작위\s*(조우|전투)|걸을\s*때마다.*전투|조우\s*(없|끄)|필드\s*(몬스터|적)|보이는\s*적|덮치|달려들|멀리서.*(알아|보)|추격.*(빠르|세게|멀리))/iu.test(input.requestText)) {
+    appendUnique(tools, seen, toolSchemasForNames(["set_encounter_table", "tune_field_enemies", "place_field_enemy", "upsert_troop"]) as OpenAiTool[]);
+  }
   appendUnique(tools, seen, mentionedToolSchemas(input.requestText) as OpenAiTool[]);
   appendUnique(tools, seen, input.discoveredToolNames
     ? toolSchemasForNames(input.discoveredToolNames) as OpenAiTool[]

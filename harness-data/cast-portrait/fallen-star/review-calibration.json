@@ -1,6 +1,19 @@
 {
  "n": 5,
  "model": "gemini-4-argon-high",
+ "thresholds": {
+  "fitMin": 6.5,
+  "sameArtistMin": 3,
+  "defectMaxVotes": 5
+ },
+ "summary": {
+  "positivesPassing": "4/6",
+  "negativesRejected": "0/0",
+  "separates": false,
+  "weakestPositiveMedian": 3.0,
+  "strongestNegativeMedian": 0,
+  "probes": {}
+ },
  "subjects": {
   "hanel": {
    "kind": "positive",
@@ -104,7 +117,528 @@
      "model": "gemini-4-argon-high"
     }
    ]
+  },
+  "knight": {
+   "kind": "positive",
+   "dir": "public/assets/shared/portraits/helmet-guard",
+   "aggregate": {
+    "n": 5,
+    "scores": [
+     2.0,
+     3.0,
+     3.0,
+     3.0,
+     2.0
+    ],
+    "median": 3.0,
+    "min": 2.0,
+    "max": 3.0,
+    "sameArtistVotes": 0,
+    "defectVotes": {
+     "base": 5,
+     "happy": 5,
+     "sad": 5,
+     "angry": 5,
+     "surprised": 5
+    },
+    "worstDefectVotes": 5
+   },
+   "runs": [
+    {
+     "castFit": 2,
+     "sameArtist": false,
+     "defects": {
+      "base": "head scale is far too small compared to the cast; viewer's right eye merges into the nasal guard and shoulder pattern has noisy, smeared pixels",
+      "happy": "skin palette shifts drastically paler than base, right eye disappears into a blurry smear, and open mouth has noisy anti-aliased artifacts",
+      "sad": "smeared pixels where eyes meet the helmet guard and neutral mouth fails to read as sad",
+      "angry": "skin tone shifts paler than base, mouth is an indistinct grey-tan smear, and viewer's right eye blurs into the grey guard",
+      "surprised": "mouth is a broken two-tone pixel artifact, expression lacks readable surprise, and helmet cheek guard detaches with a stray bright gap"
+     },
+     "notes": "The subject immediately stands out due to its drastically smaller head-to-canvas scale, higher-saturation palette, and downscaled/AI-like pixel smears rather than clean hand-placed clusters. Across expressions, inconsistent skin tones, shifting head positions, and garbled facial pixels further confirm it was not drawn by the cast's artist.",
+     "position": 5,
+     "seed": 101,
+     "model": "gemini-4-argon-high"
+    },
+    {
+     "castFit": 3,
+     "sameArtist": false,
+     "defects": {
+      "base": "noisy/blotchy red-and-white pixel clusters on pauldrons, right eye muddled against helmet noseguard",
+      "happy": "skin palette shifts noticeably paler, mouth and closed eyes are blurry anti-aliased smears, entire bust shifts upward",
+      "sad": "blurry eye construction with smeared pixels around the noseguard, noisy shoulder armor",
+      "angry": "mouth is an indistinct grey smudge, right eye vanishes into shadow/noseguard",
+      "surprised": "broken mouth made of stray dark and red pixels, asymmetric/missing right eye"
+     },
+     "notes": "The subject's head and facial scale are drastically smaller than every member of the existing cast, immediately breaking lineup consistency. Additionally, noisy armor textures, inconsistent skin palettes, and smeared facial features across expressions point to downscaling artifacts rather than clean hand-placed pixel art.",
+     "position": 2,
+     "seed": 102,
+     "model": "gemini-4-argon-high"
+    },
+    {
+     "castFit": 3,
+     "sameArtist": false,
+     "defects": {
+      "base": "head and framing are much smaller than the rest of the cast, viewer's right eye merges into the noseguard/cheekguard, and shoulder pauldrons have noisy unclustered pixels",
+      "happy": "skin palette shifts noticeably paler, mouth and eyes dissolve into noisy blurry smudges, and bust shifts upward relative to base",
+      "sad": "viewer's right eye is smeared into the noseguard shadow and facial features fail to read clearly as sad",
+      "angry": "mouth is a smeared low-contrast grey-tan blotch and viewer's right eye disappears into a muddy shadow",
+      "surprised": "mouth is a broken two-pixel smudge with discoloured stray pixels, viewer's right cheekguard separates with a bright gap, and eyes lack a clear surprised read"
+     },
+     "notes": "The subject stands out immediately due to its much smaller head scale, lower framing, and noisy unclustered armour detailing compared to the clean, large-headed cast. Across expressions, inconsistent skin palettes, vertical position shifts, and smeared facial features point to automated generation or poor downscaling rather than the original artist's hand.",
+     "position": 6,
+     "seed": 103,
+     "model": "gemini-4-argon-high"
+    },
+    {
+     "castFit": 3,
+     "sameArtist": false,
+     "defects": {
+      "base": "viewer's right eye is missing in muddy shadow and white shoulder pads have noisy stray red pixels",
+      "happy": "skin tone shifts to pale pink, eyes dissolve into blurry brown smears, and mouth is noisy and indistinct",
+      "sad": "mismatched asymmetric eyes, flat neutral mouth, and vertical framing shifts up compared to base",
+      "angry": "mouth is a muddy grey smear and viewer's right eye disappears into shadow",
+      "surprised": "broken smeared mouth with stray red pixel and asymmetric eyes"
+     },
+     "notes": "The subject stands out immediately due to a much smaller head scale, lower framing, oversaturated reds, and noisy pixelation on the pauldrons compared to the cast's clean cluster shading. Across the expression sheet, the skin palette, eye construction, and vertical alignment shift inconsistently with明顯 AI/resampling smear artifacts on the mouths and eyes.",
+     "position": 1,
+     "seed": 104,
+     "model": "gemini-4-argon-high"
+    },
+    {
+     "castFit": 2,
+     "sameArtist": false,
+     "defects": {
+      "base": "noisy stray red and brown pixels on the white shoulder armor; right eye merges indistinctly with the nasal guard and hair shadow",
+      "happy": "skin palette shifts noticeably paler/pinker than base, eyes dissolve into blurry brown smudges, and the open mouth has smeared anti-aliasing",
+      "sad": "blurry, muddy pixel clusters around both eyes and nasal guard; expression reads as neutral rather than sad",
+      "angry": "mouth is a smeared, low-contrast grey-tan blur that looks unfinished or downscaled",
+      "surprised": "mouth is a malformed off-center dark pixel with a stray red pixel underneath, and the right eye is lost in muddy shading"
+     },
+     "notes": "The subject immediately stands out due to drastically smaller head proportions and lower framing compared to every existing cast member. Additionally, noisy pixel artifacts on the pauldrons and inconsistent skin palettes and blurry facial features across expressions indicate a different hand or downscaling workflow.",
+     "position": 5,
+     "seed": 105,
+     "model": "gemini-4-argon-high"
+    }
+   ]
+  },
+  "bram": {
+   "kind": "positive",
+   "dir": "public/assets/shared/portraits/green-scholar",
+   "aggregate": {
+    "n": 5,
+    "scores": [
+     8.0,
+     9.0,
+     8.0,
+     6.0,
+     8.0
+    ],
+    "median": 8.0,
+    "min": 6.0,
+    "max": 9.0,
+    "sameArtistVotes": 4,
+    "defectVotes": {
+     "base": 1,
+     "happy": 5,
+     "sad": 5,
+     "angry": 5,
+     "surprised": 5
+    },
+    "worstDefectVotes": 5
+   },
+   "runs": [
+    {
+     "castFit": 8,
+     "sameArtist": true,
+     "defects": {
+      "base": "none",
+      "happy": "stray dark green pixel inside the right corner of the mouth and slightly smeared teeth",
+      "sad": "indistinct smeared mouth and stray green pixels on the ear, under the eyes, and along the jaw",
+      "angry": "broken, noisy grey-brown smear in place of a structured open mouth, with a stray green pixel on the lip",
+      "surprised": "irises lose their green colour entirely, turning into pale grey-tan blobs, and the open mouth is blurry"
+     },
+     "notes": "In the main lineup, the base portrait matches the cast's outline weight, soft shading ramps, and head-to-shoulder proportions seamlessly. However, the expression sheet suffers from palette bleed (stray green pixels on skin/mouths), smeared mouth geometry, and lost eye colour on the surprised face.",
+     "position": 5,
+     "seed": 101,
+     "model": "gemini-4-argon-high"
+    },
+    {
+     "castFit": 9,
+     "sameArtist": true,
+     "defects": {
+      "base": "none",
+      "happy": "stray dark green pixel inside the mouth corner and washed-out viewer-right iris",
+      "sad": "blurry smeared mouth, muddy grey-green smudges under the eyes, and inconsistent head/collar shift",
+      "angry": "smeared, indistinct grey block for the open mouth/teeth with a stray green pixel on the upper lip",
+      "surprised": "eyes lose their green iris colour and turn into blocky white shapes with brown pupils"
+     },
+     "notes": "The base portrait matches the existing cast's outline weight, soft shading ramps, facial proportions, and clustering seamlessly. However, the expression variants suffer from smeared mouths, stray green pixels, and lost eye colour.",
+     "position": 2,
+     "seed": 102,
+     "model": "gemini-4-argon-high"
+    },
+    {
+     "castFit": 8,
+     "sameArtist": true,
+     "defects": {
+      "base": "none",
+      "happy": "stray green pixel inside mouth, viewer-right eye loses green iris colour, and headband gains a bright white highlight absent in base",
+      "sad": "entire bust shifts downward, smeared/noisy mouth, and muddy grey-green artifacts on cheeks and ear",
+      "angry": "garbled blocky grey smear for the mouth with a stray green pixel near the lip, plus missing green iris in viewer-right eye",
+      "surprised": "eye colour changes from green to brown/grey with oversized asymmetrical sclera, and headband highlight differs from base"
+     },
+     "notes": "In the cast lineup, the base portrait matches the existing portraits well in outline weight, framing, shading ramps, and overall pixel density. However, the expression sheet alters the entire sprite per emotion (shifting head height, hair strands, collar pixels, and adding a white headband highlight) while introducing severe mouth smears and inconsistent eye colours.",
+     "position": 6,
+     "seed": 103,
+     "model": "gemini-4-argon-high"
+    },
+    {
+     "castFit": 6,
+     "sameArtist": false,
+     "defects": {
+      "base": "stray olive-green pixel on the far cheek edge below the eye and noisy single-pixel speckles in the hair",
+      "happy": "stray green pixel in the mouth corner, washed-out far iris, and inconsistent headband/hair pixels",
+      "sad": "whole head shifts downward, smeared indistinct mouth, and stray green pixels under the eyes and in the ear",
+      "angry": "mouth is a blurry grey-green smear with no clean pixel structure, plus mutated hair/collar pixels",
+      "surprised": "irises lose their green colour and turn into blocky white/brown shapes, blurry mouth, and upward head shift"
+     },
+     "notes": "While the base bust matches the cast's framing, outline weight, and general shading style reasonably well at 1x, closer inspection reveals noisy hair clustering and green palette bleed. The expression sheet exposes full-sprite regeneration shifts and heavy downsampling smears on the mouths and eyes rather than clean hand-pixelled edits.",
+     "position": 1,
+     "seed": 104,
+     "model": "gemini-4-argon-high"
+    },
+    {
+     "castFit": 8,
+     "sameArtist": true,
+     "defects": {
+      "base": "none",
+      "happy": "mouth has a stray dark-green pixel in the corner and muddy teeth anti-aliasing",
+      "sad": "muddy pixel noise around the mouth, cheek, and collar; head drops noticeably lower in frame without body posture matching cleanly",
+      "angry": "mouth is a smeared, unreadable grey-brown block with stray greenish pixels",
+      "surprised": "irises lose their green colour and turn muddy brown; mouth is indistinct"
+     },
+     "notes": "The base portrait integrates seamlessly into the cast lineup, matching the outline weight, shading steps, and facial proportions (though the head is on the slightly smaller end like #2). However, the alternate expressions suffer from AI/downscaling-like pixel artifacts, muddy mouths, and palette bleed (green pixels appearing in the mouth and skin).",
+     "position": 5,
+     "seed": 105,
+     "model": "gemini-4-argon-high"
+    }
+   ]
+  },
+  "grandma": {
+   "kind": "positive",
+   "dir": "public/assets/shared/portraits/people1-old-woman",
+   "aggregate": {
+    "n": 5,
+    "scores": [
+     9.0,
+     9.0,
+     8.0,
+     9.0,
+     8.0
+    ],
+    "median": 9.0,
+    "min": 8.0,
+    "max": 9.0,
+    "sameArtistVotes": 5,
+    "defectVotes": {
+     "base": 0,
+     "happy": 4,
+     "sad": 5,
+     "angry": 5,
+     "surprised": 5
+    },
+    "worstDefectVotes": 5
+   },
+   "runs": [
+    {
+     "castFit": 9,
+     "sameArtist": true,
+     "defects": {
+      "base": "none",
+      "happy": "skin palette shifts noticeably paler than base, and tunic/scarf folds shift rather than staying locked",
+      "sad": "wrong identity/de-aged smooth skin, heavy grey smudges under the eyes, stray green pixel in right brow/hair, and shoulder strap shifts to olive green",
+      "angry": "broken mouth and lower nose obscured by grey pixel smears resembling a mustache, plus shifting scarf/shoulder details",
+      "surprised": "grey vertical smear on the nose, loss of age lines/identity compared to base, and inconsistent tunic/scarf pixels"
+     },
+     "notes": "In the cast lineup, the base portrait matches the existing artist's outline weight, framing, and shading style—especially alongside portrait 1—nearly seamlessly. However, the expression sheet suffers from inconsistent clothing/palettes across frames and severe facial smearing and age-identity drift in the sad, angry, and surprised variants.",
+     "position": 5,
+     "seed": 101,
+     "model": "gemini-4-argon-high"
+    },
+    {
+     "castFit": 9,
+     "sameArtist": true,
+     "defects": {
+      "base": "none",
+      "happy": "scarf folds and shoulder strap change design from base, and viewer-right eye merges into the hair/hood edge",
+      "sad": "missing age wrinkles alter identity to look much younger, grey smudge under viewer-left eye, and shoulder strap shifts to olive green",
+      "angry": "broken, unreadable mouth and nose tip smeared with stray grey pixels, plus altered scarf/coat pattern from base",
+      "surprised": "grey pixel smear down the nose bridge, missing facial wrinkles alter age/identity from base, and altered scarf/coat pattern"
+     },
+     "notes": "The base portrait blends seamlessly into the existing cast in outline weight, framing, shading ramps, and hair clustering (especially alongside #1). However, the expression variants fail to preserve a locked base sprite, shifting clothing/scarf geometry, losing age lines, and introducing grey pixel smears on the nose and mouth.",
+     "position": 2,
+     "seed": 102,
+     "model": "gemini-4-argon-high"
+    },
+    {
+     "castFit": 8,
+     "sameArtist": true,
+     "defects": {
+      "base": "none",
+      "happy": "none",
+      "sad": "wrong identity: loses facial wrinkles, grey smudges under eyes, and the coat straps shift colour from orange-brown to olive green",
+      "angry": "smears and stray grey pixels around the mouth/chin break the mouth construction, and shoulder/scarf anatomy shifts arbitrarily",
+      "surprised": "wrong identity (loses age lines) and stray grey pixel smear vertically down the bridge of the nose"
+     },
+     "notes": "The base portrait integrates seamlessly into the cast, matching the dark-brown outline weight, palette density, and white-hair clustering of character 1. However, the expression sheet suffers from AI-like generation drift where clothing details, hair strands, and facial age change inconsistently alongside messy grey pixel artifacts on the face.",
+     "position": 6,
+     "seed": 103,
+     "model": "gemini-4-argon-high"
+    },
+    {
+     "castFit": 9,
+     "sameArtist": true,
+     "defects": {
+      "base": "none",
+      "happy": "inconsistent scarf folds, shoulder straps, and cheek hair clusters compared to base",
+      "sad": "wrong identity (age lines vanish, making face look much younger), stray olive pixel on right eyebrow, heavy grey under-eye smears, and shoulder strap changes to olive green",
+      "angry": "broken mouth and nose obscured by stray grey pixel smears, plus shifting scarf/shoulder geometry",
+      "surprised": "wrong identity (loses age wrinkles), grey smear along nose bridge, and inconsistent scarf/shoulder details"
+     },
+     "notes": "The base portrait is nearly indistinguishable from the rest of the cast in outline weight, palette, framing, and shading style (matching character 1's hair and skin treatment closely). However, the expression variants fail to keep the clothing, hair, and age identity locked, introducing severe grey pixel smears on angry and de-aging the face on sad and surprised.",
+     "position": 1,
+     "seed": 104,
+     "model": "gemini-4-argon-high"
+    },
+    {
+     "castFit": 8,
+     "sameArtist": true,
+     "defects": {
+      "base": "none",
+      "happy": "paler skin tone, noisy hair-to-cheek pixels on the left, and redrawn scarf/coat folds that do not match base",
+      "sad": "wrong identity/age (wrinkles vanish), heavy grey smears under both eyes, stray olive pixel above viewer-right brow, and shoulder strap changes colour",
+      "angry": "broken mouth and nose bridge obscured by stray grey pixel noise, plus inconsistent scarf/coat geometry vs base",
+      "surprised": "grey vertical smear down the nose bridge, loss of facial wrinkles, and inconsistent scarf/coat folds vs base"
+     },
+     "notes": "The base portrait integrates naturally into the lineup, closely matching portrait 1's hair palette, outline weight, framing, and soft-shaded pixel aesthetic. However, the expression sheet suffers from full-bust regeneration drift—altering clothing folds, strap colours, and facial age—alongside severe grey pixel smearing in sad, angry, and surprised.",
+     "position": 5,
+     "seed": 105,
+     "model": "gemini-4-argon-high"
+    }
+   ]
+  },
+  "tobi": {
+   "kind": "positive",
+   "dir": "public/assets/shared/portraits/people1-boy",
+   "aggregate": {
+    "n": 5,
+    "scores": [
+     7.0,
+     7.0,
+     9.0,
+     9.0,
+     8.0
+    ],
+    "median": 8.0,
+    "min": 7.0,
+    "max": 9.0,
+    "sameArtistVotes": 3,
+    "defectVotes": {
+     "base": 0,
+     "happy": 5,
+     "sad": 5,
+     "angry": 5,
+     "surprised": 5
+    },
+    "worstDefectVotes": 5
+   },
+   "runs": [
+    {
+     "castFit": 7,
+     "sameArtist": false,
+     "defects": {
+      "base": "none",
+      "happy": "shirt collar design disappears from base, noisy blush pixels, and smudged mouth edges",
+      "sad": "undershirt changes colour to blue-grey with stray dots, plus messy disconnected tear pixels",
+      "angry": "desaturated grey patches in upper hair, muddy grey pixels around mouth, and altered undershirt",
+      "surprised": "undershirt differs from base, viewer-right eye is blurry/misaligned, and mouth has soft smeared edges"
+     },
+     "notes": "The base bust matches the cast's dark outlines, head scale, and soft shading (especially portrait 5/6) fairly well, though the hair texture is slightly noisier than the rest of the lineup. Across Image 4, the body, hair pixels, and shirt colour shift between every expression instead of sharing a fixed base sprite, alongside muddy pixel artifacts on the mouths and tears.",
+     "position": 5,
+     "seed": 101,
+     "model": "gemini-4-argon-high"
+    },
+    {
+     "castFit": 7,
+     "sameArtist": false,
+     "defects": {
+      "base": "none",
+      "happy": "dark grey smudge on the right corner of the mouth, blotchy cheek pixels, and redrawn shirt/hair relative to base",
+      "sad": "undershirt shifts colour to pale blue with stray dots, messy cyan tear pixels on cheeks/jawline, and inconsistent hair/jacket pixels",
+      "angry": "desaturated grey smear in upper-right hair, grey stray pixels above the upper lip, and redrawn hair/collar vs base",
+      "surprised": "muddy grey pixels smearing the right eye and shifted hair/collar details compared to base"
+     },
+     "notes": "The base bust blends well with the cast's outlines and proportions (especially portrait 5), aside from slightly narrower shoulders and softer noisy shading. However, every expression redraws the hair, jacket, and undershirt instead of editing just the face, introducing off-palette grey and blue smears.",
+     "position": 2,
+     "seed": 102,
+     "model": "gemini-4-argon-high"
+    },
+    {
+     "castFit": 9,
+     "sameArtist": true,
+     "defects": {
+      "base": "none",
+      "happy": "muddy grey pixels on the viewer's right corner of the open mouth, and the undershirt loses its collar stripes from the base",
+      "sad": "undershirt changes colour from warm grey-tan to pale blue-teal, breaking costume consistency",
+      "angry": "desaturated grey smear in the upper-right hair clusters and faint grey stray pixels just above the upper lip",
+      "surprised": "viewer's right eye is blurry/muddy with grey anti-aliasing and collar details shift slightly from base"
+     },
+     "notes": "The base portrait blends seamlessly into the existing cast's outline weight, soft multi-step shading, and proportions (especially alongside portrait 5). However, the expression sheet shows clear frame-to-frame regeneration drift in the undershirt colour/collar, hair pixel clusters, and localized grey colour-bleed smudges.",
+     "position": 6,
+     "seed": 103,
+     "model": "gemini-4-argon-high"
+    },
+    {
+     "castFit": 9,
+     "sameArtist": true,
+     "defects": {
+      "base": "none",
+      "happy": "grey pixel artifact on the right side of the open mouth/teeth and missing shirt collar lines compared to base",
+      "sad": "undershirt shifts to blue-grey with stray dark pixels on the chest, and hair silhouette shifts slightly from base",
+      "angry": "grey pixel smear above the mouth resembling a moustache and desaturated grey patches in the upper-right hair",
+      "surprised": "viewer's right eye is washed out in grey compared to the brown left iris, with minor hair and collar shifts from base"
+     },
+     "notes": "The base portrait matches the cast's outline weight, colour ramps, and facial proportions seamlessly and looks drawn by the same hand. However, the expression variants regenerate the whole bust rather than editing just the face, introducing colour drift, stray grey smears, and inconsistent clothing details.",
+     "position": 1,
+     "seed": 104,
+     "model": "gemini-4-argon-high"
+    },
+    {
+     "castFit": 8,
+     "sameArtist": true,
+     "defects": {
+      "base": "none",
+      "happy": "greyish pixel artifact at viewer's right corner of mouth; undershirt loses collar stripes from base",
+      "sad": "undershirt changes colour to light blue-grey with stray dots, breaking consistency with base",
+      "angry": "greyish smear above upper lip and desaturated patch in upper-right hair",
+      "surprised": "viewer's right eye is washed out and greyed compared to left eye"
+     },
+     "notes": "The base portrait blends seamlessly with the cast's dark outlines, soft multi-step shading, and anime-proportioned features (especially alongside portrait 6). However, the expression sheet shows frame-to-frame regeneration drift in hair clusters and shirt colour/collar details alongside minor colour smears.",
+     "position": 5,
+     "seed": 105,
+     "model": "gemini-4-argon-high"
+    }
+   ]
+  },
+  "baker": {
+   "kind": "positive",
+   "dir": "public/assets/shared/portraits/people1-blonde-woman",
+   "aggregate": {
+    "n": 5,
+    "scores": [
+     5.0,
+     7.0,
+     7.0,
+     7.0,
+     6.0
+    ],
+    "median": 7.0,
+    "min": 5.0,
+    "max": 7.0,
+    "sameArtistVotes": 0,
+    "defectVotes": {
+     "base": 4,
+     "happy": 5,
+     "sad": 5,
+     "angry": 5,
+     "surprised": 5
+    },
+    "worstDefectVotes": 5
+   },
+   "runs": [
+    {
+     "castFit": 5,
+     "sameArtist": false,
+     "defects": {
+      "base": "mouth is a faint yellowish smudge rather than a defined shadow line, with blurry collar/brooch pixels",
+      "happy": "open mouth interior is filled with yellow-tan pixels, and collar colour and brooch shape change from base",
+      "sad": "muddy stray pixels on nose bridge and cheeks, eyes lose colour to grey, and collar details shift",
+      "angry": "broken mouth made of two disconnected vertical strokes, head shifts 2px lower, and collar turns bright crimson",
+      "surprised": "smudged two-tone mouth with indistinct outline, eye colour shifts, and collar/hair pixels drift from base"
+     },
+     "notes": "While the silhouette and dark outline blend passably at 1x near portrait 6, the subject uses softer gradient shading, sharper anime V-jaw proportions, and washed-out nose/mouth construction unlike the existing cast. Across expressions, shifting collar colours, drifting head height, and malformed mouths reveal inconsistent generation rather than pixel-art edits on a shared base.",
+     "position": 5,
+     "seed": 101,
+     "model": "gemini-4-argon-high"
+    },
+    {
+     "castFit": 7,
+     "sameArtist": false,
+     "defects": {
+      "base": "none",
+      "happy": "open mouth interior is filled with yellow-tan smear, and hair bangs and collar colour/shape shift from base",
+      "sad": "eye colour turns flat grey with muddy noise around the nose bridge, blurry mouth smudge, and shifted bangs/collar from base",
+      "angry": "broken mouth rendered as two separate vertical grey bars, crimson collar colour mismatch, and altered bangs from base",
+      "surprised": "eye colour shifts to dark blue-grey, blurry two-tone mouth smudge, and altered hair bangs/collar geometry from base"
+     },
+     "notes": "Outline weight, palette ramping, and hair clustering match the cast closely, but the oversized anime eyes, sharp V-chin, and flat, nearly invisible nose/mouth shading stand out against the cast's more grounded facial construction. In the expression sheet, the entire bust shifts geometry and outfit/eye colours between frames rather than editing a shared base, alongside severe mouth defects in happy and angry.",
+     "position": 2,
+     "seed": 102,
+     "model": "gemini-4-argon-high"
+    },
+    {
+     "castFit": 7,
+     "sameArtist": false,
+     "defects": {
+      "base": "mouth is a faint yellowish smudge that barely reads against the skin compared to the cast's warm brown mouth lines",
+      "happy": "open mouth interior is filled with yellow-tan pixels instead of dark/red mouth tones, and head height and collar colours shift from base",
+      "sad": "noisy stray shading pixels across the nose and cheeks, smeared mouth, and collar colour drift from base",
+      "angry": "broken mouth rendered as two disconnected vertical grey ticks, and the collar changes to bright crimson/magenta",
+      "surprised": "irises shift to a cooler grey-blue with a muddy viewer-right eye, alongside slight hair and collar pixel drift from base"
+     },
+     "notes": "In the lineup, the subject matches the cast's framing, dark 1px outline weight, and soft-shaded rendering fairly well (especially alongside #5), apart from a washed-out mouth line. However, the expression sheet clearly redraws the entire bust per state rather than editing the face, causing changing collar colours, shifting silhouettes, and malformed mouths.",
+     "position": 6,
+     "seed": 103,
+     "model": "gemini-4-argon-high"
+    },
+    {
+     "castFit": 7,
+     "sameArtist": false,
+     "defects": {
+      "base": "mouth is a faint yellowish-tan smudge that nearly disappears into the skin tone",
+      "happy": "noisy yellow-orange pixels inside the open mouth and noticeable collar/hair pixel drift from base",
+      "sad": "muddy pixel noise across the cheeks and nose bridge, indistinct smeared mouth, and collar/hair drift from base",
+      "angry": "broken mouth made of two disconnected vertical dark ticks, plus major identity drift as the collar turns bright crimson and bangs shift",
+      "surprised": "iris colour shifts bluish-grey and hair/collar pixels shift relative to base"
+     },
+     "notes": "While the base bust's outline weight, framing, and soft shading sit fairly close to portrait 6, its sharper anime jaw/eye proportions and washed-out mouth set it apart from the cast's clearer facial construction. Across the expression sheet, clothing colours, hair pixels, and facial details shift every frame, with a severely broken mouth on the angry expression.",
+     "position": 1,
+     "seed": 104,
+     "model": "gemini-4-argon-high"
+    },
+    {
+     "castFit": 6,
+     "sameArtist": false,
+     "defects": {
+      "base": "mouth and nose are faint yellow-tan smudges lacking the cast's clear shadow contrast, with noisy gradient pixels in the hair and collar",
+      "happy": "open mouth interior is a muddy mix of yellow and pink pixels, and collar/brooch colors and hair clusters shift relative to base",
+      "sad": "eye irises lose their warm tint to flat grey, blurry grey-tan smudges appear around the nose bridge, and mouth is an indistinct smear",
+      "angry": "broken mouth reduced to two disconnected vertical grey pixels, bright magenta collar color mismatch against base, and shifted head/hair pixels",
+      "surprised": "blurry two-tone mouth smudge, cooler blue-grey eye shift, and subtle hair/collar pixel drift from the base sprite"
+     },
+     "notes": "While the subject matches the cast's framing, head proportions, and dark outer outline at 1x, it stands out under inspection due to excessive gradient colors, washed-out facial shading, and lacked pixel clustering. Across expressions, the entire sprite exhibits pixel and palette drift (especially the changing collar color and broken angry mouth) rather than clean facial edits on a fixed base.",
+     "position": 5,
+     "seed": 105,
+     "model": "gemini-4-argon-high"
+    }
+   ]
   }
  },
- "at": "2026-10-25T12:04:35"
+ "at": "2026-10-25T12:07:27",
+ "calibratedThresholds": {
+  "fitMin": 1.5,
+  "sameArtistMin": 3,
+  "defectMaxVotes": 5
+ },
+ "thresholdNote": "Gate set by the user brief of 2026-10-25 (median >= 6.5 and same artist >= 3/5), stricter than the calibrated fitMin 1.5: the calibration does not separate because the knight (helmet, checked armour) scores median 3 / same 0/5 when held out. Defect votes are shown, not gated (every real member gets 5/5)."
 }

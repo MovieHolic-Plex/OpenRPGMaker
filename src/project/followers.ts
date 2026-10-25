@@ -484,7 +484,7 @@ export function followerPositions(
   const memo = followerPlacementMemo.get(session);
   if (memo && memo.trail === trail && memo.x === hero.x && memo.y === hero.y && memo.followers === followers
     && memo.gap === gap && memo.minDistance === minDistance && slots.length === 0 && formation === "line" && !blocked
-    && config?.display !== "scenesOnly") {
+    && config?.display !== "scenesOnly" && config?.sceneFormation !== "abreast") {
     return memo.result;
   }
   const previous = memo?.result;
@@ -516,6 +516,14 @@ export function followerPositions(
       if (!spot) return { follower, x: hero.x, y: hero.y, direction: follower.graphic.direction, hidden: true };
       taken.push(spot);
       return { follower, x: spot.x, y: spot.y, direction: world?.playerFacing ?? follower.graphic.direction };
+    }
+    // 뒤따르기(follow)여도 sceneFormation "abreast" 면 이야기 장면(컷신 잠금) 동안은 횡대로 선다 — 장면이 끝나 걸으면 궤적으로 돌아온다.
+    if (config?.sceneFormation === "abreast" && world?.storyScene && follower.kind !== "monster" && !follower.monsterInstanceId) {
+      const spot = abreastCell(hero, index, world, clear, minDistance);
+      if (spot) {
+        taken.push(spot);
+        return { follower, x: spot.x, y: spot.y, direction: world.playerFacing ?? follower.graphic.direction };
+      }
     }
     // 옆자리가 모자라면(인접 4칸 초과 인원, 또는 물·벽으로 막힌 칸) 그 동료는 일렬로 떨어진다.
     const slot = slots[index];

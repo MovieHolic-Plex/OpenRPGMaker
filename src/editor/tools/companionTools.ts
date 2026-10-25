@@ -334,7 +334,7 @@ const addCompanion: ToolDefinition = {
 const configureCompanionRules: ToolDefinition = {
   name: "configure_companion_rules",
   description:
-    "동료 추종 규칙을 설정한다. formation 은 대형(line=일렬, beside=플레이어 옆에 붙어 다니기). gap 은 일렬 대형의 동료 사이 간격(칸, 1~16): 1이면 바로 뒤, 8이면 여덟 칸씩 벌어져 멀리서 따라온다. maxCompanions 는 동시 추종 인원 상한이고 overflow 는 상한 초과 시 정책(reject=새 동료 거부, replaceOldest=가장 오래된 동료를 밀어냄). clearOnTransfer:true 면 맵 이동 시 동료가 해제된다. fromParty:true 면 파티 선두 뒤 활성 멤버(최대 activeSlots, 기본 4명)가 addFollower 없이 자동으로 따라온다(크로노 트리거식 — 새 게임·불러오기·changeParty 마다 갱신, addFollower 로 이미 붙은 배우는 중복하지 않음). display:\"scenesOnly\" 면 FF6 식 — 필드에서는 선두만 걷고 동료는 숨었다가, 컷신(제어 잠금) 중이거나 이벤트 안에서 선두가 아닌 파티원이 대사를 할 때만 주인공 옆에 나타난다(일반 NPC 대화로는 안 나타남). display:\"follow\"(기본)는 크로노 트리거식 뒤따르기. sceneFormation:\"abreast\" 면 그 장면 동료가 주인공 좌우 고정 횡대로 서서 주인공과 같은 쪽을 본다(보스와 마주 서는 대형). 몬스터 동행(포켓몬식)은 display 와 별개다. reset:true 면 규칙을 지워 기본값(일렬·간격 1·무제한·유지)으로 되돌린다. 몬스터 열차는 monsterParty 가 지배하므로 상한에 포함되지 않는다.",
+    "동료 추종 규칙을 설정한다. formation 은 대형(line=일렬, beside=플레이어 옆에 붙어 다니기). gap 은 일렬 대형의 동료 사이 간격(칸, 1~16): 1이면 바로 뒤, 8이면 여덟 칸씩 벌어져 멀리서 따라온다. maxCompanions 는 동시 추종 인원 상한이고 overflow 는 상한 초과 시 정책(reject=새 동료 거부, replaceOldest=가장 오래된 동료를 밀어냄). clearOnTransfer:true 면 맵 이동 시 동료가 해제된다. fromParty:true 면 파티 선두 뒤 활성 멤버(최대 activeSlots, 기본 4명)가 addFollower 없이 자동으로 따라온다(크로노 트리거식 — 새 게임·불러오기·changeParty 마다 갱신, addFollower 로 이미 붙은 배우는 중복하지 않음). display:\"scenesOnly\" 면 FF6 식 — 필드에서는 선두만 걷고 동료는 숨었다가, 컷신(제어 잠금) 중이거나 이벤트 안에서 선두가 아닌 파티원이 대사를 할 때만 주인공 옆에 나타난다(일반 NPC 대화로는 안 나타남). display:\"follow\"(기본)는 크로노 트리거식 뒤따르기. sceneFormation:\"abreast\" 면 컷신 동안(뒤따르기든 FF6 식이든) 동료가 주인공 좌우 고정 횡대로 서서 주인공과 같은 쪽을 본다(보스와 마주 서는 대형). 몬스터 동행(포켓몬식)은 display 와 별개다. reset:true 면 규칙을 지워 기본값(일렬·간격 1·무제한·유지)으로 되돌린다. 몬스터 열차는 monsterParty 가 지배하므로 상한에 포함되지 않는다.",
   mode: "write",
   domains: ["system"],
   parameters: {
@@ -347,7 +347,7 @@ const configureCompanionRules: ToolDefinition = {
       clearOnTransfer: { type: "boolean", description: "true 면 맵을 옮길 때 동료가 해제된다. 기본 false(유지)" },
       fromParty: { type: "boolean", description: "true 면 파티 멤버(선두 제외)가 자동으로 따라온다. 기본 false" },
       display: { type: "string", enum: ["follow", "scenesOnly"], description: "follow(기본)=크로노 트리거식 뒤따르기, scenesOnly=FF6 식 — 필드엔 선두만, 이야기 장면에서만 동료가 옆에 선다" },
-      sceneFormation: { type: "string", enum: ["nearest", "abreast"], description: "display:scenesOnly 장면에서 동료가 서는 자리. nearest(기본)=가장 가까운 빈 칸(주인공 앞을 막을 수 있음), abreast=고정 횡대 — 주인공 좌우에 한 줄로 서서 주인공과 같은 쪽을 본다(보스와 마주 서는 장면: 먼저 주인공을 상대 쪽으로 돌린다)" },
+      sceneFormation: { type: "string", enum: ["nearest", "abreast"], description: "이야기 장면(컷신 중)에서 동료가 서는 자리 — display follow·scenesOnly 둘 다. nearest(기본)=가장 가까운 빈 칸(주인공 앞을 막을 수 있음), abreast=고정 횡대 — 주인공 좌우에 한 줄로 서서 주인공과 같은 쪽을 본다(보스와 마주 서는 장면: 먼저 주인공을 상대 쪽으로 돌린다)" },
       reset: { type: "boolean", description: "true 면 규칙 제거(기본값 복귀)" },
     },
     additionalProperties: false,

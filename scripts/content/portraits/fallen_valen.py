@@ -9,6 +9,9 @@
   python3 scripts/content/portraits/fallen_valen.py base --round r1 --n 3          # 후보 시트 n 장
   python3 scripts/content/portraits/fallen_valen.py emo --round r1 [--cands a,b]   # 후보마다 표정 4장
   python3 scripts/content/portraits/fallen_valen.py finalize --round r1 [--cands a]   # → .omo/.../fallen-valen/<round>/<후보>/{bust,full}-*.png
+  python3 scripts/content/portraits/fallen_valen.py compose --round r1 --cands v3 --crop 230,0,932,735 --face 470,160,820,500
+      # 흉상 틀을 캐스트처럼 머리 가까이 자르고(눈가림 검수 r1: 「머리가 너무 작다」), 표정은 기본 그림에 얼굴 상자만 맞춰 붙인다
+      # (표정마다 다시 그린 시트라 머리·옷이 몇 화소씩 흔들려 「표정마다 그림이 밀린다」). → <후보>/composed/
 그다음 cast-portrait 하네스: import → check → lineup → review (openwiki/harnesses/cast-portrait.md).
 """
 import argparse, base64, io, json, re, sys, threading, time
@@ -92,8 +95,53 @@ def run_jobs(jobs, workers=4, retries=4):
     return log
 
 
+def _align(base, other, box, search=10):
+    """other 를 base 에 맞추는 (dx, dy) — 얼굴 상자 둘레에서 알파 윤곽 차이가 가장 작은 이동(±search 화소)."""
+    import numpy as np
+    x0, y0, x1, y1 = box
+    pad = search + 4
+    ref = np.asarray(base.convert("RGBA"), dtype=np.int16)[max(0, y0 - pad):y1 + pad, max(0, x0 - pad):x1 + pad]
+    oth = np.asarray(other.convert("RGBA"), dtype=np.int16)
+    best, arg = None, (0, 0)
+    for dy in range(-search, search + 1):
+        for dx in range(-search, search + 1):
+            ys, xs = max(0, y0 - pad) + dy, max(0, x0 - pad) + dx
+            if ys < 0 or xs < 0: continue
+            win = oth[ys:ys + ref.shape[0], xs:xs + ref.shape[1]]
+            if win.shape != ref.shape: continue
+            d = np.abs(win[..., :3] - ref[..., :3]).mean()
+            if best is None or d < best: best, arg = d, (dx, dy)
+    return arg
+
+
+def compose(rdir, cands, crop, face, rnd):
+    for c in cands:
+        src = rdir / c / "final"; out = rdir / c / "composed"; out.mkdir(exist_ok=True)
+        base = Image.open(src / "bust-base.png").convert("RGBA")
+        base.crop(crop).save(out / "bust-base.png", optimize=True)
+        moved = {}
+        for e in EXPRESSIONS:
+            im = Image.open(src / f"bust-{e}.png").convert("RGBA")
+            dx, dy = _align(base, im, face); moved[e] = [dx, dy]
+            patch = im.crop((face[0] + dx, face[1] + dy, face[2] + dx, face[3] + dy))
+            # 얼굴 상자 가장자리는 기본 그림과 섞는다(이음매가 보이지 않게 8화소 경사).
+            import numpy as np
+            m = np.ones((face[3] - face[1], face[2] - face[0]), dtype=np.float32); r = 8
+            for i in range(r):
+                f = (i + 1) / (r + 1); m[i, :] = np.minimum(m[i, :], f); m[-1 - i, :] = np.minimum(m[-1 - i, :], f); m[:, i] = np.minimum(m[:, i], f); m[:, -1 - i] = np.minimum(m[:, -1 - i], f)
+            b = np.asarray(base, dtype=np.float32).copy(); pz = np.asarray(patch, dtype=np.float32)
+            sl = b[face[1]:face[3], face[0]:face[2]]
+            b[face[1]:face[3], face[0]:face[2]] = sl * (1 - m[..., None]) + pz * m[..., None]
+            Image.fromarray(b.round().clip(0, 255).astype("uint8"), "RGBA").crop(crop).save(out / f"bust-{e}.png", optimize=True)
+        prov = json.loads((src / "provenance.json").read_text())
+        prov.update({"compose": {"crop": list(crop), "faceBox": list(face), "aligned": moved, "why": "blind review r1: head framed too small; expressions shifted the whole bust"}})
+        (out / "provenance.json").write_text(json.dumps(prov, ensure_ascii=False, indent=1))
+        print("composed", out, moved)
+
+
 def main():
-    ap = argparse.ArgumentParser(); ap.add_argument("phase", choices=["base", "emo", "finalize"])
+    ap = argparse.ArgumentParser(); ap.add_argument("phase", choices=["base", "emo", "finalize", "compose"])
+    ap.add_argument("--crop", default=""); ap.add_argument("--face", default="")
     ap.add_argument("--round", required=True); ap.add_argument("--n", type=int, default=3); ap.add_argument("--cands", default=""); ap.add_argument("--workers", type=int, default=4)
     a = ap.parse_args(); rdir = OUT / a.round
     if a.phase == "base":
@@ -106,6 +154,9 @@ def main():
         jobs = [dict(sheet=rdir / c / f"sheet-{e}.png", tag=e, prompt=emo_prompt(e), ref=(lambda c=c: raw_panel(rdir / c / "sheet-base.png", h=1024)))
                 for c in cands for e in EXPRESSIONS if not (rdir / c / f"bust-{e}.png").exists()]
         log = run_jobs(jobs, a.workers)
+    elif a.phase == "compose":
+        compose(rdir, a.cands.split(","), tuple(map(int, a.crop.split(","))), tuple(map(int, a.face.split(","))), a.round)
+        return
     else:
         sys.argv = ["finalize.py"]
         fin = {"__file__": str(here / "finalize.py"), "__name__": "valen_finalize"}

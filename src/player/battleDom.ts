@@ -316,6 +316,8 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
   resultHost.className = "battle-result-host";
 
   let autoBattle = false;
+  // system.allowAutoBattle false = 이 게임에는 자동 전투가 없다(F 키·자동 표시 모두).
+  const autoBattleAllowed = store.getCurrent().system.allowAutoBattle !== false;
   let speedMultiplier = 1.0;
   // 연출 중 확인/취소로 켜지는 1회성 빨리감기. 시퀀스가 끝나면 배속이 원래대로 돌아온다.
   let skipping = false;
@@ -367,6 +369,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
   }
 
   function toggleAutoBattle(): void {
+    if (!autoBattleAllowed) return;
     autoBattle = !autoBattle;
     root.dataset.battleAuto = autoBattle ? "true" : "false";
     if (autoBattle && speedMultiplier === 1.0) {
@@ -389,7 +392,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
   }
 
   function syncPlaybackStatus(): void {
-    const text = `${AUTO_BATTLE_KEY_LABEL} 자동 ${autoBattle ? "켜짐" : "꺼짐"} · ${SPEED_KEY_LABEL} ${speedMultiplier}×${skipping ? " · 넘기는 중" : ""}`;
+    const text = `${autoBattleAllowed ? `${AUTO_BATTLE_KEY_LABEL} 자동 ${autoBattle ? "켜짐" : "꺼짐"} · ` : ""}${SPEED_KEY_LABEL} ${speedMultiplier}×${skipping ? " · 넘기는 중" : ""}`;
     if (playbackStatus.textContent !== text) {
       const first = playbackStatus.textContent === "";
       playbackStatus.textContent = text;
