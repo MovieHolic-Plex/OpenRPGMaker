@@ -6,7 +6,7 @@ import { mainMark } from "./startupTiming";
 import { join } from "node:path";
 import { app, protocol } from "electron";
 import { OPRN_APP_SCHEME, OPRN_ASSET_SCHEME } from "../shared/channels";
-import { bootsToStartScreen, rendererDirectory, windowIconPath, type BootContext } from "./bootContext";
+import { bootsToStartScreen, rendererDirectory, windowIconPath, type BootContext, type SecondInstanceLaunch } from "./bootContext";
 import { openSplash, type Splash } from "./splash";
 
 protocol.registerSchemesAsPrivileged([
@@ -27,19 +27,24 @@ if (duplicate) app.exit(0);
 
 // ── 「에디터에서 열기」 링크(oprn://store/install?…) ─────────────────────────────
 // 본체가 붙기 전에 온 것은 받아 두었다가 넘긴다. 판정·처리는 본체(main.ts → assetStore.ts)가 한다.
-const early = { links: [] as string[], secondInstances: [] as (readonly string[])[] };
+const early = { links: [] as string[], secondInstances: [] as SecondInstanceLaunch[] };
 let onLink: ((url: string) => void) | null = null;
-let onSecondInstance: ((argv: readonly string[]) => void) | null = null;
+let onSecondInstance: ((launch: SecondInstanceLaunch) => void) | null = null;
 // macOS: 링크·「다음으로 열기」는 open-url 로 온다. ready 전에 붙여야 첫 실행 링크를 놓치지 않는다.
 app.on("open-url", (event, url) => {
   event.preventDefault();
   if (onLink) onLink(url);
   else early.links.push(url);
 });
-// Windows·Linux: 이미 떠 있는 앱에 두 번째 실행의 인자로 링크가 온다.
-app.on("second-instance", (_event, argv) => {
-  if (onSecondInstance) onSecondInstance(argv);
-  else early.secondInstances.push([...argv]);
+// Windows·Linux: 이미 떠 있는 앱에 두 번째 실행의 인자가 온다. 링크와 프로젝트 폴더를 본체가 가른다.
+// workingDirectory 가 있어야 `AppImage quest` 처럼 상대 경로가 그 실행의 폴더에서 풀린다.
+app.on("second-instance", (_event, argv, workingDirectory) => {
+  const launch: SecondInstanceLaunch = {
+    argv: [...argv],
+    cwd: typeof workingDirectory === "string" && workingDirectory.length > 0 ? workingDirectory : process.cwd(),
+  };
+  if (onSecondInstance) onSecondInstance(launch);
+  else early.secondInstances.push(launch);
 });
 
 mainMark("bootEvaluated");
