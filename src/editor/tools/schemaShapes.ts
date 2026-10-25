@@ -250,8 +250,9 @@ const CUTSCENE_BEAT_BASE_SCHEMA: JsonSchema = {
     preset: {
       type: "string",
       enum: [...PARTICLE_PRESETS],
-      description: "particles 비트: sparkle=반짝임(보물·축복) magic=마법 기운 heal=회복 빛 fire=불티 smoke=연기(사라짐) dust=흙먼지(착지) explosion=폭발 splash=물보라.",
+      description: "particles 비트: sparkle=반짝임(보물·축복) magic=마법 기운 heal=회복 빛 fire=불티 smoke=연기(사라짐) dust=흙먼지(착지) explosion=폭발 splash=물보라 paper=흩날리는 서류(부딪힘) petals=꽃잎.",
     },
+    sizePercent: { type: "integer", minimum: 25, maximum: 400, description: "particles 비트: 입자 크기 %(기본 100). 1배 화면에서 점으로 보이는 부딪힘 서류·폭발은 200 안팎." },
     pose: {
       type: "string",
       enum: [...SPRITE_POSES],

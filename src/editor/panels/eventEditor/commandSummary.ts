@@ -923,7 +923,8 @@ function page3M2SummaryParts(
         plainPart(" · "),
         valuePart(stagingTargetLabel(str("target"), str("eventId"), str("x"), str("y"))),
         plainPart(" · "),
-        valuePart(`${str("durationMs") || "1200"}ms`)
+        valuePart(`${str("durationMs") || "1200"}ms`),
+        ...(str("sizePercent") && str("sizePercent") !== "100" ? [plainPart(" · 크기 "), valuePart(`${str("sizePercent")}%`)] : [])
       );
     }
     case "Lift Ride": {

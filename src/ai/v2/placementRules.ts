@@ -35,14 +35,41 @@ const LANE_TAG = /^(차도|차선|아스팔트|횡단보도|선로|철도|레일
  */
 const WALK_WORD = /(?<!횡단)보도(?!\s*쪽)|인도|연석|광장|참배길|생활도로|흙길|산책길|공원 ?길|정류장 유도|sidewalk|pavement|plaza|walk/iu;
 
+/**
+ * 키트 구성 설명 괄호(「(… 포함)」)는 걷는 길·횡단보도 판정에서 뺀다 — 키트 칸 이름표 「교차로(12×12, 보도 모서리·횡단보도·정지선 포함) (7,1)」은
+ * 키트 전체 설명이 붙은 정지선 아스팔트 칸인데 «보도 모서리» 때문에 보도로 읽혀 행인이 교차로 차도를 걸었다(2026-10-26 첫사랑 op5).
+ */
+const stripNote = (s: string): string => s.replace(/\([^()]*포함\)/gu, " ");
+
 function isLaneMeta(m: Meta): boolean {
   if (!m) return false;
   const label = m.label ?? "";
   const tags = m.tags ?? [];
-  if (WALK_WORD.test(label) || tags.some((t) => WALK_WORD.test(t))) return false;
+  if (WALK_WORD.test(stripNote(label)) || tags.some((t) => WALK_WORD.test(stripNote(t)))) return false;
   if (LANE_WORD.test(label) || tags.some((t) => LANE_TAG.test(t))) return true;
   // 현대 칩셋의 «road» 태그는 차도다(jp_city 생활도로·버들항 포석 길은 위 WALK/아래 규칙으로 걸러진다).
   return tags.includes("road") && /modern-city|jp-city|시타마치/u.test(tags.join(" ")) && !tags.includes("lane") && !tags.includes("sidewalk");
+}
+
+const CROSSWALK_WORD = /횡단보도|\bcrosswalk\b/iu;
+/** 횡단보도 칸 집합(바닥 두 층의 이름표·태그로) — 차도지만 사람이 건너는 칸. */
+export function crosswalkCells(project: Project, map: GameMap): Set<number> {
+  const out = new Set<number>();
+  const cache = new Map<number, boolean>();
+  const test = (t: number | undefined): boolean => {
+    if (typeof t !== "number" || t < 0) return false;
+    let hit = cache.get(t);
+    if (hit === undefined) {
+      const m = metaOf(project, map, t);
+      // 키트 설명 괄호(「교차로(…횡단보도…)」)는 빼고 본다 — 그 칸은 정지선 아스팔트다.
+      hit = !!m && (CROSSWALK_WORD.test(stripNote(m.label ?? "")) || (m.tags ?? []).some((g) => /^(횡단보도|crosswalk)$/iu.test(g)));
+      cache.set(t, hit);
+    }
+    return hit;
+  };
+  const m = map as unknown as { lowerTiles?: ArrayLike<number>; lowerOverlayTiles?: ArrayLike<number> };
+  for (let i = 0; i < map.width * map.height; i++) if (test(m.lowerTiles?.[i]) || test(m.lowerOverlayTiles?.[i])) out.add(i);
+  return out;
 }
 
 /** 차도·선로 칸 집합(바닥 두 층의 이름표로). 실내·판타지 맵은 보통 비어 있다. */

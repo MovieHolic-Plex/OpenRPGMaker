@@ -129,6 +129,11 @@ export type RenderPlayerOptions = {
   readonly onExit?: () => void;
   /** Fires only after the current run has reached a ready PlayScene. */
   readonly onPlayBootSuccess?: () => void;
+  /**
+   * 한 번만: 플레이어가 첫 화면(타이틀·오프닝 첫 장·준비된 맵·복구 패널)을 실제로 그렸다.
+   * 웹 부팅(exportEntry)은 이때까지 «불러오는 중» 화면을 덮어 둔다 — 그 사이 검은 «• • •»·두 번째 로딩 카드가 비치지 않게.
+   */
+  readonly onFirstScreen?: () => void;
   readonly trackGlobalGame?: boolean;
   readonly initialSession?: PlaySession;
   readonly initialEventTestId?: string;
@@ -174,6 +179,12 @@ type PlayBootRequest = {
   readonly difficultyId?: string;
 };
 
+/** 브라우저가 화면을 n 번 새로 그릴 때까지 기다린다(덮개 뒤에서 건 첫 연출이 캔버스에 실린 뒤 걷는다). */
+const nextPaints = (n: number): Promise<void> => new Promise((resolve) => {
+  const step = (left: number): void => { if (left <= 0) resolve(); else requestAnimationFrame(() => step(left - 1)); };
+  step(n);
+});
+
 const MENU_CLOSE_JUICE_MS = 250;
 const TITLE_CONFIRM_JUICE_MS = 180;
 
@@ -198,6 +209,12 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
   let cleanupPlaySurface: (() => void) | null = null;
   let touchPad: TouchPadHandle | null = null;
   let playStage: HTMLElement | null = null;
+  let firstScreenShown = false;
+  const firstScreen = (): void => {
+    if (firstScreenShown) return;
+    firstScreenShown = true;
+    try { options.onFirstScreen?.(); } catch (error) { console.error("[player] onFirstScreen callback failed:", error); }
+  };
   let hostFullscreenCleanup: (() => void) | null = null;
   // 예비검사로 고친(또는 안전 모드로 깎은) 프로젝트를 런타임에 올려 둔 동안의 해제 손잡이.
   let releaseBootProject: (() => void) | null = null;
@@ -382,6 +399,7 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
       musicVolume: () => audioEngine.audioStateSnapshot().volume.bgm,
       onFrame: (url, fadeMs) => { lastFrame = url; if (fadeMs !== undefined) handoffFadeMs = fadeMs; } });
     openingMusicPlayback = playback;
+    firstScreen();
     // Start the real engine, decode textures and assemble the map during the cinematic.
     // PlayScene gates time, events, input and map audio until the presentation handoff.
     const prepared = bootPlayGame(surface.phaserContainer, session, eventTestId, loading, run, startedAt, repairs, true);
@@ -398,12 +416,17 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
       const scene = activeScene();
       if (!scene || loading.root.dataset.stage === 'error') { cover.remove(); return; }
       playback.releaseMusic(result === 'skipped' ? 0 : 600);
-      // No gameplay advances behind the departing cover, even the start-map autorun.
+      // 시작 맵의 첫 연출(자동 실행의 첫 화면 효과 — 암전·레터박스)을 아직 불투명한 덮개 뒤에서 먼저 건다.
+      // 덮개가 걷힌 뒤에 켜면 덮개가 흐려지는 동안 맨 맵이 비치고, 그다음 자동 실행의 암전이 다시 덮어
+      // «오프닝 → 맵 반 초 → 검은 화면» 이 끼었다(2026-10-26 첫사랑 op5). 덮개가 다 덮고 있는 동안만 진행된다.
+      if (run !== startRun || !shellActive) { cover.remove(); return; }
+      scene.activateInitialPresentation();
+      await nextPaints(6);
+      if (run !== startRun || !shellActive) { cover.remove(); return; }
       const fadeMs = result === 'skipped' || window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : handoffFadeMs;
       if (fadeMs > 0) await cover.animate([{ opacity: 1 }, { opacity: 0 }], { duration: fadeMs, fill: 'forwards' }).finished.catch(() => undefined);
       cover.remove();
       if (run !== startRun || !shellActive) return;
-      scene.activateInitialPresentation();
       surface.stage.focus({ preventScroll: true });
     });
   };
@@ -430,6 +453,7 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     openingController = null;
     openingMusicPlayback?.releaseMusic(600);
     const described = describeBootFailure(context);
+    firstScreen();
     // 부팅이 ready 를 지나 오버레이를 이미 걷어낸 뒤 터졌을 수도 있다 → 그때는 새로 올린다.
     const overlay = loading.root.isConnected ? loading : mountPlayLoadingOverlay(layout, "error");
     overlay.root.hidden = false;
@@ -590,6 +614,7 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
       }
       markPlayRender(startedAt);
       loading.remove();
+      firstScreen();
       bootDiag("ready", true, { detail: "boot complete" });
       signalReady();
       clearStaleModuleReloadMark();
@@ -961,6 +986,7 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     mountHostControls(surface.viewport);
     mountTouchPad(surface);
     surface.stage.append(title);
+    firstScreen();
     title.addEventListener("oprn:title-press-start", () => emitTitleJuice("title-confirm"));
     focusSelectedTitleOption(title);
     surface.sync();
@@ -1022,6 +1048,7 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     playStage = surface.stage; cleanupPlaySurface = surface.cleanup; layout.append(surface.viewport); mountTouchPad(surface); surface.sync();
     const controller = new AbortController(); openingController = controller;
     const playback = playCinematicSequence({ host: surface.stage, project, sequence, signal: controller.signal, dismissOnAnyInput: true });
+    firstScreen();
     void playback.done.then(result => { if (result !== 'aborted' && shellActive && openingController === controller) { openingController = null; renderTitle(); } });
   };
 

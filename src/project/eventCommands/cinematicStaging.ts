@@ -68,6 +68,16 @@ export function normalizeParticleDurationMs(value: unknown): number {
   return Math.round(Math.max(PARTICLE_DURATION_LIMITS.min, Math.min(PARTICLE_DURATION_LIMITS.max, numeric)));
 }
 
+/** 파티클 크기(%) — 입자 그림 크기와 퍼지는 거리를 같이 키운다. 화면에서 작게 보이는 1배 장면(부딪힘·폭발)을 읽히게 한다. */
+export const PARTICLE_SIZE_LIMITS = { min: 25, max: 400 } as const;
+export const PARTICLE_DEFAULT_SIZE_PERCENT = 100;
+
+export function normalizeParticleSizePercent(value: unknown): number {
+  const numeric = typeof value === "number" ? value : typeof value === "string" && value.trim() !== "" ? Number(value) : NaN;
+  if (!Number.isFinite(numeric)) return PARTICLE_DEFAULT_SIZE_PERCENT;
+  return Math.round(Math.max(PARTICLE_SIZE_LIMITS.min, Math.min(PARTICLE_SIZE_LIMITS.max, numeric)));
+}
+
 // ── 캐릭터 모습 효과 ─────────────────────────────────────────────
 
 /**

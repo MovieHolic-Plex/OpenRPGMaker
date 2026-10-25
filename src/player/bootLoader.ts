@@ -118,6 +118,10 @@ export function mountBootLoader(host: HTMLElement, initial: BootLoaderInfo): Boo
         const finish = (): void => {
           document.removeEventListener("keydown", onKey, true);
           root.removeEventListener("click", finish);
+          // 누른 뒤에는 첫 화면이 그려질 때까지 이 화면이 덮고 있다(exportEntry 의 onFirstScreen) — 단추는 거둔다.
+          start.style.display = "none";
+          hint.style.display = "none";
+          label.textContent = "시작하는 중…";
           resolve();
         };
         const onKey = (event: KeyboardEvent): void => {

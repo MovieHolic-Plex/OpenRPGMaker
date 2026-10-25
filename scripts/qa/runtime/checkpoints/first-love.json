@@ -56,8 +56,11 @@
        "settleMs": 500
       },
       {
-       "kind": "key",
-       "key": "Enter"
+       "kind": "pressUntilJs",
+       "key": "Enter",
+       "fn": "() => !/할 수 있어/.test(document.querySelector(\"[data-testid='dialogue-box']\")?.textContent ?? '')",
+       "maxPresses": 4,
+       "settleMs": 700
       },
       {
        "kind": "hold",

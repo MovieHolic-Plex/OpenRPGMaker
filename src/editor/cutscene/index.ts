@@ -5,6 +5,7 @@ import {
   LETTERBOX_DEFAULT_PERCENT,
   normalizeLetterboxPercent,
   normalizeParticleDurationMs,
+  normalizeParticleSizePercent,
   normalizeShakeDirection,
   PARTICLE_PRESETS,
   SHAKE_DIRECTIONS,
@@ -291,6 +292,8 @@ export type CutsceneParticlesBeat = {
   readonly x?: number;
   readonly y?: number;
   readonly durationMs?: number;
+  /** 크기(%, 25~400, 기본 100) — 입자 그림과 퍼지는 거리를 같이 키운다. 1배 화면에서 작게 보이는 부딪힘·폭발에 150~250. */
+  readonly sizePercent?: number;
   readonly wait?: boolean;
 };
 
@@ -509,6 +512,7 @@ function particleFields(beat: CutsceneParticlesBeat, forceNonBlocking: boolean):
     preset: isParticlePreset(beat.preset) ? beat.preset : "sparkle",
     ...(onTile ? { target: "tile", x: Math.round(beat.x ?? 0), y: Math.round(beat.y ?? 0) } : stagingTargetFields(beat.target, beat.eventId)),
     durationMs: normalizeParticleDurationMs(beat.durationMs),
+    ...(beat.sizePercent !== undefined ? { sizePercent: normalizeParticleSizePercent(beat.sizePercent) } : {}),
     wait: forceNonBlocking ? false : beat.wait === true,
   });
 }

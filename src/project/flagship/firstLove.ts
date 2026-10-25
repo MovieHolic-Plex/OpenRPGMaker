@@ -414,29 +414,34 @@ function buildMondayMorning(project: Project, a: FirstLoveAnchors): void {
     showPlayer(),
     ...caption("월요일 오전 8시 41분, 한결역."),
     ...think("첫 출근. 지각은 아니다. 아직은.", "스튜디오 늘봄. 서른 명 남짓한 앱 회사. 늘봄 빌딩은 길 건너, 제일 높은 유리 건물이다."),
-    ...say("seoha", "happy", "…할 수 있어, 윤서하."),
+    ...say("seoha", "happy", "할 수 있어, 윤서하."),
     // 서하가 횡단보도를 건너기 시작한다. 반쯤 왔을 때 길 건너에서 남자가 휴대폰을 보며 뛰어 내려오다 서하 쪽으로 꺾는다.
     // 부딪힘은 보도 위(횡단보도 발치)에서 — 차도에서 부딪히면 선 차와 겹쳐 서류가 보닛 위에 떴다(Argon op2).
     walkRoute(project, FL_MAP.street, "@player", s.arrive, nearBump, [], true, "right"),
     // 남자 걸음만 기다린다 — 모든 이동을 기다리면 아직 걷는 출근 인파를 기다리느라 둘이 4초 마주 서 있었다(Argon op3).
     walkRoute(project, FL_MAP.street, "ev_fl_rusher", rusher, rushStop, [bumpAt], true, "left"),
+    // 부딪히는 순간 카메라가 둘에게 확 다가선다(배율 2) — 1배 화면에서 두 사람이 12px 라 «부딪혔다»가 안 읽혔다(Sonnet op5).
+    panTo(bumpAt.x, bumpAt.y, 220, 2),
     quiet("cc0-se-orp-inventory-cloth-heavy", 0.8),
     shake(260),
     { kind: "moveEvent", eventId: "@player", route: { moves: [{ kind: "setDirectionFix", enabled: true }, { kind: "jump", dx: -1, dy: 0, heightPx: 4, durationMs: 220 }, { kind: "setDirectionFix", enabled: false }], repeat: false, wait: true, skippable: true } } as unknown as Command,
-    m2("Particle Effect", { preset: "paper", target: "player", durationMs: 1800, wait: false }),
+    // 서류는 크게(180%) — 기본 크기는 1배 화면에서 흰 점 몇 개로 보였다(Sonnet op5).
+    m2("Particle Effect", { preset: "paper", target: "player", durationMs: 1800, sizePercent: 180, wait: false }),
     quiet(SE_PAPER, 0.7),
     wait(380),
     m2("Screen Effect", { effect: "freeze", value: "warm", durationMs: 500 }),
     wait(500),
-    ...think("…아."),
-    ...think("서류가, 봄바람에, 날아간다."),
+    // 한 마디만 — 「…아.」 상자 따로, 다음 상자 따로면 흘림 첫 글자 「…」만 든 빈 상자가 정지 화면을 가렸다(Sonnet op5).
+    ...think("아. 서류가, 봄바람에, 날아간다."),
     m2("Screen Effect", { effect: "unfreeze", value: "", durationMs: 300 }),
     wait(300),
     ...voice("남자", "죄송합니다…! 괜찮으세요? 제가 지금 너무 늦어서—"),
     ...think("고개를 들기도 전에, 남자는 떨어진 종이 한 장을 내 손에 쥐여 주고 다시 뛰어갔다."),
+    panBack(500),
     // 남자는 회사 쪽(늘봄 빌딩)으로 달려가 사라진다 — 얼굴은 못 봤다.
     { kind: "moveEvent", eventId: "ev_fl_rusher", route: { moves: [{ kind: "changeSpeed", delta: 1 }, { kind: "approach", x: rusher.x, y: rusher.y, distance: 0 }, { kind: "exitVia", target: "ev_fl_office_door", se: "", closeSe: "" }], repeat: false, wait: false, skippable: true } } as unknown as Command,
-    ...think("…목소리가, 어디서 들어 본 것 같았는데."),
+    // 「…」로 시작하는 줄은 흘림 첫 순간 「…」만 든 상자가 된다 — 말머리 말줄임표를 뺐다.
+    ...think("그 목소리, 어디서 들어 본 것 같았는데."),
     ...letterbox(false, 500),
     wait(600),
     setSw(SW_BUMPED, true),

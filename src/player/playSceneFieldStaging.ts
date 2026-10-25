@@ -237,7 +237,8 @@ function targetSprite(scene: PlaySceneContext, target: ParticleStep["target"], c
 export function playParticleEffect(scene: PlaySceneContext, step: ParticleStep, currentEventId?: string): Promise<void> {
   ensureFxTextures(scene);
   const recipe = RECIPES[step.preset];
-  const scale = runtimeMapWorldScale(scene);
+  // 크기(%)는 입자 그림과 퍼지는 거리를 함께 키운다(레시피 수치가 모두 s 배) — 1배 화면에서 서류·불티가 점으로 보이던 것을 키운다.
+  const scale = runtimeMapWorldScale(scene) * ((step.sizePercent ?? 100) / 100);
   const sprite = targetSprite(scene, step.target, currentEventId);
   const size = mapTileSize(scene.map);
   // 칸 대상은 칸 발밑 중앙(캐릭터 원점과 같은 기준)에 둔다.
