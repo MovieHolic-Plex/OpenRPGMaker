@@ -12,7 +12,7 @@ import { DungeonComposeError } from "../dungeonKit/errors";
 import { capabilityTableText } from "../dungeonKit/capabilities";
 import { DUNGEON_GENRES, GENRE_PRESETS, genreOfProject, planPopulation } from "../dungeonKit/genres";
 import { DUNGEON_REFERENCES, GRAMMAR, inferDungeonRequest, inferDungeonType } from "../dungeonKit/grammar";
-import { DUNGEON_GIMMICKS, GIMMICK_LABEL, NATURAL_TYPES, THEME_GIMMICKS, chokeBlockGraphic, placeLever, placeThemeGimmick, placeTowerWarp, wallFirst, type DungeonGimmick } from "./dungeonGimmicks";
+import { DUNGEON_GIMMICKS, GIMMICK_LABEL, NATURAL_TYPES, THEME_GIMMICKS, placeLever, placeLeverBlock, placeThemeGimmick, placeTowerWarp, wallFirst, type DungeonGimmick } from "./dungeonGimmicks";
 import { composeRouted, routeDungeon } from "../dungeonKit/route";
 import { assertMapIdAvailable } from "./mapHelpers";
 import { MAP_TOOLS } from "./mapTools";
@@ -305,25 +305,17 @@ function placeLeverGate(draft: Project, map: GameMap, data: Record<string, unkno
   if (map.events.some((e) => (e.x === gate.x && e.y === gate.y) || (e.x === key.x && e.y === key.y))) { warnings.push(`${map.name}: 레버·창살 자리에 이미 이벤트가 있다`); return ""; }
   const sw = `sw_${map.id}_lever`;
   ensureNamedSwitch(draft, sw, `${map.name}: 레버 당김(쇠창살 열림)`);
-  const fixed = { type: "fixed", speed: 3, frequency: 3 } as const;
   const rock = NATURAL_TYPES.has(String(field(data, "type")) as DungeonType);
-  const bars = chokeBlockGraphic(String(field(data, "type")));
-  // 같은 이름 = 한 물체(통로 폭만큼 놓은 창살 칸들) — 이름이 없으면 린트가 「서로 다른 조사물이 같은 그림」으로 본다.
-  const ev = (id: string, at: Pt, name: string, pages: GameEvent["pages"]): GameEvent => ({ id, name, x: at.x, y: at.y, trigger: { kind: "action" }, commands: [], pages } as GameEvent);
   // 쇠창살은 통로 폭 전체를 막는다 — 3칸 통로 가운데 한 칸에만 두면 레버 없이 옆으로 지나갔다(2026-10-23 dg-r2 VQA).
   const corr = list(data, "corridors").find((v) => { const x = Number(field(v, "x")), y = Number(field(v, "y")), w = Number(field(v, "w")), h = Number(field(v, "h")); return gate.x >= x && gate.x < x + w && gate.y >= y && gate.y < y + h; });
   const across: Pt[] = !corr ? [gate] : (text(corr, "dir") === "N" || text(corr, "dir") === "S")
     ? Array.from({ length: Number(field(corr, "w")) }, (_, k) => ({ x: Number(field(corr, "x")) + k, y: gate.y }))
     : Array.from({ length: Number(field(corr, "h")) }, (_, k) => ({ x: gate.x, y: Number(field(corr, "y")) + k }));
   const barCells = across.filter((c) => (c.x === gate.x && c.y === gate.y) || (isPassable(draft, map, c.x, c.y) && !map.events.some((e) => e.x === c.x && e.y === c.y)));
-  barCells.forEach((cell, k) => {
-    const gid = k === 0 && cell.x === gate.x && cell.y === gate.y ? `ev_${map.id}_lever_gate` : `ev_${map.id}_lever_gate_${cell.x}_${cell.y}`;
-    upsertEventIntoMap(map, ev(gid, cell, rock ? "막힌 바위" : "쇠창살", [
-      { id: `${gid}_p1`, name: rock ? "길을 막은 바위" : "닫힌 쇠창살", conditions: [], graphic: bars, trigger: { kind: "action" }, priority: "same", overlapForbidden: false, movement: fixed,
-        commands: [{ kind: "text", body: rock ? "큰 바위가 길을 막고 있다. 어딘가의 레버로 치울 수 있을 것 같다." : "굳게 닫힌 쇠창살이다. 어딘가의 레버로 여는 것 같다." } as Command] },
-      { id: `${gid}_p2`, name: rock ? "치운 바위" : "열린 쇠창살", conditions: [{ kind: "switch", switchId: sw, value: true }], graphic: { transparent: true }, trigger: { kind: "action" }, priority: "below", overlapForbidden: false, movement: fixed, commands: [] },
-    ] as GameEvent["pages"]));
-  });
+  // 그림·막기는 공용 도우미가 한다(지은 던전 = 쇠창살문 타일 키트 + 보이지 않는 문 이벤트, 자연 굴 = 바위 이벤트).
+  // 키트가 안 들어가는 단면(동서 통로의 세로 단면 등)이면 이 경로를 접고 placeChokeLever 가 다른 목을 찾는다.
+  const block = placeLeverBlock(draft, map, String(field(data, "type")), barCells, sw);
+  if (!block) { warnings.push(`${map.name}: 잠긴 통로 단면에 쇠창살문 키트가 들어가지 않는다 — 다른 좁은 목을 찾는다.`); return ""; }
   // gap 벽걸이 레버(#3283): 레버 칸 바로 북쪽 벽 앞면에 걸고 벽을 보고 조사한다. 그림·벽이 없으면 바닥에 옛 캐릭터 레버.
   // 벽 레버 후보: 열쇠 방 상자 안 모든 바닥 칸(북쪽이 벽인 칸 먼저, 계획 자리에 가까운 순)
   const roomCells: Pt[] = [];
@@ -331,10 +323,10 @@ function placeLeverGate(draft: Project, map: GameMap, data: Record<string, unkno
     for (let y = ry; y < ry + rh; y += 1) for (let x = rx; x < rx + rw; x += 1) if (isPassable(draft, map, x, y) && !map.events.some((e) => Math.abs(e.x - x) + Math.abs(e.y - y) <= 1)) roomCells.push({ x, y }); }
   roomCells.sort((a, b) => Math.hypot(a.x - key.x, a.y - key.y) - Math.hypot(b.x - key.x, b.y - key.y));
   const placedLever = placeLever(draft, map, [...wallFirst(draft, map, roomCells), key], `ev_${map.id}_lever`, "레버", sw,
-    [{ kind: "text", body: rock ? "쿠르릉… 어디선가 바위가 굴러가는 소리가 울렸다." : "어디선가 쇠창살이 올라가는 소리가 울렸다." } as Command], "녹슨 레버가 있다. 힘껏 당겼다!", "레버는 이미 당겨져 있다.");
+    [...block.openCommands, { kind: "text", body: rock ? "쿠르릉… 어디선가 바위가 굴러가는 소리가 울렸다." : "어디선가 쇠창살이 올라가는 소리가 울렸다." } as Command], "녹슨 레버가 있다. 힘껏 당겼다!", "레버는 이미 당겨져 있다.");
   if (!placedLever) { warnings.push(`${map.name}: 레버 자리를 못 찾았다`); return ""; }
   const at = placedLever.at;
-  return `레버 퍼즐: ${placedLever.wall ? "벽 " : ""}레버 (${at.x},${at.y}${placedLever.wall ? " — 그 아래 칸에서 벽을 보고 조사" : ""}) → 쇠창살 ${barCells.map((c) => `(${c.x},${c.y})`).join(" ")}(통로 폭 전체) 스위치 ${sw}. 레버는 한 칸짜리 벽 레버 그림이 정상이다 — 다시 짓거나 다른 칩셋의 레버 기물을 찍지 않는다`;
+  return `레버 퍼즐: ${placedLever.wall ? "벽 " : ""}레버 (${at.x},${at.y}${placedLever.wall ? " — 그 아래 칸에서 벽을 보고 조사" : ""}) → ${block.tiles ? "쇠창살문(타일 키트 — 문간 이벤트 " : "쇠창살 "}${block.cells.map((c) => `(${c.x},${c.y})`).join(" ")}${block.tiles ? ")" : "(통로 폭 전체)"} 스위치 ${sw}. 레버는 한 칸짜리 벽 레버 그림이 정상이다 — 다시 짓거나 다른 칩셋의 레버 기물을 찍지 않는다`;
 }
 
 /** 층 하나를 채운다(rpg): 계획된 자리의 보이는 적·상자, 보스방 수호자/층 수문장, 보스 앞 방의 회복 세이브 포인트. 실패한 자리는 경고로 넘긴다. */
