@@ -5,6 +5,16 @@
 
 <!-- releases -->
 
+## 0.346.6 — 2026-10-26
+
+### 수정
+
+- **export** — stop a player-bundle </script> from splitting standalone HTML (#3583) (`68be1d9`)
+
+### 문서
+
+- **openwiki** — don't list Korean question marks as broken text (#3582) (`b1260b7`)
+
 ## 0.346.5 — 2026-10-26
 
 ### 수정
