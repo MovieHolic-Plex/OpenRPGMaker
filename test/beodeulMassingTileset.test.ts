@@ -4,6 +4,8 @@ import { BUNDLED_EASYRPG_CHIPSET_ASSETS, bundledChipsetFrameCount } from "@/asse
 import { createBlankProject } from "@/project/defaults/blankProject";
 import { ensureBundledTilesets } from "@/project/defaults/defaultAssets";
 import { createBeodeulMassingTileset } from "@/project/defaults/beodeulMassing";
+import { AUTHOR_BEODEUL_TOWN_TOOL } from "@/editor/tools/authorBeodeulTown";
+import { layerTileAt } from "@/project/mapLayers";
 
 /**
  * building-kit massing(bk-massing-100 → 손 도트 건물)의 공용 번들: 위임 허용한 건물만 든 시트가
@@ -59,5 +61,20 @@ describe("beodeul_massing bundle", () => {
     const k = ts.structureKits!.find((x) => x.id.startsWith("bd-house-mk-"))!;
     expect(k.ai?.description).toContain("사용자 위임");
     expect(k.ai?.tags).not.toContain("사람이 허용");
+  });
+
+  it("조수 도구 author_beodeul_town roofs medieval 이 검수 통과 건물을 그림자·기초와 함께 놓는다", () => {
+    const p = createBlankProject();
+    const r = AUTHOR_BEODEUL_TOWN_TOOL.run(p as never, { roofs: "medieval", theme: "river", width: 64, height: 48, seed: 7 }) as { data: { mapId: string; roofs: string; doors: { kit: string; x: number; y: number; reached: boolean }[] } };
+    expect(r.data.roofs).toBe("medieval");
+    const mk = r.data.doors.filter((d) => d.kit.startsWith("bd-house-mk-"));
+    expect(mk.length).toBeGreaterThan(0);
+    expect(mk.every((d) => d.reached)).toBe(true);
+    const m = p.maps[r.data.mapId]!;
+    const city = p.tilesets.beodeul_city!;
+    const shadowTiles = new Set(city.structureKits!.filter((k) => k.id.startsWith("bd-mk-shadow-")).flatMap((k) => k.rows.flatMap((row) => row.upperTiles ?? [])).filter((t) => t >= 0));
+    let shadow = 0;
+    for (let i = 0; i < m.width * m.height; i++) if (shadowTiles.has(layerTileAt(m, 2, i))) shadow++;
+    expect(shadow).toBeGreaterThan(0);
   });
 });
