@@ -25,6 +25,8 @@ import { PROFILES, TK, type KitPref } from "./profiles";
 import { dressCorridor, dressTyped, type DressCtx } from "./dress";
 import { DUNGEON_DIRS, DUNGEON_ROOM_KINDS, DUNGEON_SIZES, DUNGEON_STYLES, DUNGEON_TYPES } from "../types";
 import type { DungeonCompose, DungeonStairCell, DungeonDir, DungeonLayout, DungeonRoomInput, DungeonRoomKind, DungeonSize, DungeonSpec, DungeonStyle, DungeonType, PlacedCorridor, PlacedRoom } from "../types";
+/** 사람이 지은 던전(벽돌·석재) — 창·성문이 어울린다. 나머지(cave·mine·volcano·ice·forest·swamp·otherworld)는 자연 굴. */
+const BUILT_DUNGEON: ReadonlySet<string> = new Set(["catacomb", "castle", "labyrinth", "sewer", "temple", "pyramid", "tower"]);
 
 export type { DungeonCompose } from "../types";
 export { DUNGEON_DIRS, DUNGEON_ROOM_KINDS, DUNGEON_SIZES, DUNGEON_STYLES, DUNGEON_TYPES, DungeonComposeError };
@@ -304,6 +306,26 @@ export function composeDungeon(ts: TilesetDef, spec: DungeonSpec): DungeonCompos
   const ceilAt = (x: number, y: number): number => useRock ? autoCell(rockGroup!, 255, x, y) : groups.length ? (ceilingTile(groups[groups.length > 1 && hash01(x, y, seed) < 0.5 ? 1 : 0]!, 255) ?? voidTile) : voidTile;
   if (!groups.length && !useRock) warnings.push("이 타일셋 사본에 천장 테두리 오토타일(beodeul_dungeon_ceiling)이 없어 천장을 테두리 없는 허공으로 깔았다 — 프로젝트를 다시 열면 번들 꼬리가 붙는다.");
 
+  // 마른 다리: 방 덮어쓰기·물 줄이기 뒤에 물과 닿지 않게 된 다리 칸은 «마른 바위 위 다리»로 읽힌다(2026-10-25 J25 — 동굴 B1·B2 돌다리).
+  // 다리 줄기(이어진 다리 칸)마다 물 칸에 한 번도 안 닿으면 그 줄기를 바닥으로 되돌린다.
+  {
+    const seenB = new Uint8Array(W * H);
+    for (let s0 = 0; s0 < W * H; s0 += 1) {
+      if (!bridge[s0] || seenB[s0]) continue;
+      const run: number[] = [s0]; seenB[s0] = 1; let wet = false;
+      for (let k = 0; k < run.length; k += 1) {
+        const c = run[k]!; const cx = c % W, cy = (c - cx) / W;
+        for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]] as const) {
+          const nx = cx + dx, ny = cy + dy;
+          if (!inb(nx, ny)) continue;
+          const j = idx(nx, ny);
+          if (liquid[j] && !bridge[j]) wet = true;
+          if (bridge[j] && !seenB[j]) { seenB[j] = 1; run.push(j); }
+        }
+      }
+      if (!wet) for (const c of run) { bridge[c] = 0; liquid[c] = 0; }
+    }
+  }
   // ---- 바닥 칸: 종류별 바닥 키트(2×2·3×3 무늬) + 잡음 덩이 변형 + 칸마다 흩뿌림 + 물가 바닥. 액체·다리는 따로 칠한다. ----
   const fl = profile.floor;
   const tileOf = (id: string, x: number, y: number): number => { const rows = kit(id).rows; return rows[y % rows.length]!.tiles[x % rows[0]!.tiles.length]!; };
@@ -641,7 +663,8 @@ export function composeDungeon(ts: TilesetDef, spec: DungeonSpec): DungeonCompos
   let stairsUp: DungeonCompose["stairsUp"] = null;
   let stairsDown: DungeonCompose["stairsDown"] = null;
   // 여러 층 던전(2026-10-22): 들어오는 계단·나가는 계단의 종류를 층마다 고른다. 기본(up/down)은 옛 출력과 같다.
-  const entryKind = spec.entryStair ?? "up";
+  // 성문(벽 문) 입구는 지은 던전만 — 자연 굴의 북벽 문은 바위 속 문틀이 된다(J25). 굴은 올라가는 계단으로.
+  const entryKind = spec.entryStair === "door" && !BUILT_DUNGEON.has(type) ? "up" : spec.entryStair ?? "up";
   const exitKind = spec.exitStair ?? "down";
   let entryStair: DungeonStairCell | null = null;
   let exitStair: DungeonStairCell | null = null;
@@ -891,7 +914,8 @@ export function composeDungeon(ts: TilesetDef, spec: DungeonSpec): DungeonCompos
     }
   });
   // 탑 층(여러 층 탑: 다음 층으로 올라가는 계단·바닥 계단 입구·문 입구)은 북쪽 벽 앞면 위 두 줄에 화살 구멍 창(gap bd-dg-tower-window-*)을 방마다 한두 개.
-  const towerish = exitKind === "up" || entryKind === "down" || entryKind === "door";
+  // 자연 굴(동굴·광산·화산·얼음굴·숲·늪·이계)에는 창이 없다 — 동굴 북벽에 빛 든 화살 구멍 창이 «아무 데도 안 가는 문틀»로 읽혔다(2026-10-25 J25).
+  const towerish = BUILT_DUNGEON.has(type) && (exitKind === "up" || entryKind === "down" || entryKind === "door");
   if (towerish && hasKit(GAP_KIT.windowDark)) {
     rooms.forEach((r, i) => {
       const rs = rng(seed * 31 + i * 17 + 5);

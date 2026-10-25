@@ -2285,7 +2285,17 @@ function transferEndpoint(
       && canMove(project, map, landing.x, landing.y, gate.x, gate.y)
       && canMove(project, map, gate.x, gate.y, landing.x, landing.y)) ?? null;
   };
-  const choices: Array<{ gate: Point; landing: Point; radius: number; flush: boolean; severs: boolean }> = [];
+  // 문·계단·길 그림이 아닌 물건(수정·이끼·버섯 덩이…) 위 출입구는 «물건을 밟으면 순간 이동»으로 읽힌다(2026-10-25 J25: 동굴 1층 입구가 발광 이끼 위).
+  const onProp = (x: number, y: number): boolean => {
+    const idx = y * map.width + x;
+    const tileset = project.tilesets[map.tilesetId];
+    return [map.upperTiles?.[idx], map.upperOverlayTiles?.[idx]].some((tile) => {
+      if (typeof tile !== "number" || tile < 0) return false;
+      const label = tileset?.tileMeta?.[tile]?.label ?? "";
+      return !!label && !/계단|사다리|문|입구|출구|통로|길|다리|발판|매트|깔개|그림자|stair|ladder|door|gate|exit|path|road|bridge|mat|rug|shadow/iu.test(label);
+    });
+  };
+  const choices: Array<{ gate: Point; landing: Point; radius: number; flush: boolean; severs: boolean; prop: boolean }> = [];
   for (let radius = snapBlocked ? 1 : 0; radius <= maxRadius; radius += 1) {
     const flushGates: Point[] = [];
     const innerGates: Point[] = [];
@@ -2307,6 +2317,7 @@ function transferEndpoint(
         radius,
         flush: isFlushGate(gate.x, gate.y),
         severs: transferTileSeversWalk(project, map, gate.x, gate.y),
+        prop: !fixed && onProp(gate.x, gate.y),
       });
     }
   }
@@ -2315,11 +2326,15 @@ function transferEndpoint(
   // 유일한 통로보다 막지 않는 칸을 먼저. 그 안에서는 예전처럼 가까운 칸, 그다음 벽에 붙은 칸.
   choices.sort((a, b) =>
     Number(a.severs) - Number(b.severs)
+    || Number(a.prop) - Number(b.prop)
     || a.radius - b.radius
     || Number(b.flush) - Number(a.flush)
     || a.gate.y - b.gate.y
     || a.gate.x - b.gate.x);
   const picked = choices[0]!;
+  if (notes && !picked.prop && (picked.gate.x !== origin.x || picked.gate.y !== origin.y) && onProp(origin.x, origin.y)) {
+    notes.push(`출입구 (${origin.x},${origin.y}) 는 물건 그림 위라 옆 빈 바닥 (${picked.gate.x},${picked.gate.y}) 에 두었습니다.`);
+  }
   if (notes && !picked.severs) {
     const blocked = choices.find((choice) => choice.severs && (
       choice.radius < picked.radius || (choice.radius === picked.radius && choice.flush && !picked.flush)
