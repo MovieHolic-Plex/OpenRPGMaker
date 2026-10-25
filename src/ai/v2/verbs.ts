@@ -143,9 +143,10 @@ async function renderMap(env: PiAssistantV2Env, mapId: string): Promise<string |
 }
 
 /** 보기 단계: 기계 검사 + 1배 그림 + 독립 비평가(맵마다, 같은 짓기의 다른 맵은 문맥으로). */
-async function see(env: PiAssistantV2Env, session: V2Session, task: string, type: PlaceType | "content", mapIds: readonly string[], entrance: PlaceBuildResult["entrance"], critic: boolean): Promise<Seen> {
+async function see(env: PiAssistantV2Env, session: V2Session, task: string, type: PlaceType | "content", mapIds: readonly string[], entrance: PlaceBuildResult["entrance"], critic: boolean,
+  reuse?: ReadonlyMap<string, CriticVerdict>, precomputed?: MachineCheck[]): Promise<Seen> {
   const project = env.ctx.project;
-  const checks = runMachineChecks(project, mapIds, entrance);
+  const checks = precomputed ?? runMachineChecks(project, mapIds, entrance);
   const images: { mapId: string; dataUrl: string }[] = [];
   for (const mapId of mapIds.slice(0, 4)) {
     const dataUrl = await renderMap(env, mapId);
@@ -156,6 +157,9 @@ async function see(env: PiAssistantV2Env, session: V2Session, task: string, type
     env.emit({ type: "execution_status", name: "v2.critic", ok: true, summary: `다른 눈(독립 비평가)이 1배 그림 ${images.length}장을 보는 중` });
     const judged = await Promise.all(images.slice(0, 3).map(async (image) => {
       const map = project.maps[image.mapId]!;
+      // 고치기: 앞 비평에서 major 가 없던 층은 다시 비평하지 않고 앞 판정을 쓴다 — 고친 층만 본다(속도, 2026-10-25 시간 분석: 비평이 전체의 20%).
+      const kept = reuse?.get(image.mapId);
+      if (kept) return kept;
       // 다른 층은 이름만 준다 — 그림까지 주면 층마다 비평가가 그림 3장을 읽어 한 번에 ~6초 더 걸렸다(72회 실측: 1장 23초 · 3장 29초 중앙값).
       const others = images.filter((o) => o.mapId !== image.mapId).map((o) => ({ name: project.maps[o.mapId]?.name ?? o.mapId, image: "" }));
       try {
@@ -286,15 +290,25 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
     for (const mapId of [...session.places.keys()]) if (!env.ctx.project.maps[mapId]) { session.places.delete(mapId); session.seen.delete(mapId); }
     // 첫 짓기를 비평 전에 편집기에 싣는다 — 사용자는 비평을 기다리지 않고 지어지는 것을 본다.
     await env.checkpoint(verb);
-    const seen0 = await see(env, session, task, spec.type, result.mapIds, result.entrance, true);
     // 요청한 주인공 물건이 못 놓였거나 밀려났으면 기계 실패로 센다 — 되돌리기·끝맺음 관문이 이것을 본다(「큰 망원경」이 빠진 채 끝났다).
     const anchorFails: MachineCheck[] = result.missingArt.filter((m) => /놓을 빈 자리가 없다|최종 맵에 없다/u.test(m)).map((m) => ({ id: "anchor-missing", mapId: result.mapIds[0]!, ok: false, detail: m }));
+    const machine = runMachineChecks(env.ctx.project, result.mapIds, result.entrance);
+    // 고치기에서 기계 실패만으로 이미 앞 문제 수를 넘으면 그림·비평 없이 바로 되돌린다 — 더 나빠진 고치기에 비평 한 번(20~45초)을 쓰지 않는다.
+    const earlyWorse = before ? (() => {
+      const oldIds = before.record.result.mapIds;
+      const was = problemCount(before.seen.get(oldIds[0]!), oldIds);
+      const now = [...machine, ...anchorFails].filter((c) => !c.ok && result.mapIds.includes(c.mapId)).length;
+      return now > was ? { was, now } : undefined;
+    })() : undefined;
+    // 고치기: 앞 비평에서 major 가 없던 층은 그 판정을 다시 쓴다.
+    const reuse = before ? new Map([...before.seen].flatMap(([mapId, sv]) => sv.critics.filter((v) => v.mapId === mapId && !v.majors.length && !v.problem && result.mapIds.includes(mapId)).map((v) => [mapId, v] as const))) : undefined;
+    const seen0: Seen = earlyWorse ? { checks: machine, critics: [], images: [] } : await see(env, session, task, spec.type, result.mapIds, result.entrance, true, reuse, machine);
     const seen: Seen = anchorFails.length ? { ...seen0, checks: [...seen0.checks, ...anchorFails] } : seen0;
     for (const mapId of result.mapIds) session.seen.set(mapId, seen);
     // 고친 결과가 앞보다 나쁘면(기계 실패 + 비평 major 가 늘면) 앞 상태로 되돌린다 — 천문대 고치기가 방을 하나 더 붙여 맨바닥 52% 가 됐다(2026-10-23 v2 실조수).
     if (before) {
       const oldIds = before.record.result.mapIds;
-      const was = problemCount(before.seen.get(oldIds[0]!), oldIds), now = problemCount(seen, result.mapIds);
+      const was = problemCount(before.seen.get(oldIds[0]!), oldIds), now = earlyWorse ? earlyWorse.now : problemCount(seen, result.mapIds);
       if (now > was) {
         env.ctx.project = before.project;
         for (const mapId of result.mapIds) { session.places.delete(mapId); session.seen.delete(mapId); }
@@ -303,7 +317,7 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
         env.record({ toolCallId, name: verb, args, result: { ok: false, summary: `고친 결과가 더 나빠(문제 ${was}→${now}) 되돌렸다` } });
         await env.checkpoint(`${verb}-revert`);
         return withImages({ ok: false, reverted: true, summary: `고친 결과의 문제(${now})가 앞(${was})보다 많아 앞 상태로 되돌렸다 — 이 패치는 버렸다.`, triedResult: { ...seenPayload(seen), summary: result.summary.slice(0, 300) }, round: rounds,
-          next: rounds >= V2_MAX_REPAIR_ROUNDS ? "고치기 상한 — 남은 문제를 보고한다." : "다른 패치(더 작은 변화)를 한 번 더 시도하거나, 남은 문제를 보고한다." }, before.seen.get(oldIds[0]!));
+          next: "더 고치지 않는다 — 같은 방식으로 다시 고치면 또 나빠진다. 앞 상태의 남은 문제를 사용자에게 보고한다." }, before.seen.get(oldIds[0]!));
       }
     }
     return withImages({ ok: true, mapIds: result.mapIds, summary: result.summary, warnings: result.warnings, missingArt: result.missingArt, ...seenPayload(seen), round: rounds, next: nextStep(seen, rounds) }, seen);
