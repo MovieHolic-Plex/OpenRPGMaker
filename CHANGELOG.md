@@ -5,6 +5,58 @@
 
 <!-- releases -->
 
+## 0.345.0 — 2026-10-26
+
+### 기능
+
+- **tools** — make_timed_escape — countdown escape with collapsing floor and checkpoint retry (#3548) (`9e24db4`)
+- **runtime** — story journal — configure_story_journal tool, m2 «Journal Line», ESC menu 「일지」 (#3546) (`0b89b28`)
+- **ai** — author_party_split — FF6-style party split with switch orbs, lever->door pairs, rejoin, and a solvability gate (#3553) (`54a15f3`)
+- **ai** — derive_map_variant look:"burned" + keepIntact — burned village keeps house sites and roads (#3552) (`c0035b5`)
+- **ai** — configure_party_bonds — party-member bond scores, campfire talk scene, threshold unlocks, bonds in the 「관계」 menu (#3547) (`e7d1aea`)
+- **ai** — author_snow_route — winding snow-path maps with conifer walls, ice, drifts and gap-jump candidates (#3554) (`9ed055c`)
+- **battle** — combo techs accept up to 4 participants (#3542) (`8207fbd`)
+- **battle** — chargeBreak — interrupt charging skills by damage, element or state (#3544) (`d1b0cb6`)
+- **ai** — place_field_obstacle kind:'gap' — pole-vault gap jump with an examine event on both edges (#3543) (`048b62e`)
+- **wasteland** — hero-scale redraw of 12 objects, calm dirt, sparser floor decals (r63) (#3532) (`1ce4ae1`)
+- **tools** — per-map camera zoom (set_map_properties zoom) and title menu font size (set_title_screen menuFontPx) (#3536) (`f15df91`)
+
+### 수정
+
+- **ai** — puzzles no longer put the answer first or use trivial codes (J63) (#3550) (`d1e4ec4`)
+- **ai/v2** — VQA fix turns must call tools; no-tool rounds don't count (J68) (#3556) (`21099c1`)
+- **player** — phone landscape plays like desktop — controls in side gutters, never over the game; undo #3526 phone-only menu rows (#3558) (`4b0ec3c`)
+- **ci** — ratchet css budget/surfaces/winners to current main (#3541) (`81f15a2`)
+- **jp-city** — road markings under vehicles, east-west crosswalk bars, cars stay on carriageway; road-edge cells are not sidewalk for NPCs (#3535) (`4ecbba6`)
+- **ai** — a lever/bridge gate must actually gate (J1) (#3534) (`dc7db91`)
+
+### 문서
+
+- **fallen** — act 2 handoff — merged tools, open PRs, next beat queue, canonical save and QA commands (#3561) (`af691f9`)
+
+### 테스트
+
+- **ai** — passage dispatch expects the setter via find_tools, not in the narrowed first request (#3562) (`77763d4`)
+- combined-town tile tests start on the retired combined-town map; cluster hint test follows the default tileset (#3560) (`290961c`)
+- retarget generate_map tests to Scarloxy, drop removed editorUiMode import (#3559) (`da2aed8`)
+- construction/row/cluster tool fixtures retarget the blank map to the retired combined-town sheet (#3555) (`96b4b28`)
+- tile/harness fixtures add the purged EasyRPG combined-town, dungeon and world definitions; legacy import accepts bundled object kits (#3540) (`f9e74be`)
+- **tools** — tileset atlas/graft tool tests use a shipped chipset (tex_beodeul_city); the EasyRPG sheets they named were deleted on 2026-10-07 and the tools now correctly reject them (`45cec8d`)
+- **spatial** — compiler fixture keeps only the tilesets it uses, so transaction tests stop timing out on whole-project clones (`1baeee1`)
+- rebuilt EasyRPG definitions go through load normalization (ensureTilesetHarnesses), restoring the combined-town harness groups an opened old save has (`2e83ef2`)
+- **spatial** — seed the interior harness (furniture kits, wall autotiles) on the rebuilt definition, as old saves have it (`5cb668c`)
+- **spatial,tools** — remaining interior-map fixtures use the retired EasyRPG definitions an old save carries (`7176a13`)
+- **spatial** — fixtures rebuild the EasyRPG interior/combined-town definitions an old project carries (`5e2dd70`)
+
+### CI
+
+- **surface** — M2 스냅샷 재생성 — #3509 의 lift-ride 명령 승인 (2건) (#3549) (`7802cef`)
+- **surface** — #3509 의 lift-ride 명령이 바꾼 M2 카탈로그 수치와 포털 탭 3 표면을 반영 (#3538) (`bfff9ec`)
+
+### 잡무
+
+- **fallen** — save a baked Fallen Star into its canonical local project and prove the reload (#3545) (`bdd6a07`)
+
 ## 0.344.0 — 2026-10-25
 
 ### 기능
