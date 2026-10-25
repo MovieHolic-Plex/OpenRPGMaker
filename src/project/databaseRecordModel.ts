@@ -345,6 +345,7 @@ export function normalizeSystemRecords(system: Partial<SystemRecords> & Pick<Sys
     records.dialogueSpeed = Math.round(Math.min(DIALOGUE_PROJECT_SPEED_LIMITS.max, Math.max(DIALOGUE_PROJECT_SPEED_LIMITS.min, system.dialogueSpeed)) * 100) / 100;
   }
   if (system.dialoguePunctuationPause === false) records.dialoguePunctuationPause = false;
+  if (typeof system.dialogueKeepActorsVisible === "boolean") records.dialogueKeepActorsVisible = system.dialogueKeepActorsVisible;
   if (fullPortrait) records.dialogueFullPortrait = fullPortrait;
   // 기본(actors)은 저장하지 않고, 명시적 monsters 선택만 보존한다.
   if (system.battleParty === "monsters") records.battleParty = "monsters";

@@ -2030,6 +2030,11 @@ export interface SystemRecords {
   dialogueSpeed?: number;
   /** false 면 구두점 뒤에 쉬지 않는다. 생략 = 쉰다. */
   dialoguePunctuationPause?: boolean;
+  /**
+   * true 면 필드 대화창·선택지가 열려 있는 동안 카메라를 내려 주인공(과 마주 선 상대)을 창 위 빈 화면에 둔다
+   * (player/dialogueCameraLift.ts). 생략 = 끔 — 카메라는 늘 주인공을 화면 가운데에 둔다.
+   */
+  dialogueKeepActorsVisible?: boolean;
   /** 하단 대사창 뒤 전신 초상의 크기·내림(%). 생략 = 높이 125·내림 20. */
   dialogueFullPortrait?: import("@/project/dialogueStyles").DialogueFullPortraitSettings;
   fieldHud?: import("../fieldHud").FieldHudConfig;

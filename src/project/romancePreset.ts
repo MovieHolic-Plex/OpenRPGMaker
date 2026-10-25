@@ -157,6 +157,11 @@ export function applyRomanceDefaults(project: Project, options: { readonly force
     system.dialogueFullPortrait = { ...ROMANCE_FULL_PORTRAIT_DEFAULTS };
     applied.push("dialogueFullPortrait");
   }
+  // 대화 중에도 마주 선 두 사람이 보이게(시타마치 VQA after: 선택지·대사창이 맵 위 인물을 통째로 가렸다). 저작자가 끈 값은 건드리지 않는다.
+  if (system.dialogueKeepActorsVisible === undefined) {
+    system.dialogueKeepActorsVisible = true;
+    applied.push("dialogueKeepActorsVisible");
+  }
   // 대사창 읽기 보조(백로그·오토·스킵·숨기기): 저작이 없을 때만 연애 기본 구성을 명시 저작으로 심는다(2026-10-17). 저작자가 정한 값은 건드리지 않는다.
   if (!project.meta.oprnDialogueSystem) {
     project.meta.oprnDialogueSystem = romanceDialogueSystem();

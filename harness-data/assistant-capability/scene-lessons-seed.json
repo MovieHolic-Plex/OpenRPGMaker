@@ -542,6 +542,20 @@
     "no choice text contains ending names, map ids or parenthesised notes",
     "both endings are reachable by some choice sequence"
    ]
+  },
+  {
+   "id": "dialogue-keeps-speakers-visible",
+   "label": "대화·선택지가 떠도 마주 선 두 사람이 보인다",
+   "port": 19528,
+   "lessons": [
+    "dialogue-keep-actors-visible"
+   ],
+   "prompt": "골목에서 주인공이 소꿉친구에게 말을 걸면 대사 두 줄 뒤에 대답 세 개를 고르는 장면을 만들어 줘. 대사창이랑 선택지가 떠 있어도 맵 위의 두 사람이 창에 가려지지 않고 보여야 해.",
+   "requirements": [
+    "project.system.dialogueKeepActorsVisible is true (set via set_project_settings dialogue.keepActorsVisible or apply_romance_preset)",
+    "the friend NPC event has a page with text then a showChoices with three options",
+    "in the shipped player, a screenshot taken while the choices are open shows both the hero and the friend sprites above the top edge of the choice window"
+   ]
   }
  ]
 }

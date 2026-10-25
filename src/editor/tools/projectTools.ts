@@ -353,6 +353,7 @@ const setProjectSettings: ToolDefinition = {
           font: { type: "string", enum: FONT_REGISTRY.map((font) => font.id), description: "대사창 글꼴(편집기 글꼴과 별개). 보통 생략 — 스타일이 어울리는 글꼴을 이미 고른다." },
           speed: { type: "number", minimum: DIALOGUE_PROJECT_SPEED_LIMITS.min, maximum: DIALOGUE_PROJECT_SPEED_LIMITS.max, description: "모든 대사의 기본 말 빠르기 배율(1=기본). 느긋한 이야기 0.8, 경쾌한 액션 1.2." },
           punctuationPause: { type: "boolean", description: "쉼표·마침표에서 잠깐 쉬기(기본 true). 기계·로봇 톤이면 false." },
+          keepActorsVisible: { type: "boolean", description: "대화창·선택지가 떠 있는 동안 카메라를 내려 말하는 두 사람을 창 위 빈 화면에 보이게 한다(기본 false). 맵 위 인물끼리 마주 보는 장면이 많은 연애·일상·추리 게임이면 true." },
           fullPortraitHeight: {
             type: "integer",
             minimum: DIALOGUE_FULL_PORTRAIT_LIMITS.height.min,
@@ -622,7 +623,12 @@ const setProjectSettings: ToolDefinition = {
         }
         changed.push(`대화창=${DIALOGUE_STYLES[style].label}`);
       }
-      const { font, speed, punctuationPause, fullPortraitHeight, fullPortraitDrop } = args.dialogue as Record<string, unknown>;
+      const { font, speed, punctuationPause, keepActorsVisible, fullPortraitHeight, fullPortraitDrop } = args.dialogue as Record<string, unknown>;
+      if (typeof keepActorsVisible === "boolean") {
+        // false 도 남긴다 — 연애 기본값(applyRomanceDefaults)이 저작자가 끈 값을 다시 켜지 않게.
+        draft.system.dialogueKeepActorsVisible = keepActorsVisible;
+        changed.push(`대화 중 인물 보이기=${keepActorsVisible ? "켬" : "끔"}`);
+      }
       if (font !== undefined) {
         if (font === null || font === "") delete draft.system.dialogueFont;
         else if (!isFontFamilyId(font)) throw new ToolError(`알 수 없는 글꼴입니다: ${String(font)}`, { code: "invalid-args" });

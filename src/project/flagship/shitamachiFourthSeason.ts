@@ -536,7 +536,8 @@ function buildSento(project: Project, link: { entry: Cell; exit: Cell }): void {
 }
 
 function buildOffice(project: Project, link: { entry: Cell; exit: Cell }): void {
-  const at = placeIn(project, M.office, { x: link.entry.x, y: link.entry.y - 7 }, [link.entry, link.exit]);
+  // 회의 탁자 왼쪽 빈 바닥 — 탁자 뒤 의자 줄에 세우면 탁자 위에 선 것처럼 보였다(VQA after).
+  const at = placeIn(project, M.office, { x: link.entry.x - 4, y: link.entry.y - 7 }, [link.entry, link.exit]);
   const id = "ev_sm_seoyeon_office";
   const first: Command[] = [
     faceHero(id),
@@ -709,9 +710,9 @@ function buildTitleAndOpening(project: Project, spots: { jiho: Cell; yuna: Cell;
       actors: [{ who: "jiho", at: spots.jiho, dir: "down" }],
     },
     {
-      // 번대(접수대)가 아니라 탕이 보이게 — 센토라는 것이 한눈에 읽힌다.
-      id: "sm_shot_sento", mapId: M.sento, focus: { x: 20, y: 12 }, caption: "같은 전철, 같은 칸. 필름 카메라를 든 유나.",
-      actors: [{ who: "yuna", at: { x: 21, y: 16 }, dir: "down" }],
+      // 위쪽에 탕, 아래쪽에 번대(접수대) — 센토라는 것과 유나의 자리가 한 화면에 읽힌다(VQA after: 교복 차림으로 탕 바닥에 세웠었다).
+      id: "sm_shot_sento", mapId: M.sento, focus: { x: spots.yuna.x - 2, y: spots.yuna.y - 5 }, caption: "센토 마츠노유의 손녀. 같은 전철, 같은 칸의 유나.",
+      actors: [{ who: "yuna", at: spots.yuna, dir: "down" }],
     },
     {
       id: "sm_shot_office", mapId: M.office, focus: { x: spots.seoyeon.x, y: spots.seoyeon.y + 2 }, caption: "축제를 혼자 떠안은 학생회장, 서연.",
@@ -766,7 +767,7 @@ function defineEndings(project: Project): void {
   });
   execTool(project, "define_ending", {
     id: END_YUNA, name: "유나 · 마지막 한 장", priority: 10, conditions: [{ kind: "friendshipAtLeast", npcKey: "yuna", value: TRUE_AT * 100 }],
-    presentation: { kicker: "두 사람의 이야기", musicResourceId: BGM_HAPPY, tone: "warm", backgroundResourceId: "oprn-title-romance-town", credits },
+    presentation: { kicker: "두 사람의 이야기", musicResourceId: BGM_HAPPY, tone: "warm", backgroundResourceId: "oprn-title-romance-office", credits },
     epilogue: [
       { kind: "say", speaker: "유나", text: "현상한 사진은 마츠노유 번대 옆에 걸렸다. 등롱 불빛 앞에서 웃는 사람 하나." },
       { kind: "say", speaker: "하진", text: "내일 아침 전철에서 봐. 같은 칸에서." },
@@ -828,7 +829,7 @@ export function createShitamachiFourthSeasonFlagshipDemo(): FlagshipDemoBuildRes
     }
   };
   for (const e of project.maps[M.hub]!.events) for (const p of e.pages ?? []) fillRoofTransfer(p.commands);
-  execTool(project, "set_title_screen", { title: "시타마치의 네 번째 계절", logoSubtitle: "등롱이 켜지는 밤", backgroundResourceId: "oprn-title-romance-campus", logoStyle: "glow", musicResourceId: BGM_MEMORY });
+  execTool(project, "set_title_screen", { title: "시타마치의 네 번째 계절", logoSubtitle: "등롱이 켜지는 밤", backgroundResourceId: "oprn-title-romance-office", logoStyle: "glow", musicResourceId: BGM_MEMORY });
   defineEndings(project);
 
   const spot = (mapId: string, eventId: string): Cell => {
@@ -845,7 +846,7 @@ export function createShitamachiFourthSeasonFlagshipDemo(): FlagshipDemoBuildRes
   for (const [id, res] of Object.entries(mapBgm)) project.maps[id]!.bgm = { mode: "custom", resourceId: res } as GameMap["bgm"];
   for (const id of Object.values(M)) { const m = project.maps[id]!; if (!m.defaultLighting) m.defaultLighting = { ambient: 0, color: "#000000", sources: [] }; }
   // 저녁 전철은 노을빛.
-  project.maps[M.train]!.defaultLighting = { ambient: 0.18, color: "#ff9a5a", sources: [] };
+  project.maps[M.train]!.defaultLighting = { ambient: 0.32, color: "#ff8a4a", sources: [] };
 
   project.characters = {
     ...(project.characters ?? {}),
