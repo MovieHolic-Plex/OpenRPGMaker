@@ -237,8 +237,9 @@ def check(bid, quiet=False):
         ys = sorted({y for _, y in doors})
         if len(xs) != 1 or len(doors) != len(ys) or ys != list(range(ys[0], ys[-1] + 1)) or len(ys) > 2:
             fails.append(f'문은 한 열에 세로로 1~2칸 하나뿐이어야 한다: {doors}')
-        elif ys[-1] != chh - 1:
-            fails.append('문 아랫칸이 그림 맨 아래 칸 줄이 아니다(문 앞 칸이 키트 밖 땅이어야 한다)')
+        elif any(walk[y][doors[0][0]] != '.' for y in range(ys[-1] + 1, chh)):
+            # 문 앞 칸은 땅이어야 한다: 키트 밖이거나(맨 아래 줄) 키트 안의 빈칸(ㄷ자 안뜰처럼 물러난 정면)
+            fails.append('문 아래 칸이 땅(키트 밖 또는 빈칸 .)이 아니다')
     # 칸 통행은 그림과 맞아야 한다(2026-10-25 감사: 시청 아케이드·장터 가판대가 통로로 적혀 벽을 지나갔다).
     # 열린 통로(passages)는 그림으로 확인할 수 없어 받지 않는다. 땅 닿는 칸은 막힘, 벽(X) 아래에 지나가는 칸이 없다,
     # 벽 줄에 지붕 칸(*)이 홈처럼 파고들지 않는다.

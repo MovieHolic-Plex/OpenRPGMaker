@@ -62,3 +62,9 @@ c.save('<id>', meta)                 # art 두 파일 + check + 미리보기
 - (5차) ㉘ 맨 아래 줄 몇 화소가 벽과 1px 투명 줄로 떨어져 있으면 argon 이 「바닥 틈」으로 FAIL — 기초 줄은 벽에 붙인다. 꼭대기 장식(피니얼)도 지붕 꼭짓점에 닿게. `massing.py check` 가 이제 바닥 근처 가로 틈을 FAIL, 갇힌 투명 구멍을 경고로 알려 준다. ㉙ 공용 도우미를 고쳐 다른 건물을 다시 그리지 말 것(검수가 무효가 된다) — 맡은 id 만.
 - (6차, 2026-10-25 재도전) ㉚ **남북 박공 지붕 규약 하나 = 버들항 `bd-house-h124_0`** (`qa-runs/harnesses/building-kit/massing/beodeul/bd-house-h124_0.png`). 앞(남) 박공 삼각벽 뒤로 지붕이 오각형 실루엣으로 화면 위로 물러나 꼭짓점에서 닫힌다. 기와는 용마루와 나란한 **세로 열**(줄무늬) — 왼쪽 사면은 밝은 세로 열, 오른쪽 사면은 어두운 세로 열, 가운데 용마루는 세로 선, 처마 끝은 비스듬한 어두운 테. 가로 기와 줄·두 겹 계단 박공 금지. 계단 박공(길드 회관·창고)은 앞 박공만 계단으로 하고 지붕은 이 규약 그대로. json `refs` 첫째를 `bd-house-h124_0` 으로 둬서 검수판에 같이 나오게 한다.
 - ㉛ 그리기 스크립트는 이제 커밋된다: `scripts/content/building-kit/massing/work/<id>/draw.py`. 고친 뒤 `python3 scripts/content/building-kit/massing/regen.py <id> --check` 가 아니라 `regen.py <id>` 로 다시 쓰고, 맡지 않은 id 의 그림은 바꾸지 않는다(다른 id 도우미를 고치면 `regen.py --check` 로 나머지가 그대로인지 확인).
+- (7차, 2026-10-25 이미 들어간 27채 적대 VQA) 원문: `/home/main/z-project/rpg-zzu/qa-runs/bk-vqa/argon-review.md`(건물별 절 `### #NN id`), `sonnet-review.md`(표 + 「Beodeul same-zoom comparison」 정정 절). 이번 판은 거기 MAJOR/FAIL 이유를 고친다. 두 판 안에 못 고치면 번들에서 뺀다.
+  ㉜ **덩어리 모형을 지킨다**: 모형에 있는 탑·안뜰(ㄷ자)·십자 날개·트인 아케이드·첨탑·큐폴라를 지우거나 막지 않는다. 모형에 없는 별채를 붙이지 않는다.
+  ㉝ **청기와(슬레이트) 지붕 = 버들항 파랑**: 모형이 파랑·회색 지붕이면 버들항 `bd-house-manor`·`bd-house-cathedral`·`bd-house-barracks`(`qa-runs/harnesses/building-kit/massing/beodeul/`)의 지붕 색 분포를 그대로 따른다(밝은 단·중간 단 비율까지 비교). 적갈색·포화 보라·무채 회색 금지. 벽은 버들항 흰 돌(따뜻한 흰 회색 + 연보라 줄눈).
+  ㉞ **층 높이**: 한 층 ≈ 26~32px, 문 ≈ 22~28px. 세 줄 창을 다섯 칸에 넣지 않는다.
+  ㉟ **같은 8×8 조각 복사 금지**: 다른 건물과 같은 패치(지붕·벽 도장)를 쓰지 않는다. 공용 도우미 결과를 그대로 붙이지 말고 건물마다 색·창·무늬를 다르게.
+  ㊱ **walk**: `massing.py check` 가 이제 passages·벽 아래 `*`·벽 줄 홈을 막는다. D 는 그린 문 위에 정확히(문이 두 칸에 걸치게 그리지 않는다).
