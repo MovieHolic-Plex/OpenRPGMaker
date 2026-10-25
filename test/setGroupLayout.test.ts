@@ -7,6 +7,7 @@ import { createBlankProject } from "@/project/defaults";
 import { COMBINED_TOWN_TILESET_ID, TILE } from "@/project/defaults/constants";
 import type { TileGroupMetadata } from "@/project/types";
 import type { ToolContext } from "@/editor/tools/types";
+import { withRetiredEasyRpgTilesets } from "./support/retiredEasyRpgTilesets";
 
 type PatternGrammar = NonNullable<TileGroupMetadata["patternGrammar"]>;
 type SetGroupLayoutData = {
@@ -16,7 +17,7 @@ type SetGroupLayoutData = {
 };
 
 function contextWithGroup(): ToolContext {
-  const project = createBlankProject();
+  const project = withRetiredEasyRpgTilesets(createBlankProject());
   project.tilesets[COMBINED_TOWN_TILESET_ID].tileGroups = [layoutGroup()];
   return { project };
 }

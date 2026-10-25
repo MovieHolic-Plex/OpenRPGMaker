@@ -7,11 +7,12 @@ import { createBlankProject } from "@/project/defaults";
 import { TILE } from "@/project/defaults/constants";
 import { store } from "@/project/store";
 import { findByTestId, installFakeDom, type FakeElement } from "./fakeDom";
+import { withRetiredEasyRpgTilesets } from "./support/retiredEasyRpgTilesets";
 
 let restoreDom: (() => void) | null = null;
 
 beforeEach(() => {
-  store.replace(createBlankProject());
+  store.replace(withRetiredEasyRpgTilesets(createBlankProject()));
   restoreDom = installFakeDom();
 });
 

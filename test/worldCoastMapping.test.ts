@@ -8,8 +8,9 @@ import { createWorldCoastAutotileGroup, hasWorldCoastMapping, isWorldAnimatedTil
 import { createWorldTerrainAutotileGroups } from "@/project/defaults/worldTerrainAutotiles";
 import { createBlankProject } from "@/project/defaults/defaultProject";
 import { serialize, deserialize } from "@/project/io";
+import { retiredEasyRpgTileset, withRetiredEasyRpgTilesets } from "./support/retiredEasyRpgTilesets";
 
-const tileset = () => defaultTilesets().easyrpg_chipset_world!;
+const tileset = () => retiredEasyRpgTileset("easyrpg_chipset_world");
 const map = (rows: number[][]) => ({ width: rows[0]!.length, height: rows.length, lowerTiles: rows.flat() });
 
 describe("World coast mapping", () => {
@@ -39,7 +40,7 @@ describe("World coast mapping", () => {
     applyEasyRpgThemeMetadataPacks(ts);
     expect(ts.tileMeta![120]!.label).toBe("내 타일");
     expect(ts.priority[120]).toBe("upper");
-    const retro = defaultTilesets().easyrpg_chipset_retro_world!;
+    const retro = retiredEasyRpgTileset("easyrpg_chipset_retro_world");
     const before = JSON.stringify(retro);
     expect(seedWorldCoastMapping(retro)).toBe(false);
     expect(JSON.stringify(retro)).toBe(before);
@@ -103,7 +104,7 @@ describe("World coast mapping", () => {
     const snowyLand = map([[190,120,190],[120,120,120],[190,120,190]]);
     expect(lakeAutotileQuarterSources(snowyLand,1,1,ts).map(p=>p.tile)).toEqual([90,90,90,90]);
     expect(ts.tileGroups!.find(g=>g.id===WORLD_COAST_GROUP_ID)!.tileIds).toEqual(WORLD_SEA_TILES);
-    const project = createBlankProject(); project.tilesets[ts.id] = ts;
+    const project = withRetiredEasyRpgTilesets(createBlankProject()); project.tilesets[ts.id] = ts;
     const loaded = deserialize(serialize(project)).tilesets[ts.id]!;
     expect(loaded.autotileGroups!.find(g=>g.id==="my-snow")).toEqual(snow);
     expect(isLakeAutotileTile(120,loaded)).toBe(true);
@@ -119,7 +120,7 @@ describe("World coast mapping", () => {
     const migrated = ts.autotileGroups[0]!;
     expect(migrated).toEqual({...legacy,memberTileIds:WORLD_WATER_TILES,connectTileIds:WORLD_WATER_TILES});
     expect(seedWorldCoastMapping(ts)).toBe(false);
-    const project = createBlankProject(); project.tilesets[ts.id] = ts;
+    const project = withRetiredEasyRpgTilesets(createBlankProject()); project.tilesets[ts.id] = ts;
     const loaded = deserialize(serialize(project)).tilesets[ts.id]!;
     expect(loaded.autotileGroups!.find(g=>g.id===WORLD_COAST_GROUP_ID)).toEqual(migrated);
   });

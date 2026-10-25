@@ -7,6 +7,7 @@ import { passableFlag, blockedFlag } from "@/project/tilesetPassage";
 import { sha256HexText } from "@/util/sha256";
 import type { Project } from "@/project/types";
 import type { ElectronBridgeSession, SharedWire } from "./support/electronBridgeSession";
+import { withRetiredEasyRpgTilesets } from "./support/retiredEasyRpgTilesets";
 
 // 저장소만 바꿔 끼운다. 와이어 직렬화·store 로드 정규화·변이 추적·영수증·generate_map 은 전부 실제 코드다.
 let session: ElectronBridgeSession | null = null;
@@ -27,7 +28,7 @@ describe("generator real store palette identity", () => {
     "%s -> real save receipt -> fresh load has identical rules and no migration", async mode => {
       // Prevent unrelated debounce autosaves; every operation is explicitly awaited.
       vi.useFakeTimers();
-      wire.current = serialize(createBlankProject());
+      wire.current = serialize(withRetiredEasyRpgTilesets(createBlankProject()));
       const store = await freshStore();
       await store.load();
       await store.flush();

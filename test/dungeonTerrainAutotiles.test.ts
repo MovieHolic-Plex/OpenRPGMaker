@@ -6,10 +6,11 @@ import {
   DUNGEON_TERRAIN_AUTOTILE_PREFIX,
 } from "@/project/defaults/dungeonTerrainAutotiles";
 import { applyEasyRpgThemeMetadataPacks } from "@/project/tilesetHarness";
+import { withRetiredEasyRpgTilesets } from "./support/retiredEasyRpgTilesets";
 
 describe("dungeon terrain autotiles (RM2k3 blocks ×12 + 카펫)", () => {
   it("블랭크 프로젝트의 던전 타일셋에 지형 그룹 13종이 시드된다 (재적용은 idempotent)", () => {
-    const dungeon = createBlankProject().tilesets.easyrpg_chipset_dungeon;
+    const dungeon = withRetiredEasyRpgTilesets(createBlankProject()).tilesets.easyrpg_chipset_dungeon;
     const ids = (dungeon.autotileGroups ?? []).map((group) => group.id);
     for (const key of [
       "stone", "chasm", "redrock", "lava", "pit-pale", "pit-gold",
@@ -125,7 +126,7 @@ describe("dungeon terrain autotiles (RM2k3 blocks ×12 + 카펫)", () => {
   });
 
   it("던전 하네스 그룹은 타일 중복 없이 시드된다 (재적용 idempotency 전제)", () => {
-    const dungeon = createBlankProject().tilesets.easyrpg_chipset_dungeon;
+    const dungeon = withRetiredEasyRpgTilesets(createBlankProject()).tilesets.easyrpg_chipset_dungeon;
     const seen = new Map<number, string>();
     for (const group of dungeon.tileGroups ?? []) {
       for (const tile of group.tileIds) {

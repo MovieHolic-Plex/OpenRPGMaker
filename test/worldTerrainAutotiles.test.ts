@@ -9,6 +9,7 @@ import { chipsetQuarterComposition } from "@/project/defaults/terrainQuarterAuto
 import { lakeAutotileQuarterSources } from "@/project/defaults/lakeAutotile";
 import { createWorldTerrainAutotileGroups, seedWorldTerrainAutotiles, worldTerrainQuarterKit } from "@/project/defaults/worldTerrainAutotiles";
 import type { AutotileGroup } from "@/project/types";
+import { retiredEasyRpgTileset, withRetiredEasyRpgTilesets } from "./support/retiredEasyRpgTilesets";
 
 // Independently transcribed from the 30-column World.png atlas; do not derive
 // expected art roles from WORLD_TERRAIN_BLOCKS or the implementation's kits.
@@ -26,7 +27,7 @@ const ART = [
   { key: "rock-pit", anchor: 369, solid: true, isolatedArt: false },
 ] as const;
 const PREFIX = "harness-world-v2-terrain-";
-const tileset = () => defaultTilesets().easyrpg_chipset_world!;
+const tileset = () => retiredEasyRpgTileset("easyrpg_chipset_world");
 const map = (rows: number[][]) => ({ width: rows[0]!.length, height: rows.length, lowerTiles: rows.flat() });
 const neighborBits = [[1,0,1],[2,1,2],[1,2,4],[0,1,8],[2,0,16],[2,2,32],[0,2,64],[0,0,128]] as const;
 // Each tuple: two perpendicular neighbor bits, diagonal bit, exposed corner,
@@ -208,7 +209,7 @@ describe("World terrain autotiles", () => {
     ts.tileGrafts = [{targetTile:361,sourceChipset:"tex_easyrpg_chipset_world",sourceTile:262}];
     expect(worldTerrainQuarterKit(ts,421)).not.toBeNull();
     ts.tileGrafts = [{targetTile:421,sourceChipset:"tex_easyrpg_chipset_world",sourceTile:262}];
-    const project = createBlankProject(); project.tilesets[ts.id]=ts;
+    const project = withRetiredEasyRpgTilesets(createBlankProject()); project.tilesets[ts.id]=ts;
     const loaded = deserialize(serialize(project)).tilesets[ts.id]!;
     expect(loaded.tileGrafts).toEqual(ts.tileGrafts);
     expect(worldTerrainQuarterKit(loaded,421)).toBeNull();
@@ -232,7 +233,7 @@ describe("World terrain autotiles", () => {
   });
 
   it("retains terrain groups, shaped tiles and quarter rendering through project serialization", () => {
-    const project = createBlankProject();
+    const project = withRetiredEasyRpgTilesets(createBlankProject());
     const ts = project.tilesets.easyrpg_chipset_world!;
     const m = createBlankMap("World terrain serialization contract",5,3,ts.id);
     m.lowerTiles = [240,240,240,240,240,240,421,421,421,240,240,240,240,240,240];
@@ -251,7 +252,7 @@ describe("World terrain autotiles", () => {
 
 // Regression from the authored world's road-side cove (63,23): diagonal snow cannot tint a grass edge.
 it("chooses snow skin only from land contributing the quarter boundary", () => {
-  const ts = defaultTilesets().easyrpg_chipset_world!;
+  const ts = retiredEasyRpgTileset("easyrpg_chipset_world");
   const m = {width:3,height:3,lowerTiles:[120,240,190,120,120,120,120,120,120]};
   const ne = lakeAutotileQuarterSources(m,1,1,ts).find(p=>p.quarter==="ne")!;
   expect(ne.tile).toBe(60);

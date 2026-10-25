@@ -6,10 +6,11 @@ import {
   INTERIOR_TERRAIN_AUTOTILE_PREFIX,
 } from "@/project/defaults/interiorTerrainAutotiles";
 import { applyEasyRpgThemeMetadataPacks } from "@/project/tilesetHarness";
+import { withRetiredEasyRpgTilesets } from "./support/retiredEasyRpgTilesets";
 
 describe("interior terrain autotiles (RM2k3 blocks ×6)", () => {
   it("블랭크 프로젝트의 실내 타일셋에 지형/카펫 그룹 9종이 시드된다 (재적용은 idempotent)", () => {
-    const interior = createBlankProject().tilesets.easyrpg_chipset_interior;
+    const interior = withRetiredEasyRpgTilesets(createBlankProject()).tilesets.easyrpg_chipset_interior;
     const ids = (interior.autotileGroups ?? []).map((group) => group.id);
     for (const key of ["hedge", "mound", "dirt", "deck", "cobble", "teal-carpet", "sand", "dark-grass", "red-carpet"]) {
       expect(ids).toContain(`${INTERIOR_TERRAIN_AUTOTILE_PREFIX}${key}`);

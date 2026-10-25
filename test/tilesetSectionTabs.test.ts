@@ -27,6 +27,7 @@ import { applyCombinedTownHarness } from "@/project/tilesetHarness";
 import { passageMarkForTile, setPassageMark } from "@/project/tilesetPassage";
 import { store } from "@/project/store";
 import { findByTestId, installFakeDom, type FakeElement } from "./fakeDom";
+import { withRetiredEasyRpgTilesets } from "./support/retiredEasyRpgTilesets";
 
 const SLOPED_ROOF = 385; // 투명 칩 — 자동 판정은 상위.
 const STRAIGHT_ROOF = 404; // 불투명 — 자동 판정은 하위.
@@ -113,7 +114,7 @@ describe("타일셋 섹션 UI", () => {
   let restoreDom: (() => void) | null = null;
 
   beforeEach(() => {
-    store.replace(createBlankProject());
+    store.replace(withRetiredEasyRpgTilesets(createBlankProject()));
     restoreDom = installFakeDom();
     setTilesetMetadataEditMode("passage", () => {}); // rules 탭으로 초기화.
   });

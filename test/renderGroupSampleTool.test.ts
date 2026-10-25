@@ -6,6 +6,7 @@ import { createBlankProject } from "@/project/defaults";
 import { COMBINED_TOWN_TILESET_ID } from "@/project/defaults/constants";
 import type { TileGroupMetadata } from "@/project/types";
 import type { ToolContext } from "@/editor/tools/types";
+import { withRetiredEasyRpgTilesets } from "./support/retiredEasyRpgTilesets";
 
 type RenderGroupSampleData = {
   readonly samples: readonly {
@@ -28,7 +29,7 @@ type FakeCanvasContext = {
 let restoreCanvasDom: (() => void) | null = null;
 
 function context(): ToolContext {
-  const project = createBlankProject();
+  const project = withRetiredEasyRpgTilesets(createBlankProject());
   project.tilesets[COMBINED_TOWN_TILESET_ID].tileGroups = [wallGroup()];
   return { project };
 }

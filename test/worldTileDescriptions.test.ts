@@ -7,11 +7,12 @@ import { deserialize, serialize } from "@/project/io";
 import { applyEasyRpgThemeMetadataPacks } from "@/project/tilesetHarness/themePacks";
 import { resolveMaterialByLabel } from "@/project/tileVocabulary";
 import type { TilesetDef } from "@/project/types";
+import { retiredEasyRpgTileset, withRetiredEasyRpgTilesets } from "./support/retiredEasyRpgTilesets";
 
 const WORLD_ID = "easyrpg_chipset_world";
 const WORLD_TEXTURE = "tex_easyrpg_chipset_world";
 const BLANK_SLOTS = [233, 258];
-const tileset = () => defaultTilesets()[WORLD_ID]!;
+const tileset = () => retiredEasyRpgTileset(WORLD_ID);
 const descriptions = (ts: TilesetDef) => ts.tileMeta!.map(meta => meta.description);
 
 function clearDescriptions(ts: TilesetDef): void {
@@ -138,7 +139,7 @@ describe("World tile descriptions", () => {
   });
 
   it("fills legacy prose during load-time ensure and preserves it through later save/load cycles", () => {
-    const project = createBlankProject();
+    const project = withRetiredEasyRpgTilesets(createBlankProject());
     const ts = project.tilesets[WORLD_ID]!;
     clearDescriptions(ts);
     ts.tileMeta![262]!.description = "저장한 여울 마을 설명";

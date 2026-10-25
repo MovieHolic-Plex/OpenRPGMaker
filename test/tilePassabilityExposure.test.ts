@@ -9,6 +9,7 @@ import { createBlankProject } from "@/project/defaults";
 import { COMBINED_TOWN_TILESET_ID } from "@/project/defaults/constants";
 import { applyCombinedTownHarness } from "@/project/tilesetHarness";
 import type { Project, TilesetDef } from "@/project/types";
+import { withRetiredEasyRpgTilesets } from "./support/retiredEasyRpgTilesets";
 
 const SETTER = "set_tile_passability";
 const TILESET = "passage_fixture";
@@ -30,7 +31,7 @@ function passage(passable: boolean) {
 
 // Three cells/three chips; no authored project, store, browser, or remote persistence.
 function fixture(initialPassable = false): Project {
-  const project = createBlankProject();
+  const project = withRetiredEasyRpgTilesets(createBlankProject());
   const tileset: TilesetDef = {
     id: TILESET, name: "Passage fixture", image: project.tilesets[COMBINED_TOWN_TILESET_ID].image,
     tileSize: 16, tilesPerRow: 3, count: 3,
@@ -206,7 +207,7 @@ describe("public technical tile passage capability", () => {
   });
 
   it("keeps the native passage metadata through JSON reload and bundled harness reapplication", () => {
-    const context = { project: createBlankProject() };
+    const context = { project: withRetiredEasyRpgTilesets(createBlankProject()) };
     const schema = toOpenAiTools().find(tool => tool.function.name === SETTER);
     expect(schema).toBeDefined();
     const args = { tile: 342, passable: true, reason: "repair physical passage" };

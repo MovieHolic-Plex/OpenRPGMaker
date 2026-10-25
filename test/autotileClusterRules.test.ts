@@ -6,6 +6,7 @@ import { createBlankProject } from "@/project/defaults/defaultProject";
 import { isAutotileGroup, validateClusterRules } from "@/project/lint/clusterRuleValidators";
 import { store } from "@/project/store";
 import type { ClusterRule, GameMap, Project, TileGroupMetadata } from "@/project/types";
+import { withRetiredEasyRpgTilesets } from "./support/retiredEasyRpgTilesets";
 
 const MAP_ID = "map_autotile_rules";
 
@@ -168,7 +169,7 @@ function patternGrammar(kind: NonNullable<TileGroupMetadata["patternGrammar"]>["
 }
 
 function projectWithGroup(tileGroup: TileGroupMetadata): { readonly map: GameMap; readonly project: Project } {
-  const project = createBlankProject();
+  const project = withRetiredEasyRpgTilesets(createBlankProject());
   const map = blankMap();
   project.maps = { [MAP_ID]: map };
   project.mapTree = { mapId: MAP_ID, children: [] };

@@ -4,7 +4,7 @@ import { ensureInteriorRoomHarness } from "../../src/editor/interiorRoomPipeline
 import type { Project, TilesetDef } from "../../src/project/types";
 
 /**
- * 2026-10-07 저작권 정리 전에 저장한 프로젝트를 재현한다 — 그 프로젝트들은 EasyRPG 실내·합본 마을 타일셋 정의를 그대로 들고 있다.
+ * 2026-10-07 저작권 정리 전에 저장한 프로젝트를 재현한다 — 그 프로젝트들은 EasyRPG 실내·합본 마을·던전·월드 타일셋 정의를 그대로 들고 있다.
  *
  * 왜: 공간 컴파일러·실내 도구 테스트 약 90개가 `createBlankProject().tilesets.easyrpg_chipset_interior` 를 썼는데, 정리 뒤
  * 새 프로젝트에는 그 타일셋이 없어 픽스처가 「Missing shipped interior atlas」로 시작조차 못 했다(ci-full 40165485978).
@@ -18,6 +18,9 @@ export const RETIRED_COMBINED_TOWN_TILESET_ID = "easyrpg_chipset_combined_town";
 const RETIRED_SHEETS: readonly { readonly id: string; readonly textureKey: string; readonly name: string }[] = [
   { id: RETIRED_INTERIOR_TILESET_ID, textureKey: "tex_easyrpg_chipset_interior", name: "실내" },
   { id: RETIRED_COMBINED_TOWN_TILESET_ID, textureKey: "tex_easyrpg_chipset_combined_town", name: "합본 마을" },
+  { id: "easyrpg_chipset_dungeon", textureKey: "tex_easyrpg_chipset_dungeon", name: "던전" },
+  { id: "easyrpg_chipset_world", textureKey: "tex_easyrpg_chipset_world", name: "월드" },
+  { id: "easyrpg_chipset_retro_world", textureKey: "tex_easyrpg_chipset_retro_world", name: "레트로 월드" },
 ];
 
 export function withRetiredEasyRpgTilesets<T extends { tilesets: Record<string, TilesetDef> }>(project: T): T {
@@ -33,4 +36,14 @@ export function withRetiredEasyRpgTilesets<T extends { tilesets: Record<string, 
   }
   if (addedInterior) ensureInteriorRoomHarness(project as unknown as Project);
   return project;
+}
+
+/** 지운 EasyRPG 시트 하나의 옛 정의(새 사본). `defaultTilesets().easyrpg_chipset_world` 처럼 쓰던 테스트용. */
+export function retiredEasyRpgTileset(id: string): TilesetDef {
+  const sheet = RETIRED_SHEETS.find((entry) => entry.id === id);
+  if (!sheet) throw new Error(`not a retired EasyRPG sheet: ${id}`);
+  const holder = withRetiredEasyRpgTilesets({ tilesets: {} as Record<string, TilesetDef> });
+  const tileset = holder.tilesets[id];
+  if (!tileset) throw new Error(`retired tileset not built: ${id}`);
+  return tileset;
 }

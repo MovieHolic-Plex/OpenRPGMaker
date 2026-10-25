@@ -4,6 +4,7 @@ import { COMBINED_TOWN_TILESET_ID, TILE } from "@/project/defaults/constants";
 import { createBlankProject } from "@/project/defaults/defaultProject";
 import { validateClusterRules } from "@/project/lint/clusterRuleValidators";
 import type { ClusterRule, GameMap, Project, TileGroupMetadata } from "@/project/types";
+import { withRetiredEasyRpgTilesets } from "./support/retiredEasyRpgTilesets";
 
 const MAP_ID = "map_cluster_rules";
 type PatternGrammar = NonNullable<TileGroupMetadata["patternGrammar"]>;
@@ -43,7 +44,7 @@ function groupWithRules(rules: readonly ClusterRule[], patternGrammar?: PatternG
 }
 
 function projectWithRules(rules: readonly ClusterRule[], patternGrammar?: PatternGrammar): { readonly map: GameMap; readonly project: Project } {
-  const project = createBlankProject();
+  const project = withRetiredEasyRpgTilesets(createBlankProject());
   const map = blankMap();
   project.maps = { [MAP_ID]: map };
   project.mapTree = { mapId: MAP_ID, children: [] };
