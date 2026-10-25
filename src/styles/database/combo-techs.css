@@ -27,3 +27,10 @@
 .database-modal-body .db-combo-members { display: grid; gap: 8px; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); margin-block: 8px; }
 .database-modal-body .db-combo-member { border: 1px dashed var(--border-default); border-radius: 6px; display: grid; gap: 6px; padding: 8px; }
 .database-modal-body .db-combo-fields { display: grid; gap: 8px; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
+
+/* 컷인 색 행 — 이름표와 색 입력이 한 줄에 선다. */
+.database-modal-body .db-combo-tint {
+  align-items: center;
+  display: flex;
+  gap: 8px;
+}

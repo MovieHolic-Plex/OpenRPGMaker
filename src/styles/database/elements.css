@@ -102,3 +102,10 @@
     padding: 10px;
   }
 }
+
+/* 속성 예외 행 — 배율 입력과 「빼기」 버튼이 한 줄에 선다. */
+.database-modal-backdrop .db-damage-type-exception {
+  align-items: flex-end;
+  display: flex;
+  gap: 8px;
+}
