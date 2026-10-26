@@ -1,0 +1,74 @@
+// 감싸는 칸 하나를 펴서 보인다 — make_place{spec:{…}}·upsert_actor{actor:{…}}·upsert_event{mapId,event:{…}}·add_people{people:[…]} 같은
+// 도구를 «칸을 최상위에 바로 적는» 모양으로 모델에게 보이고, 실행 직전에 원래 모양으로 다시 감싼다.
+// 2026-10-25 공포 트랙 실측(J67): 긴 v2 도구 목록에서 Gemini 가 감싸는 칸을 자주 빼먹었다(hf2-mansion-argon 첫 턴 50호출 중 32 실패).
+// argRepair 가 사후에 고치지만 처음부터 펴서 보이면 틀릴 자리가 없다. 감싼 모양으로 보내도(예전 습관) 그대로 통과한다.
+import type { PiToolCallRecord, PiToolExecResult, PiToolShape } from "@/ai/piAgent/toolAdapter";
+
+type Schema = { readonly type?: unknown; readonly properties?: Readonly<Record<string, Schema>>; readonly required?: readonly string[]; readonly items?: Schema; readonly description?: string };
+type Obj = Record<string, unknown>;
+
+/** 펼 도구와 그 감싸는 칸. array 면 칸이 객체 목록이다(한 개는 최상위에, 여럿은 그 칸 목록으로). */
+export const FLAT_WRAPPERS: Readonly<Record<string, { readonly slot: string; readonly array?: boolean }>> = {
+  make_place: { slot: "spec" },
+  add_event: { slot: "event" },
+  add_scene: { slot: "scene" },
+  draw_object: { slot: "object" },
+  upsert_actor: { slot: "actor" },
+  upsert_event: { slot: "event" },
+  add_people: { slot: "people", array: true },
+};
+
+const isObj = (v: unknown): v is Obj => !!v && typeof v === "object" && !Array.isArray(v);
+const fail = (summary: string): PiToolExecResult => ({ content: [{ type: "text", text: JSON.stringify({ ok: false, summary }) }] });
+
+/** 펼친 모양의 스키마와, 펼친 인자를 원래 모양으로 되감는 함수. 펼 수 없으면 undefined(도구를 그대로 둔다). */
+export function flatWrapperShape(name: string, parameters: unknown): { readonly parameters: Schema; readonly wrap: (args: unknown) => { args: unknown; missing: readonly string[] } } | undefined {
+  const w = FLAT_WRAPPERS[name];
+  const p = parameters as Schema | undefined;
+  const slotSchema = w ? p?.properties?.[w.slot] : undefined;
+  const inner = w?.array ? slotSchema?.items : slotSchema;
+  if (!w || !p?.properties || !slotSchema || !inner?.properties) return undefined;
+  const outer = Object.fromEntries(Object.entries(p.properties).filter(([k]) => k !== w.slot));
+  // 바깥 칸과 이름이 겹치는 안쪽 칸(add_people 의 mapId)은 바깥 것 하나로 쓴다.
+  const innerProps = Object.fromEntries(Object.entries(inner.properties).filter(([k]) => !(k in outer)));
+  const innerRequired = (inner.required ?? []).filter((k) => k in innerProps);
+  const properties: Record<string, Schema> = {
+    ...outer, ...innerProps,
+    ...(w.array ? { [w.slot]: { ...slotSchema, description: `여럿을 한 번에 둘 때만 쓴다. 하나면 이 칸 없이 최상위에 바로 적는다.${slotSchema.description ? ` ${slotSchema.description}` : ""}` } } : {}),
+  };
+  const required = (p.required ?? []).filter((k) => k !== w.slot);
+  const wrap = (args: unknown): { args: unknown; missing: readonly string[] } => {
+    if (!isObj(args) || args[w.slot] !== undefined) return { args, missing: [] };
+    const out: Obj = { ...args }, moved: Obj = {};
+    for (const k of Object.keys(innerProps)) if (k in out) { moved[k] = out[k]; delete out[k]; }
+    const missing = innerRequired.filter((k) => moved[k] === undefined);
+    out[w.slot] = w.array ? [moved] : moved;
+    return { args: out, missing };
+  };
+  // 뿌리의 additionalProperties:false 는 뺀다 — 감싼 모양(예전 습관)으로 온 칸을 검증기가 지우지 않게.
+  const { additionalProperties: _drop, ...root } = p as Schema & { readonly additionalProperties?: unknown };
+  void _drop;
+  return { parameters: { ...root, properties, required: [...required, ...innerRequired] }, wrap };
+}
+
+/** 도구 하나를 펴서 보인다. 감싼 모양(예전 습관)으로 온 호출은 그대로 넘긴다. record 를 주면 필수 칸이 빠진 거절도 기록한다. */
+export function flattenWrapperTool(tool: PiToolShape, record?: (r: PiToolCallRecord) => void): PiToolShape {
+  const shape = flatWrapperShape(tool.name, tool.parameters);
+  if (!shape) return tool;
+  const slot = FLAT_WRAPPERS[tool.name]!.slot;
+  // 감싼 모양도 받아야 하므로 스키마 필수에는 바깥 필수만 둔다 — 안쪽 필수는 실행 전에 직접 본다.
+  const outerRequired = ((tool.parameters as Schema).required ?? []).filter((k) => k !== slot);
+  return {
+    ...tool,
+    parameters: { ...shape.parameters, required: outerRequired },
+    async execute(id, params, signal) {
+      const { args, missing } = shape.wrap(params);
+      if (missing.length) {
+        const summary = `${tool.name}: 필수 칸 ${missing.join(", ")} 이(가) 없다 — 최상위에 바로 적는다(예: ${tool.name}{${missing.map((k) => `${k}:…`).join(", ")}, …}).`;
+        record?.({ toolCallId: id, name: tool.name, args: params, result: { ok: false, summary } } as PiToolCallRecord);
+        return fail(summary);
+      }
+      return tool.execute(id, args, signal);
+    },
+  };
+}
