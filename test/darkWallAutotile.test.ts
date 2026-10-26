@@ -13,6 +13,7 @@ import { ensureInteriorRoomHarness, INTERIOR_ROOM_TILESET_ID } from "@/editor/in
 import { paintTile, paintTilesBulk } from "@/editor/tileActions";
 import { store } from "@/project/store";
 import type { GameMap } from "@/project/types";
+import { withRetiredEasyRpgTilesets } from "./support/retiredEasyRpgTilesets";
 
 type MapView = { width: number; height: number; lowerTiles: number[] };
 
@@ -275,7 +276,8 @@ describe("dark wall 366 via editor paintTile path", () => {
   const mapId = "map_dark_wall_paint";
 
   beforeEach(() => {
-    const project = createBlankProject();
+    // 실내 칩셋(easyrpg_chipset_interior)은 2026-10-07 정리로 새 프로젝트에서 빠졌다 — 옛 저장본처럼 다시 심는다.
+    const project = withRetiredEasyRpgTilesets(createBlankProject());
     ensureInteriorRoomHarness(project);
     const tileset = project.tilesets[INTERIOR_ROOM_TILESET_ID];
     expect(tileset).toBeTruthy();
@@ -353,7 +355,8 @@ describe("dark wall 366 via editor paintTile path", () => {
   });
 
   it("blank project interior tileset seeds dark-wall group without ensureInteriorRoomHarness", () => {
-    const project = createBlankProject();
+    // 정리 뒤 새 프로젝트에는 실내 칩셋이 없다 — 옛 정의를 하네스 없이(interiorHarness:false) 심어 정의 자체가 그룹을 갖는지 본다.
+    const project = withRetiredEasyRpgTilesets(createBlankProject(), { interiorHarness: false });
     const ts = project.tilesets[INTERIOR_ROOM_TILESET_ID]!;
     const groups = autotileGroupsForTileset(ts);
     expect(groups.some((g) => g.id === DARK_WALL_AUTOTILE_GROUP_ID)).toBe(true);
