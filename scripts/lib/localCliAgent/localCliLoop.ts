@@ -11,7 +11,7 @@
 //   Pi 의 onPayload(제공자 요청 본문)와 같은 자리다. 우리가 보낸 것이 아니라 CLI 가 받았다고 말한 것만 인정한다.
 // - 한 차례 끝(result)의 사용량은 내용 없는 message_end 하나로 합산한다.
 
-import { capResultImages, compactCliToolList, CLI_CONTEXT_EXHAUSTED_PREFIX, isCliContextExhaustedText } from "../../../src/ai/piAgent/cliContextBudget.ts";
+import { capResultImages, compactCliToolList, CLI_CONTEXT_EXHAUSTED_PREFIX, isCliApiErrorText, isCliContextExhaustedText } from "../../../src/ai/piAgent/cliContextBudget.ts";
 import type { PiToolShape } from "../../../src/ai/piAgent/toolAdapter.ts";
 import { startLocalMcpServer, type LocalMcpContent, type LocalMcpServer } from "./mcpHttpServer.ts";
 import { localCliBinary, LOCAL_CLI_ADAPTERS } from "./registry.ts";
@@ -236,6 +236,11 @@ export async function createLocalCliLoop(setup: LocalCliLoopSetup): Promise<Loca
       // CLI 가 문맥 한도로 멈추고 그 사정을 답 글로 돌려줬다 — 보고가 아니라 실패다(J79). 실행기가 세션을 비우고 한 번 이어 한다.
       if (text && isCliContextExhaustedText(text)) {
         emit({ type: "message_end", message: { role: "assistant", content: [], stopReason: "error", errorMessage: `${CLI_CONTEXT_EXHAUSTED_PREFIX} ${text.slice(0, 300)}` } });
+        return;
+      }
+      // 제공자 오류 글(「API Error: 400 …」)도 답이 아니다 — 보고로 남기지 않고 오류로 끝낸다(J79b, hf2-school-claude-j79 2턴).
+      if (text && isCliApiErrorText(text)) {
+        emit({ type: "message_end", message: { role: "assistant", content: [], stopReason: "error", errorMessage: `로컬 CLI 제공자 오류: ${text.slice(0, 300)}` } });
         return;
       }
       emit({ type: "message_end", message: { role: "assistant", content: text ? [{ type: "text", text }] : [], stopReason: "stop" } });
