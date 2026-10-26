@@ -1,5 +1,5 @@
 /** @vitest-environment happy-dom */
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import * as combat from "@/player/playSceneActionCombat";
 import { createFieldSpawnRuntime } from "@/player/fieldSpawns";
 import { createBlankProject } from "@/project/defaults";
@@ -19,14 +19,17 @@ function graphicsStub() {
 }
 
 function spriteStub(x: number, y: number) {
-  return {
+  const sprite = {
     x, y, displayWidth: 16, displayHeight: 16, originX: 0.5, originY: 1,
     scaleX: 1, scaleY: 1, alpha: 1,
     texture: { key: "stub" }, frame: { name: 0 },
     setTintFill: vi.fn(), clearTint: vi.fn(), setPosition: vi.fn(), setOrigin: vi.fn(),
     setDisplaySize: vi.fn(), setDepth: vi.fn(), setScale: vi.fn(), destroy: vi.fn(),
-    setAlpha: vi.fn(), setTint: vi.fn(), setVisible: vi.fn(), setFrame: vi.fn(), setFlipX: vi.fn(),
+    setAlpha: vi.fn(), setVisible: vi.fn(), setFrame: vi.fn(), setFlipX: vi.fn(),
+    // Phaser chains setTint(...).setTintMode(...) on a hit flash (playSceneActionCombat.ts).
+    setTint: vi.fn((): unknown => sprite), setTintMode: vi.fn((): unknown => sprite),
   };
+  return sprite;
 }
 
 /**
@@ -62,7 +65,7 @@ function fakeScene(project: Project, map: GameMap, playerAt: { x: number; y: num
     dashing: false,
     inputEnabled: true,
     facing: "down" as const,
-    player: { setTintFill: vi.fn(), clearTint: vi.fn(), setScale: vi.fn() },
+    player: spriteStub(playerAt.x * 16, playerAt.y * 16),
     input_: {
       setAttackMode: vi.fn(),
       isGuardHeld: () => false,
@@ -72,10 +75,12 @@ function fakeScene(project: Project, map: GameMap, playerAt: { x: number; y: num
     add: {
       graphics: vi.fn(graphicsStub),
       circle: vi.fn(() => ({ setDepth: vi.fn(), setStrokeStyle: vi.fn(), setPosition: vi.fn(), destroy: vi.fn() })),
-      text: vi.fn(() => ({ setOrigin: vi.fn(), setDepth: vi.fn(), destroy: vi.fn() })),
+      text: vi.fn(() => ({ setOrigin: vi.fn(), setDepth: vi.fn(), setScale: vi.fn(), destroy: vi.fn() })),
       sprite: vi.fn(() => spriteStub(0, 0)),
     },
     cameras: { main: { shake: vi.fn() } },
+    // Action skills register a shutdown cleanup on scene.events (playSceneActionSkills.ts).
+    events: { once: vi.fn(), off: vi.fn(), on: vi.fn() },
     game: { registry: { get: () => true }, canvas: { closest: () => null } },
     renderTiles: vi.fn(),
     registerPageMoveRoutes: vi.fn(),
@@ -107,6 +112,9 @@ function setup() {
 }
 
 describe("action dispatcher observations", () => {
+  // The Phaser 4 port reads the global namespace for tint modes (d7f9e4bb82); the scene stub has no Phaser runtime.
+  beforeEach(() => { vi.stubGlobal("Phaser", { TintModes: { FILL: 1 }, Math: { DegToRad: (deg: number) => deg * Math.PI / 180 } }); });
+  afterEach(() => { vi.unstubAllGlobals(); });
   it("stationary Shift takes damage; the same strike is rejected only by an actual dodge", () => {
     const run = (moving: boolean) => {
       const scene = setup();
