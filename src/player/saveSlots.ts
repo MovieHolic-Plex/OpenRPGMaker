@@ -1,6 +1,7 @@
 import { monsterSaveSummary, readMonsterSaveSummary, type MonsterSaveSummary } from "@/project/monsterSaveSummary";
 import { parseEncounterGuard } from "@/project/encounterGuard";
 import { isEmptySpriteLook, normalizeLetterboxPercent, normalizeSpriteLook, type SpriteLook } from "@/project/eventCommands/cinematicStaging";
+import { FREEZE_STYLES, type FreezeStyle } from "@/player/interpreter/screenEffectPlan";
 import { isNeutralScreenDistortion, normalizeScreenDistortion } from "@/project/eventCommands/screenDistortion";
 import { normalizeBattleReports, type BattleReport } from "@/project/battleReports";
 import { isNeutralScreenFilter, normalizeScreenFilter } from "@/project/eventCommands/screenFilter";
@@ -313,6 +314,13 @@ export type SaveScreenState = {
   readonly letterbox?: number;
   /** 캐릭터 모습 효과. 키 = spriteLookKey. */
   readonly spriteLooks?: Readonly<Record<string, SpriteLook>>;
+  /**
+   * 정지 화면. 찍은 그림은 넣지 않는다 — 불러온 뒤 그 순간의 필드를 다시 찍는다.
+   * 없거나 깨진 옛 세이브는 정지 화면 없이 불러온다.
+   */
+  readonly freeze?: { readonly style: FreezeStyle; readonly at: number };
+  /** 정지 화면이 들어오고 걷히는 시간(ms). 없거나 0이면 즉시. */
+  readonly freezeDurationMs?: number;
 };
 
 export type SaveWriteResult =
@@ -608,7 +616,7 @@ export function createSaveSnapshot(project: Project, input: PlaySession): SaveSn
   };
 }
 
-// 지속형 화면 효과(색조/날씨/숨김)만 추려 세이브에 담는다. 값이 전혀 없으면 생략.
+// 지속형 화면 효과(색조/날씨/숨김/정지 화면)만 추려 세이브에 담는다. 값이 전혀 없으면 생략.
 function pickScreenState(session: PlaySession): SaveScreenState | undefined {
   const screen = session.m2Runtime?.screen;
   if (!screen) return undefined;
@@ -616,8 +624,10 @@ function pickScreenState(session: PlaySession): SaveScreenState | undefined {
   const distortion = isNeutralScreenDistortion(screen.distortion) ? undefined : screen.distortion;
   const letterbox = screen.letterbox && screen.letterbox > 0 ? screen.letterbox : undefined;
   const spriteLooks = parseSpriteLooks(screen.spriteLooks);
+  const freeze = parseFreezeFrame(screen.freeze);
+  const freezeDurationMs = freeze ? parseFreezeDurationMs(screen.freezeDurationMs) : undefined;
   if (tint === undefined && weather === undefined && hidden === undefined && tintDurationMs === undefined && filter === undefined && !distortion
-    && letterbox === undefined && !spriteLooks) {
+    && letterbox === undefined && !spriteLooks && !freeze) {
     return undefined;
   }
   return {
@@ -626,6 +636,8 @@ function pickScreenState(session: PlaySession): SaveScreenState | undefined {
     ...(distortion ? { distortion: { ...distortion } } : {}),
     ...(letterbox !== undefined ? { letterbox } : {}),
     ...(spriteLooks ? { spriteLooks } : {}),
+    ...(freeze ? { freeze } : {}),
+    ...(freezeDurationMs !== undefined ? { freezeDurationMs } : {}),
   };
 }
 
@@ -1131,6 +1143,10 @@ function applyScreenState(session: PlaySession, screen: SaveScreenState): void {
     runtime.screen.letterboxDurationMs = 0;
   }
   if (screen.spriteLooks !== undefined) runtime.screen.spriteLooks = structuredClone(screen.spriteLooks) as Record<string, SpriteLook>;
+  if (screen.freeze !== undefined) {
+    runtime.screen.freeze = { style: screen.freeze.style, at: screen.freeze.at };
+    runtime.screen.freezeDurationMs = screen.freezeDurationMs ?? 0;
+  }
 }
 
 /** 모습 효과 표를 정규화한다. 빈 효과는 버리고, 남는 게 없으면 undefined. */
@@ -1547,6 +1563,8 @@ function parseScreenState(value: unknown): SaveScreenState | undefined {
     distortion?: SaveScreenState["distortion"];
     letterbox?: number;
     spriteLooks?: SaveScreenState["spriteLooks"];
+    freeze?: SaveScreenState["freeze"];
+    freezeDurationMs?: number;
   } = {};
   if (typeof value.tint === "string") result.tint = value.tint;
   if (typeof value.weather === "string") result.weather = value.weather;
@@ -1564,7 +1582,36 @@ function parseScreenState(value: unknown): SaveScreenState | undefined {
   if (letterbox > 0) result.letterbox = letterbox;
   const spriteLooks = parseSpriteLooks(value.spriteLooks);
   if (spriteLooks) result.spriteLooks = spriteLooks;
+  const freeze = parseFreezeFrame(value.freeze);
+  if (freeze) {
+    result.freeze = freeze;
+    const freezeDurationMs = parseFreezeDurationMs(value.freezeDurationMs);
+    if (freezeDurationMs !== undefined) result.freezeDurationMs = freezeDurationMs;
+  }
   return Object.keys(result).length > 0 ? result : undefined;
+}
+
+/** 정지 화면이 들어오고 걷히는 시간. 0·음수·비숫자는 적지 않는다(불러오면 즉시). */
+const FREEZE_DURATION_LIMIT_MS = 600_000;
+
+function parseFreezeDurationMs(value: unknown): number | undefined {
+  if (typeof value !== "number" || !Number.isFinite(value) || value <= 0) return undefined;
+  const ms = Math.round(value);
+  return ms > 0 && ms <= FREEZE_DURATION_LIMIT_MS ? ms : undefined;
+}
+
+/**
+ * 정지 화면 기록. 색감이 목록 밖이거나 다시 찍기 횟수가 정수가 아니면 버린다 —
+ * 그 칸 때문에 세이브 전체를 거절하지 않는다. 찍은 그림은 이 기록에 없다.
+ */
+function parseFreezeFrame(value: unknown): SaveScreenState["freeze"] {
+  if (!isRecord(value) || typeof value.style !== "string") return undefined;
+  const style = value.style.trim().toLowerCase();
+  if (!(FREEZE_STYLES as readonly string[]).includes(style)) return undefined;
+  if (typeof value.at !== "number" || !Number.isFinite(value.at)) return undefined;
+  const at = Math.trunc(value.at);
+  if (at < 1 || at > 1_000_000) return undefined;
+  return { style: style as FreezeStyle, at };
 }
 
 function parseSystemAudioState(value: unknown): SaveSnapshot["session"]["systemAudio"] {
