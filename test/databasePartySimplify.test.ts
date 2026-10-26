@@ -45,7 +45,7 @@ describe("party rail", () => {
   it("keeps five primary party destinations and routes subviews under their owner", () => {
     const party = TAB_GROUPS.find((group) => group.slug === "party");
     expect(party?.tabs).toEqual(["actors", "characterGraphics", "classes", "skills", "items"]);
-    expect(PARTY_SUBVIEW_PARENT).toEqual({ characterAppearances: "actors", promotionTree: "classes", skillTrees: "skills", animations: "retroChoreographies" });
+    expect(PARTY_SUBVIEW_PARENT).toEqual({ characterAppearances: "actors", promotionTree: "classes", skillTrees: "skills", comboTechs: "skills", animations: "retroChoreographies" });
     expect(databaseTabPath("promotionTree")).toEqual(["classes", "promotionTree"]);
     expect(databaseTabPath("skillTrees")).toEqual(["skills", "skillTrees"]);
     expect(databaseTabPath("characterAppearances")).toEqual(["actors", "characterAppearances"]);

@@ -18,6 +18,7 @@ const EXPECTED_TABS = [
   "db-tab-world-codex",
   "db-tab-characters",
   "db-tab-common-events",
+  "db-tab-dialogue", // 대사 tab joined the 이야기 group (e1f82de089)
   "db-tab-switches",
   "db-tab-variables",
   // 파티
@@ -126,10 +127,10 @@ describe("database sidebar navigation", () => {
     const panelRoot = renderPanelHost();
     const buttons = panelRoot.querySelectorAll(".db-tab");
     expect(buttons.length).toBe(EXPECTED_TABS.length);
-    expect(EXPECTED_TABS.length).toBe(37);
+    expect(EXPECTED_TABS.length).toBe(38);
     expect(buttons.map((button) => button.dataset.testid)).toEqual(EXPECTED_TABS);
     // 중복 없음 — 등장 순서 자체가 기대 순서와 일치하면 중복이 섞일 수 없다(배열 비교).
-    expect(new Set(EXPECTED_TABS).size).toBe(37);
+    expect(new Set(EXPECTED_TABS).size).toBe(38);
     for (const button of buttons) {
       expect(button.tagName).toBe("BUTTON");
       const label = (button.textContent ?? "").trim();
@@ -164,7 +165,8 @@ describe("database sidebar navigation", () => {
     });
     const panelRoot = renderPanelHost();
     const search = findByTestId(panelRoot, "db-tab-search")!;
-    search.value = "worldGen";
+    // The standalone worldGen rail alias is gone (only a comment remains in databaseWayfinding); search by the tab's own keyword.
+    search.value = "정주지";
     search.dispatchEvent(new Event("input"));
     const visible = panelRoot.querySelectorAll(".db-tab").filter((node) => !node.hidden);
     expect(visible.map((node) => node.dataset.tab)).toEqual(["spatialRegions"]);
