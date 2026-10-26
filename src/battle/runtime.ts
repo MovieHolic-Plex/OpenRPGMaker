@@ -4634,7 +4634,10 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     if (applied.hit && effectKind === "damage" && applied.amount > 0 && !usesMagicalDefense(options.project, skill?.elementId)) {
       applyContactAbility(user, target);
     }
-    if (applied.hit && (effectKind !== "damage" || applied.amount > 0)) {
+    // 피해로 쓰러뜨린 대상에게는 부가 상태·능력 단계를 걸지 않는다 — rm2k3 경로와 같은 계약.
+    // 쓰러진 몬스터에게 「화상에 걸렸다!」가 이어지던 결함(amount 는 0보다 커도 HP 는 이미 0).
+    const livingStatusTarget = effectKind !== "damage" || (applied.amount > 0 && target.hp > 0);
+    if (applied.hit && livingStatusTarget) {
       const stateEffects = defrosted
         ? skill?.stateEffects?.filter((stateEffect) => {
             const state = options.project.database.states.find((record) => record.id === stateEffect.stateId);
@@ -4646,7 +4649,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
         kind: effectKind === "damage" ? "damage" : "status",
       });
     }
-    if (applied.hit && (effectKind !== "damage" || applied.amount > 0)) applyStatStageEffects(user, target, skill);
+    if (applied.hit && livingStatusTarget) applyStatStageEffects(user, target, skill);
     if (applied.hit && skill?.effect?.kind === "switch" && skill.effect.switchId) {
       battleEventState.switches[skill.effect.switchId] = true;
     }
