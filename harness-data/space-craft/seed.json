@@ -10397,6 +10397,64 @@
    ],
    "verify": "author_forest_route terrain:field linkFrom:false count 2 moods / 결과 data.maps[0].entry 로 벽 이벤트 transfer·돌아오는 이벤트 / map_blank_start 가장자리 lowerTiles 변화 없음",
    "suiteCategory": "fs2-route-from-cell"
+  },
+  {
+   "category": "game",
+   "kind": "logic",
+   "mode": "balanced",
+   "startTileset": "beodeul_city",
+   "startBuild": [
+    {
+     "tool": "author_beodeul_town",
+     "args": {
+      "mapId": "map_blank_start",
+      "name": "국경 마을",
+      "houseCount": 4,
+      "theme": "river",
+      "seed": 17
+     }
+    }
+   ],
+   "id": "fs2-fortress-door",
+   "prompt": "마을 북쪽 길 끝에 성채 요새를 지어 줘. 성문 홀, 안뜰, 감방, 무기고, 꼭대기 지휘실 순서로. 마을 북쪽 끝에서 바로 들어가게 이어 줘.",
+   "requires": [
+    "요새 맵(성 문법 방 5~6개)",
+    "마을 북쪽 끝 ↔ 요새 입구 양방향 이동",
+    "요새 안 보이는 적·상자"
+   ],
+   "verify": "author_dungeon type castle rooms(entrance·hall·cell·storage·boss) + entrance{fromMapId, x,y} 한 번 / 문으로 들어가는 1층(entryStair kind door)도 연결 성공(transfer-retrigger 없이) / link_world_entrance 를 따로 또 부르지 않음",
+   "suiteCategory": "fs2-fortress-door"
+  },
+  {
+   "category": "game",
+   "kind": "logic",
+   "mode": "balanced",
+   "startTileset": "beodeul_city",
+   "startBuild": [
+    {
+     "tool": "author_dungeon",
+     "args": {
+      "type": "castle",
+      "adapter": "beodeul",
+      "genre": "rpg",
+      "name": "관문 요새",
+      "id": "map_fort",
+      "size": "medium",
+      "populate": false,
+      "seed": 5
+     }
+    }
+   ],
+   "id": "fs2-rival-knight-join",
+   "prompt": "요새(map_fort) 보스방에 붉은 갑옷 여기사가 경비견 둘을 데리고 막아서게 해 줘. 지면 게임 오버 말고 요새 감방에서 깨어나 다시 도전하고, 이기면 창을 돌려줄지 맡아 둘지 고른 뒤 동료로 합류해.",
+   "requires": [
+    "여기사 동료 배우(걷기 칩·얼굴·전투 시트가 한 사람)",
+    "적 판 여기사 + 경비견 둘 무리",
+    "전투 지면 감방으로 이동(게임 오버 아님)",
+    "이기면 선택지 둘 → 합류"
+   ],
+   "verify": "upsert_actor + upsert_enemy(monsterResourceId 에 걷기 칩 전투 시트 charset-battler-*) + upsert_troop / 이벤트 battleProcessing canLose:true branchOnResult defeatBranch 이동·victoryBranch choices + changeParty add / 새 사람 그림 생성 없음",
+   "suiteCategory": "fs2-rival-knight-join"
   }
  ],
  "gates": {
