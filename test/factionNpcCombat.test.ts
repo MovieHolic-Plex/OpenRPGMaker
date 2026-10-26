@@ -33,15 +33,21 @@ function graphicsStub() {
   return api as unknown as Phaser.GameObjects.Graphics;
 }
 
+/** Phaser 4 이주(d7f9e4bb82)로 setTintFill 이 setTint(..).setTintMode(FILL) 사슬이 됐다 — 스텁도 사슬을 받는다. */
+function chainTint<T extends object>(target: T): T {
+  Object.assign(target, { setTint: vi.fn(() => target), setTintMode: vi.fn(() => target) });
+  return target;
+}
+
 function spriteStub(x: number, y: number) {
-  return {
+  return chainTint({
     x, y, displayWidth: 16, displayHeight: 16, originX: 0.5, originY: 1,
     scaleX: 1, scaleY: 1, alpha: 1,
     texture: { key: "stub" }, frame: { name: 0 },
     setTintFill: vi.fn(), clearTint: vi.fn(), setPosition: vi.fn(), setOrigin: vi.fn(),
     setDisplaySize: vi.fn(), setDepth: vi.fn(), setScale: vi.fn(), destroy: vi.fn(),
     setAlpha: vi.fn(), setTint: vi.fn(), setVisible: vi.fn(), setFrame: vi.fn(), setFlipX: vi.fn(),
-  };
+  });
 }
 
 /**
@@ -78,7 +84,7 @@ function fakeScene(project: Project, map: GameMap, playerAt: { x: number; y: num
     dashing: false,
     inputEnabled: true,
     facing: "down" as const,
-    player: { setTintFill: vi.fn(), clearTint: vi.fn(), setScale: vi.fn() },
+    player: chainTint({ setTintFill: vi.fn(), clearTint: vi.fn(), setScale: vi.fn() }),
     input_: {
       setAttackMode: vi.fn(),
       isGuardHeld: () => false,
