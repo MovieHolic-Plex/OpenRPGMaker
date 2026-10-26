@@ -467,8 +467,11 @@ function openDraftEventEditorModal(request: OpenEventEditorRequest): void {
     backdrop.dataset.closed = "true";
     detachObserver?.disconnect();
     setCommandSelectionListener(undefined);
-    clearCommandInspector();
+    // Detach the host first: re-rendering the empty-preview placeholder into a column that is being
+    // thrown away needs the global document, which is gone when a discard settles after its document
+    // was detached (that threw here and skipped all remaining cleanup).
     setCommandInspectorHost(undefined);
+    clearCommandInspector();
     unregisterModal(backdrop);
     disposeFocusTrap();
     restoreChip.remove();
