@@ -5,6 +5,18 @@
 
 <!-- releases -->
 
+## 0.349.0 — 2026-10-26
+
+### 기능
+
+- **ai** — restore_event — restore a deleted/rewritten event exactly as before the request (toy-shop advisor t2) (#3633) (`69eae48`)
+- **store** — publish the Shitamachi demo to the play store (#3634) (`328544f`)
+
+### 수정
+
+- **ai** — requested-feature coverage blocker — chaser, darkness, hiding (J71/J73) (#3631) (`3f045b3`)
+- **ai** — local CLI context budget — compact tool list, one image per verb call, context-limit reply is a failed turn (J79) (#3630) (`58456d9`)
+
 ## 0.348.1 — 2026-10-26
 
 ### 수정
