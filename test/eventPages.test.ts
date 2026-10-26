@@ -27,6 +27,14 @@ beforeEach(() => {
   store.replace(createBlankProject());
 });
 
+/**
+ * 새 페이지는 끝이 아니라 활성 페이지 앞에 끼운다(addEventPage — 끝에 붙이면 런타임 우승 페이지가 바로 바뀐다).
+ * 「번호 순서」를 전제로 한 시험은 이 도우미로 순서를 명시한다.
+ */
+function orderPages(mapId: string, eventId: string, ids: readonly string[]): void {
+  ids.forEach((id, index) => { moveEventPageTo(mapId, eventId, id, index); });
+}
+
 describe("event pages", () => {
   it("preserves a legacy event's behavior when pasting its first page", () => {
     const mapId = store.getCurrent().startMapId;
@@ -111,6 +119,8 @@ describe("event pages", () => {
       conditions: [{ kind: "switch", switchId, value: true }],
     });
     setEventPageTextCommand(mapId, eventId, secondPageId, undefined, "second");
+    const firstPageId = store.getCurrent().maps[mapId].events.find((item) => item.id === eventId)!.pages!.find((page) => page.id !== secondPageId)!.id;
+    orderPages(mapId, eventId, [firstPageId, secondPageId]);
 
     const event = store.getCurrent().maps[mapId].events.find((item) => item.id === eventId);
     if (!event) throw new Error("event missing");
@@ -140,6 +150,8 @@ describe("event pages", () => {
     const eventId = addEvent(mapId, 2, 2);
     const page2 = addEventPage(mapId, eventId);
     const page3 = addEventPage(mapId, eventId);
+    const page1 = store.getCurrent().maps[mapId].events.find((item) => item.id === eventId)!.pages!.find((page) => page.id !== page2 && page.id !== page3)!.id;
+    orderPages(mapId, eventId, [page1, page2, page3]);
     editorState.set({ selectedEventPageId: page2 });
 
     deleteEventPage(mapId, eventId, page2);
@@ -231,7 +243,8 @@ describe("event pages", () => {
     const eventId = addEvent(mapId, 2, 2);
     const second = addEventPage(mapId, eventId);
     const third = addEventPage(mapId, eventId);
-    const first = store.getCurrent().maps[mapId]!.events.find((item) => item.id === eventId)!.pages![0]!.id;
+    const first = store.getCurrent().maps[mapId]!.events.find((item) => item.id === eventId)!.pages!.find((page) => page.id !== second && page.id !== third)!.id;
+    orderPages(mapId, eventId, [first, second, third]);
 
     expect(moveEventPageTo(mapId, eventId, first, 2)).toBe(true);
     expect(store.getCurrent().maps[mapId]!.events.find((item) => item.id === eventId)!.pages!.map((page) => page.id))
