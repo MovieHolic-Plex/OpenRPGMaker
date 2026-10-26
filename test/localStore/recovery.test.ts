@@ -36,7 +36,7 @@ describe("backup recovery", () => {
     try {
       expect(restored.projectId).not.toBe(source.projectId);
       expect(restored.loadSnapshot()?.sha256).toBe(source.loadSnapshot()?.sha256);
-      expect(await restored.assetBytes(restored.listAssets()[0]!.sha256)).toEqual(bytes);
+      expect(new Uint8Array(await restored.assetBytes(restored.listAssets()[0]!.sha256))).toEqual(bytes); // assetBytes 는 Node Buffer 를 돌려준다 — 바이트만 비교한다.
       expect(restored.mapMirrors().size).toBe(source.mapMirrors().size);
     } finally { restored.close(); }
     expect(readFileSync(join(backup, "project.sqlite"))).toEqual(before);
@@ -50,7 +50,7 @@ describe("backup recovery", () => {
     const target = join(root, "broken-copy");
     await expect(restoreLocalProjectBackup(backup, target)).rejects.toThrow("손상");
     expect(existsSync(target)).toBe(false);
-    expect(await source.assetBytes(asset.sha256)).toEqual(bytes);
+    expect(new Uint8Array(await source.assetBytes(asset.sha256))).toEqual(bytes); // assetBytes 는 Node Buffer 를 돌려준다 — 바이트만 비교한다.
   });
 
   it("기존 대상 폴더는 덮어쓰지 않는다", async () => {
