@@ -23,7 +23,7 @@ beforeEach(() => {
     {
       id: "anim_skill_test",
       name: "화염 스파크",
-      resourceId: "sample_title",
+      resourceId: "scarloxy-battle-anim-scratch",
       sheet: { frameWidth: 96, frameHeight: 96, columns: 5 },
     },
   ];

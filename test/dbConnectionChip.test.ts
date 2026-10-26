@@ -38,7 +38,7 @@ describe("저장 상태 칩", () => {
       source: "env",
     }, () => undefined));
 
-    expect(chip.textContent).toContain("준비 안 됨");
+    expect(chip.textContent).toContain("저장 위치 없음");
     expect(chip.getAttribute("title") ?? "").not.toMatch(/서버 주소|접속 키|Anon|URL/ui);
   });
 

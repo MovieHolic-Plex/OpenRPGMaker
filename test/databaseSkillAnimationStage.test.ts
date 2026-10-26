@@ -91,7 +91,7 @@ function installProject(frameCount: number): { readonly project: Project; readon
     {
       id: "anim_stage_test",
       name: "불꽃 폭발",
-      resourceId: "sample_title",
+      resourceId: "scarloxy-battle-anim-scratch",
       sheet: { frameWidth: 96, frameHeight: 96, columns: 5 },
       frames: Array.from({ length: frameCount }, (_, index) => frame(index)),
     },

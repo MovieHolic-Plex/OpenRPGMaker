@@ -25,7 +25,7 @@ describe("그룹 구획과 빈 탭 접기", () => {
   it("이야기 그룹이 레일 맨 앞에 있다", () => {
     expect(TAB_GROUPS[0]?.slug).toBe("lore");
     expect(TAB_GROUPS[0]?.label).toBe("이야기");
-    expect(TAB_GROUPS[0]?.tabs).toEqual(["worldCanon", "worldCodex", "characters", "commonEvents", "switches", "variables"]);
+    expect(TAB_GROUPS[0]?.tabs).toEqual(["worldCanon", "worldCodex", "characters", "commonEvents", "dialogue", "switches", "variables"]);
   });
 
   it("모든 탭이 정확히 한 그룹에 속한다 — 어느 그룹에도 없는 탭은 닿을 수 없다", () => {
