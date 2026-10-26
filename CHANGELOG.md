@@ -5,6 +5,16 @@
 
 <!-- releases -->
 
+## 0.350.4 — 2026-10-26
+
+### 수정
+
+- **ai-v2** — move_object on hand-edited rooms; dress_room floor decor (#3654) (`499304b`)
+
+### CI
+
+- **fast** — run the CSS ratchet on every PR; fold #3628's attention colour into the review rule (#3655) (`6f407e6`)
+
 ## 0.350.3 — 2026-10-26
 
 ### 수정
