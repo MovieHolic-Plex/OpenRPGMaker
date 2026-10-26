@@ -183,10 +183,11 @@ describe("이벤트 명령 스키마", () => {
   });
 
   it("필드가 없는 명령은 요약문을 안내문으로 보여준다", () => {
-    const schema = commandSchemaFor("checkpointSave");
-    if (!schema) throw new Error("checkpointSave 스키마 없음");
-    const body = renderSchemaForm(ctx(), { kind: "checkpointSave" } as Command, schema);
-    expect(findByTestId(body as never, "schema-no-fields-checkpointSave")).toBeTruthy();
+    // checkpointSave 는 「표시 이름」(label) 칸이 생겨 필드 없는 명령이 아니다(schema/catalog.ts) — 필드 없는 returnToTitle 로 본다.
+    const schema = commandSchemaFor("returnToTitle");
+    if (!schema) throw new Error("returnToTitle 스키마 없음");
+    const body = renderSchemaForm(ctx(), { kind: "returnToTitle" } as Command, schema);
+    expect(findByTestId(body as never, "schema-no-fields-returnToTitle")).toBeTruthy();
   });
 
   it("스키마 폼의 enum 변경이 replaceCommand 로 패치된다", () => {
