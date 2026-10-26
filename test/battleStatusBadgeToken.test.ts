@@ -84,7 +84,9 @@ describe("전투 상태 배지 토큰", () => {
 
   it("필드 노드를 그리는 스킨은 상태 행에 배지를 중복으로 달지 않는다", () => {
     const project = deserialize(JSON.stringify(battleFixture));
-    project.system.battleUiStyle = "retro2003"; // partyFacing "front" — 아군 필드 노드가 있다
+    // retro2003 은 필드에 아군을 그리면서도 배지는 파티 창 행에 다는 예외다(battleFieldDom partyStatusRowsCarryIcons, 2026-09-29).
+    // 필드 노드에만 다는 스킨은 pokemon(partyFacing "back")이다.
+    project.system.battleUiStyle = "pokemon";
     store.replace(project);
     const runtime = createBattleRuntime({
       project,
