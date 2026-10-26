@@ -71,7 +71,10 @@ function addTopLevel(kind: string): void {
   byTestId<HTMLButtonElement>(root, "event-page-advanced-condition-add").click();
 }
 
-const SWITCH_0 = () => store.getCurrent().switches[0]?.id ?? "";
+// 편집기는 새 하위 조건을 «아직 고르지 않은 스위치»(switchId "")로 만든다(pageAdvancedConditions·conditionForm).
+// 예전 빈 프로젝트에는 스위치가 없어 switches[0] 이 "" 로 떨어졌지만, 지금 기본 프로젝트는 sw_0001… 을
+// 갖고 태어나므로(defaults.test 「스위치 20개」) 첫 스위치 id 가 아니라 그 빈 값을 직접 기대한다.
+const SWITCH_0 = () => "";
 
 describe("페이지 조건 묶음(all/any/not) 편집", () => {
   beforeEach(() => {
