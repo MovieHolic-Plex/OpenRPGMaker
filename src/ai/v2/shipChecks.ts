@@ -295,9 +295,28 @@ export function defaultPlaceLeaks(project: Project, task: string): ShipBlocker[]
   return out;
 }
 
+/**
+ * 요청이 제목을 못박았는데 다른 제목으로 냈다(J71 hf2-mansion-flash 「검은 장미의 비밀」, J73 hf2-mansion-argon 「저택 탈출」 —
+ * 요청은 「제목은 「검은 장미 저택」」). 「」『』"" 로 묶인 제목 낱말만 본다(묶지 않은 글은 제목인지 알 수 없다). 앞선 요청 메모(J70)도 함께 읽는다 — 이번 글이 먼저 나오므로 이번 글의 제목이 이긴다.
+ */
+const REQUESTED_TITLE = /(?:제목|타이틀|title)\s*(?:은|는|을|를|이|가|:|=)?\s*(?:「([^」\n]{1,40})」|『([^』\n]{1,40})』|"([^"\n]{1,40})"|“([^”\n]{1,40})”)/iu;
+export function requestedTitle(task: string): string | undefined {
+  const m = REQUESTED_TITLE.exec(task);
+  const t = m?.slice(1).find((g) => g !== undefined)?.trim();
+  return t || undefined;
+}
+const squash = (s: string): string => s.replace(/\s+/gu, "").normalize("NFC");
+export function titleMismatch(project: Project, task: string): ShipBlocker[] {
+  const want = requestedTitle(task);
+  if (!want) return [];
+  const shown = String(((project.system as unknown as Obj).titleScreen as Obj | undefined)?.title ?? project.meta.title ?? "").trim();
+  if (squash(shown) === squash(want)) return [];
+  return [{ id: "title-not-requested", message: `요청한 제목은 「${want}」인데 타이틀이 「${shown || "(없음)"}」이다 — set_title_screen{title:"${want}"} 로 요청한 제목을 그대로 쓴다.`, evidence: `want=${want} shown=${shown}` }];
+}
+
 /** 조언자·끝맺음 관문이 같이 쓰는 출하 차단 목록(게임을 만드는 요청일 때만). 제목 스포일러는 어느 요청이든. */
 export function shipBlockers(project: Project, task: string): ShipBlocker[] {
-  const spoilers = titleSpoilers(project);
+  const spoilers = [...titleMismatch(project, task), ...titleSpoilers(project)];
   if (!wantsWholeGame(task)) return spoilers;
   // 엔딩 길의 열쇠·금고·문·엔딩 이벤트에 걸어 닿지 못하면 게임을 끝낼 수 없다(J75) — 출하 차단.
   const unreachable = unreachableCriticalEvents(project).map((message): ShipBlocker => ({ id: "critical-unreachable", message: `${message}. 이벤트를 걸어 닿는 칸 옆으로 move_event 하거나 막는 가구를 치운다.`, evidence: message.slice(0, 120) }));
