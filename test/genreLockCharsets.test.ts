@@ -89,7 +89,8 @@ describe("몬스터 잠금의 캐릭터 칩", () => {
 
   it("허용 칩에 없는 외형 검색은 다른 그림으로 대체하지 않고 거부한다", () => {
     const ctx = ctxOf(lockedProject());
-    const result = placeNpc(ctx, "할머니", 4, { graphic: { query: "할머니" } });
+    // 허용 칩(ScarloxyPeople 5~13, #2806 등)에 할머니가 생겼다 — 허용 칩에 여전히 없는 외형(공주)으로 본다.
+    const result = placeNpc(ctx, "공주", 4, { graphic: { query: "공주" } });
     expect(result.ok).toBe(false);
     expect(result.issues?.[0]?.message).toContain("장르 잠금");
   });
@@ -141,12 +142,14 @@ describe("몬스터 잠금의 캐릭터 칩", () => {
     expect(ctx.project.system.genreLock!.allowedCharsetFamilies).toBeDefined();
   });
 
-  it("연애 잠금은 캐릭터를 건드리지 않는다", () => {
+  // #2731 부터 연애 잠금도 캐릭터 칩을 잠근다(현대 연애 인물 칩·기물·올린 칩만) — RTP 판타지 사람 칩은 조수 경로에서 거부된다.
+  it("연애 잠금은 현대 인물 칩만 허용한다", () => {
     const project = createBlankProject();
     enableGenreLock(project, "romance");
-    expect(project.system.genreLock!.allowedCharsetFamilies).toBeUndefined();
-    expect(serialize(project)).not.toContain("allowedCharsetFamilies");
-    expect(placeNpc(ctxOf(project), "청년", 4, { graphic: RTP_YOUTH }).ok).toBe(true);
+    expect(project.system.genreLock!.allowedCharsetFamilies).toEqual(["modern", "object", "uploaded"]);
+    const result = placeNpc(ctxOf(project), "청년", 4, { graphic: RTP_YOUTH });
+    expect(result.ok).toBe(false);
+    expect(result.issues?.[0]?.message).toContain("장르 잠금");
   });
 
   it("잠금 안내에 캐릭터 그림 규칙이 있다(공간 시공·비공간 모두)", () => {
@@ -167,7 +170,8 @@ describe("몬스터 장르 표지(system.genre)", () => {
   }
 
   it("잠금이 못 걸리는 프로젝트도 몬스터 전용 도구가 성공하면 표지만 남기고 잠그지 않는다", () => {
-    const ctx = ctxOf(noKitProject());
+    // 역방향 잠금(#2812): 몬스터 게임이 아닌 프로젝트에서는 몬스터 수집 요청 턴(monsterTurn)에만 몬스터 도구가 풀린다.
+    const ctx: ToolContext = { ...ctxOf(noKitProject()), monsterTurn: true };
     expect(runTool(ctx, "configure_monster_system", { enabled: true }, { dryRun: false }).ok).toBe(true);
     expect(ctx.project.system.genre).toBe("monster-collect");
     expect(ctx.project.system.genreLock).toBeUndefined();

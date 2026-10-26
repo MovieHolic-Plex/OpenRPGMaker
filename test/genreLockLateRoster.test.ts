@@ -18,6 +18,8 @@ import type { Project } from "@/project/types";
 beforeEach(() => resetMapEditHistory());
 
 const ctxOf = (project: Project, assistantRun = true): ToolContext => ({ project, currentMapId: project.startMapId, assistantRun });
+// 역방향 잠금(#2812): 몬스터 게임이 아닌 프로젝트에서 조수가 configure_monster_system 을 부르려면 몬스터 수집 요청 턴(monsterTurn)이어야 한다.
+const monsterRequestCtxOf = (project: Project): ToolContext => ({ ...ctxOf(project), monsterTurn: true });
 const ALLOWED = new Set(["scarloxy-people", "oprn-creature", "rtp-creature", "object", "uploaded", "other"]);
 const hero = (project: Project) => project.database.actors.find((actor) => actor.id === "actor_hero")!;
 const placeNpc = (ctx: ToolContext, name: string, x: number, extra: Record<string, unknown> = {}) =>
@@ -107,7 +109,7 @@ describe("#4 동료·파티 명령이 가리키는 배우의 칩도 검사한다
 
 describe("#3 늦은 잠금 — 잠금 이전의 칩을 보고하고(막지 않고) 조수 경로의 작은 새 프로젝트만 바꾼다", () => {
   it("빈 프로젝트에 NPC 를 놓은 뒤 configure_monster_system 으로 잠그면 NPC 가 허용 칩으로 바뀐다", () => {
-    const ctx = ctxOf(createBlankProject());
+    const ctx = monsterRequestCtxOf(createBlankProject());
     expect(placeNpc(ctx, "마을 사람", 8).ok).toBe(true);
     expect(npcFamily(ctx.project, "마을 사람")).toBe("rtp-people");
     expect(runTool(ctx, "configure_monster_system", { enabled: true }, { dryRun: false }).ok).toBe(true);
@@ -116,7 +118,7 @@ describe("#3 늦은 잠금 — 잠금 이전의 칩을 보고하고(막지 않�
   });
 
   it("맵이 둘인 저작 프로젝트는 소급해 바꾸지 않고 「잠금 이전부터 있던 칩」으로 보고한다", () => {
-    const ctx = ctxOf(createBlankProject());
+    const ctx = monsterRequestCtxOf(createBlankProject());
     const tileset = ctx.project.maps[ctx.project.startMapId]!.tilesetId;
     expect(runTool(ctx, "create_map", { name: "두번째", width: 20, height: 14, tilesetId: tileset }, { dryRun: false }).ok).toBe(true);
     expect(placeNpc(ctx, "마을 사람", 8).ok).toBe(true);
@@ -145,7 +147,8 @@ describe("#3 늦은 잠금 — 잠금 이전의 칩을 보고하고(막지 않�
     applyGenrePreset(project, "monster-collect");
     const ctx = ctxOf(project, false);
     expect(placeNpc(ctx, "손편집 NPC", 8, { graphic: { textureKey: "tex_easyrpg_charset_people1", characterIndex: 1 } }).ok).toBe(true);
-    const report = genreLockReport(project);
+    // 쓰기 도구는 커밋한 새 프로젝트를 ctx.project 에 둔다 — 넘긴 원본 객체가 아니라 그것을 본다.
+    const report = genreLockReport(ctx.project);
     expect(report.charsetViolations.map((chip) => chip.where).join("|")).toContain("손편집 NPC");
     expect(report.charsetPreexisting).toHaveLength(0);
   });
