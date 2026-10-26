@@ -5,6 +5,26 @@
 
 <!-- releases -->
 
+## 0.351.3 — 2026-10-27
+
+### 수정
+
+- **export** — fail when an uploaded media file cannot be read (#3695) (`f609864`)
+- **ai** — accept numeric strings for plannedMap width and height (#3694) (`452cafe`)
+- **battle** — name the major status that blocked a status move (#3692) (`e5287c8`)
+- **player** — name the name-entry dialog and speak the grid character (#3690) (`20a13e3`)
+- **editor** — draw every copied layer in the paste preview (#3689) (`52359ac`)
+- **player** — keep absorb weakness notes across save and load (#3687) (`e1d55d8`)
+- **i18n** — describe region select as a drag release, not a placement (#3686) (`077d2b8`)
+
+### 문서
+
+- point getting-started at the live schema and CI-only tests (#3688) (`87a4008`)
+
+### 테스트
+
+- **ai** — verificationNativeScopes 의 두 it.each 에 자기 예산(60s)을 준다 (#3696) (`3fc8852`)
+
 ## 0.351.2 — 2026-10-27
 
 ### 수정
