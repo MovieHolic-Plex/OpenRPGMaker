@@ -47,12 +47,14 @@ describe("jp_city 대상 판정", () => {
 describe("지시문", () => {
   it("모든 시스템 프롬프트에 jp_city 길 한 줄이 있고, jp_city 맵이 범위에 있으면 상세 순서가 더 붙는다", () => {
     const ctx = projectWithJpMap();
-    const plain = buildPiAgentSystemPrompt(ctx.project, [START]).filter((line) => line.includes("jp_city"));
-    const scoped = buildPiAgentSystemPrompt(ctx.project, ["jpmap"]).filter((line) => line.includes("jp_city"));
-    expect(plain).toHaveLength(1);
-    expect(scoped).toHaveLength(2);
-    expect(scoped.join("\n")).toContain("layer \"2\"");
-    expect(scoped.join("\n")).toContain("build_jp_city_building");
+    // 다른 번들 칩셋 줄(실내·sengoku_edo·modern_campus)도 「jp_city 는 따로」라며 이름을 부른다 — jp_city 자신의 줄만 센다.
+    const plainAll = buildPiAgentSystemPrompt(ctx.project, [START]);
+    const scopedAll = buildPiAgentSystemPrompt(ctx.project, ["jpmap"]);
+    expect(plainAll.filter((line) => line.includes("번들 칩셋 jp_city"))).toHaveLength(1);
+    const detail = scopedAll.filter((line) => line.includes("jp_city") && !plainAll.includes(line));
+    expect(detail).toHaveLength(1);
+    expect(detail.join("\n")).toContain("layer \"2\"");
+    expect(detail.join("\n")).toContain("build_jp_city_building");
   });
   it("의도 노트는 PAW 게이트 낱말(현대·모던·modern)을 쓰지 않는다 — 노트는 task 에 실려 게이트를 켠다", () => {
     const note = formatJpCityNote({}, null) + formatJpCityNote({ mapId: "jpmap", lived: false }, { id: "jpmap", width: 40, height: 30 })
@@ -98,8 +100,13 @@ describe("build_jp_city_building 오류는 다음 행동을 알려 준다", () =
   const build = (ctx: ToolContext, over: Record<string, unknown> = {}) => runTool(ctx, "build_jp_city_building", {
     mapId: "jpmap", x: 4, y: 12, w: 6, floors: 3, floorKind: "pairs", wall: "shiro", ground: "gr.konbini.0", roof: "roof.ac.tank", door: { type: "auto", col: 2 }, ...over,
   });
-  it("빈 jp_city 맵의 문 앞 막힘은 fill_region 인자를 돌려주고, 그대로 깔면 지어진다", () => {
+  it("문 앞이 걸을 수 없는 jp_city 맵의 문 앞 막힘은 fill_region 인자를 돌려주고, 그대로 깔면 지어진다", () => {
     const ctx = projectWithJpMap();
+    // 새 jp_city 맵은 이제 걸을 수 있는 바닥으로 깔린다 — 문 앞(5,13)~(8,15)을 물(849)로 막아 같은 막힘을 만든다.
+    const jpmap = ctx.project.maps.jpmap!;
+    const water = 849;
+    expect(ctx.project.tilesets.jp_city!.tileMeta?.[water]?.label).toBe("물");
+    for (let y = 13; y < 16; y++) for (let x = 5; x < 9; x++) jpmap.lowerTiles[y * jpmap.width + x] = water;
     const failed = build(ctx);
     expect(failed.ok).toBe(false);
     const message = failed.issues?.[0]?.message ?? "";
