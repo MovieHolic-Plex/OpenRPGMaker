@@ -1185,7 +1185,7 @@ function frostford(project: Project, exec: Exec, hubId: string): void {
   const doors = (town?.doors ?? []).filter((d) => d.reached !== false && !(town?.anchors ?? []).includes(d.kit));
   if (doors.length < 3) throw new Error("[fallen-star act2] 서리나루 집 문이 모자란다");
   const work = town?.work ?? { x: 16, y: 12 };
-  exec(project, "set_scene_mood", { mapId: FS2_FROST_ID, applyMode: "map", weather: { kind: "snow", intensity: 0.35 }, lighting: { ambient: 0.85, color: "#c8d4ee" } });
+  exec(project, "set_scene_mood", { mapId: FS2_FROST_ID, applyMode: "map", weather: { kind: "snow", intensity: 0.2 }, lighting: { ambient: 0.95, color: "#dfe6f4" } });
   // 설원 길 두 번째 맵 북쪽 끝 → 마을 남쪽.
   if (!FS2_SNOW.exit) throw new Error("[fallen-star act2] 설원 길 출구가 없다");
   const b = originEdge(project, M(project, FS2_FROST_ID), "south");
@@ -1268,7 +1268,7 @@ function frostford(project: Project, exec: Exec, hubId: string): void {
     try { exec(project, "stamp_tileset_object", { mapId: FS2_FROST_ID, objectId: "bd-pick-snowfield-lamp", at }); lamps += 1; FS2_FROST.lamps.push(at); } catch { /* 길·집 칸 */ }
   }
   // 등불 빛 — 낮이라 약하게.
-  exec(project, "set_lighting_volume", { mapId: FS2_FROST_ID, applyMode: "map", ambient: 0.85, color: "#c8d4ee",
+  exec(project, "set_lighting_volume", { mapId: FS2_FROST_ID, applyMode: "map", ambient: 0.95, color: "#dfe6f4",
     sources: FS2_FROST.holes.map((h, i) => ({ id: `hole${i}`, at: { x: h.x, y: h.y }, radius: 2, intensity: 0.25, color: "#9fd0ff" })) });
 
   // 하르마 — 얼음낚시터 곁.
