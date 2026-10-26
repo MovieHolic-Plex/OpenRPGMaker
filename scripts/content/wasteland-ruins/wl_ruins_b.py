@@ -235,34 +235,56 @@ def _husk_d(c):
        group='ruins', tags=['폐허', '건물', '벽돌'], desc='불탄 벽돌 2층집. 지붕이 없어 위층 바닥판이 드러나고 북쪽 절반은 아래층까지 탔다. 앞면 창 위로 그을음.',
        solid=[(x, y) for y in (4, 5) for x in range(4)], door=(1, 5))
 def _husk_e(c):
-    W, H, t = 64, 96, 4
-    ty = 34                                                    # 앞면 윗줄(앞면 62행 = 2층 x 30, r63 축척)
+    W, H, t = 64, 96, 5
+    ty = 42                                                    # r64: 앞면 윗줄(앞면 54행 = 2층 x 27) — 지붕 없는 윗면(벽 윗면 · 속 바닥)을 42행으로 키움
     # --- 윗면 속: 북쪽 = 탄 아래층(깊고 검다) + 탄 들보, 남쪽 = 위층 바닥판(밝은 판, 북쪽 끝 부러짐)
     for y in range(1 + t, ty - t):
         for x in range(t, W - t):
             n = h2(x, y, 81) % 7
-            c.P(x, y, K('soot', 2 + (1 if n == 0 else 0) - (1 if n == 1 else 0)) if field(x, y, 82, 16) < 0.55 else K('dirt', 1 + (n == 2)))
+            f = field(x, y, 82, 16)
+            if f < 0.4: col = K('soot', 1 + (1 if n == 0 else 0))                          # 숯 바닥(짙음)
+            elif f < 0.7: col = K('soot', 2 + (1 if n < 2 else 0))                         # 탄 마루 널
+            else: col = K('soot', 4 if n < 3 else 3) if n != 6 else K('soot', 5)          # 재 무더기(밝은 회)
+            if f < 0.7 and (y % 4 == 0) and n > 1: col = K('soot', 0)                      # 탄 마루 널 줄눈(가로)
+            c.P(x, y, col)
     for x in range(t, W - t):                                   # 북벽 안쪽 면(벽돌, 그을음)
         for j in range(6):
             yy = 1 + t + j
             mortar = j % 3 == 2 or (x + (4 if j // 3 else 0)) % 8 == 0
             c.P(x, yy, K('soot', 3) if h2(x, j, 83) % 3 == 0 else K('brick', 0 if mortar else 1 + (j < 3)))
-    for (x0, y0, x1, y1) in ((8, 14, 26, 18), (30, 11, 52, 16), (14, 19, 9, 13)):    # 탄 들보(위 빛 1 · 몸 · 그늘)
-        c.line(x0, y0, x1, y1, K('wood', 1)); c.line(x0, y0 - 1, x1, y1 - 1, K('wood', 2)); c.line(x0 + 1, y0 + 1, x1 + 1, y1 + 1, K('soot', 0))
-    for k in range(6):                                         # 숯·재 덩이
-        x = t + 3 + h2(k, 1, 84) % (W - 2 * t - 6); y = 1 + t + 7 + h2(k, 2, 84) % 6
+    for x in range(t, W - t):                                   # 북벽 안쪽 면 밑동 그늘(벽과 바닥이 만나는 골)
+        c.P(x, 1 + t + 6, K('soot', 0)); c.P(x, 1 + t + 7, K('soot', 1) if x % 3 else K('soot', 0))
+    for y in range(1 + t + 6, 27):                              # 서벽 안쪽 밑 그늘(동쪽 빛을 받는 바닥과 구분)
+        c.P(t, y, K('soot', 0)); c.P(t + 1, y, K('soot', 1) if y % 2 else K('soot', 2))
+    for (x0, y0, x1, y1) in ((8, 16, 26, 21), (36, 13, 55, 19), (14, 23, 9, 15)):    # 탄 들보(윗면 빛 · 몸 · 탄 앞면 · 그림자)
+        c.line(x0, y0 - 1, x1, y1 - 1, K('wood', 4)); c.line(x0, y0, x1, y1, K('wood', 2)); c.line(x0, y0 + 1, x1, y1 + 1, K('wood', 1))
+        c.line(x0 + 1, y0 + 2, x1 + 1, y1 + 2, K('soot', 0))
+        for k in range(0, max(abs(x1 - x0), abs(y1 - y0)), 4):                    # 숯이 갈라진 비늘(빛 끊김)
+            q = k / float(max(abs(x1 - x0), abs(y1 - y0)))
+            c.P(int(round(x0 + (x1 - x0) * q)), int(round(y0 - 1 + (y1 - y0) * q)), K('soot', 1))
+    for k in range(9):                                         # 숯·재 덩이
+        x = t + 3 + h2(k, 1, 84) % (W - 2 * t - 6); y = 1 + t + 8 + h2(k, 2, 84) % 10
         c.P(x, y, K('soot', 4)); c.P(x + 1, y, K('soot', 1))
-    sb = 20                                                    # 위층 바닥판 북쪽 끝
+    # 속 칸막이 벽(남북으로 서 있던 벽돌 벽의 윗면 + 무너진 남쪽 끝 단면)
+    PX = 29
+    brick_top(c, PX, 1 + t, 3, 17, seed=96, vertical=True)
+    for j in range(4):
+        for i in range(3): c.P(PX + i, 1 + t + 17 + j, K('brick', 3 - (j // 2) if (i + j) % 4 else 1))
+    c.HL(PX, 1 + t + 21, 3, K('soot', 0)); c.VL(PX + 3, 1 + t + 6, 15, K('soot', 0))      # 칸막이 동쪽 그림자
+    sb = 27                                                    # 위층 바닥판 북쪽 끝
     for x in range(t, W - t):
-        e = sb + (h2(x // 3, 3, 85) % 4) - (2 if 20 < x < 30 else 0)
+        e = sb + (h2(x // 3, 3, 85) % 4) - (2 if 36 < x < 46 else 0)
         for y in range(e, ty - t):
             n = h2(x, y, 86) % 9
             tt = 5 + (1 if n == 0 else 0) - (1 if n == 1 else 0)
-            if field(x, y, 87, 16) > 0.66: tt = 4                            # 그을음 번진 판
+            tx, tyy = (x - t) % 7, (y - sb) % 5                               # 위층 바닥 타일(7×5): 위·왼 모서리 빛, 아래·오른 줄눈
+            if tyy == 4 or tx == 6: tt = 3
+            elif tyy == 0 or tx == 0: tt = 6 + (1 if n < 3 else 0)
+            if field(x, y, 87, 16) > 0.66: tt = max(2, tt - 2)                # 그을음 번진 판
             c.P(x, y, K('conc', tt))
         c.P(x, e, K('conc', 7)); c.P(x, e - 1, K('conc', 1)); c.P(x, e - 2, K('soot', 0))   # 판 북쪽 단면(위 빛 · 아래 어둠)
     for k in range(3):
-        cx, cy = 10 + k * 16, 24 + (k % 2) * 3
+        cx, cy = 10 + k * 16, 32 + (k % 2) * 2
         for j in range(-2, 3):
             for i in range(-4, 5):
                 if (i / 4.5) ** 2 + (j / 2.5) ** 2 < 1 and h2(cx + i, cy + j, 88) % 3: c.P(cx + i, cy + j, K('soot', 4))
@@ -278,7 +300,7 @@ def _husk_e(c):
         c.P(x, 1 + d, K('brick', 5))
     for y in (14, 15, 16): c.clear(W - 1, y); c.P(W - 2, y, K('brick', 2))
     # --- 앞면: 벽돌 2층 + 층 띠(콘크리트 턱) + 창 위 그을음(불길이 핥은 자리)
-    wins = [(8, ty + 9), (24, ty + 9), (40, ty + 9), (8, ty + 40), (40, ty + 40)]
+    wins = [(8, ty + 7), (24, ty + 7), (40, ty + 7), (8, ty + 34), (40, ty + 34)]
     plumes = [(wx, wy, 9) for (wx, wy) in wins] + [(23, H - 25, 11)]   # 창·문 위로 불길이 핥은 그을음
     def burnt(x, y):
         best = 0
@@ -294,13 +316,22 @@ def _husk_e(c):
         return best
     brick_face(c, 0, ty, W, H - ty, seed=95, burnt=burnt)
     c.HL(0, ty, W, K('soot', 1))
-    for row in (30,):                                          # 층 띠(콘크리트 턱, 그을림)
+    for row in (27,):                                          # 층 띠(콘크리트 턱, 그을림)
         for x in range(W):
             c.P(x, ty + row, K('conc', 6) if h2(x, row, 101) % 3 else K('soot', 4)); c.P(x, ty + row + 1, K('conc', 3) if h2(x, row, 102) % 3 else K('soot', 3))
         c.HL(0, ty + row + 2, W, K('brick', 0))
     for k, (wx, wy) in enumerate(wins):
+        up = k < 3                                             # 위층 창: 지붕이 없어 하늘빛이 들어 속 뒷벽이 비친다
         for j in range(10):
-            for i in range(9): c.P(wx + i, wy + j, K('soot', 0 if j < 6 else 1))
+            for i in range(9):
+                if up and 2 <= j <= 6 and 1 <= i <= 7:
+                    col = K('brick', 1) if (j % 3 == 2 or (i + (2 if j > 4 else 0)) % 4 == 0) else K('brick', 2 if j < 4 else 1)
+                    if h2(wx + i, wy + j, 108) % 4 == 0: col = K('soot', 2)
+                elif j < 2: col = K('soot', 0)
+                elif j < 7: col = K('soot', 1 if (not up and h2(wx + i, wy + j, 109) % 5 == 0) else 0)
+                else: col = K('soot', 1 if j < 9 else 2) if h2(wx + i, wy + j, 110) % 3 else K('soot', 0)
+                c.P(wx + i, wy + j, col)
+            c.P(wx, wy + j, K('soot', 0)); c.P(wx + 8, wy + j, K('soot', 1) if j > 1 else K('soot', 0))      # 문설주 안쪽 그늘(벽 두께)
         c.VL(wx - 1, wy, 10, K('soot', 2)); c.VL(wx + 9, wy, 10, K('soot', 1))                # 탄 문설주
         if k in (1, 4): c.HL(wx - 1, wy + 10, 11, K('brick', 0))                              # 창턱 떨어져 나감
         else: c.HL(wx - 1, wy + 10, 11, K('soot', 3)); c.HL(wx, wy + 11, 9, K('soot', 2))      # 검게 탄 창턱
@@ -309,7 +340,11 @@ def _husk_e(c):
     dx, dw, dh = 23, 11, 25                                    # 탄 출입구
     c.R(dx - 1, H - dh - 2, dw + 2, 2, K('soot', 3))
     for j in range(dh):
-        for i in range(dw): c.P(dx + i, H - dh + j, K('soot', 0 if j < dh - 4 else 1 if j < dh - 1 else 2))
+        for i in range(dw):
+            if 4 <= j < 13 and 2 <= i <= 8:                     # 문 속으로 보이는 아래층 뒷벽(탄 벽돌, 아래로 어두워짐)
+                col = K('brick', 1) if (j % 3 != 2 and (i + (2 if (j // 3) % 2 else 0)) % 4) else K('soot', 1)
+            else: col = K('soot', 0 if j < dh - 4 else 1 if j < dh - 1 else 2)
+            c.P(dx + i, H - dh + j, col)
     c.VL(dx - 1, H - dh, dh, K('soot', 2)); c.HL(dx, H - 1, dw, K('dirt', 2))
     c.line(dx + 2, H - 2, dx + 8, H - 9, K('wood', 1)); c.line(dx + 3, H - 2, dx + 9, H - 9, K('wood', 0))   # 쓰러진 탄 문짝
     for (x, y) in ((56, ty + 42), (52, ty + 14), (4, ty + 54)):                      # 떨어져 나간 벽돌 자국
@@ -332,7 +367,10 @@ def _husk_e(c):
                 c.P(x, y, col)
     for x in range(W):                                          # 벽 윗면 띠(앞 난간) 그을음
         for y in range(ty - t, ty):
-            if h2(x, y, 103) % 3: c.P(x, y, K('soot', 3 if y >= ty - 2 else 4) if h2(x, y, 104) % 2 else K('brick', 1))
+            if h2(x, y, 103) % 3 == 0: c.P(x, y, K('soot', 3 if y >= ty - 2 else 4) if h2(x, y, 104) % 2 else K('brick', 1))
+    for x in range(W):                                          # 앞 벽 윗면의 앞 모서리(빛 테) — 윗면과 앞면이 꺾이는 선
+        if h2(x // 2, 0, 111) % 4: c.P(x, ty - 1, K('brick', 5 if x % 5 else 4))
+        if h2(x, 1, 112) % 3 == 0: c.P(x, ty - 2, K('brick', 4))
     c.outline()
 
 

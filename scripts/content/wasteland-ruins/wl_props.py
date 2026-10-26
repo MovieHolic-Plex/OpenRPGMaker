@@ -146,14 +146,14 @@ def car_v(c, paint, seed=0):
     c.outline()
 
 
-@piece('car-rust-h', '녹슨 승용차 (가로)', 4, 2, 'other', en='abandoned rusted car lying east-west seen from above: roof, hood and trunk tops, broken windows, rusty side panel with flat tyres',
-       tags=['차', '폐차'], desc='버려진 녹슨 승용차(동서). 깨진 유리, 바람 빠진 타이어.', solid=[(0, 1), (1, 1), (2, 1), (3, 1), (1, 0), (2, 0)])
-def _car_h(c): car_h(c, 'blue', seed=2)
+@piece('car-rust-h', '녹슨 승용차 (가로)', 4, 3, 'other', en='abandoned rusted car lying east-west seen from above: roof, hood and trunk tops, broken windows, rusty side panel with flat tyres',
+       tags=['차', '폐차'], desc='버려진 녹슨 승용차(동서). 깨진 유리, 바람 빠진 타이어.', solid=[(0, 1), (1, 1), (2, 1), (3, 1), (0, 2), (1, 2), (2, 2), (3, 2)])
+def _car_h(c): car_h64(c, 'blue', seed=2)
 
 
 @piece('car-rust-v', '녹슨 승용차 (세로)', 2, 4, 'other', en='abandoned rusted car facing south seen from above: trunk, roof and hood tops with cracked glass, front grille and bumper below',
        tags=['차', '폐차'], desc='버려진 녹슨 승용차(남북, 앞이 남쪽).', solid=[(0, 1), (1, 1), (0, 2), (1, 2), (0, 3), (1, 3)])
-def _car_v(c): car_v(c, 'army', seed=7)
+def _car_v(c): car_v64(c, 'army', seed=7)
 
 
 def rust_blob(c, cx, cy, rx, ry, on, seed=0, mat='rust', hi=4):
@@ -287,7 +287,7 @@ def _car_burnt(c): car_burnt_r5(c)
 
 @piece('van-rust', '녹슨 승합차', 5, 3, 'other', en='abandoned rusty box van lying east-west seen from above: long flat roof top, cab windshield, side with sliding door and flat tyres',
        tags=['차', '폐차'], desc='버려진 녹슨 승합차(동서, 앞이 동쪽).', solid=[(0, 1), (1, 1), (2, 1), (3, 1), (4, 1), (0, 2), (1, 2), (2, 2), (3, 2), (4, 2), (1, 0), (2, 0), (3, 0)])
-def _van(c): van_r5(c)
+def _van(c): van_r64(c)
 
 
 # ------------------------------------------------------------------ 물탱크·망루·발전기·태양광판
@@ -1056,6 +1056,312 @@ def van_r5(c):
             elif v > 0.77: c.P(x, y, K('rust', 4))
     bloom(c, 7, 7, 3, on, 1, 0.8, drip=1); bloom(c, 56, 13, 4, on, 2, 0.6, drip=0); bloom(c, 74, 38, 2, on, 4, 0.8)
     bloom(c, 32, 15, 2, on, 3, 0.7); bloom(c, 8, 37, 3, on, 7, 0.8, drip=2); bloom(c, 36, 26, 3, on, 8, 0.8, drip=2)
+    ol_soft(c)
+    c.shadow([(x, y) for y in (46, 47) for x in range(4 + (y - 46), 77 - (y - 46))])
+
+
+# ================================================================== r64 다시 그리기(녹슨 승용차 가로·세로 · 승합차) — 버들 포장마차 크기
+def _k(m, t):
+    return K(m, max(0, min(len(MAT[m]) - 1, t)))
+
+
+def tyre64(c, wx, cy, r=5, seed=0):
+    """옆에서 본 바람 빠진 타이어: 고무 원판 5단(위 밝게·아래 어둡게) · 홈 결 · 휠 테 3단 + 녹슨 너트 · 바닥에 퍼진 아래 덩이."""
+    for y in range(cy - r, cy + r + 3):
+        for x in range(wx - r - 2, wx + r + 3):
+            rr = r + (1 if y > cy + 1 else 0) + (1 if y > cy + 3 else 0)
+            yy = min(y, cy + r - 1) if y > cy + 2 else y
+            if ((x - wx) / (rr + .5)) ** 2 + ((yy - cy) / (r + .5)) ** 2 > 1: continue
+            t = 6 if y < cy - 3 else 5 if y < cy - 1 else 4 if y < cy + 2 else 3 if y < cy + 4 else 2
+            if x < wx - r + 1: t += 1
+            if x > wx + r - 1: t -= 1
+            if (x + y * 2) % 5 == 0 and cy - 2 < y < cy + 4: t -= 1                    # 홈 결
+            c.P(x, y, _k('rubber', t))
+    c.ell(wx, cy, 2, 2, K('metal', 3)); c.HL(wx - 2, cy - 2, 3, K('metal', 6)); c.P(wx - 2, cy - 1, K('metal', 5))
+    c.HL(wx - 1, cy + 2, 4, K('metal', 1)); c.P(wx + 2, cy + 1, K('metal', 2))
+    c.P(wx, cy, K('rust', 3)); c.P(wx + 1, cy, K('rust', 1)); c.P(wx, cy - 1, K('rust', 5))
+
+
+def mottle(c, x, y, t, mat, seed, amp=1):
+    v = field(x * 2, y * 2, seed, 64)
+    if v > 0.70: t += amp
+    elif v < 0.24: t -= amp
+    if h2(x, y, seed + 1) % 19 == 0: t += 1 if (x + y) % 2 else -1
+    c.P(x, y, _k(mat, t))
+
+
+def car_h64(c, P='blue', seed=2):
+    """동서로 놓인 승용차(64×48) 높은 3/4: 지붕 판(4..14, 짐받이 레일) · 유리 고리 · 트렁크·보닛 윗면(14..24) · 남쪽 옆면 17행(25..41) · 바퀴 지름 11."""
+    on = set(MAT[P])
+    # 남쪽 옆면 25..41
+    for y in range(25, 42):
+        x0, x1 = (2, 61) if y in (25, 41) else (1, 62)
+        for x in range(x0, x1 + 1):
+            t = 5 if y == 25 else 4 if y < 29 else 3 if y < 35 else 2 if y < 39 else 1
+            if x == x0: t += 1
+            if x == x1: t -= 1
+            mottle(c, x, y, t, P, seed + 3)
+    c.HL(2, 30, 60, K(P, 2)); c.HL(2, 31, 60, K(P, 5))                                         # 허리 주름
+    for x in (24, 40): c.VL(x, 26, 13, K(P, 1)); c.VL(x + 1, 26, 13, K(P, 4))                 # 문 이음
+    c.HL(28, 33, 3, K('metal', 6)); c.HL(28, 34, 3, K('metal', 2)); c.HL(44, 33, 3, K('metal', 6)); c.HL(44, 34, 3, K('metal', 2))
+    for x in range(3, 61):                                                                     # 문턱 녹 때
+        for y in (38, 39, 40):
+            if field(x * 3, y * 4, seed + 8, 64) > 0.55 - (y - 38) * 0.08: c.P(x, y, K('rust', 2 + (y == 38) + (h2(x, y, 5) % 4 == 0)))
+    for wx in (13, 50):                                                                        # 바퀴 아치 + 타이어
+        for y in range(29, 42):
+            for x in range(wx - 9, wx + 10):
+                d = ((x - wx) / 8.5) ** 2 + ((y - 42) / 10.5) ** 2
+                if d <= 1: c.P(x, y, K('soot', 1) if y > 34 else K('soot', 2))
+                elif d <= 1.28 and y < 41: c.P(x, y, K(P, 5) if y < 36 else K(P, 4))
+        tyre64(c, wx, 38, 5, seed)
+    # 트렁크(서)·보닛(동) 윗면 14..24
+    for y in range(14, 25):
+        x0, x1 = (4, 59) if y == 14 else (3, 60) if y == 15 else (2, 61)
+        for x in range(x0, x1 + 1):
+            t = 4 if y == 14 else 6 if y == 23 else 3 if y == 24 else 5
+            if y < 23 and x == x0: t = 6
+            if y < 23 and x == x1: t = 3
+            if 15 <= y <= 22 and x < 12 and y < 18: t = 6 if h2(x, y, 4) % 3 else 5               # 트렁크 위왼쪽 빛
+            mottle(c, x, y, t, P, seed + 5)
+    for x in (51, 56): c.VL(x, 15, 8, K(P, 3)); c.VL(x + 1, 15, 8, K(P, 6))                     # 보닛 주름
+    c.HL(58, 15, 3, K(P, 2)); c.VL(60, 16, 7, K(P, 3))                                          # 보닛 앞 틈
+    c.VL(7, 16, 7, K(P, 3)); c.VL(8, 16, 7, K(P, 6)); c.P(5, 19, K('metal', 6)); c.P(5, 20, K('metal', 2))   # 트렁크 틈 · 열쇠 구멍
+    # 유리 고리(뒤 유리 16..20 · 앞 유리 43..48 · 옆 창 15..20)
+    for x in range(16, 21):
+        for y in range(14 - (x - 16) * 2, 21): c.P(x, y, _k('glass', 2 + (1 if y < 16 - (x - 16) * 2 else 0) - (1 if y == 20 else 0)))
+    for x in range(43, 49):
+        for y in range(5 + (x - 43) * 2, 21): c.P(x, y, _k('glass', 3 if y < 8 + (x - 43) * 2 else 2 - (1 if y == 20 else 0)))
+    for x in range(21, 43):
+        for y in range(15, 21): c.P(x, y, _k('glass', 1 if y == 20 else 3 if y == 15 else 2))
+    for k in range(5):                                                                          # 사선 반사 줄
+        for j in range(4): 
+            x = 24 + k * 4 + j; y = 19 - j
+            if c.get(x, y) in set(MAT['glass']) and k % 2 == 0: c.P(x, y, K('glass', 4))
+    glass_broken(c, 33, 15, 9, 5, seed + 3, 2)
+    c.VL(32, 15, 6, K(P, 3)); c.VL(31, 15, 6, K(P, 5)); c.VL(21, 15, 6, K(P, 4)); c.VL(42, 15, 6, K(P, 3))   # 기둥
+    for (x, y) in ((17, 10), (18, 9), (45, 9), (46, 11), (25, 16), (26, 17)): c.P(x, y, K('glass', 5))
+    c.P(46, 15, K('soot', 0)); c.P(47, 16, K('soot', 1)); c.P(46, 16, K('glass', 5))
+    c.HL(16, 21, 33, K(P, 3)); c.HL(17, 22, 31, K(P, 6))                                       # 창 밑 턱
+    # 지붕 4..14: 가장 밝은 판, 위왼쪽 빛, 오른 그늘, 앞 턱 밝게, 짐받이 레일 두 줄
+    for y in range(4, 15):
+        x0, x1 = (22, 41) if y == 4 else (21, 42)
+        for x in range(x0, x1 + 1):
+            t = 5
+            if y == 4: t = 4
+            if y in (5, 6) and x < 32: t = 6
+            if x == x0 and y > 4: t = 6
+            if x == x1: t = 3
+            if x == x1 - 1 and y > 4: t = 4
+            if y == 14: t = 6
+            if y == 13: t = 4
+            mottle(c, x, y, t, P, seed + 7)
+    for ry in (6, 11):                                                                           # 짐받이 레일
+        c.HL(23, ry, 18, K('metal', 6)); c.HL(23, ry + 1, 18, K('metal', 2))
+        for px in (23, 32, 40): c.P(px, ry + 1, K('metal', 1)); c.P(px, ry, K('metal', 7))
+    for (x, y) in ((28, 9), (36, 8)):                                                            # 움푹한 자국
+        c.P(x, y, K(P, 3)); c.P(x + 1, y, K(P, 4)); c.P(x, y + 1, K(P, 6)); c.P(x + 1, y + 1, K(P, 6))
+    # 범퍼 · 등
+    c.R(62, 16, 2, 22, K('metal', 4)); c.VL(63, 16, 22, K('metal', 2)); c.HL(62, 16, 2, K('metal', 6)); c.HL(62, 37, 2, K('metal', 1))
+    c.R(0, 16, 2, 22, K('metal', 4)); c.VL(0, 16, 22, K('metal', 6)); c.HL(0, 37, 2, K('metal', 1)); c.P(1, 24, K('metal', 7)); c.P(63, 24, K('metal', 5))
+    c.R(60, 26, 2, 3, K('glass', 4)); c.P(60, 26, K('glass', 6)); c.P(61, 28, K('glass', 2))
+    c.R(2, 26, 2, 3, K('wine', 2)); c.P(2, 26, K('paint', 1))
+    # 녹: 꽃(흘러내림) · 얼룩
+    rust_patch(c, 2, 14, 60, 27, seed=seed + 11, dens=0.20, mat='rust', on=on)
+    bloom(c, 9, 20, 3, on, seed + 1, 0.7, drip=1); bloom(c, 30, 9, 3, on, seed + 4, 0.6); bloom(c, 33, 35, 4, on, seed + 5, 0.7, drip=2)
+    bloom(c, 55, 19, 2, on, seed + 6, 0.8); bloom(c, 5, 34, 2, on, seed + 9, 0.8, drip=1); bloom(c, 58, 29, 2, on, seed + 10, 0.8, drip=2)
+    ol_soft(c)
+    c.shadow([(x, y) for y in (43, 44, 45, 46) for x in range(4 + (y - 43), 61 - (y - 43))])
+
+
+def car_v64(c, P='army', seed=7):
+    """남북으로 놓인 승용차(32×64), 앞이 남쪽, 높은 3/4: 몸 윗면(트렁크·문 어깨·보닛, 2..39) 위에 좁고 높은 실내 칸(뒤 유리·밝은 지붕·카메라 쪽으로 기운 앞 유리,
+    오른쪽 몸 위에 칸 그림자) + 앞면 22행(40..61: 그릴·전조등·번호판·범퍼·타이어)."""
+    on = set(MAT[P])
+    for y in (5, 28):                                                                           # 옆으로 삐진 바퀴
+        for j in range(10):
+            c.P(1, y + j, _k('rubber', 5 if j < 4 else 4)); c.P(2, y + j, _k('rubber', 4 if j < 5 else 3))
+            c.P(29, y + j, _k('rubber', 3)); c.P(30, y + j, _k('rubber', 2 if j < 6 else 1))
+        c.P(1, y, K('rubber', 6)); c.P(30, y + 9, K('rubber', 1))
+    # 몸 윗면 2..39 (트렁크 · 양 어깨 · 보닛): 왼쪽 빛, 오른쪽 그늘
+    for y in range(2, 40):
+        x0, x1 = (5, 26) if y == 2 else (4, 27) if y == 3 else (3, 28)
+        for x in range(x0, x1 + 1):
+            t = 3
+            if x <= x0 + 1: t = 4
+            if x >= x1 - 1: t = 2
+            if x == x1: t = 1
+            if y == 2: t -= 1
+            mottle(c, x, y, t, P, seed)
+    c.HL(5, 9, 22, K(P, 6)); c.HL(8, 4, 16, K(P, 3)); c.HL(8, 5, 16, K(P, 5))                    # 트렁크 턱 · 틈
+    c.R(14, 6, 4, 2, K('metal', 5)); c.HL(14, 7, 4, K('metal', 2))
+    for y in (19, 28): c.HL(3, y, 3, K(P, 2)); c.HL(26, y, 3, K(P, 1))                            # 문 이음(어깨)
+    c.R(0, 26, 3, 2, K('metal', 5)); c.HL(0, 27, 3, K('metal', 2)); c.R(29, 26, 3, 2, K('metal', 3)); c.HL(29, 27, 3, K('metal', 1))   # 사이드 미러
+    # 실내 칸: 오른쪽 몸 위에 떨어진 그림자
+    for y in range(12, 35):
+        for x in (25, 26): c.P(x, y, K(P, 1 if x == 25 else 2))
+    # 뒤 유리 10..14 (위로 기운 띠, 위가 좁다)
+    for y in range(10, 15):
+        x0 = 9 - (y - 10) // 2; x1 = 22 + (y - 10) // 2
+        for x in range(x0, x1 + 1): c.P(x, y, _k('glass', 1 if y == 10 else 2))
+    glass_broken(c, 8, 11, 16, 4, seed, 2)
+    c.VL(7, 12, 3, K(P, 6)); c.VL(24, 12, 3, K(P, 2))
+    # 지붕 15..25: 가장 밝은 판, 위왼쪽 빛
+    for y in range(15, 26):
+        for x in range(7, 25):
+            t = 6 if h2(x, y, seed + 21) % 4 == 0 else 5
+            if y in (15,): t = 4
+            if y in (16, 17) and x < 16: t = 6
+            if x == 7: t = 6
+            if x == 24: t = 3
+            if x == 23: t = 4
+            if y == 25: t = 6
+            mottle(c, x, y, t, P, seed + 1)
+    c.P(11, 20, K(P, 3)); c.P(12, 20, K(P, 6)); c.P(19, 22, K(P, 3)); c.P(20, 22, K(P, 6))         # 움푹한 자국
+    c.HL(9, 18, 4, K(P, 3)); c.P(13, 18, K(P, 4))
+    # 앞 유리 26..33: 카메라 쪽으로 기운 면 — 아래로 넓어지는 사다리꼴, 하늘 반사 사선
+    for y in range(26, 34):
+        x0 = 7 - (y - 26) // 3; x1 = 24 + (y - 26) // 3
+        for x in range(x0, x1 + 1):
+            t = 3 if y < 28 else 2
+            if x == x0 or x == x1: c.P(x, y, K(P, 5 if x == x0 else 2)); continue
+            if (x - y) % 9 in (0, 1) and y < 32: t = 4
+            c.P(x, y, _k('glass', t))
+    glass_broken(c, 15, 28, 8, 5, seed + 1, 2)
+    c.HL(6, 33, 20, K(P, 3))
+    # 보닛 34..39: 낮은 판, 가운데 주름, 앞 턱 밝게
+    c.HL(4, 34, 24, K(P, 5)); c.VL(15, 35, 4, K(P, 2)); c.VL(16, 35, 4, K(P, 6)); c.HL(3, 39, 26, K(P, 6))
+    # 앞면 40..61
+    for y in range(40, 59):
+        for x in range(3, 29):
+            t = 4 if y == 40 else 3 if y < 44 else 2 if y < 54 else 1
+            if x == 3: t += 1
+            if x == 28: t -= 1
+            mottle(c, x, y, t, P, seed + 9)
+    c.HL(3, 40, 26, K(P, 5)); c.HL(4, 41, 24, K(P, 3))
+    c.R(10, 43, 12, 8, K('soot', 1))                                                            # 그릴
+    for x in range(11, 22, 2): c.VL(x, 44, 6, K('metal', 3)); c.P(x, 44, K('metal', 5))
+    c.HL(10, 43, 12, K('metal', 6)); c.HL(10, 51, 12, K('metal', 1)); c.VL(10, 43, 9, K('metal', 5)); c.VL(21, 43, 9, K('metal', 2))
+    c.P(15, 47, K('metal', 7)); c.P(16, 47, K('metal', 4))
+    c.R(4, 43, 5, 5, K('glass', 3)); c.HL(4, 43, 5, K('glass', 5)); c.P(5, 44, K('white', 2)); c.HL(4, 47, 5, K('glass', 1)); c.VL(8, 44, 3, K('glass', 2))
+    c.R(23, 43, 5, 5, K('soot', 0)); c.HL(23, 43, 5, K('metal', 3)); c.P(25, 45, K('glass', 5)); c.P(27, 46, K('glass', 4)); c.P(24, 47, K('glass', 3))
+    c.R(4, 49, 4, 2, K('paint', 1)); c.P(4, 49, K('paint', 2))
+    c.R(2, 53, 28, 4, K('metal', 4)); c.HL(2, 53, 28, K('metal', 6)); c.HL(2, 54, 28, K('metal', 5)); c.HL(2, 56, 28, K('metal', 1))   # 범퍼
+    c.R(11, 52, 10, 4, K('body', 4)); c.HL(11, 52, 10, K('body', 7)); c.HL(11, 55, 10, K('body', 2)); c.VL(20, 52, 4, K('body', 3))     # 번호판(글자 없음)
+    c.P(13, 53, K('rust', 3)); c.P(18, 54, K('rust', 4))
+    for x in range(3, 29):                                                                       # 아래 그늘 · 흙탕
+        c.P(x, 57, _k(P, 1 if h2(x, 57, seed) % 3 else 2)); c.P(x, 58, K(P, 0))
+        if field(x * 3, 1, seed + 4, 64) > 0.5: c.P(x, 57, K('rust', 2))
+    for wx in (2, 21):                                                                           # 앞에서 본 납작한 타이어
+        for y in range(55, 62):
+            for x in range(wx, wx + 9):
+                if y == 55 and x in (wx, wx + 8): continue
+                t = 5 if y < 57 else 4 if y < 59 else 3 if y < 61 else 2
+                if x == wx: t += 1
+                if x == wx + 8: t -= 1
+                if (x + y) % 4 == 0 and 56 < y < 60: t -= 1
+                c.P(x, y, _k('rubber', t))
+    rust_patch(c, 4, 2, 24, 56, seed=seed + 5, dens=0.22, on=on)
+    bloom(c, 19, 20, 3, on, seed + 2, 0.7); bloom(c, 9, 37, 3, on, seed + 3, 0.6, drip=1); bloom(c, 22, 6, 2, on, seed + 4, 0.8)
+    bloom(c, 6, 45, 2, on, seed + 6, 0.8, drip=2); bloom(c, 25, 50, 2, on, seed + 8, 0.8, drip=1); bloom(c, 4, 22, 1, on, seed + 10, 0.8)
+    ol_soft(c)
+    c.shadow([(x, y) for y in (62, 63) for x in range(3, 30)])
+
+
+def van_r64(c):
+    """동서로 놓인 녹슨 상자 승합차(80×48), 앞은 동쪽. 넓은 지붕 판 22행(2..23, 앞 턱 밝게 + 빗물 홈 그늘) · 옆면 21행(24..44) · 바퀴 지름 11."""
+    P = 'body'; on = set(MAT[P])
+    for y in range(24, 46):                                                                     # 옆면(남쪽)
+        x0, x1 = (2, 77) if y < 45 else (3, 76)
+        for x in range(x0, x1 + 1):
+            t = 2 if y == 24 else 5 if y == 25 else 4 if y < 33 else 3 if y < 40 else 2 if y < 44 else 1
+            if x == x0: t += 1
+            if x == x1: t -= 1
+            if y >= 40 and h2(x, y, 3) % 3 == 0: t -= 1
+            mottle(c, x, y, t, P, 13)
+    c.HL(2, 36, 76, K(P, 2)); c.HL(2, 37, 76, K(P, 5))                                          # 허리 보호대
+    for x in (4, 61): c.VL(x, 26, 18, K(P, 2)); c.VL(x + 1, 26, 18, K(P, 5))                    # 판 이음
+    c.R(7, 27, 13, 7, K('wood', 2)); [c.HL(7, y, 13, K('wood', 3 if y % 2 else 1)) for y in range(27, 34, 2)]   # 판자로 막은 뒤 창
+    c.HL(7, 27, 13, K('wood', 4)); c.VL(19, 27, 7, K('wood', 0)); c.P(9, 28, K('metal', 6)); c.P(17, 31, K('metal', 6)); c.P(12, 30, K('wood', 5))
+    c.HL(24, 25, 36, K(P, 1)); c.HL(24, 26, 36, K(P, 6))                                         # 레일
+    c.VL(24, 27, 18, K(P, 1)); c.VL(25, 27, 18, K(P, 6))
+    c.R(28, 28, 10, 6, K('glass', 2)); c.HL(28, 28, 10, K('glass', 4)); glass_broken(c, 29, 29, 8, 4, 5, 2)
+    c.VL(45, 27, 18, K(P, 6)); c.VL(46, 27, 18, K(P, 2)); c.HL(42, 35, 2, K('metal', 6)); c.P(42, 36, K('metal', 2))
+    for y in range(27, 46):                                                                     # 열린 틈(실내)
+        for x in range(47, 58):
+            c.P(x, y, K('brust', 1) if y < 30 else K('soot', 3) if y < 41 else K('brust', 2))
+    c.R(49, 33, 6, 3, K('burlap', 3)); c.HL(49, 33, 6, K('burlap', 5)); c.HL(49, 35, 6, K('burlap', 1)); c.P(52, 39, K('metal', 3)); c.P(55, 40, K('rust', 3))
+    c.VL(58, 27, 18, K(P, 1)); c.VL(59, 27, 18, K(P, 5))
+    c.VL(63, 26, 19, K(P, 1)); c.VL(64, 26, 19, K(P, 5))                                        # 운전석 문 + 창
+    glass_broken(c, 65, 27, 9, 6, 6, 2); c.HL(65, 33, 9, K(P, 6)); c.HL(67, 35, 3, K('metal', 6))
+    for wx in (16, 66):                                                                         # 바퀴 아치 + 바퀴
+        for y in range(33, 46):
+            for x in range(wx - 9, wx + 10):
+                d = ((x - wx) / 8.6) ** 2 + ((y - 46) / 10.0) ** 2
+                if d <= 1: c.P(x, y, K('brust', 1) if y < 40 else K('brust', 0))
+                elif d <= 1.25 and y < 44: c.P(x, y, K(P, 6))
+        tyre64(c, wx, 41, 5, 3)
+    # 지붕 2..23: 위왼쪽 빛, 오른 그늘, 앞(남) 턱 가장 밝게, 리브 · 환기 뚜껑
+    for y in range(2, 24):
+        x0 = 3 if y > 2 else 4; x1 = 62 if y > 2 else 61
+        for x in range(x0, x1 + 1):
+            t = 6
+            if y == 2: t = 4
+            if y == 3: t = 5
+            if y == 23: t = 7
+            if y == 22: t = 5
+            if x == x0 and 2 < y < 23: t = 7
+            if x == x1: t = 4
+            if y in (4, 5, 6) and x0 < x < 40: t = 7
+            mottle(c, x, y, t, P, 41)
+    for x in range(9, 61, 7):
+        for y in range(4, 22): c.P(x, y, K(P, 7)); c.P(x + 1, y, K(P, 4))
+    c.R(48, 15, 6, 4, K('metal', 4)); c.HL(48, 15, 6, K('metal', 6)); c.HL(48, 18, 6, K('metal', 2)); c.VL(53, 15, 4, K('metal', 3)); c.HL(48, 19, 6, K(P, 3))   # 환기 뚜껑
+    for (x, y) in ((31, 18), (55, 7)):                                                          # 움푹한 자국
+        c.P(x, y, K(P, 4)); c.P(x + 1, y, K(P, 4)); c.P(x, y + 1, K(P, 7)); c.P(x + 1, y + 1, K(P, 7))
+    for x in range(63, 70):                                                                     # 앞 유리(경사)
+        for y in range(3 + (x - 63) * 2, 24):
+            c.P(x, y, K('glass', 3 if y < 8 + (x - 63) * 2 else 2 if y < 22 else 1))
+    for (x, y) in ((64, 6), (65, 8), (66, 13), (67, 14), (68, 20)): c.P(x, y, K('glass', 5))
+    c.P(66, 18, K('glass', 1)); c.P(67, 18, K('glass', 0)); c.P(66, 19, K('glass', 1))
+    c.HL(63, 23, 7, K(P, 7))
+    for y in range(13, 24):                                                                     # 보닛(덮개 떨어져 엔진 칸)
+        for x in range(70, 78):
+            t = 5 if y > 13 else 4
+            if y == 23: t = 7
+            if x == 77: t = 3
+            if x == 70 and y > 13: t = 6
+            c.P(x, y, K(P, t))
+    c.clear(77, 13)
+    for y in range(15, 21):
+        for x in range(71, 77):
+            c.P(x, y, K('brust', 1) if y == 15 else K('soot', 3) if (x + y) % 3 else K('brust', 2))
+    c.R(72, 16, 3, 2, K('metal', 3)); c.HL(72, 16, 3, K('metal', 5)); c.P(75, 18, K('rust', 4)); c.P(71, 17, K('rubber', 4))
+    c.R(78, 14, 2, 22, K('metal', 3)); c.VL(79, 14, 22, K('metal', 1)); c.HL(78, 14, 2, K('metal', 6)); c.R(76, 27, 2, 3, K('paint', 2)); c.P(76, 27, K('paint', 3))
+    c.R(0, 13, 2, 24, K('metal', 3)); c.VL(0, 13, 24, K('metal', 5)); c.HL(0, 13, 2, K('metal', 6)); c.R(2, 28, 2, 3, K('wine', 2))
+    # 지붕 짐: 묶은 천 꾸러미 · 눕힌 헌 타이어
+    box(c, 13, 7, 14, 6, 4, 'army', tt=4, ft=2)
+    for x in (17, 23): c.VL(x, 7, 10, K('dry', 2)); c.P(x, 7, K('dry', 4))
+    c.P(14, 8, K('army', 6)); c.P(21, 10, K('army', 2)); c.P(20, 9, K('army', 6))
+    c.ell(38, 12, 6, 3, K('rubber', 4)); c.ell(38, 12, 5, 2, K('rubber', 5)); c.ell(38, 12, 2, 1, K('rubber', 2))
+    c.HL(34, 15, 9, K('rubber', 3)); c.HL(34, 16, 9, K('rubber', 2)); c.P(34, 10, K('rubber', 6))
+    # 녹
+    for k, x in enumerate(range(9, 61, 7)):
+        y0 = 4 + h2(k, 1, 5) % 8; ln = 2 + h2(k, 2, 5) % 6
+        for j in range(ln):
+            if c.get(x + 1, y0 + j) in on: c.P(x + 1, y0 + j, K('rust', 3 if j == 0 else 4 if j < ln - 1 else 5))
+    for k, x in enumerate((6, 13, 21, 27, 36, 43, 61, 70, 75)):
+        ln = 3 + h2(k, 3, 9) % 6
+        for j in range(ln):
+            if c.get(x, 25 + j) in on: c.P(x, 25 + j, K('rust', 4 if j < ln - 1 else 5))
+    for y in range(38, 46):
+        for x in range(2, 78):
+            if c.get(x, y) not in on: continue
+            near = min(abs(x - 16), abs(x - 66))
+            v = field(x * 3, y * 3, 55, 64) + (0.18 if near < 10 else 0) + (y - 38) * 0.03
+            if v > 0.86: c.P(x, y, K('rust', 2 if h2(x, y, 4) % 4 == 0 else 3))
+            elif v > 0.77: c.P(x, y, K('rust', 4))
+    bloom(c, 7, 9, 3, on, 1, 0.8, drip=1); bloom(c, 57, 20, 3, on, 2, 0.6); bloom(c, 74, 40, 2, on, 4, 0.8)
+    bloom(c, 30, 20, 2, on, 3, 0.7); bloom(c, 8, 39, 3, on, 7, 0.8, drip=2); bloom(c, 36, 30, 3, on, 8, 0.8, drip=2)
     ol_soft(c)
     c.shadow([(x, y) for y in (46, 47) for x in range(4 + (y - 46), 77 - (y - 46))])
 

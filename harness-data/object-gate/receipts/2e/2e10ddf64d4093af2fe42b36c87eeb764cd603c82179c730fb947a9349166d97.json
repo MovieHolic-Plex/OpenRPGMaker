@@ -1,0 +1,380 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "2e10ddf64d4093af2fe42b36c87eeb764cd603c82179c730fb947a9349166d97",
+ "width": 48,
+ "height": 48,
+ "kind": "structure",
+ "name": "ragged tarp tent seen from above: a patched tarp thrown over a ridge pole on two upright poles, both sloped tarp planes visible from above, open front end showing a crate inside, guy ropes to stakes",
+ "label": "wasteland_ruins/tent-tarp",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 7,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "wasteland_ruins",
+   "fallback": true,
+   "reason": "칩셋 wasteland_ruins 의 화풍 기준 묶음이 없다",
+   "hash": "5f62fef078ef7661"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 14,
+  "tileColorsP90": 17,
+  "darkV5": 33,
+  "nearBlackEdge": 0.19,
+  "opaqueTiles": 7
+ },
+ "eye": {
+  "verdicts": [
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "wrong",
+   "borderline",
+   "borderline",
+   "borderline"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "left tarp slope",
+      "rows": "5-34",
+      "evidence": "c",
+      "front_edge_line_row": 28,
+      "eave_shadow_rows": "29-33"
+     },
+     {
+      "part": "right tarp slope",
+      "rows": "5-34",
+      "evidence": "c",
+      "front_edge_line_row": 28,
+      "eave_shadow_rows": "29-33"
+     },
+     {
+      "part": "crate inside open front",
+      "rows": "32-40",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "guy ropes and stakes",
+      "rows": "16-20",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 27,
+    "front_face_rows": 12,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette widens steadily from a 4px peak at row 1 to about 45px at row 18. The light ridge column (x=24, rows 4-22) divides two sloped tarp planes, which fill rows 5-34 and are the top surface (evidence c). The tarp hem runs around row 28, with dark eave shadow in the rows below it (29-33). Beneath it the open front end is a vertical face of about 12 rows (28-40) showing the pole, a crate and the dark interior, over a brown ground base at rows 40-42. Guy ropes and stakes at rows 16-20 and 40-47 are minor details."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The tent is small, but both tarp planes carry several teal steps (highlight, light, mid, dark, deep), with patch variation, fold lines and tinted edges. Measured facts back this up: 14 visible tones per tile against 12 and 10 for the references, 0% near-flat coverage, and 0% neutral dark edge pixels, so the outlines lean dark teal or brown rather than black. The crate, poles and guy ropes use separate wood tones, so nothing reads as a flat sticker fill. It has fewer total colours (25) than the references and its texture is less fine-grained than the roof-tile scallops, but at this scale a careful artist would accept it beside them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15107
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "left tarp slope",
+      "rows": "5-34",
+      "evidence": "c",
+      "front_edge_line_row": 34,
+      "eave_shadow_rows": "35-36"
+     },
+     {
+      "part": "right tarp slope",
+      "rows": "5-34",
+      "evidence": "c",
+      "front_edge_line_row": 34,
+      "eave_shadow_rows": "35-36"
+     },
+     {
+      "part": "crate inside open front",
+      "rows": "32-39",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "ground base and stakes with guy ropes",
+      "rows": "40-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 29,
+    "front_face_rows": 7,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette widens steadily from the ridge at row 5 (width 5) to full width at about row 18 (width 45). The two tarp planes, a lighter left and a darker right, are split at the ridge column x=24 (rows 4-22), and together they form a large sloped roof of about 29 rows. The hem at about row 34 acts as the front-edge line, with dark shadow beneath it at rows 35-36. Below the hem the open front shows the crate and the front pole (x=24, rows 26-40) above the brown ground strip at rows 40-42. The front face is short but at least 3 rows. The roof planes are the dominant volume, so this is a roof-top structure and not a flat slab or a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate has 14 visible tones per tile against 12 and 10 for the references, and 0% near-flat coverage, the same as both references. None of its dark edge pixels are neutral (0%), so the outline is a dark teal or brown tint of the neighbouring tarp or wood rather than a black sticker line. The two tarp planes carry about 5 lightness steps, with highlight ridges, shadowed folds and patch variation. The crate, poles and guy ropes are separated by value rather than a uniform outline. It is a little shallower than the tile roofs, which have per-tile scallop highlights, and its 25 total colours are limited. Even so, it is not flatter or thinner than the references at this scale, and a careful artist would accept it next to them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16625
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "left tarp slope",
+      "rows": "5-39",
+      "evidence": "c",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": "36-39"
+     },
+     {
+      "part": "right tarp slope",
+      "rows": "5-39",
+      "evidence": "c",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": "36-39"
+     },
+     {
+      "part": "ridge pole and finials",
+      "rows": "0-4",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "crate inside the open front",
+      "rows": "32-40",
+      "evidence": "a",
+      "front_edge_line_row": 34,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "ground base and poles",
+      "rows": "40-42",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 26,
+    "front_face_rows": 13,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette widens steadily from 3 px at row 3 to about 45 px at row 18, which is the shape of a sloped tarp roof. The column scan at x=24 shows a light ridge line (L=172) over rows 4-22. The tarp planes on either side are textured with patches and folds, so both slopes read as roof surfaces from rows 5 to about 28. Below the tarp edge the front is open (rows about 29-41). It shows a dark interior, a central upright pole (x=24, L=100), the crate with a lighter top band around rows 33-34, and a brown ground base at rows 40-42. That gives a roof of 3+ rows over a front face of more than 3 rows, so it reads as three-quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate has 14 visible tones per 16x16 tile, against 12 and 10 for the references. Near-flat coverage is 0%, the same as both references, so there are no flat fills. The dark edge pixels are 0% neutral, so the outline is tinted. By eye it reads as a dark teal beside the tarp and dark brown beside the poles and crate, not a black sticker line. The two tarp planes carry several teal steps (highlight, light, mid, dark) plus patch variation and fold lines. The wood poles, crate and ropes add a separate brown ramp. The candidate uses only 25 colours in total, so each material ramp is a little shallower (about 4 steps) than Beodeul's 5-6. The tent is small and simple, and its per-tile richness is at or above the references, so a careful artist would accept it beside them without it looking thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18602
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "tarp roof, both sloped planes with ridge",
+      "rows": "3-34",
+      "evidence": "c",
+      "front_edge_line_row": 34,
+      "eave_shadow_rows": "35-39"
+     },
+     {
+      "part": "ground base/ plank floor at front",
+      "rows": "40-42",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "crate inside opening",
+      "rows": "32-39",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 31,
+    "front_face_rows": 8,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The widest part of the tent is a tarp roof of two sloped planes meeting at a ridge. Silhouette width grows steadily from 4 px at row 1 to 45 px at row 18, which gives the roof a large visible top surface across rows 3-34. The tarp's lower hem at about row 34 is followed by dark shadow in rows 35-39. Below that is the open front end, rows 34-41, with the pole, a crate and a plank floor ending at row 42. This is more than 3 rows of front face, so it reads as a three-quarter view and not a flat slab or a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small tent, much smaller than the references, so I judged mostly by the measured facts and by eye at that size. On the facts it matches or beats the references: 14 visible tones per tile against 12 and 10, 0% near-flat coverage like both references, and 0% neutral dark edge pixels, so the outline is tinted. By eye the outline is a dark teal that follows the tarp and a dark brown beside the poles, crate and ropes, not a uniform black sticker line. The two tarp planes use about 4 teal lightness steps, with ridge highlights, patch variations and darker folds, a little shallower than the roughly 6-step tile ramps in the references. The tarp has patches and grain, and the crate, poles and guy ropes add detail, so there are no large flat fills. The total palette is small (25 colours), but it shows as many visible tones per tile as the references. A careful artist would accept it next to them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18495
+  }
+ ],
+ "decidedAt": "2026-10-25T14:15:56.487Z",
+ "cells": {
+  "16": [
+   "1fa3569c2d20004a",
+   "2cde9182e4d67199",
+   "52dce1dbf6ec90c4",
+   "540db119a21a4098",
+   "56f2a3679b5af122",
+   "57e3c28ee1a84887",
+   "ac944093153bb844",
+   "bb406bf439fbb8c8",
+   "c748a43fca28d605"
+  ],
+  "24": [
+   "5cc2e40560a09103",
+   "73d6e68ab515d320",
+   "a1e0f61e87422a1f",
+   "dcec09ba31a9e393"
+  ],
+  "32": [
+   "028cb6ca072cf6fa",
+   "06f08431fcf0eed1",
+   "0833771fc3925db0",
+   "0b2c8949c5f08dbb",
+   "167c7bee5d6fff5d",
+   "17537e5ec29c12df",
+   "199441b0472fd1da",
+   "25a6a9d3a6b48729",
+   "5c22e0ded5785fc4",
+   "634f741ad95b82c6",
+   "6750ec0c40f1976f",
+   "6886e3c3d98a82ac",
+   "6c9ef1f59d0ae54d",
+   "826b7f9868e7df24",
+   "89ef44c89054413c",
+   "902cea430c179ce0",
+   "b7b7e69a176a4e56",
+   "c2e855ca1ed24728",
+   "c391df135a8bd40a",
+   "c3dbdf6636d63187",
+   "c59fadb037de3fd6",
+   "e32bf9d3be28966d",
+   "f9f2595a186e12da",
+   "fca617e5b3c85353"
+  ],
+  "48": [
+   "6c80cecfd9f892bf"
+  ]
+ }
+}

@@ -1,0 +1,317 @@
+[
+ {
+  "category": "small hut",
+  "side": "B",
+  "id": "bd-pick-snowfield-hut",
+  "drawn_h_px": 66,
+  "ratio_to_hero": 2.75
+ },
+ {
+  "category": "small hut",
+  "side": "W",
+  "id": "shack-a",
+  "drawn_h_px": 68,
+  "ratio_to_hero": 2.83
+ },
+ {
+  "category": "small hut",
+  "side": "W",
+  "id": "shack-c",
+  "drawn_h_px": 75,
+  "ratio_to_hero": 3.12
+ },
+ {
+  "category": "small hut",
+  "side": "W",
+  "id": "hut-sheet",
+  "drawn_h_px": 64,
+  "ratio_to_hero": 2.67
+ },
+ {
+  "category": "small hut",
+  "side": "W",
+  "id": "hut-stove",
+  "drawn_h_px": 64,
+  "ratio_to_hero": 2.67
+ },
+ {
+  "category": "small hut",
+  "side": "W",
+  "id": "lean-doors",
+  "drawn_h_px": 32,
+  "ratio_to_hero": 1.33
+ },
+ {
+  "category": "shed / big shack",
+  "side": "B",
+  "id": "bd-pick-snowfield-shed",
+  "drawn_h_px": 82,
+  "ratio_to_hero": 3.42
+ },
+ {
+  "category": "shed / big shack",
+  "side": "W",
+  "id": "shack-b",
+  "drawn_h_px": 80,
+  "ratio_to_hero": 3.33
+ },
+ {
+  "category": "shed / big shack",
+  "side": "W",
+  "id": "container-home",
+  "drawn_h_px": 77,
+  "ratio_to_hero": 3.21
+ },
+ {
+  "category": "shed / big shack",
+  "side": "W",
+  "id": "shack-2f",
+  "drawn_h_px": 96,
+  "ratio_to_hero": 4.0
+ },
+ {
+  "category": "house / ruin",
+  "side": "B",
+  "id": "bd-house-h101_2",
+  "drawn_h_px": 84,
+  "ratio_to_hero": 3.5
+ },
+ {
+  "category": "house / ruin",
+  "side": "W",
+  "id": "husk-a",
+  "drawn_h_px": 80,
+  "ratio_to_hero": 3.33
+ },
+ {
+  "category": "house / ruin",
+  "side": "W",
+  "id": "husk-b",
+  "drawn_h_px": 64,
+  "ratio_to_hero": 2.67
+ },
+ {
+  "category": "house / ruin",
+  "side": "W",
+  "id": "husk-e",
+  "drawn_h_px": 96,
+  "ratio_to_hero": 4.0
+ },
+ {
+  "category": "tall house / tall ruin",
+  "side": "B",
+  "id": "bd-house-h102_1",
+  "drawn_h_px": 108,
+  "ratio_to_hero": 4.5
+ },
+ {
+  "category": "tall house / tall ruin",
+  "side": "W",
+  "id": "husk-tall",
+  "drawn_h_px": 128,
+  "ratio_to_hero": 5.33
+ },
+ {
+  "category": "tall house / tall ruin",
+  "side": "W",
+  "id": "husk-g",
+  "drawn_h_px": 144,
+  "ratio_to_hero": 6.0
+ },
+ {
+  "category": "tall house / tall ruin",
+  "side": "W",
+  "id": "husk-h",
+  "drawn_h_px": 144,
+  "ratio_to_hero": 6.0
+ },
+ {
+  "category": "tent",
+  "side": "B",
+  "id": "bd-dg-goblin-tent",
+  "drawn_h_px": 39,
+  "ratio_to_hero": 1.62
+ },
+ {
+  "category": "tent",
+  "side": "W",
+  "id": "tent-tarp",
+  "drawn_h_px": 47,
+  "ratio_to_hero": 1.96
+ },
+ {
+  "category": "tarp lean-to",
+  "side": "B",
+  "id": "bd-pick-shipwreck-reef-tarp-lean",
+  "drawn_h_px": 31,
+  "ratio_to_hero": 1.29
+ },
+ {
+  "category": "tarp lean-to",
+  "side": "W",
+  "id": "lean-to",
+  "drawn_h_px": 47,
+  "ratio_to_hero": 1.96
+ },
+ {
+  "category": "stall",
+  "side": "B",
+  "id": "bd-pick-walled-market-cloth-stall",
+  "drawn_h_px": 46,
+  "ratio_to_hero": 1.92
+ },
+ {
+  "category": "stall",
+  "side": "W",
+  "id": "stall-a",
+  "drawn_h_px": 48,
+  "ratio_to_hero": 2.0
+ },
+ {
+  "category": "stall",
+  "side": "W",
+  "id": "stall-b",
+  "drawn_h_px": 48,
+  "ratio_to_hero": 2.0
+ },
+ {
+  "category": "stall",
+  "side": "W",
+  "id": "market-shelter",
+  "drawn_h_px": 63,
+  "ratio_to_hero": 2.62
+ },
+ {
+  "category": "wagon / vehicle",
+  "side": "B",
+  "id": "bd-pick-walled-market-wagon",
+  "drawn_h_px": 42,
+  "ratio_to_hero": 1.75
+ },
+ {
+  "category": "wagon / vehicle",
+  "side": "W",
+  "id": "car-rust-h",
+  "drawn_h_px": 43,
+  "ratio_to_hero": 1.79
+ },
+ {
+  "category": "wagon / vehicle",
+  "side": "W",
+  "id": "car-rust-v",
+  "drawn_h_px": 62,
+  "ratio_to_hero": 2.58
+ },
+ {
+  "category": "wagon / vehicle",
+  "side": "W",
+  "id": "van-rust",
+  "drawn_h_px": 46,
+  "ratio_to_hero": 1.92
+ },
+ {
+  "category": "lamp",
+  "side": "B",
+  "id": "bd-pick-snowfield-lamp",
+  "drawn_h_px": 42,
+  "ratio_to_hero": 1.75
+ },
+ {
+  "category": "lamp",
+  "side": "W",
+  "id": "lamp-broken",
+  "drawn_h_px": 47,
+  "ratio_to_hero": 1.96
+ },
+ {
+  "category": "dead tree",
+  "side": "B",
+  "id": "bd-pick-swamp-stilt-snag",
+  "drawn_h_px": 45,
+  "ratio_to_hero": 1.88
+ },
+ {
+  "category": "dead tree",
+  "side": "W",
+  "id": "dead-tree",
+  "drawn_h_px": 64,
+  "ratio_to_hero": 2.67
+ },
+ {
+  "category": "boulder",
+  "side": "B",
+  "id": "bd-pick-mountain-pass-boulder-l",
+  "drawn_h_px": 24,
+  "ratio_to_hero": 1.0
+ },
+ {
+  "category": "boulder",
+  "side": "W",
+  "id": "rubble-pile",
+  "drawn_h_px": 23,
+  "ratio_to_hero": 0.96
+ },
+ {
+  "category": "boulder",
+  "side": "W",
+  "id": "scrap-heap",
+  "drawn_h_px": 26,
+  "ratio_to_hero": 1.08
+ },
+ {
+  "category": "fence",
+  "side": "B",
+  "id": "bd-out-fence-run",
+  "drawn_h_px": 15,
+  "ratio_to_hero": 0.62
+ },
+ {
+  "category": "fence",
+  "side": "W",
+  "id": "fence-h",
+  "drawn_h_px": 16,
+  "ratio_to_hero": 0.67
+ },
+ {
+  "category": "fence",
+  "side": "W",
+  "id": "barricade-h",
+  "drawn_h_px": 24,
+  "ratio_to_hero": 1.0
+ },
+ {
+  "category": "barrel",
+  "side": "B",
+  "id": "bd-pick-mining-valley-barrel",
+  "drawn_h_px": 14,
+  "ratio_to_hero": 0.58
+ },
+ {
+  "category": "barrel",
+  "side": "W",
+  "id": "drums",
+  "drawn_h_px": 16,
+  "ratio_to_hero": 0.67
+ },
+ {
+  "category": "barrel",
+  "side": "W",
+  "id": "tyres",
+  "drawn_h_px": 15,
+  "ratio_to_hero": 0.62
+ },
+ {
+  "category": "crate",
+  "side": "B",
+  "id": "bd-prop-crate_apple",
+  "drawn_h_px": 13,
+  "ratio_to_hero": 0.54
+ },
+ {
+  "category": "crate",
+  "side": "W",
+  "id": "crates",
+  "drawn_h_px": 15,
+  "ratio_to_hero": 0.62
+ }
+]
