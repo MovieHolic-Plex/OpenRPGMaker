@@ -7,7 +7,7 @@ import type { PiAgentDoneEvent, PiAgentEvent, PiAgentRequest } from "../../src/a
 import { buildV2SystemPrompt } from "../../src/ai/v2/prompt.ts";
 import { createV2Tools, V2Session, v2FinishGate } from "../../src/ai/v2/verbs.ts";
 import { shipBlockers } from "../../src/ai/v2/shipChecks.ts";
-import { pickVqaReviewer, reviewVqaRound, vqaClean, vqaFixRetry, vqaFollowUp, vqaLeftoverInstruction, vqaShotPlan, vqaReviewerLabel, vqaShouldContinue, vqaSummary, wantsWholeGame, VQA_MAX_ROUNDS, type VqaReviewerPick, type VqaRound, type VqaShot } from "../../src/ai/v2/vqa.ts";
+import { reviewVqaRound, vqaReviewerCandidates, vqaClean, vqaFixRetry, vqaFollowUp, vqaLeftoverInstruction, vqaShotPlan, vqaReviewerLabel, vqaShouldContinue, vqaSummary, wantsWholeGame, VQA_MAX_ROUNDS, type VqaReviewerPick, type VqaRound, type VqaShot } from "../../src/ai/v2/vqa.ts";
 import { familyOfProviderId } from "../../src/ai/assistantRoles.ts";
 import type { PiAssistantV2Env } from "../../src/ai/v2/env.ts";
 import { adviseTurn, advisorFollowUp, withShipBlockers, advisorSummary, compactToolLog, summarizeProjectDiff, type AdvisorToolCall, type AdvisorVerdict } from "../../src/ai/v2/advisor.ts";
@@ -72,7 +72,8 @@ export async function runAssistantV2(request: PiAgentRequest, options: RunPiAgen
   // 고치기 차례 감시: 고치기 지시를 낼 때의 도구 기록 길이. 다음 걸음에서 그대로면 그 차례는 도구 0회 — 판으로 세지 않는다.
   let fixFromCalls: number | undefined;
   let fixRetried = false;
-  let vqaReviewer: VqaReviewerPick | undefined;
+  let vqaCandidates: VqaReviewerPick[] | undefined;
+  let vqaCandidateIndex = 0;
   let vqaMs = 0;
   let vqaReviewedFingerprint: string | undefined;
   const runVqaRound = async (env: PiAssistantV2Env): Promise<VqaRound> => {
@@ -83,7 +84,9 @@ export async function runAssistantV2(request: PiAgentRequest, options: RunPiAgen
       env.emit({ type: "execution_status", name: "v2.vqa", ok: false, summary: `화면 검수 못 함 — ${round.problem}`, data: round });
       return round;
     }
-    vqaReviewer ??= pickVqaReviewer({
+    // 검수자 후보(다른 계열 먼저, 같은 계열은 맨 뒤 — «같은 계열 검수»). 한 후보가 답하지 못하면(호출 실패·빈 답·JSON 없음) 같은 그림을 다음 후보에게.
+    // 답한 후보는 다음 판에도 그대로 쓴다. 검수를 말없이 건너뛰지 않는다 — 끝내 아무도 못 답하면 «검수 못 함» 판으로 남는다.
+    vqaCandidates ??= vqaReviewerCandidates({
       main: { provider: env.request.provider, model: env.request.model ?? "" },
       ...(env.request.roleModels?.vision ? { vision: env.request.roleModels.vision } : {}),
       ...(env.request.assistantRoles?.advisor && env.request.assistantRoles.advisor !== "off" ? { advisor: env.request.assistantRoles.advisor } : {}),
@@ -94,10 +97,25 @@ export async function runAssistantV2(request: PiAgentRequest, options: RunPiAgen
     });
     const t0 = Date.now();
     const { shots, failed } = await captureVqaShots(env);
-    const reviewer = vqaReviewerLabel(vqaReviewer);
-    // 주 모델이 검수자일 때도 roleChat 으로 부른다 — Argon 이면 그림을 보는 high 별칭으로 가야 한다(sideChat 은 주 모델 강도 그대로).
-    const chat = env.roleChat ? (messages: readonly unknown[], signal?: AbortSignal) => env.roleChat!(vqaReviewer!, messages, signal) : env.sideChat;
-    const round = await reviewVqaRound({ task: env.request.task, shots, round: vqaRounds.length + 1, previous: vqaRounds.at(-1)?.defects ?? [], chat, reviewer, ...(env.signal ? { signal: env.signal } : {}) });
+    const tried: string[] = [];
+    let round: VqaRound | undefined;
+    let reviewer = "-";
+    for (const [index, pick] of vqaCandidates.entries()) {
+      if (index < vqaCandidateIndex) continue;
+      reviewer = vqaReviewerLabel(pick);
+      // 주 모델이 검수자일 때도 roleChat 으로 부른다 — Argon 이면 그림을 보는 high 별칭으로 가야 한다(sideChat 은 주 모델 강도 그대로).
+      const chat = env.roleChat ? (messages: readonly unknown[], signal?: AbortSignal) => env.roleChat!(pick, messages, signal) : env.sideChat;
+      round = await reviewVqaRound({ task: env.request.task, shots, round: vqaRounds.length + 1, previous: vqaRounds.at(-1)?.defects ?? [], chat, reviewer, ...(env.signal ? { signal: env.signal } : {}) });
+      // 그림이 없는 판은 검수자 탓이 아니다 — 다음 후보로 넘기지 않는다.
+      if (!round.problem || !shots.length) { vqaCandidateIndex = index; break; }
+      tried.push(`${reviewer}: ${round.problem}`);
+      env.emit({ type: "execution_status", name: "v2.vqa.reviewer_fallback", ok: false, summary: `화면 검수자 ${reviewer} 가 답하지 못함(${round.problem}) — 다음 검수자로`, data: { reviewer, problem: round.problem } });
+      vqaCandidateIndex = index + 1;
+    }
+    // 모두 답하지 못한 판 뒤에는 다음 판에서 처음 후보부터 다시 시도한다(일시 장애일 수 있다).
+    if (vqaCandidateIndex >= vqaCandidates.length) vqaCandidateIndex = 0;
+    if (!round) round = { round: vqaRounds.length + 1, shots: [], defects: [], ms: 0, reviewer: "-", problem: "검수자 후보가 없음" };
+    else if (round.problem && tried.length > 1) round = { ...round, problem: `검수자 ${tried.length}명 모두 답하지 못함 — ${tried.join(" / ").slice(0, 400)}` };
     const withFailed: VqaRound = failed.length && !round.problem && !shots.length ? { ...round, problem: `그림을 찍지 못함: ${failed.join(", ")}` } : round;
     vqaRounds.push(withFailed);
     vqaMs += Date.now() - t0;
