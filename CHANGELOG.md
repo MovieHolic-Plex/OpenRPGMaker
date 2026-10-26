@@ -5,6 +5,14 @@
 
 <!-- releases -->
 
+## 0.348.1 — 2026-10-26
+
+### 수정
+
+- **handInterior** — train car exits through its drawn doors, not a wall gap (J45) (#3629) (`4b76a96`)
+- **ai** — open the side-thread tray when a run there waits for an answer (J72) (#3628) (`9e8a968`)
+- **ai/v2** — ship blocker for a title other than the requested one (J71/J73) (#3626) (`30995b0`)
+
 ## 0.348.0 — 2026-10-26
 
 ### 기능
