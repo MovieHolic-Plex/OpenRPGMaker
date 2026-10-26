@@ -70,6 +70,21 @@ describe("editor keyboard shortcuts", () => {
     expect(handleEditorKey(keyEvent("q"))).toBe(false);
   });
 
+  it("한글 IME 가 key 를 Process 로 바꿔도 물리 키로 도구를 고른다", () => {
+    editorState.set({ tool: "select", layer: "lower" });
+    expect(handleEditorKey({
+      key: "Process",
+      code: "KeyB",
+      keyCode: 229,
+      ctrlKey: false,
+      metaKey: false,
+      altKey: false,
+      target: undefined,
+      preventDefault: () => {},
+    } as unknown as KeyboardEvent)).toBe(true);
+    expect(editorState.get().tool).toBe("paint");
+  });
+
   it("문자 단축키 V/B/E/G/N/I가 도구를 전환한다", () => {
     expect(handleEditorKey(keyEvent("v"))).toBe(true);
     expect(editorState.get().tool).toBe("select");

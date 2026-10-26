@@ -2,13 +2,13 @@
 //
 // 씬의 이동 입력은 이벤트가 돌 때 멈추지만, 미니게임(병렬 이벤트)은 바로 그때 키를 읽어야 한다.
 // 그래서 문서 keydown/keyup 을 따로 듣는 가벼운 추적기를 둔다. 텍스트 입력칸에 친 키는 세지 않는다.
-import { isTextEntryTarget } from "@/player/keyBindings";
+import { keyboardEventKey, runtimeKeyFromEvent } from "@/player/keyBindings";
 
 const held = new Set<string>();
 let installed = false;
 
-function normalize(event: KeyboardEvent): string | undefined {
-  switch (event.key) {
+function normalizeKeyName(key: string): string | undefined {
+  switch (key) {
     case "ArrowUp": case "w": case "W": return "up";
     case "ArrowDown": case "s": case "S": return "down";
     case "ArrowLeft": case "a": case "A": return "left";
@@ -24,13 +24,16 @@ export function installHeldKeyTracker(target: Document = document): void {
   if (installed) return;
   installed = true;
   target.addEventListener("keydown", (event) => {
-    if (isTextEntryTarget(event.target)) return;
-    const key = normalize(event);
-    if (key) held.add(key);
+    const key = runtimeKeyFromEvent(event);
+    const tracked = key ? normalizeKeyName(key) : undefined;
+    if (tracked) held.add(tracked);
   }, true);
   target.addEventListener("keyup", (event) => {
-    const key = normalize(event);
-    if (key) held.delete(key);
+    // 텍스트 칸으로 들어간 뒤 떼는 keyup 도 풀어 준다. Process 는 code 의 물리 키로 맞춘다.
+    const key = keyboardEventKey(event);
+    if (key === "Process" || key === "Unidentified") return;
+    const tracked = normalizeKeyName(key);
+    if (tracked) held.delete(tracked);
   }, true);
   window.addEventListener("blur", () => held.clear());
 }

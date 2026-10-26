@@ -124,6 +124,7 @@ import {
   resolveEscapeAction,
 } from "@/editor/escapeToPan";
 import { handleEditorKey, handleHistoryHotkey, historyHotkeyOwnedByPanel, isHistoryHotkeyChord, shouldIgnoreEditorShortcut } from "@/editor/hotkeys";
+import { keyboardEventKey } from "@/player/keyBindings";
 import { hasOpenModalLayer } from "@/editor/ui/modalStack";
 import { copyEventAt, openEventLayerContextMenu, pasteEventAt } from "@/editor/panels/eventLayerContextMenu";
 import { isCellInsideSelection } from "@/editor/panels/mapSelectionContextMenu";
@@ -1845,7 +1846,7 @@ export class EditScene extends PhaserRuntime.Scene {
     if (shouldIgnoreEditorShortcut(event)) return;
     if (this.cameraPanController?.handleSpaceKeyDown(event)) return;
     if (!(event.ctrlKey || event.metaKey) && this.panWithArrowKey(event)) return;
-    if (!(event.ctrlKey || event.metaKey) && event.key === "Escape" && this.handleEscapeKey()) return;
+    if (!(event.ctrlKey || event.metaKey) && keyboardEventKey(event) === "Escape" && this.handleEscapeKey()) return;
     // RM2K3 스타일 단축키: F5/F6/F7 레이어, 1..7 도구, +/- 줌.
     if (!(event.ctrlKey || event.metaKey) && handleEditorKey(event)) return;
     this.handleShortcut(event);
@@ -1926,7 +1927,7 @@ export class EditScene extends PhaserRuntime.Scene {
 
   private panWithArrowKey(event: KeyboardEvent): boolean {
     const step = event.shiftKey ? this.activeTileSize() * 16 : this.activeTileSize() * 6;
-    switch (event.key) {
+    switch (keyboardEventKey(event)) {
       case "ArrowLeft":
         event.preventDefault();
         this.panCameraBy(-step, 0);
@@ -2097,7 +2098,7 @@ export class EditScene extends PhaserRuntime.Scene {
 
   private handleShortcut(event: KeyboardEvent): void {
     if (!(event.ctrlKey || event.metaKey)) return;
-    const key = event.key.toLowerCase();
+    const key = keyboardEventKey(event).toLowerCase();
     // Ctrl+S: 저장(맵 컨텍스트와 무관하게 항상 동작).
     if (key === "s") {
       event.preventDefault();

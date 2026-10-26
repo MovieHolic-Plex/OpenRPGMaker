@@ -3,6 +3,7 @@
 // 지우기/확정 버튼으로 구성된다. 키보드 직접 타이핑(한글 IME 포함)과 그리드 클릭/방향키 탐색을 병행한다.
 // Promise<string> 을 반환하며, 확정 시 최종 이름을 resolve 한다.
 
+import { isImeCompositionEvent } from "@/player/keyBindings";
 import { clearChildren, el } from "@/util/dom";
 import { applyCharsetFrameCrop, charsetFrameCropPosition } from "@/assets/charsetFrameCrop";
 import type { NameEntryShowcaseHero } from "@/player/nameEntry/nameEntryShowcase";
@@ -103,6 +104,9 @@ export function showNameEntry(host: HTMLElement, request: NameEntryRequest): Pro
     });
     let stopShowcase: () => void = () => {};
     let finishing = false;
+    // Chromium 은 음절을 확정하는 Enter(keyCode 229) 뒤에 isComposing 이 꺼진 Enter 를 한 번 더 보낸다.
+    // 그 메아리가 이름을 확정해 버렸다.
+    let imeCommitEnter = false;
 
     const nameBar = el("div", {
       class: "name-entry-bar",
@@ -255,8 +259,18 @@ export function showNameEntry(host: HTMLElement, request: NameEntryRequest): Pro
     };
 
     const onKey = (event: KeyboardEvent): void => {
-      // IME 조합 중에는 그리드 단축키를 가로채지 않는다.
-      if (event.isComposing) return;
+      // IME 조합(isComposing 이 꺼진 keyCode 229 / Process 포함)은 글자만 받는다.
+      if (isImeCompositionEvent(event)) {
+        if (event.key === "Enter" || event.code === "Enter" || event.code === "NumpadEnter") imeCommitEnter = true;
+        return;
+      }
+      if (event.key === "Enter" && imeCommitEnter) {
+        imeCommitEnter = false;
+        event.preventDefault();
+        event.stopPropagation();
+        return;
+      }
+      imeCommitEnter = false;
       switch (event.key) {
         case "ArrowUp":
         case "ArrowDown":
