@@ -3611,7 +3611,7 @@ r8~r11 실편집기 녹화에서 조수는 도구를 찾지 않고 paint_tiles �
 ## `upsert_item.repelSteps` / `escapeTo` · `configure_monster_system.escapeGraceSteps` — 필드 도구 (2026-10-16, poke-sys ②)
 
 - 벌레퇴치 = `item {repelSteps: 1~9999, repelBelowLead?: boolean, occasion:"field", scope:"none", consumable:true}`. 탈출 로프 = `item {escapeTo:"entrance", occasion:"field", scope:"none"}`(던전·동굴 맵 mapRole `dungeon` 에서만, 마지막 입구로). 거절: `repelSteps` 가 1 미만·정수 아님 → `invalid-repel-steps`, `escapeTo` 가 "entrance" 아님 → `invalid-escape-to`. occasion 이 field/always 가 아니거나 scope 가 none 이 아니면 저장하되 경고. 둘을 한 아이템에 쓰면 벌레퇴치가 먼저 적용된다는 경고.
-- 도망 성공 뒤 무적 걸음은 `configure_monster_system {escapeGraceSteps: 0~99}`(생략 시 몬스터 파티 게임 4, 0 = 끔).
+- 도망 성공 뒤 무적 걸음은 `configure_monster_system {escapeGraceSteps: 0~99}`(생략 시 몬스터 파티 게임 4, 0 = 끔). 프로젝트 저장 정규화가 0을 포함해 남긴다.
 - 낚싯대는 새 도구가 아니다: `configure_fishing` 의 몬스터 어획(`catches[] {speciesId,…}`) + `upsert_tool_action {action:"fish", itemId}` 로 잇고, NPC `changeItem` 으로 낚싯대를 준다. 기본 `build_monster_game` 캠페인에는 이미 들어 있다. 능력 색인 `monster-field-items`, 별칭 「벌레퇴치·탈출 로프·도망 무적·낚싯대」. 자세한 런타임 동작은 `openwiki/monster-expedition.md` 「야생 조우 보호·필드 도구·낚시」.
 
 ## 이야기형 연애 기본값 `apply_romance_preset` (2026-10-25, 시타마치)
