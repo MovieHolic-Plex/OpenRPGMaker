@@ -25,7 +25,9 @@ export interface ShipBlocker { readonly id: string; readonly message: string; re
 // 컨셉 카드 한 줄(「폐업 직전 태엽 장난감 가게, 밤마다 손님이 깨어난다 (회상 스토리)」)도 게임 하나를 만드는 요청이다 — 끝의 (장르) 괄호가 표지.
 // 2026-10-26 toy-j90: 이 한 줄이 출하 검사·화면 검수 없이 1턴을 끝냈다.
 export const WHOLE_GAME_WORDS = /(게임|game)[^.!?\n]{0,60}(만들|지어|짜\s*줘|완성|제작|build|make)|(만들|지어|완성)[^.!?\n]{0,20}(게임|game)|엔딩까지|처음부터 끝까지|whole game|\([^()\n]{0,24}(스토리|이야기|RPG|어드벤처|호러|공포|연애|로맨스|추리|미스터리|탐험|퍼즐|시뮬레이션|액션|비주얼\s*노벨|생존|육성|수집|게임)[^()\n]{0,12}\)\s*$/iu;
-export function wantsWholeGame(task: string): boolean { return WHOLE_GAME_WORDS.test(task); }
+/** 고치기 동사로 끝나는 짧은 요청(「버튼 효과 고쳐 (액션)」)은 괄호 장르가 붙어도 전체 게임 요청이 아니다. */
+const EDIT_REQUEST = /(고쳐|바꿔|옮겨|지워|없애|줄여|늘려|수정|변경)\s*(줘|주세요|라)?[^()\n]{0,4}\([^()\n]*\)\s*$/u;
+export function wantsWholeGame(task: string): boolean { return WHOLE_GAME_WORDS.test(task) && !(EDIT_REQUEST.test(task) && !/(게임|game)[^.!?\n]{0,60}(만들|지어|완성|제작)|엔딩까지|처음부터 끝까지/iu.test(task)); }
 
 let factoryCache: Project | undefined;
 function factory(): Project {

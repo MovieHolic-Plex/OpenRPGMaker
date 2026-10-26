@@ -10,7 +10,7 @@
  * 건물 한 채의 벽·문은 «보인다»로 치지 않는다 — 같은 문이 여럿인 거리에서 어느 문인지 모른다(반짝임을 단다).
  * 목표 = 「현재 목표」 줄(UI 명령 objectiveChip). 게임 시작에 하나, 이정표(스위치 켜기·아이템 얻기)마다 새로 — 엔딩이면 필요 없다.
  */
-import { allPages, conditionLeaves, visitPageCommands, type PageRef, type RawCommand } from "@/qa/gameCheck/walk";
+import { allPages, childLists, conditionLeaves, visitPageCommands, type PageRef, type RawCommand } from "@/qa/gameCheck/walk";
 import { objectClusterAt } from "@/project/objectFootprint";
 import type { GameMap, Project } from "@/project/types";
 
@@ -166,15 +166,22 @@ export function objectiveGaps(project: Project): string[] {
 
 const isMilestoneWrite = (command: RawCommand): boolean =>
   command.kind === "setSwitch" ? command.value === true : command.kind === "changeItem" ? command.op !== "-=" : false;
-const CHILD_KEYS = ["branch", "then", "else", "commands", "victory", "defeat", "escape", "onCancel", "cancelBranch", "body"] as const;
+/** childLists 가 돌려주는 목록은 사본이다 — 넣기는 원본 배열에 해야 하므로 키로 원본을 다시 찾는다(탐지와 같은 분기를 걷는다). */
+function rawChild(command: RawCommand, key: string): RawCommand[] | undefined {
+  const option = /^options\[(\d+)\]\.branch$/u.exec(key);
+  const value = option ? (command.options as Record<string, unknown>[] | undefined)?.[Number(option[1])]?.branch : command[key];
+  return Array.isArray(value) ? value as RawCommand[] : undefined;
+}
 
 /** 명령 목록 안에서 이정표 쓰기 바로 뒤(같은 목록)에 목표 명령을 넣는다. 이미 같은 글의 목표가 있으면 그 자리를 바꾼다. 넣은 수. */
 function insertAfterMilestones(list: RawCommand[], message: string): number {
   let placed = 0;
   for (let i = 0; i < list.length; i += 1) {
     const command = list[i]!;
-    if (Array.isArray(command.options)) for (const option of command.options as Record<string, unknown>[]) if (Array.isArray(option.branch)) placed += insertAfterMilestones(option.branch as RawCommand[], message);
-    for (const key of CHILD_KEYS) if (Array.isArray(command[key])) placed += insertAfterMilestones(command[key] as RawCommand[], message);
+    for (const child of childLists(command)) {
+      const raw = rawChild(command, child.key);
+      if (raw) placed += insertAfterMilestones(raw, message);
+    }
   }
   let last = -1;
   list.forEach((command, i) => { if (isMilestoneWrite(command)) last = i; });
