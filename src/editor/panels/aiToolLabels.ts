@@ -169,6 +169,7 @@ export const TOOL_LABELS: Readonly<Record<string, ToolLabelEntry>> = {
   set_action_combat: system("액션 전투 설정"),
   make_action_enemy: people("액션 적 배치", "user"),
   revert_last_edit: system("마지막 편집 되돌리기", "undo"),
+  restore_event: people("이벤트 되살리기", "undo"),
   reset_project: system("프로젝트 초기화"),
   // 「게임 내보내기」는 파일이 생긴다는 뜻으로 읽힌다 — 이 툴은 점검만 한다(exportTools.ts 주석).
   export_game: system("내보내기 점검", "export"),

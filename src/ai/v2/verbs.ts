@@ -32,6 +32,7 @@ import { HELPER_LIMITS, helpersOn, runHelperJobs, type HelperJob } from "./helpe
 import { isStoreCardRequest } from "@/editor/tools/storeTools";
 import { combatProblems } from "./combatChecks";
 import { edgeCell, eventBeats, isInside, isOutdoor, oppositeSide, makeGameOn, orderPlaces, pickDoor, villageDoors, walkGame, wantsMakeGame, type GameSpec } from "./makeGame";
+import { restoreEventFromBefore } from "./restoreEvent";
 import { pickStageFrames, stageFrameProject, type EventBuildResult } from "./events";
 import { rememberObjectPlan, takeObjectPlan, type DrawObjectResult } from "./drawObject";
 
@@ -836,6 +837,18 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
     },
   };
 
+  const restoreEvent: PiToolShape = {
+    name: "restore_event", label: "이벤트 되살리기", concurrency: "exclusive",
+    description: "이번 요청 전에 있던 이벤트를 요청 전 그대로(페이지·조건·스위치·그림·대사 원본) 되살린다 — 지웠거나 덮어쓴 것을 되돌릴 때. 기억으로 upsert_event 를 다시 쓰지 않는다(이름·조건이 달라진다). eventId 는 id 또는 이름.",
+    parameters: { type: "object", properties: { eventId: { type: "string" }, mapId: { type: "string" } }, required: ["eventId"] },
+    async execute(_id, params) {
+      const p = params as { eventId: string; mapId?: string };
+      const result = restoreEventFromBefore(env.request.project, env.ctx.project, String(p.eventId ?? ""), p.mapId);
+      if (result.ok) await env.checkpoint("restore_event");
+      return text({ ...result, ...(result.ok ? { next: "get_event 로 읽어 확인하고, 보고에는 「요청 전 그대로 되살렸다」고 쓴다." } : {}) });
+    },
+  };
+
   const askUser: PiToolShape = {
     name: "ask_user", label: "사용자에게 묻기", concurrency: "shared",
     description: "요청이 정말 둘 이상으로 갈리고 잘못 고르면 다시 지어야 할 때만 묻는다. 부른 뒤에는 짓지 말고 질문으로 턴을 끝낸다.",
@@ -891,7 +904,7 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
     }
     return result;
   } });
-  const verbs = [makePlace, ...(makeGameOn() && wantsMakeGame(String(task ?? "")) ? [makeGame] : []), editPlace, moveObject, addPeople, addEvent, addScene, ...(wantsPuzzle(String(task ?? "")) ? [authorPuzzleChain] : []), sealLockedRoomVerb, drawObjectVerb, placeObject, inspect, ...(helpersOn() ? [askHelpers] : []), askUser].map((tool) => guard(flattenWrapperTool(tool)));
+  const verbs = [makePlace, ...(makeGameOn() && wantsMakeGame(String(task ?? "")) ? [makeGame] : []), editPlace, moveObject, addPeople, addEvent, addScene, ...(wantsPuzzle(String(task ?? "")) ? [authorPuzzleChain] : []), sealLockedRoomVerb, drawObjectVerb, placeObject, inspect, restoreEvent, ...(helpersOn() ? [askHelpers] : []), askUser].map((tool) => guard(flattenWrapperTool(tool)));
   // 게임 요소(퀘스트·아이템·전투·파티) 요청이면 v1 게임 도구를 덧붙인다 — 기록은 도구 묶음이 env.record 로 직접 남긴다.
   const t = String(task ?? "");
   // 스토어 음악 카드(사용자가 듣고 고른다)를 띄웠으면 사용자 질문과 같다 — 끝맺음 관문이 «음악을 안 걸었다»며 넣기를 재촉하지 않게 한다.
