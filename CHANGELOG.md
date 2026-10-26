@@ -5,6 +5,38 @@
 
 <!-- releases -->
 
+## 0.351.4 — 2026-10-27
+
+### 수정
+
+- **bench** — battle-warmup 이 실제로 있는 데모 팩토리를 쓰게 한다 (#3712) (`890f6c9`)
+- **input** — read physical keys while an IME is composing (#3711) (`4e50b1c`)
+- **desktop** — open a project folder from macOS Open With (#3710) (`5d61bea`)
+- **battle** — block burn and freeze by the target's type (#3709) (`17c9ff4`)
+- **ai** — accept numeric strings for verification check indexes (#3707) (`e59d586`)
+- **editor** — keep a dragged event body on the grabbed cell (#3706) (`1ec06d8`)
+- **player** — name the gallery viewer and announce picture changes (#3705) (`ead83a5`)
+- **i18n** — format editor dates in the chosen language (#3704) (`73aa8f3`)
+- **editor** — use Korean confirm and cancel on database dialogs (#3703) (`5796453`)
+- **project** — keep escape grace steps across project save (#3702) (`9a667da`)
+
+### 성능
+
+- **player** — skip unchanged time-tint redraws (#3708) (`f3ec52b`)
+
+### 테스트
+
+- **player** — gamepad 반복 단언의 산술을 바로잡는다 (총 keydown ↔ ArrowDown 혼동) (#3698) (`d7bb216`)
+
+### CI
+
+- **surface** — m2-214-ui-command 에 objectiveChip 선택지가 늘어난 것을 스냅샷에 반영 (1건) (#3699) (`d42d08f`)
+
+### 잡무
+
+- **ci** — #3690 의 nameEntry.css 접근성 규칙이 밀어낸 winners 래칫을 현재 트리로 (#3701) (`102b78a`)
+- **ci** — 통과 확인된 두 파일을 테스트 기준선에서 제거 (635 → 633) (#3700) (`5072085`)
+
 ## 0.351.3 — 2026-10-27
 
 ### 수정
