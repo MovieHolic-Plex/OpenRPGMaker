@@ -5,6 +5,16 @@
 
 <!-- releases -->
 
+## 0.346.12 — 2026-10-26
+
+### 수정
+
+- **player** — don't let a hidden M press stick the minimap off (#3601) (`5af28c2`)
+
+### 문서
+
+- **openwiki** — refresh the wiki census agents read first (#3600) (`cd8c1da`)
+
 ## 0.346.11 — 2026-10-26
 
 ### 수정
