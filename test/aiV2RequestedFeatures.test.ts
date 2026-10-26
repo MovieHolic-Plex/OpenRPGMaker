@@ -29,3 +29,10 @@ describe("requested feature coverage (J71/J73)", () => {
     expect(requestedFeatureGaps(project, "어두운 복도 게임 만들어 줘").map((b) => b.evidence.split(":")[0])).toEqual(["darkness"]);
   });
 });
+
+describe("requested feature negation (J73 review)", () => {
+  it("reads 「않」 as not wanted and 「아니면」 as still wanted", () => {
+    expect(want("어둡지 않은 밝은 게임 만들어 줘")).toEqual([]);
+    expect(want("쫓아오는 귀신이나 아니면 괴물이 나오는 게임")).toEqual(["chaser"]);
+  });
+});

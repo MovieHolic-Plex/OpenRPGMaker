@@ -324,7 +324,7 @@ export function titleMismatch(project: Project, task: string): ShipBlocker[] {
  * 요청이 이름 댄 핵심 장치가 게임에 없다(J71/J73 hf2-mansion: 「쫓아오는 것·어둠」을 요청했는데 추격자 0·조명 0으로 냈다).
  * 낱말 → 프로젝트에서 그 장치를 찾는 표. 「없이·빼고·말고」가 바로 뒤에 붙으면 요청이 아니다. 게임을 만드는 요청에서만 막는다.
  */
-const NOT_WANTED = String.raw`(?![^.!?\n]{0,10}(?:없이|없는|없게|빼|말고|아니|제외|싫))`;
+const NOT_WANTED = String.raw`(?![^.!?\n]{0,10}(?:없이|없는|없게|않|빼고|빼 ?줘|빼 ?주|말고|아니라|아닌|아니고|제외|싫))`;
 interface RequestedFeature { readonly id: string; readonly label: string; readonly words: RegExp; readonly present: (project: Project) => boolean; readonly fix: string }
 const pages = (project: Project): Obj[] => Object.values(project.maps).flatMap((m) => (m.events ?? []).flatMap((ev) => ((ev as unknown as Obj).pages as Obj[] | undefined) ?? []));
 const DARK_AMBIENT = 0.5;
@@ -337,7 +337,7 @@ export const REQUESTED_FEATURES: readonly RequestedFeature[] = [
   },
   {
     id: "darkness", label: "어둠(조명)",
-    words: new RegExp(String.raw`(?:어둡|어두운\s*(?:복도|방|저택|집|학교|숲|동굴|곳|밤|공간|건물|지하|병원|골목)|어둠\s*속|캄캄|깜깜|암전|손전등|불\s*꺼진|정전|darkness|dark\s+(?:room|hallway|corridor|mansion|house|school)|flashlight|lights?\s+out)` + NOT_WANTED, "iu"),
+    words: new RegExp(String.raw`(?:어둡|어두운\s*(?:분위기|톤|복도|방|저택|집|학교|숲|동굴|곳|밤|공간|건물|지하|병원|골목)|어둠\s*속|캄캄|깜깜|암전|손전등|불\s*꺼진|정전|darkness|dark\s+(?:room|hallway|corridor|mansion|house|school)|flashlight|lights?\s+out)` + NOT_WANTED, "iu"),
     present: (project) => Object.values(project.maps).some((m) => (m.defaultLighting?.ambient ?? 0) >= DARK_AMBIENT)
       || allCommands(project).some(({ cmd }) => cmd.kind === "setLighting" && Number(cmd.ambient) >= DARK_AMBIENT),
     fix: `set_lighting_volume{mapId, ambient:0.8~0.9, sources:[{at:{kind:'player'}, radius:3~4}]} 로 무대 맵을 어둡게 한다(ambient ${DARK_AMBIENT} 미만은 거의 밝다)`,
