@@ -1435,7 +1435,8 @@ function lanternNight(project: Project, exec: Exec): void {
   // 갈라지는 얼음 — 남쪽 줄부터 차례로 검은 물이 된다. 북쪽 기슭(못 바로 위 줄)에 닿으면 성공.
   const seconds = 20;
   const rows = box.maxY - box.minY + 1;
-  const steps = ice.filter((c) => !(c.x === back.x && c.y === back.y)).map((c) => ({ x: c.x, y: c.y, atSecond: Math.max(1, Math.min(seconds - 2, 1 + Math.floor(((box.maxY - c.y) * (seconds - 6)) / rows))) }));
+  // 발렌이 선 칸은 뺀다 — 붕괴 칸 이벤트가 같은 칸에 겹치면 발렌 대신 그 이벤트가 조사를 받는다(QA: 말을 걸어도 대사가 안 떴다).
+  const steps = ice.filter((c) => !(c.x === back.x && c.y === back.y) && !(c.x === valen!.x && c.y === valen!.y)).map((c) => ({ x: c.x, y: c.y, atSecond: Math.max(1, Math.min(seconds - 2, 1 + Math.floor(((box.maxY - c.y) * (seconds - 6)) / rows))) }));
   exec(project, "make_timed_escape", {
     // 처음은 발렌 장면 끝(스위치), 실패한 뒤에는 기슭에서 얼음으로 한 걸음 내디디면 다시 시작한다.
     mapId: FS2_FROST_NIGHT_ID, escapeId: "fs2_ice", seconds, startSwitchId: SW_ICE_RUN, start: { x: back.x, y: back.y - 1, width: 1, height: 1 }, startCellsSwitchId: SW_VALEN_MET,
