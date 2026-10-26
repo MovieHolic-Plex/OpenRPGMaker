@@ -13,13 +13,14 @@ import { parseAudioPrompt } from "./support/audioPrompt";
 
 const MAX_REF_ENTRIES = 40;
 
+// Matches PROMPT_SE_HEAD_IDS in src/ai/eventResourceCatalog.ts; the kjg/kra/kis sounds left the SE catalog in the public baseline (0d4f13e7c8).
 const FUNCTIONAL_SE_IDS = [
   "cc0-se-osx-wooded-box-open",
   "cc0-se-orp-inventory-coin",
-  "cc0-se-kjg-8-bit-jingles-jingles-nes09",
-  "cc0-se-kra-dooropen-1",
-  "cc0-se-kra-doorclose-1",
-  "cc0-se-kis-footstep-wood-000",
+  "cc0-se-osx-bell-01",
+  "cc0-se-osx-door-open",
+  "cc0-se-osx-door-close-01",
+  "cc0-se-ors-wood-01",
 ] as const;
 
 const BGM_PROMPT_SCENES = ["village", "field", "forest", "dungeon", "night", "battle", "title"] as const;
