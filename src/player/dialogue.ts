@@ -176,6 +176,9 @@ export type DialogueChoicesRequest = DialogueSurfaceSettings & {
 
 const DEFAULT_DIALOGUE_CHAR_DELAY_MS = 24;
 
+/** 선택 질문 노드 id. 한 화면에 창은 하나지만, 연속 선택마다 새 노드가 생긴다. */
+let choicePromptSerial = 0;
+
 type DialoguePlaybackToken =
   | { readonly kind: "char" }
   | { readonly kind: "control"; readonly control: DialogueTextControl };
@@ -1766,6 +1769,10 @@ export function createDialogueUI(
       // 고정 틀: 대사 상자 크기·자리는 그대로 두고, 선택지 칸은 그 위(창이 위에 있으면 아래)에 따로 뜬다.
       // 틀에는 질문(prompt)이, 질문이 없으면 바로 앞 대사가 그대로 남는다. 둘 다 없으면 빈 틀이다.
       const frame = choiceFrame(request, framePrevious, choiceLook);
+      // 질문은 틀 본문에만 있다. 목록이 그 노드를 이름으로 삼아야 포커스가 단추에 있어도 질문이 읽힌다.
+      const promptId = frame.dataset.choicePromptId;
+      if (promptId) choicesEl.setAttribute("aria-labelledby", promptId);
+      else choicesEl.setAttribute("aria-label", dialogueUiText(system, "backlog.choice"));
       if (frame) {
         overlay.classList.add("choices-framed");
         applyTextSettings(overlay, frame, request, position);
@@ -1903,6 +1910,16 @@ export function createDialogueUI(
       choicesWindow.append(choicesEl);
       if (frame) overlay.append(frame);
       overlay.append(choicesWindow, ...choiceBehindPortraits);
+      // 질문은 타이핑되지 않는다. 창이 붙는 순간 한 번만 알린다 — 글자마다 갱신하면 질문이 조각나 읽힌다.
+      if (promptId) {
+        const announcement = el("div", {
+          class: "dialogue-choice-announcement",
+          dataset: { testid: "dialogue-choice-announcement" },
+          attrs: { role: "status", "aria-atomic": "true" },
+        });
+        overlay.append(announcement);
+        announcement.textContent = document.getElementById(promptId)?.textContent?.trim() ?? "";
+      }
       if (system) applyWindowOpacity(choicesWindow, getEffectiveReadingPreferences(system.defaults).windowOpacity);
       if (system && frame) applyWindowOpacity(frame, getEffectiveReadingPreferences(system.defaults).windowOpacity);
       if (frame) beginEnter(frame, choicesProfile.enterMs, !wasOpen);
@@ -2410,17 +2427,27 @@ function dialoguePagesOverflowBody(bodyEl: HTMLElement, pages: readonly Dialogue
  */
 function choiceFrame(request: DialogueChoicesRequest, previous: HTMLElement | undefined, look: DialogueLook): HTMLElement {
   let frame: HTMLElement;
+  let promptBody: HTMLElement | undefined;
   if (!request.prompt && previous) {
     frame = previous.cloneNode(true) as HTMLElement;
     frame.querySelectorAll(".dialogue-page-cursor, .continue-hint, .dialogue-log-button").forEach((node) => node.remove());
     frame.classList.remove("page-ready", "dialogue-beat-shake");
     for (const key of ["dialogueShake", "dialogueFlash", "dialogueCharReveal", "dialogueBeats"]) delete frame.dataset[key];
+    // 앞 대사의 사본은 이미 읽힌 글이다. 장식만 남기고 접근성 트리에서는 뺀다.
+    frame.setAttribute("aria-hidden", "true");
   } else {
     frame = dialogueBox("", "dialogue-choice-frame");
     const content = el("div", { class: "dialogue-content" });
     const column = el("div", { class: "dialogue-text-column" });
     const body = el("div", { class: "body" });
-    if (request.prompt) renderDialogueSegments(body, parseDialogueText(request.prompt, request.textContext));
+    if (request.prompt) {
+      renderDialogueSegments(body, parseDialogueText(request.prompt, request.textContext));
+      choicePromptSerial += 1;
+      body.id = `dialogue-choice-prompt-${choicePromptSerial}`;
+      promptBody = body;
+    } else {
+      frame.setAttribute("aria-hidden", "true");
+    }
     column.append(body);
     content.append(column);
     frame.append(content);
@@ -2429,7 +2456,8 @@ function choiceFrame(request: DialogueChoicesRequest, previous: HTMLElement | un
   frame.classList.add("choices-frame");
   frame.dataset.testid = "dialogue-choice-frame";
   frame.removeAttribute("data-play-input-owner");
-  frame.setAttribute("aria-hidden", "true");
+  // 질문이 있는 틀은 숨기지 않는다. aria-hidden 조상 안의 글은 목록 이름(aria-labelledby)으로도 버려진다.
+  if (promptBody) frame.dataset.choicePromptId = promptBody.id;
   return frame;
 }
 
