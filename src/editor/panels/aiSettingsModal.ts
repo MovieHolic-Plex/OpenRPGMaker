@@ -929,7 +929,8 @@ export function renderAiSettingsForm(options: {
   let connectedRoutes: Awaited<ReturnType<typeof fetchConnectedRoutes>> = [];
   const refreshRoleMatrix = (): void => roleMatrix?.refresh(collect(), connectedRoutes);
   const reloadConnectedRoutes = (): void => {
-    void fetchConnectedRoutes().then((routes) => { connectedRoutes = routes; refreshRoleMatrix(); }, () => undefined);
+    // 응답이 문서가 걷힌 뒤(모달 닫힘·테스트 정리) 오면 다시 그리지 않는다.
+    void fetchConnectedRoutes().then((routes) => { connectedRoutes = routes; if (typeof document !== "undefined") refreshRoleMatrix(); }, () => undefined);
   };
   roleMatrix.refresh(config, connectedRoutes);
   reloadConnectedRoutes();

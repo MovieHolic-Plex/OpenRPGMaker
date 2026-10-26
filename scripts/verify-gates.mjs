@@ -428,6 +428,18 @@ if (baseline) {
     });
     regressions.push(...classified.regressions);
     report.newFileFailures = classified.newFileFailures;
+    // 기준선은 줄기만 한다(2026-10-26): 기준선에 실패로 적힌 파일이 이번에 돌아서 통과했으면 기준선에서
+    // 빼야 한다 — 남겨 두면 그 파일이 다시 깨져도 아무도 모른다. 태그가 timeout 인 항목(부하에 따라
+    // 흔들리는 시간 초과)만 경고로 둔다. 태그는 baseline.tests.failedFileTags 에 있다.
+    const ranHere = new Set(report.tests.testFiles ?? []);
+    const failedHere = new Set(report.tests.failedFiles ?? []);
+    const tags = baseline.tests.failedFileTags ?? {};
+    const stale = (baseline.tests.failedFiles ?? []).filter((file) => ranHere.has(file) && !failedHere.has(file));
+    report.staleBaselineEntries = stale;
+    for (const file of stale) {
+      if (tags[file] === "timeout") continue;
+      regressions.push(`tests ${file}: 통과했다 — .omo/gates-baseline.json 의 failedFiles·failedFileTags 에서 빼라`);
+    }
     report.testAttribution = novelty.method;
   }
 }

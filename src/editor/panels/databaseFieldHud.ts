@@ -187,7 +187,8 @@ export function fieldHudEditor(project: Project, save: (config: FieldHudConfig) 
     stage.addEventListener("pointermove",move);stage.addEventListener("pointerup",finish);stage.addEventListener("pointercancel",cancel);
   });
   stage.addEventListener("keydown",event=>{ const delta:Record<string,[number,number]>={ArrowLeft:[-1,0],ArrowRight:[1,0],ArrowUp:[0,-1],ArrowDown:[0,1]}; const change=delta[event.key]; const target=(event.target as HTMLElement).closest<HTMLElement>(".hud-widget"); if(!change||!target)return;event.preventDefault();selected=target.dataset.widgetId!;const step=event.shiftKey?8:1;patch({anchor:"top-left",x:parseFloat(target.style.left)+change[0]*step,y:parseFloat(target.style.top)+change[1]*step},true);});
-  const resize=new ResizeObserver(()=>{if(!root.isConnected){resize.disconnect();hud.destroy();return;}const width=viewport.clientWidth;if(!width)return;const scale=width/resolution.width;stage.style.transform=`scale(${scale})`;viewport.style.aspectRatio=`${resolution.width}/${resolution.height}`;});resize.observe(viewport);
+  // ResizeObserver 가 없는 환경(테스트의 가짜 DOM 등)에서는 배율 맞춤만 건너뛴다 — 편집기 자체는 그대로 그린다.
+  if(typeof ResizeObserver!=="undefined"){const resize=new ResizeObserver(()=>{if(!root.isConnected){resize.disconnect();hud.destroy();return;}const width=viewport.clientWidth;if(!width)return;const scale=width/resolution.width;stage.style.transform=`scale(${scale})`;viewport.style.aspectRatio=`${resolution.width}/${resolution.height}`;});resize.observe(viewport);}
   layout.append(left,center,inspector);root.append(node("p","hud-studio-hint","프리셋으로 시작한 뒤 요소별 데이터·표현·위치·표시 조건을 편집하세요. 프리셋을 다시 누르면 구성이 교체됩니다."),presets,description,appearance,layout,status);
   renderList();renderInspector();paint();return root;
 }

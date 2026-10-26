@@ -365,7 +365,9 @@ export function subscribeAiPresence(listener: Listener): () => void {
   listeners.add(listener);
   const first = !unsubscribeBoard;
   if (first) {
-    window.addEventListener(REGION_TASK_STATUS_EVENT, onRegionStatus);
+    // 창이 없는 환경(가짜 DOM 테스트)에서는 영역 작업 상태 이벤트만 못 듣는다 — 보드·대기열 구독은 그대로다.
+    const win = typeof window !== "undefined" ? window : null;
+    win?.addEventListener(REGION_TASK_STATUS_EVENT, onRegionStatus);
     const offBoard = subscribeTeamActivity(board => {
       boardPresences = derivePresences(board);
       publish();
@@ -374,7 +376,7 @@ export function subscribeAiPresence(listener: Listener): () => void {
     unsubscribeBoard = () => {
       offBoard();
       offQueue();
-      window.removeEventListener(REGION_TASK_STATUS_EVENT, onRegionStatus);
+      win?.removeEventListener(REGION_TASK_STATUS_EVENT, onRegionStatus);
     };
   }
   // 처음 붙을 때 값이 비어 있으면 publish 가 구독자를 깨우지 않는다(바뀐 게 없어서) — 구독 즉시 현재 값을 한 번은 준다.
