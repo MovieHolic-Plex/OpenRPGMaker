@@ -5,6 +5,32 @@
 
 <!-- releases -->
 
+## 0.351.0 — 2026-10-27
+
+### 기능
+
+- **fallen** — act 2 B6–B9 (요새·새라, 서리 가도, 서리나루) — 1.23 stops at the 서리나루 inn (#3674) (`b6a4132`)
+- **ai** — new-player discoverability — objective line, visible story events, cutscene-aware auto-play (J90-J96) (#3669) (`847345b`)
+
+### 수정
+
+- **ai** — keep a valid people list when flat fields sit beside it (#3673) (`0418532`)
+- **i18n** — call reachability a passability preview, not traffic (#3672) (`4b2ed65`)
+- **player** — keep memorized BGM across save and load (#3671) (`a619df2`)
+- **editor** — find map events by their authored name (#3670) (`38b504a`)
+
+### 테스트
+
+- **player** — J88 이후 「돈 0G」 숨김 계약에 systemShell 기대를 맞추고 짝 검증 추가 (#3667) (`996ae33`)
+
+### CI
+
+- **surface** — #3546 「일지」 명령(m2-227-journal-line)이 바꾼 M2·포털 스냅샷 반영 (#3666) (`c77b356`)
+
+### 잡무
+
+- **ci** — 16샤드 실행이 통과 확인한 두 파일을 기준선에서 뺀다 (#3668) (`7f33dc8`)
+
 ## 0.350.6 — 2026-10-27
 
 ### 수정
