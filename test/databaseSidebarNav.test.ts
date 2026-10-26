@@ -3,6 +3,7 @@ import { databaseTabLabel, renderDatabasePanel, setDatabaseActiveTab } from "@/e
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
 import { FakeElement, findByTestId, installFakeDom } from "./fakeDom";
+import { spatialAllSourceDesignCount } from "@/editor/panels/spatialCatalog";
 
 type FakeBrowserGlobals = {
   readonly window: typeof globalThis.window | undefined;
@@ -172,7 +173,9 @@ describe("database sidebar navigation", () => {
     expect(visible.map((node) => node.dataset.tab)).toEqual(["spatialRegions"]);
     expect(findByTestId(panelRoot, "db-tab-world-gen")).toBeNull();
     // 지역 탭 배지는 카탈로그 기본 설계 수 — 키워드 규칙 행은 세지 않는다.
-    expect(findTab(panelRoot, "db-tab-spatial-regions").dataset.count).toBe("9");
+    // 카탈로그 설계 수가 0 이면 배지 자체가 없다(refreshTabCounts) — 하드코딩 9 는 카탈로그 축소로 낡았다.
+    const regionDesigns = spatialAllSourceDesignCount("regions");
+    expect(findTab(panelRoot, "db-tab-spatial-regions").dataset.count).toBe(regionDesigns === 0 ? undefined : String(regionDesigns));
   });
 
   // Break caught: the new navigation entry has no aggregate count or routed view.

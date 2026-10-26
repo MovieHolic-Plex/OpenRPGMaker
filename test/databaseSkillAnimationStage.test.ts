@@ -124,9 +124,11 @@ function byTestId(root: FakeElement, testid: string): FakeElement {
 }
 
 describe("스킬 탭 애니메이션 스테이지", () => {
-  it("프레임을 자동 반복 재생하고 프레임 카운터가 따라간다", () => {
+  it("프레임을 자동 반복 재생하고 프레임 카운터가 따라간다", async () => {
     const { project, skill } = installProject(3);
     const { host, stop } = mount(skill, project);
+    // 프리뷰 수명주기는 queueMicrotask 로 활성화된다(registerDatabasePreview) — 마운트 뒤 한 번 흘려보낸다.
+    await Promise.resolve();
 
     const cells = byTestId(host, "db-skill-animation-cells");
     const counter = byTestId(host, "db-skill-animation-frame-counter");
@@ -155,7 +157,7 @@ describe("스킬 탭 애니메이션 스테이지", () => {
     stop();
   });
 
-  it("캐시된 DOM을 다시 붙이면 자동재생을 재개한다", () => {
+  it("캐시된 DOM을 다시 붙이면 자동재생을 재개한다", async () => {
     const { project, skill } = installProject(3);
     const scope = document.createElement("div") as unknown as FakeElement;
     document.body.append(scope);
@@ -168,6 +170,8 @@ describe("스킬 탭 애니메이션 스테이지", () => {
     });
     const cells = byTestId(scope, "db-skill-animation-cells");
     const toggle = byTestId(scope, "db-skill-animation-toggle");
+    // 프리뷰 수명주기는 queueMicrotask 로 활성화된다(registerDatabasePreview) — 마운트 뒤 한 번 흘려보낸다.
+    await Promise.resolve();
 
     vi.advanceTimersByTime(SHOW_ANIMATION_FRAME_MS);
     const cached = [...scope.childNodes];
@@ -190,13 +194,15 @@ describe("스킬 탭 애니메이션 스테이지", () => {
     rendered.stop();
   });
 
-  it("소유 범위를 정리하면 내부 스테이지 인터벌이 즉시 모두 멈춘다", () => {
+  it("소유 범위를 정리하면 내부 스테이지 인터벌이 즉시 모두 멈춘다", async () => {
     const { project, skill } = installProject(3);
     const scope = document.createElement("div") as unknown as FakeElement;
     document.body.append(scope);
     const rendered = renderSkillAnimationStage(skill, project);
     scope.append(rendered.element as unknown as FakeElement);
     const toggle = byTestId(scope, "db-skill-animation-toggle");
+    // 프리뷰 수명주기는 queueMicrotask 로 활성화된다(registerDatabasePreview) — 마운트 뒤 한 번 흘려보낸다.
+    await Promise.resolve();
     expect(armedIntervals.size).toBe(1);
 
     stopSkillAnimationStagesIn(scope as unknown as ParentNode);
@@ -224,10 +230,12 @@ describe("스킬 탭 애니메이션 스테이지", () => {
     stop();
   });
 
-  it("prefers-reduced-motion 이면 첫 프레임에 서고 인터벌을 만들지 않는다", () => {
+  it("prefers-reduced-motion 이면 첫 프레임에 서고 인터벌을 만들지 않는다", async () => {
     reducedMotion = true;
     const { project, skill } = installProject(3);
     const { host, stop } = mount(skill, project);
+    // 프리뷰 수명주기는 queueMicrotask 로 활성화된다(registerDatabasePreview) — 마운트 뒤 한 번 흘려보낸다.
+    await Promise.resolve();
 
     const cells = byTestId(host, "db-skill-animation-cells");
     const toggle = byTestId(host, "db-skill-animation-toggle");
@@ -247,9 +255,11 @@ describe("스킬 탭 애니메이션 스테이지", () => {
     stop();
   });
 
-  it("토글이 재생을 멈추고 다시 시작한다", () => {
+  it("토글이 재생을 멈추고 다시 시작한다", async () => {
     const { project, skill } = installProject(3);
     const { host, stop } = mount(skill, project);
+    // 프리뷰 수명주기는 queueMicrotask 로 활성화된다(registerDatabasePreview) — 마운트 뒤 한 번 흘려보낸다.
+    await Promise.resolve();
     const cells = byTestId(host, "db-skill-animation-cells");
     const toggle = byTestId(host, "db-skill-animation-toggle");
 
@@ -273,7 +283,7 @@ describe("스킬 탭 애니메이션 스테이지", () => {
     stop();
   });
 
-  it("레코드 전환은 새 폼으로 교체하기 전에 이전 스테이지 인터벌을 즉시 정리한다", () => {
+  it("레코드 전환은 새 폼으로 교체하기 전에 이전 스테이지 인터벌을 즉시 정리한다", async () => {
     const { skill } = installProject(3);
     const project = store.getCurrent();
     const nextSkill: SkillRecord = {
@@ -290,6 +300,8 @@ describe("스킬 탭 애니메이션 스테이지", () => {
     const host = document.createElement("div") as unknown as FakeElement;
     document.body.append(host);
     renderRecordTab(host as unknown as HTMLElement, "skills", () => undefined);
+    // 프리뷰 수명주기는 queueMicrotask 로 활성화된다(registerDatabasePreview) — 마운트 뒤 한 번 흘려보낸다.
+    await Promise.resolve();
     expect(armedIntervals.size).toBe(1);
 
     byTestId(host, `db-record-row-${nextSkill.id}`).click();
@@ -297,12 +309,14 @@ describe("스킬 탭 애니메이션 스테이지", () => {
     expect(armedIntervals.size).toBe(0);
   });
 
-  it("픽커 변경으로 표시면이 교체되면 분리된 스테이지의 인터벌이 정리된다", () => {
+  it("픽커 변경으로 표시면이 교체되면 분리된 스테이지의 인터벌이 정리된다", async () => {
     const { skill } = installProject(3);
     const form = document.createElement("section") as unknown as FakeElement;
     document.body.append(form);
     skillFields(form as unknown as HTMLElement, skill.id);
     renderSkillRecordForm(form as unknown as HTMLElement, skill);
+    // 프리뷰 수명주기는 queueMicrotask 로 활성화된다(registerDatabasePreview) — 마운트 뒤 한 번 흘려보낸다.
+    await Promise.resolve();
 
     const detached = byTestId(form, "db-skill-animation-cells");
     vi.advanceTimersByTime(SHOW_ANIMATION_FRAME_MS);
@@ -314,6 +328,7 @@ describe("스킬 탭 애니메이션 스테이지", () => {
     const picker = byTestId(form, "db-picker-animation");
     picker.value = "anim_stage_test";
     picker.dispatchEvent(new Event("change"));
+    await Promise.resolve();
 
     expect(clearIntervalSpy).toHaveBeenCalledWith(stageInterval);
     expect(armedIntervals.has(stageInterval)).toBe(false);
