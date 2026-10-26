@@ -136,8 +136,13 @@ export function vqaDefectLine(d: VqaDefect, index: number): string {
   const target = d.target?.kind === "map" && d.target.ref ? ` (mapId: ${d.target.ref})`
     : d.target?.kind === "title" ? " (타이틀 화면 — set_title_screen)"
     : d.target?.kind === "opening" ? " (오프닝 — 오프닝 장면 다시 그리기)" : "";
-  return `${index + 1}. [${d.severity === "blocker" ? "막음" : "다듬기"}] ${d.where}${target} — ${d.what}`;
+  const sparse = d.target?.kind === "map" && d.target.ref && SPARSE_ROOM.test(`${d.where} ${d.what}`)
+    ? ` → dress_room({ mapId: "${d.target.ref}", at: 그 방 바닥 한 칸, purpose: "<그 방의 쓰임>" }) 으로 채운다(물건을 하나씩 찍지 않는다)` : "";
+  return `${index + 1}. [${d.severity === "blocker" ? "막음" : "다듬기"}] ${d.where}${target} — ${d.what}${sparse}`;
 }
+
+/** 「방이 비었다·빈 바닥이 많다」 결함 — 고치기 동사는 dress_room 이다(2026-10-26: 고치기 차례가 stamp_object 로 하나씩 찍다 겹침 거부에 막혀 결함이 1건에서 멈췄다). */
+const SPARSE_ROOM = /비어|비었|빈 바닥|빈 방|텅|맨바닥|휑|허전|썰렁|empty|bare|sparse|barren/i;
 
 /**
  * 고치기 차례가 도구를 하나도 부르지 않고 글만 쓰고 끝났을 때(2026-10-25 실측: 결함 9→9→9, 판마다 도구 0회) — 그 차례는 판으로 세지 않고,

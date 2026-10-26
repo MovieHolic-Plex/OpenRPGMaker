@@ -35,7 +35,7 @@ function nearReach(reach: Uint8Array, map: GameMap, x: number, y: number): boole
 }
 
 /** 지도에서 걸어 들어올 칸: 주어진 입구 → 시작 위치(이 맵이면) → 이 맵으로 오는 이동의 도착 칸 → 아무 걸을 수 있는 칸. */
-function startCell(project: Project, map: GameMap, entrance?: { mapId: string; x: number; y: number }): { x: number; y: number } | undefined {
+export function startCell(project: Project, map: GameMap, entrance?: { mapId: string; x: number; y: number }): { x: number; y: number } | undefined {
   if (entrance?.mapId === map.id && isPassable(project, map, entrance.x, entrance.y)) return entrance;
   if (project.startMapId === map.id && isPassable(project, map, project.startPos.x, project.startPos.y)) return project.startPos;
   for (const other of Object.values(project.maps)) for (const t of transfers(other)) if (t.to.mapId === map.id && isPassable(project, map, t.to.x, t.to.y)) return t.to;
@@ -79,7 +79,7 @@ export function runMachineChecks(project: Project, mapIds: readonly string[], en
       const bare = measureInteriorBareFloor(project, map);
       if (bare && bare.floorCells >= 40) {
         const big = [...bare.regions].sort((a, b) => b.w * b.h - a.w * a.h)[0];
-        checks.push({ id: "bare-floor", mapId, ok: bare.pct <= INTERIOR_BARE_FLOOR_LIMIT + 5, detail: `맨바닥 덩이 ${bare.pct}%(기준 ${INTERIOR_BARE_FLOOR_LIMIT}%, 여유 5)${big ? ` — 가장 큰 덩이 (${big.x},${big.y}) ${big.w}×${big.h}` : ""}`, ...(big ? { at: { x: big.x, y: big.y } } : {}) });
+        checks.push({ id: "bare-floor", mapId, ok: bare.pct <= INTERIOR_BARE_FLOOR_LIMIT + 5, detail: `맨바닥 덩이 ${bare.pct}%(기준 ${INTERIOR_BARE_FLOOR_LIMIT}%, 여유 5)${big ? ` — 가장 큰 덩이 (${big.x},${big.y}) ${big.w}×${big.h}` : ""}${bare.pct > INTERIOR_BARE_FLOOR_LIMIT + 5 && big ? ` — dress_room(mapId, at: (${big.x},${big.y}), purpose: 그 방의 쓰임)으로 채운다` : ""}`, ...(big ? { at: { x: big.x, y: big.y } } : {}) });
       }
     } else {
       let empty = 0;
