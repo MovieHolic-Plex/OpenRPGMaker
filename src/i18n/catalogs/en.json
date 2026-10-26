@@ -13672,6 +13672,7 @@
 "커밋 0개":"0 commits",
 "커밋 {0}개":"{0} commits",
 "커밋 {0}건":"{0} commit(s)",
+"커밋 기록":"Commit history",
 "커밋 히스토리":"Commit history",
 "커밋 히스토리를 불러오지 못했습니다: {0}":"Failed to load commit history: {0}",
 "커서 SE":"Cursor SE",
