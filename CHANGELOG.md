@@ -5,6 +5,13 @@
 
 <!-- releases -->
 
+## 0.346.13 — 2026-10-26
+
+### 수정
+
+- **player** — keep a freeze frame across save and load (#3604) (`affbcb0`)
+- **i18n** — call the lower layer ground, not a child item (#3603) (`e0f78a9`)
+
 ## 0.346.12 — 2026-10-26
 
 ### 수정
