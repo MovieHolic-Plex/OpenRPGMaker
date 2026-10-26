@@ -10211,6 +10211,77 @@
    ],
    "verify": "add_battle_guest(troopId 회수자 트룹, actorId 발렌, atEnemyHpPercent 60, enemyId 회수자, requireSwitchId) / troop.battleGuests 에 발렌 1건·조건 enemyHpBelow 60 + switch / simulate_battle switchesOn 으로 phaseCoverage battle-guest firedRuns>0 / 파티(startActorIds)에 발렌 없음",
    "suiteCategory": "fs2-guest"
+  },
+  {
+   "category": "game",
+   "kind": "logic",
+   "mode": "balanced",
+   "startTileset": "beodeul_city",
+   "startBuild": [
+    {
+     "tool": "author_beodeul_town",
+     "args": {
+      "mapId": "map_blank_start",
+      "name": "버들 마을",
+      "houseCount": 4,
+      "theme": "river",
+      "seed": 11
+     }
+    },
+    {
+     "tool": "create_map",
+     "args": {
+      "id": "map_act2_cell",
+      "name": "감방",
+      "width": 20,
+      "height": 15,
+      "tilesetId": "atlas_biome_interior"
+     }
+    },
+    {
+     "tool": "define_ending",
+     "args": {
+      "id": "end_act1",
+      "name": "제1막 · 떨어진 별",
+      "conditions": [],
+      "presentation": {
+       "kicker": "제1막 끝",
+       "credits": "제2막에서 계속됩니다."
+      }
+     }
+    },
+    {
+     "tool": "place_npc",
+     "args": {
+      "mapId": "map_blank_start",
+      "id": "npc_chief",
+      "name": "촌장",
+      "x": 20,
+      "y": 16,
+      "movement": "fixed",
+      "graphic": {
+       "query": "노인 남성"
+      },
+      "pages": [
+       {
+        "lines": [
+         "어서 오게."
+        ]
+       }
+      ]
+     }
+    }
+   ],
+   "id": "fs2-act-continue",
+   "prompt": "촌장한테 말 걸면 제1막이 끝나게 해 줘. 엔딩 화면은 그대로 보여 주고, 타이틀로 돌아가지 말고 「제2막으로」를 누르면 감방 맵(map_act2_cell) 가운데서 제2막이 시작되게. 감방에 들어가면 「제2막」 한 줄이 먼저 나오게.",
+   "requires": [
+    "엔딩 end_act1 은 그대로 기록(triggerEnding)",
+    "엔딩 마지막 버튼이 타이틀이 아니라 다음 막으로",
+    "map_act2_cell 로 옮김",
+    "감방 첫 장면 자동 실행 한 번"
+   ],
+   "verify": "define_ending end_act1 continueTo {mapId:map_act2_cell, x,y 통행 칸, label 「제2막으로」} / 촌장 이벤트에 triggerEnding end_act1 / map_act2_cell 에 auto 트리거 페이지(스위치로 한 번) / transfer·returnToTitle 로 흉내내지 않음(엔딩 기록이 남아야 한다)",
+   "suiteCategory": "fs2-act-continue"
   }
  ],
  "gates": {

@@ -219,7 +219,7 @@ function cellMap(project: Project, exec: Exec): GameMap {
   return map;
 }
 
-function cellEvents(project: Project, map: GameMap): void {
+function cellEvents(map: GameMap): void {
   const rinoId = "ev_fs2_cell_rino";
   const director = "ev_fs2_cell_director";
   // 리노 — 처음엔 복도 동쪽 끝(간수실 앞)에 서 있다가, 여는 장면에서 쇠살문 앞으로 와 빵을 넣는다. 빵을 준 뒤엔 사라진다.
@@ -378,6 +378,6 @@ export function applyFallenAct2Opening(project: Project, exec: Exec, ids: Fallen
   cellMap(project, exec);
   barracks(project, exec);
   hubNight(project, exec, ids.hub);
-  cellEvents(project, M(project, FS2_CELL_ID));
+  cellEvents(M(project, FS2_CELL_ID));
   bridge(project, exec);
 }
