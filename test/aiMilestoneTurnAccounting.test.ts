@@ -26,6 +26,11 @@ import { fixedDeclarer } from "./intentFixture";
 import { HISTORICAL_PLACEMENT_CORRECTION } from "./fixtures/placementRequests";
 import { independentReviewPayload } from "./independentReviewFixture";
 
+// Each test here drives a full assistant/editor session over the ~63MB blank project
+// (createBlankProject + fingerprint/copy per session). On 4-core CI runners with 8 workers
+// these legitimately exceed vitest's 15s default, so the budget is raised for this file only.
+vi.setConfig({ testTimeout: 120_000 });
+
 function installHermeticEnv(project: Project): void {
   vi.stubEnv("VITE_LEGACY_DB_ANON_KEY", "test-anon-key");
   vi.stubEnv("VITE_LEGACY_DB_PROJECT_ID", "rpg-zzu-test-project");

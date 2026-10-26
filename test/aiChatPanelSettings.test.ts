@@ -12,6 +12,11 @@ import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
 import { FakeElement, findByTestId, installFakeDom, renderWithFakeDom } from "./fakeDom";
 
+// Each test here drives a full assistant/editor session over the ~63MB blank project
+// (createBlankProject + fingerprint/copy per session). On 4-core CI runners with 8 workers
+// these legitimately exceed vitest's 15s default, so the budget is raised for this file only.
+vi.setConfig({ testTimeout: 120_000 });
+
 let restoreDom: (() => void) | null = null;
 let storage: Map<string, string>;
 

@@ -1,11 +1,16 @@
 // 2026-09-17 수용 원장 제거 — imageReviewed 수용 기준·review_acceptance 판정·수용 스냅샷 status 를 검증하던 테스트는 삭제했다.
 // 남은 것은 시각 확인 영수증(show_map_region 이미지 전달 → adventureProblems) 의 무효화·유지 계약이다.
-import { beforeEach, describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { AssistantSession, type SessionEvent, type ToolImageRenderer } from "@/ai/assistantSession";
 import { defaultAiConfig, type ChatResult } from "@/ai/llmClient";
 import { createBlankProject } from "@/project/defaults";
 import { fixedDeclarer } from "./intentFixture";
 import { resetIntentDeclarationCache } from "@/ai/intentDeclarationClient";
+
+// Each test here drives a full assistant/editor session over the ~63MB blank project
+// (createBlankProject + fingerprint/copy per session). On 4-core CI runners with 8 workers
+// these legitimately exceed vitest's 15s default, so the budget is raised for this file only.
+vi.setConfig({ testTimeout: 120_000 });
 
 beforeEach(resetIntentDeclarationCache);
 

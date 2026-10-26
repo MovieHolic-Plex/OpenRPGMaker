@@ -13,6 +13,11 @@ import { store } from "@/project/store";
 import { getTool } from "@/editor/tools";
 import { fixedDeclarer } from "./intentFixture";
 
+// Each test here drives a full assistant/editor session over the ~63MB blank project
+// (createBlankProject + fingerprint/copy per session). On 4-core CI runners with 8 workers
+// these legitimately exceed vitest's 15s default, so the budget is raised for this file only.
+vi.setConfig({ testTimeout: 120_000 });
+
 const text = (content: string): ChatResult => ({ message: { role: "assistant", content }, finishReason: "stop" });
 
 beforeEach(() => {

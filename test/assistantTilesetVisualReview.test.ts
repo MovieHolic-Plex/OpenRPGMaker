@@ -7,6 +7,11 @@ import { createBlankProject } from "@/project/defaults";
 import { fixedDeclarer } from "./intentFixture";
 import { independentReviewPayload, imageDeliveryForRequest } from "./independentReviewFixture";
 
+// Each test here drives a full assistant/editor session over the ~63MB blank project
+// (createBlankProject + fingerprint/copy per session). On 4-core CI runners with 8 workers
+// these legitimately exceed vitest's 15s default, so the budget is raised for this file only.
+vi.setConfig({ testTimeout: 120_000 });
+
 afterEach(() => {
   vi.unstubAllGlobals();
 });

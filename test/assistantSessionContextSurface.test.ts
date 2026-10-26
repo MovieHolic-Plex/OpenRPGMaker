@@ -6,12 +6,17 @@
 // 자동 압축(임계 기반)은 test/assistantSessionCompaction.test.ts 가 이미 잠근다. 여기서는
 // **사람이 눌렀을 때** 의 경로만 본다 — 임계와 턴 회로차단기를 무시하고 한 번은 시도한다.
 
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { AssistantSession } from "@/ai/assistantSession";
 import { isCompactionSummaryMessage, SUMMARIZATION_SYSTEM_PROMPT } from "@/ai/contextCompaction";
 import { isRestoredTranscriptMessage } from "@/ai/conversationReplay";
 import type { AiConfig, ChatMessage, ChatRequest, ChatResult } from "@/ai/llmClient";
 import { createBlankProject } from "@/project/defaults";
+
+// Each test here drives a full assistant/editor session over the ~63MB blank project
+// (createBlankProject + fingerprint/copy per session). On 4-core CI runners with 8 workers
+// these legitimately exceed vitest's 15s default, so the budget is raised for this file only.
+vi.setConfig({ testTimeout: 120_000 });
 
 const CONFIG: AiConfig = {
   authMode: "apiKey",

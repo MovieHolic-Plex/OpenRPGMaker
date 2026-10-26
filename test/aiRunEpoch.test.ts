@@ -19,6 +19,11 @@ import { clearAgentGhostPreview } from "@/editor/agentGhostPreview";
 import { runTool } from "@/editor/tools";
 import { ToolError } from "@/editor/tools/types";
 
+// Each test here drives a full assistant/editor session over the ~63MB blank project
+// (createBlankProject + fingerprint/copy per session). On 4-core CI runners with 8 workers
+// these legitimately exceed vitest's 15s default, so the budget is raised for this file only.
+vi.setConfig({ testTimeout: 120_000 });
+
 vi.mock("@/ai/preferenceSignals", () => ({ observeTurn: () => ({}), shouldDistillPreferences: () => false }));
 const final: ChatResult = { message: { role: "assistant", content: "RESULT" }, finishReason: "stop" };
 const title = (value: string): ChatResult => ({ message: { role: "assistant", content: null,

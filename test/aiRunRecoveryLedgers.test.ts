@@ -1,8 +1,13 @@
-import { expect, it } from "vitest";
+import { expect, it, vi } from "vitest";
 import { AssistantAcceptanceLedger } from "@/ai/assistantAcceptanceLedger";
 import { ToolVerificationEvidence } from "@/ai/toolVerificationEvidence";
 import { createBlankProject } from "@/project/defaults";
 import "@/editor/tools";
+
+// Each test here drives a full assistant/editor session over the ~63MB blank project
+// (createBlankProject + fingerprint/copy per session). On 4-core CI runners with 8 workers
+// these legitimately exceed vitest's 15s default, so the budget is raised for this file only.
+vi.setConfig({ testTimeout: 120_000 });
 
 const json = <T>(value: T): T => JSON.parse(JSON.stringify(value));
 const clean = { ok: true, data: { counts: { errors: 0 }, issues: [] } };

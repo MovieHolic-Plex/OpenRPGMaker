@@ -1,8 +1,13 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { AssistantSession } from "@/ai/assistantSession";
 import type { ChatResult } from "@/ai/llmClient";
 import { runTool } from "@/editor/tools";
 import { createBlankProject } from "@/project/defaults";
+
+// Each test here drives a full assistant/editor session over the ~63MB blank project
+// (createBlankProject + fingerprint/copy per session). On 4-core CI runners with 8 workers
+// these legitimately exceed vitest's 15s default, so the budget is raised for this file only.
+vi.setConfig({ testTimeout: 120_000 });
 
 const CHAT_CONFIG = {
   authMode: "apiKey" as const,

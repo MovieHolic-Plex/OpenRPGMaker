@@ -1,6 +1,6 @@
 // 밑그림(BuildSpec) 게이트 강화 — 2026-09-03 적대적 리뷰에서 확정한 결함의 회귀 테스트.
 // 각 it 의 첫 줄 주석이 "이 테스트를 빨갛게 만드는 프로덕션 변경"(name the break)이다.
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { AssistantSession } from "@/ai/assistantSession";
 import {
   SPATIAL_BUILD_TOOLS,
@@ -20,6 +20,11 @@ import { TILE } from "@/project/defaults/constants";
 import type { GameMap, Project } from "@/project/types";
 import { independentReviewPayload } from "./independentReviewFixture";
 import { fixedDeclarer } from "./intentFixture";
+
+// Each test here drives a full assistant/editor session over the ~63MB blank project
+// (createBlankProject + fingerprint/copy per session). On 4-core CI runners with 8 workers
+// these legitimately exceed vitest's 15s default, so the budget is raised for this file only.
+vi.setConfig({ testTimeout: 120_000 });
 
 type ChatResult = import("@/ai/llmClient").ChatResult;
 const CONFIG = { authMode: "apiKey" as const, baseUrl: "x", model: "stub-model", apiKey: "sk", maxToolCalls: 12, maxTokens: 8192 };

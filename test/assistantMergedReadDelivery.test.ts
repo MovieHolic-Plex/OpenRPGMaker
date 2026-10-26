@@ -5,6 +5,11 @@ import { defaultAiConfig, type AiConfig, type ChatResult } from "@/ai/llmClient"
 import { fixedDeclarer } from "./intentFixture";
 import { goblinId, monsterContext } from "./monsterAiFixture";
 
+// Each test here drives a full assistant/editor session over the ~63MB blank project
+// (createBlankProject + fingerprint/copy per session). On 4-core CI runners with 8 workers
+// these legitimately exceed vitest's 15s default, so the budget is raised for this file only.
+vi.setConfig({ testTimeout: 120_000 });
+
 afterEach(() => vi.restoreAllMocks());
 
 it.each(["failed", "cancelled"])("does not grant monster or native read credit after a %s writer delivery", async outcome => {

@@ -15,6 +15,11 @@ import { fixedDeclarer } from "./intentFixture";
 import { bounded, deferred } from "./aiEpochFixture";
 import { installFakeDom } from "./fakeDom";
 
+// Each test here drives a full assistant/editor session over the ~63MB blank project
+// (createBlankProject + fingerprint/copy per session). On 4-core CI runners with 8 workers
+// these legitimately exceed vitest's 15s default, so the budget is raised for this file only.
+vi.setConfig({ testTimeout: 120_000 });
+
 const host = { conversationId: "negative", projectId: "P", projectContextKey: "remote:P" };
 const config = { ...llm.defaultAiConfig(), agentMode: "chat" as const, model: "fixture", liteModel: "fixture" };
 const final: llm.ChatResult = { message: { role: "assistant", content: "RESULT" }, finishReason: "stop" };

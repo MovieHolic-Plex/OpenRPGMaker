@@ -3,7 +3,7 @@
 // - 남은 것은 기존 구조물 보호 하나: 기준선 맵의 구조물·물·절벽은 confirmDestroy / overExisting 선언 없이 덮지 않는다.
 // - 검증기(validateBuildSpec)와 영역 추출(affectedRegions)은 그대로 결정적이다.
 // - 3회 거부·자동 확장·plannedMap 불일치·밑그림 없음 차단은 더 이상 없다(PR #892 후속 코멘트 실측).
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { AssistantSession, METADATA_ONLY_TOOLS } from "@/ai/assistantSession";
 import {
   SPATIAL_BUILD_TOOLS,
@@ -18,6 +18,11 @@ import { runTool } from "@/editor/tools";
 import { createBlankProject } from "@/project/defaults";
 import { COMBINED_TOWN_TILESET_ID } from "@/project/defaults/constants";
 import { withRetiredEasyRpgTilesets } from "./support/retiredEasyRpgTilesets";
+
+// Each test here drives a full assistant/editor session over the ~63MB blank project
+// (createBlankProject + fingerprint/copy per session). On 4-core CI runners with 8 workers
+// these legitimately exceed vitest's 15s default, so the budget is raised for this file only.
+vi.setConfig({ testTimeout: 120_000 });
 
 type ChatResult = import("@/ai/llmClient").ChatResult;
 
