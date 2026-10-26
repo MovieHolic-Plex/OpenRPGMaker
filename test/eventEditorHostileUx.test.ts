@@ -64,12 +64,13 @@ afterEach(() => {
   openEventMovement.clear();
 });
 
-it("defaults to the storyboard and does not offer a fake graph tab", () => {
+it("defaults to the list (storyboard is built lazily on demand) and does not offer a fake graph tab", () => {
   render(host);
+  // PR #3211 이후 기본 보기는 목록이고, 스토리보드는 고를 때 만들어졌다 닫으면 걷어낸다.
   const list = host.querySelector<HTMLElement>(".cmd-list");
-  const board = host.querySelector<HTMLElement>(".event-storyboard");
-  expect(list?.hidden).toBe(true);
-  expect(board?.hidden).toBe(false);
+  expect(list?.hidden).toBe(false);
+  expect(host.querySelector(".event-storyboard")).toBeNull();
+  expect(host.querySelector('[data-testid="event-view-toggle-list"]')?.getAttribute("aria-selected")).toBe("true");
   expect(host.querySelector('[data-testid="event-view-toggle-graph"]')).toBeNull();
   expect(host.querySelector('[data-testid="event-graph-placeholder"]')).toBeNull();
   expect(host.querySelector('[data-testid="event-view-toggle-list"]')?.textContent).toBe("목록");
