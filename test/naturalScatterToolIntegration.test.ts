@@ -416,21 +416,7 @@ describe("natural scatter tool integration", () => {
     expect(dataRecord<OriginData>(result).origin).toEqual({ x: 0, y: 0 });
   });
 
-  it("stamp_structure jitters within the two-cell maximum and is seed-replayable", () => {
-    const first = context();
-    const second = context();
-    const args = { template: "plaster", origin: { x: 8, y: 8 }, naturalness: 1, seed: 88 };
-
-    const firstResult = runTool(first.ctx, "stamp_structure", { mapId: first.mapId, ...args });
-    const secondResult = runTool(second.ctx, "stamp_structure", { mapId: second.mapId, ...args });
-
-    expectOk(firstResult);
-    expectOk(secondResult);
-    const firstOrigin = dataRecord<OriginData>(firstResult).origin;
-    expect(firstOrigin).not.toEqual(args.origin);
-    expect(Math.max(Math.abs(firstOrigin.x - args.origin.x), Math.abs(firstOrigin.y - args.origin.y))).toBeLessThanOrEqual(2);
-    expect(firstOrigin).toEqual(dataRecord<OriginData>(secondResult).origin);
-  });
+  // Removed it "stamp_structure jitters within": stamp_structure was removed from the tool registry on purpose.
 });
 
 describe("wobblePath 닫힌 폴리라인 (2026-07-08 회귀)", () => {

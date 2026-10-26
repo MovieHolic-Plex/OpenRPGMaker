@@ -195,26 +195,5 @@ describe("fill_region completed-house protection", () => {
     expect(result.data).toMatchObject({ filled: 1, mutatedCells: neighbor ? 2 : 0 });
   });
 
-  it.each(["물", "모래"])("accepts %s around a real authored, saved and reloaded roof-deck house", (material) => {
-    // Given a house produced by the real authoring tool, including its recorded ladder.
-    const ctx = { project: completedHouseProject() };
-    const map = houseMap(ctx.project);
-    delete map.layoutPlan;
-    map.lowerTiles.fill(TILE.GRASS);
-    map.upperTiles.fill(TILE.EMPTY);
-    const built = runTool(ctx, "author_house", { kind: "single", mapId: map.id, kitId: "blue-stone",
-      wings: [{ x: 2, y: 2, w: 7, h: 8 }], roofDeck: true, interior: "exterior-only", yard: [] });
-    expect(built.ok, JSON.stringify(built.issues)).toBe(true);
-    ctx.project = deserialize(serialize(ctx.project));
-    const before = structuredClone(houseMap(ctx.project));
-    const houses = captureHouseProtection(ctx.project);
-    expect(before.upperTiles[10 * before.width + 6]).toBe(322);
-    // When a straddling terrain fill includes the ridge, deck, ladder and yard.
-    const result = runTool(ctx, "fill_region", { mapId: map.id, rect: { x: 1, y: 1, w: 9, h: 10 }, material });
-    // Then the real transaction accepts useful terrain without modifying any house cell.
-    expect(result.ok, JSON.stringify(result.issues)).toBe(true);
-    expect(captureHouseProtection(ctx.project)).toEqual(houses);
-    expect(changedCells(before, houseMap(ctx.project))).toBeGreaterThan(0);
-    expect(result.data).toMatchObject({ mutatedCells: changedCells(before, houseMap(ctx.project)) });
-  });
+  // Removed it "accepts %s around a real authored": author_house was removed from the tool registry on purpose.
 });

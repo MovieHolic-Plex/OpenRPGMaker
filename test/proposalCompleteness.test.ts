@@ -322,16 +322,7 @@ describe("proposal completeness lint", () => {
     expect(warnings).toEqual(["⚠ 미이행: 실제 변경이 없습니다(체인지셋 0건)."]);
   });
 
-  it("실내 신축 선언에 야외 집 정본만 쓰면 경고한다", () => {
-    const warnings = proposalCompletenessWarnings({
-      requestText: "연금술사의 집 이라는 실내 를 하나 만드렁줘",
-      intent: declaredIntent({ mode: "create", space: "interior" }),
-      calls: [
-        call("author_house", { kind: "single", mapId: "m1", kitId: "bright-plaster", wings: [{ x: 4, y: 5, w: 12, h: 10 }], interior: "exterior-only", door: true, yard: [] }, { tilesChanged: 80 }),
-      ],
-    });
-    expect(warnings.some((line) => line.includes("실내 요청") && line.includes("author_house"))).toBe(true);
-  });
+  // Removed it "실내 신축 선언에 야외 집 정본만 쓰면": author_house was removed from the tool registry on purpose.
 
   // 수정 요청에 "새 실내 맵을 시공하세요" 경고를 붙이면 그 경고가 자동 완료를 막아 모델을 신축으로
   // 밀어붙인다 — 사용자가 본 증상(고쳐 달랬는데 맵이 하나 더 생김) 그 자체다.
@@ -394,16 +385,7 @@ describe("proposal completeness lint", () => {
     expect(warnings).toEqual(["⚠ 미이행: 요청 수량 10개 대비 실제 배치 3개입니다."]);
   });
 
-  it("집 3채 NPC 5명 요청에서 집 1채뿐이면 수량 미이행 경고를 낸다", () => {
-    const warnings = proposalCompletenessWarnings({
-      requestText: "40x40 맵에 작은 집 3채 NPC 5명 배치해줘",
-      calls: [
-        call("author_house", { kind: "single", mapId: "m1", kitId: "blue-stone", wings: [{ x: 2, y: 2, w: 6, h: 6 }], interior: "exterior-only", door: true, yard: [] }, { tilesChanged: 36 }),
-      ],
-    });
-
-    expect(warnings).toEqual(["⚠ 미이행: 요청 수량 8개 대비 실제 배치 1개입니다."]);
-  });
+  // Removed it "집 3채 NPC 5명 요청에서 집 1채뿐이면": author_house was removed from the tool registry on purpose.
 
   it("스펙이 없고 수량에 근접하게 배치했으면 침묵한다", () => {
     const warnings = proposalCompletenessWarnings({
@@ -446,40 +428,11 @@ describe("proposal completeness lint", () => {
     expect(proposalHasChangedMap(calls, "m2")).toBe(false);
   });
 
-  it("canonical construction calls fulfill nested target BuildSpec coverage and exact counts", () => {
-    // Given: one canonical house proposal and one canonical village proposal.
-    const houseSpec: BuildSpec = {
-      mapId: "m1",
-      assets: [{ id: "집", kind: "house", x: 3, y: 4, w: 8, h: 7 }],
-    };
-    const houseCalls = [call(
-      "author_house",
-      { kind: "single", mapId: "m1", wings: [{ x: 3, y: 4, w: 8, h: 7 }] },
-      { tilesChanged: 50 },
-      { construction: { counts: { requested: 1, actual: 1 } } },
-    )];
-    const villageCalls = [call(
-      "author_village",
-      { target: { kind: "existing", mapId: "m1", bounds: { x: 2, y: 2, w: 20, h: 18 } }, houseCount: 6, countPolicy: "exact" },
-      { tilesChanged: 180 },
-      { construction: { counts: { requested: 6, actual: 6 } } },
-    )];
-
-    // When/Then: canonical regions count as real map changes and exact requested counts do not warn.
-    expect(proposalCompletenessWarnings({ buildSpec: houseSpec, calls: houseCalls })).toEqual([]);
-    expect(proposalHasChangedMap(villageCalls, "m1")).toBe(true);
-    expect(proposalCompletenessWarnings({ requestText: "집 6채 마을 만들어줘", calls: villageCalls }))
-      .not.toContainEqual(expect.stringContaining("요청 수량"));
-  });
+  // Removed it "canonical construction calls fulfill nested target": author_house and author_village were removed from the tool registry on purpose.
 });
 
 describe("완성도 린트 — 의도 선언이 있으면 선언 필드로 판정한다", () => {
   const emptyCall = (name: string): ProposalCompletenessCall => ({ name, args: {}, result: { ok: true, diff: changeSummary() } });
-  const okHouse = (interior: "exterior-only" | "linked-interior" | "omit" = "exterior-only"): ProposalCompletenessCall => ({
-    name: "author_house",
-    args: interior === "omit" ? {} : { interior },
-    result: { ok: true, diff: changeSummary({ tilesChanged: 40 }) },
-  });
 
   it("질문 선언은 변경 0건이어도 미이행이 아니다", () => {
     const warnings = proposalCompletenessWarnings({ requestText: "이 맵 이벤트 몇 개야?", intent: declaredIntent({ mode: "question" }), calls: [emptyCall("find_events")] });
@@ -491,68 +444,18 @@ describe("완성도 린트 — 의도 선언이 있으면 선언 필드로 판�
     expect(warnings.some((warning) => warning.includes("실제 변경이 없습니다"))).toBe(true);
   });
 
-  it("실내 신축 선언에 야외 집만 지으면 경고하고, 실내 수정 선언·선언 없음에는 경고하지 않는다", () => {
-    const interiorCreate = proposalCompletenessWarnings({ requestText: "여관 지어줘", intent: declaredIntent({ mode: "create", space: "interior", facility: "여관" }), calls: [okHouse()] });
-    expect(interiorCreate.some((warning) => warning.includes("실내 요청인데 야외 집 외장"))).toBe(true);
-    const interiorModify = proposalCompletenessWarnings({ requestText: "이 여관 좀 고쳐줘", intent: declaredIntent({ mode: "modify", space: "interior" }), calls: [okHouse()] });
-    expect(interiorModify.some((warning) => warning.includes("실내 요청인데"))).toBe(false);
-    // 선언이 없으면 「여관」 낱말만으로 실내를 추측하지 않는다.
-    const none = proposalCompletenessWarnings({ requestText: "여관 지어줘", calls: [okHouse()] });
-    expect(none.some((warning) => warning.includes("실내 요청인데"))).toBe(false);
-  });
+  // Removed it "실내 신축 선언에 야외 집만 지으면 경고하고": author_house was removed from the tool registry on purpose.
 
   it("원탭 선택지가 붙은 되묻기 응답은 변경 0건이 정상이다", () => {
     const warnings = proposalCompletenessWarnings({ requestText: "집 지어줘", intent: declaredIntent({ mode: "create", space: "unclear" }), calls: [], assistantText: "어디에 지을까요?\n[선택지] 실내 | 야외" });
     expect(warnings).toEqual([]);
   });
 
-  it("실내 신축에 linked-interior 집을 지으면 경고하지 않는다", () => {
-    const warnings = proposalCompletenessWarnings({
-      requestText: "집 지어줘 들어가게",
-      intent: declaredIntent({ mode: "create", space: "interior" }),
-      calls: [call("author_house", { kind: "single", mapId: "m1", kitId: "blue-stone", wings: [{ x: 2, y: 2, w: 6, h: 6 }], interior: "linked-interior", door: true, yard: [] }, { tilesChanged: 40 })],
-    });
-    expect(warnings.some((warning) => warning.includes("실내 요청인데"))).toBe(false);
-  });
+  // Removed it "실내 신축에 linked-interior 집을": author_house was removed from the tool registry on purpose.
 
-  it("야외 집 시공에 외장만 지으면 경고한다", () => {
-    const warnings = proposalCompletenessWarnings({
-      requestText: "집 지어줘",
-      intent: declaredIntent({ mode: "create", space: "outdoor" }),
-      calls: [okHouse()],
-    });
-    expect(warnings.some((warning) => warning.includes("외장만"))).toBe(true);
-  });
+  // Removed it "야외 집 시공에 외장만 지으면": author_house was removed from the tool registry on purpose.
 
-  it("야외 집 시공에서 interior 생략은 linked-interior로 보고 경고하지 않는다", () => {
-    const warnings = proposalCompletenessWarnings({
-      requestText: "집 지어줘",
-      intent: declaredIntent({ mode: "create", space: "outdoor" }),
-      calls: [okHouse("omit")],
-    });
-    expect(warnings.some((warning) => warning.includes("외장만"))).toBe(false);
-  });
+  // Removed it "야외 집 시공에서 interior 생략은": author_house was removed from the tool registry on purpose.
 
-  it("space=both lots with all exterior-only houses fires a completeness warning", () => {
-    const warnings = proposalCompletenessWarnings({
-      requestText: "Build walk-in houses",
-      intent: declaredIntent({ mode: "create", space: "both" }),
-      calls: [
-        call(
-          "author_house",
-          {
-            kind: "lots",
-            mapId: "m1",
-            interior: "linked-interior",
-            houses: [
-              { kitId: "blue-stone", wings: [{ x: 2, y: 1, w: 6, h: 8 }], interior: "exterior-only", door: true, yard: [] },
-              { kitId: "bright-plaster", wings: [{ x: 12, y: 1, w: 7, h: 9 }], interior: "exterior-only", door: true, yard: [] },
-            ],
-          },
-          { tilesChanged: 80 },
-        ),
-      ],
-    });
-    expect(warnings.some((line) => line.includes("야외+실내") && line.includes("외장만"))).toBe(true);
-  });
+  // Removed it "space=both lots with all exterior-only": author_house was removed from the tool registry on purpose.
 });

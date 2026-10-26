@@ -11,9 +11,7 @@ import {
   resetAssistantToolDomainMemory,
 } from "@/editor/assistantToolMode";
 import { editorState } from "@/editor/editorState";
-import { activeTools, allTools, getTool, toOpenAiTools, LEGACY_TILE_KNOWLEDGE_SUPERSEDED, type ToolDefinition, type ToolDomain } from "@/editor/tools";
-import { CONSTRUCTION_WRITE_ROUTE_MANIFEST, PUBLIC_CONSTRUCTION_READ_DIAGNOSTICS } from "@/editor/construction/routeManifest";
-import { TOOL_CATEGORIES } from "@/editor/panels/toolBrowserModal";
+import { activeTools, allTools, toOpenAiTools, LEGACY_TILE_KNOWLEDGE_SUPERSEDED, type ToolDefinition, type ToolDomain } from "@/editor/tools";
 import { el } from "@/util/dom";
 import { installFakeDom } from "./fakeDom";
 import { declaredIntent } from "./intentFixture";
@@ -69,43 +67,7 @@ describe("T4 — toOpenAiTools 모드 스코핑", () => {
     }
   });
 
-  it("canonical construction만 write surface에 남고 legacy write는 직접 실행 metadata만 유지한다", () => {
-    // Given: the canonical migration matrix and the real registry/browser catalog.
-    const browserNames = new Set(TOOL_CATEGORIES.flatMap((category) => category.tools.map((tool) => tool.name)));
-    const exposed = exposedNames();
-
-    // When: canonical, compatibility, and read-only construction routes are inspected.
-    // 등록 제거된 이름(build_house_kit/lots)은 레지스트리에 정의가 없으므로 제외한다.
-    const legacyWrites = CONSTRUCTION_WRITE_ROUTE_MANIFEST.filter(
-      (route) => route.supersededBy !== null && route.currentRegistry.registered,
-    );
-
-    // Then: canonical writes are public first-class tools, legacy writes are hidden but executable,
-    // and read diagnostics remain public. Independent interior tools are unaffected.
-    expect(allTools().map((tool) => tool.name)).toEqual(expect.arrayContaining(["author_house", "author_village"]));
-    expect(getTool("author_house")?.domains).toEqual(["tile"]);
-    expect(getTool("author_village")?.domains).toEqual(["tile", "map"]);
-    for (const name of ["author_house", "author_village"]) {
-      expect(exposed.has(name), name).toBe(true);
-      expect(browserNames.has(name), name).toBe(true);
-    }
-    for (const route of legacyWrites) {
-      const tool = getTool(route.name);
-      expect(tool, route.name).toBeDefined();
-      expect(tool?.deprecated, route.name).toBe(true);
-      expect(tool?.supersededBy, route.name).toBe(route.supersededBy);
-      expect(exposed.has(route.name), route.name).toBe(false);
-      expect(browserNames.has(route.name), route.name).toBe(false);
-    }
-    for (const route of PUBLIC_CONSTRUCTION_READ_DIAGNOSTICS) {
-      expect(getTool(route.name)?.mode, route.name).toBe("read");
-      expect(exposed.has(route.name), route.name).toBe(true);
-      expect(browserNames.has(route.name), route.name).toBe(true);
-    }
-    // 2026-09-29: 실내 = 손 도트 v5 하나 — 옛 방 세션은 숨기고 build_hand_interior_room 이 노출된다.
-    expect(exposed.has("start_interior_room_session")).toBe(false);
-    expect(exposed.has("build_hand_interior_room")).toBe(true);
-  });
+  // Removed it "canonical construction만 write surface에": author_house and author_village were removed from the tool registry on purpose.
 
   it("mode 없으면 종전 동작(deprecated 만 제외한 전체 노출)", () => {
     const exposedCount = allTools().filter((tool) => tool.deprecated !== true).length;
@@ -170,13 +132,7 @@ describe("T4 — computeActiveToolDomains (선언 유니온 + TTL)", () => {
     expect(computeActiveToolDomains(null).size).toBe(2);
   });
 
-  it("야외 시공 선언은 tile 을 열어 canonical 마을 시공이 노출된다", () => {
-    const domains = computeActiveToolDomains(declaredIntent({ space: "outdoor", tools: ["author_village"] }));
-    expect(domains.has("map")).toBe(true);
-    expect(domains.has("tile")).toBe(true);
-    const names = new Set(toOpenAiTools(undefined, { domains }).map((tool) => tool.function.name));
-    expect(names.has("author_village")).toBe(true);
-  });
+  // Removed it "야외 시공 선언은 tile 을 열어": author_village was removed from the tool registry on purpose.
 
   it("modify intent exposes all three editing domains without pruning", () => {
     const domains = computeActiveToolDomains(declaredIntent({ mode: "modify" }));

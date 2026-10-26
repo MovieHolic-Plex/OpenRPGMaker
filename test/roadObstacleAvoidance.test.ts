@@ -73,16 +73,6 @@ function changedCells(before: ReadonlyMap<string, string>, after: ReadonlyMap<st
   return [...before.entries()].filter(([key, value]) => after.get(key) !== value).map(([key]) => key);
 }
 
-// 지표면(lower)만 보는 스냅샷 — 길이 쓰는 레이어가 lower 다.
-function groundSnapshot(map: GameMap, keys: Iterable<string>): ReadonlyMap<string, string> {
-  const snapshot = new Map<string, string>();
-  for (const key of keys) {
-    const [x, y] = key.split(",").map(Number);
-    snapshot.set(key, String(map.lowerTiles[y * map.width + x] ?? TILE.EMPTY));
-  }
-  return snapshot;
-}
-
 function roadKeys(map: GameMap): ReadonlySet<string> {
   const keys = new Set<string>();
   for (let y = 0; y < map.height; y += 1) {
@@ -341,31 +331,7 @@ describe("도로 우회 — 건물 관통 방지", () => {
     expect((result.diff?.warnings ?? []).join(" ")).toContain("통행 불가");
   });
 
-  it("stamp_structure road 템플릿의 길이 기존 집 지표면을 덮지 않는다", () => {
-    const { ctx } = context(40, 32);
-    buildHouse(ctx, { x: 2, y: 14 }, 10, 8);
-    // 길이 덮으면 안 되는 것은 벽·지붕이 놓인 지표면이다(맨 잔디는 길이 덮어도 된다).
-    const structureGround = [...blockedCells(ctx.project, mapOf(ctx))].filter((key) => {
-      const [x, y] = key.split(",").map(Number);
-      return (mapOf(ctx).lowerTiles[y * mapOf(ctx).width + x] ?? TILE.EMPTY) !== TILE.GRASS;
-    });
-    expect(structureGround.length).toBeGreaterThan(20);
-    const before = groundSnapshot(mapOf(ctx), structureGround);
-    const houses = captureHouseProtection(ctx.project);
-
-    // road 템플릿의 십자 길(원점 기준 y+14~15)이 집 몸통을 지나가게 원점을 잡는다.
-    expectOk(runTool(ctx, "stamp_structure", {
-      mapId: MAP_ID,
-      template: "road",
-      origin: { x: 0, y: 0 },
-      naturalness: 0,
-    }));
-
-    expect(changedCells(before, groundSnapshot(mapOf(ctx), structureGround))).toEqual([]);
-    expect(captureHouseProtection(ctx.project)).toEqual(houses);
-    // Fence rails/corners are independent single-cell units; keep the unprotected corner.
-    expect(mapOf(ctx).upperTiles[15 * mapOf(ctx).width + 17]).toBe(410);
-  });
+  // Removed it "stamp_structure road 템플릿의 길이": stamp_structure was removed from the tool registry on purpose.
 });
 
 describe("roads respect completed-house geometry", () => {

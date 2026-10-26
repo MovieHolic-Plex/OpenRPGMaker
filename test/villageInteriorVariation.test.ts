@@ -29,25 +29,7 @@ describe("house interiors — role and seed variation", () => {
     expect(houseProgramForOwner("카이")).toBeUndefined();
   });
 
-  it("builds the village's houses from their owners' trades instead of the plaza-order shop lottery", () => {
-    const context: ToolContext = { project: createEmptyToolProject("probe") };
-    const owners = ["늙은 어부 바란", "등대지기 에릭", "여관 주인 헬가", "잡화상 도린", "카이", "엘렌"];
-    const result = runTool(context, "author_village", {
-      target: { kind: "new", mapId: "v", name: "v", width: 64, height: 40 },
-      houseCount: 6, seed: 3, morphology: "street", countPolicy: "exact", forestDensity: "normal", theme: "눈 덮인 항구", npcCount: 0,
-      housePlans: owners.map((ownerName) => ({ ownerName })),
-    });
-    expect(result.ok, result.summary).toBe(true);
-    const rooms = (owner: string) => {
-      const map = Object.values(context.project.maps).find((m) => m.name.startsWith(`${owner}의 집 내부`));
-      expect(map, owner).toBeDefined();
-      return (plan(map!).rooms ?? []).map((room) => room.id);
-    };
-    expect(rooms("늙은 어부 바란")).toContain("work");
-    expect(rooms("등대지기 에릭")).toContain("study");
-    expect(rooms("여관 주인 헬가")).toContain("tavern");
-    expect(rooms("잡화상 도린")).toContain("shop");
-  }, 60_000);
+  // Removed it "builds the village": author_village was removed from the tool registry on purpose.
 
   it("gives a house's second bedroom its own furniture instead of a copy of the first", () => {
     const context: ToolContext = { project: createEmptyToolProject("probe") };

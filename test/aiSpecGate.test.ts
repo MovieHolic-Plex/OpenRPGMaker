@@ -258,38 +258,7 @@ describe("implicitSpecFromContext — 사용자 선택 영역은 암묵적 명�
 });
 
 describe("세션 스펙 게이트", () => {
-  it("plannedMap 불일치는 더 이상 게이트가 아니다 — 빌더가 자기 인자를 검증한다", async () => {
-    // Given: a valid synthetic BuildSpec followed by a mismatched canonical new-map target.
-    const chat = scriptedChat([
-      toolCallMsg("set_build_spec", {
-        mapId: "planned_village",
-        plannedMap: { mapId: "planned_village", width: 24, height: 20 },
-        assets: [{ id: "마을", kind: "village", x: 0, y: 0, w: 24, h: 20 }],
-      }, "c1"),
-      toolCallMsg("author_village", {
-        target: {
-          kind: "new", mapId: "planned_village", name: "새 마을", width: 25, height: 20,
-          plannedMap: { mapId: "planned_village", width: 25, height: 20 },
-        },
-        houseCount: 2,
-        countPolicy: "exact",
-      }, "c2"),
-      finalMsg("대상 크기를 다시 맞추겠습니다."),
-    ]);
-    const session = new AssistantSession(createBlankProject(), { config: CONFIG, chat });
-    const events: Array<{ name: string; ok: boolean; summary: string }> = [];
-
-    // When: the mismatched canonical call reaches the session gate.
-    await session.sendUserMessage("새 마을 만들어줘", (event) => {
-      if (event.type === "tool_call") events.push({ name: event.name, ok: event.result.ok, summary: event.result.summary });
-    });
-
-    // Then: the session gate does not intervene; whatever happens is the builder's own verdict.
-    const village = events.find((event) => event.name === "author_village");
-    expect(village).toBeDefined();
-    expect(village?.summary).not.toContain("스펙 게이트");
-    expect(village?.summary).not.toContain("plannedMap 불일치");
-  });
+  // Removed it "plannedMap 불일치는 더 이상 게이트가 아니다": author_village was removed from the tool registry on purpose.
 
   it("스펙 없이 공간 툴 호출 → 그대로 실행된다(밑그림 없음은 차단 사유가 아니다)", async () => {
     expect(SPATIAL_BUILD_TOOLS.has("build_house")).toBe(true);
@@ -547,32 +516,7 @@ describe("세션 스펙 게이트", () => {
     expect(events[0]?.issues?.some((issue) => issue.code === "spec-gate-auto-expand")).toBeFalsy();
   });
 
-  it("16×16 맵에서 스펙과 동일한 3개 wings author_house는 bounding rect 오차단 없이 통과한다", async () => {
-    const spec = {
-      mapId: "m1",
-      title: "작은 집 3채",
-      assets: [
-        { id: "house1", kind: "house", x: 2, y: 2, w: 5, h: 5 },
-        { id: "house2", kind: "house", x: 9, y: 2, w: 5, h: 5 },
-        { id: "house3", kind: "house", x: 2, y: 9, w: 5, h: 5 },
-      ],
-    };
-    const wings = spec.assets.map(({ x, y, w, h }) => ({ x, y, w, h }));
-    const chat = scriptedChat([
-      toolCallMsg("create_map", { id: "m1", name: "작은 맵", width: 16, height: 16 }, "c1"),
-      toolCallMsg("set_build_spec", spec, "c2"),
-      toolCallMsg("author_house", { kind: "lots", mapId: "m1", seed: 1, houses: wings.map((wing) => ({ kitId: "blue-stone", wings: [wing], interior: "exterior-only", door: true, yard: [] })) }, "c3"),
-      finalMsg("집 3채를 배치했습니다."),
-    ]);
-    const session = new AssistantSession(createBlankProject(), { config: CONFIG, chat });
-    const events: Array<{ name: string; ok: boolean; summary: string }> = [];
-    await session.sendUserMessage("작은 야외 집 3개 만들어줘", (e) => {
-      if (e.type === "tool_call") events.push({ name: e.name, ok: e.result.ok, summary: e.result.summary });
-    });
-    const house = events.find((event) => event.name === "author_house")!;
-    expect(house.ok, house.summary).toBe(true);
-    expect(house.summary).not.toContain("할당 영역 밖");
-  });
+  // Removed it "16×16 맵에서 스펙과 동일한 3개 wings author_house": author_house was removed from the tool registry on purpose.
 
   it("밑그림 밖이라도 기존 구조물 위 쓰기는 차단된다 — 남은 유일한 게이트", async () => {
     const project = (() => {

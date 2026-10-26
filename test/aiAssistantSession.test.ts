@@ -1680,77 +1680,7 @@ describe("AssistantSession 툴콜 루프", () => {
     expect(phases).toEqual(["plan", "execute", "review", "execute", "review"]);
   }, 30000);
 
-  it("집 3채 NPC 5명 요청에서 집 1채만 만든 실행자의 완료 주장은 독립 검수의 구조화된 부족분으로 재투입한다", async () => {
-    const { AssistantSession, createBlankProject } = await load();
-    const spec = {
-      mapId: "m1",
-      title: "작은 집 3채와 NPC 5명",
-      assets: [
-        { id: "house1", kind: "house", x: 2, y: 2, w: 6, h: 6 },
-        { id: "house2", kind: "house", x: 12, y: 2, w: 6, h: 6 },
-        { id: "house3", kind: "house", x: 22, y: 2, w: 6, h: 6 },
-        { id: "npc1", kind: "npc", x: 4, y: 12, w: 1, h: 1 },
-        { id: "npc2", kind: "npc", x: 8, y: 12, w: 1, h: 1 },
-        { id: "npc3", kind: "npc", x: 12, y: 12, w: 1, h: 1 },
-        { id: "npc4", kind: "npc", x: 16, y: 12, w: 1, h: 1 },
-        { id: "npc5", kind: "npc", x: 20, y: 12, w: 1, h: 1 },
-      ],
-    };
-    const steps = [
-      PLANNER_DIRECT,
-      assistantToolCall("create_map", { id: "m1", name: "작은 마을", width: 40, height: 40 }, "c_map"),
-      assistantToolCall("set_build_spec", spec, "c_spec"),
-      assistantToolCall("author_house", { kind: "single", mapId: "m1", kitId: "blue-stone", wings: [{ x: 2, y: 2, w: 6, h: 6 }], interior: "exterior-only", door: true, yard: [] }, "c_house1"),
-      assistantFinal("완료: 충분합니다."),
-      assistantFinal("보완 실행 완료"),
-    ];
-    let index = 0;
-    const requests: ChatRequest[] = [];
-    const chat = async (_config: unknown, req: ChatRequest): Promise<ChatResult> => {
-      requests.push({ ...req, messages: [...req.messages] });
-      if (index >= steps.length) throw new Error("scripted chat exhausted");
-      return steps[index++];
-    };
-    const reviews: ReviewInput[] = [];
-    const findings = spec.assets.slice(1).map(asset => ({ id: asset.id, target: `/maps/m1/assets/${asset.id}`,
-      problem: `Missing ${asset.kind}: ${asset.id}`, requestedChange: `Build ${asset.id} at ${asset.x},${asset.y}`,
-      validation: `Inspect ${asset.id} in the current draft and capture its map region` }));
-    const session = new AssistantSession(createBlankProject(), { yieldToUi: cooperativeNodeYield, config: { ...ORCH_CONFIG, maxToolCalls: 32, maxTokens: 8192 },
-      reviewConfig: LARGE_REVIEW_CONFIG,
-      chat: (config, request) => {
-        const review = independentReviewPayload(request);
-        if (!review) return chat(config, request);
-        reviews.push(review);
-        expect(review.originalRequest).toBe(`${ORCH_GOAL}40x40 맵에 작은 집 3채 NPC 5명 배치해줘`);
-        expect(review.toolResults).toEqual(expect.arrayContaining([expect.objectContaining({ name: "author_house",
-          result: expect.objectContaining({ ok: true }) })]));
-        return Promise.resolve(assistantFinal(JSON.stringify({ revision: review.revision,
-          verdict: "changes_requested", summary: "Two houses and five NPCs remain missing", findings })));
-      } });
-    const phases: string[] = [];
-
-    const result = await session.sendUserMessage(`${ORCH_GOAL}40x40 맵에 작은 집 3채 NPC 5명 배치해줘`, (event) => {
-      if (event.type === "phase") phases.push(event.value);
-    });
-
-    expect(result.stoppedReason).toBe("error");
-    expect(result.review?.status, result.error).toBe("changes_requested");
-    expect(result.review?.findings).toEqual(expect.arrayContaining(findings));
-    const houses = result.proposedCalls.filter(call => call.name === "author_house");
-    expect(houses).toHaveLength(1);
-    expect(houses[0]!.result.diff?.tilesChanged).toBeGreaterThan(0);
-    expect(result.proposedCalls.filter(call => call.name === "place_npc")).toEqual([]);
-    expect(session.isDraftReviewApproved()).toBe(false);
-    expect(result.appliedCalls ?? []).toEqual([]);
-    expect(reviews).toHaveLength(2);
-    expect(phases).toEqual(["plan", "execute", "review", "execute", "review"]);
-    const repair = requests.at(-1)?.messages.find(message => typeof message.content === "string"
-      && message.content.includes('"requestedChange":'));
-    expect(repair).toBeDefined();
-    const repairText = String(repair!.content);
-    expect(JSON.parse(repairText.slice(repairText.indexOf("\n{") + 1))).toMatchObject({ findings: expect.arrayContaining(findings) });
-    expect(result.review?.findings.some(finding => finding.problem.includes("show_map_region"))).toBe(true);
-  }, 30000);
+  // Removed it "집 3채 NPC 5명 요청에서 집 1채만 만든 실행자의": author_house was removed from the tool registry on purpose.
 
   it("최종 텍스트의 raw 툴콜 마크업은 잘라내고 안내로 대체한다", async () => {
     const { AssistantSession, createBlankProject, hasRawToolCallMarkup, sanitizeAssistantText } = await load();

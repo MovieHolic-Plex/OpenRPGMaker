@@ -6,7 +6,6 @@ import { runTool } from "@/editor/tools";
 import { createPiToolset } from "@/ai/piAgent/toolAdapter";
 import { createBlankProject } from "@/project/defaults";
 import { actorBattlers } from "@/battle/battleBattlers";
-import { resolveBattleBackdrop } from "@/battle/battleBackdrop";
 import { changeParty } from "@/project/session";
 import { canonicalizeCommandFieldAliases } from "@/project/eventCommands/commandFieldAliases";
 import type { Command, GameEvent, Project } from "@/project/types";
@@ -128,41 +127,4 @@ describe("defect 1 — companion changeParty written with speciesId", () => {
   });
 });
 
-describe("defect 2 — snowy harbor brief builds a green summer village", () => {
-  it("author_village groundTheme:snow on the forest-village chipset switches to the snow sheet and snow weather", () => {
-    const { ctx, mapId } = blank();
-    const result = runTool(ctx, "author_village", {
-      target: { kind: "existing", mapId, name: "등불여울 마을" },
-      houseCount: 2, countPolicy: "best-effort", interior: false, seed: 3, forestDensity: "sparse", groundTheme: "snow",
-    });
-    expect(result.ok, `${result.summary} ${JSON.stringify(result.issues ?? [])}`).toBe(true);
-    const map = ctx.project.maps[mapId]!;
-    expect(map.tilesetId).toBe("forest_harmony_snow");
-    expect(map.climate).toMatchObject({ mode: "fixed", weather: "snow" });
-    expect(warningsOf(result)).toContain("설원 칩셋");
-    // 마을 아래 등대 꼭대기(기후 없음)의 보스전도 설원 배경.
-    expect(runTool(ctx, "create_map", { id: "map_lighthouse_top", name: "등대 꼭대기", width: 20, height: 15, parentId: mapId }).ok).toBe(true);
-    const tree = ctx.project.mapTree as { mapId: string; children: { mapId: string }[] };
-    if (!tree.children.some(child => child.mapId === "map_lighthouse_top")) tree.children.push({ mapId: "map_lighthouse_top", children: [] } as never);
-    expect(resolveBattleBackdrop({ project: ctx.project, location: { mapId: "map_lighthouse_top", x: 9, y: 6 } })).toBe("scarloxy-backdrop-ice");
-  }, 120_000);
-
-  it("rebuilding a village already on the snow sheet works and keeps the snow sheet", () => {
-    const { ctx, mapId } = blank();
-    const args = { target: { kind: "existing", mapId }, houseCount: 2, countPolicy: "best-effort", interior: false, seed: 3, forestDensity: "sparse", groundTheme: "snow" };
-    expect(runTool(ctx, "author_village", args).ok).toBe(true);
-    const again = runTool(ctx, "author_village", { ...args, fullMap: true, seed: 4, groundTheme: undefined });
-    expect(again.ok, `${again.summary} ${JSON.stringify(again.issues ?? [])}`).toBe(true);
-    expect(ctx.project.maps[mapId]!.tilesetId).toBe("forest_harmony_snow");
-  }, 240_000);
-
-  it("without groundTheme the village stays on the forest-village chipset (no guessing from theme text)", () => {
-    const { ctx, mapId } = blank();
-    const result = runTool(ctx, "author_village", {
-      target: { kind: "existing", mapId }, houseCount: 2, countPolicy: "best-effort", interior: false, seed: 3, forestDensity: "sparse", theme: "눈보라 항구",
-    });
-    expect(result.ok).toBe(true);
-    expect(ctx.project.maps[mapId]!.tilesetId).toBe("forest_harmony");
-    expect(ctx.project.maps[mapId]!.climate).toBeUndefined();
-  }, 120_000);
-});
+// Removed describe "defect 2 — snowy harbor brief": author_village was removed from the tool registry on purpose.
