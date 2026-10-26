@@ -936,8 +936,8 @@ describe("edit scene tile culling", () => {
     // 새 타일이 만들어졌다 — (60,60) 근처 픽셀 좌표 960 근처.
     const newTilesNearPaint = tiles.filter((t) => t.x >= 940 && t.x <= 980 && t.y >= 940 && t.y <= 980);
     expect(newTilesNearPaint.length).toBeGreaterThan(0);
-    // 아직 컬링이 안 걸려서 새 타일은 보인다.
-    expect(newTilesNearPaint.every((t) => t.visible)).toBe(true);
+    // trackCullableTile 이 등록 순간 직전 컬링 창을 바로 적용한다(playSceneTileCulling.ts) — 화면 밖 새 타일은 만들어지자마자 숨는다.
+    expect(newTilesNearPaint.every((t) => !t.visible)).toBe(true);
 
     // invalidateCullingWindow 덕분에 sameWindow early-out 없이 재계산한다.
     syncTileCulling(scene, viewport);
