@@ -13,9 +13,9 @@ export function listInstalledStillPackFiles(directory: string): string[] {
       .filter((entry) => entry.isFile() && /\.(?:jpe?g|png|webp)$/iu.test(entry.name))
       .map((entry) => entry.name)
       .sort();
-  } catch (error) {
-    if ((error as NodeJS.ErrnoException).code === "ENOENT") return [];
-    throw error;
+  } catch {
+    // 없거나 못 읽는 폴더는 «설치 안 됨» — 편집기 설정·워커 시작을 막지 않는다.
+    return [];
   }
 }
 

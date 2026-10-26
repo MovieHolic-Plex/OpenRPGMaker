@@ -93,16 +93,17 @@ async function assetEntries(assets: readonly WebExportAsset[], fetchBytes: Fetch
       entries.push({ name: asset.zipPath, bytes: await uploadedAssetBytes(asset.asset) });
       continue;
     }
+    // 스틸 팩 그림은 레포에 없고 stills:install 로만 생긴다 — 없으면 재배포가 아니라 설치가 답이라고 알린다.
+    const missingCode = asset.zipPath.startsWith(STILL_PACK_ZIP_PREFIX) ? "still-pack-not-installed" : "runtime-asset-unavailable";
+    let bytes: Uint8Array;
     try {
-      const bytes = await fetchBytes(exportAssetSourceUrl(asset.sourcePath));
-      if (invalidExportDependencyBytes(bytes)) contractFailure("runtime-asset-unavailable", asset.zipPath);
-      entries.push({ name: asset.zipPath, bytes });
+      bytes = await fetchBytes(exportAssetSourceUrl(asset.sourcePath));
     } catch (error) {
-      // 스틸 팩 그림은 레포에 없고 stills:install 로만 생긴다 — 재배포가 아니라 설치가 답이라고 알린다.
-      if (asset.zipPath.startsWith(STILL_PACK_ZIP_PREFIX)) contractFailure("still-pack-not-installed", asset.zipPath);
       if (error instanceof WebExportContractError) throw error;
-      contractFailure("runtime-asset-unavailable", asset.zipPath);
+      contractFailure(missingCode, asset.zipPath);
     }
+    if (invalidExportDependencyBytes(bytes)) contractFailure(missingCode, asset.zipPath);
+    entries.push({ name: asset.zipPath, bytes });
   }
   return entries;
 }
