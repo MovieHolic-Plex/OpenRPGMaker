@@ -46,9 +46,25 @@ export function flatWrapperShape(name: string, parameters: unknown): { readonly 
     for (const k of Object.keys(out)) if (belongsInside(k)) { moved[k] = out[k]; delete out[k]; }
     const slotValue = out[w.slot];
     if (slotValue !== undefined) {
-      // 감싼 모양(예전 습관). 목록 칸이면 최상위에 한 명을 더 적은 것도 그 목록에 붙인다.
+      // 감싼 모양(예전 습관). 최상위에 칸이 더 있으면 그 칸을 버리거나 거절하지 않고 감싼 값에 합친다.
       if (!Object.keys(moved).length) return { args, missing: [] };
-      if (w.array && Array.isArray(slotValue)) return { args: { ...out, [w.slot]: [...slotValue, moved] }, missing: innerRequired.filter((k) => moved[k] === undefined) };
+      if (w.array && Array.isArray(slotValue)) {
+        const incomplete = innerRequired.filter((k) => moved[k] === undefined);
+        if (incomplete.length === 0) return { args: { ...out, [w.slot]: [...slotValue, moved] }, missing: [] };
+        // 목록이 이미 있으면 그게 본문이다. role 없는 찌꺼기(이름만 한 번 더 적은 것)를 사람으로 붙이면
+        // 필수 칸이 비어 목록 전체가 거절됐다. 한 명뿐이면 비어 있는 칸만 채우고, 여럿이면 찌꺼기는 버린다.
+        if (slotValue.length === 1 && isObj(slotValue[0])) {
+          const person: Obj = { ...slotValue[0] };
+          for (const [k, v] of Object.entries(moved)) if (person[k] === undefined) person[k] = v;
+          return { args: { ...out, [w.slot]: [person] }, missing: innerRequired.filter((k) => person[k] === undefined) };
+        }
+        if (slotValue.length > 0) return { args: { ...out, [w.slot]: slotValue }, missing: [] };
+        return { args: { ...out, [w.slot]: slotValue }, missing: incomplete };
+      }
+      if (isObj(slotValue)) {
+        const merged = { ...moved, ...slotValue };
+        return { args: { ...out, [w.slot]: merged }, missing: innerRequired.filter((k) => merged[k] === undefined) };
+      }
       return { args, missing: [] };
     }
     const missing = innerRequired.filter((k) => moved[k] === undefined);
