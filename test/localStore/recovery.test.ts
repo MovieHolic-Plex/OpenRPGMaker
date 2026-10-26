@@ -1,3 +1,4 @@
+import { createHash } from "node:crypto";
 import { existsSync, readFileSync, writeFileSync, mkdirSync } from "node:fs";
 import { mkdtemp, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
@@ -14,6 +15,7 @@ import { openNodeSqliteDriver } from "../../electron/local-store/driver";
 let root: string;
 let source: LocalProjectStore;
 const bytes = new Uint8Array([1, 2, 3, 4]);
+const sha256 = (data: Uint8Array) => createHash("sha256").update(data).digest("hex");
 beforeEach(async () => {
   root = await mkdtemp(join(tmpdir(), "oprn-recovery-"));
   source = await initLocalProjectStore({ projectDir: join(root, "original") });
@@ -39,7 +41,8 @@ describe("backup recovery", () => {
       expect(new Uint8Array(await restored.assetBytes(restored.listAssets()[0]!.sha256))).toEqual(bytes); // assetBytes 는 Node Buffer 를 돌려준다 — 바이트만 비교한다.
       expect(restored.mapMirrors().size).toBe(source.mapMirrors().size);
     } finally { restored.close(); }
-    expect(readFileSync(join(backup, "project.sqlite"))).toEqual(before);
+    // 수십 MB 짜리 SQLite 를 toEqual 로 비교하면 어긋날 때 diff 를 그리다 워커가 메모리로 죽는다(CI SIGABRT) — 같은 바이트인지 해시로 본다.
+    expect(sha256(readFileSync(join(backup, "project.sqlite")))).toBe(sha256(before));
     expect(listLocalProjectBackups(source.projectDir)).toHaveLength(2);
   });
 
