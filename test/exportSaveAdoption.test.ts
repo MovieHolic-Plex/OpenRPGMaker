@@ -69,6 +69,32 @@ describe("adoptLegacyExportSaves", () => {
   });
 });
 
+/**
+ * The exported player now shows a 「시작하기」 button after preloading and waits for it unless the boot is QA-instrumented
+ * or a desktop shell (exportEntry.prepareFirstScreen → bootLoader.waitForStart, #3318). Press it like a player would.
+ */
+/**
+ * Serves project.json and 404s everything else. The web boot also fetches loading.json and preload-files.json; one shared
+ * Response for every call let loading.json consume the body, so the project fetch failed and the player never rendered.
+ */
+function serveProject(raw: string) {
+  return vi.fn(async (input: RequestInfo | URL) => {
+    const url = input instanceof Request ? input.url : String(input);
+    return new URL(url, "http://localhost").pathname.endsWith("/project.json") ? new Response(raw) : new Response("", { status: 404 });
+  });
+}
+
+async function pressStartUntil(ready: Promise<void>): Promise<void> {
+  let done = false;
+  void ready.then(() => { done = true; }, () => { done = true; });
+  while (!done) {
+    const start = document.querySelector<HTMLButtonElement>('[data-testid="boot-loader-start"]');
+    if (start && start.style.display === "inline-block") { start.click(); break; }
+    await new Promise((resolve) => setTimeout(resolve, 20));
+  }
+  await ready;
+}
+
 // 실제 내보내기 부팅 경로(exportEntry)가 입양을 부르는지 — communitySaveBoot.test.ts 와 같은 방식으로 관측한다.
 const { rendered } = vi.hoisted(() => ({ rendered: vi.fn() }));
 vi.mock("@/player/player", () => ({ renderPlayer: rendered }));
@@ -93,10 +119,11 @@ describe("exported player boot", { timeout: 120_000 }, () => {
     localStorage.setItem("rpgzzu-export:listing-b:save-slot:v5:1", "listing-b-legacy");
     // 호스트 네임스페이스는 **번들(fetch)** 경로에서만 권위다 — 문서에 박힌(standalone) 프로젝트는 opened-file 로 부팅해
     // 자기 프로젝트 id 네임스페이스를 쓴다(resolveExportSaveNamespace 계약). 그래서 fetch 로 준다.
-    const fetch = vi.fn().mockResolvedValue(new Response(raw)); vi.stubGlobal("fetch", fetch);
+    const fetch = serveProject(raw); vi.stubGlobal("fetch", fetch);
     const ready = new Promise<void>(resolve => rendered.mockImplementation(() => resolve()));
-    await import("@/player/exportEntry"); await ready;
-    expect(fetch).toHaveBeenCalledTimes(1);
+    await import("@/player/exportEntry"); await pressStartUntil(ready);
+    // The project itself came from the bundle fetch exactly once (loading.json / preload-files.json are separate requests).
+    expect(fetch.mock.calls.filter(([input]) => String(input instanceof Request ? input.url : input).endsWith("/project.json"))).toHaveLength(1);
 
     expect(localStorage.getItem("oprn-export:listing-a:save-slot:v5:1")).toBe("listing-a-legacy");
     expect(localStorage.getItem("rpgzzu-export:listing-a:save-slot:v5:1")).toBe("listing-a-legacy");

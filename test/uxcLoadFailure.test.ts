@@ -32,6 +32,7 @@ function mockModeDependencies(): {
       }),
       loadFallbackProject,
       isSharedDemoSession: () => false,
+      subscribe: vi.fn(() => () => undefined),
       loadSharedDemo: vi.fn(async () => null),
     },
     setDevProjectFactory: vi.fn(),
@@ -91,10 +92,14 @@ function mockModeDependencies(): {
   vi.doMock("@/project/defaults/defaultProject", () => ({
     createSampleAdventureProject: () => ({ kind: "sample-fallback" }),
     createBlankProject: () => ({ kind: "blank-fallback" }),
+    // The 「새 작업으로 시작」 button now builds the starter blank project.
+    createStarterBlankProject: () => ({ kind: "blank-fallback" }),
   }));
   vi.doMock("@/project/defaults", () => ({
     createSampleAdventureProject: () => ({ kind: "sample-fallback" }),
     createBlankProject: () => ({ kind: "blank-fallback" }),
+    // The 「새 작업으로 시작」 button now builds the starter blank project.
+    createStarterBlankProject: () => ({ kind: "blank-fallback" }),
   }));
   return { discardDevProjectOverride, loadFallbackProject, renderEditor, rendered };
 }

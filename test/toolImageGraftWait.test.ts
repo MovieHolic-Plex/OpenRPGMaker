@@ -21,8 +21,10 @@ function graftedTileset() {
   const project = createBlankProject();
   const map = project.maps[project.startMapId]!;
   const tileset = project.tilesets[map.tilesetId]!;
+  // The EasyRPG interior sheet that used to be the graft source was deleted on 2026-10-07 (no bundled path, so the bake
+  // failed instead of waiting on I/O and the hold gate never fired). Graft from a surviving bundled sheet instead.
   tileset.tileGrafts = [{
-    targetTile: 0, sourceChipset: "tex_easyrpg_chipset_interior", sourceTile: 100,
+    targetTile: 0, sourceChipset: "tex_beodeul_ground", sourceTile: 100,
   }];
   return tileset;
 }
@@ -31,7 +33,7 @@ function graftedTileset() {
 describe("cold graft evidence", { timeout: 120_000 }, () => {
   it("waits for source loading and returns the composite on the first request", async () => {
     const tileset = graftedTileset();
-    const gate = installToolImageUrlHoldGate("easyrpg-chipset-interior");
+    const gate = installToolImageUrlHoldGate("beodeul-ground/chipset.png");
     let settled = false;
     const pending = loadTilesetImage(tileset).then(image => {
       settled = true;
@@ -56,7 +58,7 @@ describe("cold graft evidence", { timeout: 120_000 }, () => {
 
   it("times out held I/O but reuses the completed bake on retry", async () => {
     const tileset = graftedTileset();
-    const gate = installToolImageUrlHoldGate("easyrpg-chipset-interior");
+    const gate = installToolImageUrlHoldGate("beodeul-ground/chipset.png");
     const rejected = expect(loadTilesetImage(tileset)).rejects.toThrow("bake timed out");
     await gate.sourceHeld;
     await vi.advanceTimersByTimeAsync(GRAFT_EVIDENCE_WAIT_MS);

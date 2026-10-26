@@ -113,7 +113,8 @@ describe('shared project service', { timeout: 120_000 }, () => {
     const restored = await openLocalProjectStore({ projectDir: dirname(path) });
     try {
       expect(restored.loadSnapshot()!.project).toEqual(a.store.loadSnapshot()!.project);
-      expect(await restored.assetBytes(ref.sha256)).toEqual(new Uint8Array([1, 2, 3]));
+      // The SQLite store hands back a Node Buffer (a Uint8Array subclass); compare the bytes, not the class.
+      expect(new Uint8Array(await restored.assetBytes(ref.sha256))).toEqual(new Uint8Array([1, 2, 3]));
     } finally { restored.close(); }
     expect(a.team.authenticate(invited.token)?.id).toBe(invited.member.id);
   });
@@ -140,6 +141,9 @@ describe('record merge policy', { timeout: 120_000 }, () => {
 it('allows explicit same-member takeover without allowing renewals or release to steal it back', async () => {
   const { invoke, sessions, a } = await setup();
   const resource = 'map:takeover';
+  // A one-member team reclaims its own lease from a new tab without an explicit takeover (dispatch.ts soloReclaim,
+  // 2026-09-26). This contract is about a real team, so give the team a second member first.
+  a.team.invite('second', 'editor');
   expect(await invoke[C.teamLock]!('a', { resource })).toMatchObject({ kind: 'held' });
   expect(await invoke[C.teamLock]!('b', { resource })).toMatchObject({ kind: 'locked', canTakeover: true });
   expect(await invoke[C.teamLock]!('b', { resource, takeover: true })).toMatchObject({ kind: 'held' });
