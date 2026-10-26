@@ -5,6 +5,12 @@
 
 <!-- releases -->
 
+## 0.346.11 — 2026-10-26
+
+### 수정
+
+- **export** — name the file when a web export check fails (#3597) (`399c97c`)
+
 ## 0.346.10 — 2026-10-26
 
 ### 수정
