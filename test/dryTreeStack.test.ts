@@ -5,6 +5,7 @@ import { createEmptyToolProject } from "@/editor/tools/emptyProject";
 import { runTool } from "@/editor/tools/toolRunner";
 import type { ToolContext } from "@/editor/tools/types";
 import { validateClusterRules } from "@/project/lint/clusterRuleValidators";
+import { RETIRED_COMBINED_TOWN_TILESET_ID, withRetiredEasyRpgTilesets } from "./support/retiredEasyRpgTilesets";
 
 describe("dry-tree vertical stack", () => {
   function projectWithStack(tiles: readonly (readonly [number, number, number])[]) {
@@ -12,6 +13,10 @@ describe("dry-tree vertical stack", () => {
     const made = runTool(ctx, "create_map", { name: "스택 맵", width: 12, height: 12 });
     const mapId = (made.data as { mapId: string }).mapId;
     const map = ctx.project.maps[mapId]!;
+    // 마른나무 261/291 과 dry_tree 규칙은 합본 마을 하네스 그룹이다. 저작권 정리(2026-10-07) 뒤 새 맵은 버들항이라
+    // 규칙이 아예 없다 — 옛 저장본처럼 합본 마을 칩셋 위에 깐다.
+    withRetiredEasyRpgTilesets(ctx.project);
+    map.tilesetId = RETIRED_COMBINED_TOWN_TILESET_ID;
     for (const [tile, x, y] of tiles) map.upperTiles[y * map.width + x] = tile;
     return ctx.project;
   }
