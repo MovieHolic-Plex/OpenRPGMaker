@@ -447,7 +447,15 @@ for (const failure of report.browser?.failures ?? []) regressions.push(`browser 
 // 예산(기본 20분)을 넘긴 후보는 판정하지 않고 회귀로 남긴다. `--no-flake-retry` 로 끈다.
 const flakeRetries = [];
 let budgetSkipped = 0;
-if (baseline && regressions.length > 0 && !flag("--no-flake-retry")) {
+// 후보가 상한(--flake-max-candidates, 기본 30)을 넘으면 기준선이 낡은 것이다 — 재확인은 시간만 먹고
+// (건당 약 3분) 잡 상한에 걸려 리포트 업로드까지 잘렸다(2026-10-25 ci-full 40240616953). 그때는 건너뛴다.
+const flakeCandidateCount = regressions.filter((entry) => /^tests test\/\S+\.ts: 새로 실패$/u.test(entry)).length;
+const flakeCandidateCap = Number(value("--flake-max-candidates", "30")) || 30;
+const flakeSkippedForCap = flakeCandidateCount > flakeCandidateCap;
+if (flakeSkippedForCap && !flag("--no-flake-retry")) {
+  console.log(`[verify-gates] 새 실패 후보 ${flakeCandidateCount}건 > 상한 ${flakeCandidateCap} — 기준선이 낡았다. 플레이크 재확인을 건너뛴다.`);
+}
+if (baseline && regressions.length > 0 && !flag("--no-flake-retry") && !flakeSkippedForCap) {
   // 예산 20분은 **로컬 반복용** 기본값이다. CI 에서는 모자란다.
   //
   // 건당 비용 실측(2026-09-18) — 두 값이 크게 다르니 주의하라:
@@ -501,6 +509,7 @@ if (baseline && regressions.length > 0 && !flag("--no-flake-retry")) {
   regressions.push(...kept);
 }
 report.flakeRetries = flakeRetries;
+if (flakeSkippedForCap) report.flakeSkippedForCap = { candidates: flakeCandidateCount, cap: flakeCandidateCap };
 
 report.baseline = baseline ? baselinePath : null;
 report.regressions = regressions;
