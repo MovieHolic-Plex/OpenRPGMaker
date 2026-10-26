@@ -5,6 +5,16 @@
 
 <!-- releases -->
 
+## 0.350.3 — 2026-10-26
+
+### 수정
+
+- **ai-v2** — dress_room verb for empty-room/bare-floor defects; scene test warns on unwalkable player cells (#3651) (`5367773`)
+
+### CI
+
+- rebuild gates baseline from 8-shard ci-full with tags; fix list in .omo/ci-fix-list.md (#3652) (`4c7b572`)
+
 ## 0.350.2 — 2026-10-26
 
 ### 수정
