@@ -19,31 +19,19 @@ Work order (cheapest first): timeout → fake-DOM/env gaps → combined_town / o
 ## removed (14)
 
 - **2** — `AssertionError: 알 수 없는 툴: author_village [{"severity":"error","code":"unknown-tool","message":"등록되지 않은 툴: author_village`
-  - [ ] `test/jrpgDogfoodRetest3Regressions.test.ts`
-  - [ ] `test/jrpgDogfoodRetestRegressions.test.ts`
 - **2** — `AssertionError: 알 수 없는 툴: author_village: expected false to be true // Object.is equality`
-  - [ ] `test/villageInteriorStairs.test.ts`
-  - [ ] `test/villageInteriorVariation.test.ts`
 - **1** — `AssertionError: expected false to be true // Object.is equality`
-  - [ ] `test/conceptDoubleRowLayout.test.ts`
 - **1** — `AssertionError: expected N to be greater than N`
-  - [ ] `test/conceptOutdoorGates.test.ts`
 - **1** — `AssertionError: town-layout: 툴 실패 stamp_structure: [{"severity":"error","code":"unknown-tool","message":"등록되지 않은 툴: stam`
   - [ ] `test/evals.test.ts`
 - **1** — `AssertionError: 알 수 없는 툴: run_interior_room_pipeline: expected false to be true // Object.is equality`
   - [ ] `test/interiorPipelineMapReplacement.test.ts`
 - **1** — `알 수 없는 툴: place_concept: expected false to be true // Object.is equality`
-  - [ ] `test/interiorTileCorrections.test.ts`
 - **1** — `AssertionError: 'scatter_object' 실행 실패: 타일 그룹을 찾을 수 없습니다: harness-combined-town-conifer-tree: expected false to be true `
-  - [ ] `test/naturalScatterToolIntegration.test.ts`
 - **1** — `AssertionError: 'lay_path' 실행 실패: 길 어휘 '버들항 던전 주제 가시덤불 N×N(막음)'(beodeul:dungeon_theme_tc_fo_bramble)에 N-이웃 variantMap 오토`
-  - [ ] `test/roadObstacleAvoidance.test.ts`
 - **1** — `AssertionError: 알 수 없는 툴: get_concept_facility: expected false to be true // Object.is equality`
-  - [ ] `test/spatialLegacyPathIdentity.test.ts`
 - **1** — `AssertionError: expected '## 툴 능력 색인(활성 N개 · 라운드 스키마는 tools)\…' to contain '## 타일 어휘 다이제스트'`
-  - [ ] `test/tilesetPaletteT1a.test.ts`
 - **1** — `AssertionError: m_cottageN_dwelling_ground_N north west: expected N to be N // Object.is equality`
-  - [ ] `test/villageInteriorShell.test.ts`
 
 ## timeout (74)
 
@@ -149,7 +137,6 @@ Work order (cheapest first): timeout → fake-DOM/env gaps → combined_town / o
   - [ ] `test/cssDropDead.test.ts`
   - [ ] `test/databaseEnemyDialogFocus.test.ts`
   - [ ] `test/editSceneRender.test.ts`
-  - [ ] `test/enemyBattleScale.test.ts`
   - [ ] `test/eventCommandAssist.test.ts`
   - [ ] `test/eventCommandAssistTool.test.ts`
   - [ ] `test/eventEditorHostileUx.test.ts`
@@ -169,7 +156,6 @@ Work order (cheapest first): timeout → fake-DOM/env gaps → combined_town / o
   - [ ] `test/placePropsZeroPlacement.test.ts`
   - [ ] `test/playBootAssetSelection.test.ts`
   - [ ] `test/playerFootprint.test.ts`
-  - [ ] `test/proposalCompleteness.test.ts`
   - [ ] `test/regionTaskGateExcluded.test.ts`
   - [ ] `test/remoteProjectCertificate.test.ts`
   - [ ] `test/resourceManagerDedup.test.ts`
@@ -922,7 +908,6 @@ Work order (cheapest first): timeout → fake-DOM/env gaps → combined_town / o
 - **1** — `AssertionError: monster battler must appear in the action log: expected undefined to be truthy`
   - [ ] `test/pkmnCoreUnlock.test.ts`
 - **1** — `AssertionError: expected undefined to be 'place_concept' // Object.is equality`
-  - [ ] `test/placeConceptTool.test.ts`
 - **1** — `AssertionError: expected 'material-not-found' to be 'material-not-prop' // Object.is equality`
   - [ ] `test/placePropsRejectsFloorMaterial.test.ts`
 - **1** — `ToolError: 라벨/설명이 "나무 상자" 인 타일을 찾지 못했습니다. 이 타일셋(beodeul_city)에서 가까운 라벨: "버들항 · 외곽 건초·통·상자", "버들항 · 외곽 통나무 벽 꽃상자창칸", "버들항`
@@ -1084,7 +1069,6 @@ Work order (cheapest first): timeout → fake-DOM/env gaps → combined_town / o
 - **1** — `Error: ENOENT: no such file or directory, open '/home/runner/work/OpenRPGMaker/OpenRPGMaker/src/styles/editor/core.part-`
   - [ ] `test/toolCursor.test.ts`
 - **1** — `AssertionError: expected [ 'find_tools', …(N) ] to deeply equal ArrayContaining{…}`
-  - [ ] `test/toolDomainScoping.test.ts`
 - **1** — `AssertionError: expected 'start-position' to be 'protected-house-write' // Object.is equality`
   - [ ] `test/toolHouseProtection.test.ts`
 - **1** — `Error: expected rendered image`
