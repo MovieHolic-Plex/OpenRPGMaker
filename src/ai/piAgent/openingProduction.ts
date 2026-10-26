@@ -2,10 +2,24 @@ import type { Project } from '../../project/types';
 import { resolveAssetResourceUrl } from '../../assets/generatedAssetResourceResolver';
 import { animaticResourceIds, animaticCaptionText, sampleAnimaticTrack } from '../../project/openingAnimatic';
 import { measureOpeningAnimatic } from '../../project/openingAnimaticMeasure';
+import { openingMapViewMapId } from '../../project/openingMapView';
 
-/** Image transport only, never a saveable proposal. Avoid resending every draft PNG per preview. */
+/**
+ * Image transport only, never a saveable proposal. Avoid resending every draft PNG per preview.
+ * 「게임 속 맵 그대로」 배경(map-view:<mapId>)은 그 맵과 칩셋이 있어야 그려진다 — 둘만 남긴다. 예전에는 맵을 다 비워서
+ * 조수의 preview_opening_animatic 과 화면 검수가 이 배경을 매번 「애니메틱 맵 배경 없음」으로 못 찍었다(2026-10-26 hf2-school-claude-j80 2턴).
+ */
 export function openingImageProject(project: Project, resourceIds: readonly string[]): Project {
-  return structuredClone({ ...project, maps: {}, tilesets: {}, database: {} as Project['database'], assets: { ...project.assets, sprites: {},
+  const maps: Project['maps'] = {}, tilesets: Project['tilesets'] = {};
+  for (const id of resourceIds) {
+    const mapId = openingMapViewMapId(id), map = mapId ? project.maps[mapId] : undefined;
+    if (!mapId || !map) continue;
+    maps[mapId] = map;
+    const tileset = project.tilesets[map.tilesetId];
+    // 참고문서(MD·그림)는 그리기에 안 쓰인다 — 전송 사본을 무겁게 하지 않게 뺀다.
+    if (tileset) { const { referenceDocuments: _docs, ...drawable } = tileset; tilesets[map.tilesetId] = drawable; }
+  }
+  return structuredClone({ ...project, maps, tilesets, database: {} as Project['database'], assets: { ...project.assets, sprites: {},
     uploaded: Object.fromEntries(resourceIds.flatMap(id => project.assets.uploaded[id] ? [[id, project.assets.uploaded[id]]] : [])),
   } });
 }
