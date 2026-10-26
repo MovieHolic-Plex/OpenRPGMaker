@@ -162,6 +162,14 @@ export type TimeTintTransition = {
   elapsedMs: number;
 };
 
+/** Last tint submitted to the Graphics object. Matching values skip clear and fill. */
+export type TimeTintPaint = {
+  color: number;
+  alpha: number;
+  width: number;
+  height: number;
+};
+
 export type TransferRequest = {
   readonly mapId: MapId;
   readonly x: number;
@@ -284,6 +292,8 @@ export interface PlaySceneContext extends Phaser.Scene {
   timeTintPhase?: TimePhase;
   timeTintDisplayed?: TimeTintVisual;
   timeTintTransition: TimeTintTransition | null;
+  /** 마지막으로 화면에 올린 틴트. 같으면 Graphics 를 다시 비우지 않는다. */
+  timeTintPainted?: TimeTintPaint;
   mapAnimationLayer?: Phaser.GameObjects.Container;
   activeMapAnimations: Set<Phaser.GameObjects.Container>;
   /** 맵 배경 스프라이트 스택(아래→위) — 화면 고정, 하층 타일(depth 0) 아래. */
