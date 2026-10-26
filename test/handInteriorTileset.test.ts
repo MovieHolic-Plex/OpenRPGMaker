@@ -28,9 +28,8 @@ describe("atlas_biome_interior = hand-pixel v5", () => {
     // the RM2k3 transparency harness does not lift the baked layers
     const fresh = createAtlasBiomeInteriorTileset();
     expect(t.priority).toEqual(fresh.priority);
-    const d = p.tilesets.atlas_biome_dungeon!;
-    expect(d.family).toBe("oprn-atlas");
-    expect(d.count).toBe(1140);
+    // 갈라 낸 EasyRPG 계열 던전 시트(atlas_biome_dungeon)는 2026-10-07 저작권 정리로 기본 프로젝트에서 빠졌다 — 던전은 등록 장소 가져오기로 간다.
+    expect(p.tilesets.atlas_biome_dungeon).toBeUndefined();
   });
 
   it("an older save's Tibo-numbered definition is replaced whole; maps drawn with it stay and a warning is left", () => {
