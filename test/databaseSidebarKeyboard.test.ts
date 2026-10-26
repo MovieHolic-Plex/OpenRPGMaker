@@ -59,6 +59,7 @@ const TAB_TESTID: Record<string, string> = {
   scratchConcepts: "db-tab-scratch-concepts",
   villages: "db-tab-villages",
   commonEvents: "db-tab-common-events",
+  dialogue: "db-tab-dialogue",
   system: "db-tab-system",
   opening: "db-tab-opening",
   gameOver: "db-tab-game-over",
