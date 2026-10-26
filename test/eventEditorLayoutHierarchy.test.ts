@@ -64,7 +64,9 @@ describe("event editor layout hierarchy", () => {
     const commandsLabel = commands?.querySelector<HTMLElement>("[data-testid='event-editor-column-label-commands']");
 
     expect(settingsLabel?.textContent).toContain("이 페이지 설정");
-    expect(commandsLabel?.textContent).toContain("이 페이지가 하는 일");
+    // 칼럼 라벨은 «명령 / 위에서 아래로 차례대로 실행됩니다 / N개» 로 바뀌었다(7a7ce6ae). «이 페이지가 하는 일» 은 이제 캔버스 aria-label 의 말이다.
+    expect(commandsLabel?.textContent).toContain("명령");
+    expect(commandsLabel?.textContent).toContain("위에서 아래로 차례대로 실행됩니다");
     expect(settings?.firstElementChild).toBe(settingsLabel);
     expect(commands?.firstElementChild).toBe(commandsLabel);
   });
@@ -109,8 +111,11 @@ describe("event editor layout hierarchy", () => {
     const settingsMain = host.querySelector<HTMLElement>(".event-editor-settings-main");
     const looseChildren = [...(settingsMain?.children ?? [])] as HTMLElement[];
     expect(looseChildren.map((child) => child.className)).toEqual(["event-page-props"]);
+    // 페이지 이름 한 줄은 레일 위에 따로 둔다(wrapPageSettingsAsAccordion: 그룹으로 넣으면 «기타» 가 생긴다). 그 밖은 레일 하나뿐이다.
     const railChildren = [...(looseChildren[0]?.children ?? [])] as HTMLElement[];
-    expect(railChildren.every((child) => child.classList.contains("event-editor-settings-accordion"))).toBe(true);
+    const nonName = railChildren.filter((child) => child.dataset.testid !== "event-classic-name");
+    expect(nonName).toHaveLength(1);
+    expect(nonName.every((child) => child.classList.contains("event-editor-settings-accordion"))).toBe(true);
   });
 
   it("moves the quick tools out of the command list into the toolbar", () => {
