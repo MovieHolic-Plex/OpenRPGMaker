@@ -229,7 +229,7 @@ function cellEvents(map: GameMap): void {
     page(`${rinoId}_gone`, "떠남", [sw(SW_BREAD)], [], { priority: "below" }),
   ]);
   // 여는 장면 — 제2막으로 들어오면 한 번. 1막 에필로그 두 줄 뒤 막 제목 → 감방.
-  const toGate: Dir[] = ["left", "up"];
+  const toGate: Dir[] = ["left", "left", "up"];
   addEvent(map, director, "제2막 여는 장면", { x: 0, y: 0 }, [
     page(`${director}_run`, "감방의 밤", [sw(SW_ACT2, false)], [
       cutBegin(),
@@ -347,10 +347,13 @@ function barracks(project: Project, exec: Exec): void {
 // ════════════════════════════════════════════════════════════════════
 
 function hubNight(project: Project, exec: Exec, hubId: string): void {
-  exec(project, "duplicate_map", { mapId: hubId, id: FS2_HUB_NIGHT_ID, name: "왕도 아스텔 · 통금의 밤" });
+  // 같은 광장의 「통금의 밤」 판 — 사람·연출(1막 포위·군중·발렌)은 비우고 문만 남겨 잠근다(duplicate_map events:doors).
+  // B2 가 순찰 기사·창틈 주민을, B3·B4 가 천문대 우물·대장간 문을 새로 연다.
+  exec(project, "duplicate_map", {
+    mapId: hubId, id: FS2_HUB_NIGHT_ID, name: "왕도 아스텔 · 통금의 밤",
+    events: "doors", lockedDoorText: "통금이다. 문이 안에서 굳게 잠겨 있다.",
+  });
   const map = M(project, FS2_HUB_NIGHT_ID);
-  // 제1막 연출 이벤트(포위·행렬·발렌·기사 행렬·문지기)는 밤 판에 남기지 않는다 — B2 가 순찰 기사를 새로 세운다.
-  map.events = map.events.filter((e) => !/siege|escort|valen|director|_gate$|kid_bridge|knight$/.test(e.id));
   exec(project, "set_scene_mood", {
     mapId: FS2_HUB_NIGHT_ID, applyMode: "map",
     lighting: { ambient: 0.7, color: "#0a1024", sources: [{ id: "lamp", at: { kind: "player" }, radius: 3, intensity: 0.45, color: "#9fb4ff" }] },
