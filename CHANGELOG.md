@@ -5,6 +5,30 @@
 
 <!-- releases -->
 
+## 0.347.0 — 2026-10-26
+
+### 기능
+
+- **wasteland** — husk-b at 3.6x the hero and a calm asphalt road (#3615) (`0769690`)
+- **wasteland** — settlement and shanty maps stand large ruins and two-storey shacks in their rows (#3613) (`63c9257`)
+- **ai/v2** — VQA falls back across reviewers; same-family review is labelled (#3610) (`964ffa9`)
+- **battle** — add_battle_guest mid-battle guest joins; visible field enemies get factions and clash (#3557) (`dcc34bf`)
+- **wasteland** — scale objects up to Beodeul-measured heights (r64) (#3606) (`ed114f5`)
+
+### 수정
+
+- **ci** — re-ratchet css baselines — !important down 367→358, winners for #3542/#3546/#3558 (#3611) (`336456a`)
+- **ai** — flag a day counter running beside the time-system calendar (J18) (#3609) (`791a423`)
+- **ai** — break identical-refusal loops, not only arg-shape loops (J74) (#3608) (`aa9fed1`)
+
+### 테스트
+
+- **battle** — enemyBattleScale checks the pixel-sheet hit cell in retro2003 (#3614) (`11baee4`)
+
+### CI
+
+- **full** — 8 shards, 300-min jobs, reports always upload, cap flake retries (#3607) (`833802b`)
+
 ## 0.346.13 — 2026-10-26
 
 ### 수정
