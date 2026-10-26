@@ -226,6 +226,12 @@ describe("elements worksheet", () => {
       expect(oldList.querySelectorAll(".db-ws-row")).toHaveLength(1);
       const oldRow = oldList.firstElementChild;
       get("db-elements-maximum-number").click();
+      const maxDialog = get("db-elements-max-dialog").querySelector("[role='dialog']");
+      expect(maxDialog?.getAttribute("aria-labelledby")).toBe("db-elements-max-title");
+      expect(document.getElementById("db-elements-max-title")?.textContent).toBe("속성 최대 개수");
+      expect(get("db-elements-max-ok").textContent).toBe("확인");
+      expect(get("db-elements-max-ok").classList.contains("primary")).toBe(true);
+      expect(get("db-elements-max-cancel").textContent).toBe("취소");
       input("db-elements-max-count-input", "1");
       get("db-elements-max-ok").click();
       expect(store.getCurrent().database.elements).toHaveLength(1);

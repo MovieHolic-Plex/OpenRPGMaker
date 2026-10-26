@@ -42,6 +42,16 @@ function change(suffix: string, value: string): void {
 }
 
 describe("enemy action dialog input trust through the real store", () => {
+  it("names the dialog and labels confirm and cancel in Korean", () => {
+    open();
+    const dialog = field("dialog").querySelector("[role='dialog']");
+    expect(dialog?.getAttribute("aria-modal")).toBe("true");
+    expect(dialog?.getAttribute("aria-labelledby")).toBe("db-enemy-action-dialog-title");
+    expect(document.getElementById("db-enemy-action-dialog-title")?.textContent).toBe("공격 패턴");
+    expect(field("ok").textContent).toBe("확인");
+    expect(field("ok").classList.contains("primary")).toBe(true);
+    expect(field("cancel").textContent).toBe("취소");
+  });
   it("disables inactive turn fields and retains their raw draft across condition changes", () => {
     open();
     expect(field<HTMLInputElement>("turn-start").disabled).toBe(true);
