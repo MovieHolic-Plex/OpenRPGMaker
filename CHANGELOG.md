@@ -5,6 +5,17 @@
 
 <!-- releases -->
 
+## 0.347.1 — 2026-10-26
+
+### 수정
+
+- **ai/v2** — VQA fix turns start from a cleared context with a self-contained brief (J78) (#3618) (`1f5814a`)
+- **ai/v2** — ship-block unreachable critical events (J75); flag chasers slower than the player (J77) (#3617) (`563270d`)
+
+### 테스트
+
+- retire vitest cases that call assistant tools removed on purpose (#3616) (`caf77ef`)
+
 ## 0.347.0 — 2026-10-26
 
 ### 기능
