@@ -79,21 +79,24 @@ describe("editRenderGate", () => {
 
   it("wakes for an active window, and a frame request renders exactly once", () => {
     const { game, calls } = fakeGame();
+    const installedAt = clock;
     installEditRenderGate(game, EVENTS);
+    // 유휴 창을 16ms 프레임으로 실제처럼 지난다. 렌더 직후 시계를 500ms 건너뛰면 느린 GL 판정(slowFrameEma >
+    // EDIT_RENDER_SLOW_FRAME_MS)이 그 간격을 느린 프레임으로 읽어 뒤의 렌더를 100ms 간격으로 늦춘다 — 그건 이 시험의 주제가 아니다.
+    while (clock - installedAt <= EDIT_RENDER_IDLE_MS + 16) frame(game);
+    const idleRenders = calls.render;
     frame(game);
-    clock += EDIT_RENDER_IDLE_MS;
-    frame(game);
-    expect(calls.render).toBe(1);
+    expect(calls.render).toBe(idleRenders);
 
     requestEditRenderFrame(game);
     frame(game);
     frame(game);
-    expect(calls.render).toBe(2);
+    expect(calls.render).toBe(idleRenders + 1);
 
     markEditRenderActive(game);
     frame(game);
     frame(game);
-    expect(calls.render).toBe(4);
+    expect(calls.render).toBe(idleRenders + 3);
   });
 
   it("keeps a heartbeat render while idle", () => {
