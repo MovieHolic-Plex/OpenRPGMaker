@@ -5,6 +5,18 @@
 
 <!-- releases -->
 
+## 0.348.0 — 2026-10-26
+
+### 기능
+
+- **ai/v2** — flatten single-wrapper tool schemas (J67) (#3625) (`20175cf`)
+
+### 수정
+
+- **ai** — team image gates blame a text-only model, not a missing review (J69 follow-up) (#3624) (`1132afa`)
+- **ai** — image delivery statuses report not-delivered when the model can't take images (J69) (#3623) (`dbb6833`)
+- **ai/v2** — follow-up turns carry earlier requests; default place-name leak ship check (J70) (#3622) (`51e66a6`)
+
 ## 0.347.2 — 2026-10-26
 
 ### 수정
