@@ -3660,6 +3660,9 @@
        "steps": 4
       },
       {
+       "kind": "action"
+      },
+      {
        "kind": "waitFor",
        "testid": "dialogue-box",
        "state": "present",

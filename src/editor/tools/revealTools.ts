@@ -203,6 +203,7 @@ const placeLift: ToolDefinition = {
       toDirection: { type: "string", enum: ["up", "down", "left", "right"], description: "도착해서 보는 방향. 기본 down" },
       arrivedSwitchId: { type: "string", description: "도착 이벤트가 쓰는 스위치(도착 맵 다른 이벤트가 이어 받을 때). 기본 자동" },
       se: { type: "string", description: "기계음 효과음 id. 기본 cc0-se-osx-machine-02" },
+      trigger: { type: "string", enum: ["touch", "action"], description: "touch(기본)=발판에 올라서면 바로 탄다 · action=발판 위에서 조사 키를 눌러야 탄다(도착한 발판에서 걸어 나가다 도로 타 버리지 않게 — 양방향 승강 장치의 도착 쪽에 쓴다)" },
     },
     required: ["mapId", "x", "y"],
     additionalProperties: false,
@@ -247,7 +248,7 @@ const placeLift: ToolDefinition = {
           ]
         : [ride("move", x, y, true)]),
     ];
-    const trigger: Trigger = { kind: "playerTouch" } as Trigger;
+    const trigger: Trigger = { kind: args.trigger === "action" ? "action" : "playerTouch" } as Trigger;
     const switchId = typeof args.switchId === "string" && args.switchId ? args.switchId : undefined;
     const made: string[] = [];
     for (let dy = 0; dy < depth; dy += 1) for (let dx = 0; dx < width; dx += 1) {
