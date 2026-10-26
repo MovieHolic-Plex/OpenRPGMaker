@@ -68,12 +68,12 @@ export function panel(title: string, children: HTMLElement[], gridClass?: string
  *   2. 열 때 포커스를 안으로, 닫을 때 부르기 전 요소로 되돌린다
  *   3. 최상위 창만 Tab 경계를 감싼다. 중첩 피커는 자기 포커스를 소유한다.
  *
- * 버튼 클래스는 `.btn small` 을 그대로 쓴다. `db-ws-btn` 토큰 블록은 전부
+ * 버튼 클래스는 `.btn small` 을 그대로 쓴다. 확인 동작만 `primary` 를 더한다. `db-ws-btn` 토큰 블록은 전부
  * `.database-modal-body` 하위로 스코프돼 있고 이 대화상자는 `document.body` 에 붙기 때문에,
  * 갈아치우면 스타일이 통째로 사라진다(UA 기본 버튼이 된다). 전역 `.btn.small { flex: 1 }`
  * 인플레이션은 CSS 쪽에서 `.db-enemy-dialog footer` 로 한정해 되돌린다.
  */
-export function openDialog(testid: string, title: string, content: HTMLElement[], actions: readonly { readonly label: string; readonly testid: string; readonly action?: () => void }[], opener: HTMLElement | null = document.activeElement instanceof HTMLElement ? document.activeElement : null, onClose?: () => void): () => void {
+export function openDialog(testid: string, title: string, content: HTMLElement[], actions: readonly { readonly label: string; readonly testid: string; readonly primary?: boolean; readonly action?: () => void }[], opener: HTMLElement | null = document.activeElement instanceof HTMLElement ? document.activeElement : null, onClose?: () => void): () => void {
   const overlay = el("div", { class: "db-enemy-dialog-backdrop", dataset: { testid } });
   const restoreFocus = dialogReturnFocus(opener);
   let closed = false;
@@ -101,7 +101,7 @@ export function openDialog(testid: string, title: string, content: HTMLElement[]
       el("footer", {
         children: actions.map((entry) =>
           el("button", {
-            class: "btn small",
+            class: entry.primary ? "btn small primary" : "btn small",
             text: entry.label,
             attrs: { type: "button" },
             dataset: { testid: entry.testid },
