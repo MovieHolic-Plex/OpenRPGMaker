@@ -7,10 +7,12 @@ import { applySystemGraphic } from "@/player/systemGraphics";
 import { attachCursorMenu } from "@/player/runtimeCursorMenu";
 import { menuSkinFor } from "@/player/menuSkins/registry";
 import { partyWalker } from "@/player/partyWalker";
+import { getPlayerPreferences } from "@/player/playerPreferences";
 import { resolveActorName } from "@/project/sessionActorCommands";
 import type { PlaySession } from "@/project/session";
 import type { Project } from "@/project/types";
 import { el } from "@/util/dom";
+import { prefersReducedMotion } from "@/util/reducedMotion";
 import type { StepResult } from "@/player/interpreter";
 import type { PlaySceneContext } from "@/player/playSceneTypes";
 
@@ -135,7 +137,13 @@ function layoutPixelInn(overlay: HTMLElement, project: Project, session: PlaySes
           class: "runtime-inn-party-who",
           children: [
             el("span", { class: "runtime-inn-party-name", text: name }),
-            el("span", { class: `runtime-inn-party-state${states.length ? " has-state" : ""}`, text: states.length ? states.join(" · ") : "정상" }),
+            // 「독 → 정상」은 보이는 글자다. CSS content 로만 붙이면 화면에는 있고 읽어 주는 기술에는 없다.
+            el("span", {
+              class: `runtime-inn-party-state${states.length ? " has-state" : ""}`,
+              children: states.length
+                ? [states.join(" · "), el("span", { class: "runtime-inn-state-clear", text: " → 정상" })]
+                : ["정상"],
+            }),
           ],
         }),
         innGauge("HP", vitals.hp, hpAfter, vitals.maxHp, "hp", `inn-party-hp-${index}`),
@@ -188,6 +196,7 @@ function innGauge(label: string, current: number, after: number, max: number, ki
       }),
       el("span", {
         class: "runtime-inn-track",
+        attrs: { "aria-hidden": "true" },
         children: [
           el("span", { class: "runtime-inn-track-gain", attrs: { style: `width:${pct(after)}` } }),
           el("span", { class: "runtime-inn-track-fill", attrs: { style: `width:${pct(current)}` } }),
@@ -218,6 +227,12 @@ async function playInnRest(
   const fade = document.createElement("div");
   fade.className = "runtime-inn-fade";
   fade.dataset.testid = "inn-resting";
+  fade.setAttribute("role", "status");
+  fade.setAttribute("aria-label", "휴식 중");
+  if (innReducedMotion()) {
+    fade.style.animation = "none";
+    fade.style.opacity = "0.96";
+  }
   overlay.replaceChildren(fade);
   scene.syncRuntimeState();
 
@@ -294,14 +309,24 @@ function commerceStatus(text: string): HTMLElement {
   const status = document.createElement("p");
   status.className = "runtime-commerce-status";
   status.dataset.testid = "commerce-status";
+  status.setAttribute("role", "status");
   status.textContent = text;
   return status;
+}
+
+/** 운영체제 「움직임 줄이기」 또는 플레이어 「메뉴 움직임 줄이기」. 휴식 암전은 그때 바로 어두워진다. */
+function innReducedMotion(): boolean {
+  return getPlayerPreferences().reduceMenuMotion || prefersReducedMotion();
 }
 
 function createCommerceOverlay(options: CommerceOverlayOptions): HTMLElement {
   const overlay = document.createElement("section");
   overlay.className = "runtime-overlay runtime-commerce-overlay";
   overlay.dataset.testid = options.testId;
+  // 제목 노드는 휴식 연출이 통째로 갈아끼운다. 이름은 오버레이에 두어야 창이 바뀌어도 남는다.
+  overlay.setAttribute("role", "dialog");
+  overlay.setAttribute("aria-modal", "true");
+  overlay.setAttribute("aria-label", options.title);
   applySystemGraphic(overlay);
   const title = document.createElement("div");
   title.className = "runtime-overlay-title";
