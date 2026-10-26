@@ -10,6 +10,13 @@
 
 ### 진행 로그
 - 기준 굽기 `/tmp/fs2/base`(origin/main ed114f5cf0). 탐침은 `/tmp/fs2/probe.mts`(굽기 JSON 에 도구를 순서대로 부른다).
+- 2026-10-26 오후 (Claude 이어받음): origin/main 위로 rebase. B1~B3 를 `act2Opening.ts` 에 지음.
+  - B1 다리(엔딩 continueTo「제2막으로」)·감방·빵 속 열쇠·막사 잠입·사다리 — 출하 플레이어 체크포인트 `act2-bridge`·`act2-b1-cell`·`act2-b1-key`·`act2-b1-ladder` 통과·녹화.
+  - B2 통금의 밤 광장: `duplicate_map events:"doors" lockedDoorText`(새 일반 기능 — 사람·연출 비우고 문만 잠가 남김, 과제 `fs2-night-variant`), 순찰 기사 넷(`set_map_properties mapRole field` 뒤 `place_field_enemy` cone), 미레(우물 길)·토비(은수저)·마르타(쇠 마차).
+  - B3 우물 → `fs2_well_shaft` → `place_lift` 로 `fs2_obs_night` 서고, 하넬(세린·인장 fork). `place_lift` 가 toMap 도착 스위치를 만들지 않아 참조 검증에서 거부되던 버그 수정(과제 `fs2-well-lift`).
+  - 함정: 도구를 부르면 맵 객체가 새로 바뀐다 — 쥐고 있던 `map` 에 이벤트를 붙이면 조용히 사라진다. `addEv(project, mapId, …)` 로 그때그때 다시 찾는다.
+  - 함정: `place_npc` 는 막힌 칸이면 옆 칸으로 옮긴다 — 체크포인트 좌표는 굽기 결과에서 읽는다.
+  - 탐침: `/tmp/fs2/act2probe.mts` 는 vite-node 로 돈다: `OPRN_ASSUME_ALL_BGM_INSTALLED=1 node --max-old-space-size=12000 node_modules/vite-node/dist/cli.mjs --script /tmp/fs2/act2probe.mts`(tsx 는 .css import 로 죽는다). 타입 검사는 `/tmp/fs2/tsconfig.json`(만진 파일 + src/vite-env.d.ts).
 
 ## 1. 머지됨 (main)
 

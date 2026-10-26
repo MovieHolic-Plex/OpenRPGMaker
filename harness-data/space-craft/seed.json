@@ -10331,6 +10331,44 @@
    ],
    "verify": "duplicate_map events:\"doors\" + lockedDoorText / 새 맵 events 가 문(이전 transfer 자리)뿐, 페이지 명령이 text 한 줄 / map_blank_start 이벤트 수 불변 / set_scene_mood 또는 set_lighting_volume 로 밤 / 사람 이벤트를 하나씩 remove_event 로 지우는 대신 한 번에",
    "suiteCategory": "fs2-night-variant"
+  },
+  {
+   "category": "game",
+   "kind": "logic",
+   "mode": "balanced",
+   "startTileset": "beodeul_city",
+   "startBuild": [
+    {
+     "tool": "author_beodeul_town",
+     "args": {
+      "mapId": "map_blank_start",
+      "name": "버들 마을",
+      "houseCount": 4,
+      "theme": "river",
+      "seed": 11
+     }
+    },
+    {
+     "tool": "create_map",
+     "args": {
+      "id": "map_tower_top",
+      "name": "탑 꼭대기",
+      "width": 20,
+      "height": 15,
+      "tilesetId": "atlas_biome_interior"
+     }
+    }
+   ],
+   "id": "fs2-well-lift",
+   "prompt": "마을 우물 밑으로 사다리 타고 내려가면 작은 지하 승강구가 있고, 거기서 승강 장치를 타면 탑 꼭대기(map_tower_top)로 올라가게 해 줘. 탑에서 승강 장치 타면 다시 내려오게.",
+   "requires": [
+    "우물 조사 → 지하 맵으로 이동",
+    "지하에서 우물로 돌아가는 사다리",
+    "승강 장치 위로 → map_tower_top 도착 연출",
+    "탑에서 아래로 되돌아오는 승강 장치"
+   ],
+   "verify": "build_hand_interior_room(지하 승강구) / place_lift toMapId map_tower_top + 반대 방향 place_lift / 도착 스위치가 project.switches 에 있음(참조 검증 통과) / 승강기를 바닥 칸+페이드로 흉내내지 않음",
+   "suiteCategory": "fs2-well-lift"
   }
  ],
  "gates": {
