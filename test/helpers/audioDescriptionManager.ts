@@ -3,6 +3,7 @@ import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
 import { resetMapEditHistory } from "@/editor/mapEditHistory";
 import { openResourceModal } from "@/editor/panels/resourceModal";
+import { RESOURCE_MANAGER_CATEGORIES } from "@/editor/panels/resourceManager";
 import { resetModalStackForTest } from "@/editor/ui/modalStack";
 
 export function control<T extends HTMLElement = HTMLElement>(id: string): T {
@@ -12,8 +13,10 @@ export function control<T extends HTMLElement = HTMLElement>(id: string): T {
 }
 
 export function chooseKind(kind: "music" | "sound"): void {
-  const index = kind === "music" ? 9 : 12;
-  const button = control("resource-category-list").querySelectorAll("button")[index];
+  // 위치가 아니라 이름으로 고른다 — 얼굴 그래픽 아래 「표정 관리」 줄이 끼면서 번호가 한 칸씩 밀렸다.
+  const label = RESOURCE_MANAGER_CATEGORIES.find(category => category.kind === kind)?.label;
+  const button = [...control("resource-category-list").querySelectorAll("button")]
+    .find(candidate => candidate.getAttribute("aria-label") === label);
   if (!button) throw new Error(`Missing category: ${kind}`);
   button.click();
 }
