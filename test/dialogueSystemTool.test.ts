@@ -77,7 +77,8 @@ describe("set_dialogue_system", () => {
     [{ backlogLimit: 5 }, /backlogLimit/],
     [{ backlogLimit: 9999 }, /backlogLimit/],
     [{ backlogLimit: 50.5 }, /backlogLimit/],
-    [{ backlog: "true" }, /boolean/],
+    // 문자열 "true"/"false" 는 불리언으로 읽는다(jsonSchema 강제 변환, #3226) — 뜻이 둘인 문자열만 거부된다.
+    [{ backlog: "yes" }, /boolean/],
     [{ language: "fr" }, /language/],
     [{ preset: "visualnovel" }, /preset/],
     [{ defaults: { skipScope: "some" } }, /skipScope/],
@@ -94,6 +95,12 @@ describe("set_dialogue_system", () => {
     expect(result.ok).toBe(false);
     expect(JSON.stringify(result)).toMatch(hint);
     expect(JSON.stringify(ctx.project.meta)).toBe(before);
+  });
+
+  it("reads the strings \"true\"/\"false\" as booleans (schema coercion, #3226)", () => {
+    const ctx = { project: createBlankProject() };
+    expect(runTool(ctx, "set_dialogue_system", { backlog: "true" } as never).ok).toBe(true);
+    expect(ctx.project.meta.oprnDialogueSystem?.backlog.enabled).toBe(true);
   });
 
   it("counts as a requested game-system change that needs a review pass", () => {
