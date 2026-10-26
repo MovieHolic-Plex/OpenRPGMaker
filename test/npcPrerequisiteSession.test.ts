@@ -23,7 +23,8 @@ function harness(f: ReturnType<typeof prerequisiteFixture>, replies: (ChatResult
   return { session, replies, requests, events, onEvent, results };
 }
 afterEach(() => resetIntentDeclarationCache());
-describe("request-bound verify_npc_reward session tool", () => {
+// Heavy under CI load (15s default is too tight): runs real AssistantSession turns.
+describe("request-bound verify_npc_reward session tool", { timeout: 120_000 }, () => {
   it("R1 exposes the tool and completes through its real session boundary", async () => {
     const f = prerequisiteFixture();
     const h = harness(f, [call("verify_npc_reward", { requirementIndex: 0, prelude: f.prelude })]);

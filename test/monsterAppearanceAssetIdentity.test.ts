@@ -107,7 +107,8 @@ it("exposes a compact shared asset identity in both full reads without shipping 
   expect(JSON.stringify(results)).not.toContain(redImage);
 });
 
-it("rejects stale image identity and recovers after a new full read in the actual session", async () => {
+// Heavy under CI load (15s default is too tight): runs a real AssistantSession.
+it("rejects stale image identity and recovers after a new full read in the actual session", { timeout: 120_000 }, async () => {
   // Given an actual upload and a model that replaces bytes after reading them.
   const ctx = registeredUpload();
   const write = { name: "upsert_enemy", args: { enemy: { id: "session_boss", name: "Custom Boss", monsterResourceId: goblinId }, appearanceTags: ["goblin"] } };

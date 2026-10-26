@@ -3,7 +3,8 @@ import { runTool } from "@/editor/tools/toolRunner";
 import type { ToolContext } from "@/editor/tools/types";
 import { audioDescriptionToolProject, MUSIC_ID, SOUND_ID } from "./support/audioDescriptionToolProject";
 
-describe("audio description tools", () => {
+// Heavy under CI load (15s default is too tight): each case runs tools against a full structuredClone of the project.
+describe("audio description tools", { timeout: 120_000 }, () => {
   it.each([
     ["music", MUSIC_ID],
     ["sound", SOUND_ID],

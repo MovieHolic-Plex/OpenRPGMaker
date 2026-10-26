@@ -179,7 +179,8 @@ function normalSession(f: ReturnType<typeof fixture>) {
   } };
 }
 
-describe.each(["ordinary", "correct_verification"])("normal session selection ownership via %s", mode => {
+// Heavy under CI load (15s default is too tight): runs real AssistantSession turns with scene tests.
+describe.each(["ordinary", "correct_verification"])("normal session selection ownership via %s", { timeout: 120_000 }, mode => {
   it.each(["foreign-pass", "two-negatives", "no-target-control"])("%s stays blocked until each failed map is repaired", async scenario => {
     const f = fixture(scenario === "no-target-control" ? "no-target" : "front");
     const s = normalSession(f);

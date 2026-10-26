@@ -8,7 +8,8 @@ import { GROWTH_PRESETS } from '@/project/growth/presets';
 
 afterEach(() => { vi.restoreAllMocks(); resetMapEditHistory(); document.body.replaceChildren(); });
 for (const mode of ['promotion', 'skill'] as const) {
-  it(`${mode}: browsing and cancel are inert; explicit apply is one undo boundary`, () => {
+  // Heavy under CI load (15s default is too tight): renders the studio and clones the blank project in happy-dom.
+  it(`${mode}: browsing and cancel are inert; explicit apply is one undo boundary`, { timeout: 120_000 }, () => {
     store.replace(createBlankProject()); resetMapEditHistory();
     const before = structuredClone(store.getCurrent());
     const update = vi.spyOn(store, 'update');

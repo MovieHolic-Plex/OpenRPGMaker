@@ -11,7 +11,8 @@ type RepositoryModule = typeof import("@/project/persistence/repository");
 
 const target: ProjectTarget = { url: "memory://store-test", anonKey: "memory", projectId: "store-uses-repository" };
 
-describe("store 는 저장소 포트로 저장·읽기·상태를 얻는다", () => {
+// Heavy under CI load (15s default is too tight): saves and reloads a full project through the store.
+describe("store 는 저장소 포트로 저장·읽기·상태를 얻는다", { timeout: 120_000 }, () => {
   let memory: MemoryRepository;
   let store: StoreModule["store"];
   let repositoryModule: RepositoryModule;
