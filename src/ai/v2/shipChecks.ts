@@ -12,6 +12,7 @@ import { withoutIntentNote } from "@/ai/piAgent/monsterGameRequest";
 import { tileAt } from "@/project/collision";
 import { gameHasCombat } from "@/project/combatPresence";
 import { hiddenStairExits } from "@/project/stairs/fit";
+import { unlitDarkFinding } from "@/qa/gameCheck/visualVoid";
 import { fieldMenu } from "@/project/fieldMenu";
 import { FACTORY_HERO_ARMS } from "./genreDefaults";
 
@@ -395,7 +396,12 @@ export function shipBlockers(project: Project, task: string): ShipBlocker[] {
   // 계단 출구가 숨은 칸이다(J87) — 계단 앞에서 계단 쪽으로 걸어도 이동이 없다.
   const hiddenExits = hiddenStairExits(project).slice(0, 4);
   const hidden: ShipBlocker[] = hiddenExits.length ? [{ id: "exit-hidden", message: `계단 출구를 계단 쪽으로 걸어서는 탈 수 없다: ${hiddenExits.join(" · ")}. create_transfer_pair 를 계단 그림 칸으로 다시 부르면 계단 폭 전체가 출구가 된다.`, evidence: hiddenExits[0]!.slice(0, 120) }] : [];
-  return [...hidden, ...editorDefaultsLeft(project), ...endingClosureProblems(project), ...openingWithoutPlace(project), ...offPremiseArt(project, task), ...defaultPlaceLeaks(project, task), ...titleMismatch(project, task), ...requestedFeatureGaps(project, task), ...unreachable, ...spoilers];
+  // 짙은 어둠에 주인공 빛이 없으면 걸을 바닥이 검은 구멍이다(J89).
+  const unlit: ShipBlocker[] = Object.values(project.maps).flatMap((map) => {
+    const finding = unlitDarkFinding(map);
+    return finding ? [{ id: "dark-unlit", message: `「${map.name ?? map.id}」(${map.id}) ${finding.message.replace(/^시각 공백: /u, "")}`, evidence: `${map.id} ambient ${map.defaultLighting?.ambient}` }] : [];
+  }).slice(0, 3);
+  return [...hidden, ...unlit, ...editorDefaultsLeft(project), ...endingClosureProblems(project), ...openingWithoutPlace(project), ...offPremiseArt(project, task), ...defaultPlaceLeaks(project, task), ...titleMismatch(project, task), ...requestedFeatureGaps(project, task), ...unreachable, ...spoilers];
 }
 
 /** 게임이 «아직 안 지어졌다»는 신호 — 뼈대 자리표시만 남았거나 엔딩이 없다(편집기 기본 HUD·창 같은 마감 항목은 여기서 보지 않는다). */
