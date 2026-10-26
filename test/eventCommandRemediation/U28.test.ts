@@ -192,6 +192,9 @@ describe("G1-F18 selected text record insertion", () => {
     const body = openText();
     body.setSelectionRange(5, 5);
     control<HTMLButtonElement>("event-command-text-tool-variable").click();
+    // 기록 고르기는 선택 없이 열린다(resolveInitialId: currentId "" → "") — 첫 ↓ 는 첫 행(var_0001)을 고르고,
+    // 둘째 ↓ 가 지원 안 되는 legacy_reward 를 건너뛰어 var_0002 로 가야 한다.
+    control("event-record-picker-search").dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowDown", bubbles: true }));
     control("event-record-picker-search").dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowDown", bubbles: true }));
     control<HTMLButtonElement>("event-record-picker-ok").click();
     expect(body.value).toBe("Hello\\v[2] world");
