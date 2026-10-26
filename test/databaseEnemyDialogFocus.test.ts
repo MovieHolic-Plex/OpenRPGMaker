@@ -87,7 +87,8 @@ describe("monster dialog keyboard and live opener lifecycle", () => {
   it.each(["action", "graphic"] as const)("wraps both Tab boundaries in the %s dialog without replacing interior native Tab", (kind) => {
     if (kind === "action") openAction(); else openGraphic();
     const prefix = kind === "action" ? "db-enemy-action" : "db-enemy-graphic-dialog";
-    const first = control(kind === "action" ? "db-enemy-action-condition-type" : `${prefix}-search`);
+    // The action dialog's first tab stop is the priority field, which precedes the condition select (panel order in databaseEnemyActionDialog.ts).
+    const first = control(kind === "action" ? "db-enemy-action-rating" : `${prefix}-search`);
     const last = control(`${prefix}-cancel`);
     first.focus();
     expect(key(first, "Tab", true).defaultPrevented).toBe(true);

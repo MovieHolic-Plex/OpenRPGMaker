@@ -47,7 +47,7 @@ afterEach(() => {
 });
 
 describe("database animation preview", () => {
-  it("autoplays visible frames in a loop and restores the editing frame on stop", () => {
+  it("autoplays visible frames in a loop and restores the editing frame on stop", async () => {
     const project = createBlankProject();
     const animation = project.database.battleAnimations[0] as BattleAnimationRecord;
     const sheet: BattleAnimationSheet = animation.sheet ?? { frameWidth: 96, frameHeight: 96, columns: 5 };
@@ -70,6 +70,7 @@ describe("database animation preview", () => {
     if (!(panel instanceof FakeElement)) throw new Error("Expected fake animation panel");
 
     document.body.append(panel);
+    await Promise.resolve(); // real image loads land after the microtask that activates the preview
     for (const image of loadedImages) image.dispatchEvent(new Event("load"));
     const play = findByTestId(panel, "db-animation-play");
     expect(play?.attrs["aria-pressed"]).toBe("true");

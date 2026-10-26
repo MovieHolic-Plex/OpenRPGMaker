@@ -19,7 +19,7 @@ class PreviewImage extends EventTarget {
 
 let animationFrames: FrameRequestCallback[];
 
-beforeEach(() => {
+beforeEach(async () => {
   vi.useFakeTimers();
   vi.setSystemTime(new Date("2026-09-05T13:00:00Z"));
   vi.stubGlobal("Image", PreviewImage);
@@ -41,7 +41,7 @@ beforeEach(() => {
   resetMapEditHistory();
   editorState.set({ selectedAnimationFrameIndex: 0, selectedAnimationCellIndex: 0 });
   openDatabaseModal("animations");
-  imageLoaded();
+  await imageLoaded();
 });
 
 afterEach(async () => {
@@ -60,7 +60,10 @@ function node(testid: string): HTMLElement {
   return element;
 }
 
-function imageLoaded(): void {
+// Image decode completion is always asynchronous in a browser, i.e. after the microtask that
+// activates a registered preview (registerDatabasePreview). Flush it before delivering the load.
+async function imageLoaded(): Promise<void> {
+  await Promise.resolve();
   const image = PreviewImage.requests.at(-1);
   if (!image) throw new Error("Missing preview image request");
   image.dispatchEvent(new Event("load"));
@@ -71,7 +74,7 @@ function position(): string { return node("db-animation-stage-target").style.bac
 describe("battle animation intent across the scheduled modal store refresh", () => {
   it.each(["frame selection", "explicit stop"])("retains %s through grace flush and form replacement", async (stop) => {
     node("db-animation-frame-1").click();
-    imageLoaded();
+    await imageLoaded();
     if (stop === "explicit stop") {
       node("db-animation-play").click();
       node("db-animation-play").click();
@@ -96,7 +99,7 @@ describe("battle animation intent across the scheduled modal store refresh", () 
     const add = node("db-animation-timing-add");
     add.dispatchEvent(new Event("pointerdown", { bubbles: true }));
     add.click();
-    imageLoaded();
+    await imageLoaded();
     expect(store.getCurrent().database.battleAnimations[0].timings).toHaveLength(1);
     expect(node("db-detail-form")).toBe(oldForm);
     expect(node("db-animation-play").getAttribute("aria-pressed")).toBe("false");
@@ -110,7 +113,7 @@ describe("battle animation intent across the scheduled modal store refresh", () 
     for (const callback of queued) callback(performance.now());
     await vi.advanceTimersByTimeAsync(0);
     await refreshObserved;
-    imageLoaded();
+    await imageLoaded();
     expect(oldForm.isConnected).toBe(false);
     expect(node("db-animation-frame-1").classList.contains("active")).toBe(true);
     expect(editorState.get().selectedAnimationFrameIndex).toBe(1);
@@ -119,20 +122,20 @@ describe("battle animation intent across the scheduled modal store refresh", () 
     expect(position()).toBe("-96px 0px");
   });
 
-  it("starts fresh on a different record and after closing and reopening the modal", () => {
+  it("starts fresh on a different record and after closing and reopening the modal", async () => {
     node("db-animation-play").click();
     node("db-record-row-preview-b").click();
-    imageLoaded();
+    await imageLoaded();
     expect(node("db-animation-play").getAttribute("aria-pressed")).toBe("true");
     expect(position()).toBe("0px 0px");
     node("db-animation-play").click();
     node("db-record-row-preview-a").click();
-    imageLoaded();
+    await imageLoaded();
     expect(node("db-animation-play").getAttribute("aria-pressed")).toBe("true");
     node("db-animation-play").click();
     requestDatabaseModalClose("battleTest");
     openDatabaseModal("animations");
-    imageLoaded();
+    await imageLoaded();
     expect(node("db-animation-play").getAttribute("aria-pressed")).toBe("true");
     expect(position()).toBe("0px 0px");
   });

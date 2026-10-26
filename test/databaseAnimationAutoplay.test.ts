@@ -66,7 +66,10 @@ function play(): HTMLButtonElement {
   if (!(button instanceof HTMLButtonElement)) throw new Error("Expected playback button");
   return button;
 }
-function imageResult(result: "load" | "error" = "load"): void {
+// Image decode completion is always asynchronous in a browser, i.e. after the microtask that
+// activates a registered preview (registerDatabasePreview). Flush it before delivering the result.
+async function imageResult(result: "load" | "error" = "load"): Promise<void> {
+  await Promise.resolve();
   const image = PreviewImage.requests.at(-1);
   if (!image) throw new Error("Expected image request");
   image.dispatchEvent(new Event(result));
@@ -76,22 +79,22 @@ function expectPlaying(playing: boolean): void { expect(play().getAttribute("ari
 
 // Subscribe before the DOM mutation. Happy DOM delivers MutationObservers through
 // its timer queue, so advancing zero runs that exact lifecycle notification.
-async function mutateDom(action: () => void): Promise<void> {
+async function mutateDom(action: () => void | Promise<void>): Promise<void> {
   const observed = new Promise<void>((resolve) => {
     const observer = new MutationObserver(() => { observer.disconnect(); resolve(); });
     observer.observe(document.body, { childList: true, subtree: true });
   });
-  action();
+  await action();
   await vi.advanceTimersByTimeAsync(0);
   await observed;
 }
 
 describe("battle animation form playback lifetime", () => {
-  it("autoplays from the beginning after image load, loops, and restores the editing frame", () => {
+  it("autoplays from the beginning after image load, loops, and restores the editing frame", async () => {
     render();
     expectPlaying(false);
     expect(play().disabled).toBe(true);
-    imageResult();
+    await imageResult();
     expectPlaying(true);
     expect(position()).toBe("0px 0px");
     vi.advanceTimersByTime(67);
@@ -107,45 +110,45 @@ describe("battle animation form playback lifetime", () => {
     expect(position()).toBe("-192px 0px");
   });
 
-  it.each(["db-animation-frame-1", "db-animation-frame-prev"])("%s stops autoplay and preserves selection through field rerenders", (testid) => {
-    render(); imageResult();
-    node(testid).click(); imageResult();
+  it.each(["db-animation-frame-1", "db-animation-frame-prev"])("%s stops autoplay and preserves selection through field rerenders", async (testid) => {
+    render(); await imageResult();
+    node(testid).click(); await imageResult();
     expectPlaying(false);
     expect(editorState.get().selectedAnimationFrameIndex).toBe(1);
     expect(node("db-animation-frame-1").classList.contains("active")).toBe(true);
     expect(position()).toBe("-96px 0px");
-    node("db-animation-timing-add").click(); imageResult();
+    node("db-animation-timing-add").click(); await imageResult();
     expectPlaying(false);
     vi.advanceTimersByTime(67 * 4);
     expect(position()).toBe("-96px 0px");
   });
 
-  it("explicit stop survives ordinary rerenders but does not leak into another record or form", () => {
-    render(); imageResult(); play().click();
-    node("db-animation-timing-add").click(); imageResult();
+  it("explicit stop survives ordinary rerenders but does not leak into another record or form", async () => {
+    render(); await imageResult(); play().click();
+    node("db-animation-timing-add").click(); await imageResult();
     expectPlaying(false);
-    render({ ...animation, id: "preview-b" }); imageResult();
+    render({ ...animation, id: "preview-b" }); await imageResult();
     expectPlaying(true);
     play().click();
     form = document.createElement("section");
     document.body.append(form);
-    render(); imageResult();
+    render(); await imageResult();
     expectPlaying(true);
   });
 
-  it("stop restores current inline cell edits rather than the render-time snapshot", () => {
-    render(); imageResult();
+  it("stop restores current inline cell edits rather than the render-time snapshot", async () => {
+    render(); await imageResult();
     const input = node("db-animation-cell-x-0");
     if (!(input instanceof HTMLInputElement)) throw new Error("Expected x input");
     input.value = "55";
     input.dispatchEvent(new Event("input"));
     play().click();
-    expect(node("db-animation-stage-target").style.transform).toBe("translate(55px, 0px) scale(1)");
+    expect(node("db-animation-stage-target").style.transform).toBe("translate(55px, 0px) rotate(0deg) scale(1, 1)") // cells now carry rotation and mirror in the transform;
   });
 
-  it("reduced motion starts stopped but allows manual looping playback", () => {
+  it("reduced motion starts stopped but allows manual looping playback", async () => {
     vi.spyOn(motionPreference, "matches", "get").mockReturnValue(true);
-    render(); imageResult();
+    render(); await imageResult();
     expectPlaying(false);
     expect(play().disabled).toBe(false);
     expect(position()).toBe("-192px 0px");
@@ -155,7 +158,7 @@ describe("battle animation form playback lifetime", () => {
     expect(position()).toBe("-96px 0px");
   });
 
-  it.each([undefined, "missing-preview-resource"])("%s graphic has no fake effect or playing state", (resourceId) => {
+  it.each([undefined, "missing-preview-resource"])("%s graphic has no fake effect or playing state", async (resourceId) => {
     render({ ...animation, resourceId });
     expectPlaying(false);
     expect(play().disabled).toBe(true);
@@ -163,28 +166,29 @@ describe("battle animation form playback lifetime", () => {
     expect(form.querySelector(".db-animation-stage-cell")).toBeNull();
   });
 
-  it.each(["error", "blank", "out-of-sheet"])("%s image/cells cannot advertise playback", (kind) => {
+  it.each(["error", "blank", "out-of-sheet"])("%s image/cells cannot advertise playback", async (kind) => {
     render(kind === "blank" ? { ...animation, frames: [{ cells: [] }] }
       : kind === "out-of-sheet" ? { ...animation, frames: [{ cells: [{ ...frames[0].cells[0], pattern: 50 }] }] }
       : animation);
-    imageResult(kind === "error" ? "error" : "load");
+    await imageResult(kind === "error" ? "error" : "load");
     expectPlaying(false);
     expect(play().disabled).toBe(true);
     expect(node("db-animation-preview-status").dataset.state).toBe("empty");
     expect(form.querySelector(".db-animation-stage-cell")).toBeNull();
   });
 
-  it("rerender cancels the old interval and ignores stale image completion", () => {
+  it("rerender cancels the old interval and ignores stale image completion", async () => {
     const clear = vi.spyOn(window, "clearInterval");
-    render(); imageResult();
+    render(); await imageResult();
     const oldTarget = node("db-animation-stage-target");
     node("db-animation-timing-add").click();
     expect(clear).toHaveBeenCalledTimes(1);
     const staleImage = PreviewImage.requests.at(-1);
     node("db-animation-timing-add").click();
+    await Promise.resolve(); // the surviving preview is active, so only staleness can keep it stopped
     staleImage?.dispatchEvent(new Event("load"));
     expectPlaying(false);
-    imageResult();
+    await imageResult();
     vi.advanceTimersByTime(67);
     expect(position()).toBe("-96px 0px");
     expect(oldTarget.style.backgroundPosition).toBe("0px 0px");
@@ -194,7 +198,7 @@ describe("battle animation form playback lifetime", () => {
     const modal = document.createElement("div"); modal.className = "database-modal-backdrop";
     const workspace = document.createElement("div"); workspace.className = "oprn-record-battleAnimations";
     workspace.append(form); modal.append(workspace); document.body.append(modal);
-    await mutateDom(() => { render(); imageResult(); });
+    await mutateDom(async () => { render(); await imageResult(); });
     const intervals = vi.spyOn(window, "setInterval");
     const clear = vi.spyOn(window, "clearInterval");
     await mutateDom(() => workspace.remove());
