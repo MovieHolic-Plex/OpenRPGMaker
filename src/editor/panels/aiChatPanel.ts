@@ -82,6 +82,7 @@ import { createInlineWorkCard } from "./aiInlineWorkCard";
 import { currentTeamActivity, setTeamStopHandler } from "@/ai/piAgent/teamActivity";
 import { DEFAULT_PI_TEAM, resolvePiRunPlan, type PiRunPlan } from "@/ai/piAgent/executionRoute";
 import { isAssistantV2Enabled } from "@/ai/v2/switch";
+import { priorRequestsNote } from "@/ai/v2/priorRequests";
 import { classifyPlainPiTurn, clarifyFollowUpText, selectedEventFact } from "@/ai/piAgent/plainTurn";
 import { applyMonsterIntentStart, needsMonsterKitStart } from "@/project/genrePresets";
 import { resolveContextWindow } from "@/ai/contextCompaction";
@@ -2298,7 +2299,9 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     const timing = createTurnTiming();
     // 조수 v2(기본 꺼짐): 의도 선언 모델 호출을 건너뛴다 — v2 는 실행 모델이 요청을 짓기 명세로 바로 해석한다(src/ai/v2).
     if (isAssistantV2Enabled() && turnOptions?.team !== true) {
-      return { command: plainPiCommand(text, "single", turnMapId), plan: { ...resolvePiRunPlan(currentAutonomy()), routingAudit: "assistant-v2" }, questionPromoted: false, intentNote: null, timing };
+      // 앞선 요청을 메모로 싣는다 — 실행마다 새 세션이라 「처음에 부탁한 대로」가 가리킬 곳이 없었다(J70).
+      const priorNote = priorRequestsNote([...controller.auditHistory, ...(controller.session?.getAuditEntries() ?? [])], text);
+      return { command: plainPiCommand(text, "single", turnMapId), plan: { ...resolvePiRunPlan(currentAutonomy()), routingAudit: "assistant-v2" }, questionPromoted: false, intentNote: priorNote, timing };
     }
     timing.start("intent");
     // 순수 부분(선언 → 계획·노출 툴·의도 노트)은 plainTurn.ts 가 소유한다 — 헤드리스 생성기(scripts/qa-game/gen.mts)와 같은 함수다.
