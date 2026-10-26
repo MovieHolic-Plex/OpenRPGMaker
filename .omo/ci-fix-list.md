@@ -12,7 +12,7 @@ Work order (cheapest first): timeout → fake-DOM/env gaps → combined_town / o
 | tag | files |
 |---|---|
 | removed | 2 |
-| timeout | 75 |
+| timeout | 49 |
 | external | 0 |
 | drift | 586 |
 
@@ -23,9 +23,9 @@ Work order (cheapest first): timeout → fake-DOM/env gaps → combined_town / o
 - **1** — `AssertionError: 알 수 없는 툴: run_interior_room_pipeline: expected false to be true // Object.is equality`
   - [ ] `test/interiorPipelineMapReplacement.test.ts`
 
-## timeout (75)
+## timeout (49)
 
-- **61** — `Error: Test timed out in Nms.`
+- **35** — `Error: Test timed out in Nms.`
   - [ ] `test/actionAcceptanceProof.test.ts`
   - [ ] `test/actionCombatProbeBoot.test.ts`
   - [ ] `test/advisoryLintProvenance.test.ts`
@@ -55,38 +55,12 @@ Work order (cheapest first): timeout → fake-DOM/env gaps → combined_town / o
   - [ ] `test/assistantVerificationContinuation.test.ts`
   - [ ] `test/assistantVerificationEvidence.test.ts`
   - [ ] `test/assistantVisualEvidenceSession.test.ts`
-  - [ ] `test/audioDescriptionSessionPrompt.test.ts`
-  - [ ] `test/audioDescriptionTools.test.ts`
-  - [ ] `test/autonomyHarness.test.ts`
   - [ ] `test/buildSpecOverlapRecovery.test.ts`
-  - [ ] `test/databaseContractUnify.test.ts`
-  - [ ] `test/exportSaveAdoption.test.ts`
-  - [ ] `test/growthPresetStudio.test.ts`
-  - [ ] `test/localStore/conflict.test.ts`
   - [ ] `test/monsterAppearanceHttp.test.ts`
   - [ ] `test/monsterAppearanceSession.test.ts`
-  - [ ] `test/monsterSfx.test.ts`
-  - [ ] `test/moveRouteCatalogPersistence.test.ts`
-  - [ ] `test/npcApproach.test.ts`
   - [ ] `test/npcPrerequisiteSession.test.ts`
   - [ ] `test/npcRewardSession.test.ts`
-  - [ ] `test/persistence/repositoryContract.test.ts`
-  - [ ] `test/persistence/saveBaselineOwnership.test.ts`
-  - [ ] `test/persistence/storeUsesRepository.test.ts`
-  - [ ] `test/piAgentBackgroundCheckpoint.test.ts`
-  - [ ] `test/piAgentLanes.test.ts`
-  - [ ] `test/projectWikiPreparation.test.ts`
-  - [ ] `test/spatialCombinedAuthoring.test.ts`
-  - [ ] `test/team/projectService.test.ts`
-  - [ ] `test/tilePassabilityComponents.test.ts`
   - [ ] `test/toolHostileArgs.test.ts`
-  - [ ] `test/toolImageGraftWait.test.ts`
-  - [ ] `test/verificationPlanAtomicity.test.ts`
-  - [ ] `test/verificationPlanAtomicityOwnership.test.ts`
-  - [ ] `test/verificationSelectionOwnership.test.ts`
-  - [ ] `test/walkthroughVerificationInput.test.ts`
-  - [ ] `test/wholeMapCoverageRender.test.ts`
-  - [ ] `test/workPlanIdentity.test.ts`
 - **2** — `AssertionError: expected false to be true // Object.is equality`
   - [ ] `test/assistantBatchCompletion.test.ts`
   - [ ] `test/assistantDependencyRetry.test.ts`
