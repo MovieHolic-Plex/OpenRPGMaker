@@ -34,6 +34,9 @@
   - 함정: fadeOut 뒤 transfer 하면 화면이 검은 채로 다음 맵 도착 대사가 돈다 — 도착 자동 이벤트 첫 줄에 fadeIn.
   - 함정: 선택지 앞 대사가 여섯 줄이면 Enter 10번으로 모자라다(글자 흘림 1번 + 넘김 1번) — repeatUntil maxRounds 넉넉히.
   - 정본 revision 4(굽기 bake6, 맵 31) → revision 5(bake7, 맵 33) 저장·재로드 OK.
+  - B9 수정: 발렌을 탈출 이벤트보다 먼저 세운다 — `make_timed_escape` 가 다른 이벤트가 선 칸은 무너뜨리지 않는다(전에는 무너짐 이벤트가 발렌 칸을 덮어 말을 안 받았다). 무너짐은 칸마다가 아니라 줄마다 이어진 얼음 덩이 하나씩(steps = 줄별 연속 구간).
+  - **1.23 판본 끝 = B8 서리나루 여관**(`FS2_RELEASE_STOP = "B8"`). 하르마 뒤 여관 주인 오사 「판본 끝」 페이지: 회복·「제2막 「빌린 불」 — 여기까지」 막 카드·저장 메뉴. 밤 판(`fs2_frostford_night`)으로 가는 이동이 아예 없다(굽기 JSON 에서 바깥 맵이 밤 판·하늘탑을 가리키는 곳 0 확인). 다음 판본에서 B9 를 열려면 `FS2_RELEASE_STOP = null` — 그러면 같은 페이지 자리에 밤으로 넘어가는 페이지가 들어간다. 체크포인트 `act2-b8-stop`.
+  - 정본 revision 6(bake8) → bake9 저장.
   - 탐침: `/tmp/fs2/act2probe.mts` 는 vite-node 로 돈다: `OPRN_ASSUME_ALL_BGM_INSTALLED=1 node --max-old-space-size=12000 node_modules/vite-node/dist/cli.mjs --script /tmp/fs2/act2probe.mts`(tsx 는 .css import 로 죽는다). 타입 검사는 `/tmp/fs2/tsconfig.json`(만진 파일 + src/vite-env.d.ts).
 
 ## 1. 머지됨 (main)
