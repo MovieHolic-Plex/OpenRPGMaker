@@ -146,4 +146,53 @@ describe("shipped catalogs", () => {
       "マップ1マスの地上または上部タイルを変更します。",
     );
   });
+
+  it("calls the lower map layer the ground layer, not a child or subordinate", () => {
+    // 타일셋 필터·홈 레이어의 「하위」는 바닥 레이어다. 하위 맵·하위 조건의 자식 뜻과 갈라진다.
+    expect(en["하위"]).toBe("Ground");
+    expect(ja["하위"]).toBe("地上");
+    expect(zh["하위"]).toBe("地面");
+    expect(en["하위"]).toBe(en["바닥"]);
+    expect(ja["하위"]).toBe(ja["바닥"]);
+    expect(zh["하위"]).toBe(zh["바닥"]);
+
+    const layerKeys = [
+      "하위 + 받침",
+      "하위 = 초록 테두리",
+      "하위 고정",
+      "하위 레이어",
+      "하위 레이어 타일 — 하위 레이어 편집으로 전환",
+      "하위 레이어 타일만 강조",
+      "하위 레이어에서 자유롭게 칠하면 가장자리와 중앙이 자동으로 이어지는 물 지형입니다.",
+      "하위 레이어에서 자유롭게 칠하면 모서리, 변, 중앙이 자동으로 이어지는 길 지형입니다.",
+      "하위·상위 전부 표시",
+      "투명 하위 유지",
+      "투명 하위(받침 없음)",
+      "이 타일의 홈 레이어를 하위로 확정",
+      "받침 있는 하위",
+      "하위만",
+    ] as const;
+    for (const key of layerKeys) {
+      expect(en[key], key).not.toMatch(/\bsub\b/i);
+      expect(en[key], key).toMatch(/ground/i);
+      expect(ja[key], key).not.toMatch(/下位|子/);
+      expect(ja[key], key).toContain("地上");
+      expect(zh[key], key).not.toMatch(/子级|子图/);
+      expect(zh[key], key).toContain("地面");
+    }
+
+    expect(createTranslator(en).translate("하위 레이어 타일만 강조")).toBe("Highlight ground-layer tiles only");
+    expect(createTranslator(ja).translate("하위·상위 전부 표시")).toBe("地上・上位をともに表示");
+    expect(createTranslator(zh).translate("하위 고정")).toBe("固定地面");
+
+    // 같은 낱말이 자식·하위를 뜻하는 곳은 그대로다.
+    expect(en["하위 {0}"]).toBe("{0} sub");
+    expect(ja["하위 {0}"]).toBe("下位 {0}");
+    expect(zh["하위 {0}"]).toBe("子级 {0}");
+    expect(en["하위 맵"]).toBe("Sub-map");
+    expect(ja["하위 맵"]).toBe("サブマップ");
+    expect(zh["하위 맵"]).toBe("子地图");
+    expect(en["하위 조건"]).toBe("Sub-conditions");
+    expect(createTranslator(en).translate("하위 3")).toBe("3 sub");
+  });
 });
