@@ -16,7 +16,6 @@ import {
 } from "@/editor/customChipsetTransparency";
 import { backgroundlessLowerReviews, tileLayerPolicy } from "@/editor/tileLayerPolicy";
 import { createBlankProject } from "@/project/defaults";
-import { COMBINED_TOWN_TILESET_ID } from "@/project/defaults/constants";
 import { combinedTownTileset as defaultTileset } from "@/project/defaults/defaultAssets";
 import { store } from "@/project/store";
 import {
@@ -456,7 +455,8 @@ describe("커스텀 칩셋 감지 — 캐시·비변형·정직한 저하", () =
   // ── 5. 내장 칩셋 경로 불변 ────────────────────────────────────────────────
 
   it("내장 칩셋은 스캔하지 않는다 — 생성된 투명 목록이 정본이다", async () => {
-    const bundled = store.getCurrent().tilesets[COMBINED_TOWN_TILESET_ID];
+    // 정리(2026-10-07) 뒤 새 프로젝트에는 합본 마을이 없다 — 다음 시험처럼 정의를 직접 만든다.
+    const bundled = defaultTileset();
     const scan = await ensureCustomChipsetAlphaScan(bundled);
     expect(scan.status).toBe("unknown");
     expect(canvas.stub.imageLoads).toBe(0);
