@@ -19938,7 +19938,8 @@
     "toast",
     "hud",
     "banner",
-    "menuPrompt"
+    "menuPrompt",
+    "objectiveChip"
    ]
   },
   "labels": [
@@ -19950,7 +19951,7 @@
    "div": 8,
    "input": 1,
    "label": 3,
-   "option": 4,
+   "option": 5,
    "select": 1,
    "textarea": 1
   },
