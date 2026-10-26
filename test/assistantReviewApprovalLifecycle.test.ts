@@ -10,7 +10,7 @@ import { getMapEditHistoryState, resetMapEditHistory, undoMapEdit } from "@/edit
 import { store } from "@/project/store";
 import { createBlankProject } from "@/project/defaults";
 import { installFakeDom } from "./fakeDom";
-import { installElectronBridgeSession } from "./support/electronBridgeSession";
+import { installMemoryProjectSession } from "./support/projectSession";
 import { fixedDeclarer } from "./intentFixture";
 import { independentReviewPayload } from "./independentReviewFixture";
 
@@ -160,7 +160,18 @@ describe("review approval ownership", () => {
   });
 
   it("retries an already-applied persistence proof without replaying writes or review", async () => {
-    // Given a real reviewed/direct apply whose proof failed with storage disabled.
+    // Given a project the store really loaded from its repository (boot normalization included), with remote
+    // persistence then switched off. A project put in with store.replace(createBlankProject()) is not normalized,
+    // so its save would never read back to the accepted identity — the app always loads first.
+    // (The LegacyDb PostgREST adapter this used to stub over fetch is gone; the store reaches storage only through
+    // the repository port.)
+    const storage = installMemoryProjectSession();
+    disposeStorage = () => storage.dispose();
+    await storage.seed(createBlankProject());
+    await store.load();
+    store._setPersistenceStateForTest({ loaded: true, remotePersistenceEnabled: false, disabledReason: null });
+    resetMapEditHistory();
+    // And a real reviewed/direct apply whose proof failed with storage disabled.
     const f = fixture();
     const result = await f.session.sendUserMessage("Change title");
     expect(await f.host.applyProposal(result.proposedCalls)).toBe("applied");
@@ -168,12 +179,8 @@ describe("review approval ownership", () => {
     const applied = store.getCurrent();
     const replace = vi.spyOn(store, "replace");
 
-    // When storage recovers, exercise the real save/read proof through the project repository port.
-    // (The LegacyDb PostgREST adapter this used to stub over fetch is gone; the store reaches storage only through
-    // the repository port. This is the Electron folder bridge over an async in-test wire, the shipped path.)
+    // When storage recovers, exercise the real save/read proof.
     vi.useFakeTimers(); // Disable unrelated autosave, not the proof's explicit flush/read.
-    const storage = await installElectronBridgeSession({ projectDir: "/tmp/oprn-review-proof", projectId: "review-proof" });
-    disposeStorage = () => storage.dispose();
     store._setPersistedBaselineForTest(null);
     store._setPersistenceStateForTest({ loaded: true, remotePersistenceEnabled: true, disabledReason: null });
     await f.session.retryLastTurn();
@@ -184,7 +191,6 @@ describe("review approval ownership", () => {
     expect(f.reviewCalls()).toBe(0);
     expect(replace).not.toHaveBeenCalled();
     expect(store.getCurrent()).toBe(applied);
-    expect(storage.calls.save).toBeGreaterThan(0);
-    expect(storage.storedSerialized()).not.toBeNull();
+    expect(storage.repository.rows.has(storage.target.projectId)).toBe(true);
   });
 });

@@ -19,7 +19,9 @@ beforeEach(() => {
   rendered.mockReset();
   document.body.innerHTML = '<div id="app"></div>';
   const base = document.createElement("base");
-  base.href = `${location.origin}/export-player/`;
+  // A plain exported-game folder. Under /export-player/ every build is "hosted" and always reads assets from the
+  // editor root (exportAssetBase.ts), which would hide the probe/non-probe distinction this file checks.
+  base.href = `${location.origin}/exported-game/`;
   document.head.append(base);
 });
 afterEach(() => {
@@ -32,15 +34,18 @@ afterEach(() => {
 describe("private action proof exported boot", () => {
   it.each([
     { qaInstrumentation: true, probe: true, expectedBase: "/" },
-    { qaInstrumentation: false, probe: true, expectedBase: "/export-player/" },
-    { qaInstrumentation: true, probe: false, expectedBase: "/export-player/" },
+    { qaInstrumentation: false, probe: true, expectedBase: "/exported-game/" },
+    { qaInstrumentation: true, probe: false, expectedBase: "/exported-game/" },
   ])("uses editor public assets only with both probe capabilities: $qaInstrumentation/$probe", async ({ qaInstrumentation, probe, expectedBase }) => {
     const project = createBlankProject();
     Reflect.set(window, "__OPENRPG_BOOT__", {
       qaInstrumentation,
       ...(probe ? { actionCombatProbe: { runId: "owned-run", mapId: project.startMapId } } : {}),
     });
-    vi.stubGlobal("fetch", vi.fn().mockResolvedValue(new Response(serialize(project))));
+    // A fresh Response per request: boot fetches loading.json, project.json and the first-screen files, and a
+    // single shared Response has its body consumed by the first read.
+    const body = serialize(project);
+    vi.stubGlobal("fetch", vi.fn(async () => new Response(body)));
     const ready = new Promise<void>(resolve => rendered.mockImplementation(() => resolve()));
     // Without qaInstrumentation the web build waits on the boot loader's 「시작하기」 gesture (bootLoader.waitForStart)
     // before rendering; press it like a player would, otherwise `ready` never resolves.
