@@ -205,6 +205,171 @@ export function mapBackgroundSignature(specs: readonly MapBackgroundLayerSpec[])
 }
 
 /**
+ * 매 프레임 해석이 만드는 층 배열·서명. 맵·배경 객체·오버라이드 기록이 같고,
+ * 그 자리에서 고친 속도·반복·깊이·그림·맵 보기도 같으면 직전 배열을 그대로 쓴다.
+ * 「먼 배경 변경」은 오버라이드 객체를 통째로 갈아끼우므로 다음 프레임에 다시 해석된다.
+ */
+type BackgroundViewStamp = {
+  readonly mapId: string;
+  readonly scale: number | undefined;
+  readonly haze: number | undefined;
+  readonly desaturate: number | undefined;
+  readonly hazeColor: string | undefined;
+  readonly feather: number | undefined;
+  readonly focusX: number | undefined;
+  readonly focusY: number | undefined;
+  readonly rx: number | undefined;
+  readonly ry: number | undefined;
+  readonly rw: number | undefined;
+  readonly rh: number | undefined;
+};
+
+type BackgroundLayerStamp = {
+  readonly imageId: string | undefined;
+  readonly scrollX: number | undefined;
+  readonly scrollY: number | undefined;
+  readonly loopX: boolean | undefined;
+  readonly loopY: boolean | undefined;
+  readonly cameraFollow: number | undefined;
+  readonly fit: MapBackgroundFit | undefined;
+  readonly view: BackgroundViewStamp | undefined;
+};
+
+type AuthoredBackgroundLayer = {
+  readonly imageId?: string;
+  readonly scrollX?: number;
+  readonly scrollY?: number;
+  readonly loopX?: boolean;
+  readonly loopY?: boolean;
+  readonly cameraFollow?: number;
+  readonly fit?: MapBackgroundFit;
+  readonly fromMap?: MapBackgroundMapView;
+};
+
+type ResolvedMapBackground = {
+  readonly map: PlaySceneContext["map"] | undefined;
+  readonly mapId: string | undefined;
+  readonly background: PlaySceneContext["map"]["background"] | undefined;
+  readonly override: unknown;
+  readonly overrideMapId: string | undefined;
+  readonly overrideValue: string | undefined;
+  readonly base: BackgroundLayerStamp | undefined;
+  readonly layerStamps: readonly BackgroundLayerStamp[];
+  readonly specs: readonly MapBackgroundLayerSpec[];
+  readonly signature: string;
+};
+
+const resolvedMapBackgrounds = new WeakMap<object, ResolvedMapBackground>();
+
+function viewStamp(view: MapBackgroundMapView | undefined): BackgroundViewStamp | undefined {
+  if (!view) return undefined;
+  const region = view.region;
+  return {
+    mapId: view.mapId,
+    scale: view.scale,
+    haze: view.haze,
+    desaturate: view.desaturate,
+    hazeColor: view.hazeColor,
+    feather: view.feather,
+    focusX: view.focusX,
+    focusY: view.focusY,
+    rx: region?.x,
+    ry: region?.y,
+    rw: region?.width,
+    rh: region?.height,
+  };
+}
+
+function stampLayer(layer: AuthoredBackgroundLayer): BackgroundLayerStamp {
+  return {
+    imageId: layer.imageId,
+    scrollX: layer.scrollX,
+    scrollY: layer.scrollY,
+    loopX: layer.loopX,
+    loopY: layer.loopY,
+    cameraFollow: layer.cameraFollow,
+    fit: layer.fit,
+    view: viewStamp(layer.fromMap),
+  };
+}
+
+function viewSame(view: MapBackgroundMapView | undefined, stamp: BackgroundViewStamp | undefined): boolean {
+  if (!view || !stamp) return view === undefined && stamp === undefined;
+  const region = view.region;
+  return view.mapId === stamp.mapId
+    && view.scale === stamp.scale
+    && view.haze === stamp.haze
+    && view.desaturate === stamp.desaturate
+    && view.hazeColor === stamp.hazeColor
+    && view.feather === stamp.feather
+    && view.focusX === stamp.focusX
+    && view.focusY === stamp.focusY
+    && region?.x === stamp.rx
+    && region?.y === stamp.ry
+    && region?.width === stamp.rw
+    && region?.height === stamp.rh;
+}
+
+function layerSame(layer: AuthoredBackgroundLayer | undefined, stamp: BackgroundLayerStamp | undefined): boolean {
+  if (!layer || !stamp) return layer === undefined && stamp === undefined;
+  return layer.imageId === stamp.imageId
+    && layer.scrollX === stamp.scrollX
+    && layer.scrollY === stamp.scrollY
+    && layer.loopX === stamp.loopX
+    && layer.loopY === stamp.loopY
+    && layer.cameraFollow === stamp.cameraFollow
+    && layer.fit === stamp.fit
+    && viewSame(layer.fromMap, stamp.view);
+}
+
+function layersSame(layers: readonly MapBackgroundLayer[] | undefined, stamps: readonly BackgroundLayerStamp[]): boolean {
+  const count = layers?.length ?? 0;
+  if (count !== stamps.length) return false;
+  if (!layers) return true;
+  for (let index = 0; index < count; index += 1) {
+    if (!layerSame(layers[index], stamps[index])) return false;
+  }
+  return true;
+}
+
+/** 이번 프레임의 배경 층. 입력이 그대로면 할당 없이 직전 해석을 돌려준다. */
+function readMapBackgroundStack(scene: Pick<PlaySceneContext, "map" | "session">): Pick<ResolvedMapBackground, "specs" | "signature"> {
+  const map = scene.map;
+  const background = map?.background;
+  const override = scene.session?.m2Runtime?.map?.["parallax_override"];
+  const layers = background?.layers;
+  const cached = resolvedMapBackgrounds.get(scene);
+  if (
+    cached
+    && cached.map === map
+    && cached.mapId === map?.id
+    && cached.background === background
+    && cached.override === override
+    && cached.overrideMapId === override?.mapId
+    && cached.overrideValue === override?.value
+    && layerSame(background, cached.base)
+    && layersSame(layers, cached.layerStamps)
+  ) {
+    return cached;
+  }
+  const specs = resolveMapBackgroundLayers(scene);
+  const resolved: ResolvedMapBackground = {
+    map,
+    mapId: map?.id,
+    background,
+    override,
+    overrideMapId: override?.mapId,
+    overrideValue: override?.value,
+    base: background ? stampLayer(background) : undefined,
+    layerStamps: (layers ?? []).map((layer) => stampLayer(layer)),
+    specs,
+    signature: mapBackgroundSignature(specs),
+  };
+  resolvedMapBackgrounds.set(scene, resolved);
+  return resolved;
+}
+
+/**
  * 현재 맵의 배경을 스프라이트 스택에 반영한다. 맵을 실을 때(`loadMap`)마다 부르고, 그림이 아직
  * 안 실렸으면 로드를 걸어 두었다가 완료되면 그때 붙인다. 배경 저작이 없으면 감춘다.
  */
@@ -215,8 +380,7 @@ export function syncMapBackgroundLayers(scene: PlaySceneContext): void {
 }
 
 function syncMapBackgroundStack(scene: PlaySceneContext): void {
-  const specs = resolveMapBackgroundLayers(scene);
-  const signature = mapBackgroundSignature(specs);
+  const { specs, signature } = readMapBackgroundStack(scene);
   if (specs.length === 0) {
     hideMapBackgroundSprites(scene);
     scene.mapBackgroundAppliedSignature = "";
@@ -283,8 +447,7 @@ function syncMapBackgroundStack(scene: PlaySceneContext): void {
 export function updateMapBackground(scene: PlaySceneContext, deltaMs: number): void {
   // 이벤트 명령 「먼 배경 변경」 은 맵을 다시 싣지 않고 배경을 바꾼다 — 해석 결과가 달라지면
   // 그 자리에서 다시 건다. 진행 중·실패로 정착한 서명은 여기서 걸리지 않으므로 매 프레임 재시도가 없다.
-  const specs = resolveMapBackgroundLayers(scene);
-  const signature = mapBackgroundSignature(specs);
+  const { specs, signature } = readMapBackgroundStack(scene);
   if (signature !== scene.mapBackgroundAppliedSignature && signature !== scene.mapBackgroundPendingSignature) {
     // 명령으로 그림만 바뀐 것이다 — 기준점은 유지해야 층이 제자리에서 튀지 않는다.
     syncMapBackgroundStack(scene);
@@ -422,7 +585,7 @@ function advanceMapBackgroundFlow(scene: PlaySceneContext, deltaMs: number): num
 function realignMapBackgroundToCamera(scene: PlaySceneContext): void {
   const sprites = scene.mapBackgroundSprites;
   if (!sprites) return;
-  const specs = resolveMapBackgroundLayers(scene);
+  const { specs } = readMapBackgroundStack(scene);
   const count = Math.min(sprites.length, specs.length);
   for (let index = 0; index < count; index += 1) {
     const sprite = sprites[index]!;

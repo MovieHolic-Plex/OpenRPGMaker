@@ -342,6 +342,22 @@ describe("맵 배경 렌더", () => {
     });
   });
 
+  it("같은 배경 객체의 속도를 그 자리에서 고쳐도 다음 프레임이 그 속도를 쓴다", async () => {
+    await withProject(() => {
+      const background = { imageId: "easyrpg-backdrop-sky1", scrollX: 1 };
+      const stub = createScene({
+        background,
+        loadedTextures: [mapBackgroundTextureKey("easyrpg-backdrop-sky1")],
+      });
+      syncMapBackgroundLayers(stub.scene);
+      updateMapBackground(stub.scene, 1000);
+      expect(stub.sprite()!.tilePositionX).toBe(60);
+      background.scrollX = 2;
+      updateMapBackground(stub.scene, 1000);
+      expect(stub.sprite()!.tilePositionX).toBe(180);
+    });
+  });
+
   it("반복을 끈 축은 UV 대신 위치로 흐르고, 그림은 화면을 떠난다", async () => {
     await withProject(() => {
       const stub = createScene({
