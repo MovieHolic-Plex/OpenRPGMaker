@@ -104,15 +104,17 @@ export function searchResources(kind: ResourceSearchKind, query: string, options
 }
 
 // 전체 질의 점수. 통째로 0점이면 공백 단위로 쪼개 부분 합산한다("마을 사람" → "마을"+"사람").
+// 통째 점수가 라벨에 닿지 않고 태그·설명 부분일치뿐이면(50 미만) 낱말 점수와 비교해 큰 쪽을 쓴다 —
+// 「붉은 용」이 설명 문장 「…붉은 용이다」의 20점에 걸려 라벨 「붉은 드래곤」+태그 「용」 낱말 점수를 못 받던 결함.
 function queryScore(query: string, label: string, tags: readonly string[]): number {
   const whole = matchScore(query, label, tags);
-  if (whole > 0) return whole;
+  if (whole >= 50) return whole;
   const terms = query.split(/\s+/).filter((term) => term.length > 0);
-  if (terms.length < 2) return 0;
+  if (terms.length < 2) return whole;
   const scored = terms.map((term) => matchScore(term, label, tags));
   const sum = scored.reduce((total, s) => total + s, 0);
   const allHit = scored.every((s) => s > 0);
-  return sum + (allHit ? 20 : 0);
+  return Math.max(whole, sum + (allHit ? 20 : 0));
 }
 
 function matchScore(query: string, label: string, tags: readonly string[]): number {
