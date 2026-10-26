@@ -42,8 +42,13 @@ describe("default item catalog quality", () => {
       }
       if (item.farmTool !== undefined) expect(VALID_FARM_TOOLS.has(item.farmTool), item.id).toBe(true);
       if (isBattleUsable(item)) {
-        expect(item.animationId, item.id).toBeTruthy();
-        expect(animationIds.has(item.animationId!), item.id).toBe(true);
+        // 스킬을 발동하는 공용 전투 아이템(item_shared_battle_*)은 자기 animationId 없이 발동 스킬의 연출을 쓴다 —
+        // 전투 런타임 applyItemCast → applySkillCast 가 skill.animationId 를 재생한다(src/battle/runtime.ts).
+        const activated = item.activateSkillId ?? item.skillId;
+        const animationId = item.animationId
+          ?? (activated ? project.database.skills.find((record) => record.id === activated)?.animationId : undefined);
+        expect(animationId, item.id).toBeTruthy();
+        expect(animationIds.has(animationId!), item.id).toBe(true);
       }
     }
 

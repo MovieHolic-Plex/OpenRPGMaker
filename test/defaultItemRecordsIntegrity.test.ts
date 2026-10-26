@@ -108,7 +108,8 @@ describe("default item catalog integrity", () => {
     expect(medicine.snapshot().actors[0]!.hp).toBe(70);
     expect(medicine.snapshot().eventState.inventory[DEFAULT_ITEM_ID] ?? 0).toBe(0);
 
-    medicine.tick(5_000);
+    // 한 번의 큰 tick 은 적 행동 연출 구간에서 멈춘다(ATB 게이지가 그 사이 차지 않는다) — 다음 명령 차례까지 잘게 돌린다.
+    for (let elapsed = 0; elapsed < 20_000 && medicine.snapshot().phase !== "actorCommand"; elapsed += 250) medicine.tick(250);
     expect(medicine.snapshot().phase).toBe("actorCommand");
     medicine.performActorCommand({ kind: "item", itemId: "item_elixir", targetEnemyId: "" });
     const afterElixir = medicine.snapshot().actors[0]!;
