@@ -15,14 +15,22 @@ import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver
 import { collectWebExportAssets } from "@/project/webExportAssets";
 import { createBlankProject } from "@/project/defaults";
 
-const BACKDROP_ID = "easyrpg-backdrop-sky1";
-const BACKDROP_PATH = "assets/easyrpg/backdrop/Sky1.png";
+// EasyRPG 배경(Sky1)은 2026-10-07 저작권 정리로 지웠다 — 지금 맵 배경 고르기에 나오는 OPRN 파노라마로 잰다.
+const BACKDROP_ID = "oprn-pano-sky-day";
+const BACKDROP_PATH = "assets/panoramas/oprn-pano-sky-day.png";
+
+/** 시작 맵 배경을 이 그림으로 저작한 빈 프로젝트. */
+function projectWithBackdrop() {
+  const project = createBlankProject();
+  project.maps[project.startMapId]!.background = { imageId: BACKDROP_ID };
+  return project;
+}
 
 describe("내보내기의 맵 배경", () => {
   it("런타임이 배경 id 로 만드는 경로가 내보내기 자산 목록에 있다", () => {
     const url = resolveAssetResourceUrl(BACKDROP_ID, { project: createBlankProject() });
     expect(url).toBe(`/${BACKDROP_PATH}`);
-    const paths = collectWebExportAssets(createBlankProject()).map((asset) => asset.zipPath);
+    const paths = collectWebExportAssets(projectWithBackdrop()).map((asset) => asset.zipPath);
     expect(paths).toContain(BACKDROP_PATH);
   });
 

@@ -8,14 +8,39 @@
 import { describe, expect, it } from "vitest";
 import { runTool } from "@/editor/tools/toolRunner";
 import { createBlankProject } from "@/project/defaults";
-import type { Project } from "@/project/types";
+import { composeCombinedTownRetroWorldTileset } from "@/project/defaults/combinedTownRetroWorld";
+import { TILE } from "@/project/defaults/constants";
+import type { Project, TilesetDef } from "@/project/types";
+import { retiredEasyRpgTileset } from "./support/retiredEasyRpgTilesets";
 
 const MAP_ID = "map_blank_start";
 
+/**
+ * 숲 나무 확장 띠 그룹(forest-trees:*)을 지닌 혼합 칩셋(합본 마을+레트로 월드맵+숲 나무 띠).
+ * 이 그룹을 들고 있던 숲마을(forest_harmony)·합본 마을 칩셋은 2026-10-07 저작권 정리로 새 프로젝트에서 빠졌다.
+ * 옛 저장본이 들고 있는 정의를 되살려 조립기(composeCombinedTownRetroWorldTileset)로 같은 그룹을 다시 만든다.
+ */
+function forestTreesTileset(): TilesetDef {
+  return composeCombinedTownRetroWorldTileset(
+    retiredEasyRpgTileset("easyrpg_chipset_combined_town"),
+    retiredEasyRpgTileset("easyrpg_chipset_retro_world"),
+  );
+}
+
 function project(width = 40, height = 20): { project: Project } {
   const ctx = { project: createBlankProject() };
+  const tileset = forestTreesTileset();
+  ctx.project.tilesets[tileset.id] = tileset;
+  const start = ctx.project.maps[MAP_ID]!;
+  start.tilesetId = tileset.id;
+  start.lowerTiles.fill(TILE.GRASS);
+  start.upperTiles.fill(TILE.EMPTY);
   expect(runTool(ctx, "resize_map", { mapId: MAP_ID, width, height }).ok).toBe(true);
   return ctx;
+}
+
+function forestTreesGroups(project: Project) {
+  return Object.values(project.tilesets).find((tileset) => tileset.tileGroups?.some((group) => group.id.startsWith("forest-trees:")))!.tileGroups!;
 }
 
 function bounds(cells: readonly number[], width: number) {
@@ -29,7 +54,7 @@ describe("forest-trees 물체 place_props", () => {
     ["숲 나무 · 활엽수", "forest-trees:tree"],
   ])("%s 는 previewMap 모양대로 수관(상위)과 밑동(하위)을 함께 찍는다", (material, groupId) => {
     const ctx = project();
-    const group = ctx.project.tilesets.forest_harmony!.tileGroups!.find((g) => g.id === groupId)!;
+    const group = forestTreesGroups(ctx.project).find((g) => g.id === groupId)!;
     const preview = group.previewMap!;
     const canopy = new Set(preview.upperTiles.filter((tile) => tile >= 0));
     const trunk = new Set(preview.lowerTiles.filter((tile) => group.tileIds.includes(tile)));

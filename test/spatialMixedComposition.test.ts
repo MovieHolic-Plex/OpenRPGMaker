@@ -74,7 +74,8 @@ it('keeps a world overview separate from a directly composed child region', () =
   const root = compiled.spatialAuthoring!.occurrences['overview-with-canvas'];
   const child = Object.values(compiled.spatialAuthoring!.occurrences).find(o => o.parentId === root.id)!;
   expect(root.bindings[0].mapId).not.toBe(child.bindings[0].mapId);
-  expect(compiled.maps[root.bindings[0].mapId].tilesetId).toBe('easyrpg_chipset_world');
+  // 개요 맵은 세계 지형 칩셋을 쓴다 — 고정물의 세계 지형은 #2906 에서 worldmap_selected 로 바뀌었다(spatialMixedFixture.ts).
+  expect(compiled.maps[root.bindings[0].mapId].tilesetId).toBe('worldmap_selected');
   expect(compiled.maps[child.bindings[0].mapId]).toMatchObject({ width: 80, height: 60 });
   expect(compileSpatialOccurrence(deserialize(serialize(compiled)), { occurrenceId: root.id }).maps).toEqual(compiled.maps);
 }, 60_000);

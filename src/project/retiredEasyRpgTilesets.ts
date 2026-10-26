@@ -12,7 +12,8 @@ const WORLD_EXCEPTIONS: ReadonlySet<string> = new Set([
   "easyrpg_chipset_world", "easyrpg_chipset_retro_world", "atlas_biome_world",
 ]);
 const NOT_RETIRED: ReadonlySet<string> = new Set(["atlas_biome_interior"]);
-const RETIRED_PREFIXES = ["easyrpg_chipset_", "forest_harmony", "atlas_biome_", "oprn_dungeon_"] as const;
+// tibo_interior: Tibo 실내 확장은 family "easyrpg" 계보다. 정의를 지운 뒤(2026-10-07 정리) 프로젝트에 없는 id 는 이 표로만 가르므로 여기에도 둔다.
+const RETIRED_PREFIXES = ["easyrpg_chipset_", "forest_harmony", "atlas_biome_", "oprn_dungeon_", "tibo_interior"] as const;
 
 /** 라이브러리에서 등록 장소를 맵째 가져오는 도구 — 폐기 칩셋 위 장소도 가져올 수 있다. */
 export const LIBRARY_IMPORT_TOOLS: ReadonlySet<string> = new Set(["import_region_reference"]);

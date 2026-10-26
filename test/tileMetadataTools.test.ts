@@ -8,11 +8,13 @@ import { runTool } from "@/editor/tools/toolRunner";
 import type { ToolContext } from "@/editor/tools/types";
 import { createBlankProject } from "@/project/defaults";
 import { COMBINED_TOWN_TILESET_ID, TILE } from "@/project/defaults/constants";
+import { withRetiredCombinedTownMaps } from "./support/retiredCombinedTownMaps";
 
 const WINDOW_TILE = 85; // 상위 레이어 소품(창문) — 클러스터 페인팅용.
 
+// 창문(85)·TILE.* 번호와 그 라벨은 합본 마을 칩셋 것이다 — 정리 전 빈 프로젝트처럼 합본 마을 시작 맵에서 잰다.
 function ctx(): ToolContext {
-  return { project: createBlankProject() };
+  return { project: withRetiredCombinedTownMaps(createBlankProject()) };
 }
 
 function ctxWithMap(): { context: ToolContext; mapId: string } {

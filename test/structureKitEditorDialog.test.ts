@@ -8,11 +8,15 @@ import { store } from "@/project/store";
 import { COMBINED_TOWN_TILESET_ID } from "@/project/defaults/constants";
 import type { SectionStructureKitDef } from "@/project/types";
 import { FakeElement, installFakeDom } from "./fakeDom";
+import { createBlankProject } from "@/project/defaults";
+import { withRetiredEasyRpgTilesets } from "./support/retiredEasyRpgTilesets";
 
 let restoreDom: (() => void) | undefined;
 
 beforeEach(() => {
   restoreDom = installFakeDom();
+  // 우물 킷(240 잔디·116 문)과 라벨은 합본 마을 칩셋의 것이다 — 정리 뒤 새 프로젝트에 없는 그 정의를 옛 저장본처럼 되살린다.
+  store.replace(withRetiredEasyRpgTilesets(createBlankProject()));
   const values = new Map<string, string>();
   values.set(AI_CONFIG_STORAGE_KEY, JSON.stringify({
     authMode: "chatgpt",

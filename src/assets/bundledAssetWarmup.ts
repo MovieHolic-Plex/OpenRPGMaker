@@ -24,6 +24,14 @@ const DIALOGUE_FRAME_PATH = "assets/dialogue-frame.png";
 let warmPromise: Promise<void> | null = null;
 let warmKey = "";
 
+/**
+ * 리소스 해석기는 `/assets/...` 주소를 돌려주지만 이 목록의 나머지(칩셋·캐릭터)와 내보내기 zip 경로는 `assets/...` 다.
+ * 섞이면 조사 아이콘(cc0-*)이 「내보내기에 없는 워밍 경로」로 잡힌다(실제로는 실려 있다) — 같은 상대 경로로 맞춘다.
+ */
+function bundlePath(url: string): string {
+  return url.startsWith("/assets/") ? url.slice(1) : url;
+}
+
 /** 현재 프로젝트에 참조된 번들 이미지 경로(상대 path) 목록. */
 export function listBundledPlayAssetPaths(project?: Project): readonly string[] {
   const referenced = project ? collectPlayReferencedStrings(project) : null;
@@ -54,14 +62,14 @@ export function listBundledPlayAssetPaths(project?: Project): readonly string[] 
       if (!['charset', 'monster', 'picture', 'backdrop', 'tileset'].includes(asset.kind)) continue;
       if (!referenced.has(asset.id) || cinematicIds.has(asset.id)) continue;
       const url = resolveAssetResourceUrl(asset.id, { project });
-      if (url) paths.add(url);
+      if (url) paths.add(bundlePath(url));
     }
     for (const asset of EASYRPG_PICTURE_ASSETS) if (referenced.has(asset.id)) paths.add(asset.path);
     // Existing resource resolver also owns bundled investigation icons.
     for (const id of referenced) {
       if (!id.startsWith('cc0-')) continue;
       const url = resolveAssetResourceUrl(id, { project });
-      if (url && /\.(png|webp|jpe?g)(?:[?#]|$)/iu.test(url)) paths.add(url);
+      if (url && /\.(png|webp|jpe?g)(?:[?#]|$)/iu.test(url)) paths.add(bundlePath(url));
     }
   }
 

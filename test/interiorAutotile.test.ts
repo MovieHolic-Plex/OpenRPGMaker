@@ -10,6 +10,11 @@ import {
 import { runInteriorRoomPipeline } from "@/editor/interiorRoomPipeline";
 import { chipsetQuarterComposition } from "@/project/defaults/terrainQuarterAutotile";
 import type { AutotileGroup, TilesetDef } from "@/project/types";
+import { withRetiredEasyRpgTilesets } from "./support/retiredEasyRpgTilesets";
+
+// 이 하네스(어두운 벽 366·공허 430·크림 회벽 104~106)는 EasyRPG 실내·던전 칩셋의 것이다 — 2026-10-07 정리 뒤 새 프로젝트에는 없으니
+// 옛 저장본처럼 정의를 되살린다. 현재 실내 v5(atlas_biome_interior)는 이 번호 체계를 쓰지 않는다.
+const blankWithRetiredSheets = () => withRetiredEasyRpgTilesets(createBlankProject());
 
 function wallFrameGroup(tileset: TilesetDef | undefined): AutotileGroup | undefined {
   return tileset?.autotileGroups?.find((group) => group.id === INTERIOR_WALL_FRAME_AUTOTILE_GROUP_ID);
@@ -17,7 +22,7 @@ function wallFrameGroup(tileset: TilesetDef | undefined): AutotileGroup | undefi
 
 describe("interior wall-frame autotile harness (Option B: no house wall-frame store group)", () => {
   it("does not seed house wall-frame autotile; seeds dark 366 only", () => {
-    const project = createBlankProject();
+    const project = blankWithRetiredSheets();
     const interior = project.tilesets.easyrpg_chipset_interior;
     expect(wallFrameGroup(interior)).toBeUndefined();
     const dark = interior.autotileGroups?.find((g) => g.id.includes("dark-wall"));
@@ -32,7 +37,7 @@ describe("interior wall-frame autotile harness (Option B: no house wall-frame st
   });
 
   it("does not seed interior-specific autotiles on dungeon tilesets (but does seed dungeon's own)", () => {
-    const dungeon = createBlankProject().tilesets.easyrpg_chipset_dungeon;
+    const dungeon = blankWithRetiredSheets().tilesets.easyrpg_chipset_dungeon;
     // 실내 전용 그룹(벽 프레임)은 던전에 새지 않는다.
     expect(wallFrameGroup(dungeon)).toBeUndefined();
     const ids = autotileGroupsForTileset(dungeon).map((group) => group.id);
@@ -43,7 +48,7 @@ describe("interior wall-frame autotile harness (Option B: no house wall-frame st
   });
 
   it("keeps wall-frame group absent after ensureTilesetHarnesses", () => {
-    const project = createBlankProject();
+    const project = blankWithRetiredSheets();
     const interior = project.tilesets.easyrpg_chipset_interior;
     interior.autotileGroups = [];
     expect(wallFrameGroup(interior)).toBeUndefined();
@@ -57,7 +62,7 @@ describe("interior wall-frame autotile harness (Option B: no house wall-frame st
   // 옛 버그: (1,6)에 크림 104/106 → 인접 공허 (0,5)(0,6)(0,7)(1,7)에 428/368 조각 누출("매우 많이 망가짐").
   // 크림 면은 dark-mass 렌더 대상은 아니지만 이웃 판정(isMass)에서는 벽으로 쳐야 누출이 없다.
   it("cream wall placed on a dark-mass wall cell does not bleed onto exterior void (오두막 (1,6) 회귀)", () => {
-    const tileset = createBlankProject().tilesets.easyrpg_chipset_interior;
+    const tileset = blankWithRetiredSheets().tilesets.easyrpg_chipset_interior;
     const { map } = runInteriorRoomPipeline({
       mapId: "map_rp_hut_v1", name: "연습 · 오두막 (10×9)",
       width: 10, height: 9, wings: [{ x: 2, y: 4, w: 5, h: 3 }],

@@ -3,6 +3,7 @@ import { mapCharacterSizeFactor } from "@/project/characterScale";
 import { CHASER_SPAWN_MIN_STEPS, chaserThreatLine, chaserThreatsAt } from "@/project/chaserSpawnSafety";
 import { patchSunlight, type MapSunlight } from "@/project/sunlight";
 import { isRetiredInteriorTileset, retiredInteriorMessage } from "@/project/retiredInteriorTilesets";
+import { isRetiredEasyRpgTileset, retiredEasyRpgMessage } from "@/project/retiredEasyRpgTilesets";
 import { isMapLoop, mapLoopLabel, mapLoopsX, mapLoopsY, MAP_LOOP_VALUES } from "@/project/mapLoop";
 import { isMapRoleKind, MAP_ROLE_LABELS } from "@/project/mapRole";
 import { isCombinedTownCompatibleTileset } from "@/project/tilesetHarness";
@@ -295,9 +296,14 @@ const createMap: ToolDefinition = {
     const size = width * height;
     const tilesetId = typeof args.tilesetId === "string" && args.tilesetId.trim().length > 0 ? args.tilesetId.trim() : defaultOutdoorTilesetId(draft);
     const tileset = draft.tilesets[tilesetId];
-    if (!tileset) throw new ToolError(`타일셋을 찾을 수 없습니다: ${tilesetId}`, { code: "tileset-not-found" });
     // 폐기된 실내 칩셋(Tibo·EasyRPG 실내·LPC 가구)으로는 새 맵을 만들지 않는다 — 실내는 build_hand_interior_room(손 도트 v5).
     if (isRetiredInteriorTileset(tilesetId, tileset)) throw new ToolError(retiredInteriorMessage(tilesetId), { code: "retired-interior-tileset" });
+    // 2026-10-07 정리 뒤 새 프로젝트에는 폐기 EasyRPG 계열 정의가 없다. 「타일셋 없음」만 돌려주면 폐기 사유와 장소 가져오기 안내
+    // (실행기 rejectRetiredEasyRpgMaps 가 주던 것)가 사라져 조수가 같은 id 로 재시도한다 — 없는 폐기 id 도 같은 거부로 답한다.
+    if (!tileset && isRetiredEasyRpgTileset(draft, tilesetId)) {
+      throw new ToolError(retiredEasyRpgMessage(tilesetId, "create_map"), { code: "retired-easyrpg-tileset" });
+    }
+    if (!tileset) throw new ToolError(`타일셋을 찾을 수 없습니다: ${tilesetId}`, { code: "tileset-not-found" });
     const map: GameMap = {
       id,
       name,

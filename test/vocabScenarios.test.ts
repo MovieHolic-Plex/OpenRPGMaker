@@ -5,10 +5,14 @@ import { describe, expect, it } from "vitest";
 import { runTool } from "@/editor/tools";
 import { createBlankProject } from "@/project/defaults";
 import { COMBINED_TOWN_HARNESS_PREFIX } from "@/project/tilesetHarness/combinedTownGroups";
+import { withRetiredCombinedTownMaps } from "./support/retiredCombinedTownMaps";
+
+// 시나리오의 재료(잔디·흰 집 벽)는 합본 마을 하네스 어휘다 — 정리 전 빈 프로젝트처럼 합본 마을 맵에서 잰다.
+const blankCombinedTownProject = () => withRetiredCombinedTownMaps(createBlankProject());
 
 describe("vocab 시나리오", () => {
   it("① 없는 material 문자열은 실패하되 라벨 후보 안내를 준다", () => {
-    const project = createBlankProject();
+    const project = blankCombinedTownProject();
     const mapId = Object.keys(project.maps)[0];
     const result = runTool({ project }, "build_wall", {
       mapId, rect: { x: 4, y: 4, w: 5, h: 4 }, material: "no-such-material-xyz",
@@ -19,7 +23,7 @@ describe("vocab 시나리오", () => {
   });
 
   it("② 잔디 채우기가 한 번에 성공한다", () => {
-    const project = createBlankProject();
+    const project = blankCombinedTownProject();
     const mapId = Object.keys(project.maps)[0];
     const result = runTool({ project }, "fill_region", {
       mapId, rect: { x: 2, y: 2, w: 3, h: 3 }, material: "잔디",
@@ -28,7 +32,7 @@ describe("vocab 시나리오", () => {
   });
 
   it("③ 번들 벽 시공에 soft-confirm 경고가 없다", () => {
-    const project = createBlankProject();
+    const project = blankCombinedTownProject();
     const mapId = Object.keys(project.maps)[0];
     const result = runTool({ project }, "build_wall", {
       mapId, rect: { x: 4, y: 4, w: 5, h: 5 }, material: "흰 집 벽",

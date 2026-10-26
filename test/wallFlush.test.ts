@@ -6,9 +6,13 @@ import { createBlankProject, TILE } from "@/project/defaults";
 import { runTool, type ToolContext } from "@/editor/tools";
 import { expandCellsAgainstWalls, snapFlushToWall } from "@/editor/tools/wallFlush";
 import type { GameMap } from "@/project/types";
+import { withRetiredCombinedTownMaps } from "./support/retiredCombinedTownMaps";
+
+// TILE.WALL·잔디는 합본 마을 칩셋의 번호·재료다 — 정리 전 빈 프로젝트처럼 합본 마을 맵에서 잰다.
+const blankCombinedTownProject = () => withRetiredCombinedTownMaps(createBlankProject());
 
 function ctxWithMaps(): ToolContext {
-  const context: ToolContext = { project: createBlankProject() };
+  const context: ToolContext = { project: blankCombinedTownProject() };
   const created = runTool(context, "create_map", { id: "map_b", name: "실내", width: 20, height: 15 }, { dryRun: false });
   expect(created.ok, created.summary).toBe(true);
   return context;
@@ -20,7 +24,7 @@ function paintNorthWall(map: GameMap): void {
 
 describe("snapFlushToWall", () => {
   it("맵 가장자리에서 1칸 안쪽 출입구를 가장자리로 당긴다", () => {
-    const project = createBlankProject();
+    const project = blankCombinedTownProject();
     const map = project.maps[project.startMapId]!;
     expect(snapFlushToWall(project, map, 1, 7)).toEqual({ x: 0, y: 7 });
     expect(snapFlushToWall(project, map, map.width - 2, 7)).toEqual({ x: map.width - 1, y: 7 });
@@ -28,26 +32,26 @@ describe("snapFlushToWall", () => {
   });
 
   it("이미 가장자리에 붙어 있으면 그대로 둔다", () => {
-    const project = createBlankProject();
+    const project = blankCombinedTownProject();
     const map = project.maps[project.startMapId]!;
     expect(snapFlushToWall(project, map, 0, 7)).toEqual({ x: 0, y: 7 });
   });
 
   it("방 한가운데는 당기지 않는다", () => {
-    const project = createBlankProject();
+    const project = blankCombinedTownProject();
     const map = project.maps[project.startMapId]!;
     expect(snapFlushToWall(project, map, 10, 7)).toEqual({ x: 10, y: 7 });
   });
 
   it("북벽에서 1칸 떨어진 칸을 벽 바로 앞 통행 칸으로 당긴다", () => {
-    const project = createBlankProject();
+    const project = blankCombinedTownProject();
     const map = project.maps[project.startMapId]!;
     paintNorthWall(map);
     expect(snapFlushToWall(project, map, 8, 2)).toEqual({ x: 8, y: 1 });
   });
 
   it("벽 칸 위 요청은 바로 앞 통행 칸으로 옮긴다", () => {
-    const project = createBlankProject();
+    const project = blankCombinedTownProject();
     const map = project.maps[project.startMapId]!;
     paintNorthWall(map);
     expect(snapFlushToWall(project, map, 8, 0)).toEqual({ x: 8, y: 1 });
@@ -56,7 +60,7 @@ describe("snapFlushToWall", () => {
 
 describe("expandCellsAgainstWalls", () => {
   it("벽과 채운 영역 사이 1칸 틈을 메운다", () => {
-    const project = createBlankProject();
+    const project = blankCombinedTownProject();
     const map = project.maps[project.startMapId]!;
     paintNorthWall(map);
     const filled = expandCellsAgainstWalls(project, map, [
@@ -73,7 +77,7 @@ describe("expandCellsAgainstWalls", () => {
   });
 
   it("맵 가장자리 1칸은 메우지 않는다", () => {
-    const project = createBlankProject();
+    const project = blankCombinedTownProject();
     const map = project.maps[project.startMapId]!;
     const filled = expandCellsAgainstWalls(project, map, [{ x: 5, y: 1 }]);
     expect(filled).toEqual([{ x: 5, y: 1 }]);
@@ -119,7 +123,7 @@ describe("create_transfer_pair 벽 밀착", () => {
 
 describe("fill_region 벽 밀착", () => {
   it("북벽과 1칸 틈이 있으면 그 줄을 메운다", () => {
-    const context: ToolContext = { project: createBlankProject() };
+    const context: ToolContext = { project: blankCombinedTownProject() };
     const map = context.project.maps[context.project.startMapId]!;
     paintNorthWall(map);
     context.project.startPos = { x: 10, y: 10 };

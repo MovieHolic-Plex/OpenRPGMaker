@@ -10,6 +10,10 @@ import { store } from "@/project/store";
 import { applyCombinedTownHarness, COMBINED_TOWN_HARNESS_GROUPS } from "@/project/tilesetHarness";
 import type { TileGroupMetadata } from "@/project/types";
 import { findByTestId, installFakeDom, renderWithFakeDom, type FakeElement } from "./fakeDom";
+import { withRetiredEasyRpgTilesets } from "./support/retiredEasyRpgTilesets";
+
+// 클러스터 편집·미분류 조회는 합본 마을 칩셋(하네스 그룹 포함)을 겨냥한다 — 정리 뒤 새 프로젝트에는 없으니 옛 저장본처럼 되살린다.
+const blankWithCombinedTown = (): ReturnType<typeof createBlankProject> => withRetiredEasyRpgTilesets(createBlankProject());
 
 const assistantMock = vi.hoisted(() => {
   const sentMessages: string[] = [];
@@ -240,7 +244,7 @@ describe("delete_tile_group", () => {
   });
 
   it("기본 Combined Town 하네스 그룹 삭제는 tombstone을 남겨 재시드를 막는다", () => {
-    const context = { project: createBlankProject() };
+    const context = { project: blankWithCombinedTown() };
     const groupId = COMBINED_TOWN_HARNESS_GROUPS.find((group) => group.id.endsWith("conifer-tree"))?.id;
     if (!groupId) throw new Error("missing conifer harness group");
 
@@ -263,14 +267,14 @@ function unclassifiedCtx(): ToolContext {
 }
 
 function projectWithGroup(): ReturnType<typeof createBlankProject> {
-  const project = createBlankProject();
+  const project = blankWithCombinedTown();
   const tileset = project.tilesets[COMBINED_TOWN_TILESET_ID];
   tileset.tileGroups = [group()];
   return project;
 }
 
 function projectWithSmallTileset(): ReturnType<typeof createBlankProject> {
-  const project = createBlankProject();
+  const project = blankWithCombinedTown();
   const tileset = project.tilesets[COMBINED_TOWN_TILESET_ID];
   tileset.count = 8;
   tileset.tileMeta = Array.from({ length: tileset.count }, () => ({ label: "", description: "" }));

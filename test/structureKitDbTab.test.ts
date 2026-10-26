@@ -9,12 +9,16 @@ import { COMBINED_TOWN_TILESET_ID } from "@/project/defaults/constants";
 import { INTERIOR_OBJECT_CATALOG } from "@/editor/interiorObjectCatalog";
 import { INTERIOR_ROOM_TILESET_ID } from "@/editor/interiorRoomPipeline";
 import { FakeElement, installFakeDom } from "./fakeDom";
+import { createBlankProject } from "@/project/defaults";
+import { withRetiredCombinedTownMaps } from "./support/retiredCombinedTownMaps";
 
 let restoreDom: (() => void) | undefined;
 
 beforeEach(() => {
   restoreDom = installFakeDom();
   resetStructureKitsTabSession();
+  // 앨범 계약은 합본 마을·EasyRPG 실내 칩셋을 겨냥한다 — 정리 전 빈 프로젝트처럼 그 정의와 합본 마을 시작 맵을 되살린다.
+  store.replace(withRetiredCombinedTownMaps(createBlankProject()));
 });
 
 afterEach(() => {
