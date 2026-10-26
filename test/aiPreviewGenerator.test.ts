@@ -1,10 +1,15 @@
 import { describe, expect, it } from "vitest";
 import { createAiPreviewProject, validateAiPreviewProject } from "@/project/aiPreviewGenerator";
-import { createBlankProject, defaultTilesets, TILE } from "@/project/defaults";
+import { createBlankProject as createDefaultBlankProject, defaultTilesets, TILE } from "@/project/defaults";
 import { COMBINED_TOWN_TILESET_ID } from "@/project/defaults/constants";
+import { withRetiredEasyRpgTilesets } from "./support/retiredEasyRpgTilesets";
+
+// The preview generator targets the EasyRPG combined-town sheet, which new projects no longer ship (2026-10-07 purge);
+// fixtures recreate an older project that still carries it.
+const createBlankProject = () => withRetiredEasyRpgTilesets(createDefaultBlankProject());
 
 function firstUnsupportedTilesetId(): string {
-  const id = Object.keys(defaultTilesets()).find((candidate) => candidate.includes("ship") || candidate.includes("world"));
+  const id = Object.keys(withRetiredEasyRpgTilesets({ tilesets: defaultTilesets() }).tilesets).find((candidate) => candidate.includes("ship") || candidate.includes("world"));
   if (!id) throw new Error("expected unsupported bundled EasyRPG tileset");
   return id;
 }
