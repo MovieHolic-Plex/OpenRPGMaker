@@ -19,9 +19,12 @@ export function renderAiToolUsagePanel(): HTMLElement {
     dataset: { testid: "ai-tool-usage" },
     children: [el("p", { class: "ai-config-help", text: "이 브라우저에 남은 조수 실행 기록을 모으는 중…" })],
   });
+  // 기록을 읽는 사이 문서가 걷히면(패널 닫힘·테스트 정리) 아무것도 그리지 않는다.
   void loadToolUsageReport().then((report) => {
+    if (typeof document === "undefined") return;
     host.replaceChildren(renderReport(report));
   }).catch((error: unknown) => {
+    if (typeof document === "undefined") return;
     host.replaceChildren(el("p", {
       class: "ai-config-help",
       text: error instanceof Error ? error.message : "사용량을 읽지 못했습니다.",
