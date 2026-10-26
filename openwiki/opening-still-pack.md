@@ -127,7 +127,25 @@ The resolver uses `VITE_STILL_CDN_BASE/stills/v1/<file>` when configured; otherw
 `/assets/stills/pack/<file>`. The export collector fetches the configured CDN source
 but always places it at `assets/stills/pack/<file>` in the game ZIP. Install the pack
 before a local/offline export. A missing image is an export failure, not a successful
-empty ZIP. The player uses the local exported path; licenses use `withInlineAsset`
+empty ZIP. The failure code is `still-pack-not-installed` (tells the user to run
+`npm run stills:install` or pick another picture), not the generic runtime-asset message.
+
+### Only installed stills are offered (2026-10-26)
+
+A fresh checkout, this box's main checkout and desktop builds made without `stills:install`
+have no pack files and no CDN base. Before this fix the assistant and the picker still listed
+all 19 `oprn-pack-still-*` ids (the prompts even named `sky-01`/`sky-03`), so a title or opening
+could point at a 404 and the export then failed. Now `src/assets/installedStillPack.ts` decides
+availability like `installedBgm.ts`: a pack still is usable only when `VITE_STILL_CDN_BASE` is set or its
+file is installed. The installed list comes from the Vite define `__OPRN_INSTALLED_STILL_FILES__`
+(`scripts/lib/stillPackDelivery.ts`; restart the dev server after installing) or, in the headless
+Pi worker, from disk (`scripts/lib/piWorkerAudio.ts`). No define and no seed (player bundle) means all available.
+- `listOpeningStillMoods()` filters, so `list_opening_media`, `list_resources` and the still picker hide them.
+- `unsuitableOpeningStillMessage` rejects them for title and opening layers.
+- The tool runner (`stillPackGuard.ts`, assistant runs only) rejects any write that newly references
+  an unavailable pack still anywhere in the project (endings, game over, picture commands…). Existing
+  references and hand edits are untouched. It skips the scan entirely when the whole pack is usable.
+- `collectResourceIds` still accepts every pack id so documents stay portable across machines. The player uses the local exported path; licenses use `withInlineAsset`
 for subdirectory hosting and standalone HTML as well.
 
 ## Verification and examples

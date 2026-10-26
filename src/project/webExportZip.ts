@@ -8,6 +8,7 @@ import { prunedRuntimeAssetPaths } from "@/project/webExportRuntimeAssets";
 import type { PreparedWebExport, WebExportAsset } from "@/project/webExportTypes";
 
 const encoder = new TextEncoder();
+const STILL_PACK_ZIP_PREFIX = "assets/stills/pack/";
 
 export async function exactWebExportEntries(
   prepared: PreparedWebExport,
@@ -97,6 +98,8 @@ async function assetEntries(assets: readonly WebExportAsset[], fetchBytes: Fetch
       if (invalidExportDependencyBytes(bytes)) contractFailure("runtime-asset-unavailable", asset.zipPath);
       entries.push({ name: asset.zipPath, bytes });
     } catch (error) {
+      // 스틸 팩 그림은 레포에 없고 stills:install 로만 생긴다 — 재배포가 아니라 설치가 답이라고 알린다.
+      if (asset.zipPath.startsWith(STILL_PACK_ZIP_PREFIX)) contractFailure("still-pack-not-installed", asset.zipPath);
       if (error instanceof WebExportContractError) throw error;
       contractFailure("runtime-asset-unavailable", asset.zipPath);
     }
