@@ -207,6 +207,8 @@ const makeTimedEscape: ToolDefinition = {
       throw new ToolError("무너질 칸이 없습니다 — area(+from·bands) 또는 steps 를 주세요.", { code: "escape-no-collapse" });
     }
     const keep = new Set<string>([...cellsOf(exitRect), ...(startRect ? cellsOf(startRect) : []), ...(cpMap === map ? [cpRect] : [])].map((c) => `${c.x},${c.y}`));
+    // 다른 이벤트(사람·상자·연출)가 선 칸은 무너뜨리지 않는다 — 붕괴 칸 이벤트가 겹치면 그 칸의 조사를 가로챈다(얼음 위 인물에게 말이 안 걸렸다, 2026-10-26).
+    for (const e of map.events ?? []) if (!String(e.id).startsWith(`ev_escape_${map.id}_${escapeId}`)) keep.add(`${e.x},${e.y}`);
     const taken = new Set<string>();
     const steps: Step[] = rawSteps
       .map(({ rect, atSecond }) => ({

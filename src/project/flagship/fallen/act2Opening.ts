@@ -1435,17 +1435,17 @@ function lanternNight(project: Project, exec: Exec): void {
   // 갈라지는 얼음 — 남쪽 줄부터 차례로 검은 물이 된다. 북쪽 기슭(못 바로 위 줄)에 닿으면 성공.
   const seconds = 20;
   const rows = box.maxY - box.minY + 1;
-  // 발렌이 선 칸은 뺀다 — 붕괴 칸 이벤트가 같은 칸에 겹치면 발렌 대신 그 이벤트가 조사를 받는다(QA: 말을 걸어도 대사가 안 떴다).
-  const steps = ice.filter((c) => !(c.x === back.x && c.y === back.y) && !(c.x === valen!.x && c.y === valen!.y)).map((c) => ({ x: c.x, y: c.y, atSecond: Math.max(1, Math.min(seconds - 2, 1 + Math.floor(((box.maxY - c.y) * (seconds - 6)) / rows))) }));
-  exec(project, "make_timed_escape", {
-    // 처음은 발렌 장면 끝(스위치), 실패한 뒤에는 기슭에서 얼음으로 한 걸음 내디디면 다시 시작한다.
-    mapId: FS2_FROST_NIGHT_ID, escapeId: "fs2_ice", seconds, startSwitchId: SW_ICE_RUN, start: { x: back.x, y: back.y - 1, width: 1, height: 1 }, startCellsSwitchId: SW_VALEN_MET,
-    exit: { x: box.minX, y: box.minY - 1, width: box.maxX - box.minX + 1, height: 1 },
-    checkpoint: { x: back.x, y: back.y, direction: "up" },
-    steps, layer: "lower", collapsedTile: OPEN_WATER,
-    startText: "발밑 얼음이 갈라진다! 북쪽 기슭으로!", successText: "기슭이다. 빛기둥이 탑 꼭대기에 꽂혀 있다.",
-    failText: "…얼음물에 빠질 뻔했다. 기슭에서 다시.", fallText: "얼음이 꺼졌다!", successSwitchId: SW_ICE_DONE,
-  });
+  // 줄마다 이어진 얼음 칸 묶음 하나가 한 단계 — 칸마다 단계를 두면 스위치·병렬 이벤트가 백 개를 넘는다. 발렌이 선 칸은 도구가 뺀다.
+  const steps: { x: number; y: number; width: number; height: number; atSecond: number }[] = [];
+  for (let y = box.minY; y <= box.maxY; y += 1) {
+    let x = box.minX;
+    while (x <= box.maxX) {
+      if (!iceSet.has(`${x},${y}`)) { x += 1; continue; }
+      const x0 = x;
+      while (x <= box.maxX && iceSet.has(`${x},${y}`)) x += 1;
+      steps.push({ x: x0, y, width: x - x0, height: 1, atSecond: Math.max(1, Math.min(seconds - 2, 1 + Math.floor(((box.maxY - y) * (seconds - 6)) / rows))) });
+    }
+  }
 
   // 발렌 — 등 하나를 든 채 못 위에 서 있다.
   const vc = hubChipAny(project, "ev_fs_valen");
@@ -1490,6 +1490,16 @@ function lanternNight(project: Project, exec: Exec): void {
     ], { graphic: chip(vc.textureKey, vc.characterIndex, "down"), priority: "same" }),
     page("ev_fs2_lake_valen_gone", "떠남", [sw(SW_VALEN_MET)], [], { graphic: { transparent: true }, priority: "below" }),
   ]);
+  // 발렌을 먼저 세운 뒤에 탈출을 짓는다 — 도구가 발렌 칸을 무너질 칸에서 뺀다.
+  exec(project, "make_timed_escape", {
+    // 처음은 발렌 장면 끝(스위치), 실패한 뒤에는 기슭에서 얼음으로 한 걸음 내디디면 다시 시작한다.
+    mapId: FS2_FROST_NIGHT_ID, escapeId: "fs2_ice", seconds, startSwitchId: SW_ICE_RUN, start: { x: back.x, y: back.y - 1, width: 1, height: 1 }, startCellsSwitchId: SW_VALEN_MET,
+    exit: { x: box.minX, y: box.minY - 1, width: box.maxX - box.minX + 1, height: 1 },
+    checkpoint: { x: back.x, y: back.y, direction: "up" },
+    steps, layer: "lower", collapsedTile: OPEN_WATER,
+    startText: "발밑 얼음이 갈라진다! 북쪽 기슭으로!", successText: "기슭이다. 빛기둥이 탑 꼭대기에 꽂혀 있다.",
+    failText: "…얼음물에 빠질 뻔했다. 기슭에서 다시.", fallText: "얼음이 꺼졌다!", successSwitchId: SW_ICE_DONE,
+  });
 }
 
 function lanternNightEvents(project: Project): void {
