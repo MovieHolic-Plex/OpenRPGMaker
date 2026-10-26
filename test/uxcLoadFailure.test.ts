@@ -70,6 +70,7 @@ function mockModeDependencies(): {
   }));
   vi.doMock("@/editor/mapEditHistory", () => ({
     MAP_EDIT_HISTORY_EVENT: "map-edit-history",
+    getMapEditHistoryEntries: vi.fn(() => []),
   }));
   vi.doMock("@/editor/panels/menu", () => ({
     renderTopbar: vi.fn(),

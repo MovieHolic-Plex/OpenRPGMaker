@@ -5,7 +5,8 @@ import { serialize } from "@/project/io";
 
 const { rendered } = vi.hoisted(() => ({ rendered: vi.fn() }));
 vi.mock("@/player/player", () => ({ renderPlayer: rendered }));
-vi.mock("@/player/audio", () => ({ stopAllAudio: vi.fn() }));
+// exportEntry unlocks audio when 「시작하기」 is pressed.
+vi.mock("@/player/audio", () => ({ stopAllAudio: vi.fn(), getAudioEngine: () => ({ unlock: vi.fn() }) }));
 vi.mock("@/project/store", () => import("@/player/exportProjectStoreShim"));
 
 beforeEach(() => {

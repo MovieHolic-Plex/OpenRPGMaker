@@ -98,7 +98,8 @@ async function pressStartUntil(ready: Promise<void>): Promise<void> {
 // 실제 내보내기 부팅 경로(exportEntry)가 입양을 부르는지 — communitySaveBoot.test.ts 와 같은 방식으로 관측한다.
 const { rendered } = vi.hoisted(() => ({ rendered: vi.fn() }));
 vi.mock("@/player/player", () => ({ renderPlayer: rendered }));
-vi.mock("@/player/audio", () => ({ stopAllAudio: vi.fn() }));
+// exportEntry unlocks audio when 「시작하기」 is pressed.
+vi.mock("@/player/audio", () => ({ stopAllAudio: vi.fn(), getAudioEngine: () => ({ unlock: vi.fn() }) }));
 vi.mock("@/project/store", () => import("@/player/exportProjectStoreShim"));
 
 // Heavy under CI load (15s default is too tight): boots the exported player over a blank project in happy-dom.
