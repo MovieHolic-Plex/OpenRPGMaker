@@ -15,7 +15,7 @@ import { electronUserArgIndex, inspectCliProjectArgs, inspectCurrentCliProject }
 import { chosenDirectory, directoryDialogParent, directoryDialogProperties, pickAppWindow } from "./directoryDialog";
 import { registerAppProtocol, registerAssetProtocol } from "./protocols";
 import { captureLastViewBeforeClose, forgetLastViewWindow, markEditorLeft, markEditorSettled, readLastView, scheduleLastViewAfterSave } from "./lastView";
-import { createProjectSessionRegistry } from "./sessions";
+import { SessionConsumerClosed, createProjectSessionRegistry } from "./sessions";
 import { startCompanionServer, type CompanionServer } from "./companion";
 import { describeRecentProjects, listRecentTeams, prepareNewProjectDir, recentProjectCoverSource, rememberRecentProject, rememberRecentTeam, suggestProjectDir, writeRecentProjectCover } from "./recent";
 import { openTeamWindow } from "./teamWindow";
@@ -262,6 +262,19 @@ function createWindow(options: { readonly splash?: () => Splash | undefined; rea
   return window;
 }
 
+/**
+ * 이 창의 프로젝트 세션. 여는 중에 창이 닫히면 null — 스토어는 레지스트리가 닫는다.
+ * 죽은 webContents 에 SQLite 를 붙이면 파일 잠금이 앱이 꺼질 때까지 남는다.
+ */
+async function openWindowSession(webContentsId: number, projectDir: string) {
+  try {
+    return await sessions.open(webContentsId, projectDir);
+  } catch (error) {
+    if (error instanceof SessionConsumerClosed) return null;
+    throw error;
+  }
+}
+
 /** 창에 첫 문서를 싣는다 — 시작 화면, QA 진입점(OPRN_SMOKE_PAGE·OPRN_OPEN_PROJECT_DIR), 명령줄 폴더, 또는 편집기. */
 function loadWindowContent(window: BrowserWindow): void {
   // QA 하니스용 진입점(OPRN_SMOKE_PAGE·OPRN_RENDERER_DIR 와 같은 계열): 폴더를 주면 시작 화면을
@@ -279,9 +292,15 @@ function loadWindowContent(window: BrowserWindow): void {
   else if (devServerUrl) void window.loadURL(devServerUrl);
   else void window.loadURL(`${OPRN_APP_SCHEME}://oprn/index.html`);
   if (bootProjectDir !== undefined) {
-    void sessions.open(window.webContents.id, bootProjectDir).then((session) => {
+    const webContentsId = window.webContents.id;
+    void openWindowSession(webContentsId, bootProjectDir).then((session) => {
+      if (!session || window.isDestroyed()) {
+        if (session) sessions.close(webContentsId);
+        explicitProjectDir.delete(window);
+        if (!session && !window.isDestroyed() && !smokePage) void window.loadURL(`${OPRN_APP_SCHEME}://oprn/start-screen.html`);
+        return;
+      }
       if (openedByCli) rememberRecentProject(session.projectDir, session.store.info().title ?? session.projectDir);
-      if (window.isDestroyed()) return;
       if (devServerUrl) void window.loadURL(devServerUrl);
       else void window.loadURL(`${OPRN_APP_SCHEME}://oprn/index.html`);
     }).catch((error: unknown) => {
@@ -300,9 +319,14 @@ function rendererEntryUrl(): string {
 
 /** 폴더를 이 창의 세션으로 열고 편집기 문서로 넘긴다. 파일 메뉴가 쓰는 경로. */
 async function adoptFolder(window: BrowserWindow, projectDir: string, title?: string): Promise<void> {
-  const session = await sessions.open(window.webContents.id, projectDir);
+  const webContentsId = window.webContents.id;
+  const session = await openWindowSession(webContentsId, projectDir);
+  if (!session || window.isDestroyed()) {
+    if (session) sessions.close(webContentsId);
+    return;
+  }
   rememberRecentProject(projectDir, title ?? session.store.info().title ?? projectDir);
-  if (!window.isDestroyed()) void window.loadURL(rendererEntryUrl());
+  void window.loadURL(rendererEntryUrl());
 }
 
 function dismissSplash(): void {
@@ -670,31 +694,37 @@ export async function startApp(boot: BootContext): Promise<void> {
   ipcMain.handle(OPRN_CHANNELS.startChooseProjectRoot, (event: IpcMainInvokeEvent, _payload: unknown) =>
     askForDirectory(BrowserWindow.fromWebContents(event.sender), "새 게임을 만들 위치 선택", true));
   ipcMain.handle(OPRN_CHANNELS.startOpenFolder, async (event: IpcMainInvokeEvent, payload: unknown) => {
+    const senderId = event.sender.id;
     const requested = (payload as { readonly projectDir?: unknown } | null)?.projectDir;
     if (typeof requested === "string") {
       if (!requested || !sessions.directoryExists(requested)) throw new Error("열 프로젝트 폴더를 찾지 못했습니다.");
-      const session = await sessions.open(event.sender.id, requested);
+      const session = await openWindowSession(senderId, requested);
+      if (!session) return null;
       rememberRecentProject(session.projectDir, session.store.info().title ?? requested);
       return { projectDir: session.projectDir, isNew: false, projectId: session.store.projectId };
     }
     const dir = await askForDirectory(BrowserWindow.fromWebContents(event.sender), "프로젝트 폴더 열기");
-    if (!dir) return null;
+    if (!dir || event.sender.isDestroyed()) return null;
     // project.sqlite 가 없는 폴더도 그냥 연다 — 스토어가 만들어지고 렌더러의 store.load()
     // 가 빈 프로젝트를 심는다. isNew 는 시작 화면이 “새 프로젝트로 채택” 토스트를 띄우는 용도다.
     const isNew = !sessions.directoryExists(dir);
-    const session = await sessions.open(event.sender.id, dir);
+    const session = await openWindowSession(senderId, dir);
+    if (!session) return null;
     rememberRecentProject(dir, session.store.info().title ?? dir);
     return { projectDir: dir, isNew, projectId: session.store.projectId };
   });
   ipcMain.handle(OPRN_CHANNELS.startOpenRecent, async (event: IpcMainInvokeEvent, payload: unknown) => {
+    const senderId = event.sender.id;
     const input = payload as { readonly projectDir?: unknown };
     const dir = typeof input?.projectDir === "string" ? input.projectDir : "";
     if (!dir || !sessions.directoryExists(dir)) return null;
-    const session = await sessions.open(event.sender.id, dir);
+    const session = await openWindowSession(senderId, dir);
+    if (!session) return null;
     rememberRecentProject(dir, session.store.info().title ?? dir);
     return { projectDir: dir, projectId: session.store.projectId };
   });
   ipcMain.handle(OPRN_CHANNELS.startCreateProject, async (event: IpcMainInvokeEvent, payload: unknown) => {
+    const senderId = event.sender.id;
     const input = payload as { readonly title?: string; readonly seed?: string; readonly projectDir?: string };
     let dir: string;
     // 시작 화면은 저장 위치를 미리 보여 주고 확정된 경로를 보낸다. 편집기 메뉴 경로는 예전처럼 대화상자를 연다.
@@ -702,10 +732,11 @@ export async function startApp(boot: BootContext): Promise<void> {
       dir = prepareNewProjectDir(input.projectDir);
     } else {
       const picked = await askForDirectory(BrowserWindow.fromWebContents(event.sender), "새 프로젝트 폴더 선택", true);
-      if (!picked) return null;
+      if (!picked || event.sender.isDestroyed()) return null;
       dir = picked;
     }
-    const session = await sessions.open(event.sender.id, dir);
+    const session = await openWindowSession(senderId, dir);
+    if (!session) return null;
     // 시드(장르 프리셋 등)를 새 폴더에 심는다 — 빈 폴더로 시작하면 렌더러가 리로드 뒤에 적용할 수 없다.
     if (typeof input.seed === "string" && input.seed.length > 0) await session.store.saveSerialized(input.seed);
     rememberRecentProject(session.projectDir, input.title ?? "새 프로젝트");

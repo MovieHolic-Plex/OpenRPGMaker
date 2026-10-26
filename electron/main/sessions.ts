@@ -67,17 +67,72 @@ export async function separateInlineMediaOnOpen(store: LocalProjectStore): Promi
   }
 }
 
+/** open 이 스토어를 만드는 동안 이 키가 닫혔다. 세션은 붙지 않았고, 다른 창이 안 쓰면 스토어는 이미 닫혔다. */
+export class SessionConsumerClosed extends Error {
+  constructor() {
+    super("프로젝트를 여는 중에 세션이 닫혔습니다.");
+    this.name = "SessionConsumerClosed";
+  }
+}
+
 export function createProjectSessionRegistry() {
   const borrowedTeams = new WeakSet<ProjectSession>();
   const byConsumer = new Map<SessionKey, ProjectSession>();
   const identities = new Map<SessionKey, string>();
   const opening = new Map<string, Promise<ProjectSession>>();
   const byProjectDir = new Map<string, ProjectSession>();
+  // 같은 폴더를 여는 중인 키 수. 하나라도 남아 있으면 그 스토어를 닫지 않는다.
+  const openingCount = new Map<string, number>();
+  const released = new WeakSet<ProjectSession>();
+  // close 는 세대만 올린다. 그 전에 시작한 open 은 세대가 달라지면 죽은 창에 스토어를 붙이지 않는다.
+  // 창을 닫은 뒤의 다음 open 은 올라간 세대를 다시 잡으므로, 닫기 한 번이 나중 열기를 막지 않는다.
+  const epoch = new Map<SessionKey, number>();
+
+  const epochOf = (key: SessionKey): number => epoch.get(key) ?? 0;
+
+  const track = (projectDir: string): void => {
+    openingCount.set(projectDir, (openingCount.get(projectDir) ?? 0) + 1);
+  };
+  const untrack = (projectDir: string): void => {
+    const next = (openingCount.get(projectDir) ?? 1) - 1;
+    if (next <= 0) openingCount.delete(projectDir);
+    else openingCount.set(projectDir, next);
+  };
+
+  const releaseIfUnused = (session: ProjectSession): void => {
+    if (released.has(session)) return;
+    if ([...byConsumer.values()].some((entry) => entry === session)) return;
+    if ((openingCount.get(session.projectDir) ?? 0) > 0) return;
+    released.add(session);
+    byProjectDir.delete(session.projectDir);
+    opening.delete(session.projectDir);
+    if (!borrowedTeams.has(session)) session.team.close();
+    session.store.close();
+  };
+
+  const detach = (key: SessionKey): void => {
+    const session = byConsumer.get(key);
+    if (!session) return;
+    byConsumer.delete(key);
+    identities.delete(key);
+    for (const [resource, lease] of session.locks) if (lease.session === key) session.locks.delete(resource);
+    releaseIfUnused(session);
+  };
 
   return {
     async open(key: SessionKey, projectDir: string, sharedTeam?: TeamDirectory): Promise<ProjectSession> {
+      // 스토어를 여는 동안 창이 닫히면 closed 가 sessions.close 를 부르지만, 그때는 아직 세션이 없어
+      // 예전에는 그냥 돌아갔다. open 이 끝나면 죽은 webContents 에 SQLite 가 붙어 프로세스 끝까지 잠금이 남았다.
+      const stamp = epochOf(key);
       projectDir = resolve(projectDir);
       if (existsSync(projectDir)) projectDir = realpathSync(projectDir);
+      track(projectDir);
+      let tracked = true;
+      const finishTrack = (): void => {
+        if (!tracked) return;
+        tracked = false;
+        untrack(projectDir);
+      };
       let pending = opening.get(projectDir);
       if (!pending) {
         pending = (async () => {
@@ -94,11 +149,30 @@ export function createProjectSessionRegistry() {
         })();
         opening.set(projectDir, pending);
       }
-      let existing: ProjectSession;
-      try { existing = await pending; } catch (error) { opening.delete(projectDir); throw error; }
-      if (byConsumer.has(key) && byConsumer.get(key) !== existing) this.close(key);
-      byConsumer.set(key, existing);
-      return existing;
+      try {
+        let existing: ProjectSession;
+        try { existing = await pending; } catch (error) {
+          // 같은 폴더의 다음 시도가 이미 새 promise 를 넣었으면 그 시도는 지우지 않는다.
+          if (opening.get(projectDir) === pending) opening.delete(projectDir);
+          throw error;
+        }
+        // 기다리는 쪽에서 빼낸 뒤에 닫아야, 방금 취소된 이 키가 스토어를 산 채로 두지 않는다.
+        finishTrack();
+        if (epochOf(key) !== stamp) {
+          releaseIfUnused(existing);
+          throw new SessionConsumerClosed();
+        }
+        // 다른 폴더로 바꾸는 것은 창이 닫힌 것이 아니다 — 세대는 올리지 않는다.
+        if (byConsumer.has(key) && byConsumer.get(key) !== existing) detach(key);
+        if (epochOf(key) !== stamp) {
+          releaseIfUnused(existing);
+          throw new SessionConsumerClosed();
+        }
+        byConsumer.set(key, existing);
+        return existing;
+      } finally {
+        finishTrack();
+      }
     },
     setMember(key: SessionKey, memberId: string): void { identities.set(key, memberId); },
     member(key: SessionKey): TeamMember {
@@ -119,17 +193,8 @@ export function createProjectSessionRegistry() {
       return session;
     },
     close(key: SessionKey): void {
-      const session = byConsumer.get(key);
-      if (!session) return;
-      byConsumer.delete(key);
-      identities.delete(key);
-      for (const [resource, lease] of session.locks) if (lease.session === key) session.locks.delete(resource);
-      const stillUsed = [...byConsumer.values()].some((entry) => entry === session);
-      if (stillUsed) return;
-      byProjectDir.delete(session.projectDir);
-      opening.delete(session.projectDir);
-      if (!borrowedTeams.has(session)) session.team.close();
-      session.store.close();
+      epoch.set(key, epochOf(key) + 1);
+      detach(key);
     },
     directoryExists(projectDir: string): boolean {
       return existsSync(join(projectDir, "project.sqlite"));

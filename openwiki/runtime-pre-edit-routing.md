@@ -371,6 +371,8 @@ Phaser `preRender` 는 경계가 있으면 따라가기·패닝 뒤 clamp 를 �
   않는다. `electron/main/dispatch.ts`의 `project.load`도 저장된 wire 문자열을 그대로 보내고
   revision/sha는 메타데이터 조회로 채운다 — 메인 프로세스에서 같은 문서를 먼저 복원하지 않는다.
   미디어 분리 계약 자체는 유지하되, 이 경로에 새 전체 프로젝트 스캔을 추가하지 않는다.
+  창이 스토어를 여는 중에 닫히면 그 세션은 붙이지 않는다. 다른 창이 같은 폴더를 여는 중이 아니면 SQLite 와 팀 DB 를 닫는다.
+  닫을 때 세션이 아직 없으면 `sessions.close` 는 그 키의 세대만 올리고, 이미 시작한 `open` 이 끝나면 `SessionConsumerClosed` 로 돌아간다.
 - **호스트 정적 자원·브리지 전송:** `electron/serve/runtime.ts`는 해시가 붙은 `assets/` 파일에
   immutable 캐시를 주고, 1KiB 이상 JSON/JavaScript/CSS/SVG와 프로젝트 브리지 응답은
   `electron/serve/httpBody.ts`의 gzip 경로를 탄다. 브라우저가 매번 다시 받아야 하는 HTML과
