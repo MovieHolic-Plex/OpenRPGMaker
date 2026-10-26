@@ -431,6 +431,13 @@ export class FakeElement extends FakeNode {
     else if (this.tagName === "OPTION") this.attrs.value = value;
     else this.inputValue = value;
   }
+  /** HTMLInputElement.placeholder 는 같은 이름 속성을 비춘다(속성으로 준 값을 프로퍼티로 읽는 테스트). */
+  get placeholder(): string {
+    return this.attrs.placeholder ?? "";
+  }
+  set placeholder(value: string) {
+    this.attrs.placeholder = String(value);
+  }
   private get optionText(): string {
     return this.textContent.replace(/[\t\n\f\r ]+/gu, " ").trim();
   }
