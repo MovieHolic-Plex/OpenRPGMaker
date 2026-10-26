@@ -101,6 +101,12 @@ jobs:
 
       # 에디터↔플레이어 데이터 왕복 계약. 9파일이라 바운드가 확실하다.
       # 잡은 러너마다 격리되므로 호스트 락은 없다.
+      # CSS 래칫 6종(budget·graph·live-classes·surfaces·winners·dead-classes). 몇 초면 끝난다.
+      # 왜 (2026-10-26): ci-full 에만 있어서 머지마다 드리프트가 쌓였다 — #3541·#3611 로 두 번 다시 올렸는데
+      # 그 사이 #3628 이 hex 1개·표면 밖 선택자 1개를 또 넣었다. PR 에서 막는다.
+      - name: CSS 래칫
+        run: node scripts/verify-gates.mjs --only css
+
       - name: parity 스위트
         run: npm run test:parity
 
