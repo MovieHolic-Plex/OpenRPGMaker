@@ -66,7 +66,7 @@ describe("커맨드 줄 안에 꽂히는 상자는 그리드 배치를 명시한
   it("복원된 선택지는 답변에 남고 칩으로 승격되지 않는다", async () => {
     // Break: restoring choices strips transcript content or inserts quick-reply buttons.
     store.replace(createBlankProject());
-    restoreDom = installFakeDom();
+    restoreDom = installFakeDom({ window: true });
     const storage = new Map<string, string>();
     vi.stubGlobal("localStorage", {
       getItem: (key: string) => storage.get(key) ?? null,

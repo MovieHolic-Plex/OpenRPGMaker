@@ -38,7 +38,7 @@ function installFakeLocalStorage(): void {
 beforeEach(() => {
   store.replace(createBlankProject());
   resetMapEditHistory();
-  restoreDom = installFakeDom();
+  restoreDom = installFakeDom({ window: true });
   installFakeLocalStorage();
   editorState.set({
     currentMapId: store.getCurrent().startMapId,

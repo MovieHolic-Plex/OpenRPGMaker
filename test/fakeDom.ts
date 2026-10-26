@@ -34,6 +34,12 @@ type PreviousDomGlobals = {
 
 type FakeDomOptions = {
   readonly animationFrames?: "manual";
+  /**
+   * 최소 window 를 깐다(호스트에 window 가 없을 때만). 기본은 끈다: 앱 코드 일부는 「window 가 없으면
+   * 헤드리스」로 보고 다르게 움직인다(ui/modal.ts 의 confirm 자동 통과 등). window 에 사용자 정의 이벤트를
+   * 붙이는 패널(aiWorkspace·aiPresence)을 그리는 테스트만 켠다.
+   */
+  readonly window?: boolean;
 };
 
 const animationFrames = new Map<number, FrameRequestCallback>();
@@ -733,10 +739,10 @@ export function installFakeDom(options: FakeDomOptions = {}): () => void {
   animationFrames.clear();
   for (const observer of mutationObservers) observer.disconnect();
   nextAnimationFrameId = 1;
-  // node 환경(가짜 DOM 만 쓰는 테스트)에는 window 가 없다. 편집기 패널은 window 에 사용자 정의 이벤트를
+  // 옵트인(options.window): node 환경(가짜 DOM 만 쓰는 테스트)에는 window 가 없다. 편집기 패널은 window 에 사용자 정의 이벤트를
   // 붙이므로(aiWorkspace·aiPresence 등) 이벤트 대상 하나와 자주 쓰는 속성만 갖춘 최소 window 를 준다.
   // happy-dom 환경이면 진짜 window 를 그대로 둔다.
-  if (!previous.window) defineDomGlobal("window", createFakeWindow());
+  if (options.window && !previous.window) defineDomGlobal("window", createFakeWindow());
   defineDomGlobal("Node", FakeNode);
   defineDomGlobal("Element", FakeElement);
   defineDomGlobal("MutationObserver", FakeMutationObserver);
@@ -843,7 +849,7 @@ export function installFakeDom(options: FakeDomOptions = {}): () => void {
     animationFrames.clear();
     for (const observer of mutationObservers) observer.disconnect();
     restoreDomGlobal("document", previous.document);
-    restoreDomGlobal("window", previous.window);
+    if (options.window) restoreDomGlobal("window", previous.window);
     restoreDomGlobal("Node", previous.Node);
     restoreDomGlobal("Element", previous.Element);
     restoreDomGlobal("MutationObserver", previous.MutationObserver);

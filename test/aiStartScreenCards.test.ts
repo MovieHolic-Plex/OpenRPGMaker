@@ -21,7 +21,7 @@ let restoreDom: (() => void) | null = null;
 
 beforeEach(() => {
   store.replace(createBlankProject());
-  restoreDom = installFakeDom();
+  restoreDom = installFakeDom({ window: true });
   const storage = new Map<string, string>();
   Object.defineProperty(globalThis, "localStorage", {
     configurable: true,

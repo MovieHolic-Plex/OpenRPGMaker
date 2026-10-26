@@ -23,7 +23,7 @@ function installFakeLocalStorage(): void {
 
 beforeEach(() => {
   store.replace(createBlankProject());
-  restoreDom = installFakeDom();
+  restoreDom = installFakeDom({ window: true });
   installFakeLocalStorage();
 });
 
