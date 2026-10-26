@@ -1,7 +1,7 @@
 import { QUEST_PRESET_IDS } from '@/project/quest/questPresetIds';
 import { troopAfterBattleLists } from "@/project/troopAfterBattle";
 import { canonicalizeCommandFieldAliases } from "@/project/eventCommands/commandFieldAliases";
-import { validateEndingPresentation } from "./shapeDatabaseFields";
+import { validateEndingContinueTo, validateEndingPresentation } from "./shapeDatabaseFields";
 import { referenceOwner } from "../tilesetReferences";
 import { normalizeMapClimate } from "../mapClimate";
 import { normalizeVisualTopOverhangPx } from "../mapVisualBounds";
@@ -380,6 +380,7 @@ function validateEndings(value: unknown): void {
     }
     if (ending.presentation !== undefined) validateEndingPresentation(ending.presentation, `endings[${index}].presentation`);
     if (ending.priority !== undefined) requireNumber(`endings[${index}].priority`, ending.priority);
+    if (ending.continueTo !== undefined) validateEndingContinueTo(ending.continueTo, `endings[${index}].continueTo`);
     if (ending.epilogue !== undefined) {
       for (const [beatIndex, beat] of requireArray(`endings[${index}].epilogue`, ending.epilogue).entries()) {
         requireRecord(`endings[${index}].epilogue[${beatIndex}]`, beat);

@@ -470,6 +470,8 @@ function killParty(state: InterpreterState): void {
 
 // 에필로그 끝에 붙는 합성 ending 명령 → 실제로 본 엔딩 id. 저작된 ending 명령은 클리어가 아니다.
 const ENDING_CLEAR_COMMANDS = new WeakMap<Command, string>();
+/** 다음 막으로 이어지는 엔딩(EndingDef.continueTo) — 에필로그 뒤 마지막 명령에 붙인다. */
+const ENDING_CONTINUE_COMMANDS = new WeakMap<Command, import("@/project/types").EndingContinueTo>();
 // 에필로그 안의 문장 명령. 스킵(대사창 읽기 보조)은 이 글을 절대 건너뛰지 않는다 — StepResult text 의 endingEpilogue.
 const ENDING_EPILOGUE_TEXT = new WeakSet<Command>();
 
@@ -508,6 +510,7 @@ function triggerEnding(
   const clear = { endingId: ending.id };
   const finalCommand: Command = { kind: "ending", title: ending.name, message: "", ...(ending.presentation ? { presentation: ending.presentation } : {}) };
   ENDING_CLEAR_COMMANDS.set(finalCommand, ending.id);
+  if (ending.continueTo) ENDING_CONTINUE_COMMANDS.set(finalCommand, ending.continueTo);
   const epilogueCommands = compileEndingEpilogue(state, ending);
   for (const epilogueCommand of epilogueCommands) {
     if (epilogueCommand.kind === "text") ENDING_EPILOGUE_TEXT.add(epilogueCommand);
@@ -515,7 +518,7 @@ function triggerEnding(
   if (epilogueCommands.length > 0 && pushFrame(state, [...epilogueCommands, finalCommand])) {
     return { kind: "continue" };
   }
-  return pause("returnToTitle", { kind: "returnToTitle", title: ending.name, message: "", clear, ...(ending.presentation ? { presentation: ending.presentation } : {}) });
+  return pause("returnToTitle", { kind: "returnToTitle", title: ending.name, message: "", clear, ...(ending.presentation ? { presentation: ending.presentation } : {}), ...(ending.continueTo ? { continueTo: ending.continueTo } : {}) });
 }
 
 function selectEnding(
@@ -915,12 +918,14 @@ export function executeCommand(
       return pause("gameOver", { kind: "gameOver", ...(command.gameOverId ? { gameOverId: command.gameOverId } : {}) });
     case "ending": {
       const clearedEndingId = ENDING_CLEAR_COMMANDS.get(command);
+      const continueTo = ENDING_CONTINUE_COMMANDS.get(command);
       return pause("returnToTitle", {
         kind: "returnToTitle",
         title: command.title,
         message: command.message,
         ...(clearedEndingId ? { clear: { endingId: clearedEndingId } } : {}),
         ...(command.presentation ? { presentation: command.presentation } : {}),
+        ...(continueTo ? { continueTo } : {}),
       });
     }
     case "returnToTitle":
