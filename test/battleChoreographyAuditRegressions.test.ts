@@ -1,3 +1,4 @@
+import { battlerSkillIdsWithGrants } from "@/battle/battleSkillUse";
 import { describe, expect, it } from "vitest";
 import { resolveRetroClassChoreography, resolveRetroMonsterChoreography } from "@/assets/retroSkillCatalog";
 import { createBattleRuntime } from "@/battle/runtime";
@@ -38,7 +39,8 @@ describe("battle choreography audit identity", () => {
     const runtime = createBattleRuntime({ project, troopId: troop.id, canEscape: false, canLose: true, battleFlow: "strict", rng: () => 0.5,
       party: { partyActorIds: [actor.id], levels: { [actor.id]: 22 }, experience: {} } });
     expect(runtime.snapshot().actors[0]!.skillIds).toContain("skill_ranger_snipe");
-    expect(runtime.snapshot().actors[0]!.skillIds).toContain("skill_gunner_snipe");
+    // 장비가 준 기술은 스냅샷 skillIds 가 아니라 equipmentEffects.grantedSkillIds 에 실린다 — 메뉴와 같은 합(battlerSkillIdsWithGrants)으로 본다.
+    expect(battlerSkillIdsWithGrants(runtime.snapshot().actors[0]!)).toContain("skill_gunner_snipe");
     runtime.performActorCommand({ kind: "skill", skillId: "skill_gunner_snipe", targetEnemyId: "enemy-1" });
     const fact = runtime.snapshot().timeline.find(row => row.kind === "damage" && row.userRecordId === actor.id)!;
     expect(fact).toMatchObject({ skillName: "저격", skillId: "skill_gunner_snipe" });
