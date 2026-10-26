@@ -3024,7 +3024,7 @@ const placeBattleBlocker: ToolDefinition = {
 const placeTrap: ToolDefinition = {
   name: "place_trap",
   description:
-    "즉사 트랩 이벤트를 배치한다. at:{x,y} 또는 cells:[{x,y}]를 받으며 trigger는 touch/action. respawnCheckpoint=true면 맵 진입 auto 체크포인트 이벤트를 추가한다.  함정·즉사 트랩 요청의 정본. 트랩+체크포인트+추격을 한 번에 원하면 make_horror_loop."
+    "즉사 트랩 이벤트를 배치한다. at:{x,y} 또는 cells:[{x,y}]를 받으며 trigger는 touch/action. respawnCheckpoint=true면 맵 진입 auto 체크포인트 이벤트를 추가한다(죽으면 그 자리에서 다시 — 얻은 물건·스위치·조명 같은 진행은 그대로, 추격자는 제자리로).  함정·즉사 트랩 요청의 정본. 트랩+체크포인트+추격을 한 번에 원하면 make_horror_loop."
     + "touch 트랩은 밟을 수 있어야 하므로 통행 불가 칸이면 근처(반경 3) 통행 가능 칸으로 자동 착지한다.",
   mode: "write",
   parameters: {
