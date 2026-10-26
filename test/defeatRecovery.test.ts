@@ -71,7 +71,8 @@ describe("blackout recovery and ending persistence", () => {
     expect(restored.endings?.[0].presentation).toEqual(presentation);
     const session = startSession(restored);
     const interpreter = createInterpreter([{ kind: "triggerEnding", endingId: "finish" }, { kind: "setVariable", variableId: "var_lantern_shards", op: "=", value: 777 }], session, restored);
-    expect(interpreter.start()).toEqual({ kind: "returnToTitle", title: "Dawn", message: "", presentation });
+    // 엔딩 결과는 클리어 기록용 clear:{endingId} 도 싣는다(commandCatalog triggerEnding).
+    expect(interpreter.start()).toEqual({ kind: "returnToTitle", title: "Dawn", message: "", clear: { endingId: "finish" }, presentation });
     expect(interpreter.resume(undefined)).toEqual({ kind: "done" });
     expect(session.variables.var_lantern_shards).not.toBe(777);
     expect(session.flags['ending:finish']).toBe(true);
