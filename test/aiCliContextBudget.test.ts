@@ -42,3 +42,10 @@ describe("CLI context-limit reply is a failure (J79)", () => {
     expect(isCliContextExhaustedError("rate limited")).toBe(false);
   });
 });
+
+describe("compactCliToolList keeps an argument named description (J79 review)", () => {
+  it("only strips description strings, not a property schema keyed 'description'", () => {
+    const [tool] = compactCliToolList([{ name: "a", description: "", inputSchema: { type: "object", properties: { item: { type: "object", properties: { description: { type: "string" } } } } } }]);
+    expect(JSON.stringify(tool!.inputSchema)).toContain("\"description\":{\"type\":\"string\"}");
+  });
+});

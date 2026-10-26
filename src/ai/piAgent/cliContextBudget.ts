@@ -18,7 +18,7 @@ function stripDeepDescriptions(node: Json, depth: number): Json {
   if (Array.isArray(node)) return node.map((n) => stripDeepDescriptions(n, depth));
   if (!isObj(node)) return node;
   return Object.fromEntries(Object.entries(node)
-    .filter(([k]) => !(k === "description" && depth >= 2))
+    .filter(([k, v]) => !(k === "description" && typeof v === "string" && depth >= 2))
     .map(([k, v]) => [k, stripDeepDescriptions(v, NESTING_KEYS.has(k) ? depth + 1 : depth)]));
 }
 
@@ -33,9 +33,9 @@ export function compactCliToolList<T extends { readonly name: string; readonly d
       const first = seen.get(text);
       if (first !== undefined) {
         const type = node.type ?? (node.items ? "array" : "object");
-        return { type, description: `형식은 ${first} 와 같다(그 칸을 본다)` };
+        return { type, description: `형식은 ${first} 칸과 같다(그 도구 목록의 그 칸을 본다)` };
       }
-      seen.set(text, `${owner}${path}`);
+      seen.set(text, `${owner} 도구의 ${path}`);
     }
     return Object.fromEntries(Object.entries(node).map(([k, v]) => [k, share(v, owner, path ? `${path}.${k}` : k)]));
   };
@@ -43,7 +43,7 @@ export function compactCliToolList<T extends { readonly name: string; readonly d
 }
 
 /** 그림을 여러 장 돌려주는 짓기 동사 — CLI 에는 첫 장만 보낸다(관문이 그림 수를 세는 도구는 넣지 않는다). */
-const MULTI_IMAGE_VERBS = new Set(["add_event", "make_place", "edit_place", "move_object", "add_scene", "make_game", "inspect", "draw_object", "place_object"]);
+const MULTI_IMAGE_VERBS = new Set(["add_event", "make_place", "edit_place", "move_object", "add_scene", "make_game", "inspect"]);
 export function capResultImages<P extends { readonly type: string; readonly text?: string }>(toolName: string, content: readonly P[]): P[] {
   const images = content.filter((part) => part.type === "image").length;
   if (images <= 1 || !MULTI_IMAGE_VERBS.has(toolName)) return [...content];

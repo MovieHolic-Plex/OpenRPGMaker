@@ -245,7 +245,7 @@ export async function createLocalCliLoop(setup: LocalCliLoopSetup): Promise<Loca
     if (event.costUsd !== undefined) costUsd = (costUsd ?? 0) + event.costUsd;
     if (event.usage) usage = usage ? { input: usage.input + event.usage.input, output: usage.output + event.usage.output, cacheRead: usage.cacheRead + event.usage.cacheRead, cacheWrite: usage.cacheWrite + event.usage.cacheWrite, calls: usage.calls + event.usage.calls } : event.usage;
     pendingDelivered = [];
-    const errorMessage = !event.ok && !aborted ? `${event.error ?? "CLI 실행 실패"}${stderrTail.trim() ? ` (${stderrTail.trim().split("\n").slice(-2).join(" / ").slice(0, 300)})` : ""}` : undefined;
+    const errorMessage = !event.ok && !aborted ? `${event.error && isCliContextExhaustedText(event.error) ? `${CLI_CONTEXT_EXHAUSTED_PREFIX} ` : ""}${event.error ?? "CLI 실행 실패"}${stderrTail.trim() ? ` (${stderrTail.trim().split("\n").slice(-2).join(" / ").slice(0, 300)})` : ""}` : undefined;
     emit({ type: "message_end", message: { role: "assistant", content: [], ...(event.usage ? { usage: { ...event.usage, totalTokens: event.usage.input + event.usage.output + event.usage.cacheRead + event.usage.cacheWrite } } : {}), stopReason: errorMessage ? "error" : "stop", ...(errorMessage ? { errorMessage } : {}) } });
   };
 
