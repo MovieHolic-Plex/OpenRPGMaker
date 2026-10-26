@@ -532,7 +532,10 @@ Read that directory's `SUMMARY.md` first. Previews are actual player captures at
     회복량 ▲n. 늘어날 막대 구간이 깜빡인다. 제목 문자열(「회복약 · 4개」)은 바꾸지 않았다(여러 테스트의 계약).
 - 여관: 메뉴 스킨이 `partyStats` 면 `layoutPixelInn`(playSceneCommerce.ts)이 기존 노드(제목·인사·질문·예/아니오)를
   도트 창 격자로 옮기고 파티 창(`inn-party-row-<actorId>`, HP/MP 「60 → 514 ▲454」)과 요약 창
-  (`inn-summary-gold` 「1,200 → 1,120 G」, 회복 합계)을 더한다. 거래·휴식 연출·분기 규칙은 그대로다.
+  (`inn-summary-gold` 「1,200 → 1,120 G」, 회복 합계)을 더한다. 상태 줄의 「→ 정상」은 글자 노드다
+  (CSS `content` 가 아니다). 창은 `role=dialog` 이고 이름은 여관 제목, 질문·부족·휴식·기상은 `role=status` 다.
+  휴식 암전은 `prefers-reduced-motion` 또는 플레이어 「메뉴 움직임 줄이기」면 페이드 없이 바로 어두워진다.
+  거래·휴식 연출·분기 규칙은 그대로다.
 - 전투 결과: 승리 + `partyStats` + 포켓몬 전투가 아니면 `syncPixelResultParty`(battleDirectorDom.ts)가 합계 창 ·
   파티 창(`battle-result-party-<actorId>`: 걷는 그림 · Lv 전후 · LEVEL UP · EXP 막대 · 다음 Lv까지) ·
   레벨 업 창(`battle-result-levelup-<actorId>`: HP·MP·공격·방어·정신·민첩 현재 → 오른 뒤 ▲, 새 스킬 MP)을 더한다.
