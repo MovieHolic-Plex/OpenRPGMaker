@@ -427,7 +427,7 @@ export function createAiTeamSidebar(options: { settings: HTMLElement }): { root:
   const unsubscribeLanes = manager.subscribe(() => render());
   // Tick clocks without rebuilding cards, transcript, focus or drafts.
   const clock = setInterval(() => {
-    if (document.hidden || !root.isConnected) return;
+    if (typeof document === "undefined" || document.hidden || !root.isConnected) return;
     roster.querySelectorAll<HTMLElement>(".ai-team-member-signal[data-at]").forEach(node => {
       if (node.dataset.at) node.textContent = teamActivityAge(Number(node.dataset.at));
     });
