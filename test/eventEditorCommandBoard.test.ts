@@ -1,5 +1,26 @@
 /** @vitest-environment happy-dom */
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+
+// AI 초안 독은 더 이상 fetch 를 직접 부르지 않고 공용 조수 브리지(sendAiAssistantMessage)로
+// pendingProposal {before, after} 를 받는다(aiAssist.ts). 브리지를 막고 초안 명령만 주입한다.
+const bridgeDraft = vi.hoisted(() => ({ commands: [] as unknown[] }));
+vi.mock("@/editor/aiAssistantBridge", () => ({
+  getAiAssistantStatus: () => ({ turnBusy: false }),
+  abortAiAssistantTurn: vi.fn(),
+  sendAiAssistantMessage: async (
+    _prompt: string,
+    options: { eventCommandScope: { mapId: string; eventId: string; pageId: string } },
+  ) => {
+    const { store: liveStore } = await import("@/project/store");
+    const before = structuredClone(liveStore.getCurrent());
+    const after = structuredClone(before);
+    const target = options.eventCommandScope;
+    const page = after.maps[target.mapId]!.events.find((e) => e.id === target.eventId)!.pages!
+      .find((p) => p.id === target.pageId)!;
+    page.commands = structuredClone(bridgeDraft.commands) as typeof page.commands;
+    return { ok: true, pendingProposal: { before, after, callCount: 1, summary: "초안" } };
+  },
+}));
 import { editorState } from "@/editor/editorState";
 import { eventAiStagedCommands, resetEventAiStagedForTest } from "@/editor/panels/eventEditor/aiAssist";
 import { clearCommandInspector } from "@/editor/panels/eventEditor/commandInspector";
@@ -165,7 +186,7 @@ describe("event editor command board", () => {
 
     expect(rows).toBe(6);
     expect(count?.textContent).toBe("6개");
-    expect(count?.title).toBe("작성한 명령 6개 (분기 안 명령 포함)");
+    // 개수 배지의 title 은 없어졌다(content.ts refreshCommandCount 는 textContent+aria-label 만 쓴다) — 접근성 이름은 aria-label 이 맡는다.
     expect(count?.getAttribute("aria-label")).toBe("작성한 명령 6개, 분기 안 명령 포함");
   });
 
@@ -173,9 +194,7 @@ describe("event editor command board", () => {
     const mapId = seedNestedProject();
     const page = store.getCurrent().maps[mapId]!.events[0]!.pages![0]!;
     page.commands = [{ kind: "text", body: "A" }, { kind: "text", body: "B" }];
-    vi.stubGlobal("fetch", vi.fn(async () => new Response(JSON.stringify({
-      choices: [{ message: { content: JSON.stringify([{ kind: "text", body: "B" }]) } }],
-    }), { status: 200, headers: { "Content-Type": "application/json" } })));
+    bridgeDraft.commands = [{ kind: "text", body: "B" }];
 
     renderEventEditorDynamic(host, mapId, NESTED_EVENT_ID);
     const input = host.querySelector<HTMLTextAreaElement>('[data-testid="ai-event-input"]')!;
@@ -202,9 +221,7 @@ describe("event editor command board", () => {
       { kind: "text", body: "new" },
       { kind: "wait", ms: 500 },
     ];
-    vi.stubGlobal("fetch", vi.fn(async () => new Response(JSON.stringify({
-      choices: [{ message: { content: JSON.stringify(after) } }],
-    }), { status: 200, headers: { "Content-Type": "application/json" } })));
+    bridgeDraft.commands = after;
 
     renderEventEditorDynamic(host, mapId, NESTED_EVENT_ID);
     const input = host.querySelector<HTMLTextAreaElement>('[data-testid="ai-event-input"]')!;
