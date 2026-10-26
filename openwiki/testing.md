@@ -743,7 +743,7 @@ checkpoints, remote schema, distributed/two-tab writer guarantee or P4/P5 is ver
 - 앱 부팅: `xvfb-run -a node scripts/qa/electronAppBootProbe.mjs` — 실제 렌더러(dist)로 폴더를 연 채
   띄워 편집기 셸·본문, 상태 `ready`, DB 연결 화면 부재, **메뉴 저장이 리비전을 올리는 것**까지 판정한다.
   헤드리스에서 폴더 선택 대화상자를 자동화할 수 없으므로 `OPRN_OPEN_PROJECT_DIR` 진입점을 쓴다.
-  사용자가 앱 인자에 폴더를 넘기는 경로(`electron/main/cliProject.ts`)와는 다르다 — 그 환경 변수는 빈 폴더도 만들고 단일 인스턴스 잠금을 끈다.
+  사용자가 앱 인자에 폴더를 넘기는 경로(`electron/main/cliProject.ts`)와는 다르다 — 그 환경 변수는 빈 폴더도 만들고 단일 인스턴스 잠금을 끈다. macOS `open-file` 도 그 명령줄과 같은 `project.sqlite` 규칙이다(폴더, 또는 그 파일 자체).
 - 함정: playwright 의 `app.process()` 는 종료 뒤 호출하면 던진다(`Cannot read properties of undefined`).
   종료 헬퍼에서 이 호출을 감싸지 않으면 종료가 성공해도 스모크가 죽어 "브리지가 깨졌다" 로 오진된다.
 

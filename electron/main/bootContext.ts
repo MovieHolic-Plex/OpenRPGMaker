@@ -3,7 +3,7 @@
 // 스플래시를 늦추지 않게(2026-10-21 실측: 본체를 먼저 평가하면 ready 가 약 0.2s 늦었다).
 import { join } from "node:path";
 import { app } from "electron";
-import { inspectCurrentCliProject } from "./cliProject";
+import { inspectCurrentCliProject, projectDirFromOpenPath, shouldBootToStartScreen } from "./cliProject";
 import type { Splash } from "./splash";
 
 /** 이미 떠 있는 앱으로 넘어온 두 번째 실행. cwd 는 그 실행의 작업 폴더(상대 경로를 여기서 푼다). */
@@ -31,11 +31,46 @@ export function windowIconPath(rendererDir: string): string | undefined {
   return process.platform === "darwin" ? undefined : join(rendererDir, "icons", "pwa-512.png");
 }
 
+// macOS open-file 은 ready 전에도 온다. 본체를 읽기 전에 받아 두었다가 첫 창·이후 열기에 넘긴다.
+const pendingOpenFiles: string[] = [];
+let onOpenFile: ((filePath: string) => void) | null = null;
+
+/** Finder 「다음으로 열기」·독에 떨어뜨린 경로. 핸들러가 붙기 전이면 큐에 둔다. */
+export function noteOpenFile(filePath: string): void {
+  if (typeof filePath !== "string" || filePath.length === 0) return;
+  if (onOpenFile) onOpenFile(filePath);
+  else pendingOpenFiles.push(filePath);
+}
+
+/**
+ * 큐를 비우고 이후 경로는 handler 로 바로 넘긴다. handler 를 먼저 붙여, 비우는 동안 온 경로를 잃지 않는다.
+ */
+export function takePendingOpenFiles(handler: (filePath: string) => void): readonly string[] {
+  onOpenFile = handler;
+  return pendingOpenFiles.splice(0, pendingOpenFiles.length);
+}
+
+/**
+ * 큐에 있는 첫 프로젝트 폴더. QA 진입점에서는 null — 그 변수는 열 폴더를 따로 정하고, open-file 이 그것을 덮으면 안 된다.
+ */
+export function peekPendingProjectDir(): string | null {
+  if (process.env.OPRN_SMOKE_PAGE !== undefined || process.env.OPRN_OPEN_PROJECT_DIR !== undefined) return null;
+  for (const filePath of pendingOpenFiles) {
+    const dir = projectDirFromOpenPath(filePath);
+    if (dir) return dir;
+  }
+  return null;
+}
+
 /**
  * 처음 창이 시작 화면인가.
- * QA 진입점과, project.sqlite 가 있는 명령줄 폴더는 시작 화면이 아니다(스플래시도 띄우지 않는다).
+ * QA 진입점과, project.sqlite 가 있는 명령줄·open-file 폴더는 시작 화면이 아니다(스플래시도 띄우지 않는다).
  */
 export function bootsToStartScreen(): boolean {
-  if (process.env.OPRN_SMOKE_PAGE !== undefined || process.env.OPRN_OPEN_PROJECT_DIR !== undefined) return false;
-  return inspectCurrentCliProject().dir === null;
+  return shouldBootToStartScreen({
+    smokePage: process.env.OPRN_SMOKE_PAGE !== undefined,
+    openProjectDirEnv: process.env.OPRN_OPEN_PROJECT_DIR !== undefined,
+    cliProjectDir: inspectCurrentCliProject().dir,
+    openFileProjectDir: peekPendingProjectDir(),
+  });
 }
