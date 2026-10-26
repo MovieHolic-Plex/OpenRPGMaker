@@ -320,13 +320,50 @@ export function titleMismatch(project: Project, task: string): ShipBlocker[] {
   return [{ id: "title-not-requested", message: `요청한 제목은 「${want}」인데 타이틀이 「${shown || "(없음)"}」이다 — set_title_screen{title:"${want}"} 로 요청한 제목을 그대로 쓴다.`, evidence: `want=${want} shown=${shown}` }];
 }
 
+/**
+ * 요청이 이름 댄 핵심 장치가 게임에 없다(J71/J73 hf2-mansion: 「쫓아오는 것·어둠」을 요청했는데 추격자 0·조명 0으로 냈다).
+ * 낱말 → 프로젝트에서 그 장치를 찾는 표. 「없이·빼고·말고」가 바로 뒤에 붙으면 요청이 아니다. 게임을 만드는 요청에서만 막는다.
+ */
+const NOT_WANTED = String.raw`(?![^.!?\n]{0,10}(?:없이|없는|없게|빼|말고|아니|제외|싫))`;
+interface RequestedFeature { readonly id: string; readonly label: string; readonly words: RegExp; readonly present: (project: Project) => boolean; readonly fix: string }
+const pages = (project: Project): Obj[] => Object.values(project.maps).flatMap((m) => (m.events ?? []).flatMap((ev) => ((ev as unknown as Obj).pages as Obj[] | undefined) ?? []));
+const DARK_AMBIENT = 0.5;
+export const REQUESTED_FEATURES: readonly RequestedFeature[] = [
+  {
+    id: "chaser", label: "쫓아오는 추격자",
+    words: new RegExp(String.raw`(?:쫓아\s*오|쫓기(?:는|며|다|면서)|(?:나|주인공|플레이어|우리|아이들?)를\s*쫓는|쫓는\s*(?:괴물|귀신|살인마|놈|그림자|추격자|존재)|추격자|추격\s*(?:당|해\s*오)|따라\s*오는\s*(?:괴물|귀신|그것|놈|무언가|그림자|존재)|chaser|stalker|chased by|chases you)` + NOT_WANTED, "iu"),
+    present: (project) => pages(project).some((p) => ["chase", "approach"].includes(String((p.movement as Obj | undefined)?.type ?? "")) || !!p.detectionEncounter),
+    fix: "make_chase_scene 으로 순찰하다 보면 쫓는 추격자(pursuit·hidingSpots·killOnTouch)를 둔다",
+  },
+  {
+    id: "darkness", label: "어둠(조명)",
+    words: new RegExp(String.raw`(?:어둡|어두운\s*(?:복도|방|저택|집|학교|숲|동굴|곳|밤|공간|건물|지하|병원|골목)|어둠\s*속|캄캄|깜깜|암전|손전등|불\s*꺼진|정전|darkness|dark\s+(?:room|hallway|corridor|mansion|house|school)|flashlight|lights?\s+out)` + NOT_WANTED, "iu"),
+    present: (project) => Object.values(project.maps).some((m) => (m.defaultLighting?.ambient ?? 0) >= DARK_AMBIENT)
+      || allCommands(project).some(({ cmd }) => cmd.kind === "setLighting" && Number(cmd.ambient) >= DARK_AMBIENT),
+    fix: `set_lighting_volume{mapId, ambient:0.8~0.9, sources:[{at:{kind:'player'}, radius:3~4}]} 로 무대 맵을 어둡게 한다(ambient ${DARK_AMBIENT} 미만은 거의 밝다)`,
+  },
+  {
+    id: "hiding", label: "숨을 곳",
+    words: new RegExp(String.raw`(?:(?:옷장|침대|장롱|사물함|캐비닛|책상|커튼)[^.!?\n]{0,6}숨|숨을\s*(?:곳|데|수)|숨는\s*(?:곳|장소|공간)|숨어서\s*(?:피|도망|버티|기다)|숨바꼭질|은신|hiding\s+(?:spot|place)|hide\s+(?:in|from|under))` + NOT_WANTED, "iu"),
+    present: (project) => pages(project).some((p) => (p.interaction as Obj | undefined)?.kind === "hiding"),
+    fix: "configure_object_behavior{kind:'hiding'} 또는 make_chase_scene 의 hidingSpots 로 옷장·침대 밑 같은 숨을 곳을 둔다",
+  },
+];
+export function requestedFeatureGaps(project: Project, task: string): ShipBlocker[] {
+  return REQUESTED_FEATURES.filter((f) => f.words.test(task) && !f.present(project)).map((f) => ({
+    id: "requested-feature-missing",
+    message: `요청한 ${f.label}이(가) 게임에 없다 — ${f.fix}.`,
+    evidence: `${f.id}: ${task.match(f.words)?.[0] ?? ""}`,
+  }));
+}
+
 /** 조언자·끝맺음 관문이 같이 쓰는 출하 차단 목록(게임을 만드는 요청일 때만). 제목 스포일러는 어느 요청이든. */
 export function shipBlockers(project: Project, task: string): ShipBlocker[] {
   const spoilers = titleSpoilers(project);
   if (!wantsWholeGame(task)) return spoilers;
   // 엔딩 길의 열쇠·금고·문·엔딩 이벤트에 걸어 닿지 못하면 게임을 끝낼 수 없다(J75) — 출하 차단.
   const unreachable = unreachableCriticalEvents(project).map((message): ShipBlocker => ({ id: "critical-unreachable", message: `${message}. 이벤트를 걸어 닿는 칸 옆으로 move_event 하거나 막는 가구를 치운다.`, evidence: message.slice(0, 120) }));
-  return [...editorDefaultsLeft(project), ...endingClosureProblems(project), ...openingWithoutPlace(project), ...offPremiseArt(project, task), ...defaultPlaceLeaks(project, task), ...titleMismatch(project, task), ...unreachable, ...spoilers];
+  return [...editorDefaultsLeft(project), ...endingClosureProblems(project), ...openingWithoutPlace(project), ...offPremiseArt(project, task), ...defaultPlaceLeaks(project, task), ...titleMismatch(project, task), ...requestedFeatureGaps(project, task), ...unreachable, ...spoilers];
 }
 
 /** 게임이 «아직 안 지어졌다»는 신호 — 뼈대 자리표시만 남았거나 엔딩이 없다(편집기 기본 HUD·창 같은 마감 항목은 여기서 보지 않는다). */
