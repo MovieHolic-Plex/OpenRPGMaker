@@ -1153,8 +1153,8 @@ const SW_Q5_FISH = "sw_fs2_q5_trout_caught";
 const SW_Q5_DONE = "sw_fs2_q5_trout_done";
 const SW_Q6_DONE = "sw_fs2_q6_sled_back";
 const HARMA = "나루지기 하르마";
-export const FS2_FROST: { entry: Cell; harma: Cell; holes: Cell[]; innDoor: Cell; innExit: Cell; sled: Cell; locked: Cell[] } =
-  { entry: { x: 0, y: 0 }, harma: { x: 0, y: 0 }, holes: [], innDoor: { x: 0, y: 0 }, innExit: { x: 0, y: 0 }, sled: { x: 0, y: 0 }, locked: [] };
+export const FS2_FROST: { entry: Cell; harma: Cell; holes: Cell[]; innDoor: Cell; innExit: Cell; sled: Cell; locked: Cell[]; lamps: Cell[] } =
+  { entry: { x: 0, y: 0 }, harma: { x: 0, y: 0 }, holes: [], innDoor: { x: 0, y: 0 }, innExit: { x: 0, y: 0 }, sled: { x: 0, y: 0 }, locked: [], lamps: [] };
 
 function tileLabel(project: Project, map: GameMap, i: number, layer: number[] | undefined): string {
   const meta = (project.tilesets[map.tilesetId] as unknown as { tileMeta?: ({ label?: string } | null)[] }).tileMeta ?? [];
@@ -1262,7 +1262,8 @@ function frostford(project: Project, exec: Exec, hubId: string): void {
   let lamps = 0;
   for (const [dx, dy] of [[-8, 3], [-5, 4], [-2, 4], [1, 3], [-11, 3], [3, 2]] as const) {
     if (lamps >= 3) break;
-    try { exec(project, "stamp_tileset_object", { mapId: FS2_FROST_ID, objectId: "bd-pick-snowfield-lamp", at: { x: pond.x + dx, y: pond.y + dy } }); lamps += 1; } catch { /* 길·집 칸 */ }
+    const at = { x: pond.x + dx, y: pond.y + dy };
+    try { exec(project, "stamp_tileset_object", { mapId: FS2_FROST_ID, objectId: "bd-pick-snowfield-lamp", at }); lamps += 1; FS2_FROST.lamps.push(at); } catch { /* 길·집 칸 */ }
   }
   // 등불 빛 — 낮이라 약하게.
   exec(project, "set_lighting_volume", { mapId: FS2_FROST_ID, applyMode: "map", ambient: 0.85, color: "#c8d4ee",
@@ -1365,6 +1366,177 @@ function frostford(project: Project, exec: Exec, hubId: string): void {
 }
 
 // ════════════════════════════════════════════════════════════════════
+// 12. B9 얼음 위의 등 — 서리나루의 밤(duplicate_map). 못 위에서 혼자 등을 띄우는 발렌과 대화, 선택 2(칼 / 등).
+//     얼음이 갈라지며 탑 쪽으로 빛기둥 — 제한 시간 탈출(make_timed_escape)로 갈라지는 얼음을 건너 북쪽 하늘탑 문으로.
+// ════════════════════════════════════════════════════════════════════
+
+export const FS2_FROST_NIGHT_ID = "fs2_frostford_night";
+export const FS2_TOWER_ID = "fs2_sky_tower";
+const SW_NIGHT = "sw_fs2_frost_night";
+const SW_VALEN_SWORD = "sw_fs2_valen_sword";
+const SW_VALEN_LANTERN = "sw_fs2_valen_lantern";
+const SW_VALEN_SERIN = "sw_fs2_valen_serin";
+const SW_VALEN_MET = "sw_fs2_valen_lake_met";
+const SW_ICE_RUN = "sw_fs2_ice_run";
+const SW_ICE_DONE = "sw_fs2_ice_crossed";
+const VALEN = "발렌";
+/** 갈라진 얼음 칸 — 강·운하 물 오토타일 몸통(검은 물). */
+const OPEN_WATER = 23152;
+export const FS2_LAKE: { valen: Cell; checkpoint: Cell; gate: Cell; ice: { minY: number; maxY: number; minX: number; maxX: number } } =
+  { valen: { x: 0, y: 0 }, checkpoint: { x: 0, y: 0 }, gate: { x: 0, y: 0 }, ice: { minY: 0, maxY: 0, minX: 0, maxX: 0 } };
+
+function lanternNight(project: Project, exec: Exec): void {
+  for (const [id, name] of [[SW_NIGHT, "B9: 서리나루 밤"], [SW_VALEN_SWORD, "B9 선택2: 칼을 뽑았다"], [SW_VALEN_LANTERN, "B9 선택2: 등을 같이 띄웠다"],
+    [SW_VALEN_SERIN, "B9: 발렌에게 세린 이름을 꺼냈다"], [SW_VALEN_MET, "B9: 얼음 위 발렌과 이야기"], [SW_ICE_RUN, "B9: 갈라지는 얼음 탈출 중"], [SW_ICE_DONE, "B9: 얼음을 건넜다"]] as const) ensureSwitch(project, id, name);
+  // 밤 판 — 사람은 비우고 문은 잠근 채 남긴다(B2 통금 광장과 같은 일반 기능).
+  exec(project, "duplicate_map", { mapId: FS2_FROST_ID, id: FS2_FROST_NIGHT_ID, name: "서리나루 · 얼음 위의 밤", events: "doors", lockedDoorText: "밤이다. 문이 안에서 잠겨 있다." });
+  const night = M(project, FS2_FROST_NIGHT_ID);
+  (night as unknown as Rec).bgm = { mode: "custom", resourceId: "cc0-bgm-rtp-mys-002" };
+  // 못(얼음 바닥 「얼음」 칸)의 범위 — 발렌은 못 남쪽 가운데, 갈라짐은 남쪽부터.
+  const ice: Cell[] = [];
+  for (let i = 0; i < night.lowerTiles.length; i += 1) if (tileLabel(project, night, i, night.lowerTiles) === "버들항 장소 · 얼음") ice.push({ x: i % night.width, y: Math.floor(i / night.width) });
+  if (ice.length < 20) throw new Error("[fallen-star act2] 서리나루 못이 없다");
+  const box = { minX: Math.min(...ice.map((c) => c.x)), maxX: Math.max(...ice.map((c) => c.x)), minY: Math.min(...ice.map((c) => c.y)), maxY: Math.max(...ice.map((c) => c.y)) };
+  FS2_LAKE.ice = box;
+  const iceSet = new Set(ice.map((c) => `${c.x},${c.y}`));
+  const cx = Math.round((box.minX + box.maxX) / 2);
+  const freeIce = (c: Cell) => iceSet.has(`${c.x},${c.y}`) && night.upperTiles[c.y * night.width + c.x]! < 0;
+  // 발렌 — 가운데 기둥 줄에서 못 남쪽 끝 가까운 빈 얼음 칸.
+  let valen: Cell | null = null;
+  for (let y = box.maxY - 1; y >= box.minY && !valen; y -= 1) for (const dx of [0, 1, -1, 2, -2, 3, -3]) {
+    const c = { x: cx + dx, y };
+    if (freeIce(c) && freeIce({ x: c.x, y: c.y + 1 })) { valen = c; break; }
+  }
+  if (!valen) throw new Error("[fallen-star act2] 발렌 자리가 없다");
+  FS2_LAKE.valen = valen;
+  // 되돌아올 칸 — 발렌 아래로 내려가 처음 나오는 얼음 아닌 칸.
+  let back: Cell = { x: valen.x, y: box.maxY + 1 };
+  for (let y = valen.y + 1; y < night.height; y += 1) if (!iceSet.has(`${valen.x},${y}`)) { back = { x: valen.x, y }; break; }
+  FS2_LAKE.checkpoint = back;
+  // 못 북쪽 맵 끝 — 하늘탑 문.
+  FS2_LAKE.gate = { x: valen.x, y: 0 };
+  exec(project, "set_lighting_volume", {
+    mapId: FS2_FROST_NIGHT_ID, applyMode: "map", ambient: 0.62, color: "#0b1230",
+    sources: [
+      { id: "valen", at: { x: valen.x, y: valen.y }, radius: 3, intensity: 0.9, color: "#ffd27a", flicker: true },
+      ...FS2_FROST.lamps.map((l, i) => ({ id: `lamp${i}`, at: { x: l.x, y: l.y }, radius: 2, intensity: 0.7, color: "#ffc070", flicker: true })),
+      { id: "player", at: { kind: "player" }, radius: 3, intensity: 0.35, color: "#9fb4ff" },
+    ],
+  });
+  exec(project, "set_scene_mood", { mapId: FS2_FROST_NIGHT_ID, applyMode: "map", weather: { kind: "snow", intensity: 0.2 } });
+
+  // 갈라지는 얼음 — 남쪽 줄부터 차례로 검은 물이 된다. 북쪽 기슭(못 바로 위 줄)에 닿으면 성공.
+  const seconds = 20;
+  const rows = box.maxY - box.minY + 1;
+  const steps = ice.filter((c) => !(c.x === back.x && c.y === back.y)).map((c) => ({ x: c.x, y: c.y, atSecond: Math.max(1, Math.min(seconds - 2, 1 + Math.floor(((box.maxY - c.y) * (seconds - 6)) / rows))) }));
+  exec(project, "make_timed_escape", {
+    // 처음은 발렌 장면 끝(스위치), 실패한 뒤에는 기슭에서 얼음으로 한 걸음 내디디면 다시 시작한다.
+    mapId: FS2_FROST_NIGHT_ID, escapeId: "fs2_ice", seconds, startSwitchId: SW_ICE_RUN, start: { x: back.x, y: back.y - 1, width: 1, height: 1 }, startCellsSwitchId: SW_VALEN_MET,
+    exit: { x: box.minX, y: box.minY - 1, width: box.maxX - box.minX + 1, height: 1 },
+    checkpoint: { x: back.x, y: back.y, direction: "up" },
+    steps, layer: "lower", collapsedTile: OPEN_WATER,
+    startText: "발밑 얼음이 갈라진다! 북쪽 기슭으로!", successText: "기슭이다. 빛기둥이 탑 꼭대기에 꽂혀 있다.",
+    failText: "…얼음물에 빠질 뻔했다. 기슭에서 다시.", fallText: "얼음이 꺼졌다!", successSwitchId: SW_ICE_DONE,
+  });
+
+  // 발렌 — 등 하나를 든 채 못 위에 서 있다.
+  const vc = hubChipAny(project, "ev_fs_valen");
+  addEv(project, FS2_FROST_NIGHT_ID, "ev_fs2_lake_valen", VALEN, valen, [
+    page("ev_fs2_lake_valen_p", "얼음 위의 발렌", [], [
+      cutBegin(),
+      narrate("얼음 위에 등 하나. 발렌이 혼자 그 등에 불을 붙이고 있다."),
+      say(VALEN, "…기사들은 탑 아래에 두고 왔다.\n싸우러 온 거라면 칼을 뽑아라."),
+      say(KAEL, "등 띄우는 법, 여기서 배우셨죠?"),
+      say(VALEN, "대답하면 또 시험이 온다.\n언젠가 또 문을 잠그는 마을이 생기지."),
+      say(VALEN, "그러니 줄을 끊는다. 아이가 다시는\n떨어지지 않게. …그게 내 대답이다."),
+      { kind: "choices", prompt: "발렌 앞에서—", options: [
+        { text: "칼을 뽑는다", branch: [
+          say(KAEL, "그 대답은 이리스한테 물어보고 하세요."),
+          say(VALEN, "…그래. 그게 맞다. 넌 그 아이 편이니까."),
+          setSw(SW_VALEN_SWORD),
+        ] },
+        { text: "등을 같이 띄운다", branch: [
+          narrate("카엘이 등 하나에 불을 붙여 발렌의 등 곁에 놓았다."),
+          say(VALEN, "…두 개면 멀리 간다. 어머니가 그랬지."),
+          setSw(SW_VALEN_LANTERN),
+          { kind: "fork", condition: { kind: "item", itemId: FS2_CERT_ITEM, present: true }, then: [
+            say(KAEL, "세린 씨도 그렇게 대답했을까요?"),
+            say(VALEN, "…그 이름을 어디서."),
+            narrate("카엘이 반쯤 탄 정착 확인서를 내밀었다. 발렌은 서명란을 오래 본다."),
+            say(VALEN, "「엄마 문 열어」… 내 글씨다."),
+            setSw(SW_VALEN_SERIN),
+          ] },
+        ] },
+      ] } as unknown as Command,
+      shake(6, 900),
+      se("cc0-se-osx-metal-03"),
+      m2("m2-202-screen-effect", { effect: "flash", value: "#ffffff", durationMs: 500 }),
+      narrate("얼음이 갈라지는 소리. 북쪽 하늘탑 꼭대기로 빛기둥이 솟았다!"),
+      say(VALEN, "…렌즈가 벌써 열렸다. 늦었어."),
+      route("ev_fs2_lake_valen", walk(["up", "up", "up", "up", "up", "up"]), true),
+      setSw(SW_VALEN_MET),
+      cutLabel(),
+      cutEnd(),
+      say(ELENA, "카엘, 발밑!"),
+      setSw(SW_ICE_RUN),
+    ], { graphic: chip(vc.textureKey, vc.characterIndex, "down"), priority: "same" }),
+    page("ev_fs2_lake_valen_gone", "떠남", [sw(SW_VALEN_MET)], [], { graphic: { transparent: true }, priority: "below" }),
+  ]);
+}
+
+function lanternNightEvents(project: Project): void {
+  // 서리나루 여관 주인 — 하르마가 「밤에 얼음 위로 나가 봐」 한 뒤에는 몸을 녹이고 밤을 기다린다(밤 판이 생긴 뒤에 단다).
+  const keeper = M(project, FS2_FROST_INN_ID).events.find((e) => e.id === "ev_fs2_frost_innkeeper");
+  const look = keeper?.pages?.[0]?.graphic;
+  if (!keeper || !look) throw new Error("[fallen-star act2] 서리나루 여관 주인이 없다");
+  const front = { x: FS2_FROST.innDoor.x, y: FS2_FROST.innDoor.y + 1 };
+  keeper.pages = [
+    ...(keeper.pages ?? []),
+    page("ev_fs2_frost_innkeeper_night", "밤을 기다림", [sw(SW_HARMA)], [
+      say("여관 주인 오사", "밤에 얼음 위로 나가려고요? 그럼 불 앞에서 몸부터 녹여요.\n…하르마 할머니가 등 얘기 했구나."),
+      fadeOut(1000),
+      { kind: "recoverAll" } as unknown as Command,
+      setSw(SW_NIGHT),
+      narrate("해가 지고, 못 위에 등 하나가 떴다."),
+      transfer(FS2_FROST_NIGHT_ID, front, "down"),
+    ], { graphic: look }),
+    page("ev_fs2_frost_innkeeper_after", "탑 뒤", [sw(SW_VALEN_MET)], [
+      say("여관 주인 오사", "탑에서 빛이 솟던 밤엔 다들 못 잤어요. 하룻밤 20골드."), { kind: "inn", price: 20 } as unknown as Command,
+    ], { graphic: look }),
+  ];
+  // 밤에 처음 나서면 한 번 — 못 위의 등 하나.
+  addEv(project, FS2_FROST_NIGHT_ID, "ev_fs2_night_arrive", "얼음 위의 밤", { x: 1, y: 0 }, [
+    page("ev_fs2_night_arrive_idle", "대기", [], [], { priority: "below" }),
+    page("ev_fs2_night_arrive_run", "나선다", [sw(SW_NIGHT)], [
+      wait(500),
+      say(SARAH, "…발렌 님이다. 혼자야."),
+      say(ELENA, "기사들은? 아무도 없어."),
+      say(KAEL, "가 보자. 칼은 넣어 두고."),
+      setSw(SW_NIGHT, false),
+    ], { trigger: { kind: "auto" }, priority: "below" }),
+  ]);
+}
+
+/** B10 하늘탑 — 이번 비트에서는 문만(층·적·장치는 B10). 밤 서리나루 북쪽 끝에서 들어간다. */
+function skyTower(project: Project, exec: Exec): void {
+  exec(project, "author_dungeon", {
+    type: "tower", adapter: "beodeul", genre: "rpg", name: "하늘탑", id: FS2_TOWER_ID, floors: 4, gimmick: "teleporter", populate: false,
+    entrance: { fromMapId: FS2_FROST_NIGHT_ID, x: FS2_LAKE.gate.x, y: FS2_LAKE.gate.y }, seed: 91,
+  });
+  // 탑 문은 발렌과 이야기한 뒤에만 열린다(그 전에는 부딪혀도 한 줄만). 문 자리는 도구가 고른 칸.
+  const gate = M(project, FS2_FROST_NIGHT_ID).events.find((e) => JSON.stringify(e).includes(`"mapId":"${FS2_TOWER_ID}`));
+  if (!gate) throw new Error("[fallen-star act2] 하늘탑 문이 없다");
+  FS2_LAKE.gate = { x: gate.x, y: gate.y };
+  for (const pg of gate.pages ?? []) pg.conditions = [...(pg.conditions ?? []), sw(SW_VALEN_MET)];
+  const first = gate.pages?.[0];
+  gate.pages = [
+    page(`${gate.id}_shut`, "닫힘", [], [narrate("하늘탑으로 가는 길. 얼음 위의 등불이 자꾸 뒤를 돌아보게 한다.")],
+      { trigger: first?.trigger ?? { kind: "playerTouch" }, priority: first?.priority ?? "below" }),
+    ...(gate.pages ?? []),
+  ];
+}
+
+// ════════════════════════════════════════════════════════════════════
 
 export interface FallenAct2Ids { hub: string; observatory: string; smithy: string }
 
@@ -1384,5 +1556,8 @@ export function applyFallenAct2Opening(project: Project, exec: Exec, ids: Fallen
   northFortress(project, exec, ids.hub);
   snowPass(project, exec);
   frostford(project, exec, ids.hub);
+  lanternNight(project, exec);
+  skyTower(project, exec);
+  lanternNightEvents(project);
   fortressEvents(project);
 }

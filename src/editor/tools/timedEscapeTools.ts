@@ -120,6 +120,7 @@ const makeTimedEscape: ToolDefinition = {
       timerId: { type: "string", enum: ["timer1", "timer2"], description: "쓸 엔진 타이머. 기본 timer1" },
       start: { ...RECT_SCHEMA, description: "밟으면 탈출이 시작되는 칸 묶음(x,y,width,height). startSwitchId 와 둘 중 하나는 필요" },
       startSwitchId: { type: "string", description: "이 스위치가 켜지면 시작(컷신 끝에서 켜기). 실패하면 꺼진다" },
+      startCellsSwitchId: { type: "string", description: "시작 칸(start)이 이 스위치가 켜졌을 때만 작동한다 — 컷신 끝(startSwitchId)으로 처음 시작하고, 실패한 뒤 다시 하기는 시작 칸으로 할 때(컷신 전 그 칸을 밟아도 시작되지 않게)" },
       exit: { ...RECT_SCHEMA, description: "닿으면 성공하는 출구 칸 묶음" },
       checkpoint: {
         type: "object",
@@ -179,6 +180,7 @@ const makeTimedEscape: ToolDefinition = {
     const fallOnCollapse = args.fallOnCollapse !== false;
     const startSwitchId = str(args.startSwitchId);
     const startRect = args.start ? readRect(map, args.start, "시작 칸") : undefined;
+    const startCellsSwitchId = str(args.startCellsSwitchId);
     if (!startRect && !startSwitchId) throw new ToolError("start(밟으면 시작하는 칸) 또는 startSwitchId 가 필요합니다.", { code: "escape-start" });
     const exitRect = readRect(map, args.exit, "출구 칸");
     const cp = (args.checkpoint ?? {}) as Record<string, unknown>;
@@ -243,6 +245,7 @@ const makeTimedEscape: ToolDefinition = {
     const successSwitchId = str(args.successSwitchId);
     if (successSwitchId) ensureNamedSwitch(draft, successSwitchId, successSwitchId);
     if (startSwitchId) ensureNamedSwitch(draft, startSwitchId, startSwitchId);
+    if (startCellsSwitchId) ensureNamedSwitch(draft, startCellsSwitchId, startCellsSwitchId);
 
     const tiles = (map as unknown as Record<LayerKey, number[] | undefined>);
     const tileAt = (l: Layer, c: Cell): number => tiles[LAYER_KEY[l]]?.[c.y * map.width + c.x] ?? -1;
@@ -318,7 +321,7 @@ const makeTimedEscape: ToolDefinition = {
         const id = `${base}_start_${c.x}_${c.y}`;
         put({ id, name: "탈출 시작", x: c.x, y: c.y, trigger: { kind: "playerTouch" }, commands: [], pages: [
           idle(id),
-          page(`${id}_go`, "시작", [swOff(swActive), swOff(swDone)], "playerTouch", "below", JSON.parse(JSON.stringify(startCmds)) as Command[]),
+          page(`${id}_go`, "시작", [swOff(swActive), swOff(swDone), ...(startCellsSwitchId ? [swOn(startCellsSwitchId)] : [])], "playerTouch", "below", JSON.parse(JSON.stringify(startCmds)) as Command[]),
         ] } as GameEvent);
       }
     }

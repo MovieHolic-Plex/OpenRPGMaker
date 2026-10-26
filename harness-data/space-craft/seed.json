@@ -10522,6 +10522,35 @@
    ],
    "verify": "place_field_obstacle gap 뒤 create_transfer_pair(고개 출구 ↔ 마을)가 transfer-unreachable/sealed 로 거절되지 않음 / author_beodeul_town theme snow / 얼음 구멍 칸 이벤트 changeItem / build_hand_interior_room program inn + create_transfer_pair doorAt",
    "suiteCategory": "fs2-past-gap-town"
+  },
+  {
+   "category": "game",
+   "kind": "logic",
+   "mode": "balanced",
+   "startTileset": "beodeul_city",
+   "startBuild": [
+    {
+     "tool": "author_beodeul_town",
+     "args": {
+      "id": "map_lake_town",
+      "name": "호숫가 마을",
+      "theme": "snow",
+      "houseCount": 5,
+      "seed": 81
+     }
+    }
+   ],
+   "id": "fs2-lake-lantern-escape",
+   "prompt": "호숫가 마을(map_lake_town)의 밤 판을 따로 만들어 줘. 얼어붙은 못 위에 숙적이 혼자 등을 띄우고 있고, 말을 걸면 칼을 뽑을지 등을 같이 띄울지 고른다. 대화가 끝나면 얼음이 남쪽부터 갈라져 20초 안에 북쪽 기슭으로 건너야 해. 실패하면 기슭으로 돌아가 얼음에 한 걸음 내디디면 다시. 북쪽엔 탑 입구.",
+   "requires": [
+    "duplicate_map 밤 판(문만 남김)",
+    "못 위 숙적 이벤트 + 선택 둘",
+    "make_timed_escape 얼음 칸만 남쪽부터 붕괴",
+    "재시도 시작 칸은 대화 뒤에만(startCellsSwitchId)",
+    "북쪽 탑 던전 입구는 대화 뒤에만 열림"
+   ],
+   "verify": "make_timed_escape startSwitchId + start + startCellsSwitchId / steps 가 얼음 칸만 / author_dungeon tower entrance fromMapId 밤 판 / 대화 전 시작 칸을 밟아도 타이머가 켜지지 않음",
+   "suiteCategory": "fs2-lake-lantern-escape"
   }
  ],
  "gates": {
