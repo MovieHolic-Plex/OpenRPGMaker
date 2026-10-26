@@ -46,6 +46,12 @@ afterEach(() => {
   restoreBrowserGlobal("window", previousBrowserGlobals.window);
 });
 
+// renderStageCells 는 patchStyle(setProperty("background-position")) 로 쓴다 — 진짜 DOM 은 camelCase 와 같은 속성이지만
+// fakeDom 스타일은 키가 따로라, 프레임 패치가 쓰는 kebab 키로 읽는다.
+function stagePosition(panel: FakeElement): string | undefined {
+  return findByTestId(panel, "db-animation-stage-target")?.style.getPropertyValue("background-position");
+}
+
 describe("database animation preview", () => {
   it("autoplays visible frames in a loop and restores the editing frame on stop", async () => {
     const project = createBlankProject();
@@ -74,14 +80,14 @@ describe("database animation preview", () => {
     for (const image of loadedImages) image.dispatchEvent(new Event("load"));
     const play = findByTestId(panel, "db-animation-play");
     expect(play?.attrs["aria-pressed"]).toBe("true");
-    expect(findByTestId(panel, "db-animation-stage-target")?.style.backgroundPosition).toBe("-0px -0px");
+    expect(stagePosition(panel)).toBe("-0px -0px");
     vi.advanceTimersByTime(67);
-    expect(findByTestId(panel, "db-animation-stage-target")?.style.backgroundPosition).toBe("-96px -0px");
+    expect(stagePosition(panel)).toBe("-96px -0px");
     expect(play?.attrs["aria-pressed"]).toBe("true");
 
     vi.advanceTimersByTime(67);
     expect(play?.attrs["aria-pressed"]).toBe("true");
-    expect(findByTestId(panel, "db-animation-stage-target")?.style.backgroundPosition).toBe("-0px -0px");
+    expect(stagePosition(panel)).toBe("-0px -0px");
     play?.click();
     expect(play?.attrs["aria-pressed"]).toBe("false");
   });
