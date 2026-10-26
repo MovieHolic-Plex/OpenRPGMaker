@@ -34,6 +34,7 @@ import type { InputState } from "@/player/input";
 import type { PlaySceneContext } from "@/player/playSceneTypes";
 import type { Command, M2CommandFields, Project } from "@/project/types";
 import { event, page, mockSprite } from "./runtimeEventPageFixtures";
+import { RETIRED_COMBINED_TOWN_TILESET_ID, withRetiredEasyRpgTilesets } from "./support/retiredEasyRpgTilesets";
 
 const PATHFIND_ID = "m2-205-pathfind-move";
 const FRAME_MS = 1000 / 60;
@@ -56,6 +57,9 @@ function projectWithVariables(): Project {
   ];
   project.switches = [...project.switches, { id: "sw_arrived", name: "도착" }];
   const map = project.maps[project.startMapId]!;
+  // TILE.GRASS/WATER 는 합본 마을 번호다. 정리(2026-10-07) 뒤 시작 맵은 버들항이라 240 이 벽이 되어 모든 이동이 blocked 로 끝났다.
+  withRetiredEasyRpgTilesets(project, { interiorHarness: false });
+  map.tilesetId = RETIRED_COMBINED_TOWN_TILESET_ID;
   map.lowerTiles.fill(TILE.GRASS);
   map.upperTiles.fill(-1);
   map.events = [];
