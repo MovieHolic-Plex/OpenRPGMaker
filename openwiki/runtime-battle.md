@@ -2351,7 +2351,7 @@ retro2003 sideview 의 명령 창은 `data-look-command`(actor 156px · keys 152
 - **연계 MP 나누기** `SkillRecord.comboMpCosts [{actorId, mp}]` — 참가자별 몫. 없는 참가자는 `mpCost`. `battleSkillMpCostFor(skill, user)` 가 단일 권위(장비 절반 적용).
 - **약점 공략** `SkillRecord.exploitStates {stateIds, bonusPercent, consume?}` — 대상이 그 상태면 피해 ×(1+bonus/100), `consume` 이면 그 상태를 지운다(기술 자신의 상태 효과보다 먼저). 타임라인 `exploit:true` → 숫자 아래 「공략!」.
   「깔기 → 거두기」 짝(둔화 → 십자베기, 기절 → 광선 조준)을 만드는 수단이다.
-- **쓰러뜨린 대상에게 상태를 걸지 않는다** — 피해 기술의 상태 효과는 대상 HP 가 남았을 때만(녹화에서 「쓰러뜨렸다!」 다음 「화상에 걸렸다!」가 떴다).
+- **쓰러뜨린 대상에게 상태를 걸지 않는다** — 피해 기술의 상태 효과는 대상 HP 가 남았을 때만(녹화에서 「쓰러뜨렸다!」 다음 「화상에 걸렸다!」가 떴다). gen1(몬스터 수집) 피해도 같다. 쓰러뜨린 타격의 부가 상태(화상 등)와 능력 단계는 걸리지 않는다.
 - **결과 팡파레** `src/player/battleFanfareDom.ts` + `system.battleFanfare`(`src/project/battleFanfare.ts`, 기본값은 저장 안 함) — 도트 결과 화면의 레벨 업 창 넘기기 줄에:
   레벨 업 창 머리 「LEVEL UP!」 배너(빛줄기·파티클·능력치 줄 차례 등장) → 그 배우가 배운 기술마다 「새 기술 습득!」 카드(속성색 문장·비용·꼬리표·설명) → 이번에 해금 조건이 채워진 연계기마다 「새 연계기!」 카드(`newlyUnlockedCombos`).
   `levelUp`·`skillLearned`·`comboUnlocked`·`style`(burst·classic·minimal)·`sound`. 소리는 합성 `levelUp`·`skillLearned`·`combo`.
