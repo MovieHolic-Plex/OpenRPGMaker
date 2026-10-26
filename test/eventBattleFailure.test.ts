@@ -136,26 +136,41 @@ describe("native event battle failure ownership", () => {
     expect(host.querySelector('[data-testid="battle-scene"]')).toBeNull();
   });
 
-  it.each(["random", "field"])("reports empty monster-party admission through the existing %s caller", async trigger => {
+  // 빈 몬스터 파티는 오류 창이 아니다: 야생 조우는 아예 나오지 않고(2026-09-24 도그푸딩, playSceneMovement
+  // maybeTriggerRandomEncounter), 심볼 접촉은 게임 대사창으로 한 번 말하고 닫는다(#2746 D30, showBattleAdmissionError).
+  function emptyMonsterParty() {
     const f = setup(); f.project.system.battleParty = "monsters"; f.scene.session.monsterParty = [];
     const host = document.createElement("div"); document.body.append(host);
     const get = f.scene.game.registry.get.bind(f.scene.game.registry);
     vi.spyOn(f.scene.game.registry, "get").mockImplementation(key => key === "dialogueHost" ? host : get(key));
     f.scene.playBattle = PlayScene.prototype.playBattle.bind(f.scene);
     const show = vi.spyOn(f.scene, "showRuntimeOverlay");
-    if (trigger === "random") {
-      f.map.encounterRate = 1000; f.map.troopIds = [f.troopId];
-      resetEncounterCounter();
-      const released = f.when(() => !f.scene.running && f.scene.inputEnabled);
-      maybeTriggerRandomEncounter(f.scene);
-      await bounded(released);
-    } else {
-      f.map.fieldSpawns = [{ id: "spawn", troopId: f.troopId, area: { x: 0, y: 0, w: 2, h: 2 }, maxAlive: 1 }];
-      f.scene.fieldSpawnState = createFieldSpawnRuntime(f.project, f.map, { x: 5, y: 5 });
-      const instance = required(f.scene.fieldSpawnState.entries[0]?.alive[0]);
-      await expect(bounded(runFieldSpawnEventBattle(f.scene, instance.eventId))).resolves.toBe(true);
-    }
-    expect(show).toHaveBeenCalledWith("runtime-error", expect.any(String));
+    const showText = vi.spyOn(required(get("dialogue") as { showText: (...args: unknown[]) => Promise<unknown> } | undefined), "showText");
+    return { f, show, showText };
+  }
+
+  it("does not start a random encounter while the monster party is empty", () => {
+    const { f, show, showText } = emptyMonsterParty();
+    const playBattle = vi.spyOn(f.scene, "playBattle");
+    f.map.encounterRate = 1000; f.map.troopIds = [f.troopId];
+    resetEncounterCounter();
+    maybeTriggerRandomEncounter(f.scene);
+    expect(playBattle).not.toHaveBeenCalled();
+    expect(show).not.toHaveBeenCalledWith("runtime-error", expect.any(String));
+    expect(showText).not.toHaveBeenCalled();
+    expect(f.scene.session.battleResult).toBeUndefined();
+    expect(f.scene.running).toBe(false); expect(f.scene.inputEnabled).toBe(true);
+  });
+
+  it("reports empty monster-party admission once through the game dialogue for the field caller", async () => {
+    const { f, show, showText } = emptyMonsterParty();
+    f.map.fieldSpawns = [{ id: "spawn", troopId: f.troopId, area: { x: 0, y: 0, w: 2, h: 2 }, maxAlive: 1 }];
+    f.scene.fieldSpawnState = createFieldSpawnRuntime(f.project, f.map, { x: 5, y: 5 });
+    const instance = required(f.scene.fieldSpawnState.entries[0]?.alive[0]);
+    await expect(bounded(runFieldSpawnEventBattle(f.scene, instance.eventId))).resolves.toBe(true);
+    expect(showText).toHaveBeenCalledTimes(1);
+    expect(String((showText.mock.calls[0]?.[0] as { body?: string } | undefined)?.body)).toContain("스타터");
+    expect(show).not.toHaveBeenCalledWith("runtime-error", expect.any(String));
     expect(f.scene.session.battleResult).toBeUndefined();
     expect(f.scene.running).toBe(false); expect(f.scene.inputEnabled).toBe(true);
   });
