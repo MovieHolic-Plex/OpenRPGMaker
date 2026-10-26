@@ -361,10 +361,13 @@ function battleRuntimeOptions(project: Project, condition: Condition, state: Pla
     autoAlign: true,
     battleEventPages: [page],
   };
+  // 전투는 partyKnowsSkill 을 세션 스냅샷이 아니라 출전 배틀러의 skillIds 로 본다(battleEvents.ts partySkillIds). 실제 전투는
+  // 그 배틀러를 세션 actorSkillIds 로 만든다 — 같은 출처에서 최소 배틀러를 세운다.
+  const actors = state.partyActorIds.map((id) => ({ id, recordId: id, skillIds: [...(state.actorSkillIds?.[id] ?? [])] }));
   return {
     project,
     troopRecord,
-    actors: [],
+    actors: actors as unknown as Parameters<typeof createBattleEventRuntime>[0]["actors"],
     enemies: [],
     stateIds: [],
     state,

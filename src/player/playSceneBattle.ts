@@ -183,6 +183,16 @@ export async function playBattle(
         currentMapId: scene.session.currentMapId,
         x: scene.session.x,
         y: scene.session.y,
+        // 행동·시선·엔딩 조건(actorState·facing·eventSeesPlayer·hiding·stringVariable·clearCount …)이 읽는 칸.
+        // BATTLE_CONDITION_SESSION_STATE_FIELDS 에 있는데 다리에서 빠져 전투 이벤트 조건이 늘 기본값(거짓)으로 판정됐다.
+        actorVitals: scene.session.actorVitals,
+        actorStateIds: scene.session.actorStateIds,
+        playerFacing: scene.session.playerFacing,
+        eventLocations: scene.session.eventLocations,
+        horror: scene.session.horror,
+        flags: scene.session.flags,
+        stringVariables: scene.session.stringVariables,
+        clearHistory: scene.session.clearHistory,
       },
       partyMonsters: monsterPartyMode ? partyMonsters : undefined,
       // Terrain at the player's tile feeds battle backdrop when troop has no preview.
