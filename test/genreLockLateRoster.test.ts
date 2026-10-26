@@ -223,11 +223,13 @@ describe("#6·#9·#10 전투 그림·옛 sprite·외형 id", () => {
 describe("기본 명단·페이지 이식은 한 칩으로 몰리지 않는다(#8 준비)", () => {
   it("서로 다른 RTP 사람 칩 6개를 잠그면 허용 칩 인물이 3가지 이상으로 나뉜다", () => {
     const project = createBlankProject();
-    const ctx = { project, currentMapId: project.startMapId, assistantRun: true } as ToolContext;
+    // 역방향 잠금(#2812): 몬스터 게임이 아닌 프로젝트에서 잠금을 켜는 configure_monster_system 은 몬스터 수집 요청 턴이어야 돈다.
+    const ctx = { project, currentMapId: project.startMapId, assistantRun: true, monsterTurn: true } as ToolContext;
     const chips = [["tex_easyrpg_charset_people1", 1], ["tex_easyrpg_charset_people5", 1], ["tex_easyrpg_charset_people2", 3], ["tex_easyrpg_charset_actor1", 0], ["tex_easyrpg_charset_people3", 2], ["tex_easyrpg_charset_people1", 6]] as const;
     chips.forEach(([textureKey, characterIndex], i) => runTool(ctx, "place_npc", { mapId: project.startMapId, name: `인물${i}`, x: 4 + i, y: 6, graphic: { textureKey, characterIndex } }, { dryRun: false }));
     runTool(ctx, "configure_monster_system", { enabled: true }, { dryRun: false });
-    const patterns = new Set(project.maps[project.startMapId]!.events.map((event) => (event.pages![0]!.graphic as { pattern?: number }).pattern));
+    // 쓰기 도구는 커밋한 새 프로젝트를 ctx.project 에 둔다.
+    const patterns = new Set(ctx.project.maps[project.startMapId]!.events.map((event) => (event.pages![0]!.graphic as { pattern?: number }).pattern));
     expect(patterns.size).toBeGreaterThanOrEqual(3);
   });
 });
