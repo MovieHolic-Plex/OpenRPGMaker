@@ -49,15 +49,16 @@ function click(host: HTMLElement, testId: string): void {
   button.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true }));
 }
 
-describe("이 페이지가 하는 일 — 미리보기 보기", () => {
+// 「미리보기」 보기 방식(명령 컬럼 안 `event-page-preview-host`)은 PR #3211 이후 없다. 같은 무대는
+// 인스펙터 컬럼(`event-editor-inspector`)이 항상 먼저 보여 준다(content.ts setCommandInspectorHost).
+// 아래 케이스는 그 새 상태를 단언한다 — 토글은 목록/스토리/플로우 셋뿐이다.
+describe("이 페이지가 하는 일 — 인스펙터의 미리보기", () => {
   let host: HTMLElement;
 
   beforeEach(() => {
     clearCommandInspector();
     localStorage.clear();
-    // 보기 모드는 이제 세션에도 있다 — localStorage.clear() 만으로는 안 지워진다.
-    // 이걸 빼면 앞 테스트가 남긴 preview 때문에 아래 「툴바의 미리보기 버튼」 테스트가
-    // 버튼이 아무 일을 안 해도 통과하는 빈 테스트가 된다.
+    // 보기 모드는 세션에도 있다 — localStorage.clear() 만으로는 안 지워진다.
     resetEventViewSession();
     host = document.createElement("div");
     document.body.append(host);
@@ -68,27 +69,22 @@ describe("이 페이지가 하는 일 — 미리보기 보기", () => {
     host.remove();
   });
 
-  it("보기 토글에 미리보기가 있고, 고르면 명령 컬럼 안에서 무대를 그린다", () => {
+  it("보기 토글에는 미리보기가 없고, 무대는 인스펙터 컬럼이 그린다", () => {
     const mapId = seedProject();
     renderEventEditorDynamic(host, mapId, EVENT_ID);
 
     const canvas = host.querySelector<HTMLElement>('[data-testid="event-script-canvas"]');
-    expect(canvas?.querySelector('[data-testid="event-view-toggle-preview"]')).toBeTruthy();
-    expect(host.querySelector('[data-testid="event-page-preview"]')).toBeNull();
-
-    click(host, "event-view-toggle-preview");
-
-    const previewHost = canvas?.querySelector<HTMLElement>('[data-testid="event-page-preview-host"]');
-    const panel = previewHost?.querySelector<HTMLElement>('[data-testid="event-page-preview"]');
-    expect(previewHost?.hidden).toBe(false);
-    expect(panel).toBeTruthy();
-    expect(previewHost?.querySelector('[data-testid="event-script-live-stage"]')?.textContent).toContain("어서 오세요.");
+    const inspector = host.querySelector<HTMLElement>('[data-testid="event-editor-inspector"]');
+    expect(canvas?.querySelector('[data-testid="event-view-toggle-preview"]')).toBeNull();
+    expect(canvas?.querySelector('[data-testid="event-page-preview-host"]')).toBeNull();
+    expect(inspector?.hidden).toBe(false);
+    expect(inspector?.querySelector('[data-testid="event-page-preview"]')).toBeTruthy();
+    expect(inspector?.querySelector('[data-testid="event-script-live-stage"]')?.textContent).toContain("어서 오세요.");
   });
 
   it("이전/다음이 무대와 단계 위치를 옮긴다", () => {
     const mapId = seedProject();
     renderEventEditorDynamic(host, mapId, EVENT_ID);
-    click(host, "event-view-toggle-preview");
 
     const caption = () => host.querySelector<HTMLElement>('[data-testid="event-script-live-caption"]')?.textContent ?? "";
     const position = () => host.querySelector<HTMLElement>(".event-script-live-position")?.textContent ?? "";
@@ -107,11 +103,10 @@ describe("이 페이지가 하는 일 — 미리보기 보기", () => {
   it("keeps the selected tab focused through actual parent view replacement", () => {
     const mapId = seedProject();
     renderEventEditorDynamic(host, mapId, EVENT_ID);
-    click(host, "event-view-toggle-preview");
-    host.querySelector<HTMLElement>('[data-testid="event-view-toggle-preview"]')!.focus();
+    host.querySelector<HTMLElement>('[data-testid="event-view-toggle-list"]')!.focus();
     for (const [key, mode] of [
-      ["ArrowRight", "flow"], ["ArrowLeft", "preview"], ["Home", "list"],
-      ["ArrowLeft", "flow"], ["ArrowRight", "list"], ["End", "flow"], ["ArrowLeft", "preview"],
+      ["ArrowRight", "storyboard"], ["ArrowRight", "flow"], ["ArrowRight", "list"],
+      ["End", "flow"], ["Home", "list"], ["ArrowLeft", "flow"], ["ArrowLeft", "storyboard"],
     ]) {
       document.activeElement!.dispatchEvent(new KeyboardEvent("keydown", { key, bubbles: true }));
       const selected = host.querySelector<HTMLElement>(`[data-testid="event-view-toggle-${mode}"]`)!;
@@ -127,33 +122,29 @@ describe("이 페이지가 하는 일 — 미리보기 보기", () => {
     renderEventEditorDynamic(host, mapId, EVENT_ID);
     const input = host.querySelector<HTMLInputElement>(".event-editor-command-search")!;
     input.focus();
-    click(host, "event-view-toggle-preview");
+    click(host, "event-view-toggle-storyboard");
     expect(document.activeElement).toBe(input);
     click(host, "event-view-toggle-flow");
     expect(document.activeElement).toBe(input);
   });
 
-  // 미리보기는 보기 방식 세그먼트가 유일한 입구다. 예전에는 툴바에도 «▶ 미리보기» 가
-  // 있었는데 같은 `changeMode("preview")` 로 들어가는 중복 컨트롤이라 지웠다.
-  it("미리보기 세그먼트가 미리보기 보기로 넘긴다", () => {
+  it("보기 방식을 바꿔도 인스펙터의 미리보기는 그대로 남는다", () => {
     const mapId = seedProject();
     renderEventEditorDynamic(host, mapId, EVENT_ID);
 
-    click(host, "event-view-toggle-preview");
+    click(host, "event-view-toggle-flow");
 
-    expect(host.querySelector('[data-testid="event-page-preview"]')).toBeTruthy();
-    const toggle = host.querySelector<HTMLElement>('[data-testid="event-view-toggle-preview"]');
+    expect(host.querySelector('[data-testid="event-editor-inspector"] [data-testid="event-page-preview"]')).toBeTruthy();
+    const toggle = host.querySelector<HTMLElement>('[data-testid="event-view-toggle-flow"]');
     expect(toggle?.getAttribute("aria-selected")).toBe("true");
   });
 
-  it("미리보기는 다음 열기까지 남는 저작 보기로 저장되지 않는다", () => {
+  it("보기 토글의 저작 보기는 저장되고 미리보기는 보기로 존재하지 않는다", () => {
     const mapId = seedProject();
     renderEventEditorDynamic(host, mapId, EVENT_ID);
 
     click(host, "event-view-toggle-list");
     expect(localStorage.getItem("oprn:storyboard-mode")).toBe("list");
-
-    click(host, "event-view-toggle-preview");
-    expect(localStorage.getItem("oprn:storyboard-mode")).toBe("list");
+    expect(host.querySelector('[data-testid="event-view-toggle-preview"]')).toBeNull();
   });
 });
