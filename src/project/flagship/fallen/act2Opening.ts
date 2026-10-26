@@ -1372,6 +1372,11 @@ function frostford(project: Project, exec: Exec, hubId: string): void {
 //     얼음이 갈라지며 탑 쪽으로 빛기둥 — 제한 시간 탈출(make_timed_escape)로 갈라지는 얼음을 건너 북쪽 하늘탑 문으로.
 // ════════════════════════════════════════════════════════════════════
 
+/**
+ * 판본이 끝나는 비트 — "B8" 이면 서리나루 여관에서 「제2막 계속 — 다음 업데이트」 카드와 저장 화면으로 멈추고, B9 밤 판으로 가는 이동을 만들지 않는다.
+ * B9 를 실제로 내보낼 때 null 로 바꾼다(그러면 여관 주인이 밤 판으로 보낸다).
+ */
+export const FS2_RELEASE_STOP: "B8" | null = "B8";
 export const FS2_FROST_NIGHT_ID = "fs2_frostford_night";
 export const FS2_TOWER_ID = "fs2_sky_tower";
 const SW_NIGHT = "sw_fs2_frost_night";
@@ -1494,14 +1499,26 @@ function lanternNightEvents(project: Project): void {
   const front = { x: FS2_FROST.innDoor.x, y: FS2_FROST.innDoor.y + 1 };
   keeper.pages = [
     ...(keeper.pages ?? []),
-    page("ev_fs2_frost_innkeeper_night", "밤을 기다림", [sw(SW_HARMA)], [
-      say("여관 주인 오사", "밤에 얼음 위로 나가려고요? 그럼 불 앞에서 몸부터 녹여요.\n…하르마 할머니가 등 얘기 했구나."),
-      fadeOut(1000),
-      { kind: "recoverAll" } as unknown as Command,
-      setSw(SW_NIGHT),
-      narrate("해가 지고, 못 위에 등 하나가 떴다."),
-      transfer(FS2_FROST_NIGHT_ID, front, "down"),
-    ], { graphic: look }),
+    FS2_RELEASE_STOP === "B8"
+      // 판본 끝(1.23) — 밤 판으로 가는 이동이 아예 없다(B9 지도·탑은 지어 두되 어디서도 이어지지 않는다). 다음 판본에서 이 페이지가 밤으로 잇는다.
+      ? page("ev_fs2_frost_innkeeper_stop", "판본 끝", [sw(SW_HARMA)], [
+        say("여관 주인 오사", "밤에 얼음 위로 나가려고요? …하르마 할머니가 등 얘기 했구나.\n오늘은 눈보라가 세요. 불 앞에서 쉬어 가요."),
+        fadeOut(900),
+        { kind: "recoverAll" } as unknown as Command,
+        narrate("제2막 「빌린 불」 — 여기까지", { position: "center", context: "narration" }),
+        narrate("얼음 위의 등, 하늘탑, 그리고 이리스는\n다음 업데이트에서 이어집니다.", { position: "center", context: "narration" }),
+        fadeIn(700),
+        narrate("지금 저장해 두면 다음 판본에서 이 여관부터 이어서 할 수 있다.", { context: "system" }),
+        { kind: "openSaveMenu" } as unknown as Command,
+      ], { graphic: look })
+      : page("ev_fs2_frost_innkeeper_night", "밤을 기다림", [sw(SW_HARMA)], [
+        say("여관 주인 오사", "밤에 얼음 위로 나가려고요? 그럼 불 앞에서 몸부터 녹여요.\n…하르마 할머니가 등 얘기 했구나."),
+        fadeOut(1000),
+        { kind: "recoverAll" } as unknown as Command,
+        setSw(SW_NIGHT),
+        narrate("해가 지고, 못 위에 등 하나가 떴다."),
+        transfer(FS2_FROST_NIGHT_ID, front, "down"),
+      ], { graphic: look }),
     page("ev_fs2_frost_innkeeper_after", "탑 뒤", [sw(SW_VALEN_MET)], [
       say("여관 주인 오사", "탑에서 빛이 솟던 밤엔 다들 못 잤어요. 하룻밤 20골드."), { kind: "inn", price: 20 } as unknown as Command,
     ], { graphic: look }),
