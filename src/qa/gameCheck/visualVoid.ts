@@ -87,8 +87,8 @@ export function voidFinding(map: { readonly id: string; readonly name?: string }
 export const UNLIT_AMBIENT = 0.7;
 
 /** 맵 기본 조명에 주인공을 따라다니는 광원(손전등·횃불)이 있다. */
-export function playerCarriesLight(lighting: { readonly sources?: readonly { readonly at: unknown; readonly radius: number }[] } | undefined): boolean {
-  return (lighting?.sources ?? []).some((source) => source.at === "player" && source.radius >= 2);
+export function playerCarriesLight(lighting: { readonly sources?: readonly { readonly at: unknown; readonly radius: number; readonly intensity?: number }[] } | undefined): boolean {
+  return (lighting?.sources ?? []).some((source) => source.at === "player" && source.radius >= 2 && (source.intensity ?? 1) > 0);
 }
 
 /**

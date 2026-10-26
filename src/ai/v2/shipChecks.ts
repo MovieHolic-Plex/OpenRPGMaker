@@ -397,7 +397,9 @@ export function shipBlockers(project: Project, task: string): ShipBlocker[] {
   const hiddenExits = hiddenStairExits(project).slice(0, 4);
   const hidden: ShipBlocker[] = hiddenExits.length ? [{ id: "exit-hidden", message: `계단 출구를 계단 쪽으로 걸어서는 탈 수 없다: ${hiddenExits.join(" · ")}. create_transfer_pair 를 계단 그림 칸으로 다시 부르면 계단 폭 전체가 출구가 된다.`, evidence: hiddenExits[0]!.slice(0, 120) }] : [];
   // 짙은 어둠에 주인공 빛이 없으면 걸을 바닥이 검은 구멍이다(J89).
-  const unlit: ShipBlocker[] = Object.values(project.maps).flatMap((map) => {
+  // 이벤트가 실행 중에 주인공 빛을 켜는 게임(setLighting 에 player 광원)은 기본 조명만 보고 막지 않는다.
+  const runtimePlayerLight = allCommands(project).some(({ cmd }) => cmd.kind === "setLighting" && JSON.stringify(cmd).includes('"at":"player"'));
+  const unlit: ShipBlocker[] = runtimePlayerLight ? [] : Object.values(project.maps).flatMap((map) => {
     const finding = unlitDarkFinding(map);
     return finding ? [{ id: "dark-unlit", message: `「${map.name ?? map.id}」(${map.id}) ${finding.message.replace(/^시각 공백: /u, "")}`, evidence: `${map.id} ambient ${map.defaultLighting?.ambient}` }] : [];
   }).slice(0, 3);
