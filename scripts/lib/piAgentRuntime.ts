@@ -53,7 +53,7 @@ import { presentationArtIds, presentationArtImages } from '../../src/editor/tool
 
 import { Agent, type StreamFn } from "@oh-my-pi/pi-agent-core";
 import { streamSimple, validateToolArguments } from "@oh-my-pi/pi-ai";
-import { repairToolArgs, repeatedShapeHint, shapeErrorSignature, shapeLoopRefusal } from "../../src/ai/piAgent/argRepair.ts";
+import { refusalLoopRefusal, refusalSignature, repairToolArgs, repeatedRefusalHint, repeatedShapeHint, shapeErrorSignature, shapeLoopRefusal } from "../../src/ai/piAgent/argRepair.ts";
 import type { RoleModel } from "../../src/ai/modelRoles.ts";
 import { resolveOhMyPiModel } from "./ohMyPiModel.ts";
 import { codexVersionFetch } from "./codexClientVersion.ts";
@@ -550,6 +550,28 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   // 같은 도구가 연달아 모양 오류를 내면 오류 끝에 필수 칸 모양을 붙인다(2026-10-25: 같은 인자로 13번 실패).
   // 도구마다 연달아 난 모양 오류 수와 마지막 오류 줄(같은 오류가 되풀이되는지).
   const shapeFailures = new Map<string, { count: number; same: number; sig: string }>();
+  // 도구마다 연달아 같은 문장으로 거절된 횟수(J74) — 모양이 맞아도 도구가 같은 이유로 거절하면 같은 차단기를 쓴다.
+  const refusalRepeats = new Map<string, { same: number; sig: string }>();
+  const executeCountingRefusals = async (tool: PiToolShape, id: string, args: unknown, signal: AbortSignal | undefined) => {
+    try {
+      const result = await tool.execute(id, args as never, signal);
+      refusalRepeats.delete(tool.name);
+      return result;
+    } catch (error) {
+      if (signal?.aborted) throw error;
+      const message = error instanceof Error ? error.message : String(error);
+      const sig = refusalSignature(message);
+      const prior = refusalRepeats.get(tool.name);
+      const same = prior && prior.sig === sig ? prior.same + 1 : 1;
+      refusalRepeats.set(tool.name, { same, sig });
+      if (same >= 3) {
+        emit({ type: 'execution_status', name: 'tool.refusal.loop', ok: false, summary: `${tool.name}: 같은 거절 ${same}번째 — 방법을 바꾸라고 거절` });
+        throw new Error(refusalLoopRefusal(tool.name, sig, same, message));
+      }
+      if (same === 2) throw new Error(`${message}${repeatedRefusalHint(tool.name, message, same)}`);
+      throw error;
+    }
+  };
   const withArgRepair = (tool: PiToolShape): PiToolShape => (!tool.parameters ? tool : { ...tool, lenientArgValidation: true, async execute(id, params, signal) {
     const check = (args: unknown) => validateToolArguments(tool as never, { type: "toolCall", id, name: tool.name, arguments: args as Record<string, unknown> } as never);
     let valid: unknown;
@@ -582,7 +604,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
       emit({ type: 'execution_status', name: 'tool.args.repaired', ok: true, summary: `${tool.name}: 인자 모양을 고쳐 실행 — ${repaired.changes.join(" · ")}`, data: { toolCallId: id, tool: tool.name, changes: repaired.changes } });
     }
     shapeFailures.delete(tool.name);
-    return tool.execute(id, valid, signal);
+    return executeCountingRefusals(tool, id, valid, signal);
   } });
   const wrapTool = (tool: PiToolShape): PiToolShape => {
     const wrapped = wrapCoreTool(withHandInteriorEdits(tool));
