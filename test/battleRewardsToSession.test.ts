@@ -176,6 +176,8 @@ describe("battle rewards to play session", () => {
     const active = giveMonster(project, session, { speciesId: "species_wild_slime", level: 3 });
     const reserve = giveMonster(project, session, { speciesId: "species_wild_slime", level: 3 });
     if (!active.ok || !reserve.ok) throw new Error("expected two party monsters");
+    // 선물·포획 몬스터는 그 레벨의 누적 경험치 바닥에서 시작한다(monsterCollection.giveMonster) — 증가분만 본다.
+    const floor = active.instance.exp;
     const [activeSnapshot, reserveSnapshot] = monsterPartyBattlers(
       project,
       [active.instance, reserve.instance],
@@ -189,8 +191,8 @@ describe("battle rewards to play session", () => {
       monsterPartyMode: true,
     }, project);
 
-    expect(session.monsterInstances[active.instance.instanceId]?.exp).toBe(100);
-    expect(session.monsterInstances[reserve.instance.instanceId]?.exp).toBe(0);
+    expect(session.monsterInstances[active.instance.instanceId]?.exp).toBe(floor + 100);
+    expect(session.monsterInstances[reserve.instance.instanceId]?.exp).toBe(reserve.instance.exp);
   });
 
   it("keeps full live-monster-party EXP when regular actors fought", () => {
@@ -198,6 +200,7 @@ describe("battle rewards to play session", () => {
     const session = startSession(project);
     const companion = giveMonster(project, session, { speciesId: "species_wild_slime", level: 3 });
     if (!companion.ok) throw new Error("expected a companion monster");
+    const floor = companion.instance.exp;
 
     applyBattleRewardsToSession(session, {
       result: "victory",
@@ -206,7 +209,7 @@ describe("battle rewards to play session", () => {
       monsterPartyMode: false,
     }, project);
 
-    expect(session.monsterInstances[companion.instance.instanceId]?.exp).toBe(100);
+    expect(session.monsterInstances[companion.instance.instanceId]?.exp).toBe(floor + 100);
   });
 
   // 타이머의 진행(tick)은 맵 씬 소관이고 전투는 진입 시점 사본만 들고 있다. 사본 전체를
