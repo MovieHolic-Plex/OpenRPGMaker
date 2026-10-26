@@ -35,7 +35,7 @@ beforeEach(() => {
   vi.stubEnv("VITE_LLM_API_URL", "");
   vi.stubEnv("VITE_LLM_API_KEY", "");
   store.replace(createBlankProject());
-  restoreDom = installFakeDom();
+  restoreDom = installFakeDom({ window: true });
   installFakeLocalStorage();
 });
 
