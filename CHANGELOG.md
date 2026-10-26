@@ -5,6 +5,18 @@
 
 <!-- releases -->
 
+## 0.350.5 — 2026-10-26
+
+### 수정
+
+- **test-dom** — env2 — fake-DOM/window gaps in 36 ci-full files; 27 files leave the gates baseline (#3661) (`2e22802`)
+- **ai** — no-battle defaults, visible stair exits, unlit darkness (J87, J88, J89) (#3660) (`fa82ce8`)
+- **test** — move 33 combined_town/EasyRPG tests onto retired sheets or current defaults; drop them from gates baseline (#3657) (`63b6298`)
+
+### CI
+
+- **full** — 16 vitest shards — shard 1 lost its runner at 8 shards (#3659) (`7aea117`)
+
 ## 0.350.4 — 2026-10-26
 
 ### 수정
