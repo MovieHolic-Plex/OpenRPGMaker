@@ -5,6 +5,22 @@
 
 <!-- releases -->
 
+## 0.350.0 — 2026-10-26
+
+### 기능
+
+- **fallen** — act 2 B1–B5 — cell escape to burned Dawnwell; duplicate_map night variant, lift action trigger, event-linked forest route (#3643) (`84a31e9`)
+
+### 수정
+
+- **ai** — VQA status says why a shot failed to capture (#3642) (`089f9f1`)
+- **ai** — requested hiding spots must be visible to count (coverage check) (#3640) (`125b9ff`)
+- **ai** — VQA map shots carry game lighting (J79 rerun: defects stuck 2→2→2) (#3638) (`5783942`)
+
+### 테스트
+
+- move combined-town/interior cases onto retired sheets, retire run_*_room_pipeline cases, refresh outdated expectations (#3641) (`a500c7f`)
+
 ## 0.349.1 — 2026-10-26
 
 ### 수정
