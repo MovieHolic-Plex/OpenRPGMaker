@@ -28,7 +28,8 @@ function parseScript(file: string): { readonly ast: EsNode; readonly text: (node
   return { ast: parseAst(source, { lang: "js" }) as unknown as EsNode, text: (node) => source.slice(node.start, node.end) };
 }
 function toCommonJs(code: string): string {
-  return transformSync(code, { format: "cjs", target: "es2022", loader: "js" }).code;
+  // TS 의 CommonJS 변환처럼 import() 도 require 로 바꾼다(vm 문맥에는 동적 import 콜백이 없다).
+  return transformSync(code, { format: "cjs", target: "es2022", loader: "js", supported: { "dynamic-import": false } }).code;
 }
 function extract(file: string, kind: "observation" | "cleanup"): string {
   const { ast, text } = parseScript(file);
