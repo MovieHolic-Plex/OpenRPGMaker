@@ -5,6 +5,13 @@
 
 <!-- releases -->
 
+## 0.350.1 — 2026-10-26
+
+### 수정
+
+- **stills** — offer only installed opening still pack pictures; clear export error (#3646) (`291b046`)
+- **test-dom** — close the window/ResizeObserver/fake-DOM gaps in editor panel tests (#3645) (`a6e86b4`)
+
 ## 0.350.0 — 2026-10-26
 
 ### 기능
