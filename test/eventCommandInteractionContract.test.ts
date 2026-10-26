@@ -103,8 +103,9 @@ describe("page command interaction contract", () => {
     button("event-command-toolbar-cut").click();
     expect(commands()).toEqual([]);
     undo();
-    head().click();
-    key(head(), "v");
+    // 붙여넣기 자리 = 선택 행 바로 아래(commandListContextMenu insertionPath, 적대적 리뷰 P0-3). 마지막 행을 골라 끝에 붙인다.
+    head(2).click();
+    key(head(2), "v");
     expect(commands()).toEqual([...original, ...original]);
     undo();
     expect(commands()).toEqual(original);
@@ -115,7 +116,9 @@ describe("page command interaction contract", () => {
     head().click();
     editorState.set({ selectedEventPageId: "p2" });
     expect(selectedCommandPath()).toBeUndefined();
-    expect(button("event-editor-inspector").hidden).toBe(true);
+    // 인스펙터 칸은 미리보기 우선 표면이라 선택이 없어도 숨기지 않는다(commandInspector.hideInspector, PR #3211) — 선택 해제는 has-command-inspector 로 본다.
+    expect(button("event-editor-inspector").hidden).toBe(false);
+    expect(document.querySelector(".event-editor-workbench")?.classList.contains("has-command-inspector")).toBe(false);
   });
   it("clears selection rather than selecting the next positional command after deletion", () => {
     head().click();
@@ -254,12 +257,14 @@ describe("page command interaction contract", () => {
     undo();
     expect(commands()).toEqual(original);
   });
-  it("clears stale descendant selections after an inspector structural edit", () => {
+  // 폐기(d): 반복 본문을 인스펙터 폼의 「×」로 지우던 경로(event-loop-body-delete-N)는 인스펙터가 미리보기 우선 표면이 되면서
+  // 사라졌다(commandInspector.showCommandInspector 가 emptyPreview 일 때 폼 없이 반환, PR #3211). 구조 편집 뒤 선택 해제는
+  // 잘라내기·삭제 테스트(recordCommandToolbarChange)가 덮고, 여기서는 폼이 더는 없다는 새 상태만 못 박는다.
+  it("no longer offers the inspector loop-body form for structural edits", () => {
     head(1).click();
     key(head(1), "a");
-    button("event-loop-body-delete-0").click();
-    expect(selectedCommandPath()).toBeUndefined();
-    expect(document.querySelectorAll('.cmd-item.selected')).toHaveLength(0);
+    expect(document.querySelector('[data-testid="event-loop-body-delete-0"]')).toBeNull();
+    expect(document.querySelector('[data-testid="event-inspector-body"]')).toBeNull();
   });
   it("pastes a cut page back through the empty command-list keyboard surface as one undo", () => {
     head().click();
