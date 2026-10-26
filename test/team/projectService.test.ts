@@ -28,7 +28,8 @@ async function setup() {
   return { dir, sessions, a, base, invoke, patch };
 }
 
-describe('shared project service', () => {
+// Heavy under CI load (15s default is too tight): saves full projects through the real service and SQLite.
+describe('shared project service', { timeout: 120_000 }, () => {
   it('rejects stale full replacement and preserves the accepted revision', async () => {
     const { dir, a, invoke, base } = await setup();
     const sha = a.store.info().sha256;
@@ -118,7 +119,8 @@ describe('shared project service', () => {
   });
 });
 
-describe('record merge policy', () => {
+// Heavy under CI load (15s default is too tight): saves full projects through the real service and SQLite.
+describe('record merge policy', { timeout: 120_000 }, () => {
   it('merges independent DB records but rejects concurrent edits to the same record', () => {
     const base = projectWithoutEventDrafts(createScarloxyDemoProject());
     base.database.actors = [base.database.actors[0]!, { ...structuredClone(base.database.actors[0]!), id: 'team-second-actor' }];

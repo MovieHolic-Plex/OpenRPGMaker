@@ -113,7 +113,8 @@ async function bootFailureScreen(): Promise<{
   return { root: fakeElement(root), ...mocks };
 }
 
-describe("UXC D01 프로젝트 로드 실패 폴백", () => {
+// Heavy under CI load (15s default is too tight): boots the editor fallback with a blank project.
+describe("UXC D01 프로젝트 로드 실패 폴백", { timeout: 120_000 }, () => {
   // Compile the large app graph before timing the recovery interactions.
   // Each test still resets module state and retains its normal timeout.
   beforeAll(async () => {

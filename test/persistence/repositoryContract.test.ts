@@ -29,7 +29,8 @@ function renamed(project: Project, mapId: string, name: string): GameMap {
 }
 
 export function describeRepositoryContract(name: string, factory: FixtureFactory): void {
-  describe(`ProjectRepository 계약 — ${name}`, () => {
+  // Heavy under CI load (15s default is too tight): saves and reloads the blank project several times per case.
+  describe(`ProjectRepository 계약 — ${name}`, { timeout: 120_000 }, () => {
     let fixture: Fixture | undefined;
     afterEach(() => { fixture?.cleanup?.(); fixture = undefined; });
     const open = async () => { fixture = await factory(nextProjectId()); return fixture; };

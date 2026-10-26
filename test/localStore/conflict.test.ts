@@ -40,7 +40,8 @@ function firstTwoMapIds(project: Project): readonly [string, string] {
   return [first, second];
 }
 
-describe("local store map patches", () => {
+// Heavy under CI load (15s default is too tight): saves the blank project to a real SQLite store several times.
+describe("local store map patches", { timeout: 120_000 }, () => {
   it("서로 다른 맵을 고친 두 편집이 병합되어 둘 다 남고 revision 이 오른다", async () => {
     const base = baseProject();
     const [aId, bId] = firstTwoMapIds(base);

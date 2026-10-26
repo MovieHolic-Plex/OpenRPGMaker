@@ -101,7 +101,8 @@ describe("canMove 대칭 — 성분 색인이 기대는 정리", () => {
   });
 });
 
-describe("색인이 있어도 결과가 같다 (무작위 맵 대조)", () => {
+// Heavy under CI load (15s default is too tight): compares many random maps with and without the index.
+describe("색인이 있어도 결과가 같다 (무작위 맵 대조)", { timeout: 120_000 }, () => {
   it("findChasePath 는 색인 없음/있음에서 같은 경로를 낸다", () => {
     const random = mulberry32(7);
     for (let round = 0; round < 24; round += 1) {

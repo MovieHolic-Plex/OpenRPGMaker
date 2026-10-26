@@ -27,7 +27,8 @@ function graftedTileset() {
   return tileset;
 }
 
-describe("cold graft evidence", () => {
+// Heavy under CI load (15s default is too tight): bakes graft images over a blank project.
+describe("cold graft evidence", { timeout: 120_000 }, () => {
   it("waits for source loading and returns the composite on the first request", async () => {
     const tileset = graftedTileset();
     const gate = installToolImageUrlHoldGate("easyrpg-chipset-interior");

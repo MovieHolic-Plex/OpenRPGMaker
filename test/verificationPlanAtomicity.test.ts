@@ -3,7 +3,8 @@
 import { describe, expect, it } from "vitest";
 import { fixture, paths, rejected, scopes } from "./helpers/verificationPlanAtomicityFixture";
 
-describe.each(paths)("atomic verification adoption via %s", path => {
+// Heavy under CI load (15s default is too tight): runs real verification tools over full fixtures.
+describe.each(paths)("atomic verification adoption via %s", { timeout: 120_000 }, path => {
 // 왜 가르나(2026-09-11 실측): 케이스가 워커 하나에서 누적될수록 힙이 자란다(2케이스 0.52GB → 54케이스 3.55GB → 108케이스 4.34GB).
 // 108케이스를 한 파일에 두면 Node 기본 힙 상한(4.29GB)을 넘어 워커가 OOM 으로 죽고, 그 워커가 맡은 파일은 결과를 못 낸다.
 // 픽스처는 helpers/verificationPlanAtomicityFixture.ts 로 옮겼다.

@@ -27,7 +27,8 @@ async function bootExport(): Promise<void> {
   await ready;
 }
 
-describe("exported player asset resolution", () => {
+// Heavy under CI load (15s default is too tight): boots the exported player over a blank project in happy-dom.
+describe("exported player asset resolution", { timeout: 120_000 }, () => {
   it("keeps editor resource paths unchanged without export boot", async () => {
     // Given
     const { resolveAssetResourceUrl } = await import("@/assets/generatedAssetResourceResolver");

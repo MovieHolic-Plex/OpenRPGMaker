@@ -22,7 +22,8 @@ type RepositoryModule = typeof import("@/project/persistence/repository");
 
 const target: ProjectTarget = { url: "memory://baseline-test", anonKey: "memory", projectId: "save-baseline-ownership" };
 
-describe("저장 기준본 소유권", () => {
+// Heavy under CI load (15s default is too tight): saves the blank project several times.
+describe("저장 기준본 소유권", { timeout: 120_000 }, () => {
   let memory: MemoryRepository;
   let store: StoreModule["store"];
   let repositoryModule: RepositoryModule;

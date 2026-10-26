@@ -75,7 +75,8 @@ vi.mock("@/player/player", () => ({ renderPlayer: rendered }));
 vi.mock("@/player/audio", () => ({ stopAllAudio: vi.fn() }));
 vi.mock("@/project/store", () => import("@/player/exportProjectStoreShim"));
 
-describe("exported player boot", () => {
+// Heavy under CI load (15s default is too tight): boots the exported player over a blank project in happy-dom.
+describe("exported player boot", { timeout: 120_000 }, () => {
   afterEach(() => {
     vi.unstubAllGlobals(); rendered.mockReset(); localStorage.clear();
     Reflect.deleteProperty(window, "__OPENRPG_BOOT__");

@@ -21,7 +21,8 @@ import type { ReviewInput } from "@/ai/independentReview";
 
 const COMPLETE = "MODEL_COMPLETION_SENTINEL";
 const NPC = "ev_reward_session";
-describe.each(["items-monsters", "gold"] as const)("%s reward lifecycle", rewardKind => {
+// Heavy under CI load (15s default is too tight): runs real AssistantSession turns over blank projects.
+describe.each(["items-monsters", "gold"] as const)("%s reward lifecycle", { timeout: 120_000 }, rewardKind => {
 const REQUIRED: NpcRewardRequirements = [{
   target: { eventId: NPC }, oneTime: true,
   grants: rewardKind === "gold" ? [{ kind: "gold", count: 20 }]

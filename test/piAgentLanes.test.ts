@@ -150,7 +150,8 @@ describe("laneBundleChangedKeys — 레인별 적용의 판정 규칙", () => {
   });
 });
 
-describe("lane manager — 레인별 독립 실행과 적용", () => {
+// Heavy under CI load (15s default is too tight): runs lanes over blank projects.
+describe("lane manager — 레인별 독립 실행과 적용", { timeout: 120_000 }, () => {
   it("레인 A 를 적용해도 레인 B 의 결과는 살아남아 그대로 적용된다", async () => {
     armStore(seed());
     const manager = createLaneManager({

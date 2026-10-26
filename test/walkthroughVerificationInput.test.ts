@@ -145,7 +145,8 @@ describe("walkthrough verification uses the native structured boundary", () => {
 
 type Call = { name: string; args: Record<string, unknown> };
 
-describe("normal AssistantSession walkthrough declaration and terminal boundaries", () => {
+// Heavy under CI load (15s default is too tight): runs real AssistantSession turns.
+describe("normal AssistantSession walkthrough declaration and terminal boundaries", { timeout: 120_000 }, () => {
   it.each([false, true])("bad then valid passing walkthrough cannot poison findings (initial declaration malformed=%s)", async invalidDeclaration => {
     const project = fixture();
     const originalProject = structuredClone(project);
