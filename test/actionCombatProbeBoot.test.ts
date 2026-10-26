@@ -42,10 +42,12 @@ describe("private action proof exported boot", () => {
       qaInstrumentation,
       ...(probe ? { actionCombatProbe: { runId: "owned-run", mapId: project.startMapId } } : {}),
     });
-    // A fresh Response per request: boot fetches loading.json, project.json and the first-screen files, and a
-    // single shared Response has its body consumed by the first read.
+    // Serve project.json only. Boot also fetches loading.json, preload-files.json and every first-screen/background
+    // asset; answering those with the 63MB project (or one shared, already-consumed Response) either exhausts the
+    // runner's memory or stalls the preload. A 404 is what a bare exported folder answers for them.
     const body = serialize(project);
-    vi.stubGlobal("fetch", vi.fn(async () => new Response(body)));
+    vi.stubGlobal("fetch", vi.fn(async (input: RequestInfo | URL) => new URL(String(input), location.href).pathname.endsWith("/project.json")
+      ? new Response(body) : new Response(null, { status: 404 })));
     const ready = new Promise<void>(resolve => rendered.mockImplementation(() => resolve()));
     // Without qaInstrumentation the web build waits on the boot loader's 「시작하기」 gesture (bootLoader.waitForStart)
     // before rendering; press it like a player would, otherwise `ready` never resolves.
