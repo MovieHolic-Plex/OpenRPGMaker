@@ -121,6 +121,7 @@ import { dialogueHost } from "@/player/playSceneDom";
 import {
   createMinimap,
   destroyMinimap,
+  minimapToggleKeyHandler,
   syncMinimapPosition,
   syncMinimapVisibility,
   type MinimapRuntimeState,
@@ -332,17 +333,18 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
     const destroyAtlas = (): void => { this.worldAtlasController?.destroy(); this.worldAtlasController = null; };
     this.events.once('shutdown', destroyAtlas);
     this.events.once('destroy', destroyAtlas);
-    // M = minimap toggle. Input abstraction doesn't expose Phaser keyboard; use document.
+    // M toggles the minimap. The document listener is outside Phaser's keyboard plugin.
     const toggleMinimap = (): void => {
       if (!this.minimap) return;
       this.minimapUserHidden = !this.minimapUserHidden;
       const host = this.game.registry.get("dialogueHost") as HTMLElement | undefined;
       syncMinimapVisibility(this.minimap, host ?? null, this.minimapUserHidden);
     };
-    const onDocKey = (e: KeyboardEvent): void => {
-      if (this.game.registry.get('initialPresentationPending') === true) return;
-      if (e.key.toLowerCase() === "m" && !e.repeat) toggleMinimap();
-    };
+    const onDocKey = minimapToggleKeyHandler({
+      presentationPending: () => this.game.registry.get("initialPresentationPending") === true,
+      host: () => this.game.registry.get("dialogueHost") as HTMLElement | undefined,
+      toggle: toggleMinimap,
+    });
     document.addEventListener("keydown", onDocKey);
     const detachMinimapKey = (): void => {
       document.removeEventListener("keydown", onDocKey);
