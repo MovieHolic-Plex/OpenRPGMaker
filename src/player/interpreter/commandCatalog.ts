@@ -442,12 +442,12 @@ function executeM2Command(
   }
 }
 
-function saveCheckpoint(state: InterpreterState): void {
+function saveCheckpoint(state: InterpreterState, label?: string): void {
   if (!state.project) {
     console.warn("[interpreter] checkpointSave skipped: project context missing");
     return;
   }
-  saveSessionCheckpoint(state.project, state.session as PlaySession);
+  saveSessionCheckpoint(state.project, state.session as PlaySession, label);
 }
 
 function advanceCommandMinutes(command: Extract<Command, { kind: "advanceTime" }>): number {
@@ -861,7 +861,7 @@ export function executeCommand(
       });
     }
     case "checkpointSave":
-      saveCheckpoint(state);
+      saveCheckpoint(state, command.label);
       return resumeNext(frame);
     case "openSaveMenu":
       return pause("openSaveMenu", { kind: "openSaveMenu" });
