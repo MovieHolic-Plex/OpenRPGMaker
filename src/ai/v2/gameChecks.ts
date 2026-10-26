@@ -35,6 +35,52 @@ function eventsOf(project: Project): Map<string, EventRef> {
   return out;
 }
 
+/**
+ * 시간 체계 달력과 따로 날짜를 세는 변수(J18): 잠자기(sleepUntilMorning)·하루 넘기기(advanceTime days)와 같은 명령 줄에서 +1 되거나,
+ * 이름이 날짜 세기(일수·일차·날짜·day)인데 +1 되는 변수. onDayEnd 공통 이벤트 안의 카운트는 달력과 함께 가므로 뺀다.
+ */
+export function dayCounterVariables(project: Project, onDayEnd?: string): { id: string; name: string; where: string }[] {
+  const names = new Map((project.variables ?? []).map((v) => [v.id, v.name || v.id] as const));
+  const found = new Map<string, string>();
+  const scan = (commands: unknown, where: string): void => {
+    const lists: unknown[][] = [];
+    const collect = (list: unknown): void => {
+      if (!Array.isArray(list)) return;
+      lists.push(list);
+      for (const raw of list) {
+        const c = obj(raw);
+        if (!c) continue;
+        for (const [key, child] of Object.entries(c)) {
+          if (key === "condition" || !Array.isArray(child)) continue;
+          if (child.some((x) => obj(x)?.kind)) collect(child);
+          else for (const x of child) { const o = obj(x); if (o) { collect(o.branch); collect(o.commands); } }
+        }
+      }
+    };
+    collect(commands);
+    for (const list of lists) {
+      const cmds = list.map(obj).filter((c): c is Obj => !!c);
+      const sleeps = cmds.some((c) => c.kind === "sleepUntilMorning" || (c.kind === "advanceTime" && Number(c.days ?? 0) > 0));
+      for (const c of cmds) {
+        if (c.kind !== "setVariable" || c.op !== "+=" || Number(c.value) !== 1 || typeof c.variableId !== "string") continue;
+        const name = names.get(c.variableId) ?? c.variableId;
+        // 날짜를 세는 이름만 본다(호감도·피로처럼 잠잘 때 같이 오르는 변수는 아니다). 영어는 낱말 경계(birthday·holiday·today 제외).
+        // 이름만으로 잡을 때는 「일수·일차·N일째」, 잠자기 줄과 함께면 「날짜·며칠」도 날짜 세기로 본다.
+        const label = `${name} ${c.variableId}`;
+        const dayName = /일수|일차|일째|(?:^|[^a-z])days?(?:_?(?:count|elapsed|passed|num))?(?![a-z])/iu.test(label);
+        if (dayName || (sleeps && /날짜|며칠/u.test(label))) if (!found.has(c.variableId)) found.set(c.variableId, where);
+      }
+    }
+  };
+  for (const map of Object.values(project.maps)) for (const ev of map.events ?? []) for (const page of (ev.pages ?? []) as unknown as Obj[]) scan(page.commands, `「${ev.name || ev.id}」`);
+  for (const ce of project.commonEvents ?? []) {
+    const c = ce as unknown as Obj;
+    if (onDayEnd && c.id === onDayEnd) continue;
+    scan(c.commands, `공통 이벤트 「${String(c.name ?? c.id)}」`);
+  }
+  return [...found].map(([id, where]) => ({ id, name: names.get(id) ?? id, where }));
+}
+
 /** 이 실행이 새로 만들거나 바꾼 이벤트. */
 export function changedEvents(before: Project, after: Project): EventRef[] {
   const old = eventsOf(before);
@@ -686,6 +732,19 @@ export function gameContentProblems(before: Project, after: Project, task: strin
       off.push(`「${ev.name}」(${ev.id})`);
     }
     if (off.length) problems.push(`[게임 검사 시계] 시간 체계가 켜져 있어 화면 시계(HUD)가 따로 흐르는데, ${off.slice(0, 3).join(", ")} 은 밤을 스위치와 화면 색으로만 만든다 — 「자정」 뒤에도 시계는 아침 시각을 보인다. 밤으로 바꾸는 갈래에 {kind:'setTime',hour:24,minute:0}(자정), 낮으로 돌리는 갈래에 {kind:'setTime',hour:6,minute:0} 을 같이 넣는다. 시계가 필요 없는 이야기면 configure_time_system{enabled:false} 로 끈다.`);
+  }
+  // 날짜를 두 번 센다(2026-10-25 판정 J18, 서울 연애): 시간 체계가 켜져 HUD 달력이 「봄 4일」을 보이는데 대사·엔딩은
+  // 「서울에서 보낸 일수」 변수로 1일차를 센다. 대화마다 advanceTime 이 달력을 넘기고 잠자기가 또 넘겨 두 날짜가 어긋난다.
+  // onDayEnd 공통 이벤트 안의 카운트(set_deadline_ending 의 var_days_elapsed)는 달력과 같이 넘어가므로 뺀다.
+  {
+    const ts = after.system.timeSystem as { enabled?: boolean; onDayEnd?: string } | undefined;
+    const dualDays = ts?.enabled ? dayCounterVariables(after, ts.onDayEnd) : [];
+    const touched = changed.some((ev) => allCommands(ev).some((r) => r.cmd.kind === "setVariable" && dualDays.some((d) => d.id === r.cmd.variableId)))
+      || JSON.stringify(before.system.timeSystem ?? null) !== JSON.stringify(after.system.timeSystem ?? null);
+    if (dualDays.length && touched) {
+      const v = dualDays[0]!;
+      problems.push(`[게임 검사 시계] 시간 체계가 켜져 HUD 달력(「봄 N일」)이 따로 흐르는데, 날짜를 변수 「${v.name}」(${v.id})로 또 센다(${v.where}) — 대화의 advanceTime·잠자기가 달력을 넘겨 화면 날짜와 대사·엔딩의 「N일차」가 어긋난다. 하나만 쓴다: 변수로 세려면 configure_time_system{enabled:false} 로 달력을 끄고(잠자기 대신 화면 전환·대사로 하루를 넘긴다), 달력을 쓰려면 그 변수를 지우고 날짜는 set_deadline_ending(onDayEnd 카운트)으로 센다.`);
+    }
   }
   // 「제1막 끝」 카드: 대사 한 줄로 흉내 내면 게임이 그대로 이어진다 — 진짜 엔딩(막 끝 화면)이어야 한다(fs-end-act).
   if (/제\s*\d+\s*막\s*끝|막이?\s*끝나|막 끝/u.test(task) && !kinds.has("triggerEnding")) {
