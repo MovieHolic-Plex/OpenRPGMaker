@@ -121,6 +121,8 @@ describe("LLM reasoning 요청", () => {
       ...defaultAiConfig(), baseUrl: "https://example.invalid/v1", model: "stub-supervisor-model",
       liteModel: "stub-lite-model",
       reasoningEffort: "high",
+      // #2535 부터 기본 설정에 역할 모델(deep)이 있어 그 칸을 따른다 — liteModel 경로를 보려고 역할 모델을 뺀다.
+      roleModels: undefined,
     });
     expect(lite.reasoningEffort).toBe("off");
   });
@@ -190,14 +192,15 @@ describe("AI reasoning 설정 로드", () => {
   });
 
   it("잘못된 reasoningEffort는 기본(high)으로 되돌린다", () => {
-    installLocalStorage({ reasoningEffort: "max" });
+    // "max" 는 #3272 부터 유효한 값이다 — 진짜 잘못된 값으로 본다.
+    installLocalStorage({ reasoningEffort: "bogus" });
     const config = loadAiConfig();
     expect(config.reasoningEffort).toBe("high");
   });
 
-  it("기본 reasoningEffort는 high이다(감독 지시 2026-10-05)", () => {
+  it("기본 reasoningEffort는 medium이다(Argon medium 권장 조합, #2535)", () => {
     const config = defaultAiConfig();
-    expect(config.reasoningEffort).toBe("high");
+    expect(config.reasoningEffort).toBe("medium");
   });
 });
 
