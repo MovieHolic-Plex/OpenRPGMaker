@@ -12,7 +12,8 @@ type DomGlobalName =
   | "HTMLTextAreaElement"
   | "requestAnimationFrame"
   | "cancelAnimationFrame"
-  | "getComputedStyle";
+  | "getComputedStyle"
+  | "window";
 type PreviousDomGlobals = {
   readonly document: Document | undefined;
   readonly Node: typeof Node | undefined;
@@ -28,6 +29,7 @@ type PreviousDomGlobals = {
   readonly requestAnimationFrame: typeof requestAnimationFrame | undefined;
   readonly cancelAnimationFrame: typeof cancelAnimationFrame | undefined;
   readonly getComputedStyle: typeof getComputedStyle | undefined;
+  readonly window: (Window & typeof globalThis) | undefined;
 };
 
 type FakeDomOptions = {
@@ -709,10 +711,15 @@ export function installFakeDom(options: FakeDomOptions = {}): () => void {
     requestAnimationFrame: globalThis.requestAnimationFrame,
     cancelAnimationFrame: globalThis.cancelAnimationFrame,
     getComputedStyle: globalThis.getComputedStyle,
+    window: (globalThis as { window?: Window & typeof globalThis }).window,
   } satisfies PreviousDomGlobals;
   animationFrames.clear();
   for (const observer of mutationObservers) observer.disconnect();
   nextAnimationFrameId = 1;
+  // node 환경(가짜 DOM 만 쓰는 테스트)에는 window 가 없다. 편집기 패널은 window 에 사용자 정의 이벤트를
+  // 붙이므로(aiWorkspace·aiPresence 등) 이벤트 대상 하나와 자주 쓰는 속성만 갖춘 최소 window 를 준다.
+  // happy-dom 환경이면 진짜 window 를 그대로 둔다.
+  if (!previous.window) defineDomGlobal("window", createFakeWindow());
   defineDomGlobal("Node", FakeNode);
   defineDomGlobal("Element", FakeElement);
   defineDomGlobal("MutationObserver", FakeMutationObserver);
@@ -819,6 +826,7 @@ export function installFakeDom(options: FakeDomOptions = {}): () => void {
     animationFrames.clear();
     for (const observer of mutationObservers) observer.disconnect();
     restoreDomGlobal("document", previous.document);
+    restoreDomGlobal("window", previous.window);
     restoreDomGlobal("Node", previous.Node);
     restoreDomGlobal("Element", previous.Element);
     restoreDomGlobal("MutationObserver", previous.MutationObserver);
@@ -934,6 +942,24 @@ function matchesSelector(element: FakeElement, selector: string): boolean {
   }
   const tag = simpleSelector.match(/^([a-zA-Z]+)(?::not\(:disabled\))?$/u)?.[1];
   return tag ? element.tagName === tag.toUpperCase() && !element.disabled : false;
+}
+
+function createFakeWindow(): unknown {
+  const target = new EventTarget();
+  return Object.assign(target, {
+    setTimeout: globalThis.setTimeout.bind(globalThis),
+    clearTimeout: globalThis.clearTimeout.bind(globalThis),
+    setInterval: globalThis.setInterval.bind(globalThis),
+    clearInterval: globalThis.clearInterval.bind(globalThis),
+    innerWidth: 1280,
+    innerHeight: 800,
+    devicePixelRatio: 1,
+    matchMedia: (query: string) => ({ matches: false, media: query, addEventListener() {}, removeEventListener() {}, addListener() {}, removeListener() {} }),
+    get document() { return globalThis.document; },
+    get requestAnimationFrame() { return globalThis.requestAnimationFrame; },
+    get cancelAnimationFrame() { return globalThis.cancelAnimationFrame; },
+    get getComputedStyle() { return globalThis.getComputedStyle; },
+  });
 }
 
 function defineDomGlobal(name: DomGlobalName, value: unknown): void {
