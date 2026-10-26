@@ -4,6 +4,7 @@ import { activeTools, runTool } from "@/editor/tools";
 import type { ChatRequest, ChatResult } from "@/ai/llmClient";
 import { createBlankProject } from "@/project/defaults/defaultProject";
 import { buildSessionRegistryTools } from "@/ai/sessionToolExposure";
+import { isMonsterOnlyTool } from "@/project/genreLockMonsterAssets";
 import { declaredIntent, fixedDeclarer } from "./intentFixture";
 
 const CONFIG = {
@@ -104,7 +105,8 @@ describe("hybrid assistant tool exposure", { timeout: 60_000 }, () => {
     expect(requests).toHaveLength(2);
     expect(names(requests[0])).toContain("find_tools");
     expect(names(requests[0]).length).toBeLessThan(activeTools().length);
-    expect(names(requests[1])).toEqual(expect.arrayContaining(activeTools().map((tool) => tool.name)));
+    // 몬스터 전용 도구는 몬스터 프로젝트 밖에서 전체 카탈로그 폴백에서도 숨는다(#2812).
+    expect(names(requests[1])).toEqual(expect.arrayContaining(activeTools().map((tool) => tool.name).filter((name) => !isMonsterOnlyTool(name))));
     expect(session.getAuditEntries().some((entry) => entry.kind === "status" && entry.text.includes("tools:fallback full-catalog"))).toBe(true);
   });
 
