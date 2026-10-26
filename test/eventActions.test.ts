@@ -4,8 +4,8 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { addCommand, addEvent, getCommand, replaceCommand } from "@/editor/eventActions";
 import {
+  addEventPageCommand,
   addEventPageCommandAt,
-  replaceEventPageCommandAt,
 } from "@/editor/eventPages";
 import {
   CHOICE_CANCEL_BRANCH_INDEX,
@@ -205,7 +205,8 @@ describe("shared command resolver consumers", () => {
 
   it("event pages create shop transaction branches the same way staging does", () => {
     const shopCommand: Command = { kind: "shop", itemIds: [] };
-    replaceEventPageCommandAt(mapId, eventId, pageId, [0], shopCommand);
+    // 새 이벤트 페이지는 빈 명령 목록으로 시작한다(createDefaultGameEvent) — 바꿀 [0] 이 없으니 첫 명령으로 넣는다.
+    addEventPageCommand(mapId, eventId, pageId, shopCommand);
     addEventPageCommandAt(mapId, eventId, pageId, [0, SHOP_TRANSACTION_BRANCH_INDEX], { kind: "text", body: "persisted shop" });
 
     const persisted = currentEventPage().commands[0];
@@ -222,7 +223,7 @@ describe("shared command resolver consumers", () => {
   });
 
   it("creates missing shop transaction branches through the shared resolver for page edits", () => {
-    replaceEventPageCommandAt(mapId, eventId, pageId, [0], { kind: "shop", itemIds: [], branchOnTransaction: true });
+    addEventPageCommand(mapId, eventId, pageId, { kind: "shop", itemIds: [], branchOnTransaction: true });
 
     addEventPageCommandAt(mapId, eventId, pageId, [0, SHOP_TRANSACTION_BRANCH_INDEX], {
       kind: "text",
