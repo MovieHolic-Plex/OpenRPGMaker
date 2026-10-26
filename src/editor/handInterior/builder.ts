@@ -323,6 +323,9 @@ export function faceSeatsToTables(objects: readonly HandInteriorObject[], tables
  * 평면 + 물건 목록 → 네 층. 오류(겹침·벽면 밖 걸이·바닥 밖 가구)는 issues 에 error 로, 통행 BFS 결과는 warning 으로 남긴다.
  * tileset 이 있으면 통행을 그 정의로 계산한다(없으면 BFS 생략).
  */
+/** 벽면 걸이인데 앞 칸이 탈 자리인 탈것 문(J45: 전철 차내는 남쪽 바깥 출구 대신 이 문으로 드나든다). */
+const VEHICLE_DOORS: ReadonlySet<string> = new Set(["st-car-door"]);
+
 export function buildHandInteriorLayers(input: HandInteriorInput, tileset?: TilesetDef, S: HandInteriorSpec = HAND_INTERIOR_SPEC): HandInteriorLayers {
   const issues: HandInteriorIssue[] = [];
   if (!Array.isArray(input.plan) || input.plan.length < 3) throw new HandInteriorError("plan 은 3줄 이상의 문자열 배열이어야 한다.", "invalid-plan");
@@ -434,6 +437,8 @@ export function buildHandInteriorLayers(input: HandInteriorInput, tileset?: Tile
       } else {
         const ok = o.id === "round arch" ? cols.some((x) => A.face[o.y]?.[x] === 1) : cols.every((x) => A.face[o.y]?.[x] === 1);
         if (!ok) { const ft = faceTop(o.x); issues.push({ severity: "error", code: "hang-not-on-face", message: `${label} 는 걸이 — 벽면 두 줄 중 윗줄(막힌 칸 바로 아래 줄)에 건다${ft >= 0 ? ` — 이 열(x=${o.x})은 y=${ft}` : ""}`, x: o.x, y: o.y }); }
+        // 탈것 문(벽면에 그린 전철 출입문)은 바로 앞 첫 바닥 줄이 내리는 칸이다 — 남쪽 바깥 출구가 없는 차내에서 유일한 드나드는 자리(J45).
+        else if (VEHICLE_DOORS.has(o.id)) for (const x of cols) if (A.isFloor(x, o.y + 2)) landings.push({ i: (o.y + 2) * W + x, label });
       }
     } else if (d.kind === "door") {
       // 가로 칸막이(막힌 줄)의 1칸 틈: 좌우가 막혔고, 위(북쪽 방)와 아래 두 줄이 걸을 수 있는 바닥이며, 아래 두 줄 좌우는 벽면·막힘.
