@@ -577,8 +577,13 @@ export class FakeElement extends FakeNode {
   }
 
 
+  /** 직접 받은 focus 이벤트로 초점을 얻었는지 — matches(":focus-visible") 용. 시험은 focus() 대신 focus 이벤트를 쏘기도 한다. */
+  private fakeFocused = false;
+
   dispatchEvent(event: Event): boolean {
     if (event.target === null) Object.defineProperty(event, "target", { configurable: true, value: this });
+    if (event.target === this && event.type === "focus") this.fakeFocused = true;
+    if (event.target === this && event.type === "blur") this.fakeFocused = false;
     Object.defineProperty(event, "currentTarget", { configurable: true, value: this });
     for (const listener of this.listeners[event.type] ?? []) {
       if (typeof listener === "function") {
@@ -615,6 +620,7 @@ export class FakeElement extends FakeNode {
 
   blur(): void {
     const doc = globalThis.document as unknown as { activeElement?: FakeElement | null };
+    this.fakeFocused = false;
     if (doc.activeElement === this) doc.activeElement = null;
   }
 
@@ -626,6 +632,19 @@ export class FakeElement extends FakeNode {
   /** <input>.select() — 값 전체 선택. 텍스트 렌더가 없으니 범위만 남긴다. */
   select(): void {
     this.setSelectionRange(0, this.value.length);
+  }
+
+  /**
+   * Element.matches — 가짜 DOM 의 단순 선택자 판정과 같다. `:focus`·`:focus-visible` 은 초점을 받은 요소면 참이다
+   * (가짜 DOM 에는 포인터 입력 방식이 없어 모든 초점을 키보드 초점으로 본다). delayedTooltip 의 revealNow 가 쓴다.
+   */
+  matches(selector: string): boolean {
+    const trimmed = selector.trim();
+    if (trimmed === ":focus" || trimmed === ":focus-visible") {
+      const doc = globalThis.document as unknown as { activeElement?: FakeElement | null };
+      return this.fakeFocused || doc.activeElement === this;
+    }
+    return trimmed.split(",").some((part) => part.trim() !== "" && matchesSelector(this, part.trim()));
   }
 
   closest(selector: string): FakeElement | null {
