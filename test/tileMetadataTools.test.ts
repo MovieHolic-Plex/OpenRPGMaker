@@ -19,7 +19,8 @@ function ctx(): ToolContext {
 
 function ctxWithMap(): { context: ToolContext; mapId: string } {
   const context = ctx();
-  const created = runTool(context, "create_map", { name: "인터뷰 테스트", width: 8, height: 8, id: "map_interview" });
+  // create_map 의 tilesetId 생략은 새 야외 기본(버들항)이다 — 합본 마을 번호를 쓰므로 칩셋을 밝힌다.
+  const created = runTool(context, "create_map", { name: "인터뷰 테스트", width: 8, height: 8, id: "map_interview", tilesetId: COMBINED_TOWN_TILESET_ID });
   expect(created.ok, created.summary).toBe(true);
   return { context, mapId: "map_interview" };
 }

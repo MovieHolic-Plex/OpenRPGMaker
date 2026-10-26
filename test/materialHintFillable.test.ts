@@ -34,12 +34,13 @@ describe("면 채우기 재료 힌트", () => {
   });
 
   // qa-game mystery-3: 벽 재료로 fill_region 을 같은 인자로 11번 재시도했다 — 어느 도구로 갈지 알려 준다.
-  it("벽 재료는 build_wall·place_concept 로, 가구는 place_props 로 보낸다", () => {
+  it("벽 재료는 build_wall·build_hand_interior_room 으로, 가구는 place_props 로 보낸다", () => {
     const ctx: ToolContext = { project: blankCombinedTownProject() };
     const wall = runTool(ctx, "fill_region", { mapId: MAP_ID, rect: { x: 2, y: 2, w: 3, h: 3 }, material: "목골 석벽 집 벽 확장" });
     expect(wall.ok).toBe(false);
     expect(wall.summary).toContain("build_wall");
-    expect(wall.summary).toContain("place_concept");
+    // place_concept 는 레지스트리에서 빠졌다 — 실내 전체는 build_hand_interior_room 으로 보낸다(tileVocabulary.notFillableRoute).
+    expect(wall.summary).toContain("build_hand_interior_room");
     const table = runTool(ctx, "fill_region", { mapId: MAP_ID, rect: { x: 2, y: 2, w: 3, h: 3 }, material: "탁자(가로)" });
     expect(table.ok).toBe(false);
     expect(table.summary).toMatch(/place_props|build_wall/u);

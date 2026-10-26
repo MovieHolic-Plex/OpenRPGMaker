@@ -292,7 +292,9 @@ describe("location transitions — schema load / migrate / save", () => {
     const project = projectWithMap();
     const map = project.maps[MAP_ID]!;
     map.events = [{ id: "ev_talk", x: 1, y: 1, trigger: { kind: "action" }, commands: [] }];
-    const before = serialize(project);
+    // 디스크에 있는 옛 프로젝트는 이미 한 번 로드 정규화를 거친 모양이다. 갓 만든 createBlankProject 는 첫 로드에서
+    // 기본 DB·system 이 정규화된다(배우 characterIndex 0 생략·직업 기술 순서) — 트리거와 무관하므로 그 모양에서 잰다.
+    const before = serialize(deserialize(serialize(project)));
     expect(serialize(deserialize(before))).toBe(before);
     // 점유 기록도 생기지 않는다 — 세션 필드는 런타임에서만 만들어진다.
     expect(JSON.parse(before).session.occupiedLocationIds).toBeUndefined();

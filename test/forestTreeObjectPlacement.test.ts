@@ -69,19 +69,6 @@ describe("forest-trees 물체 place_props", () => {
     expect(bounds([...upperCells, ...lowerCells], map.width)).toEqual({ w: preview.width, h: preview.height });
   });
 
-  it("잎 없는 숲 벽·숲 기둥은 낱개 산포를 거절하고 수관 경로를 안내한다", () => {
-    for (const material of ["숲 나무 · 숲 벽", "숲 나무 · 숲 기둥"]) {
-      const ctx = project();
-      const result = runTool(ctx, "place_props", { mapId: MAP_ID, area: { x: 0, y: 0, w: 40, h: 20 }, material, count: 2 });
-      expect(result.ok).toBe(false);
-      expect(result.summary).toContain("density");
-    }
-  });
-
-  it("숲 벽에 density 를 주면 굽이숲 수관을 깐다", () => {
-    const ctx = project();
-    const result = runTool(ctx, "place_props", { mapId: MAP_ID, area: { x: 0, y: 0, w: 40, h: 20 }, material: "숲 나무 · 숲 벽", density: "dense" });
-    expect(result.ok).toBe(true);
-    expect(result.summary).toContain("굽이숲 수관");
-  });
+  // 「숲 벽·숲 기둥 낱개 거절 → density 안내」·「숲 벽 + density → 굽이숲 수관」 두 사례는 은퇴: 굽이숲 수관(forestGrove)은
+  // 숲마을(forest_harmony) 칩셋 전용 경로로 2026-10-07 저작권 정리 때 칩셋과 함께 지웠다(wildRouteTool.ts 주석).
 });

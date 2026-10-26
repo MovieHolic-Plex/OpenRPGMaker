@@ -135,6 +135,9 @@ function installFakeWindow(): () => void {
       },
       clearTimeout: globalThis.clearTimeout,
       setTimeout: globalThis.setTimeout,
+      // 패널이 띄우는 조수 상태 줄(aiStatusBar)이 1초 시계를 건다 — 이 시험은 시계를 보지 않으니 돌리지 않는다.
+      setInterval: () => 0,
+      clearInterval: () => undefined,
     },
   });
   return () => {

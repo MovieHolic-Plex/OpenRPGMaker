@@ -19,7 +19,7 @@ import { runTool } from "@/editor/tools/toolRunner";
 import type { ToolExecResult } from "@/editor/tools/types";
 import { createBlankProject } from "@/project/defaults";
 import type { GameMap, Project } from "@/project/types";
-import { startOnRetiredCombinedTown } from "./support/retiredEasyRpgTilesets";
+import { RETIRED_COMBINED_TOWN_TILESET_ID, withRetiredEasyRpgTilesets } from "./support/retiredEasyRpgTilesets";
 
 const AREA = { x: 2, y: 2, w: 12, h: 12 } as const;
 /** 2×2 활엽수 — 수관(upper) 2칸 + 밑동(lower) 2칸. 15:44 지시의 "2x2 나무" 그 자체. */
@@ -28,9 +28,9 @@ const TREE = "활엽수";
 const BOX = "나무 상자";
 
 function createProject(): { readonly project: Project; readonly map: GameMap } {
-  // 활엽수 2×2 문법·나무 상자 라벨과 그 통행 표는 합본 마을 칩셋의 것이다 — 정리 전 기본 프로젝트처럼 시작 맵을 그 칩셋에 둔다.
-  const context = { project: startOnRetiredCombinedTown(createBlankProject()) };
-  const created = runTool(context, "create_map", { id: "map_dense", name: "밀집 테스트", width: 20, height: 20 });
+  // 활엽수 2×2 문법·나무 상자 라벨과 그 통행 표는 합본 마을 칩셋의 것이다 — 옛 저장본처럼 그 정의를 되살리고 그 칩셋으로 맵을 만든다.
+  const context = { project: withRetiredEasyRpgTilesets(createBlankProject()) };
+  const created = runTool(context, "create_map", { id: "map_dense", name: "밀집 테스트", width: 20, height: 20, tilesetId: RETIRED_COMBINED_TOWN_TILESET_ID });
   expect(created.ok, created.summary).toBe(true);
   return { project: context.project, map: context.project.maps.map_dense };
 }

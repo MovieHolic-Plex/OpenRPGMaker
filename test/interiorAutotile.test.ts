@@ -63,6 +63,9 @@ describe("interior wall-frame autotile harness (Option B: no house wall-frame st
   // 크림 면은 dark-mass 렌더 대상은 아니지만 이웃 판정(isMass)에서는 벽으로 쳐야 누출이 없다.
   it("cream wall placed on a dark-mass wall cell does not bleed onto exterior void (오두막 (1,6) 회귀)", () => {
     const tileset = blankWithRetiredSheets().tilesets.easyrpg_chipset_interior;
+    // 천장 오토타일(harness-interior-house-v1-ceiling)은 공허 테두리를 일부러 다시 그린다 — 이 회귀는 어두운 벽 덩이(428/368)
+    // 누출만 보므로 천장 문법을 뺀다.
+    tileset.autotileGroups = (tileset.autotileGroups ?? []).filter((group) => group.id !== "harness-interior-house-v1-ceiling");
     const { map } = runInteriorRoomPipeline({
       mapId: "map_rp_hut_v1", name: "연습 · 오두막 (10×9)",
       width: 10, height: 9, wings: [{ x: 2, y: 4, w: 5, h: 3 }],

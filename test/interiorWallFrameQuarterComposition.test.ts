@@ -6,6 +6,15 @@ import { retiredEasyRpgTileset } from "./support/retiredEasyRpgTilesets";
 
 // 어두운 벽(366) 4분할 합성은 EasyRPG 실내 칩셋 전용이다 — 2026-10-07 정리 뒤 새 프로젝트에는 없으니 옛 저장본의 정의를 되살린다.
 const retiredInterior = () => retiredEasyRpgTileset("easyrpg_chipset_interior");
+/**
+ * 로드 정규화는 이 시트에 천장 오토타일(harness-interior-house-v1-ceiling, interiorCeilingAutotile.ts)도 심는다. 그 문법은 공허·천장 칸을
+ * 일부러 4분할로 그린다 — 아래 「통 타일은 4분할하지 않는다」 사례는 어두운 벽·벽틀 경로만 보므로 천장 문법을 뺀 시트로 잰다.
+ */
+const retiredInteriorWithoutCeiling = () => {
+  const tileset = retiredInterior();
+  tileset.autotileGroups = (tileset.autotileGroups ?? []).filter((group) => group.id !== "harness-interior-house-v1-ceiling");
+  return tileset;
+};
 
 type MapView = {
   readonly width: number;
@@ -157,7 +166,7 @@ describe("interior dark-wall quarter composition (Option B: store 366 only)", ()
   });
 
   it("house whole tiles (428/397/105/430/233/257) are never quarter-composed", () => {
-    const tileset = retiredInterior();
+    const tileset = retiredInteriorWithoutCeiling();
     for (const center of [428, 397, 105, 430, 233, 257, 258, 456, 457, 458, 396, 398, 426]) {
       expect(
         chipsetQuarterComposition(
@@ -171,7 +180,7 @@ describe("interior dark-wall quarter composition (Option B: store 366 only)", ()
   });
 
   it("does not invent quarters on deep void", () => {
-    const tileset = retiredInterior();
+    const tileset = retiredInteriorWithoutCeiling();
     expect(
       chipsetQuarterComposition(
         mapWithInteriorCorner({ center: 430, west: 426, south: 457, southWest: 456 }),

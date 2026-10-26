@@ -18,19 +18,26 @@ beforeEach(() => {
   restoreDom = installFakeDom();
   resetStructureKitsTabSession();
   // 앨범 계약은 합본 마을·EasyRPG 실내 칩셋을 겨냥한다 — 정리 전 빈 프로젝트처럼 그 정의와 합본 마을 시작 맵을 되살린다.
+  // 되살린 정의에는 로드 정규화가 심는 킷(실내 가구 카탈로그·버들항 내장 킷)이 있다. 이 시험들은 afterEach 가 그것을 지운
+  // 상태(등록 킷 0개)를 전제로 쓰였으므로 시작할 때도 같은 정리를 한다.
   store.replace(withRetiredCombinedTownMaps(createBlankProject()));
+  clearStructureKits();
 });
 
-afterEach(() => {
-  restoreDom?.();
-  restoreDom = undefined;
-  resetStructureKitsTabSession();
+function clearStructureKits(): void {
   store.update((project) => {
     for (const tileset of Object.values(project.tilesets)) {
       delete tileset.structureKits;
       delete tileset.scratchConceptBundles;
     }
   });
+}
+
+afterEach(() => {
+  restoreDom?.();
+  restoreDom = undefined;
+  resetStructureKitsTabSession();
+  clearStructureKits();
 });
 
 function createTestSectionKit(id: string, name: string, parts?: SectionStructureKitDef["parts"]): SectionStructureKitDef {
