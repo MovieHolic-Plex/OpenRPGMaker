@@ -19,3 +19,9 @@ describe("slow chasers (J77)", () => {
     expect(slowChasers(p)).toHaveLength(0);
   });
 });
+
+describe("slow chasers — exemptions", () => {
+  it("skips a chaser with an explicit approach style", () => {
+    expect(slowChasers(chaserProject({ type: "chase", speed: 3, frequency: 3, approachStyle: "lumber" }))).toHaveLength(0);
+  });
+});

@@ -264,9 +264,25 @@ export function unreachableCriticalEvents(project: Project): string[] {
     walk(page.commands, (cmd) => { const c = obj(cmd.condition); if (c?.kind === "switch" && c.switchId !== undefined) usedSwitches.add(String(c.switchId)); });
   }
   for (const ce of (project.commonEvents ?? []) as unknown as Obj[]) walk(ce.commands, (cmd) => { const c = obj(cmd.condition); if (c?.kind === "switch" && c.switchId !== undefined) usedSwitches.add(String(c.switchId)); });
+  // 계산된 착지(변수 좌표·변수 맵)로 들어오는 맵은 앵커를 다 알 수 없다 — 거짓 차단을 피해 그 맵은 보지 않는다. 대상 맵을 모르는 이동이 하나라도 있으면 전부 건너뛴다.
+  const computedLanding = new Set<string>();
+  let unknownTarget = false;
+  const scanTransfers = (node: unknown): void => {
+    if (Array.isArray(node)) { node.forEach(scanTransfers); return; }
+    const o = obj(node);
+    if (!o) return;
+    if (o.kind === "transfer") {
+      if (typeof o.mapId !== "string") unknownTarget = true;
+      else if (typeof o.x !== "number" || typeof o.y !== "number") computedLanding.add(o.mapId);
+    }
+    for (const v of Object.values(o)) if (v && typeof v === "object") scanTransfers(v);
+  };
+  for (const map of Object.values(project.maps)) for (const ev of map.events ?? []) scanTransfers(ev.pages);
+  scanTransfers(project.commonEvents ?? []);
+  if (unknownTarget) return [];
   const out: string[] = [];
   for (const map of Object.values(project.maps)) {
-    if (map.worldmapSource) continue;
+    if (map.worldmapSource || computedLanding.has(map.id)) continue;
     const critical = (map.events ?? []).flatMap((ev) => {
       const why: string[] = [];
       for (const page of (ev.pages ?? []) as unknown as Obj[]) {
