@@ -35,6 +35,7 @@ import { edgeCell, eventBeats, isInside, isOutdoor, oppositeSide, makeGameOn, or
 import { restoreEventFromBefore } from "./restoreEvent";
 import { pickStageFrames, stageFrameProject, type EventBuildResult } from "./events";
 import { rememberObjectPlan, takeObjectPlan, type DrawObjectResult } from "./drawObject";
+import { dressRoom } from "./builders/dressRoom";
 
 // 2026-10-23 5차: 고치기 3바퀴는 바퀴마다 다시 짓기+비평(20~35초)이라 던전 한 장에 200~250초가 들었다.
 // 속도 우선(6차)으로 1바퀴만 — 첫 비평의 major 를 한 번 고치고 남은 것은 보고한다.
@@ -209,7 +210,7 @@ function recordWrite(env: PiAssistantV2Env, run: RecordingBuildRun, toolCallId: 
 function nextStep(seen: Seen, rounds: number): string {
   const bad = seen.checks.filter((c) => !c.ok).length + seen.critics.reduce((n, v) => n + v.majors.length, 0);
   if (!bad && !seen.critics.some((v) => v.problem)) return "통과 — 비평 major 0, 기계 검사 통과. 다른 요청 부분이 남았으면 이어서, 아니면 사용자에게 보고한다.";
-  const furniture = "놓인 가구 하나가 문·길을 막거나 방향이 틀린 major 는 move_object(그 칸 at → to·face·remove)로 고친다 — 바퀴를 쓰지 않는다.";
+  const furniture = "놓인 가구 하나가 문·길을 막거나 방향이 틀린 major 는 move_object(그 칸 at → to·face·remove)로 고친다. 방이 비었다·빈 바닥이 많다는 문제는 dress_room(mapId, at: 그 방 바닥 한 칸, purpose: 방 쓰임)으로 채운다 — 둘 다 바퀴를 쓰지 않는다.";
   if (rounds >= V2_MAX_REPAIR_ROUNDS) return `고치기 상한(${V2_MAX_REPAIR_ROUNDS}바퀴)에 닿았다 — 다시 짓는 고치기는 더 하지 않는다. ${furniture} 그 밖의 남은 문제는 사용자에게 그대로 보고한다.`;
   return `문제 ${bad}건 — 고칠 수 있으면 edit_place 패치(구역 더하기·주인공 물건 near 좌표·크기·variant·dressing)로 한 번에 고친다(남은 바퀴 ${V2_MAX_REPAIR_ROUNDS - rounds}). ${furniture} 패치로 못 고치는 것(그림이 없는 물건 등)은 보고에 적는다.`;
 }
@@ -642,6 +643,27 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
   };
 
   // ───── move_object: 놓인 가구 하나 옮기기·돌리기·빼기(손 도트 실내). 다시 짓지 않으므로 고치기 바퀴를 쓰지 않는다 ─────
+  const dressBudget = new Map<string, number>();
+  const DRESS_ROOM_LIMIT = 4;
+  const dressRoomVerb: PiToolShape = {
+    name: "dress_room", label: "방 채우기", concurrency: "exclusive",
+    description: "이미 지은 실내 맵의 방 하나를 그 쓰임(purpose, 예: 교장실·교실·음악실·복도·보건실) 가구로 채운다. 「방이 비었다」「빈 바닥이 많다」「휑하다」 결함은 이것으로 고친다 — 물건을 하나씩 stamp 하지 않는다. at 은 그 방 바닥 한 칸. 칩셋에서 쓰임에 맞는 가구를 골라 벽을 등지게 놓고, 길·이벤트를 막는 자리는 되돌린다. 방의 나머지는 그대로이고 고치기 바퀴를 쓰지 않는다(맵당 4번).",
+    parameters: { type: "object", properties: {
+      mapId: { type: "string" }, at: POINT, purpose: { type: "string", description: "방의 쓰임 — 예: 교장실, 교실, 음악실, 복도" },
+    }, required: ["mapId", "at", "purpose"] },
+    async execute(id, params) {
+      const p = params as { mapId: string; at: { x: number; y: number }; purpose: string };
+      if (!env.ctx.project.maps[p.mapId]) return text({ ok: false, summary: `맵 ${p.mapId} 이 없다` });
+      const used = dressBudget.get(p.mapId) ?? 0;
+      if (used >= DRESS_ROOM_LIMIT) return text({ ok: false, summary: `${p.mapId} 의 방 채우기 상한(${DRESS_ROOM_LIMIT}번)에 닿았다 — 남은 문제를 사용자에게 보고한다.` });
+      if (!p.at || typeof p.at.x !== "number" || typeof p.at.y !== "number") return text({ ok: false, summary: "at 에 그 방 바닥 한 칸 {x,y} 을 준다" });
+      const from = run.calls.length;
+      const result = dressRoom(run, p.mapId, p.at, String(p.purpose ?? ""));
+      if (result.placed.length) dressBudget.set(p.mapId, used + 1);
+      return finishContent(id, "dress_room", params, { ok: result.ok, mapIds: [p.mapId], summary: result.summary, warnings: [], missingArt: [], calls: run.calls.slice(from) });
+    },
+  };
+
   const moveBudget = new Map<string, number>();
   const MOVE_OBJECT_LIMIT = 6;
   const moveObject: PiToolShape = {
@@ -904,7 +926,7 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
     }
     return result;
   } });
-  const verbs = [makePlace, ...(makeGameOn() && wantsMakeGame(String(task ?? "")) ? [makeGame] : []), editPlace, moveObject, addPeople, addEvent, addScene, ...(wantsPuzzle(String(task ?? "")) ? [authorPuzzleChain] : []), sealLockedRoomVerb, drawObjectVerb, placeObject, inspect, restoreEvent, ...(helpersOn() ? [askHelpers] : []), askUser].map((tool) => guard(flattenWrapperTool(tool)));
+  const verbs = [makePlace, ...(makeGameOn() && wantsMakeGame(String(task ?? "")) ? [makeGame] : []), editPlace, moveObject, dressRoomVerb, addPeople, addEvent, addScene, ...(wantsPuzzle(String(task ?? "")) ? [authorPuzzleChain] : []), sealLockedRoomVerb, drawObjectVerb, placeObject, inspect, restoreEvent, ...(helpersOn() ? [askHelpers] : []), askUser].map((tool) => guard(flattenWrapperTool(tool)));
   // 게임 요소(퀘스트·아이템·전투·파티) 요청이면 v1 게임 도구를 덧붙인다 — 기록은 도구 묶음이 env.record 로 직접 남긴다.
   const t = String(task ?? "");
   // 스토어 음악 카드(사용자가 듣고 고른다)를 띄웠으면 사용자 질문과 같다 — 끝맺음 관문이 «음악을 안 걸었다»며 넣기를 재촉하지 않게 한다.

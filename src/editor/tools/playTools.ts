@@ -7,6 +7,7 @@ import type { Project } from "@/project/types";
 import type { ToolDefinition, ToolExecResult } from "./types";
 import { ToolError } from "./types";
 import { COORD_SCHEMA } from "./schemaShapes";
+import { isPassable } from "@/project/collision";
 
 const playWalkthrough: ToolDefinition = {
   name: "play_walkthrough",
@@ -169,6 +170,28 @@ export function expandRepeatedMoveSteps(args: unknown): { input: unknown; expand
   return expanded.length > 0 ? { input: { ...(args as object), steps }, expanded } : { input: args, expanded };
 }
 
+/**
+ * 주인공을 벽·가구 속에 놓는 start/set 칸 — 2026-10-26 j80: 추격 시험 셋이 주인공을 벽 덩이 (28~30,22) 안에 놓아
+ * 추격자가 닿지 못했고 「게임 오버: 기대 true, 실제 false」만 보여 추격이 고장 난 것처럼 보였다(바로 옆 걸을 칸에서는 잡혔다).
+ */
+function unwalkablePlacements(project: Project, args: { mapId: string; start: { x: number; y: number }; steps: readonly unknown[] }): string[] {
+  const out: string[] = [];
+  let mapId = args.mapId;
+  const check = (where: string, x: number, y: number) => {
+    const map = project.maps[mapId];
+    if (!map || !Number.isInteger(x) || !Number.isInteger(y)) return;
+    if (x < 0 || y < 0 || x >= map.width || y >= map.height || !isPassable(project, map, x, y)) out.push(`${where} 의 주인공 칸 (${x},${y}) 은 걸을 수 없는 칸(벽·가구)이다 — 그 자리에서는 이동·추격·접촉 결과가 실제 플레이와 다르다. 걸을 수 있는 칸에 놓고 다시 시험한다.`);
+  };
+  check("start", args.start?.x, args.start?.y);
+  args.steps.forEach((step, i) => {
+    const s = step as { kind?: string; mapId?: string; x?: number; y?: number };
+    if (s?.kind !== "set") return;
+    if (typeof s.mapId === "string") mapId = s.mapId;
+    if (typeof s.x === "number" && typeof s.y === "number") check(`스텝 ${i}(set)`, s.x, s.y);
+  });
+  return out;
+}
+
 const runSceneTestTool: ToolDefinition = {
   name: "run_scene_test",
   description:
@@ -240,8 +263,10 @@ const runSceneTestTool: ToolDefinition = {
     const problem = sceneTestInputProblem(args);
     if (problem || !isSceneTestInput(args)) throw new ToolError(`Malformed scene test input: ${problem}`, { code: "invalid-scene-test" });
     const result = runSceneTest(project, args);
+    const unwalkable = unwalkablePlacements(project, args);
     return {
-      ...(flattened.length + split.length + normalized.length + expanded.length + fixes.length > 0 ? { warnings: [
+      ...(flattened.length + split.length + normalized.length + expanded.length + fixes.length + unwalkable.length > 0 ? { warnings: [
+        ...unwalkable,
         ...fixes,
         ...(flattened.length > 0 ? [`expect 스텝 ${flattened.join(", ")} 의 { kind:"expect", expect:{…} } 를 { kind:"expect", …} 로 펼쳐 실행했다 — 단언 필드는 스텝에 바로 쓴다.`] : []),
         ...(split.length > 0 ? [`interact 스텝 ${split.join(", ")} 의 to/adjacent 를 앞 스텝 {kind:"walk",to,adjacent:true} 로 나눠 실행했다 — 걷기와 조사는 두 스텝이다(스텝 번호가 하나씩 밀린다).`] : []),
@@ -250,7 +275,7 @@ const runSceneTestTool: ToolDefinition = {
       ] } : {}),
       summary: result.ok
         ? `scene test 성공 (${result.stepsRun}/${result.totalSteps} 스텝)`
-        : `scene test 실패: 스텝 ${result.failedStepIndex} — ${result.failureReason}`,
+        : `scene test 실패: 스텝 ${result.failedStepIndex} — ${result.failureReason}${unwalkable.length ? ` (주의: ${unwalkable[0]})` : ""}`,
       data: {
         ok: result.ok,
         stepsRun: result.stepsRun,
