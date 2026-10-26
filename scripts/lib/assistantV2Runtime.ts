@@ -7,7 +7,7 @@ import type { PiAgentDoneEvent, PiAgentEvent, PiAgentRequest } from "../../src/a
 import { buildV2SystemPrompt } from "../../src/ai/v2/prompt.ts";
 import { createV2Tools, V2Session, v2FinishGate } from "../../src/ai/v2/verbs.ts";
 import { shipBlockers } from "../../src/ai/v2/shipChecks.ts";
-import { reviewVqaRound, vqaReviewerCandidates, vqaClean, vqaFixRetry, vqaFollowUp, vqaLeftoverInstruction, vqaShotPlan, vqaReviewerLabel, vqaShouldContinue, vqaSummary, wantsWholeGame, VQA_MAX_ROUNDS, type VqaReviewerPick, type VqaRound, type VqaShot } from "../../src/ai/v2/vqa.ts";
+import { reviewVqaRound, vqaReviewerCandidates, vqaClean, vqaFixBrief, vqaFixRetry, vqaFollowUp, vqaLeftoverInstruction, vqaShotPlan, vqaReviewerLabel, vqaShouldContinue, vqaSummary, wantsWholeGame, VQA_MAX_ROUNDS, type VqaReviewerPick, type VqaRound, type VqaShot } from "../../src/ai/v2/vqa.ts";
 import { familyOfProviderId } from "../../src/ai/assistantRoles.ts";
 import type { PiAssistantV2Env } from "../../src/ai/v2/env.ts";
 import { adviseTurn, advisorFollowUp, withShipBlockers, advisorSummary, compactToolLog, summarizeProjectDiff, type AdvisorToolCall, type AdvisorVerdict } from "../../src/ai/v2/advisor.ts";
@@ -134,7 +134,8 @@ export async function runAssistantV2(request: PiAgentRequest, options: RunPiAgen
         fixRetried = true;
         env.emit({ type: "execution_status", name: "v2.vqa.fix_retry", ok: false, summary: `화면 검수 ${previous.round}/${VQA_MAX_ROUNDS} 고치기 차례에 도구 0회 — 판으로 세지 않고 결함 ${previous.defects.length}건을 다시 주며 도구 호출을 강제`, data: { round: previous.round, defects: previous.defects.length } });
         env.requireToolNextTurn?.();
-        return vqaFixRetry(previous);
+        env.freshContextNextTurn?.();
+        return vqaFixRetry(previous, vqaFixBrief(env.request.task, env.ctx.project, previous.defects, draft));
       }
       fixFromCalls = undefined;
       vqaPhase = "final-check";
@@ -154,8 +155,11 @@ export async function runAssistantV2(request: PiAgentRequest, options: RunPiAgen
     const noRenderPath = !env.render && !env.renderArt;
     if (!noRenderPath && !vqaClean(round) && vqaShouldContinue(vqaRounds)) {
       // 검수 못 한 판(결함 0, problem)은 고칠 것이 없다 — 도구 강제·0회 감시는 결함이 있는 판에만.
-      if (round.defects.length) { fixFromCalls = calls.length; env.requireToolNextTurn?.(); }
-      return vqaFollowUp(round);
+      if (!round.defects.length) return vqaFollowUp(round);
+      fixFromCalls = calls.length;
+      env.requireToolNextTurn?.();
+      env.freshContextNextTurn?.();
+      return vqaFollowUp(round, vqaFixBrief(env.request.task, env.ctx.project, round.defects, draft));
     }
     // 결함이 남은 채 끝나면 조수가 최종 보고에 남은 목록을 쓰게 한 번 더 돌린다(고치지 말고 정직하게). 그 보고는 검토자가 실제 변경에 대어 본다.
     if (vqaClean(round)) { vqaPhase = "done"; return undefined; }

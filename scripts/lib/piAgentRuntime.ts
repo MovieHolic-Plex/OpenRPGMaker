@@ -870,9 +870,12 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   } : undefined;
   // 화면 검수 고치기 차례: 다음 지시의 첫 모델 호출 하나만 도구 호출을 강제한다(아래 Agent 의 getToolChoice 가 한 번 쓰고 내린다).
   let forceToolTurn = false;
+  // 다음 후속 지시 앞에서 대화 기록을 비운다(J78) — 아래 v2 후속 고리가 한 번 쓰고 내린다.
+  let freshContextNext = false;
   const v2Env: PiAssistantV2Env | undefined = options.v2 ? {
     ctx, request, emit, record: recordCall,
     requireToolNextTurn: () => { forceToolTurn = true; },
+    freshContextNextTurn: () => { freshContextNext = true; },
     checkpoint: (label: string) => request.applyMode !== "step" ? checkpoint(label, label, options.signal) : Promise.resolve(),
     sideChat: async (messages, signal) => {
       const reply = await eventAssistChat(null, { messages, ...(signal ?? options.signal ? { signal: signal ?? options.signal } : {}) });
@@ -1320,6 +1323,13 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
     for (let round = 0; options.v2?.afterMain && v2Env && round < (options.v2?.maxRounds ?? 2) && !fatal && !rejected && !options.signal?.aborted && turns < maxTurns; round++) {
       const followUp = await options.v2.afterMain(v2Env, round);
       if (!followUp || fatal || rejected || options.signal?.aborted) break;
+      if (freshContextNext) {
+        freshContextNext = false;
+        // 로컬 CLI 는 새 대화로, Pi 코어는 기록을 비운다(시스템 지시·도구는 그대로). 후속 글이 요청·결함·맵 요약을 스스로 담는다.
+        if (localLoop) await localLoop.resetSession();
+        else (agent as unknown as { clearMessages(): void }).clearMessages();
+        emit({ type: "execution_status", name: "v2.context.reset", ok: true, summary: "고치기 차례 — 앞 대화 기록을 비우고 결함·맵 요약만으로 시작" });
+      }
       await promptResuming(followUp);
     }
     // 인게임 컷신은 조수의 보고가 아니라 객관 측정 + 독립 판정자로 검증한다(openingProduction.recordCutsceneReview).
