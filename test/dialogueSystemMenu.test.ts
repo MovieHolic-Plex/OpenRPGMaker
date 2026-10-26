@@ -65,7 +65,7 @@ describe("options screen", () => {
   const ids = (detail: ReturnType<typeof createPlayerOptionsDetail>) => detail.entries.map((entry) => entry.testId);
   it("is exactly the old screen for a plain project", () => {
     const detail = createPlayerOptionsDetail(undefined, createBlankProject());
-    expect(ids(detail)).toEqual(["player-option-bgm-down", "player-option-bgm-up", "player-option-se-down", "player-option-se-up", "player-option-voice-down", "player-option-voice-up", "player-option-text-speed", "player-option-menu-motion"]);
+    expect(ids(detail)).toEqual(["player-option-bgm-down", "player-option-bgm-up", "player-option-se-down", "player-option-se-up", "player-option-voice-down", "player-option-voice-up", "player-option-text-speed", "player-option-always-run", "player-option-menu-motion"]); // 달리기 고정은 f8adba2eac(모바일 터치 감각)에서 더해졌다
     expect(detail.title).toBe("설정");
     expect(detail.entries.find((entry) => entry.testId === "player-option-text-speed")?.value).toBe("보통");
     expect(createPlayerOptionsDetail().entries.length).toBe(detail.entries.length);
