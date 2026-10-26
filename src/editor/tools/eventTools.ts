@@ -26,6 +26,7 @@ import { passageMarkForTile } from "@/project/tilesetPassage";
 import { roleCapabilities } from "@/project/tileRoles";
 import { isSeason, isTimePhase, resolveTimeSystem, type Season } from "@/project/gameTime";
 import { validateConditionShape, validateShopStock } from "@/project/io/shapeCommandFields";
+import { validateTrigger } from "@/project/io/shapeReferenceFields";
 import { collectResourceIds } from "@/project/io/resourceReferenceValidation";
 import { countLimitedRuntimeSupportCommandsForEvent } from "@/project/lint/projectLint";
 import { genId } from "@/util/id";
@@ -827,6 +828,9 @@ export function assertEventShape(event: GameEvent, warnings?: string[], supplied
       }
       page.conditions.forEach((condition, index) => validateConditionShape(`${event.id}.${page.id}.conditions[${index}]`, condition));
     }
+    // 발명한 trigger(예: "autorun")는 저장되면 어느 페이지도 실행되지 않는다 — 허용 목록을 실어 바로 돌려보낸다.
+    if (event.trigger !== undefined) validateTrigger(`${event.id}.trigger`, event.trigger);
+    for (const page of event.pages ?? []) if (page.trigger !== undefined) validateTrigger(`${event.id}.${page.id}.trigger`, page.trigger);
     normalizeEventCommandArrays(event, warnings, supplied);
     validateLowLevelCommandArray(`${event.id}.commands`, event.commands);
     for (const page of event.pages ?? []) {
