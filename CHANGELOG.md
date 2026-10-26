@@ -5,6 +5,13 @@
 
 <!-- releases -->
 
+## 0.346.9 — 2026-10-26
+
+### 수정
+
+- **battle** — announce residual knockouts on the upkeep hit (#3592) (`9ccbad8`)
+- **ai** — drop coordinate wrapper keys after copying them into tool arguments (#3591) (`08b3fe3`)
+
 ## 0.346.8 — 2026-10-26
 
 ### 수정
