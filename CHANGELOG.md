@@ -5,6 +5,20 @@
 
 <!-- releases -->
 
+## 0.350.6 — 2026-10-27
+
+### 수정
+
+- **ci** — 주의 표시 색을 하드코딩 hex 대신 --warning 토큰으로, ai-side-threads 표면 소유 선언 (#3664) (`f7f96ba`)
+
+### 테스트
+
+- **ci** — timeout batch to-01 — explicit suite timeouts, unstick export/graft boots; 26 files leave the baseline (#3663) (`1b9d3ef`)
+
+### CI
+
+- prune stale baseline entries (ci-full 40318900099) + storeEventDraftPreserve budget (#3662) (`55b08ab`)
+
 ## 0.350.5 — 2026-10-26
 
 ### 수정
