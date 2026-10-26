@@ -15,6 +15,8 @@ import { lookMismatches, oversizedSprites, pristineFantasyHero, titleBackdropMis
 import { dryBoats, dryBridges, placementProblems, type PlacementProblem } from "./placementRules";
 import { offPurposeProps } from "./roomPurpose";
 import { unsafeSpawnLines } from "@/project/chaserSpawnSafety";
+import { npcMoveDurationMs, npcPageMoveIntervalMs, PLAYER_WALK_STEP_MS } from "@/project/characterMotion";
+import { fieldApproachRecipe } from "@/project/fieldApproachStyle";
 import { projectCanLoseHp, resolvedHudWidgets } from "@/project/fieldHud";
 
 type Obj = Record<string, unknown>;
@@ -274,6 +276,30 @@ export function skippableClues(project: Project): string[] {
         break;
       }
     });
+  }
+  return out;
+}
+
+/**
+ * 걸어 도망치는 주인공을 못 따라오는 추격자(J77, 2026-10-26 저택 argon-high: patch_event_page 가 frequency 5 를 넣어
+ * 한 칸 160ms 걸음 + 240ms 쉼 = 400ms — 주인공 걷기 160ms/칸의 40% 속도). 한 칸 걸음이 주인공 걸음보다 느리거나,
+ * 걸음 사이 쉼이 최소(80ms, frequency 8)보다 길면 잡을 수 없다. 다가오는 방식(approachStyle)이 있으면 그 표를 쓴다.
+ * 전투로 이어지는 필드 적(battleProcessing)은 보지 않는다 — 잡히면 끝나는 위협만.
+ */
+export function slowChasers(project: Project, changedIds?: ReadonlySet<string>): string[] {
+  const out: string[] = [];
+  for (const map of Object.values(project.maps)) for (const ev of map.events ?? []) {
+    if (changedIds && !changedIds.has(ev.id)) continue;
+    for (const page of (ev.pages ?? []) as unknown as Obj[]) {
+      const mv = obj(page.movement);
+      if (mv?.type !== "chase" || JSON.stringify(page.commands ?? []).includes("battleProcessing")) continue;
+      const recipe = fieldApproachRecipe(mv.approachStyle);
+      const stepMs = recipe ? recipe.stepMs : npcMoveDurationMs(Number(mv.speed ?? 3));
+      const pauseMs = recipe ? recipe.pauseMs / Math.max(1, recipe.burst) : npcPageMoveIntervalMs({ frequency: Number(mv.frequency ?? 3), ...(typeof mv.moveIntervalMs === "number" ? { moveIntervalMs: mv.moveIntervalMs } : {}) });
+      if (stepMs <= PLAYER_WALK_STEP_MS && pauseMs <= 80) continue;
+      out.push(`「${ev.name || ev.id}」(${ev.id}) 추격자가 한 칸에 ${Math.round(stepMs + pauseMs)}ms(걸음 ${stepMs}ms + 쉼 ${Math.round(pauseMs)}ms${recipe ? ` · 방식 ${String(mv.approachStyle)}` : ` · speed ${String(mv.speed ?? 3)}·frequency ${String(mv.frequency ?? 3)}`}) — 주인공 걷기(${PLAYER_WALK_STEP_MS}ms/칸)를 못 따라와 걸어서 도망치면 잡히지 않는다`);
+      break;
+    }
   }
   return out;
 }
@@ -615,6 +641,8 @@ export function gameContentProblems(before: Project, after: Project, task: strin
       const dead = guessable ? deadClues(after, changedIds) : [];
       if (dead.length) problems.push(`[게임 검사 퍼즐] ${dead.slice(0, 3).join(" / ")} — 퍼즐 이벤트가 그 스위치를 보지 않아 단서를 안 읽어도 풀린다. 퍼즐 이벤트의 첫 페이지는 「뭔가 단서가 필요하다」 대사만 두고, 정답 고르기·보상은 그 단서 스위치 조건의 다음 페이지로 옮긴다.`);
     }
+    const slow = slowChasers(after, changedIds);
+    if (slow.length) problems.push(`[게임 검사 위협] ${slow.slice(0, 3).join(" / ")}. 추격 페이지 movement 를 speed 6 이상·frequency 8(또는 approachStyle 을 빼거나 dash·swoop)로 둔다 — make_chase_scene 기본값(speed 6·frequency 8)이 그 값이다. 느린 추격이 의도면(숨바꼭질형) 보고에 적는다.`);
     const chasers = vanishingChasers(after).filter((line) => [...changedIds].some((id) => line.includes(`(${id})`)));
     if (chasers.length) problems.push(`[게임 검사 위협] ${chasers.slice(0, 3).join(" / ")}. 숨기가 «이번 한 번» 지나가게 하는 것이면 그 스위치를 다시 끈다(예: 옷장에서 나온 뒤 기다렸다 setSwitch false, 또는 맵을 나갈 때), 영영 사라지는 것이 요청이면 보고에 적는다.`);
   }
