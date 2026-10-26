@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, it } from "vitest";
 import { createBlankProject } from "@/project/defaults";
+import { ProjectPackageError, projectWithInlineUploadedMedia } from "@/project/package";
 import { setUploadedAssetResolver } from "@/project/persistence/assetAccessors";
 import { createStandaloneHtmlExport } from "@/project/standaloneExport";
 import { STANDALONE_PROJECT_NODE_ID } from "@/project/standaloneHtml";
@@ -60,5 +61,34 @@ describe("standalone export with separated media", () => {
 
     expect(html.slice(html.indexOf(`id="${STANDALONE_PROJECT_NODE_ID}"`))).toContain("data:image/gif;base64,R0lGOD");
     expect(asked).toBe(0);
+  });
+
+  it("ref 를 읽지 못하면 깨진 문서를 만들지 않고 소재 이름만 알린다", async () => {
+    const project = createBlankProject();
+    const hostPath = "C:/private/projects/secret/assets/missing.png";
+    project.assets.uploaded.missing_ref = { id: "missing_ref", name: "없는 그림", kind: "picture", ref: REF, meta: {} };
+    setUploadedAssetResolver({
+      url: () => "",
+      bytes: async () => {
+        throw new Error(`ENOENT: ${hostPath}`);
+      },
+    });
+
+    const error = await createStandaloneHtmlExport(project, { fetchBytes: stubFetchBytes() }).then(
+      () => { throw new Error("export succeeded"); },
+      (caught: unknown) => caught,
+    );
+    const packaged = await projectWithInlineUploadedMedia(project).then(
+      () => { throw new Error("package inlining succeeded"); },
+      (caught: unknown) => caught,
+    );
+
+    expect(error).toBeInstanceOf(ProjectPackageError);
+    expect(packaged).toBeInstanceOf(ProjectPackageError);
+    expect((error as ProjectPackageError).message).toContain("missing_ref");
+    expect((packaged as ProjectPackageError).message).toBe((error as ProjectPackageError).message);
+    expect(String(error)).not.toContain(hostPath);
+    expect(String(error)).not.toContain("ENOENT");
+    expect((error as ProjectPackageError).cause).toBeInstanceOf(Error);
   });
 });

@@ -19,8 +19,8 @@ const encoder = new TextEncoder();
 const decoder = new TextDecoder();
 
 export class ProjectPackageError extends Error {
-  constructor(message: string) {
-    super(message);
+  constructor(message: string, options?: { cause?: unknown }) {
+    super(message, options);
     this.name = "ProjectPackageError";
   }
 }
@@ -32,6 +32,7 @@ export function projectPackageFileName(project: Project): string {
 /**
  * 데스크톱(Electron) 저장소는 업로드·스토어 에셋을 `assets/<sha256>.<ext>` 에 두고 문서에는 `ref` 만 남긴다.
  * `.oprn` 패키지나 단일 파일로 내보낼 때는 다른 폴더·웹에서도 열리도록 `ref` 바이트를 읽어 `dataUrl` 로 인라인한다.
+ * 파일을 읽지 못하면 바이트 없이 성공으로 끝내지 않고, 소재 id 를 적어 실패한다.
  */
 export async function projectWithInlineUploadedMedia(project: Project): Promise<Project> {
   const uploaded = project.assets.uploaded;
@@ -47,8 +48,12 @@ export async function projectWithInlineUploadedMedia(project: Project): Promise<
       const inlined: UploadedAsset = { ...asset, dataUrl: encodeDataUrlBytes(bytes, asset.ref.mime) };
       delete inlined.ref;
       nextUploaded[id] = inlined;
-    } catch {
-      nextUploaded[id] = asset;
+    } catch (error) {
+      // 못 읽은 ref 를 남기면 .oprn·실행형 HTML 이 성공으로 끝나고, 연 쪽에는 그 소재 바이트가 없다.
+      throw new ProjectPackageError(
+        `업로드한 소재를 읽지 못해 내보낼 수 없습니다: ${shownUploadedAssetId(id)}`,
+        { cause: error },
+      );
     }
   }
   return { ...project, assets: { ...project.assets, uploaded: nextUploaded } };
@@ -99,6 +104,13 @@ function createProjectPackageEntries(project: Project): readonly ZipEntry[] {
     jsonEntry("maps/mapTree.json", project.mapTree),
     ...maps.map((map) => jsonEntry(`maps/${safeFileName(map.id)}.json`, map)),
   ];
+}
+
+/** 토스트에 보이는 소재 id. 읽기 오류는 프로젝트 폴더 경로를 담을 수 있어 `cause` 에만 둔다. */
+function shownUploadedAssetId(id: string): string {
+  const compact = id.replace(/[\u0000-\u001f]+/g, " ").replace(/\s+/g, " ").trim();
+  const shown = compact.length > 120 ? `${compact.slice(0, 120)}…` : compact;
+  return shown.length > 0 ? shown : "(이름 없음)";
 }
 
 function readPackageEntry(bytes: Uint8Array, name: string): Uint8Array | null {
