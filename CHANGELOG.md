@@ -5,6 +5,13 @@
 
 <!-- releases -->
 
+## 0.346.10 — 2026-10-26
+
+### 수정
+
+- **desktop** — close the project store if the window closes while it is opening (#3595) (`bdac1a2`)
+- **player** — name the inn window and speak its cure and rest lines (#3594) (`ccf52c8`)
+
 ## 0.346.9 — 2026-10-26
 
 ### 수정
