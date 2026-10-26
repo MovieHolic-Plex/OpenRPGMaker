@@ -1337,6 +1337,8 @@ function snapshotBodyScroll(body: HTMLElement): readonly BodyScrollEntry[] {
   const ordinals = new Map<string, number>();
   const entries: BodyScrollEntry[] = [];
   for (const node of Array.from(body.querySelectorAll<HTMLElement>("*"))) {
+    // 제 스크롤을 스스로 정하는 목록(예: 몬스터 종족)은 되돌리지 않는다 — 선택 행 보이기로 0 이 된 뜻을 덮는다.
+    if (node.dataset?.scrollOwner === "self") continue;
     const top = node.scrollTop || 0;
     const left = node.scrollLeft || 0;
     if (top <= 0 && left <= 0) continue;

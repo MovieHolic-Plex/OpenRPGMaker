@@ -133,6 +133,8 @@ export function renderMonsterSpeciesTab(host: HTMLElement, rerender: () => void)
   });
 
   const rowsHost = list.querySelector<HTMLElement>(".db-ws-list")!;
+  // 이 목록은 제 스크롤(선택 행 보이기 포함)을 스스로 정한다 — 패널의 일반 스크롤 복원이 덮지 않게 한다.
+  rowsHost.dataset.scrollOwner = "self";
   const count = list.querySelector<HTMLElement>(".db-ws-count")!;
   // Filtering only updates the list, count and notice. The mounted inspector owns
   // unsaved controls, skill-row identities, preview level and its scroll position.
