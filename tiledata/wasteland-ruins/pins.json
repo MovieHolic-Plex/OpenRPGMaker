@@ -1,7 +1,7 @@
 {
 "version": 1,
 "tilesPerRow": 48,
-"count": 2766,
+"count": 2776,
 "cells": {
 "dirt-a/0.0": 1,
 "dirt-b/0.0": 2,
@@ -2767,6 +2767,16 @@
 "market-shelter/2.2": 2762,
 "market-shelter/0.3": 2763,
 "market-shelter/1.3": 2764,
-"market-shelter/2.3": 2765
+"market-shelter/2.3": 2765,
+"husk-b/0.4": 2766,
+"husk-b/1.4": 2767,
+"husk-b/2.4": 2768,
+"husk-b/3.4": 2769,
+"husk-b/4.4": 2770,
+"husk-b/0.5": 2771,
+"husk-b/1.5": 2772,
+"husk-b/2.5": 2773,
+"husk-b/3.5": 2774,
+"husk-b/4.5": 2775
 }
 }

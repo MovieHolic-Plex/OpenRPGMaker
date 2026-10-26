@@ -818,6 +818,7 @@ def _ap_tex(r62=False):
     """128×128 이음 결 T(r52): 2~4화소 골재 덩이마다 한 단 — 어두운 숯빛 524b49 가 주인(약 63%), 가운데 단 68605e 덩이 약 25%, 밝은 7b7270 덩이 약 7%,
     짙은 타르 덩이 3d4b51 약 5%. 닳은 자리(주기 128)는 대비를 낮게만 바꾼다(줄무늬·판 전체 기울기 없음). 낱화소 소금·후추 없음 — 평평한 5×5 창은 2화소 낟알로 깬다.
     밝은 골재 8d8482 는 포아송(서로 18 이상) 2화소 알 14개."""
+    if not r62: return _ap_tex_calm()
     B3 = blobs(AP, 1871, 3)
     keys = sorted({v[0] for v in B3.values()}, key=lambda k: hsh(k[0], k[1], 1877))
     R = {k: i / len(keys) for i, k in enumerate(keys)}
@@ -851,6 +852,32 @@ def _ap_tex(r62=False):
     pts = []
     for k in range(6000):
         if len(pts) >= (14 if r62 else 5): break          # r63: 밝은 골재 14 → 5
+        x = h2(k, 1, 1885) % AP; y = h2(k, 2, 1885) % AP
+        if all(min(abs(x - a), AP - abs(x - a)) ** 2 + min(abs(y - b), AP - abs(y - b)) ** 2 >= 324 for a, b in pts): pts.append((x, y))
+    for x, y in pts:
+        T[(x, y)] = K('conc', 4); T[((x + 1) % AP, y)] = K('asph', 6)
+    return T
+
+
+def _ap_tex_calm():
+    """r65 고요한 아스팔트 결(주기 128): 버들항 길처럼 거의 한 단 바탕(TAR) 위 낱화소 알 결만 — 덩이·자갈 없음.
+    알 밀도는 32화소 흐름으로 8~18% 를 오가고(밝은 알 TAR_HI 가 대부분), 밝은 알 바로 아래는 넷에 하나 짙은 그늘 알, 드문 타르 점 1%, 밝은 골재 5개.
+    검수(r63): 2~4화소 골재 덩이 17% 가 «가장 시끄러운 바닥»이었다."""
+    T = {}
+    # r65 관문: 8~18% 세 단은 «명암 3단·정보량 낮음» — 알 12~22%, 밝은 알 중 여섯에 하나는 한 단 더 밝게(asph 6), 짙은 알 두 단(타르 점·금빛 그늘), 알 넷에 하나는 2화소.
+    dens = lambda x, y: 12 + int(wrapnoise(x, y, 1911, 32, AP) * 10)
+    for y in range(AP):
+        for x in range(AP):
+            r = h2(x, y, 1913) % 100
+            col = TAR
+            if r < dens(x, y): col = K('asph', 6) if h2(x, y, 1919) % 6 == 0 else TAR_HI
+            elif h2((x - 1) % AP, y, 1913) % 100 < dens((x - 1) % AP, y) and h2(x - 1, y, 1921) % 4 == 0: col = TAR_HI
+            elif h2(x, (y - 1) % AP, 1913) % 100 < dens(x, (y - 1) % AP) and h2(x, y, 1915) % 3 == 0: col = AP_DARK
+            elif h2(x, y, 1917) % 60 == 0: col = TAR_LO
+            T[(x, y)] = col
+    pts = []
+    for k in range(6000):
+        if len(pts) >= 5: break
         x = h2(k, 1, 1885) % AP; y = h2(k, 2, 1885) % AP
         if all(min(abs(x - a), AP - abs(x - a)) ** 2 + min(abs(y - b), AP - abs(y - b)) ** 2 >= 324 for a, b in pts): pts.append((x, y))
     for x, y in pts:
@@ -983,14 +1010,14 @@ def ap_board(lay, marks=(), r62=False):
 def ap_sample(_=0):
     """표본: 교차로·T·굽이·막다른 길·외딴 칸·2×2 판·넓은 판 + 1칸 폭·3칸 폭 12칸 직선(가로·세로).
     r63: 길은 r62 판 그대로 굽는다(고요하게 다시 그린 판은 검수자가 «여전히 가장 시끄러운 바닥»으로 FAIL — 다음 판 과제). 표본도 r62 바탕."""
-    return ap_board(AP_LAYOUT, r62=True)
+    return ap_board(AP_LAYOUT)
 
 
 piece('asphalt-ph', '금 간 아스팔트 (위상 오토타일)', APH * APH, 16, TERRAIN,
       en='old asphalt road: a calm, deliberately low-contrast surface (so the hero and objects read clearly) of one dark warm charcoal tone with a fine sparse grain of mid-grey aggregate clumps whose density drifts gently across tiles, rare light grey stones and rare dark tar spots; its unconnected edges are a chipped broken rim 1 to 3 pixels deep that varies continuously along the road, lighter broken faces on the far (north) rim, irregular rounded-off ends at dead ends and outer corners, and a dry dark-brown ledge 1 to 2 pixels thick with a broken soil shadow on the south side; laid as a road network with crossroads, dead ends and long straight 1-wide and 3-wide runs (cracks and potholes are separate decals)',
       group='ground', tags=['아스팔트', '도로', '오토타일'],
       desc='낡은 옛 아스팔트 도로 — 위상 오토타일(주기 128): 칸 (위상 ph, 마스크 m), ph = (x mod 8) + 8·(y mod 8). 결·깨진 가장자리가 전역 좌표로 이어진다. 금·포트홀은 road-crack-*/pothole-* 덧그림(길 속 칸에 드물게). 남쪽은 마른 흙빛 턱.',
-      sample=ap_sample)(lambda c: _asphalt_phase_sheet_r62(c))
+      sample=ap_sample)(lambda c: asphalt_phase_sheet(c))
 
 
 def _asphalt_phase_sheet_r62(c):

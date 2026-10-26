@@ -141,49 +141,104 @@ def _husk_a(c):
          windows=[(6, 8, 9, 9), (20, 8, 9, 9), (60, 12, 9, 9), (78, 8, 9, 9)], band=(4,))
 
 
-@piece('husk-b', '모서리 무너진 폐허', 5, 4, STRUCT, en='ruined concrete building whose front corner has collapsed into a rubble ramp, seen from above with walls, interior floor and front face',
-       group='ruins', tags=['폐허', '건물'], desc='한쪽 앞 모서리가 무너져 잔해 비탈이 된 폐허. 문은 왼쪽.',
-       solid=[(x, y) for y in (2, 3) for x in range(5)], door=(1, 3))
+@piece('husk-b', '모서리 무너진 폐허', 5, 6, STRUCT, en='two-storey ruined concrete building whose front corner has collapsed into a rubble ramp reaching the ground, seen from above: broken wall tops, rubble-strewn interior floor, front face with two rows of empty window holes and a dark doorway',
+       group='ruins', tags=['폐허', '건물'], desc='한쪽 앞 모서리(동남)가 무너져 땅까지 잔해 비탈이 된 2층 폐허. 지붕 없는 속 바닥이 보이고, 앞면에 빈 창 두 줄, 문은 왼쪽.',
+       solid=[(x, y) for y in (4, 5) for x in range(3)], door=(1, 5))
 def _husk_b(c):
-    """4판: 지붕 없는 껍데기를 위에서 — 벽 윗면은 밝은 4행 띠(창 없음), 안쪽 바닥은 따뜻하고 어두운 흙·깨진 타일·잔해,
-    북벽 안쪽 면은 3행 그늘 띠뿐, 창·문은 남쪽 앞면에만, 무너진 동남 모서리는 바닥에서 땅까지 이어지는 잔해 비탈(투명 없음)."""
-    W, H, t = 80, 64, 4
-    ty = 32                                                    # 남벽 앞면 윗줄(앞면 32행 = 한 층, r63 축척)
-    fy0, fy1 = 1 + t + 3, ty - t                               # 바닥 행 범위
+    """r65: 5x6(80x96), 보이는 높이 86(주인공 24의 3.6배). 윗면(10~35행): 벽 윗면 밝은 4행 띠 · 북벽 안쪽 3행 그늘 · 속 바닥,
+    앞면(36~95행) = 2층 x 30(층 띠 30행), 창 9x9 테 두 줄, 문 11x25. 무너진 동남 모서리는 속 바닥 높이에서 땅까지 잔해 비탈."""
+    W, H, t = 80, 96, 4
+    oy = 10                                                    # 윗면 시작(위 10행은 비움 — 보이는 높이 86)
+    ty = 36                                                    # 남벽 앞면 윗줄(앞면 60행 = 2층 x 30)
+    fy0, fy1 = oy + t + 3, ty - t                              # 바닥 행 범위
     # 1) 바닥(먼저, 넓게 — 무너진 모서리 뒤까지)
     ruin_floor(c, t, fy0, W - t, fy1 - fy0 + 2, seed=11)
-    # 북벽 안쪽 면: 3행 그늘(창 없음) + 바닥에 지는 그늘
-    for x in range(t, W - t):
-        c.P(x, 1 + t, K('conc', 3 if h2(x, 1, 3) % 5 else 2)); c.P(x, 2 + t, K('conc', 2)); c.P(x, 3 + t, K('conc', 1 if h2(x, 2, 3) % 4 else 2))
+    for x in range(t, W - t):                                  # 북벽 안쪽 면: 3행 그늘
+        c.P(x, oy + t, K('conc', 3 if h2(x, 1, 3) % 5 else 2)); c.P(x, oy + t + 1, K('conc', 2)); c.P(x, oy + t + 2, K('conc', 1 if h2(x, 2, 3) % 4 else 2))
     shade_rect(c, t, fy0, W - 2 * t, 2, 1)
-    shade_rect(c, t, fy0, 3, fy1 - fy0, 1)                     # 서벽이 바닥 동쪽으로 던지는 그늘
-    # 2) 벽 윗면 띠: 북(0~4행) · 서 · 동(동벽은 24행에서 부러짐) · 남(36~39행, 서쪽 50화소만)
-    top_band(c, 0, 1, W, t, seed=1)
-    top_band(c, 0, 1, t, ty - 1, seed=2, vertical=True)
-    top_band(c, W - t, 1, t, 24, seed=3, vertical=True)
-    top_band(c, 0, ty - t, 50, t, seed=4)
-    # 3) 남벽 앞면(서쪽 50화소): 창 두 개 + 문, 층 띠, 그을음·때
-    conc_face(c, 0, ty, 50, H - ty, seed=16, base=3, band=(3,), grime=3)
-    c.HL(0, ty, 50, K('conc', 2))
-    wins = [(4, 8, 9, 9), (34, 8, 9, 9)]
-    for (wx, wy, ww, wh) in wins: hole(c, wx, ty + wy, ww, wh, seed=wx)
-    soot_plume(c, 34, ty + 8, 9, 4, seed=2)
+    shade_rect(c, t, fy0, 3, fy1 - fy0, 1)                     # 서벽이 바닥에 던지는 그늘
+    # 2) 벽 윗면 띠: 북 · 서 · 동(동벽은 25행에서 부러짐) · 남(서쪽 48화소만)
+    top_band(c, 0, oy, W, t, seed=1)
+    top_band(c, 0, oy, t, ty - oy, seed=2, vertical=True)
+    top_band(c, W - t, oy, t, 15, seed=3, vertical=True)
+    top_band(c, 0, ty - t, 48, t, seed=4)
+    # 3) 남벽 앞면: 동쪽 끝은 위층에서 안으로, 아래층에서 밖으로 계단처럼 깨진다
+    def edge(y):                                               # 앞면 동쪽 끝 열(이 열 미만만 벽)
+        return 48 if y < ty + 14 else 50 if y < ty + 26 else 53 if y < ty + 40 else 57
+    tall_face(c, 0, ty, 58, H - ty, seed=16)
+    for (sy, sh) in ((ty + 1, 1), (ty + 30, 0)):                   # 층 바닥판 턱: 밝은 윗턱 2행 + 어두운 밑면 + 벽에 지는 그늘
+        c.HL(0, sy, 58, K('conc', 6)); c.HL(0, sy + 1, 58, K('conc', 5)); c.HL(0, sy + 2, 58, K('conc', 1)); shade_rect(c, 0, sy + 3, 58, 2, 1)
+        for x in range(0, 58, 7): c.P(x + h2(x, sy, 3) % 5, sy, K('conc', 4))
+    for y in range(ty, H): c.clear(edge(y), y, 58 - edge(y))
+    c.HL(0, ty, 48, K('conc', 2))
+    for y in range(ty, H):                                     # 깨진 단면(빛 턱 + 그늘)
+        e = edge(y)
+        c.P(e - 1, y, K('conc', 5)); c.P(e - 2, y, K('conc', 4) if h2(e, y, 5) % 3 else K('conc', 3))
+    for y in (ty + 14, ty + 26, ty + 40):                      # 계단 턱 윗면(밝음)
+        c.HL(edge(y - 1) - 1, y, edge(y) - edge(y - 1) + 1, K('conc', 6))
+    wins = [(5, 10, 9, 10), (19, 10, 9, 10), (34, 10, 9, 10), (5, 41, 9, 10), (34, 41, 9, 10)]
+    for k, (wx, wy, ww, wh) in enumerate(wins):
+        broken_window(c, wx, ty + wy, ww, wh, seed=k + 1)
+    for (wx, wy) in ((19, 10), (34, 41), (5, 10)): soot_plume(c, wx, ty + wy, 9, 4, seed=wx + wy)
     dx, dw, dh = 19, 11, 25
     c.R(dx - 1, H - dh - 2, dw + 2, 2, K('conc', 5)); c.HL(dx - 1, H - dh - 1, dw + 2, K('conc', 2))
     for j in range(dh):
         for i in range(dw): c.P(dx + i, H - dh + j, K('soot', 0 if j < dh - 4 else 1 if j < dh - 1 else 2))
-    c.VL(dx, H - dh, dh, K('soot', 1)); c.HL(dx, H - 1, dw, K('dirt', 2))
-    vine(c, 45, ty, 14, seed=3)
-    # 4) 부러진 벽 끝: 남벽 동쪽 끝(계단처럼 깨진 단면) · 동벽 남쪽 끝
-    for (yy, xe) in ((ty - 4, 50), (ty - 3, 51), (ty - 2, 50), (ty - 1, 49), (ty, 49), (ty + 1, 48), (ty + 2, 48)):
+    c.VL(dx, H - dh, dh, K('soot', 1)); c.VL(dx + dw - 1, H - dh, dh, K('soot', 1)); c.HL(dx, H - 1, dw, K('dirt', 2))
+    c.P(dx + 2, H - dh + 3, K('wood', 2)); c.VL(dx + 1, H - dh + 2, 8, K('wood', 1))           # 떨어진 문짝 경첩 자국
+    ivy(c, 45, ty + 4, H - 1, seed=3); ivy(c, 2, ty + 34, H - 1, seed=4)
+    # 4) 부러진 벽 끝: 남벽 윗면 동쪽 끝 · 동벽 남쪽 끝
+    for (yy, xe) in ((ty - 4, 48), (ty - 3, 49), (ty - 2, 48), (ty - 1, 47)):
         c.P(xe - 1, yy, K('conc', 6)); c.P(xe, yy, K('conc', 4))
-    for y in range(ty + 3, H): c.clear(48, y, 3)
-    for y in range(ty + 3, H): c.P(47, y, K('conc', 2))
-    for x in range(W - t, W): c.P(x, 25, K('conc', 7)); c.P(x, 26, K('conc', 4)); c.P(x, 27, K('conc', 2))
-    rebar(c, 50, ty - 4, 5, 2); rebar(c, 77, 24, 4, 1); rebar(c, 78, 23, 3, -1)
-    # 5) 잔해 비탈: 무너진 모서리를 바닥 높이에서 땅까지 메운다(덩이 윗면 밝게, 앞 덩이가 뒤를 덮음)
-    rubble_slope(c, 46, W, 26, H, seed=5)
-    grit(c, 0, 0, 50, 64, seed=17, rate=23, cracks=2)
+    for x in range(W - t, W): c.P(x, oy + 15, K('conc', 7)); c.P(x, oy + 16, K('conc', 4)); c.P(x, oy + 17, K('conc', 2))
+    for y in range(oy + 18, ty): c.clear(W - 1, y)
+    rebar(c, 48, ty - 4, 5, 2); rebar(c, 77, oy + 15, 4, 1); rebar(c, 78, oy + 14, 3, -1); rebar(c, 52, ty + 26, 4, 2)
+    # 5) 무너진 모서리: 벽이 사라진 자리로 아래층 속이 어둡게 드러나고(뒤 벽 안쪽 면 · 부러진 위층 바닥판 단면),
+    #    그 앞에 위층 바닥 높이에서 땅까지 흘러내린 잔해 비탈(윗선이 오른쪽 아래로 기운다)
+    for y in range(ty - t, H):
+        for x in range(edge(y) if y >= ty else 48, W):
+            if y < ty - 1: c.P(x, y, K('conc', 2 if h2(x, y, 7) % 4 else 1)); continue      # 부러진 바닥판 두께
+            d = (y - ty) / float(H - ty)
+            n = h2(x, y, 8) % 7
+            if d < 0.12: col = K('soot', 0)                                                 # 바닥판 밑 그늘
+            elif d < 0.4: col = K('soot', 1 + (n == 0) + (n == 1 and (x + y) % 3 == 0))       # 아래층 뒤 벽(그을린 면)
+            else: col = K('conc', 1 + (n < 2)) if n != 6 else K('soot', 2)                  # 아래층 바닥 잔해(어둡게)
+            c.P(x, y, col)
+    c.HL(48, ty - t, W - 48, K('conc', 5)); c.HL(48, ty - t + 1, W - 48, K('conc', 3))         # 바닥판 깨진 윗변 빛
+    for x in range(48, W, 5): c.clear(x + 2, ty - t); c.P(x + 2, ty - t + 1, K('conc', 4))
+    for y in range(ty + 2, ty + 22):                                                           # 드러난 동벽 안쪽 면(남은 벽 그루터기)
+        for x in range(W - 3, W):
+            c.P(x, y, K('conc', 2 if h2(x, y, 11) % 4 else 1))
+        c.P(W - 3, y, K('conc', 4))
+    c.R(W - 3, ty + 22, 3, 1, K('conc', 4))
+    rebar(c, 58, ty, 5, 2); rebar(c, 66, ty, 4, -1); rebar(c, 72, ty + 1, 5, 1)
+    def top_at(x):                                                                             # 비탈 윗선: 벽 끝 높이 → 오른쪽 땅
+        u = (x - 46) / float(W - 46)
+        return int(ty + 6 + 44 * u ** 1.3 + (h2(x // 2, 1, 5) % 3))
+    for x in range(46, W):
+        yt = top_at(x)
+        for y in range(yt, H):
+            v = (y - yt) / max(1.0, float(H - yt))
+            tt = 5 if v < 0.06 else 4 if v < 0.3 else 3 if v < 0.65 else 2
+            if h2(x, y, 5) % 5 == 0: tt -= 1
+            c.P(x, y, K('conc', tt))
+        c.P(x, yt, K('conc', 6))
+    pts = []
+    for k in range(34):
+        x = 47 + h2(k, 1, 5) % (W - 51)
+        y = top_at(x) + h2(k, 2, 5) % max(1, H - top_at(x) - 4)
+        pts.append((y, x, k))
+    for (y, x, k) in sorted(pts):
+        m = ('conc', 'conc', 'brick', 'conc', 'brick')[h2(k, 3, 5) % 5]
+        sz = 3 + h2(k, 4, 5) % 4
+        if m == 'brick': c.rows(x, y, ['abbb', 'bccc', 'dddd'], {'a': K('brick', 5), 'b': K('brick', 4), 'c': K('brick', 2), 'd': K('brick', 1)})
+        else: chunk5(c, x, y, sz + 1, sz, 'conc', max(2, sz // 2 + 1), 5 + k)
+    for (x, y, l, d) in ((52, ty + 12, 5, 1), (60, ty + 26, 4, -1), (70, ty + 40, 4, 2)): rebar(c, x, y, l, d)
+    for k in range(5):
+        x = 48 + h2(k, 7, 5) % (W - 52); y = top_at(x) + 3 + h2(k, 8, 5) % 10
+        if y < H - 1: c.P(x, y, K('glass', 5)); c.P(x + 1, y, K('glass', 3))
+    tuft(c, 74, H - 2, 'dry'); tuft(c, 50, H - 1, 'grass'); tuft(c, 62, H - 3, 'grass')
+    grit(c, 0, ty, 48, H - ty, seed=17, rate=23, cracks=2)
     c.outline()
 
 
