@@ -10369,6 +10369,34 @@
    ],
    "verify": "build_hand_interior_room(지하 승강구) / place_lift toMapId map_tower_top + 반대 방향 place_lift / 도착 스위치가 project.switches 에 있음(참조 검증 통과) / 승강기를 바닥 칸+페이드로 흉내내지 않음",
    "suiteCategory": "fs2-well-lift"
+  },
+  {
+   "category": "game",
+   "kind": "logic",
+   "mode": "balanced",
+   "startTileset": "beodeul_city",
+   "startBuild": [
+    {
+     "tool": "author_beodeul_town",
+     "args": {
+      "mapId": "map_blank_start",
+      "name": "성벽 마을",
+      "houseCount": 4,
+      "theme": "river",
+      "seed": 11
+     }
+    }
+   ],
+   "id": "fs2-route-from-cell",
+   "prompt": "마을 북쪽 성벽은 허물지 말고, 북쪽 끝 벽의 돌 하나를 조사하면 개구멍으로 빠져나가 북쪽 들판(두 장, 어둡고 안개)으로 가게 해 줘. 들판 입구로 돌아오면 다시 그 벽 앞으로.",
+   "requires": [
+    "시작 맵 성벽·가장자리 타일 불변(길을 새로 내지 않음)",
+    "벽 칸 조사 이벤트 → 들판 1 입구",
+    "들판 1 입구 → 마을 벽 앞으로 돌아오는 이벤트",
+    "들판 두 장이 서로 이어짐"
+   ],
+   "verify": "author_forest_route terrain:field linkFrom:false count 2 moods / 결과 data.maps[0].entry 로 벽 이벤트 transfer·돌아오는 이벤트 / map_blank_start 가장자리 lowerTiles 변화 없음",
+   "suiteCategory": "fs2-route-from-cell"
   }
  ],
  "gates": {

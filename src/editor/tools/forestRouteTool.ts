@@ -161,6 +161,7 @@ const authorForestRoute: ToolDefinition = {
       hiddenPerMap: { type: "integer", description: "맵마다 숨은 물건 수 0~3(기본 0)" },
       hiddenItemIds: { type: "array", items: { type: "string" }, description: "숨은 물건 아이템 id(돌아가며 쓴다, 없으면 돈)" },
       terrain: { type: "string", enum: ["forest", "field"], description: "forest(기본)=나무 사이 숲길 · field=트인 들판(큰 풀밭 빈터, 가장자리만 나무)" },
+      linkFrom: { type: "boolean", description: "false 면 시작 맵 가장자리에 길을 내지 않고 이동 이벤트도 두지 않는다 — 성벽 개구멍·뒷문·우물처럼 시작 맵의 정한 칸에서 이벤트로 들여보낼 때. 첫 맵 입구는 data.maps[0].entry(그 칸에 돌아가는 이벤트를 직접 둔다). 기본 true" },
       seed: { type: "integer" },
     },
     required: ["fromMapId", "side"],
@@ -179,7 +180,8 @@ const authorForestRoute: ToolDefinition = {
     const field = args.terrain === "field";
     const warnings: string[] = [];
     const out: Array<{ mapId: string; name: string; entry: Cell; exit: Cell | null; clearing: Cell; hidden: Cell[] }> = [];
-    let prev: { mapId: string } & Cell = { mapId: from.id, ...originEdge(draft, from, side) };
+    const linkFrom = args.linkFrom !== false;
+    let prev: ({ mapId: string } & Cell) | null = linkFrom ? { mapId: from.id, ...originEdge(draft, from, side) } : null;
     let used = 0;
     for (let i = 0; i < count; i += 1) {
       let id = `map_${field ? "field" : "forest"}_${side}_${i + 1}`;
@@ -191,7 +193,7 @@ const authorForestRoute: ToolDefinition = {
       const result = paintWoodland(draft, spec);
       // 시작 맵의 이 숲 묶음 아래로 — 범위 체크포인트가 새 맵을 버리지 않게.
       try { call(draft, "manage_map_tree", { operation: "move", mapId: id, parentId: from.id }); } catch { /* 트리 이동 실패는 무시 */ }
-      link(draft, prev, { mapId: id, ...entry });
+      if (prev) link(draft, prev, { mapId: id, ...entry });
       const mood = MOODS[moods[i] ?? "normal"] ?? {};
       if (mood.ambient !== undefined || mood.fog !== undefined) {
         try {

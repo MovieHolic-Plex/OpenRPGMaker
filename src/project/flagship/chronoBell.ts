@@ -60,13 +60,14 @@ const IRIS_ID = "actor_fs_iris";
  * 도구 실행 — 도구는 초안 사본에 쓰고 그 결과를 project 에 덮는다. 그래서 도구를 부른 뒤에는 맵·이벤트 참조가 낡는다.
  * 맵은 늘 maps() 로 다시 꺼내 쓴다(낡은 참조에 쓴 변경은 조용히 사라진다 — 2026-10-20 문지기 위치·엔딩 명령 유실).
  */
-function execTool(project: Project, name: string, args: Record<string, unknown>): void {
+function execTool(project: Project, name: string, args: Record<string, unknown>): unknown {
   const ctx = { project, assistantRun: false };
   const res = runTool(ctx, name, args, { dryRun: false });
   if (!res.ok) {
     throw new Error(`[fallen-star] ${name} failed: ${res.summary} ${JSON.stringify(res.issues ?? [])}`);
   }
   Object.assign(project, ctx.project);
+  return (res as { data?: unknown }).data;
 }
 
 const clone = <T>(value: T): T => JSON.parse(JSON.stringify(value)) as T;
@@ -2445,7 +2446,7 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
   // 제1막 새 뼈대 — 추락지 발렌·지하 미궁(3·4층)·달빛의 용·「달의 아이」 패널·광장 포위 끝(fallen/act1Finale.ts). 얼굴 앞.
   applyFallenAct1Finale(project, execTool, ids);
   // 제2막 여는 비트 — 1막 엔딩 → 「제2막으로」 → 초소 감방·막사 잠입·통금의 밤(fallen/act2Opening.ts). 얼굴 앞.
-  applyFallenAct2Opening(project, execTool, { hub: ids.hub, observatory: ids.observatory });
+  applyFallenAct2Opening(project, execTool, { hub: ids.hub, observatory: ids.observatory, smithy: "fs_smithy" });
   const speakerFaces: Record<string, string> = {
     [FS_NAMES.hero]: actorFace(DEFAULT_ACTOR_ID),
     엘레나: actorFace("actor_fs_elena"),

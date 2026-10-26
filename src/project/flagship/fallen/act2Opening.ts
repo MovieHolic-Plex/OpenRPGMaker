@@ -15,7 +15,8 @@ import { FS_NAMES } from "../fallenStarStory";
 import { FS_SILVER_SPOON } from "./townLife";
 import { FS_KEEPER_SEAL } from "./battleItems";
 
-type Exec = (project: Project, name: string, args: Record<string, unknown>) => void;
+/** 도구 실행 — 결과 data 를 돌려준다(author_forest_route 처럼 만든 맵 id 가 결과에만 있는 도구). */
+type Exec = (project: Project, name: string, args: Record<string, unknown>) => unknown;
 type Cell = { x: number; y: number };
 type Dir = "up" | "down" | "left" | "right";
 type Rec = Record<string, unknown>;
@@ -142,6 +143,13 @@ const RINO_CHIP: [string, number] = ["tex_easyrpg_charset_actor1", 2];
 /** 도구를 부를 때마다 맵 객체가 새로 바뀐다 — 이벤트는 그때그때 맵을 다시 찾아 붙인다(쥐고 있던 옛 객체에 붙이면 사라진다). */
 function addEv(project: Project, mapId: string, id: string, name: string, at: Cell, pages: EventPage[]): GameEvent {
   return addEvent(M(project, mapId), id, name, at, pages);
+}
+/** 어느 맵에 있든 그 이벤트의 걷기 칩(새 사람 그림 금지 — 1막 칩 재사용). */
+function hubChipAny(project: Project, eventId: string): { textureKey: string; characterIndex: number } {
+  const ev = Object.values(project.maps).flatMap((m) => m.events).find((e) => e.id === eventId);
+  const g = ev?.pages?.find((pg) => (pg.graphic as { sprite?: unknown } | undefined)?.sprite)?.graphic as { sprite?: { id?: string }; pattern?: number } | undefined;
+  if (!g?.sprite?.id || typeof g.pattern !== "number") throw new Error(`[fallen-star act2] 칩을 못 찾음: ${eventId}`);
+  return { textureKey: g.sprite.id, characterIndex: decodeCharsetFrameIndex(g.pattern).characterIndex };
 }
 function ensureSwitch(project: Project, id: string, name: string): void {
   if (!project.switches.some((s) => s.id === id)) project.switches.push({ id, name });
@@ -610,8 +618,109 @@ function observatoryNight(project: Project, exec: Exec, obsId: string): void {
 }
 
 // ════════════════════════════════════════════════════════════════════
+// 7. B4 로한의 창, 북문 — 대장간(뒷문) → 로한의 창·새라 소식 → 성벽 개구멍(브람) → 북쪽 숲 어귀
+// ════════════════════════════════════════════════════════════════════
 
-export interface FallenAct2Ids { hub: string; observatory: string }
+export const FS2_SMITHY_ID = "fs2_smithy_night";
+export const FS2_ROHAN_SPEAR = "equip_fs2_rohan_spear";
+const SW_ROHAN = "sw_fs2_rohan_spear";
+const SW_BRAM = "sw_fs2_bram_hole";
+const ROHAN = "대장장이 로한";
+const BRAM = "숲지기 브람";
+/** 광장 → 대장간 문(1막 문 칸) · 대장간 안 문 칸·로한 자리. */
+const SMITHY = { hubDoor: { x: 29, y: 42 } as Cell, hubFront: { x: 29, y: 43 } as Cell, door: { x: 7, y: 10 } as Cell, arrive: { x: 7, y: 9 } as Cell, rohan: { x: 10, y: 6 } as Cell };
+/** 북쪽 성벽 개구멍 — 광장 북쪽 돌바닥(38,16)에서 위를 보고 조사. 브람이 그 곁(39,16)에 숨어 있다. */
+const HOLE = { wall: { x: 38, y: 15 } as Cell, front: { x: 38, y: 16 } as Cell, bram: { x: 39, y: 16 } as Cell };
+
+/** 북쪽 숲 어귀·재의 들판(B5 가 이어 짓는다). 만든 맵 id 는 결과에서 받는다. */
+export const FS2_NORTH_ROUTE: { mapIds: string[]; entry: Cell } = { mapIds: [], entry: { x: 0, y: 0 } };
+
+function northGate(project: Project, exec: Exec, smithyId: string): void {
+  for (const [id, name] of [[SW_ROHAN, "B4: 로한의 창"], [SW_BRAM, "B4: 브람 — 개구멍"]] as const) ensureSwitch(project, id, name);
+  exec(project, "upsert_equipment", { equipment: {
+    id: FS2_ROHAN_SPEAR, name: "로한의 별쇠 창", slot: "weapon", price: 0, iconResourceId: "cc0-jetrel-bronze-sword", imageResourceId: "cc0-jetrel-bronze-sword",
+    description: "로한이 「네가 쓸 몫」이라며 벼려 둔 창. 공격 40 · 회피 무시.\n자루에 별쇠를 한 줄 섞었다. 새라의 창과 같은 손잡이 무늬.",
+    statBonuses: { attack: 40, defense: 0, mind: 0, agility: 2 }, equippableActorIds: ["actor_hero"], equippableClassIds: ["class_hero", "class_guardian"],
+    attackElementIds: ["spear"], effectFlags: { ignoreDodge: true },
+  } });
+  // 대장간 · 통금의 밤 — 같은 방, 사람 없이. 문은 밤 광장으로.
+  exec(project, "duplicate_map", { mapId: smithyId, id: FS2_SMITHY_ID, name: "로한의 대장간 · 통금의 밤", events: "none" });
+  exec(project, "set_lighting_volume", {
+    mapId: FS2_SMITHY_ID, ambient: 0.45, color: "#1a1020", applyMode: "map",
+    sources: [{ id: "forge", at: { x: 18, y: 4 }, radius: 5, intensity: 0.9, color: "#ff9050", flicker: true }],
+  });
+  // 북쪽 숲 어귀 → 재의 들판 — 성벽 개구멍에서 이벤트로 들여보낸다(linkFrom:false, 성벽을 허물지 않는다).
+  const route = exec(project, "author_forest_route", {
+    fromMapId: FS2_HUB_NIGHT_ID, side: "north", count: 2, terrain: "field", linkFrom: false,
+    names: ["북쪽 숲 어귀", "재의 들판"], moods: ["dark", "fog"], seed: 211,
+  }) as { maps?: { mapId: string; entry: Cell }[] } | undefined;
+  const maps = route?.maps ?? [];
+  if (maps.length !== 2) throw new Error("[fallen-star act2] 북쪽 들판이 두 장이 아니다");
+  FS2_NORTH_ROUTE.mapIds = maps.map((m) => m.mapId);
+  FS2_NORTH_ROUTE.entry = maps[0]!.entry;
+}
+
+function northGateEvents(project: Project, hubId: string): void {
+  // 광장 대장간 문 — 하넬을 만난 뒤엔 뒷문이 열려 있다.
+  const hub = M(project, FS2_HUB_NIGHT_ID);
+  const door = hub.events.find((e) => e.x === SMITHY.hubDoor.x && e.y === SMITHY.hubDoor.y);
+  if (!door?.pages?.length) throw new Error("[fallen-star act2] 대장간 문이 없다");
+  door.pages = [door.pages[0]!, { ...door.pages[0]!, id: `${door.id}_fs2_open`, name: "뒷문(열림)", conditions: [sw(SW_HANEL)],
+    commands: [narrate("대장간 뒷문이 살짝 열려 있다."), transfer(FS2_SMITHY_ID, SMITHY.arrive, "up")] } as EventPage];
+  addEv(project, FS2_SMITHY_ID, "ev_fs2_smithy_door", "대장간 문", SMITHY.door, [
+    page("ev_fs2_smithy_door_p", "문", [], [transfer(FS2_HUB_NIGHT_ID, SMITHY.hubFront, "down")], { trigger: { kind: "playerTouch" } }),
+  ]);
+  const rohanChip = hubChipAny(project, "ev_fs_smith");
+  addEv(project, FS2_SMITHY_ID, "ev_fs2_smithy_rohan", ROHAN, SMITHY.rohan, [
+    page("ev_fs2_smithy_rohan_p", "로한(창)", [], [
+      cutBegin(),
+      say(ROHAN, "…왔구나. 하넬이 보낼 줄 알았다."),
+      say(ROHAN, "약속한 몫이다. 별쇠를 섞었다."),
+      se("cc0-se-orp-inventory-cloth"),
+      { kind: "changeEquipment", actorId: "actor_hero", slot: "weapon", equipmentId: FS2_ROHAN_SPEAR } as unknown as Command,
+      narrate("카엘은 「로한의 별쇠 창」을 손에 쥐었다.", { context: "system" }),
+      say(KAEL, "아저씨, 이거… 손잡이 무늬가 특이해요."),
+      say(ROHAN, "딸년 창이랑 같은 무늬다.\n새라는 심문회 견습 창기사로 북방 관문 요새에 있어."),
+      say(ROHAN, "…그리고 새라를 보거든, 고개 들라고 해라."),
+      say(ROHAN, "북문은 막혔다. 광장 북쪽 성벽 밑에\n브람 영감이 기다린다더군."),
+      setSw(SW_ROHAN),
+      cutLabel(),
+      cutEnd(),
+    ], { graphic: chip(rohanChip.textureKey, rohanChip.characterIndex, "down") }),
+    page("ev_fs2_smithy_rohan_after", "로한(뒤)", [sw(SW_ROHAN)], [say(ROHAN, "창끝은 내리지 마라. 사람한테 말고, 길한테.")], { graphic: chip(rohanChip.textureKey, rohanChip.characterIndex, "down") }),
+  ]);
+  // 브람 — 성벽 밑 그늘. 로한을 만난 뒤에만 나타나 개구멍을 연다.
+  const bramChip = hubChipAny(project, "ev_fs_bram");
+  addEv(project, FS2_HUB_NIGHT_ID, "ev_fs2_hub_bram", BRAM, HOLE.bram, [
+    page("ev_fs2_hub_bram_none", "없음", [], [], { priority: "below" }),
+    page("ev_fs2_hub_bram_p", "브람", [sw(SW_ROHAN)], [
+      say(BRAM, "쉿. 여기다, 꼬마들."),
+      say(BRAM, "이 돌 하나가 빠진다. 서른 해 전에\n내가 빼 둔 거지. 그때도 밤이었다."),
+      say(BRAM, "그 가락 말이다. 쇠 긁는 소리.\n둘째 아이가 부르던 거다."),
+      say(BRAM, "알았으면서 모른 척했다.\n늙으면 겁이 많아져."),
+      setSw(SW_BRAM),
+    ], { graphic: chip(bramChip.textureKey, bramChip.characterIndex, "left") }),
+    page("ev_fs2_hub_bram_after", "브람(뒤)", [sw(SW_BRAM)], [say(BRAM, "가라. 여기서부턴 내 숲이 아니다.")], { graphic: chip(bramChip.textureKey, bramChip.characterIndex, "left") }),
+  ]);
+  const [first] = FS2_NORTH_ROUTE.mapIds;
+  addEv(project, FS2_HUB_NIGHT_ID, "ev_fs2_hub_hole", "성벽 개구멍", HOLE.wall, [
+    page("ev_fs2_hub_hole_p", "성벽", [], [narrate("두꺼운 성벽이다. 돌 하나가 조금 튀어나와 있다.")]),
+    page("ev_fs2_hub_hole_open", "개구멍", [sw(SW_BRAM)], [
+      se("cc0-se-osx-wooded-box-open"),
+      narrate("브람이 돌을 빼자 몸 하나 빠질 구멍이 났다."),
+      say(BRAM, "가라. 여기서부턴 내 숲이 아니다."),
+      transfer(first!, { x: FS2_NORTH_ROUTE.entry.x, y: FS2_NORTH_ROUTE.entry.y - 1 }, "up"),
+    ]),
+  ]);
+  addEv(project, first!, "ev_fs2_north_back", "성벽 개구멍으로", FS2_NORTH_ROUTE.entry, [
+    page("ev_fs2_north_back_p", "돌아간다", [], [narrate("성벽 개구멍으로 광장에 돌아갔다."), transfer(FS2_HUB_NIGHT_ID, HOLE.front, "down")], { priority: "below", trigger: { kind: "playerTouch" } }),
+  ]);
+  void hubId;
+}
+
+// ════════════════════════════════════════════════════════════════════
+
+export interface FallenAct2Ids { hub: string; observatory: string; smithy: string }
 
 export function applyFallenAct2Opening(project: Project, exec: Exec, ids: FallenAct2Ids): void {
   database(project, exec);
@@ -620,6 +729,8 @@ export function applyFallenAct2Opening(project: Project, exec: Exec, ids: Fallen
   hubNight(project, exec, ids.hub);
   curfewHub(project, exec, ids.hub);
   observatoryNight(project, exec, ids.observatory);
+  northGate(project, exec, ids.smithy);
   cellEvents(M(project, FS2_CELL_ID));
   bridge(project, exec);
+  northGateEvents(project, ids.hub);
 }
