@@ -35,7 +35,8 @@ export function applyEasing(name: EasingName | undefined, t: number): number {
     case "easeOut":
       return 1 - (1 - x) * (1 - x);
     case "easeInOut":
-      return -(Math.cos(Math.PI * x) - 1) / 2;
+      // (1 - cos)/2 — 옛 식 -(cos-1)/2 는 x=0 에서 -0 을 돌려줬다.
+      return (1 - Math.cos(Math.PI * x)) / 2;
     default:
       return x;
   }
