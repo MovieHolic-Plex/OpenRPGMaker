@@ -181,15 +181,27 @@ export function vqaFixBrief(task: string, project: Project, defects: readonly Vq
   ].join("\n");
 }
 
-/** 조수에게 줄 고치기 지시(판 사이). */
-export function vqaFollowUp(round: VqaRound, brief?: string): string {
+/** 앞 판에도 있던 결함인가 — 같은 대상(맵·그림)이고 위치·내용 낱말이 겹친다. */
+export function vqaRepeated(defect: VqaDefect, previous: VqaRound | undefined): boolean {
+  if (!previous) return false;
+  const words = (text: string) => new Set(text.toLowerCase().split(/[^\p{L}\p{N}]+/u).filter((w) => w.length >= 2));
+  const mine = words(`${defect.where} ${defect.what}`);
+  return previous.defects.some((old) => (old.target?.kind ?? "") === (defect.target?.kind ?? "") && (old.target?.ref ?? "") === (defect.target?.ref ?? "")
+    && [...words(`${old.where} ${old.what}`)].filter((w) => mine.has(w)).length >= 3);
+}
+
+/** 조수에게 줄 고치기 지시(판 사이). previous = 바로 앞 판 — 같은 결함이 다시 나오면 앞 고치기가 화면에서 효과가 없었다는 뜻이다. */
+export function vqaFollowUp(round: VqaRound, brief?: string, previous?: VqaRound): string {
   if (round.problem && !round.defects.length) {
     return `[화면 검수 ${round.round}/${VQA_MAX_ROUNDS}] 검수를 하지 못했다(${round.problem}). 다시 찍어 검수하도록 할 것이 없으면 최종 보고에 «화면 검수 미완료»라고 쓴다.`;
   }
   return [
     ...(brief ? [brief, ""] : []),
     `[화면 검수 ${round.round}/${VQA_MAX_ROUNDS}] 다른 모델의 검수자(${round.reviewer})가 실제 그림에서 아래 결함을 찾았다. 각각 고친다 — 맵은 show_map_region 으로 다시 보고, 타이틀·오프닝은 다시 그려 확인한다. 고칠 수 없으면 고치지 말고 최종 보고에 남은 결함으로 쓴다.`,
-    ...round.defects.map(vqaDefectLine),
+    ...round.defects.map((d, i) => vqaDefectLine(d, i) + (vqaRepeated(d, previous) ? " ↻ 앞 판에도 같은 결함 — 앞 고치기가 화면에서 효과가 없었다" : "")),
+    // 2026-10-26 toy-j90: 2→2→2. 검 진열대를 빼고 「장난감 선반」을 onOverlap:'nearest' 로 찍었더니 같은 구석에 내려앉았고, 파란 갑옷 인물(NPC 그림)은
+    // 다른 갑옷 그림으로만 바뀌었다. 조수는 고친 뒤 한 번도 그 자리를 보지 않았다.
+    ...(round.defects.some((d) => vqaRepeated(d, previous)) ? ["↻ 표시 결함은 같은 방법을 되풀이하지 않는다: (1) 고친 뒤 show_map_region 으로 그 자리를 직접 본다(찍은 물건이 어디에 내려앉았는지·무엇으로 보이는지), (2) 비슷한 물건을 옆에 다시 찍지 말고 전혀 다른 물건으로 바꾸거나 빼고, (3) 인물(이벤트) 그림 때문이면 그 인물의 그림을 결함과 거리가 먼 것으로 바꾸거나 숨긴다. 그래도 안 되면 «미해결»로 남긴다."] : []),
     "보고만 다시 쓰는 것은 고치기가 아니다 — 이 차례에는 도구로 그림을 바꾼다(도구를 하나도 부르지 않으면 이 판은 세지 않고 한 번 더 시킨 뒤, 그래도 안 하면 «미해결»로 끝난다). 고치지 않은 결함을 «고쳤다»고 쓰지 않는다.",
     "다 고친 뒤 「최종 보고(앞 보고를 고침):」로 시작하는 보고 하나로 앞 보고를 대신한다. 검수자가 다음 판에서 같은 그림을 다시 본다.",
   ].join("\n");

@@ -50,7 +50,7 @@ export function applyStorySetupDefaults(project: Project, task: string, freshSta
   if (!setup || BATTLE_WORDS.test(task)) return [];
   const applied: string[] = [];
   if (project.system.fieldHud === undefined) {
-    project.system.fieldHud = { theme: "minimal", vitals: false, clock: true, tools: false, objective: false, hideEmpty: true };
+    project.system.fieldHud = { theme: "minimal", vitals: false, clock: true, tools: false, objective: true, hideEmpty: true };
     applied.push("체력 HUD 끔");
   }
   const hero = redressStoryHero(project, task);

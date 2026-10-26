@@ -13,6 +13,8 @@ import { tileAt } from "@/project/collision";
 import { gameHasCombat } from "@/project/combatPresence";
 import { hiddenStairExits } from "@/project/stairs/fit";
 import { unlitDarkFinding } from "@/qa/gameCheck/visualVoid";
+import { romanceCompletionGaps } from "@/qa/gameCheck/romance";
+import { invisibleStoryEvents, objectiveGaps } from "./discoverability";
 import { fieldMenu } from "@/project/fieldMenu";
 import { FACTORY_HERO_ARMS } from "./genreDefaults";
 
@@ -20,8 +22,12 @@ type Obj = Record<string, unknown>;
 export interface ShipBlocker { readonly id: string; readonly message: string; readonly evidence: string }
 
 /** 게임 하나를 만들거나 완성하는 요청(작은 고치기 요청에는 출하 검사를 걸지 않는다). */
-export const WHOLE_GAME_WORDS = /(게임|game)[^.!?\n]{0,60}(만들|지어|짜\s*줘|완성|제작|build|make)|(만들|지어|완성)[^.!?\n]{0,20}(게임|game)|엔딩까지|처음부터 끝까지|whole game/iu;
-export function wantsWholeGame(task: string): boolean { return WHOLE_GAME_WORDS.test(task); }
+// 컨셉 카드 한 줄(「폐업 직전 태엽 장난감 가게, 밤마다 손님이 깨어난다 (회상 스토리)」)도 게임 하나를 만드는 요청이다 — 끝의 (장르) 괄호가 표지.
+// 2026-10-26 toy-j90: 이 한 줄이 출하 검사·화면 검수 없이 1턴을 끝냈다.
+export const WHOLE_GAME_WORDS = /(게임|game)[^.!?\n]{0,60}(만들|지어|짜\s*줘|완성|제작|build|make)|(만들|지어|완성)[^.!?\n]{0,20}(게임|game)|엔딩까지|처음부터 끝까지|whole game|\([^()\n]{0,24}(스토리|이야기|RPG|어드벤처|호러|공포|연애|로맨스|추리|미스터리|탐험|퍼즐|시뮬레이션|액션|비주얼\s*노벨|생존|육성|수집|게임)[^()\n]{0,12}\)\s*$/iu;
+/** 고치기 동사로 끝나는 짧은 요청(「버튼 효과 고쳐 (액션)」)은 괄호 장르가 붙어도 전체 게임 요청이 아니다. */
+const EDIT_REQUEST = /(고쳐|바꿔|옮겨|지워|없애|줄여|늘려|수정|변경)\s*(줘|주세요|라)?[^()\n]{0,4}\([^()\n]*\)\s*$/u;
+export function wantsWholeGame(task: string): boolean { return WHOLE_GAME_WORDS.test(task) && !(EDIT_REQUEST.test(task) && !/(게임|game)[^.!?\n]{0,60}(만들|지어|완성|제작)|엔딩까지|처음부터 끝까지/iu.test(task)); }
 
 let factoryCache: Project | undefined;
 function factory(): Project {
@@ -396,6 +402,15 @@ export function shipBlockers(project: Project, task: string): ShipBlocker[] {
   // 계단 출구가 숨은 칸이다(J87) — 계단 앞에서 계단 쪽으로 걸어도 이동이 없다.
   const hiddenExits = hiddenStairExits(project).slice(0, 4);
   const hidden: ShipBlocker[] = hiddenExits.length ? [{ id: "exit-hidden", message: `계단 출구를 계단 쪽으로 걸어서는 탈 수 없다: ${hiddenExits.join(" · ")}. create_transfer_pair 를 계단 그림 칸으로 다시 부르면 계단 폭 전체가 출구가 된다.`, evidence: hiddenExits[0]!.slice(0, 120) }] : [];
+  // 새 플레이어가 길을 찾나(J90): 이야기 이벤트가 보이고, 지금 할 일이 화면에 있다.
+  const invisible: ShipBlocker[] = invisibleStoryEvents(project).slice(0, 4).map((event) => ({
+    id: "critical-invisible",
+    message: `「${event.mapName}」 ${event.name}(${event.eventId}, ${event.x},${event.y}) 은 ${event.ends ? "엔딩을 부르는" : "이야기를 넘기는"} 이벤트인데 화면에 아무것도 안 보인다(투명·건물 벽면 한 칸). 새 플레이어는 어디를 눌러야 하는지 모른다 — patch_event_page{mapId, eventId, pageIndex, set:{nearSparkle:{radius:2}}} 로 반짝임을 달거나, 그림이 있는 인물·작은 물건(상자·침대·표지판)으로 옮긴다.`,
+    evidence: `${event.mapId} ${event.eventId} (${event.x},${event.y}) page ${event.pageIndex}`,
+  }));
+  const objectives: ShipBlocker[] = objectiveGaps(project).map((message) => ({ id: "objective-missing", message, evidence: message.slice(0, 120) }));
+  // 연애 게임의 호감이 인물에 묶이지 않으면 ESC 호감도·호감 HUD·호감 엔딩이 비어 있다(J91) — 경고가 아니라 막는다.
+  const romance: ShipBlocker[] = romanceCompletionGaps(project, { task }).slice(0, 4).map((message) => ({ id: "romance-gap", message, evidence: message.slice(0, 120) }));
   // 짙은 어둠에 주인공 빛이 없으면 걸을 바닥이 검은 구멍이다(J89).
   // 이벤트가 실행 중에 주인공 빛을 켜는 게임(setLighting 에 player 광원)은 기본 조명만 보고 막지 않는다.
   const runtimePlayerLight = allCommands(project).some(({ cmd }) => cmd.kind === "setLighting" && JSON.stringify(cmd).includes('"at":"player"'));
@@ -403,7 +418,7 @@ export function shipBlockers(project: Project, task: string): ShipBlocker[] {
     const finding = unlitDarkFinding(map);
     return finding ? [{ id: "dark-unlit", message: `「${map.name ?? map.id}」(${map.id}) ${finding.message.replace(/^시각 공백: /u, "")}`, evidence: `${map.id} ambient ${map.defaultLighting?.ambient}` }] : [];
   }).slice(0, 3);
-  return [...hidden, ...unlit, ...editorDefaultsLeft(project), ...endingClosureProblems(project), ...openingWithoutPlace(project), ...offPremiseArt(project, task), ...defaultPlaceLeaks(project, task), ...titleMismatch(project, task), ...requestedFeatureGaps(project, task), ...unreachable, ...spoilers];
+  return [...hidden, ...unlit, ...invisible, ...objectives, ...romance, ...editorDefaultsLeft(project), ...endingClosureProblems(project), ...openingWithoutPlace(project), ...offPremiseArt(project, task), ...defaultPlaceLeaks(project, task), ...titleMismatch(project, task), ...requestedFeatureGaps(project, task), ...unreachable, ...spoilers];
 }
 
 /** 게임이 «아직 안 지어졌다»는 신호 — 뼈대 자리표시만 남았거나 엔딩이 없다(편집기 기본 HUD·창 같은 마감 항목은 여기서 보지 않는다). */

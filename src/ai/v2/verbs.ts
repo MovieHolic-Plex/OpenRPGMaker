@@ -37,6 +37,7 @@ import { pickStageFrames, stageFrameProject, type EventBuildResult } from "./eve
 import { rememberObjectPlan, takeObjectPlan, type DrawObjectResult } from "./drawObject";
 import { dressRoom } from "./builders/dressRoom";
 import { tileMoveObjects } from "./builders/tileMove";
+import { planObjective } from "./discoverability";
 
 // 2026-10-23 5차: 고치기 3바퀴는 바퀴마다 다시 짓기+비평(20~35초)이라 던전 한 장에 200~250초가 들었다.
 // 속도 우선(6차)으로 1바퀴만 — 첫 비평의 major 를 한 번 고치고 남은 것은 보고한다.
@@ -592,6 +593,29 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
       return finishContent(id, "author_puzzle_chain", params, buildPuzzleChain(run, { ...args, mapId: args.mapId || env.ctx.currentMapId || "" }));
     },
   };
+  const setObjectiveVerb: PiToolShape = {
+    name: "set_objective", label: "현재 목표 걸기", concurrency: "exclusive",
+    description: "화면 오른쪽 위 「현재 목표」 줄에 지금 할 일 한 줄을 건다(불러오기·맵 이동 뒤에도 남는다). 게임을 만들면 반드시: at:'start' 로 시작 목표 하나, 그리고 이야기를 한 단계 넘기는 이벤트(열쇠를 줌·회상을 봄·스위치를 켬)마다 eventId 로 다음 목표 — 그 이벤트의 스위치 켜기·아이템 얻기 바로 뒤에 들어간다. 글은 장소·사람·물건 이름을 넣어 구체적으로(「창고 상자에서 태엽 열쇠를 찾자」, 「밤이 되면 집 현관에서 쉬자」). 엔딩을 부르는 이벤트에는 필요 없다.",
+    parameters: { type: "object", properties: {
+      text: { type: "string", description: "지금 할 일 한 줄(80자 안)" },
+      at: { type: "string", enum: ["start"], description: "start = 게임 시작 목표" },
+      eventId: { type: "string", description: "이 이벤트(id 또는 이름)가 이야기를 넘긴 뒤의 목표" },
+      mapId: { type: "string" },
+    }, required: ["text"] },
+    async execute(_id, params) {
+      const p = params as { text?: string; at?: string; eventId?: string; mapId?: string };
+      const plan = planObjective(env.ctx.project, { text: String(p.text ?? ""), ...(p.at ? { at: p.at } : {}), ...(p.eventId ? { eventId: String(p.eventId) } : {}), ...(p.mapId ? { mapId: String(p.mapId) } : {}) });
+      if (!plan.ok) return text({ ok: false, summary: plan.summary });
+      for (const entry of plan.events) {
+        const wrote = run.call("upsert_event", { mapId: entry.mapId, event: entry.event });
+        if (!wrote.ok) return text({ ok: false, summary: `목표를 넣지 못했다: ${wrote.summary}` });
+      }
+      // 목표 줄을 숨기는 HUD(이야기·공포 기본값은 objective:false 였다)면 켠다.
+      if (env.ctx.project.system.fieldHud?.objective === false) run.call("set_field_hud", { objective: true });
+      await env.checkpoint("set_objective");
+      return text({ ok: true, summary: plan.summary });
+    },
+  };
   const sealLockedRoomVerb: PiToolShape = {
     name: "seal_locked_room", label: "잠긴 방 막기", concurrency: "exclusive",
     description: "잠긴 문(eventId) 너머 방에 문을 거치지 않고 걸어 닿는 틈이 있으면 옆 벽 타일로 메운다(문 칸을 막고 시작·착지점에서 걸어 본다). 게임 검사 「잠긴 방」이 짚으면 쓴다.",
@@ -936,7 +960,7 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
     }
     return result;
   } });
-  const verbs = [makePlace, ...(makeGameOn() && wantsMakeGame(String(task ?? "")) ? [makeGame] : []), editPlace, moveObject, dressRoomVerb, addPeople, addEvent, addScene, ...(wantsPuzzle(String(task ?? "")) ? [authorPuzzleChain] : []), sealLockedRoomVerb, drawObjectVerb, placeObject, inspect, restoreEvent, ...(helpersOn() ? [askHelpers] : []), askUser].map((tool) => guard(flattenWrapperTool(tool)));
+  const verbs = [makePlace, ...(makeGameOn() && wantsMakeGame(String(task ?? "")) ? [makeGame] : []), editPlace, moveObject, dressRoomVerb, addPeople, addEvent, addScene, ...(wantsPuzzle(String(task ?? "")) ? [authorPuzzleChain] : []), sealLockedRoomVerb, setObjectiveVerb, drawObjectVerb, placeObject, inspect, restoreEvent, ...(helpersOn() ? [askHelpers] : []), askUser].map((tool) => guard(flattenWrapperTool(tool)));
   // 게임 요소(퀘스트·아이템·전투·파티) 요청이면 v1 게임 도구를 덧붙인다 — 기록은 도구 묶음이 env.record 로 직접 남긴다.
   const t = String(task ?? "");
   // 스토어 음악 카드(사용자가 듣고 고른다)를 띄웠으면 사용자 질문과 같다 — 끝맺음 관문이 «음악을 안 걸었다»며 넣기를 재촉하지 않게 한다.

@@ -183,7 +183,7 @@ export async function runAssistantV2(request: PiAgentRequest, options: RunPiAgen
       fixFromCalls = calls.length;
       env.requireToolNextTurn?.();
       env.freshContextNextTurn?.();
-      return vqaFollowUp(round, vqaFixBrief(env.request.task, env.ctx.project, round.defects, draft));
+      return vqaFollowUp(round, vqaFixBrief(env.request.task, env.ctx.project, round.defects, draft), vqaRounds.at(-2));
     }
     // 결함이 남은 채 끝나면 조수가 최종 보고에 남은 목록을 쓰게 한 번 더 돌린다(고치지 말고 정직하게). 그 보고는 검토자가 실제 변경에 대어 본다.
     if (vqaClean(round)) { vqaPhase = "done"; return undefined; }

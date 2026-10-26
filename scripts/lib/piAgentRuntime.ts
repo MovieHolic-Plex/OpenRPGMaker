@@ -903,7 +903,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
     ...(options.renderToolImage ? { renderArt: async (art: { resourceId: string } | { shotId: string; atMs: readonly number[] }) => {
       const ids = "resourceId" in art ? [art.resourceId] : animaticResourceIdsFor(ctx.project, art.shotId);
       const tool = "resourceId" in art ? "show_opening_image" : "preview_opening_animatic";
-      const data = "resourceId" in art ? { resourceId: art.resourceId } : { shotId: art.shotId, atMs: [...art.atMs], resourceIds: ids };
+      const data = "resourceId" in art ? { resourceId: art.resourceId } : { shotId: art.shotId, atMs: [...art.atMs], resourceIds: ids, bare: true };
       const png = await options.renderToolImage!(openingImageProject(ctx.project, ids), tool, data, options.signal);
       return png.startsWith("data:") ? png : `data:image/png;base64,${png}`;
     } } : {}),
