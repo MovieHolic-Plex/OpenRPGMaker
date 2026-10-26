@@ -697,7 +697,7 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
         if (!exact) {
           // 다시 지을 인자가 없는 방(손으로 고친 방·dress_room 으로 채운 방): 그림 칸 그대로 옮기거나 뺀다(2026-10-26 j81 교장실 소파).
           const moved = tileMoveObjects(env.ctx.project, p.mapId, edits);
-          moveBudget.set(p.mapId, used + 1);
+          if (moved.ok) moveBudget.set(p.mapId, used + 1);
           if (moved.ok) env.ctx.project = moved.project;
           const summary = moved.ok
             ? `${moved.done.join(" · ")}${moved.refused.length ? ` — 못 한 것: ${moved.refused.join(" · ")}` : ""} (그림 칸 그대로 옮김 — 방의 나머지는 그대로)`

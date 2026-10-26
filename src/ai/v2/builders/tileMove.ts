@@ -49,22 +49,26 @@ export function tileMoveObjects(project0: Project, mapId: string, edits: readonl
     const bottom = Math.max(...picked.map((c) => c.y));
     const anyBlocks = picked.some((c) => blocks(c.upper) || blocks(c.overlay));
     let why = "";
+    // 통행은 «자기 칸을 걷어 낸 맵»으로 본다 — 한 칸만 밀면 새 발이 옛 발 칸에 걸친다.
+    const cleared = withLayers(project, map, layers);
+    const clearedMap = cleared.maps[mapId]!;
     for (const c of picked) {
       const x = c.x + dx, y = c.y + dy;
       if (x < 0 || y < 0 || x >= map.width || y >= map.height) { why = `(${x},${y}) 가 맵 밖이다`; break; }
       const j = y * W + x;
       if ((layers.upper[j] ?? -1) >= 0 || (layers.overlay[j] ?? -1) >= 0) { why = `(${x},${y}) 에 다른 물체가 있다`; break; }
       const foot = anyBlocks ? blocks(c.upper) || blocks(c.overlay) : c.y === bottom;
-      if (foot && !isPassable(project, map, x, y)) { why = `발 칸 (${x},${y}) 가 걷는 바닥이 아니다`; break; }
+      if (foot && !isPassable(cleared, clearedMap, x, y)) { why = `발 칸 (${x},${y}) 가 걷는 바닥이 아니다`; break; }
       if (foot && (map.events ?? []).some((e) => e.x === x && e.y === y)) { why = `발 칸 (${x},${y}) 에 이벤트가 있다`; break; }
     }
     if (why) { refused.push(`「${cluster.label}」 → (${edit.to.x},${edit.to.y}): ${why}`); continue; }
     for (const c of picked) { const j = (c.y + dy) * W + c.x + dx; layers.upper[j] = c.upper; layers.overlay[j] = c.overlay; }
     const next = withLayers(project, map, layers);
     const now = access(next, mapId);
-    if (!Number.isFinite(base.stranded) || now.stranded > base.stranded || now.cutOff > base.cutOff) { refused.push(`「${cluster.label}」 → (${edit.to.x},${edit.to.y}): 옮기면 길이나 이벤트가 막혀 되돌렸다`); continue; }
+    if (!Number.isFinite(base.stranded)) { refused.push(`「${cluster.label}」 — 걸어 닿는 정도를 잴 시작 칸이 없어 옮기지 않았다`); continue; }
+    if (now.stranded > base.stranded || now.cutOff > base.cutOff) { refused.push(`「${cluster.label}」 → (${edit.to.x},${edit.to.y}): 옮기면 길이나 이벤트가 막혀 되돌렸다`); continue; }
     project = next; base = now;
-    done.push(`「${cluster.label}」 (${edit.at.x},${edit.at.y}) → (${edit.to.x},${edit.to.y})`);
+    done.push(`「${cluster.label}」 (${edit.at.x},${edit.at.y}) → (${edit.to.x},${edit.to.y})${edit.face ? " — 방향(face)은 손으로 고친 방이라 그대로" : ""}`);
   }
   return { ok: done.length > 0, project, done, refused };
 }
