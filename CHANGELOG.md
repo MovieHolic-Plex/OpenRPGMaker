@@ -5,6 +5,12 @@
 
 <!-- releases -->
 
+## 0.347.2 — 2026-10-26
+
+### 수정
+
+- **handInterior** — keep subway platform full width and seat train-car north seats (J45) (#3620) (`302fa31`)
+
 ## 0.347.1 — 2026-10-26
 
 ### 수정
