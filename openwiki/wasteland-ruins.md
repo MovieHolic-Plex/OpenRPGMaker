@@ -150,6 +150,12 @@ modern 계열이고 팔레트는 modern_city 에 잠겨 있다. 그림은 코드
 - 남은 것: husk-b(2.67배, 버들항 집 3.5배보다 작음 — 검수 FAIL), lean-doors(화풍 FAIL)·gate-scrap(검수 안 됨)은 `legacy_r62` 로 옛 그림, 정착지·판잣집촌 맵에 큰 폐허가 거의 안 놓여 버들항 마을보다 낮아 보임(구성기 과제).
 - 관문 묶음 파일: `GATE_ITEMS=<path> wl_all.py gate …` 로 작업자마다 따로 쓴다(동시 실행).
 
+### r65 에서 더한 것 (지붕선·husk-b·고요한 길)
+
+- **지붕선:** 길가 정착지 뒷줄이 큰 폐건물(husk-*)·2층 판잣집을 거처와 번갈아 세운다(`rowOf` 의 `reach` 10 — 뒷마당 울이 줄 머리를 막아 한 채도 못 서던 문제). 위 방벽은 북쪽 뒷줄 가장 높은 지붕 위로 올린다. 판잣집 덩이는 한쪽 끝에 큰 거처나 폐건물 하나(`BIG_SHANTY`)를 두 줄 높이로 먼저 세운다. Sonnet 검수 FAIL→PASS (`_review/r65/skyline`).
+- **husk-b:** 5×4 → 5×6, 2층 앞면, 보이는 높이 87px = 주인공 3.6배. 관문 PASS, Sonnet PASS.
+- **asphalt-ph:** `_ap_tex_calm` — 덩이 골재를 버리고 낱화소 알 결(12~22%, 다섯 단). 관문 PASS, Sonnet PASS(`_review/r65/huskb-asph`). 길 덧그림 표본은 그대로 `asphalt-ph62` 바탕.
+
 ## 검수 기록
 
 - **증거:** `tiledata/wasteland-ruins/_review/`
