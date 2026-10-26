@@ -463,22 +463,5 @@ describe("tileset palette placement parameters T1a", () => {
     expect(mapOf(first.ctx, first.mapId).lowerTiles).toContain(51);
   });
 
-  it("stamp_structure applies preset role tiles and replays with the same seed", () => {
-    const first = contextWithMap(24, 24);
-    const second = contextWithMap(24, 24);
-    first.tileset.priority[61] = "upper";
-    second.tileset.priority[61] = "upper";
-    addToolPreset(first.tileset, [{ role: "roof", tileIds: [61] }]);
-    addToolPreset(second.tileset, [{ role: "roof", tileIds: [61] }]);
-    const args = { template: "plaster", origin: { x: 2, y: 2 }, presetId: "pp_tools", paletteRole: "roof", seed: 13 };
-
-    const a = runTool(first.ctx, "stamp_structure", { mapId: first.mapId, ...args });
-    const b = runTool(second.ctx, "stamp_structure", { mapId: second.mapId, ...args });
-
-    expectOk(a);
-    expectOk(b);
-    expect(dataRecord<{ paletteTiles: number }>(a).paletteTiles).toBeGreaterThan(0);
-    expect(mapOf(first.ctx, first.mapId).upperTiles).toEqual(mapOf(second.ctx, second.mapId).upperTiles);
-    expect(mapOf(first.ctx, first.mapId).upperTiles).toContain(61);
-  });
+  // Removed it "stamp_structure applies preset role tiles": stamp_structure was removed from the tool registry on purpose.
 });

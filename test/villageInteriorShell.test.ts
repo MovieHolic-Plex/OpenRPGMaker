@@ -1,11 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { buildHouseInteriorPlan, type HouseInteriorProgram, type HouseInteriorScale } from "@/editor/houseInteriors";
-import { isCeilingTile } from "@/editor/interiorHouseWallGrammar";
 import type { InteriorRoomPlan, RoomSpec } from "@/editor/interiorRoomPipeline";
 import { createEmptyToolProject } from "@/editor/tools/emptyProject";
-import { runTool } from "@/editor/tools/toolRunner";
-import type { ToolContext } from "@/editor/tools/types";
-import type { GameMap } from "@/project/types";
 
 const SCALES: readonly HouseInteriorScale[] = ["cottage2", "cottage3", "cottage-l", "mansion"];
 const PROGRAMS: readonly HouseInteriorProgram[] = ["dwelling", "shop", "inn", "workshop", "study", "manor"];
@@ -18,17 +14,6 @@ function stockPlans(): InteriorRoomPlan[] {
     plans.push(buildHouseInteriorPlan({ mapId: `m_${scale}_${program}_${floor}_${seed}` as never, name: "x", seed, scale, program, floor, project }));
   }
   return plans;
-}
-
-function villageInteriors(seed: number): GameMap[] {
-  const context: ToolContext = { project: createEmptyToolProject("probe") };
-  const result = runTool(context, "author_village", {
-    target: { kind: "new", mapId: "m", name: "m", width: 64, height: 40 },
-    houseCount: 8, seed, morphology: "street", countPolicy: "exact", forestDensity: "normal",
-    theme: "눈 덮인 항구 마을", npcCount: 0,
-  });
-  expect(result.ok, result.summary).toBe(true);
-  return Object.values(context.project.maps).filter((map) => map.id.startsWith("map_house_interior"));
 }
 
 const rooms = (plan: InteriorRoomPlan): readonly RoomSpec[] => plan.rooms ?? [];
@@ -69,23 +54,4 @@ describe("stock house interiors — one rectangular shell", () => {
   });
 });
 
-describe("village house interiors — partitions", () => {
-  it("runs the north wall face across a one-column partition instead of letting the ceiling cut down between rooms", () => {
-    let partitions = 0;
-    for (const seed of [1, 2]) {
-      for (const map of villageInteriors(seed)) {
-        const plan = map.roomHarnessPlan!.plan as InteriorRoomPlan;
-        const list = rooms(plan);
-        for (const a of list) for (const b of list) {
-          if (b.x !== a.x + a.w + 1 || a.y !== b.y) continue;
-          partitions += 1;
-          const x = a.x + a.w;
-          for (const y of [a.y - 1, a.y - 2]) {
-            expect(isCeilingTile(map.lowerTiles[y * map.width + x]!), `${map.id} (${x},${y})`).toBe(false);
-          }
-        }
-      }
-    }
-    expect(partitions).toBeGreaterThan(0);
-  }, 60_000);
-});
+// Removed describe "village house interiors — partitions": author_village was removed from the tool registry on purpose.

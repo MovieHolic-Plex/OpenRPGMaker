@@ -1,50 +1,16 @@
-import { beforeAll, expect, it } from "vitest";
+import { expect, it } from "vitest";
 import { createBlankProject } from "@/project/defaults";
-import { runTool } from "@/editor/tools/toolRunner";
 import { INTERIOR_OBJECT_CATALOG, interiorObjectById } from "@/editor/interiorObjectCatalog";
 import { INTERIOR_TILE_SEMANTICS } from "@/project/defaults/tileSemanticsInterior";
 import { applyEasyRpgThemeMetadataPacks, INTERIOR_HARNESS_GROUPS } from "@/project/tilesetHarness/themePacks";
-import { isPassable } from "@/project/collision";
-import type { Project } from "@/project/types";
 
-let project: Project;
-beforeAll(() => {
-  const ctx = { project: createBlankProject() };
-  const result = runTool(ctx, "place_concept", { template: true, query: "inn", mapId: "tile_review_inn", seed: 7 }, { dryRun: false });
-  expect(result.ok, result.summary).toBe(true);
-  project = ctx.project;
-});
+// Removed beforeAll that built an inn with place_concept: place_concept was removed from the tool registry on purpose.
 
-it("uses one complete 1x1 stair at each descent instead of pairing two variants", () => {
-  const stair = interiorObjectById("stairs_down");
-  expect(stair && [stair.width, stair.height, stair.cells.length]).toEqual([1, 1, 1]);
-  for (const id of ["tile_review_inn_2f", "tile_review_inn_3f"]) {
-    const map = project.maps[id];
-    if (!map) throw new Error("Floor missing");
-    expect(map.upperTiles.filter(tile => tile === 474 || tile === 475)).toHaveLength(1);
-  }
-});
+// Removed it "uses one complete 1x1 stair": place_concept was removed from the tool registry on purpose.
 
-it("marks the lower entrance with tile 176 while keeping it passable", () => {
-  const map = project.maps.tile_review_inn;
-  if (!map) throw new Error("Ground floor missing");
-  const entry = map.events.find(event => event.id === `ev_entrance_${map.id}`);
-  if (!entry) throw new Error("Entrance missing");
-  expect(map.upperTiles[entry.y * map.width + entry.x]).toBe(176);
-  expect(isPassable(project, map, entry.x, entry.y)).toBe(true);
-});
+// Removed it "marks the lower entrance with tile 176": place_concept was removed from the tool registry on purpose.
 
-it("puts the entrance marker on the south wall opening, not one tile inside", () => {
-  const map = project.maps.tile_review_inn;
-  if (!map) throw new Error("Ground floor missing");
-  const plan = map.roomHarnessPlan?.plan as { door: { x: number; y: number } } | undefined;
-  if (!plan) throw new Error("Plan missing");
-  const entry = map.events.find(event => event.id === `ev_entrance_${map.id}`);
-  if (!entry) throw new Error("Entrance missing");
-  expect(entry).toMatchObject({ x: plan.door.x, y: plan.door.y + 1 });
-  expect(map.upperTiles[plan.door.y * map.width + plan.door.x]).not.toBe(176);
-  expect(map.upperTiles[entry.y * map.width + entry.x]).toBe(176);
-});
+// Removed it "puts the entrance marker on the south wall": place_concept was removed from the tool registry on purpose.
 
 it("removes rejected tiles from classification, groups and generated furniture", () => {
   const rejected = [408, 409, 410];
@@ -60,9 +26,7 @@ it("removes rejected tiles from classification, groups and generated furniture",
     expect(INTERIOR_OBJECT_CATALOG.some(object => object.cells.some(cell => cell.tile === tile))).toBe(false);
     expect(tileset.tileMeta?.[tile]?.source).toBe("unknown");
   }
-  const map = project.maps.tile_review_inn;
-  if (!map) throw new Error("Inn missing");
-  expect([...map.lowerTiles, ...map.upperTiles].some(tile => rejected.includes(tile))).toBe(false);
+  // Removed the generated-inn check: place_concept was removed from the tool registry on purpose.
 });
 
 it("classifies 209 and 239 as a vertical flue assembly", () => {

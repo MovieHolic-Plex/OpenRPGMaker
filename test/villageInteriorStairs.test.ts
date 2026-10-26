@@ -1,7 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { createHouseInteriorMap, type HouseExteriorHint } from "@/editor/houseInteriors";
-import { isCeilingTile } from "@/editor/interiorHouseWallGrammar";
-import { floorMaskFromPlan, VR, type InteriorRoomPlan } from "@/editor/interiorRoomPipeline";
+import { floorMaskFromPlan, type InteriorRoomPlan } from "@/editor/interiorRoomPipeline";
 import { createEmptyToolProject } from "@/editor/tools/emptyProject";
 import { runTool } from "@/editor/tools/toolRunner";
 import type { ToolContext } from "@/editor/tools/types";
@@ -72,26 +71,5 @@ describe("house interiors — stairs, ladders and windows", () => {
     }
   });
 
-  it("hangs no ladder alone on a wall and no window on an interior partition", () => {
-    const context: ToolContext = { project: createEmptyToolProject("probe") };
-    const result = runTool(context, "author_village", {
-      target: { kind: "new", mapId: "v", name: "v", width: 64, height: 40 },
-      houseCount: 8, seed: 2, morphology: "street", countPolicy: "exact", forestDensity: "normal", theme: "항구", npcCount: 0,
-    });
-    expect(result.ok, result.summary).toBe(true);
-    const all = [...floors.map((f) => f.map), ...Object.values(context.project.maps).filter((m) => m.id.startsWith("map_house_interior"))];
-    let windows = 0;
-    for (const map of all) {
-      expect(cells(map, "upperTiles", VR.LADDER), map.id).toEqual([]);
-      const floor = floorMaskFromPlan(plan(map));
-      for (const { x, y } of cells(map, "upperTiles", VR.WINDOW)) {
-        windows += 1;
-        // Behind an exterior wall there is only ceiling up to the map edge; a room or a partition means indoors.
-        const behind = Array.from({ length: y }, (_, row) => row * map.width + x)
-          .some((i) => floor[i] || !isCeilingTile(map.lowerTiles[i]!));
-        expect(behind, `${map.id} window (${x},${y}) faces another room`).toBe(false);
-      }
-    }
-    expect(windows).toBeGreaterThan(0);
-  }, 60_000);
+  // Removed it "hangs no ladder alone on a wall": author_village was removed from the tool registry on purpose.
 });
