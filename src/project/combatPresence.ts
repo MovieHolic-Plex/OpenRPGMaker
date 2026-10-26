@@ -7,7 +7,7 @@
  *
  * 전투가 있다 = 액션 전투·몬스터 파티를 켰거나, 어느 맵에 인카운트·필드 몬스터가 있거나, 어느 이벤트·공용 이벤트가 전투를 연다.
  * 돈을 쓴다 = 전투가 있거나(보상), 어느 이벤트가 상점·여관을 열거나 돈을 바꾸거나, 시작 돈이 있다.
- * 프로젝트 객체마다 한 번만 잰다(메뉴를 열 때마다 맵 전체를 문자열로 만들지 않게).
+ * 캐시하지 않는다 — 조수 도구는 프로젝트를 제자리에서 고치므로 객체 단위 캐시는 전투를 넣은 뒤에도 「전투 없음」을 돌려준다.
  */
 import type { Project } from "./types";
 
@@ -15,7 +15,6 @@ const COMBAT_KINDS = /"kind":"(?:battleProcessing|tacticsBattle|spawnFieldEnemy)
 const MONEY_KINDS = /"kind":"(?:shop|inn|changeGold)"/u;
 
 type Presence = { combat: boolean; money: boolean };
-const cache = new WeakMap<Project, Presence>();
 
 function measure(project: Project): Presence {
   const system = project.system as unknown as Record<string, unknown>;
@@ -37,11 +36,7 @@ function measure(project: Project): Presence {
   return { combat, money: money || combat || startGold > 0 };
 }
 
-function presence(project: Project): Presence {
-  let hit = cache.get(project);
-  if (!hit) { hit = measure(project); cache.set(project, hit); }
-  return hit;
-}
+function presence(project: Project): Presence { return measure(project); }
 
 /** 이 게임에 전투가 있다(턴제·전술·액션·몬스터 파티·인카운트·필드 몬스터). */
 export function gameHasCombat(project: Project): boolean { return presence(project).combat; }

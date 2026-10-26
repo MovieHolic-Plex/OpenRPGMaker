@@ -7,6 +7,7 @@
 import { applyRomanceDefaults } from "@/project/romancePreset";
 import { GENRE_LOCK_PRESETS } from "@/project/genreLock";
 import { fieldMenu, storyFieldMenu } from "@/project/fieldMenu";
+import { gameHasCombat } from "@/project/combatPresence";
 import { resolveNpcGraphic } from "@/assets/charsetQuery";
 import { findCharsetAsset } from "@/assets/charsetCatalog";
 import { charsetBattlerForCharacter } from "@/assets/charsetBattlers";
@@ -55,7 +56,7 @@ export function applyStorySetupDefaults(project: Project, task: string, freshSta
   const hero = redressStoryHero(project, task);
   if (hero) applied.push(hero);
   // 주인공 차림을 바꾸지 않았어도(이미 다른 칩) 공장 기본 무기·방어구는 뺀다 — 전투 없는 게임에 검·방패·갑옷이 남았다(J88).
-  if (stripFactoryHeroGear(project)) applied.push("주인공 기본 무기·방어구 뺌");
+  if (!gameHasCombat(project) && stripFactoryHeroGear(project)) applied.push("주인공 기본 무기·방어구 뺌");
   // ESC 메뉴도 전투 없는 기본으로 — 스킬·장비·파티가 아무 일도 안 하는 JRPG 틀로 읽혔다(2026-10-25 판정 J39). 저작한 메뉴·연애 메뉴는 그대로.
   if (!fieldMenu(project)) {
     project.meta.oprnFieldMenu = storyFieldMenu();
