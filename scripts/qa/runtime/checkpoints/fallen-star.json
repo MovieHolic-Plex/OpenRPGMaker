@@ -4159,9 +4159,9 @@
   {
    "id": "act2-b6-enter",
    "label": "제2막 B6 — 새벽샘 북쪽 길 끝 → 북방 관문 요새",
-   "note": "act2Opening.ts northFortress — author_dungeon entrance (26,0)",
+   "note": "act2Opening.ts northFortress — author_dungeon entrance (25,0) — 길은 성벽 사이 한 칸",
    "mapId": "fs2_dawnwell",
-   "x": 24,
+   "x": 25,
    "y": 3,
    "facing": "up",
    "switches": {
@@ -4368,7 +4368,7 @@
        "kind": "repeatUntil",
        "testid": "dialogue-choice-frame",
        "state": "present",
-       "maxRounds": 10,
+       "maxRounds": 24,
        "ops": [
         {
          "kind": "key",

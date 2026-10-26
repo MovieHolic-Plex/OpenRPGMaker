@@ -1100,7 +1100,7 @@ function snowPass(project: Project, exec: Exec): void {
     page("ev_fs2_snow_back_p", "요새로", [], [transfer(FS2_FORTRESS_ID, { x: FORT.sarah.x, y: FORT.sarah.y + 1 }, "down")], { trigger: { kind: "playerTouch" }, priority: "below" }),
   ]);
   // 들어서면 한 번 — 이리스 없는 눈길.
-  addEv(project, FS2_SNOW.mapIds[0]!, "ev_fs2_snow_arrive", "서리 가도", { x: 0, y: 0 }, [
+  addEv(project, FS2_SNOW.mapIds[0]!, "ev_fs2_snow_arrive", "서리 가도", { x: 1, y: 0 }, [
     page("ev_fs2_snow_arrive_idle", "대기", [], [], { priority: "below" }),
     page("ev_fs2_snow_arrive_run", "들어선다", [sw(SW_SARAH)], [
       wait(500),
@@ -1135,6 +1135,233 @@ function snowPass(project: Project, exec: Exec): void {
 }
 
 // ════════════════════════════════════════════════════════════════════
+// 11. B8 서리나루 — 얼어붙은 못가 나루 마을(author_beodeul_town theme snow). 하르마(세린 이야기 · 잔 일 Q5 얼음 낚시),
+//     심문회 징발대가 막은 장작 썰매(Q6 · 새라의 한마디), 여관(별빛 결정 · 썰매를 찾아 주면 공짜), 못가 「대답의 등」.
+// ════════════════════════════════════════════════════════════════════
+
+export const FS2_FROST_ID = "fs2_frostford";
+export const FS2_FROST_INN_ID = "fs2_frostford_inn";
+const FS2_TROUT = "item_fs2_silver_trout";
+const FS2_HARMA_OAR = "equip_fs2_harma_oar";
+const SW_FROST_ARRIVE = "sw_fs2_frost_arrived";
+const SW_HARMA = "sw_fs2_harma_told";
+const SW_Q5_TAKEN = "sw_fs2_q5_trout_asked";
+const SW_Q5_FISH = "sw_fs2_q5_trout_caught";
+const SW_Q5_DONE = "sw_fs2_q5_trout_done";
+const SW_Q6_DONE = "sw_fs2_q6_sled_back";
+const HARMA = "나루지기 하르마";
+export const FS2_FROST: { entry: Cell; harma: Cell; holes: Cell[]; innDoor: Cell; innExit: Cell; sled: Cell; locked: Cell[] } =
+  { entry: { x: 0, y: 0 }, harma: { x: 0, y: 0 }, holes: [], innDoor: { x: 0, y: 0 }, innExit: { x: 0, y: 0 }, sled: { x: 0, y: 0 }, locked: [] };
+
+function tileLabel(project: Project, map: GameMap, i: number, layer: number[] | undefined): string {
+  const meta = (project.tilesets[map.tilesetId] as unknown as { tileMeta?: ({ label?: string } | null)[] }).tileMeta ?? [];
+  const t = layer?.[i];
+  return t !== undefined && t >= 0 ? meta[t]?.label ?? "" : "";
+}
+
+function frostford(project: Project, exec: Exec, hubId: string): void {
+  for (const [id, name] of [[SW_FROST_ARRIVE, "B8: 서리나루 도착"], [SW_HARMA, "B8: 하르마 — 세린 이야기"], [SW_Q5_TAKEN, "B8 Q5: 은빛 송어 부탁"],
+    [SW_Q5_FISH, "B8 Q5: 은빛 송어를 낚았다"], [SW_Q5_DONE, "B8 Q5: 하르마에게 송어를 줬다"], [SW_Q6_DONE, "B8 Q6: 장작 썰매를 되찾았다"]] as const) ensureSwitch(project, id, name);
+  exec(project, "upsert_item", { item: {
+    id: FS2_TROUT, name: "은빛 송어", type: "special", occasion: "never", consumable: false, price: 0, iconResourceId: "cc0-jetrel-fish",
+    description: "얼음 밑에서 올라온 송어. 비늘이 달빛처럼 희다.\n하르마가 「첫째 아이의 고기」라 부르는 물고기.",
+  } });
+  const actorClasses = (ids: string[]): string[] => [...new Set(ids.map((id) => project.database.actors.find((a) => a.id === id)?.classId).filter((c): c is string => !!c))];
+  const wearers = ["actor_hero", "actor_fs_elena", FS2_SARAH_ACTOR, "actor_fs_iris"].filter((id) => project.database.actors.some((a) => a.id === id));
+  exec(project, "upsert_equipment", { equipment: {
+    id: FS2_HARMA_OAR, name: "하르마의 은빛 노", slot: "accessory", price: 0, iconResourceId: "cc0-jetrel-necklace", imageResourceId: "cc0-jetrel-necklace",
+    description: "나루지기 집안에 내려오는 작은 은 노 모양 목걸이. 얼음 속성 피해를 막는다.\n「대답한 사람 집 물건이야. 달에도 닿는다더라.」",
+    statBonuses: { attack: 0, defense: 6, mind: 6, agility: 0 }, equippableActorIds: wearers, equippableClassIds: actorClasses(wearers), elementalDefenseIds: ["ice"],
+  } });
+
+  // 마을 — 못(얼음낚시터)·나루 소품은 설원 마을 문법이 깐다. 문 앞 칸은 결과 data.doors.
+  const town = exec(project, "author_beodeul_town", { id: FS2_FROST_ID, name: "서리나루", theme: "snow", houseCount: 5, seed: 81 }) as
+    { doors?: { kit: string; x: number; y: number; reached?: boolean }[]; work?: Cell & { name?: string }; anchors?: string[] } | undefined;
+  const doors = (town?.doors ?? []).filter((d) => d.reached !== false && !(town?.anchors ?? []).includes(d.kit));
+  if (doors.length < 3) throw new Error("[fallen-star act2] 서리나루 집 문이 모자란다");
+  const work = town?.work ?? { x: 16, y: 12 };
+  exec(project, "set_scene_mood", { mapId: FS2_FROST_ID, applyMode: "map", weather: { kind: "snow", intensity: 0.35 }, lighting: { ambient: 0.85, color: "#c8d4ee" } });
+  // 설원 길 두 번째 맵 북쪽 끝 → 마을 남쪽.
+  if (!FS2_SNOW.exit) throw new Error("[fallen-star act2] 설원 길 출구가 없다");
+  const b = originEdge(project, M(project, FS2_FROST_ID), "south");
+  exec(project, "create_transfer_pair", { a: { mapId: FS2_SNOW.mapIds[1]!, ...FS2_SNOW.exit }, b: { mapId: FS2_FROST_ID, ...b } });
+  FS2_FROST.entry = b;
+
+  // 얼음 구멍(설원 키트 「얼음 구멍」 칸, 막힘) — 왼쪽 칸마다 하나.
+  const tm = M(project, FS2_FROST_ID);
+  for (let i = 0; i < tm.upperTiles.length; i += 1) {
+    if (tileLabel(project, tm, i, tm.upperTiles) !== "버들항 장소 · 얼음 구멍") continue;
+    if (i % tm.width > 0 && tileLabel(project, tm, i - 1, tm.upperTiles) === "버들항 장소 · 얼음 구멍") continue;
+    FS2_FROST.holes.push({ x: i % tm.width, y: Math.floor(i / tm.width) });
+  }
+  if (!FS2_FROST.holes.length) throw new Error("[fallen-star act2] 서리나루 얼음 구멍이 없다");
+
+  // 여관 — 마을 가운데에 가까운 집. 하르마 집은 못에 가장 가까운 집(잠긴 채 하르마는 못가에 선다).
+  const mid = { x: tm.width / 2, y: tm.height / 2 };
+  const byDist = (c: Cell) => (d: Cell) => Math.hypot(d.x - c.x, d.y - c.y);
+  // 여관은 붉은 지붕 목골집(설원 키트 w2)이 있으면 그 집 — 없으면 가운데에 가까운 집.
+  const innFront = doors.find((d) => d.kit === "bd-pick-snowfield-w2") ?? [...doors].sort((p, q) => byDist(mid)(p) - byDist(mid)(q))[0]!;
+  FS2_FROST.innDoor = { x: innFront.x, y: innFront.y - 1 };
+  const room = exec(project, "build_hand_interior_room", { mapId: FS2_FROST_INN_ID, name: "서리나루 · 얼음등 여관", layout: { program: "inn", seed: 1, variant: 1, styleVariant: "A" }, ceiling: "wood" }) as
+    { exits?: { x: number; y: number; width?: number }[] } | undefined;
+  const ex = room?.exits?.[0];
+  if (!ex) throw new Error("[fallen-star act2] 서리나루 여관 출구가 없다");
+  FS2_FROST.innExit = { x: ex.x + Math.floor(((ex.width ?? 1) - 1) / 2), y: ex.y };
+  exec(project, "create_transfer_pair", {
+    a: { mapId: FS2_FROST_ID, x: innFront.x, y: innFront.y, doorAt: FS2_FROST.innDoor },
+    b: { mapId: FS2_FROST_INN_ID, x: FS2_FROST.innExit.x, y: FS2_FROST.innExit.y },
+  });
+  // 문 짝 다듬기 — 바깥은 문 그림 칸의 부딪힘 문(들어가면 위를 본다), 나오면 문 앞 칸에 아래를 보고 선다.
+  const goesTo = (target: string) => (e: GameEvent) => JSON.stringify(e).includes(`"mapId":"${target}"`);
+  const outer = M(project, FS2_FROST_ID).events.find((e) => String(e.id).startsWith("ev_gate_") && goesTo(FS2_FROST_INN_ID)(e));
+  if (outer) {
+    outer.x = FS2_FROST.innDoor.x; outer.y = FS2_FROST.innDoor.y;
+    for (const pg of outer.pages ?? []) {
+      pg.priority = "same"; (pg as unknown as Rec).overlapForbidden = true;
+      for (const cmd of pg.commands ?? []) if ((cmd as unknown as Rec).kind === "transfer") (cmd as unknown as Rec).direction = "up";
+    }
+  }
+  for (const e of M(project, FS2_FROST_INN_ID).events) if (goesTo(FS2_FROST_ID)(e)) for (const pg of e.pages ?? []) for (const cmd of pg.commands ?? []) {
+    const t = cmd as unknown as Rec;
+    if (t.kind === "transfer") { t.x = innFront.x; t.y = innFront.y; t.direction = "down"; }
+  }
+  exec(project, "set_map_properties", { mapId: FS2_FROST_INN_ID, bgm: { mode: "custom", resourceId: "cc0-bgm-rtp-rst-001" } });
+  // 여관 주인 — 썰매를 되찾아 주면 공짜. 별빛 결정은 홀 안쪽.
+  exec(project, "place_npc", {
+    mapId: FS2_FROST_INN_ID, id: "ev_fs2_frost_innkeeper", name: "여관 주인 오사", x: FS2_FROST.innExit.x + 3, y: FS2_FROST.innExit.y - 4, movement: "fixed",
+    graphic: { textureKey: "tex_easyrpg_charset_people2", characterIndex: 4 },
+    pages: [
+      { name: "기본", commands: [say("여관 주인 오사", "장작을 징발당해서 방이 차요.\n그래도 담요는 두꺼워요. 하룻밤에 20골드."), { kind: "inn", price: 20 }] },
+      { name: "썰매 뒤", conditions: [sw(SW_Q6_DONE)], commands: [say("여관 주인 오사", "썰매를 찾아 준 손님한테 돈을 받으면\n하르마 할머니한테 혼나요. 그냥 자요."), { kind: "inn", price: 0 }] },
+    ],
+  });
+  for (const [dx, dy] of [[-3, -3], [3, -3], [-4, -2], [4, -2], [0, -6]] as const) {
+    try {
+      exec(project, "place_savepoint", { mapId: FS2_FROST_INN_ID, x: FS2_FROST.innExit.x + dx, y: FS2_FROST.innExit.y + dy, id: "ev_fs2_frost_save", name: "별빛 결정", mode: "slot",
+        objectId: SAVE_CRYSTAL, prompt: "기록하시겠습니까?", sparkleRadius: 2 });
+      break;
+    } catch { /* 가구 칸 — 다음 자리 */ }
+  }
+
+  // 나머지 집 문 — 가짜 문이 되지 않게 한 줄씩.
+  const lockedLines = ["문틈으로 생선 굽는 냄새가 샌다. 「장작이 없어서 반만 익었어!」", "「심문회 사람이면 돌아가요.」 …문은 안 열린다.",
+    "아이가 창에 입김을 불어 등 모양을 그린다. 문은 잠겨 있다.", "빈집이다. 문고리에 얼음이 끼었다."];
+  doors.filter((d) => d !== innFront).forEach((d, k) => {
+    const at = { x: d.x, y: d.y - 1 };
+    FS2_FROST.locked.push(at);
+    addEv(project, FS2_FROST_ID, `ev_fs2_frost_door_${k}`, "닫힌 문", at, [
+      page(`ev_fs2_frost_door_${k}_p`, "닫힌 문", [], [narrate(lockedLines[k % lockedLines.length]!)]),
+    ]);
+  });
+
+  // 대답의 등 — 못 남쪽 기슭에 등 셋(설원 키트 등불). 못가 길을 막지 않는 자리만.
+  const pond = FS2_FROST.holes.reduce((a, h) => ({ x: Math.max(a.x, h.x), y: Math.max(a.y, h.y) }), { x: 0, y: 0 });
+  let lamps = 0;
+  for (const [dx, dy] of [[-8, 3], [-5, 4], [-2, 4], [1, 3], [-11, 3], [3, 2]] as const) {
+    if (lamps >= 3) break;
+    try { exec(project, "stamp_tileset_object", { mapId: FS2_FROST_ID, objectId: "bd-pick-snowfield-lamp", at: { x: pond.x + dx, y: pond.y + dy } }); lamps += 1; } catch { /* 길·집 칸 */ }
+  }
+  // 등불 빛 — 낮이라 약하게.
+  exec(project, "set_lighting_volume", { mapId: FS2_FROST_ID, applyMode: "map", ambient: 0.85, color: "#c8d4ee",
+    sources: FS2_FROST.holes.map((h, i) => ({ id: `hole${i}`, at: { x: h.x, y: h.y }, radius: 2, intensity: 0.25, color: "#9fd0ff" })) });
+
+  // 하르마 — 얼음낚시터 곁.
+  exec(project, "place_npc", {
+    mapId: FS2_FROST_ID, id: "ev_fs2_harma", name: HARMA, x: work.x, y: work.y + 1, movement: "fixed",
+    graphic: { query: "노인 여성" },
+    pages: [
+      { name: "처음", commands: [
+        say(HARMA, "별지기 옷이네. 오랜만에 보는구먼."),
+        say(HARMA, "우리 증조할미가 달에서 온 아이한테\n「잘 지내」 했대. 그 뒤로 이 호수는 안 얼어 죽어."),
+        say(KAEL, "…세린이라는 분을 아세요?"),
+        say(HARMA, "세린이? 알지. 등을 제일 멀리 띄우던 애.\n…그 애 아들이 이번에 탑으로 올라갔어."),
+        say(KAEL, "그 사람, 등을 띄우는 법은 안 잊었어요."),
+        say(HARMA, "그럼 됐다. 밤에 얼음 위로 나가 봐. 등이 하나 떠 있을 게다."),
+        setSw(SW_HARMA),
+        say(HARMA, "그 전에 부탁 하나. 심문회가 썰매를 다 끌어가서\n고기 잡을 사람이 없어. 저 구멍에서 은빛 송어 한 마리만."),
+        setSw(SW_Q5_TAKEN),
+        narrate("잔 일 「첫째 아이의 고기」 — 얼음 구멍에서 은빛 송어를 낚아 하르마에게.", { context: "system" }),
+      ] },
+      { name: "송어 기다림", conditions: [sw(SW_Q5_TAKEN)], commands: [say(HARMA, "구멍 앞에 서서 줄을 내리면 돼.\n첫째 아이처럼 기다리는 게 요령이지.")] },
+      { name: "송어", conditions: [sw(SW_Q5_FISH)], commands: [
+        say(HARMA, "오, 은빛이구먼. 첫째 아이의 고기야.\n대답을 받은 아이는 물고기 한 마리를 받았거든."),
+        item(FS2_TROUT, -1),
+        se("cc0-se-orp-inventory-cloth"),
+        item(FS2_HARMA_OAR, 1),
+        narrate("「하르마의 은빛 노」를 받았다.", { context: "system" }),
+        say(HARMA, "우리 집 노야. 얼음 위에서 미끄러지지 말라고."),
+        setSw(SW_Q5_DONE),
+      ] },
+      { name: "끝", conditions: [sw(SW_Q5_DONE)], commands: [say(HARMA, "밤에 얼음 위로 나가 봐.\n…그 애 아들, 등 띄우는 손은 엄마랑 똑같아.")] },
+    ],
+  });
+  FS2_FROST.harma = (() => { const e = M(project, FS2_FROST_ID).events.find((v) => v.id === "ev_fs2_harma"); return e ? { x: e.x, y: e.y } : { x: work.x, y: work.y + 1 }; })();
+
+  // 얼음 구멍 — 부탁을 받은 뒤 줄을 내리면 송어가 문다.
+  FS2_FROST.holes.forEach((h, k) => {
+    addEv(project, FS2_FROST_ID, `ev_fs2_frost_hole_${k}`, "얼음 구멍", h, [
+      page(`ev_fs2_frost_hole_${k}_idle`, "구멍", [], [narrate("얼음 구멍. 검은 물이 천천히 숨을 쉰다.")]),
+      page(`ev_fs2_frost_hole_${k}_fish`, "낚는다", [sw(SW_Q5_TAKEN)], [
+        narrate("줄을 내렸다. …얼음 밑에서 뭔가가 천천히 돈다."),
+        wait(900),
+        se("cc0-se-osx-splash-01"),
+        emote("player", "exclamation", 700),
+        narrate("손끝이 당긴다!"),
+        item(FS2_TROUT, 1),
+        narrate("「은빛 송어」를 낚았다.", { context: "system" }),
+        setSw(SW_Q5_FISH),
+      ]),
+      page(`ev_fs2_frost_hole_${k}_done`, "끝", [sw(SW_Q5_FISH)], [narrate("물이 조용하다. 한 마리면 충분하다.")]),
+    ]);
+  });
+
+  // Q6 징발된 장작 — 마을 북쪽 끝 장작 썰매 곁에 심문회 병사. 새라가 말하면 물러난다.
+  const knight = hubChip(project, hubId, "ev_fs_knight");
+  let sled: Cell | null = null;
+  for (const at of [{ x: work.x + 4, y: work.y - 4 }, { x: work.x + 6, y: work.y - 2 }, { x: work.x + 8, y: work.y - 5 }, { x: work.x + 2, y: work.y - 6 }]) {
+    try { exec(project, "stamp_tileset_object", { mapId: FS2_FROST_ID, objectId: "bd-pick-snowfield-sled", at }); sled = at; break; } catch { /* 다음 자리 */ }
+  }
+  if (!sled) throw new Error("[fallen-star act2] 장작 썰매 자리가 없다");
+  try { exec(project, "stamp_tileset_object", { mapId: FS2_FROST_ID, objectId: "bd-pick-snowfield-firewood", at: { x: sled.x + 2, y: sled.y } }); } catch { /* 장식 */ }
+  exec(project, "place_npc", {
+    mapId: FS2_FROST_ID, id: "ev_fs2_frost_requisition", name: "징발대 병사", x: sled.x, y: sled.y + 2, movement: "fixed", graphic: knight,
+    pages: [
+      { name: "썰매 지킴", commands: [
+        say("징발대 병사", "물러서. 이 썰매와 장작은 하늘탑 수비대 몫이다."),
+        say(SARAH, "…북문 기사 새라다. 탑 수비대는 장작이 남아돈다.\n이건 마을에 돌려놔라. 내가 발렌 님께 말한다."),
+        say("징발대 병사", "새, 새라 님…! 북문에 계신 줄만…\n…알겠습니다. 돌려놓겠습니다."),
+        fadeOut(600),
+        setSw(SW_Q6_DONE),
+        { kind: "setVariable", variableId: VAR_BOND_SARAH, op: "+=", value: 1 } as unknown as Command,
+        { kind: "callCommonEvent", commonEventId: "ce_party_bond_check" } as unknown as Command,
+        fadeIn(600),
+        narrate("잔 일 「징발된 장작」 — 장작 썰매가 마을로 돌아갔다. (여관 공짜 · 새라 유대 +1)", { context: "system" }),
+        say(SARAH, "…이 마을 장작으로 내 아버지 장례 불을 땠었지."),
+      ] },
+      { name: "물러남", conditions: [sw(SW_Q6_DONE)], commands: [] },
+    ],
+  });
+  // 물러난 뒤 — 병사는 사라진다(투명·아래층, 길을 막지 않는다).
+  const req = M(project, FS2_FROST_ID).events.find((e) => e.id === "ev_fs2_frost_requisition");
+  const gone = req?.pages?.[1];
+  if (gone) { gone.graphic = { transparent: true } as EventPage["graphic"]; gone.priority = "below"; (gone as unknown as Rec).overlapForbidden = false; }
+  FS2_FROST.sled = sled;
+
+  // 들어서면 한 번.
+  addEv(project, FS2_FROST_ID, "ev_fs2_frost_arrive", "서리나루", { x: 1, y: 0 }, [
+    page("ev_fs2_frost_arrive_idle", "대기", [], [], { priority: "below" }),
+    page("ev_fs2_frost_arrive_run", "들어선다", [sw(SW_SARAH)], [
+      wait(400),
+      narrate("얼어붙은 못가의 나루 마을. 굴뚝마다 연기가 가늘다."),
+      say(SARAH, "서리나루다. 장작을 다 뺏겨서 연기가 저것뿐이야."),
+      say(ELENA, "저기 못 위… 구멍 앞에 할머니가 서 있어."),
+      setSw(SW_FROST_ARRIVE),
+    ], { trigger: { kind: "auto" }, priority: "below" }),
+    page("ev_fs2_frost_arrive_done", "끝", [sw(SW_FROST_ARRIVE)], [], { priority: "below" }),
+  ]);
+}
+
+// ════════════════════════════════════════════════════════════════════
 
 export interface FallenAct2Ids { hub: string; observatory: string; smithy: string }
 
@@ -1153,5 +1380,6 @@ export function applyFallenAct2Opening(project: Project, exec: Exec, ids: Fallen
   dawnwellEvents(project);
   northFortress(project, exec, ids.hub);
   snowPass(project, exec);
+  frostford(project, exec, ids.hub);
   fortressEvents(project);
 }
