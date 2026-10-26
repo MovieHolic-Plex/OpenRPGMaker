@@ -446,6 +446,23 @@ export function createBattleSequencer(
       : `${withJosa(fallen.name, "이/가")} 쓰러졌다!`;
   }
 
+  /** HP 를 깎는 타격. 독·화상·맹독·혼란 자해·모래바람·싸라기눈은 damage 가 아니라 stateUpkeep 이다. */
+  function entryDealsHp(entry: BattleTimelineEntrySnapshot | undefined): entry is BattleTimelineEntrySnapshot {
+    return Boolean(entry?.targetId) && (entry?.amount ?? 0) > 0 && (entry?.kind === "damage" || entry?.kind === "stateUpkeep");
+  }
+
+  /** 선고는 자기 문장에 이미 「쓰러졌다」가 있다. 격파 대사를 한 번 더 붙이지 않는다. */
+  function upkeepAnnouncesFaint(entry: BattleTimelineEntrySnapshot): boolean {
+    return entry.kind === "stateUpkeep" && Boolean(entry.message?.includes("쓰러"));
+  }
+
+  /** 이 위치 뒤에 아직 재생할 타격·회복·빗나감·잔여 피해가 있는가. 결판 도장은 그게 끝난 뒤에 찍는다. */
+  function laterBattleStrike(entries: readonly BattleTimelineEntrySnapshot[], from: number): boolean {
+    return entries.slice(from).some((later) =>
+      later.kind === "damage" || later.kind === "healing" || later.kind === "miss"
+      || (later.kind === "stateUpkeep" && (later.amount ?? 0) > 0));
+  }
+
   /** 이 엔트리가 대상을 쓰러뜨린 마지막 유효타면 그 대상(표시 이름·편). 아니면 undefined. */
   function fallenTarget(
     entries: readonly BattleTimelineEntrySnapshot[],
@@ -453,7 +470,7 @@ export function createBattleSequencer(
     snapshot: BattleSnapshot,
   ): { readonly target: Parameters<typeof emeraldFaintLine>[0]; readonly name: string; readonly isEnemy: boolean } | undefined {
     const entry = entries[index];
-    if (entry.kind !== "damage" || !entry.targetId || (entry.amount ?? 0) <= 0) return undefined;
+    if (!entryDealsHp(entry) || upkeepAnnouncesFaint(entry)) return undefined;
     const departed = snapshot.departedEnemies?.find((enemy) => enemy.id === entry.targetId);
     const target = snapshot.enemies.find((enemy) => enemy.id === entry.targetId)
       ?? departed
@@ -463,7 +480,7 @@ export function createBattleSequencer(
     if (!target?.defeated) return undefined;
     for (let i = index + 1; i < entries.length; i += 1) {
       const later = entries[i];
-      if (later.targetId === entry.targetId && later.kind === "damage" && (later.amount ?? 0) > 0) return undefined;
+      if (later?.targetId === entry.targetId && entryDealsHp(later)) return undefined;
     }
     const isEnemy = Boolean(departed) || snapshot.enemies.some((enemy) => enemy.id === entry.targetId);
     const peers = isEnemy ? snapshot.enemies : snapshot.actors;
@@ -629,8 +646,7 @@ export function createBattleSequencer(
     // 결판을 내는 막타: 뒤에 남은 피해·회복·빗나감 엔트리가 없고 결과가 이미 정해졌으면, 격파 대사와
     // 동시에 결과 도장을 찍고 대사 체류를 줄인다 — 대사 660ms + 결과 홀드 900ms 동안 빈 필드만
     // 보였다(2026-09-25 녹화). finishTurn 의 onResultPending 은 같은 결과면 표시 계층이 무시한다.
-    const decisive = Boolean(killLine && snapshot.result && !entries.slice(entryOffset + 1)
-      .some((later) => later.kind === "damage" || later.kind === "healing" || later.kind === "miss"));
+    const decisive = Boolean(killLine && snapshot.result && !laterBattleStrike(entries, entryOffset + 1));
     const afterBeats = killLine
       ? (): void => {
         hooks.onActionMotion?.(undefined);
@@ -819,8 +835,7 @@ export function createBattleSequencer(
       const allies = fallen.filter((row) => !row.isEnemy).map((row) => row.name);
       if (enemies.length) lines.push(`${withJosa(enemies.join(", "), "을/를")} 쓰러뜨렸다!`);
       if (allies.length) lines.push(`${withJosa(allies.join(", "), "이/가")} 쓰러졌다!`);
-      const decisive = Boolean(lines.length && snapshot.result && !entries.slice(group.end)
-        .some((later) => later.kind === "damage" || later.kind === "healing" || later.kind === "miss"));
+      const decisive = Boolean(lines.length && snapshot.result && !laterBattleStrike(entries, group.end));
       // 이 광역기로 쓰러진 대상의 상태 변화(걸림→죽어서 풀림)는 말하지 않는다 — 「쓰러뜨렸다」 뒤에 「민첩이 내려갔다/풀렸다」가 붙었다(2026-10-24 실측).
       const fallenIds = new Set(fallen.map((row) => row.target.id));
       const toStates = (): void => {
