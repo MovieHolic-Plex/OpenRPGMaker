@@ -52,7 +52,8 @@ describe("BGM release manifest", () => {
   it("pins the complete sorted catalog with real digests and runtime filenames", () => {
     expect(manifest.schemaVersion).toBe(1);
     expect(manifest.version).toBe(1);
-    expect(manifest.repo).toBe("MovieHolic-Plex/rpg-zzu");
+    // 공개 저장소 이름이 OpenRPGMaker 로 바뀌었다(0d4f13e7c8 공개 기준 커밋) — 매니페스트도 그 저장소를 가리킨다.
+    expect(manifest.repo).toBe("MovieHolic-Plex/OpenRPGMaker");
     expect(manifest.tag).toBe("bgm-v1");
     expect(manifest.license).toBe(BGM_CATALOG_LICENSE);
     expect(manifest.count).toBe(BGM_CATALOG_TRACK_COUNT);
