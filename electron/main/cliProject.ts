@@ -5,9 +5,10 @@
 //
 // 메뉴 「폴더 열기」는 project.sqlite 가 없는 폴더도 연다(스토어를 만든다). 명령줄은 그렇게 하지 않는다.
 // 오타가 난 경로에 project.sqlite 를 심으면 사용자의 폴더가 프로젝트가 된다. 없거나 프로젝트가 아니면 무시한다.
+// macOS Finder 「다음으로 열기」는 argv 가 아니라 open-file 이다. 폴더거나, 고른 파일이 project.sqlite 이면 그 폴더를 연다.
 import { realpathSync, statSync } from "node:fs";
 import { homedir } from "node:os";
-import { join, resolve } from "node:path";
+import { basename, dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 /** electron/local-store/schema.ts 의 PROJECT_STORE_FILE 과 같다. 스키마 모듈은 SQL 을 품고 있어 입구에 끌려오지 않게 여기 적는다. */
@@ -91,6 +92,46 @@ export function inspectCurrentCliProject(): CliProjectHit {
   }
   cached = inspectCliProjectArgs(process.argv, process.cwd(), { fromIndex: electronUserArgIndex() });
   return cached;
+}
+
+/**
+ * macOS `open-file` 이 넘긴 절대 경로. 프로젝트가 아니면 null — 스토어를 새로 만들지 않는다.
+ * 폴더면 그 폴더, 고른 파일이 `project.sqlite` 이면 그 부모 폴더.
+ */
+export function projectDirFromOpenPath(filePath: string, options: CliProjectOptions = {}): string | null {
+  if (typeof filePath !== "string" || filePath.length === 0) return null;
+  let abs: string;
+  try { abs = resolve(filePath); } catch { return null; }
+  const isProjectDir = options.isProjectDir ?? defaultIsProjectDir;
+  let candidate: string | null = null;
+  try {
+    const info = statSync(abs);
+    if (info.isDirectory()) candidate = abs;
+    else if (info.isFile() && basename(abs) === CLI_PROJECT_STORE_FILE) candidate = dirname(abs);
+  } catch {
+    return null;
+  }
+  if (!candidate) return null;
+  try {
+    if (!isProjectDir(candidate)) return null;
+  } catch {
+    return null;
+  }
+  try { return realpathSync(candidate); } catch { return resolve(candidate); }
+}
+
+/**
+ * 처음 창이 시작 화면인가. QA 진입점과, 명령줄·open-file 로 이미 고른 프로젝트는 시작 화면이 아니다.
+ * 스플래시도 이 값이 거짓일 때 띄우지 않는다 — 시작 화면 신호를 기다리다 편집기 창이 숨지 않게.
+ */
+export function shouldBootToStartScreen(input: {
+  readonly smokePage: boolean;
+  readonly openProjectDirEnv: boolean;
+  readonly cliProjectDir: string | null;
+  readonly openFileProjectDir: string | null;
+}): boolean {
+  if (input.smokePage || input.openProjectDirEnv) return false;
+  return input.cliProjectDir === null && input.openFileProjectDir === null;
 }
 
 function isAppEntryFile(abs: string): boolean {

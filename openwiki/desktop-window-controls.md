@@ -11,6 +11,7 @@
 | macOS | `titleBarStyle: "hiddenInset"` + `trafficLightPosition` | 없음 (OS 신호등이 있다) | 신호등 + 렌더러가 비운 여백 82px |
 
 - 창은 `fullscreen: true` 로 뜬다(기존 동작 유지). 전체화면 단추로 1280×800 창 모드로 나온다. 최소 창 크기 1100×600.
+  아직 한 번도 보이지 않은 창을 앞으로 가져올 때(두 번째 실행·macOS open-file 이 스플래시 뒤의 창을 집음)도 `electron/main/windowShow.ts` 의 처음 보이기 순서를 쓴다. 이미 보였던 창은 사용자가 빠져나온 전체화면을 다시 켜지 않는다.
 - Windows 는 `titleBarOverlay`(OS가 단추를 그림)와 DOM 단추를 비교해 **DOM 단추**를 골랐다. 이유: ① 전체화면 단추를 같은 줄에
   둘 수 없다(오버레이는 OS 세 개 고정) ② 라벨·툴팁·i18n·테마 토큰을 우리가 통제 ③ 이 저장소 Linux 에서도 같은 코드가
   실제로 검증된다. 대가: Windows 11 「스냅 레이아웃」(최대화 단추 호버 팝업)이 없다 — 필요하면 Windows 만
@@ -23,7 +24,8 @@
 |---|---|
 | `electron/shared/windowControl.ts` | 동작 이름 `toggle-fullscreen｜minimize｜toggle-maximize｜close`, `WindowState`, `windowChromeFor(platform)` — 메인·프리로드·렌더러가 같은 표를 본다 |
 | `electron/shared/channels.ts` | `windowControl`(invoke), `windowFullscreen`(기존), **`windowState`**(조회 invoke + 변화 push, 같은 이름) |
-| `electron/main/main.ts` | `chromeOptions`, 동작 검증(`isWindowControlAction` 밖의 값은 `false`), maximize/unmaximize/restore/minimize/enter·leave-full-screen → `windowState` push, 닫기 저장·Quit 재시도 |
+| `electron/main/main.ts` | `chromeOptions`, 동작 검증(`isWindowControlAction` 밖의 값은 `false`), maximize/unmaximize/restore/minimize/enter·leave-full-screen → `windowState` push, 닫기 저장·Quit 재시도, 아직 안 보인 창을 앞으로 가져올 때 전체화면 |
+| `electron/main/windowShow.ts` | 숨은 창을 처음 보이는 순서(macOS 는 보인 뒤 전체화면, 그 밖은 전체화면 뒤 보이기) |
 | `electron/main/closeFlow.ts` | 닫기 한 번의 결정(`allow`/`flush`/`hold`)과, 저장 때문에 취소된 Quit 을 다시 걸지 |
 | `electron/main/directoryDialog.ts` | 폴더 선택 대화상자를 살아 있는 앱 창에 붙인다. 파일 메뉴는 스플래시·팀 창이 아니라 그 창을 고른다 |
 | `electron/preload/index.ts` | `oprn.platform`(동기), `oprn.windowState()`, `oprn.onWindowState(cb)` |

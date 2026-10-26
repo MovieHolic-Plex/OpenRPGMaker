@@ -1,12 +1,12 @@
 // 데스크톱 앱의 시작 입구(dist-electron/main.cjs). 가볍게 둔다 — 여기서 import 하는 것은 앱 아이콘을 누른 뒤
 // 스플래시가 뜨기 전에 모두 평가된다. 무거운 앱 본체(main.ts → dist-electron/app.cjs)는 스플래시를 띄운 뒤 require 한다.
 //
-// ready 전에 해야 하는 일만 여기 있다: 스킴 권한 등록, 한 번만 실행 잠금, 링크(open-url·second-instance) 받아 두기.
+// ready 전에 해야 하는 일만 여기 있다: 스킴 권한 등록, 한 번만 실행 잠금, 링크(open-url·second-instance)·open-file 받아 두기.
 import { mainMark } from "./startupTiming";
 import { join } from "node:path";
 import { app, protocol } from "electron";
 import { OPRN_APP_SCHEME, OPRN_ASSET_SCHEME } from "../shared/channels";
-import { bootsToStartScreen, rendererDirectory, windowIconPath, type BootContext, type SecondInstanceLaunch } from "./bootContext";
+import { bootsToStartScreen, noteOpenFile, rendererDirectory, windowIconPath, type BootContext, type SecondInstanceLaunch } from "./bootContext";
 import { openSplash, type Splash } from "./splash";
 
 protocol.registerSchemesAsPrivileged([
@@ -35,6 +35,11 @@ app.on("open-url", (event, url) => {
   event.preventDefault();
   if (onLink) onLink(url);
   else early.links.push(url);
+});
+// macOS: Finder 「다음으로 열기」와 독에 떨어뜨린 폴더는 argv 가 아니라 open-file 이다. ready 전에 붙여야 첫 실행을 놓치지 않는다.
+app.on("open-file", (event, filePath) => {
+  event.preventDefault();
+  noteOpenFile(filePath);
 });
 // Windows·Linux: 이미 떠 있는 앱에 두 번째 실행의 인자가 온다. 링크와 프로젝트 폴더를 본체가 가른다.
 // workingDirectory 가 있어야 `AppImage quest` 처럼 상대 경로가 그 실행의 폴더에서 풀린다.
