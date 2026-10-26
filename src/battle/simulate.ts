@@ -49,6 +49,8 @@ export interface SimulateBattleInput {
   // 세션 셀프 스위치 시드(eventId → key → on)와 직전 전투 결과 시드.
   readonly selfSwitches?: Readonly<Record<string, Readonly<Partial<Record<string, boolean>>>>>;
   readonly battleResult?: "victory" | "defeat" | "escape";
+  /** 켜 둔 채 시작할 스위치 id(선택 결과에 걸린 페이지·손님 시험). 생략 = 모두 꺼짐. */
+  readonly switchesOn?: readonly string[];
 }
 
 /**
@@ -151,7 +153,7 @@ function runSingleBattle(input: SimulateBattleInput, rng: Rng): SingleRunResult 
       : { levels, experience: {}, partyActorIds: [...partyActorIds] },
     partyMonsters: monsterMode ? input.monsterParty : undefined,
     ownerEventId: input.ownerEventId,
-    sessionState: { switches: {}, variables: {}, inventory, selfSwitches: input.selfSwitches, battleResult: input.battleResult },
+    sessionState: { switches: Object.fromEntries((input.switchesOn ?? []).map((id) => [id, true])), variables: {}, inventory, selfSwitches: input.selfSwitches, battleResult: input.battleResult },
     captureLocation: { mapId: input.project.startMapId, x: input.project.startPos.x, y: input.project.startPos.y },
     onMonsterCaptured: (capture) => {
       capturedMonsters.push(capture);
@@ -318,7 +320,12 @@ export function simulateBattle(input: SimulateBattleInput): SimulateBattleResult
   }
   const troopRecord = input.project.database.troops.find((troop) => troop.id === input.troopId);
   // 저작된 페이지 전부를 나열한다 — 발동 0회를 결과에서 지우면 "안 뜬 연출" 을 볼 방법이 없다.
-  const phaseCoverage: BattlePhaseCoverage[] = (troopRecord?.battleEventPages ?? []).map((page) => {
+  // 트룹 손님(battleGuests)은 battleEvents 가 「battle-guest:<배우>」 가상 페이지로 돌린다 — 같은 표에 싣는다.
+  const guestPages = (troopRecord?.battleGuests ?? []).map((guest) => ({
+    id: `battle-guest:${guest.actorId}`,
+    name: `손님 합류: ${input.project.database.actors.find((actor) => actor.id === guest.actorId)?.name ?? guest.actorId}`,
+  }));
+  const phaseCoverage: BattlePhaseCoverage[] = [...(troopRecord?.battleEventPages ?? []), ...guestPages].map((page) => {
     const round = firstFiredRound.get(page.id);
     return {
       pageId: page.id,

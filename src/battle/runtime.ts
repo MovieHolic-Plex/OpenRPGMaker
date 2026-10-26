@@ -156,7 +156,8 @@ import { effectiveActorEquipment } from "@/project/equipmentRules";
 import { orderGen1TurnActions, type Gen1TurnOrderEntry } from "@/battle/battleStrictOrder";
 import { attemptGen1Capture } from "@/battle/gen1/capture";
 import { effectiveTeamSwapCost, resolveBattleTeams } from "@/battle/battleTeams";
-import type { TeamSwapCost } from "@/project/types";
+import type { ActorAutoTactic, TeamSwapCost } from "@/project/types";
+import type { TroopBattleGuest } from "@/project/types/database";
 import { restoredMovePp } from "@/project/monsterMedicine";
 import {
   applyGen1MajorStatus,
@@ -374,9 +375,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
   const usePartyMonsters =
     (options.project.system.battleParty === "monsters" || options.project.system.monsterBattleParty === true)
     && (options.partyMonsters?.length ?? 0) > 0;
-  const actors = usePartyMonsters
-    ? monsterPartyBattlers(options.project, options.partyMonsters ?? [])
-    : actorBattlers(options.project, {
+  const actorBattlerInputs = {
         names: options.party?.names,
         faceResourceIds: options.party?.faceResourceIds,
         levels: sessionState.actorLevels ?? options.party?.levels,
@@ -390,8 +389,10 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
         growthProgress: sessionState.growthProgress ?? options.party?.growthProgress,
         promotionLineage: sessionState.promotionLineage ?? options.party?.promotionLineage,
         stateIds: options.party?.stateIds,
-        partyActorIds: options.party?.partyActorIds,
-      });
+      };
+  const actors = usePartyMonsters
+    ? monsterPartyBattlers(options.project, options.partyMonsters ?? [])
+    : actorBattlers(options.project, { ...actorBattlerInputs, partyActorIds: options.party?.partyActorIds });
   if (!usePartyMonsters) applySkillLoadoutsToBattlers(options.project, actors, sessionState.actorSkillLoadouts);
   const enemies = enemyBattlers(options.project, troopRecord, options.enemyLevel !== undefined ? { wildLevel: options.enemyLevel } : undefined);
   // 리미트·기력·파티 게이지(battleGauges). 끈 프로젝트는 필드를 만들지 않는다.
@@ -424,6 +425,8 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
   const teamResting = new Set<string>();
   /** 연계 대기 중인 배우(게이지 100 유지·충전 제외). 아군 누군가의 차례가 오면 풀려 resumedFromHold 로 옮긴다. */
   const heldForCombo = new Set<string>();
+  /** 전투 중 합류한 트룹 손님(recordId → 작전). 손님은 배우 DB 의 autoBattle 과 상관없이 자동으로 싸운다. */
+  const guestTactics = new Map<string, ActorAutoTactic | undefined>();
   /** 연계 대기에서 풀려 다시 차례를 받는 배우 — 차례 시작 처리(지속 피해·턴 수)를 두 번 받지 않는다. */
   const resumedFromHold = new Set<string>();
   let activeActorIds: ActorId[] = battleTeams
@@ -761,8 +764,29 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     playAudio: options.playAudio,
     stopAudio: options.stopAudio,
     moveEnemy: moveEnemyByTarget,
+    joinBattleGuest,
   });
   markActiveParticipants();
+
+  /**
+   * 트룹 손님(TroopRecord.battleGuests) 합류. 이 전투의 배틀러 목록·전열에만 넣는다 — 파티 명단(partyActorIds)에는
+   * 넣지 않으므로 전투가 끝나면 저절로 빠지고 경험치·전리품 몫(rewardActorIds)도 없다. 손님은 늘 작전대로 자동으로 싸운다.
+   * 세션의 상처(vitals)·상태는 물려받지 않는다(가득 찬 몸으로 들어온다). 몬스터 파티·gen1·팀 교대 전투는 받지 않는다.
+   */
+  function joinBattleGuest(guest: TroopBattleGuest): string | undefined {
+    if (gen1 || usePartyMonsters || battleTeams || result) return undefined;
+    if (actors.some((actor) => actor.recordId === guest.actorId)) return undefined;
+    if (!options.project.database.actors.some((record) => record.id === guest.actorId)) return undefined;
+    const [battler] = actorBattlers(options.project, { ...actorBattlerInputs, vitals: undefined, stateIds: undefined, partyActorIds: [guest.actorId] });
+    if (!battler) return undefined;
+    applySkillLoadoutsToBattlers(options.project, [battler], sessionState.actorSkillLoadouts);
+    seedBattleGauges(options.project, [battler]);
+    battler.gauge = 0;
+    actors.push(battler);
+    activeActorIds = [...activeActorIds, battler.recordId as ActorId];
+    guestTactics.set(battler.recordId, guest.tactic);
+    return battler.name;
+  }
 
   function battlerSide(battler: MutableBattler): "actor" | "enemy" {
     return actors.some((entry) => entry.id === battler.id) ? "actor" : "enemy";
@@ -2193,13 +2217,14 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
 
   /** 자동 전투 배우의 이번 차례 명령. 수동 배우·gen1·고를 명령이 없으면 undefined(메뉴를 연다). */
   function autoActorCommand(actor: MutableBattler): ActorCommand | undefined {
-    if (gen1 || usePartyMonsters || !actorFightsAutomatically(options.project, actor.recordId, actor.classId)) return undefined;
+    const guest = guestTactics.has(actor.recordId);
+    if (gen1 || usePartyMonsters || (!guest && !actorFightsAutomatically(options.project, actor.recordId, actor.classId))) return undefined;
     const savedPhase = phase;
     const savedActorId = activeActorId;
     phase = "actorCommand";
     activeActorId = actor.recordId;
     try {
-      const command = chooseAutoBattleCommand(options.project, snapshot(), rng, actorAutoTactic(options.project, actor.recordId));
+      const command = chooseAutoBattleCommand(options.project, snapshot(), rng, guest ? guestTactics.get(actor.recordId) : actorAutoTactic(options.project, actor.recordId));
       return command && isValidActorCommand(actor, command) ? command : undefined;
     } finally {
       phase = savedPhase;
@@ -2500,6 +2525,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       switchCandidateActorIds: switchCandidateActors().map((actor) => actor.recordId),
       ...(battleTeams ? { teams: teamSnapshots(), activeTeamId, teamSwapCost } : {}),
       participatingActorIds: [...participatingActorIds],
+      ...(guestTactics.size > 0 ? { guestActorIds: [...guestTactics.keys()] as ActorId[] } : {}),
       actors: activeActors().map((actor, index) => withCharging(actor, battlerSnapshot(actor, activeActorPosition(index), actorPoseContext))),
       reserveActors: reserveActors().map((actor) => battlerSnapshot(actor, undefined, { showActionPose: false })),
       enemies: enemiesInBattle.map((enemy) => withCharging(enemy, battlerSnapshot(enemy, undefined, poseContext))),

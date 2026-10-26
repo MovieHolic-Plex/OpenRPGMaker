@@ -645,6 +645,8 @@ export interface BattleSnapshot {
   readonly activeTeamId?: string;
   readonly teamSwapCost?: import("@/project/types").TeamSwapCost;
   readonly participatingActorIds: readonly ActorId[];
+  /** 이 전투에만 합류한 트룹 손님(TroopRecord.battleGuests). 있을 때만. 호스트는 이 배우의 HP·상태를 세션에 되돌려 쓰지 않는다. */
+  readonly guestActorIds?: readonly ActorId[];
   readonly actors: readonly BattleBattlerSnapshot[];
   readonly reserveActors: readonly BattleBattlerSnapshot[];
   readonly enemies: readonly BattleBattlerSnapshot[];

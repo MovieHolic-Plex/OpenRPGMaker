@@ -1,3 +1,4 @@
+import { updateFieldEnemyClashes } from "@/player/playSceneFieldEnemyClash";
 import { cancelPointerRoute, consumePendingTapAction } from "@/player/playScenePointerMove";
 import { showBattleAdmissionError } from "@/player/playSceneOverlays";
 import { transitBlocksCell, tryBoardTransit } from "@/player/playSceneTransit";
@@ -161,6 +162,7 @@ export function updatePlayScene(scene: PlaySceneContext, deltaMs: number): void 
   // Forced event routes must progress while the interpreter awaits completion.
   // The NPC updater keeps unrelated autonomous routes paused during dialogue.
   scene.updateAutonomousNPCs(deltaMs);
+  updateFieldEnemyClashes(scene, deltaMs);
   updateAmbientFlyers(scene, deltaMs);
   if (canUpdateWaitingEvents(scene) || conditionWaitScenes.has(scene)) {
     scene.updateParallelEvents(deltaMs);

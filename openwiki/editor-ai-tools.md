@@ -3831,3 +3831,19 @@ r8~r11 실편집기 녹화에서 조수는 도구를 찾지 않고 paint_tiles �
 - ESC 메뉴 항목 id `journal`(「기록」 묶음). 기본 메뉴는 설정이 있거나 줄이 하나라도 적혔을 때만 보인다. 저작된 메뉴(`oprnFieldMenu`)에는 도구가 저장 앞에 항목을 넣는다(12칸이 차 있으면 알리기만).
 - 도구 `configure_story_journal {title, writers, lines:[{mapId,eventId|commonEventId, pageId?, afterText?, action, lineId, writer, date, text, learnActorId, learnSkillId, say?, resultSwitchId?}], remove?}` — 일지 설정과 이벤트 안 명령을 한 번에 넣는다. say 는 명령 앞 대사 한 줄(다시 읽어 주는 말).
 - 시험 과제: `harness-data/space-craft/seed.json` `fs2-journal`.
+
+
+
+## 전투 중 손님 `add_battle_guest` · 보이는 적 진영 싸움 (2026-10-25, 폴른 스타 2막 과제 8·11)
+
+- **`add_battle_guest`**(`troopBattlePageTools.ts`) `{troopId, actorId, atEnemyHpPercent?, enemyId?, atRound?, conditions?, requireSwitchId?, requireSwitchName?, tactic?, message?, remove?}` —
+  트룹에 `battleGuests[]`(`TroopBattleGuest`: actorId·conditions·tactic·message) 한 줄을 넣는다. 조건은 트룹 페이지 조건과 같은 어휘(모두 참, 한 번).
+  런타임: `battle/battleEvents.ts` 가 손님을 페이지 목록 뒤의 한 번짜리 가상 페이지 `battle-guest:<배우>` 로 돌려 같은 정지·재개 흐름을 타고,
+  `battle/runtime.ts joinBattleGuest` 가 배틀러를 이 전투의 `actors`·전열에만 넣는다(세션 상처·상태는 물려받지 않음). 띠는 text 정지 「OO이(가) 합류했다!」.
+  손님은 배우 DB 의 autoBattle 과 상관없이 `guestTactics` 작전으로 자동으로 싸운다. **파티 명단(partyActorIds)에 넣지 않으므로** 전투가 끝나면 빠지고
+  경험치·전리품 몫이 없으며, 스냅샷 `guestActorIds` 로 `playSceneBattle` 이 HP·상태 되돌려 쓰기에서 뺀다. 몬스터 파티·gen1·팀 교대 전투는 합류하지 않는다(로그 unsupported).
+  전투 페이지에 changeParty 를 넣는 옛 방식은 전투 뒤 파티에 남으므로 손님이 아니다.
+- `simulate_battle` 에 `switchesOn`(켜 둔 채 시작할 스위치)을 더했다 — 시뮬은 스위치가 전부 꺼진 채 돌아 선택 결과에 걸린 페이지·손님을 못 쟀다. 손님은 `phaseCoverage` 에 `battle-guest:<배우>` 로 실린다.
+- **보이는 적 진영 싸움(과제 11 확인 결과):** `set_factions` 는 액션 전투 구역 스폰(`FieldSpawnDef.factionId`)에만 먹었고 `place_field_enemy` 의 심볼 적(맵 이벤트)에는 진영이 없었다.
+  이제 `GameEvent.fieldFactionId` 를 달 수 있다 — `place_field_enemy{factionId}`(생략 = 선두 적 레코드의 factionId 가 정의된 진영이면 그것). 정의 안 된 진영은 `unknown-faction` 으로 거절.
+  런타임 `player/playSceneFieldEnemyClash.ts`(판정 `project/fieldEnemyClash.ts`): 적대(태도 -1 이하) 진영의 보이는 적이 맨해튼 2칸 안에 들면 둘 다 분노 말풍선 → 적 그룹 전력(HP+능력치×4 합)이 약한 쪽이 붉게 깜빡이다 지워진다(eraseEvent 와 같은 뜻, 맵 재진입 시 복귀). 대화·전투 중엔 멈춘다. 플레이어는 두 진영 모두에게 여전히 덮쳐진다. 진영을 안 단 옛 맵은 그대로다.

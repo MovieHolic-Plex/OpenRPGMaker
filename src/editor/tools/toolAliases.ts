@@ -19,6 +19,7 @@ export const TOOL_ALIASES: readonly ToolAlias[] = [
   // ── 인물·성장·장비 ──
   { terms: ["배우", "캐릭터 만들", "파티원", "동료 만들", "주인공 만들", "actor", "character record", "party member"], tools: ["upsert_actor", "upsert_class", "upsert_character_profile"], label: "배우" },
   { terms: ["직업", "클래스", "class", "job"], tools: ["upsert_class", "define_promotion"], label: "직업" },
+  { terms: ["손님", "전투 중 합류", "합류했다", "원군", "지원군", "도우러 온", "guest", "battle guest"], tools: ["add_battle_guest", "simulate_battle"], label: "전투 중 손님" },
   { terms: ["연계기", "합체기", "듀얼 테크", "트리플 테크", "쿼드 테크", "4인 연계기", "협동기", "combo tech", "dual tech", "triple tech", "연계"], tools: ["upsert_combo_tech", "list_combo_techs", "upsert_skill"], label: "연계기(듀얼·트리플·4인 테크)" },
   { terms: ["유대", "파티원 유대", "동료 유대", "모닥불 대화", "모닥불 이야기", "누구와 이야기", "여관 밤", "party bond", "bond", "campfire talk"], tools: ["configure_party_bonds", "upsert_combo_tech"], label: "파티원 유대(모닥불 대화·문턱 해금)" },
   { terms: ["레벨업 연출", "레벨 업 연출", "기술 습득 연출", "새 기술 습득", "팡파레", "level up fanfare", "skill learned"], tools: ["set_project_settings"], label: "전투 결과 팡파레(battle.fanfare)" },

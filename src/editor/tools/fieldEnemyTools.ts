@@ -276,6 +276,7 @@ export const FIELD_ENEMY_TOOLS: readonly ToolDefinition[] = [
       canEscape: { type: 'boolean', description: '도망 가능 여부(기본 true). false 는 도망 불가 전투' },
       respawnSec: { type: 'integer', description: '0(기본)=한 번 이기면 영구 소멸. 양수면 그 맵에 머문 채 N초 뒤 같은 자리에 다시 나타난다' },
       clearSwitchId: { type: 'string', description: '승리 시 켜지는 스위치(생략 시 자동 생성). 퀘스트·문 조건으로 쓸 수 있다' },
+      factionId: { type: 'string', description: '진영(set_factions 로 정의한 id). 적대(태도 -1 이하) 진영의 보이는 적과 2칸 안에서 마주치면 맵 위에서 짧게 부딪히고 전력이 약한 쪽이 사라진다(맵에 다시 들어오면 돌아온다). 플레이어는 두 진영 모두에게 덮쳐진다. 생략 = 선두 적 레코드의 factionId(있고 정의된 진영일 때), 그것도 없으면 진영 싸움 없음' },
       id: { type: 'string' },
     }, ['mapId', 'x', 'y']),
     invalidArgsExample: { mapId: 'map_dungeon_1', x: 12, y: 8, troopId: 'troop_bat', behavior: 'chase', sightRange: 4, pace: 'slow' },
@@ -409,9 +410,17 @@ export const FIELD_ENEMY_TOOLS: readonly ToolDefinition[] = [
           ? { type: 'custom', speed: 3, frequency: 3, moveIntervalMs: PATROL_INTERVAL_MS[pace], route: patrolRoute(false) }
           : { type: 'fixed', speed: 3, frequency: 3 };
 
+      // 진영 싸움(project/fieldEnemyClash.ts): 명시 factionId → 선두 적의 factionId. 정의되지 않은 진영은 거절한다.
+      const declaredFactions = new Set((draft.factions?.defs ?? []).map((def) => def.id));
+      const explicitFaction = typeof args.factionId === 'string' && args.factionId.trim() ? args.factionId.trim() : undefined;
+      if (explicitFaction && !declaredFactions.has(explicitFaction)) {
+        throw new ToolError(`정의되지 않은 진영입니다: ${explicitFaction} — set_factions 로 먼저 진영과 태도(서로 -1 이하 = 싸움)를 정하세요. 있는 진영: ${[...declaredFactions].join(', ') || '없음'}`, { code: 'unknown-faction', mapId: map.id });
+      }
+      const fieldFactionId = explicitFaction ?? (lead?.factionId && declaredFactions.has(lead.factionId) ? lead.factionId : undefined);
       const event: GameEvent = {
         id, x: start.x, y: start.y, trigger: { kind: 'eventTouch' }, commands: [],
         pages: fieldEnemyPages({ id, troopId, graphic, clearSwitchId, movement, alert, canEscape, respawnSec }),
+        ...(fieldFactionId ? { fieldFactionId } : {}),
       };
       if (behavior === 'chase') {
         // 종족마다 다른 몸짓으로 다가온다(질주·도약·통통·급강하·육중·부유·기기). 생략 = 종족으로.
@@ -432,7 +441,7 @@ export const FIELD_ENEMY_TOOLS: readonly ToolDefinition[] = [
 
       return {
         summary: `${map.name} (${start.x}, ${start.y}) 에 필드 적 '${troopId}' — ${behavior}${patrol ? ` ${patrol.dirs.length}걸음 왕복` : ''}${behavior === 'chase' ? ` 시야 ${sightRaw}칸${patrol ? '(시야 밖 순찰)' : ''}·놓치면 복귀` : ''}`,
-        data: { eventId: id, clearSwitchId, behavior, x: start.x, y: start.y, cells: patrol ? cells : undefined, adjusted: placement.adjusted },
+        data: { eventId: id, clearSwitchId, behavior, x: start.x, y: start.y, cells: patrol ? cells : undefined, adjusted: placement.adjusted, ...(fieldFactionId ? { factionId: fieldFactionId } : {}) },
         ...(warnings.length > 0 ? { warnings } : {}),
       };
     },

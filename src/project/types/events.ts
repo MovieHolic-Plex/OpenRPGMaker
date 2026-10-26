@@ -961,6 +961,12 @@ export interface GameEvent {
   socialCalendar?: SocialCalendar;
   /** Opt-in shop buy-price discount when buyer friendship with this merchant meets minFriendship. */
   socialShop?: SocialShop;
+  /**
+   * 보이는 필드 적(place_field_enemy)의 진영(project.factions 의 id). 적대(태도 -1 이하)인 진영의 보이는 적과
+   * 2칸 안에서 마주치면 맵 위에서 짧게 부딪히고 전력이 약한 쪽이 사라진다(맵에 다시 들어오면 돌아온다).
+   * 생략 = 진영 싸움 없음(옛 맵 그대로). 판정 project/fieldEnemyClash.ts, 연출 player/playSceneFieldEnemyClash.ts.
+   */
+  fieldFactionId?: string;
   draft?: EventDraftMeta;
 }
 

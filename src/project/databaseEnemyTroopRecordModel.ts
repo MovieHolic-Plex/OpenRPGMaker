@@ -22,6 +22,7 @@ import type {
 } from "@/project/types";
 import { normalizeEnemyCollapseEffect } from "@/project/enemyCollapse";
 import { isTeamSwapCost } from "@/project/battleTeamModel";
+import type { TroopBattleGuest } from "@/project/types/database";
 
 /** 피해 계열 받는 피해 %(0~1000 정수) · 속성 예외. 모두 비면 생략 — 옛 JSON 바이트를 바꾸지 않는다. 상태 runtimeEffects 도 같은 규칙. */
 export function normalizeDamageTypeRates(value: unknown): DamageTypeRates | undefined {
@@ -161,7 +162,34 @@ export function normalizeTroopRecord(record: Partial<TroopRecord> & Pick<TroopRe
       const afterBattle = normalizeTroopAfterBattle(record.afterBattle);
       return afterBattle ? { afterBattle } : {};
     })(),
+    // 전투 중 손님. 없으면 키를 만들지 않는다(옛 JSON 바이트 유지).
+    ...(() => {
+      const battleGuests = normalizeTroopBattleGuests(record.battleGuests);
+      return battleGuests.length > 0 ? { battleGuests } : {};
+    })(),
   };
+}
+
+const GUEST_TACTICS = new Set(["attackAll", "healFirst", "conserveMp"]);
+
+/** 전투 중 손님 목록. actorId 가 빈 항목·같은 배우 중복은 버린다. 조건은 배열이 아니면 빈 목록. */
+export function normalizeTroopBattleGuests(value: unknown): TroopBattleGuest[] {
+  if (!Array.isArray(value)) return [];
+  const seen = new Set<string>();
+  const out: TroopBattleGuest[] = [];
+  for (const raw of value as Partial<TroopBattleGuest>[]) {
+    const actorId = typeof raw?.actorId === "string" ? raw.actorId.trim() : "";
+    if (!actorId || seen.has(actorId)) continue;
+    seen.add(actorId);
+    const message = typeof raw.message === "string" ? raw.message.trim() : "";
+    out.push({
+      actorId,
+      conditions: Array.isArray(raw.conditions) ? raw.conditions.filter((condition) => condition && typeof condition === "object" && typeof condition.kind === "string") : [],
+      ...(typeof raw.tactic === "string" && GUEST_TACTICS.has(raw.tactic) ? { tactic: raw.tactic } : {}),
+      ...(message ? { message } : {}),
+    });
+  }
+  return out;
 }
 
 /** Repair old length-based ID collisions deterministically. References keep targeting the first page. */

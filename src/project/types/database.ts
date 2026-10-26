@@ -1110,6 +1110,22 @@ export interface TroopRecord {
    * 모델·순회는 project/troopAfterBattle.ts.
    */
   afterBattle?: TroopAfterBattle;
+  /**
+   * 전투 중 손님 — 조건(트룹 페이지 조건과 같은 어휘, 모두 참)이 맞는 순간 배우 하나가 이 전투에만 합류해
+   * 작전대로 자동으로 싸운다. 파티 명단(partyActorIds)에는 들어가지 않으므로 전투가 끝나면 저절로 빠진다
+   * (경험치·전리품 몫도 없다). 생략·빈 목록 = 없음. 런타임은 battle/battleEvents.ts · battle/runtime.ts.
+   */
+  battleGuests?: TroopBattleGuest[];
+}
+
+export interface TroopBattleGuest {
+  actorId: ActorId;
+  /** 합류 조건(모두 참일 때 한 번). 예: [{ kind: "enemyHp", enemyId, minPercent: 0, maxPercent: 60 }, { kind: "switch", switchId, value: true }]. 빈 목록 = 첫 평가 때. */
+  conditions: BattleEventCondition[];
+  /** 자동 전투 작전. 생략 = 균형. followOrders 는 받지 않는다(손님은 늘 자동). */
+  tactic?: Exclude<ActorAutoTactic, "followOrders">;
+  /** 합류 띠 문구. 생략 = 「{이름}이(가) 합류했다!」. */
+  message?: string;
 }
 
 export type TroopAfterBattleOutcome = "victory" | "defeat" | "escape";
