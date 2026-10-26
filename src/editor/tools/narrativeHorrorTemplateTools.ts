@@ -323,7 +323,8 @@ const makeHorrorLoop: ToolDefinition = {
       runNamedTool(draft, "set_scene_mood", {
         mapId: map.id,
         applyMode: "map",
-        lighting: { ambient: 0.28, color: "#1a1020" },
+        // ambient 은 어둠의 양(0=밝음·1=암전) — 0.28 은 거의 밝았다(J71/J73). 추격 공포는 어두워야 한다.
+        lighting: { ambient: 0.65, color: "#1a1020" },
         weather: { kind: "none" },
       });
     }
