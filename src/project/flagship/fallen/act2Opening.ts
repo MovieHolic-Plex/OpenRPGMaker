@@ -1186,7 +1186,7 @@ function frostford(project: Project, exec: Exec, hubId: string): void {
   const doors = (town?.doors ?? []).filter((d) => d.reached !== false && !(town?.anchors ?? []).includes(d.kit));
   if (doors.length < 3) throw new Error("[fallen-star act2] 서리나루 집 문이 모자란다");
   const work = town?.work ?? { x: 16, y: 12 };
-  exec(project, "set_scene_mood", { mapId: FS2_FROST_ID, applyMode: "map", weather: { kind: "snow", intensity: 0.2 }, lighting: { ambient: 0.95, color: "#dfe6f4" } });
+  exec(project, "set_scene_mood", { mapId: FS2_FROST_ID, applyMode: "map", weather: { kind: "snow", intensity: 0.2 }, lighting: { ambient: 0, color: "#000000" } });
   // 설원 길 두 번째 맵 북쪽 끝 → 마을 남쪽.
   if (!FS2_SNOW.exit) throw new Error("[fallen-star act2] 설원 길 출구가 없다");
   const b = originEdge(project, M(project, FS2_FROST_ID), "south");
@@ -1232,8 +1232,8 @@ function frostford(project: Project, exec: Exec, hubId: string): void {
     if (t.kind === "transfer") { t.x = innFront.x; t.y = innFront.y; t.direction = "down"; }
   }
   exec(project, "set_map_properties", { mapId: FS2_FROST_INN_ID, bgm: { mode: "custom", resourceId: "cc0-bgm-rtp-rst-001" } });
-  // 바깥 눈발·푸른 빛이 실내까지 남지 않게 — 여관은 맑고 따뜻하게.
-  exec(project, "set_scene_mood", { mapId: FS2_FROST_INN_ID, applyMode: "map", weather: { kind: "none" }, lighting: { ambient: 1, color: "#ffffff" } });
+  // 바깥 눈발이 실내까지 남지 않게 — 여관은 맑게(ambient 0 = 덮개 없음; ambient 는 덮는 색의 세기다).
+  exec(project, "set_scene_mood", { mapId: FS2_FROST_INN_ID, applyMode: "map", weather: { kind: "none" }, lighting: { ambient: 0, color: "#000000" } });
   // 여관 주인 — 썰매를 되찾아 주면 공짜. 별빛 결정은 홀 안쪽.
   exec(project, "place_npc", {
     mapId: FS2_FROST_INN_ID, id: "ev_fs2_frost_innkeeper", name: "여관 주인 오사", x: FS2_FROST.innExit.x + 3, y: FS2_FROST.innExit.y - 4, movement: "fixed",
@@ -1270,9 +1270,6 @@ function frostford(project: Project, exec: Exec, hubId: string): void {
     const at = { x: pond.x + dx, y: pond.y + dy };
     try { exec(project, "stamp_tileset_object", { mapId: FS2_FROST_ID, objectId: "bd-pick-snowfield-lamp", at }); lamps += 1; FS2_FROST.lamps.push(at); } catch { /* 길·집 칸 */ }
   }
-  // 등불 빛 — 낮이라 약하게.
-  exec(project, "set_lighting_volume", { mapId: FS2_FROST_ID, applyMode: "map", ambient: 0.95, color: "#dfe6f4",
-    sources: FS2_FROST.holes.map((h, i) => ({ id: `hole${i}`, at: { x: h.x, y: h.y }, radius: 2, intensity: 0.25, color: "#9fd0ff" })) });
 
   // 하르마 — 얼음낚시터 곁.
   exec(project, "place_npc", {

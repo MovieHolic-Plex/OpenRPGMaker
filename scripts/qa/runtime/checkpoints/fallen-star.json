@@ -5396,7 +5396,7 @@
       {
        "kind": "hold",
        "dir": null,
-       "ms": 1200
+       "ms": 3000
       }
      ],
      "shot": true
