@@ -878,6 +878,184 @@ function dawnwellEvents(project: Project): void {
 }
 
 // ════════════════════════════════════════════════════════════════════
+// 9. B6 새라 — 북방 관문 요새: 새벽샘 북쪽 → 요새(경비견·순찰 기사) → 성벽 위 새라 + 경비견 둘. 지면 감방에서 다시. 이기면 선택 1, 합류.
+// ════════════════════════════════════════════════════════════════════
+
+export const FS2_FORTRESS_ID = "fs2_fortress";
+export const FS2_SARAH_ACTOR = "actor_fs2_sarah";
+const FS2_SARAH_ENEMY = "enemy_fs2_sarah";
+const FS2_FORT_DOG = "enemy_fs2_fort_dog";
+const FS2_SARAH_TROOP = "troop_fs2_sarah";
+const FS2_FORT_DOGS = "troop_fs2_fort_dogs";
+const SW_SARAH = "sw_fs2_sarah_joined";
+const SW_SPEAR_BACK = "sw_fs2_spear_returned";
+const SW_SPEAR_KEPT = "sw_fs2_spear_kept";
+const SW_SARAH_LOST = "sw_fs2_sarah_lost_once";
+const VAR_BOND_SARAH = "var_fs2_bond_sarah";
+const FS2_STAR_IRON = "item_fs2_star_iron";
+const SARAH = "새라";
+/** 새라 걷기 칩 — Actor1 #3(붉은 갑옷 창기사). 새 사람 그림은 만들지 않는다. */
+const SARAH_CHIP: [string, number] = ["tex_easyrpg_charset_actor1", 3];
+/** 요새 방(author_dungeon rooms 문법) — 성문 홀 → 안뜰 → (감방·무기고) → 계단 홀 → 성벽 위. */
+const FORT_ROOMS = [
+  { id: "gate", kind: "entrance" }, { id: "yard", kind: "hall" }, { id: "cells", kind: "cell", from: "yard" },
+  { id: "armory", kind: "storage", from: "yard" }, { id: "stair", kind: "hall" }, { id: "rampart", kind: "boss" },
+];
+const FORT: { sarah: Cell; cell: Cell; rooms: { id: string; kind: string; x: number; y: number; w: number; h: number; spots: Cell[] }[] } = { sarah: { x: 0, y: 0 }, cell: { x: 0, y: 0 }, rooms: [] };
+
+function northFortress(project: Project, exec: Exec, hubId: string): void {
+  for (const [id, name] of [[SW_SARAH, "B6: 새라 합류"], [SW_SPEAR_BACK, "B6 선택1: 창을 돌려줬다"], [SW_SPEAR_KEPT, "B6 선택1: 창을 맡아 뒀다"], [SW_SARAH_LOST, "B6: 성벽 위에서 한 번 졌다"]] as const) ensureSwitch(project, id, name);
+  if (!project.variables.some((v) => v.id === VAR_BOND_SARAH)) project.variables.push({ id: VAR_BOND_SARAH, name: "유대: 새라" } as (typeof project.variables)[number]);
+  exec(project, "upsert_item", { item: {
+    id: FS2_STAR_IRON, name: "별쇠 조각", type: "special", occasion: "never", consumable: false, price: 0,
+    description: "새라의 창끝에서 떼어 낸 별쇠. 로한이라면 창을 한 번 더 벼릴 수 있다.",
+  } });
+  // 새라 — 용기사 직업(꿰뚫기·도약), 도발·감싸기를 처음부터 안다.
+  exec(project, "upsert_actor", { actor: {
+    id: FS2_SARAH_ACTOR, name: SARAH, nickname: "북문의 창", classId: "class_dragoon", initialLevel: 10, maxLevel: 99,
+    faceResourceId: "easyrpg-faceset-actor1-03", characterResourceId: "easyrpg-charset-actor1", characterIndex: 3,
+    battleCharacterResourceId: "charset-battler-actor1-3",
+    initialEquipment: { weapon: "equip_gen_spear_iron" },
+    learnedSkills: [{ level: 1, skillId: "skill_dragoon_lance_thrust" }, { level: 1, skillId: "skill_fs_taunt" }, { level: 1, skillId: "skill_motion_cover" }, { level: 12, skillId: "skill_dragoon_jump" }],
+  } });
+  // 적 판 새라·요새 경비견 — 1막 창병·B5 들개 레코드를 복사해 그림·능력치만 바꾼다.
+  const copyEnemy = (fromId: string, patch: Rec): void => {
+    const base = project.database.enemies.find((e) => e.id === fromId);
+    if (!base) throw new Error(`[fallen-star act2] ${fromId} 가 없다`);
+    const rec = { ...(JSON.parse(JSON.stringify(base)) as Rec), ...patch };
+    for (const key of Object.keys(rec)) if (!ENEMY_TOOL_FIELDS.has(key)) delete rec[key];
+    exec(project, "upsert_enemy", { enemy: rec });
+  };
+  const act = (skillId: string, priority: number) => ({ skillId, priority, condition: { kind: "always" }, switchOnAfterAction: { enabled: false }, switchOffAfterAction: { enabled: false } });
+  copyEnemy("enemy_fs_valen_spearman", {
+    id: FS2_SARAH_ENEMY, name: SARAH, level: 12, monsterResourceId: "charset-battler-actor1-3",
+    stats: { maxHp: 1300, maxMp: 60, attack: 86, defense: 46, mind: 30, agility: 64 },
+    skillIds: ["skill_attack", "skill_dragoon_lance_thrust", "skill_fs_taunt"],
+    actions: [act("skill_attack", 6), act("skill_dragoon_lance_thrust", 5), act("skill_fs_taunt", 3)],
+    rewards: { exp: 420, gold: 0, dropRatePercent: 0, drops: [] },
+  });
+  copyEnemy("enemy_fs2_starved_dog", {
+    id: FS2_FORT_DOG, name: "요새 경비견", level: 11, stats: { maxHp: 210, maxMp: 0, attack: 76, defense: 26, mind: 20, agility: 68 },
+    rewards: { exp: 80, gold: 12, dropRatePercent: 0, drops: [{ itemId: "item_potion", ratePercent: 20, quantity: 1, condition: { kind: "always" } }] },
+  });
+  exec(project, "upsert_troop", { troop: { id: FS2_FORT_DOGS, name: "요새 경비견", enemyIds: [FS2_FORT_DOG, FS2_FORT_DOG] } });
+  exec(project, "upsert_troop", { troop: { id: FS2_SARAH_TROOP, name: "성벽 위의 새라", enemyIds: [FS2_SARAH_ENEMY, FS2_FORT_DOG, FS2_FORT_DOG], uncapturable: true } });
+  exec(project, "upsert_troop_battle_page", { troopId: FS2_SARAH_TROOP, page: {
+    id: "fs2_sarah_open", name: "새라 — 시작", span: "battle", conditions: [{ kind: "onRound", round: 1 }],
+    commands: [say(SARAH, "개들아, 물지는 마라. 넘어뜨리기만."), say(ELENA, "개부터 떼어 내자!\n새라 씨는 창을 길게 쓴다.")],
+  } });
+  exec(project, "upsert_troop_battle_page", { troopId: FS2_SARAH_TROOP, page: {
+    id: "fs2_sarah_half", name: "새라 — 반", span: "battle", conditions: [{ kind: "enemyHpBelow", enemyId: FS2_SARAH_ENEMY, percent: 50 }],
+    commands: [say(SARAH, "…그 창, 로한 아저씨 거지.\n손잡이 무늬가 우리 집 거랑 같아."), say(KAEL, "아저씨가 전해 달래요. 「고개 들어라」.")],
+  } });
+  // 요새 — 새벽샘 북쪽 길 끝. 방 문법으로 짓고, 보이는 적(경비견)·상자·쉼터는 도구가 채운다. 사람 순찰은 아래에서 칩을 주고 따로 놓는다.
+  const d = exec(project, "author_dungeon", {
+    type: "castle", adapter: "beodeul", genre: "rpg", name: "북방 관문 요새", id: FS2_FORTRESS_ID, rooms: FORT_ROOMS,
+    populate: true, troops: { field: [FS2_FORT_DOGS], boss: FS2_FORT_DOGS }, gimmick: "none",
+    entrance: { fromMapId: FS2_DAWNWELL_ID, x: 26, y: 0 }, seed: 61,
+  }) as { rooms?: { id: string; kind: string; x: number; y: number; w: number; h: number; spots: Cell[] }[] } | undefined;
+  FORT.rooms = d?.rooms ?? [];
+  const fort = M(project, FS2_FORTRESS_ID);
+  // 도구가 보스방에 둔 경비견 보스 자리에 새라가 선다(보스 전투는 새라 이벤트가 연다).
+  const boss = fort.events.find((e) => e.id === `ev_${FS2_FORTRESS_ID}_boss`);
+  const rampart = FORT.rooms.find((r) => r.id === "rampart");
+  if (!rampart) throw new Error("[fallen-star act2] 요새 성벽 방이 없다");
+  FORT.sarah = boss ? { x: boss.x, y: boss.y } : rampart.spots[0]!;
+  fort.events = fort.events.filter((e) => e.id !== `ev_${FS2_FORTRESS_ID}_boss`);
+  const cells = FORT.rooms.find((r) => r.id === "cells");
+  if (!cells) throw new Error("[fallen-star act2] 요새 감방이 없다");
+  FORT.cell = { x: cells.x + 1, y: cells.y + cells.h - 2 };
+  exec(project, "set_scene_mood", { mapId: FS2_FORTRESS_ID, applyMode: "map", lighting: { ambient: 0.55, color: "#40485a" } });
+  // 순찰 기사 — 광장 통금 순찰대와 같은 칩·같은 무리. 안뜰·계단 홀에 하나씩.
+  const knight = hubChip(project, hubId, "ev_fs_knight");
+  let k = 0;
+  for (const room of ["yard", "stair"]) {
+    for (const at of FORT.rooms.find((r) => r.id === room)?.spots ?? []) {
+      // 경비견·상자 곁(3칸 안)은 피한다 — 붙어 서면 한 무리로 읽힌다.
+      if (M(project, FS2_FORTRESS_ID).events.some((e) => Math.max(Math.abs(e.x - at.x), Math.abs(e.y - at.y)) <= 3)) continue;
+      try {
+        exec(project, "place_field_enemy", {
+          mapId: FS2_FORTRESS_ID, x: at.x, y: at.y, troopId: FS2_PATROL_TROOP, behavior: "chase", patrol: { length: 2, axis: k % 2 ? "vertical" : "horizontal" },
+          sightRange: 5, vision: "cone", pace: "normal", approachStyle: "dash", graphic: knight, alert: "exclamation", respawnSec: 60, clearSwitchId: `sw_fs2_fort_knight_${k}_down`,
+        });
+        k += 1;
+        break;
+      } catch { /* 그 칸은 도구가 거절 — 다음 자리 */ }
+    }
+  }
+}
+
+function fortressEvents(project: Project): void {
+  const fort = M(project, FS2_FORTRESS_ID);
+  const sarahChip = chip(SARAH_CHIP[0], SARAH_CHIP[1], "down");
+  const lose: Command[] = [
+    fadeOut(900),
+    { kind: "recoverAll" } as unknown as Command,
+    setSw(SW_SARAH_LOST),
+    transfer(FS2_FORTRESS_ID, FORT.cell, "up"),
+    // 이동 뒤 명령은 돌지 않는다 — 감방 도착 장면은 감방 자동 이벤트가 맡는다.
+  ];
+  const win: Command[] = [
+    cutBegin(),
+    narrate("새라가 창을 내렸다. 개들이 그 발치에 엎드린다."),
+    say(SARAH, "…졌다. 명령은 지켰고."),
+    say(SARAH, "쇠 마차, 사흘 전에 여길 지났다.\n안에 있던 아이가… 계속 뭘 쓰고 있었어. 공책에."),
+    say(ELENA, "이리스 일지예요."),
+    say(SARAH, "창살 사이로 한 줄 보여 주더라.\n「오늘은 아무도 대답하지 않았다」."),
+    emote("player", "ellipsis", 900),
+    say(SARAH, "그 창, 로한 아저씨가 너한테 줬지.\n원래 내 아버지 창이었어."),
+    { kind: "choices", prompt: "창을 어떻게 할까?", options: [
+      { text: "창을 돌려준다", branch: [
+        say(KAEL, "아저씨는 저한테 맡긴 거예요.\n주인은 따로 있다는 거 알았을걸요."),
+        say(SARAH, "…고개 들어라. 아버지 말버릇이었지."),
+        setSw(SW_SPEAR_BACK),
+        { kind: "setVariable", variableId: VAR_BOND_SARAH, op: "+=", value: 1 } as unknown as Command,
+      ] },
+      { text: "창을 맡아 둔다", branch: [
+        say(KAEL, "북쪽까지는 제가 들고 갈게요.\n돌려드리는 건 그다음에."),
+        say(SARAH, "…그래. 대신 창끝 별쇠는 떼어 가라. 로한 아저씨가 쓸 거다."),
+        se("cc0-se-orp-inventory-cloth"),
+        item(FS2_STAR_IRON, 1),
+        narrate("「별쇠 조각」을 받았다.", { context: "system" }),
+        setSw(SW_SPEAR_KEPT),
+      ] },
+    ] } as unknown as Command,
+    say(SARAH, "발렌 님한테 가는 길이면 나도 간다.\n물어볼 게 있어. …아버지 일로."),
+    se("cc0-se-orp-inventory-cloth"),
+    { kind: "changeParty", actorId: FS2_SARAH_ACTOR, action: "add" } as unknown as Command,
+    narrate("새라가 동료가 되었다.", { context: "system" }),
+    setSw(SW_SARAH),
+    cutLabel(),
+    cutEnd(),
+  ];
+  addEvent(fort, "ev_fs2_fort_sarah", SARAH, FORT.sarah, [
+    page("ev_fs2_fort_sarah_p", "성벽 위의 새라", [], [
+      cutBegin(),
+      emote("ev_fs2_fort_sarah", "exclamation", 700),
+      say(SARAH, "별지기 꼬마들. 여기서 돌아가라.\n명령이다. …내 명령이 아니라서 미안하다."),
+      say(KAEL, "로한 아저씨가 전해 달래요.\n「고개 들어라」."),
+      say(SARAH, "…그 말, 발렌 님이 늘 하던 말인데.\n아버지한테서 배운 거였구나."),
+      say(SARAH, "그래도 길은 못 내준다. 창으로 말해라."),
+      cutLabel(),
+      cutEnd(),
+      { kind: "battleProcessing", troopId: FS2_SARAH_TROOP, canEscape: false, canLose: true, branchOnResult: true, victoryBranch: win, defeatBranch: lose, escapeBranch: [] } as unknown as Command,
+    ], { graphic: sarahChip }),
+    page("ev_fs2_fort_sarah_gone", "합류 뒤", [sw(SW_SARAH)], [], { graphic: { transparent: true }, priority: "below" }),
+  ]);
+  // 졌을 때 — 요새 감방에서 깬다(게임 오버 아님). 창살 문은 새라가 열어 두었다.
+  addEvent(fort, "ev_fs2_fort_cell_wake", "감방에서 깬다", { x: 0, y: 0 }, [
+    page("ev_fs2_fort_cell_wait", "대기", [], [], { priority: "below" }),
+    page("ev_fs2_fort_cell_run", "깬다", [sw(SW_SARAH_LOST)], [
+      fadeIn(900),
+      narrate("차가운 돌바닥. 요새 지하 감방이다."),
+      say(ELENA, "…창살이 열려 있어. 일부러 안 잠갔나 봐."),
+      say(KAEL, "한 번 더 가 보자. 이번엔 개부터."),
+      setSw(SW_SARAH_LOST, false),
+    ], { trigger: { kind: "auto" }, priority: "below" }),
+  ]);
+}
+
+// ════════════════════════════════════════════════════════════════════
 
 export interface FallenAct2Ids { hub: string; observatory: string; smithy: string }
 
@@ -894,4 +1072,6 @@ export function applyFallenAct2Opening(project: Project, exec: Exec, ids: Fallen
   bridge(project, exec);
   northGateEvents(project, ids.hub);
   dawnwellEvents(project);
+  northFortress(project, exec, ids.hub);
+  fortressEvents(project);
 }

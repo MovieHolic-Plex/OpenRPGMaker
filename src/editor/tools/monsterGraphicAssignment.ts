@@ -2,6 +2,7 @@
 // semantic term; unrelated hash fallbacks must never become persisted monster art.
 import { searchResources } from "@/assets/resourceSearch";
 import { getMonsterResource, listMonsterResources } from "@/assets/monsterResourceCatalog";
+import { charsetBattler } from "@/assets/charsetBattlers";
 import { activeGenreLockVisualCatalog } from "@/project/genreLockVisuals";
 import type { Project } from "@/project/types";
 import { ToolError } from "./types";
@@ -145,6 +146,9 @@ export function ensureMonsterGraphic(
     // Explicit IDs are author decisions, not names to reinterpret on later edits.
     // (장르 잠금 중 허용 밖 id 는 실행기 판정 enforceGenreLockVisuals 가 대안과 함께 거부하거나 「생성 대기」로 비운다 — 여기서는 존재만 본다.)
     if (getMonsterResource(project, value)) return;
+    // 사람 적(기사·동료의 적 판): 아군과 같은 걷기 칩 전투 시트(charset-battler-*)는 전투가 적으로 그린다(battleFieldDom charsetEnemy).
+    // 몬스터 목록에는 없으니 정확한 id 일 때만 그대로 받는다 — 이름 해석으로 사람 시트를 고르지는 않는다.
+    if (!Object.hasOwn(project.assets.uploaded, value) && charsetBattler(value)) return;
     if (Object.hasOwn(project.assets.uploaded, value)) {
       throw missingGraphicError(project, value, label, "invalid-args");
     }

@@ -11,6 +11,7 @@
 import type { GameMap, MapId, MapNamedLocation, Project } from "@/project/types";
 import { linkMapsInDraft, type LinkResult } from "./worldGraphTools";
 import { isDoorArtCell } from "@/project/staging/doorCells";
+import { isPassable } from "@/project/collision";
 import { SHARED_OBJECT_TOOLS } from "./sharedObjectTools";
 import { ToolError, type JsonSchema, type ToolDefinition, type ToolExecResult } from "./types";
 
@@ -103,9 +104,15 @@ export function linkEntranceInDraft(draft: Project, args: DungeonLinkArgs): { li
   }
   let toGate = args.toGate;
   let toLanding: Pt | undefined;
+  let toDoor: Pt | undefined;
   if (!toGate) {
     const info = dungeonGateOf(toMap);
     if (info.source === "marker") { toGate = info.gate; toLanding = info.landing; }
+    // 문으로 들어가는 던전(문 그림 칸은 못 걷는다, 착지 = 바로 남쪽): 연결 도구의 문 계약대로 문앞 칸을 출입구, 문 칸을 doorAt 으로 준다.
+    // 그대로 주면 연결 도구가 막힌 문 칸을 문앞으로 옮겨 착지와 겹친다(transfer-retrigger, 2026-10-26 북방 요새).
+    if (toGate && toLanding && toLanding.x === toGate.x && toLanding.y === toGate.y + 1 && !isPassable(draft, toMap, toGate.x, toGate.y)) {
+      toDoor = toGate; toGate = toLanding; toLanding = undefined;
+    }
     else notes.push(`맵 ${toMap.id} 에 던전 입구 표식이 없어 문 칸을 고르지 못했다 — 연결 도구가 맵 가장자리 중앙 문으로 보정한다. 정확히 하려면 toGate{x,y}.`);
   }
   // author_dungeon 의 자리표시 출구(바깥 맵이 없을 때 입구 계단에 둔 것)는 진짜 연결로 바꾼다.
@@ -117,7 +124,7 @@ export function linkEntranceInDraft(draft: Project, args: DungeonLinkArgs): { li
   const mouth = caveMouth(draft, fromMap, fromGate);
   if (mouth) notes.push(mouth);
   const from = { mapId: fromMap.id, x: fromGate.x, y: fromGate.y };
-  const to = { mapId: toMap.id, ...(toGate ? { x: toGate.x, y: toGate.y } : {}), ...(toLanding ? { entry: { x: toLanding.x, y: toLanding.y } } : {}) };
+  const to = { mapId: toMap.id, ...(toGate ? { x: toGate.x, y: toGate.y } : {}), ...(toLanding ? { entry: { x: toLanding.x, y: toLanding.y } } : {}), ...(toDoor ? { doorAt: { x: toDoor.x, y: toDoor.y } } : {}) };
   const link = linkMapsInDraft(draft, { from, to, bidirectional: true, fade: args.fade ?? "black", registerEdge: true });
   return { link, fromGate, ...(toGate ? { toGate } : {}), ...(placeName ? { placeName } : {}), notes };
 }
