@@ -549,7 +549,7 @@ function isTintable(object: Phaser.GameObjects.GameObject): object is Phaser.Gam
 }
 
 /** 그림자 조각(칸의 ¼)마다 검정 사각형 하나. bit0 왼위·bit1 오른위·bit2 왼아래·bit3 오른아래. 알파는 호출자가 정한다. */
-function createShadowQuarters(scene: Phaser.Scene, x: number, y: number, tileSize: number, bits: number): Phaser.GameObjects.Rectangle[] {
+export function createShadowQuarters(scene: Phaser.Scene, x: number, y: number, tileSize: number, bits: number): Phaser.GameObjects.Rectangle[] {
   const half = tileSize / 2;
   const out: Phaser.GameObjects.Rectangle[] = [];
   for (let quarter = 0; quarter < 4; quarter += 1) {
