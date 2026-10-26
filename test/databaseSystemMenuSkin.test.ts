@@ -1,7 +1,7 @@
 // 자료집 시스템 탭 「게임 메뉴 디자인」 — ESC 메뉴 스킨 12종을 고르고, 기본값은 저장에서 지운다.
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { renderSystemTab } from "@/editor/panels/databaseSystemView";
-import { listMenuSkinIds, MENU_SKINS } from "@/player/menuSkins/registry";
+import { DEFAULT_MENU_SKIN_ID, listMenuSkinIds, MENU_SKINS } from "@/player/menuSkins/registry";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
 import { findByTestId, installFakeDom, type FakeElement } from "./fakeDom";
@@ -36,7 +36,8 @@ describe("system tab menu skin cards", () => {
     const cards = select!.children;
     expect(cards.map((card) => card.dataset.testid)).toEqual(listMenuSkinIds().map((id) => `db-system-menu-skin-${id}`));
     expect(cards.map((card) => card.getAttribute("aria-label"))).toEqual(listMenuSkinIds().map((id) => MENU_SKINS[id].label));
-    expect(findByTestId(host, "db-system-menu-skin-workbench")?.getAttribute("aria-pressed")).toBe("true");
+    // 기본 스킨은 2026-09-28 에 workbench → pixel 로 바뀌었다(registry.ts DEFAULT_MENU_SKIN_ID). 이름을 박지 않고 상수를 본다.
+    expect(findByTestId(host, `db-system-menu-skin-${DEFAULT_MENU_SKIN_ID}`)?.getAttribute("aria-pressed")).toBe("true");
   });
 
   it("선택을 바꾸면 store 에 반영되고 선택 표시와 설명이 따라온다, 기본으로 돌리면 키를 지운다", () => {
@@ -44,9 +45,9 @@ describe("system tab menu skin cards", () => {
     findByTestId(host, "db-system-menu-skin-hub")!.click();
     expect(store.getCurrent().system.menuUiStyle).toBe("hub");
     expect(findByTestId(host, "db-system-menu-skin-hub")?.getAttribute("aria-pressed")).toBe("true");
-    expect(findByTestId(host, "db-system-menu-skin-workbench")?.getAttribute("aria-pressed")).toBe("false");
+    expect(findByTestId(host, `db-system-menu-skin-${DEFAULT_MENU_SKIN_ID}`)?.getAttribute("aria-pressed")).toBe("false");
     expect(findByTestId(host, "db-system-menu-skin-description")?.textContent).toContain(MENU_SKINS.hub.label);
-    findByTestId(host, "db-system-menu-skin-workbench")!.click();
+    findByTestId(host, `db-system-menu-skin-${DEFAULT_MENU_SKIN_ID}`)!.click();
     expect(store.getCurrent().system.menuUiStyle).toBeUndefined();
   });
 

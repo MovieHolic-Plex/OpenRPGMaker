@@ -269,11 +269,12 @@ describe("스튜디오 콘솔(재개편)", () => {
     expect(exited).toBe(1);
   });
 
-  it("조수 상태는 유휴면 「대기 중」, 일할 때는 문장을 그대로 보인다", () => {
+  it("조수 상태는 유휴면 「요청 없음」, 일할 때는 문장을 그대로 보인다", () => {
     const { shell, root } = standaloneShell();
     const status = findByTestId(root, "ai-studio-status");
     shell.setStatus("대기");
-    expect(status?.textContent).toBe("대기 중");
+    // 유휴 문구는 「대기 중」 대신 「요청 없음」(UI 감사 09-ai-12, #3211 b335eb9abd).
+    expect(status?.textContent).toBe("요청 없음");
     expect(status?.dataset.state).toBe("idle");
     shell.setStatus("맵 짓는 중…");
     expect(status?.textContent).toBe("맵 짓는 중…");

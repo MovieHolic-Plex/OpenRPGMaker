@@ -3,6 +3,7 @@ import { createBlankProject, DEFAULT_EASYRPG_CHARSET_ID, TILE } from "@/project/
 import { startSession } from "@/project/session";
 import { store } from "@/project/store";
 import { renderTiles } from "@/player/playSceneMapRuntime";
+import { isAlwaysAboveCharacterUpperTile } from "@/player/characterDepth";
 import { findBlockingRuntimeEventAt,
 initialRuntimeEventPositions,
 runtimeEventView, } from "@/project/runtimeEventState"
@@ -138,7 +139,12 @@ describe("runtime event page graphics", () => {
     const map = project.maps[project.startMapId];
     map.lowerTiles.fill(TILE.GRASS);
     map.upperTiles.fill(-1);
-    map.upperTiles[1 * map.width + 1] = 260; // 침엽수 수관
+    // 260(침엽수 수관)은 옛 EasyRPG 합본 마을 번호였다 — 기본 타일셋이 버들항이 된 뒤(2026-10-07)에는 그 번호가 ★ 가 아니다.
+    // 지금 기본 타일셋에서 「늘 캐릭터 위」로 판정되는 첫 칸을 쓴다.
+    const tileset = project.tilesets[map.tilesetId]!;
+    const starTile = Array.from({ length: tileset.count }, (_, i) => i).find((tile) => isAlwaysAboveCharacterUpperTile(tileset, tile));
+    if (starTile === undefined) throw new Error(`no always-above upper tile in ${map.tilesetId}`);
+    map.upperTiles[1 * map.width + 1] = starTile;
     store.replace(project);
     const lowerKids: unknown[] = [];
     const upperKids: unknown[] = [];

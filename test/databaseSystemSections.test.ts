@@ -34,6 +34,7 @@ function clickNav(host: FakeElement, slug: string): void {
 }
 
 /** 각 섹션을 대표하는 testid — 섹션 상태와 무관하게 DOM 에 존재해야 한다. */
+// 게임 메뉴·대화창·HUD 의 키 testid 는 실제 컨트롤 이름이다(스킨 카드 묶음·대화창 스타일 갤러리·HUD 스튜디오 뿌리).
 const SECTION_KEY_TESTIDS: readonly { readonly slug: string; readonly testid: string }[] = [
   { slug: "overview", testid: "db-system-studio" },
   { slug: "party", testid: "db-picker-system-start-actor" },
@@ -42,9 +43,9 @@ const SECTION_KEY_TESTIDS: readonly { readonly slug: string; readonly testid: st
   { slug: "time", testid: "db-field-system-time-enabled" },
   { slug: "typechart", testid: "db-field-system-type-chart-types" },
   { slug: "display", testid: "db-field-system-resolution-preset" },
-  { slug: "menu", testid: "db-system-menu-skin-grid" },
-  { slug: "dialogue", testid: "db-system-dialogue-style-section" },
-  { slug: "hud", testid: "db-system-field-hud-theme" },
+  { slug: "menu", testid: "db-field-system-menu-ui-style" },
+  { slug: "dialogue", testid: "db-field-system-dialogue-style" },
+  { slug: "hud", testid: "db-field-hud" },
   { slug: "font", testid: "db-field-system-font-ui" },
   { slug: "resources", testid: "db-field-title-resource" },
   { slug: "title", testid: "db-title-workbench" },

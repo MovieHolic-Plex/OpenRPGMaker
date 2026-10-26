@@ -140,13 +140,22 @@ export function prepareDoorFx(scene: PlaySceneContext): void {
   const project = store.getCurrent();
   const map = scene.map;
   if (!map) return;
+  // 문 이벤트가 없는 맵은 텍스처를 풀지 않는다 — 타일 재구축 한 번에 텍스처 해석은 한 번이어야 한다(mapEntryTilePass).
+  // 명령 훑기(transferEventIds)는 예전처럼 캐시가 빗나갈 때만 한다 — 처음 보는 맵만 문 유무를 먼저 본다.
+  const noDoorsKey = `none|${map.events.length}`;
+  const cached = doorPlans.get(map);
+  if (cached?.key === noDoorsKey) return;
+  const firstIds = cached ? null : transferEventIds(map);
+  if (firstIds?.length === 0) { doorPlans.set(map, { key: noDoorsKey, plans: new Map() }); return; }
   const textureKey = tilesetTextureKeyFor(scene, project, map);
   const key = `${textureKey}|${map.events.length}`;
-  if (doorPlans.get(map)?.key === key) return;
+  if (cached?.key === key) return;
+  const transferIds = firstIds ?? transferEventIds(map);
+  if (transferIds.length === 0) { doorPlans.set(map, { key: noDoorsKey, plans: new Map() }); return; }
   const plans = new Map<string, DoorPlan | null>();
   doorPlans.set(map, { key, plans });
   const size = mapTileSize(map);
-  for (const id of transferEventIds(map)) {
+  for (const id of transferIds) {
     const event = map.events.find((e) => e.id === id)!;
     const view = runtimeEventViewById(project, map, scene.session, scene.eventPositions, id);
     if (view && !view.transparent && isDoorCharset(view.sprite?.id ?? "")) { plans.set(id, { kind: "charset" }); continue; }

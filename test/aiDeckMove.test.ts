@@ -106,6 +106,8 @@ beforeEach(() => {
   editorState.set({ currentMapId: null, selection: null });
   restoreDom = installFakeDom();
   installFakeLocalStorage();
+  // 이 파일은 펼친 데크의 위치·폭을 본다. 첫 부팅 접힘 기본값(aiChatPanel loadPanelCollapsed(true))과는 무관하니 펼침을 저장해 둔다.
+  storage.set("oprn:ai-panel-collapsed", "0");
 });
 
 afterEach(() => {
