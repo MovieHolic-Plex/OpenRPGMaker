@@ -3,69 +3,15 @@
 
 import { describe, it, expect } from "vitest";
 import { createBlankProject, ensureSwitchVariableSlots, createBlankMap, createStarterMap, TILE, COMBINED_TOWN_TILESET_ID, DEFAULT_TILESET_ID, DEFAULT_TILESET_NAME, DEFAULT_TILESET_TEXTURE_KEY, DEFAULT_TILE_SIZE, DEFAULT_EASYRPG_CHARSET_ID, LEGACY_RM_TILESET_ID, LEGACY_RM_TILESET_TEXTURE_KEY, ensureBundledResourceProfiles, removeLegacyRmTileset } from "@/project/defaults";
-import { TERRAIN_TAG, describeChipsetTile, dirtLikeTiles, tileLabelForIndex } from "@/project/defaults/chipsetMapping";
+import { TERRAIN_TAG, describeChipsetTile, tileLabelForIndex } from "@/project/defaults/chipsetMapping";
 import { TILE_SIZE as RUNTIME_TILE_SIZE } from "@/assets/bundled";
-import { charsetFrameIndex } from "@/assets/easyrpgRtp";
 import { TILE_SIZE as PREVIEW_TILE_SIZE } from "@/assets/tilePreview";
 import { serialize } from "@/project/io";
 import { startSession } from "@/project/session";
 import { SCHEMA_VERSION } from "@/project/types";
 import sampleProject from "./fixtures/projects/oprn-sample-v3.json";
-
-const STARTER_VILLAGE_SMALL_HOUSE_PATTERN = [
-  [374, 375, 374, 375, 374],
-  [404, 405, 404, 405, 404],
-  [102, 103, 103, 103, 104],
-  [132, 133, 329, 133, 134],
-  [162, 163, 359, 163, 164],
-] as const;
-
-const STARTER_VILLAGE_HOUSE_DOOR_APPROACHES = [
-  { x: 7, y: 10 },
-  { x: 21, y: 10 },
-  { x: 7, y: 22 },
-] as const;
-const STARTER_VILLAGE_FIRST_DOOR_APPROACH = STARTER_VILLAGE_HOUSE_DOOR_APPROACHES[0];
-const STARTER_VILLAGE_NPCS = [
-  {
-    id: "event_starter_mina",
-    x: 15,
-    y: 14,
-    spriteId: "tex_easyrpg_charset_people1",
-    pattern: charsetFrameIndex({ characterIndex: 0, direction: "down", pattern: 1 }),
-    faceResourceId: "easyrpg-faceset-people1-00",
-    speaker: "미나",
-    body: "어서 와요. 이 마을의 이벤트는 모두 이 에디터 안에서 만들어졌어요.",
-  },
-  {
-    id: "event_starter_rowen",
-    x: 13,
-    y: 16,
-    spriteId: "tex_easyrpg_charset_people2",
-    pattern: charsetFrameIndex({ characterIndex: 1, direction: "down", pattern: 1 }),
-    // 수녀(People2 #1)의 짝은 FaceSet/People1 #9 흰 두건 여성이다. 이름이 같은 People2-01 은 청발 여성.
-    faceResourceId: "easyrpg-faceset-people1-09",
-    speaker: "로웬",
-    body: "트리거를 Action Button으로 두면 말을 걸 때만 대화가 시작됩니다.",
-  },
-  {
-    id: "event_starter_sera",
-    x: 15,
-    y: 18,
-    spriteId: "tex_easyrpg_charset_actor2",
-    pattern: charsetFrameIndex({ characterIndex: 2, direction: "down", pattern: 1 }),
-    // Actor2 의 얼굴은 FaceSet/Actor1 8~15칸이다. FaceSet/Actor2-02 는 닌자.
-    faceResourceId: "easyrpg-faceset-actor1-10",
-    speaker: "세라",
-    body: "얼굴 그림도 함께 뜨니까 실제 게임에서 보일 대화창을 그대로 확인할 수 있어요.",
-  },
-] as const;
-
-type PatternSubject = {
-  readonly tiles: readonly number[];
-  readonly mapWidth: number;
-  readonly mapHeight: number;
-};
+import { GENERATED_FACESET_FACE_IDS } from "@/assets/facesetFaceAssets";
+import { retiredEasyRpgTileset } from "./support/retiredEasyRpgTilesets";
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
@@ -150,8 +96,11 @@ describe("createBlankProject", () => {
   it("starts with one small picker block instead of 1000 preallocated slots", () => {
     const p = createBlankProject();
 
-    // 20 picker slots + 아이템이 켜는 기동석 스위치 11개(#777 `ensureItemSwitchDefs`).
-    expect(p.switches).toHaveLength(31);
+    // 20 picker slots + 아이템이 켜는 기동석 스위치(#777 `ensureItemSwitchDefs`). 공용 아이템 목록이 늘며 기동석 수도
+    // 11 → 15 로 늘었다 — 개수 대신 「빈 숫자 슬롯은 20칸뿐이고 나머지는 아이템이 실제로 켜는 스위치」를 본다.
+    const itemSwitchIds = new Set(p.database.items.flatMap((item) => (item.switchId ? [item.switchId] : [])));
+    expect(p.switches.filter((entry) => /^sw_\d{4}$/u.test(entry.id))).toHaveLength(20);
+    expect(p.switches.filter((entry) => !/^sw_\d{4}$/u.test(entry.id)).every((entry) => itemSwitchIds.has(entry.id))).toBe(true);
     expect(p.variables).toHaveLength(20);
     expect(p.switches[0]).toEqual({ id: "sw_0001", name: "" });
     expect(p.variables[0]).toEqual({ id: "var_0001", name: "" });
@@ -184,13 +133,14 @@ describe("createBlankProject", () => {
     expect(p.session.variables).toEqual({ var_legacy_score: 5 });
   });
 
-  it("uses Beodeul City as the project-wide default chipset while keeping Combined Town bundled", () => {
+  it("uses Beodeul City as the project-wide default chipset (Combined Town left with the 2026-10-07 purge)", () => {
     const p = createBlankProject();
     const defaultTileset = p.tilesets[DEFAULT_TILESET_ID];
     const chipsetProfiles = p.resourceProfiles.filter((profile) => profile.kind === "chipset");
 
     expect(DEFAULT_TILESET_ID).toBe("beodeul_city");
-    expect(p.tilesets["easyrpg_chipset_combined_town"]).toBeDefined();
+    // 합본 마을 시트는 2026-10-07 저작권 정리로 새 프로젝트에서 빠졌다(옛 저장본만 정의를 들고 있다).
+    expect(p.tilesets["easyrpg_chipset_combined_town"]).toBeUndefined();
     expect(defaultTileset?.name).toBe(DEFAULT_TILESET_NAME);
     expect(defaultTileset?.image).toEqual({ type: "bundled", id: DEFAULT_TILESET_TEXTURE_KEY });
     expect(p.maps[p.startMapId].tilesetId).toBe(DEFAULT_TILESET_ID);
@@ -240,19 +190,21 @@ describe("createBlankProject", () => {
   it("ensureBundledResourceProfiles 가 저장본의 생성 얼굴 프로필을 걷어낸다", () => {
     const p = createBlankProject();
     // 예전 저장본처럼 생성 시리즈 낱장 프로필이 남아 있는 상태를 만든다.
+    // 생성 시리즈 id 는 GENERATED_FACESET_FACE_IDS 가 정본이다(hero-XX 시리즈는 정리로 빠지고 generated-faceset-missing-* 가 남았다).
+    const generatedId = [...GENERATED_FACESET_FACE_IDS][0]!;
     p.resourceProfiles.push({
       kind: "faceset",
-      name: "hero-01-face 얼굴 2",
-      assetId: "generated-actor-hero-01-face-01",
+      name: "생성 얼굴",
+      assetId: generatedId,
       imageWidth: 48,
       imageHeight: 48,
     });
 
     expect(ensureBundledResourceProfiles(p)).toBe(true);
 
-    expect(p.resourceProfiles.some((profile) => profile.assetId === "generated-actor-hero-01-face-01")).toBe(false);
+    expect(p.resourceProfiles.some((profile) => profile.assetId === generatedId)).toBe(false);
     // 저작 목록에 다시 끼어들지도 않아야 한다.
-    expect(p.resourceProfiles.some((profile) => (profile.assetId ?? "").startsWith("generated-actor-hero-") && profile.kind === "faceset")).toBe(false);
+    expect(p.resourceProfiles.some((profile) => profile.kind === "faceset" && GENERATED_FACESET_FACE_IDS.has(profile.assetId ?? ""))).toBe(false);
   });
 
   it("Map Tree가 있고 루트가 startMapId", () => {
@@ -300,14 +252,16 @@ describe("createBlankProject", () => {
     expect(PREVIEW_TILE_SIZE).toBe(16);
     expect(p.tilesets[DEFAULT_TILESET_ID].tileSize).toBe(16);
     expect(p.maps[p.startMapId].tileSize).toBe(16);
-    expect(tileSizesIn(exported).every((tileSize) => tileSize === 16)).toBe(true);
+    // 지도 제작용 atlas_cartography 는 일부러 32px 시트다(섞인 칸 크기 배율 규칙 #1226) — 그 정의만 빼고 본다.
+    const { atlas_cartography: _cartography, ...otherTilesets } = exported.tilesets as Record<string, unknown>;
+    expect(tileSizesIn({ ...exported, tilesets: otherTilesets }).every((tileSize) => tileSize === 16)).toBe(true);
     expect(tileSizesIn(sampleProject).every((tileSize) => tileSize === 16)).toBe(true);
   });
 
   it("maps bundled chipset terrain, priority, and passability by atlas index", () => {
-    const p = createBlankProject();
     // TILE.* 는 합본 마을 시트의 칸 번호다 — 기본 타일셋(버들항)이 아니라 합본 마을로 확인한다.
-    const tileset = p.tilesets[COMBINED_TOWN_TILESET_ID];
+    // 정리(2026-10-07) 뒤 새 프로젝트에는 없으므로 옛 저장본의 정의를 만든다.
+    const tileset = retiredEasyRpgTileset(COMBINED_TOWN_TILESET_ID);
     const passable = { up: true, down: true, left: true, right: true };
     const solid = { up: false, down: false, left: false, right: false };
 
@@ -372,7 +326,8 @@ describe("createBlankMap", () => {
   it("기본 lower는 전부 잔디, upper는 전부 빈 칸", () => {
     const m = createBlankMap("테스트", 3, 3);
     expect(m.lowerTiles.every((t: number) => t === 737)).toBe(true);
-    const town = createBlankMap("테스트", 3, 3, COMBINED_TOWN_TILESET_ID);
+    // 합본 마을 정의를 넘기면(옛 저장본) 그 시트의 잔디(240)로 채운다.
+    const town = createBlankMap("테스트", 3, 3, COMBINED_TOWN_TILESET_ID, DEFAULT_TILE_SIZE, retiredEasyRpgTileset(COMBINED_TOWN_TILESET_ID));
     expect(town.lowerTiles.every((t: number) => t === TILE.GRASS)).toBe(true);
     expect(m.upperTiles.every((t: number) => t === TILE.EMPTY)).toBe(true);
   });
@@ -384,24 +339,16 @@ describe("createBlankMap", () => {
 });
 
 describe("createStarterMap", () => {
-  it("builds the default 마을 as a 30x30 village with exactly three small houses and connected roads", () => {
-    // Given: the starter map factory creates the first user-visible map.
-    // When: the default starter map is generated.
+  // 시작 마을 장식(집 셋·흙길·주민 셋)은 2026-10-07 저작권 정리로 지웠다(defaultMaps.ts) — 집·길·NPC 세 시험을 이 하나로 바꾼다.
+  it("builds the default 마을 as a plain 30x30 Beodeul grass field without the purged houses, roads, or NPCs", () => {
     const m = createStarterMap();
-
-    // Then: the map has the requested compact village shape.
     expect(m.name).toBe("마을");
     expect(m.width).toBe(30);
     expect(m.height).toBe(30);
-    expect(m.lowerTiles.length).toBe(30 * 30);
-    expect(m.upperTiles.length).toBe(30 * 30);
-    expect(countPatternOccurrences({ tiles: m.lowerTiles, mapWidth: m.width, mapHeight: m.height }, STARTER_VILLAGE_SMALL_HOUSE_PATTERN)).toBe(3);
-    expect(roadComponentSize(m, STARTER_VILLAGE_FIRST_DOOR_APPROACH)).toBe(roadTileCount(m));
-    for (const approach of STARTER_VILLAGE_HOUSE_DOOR_APPROACHES) {
-      expect(isDirtRoadTile(m.lowerTiles[approach.y * m.width + approach.x] ?? TILE.EMPTY)).toBe(true);
-      expect(roadComponentContains(m, STARTER_VILLAGE_FIRST_DOOR_APPROACH, approach)).toBe(true);
-      expect(m.upperTiles[approach.y * m.width + approach.x]).toBe(TILE.EMPTY);
-    }
+    expect(m.tilesetId).toBe(DEFAULT_TILESET_ID);
+    expect(m.lowerTiles.every((tile) => tile === 737)).toBe(true);
+    expect(m.upperTiles.every((tile) => tile === TILE.EMPTY)).toBe(true);
+    expect(m.events).toEqual([]);
   });
 
   it("keeps the compact village boundary open grass (no wall frame)", () => {
@@ -416,136 +363,4 @@ describe("createStarterMap", () => {
     }
   });
 
-  it("uses chipset-aligned dirt tiles for the connected village road", () => {
-    const m = createStarterMap();
-    const roadTiles = new Set<number>(dirtLikeTiles());
-    const roadSamples = [
-      { x: 4, y: 10 },
-      { x: 14, y: 11 },
-      { x: 23, y: 12 },
-      { x: 7, y: 22 },
-      { x: 15, y: 24 },
-    ];
-    expect(roadTiles.has(TILE.PATH)).toBe(true);
-    for (const point of roadSamples) {
-      const tile = m.lowerTiles[point.y * m.width + point.x];
-      expect(tile).toBeDefined();
-      expect(roadTiles.has(tile ?? TILE.EMPTY)).toBe(true);
-      expect(m.upperTiles[point.y * m.width + point.x]).toBe(TILE.EMPTY);
-    }
-  });
-
-  it("ships three playable NPC events with EasyRPG charsets, face chips, and dialogue", () => {
-    const m = createStarterMap();
-    for (const expected of STARTER_VILLAGE_NPCS) {
-      const event = m.events.find((entry) => entry.id === expected.id);
-      expect(event).toBeDefined();
-      if (!event) throw new Error(`missing starter NPC ${expected.id}`);
-      expect(event.x).toBe(expected.x);
-      expect(event.y).toBe(expected.y);
-      expect(event.trigger.kind).toBe("action");
-      expect(m.upperTiles[event.y * m.width + event.x]).toBe(TILE.EMPTY);
-
-      const page = event.pages?.[0];
-      expect(page).toBeDefined();
-      if (!page) throw new Error(`missing starter NPC page ${expected.id}`);
-      expect(page.name).toBe(expected.speaker);
-      expect(page.graphic.sprite?.id).toBe(expected.spriteId);
-      expect(page.graphic.pattern).toBe(expected.pattern);
-      expect(page.trigger.kind).toBe("action");
-      expect(page.priority).toBe("same");
-      expect(page.overlapForbidden).toBe(true);
-
-      const faceCommand = page.commands.find((command) => command.kind === "changeFace");
-      if (!faceCommand || faceCommand.kind !== "changeFace") {
-        throw new Error(`missing face command for ${expected.id}`);
-      }
-      // 얼굴 한 칸 = 파일 한 장 — 명령은 낱장 얼굴 id 하나만 들고 있다.
-      expect(faceCommand.resourceId).toBe(expected.faceResourceId);
-      expect(faceCommand.position).toBe("left");
-
-      const textCommand = page.commands.find((command) => command.kind === "text");
-      if (!textCommand || textCommand.kind !== "text") {
-        throw new Error(`missing text command for ${expected.id}`);
-      }
-      expect(textCommand.speaker).toBe(expected.speaker);
-      expect(textCommand.body).toBe(expected.body);
-    }
-  });
 });
-
-function countPatternOccurrences(
-  subject: PatternSubject,
-  pattern: readonly (readonly number[])[]
-): number {
-  let count = 0;
-  const patternHeight = pattern.length;
-  const patternWidth = pattern[0]?.length ?? 0;
-  for (let y = 0; y <= subject.mapHeight - patternHeight; y += 1) {
-    for (let x = 0; x <= subject.mapWidth - patternWidth; x += 1) {
-      if (matchesPatternAt(subject, pattern, { x, y })) count += 1;
-    }
-  }
-  return count;
-}
-
-function matchesPatternAt(
-  subject: PatternSubject,
-  pattern: readonly (readonly number[])[],
-  origin: { readonly x: number; readonly y: number }
-): boolean {
-  for (let y = 0; y < pattern.length; y += 1) {
-    const row = pattern[y];
-    if (!row) return false;
-    for (let x = 0; x < row.length; x += 1) {
-      const tile = row[x];
-      if (tile !== undefined && tile >= 0 && subject.tiles[(origin.y + y) * subject.mapWidth + origin.x + x] !== tile) return false;
-    }
-  }
-  return true;
-}
-
-function roadTileCount(map: ReturnType<typeof createStarterMap>): number {
-  return map.lowerTiles.filter(isDirtRoadTile).length;
-}
-
-function roadComponentSize(map: ReturnType<typeof createStarterMap>, start: { readonly x: number; readonly y: number }): number {
-  return collectRoadComponent(map, start).size;
-}
-
-function roadComponentContains(
-  map: ReturnType<typeof createStarterMap>,
-  start: { readonly x: number; readonly y: number },
-  target: { readonly x: number; readonly y: number }
-): boolean {
-  return collectRoadComponent(map, start).has(pointKey(target));
-}
-
-function collectRoadComponent(map: ReturnType<typeof createStarterMap>, start: { readonly x: number; readonly y: number }): Set<string> {
-  const visited = new Set<string>();
-  const queue = [start];
-  while (queue.length > 0) {
-    const point = queue.shift();
-    if (!point) continue;
-    const key = pointKey(point);
-    if (visited.has(key)) continue;
-    const tile = map.lowerTiles[point.y * map.width + point.x] ?? TILE.EMPTY;
-    if (!isDirtRoadTile(tile)) continue;
-    visited.add(key);
-    queue.push(
-      { x: point.x + 1, y: point.y },
-      { x: point.x - 1, y: point.y },
-      { x: point.x, y: point.y + 1 },
-      { x: point.x, y: point.y - 1 }
-    );
-  }
-  return visited;
-}
-
-function pointKey(point: { readonly x: number; readonly y: number }): string {
-  return `${point.x},${point.y}`;
-}
-
-function isDirtRoadTile(tile: number): boolean {
-  return dirtLikeTiles().includes(tile);
-}
