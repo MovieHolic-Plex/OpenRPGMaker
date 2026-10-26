@@ -36,7 +36,28 @@ export function writeDraft(value: string): HTMLTextAreaElement {
   return input;
 }
 
+// happy-dom 에는 레이아웃이 없어 음원 목록(가상 스크롤, rm-audio-rows)이 높이 0 으로 보고 앞 80줄만 그린다.
+// 목록 전체를 다루는 이 시험들에는 긴 화면을 준다 — 그 목록 상자에만.
+let restoreRowsHeight: (() => void) | null = null;
+function giveAudioRowsAViewport(): void {
+  const proto = HTMLElement.prototype;
+  const own = Object.getOwnPropertyDescriptor(proto, "clientHeight");
+  const inherited = own ?? Object.getOwnPropertyDescriptor(Element.prototype, "clientHeight");
+  Object.defineProperty(proto, "clientHeight", {
+    configurable: true,
+    get(this: HTMLElement) {
+      if (this.classList?.contains("rm-audio-rows")) return 100_000;
+      return inherited?.get ? inherited.get.call(this) : 0;
+    },
+  });
+  restoreRowsHeight = () => {
+    if (own) Object.defineProperty(proto, "clientHeight", own);
+    else Reflect.deleteProperty(proto, "clientHeight");
+  };
+}
+
 export function setupAudioManager(): void {
+  giveAudioRowsAViewport();
   store._setPersistenceStateForTest({ loaded: false, remotePersistenceEnabled: false });
   const project = createBlankProject();
   for (const [id, kind] of [
@@ -53,6 +74,8 @@ export function setupAudioManager(): void {
 }
 
 export function cleanupAudioManager(): void {
+  restoreRowsHeight?.();
+  restoreRowsHeight = null;
   store.replaceProject(createBlankProject());
   vi.restoreAllMocks();
   resetModalStackForTest();
