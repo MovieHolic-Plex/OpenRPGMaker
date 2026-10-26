@@ -83,11 +83,30 @@ describe("generate_map", () => {
     let conceptInteriors = 0;
     let manualAtlases = 0;
 
-    for (const asset of BUNDLED_EASYRPG_CHIPSET_ASSETS) {
-      const tilesetId = bundledEasyRpgTilesetId(asset.textureKey);
+    // All atlases share one loaded project (each case writes its own map id); building and cloning a fresh
+    // full bundle per atlas (48 bundled sheets since the beodeul/jp_city bundles) blew the 15s case budget.
+    let sharedCtx: ToolContext | undefined;
+    const loadedCtx = (): ToolContext => {
       const ctx: ToolContext = { project: createEmptyToolProject() };
       // Match the editor's loaded state; generation is not a tileset normalizer.
       ensureBundledTilesets(ctx.project);
+      return ctx;
+    };
+    for (const asset of BUNDLED_EASYRPG_CHIPSET_ASSETS) {
+      const tilesetId = bundledEasyRpgTilesetId(asset.textureKey);
+      if (!MAP_GENERATION_PROFILES.has(tilesetId)) {
+        sharedCtx ??= loadedCtx();
+        const result = generate(sharedCtx, {
+          id: `map_${tilesetId}`, name: asset.name, theme: "village", tilesetId, width: 20, height: 16, seed: 7, border: "wall",
+        });
+        // 수동 저작용 번들 아틀라스(성채·버들항 계열 등) — 생성 팔레트가 없다. 2026-10-07 정리 뒤 프로필은 Scarloxy 셋만 남았다.
+        expect(result.ok, tilesetId).toBe(false);
+        expect(result.issues?.some(issue => issue.code === "unsupported-tileset"), tilesetId).toBe(true);
+        expect(sharedCtx.project.maps[`map_${tilesetId}`]).toBeUndefined();
+        manualAtlases += 1;
+        continue;
+      }
+      const ctx = (sharedCtx ??= loadedCtx());
       if (tilesetId === "modern_exteriors_nocturne") {
         // Modern has no bundled solid rule. Exercise dispatch with an explicitly
         // authored obstacle; the untouched default is separately required to fail.
@@ -95,7 +114,8 @@ describe("generate_map", () => {
         tileset.passability[30] = blockedFlag();
         markUserTileRuntimeMetadata(tileset, 30, { passage: "solid" });
       }
-      const beforeTilesets = structuredClone(ctx.project.tilesets);
+      const beforeTilesetIds = Object.keys(ctx.project.tilesets).sort();
+      const beforeTileset = structuredClone(ctx.project.tilesets[tilesetId]);
       const result = generate(ctx, {
         id: `map_${tilesetId}`,
         name: asset.name,
@@ -107,14 +127,6 @@ describe("generate_map", () => {
         border: "wall",
       });
 
-      if (!MAP_GENERATION_PROFILES.has(tilesetId)) {
-        // 수동 저작용 번들 아틀라스(성채·버들항 계열 등) — 생성 팔레트가 없다. 2026-10-07 정리 뒤 프로필은 Scarloxy 셋만 남았다.
-        expect(result.ok).toBe(false);
-        expect(result.issues?.some(issue => issue.code === "unsupported-tileset")).toBe(true);
-        expect(ctx.project.maps[`map_${tilesetId}`]).toBeUndefined();
-        manualAtlases += 1;
-        continue;
-      }
       if (["easyrpg_chipset_interior", "easyrpg_chipset_retro_house", "scarloxy_chipset_indoor"].includes(tilesetId)) {
         expect(result.ok).toBe(false);
         expect(result.issues?.some(issue => issue.code === "concept-interior-required")).toBe(true);
@@ -132,7 +144,9 @@ describe("generate_map", () => {
       expect(new Set(map?.lowerTiles).size, tilesetId).toBeGreaterThanOrEqual(2);
       expect(isPassable(ctx.project, map!, 0, 0)).toBe(false);
       expect(isPassable(ctx.project, map!, 1, Math.floor(map!.height / 2))).toBe(true);
-      expect(ctx.project.tilesets).toEqual(beforeTilesets);
+      // Generation is not a tileset normalizer: no sheet added or removed, the target sheet untouched.
+      expect(Object.keys(ctx.project.tilesets).sort()).toEqual(beforeTilesetIds);
+      expect(ctx.project.tilesets[tilesetId]).toEqual(beforeTileset);
       profileKeys.add(data.generationProfile);
     }
 
