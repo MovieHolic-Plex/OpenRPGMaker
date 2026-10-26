@@ -2809,6 +2809,239 @@
      "shot": true
     }
    ]
+  },
+  {
+   "id": "act2-b1-cell",
+   "label": "제2막 B1 — 감방의 밤: 막 제목 → 리노의 납작빵",
+   "note": "act2Opening.ts cellEvents director·rino",
+   "mapId": "fs2_cell",
+   "x": 6,
+   "y": 4,
+   "facing": "down",
+   "switches": {
+    "sw_fs_main_started": true,
+    "sw_fs_main_done": true,
+    "sw_fs_iris_joined": true
+   },
+   "party": [
+    {
+     "actorId": "actor_hero",
+     "level": 8
+    },
+    {
+     "actorId": "actor_fs_elena",
+     "level": 8
+    }
+   ],
+   "beats": [
+    {
+     "id": "open",
+     "ops": [
+      {
+       "kind": "waitFor",
+       "testid": "dialogue-box",
+       "state": "present",
+       "timeoutMs": 15000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1800
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "rino",
+     "ops": [
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 700
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 700
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 4200
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "bread",
+     "ops": [
+      {
+       "kind": "repeatUntil",
+       "testid": "dialogue-box",
+       "state": "absent",
+       "maxRounds": 14,
+       "ops": [
+        {
+         "kind": "key",
+         "key": "Enter"
+        },
+        {
+         "kind": "hold",
+         "dir": null,
+         "ms": 1100
+        }
+       ]
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1200
+      }
+     ],
+     "shot": true
+    }
+   ]
+  },
+  {
+   "id": "act2-b1-key",
+   "label": "제2막 B1 — 빵 속 열쇠 → 쇠살문",
+   "note": "짚 침대 앞(10,4)에서 쪼갠다 → 쇠살문(7,6)",
+   "mapId": "fs2_cell",
+   "x": 10,
+   "y": 4,
+   "facing": "up",
+   "switches": {
+    "sw_fs_main_started": true,
+    "sw_fs_main_done": true,
+    "sw_fs_iris_joined": true,
+    "sw_fs2_act2_started": true,
+    "sw_fs2_bread_given": true
+   },
+   "party": [
+    {
+     "actorId": "actor_hero",
+     "level": 8
+    },
+    {
+     "actorId": "actor_fs_elena",
+     "level": 8
+    }
+   ],
+   "items": {
+    "item_fs2_heavy_bread": 1
+   },
+   "beats": [
+    {
+     "id": "break",
+     "ops": [
+      {
+       "kind": "action"
+      },
+      {
+       "kind": "waitFor",
+       "testid": "dialogue-box",
+       "state": "present",
+       "timeoutMs": 8000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1500
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "walk-gate",
+     "ops": [
+      {
+       "kind": "repeatUntil",
+       "testid": "dialogue-box",
+       "state": "absent",
+       "maxRounds": 10,
+       "ops": [
+        {
+         "kind": "key",
+         "key": "Enter"
+        },
+        {
+         "kind": "hold",
+         "dir": null,
+         "ms": 900
+        }
+       ]
+      },
+      {
+       "kind": "hold",
+       "dir": "left",
+       "ms": 900
+      },
+      {
+       "kind": "hold",
+       "dir": "down",
+       "ms": 300
+      },
+      {
+       "kind": "face",
+       "dir": "down"
+      },
+      {
+       "kind": "action"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1800
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "open",
+     "ops": [
+      {
+       "kind": "repeatUntil",
+       "testid": "dialogue-box",
+       "state": "absent",
+       "maxRounds": 6,
+       "ops": [
+        {
+         "kind": "key",
+         "key": "Enter"
+        },
+        {
+         "kind": "hold",
+         "dir": null,
+         "ms": 900
+        }
+       ]
+      },
+      {
+       "kind": "hold",
+       "dir": "down",
+       "ms": 700
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 900
+      }
+     ],
+     "shot": true
+    }
+   ]
   }
  ]
 }
