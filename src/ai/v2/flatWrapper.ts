@@ -37,10 +37,20 @@ export function flatWrapperShape(name: string, parameters: unknown): { readonly 
     ...(w.array ? { [w.slot]: { ...slotSchema, description: `여럿을 한 번에 둘 때만 쓴다. 하나면 이 칸 없이 최상위에 바로 적는다.${slotSchema.description ? ` ${slotSchema.description}` : ""}` } } : {}),
   };
   const required = (p.required ?? []).filter((k) => k !== w.slot);
+  // 안쪽이 다른 열쇠도 받으면(upsert_event 의 event: name·graphic·moveRoute…) 바깥 칸이 아닌 최상위 열쇠는 전부 안으로 옮긴다 — 안 그러면 조용히 버려진다.
+  const openInner = (inner as { readonly additionalProperties?: unknown }).additionalProperties !== false;
+  const belongsInside = (k: string): boolean => k !== w.slot && (k in innerProps || (openInner && !(k in outer)));
   const wrap = (args: unknown): { args: unknown; missing: readonly string[] } => {
-    if (!isObj(args) || args[w.slot] !== undefined) return { args, missing: [] };
+    if (!isObj(args)) return { args, missing: [] };
     const out: Obj = { ...args }, moved: Obj = {};
-    for (const k of Object.keys(innerProps)) if (k in out) { moved[k] = out[k]; delete out[k]; }
+    for (const k of Object.keys(out)) if (belongsInside(k)) { moved[k] = out[k]; delete out[k]; }
+    const slotValue = out[w.slot];
+    if (slotValue !== undefined) {
+      // 감싼 모양(예전 습관). 목록 칸이면 최상위에 한 명을 더 적은 것도 그 목록에 붙인다.
+      if (!Object.keys(moved).length) return { args, missing: [] };
+      if (w.array && Array.isArray(slotValue)) return { args: { ...out, [w.slot]: [...slotValue, moved] }, missing: innerRequired.filter((k) => moved[k] === undefined) };
+      return { args, missing: [] };
+    }
     const missing = innerRequired.filter((k) => moved[k] === undefined);
     out[w.slot] = w.array ? [moved] : moved;
     return { args: out, missing };

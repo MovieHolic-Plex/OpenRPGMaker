@@ -31,6 +31,11 @@ describe("J67 flattened single-wrapper schemas", () => {
     expect(await run(tool, { mapId: "m", role: "guard" })).toEqual({ mapId: "m", people: [{ role: "guard" }] });
     expect(await run(tool, { mapId: "m", people: [{ role: "a" }, { role: "b" }] })).toEqual({ mapId: "m", people: [{ role: "a" }, { role: "b" }] });
   });
+  it("moves extra fields into an open inner object (upsert_event)", async () => {
+    const ev = { type: "object", properties: { mapId: { type: "string" }, event: { type: "object", properties: { id: { type: "string" } }, required: ["id"], additionalProperties: true } }, required: ["mapId", "event"] };
+    const tool = flattenWrapperTool(echo("upsert_event", ev));
+    expect(await run(tool, { mapId: "m", id: "e", name: "문" })).toEqual({ mapId: "m", event: { id: "e", name: "문" } });
+  });
   it("leaves other tools alone", () => {
     const t = echo("edit_place", spec);
     expect(flattenWrapperTool(t)).toBe(t);
