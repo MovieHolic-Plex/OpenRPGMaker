@@ -53,7 +53,9 @@ describe("script_cutscene_staged 주인공 칩", () => {
     const project = lockedProject();
     const result = runTool(ctxOf(project), "script_cutscene_staged", stageArgs(project, "tex_easyrpg_charset_actor1"), { dryRun: true });
     expect(result.ok).toBe(false);
-    expect(result.summary).toMatch(/scarloxy-charset-people1/u);
+    // 한 줄 요약(summary)은 길이 제한으로 「예: character:{resourceId…」 에서 잘린다 — 허용 칩 예시는 invalid-args 이슈 본문에 있다.
+    const issue = result.issues?.find((entry) => entry.code === "invalid-args");
+    expect(issue?.message).toMatch(/scarloxy-charset-people1/u);
   });
 
   it("잠금이 없으면 Actor 주인공은 이 검사를 통과한다(프레임 준비 단계에서야 실패할 수 있음)", () => {
