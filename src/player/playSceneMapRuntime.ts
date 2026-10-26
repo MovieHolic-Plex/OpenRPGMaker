@@ -73,7 +73,7 @@ import { applyMapDefaultLighting } from "@/project/lightingRules";
 import { initializeFieldSpawnsForScene } from "@/player/playSceneFieldSpawns";
 import { renderFarmOverlays } from "@/player/playSceneFarming";
 import { renderPlaceableOverlays, syncForageWarnings } from "@/player/playScenePlaceables";
-import { initialRuntimeEventPositions,
+import { eventMayMatchTrigger, initialRuntimeEventPositions,
 runtimeEventViewsForMap,
 type RuntimeEventView, } from "@/project/runtimeEventState"
 import { buildLifeRuntimeSnapshot, type RuntimeEventSnapshot, type RuntimeStateSnapshot } from "@/player/runtimeDom";
@@ -1026,7 +1026,14 @@ export function activeRuntimeEvents(
   scene: PlaySceneContext,
   triggerKind: Trigger["kind"]
 ): RuntimeEventView[] {
-  return runtimeEventViewsForMap(store.getCurrent(), scene.map, scene.session, scene.eventPositions)
+  // 트리거가 맞을 수 없는 이벤트는 페이지 조건을 평가하지 않는다. 병렬 이벤트는 매 프레임 이 목록을 만든다.
+  return runtimeEventViewsForMap(
+    store.getCurrent(),
+    scene.map,
+    scene.session,
+    scene.eventPositions,
+    (event) => eventMayMatchTrigger(event, triggerKind),
+  )
     .filter((event) => event.trigger.kind === triggerKind
       && (event.event.pages?.length
         ? event.page !== undefined

@@ -59,6 +59,10 @@ Phaser `preRender` 는 경계가 있으면 따라가기·패닝 뒤 clamp 를 �
   - `runtimeEventViewById` 는 그 id 하나만 뷰로 만든다. 사각 질의(`findEventOverlappingRect`·`findBlocking*`)는
     앵커가 사각에 닿을 수 없는 이벤트를 뷰 없이 건너뛴다 — 몸 사각 상한(축 8)에서 파생한 범위라, 상한을 바꾸면
     `anchorMayOverlap` 이 따라 바뀐다.
+  - 매 프레임 병렬 이벤트(`activeRuntimeEvents("parallel")`)와 발견 조우(`updateDetectionEncounters`)는
+    활성 페이지가 그 질문과 맞을 수 있는 이벤트만 뷰로 만든다(`eventMayMatchTrigger`·`eventMayHaveDetectionEncounter`).
+    페이지가 있으면 그 페이지의 trigger·detectionEncounter 만 보고, 페이지가 없는 레거시 이벤트는 이벤트 trigger 를 본다.
+    지워졌거나 다른 맵으로 옮겨 간 이벤트는 예전과 같이 후보가 아니다.
   - 생활 NPC 는 같은 목표로 걷는 중이면 BFS 를 다시 돌리지 않는다(`reusableLivingRouteKey`). 호러 수색이 막히면
     500ms 동안 다시 훑지 않는다(`SEARCH_RETRY_MS`). `nearestPassableTile` 은 고리만 훑는다(결과 순서는 같다).
   - 조명은 어둠 0 이면 마스크를 그리지 않는다. 천둥 잡음 버퍼는 한 번 만들어 재사용한다. 필드 HUD·타이머·시계 HUD·
