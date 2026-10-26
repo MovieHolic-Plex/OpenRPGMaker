@@ -122,8 +122,11 @@ describe("page preview transport and context", () => {
   it("separates decorative choice markers from complete display-only labels", () => {
     const label = "  first\n" + "Token".repeat(100);
     const root = renderCommandPreview({ kind: "choices", options: [{ text: label, branch: [] }], cancelBehavior: "branch" });
-    expect(root.querySelector(".ecp-choice-label")?.textContent).toBe(label);
-    expect(root.querySelector(".ecp-choice .ee-icon")?.getAttribute("aria-hidden")).toBe("true");
+    // 미리보기는 게임 선택지 창 골격(.choice-btn)을 그대로 쓴다(commandPreview choicesMock) — 커서 ◆ 는 CSS 장식이라
+    // 항목 글자에는 라벨만 온전히 남고, 아이콘 요소도 버튼도 끼지 않는다.
+    const choice = root.querySelector(".ecp-choice");
+    expect(choice?.textContent).toBe(label);
+    expect(choice?.querySelector(".ee-icon")).toBeNull();
     expect(root.querySelector(".ecp-choice button")).toBeNull();
   });
 });
