@@ -1,4 +1,5 @@
 import type { Project } from "@/project/types";
+import { jsonEqual } from "@/util/structuralJson";
 import type { ToolResult } from "@/editor/tools/types";
 
 /** Host-owned boundary; never read from model arguments or natural-language instructions. */
@@ -56,5 +57,7 @@ export function onlyEventPageCommandsChanged(before: Project, after: Project, sc
   const changed = copy.maps[scope.mapId]?.events.find(e => e.id === scope.eventId)?.pages?.find(p => p.id === scope.pageId);
   if (!original || !changed) return false;
   changed.commands = structuredClone(original.commands);
-  return JSON.stringify(before) === JSON.stringify(copy);
+  // 키 순서는 보지 않는다: 도구 draft(createDraft)는 맵의 타일 버퍼를 떼었다 다시 붙여 키 순서가 바뀐다.
+  // JSON 문자열 비교는 명령만 바뀐 초안도 「명령 외의 변경」으로 거부해 event_command_assist 가 늘 실패했다.
+  return jsonEqual(before, copy);
 }
