@@ -68,6 +68,8 @@ export interface LocalCliLoop {
   abort(reason?: string): void;
   dispose(): Promise<void>;
   stats(): LocalCliLoopStats;
+  /** 지금 CLI 대화를 닫는다 — 다음 prompt 는 빈 대화(같은 시스템 지시·같은 MCP 도구)로 시작한다. */
+  resetSession(): Promise<void>;
 }
 
 /** 쓰기(배타) 도구는 혼자, 읽기 도구는 겹쳐 돈다 — Pi 코어의 순서 규칙과 같다. CLI 가 병렬로 불러도 지킨다. */
@@ -258,6 +260,11 @@ export async function createLocalCliLoop(setup: LocalCliLoopSetup): Promise<Loca
       if (text) session?.steer(text);
     },
     abort() { aborted = true; session?.kill(); },
+    async resetSession() {
+      const previous = session;
+      session = undefined;
+      await previous?.close().catch(() => undefined);
+    },
     async dispose() {
       await session?.close().catch(() => undefined);
       await mcp?.close();

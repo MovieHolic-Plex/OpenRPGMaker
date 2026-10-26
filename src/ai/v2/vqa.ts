@@ -143,20 +143,46 @@ export function vqaDefectLine(d: VqaDefect, index: number): string {
  * 고치기 차례가 도구를 하나도 부르지 않고 글만 쓰고 끝났을 때(2026-10-25 실측: 결함 9→9→9, 판마다 도구 0회) — 그 차례는 판으로 세지 않고,
  * 결함 목록을 다시 주며 한 번 더 고치게 한다. 이 지시와 함께 첫 모델 호출에 tool_choice required 가 걸린다.
  */
-export function vqaFixRetry(round: VqaRound): string {
+export function vqaFixRetry(round: VqaRound, brief?: string): string {
   return [
+    ...(brief ? [brief, ""] : []),
     `[화면 검수 ${round.round}/${VQA_MAX_ROUNDS} — 고치기 다시] 앞 차례에서 도구를 하나도 부르지 않고 보고만 고쳤다. 보고를 고치는 것은 고치기가 아니다. 지금 도구로 아래 결함을 하나씩 고친다 — 결함마다 대상 맵·그림을 바꾸는 도구를 부른다.`,
     ...round.defects.map(vqaDefectLine),
     "정말 고칠 수 없는 결함은 고치지 말고 최종 보고에 «미해결»로 남긴다. 고치지 않은 결함을 «고쳤다»고 쓰지 않는다.",
   ].join("\n");
 }
 
+/**
+ * 고치기 차례의 자기완결 머리글(J78): 고치기 차례는 앞 대화를 비우고 시작한다(로컬 Claude CLI 가 긴 실행 끝에 「Autocompact is thrashing」으로
+ * 죽었다). 그래서 요청 원문과 결함 대상 맵의 요약(이름·id·크기·이벤트)만 싣는다. 더 필요하면 조수가 도구로 다시 본다.
+ */
+export function vqaFixBrief(task: string, project: Project, defects: readonly VqaDefect[], lastReport?: string): string {
+  const mapIds = [...new Set(defects.flatMap((d) => (d.target?.kind === "map" && d.target.ref ? [d.target.ref] : [])))];
+  const maps = mapIds.flatMap((id) => {
+    const map = project.maps[id];
+    if (!map) return [];
+    const events = (map.events ?? []).slice(0, 14).map((ev) => `${ev.name || ev.id}@${ev.x},${ev.y}`).join(", ");
+    return [`- 맵 «${map.name}» (mapId: ${id}, ${map.width}×${map.height}, 타일셋 ${map.tilesetId ?? "?"})${id === project.startMapId ? " · 시작 맵" : ""} — 이벤트 ${(map.events ?? []).length}개${events ? `: ${events}${(map.events ?? []).length > 14 ? " …" : ""}` : ""}`];
+  });
+  const others = Object.values(project.maps).filter((m) => !mapIds.includes(m.id)).map((m) => `«${m.name}»(${m.id})`).slice(0, 12);
+  return [
+    "[고치기 차례 — 앞 대화는 비웠다. 게임은 이미 지어져 있다. 아래 요청·결함·맵 요약만 보고, 필요한 것은 도구(show_map_region·get_event·inspect)로 다시 본다.]",
+    `사용자 요청(원문): «${task.slice(0, 1200)}»`,
+    `게임 제목: «${project.meta?.title ?? ""}»`,
+    ...(maps.length ? ["결함이 난 맵:", ...maps] : []),
+    ...(others.length ? [`다른 맵: ${others.join(", ")}`] : []),
+    // 최종 보고는 앞 보고를 대신한다 — 비운 대화에서도 무엇을 지었는지 다시 쓸 수 있게 앞 보고를 싣는다(잘라서).
+    ...(lastReport?.trim() ? [`앞 보고(이것을 고쳐 최종 보고로 쓴다):\n${lastReport.trim().slice(0, 2000)}${lastReport.trim().length > 2000 ? " …" : ""}`] : []),
+  ].join("\n");
+}
+
 /** 조수에게 줄 고치기 지시(판 사이). */
-export function vqaFollowUp(round: VqaRound): string {
+export function vqaFollowUp(round: VqaRound, brief?: string): string {
   if (round.problem && !round.defects.length) {
     return `[화면 검수 ${round.round}/${VQA_MAX_ROUNDS}] 검수를 하지 못했다(${round.problem}). 다시 찍어 검수하도록 할 것이 없으면 최종 보고에 «화면 검수 미완료»라고 쓴다.`;
   }
   return [
+    ...(brief ? [brief, ""] : []),
     `[화면 검수 ${round.round}/${VQA_MAX_ROUNDS}] 다른 모델의 검수자(${round.reviewer})가 실제 그림에서 아래 결함을 찾았다. 각각 고친다 — 맵은 show_map_region 으로 다시 보고, 타이틀·오프닝은 다시 그려 확인한다. 고칠 수 없으면 고치지 말고 최종 보고에 남은 결함으로 쓴다.`,
     ...round.defects.map(vqaDefectLine),
     "보고만 다시 쓰는 것은 고치기가 아니다 — 이 차례에는 도구로 그림을 바꾼다(도구를 하나도 부르지 않으면 이 판은 세지 않고 한 번 더 시킨 뒤, 그래도 안 하면 «미해결»로 끝난다). 고치지 않은 결함을 «고쳤다»고 쓰지 않는다.",
