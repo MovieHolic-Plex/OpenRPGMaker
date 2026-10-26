@@ -969,6 +969,8 @@ function northFortress(project: Project, exec: Exec, hubId: string): void {
   if (!cells) throw new Error("[fallen-star act2] 요새 감방이 없다");
   FORT.cell = { x: cells.x + 1, y: cells.y + cells.h - 2 };
   exec(project, "set_scene_mood", { mapId: FS2_FORTRESS_ID, applyMode: "map", lighting: { ambient: 0.55, color: "#40485a" } });
+  // 돌 요새 안 싸움 — 풀밭 배경 대신 돌 배경(측면 전투 겹 배경 종류에 성채가 없어 동굴 돌벽이 가장 가깝다).
+  exec(project, "set_map_properties", { mapId: FS2_FORTRESS_ID, battleBackground: "battle-scenery-cave" });
   // 순찰 기사 — 광장 통금 순찰대와 같은 칩·같은 무리. 안뜰·계단 홀에 하나씩.
   const knight = hubChip(project, hubId, "ev_fs_knight");
   let k = 0;
@@ -1088,6 +1090,7 @@ function snowPass(project: Project, exec: Exec): void {
   FS2_SNOW.entry = { x: maps[0]!.entry.x, y: maps[0]!.entry.y - 1 };
   FS2_SNOW.exit = maps[1]!.exit;
   FS2_SNOW.clearing = maps[1]!.clearing;
+  for (const m of maps) exec(project, "set_map_properties", { mapId: m.mapId, battleBackground: "battle-scenery-snow" });
   // 얼음 틈 — 새라가 파티에 있으면 창을 장대 삼아 뛰어넘는다(새 일반 기능: 틈 칠하기 + 배우 조건 도약).
   maps.forEach((m) => m.gaps.forEach((g, k) => {
     exec(project, "place_field_obstacle", {
