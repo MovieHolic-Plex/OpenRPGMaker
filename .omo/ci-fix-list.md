@@ -11,44 +11,21 @@ Work order (cheapest first): timeout → fake-DOM/env gaps → combined_town / o
 
 | tag | files |
 |---|---|
-| removed | 14 |
-| timeout | 74 |
+| removed | 2 |
+| timeout | 75 |
 | external | 0 |
-| drift | 651 |
+| drift | 586 |
 
-## removed (14)
+## removed (2)
 
-- **2** — `AssertionError: 알 수 없는 툴: author_village [{"severity":"error","code":"unknown-tool","message":"등록되지 않은 툴: author_village`
-  - [ ] `test/jrpgDogfoodRetest3Regressions.test.ts`
-  - [ ] `test/jrpgDogfoodRetestRegressions.test.ts`
-- **2** — `AssertionError: 알 수 없는 툴: author_village: expected false to be true // Object.is equality`
-  - [ ] `test/villageInteriorStairs.test.ts`
-  - [ ] `test/villageInteriorVariation.test.ts`
-- **1** — `AssertionError: expected false to be true // Object.is equality`
-  - [ ] `test/conceptDoubleRowLayout.test.ts`
-- **1** — `AssertionError: expected N to be greater than N`
-  - [ ] `test/conceptOutdoorGates.test.ts`
 - **1** — `AssertionError: town-layout: 툴 실패 stamp_structure: [{"severity":"error","code":"unknown-tool","message":"등록되지 않은 툴: stam`
   - [ ] `test/evals.test.ts`
 - **1** — `AssertionError: 알 수 없는 툴: run_interior_room_pipeline: expected false to be true // Object.is equality`
   - [ ] `test/interiorPipelineMapReplacement.test.ts`
-- **1** — `알 수 없는 툴: place_concept: expected false to be true // Object.is equality`
-  - [ ] `test/interiorTileCorrections.test.ts`
-- **1** — `AssertionError: 'scatter_object' 실행 실패: 타일 그룹을 찾을 수 없습니다: harness-combined-town-conifer-tree: expected false to be true `
-  - [ ] `test/naturalScatterToolIntegration.test.ts`
-- **1** — `AssertionError: 'lay_path' 실행 실패: 길 어휘 '버들항 던전 주제 가시덤불 N×N(막음)'(beodeul:dungeon_theme_tc_fo_bramble)에 N-이웃 variantMap 오토`
-  - [ ] `test/roadObstacleAvoidance.test.ts`
-- **1** — `AssertionError: 알 수 없는 툴: get_concept_facility: expected false to be true // Object.is equality`
-  - [ ] `test/spatialLegacyPathIdentity.test.ts`
-- **1** — `AssertionError: expected '## 툴 능력 색인(활성 N개 · 라운드 스키마는 tools)\…' to contain '## 타일 어휘 다이제스트'`
-  - [ ] `test/tilesetPaletteT1a.test.ts`
-- **1** — `AssertionError: m_cottageN_dwelling_ground_N north west: expected N to be N // Object.is equality`
-  - [ ] `test/villageInteriorShell.test.ts`
 
-## timeout (74)
+## timeout (75)
 
 - **61** — `Error: Test timed out in Nms.`
-  - [ ] `test/databaseSystemModern.test.ts` (2026-10-26: environment fixed; passes in CI but its logo-clear case has hit the 15s timeout under load once)
   - [ ] `test/actionAcceptanceProof.test.ts`
   - [ ] `test/actionCombatProbeBoot.test.ts`
   - [ ] `test/advisoryLintProvenance.test.ts`
@@ -127,6 +104,8 @@ Work order (cheapest first): timeout → fake-DOM/env gaps → combined_town / o
   - [ ] `test/assistantAuthoredBaseline.test.ts`
 - **1** — `AssertionError: expected N to be +N // Object.is equality`
   - [ ] `test/assistantOriginalContext.test.ts`
+- **1** — `ReferenceError: ResizeObserver is not defined`
+  - [ ] `test/databaseSystemModern.test.ts`
 - **1** — `AssertionError: expected null to be '/assets/easyrpg/title/TitleN.png' // Object.is equality`
   - [ ] `test/exportAssetResolution.test.ts`
 - **1** — `AssertionError: expected { id: 'stat_enemy', …(N) } to match object { …(N) }`
@@ -136,9 +115,9 @@ Work order (cheapest first): timeout → fake-DOM/env gaps → combined_town / o
 - **1** — `AssertionError: expected 'OPRN Studio저장된 작업을 바로 열 수 없습니다기존 저장본은…' to contain '예제 작업으로 시작'`
   - [ ] `test/uxcLoadFailure.test.ts`
 
-## drift (651)
+## drift (586)
 
-- **50** — `AssertionError: expected false to be true // Object.is equality`
+- **48** — `AssertionError: expected false to be true // Object.is equality`
   - [ ] `test/aiAssistantPanel.test.ts`
   - [ ] `test/aiDocTools.test.ts`
   - [ ] `test/aiPreviewGenerator.test.ts`
@@ -149,7 +128,6 @@ Work order (cheapest first): timeout → fake-DOM/env gaps → combined_town / o
   - [ ] `test/cssDropDead.test.ts`
   - [ ] `test/databaseEnemyDialogFocus.test.ts`
   - [ ] `test/editSceneRender.test.ts`
-  - [ ] `test/enemyBattleScale.test.ts`
   - [ ] `test/eventCommandAssist.test.ts`
   - [ ] `test/eventCommandAssistTool.test.ts`
   - [ ] `test/eventEditorHostileUx.test.ts`
@@ -169,7 +147,6 @@ Work order (cheapest first): timeout → fake-DOM/env gaps → combined_town / o
   - [ ] `test/placePropsZeroPlacement.test.ts`
   - [ ] `test/playBootAssetSelection.test.ts`
   - [ ] `test/playerFootprint.test.ts`
-  - [ ] `test/proposalCompleteness.test.ts`
   - [ ] `test/regionTaskGateExcluded.test.ts`
   - [ ] `test/remoteProjectCertificate.test.ts`
   - [ ] `test/resourceManagerDedup.test.ts`
@@ -284,11 +261,6 @@ Work order (cheapest first): timeout → fake-DOM/env gaps → combined_town / o
   - [ ] `test/spatialAuthoringContinuationCapability.test.ts`
   - [ ] `test/toolRegistry.test.ts`
   - [ ] `test/walkEncounterAuthoring.test.ts`
-- **11** — `TypeError: Cannot read properties of undefined (reading 'exists')`
-- **10** — `ReferenceError: window is not defined`
-  - [ ] `test/aiPanelChrome.test.ts`
-  - [ ] `test/aiPiChangeReceipt.test.ts`
-  - [ ] `test/aiStudioShell.test.ts`
 - **8** — `AssertionError: expected '{"version":N,"meta":{"title":"새 프로젝트"…' to be '{"version":N,"meta":{"title":"새 프로젝트"…' // Obje`
   - [ ] `test/autotileGroupPersistence.test.ts`
   - [ ] `test/mapBackgroundRules.test.ts`
@@ -307,11 +279,6 @@ Work order (cheapest first): timeout → fake-DOM/env gaps → combined_town / o
   - [ ] `test/playerEditorOnlyAssets.test.ts`
   - [ ] `test/roleNameComparisonGate.test.ts`
   - [ ] `test/toolSchemaProviderCompat.test.ts`
-- **7** — `TypeError: rail.root.after is not a function`
-  - [ ] `test/aiAutonomousRunSurface.test.ts`
-  - [ ] `test/aiChatPanelComposerMode.test.ts`
-  - [ ] `test/aiDeckMove.test.ts`
-  - [ ] `test/aiPanelAutoExpand.test.ts`
 - **5** — `AssertionError: expected [] to have a length of N but got +N`
   - [ ] `test/agentGhostPreview.test.ts`
   - [ ] `test/clusterAssistUi.test.ts`
@@ -335,9 +302,11 @@ Work order (cheapest first): timeout → fake-DOM/env gaps → combined_town / o
   - [ ] `test/persistence/coreBoundary.test.ts`
   - [ ] `test/playerRuntimeAudioIds.test.ts`
   - [ ] `test/workshop/mapObjectsRunner.test.ts`
-- **4** — `TypeError: Cannot read properties of undefined (reading 'parentNode')`
-  - [ ] `test/editorLayoutPersist.test.ts`
-  - [ ] `test/leftDockPanels.test.ts`
+- **4** — `TypeError: rail.root.after is not a function`
+  - [ ] `test/aiAutonomousRunSurface.test.ts`
+  - [ ] `test/aiChatPanelComposerMode.test.ts`
+  - [ ] `test/aiDeckMove.test.ts`
+  - [ ] `test/aiPanelAutoExpand.test.ts`
 - **4** — `AssertionError: expected null to be truthy`
   - [ ] `test/aiConversationLog.test.ts`
   - [ ] `test/comboBrushPaletteUi.test.ts`
@@ -348,7 +317,6 @@ Work order (cheapest first): timeout → fake-DOM/env gaps → combined_town / o
   - [ ] `test/toolsHouseAndRules.test.ts`
   - [ ] `test/transparentTileLayerRouting.test.ts`
   - [ ] `test/treePlacementNamespaces.test.ts`
-- **4** — `ReferenceError: ResizeObserver is not defined`
 - **4** — `AssertionError: expected N to be +N // Object.is equality`
   - [ ] `test/harnesses/joseonBaram.test.ts`
   - [ ] `test/regionTaskClip.test.ts`
@@ -363,6 +331,10 @@ Work order (cheapest first): timeout → fake-DOM/env gaps → combined_town / o
   - [ ] `test/aiEventPlacementPassability.test.ts`
   - [ ] `test/aiPlacementStarterMonsters.test.ts`
   - [ ] `test/aiPlacementStoryArc.test.ts`
+- **3** — `ReferenceError: window is not defined`
+  - [ ] `test/aiPanelChrome.test.ts`
+  - [ ] `test/aiPiChangeReceipt.test.ts`
+  - [ ] `test/aiStudioShell.test.ts`
 - **3** — `AssertionError: expected undefined to be 'blocked' // Object.is equality`
   - [ ] `test/aiRequiredQuestionDispatch.test.ts`
   - [ ] `test/assistantFinalAudit.test.ts`
@@ -398,7 +370,6 @@ Work order (cheapest first): timeout → fake-DOM/env gaps → combined_town / o
 - **2** — `AssertionError: expected undefined to be 'approved' // Object.is equality`
   - [ ] `test/aiAuthoredBaselineSurfaces.test.ts`
   - [ ] `test/eventCommandScopedSession.test.ts`
-- **2** — `TypeError: Cannot read properties of undefined (reading 'image')`
 - **2** — `AssertionError: expected 'openai-codex' to be 'google-antigravity' // Object.is equality`
   - [ ] `test/aiProviderSelection.test.ts`
   - [ ] `test/imageGenerationClient.test.ts`
@@ -411,22 +382,18 @@ Work order (cheapest first): timeout → fake-DOM/env gaps → combined_town / o
 - **2** — `AssertionError: expected { kind: 'returnToTitle', …(N) } to deeply equal { kind: 'returnToTitle', …(N) }`
   - [ ] `test/checkpointEndingRuntime.test.ts`
   - [ ] `test/defeatRecovery.test.ts`
-- **2** — `TypeError: Cannot read properties of undefined (reading 'passability')`
-- **2** — `ReferenceError: HTMLCanvasElement is not defined`
-  - [ ] `test/eventCommandMapRepairs.test.ts`
+- **2** — `TypeError: Cannot read properties of undefined (reading 'parentNode')`
+  - [ ] `test/editorLayoutPersist.test.ts`
+  - [ ] `test/leftDockPanels.test.ts`
 - **2** — `AssertionError: 'place_props' 커밋 거부(무결성 오류) — 시작 위치가 통행 불가 타일입니다: (N, N) — 칠한 타일이 통행 불가이거나 시작 칸이 막혔습니다. set_start_positi`
   - [ ] `test/forestFloorMix.test.ts`
   - [ ] `test/forestTrunkLayers.test.ts`
-- **2** — `TypeError: Cannot read properties of undefined (reading 'tileGroups')`
 - **2** — `AssertionError: expected [ Array(N) ] to deeply equal [ Array(N) ]`
   - [ ] `test/fullCharacterReferenceAudit.test.ts`
   - [ ] `test/statusMenuRailFlat.test.ts`
-- **2** — `TypeError: Cannot read properties of undefined (reading 'structureKits')`
-- **2** — `TypeError: Cannot read properties of undefined (reading 'autotileGroups')`
 - **2** — `AssertionError: expected [ …(N) ] to have a length of N but got N`
   - [ ] `test/jpCityAssistantWiring.test.ts`
   - [ ] `test/structureKitDbActions.test.ts`
-- **2** — `ProjectFormatError: map loc_map: tilesetId does not exist.`
 - **2** — `AssertionError: expected N not to be N // Object.is equality`
   - [ ] `test/placeChestSavepoint.test.ts`
   - [ ] `test/sidebarFocusModes.test.ts`
@@ -445,7 +412,6 @@ Work order (cheapest first): timeout → fake-DOM/env gaps → combined_town / o
 - **2** — `AssertionError: expected 'lower' to be 'upper' // Object.is equality`
   - [ ] `test/tileLayerClassification.test.ts`
   - [ ] `test/tilePaletteSelection.test.ts`
-- **2** — `AssertionError: 'fill_region' 실행 실패: 라벨/설명이 "잔디" 인 타일을 찾지 못했습니다. 이 타일셋(beodeul_city)에서 채울 수 있는 재료: "버들항 길 포석", "버들항 광장 판`
 - **1** — `AssertionError: expected undefined to deeply equal { width: N, height: N }`
   - [ ] `test/actionCombatFootprint.test.ts`
 - **1** — `TypeError: Cannot read properties of undefined (reading 'once')`
@@ -558,7 +524,6 @@ Work order (cheapest first): timeout → fake-DOM/env gaps → combined_town / o
   - [ ] `test/battleOnField.test.ts`
 - **1** — `AssertionError: expected 'battle-scenery-plains' to be 'battle-scenery-forest' // Object.is equality`
   - [ ] `test/battlePoseHitFeelBackdropEvents.test.ts`
-- **1** — `AssertionError: expected 'battle-scenery-plains' to be 'easyrpg-backdrop-skyN' // Object.is equality`
 - **1** — `AssertionError: expected '' to match /무엇을 할까|게이지/`
   - [ ] `test/battleSequencer.test.ts`
 - **1** — `AssertionError: expected '/assets/scarloxy/scarloxy-backdrop-fo…' to match /battle-skins\/.*\.png$/.*\.png$`
@@ -625,7 +590,6 @@ Work order (cheapest first): timeout → fake-DOM/env gaps → combined_town / o
   - [ ] `test/commandRegistry.test.ts`
 - **1** — `AssertionError: expected { x: N, y: N } to not deeply equal { x: N, y: N }`
   - [ ] `test/companionRules.test.ts`
-- **1** — `AssertionError: expected [Function] to not throw an error but 'ProjectFormatError: tileset easyrpg_c…' was thrown`
 - **1** — `AssertionError: expected { width: N, height: N } to deeply equal undefined`
   - [ ] `test/conceptMakeGame.test.ts`
 - **1** — `Cannot read properties of undefined (reading 'satisfying')`
@@ -654,7 +618,6 @@ Work order (cheapest first): timeout → fake-DOM/env gaps → combined_town / o
   - [ ] `test/databaseGroupPeek.test.ts`
 - **1** — `AssertionError: expected { Object (characterAppearances, promotionTree, ...) } to deeply equal { Object (characterAppear`
   - [ ] `test/databasePartySimplify.test.ts`
-- **1** — `AssertionError: expected 'url("/assets/generated/effects/effect…' to contain '/assets/easyrpg/battle/'`
 - **1** — `AssertionError: expected [ 'db-tab-overview', …(N) ] to deeply equal [ 'db-tab-overview', …(N) ]`
   - [ ] `test/databaseSidebarKeyboard.test.ts`
 - **1** — `Error: missing test id db-skill-animation-cells`
@@ -667,7 +630,6 @@ Work order (cheapest first): timeout → fake-DOM/env gaps → combined_town / o
   - [ ] `test/databaseTilesetGraphicPicker.test.ts`
 - **1** — `AssertionError: expected '저장 위치 없음저장할 변경 없음' to contain '준비 안 됨'`
   - [ ] `test/dbConnectionChip.test.ts`
-- **1** — `AssertionError: expected '[{"severity":"error","code":"invalid-…' to match /easyrpg-title-title\d/u`
 - **1** — `AssertionError: item_shared_battle_fire-N: expected undefined to be truthy`
   - [ ] `test/defaultItemCatalogQuality.test.ts`
 - **1** — `AssertionError: expected 'charging' to be 'actorCommand' // Object.is equality`
@@ -676,7 +638,6 @@ Work order (cheapest first): timeout → fake-DOM/env gaps → combined_town / o
   - [ ] `test/defaults.test.ts`
 - **1** — `TypeError: target.matches is not a function`
   - [ ] `test/delayedTooltip.test.ts`
-- **1** — `ToolError: 라벨/설명이 "활엽수" 인 타일을 찾지 못했습니다. 이 타일셋(beodeul_city)에는 비슷한 재료도 없습니다 — 맵의 타일셋이 이 요청과 맞는지 확인하세요(실내 재료는 실내 칩셋에만 있습니다`
 - **1** — `AssertionError: expected [ 'src/player/audio/weatherAudio.ts' ] to deeply equal []`
   - [ ] `test/deterministicRng.test.ts`
 - **1** — `AssertionError: /* 가운데 창: 상자 위 남는 높이가 약 Npx 라 흉상 Npx 은 머리가 화면 밖으로 잘린다`
@@ -687,7 +648,6 @@ Work order (cheapest first): timeout → fake-DOM/env gaps → combined_town / o
   - [ ] `test/easing.test.ts`
 - **1** — `AssertionError: expected [ 'bundled-default', 'unknown' ] to include undefined`
   - [ ] `test/easyrpgAssets.test.ts`
-- **1** — `AssertionError: expected Set{ 'charset', 'faceset', …(N) } to deeply equal Set{ 'backdrop', 'battle', …(N) }`
 - **1** — `AssertionError: expected '/* Atmosphere stays mounted across En…' to match /emerald-professor-idle[^}]*-Npx/u`
   - [ ] `test/emeraldProfessorBust.test.ts`
 - **1** — `TypeError: Cannot set properties of undefined (setting 'cursor')`
@@ -696,6 +656,8 @@ Work order (cheapest first): timeout → fake-DOM/env gaps → combined_town / o
   - [ ] `test/eventActions.test.ts`
 - **1** — `AssertionError: expected [ …(N) ] to deeply equal [ …(N) ]`
   - [ ] `test/eventCommandInteractionContract.test.ts`
+- **1** — `ReferenceError: HTMLCanvasElement is not defined`
+  - [ ] `test/eventCommandMapRepairs.test.ts`
 - **1** — `AssertionError: expected 'Hello\v[N] world' to be 'Hello\v[N] world' // Object.is equality`
   - [ ] `test/eventCommandRemediation/U28.test.ts`
 - **1** — `AssertionError: expected [ 'C', 'B' ] to deeply equal [ 'B', 'C', 'A' ]`
@@ -754,7 +716,6 @@ Work order (cheapest first): timeout → fake-DOM/env gaps → combined_town / o
   - [ ] `test/gen1DemoContent.test.ts`
 - **1** — `TypeError: Cannot read properties of undefined (reading 'priority')`
   - [ ] `test/generateMapPaletteAuthority.test.ts`
-- **1** — `AssertionError: expected null to be '/assets/easyrpg/chipset/Exterior.png' // Object.is equality`
 - **1** — `AssertionError: expected [ { id: 'anim_hit', …(N) }, …(N) ] to have a length of N but got N`
   - [ ] `test/generatedEffectSheets.test.ts`
 - **1** — `AssertionError: generated-enemy-golem-N: expected false to be true // Object.is equality`
@@ -777,12 +738,10 @@ Work order (cheapest first): timeout → fake-DOM/env gaps → combined_town / o
   - [ ] `test/intentDeclaration.test.ts`
 - **1** — `AssertionError: expected [] to include '여관'`
   - [ ] `test/intentDeclarationClient.test.ts`
-- **1** — `AssertionError: expected [] to include 'tex_easyrpg_chipset_interior:chipset_…'`
 - **1** — `AssertionError: home_table 타일 N이 role=table 어휘 밖: expected false to be true // Object.is equality`
   - [ ] `test/interiorObjectCatalog.test.ts`
 - **1** — `AssertionError: shelf cell N,N: expected N to be N // Object.is equality`
   - [ ] `test/interiorRoomWalkabilitySeal.test.ts`
-- **1** — `ProjectFormatError: map support: tilesetId does not exist.`
 - **1** — `AssertionError: expected { created: N, skipped: +N, …(N) } to match object { created: +N, skipped: N }`
   - [ ] `test/investigationTools.test.ts`
 - **1** — `AssertionError: expected { kind: 'saved-local', written: false } to deeply equal { kind: 'saved-local' }`
@@ -827,7 +786,6 @@ Work order (cheapest first): timeout → fake-DOM/env gaps → combined_town / o
   - [ ] `test/mapGrowthOnFixRequests.test.ts`
 - **1** — `AssertionError: expected { terrainDesign: { …(N) } } to deeply equal {}`
   - [ ] `test/mapLayers.test.ts`
-- **1** — `ProjectFormatError: map village_map: tilesetId does not exist.`
 - **1** — `Error: Expected background toggle`
   - [ ] `test/mapProps.test.ts`
 - **1** — `AssertionError: expected null to deeply equal { Object (cellCount, x, ...) }`
@@ -860,7 +818,6 @@ Work order (cheapest first): timeout → fake-DOM/env gaps → combined_town / o
   - [ ] `test/monsterFishing.test.ts`
 - **1** — `AssertionError: 'upsert_enemy' 실행 실패: enemy.transparent는 허용되지 않는 필드입니다. 허용 필드: id, name, speciesId, monsterResourceId, b`
   - [ ] `test/monsterGraphicReliability.test.ts`
-- **1** — `AssertionError: expected '타일셋을 찾을 수 없습니다: easyrpg_chipset_dunge…' to contain 'monster_dungeon'`
 - **1** — `Error: Monster and PP skill fixtures are required`
   - [ ] `test/monsterPartyMenuDogfood.test.ts`
 - **1** — `AssertionError: expected Set{ …(N) } to deeply equal Set{ …(N) }`
@@ -921,11 +878,8 @@ Work order (cheapest first): timeout → fake-DOM/env gaps → combined_town / o
   - [ ] `test/pictureWeatherDom.test.ts`
 - **1** — `AssertionError: monster battler must appear in the action log: expected undefined to be truthy`
   - [ ] `test/pkmnCoreUnlock.test.ts`
-- **1** — `AssertionError: expected undefined to be 'place_concept' // Object.is equality`
-  - [ ] `test/placeConceptTool.test.ts`
 - **1** — `AssertionError: expected 'material-not-found' to be 'material-not-prop' // Object.is equality`
   - [ ] `test/placePropsRejectsFloorMaterial.test.ts`
-- **1** — `ToolError: 라벨/설명이 "나무 상자" 인 타일을 찾지 못했습니다. 이 타일셋(beodeul_city)에서 가까운 라벨: "버들항 · 외곽 건초·통·상자", "버들항 · 외곽 통나무 벽 꽃상자창칸", "버들항`
 - **1** — `AssertionError: expected 'single' to be 'team' // Object.is equality`
   - [ ] `test/plainTurnGenrePreset.test.ts`
 - **1** — `AssertionError: expected [ 'set_encounter_table', …(N) ] to include 'author_village'`
@@ -952,7 +906,6 @@ Work order (cheapest first): timeout → fake-DOM/env gaps → combined_town / o
   - [ ] `test/playerStatusMenuEdgeDock.test.ts`
 - **1** — `AssertionError: expected '주인공정상HP N/NMP N/N' to match /HP N\/N → \d+ ▲\d+/N → \d+ ▲\d+`
   - [ ] `test/playerStatusMenuPixel.test.ts`
-- **1** — `AssertionError: expected '' to contain 'background-image:url("/assets/easyrpg…'`
 - **1** — `AssertionError: expected 'pixel' to be 'workbench' // Object.is equality`
   - [ ] `test/playerStatusMenuSkins.test.ts`
 - **1** — `AssertionError: expected "vi.fn()" to be called once, but got N times`
@@ -981,7 +934,6 @@ Work order (cheapest first): timeout → fake-DOM/env gaps → combined_town / o
   - [ ] `test/renderFootprintCenter.test.ts`
 - **1** — `AssertionError: expected undefined to match object { id: 'request-N:functional:N', …(N) }`
   - [ ] `test/requestCoverage.test.ts`
-- **1** — `AssertionError: tibo_interior_expanded: expected false to be true // Object.is equality`
 - **1** — `AssertionError: expected [ 'Sword', 'Spear', 'Hit', …(N) ] to deeply equal [ 'Sword', 'Spear', 'Hit', …(N) ]`
   - [ ] `test/rm2003DatabaseUtilityRecords.test.ts`
 - **1** — `AssertionError: expected [ 'villager-room-vN' ] to deeply equal [ 'dungeon-room-vN', …(N) ]`
@@ -1026,7 +978,6 @@ Work order (cheapest first): timeout → fake-DOM/env gaps → combined_town / o
   - [ ] `test/spatialFeedback.test.ts`
 - **1** — `AssertionError: expected [Function] to throw an error`
   - [ ] `test/spatialGeographyPreview.test.ts`
-- **1** — `AssertionError: expected 'worldmap_selected' to be 'easyrpg_chipset_world' // Object.is equality`
 - **1** — `TypeError: Missing inn bundle`
   - [ ] `test/spatialPlacePreview.test.ts`
 - **1** — `AssertionError: expected undefined to be false // Object.is equality`
@@ -1047,7 +998,6 @@ Work order (cheapest first): timeout → fake-DOM/env gaps → combined_town / o
   - [ ] `test/standaloneExportMedia.test.ts`
 - **1** — `AssertionError: 이 파일들이 store 를 바꾸면서 되돌리기 스냅샷을 남기지 않는다:`
   - [ ] `test/storeUndoSnapshotInventory.test.ts`
-- **1** — `AssertionError: expected 'beodeul_city' to be 'easyrpg_chipset_combined_town' // Object.is equality`
 - **1** — `TypeError: Cannot read properties of undefined (reading 'id')`
   - [ ] `test/structureKitFile.test.ts`
 - **1** — `AssertionError: expected undefined to be 'section' // Object.is equality`
@@ -1058,7 +1008,6 @@ Work order (cheapest first): timeout → fake-DOM/env gaps → combined_town / o
   - [ ] `test/tileBrushState.test.ts`
 - **1** — `AssertionError: expected [ N, N, N, N, N ] to include N`
   - [ ] `test/tileBrushTools.test.ts`
-- **1** — `TypeError: Cannot read properties of undefined (reading 'tileMeta')`
 - **1** — `AssertionError: 탐색 실패 뒤에도 색인이 만들어지지 않았다 — 이 테스트가 낡은 색인을 시험하지 못한다: expected true to be false // Object.is equality`
   - [ ] `test/tilePassabilityStaleIndexRuntime.test.ts`
 - **1** — `AssertionError: 'tile_query' 실행 실패: Cannot read properties of undefined (reading 'N'): expected false to be true // Obje`
@@ -1083,8 +1032,6 @@ Work order (cheapest first): timeout → fake-DOM/env gaps → combined_town / o
   - [ ] `test/titleScreenMenuLabels.test.ts`
 - **1** — `Error: ENOENT: no such file or directory, open '/home/runner/work/OpenRPGMaker/OpenRPGMaker/src/styles/editor/core.part-`
   - [ ] `test/toolCursor.test.ts`
-- **1** — `AssertionError: expected [ 'find_tools', …(N) ] to deeply equal ArrayContaining{…}`
-  - [ ] `test/toolDomainScoping.test.ts`
 - **1** — `AssertionError: expected 'start-position' to be 'protected-house-write' // Object.is equality`
   - [ ] `test/toolHouseProtection.test.ts`
 - **1** — `Error: expected rendered image`
@@ -1117,8 +1064,6 @@ Work order (cheapest first): timeout → fake-DOM/env gaps → combined_town / o
   - [ ] `test/weatherBufferPhaser.test.ts`
 - **1** — `AssertionError: expected [ 'assets/ATTRIBUTION.md', …(N) ] to include 'assets/generated/starter/hero-N-face…'`
   - [ ] `test/webExportFacesetFaces.test.ts`
-- **1** — `AssertionError: expected null to be '/assets/easyrpg/backdrop/SkyN.png' // Object.is equality`
-- **1** — `AssertionError: expected [ …(N) ] to include 'assets/easyrpg/game-over/Game Over.png'`
 - **1** — `AssertionError: expected '/goal 장르 프리셋: 이브 같은 갤러리 호러\n톤: 미술관·회랑…' to contain 'place_concept'`
   - [ ] `test/welcomeGenrePresets.test.ts`
 - **1** — `AssertionError: expected null to be 'm_c' // Object.is equality`
