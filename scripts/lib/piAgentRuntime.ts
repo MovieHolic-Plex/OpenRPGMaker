@@ -53,6 +53,7 @@ import { presentationArtIds, presentationArtImages } from '../../src/editor/tool
 
 import { Agent, type StreamFn } from "@oh-my-pi/pi-agent-core";
 import { streamSimple, validateToolArguments } from "@oh-my-pi/pi-ai";
+import { isCliContextExhaustedError } from "../../src/ai/piAgent/cliContextBudget.ts";
 import { refusalLoopRefusal, refusalSignature, repairToolArgs, repeatedRefusalHint, repeatedShapeHint, shapeErrorSignature, shapeLoopRefusal } from "../../src/ai/piAgent/argRepair.ts";
 import type { RoleModel } from "../../src/ai/modelRoles.ts";
 import { resolveOhMyPiModel } from "./ohMyPiModel.ts";
@@ -286,6 +287,16 @@ function animaticResourceIdsFor(project: Project, shotId: string): string[] {
   if (!scene || scene.kind !== "animatic") return [];
   return animaticResourceIds(scene.composition);
 }
+/** CLI 문맥 한도로 멈춘 뒤 빈 세션에서 이어 할 첫 글 — 앞 대화가 없으니 요청을 다시 싣는다(J79). */
+function cliContextResumePrompt(task: string): string {
+  return [
+    "[이어 하기] 앞 차례가 CLI 문맥 한도로 끊겨 대화 기록을 비웠다. 지은 것은 프로젝트에 남아 있다 — 먼저 inspect 로 지금 상태를 읽고, 아래 글에서 남은 일만 이어 한다. 이미 한 일을 다시 하지 않는다. 큰 결과(그림 여러 장·긴 이벤트)는 필요한 것만 읽는다.",
+    "",
+    "[이번 차례에 받은 글]",
+    task.length > 6000 ? `${task.slice(0, 6000)}…` : task,
+  ].join("\n");
+}
+
 export async function renderMapRegionImage(project: Project, region: { mapId: string; x: number; y: number; w: number; h: number },
   renderToolImage: NonNullable<RunPiAgentOptions["renderToolImage"]>, signal?: AbortSignal): Promise<string> {
   const copy = cloneProjectSharingSharedDictionaries(project);
@@ -1133,6 +1144,8 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   // 제공자 스트림이 도중에 끊긴 오류. 실행을 끝내지 않고 같은 기록 위에서 이어 가기 턴을 연다(providerRetry.ts).
   let resumeAfter: string | undefined;
   let providerRetries = 0;
+  let cliContextResets = 0;
+  let cliContextResetPending = false;
   const started = Date.now();
   emit({ type: "start", provider: request.provider, model: String((model as { id?: string }).id ?? ""), toolCount: tools.length });
   // 모델 스트림 조각은 버리지 않고 합쳐 중계한다 — 이게 없어서 모델이 생각하는 동안 와이어가 비었다(실측 2026-09-14).
@@ -1261,6 +1274,14 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
         }
       }
       if (message.stopReason === "error" || message.errorMessage) {
+        // 로컬 CLI 가 문맥 한도로 멈췄다(J79 「Autocompact is thrashing」) — 같은 세션으로는 다시 찬다. 세션을 비우고 한 번 이어 한다.
+        if (!fatal && !options.signal?.aborted && localLoop && cliContextResets < 1 && isCliContextExhaustedError(message.errorMessage)) {
+          cliContextResets += 1;
+          cliContextResetPending = true;
+          resumeAfter = message.errorMessage;
+          emit({ type: "execution_status", name: "local-cli.context_reset", ok: false, summary: "CLI 문맥이 한도에 차서 멈췄습니다 — 대화 기록을 비우고 요청과 지금 프로젝트에서 한 번 이어 합니다." });
+          return;
+        }
         // 우리가 먼저 정한 사유(턴·시간 상한, 클라이언트 끊김)가 있으면 그것이 이긴다 — 코어가 합성한
         // aborted 메시지의 문구로 덮어쓰지 않는다.
         if (!fatal && !options.signal?.aborted && providerRetries < PI_PROVIDER_STREAM_RETRY_LIMIT
@@ -1293,6 +1314,13 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
     await agent.prompt(text);
     while (resumeAfter && !fatal && !rejected && !options.signal?.aborted) {
       resumeAfter = undefined;
+      if (cliContextResetPending && localLoop) {
+        cliContextResetPending = false;
+        await localLoop.resetSession();
+        emit({ type: "execution_status", name: "v2.context.reset", ok: true, summary: "CLI 문맥 한도 — 앞 대화 기록을 비우고 요청만 다시 싣고 이어 한다" });
+        await agent.prompt(cliContextResumePrompt(text));
+        continue;
+      }
       providerRetries += 1;
       await new Promise((resolve) => setTimeout(resolve, PROVIDER_RETRY_DELAY_MS * providerRetries));
       await agent.prompt(providerStreamResumePrompt(providerRetries, PI_PROVIDER_STREAM_RETRY_LIMIT));
