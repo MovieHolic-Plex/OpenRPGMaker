@@ -29,8 +29,9 @@ describe("elements worksheet", () => {
     const before = JSON.stringify(store.getCurrent());
     mount();
     const images = [...get("db-elements-list").querySelectorAll("img")];
-    expect(images).toHaveLength(17);
-    expect(new Set(images.map((image) => image.getAttribute("src"))).size).toBe(17);
+    // 18 types since the Grass element (#2603, fed4d8d0b9).
+    expect(images).toHaveLength(18);
+    expect(new Set(images.map((image) => image.getAttribute("src"))).size).toBe(18);
     expect(JSON.stringify(store.getCurrent())).toBe(before);
   });
   it("updates identity in place and keeps the caret", () => {
@@ -49,7 +50,7 @@ describe("elements worksheet", () => {
     expect(get("db-field-element-name-selected")).toBe(detail);
     expect(get("db-elements-list").querySelectorAll(".db-ws-row")).toHaveLength(0);
     get("db-elements-search-clear").click();
-    expect(get("db-elements-list").querySelectorAll(".db-ws-row")).toHaveLength(17);
+    expect(get("db-elements-list").querySelectorAll(".db-ws-row")).toHaveLength(18);
     expect(get("db-field-element-name-selected")).toBe(detail);
   });
   it("derives signed results and one shared scale, including edited E", () => {
@@ -178,7 +179,7 @@ describe("elements worksheet", () => {
       const project = store.getCurrent();
       const pane = get("db-elements-classic");
       const list = get("db-elements-list");
-      expect(list.querySelectorAll(".db-ws-row")).toHaveLength(17);
+      expect(list.querySelectorAll(".db-ws-row")).toHaveLength(18);
       const search = input("db-elements-search", "Fire");
 
       // Leave before the old 90ms debounce, then release it while Elements is cached.
@@ -209,15 +210,15 @@ describe("elements worksheet", () => {
       get("db-elements-search-clear").click();
       expect(search.value).toBe("");
       expect(document.activeElement).toBe(search);
-      expect(get("db-elements-list").querySelectorAll(".db-ws-row")).toHaveLength(17);
+      expect(get("db-elements-list").querySelectorAll(".db-ws-row")).toHaveLength(18);
 
       vi.advanceTimersByTime(90);
       expect(search.value).toBe("");
-      expect(get("db-elements-list").querySelectorAll(".db-ws-row")).toHaveLength(17);
+      expect(get("db-elements-list").querySelectorAll(".db-ws-row")).toHaveLength(18);
       expect(get("db-field-element-name-selected")).toBe(detail);
       mount();
       expect((get("db-elements-search") as HTMLInputElement).value).toBe("");
-      expect(get("db-elements-list").querySelectorAll(".db-ws-row")).toHaveLength(17);
+      expect(get("db-elements-list").querySelectorAll(".db-ws-row")).toHaveLength(18);
     });
 
     it("preserves the filter without refreshing replaced rows when maximum count shrinks", () => {

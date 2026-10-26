@@ -1695,7 +1695,20 @@ function partySubviewNav(tab: DatabaseTab, container: HTMLElement): HTMLElement 
       dataset: { testid: `db-subview-${view.slug}`, tab: view.tab },
       on: {
         click: () => {
-          if (view.tab !== activeTab) switchDatabaseActiveTab(view.tab, container);
+          if (view.tab === activeTab) return;
+          // 같은 그룹 안 보기 전환은 레일 탭 버튼처럼 캐시된 화면을 다시 붙인다(강제 새 렌더 아님) —
+          // 캐시된 전투 애니메이션 작업대의 미리보기 루프가 보기 전환에서 끊기고 다시 만들어지지 않게.
+          const body = container.querySelector(".db-body");
+          const header = container.querySelector(".db-tabs");
+          if (!(body instanceof HTMLElement) || !(header instanceof HTMLElement)) {
+            switchDatabaseActiveTab(view.tab, container);
+            return;
+          }
+          if (view.tab === "retroChoreographies") resetRetroChoreographyViewState();
+          setDatabaseActiveTab(view.tab);
+          updateTabButtons(header);
+          renderActiveTab(body, container);
+          refreshTabCounts(container);
         },
       },
     })),
