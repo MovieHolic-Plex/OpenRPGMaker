@@ -16,9 +16,9 @@ import {
 import type { AiConfig, ChatMessage, ChatRequest, ChatResult } from "@/ai/llmClient";
 import { createBlankProject } from "@/project/defaults";
 
-// Each test here drives a full assistant/editor session over the ~63MB blank project
-// (createBlankProject + fingerprint/copy per session). On 4-core CI runners with 8 workers
-// these legitimately exceed vitest's 15s default, so the budget is raised for this file only.
+// Tests here build the ~63MB blank project (createBlankProject) and drive assistant sessions or editor
+// panels over it, fingerprinting/copying it per session. Under ci-full load (8 workers on 4-core runners)
+// single tests measured 10-50s, past vitest's 15s default, so the budget is raised for this file only.
 vi.setConfig({ testTimeout: 120_000 });
 
 // 알 수 없는 모델 = DEFAULT_CONTEXT_WINDOW 128,000. reserve 16,384 → 임계 111,616 토큰.
