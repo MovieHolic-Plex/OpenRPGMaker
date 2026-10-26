@@ -11,6 +11,7 @@ import { deserialize, serialize } from "@/project/io";
 import * as vocabulary from "@/project/tileVocabulary";
 import type { GameMap, Project, Rect } from "@/project/types";
 import { completedHouseProject, houseMap, mutateProject } from "./fixtures/completedHouse";
+import { startOnRetiredCombinedTown } from "./support/retiredEasyRpgTilesets";
 
 const UNDERGROWTH = new Set(DEFAULT_UNDERGROWTH_AUTOTILE_GROUP.memberTileIds);
 const BODY = DEFAULT_UNDERGROWTH_AUTOTILE_GROUP.variantMap["255"]!;
@@ -20,7 +21,9 @@ const AREA = { x: 2, y: 2, w: 20, h: 20 };
 afterEach(() => vi.restoreAllMocks());
 
 function setup(size = 30): Project {
-  const project = completedHouseProject();
+  // 숲 조성 그룹(덤불·침엽수·활엽수)과 TILE.* 번호는 합본 마을 칩셋 기준이다 — 2026-10-07 정리 뒤 기본이 beodeul_city 라
+  // 옛 저장본처럼 시작 맵을 합본 마을에 둔다.
+  const project = startOnRetiredCombinedTown(completedHouseProject());
   const map = houseMap(project);
   map.width = size;
   map.height = size;
