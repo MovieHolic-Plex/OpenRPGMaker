@@ -656,9 +656,10 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
       if (!env.ctx.project.maps[p.mapId]) return text({ ok: false, summary: `맵 ${p.mapId} 이 없다` });
       const used = dressBudget.get(p.mapId) ?? 0;
       if (used >= DRESS_ROOM_LIMIT) return text({ ok: false, summary: `${p.mapId} 의 방 채우기 상한(${DRESS_ROOM_LIMIT}번)에 닿았다 — 남은 문제를 사용자에게 보고한다.` });
-      dressBudget.set(p.mapId, used + 1);
+      if (!p.at || typeof p.at.x !== "number" || typeof p.at.y !== "number") return text({ ok: false, summary: "at 에 그 방 바닥 한 칸 {x,y} 을 준다" });
       const from = run.calls.length;
-      const result = dressRoom(run, p.mapId, p.at ?? { x: 0, y: 0 }, String(p.purpose ?? ""));
+      const result = dressRoom(run, p.mapId, p.at, String(p.purpose ?? ""));
+      if (result.placed.length) dressBudget.set(p.mapId, used + 1);
       return finishContent(id, "dress_room", params, { ok: result.ok, mapIds: [p.mapId], summary: result.summary, warnings: [], missingArt: [], calls: run.calls.slice(from) });
     },
   };

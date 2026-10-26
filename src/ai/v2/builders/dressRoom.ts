@@ -43,7 +43,7 @@ export function dressPalette(spec: HandInteriorSpec, purpose: string): { id: str
   for (const [re, more, no] of ALIASES) if (re.test(purpose)) { for (const w of more) words.add(w.toLowerCase()); if (no) deny.push(no); }
   const usable = (id: string): boolean => {
     const o = spec.objects[id];
-    if (!o || (o.kind !== "floor" && o.kind !== "flat") || o.stairs || o.w > 4 || o.h > 3) return false;
+    if (!o || !o.cells?.length || (o.kind !== "floor" && o.kind !== "flat") || o.stairs || o.w > 4 || o.h > 3) return false;
     if (deny.some((re) => re.test(`${id} ${o.ko} ${(o.tags ?? []).join(" ")}`))) return false;
     return !(o.use ?? []).some((u) => ["gate", "trap", "key", "seal", "save", "travel"].includes(u));
   };
@@ -151,6 +151,8 @@ export function dressRoom(run: BuildRun, mapId: string, at: { x: number; y: numb
   const failedAt = new Set<string>();
   let turn = 0;
   let base = access(run.ctx.project, mapId);
+  // 시작 칸이 없으면 도달을 잴 수 없다 — 재지 못하면 놓지 않는다(Infinity > Infinity 는 거짓이라 막는 가구를 못 거른다).
+  if (!Number.isFinite(base.stranded)) return { ok: false, summary: `${mapId} 에서 걸어 닿는 정도를 잴 시작 칸이 없어 방을 채우지 않았다`, placed: [], before: roomBarePct(run.ctx.project, map(), room), after: roomBarePct(run.ctx.project, map(), room) };
   for (let attempt = 0; attempt < MAX_ITEMS * 3 && placed.length < MAX_ITEMS; attempt++) {
     if (roomBarePct(run.ctx.project, map(), room) <= target) break;
     // 무게대로 돌아가며 고른다(같은 것만 줄지어 놓지 않게 — 앞 3개를 두 번씩, 나머지는 한 번씩).
