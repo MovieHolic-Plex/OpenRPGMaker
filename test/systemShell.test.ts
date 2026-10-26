@@ -199,6 +199,7 @@ describe("T12 RM2K3 player status menu", () => {
         ],
         actions: {
           onCommand: () => undefined,
+          onOpenGroup: () => undefined,
           onSaveSlot: () => undefined,
           onLoadSlot: () => undefined,
           onSelectItemTarget: () => undefined,
@@ -223,13 +224,57 @@ describe("T12 RM2K3 player status menu", () => {
       expect(findByTestId(menu, "status-menu-command-rail")?.textContent).toContain("아이템");
       // 저장은 "시스템 ▸" 그룹으로 접혔다 — 레일에는 그룹 열기 항목만 남는다.
       expect(findByTestId(menu, "status-menu-command-system-menu")?.textContent).toBe("시스템 ▸");
-      expect(findByTestId(menu, "status-menu-gold")?.textContent).toBe("돈 0G");
+      // J88(2026-10-26): 전투도 상점도 시작 돈도 없는 게임은 머리줄에 「돈 0G」 를 두지 않는다.
+      // 빈 프로젝트가 그 경우다 — 금액 라벨(snapshot.goldLabel)은 그대로 계산되지만 화면에는 안 나간다.
+      expect(findByTestId(menu, "status-menu-gold")).toBeNull();
       expect(findByTestId(menu, "status-menu-slots")).toBeNull();
       expect(findByTestId(menu, "status-menu-time")?.textContent).toBe("0:00");
       expect(findByTestId(menu, "status-menu-party")).toBeNull();
       expect(findByTestId(menu, "status-menu-empty")).toBeNull();
       expect(findByTestId(menu, "status-menu-detail-title")?.textContent).toBe("아이템");
       expect(findByTestId(menu, "status-menu-detail")?.textContent).toContain("아이템이 없습니다");
+    } finally {
+      restoreDom();
+    }
+  });
+
+  // 짝 검증 — 위 테스트만 있으면 「돈을 영원히 숨김」 도 통과한다. 돈을 쓰는 게임에서는 보여야 한다.
+  it("shows the gold label when the game actually uses money", () => {
+    const restoreDom = installFakeDom();
+    try {
+      const project = createBlankProject();
+      project.system.menuUiStyle = "workbench";
+      const session = startSession(project);
+      session.gold = 250;
+
+      const menu = renderWithFakeDom(() => renderPlayerStatusMenu({
+        project,
+        session,
+        slots: [],
+        actions: {
+          onCommand: () => undefined,
+          onOpenGroup: () => undefined,
+          onSaveSlot: () => undefined,
+          onLoadSlot: () => undefined,
+          onSelectItemTarget: () => undefined,
+          onToggleWait: () => undefined,
+          onToTitle: () => undefined,
+          onUseItem: () => undefined,
+          onSelectSkillActor: () => undefined,
+          onSelectSkill: () => undefined,
+          onSelectEquipmentActor: () => undefined,
+          onSelectEquipmentSlot: () => undefined,
+          onEquipItem: () => undefined,
+          onUnequipItem: () => undefined,
+          onToggleRow: () => undefined,
+          onSelectFormationActor: () => undefined,
+          onMoveFormationActor: () => undefined,
+          onToggleMonsterView: () => undefined,
+          onMoveMonster: () => undefined,
+        },
+      }));
+
+      expect(findByTestId(menu, "status-menu-gold")?.textContent).toContain("250");
     } finally {
       restoreDom();
     }
