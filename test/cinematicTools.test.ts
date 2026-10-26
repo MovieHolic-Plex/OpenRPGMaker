@@ -13,6 +13,9 @@ const VOICE = "voice-upload";
 
 function mediaProject(): Project {
   const project = createBlankProject();
+  // 새 프로젝트는 기본 오프닝(kingdom-prologue)을 씨앗으로 들고 태어난다(defaultOpeningSequence). 이 시험은 오프닝이 없는
+  // 문서에서 시작하는 도구 계약을 보므로 그 씨앗을 뺀다 — 로드는 빠진 오프닝을 다시 만들지 않는다.
+  delete project.system.opening;
   project.assets.uploaded[PICTURE] = {
     id: PICTURE, name: "표지 그림", kind: "picture", dataUrl: "data:image/png;base64,AAAA", meta: {},
   };
