@@ -22,8 +22,9 @@ function cardOf(host: HTMLElement, idx: number): HTMLElement {
 // 분기 이름은 카드 아래 펼쳐진 패널이 **한 번만** 찍는다. 예전에는 카드 안에도 앞 2개를
 // 12자로 자른 «칩 줄»(`.event-storyboard-card-branches`)이 있어서 같은 목록이 두 번 나왔다.
 describe("storyboard renders each branch name exactly once", () => {
-  it("uses the visual storyboard as the default authoring view", () => {
-    expect(loadStoryboardMode()).toBe("storyboard");
+  it("uses the list as the default authoring view", () => {
+    // 기본 보기는 목록이다(PR #3211 이후 storyboard 는 고르는 보기).
+    expect(loadStoryboardMode()).toBe("list");
   });
 
   it("no longer renders the truncated chip row inside the card", () => {
