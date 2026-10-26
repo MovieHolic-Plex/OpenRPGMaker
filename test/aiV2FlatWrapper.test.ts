@@ -19,6 +19,11 @@ describe("J67 flattened single-wrapper schemas", () => {
     const tool = flattenWrapperTool(echo("make_place", spec));
     expect(await run(tool, { spec: { type: "village", name: "a" } })).toEqual({ spec: { type: "village", name: "a" } });
   });
+  it("fills a partial wrapper from flat fields instead of leaving them outside", async () => {
+    const tool = flattenWrapperTool(echo("make_place", spec));
+    expect(await run(tool, { spec: { type: "village" }, name: "a" })).toEqual({ spec: { type: "village", name: "a" } });
+    expect(await run(tool, { spec: { type: "village", name: "안" }, name: "밖" })).toEqual({ spec: { type: "village", name: "안" } });
+  });
   it("refuses a flat call missing an inner required field", async () => {
     const tool = flattenWrapperTool(echo("make_place", spec));
     expect(await run(tool, { type: "village" })).toMatchObject({ ok: false });
@@ -30,6 +35,9 @@ describe("J67 flattened single-wrapper schemas", () => {
     const tool = flattenWrapperTool(echo("add_people", people));
     expect(await run(tool, { mapId: "m", role: "guard" })).toEqual({ mapId: "m", people: [{ role: "guard" }] });
     expect(await run(tool, { mapId: "m", people: [{ role: "a" }, { role: "b" }] })).toEqual({ mapId: "m", people: [{ role: "a" }, { role: "b" }] });
+    expect(await run(tool, { mapId: "m", people: [{ role: "guard" }], name: "경비" })).toEqual({ mapId: "m", people: [{ role: "guard", name: "경비" }] });
+    expect(await run(tool, { mapId: "m", people: [{ role: "a", name: "가" }, { role: "b" }], name: "찌꺼기" })).toEqual({ mapId: "m", people: [{ role: "a", name: "가" }, { role: "b" }] });
+    expect(await run(tool, { mapId: "m", people: [{ role: "a" }], role: "clerk", name: "다" })).toEqual({ mapId: "m", people: [{ role: "a" }, { role: "clerk", name: "다" }] });
   });
   it("moves extra fields into an open inner object (upsert_event)", async () => {
     const ev = { type: "object", properties: { mapId: { type: "string" }, event: { type: "object", properties: { id: { type: "string" } }, required: ["id"], additionalProperties: true } }, required: ["mapId", "event"] };
