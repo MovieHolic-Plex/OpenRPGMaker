@@ -42,8 +42,18 @@ describe("private action proof exported boot", () => {
     });
     vi.stubGlobal("fetch", vi.fn().mockResolvedValue(new Response(serialize(project))));
     const ready = new Promise<void>(resolve => rendered.mockImplementation(() => resolve()));
-    await import("@/player/exportEntry");
-    await ready;
+    // Without qaInstrumentation the web build waits on the boot loader's 「시작하기」 gesture (bootLoader.waitForStart)
+    // before rendering; press it like a player would, otherwise `ready` never resolves.
+    const pressStart = setInterval(() => {
+      const start = document.querySelector<HTMLElement>('[data-testid="boot-loader-start"]');
+      if (start && start.style.display !== "none") start.click();
+    }, 20);
+    try {
+      await import("@/player/exportEntry");
+      await ready;
+    } finally {
+      clearInterval(pressStart);
+    }
     const { withInlineAsset } = await import("@/assets/inlineAssetStore");
     expect(withInlineAsset("/assets/easyrpg-chipset-exterior.png"))
       .toBe(`${location.origin}${expectedBase}assets/easyrpg-chipset-exterior.png`);
