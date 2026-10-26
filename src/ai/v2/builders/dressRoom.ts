@@ -15,6 +15,8 @@ import type { BuildRun } from "../types";
 const HAND_LAYOUT_ROOM_TAG = "hand-layout-room";
 export const DRESS_ROOM_TARGET = 15;
 const MAX_ITEMS = 24;
+/** 바닥 장식(깔개·매트)은 방 바닥 60칸에 한 점(3~8점), 서로 두 칸 띄운다 — 촘촘히 깔면 깔개 전시장처럼 줄지어 보인다(2026-10-26 프로브: 음악실 깔개 9장). */
+const decorCap = (room: RoomRect): number => Math.max(3, Math.min(8, Math.floor(((room.x1 - room.x0 + 1) * (room.y1 - room.y0 + 1)) / 60)));
 /** 같은 가구는 한 방에 4점까지(드럼 세트만 여섯 놓지 않게). */
 const PER_ITEM_CAP = 4;
 
@@ -67,6 +69,26 @@ export function dressPalette(spec: HandInteriorSpec, purpose: string): { id: str
   return (strong.length >= 3 ? strong : ranked).slice(0, 8);
 }
 
+/** 걸어 지나가는 바닥 장식(깔개·매트·바닥 무늬) — 막지 않으니 길 가운데에도 둔다. 쓰임에 맞는 것만. */
+const DECOR_RULES: readonly [RegExp, RegExp][] = [
+  // 깔개는 사람이 머무는 방·복도에 — 교실·체육관·창고·화장실에는 깔지 않는다(2026-10-26 프로브: 교실에 거실 깔개 7장).
+  [/깔개|러그|rug|carpet|카펫/iu, /^(?!.*(교실|강의실|체육|강당|창고|화장실|부엌|주방|classroom|gym|storage|toilet|kitchen)).*(교장|원장|사무|교무|응접|거실|음악|도서|로비|현관|대기|회의|침실|복도|보건|상담|서재|office|living|music|library|lobby|meeting|bedroom|corridor|hall|study)/iu],
+  [/매트|mat/iu, /유치원|놀이|체육|kinder|gym|play/iu],
+  [/체크|checker/iu, /카페|식당|부엌|주방|화장실|cafe|kitchen|diner/iu],
+  [/점자|tactile/iu, /역|승강장|지하철|station|platform|subway/iu],
+  [/다다미|방석|이불|tatami|zabuton|futon|화로/iu, /다다미|와실|일본|다실|화실|tatami|japanese/iu],
+  [/코트|court|센터 서클/iu, /체육|강당|gym|court/iu],
+];
+export function decorPalette(spec: HandInteriorSpec, purpose: string): string[] {
+  const out: string[] = [];
+  for (const [id, o] of Object.entries(spec.objects)) {
+    if (o.kind !== "flat" || !o.cells?.length || o.w > 4 || o.h > 4 || (o.use ?? []).some((u) => ["gate", "trap", "key", "seal", "save", "travel"].includes(u))) continue;
+    const hay = `${id} ${o.ko} ${(o.tags ?? []).join(" ")}`;
+    if (DECOR_RULES.some(([what, where]) => what.test(hay) && where.test(purpose))) out.push(id);
+  }
+  return out.sort((a, b) => spec.objects[b]!.w * spec.objects[b]!.h - spec.objects[a]!.w * spec.objects[a]!.h);
+}
+
 /** 방 = 손 도트 방 구획(location). at 칸이 든 것, 없으면 undefined. */
 export function roomAt(map: GameMap, at: { x: number; y: number }): RoomRect | undefined {
   const hit = (map.locations ?? []).filter((l) => (l.tags ?? []).includes(HAND_LAYOUT_ROOM_TAG))
@@ -80,6 +102,13 @@ function freeFloor(project: Project, map: GameMap, x: number, y: number): boolea
   const i = y * map.width + x;
   return isPassable(project, map, x, y) && (map.lowerOverlayTiles?.[i] ?? -1) < 0 && (map.upperTiles[i] ?? -1) < 0
     && (map.upperOverlayTiles?.[i] ?? -1) < 0 && !(map.events ?? []).some((e) => e.x === x && e.y === y);
+}
+
+/** 그 칸에 다른 물체(3·4층 그림)가 없나 — 맵 밖은 «있다». */
+function noObjectAt(map: GameMap, x: number, y: number): boolean {
+  if (x < 0 || y < 0 || x >= map.width || y >= map.height) return false;
+  const i = y * map.width + x;
+  return (map.upperTiles[i] ?? -1) < 0 && (map.upperOverlayTiles?.[i] ?? -1) < 0;
 }
 
 /** 방 빈 바닥 % — 2×2 이상 맨바닥 덩이에 드는 칸 ÷ 방 바닥 칸(bareFloor.ts 와 같은 눈, 방 하나만). */
@@ -121,7 +150,7 @@ export function handObjectKitId(project: Project, tilesetId: string, id: string)
 }
 
 /** 걸어서 닿는 정도: 닿지 못하는 걸을 칸 수 + 손이 닿지 않게 된 이벤트 수. 놓기 전보다 늘면 그 가구는 되돌린다. */
-function access(project: Project, mapId: string): { stranded: number; cutOff: number } {
+export function access(project: Project, mapId: string): { stranded: number; cutOff: number } {
   const map = project.maps[mapId]!;
   const start = startCell(project, map);
   if (!start) return { stranded: Infinity, cutOff: Infinity };
@@ -160,7 +189,11 @@ export function dressRoom(run: BuildRun, mapId: string, at: { x: number; y: numb
     const id = order[turn++ % order.length]!;
     const area = spec.objects[id]!.w * Math.max(1, spec.objects[id]!.h);
     // 큰 가구(피아노·드럼 세트·소파)는 한 방에 하나, 중간 것은 둘 — 같은 큰 가구 다섯이 줄지으면 창고로 읽힌다.
-    const cap = area >= 6 ? 1 : area >= 2 ? 2 : PER_ITEM_CAP;
+    const label = `${id} ${spec.objects[id]!.ko}`;
+    // 교실의 책상은 줄지어 여럿, 교탁·칠판·피아노 같은 «하나뿐인 것»은 하나.
+    const cap = /교실|강의실|classroom/iu.test(purpose) && /책상|desk/iu.test(label) && !/교탁|교사|teacher|lectern/iu.test(label) ? 8
+      : /교탁|lectern|칠판|blackboard|피아노|piano|금고|safe/iu.test(label) ? 1
+      : area >= 6 ? 1 : area >= 2 ? 2 : PER_ITEM_CAP;
     if (placed.filter((p) => p.startsWith(`${spec.objects[id]!.ko}(`)).length >= cap) continue;
     const o = spec.objects[id]!;
     const rows = Math.max(1, o.h) + (o.kind === "flat" ? 0 : 1);
@@ -170,6 +203,8 @@ export function dressRoom(run: BuildRun, mapId: string, at: { x: number; y: numb
       if (failedAt.has(`${id}@${x},${y}`)) continue;
       let ok = true;
       for (let j = 0; j < rows && ok; j++) for (let i = 0; i < o.w && ok; i++) if (!freeFloor(run.ctx.project, map(), x + i, y + j)) ok = false;
+      // 그림이 발 위로 솟은 칸(교탁·책상 윗면)도 다른 물체와 겹치면 안 된다 — stamp_object 가 거부한다(2026-10-26 프로브: 시도 대부분이 이것).
+      if (ok && !o.cells.every(([cx, cy]) => noObjectAt(map(), x + cx, y + cy))) ok = false;
       if (!ok) continue;
       let score = 0;
       for (let j = -2; j < rows + 2; j++) for (let i = -2; i < o.w + 2; i++) if (freeFloor(run.ctx.project, map(), x + i, y + j)) score++;
@@ -191,13 +226,47 @@ export function dressRoom(run: BuildRun, mapId: string, at: { x: number; y: numb
     base = now!;
     placed.push(`${o.ko}(${best.x},${best.y})`);
   }
+  // 2) 서는 가구로 더 채우면 길을 막는다 — 남은 빈 바닥 덩이에 밟고 지나가는 바닥 장식(깔개·매트)을 깐다.
+  //    (2026-10-26 j81: 가구만으로는 교장실 42%·복도 79%에서 멈췄다.) 막지 않으니 도달 검사가 필요 없고, 서로 한 칸 띄운다.
+  const decor = decorPalette(spec, purpose);
+  const laid: string[] = [];
+  const decorRects: { x0: number; y0: number; x1: number; y1: number }[] = [];
+  for (let k = 0; k < decorCap(room) && decor.length && roomBarePct(run.ctx.project, map(), room) > target; k++) {
+    let best: { id: string; x: number; y: number; score: number } | undefined;
+    for (const id of decor) {
+      const o = spec.objects[id]!;
+      for (let y = room.y0 + 1; y + o.h - 1 <= room.y1; y++) for (let x = room.x0; x + o.w - 1 <= room.x1; x++) {
+        if (failedAt.has(`${id}@${x},${y}`)) continue;
+        if (decorRects.some((r) => x <= r.x1 + 2 && x + o.w - 1 >= r.x0 - 2 && y <= r.y1 + 2 && y + o.h - 1 >= r.y0 - 2)) continue;
+        let ok = true;
+        for (let j = 0; j < o.h && ok; j++) for (let i = 0; i < o.w && ok; i++) if (!freeFloor(run.ctx.project, map(), x + i, y + j)) ok = false;
+        if (ok && !o.cells.every(([cx, cy]) => noObjectAt(map(), x + cx, y + cy))) ok = false;
+        if (!ok) continue;
+        // 덮는 칸 + 둘레가 빈 바닥인 정도(덩이 가운데일수록 좋다).
+        let score = o.w * o.h * 4;
+        for (let j = -1; j <= o.h; j++) for (let i = -1; i <= o.w; i++) if (freeFloor(run.ctx.project, map(), x + i, y + j)) score++;
+        if (!best || score > best.score) best = { id, x, y, score };
+      }
+    }
+    if (!best) break;
+    const o = spec.objects[best.id]!;
+    const kitId = handObjectKitId(run.ctx.project, tilesetId, best.id);
+    const minDx = Math.min(...o.cells.map((c) => c[0])), minDy = Math.min(...o.cells.map((c) => c[1]));
+    const snapshot = run.ctx.project;
+    const res = kitId ? run.call("stamp_object", { objectId: `kit:${tilesetId}/${kitId}`, mapId, x: best.x + minDx, y: best.y + minDy }) : { ok: false };
+    const now = res.ok ? access(run.ctx.project, mapId) : undefined;
+    if (!res.ok || !now || now.stranded > base.stranded || now.cutOff > base.cutOff) { run.ctx.project = snapshot; failedAt.add(`${best.id}@${best.x},${best.y}`); continue; }
+    decorRects.push({ x0: best.x, y0: best.y, x1: best.x + o.w - 1, y1: best.y + o.h - 1 });
+    laid.push(`${o.ko}(${best.x},${best.y})`);
+  }
+  if (laid.length) placed.push(...laid);
   const after = roomBarePct(run.ctx.project, map(), room);
   const reached = after <= target;
   return {
     ok: placed.length > 0,
     placed, before, after,
     summary: placed.length
-      ? `«${room.name}» 방을 «${purpose}» 가구 ${placed.length}점으로 채웠다 — 방 빈 바닥 ${before}% → ${after}%${reached ? "" : `(목표 ${target}% 에 못 닿음 — 더 놓을 빈 자리가 길을 막는다)`}. 놓은 것: ${placed.slice(0, 12).join(", ")}${placed.length > 12 ? " …" : ""}`
+      ? `«${room.name}» 방을 «${purpose}» 가구 ${placed.length - laid.length}점${laid.length ? `·바닥 깔개 ${laid.length}점` : ""}으로 채웠다 — 방 빈 바닥 ${before}% → ${after}%${reached ? "" : `(목표 ${target}% 에 못 닿음 — 더 놓을 빈 자리가 길을 막는다)`}. 놓은 것: ${placed.slice(0, 12).join(", ")}${placed.length > 12 ? " …" : ""}`
       : `«${room.name}» 방에 놓을 수 있는 «${purpose}» 가구 자리가 없었다(빈 바닥 ${before}%) — 놓으면 길을 막거나 겹친다`,
   };
 }
