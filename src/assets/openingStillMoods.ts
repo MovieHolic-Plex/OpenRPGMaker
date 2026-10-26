@@ -9,6 +9,8 @@
 // 파일 정본: BUILTIN_GENERATED_RESOURCE_URLS(같은 파일을 웰컴 포스터와 공유한다).
 // 여기는 검색어·표시 이름만 담는다 — 경로는 resolver 쪽이 유일 정본이다.
 
+import { isOpeningStillAvailable, unavailableOpeningStillMessage } from "./installedStillPack";
+
 export type OpeningStillMood = {
   readonly id: string;
   readonly name: string;
@@ -469,13 +471,16 @@ export function findOpeningStillMood(id: string): OpeningStillMood | undefined {
  * suitableForOpening:false 는 목록 라벨로만 쓰여 도구가 그대로 받아들였다.
  */
 export function unsuitableOpeningStillMessage(id: string, field: string): string | null {
+  const missing = unavailableOpeningStillMessage(id, field);
+  if (missing) return missing;
   const still = findOpeningStillMood(id);
   if (!still || still.suitableForOpening) return null;
-  const clean = ALL_STILL_MOODS.filter((entry) => entry.suitableForOpening && entry.cautions.length === 0).map((entry) => entry.id);
+  const clean = listOpeningStillMoods().filter((entry) => entry.suitableForOpening && entry.cautions.length === 0).map((entry) => entry.id);
   return `${field} '${id}' 는 타이틀·오프닝 배경으로 쓸 수 없는 참고 스틸입니다(${still.cautions.join("; ") || "오프닝 부적합"}). `
     + `한 장면이 화면을 꽉 채우는 스틸로 바꾸세요 — 예: ${clean.join(", ")}.`;
 }
 
+/** 고르기 목록·조수 검색 대상. 그림 파일이 없는 팩 스틸(설치 전·CDN 미설정)은 빼고 돌려준다(installedStillPack.ts). */
 export function listOpeningStillMoods(): readonly OpeningStillMood[] {
-  return ALL_STILL_MOODS;
+  return ALL_STILL_MOODS.filter((entry) => isOpeningStillAvailable(entry.id));
 }

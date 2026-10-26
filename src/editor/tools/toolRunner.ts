@@ -35,6 +35,7 @@ import { normalizeArgsForSchema, validateArgs } from "./jsonSchema";
 import { applyArgAliases, describeArgError } from "./argRepair";
 import { getTool } from "./toolRegistry";
 import { authoringWritePrerequisite } from '../../harnesses/_core/authoringRegistry';
+import { rejectUnavailablePackStills } from "./stillPackGuard";
 import { ToolError, type JsonSchema, type ToolContext, type ToolDefinition, type ToolResult } from "./types";
 import { assertHouseProtection, captureHouseProtection, newlyBuiltHouseSnapshots, type HouseSnapshot } from "./houseProtection";
 
@@ -567,6 +568,7 @@ export function runToolDefinition(
       const visualWarnings = rejectGenreLockVisuals(ctx, tool, before, draft);
       if (visualWarnings.length) exec = { ...exec, warnings: [...visualWarnings, ...(exec.warnings ?? [])] };
       rejectRomanceTitleMismatch(ctx, before, draft);
+      if (ctx.assistantRun) rejectUnavailablePackStills(before, draft);
       const monsterWarnings = rejectMonsterAssets(ctx, tool, before, draft);
       if (monsterWarnings.length) exec = { ...exec, warnings: [...monsterWarnings, ...(exec.warnings ?? [])] };
     }

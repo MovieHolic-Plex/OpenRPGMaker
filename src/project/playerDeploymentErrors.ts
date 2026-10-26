@@ -7,6 +7,7 @@ export type WebExportContractErrorCode =
   | "bundle-unavailable"
   | "bundle-integrity-mismatch"
   | "runtime-asset-unavailable"
+  | "still-pack-not-installed"
   | "runtime-asset-integrity-mismatch"
   | "zip-path-collision";
 
@@ -19,6 +20,7 @@ const ERROR_MESSAGES: Readonly<Record<WebExportContractErrorCode, string>> = Obj
   "bundle-unavailable": "A declared player bundle file is unavailable. Rebuild and redeploy the player.",
   "bundle-integrity-mismatch": "A declared player bundle file failed integrity verification.",
   "runtime-asset-unavailable": "A declared player runtime asset is unavailable. Redeploy the runtime assets.",
+  "still-pack-not-installed": "This game uses an opening still pack picture that is not installed here. Run npm run stills:install, or pick another picture, then export again.",
   "runtime-asset-integrity-mismatch": "A declared player runtime asset failed integrity verification.",
   "zip-path-collision": "The web export contains colliding ZIP paths.",
 });
