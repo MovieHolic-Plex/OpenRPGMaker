@@ -10211,6 +10211,192 @@
    ],
    "verify": "add_battle_guest(troopId 회수자 트룹, actorId 발렌, atEnemyHpPercent 60, enemyId 회수자, requireSwitchId) / troop.battleGuests 에 발렌 1건·조건 enemyHpBelow 60 + switch / simulate_battle switchesOn 으로 phaseCoverage battle-guest firedRuns>0 / 파티(startActorIds)에 발렌 없음",
    "suiteCategory": "fs2-guest"
+  },
+  {
+   "category": "game",
+   "kind": "logic",
+   "mode": "balanced",
+   "startTileset": "beodeul_city",
+   "startBuild": [
+    {
+     "tool": "author_beodeul_town",
+     "args": {
+      "mapId": "map_blank_start",
+      "name": "버들 마을",
+      "houseCount": 4,
+      "theme": "river",
+      "seed": 11
+     }
+    },
+    {
+     "tool": "create_map",
+     "args": {
+      "id": "map_act2_cell",
+      "name": "감방",
+      "width": 20,
+      "height": 15,
+      "tilesetId": "atlas_biome_interior"
+     }
+    },
+    {
+     "tool": "define_ending",
+     "args": {
+      "id": "end_act1",
+      "name": "제1막 · 떨어진 별",
+      "conditions": [],
+      "presentation": {
+       "kicker": "제1막 끝",
+       "credits": "제2막에서 계속됩니다."
+      }
+     }
+    },
+    {
+     "tool": "place_npc",
+     "args": {
+      "mapId": "map_blank_start",
+      "id": "npc_chief",
+      "name": "촌장",
+      "x": 20,
+      "y": 16,
+      "movement": "fixed",
+      "graphic": {
+       "query": "노인 남성"
+      },
+      "pages": [
+       {
+        "lines": [
+         "어서 오게."
+        ]
+       }
+      ]
+     }
+    }
+   ],
+   "id": "fs2-act-continue",
+   "prompt": "촌장한테 말 걸면 제1막이 끝나게 해 줘. 엔딩 화면은 그대로 보여 주고, 타이틀로 돌아가지 말고 「제2막으로」를 누르면 감방 맵(map_act2_cell) 가운데서 제2막이 시작되게. 감방에 들어가면 「제2막」 한 줄이 먼저 나오게.",
+   "requires": [
+    "엔딩 end_act1 은 그대로 기록(triggerEnding)",
+    "엔딩 마지막 버튼이 타이틀이 아니라 다음 막으로",
+    "map_act2_cell 로 옮김",
+    "감방 첫 장면 자동 실행 한 번"
+   ],
+   "verify": "define_ending end_act1 continueTo {mapId:map_act2_cell, x,y 통행 칸, label 「제2막으로」} / 촌장 이벤트에 triggerEnding end_act1 / map_act2_cell 에 auto 트리거 페이지(스위치로 한 번) / transfer·returnToTitle 로 흉내내지 않음(엔딩 기록이 남아야 한다)",
+   "suiteCategory": "fs2-act-continue"
+  },
+  {
+   "category": "game",
+   "kind": "logic",
+   "mode": "balanced",
+   "startTileset": "beodeul_city",
+   "startBuild": [
+    {
+     "tool": "author_beodeul_town",
+     "args": {
+      "mapId": "map_blank_start",
+      "name": "버들 마을",
+      "houseCount": 4,
+      "theme": "river",
+      "seed": 11
+     }
+    },
+    {
+     "tool": "place_npc",
+     "args": {
+      "mapId": "map_blank_start",
+      "id": "npc_baker",
+      "name": "빵집 아주머니",
+      "x": 20,
+      "y": 16,
+      "movement": "fixed",
+      "graphic": {
+       "query": "여성 상인"
+      },
+      "pages": [
+       {
+        "lines": [
+         "어서 와요."
+        ]
+       }
+      ]
+     }
+    }
+   ],
+   "id": "fs2-night-variant",
+   "prompt": "이 마을의 「점령된 밤」 판을 따로 하나 만들어 줘. 길·집은 그대로인데 사람들은 다 집에 들어가 있고, 집 문은 「통금이다」 하고 안 열리게. 밤이니까 어둡게.",
+   "requires": [
+    "원본 맵은 그대로 둔다",
+    "새 맵에 사람 NPC 이벤트가 없다",
+    "문 이벤트는 남되 이동하지 않고 한 줄만 보여 준다",
+    "새 맵이 어둡다(밤 분위기)"
+   ],
+   "verify": "duplicate_map events:\"doors\" + lockedDoorText / 새 맵 events 가 문(이전 transfer 자리)뿐, 페이지 명령이 text 한 줄 / map_blank_start 이벤트 수 불변 / set_scene_mood 또는 set_lighting_volume 로 밤 / 사람 이벤트를 하나씩 remove_event 로 지우는 대신 한 번에",
+   "suiteCategory": "fs2-night-variant"
+  },
+  {
+   "category": "game",
+   "kind": "logic",
+   "mode": "balanced",
+   "startTileset": "beodeul_city",
+   "startBuild": [
+    {
+     "tool": "author_beodeul_town",
+     "args": {
+      "mapId": "map_blank_start",
+      "name": "버들 마을",
+      "houseCount": 4,
+      "theme": "river",
+      "seed": 11
+     }
+    },
+    {
+     "tool": "create_map",
+     "args": {
+      "id": "map_tower_top",
+      "name": "탑 꼭대기",
+      "width": 20,
+      "height": 15,
+      "tilesetId": "atlas_biome_interior"
+     }
+    }
+   ],
+   "id": "fs2-well-lift",
+   "prompt": "마을 우물 밑으로 사다리 타고 내려가면 작은 지하 승강구가 있고, 거기서 승강 장치를 타면 탑 꼭대기(map_tower_top)로 올라가게 해 줘. 탑에서 승강 장치 타면 다시 내려오게.",
+   "requires": [
+    "우물 조사 → 지하 맵으로 이동",
+    "지하에서 우물로 돌아가는 사다리",
+    "승강 장치 위로 → map_tower_top 도착 연출",
+    "탑에서 아래로 되돌아오는 승강 장치"
+   ],
+   "verify": "build_hand_interior_room(지하 승강구) / place_lift toMapId map_tower_top + 반대 방향 place_lift / 도착 스위치가 project.switches 에 있음(참조 검증 통과) / 승강기를 바닥 칸+페이드로 흉내내지 않음",
+   "suiteCategory": "fs2-well-lift"
+  },
+  {
+   "category": "game",
+   "kind": "logic",
+   "mode": "balanced",
+   "startTileset": "beodeul_city",
+   "startBuild": [
+    {
+     "tool": "author_beodeul_town",
+     "args": {
+      "mapId": "map_blank_start",
+      "name": "성벽 마을",
+      "houseCount": 4,
+      "theme": "river",
+      "seed": 11
+     }
+    }
+   ],
+   "id": "fs2-route-from-cell",
+   "prompt": "마을 북쪽 성벽은 허물지 말고, 북쪽 끝 벽의 돌 하나를 조사하면 개구멍으로 빠져나가 북쪽 들판(두 장, 어둡고 안개)으로 가게 해 줘. 들판 입구로 돌아오면 다시 그 벽 앞으로.",
+   "requires": [
+    "시작 맵 성벽·가장자리 타일 불변(길을 새로 내지 않음)",
+    "벽 칸 조사 이벤트 → 들판 1 입구",
+    "들판 1 입구 → 마을 벽 앞으로 돌아오는 이벤트",
+    "들판 두 장이 서로 이어짐"
+   ],
+   "verify": "author_forest_route terrain:field linkFrom:false count 2 moods / 결과 data.maps[0].entry 로 벽 이벤트 transfer·돌아오는 이벤트 / map_blank_start 가장자리 lowerTiles 변화 없음",
+   "suiteCategory": "fs2-route-from-cell"
   }
  ],
  "gates": {

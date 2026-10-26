@@ -68,7 +68,7 @@ import { mapBackgroundFromPanoramaSet, oprnPanoramaSetOfImage, OPRN_PANORAMA_SET
 import { mapTileSize } from "@/project/tileGeometry";
 import { tileCategoriesForTile } from "@/project/tilesetPalette";
 import { isActionCombatMap } from "@/project/actionCombat";
-import type { EncounterTableEntry, FieldSpawnDef, GameEvent, GameMap, MapBackground, PaletteSlotRole, Project, Rect, RoguelikeRoomDef, TilesetDef } from "@/project/types";
+import type { Command, EncounterTableEntry, FieldSpawnDef, GameEvent, GameMap, MapBackground, PaletteSlotRole, Project, Rect, RoguelikeRoomDef, TilesetDef } from "@/project/types";
 import { mapLocations, resolveLocation } from "@/project/mapNamedLocations";
 import { terrainRecordAt } from "@/project/terrainAt";
 import { ensureGrassTerrainRecord, GRASS_TERRAIN_ID } from "@/project/defaults/defaultDatabaseUtilityRecords";
@@ -349,7 +349,9 @@ const createMap: ToolDefinition = {
 
 const duplicateMap: ToolDefinition = {
   name: "duplicate_map",
-  description: "맵 전체(타일·이벤트·BGM·배경·미니맵 설정)를 복제하고 원본 바로 뒤에 배치한다. 새 map id는 명시해야 한다.",
+  description: "맵 전체(타일·이벤트·BGM·배경·미니맵 설정)를 복제하고 원본 바로 뒤에 배치한다. 새 map id는 명시해야 한다. " +
+    "같은 장소의 다른 때 판(점령된 밤·통금·폐허 직후)을 만들 때는 events:\"doors\" 로 사람·연출 이벤트를 비우고 문·출입구(이동만 하는 이벤트)만 남기며, " +
+    "lockedDoorText 를 주면 남긴 문은 옮기지 않고 그 한 줄만 보여 준다(통금으로 잠긴 집). 열어 둘 문은 openDoorMapIds 에 그 문이 가는 맵 id 를 적는다.",
   mode: "write",
   parameters: {
     type: "object",
@@ -357,6 +359,9 @@ const duplicateMap: ToolDefinition = {
       mapId: { type: "string" },
       id: { type: "string", description: "새 맵 id" },
       name: { type: "string", description: "새 맵 이름(생략 시 '<원본> 복사')" },
+      events: { type: "string", enum: ["all", "doors", "none"], description: "all(기본)=이벤트 전부 복제 · doors=이동(transfer)만 하는 문·출입구 이벤트만 남김 · none=이벤트 없이 타일만" },
+      lockedDoorText: { type: "string", description: "events:doors 일 때 남긴 문을 잠근다 — 이동 대신 이 한 줄(예: 「통금이다. 문이 굳게 잠겨 있다.」)" },
+      openDoorMapIds: { type: "array", items: { type: "string" }, description: "lockedDoorText 를 줘도 그대로 열어 둘 문(이 맵들로 가는 문)" },
     },
     required: ["mapId", "id"],
     additionalProperties: false,
@@ -368,8 +373,34 @@ const duplicateMap: ToolDefinition = {
       throw new ToolError(`이미 사용 중인 맵/폴더 id입니다: ${id} — ${MAP_ID_TAKEN_GUIDANCE}`, { code: "map-exists", mapId: id });
     }
     const name = typeof args.name === "string" && args.name.trim() ? args.name.trim() : `${source.name} 복사`;
-    cloneMapIntoProject(draft, source, id, name);
-    return { summary: `맵 '${source.name}' 복제 → '${name}' (${id})`, data: { mapId: id } };
+    const { copy } = cloneMapIntoProject(draft, source, id, name);
+    const mode = args.events === "doors" || args.events === "none" ? args.events : "all";
+    let kept = copy.events.length;
+    let locked = 0;
+    if (mode !== "all") {
+      // 문 = 모든 페이지가 이동(transfer)·얼굴·대사만으로 된 이벤트(출입구·잠긴 집 안내 포함). 사람·연출·상자는 뺀다.
+      const doorish = (event: GameEvent): boolean => {
+        const pages = event.pages ?? [];
+        return pages.length > 0
+          && pages.some((page) => page.commands.some((command) => command.kind === "transfer"))
+          && pages.every((page) => page.commands.every((command) => command.kind === "transfer" || command.kind === "text" || command.kind === "changeFace"));
+      };
+      copy.events = mode === "none" ? [] : copy.events.filter(doorish);
+      kept = copy.events.length;
+      const lockText = typeof args.lockedDoorText === "string" ? args.lockedDoorText.trim() : "";
+      const open = new Set(Array.isArray(args.openDoorMapIds) ? args.openDoorMapIds.map(String) : []);
+      if (mode === "doors" && lockText) {
+        for (const event of copy.events) {
+          const targets = (event.pages ?? []).flatMap((page) => page.commands.flatMap((command) => command.kind === "transfer" ? [String((command as { mapId?: unknown }).mapId)] : []));
+          if (targets.some((target) => open.has(target))) continue;
+          const first = event.pages![0]!;
+          event.pages = [{ ...first, conditions: [], commands: [{ kind: "text", body: lockText } as Command] }];
+          locked += 1;
+        }
+      }
+    }
+    const note = mode === "all" ? "" : ` — 이벤트 ${mode === "none" ? "비움" : `문 ${kept}개만 남김${locked ? `(잠금 ${locked})` : ""}`}`;
+    return { summary: `맵 '${source.name}' 복제 → '${name}' (${id})${note}`, data: { mapId: id, events: kept, lockedDoors: locked } };
   },
 };
 

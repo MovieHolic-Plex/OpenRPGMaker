@@ -1,5 +1,5 @@
 import { BattleAdmissionError } from "@/project/battleAdmission";
-import type { Project } from "@/project/types";
+import type { Project, EndingContinueTo } from "@/project/types";
 import { getPlayerPreferences } from "@/player/playerPreferences";
 import { playCinematicSequence } from "@/player/cinematicSequence";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
@@ -449,7 +449,7 @@ function fitOneLine(element: HTMLElement, from: number, to: number, unit: string
   element.style.whiteSpace = "";
 }
 
-export function showEndingScreen(scene: PlaySceneContext, title: string, message: string, presentation?: EndingPresentation, endingId?: string): void {
+export function showEndingScreen(scene: PlaySceneContext, title: string, message: string, presentation?: EndingPresentation, endingId?: string, continueTo?: EndingContinueTo): void {
   const terminal = createTerminalScene(scene, "ending", title || endingText("ending.heading"));
   if (!terminal) return;
   terminal.root.dataset.tone = presentation?.tone ?? "warm";
@@ -528,7 +528,10 @@ export function showEndingScreen(scene: PlaySceneContext, title: string, message
     if (summary) meta.append(textNode("div", "ending-final-summary", summary));
     final.append(meta);
     const actions = textNode("div", "game-over-actions", "");
-    const button = terminalButton("return-title", endingText("ending.returnTitle"), () => { void exitTerminal(terminal, () => scene.returnToTitle()); });
+    // 다음 막으로 이어지는 엔딩 — 타이틀 대신 그 맵으로 옮겨 이야기를 잇는다(EndingDef.continueTo).
+    const button = continueTo
+      ? terminalButton("continue-next", continueTo.label || endingText("ending.nextAct"), () => { void exitTerminal(terminal, () => { void scene.transferTo({ mapId: continueTo.mapId, x: continueTo.x, y: continueTo.y, direction: continueTo.direction ?? "down", fade: "black" }); }); })
+      : terminalButton("return-title", endingText("ending.returnTitle"), () => { void exitTerminal(terminal, () => scene.returnToTitle()); });
     actions.append(button); final.append(actions); terminal.root.append(final);
     const fitFinal = (): void => {
       if (!final.isConnected || terminal.root.dataset.monsterStyle === "emerald") return;

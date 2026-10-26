@@ -946,6 +946,17 @@ function assertFiniteNumberInRange(label: string, value: unknown, min: number, m
   assert(result >= min && result <= max, `${label} must be between ${min} and ${max}.`);
 }
 
+/** EndingDef.continueTo — 엔딩 뒤 다음 막으로 옮길 맵·칸. */
+export function validateEndingContinueTo(value: unknown, label = "ending.continueTo"): void {
+  const target = requireRecord(label, value);
+  requireOnlyFields(label, target, ["mapId", "x", "y", "direction", "label"]);
+  requireNonBlankString(`${label}.mapId`, target.mapId);
+  requireNumber(`${label}.x`, target.x);
+  requireNumber(`${label}.y`, target.y);
+  if (target.direction !== undefined) assert(["up", "down", "left", "right"].includes(target.direction as string), `${label}.direction is invalid.`);
+  if (target.label !== undefined) { requireString(`${label}.label`, target.label); assert((target.label as string).length <= 24, `${label}.label is too long.`); }
+}
+
 export function validateEndingPresentation(value: unknown, label = "ending.presentation"): void {
   const settings = requireRecord(label, value);
   requireOnlyFields(label, settings, ["tone", "backgroundResourceId", "musicResourceId", "credits", "kicker", "badge", "finalTitle", "portraits"]);

@@ -804,7 +804,14 @@ export interface EndingDef {
   priority: number;
   epilogue?: Record<string, unknown>[];
   presentation?: import("../cinematicSettings").EndingPresentation;
+  /**
+   * 막·장 끝 엔딩이 게임을 끝내지 않고 다음 막으로 이어질 때 — 마지막 화면 버튼이 「다음 막으로」가 되어
+   * 타이틀 대신 이 맵·칸으로 옮긴다(엔딩 기록·클리어 보고는 그대로 남는다). 비우면 타이틀로 돌아간다.
+   */
+  continueTo?: EndingContinueTo;
 }
+
+export interface EndingContinueTo { mapId: string; x: number; y: number; direction?: "up" | "down" | "left" | "right"; label?: string }
 
 export type StoryFlagKind = "switch" | "variable";
 
