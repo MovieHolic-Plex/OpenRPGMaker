@@ -6,6 +6,7 @@ import { applySaveSnapshot, createSaveSnapshot } from "@/player/saveSlots";
 import { findChasePath, nextChaseDecision, type ChaseRuntimeState } from "@/player/chaseAi";
 import { addFollowerToSession, followerPositions, recordFollowerPlayerStep } from "@/project/followers";
 import { runSceneTest } from "@/testing/sceneTestRunner";
+import { startOnRetiredCombinedTown } from "./support/retiredEasyRpgTilesets";
 import {
   createHorrorPhase5Fixture,
   PHASE5_CHASER_ID,
@@ -15,7 +16,8 @@ import {
 
 describe("chase pathfinding", () => {
   it("A*는 벽 사이 경로를 우회해 플레이어 쪽 경로를 찾는다", () => {
-    const project = createBlankProject();
+    // TILE.* 는 합본 마을 번호 — 2026-10-07 정리 뒤 기본이 beodeul_city 라 시작 맵을 합본 마을에 둔다.
+    const project = startOnRetiredCombinedTown(createBlankProject());
     const map = project.maps[project.startMapId];
     map.lowerTiles.fill(TILE.GRASS);
     for (const y of [1, 2, 3]) map.lowerTiles[y * map.width + 3] = TILE.WATER;
@@ -28,7 +30,8 @@ describe("chase pathfinding", () => {
   });
 
   it("시야 밖에서는 대기하고 giveUpRange 밖에서는 추격을 해제한다", () => {
-    const project = createBlankProject();
+    // TILE.* 는 합본 마을 번호 — 2026-10-07 정리 뒤 기본이 beodeul_city 라 시작 맵을 합본 마을에 둔다.
+    const project = startOnRetiredCombinedTown(createBlankProject());
     const map = project.maps[project.startMapId];
     map.lowerTiles.fill(TILE.GRASS);
     const mover: ChaseRuntimeState = { timer: 999, moveIntervalMs: 0 };

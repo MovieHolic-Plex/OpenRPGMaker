@@ -9,13 +9,16 @@ import { isPassable } from "@/project/collision";
 import { createBlankProject } from "@/project/defaults";
 import { COMBINED_TOWN_TILESET_ID, TILE } from "@/project/defaults/constants";
 import { COMBINED_TOWN_HARNESS_PREFIX } from "@/project/tilesetHarness/combinedTownGroups";
+import { startOnRetiredCombinedTown } from "./support/retiredEasyRpgTilesets";
 
 const MAP_ID = "map_blank_start";
 const CONIFER_TOP = 260;
 const WALL_GROUP_ID = `${COMBINED_TOWN_HARNESS_PREFIX}plaster-wall-9slice`;
 
 function context(): ToolContext {
-  return { project: createBlankProject() };
+  // 재료 이름(모래·물)·벽 9분할 그룹·TILE.* 는 합본 마을 칩셋 기준이다 — 2026-10-07 정리 뒤 기본이 beodeul_city 라
+  // 옛 저장본처럼 시작 맵을 합본 마을에 둔다.
+  return { project: startOnRetiredCombinedTown(createBlankProject()) };
 }
 function lowerAt(ctx: ToolContext, x: number, y: number): number {
   const map = ctx.project.maps[MAP_ID];
