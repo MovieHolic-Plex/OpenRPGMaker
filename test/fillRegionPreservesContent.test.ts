@@ -146,11 +146,12 @@ describe("fill_region — 남의 것을 지우지 않는다", () => {
   it("벽 틈 메움으로 요청 rect 밖 칸이 늘면 요약에 그 수를 밝힌다", () => {
     const ctx = context();
     const map = ctx.project.maps[MAP_ID];
-    map.lowerTiles[5 * map.width + 12] = wallTile(ctx);
+    // 혼자 선 한 칸은 벽으로 치지 않는다(wallFlush e0be8616a2) — 이어진 벽 줄(12,4~6)을 세운다. 틈은 rect 오른쪽 세 줄(11,4~6).
+    for (const y of [4, 5, 6]) map.lowerTiles[y * map.width + 12] = wallTile(ctx);
     expect(isPassable(ctx.project, map, 12, 5)).toBe(false);
     const result = runTool(ctx, "fill_region", { mapId: MAP_ID, rect: { x: 5, y: 4, w: 6, h: 3 }, material: "모래" });
     expect(result.ok, result.summary).toBe(true);
     expect(lowerAt(ctx, 11, 5), "틈 칸 (11,5)").not.toBe(TILE.GRASS);
-    expect(result.summary).toContain("벽 틈 메움 1칸");
+    expect(result.summary).toContain("벽 틈 메움 3칸");
   });
 });

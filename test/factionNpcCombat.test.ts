@@ -17,6 +17,9 @@ import { normalizeEnemyRecord } from "@/project/databaseEnemyTroopRecordModel";
 import type { PlaySceneContext } from "@/player/playSceneTypes";
 import type { EnemyActionProfile, GameMap, Project } from "@/project/types";
 
+// 런타임은 Phaser 를 전역으로 쓴다(Phaser 4 이주 d7f9e4bb82 의 setTintMode(Phaser.TintModes.FILL)). node 에는 전역이 없으므로 쓰는 값만 둔다.
+vi.stubGlobal("Phaser", { TintModes: { FILL: 1 }, Math: { DegToRad: (degrees: number) => (degrees * Math.PI) / 180 } });
+
 const MELEE: EnemyActionProfile = {
   contactDamage: 5,
   moveIntervalMs: 100,
