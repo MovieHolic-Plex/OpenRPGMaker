@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { runTool } from "@/editor/tools";
 import { createBlankProject, DEFAULT_ITEM_ID, TILE } from "@/project/defaults";
 import type { GameEvent, GameMap, Project } from "@/project/types";
+import { startOnRetiredCombinedTown } from "./support/retiredEasyRpgTilesets";
 import {
   createGalleryPhase4Fixture,
   GALLERY_ENDING_ID,
@@ -743,7 +744,8 @@ describe("compile_puzzle", () => {
     expect(itemGate.ok).toBe(false);
     expect(itemGate.issues?.[0]?.message).toContain("DB에 존재하지 않습니다");
 
-    const openPlateCtx = { project: createBlankProject() };
+    // TILE.WATER 는 합본 마을 번호다 — 2026-10-07 정리 뒤 기본이 beodeul_city 라 옛 저장본처럼 시작 맵을 합본 마을에 둔다.
+    const openPlateCtx = { project: startOnRetiredCombinedTown(createBlankProject()) };
     const openPlateMap = startMap(openPlateCtx.project);
     openPlateMap.lowerTiles[2 + 2 * openPlateMap.width] = TILE.WATER;
     const openPlate = runTool(openPlateCtx, "compile_puzzle", {
@@ -757,10 +759,11 @@ describe("compile_puzzle", () => {
     expect(openPlate.ok).toBe(true);
     expect(openPlate.diff?.warnings.some((warning) => warning.includes("위치 자동 조정"))).toBe(true);
 
-    const blockedPlateCtx = { project: createBlankProject() };
+    const blockedPlateCtx = { project: startOnRetiredCombinedTown(createBlankProject()) };
     const blockedPlateMap = startMap(blockedPlateCtx.project);
-    for (let y = 0; y <= 5; y += 1) {
-      for (let x = 0; x <= 5; x += 1) blockedPlateMap.lowerTiles[x + y * blockedPlateMap.width] = TILE.WATER;
+    // 자동 조정은 반경 5칸까지 찾는다(nearestPassableCell, #2894) — (2,2) 둘레 반경 5칸을 모두 물로 막는다.
+    for (let y = 0; y <= 7; y += 1) {
+      for (let x = 0; x <= 7; x += 1) blockedPlateMap.lowerTiles[x + y * blockedPlateMap.width] = TILE.WATER;
     }
     const blockedPlate = runTool(blockedPlateCtx, "compile_puzzle", {
       mapId: blockedPlateMap.id,
