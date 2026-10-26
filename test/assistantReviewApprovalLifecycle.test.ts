@@ -10,7 +10,7 @@ import { getMapEditHistoryState, resetMapEditHistory, undoMapEdit } from "@/edit
 import { store } from "@/project/store";
 import { createBlankProject } from "@/project/defaults";
 import { installFakeDom } from "./fakeDom";
-import { installMemoryProjectSession } from "./support/projectSession";
+import { installElectronBridgeSession } from "./support/electronBridgeSession";
 import { fixedDeclarer } from "./intentFixture";
 import { independentReviewPayload } from "./independentReviewFixture";
 
@@ -169,10 +169,10 @@ describe("review approval ownership", () => {
     const replace = vi.spyOn(store, "replace");
 
     // When storage recovers, exercise the real save/read proof through the project repository port.
-    // (The LegacyDb PostgREST adapter this used to stub over fetch is gone; the store now reaches storage only
-    // through the repository port — Electron/host bridge or this in-memory adapter with a durable target.)
+    // (The LegacyDb PostgREST adapter this used to stub over fetch is gone; the store reaches storage only through
+    // the repository port. This is the Electron folder bridge over an async in-test wire, the shipped path.)
     vi.useFakeTimers(); // Disable unrelated autosave, not the proof's explicit flush/read.
-    const storage = installMemoryProjectSession();
+    const storage = await installElectronBridgeSession({ projectDir: "/tmp/oprn-review-proof", projectId: "review-proof" });
     disposeStorage = () => storage.dispose();
     store._setPersistedBaselineForTest(null);
     store._setPersistenceStateForTest({ loaded: true, remotePersistenceEnabled: true, disabledReason: null });
@@ -184,6 +184,7 @@ describe("review approval ownership", () => {
     expect(f.reviewCalls()).toBe(0);
     expect(replace).not.toHaveBeenCalled();
     expect(store.getCurrent()).toBe(applied);
-    expect(storage.repository.rows.has(storage.target.projectId)).toBe(true);
+    expect(storage.calls.save).toBeGreaterThan(0);
+    expect(storage.storedSerialized()).not.toBeNull();
   });
 });
