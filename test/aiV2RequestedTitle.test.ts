@@ -7,6 +7,9 @@ describe("J71/J73 requested title", () => {
     expect(requestedTitle("짧은 공포 탐험 게임. 제목은 「검은 장미 저택」. 주인공…")).toBe("검은 장미 저택");
     expect(requestedTitle("타이틀: 『별의 끝』")).toBe("별의 끝");
     expect(requestedTitle("밤의 학교 공포 게임을 만들어 줘")).toBeUndefined();
+    expect(requestedTitle("부제목은 「A」")).toBeUndefined();
+    expect(requestedTitle("책 제목은 「일기」")).toBeUndefined();
+    expect(requestedTitle("제목은 「A」 말고 다른 걸로")).toBeUndefined();
   });
   it("blocks a different title and passes the requested one", () => {
     const p = createBlankProject();
