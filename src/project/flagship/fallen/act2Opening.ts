@@ -968,7 +968,8 @@ function northFortress(project: Project, exec: Exec, hubId: string): void {
   const cells = FORT.rooms.find((r) => r.id === "cells");
   if (!cells) throw new Error("[fallen-star act2] 요새 감방이 없다");
   FORT.cell = { x: cells.x + 1, y: cells.y + cells.h - 2 };
-  exec(project, "set_scene_mood", { mapId: FS2_FORTRESS_ID, applyMode: "map", lighting: { ambient: 0.55, color: "#40485a" } });
+  // 날씨는 맵을 넘어 남는다 — 새벽샘 안개가 요새 안까지 따라 들어왔다(QA). 요새는 맑게.
+  exec(project, "set_scene_mood", { mapId: FS2_FORTRESS_ID, applyMode: "map", weather: { kind: "none" }, lighting: { ambient: 0.55, color: "#40485a" } });
   // 돌 요새 안 싸움 — 풀밭 배경 대신 돌 배경(측면 전투 겹 배경 종류에 성채가 없어 동굴 돌벽이 가장 가깝다).
   exec(project, "set_map_properties", { mapId: FS2_FORTRESS_ID, battleBackground: "battle-scenery-cave" });
   // 순찰 기사 — 광장 통금 순찰대와 같은 칩·같은 무리. 안뜰·계단 홀에 하나씩.
@@ -1231,6 +1232,8 @@ function frostford(project: Project, exec: Exec, hubId: string): void {
     if (t.kind === "transfer") { t.x = innFront.x; t.y = innFront.y; t.direction = "down"; }
   }
   exec(project, "set_map_properties", { mapId: FS2_FROST_INN_ID, bgm: { mode: "custom", resourceId: "cc0-bgm-rtp-rst-001" } });
+  // 바깥 눈발·푸른 빛이 실내까지 남지 않게 — 여관은 맑고 따뜻하게.
+  exec(project, "set_scene_mood", { mapId: FS2_FROST_INN_ID, applyMode: "map", weather: { kind: "none" }, lighting: { ambient: 1, color: "#ffffff" } });
   // 여관 주인 — 썰매를 되찾아 주면 공짜. 별빛 결정은 홀 안쪽.
   exec(project, "place_npc", {
     mapId: FS2_FROST_INN_ID, id: "ev_fs2_frost_innkeeper", name: "여관 주인 오사", x: FS2_FROST.innExit.x + 3, y: FS2_FROST.innExit.y - 4, movement: "fixed",
