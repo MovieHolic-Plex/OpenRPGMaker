@@ -3,11 +3,12 @@ import { runTool } from "@/editor/tools/toolRunner";
 import type { ToolContext, ToolResult } from "@/editor/tools/types";
 import { inMapBounds, lineCells, type Point } from "@/editor/tools/mapHelpers";
 import { DIRT_ROAD_TILE } from "@/project/defaults/chipsetMapping";
-import { TILE } from "@/project/defaults/constants";
+import { COMBINED_TOWN_TILESET_ID, TILE } from "@/project/defaults/constants";
 import { shapeRoadAround, isRoadTile } from "@/project/defaults/roadAutotile";
 import { createBlankProject } from "@/project/defaults";
 import { COMBINED_TOWN_HARNESS_PREFIX } from "@/project/tilesetHarness/combinedTownGroups";
 import type { GameMap } from "@/project/types";
+import { withRetiredEasyRpgTilesets } from "./support/retiredEasyRpgTilesets";
 
 const CONIFER_GROUP_ID = `${COMBINED_TOWN_HARNESS_PREFIX}conifer-tree`;
 
@@ -22,8 +23,10 @@ type ScatterData = {
 };
 
 function context(width = 30, height = 30): { readonly ctx: ToolContext; readonly mapId: string } {
-  const ctx: ToolContext = { project: createBlankProject() };
-  const created = runTool(ctx, "create_map", { id: "map_natural_tools", name: "자연 툴", width, height });
+  // These cases target the combined-town harness (conifer group, bench tiles 327/328/358/388, dirt road). That sheet is retired
+  // from new projects, so restore it the way a pre-purge project carried it and build the map on it.
+  const ctx: ToolContext = { project: withRetiredEasyRpgTilesets(createBlankProject()) };
+  const created = runTool(ctx, "create_map", { id: "map_natural_tools", name: "자연 툴", width, height, tilesetId: COMBINED_TOWN_TILESET_ID });
   expect(created.ok, created.summary).toBe(true);
   return { ctx, mapId: "map_natural_tools" };
 }

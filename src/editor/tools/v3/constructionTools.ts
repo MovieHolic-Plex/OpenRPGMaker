@@ -1128,9 +1128,17 @@ const fillRegion: ToolDefinition = {
     const reshapes = autotile !== undefined && autotile !== null
       && (autotileGroupLayer(autotile) === "upper" ? layerNo === 3 : layerNo === 1 || layerNo === 2);
     const reshapeView = reshapes ? autotileLayerView(map, layerNo) : null;
+    // 그래도 완성된 집 칸과, 다른 층의 구조물(지붕 등)이 덮은 칸은 이웃 재계산이 고치지 않는다 — 연결 판정에는 그대로 쓰인다.
+    // 재료 칸이라는 이유만으로 열어 두면 집 안 모래·지붕 밑 모래가 다시 깎였다(houseProtectionFill 이웃 보호 계약).
+    const otherLayerTiles = layerNo === 3 ? map.lowerTiles : map.upperTiles;
+    const canReshape = (x: number, y: number): boolean => {
+      if (houses.has(pointKey({ x, y }))) return false;
+      if (protectedReason({ x, y }) === null) return true;
+      return autotileMembers.has(reshapeView!.lowerTiles[y * map.width + x]!)
+        && structureGroupNameForTile(tileset, otherLayerTiles[y * map.width + x]) === null;
+    };
     const reshaped = autotile && reshapeView
-      ? resolveAutotile(autotile, exit.cells, reshapeView, (x, y) => autotileMembers.has(reshapeView.lowerTiles[y * map.width + x]!)
-        || protectedReason({ x, y }) === null) : 0;
+      ? resolveAutotile(autotile, exit.cells, reshapeView, canReshape) : 0;
     // 1층을 채운 칸은 2층 장식도 비웠으므로 둘레 2층 장식의 가장자리를 다시 잡는다(2층이 있는 맵만).
     if (layerNo === 1 && map.lowerOverlayTiles) {
       const overlay = autotileLayerView(map, 2);

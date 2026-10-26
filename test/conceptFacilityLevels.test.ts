@@ -2,12 +2,14 @@
 import { describe, expect, it } from "vitest";
 import { conceptFacilityLevels, layoutConceptFacility } from "@/editor/conceptBundleResolve";
 import { createBlankProject } from "@/project/defaults";
+import { ATLAS_BIOME_INTERIOR_ID } from "@/project/defaults/atlasBiomeInterior";
 import { cloneConceptBundle } from "@/project/defaults/scratchInnBundle";
 import { SCRATCH_INN_BUNDLE } from "./fixtures/legacyConceptInn";
 import { validateTileset } from "@/project/io/shapeResourceFields";
 import type { ConceptBundleRecord } from "@/project/types";
 
-const INTERIOR = "easyrpg_chipset_interior";
+// Concept bundles are validated on the current default interior, the hand-pixel v5 sheet (openwiki/atlas-biome-interior.md).
+const INTERIOR = ATLAS_BIOME_INTERIOR_ID;
 
 /** 여관을 두 층으로: 식당·홀(dining)은 1층, 복도·침실은 2층. 계단은 홀(올라감)과 복도(내려감) 양쪽에. */
 function twoStoryInn(): ConceptBundleRecord {

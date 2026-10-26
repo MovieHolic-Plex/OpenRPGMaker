@@ -185,7 +185,9 @@ describe("house kit — 창문 자동 배치", () => {
     expect(result.ok, result.reason).toBe(true);
     expect(result.doorAt).toEqual({ x: 6, y: 7 });
 
-    expect(map.upperTiles[6 * map.width + 3]).toBe(87);
+    // Window slots follow windowSlotsInRun/placeWindowsOnWallRuns (src/editor/houseKit.ts): centred in each wall run beside the door,
+    // upper floors aligned to the ground-floor windows and door column. Behaviour as of 0d4f13e7c8; the old columns (3, 9) predate it.
+    expect(map.upperTiles[6 * map.width + 4]).toBe(87);
     expect(map.upperTiles[6 * map.width + 9]).toBe(87);
     for (const x of [5, 6, 7]) expect(map.upperTiles[6 * map.width + x]).toBe(E);
   });
@@ -195,12 +197,17 @@ describe("house kit — 창문 자동 배치", () => {
     const result = stampRectHouseKit(map, { x: 2, y: 2, width: 10, stories: 2, roofBodyRows: 1, kitId: "blue-stone" });
     expect(result.ok, result.reason).toBe(true);
 
+    // Window slots follow windowSlotsInRun/placeWindowsOnWallRuns (src/editor/houseKit.ts): centred in each wall run beside the door,
+    // upper floors aligned to the ground-floor windows and door column. Behaviour as of 0d4f13e7c8; the old columns (3, 9) predate it.
+    expect(result.doorAt).toEqual({ x: 7, y: 9 });
     for (const y of [6, 8]) {
-      expect(map.upperTiles[y * map.width + 3], `window left y=${y}`).toBe(87);
-      expect(map.upperTiles[y * map.width + 9], `window right y=${y}`).toBe(87);
-      for (const x of [6, 7, 8]) expect(map.upperTiles[y * map.width + x], `door skip (${x},${y})`).toBe(E);
+      expect(map.upperTiles[y * map.width + 4], `window left y=${y}`).toBe(87);
+      expect(map.upperTiles[y * map.width + 10], `window right y=${y}`).toBe(87);
     }
-    for (const x of [3, 9]) expect(map.upperTiles[7 * map.width + x], `floor separator x=${x}`).toBe(E);
+    for (const x of [6, 7, 8]) expect(map.upperTiles[8 * map.width + x], `door skip (${x},8)`).toBe(E);
+    // The upper floor puts a window over the door column.
+    expect(map.upperTiles[6 * map.width + 7], "upper window over the door").toBe(87);
+    for (const x of [4, 10]) expect(map.upperTiles[7 * map.width + x], `floor separator x=${x}`).toBe(E);
   });
 
   it("windows:false면 창문 타일을 추가하지 않는다", () => {
@@ -224,11 +231,12 @@ describe("house kit — 창문 자동 배치", () => {
 
   it("창문 위치의 상위 레이어에 기존 값이 있으면 덮지 않는다", () => {
     const map = freshMap();
-    map.upperTiles[6 * map.width + 3] = 260;
+    // Occupy the left window slot (column 4 per windowSlotsInRun, see the first window case).
+    map.upperTiles[6 * map.width + 4] = 260;
     const result = stampRectHouseKit(map, { x: 2, y: 2, width: 10, stories: 1, roofBodyRows: 1, kitId: "blue-stone" });
     expect(result.ok, result.reason).toBe(true);
-    expect(map.upperTiles[6 * map.width + 3]).toBe(260);
-    expect(map.upperTiles[6 * map.width + 9]).toBe(87);
+    expect(map.upperTiles[6 * map.width + 4]).toBe(260);
+    expect(map.upperTiles[6 * map.width + 10]).toBe(87);
   });
 
   it("문 이벤트 옵션은 Object1 그래픽과 열림 프레임→transfer 명령을 만든다", () => {

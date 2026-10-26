@@ -4,7 +4,6 @@
 import { cooperativeNodeYield } from "./cooperativeNodeYield";
 import { fixedDeclarer } from "./intentFixture";
 import { approvedReviewResponse, independentReviewPayload, imageDeliveryForRequest } from "./independentReviewFixture";
-import type { ReviewInput } from "@/ai/independentReview";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { getMapEditHistoryEntries, resetMapEditHistory } from "@/editor/mapEditHistory";
 import { store } from "@/project/store";
@@ -12,6 +11,7 @@ import type { Project } from "@/project/types";
 import type { SessionEvent, ToolImageRenderer } from "@/ai/assistantSession";
 import { getTool } from "@/editor/tools";
 import * as applyStore from "@/editor/tools/applyChangesetToStore";
+import { withRetiredCombinedTownMaps } from "./support/retiredCombinedTownMaps";
 
 const MILESTONE_TEST_ENV = {
   VITE_LEGACY_DB_ANON_KEY: "test-anon-key",
@@ -567,18 +567,11 @@ describe("마일스톤 자동 적용 (todo 4)", () => {
     const project = createBlankProject();
     initMilestoneStore(project);
     const baseline = structuredClone(store.getCurrent());
-    const reviews: ReviewInput[] = [];
     const steps = threeMilestoneSteps();
     let index = 0;
     const chat = async (_config: unknown, request: ChatRequest): Promise<ChatResult> => {
-      const review = independentReviewPayload(request);
-      const approval = approvedReviewResponse(request);
-      if (review && approval) {
-        reviews.push(review);
-        expect(store.getCurrent()).toEqual(baseline);
-        expect(review.requiredProblems).toEqual([]);
-        return approval;
-      }
+      // 2026-09-17 독립 검수(LLM) 해체 — 검수는 결정적 검사로만 난다(파일 머리 주석). 검수 요청이 오면 계약 위반이다.
+      if (independentReviewPayload(request)) throw new Error("검수 모델은 더 이상 호출되지 않아야 한다");
       if (index >= steps.length) milestoneExhausted();
       return steps[index++]!;
     };
@@ -591,20 +584,29 @@ describe("마일스톤 자동 적용 (todo 4)", () => {
     }, undefined, { autonomous: true });
     expect(result.stoppedReason, result.error).toBe("final");
     expect(result.appliedCalls?.map(call => call.args.title)).toEqual(["t1", "t2", "t3"]);
-    expect(reviews).toHaveLength(1);
-    expect(reviews[0]?.originalRequest).toBe("타이틀을 3단계로 개선해줘");
-    for (const title of ["t1", "t2", "t3"]) expect(reviews[0]?.toolResults).toContainEqual(expect.objectContaining({
+    // 옛 LLM 검수 요청 1건 단언을 대신한다: 결정적 검사(deterministic-review)는 모델 호출이 없어 드라이버 턴마다 한 번씩
+    // (여기선 3턴 → 3번) 돌고 모두 승인한다. 적용은 여전히 마지막 승인 뒤 한 번이다(아래 milestone_applied 1건).
+    expect(result.review?.status).toBe("approved");
+    const reviewEvents = events.filter((event): event is Extract<SessionEvent, { type: "result_review" }> => event.type === "result_review");
+    expect(reviewEvents.length).toBeGreaterThan(0);
+    expect(reviewEvents.every((event) => event.review.status === "approved")).toBe(true);
+    expect(milestoneStatusTexts(session).filter((t) => t.startsWith("deterministic-review "))).toHaveLength(reviewEvents.length);
+    for (const title of ["t1", "t2", "t3"]) expect(result.appliedCalls).toContainEqual(expect.objectContaining({
       name: "set_title_screen", args: { title }, result: expect.objectContaining({ ok: true }),
     }));
 
     // 사용자 조작 없이 스토어에 적용 완료.
     expect(store.getCurrent().meta?.title).toBe("t3");
     // All completed items are one reviewed transaction, not three unreviewed writes.
-    expect(commitCalls.filter((url) => url.includes("/rest/v1/project_commits"))).toHaveLength(1);
-    expect(commitCalls.filter((url) => url.includes("/rest/v1/project_changes"))).toHaveLength(1);
+    // 커밋 row 는 더 이상 VITE_LEGACY_DB_* + /rest/v1/project_commits fetch 로 가지 않는다 — 그 Supabase 전송은 a931de829 에서
+    // 빠졌고 정본 경로는 projectRepository().commits.record 다(applyChangesetToStore.test.ts 머리 주석). 한 거래라는 계약은
+    // 아래 undo 스냅샷 1개·milestone_applied 1건이 잰다. 은퇴한 전송이 다시 불리지 않는지만 본다.
+    expect(commitCalls.filter((url) => url.includes("/rest/v1/project_commits") || url.includes("/rest/v1/project_changes"))).toEqual([]);
     expect(getMapEditHistoryEntries()).toHaveLength(1);
+    // 마지막 검사 바로 뒤에 적용이 한 번 온다.
     expect(events.filter(event => event.type === "result_review" || event.type === "milestone_applied")
-      .map(event => event.type)).toEqual(["result_review", "milestone_applied"]);
+      .map(event => event.type).slice(-2)).toEqual(["result_review", "milestone_applied"]);
+    expect(events.filter(event => event.type === "milestone_applied")).toHaveLength(1);
     expect(events.find(event => event.type === "milestone_applied")).toMatchObject({ toolCount: 3 });
     const audits = milestoneStatusTexts(session);
     expect(audits.filter((t) => t.includes("agent_run:milestone-applied"))).toHaveLength(1);
@@ -659,7 +661,9 @@ describe("마일스톤 자동 적용 (todo 4)", () => {
     const result = await session.sendUserMessage(`${ORCH_GOAL}이벤트 영역을 정리해줘`, (event) => { events.push(event); }, undefined, { autonomous: true });
 
     // remove_event도 같은 마일스톤 적용 경로를 타며 전체 프로젝트 undo 스냅샷을 남긴다.
-    expect(JSON.stringify(store.getCurrent())).toBe(before);
+    // 내용 비교다 — 적용 경로가 맵 객체를 다시 쓰면서 키 순서(events·terrainDesign)가 앞으로 옮겨질 뿐 값은 같다
+    // (CI 40281674433: 두 직렬화는 길이 77,368,129 로 같고 JSON 으로 읽으면 동일). 문자열 비교는 키 순서까지 묶었다.
+    expect(store.getCurrent()).toEqual(JSON.parse(before));
     expect(getMapEditHistoryEntries()).toHaveLength(1);
     expect(events.some((event) => event.type === "proposal_paused")).toBe(false);
     expect(events.some((event) => event.type === "milestone_applied")).toBe(true);
@@ -667,7 +671,8 @@ describe("마일스톤 자동 적용 (todo 4)", () => {
     expect(result.review?.status).toBe("approved");
     expect(result.proposedCalls).toEqual([]);
     expect(result.appliedCalls?.map(call => call.name)).toEqual(["upsert_event", "remove_event"]);
-  }, 30000);
+    // 자율 마일스톤 적용 경로라 (a)·(c-3) 과 같은 120초 예산 — CI 40289940108 에서 30초에 끊겼다(실행 40.7초).
+  }, 120000);
 
   it("(b-2) clear_region의 파괴 표식은 더 이상 별도 policy 게이트를 만들지 않는다", () => {
     const call = {
@@ -811,7 +816,8 @@ describe("마일스톤 자동 적용 (todo 4)", () => {
     expect(secondEvents.some((event) => event.type === "milestone_applied" && event.title === "다음 적용")).toBe(true);
     expect(secondEvents.some((event) => event.type === "proposal_paused")).toBe(false);
     expect(getMapEditHistoryEntries()).toHaveLength(1);
-  }, 30000);
+    // 두 자율 턴이 각자 결정적 검사(run_lint 기준선+초안)를 돈다 — (a)와 같은 120초 예산. CI 40281674433 에서 30초에 끊겼다.
+  }, 120000);
 });
 
 // ── 레이어 검증 게이트 + run-end 저장 증명(todo 5) ──────────────────────────
@@ -974,7 +980,8 @@ describe("레이어 검증(자문) + run-end 저장 증명 (todo 5)", () => {
     expect(completionCalls.filter(call => call.name === "play_walkthrough").map(call => call.args))
       .toEqual([{ scenario }, { scenario }]);
     expect(result.completionAssessment).toEqual(assessments.at(-1)?.assessment);
-    expect(lint.mock.calls.map(([checkedProject]) => checkedProject.meta.title)).toEqual(["t1", "t1", "t2", "t2", "t2"]);
+    // 결정적 검사는 기준선(적용 전 원본 「새 프로젝트」) → 초안(t2) 순으로 run_lint 를 두 번 부른다(lint error 재투입 테스트와 같은 계약).
+    expect(lint.mock.calls.map(([checkedProject]) => checkedProject.meta.title)).toEqual(["t1", "t1", "t2", "t2", "새 프로젝트", "t2", "t2"]);
     expect(lint.mock.calls.at(-1)?.[0]).toEqual(store.getCurrent());
     const audits = gateStatusTexts(session);
     expect(audits.filter((t) => t.includes("agent_run:verification-pass")).length).toBe(3);
@@ -1569,7 +1576,11 @@ describe("AssistantSession 툴콜 루프", () => {
       if (index >= steps.length) throw new Error("scripted chat exhausted");
       return steps[index++];
     };
-    const session = new AssistantSession(createBlankProject(), { yieldToUi: cooperativeNodeYield, config: ORCH_CONFIG, chat });
+    // 전체 카탈로그(약 189,000 토큰)는 창을 모르는 합성 id 의 128K 기본 창에 안 들어가서, 그때는 좁힌 목록(코어+발견 도구)이
+    // 나간다(sessionToolExposure.fullCatalogFitsWindow, 2026-10-02 실측). 이 테스트는 창이 충분할 때 실행 모델이 첫 쓰기 전에
+    // 전체 스키마를 받는지를 재므로 창이 분명한 모델 id 로 잰다(lint error 재투입 테스트·LARGE_REVIEW_CONFIG 와 같은 이유).
+    const config = { ...ORCH_CONFIG, model: "gemini-2.5-flash", liteModel: "gemini-2.5-flash-lite" };
+    const session = new AssistantSession(createBlankProject(), { yieldToUi: cooperativeNodeYield, config, chat });
     const phases: string[] = [];
 
     const result = await session.sendUserMessage(`${ORCH_GOAL}타이틀을 새 제목으로 바꿔줘`, (event) => {
@@ -1583,7 +1594,7 @@ describe("AssistantSession 툴콜 루프", () => {
     expect(result.assistantText).toContain(result.review!.summary);
     expect(result.proposedCalls.map((call) => call.name)).toEqual(["set_title_screen"]);
     // 플래너·첫 본문은 감독 모델, 쓰기가 시작된 뒤의 본문은 실행 모델. 결정적 검사는 모델을 부르지 않는다.
-    expect(seenModels).toEqual(["supervisor-model", "supervisor-model", "executor-model"]);
+    expect(seenModels).toEqual(["gemini-2.5-flash", "gemini-2.5-flash", "gemini-2.5-flash-lite"]);
     expect(phases).toEqual(["plan", "execute", "review"]);
     const reviewAudit = session.getAuditEntries().find(entry => entry.kind === "status" && entry.text.startsWith("deterministic-review "));
     expect(reviewAudit?.kind).toBe("status");
@@ -1603,7 +1614,9 @@ describe("AssistantSession 툴콜 루프", () => {
 
   it("결정적 검사가 lint error 를 발견하면 실행 모델로 한 번 재투입한 뒤 고친 판을 승인한다", async () => {
     const { AssistantSession, createBlankProject } = await load();
-    const project = createBlankProject();
+    // 칸 번호 421(길)·288(꽃)은 합본 마을 번호다. 2026-10-07 저작권 정리 뒤 빈 프로젝트는 버들항(beodeul_city)으로 시작하고,
+    // 버들항은 참고문서가 있어 읽기 전 paint_tiles 를 막는다(tilesetReferenceEvidence). 재투입 계약만 재도록 합본 마을 맵에서 돈다.
+    const project = withRetiredCombinedTownMaps(createBlankProject());
     const mapId = project.startMapId;
     const spec = {
       mapId,
