@@ -102,7 +102,8 @@ export function createProjectSuggestions(options: {
     }));
   };
   const tick = () => {
-    if (disposed) return;
+    // 문서가 걷힌 뒤(테스트 정리·창 닫힘) 남은 타이머가 DOM 을 만들지 않게 한다.
+    if (disposed || typeof document === "undefined") return;
     const snapshot = options.snapshot();
     if (paused) { if (pending) { generation++; pending.abort(); pending = null; } key = ""; renderKey = ""; return; }
     const candidates = inspect(snapshot);

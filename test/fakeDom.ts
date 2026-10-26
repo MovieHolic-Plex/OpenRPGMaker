@@ -40,6 +40,13 @@ const animationFrames = new Map<number, FrameRequestCallback>();
 let nextAnimationFrameId = 1;
 
 export class FakeNode {
+  // Node 상수 — 가짜 DOM 이 Node 전역을 FakeNode 로 바꾸므로 `Node.TEXT_NODE` 비교(domTranslator.sourceTextOf)가 여기를 본다.
+  static readonly ELEMENT_NODE = 1;
+  static readonly TEXT_NODE = 3;
+  static readonly COMMENT_NODE = 8;
+  static readonly DOCUMENT_FRAGMENT_NODE = 11;
+  /** 글자 노드는 3, FakeElement 는 1, 조각은 11. */
+  readonly nodeType: number = 3;
   readonly childNodes: FakeNode[] = [];
   parentNode: FakeNode | null = null;
 
@@ -65,6 +72,15 @@ export class FakeNode {
     return this.parentNode instanceof FakeElement ? this.parentNode : null;
   }
   private ownText = "";
+
+  /** Text.data — 글자 노드의 자기 글자. */
+  get data(): string {
+    return this.ownText;
+  }
+
+  set data(value: string) {
+    this.textContent = value;
+  }
 
   get firstChild(): FakeNode | null {
     return this.childNodes[0] ?? null;
@@ -300,10 +316,11 @@ function notifyValueMutation(target: FakeNode, type: "attributes" | "characterDa
 
 /** DocumentFragment — 붙지 않은 자식 목록. FakeNode.appendChild 가 자식만 옮긴다. */
 class FakeFragment extends FakeNode {
-  readonly nodeType = 11;
+  override readonly nodeType: number = 11;
 }
 
 export class FakeElement extends FakeNode {
+  override readonly nodeType: number = 1;
   checked = false;
   className = "";
   dataset: Record<string, string> = {};
