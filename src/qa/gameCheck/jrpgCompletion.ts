@@ -29,7 +29,8 @@ const COLLAPSE_WORDS = /붕괴|무너(?:져|지|진|뜨|졌)|폐허|멸망|몰�
 const RUIN_MAP_NAME = /붕괴|폐허|잔해|황폐|멸망|몰락|무너|ruin|collaps|wreck|devast/iu;
 /** 씨앗 시작 맵(버들항 어촌)의 지울 수 없는 표지 — 등대 건물. 이 맵이 어촌이라고 부르지 않는 이름으로 남아 있으면 다시 짓지 않은 것이다. */
 const SCAFFOLD_LANDMARK_KIT = "bd-pick-fishing-port-lighthouse";
-const HARBOR_MAP_NAME = /항|어촌|포구|해안|바닷|해변|등대|부두|선착|port|harbor|harbour|coast|fishing|seaside|beach|lighthouse/iu;
+// 「항」은 낱말 끝(버들항·북항)이나 항구·항만일 때만 항구로 본다 — 맨 「항」은 「저항군」「항상」까지 면제해 씨앗 어촌을 놓쳤다.
+const HARBOR_MAP_NAME = /항구|항만|항(?=$|[\s·,.)\]」』-])|어촌|포구|해안|바닷|해변|등대|부두|선착|port|harbor|harbour|coast|fishing|seaside|beach|lighthouse/iu;
 /** 시작 마을에서 말을 거는 인물의 최소 수 — 촌장 하나로는 마을이 아니다. */
 export const START_TOWN_MIN_TALKERS = 2;
 /** checkJrpg 경고 중 «끝내도 되나» 를 막는 전투 균형 코드. */
