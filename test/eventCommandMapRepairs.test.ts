@@ -45,7 +45,13 @@ function fixture() {
   const session = startSession(project, 12345);
   const positions = initialRuntimeEventPositions(map.events);
   const resource = (kind: "music" | "sound" | "backdrop") => {
-    const id = project.resourceProfiles.find(profile => profile.kind === kind)?.assetId;
+    let id = project.resourceProfiles.find(profile => profile.kind === kind)?.assetId;
+    // 2026-10-07 저작권 정리(#2335) 뒤 새 프로젝트에는 먼 배경 자원이 없다 — 명령은 id 를 그대로 싣기만
+    // 하므로(m2Runtime "Change Parallax Back") 등록된 배경 프로필 하나를 직접 둔다.
+    if (!id && kind === "backdrop") {
+      id = "backdrop_map_repair_fixture";
+      project.resourceProfiles.push({ kind: "backdrop", name: "map repair backdrop", assetId: id });
+    }
     if (!id) throw new Error(`Blank project lacks a ${kind} resource`);
     return id;
   };
