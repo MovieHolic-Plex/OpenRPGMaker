@@ -13,6 +13,7 @@ import { charsetFrameIndex, decodeCharsetFrameIndex } from "@/assets/easyrpgRtp"
 import type { Command, Condition, EventPage, GameEvent, GameMap, Project } from "@/project/types";
 import { FS_NAMES } from "../fallenStarStory";
 import { FS_SILVER_SPOON } from "./townLife";
+import { FS_KEEPER_SEAL } from "./battleItems";
 
 type Exec = (project: Project, name: string, args: Record<string, unknown>) => void;
 type Cell = { x: number; y: number };
@@ -138,6 +139,10 @@ const chip = (sprite: string, characterIndex: number, direction: Dir): Rec => ({
 /** 리노 — 제1막 초소 기사와 같은 칩(Actor1 #2, 파란 갑옷). */
 const RINO_CHIP: [string, number] = ["tex_easyrpg_charset_actor1", 2];
 
+/** 도구를 부를 때마다 맵 객체가 새로 바뀐다 — 이벤트는 그때그때 맵을 다시 찾아 붙인다(쥐고 있던 옛 객체에 붙이면 사라진다). */
+function addEv(project: Project, mapId: string, id: string, name: string, at: Cell, pages: EventPage[]): GameEvent {
+  return addEvent(M(project, mapId), id, name, at, pages);
+}
 function ensureSwitch(project: Project, id: string, name: string): void {
   if (!project.switches.some((s) => s.id === id)) project.switches.push({ id, name });
 }
@@ -323,10 +328,9 @@ function barracks(project: Project, exec: Exec): void {
   });
   // 북동 벽 사다리 — 광장 초소 뒷골목으로. 압수품을 되찾기 전엔 「짐부터」.
   exec(project, "stamp_object", { objectId: "kit:atlas_biome_interior/hand-interior:ship ladder", mapId: FS2_BARRACKS_ID, x: BARRACKS.ladder.x, y: BARRACKS.ladder.y });
-  const map = M(project, FS2_BARRACKS_ID);
-  (map as unknown as Rec).bgm = { mode: "custom", resourceId: "cc0-bgm-rtp-mys-002" };
+  (M(project, FS2_BARRACKS_ID) as unknown as Rec).bgm = { mode: "custom", resourceId: "cc0-bgm-rtp-mys-002" };
   const ladderId = "ev_fs2_barracks_ladder";
-  addEvent(map, ladderId, "광장으로 오르는 사다리", { x: BARRACKS.ladder.x, y: BARRACKS.ladder.y + 2 }, [
+  addEv(project, FS2_BARRACKS_ID, ladderId, "광장으로 오르는 사다리", { x: BARRACKS.ladder.x, y: BARRACKS.ladder.y + 2 }, [
     page(`${ladderId}_wait`, "짐부터", [], [
       narrate("위로 오르는 사다리다. 바깥 바람이 내려온다."),
       say(ELENA, "잠깐, 우리 짐. 저 금고에 있을 거야.\n빈손으로는 못 나가."),
@@ -340,7 +344,7 @@ function barracks(project: Project, exec: Exec): void {
   ]);
   // 막사 아래 계단(남쪽 입구) — 감방으로 돌아가는 길(도착 칸 바로 아래 줄).
   const back = "ev_fs2_barracks_down";
-  addEvent(map, back, "감방으로 내려가는 계단", { x: BARRACKS.entry.x, y: BARRACKS.entry.y + 1 }, [
+  addEv(project, FS2_BARRACKS_ID, back, "감방으로 내려가는 계단", { x: BARRACKS.entry.x, y: BARRACKS.entry.y + 1 }, [
     page(`${back}_p`, "계단", [], [transfer(FS2_CELL_ID, CELL.arrive, "down")], { priority: "below", trigger: { kind: "playerTouch" } }),
   ]);
 }
@@ -356,14 +360,13 @@ function hubNight(project: Project, exec: Exec, hubId: string): void {
     mapId: hubId, id: FS2_HUB_NIGHT_ID, name: "왕도 아스텔 · 통금의 밤",
     events: "doors", lockedDoorText: "통금이다. 문이 안에서 굳게 잠겨 있다.",
   });
-  const map = M(project, FS2_HUB_NIGHT_ID);
   exec(project, "set_scene_mood", {
     mapId: FS2_HUB_NIGHT_ID, applyMode: "map",
     lighting: { ambient: 0.7, color: "#0a1024", sources: [{ id: "lamp", at: { kind: "player" }, radius: 3, intensity: 0.45, color: "#9fb4ff" }] },
   });
-  (map as unknown as Rec).bgm = { mode: "custom", resourceId: "cc0-bgm-rtp-mys-002" };
+  (M(project, FS2_HUB_NIGHT_ID) as unknown as Rec).bgm = { mode: "custom", resourceId: "cc0-bgm-rtp-mys-002" };
   const arriveId = "ev_fs2_hub_arrive";
-  addEvent(map, arriveId, "뚜껑 문으로 나옴", { x: 0, y: 0 }, [
+  addEv(project, FS2_HUB_NIGHT_ID, arriveId, "뚜껑 문으로 나옴", { x: 0, y: 0 }, [
     page(`${arriveId}_p`, "광장의 밤", [sw(SW_OUT), sw("sw_fs2_hub_arrived", false)], [
       setSw("sw_fs2_hub_arrived"),
       bgm("cc0-bgm-rtp-mys-002"),
@@ -391,10 +394,10 @@ const PATROLS: { at: Cell; axis: "horizontal" | "vertical"; length: number }[] =
   { at: { x: 27, y: 25 }, axis: "vertical", length: 3 },
   { at: { x: 14, y: 21 }, axis: "horizontal", length: 4 },
 ];
-/** 창틈 주민 — 문간에 서서 길을 알려 준다. */
-const MIRE_AT: Cell = { x: 13, y: 12 };
-const TOBY_AT: Cell = { x: 33, y: 27 };
-const MARTA_AT: Cell = { x: 50, y: 32 };
+/** 창틈 주민 — 문간에 서서 길을 알려 준다(place_npc 가 통행 칸으로 옮긴 자리 그대로). */
+const MIRE_AT: Cell = { x: 12, y: 12 };
+const TOBY_AT: Cell = { x: 34, y: 25 };
+const MARTA_AT: Cell = { x: 49, y: 32 };
 const MARTA = "여관 주인 마르타";
 const MIRE = "빵집 아주머니 미레";
 const TOBY = "꼬마 토비";
@@ -477,8 +480,138 @@ function curfewHub(project: Project, exec: Exec, hubId: string): void {
 }
 
 // ════════════════════════════════════════════════════════════════════
+// 6. B3 승강구로 들어간 천문대 — 광장 우물 → 서고 밑 승강구 → (1막 승강 장치를 거꾸로) 천문대, 하넬
+// ════════════════════════════════════════════════════════════════════
 
-export interface FallenAct2Ids { hub: string }
+export const FS2_SHAFT_ID = "fs2_well_shaft";
+export const FS2_OBS_NIGHT_ID = "fs2_obs_night";
+const SW_HANEL = "sw_fs2_hanel_told";
+const HANEL = "천문대장 하넬";
+/** 광장 우물(2×2 그림의 아랫줄) — 앞(y29)에서 위를 보고 조사. */
+const WELL: Cell[] = [{ x: 40, y: 28 }, { x: 41, y: 28 }];
+const WELL_FRONT: Cell = { x: 40, y: 29 };
+const SHAFT_PLAN = [
+  "############",
+  "#..........#",
+  "#..........#",
+  "#..........#",
+  "#..........#",
+  "#..........#",
+  "#..........#",
+  "#..........#",
+  "############",
+];
+const SHAFT = { ladder: { x: 2, y: 1 } as Cell, ladderUse: { x: 2, y: 3 } as Cell, arrive: { x: 2, y: 4 } as Cell, lift: { x: 6, y: 4 } as Cell };
+/** 천문대 서쪽 서고 — 제1막 승강 장치가 올라오던 칸(3,19), 하넬은 서고 탁자 곁. */
+const OBS = { lift: { x: 3, y: 19 } as Cell, hanel: { x: 7, y: 18 } as Cell, door: { x: 15, y: 22 } as Cell };
+
+function observatoryNight(project: Project, exec: Exec, obsId: string): void {
+  ensureSwitch(project, SW_HANEL, "B3: 하넬 — 세린·인장");
+  // 우물 밑 승강구 — 서고 지하. 쇠 사다리로 우물과, 승강 장치로 천문대와 잇는다.
+  exec(project, "build_hand_interior_room", {
+    mapId: FS2_SHAFT_ID, name: "우물 밑 · 서고 승강구", tileset: "atlas_biome_interior", plan: SHAFT_PLAN, start: SHAFT.arrive,
+    floor: "dungeon", wall: "dungeonw", ceiling: "dark",
+    objects: [{ id: "wall torch", x: 5, y: 1 }, { id: "wall torch", x: 9, y: 1 }, { id: "barrel", x: 10, y: 6 }, { id: "drip puddle", x: 3, y: 6 }],
+  });
+  exec(project, "stamp_object", { objectId: "kit:atlas_biome_interior/hand-interior:ship ladder", mapId: FS2_SHAFT_ID, x: SHAFT.ladder.x, y: SHAFT.ladder.y });
+  exec(project, "set_lighting_volume", {
+    mapId: FS2_SHAFT_ID, ambient: 0.55, color: "#0b0f1a", applyMode: "map",
+    sources: [{ id: "t1", at: { x: 5, y: 2 }, radius: 4, intensity: 0.85, color: "#ffb860", flicker: true }, { id: "t2", at: { x: 9, y: 2 }, radius: 4, intensity: 0.85, color: "#ffb860", flicker: true }],
+  });
+  const shaft = M(project, FS2_SHAFT_ID);
+  (shaft as unknown as Rec).bgm = { mode: "custom", resourceId: "cc0-bgm-rtp-mys-002" };
+
+  // 천문대 · 연금의 밤 — 같은 방, 사람·연출 없이(문만 남기면 서고 승강 칸의 옛 이동 이벤트가 잠긴 문이 된다 — 다 비운다).
+  exec(project, "duplicate_map", { mapId: obsId, id: FS2_OBS_NIGHT_ID, name: "별빛 천문대 · 연금의 밤", events: "none" });
+  const obs = M(project, FS2_OBS_NIGHT_ID);
+  (obs as unknown as Rec).bgm = { mode: "custom", resourceId: "cc0-bgm-rtp-mys-002" };
+  exec(project, "set_lighting_volume", {
+    mapId: FS2_OBS_NIGHT_ID, ambient: 0.55, color: "#0c1230", applyMode: "map",
+    sources: [
+      { id: "slit", at: { x: 15, y: 4 }, radius: 5, intensity: 0.6, color: "#9fb8ff" },
+      { id: "lamp", at: { x: OBS.hanel.x, y: OBS.hanel.y - 1 }, radius: 3, intensity: 0.9, color: "#ffc070", flicker: true },
+    ],
+  });
+
+  // 우물 → 승강구, 승강구 사다리 → 우물.
+  WELL.forEach((c, i) => {
+    const id = `ev_fs2_well_${i}`;
+    addEv(project, FS2_HUB_NIGHT_ID, id, "광장 우물", c, [
+      page(`${id}_p`, "우물", [], [narrate("깊은 우물이다. 바닥이 보이지 않는다.")]),
+      page(`${id}_down`, "사다리", [sw(SW_MIRE)], [
+        narrate("우물 안쪽 벽에 쇠 사다리가 박혀 있다.\n미레 아주머니 말대로다."),
+        se("cc0-se-osx-wooded-box-open"),
+        transfer(FS2_SHAFT_ID, SHAFT.arrive, "down"),
+      ]),
+    ]);
+  });
+  addEv(project, FS2_SHAFT_ID, "ev_fs2_shaft_ladder", "우물로 오르는 사다리", SHAFT.ladderUse, [
+    page("ev_fs2_shaft_ladder_p", "사다리", [], [narrate("사다리를 타고 우물 위로 올라갔다."), transfer(FS2_HUB_NIGHT_ID, WELL_FRONT, "down")]),
+  ]);
+  // 1막 지하 4층에서 탔던 승강 장치를 이번엔 서고 밑에서 탄다 — 오르면 천문대 서고, 내려오면 다시 여기.
+  exec(project, "place_lift", {
+    mapId: FS2_SHAFT_ID, x: SHAFT.lift.x, y: SHAFT.lift.y, direction: "up", distance: 5, text: "승강 장치에 올라탔다. 위는 천문대 서고다.",
+    toMapId: FS2_OBS_NIGHT_ID, toX: OBS.lift.x, toY: OBS.lift.y, toDirection: "right",
+  });
+  exec(project, "place_lift", {
+    mapId: FS2_OBS_NIGHT_ID, x: OBS.lift.x, y: OBS.lift.y, direction: "down", distance: 5, text: "승강 장치로 서고 밑으로 내려간다.",
+    toMapId: FS2_SHAFT_ID, toX: SHAFT.lift.x, toY: SHAFT.lift.y, toDirection: "down",
+  });
+  // 정문 — 연금 중. 기사가 지킨다.
+  addEv(project, FS2_OBS_NIGHT_ID, "ev_fs2_obs_door", "천문대 정문", OBS.door, [
+    page("ev_fs2_obs_door_p", "정문", [], [narrate("문 밖에서 쇠 장화 소리가 오간다.\n정문으로는 못 나간다.")], { trigger: { kind: "playerTouch" } }),
+  ]);
+  // 하넬 — 서고 탁자 곁. 처음 올라오면 한 번 이야기한다.
+  const hanelChip = { textureKey: "", characterIndex: 0 };
+  const hubHanel = Object.values(project.maps).flatMap((m) => m.events).find((e) => e.id === "ev_fs_hanel");
+  const hg = hubHanel?.pages?.[0]?.graphic as { sprite?: { id?: string }; pattern?: number } | undefined;
+  if (!hg?.sprite?.id || typeof hg.pattern !== "number") throw new Error("[fallen-star act2] 하넬 칩이 없다");
+  hanelChip.textureKey = hg.sprite.id; hanelChip.characterIndex = decodeCharsetFrameIndex(hg.pattern).characterIndex;
+  const talk: Command[] = [
+    cutBegin(),
+    emote("ev_fs2_obs_hanel", "exclamation", 700),
+    say(HANEL, "…아래로 올 줄 알았다.\n정문으로 왔으면 혼냈을 게다."),
+    say(ELENA, "선생님! 이리스가—"),
+    say(HANEL, "안다. 발렌이 쇠 마차로 북쪽에 데려갔지."),
+    say(HANEL, "서른 해 전, 둘째 아이에게 대답한 건\n숲의 젊은이 셋이었다. 나, 브람, 그리고 세린."),
+    say(HANEL, "세린은 나보다 별 이름을 잘 외웠다.\n그리고 나보다 먼저, 대답하자고 했지."),
+    say(KAEL, "그 다음엔요?"),
+    emote("ev_fs2_obs_hanel", "ellipsis", 900),
+    { kind: "fork", condition: { kind: "item", itemId: FS_KEEPER_SEAL, present: true }, then: [
+      say(HANEL, "숲 지하에서 별지기 인장을 주웠다지.\n그게 하늘탑 두 번째 렌즈의 열쇠다."),
+    ], else: [
+      say(HANEL, "내 인장을 가져가라.\n하늘탑 두 번째 렌즈의 열쇠다."),
+      se("cc0-se-orp-inventory-cloth"),
+      item(FS_KEEPER_SEAL, 1),
+      narrate("「별지기 인장」을 받았다.", { context: "system" }),
+    ] } as unknown as Command,
+    say(HANEL, "그 인장을 갖고 탑에 가거라.\n나머지는… 거기서, 내 입으로 하마."),
+    say(KAEL, "선생님, 또 숙제예요?"),
+    say(HANEL, "이번엔 내 숙제다."),
+    say(HANEL, "북문은 기사들이 막았다. 로한을 찾아가거라.\n대장간 뒷문은 아무도 안 지킨다."),
+    setSw(SW_HANEL),
+    cutLabel(),
+    cutEnd(),
+  ];
+  addEv(project, FS2_OBS_NIGHT_ID, "ev_fs2_obs_hanel", HANEL, OBS.hanel, [
+    page("ev_fs2_obs_hanel_p", "하넬(연금)", [], talk, { graphic: chip(hanelChip.textureKey, hanelChip.characterIndex, "left") }),
+    page("ev_fs2_obs_hanel_after", "하넬(뒤)", [sw(SW_HANEL)], [say(HANEL, "가거라. 별 이름은 잊지 말고.")], { graphic: chip(hanelChip.textureKey, hanelChip.characterIndex, "left") }),
+  ]);
+  // 처음 올라오면 하넬이 먼저 부른다(승강 장치 도착 뒤 한 번).
+  addEv(project, FS2_OBS_NIGHT_ID, "ev_fs2_obs_call", "하넬이 부른다", { x: 0, y: 0 }, [
+    page("ev_fs2_obs_call_wait", "대기", [], [], { priority: "below" }),
+    page("ev_fs2_obs_call_run", "부른다", [sw(SW_HANEL, false)], [
+      wait(400),
+      say(HANEL, "거기 누구냐. …카엘이냐?"),
+      { kind: "setSelfSwitch", key: "A", value: true } as unknown as Command,
+    ], { trigger: { kind: "auto" } }),
+    page("ev_fs2_obs_call_done", "끝", [{ kind: "selfSwitch", key: "A", value: true } as unknown as Condition], [], { priority: "below" }),
+  ]);
+}
+
+// ════════════════════════════════════════════════════════════════════
+
+export interface FallenAct2Ids { hub: string; observatory: string }
 
 export function applyFallenAct2Opening(project: Project, exec: Exec, ids: FallenAct2Ids): void {
   database(project, exec);
@@ -486,6 +619,7 @@ export function applyFallenAct2Opening(project: Project, exec: Exec, ids: Fallen
   barracks(project, exec);
   hubNight(project, exec, ids.hub);
   curfewHub(project, exec, ids.hub);
+  observatoryNight(project, exec, ids.observatory);
   cellEvents(M(project, FS2_CELL_ID));
   bridge(project, exec);
 }

@@ -2445,7 +2445,7 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
   // 제1막 새 뼈대 — 추락지 발렌·지하 미궁(3·4층)·달빛의 용·「달의 아이」 패널·광장 포위 끝(fallen/act1Finale.ts). 얼굴 앞.
   applyFallenAct1Finale(project, execTool, ids);
   // 제2막 여는 비트 — 1막 엔딩 → 「제2막으로」 → 초소 감방·막사 잠입·통금의 밤(fallen/act2Opening.ts). 얼굴 앞.
-  applyFallenAct2Opening(project, execTool, { hub: ids.hub });
+  applyFallenAct2Opening(project, execTool, { hub: ids.hub, observatory: ids.observatory });
   const speakerFaces: Record<string, string> = {
     [FS_NAMES.hero]: actorFace(DEFAULT_ACTOR_ID),
     엘레나: actorFace("actor_fs_elena"),

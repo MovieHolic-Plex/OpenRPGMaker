@@ -268,6 +268,8 @@ const placeLift: ToolDefinition = {
     }
     let arrivalId: string | undefined;
     if (toMap) {
+      // 도착 스위치가 프로젝트에 없으면 만든다 — 자동 이름(sw_ev_lift_…_arrived)은 참조 검증에서 「없는 스위치」로 거부됐다.
+      if (!draft.switches.some((s) => s.id === arrived)) draft.switches.push({ id: arrived, name: `승강 장치 도착 · ${toMap.name ?? toMap.id}` });
       arrivalId = `ev_lift_arrival_${toMap.id}_${toX}_${toY}`;
       const autorun: Trigger = { kind: "auto" } as Trigger;
       const event: GameEvent = {

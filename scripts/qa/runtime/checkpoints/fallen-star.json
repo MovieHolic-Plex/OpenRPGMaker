@@ -3335,9 +3335,9 @@
   {
    "id": "act2-b2-marta",
    "label": "제2막 B2 — 통금의 밤: 여관 문간의 마르타 「쇠 마차, 세 번」",
-   "note": "act2Opening.ts curfewHub marta (50,32)",
+   "note": "act2Opening.ts curfewHub marta (49,32)",
    "mapId": "fs2_hub_night",
-   "x": 50,
+   "x": 49,
    "y": 33,
    "facing": "up",
    "switches": {
@@ -3427,10 +3427,10 @@
   {
    "id": "act2-b2-toby",
    "label": "제2막 B2 — 기둥 뒤의 토비, 은수저",
-   "note": "act2Opening.ts curfewHub toby (33,27)",
+   "note": "act2Opening.ts curfewHub toby (34,25)",
    "mapId": "fs2_hub_night",
-   "x": 33,
-   "y": 28,
+   "x": 34,
+   "y": 26,
    "facing": "up",
    "switches": {
     "sw_fs_main_started": true,
