@@ -217,4 +217,19 @@ describe("shipped catalogs", () => {
     expect(createTranslator(ja).translate("통행 보기")).toBe("通行を見る");
     expect(createTranslator(zh).translate("통행 미리보기")).toBe("通行预览");
   });
+
+  it("names the loop-body controls instead of a bare multiplication sign", () => {
+    expect(en["이 반복 명령 삭제"]).toBe("Delete this repeated command");
+    expect(ja["이 반복 명령 삭제"]).toBe("この繰り返しコマンドを削除");
+    expect(zh["이 반복 명령 삭제"]).toBe("删除此循环命令");
+    expect(en["추가할 명령"]).toBe("Command to add");
+    expect(ja["추가할 명령"]).toBe("追加するコマンド");
+    expect(zh["추가할 명령"]).toBe("要添加的指令");
+    expect(en["반복 문장"]).toBe("Repeated line");
+    expect(ja["반복 문장"]).toBe("繰り返しの文");
+    expect(zh["반복 문장"]).toBe("循环句子");
+    expect(createTranslator(en).translate("이 반복 명령 삭제")).toBe("Delete this repeated command");
+    expect(createTranslator(ja).translate("추가할 명령")).toBe("追加するコマンド");
+    expect(createTranslator(zh).translate("반복 문장")).toBe("循环句子");
+  });
 });
