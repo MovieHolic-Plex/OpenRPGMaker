@@ -1,4 +1,5 @@
 import type { Project, CinematicSequence } from './types';
+import { openingMapViewMapId } from './openingMapView';
 
 /** Versioned metadata extension keeps authored timelines through older host validators.
  * The legacy sequence is a visible still/text fallback; current readers restore full timelines.
@@ -34,7 +35,8 @@ export function encodeCinematicWire(project: Project): Project {
     const { entry: _entry, ...fields } = authored;
     const fallback: CinematicSequence = { ...fields, enabled: authored.enabled && (!authored.entry || authored.entry.mode === 'new-game'), scenes: authored.scenes.map(s => {
       if (s.kind !== 'animatic') return s;
-      const image = s.composition.layers.find(l => l.kind === 'image');
+      // 옛 플레이어는 「게임 속 맵 그대로」(map-view:<mapId>)를 그림으로 못 바꾼다 — 대체 그림으로 고르지 않는다.
+      const image = s.composition.layers.find(l => l.kind === 'image' && !openingMapViewMapId(l.resourceId));
       const common = { id: s.id, narration: s.narration, durationMs: s.durationMs, ...(s.narrationAudioResourceId ? { narrationAudioResourceId: s.narrationAudioResourceId } : {}) };
       return image ? { ...common, kind: 'image' as const, resourceId: image.resourceId!, motion: 'none' as const } : { ...common, kind: 'text' as const };
     }) };
