@@ -240,6 +240,10 @@ function projectWithLiveDrafts(incoming: Project, live: Project): Project {
       const preserved = structuredClone(liveEvent);
       if (conflict && preserved.draft) {
         preserved.draft = { ...preserved.draft, conflict: { kind: conflict, detectedAt: Date.now() } };
+      } else if (preserved.draft && !preserved.draft.conflict && incoming?.draft?.conflict?.kind === "remote-delete") {
+        // 이미 병합된 프로젝트를 다시 받으면(store.replace 는 기본으로 한 번 더 병합한다) 지워진 이벤트도 초안째
+        // 들어 있어 삭제를 다시 볼 수 없다 — 들어온 삭제 표지를 버리면 폐기가 지워진 이벤트를 되살린다(바뀜 충돌은 다시 비교로 찾는다).
+        preserved.draft = { ...preserved.draft, conflict: structuredClone(incoming.draft.conflict) };
       }
       if (index >= 0) {
         const placed = rebaseOpenEditDraft(targetMap.events, preserved);
