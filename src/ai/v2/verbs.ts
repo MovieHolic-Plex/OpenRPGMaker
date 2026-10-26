@@ -36,6 +36,7 @@ import { restoreEventFromBefore } from "./restoreEvent";
 import { pickStageFrames, stageFrameProject, type EventBuildResult } from "./events";
 import { rememberObjectPlan, takeObjectPlan, type DrawObjectResult } from "./drawObject";
 import { dressRoom } from "./builders/dressRoom";
+import { tileMoveObjects } from "./builders/tileMove";
 
 // 2026-10-23 5차: 고치기 3바퀴는 바퀴마다 다시 짓기+비평(20~35초)이라 던전 한 장에 200~250초가 들었다.
 // 속도 우선(6차)으로 1바퀴만 — 첫 비평의 major 를 한 번 고치고 남은 것은 보고한다.
@@ -668,7 +669,7 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
   const MOVE_OBJECT_LIMIT = 6;
   const moveObject: PiToolShape = {
     name: "move_object", label: "가구 옮기기", concurrency: "exclusive",
-    description: "손 도트 실내에 이미 놓인 가구를 하나씩 옮기거나(to), 다른 방향 그림으로 돌리거나(face), 뺀다(remove). at 은 그 가구가 덮는 칸(비평이 짚은 칸). to 는 at 칸이 갈 자리 — 가구 전체가 같은 만큼 밀린다. 방의 나머지는 그대로이고 고치기 바퀴를 쓰지 않는다(맵당 6번). 길을 막거나 지을 수 없는 자리면 되돌리고 이유를 말한다. 탁자·상품·단상·벽·바닥은 못 옮긴다.",
+    description: "손 도트 실내에 이미 놓인 가구를 하나씩 옮기거나(to), 다른 방향 그림으로 돌리거나(face), 뺀다(remove). at 은 그 가구가 덮는 칸(비평이 짚은 칸). to 는 at 칸이 갈 자리 — 가구 전체가 같은 만큼 밀린다. 방의 나머지는 그대로이고 고치기 바퀴를 쓰지 않는다(맵당 6번). 길을 막거나 지을 수 없는 자리면 되돌리고 이유를 말한다. 탁자·상품·단상·벽·바닥은 못 옮긴다. 손으로 고친 방(dress_room·stamp_object 로 채운 방)은 그림 칸 그대로 옮기거나 뺀다(face 는 안 된다).",
     parameters: { type: "object", properties: {
       mapId: { type: "string" },
       edits: { type: "array", minItems: 1, maxItems: 8, items: { type: "object", properties: {
@@ -693,7 +694,16 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
         if (state?.args && !state.stampEdit && state.mapId !== p.mapId) return text({ ok: false, summary: `${p.mapId} 는 위층·딸린 맵이라 아직 가구를 옮기지 못한다 — 보고에 적는다.` });
         // 이 실행이 짓지 않은 방: 지금 그림과 똑같이 다시 지어지는 인자를 찾는다(못 찾으면 옮기지 않는다 — 방이 견본으로 바뀌면 안 된다).
         const exact = adoptExactInterior(run, p.mapId);
-        if (!exact) return text({ ok: false, summary: `${p.mapId} 의 가구 목록을 읽지 못했다(손 도트 실내가 아니거나 손으로 고친 방) — 옮기지 않았다. 보고에 적는다.` });
+        if (!exact) {
+          // 다시 지을 인자가 없는 방(손으로 고친 방·dress_room 으로 채운 방): 그림 칸 그대로 옮기거나 뺀다(2026-10-26 j81 교장실 소파).
+          const moved = tileMoveObjects(env.ctx.project, p.mapId, edits);
+          moveBudget.set(p.mapId, used + 1);
+          if (moved.ok) env.ctx.project = moved.project;
+          const summary = moved.ok
+            ? `${moved.done.join(" · ")}${moved.refused.length ? ` — 못 한 것: ${moved.refused.join(" · ")}` : ""} (그림 칸 그대로 옮김 — 방의 나머지는 그대로)`
+            : `옮기지 못했다: ${moved.refused.join(" · ")}`;
+          return finishContent(id, "move_object", params, { ok: moved.ok, mapIds: [p.mapId], summary, warnings: [], missingArt: [], calls: [] });
+        }
         base = exact;
         prev = { tilesetId: exact.tilesetId, mapId: p.mapId, args: exact.args, adopted: exact };
       }
