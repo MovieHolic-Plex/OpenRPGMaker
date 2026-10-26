@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { priorRequestsNote } from "@/ai/v2/priorRequests";
-import { defaultPlaceLeaks } from "@/ai/v2/shipChecks";
+import { defaultPlaceLeaks, wantsWholeGame } from "@/ai/v2/shipChecks";
 import { createBlankProject } from "@/project/defaults";
 
 describe("J70 prior requests note", () => {
@@ -11,6 +11,10 @@ describe("J70 prior requests note", () => {
     const note = priorRequestsNote([{ kind: "user", text: "밤의 학교에 갇히는 공포 게임" }, { kind: "assistant", text: "만들었다" }], "처음에 부탁한 대로 끝까지 만들어 줘");
     expect(note).toContain("1. 밤의 학교에 갇히는 공포 게임");
     expect(note).not.toContain("처음에 부탁한 대로 끝까지");
+  });
+  it("does not turn a small edit into a whole-game request by itself", () => {
+    const note = priorRequestsNote([{ kind: "user", text: "문 색을 바꿔 줘" }], "창문도")!;
+    expect(wantsWholeGame(`창문도${note}`)).toBe(false);
   });
   it("keeps the first request when there are many", () => {
     const entries = Array.from({ length: 8 }, (_, i) => ({ kind: "user" as const, text: `요청 ${i}` }));
