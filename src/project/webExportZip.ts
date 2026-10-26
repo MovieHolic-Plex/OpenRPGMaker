@@ -1,4 +1,4 @@
-import { contractFailure } from "@/project/playerDeploymentErrors";
+import { contractFailure, WebExportContractError } from "@/project/playerDeploymentErrors";
 import { pathCollisionKey } from "@/project/playerDeploymentManifest";
 import type { FetchBytes, VerifiedPlayerDeployment } from "@/project/playerDeploymentManifest";
 import type { ZipEntry } from "@/project/packageZip";
@@ -65,7 +65,7 @@ function reserveMissingAssetPath(
   const key = pathCollisionKey(filePath);
   const previous = collisionIndex.get(key);
   if (previous === filePath && entries.has(filePath)) return false;
-  if (previous !== undefined) contractFailure("zip-path-collision");
+  if (previous !== undefined) contractFailure("zip-path-collision", [previous, filePath]);
   collisionIndex.set(key, filePath);
   return true;
 }
@@ -77,7 +77,9 @@ function addExactEntry(options: {
 }): void {
   const key = pathCollisionKey(options.entry.name);
   const previous = options.collisionIndex.get(key);
-  if (previous !== undefined && previous !== options.entry.name) contractFailure("zip-path-collision");
+  if (previous !== undefined && previous !== options.entry.name) {
+    contractFailure("zip-path-collision", [previous, options.entry.name]);
+  }
   if (options.entries.has(options.entry.name)) contractFailure("manifest-incomplete");
   options.collisionIndex.set(key, options.entry.name);
   options.entries.set(options.entry.name, options.entry);
@@ -92,10 +94,11 @@ async function assetEntries(assets: readonly WebExportAsset[], fetchBytes: Fetch
     }
     try {
       const bytes = await fetchBytes(exportAssetSourceUrl(asset.sourcePath));
-      if (invalidExportDependencyBytes(bytes)) contractFailure("runtime-asset-unavailable");
+      if (invalidExportDependencyBytes(bytes)) contractFailure("runtime-asset-unavailable", asset.zipPath);
       entries.push({ name: asset.zipPath, bytes });
-    } catch {
-      contractFailure("runtime-asset-unavailable");
+    } catch (error) {
+      if (error instanceof WebExportContractError) throw error;
+      contractFailure("runtime-asset-unavailable", asset.zipPath);
     }
   }
   return entries;

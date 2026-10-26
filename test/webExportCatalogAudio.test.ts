@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { createBlankProject } from "@/project/defaults";
+import { WebExportContractError } from "@/project/playerDeploymentErrors";
 import { prepareWebExport } from "@/project/webExport";
 import { exactWebExportEntries } from "@/project/webExportZip";
 import { createStandaloneHtmlExport } from "@/project/standaloneExport";
@@ -24,10 +25,31 @@ describe("catalog audio export", () => {
     const prepared = prepareWebExport(catalogProject());
 
     // When
-    const attempt = exactWebExportEntries(prepared, { bundleFiles: [], runtimeAssets: [] }, async () => bytes);
+    const error = await exactWebExportEntries(prepared, { bundleFiles: [], runtimeAssets: [] }, async () => bytes)
+      .catch((caught: unknown) => caught);
 
     // Then
-    await expect(attempt).rejects.toMatchObject({ code: "runtime-asset-unavailable" });
+    expect(error).toBeInstanceOf(WebExportContractError);
+    const failure = error as WebExportContractError;
+    expect(failure.code).toBe("runtime-asset-unavailable");
+    expect(failure.paths).toHaveLength(1);
+    expect(prepared.assets.map((asset) => asset.zipPath)).toContain(failure.paths[0]);
+    expect(String(failure)).toContain(failure.paths[0]);
+  });
+
+  it("names the missing zip path and omits the fetch error", async () => {
+    const prepared = prepareWebExport(catalogProject());
+    const secret = `C:/private/${"export-canary"}`;
+    const error = await exactWebExportEntries(prepared, { bundleFiles: [], runtimeAssets: [] }, async () => {
+      throw new Error(secret);
+    }).catch((caught: unknown) => caught);
+
+    expect(error).toBeInstanceOf(WebExportContractError);
+    const failure = error as WebExportContractError;
+    expect(failure.code).toBe("runtime-asset-unavailable");
+    expect(prepared.assets.map((asset) => asset.zipPath)).toContain(failure.paths[0]);
+    expect(String(failure)).not.toContain(secret);
+    expect(JSON.stringify(failure)).not.toContain("canary");
   });
 
   it("packages the played CDN track at the player's local fallback path", () => {

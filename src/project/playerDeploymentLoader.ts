@@ -1,5 +1,5 @@
 import { parsePlayerDeploymentManifest } from "@/project/playerDeploymentContract";
-import { contractFailure } from "@/project/playerDeploymentErrors";
+import { contractFailure, WebExportContractError } from "@/project/playerDeploymentErrors";
 import { parseJsonObject } from "@/project/playerDeploymentPaths";
 import type {
   DeploymentFileRecord,
@@ -66,8 +66,9 @@ function resolvedAdapters(adapters: PlayerDeploymentAdapters): Required<PlayerDe
 async function fetchManifestBytes(bundleBase: string, fetchBytes: FetchBytes): Promise<Uint8Array> {
   try {
     return await fetchBytes(joinUrlPath(bundleBase, WEB_PLAYER_MANIFEST));
-  } catch {
-    contractFailure("manifest-unavailable");
+  } catch (error) {
+    if (error instanceof WebExportContractError) throw error;
+    contractFailure("manifest-unavailable", WEB_PLAYER_MANIFEST);
   }
 }
 
@@ -80,17 +81,19 @@ async function fetchVerifiedRecord(options: {
   let bytes: Uint8Array;
   try {
     bytes = await options.adapters.fetchBytes(options.sourcePath);
-  } catch {
-    contractFailure(options.kind === "bundle" ? "bundle-unavailable" : "runtime-asset-unavailable");
+  } catch (error) {
+    if (error instanceof WebExportContractError) throw error;
+    contractFailure(options.kind === "bundle" ? "bundle-unavailable" : "runtime-asset-unavailable", options.record.path);
   }
   let digest: string;
   try {
     digest = await options.adapters.hashBytes(bytes);
-  } catch {
-    contractFailure(options.kind === "bundle" ? "bundle-integrity-mismatch" : "runtime-asset-integrity-mismatch");
+  } catch (error) {
+    if (error instanceof WebExportContractError) throw error;
+    contractFailure(options.kind === "bundle" ? "bundle-integrity-mismatch" : "runtime-asset-integrity-mismatch", options.record.path);
   }
   if (bytes.length !== options.record.bytes || digest !== options.record.sha256) {
-    contractFailure(options.kind === "bundle" ? "bundle-integrity-mismatch" : "runtime-asset-integrity-mismatch");
+    contractFailure(options.kind === "bundle" ? "bundle-integrity-mismatch" : "runtime-asset-integrity-mismatch", options.record.path);
   }
   return bytes;
 }
