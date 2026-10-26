@@ -140,7 +140,7 @@ export async function runAssistantV2(request: PiAgentRequest, options: RunPiAgen
     if (vqaCandidateIndex >= vqaCandidates.length) vqaCandidateIndex = 0;
     if (!round) round = { round: vqaRounds.length + 1, shots: [], defects: [], ms: 0, reviewer: "-", problem: "검수자 후보가 없음" };
     else if (round.problem && tried.length > 1) round = { ...round, problem: `검수자 ${tried.length}명 모두 답하지 못함 — ${tried.join(" / ").slice(0, 400)}` };
-    const withFailed: VqaRound = failed.length && !round.problem && !shots.length ? { ...round, problem: `그림을 찍지 못함: ${failed.join(", ")}` } : round;
+    const withFailed: VqaRound = failed.length && !round.problem && !shots.length ? { ...round, problem: `그림을 찍지 못함: ${failed.join(", ").slice(0, 400)}` } : round;
     vqaRounds.push(withFailed);
     vqaMs += Date.now() - t0;
     env.emit({ type: "execution_status", name: "v2.vqa", ok: vqaClean(withFailed), summary: `화면 검수 ${withFailed.round}/${VQA_MAX_ROUNDS} · ${withFailed.problem ?? `결함 ${withFailed.defects.length}건`} · 그림 ${shots.length}장${failed.length ? ` (못 찍음 ${failed.length}: ${failed.join(" / ").slice(0, 300)})` : ""} · ${reviewer} · ${Math.round((Date.now() - t0) / 1000)}초`,
