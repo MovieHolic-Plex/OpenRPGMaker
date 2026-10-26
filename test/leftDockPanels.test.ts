@@ -49,6 +49,9 @@ function installBrowserGlobals(): void {
     value: {
       confirm: vi.fn(() => true),
       innerWidth: 1440,
+      // 조수 상태 띠(aiStatusBar)의 1초 시계 — 이 테스트는 시계를 보지 않으니 멈춘 타이머로 둔다.
+      setInterval: vi.fn(() => 0),
+      clearInterval: vi.fn(),
       innerHeight: 900,
       localStorage: storage,
       addEventListener: vi.fn(),
@@ -109,6 +112,10 @@ function mockEditorDependencies(): void {
   }));
   vi.doMock("@/editor/panels/tilePalette", () => ({
     renderTilePalette: (node: HTMLElement) => {
+      node.textContent = "tiles";
+    },
+    // 패널 등록부(panelRegistry)는 이제 refreshTilePalette 로 타일 패널을 짓는다(입력이 같으면 다시 안 짓는 머리말).
+    refreshTilePalette: (node: HTMLElement) => {
       node.textContent = "tiles";
     },
   }));

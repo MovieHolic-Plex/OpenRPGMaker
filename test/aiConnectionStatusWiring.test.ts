@@ -154,6 +154,10 @@ function mockEditorDependencies(): void {
     renderTilePalette: (node: HTMLElement) => {
       node.textContent = "tiles";
     },
+    // 패널 등록부(panelRegistry)는 이제 refreshTilePalette 로 타일 패널을 짓는다(입력이 같으면 다시 안 짓는 머리말).
+    refreshTilePalette: (node: HTMLElement) => {
+      node.textContent = "tiles";
+    },
   }));
 }
 

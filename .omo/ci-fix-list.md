@@ -48,6 +48,7 @@ Work order (cheapest first): timeout → fake-DOM/env gaps → combined_town / o
 ## timeout (74)
 
 - **61** — `Error: Test timed out in Nms.`
+  - [ ] `test/databaseSystemModern.test.ts` (2026-10-26: environment fixed; passes in CI but its logo-clear case has hit the 15s timeout under load once)
   - [ ] `test/actionAcceptanceProof.test.ts`
   - [ ] `test/actionCombatProbeBoot.test.ts`
   - [ ] `test/advisoryLintProvenance.test.ts`
@@ -284,28 +285,10 @@ Work order (cheapest first): timeout → fake-DOM/env gaps → combined_town / o
   - [ ] `test/toolRegistry.test.ts`
   - [ ] `test/walkEncounterAuthoring.test.ts`
 - **11** — `TypeError: Cannot read properties of undefined (reading 'exists')`
-  - [ ] `test/generatedMonsterFieldSprites.test.ts`
-  - [ ] `test/lifeFieldInteraction.test.ts`
-  - [ ] `test/mapEntryTilePass.test.ts`
-  - [ ] `test/nativeGraphicDiscovery.test.ts`
-  - [ ] `test/npcActionFacing.test.ts`
-  - [ ] `test/playSceneExtraLayers.test.ts`
-  - [ ] `test/playSceneTileCulling.test.ts`
-  - [ ] `test/runtimeEventFootprint.test.ts`
-  - [ ] `test/runtimeEventPageGraphics.test.ts`
-  - [ ] `test/runtimeEventState.test.ts`
-  - [ ] `test/runtimeTileWindow.test.ts`
 - **10** — `ReferenceError: window is not defined`
-  - [ ] `test/aiAssistantUxP0P2.test.ts`
-  - [ ] `test/aiDockMetaReach.test.ts`
   - [ ] `test/aiPanelChrome.test.ts`
-  - [ ] `test/aiPanelModernShell.test.ts`
   - [ ] `test/aiPiChangeReceipt.test.ts`
-  - [ ] `test/aiPreferenceComposerButton.test.ts`
-  - [ ] `test/aiRunRecovery.test.ts`
   - [ ] `test/aiStudioShell.test.ts`
-  - [ ] `test/aiWorkCardOwnerless.test.ts`
-  - [ ] `test/assistantSkillsRemoved.test.ts`
 - **8** — `AssertionError: expected '{"version":N,"meta":{"title":"새 프로젝트"…' to be '{"version":N,"meta":{"title":"새 프로젝트"…' // Obje`
   - [ ] `test/autotileGroupPersistence.test.ts`
   - [ ] `test/mapBackgroundRules.test.ts`
@@ -329,9 +312,6 @@ Work order (cheapest first): timeout → fake-DOM/env gaps → combined_town / o
   - [ ] `test/aiChatPanelComposerMode.test.ts`
   - [ ] `test/aiDeckMove.test.ts`
   - [ ] `test/aiPanelAutoExpand.test.ts`
-  - [ ] `test/aiPanelGlassResize.test.ts`
-  - [ ] `test/aiTilesetChangeCard.test.ts`
-  - [ ] `test/aiWelcomeHandoffDisplay.test.ts`
 - **5** — `AssertionError: expected [] to have a length of N but got +N`
   - [ ] `test/agentGhostPreview.test.ts`
   - [ ] `test/clusterAssistUi.test.ts`
@@ -356,10 +336,8 @@ Work order (cheapest first): timeout → fake-DOM/env gaps → combined_town / o
   - [ ] `test/playerRuntimeAudioIds.test.ts`
   - [ ] `test/workshop/mapObjectsRunner.test.ts`
 - **4** — `TypeError: Cannot read properties of undefined (reading 'parentNode')`
-  - [ ] `test/aiConnectionStatusWiring.test.ts`
   - [ ] `test/editorLayoutPersist.test.ts`
   - [ ] `test/leftDockPanels.test.ts`
-  - [ ] `test/rightDragPanelRebuilds.test.ts`
 - **4** — `AssertionError: expected null to be truthy`
   - [ ] `test/aiConversationLog.test.ts`
   - [ ] `test/comboBrushPaletteUi.test.ts`
@@ -371,10 +349,6 @@ Work order (cheapest first): timeout → fake-DOM/env gaps → combined_town / o
   - [ ] `test/transparentTileLayerRouting.test.ts`
   - [ ] `test/treePlacementNamespaces.test.ts`
 - **4** — `ReferenceError: ResizeObserver is not defined`
-  - [ ] `test/databaseSystemMenuSkin.test.ts`
-  - [ ] `test/databaseSystemModern.test.ts`
-  - [ ] `test/databaseSystemSections.test.ts`
-  - [ ] `test/databaseSystemStudio.test.ts`
 - **4** — `AssertionError: expected N to be +N // Object.is equality`
   - [ ] `test/harnesses/joseonBaram.test.ts`
   - [ ] `test/regionTaskClip.test.ts`
@@ -440,7 +414,6 @@ Work order (cheapest first): timeout → fake-DOM/env gaps → combined_town / o
 - **2** — `TypeError: Cannot read properties of undefined (reading 'passability')`
 - **2** — `ReferenceError: HTMLCanvasElement is not defined`
   - [ ] `test/eventCommandMapRepairs.test.ts`
-  - [ ] `test/eventLayerReuse.test.ts`
 - **2** — `AssertionError: 'place_props' 커밋 거부(무결성 오류) — 시작 위치가 통행 불가 타일입니다: (N, N) — 칠한 타일이 통행 불가이거나 시작 칸이 막혔습니다. set_start_positi`
   - [ ] `test/forestFloorMix.test.ts`
   - [ ] `test/forestTrunkLayers.test.ts`

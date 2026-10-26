@@ -29,7 +29,7 @@ let storage: Map<string, string>;
 beforeEach(async () => {
   store.replace(createBlankProject());
   editorState.set({ currentMapId: null, selection: null });
-  restoreDom = installFakeDom();
+  restoreDom = installFakeDom({ window: true });
   storage = new Map();
   Object.defineProperty(globalThis, "localStorage", {
     configurable: true,
