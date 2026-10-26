@@ -102,7 +102,10 @@ describe("native verification scopes through the real session and terminal accep
     expect(f.session.getVerificationSnapshot().findings).toEqual([]);
     expect(f.session.getWorkPlan()?.layers[0]?.items[0]?.status).toBe("done");
     expect(f.session.getProposedProject()).toEqual(project);
-  });
+    // 실제 AssistantSession + 실제 도구 실행(모킹한 것은 chat 응답뿐) — 이 파일의 케이스는 한 건이
+    // 12~18초라 전역 15초로는 evaluate_game_quality 만 살짝 넘어간다(2026-10-26 실측: 15.7s·18.1s,
+    // 나머지는 12.4~15.0s). 자매 통합 테스트처럼 자기 예산을 준다(aiAssistantSession 은 30~600초).
+  }, 60_000);
 
   it.each(nonMapTools)("%s resolves a pending checkId without changing owner or targets or borrowing a prior pass", async name => {
     const project = createBlankProject();
@@ -138,7 +141,7 @@ describe("native verification scopes through the real session and terminal accep
     await f.send([call, complete]);
     expect(results(f.events, "complete_work_item").map(result => result.ok)).toEqual([false, true]);
     expect(f.session.getVerificationSnapshot().requirements).toEqual([{ ...specified[0], status: "passed" }]);
-  });
+  }, 60_000);
 
   it.each(mapTools)("%s rejects a foreign map declaration and resolves the pending ID only on its retained map", async name => {
     const project = createBlankProject();
