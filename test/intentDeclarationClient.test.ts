@@ -390,8 +390,11 @@ describe("buildIntentFacts", () => {
     expect(facts.currentMap?.id).toBe(startMapId);
     expect(facts.selection?.width).toBe(5);
     expect(facts.maps.map((map) => map.id)).toContain(startMapId);
-    expect(facts.facilityLabels).toContain("여관");
-    expect(facts.toolNames).toContain("place_concept");
-    expect(facts.toolNames).toContain("author_house");
+    // place_concept·author_house 와 실내 개념 꾸러미(여관·민가 …)는 은퇴했다 — 새 프로젝트에는 시설 라벨이 없어 그 단언은 뺐고,
+    // 실내는 build_hand_interior_room, 외장은 place_terrain_house 가 맡는다.
+    expect(facts.toolNames).not.toContain("place_concept");
+    expect(facts.toolNames).not.toContain("author_house");
+    expect(facts.toolNames).toContain("build_hand_interior_room");
+    expect(facts.toolNames).toContain("place_terrain_house");
   });
 });
