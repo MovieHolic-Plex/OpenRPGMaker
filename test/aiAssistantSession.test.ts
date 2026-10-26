@@ -2105,7 +2105,13 @@ describe("밑그림만 그리고 끝내는 턴", () => {
     const audit = session.getAuditEntries();
     expect(audit.some((e) => e.kind === "status" && String(e.text).includes("spec-npc-autobuild"))).toBe(true);
 
-    // 핵심: 실제 이벤트가 페이지·커맨드까지 컴파일됐는가. 상점 역할이므로 shop 커맨드가 있어야 한다.
+    // 그림 검색 사다리: 「잡화점 상인」은 charset 라벨이 없어(2026-09-27 부터 대체 그림 없이 거절) 역할 명사 「상인」으로 찾는다.
+    // 어떤 검색어가 맞았는지 결과 data 와 요약에 남는다.
+    expect(npcProposals[0]!.args.graphic).toEqual({ query: "상인" });
+    expect(npcProposals[0]!.result.data).toMatchObject({ specNpcGraphic: { query: "상인", term: "role" } });
+    expect(npcProposals[0]!.result.summary).toContain("역할 「상인」");
+
+    // 핵심: 실제 이벤트가 페이지·커맨드까지 컴파일됐는가(대사 없는 대기 페이지 — 상점 재고는 set_shop_stock 몫).
     const diff = npcProposals[0]!.result.diff;
     expect(diff).toBeTruthy();
     expect(diff?.eventsAdded ?? 0).toBe(1);
