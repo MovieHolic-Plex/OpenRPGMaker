@@ -14,7 +14,7 @@ import { extname, join, relative } from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 import { PRODUCT_BRAND, PRODUCT_SLUG, PRODUCT_TAGLINE } from "@/brand";
-import ts from "typescript";
+import { transformSync, type Loader } from "esbuild";
 
 const REPO_ROOT = fileURLToPath(new URL("..", import.meta.url));
 const SRC_ROOT = join(REPO_ROOT, "src");
@@ -262,8 +262,14 @@ const COMMENT_STRIPPABLE_EXTENSIONS = new Set([".ts", ".tsx", ".mts", ".mjs", ".
 
 function shippingSource(source: string, extension: string): string {
   if (COMMENT_STRIPPABLE_EXTENSIONS.has(extension)) {
-    const file = ts.createSourceFile(`source${extension}`, source, ts.ScriptTarget.Latest, true);
-    return ts.createPrinter({ removeComments: true }).printFile(file);
+    // TypeScript 7(package.json ^7.0.2)은 JS 컴파일러 API(createSourceFile·createPrinter)를 없앴다 — esbuild 로 주석만 뗀다.
+    // 문자열 안의 주석 모양 글자는 남고, 비ASCII 는 utf8 그대로 둔다.
+    const loader: Loader = extension === ".tsx" ? "tsx" : extension === ".ts" || extension === ".mts" ? "ts" : "js";
+    try {
+      return transformSync(source, { loader, charset: "utf8", legalComments: "none" }).code;
+    } catch {
+      return source; // esbuild 가 못 읽는 선언 파일(.d.mts 등)은 원문 그대로 본다 — 더 엄격한 쪽
+    }
   }
   return source;
 }

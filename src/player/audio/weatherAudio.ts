@@ -102,8 +102,15 @@ export class WeatherAudio {
     for (let channel = 0; channel < 2; channel++) {
       const data = buffer.getChannelData(channel);
       let last = 0;
+      // 소음 버퍼는 장식 소리라 게임 RNG 를 쓰지 않는다 — 고정 시드 xorshift32(채널마다 다른 시드)로 채운다.
+      // Math.random 을 직접 부르면 결정적 RNG 규칙(test/deterministicRng)을 어긴다.
+      let seed = (0x9e3779b9 ^ ((channel + 1) * 0x85ebca6b) ^ (brown ? 0x27d4eb2d : 0)) >>> 0 || 1;
       for (let index = 0; index < data.length; index++) {
-        const white = Math.random() * 2 - 1;
+        seed ^= seed << 13;
+        seed ^= seed >>> 17;
+        seed ^= seed << 5;
+        seed >>>= 0;
+        const white = (seed / 0x1_0000_0000) * 2 - 1;
         last = (last + 0.035 * white) / 1.035;
         data[index] = brown ? last * 4 : white * 0.7 + last;
       }

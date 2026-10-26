@@ -68,7 +68,9 @@ export function dropDeadSource(src, deadSelectors, opts = {}) {
     if (next?.type === "comment" && next.source?.start.line === rule.source?.end.line && !/\n/.test(next.raws.before ?? "")) next.remove();
     removeEmptied(parent);
   }
-  return bom + root.toString();
+  // postcss 8.5.29 부터는 BOM 을 스스로 되돌린다 — 이미 붙어 있으면 다시 붙이지 않는다(이중 BOM 방지).
+  const out = root.toString();
+  return out.startsWith("\uFEFF") ? out : bom + out;
 }
 
 export function dropDeadRules(fileAbs, deadSelectors, opts = {}) {
