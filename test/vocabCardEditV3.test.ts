@@ -20,6 +20,10 @@ import { createBlankProject } from "@/project/defaults";
 import { COMBINED_TOWN_TILESET_ID } from "@/project/defaults/constants";
 import type { Project } from "@/project/types";
 import { findByTestId, installFakeDom, type FakeElement } from "./fakeDom";
+import { withRetiredCombinedTownMaps } from "./support/retiredCombinedTownMaps";
+
+// 어휘 카드는 합본 마을 하네스 그룹(석벽 9분할)을 편집한다 — 정리 전 빈 프로젝트처럼 합본 마을 시작 맵에서 잰다.
+const blankCombinedTownProject = () => withRetiredCombinedTownMaps(createBlankProject());
 
 let restoreDom: (() => void) | null = null;
 
@@ -46,7 +50,7 @@ function proposeCall(project: Project): { call: ProposedCall; groupId: string } 
 
 describe("어휘 카드 렌더 + 인라인 편집", () => {
   it("data.cards가 카드로 렌더되고(AI 추정/사실 배지/편집 필드) 편집 이벤트가 편집값으로 수집된다", () => {
-    const project = createBlankProject();
+    const project = blankCombinedTownProject();
     const { call } = proposeCall(project);
     expect(vocabularyCardsData(call)?.cards).toHaveLength(1);
 
@@ -77,7 +81,7 @@ describe("어휘 카드 렌더 + 인라인 편집", () => {
   });
 
   it("편집값이 수락 시 커밋되는 값이다 — 재조립 재실행 경로가 편집된 이름/layerHome을 origin:user로 반영", () => {
-    const project = createBlankProject();
+    const project = blankCombinedTownProject();
     const { call, groupId } = proposeCall(project);
     const editsByCall = new Map<number, Map<number, VocabularyCardEdit>>([
       [0, new Map([[0, { name: "돌담", layerHome: "upper" }]])],

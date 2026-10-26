@@ -130,40 +130,29 @@ describe("generatedAssetResourceResolver", () => {
     // Given: a vendored EasyRPG RTP replacement asset id and its Phaser texture key.
     // When/Then: both identifiers resolve to the same browser-readable package asset.
     expect(resolveEasyRpgRuntimeAssetUrl("easyrpg-faceset-actor1")).toBe("/assets/easyrpg/faceset/Actor1.png");
-    expect(resolveEasyRpgRuntimeAssetUrl("easyrpg-chipset-exterior")).toBe("/assets/easyrpg/chipset/Exterior.png");
+    // EasyRPG 칩셋 그림은 2026-10-07 저작권 정리로 지웠다 — 지운 그림을 경로로 해석하지 않는다(retiredAssets.ts).
+    expect(resolveEasyRpgRuntimeAssetUrl("easyrpg-chipset-exterior")).toBeNull();
     expect(resolveAssetResourceUrl("easyrpg-charset-actor1")).toBe("/assets/easyrpg/charset/Actor1.png");
     expect(resolveAssetResourceUrl("tex_easyrpg_charset_actor1")).toBe("/assets/easyrpg/charset/Actor1.png");
   });
 
   it("keeps packaged EasyRPG resources from being shadowed by project uploads", () => {
+    // 타이틀 그림(easyrpg-title-*)은 2026-10-07 저작권 정리로 지웠다 — 남아 있는 번들 캐릭터 그림으로 잰다.
     const project = createBlankProject();
-    project.assets.uploaded["easyrpg-title-title1"] = {
-      id: "easyrpg-title-title1",
+    project.assets.uploaded["easyrpg-charset-actor1"] = {
+      id: "easyrpg-charset-actor1",
       name: "Stale uploaded placeholder",
       kind: "picture",
       dataUrl: "data:image/png;base64,uploaded",
       meta: { width: 1, height: 1 },
     };
 
-    const url = resolveAssetResourceUrl("easyrpg-title-title1", { project });
+    const url = resolveAssetResourceUrl("easyrpg-charset-actor1", { project });
 
-    expect(url).toBe("/assets/easyrpg/title/Title1.png");
+    expect(url).toBe("/assets/easyrpg/charset/Actor1.png");
   });
 
-  it("maps the legacy sample title placeholder to the packaged EasyRPG title image", () => {
-    const project = createBlankProject();
-    project.assets.uploaded.sample_title = {
-      id: "sample_title",
-      name: "Legacy sample title placeholder",
-      kind: "title",
-      dataUrl: "data:image/png;base64,uploaded",
-      meta: { width: 1, height: 1 },
-    };
-
-    const url = resolveAssetResourceUrl("sample_title", { project });
-
-    expect(url).toBe("/assets/easyrpg/title/Title1.png");
-  });
+  // 옛 「sample_title → EasyRPG Title1」 대체 경로는 Title1 그림과 함께 2026-10-07 저작권 정리로 지웠다(generatedAssetResourceResolver.ts).
 
   it("returns null for unknown or planned generated resource ids", () => {
     // Given: an unknown id and an unpromoted generated asset plan.

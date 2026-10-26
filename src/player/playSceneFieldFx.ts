@@ -127,7 +127,8 @@ function tilesetTextureKeyFor(scene: PlaySceneContext, project: Project, map: Ga
   // 메서드로 부른다(this 가 필요하다).
   const host = scene as unknown as { resolveTilesetTexture?(t: NonNullable<typeof tileset>): string };
   const key = tileset ? host.resolveTilesetTexture?.(tileset) ?? tilesetTextureKey(tileset) : "";
-  return key && scene.textures.exists(key) ? key : "";
+  // renderTiles 컨텍스트의 textures 는 선택이다(RenderTilesSceneContext) — 없으면 문 연출 텍스처도 없다.
+  return key && scene.textures?.exists(key) ? key : "";
 }
 
 /**

@@ -4,6 +4,7 @@ import { interiorObjectById } from '@/editor/interiorObjectCatalog';
 import { INTERIOR_ROOM_DEMO_PLANS, runInteriorRoomPipeline, createEmptyRoomMap } from '@/editor/interiorRoomPipeline';
 import { deserialize, serialize } from '@/project/io';
 import { createBlankProject } from '@/project/defaults';
+import { withRetiredEasyRpgTilesets } from './support/retiredEasyRpgTilesets';
 
 function fixture() {
   const map=createEmptyRoomMap({mapId:'support',name:'support',width:12,height:12,theme:'dining'});
@@ -28,7 +29,8 @@ describe('small interior props require furniture supports',()=>{
   expect(r.warnings).toEqual([]);expect(r.placements).toHaveLength(3);
   for(const p of r.placements.filter(p=>p.objectId!=='table_wood'))for(const cell of p.cells)expect([156,157,158,186,187,188]).toContain(map.lowerTiles[cell.y*12+cell.x]);
   const before=map.upperTiles.slice();compose(map,floor,['vase_flowers']);for(let i=0;i<before.length;i++)if(before[i]>=0)expect(map.upperTiles[i]).toBe(before[i]);
-  const project=createBlankProject();project.maps[map.id]=map;expect(deserialize(serialize(project)).maps[map.id]).toEqual(map);
+  // 이 방은 EasyRPG 실내 칩셋(INTERIOR_ROOM_TILESET_ID) 맵이다 — 저장 왕복은 그 정의를 든 옛 저장본처럼 잰다.
+  const project=withRetiredEasyRpgTilesets(createBlankProject());project.maps[map.id]=map;expect(deserialize(serialize(project)).maps[map.id]).toEqual(map);
  });
  it('places a pot on a stove, never on a dining tabletop',()=>{
   const {map,floor}=fixture();map.lowerTiles[4*12+3]=156;
