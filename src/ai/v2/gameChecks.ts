@@ -64,7 +64,11 @@ export function dayCounterVariables(project: Project, onDayEnd?: string): { id: 
       for (const c of cmds) {
         if (c.kind !== "setVariable" || c.op !== "+=" || Number(c.value) !== 1 || typeof c.variableId !== "string") continue;
         const name = names.get(c.variableId) ?? c.variableId;
-        if (sleeps || /일수|일차|날짜|며칠|day/iu.test(`${name} ${c.variableId}`)) if (!found.has(c.variableId)) found.set(c.variableId, where);
+        // 날짜를 세는 이름만 본다(호감도·피로처럼 잠잘 때 같이 오르는 변수는 아니다). 영어는 낱말 경계(birthday·holiday·today 제외).
+        // 이름만으로 잡을 때는 「일수·일차·N일째」, 잠자기 줄과 함께면 「날짜·며칠」도 날짜 세기로 본다.
+        const label = `${name} ${c.variableId}`;
+        const dayName = /일수|일차|일째|(?:^|[^a-z])days?(?:_?(?:count|elapsed|passed|num))?(?![a-z])/iu.test(label);
+        if (dayName || (sleeps && /날짜|며칠/u.test(label))) if (!found.has(c.variableId)) found.set(c.variableId, where);
       }
     }
   };
