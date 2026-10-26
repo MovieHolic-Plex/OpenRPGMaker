@@ -2917,10 +2917,10 @@
   {
    "id": "act2-b1-key",
    "label": "제2막 B1 — 빵 속 열쇠 → 쇠살문",
-   "note": "짚 침대 앞(10,4)에서 쪼갠다 → 쇠살문(7,6)",
+   "note": "짚 침대(10,4) 앞(10,5)에서 쪼갠다 → 쇠살문(7,6) → 복도",
    "mapId": "fs2_cell",
    "x": 10,
-   "y": 4,
+   "y": 5,
    "facing": "up",
    "switches": {
     "sw_fs_main_started": true,
@@ -2984,14 +2984,9 @@
        ]
       },
       {
-       "kind": "hold",
+       "kind": "move",
        "dir": "left",
-       "ms": 900
-      },
-      {
-       "kind": "hold",
-       "dir": "down",
-       "ms": 300
+       "steps": 3
       },
       {
        "kind": "face",
@@ -3029,14 +3024,34 @@
        ]
       },
       {
-       "kind": "hold",
+       "kind": "move",
        "dir": "down",
-       "ms": 700
+       "steps": 3
+      },
+      {
+       "kind": "move",
+       "dir": "right",
+       "steps": 7
+      },
+      {
+       "kind": "move",
+       "dir": "up",
+       "steps": 4
+      },
+      {
+       "kind": "move",
+       "dir": "right",
+       "steps": 2
+      },
+      {
+       "kind": "move",
+       "dir": "up",
+       "steps": 2
       },
       {
        "kind": "hold",
        "dir": null,
-       "ms": 900
+       "ms": 2500
       }
      ],
      "shot": true
@@ -3311,6 +3326,239 @@
        "kind": "hold",
        "dir": null,
        "ms": 800
+      }
+     ],
+     "shot": true
+    }
+   ]
+  },
+  {
+   "id": "act2-b2-marta",
+   "label": "제2막 B2 — 통금의 밤: 여관 문간의 마르타 「쇠 마차, 세 번」",
+   "note": "act2Opening.ts curfewHub marta (50,32)",
+   "mapId": "fs2_hub_night",
+   "x": 50,
+   "y": 33,
+   "facing": "up",
+   "switches": {
+    "sw_fs_main_started": true,
+    "sw_fs_main_done": true,
+    "sw_fs_iris_joined": true,
+    "sw_fs2_act2_started": true,
+    "sw_fs2_bread_given": true,
+    "sw_fs2_cell_key_found": true,
+    "sw_fs2_cell_open": true,
+    "sw_fs2_barracks_cleared": true,
+    "sw_fs2_out_of_cells": true,
+    "sw_fs2_hub_arrived": true
+   },
+   "party": [
+    {
+     "actorId": "actor_hero",
+     "level": 8
+    },
+    {
+     "actorId": "actor_fs_elena",
+     "level": 8
+    }
+   ],
+   "beats": [
+    {
+     "id": "look",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1500
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "talk",
+     "ops": [
+      {
+       "kind": "action"
+      },
+      {
+       "kind": "waitFor",
+       "testid": "dialogue-box",
+       "state": "present",
+       "timeoutMs": 8000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1500
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "carriage",
+     "ops": [
+      {
+       "kind": "repeatUntil",
+       "testid": "dialogue-box",
+       "state": "absent",
+       "maxRounds": 10,
+       "ops": [
+        {
+         "kind": "key",
+         "key": "Enter"
+        },
+        {
+         "kind": "hold",
+         "dir": null,
+         "ms": 1100
+        }
+       ]
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1000
+      }
+     ],
+     "shot": true
+    }
+   ]
+  },
+  {
+   "id": "act2-b2-toby",
+   "label": "제2막 B2 — 기둥 뒤의 토비, 은수저",
+   "note": "act2Opening.ts curfewHub toby (33,27)",
+   "mapId": "fs2_hub_night",
+   "x": 33,
+   "y": 28,
+   "facing": "up",
+   "switches": {
+    "sw_fs_main_started": true,
+    "sw_fs_main_done": true,
+    "sw_fs_iris_joined": true,
+    "sw_fs2_act2_started": true,
+    "sw_fs2_bread_given": true,
+    "sw_fs2_cell_key_found": true,
+    "sw_fs2_cell_open": true,
+    "sw_fs2_barracks_cleared": true,
+    "sw_fs2_out_of_cells": true,
+    "sw_fs2_hub_arrived": true
+   },
+   "party": [
+    {
+     "actorId": "actor_hero",
+     "level": 8
+    },
+    {
+     "actorId": "actor_fs_elena",
+     "level": 8
+    }
+   ],
+   "beats": [
+    {
+     "id": "talk",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 800
+      },
+      {
+       "kind": "action"
+      },
+      {
+       "kind": "waitFor",
+       "testid": "dialogue-box",
+       "state": "present",
+       "timeoutMs": 8000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1500
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "spoon",
+     "ops": [
+      {
+       "kind": "repeatUntil",
+       "testid": "dialogue-box",
+       "state": "absent",
+       "maxRounds": 12,
+       "ops": [
+        {
+         "kind": "key",
+         "key": "Enter"
+        },
+        {
+         "kind": "hold",
+         "dir": null,
+         "ms": 1100
+        }
+       ]
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1000
+      }
+     ],
+     "shot": true
+    }
+   ]
+  },
+  {
+   "id": "act2-b2-patrol",
+   "label": "제2막 B2 — 순찰 기사에게 들킨다 → 전투",
+   "note": "place_field_enemy chase cone (44,21)",
+   "mapId": "fs2_hub_night",
+   "x": 45,
+   "y": 25,
+   "facing": "up",
+   "switches": {
+    "sw_fs_main_started": true,
+    "sw_fs_main_done": true,
+    "sw_fs_iris_joined": true,
+    "sw_fs2_act2_started": true,
+    "sw_fs2_bread_given": true,
+    "sw_fs2_cell_key_found": true,
+    "sw_fs2_cell_open": true,
+    "sw_fs2_barracks_cleared": true,
+    "sw_fs2_out_of_cells": true,
+    "sw_fs2_hub_arrived": true
+   },
+   "party": [
+    {
+     "actorId": "actor_hero",
+     "level": 8
+    },
+    {
+     "actorId": "actor_fs_elena",
+     "level": 8
+    }
+   ],
+   "beats": [
+    {
+     "id": "spotted",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 6000
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "battle",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 5000
       }
      ],
      "shot": true

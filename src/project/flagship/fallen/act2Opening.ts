@@ -9,9 +9,10 @@
  *
  * 좌표는 지어진 맵 기준. 감방 평면은 CELL_ROOM 한 곳에서만 고친다.
  */
-import { charsetFrameIndex } from "@/assets/easyrpgRtp";
+import { charsetFrameIndex, decodeCharsetFrameIndex } from "@/assets/easyrpgRtp";
 import type { Command, Condition, EventPage, GameEvent, GameMap, Project } from "@/project/types";
 import { FS_NAMES } from "../fallenStarStory";
+import { FS_SILVER_SPOON } from "./townLife";
 
 type Exec = (project: Project, name: string, args: Record<string, unknown>) => void;
 type Cell = { x: number; y: number };
@@ -38,6 +39,7 @@ const SW_OUT = "sw_fs2_out_of_cells";
 
 // ── 감방 평면(21×11) ─────────────────────────────────────────────────────
 // 서쪽 = 감방(x1..12, y1..5, 남쪽 y6 쇠창살 줄, 가운데 x7 쇠살문) · 그 아래 복도(y7..9) · 동쪽 = 간수실(x14..19)과 막사로 오르는 돌 계단.
+// 칸막이 벽(x13)의 앞면이 y7·y8 까지 내려와 복도와 간수실은 맨 아랫줄 y9 로만 이어진다.
 const CELL_PLAN = [
   "#####################",
   "#............#......#",
@@ -209,7 +211,7 @@ function cellMap(project: Project, exec: Exec): GameMap {
   (map as unknown as Rec).bgm = { mode: "custom", resourceId: "cc0-bgm-rtp-mys-002" };
   // 횃불 둘만 밝다 — 감방 쪽은 거의 어둡다.
   exec(project, "set_lighting_volume", {
-    mapId: FS2_CELL_ID, ambient: 0.62, color: "#0b0f1a", applyMode: "map",
+    mapId: FS2_CELL_ID, ambient: 0.5, color: "#0b0f1a", applyMode: "map",
     sources: [
       { id: "t1", at: { x: 14, y: 2 }, radius: 4, intensity: 0.9, color: "#ffb860", flicker: true },
       { id: "t2", at: { x: 19, y: 2 }, radius: 4, intensity: 0.9, color: "#ffb860", flicker: true },
@@ -253,7 +255,7 @@ function cellEvents(map: GameMap): void {
       item(FS2_BREAD_ITEM, 1),
       narrate("「무거운 납작빵」을 받았다.", { context: "system" }),
       say(RINO, "나는 오늘 밤 아무것도 못 봤다.\n…이름은 리노다. 이번엔 잊지 마라."),
-      route(rinoId, [{ kind: "setThrough", enabled: true }, { kind: "turn", dir: "right" }, ...walk(["down", "right", "right", "right", "right", "right", "right", "right", "up", "up", "up"]), { kind: "setThrough", enabled: false }]),
+      route(rinoId, [{ kind: "setThrough", enabled: true }, { kind: "turn", dir: "right" }, ...walk(["down", "down", "right", "right", "right", "right", "right", "right", "right", "up", "up", "up"]), { kind: "setThrough", enabled: false }]),
       setSw(SW_BREAD),
       say(ELENA, "카엘, 이 빵… 무게가 이상해."),
       say(KAEL, "반죽이 또 안 부풀었나 봐."),
@@ -262,10 +264,11 @@ function cellEvents(map: GameMap): void {
     ], { trigger: { kind: "auto" } }),
   ]);
   // 빵 — 짚 침대 위에서 쪼개 본다(아무 데서나: 감방 쪽 침대 둘 앞). 열쇠가 나온다.
+  // 침대 아래 칸(침대 그림의 아랫줄) — 앞(y5)에서 위를 보고 조사한다.
   for (const [i, at] of [{ x: 2, y: 4 }, { x: 10, y: 4 }].entries()) {
     const id = `ev_fs2_cell_bed_${i}`;
     addEvent(map, id, "짚 침대", at, [
-      page(`${id}_p`, "짚 침대", [], [narrate("짚이 눅눅하다. 오래 누울 곳은 아니다.")], { priority: "below" }),
+      page(`${id}_p`, "짚 침대", [], [narrate("짚이 눅눅하다. 오래 누울 곳은 아니다.")], { priority: "same" }),
       page(`${id}_bread`, "빵을 쪼갠다", [sw(SW_BREAD), sw(SW_KEY, false)], [
         narrate("침대 모서리에 납작빵을 대고 쪼갰다."),
         se("cc0-se-osx-wooded-box-open"),
@@ -277,8 +280,8 @@ function cellEvents(map: GameMap): void {
         narrate("「빵 속 감방 열쇠」를 얻었다.", { context: "system" }),
         say(ELENA, "토마 아저씨…!\n「꼭꼭 씹어라」가 이 뜻이었어."),
         say(KAEL, "작은 일들이 먼저 대답을 하네."),
-      ], { priority: "below" }),
-      page(`${id}_after`, "짚 침대", [sw(SW_KEY)], [narrate("빵 부스러기만 남았다.")], { priority: "below" }),
+      ], { priority: "same" }),
+      page(`${id}_after`, "짚 침대", [sw(SW_KEY)], [narrate("빵 부스러기만 남았다.")], { priority: "same" }),
     ]);
   }
   // 쇠살문 — 열쇠가 있으면 연다. 문 칸 자체가 이벤트(쇠창살 줄 가운데).
@@ -372,6 +375,107 @@ function hubNight(project: Project, exec: Exec, hubId: string): void {
   ensureSwitch(project, "sw_fs2_hub_arrived", "B1: 통금의 밤 광장에 나옴");
 }
 
+
+// ════════════════════════════════════════════════════════════════════
+// 5. B2 불 꺼진 왕도 — 순찰 기사(보이는 적, 들키면 전투)·창틈 주민(미레·토비·마르타)
+// ════════════════════════════════════════════════════════════════════
+
+export const FS2_PATROL_TROOP = "troop_fs2_curfew_patrol";
+const SW_SPOON = "sw_fs2_toby_spoon";
+const SW_CARRIAGE = "sw_fs2_heard_carriage";
+const SW_MIRE = "sw_fs2_mire_well";
+/** 순찰 기사 넷 — 광장 길목마다 하나. 앞쪽 부채꼴 시야라 등 뒤·그늘로 돌면 지나갈 수 있다. */
+const PATROLS: { at: Cell; axis: "horizontal" | "vertical"; length: number }[] = [
+  { at: { x: 44, y: 21 }, axis: "horizontal", length: 4 },
+  { at: { x: 36, y: 33 }, axis: "horizontal", length: 4 },
+  { at: { x: 27, y: 25 }, axis: "vertical", length: 3 },
+  { at: { x: 14, y: 21 }, axis: "horizontal", length: 4 },
+];
+/** 창틈 주민 — 문간에 서서 길을 알려 준다. */
+const MIRE_AT: Cell = { x: 13, y: 12 };
+const TOBY_AT: Cell = { x: 33, y: 27 };
+const MARTA_AT: Cell = { x: 50, y: 32 };
+const MARTA = "여관 주인 마르타";
+const MIRE = "빵집 아주머니 미레";
+const TOBY = "꼬마 토비";
+
+/** 제1막 광장 이벤트의 걷기 칩을 그대로 쓴다(새 사람 그림 금지). */
+function hubChip(project: Project, hubId: string, eventId: string): { textureKey: string; characterIndex: number } {
+  const ev = M(project, hubId).events.find((e) => e.id === eventId);
+  const g = ev?.pages?.[0]?.graphic as { sprite?: { id?: string }; pattern?: number } | undefined;
+  if (!g?.sprite?.id || typeof g.pattern !== "number") throw new Error(`[fallen-star act2] 칩을 못 찾음: ${eventId}`);
+  return { textureKey: g.sprite.id, characterIndex: decodeCharsetFrameIndex(g.pattern).characterIndex };
+}
+
+function curfewHub(project: Project, exec: Exec, hubId: string): void {
+  for (const [id, name] of [[SW_SPOON, "B2: 토비의 은수저"], [SW_CARRIAGE, "B2: 마르타 — 쇠 마차 북문으로"], [SW_MIRE, "B2: 미레 — 우물 길"]] as const) ensureSwitch(project, id, name);
+  exec(project, "upsert_troop", { troop: {
+    id: FS2_PATROL_TROOP, name: "통금 순찰대", enemyIds: ["enemy_fs_valen_soldier", "enemy_fs_valen_spearman", "enemy_fs_valen_soldier"],
+  } });
+  // 점령된 밤의 광장은 「필드」다 — 마을 판정이면 보이는 적을 거절한다(set_map_properties mapRole).
+  exec(project, "set_map_properties", { mapId: FS2_HUB_NIGHT_ID, mapRole: "field" });
+  const knight = hubChip(project, hubId, "ev_fs_knight");
+  PATROLS.forEach((p, i) => {
+    exec(project, "place_field_enemy", {
+      mapId: FS2_HUB_NIGHT_ID, x: p.at.x, y: p.at.y, troopId: FS2_PATROL_TROOP, behavior: "chase",
+      patrol: { length: p.length, axis: p.axis }, sightRange: 5, vision: "cone", pace: "normal", approachStyle: "dash",
+      graphic: knight, alert: "exclamation", respawnSec: 45, clearSwitchId: `sw_fs2_patrol_${i}_down`,
+    });
+  });
+  // 창틈 불빛 — 주민이 선 문간마다 작은 등잔(통금이라 다른 창은 다 어둡다).
+  exec(project, "set_lighting_volume", {
+    mapId: FS2_HUB_NIGHT_ID, applyMode: "map", ambient: 0.7, color: "#0a1024",
+    sources: [
+      { id: "lamp", at: { kind: "player" }, radius: 3, intensity: 0.45, color: "#9fb4ff" },
+      ...[MIRE_AT, TOBY_AT, MARTA_AT].map((c, i) => ({ id: `crack${i}`, at: { x: c.x, y: c.y - 1 }, radius: 2, intensity: 0.7, color: "#ffc070", flicker: true })),
+    ],
+  });
+  const mire = hubChip(project, hubId, "ev_fs_baker");
+  const toby = hubChip(project, hubId, "ev_fs_kid");
+  exec(project, "place_npc", {
+    mapId: FS2_HUB_NIGHT_ID, id: "ev_fs2_night_mire", name: MIRE, x: MIRE_AT.x, y: MIRE_AT.y, movement: "fixed", graphic: mire,
+    pages: [
+      { name: "문틈", commands: [
+        say(MIRE, "(문틈으로) 쉿— 너희구나.\n리노가 빵은 잘 넣어 줬니?"),
+        say(KAEL, "꼭꼭 씹었어요. 덕분에요."),
+        say(MIRE, "천문대 정문엔 기사가 서 있어.\n광장 우물로 가. 바닥 사다리가 서고 밑으로 이어져."),
+        setSw(SW_MIRE),
+      ] },
+      { name: "문틈(다시)", conditions: [sw(SW_MIRE)], commands: [say(MIRE, "우물이야. 등불 든 기사 앞으론 가지 말고.")] },
+    ],
+  });
+  exec(project, "place_npc", {
+    mapId: FS2_HUB_NIGHT_ID, id: "ev_fs2_night_toby", name: TOBY, x: TOBY_AT.x, y: TOBY_AT.y, movement: "fixed", graphic: toby,
+    pages: [
+      { name: "기둥 뒤", commands: [
+        say(TOBY, "형! 여기, 여기."),
+        say(TOBY, "형, 이거. 은수저.\n이번엔 말하고 가져가는 거야. 형한테."),
+        se("cc0-se-orp-inventory-cloth"),
+        item(FS_SILVER_SPOON, 1),
+        narrate("「은수저」를 받았다.", { context: "system" }),
+        say(TOBY, "별한테 줄 선물. 이번엔 형이 갖다 줘."),
+        say(KAEL, "…응. 꼭 전할게."),
+        setSw(SW_SPOON),
+      ] },
+      { name: "기둥 뒤(다시)", conditions: [sw(SW_SPOON)], commands: [say(TOBY, "엄마가 깨기 전에 들어가야 해. 형도 조심해.")] },
+    ],
+  });
+  exec(project, "place_npc", {
+    mapId: FS2_HUB_NIGHT_ID, id: "ev_fs2_night_marta", name: MARTA, x: MARTA_AT.x, y: MARTA_AT.y, movement: "fixed",
+    graphic: { textureKey: "tex_easyrpg_charset_people1", characterIndex: 5 },
+    pages: [
+      { name: "여관 문간", commands: [
+        say(MARTA, "새벽녘에 발렌이 쇠로 덮은 마차를 몰고\n북문으로 나갔어요."),
+        say(MARTA, "마차 창에 은빛 머리카락이 보였어요.\n…창을 두드리더라고요. 세 번."),
+        say(KAEL, "세 번?"),
+        say(ELENA, "…「달의 아이」 얘기랑 같아."),
+        setSw(SW_CARRIAGE),
+      ] },
+      { name: "여관 문간(다시)", conditions: [sw(SW_CARRIAGE)], commands: [say(MARTA, "북문 쪽은 오늘 밤 기사가 배로 섰어요.\n먼저 하넬 선생님을 찾아가 봐요.")] },
+    ],
+  });
+}
+
 // ════════════════════════════════════════════════════════════════════
 
 export interface FallenAct2Ids { hub: string }
@@ -381,6 +485,7 @@ export function applyFallenAct2Opening(project: Project, exec: Exec, ids: Fallen
   cellMap(project, exec);
   barracks(project, exec);
   hubNight(project, exec, ids.hub);
+  curfewHub(project, exec, ids.hub);
   cellEvents(M(project, FS2_CELL_ID));
   bridge(project, exec);
 }
