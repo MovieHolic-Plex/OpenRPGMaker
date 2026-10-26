@@ -73,6 +73,8 @@ function makeRendererScene(
     add: {
       container: vi.fn(() => makeContainer()),
       graphics: vi.fn(() => ({
+        // The ghost renderer reuses one sweep graphic and clears it each frame (agentPreviewRenderers.ts).
+        clear: vi.fn(),
         fillStyle: vi.fn(),
         fillRect: vi.fn(),
         lineStyle: vi.fn(),
