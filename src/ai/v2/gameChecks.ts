@@ -942,7 +942,7 @@ export function unaskedChanges(before: Project, after: Project, task: string): s
         const size = (ev.pages ?? []).reduce((n, pg) => n + (pg.commands?.length ?? 0), 0);
         const auto = (ev.pages ?? []).some((pg) => ["auto", "parallel"].includes(String((pg.trigger as { kind?: string } | undefined)?.kind ?? "")));
         if (size < 3) continue;
-        out.push(`[게임 검사 부작용] 요청에 없는데 기존 이벤트 「${ev.name || ev.id}」(${ev.id}${auto ? ", 자동 실행 컷신" : ""}, 명령 ${size}개)를 지웠다 — 그 장면·대사가 게임에서 사라진다. 요청과 상관없으면 같은 내용으로 되살리고, 일부러 대신했으면 보고에 무엇을 왜 지웠는지 적는다.`);
+        out.push(`[게임 검사 부작용] 요청에 없는데 기존 이벤트 「${ev.name || ev.id}」(${ev.id}${auto ? ", 자동 실행 컷신" : ""}, 명령 ${size}개)를 지웠다 — 그 장면·대사가 게임에서 사라진다. 요청과 상관없으면 restore_event{eventId:"${ev.id}"} 로 요청 전 그대로 되살리고(기억으로 다시 쓰지 않는다), 일부러 대신했으면 보고에 무엇을 왜 지웠는지 적는다.`);
       }
     }
   }
