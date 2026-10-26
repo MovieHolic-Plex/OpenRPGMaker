@@ -7,6 +7,7 @@
 import { applyRomanceDefaults } from "@/project/romancePreset";
 import { GENRE_LOCK_PRESETS } from "@/project/genreLock";
 import { fieldMenu, storyFieldMenu } from "@/project/fieldMenu";
+import { gameHasCombat } from "@/project/combatPresence";
 import { resolveNpcGraphic } from "@/assets/charsetQuery";
 import { findCharsetAsset } from "@/assets/charsetCatalog";
 import { charsetBattlerForCharacter } from "@/assets/charsetBattlers";
@@ -54,6 +55,8 @@ export function applyStorySetupDefaults(project: Project, task: string, freshSta
   }
   const hero = redressStoryHero(project, task);
   if (hero) applied.push(hero);
+  // 주인공 차림을 바꾸지 않았어도(이미 다른 칩) 공장 기본 무기·방어구는 뺀다 — 전투 없는 게임에 검·방패·갑옷이 남았다(J88).
+  if (!gameHasCombat(project) && stripFactoryHeroGear(project)) applied.push("주인공 기본 무기·방어구 뺌");
   // ESC 메뉴도 전투 없는 기본으로 — 스킬·장비·파티가 아무 일도 안 하는 JRPG 틀로 읽혔다(2026-10-25 판정 J39). 저작한 메뉴·연애 메뉴는 그대로.
   if (!fieldMenu(project)) {
     project.meta.oprnFieldMenu = storyFieldMenu();
@@ -62,8 +65,18 @@ export function applyStorySetupDefaults(project: Project, task: string, freshSta
   return applied;
 }
 
-/** 공장 기본 주인공 장비(검·떡갈나무 방패) — 전투 없는 이야기에서 들고 다닐 까닭이 없다. */
-const FACTORY_HERO_ARMS: Readonly<Record<string, string>> = { weapon: "equip_sword", shield: "equip_oak_shield" };
+/** 공장 기본 주인공 장비(검·떡갈나무 방패·가죽 갑옷·여행자 모자·집중 부적) — 전투 없는 이야기에서 들고 다닐 까닭이 없다(J43·J88). */
+export const FACTORY_HERO_ARMS: Readonly<Record<string, string>> = { weapon: "equip_sword", shield: "equip_oak_shield", armor: "equip_leather_armor", helmet: "equip_traveler_hat", accessory: "equip_focus_charm" };
+
+/** 전투 없는 게임: 주인공 시작 장비 중 공장 기본값만 뺀다(저작자가 고른 장비는 그대로). 뺀 칸 수. */
+export function stripFactoryHeroGear(project: Project): number {
+  const hero = project.database.actors.find((actor) => actor.id === "actor_hero") ?? project.database.actors[0];
+  const equipment = hero?.initialEquipment;
+  if (!equipment) return 0;
+  let n = 0;
+  for (const [slot, id] of Object.entries(FACTORY_HERO_ARMS)) if (equipment[slot] === id) { delete equipment[slot]; n++; }
+  return n;
+}
 
 /**
  * 전투 없는 이야기 게임의 손대지 않은 기본 주인공(판타지 칩 Actor1 0번, 검과 방패를 든 두건 검사)을 평범한 사람 차림으로 갈아입힌다(J43).
@@ -88,9 +101,7 @@ function redressStoryHero(project: Project, task: string): string | undefined {
     const face = sharedFaceIdForCharset(pick.textureKey, pick.characterIndex);
     if (face) hero.faceResourceId = face; else delete hero.faceResourceId;
   }
-  const equipment = hero.initialEquipment ?? {};
-  for (const [slot, id] of Object.entries(FACTORY_HERO_ARMS)) if (equipment[slot] === id) delete equipment[slot];
-  return `주인공 차림 「${pick.label}」(${pick.appearance ?? query}) — 판타지 검사 기본 칩·검·방패를 뺐다`;
+  return `주인공 차림 「${pick.label}」(${pick.appearance ?? query}) — 판타지 검사 기본 칩을 뺐다`;
 }
 
 /** 빈 프로젝트(이벤트·엔딩 없음)인가 — 첫 장소를 짓는 요청을 게임 시작으로 본다. */

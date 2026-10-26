@@ -10,6 +10,11 @@ import { findOpeningStillMood } from "@/assets/openingStillMoods";
 import { unreachableCriticalEvents } from "./puzzleChecks";
 import { withoutIntentNote } from "@/ai/piAgent/monsterGameRequest";
 import { tileAt } from "@/project/collision";
+import { gameHasCombat } from "@/project/combatPresence";
+import { hiddenStairExits } from "@/project/stairs/fit";
+import { unlitDarkFinding } from "@/qa/gameCheck/visualVoid";
+import { fieldMenu } from "@/project/fieldMenu";
+import { FACTORY_HERO_ARMS } from "./genreDefaults";
 
 type Obj = Record<string, unknown>;
 export interface ShipBlocker { readonly id: string; readonly message: string; readonly evidence: string }
@@ -27,7 +32,7 @@ function factory(): Project {
 /** 편집기 기본값 목록(LEDGER 의 목록과 같은 순서). 검사·문서가 같은 이름을 쓴다. */
 export const EDITOR_DEFAULT_INVENTORY = [
   "title-name", "title-image", "opening", "opening-music", "hud", "window-look", "map-bgm", "battle-bgm", "battle-background",
-  "game-over", "ending-screen", "party-names", "party-faces", "hero-look", "placeholder-text",
+  "game-over", "ending-screen", "party-names", "party-faces", "hero-look", "placeholder-text", "combat-leftovers",
 ] as const;
 
 /** 뼈대·자리표시 글(엔딩·이벤트 이름이나 대사에 남으면 안 된다). */
@@ -126,6 +131,16 @@ export function editorDefaultsLeft(project: Project): ShipBlocker[] {
   if (facesLeft.length) add("party-faces", `파티의 얼굴이 편집기 기본 초상(${facesLeft.map((a) => a.name).join("·")})이다 — 이 인물에 맞는 얼굴을 고르거나(list_npc_graphics) 얼굴을 비운다.`, facesLeft.map((a) => `${a.id}:${a.faceResourceId}`).join(","));
   const looksLeft = party.filter((a) => { const fa = fActors.get(a.id); return !!fa && fa.characterResourceId === a.characterResourceId && (fa.characterIndex ?? 0) === (a.characterIndex ?? 0); });
   if (looksLeft.length) add("hero-look", `파티의 모습이 편집기 기본 칩(${looksLeft.map((a) => a.name).join("·")}, 판타지 검사)이다 — list_npc_graphics{query:<외형>} 로 이 게임의 주인공 모습을 골라 upsert_actor 로 바꾼다.`, looksLeft.map((a) => `${a.id}:${a.characterResourceId}`).join(","));
+
+  // 9b) 전투 없는 게임의 전투 기본값(J88): ESC 메뉴의 스킬·장비·상태·진형 항목, 주인공의 공장 기본 무기·방어구.
+  //     (메뉴 첫 화면의 직업·Lv·HP·MP·EX·돈 칸은 플레이어가 전투·돈 유무로 스스로 숨긴다 — project/combatPresence.ts.)
+  if (!gameHasCombat(project)) {
+    const menu = fieldMenu(project);
+    const combatRows = (menu?.entries ?? []).filter((row) => ["skills", "equipment", "status", "row", "formation", "battle-reports"].includes(row.command)).map((row) => row.label);
+    if (!menu) combatRows.push("편집기 기본 메뉴(스킬·장비·상태)");
+    const gear = party.flatMap((a) => Object.entries(a.initialEquipment ?? {}).filter(([slot, id]) => id && FACTORY_HERO_ARMS[slot] === id).map(([slot, id]) => `${a.name} ${slot}:${String(id)}`));
+    if (combatRows.length || gear.length) add("combat-leftovers", `전투가 없는 게임인데 전투 기본값이 남았다 — ${[...(combatRows.length ? [`ESC 메뉴 ${combatRows.join("·")}`] : []), ...(gear.length ? [`시작 장비 ${gear.join(", ")}`] : [])].join(" / ")}. configure_field_menu{preset:'story'} 로 메뉴를 이야기용으로, upsert_actor{id, initialEquipment:{}} 로 기본 무기·방어구를 뺀다(전투 없는 게임에 검·방패를 «되돌리지» 않는다).`, [...combatRows, ...gear].join(" | ").slice(0, 200));
+  }
 
   // 10) 자리표시 글
   const placeholders: string[] = [];
@@ -378,7 +393,17 @@ export function shipBlockers(project: Project, task: string): ShipBlocker[] {
   if (!wantsWholeGame(task)) return spoilers;
   // 엔딩 길의 열쇠·금고·문·엔딩 이벤트에 걸어 닿지 못하면 게임을 끝낼 수 없다(J75) — 출하 차단.
   const unreachable = unreachableCriticalEvents(project).map((message): ShipBlocker => ({ id: "critical-unreachable", message: `${message}. 이벤트를 걸어 닿는 칸 옆으로 move_event 하거나 막는 가구를 치운다.`, evidence: message.slice(0, 120) }));
-  return [...editorDefaultsLeft(project), ...endingClosureProblems(project), ...openingWithoutPlace(project), ...offPremiseArt(project, task), ...defaultPlaceLeaks(project, task), ...titleMismatch(project, task), ...requestedFeatureGaps(project, task), ...unreachable, ...spoilers];
+  // 계단 출구가 숨은 칸이다(J87) — 계단 앞에서 계단 쪽으로 걸어도 이동이 없다.
+  const hiddenExits = hiddenStairExits(project).slice(0, 4);
+  const hidden: ShipBlocker[] = hiddenExits.length ? [{ id: "exit-hidden", message: `계단 출구를 계단 쪽으로 걸어서는 탈 수 없다: ${hiddenExits.join(" · ")}. create_transfer_pair 를 계단 그림 칸으로 다시 부르면 계단 폭 전체가 출구가 된다.`, evidence: hiddenExits[0]!.slice(0, 120) }] : [];
+  // 짙은 어둠에 주인공 빛이 없으면 걸을 바닥이 검은 구멍이다(J89).
+  // 이벤트가 실행 중에 주인공 빛을 켜는 게임(setLighting 에 player 광원)은 기본 조명만 보고 막지 않는다.
+  const runtimePlayerLight = allCommands(project).some(({ cmd }) => cmd.kind === "setLighting" && JSON.stringify(cmd).includes('"at":"player"'));
+  const unlit: ShipBlocker[] = runtimePlayerLight ? [] : Object.values(project.maps).flatMap((map) => {
+    const finding = unlitDarkFinding(map);
+    return finding ? [{ id: "dark-unlit", message: `「${map.name ?? map.id}」(${map.id}) ${finding.message.replace(/^시각 공백: /u, "")}`, evidence: `${map.id} ambient ${map.defaultLighting?.ambient}` }] : [];
+  }).slice(0, 3);
+  return [...hidden, ...unlit, ...editorDefaultsLeft(project), ...endingClosureProblems(project), ...openingWithoutPlace(project), ...offPremiseArt(project, task), ...defaultPlaceLeaks(project, task), ...titleMismatch(project, task), ...requestedFeatureGaps(project, task), ...unreachable, ...spoilers];
 }
 
 /** 게임이 «아직 안 지어졌다»는 신호 — 뼈대 자리표시만 남았거나 엔딩이 없다(편집기 기본 HUD·창 같은 마감 항목은 여기서 보지 않는다). */

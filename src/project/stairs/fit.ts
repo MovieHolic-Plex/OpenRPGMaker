@@ -2,7 +2,7 @@
 // 계단 층 이동 맞추기 — 입구 계약대로 이동 이벤트는 계단 그림 칸(trigger)에, 도착은 앞 칸(approach)에 계단을 등지고.
 // 조수 도구(build_hand_interior_room 의 links, create_transfer_pair)가 쓰기 직후 부른다. 계약 없는 계단·문은 건드리지 않는다.
 import type { Command, GameEvent, GameMap, Project } from "../types";
-import { stairApproachCells, stairArrivalFacing, stairTriggerCells } from "./contract";
+import { SIDE_DELTA, stairApproachCells, stairArrivalFacing, stairTriggerCells } from "./contract";
 import { findPlacedStairs, walkableCell, type FoundStair } from "./detect";
 
 type Transfer = Extract<Command, { kind: "transfer" }>;
@@ -49,6 +49,26 @@ export function fitStairTransfers(project: Project, mapIds: readonly string[]): 
       taken.add(`${e.x},${e.y}`);
       // 막힌 계단 그림 칸은 부딪힘으로 탄다(같은 층 접촉 — 런타임은 same + overlapForbidden 만 막는 이벤트로 본다).
       if (s.contract.mode === "bump") for (const page of e.pages ?? []) Object.assign(page as object, { priority: "same", overlapForbidden: true });
+    }
+  }
+  // 계단 폭 전체가 출구다(J87, 2026-10-26 검은 장미 저택): 3칸 계단의 가운데 한 칸에만 이동을 달아, 왼쪽 앞 칸에 내린 사람이
+  // 계단 쪽(위)으로 걸어도 아무 일이 없었다 — 옆 칸 두 번만 통했다. 이동이 달린 계단의 나머지 trigger 칸에도 같은 이동을 단다.
+  for (const [mapId, list] of stairs) {
+    const map = project.maps[mapId] as GameMap;
+    for (const s of list) {
+      const trig = stairTriggerCells(s);
+      const owner = (map.events ?? []).find((e) => trig.some((t) => t.x === e.x && t.y === e.y) && transfersOf(e).some((t) => t.mapId !== mapId));
+      if (!owner) continue;
+      for (const t of trig) {
+        if ((map.events ?? []).some((e) => e.x === t.x && e.y === t.y)) continue;
+        if (s.contract.mode === "walk" && !walkableCell(project, map, t.x, t.y)) continue;
+        const copy = structuredClone(owner) as GameEvent;
+        copy.id = `${owner.id}__w${t.x - owner.x}_${t.y - owner.y}`;
+        copy.x = t.x; copy.y = t.y;
+        for (const [i, page] of (copy.pages ?? []).entries()) (page as { id?: string }).id = `${copy.id}_page${i}`;
+        map.events.push(copy);
+        notes.push(`${mapId} 계단 ${s.kitId} 폭 전체를 출구로 — (${t.x},${t.y}) 에도 ${owner.id} 와 같은 이동`);
+      }
     }
   }
   const srcCache = new Map<string, FoundStair[]>();
@@ -108,4 +128,26 @@ export function stairPairMismatch(project: Project, a: { mapId: string; x: numbe
   if (!sa || !sb || sa.contract.leads !== sb.contract.leads) return undefined;
   const ko = sa.contract.leads === "up" ? "오르는" : "내려가는";
   return `계단 방향이 짝이 아니다 — ${a.mapId} 의 ${sa.kitId} 와 ${b.mapId} 의 ${sb.kitId} 가 둘 다 ${ko} 계단이다. 위층에는 내려가는 계단, 아래층에는 오르는 계단을 둔다(stair-misfacing).`;
+}
+
+/**
+ * 계단 출구를 «자연스러운 방향»으로 탈 수 있나(J87): 이동이 달린 계단의 앞 칸마다 계단 쪽으로 한 걸음 가면 이동 칸에 닿아야 한다.
+ * 못 닿는 앞 칸 목록(사람이 읽는 문장). 계단 그림 한 칸에만 이동이 있으면 다른 앞 칸에서 위로 걸어도 아무 일이 없다.
+ */
+export function hiddenStairExits(project: Project): string[] {
+  const out: string[] = [];
+  for (const map of Object.values(project.maps)) {
+    for (const s of findPlacedStairs(project, map).filter((st) => st.contract.leads !== "same")) {
+      const trig = stairTriggerCells(s);
+      const exitAt = (x: number, y: number) => (map.events ?? []).some((e) => e.x === x && e.y === y && transfersOf(e).some((t) => t.mapId !== map.id));
+      if (!trig.some((t) => exitAt(t.x, t.y))) continue;
+      const side = s.contract.side;
+      for (const a of stairApproachCells(s)) {
+        if (!walkableCell(project, map, a.x, a.y)) continue;
+        const toward = side === "any" ? [...trig].sort((p, q) => dist(p, a) - dist(q, a))[0]! : { x: a.x - SIDE_DELTA[side][0], y: a.y - SIDE_DELTA[side][1] };
+        if (!exitAt(toward.x, toward.y)) out.push(`${map.name ?? map.id}: 계단 ${s.kitId} 앞 (${a.x},${a.y}) 에서 계단 쪽으로 걸어도 (${toward.x},${toward.y}) 에 이동이 없다`);
+      }
+    }
+  }
+  return out;
 }
