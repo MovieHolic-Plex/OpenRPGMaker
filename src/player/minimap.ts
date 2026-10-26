@@ -31,12 +31,20 @@ const SUPPRESS_TEST_IDS = [
   "ending-screen",
 ] as const;
 
+// One selector. PlayScene asks every frame; the old loop walked the host and then
+// the whole document once per id (up to 24 misses while the field is clear).
+const SUPPRESS_SELECTOR = SUPPRESS_TEST_IDS.map((id) => `[data-testid='${id}']`).join(",");
+
 function isSuppressed(host: HTMLElement | null): boolean {
   if (!host) return true;
-  return SUPPRESS_TEST_IDS.some(
-    (id) => host.querySelector(`[data-testid='${id}']`) !== null || document.querySelector(`[data-testid='${id}']`) !== null,
-  );
+  // Host first: a detached dialogue host still hides the map, and this walk is small.
+  if (host.querySelector(SUPPRESS_SELECTOR)) return true;
+  // Shop, battle, and the title can sit outside the dialogue host (viewport or layout).
+  const doc = host.ownerDocument;
+  return Boolean(doc?.querySelector(SUPPRESS_SELECTOR));
 }
+
+const dotPositionText = new WeakMap<MinimapRuntimeState, string>();
 
 function effectiveScale(map: GameMap, setting: MapMinimapSetting): number {
   if (setting.scale !== undefined) return clamp(setting.scale, 0.08, 0.5);
@@ -195,8 +203,13 @@ export function syncMinimapPosition(
   const px = tileX * ts * state.scale;
   const py = tileY * ts * state.scale;
   const dotSize = 5;
-  state.dot.style.left = `${px - dotSize / 2}px`;
-  state.dot.style.top = `${py - dotSize / 2}px`;
+  const left = `${px - dotSize / 2}px`;
+  const top = `${py - dotSize / 2}px`;
+  const next = `${left}|${top}`;
+  if (dotPositionText.get(state) === next) return;
+  dotPositionText.set(state, next);
+  state.dot.style.left = left;
+  state.dot.style.top = top;
 }
 
 export function syncMinimapVisibility(
@@ -206,9 +219,11 @@ export function syncMinimapVisibility(
 ): boolean {
   const suppressed = isSuppressed(host);
   const hidden = suppressed || userHidden;
+  const display = hidden ? "none" : "";
+  if (state.hidden === hidden && state.root.hidden === hidden && state.root.style.display === display) return hidden;
   state.hidden = hidden;
   state.root.hidden = hidden;
-  state.root.style.display = hidden ? "none" : "";
+  state.root.style.display = display;
   return hidden;
 }
 
