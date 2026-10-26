@@ -179,21 +179,26 @@ describe("event editor UI density", () => {
     expect(host.querySelector('[data-testid^="event-draft-validation-issue-"]')).toBeNull();
   });
 
-  it("keeps the command inspector hidden until a command is selected", () => {
+  // 옛 계약: 명령을 고르기 전엔 인스펙터가 숨겨졌다. 지금은 인스펙터 칼럼이 항상 페이지 미리보기를
+  // 빈 상태로 보여 준다(content.ts setCommandInspectorHost 의 emptyPreview, commandInspector.ts 가
+  // emptyPreview 가 있으면 미리보기만 그리고 돌아온다). 숨김·본문 폼·제목은 더 이상 없다.
+  it("keeps the command inspector column as a preview-first surface, before and after selecting a command", () => {
     renderEventEditorDynamic(host, store.getCurrent().startMapId, "ev_herbalist");
     const workbench = host.querySelector<HTMLElement>(".event-editor-workbench");
     const inspector = host.querySelector<HTMLElement>('[data-testid="event-editor-inspector"]');
     const firstCommand = host.querySelector<HTMLElement>(".cmd-item .cmd-head");
 
     expect(workbench).toBeTruthy();
-    expect(inspector?.hidden).toBe(true);
+    expect(inspector?.hidden).toBe(false);
+    expect(inspector?.querySelector(".event-preview-heading")?.textContent).toBe("미리보기");
     expect(workbench?.classList.contains("has-command-inspector")).toBe(false);
 
     firstCommand?.click();
 
     expect(inspector?.hidden).toBe(false);
     expect(workbench?.classList.contains("has-command-inspector")).toBe(true);
-    expect(inspector?.querySelector('[data-testid="event-inspector-body"]')).toBeTruthy();
+    expect(inspector?.querySelector('[data-testid="event-inspector-preview"]')).toBeTruthy();
+    expect(inspector?.querySelector('[data-testid="event-inspector-body"]')).toBeNull();
   });
 
   it("shows active switch conditions and opens their controls from the settings rail", () => {
@@ -220,10 +225,12 @@ describe("event editor UI density", () => {
     expect(host.querySelector<HTMLSelectElement>('[data-testid="event-page-switch-condition-value"]')?.value).toBe("on");
 
     selectGroup(host, "when");
-    // expand-then-assert: condition grid controls become available
-    expect(host.querySelector('[data-testid="event-page-switch-condition-input"]')).toBeTruthy();
-    expect(host.querySelector('[data-testid="event-condition-chip-variable"]')?.getAttribute("aria-pressed")).toBe("false");
-    expect(host.querySelector('[data-testid="event-condition-row-변수"]')).toBeNull();
+    // 「언제 보이나요」 헤더는 레일 안에서 펼치지 않고 등장 조건 모달(문서에 붙음)을 연다 — 조건 컨트롤은 모달 안에 있다.
+    expect(document.querySelector('[data-testid="event-condition-modal"]')).toBeTruthy();
+    expect(document.querySelector('[data-testid="event-page-switch-condition-input"]')).toBeTruthy();
+    expect(document.querySelector('[data-testid="event-condition-chip-variable"]')?.getAttribute("aria-pressed")).toBe("false");
+    expect(document.querySelector('[data-testid="event-condition-row-변수"]')).toBeNull();
+    document.querySelector<HTMLElement>('[data-testid="event-condition-modal-done"]')?.click();
   });
 
   it("expands movement section for nested movement controls without burying trigger", () => {
@@ -245,7 +252,9 @@ describe("event editor UI density", () => {
     expect(host.querySelector('[data-testid="event-classic-trigger"]')).toBeTruthy();
   });
 
-  it("shows a compact choices inspector title: prompt only, no options/cancel", () => {
+  // 옛 계약: 인스펙터 머리(event-inspector-title)가 선택지 질문만 짧게 보여 줬다. 인스펙터가 미리보기 전용이 되며
+  // 머리·제목·카드 힌트가 사라졌다(commandInspector.ts emptyPreview 조기 반환) — 옛 제목 단언은 지금 상태 단언으로 바꿨다.
+  it("renders a choices command in the preview-only inspector without a title or card hint", () => {
     const choicesCmd: Command = {
       kind: "choices",
       prompt: "두 길목을 정리해 줄래?",
@@ -264,16 +273,14 @@ describe("event editor UI density", () => {
     renderEventEditorDynamic(host, store.getCurrent().startMapId, "ev_herbalist");
     host.querySelector<HTMLElement>(".cmd-item .cmd-head")?.click();
 
-    const title = host.querySelector('[data-testid="event-inspector-title"]');
-    expect(title?.textContent).toBe("두 길목을 정리해 줄래?");
-    expect(title?.textContent).not.toContain("1.맡는다");
-    expect(title?.textContent).not.toContain("나중에");
-    expect(title?.textContent).not.toContain("취소");
-    // Default density is the directly editable form; the old duplicate card hint is absent.
+    expect(host.querySelector('[data-testid="event-inspector-preview"]')).toBeTruthy();
+    expect(host.querySelector('[data-testid="event-inspector-title"]')).toBeNull();
     expect(host.querySelector(".event-inspector-card-hint")).toBeNull();
   });
 
-  it("falls back to `선택지 N개` when the choices prompt is empty", () => {
+  // 옛 계약: 빈 질문이면 인스펙터 제목이 `선택지 N개` 로 대체됐다. 제목 자체가 없어졌으므로(위 테스트 주석) 빈 질문 선택지도
+  // 같은 미리보기 전용 상태임을 단언한다. 제목 대체 문구 자체는 이제 inspectorTitle 이 인스펙터에 그려지지 않는다.
+  it("renders a choices command with an empty prompt in the preview-only inspector", () => {
     const choicesCmd: Command = {
       kind: "choices",
       prompt: "   ",
@@ -291,7 +298,8 @@ describe("event editor UI density", () => {
     renderEventEditorDynamic(host, store.getCurrent().startMapId, "ev_herbalist");
     host.querySelector<HTMLElement>(".cmd-item .cmd-head")?.click();
 
-    expect(host.querySelector('[data-testid="event-inspector-title"]')?.textContent).toBe("선택지 2개");
+    expect(host.querySelector('[data-testid="event-inspector-preview"]')).toBeTruthy();
+    expect(host.querySelector('[data-testid="event-inspector-title"]')).toBeNull();
     expect(host.querySelector(".event-inspector-card-hint")).toBeNull();
   });
 
@@ -299,10 +307,12 @@ describe("event editor UI density", () => {
     const mapId = store.getCurrent().startMapId;
     renderEventEditorDynamic(host, mapId, "ev_herbalist");
     selectGroup(host, "when");
-    expect(host.querySelectorAll(".event-condition-row")).toHaveLength(0);
-    const chip = host.querySelector<HTMLButtonElement>('[data-testid="event-condition-chip-variable"]');
+    // 조건 컨트롤은 「언제 보이나요」 모달(문서에 붙음)로 옮겨 가므로 document 에서 찾는다.
+    expect(document.querySelectorAll(".event-condition-row")).toHaveLength(0);
+    const chip = document.querySelector<HTMLButtonElement>('[data-testid="event-condition-chip-variable"]');
     expect(chip?.getAttribute("aria-pressed")).toBe("false");
     chip?.click();
+    document.querySelector<HTMLElement>('[data-testid="event-condition-modal-done"]')?.click();
     expect(store.getCurrent().maps[mapId]?.events[0]?.pages?.[0]?.conditions).toContainEqual(expect.objectContaining({ kind: "variable" }));
     host.replaceChildren();
     renderEventEditorDynamic(host, mapId, "ev_herbalist");
