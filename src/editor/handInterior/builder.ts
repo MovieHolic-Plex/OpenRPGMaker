@@ -324,7 +324,7 @@ export function faceSeatsToTables(objects: readonly HandInteriorObject[], tables
  * tileset 이 있으면 통행을 그 정의로 계산한다(없으면 BFS 생략).
  */
 /** 벽면 걸이인데 앞 칸이 탈 자리인 탈것 문(J45: 전철 차내는 남쪽 바깥 출구 대신 이 문으로 드나든다). */
-const VEHICLE_DOORS: ReadonlySet<string> = new Set(["st-car-door"]);
+export const VEHICLE_DOORS: ReadonlySet<string> = new Set(["st-car-door"]);
 
 export function buildHandInteriorLayers(input: HandInteriorInput, tileset?: TilesetDef, S: HandInteriorSpec = HAND_INTERIOR_SPEC): HandInteriorLayers {
   const issues: HandInteriorIssue[] = [];
