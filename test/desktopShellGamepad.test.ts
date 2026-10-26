@@ -231,14 +231,19 @@ describe("desktop shell gamepad", () => {
     expect(downs.filter((event) => event.key === "Enter")).toHaveLength(1);
 
     axisY = 0;
+    const beforeRelease = downs.length;
     now = 4_000;
     flushFrame(frames);
-    expect(downs.filter((event) => event.key === "ArrowDown")).toHaveLength(4);
+    // 엣지 1 + 반복 2 = ArrowDown 3. 위 단언들(1520 길이 3 · 1533 반복 2)이 그 둘을 이미 고정하므로
+    // 총 keydown 은 Enter 까지 4 다 — 이 자리에서 4 를 기대하던 것은 총 개수와 ArrowDown 개수를 혼동한 것이다.
+    expect(downs.filter((event) => event.key === "ArrowDown")).toHaveLength(3);
     expect(downs.filter((event) => event.key === "Enter")).toHaveLength(1);
+    // 릴리스 프레임이 새 keydown 을 만들지 않아야 "반복이 멈춘다" 가 증명된다.
+    expect(downs).toHaveLength(beforeRelease);
 
     now = 5_000;
     flushFrame(frames);
-    expect(downs.filter((event) => event.key === "ArrowDown")).toHaveLength(4);
+    expect(downs).toHaveLength(beforeRelease);
     expect(downs.filter((event) => event.key === "Enter")).toHaveLength(1);
   });
 });
