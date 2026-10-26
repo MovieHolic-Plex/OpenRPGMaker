@@ -14,19 +14,25 @@ import {
   terrainMayReach,
 } from "@/project/tilePassabilityComponents";
 import type { GameMap, Project } from "@/project/types";
+import { RETIRED_COMBINED_TOWN_TILESET_ID, withRetiredEasyRpgTilesets } from "./support/retiredEasyRpgTilesets";
 
 const SIZE = 14;
 
 function blankMap(id: string, size = SIZE): GameMap {
   const map = createBlankMap("성분 테스트", size, size);
   map.id = id;
+  // TILE.GRASS / TILE.WATER are combined-town chip numbers; since the 2026-10-07 purge the default sheet is beodeul_city,
+  // where those numbers mean other (passable) chips. Pin the map to the retired combined-town sheet they were written for.
+  map.tilesetId = RETIRED_COMBINED_TOWN_TILESET_ID;
   map.lowerTiles = new Array(size * size).fill(TILE.GRASS);
   map.upperTiles = new Array(size * size).fill(-1);
   return map;
 }
 
 function projectWith(map: GameMap): Project {
-  const project = createBlankProject();
+  const project = withRetiredEasyRpgTilesets(createBlankProject(), { interiorHarness: false });
+  const tileset = project.tilesets[map.tilesetId];
+  if (tileset) map.tileSize = tileset.tileSize;
   project.maps = { [map.id]: map };
   project.mapTree = { mapId: map.id, children: [] };
   project.startMapId = map.id;

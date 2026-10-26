@@ -35,10 +35,10 @@ describe("exported player asset resolution", { timeout: 120_000 }, () => {
     const { normalizeWarmUrl } = await import("@/assets/imageWarmQueue");
 
     // When
-    const resolved = resolveAssetResourceUrl("easyrpg-title-title1");
+    const resolved = resolveAssetResourceUrl("oprn-title-field");
 
     // Then
-    expect(resolved).toBe("/assets/easyrpg/title/Title1.png");
+    expect(resolved).toBe("/assets/generated/title/oprn-title-field.png");
     expect(normalizeWarmUrl("assets/dialogue-frame.png")).toBe("/assets/dialogue-frame.png");
   });
 
@@ -53,7 +53,7 @@ describe("exported player asset resolution", { timeout: 120_000 }, () => {
     const base = `${window.location.origin}/games/harbor/`;
 
     // Then
-    expect(resolveAssetResourceUrl("easyrpg-title-title1")).toBe(`${base}assets/easyrpg/title/Title1.png`);
+    expect(resolveAssetResourceUrl("oprn-title-field")).toBe(`${base}assets/generated/title/oprn-title-field.png`);
     expect(resolveAssetResourceUrl("easyrpg-sound-decision1")).toBe(`${base}assets/easyrpg/sound/Decision1.wav`);
     expect(resolveAssetResourceUrl("generated-enemy-slime-01")).toBe(`${base}assets/generated/pixel-enemy-portraits/slime.png`);
     expect(normalizeWarmUrl("assets/dialogue-frame.png")).toBe(`${base}assets/dialogue-frame.png`);
@@ -81,7 +81,7 @@ describe("exported player asset resolution", { timeout: 120_000 }, () => {
     const project = createBlankProject();
     for (const [id, value] of [
       ["oprn-standalone-project", serialize(project)],
-      ["oprn-standalone-assets", JSON.stringify({ "assets/easyrpg/title/Title1.png": "data:image/png;base64,AA==" })],
+      ["oprn-standalone-assets", JSON.stringify({ "assets/generated/title/oprn-title-field.png": "data:image/png;base64,AA==" })],
     ] as const) {
       const node = document.createElement("script");
       node.type = "application/json";
@@ -98,7 +98,7 @@ describe("exported player asset resolution", { timeout: 120_000 }, () => {
     const { resolveAssetResourceUrl } = await import("@/assets/generatedAssetResourceResolver");
 
     // Then
-    expect(resolveAssetResourceUrl("easyrpg-title-title1")).toBe("data:image/png;base64,AA==");
+    expect(resolveAssetResourceUrl("oprn-title-field")).toBe("data:image/png;base64,AA==");
     expect(withInlineAsset("https://cdn.example.com/a.png")).toBe("https://cdn.example.com/a.png");
     expect(withInlineAsset("//cdn.example.com/a.png")).toBe("//cdn.example.com/a.png");
     expect(withInlineAsset("#battle-flash-tint")).toBe("#battle-flash-tint");
