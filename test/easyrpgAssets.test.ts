@@ -52,48 +52,28 @@ describe("bundled EasyRPG RTP assets", () => {
         tilesPerRow: bundledChipsetTilesPerRow(asset.textureKey),
         count: bundledChipsetFrameCount(asset.textureKey),
       });
-      // combined_town은 harness가 메타데이터를 채운 공식 디폴트 칩셋(bundled-default).
-      // 테마 팩(interior/dungeon/scarloxy)이 있는 칩셋은 팩이 덮는 타일만 bundled-default,
-      // 그 외 vendored 칩셋 타일은 AI 분류 대기 상태(unknown)이다.
+      // 2026-10-07 저작권 정리 뒤 이 목록은 손 도트 번들 시트다(합본 마을은 빠졌다 — expect 아래).
+      // 칸 메타가 있는 시트는 bundled-default/unknown 으로 시작한다. 버들항 덧그림 시트(warm_trees·door·ground…)는
+      // 칸 메타 없이 kit/조각 정의만 들고 다니므로 tileMeta 가 비어 있다 — 그때는 출처 칸이 없다.
+      expect(id).not.toBe(COMBINED_TOWN_TILESET_ID);
+      if (Object.keys(tileset.tileMeta ?? {}).length === 0) continue;
       const source = tileset.tileMeta?.[0]?.source;
-      if (id === COMBINED_TOWN_TILESET_ID) {
-        expect(source).toBe("bundled-default");
-      } else {
-        expect(["bundled-default", "unknown"]).toContain(source);
-      }
+      expect(["bundled-default", "unknown"], id).toContain(source);
     }
   });
 
-  it("exposes synced EasyRPG RTP ChipSet package entries as resource profiles", () => {
+  // 2026-10-07 저작권 정리(#2335): EasyRPG ChipSet 패키지 항목을 비웠고 Exterior 시트·프로필도 지웠다 — 되살아나지 않아야 한다.
+  it("no longer exposes the purged EasyRPG RTP ChipSet entries as resource profiles", () => {
     const p = createBlankProject();
-    const exterior = EASYRPG_CHIPSET_ASSETS.find((asset) => asset.id === "easyrpg-chipset-exterior");
-    const profile = p.resourceProfiles.find((resourceProfile) => resourceProfile.assetId === "easyrpg-chipset-exterior");
-
-    expect(exterior).toMatchObject({
-      path: "assets/easyrpg/chipset/Exterior.png",
-      sourcePath: "ChipSet/Exterior.png",
-    });
-    expect(profile).toMatchObject({
-      kind: "chipset",
-      name: "Exterior · 타일 그림판 · EasyRPG",
-      tileWidth: 16,
-      tileHeight: 16,
-      imageWidth: 480,
-      imageHeight: 256,
-      assetId: "easyrpg-chipset-exterior",
-    });
+    expect(EASYRPG_CHIPSET_ASSETS).toEqual([]);
+    expect(p.resourceProfiles.find((resourceProfile) => resourceProfile.assetId === "easyrpg-chipset-exterior")).toBeUndefined();
   });
 
-  it("adds synced EasyRPG RTP package profiles to saved projects that predate them", () => {
+  it("does not re-add the purged Exterior profile to saved projects", () => {
     const p = createBlankProject();
     p.resourceProfiles = p.resourceProfiles.filter((profile) => profile.assetId !== "easyrpg-chipset-exterior");
-
-    expect(ensureBundledResourceProfiles(p)).toBe(true);
-    expect(p.resourceProfiles.find((profile) => profile.assetId === "easyrpg-chipset-exterior")).toMatchObject({
-      kind: "chipset",
-      imageWidth: 480,
-      imageHeight: 256,
-    });
+    ensureBundledResourceProfiles(p);
+    expect(p.resourceProfiles.find((profile) => profile.assetId === "easyrpg-chipset-exterior")).toBeUndefined();
   });
 
   it("ships color-keyed EasyRPG chipsets with baked transparency for DOM previews", async () => {
@@ -102,11 +82,9 @@ describe("bundled EasyRPG RTP assets", () => {
       isColorKeyedChipsetTextureKey(asset.textureKey),
     );
 
-    expect(colorKeyedAssets.map((asset) => asset.textureKey)).toEqual([
-      "tex_easyrpg_chipset_dungeon",
-      "tex_easyrpg_chipset_interior",
-      "tex_easyrpg_chipset_retro_dungeon",
-    ]);
+    // 색 키 시트 셋(EasyRPG 던전·실내·레트로 던전)은 2026-10-07 저작권 정리로 번들에서 빠졌다 — 지금 번들 시트는 모두 진짜 투명이다.
+    // 색 키 시트가 다시 들어오면 아래 반복이 구운 투명을 검사한다.
+    expect(colorKeyedAssets.map((asset) => asset.textureKey)).toEqual([]);
 
     for (const asset of colorKeyedAssets) {
       const imageUrl = new URL(`../public/${asset.path}`, import.meta.url);
