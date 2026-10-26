@@ -16,6 +16,11 @@
   - B3 우물 → `fs2_well_shaft` → `place_lift` 로 `fs2_obs_night` 서고, 하넬(세린·인장 fork). `place_lift` 가 toMap 도착 스위치를 만들지 않아 참조 검증에서 거부되던 버그 수정(과제 `fs2-well-lift`).
   - 함정: 도구를 부르면 맵 객체가 새로 바뀐다 — 쥐고 있던 `map` 에 이벤트를 붙이면 조용히 사라진다. `addEv(project, mapId, …)` 로 그때그때 다시 찾는다.
   - 함정: `place_npc` 는 막힌 칸이면 옆 칸으로 옮긴다 — 체크포인트 좌표는 굽기 결과에서 읽는다.
+  - B4 대장간 뒷문(하넬 뒤에만 열림)·로한의 창(`upsert_equipment`+`changeEquipment`)·브람 개구멍 → `author_forest_route` 북쪽 2장(`linkFrom:false` — 새 일반 기능, 출발 맵 가장자리 대신 개구멍 이벤트로 잇는다). 체크포인트 `act2-b4-rohan`·`act2-b4-hole` 통과.
+  - B5 재의 들판 적 다섯(1막 늑대 레코드를 복사해 그림만 기존 몬스터로; `upsert_enemy` 는 `graphicHue` 를 안 받는다), 새벽샘 `author_beodeul_town` → `derive_map_variant burned keepIntact north`, 잠긴 집 문은 `data.doors`(문 앞 칸)에서 읽는다. 주먹 자국 셋 → 문이 열리면 정착 확인서(`item_fs2_serin_form`). 들판2 북쪽 ↔ 마을 남쪽 `create_transfer_pair`.
+  - 함정: `author_forest_route` 를 끝 맵 가장자리에서 이을 때 덧층(lower/upperOverlay)이 남아 「unreachable」 — 파낸 칸의 덧층도 비우게 고침. `originEdge(…, walkFrom)` 은 걸어 들어올 칸에서 BFS 한다.
+  - 함정: 승강 장치 도착 칸이 발판 위라 `trigger:"touch"` 면 걸어 나가다 도로 탄다 → `place_lift trigger:"action"`(새 인자).
+  - 함정: 하넬 체크포인트 — 발판에서 오른쪽 3칸이 가끔 2칸만 간다(따라오는 동료와 엉킴). 넉넉히 5칸 걷게 하면 하넬에 막혀 멈춘다.
   - 탐침: `/tmp/fs2/act2probe.mts` 는 vite-node 로 돈다: `OPRN_ASSUME_ALL_BGM_INSTALLED=1 node --max-old-space-size=12000 node_modules/vite-node/dist/cli.mjs --script /tmp/fs2/act2probe.mts`(tsx 는 .css import 로 죽는다). 타입 검사는 `/tmp/fs2/tsconfig.json`(만진 파일 + src/vite-env.d.ts).
 
 ## 1. 머지됨 (main)
