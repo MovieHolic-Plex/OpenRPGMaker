@@ -211,7 +211,10 @@ describe("database faction editor model", () => {
     if (!renamed.ok) return;
     expect(renamed.project.database.enemies[0]?.factionId).toBe("watch");
     expect(renamed.project.maps[project.startMapId]?.fieldSpawns?.[0]?.factionId).toBe("watch");
-    expect(serialize(renamed.project)).not.toContain('"guard"');
+    // The default jp_city tileset now carries a "guard" semantic tag (guardrail tiles), so scan
+    // everything except tilesets for a leftover faction id instead of the whole serialization.
+    const { tilesets: _tilesets, ...authored } = renamed.project;
+    expect(JSON.stringify(authored)).not.toContain('"guard"');
     expect(() => deserialize(serialize(renamed.project))).not.toThrow();
 
     const renamedBlocked = deleteFaction(renamed.project, "watch");
