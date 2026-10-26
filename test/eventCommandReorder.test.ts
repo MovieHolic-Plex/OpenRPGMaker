@@ -4,7 +4,6 @@ import {
   addEventPageCommand,
   moveEventPageCommandAt,
   moveEventPageCommandToIndex,
-  replaceEventPageCommandAt,
 } from "@/editor/eventPages";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
@@ -22,8 +21,8 @@ describe("event command drag reorder", () => {
     eventId = addEvent(mapId, 1, 1);
     const event = store.getCurrent().maps[mapId].events.find((item) => item.id === eventId)!;
     pageId = event.pages![0].id;
-    // 기본 text 명령 1개가 있으므로 본문을 A로 바꾸고, 2개 더 추가해 [A,B,C] 를 만든다.
-    replaceEventPageCommandAt(mapId, eventId, pageId, [0], { kind: "text", body: "A" });
+    // 새 이벤트의 첫 페이지는 빈 명령 목록으로 시작한다(createDefaultGameEvent: commands = []) — [A,B,C] 를 직접 쌓는다.
+    addEventPageCommand(mapId, eventId, pageId, { kind: "text", body: "A" });
     addEventPageCommand(mapId, eventId, pageId, { kind: "text", body: "B" });
     addEventPageCommand(mapId, eventId, pageId, { kind: "text", body: "C" });
   });
