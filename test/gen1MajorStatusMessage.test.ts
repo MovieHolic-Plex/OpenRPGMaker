@@ -40,7 +40,7 @@ function teachStatusMove(project: Project, id: string, name: string, stateId: st
   actor.learnedSkills = [...actor.learnedSkills, { level: 1, skillId: id }];
 }
 
-function battle(): BattleRuntime {
+function battle(troopId = "troop_pkmn_grass_a"): BattleRuntime {
   const project = createScarloxyPokemonDemoProject();
   teachStatusMove(project, "skill_test_burn_status", "확정 화상", "state_burn", "support");
   teachStatusMove(project, "skill_test_para_status", "확정 마비", "state_paralysis", "support");
@@ -56,7 +56,7 @@ function battle(): BattleRuntime {
   store.replaceProject(project);
   return createBattleRuntime({
     project,
-    troopId: "troop_pkmn_grass_a",
+    troopId,
     canEscape: true,
     canLose: true,
     battleFlow: "strict",
@@ -127,5 +127,27 @@ describe("gen1 major status battle message", () => {
     const hit = play({ kind: "skill", skillId: "skill_test_burn_hit", targetEnemyId: "enemy-1" });
     expect(hit.some((line) => line.includes("이미 화상"))).toBe(false);
     expect(runtime.snapshot().enemies.find((enemy) => enemy.id === "enemy-1")?.stateIds).toContain("state_burn");
+  });
+
+  it("refuses burn on a fire type even from a normal move, and names the type instead of another status", () => {
+    const runtime = battle("troop_pkmn_new_pair");
+    const play = playback(runtime);
+    const emberkit = () => runtime.snapshot().enemies.find((enemy) => enemy.id === "enemy-1");
+    expect(emberkit()?.name).toBe("엠버킷");
+
+    const paralyzed = play({ kind: "skill", skillId: "skill_test_para_status", targetEnemyId: "enemy-1" });
+    expect(paralyzed.some((line) => line.includes("마비에 걸렸다"))).toBe(true);
+    expect(emberkit()?.stateIds).toContain("state_paralysis");
+
+    const burned = play({ kind: "skill", skillId: "skill_test_burn_status", targetEnemyId: "enemy-1" });
+    expect(emberkit()?.stateIds).toContain("state_paralysis");
+    expect(emberkit()?.stateIds ?? []).not.toContain("state_burn");
+    expect(burned).toContain("엠버킷은 불꽃 타입이라 화상 상태에 걸리지 않는다!");
+    expect(burned.some((line) => line.includes("이미 마비"))).toBe(false);
+    expect(burned).not.toContain("엠버킷에게는 효과가 없었다.");
+
+    const hit = play({ kind: "skill", skillId: "skill_test_burn_hit", targetEnemyId: "enemy-1" });
+    expect(emberkit()?.stateIds ?? []).not.toContain("state_burn");
+    expect(hit.some((line) => line.includes("화상 상태에 걸리지"))).toBe(false);
   });
 });
