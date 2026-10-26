@@ -12,6 +12,7 @@ import { registerAssetBrowser } from "./assetBrowser";
 import { acceptStoreDeepLink, registerAssetStore } from "./assetStore";
 import { findStoreDeepLinkArg } from "../../src/assetStore/deepLink";
 import { electronUserArgIndex, inspectCliProjectArgs, inspectCurrentCliProject } from "./cliProject";
+import { decideWindowClose, nextQuitHeld, shouldRetryQuit } from "./closeFlow";
 import { chosenDirectory, directoryDialogParent, directoryDialogProperties, pickAppWindow } from "./directoryDialog";
 import { registerAppProtocol, registerAssetProtocol } from "./protocols";
 import { captureLastViewBeforeClose, forgetLastViewWindow, markEditorLeft, markEditorSettled, readLastView, scheduleLastViewAfterSave } from "./lastView";
@@ -58,13 +59,28 @@ const TEAM_HOST_PORTS = [9840, 9841, 9842, 9843, 9844, 9845, 9846, 9847, 9848, 9
 
 const closing = new Set<number>();
 const closeTimers = new Map<number, ReturnType<typeof setTimeout>>();
+/**
+ * 사용자가 Quit 을 요청했다. 프로젝트 창이 저장 때문에 close 를 막으면 Electron 이 종료를 취소하므로
+ * (app.quit 문서), 그 저장이 끝난 뒤에 다시 건다. 마지막 창을 그냥 닫는 것과는 다르다 — macOS 는 그때 앱이 남는다.
+ */
+let quitRequested = false;
+/** 열린 프로젝트의 저장이 Quit 을 한 번 막았다. 막을 일이 없었으면(시작 화면) 다시 종료하지 않는다. */
+let quitHeld = false;
 
 function destroyWindow(window: BrowserWindow): void {
+  if (window.isDestroyed()) return;
   const id = window.webContents.id;
   const timer = closeTimers.get(id);
   if (timer) clearTimeout(timer);
   closeTimers.delete(id);
-  if (!window.isDestroyed()) window.destroy();
+  window.destroy();
+}
+
+function retryQuitIfFlushHeldIt(): void {
+  const pending = (): boolean => shouldRetryQuit({ quitRequested, quitHeld, windowsStillFlushing: closing.size });
+  if (!pending()) return;
+  // 같은 종료에서 다른 창의 close 가 이 핸들러보다 늦게 올 수 있다. 한 틱 뒤에, 아직 저장 중인 창이 없을 때만 다시 건다.
+  setTimeout(() => { if (pending()) app.quit(); }, 0);
 }
 
 /**
@@ -75,13 +91,18 @@ function destroyWindow(window: BrowserWindow): void {
 const CLOSE_FLUSH_TIMEOUT_MS = 60_000;
 
 // 닫기는 flush → ack → destroy 다(설계서 7.3). 렌더러가 상한 안에 flush-done 을 부르지 않으면 강제로 닫는다.
+// 저장을 기다리는 동안의 두 번째 close 는 막는다(closeFlow.ts). 막지 않으면 연타·Quit 이 저장을 끊는다.
 function installCloseFlow(window: BrowserWindow): void {
   const id = window.webContents.id;
   window.on("close", (event) => {
-    if (closing.has(id)) return;
     const session = sessions.get(id);
-    if (!session) return;
+    const decision = decideWindowClose(closing.has(id), session !== null);
+    if (decision === "allow") return;
     event.preventDefault();
+    quitHeld = nextQuitHeld(quitHeld, quitRequested, decision);
+    if (decision === "hold") return;
+    // flush 는 세션이 있을 때만 나온다. 없으면 닫기를 막아 둔 채 두면 창이 남지 않게 바로 없앤다.
+    if (session === null) { destroyWindow(window); return; }
     closing.add(id);
     window.webContents.send(OPRN_CHANNELS.lifecycleFlushBeforeClose);
     closeTimers.set(id, setTimeout(() => destroyWindow(window), CLOSE_FLUSH_TIMEOUT_MS));
@@ -96,6 +117,7 @@ function installCloseFlow(window: BrowserWindow): void {
     if (timer) clearTimeout(timer);
     closeTimers.delete(id);
     sessions.close(id);
+    retryQuitIfFlushHeldIt();
   });
 }
 
@@ -635,7 +657,9 @@ export async function startApp(boot: BootContext): Promise<void> {
   mainMark("windowLoading");
   ipcMain.handle(OPRN_CHANNELS.lifecycleFlushDone, (event) => {
     const window = BrowserWindow.fromWebContents(event.sender);
-    if (window) destroyWindow(window);
+    // 닫기 저장을 걸어 둔 창만 없앤다. 저장을 요청하지 않았는데 오면 편집 중인 창을 닫지 않는다.
+    if (!window || window.isDestroyed() || !closing.has(event.sender.id)) return false;
+    destroyWindow(window);
     return true;
   });
   ipcMain.on(OPRN_CHANNELS.resumeEditorReady, (event) => {
@@ -793,6 +817,8 @@ export async function startApp(boot: BootContext): Promise<void> {
     if (BrowserWindow.getAllWindows().length === 0) createWindow();
   });
 }
+
+app.on("before-quit", () => { quitRequested = true; });
 
 app.on("window-all-closed", () => {
   if (process.platform !== "darwin") app.quit();
