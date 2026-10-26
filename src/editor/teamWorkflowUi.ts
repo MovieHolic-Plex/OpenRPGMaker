@@ -1,4 +1,5 @@
 import { PRODUCT_BRAND } from "@/brand";
+import { formatEditorDate } from "@/i18n";
 import { registerModal, unregisterModal } from "@/editor/ui/modalStack";
 import { currentHumanEditorIdentity, setOwnerLabel, type EditorIdentity } from "@/project/editorIdentity";
 import type { CommitListItem } from "@/project/persistence/types";
@@ -458,7 +459,7 @@ function formatCommitTime(value: string | null): string {
   if (!value) return "-";
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return value;
-  return date.toLocaleString("ko-KR", { dateStyle: "short", timeStyle: "short" });
+  return formatEditorDate(date, { dateStyle: "short", timeStyle: "short" });
 }
 
 function oauthProviderName(method: "google" | "github"): string {

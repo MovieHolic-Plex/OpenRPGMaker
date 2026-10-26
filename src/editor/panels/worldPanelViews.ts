@@ -1,3 +1,4 @@
+import { formatEditorDate } from "@/i18n";
 import { WORLD_ENTITY_TYPES, type ProjectWorld, type WorldEntity, type WorldRelation } from "@/project/world/types";
 import type { LintIssue } from "@/project/lint/projectLint";
 import { store } from "@/project/store";
@@ -502,7 +503,7 @@ function renderWikiProvenance(
             dataset: { testid: `world-wiki-source-${index}`, sourceId: source.id, sourceKind: source.kind },
             children: [
               el("strong", { text: `${{ user: "사용자 발언", application: "실제 적용", manual: "수동 편집" }[source.kind]} · ${source.id}` }),
-              el("p", { class: "world-muted", text: new Date(source.at).toLocaleString("ko-KR") }),
+              el("p", { class: "world-muted", text: formatEditorDate(new Date(source.at)) }),
               el("p", { text: source.text.length > 320 ? `${source.text.slice(0, 320)}…` : source.text }),
               ...(source.text.length > 320 ? [el("details", { children: [
                 el("summary", { text: "전체 출처 보기" }), el("p", { text: source.text }),

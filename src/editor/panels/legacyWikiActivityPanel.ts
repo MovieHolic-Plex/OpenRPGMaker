@@ -1,3 +1,4 @@
+import { formatEditorDate } from "@/i18n";
 import { legacyWikiActivity } from "@/project/world/activity";
 import type { ProjectWorld, WorldEntity } from "@/project/world/types";
 import { el } from "@/util/dom";
@@ -27,7 +28,7 @@ export function renderLegacyWikiActivityPanel(world: ProjectWorld | undefined): 
 function activityRow(entity: WorldEntity): HTMLElement {
   const at = Math.max(0, ...(entity.wiki?.sources.map((source) => source.at) ?? []));
   const date = new Date(at);
-  const dateText = Number.isFinite(date.getTime()) ? date.toLocaleString("ko-KR") : "시각 미상";
+  const dateText = Number.isFinite(date.getTime()) ? formatEditorDate(date) : "시각 미상";
   const body = el("div", { class: "edit-activity-fields", dataset: { testid: `legacy-wiki-body-${entity.id}` } });
   body.hidden = true;
   const toggle = el("button", { class: "edit-activity-fields-toggle", text: "원문 보기", attrs: { type: "button", "aria-expanded": "false" }, dataset: { testid: `legacy-wiki-toggle-${entity.id}` } });
