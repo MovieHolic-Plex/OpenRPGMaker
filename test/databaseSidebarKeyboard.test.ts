@@ -148,9 +148,9 @@ describe("database sidebar keyboard navigation", () => {
       expect(group.tagName).toBe("DIV");
     }
 
-    // 첫 탭은 상단 고정 개요 엔트리, 마지막은 시스템 그룹의 변수 탭.
+    // 첫 탭은 상단 고정 개요 엔트리, 마지막은 시스템 그룹의 용어 탭(변수 탭은 세계 그룹으로 이동).
     expect(buttons[0]?.dataset.testid).toBe("db-tab-overview");
-    expect(buttons.at(-1)?.dataset.testid).toBe("db-tab-variables");
+    expect(buttons.at(-1)?.dataset.testid).toBe("db-tab-terms");
   });
 
   it("activates the focused tab through the click handler on Enter (keydown path inert)", () => {
