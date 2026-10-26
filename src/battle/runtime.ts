@@ -168,6 +168,7 @@ import {
   stepGen1Confusion,
   gen1EffectChanceSucceeds,
   gen1MajorStatusBlockedByType,
+  gen1StatusMoveBlockedByTargetType,
   gen1ParalyzedSpeed,
   readGen1MajorStatus,
   stepGen1MajorStatus,
@@ -864,20 +865,33 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     const stateRecords = gen1StateRecords();
     for (const effect of effects) {
       const stateRecord = stateRecords.find((state) => state.id === effect.stateId);
+      const moveType = move ? gen1CanonicalTypeForId(options.project, move.type) : undefined;
+      const targetCanonicalTypes = battlerTypes(options.project, target).flatMap((typeId) => {
+        const canonical = gen1CanonicalTypeForId(options.project, typeId);
+        return canonical ? [canonical] : [];
+      });
       if (
         effect.operation === "add"
         && stateRecord?.gen1MajorStatus
         && move
         && gen1MajorStatusBlockedByType(
           stateRecord.gen1MajorStatus,
-          gen1CanonicalTypeForId(options.project, move.type),
-          battlerTypes(options.project, target).flatMap((typeId) => {
-            const canonical = gen1CanonicalTypeForId(options.project, typeId);
-            return canonical ? [canonical] : [];
-          }),
+          moveType,
+          targetCanonicalTypes,
           move.kind,
         )
-      ) continue;
+      ) {
+        // 상태 기술이 타입 때문에 막히면 그 이유를 말한다. 이미 다른 주요 상태가 있어도
+        // 「이미 마비 상태다」로 읽히면 기술이 그 상태 때문에 막힌 것처럼 보인다.
+        if (move.kind === "status") {
+          const immune = gen1StatusMoveBlockedByTargetType(stateRecord.gen1MajorStatus, moveType, targetCanonicalTypes);
+          if (immune) {
+            const label = typeName(gen1ElementIdForCanonical(options.project, immune));
+            recordSpecial(user, target, `${withJosa(target.name, "은/는")} ${label} 타입이라 ${stateName(effect.stateId)} 상태에 걸리지 않는다!`);
+          }
+        }
+        continue;
+      }
       if (!gen1EffectChanceSucceeds(effect.chance, nextGen1Byte)) continue;
       if (effect.operation === "remove") {
         if (!target.stateIds.includes(effect.stateId)) continue;
