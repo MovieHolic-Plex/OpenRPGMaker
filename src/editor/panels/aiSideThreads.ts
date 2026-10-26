@@ -50,14 +50,27 @@ export function createSideThreads(): SideThreads {
     toggle.setAttribute("aria-expanded", String(open));
     list.hidden = !open;
   };
+  // 다른 스레드의 실행이 사용자 답(맵 삭제 확인·단계 적용)을 기다리면 트레이를 편다 — 접힌 트레이 안의 질문 카드는 아무도 못 보고
+  // 실행이 30분 적용 대기에 걸려 죽었다(J72, hf2-mansion-argon 3턴: 「저택 1층」 스레드의 remove_map 확인 카드가 접힌 채 45분).
+  const ASK = '[data-testid="ai-decision-prompt"], [data-testid="ai-pending-review"]';
+  const asking = (card: HTMLElement): HTMLElement[] =>
+    [...card.querySelectorAll<HTMLElement>(ASK)].filter(prompt => [...prompt.querySelectorAll("button")].some(button => !button.disabled));
+  const shown = new WeakSet<HTMLElement>();
   const refresh = (): void => {
     const all = cards();
+    const questions = all.flatMap(asking);
+    const fresh = questions.filter(prompt => !shown.has(prompt));
+    if (fresh.length) {
+      fresh.forEach(prompt => shown.add(prompt));
+      setOpen(true);
+      requestAnimationFrame(() => fresh[0]?.scrollIntoView?.({ block: "nearest", behavior: "smooth" }));
+    }
     root.hidden = all.length === 0;
     const live = all.filter(isLive);
     const failed = all.filter(card => card.dataset.state === "failed" || card.dataset.state === "cancelled");
     const review = all.filter(card => card.dataset.review === "1");
-    summary.textContent = `${live.length ? `${live.length}개 진행 중` : "모두 끝남"}${failed.length ? ` · 실패 ${failed.length}` : ""}`;
-    root.dataset.attention = failed.length ? "failed" : review.length ? "review" : "none";
+    summary.textContent = `${live.length ? `${live.length}개 진행 중` : "모두 끝남"}${questions.length ? ` · 답변 필요 ${questions.length}` : ""}${failed.length ? ` · 실패 ${failed.length}` : ""}`;
+    root.dataset.attention = questions.length ? "answer" : failed.length ? "failed" : review.length ? "review" : "none";
     clear.hidden = all.length === live.length;
   };
   setOpen(false);
@@ -68,7 +81,7 @@ export function createSideThreads(): SideThreads {
   });
   // 카드 안에서 상태·검토 칸이 바뀌면 머리말을 다시 쓴다.
   const observer = typeof MutationObserver === "function" ? new MutationObserver(refresh) : null;
-  observer?.observe(list, { subtree: true, childList: true, attributes: true, attributeFilter: ["data-state", "data-review"] });
+  observer?.observe(list, { subtree: true, childList: true, attributes: true, attributeFilter: ["data-state", "data-review", "disabled"] });
 
   const api: SideThreads = {
     root,
