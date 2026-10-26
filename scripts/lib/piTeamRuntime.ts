@@ -79,7 +79,6 @@ interface AgentProgress {
   lastLine: string;
 }
 
-/** 사용 한도·429 로 끊긴 오류인가(실제 Argon 시험에서 작업자가 429 로 죽은 채 팀이 끝났다). */
 /**
  * 그림 전달 상태가 ok:false 면 모델이 그림을 받지 못한 것이다(piAgentRuntime imageStatus, J69). 그때 검수 실패를
  * 「검수 보고가 없다」로 적으면 원인을 숨긴다 — 모델 탓으로 적고 고칠 방법을 준다.
@@ -89,6 +88,7 @@ export function isBlindImageStatus(event: { readonly type: string; readonly name
   return event.type === 'execution_status' && event.ok === false && typeof event.name === 'string' && /(?:\.image|^map\.background)\.delivered$/u.test(event.name);
 }
 
+/** 사용 한도·429 로 끊긴 오류인가(실제 Argon 시험에서 작업자가 429 로 죽은 채 팀이 끝났다). */
 export function isRateLimitMessage(message: string): boolean {
   return /\b429\b|rate.?limit|too many requests|resource.?exhausted|quota|사용 한도|한도에 도달/iu.test(message);
 }
@@ -1078,7 +1078,7 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
       toolCalls += done.stats.toolCalls; toolErrors += done.stats.toolErrors; subTurns += done.stats.turns; subUsage = addPiAgentUsage(subUsage, done.stats.usage);
       if (changedProjectKeys(snapshot, done.project).length) throw new Error('읽기 전용 첫 장면 검수가 변경을 반환했습니다.');
       const report = verdict as { ok: boolean; blockers: string[] } | undefined;
-      if (!report?.ok || report.blockers.length || mapIds.some(id => !delivered.has(id)) || requiredArt.some(id => !deliveredArt.has(id))) throw new Error('첫 장면 검수 실패: ' + (firstSceneBlind && (mapIds.some(id => !delivered.has(id)) || requiredArt.some(id => !deliveredArt.has(id))) ? BLIND_MODEL_FINDING : (report?.blockers.join(' / ') || '실제 이미지 확인/검수 보고가 없습니다.')));
+      if (!report?.ok || report.blockers.length || mapIds.some(id => !delivered.has(id)) || requiredArt.some(id => !deliveredArt.has(id))) throw new Error('첫 장면 검수 실패: ' + (firstSceneBlind && (mapIds.some(id => !delivered.has(id)) || requiredArt.some(id => !deliveredArt.has(id))) ? [BLIND_MODEL_FINDING, ...(report?.blockers ?? [])].join(' / ') : (report?.blockers.join(' / ') || '실제 이미지 확인/검수 보고가 없습니다.')));
       reviewedFirstScene = firstSceneSignature(working, receipt);
       emit({ type: 'execution_status', name: 'first_scene.review_passed', ok: true, summary: '실제 장소·대상·동선과 작품 타이틀/오프닝 원화 일치를 확인했습니다.' });
       emit({ type: 'agent_done', agentId, ok: true, summary: '첫 장면 이미지 확인', stats: done.stats, changedKeys: [], spills: [], conflicts: [] });
