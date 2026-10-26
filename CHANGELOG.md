@@ -5,6 +5,13 @@
 
 <!-- releases -->
 
+## 0.349.1 — 2026-10-26
+
+### 수정
+
+- **ai** — CLI tool-list compaction walks schema positions only; a provider-error reply is a failed turn (J79b) (#3637) (`fbc625b`)
+- **player** — map-entry checkpoint retry keeps progress (J58) (#3636) (`a4bb679`)
+
 ## 0.349.0 — 2026-10-26
 
 ### 기능
