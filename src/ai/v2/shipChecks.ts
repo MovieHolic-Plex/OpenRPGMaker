@@ -261,13 +261,47 @@ export function offPremiseArt(project: Project, task: string): ShipBlocker[] {
   return out;
 }
 
+/**
+ * 제목·엔딩이 기본 시작 칩셋의 고유 지명을 게임 주제로 삼았다(J70, hf2-school-flash: 밤의 학교 공포 게임이 「버들항의 모험」·
+ * 엔딩 「모험의 끝」 "버들항의 평화"로 끝났다). 새 프로젝트가 처음부터 들고 있는 칩셋 계열 이름이라 요청에 없으면 모델이 지어낸 것이다.
+ * task 는 앞선 요청 메모까지 든 실행 지시문이다 — 같은 대화의 어느 요청이든 그 지명을 말했으면 정당하다.
+ */
+/** 플레이어에게 보이는 글만 — 문자열 줄과 비트의 text·lines(id·자원 참조는 빼고). */
+function shownTexts(v: unknown): string[] {
+  if (typeof v === "string") return [v];
+  if (Array.isArray(v)) return v.flatMap(shownTexts);
+  if (v && typeof v === "object") { const o = v as Obj; return [...shownTexts(o.text), ...shownTexts(o.lines)]; }
+  return [];
+}
+const DEFAULT_PLACE_FAMILIES = ["beodeul"] as const;
+export function defaultPlaceLeaks(project: Project, task: string): ShipBlocker[] {
+  const words = new Set<string>();
+  for (const [id, ts] of Object.entries(project.tilesets ?? {})) {
+    if (!DEFAULT_PLACE_FAMILIES.some((f) => id.startsWith(f))) continue;
+    const head = String((ts as { name?: unknown }).name ?? "").trim().split(/[\s·]+/u)[0] ?? "";
+    if (/^[가-힣]{2,}$/u.test(head)) words.add(head);
+  }
+  const out: ShipBlocker[] = [];
+  for (const word of words) {
+    if (task.includes(word)) continue;
+    const title = String(((project.system as unknown as Obj).titleScreen as Obj | undefined)?.title ?? "");
+    const where = [
+      ...(title.includes(word) ? [`타이틀 「${title}」`] : []),
+      ...(String(project.meta.title ?? "").includes(word) && project.meta.title !== title ? [`프로젝트 제목 「${project.meta.title}」`] : []),
+      ...(project.endings ?? []).filter((e) => [e.name, ...shownTexts((e as unknown as Obj).epilogue)].some((t) => t.includes(word))).map((e) => `엔딩 「${e.name}」`),
+    ];
+    if (where.length) out.push({ id: "default-place-leak", message: `${where.slice(0, 4).join("·")}이 「${word}」을 말하는데 요청에는 ${word}이 없다 — ${word}은 새 프로젝트 기본 칩셋 이름이지 이 게임의 무대가 아니다. 요청한 이야기에서 제목(set_title_screen{title})·엔딩(define_ending)을 다시 짓는다.`, evidence: `${word}: ${where.join(", ").slice(0, 160)}` });
+  }
+  return out;
+}
+
 /** 조언자·끝맺음 관문이 같이 쓰는 출하 차단 목록(게임을 만드는 요청일 때만). 제목 스포일러는 어느 요청이든. */
 export function shipBlockers(project: Project, task: string): ShipBlocker[] {
   const spoilers = titleSpoilers(project);
   if (!wantsWholeGame(task)) return spoilers;
   // 엔딩 길의 열쇠·금고·문·엔딩 이벤트에 걸어 닿지 못하면 게임을 끝낼 수 없다(J75) — 출하 차단.
   const unreachable = unreachableCriticalEvents(project).map((message): ShipBlocker => ({ id: "critical-unreachable", message: `${message}. 이벤트를 걸어 닿는 칸 옆으로 move_event 하거나 막는 가구를 치운다.`, evidence: message.slice(0, 120) }));
-  return [...editorDefaultsLeft(project), ...endingClosureProblems(project), ...openingWithoutPlace(project), ...offPremiseArt(project, task), ...unreachable, ...spoilers];
+  return [...editorDefaultsLeft(project), ...endingClosureProblems(project), ...openingWithoutPlace(project), ...offPremiseArt(project, task), ...defaultPlaceLeaks(project, task), ...unreachable, ...spoilers];
 }
 
 /** 게임이 «아직 안 지어졌다»는 신호 — 뼈대 자리표시만 남았거나 엔딩이 없다(편집기 기본 HUD·창 같은 마감 항목은 여기서 보지 않는다). */
