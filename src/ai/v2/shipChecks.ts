@@ -9,6 +9,7 @@ import type { Project } from "@/project/types";
 import { findOpeningStillMood } from "@/assets/openingStillMoods";
 import { unreachableCriticalEvents } from "./puzzleChecks";
 import { withoutIntentNote } from "@/ai/piAgent/monsterGameRequest";
+import { tileAt } from "@/project/collision";
 
 type Obj = Record<string, unknown>;
 export interface ShipBlocker { readonly id: string; readonly message: string; readonly evidence: string }
@@ -328,6 +329,18 @@ const NOT_WANTED = String.raw`(?![^.!?\n]{0,10}(?:없이|없는|없게|않|빼�
 interface RequestedFeature { readonly id: string; readonly label: string; readonly words: RegExp; readonly present: (project: Project) => boolean; readonly fix: string }
 const pages = (project: Project): Obj[] => Object.values(project.maps).flatMap((m) => (m.events ?? []).flatMap((ev) => ((ev as unknown as Obj).pages as Obj[] | undefined) ?? []));
 const DARK_AMBIENT = 0.5;
+/** 숨기 이벤트와 그 칸이 눈에 보이는가(이벤트 그림 또는 그 칸의 2층 이상 타일 — 사물함·옷장 가구). */
+export function hidingSpots(project: Project): { mapId: string; eventId: string; x: number; y: number; visible: boolean }[] {
+  const out: { mapId: string; eventId: string; x: number; y: number; visible: boolean }[] = [];
+  for (const map of Object.values(project.maps)) for (const ev of map.events ?? []) {
+    const hiding = (ev.pages ?? []).filter((p) => (p.interaction as Obj | undefined)?.kind === "hiding");
+    if (!hiding.length) continue;
+    const drawn = hiding.some((p) => { const g = (p.graphic ?? {}) as Obj; return !g.transparent && Boolean(g.sprite || g.appearanceId); });
+    const furniture = tileAt(map, ev.x, ev.y).layers.slice(1).some((t) => t >= 0);
+    out.push({ mapId: map.id, eventId: ev.id, x: ev.x, y: ev.y, visible: drawn || furniture });
+  }
+  return out;
+}
 export const REQUESTED_FEATURES: readonly RequestedFeature[] = [
   {
     id: "chaser", label: "쫓아오는 추격자",
@@ -345,8 +358,9 @@ export const REQUESTED_FEATURES: readonly RequestedFeature[] = [
   {
     id: "hiding", label: "숨을 곳",
     words: new RegExp(String.raw`(?:(?:옷장|침대|장롱|사물함|캐비닛|책상|커튼)[^.!?\n]{0,6}숨|숨을\s*(?:곳|데|수)|숨는\s*(?:곳|장소|공간)|숨어서\s*(?:피|도망|버티|기다)|숨바꼭질|은신|hiding\s+(?:spot|place)|hide\s+(?:in|from|under))` + NOT_WANTED, "iu"),
-    present: (project) => pages(project).some((p) => (p.interaction as Obj | undefined)?.kind === "hiding"),
-    fix: "configure_object_behavior{kind:'hiding'} 또는 make_chase_scene 의 hidingSpots 로 옷장·침대 밑 같은 숨을 곳을 둔다",
+    // 보이는 은신처만 센다(J81 hf2-school-claude-j79: 은신처 4곳이 모두 맨바닥의 투명 이벤트라 플레이어가 어디에 숨는지 알 수 없었다).
+    present: (project) => hidingSpots(project).some((spot) => spot.visible),
+    fix: "사물함·옷장·청소도구함 같은 보이는 물건 칸을 숨을 곳으로 한다 — 그 칸에 가구를 놓고(place_object·draw_object) configure_object_behavior{kind:'hiding'} 또는 make_chase_scene 의 hidingSpots 로 그 칸을 준다. 맨바닥의 투명 은신처는 숨을 곳으로 치지 않는다",
   },
 ];
 export function requestedFeatureGaps(project: Project, task: string): ShipBlocker[] {
