@@ -240,8 +240,8 @@ function carve(plan: SnowPlan, gapWidth: number, warnings: string[]): { path: Se
   return { path, open, gaps };
 }
 
-function paintSnowMap(project: Project, plan: SnowPlan, gapWidth: number, iceAmount: number, driftAmount: number, warnings: string[]):
-  { map: GameMap; gaps: SnowGap[]; ice: Cell[]; drifts: Cell[] } {
+function paintSnowMap(project: Project, plan: SnowPlan, gapWidth: number, iceAmount: number, driftAmount: number, warnings: string[], paintGaps = false):
+  { paintGapArt: () => void; map: GameMap; gaps: SnowGap[]; ice: Cell[]; drifts: Cell[] } {
   const { width: W, height: H, seed } = plan;
   call(project, "create_map", { id: plan.id, name: plan.name, width: W, height: H, tilesetId: BEODEUL_TILESET_ID });
   const map = project.maps[plan.id]!;
@@ -370,8 +370,31 @@ function paintSnowMap(project: Project, plan: SnowPlan, gapWidth: number, iceAmo
     const cell = (c: number): Cell => ({ x: c % W, y: Math.floor(c / W) });
     return { cells: g.cells.map(cell), from: cell(g.from), to: cell(g.to), width: g.width, axis: g.axis, seals: !reach(new Set(g.cells)) };
   });
+  // 틈 칠하기(paintGaps): 띠 칸에 얼음 구멍(설원 키트 2×1 「얼음 구멍」, 못 걷는 윗층)을 가로로 잇대 찍는다 — 갈라진 얼음 틈.
+  // 길이 실제로 막히므로 건널 수단(place_field_obstacle kind:"gap" 를 from 칸에)을 같이 놓아야 한다.
+  // 막는 그림은 맵 사이 잇기가 끝난 뒤에 찍는다 — 먼저 막으면 연결 도구가 출구를 「닿지 않는 칸」으로 보고 거절한다.
+  const paintGapArt = (): void => {
+    if (!paintGaps) return;
+    const hole = (kits.get(KIT("ice-hole"))?.rows?.[0]?.upperTiles ?? []).filter((t) => t >= 0);
+    if (hole.length < 2) warnings.push(`${plan.name}: 얼음 구멍 키트(${KIT("ice-hole")})가 없어 틈을 칠하지 못했다.`);
+    else for (const g of gaps) {
+      const rowsOf = new Map<number, number[]>();
+      for (const c of g.cells) { const x = c % W, y = (c - x) / W; const key = g.axis === "vertical" ? y : x; rowsOf.set(key, [...(rowsOf.get(key) ?? []), g.axis === "vertical" ? x : y]); }
+      for (const [line, qs] of rowsOf) {
+        qs.sort((a, b) => a - b);
+        const lo = qs[0]!, hi = qs[qs.length - 1]!;
+        // 잇기 도구가 맵 객체를 새로 바꾼다 — 지금 맵을 다시 찾아 칠한다.
+        const live = project.maps[plan.id] ?? map;
+        const put = (q: number, tile: number) => { const c = g.axis === "vertical" ? idx(q, line) : idx(line, q); live.upperTiles[c] = tile; };
+        if (g.axis === "vertical") {
+          // 가로 띠: 2칸 구멍을 잇대고, 홀수 폭이면 마지막 구멍을 한 칸 겹쳐 끝에 붙인다.
+          for (let q = lo; q <= hi; q += 2) { const s0 = Math.min(q, hi - 1); if (s0 < lo) { put(lo, hole[0]!); continue; } put(s0, hole[0]!); put(s0 + 1, hole[1]!); }
+        } else for (let q = lo; q <= hi; q += 1) put(q, hole[0]!);
+      }
+    }
+  };
   for (const [k, g] of out.entries()) if (!g.seals) warnings.push(`${plan.name}: 얼음 틈 ${k + 1} (${g.from.x},${g.from.y})→(${g.to.x},${g.to.y}) 는 띠를 막아도 옆으로 돌아갈 수 있다(seals:false).`);
-  return { map: project.maps[plan.id]!, gaps: out, ice: [...iceSet].map((c) => ({ x: c % W, y: Math.floor(c / W) })), drifts };
+  return { paintGapArt, map: project.maps[plan.id]!, gaps: out, ice: [...iceSet].map((c) => ({ x: c % W, y: Math.floor(c / W) })), drifts };
 }
 
 const MOODS: Record<Mood, { weather?: { kind: "snow"; intensity: number }; ambient?: number; color?: string }> = {
@@ -404,6 +427,8 @@ const authorSnowRoute: ToolDefinition = {
       ice: { type: "number", description: "빙판 덩이 양 0~1(기본 0.5)" },
       drifts: { type: "number", description: "눈더미·바위·낱 소나무 양 0~1(기본 0.5)" },
       openEnd: { type: "boolean", description: "마지막 맵도 반대쪽 가장자리 출구를 남긴다(기본 false = 막다른 빈터)" },
+      paintGaps: { type: "boolean", description: "true 면 얼음 틈 띠에 얼음 구멍 그림을 찍어 실제로 막는다(기본 false = 칠하지 않음). 켜면 틈마다 place_field_obstacle kind:\"gap\"(x,y = gaps[k].from) 로 건널 수단을 꼭 놓는다" },
+      linkFrom: { type: "boolean", description: "false 면 시작 맵 가장자리에 길·이동 이벤트를 두지 않는다 — 요새 뒷문·동굴 출구·성벽 계단처럼 시작 맵(실내·던전)의 정한 칸에서 이벤트로 들여보낼 때. 첫 맵 입구는 data.maps[0].entry(그 칸에 돌아가는 이벤트를 직접 둔다). 기본 true" },
       seed: { type: "integer" },
     },
     required: ["fromMapId", "side"],
@@ -423,8 +448,10 @@ const authorSnowRoute: ToolDefinition = {
     const iceAmount = clamp01(args.ice, 0.5), driftAmount = clamp01(args.drifts, 0.5);
     const openEnd = args.openEnd === true;
     const warnings: string[] = [];
+    const gapArt: (() => void)[] = [];
     const out: Array<{ mapId: string; name: string; entry: Cell; exit: Cell | null; clearing: Cell; gaps: SnowGap[]; ice: Cell[]; drifts: Cell[] }> = [];
-    let prev: { mapId: string } & Cell = { mapId: from.id, ...originEdge(draft, from, side) };
+    const linkFrom = args.linkFrom !== false;
+    let prev: ({ mapId: string } & Cell) | null = linkFrom ? { mapId: from.id, ...originEdge(draft, from, side) } : null;
     for (let i = 0; i < count; i += 1) {
       let id = `map_snow_${side}_${i + 1}`;
       for (let n = 2; draft.maps[id]; n += 1) id = `map_snow_${side}_${i + 1}_${n}`;
@@ -432,9 +459,9 @@ const authorSnowRoute: ToolDefinition = {
       const gapsHere = Math.floor(gapTotal / count) + (i < gapTotal % count ? 1 : 0);
       const entryU = 10 + mulberry32(seed0 + i * 31)() * 12;
       const plan = planSnow(id, name, side, seed0 + i * 97, i === count - 1, openEnd, entryU, gapsHere);
-      const painted = paintSnowMap(draft, plan, gapWidth, iceAmount, driftAmount, warnings);
+      const painted = paintSnowMap(draft, plan, gapWidth, iceAmount, driftAmount, warnings, args.paintGaps === true);
       try { call(draft, "manage_map_tree", { operation: "move", mapId: id, parentId: from.id }); } catch { /* 트리 이동 실패는 무시 */ }
-      link(draft, prev, { mapId: id, ...plan.entry });
+      if (prev) link(draft, prev, { mapId: id, ...plan.entry });
       const moodName = (["clear", "snow", "blizzard", "dusk"] as const).find((m) => m === moods[i]) ?? "snow";
       const mood = MOODS[moodName];
       if (mood.weather || mood.ambient !== undefined) {
@@ -447,12 +474,14 @@ const authorSnowRoute: ToolDefinition = {
         } catch (e) { warnings.push(`${name} 날씨 실패: ${String(e).slice(0, 120)}`); }
       }
       if (painted.gaps.length < gapsHere) warnings.push(`${name}: 얼음 틈 ${gapsHere}곳 중 ${painted.gaps.length}곳만 자리를 찾았다.`);
+      gapArt.push(painted.paintGapArt);
       out.push({ mapId: id, name, entry: plan.entry, exit: plan.exit, clearing: plan.endClearing, gaps: painted.gaps, ice: painted.ice, drifts: painted.drifts });
       if (plan.exit) prev = { mapId: id, ...plan.exit };
     }
+    for (const paint of gapArt) paint();
     const gapNote = out.reduce((n, m) => n + m.gaps.length, 0);
     return {
-      summary: `설원 길 ${count}장(${side}): ${out.map((m) => `${m.name}=${m.mapId}${m.gaps.length ? ` 얼음 틈 ${m.gaps.length}` : ""}`).join(" → ")} · ${from.id} ${side} 가장자리와 연결${gapNote ? ` · 틈 자리는 data.maps[i].gaps(from→to)` : ""}`,
+      summary: `설원 길 ${count}장(${side}): ${out.map((m) => `${m.name}=${m.mapId}${m.gaps.length ? ` 얼음 틈 ${m.gaps.length}` : ""}`).join(" → ")} · ${linkFrom ? `${from.id} ${side} 가장자리와 연결` : `${from.id} 와는 잇지 않음(첫 맵 입구 data.maps[0].entry 에 이벤트로 잇는다)`}${gapNote ? ` · 틈 자리는 data.maps[i].gaps(from→to)` : ""}`,
       data: { maps: out },
       ...(warnings.length ? { warnings } : {}),
     };

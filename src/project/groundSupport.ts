@@ -219,6 +219,9 @@ export function groundSupportIssues(map: GameMap, ts: TilesetDef | undefined, op
   if (opts.events !== false) {
     for (const event of map.events ?? []) {
       if (issues.length >= MAX_ISSUES_PER_MAP) break;
+      // 보이지 않는 자동·병렬 이벤트(맵 진입 분위기·날씨, 도착 장면)는 칸에 선 물체가 아니다 — 받침을 따지지 않는다
+      // (set_scene_mood 가 (0,0) 에 두는 날씨 이벤트가 던전 맵 허공 칸이라 거절됐다, 2026-10-26).
+      if (isInvisibleLogicEvent(event)) continue;
       const surface = supportSurfaceOf(ts, at(map, event.x, event.y));
       if (surface === "ceiling") {
         issues.push({ severity: "error", code: "ground-support", x: event.x, y: event.y, eventId: event.id,
@@ -240,4 +243,16 @@ export function groundSupportIssues(map: GameMap, ts: TilesetDef | undefined, op
     }
   }
   return issues;
+}
+
+/** 모든 페이지가 그림 없는(투명) 자동·병렬 실행 이벤트 — 맵 논리용이라 바닥 받침이 필요 없다. */
+function isInvisibleLogicEvent(event: { trigger?: { kind?: string }; pages?: readonly { trigger?: { kind?: string }; graphic?: unknown }[] }): boolean {
+  const pages = event.pages ?? [];
+  if (pages.length === 0) return event.trigger?.kind === "auto" || event.trigger?.kind === "parallel";
+  return pages.every((page) => {
+    const g = page.graphic as { transparent?: boolean; sprite?: unknown; tileId?: unknown } | undefined;
+    const invisible = !g || g.transparent === true || (!g.sprite && g.tileId === undefined);
+    const kind = page.trigger?.kind ?? event.trigger?.kind;
+    return invisible && (kind === "auto" || kind === "parallel" || kind === "action");
+  }) && pages.some((page) => { const k = page.trigger?.kind ?? event.trigger?.kind; return k === "auto" || k === "parallel"; });
 }
