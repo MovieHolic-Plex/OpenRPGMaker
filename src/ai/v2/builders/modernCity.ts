@@ -86,7 +86,9 @@ function buildStreet(run: BuildRun, spec: PlaceSpec, previous?: PlaceRecord): Pl
   const missing: string[] = [];
   const prev = previous?.result.state as KrState | undefined;
   const text = textOf(spec);
-  const size = spec.size ?? "large";
+  // 크기를 안 주면 가게 수로 정한다 — 가게 다섯의 동네 거리를 60×48 로 지었더니 새 플레이어가 한 시간 동안 집 현관을 못 찾았다(J95).
+  const wanted = SHOP_WORDS.filter(([re]) => has(text, re)).length;
+  const size = spec.size ?? (wanted <= 3 ? "small" : wanted <= 6 ? "medium" : "large");
   let [w, h] = size === "small" ? [44, 34] : size === "medium" ? [52, 40] : [60, 48];
   w = Math.max(40, Math.min(80, Math.round(num(spec.hints?.width) ?? w))); h = Math.max(30, Math.min(64, Math.round(num(spec.hints?.height) ?? h)));
   const mapId = prepareStreetMap(run, spec, targetMap(run, spec, previous), w, h, warnings);
@@ -103,6 +105,9 @@ function buildStreet(run: BuildRun, spec: PlaceSpec, previous?: PlaceRecord): Pl
   const start = data.start;
   const built = (data.buildings ?? []).map((b) => b.name);
   for (const s of shops) if (!built.some((b) => b.includes(s.slice(0, 2)))) missing.push(`${s}(거리 구성기가 이 크기 거리에 못 세움)`);
+  // 같은 가게가 둘(「카페」·「카페 2」)이면 이야기의 가게가 어느 쪽인지 헷갈린다 — 이어 줄 한 곳 말고는 문을 잠근 간판으로 남는다(J95 미끼 카페).
+  const twins = built.filter((b) => / \d+$/u.test(b));
+  if (twins.length) warnings.push(`같은 종류 가게가 여럿이다(${twins.join(" · ")}) — 이야기에 나오는 가게 하나만 실내와 잇고, 나머지는 들어갈 수 없다는 안내가 뜨는지 확인한다. 새 플레이어가 간판만 보고 엉뚱한 가게로 간다.`);
   return {
     ok: true, mapIds: [mapId], ...(start ? { entrance: { mapId, ...start } } : {}),
     summary: `${spec.name}: 한국 도시 거리 ${w}×${h}(seed ${seed}) — 건물 ${built.length}채${built.length ? `: ${built.slice(0, 8).join(" · ")}` : ""}. 건물 문은 그 실내(house kr-modern)와 link_modern_city_interior 로 잇는다`,

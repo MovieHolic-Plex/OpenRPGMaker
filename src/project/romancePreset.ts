@@ -49,7 +49,7 @@ export function romanceHudConfig(previous: FieldHudConfig | undefined): FieldHud
   const w = (id: string, patch: Record<string, unknown>) => normalizeHudWidget({ id, ...patch });
   return {
     theme: "hearts", font: "pixel", ...(previous?.menuStyle ? { menuStyle: previous.menuStyle } : {}),
-    vitals: false, clock: true, tools: false, objective: false, hideEmpty: true,
+    vitals: false, clock: true, tools: false, objective: true, hideEmpty: true,
     widgets: [
       // 2026-10-16 R06: 호감 목록·남은 시간 판이 지도 위쪽과 실내 위쪽을 상시 덮었다. 이제 이 둘은 값이 바뀐 뒤 3초만(대화가 끝나 HUD 가 다시 보일 때) 뜬다 —
       // 평소 화면은 모서리 시계 칩 하나뿐이고, 그 칩도 플레이어가 위쪽에 서면 아래쪽으로 옮겨 간다(autoAvoid). 전체 목록은 ESC 「호감도」.

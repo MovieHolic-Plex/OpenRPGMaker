@@ -60,7 +60,7 @@ export const GAME_SYSTEM_AUTHORING_TOOLS:readonly ToolDefinition[]=[
   },[]),(p,args)=>{
     const keys=['theme','off','vitals','clock','tools','objective'];const unknown=Object.keys(args).filter(k=>!keys.includes(k));
     if(unknown.length)throw new ToolError(`알 수 없는 인자 ${unknown.join(', ')}. 허용: ${keys.join(', ')}.`,{code:'invalid-args'});
-    if(args.off===true){p.system.fieldHud={theme:'chase',vitals:false,clock:false,tools:false,objective:false,hideEmpty:true,widgets:[]};return {summary:'필드 HUD 를 껐습니다(상시 표시 없음).',data:{hud:p.system.fieldHud}};}
+    if(args.off===true){p.system.fieldHud={theme:'chase',vitals:false,clock:false,tools:false,objective:args.objective!==false,hideEmpty:true,widgets:[]};return {summary:'필드 HUD 를 껐습니다(상시 표시 없음, 「현재 목표」 줄은 남김).',data:{hud:p.system.fieldHud}};}
     if(args.theme===undefined&&!keys.slice(2).some(k=>args[k]!==undefined))throw new ToolError('바꿀 것이 없습니다. 예: {theme:"horror"} · {off:true} · {theme:"hearts",clock:false}',{code:'invalid-args'});
     const theme=typeof args.theme==='string'?args.theme:(p.system.fieldHud?.theme??'minimal');
     const prev=p.system.fieldHud&&p.system.fieldHud.theme===theme?p.system.fieldHud:undefined;
