@@ -70,7 +70,8 @@ describe("emerald opening pixel grid (CSS contract)", () => {
   });
   it("keeps idle bobs on 2px steps and the dialogue window inside the stage", () => {
     expect(motion).toContain("emerald-creature-idle 3.2s steps(1, end)");
-    expect(motion).toMatch(/emerald-professor-idle[^}]*-2px/u);
+    // 키프레임 블록 안(중첩 {} 한 단계)에서 -2px 를 찾는다 — 옛 정규식 [^}]* 은 첫 프레임의 } 에서 멈춰 한 번도 맞은 적이 없다(#2726 에서 실행 없이 추가).
+    expect(motion).toMatch(/@keyframes emerald-professor-idle\s*\{(?:[^{}]*\{[^}]*\})*?[^{}]*\{[^}]*translate:\s*0 -2px/u);
     expect(css).toContain("width:calc(100% - 28px - 40px)");
     expect(css).toContain("border:6px double #55615f");
   });

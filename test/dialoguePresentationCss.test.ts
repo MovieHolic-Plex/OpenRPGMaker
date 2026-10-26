@@ -105,10 +105,14 @@ describe("대화창 연출 CSS", () => {
   it("이름표·초상화 연출은 상자의 진입 단계에만 걸린다", () => {
     // 게이트가 없으면 연속 대사마다 이름표가 다시 튀어나온다 — phase="enter" 는
     // 세션 첫 창에만 붙으므로 그게 곧 세션 경계 게이트다.
-    const childRules = [...css.matchAll(/^([^{}\n][^{}]*?)\{/gm)]
-      .map(([, selector]) => selector!.trim())
-      .filter((selector) => /\.speaker\.speaker-nameplate|\.dialogue-face/.test(selector))
-      .filter((selector) => /animation/.test(css.slice(css.indexOf(selector) + selector.length, css.indexOf(selector) + selector.length + 300)));
+    // 주석을 떼고 잎 규칙(선택자 { 본문 })만 본다. 예전엔 앞 주석까지 선택자로 읽고 규칙 뒤 300자를 훑어서,
+    // 애니메이션 없는 크기 규칙(가운데 창 흉상, 2026-10-17)이 뒤따르는 reduced-motion 블록의 animation 때문에 걸렸다.
+    const plain = css.replace(/\/\*[\s\S]*?\*\//g, "");
+    const childRules = [...plain.matchAll(/([^{}]+)\{([^{}]*)\}/g)]
+      .map(([, selector, body]) => ({ selector: selector!.trim(), body: body! }))
+      .filter(({ selector }) => /\.speaker\.speaker-nameplate|\.dialogue-face/.test(selector))
+      .filter(({ body }) => /animation/.test(body))
+      .map(({ selector }) => selector);
     for (const selector of childRules) {
       expect(
         selector,

@@ -191,10 +191,11 @@
   white-space: nowrap;
 }
 
-/* 편집기는 select 를 .event-custom-select 로 감싸고 그 감싸개가 줄 끝까지 늘어난다 — 이 줄에서만 좁게. */
-.transfer-command-editor .transfer-command-door-row > :is(select, .event-custom-select) {
+/* 편집기는 select 를 .event-custom-select 로 감싸고 그 감싸개가 줄 끝까지 늘어난다 — 이 줄에서만 좁게.
+   이벤트 표면은 !important 를 쓰지 않는다(test/eventEditorBalancedShell) — 특이도(0,4,0)로 .event-custom-select{width:100%}(0,1,0)를 이긴다. */
+.transfer-command-editor .transfer-command-door-row.transfer-command-door-row > :is(select, .event-custom-select) {
   flex: none;
-  width: 140px !important;
+  width: 140px;
 }
 
 .transfer-command-summary {
