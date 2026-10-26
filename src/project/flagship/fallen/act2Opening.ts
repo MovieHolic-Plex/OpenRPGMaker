@@ -1106,7 +1106,9 @@ function snowPass(project: Project, exec: Exec): void {
   addEv(project, FS2_SNOW.mapIds[0]!, "ev_fs2_snow_arrive", "서리 가도", { x: 1, y: 0 }, [
     page("ev_fs2_snow_arrive_idle", "대기", [], [], { priority: "below" }),
     page("ev_fs2_snow_arrive_run", "들어선다", [sw(SW_SARAH)], [
-      wait(500),
+      // 요새에서 화면을 덮고(fadeOut) 넘어온다 — 여기서 걷어야 눈길이 보인다(검은 화면 대사, QA 2026-10-26).
+      fadeIn(800),
+      wait(300),
       say(SARAH, "이 바람엔 길이 안 보여."),
       say(KAEL, "그럼 별을 보고 가요. 저기, 북쪽 끝."),
       say(ELENA, "이리스가 있었으면 손끝에 불 켜 줬을 텐데."),
@@ -1508,7 +1510,8 @@ function lanternNightEvents(project: Project): void {
   addEv(project, FS2_FROST_NIGHT_ID, "ev_fs2_night_arrive", "얼음 위의 밤", { x: 1, y: 0 }, [
     page("ev_fs2_night_arrive_idle", "대기", [], [], { priority: "below" }),
     page("ev_fs2_night_arrive_run", "나선다", [sw(SW_NIGHT)], [
-      wait(500),
+      fadeIn(900),
+      wait(300),
       say(SARAH, "…발렌 님이다. 혼자야."),
       say(ELENA, "기사들은? 아무도 없어."),
       say(KAEL, "가 보자. 칼은 넣어 두고."),
