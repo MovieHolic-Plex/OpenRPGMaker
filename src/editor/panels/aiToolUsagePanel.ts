@@ -9,6 +9,7 @@ import {
   type ToolUsageObservation,
   type ToolUsageReport,
 } from "@/ai/toolUsageReport";
+import { formatEditorDate } from "@/i18n";
 import { store } from "@/project/store";
 import { el } from "@/util/dom";
 import { toolLabel } from "./aiToolLabels";
@@ -222,7 +223,7 @@ function formatDuration(ms: number): string {
 function formatWhen(iso: string): string {
   const at = new Date(iso);
   if (Number.isNaN(at.getTime())) return iso;
-  return at.toLocaleString("ko-KR", { month: "numeric", day: "numeric", hour: "2-digit", minute: "2-digit" });
+  return formatEditorDate(at, { month: "numeric", day: "numeric", hour: "2-digit", minute: "2-digit" });
 }
 
 function downloadReport(report: ToolUsageReport): void {

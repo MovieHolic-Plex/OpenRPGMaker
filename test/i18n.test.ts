@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { MAP_SHIFT_NOTE } from "@/editor/panels/mapShiftCopy";
-import { matchSupportedLocale, resolveLocale } from "@/i18n/locale";
+import { editorIntlLocale, matchSupportedLocale, resolveLocale } from "@/i18n/locale";
 import { createTranslator } from "@/i18n/translator";
 import en from "@/i18n/catalogs/en.json";
 import ja from "@/i18n/catalogs/ja.json";
@@ -34,6 +34,29 @@ describe("resolveLocale", () => {
     expect(resolveLocale({ languages: ["en-US"], automation: true })).toBe("ko");
     expect(resolveLocale({ languages: ["en-US"], automation: true, forceDetect: true })).toBe("en");
     expect(resolveLocale({ saved: "ja", languages: ["en-US"], automation: true })).toBe("ja");
+  });
+});
+
+describe("editorIntlLocale", () => {
+  const day = new Date(2026, 6, 11, 10, 0, 0);
+  const options: Intl.DateTimeFormatOptions = { year: "numeric", month: "long", day: "numeric", weekday: "short" };
+
+  it("keeps Korean dates on ko-KR and uses the chosen language otherwise", () => {
+    expect(editorIntlLocale("ko")).toBe("ko-KR");
+    expect(editorIntlLocale("en")).toBe("en");
+    expect(editorIntlLocale("ja")).toBe("ja");
+    expect(editorIntlLocale("zh")).toBe("zh-CN");
+    const ko = day.toLocaleDateString(editorIntlLocale("ko"), options);
+    const en = day.toLocaleDateString(editorIntlLocale("en"), options);
+    const ja = day.toLocaleDateString(editorIntlLocale("ja"), options);
+    const zh = day.toLocaleDateString(editorIntlLocale("zh"), options);
+    expect(ko).toBe(day.toLocaleDateString("ko-KR", options));
+    expect(ko).toMatch(/2026년/);
+    expect(en).toMatch(/July/);
+    expect(en).toMatch(/2026/);
+    expect(ja).toMatch(/2026年7月11日/);
+    expect(zh).toMatch(/2026年7月11日/);
+    for (const label of [en, ja, zh]) expect(label).not.toMatch(/[가-힣]/);
   });
 });
 
