@@ -65,7 +65,8 @@ describe("동료 간격 규칙", () => {
 
   it("맵 진입 궤적 초기화는 gap 만큼 길게 깔아 동료가 플레이어 칸에 겹치지 않게 한다", () => {
     const project = createBlankProject();
-    project.system.companions = { gap: 4 };
+    // 기본 따라오기는 빵부스러기(#3509) — 맵에 들어서면 일부러 주인공 칸에 겹쳐 선다. 간격 궤적은 spaced 모드에서 본다.
+    project.system.companions = { gap: 4, followMode: "spaced" };
     const session = startSession(project);
     addFollowerToSession(project, session, { actorId: "actor_hero", name: "가리" });
     addFollowerToSession(project, session, { graphic: CAT(), name: "야옹이" });
