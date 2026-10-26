@@ -36,13 +36,19 @@ describe('selected features share the shipping project codec', () => {
   });
 
   it('does not opt old projects into new battle or climate behavior', () => {
-    const restored = deserialize(serialize(createBlankProject()));
+    const original = createBlankProject();
+    const restored = deserialize(serialize(original));
     expect(restored.maps[restored.startMapId]!.climate).toBeUndefined();
+    // 기본 로스터 스킬(src/assets/retroRosterSkills)은 이제 연타·공식·재사용 대기를 저작해 들고 온다 —
+    // 이 검사의 뜻은 「코덱이 새 필드를 끼워 넣지 않는다」이므로 저작된 원본과 같고, 없던 스킬엔 계속 없어야 한다.
+    const authored = new Map(original.database.skills.map((skill) => [skill.id, skill] as const));
     for (const skill of restored.database.skills) {
-      expect(skill.damageFormula).toBeUndefined();
-      expect(skill.hitSequence).toBeUndefined();
-      expect(skill.cooldownTurns).toBeUndefined();
+      const source = authored.get(skill.id);
+      expect(skill.damageFormula).toEqual(source?.damageFormula);
+      expect(skill.hitSequence).toEqual(source?.hitSequence);
+      expect(skill.cooldownTurns).toEqual(source?.cooldownTurns);
     }
+    expect(restored.database.skills.some((skill) => !authored.get(skill.id)?.hitSequence && skill.hitSequence === undefined)).toBe(true);
     for (const enemy of restored.database.enemies) expect(enemy.rewards.drops).toBeUndefined();
   });
 });
