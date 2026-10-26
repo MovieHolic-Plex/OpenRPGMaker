@@ -16,7 +16,8 @@ export function openingImageProject(project: Project, resourceIds: readonly stri
     if (!mapId || !map) continue;
     maps[mapId] = map;
     const tileset = project.tilesets[map.tilesetId];
-    if (tileset) tilesets[map.tilesetId] = tileset;
+    // 참고문서(MD·그림)는 그리기에 안 쓰인다 — 전송 사본을 무겁게 하지 않게 뺀다.
+    if (tileset) { const { referenceDocuments: _docs, ...drawable } = tileset; tilesets[map.tilesetId] = drawable; }
   }
   return structuredClone({ ...project, maps, tilesets, database: {} as Project['database'], assets: { ...project.assets, sprites: {},
     uploaded: Object.fromEntries(resourceIds.flatMap(id => project.assets.uploaded[id] ? [[id, project.assets.uploaded[id]]] : [])),
