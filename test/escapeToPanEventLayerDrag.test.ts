@@ -291,7 +291,7 @@ function dragHarness(): DragHarness {
   };
   const scene = Object.assign(Object.create(EditSceneCtor.prototype), {
     cameras: { main: camera },
-    game: { canvas: { getBoundingClientRect: () => ({ x: 0, y: 0, left: 0, top: 0, width: 320, height: 240 }) } },
+    game: { canvas: { style: {}, getBoundingClientRect: () => ({ x: 0, y: 0, left: 0, top: 0, width: 320, height: 240 }) } },
     input: {
       on: (type: string, handler: (event: unknown) => void) => { handlers.set(type, handler); },
       mouse: { disableContextMenu: () => undefined },
