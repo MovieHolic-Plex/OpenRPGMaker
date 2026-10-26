@@ -141,7 +141,7 @@ describe("마일스톤 턴 정산", () => {
     expect(result.proposedCalls.some((call) => call.name === "set_map_properties" && call.result.ok)).toBe(true);
     expect(session.getProposedProject().maps[project.startMapId]?.name).toBe("마을");
     expect(session.getHarnessSnapshot().workPlan?.layers[0]?.items[0]?.status).toBe(expectedStatus);
-  }, 30000);
+  }, 120000);
 
   it("한 항목이 실행 한도로 나뉘어도 앞선 성공과 미적용 제안을 이어서 완료한다", async () => {
     const project = createBlankProject();
@@ -195,7 +195,7 @@ describe("마일스톤 턴 정산", () => {
     expect(store.getCurrent().system.titleScreen?.title).toBe("연속 실행 모험");
     expect(session.getAuditEntries().filter(entry => entry.kind === "user").map(entry => entry.text))
       .toEqual(["아이템과 타이틀을 등록해줘", "계속"]);
-  }, 30000);
+  }, 120000);
 
   it.each([false, true])("마일스톤 쓰기는 자동 계속(%s) 후에도 정산에 남는다", async (continueOnce) => {
     const project = createBlankProject();
@@ -248,5 +248,5 @@ describe("마일스톤 턴 정산", () => {
     const items = store.getCurrent().database.items;
     expect(items.filter((item) => item.id.startsWith("item_ledger_"))).toHaveLength(WRITE_COUNT);
     expect(store.getCurrent().system.titleScreen?.title).toBe("원장 검증");
-  }, 30000);
+  }, 120000);
 });

@@ -49,7 +49,10 @@ it.each([true, false])("rejects an actual held approval after a live price edit,
   const deadline = AbortSignal.timeout(60000);
   const expired = new Promise<never>((_resolve, reject) => deadline.addEventListener("abort", () => reject(new Error("Held draft deadline")), { once: true }));
   await Promise.race([entered.promise, expired]);
-  expect(store.getCurrent().database.items.find(item => item.id === "item_potion")?.price).toBe(50);
+  // The live store is still at the blank project's own potion price (whatever the defaults set it to) before the human edit.
+  const baselinePrice = project.database.items.find(item => item.id === "item_potion")?.price;
+  expect(baselinePrice).toBeTypeOf("number");
+  expect(store.getCurrent().database.items.find(item => item.id === "item_potion")?.price).toBe(baselinePrice);
   store.update(draft => {
     const potion = draft.database.items.find(item => item.id === "item_potion");
     if (!potion) throw new Error("Missing potion fixture");

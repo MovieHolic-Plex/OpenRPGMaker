@@ -25,7 +25,7 @@ const config = { ...llm.defaultAiConfig(), agentMode: "chat" as const, model: "f
 const final: llm.ChatResult = { message: { role: "assistant", content: "RESULT" }, finishReason: "stop" };
 let restoreDom: () => void;
 beforeEach(() => {
-  restoreDom = installFakeDom(); vi.stubGlobal("indexedDB", new IDBFactory()); resetAiRecordDbForTest();
+  restoreDom = installFakeDom({ window: true }); vi.stubGlobal("indexedDB", new IDBFactory()); resetAiRecordDbForTest();
   const values = new Map([[llm.AI_CONFIG_STORAGE_KEY, JSON.stringify(config)]]);
   vi.stubGlobal("localStorage", { getItem: (key: string) => values.get(key) ?? null,
     setItem: (key: string, value: string) => values.set(key, value), removeItem: (key: string) => values.delete(key) });
