@@ -5823,10 +5823,25 @@
       {
        "kind": "pressUntil",
        "key": "Enter",
-       "testid": "save-file-selection",
+       "testid": "main-menu",
        "state": "present",
        "maxPresses": 20,
        "timeoutMs": 1500
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1200
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "saved",
+     "ops": [
+      {
+       "kind": "press",
+       "key": "Enter"
       },
       {
        "kind": "hold",
