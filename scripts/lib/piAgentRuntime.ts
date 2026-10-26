@@ -348,6 +348,13 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   referenceGate.evidence.shrinkImage = shrinkReferenceImage;
   const charsetGate = new PiCharsetSelectionGate();
   const model = localCli ? ({ id: request.model ?? "" } as unknown as ReturnType<typeof resolvePiModel>) : options.model ?? resolvePiModel(request.provider, request.model);
+  // 그림을 도구 응답에 넣었다고 모델이 본 것은 아니다 — 그림을 못 받는 모델(input 에 image 가 없다)이면 pi-ai 가 그림 자리를 글 한 줄로 바꾼다.
+  // 그때 「모델 입력에 포함했습니다」라고 적으면 거짓 상태다(J69, hf2-school-flash: supportsImages:false 인데 charset.image.delivered).
+  // 로컬 CLI 처럼 input 을 모르면 예전처럼 전달로 본다.
+  const modelSeesImages = (): boolean => { const input = (model as { input?: unknown }).input; return !Array.isArray(input) || input.includes('image'); };
+  const imageStatus = (summary: string): { ok: boolean; summary: string } => modelSeesImages()
+    ? { ok: true, summary }
+    : { ok: false, summary: `그림을 만들었지만 이 모델(${String((model as { id?: unknown }).id ?? '')})은 그림을 받지 못해 전달되지 않았습니다 — 모델은 그림 대신 글만 봤습니다.` };
   // 어댑터와 코어 이벤트의 호출 id로 결과를 연결한다. 같은 이름의 병렬 호출도 섞지 않는다.
   const pendingSummaries = new Map<string, { ok: boolean; summary: string; result: unknown; visuals?: readonly ActivityVisual[] }>();
   const toolStartedAt = new Map<string, number>();
@@ -735,7 +742,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
           // 모델에게는 플레이어 첫 화면에 실제로 비치는 부분만 보여 준다 — 전체 그림을 주면 가려진 아래쪽(반영·땅)까지 보고했다(2026-10-22 검수).
           const visible = await composeVisiblePanorama(far.dataUrl, near?.dataUrl, args.view, visibleTop).catch(() => undefined);
           if (visible?.startsWith('data:image/png;base64,')) result.content.push({ type: 'image', mimeType: 'image/png', data: visible.slice(visible.indexOf(',') + 1) });
-          emit({ type: 'execution_status', name: 'map.background.delivered', ok: true, summary: '생성한 맵 배경 그림을 모델에게 전달했습니다.', data: { resourceIds: made.map(entry => entry.still.resourceId), toolCallId: id } });
+          emit({ type: 'execution_status', name: 'map.background.delivered', ...imageStatus('생성한 맵 배경 그림을 모델에게 전달했습니다.'), data: { resourceIds: made.map(entry => entry.still.resourceId), toolCallId: id } });
         } else result = await tool.execute(id, params, signal);
       }
       if (tool.name === 'show_opening_image' || tool.name === 'generate_opening_image' || tool.name === 'generate_opening_layer') {
@@ -745,7 +752,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
         if (!png) throw new Error('오프닝 그림을 모델에게 전달하지 못했습니다.');
         result.content.push({ type: 'image', mimeType: 'image/png', data: png });
         if (data?.resourceId) {openingProduction.saw(ctx.project, data.resourceId);monsterGameProduction.saw(ctx.project, data.resourceId);}
-        emit({ type: 'execution_status', name: 'opening.image.delivered', ok: true, summary: '실제 오프닝 그림을 모델에게 전달했습니다.', data: { resourceId: data?.resourceId, toolCallId: id } });
+        emit({ type: 'execution_status', name: 'opening.image.delivered', ...imageStatus('실제 오프닝 그림을 모델에게 전달했습니다.'), data: { resourceId: data?.resourceId, toolCallId: id } });
       }
       if (tool.name === 'preview_opening_reference') {
         if (!options.renderToolImage) throw new Error('참고 프레임 전달 경로 없음.');
@@ -792,7 +799,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
         }
         if (png && data && typeof data === "object") interiorCompletion.recordPreview(ctx.project, data);
         const region = data && typeof data === 'object' ? data as Record<string, unknown> : {};
-        options.onEvent?.({ type: "execution_status", name: "map.image.delivered", ok: true, summary: "현재 초안 이미지를 모델 도구 응답에 포함했습니다.", data: { toolCallId: id, base64Length: png.length,
+        options.onEvent?.({ type: "execution_status", name: "map.image.delivered", ...imageStatus("현재 초안 이미지를 모델 도구 응답에 포함했습니다."), data: { toolCallId: id, base64Length: png.length,
           ...Object.fromEntries(['mapId', 'x', 'y', 'w', 'h'].map(key => [key, region[key]])) } });
       }
       const charsetResult = result.details as ToolResult;
@@ -810,7 +817,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
           imageLegend: `실제 칩 그림의 번호는 왼쪽 위부터 행 순서입니다. ${candidates.map((row, i) => `${i + 1}: ${row.label} (${row.selectionId})`).join(' / ')}` }) };
         result.content.push({ type: 'image', mimeType: 'image/png', data: png });
         charsetGate.offer(tool.name, charsetResult, png);
-        emit({ type: 'execution_status', name: 'charset.image.delivered', ok: true, summary: '검색 후보의 실제 캐릭터 칩 이미지를 모델 입력에 포함했습니다.', data: { toolCallId: id, selectionIds: candidates.map(row => row.selectionId), base64Length: png.length } });
+        emit({ type: 'execution_status', name: 'charset.image.delivered', ...imageStatus('검색 후보의 실제 캐릭터 칩 이미지를 모델 입력에 포함했습니다.'), data: { toolCallId: id, selectionIds: candidates.map(row => row.selectionId), base64Length: png.length } });
       }
       if (tool.name === 'show_title_opening') {
         const ids = presentationArtImages(ctx.project).map(image => image.resourceId);
@@ -824,8 +831,8 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
         }
         // 연결된 오프닝 그림을 실제로 본 것도 오프닝 제작 확인으로 친다 — 첫 제작 타이틀·오프닝 단계의 확인 도구가 이것이다.
         for (const resourceId of ids) openingProduction.saw(ctx.project, resourceId);
-        emit({ type: 'execution_status', name: 'presentation.image.delivered', ok: true,
-          summary: '연결된 타이틀·오프닝 원화를 모델 도구 응답에 포함했습니다.', data: { toolCallId: id, resourceIds: ids } });
+        emit({ type: 'execution_status', name: 'presentation.image.delivered',
+          ...imageStatus('연결된 타이틀·오프닝 원화를 모델 도구 응답에 포함했습니다.'), data: { toolCallId: id, resourceIds: ids } });
       }
       if (tool.concurrency === "exclusive" && request.applyMode !== "step") await checkpoint(tool.name, tool.name, signal);
       return result;
