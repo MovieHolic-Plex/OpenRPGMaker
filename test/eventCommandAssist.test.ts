@@ -47,6 +47,7 @@ import { store } from "@/project/store";
 import type { Command, EventPage, Project } from "@/project/types";
 import { FakeElement, findByTestId, installFakeDom } from "./fakeDom";
 import { parseAudioPrompt } from "./support/audioPrompt";
+import { startOnRetiredCombinedTown } from "./support/retiredEasyRpgTilesets";
 
 const CONFIG: AiConfig = {
   authMode: "apiKey",
@@ -330,7 +331,9 @@ describe("parseAndValidate", () => {
   });
 
   it("isPassable 만 통과하는 한 방향 함정 칸 transfer 를 거부한다", () => {
-    const project = testProject();
+    // 306/230/240 은 합본 마을 칩셋의 풀·한 방향 턱·벽 번호다 — 2026-10-07 정리(#2335) 뒤 기본 칩셋이 버들항이라
+    // 그 칩셋을 명시해 둔다.
+    const project = startOnRetiredCombinedTown(testProject());
     const map = project.maps[project.startMapId];
     map.lowerTiles.fill(306);
     map.upperTiles.fill(-1);
