@@ -9495,7 +9495,7 @@
 "영역 복사":"Copy region",
 "영역 비우기":"Clear region",
 "영역 선택":"Select region",
-"영역 선택 — 놓으면 AI 작업·복사·지우기·구조물로 저장":"Select region — once placed, save as AI task, copy, erase, or structure",
+"영역 선택 — 놓으면 AI 작업·복사·지우기·구조물로 저장":"Select region — when you release: 「AI task」, copy, erase, and 「Save as structure」",
 "영역 안에서는 전권이다:":"Within the region, everything goes:",
 "영역 옮기기":"Move region",
 "영역 읽기":"Read region",

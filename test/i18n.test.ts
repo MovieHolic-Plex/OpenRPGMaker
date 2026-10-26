@@ -217,4 +217,19 @@ describe("shipped catalogs", () => {
     expect(createTranslator(ja).translate("통행 보기")).toBe("通行を見る");
     expect(createTranslator(zh).translate("통행 미리보기")).toBe("通行预览");
   });
+
+  it("describes right-drag region select as a release, not placing an object", () => {
+    // 도움말의 우클릭 드래그. 「놓으면」은 드래그를 떼는 것이고, 그 뒤에 뜨는 동작은
+    // AI 작업·복사·지우기·구조물로 저장이다. 「저장」은 구조물에만 붙는다.
+    const hint = "영역 선택 — 놓으면 AI 작업·복사·지우기·구조물로 저장";
+    expect(en[hint]).toBe("Select region — when you release: 「AI task」, copy, erase, and 「Save as structure」");
+    expect(en[hint].toLowerCase()).not.toMatch(/placed|save as ai/);
+    expect(ja[hint]).toBe("範囲選択 — 離すと「AIタスク」·コピー·消去·「構造物として保存」");
+    expect(ja[hint]).not.toMatch(/配置|リージョン/);
+    expect(zh[hint]).toBe("选择区域 — 松开后：「AI 任务」·复制·擦除·「保存为结构物」");
+    expect(zh[hint]).not.toMatch(/放置|保存为AI/);
+    expect(createTranslator(en).translate(hint)).toBe(en[hint]);
+    expect(createTranslator(ja).translate(hint)).toBe(ja[hint]);
+    expect(createTranslator(zh).translate(hint)).toBe(zh[hint]);
+  });
 });
