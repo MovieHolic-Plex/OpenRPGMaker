@@ -56,6 +56,9 @@ function retryKeepingProgress(project: Project, session: PlaySession, snapshot: 
   retry.x = at.x;
   retry.y = at.y;
   retry.audio = {};
+  // 카운트다운은 체크포인트 때 값으로 — 시간이 다 돼 죽었으면 0초로 되살아나 바로 다시 죽는다.
+  retry.timers = { ...(at.timers ?? {}) };
+  if (at.timerActive) retry.timerActive = { ...at.timerActive }; else delete retry.timerActive;
   resetPursuersForRetry(retry);
   setSessionCheckpoint(retry, snapshot);
   return retry;
