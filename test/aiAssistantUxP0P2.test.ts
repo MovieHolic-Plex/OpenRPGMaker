@@ -32,7 +32,7 @@ function installFakeLocalStorage(): void {
 beforeEach(() => {
   store.replace(createBlankProject());
   editorState.set({ currentMapId: null, selection: null });
-  restoreDom = installFakeDom();
+  restoreDom = installFakeDom({ window: true });
   installFakeLocalStorage();
 });
 

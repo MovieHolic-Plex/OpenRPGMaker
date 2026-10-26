@@ -33,7 +33,7 @@ beforeEach(() => {
   vi.stubEnv("VITE_LLM_API_KEY", "");
   store.replace(createBlankProject());
   editorState.set({ currentMapId: null, selection: null });
-  restoreDom = installFakeDom();
+  restoreDom = installFakeDom({ window: true });
   installFakeLocalStorage();
 });
 

@@ -39,6 +39,9 @@ function installFakeWindow(innerWidth = 1600, innerHeight = 1000): void {
   const target = new EventTarget() as EventTarget & Partial<Window>;
   target.setTimeout = ((..._args: Parameters<typeof setTimeout>) => 0) as typeof setTimeout;
   target.clearTimeout = ((..._args: Parameters<typeof clearTimeout>) => undefined) as typeof clearTimeout;
+  // 상태 띠(aiStatusBar)가 window.setInterval 로 시계를 돌린다 — setTimeout 처럼 멈춘 타이머로 둔다.
+  target.setInterval = ((..._args: Parameters<typeof setInterval>) => 0) as typeof setInterval;
+  target.clearInterval = ((..._args: Parameters<typeof clearInterval>) => undefined) as typeof clearInterval;
   Object.defineProperty(target, "innerWidth", { configurable: true, value: innerWidth });
   Object.defineProperty(target, "innerHeight", { configurable: true, value: innerHeight });
   Object.defineProperty(globalThis, "window", { configurable: true, writable: true, value: target });

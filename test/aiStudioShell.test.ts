@@ -25,7 +25,7 @@ beforeEach(() => {
   store.replace(createBlankProject());
   resetLaneSessionForTest();
   resetMapEditHistory();
-  restoreDom = installFakeDom();
+  restoreDom = installFakeDom({ window: true });
   storage = new Map();
   Object.defineProperty(globalThis, "localStorage", {
     configurable: true,
