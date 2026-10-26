@@ -124,10 +124,14 @@ const item = (itemId: string, amount = 1): Command => ({ kind: "changeItem", ite
 
 const fixedMove = { type: "fixed", speed: 3, frequency: 3 };
 function page(id: string, name: string, conditions: Condition[], commands: Command[], extra: Rec = {}): EventPage {
-  return {
+  const out = {
     id, name, conditions, graphic: { transparent: true }, trigger: { kind: "action" }, priority: "same", overlapForbidden: false,
     movement: fixedMove, commands, ...extra,
-  } as unknown as EventPage;
+  } as Rec;
+  // 칩이 보이는 사람(같은 층)은 몸으로 막는다 — overlapForbidden 이 없으면 주인공이 그 칸을 걸어 지나간다(QA 2026-10-26 하넬).
+  const g = out.graphic as { transparent?: boolean; sprite?: unknown } | undefined;
+  if (!("overlapForbidden" in extra) && out.priority === "same" && g?.sprite && !g.transparent) out.overlapForbidden = true;
+  return out as unknown as EventPage;
 }
 function addEvent(map: GameMap, id: string, name: string, at: Cell, pages: EventPage[]): GameEvent {
   map.events = map.events.filter((e) => e.id !== id);
