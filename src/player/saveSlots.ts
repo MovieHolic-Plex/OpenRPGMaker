@@ -292,6 +292,11 @@ export type SaveSnapshot = {
     // Change Save Access 등 접근 플래그(m2Runtime.access). 세이브 복원 대상.
     readonly access?: Partial<Record<"escape" | "menu" | "save" | "teleportation", boolean>>;
     readonly systemAudio?: Record<string, string>;
+    /**
+     * 「현재 BGM 기억」이 적어 둔 곡 id. 지금 나오는 곡(`audio.bgm`)과는 별개다.
+     * 없거나 깨진 옛 세이브는 기억한 곡이 없고, 「기억한 BGM 재생」은 아무 곡도 틀지 않는다.
+     */
+    readonly memorizedBgm?: string;
   };
 };
 
@@ -612,6 +617,10 @@ export function createSaveSnapshot(project: Project, input: PlaySession): SaveSn
       mapBackground: pickMapBackground(session),
       systemAudio: parseSystemAudioState(session.m2Runtime?.system),
       access: session.m2Runtime?.access && Object.keys(session.m2Runtime.access).length > 0 ? { ...session.m2Runtime.access } : undefined,
+      ...(() => {
+        const memorizedBgm = persistedMemorizedBgm(session.m2Runtime?.audio?.memorizedBgm);
+        return memorizedBgm ? { memorizedBgm } : {};
+      })(),
     },
   };
 }
@@ -1015,6 +1024,8 @@ export function applySaveSnapshot(project: Project, input: SaveSnapshot): PlaySe
   if (snapshot.session.screen) applyScreenState(session, snapshot.session.screen);
   applyMapBackground(session, parseMapBackground(snapshot.session.mapBackground));
   if (snapshot.session.systemAudio) Object.assign(ensureM2Runtime(session).system, snapshot.session.systemAudio);
+  const memorizedBgm = persistedMemorizedBgm(snapshot.session.memorizedBgm);
+  if (memorizedBgm) ensureM2Runtime(session).audio.memorizedBgm = memorizedBgm;
   if (snapshot.session.access) {
     const runtime = ensureM2Runtime(session);
     runtime.access = { ...snapshot.session.access };
@@ -1347,6 +1358,7 @@ function parseSessionRecord(session: Record<string, unknown>): ParsedSessionResu
   }
   const battleResult = parseBattleResult(session.battleResult);
   if (battleResult === "invalid") return { ok: false, message: "Invalid battle result" };
+  const memorizedBgm = persistedMemorizedBgm(session.memorizedBgm);
   const parsedOverrides = parseFactionStanceOverrides(session.factionStanceOverrides);
   const audio = parseAudioState(session.audio);
   if (!audio.ok) return { ok: false, message: audio.message };
@@ -1497,6 +1509,7 @@ function parseSessionRecord(session: Record<string, unknown>): ParsedSessionResu
       mapBackground: parseMapBackground(session.mapBackground),
       systemAudio: parseSystemAudioState(session.systemAudio),
       access: parseAccessState(session.access),
+      ...(memorizedBgm ? { memorizedBgm } : {}),
     },
   };
 }
@@ -1612,6 +1625,19 @@ function parseFreezeFrame(value: unknown): SaveScreenState["freeze"] {
   const at = Math.trunc(value.at);
   if (at < 1 || at > 1_000_000) return undefined;
   return { style: style as FreezeStyle, at };
+}
+
+/**
+ * 「현재 BGM 기억」. 빈 문자열·깨진 값은 적지 않는다 — 그 칸 때문에 세이브 전체를 거절하지 않는다.
+ * 지금 재생 중인 곡(`audio.bgm`)은 길이 제한이 없으므로, 기억한 id 만 비정상적으로 길 때 그 칸을 버린다.
+ */
+const MEMORIZED_BGM_LIMIT = 1024;
+
+function persistedMemorizedBgm(value: unknown): string | undefined {
+  if (typeof value !== "string") return undefined;
+  const id = value.trim();
+  if (!id || id.length > MEMORIZED_BGM_LIMIT) return undefined;
+  return id;
 }
 
 function parseSystemAudioState(value: unknown): SaveSnapshot["session"]["systemAudio"] {
