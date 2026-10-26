@@ -34,7 +34,7 @@ const tool = (name: string, args: unknown): llm.ChatResult => ({ message: { role
   tool_calls: [{ id: name, type: "function", function: { name, arguments: JSON.stringify(args) } }] }, finishReason: "tool_calls" });
 let restoreDom: () => void;
 beforeEach(async () => {
-  restoreDom = installFakeDom(); vi.stubGlobal("indexedDB", new IDBFactory()); resetAiRecordDbForTest();
+  restoreDom = installFakeDom({ window: true }); vi.stubGlobal("indexedDB", new IDBFactory()); resetAiRecordDbForTest();
   const values = new Map([[llm.AI_CONFIG_STORAGE_KEY, JSON.stringify(config)]]);
   vi.stubGlobal("localStorage", { getItem: (key: string) => values.get(key) ?? null,
     setItem: (key: string, value: string) => values.set(key, value), removeItem: (key: string) => values.delete(key) });

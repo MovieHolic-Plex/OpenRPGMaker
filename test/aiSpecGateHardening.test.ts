@@ -16,10 +16,11 @@ import { formatMaterialLabelHint } from "@/ai/turnGuide";
 import { buildRegionTaskMessage } from "@/editor/regionTask/runRegionTask";
 import { getTool, runTool } from "@/editor/tools";
 import { createBlankProject } from "@/project/defaults";
-import { TILE } from "@/project/defaults/constants";
+import { COMBINED_TOWN_TILESET_ID, TILE } from "@/project/defaults/constants";
 import type { GameMap, Project } from "@/project/types";
 import { independentReviewPayload } from "./independentReviewFixture";
 import { fixedDeclarer } from "./intentFixture";
+import { withRetiredEasyRpgTilesets } from "./support/retiredEasyRpgTilesets";
 
 // Each test here drives a full assistant/editor session over the ~63MB blank project
 // (createBlankProject + fingerprint/copy per session). On 4-core CI runners with 8 workers
@@ -52,9 +53,12 @@ function toolCallMsg(name: string, args: unknown, id: string): ChatResult {
 function finalMsg(text: string): ChatResult {
   return { message: { role: "assistant", content: text, tool_calls: undefined }, finishReason: "stop" } as ChatResult;
 }
+// m1 sits on the retired combined-town sheet, as in aiSpecGate.test.ts: these cases use its tile ids (TILE.GRASS=240,
+// WALL, sand/path terrain) and harness vocabulary. On the current default (beodeul_city) 240 is a wall, and the
+// tileset-reference read gate (tilesetReferenceEvidence) refuses tile writes before the structure guard is reached.
 function mkProject(width = 20, height = 20): Project {
-  const ctx = { project: createBlankProject() };
-  const created = runTool(ctx, "create_map", { id: "m1", name: "게이트", width, height });
+  const ctx = { project: withRetiredEasyRpgTilesets(createBlankProject()) };
+  const created = runTool(ctx, "create_map", { id: "m1", name: "게이트", width, height, tilesetId: COMBINED_TOWN_TILESET_ID });
   if (!created.ok) throw new Error(created.summary);
   return ctx.project;
 }
