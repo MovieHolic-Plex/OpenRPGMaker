@@ -48,6 +48,7 @@ Work order (cheapest first): timeout → fake-DOM/env gaps → combined_town / o
 ## timeout (74)
 
 - **61** — `Error: Test timed out in Nms.`
+  - [ ] `test/databaseSystemModern.test.ts` (2026-10-26: environment fixed; passes in CI but its logo-clear case has hit the 15s timeout under load once)
   - [ ] `test/actionAcceptanceProof.test.ts`
   - [ ] `test/actionCombatProbeBoot.test.ts`
   - [ ] `test/advisoryLintProvenance.test.ts`
@@ -348,7 +349,6 @@ Work order (cheapest first): timeout → fake-DOM/env gaps → combined_town / o
   - [ ] `test/transparentTileLayerRouting.test.ts`
   - [ ] `test/treePlacementNamespaces.test.ts`
 - **4** — `ReferenceError: ResizeObserver is not defined`
-  - [ ] `test/databaseSystemModern.test.ts`
 - **4** — `AssertionError: expected N to be +N // Object.is equality`
   - [ ] `test/harnesses/joseonBaram.test.ts`
   - [ ] `test/regionTaskClip.test.ts`
@@ -414,7 +414,6 @@ Work order (cheapest first): timeout → fake-DOM/env gaps → combined_town / o
 - **2** — `TypeError: Cannot read properties of undefined (reading 'passability')`
 - **2** — `ReferenceError: HTMLCanvasElement is not defined`
   - [ ] `test/eventCommandMapRepairs.test.ts`
-  - [ ] `test/eventLayerReuse.test.ts`
 - **2** — `AssertionError: 'place_props' 커밋 거부(무결성 오류) — 시작 위치가 통행 불가 타일입니다: (N, N) — 칠한 타일이 통행 불가이거나 시작 칸이 막혔습니다. set_start_positi`
   - [ ] `test/forestFloorMix.test.ts`
   - [ ] `test/forestTrunkLayers.test.ts`
