@@ -35,7 +35,11 @@ assertCiOnlyTests("npm run gates");
 const DEFAULT_BASELINE = resolve(process.cwd(), ".omo/gates-baseline.json");
 const args = process.argv.slice(2);
 const flag = (name) => args.includes(name);
+// `--name value` 와 `--name=value` 둘 다 받는다. ci-full.yml 은 `--flake-budget-min=40` 으로 넘겨 왔는데
+// 예전에는 `=` 형식을 못 읽어 조용히 기본값(20분)이 쓰였다.
 const value = (name, fallback) => {
+  const inline = args.find((arg) => arg.startsWith(`${name}=`));
+  if (inline) return inline.slice(name.length + 1) || fallback;
   const index = args.indexOf(name);
   return index >= 0 && args[index + 1] ? args[index + 1] : fallback;
 };
