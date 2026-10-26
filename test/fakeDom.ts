@@ -956,8 +956,15 @@ function createFakeWindow(): unknown {
     devicePixelRatio: 1,
     matchMedia: (query: string) => ({ matches: false, media: query, addEventListener() {}, removeEventListener() {}, addListener() {}, removeListener() {} }),
     get document() { return globalThis.document; },
-    get requestAnimationFrame() { return globalThis.requestAnimationFrame; },
-    get cancelAnimationFrame() { return globalThis.cancelAnimationFrame; },
+    location: { href: "http://localhost/", origin: "http://localhost", protocol: "http:", host: "localhost", hostname: "localhost", pathname: "/", search: "", hash: "" },
+    // 전역 rAF 가 없으면(node 환경) 다음 매크로태스크로 미룬다 — window 가 생겼다고 rAF 를 부르는 코드가 터지지 않게.
+    get requestAnimationFrame() {
+      return globalThis.requestAnimationFrame
+        ?? ((callback: FrameRequestCallback) => globalThis.setTimeout(() => callback(Date.now()), 0) as unknown as number);
+    },
+    get cancelAnimationFrame() {
+      return globalThis.cancelAnimationFrame ?? ((id: number) => globalThis.clearTimeout(id));
+    },
     get getComputedStyle() { return globalThis.getComputedStyle; },
   });
 }
