@@ -5,6 +5,16 @@
 
 <!-- releases -->
 
+## 0.351.1 — 2026-10-27
+
+### 수정
+
+- **battle** — skip secondary status when a gen1 hit knocks the target out (#3680) (`5f36944`)
+- **player** — announce the choice question to assistive tech (#3679) (`ab496a4`)
+- **player** — repeat held gamepad and touch directions (#3678) (`abdb603`)
+- **desktop** — keep the close save running if the window is closed again (#3677) (`cd7ebff`)
+- **export** — drop new tileset study docs from the player bundle (#3676) (`dcd9eb2`)
+
 ## 0.351.0 — 2026-10-27
 
 ### 기능
