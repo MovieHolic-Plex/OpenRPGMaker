@@ -442,7 +442,10 @@ export function layoutWants(tilesetId: string, req: LayoutRequest): Want[] {
     const hasStairwell = Boolean(template?.items.some((it) => it.t === "o" && /stairwell/u.test(it.id)));
     const small = !hasStairwell && /^(hall|corridor|genkan|toilet|bath|unitbath|dressing|cell)$/u.test(q.kind);
     const minH = Math.max(small ? 4 : 5, Math.min(th, small ? 4 : 5));
-    return { id, kind: q.kind, tw, th: Math.max(th, minH), bw: tw0, bh: Math.max(th0, minH), minW: Math.max(2, Math.min(tw, 3) - (tw <= 2 ? 1 : 0)), minH,
+    // 견본 폭을 가로지르는 띠(선로·물길 같은 넓이 키트 't' 가 x 0 에서 견본 폭 끝까지)가 든 방은 견본보다 좁아지면 띠가 통째로 빠진다
+    // (2026-10-25 J45: 승강장이 15칸으로 잘려 16칸 선로·승강장 끝 줄·승차 표시가 모두 빠졌다) — 그 방의 최소 폭은 견본 폭이다.
+    const spansWidth = Boolean(template?.items.some((it) => it.t === "t" && it.x === 0 && (it.w ?? 0) >= template.w));
+    return { id, kind: q.kind, tw, th: Math.max(th, minH), bw: tw0, bh: Math.max(th0, minH), minW: spansWidth ? tw : Math.max(2, Math.min(tw, 3) - (tw <= 2 ? 1 : 0)), minH,
       floor: q.floor ?? pal?.[0] ?? template?.floor, wall: q.wall ?? pal?.[1] ?? template?.wall, template };
   });
 }

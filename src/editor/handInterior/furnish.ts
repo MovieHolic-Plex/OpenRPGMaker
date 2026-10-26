@@ -101,21 +101,41 @@ export function furnishRooms(base: HandInteriorInput, rooms: readonly LayoutRoom
     return out;
   };
   /** 한 점을 넣어 본다 — 싼 검사(방 안·문 앞·겹침) 뒤 조립기 검사. 되면 반영하고 true. */
+  // 견본이 일부러 겹쳐 그린 벽면 짝(전철 롱시트 위 손잡이 끈처럼)은 벽면 칸을 같이 쓴다 — 「키 큰 가구가 게시판을 가린다」 규칙이
+  // 견본 자체의 배치를 지워 북쪽 좌석이 통째로 빠졌다(J45). 짝은 견본 좌표에서 벽면 칸이 겹치는 두 물건 id 다.
+  let wallShare = new Map<string, Set<string>>();
+  const wallSharesOf = (t: { readonly items: readonly InteriorTemplateItem[] }): Map<string, Set<string>> => {
+    const byCell = new Map<string, string[]>();
+    for (const it of t.items) for (const c of cellsOf(it)) if (c.startsWith("wcol:")) byCell.set(c, [...(byCell.get(c) ?? []), it.id]);
+    const out = new Map<string, Set<string>>();
+    for (const ids of byCell.values()) for (const a of ids) for (const b of ids) if (a !== b) out.set(a, (out.get(a) ?? new Set<string>()).add(b));
+    return out;
+  };
+  const clashes = (it: InteriorTemplateItem, c: string, taken: Set<string>): boolean => {
+    if (!taken.has(c)) return false;
+    if (!c.startsWith("wcol:")) return true;
+    const mates = wallShare.get(it.id);
+    if (!mates) return true;
+    const xy = c.slice(5);
+    const owners = [...taken].filter((k) => k.startsWith(`wown:${xy}=`)).map((k) => k.slice(k.indexOf("=") + 1));
+    return !owners.length || owners.some((o) => !mates.has(o));
+  };
   const tryPutIn = (it: InteriorTemplateItem, taken: Set<string>, inside: (it: InteriorTemplateItem) => boolean): boolean => {
     const cells = cellsOf(it);
-    if (!inside(it) || footprint(it, S).some((c) => keep.has(c)) || cells.some((c) => taken.has(c))) return false;
+    if (!inside(it) || footprint(it, S).some((c) => keep.has(c)) || cells.some((c) => clashes(it, c, taken))) return false;
     const next = withItems(input, [it]);
     const built = buildHandInteriorLayers(next, tileset, S);
     const e = built.issues.filter((i) => i.severity === "error").length;
     if (e > errors || built.unreachedFloor.length > unreached) return false;
     input = next; errors = e; unreached = built.unreachedFloor.length;
-    for (const c of cells) taken.add(c);
+    for (const c of cells) { taken.add(c); if (c.startsWith("wcol:")) taken.add(`wown:${c.slice(5)}=${it.id}`); }
     return true;
   };
   for (const room of orderedRooms) {
     if (room.kind === HALL_KIND && room.dress) {
       // 복도는 견본이 없다 - 벽 가구·걸이·벤치를 archHall.ts 후보대로 놓고, 문 앞·겹침에 걸리면 옆으로 비킨다.
       const hallTaken = new Set<string>();
+      wallShare = new Map();
       const inHall = (it: InteriorTemplateItem) => it.t !== "l" && it.x >= room.x0 && it.x <= room.x1 && it.y >= room.y0 && it.y <= room.y1;
       let hPlaced = 0, hDropped = 0;
       for (const it of hallItems(room, room.dress, (id) => S.objects[id]?.w ?? 1)) {
@@ -131,6 +151,7 @@ export function furnishRooms(base: HandInteriorInput, rooms: readonly LayoutRoom
     if (!t0) continue;
     const w = room.x1 - room.x0 + 1, h = room.y1 - room.y0 + 1;
     const t = fittingTemplate(tilesetId, t0, w, h);
+    wallShare = wallSharesOf(t);
     const nrs = (room.notches ?? []).map((n) => notchRect(room, n));
     const inside = (it: InteriorTemplateItem) => {
       const pts = it.t === "l" ? it.cells!.map(([x, y]) => [x, y] as const) : [[it.x, it.y] as const];
