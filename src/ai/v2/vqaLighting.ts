@@ -23,6 +23,8 @@ export function applyMapLighting(rgba: Uint8Array, width: number, height: number
   const ambient = clamp01(lighting?.ambient ?? 0);
   if (!lighting || ambient <= 0 || !map.width || !map.height) return { applied: false, ambient, lights: 0, playerLightAtStart: false };
   const tile = width / map.width;
+  // 높이 지형(relief) 맵은 그림이 위아래로 더 크고 내용이 아래로 밀린다 — 남는 높이를 위 여백으로 본다.
+  const padY = Math.max(0, height - map.height * tile);
   const isStart = project.startMapId === map.id;
   let playerLightAtStart = false;
   const centers: { x: number; y: number; r: number; a: number }[] = [];
@@ -36,18 +38,24 @@ export function applyMapLighting(rgba: Uint8Array, width: number, height: number
       if (ev) cell = { x: ev.x, y: ev.y };
     } else if (at && typeof at === "object" && "x" in (at as object)) cell = at as { x: number; y: number };
     if (!cell || !(source.radius > 0)) continue;
-    centers.push({ x: (cell.x + 0.5) * tile, y: (cell.y + 0.5) * tile, r: source.radius * tile, a: clamp01(source.intensity ?? 1) });
+    centers.push({ x: (cell.x + 0.5) * tile, y: padY + (cell.y + 0.5) * tile, r: source.radius * tile, a: clamp01(source.intensity ?? 1) });
   }
   const [cr, cg, cb] = hex(lighting.color);
-  for (let y = 0; y < height; y++) for (let x = 0; x < width; x++) {
-    let keep = 1;
-    for (const c of centers) {
-      const d = Math.hypot(x + 0.5 - c.x, y + 0.5 - c.y);
-      if (d < c.r) keep *= 1 - cutAt(d / c.r, c.a);
+  // 어둠 한 겹을 먼저 칠할 몫(keep=1)으로 두고, 광원 둘레 네모 안에서만 걷어 낼 몫을 곱한다(큰 맵 × 광원 여럿도 빛 둘레만 계산).
+  const keep = new Float32Array(width * height).fill(1);
+  for (const c of centers) {
+    const x0 = Math.max(0, Math.floor(c.x - c.r)), x1 = Math.min(width - 1, Math.ceil(c.x + c.r));
+    const y0 = Math.max(0, Math.floor(c.y - c.r)), y1 = Math.min(height - 1, Math.ceil(c.y + c.r));
+    const r2 = c.r * c.r;
+    for (let y = y0; y <= y1; y++) for (let x = x0; x <= x1; x++) {
+      const dx = x + 0.5 - c.x, dy = y + 0.5 - c.y, d2 = dx * dx + dy * dy;
+      if (d2 < r2) keep[y * width + x]! *= 1 - cutAt(Math.sqrt(d2) / c.r, c.a);
     }
-    const m = ambient * keep;
+  }
+  for (let p = 0; p < width * height; p++) {
+    const m = ambient * keep[p]!;
     if (m <= 0) continue;
-    const i = (y * width + x) * 4;
+    const i = p * 4;
     rgba[i] = Math.round(rgba[i]! * (1 - m) + cr * m);
     rgba[i + 1] = Math.round(rgba[i + 1]! * (1 - m) + cg * m);
     rgba[i + 2] = Math.round(rgba[i + 2]! * (1 - m) + cb * m);

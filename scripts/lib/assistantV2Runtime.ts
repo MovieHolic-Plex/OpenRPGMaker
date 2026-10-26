@@ -58,6 +58,7 @@ async function captureVqaShots(env: PiAssistantV2Env): Promise<{ shots: VqaShot[
         if (image && map.defaultLighting?.ambient) {
           const lit = litMapImage(image, map, env.ctx.project);
           if (lit) { image = lit.image; where = `${item.where}${litShotNote(lit.lit)}`; }
+          else where = `${item.where} — 조명을 입히지 못한 편집기 그림(게임에서는 어둠 ${map.defaultLighting.ambient})`;
         }
       } else if (env.renderArt && item.shotId && item.atMs) image = await env.renderArt({ shotId: item.shotId, atMs: item.atMs });
       else if (env.renderArt && item.ref) image = await env.renderArt({ resourceId: item.ref });
