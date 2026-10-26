@@ -5,6 +5,13 @@
 
 <!-- releases -->
 
+## 0.350.2 — 2026-10-26
+
+### 수정
+
+- **ai** — spec NPC autobuild searches its graphic full name -> role noun; interior shell test checks real invariants (#3649) (`3a9f0ec`)
+- **opening** — map-view backgrounds render in previews and screen checks (#3647) (`d32f2f1`)
+
 ## 0.350.1 — 2026-10-26
 
 ### 수정
