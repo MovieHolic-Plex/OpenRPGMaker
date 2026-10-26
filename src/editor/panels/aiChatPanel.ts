@@ -3484,7 +3484,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       mapId: mapContext().mapId ?? "",
       // 모델 호출의 조건. 로컬 탐지·배지는 닫혀 있어도 돌아야 하므로(느낌표가 알림이다)
       // 이 값은 **비싼 원격 턴**만 막는다. 팝오버가 열려 있고 턴 중이 아니어야 한다.
-      active: !disposed && !turnBusy && document.visibilityState !== "hidden" && peek.isOpen(),
+      active: !disposed && !turnBusy && typeof document !== "undefined" && document.visibilityState !== "hidden" && peek.isOpen(),
     }),
     onCountChange: count => peek.setCount(count),
     request: suggestion => {

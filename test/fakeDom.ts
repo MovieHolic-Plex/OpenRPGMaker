@@ -137,6 +137,21 @@ export class FakeNode {
     this.parentNode = null;
   }
 
+  /** ChildNode.after/before — 부모 안에서 이 노드 바로 뒤/앞에 끼운다(aiChatPanel 이 레일 뒤에 레인 요약을 붙인다). */
+  after(...nodes: (FakeNode | string)[]): void {
+    const parent = this.parentNode;
+    if (!parent) return;
+    const index = parent.childNodes.indexOf(this);
+    const reference = parent.childNodes.slice(index + 1).find((node) => !nodes.includes(node)) ?? null;
+    for (const node of convertFakeNodes(nodes)) parent.insertBefore(node, reference);
+  }
+
+  before(...nodes: (FakeNode | string)[]): void {
+    const parent = this.parentNode;
+    if (!parent) return;
+    for (const node of convertFakeNodes(nodes)) parent.insertBefore(node, this);
+  }
+
   replaceWith(...nodes: FakeNode[]): void {
     const parent = this.parentNode;
     if (!parent) return;
