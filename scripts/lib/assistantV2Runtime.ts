@@ -63,10 +63,12 @@ async function captureVqaShots(env: PiAssistantV2Env): Promise<{ shots: VqaShot[
       } else if (env.renderArt && item.shotId && item.atMs) image = await env.renderArt({ shotId: item.shotId, atMs: item.atMs });
       else if (env.renderArt && item.ref) image = await env.renderArt({ resourceId: item.ref });
       if (image) shots.push({ where, kind: item.kind, ...(item.ref ? { ref: item.ref } : {}), image });
-      else failed.push(item.where);
+      else failed.push(`${item.where}: 그릴 경로 없음`);
     } catch (error) {
       if (env.signal?.aborted) throw error;
-      failed.push(item.where);
+      // 왜 못 찍었는지 남긴다(2026-10-26 hf2-school-claude-j79: 타이틀 그림이 판마다 「못 찍음 1」로만 남았다 — 원인은 이 설치에 없는 오프닝 스틸 팩 그림).
+      const reason = error instanceof Error ? error.message : String(error);
+      failed.push(`${item.where}${item.ref ? `(${item.ref})` : ""}: ${reason.slice(0, 160)}`);
     }
   }
   return { shots, failed };
@@ -138,10 +140,10 @@ export async function runAssistantV2(request: PiAgentRequest, options: RunPiAgen
     if (vqaCandidateIndex >= vqaCandidates.length) vqaCandidateIndex = 0;
     if (!round) round = { round: vqaRounds.length + 1, shots: [], defects: [], ms: 0, reviewer: "-", problem: "검수자 후보가 없음" };
     else if (round.problem && tried.length > 1) round = { ...round, problem: `검수자 ${tried.length}명 모두 답하지 못함 — ${tried.join(" / ").slice(0, 400)}` };
-    const withFailed: VqaRound = failed.length && !round.problem && !shots.length ? { ...round, problem: `그림을 찍지 못함: ${failed.join(", ")}` } : round;
+    const withFailed: VqaRound = failed.length && !round.problem && !shots.length ? { ...round, problem: `그림을 찍지 못함: ${failed.join(", ").slice(0, 400)}` } : round;
     vqaRounds.push(withFailed);
     vqaMs += Date.now() - t0;
-    env.emit({ type: "execution_status", name: "v2.vqa", ok: vqaClean(withFailed), summary: `화면 검수 ${withFailed.round}/${VQA_MAX_ROUNDS} · ${withFailed.problem ?? `결함 ${withFailed.defects.length}건`} · 그림 ${shots.length}장${failed.length ? ` (못 찍음 ${failed.length})` : ""} · ${reviewer} · ${Math.round((Date.now() - t0) / 1000)}초`,
+    env.emit({ type: "execution_status", name: "v2.vqa", ok: vqaClean(withFailed), summary: `화면 검수 ${withFailed.round}/${VQA_MAX_ROUNDS} · ${withFailed.problem ?? `결함 ${withFailed.defects.length}건`} · 그림 ${shots.length}장${failed.length ? ` (못 찍음 ${failed.length}: ${failed.join(" / ").slice(0, 300)})` : ""} · ${reviewer} · ${Math.round((Date.now() - t0) / 1000)}초`,
       data: { ...withFailed, failed } });
     return withFailed;
   };
