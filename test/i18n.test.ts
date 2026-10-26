@@ -195,4 +195,26 @@ describe("shipped catalogs", () => {
     expect(en["하위 조건"]).toBe("Sub-conditions");
     expect(createTranslator(en).translate("하위 3")).toBe("3 sub");
   });
+
+  it("calls terrain reachability a passability preview, not vehicle traffic or a corridor", () => {
+    // 지형 도구의 통행 미리보기는 시작 위치에서 걸어 닿는 땅을 칠한다. 차 흐름(traffic)도, 복도(passage)도 아니다.
+    const sentence = "경사로·기물, 지형 설계, 통행 미리보기는 아래 도구에서 고릅니다.";
+    expect(en["통행"]).toBe("Passability");
+    expect(en["통행 보기"]).toBe("View passability");
+    expect(en["통행 미리보기"]).toBe("Passability preview");
+    expect(en[sentence]).toBe("Choose ramps/props, terrain design, and passability preview from the tools below.");
+    expect(en["통행 미리보기"].toLowerCase()).not.toMatch(/traffic|\bpassage\b/);
+    expect(en[sentence].toLowerCase()).not.toMatch(/traffic|\bpassage\b/);
+    expect(ja["통행 보기"]).toBe("通行を見る");
+    expect(ja["통행 미리보기"]).toBe("通行プレビュー");
+    expect(ja[sentence]).toContain("通行");
+    expect(zh["통행 보기"]).toBe("查看通行");
+    expect(zh["통행 미리보기"]).toBe("通行预览");
+    expect(zh[sentence]).toContain("通行");
+    expect(createTranslator(en).translate("통행 보기")).toBe("View passability");
+    expect(createTranslator(en).translate("통행 미리보기")).toBe("Passability preview");
+    expect(createTranslator(en).translate(sentence)).toBe(en[sentence]);
+    expect(createTranslator(ja).translate("통행 보기")).toBe("通行を見る");
+    expect(createTranslator(zh).translate("통행 미리보기")).toBe("通行预览");
+  });
 });
