@@ -2,6 +2,7 @@ import type { BuildSpec } from "@/ai/buildSpec";
 import { createBlankProject } from "@/project/defaults";
 import { runTool } from "@/editor/tools";
 import type { ToolContext } from "@/editor/tools/types";
+import { RETIRED_COMBINED_TOWN_TILESET_ID, withRetiredEasyRpgTilesets } from "../support/retiredEasyRpgTilesets";
 
 // P7's exact native paint geometry; no live content or saved evidence is loaded.
 export const PRESERVED_PAINT_SPEC: BuildSpec = {
@@ -29,8 +30,9 @@ export function nativePaintCall(ctx: ToolContext, args: Record<string, unknown>)
 }
 
 export function preservedPaintContext(): ToolContext {
-  const ctx = { project: createBlankProject() };
-  const created = runTool(ctx, "create_map", { id: "map_basement", name: "P7 accounting", width: 12, height: 10 });
+  // 342(바닥)·306(벽)·112 는 옛 합본 마을 시트 번호다 — 기본 버들항 시트에서는 다른 그림·통행이라 그 시트를 명시한다.
+  const ctx = { project: withRetiredEasyRpgTilesets(createBlankProject()) };
+  const created = runTool(ctx, "create_map", { id: "map_basement", name: "P7 accounting", width: 12, height: 10, tilesetId: RETIRED_COMBINED_TOWN_TILESET_ID });
   if (!created.ok) throw new Error(created.summary);
   const map = ctx.project.maps.map_basement;
   map.lowerTiles.fill(112);
