@@ -1052,7 +1052,23 @@ export function createBattleSequencer(
     if (target && adds.every((stateId) => target.stateIds.includes(stateId))) {
       return { failLine: `${withJosa(name, "은/는")} 이미 ${stateLabel(adds[0])} 상태다.` };
     }
+    // 주요 상태는 하나만 걸린다. 화상에 걸린 대상에게 마비가 막히면 「효과가 없었다」는
+    // 기술이 빗나간 것처럼 읽힌다 — 이미 있는 상태 이름을 말한다. 피해 기술의 부가 실패는
+    // 이 함수에 들어오지 않는다(action·피해 0 보조 기술만).
+    const occupied = target ? occupiedMajorStatusName(adds, target.stateIds) : undefined;
+    if (occupied) return { failLine: `${withJosa(name, "은/는")} 이미 ${occupied} 상태다.` };
     return { failLine: `${name}에게는 효과가 없었다.` };
+  }
+
+  /** 걸려고 한 상태 중 주요 상태가 있고, 대상에 다른 주요 상태가 이미 있으면 그 이름. */
+  function occupiedMajorStatusName(adds: readonly string[], stateIds: readonly string[]): string | undefined {
+    const byId = new Map(store.getCurrent().database.states.map((state) => [state.id, state]));
+    if (!adds.some((stateId) => byId.get(stateId)?.gen1MajorStatus)) return undefined;
+    for (const stateId of stateIds) {
+      const state = byId.get(stateId);
+      if (state?.gen1MajorStatus && !adds.includes(stateId)) return state.name;
+    }
+    return undefined;
   }
 
   /** 능력치 단계 변화(statStage)가 실린 special 엔트리의 문장 — 에메랄드 문장 규칙이면 「상대/야생 이름」을 쓴다. 아니면 undefined. */
