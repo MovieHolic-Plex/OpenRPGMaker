@@ -168,7 +168,8 @@ export function vqaFollowUp(round: VqaRound): string {
 export function vqaSummary(rounds: readonly VqaRound[]): { readonly clean: boolean; readonly text: string; readonly leftover: readonly VqaDefect[] } {
   const last = rounds.at(-1);
   if (!last) return { clean: false, text: "화면 검수: 돌지 않음", leftover: [] };
-  const counts = rounds.map((r) => (r.problem && !r.defects.length ? "검수 못 함" : `${r.defects.length}건`)).join(" → ");
+  const weak = rounds.some((r) => r.reviewer.includes("같은 계열 검수")) ? " · 「같은 계열 검수」(약한 증거)" : "";
+  const counts = rounds.map((r) => (r.problem && !r.defects.length ? "검수 못 함" : `${r.defects.length}건`)).join(" → ") + weak;
   if (vqaClean(last)) return { clean: true, text: `화면 검수 ${rounds.length}판: ${counts} — 마지막 판 결함 없음`, leftover: [] };
   return { clean: false, text: `화면 검수 ${rounds.length}판: ${counts} — 남은 결함 ${last.defects.length}건${last.problem ? ` (${last.problem})` : ""}`, leftover: last.defects };
 }
@@ -205,29 +206,49 @@ export function vqaVisionModel(pick: { readonly provider: string; readonly model
   if (pick.provider.startsWith("openai-compat:")) return { provider: pick.provider, model: "gemini-4-argon-high" };
   return { provider: pick.provider, model: "gemini-4-argon", effort: "high" };
 }
-/** 검수자 표시 이름 — 실제로 부른 별칭을 보인다(판정자가 «눈 먼 판»을 가려낼 수 있게). */
+/** 검수자 표시 이름 — 실제로 부른 별칭을 보인다(판정자가 «눈 먼 판»을 가려낼 수 있게). 같은 계열은 «같은 계열 검수»(약한 증거)로 표시한다. */
 export const vqaReviewerLabel = (pick: VqaReviewerPick): string =>
-  `${pick.provider}/${pick.effort === "high" && pick.model === "gemini-4-argon" ? "gemini-4-argon-high" : pick.model}${pick.sameAsMain ? " (주 모델과 같은 계열 — 다른 계열 계정 없음)" : ""}`;
-export function pickVqaReviewer(input: {
+  `${pick.provider}/${pick.effort === "high" && pick.model === "gemini-4-argon" ? "gemini-4-argon-high" : pick.model}${pick.sameAsMain ? " 「같은 계열 검수」(다른 계열 검수자가 답하지 못함 — 약한 증거)" : ""}`;
+
+export interface VqaReviewerInput {
   readonly main: { readonly provider: string; readonly model: string };
   readonly vision?: { readonly provider: string; readonly model: string };
   readonly advisor?: { readonly provider: string; readonly model: string };
   readonly keyed: ReadonlySet<string>;
   readonly familyOf: (providerId: string) => string | undefined;
-}): VqaReviewerPick {
+}
+
+/**
+ * 검수자 후보 차례(2026-10-26 결정): 다른 계열을 모두 먼저, 그다음에만 같은 계열(«같은 계열 검수» 표시, 약한 증거).
+ * 다른 계열: «눈» 칸 → 검토자 칸 → 키 있는 기본 계정 → 로컬 CLI(Claude Sonnet·Codex GPT·Gemini).
+ * 같은 계열: 명시한 «눈» 칸(예: argon-high) → 검토자 칸 → 주 모델. 실행기는 앞 후보가 답하지 못하면(호출 실패·빈 답·JSON 없음) 다음 후보로 같은 그림을 다시 보낸다.
+ */
+export function vqaReviewerCandidates(input: VqaReviewerInput): VqaReviewerPick[] {
   const mainFamily = input.familyOf(input.main.provider);
   const differs = (provider: string) => { const f = input.familyOf(provider); return Boolean(f && f !== mainFamily); };
   const seesImages = (provider: string) => !/deepseek/iu.test(provider) && input.familyOf(provider) !== "deepseek";
   const usable = (provider: string) => input.keyed.has(provider) || provider.startsWith("local-cli:");
-  if (input.vision && usable(input.vision.provider) && differs(input.vision.provider)) return { ...vqaVisionModel(input.vision), sameAsMain: false };
-  if (input.advisor && usable(input.advisor.provider) && seesImages(input.advisor.provider) && differs(input.advisor.provider)) return { ...vqaVisionModel(input.advisor), sameAsMain: false };
-  const defaults: readonly { provider: string; model: string }[] = [
-    { provider: "google-antigravity", model: "gemini-4-argon" },
-    { provider: "openai-codex", model: "gpt-6.1-sol" },
-  ];
-  // 키 있는 다른 계열 계정이 없으면 로컬 Claude CLI 의 Sonnet(주 모델이 Claude 가 아닐 때만). CLI 가 없으면 호출이 실패해 «검수 못 함» 판이 된다(깨끗한 판이 아니다).
-  const other = defaults.find((d) => input.keyed.has(d.provider) && differs(d.provider))
-    ?? (differs("local-cli:claude") ? { provider: "local-cli:claude", model: "claude-sonnet-5-5" } : undefined);
-  if (other) return { ...vqaVisionModel(other), sameAsMain: false };
-  return { ...vqaVisionModel(input.main), sameAsMain: true };
+  const out: VqaReviewerPick[] = [];
+  const add = (slot: { provider: string; model: string } | undefined, sameAsMain: boolean) => {
+    if (!slot) return;
+    const pick = { ...vqaVisionModel(slot), sameAsMain };
+    if (!out.some((p) => p.provider === pick.provider && p.model === pick.model && p.effort === pick.effort)) out.push(pick);
+  };
+  if (input.vision && usable(input.vision.provider) && differs(input.vision.provider)) add(input.vision, false);
+  if (input.advisor && usable(input.advisor.provider) && seesImages(input.advisor.provider) && differs(input.advisor.provider)) add(input.advisor, false);
+  for (const d of [{ provider: "google-antigravity", model: "gemini-4-argon" }, { provider: "openai-codex", model: "gpt-6.1-sol" }]) {
+    if (input.keyed.has(d.provider) && differs(d.provider)) add(d, false);
+  }
+  // 키 있는 다른 계열 계정이 없거나 답하지 못하면 로컬 CLI. 설치돼 있지 않으면 호출이 실패해 다음 후보로 넘어간다.
+  for (const d of [{ provider: "local-cli:claude", model: "claude-sonnet-5-5" }, { provider: "local-cli:codex", model: "gpt-6.1-sol" }, { provider: "local-cli:gemini", model: "gemini-4-argon" }]) {
+    if (differs(d.provider)) add(d, false);
+  }
+  if (input.vision && usable(input.vision.provider) && !differs(input.vision.provider)) add(input.vision, true);
+  if (input.advisor && usable(input.advisor.provider) && seesImages(input.advisor.provider) && !differs(input.advisor.provider)) add(input.advisor, true);
+  add(input.main, true);
+  return out;
+}
+
+export function pickVqaReviewer(input: VqaReviewerInput): VqaReviewerPick {
+  return vqaReviewerCandidates(input)[0]!;
 }
