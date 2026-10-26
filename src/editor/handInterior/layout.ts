@@ -395,6 +395,9 @@ function programVariation(tilesetId: string, req: LayoutRequest): { v: ModernPro
 interface Want { id: string; kind: string; tw: number; th: number; bw: number; bh: number; minW: number; minH: number; floor?: string; wall?: string; template?: InteriorRoomTemplate; dress?: HallDress }
 interface Rect { x: number; y: number; w: number; h: number }
 
+/** 바깥 출구 틈을 내지 않는 방 — 전철 차내는 남쪽 벽이 좌석·문 그림이라 틈이 좌석 사이에 났다(J45). 드나들기는 벽면의 차 문(st-car-door) 앞 칸이다. */
+const NO_EXTERIOR_EXIT_KINDS: ReadonlySet<string> = new Set(["traincar"]);
+
 export class LayoutError extends Error { constructor(message: string) { super(message); this.name = "LayoutError"; } }
 
 /** 요청 → 방 목록(목표 크기·견본). */
@@ -819,7 +822,7 @@ function buildCandidatesForVariant(
         score: Math.round(score * 100) / 100,
         rooms,
         connect,
-        exit: { room: entrance, ...(vary?.v.noExteriorExit ? { width: 0 } : exitX !== undefined ? { x: exitX } : {}) },
+        exit: { room: entrance, ...(vary?.v.noExteriorExit || NO_EXTERIOR_EXIT_KINDS.has(exitRoom.kind) ? { width: 0 } : exitX !== undefined ? { x: exitX } : {}) },
         notes,
         styleVariant,
       });

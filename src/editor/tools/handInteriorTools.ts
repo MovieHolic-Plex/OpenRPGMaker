@@ -6,7 +6,7 @@
 import { withHandInteriorEdit } from "@/editor/handInterior/edit";
 import { fitStairTransfers } from "@/project/stairs/fit";
 import { describeSpecStairEntrance } from "@/project/stairs/contract";
-import { buildHandInteriorLayers, roomSpecOf, HAND_INTERIOR_SPEC, HAND_INTERIOR_SPECS, HAND_INTERIOR_TILESET_ID, JP_INTERIOR_SPEC, JP_INTERIOR_TILESET_ID, WIZARDING_INTERIOR_SPEC, WIZARDING_INTERIOR_TILESET_ID, SENGOKU_INTERIOR_SPEC, SENGOKU_INTERIOR_TILESET_ID, CAMPUS_INTERIOR_SPEC, MODERN_CITY_INTERIOR_SPEC, MODERN_CITY_INTERIOR_TILESET_ID, HandInteriorError, type HandInteriorInput, type HandInteriorLayers, type HandInteriorSpec } from "@/editor/handInterior/builder";
+import { buildHandInteriorLayers, roomSpecOf, HAND_INTERIOR_SPEC, HAND_INTERIOR_SPECS, HAND_INTERIOR_TILESET_ID, JP_INTERIOR_SPEC, JP_INTERIOR_TILESET_ID, WIZARDING_INTERIOR_SPEC, WIZARDING_INTERIOR_TILESET_ID, SENGOKU_INTERIOR_SPEC, SENGOKU_INTERIOR_TILESET_ID, CAMPUS_INTERIOR_SPEC, MODERN_CITY_INTERIOR_SPEC, MODERN_CITY_INTERIOR_TILESET_ID, HandInteriorError, VEHICLE_DOORS, type HandInteriorInput, type HandInteriorLayers, type HandInteriorSpec } from "@/editor/handInterior/builder";
 import { roomIndex, roomParts, searchParts, fullRow, shortRow } from "@/editor/handInterior/parts";
 import { handInteriorShapeFromPlan, nearestOpening, PLAIN_BOX_MIN_CELLS, type HandInteriorShape } from "@/editor/handInterior/shape";
 import { createAtlasBiomeInteriorTileset, ensureAtlasBiomeInteriorCurrent } from "@/project/defaults/atlasBiomeInterior";
@@ -378,6 +378,19 @@ function fitDoorsToPlan(
     if (shape.openings.some((o) => o.x === event.x && o.y === event.y)) continue;
     const target = nearestOpening(shape, event);
     if (!target) {
+      // 바깥 출구 틈이 없는 방(전철 차내 J45)은 그린 탈것 문 앞 탈 자리가 드나드는 곳이다 — 바깥으로 가는 문도 그리로 옮긴다.
+      const vehicleSpot = [...built.travel]
+        .filter((tr) => [...VEHICLE_DOORS].some((id) => tr.label.includes(`(${id})`)) && (!occupied.has(`${tr.x},${tr.y}`) || (tr.x === event.x && tr.y === event.y)))
+        .sort((a, b) => (Math.abs(a.x - event.x) + Math.abs(a.y - event.y)) - (Math.abs(b.x - event.x) + Math.abs(b.y - event.y)))[0];
+      if (vehicleSpot && !shape.openings.length) {
+        if (vehicleSpot.x !== event.x || vehicleSpot.y !== event.y) {
+          occupied.delete(`${event.x},${event.y}`);
+          notes.push(`문 ${event.id} (${event.x},${event.y}) → 탈 자리 (${vehicleSpot.x},${vehicleSpot.y})`);
+          event.x = vehicleSpot.x; event.y = vehicleSpot.y;
+          occupied.add(`${event.x},${event.y}`);
+        }
+        continue;
+      }
       const outdoors = outbound.find((t) => draft.maps[t.mapId] && draft.maps[t.mapId]!.tilesetId !== HAND_INTERIOR_TILESET_ID);
       if (outdoors) throw new ToolError(`바깥(${outdoors.mapId})으로 나가는 문 ${event.id}(${event.x},${event.y}) 이 있는데 평면 가장자리에 출입구 틈이 없다 — plan 맨 아래 줄의 '#' 하나를 '.' 로 비워 문을 낸다(그 칸이 출구가 된다)`, { code: "no-exit-gap", mapId });
       continue;
