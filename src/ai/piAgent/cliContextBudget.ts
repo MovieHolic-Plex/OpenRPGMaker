@@ -10,36 +10,76 @@
 type Json = unknown;
 const isObj = (v: Json): v is Record<string, Json> => !!v && typeof v === "object" && !Array.isArray(v);
 
-const NESTING_KEYS = new Set(["properties", "items", "anyOf", "oneOf", "allOf", "additionalProperties", "$defs", "definitions"]);
+/**
+ * JSON 스키마를 «스키마 자리»만 골라 걷는다(J79b: 처음 판은 properties 지도·default·enum 같은 스키마가 아닌 자리까지 걸어
+ * 같은 큰 properties 지도가 두 번 나오면 그 지도를 {type, description} 으로 바꿀 수 있었다 — 틀린 스키마 하나가 요청 전체를 400 으로 막는다).
+ */
+const MAP_KEYS = new Set(["properties", "$defs", "definitions", "patternProperties", "dependentSchemas"]);
+const ONE_KEYS = new Set(["items", "additionalProperties", "not", "if", "then", "else", "contains", "propertyNames", "unevaluatedItems", "unevaluatedProperties", "additionalItems"]);
+const LIST_KEYS = new Set(["anyOf", "oneOf", "allOf", "prefixItems"]);
 /** 이만큼 넘는 하위 스키마가 앞 도구와 같으면 한 줄로 바꾼다. */
 const SHARED_MIN = 3000;
 
-function stripDeepDescriptions(node: Json, depth: number): Json {
-  if (Array.isArray(node)) return node.map((n) => stripDeepDescriptions(n, depth));
-  if (!isObj(node)) return node;
-  return Object.fromEntries(Object.entries(node)
-    .filter(([k, v]) => !(k === "description" && typeof v === "string" && depth >= 2))
-    .map(([k, v]) => [k, stripDeepDescriptions(v, NESTING_KEYS.has(k) ? depth + 1 : depth)]));
+type Visit = (schema: Record<string, Json>, depth: number, path: string) => Json | undefined;
+type Drop = (key: string, value: Json, depth: number) => boolean;
+/** 스키마 하나를 걷는다. visit 가 값을 돌려주면 그 자리를 그것으로 바꾸고 안으로 들어가지 않는다. drop 이 참인 제 칸은 뺀다. */
+function walkSchema(schema: Json, depth: number, path: string, visit: Visit, drop?: Drop): Json {
+  if (!isObj(schema)) return schema;
+  const replaced = visit(schema, depth, path);
+  if (replaced !== undefined) return replaced;
+  const out: Record<string, Json> = {};
+  const sub = (v: Json, d: number, p: string): Json => walkSchema(v, d, p, visit, drop);
+  for (const [k, v] of Object.entries(schema)) {
+    if (drop?.(k, v, depth)) continue;
+    if (MAP_KEYS.has(k) && isObj(v)) out[k] = Object.fromEntries(Object.entries(v).map(([name, s]) => [name, sub(s, depth + 1, `${path ? `${path}.` : ""}${name}`)]));
+    else if (ONE_KEYS.has(k) && isObj(v)) out[k] = sub(v, depth + 1, `${path}${k === "items" ? "[]" : `.${k}`}`);
+    else if (ONE_KEYS.has(k) && Array.isArray(v)) out[k] = v.map((s, i) => sub(s, depth + 1, `${path}[${i}]`));
+    else if (LIST_KEYS.has(k) && Array.isArray(v)) out[k] = v.map((s, i) => sub(s, depth, `${path}<${i}>`));
+    else out[k] = v; // default·enum·const·examples·required 같은 값 자리는 손대지 않는다.
+  }
+  return out;
 }
+
+/** 깊은 칸(둘째 단계 아래)의 설명 글을 걷는다. 스키마의 description 만 — 이름이 description 인 칸(properties 의 열쇠)은 그대로. */
+const stripDeep = (schema: Json): Json => walkSchema(schema, 0, "", () => undefined, (key, value, depth) => key === "description" && typeof value === "string" && depth >= 2);
 
 /** CLI 에 보이는 도구 목록을 가볍게 한다. 도구 순서대로 걸으며 같은 큰 하위 스키마는 처음 나온 도구만 온전히 싣는다. */
 export function compactCliToolList<T extends { readonly name: string; readonly description: string; readonly inputSchema: unknown }>(list: readonly T[]): T[] {
   const seen = new Map<string, string>();
-  const share = (node: Json, owner: string, path: string): Json => {
-    if (Array.isArray(node)) return node.map((n, i) => share(n, owner, `${path}[${i}]`));
-    if (!isObj(node)) return node;
-    const text = JSON.stringify(node);
-    if (text.length >= SHARED_MIN && path) {
+  return list.map((tool) => {
+    const light = stripDeep(tool.inputSchema);
+    const shared = walkSchema(light, 0, "", (node, depth, path) => {
+      if (depth === 0) return undefined;
+      const text = JSON.stringify(node);
+      if (text.length < SHARED_MIN) return undefined;
       const first = seen.get(text);
-      if (first !== undefined) {
-        const type = node.type ?? (node.items ? "array" : "object");
-        return { type, description: `형식은 ${first} 칸과 같다(그 도구 목록의 그 칸을 본다)` };
-      }
-      seen.set(text, `${owner} 도구의 ${path}`);
+      if (first === undefined) { seen.set(text, `${tool.name} 도구의 ${path}`); return undefined; }
+      return { ...(node.type !== undefined ? { type: node.type } : {}), description: `형식은 ${first} 칸과 같다(그 도구 목록의 그 칸을 본다)` };
+    });
+    // 걸은 결과가 스키마 꼴을 잃었으면(있어서는 안 되지만) 그 도구만 원래 스키마로 보낸다 — 틀린 목록 하나가 요청 전체를 400 으로 막는다.
+    return { ...tool, inputSchema: schemaShapeProblem(shared) ? tool.inputSchema : shared };
+  });
+}
+
+/** 스키마 꼴 검사(가벼운 것만): properties 값·items·anyOf 원소가 스키마(객체·참거짓)인가, type·required 가 맞는 꼴인가. 문제 자리를 돌려준다. */
+export function schemaShapeProblem(schema: Json, path = ""): string | undefined {
+  if (typeof schema === "boolean") return undefined;
+  if (!isObj(schema)) return path || "(뿌리)";
+  if (schema.type !== undefined && typeof schema.type !== "string" && !(Array.isArray(schema.type) && schema.type.every((t) => typeof t === "string"))) return `${path}.type`;
+  if (schema.required !== undefined && !(Array.isArray(schema.required) && schema.required.every((r) => typeof r === "string"))) return `${path}.required`;
+  for (const [k, v] of Object.entries(schema)) {
+    if (MAP_KEYS.has(k)) {
+      if (!isObj(v)) return `${path}.${k}`;
+      for (const [name, sub] of Object.entries(v)) { const bad = schemaShapeProblem(sub, `${path}.${k}.${name}`); if (bad) return bad; }
+    } else if (ONE_KEYS.has(k)) {
+      const subs = Array.isArray(v) ? v : [v];
+      for (const [i, sub] of subs.entries()) { const bad = schemaShapeProblem(sub, `${path}.${k}${Array.isArray(v) ? `[${i}]` : ""}`); if (bad) return bad; }
+    } else if (LIST_KEYS.has(k)) {
+      if (!Array.isArray(v)) return `${path}.${k}`;
+      for (const [i, sub] of v.entries()) { const bad = schemaShapeProblem(sub, `${path}.${k}[${i}]`); if (bad) return bad; }
     }
-    return Object.fromEntries(Object.entries(node).map(([k, v]) => [k, share(v, owner, path ? `${path}.${k}` : k)]));
-  };
-  return list.map((tool) => ({ ...tool, inputSchema: share(stripDeepDescriptions(tool.inputSchema, 0), tool.name, "") }));
+  }
+  return undefined;
 }
 
 /** 그림을 여러 장 돌려주는 짓기 동사 — CLI 에는 첫 장만 보낸다(관문이 그림 수를 세는 도구는 넣지 않는다). */
@@ -57,6 +97,11 @@ const CLI_CONTEXT_EXHAUSTED = /^\s*(?:Autocompact is thrashing|Prompt is too lon
 export const CLI_CONTEXT_EXHAUSTED_PREFIX = "[CLI 문맥 한도]";
 export function isCliContextExhaustedText(text: string): boolean {
   return CLI_CONTEXT_EXHAUSTED.test(text);
+}
+/** CLI 가 제공자 오류(「API Error: 400 Invalid request…」)를 답 글로 돌려준 것인가 — 보고가 아니라 실패다(J79b). */
+const CLI_API_ERROR = /^\s*API Error:\s*\d{3}\b/u;
+export function isCliApiErrorText(text: string): boolean {
+  return CLI_API_ERROR.test(text);
 }
 export function isCliContextExhaustedError(message: string | undefined): boolean {
   return !!message && message.startsWith(CLI_CONTEXT_EXHAUSTED_PREFIX);
