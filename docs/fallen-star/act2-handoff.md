@@ -21,6 +21,12 @@
   - 함정: `author_forest_route` 를 끝 맵 가장자리에서 이을 때 덧층(lower/upperOverlay)이 남아 「unreachable」 — 파낸 칸의 덧층도 비우게 고침. `originEdge(…, walkFrom)` 은 걸어 들어올 칸에서 BFS 한다.
   - 함정: 승강 장치 도착 칸이 발판 위라 `trigger:"touch"` 면 걸어 나가다 도로 탄다 → `place_lift trigger:"action"`(새 인자).
   - 함정: 하넬 체크포인트 — 발판에서 오른쪽 3칸이 가끔 2칸만 간다(따라오는 동료와 엉킴). 넉넉히 5칸 걷게 하면 하넬에 막혀 멈춘다.
+  - B1~B5 는 PR #3643 으로 머지됨(2026-10-26 저녁).
+  - B6 북방 관문 요새: `author_dungeon castle rooms`(성문 홀·안뜰·감방·무기고·계단 홀·rampart 보스방) + `entrance{fromMapId 새벽샘, x:24,y:0}` + 새벽샘 북쪽 `paint_road`. 경비견은 populate, 순찰 기사는 칩을 줘 따로. 새라: `upsert_actor`(용기사, Actor1 #3)·`upsert_enemy`(charset-battler-actor1-3)·`upsert_troop` + `upsert_troop_battle_page` 둘. 새라 이벤트 `battleProcessing canLose branchOnResult` — 지면 요새 감방에서 깸, 이기면 선택 1(창 돌려줌 → 유대 +1 / 맡아 둠 → 별쇠 조각)·합류·설원 길로 이동.
+  - 일반 기능: 문으로 들어가는 던전 1층(entryStair door)과 야외 잇기가 transfer-retrigger 로 늘 실패하던 버그(`dungeonLinkTools` 가 문 칸을 doorAt 으로) · `upsert_enemy` 가 걷기 칩 전투 시트(charset-battler-*)를 사람 적 그림으로 받음 · `author_snow_route paintGaps`(얼음 구멍으로 틈을 실제로 막음, 잇기 뒤에 칠함)·`linkFrom:false`.
+  - B7 서리 가도: 설원 길 두 장(눈→눈보라), 얼음 틈 둘 = `place_field_obstacle gap requiresActorId 새라`, 고개 모닥불 `configure_party_bonds`(엘레나·새라, 새라 유대 2 → 창 휘두르기).
+  - 함정: `author_dungeon` populate 의 보이는 적·보스는 몬스터 그림 무리만 놓는다(사람 칩 무리는 조용히 건너뜀 — runTool 결과에 경고가 안 실린다). 함정: 도구 안에서도 잇기 뒤엔 맵 객체가 바뀐다(설원 틈 칠하기 버그였다).
+  - 정본 revision 4(굽기 bake6, 맵 31) 저장·재로드 OK.
   - 탐침: `/tmp/fs2/act2probe.mts` 는 vite-node 로 돈다: `OPRN_ASSUME_ALL_BGM_INSTALLED=1 node --max-old-space-size=12000 node_modules/vite-node/dist/cli.mjs --script /tmp/fs2/act2probe.mts`(tsx 는 .css import 로 죽는다). 타입 검사는 `/tmp/fs2/tsconfig.json`(만진 파일 + src/vite-env.d.ts).
 
 ## 1. 머지됨 (main)
