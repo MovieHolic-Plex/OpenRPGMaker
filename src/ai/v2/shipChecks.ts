@@ -336,7 +336,8 @@ export function hidingSpots(project: Project): { mapId: string; eventId: string;
     const hiding = (ev.pages ?? []).filter((p) => (p.interaction as Obj | undefined)?.kind === "hiding");
     if (!hiding.length) continue;
     const drawn = hiding.some((p) => { const g = (p.graphic ?? {}) as Obj; return !g.transparent && Boolean(g.sprite || g.appearanceId); });
-    const furniture = tileAt(map, ev.x, ev.y).layers.slice(1).some((t) => t >= 0);
+    const cell = tileAt(map, ev.x, ev.y);
+    const furniture = cell.upper >= 0 || cell.layers.slice(1).some((t) => t >= 0);
     out.push({ mapId: map.id, eventId: ev.id, x: ev.x, y: ev.y, visible: drawn || furniture });
   }
   return out;
