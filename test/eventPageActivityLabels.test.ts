@@ -78,13 +78,15 @@ function text(body: string): Command {
 describe("페이지 편집 라벨", () => {
   it("추가·순서 이동·복사·삭제를 행위 이름과 페이지 이름으로 남긴다", () => {
     const addedId = addEventPage(mapId, eventId);
-    moveEventPage(mapId, eventId, addedId, -1);
+    // 새 페이지는 활성 페이지 **앞에** 끼워진다(빈 페이지가 런타임 판정을 빼앗지 않게, baseline 0d4f13e7c8
+    // addEventPage) — 맨 앞이라 "앞으로" 는 거절되므로 뒤로 옮겨 라벨을 본다.
+    moveEventPage(mapId, eventId, addedId, 1);
     const copiedId = copyEventPage(mapId, eventId, pageId);
     deleteEventPage(mapId, eventId, copiedId);
 
     expect(labels()).toEqual([
       "페이지 추가 (2번째)",
-      "페이지 순서 이동: 페이지 2 (앞으로)",
+      "페이지 순서 이동: 페이지 2 (뒤로)",
       "페이지 복제: 페이지 1",
       "페이지 삭제: 페이지 1 복사본",
     ]);
@@ -111,6 +113,9 @@ describe("페이지 편집 라벨", () => {
   });
 
   it("페이지 기본값 생성은 사람 행위가 아니라 system origin 으로 갈라진다", () => {
+    // addEvent 가 이미 첫 페이지를 만들어 두므로(createDefaultGameEvent) 페이지 없는 옛 이벤트를 재현한다.
+    store.updateEvent(mapId, eventId, (event) => { event.pages = []; });
+    _resetEditActivityForTest();
     ensureEventPages(mapId, eventId);
     const entry = entries()[0]!;
     expect(entry.label).toBe("페이지 기본값 생성");
@@ -177,10 +182,9 @@ describe("커맨드 편집 라벨", () => {
     moveEventPageCommandAt(mapId, eventId, pageId, [0], -1);
     moveEventPageCommandToIndex(mapId, eventId, pageId, [1], 9);
 
-    expect(labels()).toEqual([
-      "커맨드 순서 이동: 문장 표시 (#0, 이동 없음)",
-      "커맨드 순서 이동: 문장 표시 (#1, 이동 없음)",
-    ]);
+    // store.reorderEventCommands 는 제자리 이동을 개정 없이 버린다(baseline 0d4f13e7c8) — 없는 자리로
+    // 갔다는 기록은 물론, 아무 기록도 남지 않아야 한다.
+    expect(labels()).toEqual([]);
   });
 
   it("커맨드 목록 교체는 규모를 개수로 남긴다", () => {
@@ -214,6 +218,8 @@ describe("커맨드 편집 라벨", () => {
 describe("이벤트 CRUD 라벨", () => {
   it("추가·이동·속성 변경·삭제가 이벤트 이름과 좌표를 남긴다", () => {
     updateEventPage(mapId, eventId, pageId, { name: "촌장" }, "이름 지정");
+    // 새 이벤트는 그림이 없어(createDefaultGameEvent) 그림 지우기가 무변경으로 버려진다 — 먼저 그림을 준다.
+    updateEvent(mapId, eventId, { sprite: { type: "bundled", id: "charset_probe" } });
     _resetEditActivityForTest();
 
     moveEvent(mapId, eventId, 9, 10);
