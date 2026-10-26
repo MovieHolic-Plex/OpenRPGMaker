@@ -4,6 +4,7 @@ import type { ToolContext } from "@/editor/tools/types";
 import { INTERIOR_ROOM_TILESET_ID } from "@/editor/interiorRoomPipeline";
 import { createBlankProject } from "@/project/defaults";
 import { COMBINED_TOWN_TILESET_ID } from "@/project/defaults/constants";
+import { withRetiredEasyRpgTilesets } from "./support/retiredEasyRpgTilesets";
 
 function ctx(): ToolContext {
   return { project: createBlankProject() };
@@ -23,9 +24,14 @@ describe("Phase 5 실외 확장 — 스코프 게이트와 명시적 거부", ()
   });
 
   it("실내 칩셋은 여전히 초안을 시드한다", () => {
-    const context = ctx();
+    // Concept-bundle seeding is tied to the retired EasyRPG interior sheet (ensureConceptBundles only seeds INTERIOR_ROOM_TILESET_ID);
+    // the v5 hand-pixel interior never seeds drafts, so this runs on a pre-purge project that still carries that sheet.
+    const context = { project: withRetiredEasyRpgTilesets(createBlankProject()) };
     ensureConceptBundles(context.project, INTERIOR_ROOM_TILESET_ID);
-    expect((context.project.tilesets[INTERIOR_ROOM_TILESET_ID]?.scratchConceptBundles ?? []).length).toBeGreaterThan(0);
+    // The interior sheet is still the only one ensure touches (unlike the outdoor case above), but the shared interior reset
+    // retired every facility template (CONCEPT_FACILITY_TEMPLATES = [] — "do not seed rejected facility layouts", present at
+    // the public baseline 0d4f13e7c8), so the seeded draft list is empty rather than populated.
+    expect(context.project.tilesets[INTERIOR_ROOM_TILESET_ID]?.scratchConceptBundles).toEqual([]);
   });
 
   // Removed it "place_concept는 실내 칩셋이 아니면": place_concept was removed from the tool registry on purpose.

@@ -4,11 +4,12 @@ import { captureHouseProtection } from "@/editor/tools/houseProtection";
 import { cellsInFillShape } from "@/editor/tools/v3/constructionTools";
 import { DEFAULT_SAND_AUTOTILE_GROUP } from "@/project/defaults/autotileGroups";
 import { SAND_TILE } from "@/project/defaults/chipsetMapping";
-import { TILE } from "@/project/defaults/constants";
+import { COMBINED_TOWN_TILESET_ID, TILE } from "@/project/defaults/constants";
 import { LAKE_AUTOTILE_TILE } from "@/project/defaults/lakeAutotile";
 import { deserialize, serialize } from "@/project/io";
 import type { GameMap } from "@/project/types";
 import { completedHouseProject, houseMap, HOUSE_RECT } from "./fixtures/completedHouse";
+import { withRetiredEasyRpgTilesets } from "./support/retiredEasyRpgTilesets";
 
 function fillTool() {
   const tool = getTool("fill_region");
@@ -17,8 +18,11 @@ function fillTool() {
 }
 
 function fixture() {
-  const project = completedHouseProject();
+  // The fill materials (물·모래·잔디), sand/lake autotiles and TILE.GRASS are combined-town ones. That sheet is retired from new
+  // projects (the start map is beodeul_city, where 240 is a wall), so restore it and put the house map back on it.
+  const project = withRetiredEasyRpgTilesets(completedHouseProject());
   const map = houseMap(project);
+  map.tilesetId = COMBINED_TOWN_TILESET_ID;
   // Passable roof/deck, empty wing gap, ordered stacks and empty stacks are all owned.
   map.lowerTiles.fill(TILE.GRASS);
   map.lowerTiles[4 * map.width + 4] = TILE.EMPTY;
@@ -174,6 +178,9 @@ describe("fill_region completed-house protection", () => {
     const ctx = fixture();
     const map = houseMap(ctx.project);
     map.lowerTiles[4 * map.width + 4] = 15;
+    // A wall is a run: a lone obstacle no longer pulls the fill past the rectangle (wallFlush.expandCellsAgainstWalls,
+    // e0be8616a2). Extend the wall one cell north so the gap in front of it still counts.
+    map.lowerTiles[3 * map.width + 4] = 15;
     const houses = captureHouseProtection(ctx.project);
     // When wall-flush expansion adds the protected gap to the fill candidates.
     const result = fillTool().run(ctx.project, { mapId: map.id, rect: { x: 2, y: 4, w: 1, h: 1 }, material: "모래" });

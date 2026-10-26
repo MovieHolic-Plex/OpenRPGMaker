@@ -1,5 +1,5 @@
 import { expect, it } from "vitest";
-import { createBlankProject } from "@/project/defaults";
+import { retiredEasyRpgTileset, RETIRED_INTERIOR_TILESET_ID } from "./support/retiredEasyRpgTilesets";
 import { INTERIOR_OBJECT_CATALOG, interiorObjectById } from "@/editor/interiorObjectCatalog";
 import { INTERIOR_TILE_SEMANTICS } from "@/project/defaults/tileSemanticsInterior";
 import { applyEasyRpgThemeMetadataPacks, INTERIOR_HARNESS_GROUPS } from "@/project/tilesetHarness/themePacks";
@@ -14,8 +14,8 @@ import { applyEasyRpgThemeMetadataPacks, INTERIOR_HARNESS_GROUPS } from "@/proje
 
 it("removes rejected tiles from classification, groups and generated furniture", () => {
   const rejected = [408, 409, 410];
-  const tileset = createBlankProject().tilesets.easyrpg_chipset_interior;
-  if (!tileset) throw new Error("Tileset missing");
+  // The rejected tiles and theme packs are EasyRPG interior numbers; that sheet is retired, so build its old definition explicitly.
+  const tileset = retiredEasyRpgTileset(RETIRED_INTERIOR_TILESET_ID);
   for (const tile of rejected) {
     tileset.tileMeta![tile] = { label: "old-counter", description: "", source: "bundled-default", tags: ["counter"] };
   }

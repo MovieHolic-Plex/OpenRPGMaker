@@ -14,18 +14,21 @@ import type { ToolContext, ToolResult } from "@/editor/tools/types";
 import { filterRoadWidthCells, repairRoadPath, roadObstacleMaskFor } from "@/editor/tools/roadObstacles";
 import type { Point } from "@/editor/tools/mapHelpers";
 import { createBlankProject } from "@/project/defaults";
-import { TILE } from "@/project/defaults/constants";
+import { COMBINED_TOWN_TILESET_ID, TILE } from "@/project/defaults/constants";
 import { isRoadTile } from "@/project/defaults/roadAutotile";
 import { captureHouseProtection } from "@/editor/tools/houseProtection";
 import { DIRT_ROAD_TILE, SAND_TILE } from "@/project/defaults/chipsetMapping";
 import { isPassable } from "@/project/collision";
 import type { GameMap, Project } from "@/project/types";
+import { withRetiredEasyRpgTilesets } from "./support/retiredEasyRpgTilesets";
 
 const MAP_ID = "map_road_obstacle";
 
 function context(width = 40, height = 24): { readonly ctx: ToolContext; readonly mapId: string } {
-  const ctx: ToolContext = { project: createBlankProject() };
-  const created = runTool(ctx, "create_map", { id: MAP_ID, name: "도로 우회", width, height });
+  // The road tiles, walls (374), trees (290/260), water and the 흙길 path material are combined-town ones. That sheet is retired
+  // from new projects, so restore it and build the map on it.
+  const ctx: ToolContext = { project: withRetiredEasyRpgTilesets(createBlankProject()) };
+  const created = runTool(ctx, "create_map", { id: MAP_ID, name: "도로 우회", width, height, tilesetId: COMBINED_TOWN_TILESET_ID });
   expect(created.ok, created.summary).toBe(true);
   return { ctx, mapId: MAP_ID };
 }

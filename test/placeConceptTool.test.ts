@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { capabilityEscalatedToolNames } from "@/ai/capabilityEscalation";
 import { buildSystemPrompt } from "@/ai/contextBuilder";
 import { layoutConceptFacility } from "@/editor/conceptBundleResolve";
-import { INTERIOR_ROOM_TILESET_ID } from "@/editor/interiorRoomPipeline";
+import { ATLAS_BIOME_INTERIOR_ID } from "@/project/defaults/atlasBiomeInterior";
 import { cloneConceptBundle } from "@/project/defaults/scratchInnBundle";
 import { SCRATCH_INN_BUNDLE } from "./fixtures/legacyConceptInn";
 import { createBlankProject } from "@/project/defaults";
@@ -35,7 +35,7 @@ describe("개념 꾸러미 프롬프트", () => {
     const edited = cloneConceptBundle(SCRATCH_INN_BUNDLE);
     edited.facilities[0] = { ...edited.facilities[0]!, label: "주막" };
     edited.label = "주막";
-    project.tilesets[INTERIOR_ROOM_TILESET_ID]!.scratchConceptBundles = [edited];
+    project.tilesets[ATLAS_BIOME_INTERIOR_ID]!.scratchConceptBundles = [edited];
     const prompt = buildSystemPrompt(project, { currentMapId: project.startMapId, budgetChars: 50_000 });
     expect(prompt).not.toContain("## 개념 꾸러미");
     expect(prompt).toContain("build_hand_interior_room");
@@ -46,7 +46,7 @@ describe("개념 꾸러미 장소 스키마 (role · size · count)", () => {
   it("역할·크기·개수를 받아들이고 모르는 값은 거절한다", async () => {
     const { validateTileset } = await import("@/project/io/shapeResourceFields");
     const project = createBlankProject();
-    const tileset = project.tilesets[INTERIOR_ROOM_TILESET_ID]!;
+    const tileset = project.tilesets[ATLAS_BIOME_INTERIOR_ID]!;
     const bundle = cloneConceptBundle(SCRATCH_INN_BUNDLE);
     bundle.places = [
       { id: "hall", label: "홀", role: "entrance", size: "l" },
