@@ -2,6 +2,15 @@
 
 기획 정본: `docs/fallen-star/act2-plan.md`. 제1막·1.22 는 운영 스토어에 게시됨(fallen-star 1.22, PR #3509).
 
+## 0. 지금 진행 중 (2026-10-26)
+
+- 열린 도구 PR 셋(#3546 일지·#3548 시간 탈출·#3557 전투 손님)과 인계 문서 #3561 은 **모두 머지됨**.
+- 비트 작업 브랜치: **`agent/fs2-beats`** (워크트리 `/home/main/z-project/rpg-zzu-fs2-beats`). WIP 를 자주 푸시한다 — 이어받으면 이 브랜치에서 시작.
+- 진행 기록은 이 절 아래 「진행 로그」에 덧붙인다.
+
+### 진행 로그
+- 기준 굽기 `/tmp/fs2/base`(origin/main ed114f5cf0). 탐침은 `/tmp/fs2/probe.mts`(굽기 JSON 에 도구를 순서대로 부른다).
+
 ## 1. 머지됨 (main)
 
 | PR | 도구 | 한 줄 |
