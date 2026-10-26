@@ -4161,8 +4161,8 @@
    "label": "제2막 B6 — 새벽샘 북쪽 길 끝 → 북방 관문 요새",
    "note": "act2Opening.ts northFortress — author_dungeon entrance (26,0)",
    "mapId": "fs2_dawnwell",
-   "x": 26,
-   "y": 2,
+   "x": 24,
+   "y": 3,
    "facing": "up",
    "switches": {
     "sw_fs_main_started": true,
@@ -4203,7 +4203,7 @@
       {
        "kind": "move",
        "dir": "up",
-       "steps": 3
+       "steps": 4
       },
       {
        "kind": "waitForMap",
@@ -4366,8 +4366,8 @@
      "ops": [
       {
        "kind": "repeatUntil",
-       "testid": "dialogue-box",
-       "state": "absent",
+       "testid": "dialogue-choice-frame",
+       "state": "present",
        "maxRounds": 10,
        "ops": [
         {
@@ -4405,7 +4405,35 @@
        "kind": "repeatUntil",
        "testid": "dialogue-box",
        "state": "absent",
-       "maxRounds": 14,
+       "maxRounds": 16,
+       "ops": [
+        {
+         "kind": "key",
+         "key": "Enter"
+        },
+        {
+         "kind": "hold",
+         "dir": null,
+         "ms": 1100
+        }
+       ]
+      },
+      {
+       "kind": "waitForMap",
+       "mapId": "map_snow_north_1",
+       "timeoutMs": 10000
+      },
+      {
+       "kind": "waitFor",
+       "testid": "dialogue-box",
+       "state": "present",
+       "timeoutMs": 8000
+      },
+      {
+       "kind": "repeatUntil",
+       "testid": "dialogue-box",
+       "state": "absent",
+       "maxRounds": 8,
        "ops": [
         {
          "kind": "key",
@@ -4421,7 +4449,7 @@
       {
        "kind": "hold",
        "dir": null,
-       "ms": 1500
+       "ms": 2000
       }
      ],
      "shot": true
@@ -4540,6 +4568,267 @@
        "testid": "dialogue-box",
        "state": "absent",
        "maxRounds": 6,
+       "ops": [
+        {
+         "kind": "key",
+         "key": "Enter"
+        },
+        {
+         "kind": "hold",
+         "dir": null,
+         "ms": 1100
+        }
+       ]
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1500
+      }
+     ],
+     "shot": true
+    }
+   ]
+  },
+  {
+   "id": "act2-b7-gap",
+   "label": "제2막 B7 — 서리 가도 얼음 틈, 새라의 장대 도약",
+   "note": "act2Opening.ts snowPass — author_snow_route paintGaps + place_field_obstacle gap requiresActorId",
+   "mapId": "map_snow_north_1",
+   "x": 13,
+   "y": 17,
+   "facing": "up",
+   "switches": {
+    "sw_fs_main_started": true,
+    "sw_fs_main_done": true,
+    "sw_fs_iris_joined": true,
+    "sw_fs2_act2_started": true,
+    "sw_fs2_out_of_cells": true,
+    "sw_fs2_hub_arrived": true,
+    "sw_fs2_mire_well": true,
+    "sw_fs2_heard_carriage": true,
+    "sw_fs2_hanel_told": true,
+    "sw_fs2_rohan_spear": true,
+    "sw_fs2_bram_hole": true,
+    "sw_fs2_dawn_mem_0": true,
+    "sw_fs2_dawn_mem_1": true,
+    "sw_fs2_dawn_mem_2": true,
+    "sw_fs2_serin_form": true,
+    "sw_fs2_sarah_joined": true,
+    "sw_fs2_snow_arrived": true,
+    "sw_fs2_spear_returned": true
+   },
+   "party": [
+    {
+     "actorId": "actor_hero",
+     "level": 14
+    },
+    {
+     "actorId": "actor_fs_elena",
+     "level": 14
+    },
+    {
+     "actorId": "actor_fs2_sarah",
+     "level": 14
+    }
+   ],
+   "beats": [
+    {
+     "id": "look",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1500
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "vault",
+     "ops": [
+      {
+       "kind": "action"
+      },
+      {
+       "kind": "repeatUntil",
+       "testid": "dialogue-choice-frame",
+       "state": "present",
+       "maxRounds": 6,
+       "ops": [
+        {
+         "kind": "key",
+         "key": "Enter"
+        },
+        {
+         "kind": "hold",
+         "dir": null,
+         "ms": 1100
+        }
+       ]
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 600
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1500
+      },
+      {
+       "kind": "repeatUntil",
+       "testid": "dialogue-box",
+       "state": "absent",
+       "maxRounds": 6,
+       "ops": [
+        {
+         "kind": "key",
+         "key": "Enter"
+        },
+        {
+         "kind": "hold",
+         "dir": null,
+         "ms": 1100
+        }
+       ]
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 2000
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "onward",
+     "ops": [
+      {
+       "kind": "move",
+       "dir": "up",
+       "steps": 3
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1500
+      }
+     ],
+     "shot": true
+    }
+   ]
+  },
+  {
+   "id": "act2-b7-fire",
+   "label": "제2막 B7 — 눈보라 고개 모닥불, 한 사람과 이야기(유대)",
+   "note": "act2Opening.ts snowPass — configure_party_bonds campfire",
+   "mapId": "map_snow_north_2",
+   "x": 23,
+   "y": 22,
+   "facing": "right",
+   "switches": {
+    "sw_fs_main_started": true,
+    "sw_fs_main_done": true,
+    "sw_fs_iris_joined": true,
+    "sw_fs2_act2_started": true,
+    "sw_fs2_out_of_cells": true,
+    "sw_fs2_hub_arrived": true,
+    "sw_fs2_mire_well": true,
+    "sw_fs2_heard_carriage": true,
+    "sw_fs2_hanel_told": true,
+    "sw_fs2_rohan_spear": true,
+    "sw_fs2_bram_hole": true,
+    "sw_fs2_dawn_mem_0": true,
+    "sw_fs2_dawn_mem_1": true,
+    "sw_fs2_dawn_mem_2": true,
+    "sw_fs2_serin_form": true,
+    "sw_fs2_sarah_joined": true,
+    "sw_fs2_snow_arrived": true,
+    "sw_fs2_spear_returned": true
+   },
+   "party": [
+    {
+     "actorId": "actor_hero",
+     "level": 14
+    },
+    {
+     "actorId": "actor_fs_elena",
+     "level": 14
+    },
+    {
+     "actorId": "actor_fs2_sarah",
+     "level": 14
+    }
+   ],
+   "beats": [
+    {
+     "id": "fire",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1200
+      },
+      {
+       "kind": "action"
+      },
+      {
+       "kind": "repeatUntil",
+       "testid": "dialogue-choice-frame",
+       "state": "present",
+       "maxRounds": 6,
+       "ops": [
+        {
+         "kind": "key",
+         "key": "Enter"
+        },
+        {
+         "kind": "hold",
+         "dir": null,
+         "ms": 1100
+        }
+       ]
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1200
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "talk",
+     "ops": [
+      {
+       "kind": "key",
+       "key": "ArrowDown"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 400
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1200
+      },
+      {
+       "kind": "repeatUntil",
+       "testid": "dialogue-box",
+       "state": "absent",
+       "maxRounds": 8,
        "ops": [
         {
          "kind": "key",

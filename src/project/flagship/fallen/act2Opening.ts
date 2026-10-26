@@ -901,11 +901,12 @@ const FORT_ROOMS = [
   { id: "gate", kind: "entrance" }, { id: "yard", kind: "hall" }, { id: "cells", kind: "cell", from: "yard" },
   { id: "armory", kind: "storage", from: "yard" }, { id: "stair", kind: "hall" }, { id: "rampart", kind: "boss" },
 ];
+/** 새벽샘 북쪽 맵 끝 요새 입구 칸(돌길 북쪽, 나무 덤불 서쪽). */
+const FORT_GATE: Cell = { x: 24, y: 0 };
 const FORT: { sarah: Cell; cell: Cell; rooms: { id: string; kind: string; x: number; y: number; w: number; h: number; spots: Cell[] }[] } = { sarah: { x: 0, y: 0 }, cell: { x: 0, y: 0 }, rooms: [] };
 
 function northFortress(project: Project, exec: Exec, hubId: string): void {
   for (const [id, name] of [[SW_SARAH, "B6: 새라 합류"], [SW_SPEAR_BACK, "B6 선택1: 창을 돌려줬다"], [SW_SPEAR_KEPT, "B6 선택1: 창을 맡아 뒀다"], [SW_SARAH_LOST, "B6: 성벽 위에서 한 번 졌다"]] as const) ensureSwitch(project, id, name);
-  if (!project.variables.some((v) => v.id === VAR_BOND_SARAH)) project.variables.push({ id: VAR_BOND_SARAH, name: "유대: 새라" } as (typeof project.variables)[number]);
   exec(project, "upsert_item", { item: {
     id: FS2_STAR_IRON, name: "별쇠 조각", type: "special", occasion: "never", consumable: false, price: 0,
     description: "새라의 창끝에서 떼어 낸 별쇠. 로한이라면 창을 한 번 더 벼릴 수 있다.",
@@ -948,11 +949,13 @@ function northFortress(project: Project, exec: Exec, hubId: string): void {
     id: "fs2_sarah_half", name: "새라 — 반", span: "battle", conditions: [{ kind: "enemyHpBelow", enemyId: FS2_SARAH_ENEMY, percent: 50 }],
     commands: [say(SARAH, "…그 창, 로한 아저씨 거지.\n손잡이 무늬가 우리 집 거랑 같아."), say(KAEL, "아저씨가 전해 달래요. 「고개 들어라」.")],
   } });
+  // 새벽샘 북쪽 — 돌길에서 맵 끝까지 흙길을 내 요새 입구로 이끈다(풀밭 한가운데 출구로 보이지 않게).
+  exec(project, "paint_road", { mapId: FS2_DAWNWELL_ID, points: [{ x: FORT_GATE.x, y: 6 }, { x: FORT_GATE.x, y: 0 }], style: "dirt", naturalness: 0 });
   // 요새 — 새벽샘 북쪽 길 끝. 방 문법으로 짓고, 보이는 적(경비견)·상자·쉼터는 도구가 채운다. 사람 순찰은 아래에서 칩을 주고 따로 놓는다.
   const d = exec(project, "author_dungeon", {
     type: "castle", adapter: "beodeul", genre: "rpg", name: "북방 관문 요새", id: FS2_FORTRESS_ID, rooms: FORT_ROOMS,
     populate: true, troops: { field: [FS2_FORT_DOGS], boss: FS2_FORT_DOGS }, gimmick: "none",
-    entrance: { fromMapId: FS2_DAWNWELL_ID, x: 26, y: 0 }, seed: 61,
+    entrance: { fromMapId: FS2_DAWNWELL_ID, x: FORT_GATE.x, y: FORT_GATE.y }, seed: 61,
   }) as { rooms?: { id: string; kind: string; x: number; y: number; w: number; h: number; spots: Cell[] }[] } | undefined;
   FORT.rooms = d?.rooms ?? [];
   const fort = M(project, FS2_FORTRESS_ID);
@@ -1010,6 +1013,7 @@ function fortressEvents(project: Project): void {
         say(SARAH, "…고개 들어라. 아버지 말버릇이었지."),
         setSw(SW_SPEAR_BACK),
         { kind: "setVariable", variableId: VAR_BOND_SARAH, op: "+=", value: 1 } as unknown as Command,
+        { kind: "callCommonEvent", commonEventId: "ce_party_bond_check" } as unknown as Command,
       ] },
       { text: "창을 맡아 둔다", branch: [
         say(KAEL, "북쪽까지는 제가 들고 갈게요.\n돌려드리는 건 그다음에."),
@@ -1027,6 +1031,9 @@ function fortressEvents(project: Project): void {
     setSw(SW_SARAH),
     cutLabel(),
     cutEnd(),
+    say(SARAH, "북문은 왕좌 뒤 계단이다. 따라와."),
+    fadeOut(900),
+    transfer(FS2_SNOW.mapIds[0]!, FS2_SNOW.entry, "up"),
   ];
   addEvent(fort, "ev_fs2_fort_sarah", SARAH, FORT.sarah, [
     page("ev_fs2_fort_sarah_p", "성벽 위의 새라", [], [
@@ -1040,7 +1047,11 @@ function fortressEvents(project: Project): void {
       cutEnd(),
       { kind: "battleProcessing", troopId: FS2_SARAH_TROOP, canEscape: false, canLose: true, branchOnResult: true, victoryBranch: win, defeatBranch: lose, escapeBranch: [] } as unknown as Command,
     ], { graphic: sarahChip }),
-    page("ev_fs2_fort_sarah_gone", "합류 뒤", [sw(SW_SARAH)], [], { graphic: { transparent: true }, priority: "below" }),
+    // 합류 뒤 — 새라가 서 있던 자리(왕좌 앞)에서 조사하면 북문 계단으로 나간다.
+    page("ev_fs2_fort_sarah_gone", "북문 계단", [sw(SW_SARAH)], [
+      narrate("왕좌 뒤로 북문에 닿는 좁은 계단이 있다."),
+      transfer(FS2_SNOW.mapIds[0]!, FS2_SNOW.entry, "up"),
+    ], { graphic: { transparent: true }, priority: "below" }),
   ]);
   // 졌을 때 — 요새 감방에서 깬다(게임 오버 아님). 창살 문은 새라가 열어 두었다.
   addEvent(fort, "ev_fs2_fort_cell_wake", "감방에서 깬다", { x: 0, y: 0 }, [
@@ -1053,6 +1064,74 @@ function fortressEvents(project: Project): void {
       setSw(SW_SARAH_LOST, false),
     ], { trigger: { kind: "auto" }, priority: "below" }),
   ]);
+}
+
+// ════════════════════════════════════════════════════════════════════
+// 10. B7 서리 가도 — 요새 북문 → 설원 길 두 장(눈 → 눈보라), 얼음 틈 둘(새라 장대 도약), 고개 모닥불(유대 — 한 사람과 이야기)
+// ════════════════════════════════════════════════════════════════════
+
+export const FS2_SNOW: { mapIds: string[]; entry: Cell; back: Cell; exit: Cell | null; clearing: Cell } = { mapIds: [], entry: { x: 0, y: 0 }, back: { x: 0, y: 0 }, exit: null, clearing: { x: 0, y: 0 } };
+const VAR_BOND_ELENA = "var_fs2_bond_elena";
+const SW_SNOW_ARRIVE = "sw_fs2_snow_arrived";
+
+function snowPass(project: Project, exec: Exec): void {
+  ensureSwitch(project, SW_SNOW_ARRIVE, "B7: 서리 가도에 들어섰다");
+  const d = exec(project, "author_snow_route", {
+    fromMapId: FS2_FORTRESS_ID, side: "north", count: 2, names: ["서리 가도", "눈보라 고개"], moods: ["snow", "blizzard"],
+    gapCount: 2, gapWidth: 1, paintGaps: true, linkFrom: false, openEnd: true, seed: 71,
+  }) as { maps?: { mapId: string; entry: Cell; exit: Cell | null; clearing: Cell; gaps: { from: Cell; to: Cell; seals: boolean }[] }[] } | undefined;
+  const maps = d?.maps ?? [];
+  if (maps.length < 2) throw new Error("[fallen-star act2] 설원 길이 두 장이 아니다");
+  FS2_SNOW.mapIds = maps.map((m) => m.mapId);
+  // 입구 칸(맵 남쪽 끝)은 요새로 돌아가는 칸 — 들어올 때는 그 한 칸 위에 선다.
+  FS2_SNOW.back = maps[0]!.entry;
+  FS2_SNOW.entry = { x: maps[0]!.entry.x, y: maps[0]!.entry.y - 1 };
+  FS2_SNOW.exit = maps[1]!.exit;
+  FS2_SNOW.clearing = maps[1]!.clearing;
+  // 얼음 틈 — 새라가 파티에 있으면 창을 장대 삼아 뛰어넘는다(새 일반 기능: 틈 칠하기 + 배우 조건 도약).
+  maps.forEach((m) => m.gaps.forEach((g, k) => {
+    exec(project, "place_field_obstacle", {
+      mapId: m.mapId, kind: "gap", x: g.from.x, y: g.from.y, requiresActorId: FS2_SARAH_ACTOR, id: `ev_fs2_snow_gap_${m.mapId}_${k}`, name: "얼음 틈",
+      hint: "새라가 창을 얼음에 꽂았다. 「잡아. 뛴다.」", blockedText: "얼음이 길을 가로질러 갈라져 있다. 맨몸으로 뛰기엔 넓다.",
+    });
+  }));
+  // 첫 맵 입구 — 요새 북문 계단으로 돌아간다(성벽 위 새라 자리 아래 칸).
+  addEv(project, FS2_SNOW.mapIds[0]!, "ev_fs2_snow_back", "요새 북문", FS2_SNOW.back, [
+    page("ev_fs2_snow_back_p", "요새로", [], [transfer(FS2_FORTRESS_ID, { x: FORT.sarah.x, y: FORT.sarah.y + 1 }, "down")], { trigger: { kind: "playerTouch" }, priority: "below" }),
+  ]);
+  // 들어서면 한 번 — 이리스 없는 눈길.
+  addEv(project, FS2_SNOW.mapIds[0]!, "ev_fs2_snow_arrive", "서리 가도", { x: 0, y: 0 }, [
+    page("ev_fs2_snow_arrive_idle", "대기", [], [], { priority: "below" }),
+    page("ev_fs2_snow_arrive_run", "들어선다", [sw(SW_SARAH)], [
+      wait(500),
+      say(SARAH, "이 바람엔 길이 안 보여."),
+      say(KAEL, "그럼 별을 보고 가요. 저기, 북쪽 끝."),
+      say(ELENA, "이리스가 있었으면 손끝에 불 켜 줬을 텐데."),
+      say(KAEL, "그러니까 데리러 가는 거야."),
+      setSw(SW_SNOW_ARRIVE),
+    ], { trigger: { kind: "auto" }, priority: "below" }),
+    // 뒤 페이지가 이긴다 — 한 번 본 뒤에는 멈춘다.
+    page("ev_fs2_snow_arrive_done", "끝", [sw(SW_SNOW_ARRIVE)], [], { priority: "below" }),
+  ]);
+  // 고개 위 바위 그늘 — 모닥불(설원 키트) 앞에서 한 사람과 이야기한다.
+  // 빈터 둘레에서 눈길이 아닌 칸을 고른다(도구가 길 위·막힌 칸을 거절하면 다음 자리).
+  const c0 = FS2_SNOW.clearing;
+  let fire: Cell | null = null;
+  for (const [dx, dy] of [[2, -2], [-3, -2], [2, 0], [-3, 0], [2, 2], [-3, 2], [0, -3], [0, 2]] as const) {
+    const at = { x: c0.x + dx, y: c0.y + dy };
+    try { exec(project, "stamp_tileset_object", { mapId: FS2_SNOW.mapIds[1]!, objectId: "bd-pick-snowfield-bonfire", at }); fire = at; break; } catch { /* 다음 자리 */ }
+  }
+  if (!fire) throw new Error("[fallen-star act2] 고개 모닥불 자리가 없다");
+  exec(project, "configure_party_bonds", {
+    members: [
+      { actorId: "actor_fs_elena", variableId: VAR_BOND_ELENA, talk: ["불씨는 내가 지킬게. 넌 별이나 세.", "…이리스 몫까지 세 줘."] },
+      { actorId: FS2_SARAH_ACTOR, variableId: VAR_BOND_SARAH, talk: ["아버지는 북문 기사였어. 쇠 마차가 처음 온 해에 돌아오지 않았지.", "발렌 님은 그 뒤로 날 북문에 세웠다. …고개 들라고."] },
+    ],
+    intro: ["바위 그늘에 불을 피웠다. 눈보라가 잠깐 잦아든다."],
+    // 새라 유대 2 — 창 휘두르기(창을 돌려줬으면 B6 에서 1 이 먼저 쌓여 있다).
+    unlocks: [{ actorId: FS2_SARAH_ACTOR, atLeast: 2, learn: [{ skillId: "skill_dragoon_sweeping_lance" }], message: "새라가 「창 휘두르기」를 떠올렸다." }],
+    campfires: [{ mapId: FS2_SNOW.mapIds[1]!, x: fire.x, y: fire.y + 1, id: "ev_fs2_snow_fire", name: "모닥불" }],
+  });
 }
 
 // ════════════════════════════════════════════════════════════════════
@@ -1073,5 +1152,6 @@ export function applyFallenAct2Opening(project: Project, exec: Exec, ids: Fallen
   northGateEvents(project, ids.hub);
   dawnwellEvents(project);
   northFortress(project, exec, ids.hub);
+  snowPass(project, exec);
   fortressEvents(project);
 }
