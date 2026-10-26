@@ -1,5 +1,5 @@
 // @vitest-environment happy-dom
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { installDesktopShellBridge } from "@/player/desktopShellBridge";
 
 /**
@@ -177,6 +177,69 @@ describe("desktop shell gamepad", () => {
 
     cleanup();
     expect(keyups).toHaveLength(1);
+  });
+
+  it("repeats a held direction like a keyboard key and keeps a held confirm as one edge", () => {
+    const frames: FrameRequestCallback[] = [];
+    const restoreRaf = stubAnimationFrame(frames);
+    cleanups.push(restoreRaf);
+
+    let now = 1_000;
+    const nowSpy = vi.spyOn(performance, "now").mockImplementation(() => now);
+    cleanups.push(() => nowSpy.mockRestore());
+
+    let axisY = 0;
+    let southPressed = false;
+    const restorePads = stubGamepads(() => [gamepadWithStick(0, axisY, southPressed)]);
+    cleanups.push(restorePads);
+
+    const downs: KeyboardEvent[] = [];
+    const onKeyDown = (event: Event): void => {
+      if (event instanceof KeyboardEvent) downs.push(event);
+    };
+    window.addEventListener("keydown", onKeyDown);
+    cleanups.push(() => window.removeEventListener("keydown", onKeyDown));
+
+    const cleanup = installDesktopShellBridge(document.body, { gamepadPolling: true });
+    cleanups.push(cleanup);
+
+    flushFrame(frames);
+    axisY = 1;
+    southPressed = true;
+    flushFrame(frames);
+    expect(downs.map((event) => `${event.key}:${event.repeat}`)).toEqual(["Enter:false", "ArrowDown:false"]);
+
+    now = 1_400;
+    flushFrame(frames);
+    expect(downs).toHaveLength(2);
+
+    now = 1_500;
+    flushFrame(frames);
+    expect(downs.map((event) => `${event.key}:${event.repeat}`)).toEqual([
+      "Enter:false",
+      "ArrowDown:false",
+      "ArrowDown:true",
+    ]);
+
+    now = 1_520;
+    flushFrame(frames);
+    expect(downs).toHaveLength(3);
+
+    now = 1_533;
+    flushFrame(frames);
+    expect(downs.filter((event) => event.key === "ArrowDown" && event.repeat)).toHaveLength(2);
+    expect(downs.filter((event) => event.key === "Enter")).toHaveLength(1);
+
+    axisY = 0;
+    now = 4_000;
+    flushFrame(frames);
+    expect(downs.filter((event) => event.key === "ArrowDown")).toHaveLength(4);
+    expect(downs.filter((event) => event.key === "Enter")).toHaveLength(1);
+
+    now = 5_000;
+    flushFrame(frames);
+    expect(downs.filter((event) => event.key === "ArrowDown")).toHaveLength(4);
+    expect(downs.filter((event) => event.key === "Enter")).toHaveLength(1);
   });
 });
 
