@@ -18,8 +18,9 @@ This is not the in-app user manual. It is the pre-edit context layer for agents.
 1. Read this file.
 2. Read `openwiki/quickstart.md` — 환경 보정, **게이트와 그 기준선 실측값**, 기능→진입 파일 표.
    이 절차를 건넌 에이전트는 자기 환경 함정을 생소한 불량 코드로 오진한다.
-3. Read `openwiki/INDEX.md` — 위키 41쪽의 크기·절 좌표·주의 표지(통째 읽기가 잘리는 7쪽, 모지바키 9쪽,
-   없는 파일을 가리키는 참조 60여 건). 필요한 절만 줄 번호로 잘라 읽는다 — 위키 전체는 약 27만 토큰이다.
+3. Read `openwiki/INDEX.md` — 크기·절 좌표·주의 표지. INDEX 머리글(2026-10-26)은 187쪽 · 7194KB · 약 2,108,898 토큰,
+   통째 읽기가 잘리는 30쪽, 가장 큰 절도 50KB 를 넘는 8쪽, 모지바케 7쪽 71줄, 없는 파일 참조 1,868건이다.
+   필요한 범위만 줄 번호로 잘라 읽는다. 위키가 커지면 그 머리글을 다시 읽는다.
 4. Read the focused page for the area being changed:
    - Editor pre-edit routing & cautions (read first): `openwiki/editor-pre-edit-routing.md`
    - Editor observability (mutation 계측 초크포인트, 편집 감사 로그, 오류 트랩, 디버깅 레시피): `openwiki/editor-observability.md`
