@@ -14,6 +14,7 @@ import type { Command, Condition, EventPage, GameEvent, GameMap, Project } from 
 import { FS_NAMES } from "../fallenStarStory";
 import { FS_SILVER_SPOON } from "./townLife";
 import { FS_KEEPER_SEAL } from "./battleItems";
+import { originEdge } from "@/editor/tools/forestRouteTool";
 
 /** 도구 실행 — 결과 data 를 돌려준다(author_forest_route 처럼 만든 맵 id 가 결과에만 있는 도구). */
 type Exec = (project: Project, name: string, args: Record<string, unknown>) => unknown;
@@ -634,7 +635,7 @@ const SMITHY = { hubDoor: { x: 29, y: 42 } as Cell, hubFront: { x: 29, y: 43 } a
 const HOLE = { wall: { x: 38, y: 15 } as Cell, front: { x: 38, y: 16 } as Cell, bram: { x: 39, y: 16 } as Cell };
 
 /** 북쪽 숲 어귀·재의 들판(B5 가 이어 짓는다). 만든 맵 id 는 결과에서 받는다. */
-export const FS2_NORTH_ROUTE: { mapIds: string[]; entry: Cell } = { mapIds: [], entry: { x: 0, y: 0 } };
+export const FS2_NORTH_ROUTE: { mapIds: string[]; entry: Cell; entries: Cell[] } = { mapIds: [], entry: { x: 0, y: 0 }, entries: [] };
 
 function northGate(project: Project, exec: Exec, smithyId: string): void {
   for (const [id, name] of [[SW_ROHAN, "B4: 로한의 창"], [SW_BRAM, "B4: 브람 — 개구멍"]] as const) ensureSwitch(project, id, name);
@@ -659,6 +660,7 @@ function northGate(project: Project, exec: Exec, smithyId: string): void {
   if (maps.length !== 2) throw new Error("[fallen-star act2] 북쪽 들판이 두 장이 아니다");
   FS2_NORTH_ROUTE.mapIds = maps.map((m) => m.mapId);
   FS2_NORTH_ROUTE.entry = maps[0]!.entry;
+  FS2_NORTH_ROUTE.entries = maps.map((m) => m.entry);
 }
 
 function northGateEvents(project: Project, hubId: string): void {
@@ -720,6 +722,158 @@ function northGateEvents(project: Project, hubId: string): void {
 }
 
 // ════════════════════════════════════════════════════════════════════
+// 8. B5 새벽샘 터 — 재의 들판의 적(잿불 도깨비·재까마귀·숯덩이 골렘·굶은 들개·재뱀), 불탄 마을, 잠긴 집, 정착 확인서
+// ════════════════════════════════════════════════════════════════════
+
+export const FS2_DAWNWELL_ID = "fs2_dawnwell";
+const FS2_DAWNWELL_BASE = "fs2_dawnwell_before";
+export const FS2_CERT_ITEM = "item_fs2_serin_form";
+const SW_CERT = "sw_fs2_serin_form";
+const SW_MEMS = ["sw_fs2_dawn_mem_0", "sw_fs2_dawn_mem_1", "sw_fs2_dawn_mem_2"] as const;
+const SAVE_CRYSTAL = "kit:beodeul_city/bd-pick-dungeon-theme-crystal-pedestal";
+/** 재의 들판 적 — 이미 있는 몬스터 도트를 쓴다(새 그림 없음; graphicHue 는 전투가 읽지 않아 색은 원래대로). */
+const ASH_FOES: { id: string; name: string; art: string; hue: number; stats: Rec; style: string; elementRates?: Rec; skills: string[] }[] = [
+  { id: "enemy_fs2_ash_wisp", name: "잿불 도깨비", art: "generated-enemy-spirit-fire", hue: 200, style: "float", stats: { maxHp: 180, maxMp: 40, attack: 74, defense: 24, mind: 80, agility: 52 }, elementRates: { fire: "E", ice: "A", water: "A" }, skills: ["skill_attack", "skill_mon_frost_orb"] },
+  { id: "enemy_fs2_ash_crow", name: "재까마귀", art: "generated-enemy-bird-hawk", hue: 220, style: "swoop", stats: { maxHp: 120, maxMp: 0, attack: 70, defense: 18, mind: 20, agility: 70 }, skills: ["skill_attack"] },
+  { id: "enemy_fs2_cinder_golem", name: "숯덩이 골렘", art: "generated-enemy-golem-clay", hue: 240, style: "lumber", stats: { maxHp: 420, maxMp: 0, attack: 82, defense: 80, mind: 20, agility: 18 }, elementRates: { fire: "E", water: "A" }, skills: ["skill_attack", "skill_earth"] },
+  { id: "enemy_fs2_starved_dog", name: "굶은 들개", art: "generated-enemy-hound-hell", hue: 150, style: "dash", stats: { maxHp: 150, maxMp: 0, attack: 72, defense: 20, mind: 20, agility: 62 }, skills: ["skill_attack"] },
+  { id: "enemy_fs2_ash_snake", name: "재뱀", art: "generated-enemy-snake-viper", hue: 210, style: "slither", stats: { maxHp: 160, maxMp: 0, attack: 70, defense: 26, mind: 30, agility: 48 }, skills: ["skill_attack"] },
+];
+const ASH_TROOPS: { id: string; name: string; members: string[] }[] = [
+  { id: "troop_fs2_ash_wisps", name: "잿불 도깨비 떼", members: ["enemy_fs2_ash_wisp", "enemy_fs2_ash_wisp", "enemy_fs2_ash_wisp"] },
+  { id: "troop_fs2_ash_crows", name: "재까마귀 떼", members: ["enemy_fs2_ash_crow", "enemy_fs2_ash_crow", "enemy_fs2_ash_crow"] },
+  { id: "troop_fs2_cinder_golem", name: "숯덩이 골렘", members: ["enemy_fs2_cinder_golem", "enemy_fs2_ash_wisp"] },
+  { id: "troop_fs2_starved_dogs", name: "굶은 들개", members: ["enemy_fs2_starved_dog", "enemy_fs2_starved_dog"] },
+  { id: "troop_fs2_ash_snakes", name: "재뱀", members: ["enemy_fs2_ash_snake", "enemy_fs2_ash_snake"] },
+];
+
+const ENEMY_TOOL_FIELDS = new Set(["id", "name", "speciesId", "monsterResourceId", "battleScalePercent", "collapseEffect", "hideHp", "damageTypeRates", "criticalHit", "attackOptions", "skillIds", "level", "stats", "rewards", "actions", "reactions", "stealItems", "stateRates", "elementRates"]);
+function ashFoes(project: Project, exec: Exec): void {
+  const base = project.database.enemies.find((e) => e.id === "enemy_fs_wolf");
+  if (!base) throw new Error("[fallen-star act2] enemy_fs_wolf 가 없다");
+  for (const f of ASH_FOES) {
+    const rec = JSON.parse(JSON.stringify(base)) as Rec;
+    Object.assign(rec, {
+      id: f.id, name: f.name, level: 10, monsterResourceId: f.art, stats: f.stats, skillIds: f.skills,
+      actions: f.skills.map((skillId, i) => ({ skillId, priority: i === 0 ? 7 : 8, condition: { kind: "always" }, switchOnAfterAction: { enabled: false }, switchOffAfterAction: { enabled: false } })),
+      rewards: { exp: 70, gold: 18, dropRatePercent: 0, drops: [{ itemId: "item_potion", ratePercent: 20, quantity: 1, condition: { kind: "always" } }] },
+      ...(f.elementRates ? { elementRates: { ...(base as unknown as Rec).elementRates as Rec, ...f.elementRates } } : {}),
+    });
+    delete rec.lungeSpeedPercent;
+    // upsert_enemy 가 받는 칸만 넘긴다(graphicHue·transparent·flying 은 도구 밖 — 전투가 읽지 않는다).
+    for (const key of Object.keys(rec)) if (!ENEMY_TOOL_FIELDS.has(key)) delete rec[key];
+    exec(project, "upsert_enemy", { enemy: rec });
+  }
+  for (const t of ASH_TROOPS) exec(project, "upsert_troop", { troop: { id: t.id, name: t.name, enemyIds: t.members } });
+}
+
+function dawnwell(project: Project, exec: Exec): void {
+  ensureSwitch(project, SW_CERT, "B5: 세린의 정착 확인서");
+  SW_MEMS.forEach((id, i) => ensureSwitch(project, id, `B5: 새벽샘 기억 ${i + 1}`));
+  exec(project, "upsert_item", { item: {
+    id: FS2_CERT_ITEM, name: "반쯤 탄 정착 확인서", type: "special", occasion: "never", consumable: false, price: 0,
+    description: "천문대 서랍의 양식과 같은 종이. 서명란: 「기록자 세린」.\n서명 아래 아이 글씨 — 「엄마 문 열어」.",
+  } });
+  ashFoes(project, exec);
+  // 서른 해 전의 새벽샘 — 작은 강가 마을을 한 번 짓고(보이지 않는 원본), 불탄 모습으로 바꾼다. 북쪽 끝 집 한 채만 남는다.
+  const town0 = exec(project, "author_beodeul_town", { id: FS2_DAWNWELL_BASE, name: "새벽샘 (서른 해 전)", houseCount: 5, theme: "river", form: "street", water: "none", seed: 31 }) as
+    { doors?: { kit: string; x: number; y: number }[] } | undefined;
+  const derived = exec(project, "derive_map_variant", {
+    sourceMapId: FS2_DAWNWELL_BASE, variants: [{ id: FS2_DAWNWELL_ID, name: "새벽샘 터", look: "burned", keepIntact: "north" }],
+  }) as { variants?: { look?: { keptIntact?: { kitId: string; x: number; y: number; w: number; h: number } } }[] } | undefined;
+  const kept = derived?.variants?.[0]?.look?.keptIntact;
+  if (!kept) throw new Error("[fallen-star act2] 새벽샘 남은 집이 없다");
+  DAWN.kept = kept;
+  // 남은 집의 문 앞 칸(author_beodeul_town data.doors = 문 앞 칸). 문 그림 칸은 그 바로 위.
+  const front = town0?.doors?.find((d) => d.kit === `bd-house-${kept.kitId.replace(/^bd-house-/, "")}` || d.kit === kept.kitId);
+  if (!front) throw new Error(`[fallen-star act2] 남은 집(${kept.kitId}) 문을 못 찾음`);
+  DAWN.front = { x: front.x, y: front.y };
+  exec(project, "set_map_properties", { mapId: FS2_DAWNWELL_ID, mapRole: "field" });
+  exec(project, "set_scene_mood", {
+    mapId: FS2_DAWNWELL_ID, applyMode: "map",
+    lighting: { ambient: 0.4, color: "#3a3440" }, weather: { kind: "fog", intensity: 0.45 },
+  });
+  // 재의 들판(두 번째 들판) 북쪽 끝 → 마을 터 남쪽.
+  const [north1, field] = FS2_NORTH_ROUTE.mapIds;
+  const town = M(project, FS2_DAWNWELL_ID);
+  const fieldEntry = FS2_NORTH_ROUTE.entries[1]!;
+  const a = originEdge(project, M(project, field!), "north", { x: fieldEntry.x, y: fieldEntry.y - 1 });
+  const b = originEdge(project, town, "south");
+  exec(project, "create_transfer_pair", { a: { mapId: field!, ...a }, b: { mapId: FS2_DAWNWELL_ID, ...b } });
+  DAWN.entry = b;
+  // 보이는 적 — 숲 어귀엔 들개·까마귀, 들판엔 도깨비·뱀·골렘, 마을 터엔 도깨비·골렘.
+  const foe = (mapId: string, troopId: string, x: number, y: number, style: string): void => {
+    try {
+      exec(project, "place_field_enemy", { mapId, x, y, troopId, behavior: "chase", patrol: { length: 2, axis: x % 2 ? "horizontal" : "vertical" },
+        sightRange: 6, vision: "cone", pace: "normal", approachStyle: style, respawnSec: 60 });
+    } catch { /* 그 칸은 도구가 거절(입구 곁·막힌 칸) — 건너뛴다 */ }
+  };
+  for (const mapId of [north1!, field!]) exec(project, "set_map_properties", { mapId, mapRole: "field" });
+  const W = (id: string) => M(project, id).width, H = (id: string) => M(project, id).height;
+  foe(north1!, "troop_fs2_starved_dogs", Math.floor(W(north1!) / 2), Math.floor(H(north1!) / 2), "dash");
+  foe(north1!, "troop_fs2_ash_crows", Math.floor(W(north1!) / 2) + 4, Math.floor(H(north1!) / 3), "swoop");
+  foe(field!, "troop_fs2_ash_wisps", Math.floor(W(field!) / 2), Math.floor(H(field!) / 2), "float");
+  foe(field!, "troop_fs2_ash_snakes", Math.floor(W(field!) / 2) - 5, Math.floor(H(field!) * 2 / 3), "slither");
+  foe(field!, "troop_fs2_cinder_golem", Math.floor(W(field!) / 2) + 4, Math.floor(H(field!) / 4), "lumber");
+  // 마을 터 — 잠긴 집(서쪽) 앞을 비워 두고 동서 길목에.
+  foe(FS2_DAWNWELL_ID, "troop_fs2_ash_wisps", 7, 22, "float");
+  foe(FS2_DAWNWELL_ID, "troop_fs2_cinder_golem", 30, 22, "lumber");
+  // 별빛 결정 — 마을 터 입구 곁.
+  exec(project, "place_savepoint", { mapId: FS2_DAWNWELL_ID, x: b.x + 2, y: b.y - 3, id: "ev_fs2_dawnwell_save", name: "별빛 결정", mode: "slot",
+    objectId: SAVE_CRYSTAL, prompt: "기록하시겠습니까?", sparkleRadius: 2 });
+}
+const DAWN: { kept: { x: number; y: number; w: number; h: number; kitId?: string }; entry: Cell; front: Cell } = { kept: { x: 0, y: 0, w: 0, h: 0 }, entry: { x: 0, y: 0 }, front: { x: 0, y: 0 } };
+
+function dawnwellEvents(project: Project): void {
+  const town = M(project, FS2_DAWNWELL_ID);
+  const k = DAWN.kept;
+  // 남은 집의 문 — 문 앞 칸 바로 위(문 그림 칸). 그 칸에 원본 이벤트가 있으면 대신한다.
+  const door: Cell = { x: DAWN.front.x, y: DAWN.front.y - 1 };
+  const doorY = door.y;
+  town.events = town.events.filter((e) => !(e.x === door.x && e.y === door.y));
+  // 기억 셋(Q7) — 마을 터 세 곳. 다 보면 잠긴 문을 연다.
+  const mems: { at: Cell; lines: [string, string][] }[] = [
+    { at: { x: Math.max(2, k.x - 6), y: Math.min(town.height - 3, doorY + 4) }, lines: [["", "그을린 우물 둘레에 작은 손자국이 찍혀 있다."], [ELENA, "아이가… 여기서 물을 마셨나 봐."]] },
+    { at: { x: Math.min(town.width - 3, k.x + k.w + 5), y: Math.min(town.height - 3, doorY + 3) }, lines: [["", "반쯤 묻힌 등 하나. 서리나루 사람들이 띄우는 그 등이다."], [KAEL, "대답의 등이야. 여기서도 띄웠구나."]] },
+    { at: { x: door.x, y: Math.min(town.height - 3, doorY + 7) }, lines: [["", "길 한가운데 잿더미 속 장갑 한 짝. 안쪽에 실로 「ㅅ」."], [KAEL, "…발렌 장갑이랑 같은 실이야."]] },
+  ];
+  mems.forEach((m, i) => {
+    const id = `ev_fs2_dawn_mem_${i}`;
+    addEvent(town, id, "새벽샘의 흔적", m.at, [
+      page(`${id}_p`, "흔적", [], [...m.lines.map(([who, body]) => who ? say(who, body) : narrate(body)), setSw(SW_MEMS[i]!)], { priority: "below" }),
+    ]);
+  });
+  const allMems: Condition[] = SW_MEMS.map((id) => sw(id));
+  addEvent(town, "ev_fs2_dawn_door", "바깥에서 잠긴 문", door, [
+    page("ev_fs2_dawn_door_p", "잠긴 문", [], [
+      narrate("무너지지 않은 단 한 채. 문에 빗장이 바깥에서 걸려 있다."),
+      narrate("문 아래쪽, 아이 키 높이에 작은 주먹 자국 셋."),
+      say(ELENA, "문이 바깥에서 잠겨 있었어.\n안에 있던 사람이 못 나오게."),
+      say(KAEL, "…이 마을을 먼저 둘러보자."),
+    ]),
+    page("ev_fs2_dawn_door_open", "빗장을 연다", [...allMems, sw(SW_CERT, false)], [
+      cutBegin(),
+      se("cc0-se-osx-door-open"),
+      narrate("빗장을 들어 올렸다. 서른 해 만에 문이 열렸다."),
+      narrate("안은 텅 비어 있다. 탁자 위에 반쯤 탄 종이 한 장."),
+      se("cc0-se-orp-inventory-cloth"),
+      item(FS2_CERT_ITEM, 1),
+      narrate("「반쯤 탄 정착 확인서」를 얻었다.", { context: "system" }),
+      say(ELENA, "천문대 서랍의 양식이랑 같아.\n서명란… 「기록자 세린」."),
+      say(ELENA, "서명 아래 아이 글씨.\n「엄마 문 열어」."),
+      say(KAEL, "대답하려던 사람을 가둔 거야.\n…규약 넷째 줄 때문에."),
+      emote("player", "ellipsis", 900),
+      say(ELENA, "「ㅅ」. 장갑 안쪽 첫 획이랑 같아."),
+      setSw(SW_CERT),
+      cutLabel(),
+      cutEnd(),
+    ]),
+    page("ev_fs2_dawn_door_after", "빈 집", [sw(SW_CERT)], [narrate("빈 집이다. 재 냄새만 남았다.")]),
+  ]);
+  void DAWN.entry;
+}
+
+// ════════════════════════════════════════════════════════════════════
 
 export interface FallenAct2Ids { hub: string; observatory: string; smithy: string }
 
@@ -731,7 +885,9 @@ export function applyFallenAct2Opening(project: Project, exec: Exec, ids: Fallen
   curfewHub(project, exec, ids.hub);
   observatoryNight(project, exec, ids.observatory);
   northGate(project, exec, ids.smithy);
+  dawnwell(project, exec);
   cellEvents(M(project, FS2_CELL_ID));
   bridge(project, exec);
   northGateEvents(project, ids.hub);
+  dawnwellEvents(project);
 }

@@ -3715,18 +3715,13 @@
       },
       {
        "kind": "move",
-       "dir": "right",
-       "steps": 2
-      },
-      {
-       "kind": "move",
        "dir": "up",
        "steps": 1
       },
       {
        "kind": "move",
        "dir": "right",
-       "steps": 1
+       "steps": 3
       },
       {
        "kind": "face",
@@ -4003,6 +3998,158 @@
        "kind": "hold",
        "dir": null,
        "ms": 1500
+      }
+     ],
+     "shot": true
+    }
+   ]
+  },
+  {
+   "id": "act2-b5-field",
+   "label": "제2막 B5 — 재의 들판: 잿불 도깨비가 둥실 다가온다",
+   "note": "act2Opening.ts dawnwell foes map_field_north_2",
+   "mapId": "map_field_north_2",
+   "x": 16,
+   "y": 24,
+   "facing": "up",
+   "switches": {
+    "sw_fs_main_started": true,
+    "sw_fs_main_done": true,
+    "sw_fs_iris_joined": true,
+    "sw_fs2_act2_started": true,
+    "sw_fs2_out_of_cells": true,
+    "sw_fs2_hub_arrived": true,
+    "sw_fs2_mire_well": true,
+    "sw_fs2_heard_carriage": true,
+    "sw_fs2_hanel_told": true,
+    "sw_fs2_rohan_spear": true,
+    "sw_fs2_bram_hole": true
+   },
+   "party": [
+    {
+     "actorId": "actor_hero",
+     "level": 10
+    },
+    {
+     "actorId": "actor_fs_elena",
+     "level": 10
+    }
+   ],
+   "beats": [
+    {
+     "id": "approach",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 7000
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "battle",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 4000
+      }
+     ],
+     "shot": true
+    }
+   ]
+  },
+  {
+   "id": "act2-b5-door",
+   "label": "제2막 B5 — 새벽샘 터: 바깥에서 잠긴 집, 정착 확인서 「엄마 문 열어」",
+   "note": "act2Opening.ts dawnwellEvents door (14,19)",
+   "mapId": "fs2_dawnwell",
+   "x": 14,
+   "y": 20,
+   "facing": "up",
+   "switches": {
+    "sw_fs_main_started": true,
+    "sw_fs_main_done": true,
+    "sw_fs_iris_joined": true,
+    "sw_fs2_act2_started": true,
+    "sw_fs2_out_of_cells": true,
+    "sw_fs2_hub_arrived": true,
+    "sw_fs2_mire_well": true,
+    "sw_fs2_heard_carriage": true,
+    "sw_fs2_hanel_told": true,
+    "sw_fs2_rohan_spear": true,
+    "sw_fs2_bram_hole": true,
+    "sw_fs2_dawn_mem_0": true,
+    "sw_fs2_dawn_mem_1": true,
+    "sw_fs2_dawn_mem_2": true
+   },
+   "party": [
+    {
+     "actorId": "actor_hero",
+     "level": 10
+    },
+    {
+     "actorId": "actor_fs_elena",
+     "level": 10
+    }
+   ],
+   "beats": [
+    {
+     "id": "look",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1500
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "open",
+     "ops": [
+      {
+       "kind": "action"
+      },
+      {
+       "kind": "waitFor",
+       "testid": "dialogue-box",
+       "state": "present",
+       "timeoutMs": 8000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1500
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "form",
+     "ops": [
+      {
+       "kind": "repeatUntil",
+       "testid": "dialogue-box",
+       "state": "absent",
+       "maxRounds": 16,
+       "ops": [
+        {
+         "kind": "key",
+         "key": "Enter"
+        },
+        {
+         "kind": "hold",
+         "dir": null,
+         "ms": 1100
+        }
+       ]
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1200
       }
      ],
      "shot": true

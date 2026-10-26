@@ -85,9 +85,10 @@ export function centerBlob(side: Side, u: number, v: number, ru: number, rv: num
 }
 
 /** 시작 맵 그쪽 가장자리에서 걸어 닿는 칸 — 길·빈 칸을 가운데 가까운 것부터. 없으면 가까운 칸에서 가장자리까지 윗층을 걷어 길을 낸다. */
-export function originEdge(project: Project, map: GameMap, side: Side): Cell {
+export function originEdge(project: Project, map: GameMap, side: Side, walkFrom?: Cell): Cell {
   const W = map.width, H = map.height;
-  const start = project.startMapId === map.id && project.startPos ? project.startPos : { x: Math.floor(W / 2), y: Math.floor(H / 2) };
+  // 걸어 닿는 기준 칸 — 주면 그 칸(다른 맵에서 들어오는 입구), 아니면 시작 위치·맵 가운데.
+  const start = walkFrom ?? (project.startMapId === map.id && project.startPos ? project.startPos : { x: Math.floor(W / 2), y: Math.floor(H / 2) });
   const reach = computeReachableCells(project, map, start.x, start.y);
   const edge: Cell[] = [];
   if (side === "north" || side === "south") for (let x = 1; x < W - 1; x += 1) edge.push({ x, y: side === "north" ? 0 : H - 1 });
@@ -111,7 +112,13 @@ export function originEdge(project: Project, map: GameMap, side: Side): Cell {
     c = { x: c.x + step.dx, y: c.y + step.dy };
     for (const d of [0, step.dx === 0 ? 1 : W]) {
       const i = c.y * W + c.x + d;
-      if (i >= 0 && i < W * H) { map.upperTiles[i] = -1; map.lowerTiles[i] = ground; }
+      if (i >= 0 && i < W * H) {
+        map.upperTiles[i] = -1; map.lowerTiles[i] = ground;
+        // 겹 칸(나무 밑동·덤불)도 걷어야 실제로 지나간다 — 윗층만 걷으면 들판 북쪽 끝이 막힌 채 남았다(2026-10-26).
+        const layers = map as unknown as { lowerOverlayTiles?: number[]; upperOverlayTiles?: number[] };
+        if (layers.lowerOverlayTiles) layers.lowerOverlayTiles[i] = -1;
+        if (layers.upperOverlayTiles) layers.upperOverlayTiles[i] = -1;
+      }
     }
   }
   return c;
