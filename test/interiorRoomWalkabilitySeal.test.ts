@@ -96,13 +96,15 @@ it("furnishing another map cannot carry its rollback journal into the next build
 });
 
 
-it("the L-shaped study restores all six blocking bookshelf cells, opening its eastern pocket", () => {
+it("the L-shaped study keeps its eastern pocket open behind the shelf", () => {
   // Before repair this actual pipeline plan had 9 unreachable open cells behind the 2×3 shelf.
+  // 지금 파이프라인은 그 자리에 책장을 다시 세우되 주머니(x 11~13, y 9~11)를 막지 않는다 — 옛 「책장 여섯 칸을 바닥으로 되돌린다」 대신
+  // 주머니가 바닥으로 열려 있고 닿지 못하는 칸이 없는지를 본다(봉쇄 회귀의 실제 계약).
   const plan = INTERIOR_ROOM_DEMO_PLANS.find((plan) => plan.theme === "study")!;
   const built = runInteriorRoomPipeline(plan);
   for (let y = 9; y <= 11; y += 1) {
-    for (let x = 9; x <= 10; x += 1) {
-      expect(built.map.lowerTiles[y * plan.width + x], `shelf cell ${x},${y}`).toBe(VR.FLOOR);
+    for (let x = 11; x <= 13; x += 1) {
+      expect(built.map.lowerTiles[y * plan.width + x], `pocket cell ${x},${y}`).toBe(VR.FLOOR);
     }
   }
   expect(evaluateInteriorRoom(built.map, plan).metrics.unreachableOpenCells).toBe(0);
