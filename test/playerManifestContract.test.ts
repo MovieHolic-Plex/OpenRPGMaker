@@ -210,21 +210,22 @@ describe("player deployment manifest", () => {
   });
 
   it.each([
-    ["missing chunk", { unavailablePath: "assets/chunk.js" }, "bundle-unavailable"],
-    ["tampered chunk", { tamperedPath: "assets/chunk.js" }, "bundle-integrity-mismatch"],
-    ["wrong chunk byte count", { tamperedPath: "player.js" }, "bundle-integrity-mismatch"],
-    ["missing runtime asset", { unavailablePath: RUNTIME_ASSET_PATH }, "runtime-asset-unavailable"],
-    ["tampered runtime asset", { tamperedPath: RUNTIME_ASSET_PATH }, "runtime-asset-integrity-mismatch"],
-    ["interrupted bundle read", { interruptPath: "assets/chunk.js" }, "bundle-unavailable"],
-  ])("rejects %s before ZIP success", async (_name, options, expectedCode) => {
+    ["missing chunk", { unavailablePath: "assets/chunk.js" }, "bundle-unavailable", "assets/chunk.js"],
+    ["tampered chunk", { tamperedPath: "assets/chunk.js" }, "bundle-integrity-mismatch", "assets/chunk.js"],
+    ["wrong chunk byte count", { tamperedPath: "player.js" }, "bundle-integrity-mismatch", "player.js"],
+    ["missing runtime asset", { unavailablePath: RUNTIME_ASSET_PATH }, "runtime-asset-unavailable", RUNTIME_ASSET_PATH],
+    ["tampered runtime asset", { tamperedPath: RUNTIME_ASSET_PATH }, "runtime-asset-integrity-mismatch", RUNTIME_ASSET_PATH],
+    ["interrupted bundle read", { interruptPath: "assets/chunk.js" }, "bundle-unavailable", "assets/chunk.js"],
+  ])("rejects %s before ZIP success", async (_name, options, expectedCode, expectedPath) => {
     const fixture = await deploymentFixture(options);
 
     await expect(discoverWebPlayerBundleFiles(BUNDLE_BASE, fixture.fetchBytes)).rejects.toMatchObject({
       code: expectedCode,
+      paths: [expectedPath],
     });
   });
 
-  it("returns a value-free actionable error for a failed dependency read", async () => {
+  it("names the missing bundle file and omits the host path from a failed read", async () => {
     const sensitiveMarker = `sk-${"T".repeat(32)}`;
     const hostPath = "C:/private/build/player.js";
     const fixture = await deploymentFixture({ unavailablePath: "player.js" });
@@ -235,7 +236,8 @@ describe("player deployment manifest", () => {
 
     const error = await discoverWebPlayerBundleFiles(BUNDLE_BASE, failingFetch).catch((caught: unknown) => caught);
 
-    expect(error).toMatchObject({ code: "bundle-unavailable" });
+    expect(error).toMatchObject({ code: "bundle-unavailable", paths: ["player.js"] });
+    expect(String(error)).toContain("player.js");
     expect(String(error)).not.toContain(hostPath);
     expect(String(error)).not.toContain(sensitiveMarker);
   });
@@ -253,7 +255,7 @@ describe("player deployment manifest", () => {
 
     const error = await discoverWebPlayerBundleFiles(BUNDLE_BASE, failingFetch).catch((caught: unknown) => caught);
 
-    expect(error).toMatchObject({ code: expectedCode });
+    expect(error).toMatchObject({ code: expectedCode, paths: [failingPath] });
     expect(JSON.stringify(error)).not.toContain("canary");
     expect(String(error)).not.toContain("C:/private");
   });
@@ -309,7 +311,7 @@ describe("player deployment manifest", () => {
     await expect(createWebPlayerExportPackage(createBlankProject(), {
       bundleBase: BUNDLE_BASE,
       fetchBytes: fixture.fetchBytes,
-    })).rejects.toMatchObject({ code: "zip-path-collision" });
+    })).rejects.toMatchObject({ code: "zip-path-collision", paths: ["project.json", "PROJECT.JSON"] });
   });
 
   it("rejects case-colliding generated uploaded-asset paths", async () => {
@@ -327,10 +329,16 @@ describe("player deployment manifest", () => {
       iconResourceId: "hero",
     };
 
-    await expect(createWebPlayerExportPackage(project, {
+    const error = await createWebPlayerExportPackage(project, {
       bundleBase: BUNDLE_BASE,
       fetchBytes: fixture.fetchBytes,
-    })).rejects.toMatchObject({ code: "zip-path-collision" });
+    }).catch((caught: unknown) => caught);
+
+    expect(error).toMatchObject({ code: "zip-path-collision" });
+    expect([...(error as { paths: string[] }).paths].sort()).toEqual([
+      "assets/uploaded/Hero.png",
+      "assets/uploaded/hero.png",
+    ].sort());
   });
 
   it("rejects a full-casefold collision across deployment and generated ZIP entries", async () => {
@@ -344,7 +352,10 @@ describe("player deployment manifest", () => {
     await expect(createWebPlayerExportPackage(project, {
       bundleBase: BUNDLE_BASE,
       fetchBytes: fixture.fetchBytes,
-    })).rejects.toMatchObject({ code: "zip-path-collision" });
+    })).rejects.toMatchObject({
+      code: "zip-path-collision",
+      paths: ["assets/uploaded/STRASSE.png", "assets/uploaded/Straße.png"],
+    });
   });
 
   it.each([undefined, "pokemon", "retro2003"] as const)("writes the exact verified deployment closure and project payload into the ZIP for %s", async skin => {
