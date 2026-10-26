@@ -11,6 +11,7 @@
 // shouldIgnoreEditorShortcut() 로 가드한다.
 
 import { deleteSelectedEditorEvent } from "@/editor/eventDeletion";
+import { keyboardEventKey } from "@/player/keyBindings";
 import { EDITOR_ZOOM_LEVELS, editorState, type EditorState, type Layer, type Tool } from "@/editor/editorState";
 import { hasOpenModalLayer } from "@/editor/ui/modalStack";
 import { dismissLocationDrawModeForLayer, dismissLocationDrawModeForTool } from "@/editor/locationDrawMode";
@@ -133,7 +134,7 @@ export function isTextEditingElement(target: unknown): boolean {
 /** Ctrl/Cmd+Z · Ctrl/Cmd+Shift+Z · Ctrl/Cmd+Y 인지 — 히스토리 키를 다른 가드보다 먼저 라우팅하려면 필요. */
 export function isHistoryHotkeyChord(event: KeyboardEvent): boolean {
   if (!(event.ctrlKey || event.metaKey) || event.altKey) return false;
-  const key = event.key.toLowerCase();
+  const key = keyboardEventKey(event).toLowerCase();
   return key === "z" || key === "y";
 }
 
@@ -174,7 +175,7 @@ const handledHistoryEvents = new WeakSet<KeyboardEvent>();
 export function handleHistoryHotkey(event: KeyboardEvent): boolean {
   if (!(event.ctrlKey || event.metaKey) || event.altKey) return false;
   if (isTextEditingFocus(event)) return false;
-  const key = event.key.toLowerCase();
+  const key = keyboardEventKey(event).toLowerCase();
   if (key !== "z" && key !== "y") return false;
   if (handledHistoryEvents.has(event)) return false;
   handledHistoryEvents.add(event);
@@ -248,7 +249,9 @@ export function applyLayer(layer: Layer): void {
 /** Ctrl 없이 누른 키에 대한 에디터 전역 단축키 처리. true=처리함. */
 export function handleEditorKey(event: KeyboardEvent): boolean {
   if (shouldIgnoreEditorShortcut(event)) return false;
-  if ((event.ctrlKey || event.metaKey) && event.altKey && event.key.toLowerCase() === "w") {
+  // 한글 IME 가 켜져 있으면 B·1 같은 단축키의 key 가 Process 다. code 의 물리 키로 고른다.
+  const key = keyboardEventKey(event);
+  if ((event.ctrlKey || event.metaKey) && event.altKey && key.toLowerCase() === "w") {
     event.preventDefault();
     void import("@/editor/panels/worldEntries").then(({ openWorldPanel }) => { void openWorldPanel(); });
     return true;
@@ -277,7 +280,7 @@ export function handleEditorKey(event: KeyboardEvent): boolean {
   // F2/F3/F4: 그리드/줌 단축 보조(그리드 토글은 별도). 여기선 무시.
 
   // 숫자키 1..7: 도구.
-  const toolIndex = "1234567".indexOf(event.key);
+  const toolIndex = "1234567".indexOf(key);
   if (toolIndex >= 0 && toolIndex < TOOL_HOTKEYS.length) {
     event.preventDefault();
     const tool = TOOL_HOTKEYS[toolIndex];
@@ -296,8 +299,8 @@ export function handleEditorKey(event: KeyboardEvent): boolean {
   }
 
   // 문자키 도구 전환 — 숫자키와 동일한 레이어 가드.
-  const letterTool = TOOL_LETTER_HOTKEYS[event.key.toLowerCase()];
-  if (letterTool && event.key.length === 1) {
+  const letterTool = TOOL_LETTER_HOTKEYS[key.toLowerCase()];
+  if (letterTool && key.length === 1) {
     event.preventDefault();
     const state = editorState.get();
     if (letterTool === "event") {
@@ -314,12 +317,12 @@ export function handleEditorKey(event: KeyboardEvent): boolean {
   }
 
   // 줌: +/- 와 < > (RM2K3 는 +/- 사용). 정수 스텝만.
-  if (event.key === "+" || event.key === "=") {
+  if (key === "+" || key === "=") {
     event.preventDefault();
     stepZoom(+1);
     return true;
   }
-  if (event.key === "-" || event.key === "_") {
+  if (key === "-" || key === "_") {
     event.preventDefault();
     stepZoom(-1);
     return true;
@@ -331,7 +334,7 @@ export function handleEditorKey(event: KeyboardEvent): boolean {
 export function handleEditorDeleteKey(event: KeyboardEvent): boolean {
   if (shouldIgnoreEditorShortcut(event)) return false;
   if (event.ctrlKey || event.metaKey || event.altKey) return false;
-  if (event.key !== "Delete") return false;
+  if (keyboardEventKey(event) !== "Delete") return false;
   if (editorState.get().layer !== "event") return false;
   if (!deleteSelectedEditorEvent()) return false;
   event.preventDefault();

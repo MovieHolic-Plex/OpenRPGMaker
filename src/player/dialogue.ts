@@ -52,7 +52,7 @@ import {
   type DialoguePresentationProfile,
 } from "@/player/dialoguePresentation";
 import { prefersReducedMotion } from "@/player/characterLanding";
-import { isCancelKey, isConfirmKey, isTextEntryTarget, normalizeKey } from "@/player/keyBindings";
+import { isCancelKey, isConfirmKey, isTextEntryTarget, keyboardEventKey, normalizeKey } from "@/player/keyBindings";
 import { applySystemWindowSkinVariable } from "@/player/systemGraphics";
 import { resolveAudioSource } from "@/player/audio/audioResources";
 import { lineVoiceActive, playLineVoice, stopLineVoice } from "@/player/lineVoice";
@@ -1590,7 +1590,11 @@ export function createDialogueUI(
 
       const onKey = (e: KeyboardEvent) => {
         // 텍스트 입력 컨트롤(런타임 디버그 패널)에 치는 Enter/Space 는 대사 진행이 아니다.
-        if (settled || e.repeat || e.isComposing || isTextEntryTarget(e.target)) return;
+        // 한글 IME 는 key 를 Process 로 바꾸므로, 진행·취소는 물리 키를 본다.
+        if (settled || e.repeat) return;
+        const key = keyboardEventKey(e);
+        if (key === "Process" || key === "Unidentified") return;
+        if ((e.isComposing && key === e.key) || isTextEntryTarget(e.target)) return;
         if (system) {
           // Ctrl 은 누르는 동안만 스킵. 누르고 있다가 다른 키가 Ctrl 없이 눌리면(놓친 keyup) 스킵을 푼다.
           if (ctrlSkip && !e.ctrlKey) ctrlSkip = false;
@@ -1601,7 +1605,7 @@ export function createDialogueUI(
             setHidden(false);
             return;
           }
-          if (e.key === "Control" && system.skip.enabled && !backlogViewIsOpen()) {
+          if (key === "Control" && system.skip.enabled && !backlogViewIsOpen()) {
             ctrlSkip = true;
             delete overlay.dataset.readingStop;
             reevaluate();
@@ -1619,7 +1623,7 @@ export function createDialogueUI(
             }
           }
           // 오토·스킵 중 결정키·취소키는 읽기 보조만 끈다(글을 넘기지도, 메뉴를 열지도 않는다).
-          if (readingMode !== "off" && (isDialogueAdvanceKey(e.key) || e.key === "Escape")) {
+          if (readingMode !== "off" && (isDialogueAdvanceKey(key) || key === "Escape")) {
             e.preventDefault();
             e.stopImmediatePropagation();
             stopReading("manual");
@@ -1627,7 +1631,7 @@ export function createDialogueUI(
           }
         }
         if (handleLogKey(e)) return;
-        if (isDialogueAdvanceKey(e.key)) {
+        if (isDialogueAdvanceKey(key)) {
           e.preventDefault();
           e.stopImmediatePropagation();
           advance();
@@ -1835,22 +1839,23 @@ export function createDialogueUI(
         }
       };
       onKey = (e: KeyboardEvent) => {
-        if (settled || e.isComposing) return;
+        if (settled || isTextEntryTarget(e.target)) return;
+        const key = keyboardEventKey(e);
+        if (key === "Process" || key === "Unidentified") return;
+        if (e.isComposing && key === e.key) return;
         // 열린 직후의 결정·숫자 키는 버린다 — 앞 대사를 넘기려고 연타한 Enter 가, 선택지가 그려진 바로 그 순간 닿아
         // 플레이어가 읽지도 못한 0번이 골라지던 결함(첫사랑 r11·r8 재현: 선택지 등장과 Enter 가 같은 0.1초).
         // 실제 키 입력(isTrusted)만 막는다. 단위 테스트의 합성 이벤트는 그대로 지나간다.
-        if (e.isTrusted && performance.now() - openedAt < CHOICE_CONFIRM_GRACE_MS && (isConfirmKey(e.key) || /^[1-9]$/.test(e.key))) {
+        if (e.isTrusted && performance.now() - openedAt < CHOICE_CONFIRM_GRACE_MS && (isConfirmKey(key) || /^[1-9]$/.test(key))) {
           e.preventDefault();
           return;
         }
         sawKeyDown = true;
-        if (e.repeat && (isConfirmKey(e.key) || isCancelKey(e.key) || /^[1-9]$/.test(e.key))) {
+        if (e.repeat && (isConfirmKey(key) || isCancelKey(key) || /^[1-9]$/.test(key))) {
           e.preventDefault();
           return;
         }
-        // 입력창에 치는 숫자·Enter 가 선택지를 고르면 안 된다(텍스트 입력 컨트롤은 게임 키가 아니다).
-        if (isTextEntryTarget(e.target)) return;
-        const n = parseInt(e.key, 10);
+        const n = parseInt(key, 10);
         if (!isNaN(n) && n >= 1 && n <= request.options.length && !document.querySelector("[data-testid='title-screen']")) {
           e.preventDefault();
           e.stopPropagation();
@@ -1858,7 +1863,7 @@ export function createDialogueUI(
           return;
         }
         // 취소는 X/Esc 둘 다. 선택지에서 X 만 죽어 있던 결함(적대 리뷰 5).
-        if (isCancelKey(e.key)) {
+        if (isCancelKey(key)) {
           const cancelIndex = cancelChoiceIndex(request.cancelBehavior, request.options.length);
           if (cancelIndex !== null) {
             e.preventDefault();
@@ -1866,19 +1871,19 @@ export function createDialogueUI(
           }
           return;
         }
-        if (normalizeKey(e.key) === "arrowup") {
+        if (normalizeKey(key) === "arrowup") {
           e.preventDefault();
           setSelected((selectedIndex + request.options.length - 1) % request.options.length);
           return;
         }
-        if (normalizeKey(e.key) === "arrowdown") {
+        if (normalizeKey(key) === "arrowdown") {
           e.preventDefault();
           setSelected((selectedIndex + 1) % request.options.length);
           return;
         }
         // 결정은 Z/Enter/Space/E. Enter·Space 만 받아서 대사를 Z 로 넘기다가
         // 선택지가 뜨는 순간 Z 가 죽던 결함(적대 리뷰 1).
-        if (isConfirmKey(e.key)) {
+        if (isConfirmKey(key)) {
           e.preventDefault();
           finish(selectedIndex);
         }

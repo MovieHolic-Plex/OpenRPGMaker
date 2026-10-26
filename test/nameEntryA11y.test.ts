@@ -55,6 +55,24 @@ describe("name entry accessibility", () => {
     expect(host.querySelector("[data-testid='runtime-name-entry']")).toBeNull();
   });
 
+  it("does not confirm the name on the Enter that only commits an IME syllable", () => {
+    const host = document.createElement("div");
+    document.body.append(host);
+    const pending = showNameEntry(host, { currentName: "린", maxLength: 6, showInitialName: true });
+    void pending.catch(() => undefined);
+
+    const composingEnter = new KeyboardEvent("keydown", { key: "Enter", code: "Enter", bubbles: true, cancelable: true, isComposing: true });
+    Object.defineProperty(composingEnter, "keyCode", { value: 229 });
+    document.dispatchEvent(composingEnter);
+    expect(host.querySelector("[data-testid='runtime-name-entry']")).not.toBeNull();
+
+    document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", code: "Enter", bubbles: true, cancelable: true }));
+    expect(host.querySelector("[data-testid='runtime-name-entry']")).not.toBeNull();
+
+    document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", code: "Enter", bubbles: true, cancelable: true }));
+    expect(host.querySelector("[data-testid='runtime-name-entry']")).toBeNull();
+  });
+
   it("falls back to the default title when the prompt is blank", () => {
     const host = document.createElement("div");
     document.body.append(host);

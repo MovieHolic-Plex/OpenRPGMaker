@@ -16,8 +16,9 @@ import {
   isSkillCycleKey,
   isSkillKey,
   isTextEntryFocused,
-  isTextEntryTarget,
+  keyboardEventKey,
   normalizeKey,
+  runtimeKeyFromEvent,
 } from "@/player/keyBindings";
 
 export type { Dir };
@@ -322,14 +323,19 @@ export class Input {
     this.capturedKeyEvents.add(event);
     // 텍스트 입력 컨트롤에 친 글자는 게임 키가 아니다(디버그 패널·이름 입력). keyup 은 어디서 와도
     // 처리한다 — 키를 누른 채 입력창으로 들어가 뗐을 때 눌림이 남으면 나와서 혼자 걷는다.
-    if (isTextEntryTarget(event.target)) return;
-    this.runtimeKeys.keyDown(event.key, event.repeat);
+    const key = runtimeKeyFromEvent(event);
+    if (!key) return;
+    this.runtimeKeys.keyDown(key, event.repeat);
   }
 
   private captureRuntimeKeyUp(event: KeyboardEvent): void {
     if (this.capturedKeyEvents.has(event)) return;
     this.capturedKeyEvents.add(event);
-    this.runtimeKeys.keyUp(event.key);
+    // keydown 은 텍스트 칸에서 무시했지만, 누른 채 칸으로 들어간 뒤의 keyup 은 풀어 줘야 한다.
+    // IME 가 key 를 Process 로 바꿔도 code 로 같은 물리 키를 푼다.
+    const key = keyboardEventKey(event);
+    if (key === "Process" || key === "Unidentified") return;
+    this.runtimeKeys.keyUp(key);
   }
 
   // 포커스 이탈 시 눌림 상태 해제. 주입 방향과 priority 까지 함께 비운다.
