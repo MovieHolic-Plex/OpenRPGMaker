@@ -36,7 +36,9 @@ function installDocument(): void {
   });
 }
 
-describe("mode transitions", () => {
+// 파일 단위 시한: 차가운 러너에서 @/app/mode 의 import 그래프만 약 22초 걸린다(ci-vitest-files 단독 실행 실측).
+// 전역 testTimeout(15초)을 올리지 않고 이 파일만 늘린다.
+describe("mode transitions", { timeout: 60_000 }, () => {
   afterEach(() => {
     vi.unstubAllGlobals();
     vi.resetModules();
@@ -114,12 +116,15 @@ describe("mode transitions", () => {
       ensureGuestIdentityForAiSurface: vi.fn(),
       openLoginModalIfNeeded: vi.fn(),
     }));
-    vi.doMock("@/player/player", () => ({ renderPlayer, teardownPlayer }));
     vi.doMock("@/app/editorPlayBootDiagnostics", () => ({
       editorPlayBootDiagnosticSink,
     }));
 
-    const { bootApp, enterMode } = await import("@/app/mode");
+    const { bootApp, enterMode, setPlayerModuleLoaderForTest } = await import("@/app/mode");
+    // 플레이어는 mode.ts 의 이음새로 넣는다. vi.doMock 은 겹친 두 전환이 동시에 부른 동적 import 중 두 번째에
+    // 진짜 모듈을 돌려줬다(CI 진단 40463662845). 이음새 하나로 두 전환이 같은 약속을 나눠 쓰는지도 본다.
+    const loadPlayer = vi.fn(async () => ({ renderPlayer, teardownPlayer }));
+    setPlayerModuleLoaderForTest(loadPlayer as unknown as Parameters<typeof setPlayerModuleLoaderForTest>[0]);
     const root = document.createElement("div");
     await bootApp(root);
 
@@ -133,6 +138,7 @@ describe("mode transitions", () => {
     const secondSwitch = enterMode("play");
     await bounded(Promise.all([firstSwitch, secondSwitch]));
 
+    expect(loadPlayer).toHaveBeenCalledTimes(1);
     expect(renderPlayer).toHaveBeenCalledTimes(1);
     expect(renderPlayer).toHaveBeenCalledWith(
       expect.anything(),

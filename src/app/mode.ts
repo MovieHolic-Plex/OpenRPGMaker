@@ -541,6 +541,26 @@ function renderLoadFailureScreen(_error: unknown): void {
   elements.main.append(panel);
 }
 
+// 플레이어 모듈은 약속 하나로 한 번만 불러온다 — 겹친 플레이 전환(앞 전환이 편집기 정리를 기다리는 사이 들어온
+// 두 번째 요청)이 같은 import 를 나눠 쓴다. 실패하면 약속을 비워 다음 전환이 다시 시도한다.
+type PlayerModule = Pick<typeof import("@/player/player"), "renderPlayer" | "teardownPlayer">;
+let playerModuleLoader: () => Promise<PlayerModule> = () => import("@/player/player");
+let playerModulePromise: Promise<PlayerModule> | null = null;
+function loadPlayerModule(): Promise<PlayerModule> {
+  if (!playerModulePromise) {
+    playerModulePromise = playerModuleLoader().catch((error: unknown) => {
+      playerModulePromise = null;
+      throw error;
+    });
+  }
+  return playerModulePromise;
+}
+/** 테스트 전용 이음새: 플레이어 모듈을 주입한다(null 이면 실제 모듈). 기억한 약속도 비운다. */
+export function setPlayerModuleLoaderForTest(loader: (() => Promise<PlayerModule>) | null): void {
+  playerModuleLoader = loader ?? (() => import("@/player/player"));
+  playerModulePromise = null;
+}
+
 // 모드 진입. 이전 모드 정리 후 새 모드 부팅.
 /** 첫 부팅에서 편집기 셸 DOM 이 붙은 직전에 한 번 부를 것(finishEditorBoot 가 건다). */
 let afterFirstShellDom: (() => void) | null = null;
@@ -556,7 +576,7 @@ export async function enterMode(mode: Mode): Promise<void> {
     if (run !== modeRun) return;
     teardownEditor();
   } else if (modeMounted) {
-    const { teardownPlayer } = await import("@/player/player");
+    const { teardownPlayer } = await loadPlayerModule();
     const { stopAllAudio } = await import("@/player/audio");
     if (run !== modeRun) return;
     teardownPlayer();
@@ -582,7 +602,7 @@ export async function enterMode(mode: Mode): Promise<void> {
     afterFirstShellDom = null;
     reveal?.();
   } else {
-    const [{ renderPlayer }] = await Promise.all([import("@/player/player"), preloadRuntimeStyles()]);
+    const [{ renderPlayer }] = await Promise.all([loadPlayerModule(), preloadRuntimeStyles()]);
     if (run !== modeRun) return;
     // Editor play mode is an authoring surface, not the shipped export player: QA
     // instrumentation stays on so debug hooks/state mirrors remain available here.
