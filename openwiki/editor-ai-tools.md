@@ -59,7 +59,8 @@
 파일 `src/editor/tools/dialogueTools.ts`(도메인 event), 별칭 「대사 관리·윤문」, 레시피 `dialogue-polish`, Pi 시스템 프롬프트 한 줄.
 색인·검사는 자료집 「대사」 탭과 같은 `src/editor/dialogue/*` 를 쓴다([editor-database.md](editor-database.md) 같은 날 절).
 
-- `list_dialogue` (read) — 거르개 query·speaker·mapId·scope(all/map/common/troop/database)·kind(all/line/choice/description)·overflowOnly·minChars, offset/limit(≤200).
+- `list_dialogue` (read) — 거르개 query·speaker·mapId·scope(all/map/common/troop/database/quest/ending)·kind(all/line/choice/description/quest)·overflowOnly·minChars, offset/limit(≤200).
+  (2026-10-27) 퀘스트 일지 제목·요약·단계 이름(`qs/…`)과 엔딩 제목·머리말·크레딧(`en/…`)·에필로그 say 비트(`ep/…`)도 줄로 나온다 — [editor-database.md](editor-database.md) 같은 날 절.
   줄마다 `{id, hash, speaker, text, where, lines "쓴줄/한장", overflow, locked, pendingProposal}`. 첫 쪽에는 화자 목록(수·말투 메모)·`styleRules`·걸린 제안 수.
   화자는 자유 문자열이라 정확히 같은 이름이 없으면 낱말 포함으로 넓히고 요약에 그 사실을 적는다(「발렌」→「심문관 발렌」).
 - `get_dialogue_context` (read) — 같은 이벤트 쪽 안의 앞뒤 줄, 화자 말투 메모, 창 맞춤 추정, 걸린 제안.
