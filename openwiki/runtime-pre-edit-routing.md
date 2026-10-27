@@ -62,7 +62,9 @@ Phaser `preRender` 는 경계가 있으면 따라가기·패닝 뒤 clamp 를 �
   - 생활 NPC 는 같은 목표로 걷는 중이면 BFS 를 다시 돌리지 않는다(`reusableLivingRouteKey`). 호러 수색이 막히면
     500ms 동안 다시 훑지 않는다(`SEARCH_RETRY_MS`). `nearestPassableTile` 은 고리만 훑는다(결과 순서는 같다).
   - 조명은 어둠 0 이면 마스크를 그리지 않는다. 천둥 잡음 버퍼는 한 번 만들어 재사용한다. 필드 HUD·타이머·시계 HUD·
-    픽처 층은 값이 바뀔 때만 DOM 을 쓴다. 구역 안내의 정면 조사 안내는 칸·방향이 같으면 250ms 동안 재사용한다.
+    픽처 층은 값이 바뀔 때만 DOM 을 쓴다. 필드 HUD 의 위치·크기·`hidden`·data 속성도 직전 프레임과 같으면
+    다시 쓰지 않는다(`fieldHud.ts`, 서 있는 동안 위젯마다 left/top/width 문자열을 만들지 않는다).
+    구역 안내의 정면 조사 안내는 칸·방향이 같으면 250ms 동안 재사용한다.
   - **타일 그리기의 칸당 판정은 기억한다(2차, `test/runtimeLagFixes2.test.ts`).** `tileGraftsTextureSuffix` 는
     이식 배열 정체성+길이로 기억한다 — **이식 항목을 제자리에서 고치는 코드를 새로 만들지 않는다**(새 배열 대입이나 push).
     `worldCoastAutotileGroup` 은 그룹 내용 사본(이웃 수·멤버·연결·variantMap)과 비교해 기억한다. 그룹은 제자리에서
