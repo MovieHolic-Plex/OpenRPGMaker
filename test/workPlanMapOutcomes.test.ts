@@ -9,7 +9,8 @@ import type { ChatResult } from "@/ai/llmClient";
 import { fixedDeclarer } from "./intentFixture";
 
 const CELLAR = "map_basement";
-const fillArgs = (mapId: string, rect = { x: 1, y: 1, w: 10, h: 8 }) => ({ mapId, material: "잔디", shape: "rect", rect });
+// 새 프로젝트 기본 칩셋은 beodeul_city 라 재료 이름은 「버들항 길 포석」이다(시작 맵이 이미 풀밭이라 풀밭 채우기는 변경 0칸 no-op 이다)(옛 EasyRPG 칩셋의 「잔디」는 없다).
+const fillArgs = (mapId: string, rect = { x: 1, y: 1, w: 10, h: 8 }) => ({ mapId, material: "버들항 길 포석", shape: "rect", rect });
 // 2026-09-17 밑그림 스펙 게이트 해체 — 밑그림이 없다는 이유로 fill_region 이 막히지 않는다. 포착된 지하실 실패는
 // 12×10 지하실을 벗어나는 rect(fill_region 이 invalid-args 로 거부)로 재현한다. 작업 결과 원장은 CELLAR 의 ok:false 만 본다.
 const OUTSIDE_CELLAR = { x: 1, y: 1, w: 20, h: 8 };
@@ -65,7 +66,9 @@ describe("target-scoped work outcomes", () => {
     if (failureFirst) { cellar = fill(session, CELLAR, OUTSIDE_CELLAR); village = fill(session, mapId); }
     else { village = fill(session, mapId); cellar = fill(session, CELLAR, OUTSIDE_CELLAR); }
     expect(village.ok).toBe(true);
-    expect(session.getProposedProject().maps[mapId]).toEqual(before);
+    // 길 포석 채우기는 이제 실제로 타일을 바꾼다(옛 「잔디」 채우기는 0칸 no-op 이라 맵 전체가 같았다) — 타일 외 맵 구조만 그대로인지 본다.
+    const afterVillage = session.getProposedProject().maps[mapId]!;
+    expect({ ...afterVillage, lowerTiles: undefined }).toEqual({ ...before, lowerTiles: undefined });
     expect(cellar.ok).toBe(false);
     expect(cellar.issues?.map(issue => issue.code)).toContain("invalid-args");
     expect(transfer(session, mapId).ok).toBe(true);

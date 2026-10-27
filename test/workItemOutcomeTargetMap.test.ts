@@ -32,10 +32,10 @@ describe("맵 생성 툴 추적", () => {
   // 방 하네스 세션 시작은 이름만 세션이고 실제로 맵을 등록한다 — 추적에서 빠지면
   // "대상 맵은 그대로인데 새 실내 맵이 생겼다"는 정확히 그 패턴을 게이트가 못 본다.
   it.each([
-    "start_interior_room_session",
-    "start_dungeon_room_session",
-    "run_dungeon_room_pipeline",
-    "run_interior_room_pipeline",
+    // start_*_room_session / run_*_room_pipeline 은 의도적으로 제거됨 — 현재 맵 생성 툴로 대체.
+    "build_hand_interior_room",
+    "build_wizarding_space",
+    "build_gothic_place",
     "create_map",
     "duplicate_map",
   ])("맵 생성 툴로 센다: %s", (name) => {
@@ -43,8 +43,8 @@ describe("맵 생성 툴 추적", () => {
   });
 
   it("data.mapId 를 우선하고 args.mapId 로 폴백한다", () => {
-    expect(createdMapIdFrom("start_interior_room_session", { mapId: "map_a" }, { mapId: "map_b" })).toBe("map_b");
-    expect(createdMapIdFrom("start_interior_room_session", { mapId: "map_a" }, {})).toBe("map_a");
+    expect(createdMapIdFrom("build_hand_interior_room", { mapId: "map_a" }, { mapId: "map_b" })).toBe("map_b");
+    expect(createdMapIdFrom("build_hand_interior_room", { mapId: "map_a" }, {})).toBe("map_a");
     expect(createdMapIdFrom("paint_tiles", { mapId: "map_a" }, {})).toBeNull();
   });
 });

@@ -14,7 +14,9 @@ function setup() {
   backdrop.append(dialog); document.body.append(backdrop); registerModal(backdrop, () => {});
   let reads = 0;
   const button = (parent = dialog): HTMLButtonElement => {
-    const node = document.createElement("button"); node.textContent = "control";
+    // No text child: happy-dom 20's TreeWalker.previousNode shadows `node` and loses an element whose
+    // last child is a filtered-out text node (spec returns the parent). Browsers follow the spec.
+    const node = document.createElement("button"); node.setAttribute("aria-label", "control");
     Object.defineProperty(node, "offsetParent", { get() { reads += 1; return dialog; } });
     parent.append(node); return node;
   };

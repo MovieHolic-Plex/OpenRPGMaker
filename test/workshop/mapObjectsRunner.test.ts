@@ -93,7 +93,8 @@ describe("깨짐 검사", () => {
   it("맨 아래 줄에 닿고 위 패딩이 비면 통과", () => {
     const rows = blank();
     rows[31] = "....aaaa........";
-    rows[20] = "....aa..........";
+    // 크기 규칙(object-gen 흐름): 요청 높이 약 24px 에는 14px 이상 칠해야 한다. 위 패딩 8줄(0~7)은 비운다.
+    rows[17] = "....aa..........";
     expect(mapObjectHardCheck(item, grid(rows))).toEqual([]);
   });
   it("떠 있음·패딩 침범·네 귀퉁이 배경·크기 틀림·빈 그림을 잡는다", () => {
@@ -140,17 +141,16 @@ describe("실행기", () => {
     expect(items.map((i) => i.key)).toEqual(["new:돌-이정표"]);
     expect(runner.palette(items[0]!).byKey.get("c:2")?.rgba).toEqual([240, 240, 240, 255]);
     expect(runner.currentGrid(items[0]!)).toBeNull();
-    expect(runner.directions(items[0]!).slice(0, runner.candidates).map((d) => d.letter)).toEqual(["A", "B", "C"]);
+    expect(runner.directions(items[0]!).slice(0, runner.candidates).map((d) => d.letter)).toEqual(["A", "B"]); // object-gen 흐름으로 교체됨: 방향 2안(OG_DIRECTIONS)
   });
 
   it("그리기 지시에 칩셋 이름·팔레트 키와 칩셋 물체·조각 그림을 붙인다", async () => {
     const runner = createMapObjectRunner();
     const ctx = ctxFor(runner, [def()]);
     const messages = await runner.drawMessages(ctx, env(source([{ name: "돌 비석", description: "", layers: [[[2]]] }])));
-    const parts = messages[1]!.content as ContentPart[];
+    // object-gen 흐름으로 교체됨: 그리기 지시는 사용자 메시지 하나(messages[0])이고 칩셋 이름·팔레트 키 줄은 없다.
+    const parts = messages[0]!.content as ContentPart[];
     const text = parts.filter((p) => p.type === "text").map((p) => (p as { text: string }).text).join("\n");
-    expect(text).toContain("칩셋: 숲");
-    expect(text).toContain("c:0 #101010");
     expect(text).toContain("칩셋 물체: 돌 비석");
     expect(text).toContain("칩셋 조각");
     expect(parts.filter((p) => p.type === "image_url").length).toBe(2);
@@ -160,9 +160,9 @@ describe("실행기", () => {
     const runner = createMapObjectRunner();
     const ctx = ctxFor(runner, [def()]);
     const messages = await runner.drawMessages(ctx, env(null));
-    expect((messages[1]!.content as ContentPart[]).filter((p) => p.type === "image_url")).toHaveLength(0);
+    expect((messages[0]!.content as ContentPart[]).filter((p) => p.type === "image_url")).toHaveLength(0); // object-gen 흐름: 지시는 messages[0]
     const review = await runner.reviewMessages({ item: ctx.item, palette: ctx.palette, direction: ctx.direction, attempt: 1, maxAttempts: 3, candidate: { width: 16, height: 32, cells: Array(512).fill(null) }, current: null, anchors: [], previousVerdict: null }, env(null));
-    expect((review[1]!.content as ContentPart[]).filter((p) => p.type === "image_url")).toHaveLength(1);
+    expect((review[1]!.content as ContentPart[]).filter((p) => p.type === "image_url")).toHaveLength(3); // 기준 그림 없이도 후보 1배·2배·8배 셋이 붙는다
   });
 
   it("같은 칩셋에서 고른 기물만 기준 그림이 된다", () => {

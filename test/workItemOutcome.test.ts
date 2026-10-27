@@ -68,7 +68,7 @@ describe("createdMapIdFrom", () => {
 
   it("data 에 없으면 인자 id/mapId 로 폴백한다", () => {
     expect(createdMapIdFrom("create_map", { id: "m_b" }, undefined)).toBe("m_b");
-    expect(createdMapIdFrom("run_interior_room_pipeline", { mapId: "m_c" }, undefined)).toBe("m_c");
+    expect(createdMapIdFrom("build_hand_interior_room", { mapId: "m_c" }, undefined)).toBe("m_c");
   });
 
   it("맵을 만들지 않는 툴은 무시한다", () => {
