@@ -26,6 +26,8 @@
   --retro-window: linear-gradient(180deg, var(--retro-top), var(--retro-bottom));
   --retro-frame: 0 0 0 2px var(--retro-edge), inset 0 0 0 2px var(--retro-edge-inner);
   --retro-pixel: calc(2px / 2);
+  /* 전투 꾸미기 글꼴(player/battleLookDom.ts 가 이 요소 인라인으로 덮는다). 고르지 않았으면 런타임 픽셀 글꼴. */
+  --battle-look-font: var(--runtime-pixel-font);
   --runtime-ui-font: var(--battle-look-font, var(--runtime-pixel-font));
   /* RM2003 배치: 왼쪽 = 적 이름 창(내 차례엔 그 자리에 명령 창), 오른쪽 = 파티 상태 창.
      유리 묶음은 연출 단계에 1열을 0 으로 접지만 이 스킨은 두 창을 늘 띄운다(접으면 빈 남색 판이 남았다). */

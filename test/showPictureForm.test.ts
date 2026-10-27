@@ -121,8 +121,31 @@ describe("그림 표시 폼", () => {
     expect(current().rotation).toBe(540);
   });
 
+  it("완료까지 대기를 켜면 페이드가 끝난 뒤에야 다음 명령이 시작하도록 저장한다", () => {
+    const seeded: ShowPicture = { ...BASE, durationMs: 800, waitForPicture: true };
+    const { context, current } = stagedContext(seeded);
+    const body = renderWithFakeDom(() => showPictureBody(context, seeded));
+    const box = findByTestId(body, "show-picture-wait");
+    expect(box?.checked).toBe(true);
+    expect(body.textContent ?? "").toContain("페이드·이동이 끝난 뒤");
+
+    if (box) {
+      box.checked = false;
+      box.dispatchEvent(new Event("change"));
+    }
+    expect(current().waitForPicture).toBeUndefined();
+    expect(current().durationMs).toBe(800);
+
+    if (box) {
+      box.checked = true;
+      box.dispatchEvent(new Event("change"));
+    }
+    expect(current().waitForPicture).toBe(true);
+    expect(body.textContent ?? "").toContain("끝날 때까지 대기");
+  });
+
   it("좌표만 바꿔도 기존 변환값이 날아가지 않는다", () => {
-    const seeded: ShowPicture = { ...BASE, scale: 50, opacity: 100, rotation: 10, durationMs: 300 };
+    const seeded: ShowPicture = { ...BASE, scale: 50, opacity: 100, rotation: 10, durationMs: 300, waitForPicture: true };
     const { context, current } = stagedContext(seeded);
     const body = renderWithFakeDom(() => showPictureBody(context, seeded));
 
@@ -133,6 +156,7 @@ describe("그림 표시 폼", () => {
     expect(current().opacity).toBe(100);
     expect(current().rotation).toBe(10);
     expect(current().durationMs).toBe(300);
+    expect(current().waitForPicture).toBe(true);
   });
 
   it("미리보기 문구가 런타임과 같은 좌상단 앵커라고 알린다", () => {

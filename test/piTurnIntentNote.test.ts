@@ -5,7 +5,6 @@ import { describe, expect, it } from "vitest";
 import { buildPiIntentNote, composePiTask } from "@/ai/piAgent/executionRoute";
 import { INTENT_NOTE_BOUNDARY } from "@/ai/piAgent/monsterGameRequest";
 import { emptyIntentDeclaration, type IntentDeclaration } from "@/ai/intentDeclaration";
-import { asVillageDesign } from "@/project/villageDesign";
 
 const villageIntent: IntentDeclaration = {
   ...emptyIntentDeclaration(),
@@ -19,126 +18,8 @@ const villageIntent: IntentDeclaration = {
 };
 
 describe("Pi 턴 의도 노트", () => {
-  it("기본 설계서 4채·숲 없음에는 기본 12채·숲 밀도·선행 resize를 강요하지 않는다", () => {
-    const preset = asVillageDesign({ id: "four-houses", name: "네 집", houseCount: 4 });
-    const project = { defaultVillagePresetId: preset.id, villagePresets: [preset] };
-    const note = buildPiIntentNote({ project, intent: { ...villageIntent, mode: "modify" },
-      targetMap: { id: "map_a", width: 20, height: 20, lived: false }, selection: null });
-    expect(note).toContain('기본 마을 설계서 "four-houses"');
-    expect(note).toContain("houseCount는 생략");
-    expect(note).toContain("숲 없음이면 지정하지 않는다");
-    expect(note).not.toContain("houseCount:12");
-    expect(note).not.toContain("forestDensity 는 반드시");
-    expect(note).not.toContain("[시공 규모]");
-    expect(note).not.toContain("resize_map({");
-  });
-
-  it("사용자가 지정한 집 수는 설계서와 달라도 숨기지 않고 충돌로 보고하게 한다", () => {
-    const preset = asVillageDesign({ id: "four", name: "네 집", houseCount: 4 });
-    const note = buildPiIntentNote({ project: { defaultVillagePresetId: preset.id, villagePresets: [preset] },
-      intent: { ...villageIntent, construction: { houseCount: 7, npcCount: 3 } }, targetMap: null, selection: null });
-    expect(note).toContain("사용자가 명시한 houseCount:7");
-    expect(note).toContain("npcCount:3");
-    expect(note).toContain("village-design-conflict");
-    expect(note).toContain("width/height는 생략");
-  });
-
-  it("야외 마을 시공 선언은 author_village 와 권장 크기를 본문에 싣는다", () => {
-    const note = buildPiIntentNote({ intent: villageIntent, targetMap: { id: "map_a", width: 100, height: 100, lived: true }, selection: null });
-    expect(note).not.toBeNull();
-    expect(note).toContain("author_village");
-    expect(note).toContain("[시공 규모]");
-    expect(note).toMatch(/권장 맵 크기는 \d+×\d+/);
-  });
-
-  it("수정 선언 + 작은 대상 맵이면 resize_map 을 먼저 부르라고 못박는다", () => {
-    const note = buildPiIntentNote({
-      intent: { ...villageIntent, mode: "modify", targetMapId: "map_small", construction: { scale: "medium", houseCount: 12 } },
-      targetMap: { id: "map_small", width: 20, height: 20, lived: true },
-      selection: null,
-    });
-    expect(note).toContain('resize_map({mapId:"map_small"');
-    expect(note).toContain("author_village(kind:\"new\") 로 새것을 만들지 말 것");
-  });
-
-  it("선택 영역이 있으면 그 사각형을 author_village target 으로 못박는다", () => {
-    const note = buildPiIntentNote({
-      intent: { ...villageIntent, useSelection: true },
-      targetMap: { id: "map_a", width: 100, height: 100, lived: true },
-      selection: { mapId: "map_a", x: 10, y: 20, width: 30, height: 40 },
-    });
-    expect(note).toContain('target:{kind:"existing",mapId:"map_a",bounds:{x:10,y:20,w:30,h:40}}');
-  });
-
-  // 2026-09-17 실측: 빈 20×15 시작 맵에서 선언은 tools=[author_village,…] 를 냈지만 모델은 그 이름을 못 봤고,
-  // 수량이 없어 크기 지시도 없어서 fill_region 길 + author_house 2채로 끝났다. 도구는 빈 맵을 전체 시공하고
-  // 집 수에 맞춰 스스로 넓히므로, 노트는 그 한 호출을 지시하면 된다.
-  it("빈 맵 + author_village 선언 → 맵 전체 한 호출, 기본 집 수, resize 불필요, 손작업 금지", () => {
-    const note = buildPiIntentNote({
-      intent: { ...villageIntent, construction: undefined },
-      targetMap: { id: "map_blank_start", width: 20, height: 15, lived: false },
-      selection: null,
-    });
-    expect(note).toContain("[마을 시공]");
-    expect(note).toContain('target:{kind:"existing", mapId:"map_blank_start"}');
-    expect(note).toContain("houseCount:12(수량 선언이 없어 코드 기본값)");
-    expect(note).toContain("resize_map 은 부르지 않는다");
-    expect(note).toContain("paint_road·fill_region·place_props 로 길과 나무를 손으로 깔지 말 것");
-    expect(note).not.toContain('kind:"new"');
-  });
-
-  it("선언 수량이 있으면 그 수가 houseCount 다", () => {
-    const note = buildPiIntentNote({
-      intent: { ...villageIntent, construction: { houseCount: 7 } },
-      targetMap: { id: "map_blank_start", width: 20, height: 15, lived: false },
-      selection: null,
-    });
-    expect(note).toContain("houseCount:7,");
-    expect(note).not.toContain("코드 기본값");
-  });
-
-  // 2026-09-17 정정. 여기엔 「새 맵은 결과에서 버려진다」·「빈 맵을 열어 다시 지시해 달라」가
-  // 박혀 있었다. 근거는 «평문 채팅은 언제나 맵 묶음으로 잘린다»였고, 그 전제가 사라졌다 —
-  // mergedFromBundles 는 이제 사용자가 맵을 직접 적었거나 묶음이 둘 이상일 때만 참이다.
-  // 전제가 죽은 지시를 남겨 두면 모델이 «할 수 있는 일»을 못 한다고 믿고 요청을 거절한다.
-  // (사용자가 범위를 직접 적은 턴에서는 여전히 잘리지만, 그때는 조용한 성공이 아니라
-  //  「적용 실패」+ 범위 밖 사유로 드러난다 — piAgentRunOutcome 의 droppedEverything 케이스.)
-  it("내용이 있는 맵 + author_village 선언 → 이 맵 안 bounds 우선, 최후엔 새 맵을 만들고 보고", () => {
-    const note = buildPiIntentNote({
-      intent: villageIntent,
-      targetMap: { id: "map_village", width: 100, height: 100, lived: true },
-      selection: null,
-    });
-    expect(note).toContain("이미 내용이 있다");
-    expect(note).toContain("되도록 이 맵 안에서 해결한다");
-    expect(note).toContain('bounds:{x,y,w,h}');
-    // 최후 수단은 «거절» 이 아니라 «만들고 보고» 다.
-    expect(note).toContain("새 맵");
-    expect(note).toContain("무엇을 했는지 보고한다");
-    // 죽은 전제가 되살아나면 여기서 걸린다.
-    expect(note).not.toContain("버려진다");
-    expect(note).not.toContain("다시 지시해 달라");
-  });
-
-  it("선택 영역 안 시공이면 마을 노트는 target 을 선택 영역 노트에 맡긴다", () => {
-    const note = buildPiIntentNote({
-      intent: { ...villageIntent, useSelection: true },
-      targetMap: { id: "map_a", width: 100, height: 100, lived: true },
-      selection: { mapId: "map_a", x: 10, y: 20, width: 30, height: 40 },
-    });
-    expect(note).toContain("target 은 아래 [선택 영역] 노트의 사각형이다");
-    expect(note).toContain('bounds:{x:10,y:20,w:30,h:40}');
-  });
-
-  it("선언이 author_village 를 고르지 않았으면 마을 노트는 없다 — 집 한 채·소품 요청을 마을로 키우지 않는다", () => {
-    const note = buildPiIntentNote({
-      intent: { ...villageIntent, tools: ["author_house"], construction: undefined },
-      targetMap: { id: "map_blank_start", width: 20, height: 15, lived: false },
-      selection: null,
-    });
-    expect(note).not.toContain("[마을 시공]");
-    expect(note).toContain("author_house");
-  });
+  // 마을 시공 노트(author_village·author_house·설계서 houseCount·resize 선행) 사례 10개는 은퇴 —
+  // 두 도구가 2026-10-07 저작권 정리로 삭제됐다(toolRegistry CONSTRUCTION_WRITE_SUPERSEDED 주석).
 
   it("모호한 점은 되묻지 않고 해석을 밝히라고 한다 — Pi 경로에는 되묻는 자리가 없다", () => {
     const note = buildPiIntentNote({ intent: { ...villageIntent, clarify: "어느 맵에?" }, targetMap: null, selection: null });

@@ -3,6 +3,7 @@ import { store } from "@/project/store";
 import { el } from "@/util/dom";
 import { audioResourceDocument } from "./audioResourcePresentation";
 import { createAudioPreviewPlayer } from "./audioPreviewPlayer";
+import { databasePreviewIsRetained } from "./databasePreviewLifecycle";
 
 /** Selected/inline details only. Thumbnails must never instantiate this view. */
 export function createAudioResourcePreview(prefix = "db-resource-picker-audio") {
@@ -26,7 +27,9 @@ export function releaseAudioPreviewOnRemoval(view: ReturnType<typeof createAudio
   const unsubscribe = store.subscribe((_project, change) => { if (change.projectSwitch) dispose(); });
   const observer = new MutationObserver(records => {
     mounted ||= view.element.isConnected || records.some(record => [...record.addedNodes].some(node => node === view.element || node.contains(view.element)));
-    if (mounted && !view.element.isConnected) dispose();
+    // A cached database tab detaches this field without removing it. Disposing then
+    // kills Play when the author comes back; concealment already stopped playback.
+    if (mounted && !view.element.isConnected && !databasePreviewIsRetained(view.element)) dispose();
   });
   function dispose(): void { observer.disconnect(); unsubscribe(); view.dispose(); }
   observer.observe(document.body, { childList: true, subtree: true });

@@ -110,6 +110,15 @@ export function emeraldNoEscapeLine(snapshot: Pick<BattleSnapshot, "troopId">): 
   return emeraldTrainerTroop(snapshot) ? "안돼! 승부 중에는\n도망칠 수 없어!" : "도망칠 수 없다!";
 }
 
+/**
+ * 도주가 막힌 전투에서 확인했을 때 문장 창에 띄울 한 줄.
+ * 몬스터 전투는 3세대 문장, 그 밖은 프로젝트 용어(기본 「도주」)로 「이 싸움에서는 도주할 수 없습니다.」
+ */
+export function noEscapeNoticeLine(snapshot: Pick<BattleSnapshot, "troopId">): string {
+  if (store.getCurrent().system.battleUiStyle === "pokemon") return emeraldNoEscapeLine(snapshot);
+  return `이 싸움에서는 ${resolveTerms(store.getCurrent()).escape}할 수 없습니다.`;
+}
+
 export function emeraldTrainerSendOutLine(trainerName: string, monsterName: string): string {
   return `${withJosa(emeraldShortName(trainerName), "은/는")} ${withJosa(emeraldShortName(monsterName), "을/를")} 내보냈다!`;
 }

@@ -4,6 +4,7 @@ import { el } from "@/util/dom";
 import { renderEditorIcon as editorIcon } from "./eventEditor/editorIcons";
 import { audioPlayback } from "./audioResourcePresentation";
 import { AUDIO_PREVIEW_DEFAULTS, AudioPreviewSession, type AudioPreviewSettings } from "./audioPreviewSession";
+import { registerDatabasePreview } from "./databasePreviewLifecycle";
 
 const PHASE_LABELS = {
   empty: "음원을 선택하세요", ready: "미리듣기 준비", loading: "불러오는 중 / 버퍼링",
@@ -61,6 +62,12 @@ export function createAudioPreviewPlayer(prefix = "audio-preview") {
     time.textContent = `${audioPreviewTime(state.current)} / ${audioPreviewTime(state.duration)}`;
     status.textContent = state.error ? `${PHASE_LABELS[state.phase]}: ${state.error}` : PHASE_LABELS[state.phase];
   });
+  // Showing the field again must not restart a clip the author already left.
+  const lifecycle = registerDatabasePreview(transport, {
+    suspend: () => session.stop(),
+    resume: () => undefined,
+    dispose: () => { unsubscribe(); session.dispose(); },
+  });
   const controls: { readonly input: HTMLInputElement; readonly output: HTMLOutputElement; readonly key: keyof AudioPreviewSettings; readonly format: (value: number) => string }[] = [];
   const advanced = el("details", {
     class: "audio-preview-advanced", dataset: { testid: `${prefix}-advanced` },
@@ -107,6 +114,6 @@ export function createAudioPreviewPlayer(prefix = "audio-preview") {
       const playback = resource ? audioPlayback(resource.id, project) : undefined;
       session.select(playback?.url ?? null, playback && !playback.playable ? playback.midi ? "MIDI 비재생" : "재생 가능한 파일이 없습니다." : "", resource?.kind === "music");
     },
-    dispose: (): void => { unsubscribe(); session.dispose(); },
+    dispose: (): void => { lifecycle.dispose(); },
   };
 }

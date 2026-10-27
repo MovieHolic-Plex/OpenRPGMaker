@@ -6,6 +6,9 @@ import { startSession } from "@/project/session";
 import { findByTestId, installFakeDom, renderWithFakeDom } from "./fakeDom";
 
 const noopActions: PlayerStatusMenuActions = {
+  // 실제 메뉴 컨트롤러는 늘 이 콜백을 준다(playerStatusMenuController). 없으면 가방 정렬·분류 행이
+  // 조작 불가로 그려져 설명을 행 안에 펼친다(#2707 의 가방 보기 행).
+  onInventoryViewChange: () => undefined,
   onCommand: () => undefined,
   onOpenGroup: () => undefined,
   onSaveSlot: () => undefined,

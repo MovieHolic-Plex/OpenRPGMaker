@@ -3,9 +3,11 @@ import { createBlankProject } from "@/project/defaults";
 import { DEFAULT_AUTOTILE_GROUPS } from "@/project/defaults/autotileGroups";
 import { auditCombinedTownAutotiles, repairCombinedTownAutotiles } from "@/project/combinedTownAutotileAudit";
 import type { AutotileGroup, Project } from "@/project/types";
+// 합본 마을(EasyRPG) 칩셋의 타일 번호·그룹을 겨냥한 시험 — 2026-10-07 정리 뒤 새 프로젝트에 없어 옛 저장본처럼 다시 심는다.
+import { startOnRetiredCombinedTown } from "./support/retiredEasyRpgTilesets";
 
 function fixture(group: AutotileGroup, tiles: readonly number[]): Project {
-  const project = createBlankProject();
+  const project = startOnRetiredCombinedTown(createBlankProject());
   project.meta = { ...project.meta, title: "audit fixture" };
   const map = project.maps[project.startMapId]!;
   map.width = tiles.length;
@@ -50,7 +52,7 @@ describe("combined-town autotile audit", () => {
   });
 
   it("merges a custom group with non-overlapping built-ins", () => {
-    const project = createBlankProject();
+    const project = startOnRetiredCombinedTown(createBlankProject());
     const map = project.maps[project.startMapId]!;
     project.tilesets[map.tilesetId] = { ...project.tilesets[map.tilesetId]!, autotileGroups: [group] };
     const report = auditCombinedTownAutotiles(project, "fixture");

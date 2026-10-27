@@ -106,7 +106,8 @@ describe("canonical commands through authoring and persistence", () => {
     { kind: "switch", switchId: "sw_1" },
     { kind: "variable", variableId: "var_1", op: ">=" },
     { kind: "item", itemId: "item_potion" },
-    { kind: "item", itemId: "item_potion", present: "true" },
+    // The string "true" is now read as a boolean (#3226, jsonSchema.ts); a non-boolean word stays a type error.
+    { kind: "item", itemId: "item_potion", present: "yes" },
   ])("rejects missing or mistyped condition values for $kind atomically", condition => {
     const { context, mapId, commands } = fixture();
     const before = serialize(context.project);

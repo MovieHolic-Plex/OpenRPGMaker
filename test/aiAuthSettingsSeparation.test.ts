@@ -197,7 +197,8 @@ describe("안내와 오류를 구분하고 오진하지 않는다", () => {
 
     const hint = findByTestId(root, "ai-auth-hint");
     expect(hint?.hidden).toBe(false);
-    expect(hint?.textContent ?? "").toContain("ai:oauth");
+    // The hint no longer names the developer command (npm run ai:oauth); it tells the user to press 「연결 확인」 (aiAuthSettings.ts).
+    expect(hint?.textContent ?? "").toContain("연결 확인");
     dispose();
   });
 });

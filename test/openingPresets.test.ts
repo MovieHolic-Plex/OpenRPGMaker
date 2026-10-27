@@ -18,6 +18,7 @@ import {
 import { createBlankProject } from "@/project/defaults";
 import { collectResourceIds } from "@/project/io/resourceReferenceValidation";
 import { store } from "@/project/store";
+import * as modal from "@/editor/ui/modal";
 import { findByTestId, installFakeDom, type FakeElement } from "./fakeDom";
 
 let restoreDom: () => void;
@@ -65,7 +66,8 @@ describe("opening preset catalogue", () => {
       expect(preset.scenes.length).toBeGreaterThan(1);
       expect(preset.scenes.length).toBeLessThanOrEqual(CINEMATIC_SCENE_LIMIT);
       // 카드가 그림으로 팔리는 기능이다 — 대표 그림 없는 프리셋은 고를 근거가 없다.
-      expect(openingPresetCoverResourceId(preset)).toBeTruthy();
+      // 예외: 「편지로 시작하는 이야기」(written-prologue)는 그림 없는 명조 서문이 의도다 — 그런 프리셋은 장면마다 글자 연출(presentation.preset)을 가져야 한다.
+      if (!openingPresetCoverResourceId(preset)) expect(preset.scenes.every(scene => scene.presentation?.preset)).toBe(true);
       expect(openingPresetDurationSeconds(preset)).toBeGreaterThan(0);
       for (const scene of preset.scenes) {
         // 0이면 키를 눌러야 넘어간다 — 프리셋은 가만히 둬도 흘러가야 한다.
@@ -120,7 +122,8 @@ describe("opening preset gallery in the Database editor", () => {
   });
 
   it("fills an empty opening from one click and undoes in one step", () => {
-    const preset = OPENING_PRESETS[0];
+    // 그림 장면이 있는 프리셋으로 잰다 — 첫 프리셋(written-prologue)은 글자만 있는 서문이다.
+    const preset = OPENING_PRESETS.find(entry => openingPresetCoverResourceId(entry))!;
     openTab("opening");
     node(`db-cinematic-preset-${preset.id}`).click();
 
@@ -136,21 +139,22 @@ describe("opening preset gallery in the Database editor", () => {
     expect(store.getCurrent().system.opening).toBeUndefined();
   });
 
-  it("asks before replacing authored scenes and leaves them alone on cancel", () => {
+  it("asks before replacing authored scenes and leaves them alone on cancel", async () => {
     const [first, second] = OPENING_PRESETS;
     openTab("opening");
     node(`db-cinematic-preset-${first.id}`).click();
     const applied = store.getCurrent().system.opening;
 
-    const confirm = vi.fn(() => false);
-    vi.stubGlobal("confirm", confirm);
+    // 확인은 window.confirm 이 아니라 편집기 모달(showConfirm)이다 — 그 결정을 대신 내려 준다.
+    const confirm = vi.spyOn(modal, "showConfirm").mockResolvedValue(false);
     node(`db-cinematic-preset-${second.id}`).click();
+    await Promise.resolve(); await Promise.resolve();
     expect(confirm).toHaveBeenCalledTimes(1);
     expect(store.getCurrent().system.opening).toEqual(applied);
 
-    confirm.mockReturnValue(true);
+    confirm.mockResolvedValue(true);
     node(`db-cinematic-preset-${second.id}`).click();
-    expect(store.getCurrent().system.opening?.scenes).toHaveLength(second.scenes.length);
+    await vi.waitFor(() => expect(store.getCurrent().system.opening?.scenes).toHaveLength(second.scenes.length));
     expect(store.getCurrent().system.opening).not.toEqual(applied);
   });
 

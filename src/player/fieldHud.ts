@@ -45,9 +45,10 @@ export class FieldHud {
       }
     }
     const config = this.config, modern = config.theme !== "legacy";
-    // PlayScene calls this every frame. Unchanged data attributes still dirty the host.
     writeDataset(this.host, "fieldHud", config.theme);
     writeDataset(this.host, "hudObjective", String(!modern || config.objective));
+    const uiScale = String(Math.max(1, Math.round((resolvePlayResolution(project.system).height / 240) * 100) / 100));
+    if (this.host.style.getPropertyValue("--play-ui-scale") !== uiScale) this.host.style.setProperty("--play-ui-scale", uiScale);
     writeDataset(this.root, "theme", config.theme);
     const font = config.font && config.font !== "auto" ? config.font : recommendedHudFont(config.theme);
     writeDataset(this.host, "hudFont", font);

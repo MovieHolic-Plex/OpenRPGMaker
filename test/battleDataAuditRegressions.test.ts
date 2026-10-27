@@ -88,7 +88,8 @@ describe("battle audit data dependencies", () => {
     expect(collectProjectReferenceIssues(restored)).toEqual([]);
     expect(restored.database.equipment.find((row) => row.id === equipment.id)).toEqual(equipment);
     expect(restored.database.states.find((row) => row.id === state.id)).toEqual(state);
-    expect(restored.database.battleAnimations.find((row) => row.id === animation.id)).toEqual(animation);
+    // 로드 정규화는 후속 연출 목록을 늘 배열로 채운다(없으면 []) — 저자 행의 나머지 칸은 그대로다.
+    expect(restored.database.battleAnimations.find((row) => row.id === animation.id)).toEqual({ ...animation, followUps: animation.followUps ?? [] });
     expect(restored.database.elements!.find((row) => row.id === element.id)).toEqual(element);
     expect(restored.database.actors.find((row) => row.id === actor.id)?.battleCharacterResourceId).toBe("hero");
     expect(restored.system.startActorIds).toEqual([actor.id]);

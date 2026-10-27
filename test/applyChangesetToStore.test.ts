@@ -6,6 +6,7 @@ import * as applyChangesetToStore from "@/editor/tools/applyChangesetToStore";
 import { createEmptyToolProject } from "@/editor/tools/emptyProject";
 import { getMapEditHistoryEntries, resetMapEditHistory } from "@/editor/mapEditHistory";
 import { createBlankProject } from "@/project/defaults";
+import { startOnRetiredCombinedTown } from "./support/retiredEasyRpgTilesets";
 import { createMemoryRepository } from "@/project/persistence/memoryRepository";
 import { setProjectRepositoryForTest } from "@/project/persistence/repository";
 import { recordProjectCommit } from "@/project/projectCommitLog";
@@ -73,26 +74,15 @@ afterEach(() => {
 });
 
 describe("canonical construction apply and undo policy", () => {
-  it("uses map undo for existing targets and full-project undo for planned new targets", () => {
-    // Given: the two canonical routes and their target variants.
+  it("uses map undo for map-only writes and full-project undo for everything else", () => {
+    // author_house·author_village 는 제거됐다 — 같은 정책을 남은 도구로 잰다: 한 맵만 쓰는 도구는 그 맵 스냅샷,
+    // 맵을 새로 만드는 도구는 프로젝트 스냅샷.
     const candidate: unknown = Reflect.get(applyChangesetToStore, "toolUndoScope");
     expect(typeof candidate).toBe("function");
     if (typeof candidate !== "function") return;
-    const existingHouse = candidate("author_house", { kind: "single", mapId: "m1" });
-    const existingVillage = candidate("author_village", {
-      target: { kind: "existing", mapId: "m1", bounds: { x: 2, y: 2, w: 10, h: 10 } },
-    });
-    const newVillage = candidate("author_village", {
-      target: {
-        kind: "new", mapId: "m2", name: "새 마을", width: 30, height: 28,
-        plannedMap: { mapId: "m2", width: 30, height: 28 },
-      },
-    });
-
-    // When/Then: existing writes are one-map snapshots; map creation is one project snapshot.
-    expect(existingHouse).toEqual({ kind: "map", mapId: "m1" });
-    expect(existingVillage).toEqual({ kind: "map", mapId: "m1" });
-    expect(newVillage).toEqual({ kind: "project" });
+    expect(candidate("build_house", { mapId: "m1" })).toEqual({ kind: "map", mapId: "m1" });
+    expect(candidate("paint_tiles", { mapId: "m1" })).toEqual({ kind: "map", mapId: "m1" });
+    expect(candidate("create_map", { id: "m2", name: "새 마을", width: 30, height: 28 })).toEqual({ kind: "project" });
   });
 
   it("never reruns a canonical facade while reassembling a partial proposal", () => {
@@ -234,7 +224,8 @@ describe("applyProposedProject shared apply path", () => {
 
 describe("direct tool render descriptors", () => {
   it("publishes changed cells including autotile neighbors for direct tools and sequences", () => {
-    store.replace(createBlankProject());
+    // 281 이 오토타일인 옛 합본 마을 시트에서 잰다 — 기본 버들항 시트에서는 이웃 칸이 다시 그려지지 않는다.
+    store.replace(startOnRetiredCombinedTown(createBlankProject()));
     const mapId = store.getCurrent().startMapId;
     const replace = vi.spyOn(store, "replace");
     const args = { mapId, layer: "lower", mode: "cells", tile: 281, cells: [{ x: 2, y: 2 }] };

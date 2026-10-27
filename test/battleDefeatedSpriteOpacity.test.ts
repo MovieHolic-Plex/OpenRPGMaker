@@ -30,6 +30,27 @@ function cssFiles(dir: string): string[] {
   return out;
 }
 
+/**
+ * 동작 줄이기(prefers-reduced-motion) 미디어 블록을 공백으로 지운다(줄 번호 보존).
+ * 그 블록은 퇴장 연출 자체를 끄고(animation: none) 끝 상태(opacity: 0)를 바로 둔다 — 막을 대상인 「juice 가 연출을
+ * 빼앗은 막타 프레임」이 생기지 않는 경로다(262fdd2fc0·0c62bc8bc6 이후 27-retro-motion.css 에 생겼다).
+ */
+function stripReducedMotionBlocks(css: string): string {
+  const head = /@media\s*\(\s*prefers-reduced-motion\s*:\s*reduce\s*\)\s*\{/g;
+  let out = css;
+  for (let match = head.exec(out); match; match = head.exec(out)) {
+    let depth = 1;
+    let end = match.index + match[0].length;
+    while (end < out.length && depth > 0) {
+      if (out[end] === "{") depth += 1;
+      else if (out[end] === "}") depth -= 1;
+      end += 1;
+    }
+    out = out.slice(0, match.index) + out.slice(match.index, end).replace(/[^\n]/g, " ") + out.slice(end);
+  }
+  return out;
+}
+
 type Offender = { file: string; line: number; selector: string; value: string };
 
 /**
@@ -40,7 +61,7 @@ type Offender = { file: string; line: number; selector: string; value: string };
 function staticDefeatedSpriteOpacity(): Offender[] {
   const offenders: Offender[] = [];
   for (const file of cssFiles(RUNTIME_STYLES)) {
-    const clean = stripComments(readFileSync(file, "utf8"));
+    const clean = stripReducedMotionBlocks(stripComments(readFileSync(file, "utf8")));
     let cursor = 0;
     for (const chunk of clean.split("}")) {
       const startLine = clean.slice(0, cursor).split("\n").length;

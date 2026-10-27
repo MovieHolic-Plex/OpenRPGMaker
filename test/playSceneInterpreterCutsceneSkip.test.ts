@@ -14,6 +14,8 @@ const cameraControl = vi.hoisted(() => vi.fn<() => Promise<void>>());
 
 vi.mock("@/player/playSceneCamera", () => ({
   applyCameraControl: cameraControl,
+  // 스킵은 카메라를 컷신 전 상태로 되돌린다(playSceneInterpreter requestSkip) — 이 시험은 스킵 흐름만 보므로 빈 구현.
+  restoreCameraAfterCutsceneSkip: () => undefined,
 }));
 
 const SKIPPED_SWITCH = "sw_skipped_command";

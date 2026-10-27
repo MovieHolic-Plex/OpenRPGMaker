@@ -1,7 +1,8 @@
-import { spawn } from 'node:child_process';
+import { execFileSync, spawn } from 'node:child_process';
 import { createServer } from 'node:net';
 import { readFileSync, writeFileSync, existsSync, openSync, writeSync } from 'node:fs';
-import { resolve } from 'node:path';
+import { dirname, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { DatabaseSync } from 'node:sqlite';
 import { gunzipSync } from 'node:zlib';
 import { firefox } from 'playwright';
@@ -12,6 +13,7 @@ import { isDeepStrictEqual } from 'node:util';
 // never settles. The reviewer still checks text and chip visibility in the PNG.
 process.env.PW_TEST_SCREENSHOT_NO_FONTS_READY = '1';
 
+const REPO_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '../../../..');
 export const digest = value => createHash('sha256').update(value).digest('hex');
 export function stored(projectDir) {
   const db = new DatabaseSync(resolve(projectDir, 'project.sqlite'), { readOnly: true });
@@ -31,6 +33,15 @@ export function writeRuntimeProject(projectDir, file, savedSnapshot) {
       const body=blob.get(ref.$blob)?.body;
       if(!body||digest(body)!==ref.$blob)throw Error(`Saved tileset bytes missing or corrupt: ${id}`);
       project.tilesets[id]=JSON.parse(body);
+    }
+    // 번들 타일셋은 번들 정의와의 차이만 저장된다 — 앱과 같은 읽기(deserialize)로 되돌린 타일셋으로 바꾼다.
+    const diffIds=Object.entries(project.tilesets).filter(([,value])=>value&&Object.hasOwn(value,'bundledTilesetDiff')).map(([id])=>id);
+    if(diffIds.length) {
+      const full=JSON.parse(execFileSync('npx',['tsx','scripts/content/read-project-sqlite.mts',resolve(projectDir)],{cwd:REPO_ROOT,maxBuffer:1e9})).tilesets;
+      for(const id of diffIds) {
+        if(!full[id])throw Error(`Saved bundled tileset could not be restored: ${id}`);
+        project.tilesets[id]=full[id];
+      }
     }
     writeFileSync(file,JSON.stringify(project));
   } finally {db.close();}
