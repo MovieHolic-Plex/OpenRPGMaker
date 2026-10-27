@@ -1,11 +1,14 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { bounded, deferred } from "./persistenceTestSignals";
 
-// 플레이어는 파일 머리에서 가로챈다(vi.mock 은 끌어올려진다). 아래에서 목 모듈을 한 번 미리 불러 둔다 —
-// CI 진단: 두 전환이 동시에 import("@/player/player") 를 부르면 두 번째(Promise.all index 1)가 진짜 모듈을 받아
-// renderPlayer 가 목 store 의 meta.publication 에서 죽었다. 첫 import 를 끝내 두면 둘 다 같은 목을 받는다.
+// 플레이어는 파일 머리에서 가로챈다(vi.mock 은 끌어올려진다).
+// CI 진단(ci-vitest-files 40463662845): mode.ts 안에서 import("@/player/player") 두 개가 **동시에** 걸리면 먼저 온 것은 목,
+// 겹친 두 번째는 진짜 모듈을 받았다(Vitest 의 동시 동적 import 목 해석). 진짜 renderPlayer 는 목 store 의
+// meta.publication 에서 죽었다. 그래서 겹침 시나리오 전에 플레이 진입을 한 번 해 mode.ts 쪽 import 를 끝내 둔다.
 const player = vi.hoisted(() => ({ renderPlayer: vi.fn(), teardownPlayer: vi.fn() }));
 vi.mock("@/player/player", () => player);
+// 데우기의 편집 복귀가 stopAllAudio 를 부른다 — 노드에는 오디오가 없다.
+vi.mock("@/player/audio", () => ({ stopAllAudio: vi.fn() }));
 
 class TestElement {
   className = "";
@@ -52,7 +55,7 @@ describe("mode transitions", () => {
   it("mounts play when a newer same-mode request overlaps an in-flight switch", async () => {
     installDocument();
     const renderEditor = vi.fn();
-    const editorTornDown = deferred<void>();
+    let editorTornDown = deferred<void>();
     const teardownEditor = vi.fn(() => editorTornDown.resolve());
     const renderPlayer = player.renderPlayer.mockImplementation((parent: HTMLElement) => {
       const surface = document.createElement("div");
@@ -124,9 +127,15 @@ describe("mode transitions", () => {
     }));
 
     const { bootApp, enterMode } = await import("@/app/mode");
-    await import("@/player/player");
     const root = document.createElement("div");
     await bootApp(root);
+
+    // 데우기: 플레이 한 번 → 편집 복귀. 겹침 시나리오는 그다음 편집 상태에서 똑같이 시작한다.
+    await enterMode("play");
+    await enterMode("edit");
+    editorTornDown = deferred<void>();
+    teardownEditor.mockClear();
+    renderPlayer.mockClear();
 
     const teardownSignal = bounded(editorTornDown.promise);
     let firstFinished = false;
