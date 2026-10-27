@@ -193,7 +193,8 @@ describe("title screen", () => {
     const restoreDom = installFakeDom();
     try {
       const project = createBlankProject();
-      project.system.titleResourceId = "easyrpg-title-title2";
+      // EasyRPG 타이틀 그림(easyrpg-title-title2)은 2026-10-07 저작권 정리로 빠졌다 — 기본값이 아닌 번들 타이틀로 같은 경로를 시험한다.
+      project.system.titleResourceId = "oprn-title-blue";
       project.system.titleScreen = fullVisibilitySettings({
         title: "레거시 타이틀",
         layout: {
@@ -219,7 +220,7 @@ describe("title screen", () => {
         }),
       );
 
-      expect(screen.style.backgroundImage).toContain("Title2.png");
+      expect(screen.style.backgroundImage).toContain("default-title-blue.png");
     } finally {
       restoreDom();
     }
