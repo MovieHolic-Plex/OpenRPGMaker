@@ -1222,76 +1222,6 @@
  "rejects": [],
  "runs": [
   {
-   "round": "theme-walls-r10",
-   "at": "2026-10-24T23:52:08",
-   "fail": 0,
-   "warn": 0,
-   "warnByCode": {},
-   "polish": [],
-   "hashes": {
-    "wall.other_rim": {
-     "A1": "f2a995a651c06d1680ea60fb79f694439c981cd441acd38392645282161a5d01",
-     "A2": "c21a8d0e5cb827962cb02669bf968e18eacb6604c91847f77617c66f1223c1ff"
-    }
-   }
-  },
-  {
-   "round": "theme-props-r7",
-   "at": "2026-10-24T23:53:14",
-   "fail": 0,
-   "warn": 0,
-   "warnByCode": {},
-   "polish": [],
-   "hashes": {
-    "wall.ice_face": {
-     "A1": "a63ccd8e339c8ed6ede8ae11f008709cfd6cbf10a0aa972e6f11041315a1f3ae",
-     "A2": "0c5184a4024bb3c9cf3c2d7531d0ccd88b0b4c9bec1815517a021ae1e23f504d"
-    }
-   }
-  },
-  {
-   "round": "theme-props-r7",
-   "at": "2026-10-24T23:54:52",
-   "fail": 0,
-   "warn": 0,
-   "warnByCode": {},
-   "polish": [],
-   "hashes": {
-    "wall.ice_face": {
-     "A1": "c4891d76430b8634980ebac19003bb563c6909b2206e678030a758aabd43fca9",
-     "A2": "7148a602c8b236d4b7989392aa37df22ac8ea1a42412775c09208d99c5e9c736"
-    }
-   }
-  },
-  {
-   "round": "theme-props-r7",
-   "at": "2026-10-24T23:56:24",
-   "fail": 0,
-   "warn": 0,
-   "warnByCode": {},
-   "polish": [],
-   "hashes": {
-    "wall.ice_face": {
-     "A1": "769fafb03ccbf1ebbfcc45589b8b07631a4fe1effe968f7f9d765436da08a8d2",
-     "A2": "a017fb65d3456846967810a2d2a37beb02abf32c271e0e652fc0ed1c28a68099"
-    }
-   }
-  },
-  {
-   "round": "theme-props-r7",
-   "at": "2026-10-24T23:57:40",
-   "fail": 0,
-   "warn": 0,
-   "warnByCode": {},
-   "polish": [],
-   "hashes": {
-    "wall.ice_face": {
-     "A1": "f8e19dff632dcceb7e661b65b453891ea2a1dc33759d69447f5752234e7b5a79",
-     "A2": "9934508fd975dad708ec569249812200de99581d72ad2c58cef5021d57b2d3be"
-    }
-   }
-  },
-  {
    "round": "theme-props-r7",
    "at": "2026-10-25T00:11:22",
    "fail": 0,
@@ -1991,6 +1921,107 @@
    "hashes": {
     "other.ground": {
      "A1": "cfaa3576b4418e7bdb3f2d0feca951f7fd72e938f6db8ac788ea03e4af490cb5"
+    }
+   }
+  },
+  {
+   "round": "theme-floors-r8",
+   "at": "2026-10-27T20:23:40",
+   "fail": 1,
+   "warn": 1,
+   "warnByCode": {
+    "OUTLINE": 1
+   },
+   "polish": [
+    {
+     "item": "other.ground",
+     "key": "A1",
+     "code": "OUTLINE",
+     "msg": "가장자리 106화소 중 먹 90% — 상한(먹 15%·빛 쪽 50%) 넘음: ground 북변 먹 66%·빛 쪽 먹·0단 100%; ground 남변 먹 100%; ground 서변 먹 100%·빛 쪽 먹·0단 100%; ground 동변 먹 100% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    }
+   ],
+   "hashes": {
+    "other.ground": {
+     "A1": "b2cb48e8385e94d2128883758c8a6ebdba8550e1d85a731c0dac122b5360e9fe"
+    }
+   }
+  },
+  {
+   "round": "theme-floors-r8",
+   "at": "2026-10-27T20:25:14",
+   "fail": 1,
+   "warn": 1,
+   "warnByCode": {
+    "OUTLINE": 1
+   },
+   "polish": [
+    {
+     "item": "other.ground",
+     "key": "A1",
+     "code": "OUTLINE",
+     "msg": "가장자리 128화소 중 먹 91% — 상한(먹 15%·빛 쪽 50%) 넘음: ground 북변 먹 77%·빛 쪽 먹·0단 100%; ground 남변 먹 100%; ground 서변 먹 100%·빛 쪽 먹·0단 100%; ground 동변 먹 100% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    }
+   ],
+   "hashes": {
+    "other.ground": {
+     "A1": "a59ca00ddda7f1e989acb179590b5ef70df50663f7c886b1112d040e63c8da84"
+    }
+   }
+  },
+  {
+   "round": "theme-floors-r8",
+   "at": "2026-10-27T20:26:01",
+   "fail": 0,
+   "warn": 1,
+   "warnByCode": {
+    "OUTLINE": 1
+   },
+   "polish": [
+    {
+     "item": "other.ground",
+     "key": "A1",
+     "code": "OUTLINE",
+     "msg": "가장자리 128화소 중 먹 91% — 상한(먹 15%·빛 쪽 50%) 넘음: ground 북변 먹 77%·빛 쪽 먹·0단 100%; ground 남변 먹 100%; ground 서변 먹 100%·빛 쪽 먹·0단 100%; ground 동변 먹 100% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    }
+   ],
+   "hashes": {
+    "other.ground": {
+     "A1": "a59ca00ddda7f1e989acb179590b5ef70df50663f7c886b1112d040e63c8da84"
+    }
+   }
+  },
+  {
+   "round": "theme-floors-r8",
+   "at": "2026-10-27T20:26:23",
+   "fail": 0,
+   "warn": 1,
+   "warnByCode": {
+    "OUTLINE": 1
+   },
+   "polish": [
+    {
+     "item": "other.ground",
+     "key": "A1",
+     "code": "OUTLINE",
+     "msg": "가장자리 105화소 중 먹 5% — 상한(먹 15%·빛 쪽 50%) 넘음: ground 북변 빛 쪽 먹·0단 71%; ground 서변 빛 쪽 먹·0단 70% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    }
+   ],
+   "hashes": {
+    "other.ground": {
+     "A1": "a59ca00ddda7f1e989acb179590b5ef70df50663f7c886b1112d040e63c8da84"
+    }
+   }
+  },
+  {
+   "round": "theme-floors-r8",
+   "at": "2026-10-27T20:26:50",
+   "fail": 0,
+   "warn": 0,
+   "warnByCode": {},
+   "polish": [],
+   "hashes": {
+    "other.ground": {
+     "A1": "a59ca00ddda7f1e989acb179590b5ef70df50663f7c886b1112d040e63c8da84"
     }
    }
   }

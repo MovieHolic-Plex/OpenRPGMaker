@@ -4439,6 +4439,15 @@
     "other.ground"
    ],
    "lead": "r6 반려(칸마다 같은 금+점 격자·카펫 잔점) → 64×64 감김 판석 밭(판마다 기울기)·검은 줄눈·줄눈에서 새는 보라 빛, 16칸으로 잘라 몸통 변형."
+  },
+  "theme-floors-r8": {
+   "module": "src/harnesses/dungeon-chipset/rounds/theme_floors_r8.py",
+   "wave": "theme_arcane",
+   "title": "던전 테마 바닥 다시 그림 theme-floors-r8",
+   "items": [
+    "other.ground"
+   ],
+   "lead": "r7 반려(64px 반복·평면 판·가장자리 그늘 없음·적갈색·굵은 빛) → 128×96 밭(판 64), 3단 베벨, 보라 검정 바탕, 1px 줄눈 빛, 가장자리 그늘 사다리."
   }
  }
 }
