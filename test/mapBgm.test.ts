@@ -1,10 +1,12 @@
 // 맵 진입 BGM 해석 — GameMap.bgm 이 실제로 소리로 이어지는지 지키는 가드.
 // 배경: bgm 타입과 에디터 UI 는 있었지만 플레이어가 읽는 곳이 없어 게임이 무음이었다.
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
+import * as playerAudio from "@/player/audio";
 import {
   mapAncestorIds,
   resolveMapBgm,
   applyMapBgmToSession,
+  startMapBgm,
   FALLBACK_BGM_RESOURCE_ID,
 } from "@/player/mapBgm";
 import type { GameMap, MapBgmSetting, MapTreeNode } from "@/project/types";
@@ -112,5 +114,30 @@ describe("applyMapBgmToSession", () => {
     const audio: { bgm?: { resourceId: string; loop: boolean } } = { bgm: { resourceId: "x", loop: true } };
     applyMapBgmToSession(audio, { kind: "silence" });
     expect(audio.bgm).toBeUndefined();
+  });
+
+  it("지정한 페이드인(0 포함)을 세션에 싣고, 없으면 필드를 빼 둔다", () => {
+    const audio: { bgm?: { resourceId: string; loop: boolean; fadeInMs?: number } } = {};
+    applyMapBgmToSession(audio, { kind: "play", resourceId: "bgm-town", fadeInMs: 0 });
+    expect(audio.bgm).toEqual({ resourceId: "bgm-town", loop: true, fadeInMs: 0 });
+    applyMapBgmToSession(audio, { kind: "play", resourceId: "bgm-town", fadeInMs: 800 });
+    expect(audio.bgm).toEqual({ resourceId: "bgm-town", loop: true, fadeInMs: 800 });
+    applyMapBgmToSession(audio, { kind: "play", resourceId: "bgm-town" });
+    expect(audio.bgm).toEqual({ resourceId: "bgm-town", loop: true });
+  });
+});
+
+describe("startMapBgm", () => {
+  it("맵에 적은 페이드인으로 재생한다", () => {
+    const play = vi.spyOn(playerAudio, "playAudioCommand").mockImplementation(() => {});
+    try {
+      const p = project([map("inn", { mode: "custom", resourceId: "bgm-inn", fadeInMs: 0 })]) as Parameters<typeof startMapBgm>[0];
+      const session: Parameters<typeof startMapBgm>[1] = { audio: {} };
+      startMapBgm(p, session, "inn");
+      expect(session.audio.bgm).toEqual({ resourceId: "bgm-inn", loop: true, fadeInMs: 0 });
+      expect(play).toHaveBeenCalledWith(session.audio.bgm, p);
+    } finally {
+      play.mockRestore();
+    }
   });
 });

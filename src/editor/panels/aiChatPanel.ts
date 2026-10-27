@@ -62,6 +62,7 @@ import { isAutonomyLevel, loadAiConfig, saveAiConfig, type AiConfig } from "@/ai
 import { isLocalCliProviderId } from "@/ai/localCliEngine";
 import { GOAL_MAX_TURNS, GOAL_TIMEOUT_MS } from "@/ai/piAgent/goalCommand";
 import { store } from "@/project/store";
+import { pendingLazyBundledTilesetIds } from "@/project/bundledTilesetDiff";
 import { parsePiCommand, plainPiCommand, runPiCommand, type ParsedPiCommand, type PiChangeReceipt, type PiRunOptions } from "./aiPiAgentCommand";
 import { aiProjectRunKey } from "@/editor/aiMapRunOwnership";
 import { createTeamPanel } from "./aiTeamPanel";
@@ -436,7 +437,12 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       if (disposed) return;
       warmHeavyWire(() => store.getCurrent(), (run) => schedule(() => { if (!disposed) run(); }));
       // 첫 체크포인트 적용의 왕복 검사·적용 권위 요약도 처음 한 번은 문서 전체를 훑는다 — 같은 한가한 틈에 미리 한다.
-      schedule(() => { if (!disposed) warmApplyCaches(store.getCurrent()); });
+      // 지연 번들 타일셋(bundledTilesetDiff.ts)이 남았으면 건너뛴다 — 문서 전체 요약은 모든 정의를 읽고 되돌린다. 첫 턴이 한다.
+      schedule(() => {
+        if (disposed) return;
+        const project = store.getCurrent();
+        if (pendingLazyBundledTilesetIds(project.tilesets).length === 0) warmApplyCaches(project);
+      });
     });
   };
   scheduleHeavyWireWarmup();

@@ -8,6 +8,10 @@ import { createEmptyToolProject } from "@/editor/tools/emptyProject";
 import { runTool } from "@/editor/tools/toolRunner";
 import type { ToolContext } from "@/editor/tools/types";
 
+// Since the 2026-10-07 copyright purge only the Scarloxy profiles generate maps (mapGenerationProfiles.ts);
+// the default tileset (beodeul_city) answers unsupported-tileset.
+const GENERATE_TILESET_ID = "scarloxy_chipset_grassland";
+
 function catalogId(resourceId: string): string {
   expect(isBgmCatalogResourceId(resourceId), `${resourceId} 가 카탈로그에 없다`).toBe(true);
   expect(findBgmTrack(resourceId), resourceId).toBeDefined();
@@ -103,13 +107,13 @@ describe("자동 BGM 다양성 (seed 생략 반복)", () => {
     const first = runTool(
       ctx,
       "generate_map",
-      { theme: "village", width: 12, height: 12, id: "gen_variety_1", chokepoints: 0 },
+      { theme: "village", width: 12, height: 12, id: "gen_variety_1", chokepoints: 0, tilesetId: GENERATE_TILESET_ID },
       { dryRun: false },
     );
     const second = runTool(
       ctx,
       "generate_map",
-      { theme: "village", width: 12, height: 12, id: "gen_variety_2", chokepoints: 0 },
+      { theme: "village", width: 12, height: 12, id: "gen_variety_2", chokepoints: 0, tilesetId: GENERATE_TILESET_ID },
       { dryRun: false },
     );
     expect(first.ok, first.summary).toBe(true);
@@ -127,7 +131,7 @@ describe("자동 BGM 다양성 (seed 생략 반복)", () => {
       const result = runTool(
         ctx,
         "generate_map",
-        { theme: "forest", width: 12, height: 12, id: "gen_replay", chokepoints: 0 },
+        { theme: "forest", width: 12, height: 12, id: "gen_replay", chokepoints: 0, tilesetId: GENERATE_TILESET_ID },
         { dryRun: false },
       );
       expect(result.ok, result.summary).toBe(true);
@@ -168,7 +172,7 @@ describe("generate_map BGM", () => {
       const result = runTool(
         ctx,
         "generate_map",
-        { theme, width: 12, height: 12, seed: 1, id: `gen_${theme}`, chokepoints: 0 },
+        { theme, width: 12, height: 12, seed: 1, id: `gen_${theme}`, chokepoints: 0, tilesetId: GENERATE_TILESET_ID },
         { dryRun: false },
       );
       expect(result.ok, result.summary).toBe(true);
@@ -193,7 +197,7 @@ describe("generate_map BGM", () => {
         height: 12,
         seed: 1,
         id: "gen_bgm_id",
-        chokepoints: 0,
+        chokepoints: 0, tilesetId: GENERATE_TILESET_ID,
         bgmResourceId: STARTER_BATTLE_BGM_ID,
       },
       { dryRun: false },
@@ -217,7 +221,7 @@ describe("generate_map BGM", () => {
         height: 12,
         seed: 1,
         id: "gen_bgm_custom",
-        chokepoints: 0,
+        chokepoints: 0, tilesetId: GENERATE_TILESET_ID,
         bgm: { mode: "custom", resourceId: STARTER_DEFAULT_BGM_ID },
       },
       { dryRun: false },
@@ -240,7 +244,7 @@ describe("generate_map BGM", () => {
         height: 12,
         seed: 1,
         id: "gen_bgm_none",
-        chokepoints: 0,
+        chokepoints: 0, tilesetId: GENERATE_TILESET_ID,
         bgm: { mode: "none" },
       },
       { dryRun: false },

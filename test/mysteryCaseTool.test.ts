@@ -393,10 +393,11 @@ describe("author_mystery_case — 컴파일 산출물", () => {
     const { result } = author(fixture());
     expect(result.ok).toBe(true);
     const warnings = (result.diff?.warnings ?? []) as string[];
-    expect(warnings.some((warning) => warning.includes("사건 무대") && warning.includes("place_concept"))).toBe(true);
+    // place_concept 는 제거됐다 — 실내를 짓는 도구는 이제 build_hand_interior_room(실내 v5 단일 경로, 2026-09-29).
+    expect(warnings.some((warning) => warning.includes("사건 무대") && warning.includes("build_hand_interior_room"))).toBe(true);
     // 7회차: place_concept 를 먼저 말해도 뒤에 「verificationScene 을 run_scene_test 에」가 있으면 모델은 그것만 한다.
     expect(result.summary).toContain("지금은 run_scene_test 를 호출하지 마라");
-    expect(result.summary).toContain("place_concept");
+    expect(result.summary).toContain("build_hand_interior_room");
     expect(result.summary).not.toContain("data.verificationScene 을 고치지 말고");
     expect((result.data as { verificationScene?: unknown }).verificationScene).toBeUndefined();
     // 방이 있는 맵이면 경고가 없다.

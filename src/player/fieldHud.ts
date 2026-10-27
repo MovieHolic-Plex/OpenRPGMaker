@@ -38,6 +38,9 @@ export class FieldHud {
     const config = this.config, modern = config.theme !== "legacy";
     this.host.dataset.fieldHud = config.theme;
     this.host.dataset.hudObjective = String(!modern || config.objective);
+    // 「현재 목표」 줄 글자는 논리 해상도를 따라 커진다 — 1024×768 무대에서 7px 가 그대로 7px 라 읽을 수 없었다(2026-10-27 romance-j91 J105).
+    const uiScale = String(Math.max(1, Math.round((resolvePlayResolution(project.system).height / 240) * 100) / 100));
+    if (this.host.style.getPropertyValue("--play-ui-scale") !== uiScale) this.host.style.setProperty("--play-ui-scale", uiScale);
     this.root.dataset.theme = config.theme;
     const font = config.font && config.font !== "auto" ? config.font : recommendedHudFont(config.theme);
     this.host.dataset.hudFont = font;

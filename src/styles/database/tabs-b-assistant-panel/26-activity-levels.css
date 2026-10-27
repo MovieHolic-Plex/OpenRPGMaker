@@ -40,10 +40,10 @@
 .ai-activity-entry.is-running .ai-activity-entry-title { font-weight: 600; }
 .ai-activity-entry small { display: block; font-size: 11px; color: var(--text-3); padding-left: 19px; }
 .ai-activity-entry summary { cursor: pointer; }
-.ai-activity-view[data-level="trace"] .ai-activity-entry-title { font-family: monospace; font-size: 11px; }
+.ai-activity-view[data-level="trace"] .ai-activity-entry-title { font-family: var(--font-mono); font-size: 11px; }
 .ai-activity-payload { background: var(--bg-inset); padding: 9px; margin: 8px 0 2px; border-radius: var(--radius-s); }
 .ai-activity-payload strong { font-size: 11px; color: var(--text-2); }
-.ai-activity-payload pre { margin: 4px 0 12px; font: 11px/1.7 monospace; color: var(--text-1); white-space: pre-wrap; overflow-wrap: anywhere; }
+.ai-activity-payload pre { margin: 4px 0 12px; font: 11px/1.7 var(--font-mono); color: var(--text-1); white-space: pre-wrap; overflow-wrap: anywhere; }
 .ai-activity-payload pre:last-child { margin-bottom: 0; }
 .ai-activity-payload p { white-space: pre-wrap; margin: 0; }
 .ai-work-inline.has-activity > .ai-team-board { margin: 4px 0; padding: 0; border: 0; background: transparent; }
@@ -64,16 +64,16 @@
 .ai-activity-log-row { padding: 11px 8px; list-style: none; border-radius: 5px; }
 .ai-activity-log-row::-webkit-details-marker { display: none; }
 .ai-activity-log-row:hover, .ai-activity-entry[open] > .ai-activity-log-row { background: var(--bg-inset); }
-.ai-activity-log-time, .ai-activity-log-duration { font: 11px/1.5 monospace; color: var(--text-3); }
+.ai-activity-log-time, .ai-activity-log-duration { font: 11px/1.5 var(--font-mono); color: var(--text-3); }
 .ai-activity-log-actor { font-size: 11px; color: var(--text-2); overflow-wrap: anywhere; }
 .ai-activity-log-task { min-width: 0; }
 .ai-activity-log-task strong { font-size: 12px; line-height: 1.5; font-weight: 500; }
-.ai-activity-entry .ai-activity-log-task small { padding: 0; margin: 3px 0 0; font: 10px/1.5 monospace; color: var(--text-3); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ai-activity-entry .ai-activity-log-task small { padding: 0; margin: 3px 0 0; font: 10px/1.5 var(--font-mono); color: var(--text-3); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .ai-activity-log-status { color: var(--text-3); font-size: 10px; text-align: center; padding: 3px 5px; border-radius: 5px; background: var(--bg-inset); }
 .ai-activity-entry.is-error .ai-activity-log-status { color: var(--danger); background: color-mix(in srgb, var(--danger) 8%, transparent); }
 .ai-activity-entry.is-running .ai-activity-log-status { color: var(--accent); background: var(--accent-muted); }
 .ai-activity-payload { border: 1px solid var(--border-subtle); margin: 0 0 10px; padding: 14px; }
-.ai-activity-payload .ai-activity-receipt-meta { font: 10px/1.6 monospace; color: var(--text-3); margin-top: 16px; }
+.ai-activity-payload .ai-activity-receipt-meta { font: 10px/1.6 var(--font-mono); color: var(--text-3); margin-top: 16px; }
 @container (max-width: 560px) {
   .ai-activity-log-columns, .ai-activity-log-row { grid-template-columns: 40px minmax(0, 1fr) 48px; gap: 8px; }
   .ai-activity-log-actor, .ai-activity-log-duration, .ai-activity-log-columns > :nth-child(2), .ai-activity-log-columns > :nth-child(5) { display: none; }

@@ -9,7 +9,8 @@ describe('collector authoring presentation', () => {
     const project = createBlankProject();
     applyGenrePreset(project, 'monster-collect');
     expect(project.system.battleParty).toBe('monsters');
-    expect(project.system.menuUiStyle).toBe('pixel');
+    // configureMonsterPresentation uses the collector travel menu (fieldHud HUD_MENUS «field-list»), not the pixel menu.
+    expect(project.system.menuUiStyle).toBe('field-list');
     expect(project.system.fieldHud).toMatchObject({ theme: 'collector', vitals: false });
     expect(project.system.opening?.enabled).toBe(false);
   });

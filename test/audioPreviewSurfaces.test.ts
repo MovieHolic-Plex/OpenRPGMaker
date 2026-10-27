@@ -9,6 +9,7 @@ import { openDatabaseResourcePickerDialog, resourcePickerControl } from "@/edito
 import { createAudioDescriptionDetail } from "@/editor/panels/audioDescriptionDetail";
 import { listAudioResources } from "@/assets/audioResourceCatalog";
 import { getAudioEngine } from "@/player/audio";
+import { retainDatabasePreviewsIn, setDatabasePreviewsActiveIn } from "@/editor/panels/databasePreviewLifecycle";
 
 const disposals: (() => void)[] = [];
 
@@ -121,6 +122,43 @@ it("stops a picker selection even when the next resource resolves to the same UR
   expect(media.hasAttribute("src")).toBe(false);
   expect(previewMedia()).not.toBe(media);
   expect(audioElement(document, "button", "db-resource-picker-audio-play").getAttribute("aria-pressed")).toBe("false");
+});
+
+it("stops a playing dialog preview when its surface is concealed and does not resume it", async () => {
+  openAudioTestDialog();
+  document.querySelector<HTMLButtonElement>(`[data-testid="audio-test-list"] [data-resource-id="${AUDIO_SEARCH_ID}"]`)?.click();
+  const media = previewMedia();
+  const requested = mediaEvent(media, "play");
+  audioElement(document, "button", "audio-test-play").click();
+  await requested;
+  media.dispatchEvent(new Event("playing"));
+  const transport = document.querySelector<HTMLElement>("[data-testid='audio-test-transport']");
+  if (!transport) throw new Error("transport missing");
+  const paused = mediaEvent(media, "pause");
+  setDatabasePreviewsActiveIn(transport, false);
+  await paused;
+  expect(media.paused).toBe(true);
+  setDatabasePreviewsActiveIn(transport, true);
+  expect(media.paused).toBe(true);
+  expect(media.hasAttribute("src")).toBe(true);
+});
+
+it("keeps inline preview media when a retained field leaves the document", async () => {
+  const control = resourcePickerControl({ label: "Audio", kind: "music", resourceId: AUDIO_SEARCH_ID, testid: "inline-audio", onChange: vi.fn(), rerender: vi.fn() });
+  document.body.append(control);
+  const media = previewMedia();
+  const requested = mediaEvent(media, "play");
+  audioElement(document, "button", "db-resource-picker-audio-play").click();
+  await requested;
+  media.dispatchEvent(new Event("playing"));
+  retainDatabasePreviewsIn(control, true);
+  const paused = mediaEvent(media, "pause");
+  setDatabasePreviewsActiveIn(control, false);
+  await paused;
+  control.remove();
+  await new Promise<void>((resolve) => { queueMicrotask(resolve); });
+  expect(media.paused).toBe(true);
+  expect(media.hasAttribute("src")).toBe(true);
 });
 
 it("releases playing inline media when the owning DOM is replaced", async () => {

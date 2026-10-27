@@ -201,6 +201,10 @@ export function actorCommandDirectorState(
   const ownEntry = (entry: BattleSnapshot["timeline"][number]) => entry.userRecordId === actor?.recordId
     && (entry.kind === "damage" || entry.kind === "miss" || entry.kind === "healing" || entry.kind === "action");
   const delta = after.timeline.slice(before.timeline.length);
+  // 해독초처럼 HP 는 그대로이고 상태만 바뀐 명령. 0 회복 엔트리가 없으면 lastActionResult
+  // (이전 공격)를 빌려 「피해!」나 「효과가 충분하지 않았다」로 읽히지 않게 한다.
+  const actorStateChange = delta.some((entry) =>
+    (entry.kind === "stateAdded" || entry.kind === "stateRemoved") && entry.userRecordId === actor?.recordId);
   const commandEntry = delta.find((entry) => ownEntry(entry) && entry.targetId === commanded?.id) ?? delta.find(ownEntry);
   const target = commandEntry && commandEntry.targetId !== commanded?.id
     ? [...after.enemies, ...after.actors, ...(after.departedEnemies ?? [])].find((battler) => battler.id === commandEntry.targetId) ?? commanded
@@ -217,6 +221,8 @@ export function actorCommandDirectorState(
       ...(options.describeEffectiveness && commandEntry.effectiveness !== undefined ? { effectiveness: commandEntry.effectiveness } : {}),
     }
     // 결과 엔트리가 없는 명령(못 움직인 차례 등)에 남의 결과를 붙이지 않는다.
+    // 상태만 바뀐 약도 이전 타격의 lastActionResult 를 빌리지 않는다.
+    : actorStateChange ? undefined
     : after.lastActionResult?.userRecordId !== actor?.recordId ? undefined
     : after.lastActionResult && !options.describeEffectiveness
       ? { ...after.lastActionResult, effectiveness: undefined }
@@ -244,9 +250,12 @@ export function actorCommandDirectorState(
       commandLine(command, actor, before),
       impactLine(command, target, impact, result, after, effect),
     ];
+  // 상태가 실제로 풀리거나 걸렸으면 「효과가 충분하지 않았다」는 거짓 실패다.
+  // 회복·피해 문장은 그대로 둔다. HP 가 이미 가득 찬 약은 상태 변화가 없어 이 줄을 유지한다.
+  const spoken = actorStateChange ? lines.filter((line) => line !== "효과가 충분하지 않았다.") : lines;
   return {
     step: impact > 0 ? "impact" : "acting",
-    lines,
+    lines: spoken,
     activeActorRecordId: actor?.recordId,
     targetId: target?.id,
   };
@@ -325,7 +334,7 @@ export function resultDirectorState(snapshot: BattleSnapshot, previous: BattleDi
   if (!snapshot.result) return previous;
   return {
     step: "result",
-    // 에메랄드는 결과 문장 창 쪽들(emeraldResultRows)이 말한다 — 「승리 / 경험치 18 / 골드 48」 요약 줄을 겹쳐 두지 않는다.
+    // 에메랄드는 결과 문장 창 쪽들(emeraldResultRows)이 말한다 — 「승리 / 경험치 18 / 48 G」 요약 줄을 겹쳐 두지 않는다.
     lines: emeraldNarrationActive() ? [] : [resultLine(snapshot.result), rewardsLine(snapshot)],
     activeActorRecordId: previous.activeActorRecordId,
     targetId: previous.targetId,
@@ -785,7 +794,10 @@ function syncPixelLoot(panel: HTMLElement, snapshot: BattleSnapshot): void {
     const entry = kind === "item" ? counts[itemIndex++] : undefined;
     if (row.querySelector(".battle-result-reward-owned")) continue;
     let owned: string | undefined;
-    if (kind === "gold") owned = `소지금 ${gold.toLocaleString("ko-KR")} → ${(gold + snapshot.rewards.gold).toLocaleString("ko-KR")}`;
+    if (kind === "gold") {
+      const unit = battleCurrencyUnit();
+      owned = `소지금 ${gold.toLocaleString("ko-KR")} ${unit} → ${(gold + snapshot.rewards.gold).toLocaleString("ko-KR")} ${unit}`;
+    }
     if (entry) {
       const before = snapshot.eventState.inventory[entry[0]] ?? 0;
       owned = `보유 ${before} → ${before + entry[1]}`;
@@ -922,6 +934,10 @@ export function applyBattleDirectorState(
   snapshot: BattleSnapshot
 ): void {
   root.dataset.battleDirectorStep = state.step;
+  // 클래식 스킨은 명령 단계에서 문장 창을 접는다. 도주 불가 안내는 그 창이 유일한 자리라
+  // 잠깐 다시 편다(01-scene-base.css · _rm2000.css 의 data-battle-notice).
+  if (state.flash) root.dataset.battleNotice = "true";
+  else delete root.dataset.battleNotice;
   root.dataset.battlePhase = snapshot.phase;
   root.dataset.battleFlow = snapshot.battleFlow;
   // 결과 클래스는 연출(비트)이 전부 끝나고 디렉터가 result 단계에 진입했을 때만 붙인다.
@@ -1112,10 +1128,18 @@ function resultLine(result: BattleSnapshot["result"]): string {
   }
 }
 
+/** 자료집 용어의 화폐 단위. 비어 있으면 기본 「G」.
+ *  승리 칸이 「골드」로 고정되면 상점·메뉴의 「G」(또는 만든 사람이 바꾼 이름)와 다른 돈을 받은 것처럼 읽힌다. */
+function battleCurrencyUnit(): string {
+  return resolveTerms(store.getCurrent()).gold.trim() || "G";
+}
+
 function rewardsLine(snapshot: BattleSnapshot): string {
   if (snapshot.result !== "victory") return "전투가 종료되었습니다.";
+  const terms = resolveTerms(store.getCurrent());
   const itemCount = snapshot.rewards.items.length;
-  const base = `경험치 ${snapshot.rewards.exp} / 골드 ${snapshot.rewards.gold} / 아이템 ${itemCount}`;
+  const itemWord = terms.item.trim() || "아이템";
+  const base = `경험치 ${snapshot.rewards.exp} / ${snapshot.rewards.gold} ${battleCurrencyUnit()} / ${itemWord} ${itemCount}`;
   // 액터·몬스터 양쪽 레벨업을 한 줄에 합친다(몬스터 전투는 액터 쪽이 항상 비어 있다).
   const names = [
     ...(snapshot.rewards.levelUps ?? []).map((entry) => `${entry.actorName} Lv.${entry.toLevel}`),
@@ -1136,7 +1160,7 @@ function rewardRows(snapshot: BattleSnapshot): readonly EmeraldResultRow[] {
   if (snapshot.result !== "victory") return [];
   const rows: { kind: string; label: string; value: string }[] = [
     { kind: "exp", label: "경험치", value: `+${snapshot.rewards.exp}` },
-    { kind: "gold", label: "골드", value: `+${snapshot.rewards.gold}` },
+    { kind: "gold", label: battleCurrencyUnit(), value: `+${snapshot.rewards.gold}` },
   ];
   // 획득한 아이템이 있으면 실제 이름으로, 없으면 행을 추가하지 않는다(거짓 표시 금지).
   // 같은 아이템은 한 행에 ×n — 드롭 6개가 「아이템」 라벨 6줄·같은 아이콘 6개로 늘어나

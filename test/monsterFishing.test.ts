@@ -12,7 +12,8 @@ import type { ToolContext } from "@/editor/tools";
 function monsterFixture() {
   const project = createBlankProject();
   const mapId = project.startMapId;
-  project.database.monsterSpecies = [{ id: "sp_carp", name: "잉어킹류" } as never];
+  // Add to the shipped roster — replacing it orphans the default enemies' speciesId references and every commit fails validation.
+  project.database.monsterSpecies.push({ id: "sp_carp", name: "잉어킹류" } as never);
   project.database.enemies.push({ id: "enemy_wild_sp_carp", name: "잉어", speciesId: "sp_carp" } as never);
   project.database.troops.push({ id: "troop_wild_sp_carp", name: "야생 잉어", enemyIds: ["enemy_wild_sp_carp"] } as never);
   const ctx = { project, currentMapId: mapId } as ToolContext;
@@ -38,8 +39,10 @@ describe("몬스터 낚시", () => {
   });
 
   it("낚으면 encounter 결과(troopId·레벨 범위)가 오고 interactWithLifeField 가 그대로 전달한다", () => {
-    const { project, ctx, mapId } = monsterFixture();
-    runTool(ctx, "configure_fishing", { enabled: true, energyCost: 0, spots: [{ id: "s", mapId, area: { x: 0, y: 0, w: 2, h: 2 }, catches: [{ speciesId: "sp_carp", levelMin: 4, levelMax: 6 }] }] });
+    const { ctx, mapId } = monsterFixture();
+    expect(runTool(ctx, "configure_fishing", { enabled: true, energyCost: 0, spots: [{ id: "s", mapId, area: { x: 0, y: 0, w: 2, h: 2 }, catches: [{ speciesId: "sp_carp", levelMin: 4, levelMax: 6 }] }] }).ok).toBe(true);
+    // runTool commits a new project object onto the context — read the configured project from there.
+    const project = ctx.project;
     const session = startSession(project, 1);
     const direct = attemptFishingCatch(project, session, { mapId, x: 0, y: 0 });
     expect(direct).toMatchObject({ ok: true, kind: "encounter", speciesId: "sp_carp", troopId: "troop_wild_sp_carp" });

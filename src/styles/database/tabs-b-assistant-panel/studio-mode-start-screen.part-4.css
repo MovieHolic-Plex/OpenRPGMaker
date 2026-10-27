@@ -1172,7 +1172,7 @@
 
 .ai-studio-director-theater-status {
   color: var(--text-2);
-  font-family: ui-monospace, monospace;
+  font-family: var(--font-mono);
   font-size: 11px;
 }
 
