@@ -877,10 +877,11 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
 
   function onKeydown(event: KeyboardEvent): void {
     if (destroyed || options.runtime.snapshot().eventChoice || options.runtime.snapshot().eventPause) return;
+    // 한글·일본어 IME 는 keydown 의 key 를 "Process" 로 바꾼다. 필드·메뉴와 같이 code 의 물리 키로 되돌린다.
+    // 글자 자체가 온 조합(isComposing 이고 복원되지 않음)은 메뉴를 움직이지 않는다.
     // 한글 IME 는 칸 밖에서도 key 를 Process 로 바꾼다. 필드·대사·커서 메뉴와 같이 code 의 물리 키를 읽는다.
     // 글자 자체가 온 조합은 명령이 아니고, 입력 칸에 친 키는 전투가 가져가지 않는다.
-    if (isTextInputTarget(event.target)) return;
-    const key = keyboardEventKey(event);
+    if (isTextInputTarget(event.target)) return;    const key = keyboardEventKey(event);
     if (key === "Process" || key === "Unidentified") return;
     if (event.isComposing && key === event.key) return;
     if (shiftHeld && key !== "Shift") shiftCombined = true;
@@ -923,11 +924,14 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     }
     if (inputPrompt) {
       const dir = directionForKey(key);
+      const inputKey: SkillInputKey | undefined = dir ?? (isBattleConfirmKey(key) ? "confirm" : isBattleCancelKey(key) ? "cancel" : undefined);
+      if (inputKey) {
+        event.preventDefault();
+        inputPrompt.press(inputKey);
       const promptKey: SkillInputKey | undefined = dir ?? (isBattleConfirmKey(key) ? "confirm" : isBattleCancelKey(key) ? "cancel" : undefined);
       if (promptKey) {
         event.preventDefault();
-        inputPrompt.press(promptKey);
-      }
+        inputPrompt.press(promptKey);      }
       return;
     }
     if (sequenceBusy) {
@@ -999,10 +1003,10 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
   // Shift 단독 토글: keydown 에서 조합 여부를 기록하고, keyup 에서 단독이었을 때만
   // 속도를 토글한다. Shift+A(대문자)·Shift+Z 같은 조합에서는 토글되지 않는다(결함 2).
   function onWindowKeyup(event: KeyboardEvent): void {
+    if (keyboardEventKey(event) !== "Shift") return;
     // keydown 과 같이, IME 가 key 를 Process 로 바꿔도 Shift 를 놓친 것으로 본다.
     const key = keyboardEventKey(event);
-    if (key !== "Shift") return;
-    if (options.runtime.snapshot().eventChoice || options.runtime.snapshot().eventPause) { shiftHeld = false; shiftCombined = false; return; }
+    if (key !== "Shift") return;    if (options.runtime.snapshot().eventChoice || options.runtime.snapshot().eventPause) { shiftHeld = false; shiftCombined = false; return; }
     // 텍스트 입력 중에는 토글하지 않는다. 연출 중에는 허용한다 — 배속은 재생을
     // 보면서 조절하는 컨트롤이다(코덱스 리뷰 C6).
     if (shiftHeld && !shiftCombined && root.isConnected && !isTextInputTarget(event.target)) {
