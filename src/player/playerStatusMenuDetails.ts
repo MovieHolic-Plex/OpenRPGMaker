@@ -586,7 +586,7 @@ function skillDetail(options: StatusMenuDetailOptions): StatusMenuDetail {
         onActivate: options.onSelectSkill ? () => options.onSelectSkill?.(skill.id) : undefined,
       })),
       emptyLabel: "사용할 수 있는 스킬이 없습니다",
-      hint: options.selectedSkillId ? "선택한 스킬 정보를 확인했습니다." : "스킬을 선택하면 설명을 확인합니다.",
+      hint: "설명은 커서를 올리면 아래에 보입니다. 필드 스킬만 Enter로 사용합니다.",
     };
   }
 
