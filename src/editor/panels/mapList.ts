@@ -345,6 +345,26 @@ function toggleMapFilterExpansion(): void {
     ?.focus();
 }
 
+/** 한글·일본어 IME 조합 중 input. 요소를 갈아끼우면 조합 중인 음절이 끊긴다. */
+function isImeComposingInput(event: Event): boolean {
+  return "isComposing" in event && (event as InputEvent).isComposing === true;
+}
+
+function mapFilterInput(event: Event): HTMLInputElement | null {
+  const node = event.currentTarget ?? event.target;
+  if (!node || typeof (node as HTMLInputElement).value !== "string") return null;
+  return node as HTMLInputElement;
+}
+
+function restoreMapFilterCaret(start: number, end: number): void {
+  const input = currentMapListContainer?.querySelector<HTMLInputElement>("[data-testid='map-tree-filter']");
+  if (!input) return;
+  input.focus();
+  const caret = Math.max(0, Math.min(start, input.value.length));
+  const caretEnd = Math.max(caret, Math.min(end, input.value.length));
+  input.setSelectionRange(caret, caretEnd);
+}
+
 function makeFilterField(mapCount: number): HTMLElement {
   const expanded = isFilterExpanded(mapCount);
   const chips = el("div", { class: "map-tree-filter-facets" });
@@ -370,6 +390,23 @@ function makeFilterField(mapCount: number): HTMLElement {
   // CSS 의 :has(.map-tree-facet.is-active) 는 is-active 를 토글하는 모든 곳(레이어 스위처
   // 포함)에서 BODY 까지 스타일 무효화를 일으켜 3.7k 요소 재계산(~50ms)을 만든다.
   // 필터는 렌더마다 새로 지어지므로 정적 클래스로 같은 판정을 한다.
+
+  // 글자마다 목록을 다시 짓는다. 그때 입력칸도 새 노드가 되므로, 커서를 끝으로 밀면
+  // 단어 중간에 끼워 넣은 글자 다음이 아니라 맨 끝에서 이어서 치게 된다. 한글·일본어 IME 는
+  // 그 교체만으로 조합 중인 음절이 끊기므로, 조합이 끝나기 전에는 목록을 건드리지 않는다.
+  let composing = false;
+  const commitFilter = (input: HTMLInputElement): void => {
+    if (composing) return;
+    const value = input.value;
+    const start = input.selectionStart ?? value.length;
+    const end = input.selectionEnd ?? start;
+    // 같은 문자열이면 목록은 이미 맞다. 조합이 끝난 직후 같은 값의 input 이 한 번 더 오면
+    // 이미 맞춘 커서를 끝으로 되돌리지 않는다.
+    if (value === mapFilterQuery) return;
+    mapFilterQuery = value;
+    rerenderMapList();
+    restoreMapFilterCaret(start, end);
+  };
   const wrap = el("div", {
     class: "map-tree-filter" + (mapFilterFacet !== "all" ? " has-active-facet" : ""),
     children: [
@@ -383,12 +420,18 @@ function makeFilterField(mapCount: number): HTMLElement {
         value: mapFilterQuery,
         dataset: { testid: "map-tree-filter" },
         on: {
+          compositionstart: () => {
+            composing = true;
+          },
+          compositionend: (event) => {
+            composing = false;
+            const input = mapFilterInput(event);
+            if (input) commitFilter(input);
+          },
           input: (event) => {
-            mapFilterQuery = (event.target as HTMLInputElement).value;
-            rerenderMapList();
-            const input = currentMapListContainer?.querySelector<HTMLInputElement>("[data-testid='map-tree-filter']");
-            input?.focus();
-            if (input) input.setSelectionRange(mapFilterQuery.length, mapFilterQuery.length);
+            if (composing || isImeComposingInput(event)) return;
+            const input = mapFilterInput(event);
+            if (input) commitFilter(input);
           },
         },
       }),
