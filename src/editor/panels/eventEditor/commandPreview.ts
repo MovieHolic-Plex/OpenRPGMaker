@@ -39,6 +39,7 @@ import { pictureSlotCaption } from "./options";
 import { commandLabel } from "./commandPicker";
 import { commandSummaryParts, isSummaryIconPart } from "./commandSummary";
 import { textBodyOf } from "@/project/io/rewriteLegacyDialogue";
+import { LETTERBOX_DEFAULT_PERCENT } from "@/project/eventCommands/cinematicStaging";
 import { planScreenEffect } from "@/player/interpreter/screenEffectPlan";
 import { clampMs } from "@/player/interpreter/commandCatalog";
 import { isRecognizedTintValue, isVisibleTint, parseTintColor, rgbaToCss } from "@/player/screen/tintModel";
@@ -1595,9 +1596,10 @@ function screenEffectStage(cmd: Extract<Command, { kind: "m2Command" }>): HTMLEl
   overlay.style.background = model.background;
   overlay.style.opacity = String(model.restOpacity);
   screen.append(overlay);
+  const letterbox = model.letterbox ? appendLetterboxPreview(screen, model.letterbox.restPercent) : undefined;
   screen.append(el("div", { class: "ecp-fx-label", text: screenEffectLabel(effect) }));
   stage.append(screen);
-  stage.append(screenEffectPlayButton(stage, overlay, model, duration));
+  stage.append(screenEffectPlayButton(stage, overlay, model, duration, letterbox));
   const meta = [screenEffectLabel(effect)];
   if (value) meta.push(value);
   meta.push(`${duration}ms`);
@@ -1623,6 +1625,16 @@ const SCREEN_EFFECT_LABELS: Record<string, string> = {
   flash: "플래시",
   tint: "색조",
   weather: "날씨",
+  wave: "물결",
+  mosaic: "모자이크",
+  rotate: "기울기",
+  clearDistortion: "왜곡 끄기",
+  letterbox: "레터박스",
+  clearLetterbox: "레터박스 걷기",
+  freeze: "정지 화면",
+  unfreeze: "정지 풀기",
+  doorOpen: "문 열기",
+  doorClose: "문 닫기",
 };
 
 function screenEffectLabel(effect: string): string {
@@ -1639,6 +1651,14 @@ type ScreenEffectPreviewModel = {
   readonly restOpacity: number;
   /** 색조 제거(톤 리셋) — 색을 칠하는 것이 아니라 지우는 상태. */
   readonly neutral?: boolean;
+  /**
+   * 레터박스. 정지 그림은 도착 두께(rest)이고, 재생은 from 에서 rest 로 높이를 옮긴다.
+   * 런타임도 띠 height 를 durationMs 동안 전이한다.
+   */
+  readonly letterbox?: {
+    readonly fromPercent: number;
+    readonly restPercent: number;
+  };
   readonly note?: string;
   readonly error?: string;
 };
@@ -1691,7 +1711,12 @@ function screenEffectPreviewModel(effect: string, value: string, durationMs: num
         background: "rgba(0,0,0,0)",
         fromOpacity: 0,
         restOpacity: 0,
-        note: plan.percent > 0 ? `레터박스 — 위아래 ${plan.percent}% 검은 띠` : "레터박스 걷기",
+        // 걷기는 이전 두께를 명령이 기억하지 않는다. 재생은 기본 두께(12%)에서 닫히는 모습을 보여 준다.
+        letterbox: {
+          fromPercent: plan.percent > 0 ? 0 : LETTERBOX_DEFAULT_PERCENT,
+          restPercent: plan.percent,
+        },
+        note: plan.percent > 0 ? `위아래 ${plan.percent}% 검은 띠` : "띠가 걷힌 뒤",
       };
     case "freeze":
       return { background: "rgba(255,255,255,0)", fromOpacity: 0, restOpacity: 0, note: plan.on ? `정지 화면 — 지금 화면을 멈춘 한 장으로(${plan.style})` : "정지 화면 풀기" };
@@ -1713,12 +1738,53 @@ function screenEffectValueError(effect: string, value: string): string | undefin
   return `알 수 없는 색 '${trimmed}' — 런타임은 흰색으로 대신합니다.`;
 }
 
+type LetterboxPreviewParts = {
+  readonly bars: readonly HTMLElement[];
+  readonly line: HTMLElement;
+};
+
+/** 미니 모니터에 런타임과 같은 위·아래 검은 띠와, 띠 안쪽에 앉는 대사창을 그린다. */
+function appendLetterboxPreview(screen: HTMLElement, restPercent: number): LetterboxPreviewParts {
+  const bar = (edge: "top" | "bottom"): HTMLElement => {
+    const node = el("div", {
+      class: `ecp-letterbox-bar ecp-letterbox-bar-${edge}`,
+      dataset: { testid: `ecp-screen-effect-letterbox-${edge}` },
+      attrs: { "aria-hidden": "true" },
+    });
+    node.style.height = `${restPercent}%`;
+    // 게임 레터박스와 같은 검정. 인라인으로 두어 편집기 크롬 팔레트(CSS 예산)와 섞지 않는다.
+    node.style.background = "#000";
+    return node;
+  };
+  const bars = [bar("top"), bar("bottom")];
+  const line = el("div", {
+    class: "ecp-letterbox-line",
+    text: "대사",
+    dataset: { testid: "ecp-screen-effect-letterbox-line" },
+    attrs: { "aria-hidden": "true" },
+  });
+  // 아래 대사창의 밑변이 아래 띠의 안쪽 가장자리에 붙는다. 띠가 없으면 화면 아래에 앉는다.
+  line.style.bottom = `${restPercent}%`;
+  screen.append(...bars, line);
+  return { bars, line };
+}
+
+function placeLetterboxPreview(parts: LetterboxPreviewParts, percent: number, instant: boolean): void {
+  for (const bar of parts.bars) {
+    bar.classList.toggle("is-fx-from", instant);
+    bar.style.height = `${percent}%`;
+  }
+  parts.line.classList.toggle("is-fx-from", instant);
+  parts.line.style.bottom = `${percent}%`;
+}
+
 /** 한 번 재생. from 상태로 점프한 다음 다음 프레임에 rest 로 풀어 CSS 전이가 돌게 한다. */
 function screenEffectPlayButton(
   stage: HTMLElement,
   overlay: HTMLElement,
   model: ScreenEffectPreviewModel,
-  durationMs: number
+  durationMs: number,
+  letterbox?: LetterboxPreviewParts,
 ): HTMLElement {
   let settleTimer: ReturnType<typeof setTimeout> | undefined;
   const settle = () => {
@@ -1740,10 +1806,12 @@ function screenEffectPlayButton(
         // is-fx-from 은 transition 을 끄는 클래스다 — 시작 상태로 즉시 점프한다.
         overlay.classList.add("is-fx-from");
         overlay.style.opacity = String(model.fromOpacity);
+        if (letterbox && model.letterbox) placeLetterboxPreview(letterbox, model.letterbox.fromPercent, true);
         nextFrame(() => {
           nextFrame(() => {
             overlay.classList.remove("is-fx-from");
             overlay.style.opacity = String(model.restOpacity);
+            if (letterbox && model.letterbox) placeLetterboxPreview(letterbox, model.letterbox.restPercent, false);
             // transitionend 가 오지 않는 환경(모션 감소 설정 등)을 위한 안전망.
             settleTimer = setTimeout(settle, durationMs + 250);
           });
