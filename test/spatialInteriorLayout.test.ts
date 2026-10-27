@@ -26,7 +26,10 @@ describe("structural interior room layout", () => {
     expect(map.width).toBe(12);
     expect(map.height).toBe(12);
     expect(map.roomHarnessPlan!.plan.rooms).toHaveLength(2);
-    for (let y = 1; y <= 4; y++) expect(isCeilingTile(map.lowerTiles[y * 12 + 6]!)).toBe(true);
+    // 천장 canon v2(interiorHouseWallGrammar.ts): 천장 아래 남향 모서리마다 크림 벽면 2행(1칸 구조는 77/107)이 쌍으로 붙는다.
+    // 열 6 = 북벽 천장(1) · 북벽 면(2~3) · 칸막이 천장(4) · 칸막이 면(5~6). 예전의 «1~4 전부 천장» 기대는 벽면 쌍 불변식 이전 것.
+    for (const y of [1, 4]) expect(isCeilingTile(map.lowerTiles[y * 12 + 6]!)).toBe(true);
+    for (const y of [2, 3, 5, 6]) expect(isCeilingTile(map.lowerTiles[y * 12 + 6]!)).toBe(false);
     for (let y = 4; y < 10; y++) expect(isPassableLanding(result, map, 6, y)).toBe(y === 7);
     const shaped = structuredClone(map);
     shapeInteriorCeiling(shaped);
