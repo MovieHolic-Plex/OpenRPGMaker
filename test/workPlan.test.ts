@@ -441,8 +441,10 @@ describe("workPlan progress harness", () => {
 
 describe("canonical construction routing in work plans", () => {
   it("플래너 예시는 목표·정확 수량을 갖춘 공식 facade만 권장한다", () => {
-    expect(ORCHESTRATOR_SYSTEM_PROMPT).toContain("author_house");
-    expect(ORCHESTRATOR_SYSTEM_PROMPT).toContain("author_village");
+    // author_house·author_village 는 2026-10-07 저작권 정리로 지워졌다 — 신축 facade 는 author_beodeul_town·place_terrain_house 다.
+    expect(ORCHESTRATOR_SYSTEM_PROMPT).toContain("author_beodeul_town");
+    expect(ORCHESTRATOR_SYSTEM_PROMPT).toContain("place_terrain_house");
+    expect(ORCHESTRATOR_SYSTEM_PROMPT).not.toMatch(/\bauthor_house\b|\bauthor_village\b/);
     expect(ORCHESTRATOR_SYSTEM_PROMPT).toContain("목표 맵");
     expect(ORCHESTRATOR_SYSTEM_PROMPT).toContain("정확한 수량");
     expect(ORCHESTRATOR_SYSTEM_PROMPT).not.toMatch(/build_house_kit|build_house_lots|build_village|run_village_session|run_village_pipeline/);
