@@ -1,0 +1,32 @@
+VERDICT: FAIL
+
+Judged from the images only. Coordinates:
+- floor-20x15-3x is 960x720 at 3x, so the 112x80 field repeat is 336px horizontally and 240px vertically.
+- built-seed1-1x is 736x944. built-seed2-1x is 640x880.
+- built-seed2-crop-3x is 720x480.
+- beodeul-volcano-crop-3x is 720x480.
+
+This is the best round so far. The floor is now clearly purple-black, the slabs have a lit rim and grain, and there are no 16px or 64px lattices and no tile seams. In the real built dungeons it looks good and fits the walls and props. One major defect remains, and it is the same family as r7 and r8.
+
+Major defect
+1. The 112/80 repeat is clearly visible in a widely tiled open floor (point 2).
+   - In floor-20x15-3x the violet glow dots form an obvious lattice at the repeat pitch. They sit at y~45 at x~95, 430 and 768. At y~97 they are at x~250, 587 and 925. At y~183 they are at x~50, 385 and 720. At y~205 they are at x~183, 520 and 855. Each column of dots is exactly 336px from the next. The same dots return 240px lower (for example x~97,y~45 and x~97,y~285 and x~97,y~525).
+   - The large maroon-lit slab clusters repeat too, at the same pitch. The cluster at x~130-190,y~50-95 returns at x~470-530 and x~805-865, and again at y~285-330 and y~525-570.
+   - The reader sees wallpaper: repeating bands of identical slab clusters and glow dots. A 112x80 field is smaller than r8's, so any open room of 12 tiles or more across shows several repeats.
+   - It is largely masked in the two built dungeons, because the rooms are irregular and broken up by props, cliffs and void. The most exposed spots are the large open floors: seed1 around x~290-470,y~480-610 and seed2 around x~330-560,y~230-400. I cannot confirm a repeat there at 1x. The brief says "no visible repeat when tiled widely", and the provided 20x15 test shows it.
+
+Moderate and minor
+2. Flat interiors (point 3), moderate. The darkest slabs are almost single-value indigo with only faint horizontal grain. Examples in floor-20x15-3x are x~145-200,y~85-130 and x~380-440,y~290-340. In the 1x dungeons these read as dark filler between the lit slabs, so the floor is a mix of lit slabs and near-flat dark ones. It is fine at 1x. At 3x it is flatter than Beodeul's multi-tone texture.
+3. Wall contact (point 5), minor. In floor-20x15-3x the under-wall shade row (y~0-12) is only a thin dark strip at the very top, about 3-4px at 1x, with no gradient into the first slab row. In the built crop the contact under the brick wall reads well (seed2 crop x~310-460,y~60-95, a dark band that blends into the first slab row). The 20x15 version is weaker than the built one.
+4. Glow (point 4), minor. It meets "faint, in some cracks": 2-6px violet slivers on slab borders, roughly 12 per 112x80 field. At 1x they are almost invisible (only a few violet dots, e.g. seed2 crop 3x x~120,y~200 and x~425,y~395). The glow does not contribute a read of "otherworld" on its own. The purple hue, crystals and portal props do that work. It is also very regular: the same size and style everywhere, with no halo.
+5. Outline (point 2), minor. A uniform near-black 1-2px outline surrounds every slab, which reads as Voronoi cobbles. There are no seams at 16px boundaries and no mortar lattice. This is a style note.
+6. Edges (point 5), no defect. With the 47 edge variants gone, I see no pasted-on edges. The floor reaches the cliff ledges and wall bases cleanly in both dungeons (e.g. seed2 x~110-300,y~265-300 and seed1 x~240-415,y~255-275).
+
+Quality vs Beodeul (point 6)
+- Beodeul's volcano floor is organic, low-chroma and patchy. It has no repeating motif and sits very calmly under props.
+- This floor has clearer slab structure and holds up well beside the walls, the throne, the portal and the crystals in the built dungeons. Information per tile is comparable or higher. Shading steps are fewer on the dark slabs.
+- It reaches the bar in the built context. It falls short only on the visible repeat in open ground.
+
+Fix direction
+- Break the repeat: make the field larger or add a second field or glow set so each region is different.
+- Alternatively, offset each cell's field position by a position hash, so the 112/80 grid is not axis-aligned. Rotating or mirroring the whole field per region would also help.

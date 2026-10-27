@@ -4457,6 +4457,15 @@
     "other.ground"
    ],
    "lead": "r8 반려(가장자리 납작한 띠·붙인 판·2×2 반복) → 가장자리 47 변형 없이 112×80 밭을 칸 위치로 감아 깔고 벽 밑 줄은 그늘 줄 조각. 시트 여유 47칸 안(42칸)."
+  },
+  "theme-floors-r10": {
+   "module": "src/harnesses/dungeon-chipset/rounds/theme_floors_r10.py",
+   "wave": "theme_arcane",
+   "title": "던전 테마 바닥 다시 그림 theme-floors-r10",
+   "items": [
+    "other.ground"
+   ],
+   "lead": "r9 반려(넓은 바닥 112/80 반복) → 밝은 판 드물고 고르게, 빛 줄기 셋, 시공기 방마다 밭 시작 어긋남."
   }
  }
 }
