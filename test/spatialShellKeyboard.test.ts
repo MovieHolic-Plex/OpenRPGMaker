@@ -82,25 +82,5 @@ describe("spatial shell keyboard and tiles instance selection", () => {
   });
 
   // (d) 타일 탭은 타일셋 편집기만 그리고 「맵 사용」 칩·인스턴스 카드가 없다(spatialShell.renderTileLibrary) — 이 케이스만 은퇴.
-  it.skip("keeps a real tileset id after clicking a tiles 맵 사용 instance card", () => {
-    const project = store.getCurrent();
-    const map = project.maps[project.startMapId];
-    expect(map, "blank project start map").toBeDefined();
-    if (!map) throw new Error("missing start map");
-    expect(map.tilesetId.length).toBeGreaterThan(0);
-    setSelectedTileset(map.tilesetId);
-    renderDatabasePanel(host);
-    host.querySelector<HTMLButtonElement>("[data-testid='spatial-mode-instances']")?.click();
-    expect(spatialSession().mode).toBe("instances");
-    const usageId = `map:${map.id}`;
-    const usageCard = host.querySelector<HTMLButtonElement>(spatialCardDomSelector(usageId));
-    expect(usageCard, "map usage card").not.toBeNull();
-    expect(usageCard?.getAttribute("data-source")).toBe("placed");
-    expect(usageCard?.getAttribute("data-card-id")).toBe(usageId);
-    usageCard?.click();
-    expect(spatialSession().occurrenceId).toBe(usageId);
-    expect(getSelectedTilesetId()).toBe(map.tilesetId);
-    expect(window.localStorage.getItem("oprn:database.selectedTilesetId")).toBe(map.tilesetId);
-    expect(getSelectedTilesetId()?.startsWith("map:")).toBe(false);
-  });
+  // 은퇴한 사례: "keeps a real tileset id after clicking a tiles 맵 사용 instance card"
 });

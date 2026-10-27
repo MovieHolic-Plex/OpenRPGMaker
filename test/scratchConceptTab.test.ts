@@ -153,38 +153,10 @@ describe("scratchConceptTab 시설 띠", () => {
   }
 
   // CONCEPT_FACILITY_TEMPLATES 는 공용 실내 초기화로 비워졌다(「Retired by the shared interior reset」, conceptFacilityTemplates.ts) — 시드 의존 사례 폐기.
-  it.skip("시설 칩을 누르면 그 시설의 장소가 그려지고 벽 재질이 보인다", () => {
-    const host = renderOnTileset(INTERIOR_ROOM_TILESET_ID);
-    expect(host.querySelector("[data-testid='scratch-concept-place-workshop']")).toBeNull();
-    host.querySelector("[data-testid='scratch-concept-facility-smithy']")!.click();
-    expect(host.querySelector("[data-testid='scratch-concept-place-workshop']")).not.toBeNull();
-    expect(host.querySelector("[data-testid='scratch-concept-place-bedroom']")).toBeNull();
-    expect(host.querySelector("[data-testid='scratch-concept-thing-name']")?.value).not.toBe("침대(가로)");
-    expect(host.querySelector("[data-testid='scratch-concept-place-dorm']")).toBeNull();
-    expect(host.querySelector("[data-testid='scratch-concept-crumb']")?.textContent).toContain("대장간");
-    expect(select(host, "scratch-concept-facility-wall").value).toBe("stone-brick");
-    expect(select(host, "scratch-concept-place-floor-workshop").value).toBe("stone");
-    expect(host.querySelector("[data-testid='scratch-concept-line']")?.textContent).toContain("대장간");
-  });
+  // 은퇴한 사례: "시설 칩을 누르면 그 시설의 장소가 그려지고 벽 재질이 보인다"
 
   // CONCEPT_FACILITY_TEMPLATES 는 공용 실내 초기화로 비워졌다(「Retired by the shared interior reset」, conceptFacilityTemplates.ts) — 시드 의존 사례 폐기.
-  it.skip("벽·바닥 재질을 바꾸면 저장되고 기본값(크림·나무)은 필드를 비운다", () => {
-    const host = renderOnTileset(INTERIOR_ROOM_TILESET_ID);
-    host.querySelector("[data-testid='scratch-concept-facility-smithy']")!.click();
-    const wall = select(host, "scratch-concept-facility-wall");
-    wall.value = "cream";
-    wall.dispatchEvent(new Event("change"));
-    const floor = select(host, "scratch-concept-place-floor-workshop");
-    floor.value = "plank";
-    floor.dispatchEvent(new Event("change"));
-    const smithy = store.getCurrent().tilesets[INTERIOR_ROOM_TILESET_ID]!.scratchConceptBundles!.find((bundle) => bundle.id === "smithy")!;
-    expect(smithy.facilities[0]!.wall).toBeUndefined();
-    expect(smithy.places.find((place) => place.id === "workshop")?.floor).toBe("plank");
-    const floorAgain = select(host, "scratch-concept-place-floor-workshop");
-    floorAgain.value = "wood";
-    floorAgain.dispatchEvent(new Event("change"));
-    expect(store.getCurrent().tilesets[INTERIOR_ROOM_TILESET_ID]!.scratchConceptBundles!.find((bundle) => bundle.id === "smithy")!.places.find((place) => place.id === "workshop")?.floor).toBeUndefined();
-  });
+  // 은퇴한 사례: "벽·바닥 재질을 바꾸면 저장되고 기본값(크림·나무)은 필드를 비운다"
 
   it("장소 카드의 「층」을 바꾸면 level 이 저장되고 1층은 필드를 비운다", () => {
     const host = renderOnTileset(INTERIOR_ROOM_TILESET_ID);
@@ -202,23 +174,7 @@ describe("scratchConceptTab 시설 띠", () => {
   });
 
   // CONCEPT_FACILITY_TEMPLATES 는 공용 실내 초기화로 비워졌다(「Retired by the shared interior reset」, conceptFacilityTemplates.ts) — 시드 의존 사례 폐기.
-  it.skip("시설을 지우면 띠에서 빠지고 「초안 넣기」로 되돌릴 수 있다", () => {
-    const host = renderOnTileset(INTERIOR_ROOM_TILESET_ID);
-    expect(host.querySelector("[data-testid='scratch-concept-template-select']")).toBeNull();
-    host.querySelector("[data-testid='scratch-concept-facility-church']")!.click();
-    host.querySelector("[data-testid='scratch-concept-facility-remove']")!.click();
-    let ids = store.getCurrent().tilesets[INTERIOR_ROOM_TILESET_ID]!.scratchConceptBundles!.map((bundle) => bundle.id);
-    expect(ids).not.toContain("church");
-    expect(ids).toHaveLength(0);
-    expect(host.querySelector("[data-testid='scratch-concept-facility-church']")).toBeNull();
-    const picker = select(host, "scratch-concept-template-select");
-    expect(picker).not.toBeNull();
-    picker.value = "church";
-    picker.dispatchEvent(new Event("change"));
-    ids = store.getCurrent().tilesets[INTERIOR_ROOM_TILESET_ID]!.scratchConceptBundles!.map((bundle) => bundle.id);
-    expect(ids).toContain("church");
-    expect(host.querySelector("[data-testid='scratch-concept-place-chapel']")).not.toBeNull();
-  });
+  // 은퇴한 사례: "시설을 지우면 띠에서 빠지고 「초안 넣기」로 되돌릴 수 있다"
 
   it("마지막 시설까지 지우면 빈 배열이 남고 다시 시드하지 않는다", () => {
     store.update((project) => {
