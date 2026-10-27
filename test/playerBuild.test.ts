@@ -74,10 +74,16 @@ describe("player build output", () => {
       },
     } satisfies Plugin;
 
+    // vitest runs with NODE_ENV=test, which makes vite build with import.meta.env.DEV = true and pulls in the
+    // dev-only flagship demo builders (src/player/exportEntry.ts loadFlagshipDemo) and with them the editor tool
+    // registry. Shipped builds run with NODE_ENV=production; build the same artifact here.
+    const previousNodeEnv = process.env.NODE_ENV;
+    process.env.NODE_ENV = "production";
     try {
       // When
       await build({
         configFile: resolve("vite.player.config.ts"),
+        mode: "production",
         logLevel: "silent",
         plugins: [importGraphProbe],
         build: {
@@ -101,6 +107,8 @@ describe("player build output", () => {
       expect(report.findings).toEqual([]);
       expect(report.scannedFileCount).toBeGreaterThan(0);
     } finally {
+      if (previousNodeEnv === undefined) delete process.env.NODE_ENV;
+      else process.env.NODE_ENV = previousNodeEnv;
       await rm(outputDir, { recursive: true, force: true });
     }
   }, 120_000);
