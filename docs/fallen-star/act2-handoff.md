@@ -47,6 +47,9 @@
     - B8 해 질 녘 「대답의 등」(조명 덮개+등불 광원, 첫 등에서 한 줄 띄우기 선택), 얼음낚시 노인, 집 셋 실내(등 만드는 집 tailor·어부 fish·하르마 narshe — 손 도트 실내 v5, 사람 칩은 1막 광장 칩).
     - 난이도·알아채기: 필드 몬스터 160ms/칸·시야 8·부채꼴 110°, 밤 순찰 시야 8·140°·수색 7초(`set_field_detection`).
   - 「실내 17곳 옛 Tibo 번호」 경고는 **오탐**: 정의는 v5 인데 `stamp_tileset_object` 이식(tileGrafts)으로 칸 수가 시트보다 커져 `isHandInteriorV5Definition` 이 옛 정의로 오판, 통째 갈아 끼우며 경고했다. 출하 플레이어 방 전수(fallen-rooms 17곳) 모두 정상. 판정에서 이식 칸을 빼고, 같은 시트 새로 고침에서 이식 꼬리를 보존하도록 고침(`atlasBiomeInterior.ts`).
+  - **1.24 판본 끝 = 하늘탑 1층**(`FS2_RELEASE_STOP = "B9"`): 여관 주인이 밤 판으로 보내고(B9 얼음 위의 등·발렌·제한 시간 탈출), 탑 1층에 들어서면 막 카드·회복·저장(`towerReleaseStop`), 위층 계단은 「다음 업데이트」. 체크포인트 `act2-b9-stop`(옛 `act2-b8-stop` 대체). B10 을 열 때 null.
+  - 함정: `set_scene_mood` 에 lighting 을 주면 그 맵에 들어설 때 분위기 이벤트가 조명을 덮어쓴다 — `set_lighting_volume` 으로 따로 정한 맵(서리나루 해 질 녘)은 weather 만 준다.
+  - 함정: 체크포인트 부팅이 부하에서 400~570초 — 부팅 한도를 600초로(`QA_CHECKPOINT_BOOT_MS`).
   - 함정: checkpoints 시나리오는 부팅 때 **현재 소스로** 폴른 프로젝트를 다시 짓는다 — QA 도는 중에 소스를 고치면 그 판이 섞인다.
   - 탐침: `/tmp/fs2/act2probe.mts` 는 vite-node 로 돈다: `OPRN_ASSUME_ALL_BGM_INSTALLED=1 node --max-old-space-size=12000 node_modules/vite-node/dist/cli.mjs --script /tmp/fs2/act2probe.mts`(tsx 는 .css import 로 죽는다). 타입 검사는 `/tmp/fs2/tsconfig.json`(만진 파일 + src/vite-env.d.ts).
 
