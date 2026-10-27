@@ -3,6 +3,8 @@
 // 오프라인 QA 도구다 — 조수 실행 경로에 끼우는 게이트가 아니다(memory: 조수 게이트는 더 붙이지 않는다).
 
 import type { Project } from "@/project/types";
+import { isBundledTilesetDiffView, restoreBundledTilesetDiffs } from "@/project/bundledTilesetDiff";
+import { BUNDLED_TILESET_REF, restoreBundledTilesetRefs } from "@/project/bundledTilesetRefs";
 import { simulateBattle } from "@/battle/simulate";
 import { runAutoPlay } from "./autoPlay";
 import { runDeadlineAutoPlay } from "./deadline";
@@ -38,7 +40,30 @@ function dedupe(findings: readonly Finding[]): Finding[] {
   });
 }
 
-export function runGameCheck(project: Project, options: GameCheckOptions = {}): GameCheckReport {
+/**
+ * 원본 JSON(`--raw`, 로드 실패 시 원본)으로 검사할 때도 번들 타일셋의 저장 표현만은 푼다.
+ * 저장본은 번들 타일셋을 번들 정의와의 차이(#3774)나 참조(내보낸 게임)로 싣는다 — 이건 생성기가 쓴 내용이 아니라
+ * 저장 형식이라, 풀지 않으면 자동 플레이가 `tileset.passability` 없는 타일셋에서 멈췄다. 다른 정규화는 하지 않는다.
+ * 받은 객체는 바꾸지 않는다(얕은 사본의 tilesets 만 갈아 끼운다). 풀 수 없으면(이 앱에 없는 번들) 받은 그대로 검사한다.
+ */
+function unfoldStoredTilesets(project: Project): Project {
+  const tilesets = (project as { tilesets?: unknown }).tilesets;
+  if (!tilesets || typeof tilesets !== "object") return project;
+  const stored = Object.values(tilesets as Record<string, unknown>).some((value) =>
+    isBundledTilesetDiffView(value) || (value !== null && typeof value === "object" && Object.hasOwn(value, BUNDLED_TILESET_REF)));
+  if (!stored) return project;
+  const copy = { ...project, tilesets: { ...(tilesets as Project["tilesets"]) } };
+  try {
+    restoreBundledTilesetRefs(copy);
+    restoreBundledTilesetDiffs(copy);
+  } catch {
+    return project;
+  }
+  return copy;
+}
+
+export function runGameCheck(input: Project, options: GameCheckOptions = {}): GameCheckReport {
+  const project = unfoldStoredTilesets(input);
   const started = Date.now();
   const graph = buildMapGraph(project);
   const findings: Finding[] = [
