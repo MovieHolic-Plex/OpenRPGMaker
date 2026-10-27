@@ -341,11 +341,15 @@ export function findNpcGraphicMatches(
   // 왜(2026-10-25 심사 J66): 「하얀 드레스 여자 유령」이 0건이라 조수가 「유령」 한 낱말로 다시 찾아 만화풍 흰 시트 유령을
   // 하얀 드레스 여자 자리에 놓았다 — 판정자 눈에 고무 오리였다. 의도 낱말이 아닌 낱말이 하나는 맞아야 한다.
   const described = queryTerms.filter((term) => !intentTerms.has(term));
+  // 재료·종류 낱말(석상·동상·인형·초상화…)은 무엇인지를 정한다 — 부분 일치로도 빠뜨릴 수 없다. 「고양이 석상」이 J66 부분 일치로
+  // 살아 있는 고양이를 받았다(2026-09-27 전수 조사 규칙의 회귀). 그 낱말이 맞는 칸이 없으면 0건이 맞다.
+  const kindTerms = described.filter((term) => OBJECT_KIND_WORDS.test(term));
   return catalog
     .map((entry) => {
       if (!satisfiesIntent(entry, intent)) return { entry, score: 0 };
       const hits = described.filter((term) => textMatchScore(term, entry) > 0);
       if (hits.length === 0) return { entry, score: 0 };
+      if (kindTerms.some((term) => !hits.includes(term))) return { entry, score: 0 };
       return { entry, score: hits.length * 100 + intentScore(entry, intent) + hits.reduce((sum, term) => sum + textMatchScore(term, entry), 0) };
     })
     .filter((match) => match.score > 0)
@@ -358,6 +362,9 @@ export function unmatchedNpcGraphicTerms(query: string, entry: CharsetSemanticEn
   const intentTerms = intentWords(normalized);
   return normalized.split(/\s+/).filter((term) => term && !intentTerms.has(term) && textMatchScore(term, entry) <= 0);
 }
+
+/** 무엇으로 만든 것인지·어떤 물건인지를 정하는 낱말. 사람·동물 칩의 부분 일치를 막는다(findNpcGraphicMatches). */
+const OBJECT_KIND_WORDS = /^(?:석상|동상|조각상|석조상|목상|불상|인형|허수아비|마네킹|초상화|박제|모형|statue|sculpture|figurine|carving|doll|scarecrow|mannequin|portrait|painting)$/iu;
 
 /** 사람(여자·소녀·부인…)이 유령인 인물 — 사람 칩에 반투명 빛(blendMode add)으로 그린다. 시트 유령 몬스터 칩이 아니다. */
 export const GHOST_WORDS = /유령|귀신|원령|망령|혼령|ghost|phantom|spirit/iu;
