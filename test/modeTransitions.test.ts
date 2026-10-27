@@ -1,6 +1,12 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { bounded, deferred } from "./persistenceTestSignals";
 
+// 플레이어는 파일 머리에서 가로챈다(vi.mock 은 끌어올려진다). 테스트 안의 vi.doMock 은 테스트 파일 자신의
+// import 에만 걸리고 mode.ts 의 동적 import("@/player/player") 는 진짜 모듈을 받았다(CI 진단: 같은 테스트에서
+// 테스트 쪽 import 는 목, mode.ts 쪽은 진짜 renderPlayer 가 store.getCurrent().meta.publication 에서 죽었다).
+const player = vi.hoisted(() => ({ renderPlayer: vi.fn(), teardownPlayer: vi.fn() }));
+vi.mock("@/player/player", () => player);
+
 class TestElement {
   className = "";
   readonly children: TestElement[] = [];
@@ -48,12 +54,11 @@ describe("mode transitions", () => {
     const renderEditor = vi.fn();
     const editorTornDown = deferred<void>();
     const teardownEditor = vi.fn(() => editorTornDown.resolve());
-    const renderPlayer = vi.fn((parent: HTMLElement) => {
+    const renderPlayer = player.renderPlayer.mockImplementation((parent: HTMLElement) => {
       const surface = document.createElement("div");
       surface.className = "play-surface";
       parent.append(surface);
     });
-    const teardownPlayer = vi.fn();
     const editorPlayBootDiagnosticSink = vi.fn();
 
     vi.doMock("@/project/store", () => ({
@@ -114,7 +119,6 @@ describe("mode transitions", () => {
       ensureGuestIdentityForAiSurface: vi.fn(),
       openLoginModalIfNeeded: vi.fn(),
     }));
-    vi.doMock("@/player/player", () => ({ renderPlayer, teardownPlayer }));
     vi.doMock("@/app/editorPlayBootDiagnostics", () => ({
       editorPlayBootDiagnosticSink,
     }));
