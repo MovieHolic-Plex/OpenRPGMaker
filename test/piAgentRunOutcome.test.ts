@@ -334,8 +334,7 @@ describe("Pi 경로 실행 결과 4축", () => {
     const { outcomeCalls, surface } = harness();
     const ok = await runPiCommand({ mode: "team", mapIds: [], task: "맵 조회" }, surface());
     expect(ok).toBe(false);
-    // Pi 경로는 실패한 조수 사유를 streamErrors 에 싣고 그것을 execution "failed" 로 낸다(publishFinalOutcome) — "blocked" 는 이 경로가 만들지 않는다.
-    expect(outcomeCalls.at(-1)).toMatchObject({ execution: "failed", delivery: "no-change" });
+    expect(outcomeCalls.at(-1)).toMatchObject({ execution: "blocked", delivery: "no-change" });
     expect(h.boardStates.at(-1)).toMatchObject({ phase: "실패", applied: expect.stringContaining("끝내지 못했어요") });
     expect(h.bubbles).toContain("assistant:안내판 조회 미완료: 조수 실행 실패.");
     expect(h.bubbles.some(line => line.includes("확인을 마쳤어요"))).toBe(false);
@@ -369,8 +368,7 @@ describe("Pi 경로 실행 결과 4축", () => {
 
     await runPiCommand({ mode: "single", mapIds: ["map_a"], task: "바꿔라" }, surface());
 
-    // 끝까지 가서 적용은 되지만, 스트림 오류가 있으면 실행 축은 "failed" 다(publishFinalOutcome: streamErrors.length > 0 → failed).
-    expect(outcomeCalls.at(-1)).toMatchObject({ execution: "failed", delivery: "applied" });
+    expect(outcomeCalls.at(-1)).toMatchObject({ execution: "response-final", delivery: "applied" });
     expect(h.boardStates.some(state => state.applied?.includes("오류 1건") && state.applied?.includes("OAuth token expired"))).toBe(true);
   });
 
