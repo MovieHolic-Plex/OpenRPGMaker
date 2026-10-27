@@ -10819,6 +10819,7 @@
 "이벤트 명령이 이 커먼 이벤트를 호출 중입니다.":"Event commands call this common event.",
 "이벤트 명령이 참조하는 ID 입니다.":"ID referenced by event commands.",
 "이벤트 목록에서는 #{0} 로도 표시됩니다.":"Also shown as #{0} in the event list.",
+"이벤트 몸이 맵 밖으로 나갑니다.":"The event body extends outside the map.",
 "이벤트 변경을 프로젝트에 반영했습니다.":"Event changes applied to the project.",
 "이벤트 보너스 변수":"Event bonus variable",
 "이벤트 복제":"Duplicate event",
