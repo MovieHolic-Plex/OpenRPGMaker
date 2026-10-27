@@ -19,6 +19,7 @@ vi.mock("@/project/lint/clusterRuleLint", () => ({
 }));
 
 import { makeLeftLayerSwitcher } from "@/editor/panels/leftLayerSwitcher";
+import { ruleAuditViolationCount } from "@/editor/panels/ruleAuditPanel";
 import { makeOverflowDropdown, resetTileToolbarMenusForTests } from "@/editor/panels/tileToolbarMenus";
 
 function toolbarModel(): TileToolbarModel {
@@ -53,6 +54,8 @@ describe("표준/전문가 사이드바 접근성", () => {
       { code: "cluster-rule-count", message: "꽃 과밀", severity: "info" },
       { code: "cluster-rule-spacing", message: "창문 간격", severity: "warning" },
     ];
+    // 툴바 배지는 캐시값만 읽고 차가운 캐시는 지연 계산한다(ruleAuditViolationCountCached) — 동기 계약으로 캐시를 먼저 데운다.
+    ruleAuditViolationCount();
 
     const overflow = makeOverflowDropdown(toolbarModel());
     const toggle = overflow.querySelector<HTMLElement>('[data-testid="oprn-tool-overflow"]');

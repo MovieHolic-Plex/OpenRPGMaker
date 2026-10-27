@@ -1,14 +1,15 @@
 import { describe, expect, it } from "vitest";
 import { defaultPaintLayerForTile, tileLayerHome, tileVisibleOnLayer } from "@/editor/tileLayerClassification";
-import { createBlankProject, TILE } from "@/project/defaults";
+import { TILE } from "@/project/defaults";
 import type { TilesetDef } from "@/project/types";
+import { retiredEasyRpgTileset } from "./support/retiredEasyRpgTilesets";
 
 // RM2K3식 타일 레이어 분류 — 각 타일의 홈 레이어 판정과 팔레트 노출 규칙.
 
+// 울타리 378·소품 441·FLOWERS 는 합본 마을 시트 번호다. 새 프로젝트는 beodeul_city 로 시작하므로(2026-10-07 저작권 정리, #3560 과 같은 이유)
+// 옛 합본 마을 정의(로드 정규화 하네스 그룹 포함)로 시험한다.
 function bundledTileset(): TilesetDef {
-  const project = createBlankProject();
-  const map = project.maps[project.startMapId];
-  return project.tilesets[map.tilesetId];
+  return retiredEasyRpgTileset("easyrpg_chipset_combined_town");
 }
 
 describe("tileLayerHome — 홈 레이어 판정", () => {

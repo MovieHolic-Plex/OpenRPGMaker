@@ -6,10 +6,11 @@ import { runTool, type ToolContext } from "@/editor/tools";
 import { createBlankProject } from "@/project/defaults";
 import { COMBINED_TOWN_TILESET_ID } from "@/project/defaults/constants";
 import type { TilesetDef } from "@/project/types";
-import { withRetiredEasyRpgTilesets } from "./support/retiredEasyRpgTilesets";
+import { startOnRetiredCombinedTown, withRetiredEasyRpgTilesets } from "./support/retiredEasyRpgTilesets";
 
 function context(): { ctx: ToolContext; tileset: () => TilesetDef } {
-  const ctx: ToolContext = { project: withRetiredEasyRpgTilesets(createBlankProject()) };
+  // tilesetId 를 생략한 호출은 시작 맵 칩셋을 쓴다 — 2026-10-07 저작권 정리로 기본이 beodeul_city 가 되어 합본 마을로 되돌린다(#3560 방식).
+  const ctx: ToolContext = { project: startOnRetiredCombinedTown(createBlankProject()) };
   return { ctx, tileset: () => ctx.project.tilesets[COMBINED_TOWN_TILESET_ID] };
 }
 

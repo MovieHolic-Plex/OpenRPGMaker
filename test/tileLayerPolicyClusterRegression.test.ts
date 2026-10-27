@@ -9,14 +9,17 @@ import { tilePassability } from "@/project/collision";
 import { createBlankProject } from "@/project/defaults";
 import { TILE } from "@/project/defaults/constants";
 import type { GameMap, TilesetDef } from "@/project/types";
+import { startOnRetiredCombinedTown } from "./support/retiredEasyRpgTilesets";
 
 const CONIFER_TRUNK = 290;
 const SECOND_TRUNK = 291;
 const BROADLEAF_TRUNK = 292;
 const CONIFER_CANOPY = 260;
 
+// 290·291·292(침엽수·활엽수 밑동)·260(수관)·TILE.GRASS 는 합본 마을 시트 번호다. 새 프로젝트는 beodeul_city 로 시작하므로
+// (2026-10-07 저작권 정리, #3560 과 같은 이유) 옛 저장본처럼 시작 맵을 합본 마을 위에 둔다.
 function blankMapAndTileset(): { map: GameMap; tileset: TilesetDef } {
-  const project = createBlankProject();
+  const project = startOnRetiredCombinedTown(createBlankProject());
   const map = project.maps[project.startMapId];
   return { map, tileset: project.tilesets[map.tilesetId] };
 }

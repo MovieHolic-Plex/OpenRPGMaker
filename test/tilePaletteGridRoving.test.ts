@@ -6,6 +6,7 @@ import { GRID_PALETTE_COLUMNS } from "@/editor/panels/tilePaletteGrid";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
 import { findByTestId, installFakeDom, type FakeElement } from "./fakeDom";
+import { startOnRetiredCombinedTown } from "./support/retiredEasyRpgTilesets";
 
 /**
  * 타일 그림판 그리드는 사이드바에서 탭 스톱을 213개까지 부풀린 원인이었다(plan §1-2 A-2).
@@ -30,7 +31,9 @@ describe("tile palette grid roving tabindex", () => {
   beforeEach(() => {
     restore = installFakeDom();
     resetSmartPaletteForTests();
-    store.replace(createBlankProject());
+    // 표준 시트(makeGridPalette, oprn-palette-grid)는 합본 마을 같은 번들 시트의 팔레트다. 새 프로젝트의 beodeul_city 는 커스텀 팔레트를 써서
+    // 이 격자가 없으므로(2026-10-07 저작권 정리, #3560 과 같은 이유) 옛 저장본처럼 시작 맵을 합본 마을 위에 둔다.
+    store.replace(startOnRetiredCombinedTown(createBlankProject()));
     container = document.createElement("div");
     container.dataset.testid = "left-palette-root";
     document.body.append(container);
