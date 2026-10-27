@@ -116,6 +116,8 @@ describe("spatial Database authoring integration", () => {
     expect(getDatabaseActiveTab()).toBe("spatialSpaces");
     expect(spatialSession().tab).toBe("spaces");
     expect(spatialSession().breadcrumb).toHaveLength(1);
+    // 목록에서 연 뒤 목록 보기(listView)가 남아 구성 작업대 대신 자산 브라우저가 뜬다(#2888 이후) — 구성 작업대 진입은 listView 해제.
+    patchSpatialSession({ listView: false });
     expect(host.querySelector("[data-testid='composition-board']"), JSON.stringify({ s: spatialSession(), h: host.innerHTML.slice(0, 400) })).not.toBeNull();
     expect(host.querySelector("[data-testid='spatial-places-board']")).toBeNull();
     expect(host.querySelector("[data-testid='db-tab-spatial-spaces']")).toBeNull();

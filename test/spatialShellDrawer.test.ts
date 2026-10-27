@@ -50,7 +50,7 @@ describe("spatial inspector drawer", () => {
     expect(toggle, "1024 inspector must be selectable").not.toBeNull();
     expect(inspector?.classList.contains("is-open") ?? false).toBe(false);
     toggle?.click();
-    expect(host.querySelector("[data-testid='spatial-inspector']")?.classList.contains("is-open")).toBe(true);
+    expect(host.querySelector("[data-testid='spatial-inspector']")?.classList.contains("is-open"), JSON.stringify({ s: spatialSession(), h: host.innerHTML.slice(0, 500) })).toBe(true);
   });
 
   it("selects a coherent default without a prior design id", () => {
@@ -64,7 +64,7 @@ describe("spatial inspector drawer", () => {
     const inspector = host.querySelector(".spatial-inspector-name")?.textContent ?? "";
     expect(selected).not.toBeNull();
     expect(spatialSession().designId).toBe(selected?.getAttribute("data-card-id"));
-    expect(header).toBe(inspector);
+    expect(header, JSON.stringify({ s: spatialSession(), sel: selected?.outerHTML.slice(0, 200), ih: host.querySelector("[data-testid='spatial-inspector']")?.outerHTML.slice(0, 400) })).toBe(inspector);
     expect(header).not.toBe("장소");
   });
 

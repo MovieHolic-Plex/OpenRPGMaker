@@ -182,7 +182,8 @@ describe("spatial tiles and objects surfaces", () => {
     host.querySelector<HTMLButtonElement>(bed ? spatialCardDomSelector(bed.id) : "[data-card-id]")?.click();
 
     // Then
-    expect(host.querySelector("[data-testid='spatial-object-preview']")).not.toBeNull();
+    const diag = JSON.stringify({ bed: bed?.id, s: spatialSession(), h: host.innerHTML.slice(0, 600) });
+    expect(host.querySelector("[data-testid='spatial-object-preview']"), diag).not.toBeNull();
     expect(host.querySelector("[data-testid='spatial-object-copy']")).not.toBeNull();
     expect(host.querySelector("[data-testid='spatial-object-name']")).not.toBeNull();
     expect(store.getCurrent()).toEqual(before);
