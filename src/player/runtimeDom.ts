@@ -731,7 +731,8 @@ export class RuntimeDomOverlay {
       node.dataset.testid = "runtime-timer-hud";
       host.append(node);
     }
-    const text = entries.map(([id, seconds]) => `${id}: ${formatTimer(seconds)}${active[id] ? "" : " paused"}`).join("  ");
+    // 엔진 기본 타이머(timer1·timer2) 이름은 플레이어에게 뜻이 없다 — 시간만 보인다. 저작자가 이름 붙인 타이머는 이름을 단다.
+    const text = entries.map(([id, seconds]) => `${/^timer[12]$/.test(id) ? "" : `${id}: `}${formatTimer(seconds)}${active[id] ? "" : " paused"}`).join("  ");
     if (node !== this.timerHudNode || text !== this.timerHudText) {
       node.textContent = text;
       this.timerHudNode = node;

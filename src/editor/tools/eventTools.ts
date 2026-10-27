@@ -3299,6 +3299,27 @@ function chaserSpawnWarnings(project: Project, mapId: string, chaserId: string, 
     .map((entry) => `${entry.line}. 추격자를 시야 밖(벽 너머·다른 방)에 두거나 set_start_position 으로 시작을 옮기거나, 체크포인트를 추격 구역 앞(문 밖)으로 옮기세요.`);
 }
 
+/** make_chase_scene caughtPenalty — 없는 적 그룹·맵·맵 밖 좌표는 거절. */
+function readCaughtPenalty(draft: Project, raw: unknown): { troopId?: string; text?: string; sendTo?: { mapId: string; x: number; y: number } } | undefined {
+  if (raw === undefined || raw === null) return undefined;
+  if (typeof raw !== "object") throw new ToolError("caughtPenalty 는 {troopId?, sendTo?:{mapId,x,y}, text?} 입니다.", { code: "invalid-args" });
+  const r = raw as Record<string, unknown>;
+  const troopId = typeof r.troopId === "string" && r.troopId.trim() ? r.troopId.trim() : undefined;
+  if (troopId && !draft.database.troops.some((t) => t.id === troopId)) throw new ToolError(`caughtPenalty.troopId 적 그룹이 없습니다: ${troopId}`, { code: "troop-not-found" });
+  let sendTo: { mapId: string; x: number; y: number } | undefined;
+  if (r.sendTo && typeof r.sendTo === "object") {
+    const t = r.sendTo as Record<string, unknown>;
+    const mapId = String(t.mapId ?? ""), x = Number(t.x), y = Number(t.y);
+    const target = draft.maps[mapId];
+    if (!target) throw new ToolError(`caughtPenalty.sendTo 맵이 없습니다: ${mapId}`, { code: "map-not-found" });
+    if (!Number.isInteger(x) || !Number.isInteger(y) || x < 0 || y < 0 || x >= target.width || y >= target.height) throw new ToolError("caughtPenalty.sendTo 좌표가 맵 밖입니다.", { code: "invalid-args" });
+    sendTo = { mapId, x, y };
+  }
+  const text = typeof r.text === "string" && r.text.trim() ? r.text.trim() : undefined;
+  if (!troopId && !sendTo && !text) return undefined;
+  return { ...(troopId ? { troopId } : {}), ...(sendTo ? { sendTo } : {}), ...(text ? { text } : {}) };
+}
+
 const makeChaseScene: ToolDefinition = {
   name: "make_chase_scene",
   description:
@@ -3333,6 +3354,14 @@ const makeChaseScene: ToolDefinition = {
         },
       },
       killOnTouch: { type: "boolean" },
+      caughtPenalty: {
+        type: "object",
+        description: "붙잡히면 게임 오버 대신 값을 치른다(잠입·통금 순찰): text 한 줄 → troopId 가 있으면 그 무리와 도망 불가 전투(져도 게임 오버 아님) → sendTo 칸으로 끌려간다(생략 = 이 맵 출발 칸 대신 제자리). killOnTouch 와 같이 쓸 수 없다.",
+        properties: {
+          troopId: { type: "string" }, text: { type: "string" },
+          sendTo: { type: "object", properties: { mapId: { type: "string" }, x: { type: "integer" }, y: { type: "integer" } }, required: ["mapId", "x", "y"] },
+        },
+      },
       safeZone: { ...RECT_SCHEMA, description: "{x,y,w,h} 안전 지대 — 이 안의 주인공은 절대 잡히지 않는다. 세이브 방·계단참 같은 몇 칸짜리 구역만. 추격 통로를 덮지 말 것" },
       activateSwitch: { type: "string" },
       checkpointOnEntry: { type: "boolean" },
@@ -3390,7 +3419,15 @@ const makeChaseScene: ToolDefinition = {
     }
     const pursuit = parsedPursuit && activateSwitch && parsedPursuit.tracking === undefined
       ? { ...parsedPursuit, tracking: "persistent" as const } : parsedPursuit;
-    const commands: Command[] = args.killOnTouch === true ? [{ kind: "killPlayer", message: "붙잡혔다." }] : [];
+    const penalty = readCaughtPenalty(draft, args.caughtPenalty);
+    if (penalty && args.killOnTouch === true) throw new ToolError("caughtPenalty 와 killOnTouch 는 같이 쓸 수 없습니다 — 붙잡히면 게임 오버인지, 끌려가는지 하나만 고르세요.", { code: "invalid-args" });
+    const commands: Command[] = args.killOnTouch === true ? [{ kind: "killPlayer", message: "붙잡혔다." }]
+      : penalty ? [
+        { kind: "showEmote", target: { eventId: id }, emote: "exclamation", durationMs: 600 } as Command,
+        { kind: "text", body: penalty.text ?? "붙잡혔다!" } as Command,
+        ...(penalty.troopId ? [{ kind: "battleProcessing", troopId: penalty.troopId, canEscape: false, canLose: true } as unknown as Command] : []),
+        ...(penalty.sendTo ? [{ kind: "transfer", mapId: penalty.sendTo.mapId, x: penalty.sendTo.x, y: penalty.sendTo.y, direction: "down", fade: "black" } as Command] : []),
+      ] : [];
     const patrolRoute = args.patrol === undefined ? undefined : chaserPatrolRoute(draft, map, { x: placement.x, y: placement.y }, args.patrol, id);
     const event: GameEvent = {
       id,

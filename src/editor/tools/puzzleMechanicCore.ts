@@ -126,6 +126,11 @@ export interface MechanicContext {
   readonly rewardCommands: readonly Command[];
   readonly title?: string;
   readonly hint?: string;
+  /**
+   * 들켰을 때·실패했을 때의 벌(그 상태가 있는 프리셋만 — 지금은 stealth_guard_patrol). 생략 = 프리셋 기본(입구로 쫓겨남).
+   * troopId = 먼저 그 적 그룹과 싸운다(도망 불가) · sendTo = 쫓겨나는 곳(다른 맵도 된다, 예: 감방) · text = 들킨 대사.
+   */
+  readonly failPenalty?: { readonly troopId?: string; readonly sendTo?: { readonly mapId: string; readonly x: number; readonly y: number }; readonly text?: string };
   /** puzzleId 에서 뽑은 고정 씨앗 — 같은 id 면 같은 문제, 다른 방이면 다른 배치. */
   readonly seed: number;
   /** 이름 붙은 스위치/변수를 만들고 id 를 돌려준다. */

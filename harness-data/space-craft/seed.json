@@ -10551,6 +10551,182 @@
    ],
    "verify": "make_timed_escape startSwitchId + start + startCellsSwitchId / steps 가 얼음 칸만 / author_dungeon tower entrance fromMapId 밤 판 / 대화 전 시작 칸을 밟아도 타이머가 켜지지 않음",
    "suiteCategory": "fs2-lake-lantern-escape"
+  },
+  {
+   "category": "game",
+   "kind": "logic",
+   "mode": "balanced",
+   "startTileset": "beodeul_city",
+   "startBuild": [
+    {
+     "tool": "author_beodeul_town",
+     "args": {
+      "id": "map_night_town",
+      "name": "통금의 마을",
+      "houseCount": 5,
+      "seed": 31
+     }
+    }
+   ],
+   "id": "fs2-field-detection",
+   "prompt": "통금의 마을(map_night_town)에 밤 순찰 기사 둘이 돌게 해 줘. 들키면 바로 달려와서 싸워야 해. 이번엔 순찰이 훨씬 예민해야 해 — 더 멀리 보고, 시야 부채꼴도 넓고, 들킨 뒤 바로 뛰어오고, 놓쳐도 한참 뒤지다가 돌아가게.",
+   "requires": [
+    "추격형 보이는 적 둘(순찰 경로)",
+    "시야 거리·부채꼴 각도를 기본보다 넓게",
+    "알아차림 지연 짧게·추격 걸음 빠르게",
+    "놓친 뒤 수색 시간 길게"
+   ],
+   "verify": "place_field_enemy behavior chase + patrol, 또는 그 뒤 set_field_detection {sightRange≥7, coneDegrees≥120, alertMs≤300, chaseStepMs≤200, searchMs≥5000} / 순찰 경로 걸음 간격은 그대로(왕복 속도 안 바뀜)",
+   "suiteCategory": "fs2-field-detection"
+  },
+  {
+   "category": "game",
+   "kind": "logic",
+   "mode": "balanced",
+   "startTileset": "beodeul_city",
+   "id": "fs2-stealth-penalty",
+   "prompt": "감옥 경비실을 잠입 퍼즐로 만들어 줘. 등불 든 경비 시야에 들키면 경비 둘과 싸우고(도망 못 침) 감방으로 다시 끌려가게 해 줘. 그냥 입구로 돌아가는 게 아니라 실수에 값을 치르게.",
+   "requires": [
+    "stealth_guard_patrol 퍼즐",
+    "들키면 전투(도망 불가) 후 감방으로 이동",
+    "경비 스위치 초기화"
+   ],
+   "verify": "author_map_puzzle presetId stealth_guard_patrol + failPenalty {troopId, sendTo:{mapId,x,y}, text} / caught 명령에 battleProcessing canEscape:false → transfer sendTo",
+   "suiteCategory": "fs2-stealth-penalty"
+  },
+  {
+   "category": "dungeon",
+   "kind": "logic",
+   "mode": "balanced",
+   "startTileset": "beodeul_city",
+   "id": "fs2-two-floor-fortress",
+   "prompt": "2층짜리 관문 요새를 지어 줘. 1층은 정문·안뜰·감방·무기고·계단 홀, 2층은 막사와 성벽 위 결투장. 결투장 앞은 쇠창살로 막혀 있고 막사 쪽 레버를 당겨야 열려. 2층 막사엔 쇠뇌병 보초를 세워 줘.",
+   "requires": [
+    "층마다 다른 방 목록(1층 5방·2층 결투장 포함)",
+    "층 계단 연결",
+    "2층 결투장 앞 레버 쇠창살",
+    "2층 고정 보초"
+   ],
+   "verify": "author_dungeon floors 2 direction up floorRooms [[…5방],[…boss]] gimmick lever / 1층 방 목록 ≠ 2층 방 목록 / 2층에 lever·lever_gate 이벤트",
+   "suiteCategory": "fs2-two-floor-fortress"
+  },
+  {
+   "category": "game",
+   "kind": "logic",
+   "mode": "balanced",
+   "startTileset": "beodeul_city",
+   "startBuild": [
+    {
+     "tool": "author_beodeul_town",
+     "args": {
+      "id": "map_snow_town",
+      "name": "눈 마을",
+      "theme": "snow",
+      "houseCount": 4,
+      "seed": 12
+     }
+    },
+    {
+     "tool": "author_snow_route",
+     "args": {
+      "fromMapId": "map_snow_town",
+      "side": "north",
+      "count": 1,
+      "names": [
+       "눈길"
+      ],
+      "gapCount": 1,
+      "paintGaps": true,
+      "linkFrom": true,
+      "seed": 5
+     }
+    }
+   ],
+   "id": "fs2-ice-melt",
+   "prompt": "눈길 맵에서 길 한가운데를 두 칸 높이 얼음 덩이로 막아 줘. 불 마법을 쓰는 동료가 필드에서 「불씨 녹이기」를 배우면, 조사해서 녹이고 지나갈 수 있게. 녹이면 얼음 윗머리까지 같이 사라져야 해.",
+   "requires": [
+    "좁은 길목을 폭 전체로 막음",
+    "두 칸 그림(윗머리는 위 칸)",
+    "필드 기술로 열림(녹이기)",
+    "기술은 이벤트로 배움"
+   ],
+   "verify": "place_field_obstacle kind rock fullWidth tile+tileAbove requiresSkillId machine none / 열림 명령이 위 칸 changeTile 까지 되돌림 / learnSkill 이벤트",
+   "suiteCategory": "fs2-ice-melt"
+  },
+  {
+   "category": "game",
+   "kind": "logic",
+   "mode": "balanced",
+   "startTileset": "beodeul_city",
+   "id": "fs2-alarm-chase",
+   "prompt": "성벽 개구멍을 빠져나가는 순간 순찰 기사에게 들키게 해 줘. 숲 어귀로 나가면 기사 둘이 쫓아오고, 숲 그늘(맵을 가로지르는 한 줄)에 닿으면 기사들이 돌아서고 숲지기가 고백하는 장면이 나오게.",
+   "requires": [
+    "개구멍 이벤트가 경보 스위치를 켠다",
+    "place_field_enemy appearSwitchId 로 경보 뒤에만 나타나는 추격 기사",
+    "숲 그늘 줄에 닿으면 vanishSwitchId 를 켜서 기사가 사라지고 고백 컷신"
+   ],
+   "verify": "place_field_enemy behavior chase + appearSwitchId(경보) + vanishSwitchId(안전 지점) — 페이지: 경보 전(없음) · 필드 적(경보 조건) · 물러남(없음)",
+   "suiteCategory": "fs2-alarm-chase"
+  },
+  {
+   "category": "game",
+   "kind": "logic",
+   "mode": "balanced",
+   "startTileset": "beodeul_city",
+   "id": "fs2-lamp-festival",
+   "prompt": "눈 덮인 나루 마을을 해 질 녘 「대답의 등」 축제 날로 꾸며 줘. 등불마다 따뜻한 빛, 못가 첫 등에서 한 줄을 적어 띄우는 선택, 어부와 등 접는 아이, 잠긴 집 셋은 들어갈 수 있는 실내로.",
+   "requires": [
+    "set_lighting_volume 해 질 녘 덮개 + 등불 광원",
+    "등 띄우기 선택(스위치)",
+    "place_npc 어부·아이",
+    "build_hand_interior_room 실내 3 + create_transfer_pair"
+   ],
+   "verify": "마을 맵 lighting ambient>0·등 광원 / 선택지 이벤트가 스위치를 켠다 / 실내 3곳 출입 쌍",
+   "suiteCategory": "fs2-lamp-festival"
+  },
+  {
+   "category": "game",
+   "kind": "logic",
+   "mode": "balanced",
+   "startTileset": "beodeul_city",
+   "id": "fs2-lamp-errand",
+   "prompt": "통금 밤 마을에 잔 일 하나: 빵집 미레가 꺼진 등 셋을 맡기면, 잠긴 집 세 곳 문고리에 몰래 걸어 주고 돌아오면 별빛빵 둘을 받게.",
+   "requires": [
+    "아이템 꺼진 등 x3 지급",
+    "문 세 곳 등 걸기 페이지(아이템 -1, 스위치)",
+    "세 스위치 모두 켜지면 보상 페이지"
+   ],
+   "verify": "미레 페이지 조건 = 세 등 스위치 / 문 이벤트 페이지 '등 걸기'·'등이 걸린 문'",
+   "suiteCategory": "fs2-lamp-errand"
+  },
+  {
+   "category": "game",
+   "kind": "logic",
+   "mode": "balanced",
+   "startTileset": "beodeul_city",
+   "id": "fs2-patrol-caught",
+   "prompt": "막사 잠입 퍼즐에 상자 줄 사이 통로를 천천히 오가는 순찰 기사 하나를 더해 줘. 등 뒤로 지나가야 하고, 붙잡히면 게임 오버가 아니라 경비 둘과 싸운 뒤 감방으로 끌려가게.",
+   "requires": [
+    "make_chase_scene patrol waypoints",
+    "caughtPenalty {troopId, sendTo, text}",
+    "killOnTouch 아님"
+   ],
+   "verify": "추격자 페이지 commands = 텍스트 → battleProcessing canEscape:false canLose:true → transfer sendTo",
+   "suiteCategory": "fs2-patrol-caught"
+  },
+  {
+   "category": "game",
+   "kind": "logic",
+   "mode": "balanced",
+   "startTileset": "beodeul_city",
+   "id": "fs2-whole-burned-village",
+   "prompt": "강가 마을을 한 번 짓고, 서른 해 전 불에 다 타 버린 모습의 변형 맵을 만들어 줘. 북쪽 끝 집 한 채만 멀쩡하고 나머지 땅은 풀까지 다 잿빛이어야 해.",
+   "requires": [
+    "derive_map_variant look burned keepIntact north scorch whole",
+    "원본은 쓰고 나면 remove_map"
+   ],
+   "verify": "변형 맵 lowerTiles 대부분이 잿빛 땅 · 남은 집 발자국만 풀 · 원본 맵 없음",
+   "suiteCategory": "fs2-whole-burned-village"
   }
  ],
  "gates": {

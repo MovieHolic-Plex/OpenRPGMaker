@@ -34,7 +34,7 @@ type StoreShelf = { readonly title: string; readonly genre: string; readonly des
 const DEMOS: Record<string, { readonly slug: string; readonly builtin?: string; readonly shelf?: StoreShelf; readonly description: string; readonly pointer?: boolean }> = {
   "chrono-bell": {
     slug: "fallen-star", builtin: "chrono-bell",
-    description: "OPRN 에디터의 대표 데모 JRPG 입니다. 북쪽 숲에 떨어진 별, 그 속에서 깨어난 기계 소녀, 그리고 별을 쫓는 심문관.\n제1막(약 20분)과 제2막 「빌린 불」 앞부분 — 감방 탈출부터 북방 관문 요새의 새라, 설원 고개, 얼어붙은 나루 마을 서리나루까지 — 를 플레이할 수 있습니다. 전투·대화·컷신·세이브가 모두 들어 있습니다.",
+    description: "OPRN 에디터의 대표 데모 JRPG 입니다. 북쪽 숲에 떨어진 별, 그 속에서 깨어난 기계 소녀, 그리고 별을 쫓는 심문관.\n제1막(약 20분)과 제2막 「빌린 불」 앞부분 — 감방 탈출과 통금의 밤, 개구멍 추격, 불탄 새벽샘, 2층 요새의 창기사 새라, 설원 고개, 「대답의 등」 축제가 열리는 나루 마을 서리나루까지 — 를 플레이할 수 있습니다. 전투·대화·컷신·세이브가 모두 들어 있습니다.",
   },
   "emerald-crown": {
     slug: "astra-horizon", builtin: "emerald-crown", pointer: true,

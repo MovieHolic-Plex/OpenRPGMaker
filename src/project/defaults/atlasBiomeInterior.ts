@@ -68,15 +68,22 @@ export function isAtlasBiomeInteriorTileset(tileset: Pick<TilesetDef, "image"> |
  * 손 도트 v5 정의인가 — 가로 칸 수·첫 킷 id 로 가른다(옛 정의는 30칸 폭, Tibo 킷). 칸 수는 굽기마다 끝에 붙어 늘어날 뿐
  * 이미 있는 번호는 그대로다(scripts/content/hand-interior/pin_ids.py) — 그래서 칸 수가 번들 이하이면 같은 시트의 옛 빌드다.
  */
+/** 이식(tileGrafts — stamp_tileset_object 가 다른 칩셋 그림을 끝에 붙인 칸)을 뺀 시트 본래 칸 수. */
+function ownTileCount(tileset: Pick<TilesetDef, "count" | "tileGrafts">): number {
+  const grafts = tileset.tileGrafts ?? [];
+  return grafts.length ? Math.min(tileset.count, ...grafts.map((g) => g.targetTile)) : tileset.count;
+}
+
 export function isHandInteriorV5Definition(tileset: TilesetDef): boolean {
-  return tileset.count <= sheet.count && tileset.tilesPerRow === sheet.tilesPerRow
+  // 이식 칸은 시트 뒤에 붙을 뿐이다 — 칸 수에서 빼고 본다(안 빼면 이식 한 번에 v5 를 옛 정의로 오판해 통째로 갈아 끼우고 경고한다).
+  return ownTileCount(tileset) <= sheet.count && tileset.tilesPerRow === sheet.tilesPerRow
     && (tileset.structureKits ?? []).some((k) => k.id.startsWith("hand-interior:"));
 }
 
 /** 통행·층·잠금 한 줄 요약 — 번들 메타가 바뀌었는지(같은 시트의 새 빌드인지) 싸게 가른다. */
-function layerSignature(t: Pick<TilesetDef, "priority" | "passability" | "tileMeta">): string {
+function layerSignature(t: Pick<TilesetDef, "priority" | "passability" | "tileMeta">, limit = t.priority.length): string {
   let out = "";
-  for (let i = 0; i < t.priority.length; i++) {
+  for (let i = 0; i < Math.min(limit, t.priority.length); i++) {
     const m = t.tileMeta?.[i];
     out += (t.priority[i] === "upper" ? "u" : "l") + (t.passability[i]?.up ? "1" : "0") + (m?.defaultLayer === "upper" ? "U" : m?.defaultLayer === "lower" ? "L" : "-") + (m?.locked ? "k" : "");
   }
@@ -167,10 +174,22 @@ function refreshAtlasBiomeInterior(project: InteriorProject, id: string): boolea
   if (isHandInteriorV5Definition(tileset)) {
     // same sheet, older build (new tiles appended, passage/layer/labels refreshed): refresh the bundle-owned fields.
     // Tile ids already placed on maps keep their meaning (append-only build), so maps are not touched.
-    if (tileset.count === sheet.count && layerSignature(tileset) === bundleSignature()) return ensureAtlasBiomeInteriorReferences(tileset);
+    const own = ownTileCount(tileset);
+    if (own === sheet.count && layerSignature(tileset, sheet.count) === bundleSignature()) return ensureAtlasBiomeInteriorReferences(tileset);
     const fresh = createAtlasBiomeInteriorTileset();
+    // 같은 길이의 시트면 이식 칸(시트 뒤 꼬리)의 통행·층·메타를 그대로 이어 붙인다 — 맵에 놓인 이식 번호가 계속 같은 그림을 가리킨다.
+    const tail = own === fresh.count && tileset.count > own
+      ? { count: tileset.count, passability: tileset.passability.slice(own), priority: tileset.priority.slice(own), terrain: (tileset.terrain ?? []).slice(own), tileMeta: (tileset.tileMeta ?? []).slice(own) }
+      : undefined;
     for (const key of ["count", "passability", "priority", "terrain", "tileMeta", "tileGroups", "autotileGroups", "animationStrips", "structureKits"] as const) {
       (tileset as unknown as Record<string, unknown>)[key] = fresh[key];
+    }
+    if (tail) {
+      tileset.count = tail.count;
+      tileset.passability = [...tileset.passability, ...tail.passability];
+      tileset.priority = [...tileset.priority, ...tail.priority];
+      if (tileset.terrain) tileset.terrain = [...tileset.terrain, ...tail.terrain];
+      if (tileset.tileMeta) tileset.tileMeta = [...tileset.tileMeta, ...tail.tileMeta];
     }
     if (fresh.slideTiles) tileset.slideTiles = fresh.slideTiles;
     // the bundle-owned reference category (furniture dictionary, examples) follows the new build; authored categories stay

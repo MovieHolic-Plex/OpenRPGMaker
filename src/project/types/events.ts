@@ -790,6 +790,8 @@ export interface NpcSight {
    * (conditionEventSight.inViewCone) — a field monster sees what is in front of it, not behind.
    */
   facing: "any" | "forward" | "cone";
+  /** cone 의 벌어진 각(도, 30~180). 생략 = 90°(옆 폭 ≤ 앞 거리). 넓을수록 곁눈으로도 본다 — 순찰 기사·경계병. */
+  coneDegrees?: number;
 }
 export interface DetectionEncounter {
   sight: NpcSight;
@@ -843,6 +845,11 @@ export interface EventPageMovement {
   pathfind?: boolean;
   /** 추적 결정 간격(ms) 명시 오버라이드. 생략 시 frequency 랭크로 결정. */
   moveIntervalMs?: number;
+  /**
+   * chase 전용 «추격 박자»(ms/칸): 쫓는 동안 한 칸에 드는 시간. 저작 도구가 speed·moveIntervalMs 를 이 값에 맞춰 쓰고,
+   * 이 값이 있으면 다가오는 방식(approachStyle)이 칸 사이 쉼을 지우지 않는다 — 몸짓은 남고 빠르기는 이 값이 정한다.
+   */
+  chaseStepMs?: number;
   /** chase 전용. 시야에 처음 들어온 순간 말풍선+짧은 멈춤 뒤 추격을 시작한다. */
   sightAlert?: ChaseSightAlert;
   /**

@@ -331,7 +331,7 @@ function transformVariantRoadsAndFarms(copy: GameMap, tileset: Project["tilesets
  * 변형 맵 `copy` 에 시대 프리셋을 건다. `copy` 는 cloneMapIntoProject 로 방금 복제한 맵이고,
  * 건물 철거는 복제본이 가진 structurePlacements 의 `before` 로 한다.
  */
-export function applyVariantLook(draft: Project, copy: GameMap, look: VariantLook, warnings: string[], label: string, options: { readonly keepIntact?: KeepIntact } = {}): VariantLookReport {
+export function applyVariantLook(draft: Project, copy: GameMap, look: VariantLook, warnings: string[], label: string, options: { readonly keepIntact?: KeepIntact; readonly scorch?: "sites" | "whole" } = {}): VariantLookReport {
   const spec = LOOKS[look];
   copy.defaultLighting = { ambient: spec.ambient, color: spec.color, sources: [] };
   if (spec.fog !== undefined) copy.climate = { mode: "fixed", weather: "fog", intensity: spec.fog };
@@ -468,7 +468,8 @@ export function applyVariantLook(draft: Project, copy: GameMap, look: VariantLoo
       warnings.push(`${label}: ${report.note}`);
       return report;
     }
-    const terrain = applyVariantTerrain(copy, tileset, "scorched", seed, scorchMask(copy, burnedSites, kept, seed));
+    // scorch "whole" — 마을 전체가 탄 경우(들불·방화): 남긴 집 발자국만 빼고 맵 전체 풀·나무를 그을린다. 기본 "sites" 는 집터 둘레만.
+    const terrain = applyVariantTerrain(copy, tileset, "scorched", seed, options.scorch === "whole" ? wholeScorchMask(copy, kept) : scorchMask(copy, burnedSites, kept, seed));
     if (terrain) report.terrain = terrain;
     return report;
   }
@@ -542,6 +543,17 @@ function dressBurnedSite(
   }
   const bitCount = 1 + Math.floor(random() * 3);
   for (let n = 0; n < bitCount && bits.length > 0; n += 1) placeKitInSite(bits[Math.floor(random() * bits.length)]!);
+}
+
+/** 마을 전체 그을림 — 남긴 건물 발자국과 그 둘레 한 칸(멀쩡한 집 앞마당)만 뺀다. */
+function wholeScorchMask(copy: GameMap, kept: Placement | undefined): Uint8Array {
+  const mask = new Uint8Array(copy.width * copy.height).fill(1);
+  if (kept) {
+    for (let y = kept.y - 1; y < kept.y + kept.h + 1; y += 1) for (let x = kept.x - 1; x < kept.x + kept.w + 1; x += 1) {
+      if (x >= 0 && y >= 0 && x < copy.width && y < copy.height) mask[y * copy.width + x] = 0;
+    }
+  }
+  return mask;
 }
 
 /** 불탄 집터 둘레 그을림 칸 — 발자국과 그 둘레 1칸은 늘, 2·3칸은 덩어리 얼룩으로 줄어들게. 남긴 건물 발자국은 뺀다. */
