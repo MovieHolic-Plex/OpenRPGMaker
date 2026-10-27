@@ -6,9 +6,11 @@ import { createBlankProject } from '@/project/defaults';
 async function create(configure: (p: ReturnType<typeof createBlankProject>) => void, args: Record<string, unknown> = {}) {
   const project = createBlankProject();
   configure(project);
-  const result = await runToolAsync({ project, currentMapId: project.startMapId } as never, 'build_monster_game', { mode: 'create', ...args });
+  const context = { project, currentMapId: project.startMapId };
+  const result = await runToolAsync(context as never, 'build_monster_game', { mode: 'create', ...args });
   expect(result.ok, result.summary).toBe(true);
-  return project;
+  // create reuses the shared original campaign and swaps context.project for it — read the built project from the context.
+  return context.project;
 }
 
 describe('build_monster_game create title', () => {

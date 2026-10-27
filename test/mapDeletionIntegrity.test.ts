@@ -168,6 +168,10 @@ describe("remove_map 툴 — 무결성 가드 공유", () => {
 
   it("시작 맵 삭제는 여전히 차단한다(에이전트 경로 정책 유지)", () => {
     const project = projectWithMaps(2);
+    // An untouched blank start map may now be removed with an automatic re-route (mapTools remove_map, isUntouchedMap);
+    // the policy under test is for a start map that has been worked on.
+    const start = project.maps[project.startMapId]!;
+    start.lowerTiles[0] = start.lowerTiles[0] === 1 ? 2 : 1;
     const context: ToolContext = { project };
     const result = runTool(context, "remove_map", { mapId: project.startMapId });
     expect(result.ok).toBe(false);

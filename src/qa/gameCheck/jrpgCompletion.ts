@@ -97,7 +97,7 @@ export function jrpgCompletionGaps(project: Project, briefText = briefTextOf(pro
   const title = (project.system?.titleScreen?.title ?? "").trim();
   const metaTitle = (project.meta?.title ?? "").trim();
   if (PLACEHOLDER_TITLES.has(title) || PLACEHOLDER_TITLES.has(metaTitle)) {
-    gaps.push(`게임 제목이 기본값 「${title || metaTitle || "(비어 있음)"}」 그대로입니다 — configure_title_screen {title} 로 이 게임의 이름을 짓고, 기본 부제(「A NEW ADVENTURE」)를 쓰지 않을 거면 logoStyle 을 정하세요.`);
+    gaps.push(`게임 제목이 기본값 「${title || metaTitle || "(비어 있음)"}」 그대로입니다 — configure_title_screen {title} 로 이 게임의 이름을 짓고, 기본 부제(「A NEW ADVENTURE」)를 쓰지 않을 거면 logoSubtitle 을 적거나 logoStyle 을 정하세요.`);
   }
 
   // 1b) 오프닝 — 비어 있거나 제목/단문 카드 한 장, 또는 정지 그림 슬라이드뿐이거나 #2852 도트 격자 애니메틱 6샷이 아니면 미완이다.

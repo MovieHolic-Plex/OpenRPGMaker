@@ -63,7 +63,8 @@ describe('first playable creation boundary', () => {
       { id: 'intro', kind: 'text', narration: '방 안 탁자에 시계가 있다.', durationMs: 20000 },
     ] };
     const issues = inspectFirstScene(base, next, receipt(base));
-    expect(issues).toContain(`기본 빈 맵의 장소 구성이 그대로입니다: ${base.startMapId}`);
+    // 첫 구간 뼈대가 이미 장소를 깔아 둔 맵은 「기본 빈 맵」으로 막지 않는다(firstScene.ts inspectFirstScenePlaces hasSceneryOf(base) 예외).
+    expect(issues).not.toContain(`기본 빈 맵의 장소 구성이 그대로입니다: ${base.startMapId}`);
     expect(issues.some(issue => issue.includes('대상의 그림이 없습니다'))).toBe(true);
     expect(issues.some(issue => issue.includes('검은 화면'))).toBe(true);
   });
@@ -144,9 +145,11 @@ describe('first playable creation boundary', () => {
           order.push('presentation');
           expect(options.toolNames).toContain('generate_title_art');
           expect(options.toolNames).toContain('generate_opening_image');
-          for (const id of ['title-art', 'opening-art']) request.project.assets.uploaded[id] = { id, name: id, kind: 'picture', dataUrl: 'data:image/png;base64,AAA=', meta: {} };
+          // 첫 오프닝은 서로 다른 그림 5컷·장면 연출·BGM 이 필요하다(firstPresentation.ts inspectFirstPresentation).
+          const shots = ['opening-art-1', 'opening-art-2', 'opening-art-3', 'opening-art-4', 'opening-art-5'];
+          for (const id of ['title-art', ...shots]) request.project.assets.uploaded[id] = { id, name: id, kind: 'picture', dataUrl: 'data:image/png;base64,AAA=', meta: {} };
           request.project.system.titleScreen = { ...request.project.system.titleScreen!, title: '시계의 기억', backgroundResourceId: 'title-art', backgroundFit: 'cover', logoStyle: 'gold', sequence: { logoReveal: 'rise' }, transition: { kind: 'fade' } };
-          request.project.system.opening = { enabled: true, skippable: true, scenes: [{ id: 'opening', kind: 'image', resourceId: 'opening-art', narration: '시계가 멈췄다.', durationMs: 6000, motion: 'zoom' }] };
+          request.project.system.opening = { enabled: true, skippable: true, musicResourceId: 'cc0-bgm-town', scenes: shots.map((resourceId, i) => ({ id: `opening-${i}`, kind: 'image' as const, resourceId, narration: i === 0 ? '시계가 멈췄다.' : '', durationMs: 6000, motion: 'zoom' as const, direction: { transition: { kind: 'fade' as const, durationMs: 400 } } })) };
           await options.onCheckpoint!({ project: request.project, toolName: 'set_opening', label: '타이틀과 오프닝' });
           await presentation.execute('presentation-report', { report: '작품 원화와 짧은 오프닝' });
         } else if (sceneReview) {
@@ -158,7 +161,7 @@ describe('first playable creation boundary', () => {
             options.onEvent!({ type: 'execution_status', name: 'map.image.delivered', ok: true, summary: '테스트 이미지 전달', data: { mapId, x: 0, y: 0, w: map.width, h: map.height } });
           }
           await expect(sceneReview.execute('without-art', report)).rejects.toThrow('실제 타이틀/오프닝 그림');
-          options.onEvent!({ type: 'execution_status', name: 'presentation.image.delivered', ok: true, summary: '테스트 원화 전달', data: { resourceIds: ['title-art', 'opening-art'] } });
+          options.onEvent!({ type: 'execution_status', name: 'presentation.image.delivered', ok: true, summary: '테스트 원화 전달', data: { resourceIds: ['title-art', 'opening-art-1', 'opening-art-2', 'opening-art-3', 'opening-art-4', 'opening-art-5'] } });
           await sceneReview.execute('with-images', report);
         } else {
           order.push('coordinator');

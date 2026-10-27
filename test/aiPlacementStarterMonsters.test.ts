@@ -91,9 +91,10 @@ describe("give_starter_monsters 통행 가능 배치", () => {
     expect(result.warnings?.some((warning) => warning.includes("위치 자동 조정"))).not.toBe(true);
   });
 
-  it("요청 좌표 반경 3칸이 전부 물이면 starter-monsters-impassable ToolError", () => {
+  it("요청 좌표 반경 5칸이 전부 물이면 starter-monsters-impassable ToolError", () => {
     const { project, map, mapId, speciesId } = fixture();
-    waterBlock(map, 12, 10, 3);
+    // nearestPassableCell now searches a clean landing up to radius 5 before failing (#2894), so the blocked area must cover radius 5.
+    waterBlock(map, 12, 10, 5);
     expect(isPassable(project, map, 12, 10)).toBe(false);
 
     let error: unknown;

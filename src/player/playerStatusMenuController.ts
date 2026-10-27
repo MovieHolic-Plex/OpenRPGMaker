@@ -16,7 +16,7 @@ import { refreshGrowthVitals } from "@/project/growth/vitals";
 import type { GrowthMenuTab } from "@/player/playerGrowthMenu";
 import { store } from "@/project/store";
 import { getPlayerPreferences, updatePlayerPreferences } from "@/player/playerPreferences";
-import { createSaveSnapshot, getSaveSlotStatus, listSaveSlots, saveToSlot, type SaveSlotIndex } from "@/player/saveSlots";
+import { createSaveSnapshot, getSaveSlotStatus, listSaveSlots, readAutosave, saveToSlot, type SaveSlotIndex } from "@/player/saveSlots";
 import { renderPlayerStatusMenu, statusMenuControls } from "@/player/playerStatusMenu";
 import { updateStatusMenuDetailSelection } from "@/player/playerStatusMenuDetailRenderer";
 import { animateStatusMenuPage, animateStatusMenuVitals, readStatusMenuVitals } from "@/player/playerStatusMenuMotion";
@@ -85,7 +85,6 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
   let targetItemId: string | undefined;
   let itemActionId: string | undefined;
   let skillActorId: string | undefined;
-  let selectedSkillId: string | undefined;
   let growthTab: GrowthMenuTab = "skills";
   let equipmentActorId: string | undefined;
   let equipmentSlotId: keyof ActorInitialEquipment | undefined;
@@ -130,7 +129,6 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
     targetItemId = undefined;
     itemActionId = undefined;
     skillActorId = undefined;
-    selectedSkillId = undefined;
     growthTab = "skills";
     equipmentActorId = undefined;
     equipmentSlotId = undefined;
@@ -185,6 +183,7 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
       project,
       session,
       slots: listSaveSlots(window.localStorage),
+      autosave: readAutosave(window.localStorage),
       message,
       selectedCommand,
       mode,
@@ -193,7 +192,6 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
       itemActionId,
       canUseItemOnFacedTarget: (itemId) => facedItemTarget(itemId) !== undefined,
       skillActorId,
-      selectedSkillId,
       growthTab,
       equipmentActorId,
       equipmentSlotId,
@@ -239,6 +237,7 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
         onOpenGroup: openGroup,
         onSaveSlot: saveSlot,
         onLoadSlot: loadSlot,
+        onLoadAutosave: options.loadAutosave ? () => loadAutosave() : undefined,
         onSelectItemTarget: (itemId) => {
           rememberDetailCursorFromTestId(`status-menu-item-${itemId}`);
           itemActionId = undefined;
@@ -257,7 +256,6 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
         onSelectSkillActor: (actorId) => {
           rememberDetailCursorFromTestId(`status-menu-skill-actor-${actorId}`);
           skillActorId = actorId;
-          selectedSkillId = undefined;
           options.emitMenuJuice("menu-confirm", renderMenu(undefined, "skills"));
         },
         onSelectGrowthTab: (tab) => { growthTab = tab; selectedDetailActionIndex = 0; options.emitMenuJuice("menu-select", renderMenu(undefined, "skills")); },
@@ -274,7 +272,7 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
         },
         onSelectSkill: (skillId) => {
           if (skillActorId) rememberDetailCursorFromTestId(`status-menu-skill-${skillActorId}-${skillId}`);
-          // 명작 공백 #5: 필드 능력은 고르면 바로 쓴다(두 번 누를 필요 없음). 일반 스킬은 설명만.
+          // 명작 공백 #5: 필드 능력은 고르면 바로 쓴다(두 번 누를 필요 없음).
           const skill = store.getCurrent().database.skills.find((record) => record.id === skillId);
           const scene = options.getActiveScene();
           if (skill?.fieldCommonEventId && scene && skillActorId) {
@@ -283,11 +281,13 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
               options.closeMenu();
               return;
             }
-            options.emitMenuJuice("menu-select", renderMenu(used.message, "skills"));
+            options.emitMenuJuice("menu-invalid", renderMenu(used.message, "skills"));
             return;
           }
-          selectedSkillId = skillId;
-          options.emitMenuJuice("menu-select", renderMenu(undefined, "skills"));
+          // 설명은 커서를 올리면 이미 아래에 있다. 고른 사실을 기억하면 다음 Esc 가
+          // 그 기억만 지우고 목록에 남아, 스킬 화면을 나가려면 취소를 두 번 눌러야 했다.
+          const name = skill?.name?.trim() || "이 스킬";
+          options.emitMenuJuice("menu-select", renderMenu(`${withJosa(name, "은/는")} 전투에서 사용합니다.`, "skills"));
         },
         onSelectEquipmentActor: (actorId) => {
           rememberDetailCursorFromTestId(`status-menu-equipment-actor-${actorId}`);
@@ -596,6 +596,13 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
     rememberDetailCursorFromTestId(`load-slot-${slot}`);
     options.emitMenuJuice("menu-confirm", currentMenu());
     options.loadSlot(slot, false);
+  }
+
+  function loadAutosave(): void {
+    if (!options.loadAutosave) return;
+    rememberDetailCursorFromTestId("load-slot-auto");
+    options.emitMenuJuice("menu-confirm", currentMenu());
+    options.loadAutosave(false);
   }
 
   function useItem(itemId: string, actorId?: string, monsterInstanceId?: string): void {
@@ -1088,10 +1095,6 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
         }
         return false;
       case "skills":
-        if (selectedSkillId) {
-          selectedSkillId = undefined;
-          return true;
-        }
         if (skillActorId) {
           skillActorId = undefined;
           return true;
@@ -1181,6 +1184,16 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
       return true;
     }
     setDetailCursor(wrapStatusMenuIndex(selectedDetailActionIndex + delta, actions.length));
+    if (selectedCommand === "save" && confirmSaveSlot !== undefined) {
+      const staying = actions[selectedDetailActionIndex]?.getAttribute("data-testid") === `save-slot-${confirmSaveSlot}`;
+      if (!staying) {
+        // 덮어쓰기 확인은 그 칸에 커서가 있을 때만 맞다. 다른 칸으로 옮긴 뒤에도 푸터가
+        // 「다시 선택하면 덮어씁니다」로 남고, 빈 칸에서 Enter 는 바로 기록했다.
+        confirmSaveSlot = undefined;
+        renderMenu(undefined, "save");
+        return true;
+      }
+    }
     syncRenderedDetailCursor();
     const detail = currentMenu()?.querySelector<HTMLElement>(".status-menu-detail");
     const message = currentMenu()?.querySelector<HTMLElement>(".status-menu-message");

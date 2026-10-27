@@ -13,6 +13,8 @@ import {
   type ShopGoods,
 } from "@/player/playSceneShopGoods";
 import type { PlaySceneContext } from "@/player/playSceneTypes";
+import { GOLD_MAX } from "@/project/economyValues";
+import { ITEM_QUANTITY_MAX } from "@/project/itemQuantities";
 import { resolveShopSellUnitPrice } from "@/project/shopPrice";
 import type { ItemRecord } from "@/project/types/database";
 import type { ResolvedTerms } from "@/project/terms";
@@ -274,8 +276,14 @@ export function shopItemRow(options: {
   return button;
 }
 
-/** 수량 스테퍼가 올라갈 수 있는 절대 상한(RM2003 과 동일). 소지 한도와는 별개다. */
+/** 수량 스테퍼가 올라갈 수 있는 절대 상한(RM2003 과 동일). 한 거래의 개수 상한이지 가방 한도는 아니다. */
 export const SHOP_QUANTITY_HARD_MAX = 99;
+
+/** 판매 대금이 소지금 한도를 넘을 때. 거래 거절 문장과 행 안내가 같은 말을 쓴다. */
+export const SHOP_GOLD_CAP_REASON = "소지금이 한도에 도달했습니다.";
+
+/** 구매가 가방 한도를 넘을 때. `handleShopTransaction` 의 거절 문장과 같다. */
+export const SHOP_BAG_FULL_REASON = "가방이 꽉 찼습니다.";
 
 /**
  * 상한을 수량 입력칸에 반영한다. 세 곳(생성 시점·clamp·합계 갱신)이 같은 문구를
@@ -294,8 +302,9 @@ function applyQuantityMaxTo(input: HTMLInputElement, max: number): void {
  * 이 물건을 지금 몇 개까지 거래할 수 있는가.
  *
  * RM2003 은 `std::min(max, gold / price)` 로 수량 자체를 못 올리게 한다(scene_shop.cpp).
- * 소지 한도(RM 은 99)는 베끼지 않았다 — 이 저장소의 한도는 ITEM_QUANTITY_MAX(9,999,999)
- * 이고, 99로 낮추면 전 시스템에 걸친 회귀가 된다.
+ * 소지 한도를 RM 의 99로 낮추지는 않았다 — 이 저장소의 한도는 ITEM_QUANTITY_MAX(9,999,999)
+ * 이고, 거래 하드 상한만 99다. 그 한도까지 남은 칸과, 판매 때는 GOLD_MAX 까지 남은
+ * 소지금은 수량에 넣는다. 넣지 않으면 스테퍼가 99를 허용한 뒤 결정이 통째로 거절된다.
  *
  * 0을 반환할 수 있다(한 개도 못 산다). 그 경우 행은 이미 흐림·자물쇠로 표시돼 있고
  * 결정하면 버저가 울린다 — 커서는 얹히게 둔다.
@@ -308,15 +317,61 @@ export function affordableQuantityMax(
   owned: number
 ): number {
   const price = listingPrice(goods, mode);
+  const held = Math.max(0, Math.trunc(owned));
   if (mode === "sell") {
-    // 판매는 가진 개수가 먼저 상한이고, 상인 지갑이 그다음이다.
-    const byOwned = Math.max(0, Math.trunc(owned));
-    if (price <= 0) return Math.min(SHOP_QUANTITY_HARD_MAX, byOwned);
-    return Math.min(SHOP_QUANTITY_HARD_MAX, byOwned, Math.floor(Math.max(0, merchantGold) / price));
+    // 판매는 가진 개수가 먼저, 상인 지갑이 다음, 소지금 한도가 마지막이다.
+    if (price <= 0) return Math.min(SHOP_QUANTITY_HARD_MAX, held);
+    return Math.min(
+      SHOP_QUANTITY_HARD_MAX,
+      held,
+      Math.floor(Math.max(0, merchantGold) / price),
+      sellGoldRoom(gold, price),
+    );
   }
-  // 공짜 물건은 소지금이 상한을 만들지 못한다.
-  if (price <= 0) return SHOP_QUANTITY_HARD_MAX;
-  return Math.min(SHOP_QUANTITY_HARD_MAX, Math.floor(Math.max(0, gold) / price));
+  const room = stackRoom(owned);
+  // 공짜 물건은 소지금이 상한을 만들지 못한다. 가방 칸은 만든다.
+  if (price <= 0) return Math.min(SHOP_QUANTITY_HARD_MAX, room);
+  return Math.min(SHOP_QUANTITY_HARD_MAX, room, Math.floor(Math.max(0, gold) / price));
+}
+
+/**
+ * 한 개도 거래할 수 없을 때의 행 안내. 살 돈·상인 지갑이 먼저이고,
+ * 그다음이 가방 칸과 소지금 한도다.
+ */
+export function unaffordableShopReason(
+  goods: ShopGoods,
+  mode: ShopMode,
+  gold: number,
+  merchantGold: number,
+  owned: number,
+): string | undefined {
+  const price = listingPrice(goods, mode);
+  if (mode === "sell") {
+    if (!(price > 0)) return undefined;
+    if (merchantGold < price) return "상인 소지금 부족";
+    if (sellGoldRoom(gold, price) < 1 && Math.trunc(owned) >= 1) return SHOP_GOLD_CAP_REASON;
+    return undefined;
+  }
+  if (price > 0 && gold < price) return "소지금 부족";
+  if (stackRoom(owned) < 1) return SHOP_BAG_FULL_REASON;
+  return undefined;
+}
+
+/** 가방에 이 물건을 더 넣을 수 있는 개수. 개수가 정수가 아니면 더 넣지 않는다. */
+function stackRoom(owned: number): number {
+  if (!Number.isSafeInteger(owned) || owned < 0 || owned > ITEM_QUANTITY_MAX) return 0;
+  return ITEM_QUANTITY_MAX - owned;
+}
+
+/**
+ * 판매 대금이 소지금 한도 안에 들어가는 개수.
+ * 소지금이 정수가 아니면 여기서 상한을 만들지 않는다 — 거래 안전 검사가 거절한다.
+ */
+function sellGoldRoom(gold: number, unitPrice: number): number {
+  if (unitPrice <= 0) return SHOP_QUANTITY_HARD_MAX;
+  if (!Number.isSafeInteger(gold) || gold < 0) return SHOP_QUANTITY_HARD_MAX;
+  if (gold >= GOLD_MAX) return 0;
+  return Math.floor((GOLD_MAX - gold) / unitPrice);
 }
 
 /**
@@ -346,8 +401,8 @@ export function applyAffordability(
   owned: number
 ): void {
   const price = listingPrice(goods, mode);
-  const blocked = mode === "sell" ? merchantGold < price : gold < price;
-  const reason = mode === "sell" ? "상인 소지금 부족" : "소지금 부족";
+  const reason = unaffordableShopReason(goods, mode, gold, merchantGold, owned);
+  const blocked = reason !== undefined;
   // 생성과 거래 후 갱신 모두 같은 상한을 싣는다. 스테퍼·입력칸·합계가 이 값을 읽는다.
   row.dataset.maxQty = String(affordableQuantityMax(goods, mode, gold, merchantGold, owned));
   row.classList.toggle("is-unaffordable", blocked);
@@ -652,11 +707,16 @@ export function updateShopQuantityTotalIn(overlay: HTMLElement): void {
     const next = gold + (balance.dataset.mode === "sell" ? 1 : -1) * unit * qty;
     delete balance.dataset.balance;
     delete balance.dataset.shortage;
+    delete balance.dataset.goldCap;
     balance.dataset.available = String(Boolean(row) && Number(row?.dataset.maxQty) >= qty);
     if (!row) balance.textContent = "거래할 물건 없음";
     else if (next < 0) {
       balance.dataset.shortage = String(-next);
       balance.textContent = `소지금 ${-next}${balance.dataset.goldUnit} 부족`;
+    } else if (next > GOLD_MAX) {
+      // 한 개도 못 파는 행은 수량칸이 1을 보여 준다. 그 1개의 예상 잔액을 한도 너머 숫자로 적지 않는다.
+      balance.dataset.goldCap = "1";
+      balance.textContent = "소지금이 한도를 넘습니다";
     } else {
       balance.dataset.balance = String(next);
       balance.textContent = `${balance.dataset.available === "true" ? "거래 후" : "거래 불가 · 예상"} 잔액 ${next}${balance.dataset.goldUnit}`;

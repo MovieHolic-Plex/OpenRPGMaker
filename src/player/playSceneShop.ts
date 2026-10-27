@@ -61,7 +61,7 @@ import type { StepResult } from "@/player/interpreter";
 import type { PlaySceneContext } from "@/player/playSceneTypes";
 import { goodsIndex, type ShopCategory, type ShopGoods } from "@/player/playSceneShopGoods";
 import { bestFitActorId, partyFit, recoveryPreview } from "@/player/shopPartyFit";
-import { shopPartyWalker } from "@/player/playSceneShopParts";
+import { SHOP_BAG_FULL_REASON, SHOP_GOLD_CAP_REASON, shopPartyWalker } from "@/player/playSceneShopParts";
 import { clampLevel, normalizeActorRecord } from "@/project/actorModel";
 
 export type ShopStep = Extract<StepResult, { kind: "shop" }>;
@@ -673,9 +673,12 @@ export function handleShopTransaction(
     };
     const tc = economy.shopTradeCounts ?? {};
     const currentTrade = tc[item.id] ?? { sold: 0, bought: 0 };
+    if (isSafeEconomyValue(payout) && isSafeEconomyValue(scene.session.gold) && scene.session.gold + payout > GOLD_MAX) {
+      scene.syncRuntimeState();
+      return { ok: false, status: SHOP_GOLD_CAP_REASON };
+    }
     if (!isSafeEconomyValue(payout)
       || !isSafeEconomyValue(scene.session.gold)
-      || scene.session.gold + payout > GOLD_MAX
       || !isSafeEconomyValue(merchantGold)
       || (economy.shopLoyaltySpend !== undefined && !isSafeEconomyRecord(economy.shopLoyaltySpend))
       || (economy.shopTradeCounts !== undefined && !isSafeShopTradeCountsRecord(economy.shopTradeCounts))
@@ -725,7 +728,7 @@ export function handleShopTransaction(
   }
   if (!changeItemsAtomically(scene.session, [{ itemId: item.id, op: "+=", amount: qty }])) {
     scene.syncRuntimeState();
-    return { ok: false, status: "가방이 꽉 찼습니다." };
+    return { ok: false, status: SHOP_BAG_FULL_REASON };
   }
   changeGold(scene.session, "-=", cost);
   {

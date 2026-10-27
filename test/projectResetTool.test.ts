@@ -58,7 +58,14 @@ describe("reset_project", () => {
 
     expect(firstResult.ok, firstResult.summary).toBe(true);
     expect(secondResult.ok, secondResult.summary).toBe(true);
-    expect(first.project).toEqual(second.project);
+    // 오프닝 장면 id 는 매번 새로 뽑는다(openingPresets/defaultOpeningSequence 의 genId — 편집 선택이 옛 장면을 가리키지 않게).
+    // 그 id 만 떼고 나머지 내용이 같은지 본다.
+    const withoutSceneIds = (project: ToolContext["project"]) => {
+      const copy = structuredClone(project);
+      for (const scene of copy.system.opening?.scenes ?? []) (scene as { id?: string }).id = "";
+      return copy;
+    };
+    expect(withoutSceneIds(first.project)).toEqual(withoutSceneIds(second.project));
     expect(() => deserialize(serialize(first.project))).not.toThrow();
     expect(first.project.meta.title).toBe("달빛 농장");
     expect(first.project.system.titleScreen?.title).toBe("달빛 농장");

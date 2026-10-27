@@ -7,6 +7,7 @@ import { SCHEMA_VERSION, type Project } from "../../types";
 import { deserializeStoredProjectJson, repairStoredLoadFoundation } from "./loadRepair";
 import { changedMapIdsBetween, changedMapTreeIdsBetween, mapSaveConflicts, mergeProjectMaps, type MapSaveConflict } from "./mapMerge";
 import { projectWire, type ProjectWire } from "./projectWire";
+import { restoreBundledTilesetDiffs } from "../../bundledTilesetDiff";
 
 // Map merging only needs maps/mapTree, but the audio-description and monster-metadata
 // deltas compare the same remote snapshot, so those optional roots stay visible.
@@ -28,6 +29,8 @@ export function canonicalizeForMapComparison(project: Project): MapPatchSnapshot
 export function readMapPatchSnapshot(value: unknown): MapPatchSnapshot {
   if (!isRecord(value) || value.version !== SCHEMA_VERSION) return deserializeStoredProjectJson(value);
   const snapshot = structuredClone(value);
+  // 저장본의 번들 타일셋 차이(bundledTilesetDiff.ts)를 되돌려야 타일셋 모양 검사를 통과한다.
+  restoreBundledTilesetDiffs(snapshot as { tilesets?: unknown });
   // Keep compatibility foundation changes, but never use ordinary load repair
   // to prune map references against roots that the local candidate may restore.
   repairStoredLoadFoundation(snapshot);

@@ -60,7 +60,9 @@ describe("모르는 움직임 필드 거부", () => {
     const problems = movementKeyProblems({ type: "chase", patrol: ["left"], waypoints: [], sight: { range: 5 } }, "movement");
     expect(problems.join(" ")).toContain("patrol");
     expect(problems.join(" ")).toContain("waypoints");
-    expect(problems.join(" ")).not.toContain("sight");
+    // 문제 문장에는 허용 키 목록(…sight…)이 함께 붙는다 — sight 자체가 문제로 짚히지 않는지만 본다.
+    expect(problems.some((problem) => problem.startsWith("movement.sight"))).toBe(false);
+    expect(problems).toHaveLength(2);
   });
 
   it("patch_event_page 는 movement 의 모르는 키를 거부한다", () => {

@@ -1147,6 +1147,13 @@ export function showPictureBody(
     dataset: { testid: "show-picture-gallery" },
   }) as HTMLInputElement;
   recordInGallery.checked = cmd.recordInGallery === true;
+  // 전환 시간만 넣고 대기를 못 켜면 페이드 도중에 대사·지우기가 바로 시작한다.
+  // 런타임은 waitForPicture 를 이미 읽는다(playSceneInterpreter). 폼에 칸이 없었다.
+  const waitForPicture = el("input", {
+    attrs: { type: "checkbox", "aria-label": "전환이 끝날 때까지 대기" },
+    dataset: { testid: "show-picture-wait" },
+  }) as HTMLInputElement;
+  waitForPicture.checked = cmd.waitForPicture === true;
   const galleryLabel = galleryMenuLabel(store.getCurrent());
   const preview = el("div", {
     class: "actor-m2-preview page3-command-preview",
@@ -1181,8 +1188,7 @@ export function showPictureBody(
       durationMs: intInRange(durationMs, 0, 0, 60_000),
       ...(normalizeEasing(easing.value) ? { easing: normalizeEasing(easing.value) } : {}),
       ...(normalizeBlendMode(blendMode.value) ? { blendMode: normalizeBlendMode(blendMode.value) } : {}),
-      // 폼에 칸이 없는 필드는 그대로 실어 보낸다 — 다른 칸을 고쳤다고 대기 설정이 사라지면 안 된다.
-      ...(cmd.waitForPicture === true ? { waitForPicture: true } : {}),
+      ...(waitForPicture.checked ? { waitForPicture: true } : {}),
       ...(recordInGallery.checked ? { recordInGallery: true } : {}),
     });
     renderPreview();
@@ -1236,7 +1242,8 @@ export function showPictureBody(
           ` · ${parseInt(scale.value, 10) || 100}%` +
           ` · 불투명도 ${parseInt(opacity.value, 10) || 0}%` +
           (previewRotation ? ` · ${previewRotation}°` : "") +
-          ((parseInt(durationMs.value, 10) || 0) ? ` · ${parseInt(durationMs.value, 10)}ms` : ""),
+          ((parseInt(durationMs.value, 10) || 0) ? ` · ${parseInt(durationMs.value, 10)}ms` : "") +
+          (waitForPicture.checked ? " · 끝날 때까지 대기" : ""),
       }),
       el("p", {
         class: "actor-m2-preview-note",
@@ -1252,6 +1259,7 @@ export function showPictureBody(
     control.addEventListener("input", renderPreview);
   }
   recordInGallery.addEventListener("change", commit);
+  waitForPicture.addEventListener("change", commit);
   easing.addEventListener("change", commit);
   blendMode.addEventListener("change", commit);
 
@@ -1356,7 +1364,7 @@ export function showPictureBody(
             el("details", {
               class: "page3-more-fields",
               attrs: {
-                ...(Number(rotation.value) || Number(durationMs.value) || cmd.easing ? { open: "" } : {}),
+                ...(Number(rotation.value) || Number(durationMs.value) || cmd.easing || cmd.waitForPicture ? { open: "" } : {}),
               },
               children: [
                 el("summary", { text: "회전 · 서서히" }),
@@ -1365,6 +1373,19 @@ export function showPictureBody(
                   el("div", { class: "actor-m2-inline page3-coord-row", children: [rotation, durationMs] })
                 ),
                 fieldBlock("움직임 곡선", easing),
+                fieldBlock(
+                  "완료까지 대기",
+                  el("label", {
+                    class: "page3-gallery-record",
+                    attrs: { style: "display:flex;gap:8px;align-items:flex-start;line-height:1.45;white-space:normal;" },
+                    children: [
+                      waitForPicture,
+                      el("span", {
+                        text: "페이드·이동이 끝난 뒤에 다음 명령을 시작합니다. 끄면 그림이 움직이는 동안 대사가 바로 이어집니다.",
+                      }),
+                    ],
+                  }),
+                ),
               ],
             }),
           ],

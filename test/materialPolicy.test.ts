@@ -11,6 +11,7 @@ import { COMBINED_TOWN_HARNESS_PREFIX } from "@/project/tilesetHarness/combinedT
 import { runTool } from "@/editor/tools/toolRunner";
 import { TILE } from "@/project/defaults/constants";
 import { formatMaterialLabelHint } from "@/editor/regionTask/runRegionTask";
+import { RETIRED_COMBINED_TOWN_TILESET_ID, retiredEasyRpgTileset } from "./support/retiredEasyRpgTilesets";
 
 const BAG_ID = `${COMBINED_TOWN_HARNESS_PREFIX}small-props`;
 
@@ -27,9 +28,8 @@ describe("materialPolicy bag demotion", () => {
   });
 
   it("resolveMaterialByLabel rejects bag labels and group ids", () => {
-    const project = createBlankProject();
-    const tileset = project.tilesets[project.startMapId ? Object.values(project.maps)[0]!.tilesetId : Object.keys(project.tilesets)[0]!];
-    const ts = Object.values(project.tilesets)[0]!;
+    // The labels below are combined-town harness groups; that sheet left createBlankProject() in the 2026-10-07 copyright purge.
+    const ts = retiredEasyRpgTileset(RETIRED_COMBINED_TOWN_TILESET_ID);
     expect(resolveMaterialByLabel(ts, "마을 소품").status).toBe("missing");
     expect(resolveMaterialByLabel(ts, BAG_ID).status).toBe("missing");
     const ok = resolveMaterialByLabel(ts, "나무 상자");

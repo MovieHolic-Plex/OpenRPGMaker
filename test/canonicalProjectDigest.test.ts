@@ -21,8 +21,11 @@ import type { Project } from "../src/project/types";
  * deterministically, and refuse when the observed digest differs.
  */
 describe("canonical project content digest", () => {
+  // 새 프로젝트의 기본 오프닝 장면 id 는 만들 때마다 새로 뽑는다(defaultOpeningSequence) — 「같은 내용」을 만들려면
+  // 한 번 만든 빈 프로젝트를 복제한다.
+  const blank = createBlankProject();
   function sampleProject(): Project {
-    const project = createBlankProject();
+    const project = structuredClone(blank);
     project.meta.title = "푸른 액자의 밤";
     project.startMapId = "map_horror_blue_gallery";
     project.startPos = { x: 13, y: 13 };

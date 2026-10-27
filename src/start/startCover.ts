@@ -94,7 +94,27 @@ export type ProjectCoverResult =
   | { readonly kind: "failed" };
 
 /** 재료로 480×300 JPEG 를 굽는다 — 시작 칸을 가운데 둔 2배 장면. 빈 맵이면 empty, 그릴 수 없으면 failed. */
+/** 번들 타일셋은 번들 정의와의 차이만 저장된다(bundledTilesetDiff.ts) — 그 정의만 읽어 앱과 같게 되돌린다. */
+async function restoredCoverTileset(tileset: unknown): Promise<unknown> {
+  if (!tileset || typeof tileset !== "object" || !Object.hasOwn(tileset, "bundledTilesetDiff")) return tileset;
+  const id = (tileset as { readonly id?: unknown }).id;
+  if (typeof id !== "string") return null;
+  try {
+    const [{ preloadBundledTilesetDefinitions }, { restoreBundledTilesetDiffs }] = await Promise.all([
+      import("@/project/defaults/defaultAssets"),
+      import("@/project/bundledTilesetDiff"),
+    ]);
+    await preloadBundledTilesetDefinitions([id]);
+    const holder = { tilesets: { [id]: structuredClone(tileset) } as Record<string, unknown> };
+    restoreBundledTilesetDiffs(holder);
+    return holder.tilesets[id];
+  } catch {
+    return null;
+  }
+}
+
 export async function renderProjectCover(source: ProjectCoverSource): Promise<ProjectCoverResult> {
+  source = { ...source, tileset: (await restoredCoverTileset(source.tileset)) as ProjectCoverSource["tileset"] };
   if (!isRenderableMap(source.map) || !isRenderableTileset(source.tileset)) return { kind: "failed" };
   if (isMostlyEmptyMap(source.map)) return { kind: "empty" };
   const image = await loadCoverTilesetImage(source.tileset, source.uploadedImage);

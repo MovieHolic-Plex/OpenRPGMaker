@@ -17,8 +17,13 @@ describe("spatial checkpoint roundtrip reuse", () => {
     const { value, tilesetId } = accepted();
     const wire = serializeForRoundtripCheck(value);
     const projected = JSON.parse(wire).tilesets[tilesetId];
-    const { referenceDocuments: _docs, structureKits, ...expected } = value.tilesets[tilesetId]!;
+    const { referenceDocuments: _docs, structureKits, tileMeta, passability, priority, terrain, ...expected } = value.tilesets[tilesetId]!;
     expect(projected).toMatchObject(expected);
+    // Per-tile arrays of a passed tileset project as same-length null arrays (PER_TILE_ARRAY_FIELDS, #2631);
+    // the roundtrip only checks their length against count.
+    for (const [field, original] of Object.entries({ tileMeta, passability, priority, terrain })) {
+      expect(projected[field]?.length, field).toBe((original as unknown[] | undefined)?.length);
+    }
     expect(projected.structureKits).toEqual(structureKits?.map(({ referenceDocuments: _kitDocs, ...kit }) => kit));
     expect(deserialize(wire).spatialAuthoring).toEqual(value.spatialAuthoring);
   });

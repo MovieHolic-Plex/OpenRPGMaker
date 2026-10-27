@@ -25,9 +25,11 @@ import { defaultPaintLayerForTile } from "@/editor/tileLayerClassification";
 import { createBlankProject } from "@/project/defaults";
 import { CHIPSET_TILE_GROUPS } from "@/project/defaults/chipsetMapping";
 import type { TilesetDef } from "@/project/types";
+// 큐레이션 조합 붓은 합본 마을(EasyRPG) 칸 번호로 정의돼 있다 — 2026-10-07 정리 뒤 시작 맵을 그 칩셋으로 되돌려 본다.
+import { startOnRetiredCombinedTown } from "./support/retiredEasyRpgTilesets";
 
 function defaultTileset(): TilesetDef {
-  const project = createBlankProject();
+  const project = startOnRetiredCombinedTown(createBlankProject());
   const map = project.maps[project.startMapId]!;
   return project.tilesets[map.tilesetId]!;
 }
