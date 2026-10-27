@@ -10,9 +10,11 @@ export function combatConditionFields(initial: EnemyActionCondition, id: string,
   const commit = (next: EnemyActionCondition): void => { condition = next; onChange(next); };
   const render = (): void => {
     const c = condition;
+    // 턴 조건은 1 부터다(저장 때 Math.max(1, …)). 칸의 하한도 1 이어야 화면 값과 저장 값이 같다 — 0 을 보여 주고 1 을 저장하지 않는다.
+    const floor = c.kind === 'turn' ? 1 : 0;
     const range = (low: string, high: string, min: number, max: number, limit: number, update: (min: number, max: number) => void): HTMLElement[] => [
-      numberField(low, id === "feature16-enemy-condition" && c.kind === "turn" ? "db-enemy-action-turn-start" : `${id}-min`, min, value => { min = value; update(min, max); }, { min: 0, max: limit }),
-      numberField(high, id === "feature16-enemy-condition" && c.kind === "turn" ? "db-enemy-action-turn-interval" : `${id}-max`, max, value => { max = value; update(min, max); }, { min: 0, max: limit }),
+      numberField(low, id === "feature16-enemy-condition" && c.kind === "turn" ? "db-enemy-action-turn-start" : `${id}-min`, min, value => { min = value; update(min, max); }, { min: floor, max: limit }),
+      numberField(high, id === "feature16-enemy-condition" && c.kind === "turn" ? "db-enemy-action-turn-interval" : `${id}-max`, max, value => { max = value; update(min, max); }, { min: floor, max: limit }),
     ];
     if (c.kind === 'hp' || c.kind === 'mp') details.replaceChildren(...range('최소 %', '최대 %', c.minPercent, c.maxPercent, 100, (minPercent, maxPercent) => commit({ kind: c.kind, minPercent, maxPercent })));
     else if (c.kind === 'allies') details.replaceChildren(...range('생존 동료 최소', '생존 동료 최대', c.min, c.max, 99, (min, max) => commit({ kind: 'allies', min, max })));

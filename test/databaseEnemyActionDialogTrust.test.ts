@@ -52,44 +52,51 @@ describe("enemy action dialog input trust through the real store", () => {
     expect(field("ok").classList.contains("primary")).toBe(true);
     expect(field("cancel").textContent).toBe("취소");
   });
-  it("disables inactive turn fields and retains their raw draft across condition changes", () => {
+  // 조건 칸은 공용 combatConditionFields 로 옮겨졌다: 턴 칸은 「턴」 조건일 때만 그려지고(비활성으로 남기지 않는다),
+  // 조건 종류를 바꾸면 그 종류의 기본값(시작 1·간격 1)으로 새로 시작한다.
+  it("renders turn fields only for the turn condition and commits the selected condition", () => {
     open();
-    expect(field<HTMLInputElement>("turn-start").disabled).toBe(true);
-    expect(field<HTMLInputElement>("turn-interval").disabled).toBe(true);
+    expect(document.querySelector('[data-testid="db-enemy-action-turn-start"]')).toBeNull();
     change("condition-type", "turn");
+    expect(field<HTMLInputElement>("turn-start").value).toBe("1");
+    expect(field<HTMLInputElement>("turn-interval").value).toBe("1");
     change("turn-start", "27");
-    change("turn-interval", "");
     change("condition-type", "always");
-    expect(field<HTMLInputElement>("turn-start").disabled).toBe(true);
-    change("condition-type", "turn");
-    expect(field<HTMLInputElement>("turn-start").value).toBe("27");
-    expect(field<HTMLInputElement>("turn-interval").value).toBe("");
-    expect(field<HTMLInputElement>("turn-interval").disabled).toBe(false);
-    change("condition-type", "always");
+    expect(document.querySelector('[data-testid="db-enemy-action-turn-start"]')).toBeNull();
     field<HTMLButtonElement>("ok").click();
     expect(enemy().actions[0]?.condition).toEqual({ kind: "always" });
     expect(rerender).toHaveBeenCalledOnce();
   });
-  for (const [suffix, max] of [["rating", 100], ["turn-start", 999], ["turn-interval", 999]] as const) {
-    it.each(["", "0", "-1", "1.5", String(max + 1), "1e309"])(`rejects ${suffix}=%s without changing or closing the record`, (value) => {
+  it.each(["", "0", "-1", "1.5", String(101), "1e309"])("rejects rating=%s without changing or closing the record", (value) => {
+    open({ ...action(), condition: { kind: "turn", start: 7, interval: 3 } });
+    const before = structuredClone(enemy());
+    change("rating", value);
+    const input = field<HTMLInputElement>("rating");
+    const visible = input.value;
+    field<HTMLButtonElement>("ok").click();
+    expect(enemy()).toEqual(before);
+    expect(rerender).not.toHaveBeenCalled();
+    expect(field("dialog").isConnected).toBe(true);
+    expect(document.activeElement).toBe(input);
+    expect(input.value).toBe(visible);
+    expect(input.getAttribute("aria-invalid")).toBe("true");
+    const message = document.getElementById(input.getAttribute("aria-describedby") ?? "");
+    expect(message?.hidden).toBe(false);
+    expect(message?.textContent?.length).toBeGreaterThan(0);
+    change("rating", "100");
+    expect(input.getAttribute("aria-invalid")).not.toBe("true");
+    field<HTMLButtonElement>("ok").click();
+    expect(rerender).toHaveBeenCalledOnce();
+  });
+  // 턴 칸은 공용 숫자 칸이라 범위 밖 값을 1~999 로 당겨 칸에 다시 써 보인다. 저장되는 값은 칸에 보이는 값과 같다(조용히 다른 값을 저장하지 않는다).
+  for (const suffix of ["turn-start", "turn-interval"] as const) {
+    it.each([["", "1"], ["0", "1"], ["-1", "1"], ["1000", "999"], ["1e309", "1"]])(`clamps ${suffix}=%s to the visible %s and commits that`, (value, shown) => {
       open({ ...action(), condition: { kind: "turn", start: 7, interval: 3 } });
-      const before = structuredClone(enemy());
       change(suffix, value);
-      const input = field<HTMLInputElement>(suffix);
-      const visible = input.value;
+      expect(field<HTMLInputElement>(suffix).value).toBe(shown);
       field<HTMLButtonElement>("ok").click();
-      expect(enemy()).toEqual(before);
-      expect(rerender).not.toHaveBeenCalled();
-      expect(field("dialog").isConnected).toBe(true);
-      expect(document.activeElement).toBe(input);
-      expect(input.value).toBe(visible);
-      expect(input.getAttribute("aria-invalid")).toBe("true");
-      const message = document.getElementById(input.getAttribute("aria-describedby") ?? "");
-      expect(message?.hidden).toBe(false);
-      expect(message?.textContent?.length).toBeGreaterThan(0);
-      change(suffix, String(max));
-      expect(input.getAttribute("aria-invalid")).not.toBe("true");
-      field<HTMLButtonElement>("ok").click();
+      const condition = enemy().actions[0]?.condition;
+      expect(condition).toEqual({ kind: "turn", start: suffix === "turn-start" ? Number(shown) : 7, interval: suffix === "turn-interval" ? Number(shown) : 3 });
       expect(rerender).toHaveBeenCalledOnce();
     });
   }
