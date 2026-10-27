@@ -126,6 +126,26 @@ describe("키보드 오버레이", () => {
     expect(host.querySelector("[data-testid='tactics-status']")?.textContent).toContain("2턴");
     controller.destroy();
   });
+
+  it("한글 IME 의 Process 키로도 고르고 이동한다", () => {
+    const host = document.createElement("div");
+    document.body.append(host);
+    const state = createTacticsState([seed("a", { attack: 99 })], [seed("x")], { width: 4, height: 1 });
+    const controller = mountTacticsBattle(host, state, vi.fn());
+    const press = (code: string, init: KeyboardEventInit = {}) => {
+      window.dispatchEvent(new KeyboardEvent("keydown", { key: "Process", code, cancelable: true, ...init }));
+    };
+    window.dispatchEvent(new KeyboardEvent("keydown", { key: "가", isComposing: true, cancelable: true }));
+    expect(controller.root.dataset.phase).toBe("select");
+    press("KeyZ");
+    expect(controller.root.dataset.phase).toBe("move");
+    press("ArrowRight");
+    press("ArrowRight");
+    press("KeyZ");
+    expect(state.units[0]!.x).toBe(2);
+    expect(controller.root.dataset.phase).toBe("target");
+    controller.destroy();
+  });
 });
 
 describe("프로젝트 → 유닛 · 세션 되쓰기 · 저장 왕복", () => {

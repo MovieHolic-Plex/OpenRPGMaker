@@ -256,6 +256,46 @@ describe("battle dom keyboard and status rows", () => {
     controller.destroy();
   });
 
+  it("reads battle menu keys from the physical code while an IME is active", () => {
+    vi.useFakeTimers();
+    const { runtime, controller } = setup();
+    untilActorCommand(runtime);
+    vi.advanceTimersByTime(250);
+
+    const commands = [...controller.root.querySelectorAll<HTMLButtonElement>(
+      "button.battle-command:not([data-preview-only='true'])",
+    )];
+    expect(commands[0]?.dataset.battleCommandCursor).toBe("true");
+    const ime = (code: string, init: KeyboardEventInit = {}, type: "keydown" | "keyup" = "keydown") => {
+      window.dispatchEvent(new KeyboardEvent(type, { key: "Process", code, bubbles: true, cancelable: true, ...init }));
+    };
+
+    window.dispatchEvent(new KeyboardEvent("keydown", { key: "가", isComposing: true, bubbles: true, cancelable: true }));
+    expect(commands[0]?.dataset.battleCommandCursor).toBe("true");
+
+    ime("ArrowDown");
+    expect(commands[1]?.dataset.battleCommandCursor).toBe("true");
+    expect(commands[0]?.dataset.battleCommandCursor).toBeUndefined();
+
+    const status = controller.root.querySelector("[data-testid='battle-playback-status']");
+    ime("KeyF");
+    expect(status?.textContent).toContain("F 자동 켜짐");
+    ime("ShiftLeft");
+    ime("ShiftLeft", {}, "keyup");
+    expect(status?.textContent).toContain("Shift 1.8×");
+
+    controller.root.querySelector<HTMLButtonElement>("[data-testid='actor-command-item']")?.click();
+    expect(controller.root.querySelector("[data-testid='actor-command-back']")).toBeTruthy();
+    ime("KeyX");
+    expect(controller.root.querySelector<HTMLButtonElement>("[data-testid='actor-command-attack']")?.dataset.battleCommandCursor).toBe("true");
+
+    const confirmed = vi.fn();
+    controller.root.querySelector<HTMLButtonElement>("[data-testid='actor-command-attack']")?.addEventListener("click", confirmed, { once: true });
+    ime("KeyZ");
+    expect(confirmed).toHaveBeenCalledTimes(1);
+    controller.destroy();
+  });
+
 });
 
 // ── 실플레이 적대 리뷰 후속: gen1+RM 스킨의 죽은 공격 버튼 / 스크롤 큐 ──
