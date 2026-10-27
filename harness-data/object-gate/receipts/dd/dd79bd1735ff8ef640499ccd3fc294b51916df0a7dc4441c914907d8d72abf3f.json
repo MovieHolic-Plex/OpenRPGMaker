@@ -1,0 +1,340 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "dd79bd1735ff8ef640499ccd3fc294b51916df0a7dc4441c914907d8d72abf3f",
+ "width": 64,
+ "height": 64,
+ "kind": "terrain",
+ "name": "other.ground r7 A1",
+ "label": "dungeon/other.ground.r7.A1",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 7,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "dungeon",
+   "fallback": true,
+   "reason": "칩셋 dungeon 의 화풍 기준 묶음이 없다",
+   "hash": "8cecb3a70460aa86"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 9,
+  "tileColorsP90": 10,
+  "darkV5": 35,
+  "nearBlackEdge": 0.21,
+  "opaqueTiles": 16
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cobblestone-like ground tile with dark purple stones, dark gaps and small violet crystal highlights",
+      "rows": "0-63",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The image is a full 64x64 seamless ground texture: irregular cobble stones separated by dark crack lines, with a few lilac crystal flecks. There is no silhouette, no front face, no eave or edge line, and no standing volume. It is a flat terrain tile with the top-down view of the ground, and the kind is terrain, so it matches."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a cracked-cobble paving patch, so the paving reference is the right comparison. It reads as 8 visible tones per tile against 7 for the paving reference and 3 for the grass. Near-flat coverage is 1%, so there are no large flat fills. Each stone has an edge-to-centre value ramp, plus a few violet glint dots that act as texture. Dark edge pixels are 0% neutral, so the seams are tinted dark purple, matching the adjacent stone, not a near-black sticker line. Weaknesses: only about 10 colours in total, and the stone interiors are fairly smooth with sparse grain. That is roughly 5 shading steps against the reference's 6, but it is on par with the paving reference's 7 colours and its own density.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 11825
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cobblestone ground texture filling the whole 64x64 tile",
+      "rows": "0-63",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The image is a full-bleed 64x64 tile of dark purple cobblestones separated by dark grout lines, with a few glowing violet crystal flecks. The silhouette is 64 wide on every row, with no standing object, no front face and no edge line or eave shadow. It is a flat top-down ground texture, which fits the terrain kind. The column scan shows only texture variation (stone, grout and glow), not a top/front structure."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a cobblestone-style paving patch, so the paving reference is the right comparison. It measures 8 visible tones per tile against 7 for the paving reference and 3 for the grass reference. Near-flat coverage is 1%, so there are no large flat fills. The stones show an inner highlight and shade ramp of roughly 5 steps, plus speckle and violet glints. Dark edge pixels are 0% neutral, so the seams lean purple and follow the stone body colour rather than forming a black sticker outline. It is slightly less textured than the paving reference, which has crisp per-stone grain, and its raw palette is small at 10 colours. Even so, the visible tone count and structure are at or above the references, and a careful artist would accept it next to them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 11442
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cobblestone ground tiles with dark gaps and a few violet crystal glints",
+      "rows": "0-63",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The image is a full-bleed 64x64 seamless terrain tile of purple-maroon cobblestones separated by dark grout lines, with small bright violet crystal accents. Every row has width 64. There is no silhouette, no front face and no standing volume, so it reads as flat top-down ground, which is expected for terrain."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a cobblestone paving patch, so the paving reference is the right comparison. Each stone has a lighter top plane, a mid body and a darker lower edge, plus a few bright accent specks. That gives about 4 visible steps against the reference's 5-6, which is a little lower but not shallow. The gaps between stones are dark purple-maroon, a tinted version of the stone colour, and 0% of the dark edge pixels are neutral, so this is not the near-black sticker outline. Measured facts: 8 visible tones per tile against 7 for the paving reference, and only 1% near-flat coverage, so there are no large flat fills. Raw colour count is low (10 in total), but that fits a locked palette and does not lower the visible density. The stone shapes vary in size and shading and are not uniform, so the surface reads as textured rather than flat. It would sit acceptably next to the paving reference, though it is slightly simpler than the reference's per-stone grain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 10924
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cobblestone ground texture filling the full 64x64 tile",
+      "rows": "0-63",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The image is a seamless, full-bleed 64x64 ground tile of purple cobblestones separated by dark mortar lines, with a few glowing violet specks. The silhouette is 64 wide on every row. It has no standing body, front face, eave line, or ellipse. It is a flat top-down terrain texture, which fits the terrain kind."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a cobblestone-style ground patch, which matches the paving reference in kind. It has 8 visible tones per tile against 7 for the paving and 3 for the grass. Near-flat coverage is 1%, so there are no large flat fills. The stone interiors carry dot variation, a lighter top edge on each stone and a few violet glint pixels. The dark edge pixels are 0% near-neutral, so the cracks between stones are a dark purple-maroon tinted to the stone material, not a black sticker line. Each stone shows roughly 4-5 lightness steps, a little under the reference's 5-6. The palette is small, with only 10 distinct colours in total, but the visible texture is still on par with the paving reference. A careful artist would accept it next to the reference without it looking thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 11165
+  }
+ ],
+ "decidedAt": "2026-10-27T11:19:19.065Z",
+ "cells": {
+  "16": [
+   "059449c200e727b0",
+   "12f5c7814aea444c",
+   "16da5df64320cd91",
+   "4f153f9cadfdf88d",
+   "79fb0b5c67dca106",
+   "98b003c216461409",
+   "aa252fa4822809e8",
+   "ccdf79d82f858abb",
+   "dd98f9391a348097",
+   "e6a7c2bd6a78aedd",
+   "e9cfa6c48f7ea943",
+   "ecb33eb5070c7636",
+   "f046d7a934d0aeee",
+   "f09989be871648b1",
+   "f1b4db1ff7df1e28",
+   "fe8829242ad74602"
+  ],
+  "24": [
+   "055e51bd9db17c14",
+   "08f40068d518db0a",
+   "0a52d3c5c86d253d",
+   "0ac8efadd264e02a",
+   "0b6d0d02e16e87bc",
+   "0da6f039daf12e71",
+   "1771946a19fbb95b",
+   "1e5950ce116431c9",
+   "1f7c4f65902362a6",
+   "23ae0643eae4677e",
+   "26d8add6bc36ff18",
+   "2cf85c3474b6cf8c",
+   "301fdf7ff399a62d",
+   "31241ac9b9c463d7",
+   "33e786360890ea62",
+   "369261c7a4d5d08b",
+   "3914632fe783addc",
+   "3b54defcd9e7414b",
+   "3bf420be9f9fbff7",
+   "47a5aed28d81c2cc",
+   "4a3cf23b59c600a1",
+   "4c640aa8ba3cb3b4",
+   "5d97d236897f2022",
+   "67d7622f5118e379",
+   "6d765ccacbce2485",
+   "6d79ca6b89eefc1a",
+   "6f6140637fd46808",
+   "76fa4386fa745f3a",
+   "786e7c97a716fed4",
+   "78dea2c72984c8a8",
+   "7f24d28141b3dd68",
+   "8071c491a575e99d",
+   "866896843f4fe0e2",
+   "87963f7727e33fce",
+   "89f2d27a0ab9a325",
+   "8b67299c7b66254b",
+   "9201df2059b2b4b0",
+   "a4751c13ce8a998e",
+   "aac688899948eee4",
+   "b61a11e79437b50f",
+   "b8e4f440e099109b",
+   "b94bf89c94c63b72",
+   "bba2583ca78b8515",
+   "bf83116b3ea73179",
+   "c9ba2c3aa4dfb51c",
+   "d2c5db33240cc793",
+   "d86a2a8eff4dc2ce",
+   "df84eb4d3a977fff",
+   "e5fdf80fd7eb7666",
+   "e73db14251d7dba9",
+   "eb9d0c8dc66b3b9c",
+   "f70e5209aab67751",
+   "faa5db558ee98146",
+   "fdfa290c352d2dc8"
+  ],
+  "32": [
+   "71480e0e407e9dfe",
+   "9f0faabeae074338",
+   "bb05413d8464281a",
+   "be21ee056beeef49"
+  ],
+  "48": [
+   "012f593d65b86d46",
+   "05e76b5f02518492",
+   "07ca7dd1a3c70ee7",
+   "1bb0ec7b97c676ad",
+   "2425af0f157480e8",
+   "2c464ea182810c90",
+   "52f7d114a8321753",
+   "581804c42ec0c3f4",
+   "6d7152c6b3ce9141",
+   "6f3e0e862cdef931",
+   "76157a04d8ab9c60",
+   "8709743e1a437c74",
+   "9df36693e0349db1",
+   "a04c602d970be2ec",
+   "a1c9dc6062f2f2ba",
+   "a558fb02265d81a1",
+   "a73876cd00c0ecbb",
+   "aa19745e209cfa6d",
+   "ab1555264f77779d",
+   "b41f3f343ecd7596",
+   "b78711aca5a643c5",
+   "b9436a0d4668f91f",
+   "cb7d0ae2f1e385fa",
+   "fb34d3fee516303f"
+  ]
+ }
+}
