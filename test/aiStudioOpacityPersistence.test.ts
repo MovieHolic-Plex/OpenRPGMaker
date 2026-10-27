@@ -138,7 +138,9 @@ describe("studio background-density preference lifecycle", () => {
   });
 
   it("clears only custom geometry in studio and restores floating width after exit and collapse", async () => {
-    // Given saved float width and legacy inline dimensions.
+    // Given saved float width and legacy inline dimensions on an expanded panel. The panel boots collapsed by default
+    // (loadPanelCollapsed(true) in aiChatPanel.ts), and a collapsed panel carries no float width, so expansion is persisted here.
+    localStorage.setItem("oprn:ai-panel-collapsed", "0");
     const panel = await boot();
     const deck = control("ai-deck");
     expect(panel.style.getPropertyValue("--ai-float-bar-width")).toBe("704px");
