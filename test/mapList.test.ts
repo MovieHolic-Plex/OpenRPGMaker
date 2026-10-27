@@ -99,6 +99,22 @@ describe("map tree panel", () => {
     expect(findByTestId(panel, "map-tree-section-toggle")).toBeNull();
   });
 
+  it("맵 줄의 크기·이벤트 수·문 수를 번역 조각으로 나눈다", () => {
+    // `{0}×{1} · 이벤트 {2}` 가 「N개 · 문 M개」까지 한 노드로 보면 영어가 "Events 1" 이 된다.
+    const panel = renderWithFakeDom(() => {
+      const container = document.createElement("div");
+      renderMapList(container);
+      return container;
+    });
+    const project = store.getCurrent();
+    const meta = findByTestId(panel, `map-tree-node-${project.startMapId}`)?.querySelector(".map-tree-meta");
+    const pieces = [...(meta?.childNodes ?? [])].map((node) => node.textContent ?? "");
+    expect(pieces.join("")).toBe(meta?.textContent);
+    expect(pieces.some((piece) => piece.includes("×") && piece.includes("이벤트"))).toBe(false);
+    expect(pieces).toContain(`이벤트 ${project.maps[project.startMapId]?.events.length ?? 0}개`);
+    expect(pieces).toContain(expect.stringMatching(/^문 \d+개$/));
+  });
+
   it("헤더 제목과 개수를 별도 span으로 렌더한다(맵 N 합침 회귀 방지)", () => {
     const project = createBlankProject();
     const secondId = "map_second";

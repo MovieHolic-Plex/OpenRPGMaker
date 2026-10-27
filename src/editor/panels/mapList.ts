@@ -519,6 +519,7 @@ function renderNode(spec: RenderNodeSpec): void {
     // 있고, 목록 칸의 1fr 트랙은 이름을 읽는 데 써야 한다. 다만 0 일 때는 그 자리에
     // '고립'을 남긴다: 이게 유일하게 행에서 손을 써야 하는 신호다.
     if (isBasicRow && isUnlinked) metaBits.push("고립");
+    if (!isFolder && !isBasicRow) metaBits.push(`문 ${links?.outgoingTransfers ?? 0}개`);
     // 시작 배지는 이름 줄 끝에 둔다. 행 그리드의 열로 두면 메타 줄까지 그 폭을 잃어
     // 「문 N개」가 말줄임됐다(UI 감사 05-maps-03) — 메타 줄은 배지 아래까지 쓴다.
     const nameLine = el("div", {
@@ -534,13 +535,15 @@ function renderNode(spec: RenderNodeSpec): void {
           : []),
       ],
     });
+    // 한 텍스트 노드로 붙이면 `{0}×{1} · 이벤트 {2}` 가 뒤의 「N개 · 문 M개」까지
+    // 삼켜 영어가 "Events 1" 이 된다. 조각마다 텍스트 노드를 나눈다.
     item.append(el("div", {
       class: "map-tree-copy",
       children: [
         nameLine,
         el("span", {
           class: "map-tree-meta" + (isUnlinked ? " is-unlinked" : ""),
-          text: isFolder || isBasicRow ? metaBits.join(" · ") : `${metaBits.join(" · ")} · 문 ${links?.outgoingTransfers ?? 0}개`,
+          children: metaBits.flatMap((bit, index) => index === 0 ? [bit] : [" · ", bit]),
           attrs: {
             title: isFolder
               ? "플레이 맵이 아닙니다. 정리용 폴더입니다."
