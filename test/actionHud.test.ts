@@ -49,6 +49,8 @@ describe("action combat HUD identity", () => {
     const session = startSession(project);
     const map = project.maps[session.currentMapId];
     project.system.actionCombat = { enabled: true };
+    // The legacy chip only draws under the "legacy" field-HUD theme; other themes are owned by FieldHud (handSlotChip.ts).
+    project.system.fieldHud = { theme: "legacy" } as typeof project.system.fieldHud;
     map.actionCombat = true;
     const host = document.createElement("div");
     const chip = mountHandSlotChip(host);

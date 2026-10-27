@@ -138,7 +138,8 @@ describe("character appearance editor", () => {
     const { host } = await catalog([appearance]);
     const charsetLine = findByTestId(host, "appearance-shared-charset");
     if (!charsetLine) throw new TypeError("Missing shared charset line");
-    expect(charsetLine.textContent).toContain("금발 붉은 갑옷 기사");
+    // actor1 #3 은 2026-10-05 원본 픽셀 대조로 「붉은 갑옷 여전사」로 고쳤다(characterReferenceCorrections.json).
+    expect(charsetLine.textContent).toContain("붉은 갑옷 여전사");
     expect(charsetLine.textContent).toContain("얼굴 지정");
     const faceLine = findByTestId(host, "appearance-shared-face");
     if (!faceLine) throw new TypeError("Missing shared face line");

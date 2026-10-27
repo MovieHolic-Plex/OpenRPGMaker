@@ -347,7 +347,7 @@ function screenEffectIntentCopy(effect: string, value: string, durationMs: numbe
     case "clearDistortion":
       return `물결·모자이크·기울기를 ${durationMs}ms 동안 모두 거둔다.`;
     case "letterbox":
-      return `화면 위아래에 ${color || "12"}% 두께 검은 띠가 ${durationMs}ms 동안 들어온다. 대화창은 띠 위에 그대로 뜬다. 걷을 때까지 남는다.`;
+      return `화면 위아래에 ${color || "12"}% 두께 검은 띠가 ${durationMs}ms 동안 들어온다. 위·아래 대사창은 띠에 가리지 않게 그 높이만큼 안쪽으로 밀린다. 걷을 때까지 남는다.`;
     case "clearLetterbox":
       return `위아래 검은 띠를 ${durationMs}ms 동안 걷는다.`;
     case "freeze":

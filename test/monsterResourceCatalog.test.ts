@@ -3,6 +3,7 @@ import { EASYRPG_MONSTER_ASSETS } from "@/assets/easyrpgRtp";
 import { builtinGeneratedResourceIds } from "@/assets/generatedAssetResourceResolver";
 import { GENERATED_ASSET_PLAN } from "@/assets/oprnGeneratedAssetPlan";
 import { SCARLOXY_MONSTER_ASSETS } from "@/assets/scarloxyPack";
+import { HARNESS_MONSTER_RESOURCE_IDS } from "@/assets/harnessMonsterArt";
 import { getMonsterResource, listMonsterResources, type MonsterResourceProject } from "@/assets/monsterResourceCatalog";
 import { searchResources } from "@/assets/resourceSearch";
 
@@ -29,6 +30,8 @@ describe("monster resource authority", () => {
       ...builtinGeneratedResourceIds().filter(resourceId => resourceId.startsWith("generated-enemy-")),
       ...EASYRPG_MONSTER_ASSETS.map(asset => asset.id),
       ...SCARLOXY_MONSTER_ASSETS.map(asset => asset.id),
+      // Harness-picked species art (front/back) joined the bundled monster list in #2593.
+      ...HARNESS_MONSTER_RESOURCE_IDS,
     ].filter(resourceId => !RETIRED.has(resourceId)));
     // When
     const resources = listMonsterResources(project);

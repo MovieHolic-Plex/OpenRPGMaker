@@ -9,6 +9,8 @@ import { isBattleItemUserEligible } from "@/battle/battleItemEligibility";
 function fixture() {
   const project = createBlankProject();
   project.system.battleParty = "monsters";
+  // 기본 슬라임이 HP 1 몬스터보다 먼저 움직여 명령 전에 전투가 끝난다 — 이 시험은 약 사용만 본다.
+  for (const enemy of project.database.enemies) enemy.stats.agility = 1;
   const session = startSession(project);
   const speciesId = project.database.monsterSpecies![0]!.id;
   const gift = giveMonster(project, session, { speciesId, level: 10 });

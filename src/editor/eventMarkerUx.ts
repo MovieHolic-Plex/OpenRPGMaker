@@ -5,6 +5,7 @@ import { callMapEventTargetStatus } from "@/editor/eventCallTargetStatus";
 import { store } from "@/project/store";
 import { relationshipStateName } from "@/project/relationshipState";
 import { locationTransitionSentence } from "@/editor/locationTriggerAuthoring";
+import { timerThresholdLabel } from "@/editor/panels/eventEditor/timerConditionText";
 import type {
   Command,
   Project,
@@ -464,7 +465,7 @@ function pageConditionSummary(condition: EventPageCondition): string {
     case "gold":
       return `소지금 ${condition.op} ${condition.amount}`;
     case "timer":
-      return `${condition.timerId === "timer1" ? "타이머 1" : "타이머 2"} ${condition.seconds}초 이하`;
+      return `${condition.timerId === "timer1" ? "타이머 1" : "타이머 2"} ${timerThresholdLabel(condition)}`;
     case "timePhase":
       return `시간대 ${timePhaseLabel(condition.phase)}`;
     case "season":

@@ -85,10 +85,11 @@ describe("shared canvas tileset textures", () => {
     const green = await loadTilesetImage(definition) as HTMLCanvasElement;
     expect(bakedPixels(pink)).toEqual([8, 69, 146, 255, 255, 103, 139, 0, 60, 143, 75, 255]);
     expect(bakedPixels(green)).toEqual([8, 69, 146, 255, 255, 103, 139, 255, 60, 143, 75, 0]);
-    expect(imageLoads).toBe(2);
+    // One decode per sheet URL; colour-key variants only re-bake the canvas (mapTileDraw.ts decodedImagePromises, 2026-09-30 lag fix).
+    expect(imageLoads).toBe(1);
     definition.transparentColor = undefined;
     expect(await loadTilesetImage(definition)).toBeInstanceOf(HTMLImageElement);
-    expect(imageLoads).toBe(3);
+    expect(imageLoads).toBe(1);
   });
 
   it("applies the known interior object key without stripping the grass or ocean colors", async () => {

@@ -1,5 +1,6 @@
 import type { Project } from "../types";
 import { projectWireView } from "./serialize";
+import { isBundledTilesetDiffView, materializeLazyBundledTileset } from "../bundledTilesetDiff";
 
 /**
  * 타일셋·업로드 자산 사전의 JSON 을 항목별로 기억해 조립한다. 결과는 `JSON.stringify` 와 글자까지 같다.
@@ -30,6 +31,8 @@ function hasToJson(value: object): boolean {
 function fieldsOf(entry: Record<string, unknown>): readonly string[] {
   const hit = fieldPieces.get(entry);
   if (hit) return hit;
+  // 지연 번들 타일셋은 키를 훑기 전에 되돌린다 — 다른 판의 번들이 더한 필드는 되돌린 뒤에야 키로 보인다.
+  materializeLazyBundledTileset(entry);
   const fields: string[] = [];
   const keys: string[] = [];
   for (const key of Object.keys(entry)) {
@@ -180,7 +183,15 @@ export function serializeForRoundtripCheck(project: Project): string {
     const value = view[key];
     let piece: string | undefined;
     if (key === "tilesets" && isPlainRecord(value)) {
-      piece = `{${Object.keys(value).flatMap((id) => { const text = roundtripTilesetPiece(value[id]); return text === undefined ? [] : [`${JSON.stringify(id)}:${text}`]; }).join(",")}}`;
+      // 번들 차이 보기(bundledTilesetDiff.ts)는 되읽으면 번들 정의를 다시 만든다(체크포인트마다 수십 MB). 같은 내용인 온전한 항목의
+      // 투영본을 대신 넣는다 — 차이 되돌리기 자체의 왕복은 bundledTilesetDiff 가 같은 판에서 값 동치로 보장한다.
+      const tilesetEntry = (id: string): unknown => {
+        const entry = value[id];
+        if (!isBundledTilesetDiffView(entry)) return entry;
+        const full = (project.tilesets as Record<string, unknown>)[id];
+        return isPlainRecord(full) && !Object.hasOwn(full, "terrainTemplates") ? full : entry;
+      };
+      piece = `{${Object.keys(value).flatMap((id) => { const text = roundtripTilesetPiece(tilesetEntry(id)); return text === undefined ? [] : [`${JSON.stringify(id)}:${text}`]; }).join(",")}}`;
     } else if (key === "assets" && isPlainRecord(value)) {
       const inner: string[] = [];
       for (const assetKey of Object.keys(value)) {

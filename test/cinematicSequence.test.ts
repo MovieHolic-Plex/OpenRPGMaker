@@ -27,6 +27,10 @@ function start(scenes: CinematicScene[], skippable = false): CinematicPlayback {
   playback = playCinematicSequence({ host, project, sequence: { enabled: true, skippable, scenes }, signal: controller.signal });
   return playback;
 }
+// 미디어 src 는 이제 cinematicAssets.prepareAudio 를 거쳐 비동기로 붙는다(3fa4f02578 #3440) — 그 약속 사슬을 흘려 보낸다.
+async function flushMedia(): Promise<void> {
+  for (let index = 0; index < 8; index += 1) await Promise.resolve();
+}
 function key(key: string, repeat = false): KeyboardEvent {
   const event = new KeyboardEvent("keydown", { key, repeat, bubbles: true, cancelable: true });
   (document.activeElement ?? document).dispatchEvent(event);
@@ -178,6 +182,7 @@ describe("shared sequence playback", () => {
   });
   it("advances video on ended once, clears sources and rejects stale ended events", async () => {
     start([{ ...video, narrationAudioResourceId: "voice", durationMs: 200 }, image, text]);
+    await flushMedia();
     const movie = media<HTMLVideoElement>("video"); const voice = media<HTMLAudioElement>("audio");
     expect(movie.src).toBe(project.assets.uploaded.video.dataUrl);
     expect(voice.src).toBe(project.assets.uploaded.voice.dataUrl);
@@ -198,9 +203,9 @@ describe("shared sequence playback", () => {
   });
   it("exposes retry after rejected autoplay and continues even an unskippable video", async () => {
     play.mockRejectedValueOnce(new DOMException("blocked", "NotAllowedError"));
-    start([video]); await Promise.resolve();
+    start([video]); await flushMedia();
     expect(root().dataset.mediaState).toBe("blocked");
-    key("r"); await Promise.resolve();
+    key("r"); await flushMedia();
     expect(play).toHaveBeenCalledTimes(2);
     media("video").dispatchEvent(new Event("playing"));
     expect(root().dataset.mediaState).toBe("playing");
@@ -210,14 +215,14 @@ describe("shared sequence playback", () => {
   });
   it("clears the blocked state after a successful narration retry", async () => {
     play.mockRejectedValueOnce(new DOMException("blocked", "NotAllowedError"));
-    start([{ ...text, narrationAudioResourceId: "voice" }]); await Promise.resolve();
+    start([{ ...text, narrationAudioResourceId: "voice" }]); await flushMedia();
     expect(root().dataset.mediaState).toBe("blocked");
-    key("r"); await Promise.resolve();
+    key("r"); await flushMedia();
     expect(root().dataset.mediaState).toBe("ready");
   });
   it("makes narration rejection visible and permits continuation", async () => {
     play.mockRejectedValueOnce(new DOMException("blocked", "NotAllowedError"));
-    start([{ ...text, narrationAudioResourceId: "voice" }]); await Promise.resolve();
+    start([{ ...text, narrationAudioResourceId: "voice" }]); await flushMedia();
     expect(root().dataset.mediaState).toBe("blocked");
     key("Enter"); expect(await playback.done).toBe("completed");
     expect(pause).toHaveBeenCalledTimes(1);
@@ -371,11 +376,11 @@ describe("shared sequence playback", () => {
   });
   it("does not let waiting events hide blocked autoplay retry", async () => {
     play.mockRejectedValueOnce(new DOMException("blocked", "NotAllowedError"));
-    start([video]); await Promise.resolve();
+    start([video]); await flushMedia();
     media("video").dispatchEvent(new Event("waiting"));
     media("video").dispatchEvent(new Event("stalled"));
     expect(root().dataset.mediaState).toBe("blocked");
-    key("r"); await Promise.resolve();
+    key("r"); await flushMedia();
     expect(play).toHaveBeenCalledTimes(2);
     expect(root().dataset.mediaState).toBe("playing");
   });
@@ -427,8 +432,8 @@ describe("shared sequence playback", () => {
     start([video, text]); key("Enter"); rejectPlay(new Error("late")); await Promise.resolve();
     expect(root().dataset.sceneId).toBe("text"); expect(root().dataset.mediaState).toBe("ready");
   });
-  it("disables image motion when reduced motion is requested", () => {
+  it("disables image motion when reduced motion is requested", async () => {
     vi.spyOn(window, "matchMedia").mockReturnValue({ matches: true } as MediaQueryList);
-    start([image]); expect(root().querySelector("img")?.dataset.motion).toBe("none");
+    start([image]); await vi.advanceTimersByTimeAsync(0); expect(root().querySelector("img")?.dataset.motion).toBe("none");
   });
 });

@@ -4,12 +4,14 @@
 // region-task.css 는 cream-era(따뜻한) 색 리터럴에서 벗어나 모든 색을 var(--token) 으로
 // 가져와야 한다. 이 테스트는 파일 텍스트를 직접 읽어 그 불변식을 고정한다. 파일 경로는
 // databaseLightTheme.test.ts 와 같은 방식으로 저장소 루트에 상대적으로 잡는다.
-import { readFileSync } from "node:fs";
+import { readFileSync, readdirSync } from "node:fs";
 import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
 
-const REGION_CSS = resolve(__dirname, "..", "src", "styles", "editor", "region-task.css");
-const css = readFileSync(REGION_CSS, "utf8");
+// 시트는 9b2ff9a9f1(editor/ 유령 디렉터리 해체)로 styles/map/ 아래로 옮겨졌고 region-task.part-N.css 로 나뉘었다 — 전부 이어 붙여 본다.
+const REGION_DIR = resolve(__dirname, "..", "src", "styles", "map");
+const REGION_FILES = ["region-task.css", ...readdirSync(REGION_DIR).filter((name) => /^region-task\.part-\d+\.css$/.test(name)).sort()];
+const css = REGION_FILES.map((name) => readFileSync(resolve(REGION_DIR, name), "utf8")).join("\n");
 
 /** 정규식을 1-based 라인 번호 목록으로 매핑해 실패 메시지를 행동 가능하게 만든다. */
 function linesMatching(re: RegExp): number[] {

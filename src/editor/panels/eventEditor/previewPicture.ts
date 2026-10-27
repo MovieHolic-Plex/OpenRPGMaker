@@ -51,6 +51,7 @@ export function previewPicture(cmd: Extract<Command, { kind: "showPicture" }>): 
   if (cmd.resourceId?.trim()) bits.push(humanizePictureCaption(cmd.resourceId));
   if (cmd.scale !== undefined) bits.push(`×${cmd.scale}`);
   if (cmd.opacity !== undefined) bits.push(`α${cmd.opacity}`);
+  if (cmd.waitForPicture) bits.push("끝날 때까지 대기");
   root.append(el("div", { class: "ecp-picture-caption", text: bits.join(" · ") }));
   return root;
 }

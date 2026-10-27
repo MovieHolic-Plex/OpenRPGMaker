@@ -107,7 +107,7 @@ import {
 import { applyEditTileLayerPresentation, repaintEditGrid } from "@/editor/editSceneViewChrome";
 import { markEditRenderActive, requestEditRenderFrame } from "@/editor/editRenderGate";
 import { createChipsetTileObject, createRawChipsetTileObject } from "@/editor/chipsetTileRender";
-import { pasteGhostPieces } from "@/editor/pastePreviewGhost";
+import { pasteGhostLiftSteps, pasteGhostPieces, pasteStampLiftField } from "@/editor/pastePreviewGhost";
 import { resetCullableTiles, syncTileCulling, tileCullingStats } from "@/player/playSceneTileCulling";
 import {
   cancelPastePreview,
@@ -1634,11 +1634,14 @@ export class EditScene extends PhaserRuntime.Scene {
     if (!map) return;
     const tileset = store.getCurrent().tilesets[map.tilesetId];
     if (!tileset) return;
-    if (map.relief) prepareReliefRead(map);
-    const lift = map.relief ? reliefLiftField(map.relief) : null;
+    // 복사본이 높이를 들고 있으면 고스트는 그 높이로 들린다. 평지를 붙이면 목적지 언덕 위에 떠 보이지 않는다.
+    const stampHeight = clipboard.relief != null;
+    const stampLift = stampHeight ? pasteStampLiftField(clipboard) : null;
+    if (map.relief && !stampHeight) prepareReliefRead(map);
+    const lift = !stampHeight && map.relief ? reliefLiftField(map.relief) : null;
     const tileSize = this.activeTileSize();
     if (
-      !lift
+      (stampHeight || !lift)
       && this.pasteGhostClipboard === clipboard
       && this.pasteGhostAt
       && layer.list.length > 0
@@ -1664,7 +1667,8 @@ export class EditScene extends PhaserRuntime.Scene {
         const y = preview.y + cy;
         if (x < 0 || y < 0 || x >= map.width || y >= map.height) continue;
         const idx = cy * clipboard.width + cx;
-        const liftPx = (lift ? cellLift(lift, x, y) : 0) * tileSize;
+        const liftSteps = stampHeight ? pasteGhostLiftSteps(stampLift, cx, cy) : (lift ? cellLift(lift, x, y) : 0);
+        const liftPx = liftSteps * tileSize;
         for (const piece of pasteGhostPieces(clipboard, idx)) {
           if (piece.draw === "shadow") {
             for (const shade of createShadowQuarters(this, x, y, tileSize, piece.bits)) {
@@ -1681,7 +1685,7 @@ export class EditScene extends PhaserRuntime.Scene {
           obj.setAlpha(piece.alpha);
           layer.add(obj);
         }
-        if (lift) {
+        if (stampHeight ? stampLift : lift) {
           const border = this.add.rectangle(
             x * tileSize,
             y * tileSize - liftPx,
@@ -1699,7 +1703,7 @@ export class EditScene extends PhaserRuntime.Scene {
     // 외곽선 — 붙여넣기 범위 표시.
     const w = Math.min(clipboard.width, map.width - preview.x);
     const h = Math.min(clipboard.height, map.height - preview.y);
-    if (!lift && w > 0 && h > 0) {
+    if (!(stampHeight ? stampLift : lift) && w > 0 && h > 0) {
       const border = this.add.rectangle(
         preview.x * tileSize,
         preview.y * tileSize,

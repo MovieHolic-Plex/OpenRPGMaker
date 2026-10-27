@@ -39,10 +39,10 @@ const monsterProject = (): Project => { const p = createBlankProject(); p.system
 const starterArgs = (p: Project) => ({ speciesIds: p.database.monsterSpecies!.slice(0, 3).map((species) => species.id), actorEvent: { mapId: p.startMapId, x: 5, y: 5, name: "박사" } });
 const NEXT_ACTION = /되묻|몬스터 수집 게임 만들어 줘|upsert_enemy/u;
 
-// ── L01 실행기 이름 호출 거부(전용 도구 18개) ─────────────────────────────────────────────────────
+// ── L01 실행기 이름 호출 거부(전용 도구 17개 — #3543: place_field_obstacle 은 ARG_RULES 로 이동, kind:gap 은 비몬스터에도 열림) ─────────────────────────────────────────────────────
 describe("L01 전용 도구는 이름으로 불러도 실행기가 거부한다(거부 문장에 다음 행동)", () => {
-  it("표는 18행이고 모두 몬스터 전용으로 판정된다", () => {
-    expect(MONSTER_ONLY_TOOLS).toHaveLength(18);
+  it("표는 17행이고 모두 몬스터 전용으로 판정된다", () => {
+    expect(MONSTER_ONLY_TOOLS).toHaveLength(17);
     for (const row of MONSTER_ONLY_TOOLS) expect(isMonsterOnlyTool(row.name)).toBe(true);
   });
   it.each(MONSTER_ONLY_TOOLS.map((row) => row.name))("%s: JRPG 에서 거부, 이름과 다음 행동을 알린다", (name) => {

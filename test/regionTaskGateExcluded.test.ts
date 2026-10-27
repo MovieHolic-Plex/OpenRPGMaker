@@ -9,9 +9,13 @@ import {
   __clearPendingRegionApplyForTest,
   setPendingRegionApply,
 } from "@/editor/regionTask/pendingRegionApply";
-import { createBlankProject } from "@/project/defaults";
+import { createBlankProject as createBlankDefaultProject } from "@/project/defaults";
 import { TILE } from "@/project/defaults/constants";
 import type { Project } from "@/project/types";
+import { startOnRetiredCombinedTown } from "./support/retiredEasyRpgTilesets";
+
+// TILE.* 는 합본 마을 칩 번호다 — 2026-10-07 저작권 정리 뒤 새 프로젝트 시작 맵이 버들항이라 옛 저장본처럼 합본 마을 위에서 시작한다.
+const createBlankProject = () => startOnRetiredCombinedTown(createBlankDefaultProject());
 
 const REGION = { x: 0, y: 0, width: 4, height: 4 } as const;
 

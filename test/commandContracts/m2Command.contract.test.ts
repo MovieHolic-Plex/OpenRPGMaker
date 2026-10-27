@@ -133,6 +133,13 @@ const MAP_FULL_CONTRACTS: readonly MapSemanticContract[] = [
   contract("m2-225-sprite-look", { target: "this-event", eventId: "", reset: false, pose: "fallen", tint: "keep", tintHex: "", tintFill: "keep", flip: "keep", afterimage: "keep", angle: "", opacity: "" }, (result) => {
     expect(result.pauses).toContainEqual(expect.objectContaining({ kind: "spriteLook", target: { kind: "event", eventId: CONTRACT_EVENT_ID } }));
   }),
+  // 승강기 타기·일지 한 줄(Fallen Star 1.22, #3509)도 맵 문맥 full 명령이다.
+  contract("m2-226-lift-ride", { mode: "depart", direction: "up", distance: 5, durationMs: 3000, x: 2, y: 3, width: 2, depth: 2, se: "", wait: true }, (result) => {
+    expect(result.pauses).toContainEqual(expect.objectContaining({ kind: "liftRide" }));
+  }),
+  contract("m2-227-journal-line", { action: "write", lineId: "oath", writer: "리아", date: "1일", text: "별이 떨어졌다." }, (result) => {
+    expect(result.session.storyJournal).toContainEqual(expect.objectContaining({ id: "oath", text: "별이 떨어졌다.", state: "normal" }));
+  }),
 ];
 
 const BATTLE_FULL_CONTRACTS: readonly {

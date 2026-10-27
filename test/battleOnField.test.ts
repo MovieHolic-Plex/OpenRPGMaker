@@ -33,7 +33,10 @@ describe("battleOnField", () => {
     // 적 여럿은 심볼을 중심으로 한 칸 간격, 모자란 아군 자리는 주인공 옆으로.
     expect(onFieldEnemyPoint(anchors, 0, 2).fx).toBeCloseTo(0.5 - 8 / 320);
     expect(onFieldEnemyPoint(anchors, 1, 2).fx).toBeCloseTo(0.5 + 8 / 320);
-    expect(onFieldPartyPoint(anchors, 3)).toEqual({ fx: 0.5 + 3 * 16 / 320, fy: 0.5 });
+    // 모자란 자리는 주인공 등 뒤 대형으로 엇갈려 선다(#2624): 3번은 두 줄 뒤(0.8칸×2) 오른쪽(0.6칸).
+    const third = onFieldPartyPoint(anchors, 3);
+    expect(third.fx).toBeCloseTo(0.5 + 0.6 * 16 / 320);
+    expect(third.fy).toBeCloseTo(0.5 + 2 * 0.8 * 16 / 240);
   });
 
   it("falls back to three tiles in front of the hero when no symbol sprite exists", () => {

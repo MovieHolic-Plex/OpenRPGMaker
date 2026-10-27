@@ -261,6 +261,7 @@ describe("database system view", () => {
     title.dispatchEvent(new Event("input"));
 
     expect(store.getCurrent().system.titleScreen?.title).toBe("테스트 타이틀");
+    expect(store.getCurrent().meta.title).toBe("테스트 타이틀");
   });
 
   // fix(db): 이 뷰의 직행 store.update 19곳(+ 시스템 뷰 전체)이 undo 스냅샷을 안 남겨

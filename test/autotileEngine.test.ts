@@ -18,6 +18,7 @@ import {
 import { DIRT_ROAD_TILE, SAND_TILE } from "@/project/defaults/chipsetMapping";
 import { createBlankProject, COMBINED_TOWN_TILESET_ID, TILE } from "@/project/defaults";
 import type { AutotileGroup } from "@/project/types";
+import { withRetiredEasyRpgTilesets } from "./support/retiredEasyRpgTilesets";
 
 type MapView = { width: number; height: number; lowerTiles: number[] };
 
@@ -237,7 +238,8 @@ describe("built-in default groups reproduce legacy road/sand behavior", () => {
   it("autotileGroupsForTileset 는 기본 Combined Town에서만 내장 그룹으로 폴백한다", () => {
     // 내장 그룹 수가 늘어도 깨지지 않게 파생값으로 대조 (2026-07-17: 4→11종).
     expect(autotileGroupsForTileset(undefined)).toHaveLength(DEFAULT_AUTOTILE_GROUPS.length);
-    const project = createBlankProject();
+    // 합본 마을·던전 칩셋은 2026-10-07 저작권 정리로 새 프로젝트에서 빠졌다 — 그 칩셋을 들고 있는 옛 저장본을 재현한다.
+    const project = withRetiredEasyRpgTilesets(createBlankProject());
     expect(autotileGroupsForTileset(project.tilesets[COMBINED_TOWN_TILESET_ID])).toHaveLength(DEFAULT_AUTOTILE_GROUPS.length);
     // 던전은 내장 Combined Town 그룹으로 폴백하지 않고 자기 시드 그룹만 노출한다.
     const dungeonGroups = autotileGroupsForTileset(project.tilesets.easyrpg_chipset_dungeon);

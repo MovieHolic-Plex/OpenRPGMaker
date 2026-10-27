@@ -6,6 +6,7 @@ import {
 } from "@/project/mapLayers";
 import { applyMapDeltas } from "@/ai/piAgent/mapDelta";
 import type { GameMap } from "@/project/types";
+import { DEFAULT_TERRAIN_GAMEPLAY } from "@/project/terrainDesign";
 
 function blankMap(): GameMap {
   const project = createBlankProject();
@@ -68,7 +69,8 @@ describe("mapLayers", () => {
     const copy = cloneExtraLayers(map);
     copy.upperOverlayTiles![0] = 99;
     expect(layerTileAt(map, 4, 0)).toBe(5);
-    expect(cloneExtraLayers(blankMap())).toEqual({});
+    // New maps store terrainDesign.gameplay explicitly (sight blocking OFF, defaultMaps.createBlankMap) — it is cloned too.
+    expect(cloneExtraLayers(blankMap())).toEqual({ terrainDesign: { gameplay: { ...DEFAULT_TERRAIN_GAMEPLAY } } });
   });
 
   it("remap 은 새 크기로 옮기고 밖은 비운다", () => {

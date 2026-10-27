@@ -235,7 +235,8 @@ function retroExtensionActors(): ActorRecord[] {
       nickname: row.nickname,
       faceResourceId: pairedFace(characterResourceId, row.index),
       characterResourceId,
-      characterIndex: row.index,
+      // 0 번 칸은 적지 않는다 — 로드 정규화(normalizeOptionalSheetIndex)가 0 을 지워 저장→재로드 바이트가 달라진다.
+      ...(row.index ? { characterIndex: row.index } : {}),
       battleCharacterResourceId,
       initialEquipment: { ...row.equipment },
     };
