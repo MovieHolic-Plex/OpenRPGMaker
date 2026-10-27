@@ -3,7 +3,7 @@ import {
   listDatabaseResourceOptions,
   openDatabaseResourcePickerDialog,
 } from "@/editor/panels/databaseResourcePickerDialog";
-import { getAudioEngine, playAudioCommand, stopAudioCommand } from "@/player/audio";
+import { getAudioEngine, playAudioCommand, stopAllAudio, stopAudioCommand } from "@/player/audio";
 import { listAudioResources } from "@/assets/audioResourceCatalog";
 import { audioDescriptionView, audioPlayback } from "@/editor/panels/audioResourcePresentation";
 import { store } from "@/project/store";
@@ -1389,11 +1389,26 @@ function skillSubtitle(record: { readonly mpCost: { readonly flat: number }; rea
   return `MP ${record.mpCost.flat} · 위력 ${record.power} · ${scopeLabel}${typeLabel}`;
 }
 
+// 미리 듣기를 시작한 뒤에만 감시한다. 폼이 대화상자 닫기·인스펙터 교체로 문서에서 빠지면 그 재생을 끊는다.
+function stopOwnedAudioPreviewWhenDetached(node: HTMLElement, active: () => boolean, stop: () => void): void {
+  if (typeof MutationObserver === "undefined" || typeof document === "undefined" || !document.body) return;
+  const observer = new MutationObserver(() => {
+    if (node.isConnected) return;
+    observer.disconnect();
+    if (!active()) return;
+    stop();
+  });
+  observer.observe(document.body, { childList: true, subtree: true });
+}
+
 function playAudioBody(context: CommandEditContext, cmd: Extract<Command, { kind: "playAudio" }>): HTMLElement {
   getAudioEngine().installUnlockListeners();
 
   let channel: "bgm" | "se" = cmd.loop ? "bgm" : "se";
   let resourceId = cmd.resourceId.trim();
+  // 미리 듣기는 게임 엔진을 쓴다. 이 폼이 재생을 시작한 뒤에 문서에서 빠지면 그 곡만 끊는다.
+  let previewStarted = false;
+  let previewDetachWatching = false;
 
   const wrap = el("div", {
     class: "play-audio-command-body cream-command-form",
@@ -1558,6 +1573,14 @@ function playAudioBody(context: CommandEditContext, cmd: Extract<Command, { kind
         }
         stopAudioCommand();
         playAudioCommand({ resourceId, loop: channel === "bgm" }, store.getCurrent());
+        previewStarted = true;
+        if (!previewDetachWatching) {
+          previewDetachWatching = true;
+          stopOwnedAudioPreviewWhenDetached(wrap, () => previewStarted, () => {
+            previewStarted = false;
+            stopAllAudio();
+          });
+        }
         status.textContent = `재생 중: ${currentOptionLabel(list) || currentAudioLabel(resourceId, store.getCurrent())}`;
       },
     },
