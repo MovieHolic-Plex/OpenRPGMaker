@@ -3356,7 +3356,7 @@ const makeChaseScene: ToolDefinition = {
       killOnTouch: { type: "boolean" },
       caughtPenalty: {
         type: "object",
-        description: "붙잡히면 게임 오버 대신 값을 치른다(잠입·통금 순찰): text 한 줄 → troopId 가 있으면 그 무리와 도망 불가 전투(져도 게임 오버 아님) → sendTo 칸으로 끌려간다(생략 = 이 맵 출발 칸 대신 제자리). killOnTouch 와 같이 쓸 수 없다.",
+        description: "붙잡히면 게임 오버 대신 값을 치른다(잠입·통금 순찰): text 한 줄 → troopId 가 있으면 그 무리와 도망 불가 전투(져도 게임 오버 아님, 끝나면 파티 회복) → sendTo 칸으로 끌려간다(생략 = 이 맵 출발 칸 대신 제자리). killOnTouch 와 같이 쓸 수 없다.",
         properties: {
           troopId: { type: "string" }, text: { type: "string" },
           sendTo: { type: "object", properties: { mapId: { type: "string" }, x: { type: "integer" }, y: { type: "integer" } }, required: ["mapId", "x", "y"] },
@@ -3425,7 +3425,11 @@ const makeChaseScene: ToolDefinition = {
       : penalty ? [
         { kind: "showEmote", target: { eventId: id }, emote: "exclamation", durationMs: 600 } as Command,
         { kind: "text", body: penalty.text ?? "붙잡혔다!" } as Command,
-        ...(penalty.troopId ? [{ kind: "battleProcessing", troopId: penalty.troopId, canEscape: false, canLose: true } as unknown as Command] : []),
+        ...(penalty.troopId ? [
+          { kind: "battleProcessing", troopId: penalty.troopId, canEscape: false, canLose: true } as unknown as Command,
+          // 져도 게임 오버가 아니므로, 쓰러진 파티(HP 0)가 그대로 걸어 다니다 다음 싸움에서 곧장 끝나지 않게 되살린다(독립 플레이 판정 실측).
+          { kind: "recoverAll" } as unknown as Command,
+        ] : []),
         ...(penalty.sendTo ? [{ kind: "transfer", mapId: penalty.sendTo.mapId, x: penalty.sendTo.x, y: penalty.sendTo.y, direction: "down", fade: "black" } as Command] : []),
       ] : [];
     const patrolRoute = args.patrol === undefined ? undefined : chaserPatrolRoute(draft, map, { x: placement.x, y: placement.y }, args.patrol, id);

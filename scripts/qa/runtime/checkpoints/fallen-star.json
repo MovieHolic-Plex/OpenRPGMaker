@@ -6991,6 +6991,41 @@
      "shot": true
     }
    ]
+  },
+  {
+   "id": "act2-play",
+   "label": "제2막 처음부터 대화형 플레이(독립 판정용) — 감방에서 깬 직후",
+   "note": "runtimeQaInteractive.mjs — QA_INTERACTIVE_DIR 폴더에 scripts/qa/play-step.mjs 로 조작을 보낸다",
+   "mapId": "fs2_cell",
+   "x": 6,
+   "y": 4,
+   "facing": "down",
+   "switches": {
+    "sw_fs_main_started": true,
+    "sw_fs_main_done": true,
+    "sw_fs_iris_joined": true
+   },
+   "party": [
+    {
+     "actorId": "actor_hero",
+     "level": 8
+    },
+    {
+     "actorId": "actor_fs_elena",
+     "level": 8
+    }
+   ],
+   "beats": [
+    {
+     "id": "play",
+     "ops": [
+      {
+       "kind": "interactive"
+      }
+     ],
+     "shot": true
+    }
+   ]
   }
  ]
 }

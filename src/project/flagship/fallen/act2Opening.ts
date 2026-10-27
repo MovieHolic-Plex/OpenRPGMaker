@@ -336,6 +336,12 @@ function cellEvents(map: GameMap): void {
       narrate("굵은 쇠살문이 잠겨 있다."),
       say(KAEL, "열쇠 구멍은 있는데…"),
     ]),
+    // 빵을 받고도 문만 두드리면 엘레나가 길을 짚는다(독립 플레이 판정: 180걸음 동안 문 앞에서 맴돌았다).
+    page(`${gateId}_hint`, "잠김(빵 힌트)", [sw(SW_BREAD), sw(SW_KEY, false)], [
+      narrate("굵은 쇠살문이 잠겨 있다."),
+      say(KAEL, "열쇠 구멍은 있는데…"),
+      say(ELENA, "…리노가 「꼭꼭 씹어라」 했지.\n그 무거운 빵, 침대 모서리에 대고 쪼개 볼까?"),
+    ]),
     page(`${gateId}_key`, "열쇠로 연다", [sw(SW_KEY), sw(SW_CELL_OPEN, false)], [
       narrate("빵 속 열쇠를 꽂았다. 딸깍."),
       ...openGate(map, CELL.gate),
