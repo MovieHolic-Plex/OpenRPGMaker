@@ -10,10 +10,13 @@ import { createBlankProject } from "@/project/defaults";
 import { COMBINED_TOWN_TILESET_ID } from "@/project/defaults/constants";
 import { store } from "@/project/store";
 import type { Project } from "@/project/types";
+import { withRetiredEasyRpgTilesets } from "./support/retiredEasyRpgTilesets";
 
 const MAP_ID = "map_blank_start";
 
 function withUploadedPack(project: Project): Project {
+  // 2026-10-07 저작권 정리로 새 프로젝트에서 합본 마을 시트가 빠졌다(#3539·#3560) — 옛 저장본처럼 다시 심어 번들 타일셋 쪽 기준으로 쓴다.
+  withRetiredEasyRpgTilesets(project);
   const bundled = project.tilesets[COMBINED_TOWN_TILESET_ID]!;
   project.tilesets.pack = { ...structuredClone(bundled), id: "pack", name: "올린 팩", image: { type: "uploaded", id: "asset_pack" } };
   return project;
@@ -78,19 +81,8 @@ describe("업로드 타일셋 칩셋 바꿔치기 거부", () => {
     expect(ctx.project.maps[MAP_ID]!.tilesetId).toBe("pack");
   });
 
-  it("실제 회귀: run_dungeon_room_pipeline 이 업로드 타일셋 맵을 덮어쓰려 하면 uploaded-tileset-replaced 로 거부한다", () => {
-    const project = projectWithUploadedTileset();
-    const snapshot = JSON.stringify(project);
-    const ctx = { project };
-    // 얼음 동굴 실측과 같은 모양: 기존 맵 id + replaceExisting. tilesetId 는 이 도구가 받지 않는다.
-    const result = runTool(ctx, "run_dungeon_room_pipeline", {
-      mapId: MAP_ID, theme: "ice", width: 36, height: 28, replaceExisting: true,
-    }, { dryRun: false });
-    expect(result.ok, result.summary).toBe(false);
-    expect(result.issues?.[0]?.code).toBe("uploaded-tileset-replaced");
-    expect(ctx.project).toBe(project);
-    expect(JSON.stringify(ctx.project)).toBe(snapshot);
-  });
+  // 「실제 회귀: run_dungeon_room_pipeline …」 사례는 뺐다 — 그 도구가 제거돼(unknown-tool) 같은 경로를 더는 재현할 수 없다.
+  // 같은 거부 규칙은 위 swap_chipset_probe 시험이 지킨다.
 
   it("allowsTilesetChange: reset_project·revert_last_edit 만 켠다", () => {
     expect(getTool("reset_project")?.allowsTilesetChange).toBe(true);

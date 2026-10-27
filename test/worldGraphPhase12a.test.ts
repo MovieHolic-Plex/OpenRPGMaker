@@ -5,6 +5,7 @@ import { runTool } from "@/editor/tools/toolRunner";
 import type { ToolContext } from "@/editor/tools/types";
 import { TILE } from "@/project/defaults/constants";
 import { createBlankProject } from "@/project/defaults";
+import { blankFillTileFor } from "@/project/defaults/defaultMaps";
 import { deserialize, serialize } from "@/project/io";
 import { projectLint } from "@/project/lint/projectLint";
 import type { Command, GameEvent, GameMap } from "@/project/types";
@@ -141,11 +142,13 @@ describe("Phase 12a worldGraph tools", () => {
     });
 
     expect(result.ok, result.summary).toBe(true);
-    expect(new Set(context.project.maps.map_town.lowerTiles)).toEqual(new Set([TILE.GRASS]));
-    expect(new Set(context.project.maps.map_field.lowerTiles)).toEqual(new Set([TILE.GRASS]));
-    expect(new Set(context.project.maps.map_dungeon.lowerTiles)).toEqual(new Set([TILE.DARK_GRASS]));
+    // 2026-10-07 저작권 정리 뒤 모든 역할이 야외 기본 칩셋(버들항)의 빈 판으로 시작한다(createRoleMap) — 역할별 합본 마을 번호 대신 그 평지 번호.
+    const plain = new Set([blankFillTileFor("beodeul_city", TILE.EMPTY)]);
+    expect(new Set(context.project.maps.map_town.lowerTiles)).toEqual(plain);
+    expect(new Set(context.project.maps.map_field.lowerTiles)).toEqual(plain);
+    expect(new Set(context.project.maps.map_dungeon.lowerTiles)).toEqual(plain);
     expect(context.project.maps.map_dungeon.defaultLighting).toMatchObject({ ambient: 0.75, color: "#05070a" });
-    expect(new Set(context.project.maps.map_interior.lowerTiles)).toEqual(new Set([TILE.PATH]));
+    expect(new Set(context.project.maps.map_interior.lowerTiles)).toEqual(plain);
   });
 
   it("lint_world는 adjacent 경계가 이어지는 케이스와 끊기는 케이스를 구분한다", () => {

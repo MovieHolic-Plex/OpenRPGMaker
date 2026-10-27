@@ -27,6 +27,7 @@ type FakeTexture = {
   readonly frames: number[];
   add(frame: number, sourceIndex: number, x: number, y: number, width: number, height: number): void;
   getFrameNames(): string[];
+  has(name: string | number): boolean;
   getSourceImage(): object;
 };
 
@@ -75,6 +76,8 @@ function fakeScene() {
         texture.frames.push(frame);
       },
       getFrameNames: () => texture.frames.map(String),
+      // registerTileAnimationsForTexture 가 Phaser Texture.has 로 스트립 프레임 존재를 확인한다(2026-09-26 이후).
+      has: (name) => texture.frames.some((frame) => String(frame) === String(name)),
       getSourceImage: () => source,
     };
     textures.set(key, texture);
@@ -233,24 +236,25 @@ describe("uploaded charset transparency", () => {
     expect(harness.started).toHaveLength(1);
   });
 
+  // 숲마을 칩셋(tex_forest_harmony)은 2026-10-07 저작권 정리로 번들에서 빠졌다 — 지금도 번들인 작은 칩셋(tex_beodeul_door, 16칸)으로 같은 경로를 검증한다.
   // 실측 2026-09-23: 조수가 새 프로젝트 맵을 숲마을 칩셋(tex_forest_harmony)으로 바꾸자 편집 캔버스가
   // Phaser 의 "빠진 텍스처" 빗금(__MISSING)으로만 그려졌다. preload 는 부팅 때 쓰던 칩셋만 싣는다.
   it("loads a bundled chipset the project starts using after scene boot and registers its frames", () => {
     const harness = fakeScene();
     const project = createBlankProject();
     const tileset = Object.values(project.tilesets)[0]!;
-    (tileset as { textureKey: string }).textureKey = "tex_forest_harmony";
+    (tileset as { textureKey: string }).textureKey = "tex_beodeul_door";
     let redrawn = 0;
 
     ensureBundledProjectTextures(harness.scene, project, () => { redrawn += 1; });
 
-    expect(harness.queued.map((entry) => entry.key)).toContain("tex_forest_harmony");
+    expect(harness.queued.map((entry) => entry.key)).toContain("tex_beodeul_door");
     expect(harness.started).toHaveLength(1);
 
-    harness.addTexture("tex_forest_harmony", sourceImage(480, 608));
+    harness.addTexture("tex_beodeul_door", sourceImage(64, 64));
     harness.completeLoad();
 
-    expect(harness.textures.get("tex_forest_harmony")!.frames.length).toBeGreaterThan(1140);
+    expect(harness.textures.get("tex_beodeul_door")!.frames.length).toBeGreaterThan(16);
     expect(redrawn).toBe(1);
   });
 
@@ -258,15 +262,15 @@ describe("uploaded charset transparency", () => {
     const harness = fakeScene();
     const project = createBlankProject();
     const tileset = Object.values(project.tilesets)[0]!;
-    (tileset as { textureKey: string }).textureKey = "tex_forest_harmony";
+    (tileset as { textureKey: string }).textureKey = "tex_beodeul_door";
 
     ensureBundledProjectTextures(harness.scene, project);
     ensureBundledProjectTextures(harness.scene, project);
-    expect(harness.queued.filter((entry) => entry.key === "tex_forest_harmony")).toHaveLength(1);
+    expect(harness.queued.filter((entry) => entry.key === "tex_beodeul_door")).toHaveLength(1);
 
     const loaded = fakeScene();
-    loaded.addTexture("tex_forest_harmony", sourceImage(480, 608));
+    loaded.addTexture("tex_beodeul_door", sourceImage(64, 64));
     ensureBundledProjectTextures(loaded.scene, project);
-    expect(loaded.queued.map((entry) => entry.key)).not.toContain("tex_forest_harmony");
+    expect(loaded.queued.map((entry) => entry.key)).not.toContain("tex_beodeul_door");
   });
 });

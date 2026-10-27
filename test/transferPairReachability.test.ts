@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import { createBlankProject, TILE } from "@/project/defaults";
 import { runTool, type ToolContext } from "@/editor/tools";
 import { transferGatesStayApproachable } from "@/editor/tools/transferReachability";
+import { startOnRetiredCombinedTown } from "./support/retiredEasyRpgTilesets";
 
 function walledStart(): ToolContext {
   const context: ToolContext = { project: createBlankProject() };
@@ -59,7 +60,8 @@ describe("create_transfer_pair 도달성", () => {
   });
 
   it("기존 출입구를 봉쇄하는 자리는 다른 칸으로 옮긴다(추격 호러 r8 복도 봉쇄 재현)", () => {
-    const context: ToolContext = { project: createBlankProject() };
+    // 2026-10-07 저작권 정리 뒤 새 프로젝트는 버들항 시트에서 시작해 TILE.WALL/GRASS 번호가 같은 뜻이 아니다 — 옛 합본 마을 시트로 시작한다.
+    const context: ToolContext = { project: startOnRetiredCombinedTown(createBlankProject()) };
     expect(runTool(context, "create_map", { id: "map_wing", name: "별관", width: 12, height: 8 }, { dryRun: false }).ok).toBe(true);
     const map = context.project.maps[context.project.startMapId]!;
     // y0 벽, y1 은 (4,1) 통로 하나만 뚫린 문간 — (4,1) 문의 유일한 접근은 (4,2) 다.
