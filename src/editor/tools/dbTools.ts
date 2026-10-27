@@ -617,6 +617,8 @@ const enemyRecordSchema = objectSchema({
   name: stringSchema(),
   speciesId: stringSchema(),
   monsterResourceId: stringSchema(),
+  // Enemy.transparent 를 런타임·ensureMonsterGraphic 이 지킨다 — 스키마만 막고 있었다.
+  transparent: booleanSchema("의도적으로 외형을 숨길 때만 true(그림 없이 저장). false 로 되돌리면 그림이 다시 필요하다."),
   battleScalePercent: integerSchema("전투 표시 크기(%). 10~300으로 제한, 기본 100."),
   lungeSpeedPercent: integerSchema("도트 측면 전투에서 아군에게 달려드는 속도(%). 25~300, 기본 100. 늑대·맹수처럼 날랜 적 120~160, 굼뜬 거인 70~90. 전역 기본 세기는 set_project_settings battle.staging.enemyLunge"),
   collapseEffect: {
@@ -684,6 +686,8 @@ const troopRecordSchema = objectSchema({
 
 const monsterSpeciesGraphicSchema = objectSchema({
   monsterResourceId: stringSchema(),
+  // MonsterSpeciesGraphic.transparent 도 ensureMonsterGraphic 이 지킨다(의도적 숨김).
+  transparent: booleanSchema("의도적으로 외형을 숨길 때만 true(그림 없이 저장)."),
   backResourceId: stringSchema("후면 전투용 몬스터 리소스. 생략하면 정면 그림을 사용합니다."),
   fieldCharsetId: stringSchema("동행 캐릭터셋 리소스. fieldGraphic이 있으면 그 설정을 우선합니다."),
   fieldGraphic: objectSchema({

@@ -14,7 +14,7 @@ Work order (cheapest first): timeout → fake-DOM/env gaps → combined_town / o
 | removed | 2 |
 | timeout | 13 |
 | external | 0 |
-| drift | 283 |
+| drift | 280 |
 
 ## removed (2)
 
@@ -47,7 +47,7 @@ Work order (cheapest first): timeout → fake-DOM/env gaps → combined_town / o
 - **1** — `AssertionError: expected 'OPRN Studio저장된 작업을 바로 열 수 없습니다기존 저장본은…' to contain '예제 작업으로 시작'`
   - [ ] `test/uxcLoadFailure.test.ts`
 
-## drift (283)
+## drift (280)
 
 - **23** — `AssertionError: expected false to be true // Object.is equality`
   - [ ] `test/cssDropDead.test.ts`
@@ -351,14 +351,8 @@ Work order (cheapest first): timeout → fake-DOM/env gaps → combined_town / o
   - [ ] `test/manualCommitDiff.test.ts`
 - **1** — `TypeError: Cannot read properties of undefined (reading 'length')`
   - [ ] `test/modeTransitions.test.ts`
-- **1** — `AssertionError: 'upsert_enemy' 실행 실패: enemy.transparent는 허용되지 않는 필드입니다. 허용 필드: id, name, speciesId, monsterResourceId, b`
-  - [ ] `test/monsterGraphicReliability.test.ts`
-- **1** — `TypeError: Cannot read properties of undefined (reading 'tileSize')`
-  - [ ] `test/mzLayerWriteTools.test.ts`
 - **1** — `AssertionError: expected '{"version":N,"meta":{"title":"Scarlox…' to be '{"version":N,"meta":{"title":"Scarlox…' // Obje`
   - [ ] `test/persistence/electronRepository.test.ts`
-- **1** — `TypeError: __vite_ssr_import_N__.store.getDbPersistenceStatus is not a function`
-  - [ ] `test/piAgentRunOutcome.test.ts`
 - **1** — `PlayerArtifactScanError: Player artifact scan failed (remote-activity-table:N, editor-module-path:N, remote-api-endpoint`
   - [ ] `test/playerBuild.test.ts`
 - **1** — `AssertionError: expected "vi.fn()" to not be called at all, but actually been called N times[Nm`
