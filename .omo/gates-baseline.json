@@ -180,6 +180,7 @@
       "test/eventCommandScopedSession.test.ts",
       "test/eventEditorUiDensity.test.ts",
       "test/eventEditorViewToggle.test.ts",
+      "test/eventPreviewPaintCssom.test.ts",
       "test/eventValidationRecoveryFields.test.ts",
       "test/exportAssetResolution.test.ts",
       "test/feature16-ai-transport.test.ts",
@@ -1558,6 +1559,7 @@
       "test/eventPageTabsRich.test.ts",
       "test/eventPages.test.ts",
       "test/eventPassageBlock.test.ts",
+      "test/eventPreviewPaintCssom.test.ts",
       "test/eventPreviewState.test.ts",
       "test/eventRailAuthoredDot.test.ts",
       "test/eventRailGroupComposition.test.ts",
@@ -3557,7 +3559,8 @@
       "test/workshop/interiorPropsRunner.test.ts": "drift",
       "test/workshop/mapObjectsRunner.test.ts": "drift",
       "test/worldGraphPhase12a.test.ts": "drift",
-      "test/worldStructureTools.test.ts": "drift"
+      "test/worldStructureTools.test.ts": "drift",
+      "test/eventPreviewPaintCssom.test.ts": "drift"
     },
     "note": "Rebuilt 2026-10-26 from ci-full 40280643391 (shards 2-8, commit 833802b23d) + ci-vitest-files --shard=1/8 at the same commit (shard 1 of the ci-full run was cancelled). The baseline only shrinks: verify-gates fails when a listed file passes (except tag timeout). Tags: removed = calls a tool removed on purpose; timeout = per-test timeout under CI load; drift = code/expectation drift, to fix; external = depends on something outside the repo. Fix list: .omo/ci-fix-list.md. Counts exclude shard 1. Pruned after rebuild: 15 files verified passing on the merged #3645 tree (ci-vitest-files 40299836332/40299844210/40299851194/40299858900) and 8 test files deleted since 833802b23d (#3616)."
   },
