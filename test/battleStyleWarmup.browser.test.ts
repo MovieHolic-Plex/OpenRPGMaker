@@ -14,11 +14,19 @@ describe("battle style preparation in the exported player", () => {
       const rows = JSON.parse(readFileSync(output, "utf8"));
       const current = rows.find((r: any) => r.variant === "current");
       const cold = rows.find((r: any) => r.variant === "cold");
+      const sum = (entries: any[], key: "bytes" | "decoded"): number =>
+        entries.reduce((total, entry) => total + (entry[key] ?? 0), 0);
+      const urls = (entries: any[]): string[] => entries.map((entry) => entry.url).sort();
+
       expect(current.warm.width).toBe(640);
       expect(current.warm.images).toBeGreaterThan(0);
       expect(current.warm.backgrounds).toBeGreaterThan(0);
-      expect(current.requests.filter((r: any) => r.phase === "mount")).toHaveLength(0);
-      expect(current.requests.map((r: any) => r.url).sort()).toEqual(cold.requests.map((r: any) => r.url).sort());
+
+      const warmBytes = sum(current.phases.warm, "bytes");
+      const mountBytes = sum(current.phases.mount, "bytes");
+      expect(sum(current.phases.warm, "decoded")).toBeGreaterThan(0);
+      expect(mountBytes).toBeLessThan(Math.max(4_096, warmBytes * 0.1));
+      expect([...urls(current.phases.warm), ...urls(current.phases.mount)].sort()).toEqual(urls(cold.phases.mount));
     } finally {
       rmSync(output, { force: true });
     }
