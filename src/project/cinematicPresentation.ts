@@ -32,8 +32,20 @@ export const CINEMATIC_PRESENTATION_DEFAULTS = {
   credits: { text: { layout: 'credits', font: 'sans', size: 11, color: '#fff8ea', animation: 'scroll', delayMs: 0, revealMs: 0, exitMs: 500 }, transition: { enter: 'fade', enterMs: 700, exitMs: 600 }, letterbox: 0 },
 } as const;
 
-/** 무대는 320×240 논리 픽셀이다(화면 3배면 글자도 3배). 이보다 큰 글자는 화면을 덮는다. */
-export const CINEMATIC_TEXT_SIZE_MAX = 16;
+/**
+ * 글자 크기(무대 논리 픽셀). 폼·저장·조수 도구·재생이 같은 8–64 다.
+ * 재생기가 13–16으로 접으면 제목 카드에 40을 넣어도 자막과 같은 16으로 그려지고,
+ * 크레딧 기본 11은 13으로 커진다. 320×240 무대가 3배로 보이므로 40은 화면에서 큰 제목이고,
+ * 64는 한 줄 제목의 상한이다. 넘치는 줄은 프레임이 자른다.
+ */
+export const CINEMATIC_TEXT_SIZE_MIN = 8;
+export const CINEMATIC_TEXT_SIZE_MAX = 64;
+
+/** 숫자가 아니면 자막 기본(13). 그 밖은 폼과 같은 8–64 경계로 접는다. */
+export function clampCinematicTextSize(size: number): number {
+  const value = Number.isFinite(size) ? Math.round(size) : CINEMATIC_PRESENTATION_DEFAULTS.subtitle.text.size;
+  return Math.min(CINEMATIC_TEXT_SIZE_MAX, Math.max(CINEMATIC_TEXT_SIZE_MIN, value));
+}
 export function resolveCinematicPresentation(value: CinematicPresentation) {
   const defaults = CINEMATIC_PRESENTATION_DEFAULTS[value.preset ?? 'subtitle'];
   return {
@@ -69,7 +81,7 @@ export function parseCinematicPresentation(value: unknown): CinematicPresentatio
     if (t.layout !== undefined) choice(t.layout, 'presentation.text.layout', ['center', 'bottom', 'bar', 'left', 'credits']);
     if (t.font !== undefined) choice(t.font, 'presentation.text.font', ['serif', 'sans', 'pixel']);
     if (t.animation !== undefined) choice(t.animation, 'presentation.text.animation', CINEMATIC_TEXT_ANIMATIONS);
-    if (t.size !== undefined) number(t.size, 'presentation.text.size', 8, 64);
+    if (t.size !== undefined) number(t.size, 'presentation.text.size', CINEMATIC_TEXT_SIZE_MIN, CINEMATIC_TEXT_SIZE_MAX);
     if (t.color !== undefined) color(t.color, 'presentation.text.color');
     for (const key of ['delayMs', 'revealMs', 'exitMs']) if (t[key] !== undefined) number(t[key], `presentation.text.${key}`, 0, 10000);
   }

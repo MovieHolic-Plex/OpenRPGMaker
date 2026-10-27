@@ -39,7 +39,7 @@ export function openMapCreateDialog(request: MapCreateRequest = {}): void {
         dataset: { testid: "map-create-width" },
       }) as HTMLInputElement;
       const height = el("input", {
-        attrs: { type: "number", min: "4", max: String(MAX_TOOL_MAP_DIMENSION), "aria-label": "세로" },
+        attrs: { type: "number", min: "4", max: String(MAX_TOOL_MAP_DIMENSION), "aria-label": "높이" },
         value: spec.height,
         dataset: { testid: "map-create-height" },
       }) as HTMLInputElement;
@@ -116,9 +116,9 @@ export function openMapCreateDialog(request: MapCreateRequest = {}): void {
           presets,
           field("이름", name),
           field("가로", width),
-          field("세로", height),
+          field("높이", height),
           field("타일 그림판", tileset),
-          field("상위", parent),
+          field("상위 맵", parent),
           el("p", {
             class: "map-create-hint",
             text: t("상위를 고르지 않은 맵은 {0}의 하위로 들어갑니다. 나란히 서는 최상위 맵은 만들 수 없습니다.").replace("{0}", rootParentPrefix(project)),

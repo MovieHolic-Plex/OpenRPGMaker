@@ -54,6 +54,9 @@ async function showGiftMessage(scene: PlaySceneContext, event: GameEvent, body: 
   });
 }
 
+/** 보이는 「선물하기」가 창 이름이다. 커서가 옮기면 그 물건만 알린다. */
+const GIFT_TITLE_ID = "runtime-gift-title";
+
 function chooseGiftItem(scene: PlaySceneContext, event: GameEvent): Promise<ItemRecord | null> {
   const items = giftableInventoryItems(scene);
   if (items.length === 0) {
@@ -63,9 +66,14 @@ function chooseGiftItem(scene: PlaySceneContext, event: GameEvent): Promise<Item
     const overlay = document.createElement("section");
     overlay.className = "runtime-overlay runtime-gift-overlay";
     overlay.dataset.testid = "gift-scene";
+    overlay.setAttribute("role", "dialog");
+    overlay.setAttribute("aria-modal", "true");
+    overlay.setAttribute("aria-labelledby", GIFT_TITLE_ID);
+    overlay.tabIndex = -1;
     const list = el("div", {
       class: "runtime-gift-list",
       dataset: { testid: "gift-item-list" },
+      attrs: { role: "group", "aria-label": "선물할 물건" },
       children: items.map((item, index) => giftItemButton(scene, item, index, resolveWith)),
     });
     const cancel = el("button", {
@@ -75,12 +83,23 @@ function chooseGiftItem(scene: PlaySceneContext, event: GameEvent): Promise<Item
       dataset: { testid: "gift-cancel" },
       on: { click: () => resolveWith(null) },
     }) as HTMLButtonElement;
-    overlay.append(el("div", { class: "runtime-gift-window", children: [el("div", { class: "runtime-gift-title", text: "선물하기" }), list, cancel] }));
+    const announcement = choiceAnnouncement("gift-announcement");
+    overlay.append(el("div", {
+      class: "runtime-gift-window",
+      children: [
+        el("div", { class: "runtime-gift-title", text: "선물하기", attrs: { id: GIFT_TITLE_ID } }),
+        list,
+        cancel,
+        announcement,
+      ],
+    }));
     mountGiftOverlay(scene, overlay);
+    const choices = Array.from(overlay.querySelectorAll<HTMLElement>(".runtime-gift-item"));
     let detachCursor: (() => void) | null = attachCursorMenu(overlay, {
-      items: Array.from(overlay.querySelectorAll<HTMLElement>(".runtime-gift-item")),
+      items: choices,
       cancelEl: cancel,
       initialIndex: 0,
+      onSelect: (index) => announceChoice(announcement, choices[index]),
     });
 
     function resolveWith(item: ItemRecord | null): void {
@@ -121,12 +140,29 @@ function giftItemButton(
   button.className = "runtime-gift-item";
   button.dataset.testid = `gift-item-${item.id}`;
   if (index === 0) button.classList.add("selected");
+  const count = scene.session.inventory[item.id] ?? 0;
+  button.setAttribute("aria-label", `${item.name} ${count}개`);
   button.append(
     el("span", { class: "runtime-gift-item-name", text: item.name }),
-    el("span", { class: "runtime-gift-item-count", text: String(scene.session.inventory[item.id] ?? 0) })
+    el("span", { class: "runtime-gift-item-count", text: String(count) })
   );
   button.addEventListener("click", () => onSelect(item));
   return button;
+}
+
+function choiceAnnouncement(testId: string): HTMLElement {
+  return el("div", {
+    // 선택지 질문과 같은 화면 밖 알림. 보이는 행은 그대로 둔다.
+    class: "dialogue-choice-announcement",
+    dataset: { testid: testId },
+    attrs: { role: "status", "aria-live": "polite", "aria-atomic": "true" },
+  });
+}
+
+function announceChoice(announcement: HTMLElement, choice: HTMLElement | undefined): void {
+  const label = choice?.getAttribute("aria-label") ?? "";
+  if (!label || announcement.textContent === label) return;
+  announcement.textContent = label;
 }
 
 function mountGiftOverlay(scene: PlaySceneContext, overlay: HTMLElement): void {

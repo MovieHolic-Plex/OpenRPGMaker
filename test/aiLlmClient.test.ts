@@ -229,8 +229,9 @@ describe("aiConfig 저장/로드", () => {
   });
 
   it("configForLiteModel은 보조 모델을 실제 요청 모델로 승격한다", async () => {
+    // defaultAiConfig() 는 실행(deep) 역할을 Argon 으로 고정한다(#2535) — 역할 칸이 없을 때의 승격을 잰다.
     const { configForLiteModel, defaultAiConfig } = await loadClient();
-    const config = configForLiteModel({ ...defaultAiConfig(), baseUrl: "https://example.invalid/v1", model: "main-model", liteModel: "batch-model" });
+    const config = configForLiteModel({ ...defaultAiConfig(), roleModels: {}, baseUrl: "https://example.invalid/v1", model: "main-model", liteModel: "batch-model" });
     expect(config.model).toBe("batch-model");
     expect(config.liteModel).toBe("batch-model");
   });
@@ -257,8 +258,9 @@ describe("aiConfig 저장/로드", () => {
   });
 
   it("빈 liteModel 문자열은 감독 model로 폴백한다", async () => {
+    // defaultAiConfig() 는 실행(deep) 역할을 Argon 으로 고정한다(#2535) — 역할 칸이 없을 때의 승격을 잰다.
     const { configForLiteModel, defaultAiConfig } = await loadClient();
-    const config = configForLiteModel({ ...defaultAiConfig(), baseUrl: "https://example.invalid/v1", model: "glm-5.2-ultrafast", liteModel: "   " });
+    const config = configForLiteModel({ ...defaultAiConfig(), roleModels: {}, baseUrl: "https://example.invalid/v1", model: "glm-5.2-ultrafast", liteModel: "   " });
     expect(config.model).toBe("glm-5.2-ultrafast");
     expect(config.liteModel).toBe("glm-5.2-ultrafast");
   });
@@ -300,9 +302,10 @@ describe("chatCompletion 스트리밍 SSE 파서", () => {
     // 요점은 "게이트웨이 baseUrl 이 아니라 OAuth 경로로 간다" 이므로 그 상수 기준으로 본다.
     expect(String(url)).toBe(`${DEFAULT_CHATGPT_BASE_URL}/chat/completions`);
     expect(String(url)).not.toContain(config.baseUrl || " 없음");
-    expect((init as RequestInit | undefined)?.headers).toEqual({
-      "Content-Type": "application/json",
-      "X-Oprn-Provider": "google-antigravity",
+    // 동반 서비스 입구가 헤더를 Headers 객체로 다시 싼다(#3152) — 값으로 비교한다.
+    expect(Object.fromEntries(new Headers((init as RequestInit | undefined)?.headers).entries())).toEqual({
+      "content-type": "application/json",
+      "x-oprn-provider": "google-antigravity",
     });
   });
 
@@ -388,8 +391,9 @@ describe("chatCompletion 스트리밍 SSE 파서", () => {
     );
     const fetchMock = (globalThis as unknown as { fetch: ReturnType<typeof vi.fn> }).fetch;
     const init = fetchMock.mock.calls[0]?.[1] as RequestInit | undefined;
-    const sent = init?.headers as Record<string, string>;
-    expect(sent["X-Oprn-Provider"]).toBe("openai-codex");
+    // 동반 서비스 입구가 헤더를 Headers 객체로 다시 싼다(#3152).
+    const sent = new Headers(init?.headers);
+    expect(sent.get("X-Oprn-Provider")).toBe("openai-codex");
     expect(String(fetchMock.mock.calls[0]?.[0])).toContain("/chat/completions");
   });
 });

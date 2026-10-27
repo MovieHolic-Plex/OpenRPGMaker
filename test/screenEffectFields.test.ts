@@ -203,6 +203,15 @@ describe("screen effect authoring — intent card, duration presets, value visib
     select.dispatchEvent(new Event("change", { bubbles: true }));
     expect(findByTestId(body, "m2-screen-effect-value-field")?.hidden).toBe(false);
   });
+
+  it("letterbox intent says the message window moves inside the bars", () => {
+    const body = bodyOf({ effect: "letterbox", value: "12", durationMs: 600 });
+    const card = findByTestId(body, "m2-screen-effect-intent");
+    expect(card?.textContent).toContain("안쪽으로 밀린다");
+    expect(card?.textContent).not.toContain("그대로");
+    expect(card?.textContent).toContain("12%");
+    expect(card?.textContent).toContain("600ms");
+  });
 });
 
 /**

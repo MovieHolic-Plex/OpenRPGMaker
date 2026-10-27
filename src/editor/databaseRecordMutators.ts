@@ -66,7 +66,9 @@ export function updateSkillRecord(database: DatabaseRecords, id: string, patch: 
   if ("gen1CriticalRate" in patch) record.gen1CriticalRate = patch.gen1CriticalRate;
   if ("actionSkill" in patch) record.actionSkill = patch.actionSkill;
   if ("movePriority" in patch) record.movePriority = patch.movePriority;
-  for (const key of ["damageFormula", "criticalRate", "criticalMultiplier", "cooldownTurns", "oncePerBattle", "hitSequence", "resource2Cost", "limitSkill", "partyGaugeCost", "hpCostPercent", "drainPercent", "recoilPercent", "fixedDamage", "multiHit", "flinchChance", "retroChoreographyId", "area", "comboActorIds", "comboRequires", "comboMpCosts", "comboCombinedStats", "comboSwitchId", "comboStaging", "exploitStates", "moveMotion", "statStageEffects"] as const) {
+  // 스킬 폼이 이미 쓰는 전투 규칙. 이 목록에 없으면 updateDatabaseRecord 가 입력을 버리고
+  // 화면은 저장값으로 다시 그려 게이지 밀기·힘 모으기·소환·청마법·입력 커맨드·전투 기믹이 되돌아간다.
+  for (const key of ["damageFormula", "criticalRate", "criticalMultiplier", "cooldownTurns", "oncePerBattle", "hitSequence", "resource2Cost", "limitSkill", "partyGaugeCost", "hpCostPercent", "drainPercent", "recoilPercent", "fixedDamage", "multiHit", "flinchChance", "retroChoreographyId", "area", "comboActorIds", "comboRequires", "comboMpCosts", "comboCombinedStats", "comboSwitchId", "comboStaging", "exploitStates", "moveMotion", "statStageEffects", "gaugeShift", "chargeTurns", "summonResourceId", "learnable", "inputSequence", "battleGimmick"] as const) {
     if (key in patch) Object.assign(record, { [key]: patch[key] });
   }
   database.skills[index] = normalizeSkillRecord(record);
@@ -185,6 +187,8 @@ export function updateEnemyRecord(database: DatabaseRecords, id: string, patch: 
   if ("actionProfile" in patch) record.actionProfile = patch.actionProfile;
   if ("factionId" in patch) record.factionId = patch.factionId;
   if ("reactions" in patch) record.reactions = patch.reactions;
+  // 적 폼의 훔치기 표. 빼면 「훔칠 아이템 추가」가 저장되지 않고 행이 바로 사라진다.
+  if ("stealItems" in patch) record.stealItems = patch.stealItems;
   database.enemies[index] = normalizeEnemyRecord(record);
 }
 

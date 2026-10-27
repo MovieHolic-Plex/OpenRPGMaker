@@ -8,12 +8,17 @@ import { renderPageMovement } from '@/editor/panels/eventEditor/pageMovement';
 import { renderEventPageProps } from '@/editor/panels/eventEditor/pageProps';
 import { encounterProject, required } from './fixtures/npcEncounterPipeline';
 
-vi.mock('@/project/store', () => ({ store: { getCurrent: vi.fn(), update: vi.fn(), subscribe: vi.fn(() => () => undefined) } }));
+vi.mock('@/project/store', () => ({ store: { getCurrent: vi.fn(), update: vi.fn(), updateEvent: vi.fn(), subscribe: vi.fn(() => () => undefined) } }));
 let f: ReturnType<typeof encounterProject>;
 beforeEach(() => {
   f = encounterProject(); vi.mocked(store.getCurrent).mockReturnValue(f.project);
   // In-memory store adapter runs the actual editor mutation callback, not a canned patch.
   vi.mocked(store.update).mockImplementation(mutator => { mutator(f.project); });
+  // 페이지 편집은 이제 store.updateEvent(맵·이벤트 한 개)로 간다 — 같은 메모리 어댑터로 실제 콜백을 돌린다.
+  vi.mocked(store.updateEvent).mockImplementation((mapId, eventId, mutator) => {
+    const event = f.project.maps[mapId]?.events.find(item => item.id === eventId);
+    if (event) mutator(event);
+  });
 });
 afterEach(() => { document.body.replaceChildren(); });
 
@@ -108,7 +113,7 @@ describe('NPC behavior authoring contracts', () => {
     f.page.detectionEncounter = { sight: { range: 6, lineOfSight: true, facing: 'forward' },
       emote: null, emoteMs: 0, approachSpeed: 4 };
     if (field === 'range') f.page.movement.sight.range = -1;
-    if (field === 'facing') Object.assign(f.page.detectionEncounter.sight, { facing: 'cone' });
+    if (field === 'facing') Object.assign(f.page.detectionEncounter.sight, { facing: 'behind' }); // 'cone' 은 #3332 에서 정식 값이 됐다
     if (field === 'emoteMs') f.page.detectionEncounter.emoteMs = -1;
     if (field === 'approachSpeed') f.page.detectionEncounter.approachSpeed = 9;
     expect(() => deserialize(serialize(f.project))).toThrow();

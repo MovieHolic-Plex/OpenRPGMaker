@@ -3,6 +3,7 @@
 // (구 스킬 팔레트 클래스 ai-skill-palette-* 는 스타일 파일과 함께 삭제됨).
 import { listEditorCommands, listMapCommands, matchEditorCommands, type EditorCommand } from "@/editor/commandRegistry";
 import { registerModal, unregisterModal } from "@/editor/ui/modalStack";
+import { isImeCompositionEvent } from "@/player/keyBindings";
 import { store } from "@/project/store";
 import { el } from "@/util/dom";
 
@@ -53,12 +54,43 @@ export function movePaletteIndex(length: number, index: number, delta: 1 | -1): 
   return (index + delta + length) % length;
 }
 
+export type PaletteKeyAction = "up" | "down" | "run" | "ignore";
+
+/**
+ * 팔레트 입력칸의 키.
+ * 한글·일본어·중국어 조합 중 Enter 와 화살표는 글자 확정이다 — 명령 실행·선택 이동으로 받으면
+ * 마지막 음절이 잘리고, 고른 명령이 바로 실행된 뒤 팔레트가 닫힌다.
+ */
+export function paletteKeyAction(event: { readonly key: string; readonly isComposing?: boolean; readonly keyCode?: number }): PaletteKeyAction {
+  if (isImeCompositionEvent(event)) return "ignore";
+  if (event.key === "ArrowDown") return "down";
+  if (event.key === "ArrowUp") return "up";
+  if (event.key === "Enter") return "run";
+  return "ignore";
+}
+
+function paletteOptionId(index: number): string {
+  return `command-palette-option-${index}`;
+}
+
 export function openCommandPalette(): HTMLElement {
   document.querySelector("[data-testid='command-palette']")?.remove();
-  const listHost = el("div", { class: "command-palette-list" });
+  const listHost = el("div", {
+    class: "command-palette-list",
+    attrs: { id: "command-palette-list", role: "listbox", "aria-label": "명령과 맵" },
+  });
   const search = el("input", {
     class: "command-palette-input",
-    attrs: { type: "text", placeholder: "명령·맵 검색… (↑↓ 이동, Enter 실행, Esc 닫기)" },
+    attrs: {
+      type: "text",
+      role: "combobox",
+      placeholder: "명령·맵 검색… (↑↓ 이동, Enter 실행, Esc 닫기)",
+      autocomplete: "off",
+      "aria-autocomplete": "list",
+      "aria-expanded": "true",
+      "aria-controls": "command-palette-list",
+      "aria-label": "명령 또는 맵",
+    },
     dataset: { testid: "command-palette-search" },
   }) as HTMLInputElement;
 
@@ -69,7 +101,7 @@ export function openCommandPalette(): HTMLElement {
     children: [
       el("section", {
         class: "command-palette-window",
-        attrs: { role: "dialog", "aria-modal": "true", "aria-label": "커맨드 팔레트" },
+        attrs: { role: "dialog", "aria-modal": "true", "aria-label": "명령 팔레트" },
         children: [search, listHost],
       }),
     ],
@@ -97,12 +129,18 @@ export function openCommandPalette(): HTMLElement {
     entries.forEach((entry, index) => {
       if (entry.kind !== lastKind) {
         lastKind = entry.kind;
-        nodes.push(el("div", { class: "command-palette-group", text: KIND_HEADERS[entry.kind] }));
+        nodes.push(el("div", { class: "command-palette-group", text: KIND_HEADERS[entry.kind], attrs: { role: "presentation" } }));
       }
       nodes.push(
         el("button", {
           class: `command-palette-item${index === activeIndex ? " is-active" : ""}`,
-          attrs: { type: "button", title: entry.detail, "aria-selected": String(index === activeIndex) },
+          attrs: {
+            type: "button",
+            id: paletteOptionId(index),
+            role: "option",
+            title: entry.detail,
+            "aria-selected": String(index === activeIndex),
+          },
           dataset: { testid: `command-palette-item-${entry.kind}-${entry.id}` },
           children: [
             el("span", { class: "command-palette-item-name", text: entry.label }),
@@ -120,6 +158,7 @@ export function openCommandPalette(): HTMLElement {
                 node.classList.toggle("is-active", nodeIndex === index);
                 node.setAttribute("aria-selected", String(nodeIndex === index));
               });
+              search.setAttribute("aria-activedescendant", paletteOptionId(index));
             },
           },
         }),
@@ -127,21 +166,31 @@ export function openCommandPalette(): HTMLElement {
     });
     if (entries.length === 0) nodes.push(el("div", { class: "command-palette-empty", text: "일치하는 항목이 없습니다" }));
     listHost.replaceChildren(...nodes);
+    const active = entries[activeIndex];
+    if (!active) {
+      search.removeAttribute("aria-activedescendant");
+      return;
+    }
+    search.setAttribute("aria-activedescendant", paletteOptionId(activeIndex));
+    const activeNode = listHost.querySelector<HTMLElement>(`#${paletteOptionId(activeIndex)}`);
+    if (activeNode && typeof activeNode.scrollIntoView === "function") {
+      activeNode.scrollIntoView({ block: "nearest" });
+    }
   };
 
   search.addEventListener("input", () => { activeIndex = 0; refresh(); });
   search.addEventListener("keydown", (event) => {
-    // Escape 는 공용 모달 스택이 라우팅한다(아래 registerModal).
-    if (event.key === "ArrowDown" || event.key === "ArrowUp") {
-      event.preventDefault();
-      activeIndex = movePaletteIndex(entries.length, activeIndex, event.key === "ArrowDown" ? 1 : -1);
+    // Escape 는 공용 모달 스택이 라우팅한다(아래 registerModal). 조합 중 키는 입력기 것이다.
+    const action = paletteKeyAction(event);
+    if (action === "ignore") return;
+    event.preventDefault();
+    if (action === "down" || action === "up") {
+      activeIndex = movePaletteIndex(entries.length, activeIndex, action === "down" ? 1 : -1);
       refresh();
       return;
     }
-    if (event.key === "Enter") {
-      const entry = entries[activeIndex];
-      if (entry) runEntry(entry);
-    }
+    const entry = entries[activeIndex];
+    if (entry) runEntry(entry);
   });
   // aria-modal 이므로 Tab 이 배경(톱바 메뉴·자료집 단추 등)으로 나가지 않게 입력칸으로 되돌린다.
   // 초점이 항목 버튼에 있어도 백드롭에서 받는다.

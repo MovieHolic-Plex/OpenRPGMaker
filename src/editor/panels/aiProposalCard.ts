@@ -8,6 +8,7 @@ import {
   type TurnResult,
 } from "@/ai/assistantSession";
 import { loadAiConfig } from "@/ai/llmClient";
+import { AI_APPLY_UNDO_HINT } from "@/ai/piAgent/userFacingCopy";
 import { stripContextFooter } from "@/ai/contextFooter";
 import { clearAgentGhostPreview } from "@/editor/agentGhostPreview";
 import { drawTransferFallback, drawTransferMapPreview } from "@/editor/panels/eventEditor/transferMapPreview";
@@ -288,7 +289,7 @@ export function createProposalHost(options: {
     if (review.needsReview) {
       appendBubble(
         "system",
-        `대량 변경 ${calls.length}건을 확인 없이 적용합니다 — ${review.reasons.join(" · ")} · 되돌리려면 [되돌리기](Ctrl+Z).`,
+        `대량 변경 ${calls.length}건을 확인 없이 적용합니다 — ${review.reasons.join(" · ")} · ${AI_APPLY_UNDO_HINT}`,
       );
     }
     const humanSummary = proposalHumanSummaryLine(calls);
@@ -380,7 +381,7 @@ export function createProposalHost(options: {
     setAssistantMessageBadge(assistantBubble, "applied");
     lastAppliedProposalMessage = pendingProposalMessage;
     pendingProposalMessage = null;
-    appendBubble("system", `변경 ${calls.length}건을 프로젝트에 적용했습니다. 되돌리려면 [되돌리기](Ctrl+Z).`);
+    appendBubble("system", `변경 ${calls.length}건을 프로젝트에 적용했습니다. ${AI_APPLY_UNDO_HINT}`);
     // 배치 진단은 숨기지 않고 남긴다 — 타일은 이미 깔렸고, 마음에 안 들면 되돌리기가 답이다.
     if (layoutIssues.length > 0) {
       appendBubble("system", `배치 진단: ${formatLayoutValidationSummary(layoutIssues)}`);

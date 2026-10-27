@@ -13,9 +13,11 @@ import {
 } from "@/editor/regionTask/regionChangeGroups";
 import type { MapId, Project, RegionRect } from "@/project/types";
 import type { TilesetDef } from "@/project/types";
+import { startOnRetiredCombinedTown } from "./support/retiredEasyRpgTilesets";
 
 function makeProject(): { project: Project; mapId: MapId } {
-  const project = createBlankProject();
+  // TILE.GRASS/WATER 는 합본 마을 칩 번호다 — 2026-10-07 저작권 정리 뒤 시작 맵이 버들항이라 옛 저장본처럼 잔디 바닥 합본 마을에서 시작한다.
+  const project = startOnRetiredCombinedTown(createBlankProject());
   return { project, mapId: project.startMapId };
 }
 

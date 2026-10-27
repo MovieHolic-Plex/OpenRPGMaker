@@ -375,8 +375,17 @@ export function createComposerElements(options: ComposerOptions): ComposerElemen
   });
   paintSettingsSummary = (): void => {
     const mode = normalizePiApplyMode(applyModeSelect.value);
-    const labels = { default: "기본", yolo: "확인 없이 반영", auto: "자동 검수", review: "검토 후 적용", step: "단계별 적용" };
-    settingsToggle.textContent = quickPlacement ? "작업 설정 · 바로 깔기" : mode === "default" ? "작업 설정" : `작업 설정 · ${labels[mode]}`;
+    const chosen = PI_APPLY_MODES.find((item) => item.id === mode);
+    const label = chosen?.label ?? "";
+    // 버튼에 보이는 말은 목록의 그 항목과 같다. 짧은 별칭(「자동 검수」)은 「바로 반영」을
+    // 빼먹어, 고친 내용이 바로 들어가는 모드를 검수만 하는 것처럼 읽혔다. 기본값도
+    // 「큰 삭제만 확인」을 「작업 설정」 뒤에 숨기지 않는다.
+    const summary = quickPlacement ? "작업 설정 · 바로 깔기" : `작업 설정 · ${label}`;
+    settingsToggle.textContent = quickPlacement ? summary : label;
+    settingsToggle.setAttribute("aria-label", summary);
+    settingsToggle.title = quickPlacement
+      ? "바로 깔기 — 켜면 Enter 가 계획·승인 없이 곧바로 깐다"
+      : (chosen?.description ?? summary);
   };
   paintSettingsSummary();
   const settingRow = (title: string, hint: string, control: HTMLElement): HTMLElement => {

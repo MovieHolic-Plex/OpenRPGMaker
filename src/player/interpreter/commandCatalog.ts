@@ -47,11 +47,11 @@ import { collectResourceIds } from "@/project/io/resourceReferenceValidation";
 import type { CommandExecution, Frame, InterpreterState, PendingStep, StagingTarget, StepResult } from "@/player/interpreter/types";
 import { breakLoop, gotoLabel, pushFrame, pushLoopFrame } from "@/player/interpreter/stack";
 import { presentableItems } from "@/player/interpreter/presentItem";
-import { executeM2RuntimeCommand, relocateM2Events } from "@/player/interpreter/m2Runtime";
+import { executeM2RuntimeCommand, memorizedBgmPlayback, relocateM2Events } from "@/player/interpreter/m2Runtime";
 import { fieldBoolean, fieldNumber, fieldString } from "@/player/interpreter/m2RuntimeFields";
 import { recordSoundLayer, waitConditionMet } from "@/player/interpreter/m2ModernRuntime";
 import { ensureM2Runtime } from "@/player/interpreter/m2RuntimeState";
-import { planScreenEffect } from "@/player/interpreter/screenEffectPlan";
+import { HIDE_SHOW_SCREEN_FADE_MS, planScreenEffect } from "@/player/interpreter/screenEffectPlan";
 import type { RuntimeCameraTarget } from "@/project/sessionRuntimeTypes"
 import { beginCutsceneControl, endCutsceneControl } from "@/player/cutsceneControl";
 import { saveSessionCheckpoint } from "@/player/checkpoints";
@@ -229,9 +229,16 @@ function executeM2Command(
   if (entry.title === "Fadeout BGM") return pause("stopAudio", { kind: "stopAudio", channel: "bgm" });
 
   if (entry.title === "Play Memorized BGM" && executeM2RuntimeCommand(state.session, entry, command, m2Context)) {
-    const memorized = state.session.m2Runtime?.audio?.playedMemorizedBgm;
-    if (typeof memorized === "string" && memorized.length > 0) {
-      return pause("playAudio", { kind: "playAudio", resourceId: memorized, loop: true, channel: "bgm" });
+    const memorized = memorizedBgmPlayback(state.session.m2Runtime);
+    if (memorized) {
+      return pause("playAudio", {
+        kind: "playAudio",
+        resourceId: memorized.resourceId,
+        loop: true,
+        channel: "bgm",
+        ...(memorized.volume === undefined ? {} : { volume: memorized.volume }),
+        ...(memorized.fadeInMs === undefined ? {} : { fadeInMs: memorized.fadeInMs }),
+      });
     }
     return resumeNext(frame);
   }
@@ -334,6 +341,11 @@ function executeM2Command(
 
   if (entry.title === "Stop All Movement" && executeM2RuntimeCommand(state.session, entry, command, m2Context)) {
     return pause("stopAllMovement", { kind: "stopAllMovement" });
+  }
+
+  // 화면 숨기기/표시는 페이드가 끝난 뒤에 다음 명령이 시작한다. 안 기다리면 대사가 검게 덮이는 도중에 뜬다.
+  if ((entry.title === "Hide Screen" || entry.title === "Show Screen") && executeM2RuntimeCommand(state.session, entry, command, m2Context)) {
+    return pause("wait", { kind: "wait", ms: HIDE_SHOW_SCREEN_FADE_MS });
   }
 
   // 일회성 화면 효과: 상태 기록(executeM2RuntimeCommand) 후 블로킹 pause 로 플레이어에 위임.
@@ -752,6 +764,9 @@ export function executeCommand(
         moves: command.route.moves,
         repeat: command.route.repeat,
         wait: command.route.wait === true,
+        // 생략·true 는 막힌 걸음을 소비하는 기존 동작. false 만 단계에 실어
+        // 페이지 순찰과 같은 «막히면 그 걸음을 다시» 계약을 플레이어·NPC 경로에 전달한다.
+        ...(command.route.skippable === false ? { skippable: false as const } : {}),
       });
     case "setEventGraphicPattern":
       return pause("setEventGraphicPattern", {

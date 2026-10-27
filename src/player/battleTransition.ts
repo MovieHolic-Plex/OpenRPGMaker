@@ -1,3 +1,5 @@
+import { DEFAULT_GAME_OVER_FADE_OUT_MS } from "@/project/cinematicSettings";
+
 export const BATTLE_TRANSITION_FLASH_MS = 340;
 export const BATTLE_TRANSITION_CLOSE_MS = 260;
 export const BATTLE_TRANSITION_REVEAL_MS = 300;
@@ -155,6 +157,25 @@ const SKIN_TRANSITION_CLASS: Record<string, string> = {
   "wipe-black": "battle-transition--wipe-black",
   "flash-white": "battle-transition--flash-white",
 };
+
+/** One frame past the game-over darken, so the terminal is already solid when the cover leaves. */
+const TERMINAL_COVER_HOLD_SLACK_MS = 32;
+
+/**
+ * How long the opaque battle-exit cover stays up over a game-over screen.
+ * `reveal()` fades that cover off and plays `battle-return-settle` on the field.
+ * The game-over layer starts transparent and sits underneath the cover, so lifting
+ * the cover early shows the party still standing. Hold until the darken is solid.
+ * Reduced motion paints the terminal opaque immediately, so the cover can go at once.
+ */
+export function terminalDefeatCoverHoldMs(fadeOutMs: number | undefined, reducedMotion: boolean): number {
+  if (reducedMotion) return 0;
+  const authored = typeof fadeOutMs === "number" && Number.isFinite(fadeOutMs)
+    ? Math.max(0, fadeOutMs)
+    : DEFAULT_GAME_OVER_FADE_OUT_MS;
+  if (authored === 0) return 0;
+  return authored + TERMINAL_COVER_HOLD_SLACK_MS;
+}
 
 export function createSkinBattleTransition(
   host: HTMLElement,

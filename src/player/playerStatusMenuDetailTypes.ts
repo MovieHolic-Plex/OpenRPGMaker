@@ -1,6 +1,6 @@
 import type { InventoryView } from '@/player/playerInventoryView';
 import type { GrowthMenuTab, GrowthMenuMutation } from "@/player/playerGrowthMenu";
-import type { SaveSlotIndex, SaveSlotReadResult } from "@/player/saveSlots";
+import type { AutosaveReadResult, SaveSlotIndex, SaveSlotReadResult } from "@/player/saveSlots";
 import type { PlaySession } from "@/project/session";
 import type { ActorInitialEquipment, BattleAnimationSheet, ItemScope, Project } from "@/project/types";
 import type { StatusMenuCommandId, StatusMenuRailId } from "@/player/playerStatusMenuModel";
@@ -102,6 +102,9 @@ export type StatusMenuDetailOptions = {
   /** 그룹 열기 항목(record-menu/system-menu)도 올 수 있다 — 그때는 그룹 명령 목록을 그린다. */
   readonly selectedCommand: StatusMenuRailId;
   readonly slots: readonly SaveSlotReadResult[];
+  /** 인게임 로드 화면 맨 위의 자동 저장. 저장 화면은 덮어쓰지 않으므로 쓰지 않는다. */
+  readonly autosave?: AutosaveReadResult;
+  readonly onLoadAutosave?: () => void;
   readonly waitModeEnabled: boolean;
   readonly inventoryView?: InventoryView;
   readonly onInventoryViewChange?: (view: InventoryView) => void;

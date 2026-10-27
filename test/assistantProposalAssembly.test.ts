@@ -7,6 +7,7 @@ import { createBlankProject } from "@/project/defaults";
 import { TILE } from "@/project/defaults/constants";
 import type { ChatResult } from "@/ai/llmClient";
 import { fixedDeclarer } from "./intentFixture";
+import { startOnRetiredCombinedTown } from "./support/retiredEasyRpgTilesets";
 
 const CONFIG = {
   authMode: "apiKey" as const,
@@ -53,9 +54,11 @@ function placeNpc(ctx: ToolContext, id: string, x: number, y: number): void {
   expect(result.ok, result.summary).toBe(true);
 }
 
+// The beodeul_city default ships reference docs, so paint_tiles needs read_tileset_reference first (tileset-reference-read-required);
+// these scope-warning cases target TILE.* ids on the retired combined-town sheet, which has no reference gate.
 describe("assistant proposal assembly scope warnings", () => {
   it("adds a diff warning when a previous-turn build spec is used in the next proposal", async () => {
-    const project = createBlankProject();
+    const project = startOnRetiredCombinedTown(createBlankProject());
     const mapId = project.startMapId;
     const spec = {
       mapId,
@@ -79,7 +82,7 @@ describe("assistant proposal assembly scope warnings", () => {
   });
 
   it("does not add a carryover warning when the build spec is created in the same turn", async () => {
-    const project = createBlankProject();
+    const project = startOnRetiredCombinedTown(createBlankProject());
     const mapId = project.startMapId;
     const chat = scriptedChat([
       toolCallMsg("set_build_spec", { mapId, title: "새 길", assets: [{ id: "길", kind: "road", x: 2, y: 2, w: 8, h: 2 }] }, "c1"),
@@ -95,7 +98,7 @@ describe("assistant proposal assembly scope warnings", () => {
   });
 
   it("adds the carryover warning only once for multiple spatial calls", async () => {
-    const project = createBlankProject();
+    const project = startOnRetiredCombinedTown(createBlankProject());
     const mapId = project.startMapId;
     const spec = {
       mapId,

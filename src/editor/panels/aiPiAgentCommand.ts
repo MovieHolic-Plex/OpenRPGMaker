@@ -357,8 +357,8 @@ async function runPiCommandProtected(command: ParsedPiCommand, surface: PiComman
     if (identity !== JSON.stringify(store.getProjectIdentity())) return false;
   }
   // 부팅 정규화를 첫 화면 뒤로 미뤘으면(새 빌드 첫 실행) 끝난 문서를 기준으로 잡는다 — 정규화 전 기준은 곧 낡은 기준이 된다.
+  // 중단은 여기서 던지지 않는다 — 아래 실행 경로가 중단을 「cancelled」 결과로 보고한다(던지면 결과 4축이 비어 남는다).
   await store.whenBootNormalized();
-  surface.signal?.throwIfAborted();
   const base = store.getCurrent();
   const { base: proposalBase, baseline } = captureApplyAuthority(base);
   const config = loadAiConfig();
@@ -455,6 +455,13 @@ async function runPiCommandProtected(command: ParsedPiCommand, surface: PiComman
   // 실행 결과 4축 — 세션 경로(assistantSession.getRunOutcome)와 같은 deriveRunOutcome 을 쓴다.
   // 실행부는 사실만 정하고 판정(목표)은 수용 검사가 소유하므로 Pi 경로에선 unassessed 가 정직한 값이다.
   const streamErrors: string[] = [];
+  /**
+   * 실행을 실제로 끝낸 오류(던져진 오류·읽기 전용 위반·답 없이 멈춘 턴)만 센다. 스트림 중간의 회수 가능한 오류
+   * (토큰 만료 등)는 streamErrors 에 남아 캡션 다이제스트로 보이지만, 실행이 끝까지 갔으면 결과 축은 response-final 이다.
+   */
+  let fatalErrors = 0;
+  /** 조수(팀원)가 실패해 일을 끝내지 못한 턴 — 응답 실패가 아니라 막힘(blocked)이다. */
+  let blockedByAgents = false;
   const spilledKeys: string[] = [];
   let toolErrorCount = 0;
   let changedCount = 0;
@@ -471,7 +478,8 @@ async function runPiCommandProtected(command: ParsedPiCommand, surface: PiComman
     const hasPendingDraft = !applied && unpublishedChanges && changedCount > 0 && (!isLiveApplyMode(applyMode) || harmonyManualReview);
     publishOutcome({
       execution: surface.signal?.aborted ? "cancelled"
-        : streamErrors.length > 0 ? "failed" : "response-final",
+        : fatalErrors > 0 || (stoppedByLimit && streamErrors.length > 0) ? "failed"
+        : blockedByAgents ? "blocked" : "response-final",
       hasPendingDraft,
       hasApplied: applied || publication.count > 0,
       persistence: "none",
@@ -757,6 +765,7 @@ async function runPiCommandProtected(command: ParsedPiCommand, surface: PiComman
     }
     const message = error instanceof Error ? error.message : String(error);
     streamErrors.push(message);
+    fatalErrors += 1;
     // 도중에 끊긴 실행(토큰 만료·연결 끊김)이 실시간으로 반쯤 반영한 결과도 같은 판정을 받는다.
     const segmentReverted = publication.count > 0 && (await enforcePlayableSegment(publication.project).catch(() => null)) !== null;
     ghost.dispose();
@@ -780,6 +789,7 @@ async function runPiCommandProtected(command: ParsedPiCommand, surface: PiComman
   if (readOnly && results.some(result => changedProjectKeys(base, result.project).length > 0)) {
     ghost.dispose();
     streamErrors.push("읽기 전용 실행이 변경을 반환했습니다. 적용하지 않았습니다.");
+    fatalErrors += 1;
     publishFinalOutcome();
     boardState = markTeamBoardFailed(boardState, streamErrors.at(-1)!); sync();
     finishLog({ applied: false, changedCount: 0, error: streamErrors.at(-1)! });
@@ -917,7 +927,11 @@ async function runPiCommandProtected(command: ParsedPiCommand, surface: PiComman
         : answer ? "프로젝트는 바뀌지 않았습니다." : "확인을 마쳤어요. 프로젝트는 바꾸지 않았어요.";
     if (failed) {
       boardState = { ...boardState, applied: caption };
-      if (streamErrors.length === 0) streamErrors.push(failureReason!);
+      // 답 없이 멈춘 턴(스트림 오류)·범위 밖으로 다 버린 턴은 실패다. 오류 없이 조수가 실패해 끝내지 못한 턴은
+      // 「막힘」으로 남긴다 — 사유는 실행 기록(finishLog error)·보드에 그대로 있다.
+      if (streamErrors.length > 0) fatalErrors += 1;
+      else if (droppedEverything) { streamErrors.push(failureReason!); fatalErrors += 1; }
+      else blockedByAgents = true;
     }
     publishFinalOutcome();
     sync();
@@ -1195,7 +1209,8 @@ async function runPiCommandProtected(command: ParsedPiCommand, surface: PiComman
     const appliedText = team
       ? `적용했습니다 — 팀, 툴콜 ${toolCalls}회, 바뀐 맵·항목 ${changedCount}개${spillNotice}${errorDigest()}.`
       : `변경 내용을 적용했습니다${spillNotice}${errorDigest()}.`;
-    boardState = streamErrors.length
+    // 끊긴 실행만 보드를 실패로 둔다. 끝까지 간 실행의 회수 가능한 오류는 「적용됨」 캡션의 ⚠ 다이제스트로 남긴다(errorDigest).
+    boardState = streamErrors.length && (fatalErrors > 0 || stoppedByLimit)
       ? markTeamBoardFailed(boardState, `${friendlyExecutionError(streamErrors[0]!)} 이미 반영한 변경은 남아 있으며 되돌릴 수 있어요.`)
       : markTeamBoardApplied(boardState, appliedText); sync();
     observeActivitySave((name, summary, status, data) => {

@@ -33,6 +33,8 @@ describe("qa-game monster-collect checks", () => {
     project.system.genre = "adventure-jrpg" as never;
     delete project.gameDesignBrief;
     delete project.system.monsterCollection;
+    // 장르 잠금(preset monster-collect)도 몬스터 게임 선언이다(isDeclaredMonsterGame, #2812) — 다른 장르로 바꾸려면 잠금도 뗀다.
+    delete project.system.genreLock;
     expect(checkMonster(project)).toEqual([]);
   });
 });

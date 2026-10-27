@@ -689,7 +689,34 @@ describe("changeTile / moveEvent / setEventGraphicPattern — 요청 반환", ()
     ];
     const it = createInterpreter(cmds, mkSession());
     const r = it.start();
-    expect(r.kind).toBe("moveEvent");
+    expect(r).toEqual({
+      kind: "moveEvent",
+      eventId: "ev1",
+      moves: [{ kind: "move", dir: "down" }],
+      repeat: false,
+      wait: false,
+    });
+  });
+
+  it("moveEvent skippable false 만 단계에 실려 막힌 걸음을 다시 시도하게 한다", () => {
+    const session = mkSession();
+    const held = createInterpreter(
+      [{ kind: "moveEvent", eventId: "ev1", route: { moves: [{ kind: "move", dir: "right" }], repeat: false, skippable: false } }],
+      session,
+    ).start();
+    expect(held).toEqual({
+      kind: "moveEvent",
+      eventId: "ev1",
+      moves: [{ kind: "move", dir: "right" }],
+      repeat: false,
+      wait: false,
+      skippable: false,
+    });
+    const skipped = createInterpreter(
+      [{ kind: "moveEvent", eventId: "ev1", route: { moves: [{ kind: "move", dir: "right" }], repeat: false, skippable: true } }],
+      session,
+    ).start();
+    expect(skipped).not.toMatchObject({ skippable: false });
   });
 
   it("setEventGraphicPattern은 프레임 변경 요청을 반환하고 resume 후 계속한다", () => {

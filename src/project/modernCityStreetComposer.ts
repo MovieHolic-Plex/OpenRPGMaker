@@ -597,8 +597,9 @@ export function composeModernCityStreet(spec: MCStreetSpec, pal: MCPalette): MCS
       vehicles: rotatedMix,
       busVehicle: "mc-veh-bus-a",
       drive: "right",
-      headwaySec: 6,
-      busHeadwaySec: 28,
+      // 차 간격: 6초면 차선마다 차가 줄지어 서 횡단보도 밖에서는 길을 건널 수 없었다(2026-10-27 romance-j91 J102 「멈춘 차가 길을 막는다」).
+      headwaySec: 14,
+      busHeadwaySec: 40,
       includeTurns: true,
       busStops,
     }).routes,
