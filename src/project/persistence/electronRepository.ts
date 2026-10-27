@@ -2,6 +2,7 @@ import { deserialize, serialize } from "../io";
 import { yieldToTask } from "@/util/yieldToTask";
 import { afterBootSettled } from "@/util/bootSettled";
 import { deserializeParsed, projectWireView } from "../io/serialize";
+import { preloadAllBundledTilesetDefinitions } from "../defaults/defaultAssets";
 import { assetBlobOwners, parseFoldedDocument, restoreAssetBlobs, unfoldedDocumentTree } from "./core/foldedProject";
 import { jsonContentDigest } from "./core/contentDigest";
 import { bootNormalizationMatches, currentBootNormalizationMarker } from "../bootNormalization";
@@ -274,6 +275,9 @@ export function createElectronRepository(): ElectronRepository {
    */
   const loadSnapshotFromHost = async (target: LocalProjectTarget): Promise<ProjectSnapshot | null> => {
     const bridge = electronBridge().project;
+    // 저장본은 번들 타일셋을 번들 정의와의 차이로 싣는다(bundledTilesetDiff.ts). 되돌리려면 정의가 필요하고, 저장 보기도 정의가
+    // 읽혀 있어야 차이로 싣는다 — 로드 전에 모두 읽어 두어 같은 내용이 늘 같은 저장 모양이 되게 한다(동기 XHR 안전망을 타지 않는다).
+    await preloadAllBundledTilesetDefinitions();
     if (!bridge.loadFolded || !bridge.tilesetBlobs) {
       const loaded = await bridge.load({ projectDir: target.projectDir });
       return snapshotOf(loaded?.serialized, loaded?.sha256, target);
