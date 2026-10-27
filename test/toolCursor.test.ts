@@ -17,7 +17,8 @@ import { installToolCursor, resetToolCursorForTest } from "@/editor/toolCursor";
 
 const TOOLS: readonly Tool[] = ["paint", "fill", "eyedropper", "pan", "select", "erase", "collision", "event"];
 
-const EDITOR_CORE_CSS = resolve(__dirname, "..", "src", "styles", "editor", "core.part-1.css");
+// 9b2ff9a9f1 (refactor(css): editor/ 유령 디렉터리 해체) 가 이 시트를 src/styles/map/ 으로 옮겼다.
+const EDITOR_CORE_CSS = resolve(__dirname, "..", "src", "styles", "map", "core.part-1.css");
 const EDITOR_STATE_TS = resolve(__dirname, "..", "src", "editor", "editorState.ts");
 
 /** editorState.ts 의 `export type Tool = "a" | "b";` 유니온을 소스에서 그대로 읽는다. */
