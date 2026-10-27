@@ -320,6 +320,15 @@ describe("shipped catalogs", () => {
     expect(japanese.translate(regionIds)).toContain("リージョン");
   });
 
+  it("keeps item and actor picker empty copy translated after the batchim particle", () => {
+    const english = createTranslator(en);
+    expect(english.translate("아이템이 아직 없습니다.")).toBe("Item not yet available.");
+    expect(english.translate("주인공이 아직 없습니다.")).toBe("Actor not yet available.");
+    expect(english.translate("스위치가 아직 없습니다.")).toBe("Switch not yet available.");
+    expect(english.translate('"없는물건" 과 일치하는 아이템이 없습니다.')).toBe('No Item matches "없는물건".');
+    expect(english.translate('"가나" 와 일치하는 스위치가 없습니다.')).toBe('No Switch matches "가나".');
+    expect(createTranslator(ja).translate("아이템이 아직 없습니다.")).toBe("アイテム がまだありません。");
+    expect(createTranslator(zh).translate("주인공이 아직 없습니다.")).toBe("还没有 角色。");
   it("calls a number-input digit a digit, and one digit stays singular in English", () => {
     // 숫자 입력 미리보기의 「N자리 · 대기 중」은 자릿수다. 좌석이 아니다.
     expect(createTranslator(en).translate("1자리 · 대기 중")).toBe("1 digit · waiting");
@@ -330,6 +339,5 @@ describe("shipped catalogs", () => {
     expect(ja["{0}자리 · 대기 중"]).not.toContain("席");
     expect(createTranslator(zh).translate("1자리 · 대기 중")).toBe("1位 · 等待中");
     expect(createTranslator(zh).translate("4자리 · 대기 중")).toBe("4位 · 等待中");
-    expect(zh["{0}자리 · 대기 중"]).not.toContain("名额");
-  });
+    expect(zh["{0}자리 · 대기 중"]).not.toContain("名额");  });
 });
