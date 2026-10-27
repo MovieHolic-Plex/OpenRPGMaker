@@ -61,14 +61,13 @@ export function shareUnchangedTilesets(before: Project, draft: Project): void {
 }
 
 function mapWithoutTileBuffers(map: GameMap): GameMap {
-  const {
-    lowerTiles: _lowerTiles,
-    upperTiles: _upperTiles,
-    lowerTileStacks: _lowerTileStacks,
-    upperTileStacks: _upperTileStacks,
-    ...rest
-  } = map;
-  return { ...rest, lowerTiles: [], upperTiles: [] };
+  // 키 순서를 원본과 같게 둔다 — 스프레드 뒤 같은 키에 대입하면 자리가 유지된다. 순서가 바뀌면 draft 의
+  // JSON 지문이 원본과 달라져 spatial 미리보기 영수증(spatialToolFingerprint)이 «Project changed since preview» 로 거절된다.
+  // 스택 키는 있었던 자리에 자리표시자를 두고 copyTileBuffers 가 채운다.
+  const copy: GameMap = { ...map, lowerTiles: [], upperTiles: [] };
+  if ("lowerTileStacks" in map) copy.lowerTileStacks = undefined;
+  if ("upperTileStacks" in map) copy.upperTileStacks = undefined;
+  return copy;
 }
 
 function copyTileBuffers(source: GameMap, target: GameMap): void {
