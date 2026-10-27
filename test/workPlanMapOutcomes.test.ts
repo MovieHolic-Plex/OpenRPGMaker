@@ -7,10 +7,12 @@ import { parseOrchestratorDecision, workPlanFromOrchestratorDecision, workPlanFr
 import { workTargetIssues, workToolOutcome } from "@/ai/workPlanTargets";
 import type { ChatResult } from "@/ai/llmClient";
 import { fixedDeclarer } from "./intentFixture";
+import { startOnRetiredCombinedTown } from "./support/retiredEasyRpgTilesets";
 
 const CELLAR = "map_basement";
-// 새 프로젝트 기본 칩셋은 beodeul_city 라 재료 이름은 「버들항 길 포석」이다(시작 맵이 이미 풀밭이라 풀밭 채우기는 변경 0칸 no-op 이다)(옛 EasyRPG 칩셋의 「잔디」는 없다).
-const fillArgs = (mapId: string, rect = { x: 1, y: 1, w: 10, h: 8 }) => ({ mapId, material: "버들항 길 포석", shape: "rect", rect });
+// 새 프로젝트 기본 칩셋이 beodeul_city 로 바뀌어(2026-10-07 저작권 정리) 「잔디」 재료가 없다. 시작 맵의 풀밭을 같은
+// 풀밭으로 덮는 「버들항 풀밭」이 옛 「잔디」 채우기처럼 ok:true · 실제 변경 0칸 no-op 이다(아래 맵 동일 단언이 이것에 기댄다).
+const fillArgs = (mapId: string, rect = { x: 1, y: 1, w: 10, h: 8 }, material = "버들항 풀밭") => ({ mapId, material, shape: "rect", rect });
 // 2026-09-17 밑그림 스펙 게이트 해체 — 밑그림이 없다는 이유로 fill_region 이 막히지 않는다. 포착된 지하실 실패는
 // 12×10 지하실을 벗어나는 rect(fill_region 이 invalid-args 로 거부)로 재현한다. 작업 결과 원장은 CELLAR 의 ok:false 만 본다.
 const OUTSIDE_CELLAR = { x: 1, y: 1, w: 20, h: 8 };
@@ -66,9 +68,7 @@ describe("target-scoped work outcomes", () => {
     if (failureFirst) { cellar = fill(session, CELLAR, OUTSIDE_CELLAR); village = fill(session, mapId); }
     else { village = fill(session, mapId); cellar = fill(session, CELLAR, OUTSIDE_CELLAR); }
     expect(village.ok).toBe(true);
-    // 길 포석 채우기는 이제 실제로 타일을 바꾼다(옛 「잔디」 채우기는 0칸 no-op 이라 맵 전체가 같았다) — 타일 외 맵 구조만 그대로인지 본다.
-    const afterVillage = session.getProposedProject().maps[mapId]!;
-    expect({ ...afterVillage, lowerTiles: undefined }).toEqual({ ...before, lowerTiles: undefined });
+    expect(session.getProposedProject().maps[mapId]).toEqual(before);
     expect(cellar.ok).toBe(false);
     expect(cellar.issues?.map(issue => issue.code)).toContain("invalid-args");
     expect(transfer(session, mapId).ok).toBe(true);
@@ -130,13 +130,14 @@ describe("target-scoped work outcomes", () => {
   });
 
   it("retains a target's no-op outcome through a real continuation and explicit completion", async () => {
-    const project = createBlankProject();
+    // 실제 세션 경로는 beodeul_city 에 참고문서 선행 읽기 관문을 건다(이 시험의 주제가 아니다) — 관문이 없던 옛 시작 칩셋에서 잔디 no-op 채우기를 그대로 잰다.
+    const project = startOnRetiredCombinedTown(createBlankProject());
     let step = 0;
     const chat = async (_config: unknown, request: { tools?: readonly unknown[] }): Promise<ChatResult> => {
       if (!request.tools?.length) return { message: { role: "assistant", content: JSON.stringify({ action: "resume" }) }, finishReason: "stop" };
       step += 1;
       const name = step === 1 ? "fill_region" : step === 2 ? "get_map_region" : "complete_work_item";
-      const args = step === 1 ? fillArgs(project.startMapId) : step === 2 ? { mapId: project.startMapId, x: 0, y: 0, w: 2, h: 2 } : { itemId: "terrain" };
+      const args = step === 1 ? fillArgs(project.startMapId, undefined, "잔디") : step === 2 ? { mapId: project.startMapId, x: 0, y: 0, w: 2, h: 2 } : { itemId: "terrain" };
       return { message: { role: "assistant", content: null, tool_calls: [{ id: `call-${step}`, type: "function", function: { name, arguments: JSON.stringify(args) } }] }, finishReason: "tool_calls" };
     };
     const session = new AssistantSession(project, { chat, declareIntent: fixedDeclarer(), config: { authMode: "apiKey", baseUrl: "x", apiKey: "test", model: "test", liteModel: "test", agentMode: "chat", maxToolCalls: 1, maxTokens: 1024 } });

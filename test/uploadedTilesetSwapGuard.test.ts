@@ -10,7 +10,7 @@ import { createBlankProject } from "@/project/defaults";
 import { COMBINED_TOWN_TILESET_ID } from "@/project/defaults/constants";
 import { store } from "@/project/store";
 import type { Project } from "@/project/types";
-import { withRetiredEasyRpgTilesets } from "./support/retiredEasyRpgTilesets";
+import { startOnRetiredCombinedTown, withRetiredEasyRpgTilesets } from "./support/retiredEasyRpgTilesets";
 
 const MAP_ID = "map_blank_start";
 
@@ -71,7 +71,8 @@ describe("업로드 타일셋 칩셋 바꿔치기 거부", () => {
   });
 
   it("번들 타일셋 맵은 전처럼 바뀐다", () => {
-    const project = withUploadedPack(createBlankProject());
+    // 시작 맵이 beodeul_city 면 같은 칸 번호를 합본 마을 사본(pack)으로 읽어 시작 칸이 막힌다 — 옛 시작 칩셋(합본 마을)에서 같은 그림의 팩으로 바꾼다.
+    const project = withUploadedPack(startOnRetiredCombinedTown(createBlankProject()));
     const ctx = { project };
     const result = runToolDefinition(ctx, { ...swapTool, run(draft, args) {
       draft.maps[args.mapId as string]!.tilesetId = "pack";
