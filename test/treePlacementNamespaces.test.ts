@@ -4,13 +4,14 @@ import { expandHardClusterPlacement } from "@/editor/tools/clusterRulePlacement"
 import { createBlankProject, TILE } from "@/project/defaults";
 import { store } from "@/project/store";
 import type { TileGroupMetadata, TilesetDef } from "@/project/types";
-import { withRetiredEasyRpgTilesets } from "./support/retiredEasyRpgTilesets";
+import { startOnRetiredCombinedTown } from "./support/retiredEasyRpgTilesets";
 
 const FOREIGN_NAMESPACES = ["custom", "interior"] as const;
 const TRUNKS = [290, 291, 292, 293] as const;
 
 function fixture(namespace: "custom" | "interior" | "town") {
-  const project = withRetiredEasyRpgTilesets(createBlankProject());
+  // 2026-10-07 copyright purge (#3539): new projects start on beodeul_city; the town namespace needs the retired combined-town sheet (260-263/290-293 trees).
+  const project = startOnRetiredCombinedTown(createBlankProject());
   const map = project.maps[project.startMapId];
   map.width = 6;
   map.height = 6;

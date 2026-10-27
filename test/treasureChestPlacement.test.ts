@@ -4,9 +4,11 @@ import { isPassable } from "@/project/collision";
 import { createBlankProject } from "@/project/defaults";
 import { TILE } from "@/project/defaults/constants";
 import { blockedFlag, passableFlag } from "@/project/tilesetPassage";
+import { startOnRetiredCombinedTown } from "./support/retiredEasyRpgTilesets";
 
 function fixture() {
-  const project = createBlankProject();
+  // 2026-10-07 copyright purge (#3539): new projects start on beodeul_city; the water/path/wall numbers here are combined-town numbers.
+  const project = startOnRetiredCombinedTown(createBlankProject());
   const map = project.maps[project.startMapId];
   map.width = 24;
   map.height = 20;

@@ -7,10 +7,17 @@ import { toOpenAiTools } from "@/editor/tools/toolRegistry";
 import { createBlankProject } from "@/project/defaults";
 import { TILE } from "@/project/defaults/constants";
 import { MAX_TOOL_MAP_DIMENSION } from '@/project/mapSizeLimits';
+import { RETIRED_COMBINED_TOWN_TILESET_ID, startOnRetiredCombinedTown } from "./support/retiredEasyRpgTilesets";
+
+// 2026-10-07 저작권 정리(#3539): 새 프로젝트는 beodeul_city 에서 시작하고 TILE.GRASS(240)·TILE.WALL 은 옛 합본 마을 번호다.
+// 이 파일의 잔디·돌벽 기대는 퇴역한 합본 마을 시트를 명시해서 만든 맵에서만 성립한다.
+function townProject() {
+  return startOnRetiredCombinedTown(createBlankProject());
+}
 
 function ctxWithMap(width = 12, height = 12): { context: ToolContext; mapId: string } {
-  const context: ToolContext = { project: createBlankProject() };
-  const created = runTool(context, "create_map", { name: "관리 테스트", width, height, id: "map_mgmt" });
+  const context: ToolContext = { project: townProject() };
+  const created = runTool(context, "create_map", { name: "관리 테스트", width, height, id: "map_mgmt", tilesetId: RETIRED_COMBINED_TOWN_TILESET_ID });
   expect(created.ok, created.summary).toBe(true);
   return { context, mapId: "map_mgmt" };
 }
@@ -240,8 +247,9 @@ describe("get_event", () => {
     expect(result.ok).toBe(false);
     expect(result.issues?.[0]?.code).toBe("invalid-args");
     const message = result.issues?.[0]?.message ?? "";
-    expect(message).toContain("ev_bad_kind.commands[0].kind");
-    expect(message).toContain("ev_bad_kind.commands[1].kind");
+    // 이벤트 직속 commands 는 기본 페이지(ev_bad_kind_page)로 감싸 검증하므로 경로에 페이지 id 가 낀다(e22aa52049 이후).
+    expect(message).toContain("ev_bad_kind.ev_bad_kind_page.commands[0].kind");
+    expect(message).toContain("ev_bad_kind.ev_bad_kind_page.commands[1].kind");
     expect(message).toContain("기대 형식 string");
     expect(message).toContain("커맨드 kind는 문자열");
     expect(message).toContain("올바른 1커맨드 예시 JSON");
@@ -305,16 +313,16 @@ describe("resize_map", () => {
 
 describe("create_map", () => {
   it("기본 생성은 돌벽 테두리 없이 잔디 평지로 만든다", () => {
-    const context: ToolContext = { project: createBlankProject() };
-    const result = runTool(context, "create_map", { name: "평지", width: 5, height: 4, id: "map_plain" });
+    const context: ToolContext = { project: townProject() };
+    const result = runTool(context, "create_map", { name: "평지", width: 5, height: 4, id: "map_plain", tilesetId: RETIRED_COMBINED_TOWN_TILESET_ID });
     expect(result.ok, result.summary).toBe(true);
     const map = context.project.maps.map_plain;
     expect(map.lowerTiles.every((tile) => tile === TILE.GRASS)).toBe(true);
   });
 
   it("border:'wall'을 지정하면 기존처럼 외곽을 돌벽으로 두른다", () => {
-    const context: ToolContext = { project: createBlankProject() };
-    const result = runTool(context, "create_map", { name: "벽 평지", width: 5, height: 4, id: "map_walled", border: "wall" });
+    const context: ToolContext = { project: townProject() };
+    const result = runTool(context, "create_map", { name: "벽 평지", width: 5, height: 4, id: "map_walled", border: "wall", tilesetId: RETIRED_COMBINED_TOWN_TILESET_ID });
     expect(result.ok, result.summary).toBe(true);
     const map = context.project.maps.map_walled;
     for (let x = 0; x < map.width; x += 1) {
@@ -356,12 +364,23 @@ describe("remove_map", () => {
     expect(JSON.stringify(context.project.mapTree)).not.toContain("map_doomed");
   });
 
-  it("시작 맵은 삭제를 거부한다", () => {
+  it("작업된 시작 맵은 삭제를 거부한다", () => {
+    // d98b243a29(#3123): 손대지 않은 빈 시작 맵은 삭제와 함께 자동 재배선되므로, 거부 계약은 손댄 시작 맵으로 확인한다.
     const { context } = ctxWithMap();
     const startMapId = context.project.startMapId;
+    context.project.maps[startMapId].upperTiles[0] = TILE.GRASS;
     const result = runTool(context, "remove_map", { mapId: startMapId });
     expect(result.ok).toBe(false);
     expect(result.summary).toContain("시작 맵");
+  });
+
+  it("손대지 않은 빈 시작 맵은 다른 맵이 있으면 삭제되고 시작 맵이 재배선된다", () => {
+    const { context, mapId } = ctxWithMap();
+    const startMapId = context.project.startMapId;
+    const result = runTool(context, "remove_map", { mapId: startMapId });
+    expect(result.ok, result.summary).toBe(true);
+    expect(context.project.maps[startMapId]).toBeUndefined();
+    expect(context.project.startMapId).toBe(mapId);
   });
 });
 

@@ -9,14 +9,16 @@ import { runTool } from "@/editor/tools/toolRunner";
 import type { JsonSchema, ToolContext } from "@/editor/tools/types";
 import { createBlankProject } from "@/project/defaults";
 import { TILE } from "@/project/defaults/constants";
+import { RETIRED_COMBINED_TOWN_TILESET_ID, startOnRetiredCombinedTown } from "./support/retiredEasyRpgTilesets";
 
 const SRC = "map_copy_src";
 const DST = "map_copy_dst";
 
 function context(size = 12): ToolContext {
-  const context: ToolContext = { project: createBlankProject() };
+  // 2026-10-07 저작권 정리(#3539): 새 프로젝트는 beodeul_city 에서 시작하고 TILE.GRASS/WALL 은 옛 합본 마을 번호라, 퇴역한 합본 마을 시트를 명시해 맵을 만든다.
+  const context: ToolContext = { project: startOnRetiredCombinedTown(createBlankProject()) };
   for (const [id, name] of [[SRC, "원본"], [DST, "대상"]] as const) {
-    const created = runTool(context, "create_map", { name, width: size, height: size, id });
+    const created = runTool(context, "create_map", { name, width: size, height: size, id, tilesetId: RETIRED_COMBINED_TOWN_TILESET_ID });
     expect(created.ok, created.summary).toBe(true);
   }
   return context;

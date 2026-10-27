@@ -1,3 +1,4 @@
+/** @vitest-environment happy-dom */
 import { beforeEach, describe, expect, it } from "vitest";
 
 import { editorState } from "@/editor/editorState";
@@ -6,6 +7,7 @@ import { TilePaintEngine, type TilePaintEngineDeps } from "@/editor/TilePaintEng
 import { createBlankProject, TILE } from "@/project/defaults";
 import { store } from "@/project/store";
 import type { GameMap, MapId, TilesetDef } from "@/project/types";
+import { startOnRetiredCombinedTown } from "./support/retiredEasyRpgTilesets";
 
 function currentMap(mapId: MapId): GameMap {
   return store.getCurrent().maps[mapId]!;
@@ -40,7 +42,8 @@ function createPaintEngine(mapId: MapId, tileset: TilesetDef): TilePaintEngine {
 }
 
 beforeEach(() => {
-  store.replace(createBlankProject());
+  // 2026-10-07 copyright purge (#3539): new projects start on beodeul_city; these cases use combined-town tile numbers (260/290 conifer).
+  store.replace(startOnRetiredCombinedTown(createBlankProject()));
   editorState.set({
     activePaletteStamp: null,
     brushSize: 1,

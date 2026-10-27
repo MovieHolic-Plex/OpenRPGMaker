@@ -3,12 +3,14 @@ import { placePropsOnDraft } from "@/editor/tools/placePropsDomain";
 import { createBlankProject } from "@/project/defaults";
 import { TILE } from "@/project/defaults/constants";
 import { repairTreePairsOnProject } from "@/project/lint/repairTreePairs";
+import { startOnRetiredCombinedTown } from "./support/retiredEasyRpgTilesets";
 
 // A single candidate proves rejection happens before either half is written.
 // No runner rollback or cleanup can conceal a partial tree here.
 describe.each(["natural", "dense"] as const)("tree footprint eligibility (%s)", (packing) => {
   it.each(["canopy over wall", "trunk over fence", "recorded stacked house", "recorded empty house"])("rejects the whole object: %s", (obstacle) => {
-    const project = createBlankProject();
+    // 2026-10-07 copyright purge (#3539): wall 76 / fence 409 / conifer 260·290 are combined-town numbers.
+    const project = startOnRetiredCombinedTown(createBlankProject());
     const map = project.maps.map_blank_start;
     const top = 3 * map.width + 3;
     const bottom = top + map.width;
@@ -28,7 +30,8 @@ describe.each(["natural", "dense"] as const)("tree footprint eligibility (%s)", 
   });
 
   it("keeps legitimate canopy-over-trunk forest overlap", () => {
-    const project = createBlankProject();
+    // 2026-10-07 copyright purge (#3539): wall 76 / fence 409 / conifer 260·290 are combined-town numbers.
+    const project = startOnRetiredCombinedTown(createBlankProject());
     const map = project.maps.map_blank_start;
     const top = 3 * map.width + 3;
     map.lowerTiles[top] = 290;
