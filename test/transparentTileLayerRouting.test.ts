@@ -15,6 +15,7 @@ import { COMBINED_TOWN_TRANSPARENT_TILES } from "@/project/defaults/generatedChi
 import { applyCombinedTownHarness, isUpperOnlyOverlayTile } from "@/project/tilesetHarness";
 import { store } from "@/project/store";
 import { findByTestId, installFakeDom, type FakeElement } from "./fakeDom";
+import { RETIRED_COMBINED_TOWN_TILESET_ID, startOnRetiredCombinedTown } from "./support/retiredEasyRpgTilesets";
 
 const BENCH = 357;
 const SLOPED_ROOF = 385;
@@ -83,8 +84,9 @@ describe("투명 칩 데이터/분류", () => {
 
 describe("paint_tiles 레이어 라우팅", () => {
   function ctxWithMap(): { context: ToolContext; mapId: string } {
-    const context: ToolContext = { project: createBlankProject() };
-    const created = runTool(context, "create_map", { name: "라우팅 테스트", width: 10, height: 10, id: "map_route" });
+    // 2026-10-07 copyright purge (#3539): 357/385/120 are combined-town numbers; new projects start on beodeul_city, so pin the retired sheet.
+    const context: ToolContext = { project: startOnRetiredCombinedTown(createBlankProject()) };
+    const created = runTool(context, "create_map", { name: "라우팅 테스트", width: 10, height: 10, id: "map_route", tilesetId: RETIRED_COMBINED_TOWN_TILESET_ID });
     expect(created.ok, created.summary).toBe(true);
     return { context, mapId: "map_route" };
   }
@@ -126,7 +128,8 @@ describe("시연 캔버스 라우팅", () => {
   let restoreDom: (() => void) | null = null;
 
   beforeEach(() => {
-    const project = createBlankProject();
+    // 2026-10-07 copyright purge (#3539): the bench (357) is a combined-town tile; start the map on that retired sheet.
+    const project = startOnRetiredCombinedTown(createBlankProject());
     // 시드 영역에 벤치를 심어 팔레트에 demo-teach-pick-357이 뜨게 한다.
     const map = project.maps[project.startMapId];
     map.upperTiles[0] = BENCH;
