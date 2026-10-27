@@ -47,7 +47,7 @@ import { collectResourceIds } from "@/project/io/resourceReferenceValidation";
 import type { CommandExecution, Frame, InterpreterState, PendingStep, StagingTarget, StepResult } from "@/player/interpreter/types";
 import { breakLoop, gotoLabel, pushFrame, pushLoopFrame } from "@/player/interpreter/stack";
 import { presentableItems } from "@/player/interpreter/presentItem";
-import { executeM2RuntimeCommand, relocateM2Events } from "@/player/interpreter/m2Runtime";
+import { executeM2RuntimeCommand, memorizedBgmPlayback, relocateM2Events } from "@/player/interpreter/m2Runtime";
 import { fieldBoolean, fieldNumber, fieldString } from "@/player/interpreter/m2RuntimeFields";
 import { recordSoundLayer, waitConditionMet } from "@/player/interpreter/m2ModernRuntime";
 import { ensureM2Runtime } from "@/player/interpreter/m2RuntimeState";
@@ -229,9 +229,16 @@ function executeM2Command(
   if (entry.title === "Fadeout BGM") return pause("stopAudio", { kind: "stopAudio", channel: "bgm" });
 
   if (entry.title === "Play Memorized BGM" && executeM2RuntimeCommand(state.session, entry, command, m2Context)) {
-    const memorized = state.session.m2Runtime?.audio?.playedMemorizedBgm;
-    if (typeof memorized === "string" && memorized.length > 0) {
-      return pause("playAudio", { kind: "playAudio", resourceId: memorized, loop: true, channel: "bgm" });
+    const memorized = memorizedBgmPlayback(state.session.m2Runtime);
+    if (memorized) {
+      return pause("playAudio", {
+        kind: "playAudio",
+        resourceId: memorized.resourceId,
+        loop: true,
+        channel: "bgm",
+        ...(memorized.volume === undefined ? {} : { volume: memorized.volume }),
+        ...(memorized.fadeInMs === undefined ? {} : { fadeInMs: memorized.fadeInMs }),
+      });
     }
     return resumeNext(frame);
   }

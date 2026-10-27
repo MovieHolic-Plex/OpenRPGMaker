@@ -109,7 +109,7 @@ function executeByTitle(
     return;
   }
   if (title === "Memorize Current BGM") {
-    runtime.audio.memorizedBgm = currentBgm(session);
+    memorizeCurrentBgm(session, runtime);
     return;
   }
   if (title === "Play Memorized BGM") {
@@ -367,17 +367,56 @@ function recordSystemAudioChange(runtime: M2RuntimeState, title: string, fields:
   if (isSystemAudioSlot(slot)) runtime.system[systemAudioOverrideKey(slot)] = resourceId;
 }
 
-function currentBgm(session: PlaySessionLike): string {
-  return session.audio?.bgm?.resourceId ?? "";
+const MEMORIZED_BGM_FADE_LIMIT_MS = 60_000;
+
+function finiteInRange(value: unknown, min: number, max: number): number | undefined {
+  if (typeof value !== "number" || !Number.isFinite(value) || value < min || value > max) return undefined;
+  return value;
+}
+
+/** Volume and fade captured with the memorized resource. Omitted fields keep today's defaults. */
+export type MemorizedBgmPlayback = {
+  readonly resourceId: string;
+  readonly volume?: number;
+  readonly fadeInMs?: number;
+};
+
+export function memorizedBgmPlayback(runtime: M2RuntimeState | undefined): MemorizedBgmPlayback | undefined {
+  const resourceId = typeof runtime?.audio.memorizedBgm === "string" ? runtime.audio.memorizedBgm.trim() : "";
+  if (!resourceId) return undefined;
+  const volume = finiteInRange(runtime?.audio.memorizedBgmVolume, 0, 100);
+  const fadeInMs = finiteInRange(runtime?.audio.memorizedBgmFadeInMs, 0, MEMORIZED_BGM_FADE_LIMIT_MS);
+  return {
+    resourceId,
+    ...(volume === undefined ? {} : { volume }),
+    ...(fadeInMs === undefined ? {} : { fadeInMs }),
+  };
+}
+
+function memorizeCurrentBgm(session: PlaySessionLike, runtime: M2RuntimeState): void {
+  const track = session.audio?.bgm;
+  const resourceId = track?.resourceId ?? "";
+  runtime.audio.memorizedBgm = resourceId;
+  const playback = resourceId.trim() ? track : undefined;
+  const volume = finiteInRange(playback?.volume, 0, 100);
+  const fadeInMs = finiteInRange(playback?.fadeInMs, 0, MEMORIZED_BGM_FADE_LIMIT_MS);
+  if (volume === undefined) delete runtime.audio.memorizedBgmVolume;
+  else runtime.audio.memorizedBgmVolume = volume;
+  if (fadeInMs === undefined) delete runtime.audio.memorizedBgmFadeInMs;
+  else runtime.audio.memorizedBgmFadeInMs = fadeInMs;
 }
 
 function playMemorizedBgm(session: PlaySessionLike, runtime: M2RuntimeState): void {
-  const memorized = fieldString(runtime.audio, "memorizedBgm", "");
-  if (memorized) {
-    session.audio ??= {};
-    session.audio.bgm = { resourceId: memorized, loop: true };
-  }
-  runtime.audio.playedMemorizedBgm = memorized;
+  const playback = memorizedBgmPlayback(runtime);
+  runtime.audio.playedMemorizedBgm = playback?.resourceId ?? "";
+  if (!playback) return;
+  session.audio ??= {};
+  session.audio.bgm = {
+    resourceId: playback.resourceId,
+    loop: true,
+    ...(playback.volume === undefined ? {} : { volume: playback.volume }),
+    ...(playback.fadeInMs === undefined ? {} : { fadeInMs: playback.fadeInMs }),
+  };
 }
 
 function accessKey(title: string): keyof M2RuntimeState["access"] {
