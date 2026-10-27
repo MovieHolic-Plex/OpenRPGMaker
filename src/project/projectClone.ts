@@ -28,8 +28,8 @@ export function cloneProjectSharingReferenceDocuments(project: Project): Project
       continue;
     }
     shared.push([id, documents]);
-    const { referenceDocuments: _documents, ...rest } = tileset;
-    tilesets[id] = rest;
+    // 빈 배열로 자리만 비워 키 순서를 지킨다(빼고 나중에 붙이면 referenceDocuments 가 맨 끝으로 가서 undo 뒤 직렬화 바이트가 달라진다).
+    tilesets[id] = { ...tileset, referenceDocuments: [] };
   }
   const cloned = structuredClone({ ...project, tilesets });
   for (const [id, tileset] of lazy) cloned.tilesets[id] = tileset;
