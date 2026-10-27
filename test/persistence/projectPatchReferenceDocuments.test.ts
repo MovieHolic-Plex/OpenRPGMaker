@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { diffProjectDocuments, applyProjectDocumentPatch, withWirePatchValues } from "@/project/persistence/core/projectPatch";
 import { projectWireView, serialize } from "@/project/io/serialize";
 import { createBlankProject } from "@/project/defaults";
+import { restoreBundledTilesetDiffs } from "@/project/bundledTilesetDiff";
 import type { Project, TilesetReferenceCategory } from "@/project/types";
 
 /**
@@ -51,7 +52,10 @@ describe("저장 패치의 타일셋 참고문서 처리", () => {
     const patch = diffProjectDocuments(projectWireView(base), projectWireView(local));
     const changed = patch.tilesets?.set?.[tilesetId] as { referenceDocuments?: unknown } | undefined;
     expect(changed).toBeDefined();
-    expect(changed?.referenceDocuments).toEqual(documents("after"));
+    // #3774 부터 번들 타일셋은 저장 보기에서 「번들 + 차이」로 실린다 — 패치 칸을 되돌려 문서 전체가 실렸는지 본다.
+    const restored: { tilesets: Record<string, unknown> } = { tilesets: { [tilesetId]: structuredClone(changed) } };
+    restoreBundledTilesetDiffs(restored);
+    expect((restored.tilesets[tilesetId] as { referenceDocuments?: unknown }).referenceDocuments).toEqual(documents("after"));
   });
 
   it("문서를 지우면 삭제 방향도 패치에 실린다", () => {
