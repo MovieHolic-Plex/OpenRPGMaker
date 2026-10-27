@@ -39,6 +39,9 @@
 }
 
 .zone-feedback-objective {
+  /* 목표 줄은 늘 읽혀야 한다 — 고해상도 무대(--play-ui-scale, fieldHud.ts)에서도 같은 크기로 보이게 키우고, 밝은 테두리로 대비를 준다(J105). */
+  border-color: color-mix(in srgb, var(--runtime-window-text) 45%, transparent);
+  font-size: calc(var(--runtime-font-size-9) * var(--play-ui-scale, 1));
   right: var(--space-2);
   top: var(--space-2);
 }
