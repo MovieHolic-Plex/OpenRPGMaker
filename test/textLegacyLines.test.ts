@@ -92,7 +92,9 @@ describe("stored NPC dialogue aliases (Lily)", () => {
     });
     const loaded = deserialize(serialize(project));
     // ProjectStore runs this rewrite after loading the project and map overlays.
-    expect(rewriteLegacyAdvancedDialogueInProject(loaded)).toBe(true);
+    // 문자열 별칭({text:"…"})은 이제 로드 정규화(shape.ts canonicalizeProjectCommandFieldAliases → commandFieldAliases
+    // TEXT_BODY_ALIASES)가 먼저 body 로 옮기므로 이 재작성은 dialogue.lines 모양에서만 바꾼다. 결과는 아래 body 단언이 본다.
+    expect(rewriteLegacyAdvancedDialogueInProject(loaded)).toBe(!("text" in raw));
     const saved = deserialize(serialize(loaded));
     expect(rewriteLegacyAdvancedDialogueInProject(saved)).toBe(false);
     const commands = saved.maps[saved.startMapId]!.events.find(e => e.id === "lily")!.commands;
