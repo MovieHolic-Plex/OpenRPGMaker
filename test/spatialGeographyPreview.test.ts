@@ -57,12 +57,26 @@ describe("geographyPreviewMap typed failures", () => {
     expect(geographyRasterTile(preview.map, 20, 8)).toBe(geographyRasterTile(preview.map, 2, 2));
   });
 
+  it("returns a typed error for a terrain atlas the project no longer has", () => {
+    // #2906: 지운 타일셋을 가리키는 저장된 설계는 세계 탭 전체를 죽이지 않고 typed error 로 돌려준다(spatialGeographyRaster.typedPreviewError).
+    const project = geographyFixture("region");
+    const region = firstRegion(project);
+    const preview = geographyPreviewMap(project, {
+      ...region,
+      terrain: { ...region.terrain, tilesetId: "missing-atlas" },
+    });
+    expect(preview.map).toBeUndefined();
+    expect(preview.error).toBeDefined();
+    expect(project.maps["spatial-geography-ui:" + region.id]).toBeUndefined();
+  });
+
   it("does not swallow unknown construction failures", () => {
     const project = geographyFixture("region");
     const region = firstRegion(project);
+    // 빠진 타일셋은 #2906 부터 typed error 라서, 정말 알 수 없는 실패는 깨진 구역 값으로 만든다.
     expect(() => geographyPreviewMap(project, {
       ...region,
-      terrain: { ...region.terrain, tilesetId: "missing-atlas" },
+      terrain: { ...region.terrain, areas: [...region.terrain.areas, null as never] },
     })).toThrow();
     expect(project.maps["spatial-geography-ui:" + region.id]).toBeUndefined();
   });
