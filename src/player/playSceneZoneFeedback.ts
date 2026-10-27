@@ -27,6 +27,10 @@ const SUPPRESSING_TEST_IDS = [
   "ending-screen",
 ] as const;
 
+// 매 프레임 불린다. 예전에는 가림 id 마다 호스트와 문서를 한 번씩 훑었다(빈 필드에서 최대 20번).
+// 선택자 한 줄로 호스트를 한 번, 없으면 문서를 한 번만 본다.
+const SUPPRESSING_SELECTOR = SUPPRESSING_TEST_IDS.map((id) => `[data-testid='${id}']`).join(",");
+
 // ── 씬 로컬 농사 안내 채널 ──
 // session.m2Runtime.ui 를 쓰면 안 된다: updateZoneFeedback 은 surface+message 로
 // 세션 전체를 중복 제거하므로 "괭이가 필요합니다" 가 평생 한 번만 보이고,
@@ -199,7 +203,7 @@ function renderFeedback(
   setPromptLine(elements.prompt, view.prompt);
   const hasContent = Boolean(view.banner || view.toast || view.objective || view.prompt);
   if (view.suppressed || !hasContent) {
-    elements.root.remove();
+    if (elements.root.isConnected) elements.root.remove();
     return;
   }
   if (elements.root.parentElement !== host) host.append(elements.root);
@@ -222,8 +226,11 @@ function setPromptLine(element: HTMLElement, message: string | null): void {
 }
 
 function setLine(element: HTMLElement, message: string | null): void {
-  element.hidden = message === null;
-  element.textContent = message ?? "";
+  const hidden = message === null;
+  const text = message ?? "";
+  // 같은 글을 다시 대입하면 텍스트 노드가 바뀐다. 매 프레임 같은 안내를 다시 쓰지 않는다.
+  if (element.hidden !== hidden) element.hidden = hidden;
+  if (element.textContent !== text) element.textContent = text;
 }
 
 function dialogueHost(scene: Pick<ZoneFeedbackScene, "game">): HTMLElement | null {
@@ -233,10 +240,11 @@ function dialogueHost(scene: Pick<ZoneFeedbackScene, "game">): HTMLElement | nul
 
 export function feedbackSuppressedByOverlay(host: HTMLElement | null): boolean {
   if (!host) return true;
-  return SUPPRESSING_TEST_IDS.some((testId) =>
-    host.querySelector(`[data-testid='${testId}']`) !== null
-    || document.querySelector(`[data-testid='${testId}']`) !== null
-  );
+  // 호스트를 먼저 본다. 대사 호스트가 문서에서 떨어져 있어도 그 안의 창은 안내를 가린다.
+  if (host.querySelector(SUPPRESSING_SELECTOR)) return true;
+  // 상점·전투·타이틀은 대사 호스트 밖에 붙을 수 있다.
+  const doc = host.ownerDocument;
+  return Boolean(doc?.querySelector(SUPPRESSING_SELECTOR));
 }
 
 function cachedFacingPrompt(scene: ZoneFeedbackScene, feedback: PlaySceneZoneFeedback): string | null {

@@ -2,6 +2,7 @@ import type { M2UiCommandState } from "@/project/sessionRuntimeTypes"
 import type { EventPage } from "@/project/types";
 
 const BANNER_DURATION_MS = 1500;
+const NO_ZONE_EFFECTS: readonly ZoneFeedbackEffect[] = [];
 
 type TimedMessage = {
   readonly message: string;
@@ -72,8 +73,9 @@ export function updateZoneFeedback(model: ZoneFeedbackModel, input: ZoneFeedback
   }
 
   // 새 항목이 없는 프레임(거의 전부)에서는 누적 Set 을 복사하지 않는다.
-  const seen = input.entries.length > model.cursor ? new Set(model.seen) : model.seen as Set<string>;
-  const effects: ZoneFeedbackEffect[] = [];
+  // 새 항목이 있어도 이미 본 글이면 Set 을 복사하지 않는다 — 커서는 아래 모델에서만 전진한다.
+  let seen = model.seen as Set<string>;
+  let effects: ZoneFeedbackEffect[] | undefined;
   let banner = activeMessage(model.banner, input.nowMs);
   let toast = activeMessage(model.toast, input.nowMs);
   let objective = model.objective;
@@ -86,6 +88,7 @@ export function updateZoneFeedback(model: ZoneFeedbackModel, input: ZoneFeedback
     const surface = entry.surface.trim();
     const key = `${surface}\u0000${message}`;
     if (seen.has(key)) continue;
+    if (seen === model.seen) seen = new Set(model.seen);
     seen.add(key);
 
     switch (surface) {
@@ -97,15 +100,26 @@ export function updateZoneFeedback(model: ZoneFeedbackModel, input: ZoneFeedback
         break;
       case "checkpoint":
         toast = timedToast(message, entry.durationMs, input.nowMs);
-        effects.push({ kind: "checkpointChime" });
+        (effects ??= []).push({ kind: "checkpointChime" });
         break;
       case "toast":
         toast = timedToast(message, entry.durationMs, input.nowMs);
-        if (isCheckpointMessage(message)) effects.push({ kind: "checkpointChime" });
+        if (isCheckpointMessage(message)) (effects ??= []).push({ kind: "checkpointChime" });
         break;
       default:
         break;
     }
+  }
+
+  // 새 글도 만료도 없으면 모델 객체를 그대로 쓴다. 안내 문구·가림만 바뀐 프레임은 뷰만 만든다.
+  if (
+    !effects
+    && input.entries.length === model.cursor
+    && banner === model.banner
+    && toast === model.toast
+    && objective === model.objective
+  ) {
+    return resultFrom(model, input, NO_ZONE_EFFECTS);
   }
 
   const next: ZoneFeedbackModel = {
@@ -117,7 +131,7 @@ export function updateZoneFeedback(model: ZoneFeedbackModel, input: ZoneFeedback
     toast,
     objective,
   };
-  return resultFrom(next, input, effects);
+  return resultFrom(next, input, effects ?? NO_ZONE_EFFECTS);
 }
 
 export function interactionPromptLabel(page: EventPage | undefined): string | null {
