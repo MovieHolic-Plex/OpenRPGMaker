@@ -1,0 +1,21 @@
+{
+ "schema": "oprn-object-gate-queue/1",
+ "id": "astel-capital-canal-r3-20261027",
+ "title": "왕도 아스텔 운하 3판(텍스처)",
+ "note": "선착 계단·갑문 3판 결 보강",
+ "createdAt": "2026-10-27T10:44:56.585Z",
+ "items": [
+  {
+   "sha": "de2dac52005e881ae23e17280a56e8d837e1342865df7ab3c86cdcfcfc74f373",
+   "kind": "terrain",
+   "label": "beodeul_city/capital/capital_quay_steps",
+   "source": "/tmp/astel/gate4/capital_quay_steps.png"
+  },
+  {
+   "sha": "86c9cad025999ed90461de5dd8577e4fd48c6fd830dc8708bf52b2ca01528704",
+   "kind": "structure",
+   "label": "beodeul_city/capital/capital_canal_lock",
+   "source": "/tmp/astel/gate4/capital_canal_lock.png"
+  }
+ ]
+}

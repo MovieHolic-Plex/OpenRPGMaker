@@ -1,0 +1,421 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "86c9cad025999ed90461de5dd8577e4fd48c6fd830dc8708bf52b2ca01528704",
+ "width": 96,
+ "height": 48,
+ "kind": "structure",
+ "name": "canal lock across a four-tile-wide stone-edged canal, 3/4 top-down: upper water, a plank walkway with an iron railing on top of the lock gates (seen from above), the south face of two heavy timber lock gates with iron straps meeting in the middle, water spilling from two sluices into foam below; a wooden capstan on each bank",
+ "label": "beodeul_city/capital/capital_canal_lock",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 평면 채움 (4/4)",
+  "화풍: 명암 3단 < 4 (3/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "평면 채움 (4/4)",
+   "명암 3단 < 4 (3/4)"
+  ],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 5,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "5f62fef078ef7661"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 9,
+  "tileColorsP90": 15,
+  "darkV5": 57,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 18
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "plank walkway with railing on top of the lock gates",
+      "rows": "0-9",
+      "evidence": "a",
+      "front_edge_line_row": 10,
+      "eave_shadow_rows": "11-14"
+     },
+     {
+      "part": "timber lock gate south face with iron straps",
+      "rows": "10-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "water surface and foam below the sluices",
+      "rows": "15-47",
+      "evidence": "d",
+      "front_edge_line_row": 15,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "capstans on the banks",
+      "rows": "18-28",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 10,
+    "front_face_rows": 5,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is the lock gate. Rows 0-9 are a plank walkway seen from above, 10 rows of planks across the full 96 px width. Row 9 is a dark edge and row 10 a light edge line on the column scan at x=71. Rows 11-14 are dark shadow under the walkway, with the gate south face and its iron straps below (rows 10-14, about 5 rows, which is 3 or more). Rows 15-47 are open water, spilling foam and sluices seen from above. The capstans are small decor parts on the banks. The top and the front face are both drawn, with no isometric side face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate has about 9 visible tones per tile against 10-12 in the references, so the count is close. The structure is shallower, though. The plank walkway on top is a nearly flat brown band with only 2-3 steps and little per-plank grain, where the references shade roof tiles one by one with 5-6 steps. The lock gates and water are dark teal with sparse foam dots, and the stone edges are small grey blocks with few steps. 55% of the dark edge pixels are neutral, against 7-9% in the references, so the outlines lean toward near-black rather than a dark tone of the neighbouring material. Near-flat coverage is 11% against 0% in the references, which fits the flat dark gate and water areas. The two capstans are tiny and simple. Overall it reads thinner and flatter than the references and a little sticker-like, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 13282
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "plank walkway with railing across the lock gates, seen from above",
+      "rows": "0-9",
+      "evidence": "a",
+      "front_edge_line_row": 10,
+      "eave_shadow_rows": "11-12"
+     },
+     {
+      "part": "timber lock gate south face with iron straps",
+      "rows": "10-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "upper water and foam spilling from the sluices, lower canal water",
+      "rows": "15-47",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "wooden capstans on the banks",
+      "rows": "18-28",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 10,
+    "front_face_rows": 5,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The plank walkway fills rows 0-9 as a wide horizontal surface. Its planks are visible and it ends in a lighter front-edge line at row 10. Dark eave-shadow rows (11-14) and the timber gate face with iron straps sit below it, about 5 rows tall. Water and foam fill rows 15-47 below the gate. The walkway has real depth and a front edge line, so it is not a thin rim. The capstans on the banks are small but show a top and a body."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a small, simple structure: a plank walkway on top, stone banks, and water below. Its 9 visible tones per tile are close to the references' 10-12, and near-flat coverage is 11% against 0% for both references. The plank walkway has only about 3-4 steps and large, fairly uniform plank bands, with little per-plank grain compared with the references' scalloped tiles with per-tile highlights. The water has some foam dots and streaks, but the dark teal area at the bottom is broad and sparsely varied. The stone banks are small and have little shading stone by stone. The gates' timber faces and iron straps are thin and simple. 55% of dark edge pixels are near-neutral, against 7-9% for the references, so the dark outlines lean toward neutral black or grey rather than a dark tone of the neighbouring material, which is the sticker look. The piece reads as clean but shallower and flatter than the references, with fewer shading steps, flat fills present, and a dark outline that is not clearly material-tinted.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 18236
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "plank walkway on top of lock gates (with railing, seen from above)",
+      "rows": "0-9",
+      "evidence": "a",
+      "front_edge_line_row": 10,
+      "eave_shadow_rows": "11-14"
+     },
+     {
+      "part": "south face of timber lock gates with iron straps",
+      "rows": "10-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "canal water and foam below the sluices",
+      "rows": "15-47",
+      "evidence": "d",
+      "front_edge_line_row": 15,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "wooden capstans on each bank",
+      "rows": "18-29",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 10,
+    "front_face_rows": 5,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The walkway is a 10-row plank band (rows 0-9) seen from above. It ends in a dark outline at row 9 and a light front-edge line at row 10 (L=131). Below that, rows 10-14 are the south face of the timber gates, with iron straps and darker shadow in rows 11-14, so the front face is 5 rows. Water from row 15 down (light edge line at row 15, then the sluice spill and foam) is a visible horizontal surface. The capstans are small decor parts standing on the banks. No receding side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small canal lock. The plank walkway on top has only about 3 brown steps with sparse plank lines. The gate faces and the water below are broad dark teal areas with little grain, and the foam is a thin strip of dots. The stone bank edges are shaded in grey but look flat and blocky next to the references' stones, which are shaded one by one, and next to the tile scallops with per-tile highlights. The 55% near-neutral share of dark edge pixels, against 7-9% for the references, means the outline leans neutral near-black rather than the tinted dark material tones Beodeul uses. The 9 visible tones per tile are close to the references' 10-12, but 11% near-flat coverage against 0% in both references shows flat fills on the gates and water. The ramps are shallow at about 3 steps against 5-6, and the piece reads thinner and more sticker-like than the references, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 14411
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "plank walkway with railing on top of the lock gates",
+      "rows": "0-9",
+      "evidence": "a",
+      "front_edge_line_row": 10,
+      "eave_shadow_rows": "11-14"
+     },
+     {
+      "part": "south face of the timber lock gates with iron straps",
+      "rows": "10-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "sluice spill and foam",
+      "rows": "15-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower canal water",
+      "rows": "31-47",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "wooden capstans on both banks",
+      "rows": "18-28",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 10,
+    "front_face_rows": 5,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The walkway is a band of plank rows 0-9. It is viewed from above and ends in a lighter front-edge line at row 10. Below it, rows 11-14 give the darker gate face with iron straps, so the front face is 5 rows of timber (x=24: rows 11-14, x=71: rows 11-14). Rows 15-30 show the sluice spill and foam, and rows 31-47 show the lower canal water. The capstans on the banks show a lighter wooden top over a darker barrel body. The walkway top is 10 rows deep and the timber gate face is 5 rows, so the body reads as a top surface plus a front face (three-quarter view)."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate lock is a small, simple piece. The plank walkway and the gate faces are only 3-4 tones each, against about 6 steps on the reference roof tiles and walls. The reference roofs have per-tile scallops and highlights and the stone wall is shaded stone by stone. The candidate's planks are mostly flat bands with a dark top edge, and the stone bank edges are shaded only lightly. The water has some foam dots and streaks, which helps, but the dark teal lower pool is a large near-flat area. The measured facts back this up: 9 visible tones per tile against 10-12 for the references, and 11% near-flat coverage against 0%. Dark edge pixels are 55% neutral against 7-9% in the references, so the outline leans near-black in places, a sticker-like look instead of the dark-material tones the references use. The capstans are tiny and flat. Overall it is shallower and flatter than the references, and a careful artist would not accept it next to them.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 17826
+  }
+ ],
+ "decidedAt": "2026-10-27T10:45:40.128Z",
+ "cells": {
+  "16": [
+   "11909ff931e413cd",
+   "37baca91cccc2a19",
+   "55140c6e3ad57315",
+   "619c81bb95b4cdcb",
+   "6fee45854827bbeb",
+   "849a4e8273f1b4ae",
+   "85b20e29ac3c379a",
+   "a2c1c2316ebc536a",
+   "c4a2da2c0ac53ec8",
+   "c7f010138410716f",
+   "d1500b1d8baa8abf",
+   "ec8c9bb75de7bfc8",
+   "f9940d64806cc0a8"
+  ],
+  "24": [
+   "0d40f2823d05ee39",
+   "3fcecdcc7f6a05f7",
+   "6677b408e675b86c",
+   "85d26f2f46909101",
+   "944980be2df8d8cf",
+   "a02eae42db702f61",
+   "ad02ef2bc5dcddbc",
+   "cb4a84e609df96e0"
+  ],
+  "32": [
+   "0985b5de18a6df6e",
+   "382a7fed1ca938f0",
+   "67981a32425f0ebc",
+   "8585464d4cd60184",
+   "8903fe8ccf338432",
+   "aa92350946c5d7d3",
+   "c6bb6281df66e76d",
+   "cdc77bdc94a38626",
+   "dd14dd4a7ee61857",
+   "f7bf332823f4eb94",
+   "f8f925e76fcf7cd5",
+   "fa70fadd2405acd1"
+  ],
+  "48": [
+   "2f6b53e495cdd22c",
+   "e2c571608b405352"
+  ]
+ }
+}
