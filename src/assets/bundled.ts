@@ -142,7 +142,7 @@ export const BUNDLED_EASYRPG_CHIPSET_ASSETS = [
   // 버들항 자연 덧그림(2026-10-11) — 그림자·자연 물가·풀밭 가장자리 2층 덧그림. 재생성 scripts/content/build-beodeul-nature.py, 정의 project/defaults/beodeulNature.ts.
   {textureKey:"tex_beodeul_nature",path:"assets/beodeul-nature/chipset.png",name:"버들항 · 자연 덧그림(그림자·물가·풀밭 가장자리)"},
   {textureKey:'tex_beodeul_architecture',path:'assets/beodeul-architecture/chipset.png',name:'버들항 · 원본 보존 민가·성당'},
-  {textureKey:'tex_beodeul_forms',path:'assets/beodeul-forms/chipset.png',name:'버들항 · 건물 구조 여섯 계열'},
+  {textureKey:'tex_beodeul_forms',path:'assets/beodeul-forms/chipset.png',name:'버들항 · 긴 민가와 좁은 이층집'},
   {textureKey:'tex_beodeul_reviewed',path:'assets/beodeul-reviewed/chipset.png',name:'버들항 · 사람이 허용한 건물'},
   {textureKey:'tex_beodeul_massing',path:'assets/beodeul-massing/chipset.png',name:'버들항 · 중세 건물(덩어리 모형)'},
   // 버들항 자연 기물(2026-10-24) — 바위·덤불·통나무·버섯·들꽃·고사리·고목. 굽기 scripts/content/beodeul-organic/bake.py(object-gate 출구), 정의 project/defaults/beodeulOrganic.ts
