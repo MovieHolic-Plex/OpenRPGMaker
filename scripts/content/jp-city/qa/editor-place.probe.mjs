@@ -71,7 +71,7 @@ try {
   });
   await page.addInitScript(() => {
     for (const k of ["oprn:editor-welcome-dismissed", "oprn:standard-welcome-seen", "oprn:coachmarks-basic-v1"]) localStorage.setItem(k, "1");
-    localStorage.setItem("rpg-zzu:editor-ui-mode", "expert");
+    localStorage.setItem("oprn:editor-ui-mode", "expert");
   });
   await page.goto(`${base}/?blankProject=1&aiBridge=0`, { waitUntil: "domcontentloaded" });
   await page.waitForFunction(() => window.__oprnEditorStore);

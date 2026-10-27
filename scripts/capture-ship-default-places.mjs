@@ -7,7 +7,7 @@ const query=process.argv[4]??'blankProject=1';
 const browser=await (process.env.QA_BROWSER==='chromium'?chromium:firefox).launch();const page=await browser.newPage({viewport:{width:1440,height:1000}});page.setDefaultTimeout(120000);const errors=[];page.on('pageerror',e=>errors.push(e.message));
 try {
  await page.route('**/*',route=>{const r=route.request();return !['GET','HEAD','OPTIONS'].includes(r.method())&&/\/rest\/v1\/|\/rpc\//.test(r.url())?route.abort():route.continue();});
- await page.addInitScript(()=>{localStorage.setItem('oprn:editor-welcome-dismissed','1');localStorage.setItem('rpg-zzu:editor-ui-mode','expert');localStorage.setItem('oprn:standard-welcome-seen','1');localStorage.setItem('oprn:coachmarks-basic-v1','1');});
+ await page.addInitScript(()=>{localStorage.setItem('oprn:editor-welcome-dismissed','1');localStorage.setItem('oprn:editor-ui-mode','expert');localStorage.setItem('oprn:standard-welcome-seen','1');localStorage.setItem('oprn:coachmarks-basic-v1','1');});
  await page.goto(base+'/?'+query+'&aiBridge=0',{waitUntil:'domcontentloaded',timeout:120000});
  await page.getByTestId('toolbar-database').click({timeout:120000});
  const group=page.getByTestId('db-tab-group-world');if(await group.getAttribute('aria-expanded')==='false')await group.click();
