@@ -7,6 +7,8 @@ import { projectWikiHistorySources } from "@/editor/projectWikiCoordinator";
 vi.mock("@/project/store", () => ({ store: {
   getProjectIdentity: () => ({ kind: "remote", id: "P" }),
   getCurrent: () => ({ meta: { title: "P" }, startMapId: "A" }),
+  // 편집기 모듈(reliefActions)이 가져올 때 구독을 건다 — 가짜 저장소도 구독을 받아야 모듈이 실린다.
+  subscribe: () => () => undefined,
 } }));
 vi.mock("@/editor/mapEditHistory", () => ({ recordProjectSnapshot: vi.fn() }));
 vi.mock("@/ai/projectWikiClient", () => ({ extractProjectWiki: vi.fn() }));

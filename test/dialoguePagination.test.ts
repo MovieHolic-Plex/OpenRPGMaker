@@ -113,6 +113,42 @@ describe("dialogue pagination", () => {
     expect(plainLineTexts(pages[0]!)).toEqual(["abcd"]);
   });
 
+  it("keeps closing punctuation with the last character instead of a line of its own", () => {
+    const pages = paginateDialogueSegments([
+      { text: "가나다라.", colorIndex: 0 },
+    ], { maxWidth: 4, measure: measureChars });
+
+    expect(plainLineTexts(pages[0]!)).toEqual(["가나다", "라."]);
+  });
+
+  it("keeps a run of periods and an exclamation with the preceding character", () => {
+    const period = paginateDialogueSegments([
+      { text: "가나다...", colorIndex: 0 },
+    ], { maxWidth: 4, measure: measureChars });
+    const bang = paginateDialogueSegments([
+      { text: "가나다라!", colorIndex: 0 },
+    ], { maxWidth: 4, measure: measureChars });
+
+    expect(plainLineTexts(period[0]!)).toEqual(["가나", "다..."]);
+    expect(plainLineTexts(bang[0]!)).toEqual(["가나다", "라!"]);
+  });
+
+  it("does not end a wrapped line on an opening quote", () => {
+    const pages = paginateDialogueSegments([
+      { text: "가나「다라", colorIndex: 0 },
+    ], { maxWidth: 3, measure: measureChars });
+
+    expect(plainLineTexts(pages[0]!)).toEqual(["가나", "「다라"]);
+  });
+
+  it("still wraps spaced text at the space when the next word keeps its period", () => {
+    const pages = paginateDialogueSegments([
+      { text: "hello world.", colorIndex: 0 },
+    ], { maxWidth: 11, measure: measureChars });
+
+    expect(plainLineTexts(pages[0]!)).toEqual(["hello", "world."]);
+  });
+
   it("falls back to character measurement when the injected measure fails", () => {
     const pages = paginateDialogueSegments([
       { text: "abcdef", colorIndex: 0 },

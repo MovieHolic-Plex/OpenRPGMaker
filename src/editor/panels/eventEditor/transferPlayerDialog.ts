@@ -23,6 +23,11 @@ type TransferPickerRequest = {
   readonly hideFooter?: boolean;
   /** When true, live-apply draft changes (inline command editor). */
   readonly liveApply?: boolean;
+  /**
+   * The command currently staged by the form. Map clicks only edit destination,
+   * direction, and fade — door and transition live on this copy and must survive.
+   */
+  readonly latestCommand?: () => TransferCommand;
 };
 
 const DIRECTION_OPTIONS: readonly { value: TransferDirection; label: string }[] = [
@@ -114,24 +119,19 @@ export function renderTransferPicker(body: HTMLElement, request: TransferPickerR
   let lastApplied = request.command;
   const applyDraft = () => {
     if (!request.liveApply) return;
-    const current = lastApplied;
-    if (
-      current.mapId === draft.mapId &&
-      current.x === draft.x &&
-      current.y === draft.y &&
-      (current.direction ?? "retain") === draft.direction &&
-      (current.fade ?? "black") === draft.fade
-    ) {
-      return;
-    }
-    lastApplied = {
-      ...current,
+    // Door and transition are edited outside this picker. Read the staged command
+    // so a later map click does not put back the copy from when the form opened.
+    const base = request.latestCommand?.() ?? lastApplied;
+    const next: TransferCommand = {
+      ...base,
       mapId: draft.mapId,
       x: draft.x,
       y: draft.y,
       direction: draft.direction,
       fade: draft.fade,
     };
+    if (sameTransferApply(lastApplied, next)) return;
+    lastApplied = next;
     request.onApply(lastApplied);
   };
   const rerenderFooter = () => {
@@ -303,4 +303,14 @@ function zoomLabel(zoom: number): string {
 
 function clamp(value: number, min: number, max: number): number {
   return Math.max(min, Math.min(max, value));
+}
+
+function sameTransferApply(a: TransferCommand, b: TransferCommand): boolean {
+  return a.mapId === b.mapId
+    && a.x === b.x
+    && a.y === b.y
+    && (a.direction ?? "retain") === (b.direction ?? "retain")
+    && (a.fade ?? "black") === (b.fade ?? "black")
+    && a.door === b.door
+    && a.transition === b.transition;
 }

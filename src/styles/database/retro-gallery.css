@@ -59,7 +59,7 @@
 .db-retro-card:hover { border-color: var(--db-studio-accent); }
 .db-retro-card.active { border-color: var(--db-studio-accent); background: var(--db-studio-accent-soft); }
 .db-retro-card-name { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 12px; font-weight: 600; }
-.db-retro-card-key { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 10px; color: var(--db-studio-text-3); font-family: var(--db-studio-mono, ui-monospace, monospace); }
+.db-retro-card-key { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 10px; color: var(--db-studio-text-3); font-family: var(--font-mono); }
 .db-retro-card-sub { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 11px; color: var(--db-studio-text-3); }
 
 .db-retro-gallery-preview {

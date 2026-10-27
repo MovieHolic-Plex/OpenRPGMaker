@@ -1,25 +1,36 @@
 import { describe, expect, it } from "vitest";
-import { defaultTilesets } from "@/project/defaults/defaultAssets";
+import { defaultTilesets, retiredEasyRpgChipsetTileset } from "@/project/defaults/defaultAssets";
 import { ensureTilesetHarnesses } from "@/project/tilesetHarness";
 import { searchResources } from "@/assets/resourceSearch";
 import { animationFrameForTile } from "@/project/defaults/chipsetAnimation";
 import { CHIPSET_LABEL_CORRECTIONS, seedChipsetLabelCorrections } from "@/project/defaults/chipsetLabelCorrections";
 import { createBlankProject } from "@/project/defaults";
 import { deserialize, serialize } from "@/project/io";
+import type { TilesetDef } from "@/project/types";
+
+// 보정 대상 칸은 모두 EasyRPG 칩셋(합본 마을·던전·실내·레트로 집/바깥·월드) 것이다. 그 시트들은 2026-10-07 저작권 정리로
+// 새 프로젝트에서 빠졌지만 옛 저장본은 들고 있고, 로드 정규화가 여기에 보정을 심는다 — 그 옛 정의를 다시 만든다.
+function retiredTilesets(): Record<string, TilesetDef> {
+  const keys = [...new Set(CHIPSET_LABEL_CORRECTIONS.map(correction => correction.textureKey))];
+  return Object.fromEntries(keys.map(key => {
+    const tileset = retiredEasyRpgChipsetTileset(key, key);
+    return [tileset.id, tileset];
+  }));
+}
 
 describe("approved chipset corrections", () => {
   it("finds stained glass rather than gems after metadata seeding", () => {
-    const tilesets = defaultTilesets();
+    const tilesets = retiredTilesets();
     ensureTilesetHarnesses({ tilesets });
-    const tileset = tilesets.easyrpg_chipset_retro_house;
+    const tileset = tilesets.easyrpg_chipset_retro_house!;
     expect(searchResources("tile", "스테인드 글라스", { tileset }).map(result => result.id)).toContain("tile:84");
     expect(searchResources("tile", "보석", { tileset }).map(result => result.id)).not.toContain("tile:84");
   });
 
   it("keeps floor runtime contracts while correcting their semantic role", () => {
-    const tilesets = defaultTilesets();
+    const tilesets = retiredTilesets();
     ensureTilesetHarnesses({ tilesets });
-    const tileset = tilesets.easyrpg_chipset_dungeon;
+    const tileset = tilesets.easyrpg_chipset_dungeon!;
     for (const tile of [78, 79]) {
       expect(tileset.tileMeta?.[tile]?.role).toBe("floor");
       expect(tileset.priority[tile]).toBe("lower");
@@ -28,9 +39,9 @@ describe("approved chipset corrections", () => {
   });
 
   it("describes the mine lower row with fixed caps and a repeating center", () => {
-    const tilesets = defaultTilesets();
+    const tilesets = retiredTilesets();
     ensureTilesetHarnesses({ tilesets });
-    const tileset = tilesets.easyrpg_chipset_dungeon;
+    const tileset = tilesets.easyrpg_chipset_dungeon!;
     expect([255, 256, 257].map(tile => tileset.tileMeta?.[tile]?.repeatability)).toEqual(["fixed", "center", "fixed"]);
   });
 
@@ -41,8 +52,8 @@ describe("approved chipset corrections", () => {
   });
 
   it("preserves user metadata when the harness is reapplied", () => {
-    const tilesets = defaultTilesets();
-    const tileset = tilesets.easyrpg_chipset_retro_house;
+    const tilesets = retiredTilesets();
+    const tileset = tilesets.easyrpg_chipset_retro_house!;
     const custom = { label: "사용자 창문", description: "직접 작성", tags: ["사용자 태그"], source: "user" as const };
     if (!tileset.tileMeta) throw new Error("missing tile metadata");
     tileset.tileMeta[84] = custom;
@@ -52,6 +63,9 @@ describe("approved chipset corrections", () => {
 
   it("keeps all approved metadata through save and load without resurrecting old tags", () => {
     const project = createBlankProject();
+    const retired = retiredTilesets();
+    ensureTilesetHarnesses({ tilesets: retired });
+    Object.assign(project.tilesets, retired);
     const restored = deserialize(serialize(project));
     for (const correction of CHIPSET_LABEL_CORRECTIONS) {
       const tileset = Object.values(restored.tilesets).find(entry => entry.image.id === correction.textureKey);
@@ -64,7 +78,7 @@ describe("approved chipset corrections", () => {
   });
 
   it("is idempotent and does not modify layout or passability", () => {
-    const tilesets = defaultTilesets();
+    const tilesets = { ...defaultTilesets(), ...retiredTilesets() };
     ensureTilesetHarnesses({ tilesets });
     for (const tileset of Object.values(tilesets)) {
       const before = JSON.stringify(tileset);
@@ -75,8 +89,8 @@ describe("approved chipset corrections", () => {
 
   it("preserves origin-user, locked, and grafted artwork on corrected slots", () => {
     for (const protection of ["origin", "locked", "graft"] as const) {
-      const tilesets = defaultTilesets();
-      const tileset = tilesets.easyrpg_chipset_retro_house;
+      const tilesets = retiredTilesets();
+      const tileset = tilesets.easyrpg_chipset_retro_house!;
       const custom = { label: "직접 판독한 그림", description: "보존", source: "ai" as const,
         ...(protection === "origin" ? { origin: "user" as const } : {}),
         ...(protection === "locked" ? { locked: true } : {}) };

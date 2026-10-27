@@ -56,7 +56,8 @@ describe("syncPictureLayer — 실 이미지 렌더", () => {
     const overlay = new RuntimeDomOverlay(() => asHost(host));
 
     overlay.syncPictureLayer({
-      pic1: pic({ pictureId: "pic1", resourceId: "hero", x: 10, y: 20 }),
+      // 「hero」 생성 그림은 2026-10-07 저작권 정리로 빠져 더는 해석되지 않는다 — 번들 CC0 아이콘으로 해석 경로를 본다.
+      pic1: pic({ pictureId: "pic1", resourceId: "cc0-jetrel-clock", x: 10, y: 20 }),
       bg: pic({ pictureId: "bg", resourceId: "no-such-resource", x: 0, y: 0 }),
     });
 

@@ -58,9 +58,10 @@ describe("place_battle_blocker 통행 가능 착지", () => {
     expect(result.warnings?.some((warning) => warning.includes("위치 자동 조정"))).toBe(true);
   });
 
-  it("반경 3칸이 전부 벽이면 battle-blocker-impassable ToolError", () => {
+  it("반경 5칸이 전부 벽이면 battle-blocker-impassable ToolError", () => {
     const { project, map, mapId } = fixture();
-    wallBlock(map, 8, 7, 3);
+    // nearestPassableCell now searches a clean landing up to radius 5 before failing (#2894), so the blocked area must cover radius 5.
+    wallBlock(map, 8, 7, 5);
 
     let error: unknown;
     try {

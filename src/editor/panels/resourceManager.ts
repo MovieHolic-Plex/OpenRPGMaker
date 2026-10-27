@@ -58,6 +58,14 @@ export const RESOURCE_MANAGER_CATEGORIES = [
 
 const expressionViews = new WeakSet<HTMLElement>();
 
+/** 폴더를 놓았을 때 지금 분류가 받는 확장자. 파일 하나를 놓는 검사는 각 가져오기 경로가 따로 한다. */
+function folderImportExtensions(kind: ResourceKind): readonly string[] {
+  const rule = mediaImportRuleFor(kind);
+  if (rule?.kind === "movie") return ["webm", "mp4", "m4v", "ogv"];
+  if (rule !== null) return ["wav", "mp3", "ogg"];
+  return ["png", "jpg", "jpeg", "webp", "gif"];
+}
+
 type AudioActions = { readonly import: () => void; readonly delete: (asset: UploadedAsset) => void };
 const managerMounts = new WeakMap<HTMLElement, { kind: ResourceKind; profiles: readonly unknown[];
   uploads: object; audioActions?: AudioActions }>();
@@ -254,6 +262,7 @@ export function renderResourceManager(
     onImport,
     ...(recentAssetId === undefined ? {} : { recentAssetId }),
     onDropFile,
+    folderExtensions: folderImportExtensions(selectedResourceKind),
     onImportUrl,
     onBrowseCreatorPage: () => openAssetSourceBrowser({
       onImportFile: (request) => importImageResource(request.file, "chipset", container, request),

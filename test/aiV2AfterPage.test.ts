@@ -6,14 +6,15 @@ import { fallenTierTools } from "@/ai/v2/game";
 import type { Project } from "@/project/types";
 
 // 2026-10-25 장난감 가게 고치기 2턴: after 장면이 늘 0번(낮) 페이지 끝에 붙고 「장면 뒤」 페이지가 맨 끝에 놓여 밤 페이지를 가렸다.
+// Fixture pages use the runtime movement shape ({type,speed,frequency}); upsert_event now rejects unknown movement keys such as `kind`.
 function page(id: string, line: string, conditions: unknown[] = []) {
-  return { id, name: id, conditions, graphic: { kind: "none" }, trigger: { kind: "action" }, priority: "same", movement: { kind: "fixed" }, commands: [{ kind: "text", body: line }] };
+  return { id, name: id, conditions, graphic: { kind: "none" }, trigger: { kind: "action" }, priority: "same", movement: { type: "fixed", speed: 3, frequency: 3 }, commands: [{ kind: "text", body: line }] };
 }
 function setup() {
   const project = createBlankProject() as Project;
   const mapId = project.startMapId!;
   const map = project.maps[mapId]!;
-  (map.events as unknown[]).push({ id: "ev_clara", name: "클라라", x: 3, y: 3, trigger: { kind: "action" }, graphic: { kind: "none" }, priority: "same", movement: { kind: "fixed" }, commands: [], pages: [page("day", "낮 인사"), page("night", "밤 추억", [{ kind: "switch", switchId: "sw_0001", value: true }])] });
+  (map.events as unknown[]).push({ id: "ev_clara", name: "클라라", x: 3, y: 3, trigger: { kind: "action" }, graphic: { kind: "none" }, priority: "same", movement: { type: "fixed", speed: 3, frequency: 3 }, commands: [], pages: [page("day", "낮 인사"), page("night", "밤 추억", [{ kind: "switch", switchId: "sw_0001", value: true }])] });
   return { project, mapId, run: createBuildRun({ project, currentMapId: mapId }) };
 }
 const spec = (mapId: string, extra: Record<string, unknown> = {}) => ({ kind: "cutscene", mapId, after: "클라라", beats: [{ do: "say", who: "클라라", text: "그날 밤을 기억해?" }], ...extra }) as never;

@@ -1,5 +1,7 @@
 import { bindSeedHouseInteriorPlan } from "@/editor/interiorConceptPlan";
 import { createBlankProject } from "@/project/defaults";
+import { SCRATCH_HOUSE_BUNDLE, SCRATCH_LIBRARY_BUNDLE } from "@/project/defaults/conceptFacilityTemplates";
+import { withRetiredEasyRpgTilesets } from "./support/retiredEasyRpgTilesets";
 import { withEnvironment } from "@/editor/panels/spatialSpaceDraft";
 import { createEmptyRoomMap, applyInteriorRoomLayer } from "@/editor/interiorRoomPipeline";
 import { interiorActivityEntries } from "@/editor/interiorActivityEntries";
@@ -82,7 +84,10 @@ describe("activity zones share one interior shell", () => {
   });
   it("uses one small common table for meals and study in a tiny generated home", () => {
     const plan=buildHouseInteriorPlan({mapId:"home",name:"home",seed:7,scale:"cottage3",program:"study"});
-    const bound=bindSeedHouseInteriorPlan(plan,createBlankProject(),"study");
+    // 새 프로젝트에는 꾸러미 초안도 EasyRPG 실내 칩셋도 없다(초안 폐기 2026-09-18, 저작권 정리 2026-10-07) — 서재·민가 초안을 직접 심는다.
+    const project=withRetiredEasyRpgTilesets(createBlankProject());
+    project.tilesets.easyrpg_chipset_interior!.scratchConceptBundles=[structuredClone(SCRATCH_HOUSE_BUNDLE),structuredClone(SCRATCH_LIBRARY_BUNDLE)];
+    const bound=bindSeedHouseInteriorPlan(plan,project,"study");
     const tables=Object.values(bound.concept!.rooms).flatMap(r=>r.things).filter(t=>["home_table","table_chairs","dining_table","reading_table","study_desk"].includes(t.objectId));
     expect(tables).toHaveLength(1); expect(tables[0]!.objectId).toBe("home_table");
     expect(bound.width * bound.height).toBeLessThan(220);

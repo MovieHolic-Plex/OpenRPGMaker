@@ -18,6 +18,7 @@ import {
 import { isActorQueryConditionKind } from "@/project/conditionActorQueries";
 
 import { isRelationshipState, RELATIONSHIP_STATES, relationshipStateName } from "@/project/relationshipState";
+import { timerComparisonOp, timerOpFromChoice, timerRelationWord } from "./timerConditionText";
 export { databasePicker, switchPicker, switchVariablePicker, variablePicker } from "./switchVariablePicker";
 
 const CONDITION_MODE_OPTIONS = [
@@ -693,7 +694,7 @@ function conditionHint(kind: Condition["kind"]): string {
     case "gold":
       return "현재 소지금을 비교합니다.";
     case "timer":
-      return "타이머 남은 시간이 지정 초 이하인지 검사합니다.";
+      return "타이머 남은 시간을 비교합니다. 연산자를 적지 않으면 지정 초 이하입니다. 꺼진 타이머는 0초로 읽습니다.";
     case "timePhase":
       return "현재 시간대(아침/낮/저녁/밤)를 검사합니다.";
     case "season":
@@ -1010,17 +1011,20 @@ export function renderTimerCondition(
       value: String(cond.seconds % 60),
       dataset: { testid: options.secondsTestId ?? "event-condition-timer-seconds" },
     }) as HTMLInputElement;
+    const op = selectWithOptions(CONDITION_OP_OPTIONS, timerComparisonOp(cond), "event-condition-timer-op");
     const apply = () => {
       onChange({
         kind: "timer",
         timerId: timerId.value === "timer2" ? "timer2" : "timer1",
         seconds: (parseInt(minutes.value, 10) || 0) * 60 + (parseInt(seconds.value, 10) || 0),
+        ...timerOpFromChoice(selectedOptionValue(op, CONDITION_OP_OPTIONS, timerComparisonOp(cond))),
       });
     };
     timerId.addEventListener("change", apply);
     minutes.addEventListener("change", apply);
     seconds.addEventListener("change", apply);
-    row.append(timerId, minutes, el("span", { text: "분" }), seconds, el("span", { text: "초 이하" }));
+    op.addEventListener("change", apply);
+    row.append(timerId, minutes, el("span", { text: "분" }), seconds, el("span", { text: `초 ${timerRelationWord(cond.op)}` }), op);
     return row;
   }
   const seconds = el("input", {
@@ -1028,16 +1032,19 @@ export function renderTimerCondition(
     value: String(cond.seconds),
     dataset: { testid: options.secondsTestId ?? "event-condition-timer-seconds" },
   }) as HTMLInputElement;
+  const op = selectWithOptions(CONDITION_OP_OPTIONS, timerComparisonOp(cond), "event-condition-timer-op");
   const apply = () => {
     onChange({
       kind: "timer",
       timerId: timerId.value === "timer2" ? "timer2" : "timer1",
       seconds: parseInt(seconds.value, 10) || 0,
+      ...timerOpFromChoice(selectedOptionValue(op, CONDITION_OP_OPTIONS, timerComparisonOp(cond))),
     });
   };
   timerId.addEventListener("change", apply);
   seconds.addEventListener("change", apply);
-  row.append(timerId, seconds);
+  op.addEventListener("change", apply);
+  row.append(timerId, seconds, op);
   return row;
 }
 

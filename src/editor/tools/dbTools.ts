@@ -293,7 +293,7 @@ const utilityRecordSchema: JsonSchema = {
     battleBackgroundResourceId: { type: "string", description: BATTLE_BACKDROP_ID_HINT },
     footstepSoundResourceId: { type: "string" },
     characterDisplay: { type: "string", enum: ["normal", "transparent"] },
-    vehiclePassage: { type: "object", properties: { boat: { type: "boolean" }, ship: { type: "boolean" }, airshipLand: { type: "boolean" }, chocobo: { type: "boolean", description: "초코보가 걸을 수 없는 칸(숲 등)도 지난다" }, cart: { type: "boolean", description: "광산 수레가 다니는 칸(레일)" }, raft: { type: "boolean", description: "뗏목이 다니는 칸(강·얕은 물)" } }, additionalProperties: false },
+    vehiclePassage: { type: "object", properties: { boat: { type: "boolean" }, ship: { type: "boolean" }, airshipLand: { type: "boolean" }, chocobo: { type: "boolean", description: "초코보가 걸을 수 없는 칸(숲 등)도 지난다" }, cart: { type: "boolean", description: "광산 수레가 다니는 칸(레일)" }, raft: { type: "boolean", description: "뗏목이 다니는 칸(강·얕은 물). false 면 소형선만 다니는 물(호수 폴백)에서도 못 간다. 빼면 그 폴백" } }, additionalProperties: false },
     skillSubsetName: { type: "string" },
     skillId: { type: "string" },
     commonEventId: { type: "string", description: "battleCommands kind:commonEvent — 고르면 전투 중에 실행할 공통 이벤트 id(메시지·선택지·변수 조작을 그대로 쓴다)" },
@@ -346,7 +346,9 @@ const upsertDatabaseUtility: ToolDefinition = {
           airshipLand: (passage as Record<string, unknown>).airshipLand === true,
           ...((passage as Record<string, unknown>).chocobo === true ? { chocobo: true } : {}),
           ...((passage as Record<string, unknown>).cart === true ? { cart: true } : {}),
-          ...((passage as Record<string, unknown>).raft === true ? { raft: true } : {}),
+          ...((passage as Record<string, unknown>).raft === true || (passage as Record<string, unknown>).raft === false
+            ? { raft: (passage as Record<string, unknown>).raft === true }
+            : {}),
         },
       };
       draft.database.terrains ??= [];
@@ -617,6 +619,8 @@ const enemyRecordSchema = objectSchema({
   name: stringSchema(),
   speciesId: stringSchema(),
   monsterResourceId: stringSchema(),
+  // Enemy.transparent 를 런타임·ensureMonsterGraphic 이 지킨다 — 스키마만 막고 있었다.
+  transparent: booleanSchema("의도적으로 외형을 숨길 때만 true(그림 없이 저장). false 로 되돌리면 그림이 다시 필요하다."),
   battleScalePercent: integerSchema("전투 표시 크기(%). 10~300으로 제한, 기본 100."),
   lungeSpeedPercent: integerSchema("도트 측면 전투에서 아군에게 달려드는 속도(%). 25~300, 기본 100. 늑대·맹수처럼 날랜 적 120~160, 굼뜬 거인 70~90. 전역 기본 세기는 set_project_settings battle.staging.enemyLunge"),
   collapseEffect: {
@@ -684,6 +688,8 @@ const troopRecordSchema = objectSchema({
 
 const monsterSpeciesGraphicSchema = objectSchema({
   monsterResourceId: stringSchema(),
+  // MonsterSpeciesGraphic.transparent 도 ensureMonsterGraphic 이 지킨다(의도적 숨김).
+  transparent: booleanSchema("의도적으로 외형을 숨길 때만 true(그림 없이 저장)."),
   backResourceId: stringSchema("후면 전투용 몬스터 리소스. 생략하면 정면 그림을 사용합니다."),
   fieldCharsetId: stringSchema("동행 캐릭터셋 리소스. fieldGraphic이 있으면 그 설정을 우선합니다."),
   fieldGraphic: objectSchema({
@@ -2843,7 +2849,7 @@ const setTitleScreen: ToolDefinition = {
       backgroundFit: { type: "string", enum: TITLE_BACKGROUND_FITS, description: "배경 맞춤. 기본 cover(비율 유지해 채움). stretch 는 레거시." },
       backgroundRendering: { type: "string", enum: TITLE_BACKGROUND_RENDERINGS, description: "smooth(그린 키아트) | pixelated(도트 배경)" },
       logoStyle: { type: "string", enum: TITLE_LOGO_STYLES, description: "제목 글자 질감. 지정하면 기본 편집 문구(A NEW ADVENTURE)를 숨긴다." },
-      logoSubtitle: { type: "string", description: "로고 밑 작은 부제(예: OATH OF THE BLADE). 빈 문자열이면 해제." },
+      logoSubtitle: { type: "string", description: "제목 아래 부제. 적으면 기본 문구(A NEW ADVENTURE)를 대신해 제목 아래에 나온다. 로고 질감이 없어도 보인다. 빈 문자열이면 해제." },
       menuStyle: { type: "string", enum: TITLE_MENU_STYLES, description: "window(창) | plain(키아트 위 글자 메뉴)" },
       menuFontPx: { type: "integer", minimum: 10, maximum: 24, description: "타이틀 메뉴 글자 크기(논리 px 10~24). 생략·0 = 스킨 기본(11px). 넓은 화면(480 폭 이상)이나 큰 키아트 위 글자 메뉴는 14~18 이 읽기 좋다. CSS 를 고치지 말고 이 값으로." },
       sequence: {

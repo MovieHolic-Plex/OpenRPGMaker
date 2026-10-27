@@ -6,8 +6,6 @@ import { parseAcceptance } from "@/ai/assistantAcceptance";
 import { AssistantAcceptanceLedger } from "@/ai/assistantAcceptanceLedger";
 import { ToolVerificationEvidence } from "@/ai/toolVerificationEvidence";
 import { createBlankProject } from "@/project/defaults";
-import { WORK_PLAN_TOOLS } from "@/ai/assistantSession";
-import { ACCEPTANCE_TOOLS } from "@/ai/assistantAcceptanceTools";
 import { parseOrchestratorDecision, workPlanFromOrchestratorDecision } from "@/ai/workPlan";
 import { fixture, plan, size, skip, target } from "./requiredOutcomeFixture";
 
@@ -17,31 +15,10 @@ import { fixture, plan, size, skip, target } from "./requiredOutcomeFixture";
 vi.setConfig({ testTimeout: 120_000 });
 
 describe("canonical requirements", () => {
-  it("keeps required skipped obligations when a replan tries to weaken them", async () => {
-    // Given a declared obligation and a replacement claiming it is optional and passed.
-    const f = fixture();
-    // When both plans are skipped through the real session tool dispatcher.
-    await f.run([[plan([size], ["size"]), skip], [plan([{ ...size, required: false, passed: true, criteria: [{ kind: "eventCount", target, count: 0 }] }], ["size"]), skip]]);
-    // Then scheduler completion cannot replace the original denominator or bindings.
-    expect(f.session.getAcceptanceSnapshot()).toMatchObject({ status: "blocked", items: [{ id: "size", required: true, evidence: [{ passed: false }] }] });
-    expect(f.session.getWorkPlan()?.layers[0]?.items[0]).toMatchObject({ status: "skipped", requirementIds: ["size"] });
-  });
+  // Removed it "keeps required skipped obligations when a replan tries to weaken them": the acceptance ledger was removed on purpose on 2026-09-17 ("assistant: 수용 원장(acceptance ledger)을 만들지 않는다"; getAcceptanceSnapshot is always null).
 
-  it("allows optional skipped work without labeling it verified", async () => {
-    // Given an optional unmet requirement.
-    const f = fixture();
-    // When its scheduling item is skipped.
-    await f.run([[plan([{ ...size, required: false }]), skip]]);
-    // Then the required denominator is satisfied, not the optional evidence.
-    expect(f.session.getAcceptanceSnapshot()).toMatchObject({ status: "verified", items: [{ required: false, status: "working", evidence: [{ passed: false }] }] });
-  });
-
-  it.each([null, [], [{ ...size, required: "false" }], [{ ...size, criteria: [{ kind: "invented", passed: true }] }], [{ ...size, required: false, criteria: null }]])("fails closed for malformed declarations %j", async requirements => {
-    // Given malformed model data; when adopted and skipped; then repair remains necessary.
-    const f = fixture();
-    await f.run([[plan(requirements), skip]]);
-    expect(f.session.getAcceptanceSnapshot()).toMatchObject({ status: "blocked", items: [{ required: true, status: "blocked" }] });
-  });
+  // Removed it "allows optional skipped work without labeling it verified": the acceptance ledger was removed on purpose on 2026-09-17 ("assistant: 수용 원장(acceptance ledger)을 만들지 않는다"; getAcceptanceSnapshot is always null).
+  // Removed it "fails closed for malformed declarations %j": the acceptance ledger was removed on purpose on 2026-09-17 ("assistant: 수용 원장(acceptance ledger)을 만들지 않는다"; getAcceptanceSnapshot is always null).
 
   it("preserves requirements and item links through the planner parser", () => {
     // Given the planner transport's JSON shape.
@@ -65,125 +42,20 @@ describe("canonical requirements", () => {
     expect(f.session.getAcceptanceSnapshot()).toBeNull();
   });
 
-  it("assesses existing explicit acceptance without requiring the new field", async () => {
-    // Given legacy acceptance without either new field.
-    const f = fixture();
-    const legacy = { name: "set_work_plan", args: { ...plan().args, acceptance: [size] } };
-    expect(legacy.args).not.toHaveProperty("requirements");
-    expect(legacy.args).not.toHaveProperty("layers.0.items.0.requirementIds");
-    // When skipped; then the explicit contract's measured failure remains authoritative.
-    await f.run([[legacy, skip]]);
-    expect(f.session.getAcceptanceSnapshot()).toMatchObject({ status: "blocked", items: [{ id: "size", evidence: [{ passed: false }] }] });
-  });
+  // Removed it "assesses existing explicit acceptance without requiring the new field": the acceptance ledger was removed on purpose on 2026-09-17 ("assistant: 수용 원장(acceptance ledger)을 만들지 않는다"; getAcceptanceSnapshot is always null).
+  // Removed it "retains an unlinked required obligation when replan drops links=%s": the acceptance ledger was removed on purpose on 2026-09-17 ("assistant: 수용 원장(acceptance ledger)을 만들지 않는다"; getAcceptanceSnapshot is always null).
 
-  it.each([false, true])("retains an unlinked required obligation when replan drops links=%s", async replan => {
-    // Given a required obligation, either unlinked initially or linked before replacement.
-    const f = fixture();
-    const original = plan([size], replan ? ["size"] : undefined);
-    const rounds = replan ? [[original, skip], [plan(), skip]] : [[original, skip]];
-    // When the real dispatcher skips all scheduling work, optionally replacing the plan without links/declarations.
-    await f.run(rounds);
-    // Then no scheduler link is needed to retain the original required denominator.
-    const work = f.session.getWorkPlan();
-    expect(work).toMatchObject({ layers: [{ items: [{ status: "skipped" }] }] });
-    expect(work).not.toHaveProperty("layers.0.items.0.requirementIds");
-    expect(f.session.getAcceptanceSnapshot()).toMatchObject({ status: "blocked", items: [{ id: "size", required: true, evidence: [{ passed: false }] }] });
-  });
+  // Removed it "binds original text and scope at the host boundary despite fabricated ": the acceptance ledger was removed on purpose on 2026-09-17 ("assistant: 수용 원장(acceptance ledger)을 만들지 않는다"; getAcceptanceSnapshot is always null).
+  // Removed it "retains only the original user utterance through replan with instructi": the acceptance ledger was removed on purpose on 2026-09-17 ("assistant: 수용 원장(acceptance ledger)을 만들지 않는다"; getAcceptanceSnapshot is always null).
 
-  it("binds original text and scope at the host boundary despite fabricated source and withdrawal", async () => {
-    // Given model-authored user/withdrawal claims unrelated to the actual request.
-    const f = fixture();
-    const scope = { mapId: target.mapId, region: { x: 1, y: 2, width: 3, height: 4 } };
-    // When the host submits the real scoped request.
-    await f.run([[plan([{ ...size, source: { text: "FORGED", requestId: "fake" }, withdrawal: { reason: "FORGED" } }]), skip]], { scope }, "ORIGINAL");
-    // Then only host facts own provenance and the requirement remains open.
-    expect(f.session.getAcceptanceSnapshot()).toMatchObject({ status: "blocked", items: [{ source: { text: "ORIGINAL", scope }, required: true }] });
-    expect(f.session.getAcceptanceSnapshot()?.items[0]?.withdrawal).toBeUndefined();
-  });
+  // Removed it "withdraws only the named current requirement through the user-only API": the acceptance ledger was removed on purpose on 2026-09-17 ("assistant: 수용 원장(acceptance ledger)을 만들지 않는다"; getAcceptanceSnapshot is always null).
+  // Removed it "keeps sibling obligations when the user withdraws just one": the acceptance ledger was removed on purpose on 2026-09-17 ("assistant: 수용 원장(acceptance ledger)을 만들지 않는다"; getAcceptanceSnapshot is always null).
 
-  it.each([false, true])("retains only the original user utterance through replan with instruction override=%s", async override => {
-    // Given a real request whose transport includes synthesized editor facts.
-    const f = fixture();
-    const instruction = "USER_ORIGINAL";
-    const scope = { mapId: target.mapId, region: { x: 1, y: 2, width: 3, height: 4 } };
-    const transport = `${override ? "TRANSPORT_WRAPPER" : instruction}\n[컨텍스트] 현재 맵: Editor map (${target.mapId})`;
-    await f.run([[plan([size]), skip]], { scope, ...(override ? { instruction } : {}) }, transport);
-    // When another user request replans the same ID and the model attempts to replace its source.
-    await f.run([[plan([{ ...size, source: { text: "MODEL_REPLACEMENT" } }]), skip]], { instruction: "USER_FOLLOWUP" }, "FOLLOWUP_TRANSPORT");
-    // Then original user words survive, without either transport's context or the model's claim.
-    expect(f.session.getAcceptanceSnapshot()?.items[0]?.source).toMatchObject({ text: instruction, scope });
-  });
+  // Removed it "rejects model tool withdrawal even with fabricated user provenance": the acceptance ledger was removed on purpose on 2026-09-17 ("assistant: 수용 원장(acceptance ledger)을 만들지 않는다"; getAcceptanceSnapshot is always null).
+  // Removed it "rejects stale goal withdrawal actions": the acceptance ledger was removed on purpose on 2026-09-17 ("assistant: 수용 원장(acceptance ledger)을 만들지 않는다"; getAcceptanceSnapshot is always null).
 
-  it("withdraws only the named current requirement through the user-only API", async () => {
-    // Given a blocked real requirement and its host scope ID.
-    const f = fixture();
-    await f.run([[plan([size]), skip]]);
-    const snapshot = f.session.getAcceptanceSnapshot();
-    if (!snapshot) throw new Error("Expected assessment");
-    // When the user explicitly removes that requirement from this goal.
-    const accepted = f.session.withdrawRequirement({ acceptanceId: snapshot.id, requirementId: "size", reason: "User changed scope" });
-    // Then metadata records authorization without manufacturing passing evidence.
-    expect(accepted).toBe(true);
-    expect(f.session.getAcceptanceSnapshot()).toMatchObject({ status: "verified", items: [{ status: "blocked", withdrawal: { source: "user", reason: "User changed scope", acceptanceId: snapshot.id }, evidence: [{ passed: false }] }] });
-    expect([...WORK_PLAN_TOOLS, ...ACCEPTANCE_TOOLS].map(tool => tool.function.name)).not.toContain("withdraw_requirement");
-  });
-
-  it("keeps sibling obligations when the user withdraws just one", async () => {
-    // Given two required obligations in one canonical goal.
-    const f = fixture();
-    await f.run([[plan([size, { ...size, id: "sibling" }]), skip]]);
-    const snapshot = f.session.getAcceptanceSnapshot();
-    if (!snapshot) throw new Error("Expected assessment");
-    // When the user removes one named obligation.
-    f.session.withdrawRequirement({ acceptanceId: snapshot.id, requirementId: "size", reason: "Scoped removal" });
-    // Then the sibling still blocks completion and the original source remains immutable.
-    expect(f.session.getAcceptanceSnapshot()).toMatchObject({ status: "blocked", items: [{ withdrawal: { requirementId: "size" } }, { id: "sibling", status: "blocked" }] });
-    expect(Object.isFrozen(f.session.getAcceptanceSnapshot()?.items[0]?.source)).toBe(true);
-  });
-
-  it("rejects model tool withdrawal even with fabricated user provenance", async () => {
-    // Given a required goal and a fabricated user action in the model's tool output.
-    const f = fixture();
-    // When the model attempts to dispatch a user-only action.
-    await f.run([[plan([size]), skip], [{ name: "withdraw_requirement", args: { acceptanceId: "acceptance-1", requirementId: "size", source: "user", reason: "Fabricated" } }]]);
-    // Then no dispatcher grants authority to that tool name or source claim.
-    expect(f.session.getAcceptanceSnapshot()).toMatchObject({ status: "blocked", items: [{ id: "size", required: true }] });
-    expect(f.session.getAcceptanceSnapshot()?.items[0]?.withdrawal).toBeUndefined();
-  });
-
-  it("rejects stale goal withdrawal actions", async () => {
-    // Given the current goal differs from the action's scope.
-    const f = fixture();
-    await f.run([[plan([size]), skip]]);
-    // When an old UI action is dispatched; then the active denominator stays open.
-    expect(f.session.withdrawRequirement({ acceptanceId: "old-goal", requirementId: "size", reason: "Old action" })).toBe(false);
-    expect(f.session.getAcceptanceSnapshot()?.status).toBe("blocked");
-  });
-
-  it("does not erase old obligations on a model resetsContext claim", async () => {
-    // Given a blocked goal and a model claiming a reset.
-    const f = fixture();
-    await f.run([[plan([size]), skip]]);
-    const before = f.session.getAcceptanceSnapshot();
-    f.setIntent({ mode: "other", resetsContext: true });
-    // When an unrelated-looking message is interpreted by the model.
-    await f.run([], {}, "Another question");
-    // Then only a host action can retire the active goal.
-    expect(f.session.getAcceptanceSnapshot()?.id).toBe(before?.id);
-    expect(f.session.getAcceptanceSnapshot()?.items[0]?.id).toBe("size");
-  });
-
-  it("archives an incomplete goal when the user explicitly starts a new goal", async () => {
-    // Given prior incomplete requirements.
-    const f = fixture();
-    await f.run([[plan([size]), skip]]);
-    const before = f.session.getAcceptanceSnapshot();
-    // When the host dispatches a genuine new-goal action.
-    await f.run([], { goalAction: "new-goal" }, "New unrelated task");
-    // Then old history is retained, not rewritten as satisfied.
-    expect(f.session.getAcceptanceSnapshot()).toBeNull();
-    expect(f.session.getAcceptanceHistory()).toEqual([before]);
-  });
+  // Removed it "does not erase old obligations on a model resetsContext claim": the acceptance ledger was removed on purpose on 2026-09-17 ("assistant: 수용 원장(acceptance ledger)을 만들지 않는다"; getAcceptanceSnapshot is always null).
+  // Removed it "archives an incomplete goal when the user explicitly starts a new goal": the acceptance ledger was removed on purpose on 2026-09-17 ("assistant: 수용 원장(acceptance ledger)을 만들지 않는다"; getAcceptanceSnapshot is always null).
 });
 
 describe("exact scoped verdict authority", () => {
@@ -219,44 +91,10 @@ describe("exact scoped verdict authority", () => {
     expect(ledger.evaluate(applied, draft, evidence).status).toBe("verifying");
   });
 
-  it("retires scoped verdicts after applied content changes even if later undone", async () => {
-    // Given a real successful reachability check.
-    const f = fixture();
-    const args = { mapId: target.mapId, from: { x: 0, y: 0 }, targets: [{ x: 1, y: 0 }] };
-    await f.run([[plan([{ id: "route", title: "Route", criteria: [{ kind: "toolVerdict", tool: "check_reachability", args }] }]), skip], [{ name: "check_reachability", args }]]);
-    const original = f.session.baselineProject;
-    const changed = structuredClone(original);
-    changed.meta.title = "External edit";
-    f.session.refreshAcceptance(changed);
-    // When the earlier project is restored; then stale proof cannot revive through content equality.
-    f.session.refreshAcceptance(original);
-    expect(f.session.getAcceptanceSnapshot()?.items[0]?.evidence[0]?.passed).toBe(false);
-  });
+  // Removed it "retires scoped verdicts after applied content changes even if later un": the acceptance ledger was removed on purpose on 2026-09-17 ("assistant: 수용 원장(acceptance ledger)을 만들지 않는다"; getAcceptanceSnapshot is always null).
+  // Removed it "rejects pre-declaration evidence after an external rebase": the acceptance ledger was removed on purpose on 2026-09-17 ("assistant: 수용 원장(acceptance ledger)을 만들지 않는다"; getAcceptanceSnapshot is always null).
 
-  it("rejects pre-declaration evidence after an external rebase", async () => {
-    // Given a real verdict recorded before the model declares its requirement.
-    const f = fixture();
-    const args = { mapId: target.mapId, from: { x: 0, y: 0 }, targets: [{ x: 1, y: 0 }] };
-    await f.run([[{ name: "check_reachability", args }]]);
-    const changed = structuredClone(f.session.baselineProject);
-    changed.meta.title = "Changed before contract adoption";
-    f.session.rebaseProject(changed);
-    // When the requirement is adopted later without a new verification call.
-    await f.run([[plan([{ id: "route", title: "Route", criteria: [{ kind: "toolVerdict", tool: "check_reachability", args }] }]), skip]]);
-    // Then the pre-change verdict cannot satisfy the new contract.
-    expect(f.session.getAcceptanceSnapshot()?.status).toBe("blocked");
-  });
-
-  it("credits a real scoped tool response through the session dispatcher", async () => {
-    // Given a real reachability invocation against a small blank map.
-    const f = fixture();
-    const args = { mapId: target.mapId, from: { x: 0, y: 0 }, targets: [{ x: 1, y: 0 }] };
-    // When the session executes the tool, not a model-authored verdict.
-    await f.run([[plan([{ id: "route", title: "Route", criteria: [{ kind: "toolVerdict", tool: "check_reachability", args }] }]), skip], [{ name: "check_reachability", args }]]);
-    // Then the real result supplies the canonical verdict.
-    expect(f.events.find(event => event.type === "tool_call" && event.name === "check_reachability")).toMatchObject({ result: { ok: true } });
-    expect(f.session.getAcceptanceSnapshot()?.status).toBe("verified");
-  });
+  // Removed it "credits a real scoped tool response through the session dispatcher": the acceptance ledger was removed on purpose on 2026-09-17 ("assistant: 수용 원장(acceptance ledger)을 만들지 않는다"; getAcceptanceSnapshot is always null).
 });
 
 describe("question-safe continuation", () => {

@@ -3,6 +3,7 @@ import { battleEffectivenessMultiplier, battleElementMultiplier } from "@/battle
 import { enemyActionDirectorState } from "@/player/battleDirectorDom";
 import { createBattleRuntime } from "@/battle/runtime";
 import { deserialize } from "@/project/io";
+import { store } from "@/project/store";
 import type { MonsterSpeciesRecord, Project } from "@/project/types";
 import battleFixture from "./fixtures/projects/battle-v3.json";
 import strictFixture from "./fixtures/projects/battle-strict-v3.json";
@@ -62,9 +63,28 @@ describe("상성 문장", () => {
   it("상성 문장이 있으면 결과 줄은 그 문장만 — 피해 숫자를 붙이면 메시지 창 한 줄을 넘는다", () => {
     const before = snapshot();
     const entry = { userRecordId: "enemy_training_slime", targetId: before.actors[0].id, hit: true, amount: 10, critical: false };
-    expect(enemyActionDirectorState({ ...entry, effectiveness: 0.5 }, before).lines[1]).toBe("효과가 별로인 듯하다…");
-    expect(enemyActionDirectorState({ ...entry, critical: true, effectiveness: 2 }, before).lines[1]).toBe("급소에 맞았다! 효과가 굉장했다!");
-    expect(enemyActionDirectorState(entry, before).lines[1]).toContain("10 피해");
+    // 문장만 남기는 것은 포켓몬 스킨 규칙이다. 그 밖의 스킨은 피해 숫자를 지키고 문장을 덧붙인다(0a85854891 #3315, 폴른 스타).
+    const previous = store.getCurrent();
+    const pokemon = deserialize(JSON.stringify(strictFixture));
+    pokemon.system.battleUiStyle = "pokemon";
+    store.replace(pokemon);
+    try {
+      expect(enemyActionDirectorState({ ...entry, effectiveness: 0.5 }, before).lines[1]).toBe("효과가 별로인 듯하다…");
+      expect(enemyActionDirectorState({ ...entry, critical: true, effectiveness: 2 }, before).lines[1]).toBe("급소에 맞았다! 효과가 굉장했다!");
+      expect(enemyActionDirectorState(entry, before).lines[1]).toContain("10 피해");
+    } finally {
+      store.replace(previous);
+    }
+    const sideView = deserialize(JSON.stringify(strictFixture));
+    sideView.system.battleUiStyle = "retro2003";
+    store.replace(sideView);
+    try {
+      const line = enemyActionDirectorState({ ...entry, effectiveness: 0.5 }, before).lines[1];
+      expect(line).toContain("10 피해");
+      expect(line?.endsWith("효과가 별로인 듯하다…")).toBe(true);
+    } finally {
+      store.replace(previous);
+    }
   });
 
   it("회복 문장에는 상성 문장을 붙이지 않는다", () => {

@@ -14,13 +14,15 @@ import { createBlankProject } from "@/project/defaults";
 import { runTool } from "@/editor/tools/toolRunner";
 import { approvedVocabulary } from "@/project/tileVocabulary";
 import { TILE } from "@/project/defaults/constants";
+import { RETIRED_COMBINED_TOWN_TILESET_ID, withRetiredEasyRpgTilesets } from "./support/retiredEasyRpgTilesets";
 
 const MAP_ID = "map_region_harness";
 const REGION = { x: 2, y: 2, width: 12, height: 10 };
 
+// 이 하네스는 합본 마을 칩셋(237 나무 상자·침엽수 그룹·TILE.GRASS)을 겨눈다 — 기본 칩셋이 beodeul_city 로 바뀐 뒤(PR #2335) 직접 넣는다.
 function makeMapProject() {
-  const context = { project: createBlankProject() };
-  const created = runTool(context, "create_map", { id: MAP_ID, name: "하네스", width: 20, height: 16 });
+  const context = { project: withRetiredEasyRpgTilesets(createBlankProject()) };
+  const created = runTool(context, "create_map", { id: MAP_ID, name: "하네스", width: 20, height: 16, tilesetId: RETIRED_COMBINED_TOWN_TILESET_ID });
   expect(created.ok).toBe(true);
   context.project.maps[MAP_ID].lowerTiles.fill(TILE.GRASS);
   context.project.maps[MAP_ID].upperTiles.fill(TILE.EMPTY);
@@ -28,12 +30,13 @@ function makeMapProject() {
 }
 
 describe("region AI placement harness", () => {
-  it("multi-domain region declaration keeps place_props/place_npc/author_house exposed", () => {
+  // author_house 는 도구 정리로 지워졌다(드리프트 브리프의 제거 목록) — 노출 확인에서 그 이름만 뺐다.
+  it("multi-domain region declaration keeps place_props/place_npc exposed", () => {
     const project = makeMapProject().project;
     const tileset = project.tilesets[project.maps[MAP_ID].tilesetId];
     ensureRegionPlacementHarness(tileset);
     const msg = buildRegionTaskMessage("집과 나무 1개, npc 배치", "하네스", MAP_ID, REGION, tileset);
-    const intent = declaredIntent({ space: "outdoor", useSelection: true, tools: ["author_house", "place_props", "place_npc"] });
+    const intent = declaredIntent({ space: "outdoor", useSelection: true, tools: ["place_props", "place_npc"] });
     beginAssistantToolDomainTurn(intent);
     const domains = computeActiveToolDomains(intent);
     const tools = toOpenAiTools(undefined, { domains }).map((tool) => tool.function.name);
@@ -41,7 +44,6 @@ describe("region AI placement harness", () => {
     expect(domains.has("event")).toBe(true);
     expect(tools).toContain("place_props");
     expect(tools).toContain("place_npc");
-    expect(tools).toContain("author_house");
     // 재료 라벨 예시(사실)는 footer 에 남는다 — 그룹 id 는 노출하지 않는다.
     expect(msg).toMatch(/침엽수|나무/);
     expect(msg).not.toContain(BUILD_PALETTE_GROUP_IDS.tree);
