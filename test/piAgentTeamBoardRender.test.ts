@@ -135,7 +135,8 @@ describe("팀 패널 「지금」 렌더", () => {
     const rows = [...panel.root.querySelectorAll("[data-testid='ai-team-live-row']")];
     const gardener = rows.find((row) => (row.textContent ?? "").includes("정원사"))!;
     expect(gardener).toBeDefined();
-    expect(gardener.textContent ?? "").toContain("시공");
+    // 배지 문구는 aiTeamPanel KIND_LABEL 의 「만들기」(예전 「시공」).
+    expect(gardener.textContent ?? "").toContain("만들기");
     panel.dispose();
   });
 });

@@ -6,7 +6,9 @@ import { configForRole, modelForRole, parseRoleModels } from "@/ai/modelRoles";
 
 describe("independent specialist selections", () => {
   it("migrates old writer/executor selections without changing explicit model ids", () => {
-    const config = { ...defaultAiConfig(), model: "custom-writer", liteModel: "custom-deep" };
+    // An old save has no per-role slots; since #2535 the factory default seeds every role slot with gemini-4-argon.
+    const { roleModels: _factoryRoleSlots, ...factory } = defaultAiConfig();
+    const config = { ...factory, model: "custom-writer", liteModel: "custom-deep" };
     expect(modelForRole(config, "writer").model).toBe("custom-writer");
     expect(modelForRole(config, "deep").model).toBe("custom-deep");
     expect(modelForRole(config, "vision").model).toBe("custom-writer");
