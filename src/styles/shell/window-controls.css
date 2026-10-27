@@ -6,8 +6,11 @@
    responsive)에 흩어져 있다. 그래서 여백·드래그 규칙은 레이어 밖(unlayered)에 두어 어느 쪽에서도 이긴다.
    !important 는 쓰지 않는다. 색은 토큰이며, 닫기 호버 빨강만 OS 관례라 이 파일의 지역 변수다. */
 
+/* 창 단추 띠의 높이. 테스트 플레이 전체 화면 제목 막대도 이 높이를 쓴다. */
+body.has-window-buttons { --window-caption-height: 48px; }
+
 .studio-window-controls {
-  --swc-height: 48px;
+  --swc-height: var(--window-caption-height, 48px);
   --swc-button-width: 46px;
   --swc-fg: var(--text-1, #1b1f2a);
   --swc-hover: color-mix(in srgb, var(--swc-fg) 10%, transparent);
@@ -130,4 +133,17 @@ body.has-window-buttons .ci-controls { margin-top: 36px; }
   body.has-window-chrome .test-play-titlebar,
   body.has-window-chrome .ai-assistant-wide-head,
   body.has-window-chrome .event-editor-modal-header { padding-right: calc(var(--window-inset-right, 0px) - 6px); }
+}
+
+/* 테스트 플레이 「전체 화면」은 앱 창을 꽉 채우고 제목 막대는 30px 다. 창 단추는 48px 라
+   그 아래쪽이 게임 위에 겹친다. 겹친 칸을 누르면 게임이 아니라 최소화·최대화·닫기가 눌린다.
+   제목 막대를 단추 높이로 키워 게임은 단추 아래에서 시작한다. 오른쪽 여백(위)은 그대로다. */
+body.has-window-buttons .test-play-window[data-window-mode="fullscreen"] .test-play-titlebar {
+  box-sizing: border-box;
+  flex-basis: var(--window-caption-height);
+  height: var(--window-caption-height);
+  min-height: var(--window-caption-height);
+}
+body.has-window-buttons .test-play-window[data-window-mode="fullscreen"] .test-play-modal-body {
+  height: calc(100% - var(--window-caption-height));
 }
