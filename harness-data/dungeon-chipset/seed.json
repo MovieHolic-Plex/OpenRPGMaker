@@ -3567,16 +3567,25 @@
   },
   {
    "id": "tc.cave_stalactite",
-   "title": "종유석(벽 앞면 걸이) 1×1·2×1",
+   "title": "종유석(벽 앞면 걸이) 1×2·2×2",
    "kind": "objects",
    "size": [
     3,
-    1
+    2
    ],
    "layer": "upper",
    "walk": "막힘(벽 앞면 위 덧칠 — 2칸 조각은 칸마다 x)",
    "walk_grid": {
+    "1칸": [
+     "x",
+     "x"
+    ],
+    "2칸": [
+     "xx",
+     "xx"
+    ],
     "기본": [
+     "x",
      "x"
     ]
    },
@@ -3584,7 +3593,7 @@
     1,
     1
    ],
-   "brief": "자연 동굴 벽 앞면 윗단(바위 턱 바로 밑)에 매달린 흙빛 종유석. 그림 = [1칸|2칸]. 투명 바탕 — 줄 A 흙굴 바위 앞면에 얹힌다.",
+   "brief": "자연 동굴 벽 앞면 두 줄(바위 턱 바로 밑부터 바닥 바로 위까지)에 매달린 흙빛 종유석. 그림 = [1칸|2칸], 높이 2칸. 투명 바탕 — 줄 A 흙굴 바위 앞면에 얹힌다.",
    "refs": [
     "sea-cave:wall"
    ],
@@ -4542,6 +4551,87 @@
     "tc.cave_stalactite"
    ],
    "lead": "r2·r3 화풍 반려 근본 원인(투명 칸 가는 가시) → 칸 폭 바위 처마 띠 + 굵은 원뿔, 명암 6단."
+  },
+  "theme-cave-stal-r5": {
+   "module": "src/harnesses/dungeon-chipset/rounds/theme_cave_stal_r5.py",
+   "wave": "theme_climate",
+   "title": "자연 동굴 종유석 theme-cave-stal-r5",
+   "items": [
+    "tc.cave_stalactite"
+   ],
+   "lead": "r4 지도 속 검수 FAIL(1px 빗살·크림색) → 원뿔 수 줄이고 굵게, 벽 앞면 단 명암, 끝 어둡게."
+  },
+  "theme-cave-stal-r6": {
+   "module": "src/harnesses/dungeon-chipset/rounds/theme_cave_stal_r6.py",
+   "wave": "theme_climate",
+   "title": "자연 동굴 종유석 theme-cave-stal-r6",
+   "items": [
+    "tc.cave_stalactite"
+   ],
+   "lead": "r5 지도 검수 FAIL(밝은 처마 띠·짧은 원뿔) → 처마 2줄 벽 단, 원뿔 11~15px."
+  },
+  "theme-cave-stal-r7": {
+   "module": "src/harnesses/dungeon-chipset/rounds/theme_cave_stal_r7.py",
+   "wave": "theme_climate",
+   "title": "자연 동굴 종유석 theme-cave-stal-r7",
+   "items": [
+    "tc.cave_stalactite"
+   ],
+   "lead": "r6 지도 검수 FAIL(1배에서 1~2px 가시) → 칸 폭 큰 원뿔, 칸 끝까지, 빛·그늘 두 줄."
+  },
+  "theme-cave-stal-r8": {
+   "module": "src/harnesses/dungeon-chipset/rounds/theme_cave_stal_r8.py",
+   "wave": "theme_climate",
+   "title": "자연 동굴 종유석 theme-cave-stal-r8",
+   "items": [
+    "tc.cave_stalactite"
+   ],
+   "lead": "r7 지도 검수 FAIL(C 밝은 색) → 벽 단 몸, 처마 밑 그늘 띠, 드리운 그림자."
+  },
+  "theme-cave-stal-r9": {
+   "module": "src/harnesses/dungeon-chipset/rounds/theme_cave_stal_r9.py",
+   "wave": "theme_climate",
+   "title": "자연 동굴 종유석 theme-cave-stal-r9",
+   "items": [
+    "tc.cave_stalactite"
+   ],
+   "lead": "r8 지도 검수 FAIL(대칭 삼각 도장·뿌리 빛 없음) → 비대칭 마디 실루엣, 뿌리 빛."
+  },
+  "theme-cave-stal-r10": {
+   "module": "src/harnesses/dungeon-chipset/rounds/theme_cave_stal_r10.py",
+   "wave": "theme_climate",
+   "title": "자연 동굴 종유석 theme-cave-stal-r10",
+   "items": [
+    "tc.cave_stalactite"
+   ],
+   "lead": "r8 지도 검수 FAIL(대칭 삼각 도장) → 마디 진 원뿔·휜 끝·뿌리 빛, 매끈한 가장자리(r9 폐기)."
+  },
+  "theme-cave-stal-r11": {
+   "module": "src/harnesses/dungeon-chipset/rounds/theme_cave_stal_r11.py",
+   "wave": "theme_climate",
+   "title": "자연 동굴 종유석 theme-cave-stal-r11",
+   "items": [
+    "tc.cave_stalactite"
+   ],
+   "lead": "r4~r8 C 반복 실패 근본 원인(한 칸 높이 한계) → 두 칸 높이(벽 앞면 두 줄) 긴 원뿔."
+  },
+  "theme-cave-stal-r12": {
+   "module": "src/harnesses/dungeon-chipset/rounds/theme_cave_stal_r12.py",
+   "wave": "theme_climate",
+   "title": "자연 동굴 종유석 theme-cave-stal-r12",
+   "items": [
+    "tc.cave_stalactite"
+   ],
+   "lead": "r11(지도 검수 PASS) + object-gate 화풍 반려(톤 부족·근흑 윤곽) → 결·갈색 윤곽."
+  },
+  "theme-cave-stal-r13": {
+   "module": "src/harnesses/dungeon-chipset/rounds/theme_cave_stal_r13.py",
+   "wave": "theme_climate",
+   "title": "자연 동굴 종유석 theme-cave-stal-r13",
+   "items": [
+    "tc.cave_stalactite"
+   ],
+   "lead": "r12 지도 검수 FAIL(밝음·이끼 점) → r11 밝기 + r12 결, 이끼 점 제거."
   }
  }
 }

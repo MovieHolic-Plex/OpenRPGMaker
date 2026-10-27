@@ -57,7 +57,7 @@ def draw(n, w, salt):
                 break
             # 폭이 아래로 줄어든다(삼각), 왼쪽이 빛
             t = i / max(1, ln - 1)
-            ww = max(1, round(cw * (1 - t) + 0.4))
+            ww = max(2 if cw >= 4 else 1, round(cw * (1 - t) + 0.4))   # 굵은 원뿔 끝은 2px(1px 바늘로 읽혔다)
             off = (cw - ww) // 2
             for j in range(ww):
                 X = x0 + off + j
@@ -65,7 +65,7 @@ def draw(n, w, salt):
                     continue
                 f = j / max(1, ww - 1)   # 0 왼 … 1 오른
                 # 세로 사다리: 위 밝음 → 아래 어둠, 가로: 왼 빛 → 오른 그늘
-                base = 4 - round(2.2 * t)        # 4 → 2
+                base = 4 - round(1.4 * t)        # 4 → 3 (r4 검수: 아래 절반이 벽 앞면에 묻혔다 — 한 단 밝게)
                 k = base + (1 if f < 0.25 else 0) - (1 if f > 0.55 else 0) - (1 if f > 0.85 else 0)
                 if ww >= 3 and j == ww - 1:
                     ch = 'd' if i % 2 else 'c'

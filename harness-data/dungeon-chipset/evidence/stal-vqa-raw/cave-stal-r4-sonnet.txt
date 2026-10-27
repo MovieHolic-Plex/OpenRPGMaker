@@ -1,0 +1,27 @@
+VERDICT: FAIL
+A1: PASS
+A2: FAIL
+
+(Overall FAIL because not both candidates pass; A1 is usable alone, with minor defects.)
+
+A1 (PASS, minor):
+- Solid tan ledge band spans the full width on both 1-tile and 2-tile pieces (pieces-x8 y~0-28). In the scene it merges with the wall's own tan rim, so it reads as a rock lip, not a separate bar.
+- Cones taper, vary in length and width, shade light-left to dark-right and top to bottom, and have brown outlines. Tone count is about 5 (pale tan, mid tan, brown, dark brown, grey-teal fleck), so it is no longer the 3-tone r2/r3 look. Reads as stalactites hanging from the ledge, not bars or teeth.
+- Defect 1 (minor): in the scene the dark lower halves of the cones sink into the dark wall face and only the pale top ~4-6px stays visible. They read as short drips. Scene-3x ~(205-240,60-85), ~(150-185,105-130), ~(100-135,150-175). Fix: lift the lower-half tone one step, or lighten the outline against the dark wall.
+- Defect 2 (minor): the cone tips are 1px needles in the scene, e.g. the 1px tip at ~(215,85) and at ~(160,125). It is slightly sparse, about 3 cones per tile, and may draw an r3-style "thin" comment from the gate. Fix: widen the 1px tips to 2px.
+- Defect 3 (cosmetic): the ledge's left end is a flat square cut beyond the wall edge, at scene ~(180-195,45) and ~(135-145,92). It overhangs the rough floor rock with no end cap or shadow.
+- Tileability: the 1-tile and 2-tile pieces butt together cleanly on the ledge row. The 3x scene shows no seam.
+
+A2 (FAIL):
+- Cones are stubby and merge into one dark mass. At scene-3x ~(205-240,60-85), ~(150-185,105-130) and ~(395-435,195-225) they read as a "V/Y" fang cluster, not separate tapered cones. They look muddy.
+- Dark pixel noise sits between and inside the cones, at scene ~(228,65), ~(160,125) and ~(405,215). It looks like dirt or gaps, not the light-to-dark shading the brief asked for. The shading is not consistent top to bottom: the dark blobs are mid-cone and the tips go pale again.
+- Only the short pale tops are readable against the wall, about 3-4px, the same visibility failure as the r1 A2 bars. At 3x it looks like teeth, which was the r1 rejection reason.
+- The ledge band and the brown outlines are fine, the same as A1.
+- The teal flecks in the ledge (pieces-x8 ~(130-160,18) and ~(220-260,18)) match the cave wall's grey-teal pattern. This is OK and not a defect.
+
+--- r4c (A1 recheck) ---
+VERDICT: PASS
+- Both r4 defects are fixed. The cone lower halves are now a light tan and stay readable against the dark wall instead of sinking into it (scene-3x ~(205-240,60-85), ~(150-185,105-130), ~(100-135,150-175), ~(395-435,195-225)). The tips are now 2px wide, not 1px needles, and taper to a point. They read as stalactites hanging from the ledge, not bars or teeth.
+- The ledge band, the brown outlines and the light-to-dark shading are unchanged and still good. The pieces butt together on the ledge row with no seam.
+- Minor 1: at 1x in the scene the cones are still slim, 2-3px wide and about 3 per tile, so they look like icicle pegs more than fat cones (the x8 piece looks fatter than the scene does). Acceptable, but a gate comment about "sparse" is still possible.
+- Minor 2 (cosmetic, carried over): the flat square left end of the ledge has no end cap, at scene ~(180-195,45) and ~(135-145,92).
