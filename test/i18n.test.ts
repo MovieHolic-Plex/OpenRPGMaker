@@ -333,6 +333,30 @@ describe("shipped catalogs", () => {
     expect(japanese.translate(regionIds)).toContain("リージョン");
   });
 
+  it("calls furniture push directions a push, not a camera pan", () => {
+    // 이벤트 「물체 동작」의 체크박스는 가구를 미는 방향이다.
+    // 「왼쪽」+「로」는 「왼쪽로」가 되고, 「{0}로 밀기」는 화면 밀기(Pan/スクロール/平移)로 읽혔다.
+    const labels = ["위로 밀기", "아래로 밀기", "왼쪽으로 밀기", "오른쪽으로 밀기"] as const;
+    expect(createTranslator(en).translate("위로 밀기")).toBe("Push up");
+    expect(createTranslator(en).translate("아래로 밀기")).toBe("Push down");
+    expect(createTranslator(en).translate("왼쪽으로 밀기")).toBe("Push left");
+    expect(createTranslator(en).translate("오른쪽으로 밀기")).toBe("Push right");
+    expect(createTranslator(ja).translate("위로 밀기")).toBe("上へ押す");
+    expect(createTranslator(ja).translate("아래로 밀기")).toBe("下へ押す");
+    expect(createTranslator(ja).translate("왼쪽으로 밀기")).toBe("左へ押す");
+    expect(createTranslator(ja).translate("오른쪽으로 밀기")).toBe("右へ押す");
+    expect(createTranslator(zh).translate("위로 밀기")).toBe("向上推");
+    expect(createTranslator(zh).translate("아래로 밀기")).toBe("向下推");
+    expect(createTranslator(zh).translate("왼쪽으로 밀기")).toBe("向左推");
+    expect(createTranslator(zh).translate("오른쪽으로 밀기")).toBe("向右推");
+    for (const label of labels) {
+      expect(createTranslator(en).translate(label)?.toLowerCase()).not.toMatch(/pan|scroll/);
+      expect(createTranslator(ja).translate(label)).not.toContain("スクロール");
+      expect(createTranslator(zh).translate(label)).not.toContain("平移");
+    }
+    expect(en["{0}로 밀기"].toLowerCase()).not.toMatch(/pan|scroll/);
+    expect(ja["{0}로 밀기"]).not.toContain("スクロール");
+    expect(zh["{0}로 밀기"]).not.toContain("平移");
   it("keeps item and actor picker empty copy translated after the batchim particle", () => {
     const english = createTranslator(en);
     expect(english.translate("아이템이 아직 없습니다.")).toBe("Item not yet available.");
@@ -341,8 +365,7 @@ describe("shipped catalogs", () => {
     expect(english.translate('"없는물건" 과 일치하는 아이템이 없습니다.')).toBe('No Item matches "없는물건".');
     expect(english.translate('"가나" 와 일치하는 스위치가 없습니다.')).toBe('No Switch matches "가나".');
     expect(createTranslator(ja).translate("아이템이 아직 없습니다.")).toBe("アイテム がまだありません。");
-    expect(createTranslator(zh).translate("주인공이 아직 없습니다.")).toBe("还没有 角色。");
-  it("calls a number-input digit a digit, and one digit stays singular in English", () => {
+    expect(createTranslator(zh).translate("주인공이 아직 없습니다.")).toBe("还没有 角色。");  it("calls a number-input digit a digit, and one digit stays singular in English", () => {
     // 숫자 입력 미리보기의 「N자리 · 대기 중」은 자릿수다. 좌석이 아니다.
     expect(createTranslator(en).translate("1자리 · 대기 중")).toBe("1 digit · waiting");
     expect(createTranslator(en).translate("4자리 · 대기 중")).toBe("4 digits · waiting");

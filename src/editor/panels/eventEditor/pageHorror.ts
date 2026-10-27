@@ -65,11 +65,18 @@ export function renderObjectInteraction(mapId: MapId, eventId: string, page: Eve
   wrap.append(field('물체 상호작용', select('event-object-kind', page.interaction?.kind ?? 'none', [['none', '일반 이벤트'], ['pushable', '밀 수 있는 가구'], ['hiding', '은신처']], set)));
   if (page.interaction?.kind === 'pushable') {
     const allowed = page.interaction.directions ?? ['up', 'down', 'left', 'right'];
-    for (const [dir, text] of [['up', '위'], ['down', '아래'], ['left', '왼쪽'], ['right', '오른쪽']] as [Dir, string][]) {
+    // 방향마다 한 문장. 「왼쪽」에 「로」를 붙이면 「왼쪽로 밀기」가 되고,
+    // 「{0}로 밀기」는 화면 밀기(Pan)로 오역된다.
+    for (const [dir, label] of [
+      ['up', '위로 밀기'],
+      ['down', '아래로 밀기'],
+      ['left', '왼쪽으로 밀기'],
+      ['right', '오른쪽으로 밀기'],
+    ] as [Dir, string][]) {
       const input = el('input', { attrs: { type: 'checkbox' }, dataset: { testid: `event-push-${dir}` } });
       input.checked = allowed.includes(dir);
       input.addEventListener('change', () => updateEventPage(mapId, eventId, page.id, { interaction: { kind: 'pushable', directions: input.checked ? [...allowed, dir] : allowed.filter(d => d !== dir) } }));
-      wrap.append(field(`${text}로 밀기`, input));
+      wrap.append(field(label, input));
     }
     wrap.append(el('p', { class: 'empty-hint', text: '가구 그림은 이벤트에 지정하고 바닥 타일은 비워 두세요. 밀린 위치는 맵 이동과 세이브 후에도 유지됩니다.' }));
   }
