@@ -30,7 +30,8 @@ describe("Host-owned character graphics catalog", () => {
     const accepted = writeSharedCharacterGraphics({ revision: initial.revision, document }, file);
     expect(readSharedCharacterGraphics(file)).toEqual(accepted);
     writeSharedCharacterGraphics({ revision: accepted.revision, document: emptySharedCharacterGraphics() }, file);
-    expect(JSON.parse(readFileSync(`${file}.previous`, "utf8"))).toEqual(document);
+    // 저장본은 제출 초안이 아니라 받아들인 문서다 — #2759 부터 현대 연애 칩 짝 행을 앞채움하므로 accepted.document 와 비교한다.
+    expect(JSON.parse(readFileSync(`${file}.previous`, "utf8"))).toEqual(accepted.document);
   });
   it("rejects an older reader without overwriting newer data", () => {
     const initial = readSharedCharacterGraphics(file);
