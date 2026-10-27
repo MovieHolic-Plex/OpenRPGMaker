@@ -1,51 +1,15 @@
 import { describe, expect, it } from "vitest";
-import {
-  createStarterMap,
-  TILE,
-} from "@/project/defaults";
-import { dirtLikeTiles } from "@/project/defaults/chipsetMapping";
+import { createStarterMap, DEFAULT_TILESET_ID, TILE } from "@/project/defaults";
 
 describe("starter map chipset showcase", () => {
-  it("builds a compact default 마을 with three small houses and visible roads", () => {
+  // 2026-10-07 저작권 정리(0d4f13e7c8): 통나무집 세 채와 길을 그리던 시작 마을 장식은 지웠다.
+  // createStarterMap 은 이제 기본 칩셋의 빈 풀밭이라 집·길 타일 패턴 단언은 폐기하고 크기·칩셋·빈 위층만 지킨다.
+  it("builds a compact default 마을 as an open 30x30 field on the default tileset", () => {
     const map = createStarterMap();
-    const smallHouse = [
-      [374, 375, 374, 375, 374],
-      [404, 405, 404, 405, 404],
-      [102, 103, 103, 103, 104],
-      [132, 133, 329, 133, 134],
-      [162, 163, 359, 163, 164],
-    ];
 
     expect(map.width).toBe(30);
     expect(map.height).toBe(30);
-    expectHousePattern(map, { x: 5, y: 5 }, smallHouse);
-    expectHousePattern(map, { x: 19, y: 5 }, smallHouse);
-    expectHousePattern(map, { x: 5, y: 17 }, smallHouse);
-    expect(new Set(dirtLikeTiles()).has(map.lowerTiles[10 * map.width + 8] ?? TILE.EMPTY)).toBe(true);
-    expect(new Set(dirtLikeTiles()).has(map.lowerTiles[22 * map.width + 7] ?? TILE.EMPTY)).toBe(true);
-    expectUpperLayerEmptyOnRoad(map);
+    expect(map.tilesetId).toBe(DEFAULT_TILESET_ID);
+    expect(map.upperTiles.every((tile) => tile === TILE.EMPTY)).toBe(true);
   });
 });
-
-function expectHousePattern(
-  map: ReturnType<typeof createStarterMap>,
-  origin: { readonly x: number; readonly y: number },
-  expected: readonly (readonly number[])[]
-): void {
-  for (let y = 0; y < expected.length; y += 1) {
-    const row = expected[y];
-    expect(row).toBeDefined();
-    for (let x = 0; row && x < row.length; x += 1) {
-      const tile = row[x];
-      if (tile !== -1) expect(map.lowerTiles[(origin.y + y) * map.width + origin.x + x]).toBe(tile);
-    }
-  }
-}
-
-function expectUpperLayerEmptyOnRoad(map: ReturnType<typeof createStarterMap>): void {
-  const roadTiles = new Set<number>(dirtLikeTiles());
-  for (let index = 0; index < map.lowerTiles.length; index += 1) {
-    const lower = map.lowerTiles[index];
-    if (lower !== undefined && roadTiles.has(lower)) expect(map.upperTiles[index]).toBe(TILE.EMPTY);
-  }
-}
