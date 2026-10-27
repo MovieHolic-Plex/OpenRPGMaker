@@ -27,6 +27,9 @@ function backdropNode(): HTMLElement {
 
 function mountFieldFor(animation: BattleBackdropAnimation | undefined): HTMLElement {
   const project = createBlankProject();
+  // Troop backdrop motion drives the non-layered (monster stand-off) skin; the default side view (retro2003) draws layered
+  // scenery instead (battleFieldDom.battleField) — the same split the troop form test below relies on.
+  project.system.battleUiStyle = "pokemon";
   const troop = project.database.troops[0]!;
   if (animation) troop.backdropAnimation = animation;
   store.replace(project);

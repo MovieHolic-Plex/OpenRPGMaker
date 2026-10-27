@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   editorState,
   editorStateChangedOnlyCanvasOverlay,
+  editorStateChangedOnlyEventSelection,
   editorStateChangedOnlySelectedTile,
   editorStateChangedOnlyToolPick,
   editorStateNeedsEventEditorRefresh,
@@ -75,6 +76,35 @@ describe("에디터 상태와 맵 트리 갱신", () => {
     const previous = snapshot({ selectedTile: 1, tool: "paint", layer: "lower" });
     expect(editorStateChangedOnlySelectedTile(previous, snapshot({ selectedTile: 8, layer: "upper" }))).toBe(false);
     expect(editorStateChangedOnlySelectedTile(previous, snapshot({ selectedTile: 8, tool: "erase" }))).toBe(false);
+  });
+
+  it("이벤트 레이어에서 고른 이벤트만 바뀌면 목록 전체 재생성이 아니다", () => {
+    const previous = snapshot({
+      layer: "event",
+      tool: "event",
+      selectedEventId: "event-a",
+      selectedEventPageId: "page-a",
+      pendingEventCoordinate: null,
+    });
+    const next = snapshot({
+      layer: "event",
+      tool: "event",
+      selectedEventId: "event-b",
+      selectedEventPageId: null,
+      pendingEventCoordinate: null,
+    });
+    expect(editorStateChangedOnlyEventSelection(previous, next)).toBe(true);
+    expect(editorStateNeedsPaletteRefresh(previous, next)).toBe(true);
+    expect(editorStateNeedsMapTreeRefresh(previous, next)).toBe(false);
+    expect(editorStateChangedOnlyEventSelection(previous, snapshot({
+      layer: "event",
+      tool: "paint",
+      selectedEventId: "event-b",
+    }))).toBe(false);
+    expect(editorStateChangedOnlyEventSelection(
+      snapshot({ layer: "lower", selectedEventId: null }),
+      snapshot({ layer: "lower", selectedEventId: "event-b" }),
+    )).toBe(false);
   });
 
   it("줌만 바뀌면 팔레트도 맵 트리도 갱신하지 않는다", () => {

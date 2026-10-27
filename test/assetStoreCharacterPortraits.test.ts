@@ -42,13 +42,15 @@ function characterPack() {
         portraits: { face: "cg_face", bust: { base: "cg_bb", happy: "cg_bh" }, full: { base: "cg_fb", happy: "cg_fh" }, extra: { thinking: { bust: "cg_bt" } } },
       }],
     },
-    previews: [],
+    // 그림이 든 팩은 미리보기가 1장 이상이어야 한다(src/assetStore/format.ts validateManifest) — 칩 시트를 쓴다.
+    previews: [sha(files.sheet!)],
     blobs: [...blobs].map(([hash, bytes]) => ({ sha256: hash, mime: "image/png" as const, bytes: bytes.byteLength })),
   };
   return { manifest, blobs };
 }
 
-const target = () => ({ tilesets: {}, assets: { uploaded: {} }, resourceProfiles: [], database: { characterAppearances: [] } }) as unknown as Project;
+// 되돌리기 검사(storeItemUsages)가 맵을 훑는다 — 빈 맵 목록을 준다.
+const target = () => ({ maps: {}, tilesets: {}, assets: { uploaded: {} }, resourceProfiles: [], database: { characterAppearances: [] } }) as unknown as Project;
 
 describe("store character packs with paired portraits (char-gen)", () => {
   it("validates the portrait references", () => {

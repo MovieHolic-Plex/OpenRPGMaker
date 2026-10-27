@@ -1,6 +1,6 @@
 import type { Project } from "../types";
 import { projectWireView } from "./serialize";
-import { isBundledTilesetDiffView } from "../bundledTilesetDiff";
+import { isBundledTilesetDiffView, materializeLazyBundledTileset } from "../bundledTilesetDiff";
 
 /**
  * 타일셋·업로드 자산 사전의 JSON 을 항목별로 기억해 조립한다. 결과는 `JSON.stringify` 와 글자까지 같다.
@@ -31,6 +31,8 @@ function hasToJson(value: object): boolean {
 function fieldsOf(entry: Record<string, unknown>): readonly string[] {
   const hit = fieldPieces.get(entry);
   if (hit) return hit;
+  // 지연 번들 타일셋은 키를 훑기 전에 되돌린다 — 다른 판의 번들이 더한 필드는 되돌린 뒤에야 키로 보인다.
+  materializeLazyBundledTileset(entry);
   const fields: string[] = [];
   const keys: string[] = [];
   for (const key of Object.keys(entry)) {

@@ -45,7 +45,11 @@ export function normalizeTerrainRecords(records: readonly Partial<DatabaseTerrai
         airshipLand: record.vehiclePassage?.airshipLand ?? true,
         ...(record.vehiclePassage?.chocobo === true ? { chocobo: true } : {}),
         ...(record.vehiclePassage?.cart === true ? { cart: true } : {}),
-        ...(record.vehiclePassage?.raft === true ? { raft: true } : {}),
+        // raft:false 는 «이 물에는 뗏목이 못 간다». 키를 지우면 boat 이고 ship 이 아닌
+        // 호수는 뗏목을 허용한다(vehicles.ts vehicleCanEnter). true 만 남기면 저장 한 번에 금지가 풀린다.
+        ...(record.vehiclePassage?.raft === true || record.vehiclePassage?.raft === false
+          ? { raft: record.vehiclePassage.raft === true }
+          : {}),
       },
       ...(record.climbable === true ? { climbable: true } : {}),
     }));

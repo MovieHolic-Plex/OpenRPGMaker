@@ -3,6 +3,8 @@ import { preloadRuntimeStyles } from "@/app/runtimeStyles";
 import { uiLabel } from "@/editor/uiCopy";
 import { el } from "@/util/dom";
 import { afterBootSettled } from "@/util/bootSettled";
+import { store } from "@/project/store";
+import { pendingLazyBundledTilesetIds, preloadPendingLazyBundledTilesets } from "@/project/bundledTilesetDiff";
 
 /**
  * 자료집 본문은 수 MB 편집 표면이다. 편집기 첫 화면 그래프에는 넣지 않는다.
@@ -29,7 +31,9 @@ function loadDatabaseModal(): Promise<DatabaseModalModule> {
     modulePromise = import("@/editor/panels/databaseModal").then((mod) => {
       readyModule = mod;
       // 창을 여는 중이면 그 경로가 본문을 그린다. 아닐 때만 미리 그린다.
-      if (!pending) mod.prewarmDatabaseModal();
+      // 아직 되돌리지 않은 번들 타일셋이 있으면 미리 그리지 않는다 — 탭 수 세기가 모든 타일셋의 킷을 읽어 번들 정의를 모두
+      // 읽고 되돌린다(로드가 맵이 쓰는 것만 되돌린 의미가 사라진다). 그때는 여는 순간 정의를 비동기로 읽고 그린다.
+      if (!pending && !hasPendingLazyTilesets()) mod.prewarmDatabaseModal();
       return mod;
     }).catch((error: unknown) => {
       modulePromise = null;
@@ -37,6 +41,18 @@ function loadDatabaseModal(): Promise<DatabaseModalModule> {
     });
   }
   return modulePromise;
+}
+
+function hasPendingLazyTilesets(): boolean {
+  const project = store.getCurrent();
+  return !!project && pendingLazyBundledTilesetIds(project.tilesets).length > 0;
+}
+
+/** 자료집은 모든 타일셋을 읽는다 — 지연 번들 타일셋의 정의를 먼저 비동기로 읽는다(bundledTilesetDiff.ts). */
+function loadDatabaseModalWithTilesets(): Promise<DatabaseModalModule> {
+  const project = store.getCurrent();
+  const definitions = project ? preloadPendingLazyBundledTilesets(project.tilesets) : null;
+  return definitions ? Promise.all([loadDatabaseModal(), definitions]).then(([mod]) => mod) : loadDatabaseModal();
 }
 
 function runningUnderTest(): boolean {
@@ -184,8 +200,8 @@ export function openDatabaseModalLazy(
   const serial = ++requestSerial;
   pending = { serial, tab: initialTab, options };
   void preloadRuntimeStyles();
-  // 미리 읽어 둔 본문은 껍데기 없이 바로 연다.
-  if (readyModule) {
+  // 미리 읽어 둔 본문은 껍데기 없이 바로 연다(지연 번들 타일셋이 남았으면 그 정의를 읽는 동안 껍데기를 띄운다).
+  if (readyModule && !hasPendingLazyTilesets()) {
     try {
       readyModule.openDatabaseModal(initialTab, options);
       pending = null;
@@ -196,7 +212,7 @@ export function openDatabaseModalLazy(
   }
   // 이미 열린 자료집은 본문만 갈아탄다. 여는 중 껍데기를 겹치지 않는다.
   if (document.querySelector("[data-testid='database-modal']")) {
-    void loadDatabaseModal().then((mod) => {
+    void loadDatabaseModalWithTilesets().then((mod) => {
       if (serial !== pending?.serial) return;
       mod.openDatabaseModal(initialTab, options);
       pending = null;
@@ -206,7 +222,7 @@ export function openDatabaseModalLazy(
     return;
   }
   const token = mountOpeningShell();
-  void loadDatabaseModal().then((mod) => {
+  void loadDatabaseModalWithTilesets().then((mod) => {
     finishOpen(token, serial, mod);
   }).catch(() => {
     showOpeningFailure(token);

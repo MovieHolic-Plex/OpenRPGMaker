@@ -78,8 +78,9 @@ describe("show_map_region 네 층 배열", () => {
     map.upperTiles = [-1, 2, -1, -1, 3, -1];
     const result = runTool({ project }, "show_map_region", { mapId: map.id, x: 0, y: 0, w: 3, h: 2 });
     expect(result.ok, result.summary).toBe(true);
+    // blockedCells 는 e5427cd9e1(show_map_region 이 막힌 칸을 알린다)에서 더해졌다 — 층 키는 여전히 없다.
     expect(JSON.stringify(result.data)).toBe(JSON.stringify({
-      h: 2, lower: [[0, 1, 2], [3, 0, 1]], mapId: map.id, upper: [[-1, 2, -1], [-1, 3, -1]], w: 3, x: 0, y: 0,
+      h: 2, lower: [[0, 1, 2], [3, 0, 1]], mapId: map.id, upper: [[-1, 2, -1], [-1, 3, -1]], w: 3, x: 0, y: 0, blockedCells: [],
     }));
   });
 

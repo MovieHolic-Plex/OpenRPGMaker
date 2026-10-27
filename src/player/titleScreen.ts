@@ -201,14 +201,17 @@ export function renderTitleScreen(
   title.append(...titleNodes);
   // 조작 안내 줄은 그리지 않는다 — 키아트 하단을 가리고, 메뉴 커서가 이미 선택을 보여 준다.
   // 메뉴 위끝은 로고·부제 아래 — 항목이 늘면(이어하기) 메뉴를 위로 끌어올려 부제를 덮었다(2026-10-25 J28).
-  const logoBottom = settings.logoStyle ? titleBlockBottom(settings, titleFit) : undefined;
+  // 부제는 로고 질감이 없어도 제목 아래에 그린다. 그때도 메뉴가 그 줄을 덮지 않게 같은 아래끝을 쓴다.
+  const authoredSubtitle = (settings.logoSubtitle ?? "").trim().length > 0;
+  const logoBottom = settings.logoStyle || authoredSubtitle ? titleBlockBottom(settings, titleFit) : undefined;
   const menu = renderMenu(settings, options, clampedIndex, false, logoBottom);
   wireTitleOptionClicks(menu, options, actions);
   if (playIntro) applyTitleIntroToMenu(menu, settings.intro);
   title.append(menu);
-  // 로고 질감을 고른 오프닝은 키아트와 부딪히는 기본 문구 대신 저자의 부제만 쓴다.
-  if (settings.logoStyle) {
-    if (settings.logoSubtitle) title.append(renderTitleLogoSubtitle(settings, titleFit));
+  // 저자가 부제를 적었거나 로고 질감을 고르면, 키아트와 부딪히는 기본 문구 대신 그 부제만 쓴다.
+  // 질감을 「기본」으로 둔 채 부제만 적어도 저장은 됐는데 화면에는 「A NEW ADVENTURE」가 남아 있었다.
+  if (settings.logoStyle || authoredSubtitle) {
+    if (authoredSubtitle) title.append(renderTitleLogoSubtitle(settings, titleFit));
   } else {
     title.append(renderTitleEditorialCopy());
   }

@@ -53,6 +53,20 @@ function decimalPlaces(value: number): number {
   return Math.max(0, fractionPlaces - Number(exponentText ?? 0));
 }
 
+/**
+ * 아직 숫자가 아닌 타이핑 중간 상태.
+ * `Number("-")`·`Number("1.")`·`Number("")` 는 NaN 이거나 잘린 값이라, 그대로 정규화하면
+ * 스킬 우선도(-7)처럼 음수를 치려다 첫 글자 `-` 가 하한으로 덮이고, `0.05` 를 치려다
+ * 소수점이 지워진다. 빈 칸과 같은 규약으로 두고, 확정은 blur(change)가 맡는다.
+ */
+function isInProgressNumber(text: string): boolean {
+  const trimmed = text.trim();
+  if (trimmed === "" || trimmed === "-" || trimmed === "+" || trimmed === "." || trimmed === "-." || trimmed === "+.") return true;
+  if (trimmed.endsWith(".")) return true;
+  if (/[eE][+-]?$/.test(trimmed)) return true;
+  return !Number.isFinite(Number(trimmed));
+}
+
 export type SliderStepperBounds = {
   readonly min: number;
   readonly max: number;
@@ -99,20 +113,22 @@ export function sliderStepperField(
   const initialDisplay = Math.min(bounds.max, Math.max(bounds.min, Number.isFinite(value) ? value : bounds.min));
   range.value = String(initialDisplay);
   stepper.value = String(initialDisplay);
-  const commit = (source: HTMLInputElement, next: number): void => {
-    range.value = String(next);
-    stepper.value = String(next);
-    // 소스 입력은 클램프가 값을 실제로 바꿨을 때만 되쓴다 — 타이핑 중 커서 점프 방지.
-    const rewritten = String(next) !== source.value;
-    if (rewritten) source.value = String(next);
+  const commit = (source: HTMLInputElement, next: number, rewrite: boolean): void => {
+    const text = String(next);
+    if (source !== range) range.value = text;
+    if (source !== stepper) stepper.value = text;
+    // 클램프·스텝이 숫자를 실제로 바꿨을 때만 되쓴다. "1.0" 처럼 같은 값의 다른 표기는
+    // 타이핑 중이므로 커서를 점프시키지 않는다. blur 는 rewrite 로 표기를 정리한다.
+    const parsed = Number(source.value);
+    if (rewrite || !Number.isFinite(parsed) || parsed !== next) source.value = text;
     onInput(next);
   };
-  range.addEventListener("input", () => commit(range, normalize(Number(range.value))));
+  range.addEventListener("input", () => commit(range, normalize(Number(range.value)), true));
   stepper.addEventListener("input", () => {
-    if (stepper.value === "") return;
-    commit(stepper, normalize(Number(stepper.value)));
+    if (isInProgressNumber(stepper.value)) return;
+    commit(stepper, normalize(Number(stepper.value)), false);
   });
-  stepper.addEventListener("change", () => commit(stepper, normalize(Number(stepper.value))));
+  stepper.addEventListener("change", () => commit(stepper, normalize(Number(stepper.value)), true));
   const pair = el("span", {
     class: "db-slider-stepper",
     children: [
@@ -176,20 +192,24 @@ export function numberField(
     increment.disabled = bounds !== undefined && current >= bounds.max;
   };
   const commitInput = (rewrite: boolean): void => {
-    const next = normalize(Number(input.value));
-    // 클램프가 실제로 값을 바꿨을 때만 되쓴다 — 타이핑 중 커서 점프 방지.
-    if (rewrite || (bounds && input.value !== "" && String(next) !== input.value)) input.value = String(next);
+    const rawText = input.value;
+    // 부호·소수점만 친 상태는 값이 아니다. 여기서 커밋하면 Number("-") === NaN 이
+    // 하한(스킬 우선도 -7, 배경 스크롤 -400)으로 바뀌고 입력이 그 글자로 덮인다.
+    if (!rewrite && isInProgressNumber(rawText)) {
+      syncButtonState();
+      return;
+    }
+    const next = normalize(Number(rawText));
+    // 클램프가 숫자를 바꿨을 때만 되쓴다. "1.0" 은 1 과 같아도 다음 소수 자리를 치는 중이다.
+    const parsed = Number(rawText);
+    if (rewrite || (bounds && (!Number.isFinite(parsed) || parsed !== next))) input.value = String(next);
     syncButtonState();
     onInput(next);
   };
   input.addEventListener("input", () => {
-    // 빈 칸은 "지우는 중"이지 0 이 아니다. Number("") === 0 이 isFinite 를 통과하는 탓에
-    // 전체 선택 후 삭제하는 평범한 제스처가 매 keystroke 0(또는 min)을 커밋했고, 화면은
-    // rewrite 가드(input.value !== "") 때문에 빈 칸으로 남아 사용자가 알아채지 못했다.
-    // 가격 0, 최소 기부 개수 0 같은 조용한 데이터 손상 경로다.
-    // 형제 컨트롤 sliderStepperField 는 이미 빈 입력을 무시한다 — 같은 규약으로 맞춘다.
-    // 빈 칸의 최종 확정은 아래 change(블러)가 normalize 해서 맡는다.
-    if (input.value === "") return;
+    // 빈 칸·"-"·"1." 은 아직 값이 아니다. Number("") === 0, Number("-") === NaN 이라
+    // 그대로 커밋하면 삭제 중에도 0 이 저장되거나, 음수의 첫 글자가 하한으로 덮인다.
+    // commitInput 이 그 중간 상태를 무시하고, 확정은 change(블러)가 맡는다.
     commitInput(false);
   });
   input.addEventListener("change", () => commitInput(true));
@@ -586,6 +606,60 @@ function literalLabel(value: string): string {
       return "적 상태";
     case "enemiesAlive":
       return "남은 적 수";
+    case "onRound":
+      return "이 턴만";
+    case "everyRound":
+      return "몇 턴마다";
+    case "enemyHpBelow":
+      return "적 HP 이하";
+    case "text":
+      return "글만";
+    case "graphic":
+      return "그림만";
+    case "both":
+      return "글과 그림";
+    case "snow":
+      return "눈";
+    case "rain":
+      return "비";
+    case "fireflies":
+      return "반딧불";
+    case "stars":
+      return "별빛";
+    case "fadeIn":
+      return "서서히 나타남";
+    case "riseIn":
+      return "위로 떠오름";
+    case "slideUp":
+      return "아래에서 올라옴";
+    case "poison":
+      return "독";
+    case "toxic":
+      return "맹독";
+    case "burn":
+      return "화상";
+    case "sleep":
+      return "수면";
+    case "freeze":
+      return "얼음";
+    case "paralysis":
+      return "마비";
+    case "confusion":
+      return "혼란";
+    case "high":
+      return "높음";
+    case "ON":
+      return "켜짐";
+    case "OFF":
+      return "꺼짐";
+    case "poke":
+      return "보통 볼";
+    case "great":
+      return "상급 볼";
+    case "ultra":
+      return "특급 볼";
+    case "master":
+      return "확정 볼";
     default:
       return value;
   }

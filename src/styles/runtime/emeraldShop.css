@@ -12,7 +12,7 @@
 .emerald-shop-overlay .emerald-shop-shell {
   position:absolute; left:0; top:0; width:480px; height:320px; margin:0;
   transform:scale(var(--emerald-shop-scale)); transform-origin:top left;
-  font:400 16px/1.4 var(--runtime-pixel-font,"Galmuri9",sans-serif);
+  font:400 16px/1.4 var(--runtime-pixel-font);
   color:#384840; text-shadow:none;
 }
 /* Once the real field crop is available it is the only displayed map image.

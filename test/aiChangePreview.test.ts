@@ -93,6 +93,22 @@ function dispatchDocumentKey(key: string): void {
   document.dispatchEvent(event);
 }
 
+function dispatchKey(target: FakeElement, key: string, shiftKey = false): Event {
+  const event = new Event("keydown", { bubbles: true, cancelable: true });
+  Object.defineProperties(event, {
+    key: { configurable: true, value: key },
+    shiftKey: { configurable: true, value: shiftKey },
+  });
+  target.dispatchEvent(event);
+  return event;
+}
+
+function wideFocusable(root: FakeElement): FakeElement[] {
+  return [...root.querySelectorAll(
+    "button:not(:disabled), input:not(:disabled), [href], select:not(:disabled), textarea:not(:disabled), [tabindex]:not([tabindex='-1'])",
+  )].filter((node) => !node.closest("[hidden]"));
+}
+
 describe("changePreviewRegion", () => {
   it("타일 변경 bbox 에 패딩을 더한 영역을 쓴다", () => {
     const { before, after, mapId } = tilePair();
@@ -295,6 +311,39 @@ describe("openWideChangeViewer", () => {
     dispatchDocumentKey("Escape");
     expect(document.querySelector("[data-testid='ai-change-wide']")).toBeNull();
     byEscape.close();
+  });
+
+  it("보이는 제목을 대화상자 이름으로 묶고 Tab 을 창 안에 가둔 뒤 닫으면 연 곳으로 돌아간다", () => {
+    const opener = document.createElement("button");
+    document.body.append(opener);
+    opener.focus();
+    const { before, after, mapId } = tilePair();
+    const viewer = openWideChangeViewer({ before, after, mapId, title: "대장간을 고쳤습니다", renderShot: stubRenderer() });
+    const root = card(viewer.root);
+    const title = root.querySelector(".ai-change-wide-title");
+    expect(root.getAttribute("aria-modal")).toBe("true");
+    expect(title?.textContent).toBe("대장간을 고쳤습니다");
+    expect(title?.getAttribute("id")).toBeTruthy();
+    expect(root.getAttribute("aria-labelledby")).toBe(title?.getAttribute("id"));
+
+    const focusable = wideFocusable(root);
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    if (!first || !last) throw new Error("초점 가능한 컨트롤이 없다");
+    expect(document.activeElement).toBe(first);
+
+    last.focus();
+    const forward = dispatchKey(last, "Tab");
+    expect(forward.defaultPrevented).toBe(true);
+    expect(document.activeElement).toBe(first);
+    first.focus();
+    const backward = dispatchKey(first, "Tab", true);
+    expect(backward.defaultPrevented).toBe(true);
+    expect(document.activeElement).toBe(last);
+
+    viewer.close();
+    expect(document.activeElement).toBe(opener);
+    expect(document.querySelector("[data-testid='ai-change-wide']")).toBeNull();
   });
 });
 
