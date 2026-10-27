@@ -146,16 +146,11 @@ describe("repairTreePairs", () => {
 
     const ctx = { project: createBlankProject() };
     const hookedMap = ctx.project.maps[MAP];
-    hookedMap.lowerTiles[5 * hookedMap.width + 5] = 290;
     hookedMap.upperTiles[4 * hookedMap.width + 5] = 237;
-    const hooked = runTool(ctx, "place_npc", {
-      mapId: MAP,
-      x: 1,
-      y: 1,
-      name: "테스트",
-      pages: [{ lines: ["ok"] }],
-    });
-    expect(hooked.ok).toBe(true);
+    // 이벤트·DB 편집은 나무를 고치지 않는다(toolRunner: 「Event/DB/name edits must not normalize trees」) —
+    // 래스터를 쓰는 도구로 밑동을 놓아 post-write hook 을 태운다.
+    const hooked = runTool(ctx, "paint_tiles", { mapId: MAP, layer: "lower", mode: "cells", tile: 290, cells: [{ x: 5, y: 5 }] });
+    expect(hooked.ok, hooked.summary).toBe(true);
     expect(ctx.project.maps[MAP].upperTiles[4 * hookedMap.width + 5]).toBe(260);
   });
 });

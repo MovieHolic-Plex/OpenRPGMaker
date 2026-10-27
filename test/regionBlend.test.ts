@@ -17,7 +17,7 @@ import { runTool } from "@/editor/tools/toolRunner";
 import { createBlankProject as createBlankDefaultProject, TILE } from "@/project/defaults";
 import { autotileGroupsForTileset } from "@/project/defaults/autotileGroups";
 import type { Project } from "@/project/types";
-import { startOnRetiredCombinedTown } from "./support/retiredEasyRpgTilesets";
+import { RETIRED_COMBINED_TOWN_TILESET_ID, startOnRetiredCombinedTown } from "./support/retiredEasyRpgTilesets";
 
 // TILE.* 는 합본 마을 칩 번호다 — 2026-10-07 저작권 정리 뒤 새 프로젝트 시작 맵이 버들항이라 옛 저장본처럼 합본 마을 위에서 시작한다.
 const createBlankProject = () => startOnRetiredCombinedTown(createBlankDefaultProject());
@@ -28,7 +28,7 @@ const REGION: RegionRect = { x: 8, y: 8, width: 4, height: 4 };
 
 function makeProject(): Project {
   const context = { project: createBlankProject() };
-  const created = runTool(context, "create_map", { id: MAP_ID, name: "어울림 테스트", width: W, height: W });
+  const created = runTool(context, "create_map", { id: MAP_ID, name: "어울림 테스트", width: W, height: W, tilesetId: RETIRED_COMBINED_TOWN_TILESET_ID });
   expect(created.ok, created.summary).toBe(true);
   context.project.maps[MAP_ID].lowerTiles.fill(TILE.GRASS);
   return context.project;
