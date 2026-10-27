@@ -5,6 +5,12 @@
 
 <!-- releases -->
 
+## 0.356.0 — 2026-10-27
+
+### 기능
+
+- **dialogue** — quest/ending lines in the dialogue index; list_dialogue finds lines outside the open map; fix desktop build (#3868) (`5300f35`)
+
 ## 0.355.2 — 2026-10-27
 
 ### 기타
