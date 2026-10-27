@@ -10,6 +10,11 @@ import type { Dir } from "@/player/input";
 import type { AutonomousNpcSprite } from "@/player/playSceneAutonomousTypes";
 import { store } from "@/project/store";
 
+/** 서 있어도 걷기 주기(왼·가운데·오른·가운데)를 재생하는 페이지 유형. */
+export function animationStepsWhileStopped(animationType: string | undefined): boolean {
+  return animationType === "step" || animationType === "fixedDirectionStep" || animationType === "fourFrame";
+}
+
 export function setNpcWalkFrame(
   sprite: AutonomousNpcSprite | undefined,
   baseFrame: number,

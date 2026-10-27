@@ -253,6 +253,19 @@ describe("shipped catalogs", () => {
     expect(createTranslator(zh).translate("통행 미리보기")).toBe("通行预览");
   });
 
+  it("names the loop-body controls instead of a bare multiplication sign", () => {
+    expect(en["이 반복 명령 삭제"]).toBe("Delete this repeated command");
+    expect(ja["이 반복 명령 삭제"]).toBe("この繰り返しコマンドを削除");
+    expect(zh["이 반복 명령 삭제"]).toBe("删除此循环命令");
+    expect(en["추가할 명령"]).toBe("Command to add");
+    expect(ja["추가할 명령"]).toBe("追加するコマンド");
+    expect(zh["추가할 명령"]).toBe("要添加的指令");
+    expect(en["반복 문장"]).toBe("Repeated line");
+    expect(ja["반복 문장"]).toBe("繰り返しの文");
+    expect(zh["반복 문장"]).toBe("循环句子");
+    expect(createTranslator(en).translate("이 반복 명령 삭제")).toBe("Delete this repeated command");
+    expect(createTranslator(ja).translate("추가할 명령")).toBe("追加するコマンド");
+    expect(createTranslator(zh).translate("반복 문장")).toBe("循环句子");
   it("names a map's parent separately from the upper tile layer, and its vertical size as height", () => {
     // 새 맵 칸의 글자가 「상위」·「세로」이면 영어는 Upper layer·Vertical, 일본어는 上位·縦,
     // 중국어는 上层·纵向가 된다. 부모 맵과 칸수에는 그 낱말을 쓰지 않는다.
@@ -320,6 +333,15 @@ describe("shipped catalogs", () => {
     expect(japanese.translate(regionIds)).toContain("リージョン");
   });
 
+  it("keeps item and actor picker empty copy translated after the batchim particle", () => {
+    const english = createTranslator(en);
+    expect(english.translate("아이템이 아직 없습니다.")).toBe("Item not yet available.");
+    expect(english.translate("주인공이 아직 없습니다.")).toBe("Actor not yet available.");
+    expect(english.translate("스위치가 아직 없습니다.")).toBe("Switch not yet available.");
+    expect(english.translate('"없는물건" 과 일치하는 아이템이 없습니다.')).toBe('No Item matches "없는물건".');
+    expect(english.translate('"가나" 와 일치하는 스위치가 없습니다.')).toBe('No Switch matches "가나".');
+    expect(createTranslator(ja).translate("아이템이 아직 없습니다.")).toBe("アイテム がまだありません。");
+    expect(createTranslator(zh).translate("주인공이 아직 없습니다.")).toBe("还没有 角色。");
   it("calls a number-input digit a digit, and one digit stays singular in English", () => {
     // 숫자 입력 미리보기의 「N자리 · 대기 중」은 자릿수다. 좌석이 아니다.
     expect(createTranslator(en).translate("1자리 · 대기 중")).toBe("1 digit · waiting");
@@ -330,6 +352,5 @@ describe("shipped catalogs", () => {
     expect(ja["{0}자리 · 대기 중"]).not.toContain("席");
     expect(createTranslator(zh).translate("1자리 · 대기 중")).toBe("1位 · 等待中");
     expect(createTranslator(zh).translate("4자리 · 대기 중")).toBe("4位 · 等待中");
-    expect(zh["{0}자리 · 대기 중"]).not.toContain("名额");
-  });
+    expect(zh["{0}자리 · 대기 중"]).not.toContain("名额");  });
 });

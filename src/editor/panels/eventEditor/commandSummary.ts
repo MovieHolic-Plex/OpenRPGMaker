@@ -12,7 +12,9 @@ import {
 } from "./options";
 import { formatWeightedBranchSummary } from "./weightedBranchTable";
 import { BGM_CATALOG } from "@/assets/bgmCatalog";
+import { authoredVolumePercent } from "@/player/audio/fade";
 import { m2CommandById, type M2CommandFieldSpec } from "@/project/eventCommands/m2Catalog";
+import { HIDE_SHOW_SCREEN_FADE_MS } from "@/player/interpreter/screenEffectPlan";
 import { tintDurationMs } from "@/project/eventCommands/tintDuration";
 import { screenFilterFromFields } from "@/project/eventCommands/screenFilter";
 import { coordinateAxisSpec, coordinateFailurePolicy } from "@/project/eventCommands/coordinateDestination";
@@ -27,8 +29,12 @@ import { relationshipStateName } from "@/project/relationshipState";
 import { textBodyOf } from "@/project/io/rewriteLegacyDialogue";
 import { insideLocationSentence } from "@/editor/mapLocationLabels";
 import { difficultyDisplayName } from "@/project/difficulty";
-import { timerThresholdLabel } from "./timerConditionText";
-export type CommandSummaryTone =
+
+function hideShowFadeLabel(named: string, fallback: string): string {
+  const label = named || fallback;
+  return `${label} · ${HIDE_SHOW_SCREEN_FADE_MS}ms`;
+}
+import { timerThresholdLabel } from "./timerConditionText";export type CommandSummaryTone =
   | "plain"
   | "command"
   | "value"
@@ -368,7 +374,7 @@ const commandSummaryPartHandlers: CommandSummaryPartHandlers = {
       ...(cmd.waitForPicture ? [plainPart(" / "), valuePart("끝날 때까지 대기")] : []),
     ),
   erasePicture: (cmd) => commandLine("그림 지우기", valuePart(pictureSlotCaption(cmd.pictureId))),
-  playAudio: (cmd) => commandLine("소리 재생", valuePart(audioName(cmd.resourceId))),
+  playAudio: (cmd) => commandLine("소리 재생", valuePart(audioName(cmd.resourceId)), ...playAudioMixParts(cmd)),
   playMovie: (cmd) => commandLine(
     "동영상 재생",
     valuePart(movieName(cmd.resourceId)),
@@ -902,9 +908,9 @@ function page3M2SummaryParts(
       );
     }
     case "Hide Screen":
-      return commandLine(labelOf("화면 숨기기"), valuePart(str("value") || str("transition") || "페이드 아웃"));
+      return commandLine(labelOf("화면 숨기기"), valuePart(hideShowFadeLabel(str("value") || str("transition"), "페이드 아웃")));
     case "Show Screen":
-      return commandLine(labelOf("화면 표시"), valuePart(str("value") || str("transition") || "페이드 인"));
+      return commandLine(labelOf("화면 표시"), valuePart(hideShowFadeLabel(str("value") || str("transition"), "페이드 인")));
     case "Tint Screen": {
       const color = str("value") || str("color") || "기본";
       const duration = tintDurationMs(cmd.fields);
@@ -1409,6 +1415,25 @@ function humanizeAuthorId(id: string): string {
   const trimmed = id.trim();
   if (!trimmed) return "(없음)";
   return trimmed.replace(/^item_/, "").replace(/^(bgm|se|cc0-bgm)-/, "").replace(/_/g, " ");
+}
+
+function playAudioFadeLabel(ms: number): string {
+  const seconds = ms / 1000;
+  const text = Number.isInteger(seconds) ? String(seconds) : seconds.toFixed(1).replace(/\.0$/, "");
+  return `${text}초`;
+}
+
+function playAudioMixParts(cmd: Extract<Command, { kind: "playAudio" }>): CommandSummaryPart[] {
+  const parts: CommandSummaryPart[] = [];
+  if (cmd.channel === "bgs") parts.push(plainPart(" · "), valuePart("환경음"));
+  else if (cmd.channel === "me") parts.push(plainPart(" · "), valuePart("효과 음악"));
+  if (cmd.volume !== undefined && authoredVolumePercent(cmd.volume) !== 100) {
+    parts.push(plainPart(" · "), valuePart(`${authoredVolumePercent(cmd.volume)}%`));
+  }
+  if (cmd.fadeInMs !== undefined && cmd.fadeInMs > 0) {
+    parts.push(plainPart(" · "), valuePart(`페이드 ${playAudioFadeLabel(cmd.fadeInMs)}`));
+  }
+  return parts;
 }
 
 function audioName(id: string): string {

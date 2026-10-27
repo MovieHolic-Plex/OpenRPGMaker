@@ -45,7 +45,7 @@ export type AudioChannel = "bgm" | "bgs" | "ambient" | "me" | "se";
 export type AudioTrackState = {
   readonly resourceId: string;
   readonly loop: boolean;
-  /** Authored track volume, 0..100; independent of the user mixer. */
+  /** Authored loudness: percent 0..100, or a gain fraction in (0, 1). Independent of the user mixer. */
   readonly volume?: number;
   readonly fadeInMs?: number;
 };

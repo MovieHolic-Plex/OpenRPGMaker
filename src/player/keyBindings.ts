@@ -269,6 +269,10 @@ function keyFromPhysicalCode(code: string): string | null {
     case "NumpadAdd": return "+";
     case "BracketLeft": return "[";
     case "BracketRight": return "]";
+    case "PageUp": return "PageUp";
+    case "PageDown": return "PageDown";
+    case "Home": return "Home";
+    case "End": return "End";
     case "ArrowUp":
     case "ArrowDown":
     case "ArrowLeft":

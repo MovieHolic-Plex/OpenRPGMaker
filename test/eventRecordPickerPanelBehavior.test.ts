@@ -85,6 +85,36 @@ describe("레코드 픽커 창 동작", () => {
     expect(after).not.toBe(before);
   });
 
+  it("빈 검색 문구는 아이템·스위치 받침에 맞는 조사를 쓴다", () => {
+    openRecordPickerPanel({ kind: "item", currentId: "", onSelect: () => undefined });
+    const search = picker().querySelector<HTMLInputElement>(
+      '[data-testid="event-record-picker-search"]',
+    )!;
+    search.value = "없는물건";
+    search.dispatchEvent(new Event("input", { bubbles: true }));
+    expect(picker().querySelector('[data-testid="event-record-picker-no-result"]')?.textContent)
+      .toBe('"없는물건" 과 일치하는 아이템이 없습니다.');
+
+    document.querySelectorAll('[data-testid="event-record-picker"]').forEach((node) => node.remove());
+    openRecordPickerPanel({ kind: "switch", currentId: "", onSelect: () => undefined });
+    const switchSearch = picker().querySelector<HTMLInputElement>(
+      '[data-testid="event-record-picker-search"]',
+    )!;
+    switchSearch.value = "가나";
+    switchSearch.dispatchEvent(new Event("input", { bubbles: true }));
+    expect(picker().querySelector('[data-testid="event-record-picker-no-result"]')?.textContent)
+      .toBe('"가나" 와 일치하는 스위치가 없습니다.');
+  });
+
+  it("아이템이 없으면 빈 목록도 받침 있는 조사를 쓴다", () => {
+    const project = createBlankProject();
+    project.database.items = [];
+    store.replace(project);
+    openRecordPickerPanel({ kind: "item", currentId: "", onSelect: () => undefined });
+    expect(picker().textContent).toContain("아이템이 아직 없습니다.");
+    expect(picker().textContent).not.toContain("아이템가");
+  });
+
   it("Enter 는 선택을 확정하고 창을 닫는다", () => {
     const onSelect = vi.fn();
     openRecordPickerPanel({ kind: "switch", currentId: "", onSelect });

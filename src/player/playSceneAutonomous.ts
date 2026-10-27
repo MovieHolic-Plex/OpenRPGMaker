@@ -30,7 +30,7 @@ import {
 import { canNpcMove, isPlayerOccupyingTile } from "@/player/playSceneAutonomousMapActions";
 import { detourAroundPlayer, sidestepForPlayer } from "@/player/commandRouteDetour";
 import { startPlayerRoute } from "@/player/playerRouteState";
-import { applySpriteAlpha, setNpcIdleFrame, setNpcWalkFrame } from "@/player/playSceneAutonomousSprites";
+import { animationStepsWhileStopped, applySpriteAlpha, setNpcIdleFrame, setNpcWalkFrame } from "@/player/playSceneAutonomousSprites";
 import { nextChaseDecision } from "@/player/chaseAi";
 import { tickChaseSpawnGrace } from "@/player/chaseSpawnGrace";
 import { strollChainPending, strollPauseScale, wanderCommand } from "@/player/npcStroll";
@@ -40,11 +40,75 @@ import type { AutonomousNpcSceneContext } from "@/player/playSceneAutonomousType
 import { moveRuntimeEventPosition,
 runtimeEventView,
 type RuntimeEventView,
-runtimeEventViewById, } from "@/project/runtimeEventState"
+runtimeEventViewById,
+runtimeEventViewsForMap, } from "@/project/runtimeEventState"
+
+/** 정지 애니메이션 시계. 씬이 사라지면 함께 버린다. */
+const stoppedStepElapsedMs = new WeakMap<object, Map<string, number>>();
 
 export function updateAutonomousNPCs(scene: AutonomousNpcSceneContext, frameDeltaMs: number): void {
   // NPC 마다 자기 뷰를 id 로 1~3번 찾는다. 이 동기 루프 동안만 id 색인을 쓴다(runtimeEventState §withEventIdIndexPass).
-  withChaseRepathBudget(scene, () => withEventIdIndexPass(() => updateAutonomousNPCsInPass(scene, frameDeltaMs)));
+  withChaseRepathBudget(scene, () => withEventIdIndexPass(() => {
+    updateAutonomousNPCsInPass(scene, frameDeltaMs);
+    updateStoppedStepAnimations(scene, frameDeltaMs);
+  }));
+}
+
+/**
+ * 「정지 시 애니메이션」·「방향 고정 + 정지 애니메이션」·「4프레임 애니메이션」.
+ *
+ * 걷지 않는 이벤트(횃불·깃발·물)에는 무버가 없다. 무버 루프만 보면 가운데 프레임에 얼어 있다.
+ * 걷는 중에는 걸음 프레임이 우선하고, 명령으로 바꾼 프레임과 애니메이션 OFF 는 덮지 않는다.
+ * 주기는 그 페이지 이동 속도의 한 칸 시간 절반 — 속도를 올리면 제자리 애니메이션도 빨라진다.
+ */
+function updateStoppedStepAnimations(scene: AutonomousNpcSceneContext, frameDeltaMs: number): void {
+  const project = store.getCurrent();
+  const dt = Math.max(0, frameDeltaMs);
+  let clocks = stoppedStepElapsedMs.get(scene);
+  if (!clocks) {
+    clocks = new Map();
+    stoppedStepElapsedMs.set(scene, clocks);
+  }
+  const seen = new Set<string>();
+  const overrides = scene.eventGraphicPatternOverrides;
+  for (const view of stoppedStepViews(scene, project)) {
+    const eventId = view.event.id;
+    seen.add(eventId);
+    if (overrides?.has(eventId)) continue;
+    const mover = scene.autonomousNPCs.get(eventId);
+    if (mover?.animationEnabled === false) continue;
+    const elapsed = (clocks.get(eventId) ?? 0) + dt;
+    clocks.set(eventId, elapsed);
+    // 걷는 중에는 updateActiveNpcMove 가 발 그림을 이미 맞춘다. 여기서 다시 그리면 위상이 싸운다.
+    if (mover?.activeMove && !mover.activeMove.hop) continue;
+    const sprite = scene.eventSprites.get(eventId);
+    if (!sprite) continue;
+    setNpcWalkFrame(
+      sprite,
+      view.page?.graphic.pattern ?? 0,
+      mover?.facing ?? view.direction ?? "down",
+      elapsed,
+      view.animationType,
+      true,
+      npcMoveDurationMs(mover?.speedRank ?? view.movement.speed),
+      1,
+    );
+  }
+  for (const id of [...clocks.keys()]) if (!seen.has(id)) clocks.delete(id);
+}
+
+function stoppedStepViews(scene: AutonomousNpcSceneContext, project: ReturnType<typeof store.getCurrent>): RuntimeEventView[] {
+  const spriteIds = scene.eventSprites.keys?.();
+  if (spriteIds) {
+    const views: RuntimeEventView[] = [];
+    for (const eventId of spriteIds) {
+      const view = runtimeEventViewById(project, scene.map, scene.session, scene.eventPositions, eventId);
+      if (view && animationStepsWhileStopped(view.animationType)) views.push(view);
+    }
+    return views;
+  }
+  return runtimeEventViewsForMap(project, scene.map, scene.session, scene.eventPositions)
+    .filter((view) => animationStepsWhileStopped(view.animationType));
 }
 
 function updateAutonomousNPCsInPass(scene: AutonomousNpcSceneContext, frameDeltaMs: number): void {

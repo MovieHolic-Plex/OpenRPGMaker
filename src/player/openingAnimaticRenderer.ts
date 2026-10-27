@@ -1,5 +1,5 @@
 import { resolveAssetResourceUrl } from '@/assets/generatedAssetResourceResolver';
-import { parseCssColor, sampleAnimaticTrack, animaticCueVolume, animaticPulseValue, type OpeningAnimatic, type AnimaticLayer, type AnimaticRegionLoop } from '@/project/openingAnimatic';
+import { parseCssColor, resolveAnimaticCameraAxis, sampleAnimaticTrack, animaticCueVolume, animaticPulseValue, type OpeningAnimatic, type AnimaticLayer, type AnimaticRegionLoop } from '@/project/openingAnimatic';
 import type { Project } from '@/project/types';
 import { openingMapViewMapId } from '@/project/openingMapView';
 import { renderMapViewCanvas } from '@/player/mapBackgroundMapView';
@@ -630,9 +630,9 @@ function drawStage(ctx: CanvasRenderingContext2D, sx: number, sy: number, snappi
   const cameraTime = reduced ? 0 : t;
   const snap = (v: number) => snapping > 0 ? Math.round(v * snapping) / snapping : v;
   const snapSize = (v: number) => snapping > 0 ? Math.max(1 / snapping, Math.round(v * snapping) / snapping) : v;
-  let cx = sampleAnimaticTrack(c?.keys?.x, cameraTime, c?.x ?? a.width / 2), cy = sampleAnimaticTrack(c?.keys?.y, cameraTime, c?.y ?? a.height / 2);
-  if (Math.abs(cx) <= a.width * 0.25) cx += a.width / 2;
-  if (Math.abs(cy) <= a.height * 0.25) cy += a.height / 2;
+  const fallbackX = c?.x ?? a.width / 2, fallbackY = c?.y ?? a.height / 2;
+  let cx = resolveAnimaticCameraAxis(sampleAnimaticTrack(c?.keys?.x, cameraTime, fallbackX), c?.keys?.x, fallbackX, a.width);
+  let cy = resolveAnimaticCameraAxis(sampleAnimaticTrack(c?.keys?.y, cameraTime, fallbackY), c?.keys?.y, fallbackY, a.height);
   const zoom = sampleAnimaticTrack(c?.keys?.zoom, cameraTime, c?.zoom ?? 1), rotation = sampleAnimaticTrack(c?.keys?.rotation, cameraTime, c?.rotation ?? 0);
   const shake = c?.shake;
   if (!reduced && shake && t >= shake.atMs && t < shake.atMs + shake.durationMs) {

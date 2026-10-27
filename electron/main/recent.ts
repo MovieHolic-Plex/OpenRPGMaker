@@ -3,10 +3,13 @@ import { existsSync, readFileSync, readdirSync, realpathSync, rmSync, statSync, 
 import { tmpdir } from "node:os";
 import { dirname, isAbsolute, join, resolve, sep } from "node:path";
 import { app } from "electron";
+import { isUsableNewDir } from "./newProjectDir";
 import { readProjectCoverSource, readProjectFolderSummary } from "../local-store/summary";
 import { PROJECT_STORE_FILE } from "../local-store/schema";
 import { PROJECT_COVER_VERSION, type ProjectCoverSource, type RecentProjectEntry, type SuggestedProjectDir } from "../shared/start";
 import type { RecentTeamEntry } from "../shared/start";
+
+export { prepareNewProjectDir } from "./newProjectDir";
 
 type RecentEntry = { readonly projectDir: string; readonly title: string; readonly lastOpenedAt: string };
 const MAX_RECENT = 20;
@@ -205,15 +208,6 @@ function folderNameFor(title: string | undefined): string {
   return cleaned || DEFAULT_PROJECT_NAME;
 }
 
-function isUsableNewDir(path: string): boolean {
-  if (!existsSync(path)) return true;
-  try {
-    return statSync(path).isDirectory() && readdirSync(path).length === 0;
-  } catch {
-    return false;
-  }
-}
-
 /** `<root>/<이름>` 이 이미 쓰이고 있으면 `<이름> 2`, `<이름> 3` … 으로 비켜 간다. */
 export function suggestProjectDir(title: string | undefined, root: string = defaultProjectRoot()): SuggestedProjectDir {
   const base = folderNameFor(title);
@@ -222,16 +216,4 @@ export function suggestProjectDir(title: string | undefined, root: string = defa
     if (isUsableNewDir(candidate)) return { root, projectDir: candidate };
   }
   return { root, projectDir: join(root, base + " " + Date.now()) };
-}
-
-/**
- * 시작 화면이 고른 새 폴더를 준비한다. 절대 경로여야 하고, 없거나 비어 있어야 한다 —
- * 이미 무언가 있는 폴더에 새 프로젝트를 심으면 사용자의 파일 옆에 project.sqlite 가 생긴다.
- */
-export function prepareNewProjectDir(projectDir: string): string {
-  if (!isAbsolute(projectDir)) throw new Error("새 프로젝트 폴더는 절대 경로여야 합니다.");
-  const dir = resolve(projectDir);
-  if (!isUsableNewDir(dir)) throw new Error("이미 파일이 있는 폴더입니다. 다른 이름이나 위치를 골라 주세요.");
-  mkdirSync(dir, { recursive: true });
-  return dir;
 }

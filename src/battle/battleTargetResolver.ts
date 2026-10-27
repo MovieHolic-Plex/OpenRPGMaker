@@ -104,7 +104,26 @@ export function targetIdFor(target: BattleTarget): string {
   return target.id;
 }
 
-function battlerIds(target: BattleTarget): readonly string[] {
+/**
+ * 고른 단일 대상이 행동 전에 쓰러졌을 때, 같은 명단에서 다음으로 맞출 수 있는 배틀러.
+ * 요청 id 가 명단에 없으면 undefined — 없는 대상은 다른 배틀러로 돌리지 않는다.
+ * `candidates` 는 지금 맞출 수 있는 쪽(살아 있는 상대, 또는 화면에 있는 적)만 담는다.
+ */
+export function nextLivingBattler<T extends Pick<BattleTarget, "id" | "recordId">>(
+  roster: readonly T[],
+  candidates: readonly T[],
+  requestedId: string,
+): T | undefined {
+  const start = roster.findIndex((entry) => battlerIds(entry).includes(requestedId));
+  if (start < 0) return undefined;
+  for (let step = 1; step <= roster.length; step += 1) {
+    const entry = roster[(start + step) % roster.length];
+    if (entry && candidates.includes(entry)) return entry;
+  }
+  return undefined;
+}
+
+function battlerIds(target: Pick<BattleTarget, "id" | "recordId">): readonly string[] {
   return target.id === target.recordId ? [target.id] : [target.id, target.recordId];
 }
 

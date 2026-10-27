@@ -24,6 +24,7 @@ import { afterBootSettled, expectBootSettle } from "@/util/bootSettled";
 import { preloadBundledJsonForProject } from "@/project/defaults/bundledJson";
 import { editorState } from "@/editor/editorState";
 import { store } from "@/project/store";
+import { reloadFlushAllowsReload } from "../electron/shared/reloadFlow";
 import { hasElectronBridge } from "@/project/persistence/electronRepository";
 import { adoptElectronOpenProject } from "@/project/persistence/repository";
 import { initI18n } from "@/i18n";
@@ -75,6 +76,20 @@ if (typeof window !== "undefined" && window.location) {
         console.error("[store] 메뉴 저장 실패:", error);
       });
     });
+    // 보기 → 새로고침·개발자 도구의 새로고침. 리스너가 붙기 전에는 메인이 바로 새로고침한다.
+    window.oprn.lifecycle.markFlushReady?.();
+    window.oprn.lifecycle.onFlushBeforeReload?.(() => {
+      void store.flush().then(
+        (result) => {
+          const ok = reloadFlushAllowsReload(result.kind, store.hasUnsavedChanges());
+          void window.oprn?.lifecycle.flushReloadDone?.(ok);
+        },
+        (error: unknown) => {
+          console.error("[store] 새로고침 전 저장 실패:", error);
+          void window.oprn?.lifecycle.flushReloadDone?.(false);
+        },
+      );
+    });
     // 파일 → 새 프로젝트·폴더 열기. flush 가 끝나고 남은 변경이 없을 때만 메인이 폴더를 바꾼다.
     window.oprn.lifecycle.onFlushBeforeReplace?.(() => {
       void store.flush().then(
@@ -87,11 +102,19 @@ if (typeof window !== "undefined" && window.location) {
         },
       );
     });
-    window.oprn.lifecycle.flushReplaceReady?.();
-  }
+    window.oprn.lifecycle.flushReplaceReady?.();  }
 
   window.addEventListener("beforeunload", (event) => {
-    if (window.oprn?.closeIsHostDriven === true) return;
+    if (window.oprn?.closeIsHostDriven === true) {
+      // 창 닫기는 메인이 close 에서 먼저 막으므로 여기까지 오지 않는다.
+      // 개발자 도구의 새로고침은 보기 메뉴를 타지 않는다. 미저장이면 막고, 메인이 저장한 뒤 다시 연다.
+      if (store.hasUnsavedChanges()) {
+        try { window.oprn.lifecycle.noteUnsavedReloadBlock?.(); } catch { /* 막기만 해도 편집은 남는다. */ }
+        event.preventDefault();
+        event.returnValue = "";
+      }
+      return;
+    }
     // Local-first: flush whenever dirty, not only when autosave UI says pending/saving.
     // Paint during an in-flight save can leave dirty=true while status briefly reads "saved".
     if (store.hasUnsavedChanges()) {
