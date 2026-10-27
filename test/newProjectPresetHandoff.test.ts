@@ -6,7 +6,8 @@ import { isAssistantEndpointReady } from "@/ai/assistantEndpoint";
 import { interviewBrief } from "./helpers/gameDesignBrief";
 import type { Project } from "@/project/types";
 
-vi.mock("@/project/store", () => ({ store: { getCurrent: vi.fn(), getProjectIdentity: vi.fn(), update: vi.fn(), flush: vi.fn() } }));
+// subscribe: mapEditHistory 가 불러오는 순간 store.subscribe 로 프로젝트 전환 초기화를 건다(가져오기 그래프에 들어옴).
+vi.mock("@/project/store", () => ({ store: { getCurrent: vi.fn(), getProjectIdentity: vi.fn(), update: vi.fn(), flush: vi.fn(), subscribe: vi.fn(() => () => undefined) } }));
 vi.mock("@/editor/aiBootIntent", () => ({ setPendingAiBootIntent: vi.fn() }));
 vi.mock("@/util/toast", () => ({ toast: vi.fn() }));
 vi.mock("@/ai/assistantEndpoint", () => ({ resolveSurfaceAiConfig: vi.fn(() => ({})), isAssistantEndpointReady: vi.fn(() => true) }));
