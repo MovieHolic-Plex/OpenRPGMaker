@@ -8,7 +8,7 @@ import { AtmosphereAudio } from "./atmosphereAudio";
 // 순수 로직(큐/페이드/리소스 해석)은 audioQueue/fade/audioResources 에 분리돼 단위 테스트된다.
 
 import type { AudioChannel, AudioCommandState } from "@/project/session";
-import { clampVolume, computeFadeVolume, isFadeComplete } from "./fade";
+import { authoredTrackGain, clampVolume, computeFadeVolume, isFadeComplete } from "./fade";
 import {
   createAudioQueueState,
   requestAudio,
@@ -294,7 +294,7 @@ export class AudioEngine {
       }
       this.play(channel, track.resourceId, url, track.loop, {
         ...options,
-        ...(track.volume === undefined ? {} : { gain: track.volume / 100 }),
+        ...(track.volume === undefined ? {} : { gain: authoredTrackGain(track.volume) }),
         ...(track.fadeInMs === undefined ? {} : { fadeInMs: track.fadeInMs }),
       });
     }

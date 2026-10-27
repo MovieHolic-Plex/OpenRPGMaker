@@ -113,6 +113,22 @@
   padding: 8px 10px;
 }
 
+.event-command-text-speaker-row {
+  align-items: center;
+  display: flex;
+  gap: 6px;
+  min-width: 0;
+}
+
+.event-command-text-speaker-field .event-command-text-speaker-row input {
+  flex: 1;
+  width: auto;
+}
+
+.event-command-text-speaker-row .btn {
+  flex: none;
+}
+
 .event-command-text-speaker-field small {
   color: var(--text-3, #766C60);
   font: 500 10px/1.3 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;

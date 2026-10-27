@@ -71,6 +71,19 @@ describe("Sound Layer preserves the authored channel and track controls", () => 
     if (channel !== "bgm") expect(session.audio.bgm?.resourceId).toBe("existing-bgm");
   });
 
+  it("plays a fractional volume as a gain so 0.6 is 60%, not 0.6%", () => {
+    const project = createBlankProject();
+    const value = getAudioEngine();
+    engines.push(value);
+    value.unlock();
+    value.setVolume("bgm", 0.7);
+    value.setVolume("se", 0.8);
+    playAudioCommand({ channel: "se", resourceId, loop: false, volume: 0.6, fadeInMs: 0 }, project);
+    expect(lastElement().volume).toBeCloseTo(0.48);
+    value.resumeFromState({ bgs: { resourceId, loop: true, volume: 0.5, fadeInMs: 0 } }, (id) => `/${id}.wav`);
+    expect(lastElement().volume).toBeCloseTo(0.35);
+  });
+
   it("the player adapter keeps BGS separate and multiplies track volume by the mixer", () => {
     // Given: only the platform media element is substituted; adapter and engine are real.
     const project = createBlankProject();

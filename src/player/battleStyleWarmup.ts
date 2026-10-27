@@ -53,8 +53,8 @@ export function warmBattleStyles(host: HTMLElement, snapshot: BattleSnapshot): v
     );
     host.append(stage);
     void scene.offsetHeight;
-    // 그림도 여기서 데운다. 스타일만 데우면 마운트가 img.src·배경 url 을 처음 요청하고 그 요청이
-    // 커버가 걷힌 뒤 도착한다(2026-10-27 실측: mount 단계 517KB 재다운로드).
+    // 그림도 여기서 데운다. 스타일만 데우면 실제 마운트가 img.src·배경 url 을 처음 요청하고
+    // 그 요청이 커버가 걷힌 뒤 도착한다(2026-10-27 실측: mount 단계에서 515KB 재다운로드).
     // 무대는 아래 finally 에서 **같은 동기 호출 안에서** 떼야 한다 — 이 모듈의 계약이고
     // test/battleStyleWarmup.test.ts 가 stage.isConnected === false 로 지킨다. 그래서 DOM 을
     // 붙여 둔 채 기다리지 않고, URL 만 모아 Image() 로 요청만 띄운다(요청은 DOM 수명과 무관하다).

@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { createInterpreter } from "@/player/interpreter";
 import { screenColorToRgb, clampMs } from "@/player/interpreter/commandCatalog";
+import { HIDE_SHOW_SCREEN_FADE_MS } from "@/player/interpreter/screenEffectPlan";
 import { shakeIntensityRatio } from "@/player/playSceneMapCommands";
 import { M2_COMMAND_CATALOG } from "@/project/eventCommands/m2Catalog";
 import type { Command, M2CommandFields } from "@/project/types";
@@ -33,8 +34,7 @@ function modernM2Command(title: string, fields: M2CommandFields = {}): Command {
   return { kind: "m2Command", commandId: entry.id, fields };
 }
 
-// flashScreen/shakeScreen 은 인터프리터가 pause 로 반환하므로 resume 으로 넘긴다.
-// tint/hide screen 은 pause 없이 내부에서 상태 기록 후 바로 다음 명령으로 간다.
+// flashScreen/shakeScreen/wait(화면 숨기기·표시 페이드 포함)는 pause 이므로 resume 으로 넘긴다.
 function drainScreenCommands(commands: Command[], session: PlaySessionLike): void {
   const interp = createInterpreter(commands, session);
   let r = interp.start();
@@ -112,21 +112,29 @@ describe("화면 효과 — 인터프리터", () => {
     expect(session.m2Runtime?.screen.tint).toBe("255,128,0");
   });
 
-  it("Hide Screen 이 m2Runtime.screen.hidden = true 를 기록한다", () => {
+  it("Hide Screen 이 m2Runtime.screen.hidden = true 를 기록하고 페이드가 끝날 때까지 기다린다", () => {
     const session = mkSession();
-    drainScreenCommands([modernM2Command("Hide Screen")], session);
+    const interp = createInterpreter([modernM2Command("Hide Screen")], session);
+    const step = interp.start();
 
     expect(session.m2Runtime?.screen.hidden).toBe(true);
+    expect(session.m2Runtime?.screen.hideFadeMs).toBe(HIDE_SHOW_SCREEN_FADE_MS);
+    expect(step).toEqual({ kind: "wait", ms: HIDE_SHOW_SCREEN_FADE_MS });
   });
 
-  it("Show Screen 이 hidden 상태를 해제한다", () => {
+  it("Show Screen 이 hidden 상태를 해제하고 같은 길이만큼 페이드한다", () => {
     const session = mkSession();
-    drainScreenCommands(
+    const interp = createInterpreter(
       [modernM2Command("Hide Screen"), modernM2Command("Show Screen")],
       session
     );
+    const hide = interp.start();
+    expect(hide).toMatchObject({ kind: "wait", ms: HIDE_SHOW_SCREEN_FADE_MS });
+    const show = interp.resume(undefined);
 
     expect(session.m2Runtime?.screen.hidden).toBe(false);
+    expect(session.m2Runtime?.screen.hideFadeMs).toBe(HIDE_SHOW_SCREEN_FADE_MS);
+    expect(show).toEqual({ kind: "wait", ms: HIDE_SHOW_SCREEN_FADE_MS });
   });
 });
 

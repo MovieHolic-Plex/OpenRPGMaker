@@ -5,7 +5,7 @@
  * 조작(파티 차례): 방향키 = 커서, 결정(Z/Enter/Space) = 유닛 고르기 → 이동할 칸 → 공격할 적(또는 제자리 결정 = 대기),
  * 취소(X/Esc) = 선택 취소. 적 차례는 자동으로 진행된다.
  */
-import { directionForKey, isCancelKey, isConfirmKey } from "@/player/keyBindings";
+import { directionForKey, isCancelKey, isConfirmKey, keyboardEventKey } from "@/player/keyBindings";
 import {
   adjacentFoes,
   reachableTiles,
@@ -161,11 +161,16 @@ export function mountTacticsBattle(
   }
 
   const onKeyDown = (event: KeyboardEvent): void => {
-    if (!root.isConnected || event.repeat && !directionForKey(event.key)) return;
-    if (!directionForKey(event.key) && !isConfirmKey(event.key) && !isCancelKey(event.key)) return;
+    if (!root.isConnected) return;
+    // 턴제 전투와 같이, IME 가 key 를 Process 로 바꿔도 code 의 물리 키로 칸을 움직인다.
+    const key = keyboardEventKey(event);
+    if (key === "Process" || key === "Unidentified") return;
+    if (event.isComposing && key === event.key) return;
+    if (event.repeat && !directionForKey(key)) return;
+    if (!directionForKey(key) && !isConfirmKey(key) && !isCancelKey(key)) return;
     event.preventDefault();
     event.stopPropagation();
-    press(event.key);
+    press(key);
   };
   // 전역 필드 핸들러보다 먼저 받는다(캡처) — 방향키가 맵 위 주인공을 움직이지 않게.
   window.addEventListener("keydown", onKeyDown, true);

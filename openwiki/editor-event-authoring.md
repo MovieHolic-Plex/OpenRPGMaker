@@ -127,6 +127,11 @@ Enter 로 맡기면 곧바로 닫혀 다음 칸을 누를 수 있다. 맡긴 일
 먼저 깔린 이벤트를 집으므로 나중에 놓은 쪽은 없는 것처럼 보인다.
 
 「이벤트 생성」「장소 이동 이벤트 생성」「탈것 시작 위치」도 그 칸을 이미 덮는 이벤트가 있으면 새로 만들지 않는다.
+
+우클릭 「잘라내기」·「삭제」는 `deleteEditorEvent` 가 남기는 맵 스냅샷 **한 칸**만 쓴다.
+그 앞에 프로젝트 스냅샷을 더 쌓으면 종류가 달라 합쳐지지 않아, 이벤트가 돌아온 뒤에도
+라벨 「편집」인 빈 단계가 남고 그 다음 되돌리기가 앞선 작업을 건드리지 못한다.
+
 계약: `test/eventLayerContextMenu.test.ts`, `test/eventDragMove.test.ts`.
 
 ## 조수에서도 이벤트 명령 생성기 사용 (2026-09-20)
@@ -213,7 +218,7 @@ Enter 로 맡기면 곧바로 닫혀 다음 칸을 누를 수 있다. 맡긴 일
 - **Data Query**(m2-217)에 같은 조회 14종을 더했다 — `actorLevel/actorHp/actorMp/actorMaxHp/actorHpPercent/actorHasState/partyLeaderIndex/partySize/playerFacing/playtimeSeconds/steps/clearCount/weekday/stringLength`. 식(m2-216)은 `leaderLevel·leaderHp·leaderMp·leaderHpPercent·partySize·playtime·steps·clearCount` 를 식별자로 읽는다.
 - **문자 입력**: `enterHeroName.stringVariableId` 를 주면 배우 이름 대신 문자열 변수에 저장한다(`prompt` 가 창 제목). 대사에서 `\T[id]` 로 찍는다(`\S[n]` 은 이미 속도 제어라 `T`).
 - 세션 새 칸 `playerFacing`·`stringVariables`·`stepCount` 는 세이브에 들어가고, `clearHistory` 는 **세이브에 넣지 않는다**(회차는 슬롯이 아니라 기기에 속한다).
-- 편집기: 조건 종류 선택기·고급 조건 목록 모두 `actorQueryConditionForm.ts` 하나가 그린다. 없는 배우·상태·엔딩 참조는 초안 검증이 `condition.<kind>.reference` 경고로 잡는다.
+- 편집기: 조건 종류 선택기·고급 조건 목록 모두 `actorQueryConditionForm.ts` 하나가 그린다. 없는 배우·상태·엔딩 참조는 초안 검증이 `condition.<kind>.reference` 경고로 잡는다. 요일 칸은 조건 분기 창이 폼을 다시 그리지 않아도 앞서 켠·끈 요일을 누적해 저장하고, 아래 문장도 그 배열을 따른다.
 - **추격 훅(#28)**: 추격자 `movement.pursuit.lostSwitchId` 는 수색 끝에 포기하는 순간 켜고 다시 발견하면 끈다. `followSwitchId` 는 문을 따라 다른 맵으로 넘어오기 시작하면 켠다(`horrorRuntime.ts` / `pursuitDoors.ts`). 페이지 조건으로 「따돌렸다」·「문이 열린다」 연출을 건다. 페이지 추격 패널과 `configure_object_behavior` 의 `pursuit` 에 노출, `test/mgPursuitHooks.test.ts`.
 - **파티 스킬 조건(`partyKnowsSkill{skillId,present?}`, 2026-10-15)**: 「이 스킬을 아는 구성원이 파티에 있다」 — 바위깨기·물 건너기 같은 필드 스킬 게이트의 페이지 조건·분기 조건. `partySkills.ts` 가 배우(습득표·직업·성장 트리·장비)와 몬스터 파티를 한꺼번에 푼다. 평가기는 둘(session·pageResolution)과 전투 이벤트라 한 군데만 고치면 어긋난다.
 - **배지 수 조건(`badgeCount{op,value}`, 2026-10-16)**: 「배지를 N개 이상 받았다」 — 몬스터 캠페인 `badges[].switchId` 가 켜진 개수(정의가 없으면 `mx_badge_N` 규약 스위치)를 비교한다. 해석기는 `project/badgeProgress.ts` 하나이고 `partySkillContext` 가 캠페인 배지 목록을 실어 모든 페이지 해석 호출처에 퍼진다(전투 이벤트는 `badgeContext`). 도구: `place_badge_gate`. 자세한 규칙은 `openwiki/monster-badge-progression.md`.

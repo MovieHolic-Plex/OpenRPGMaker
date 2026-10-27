@@ -152,7 +152,7 @@ Git에는 카탈로그·검색어·해시만, 그림은 `stills-v1` Release에 �
 | 데이터베이스 창·탭·레코드 편집 | `src/editor/panels/database.ts`, `src/editor/panels/databaseSystemView.ts`, `src/editor/databaseActions.ts` |
 | DB 레코드 스키마·필드 | `src/project/types/database.ts`, `src/project/databaseRecordModel.ts`, `src/project/io/shapeDatabaseFields.ts` |
 | AI 조수 패널 UI·도크·컴포저 | `src/editor/panels/aiChatPanel.ts`(3,400줄), `src/editor/panels/aiComposer.ts`, `src/editor/panels/aiPanelLayout.ts`, `src/editor/panels/aiProposalCard.ts` |
-| AI 스튜디오(장면 레일·모니터·브리핑·덱) | `src/editor/panels/aiStudioShell.ts`, `src/styles/database/tabs-b-assistant-panel/08-studio-mode-start-screen.css` (설계 `docs/superpowers/specs/2026-09-03-ai-studio-console-design.md`) |
+| AI 스튜디오(장면 레일·모니터·브리핑·덱) | `src/editor/panels/aiStudioShell.ts`, `src/styles/database/tabs-b-assistant-panel/08-studio-mode-start-screen.css`. 배치 기록은 `openwiki/editor-ai-panel.md` 「스튜디오 3분할」(3552행)부터 |
 | AI 턴·툴 호출·컨텍스트 | `src/ai/assistantSession.ts`(5,433줄 — 클래스만 남았다), `src/ai/session/*`(순수 표면 14모듈), `src/ai/llmClient.ts`, `src/ai/contextBuilder.ts`, `src/ai/approvalPolicy.ts` |
 | AI 툴 추가·수정 | `src/editor/tools/toolRegistry.ts` + `src/editor/tools/*` |
 | 우클릭 영역 작업(AI 로 영역 채우기) | `src/editor/panels/regionTaskModal.ts`, `src/editor/regionTask/*` |

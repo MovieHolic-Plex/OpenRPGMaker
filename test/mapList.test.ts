@@ -395,6 +395,56 @@ describe("map tree panel", () => {
     expect(setStart?.getAttribute("title")).toContain("이미 시작 맵");
   });
 
+  it("keeps the map filter caret where the author was typing", () => {
+    const host = document.createElement("div");
+    renderMapList(host);
+    const filter = host.querySelector<HTMLInputElement>('[data-testid="map-tree-filter"]');
+    if (!filter) throw new Error("filter");
+    filter.value = "빈맵";
+    filter.setSelectionRange(1, 1);
+    filter.dispatchEvent(new Event("input", { bubbles: true }));
+
+    const next = host.querySelector<HTMLInputElement>('[data-testid="map-tree-filter"]');
+    expect(next).not.toBe(filter);
+    expect(next?.value).toBe("빈맵");
+    expect(next?.selectionStart).toBe(1);
+    expect(next?.selectionEnd).toBe(1);
+    expect(document.activeElement).toBe(next);
+  });
+
+  it("keeps the map filter field while an IME composition is in progress", () => {
+    const host = document.createElement("div");
+    renderMapList(host);
+    const startId = store.getCurrent().startMapId;
+    const filter = host.querySelector<HTMLInputElement>('[data-testid="map-tree-filter"]');
+    if (!filter) throw new Error("filter");
+    filter.dispatchEvent(new Event("compositionstart"));
+    filter.value = "ㄱ";
+    const composing = new Event("input", { bubbles: true });
+    Object.defineProperty(composing, "isComposing", { value: true });
+    filter.dispatchEvent(composing);
+
+    expect(host.querySelector('[data-testid="map-tree-filter"]')).toBe(filter);
+    expect(host.querySelector(`[data-testid="map-tree-node-${startId}"]`)).not.toBeNull();
+
+    filter.value = "가";
+    filter.setSelectionRange(1, 1);
+    filter.dispatchEvent(new Event("compositionend", { bubbles: true }));
+    const next = host.querySelector<HTMLInputElement>('[data-testid="map-tree-filter"]');
+    expect(next).not.toBe(filter);
+    expect(next?.value).toBe("가");
+    expect(next?.selectionStart).toBe(1);
+    expect(next?.selectionEnd).toBe(1);
+    expect(host.querySelector(`[data-testid="map-tree-node-${startId}"]`)).toBeNull();
+
+    // 조합이 끝난 칸에 같은 값의 input 이 한 번 더 와도 커서를 끝으로 밀지 않는다.
+    filter.setSelectionRange(filter.value.length, filter.value.length);
+    filter.dispatchEvent(new Event("input", { bubbles: true }));
+    const after = host.querySelector<HTMLInputElement>('[data-testid="map-tree-filter"]');
+    expect(after?.selectionStart).toBe(1);
+    expect(after?.selectionEnd).toBe(1);
+  });
+
   it("분류 폴더를 고르면 상세 칸이 빈 칸이 아니라 이유를 적는다", () => {
     const project = createBlankProject();
     project.mapTree.children.push({ children: [], kind: "folder", mapId: "folder_town", name: "마을 묶음" });

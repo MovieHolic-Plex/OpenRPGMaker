@@ -1,5 +1,5 @@
 import {
-  directionForKey, isCancelKey, isConfirmKey, isShopFocusGroupKey, isShopDetailScrollKey,
+  directionForKey, isCancelKey, isConfirmKey, isShopFocusGroupKey, isShopDetailScrollKey, keyboardEventKey,
 } from "@/player/keyBindings";
 import { emitRuntimeJuice } from "@/player/runtimeJuice";
 
@@ -56,31 +56,35 @@ export function attachShopDecisionInput(root: HTMLElement, options: {
     row.addEventListener("click", () => select(index), { signal, capture: true });
   });
   root.addEventListener("keydown", event => {
-    if (event.isComposing) return;
+    // 상점 오버레이는 전역 키 처리기가 모달로 보고 물러난다. 한글 IME 는 그 리스너 밖에서도
+    // key 를 Process 로 바꾸므로, 커서 메뉴와 같이 물리 키를 읽는다. 복원되지 않은 글자 조합은 그대로 둔다.
+    const key = keyboardEventKey(event);
+    if (key === "Process" || key === "Unidentified") return;
+    if (event.isComposing && key === event.key) return;
     const detail = detailRoot();
     const active = root.ownerDocument.activeElement;
     const ring = groups();
     const groupIndex = ring.findIndex(group => group.some(node => node === active));
     const group = ring[groupIndex];
-    const direction = directionForKey(event.key);
-    const scrollKey = isShopDetailScrollKey(event.key);
-    if (!direction && !isConfirmKey(event.key) && !isCancelKey(event.key)
-      && !isShopFocusGroupKey(event.key) && !(detail && scrollKey)) return;
+    const direction = directionForKey(key);
+    const scrollKey = isShopDetailScrollKey(key);
+    if (!direction && !isConfirmKey(key) && !isCancelKey(key)
+      && !isShopFocusGroupKey(key) && !(detail && scrollKey)) return;
     event.preventDefault();
     event.stopPropagation();
-    if (event.repeat && (isConfirmKey(event.key) || isCancelKey(event.key) || isShopFocusGroupKey(event.key))) return;
-    if (isCancelKey(event.key)) {
+    if (event.repeat && (isConfirmKey(key) || isCancelKey(key) || isShopFocusGroupKey(key))) return;
+    if (isCancelKey(key)) {
       emitRuntimeJuice({ event: "menu-back" });
       root.querySelector<HTMLElement>(detail ? "[data-testid='shop-detail-close']" : "[data-testid='shop-item-cancel']")?.click();
-    } else if (isShopFocusGroupKey(event.key)) {
+    } else if (isShopFocusGroupKey(key)) {
       const next = (groupIndex + (event.shiftKey ? -1 : 1) + ring.length) % ring.length;
       if (ring[next]) focus(representative(ring[next]));
     } else if (detail && active instanceof HTMLElement && active.dataset.testid === "shop-detail-scroll" && scrollKey) {
       const max = Math.max(0, active.scrollHeight - active.clientHeight);
       const page = active.clientHeight;
-      const key = event.key.toLowerCase();
-      const next = key === "home" ? 0 : key === "end" ? max
-        : active.scrollTop + (key === "pageup" ? -page : key === "pagedown" ? page
+      const normalized = key.toLowerCase();
+      const next = normalized === "home" ? 0 : normalized === "end" ? max
+        : active.scrollTop + (normalized === "pageup" ? -page : normalized === "pagedown" ? page
           : direction === "up" || direction === "left" ? -32 : 32);
       active.scrollTop = Math.max(0, Math.min(max, next));
     } else if (direction) {
@@ -94,7 +98,7 @@ export function attachShopDecisionInput(root: HTMLElement, options: {
         focus(group[(index + (direction === "left" || direction === "up" ? -1 : 1) + group.length) % group.length]);
         emitRuntimeJuice({ event: "menu-select" });
       }
-    } else if (isConfirmKey(event.key)) {
+    } else if (isConfirmKey(key)) {
       // 수량 입력칸 위의 결정키는 선택 행의 결정과 같다 — 여기서 Enter 가 죽어 있으면
       // 힌트의 "E/Z/Enter/Space 결정" 이 거짓말이 된다(수량 타이핑 후 Enter = 그 수량으로 거래).
       if (active instanceof HTMLElement && active.dataset.testid === "shop-quantity-input") {

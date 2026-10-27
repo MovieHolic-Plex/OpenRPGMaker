@@ -1,4 +1,4 @@
-import { directionForKey, isCancelKey, isConfirmKey } from '@/player/keyBindings';
+import { directionForKey, isCancelKey, isConfirmKey, keyboardEventKey } from '@/player/keyBindings';
 
 /** A single lifetime owns every shop phase: a held confirm never reaches the next phase. */
 export function attachEmeraldShopInput(root: HTMLElement, actions: {
@@ -11,17 +11,22 @@ export function attachEmeraldShopInput(root: HTMLElement, actions: {
   const view = root.ownerDocument.defaultView ?? window;
   view.addEventListener('keydown', event => {
     if (!root.isConnected) return;
-    const direction = directionForKey(event.key);
-    const confirm = isConfirmKey(event.key), cancel = isCancelKey(event.key);
-    const scroll = ['PageUp', 'PageDown', 'Home', 'End'].includes(event.key);
-    if (!direction && !confirm && !cancel && !scroll && event.key !== 'Tab') return;
+    // 에메랄드 상점도 전역 키 처리기 밖이다. 한글 IME 의 Process 키를 물리 키로 되돌린다.
+    // 복원되지 않은 글자 조합은 상점을 움직이지 않는다.
+    const key = keyboardEventKey(event);
+    if (key === 'Process' || key === 'Unidentified') return;
+    if (event.isComposing && key === event.key) return;
+    const direction = directionForKey(key);
+    const confirm = isConfirmKey(key), cancel = isCancelKey(key);
+    const scroll = key === 'PageUp' || key === 'PageDown' || key === 'Home' || key === 'End';
+    if (!direction && !confirm && !cancel && !scroll && key !== 'Tab') return;
     event.preventDefault();
     event.stopImmediatePropagation();
-    if (event.isComposing || (event.repeat && (confirm || cancel))) return;
+    if (event.repeat && (confirm || cancel)) return;
     if (direction) actions.onDirection(direction);
     else if (confirm) actions.onConfirm();
     else if (cancel) actions.onCancel();
-    else if (scroll) actions.onScroll(event.key);
+    else if (scroll) actions.onScroll(key);
     // Tab stays in the current phase. There are no hidden footer actions to find.
   }, { capture: true, signal: controller.signal });
   return () => controller.abort();

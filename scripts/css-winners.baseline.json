@@ -10393,6 +10393,7 @@
     "\"Cinzel\", \"Trajan Pro\", Georgia, var(--runtime-ui-font, var(--font-ui)), serif",
     "400 5.625cqw/1.2 var(--runtime-ui-font, var(--font-ui))",
     "var(--db-studio-mono, ui-monospace, monospace)",
+    "16px 6rem minmax(0, 1fr) auto",
     "10px/1.5 monospace",
     "11px/1.5 monospace",
     "10px/1.6 monospace",

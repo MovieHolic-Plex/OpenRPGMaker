@@ -601,6 +601,9 @@
   min-width: 0;
   overflow-x: hidden;
   overflow-y: auto;
+  /* 조건 라벨 줄바꿈은 창 폭이 아니라 이 칸의 폭으로 정한다(pages-4.part-2). */
+  container-name: evt-settings-rail;
+  container-type: inline-size;
 }
 
 .event-page-number-tabs {
@@ -735,12 +738,14 @@
   gap: 5px;
 }
 
-/* RM 조건 한 줄: [✓] 라벨 | 컨트롤 | 접미어 */
+/* RM 조건 한 줄: [✓] 라벨 | 컨트롤 | 접미어.
+   4.75rem(76px)은 «이 이벤트 기억»(굵은 12px, 약 80px)의 끝 글자를 말줄임으로 삼켰다.
+   6rem(96px)이면 한 줄에 들어가고, 짧은 라벨(스위치·변수)은 같은 축에 남는다. */
 .event-editor-modal-body .event-condition-row {
   align-items: center;
   column-gap: 8px;
   display: grid;
-  grid-template-columns: 16px 4.75rem minmax(0, 1fr) auto;
+  grid-template-columns: 16px 6rem minmax(0, 1fr) auto;
   max-width: 100%;
   min-height: 26px;
   min-width: 0;
