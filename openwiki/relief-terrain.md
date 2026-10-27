@@ -285,6 +285,7 @@ UX2 페이지 보존 뒤 「높이 붓을 쓰면 렉」 신고. 원인은 붓 �
 - `EditScene.worldToTile`: `map.relief`에 높이가 있으면 `prepareReliefRead(map)` 뒤 `reliefPickCell(map.relief, groundX, groundY)`로 커서 아래에 보이는 윗면/절벽 칸 `{ x, y, groundY }`를 돌려준다.
 - `TilePaintEngine`: 일반 타일·스탬프·지우개·충돌·스포이트·이벤트 배치는 들림이 역산된 논리 칸 `(x, y)`에 적용하고, 높이 붓(`tool === "relief"`)만은 올리는 동안 같은 화면 자리에 머물러도 칸이 북쪽으로 튀지 않도록 원래 땅바닥 줄 `groundY`를 그대로 쓴다.
 - `editSceneHoverPreview` · `DragOperationHandler` · `EditScene.renderPastePreviewGhost` · `editSceneRender`: 호버 프리뷰, 선/직사각형/타원 드래그 프리뷰, 클립보드 붙여넣기 고스트, 시작 위치·충돌 오버레이 모두 각 칸의 `cellLift(lift, x, y) × tileSize`만큼 위로 올려 실제 그려질 화면 자리와 일치시킨다. 호버 캐시 키에 `reliefSignature`와 `groundY`를 포함해 높이가 바뀐 직후에도 고스트가 즉시 갱신되며, 포인터가 맵 밖으로 나가거나 `pointerout`이 오면 호버 레이어를 비우고 렌더 프레임을 요청한다.
+- 영역 복사·붙여넣기(`mapClipboard`)는 타일과 함께 그 사각형의 높이·경사로·벽면 장식을 옮긴다. 평지를 붙이거나 선택 영역을 지우면 그 칸의 높이는 0이 되고, 맵이 통째로 평지가 되면 `relief` 를 뺀다. 붙여넣기 고스트는 목적지 언덕이 아니라 스탬프의 높이로 들린다. 높이가 없는 옛 클립보드는 목적지의 높이를 그대로 둔다.
 - 검증: `scripts/capture/capture-relief-paint-offset.mjs`가 평지(줌 1·2·3), 고원(`h = 1..3`, 줌 1..3, 바닥/상위/3×3 붓/지우개/이벤트/카메라 스크롤), 실제 높이 러프 붓(`S/raise`, `M/mountain`) 위 칠하기까지 118개 지점을 실측해 모든 지점에서 `dx = 0`, `dy = 0`, `visualDy = 0`, `ghostVisualDy = 0`, `ghostDx = 0`, `errors = []`임을 확인했다.
 ## 알려진 한계 · 결정이 필요한 것
 
