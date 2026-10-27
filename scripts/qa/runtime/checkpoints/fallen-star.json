@@ -7026,6 +7026,46 @@
      "shot": true
     }
    ]
+  },
+  {
+   "id": "act2-play-hub",
+   "label": "제2막 막사를 빠져나온 뒤부터 대화형 플레이(독립 판정용) — 짐을 찾고 사다리 앞",
+   "note": "runtimeQaInteractive.mjs — QA_INTERACTIVE_DIR 폴더에 scripts/qa/play-step.mjs 로 조작을 보낸다",
+   "mapId": "fs2_barracks",
+   "x": 18,
+   "y": 6,
+   "facing": "up",
+   "switches": {
+    "sw_fs_main_started": true,
+    "sw_fs_main_done": true,
+    "sw_fs_iris_joined": true,
+    "sw_fs2_act2_started": true,
+    "sw_fs2_bread_given": true,
+    "sw_fs2_cell_key_found": true,
+    "sw_fs2_cell_open": true,
+    "sw_fs2_barracks_cleared": true
+   },
+   "party": [
+    {
+     "actorId": "actor_hero",
+     "level": 8
+    },
+    {
+     "actorId": "actor_fs_elena",
+     "level": 8
+    }
+   ],
+   "beats": [
+    {
+     "id": "play",
+     "ops": [
+      {
+       "kind": "interactive"
+      }
+     ],
+     "shot": true
+    }
+   ]
   }
  ]
 }
