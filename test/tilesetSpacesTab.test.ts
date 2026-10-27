@@ -5,12 +5,17 @@ import { renderTilesetSpacesTab, resetTilesetSpacesTabSession } from "@/editor/p
 import { COMBINED_TOWN_TILESET_ID } from "@/project/defaults/constants";
 import { store } from "@/project/store";
 import { FakeElement, installFakeDom } from "./fakeDom";
+import { withRetiredEasyRpgTilesets } from "./support/retiredEasyRpgTilesets";
 
 let restoreDom: (() => void) | undefined;
 
 beforeEach(() => {
   restoreDom = installFakeDom();
   resetTilesetSpacesTabSession();
+  // 2026-10-07 저작권 정리로 새 프로젝트에 EasyRPG 실내·합본 마을 시트가 없다 — 이 탭 시험은 그 시트 id 를 겨냥하므로 옛 저장본처럼 심는다.
+  store.update((project) => {
+    withRetiredEasyRpgTilesets(project);
+  });
 });
 
 afterEach(() => {

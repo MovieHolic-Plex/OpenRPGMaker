@@ -5,29 +5,42 @@ import { resetMapEditHistory } from "@/editor/mapEditHistory";
 import { runTool } from "@/editor/tools/toolRunner";
 import type { ToolContext } from "@/editor/tools/types";
 import { createBlankProject } from "@/project/defaults";
-import { COMBINED_TOWN_TILESET_ID } from "@/project/defaults/constants";
 import type { Project } from "@/project/types";
+import { startOnRetiredCombinedTown, withRetiredEasyRpgTilesets } from "./support/retiredEasyRpgTilesets";
 
 const MAP_ID = "map_blank_start";
 
+// 2026-10-07 저작권 정리: 새 프로젝트에는 합본 마을·실내·던전 시트와 성채·숲마을 번들이 없다 — 복제 원본은 첫 타일셋을 쓴다.
 function withUploaded(project: Project, id: string, family?: string): Project {
-  const bundled = project.tilesets[COMBINED_TOWN_TILESET_ID]!;
+  const bundled = Object.values(project.tilesets)[0]!;
   const tileset = { ...structuredClone(bundled), id, name: `올린 ${id}`, image: { type: "uploaded" as const, id: `asset_${id}` } };
   delete tileset.referenceDocuments;
   delete tileset.referenceSourceTilesetId;
+  delete tileset.family;
   project.tilesets[id] = family ? { ...tileset, family } : tileset;
+  return project;
+}
+
+/** 번들 성채 칩셋(opengameart_castle, id 로 castle 계열)을 새 프로젝트에 다시 들인다 — 정리 뒤 새 프로젝트에는 없다. */
+function withCastle(project: Project): Project {
+  const tileset = { ...structuredClone(Object.values(project.tilesets)[0]!), id: "opengameart_castle", name: "성채", image: { type: "bundled" as const, id: "tex_opengameart_castle" } };
+  delete tileset.referenceDocuments;
+  delete tileset.referenceSourceTilesetId;
+  delete tileset.family;
+  project.tilesets.opengameart_castle = tileset;
   return project;
 }
 
 /** 지금 보는 맵이 업로드 칩셋(Rasak 계열 흉내)인 프로젝트. 같은 계열 칩셋이 하나 더 있다. */
 function uploadedProject(): Project {
-  const project = withUploaded(withUploaded(createBlankProject(), "rasak_field", "rasak-fantasy"), "rasak_cave", "rasak-fantasy");
+  const project = withUploaded(withUploaded(withCastle(withRetiredEasyRpgTilesets(createBlankProject())), "rasak_field", "rasak-fantasy"), "rasak_cave", "rasak-fantasy");
   project.maps[MAP_ID]!.tilesetId = "rasak_field";
   return project;
 }
 
-function dungeon(ctx: ToolContext, mapId = "map_cave") {
-  return runTool(ctx, "run_dungeon_room_pipeline", { mapId, theme: "stone", width: 36, height: 28 }, { dryRun: false });
+// run_dungeon_room_pipeline 은 제거된 도구다(EasyRPG 던전 폐기) — 같은 「다른 계열 새 맵」 검사를 create_map(EasyRPG 던전 칩셋)으로 건다.
+function dungeon(ctx: ToolContext, mapId = "map_cave", dryRun = false) {
+  return runTool(ctx, "create_map", { id: mapId, name: "동굴", width: 36, height: 28, tilesetId: "easyrpg_chipset_dungeon" }, { dryRun });
 }
 
 beforeEach(() => {
@@ -35,7 +48,7 @@ beforeEach(() => {
 });
 
 describe("칩셋 계열 검사", () => {
-  it("(a) 업로드 계열 맵을 보며 던전 파이프라인으로 새 맵 → 거부, 후보·ask_tileset_change 안내", () => {
+  it("(a) 업로드 계열 맵을 보며 다른 계열 던전 칩셋으로 새 맵 → 거부, 후보·ask_tileset_change 안내", () => {
     const project = uploadedProject();
     const ctx: ToolContext = { project, currentMapId: MAP_ID };
     const result = dungeon(ctx);
@@ -74,7 +87,7 @@ describe("칩셋 계열 검사", () => {
 
   it("(h) 손대지 않은 빈 기본 시작 맵은 그림체 기준이 아니다 → 다른 계열 새 맵 통과", () => {
     const ctx: ToolContext = { project: createBlankProject(), currentMapId: MAP_ID };
-    const result = runTool(ctx, "create_map", { id: "map_x", name: "성", width: 20, height: 15, tilesetId: "opengameart_castle" }, { dryRun: false });
+    const result = runTool({ ...ctx, project: withCastle(ctx.project) }, "create_map", { id: "map_x", name: "성", width: 20, height: 15, tilesetId: "opengameart_castle" }, { dryRun: false });
     expect(result.ok, result.summary).toBe(true);
   });
 
@@ -90,7 +103,7 @@ describe("칩셋 계열 검사", () => {
   });
 
   it.each(["lowerOverlayTiles", "upperOverlayTiles", "shadowBits"] as const)("(h'') %s 에만 저작한 기본 맵도 그림체 기준으로 남는다", (key) => {
-    const project = createBlankProject();
+    const project = withCastle(createBlankProject());
     const map = project.maps[MAP_ID]!;
     map[key] = new Array<number>(map.width * map.height).fill(key === "shadowBits" ? 0 : -1);
     map[key]![0] = 1;
@@ -100,7 +113,7 @@ describe("칩셋 계열 검사", () => {
   });
 
   it("(h''') 높이만 저작한 기본 맵도 그림체 기준으로 남는다", () => {
-    const project = createBlankProject();
+    const project = withCastle(createBlankProject());
     const map = project.maps[MAP_ID]!;
     map.relief = { width: map.width, height: map.height, levels: new Array<number>(map.width * map.height).fill(0) };
     map.relief.levels[0] = 1;
@@ -132,17 +145,17 @@ describe("칩셋 계열 검사", () => {
     const { applyProjectWithHistory } = await import("@/editor/mapEditHistory");
     const { store } = await import("@/project/store");
     const base = uploadedProject();
-    base.maps[MAP_ID]!.tilesetId = COMBINED_TOWN_TILESET_ID;
+    base.maps[MAP_ID]!.tilesetId = createBlankProject().maps[MAP_ID]!.tilesetId;
     store.replace(structuredClone(base));
     resetMapEditHistory();
     const next = structuredClone(base);
     next.maps[MAP_ID]!.tilesetId = "rasak_field";
     expect(applyProjectWithHistory(next, "칩셋 바꿈")).toBe(true);
-    // 사용자는 지금 Rasak 계열 맵을 보고 있고, 되돌리면 EasyRPG 로 돌아간다 — 되돌리기는 막히면 안 된다.
+    // 사용자는 지금 Rasak 계열 맵을 보고 있고, 되돌리면 기본 칩셋(다른 계열)으로 돌아간다 — 되돌리기는 막히면 안 된다.
     const ctx: ToolContext = { project: store.getCurrent(), currentMapId: MAP_ID };
     const result = runTool(ctx, "revert_last_edit", {}, { dryRun: false });
     expect(result.ok, result.summary).toBe(true);
-    expect(ctx.project.maps[MAP_ID]!.tilesetId).toBe(COMBINED_TOWN_TILESET_ID);
+    expect(ctx.project.maps[MAP_ID]!.tilesetId).toBe(createBlankProject().maps[MAP_ID]!.tilesetId);
   });
 
   it("(f) create_map tilesetId 생략 → 지금 보는 맵 칩셋(다른 계열일 때)", () => {
@@ -154,17 +167,20 @@ describe("칩셋 계열 검사", () => {
     expect(map.tileSize).toBe(ctx.project.tilesets.rasak_field!.tileSize);
   });
 
-  it("(f') EasyRPG 실내 맵을 볼 때 create_map 기본은 여전히 숲마을(같은 계열이면 도구 기본값)", () => {
+  // 폐기된 실내 칩셋(easyrpg_chipset_interior)은 create_map 이 거부한다(2026-09-29) — 같은 계열 케이스는 현재 기본(버들항)으로 확인한다.
+  it("(f') 도구 기본값과 같은 계열 맵을 볼 때 create_map 기본은 도구 기본값", () => {
     const project = createBlankProject();
-    project.maps[MAP_ID]!.tilesetId = "easyrpg_chipset_interior";
+    project.maps[MAP_ID]!.lowerTiles[0] = (project.maps[MAP_ID]!.lowerTiles[0] ?? 0) + 1; // 칠한 맵이어야 그림체 기준이 된다
     const ctx: ToolContext = { project, currentMapId: MAP_ID };
     const result = runTool(ctx, "create_map", { id: "map_new", name: "새 마을", width: 20, height: 15 }, { dryRun: false });
     expect(result.ok, result.summary).toBe(true);
     expect(ctx.project.maps.map_new!.tilesetId).toBe(createBlankProject().maps[MAP_ID]!.tilesetId);
   });
 
-  it("(g) EasyRPG 맵을 보며 EasyRPG 던전 파이프라인 → 통과", () => {
-    const ctx: ToolContext = { project: createBlankProject(), currentMapId: MAP_ID };
+  it("(g) EasyRPG 맵을 보며 EasyRPG 던전 칩셋 새 맵 → 통과", () => {
+    const project = startOnRetiredCombinedTown(createBlankProject());
+    project.maps[MAP_ID]!.lowerTiles[0] = (project.maps[MAP_ID]!.lowerTiles[0] ?? 0) + 1; // 칠한 맵이어야 그림체 기준이 된다
+    const ctx: ToolContext = { project, currentMapId: MAP_ID };
     const result = dungeon(ctx);
     expect(result.ok, result.summary).toBe(true);
     expect(ctx.project.maps.map_cave).toBeDefined();
@@ -172,7 +188,7 @@ describe("칩셋 계열 검사", () => {
 
   it("dryRun 도 같은 검사를 탄다", () => {
     const project = uploadedProject();
-    const result = runTool({ project, currentMapId: MAP_ID }, "run_dungeon_room_pipeline", { mapId: "map_cave", theme: "stone", width: 36, height: 28 }, { dryRun: true });
+    const result = dungeon({ project, currentMapId: MAP_ID }, "map_cave", true);
     expect(result.ok).toBe(false);
     expect(result.issues?.[0]?.code).toBe("tileset-family-change");
   });
@@ -185,7 +201,7 @@ describe("칩셋 계열 검사", () => {
 
 describe("ask_tileset_change", () => {
   it("지금 보는 맵을 from 으로 질문 자료를 돌려주고 프로젝트는 그대로 둔다", () => {
-    const project = createBlankProject();
+    const project = withCastle(startOnRetiredCombinedTown(createBlankProject()));
     const snapshot = JSON.stringify(project);
     const ctx: ToolContext = { project, currentMapId: MAP_ID };
     const result = runTool(ctx, "ask_tileset_change", { toTilesetId: "opengameart_castle", reason: "성 안을 만들려면 성채 타일이 필요해요.", purpose: "castle_interior" });
@@ -201,10 +217,10 @@ describe("ask_tileset_change", () => {
   });
 
   it("없는 타일셋·같은 계열·지금 맵 모름은 거부", () => {
-    const ctx: ToolContext = { project: createBlankProject(), currentMapId: MAP_ID };
+    const ctx: ToolContext = { project: withCastle(startOnRetiredCombinedTown(createBlankProject())), currentMapId: MAP_ID };
     expect(runTool(ctx, "ask_tileset_change", { toTilesetId: "nope", reason: "x" }).issues?.[0]?.code).toBe("tileset-not-found");
     expect(runTool(ctx, "ask_tileset_change", { toTilesetId: "easyrpg_chipset_dungeon", reason: "x" }).issues?.[0]?.code).toBe("tileset-same-family");
-    expect(runTool({ project: createBlankProject() }, "ask_tileset_change", { toTilesetId: "opengameart_castle", reason: "x" }).issues?.[0]?.code).toBe("map-not-found");
+    expect(runTool({ project: withCastle(createBlankProject()) }, "ask_tileset_change", { toTilesetId: "opengameart_castle", reason: "x" }).issues?.[0]?.code).toBe("map-not-found");
   });
 
   it("core 도메인으로 늘 노출되는 읽기 도구", async () => {

@@ -9,11 +9,13 @@ import type { ToolContext } from "@/editor/tools/types";
 import { createBlankProject } from "@/project/defaults";
 import { COMBINED_TOWN_TILESET_ID, TILE } from "@/project/defaults/constants";
 import { applyCombinedTownHarness } from "@/project/tilesetHarness";
+import { startOnRetiredCombinedTown } from "./support/retiredEasyRpgTilesets";
 
 const SLOPED_ROOF = 385;
 
+// 2026-10-07 저작권 정리로 새 프로젝트는 beodeul_city 에서 시작한다 — 이 시험은 합본 마을 시트의 타일 번호(85·354·405 등)와 하네스를 겨냥하므로 옛 저장본처럼 합본 마을에서 시작한다.
 function ctxWithMap(width = 16, height = 16): { context: ToolContext; mapId: string } {
-  const context: ToolContext = { project: createBlankProject() };
+  const context: ToolContext = { project: startOnRetiredCombinedTown(createBlankProject()) };
   const created = runTool(context, "create_map", { name: "집 테스트", width, height, id: "map_house" });
   expect(created.ok, created.summary).toBe(true);
   return { context, mapId: "map_house" };
@@ -47,7 +49,8 @@ describe("build_house", () => {
     expect(map.lowerTiles[at(7, 10)]).toBe(116);
     expect(map.lowerTiles[at(7, 11)]).toBe(146);
     // bright-plaster 키트 창문(상위 85) 최소 1개.
-    expect(map.upperTiles[at(3, 10)]).toBe(85);
+    // 창 자리는 벽 가운데 칸만 쓴다(집 외형 규칙 2026-09-25: 창은 벽 가운데만) — 첫 창은 x=3 이 아니라 x=4.
+    expect(map.upperTiles[at(4, 10)]).toBe(85);
   });
 
   it("최소 크기 미만/맵 밖은 거부한다", () => {
@@ -90,14 +93,14 @@ describe("clear_region", () => {
 
 describe("set_tile_rules", () => {
   it("레이어 확정은 confirmedByUser 없이는 거부한다", () => {
-    const context: ToolContext = { project: createBlankProject() };
+    const context: ToolContext = { project: startOnRetiredCombinedTown(createBlankProject()) };
     const result = runTool(context, "set_tile_rules", { entries: [{ tile: SLOPED_ROOF, layer: "lower" }] });
     expect(result.ok).toBe(false);
     expect(result.summary).toContain("사용자 확인");
   });
 
   it("확정 레이어/통행/지형 태그가 하네스 재적용에도 유지된다", () => {
-    const context: ToolContext = { project: createBlankProject() };
+    const context: ToolContext = { project: startOnRetiredCombinedTown(createBlankProject()) };
     // 잔디를 막으면 기존 맵의 이동(transfer) 무결성 게이트에 걸리므로,
     // 통행 완화(나무를 통행 가능으로) + 지형 태그로 검증한다.
     const result = runTool(context, "set_tile_rules", {
@@ -122,7 +125,7 @@ describe("set_tile_rules", () => {
   });
 
   it("set_tile_passability도 user 메타로 기록되어 하네스에 살아남는다", () => {
-    const context: ToolContext = { project: createBlankProject() };
+    const context: ToolContext = { project: startOnRetiredCombinedTown(createBlankProject()) };
     expect(runTool(context, "set_tile_passability", { tile: 342, passable: true }).ok).toBe(true);
     const tileset = context.project.tilesets[COMBINED_TOWN_TILESET_ID];
     expect(tileset.passability[342].up).toBe(true);
