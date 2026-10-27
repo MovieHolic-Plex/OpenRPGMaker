@@ -204,7 +204,9 @@ export function defaultClassRecords(): ClassRecord[] {
   for (const record of records) {
     const known = new Set(record.learnedSkills.map((entry) => entry.skillId));
     const added = retroClassLearnedSkills(record.id).filter((entry) => !known.has(entry.skillId));
-    record.learnedSkills = [...record.learnedSkills, ...added];
+    // 로드 정규화(normalizeLearnedSkills)와 같은 순서(레벨, 그다음 id)로 둔다 — 아니면 저장→재로드 바이트가 달라진다.
+    record.learnedSkills = [...record.learnedSkills, ...added]
+      .sort((left, right) => left.level - right.level || left.skillId.localeCompare(right.skillId));
     record.skillIds = record.learnedSkills.map((entry) => entry.skillId);
   }
   applyGeneratedBattleEffectClassBindings(records);

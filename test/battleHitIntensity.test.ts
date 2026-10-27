@@ -4,6 +4,8 @@
  * 막타는 crushing. 세기는 대상 노드(넉백·찌그러짐)와 씬 루트(펀치·흔들림) 변수로 옮겨진다.
  */
 import { afterEach, describe, expect, it, vi } from "vitest";
+import { createBlankProject } from "@/project/defaults";
+import { store } from "@/project/store";
 import {
   HIT_INTENSITY_STYLE,
   hitIntensity,
@@ -245,13 +247,22 @@ describe("명중 파편 · 피격 점멸 · 공격자 표시 (2026-09-25)", () =
     scene.append(field, party);
     document.body.append(scene);
 
-    applyActionMotion(field, { kind: "approach", directorStep: "acting", durationMs: 470, userId: "enemy_1", userMotion: "lunge", targetMotion: "idle", hitStop: false });
-    expect(enemy.dataset.motionPhase).toBe("approach");
-    expect(enemy.style.getPropertyValue("--motion-beat-ms")).toBe("470ms");
+    // 기본 스킨(retro2003)은 고전 모션이 바깥 노드를 독점해 applyActionMotion 이 아무것도 안 한다 — 비고전 스킨에서 본다.
+    const previous = store.getCurrent();
+    const pokemon = createBlankProject();
+    pokemon.system.battleUiStyle = "pokemon";
+    store.replace(pokemon);
+    try {
+      applyActionMotion(field, { kind: "approach", directorStep: "acting", durationMs: 470, userId: "enemy_1", userMotion: "lunge", targetMotion: "idle", hitStop: false });
+      expect(enemy.dataset.motionPhase).toBe("approach");
+      expect(enemy.style.getPropertyValue("--motion-beat-ms")).toBe("470ms");
 
-    applyActionMotion(field, { kind: "approach", directorStep: "acting", durationMs: 470, userId: "actor_hero", targetId: "enemy_1", userMotion: "lunge", targetMotion: "idle", hitStop: false });
-    expect(row.classList.contains("is-acting")).toBe(true);
-    applyActionMotion(field, undefined);
-    expect(row.classList.contains("is-acting")).toBe(false);
+      applyActionMotion(field, { kind: "approach", directorStep: "acting", durationMs: 470, userId: "actor_hero", targetId: "enemy_1", userMotion: "lunge", targetMotion: "idle", hitStop: false });
+      expect(row.classList.contains("is-acting")).toBe(true);
+      applyActionMotion(field, undefined);
+      expect(row.classList.contains("is-acting")).toBe(false);
+    } finally {
+      store.replace(previous);
+    }
   });
 });

@@ -125,9 +125,10 @@ export function buildBetweenTurnRows(
   const limit = Math.max(1, Math.floor(options.limit ?? DEFAULT_LIMIT));
   const rows: BetweenTurnRow[] = [];
   const seen = new Set<number>();
-  for (let index = events.length - 1; index >= 0; index -= 1) {
-    const event = events[index];
-    if (!event || seen.has(event.seq)) continue;
+  // 최신(큰 seq)이 앞이다 — 배열 위치가 아니라 seq 로 정렬한다. 위치로 거꾸로 돌면 뒤에 붙은 옛 행(중복 사본 등)이 앞으로 온다.
+  const ordered = events.filter((event): event is AiUiEvent => Boolean(event)).sort((left, right) => right.seq - left.seq);
+  for (const event of ordered) {
+    if (seen.has(event.seq)) continue;
     seen.add(event.seq);
     const reason = event.reason?.trim();
     const detail = betweenTurnDetailText(event.detail);

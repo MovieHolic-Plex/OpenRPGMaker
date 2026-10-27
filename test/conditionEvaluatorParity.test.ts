@@ -145,6 +145,11 @@ const CASES = {
     satisfying: (state) => { state.partyActorIds = ["actor_parity"]; state.actorStateIds = { actor_parity: ["state_poison"] }; },
     nonSatisfying: (state) => { state.partyActorIds = ["actor_parity"]; state.actorStateIds = { actor_parity: [] }; },
   },
+  partyLeader: {
+    condition: { kind: "partyLeader", actorId: "actor_parity" },
+    satisfying: (state) => { state.partyActorIds = ["actor_parity", "actor_other"]; },
+    nonSatisfying: (state) => { state.partyActorIds = ["actor_other", "actor_parity"]; },
+  },
   partyKnowsSkill: {
     condition: { kind: "partyKnowsSkill", skillId: "skill_parity" },
     satisfying: (state) => { state.partyActorIds = ["actor_parity"]; state.actorSkillIds = { actor_parity: ["skill_parity"] }; },
@@ -154,11 +159,6 @@ const CASES = {
     condition: { kind: "badgeCount", op: ">=", value: 2 },
     satisfying: (state) => { state.switches = { mx_badge_1: true, mx_badge_2: true }; },
     nonSatisfying: (state) => { state.switches = { mx_badge_1: true, mx_badge_2: false }; },
-  },
-  partyLeader: {
-    condition: { kind: "partyLeader", actorId: "actor_parity" },
-    satisfying: (state) => { state.partyActorIds = ["actor_parity", "actor_other"]; },
-    nonSatisfying: (state) => { state.partyActorIds = ["actor_other", "actor_parity"]; },
   },
   partySize: {
     condition: { kind: "partySize", op: ">=", value: 2 },
@@ -185,6 +185,12 @@ const CASES = {
     condition: { kind: "pursuitActive", value: true },
     satisfying: (state) => { state.horror = { pursuits: { oni: { home: { mapId: "m", x: 0, y: 0 }, active: true, searchMs: 0, doors: [] } } }; },
     nonSatisfying: (state) => { state.horror = { pursuits: { oni: { home: { mapId: "m", x: 0, y: 0 }, active: false, searchMs: 0, doors: [] } } }; },
+  },
+  eventSeesPlayer: {
+    // 집주인(3,3)이 아래를 본다. 시선 조건(dd8de6b90d #3317)은 세션 eventLocations 로 위치를 읽는다.
+    condition: { kind: "eventSeesPlayer", eventId: "watcher", range: 5, sameRoom: false, requireFacing: false },
+    satisfying: (state) => { state.x = 3; state.y = 5; state.eventLocations.watcher = { mapId: state.currentMapId, x: 3, y: 3, direction: "down" }; },
+    nonSatisfying: (state) => { state.x = 3; state.y = 12; state.eventLocations.watcher = { mapId: state.currentMapId, x: 3, y: 3, direction: "down" }; },
   },
   clearCount: {
     condition: { kind: "clearCount", op: ">=", value: 2 },
@@ -355,10 +361,13 @@ function battleRuntimeOptions(project: Project, condition: Condition, state: Pla
     autoAlign: true,
     battleEventPages: [page],
   };
+  // 전투는 partyKnowsSkill 을 세션 스냅샷이 아니라 출전 배틀러의 skillIds 로 본다(battleEvents.ts partySkillIds). 실제 전투는
+  // 그 배틀러를 세션 actorSkillIds 로 만든다 — 같은 출처에서 최소 배틀러를 세운다.
+  const actors = state.partyActorIds.map((id) => ({ id, recordId: id, skillIds: [...(state.actorSkillIds?.[id] ?? [])] }));
   return {
     project,
     troopRecord,
-    actors: [],
+    actors: actors as unknown as Parameters<typeof createBattleEventRuntime>[0]["actors"],
     enemies: [],
     stateIds: [],
     state,
