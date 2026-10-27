@@ -89,6 +89,8 @@ export interface DesktopSteamExportResult {
 
 const encoder = new TextEncoder();
 const decoder = new TextDecoder();
+/** Regular file, owner rwx, group/other rx. Unzip and Steam keep this only when the ZIP host OS is Unix. */
+const UNIX_EXECUTABLE = 0o100755;
 
 export const DESKTOP_PLATFORM_SPECS: Readonly<Record<DesktopExportPlatform, {
   readonly id: DesktopExportPlatform;
@@ -261,11 +263,11 @@ export async function createDesktopSteamExportPackage(
   const { bytes: pakBytes, manifest: pakManifest } = await buildOprnPakArchive(title, runtimeEntries);
 
   const zipEntries: ZipEntry[] = [];
-  const addText = (name: string, content: string) => {
-    zipEntries.push({ name, bytes: encoder.encode(content) });
+  const addText = (name: string, content: string, unixMode?: number) => {
+    zipEntries.push({ name, bytes: encoder.encode(content), ...(unixMode === undefined ? {} : { unixMode }) });
   };
-  const addBytes = (name: string, bytes: Uint8Array) => {
-    zipEntries.push({ name, bytes });
+  const addBytes = (name: string, bytes: Uint8Array, unixMode?: number) => {
+    zipEntries.push({ name, bytes, ...(unixMode === undefined ? {} : { unixMode }) });
   };
 
   // 1. Platform Native Executable Stub & Launchers
@@ -525,8 +527,8 @@ function addPlatformLaunchers(options: {
   readonly versionLabel: string;
   readonly steamAppId: number;
   readonly displayMode: DesktopDisplayMode;
-  readonly addText: (name: string, content: string) => void;
-  readonly addBytes: (name: string, bytes: Uint8Array) => void;
+  readonly addText: (name: string, content: string, unixMode?: number) => void;
+  readonly addBytes: (name: string, bytes: Uint8Array, unixMode?: number) => void;
 }): string {
   const { platform, slug, title, versionLabel, steamAppId, displayMode, addText, addBytes } = options;
   const windowFlags =
@@ -568,7 +570,7 @@ function addPlatformLaunchers(options: {
 
   if (platform === "linux64-steamos") {
     const binName = `${slug}.x86_64`;
-    addBytes(binName, buildLinuxElf64LauncherStub(slug, title, steamAppId));
+    addBytes(binName, buildLinuxElf64LauncherStub(slug, title, steamAppId), UNIX_EXECUTABLE);
     addText(
       `Launch-${slug}.sh`,
       [
@@ -578,18 +580,25 @@ function addPlatformLaunchers(options: {
         `export SteamAppId="${steamAppId}"`,
         `export SteamGameId="${steamAppId}"`,
         'mkdir -p "${SCRIPT_DIR}/saves"',
-        'APP_INDEX="file://${SCRIPT_DIR}/resources/app/index.html"',
-        'for BROWSER in chromium chromium-browser google-chrome flatpak-spawn xdg-open; do',
+        'APP_PATH="${SCRIPT_DIR}/resources/app/index.html"',
+        '# Chromium cuts a file URL at the first space. Steam library folders often contain one.',
+        'APP_URL="file://${APP_PATH// /%20}"',
+        // flatpak-spawn is a sandbox helper, not a browser. SteamOS has it on PATH,
+        // so listing it here used to exec it and never reach xdg-open.
+        'for BROWSER in chromium chromium-browser google-chrome xdg-open; do',
         '  if command -v "$BROWSER" >/dev/null 2>&1; then',
         '    if [[ "$BROWSER" == "xdg-open" ]]; then',
-        '      exec xdg-open "${SCRIPT_DIR}/resources/app/index.html"',
+        '      exec xdg-open "${APP_PATH}"',
         "    else",
-        `      exec "$BROWSER" --app="\${APP_INDEX}" ${windowFlags} --user-data-dir="\${SCRIPT_DIR}/saves/runtime-profile"`,
+        `      exec "$BROWSER" --app="\${APP_URL}" ${windowFlags} --user-data-dir="\${SCRIPT_DIR}/saves/runtime-profile"`,
         "    fi",
         "  fi",
         "done",
+        "printf '%s\\n' 'No browser found. Open resources/app/index.html yourself.' >&2",
+        "exit 1",
         "",
       ].join("\n"),
+      UNIX_EXECUTABLE,
     );
     return binName;
   }
@@ -631,9 +640,12 @@ function addPlatformLaunchers(options: {
         'ROOT_DIR="$(cd "${MACOS_DIR}/../../.." && pwd)"',
         `export SteamAppId="${steamAppId}"`,
         'mkdir -p "${ROOT_DIR}/saves"',
-        'open -a "Google Chrome" --args --app="file://${ROOT_DIR}/resources/app/index.html" ' + windowFlags + ' || open "${ROOT_DIR}/resources/app/index.html"',
+        'APP_PATH="${ROOT_DIR}/resources/app/index.html"',
+        'APP_URL="file://${APP_PATH// /%20}"',
+        'open -a "Google Chrome" --args --app="${APP_URL}" ' + windowFlags + ' || open "${APP_PATH}"',
         "",
       ].join("\n"),
+      UNIX_EXECUTABLE,
     );
     return appExecutable;
   }
