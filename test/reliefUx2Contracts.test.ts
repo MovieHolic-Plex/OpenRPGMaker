@@ -74,27 +74,33 @@ describe("relief UX2 ground/revision writer contracts", () => {
     expect(createReliefGroundSurface(store.getCurrent().maps[id]!, tileset, image)).not.toBe(surface);
   });
 
+  // store.updateMapTiles copies relief before the writer runs (cloneExtraLayers, already in the public baseline
+  // 0d4f13e7c8), so a writer that mutates the previously published relief object is not a supported path: every
+  // write goes through the draft and publishes a new relief object. The read-count proxy is re-installed on each
+  // published relief to keep "one full hash per generation, none on a warm read".
   it("hashes once per global generation and detects draft aliases before publication", () => {
     const { id } = projectFixture();
-    let map = store.getCurrent().maps[id]!, r = map.relief!;
     let reads = 0;
-    r.levels = new Proxy(r.levels, { get(a, k, receiver) {
+    const counted = (levels: number[]) => new Proxy(levels, { get(a, k, receiver) {
       if (/^\d+$/.test(String(k))) reads++; return Reflect.get(a, k, receiver);
     } });
+    let map = store.getCurrent().maps[id]!, r = map.relief!;
+    r.levels = counted(r.levels);
     prepareReliefRead(map); const before = reliefReadSignature(r); reads = 0;
     for (let n = 0; n < 100; n++) { prepareReliefRead(map); expect(reliefReadSignature(r)).toBe(before); }
     expect(reads).toBe(0);
-    const writes = [
-      () => { r.levels[10 * 48 + 10] = 3; },
-      () => { r.ramps = Array(48 * 48).fill(0); r.ramps[16 * 48 + 10] = 1; },
-      () => { r.style = "grass-cliff"; },
-      () => { r.wallDecor = [{ x: 10, y: 15, row: 1, tile: 0 }]; },
-      () => { r.wallDecor![0]!.tile = 1; },
+    const writes: ((relief: NonNullable<typeof r>) => void)[] = [
+      (relief) => { relief.levels[10 * 48 + 10] = 3; },
+      (relief) => { relief.ramps = Array(48 * 48).fill(0); relief.ramps[16 * 48 + 10] = 1; },
+      (relief) => { relief.style = "grass-cliff"; },
+      (relief) => { relief.wallDecor = [{ x: 10, y: 15, row: 1, tile: 0 }]; },
+      (relief) => { relief.wallDecor![0]!.tile = 1; },
     ];
     const signatures = [before];
     for (const write of writes) {
-      store.updateMapTiles(id, write, { relief: true }); // deliberately shallow in-place writer
-      map = store.getCurrent().maps[id]!; prepareReliefRead(map);
+      store.updateMapTiles(id, (draft) => write(draft.relief!), { relief: true });
+      map = store.getCurrent().maps[id]!; r = map.relief!;
+      r.levels = counted(r.levels); prepareReliefRead(map);
       reads = 0; signatures.push(reliefReadSignature(r)); expect(reads).toBe(48 * 48);
       reads = 0; reliefReadSignature(r); expect(reads).toBe(0);
     }
@@ -147,7 +153,8 @@ describe("relief UX2 assistant descriptor", () => {
       const change = changes.at(-1)!;
       expect(change).toMatchObject({ scope: "map", mapId: id, relief: true });
       expect(change.reliefCells).toEqual(expect.arrayContaining([{ x: 10, y: 10 }, { x: 10, y: 16 }, { x: 12, y: 15 }]));
-      expect(change.reliefCells).toHaveLength(3); expect("cells" in change).toBe(false);
+      // #2432 (relief edits clear objects) always sends `cells`; an edit that clears nothing and paints no grass sends none.
+      expect(change.reliefCells).toHaveLength(3); expect(change.cells ?? []).toEqual([]);
       expect(map.relief).toEqual(original); // editor callback receives an isolated relief copy
       const saved = store.getCurrent().maps[id]!.relief!;
       expect(saved.levels[locked]).toBe(original!.levels[locked]); expect(saved.ramps![locked]).toBe(0);
