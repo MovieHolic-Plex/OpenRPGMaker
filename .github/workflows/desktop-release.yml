@@ -72,6 +72,10 @@ jobs:
           npm ci
           node scripts/build-electron.mjs
           npx vite build --configLoader runner
+          # 예제 프로젝트(폴른 스타 등)를 dist/demos 에 굽는다. 없으면 편집기 「예제 프로젝트」가
+          # 브라우저에서 빌더를 2분 넘게 돌리다 실패한다(2026-10-27). 웹 9888 은 npm run build 가 굽는다.
+          npm run bake:demos
+          test -s dist/demos/chrono-bell.project.json
           mkdir -p "$HOME/.cache/electron-builder"
           printf '%s\n' '{"type":"commonjs"}' > "$HOME/.cache/electron-builder/package.json"
           wrapper="$RUNNER_TEMP/7za-memcap.sh"
