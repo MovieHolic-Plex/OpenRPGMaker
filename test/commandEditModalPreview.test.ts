@@ -147,6 +147,8 @@ describe("command edit modal — image-rich preview", () => {
     expect(findByTestId(preview, "ecp-number-window")).toBeTruthy();
     expect(findByTestId(preview, "ecp-number-slots")).toBeTruthy();
     expect(findByTestId(preview, "ecp-number-pad")).toBeTruthy();
+    expect(preview.textContent).toContain("확인");
+    expect(preview.textContent).not.toContain("OK");
     expect(preview.textContent).toContain("비밀번호");
     expect(preview.textContent).toContain("4자리");
     expect(preview.textContent).toContain("대기 중");
@@ -177,13 +179,15 @@ describe("command edit modal — image-rich preview", () => {
     expect(body.textContent).not.toContain("자릿수");
   });
 
-  it("inputNumber preview without pad shows OK mock instead of keypad", () => {
+  it("inputNumber preview without pad shows a Korean confirm mock instead of a keypad", () => {
     const preview = renderWithFakeDom(() =>
       renderCommandPreview({ kind: "inputNumber", variableId: "var_0001", digits: 1 })
     );
-    expect(findByTestId(preview, "ecp-number-ok-mock")).toBeTruthy();
+    const mock = findByTestId(preview, "ecp-number-ok-mock");
+    expect(mock?.textContent).toBe("확인");
     expect(findByTestId(preview, "ecp-number-pad")).toBeFalsy();
     expect(preview.textContent).toContain("1자리");
+    expect(preview.textContent).not.toContain("OK");
   });
 
   it("setVariable form shows labeled fields, op segments, and live formula", () => {
