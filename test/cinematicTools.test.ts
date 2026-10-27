@@ -262,7 +262,13 @@ describe("opening cinematic AI tools", () => {
     const ctx = context();
 
     for (const kind of ["image", "movie", "sound"] as const) {
-      const catalog = catalogIds(kind === "image" ? "still" : kind, ctx.project);
+      // 도구는 프로젝트에 올린 자료를 먼저 보여 준다(opening_still_* → 나중에 올린 것 순), 그다음 번들 카탈로그 순서다.
+      const uploadOrder = Object.keys(ctx.project.assets.uploaded);
+      const rank = (id: string) => (uploadOrder.includes(id) ? (id.startsWith("opening_still_") ? 0 : 1) : 2);
+      const catalog = catalogIds(kind === "image" ? "still" : kind, ctx.project)
+        .map((id, index) => ({ id, index }))
+        .sort((a, b) => rank(a.id) - rank(b.id) || (rank(a.id) < 2 ? uploadOrder.indexOf(b.id) - uploadOrder.indexOf(a.id) : a.index - b.index))
+        .map((entry) => entry.id);
       const listed = runTool(ctx, "list_opening_media", { kind });
       expect(listed.ok, failure(listed)).toBe(true);
       const ids = (listed.data as { matches: { id: string }[] }).matches.map((entry) => entry.id);
@@ -305,7 +311,8 @@ describe("opening cinematic AI tools", () => {
       title: "패배",
       message: "어둠이 성을 삼켰다.",
       retryLabel: "다시 도전",
-      backgroundResourceId: "easyrpg-backdrop-cosmos1",
+      // EasyRPG 배경(cosmos1)은 2026-10-07 저작권 정리로 빠졌다 — 번들 정지 그림을 쓴다.
+      backgroundResourceId: "oprn-still-corridor",
     });
     expect(result.ok, failure(result)).toBe(true);
     expect(ctx.project.system.opening).toBeUndefined();
@@ -313,11 +320,11 @@ describe("opening cinematic AI tools", () => {
       title: "패배",
       message: "어둠이 성을 삼켰다.",
       retryLabel: "다시 도전",
-      backgroundResourceId: "easyrpg-backdrop-cosmos1",
+      backgroundResourceId: "oprn-still-corridor",
     });
     const read = runTool(ctx, "get_game_over", {});
     expect(read.ok, failure(read)).toBe(true);
-    expect(read.data).toMatchObject({ gameOver: { backgroundResourceId: "easyrpg-backdrop-cosmos1" } });
+    expect(read.data).toMatchObject({ gameOver: { backgroundResourceId: "oprn-still-corridor" } });
   });
 
   it("prepares a game-over image generation handoff", () => {
