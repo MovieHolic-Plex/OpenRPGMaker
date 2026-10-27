@@ -24,7 +24,8 @@ describe("qualified live spatial graphic resolution", () => {
     resolved.forEach((entry, index) => {
       if (!entry) throw new Error("Expected resolved builtin");
       switch (entry.source) {
-        case "builtin": expect(entry.object).toBe(INTERIOR_OBJECT_CATALOG[index]); break;
+        // The live catalog grew and was reordered after this baseline was frozen (75 vs 55 entries); match identity by id, not by index.
+        case "builtin": expect(entry.object).toBe(INTERIOR_OBJECT_CATALOG.find(object => object.id === baseline.catalog[index]?.id)); break;
         case "authored": throw new Error("Unexpected authored kit");
         default: entry satisfies never;
       }

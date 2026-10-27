@@ -284,6 +284,8 @@ describe("frozen spatial occurrences", () => {
   it("freezes exact builtin cells when the qualified shared resolver selects them", () => {
     // Given
     const { project, document } = instancesFixture();
+    // The shared builtin resolver reads the interior sheet; new projects no longer ship it (#2335), so restore the saved-project shape.
+    withRetiredEasyRpgTilesets(project);
     const builtin = INTERIOR_OBJECT_CATALOG.find(object => object.id === "bed_h");
     if (!builtin) throw new TypeError("Builtin fixture missing");
     const input = { ...document, library: { ...emptySpatialLibrary(), objects: { desk: { ...own(document.library.objects, "desk"), graphic: { tilesetId: INTERIOR_TILESET_ID, kitId: builtin.id } } } } };
