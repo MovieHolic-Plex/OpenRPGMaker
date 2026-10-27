@@ -1,0 +1,21 @@
+{
+ "schema": "oprn-object-gate-hold-decision/1",
+ "pixelSha256": "f95fa9333a1eaee4464f15eaafcb38948dd73c010953baf69208ce9aff2b47e7",
+ "profileHash": "4d8774b517f41638",
+ "kind": "other",
+ "decision": "allow",
+ "decidedBy": "supervisor (Claude Opus 5.5)",
+ "decidedAt": "2026-10-27T10:50:38.956Z",
+ "by": "delegated",
+ "delegatedBy": "delegated by user to supervisor 2026-10-27",
+ "evidence": "/home/main/z-project/rpg-zzu-object-gate-holds/harness-data/object-gate/vqa/astel-capital-20261027.json",
+ "via": "review-page",
+ "reasons": [
+  "3/4: 독립 눈이 「3/4 아님」 4/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면",
+  "화풍: 화풍 판정이 갈림(걸린 판정 2/4)",
+  "화풍: 판정자 fail (2/4)",
+  "화풍: 명암 3단 < 4 (2/4)"
+ ],
+ "note": "capital_lamp_double — Argon adversarial VQA r2 (decoys rejected) + r3 PASS; AI receipt advisory (uncalibrated)",
+ "sig": "b022f1ecedfe9d01361a36dc8ca3d0ea67ae4e8629885abd0b338ae2aa211e73"
+}

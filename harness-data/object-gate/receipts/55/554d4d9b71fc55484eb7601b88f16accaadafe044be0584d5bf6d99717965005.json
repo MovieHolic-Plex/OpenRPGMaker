@@ -1,0 +1,419 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "554d4d9b71fc55484eb7601b88f16accaadafe044be0584d5bf6d99717965005",
+ "width": 96,
+ "height": 48,
+ "kind": "terrain",
+ "name": "four-tile-wide stone-edged canal between two cobbled banks, 3/4 top-down: on each bank a narrow flight of stone quay steps cut into the bank, descending south into the water (landing slabs at bank level, lit treads and dark risers, the last step submerged)",
+ "label": "beodeul_city/capital/capital_quay_steps",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 평면 채움 (4/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "평면 채움 (4/4)"
+  ],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 6,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "8cecb3a70460aa86"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 5,
+  "tileColorsP90": 17,
+  "darkV5": 60,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 18
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "landing slabs and first tread (both banks)",
+      "rows": "0-17",
+      "evidence": "a",
+      "front_edge_line_row": 18,
+      "eave_shadow_rows": "19-20"
+     },
+     {
+      "part": "second tread",
+      "rows": "21-23",
+      "evidence": "a",
+      "front_edge_line_row": 24,
+      "eave_shadow_rows": "25-27"
+     },
+     {
+      "part": "third tread",
+      "rows": "28-30",
+      "evidence": "a",
+      "front_edge_line_row": 31,
+      "eave_shadow_rows": "32-34"
+     },
+     {
+      "part": "fourth tread, last step",
+      "rows": "35-37",
+      "evidence": "a",
+      "front_edge_line_row": 37,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "canal water and submerged step",
+      "rows": "0-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 3,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Each bank has a stair flight in a staircase pattern. Lit tread bands (rows 13-17, 21-23, 28-30, 35-37) each end in a front-edge line (rows 18, 24, 31). Dark riser rows follow (rows 19-20, 25-27, 32-34; the dark line at rows 20, 27 and 34 is the shadow), so the stone steps show horizontal top surfaces plus vertical risers. The last step is submerged at row 38, where it meets the water. The canal water in the middle (x about 36-67) is flat terrain, and the cobbled banks are flat ground texture. There is no isometric side face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The cobbled banks hold up: they are shaded stone by stone and read much like the reference paving, with 5 visible tones per tile against 7 for the paving reference. The canal is the weak part. The water is a large, nearly flat dark teal field with only faint rain-like streaks, and the quay steps are pale slabs with thin dark risers and only a few shades. Near-flat coverage is 18% and 17% exact, while both references sit at 0%, so the flat fills are real and sit in the water and the slabs. The dark edge pixels are 72% near-neutral, close to the paving reference's 80%. The outlines therefore lean grey-black between the cobbles and around the steps, not the tinted tone of each material, so I call them mixed. The steps are drawn with fewer value steps than the reference ramps, and the submerged last step is barely separated from the water. A careful artist would find this thinner and flatter than the Beodeul reference.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 14760
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "landing slab at bank level (both banks)",
+      "rows": "0-5",
+      "evidence": "a",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "upper tread",
+      "rows": "7-11",
+      "evidence": "a",
+      "front_edge_line_row": 12,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "tread with riser",
+      "rows": "13-17",
+      "evidence": "a",
+      "front_edge_line_row": 18,
+      "eave_shadow_rows": "19-20"
+     },
+     {
+      "part": "lower tread",
+      "rows": "21-23",
+      "evidence": "a",
+      "front_edge_line_row": 24,
+      "eave_shadow_rows": "25-27"
+     },
+     {
+      "part": "last tread",
+      "rows": "28-30",
+      "evidence": "a",
+      "front_edge_line_row": 31,
+      "eave_shadow_rows": "32-34"
+     },
+     {
+      "part": "canal water",
+      "rows": "0-47",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 3,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Each quay stair is a stack of lit tread bands (rows 0-5, 7-11, 13-17, 21-23, 28-30) of 3-5 rows. Each tread ends in a front-edge line (rows 6, 12, 18, 24, 31) followed by 2-3 rows of dark riser or shadow (rows 19-20, 25-27, 32-34), so the steps show both top surfaces and front faces. The last step goes under the water at row 38. The cobbled outer banks and the open canal water are flat terrain fill."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The cobbled banks follow the paving reference reasonably well. The stone steps read, with lit treads and darker risers, but they use only about 3-4 tones. The wide water channel is mostly a dark teal fill with sparse vertical streaks, and that fill accounts for the measured 18% near-flat coverage; both references have 0%. The candidate has 5 visible tones per tile against 7 for the paving reference. Its dark edge pixels are 72% neutral, so the outlines lean grey/black rather than a tinted dark tone of the neighbouring material. The paving reference also scores high here (80%), so this is not decisive, but the candidate shows no tint on the steps or water edge. The steps and water are thinner and flatter than the Beodeul reference, so it would look somewhat sticker-like beside it.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 16215
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "bank landing slabs (both banks)",
+      "rows": "0-17",
+      "evidence": "a",
+      "front_edge_line_row": 18,
+      "eave_shadow_rows": "19-20"
+     },
+     {
+      "part": "quay step tread 2 with dark riser",
+      "rows": "21-23",
+      "evidence": "a",
+      "front_edge_line_row": 24,
+      "eave_shadow_rows": "25-27"
+     },
+     {
+      "part": "quay step tread 3 with dark riser",
+      "rows": "28-31",
+      "evidence": "a",
+      "front_edge_line_row": 32,
+      "eave_shadow_rows": "33-34"
+     },
+     {
+      "part": "quay step tread 4 (last, lit) then submerged step",
+      "rows": "35-37",
+      "evidence": "a",
+      "front_edge_line_row": 37,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "canal water, central channel",
+      "rows": "0-47",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "cobbled banks outside the steps",
+      "rows": "0-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 18,
+    "front_face_rows": 10,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The terrain block shows the top-down canal and cobbled banks, plus a stepped quay on each bank. The landing slabs (rows 0-17) end in a front-edge line at row 18 with dark shadow at rows 19-20. Below that, light treads (rows 21-23, 28-31, 35-37) alternate with dark risers (rows 24-27, 32-34), so each step has a horizontal tread and a vertical riser. The steps then go under the water at rows 38 and below. The column scan at x=24 and x=71 shows the repeating light, edge, dark pattern. The water is an open surface seen from above."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate's cobbled banks echo the reference paving, with stones shaded individually, and the steps are readable. The measured facts are 5 visible tones per tile against 7 for the paving reference, near-flat coverage of 18% against 0%, and 72% of dark edge pixels near-neutral. The water is a large teal area with only faint rain-like streaks, so it reads as a flat fill with 2-3 steps. The stone steps and edge slabs have only about 3-4 tones (pale highlight, light, mid, dark) and carry little grain or speckle. Dark edges are mostly neutral grey-black, so the outline leans toward the sticker look rather than dark material tones. The piece is clean and legible but shallower than the references in shading steps, texture and tile density, and the flat water plus neutral outlines are the main weaknesses.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 18653
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "bank landing slabs (both banks, at bank level)",
+      "rows": "0-17",
+      "evidence": "a",
+      "front_edge_line_row": 18,
+      "eave_shadow_rows": "19-20"
+     },
+     {
+      "part": "quay step treads and risers (lit treads, dark risers)",
+      "rows": "21-37",
+      "evidence": "a",
+      "front_edge_line_row": 27,
+      "eave_shadow_rows": "24-27"
+     },
+     {
+      "part": "canal water surface (4 tiles wide, centre)",
+      "rows": "0-47",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "submerged last step under water",
+      "rows": "38-47",
+      "evidence": "d",
+      "front_edge_line_row": 38,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 18,
+    "front_face_rows": 11,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Terrain tile read as a 3/4 top-down view. Each bank has a landing slab band at rows 0-17 that ends in a darker edge line at row 18 and a shadow at rows 19-20. Below it the stair has lit tread bands at rows 21-23, 28-30 and 35-37. Dark riser rows sit between the treads at rows 24-27 and 31-34 (column x=24 shows L=63 lines at rows 20, 27 and 34), which gives about 11 rows of vertical front faces. The last step is submerged at rows 38-47 under water-tinted rows. The central canal is a horizontal water surface with ripple highlights, and the cobbled outer banks are flat ground. No isometric side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate's cobbled banks are shaded similarly to the reference paving: grey stones with lighter edges and dark gaps. The 5-6 tones per tile are close to the reference's 7. The canal water, however, is a large, nearly flat dark teal field with only faint rain streaks and no ripple, highlight or depth ramp, which is a flat fill and not the several-step shading Beodeul uses. The stone steps are pale cream blocks with few intermediate tones (roughly 3-4 steps: light tread, mid, dark riser), so they look less carefully shaded than the reference stones. The 72% near-neutral share of dark edge pixels is close to the paving reference's 80%, so the dark lines are mostly neutral grey-black and not tinted by the neighbouring material. The result is somewhat sticker-like. Near-flat coverage is 18% against 0% in both references, which confirms the flat water and step areas. Overall it is slightly shallower than the reference, and when in doubt it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 21649
+  }
+ ],
+ "decidedAt": "2026-10-23T01:53:03.587Z",
+ "cells": {
+  "16": [
+   "11909ff931e413cd",
+   "28d622f493888d1b",
+   "53583b7fc05cc516",
+   "55831d84f6e1f0dc",
+   "6c7dc456e972b38d",
+   "6fee45854827bbeb",
+   "96a3638e0c970de8",
+   "e01c243fffa7f9fa"
+  ],
+  "24": [
+   "0377c6fe2106dcfd",
+   "5139215a2eadd57f",
+   "5f2d22456aa6a103",
+   "9bc4045532458099",
+   "9f7fce872cd150b7",
+   "b608036addcc83ab",
+   "c996bad86e8003a6",
+   "f692d31e2fd23789"
+  ],
+  "32": [
+   "055cb0d6af673cb7",
+   "2d1592978cd05113",
+   "30df2cceb962f71f",
+   "4d4d7297b35e2232",
+   "7ae9948543fdfdfb",
+   "8948297c34051a0d",
+   "aa92350946c5d7d3",
+   "cd180b397058d065",
+   "d1168b2bfe62cd0a",
+   "d2c31ad0a2623bcd",
+   "d2f7775c2214c98d"
+  ],
+  "48": [
+   "7d6fea24ed460ce4",
+   "ac980fb655640756"
+  ]
+ }
+}

@@ -1,0 +1,27 @@
+{
+ "schema": "oprn-object-gate-queue/1",
+ "id": "astel-capital-r3-20261027",
+ "title": "왕도 아스텔 방패·쌍등 다시 그림",
+ "note": "VQA r2 반려 뒤 다시 그림",
+ "createdAt": "2026-10-27T10:48:38.861Z",
+ "items": [
+  {
+   "sha": "e2ef6e668d903bd7ce55fb556d55fd736fb473677c56b1997c86180a7f96258f",
+   "kind": "structure",
+   "label": "beodeul_city/capital/capital_watergate_s",
+   "source": "/tmp/astel/gate5/capital_watergate_s.png"
+  },
+  {
+   "sha": "fea70a2da2f762804605da3250995de63f35c260a45931b5b52a60154077771b",
+   "kind": "wall_mounted",
+   "label": "beodeul_city/capital/capital_wall_heraldry",
+   "source": "/tmp/astel/gate5/capital_wall_heraldry.png"
+  },
+  {
+   "sha": "f95fa9333a1eaee4464f15eaafcb38948dd73c010953baf69208ce9aff2b47e7",
+   "kind": "other",
+   "label": "beodeul_city/capital/capital_lamp_double",
+   "source": "/tmp/astel/gate5/capital_lamp_double.png"
+  }
+ ]
+}

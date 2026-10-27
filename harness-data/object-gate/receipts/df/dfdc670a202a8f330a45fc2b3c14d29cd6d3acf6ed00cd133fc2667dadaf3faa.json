@@ -1,0 +1,499 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "dfdc670a202a8f330a45fc2b3c14d29cd6d3acf6ed00cd133fc2667dadaf3faa",
+ "width": 48,
+ "height": 80,
+ "kind": "other",
+ "name": "royal banner pole, 3/4 top-down: square stone foot (top face seen from above, front face), wooden pole with iron bands, gold spear-tip finial, crossbar with a hanging blue banner (gold border, gold crown over a gold eight-point star, swallowtail)",
+ "label": "beodeul_city/capital/capital_banner_pole",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 명암 3단 < 4 (4/4)",
+  "화풍: 질감 없음 (3/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "명암 3단 < 4 (4/4)",
+   "질감 없음 (3/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 4,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "2ad36264365ed8d5"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 4,
+  "tileColorsP90": 17,
+  "darkV5": 110,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 15
+ },
+ "eye": {
+  "verdicts": [
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "right",
+   "borderline",
+   "borderline",
+   "borderline",
+   "right",
+   "borderline",
+   "right",
+   "borderline"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "stone foot top face",
+      "rows": "56-58",
+      "evidence": "a",
+      "front_edge_line_row": 59,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stone foot front face",
+      "rows": "59-62",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "wooden pole with iron bands",
+      "rows": "21-55",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "crossbar",
+      "rows": "20-21",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "gold spear-tip finial",
+      "rows": "16-19",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "hanging blue banner",
+      "rows": "22-44",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 3,
+    "front_face_rows": 4,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The only built volume is the square stone foot (rows 56-62, about 10 px wide). Its lighter top face is rows 56-58 (the column scan shows near-white L=219 at rows 57-58). A lightness change at row 59 gives the front-edge line. Below it is a mid-gray front face (rows 59-61, L=176) with a dark bottom outline at row 62. This is a short but real top surface, about 3 rows, with a front face of 3 or more rows. The pole, crossbar, finial and banner are thin vertical elements. The banner and finial are listed as decor, like a flag on a pole. The crossbar is only a 2-row front-facing strip, so I did not count it as a major part missing a top. Facing is south."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a thin, sparse prop, so the per-tile fact is not held against it. Judged by eye, it still looks flatter than the references. The stone foot is a pale block with only 2-3 steps and little grain or per-stone shading. The pole is a thin 1-2 tone line, and the iron bands barely register. The banner is mostly flat blue with a gold border and a small crown and star emblem. It has no cloth folds, no mid or dark ramp, and no swallowtail shading, so it reads as a sticker. Outlines are dark and tinted (0% neutral), but they are used almost uniformly around the shapes instead of being selective, so I call them mixed. Beodeul references such as the well, stall and hedge carry 5-6 steps per material with clustered texture dots, and the candidate is clearly thinner and flatter next to them. Verdict: fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 17551
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "stone foot top face",
+      "rows": "56-58",
+      "evidence": "a",
+      "front_edge_line_row": 59,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stone foot front face",
+      "rows": "59-62",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "wooden pole with iron bands",
+      "rows": "43-56",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "crossbar",
+      "rows": "20-21",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "blue banner with gold border, crown and star",
+      "rows": "21-44",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "gold spear-tip finial",
+      "rows": "16-19",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 3,
+    "front_face_rows": 4,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The stone foot (about 10 px wide, rows 56-62) has a light top face in rows 56-58 (#dadcd9 at rows 57-58). Below it the slightly darker gray front face (#afb1ae, rows 59-61) ends in a dark bottom outline at row 62. The front face is 4 rows. The pole, crossbar and banner are thin vertical elements drawn face-on, and the 1-row crossbar needs no top. The foot is small and its top is only 3 rows, so the three-quarter reading is weak."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a thin prop, so the per-tile fact is only a weak signal. By eye the banner pole is clearly shallower than the references such as the well, the cheese stall and the hedge. The pole is a flat brown column of about 2-3 steps, and the iron bands read as a few dark dashes rather than a shaded material. The stone foot is a small light-grey block with 2-3 tones and no per-stone shading, speckle or grain. The blue banner is mostly flat fill with a gold border, and the crown and star are tiny and simple. The dark edge pixels carry a tint (0% neutral), so the outline is not a black sticker line, but it is thin and the forms are small. The candidate has 4 visible tones per tile against 9-20 for the richer references. Nothing in the piece, including the finial, crossbar and swallowtail, reaches the layered ramps, texture dots or clustered detail of the Beodeul pieces. Placed next to the references it looks thinner and flatter.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 17117
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "square stone foot top",
+      "rows": "57-58",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stone foot front face",
+      "rows": "59-62",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "wooden pole with iron bands",
+      "rows": "43-56",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "crossbar",
+      "rows": "20-21",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "hanging banner",
+      "rows": "21-44",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "gold spear-tip finial",
+      "rows": "16-19",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 4,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The main body is a tall flat banner on a thin pole, drawn as a vertical face with no top surface. The crossbar is a front-facing strip with no edge line or shadow. The only horizontal surface is the stone foot top, a light band at rows 57-58 (L=219) of about 2 rows. Below it the front face is rows 59-61 (L=176) plus a dark outline at row 62. A 2-row top band with no ellipse and no eave shadow reads as a rim or band, like the 'seat: band 2' reference marked wrong, so the object reads as a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The prop is thin and sparse, so I judged density by eye rather than by the per-tile count. The outline is tinted, with 0% neutral dark edge pixels, which matches Beodeul's dark-material-tone approach. The shading is shallow, though. The blue banner shows about 2-3 blue steps plus gold trim, and the pole reads as a thin 2-3 tone line with little grain or iron-band modelling. The stone foot is a small, nearly flat pale block with no stone-by-stone shading. Banner, crown and star are legible, and the piece is comparable to the lamp-crook reference. Next to the richer references (stall, well, hedge) it looks flatter and smaller in information, so it falls short of the standard. With the foot and pole this flat, I fail it on the doubt rule.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 25658
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "stone foot top face",
+      "rows": "56-58",
+      "evidence": "a",
+      "front_edge_line_row": 59,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stone foot front face",
+      "rows": "59-62",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "wooden pole with iron bands",
+      "rows": "43-56",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "crossbar",
+      "rows": "20-20",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "spear-tip finial",
+      "rows": "16-19",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "hanging banner",
+      "rows": "21-44",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 3,
+    "front_face_rows": 4,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body that carries the pole is the square stone foot at rows 56-62. Rows 56-58 are a light top face (#dadcd9 at 57-58), with the pole base dark at row 56. Rows 59-61 are a darker gray front face (L=176) and row 62 is a dark outline. The change in lightness at row 59 acts as the front-edge line, so the foot has a 3-row top and a 4-row front. The thin pole, the 1-row crossbar and the spear tip are slender parts that do not need a visible top. The banner is a flag hanging from a pole, so it counts as decor. The top is shallow but present, so the foot reads as three-quarter view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a thin, sparse prop, so the per-tile tone count (4) is not held against it on its own. Judged by eye next to the references (lamp-crook, well-roofed, stall-cheese), it is clearly flatter. The banner cloth is a flat blue field with a gold border and a tiny emblem, and the crown and star are only a few pixels, with no cloth folds, highlight/shadow steps or weave grain. The pole is a narrow 1-2 px shaft with little visible wood ramp, and the iron bands are barely distinguishable. The stone foot is a small light block with about 2-3 tones and no per-stone speckle or chips, which is shallower than the shaded stonework in the well. The outline is hard to read at this size. It looks like a dark, slightly tinted edge around the banner but not a clear dark-material-tone separation, so I call it mixed. Overall it reads as a clean sticker-like icon with about 3 steps per material against the references' 5-6, so a careful artist would see it as thinner and flatter than the reference. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 17473
+  }
+ ],
+ "decidedAt": "2026-10-23T01:32:12.600Z",
+ "cells": {
+  "16": [
+   "3dcea84aa778ac68",
+   "705683495cd68e4a",
+   "9fb65314a7c473b8",
+   "d9930af8fd310782"
+  ],
+  "24": [
+   "07e5937c946fdd5a",
+   "08428ab1400faece",
+   "10b93a3635f4d14e",
+   "11cde1d1d8c176a1",
+   "4080c0d732241160",
+   "428f19ff7f640a9f",
+   "4952eaff13bcfa43",
+   "4a17c9cc64344a32",
+   "541af402c0bae6b1",
+   "59538b2c2acb9242",
+   "8d2fde61220b80e4",
+   "acb8ca29299d7ffb",
+   "d98c96ca3cdea126",
+   "e4d39705a71326ae",
+   "e67ffb93a866aeb8",
+   "fd1916953c6fd92d"
+  ],
+  "32": [
+   "107c7d39876c97c8",
+   "157d1c892d0b869b",
+   "1787cc68abade585",
+   "18c0540cf44390cb",
+   "1f416fabad62d4b9",
+   "299afab375150eda",
+   "3094fc2b49111570",
+   "322b9f084251959d",
+   "398b2a15faf225ba",
+   "56e5fe12f768bf74",
+   "6b7afaa026b278b4",
+   "6b94036707651b29",
+   "6cadf0472a8ec736",
+   "750bd95d0ea4c0ff",
+   "83b10983bd227aaf",
+   "8f30241916e25919",
+   "934ddb440d7464f1",
+   "aef2da4e2ebb94eb",
+   "b179f70aac6270bf",
+   "c1b066c514257b43",
+   "c4246d995885f8da",
+   "d6394c6805e7b04d",
+   "e8fa1d3ac5b74f97",
+   "ecb5319b8b245511",
+   "ef0e24b5308b479b",
+   "f59f1c8648b10ebd",
+   "f78bca4e6bba8fb7",
+   "f88a7ac5d7521d8f"
+  ],
+  "48": [
+   "0fc3c7cc1d933840",
+   "785a5f0e2bf138cd",
+   "9f46cc34632d7585",
+   "c09d518c00dc0f85"
+  ]
+ }
+}

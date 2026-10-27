@@ -1,0 +1,464 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "c06893cae6ab4b0470d30398f4055e16053b327d5d0ddd0fcd048dc4ae830b6b",
+ "width": 32,
+ "height": 48,
+ "kind": "other",
+ "name": "royal double street lamp, 3/4 top-down: square stone pedestal (top face seen from above), iron post with gold bands and a gold star finial, a curled crossarm with a crowned lantern hanging at each end (warm lit glass)",
+ "label": "beodeul_city/capital/capital_lamp_double",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "refer",
+ "reasons": [
+  "화풍: 화풍 판정이 갈림(걸린 판정 2/4)",
+  "화풍: 판정자 fail (2/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "refer",
+  "reasons": [
+   "화풍 판정이 갈림(걸린 판정 2/4)",
+   "판정자 fail (2/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "2ad36264365ed8d5"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 14,
+  "tileColorsP90": 14,
+  "darkV5": 30,
+  "nearBlackEdge": 0.08,
+  "opaqueTiles": 2
+ },
+ "eye": {
+  "verdicts": [
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "stone pedestal top",
+      "rows": "36-41",
+      "evidence": "a",
+      "front_edge_line_row": 41,
+      "eave_shadow_rows": "42"
+     },
+     {
+      "part": "left lantern crown roof",
+      "rows": "13-19",
+      "evidence": "c",
+      "front_edge_line_row": 19,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "right lantern crown roof",
+      "rows": "13-19",
+      "evidence": "c",
+      "front_edge_line_row": 19,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "crossarm",
+      "rows": "9-10",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "iron post with gold bands and star finial",
+      "rows": "2-35",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 4,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The square pedestal (width 14, rows 36-45) shows a light top face in rows 36-41. A darker front-edge row and shadow at about rows 41-42 separate it from a 4-row front face in rows 42-45 with a small emblem. Each lantern has a sloped blue crown roof in rows 13-17 that widens to a gold eave line at rows 18-19, and the lit glass body hangs below it. The thin post is a vertical structure carried by the pedestal. The pedestal top is clearly more than a 1-2 row rim, so the object reads as three-quarter view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a thin, sparse prop, so I judged it by eye against prop-lamp-crook and the well and stall. It has 14 visible tones on its full tile, 0% near-flat coverage and 25 total colours. The reference lamp-crook has only 14 colours in total and no full-tile tone count. The candidate carries clearly more structure: a stone pedestal with a visible top face, an iron post with gold bands, a star finial, a curled crossarm and two crowned lanterns with warm lit glass. Each material gets roughly 3-5 tones, a bit below the 5-6 of the richer references such as the well and stall. 62% of its dark edge pixels are near-neutral. That is the iron-post look, and the reference lamp (100% neutral) is the same. The glass, gold and stone parts are separated by value, not by a uniform black sticker outline, so I call the outline mixed. It has no large flat fills. A careful artist would accept it next to the reference lamp without it looking thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "맨 위의 큰 부분(34행)이 윗면 없이 세로 면뿐 — 윗끝이 3/4 가 아님 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "맨 위의 큰 부분(34행)이 윗면 없이 세로 면뿐 — 윗끝이 3/4 가 아님 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16978
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "stone pedestal top",
+      "rows": "36-40",
+      "evidence": "a",
+      "front_edge_line_row": 40,
+      "eave_shadow_rows": "41-41"
+     },
+     {
+      "part": "pedestal front face",
+      "rows": "41-45",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "iron post with gold bands",
+      "rows": "11-37",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "crossarm",
+      "rows": "9-10",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "left and right lantern crown roofs",
+      "rows": "13-19",
+      "evidence": "c",
+      "front_edge_line_row": 18,
+      "eave_shadow_rows": "19-19"
+     },
+     {
+      "part": "lantern glass bodies",
+      "rows": "20-27",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "gold star finial",
+      "rows": "2-6",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 5,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The pedestal is the largest solid volume. Rows 36-40 form a light top face about 14 px wide, ending in a front-edge line at row 40 and a darker band at row 41. Below it, rows 41-45 are a front face with a small emblem or door. The lantern crowns are sloped roof planes in blue stripes over a gold eave line at rows 18-19, so they also show a top surface. The crossarm and post are thin elements and only read as vertical strips, which is acceptable for such slim parts."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a detailed double lamp with a gold-banded post, star finial, curled arm and two crowned lanterns on a stone pedestal. Its 14 visible tones per tile and 0% near-flat coverage beat the hedge (9) and the thin crook lamp (0). It sits just under the well (20) and stall (17). Even so, the total palette is only 25 colours against 38-40 for the rich references. The pedestal, lanterns and post each show about 3-4 lightness steps, not the 5-6 of the well roof and stall. 62% of the dark edge pixels are near-neutral, so the outline leans towards a near-black sticker line instead of the dark tone of the adjacent material; the well (33%), stall (1%) and hedge (0%) are tinted. Texture is limited to a few dots on the stone, and the lantern glass and iron look smooth next to the grain on the references. It is not flat, but it is thinner and more outline-driven than the richest references, and with doubt the verdict is fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 21655
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "stone pedestal top face",
+      "rows": "36-41",
+      "evidence": "a",
+      "front_edge_line_row": 41,
+      "eave_shadow_rows": "42"
+     },
+     {
+      "part": "pedestal front face",
+      "rows": "42-45",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lantern crowns (sloped blue roofs with gold eave)",
+      "rows": "13-19",
+      "evidence": "c",
+      "front_edge_line_row": 18,
+      "eave_shadow_rows": "19"
+     },
+     {
+      "part": "lantern glass bodies",
+      "rows": "20-25",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lantern bases",
+      "rows": "26-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "crossarm",
+      "rows": "9-10",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "gold star finial",
+      "rows": "2-6",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 4,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The pedestal (width 14, rows 36-45) has a light top face on rows 36-41 that ends in a darker front-edge line around row 41-42. Below it is a front face of about 4 rows (42-45) with a small emblem. The lanterns have sloped blue roof planes (rows 13-19) above a gold eave line at rows 18-19, which counts as roof evidence (c). The thin post and crossarm are slender structural elements and do not need their own top surfaces. Overall it reads as a 3/4 view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a 2x3-tile lamp prop, so the closest reference is prop-lamp-crook, with prop-well-roofed and prop-stall-cheese as richer comparisons. It has 14 visible tones per full tile and 25 distinct colours in total. That is well above the lamp-crook (14 colours in total) and in the range of the hedge and the stall, though a little under the well (20) and the stall (17). Near-flat coverage is 0%, so there are no large flat fills. The pedestal, gold bands and lantern glass each show about 3-4 steps, a bit short of Beodeul's 5-6, but they are separated by value and the gold and warm glass are shaded. The 62% near-neutral share of dark edge pixels sits between the references (0% to 100%). The dark parts are an iron post and grey stone, where neutral-leaning darks are natural, and the reference lamp-crook is 100% neutral, so this is not a sticker outline. It is judged mixed. The piece is a bit thinner than the well and the stall but not flatter or more sticker-like than the lamp reference, so a careful artist would accept it beside the set.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 20209
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "stone pedestal top face",
+      "rows": "36-40",
+      "evidence": "a",
+      "front_edge_line_row": 41,
+      "eave_shadow_rows": "42-42"
+     },
+     {
+      "part": "stone pedestal front face",
+      "rows": "42-45",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "left lantern crown roof",
+      "rows": "14-19",
+      "evidence": "c",
+      "front_edge_line_row": 19,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "right lantern crown roof",
+      "rows": "14-19",
+      "evidence": "c",
+      "front_edge_line_row": 19,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lantern glass bodies and bases",
+      "rows": "20-27",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "crossarm beam",
+      "rows": "9-10",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "iron post with gold bands",
+      "rows": "11-35",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "gold star finial",
+      "rows": "2-6",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 4,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The pedestal (rows 36-45, 14 px wide) shows a light top face in rows 36-40, then a darker front-edge row at 41 and 1 row of shadow, then a front face of about 4 rows. The lanterns have sloped crown roofs in rows 14-19 that read as top planes, and the glass bodies below are vertical faces. The crossarm and post are thin structural lines. The star finial is a decor tip. Overall it reads as 3/4 view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate has 14 visible tones per tile against 17-20 for the richer references (well, stall), with 0% near-flat coverage, so it avoids big flat fills. Its palette is small, with only 25 distinct colours against 38-40 for the well and stall. The facts and the small board image suggest about 3-4 steps per material: the gold bands, the iron post, the lantern glass and the stone pedestal top. The references use about 5-6 steps, and the well's stones and the stall's awning are shaded one by one. 62% of the dark edge pixels are near-neutral, so the outline is partly a near-black sticker line rather than consistently the dark tone of the neighbouring material, as in the hedge (0%) and stall (1%). The pedestal and crowned lanterns look more simply modelled than the well's stonework and tile texture. It is clean and readable, but a careful artist would likely find it a little thinner and more outlined than the reference. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 19790
+  }
+ ],
+ "decidedAt": "2026-10-23T01:53:03.582Z",
+ "cells": {
+  "16": [
+   "1bf2a5d220617b9e",
+   "63671e15049b6ea8",
+   "7ff2144d77645c11",
+   "8e213a02d2dc1e38",
+   "c52009d15f0181b8",
+   "db4513d62ef0a132"
+  ],
+  "24": [
+   "0b81c4aa2ad75062",
+   "12513fd42b34c2f2",
+   "480a0d234f4aeb95",
+   "52e40e87bff82861",
+   "7c361cfc600e9abb",
+   "8c16ee966e952eaf",
+   "acf743da1247ea54",
+   "ad623ff5ae393254",
+   "cc726d95c6b6f49e",
+   "d8ff3b4fe6241522",
+   "e11cc88168dab282",
+   "f6661145497c9085"
+  ],
+  "32": [
+   "2920fadad75354cd",
+   "34b6e2df260fa58f",
+   "8d9a8f425a84e81b",
+   "c67dc96eae5f430b"
+  ],
+  "48": [
+   "5c1bfe973a6215ac",
+   "6e611a0be90143bf",
+   "955018924bdf962f"
+  ]
+ }
+}

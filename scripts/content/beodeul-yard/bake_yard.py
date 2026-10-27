@@ -359,3 +359,8 @@ def main():
 
 if __name__ == "__main__":
     main()
+    # 마당 꼬리 뒤(33,408~)의 왕도 아스텔 꼬리(beodeul-capital/bake_capital.py)는 이 스크립트가 시트를 다시 쓰면 잘린다 — 이어서 다시 굽는다(관문 확인 그대로).
+    _cap = ROOT / "scripts/content/beodeul-capital/bake_capital.py"
+    if not any(a.startswith(("--gate-export", "--samples")) for a in sys.argv[1:]) and _cap.exists():
+        import subprocess
+        subprocess.run([sys.executable, str(_cap)], cwd=ROOT, check=True)

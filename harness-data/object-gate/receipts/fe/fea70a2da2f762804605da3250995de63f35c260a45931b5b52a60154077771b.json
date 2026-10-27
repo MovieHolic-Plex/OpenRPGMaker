@@ -1,0 +1,450 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "fea70a2da2f762804605da3250995de63f35c260a45931b5b52a60154077771b",
+ "width": 64,
+ "height": 96,
+ "kind": "wall_mounted",
+ "name": "blue heraldic banners on iron rods and a blue-and-gold shield hung flat on an ashlar town wall face (gold crown over a gold eight-point star)",
+ "label": "beodeul_city/capital/capital_wall_heraldry",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "2ad36264365ed8d5"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 16,
+  "tileColorsP90": 24,
+  "darkV5": 64,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 24
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "ashlar wall face (stone courses, background body)",
+      "rows": "0-95",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "upper wall band / parapet-like grey strip with notched top",
+      "rows": "22-31",
+      "evidence": "none",
+      "front_edge_line_row": 31,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "iron rods (thin horizontal bars)",
+      "rows": "32-34",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "left blue banner (vertical cloth with crown and star)",
+      "rows": "34-60",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "blue-and-gold shield (flat)",
+      "rows": "33-46",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "right blue banner (vertical cloth with crown and star)",
+      "rows": "34-60",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base ledge band",
+      "rows": "84-85",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 96,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The whole piece is a flat, face-on wall elevation. Banners, shield and rods are vertical faces hung flat on the ashlar wall, with no depth or receding side face. The wall carries only thin horizontal rows: a 1-row light coping line at row 1, a 1-row dark line at row 31, and a 2-row light band at rows 84-85. None of these is a deep top plane, and there is no ellipse, roof or visible contents. The face reads as a front elevation. That is expected for a flat wall-mounted object, but there is no top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The ashlar wall is shaded stone by stone, with highlight, light, mid, dark and mortar tones, plus speckle and grass tufts at the base. This matches the Beodeul hedge and well in texture. Measured facts support this: 12 visible tones per tile sits inside the reference range (hedge 9, cheese stall 17, well 20), and near-flat coverage is 0%. The banners and shield are the thinnest part, at about 3-4 blue and gold steps. They have dark blue-tinted edges with value separation rather than a black sticker line, and the stone edges lean brown-grey. The 46% neutral share of dark edge pixels is close to the bench (44%) and well (33%), so I call the outline mixed rather than near-black. The piece is a wall face rather than a standing prop, but its craft is comparable to the references. It does not look flatter or thinner next to them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 20600
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "ashlar wall face (stone courses, whole sprite)",
+      "rows": "0-95",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "iron rods holding the banners (thin horizontal bars with gold end caps)",
+      "rows": "32-33",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "left blue banner (flat cloth, gold crown and star)",
+      "rows": "34-61",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "blue-and-gold shield (flat, gold crown over star)",
+      "rows": "33-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "right blue banner (flat cloth, gold crown and star)",
+      "rows": "34-61",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 96,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The sprite is a flat, front-on wall face with stone courses. The banners and shield hang flat against it and are drawn only as vertical faces, with no horizontal surface and no receding side face. The rods at rows 32-33 are thin strips, and the light band at rows 84-85 is a rim of 1-2 rows, so neither counts as a top surface. Banners and shield are flat wall-mounted items, so no top is expected. Nothing has a front-edge line with eave shadow, no ellipse, and no open-container contents. This is a flat wall-mounted elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate carries 12 visible tones per 16x16 tile, which sits inside the reference range (hedge 9, stall 17, well 20), and its near-flat coverage is 0%. The ashlar wall is built from individually shaded blocks with highlight, light, mid and dark steps (about 5) plus speckle and grain. The crenellated cap and the moss tufts at the base add more variation. The mortar and block edges are grey-brown, tinted by the stone. The banners use dark navy edges next to the blue cloth. The 46% neutral share of dark edge pixels is close to the bench (44%) and well (33%) and mostly comes from the grey stone, so the outline is mixed rather than a uniform black sticker line. The banners and shield are small and fairly simple, but each has a gold emblem with a highlight and shadow step on a blue cloth ramp. The piece would sit next to the references without looking thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19116
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "ashlar wall face (full height, stone courses)",
+      "rows": "0-95",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "light merlon-like band at the top of the wall with a dark line at row 31",
+      "rows": "22-31",
+      "evidence": "none",
+      "front_edge_line_row": 31,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "iron rods holding the banners",
+      "rows": "32-34",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "left blue banner with gold border, crown and star",
+      "rows": "34-61",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "blue-and-gold shield with crown and star",
+      "rows": "33-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "right blue banner with gold border, crown and star",
+      "rows": "34-61",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "light string course or ledge near the bottom of the wall",
+      "rows": "84-85",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 96,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "This is a flat, face-on view of a wall with banners and a shield hung on it. The banners and shield are vertical faces, drawn flat as a wall-mounted item should be. The wall shows no receding top surface or side face. The light band at rows 22-31 ends in a dark line at row 31, but it reads as a wall course and not as a horizontal plane. The 1-2 row light band at rows 84-85 is only a ledge strip. The main body has no top surface and a full-height front face, so it reads as front elevation, which is acceptable for a flat wall-mounted kind."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The ashlar wall is shaded stone by stone, with light and dark faces, mortar joints, speckle and small grass tufts at the base. The crenellated top carries the same stone variation. There are no flat fills, and measured near-flat coverage is 0%. Visible tones per tile are 12, which sits between the hedge (9) and the cheese stall (17) and well roofed (20), so density is comparable to the references. Outlines are mixed: 46% of dark edge pixels are near-neutral, which matches the grey stone, and the banners have a darker blue edge. This is not a uniform black sticker line, and forms are separated mostly by value. The banners are the weakest part, with about 3-4 blue steps and a simple gold emblem, but they are still tinted and textured enough to sit next to the references. A careful artist would accept it.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17230
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "ashlar wall face (backing)",
+      "rows": "0-95",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "iron rods with gold end caps",
+      "rows": "32-34",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "left and right blue banners",
+      "rows": "34-61",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "blue and gold shield",
+      "rows": "33-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 95,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The whole sprite is a flat, face-on wall section 64 px wide for all 96 rows. The banners hang as vertical cloth from thin rods (rows 32-34), and the shield is a flat face-on heraldic plate (rows 33-47). The stone blocks are drawn face-on with mortar lines, and rows 22-30 are pale stone blocks, not a receding top. No part shows a horizontal top surface, ellipse, or roof plane. This is normal for a flat wall-mounted piece, so it reads as a front elevation with no top."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a wall-mounted prop (banners and a shield on an ashlar face), so it is only loosely the same kind as the free-standing references. Measured facts: 12 visible tones per 16x16 tile, which sits between the hedge (9) and the stall/well (17-20). Near-flat coverage is 0%, so there are no flat fills. The stones are shaded individually, with highlights, mortar lines and speckle, and the crenellated top is cut into several grey steps, about 5 in all. The banners carry 3-4 blue steps plus gold emblems, which is a bit simpler than the stone. Dark edges are 46% near-neutral, similar to the bench (44%) and well (33%), so the outline is mixed rather than uniform black. Edges are largely separated by value, as in the references. It does not look sticker-like next to the references. Density is slightly below the richest references (stall, well) but at or above the hedge, so an artist would accept it.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17798
+  }
+ ],
+ "decidedAt": "2026-10-27T10:49:54.770Z",
+ "cells": {
+  "16": [
+   "0ff1209741f9c992",
+   "19fc97afa4f10330",
+   "27cf72a8a5acb5a5",
+   "3218ff94e58d2e93",
+   "37ee9c5957ee1d40",
+   "3b7c0cd9058cd35c",
+   "3dd59ed92009f023",
+   "48f5fdfcd9f1cd48",
+   "4df5c1f41f35a27d",
+   "52be2b72f231312f",
+   "61ca120d6ad6926f",
+   "89667aeb92b37556",
+   "978a462a29bb55f9",
+   "a15a24fd88b2ecc2",
+   "a46c808ee14d478e",
+   "b8a6ca46de83dbcd",
+   "c1b801d1edac3bd0",
+   "e29e4b250e7fe074",
+   "e7a3853dd51b0e51",
+   "f0196d810031b322"
+  ],
+  "24": [
+   "094e876700a4bc6e",
+   "0ce2bd79a1d92a09",
+   "18c663e752e0dc94",
+   "28f869132a5a8917",
+   "299073c87060393a",
+   "372f75b722dd4514",
+   "49a609eff1e12829",
+   "4cc87f987e4dbbf8",
+   "59f8e32635f318a8",
+   "6808f452153835e6",
+   "688b6e5c636e30bc",
+   "6d5a014453446052",
+   "765a7d6f575683a8",
+   "78bb64f47ce7a4c9",
+   "7aa216ffd1fcb9de",
+   "7f0721f6c1565d16",
+   "837a8b2b7dfb68be",
+   "92ac71209143afc1",
+   "962a07921ccfebcc",
+   "984100cdd2f77a30",
+   "abfc80f2dfe29695",
+   "acd1d682817de04e",
+   "ad06aa9b12312857",
+   "afc3618d6383ac9f",
+   "b401a8b38959f213",
+   "bd4ca148dd1c9e0a",
+   "ce06688f6a641146",
+   "d0abb0d269278622",
+   "d7ac0c502c66d3ab",
+   "d7c13c864478be22",
+   "d8f35d4e9a07cb33",
+   "e2992b0344acf509",
+   "e2a6f08eff684e1b",
+   "eadf6ecb7e884a50",
+   "fa3e44b4e7c6291f",
+   "fe85b104de299258"
+  ],
+  "32": [
+   "4af235ea2e7beed7",
+   "8f47a541e4063201",
+   "dfe005b54527ee9c",
+   "e0090d558b50c250",
+   "f71e4723185f702c"
+  ],
+  "48": [
+   "0aec9fd6301cffeb",
+   "1cb7d19cb6c700d6",
+   "22cea8ff26664882",
+   "2c532fcf904b2b26",
+   "4e492b9bf6c913f9",
+   "6a1b40b333c06c85",
+   "8fe537aa79a9013b",
+   "b37c46f7a2c071de",
+   "ba64c647aa321908",
+   "bf8648c3775e6712",
+   "c95bc250a23b9a4d",
+   "fc89ea4a61144028"
+  ]
+ }
+}

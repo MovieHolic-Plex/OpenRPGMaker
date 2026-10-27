@@ -1,0 +1,16 @@
+{
+ "schema": "oprn-object-gate-hold-decision/1",
+ "pixelSha256": "a419b33d1e03a2f723c9a59d38bc9aaf5b0a5181cd6188457a91aca813752ea6",
+ "profileHash": "4d8774b517f41638",
+ "kind": "structure",
+ "decision": "allow",
+ "decidedBy": "supervisor (Claude Opus 5.5)",
+ "decidedAt": "2026-10-23T03:52:09.374Z",
+ "by": "delegated",
+ "delegatedBy": "delegated by user to supervisor 2026-10-23",
+ "evidence": "/home/main/z-project/rpg-zzu-object-gate-holds/harness-data/object-gate/vqa/fallen-astel-capital-20261023.json",
+ "via": "review-page",
+ "reasons": [],
+ "note": "묶음 허용: 폴른 스타 왕도 아스텔 새 조각 6 — fresh adversarial Opus + Argon VQA r3 both PASS all six; hidden decoys rejected (Opus 4/4, Argon 3/4)",
+ "sig": "da92708e8051b6d53d253439708422ffc813425574c766428f2a1ef6e82613ea"
+}
