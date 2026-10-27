@@ -1,15 +1,13 @@
 /** @vitest-environment happy-dom */
 import { describe, expect, it } from "vitest";
 import { loadBundledAssets } from "@/assets/bundled";
-import { EASYRPG_PICTURE_ASSETS } from "@/assets/easyrpgRtp";
-import { resolveEventSpriteTexture, resolveSpatialGraphicTexture } from "@/player/eventSpriteResources";
+import { resolveSpatialGraphicTexture } from "@/player/eventSpriteResources";
 import { renderPlaceableOverlays } from "@/player/playScenePlaceables";
 import { createBlankProject } from "@/project/defaults";
 import { startSession } from "@/project/session";
 import { store } from "@/project/store";
 
 const CLOUD = "easyrpg-picture-cloud";
-const CLOUD_PATH = "assets/easyrpg/picture/Cloud.png";
 
 function spatialProject(options?: {
   readonly graphicResourceId?: string;
@@ -47,44 +45,9 @@ function fakeLoadScene() {
 }
 
 describe("spatial catalog picture render", () => {
-  it("selects and loads the editor default picture under its catalog id, not the whole picture library", () => {
-    // Given: a farm building that authors the editor default Cloud picture.
-    const referenced = fakeLoadScene();
-    const unreferenced = fakeLoadScene();
-    expect(EASYRPG_PICTURE_ASSETS.some((asset) => asset.id === CLOUD && asset.path === CLOUD_PATH)).toBe(true);
-
-    // When: bundled play assets load for that project versus a project with no spatial pictures.
-    loadBundledAssets(referenced.scene, spatialProject());
-    loadBundledAssets(unreferenced.scene, createBlankProject());
-
-    // Then: Cloud is queued as Phaser key easyrpg-picture-cloud from its catalog path, and blank projects do not load it.
-    expect(referenced.images).toContainEqual({ key: CLOUD, url: CLOUD_PATH });
-    expect(unreferenced.images.some((image) => image.key === CLOUD)).toBe(false);
-  });
-
-  it("loads an orientation-variant catalog picture referenced only on one facing", () => {
-    // Given: the default graphic is a non-picture id, but left facing authors Cloud.
-    const { scene, images } = fakeLoadScene();
-
-    // When: bundled assets inspect level orientation graphics.
-    loadBundledAssets(scene, spatialProject({ graphicResourceId: "building-default", orientationId: CLOUD }));
-
-    // Then: the facing variant is still selected for load.
-    expect(images).toContainEqual({ key: CLOUD, url: CLOUD_PATH });
-  });
-
-  it("resolves the catalog picture for spatial sprites without treating it as an event charset", () => {
-    // Given: the default Cloud id used by the editor spatial graphic field.
-    const project = spatialProject();
-
-    // When: spatial overlay resolution runs beside the existing event-sprite resolver.
-    const spatial = resolveSpatialGraphicTexture(project, CLOUD);
-    const event = resolveEventSpriteTexture(project, CLOUD, 0);
-
-    // Then: the map sprite uses the catalog texture key; NPC/event charset mapping stays unchanged.
-    expect(spatial).toEqual({ texture: CLOUD, frame: "__BASE" });
-    expect(event).toBeNull();
-  });
+  // Retired: the EasyRPG picture library (incl. easyrpg-picture-cloud) left the bundle in the 2026-10-07 copyright purge
+  // (EASYRPG_PICTURE_ASSETS is now empty, src/assets/easyrpgRtp.ts), so the three catalog-picture load/resolve cases
+  // (default load, orientation-variant load, spatial texture resolve) no longer have an asset to load.
 
   it("draws the catalog picture key for a live placement instead of the raw missing fallback only", () => {
     // Given: one shed using Cloud on the current map.
