@@ -606,6 +606,60 @@ function literalLabel(value: string): string {
       return "적 상태";
     case "enemiesAlive":
       return "남은 적 수";
+    case "onRound":
+      return "이 턴만";
+    case "everyRound":
+      return "몇 턴마다";
+    case "enemyHpBelow":
+      return "적 HP 이하";
+    case "text":
+      return "글만";
+    case "graphic":
+      return "그림만";
+    case "both":
+      return "글과 그림";
+    case "snow":
+      return "눈";
+    case "rain":
+      return "비";
+    case "fireflies":
+      return "반딧불";
+    case "stars":
+      return "별빛";
+    case "fadeIn":
+      return "서서히 나타남";
+    case "riseIn":
+      return "위로 떠오름";
+    case "slideUp":
+      return "아래에서 올라옴";
+    case "poison":
+      return "독";
+    case "toxic":
+      return "맹독";
+    case "burn":
+      return "화상";
+    case "sleep":
+      return "수면";
+    case "freeze":
+      return "얼음";
+    case "paralysis":
+      return "마비";
+    case "confusion":
+      return "혼란";
+    case "high":
+      return "높음";
+    case "ON":
+      return "켜짐";
+    case "OFF":
+      return "꺼짐";
+    case "poke":
+      return "보통 볼";
+    case "great":
+      return "상급 볼";
+    case "ultra":
+      return "특급 볼";
+    case "master":
+      return "확정 볼";
     default:
       return value;
   }
