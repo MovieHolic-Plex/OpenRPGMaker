@@ -17,8 +17,9 @@ describe("export battle asset URLs", () => {
   ])("resolves high resolution sheets for %s exports", (kind, expected) => {
     // Given
     registerExportAssetBase(new URL("https://games.example.test/games/demo/"));
-    const sheet = battlerHiresSheet("generated-actor-hero-01-battle");
-    if (!sheet) throw new Error("Expected high resolution sheet");
+    // 번들 스타터 고해상도 시트는 2026-10-03 에 빠졌다(BATTLER_HIRES_SHEETS = []) — URL 해석 계약은 같은 모양의 시트 항목으로 본다.
+    expect(battlerHiresSheet("generated-actor-hero-01-battle")).toBeUndefined();
+    const sheet = { resourceId: "generated-actor-hero-01-battle", path: "assets/generated/starter/hires/hero-01-battle.png", cellWidth: 192, cellHeight: 192 };
     if (kind === "embedded") registerInlineAssets({ [sheet.path]: "data:image/png;base64,AQ==" });
 
     // When
@@ -54,31 +55,7 @@ describe("export battle asset URLs", () => {
     expect(url).toBe("data:image/png;base64,AQ==");
   });
 
-  it("builds HUD icon URLs through Vite rather than keeping origin-root paths", async () => {
-    // Given
-    const input = resolve("src/styles/runtime/battle/10-compact-hud-stage.css");
-
-    // When
-    const built = await build({
-      configFile: false,
-      publicDir: false,
-      base: "./",
-      logLevel: "silent",
-      build: { write: false, assetsInlineLimit: 0, rollupOptions: { input } },
-    });
-    const output = Array.isArray(built) ? built[0] : built;
-    if (!output || !("output" in output)) throw new Error("Expected completed CSS build");
-    const css = output.output.find((file) => file.type === "asset" && file.fileName.endsWith(".css"));
-    if (!css || css.type !== "asset") throw new Error("CSS artifact missing");
-    const text = typeof css.source === "string" ? css.source : new TextDecoder().decode(css.source);
-    const urls = [...text.matchAll(/url\(["']?([^"')]+)["']?\)/g)].map((match) => match[1]);
-    const icons = urls.filter((url) => url?.includes("battle-icon-"));
-
-    // Then
-    expect(icons.length).toBeGreaterThan(0);
-    expect(icons.filter((url) => url?.startsWith("/"))).toEqual([]);
-    expect(output.output.some((file) => file.fileName.includes("battle-icon-sword"))).toBe(true);
-  });
+  // (은퇴) 「HUD 아이콘 URL 을 Vite 로 굽는다」 — 스타터 battle-icon-* 그림과 그 url() 이 2026-10-03 스타터 자산 정리로 빠졌다.
 
   it("builds runtime fonts and fallback window skin without root-only URLs", async () => {
     // Given
@@ -100,6 +77,7 @@ describe("export battle asset URLs", () => {
 
     // Then
     expect([...text.matchAll(/url\(["']?(\/assets\/[^"')]+)["']?\)/g)]).toEqual([]);
-    expect(output.output.filter((file) => file.fileName.endsWith(".woff2"))).toHaveLength(4);
+    // 2026-10-07 정리로 Neo둥근모가 빠지고 갈무리 셋(9·11·11 Bold)만 남았다(fonts.css).
+    expect(output.output.filter((file) => file.fileName.endsWith(".woff2"))).toHaveLength(3);
   });
 });

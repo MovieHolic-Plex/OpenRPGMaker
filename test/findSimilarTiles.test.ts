@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { runTool } from "@/editor/tools/toolRunner";
-import { createBlankProject, COMBINED_TOWN_TILESET_ID } from "@/project/defaults";
+import { createBlankProject, DEFAULT_TILESET_ID } from "@/project/defaults";
 
 type FindSimilarTilesData = {
   readonly tileId: number;
@@ -21,8 +21,11 @@ function findSimilarTilesData(value: unknown): FindSimilarTilesData {
 
 function projectWithTileSemantics(): ReturnType<typeof createBlankProject> {
   const project = createBlankProject();
-  const tileset = project.tilesets[COMBINED_TOWN_TILESET_ID];
+  const tileset = project.tilesets[DEFAULT_TILESET_ID];
   if (!tileset) throw new Error("default tileset missing");
+  // 2026-10-07 저작권 정리로 새 프로젝트 기본 칩셋이 합본 마을 → beodeul_city 로 바뀌었다. 픽스처는 메타·지형을 통째로
+  // 덮어쓰는 일반 동작 시험이라 기본 칩셋을 쓰고, 그 칩셋의 실제 그룹이 점수에 끼지 않게 비운다.
+  tileset.tileGroups = [];
   tileset.count = 40;
   tileset.tilesPerRow = 10;
   tileset.terrain = Array.from({ length: tileset.count }, () => 0);
@@ -41,11 +44,11 @@ describe("find_similar_tiles", () => {
   it("ranks nearby role and terrain matches first", () => {
     const project = projectWithTileSemantics();
 
-    const result = runTool({ project }, "find_similar_tiles", { limit: 4, tileId: 22, tilesetId: COMBINED_TOWN_TILESET_ID });
+    const result = runTool({ project }, "find_similar_tiles", { limit: 4, tileId: 22, tilesetId: DEFAULT_TILESET_ID });
 
     expect(result.ok, result.summary).toBe(true);
     const data = findSimilarTilesData(result.data);
-    expect(data).toMatchObject({ tileId: 22, tilesetId: COMBINED_TOWN_TILESET_ID });
+    expect(data).toMatchObject({ tileId: 22, tilesetId: DEFAULT_TILESET_ID });
     expect(data.tiles).toHaveLength(4);
     expect(data.tiles).not.toContain(22);
     expect(data.tiles.slice(0, 3)).toEqual([21, 23, 32]);
@@ -54,7 +57,7 @@ describe("find_similar_tiles", () => {
   it("honors limit and excludes the source tile", () => {
     const project = projectWithTileSemantics();
 
-    const result = runTool({ project }, "find_similar_tiles", { limit: 2, tileId: 22, tilesetId: COMBINED_TOWN_TILESET_ID });
+    const result = runTool({ project }, "find_similar_tiles", { limit: 2, tileId: 22, tilesetId: DEFAULT_TILESET_ID });
 
     expect(result.ok, result.summary).toBe(true);
     const data = findSimilarTilesData(result.data);

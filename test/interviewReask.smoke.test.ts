@@ -12,10 +12,18 @@ function analyze(ctx: { project: ReturnType<typeof createBlankProject> }, mapId:
   return res.data as UsageData;
 }
 
+function forgetTileMeta(ctx: { project: ReturnType<typeof createBlankProject> }, mapId: string, tile: number): void {
+  const tileset = ctx.project.tilesets[ctx.project.maps[mapId]!.tilesetId]!;
+  tileset.tileMeta![tile] = { description: "", label: "", source: "unknown" };
+}
+
 describe("맵 인터뷰 재질문 스모크(#7)", () => {
   it("set_tile_metadata로 라벨을 확정하면 그 타일은 described=true가 되어 재질문 목록에서 빠진다", () => {
     const ctx = { project: createBlankProject() };
     expect(runTool(ctx, "create_map", { id: "m1", name: "t", width: 12, height: 12 }).ok).toBe(true);
+    // 기본 칩셋(beodeul_city, 2026-10-07 정리 뒤)은 칸마다 번들 설명이 있어 200 도 이미 described 다 —
+    // 설명 없는 칸(업로드 칩셋과 같은 상태)으로 만들어 재질문 전이를 본다.
+    forgetTileMeta(ctx, "m1", 200);
     // 내부(테두리 제외)에 임의 타일 200를 깐다.
     expect(runTool(ctx, "paint_tiles", { mapId: "m1", from: { x: 3, y: 3 }, to: { x: 5, y: 5 }, mode: "rect", layer: "lower", tile: 200 }).ok).toBe(true);
 

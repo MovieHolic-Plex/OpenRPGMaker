@@ -308,7 +308,10 @@ describe("monster-collect-species 애니메이션", () => {
     const frames = idleFrames(sprite, "front");
     const moved = frames.map((f) => ({ ...f, data: new Uint8ClampedArray(f.data) }));
     const box = opaqueBounds(sprite)!;
-    setPixel(moved[2]!, box.x + 3, box.y + box.height - 1, [0, 0, 0, 0]);
+    // Erase a real foot pixel: on the current fitted sample the old fixed offset (box.x + 3) of the bottom row is already transparent, so nothing moved.
+    const footY = box.y + box.height - 1;
+    const footX = Array.from({ length: box.width }, (_, i) => box.x + i).find((x) => pixelAt(moved[2]!, x, footY)[3] > 0)!;
+    setPixel(moved[2]!, footX, footY, [0, 0, 0, 0]);
     setPixel(moved[0]!, box.x + 5, box.y + 2, [1, 2, 3, 255]);
     const messages = checkFrames(moved, sprite, 20, "idle").map((i) => i.message);
     expect(messages.some((m) => m.includes("0번 프레임"))).toBe(true);
@@ -412,7 +415,8 @@ describe("monster-collect-species 시드·레지스트리", () => {
     expect(front).not.toContain("NOT chibi");
     expect(front).not.toContain("NOT kawaii");
     const evolvedFront = frontPrompt(seed.style, evolved);
-    expect(evolvedFront).toContain("imposing");
+    // #2754 (cute-first rules v4): evolved forms are "strong but still lovable" instead of "imposing".
+    expect(evolvedFront).toContain("strong but still lovable");
     expect(evolvedFront).not.toContain("40-50%");
     expect(evolutionPrompt(seed.style, evolved, "Prev")).toContain("NOT the same silhouette with a recolor");
     expect(backPrompt(first)).toContain(first.signature);

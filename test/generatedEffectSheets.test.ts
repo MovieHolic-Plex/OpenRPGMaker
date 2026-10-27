@@ -322,7 +322,9 @@ describe("기본 데이터베이스 배선", () => {
 
   it("생성 레코드는 용도별 8~12프레임 전부를 순서대로 재생한다", () => {
     const generated = records.filter((record) => GENERATED_EFFECT_RESOURCE_IDS.includes(record.resourceId ?? ""));
-    expect(generated).toHaveLength(GENERATED_EFFECT_SHEETS.length);
+    // 2026-10-03 EasyRPG 전투 시트를 걷어 내며 기본 anim_hit·anim_sword·anim_heal 등 옛 id 기록도 생성 시트를 가리킨다
+    // (DEPRECATED_EASYRPG_BATTLE_SHEETS) — 기록 수가 아니라 「시트마다 기록이 있다」를 본다.
+    expect(new Set(generated.map((record) => record.resourceId)).size).toBe(GENERATED_EFFECT_SHEETS.length);
     for (const record of generated) {
       const slug = record.resourceId!.replace("generated-battle-anim-", "");
       const frameCount = expectedFrameCount(slug);

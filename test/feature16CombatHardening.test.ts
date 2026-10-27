@@ -97,7 +97,9 @@ describe('feature16 combat hardening: production runtime and presentation', () =
     expect(runtime.snapshot().actors[0].skillCooldowns?.hardening).toBeUndefined();
   });
   it.each(['strict', 'gauge'] as const)('evaluates %s drops in the killing turn before battle-end state cleanup', flow => {
-    const { project, enemy, start } = setup({ power: 2000, hitSequence: [1], stateEffects: [{ stateId: 'marked', chance: 100, operation: 'add' }] }, flow);
+    // #3370 부터 피해로 쓰러뜨린 그 타격은 상태를 걸지 않는다 — 첫 타(600)가 표식을 걸고 둘째 타가 쓰러뜨리게 나눠,
+    // 「쓰러뜨린 턴의 드롭은 전투 종료 정리(removeOnBattleEnd) 전에 판정한다」는 이 검사의 뜻을 그대로 본다.
+    const { project, enemy, start } = setup({ power: 600, hitSequence: [1, 1], stateEffects: [{ stateId: 'marked', chance: 100, operation: 'add' }] }, flow);
     project.database.states.push({ id: 'marked', name: 'Marked', runtimeEffects: { removeOnBattleEnd: true } });
     enemy.stateRates.marked = 'A';
     enemy.rewards.drops = [

@@ -8,9 +8,10 @@ import { createBlankProject } from "@/project/defaults";
 const run = (args: Record<string, unknown>) => LIST_HAND_INTERIOR_PARTS_TOOL.run(createBlankProject() as never, args as never) as { summary: string; data: any };
 
 describe("handInteriorSpec 소품 메모", () => {
-  it("527종(v5 381 + 고른 「함께 쓰기」 변형 5 + 고른 새 기물) 모두 desc·tags 가 있고, desc 는 60자 이하·서로 다르다", () => {
+  it("635종(v5 381 + 고른 「함께 쓰기」 변형 5 + 고른 새 기물·interior-plus·퍼즐·낙성 실내) 모두 desc·tags 가 있고, desc 는 60자 이하·서로 다르다", () => {
     const objs = Object.entries(S.objects);
-    expect(objs.length).toBe(527);
+    // 527 → 635: 이후 handInteriorSpec.json 에 기물이 더해졌다(interior-plus·퍼즐 #3081·낙성 실내 #3234·#3277 등).
+    expect(objs.length).toBe(635);
     for (const [id, o] of objs) {
       expect(o.desc, id).toBeTruthy();
       expect(o.desc!.length, id).toBeLessThanOrEqual(60);
@@ -23,9 +24,10 @@ describe("handInteriorSpec 소품 메모", () => {
     for (const [id, o] of Object.entries(S.objects)) for (const p of o.pair ?? [])
       expect(Boolean(S.objects[p] || p.startsWith("goods:") || S.tables[p.split(" ")[0]!] || S.lines[p]), `${id} → ${p}`).toBe(true);
   });
-  it("방 표: 예제 26맵의 방마다 방 종류가 있고 그 종류가 kinds 에 있다", () => {
+  it("방 표: 예제 30맵의 방마다 방 종류가 있고 그 종류가 kinds 에 있다", () => {
     const t = S.rooms!;
-    expect(new Set(t.examples.map((e) => e[0])).size).toBe(26);
+    // 26 → 30: 이후 예제 맵이 더해졌다(handInteriorSpec.json rooms.examples).
+    expect(new Set(t.examples.map((e) => e[0])).size).toBe(30);
     for (const [, , room] of t.examples) expect(t.kinds[room], room).toBeTruthy();
   });
 });
@@ -42,7 +44,8 @@ describe("list_hand_interior_parts", () => {
     expect(searchParts("부엌").ids).toContain("kitchen range");
   });
   it("결과가 12종 이하면 행에 desc·tags·place·pair, 많으면 짧은 행", () => {
-    const few = run({ query: "bed" });
+    // "bed" 는 기물이 늘어 13종이 되었다 — 12종 이하인 낱말(선장 9종)로 짧은 결과 경로를 본다.
+    const few = run({ query: "선장" });
     expect(few.data.objects.length).toBeLessThanOrEqual(12);
     expect(few.data.objects[0]).toEqual(expect.objectContaining({ desc: expect.any(String), tags: expect.any(Array), place: expect.any(String) }));
     const many = run({ query: "부엌" });
