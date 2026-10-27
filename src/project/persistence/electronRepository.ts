@@ -81,6 +81,10 @@ export type OprnBridgeLifecycle = {
   readonly flushDone: () => Promise<unknown>;
   /** 파일 → 저장(CmdOrCtrl+S). 메뉴가 보내는 flush 요청. */
   readonly onSaveRequest: (callback: () => void) => void;
+  /** 파일 → 새 프로젝트·폴더 열기. 폴더를 바꾸기 전에 flush 하고 결과를 보고한다. */
+  readonly onFlushBeforeReplace?: (callback: () => void) => void;
+  readonly flushReplaceDone?: (report: { readonly kind: string; readonly dirty: boolean }) => void;
+  readonly flushReplaceReady?: () => void;
 };
 export type OprnBridgeStart = {
   readonly recentProjects: () => Promise<readonly import("../../../electron/shared/start").RecentProjectEntry[]>;
