@@ -4367,6 +4367,15 @@
     "other.ground"
    ],
    "lead": "floor VQA r1~r4(Argon·Sonnet): 마계 바닥 A2 의 분홍·붉은 점(소금·후추)과 붉은 사선 금 → 잔잔한 보라 검은 판, 점 없음, 금 드물게, 빛 핏줄은 아주 드물게."
+  },
+  "gap-ice-r4": {
+   "module": "src/harnesses/dungeon-chipset/rounds/gap_ice_r4.py",
+   "wave": "gap",
+   "title": "얼음 동굴 벽 gap-ice-r4",
+   "items": [
+    "gap.ice_rock"
+   ],
+   "lead": "r3 독립 검수 FAIL(윗면 서리 없음·앞면 어두운 돌+청록 물방울·고른 고드름·16px 반복·밝은 테) → 눈 처마·반투명 얼음 기둥(위 밝고 밑 깊음)·바위 창·2~16px 고드름·밝은 선 없는 바닥 그늘."
   }
  }
 }
