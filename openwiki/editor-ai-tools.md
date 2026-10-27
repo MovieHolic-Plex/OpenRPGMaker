@@ -61,6 +61,9 @@
 
 - `list_dialogue` (read) — 거르개 query·speaker·mapId·scope(all/map/common/troop/database/quest/ending)·kind(all/line/choice/description/quest)·overflowOnly·minChars, offset/limit(≤200).
   (2026-10-27) 퀘스트 일지 제목·요약·단계 이름(`qs/…`)과 엔딩 제목·머리말·크레딧(`en/…`)·에필로그 say 비트(`ep/…`)도 줄로 나온다 — [editor-database.md](editor-database.md) 같은 날 절.
+  (2026-10-27) 조수가 «지금 보는 맵» 만 뒤지고 「없다」고 끝내지 않게: mapId 로 좁혀 0줄이면 같은 거르개로 다른 곳을 세어 `elsewhere`(맵 이름·id·줄 수, 많은 순 6곳)와 요약 한 줄로 알려 준다.
+  query 가 게임 글 어디에도 그대로 없으면 같은 물건을 부르는 말 묶음(`QUERY_SYNONYMS`: 터미널→단말·패널·콘솔…, 표지판→팻말…, 편지→서신…, 일기→일지·기록…)으로 넓히고 `widenedQuery` 로 밝힌다.
+  실측(폴른 스타, 조수 대용 claude CLI sonnet): 고치기 전 「터미널 대사 너무 길어, 절반으로 줄여」 3번 모두 왕도 맵에서 「터미널」·「단말」을 찾고 「없다」로 끝남 → 고친 뒤 같은 문장으로 천문대 지하 단말 글 26줄 제안(거절 0).
   줄마다 `{id, hash, speaker, text, where, lines "쓴줄/한장", overflow, locked, pendingProposal}`. 첫 쪽에는 화자 목록(수·말투 메모)·`styleRules`·걸린 제안 수.
   화자는 자유 문자열이라 정확히 같은 이름이 없으면 낱말 포함으로 넓히고 요약에 그 사실을 적는다(「발렌」→「심문관 발렌」).
 - `get_dialogue_context` (read) — 같은 이벤트 쪽 안의 앞뒤 줄, 화자 말투 메모, 창 맞춤 추정, 걸린 제안.
