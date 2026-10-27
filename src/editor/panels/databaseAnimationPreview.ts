@@ -272,7 +272,8 @@ function bindPlayback(
     status.textContent = "반복 재생 중";
     timer = window.setInterval(() => {
       if (!lifecycle.isActive()) {
-        if (isDisconnected(panel)) lifecycle.dispose();
+        // 떨어진 패널도 캐시가 다시 붙일 수 있다 — 즉시 버리지 말고 수명주기의 지연 폐기(붙잡힘 확인)에 맡긴다.
+        if (isDisconnected(panel)) lifecycle.setActive(false);
         stop(false);
         return;
       }

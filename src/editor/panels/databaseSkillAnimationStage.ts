@@ -127,7 +127,9 @@ export function renderSkillAnimationStage(record: SkillRecord, project: Project)
       onStop: () => {
         handle = null;
         setRunning(false);
-        if (!stage.isConnected) lifecycle.dispose();
+        // 떨어진 스테이지는 바로 버리지 않는다 — 탭 캐시가 DOM 을 다시 붙이면 재개해야 한다. setActive(false) 가
+        // 다음 마이크로태스크에 «여전히 떨어져 있고 캐시가 붙잡지 않은» 경우에만 버린다(databasePreviewLifecycle).
+        if (!stage.isConnected) lifecycle.setActive(false);
       },
     });
     setRunning(true);
