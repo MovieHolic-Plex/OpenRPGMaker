@@ -7,9 +7,11 @@ import { deserialize, serialize } from "@/project/io";
 import { ensureBundledTilesets } from "@/project/defaults/defaultAssets";
 import { WORLD_BRIDGE_DESCRIPTIONS } from "@/project/defaults/worldStructureRules";
 import { applyEasyRpgThemeMetadataPacks } from "@/project/tilesetHarness/themePacks";
+import { withRetiredEasyRpgTilesets } from "./support/retiredEasyRpgTilesets";
 
 function fixture() {
-  const project = createBlankProject();
+  // 2026-10-07 저작권 정리 뒤 새 프로젝트에는 월드 시트가 없다 — 옛 저장본처럼 그 정의를 심고 시작한다.
+  const project = withRetiredEasyRpgTilesets(createBlankProject());
   const map = createBlankMap("World authoring", 64, 56, "easyrpg_chipset_world");
   map.id = "world";
   map.lowerTiles.fill(240);

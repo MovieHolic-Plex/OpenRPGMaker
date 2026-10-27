@@ -11,13 +11,15 @@ import {
 import { COMBINED_TOWN_HARNESS_PREFIX } from "@/project/tilesetHarness/combinedTownGroups";
 import { collectVocabSoftConfirms, markSoftVocabApprovalsOnProject } from "@/editor/panels/aiProposalFusion";
 import type { ProposedCall } from "@/ai/assistantSession";
+import { RETIRED_COMBINED_TOWN_TILESET_ID, withRetiredEasyRpgTilesets } from "./support/retiredEasyRpgTilesets";
 
 const MAP_ID = "map_soft";
 const TREE = `${COMBINED_TOWN_HARNESS_PREFIX}conifer-tree`;
 
 function makeCtx() {
-  const context = { project: createBlankProject() };
-  const created = runTool(context, "create_map", { id: MAP_ID, name: "soft", width: 20, height: 16 });
+  // 2026-10-07 저작권 정리 뒤 새 프로젝트에는 합본 마을 시트(conifer-tree 그룹)가 없다 — 옛 저장본처럼 그 시트로 시작한다.
+  const context = { project: withRetiredEasyRpgTilesets(createBlankProject()) };
+  const created = runTool(context, "create_map", { id: MAP_ID, name: "soft", width: 20, height: 16, tilesetId: RETIRED_COMBINED_TOWN_TILESET_ID });
   expect(created.ok).toBe(true);
   context.project.maps[MAP_ID].lowerTiles.fill(TILE.GRASS);
   context.project.maps[MAP_ID].upperTiles.fill(TILE.EMPTY);

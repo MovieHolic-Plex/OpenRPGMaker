@@ -2,6 +2,7 @@
 // 시내 포석·계단 길·덤불 점박이·막다른 길 토막, 그리고 조수가 도로에 찍은 항구·농장 소품.
 import { beforeEach, describe, expect, it } from "vitest";
 import { resetMapEditHistory } from "@/editor/mapEditHistory";
+import { beodeulWoodlandGrass } from "@/editor/tools/beodeulForest";
 import { runTool } from "@/editor/tools/toolRunner";
 import type { ToolContext } from "@/editor/tools/types";
 import { createBlankProject } from "@/project/defaults";
@@ -60,9 +61,11 @@ describe("버들항 도로", () => {
     // 일반 RPG(몬스터 수집 아님): 조우 풀숲·풀숲 로케이션이 없고 조우는 맵 전체, 짙은 풀 속 칸만으로 된 네모 판이 없다(2026-10-21 사용자 정정).
     expect((map.locations ?? []).some(location => location.id.startsWith("loc_wild_grass_"))).toBe(false);
     expect(map.encounterTable?.every(entry => !entry.conditions?.locationId)).toBe(true);
-    const dark = tileset.autotileGroups!.find(group => group.id === "beodeul_dark_grass_woodland")!;
-    const edge = new Set(dark.memberTileIds);
-    expect(map.lowerTiles.some(tile => edge.has(tile))).toBe(true);   // 나무 밑 짙은 풀은 가장자리 모양으로 풀린다
+    // 2026-10-24 숲 벽이 마을 숲과 같은 수관 오토타일(#3259)로 바뀌며 짙은 풀 바닥 오토타일을 더는 깔지 않는다 — 바닥은 숲 장면 잔디(r4 B)로 통일되고 공용 잔디 737 은 남지 않는다.
+    const woodlandGrass = beodeulWoodlandGrass(ctx.project, tileset);
+    expect(woodlandGrass).toBeGreaterThanOrEqual(0);
+    expect(map.lowerTiles.some(tile => tile === woodlandGrass)).toBe(true);
+    expect(map.lowerTiles.some(tile => tile === 737)).toBe(false);
     const core = (i: number) => map.lowerTiles[i] === 11628;
     for (let y = 0; y + 2 < map.height; y++) for (let x = 0; x + 2 < map.width; x++) {
       const i = y * map.width + x;
