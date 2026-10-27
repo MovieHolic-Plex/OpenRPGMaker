@@ -1142,8 +1142,11 @@ SQLite 저장소를 자동 변경하는 이관은 수행하지 않는다.
   아이템 드롭은 이름별 한 행에 `×n`. 인트로 배너는 같은 이름을 `이름 ×n` 으로 묶는다.
 - **도주음·BGM 정지는 결과가 화면에 도달할 때** — `hooks.onEscapeOutcome(success)` 가 성공이면 `escape` 큐,
   실패면 `hit-miss` 큐. 명령 확정 시점의 `emitSwingJuice` 에 escape 분기는 없다.
-- **패배(canLose=false) 종료는 커버를 걷지 않고 넘긴다.** `playSceneBattle` 이 `exitTransition` 소유권을 놓고
-  `reveal()` 을 await 없이 시작 → 게임오버가 그 아래에 마운트된 뒤 페이드아웃. 밝은 필드가 300ms 드러나는 일 없음.
+- **패배(canLose=false) 종료는 커버를 걷지 않고 넘긴다.** `reveal()` 은 커버를 투명으로 페이드하고
+  필드에 `battle-return-settle` 을 붙인다. 게임오버 화면은 z-index 65 로 커버(70) 아래이고
+  `terminal-darken` 이 투명에서 시작하므로, 커버를 그 전에 걷으면 살아 있는 필드가 비친다.
+  `playSceneBattle` 은 `exitTransition` 소유권만 놓고, 불투명한 exit 커버를 게임오버 암전
+  (`fadeOutMs`, 기본 900ms, 감소 모션이면 0)이 끝난 뒤에야 제거한다.
 - **rm2000 파티 카드는 스냅하지 않는다.** 명령 카드가 숨는 단계는 `display:none` + `grid-column` 토글 대신 씬
   1열 트랙을 `0px` 로 접고(`transition: grid-template-columns 220ms`) 호스트를 `visibility:hidden` 한다.
   `.battle-flash-hit` 의 고정 4px 흔들림은 `.battle-screen-shake` 가 없을 때만(세기 변수 흔들림이 이긴다).

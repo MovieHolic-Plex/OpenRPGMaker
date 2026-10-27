@@ -4,7 +4,7 @@ import { getPlayerPreferences } from "@/player/playerPreferences";
 import { playCinematicSequence } from "@/player/cinematicSequence";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { store } from "@/project/store";
-import { gameOverOutcome, resolveGameOverSettings, type GameOverSettings, DEFAULT_GAME_OVER_BACKGROUND_RESOURCE_ID } from "@/project/cinematicSettings";
+import { gameOverOutcome, resolveGameOverSettings, type GameOverSettings, DEFAULT_GAME_OVER_BACKGROUND_RESOURCE_ID, DEFAULT_GAME_OVER_FADE_OUT_MS } from "@/project/cinematicSettings";
 import { createTerminalScene, type TerminalScene } from "@/player/terminalScene";
 import type { EndingPresentation } from "@/project/cinematicSettings";
 import { isCancelKey, isCinematicAdvanceKey, normalizeKey } from "@/player/keyBindings";
@@ -193,10 +193,11 @@ export function playGameOverPresentation(terminal: TerminalScene, project: Proje
   const style = settings?.presentation ?? "classic";
   const outcome = gameOverOutcome(settings);
   const timing = settings?.timing;
-  terminal.root.style.setProperty("--terminal-fade-ms", `${timing?.fadeOutMs ?? 900}ms`);
+  const fadeOutMs = timing?.fadeOutMs ?? DEFAULT_GAME_OVER_FADE_OUT_MS;
+  terminal.root.style.setProperty("--terminal-fade-ms", `${fadeOutMs}ms`);
   terminal.root.dataset.presentation = style;
   const run = async (): Promise<void> => {
-    if (!await terminal.wait(terminal.reducedMotion ? 0 : (timing?.fadeOutMs ?? 900))) return;
+    if (!await terminal.wait(terminal.reducedMotion ? 0 : fadeOutMs)) return;
     terminal.phase("silence");
     if (!await terminal.wait(timing?.silenceMs ?? (style === "horror" ? 750 : 180))) return;
     if (settings?.sequence?.enabled && settings.sequence.scenes.length) {

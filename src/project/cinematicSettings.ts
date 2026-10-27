@@ -4,6 +4,8 @@ import type { CinematicDirection } from './cinematicDirection';
 
 export const CINEMATIC_SCENE_LIMIT = 100;
 export const CINEMATIC_DURATION_MAX_MS = 120_000;
+/** Default game-over field darken. CSS `--terminal-fade-ms` uses the same 900ms fallback. */
+export const DEFAULT_GAME_OVER_FADE_OUT_MS = 900;
 /** Also included by the web exporter when no project-specific game-over art is authored. */
 export const DEFAULT_GAME_OVER_BACKGROUND_RESOURCE_ID = "easyrpg-game-over-game-over";
 
