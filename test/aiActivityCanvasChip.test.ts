@@ -73,6 +73,8 @@ function makeRendererScene(
     add: {
       container: vi.fn(() => makeContainer()),
       graphics: vi.fn(() => ({
+        // The ghost renderer reuses one sweep graphic and clears it each frame (agentPreviewRenderers.ts).
+        clear: vi.fn(),
         fillStyle: vi.fn(),
         fillRect: vi.fn(),
         lineStyle: vi.fn(),
@@ -80,6 +82,8 @@ function makeRendererScene(
         moveTo: vi.fn(),
         lineTo: vi.fn(),
         strokePath: vi.fn(),
+        // agentPreviewRenderers.ts 가 영역 테두리를 strokeRect 로 그린다.
+        strokeRect: vi.fn(),
         destroy: vi.fn(),
       })),
       image: vi.fn(() => ({

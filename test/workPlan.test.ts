@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { QUICK_REPLY_MARKER } from "@/ai/interviewPrompt";
+import { parseWorkTargetIds } from "@/ai/workPlanTargets";
 import {
   advanceWorkPlanFromTools,
   buildDefaultWorkPlan,
@@ -105,6 +106,51 @@ describe("planner LLM plan parsing (no regex planning)", () => {
     expect(parseOrchestratorDecision('{"action":"new_plan","goal":"g"}').error).toContain("layers");
     expect(parseOrchestratorDecision("not json at all").error).toContain("JSON");
     expect(parseOrchestratorDecision('{"action":"bogus"}').error).toContain("action");
+  });
+
+  it("keeps a string successTools list and a string mapTargets list", () => {
+    const plan = workPlanFromSetToolArgs({
+      goal: "숲",
+      layers: [{ title: "맵", items: [{
+        title: "생성",
+        instruction: "맵을 만들고 바닥을 칠한다",
+        successTools: "create_map, fill_region",
+        mapTargets: "map_forest",
+      }] }],
+    });
+    const item = plan?.layers[0]?.items[0];
+    expect(item).toMatchObject({
+      successTools: ["create_map", "fill_region"],
+      mapTargets: ["map_forest"],
+    });
+    expect(canCompleteWorkItem(item!, ["create_map"]).ok).toBe(false);
+    expect(canCompleteWorkItem(item!, ["create_map", "fill_region"]).ok).toBe(true);
+
+    const raw = JSON.stringify({
+      action: "new_plan",
+      goal: "연결",
+      layers: [{ title: "길", items: [{
+        title: "연결",
+        instruction: "두 맵을 잇는다",
+        successTools: "create_transfer_pair",
+        mapTargets: "map_a, map_b",
+      }] }],
+    });
+    const { decision } = parseOrchestratorDecision(raw);
+    if (!decision || decision.action !== "new_plan") throw new Error("expected plan");
+    expect(decision.layers[0]?.items[0]).toMatchObject({
+      successTools: ["create_transfer_pair"],
+      mapTargets: ["map_a", "map_b"],
+    });
+    expect(parseWorkTargetIds(" map_hub ")).toEqual(["map_hub"]);
+    expect(parseWorkTargetIds("map_a, map_a")).toBeNull();
+    expect(parseWorkTargetIds("")).toBeNull();
+    expect(parseWorkTargetIds(["a", 3])).toBeNull();
+    const blankTools = workPlanFromSetToolArgs({
+      goal: "메모",
+      layers: [{ title: "메모", items: [{ title: "적기", instruction: "메모만", successTools: " , " }] }],
+    });
+    expect(blankTools?.layers[0]?.items[0]?.successTools).toBeUndefined();
   });
 
   it("accepts planner layer field aliases (name/steps/detail)", () => {

@@ -27,12 +27,14 @@ import type { PlaySceneContext } from "@/player/playSceneTypes";
 import type { CharacterFootprint, GameEvent, GameMap, Project } from "@/project/types";
 import { resolveDiagonalStep } from "@/player/input";
 import { event, page, mockSprite, type MockSprite } from "./runtimeEventPageFixtures";
+import { startOnRetiredCombinedTown } from "./support/retiredEasyRpgTilesets";
 
 const GOLEM: CharacterFootprint = { width: 3, height: 3 };
 const UNIT: CharacterFootprint = { width: 1, height: 1 };
 
 function grassProject(): { project: Project; map: GameMap } {
-  const project = createBlankProject();
+  // TILE.GRASS/WALL 은 합본 마을 칩 번호다 — 2026-10-07 저작권 정리 뒤 시작 맵이 버들항이라 옛 저장본처럼 합본 마을에서 시작한다.
+  const project = startOnRetiredCombinedTown(createBlankProject());
   const map = project.maps[project.startMapId]!;
   map.lowerTiles.fill(TILE.GRASS);
   map.events = [];

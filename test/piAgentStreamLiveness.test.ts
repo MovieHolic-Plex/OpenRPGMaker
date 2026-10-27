@@ -2,6 +2,7 @@
 // 와이어가 비었고, Bun 유휴 타임아웃이 그 침묵을 끊어 팀 모드 「마을 만들어줘」가 매번 `terminated` 로 죽었다.
 // 세 겹으로 막는다: 델타 중계(내용) · 워커 heartbeat(맥박) · 브라우저 워치독(침묵 = 워커 사망).
 import { describe, expect, it } from "vitest";
+import { gunzipSync } from "node:zlib";
 import { createDeltaRelay, type PiDeltaEvent } from "@/ai/piAgent/deltaRelay";
 import { PiAgentClientError, runPiAgentViaCompanion } from "@/ai/piAgent/client";
 import { createPiAgentLineDecoder, encodePiAgentEvent, type PiAgentEvent } from "@/ai/piAgent/protocol";
@@ -143,7 +144,9 @@ describe("브라우저 워치독 — 우리가 적용 중인 침묵은 끊지 �
     let ackBody: { ok?: boolean } | null = null;
     const fetchImpl = (async (url: string, init?: RequestInit) => {
       if (String(url).includes("/v1/agent/checkpoint")) {
-        ackBody = JSON.parse(String(init?.body));
+        // 큰 프로젝트를 실은 ACK 는 gzip 바이트로 간다(piRequestBody) — 몸통 모양대로 푼다.
+        const raw = init?.body;
+        ackBody = JSON.parse(raw instanceof ArrayBuffer || ArrayBuffer.isView(raw) ? gunzipSync(Buffer.from(raw as ArrayBuffer)).toString("utf8") : String(raw));
         return new Response("{}", { status: 200 });
       }
       return ndjsonResponse((write, close) => {

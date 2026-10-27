@@ -7,7 +7,9 @@ import { ROMANCE_TITLE_SUBTITLE } from "@/project/romancePreset";
 
 describe("romance fix 3", () => {
   it("일반 질의(villager)도 Modern 연애 칩을 사람으로 센다", () => {
-    const keys = queryNpcGraphics("villager", 20).map((match) => match.entry.textureKey);
+    // 이 경우는 「Modern 칩이 사람 후보에 든다」를 본다 — 순위가 아니다. scarloxy 사람 시트가 늘어(#2335 뒤 OPRN 사람 칩 추가)
+    // 상위 20 은 다른 시트가 채우므로 후보 전체(최대 100)에서 찾는다.
+    const keys = queryNpcGraphics("villager", 100).map((match) => match.entry.textureKey);
     expect(keys.some((key) => key.startsWith("tex_oprn_charset_modern"))).toBe(true);
   });
 

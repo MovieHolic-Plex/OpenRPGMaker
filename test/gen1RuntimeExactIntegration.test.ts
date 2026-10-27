@@ -175,6 +175,51 @@ describe("Gen1 exact engines are wired into the battle runtime", () => {
     expect(snapshot.result).toBe("defeat");
   });
 
+  it("still applies poison residual after defend, a failed escape, or a potion", () => {
+    const poisoned = monster({ currentHp: 1, stateIds: ["state_poison"] });
+    const defend = exactBattle({ partyMonster: poisoned, rng: sequence([BYTE_255]) });
+    defend.runtime.performActorCommand({ kind: "defend" });
+    const defended = defend.runtime.snapshot();
+    expect(defended.timeline.some((entry) => entry.kind === "stateUpkeep" && entry.side === "actor" && entry.amount === 4)).toBe(true);
+    expect(defended.actors[0]?.hp).toBe(0);
+    expect(defended.result).toBe("defeat");
+
+    const escaped = exactBattle({ partyMonster: poisoned, rng: sequence([BYTE_255]) });
+    escaped.runtime.performActorCommand({ kind: "escape" });
+    const failedEscape = escaped.runtime.snapshot();
+    expect(failedEscape.timeline.some((entry) => entry.kind === "action" && entry.commandKind === "escape" && entry.success === false)).toBe(true);
+    expect(failedEscape.timeline.some((entry) => entry.kind === "stateUpkeep" && entry.side === "actor" && entry.amount === 4)).toBe(true);
+    expect(failedEscape.result).toBe("defeat");
+
+    const fled = exactBattle({ partyMonster: poisoned, rng: sequence([0]) });
+    fled.runtime.performActorCommand({ kind: "escape" });
+    const fledSnapshot = fled.runtime.snapshot();
+    expect(fledSnapshot.result).toBe("escape");
+    expect(fledSnapshot.actors[0]?.hp).toBe(1);
+    expect(fledSnapshot.timeline.some((entry) => entry.kind === "stateUpkeep")).toBe(false);
+
+    const healed = exactBattle({
+      partyMonster: poisoned,
+      inventory: { item_potion: 1 },
+      rng: sequence([BYTE_255]),
+    });
+    const before = healed.runtime.snapshot().actors[0]!;
+    healed.runtime.performActorCommand({
+      kind: "item",
+      itemId: "item_potion",
+      targetEnemyId: "enemy-1",
+      targetActorId: before.id,
+    });
+    const after = healed.runtime.snapshot();
+    const healing = after.timeline.find((entry) => entry.kind === "healing" && entry.side === "actor");
+    const healedHp = Math.min(before.maxHp, before.hp + (healing?.amount ?? 0));
+    expect(healing?.amount).toBeGreaterThan(0);
+    expect(after.timeline.some((entry) => entry.kind === "stateUpkeep" && entry.side === "actor" && entry.amount === 4)).toBe(true);
+    expect(after.actors[0]?.hp).toBeGreaterThan(0);
+    expect(after.actors[0]?.hp).toBeLessThan(healedHp);
+    expect(after.eventState.inventory.item_potion ?? 0).toBe(0);
+  });
+
   it("uses the exact two-stage capture rate and preserves the captured battle state", () => {
     const { project, runtime } = exactBattle({
       inventory: { item_capture_orb: 1 },

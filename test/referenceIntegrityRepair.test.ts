@@ -62,7 +62,8 @@ describe("project reference integrity", () => {
     const commands = restored.maps[mapId].events[0].commands;
     expect(JSON.stringify(commands)).not.toContain("map_dry_mine");
     expect(JSON.stringify(commands)).not.toContain("map_ember_village");
-    expect(commands[0]).toMatchObject({ kind: "text", text: "안녕" });
+    // 로드가 문장 명령의 옛 text 칸을 본문 칸 body 로 옮긴다(commandFieldAliases, #3226 계열).
+    expect(commands[0]).toMatchObject({ kind: "text", body: "안녕" });
     // 정상 명령/분기 구조는 보존된다.
     expect(commands.some((command) => command.kind === "choices")).toBe(true);
   });

@@ -27,13 +27,18 @@ export type { MapBgmResolution } from '@/project/mapMusic';
 /**
  * 해석 결과를 세션 오디오 상태에 반영한다(실제 재생은 호출자가 엔진에 넘긴다).
  * 세션에 기록해야 전투 진입 시 battleAudio 가 필드 BGM 을 기억/복원할 수 있고 세이브에도 실린다.
+ * 맵이 적은 페이드인(0 포함)도 같이 싣는다. 없으면 필드를 빼서 엔진 기본 페이드를 유지한다.
  */
 export function applyMapBgmToSession(audio: AudioCommandState, resolution: MapBgmResolution): void {
   if (resolution.kind === "silence") {
     audio.bgm = undefined;
     return;
   }
-  audio.bgm = { resourceId: resolution.resourceId, loop: true };
+  audio.bgm = {
+    resourceId: resolution.resourceId,
+    loop: true,
+    ...(resolution.fadeInMs === undefined ? {} : { fadeInMs: resolution.fadeInMs }),
+  };
 }
 
 /** 맵 진입 시 호출 — 해석 → 세션 기록 → 엔진 재생/정지. loadMap 이 유일한 호출자다. */
@@ -53,6 +58,8 @@ export function startMapBgm(
     return resolution;
   }
   // 같은 곡이면 엔진이 재시작을 무시한다(audioEngine.playLoop). 그래서 무조건 호출해도 안전하다.
-  playAudioCommand({ resourceId: resolution.resourceId, loop: true }, project);
+  // 세션에 실은 페이드인을 그대로 재생한다. 빼면 맵 속성의 0ms·지정 ms 가 엔진 기본(600ms)으로 바뀐다.
+  const track = session.audio.bgm;
+  if (track) playAudioCommand(track, project);
   return resolution;
 }

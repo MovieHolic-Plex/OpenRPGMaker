@@ -39,7 +39,8 @@ describe("question dispatch preserves blocked goal ownership", () => {
         repairs: f.session["acceptanceRepairAttempts"],
       };
       expect(work?.layers[0]?.items.map(item => item.status)).toEqual(["blocked", "pending"]);
-      expect(acceptance?.status).toBe("blocked");
+      // 수용 원장은 더 이상 만들어지지 않는다(acceptance:disabled, 2026-09-17 하네스 게이트 2차 해체) — 질문 턴 뒤에도 그대로 없어야 한다.
+      expect(acceptance).toBeNull();
       expect(counters.failures.length).toBeGreaterThan(0);
       if (mode === "question") f.setIntent({ mode: "question", resetsContext: true });
       // When a question's model attempts writes plus inspection through the real dispatch path.

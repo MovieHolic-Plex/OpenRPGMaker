@@ -2,6 +2,7 @@ import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { editorState } from "@/editor/editorState";
 import { renderMapProps, resetMapPropsTabForTests } from "@/editor/panels/mapProps";
 import { createBlankProject } from "@/project/defaults";
+import { MAX_TOOL_MAP_DIMENSION } from "@/project/mapSizeLimits";
 import { store } from "@/project/store";
 import { FakeElement, findByTestId, installFakeDom } from "./fakeDom";
 
@@ -9,7 +10,8 @@ describe("map properties panel", () => {
   let restoreDom: () => void;
 
   beforeEach(() => {
-    restoreDom = installFakeDom();
+    // Picking a background preset mounts the live game-screen preview, which schedules animation frames (#3210).
+    restoreDom = installFakeDom({ animationFrames: "manual" });
     const project = createBlankProject();
     store.replace(project);
     editorState.set({ currentMapId: project.startMapId });
@@ -36,6 +38,36 @@ describe("map properties panel", () => {
     expect(store.getCurrent().maps[mapId]?.name).toBe("01 집 외관 정면");
   });
 
+  it("resizes a map up to the official limit and refuses one tile past it", () => {
+    const container = new FakeElement("div");
+    const mapId = store.getCurrent().startMapId;
+    const original = store.getCurrent().maps[mapId];
+    if (!original) throw new Error("Expected a start map");
+
+    renderMapProps(container as unknown as HTMLElement);
+    const widthInput = findByTestId(container, "map-width-input");
+    const heightInput = findByTestId(container, "map-height-input");
+    const applyButton = findByTestId(container, "map-resize-apply");
+    if (!widthInput || !heightInput || !applyButton) throw new Error("Expected map size controls");
+
+    expect(widthInput.getAttribute("max")).toBe(String(MAX_TOOL_MAP_DIMENSION));
+    expect(heightInput.getAttribute("max")).toBe(String(MAX_TOOL_MAP_DIMENSION));
+    const hint = [...container.querySelectorAll(".map-props-hint")].find((node) => node.textContent?.includes("가로·세로 각각"));
+    expect(hint?.textContent).toContain(String(MAX_TOOL_MAP_DIMENSION));
+
+    widthInput.value = "200";
+    heightInput.value = "150";
+    applyButton.dispatchEvent(new Event("click"));
+    expect(store.getCurrent().maps[mapId]?.width).toBe(200);
+    expect(store.getCurrent().maps[mapId]?.height).toBe(150);
+
+    widthInput.value = String(MAX_TOOL_MAP_DIMENSION + 1);
+    heightInput.value = "150";
+    applyButton.dispatchEvent(new Event("click"));
+    expect(store.getCurrent().maps[mapId]?.width).toBe(200);
+    expect(store.getCurrent().maps[mapId]?.height).toBe(150);
+  });
+
   it("renders all nine sections at once and preserves scroll across rerender", () => {
     const container = new FakeElement("div");
     renderMapProps(container as unknown as HTMLElement);
@@ -48,9 +80,10 @@ describe("map properties panel", () => {
     const body = container.querySelector(".map-props-body") as unknown as FakeElement | null;
     if (!body) throw new Error("Expected map props body");
     body.scrollTop = 240;
-    const bgToggle = findByTestId(container, "map-bg-enable");
-    if (!bgToggle) throw new Error("Expected background toggle");
-    bgToggle.dispatchEvent(new Event("change"));
+    // The background tab has no enable toggle since #3210 — picking a preset card is the rerendering action.
+    const preset = findByTestId(container, "map-bg-preset-oprn-sky-day");
+    if (!preset) throw new Error("Expected background preset card");
+    preset.dispatchEvent(new Event("click"));
     const nextBody = container.querySelector(".map-props-body") as unknown as FakeElement | null;
     expect(nextBody?.scrollTop).toBe(240);
   });
@@ -76,23 +109,21 @@ describe("map properties panel", () => {
     expect(groups[1]?.textContent).toContain("CUSTOM Modern Exteriors");
   });
 
-  it("맵 배경 그림을 고르면 미리보기 그림을 세운다", () => {
-    // 캔버스가 배경을 안 그리므로(빈 칸 체커가 신호라 덮지 않는다) 확인할 자리는 이 미리보기뿐이다.
+  it("맵 배경 견본을 고르면 게임 화면 미리보기를 세운다", () => {
+    // #3210: the enable toggle and the static first-image preview became preset cards and a live game-screen preview.
     const container = new FakeElement("div");
     renderMapProps(container as unknown as HTMLElement);
-    expect(findByTestId(container, "map-bg-preview")).toBeNull();
+    // 배경이 없으면 미리보기도 없다 — 빈 칸에 깨진 그림을 세우지 않는다.
+    expect(findByTestId(container, "map-bg-live-preview")).toBeNull();
 
     const mapId = store.getCurrent().startMapId;
-    const enable = findByTestId(container, "map-bg-enable");
-    if (!enable) throw new Error("Expected background toggle");
-    enable.dispatchEvent(new Event("change"));
-    // 그림이 비어 있으면 미리보기도 없다 — 빈 칸에 깨진 img 를 세우지 않는다.
-    expect(findByTestId(container, "map-bg-preview")).toBeNull();
+    const preset = findByTestId(container, "map-bg-preset-oprn-sky-day");
+    if (!preset) throw new Error("Expected background preset card");
+    preset.dispatchEvent(new Event("click"));
 
-    store.getCurrent().maps[mapId]!.background = { imageId: "easyrpg-backdrop-sky1", scrollX: 0, scrollY: 0 };
-    const next = new FakeElement("div");
-    renderMapProps(next as unknown as HTMLElement);
-    const preview = findByTestId(next, "map-bg-preview");
-    expect(preview?.attrs.src).toBe("/assets/easyrpg/backdrop/Sky1.png");
+    expect(store.getCurrent().maps[mapId]!.background?.imageId).toBe("oprn-pano-sky-day");
+    expect(findByTestId(container, "map-bg-live-preview")).not.toBeNull();
+    expect(findByTestId(container, "map-bg-preset-oprn-sky-day")?.getAttribute("aria-pressed")).toBe("true");
   });
+
 });
