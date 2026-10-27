@@ -22,10 +22,16 @@ describe("battle style preparation in the exported player", () => {
       expect(current.warm.images).toBeGreaterThan(0);
       expect(current.warm.backgrounds).toBeGreaterThan(0);
 
-      const warmBytes = sum(current.phases.warm, "bytes");
-      const mountBytes = sum(current.phases.mount, "bytes");
+      // 계약: **준비가 데운 그림을 마운트가 다시 받지 않는다.** 준비는 명령 패널처럼 콜백이 필요한
+      // 영역을 일부러 넣지 않으므로(모듈 주석), 마운트가 새 그림을 더 받는 것은 정상이다.
+      // 그래서 전체 바이트 상한이 아니라 "warm 이 받은 URL" 만 골라 마운트 재전송을 잰다.
       expect(sum(current.phases.warm, "decoded")).toBeGreaterThan(0);
-      expect(mountBytes).toBeLessThan(Math.max(4_096, warmBytes * 0.1));
+      const warmedUrls = new Set(urls(current.phases.warm));
+      const refetched = current.phases.mount.filter((entry: any) => warmedUrls.has(entry.url));
+      const refetchedBytes = refetched.reduce((total: number, entry: any) => total + (entry.bytes ?? 0), 0);
+      expect(refetchedBytes).toBeLessThan(4_096);
+
+      // 준비 ∪ 마운트가 다루는 그림 집합은 준비 없이 마운트만 한 경우와 같아야 한다.
       expect([...urls(current.phases.warm), ...urls(current.phases.mount)].sort()).toEqual(urls(cold.phases.mount));
     } finally {
       rmSync(output, { force: true });
