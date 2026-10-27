@@ -22,6 +22,7 @@ Evidence: `scripts/qa/quest-library.mjs` and the shipped-player `quest-library` 
 ## Sound Layer audio controls (2026-09-06)
 
 - Sound Layer emits optional `channel`, authored `volume` (0..100), and `fadeInMs` on the existing `playAudio` handoff. BGM/BGS/ambient loop independently; ME/SE are one-shots. Native commands without these fields keep their previous defaults.
+- A `playAudio` volume strictly between 0 and 1 is a gain fraction (0.6 = 60%), which is how quieter door and train cues are authored. 0 and 1..100 stay percents (1 = 1%, 63 = 63%). Resume uses the same reading, so a saved fraction is not replayed at a hundredth of that gain.
 - The engine keeps per-track gain (0..1) and fade envelope separate from user mixer volume. Same-resource requests update gain without restarting playback. Mixer changes affect loops and one-shots in their own group (ME uses BGM), including mute/unmute during a fade. Native one-shots remain immediate unless a fade is explicitly supplied.
 - The unlock queue and real save-slot parser retain ambient and track controls. Resume restores looping channels only; explicit zero gain/fade survives. Malformed persisted volume/fade values are rejected at the save boundary.
 - Regression: `test/eventCommandAudioRepairs.test.ts` includes `saveToSlot` -> `readSaveSlot` -> `applySaveSnapshot` -> engine resume, not only parser checks. Real audible output is verified separately in supervisor player QA.
