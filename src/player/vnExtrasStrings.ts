@@ -50,6 +50,10 @@ export type VnUiKey =
   | "save.empty"
   | "save.corrupt"
   | "save.saved"
+  | "save.autosave"
+  | "save.blocked"
+  | "save.trigger.transfer"
+  | "save.trigger.battleVictory"
   | "save.overwrite"
   | "save.hintDisabled"
   | "save.hintConfirm"
@@ -118,6 +122,10 @@ export const VN_UI_STRINGS: Readonly<Record<VnUiKey, Row>> = {
   "save.empty": { ko: "비어 있음", en: "Empty", ja: "空き", zh: "空" },
   "save.corrupt": { ko: "손상됨", en: "Corrupted", ja: "破損", zh: "已损坏" },
   "save.saved": { ko: "저장됨", en: "Saved", ja: "保存済み", zh: "已保存" },
+  "save.autosave": { ko: "자동 저장", en: "Autosave", ja: "オートセーブ", zh: "自动存档" },
+  "save.blocked": { ko: "이어서 할 수 없음", en: "Can't continue", ja: "続けられない", zh: "无法继续" },
+  "save.trigger.transfer": { ko: "맵 이동", en: "Map move", ja: "マップ移動", zh: "地图移动" },
+  "save.trigger.battleVictory": { ko: "전투 승리", en: "Battle won", ja: "戦闘勝利", zh: "战斗胜利" },
   "save.overwrite": { ko: "덮어쓰기 확인", en: "Confirm overwrite", ja: "上書き確認", zh: "确认覆盖" },
   "save.hintDisabled": { ko: "지금은 저장할 수 없습니다.", en: "You can't save right now.", ja: "今は保存できません。", zh: "现在无法存档。" },
   "save.hintConfirm": { ko: "이미 저장된 칸입니다. 같은 슬롯을 다시 선택하면 덮어씁니다.", en: "This slot already has a save. Select it again to overwrite.", ja: "すでに保存されています。もう一度選ぶと上書きします。", zh: "此栏已有存档。再次选择将覆盖。" },

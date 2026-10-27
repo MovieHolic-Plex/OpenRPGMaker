@@ -26,7 +26,7 @@ import { canCraft, combinationPartnersOf, combinationRecipeFor } from "@/project
 import { actorLoadoutSlots, equippedBattleSkillIds } from "@/project/skillLoadout";
 import { actorDerivedStats } from '@/battle/battleBattlers';
 import { machineSkillOf, menuItemUnavailableReason, previewEvolutionStoneTarget, previewMenuItemTarget, previewMonsterMachine, previewMonsterMedicine, targetsPartyMonsters } from "@/player/playerItemUse";
-import type { SaveSlotIndex, SaveSlotReadResult } from "@/player/saveSlots";
+import { snapshotLoadBlocker, type SaveSlotReadResult, type SaveSnapshot } from "@/player/saveSlots";
 import { canEquip, effectiveActorEquipment, equipmentSlotAccepts } from "@/project/equipmentRules";
 import { resolveActorName, resolveActorFaceResourceId } from "@/project/sessionActorCommands";
 import { listPartyBondEntries, partyBondMeter } from "@/project/partyBonds";
@@ -104,7 +104,7 @@ export function createStatusMenuDetail(options: StatusMenuDetailOptions): Status
     case "region-map":
     case "campaign-progress": return createMonsterCampaignDetail(options, options.selectedCommand);
     case "save": return saveDetail(options);
-    case "load": return loadDetail(options.slots, options.onLoadSlot, options.project);
+    case "load": return loadDetail(options);
     case "status": return usesMonsterParty(options.project) ? monsterPartyStatusDetail(options) : statusDetail(options.project, options.session);
     case "row": return rowDetail(options);
     case "formation": return formationDetail(options);
@@ -722,19 +722,53 @@ function saveDetail(options: StatusMenuDetailOptions): StatusMenuDetail {
   };
 }
 
-function loadDetail(slots: readonly SaveSlotReadResult[], onLoadSlot: ((slot: SaveSlotIndex) => void) | undefined, project: Project): StatusMenuDetail {
+function loadDetail(options: Pick<StatusMenuDetailOptions, "slots" | "onLoadSlot" | "project" | "autosave" | "onLoadAutosave">): StatusMenuDetail {
+  const { slots, onLoadSlot, project } = options;
   const text = saveText(project);
+  const autosave = autosaveLoadEntry(options);
   return {
     title: withCloudStatus(text("load.title")),
-    entries: slots.map((slot) => ({
-      label: text("save.slot", slot.slot),
-      ...saveSlotEntryParts(slot, false, vnSaveCards(project), text),
-      testId: `load-slot-${slot.slot}`,
-      onActivate: onLoadSlot && slot.kind === "present" ? () => onLoadSlot(slot.slot) : undefined,
-      disabled: slot.kind !== "present",
-    })),
+    entries: [
+      ...(autosave ? [autosave] : []),
+      ...slots.map((slot) => ({
+        label: text("save.slot", slot.slot),
+        ...saveSlotEntryParts(slot, false, vnSaveCards(project), text),
+        testId: `load-slot-${slot.slot}`,
+        onActivate: onLoadSlot && slot.kind === "present" ? () => onLoadSlot(slot.slot) : undefined,
+        disabled: slot.kind !== "present",
+      })),
+    ],
     hint: text("load.hint"),
   };
+}
+
+function autosaveLoadEntry(options: Pick<StatusMenuDetailOptions, "project" | "autosave" | "onLoadAutosave">): StatusMenuDetailEntry | undefined {
+  const autosave = options.autosave;
+  if (!autosave || autosave.kind === "empty") return undefined;
+  const text = saveText(options.project);
+  const label = text("save.autosave");
+  if (autosave.kind === "corrupt") {
+    return { label, value: text("save.corrupt"), description: autosave.message, testId: "load-slot-auto" };
+  }
+  const blocker = snapshotLoadBlocker(options.project, autosave.snapshot);
+  if (blocker) {
+    return { label, value: text("save.blocked"), description: blocker, testId: "load-slot-auto" };
+  }
+  const parts = savedSnapshotParts(autosave.snapshot, false, vnSaveCards(options.project), text);
+  const trigger = autosaveTriggerText(autosave.snapshot.autosaveTrigger, text);
+  return {
+    label,
+    value: parts.value,
+    description: [trigger, parts.description].filter(Boolean).join(" / "),
+    testId: "load-slot-auto",
+    onActivate: options.onLoadAutosave,
+  };
+}
+
+function autosaveTriggerText(trigger: SaveSnapshot["autosaveTrigger"], text: (key: VnUiKey) => string): string | undefined {
+  if (trigger === "transfer") return text("save.trigger.transfer");
+  if (trigger === "battleVictory") return text("save.trigger.battleVictory");
+  return undefined;
 }
 
 function statusDetail(project: Project, session: PlaySession): StatusMenuDetail {
@@ -1258,33 +1292,40 @@ function saveSlotEntryParts(
   switch (slot.kind) {
     case "empty": return { value: text("save.empty") };
     case "corrupt": return { value: text("save.corrupt") };
-    case "present": {
-      const parts = [slot.snapshot.projectTitle];
-      if (typeof slot.snapshot.partyLevel === "number") parts.push(`L${slot.snapshot.partyLevel}`);
-      if (slot.snapshot.mapName) parts.push(slot.snapshot.mapName);
-      if (typeof slot.snapshot.playTimeSeconds === "number") parts.push(formatPlayTime(slot.snapshot.playTimeSeconds));
-      const monster = slot.snapshot.monsterSummary;
-      if (monster) {
-        // 몬스터 수집 게임: 고른 칸의 쇼케이스(설명)에 도감·배지·주인공·장소·시간·파티. 행의 오른쪽 값은 짧게 둔다(쇼케이스가 열리면 목록 폭이 좁다).
-        const progress = [`도감 ${monster.caught}/${monster.dexTotal}`, ...(monster.badgeTotal > 0 ? [`배지 ${monster.badges}/${monster.badgeTotal}`] : [])].join(" · ");
-        const where = [progress, monster.trainer, slot.snapshot.mapName, typeof slot.snapshot.playTimeSeconds === "number" ? formatPlayTime(slot.snapshot.playTimeSeconds) : undefined, `파티 ${monster.party}`];
-        return { value: confirmingOverwrite ? text("save.overwrite") : text("save.saved"), description: where.filter(Boolean).join(" / ") };
-      }
-      // 미연시 세이브 카드(saveCards): 날짜와 저장 시점의 마지막 대사 한 줄을 함께 보인다.
-      if (vnCard) {
-        const when = formatSaveDate(slot.snapshot.savedAt);
-        if (when) parts.push(when);
-        if (slot.snapshot.sceneLine) parts.push(`“${slot.snapshot.sceneLine}”`);
-      }
-      return {
-        value: confirmingOverwrite ? text("save.overwrite") : text("save.saved"),
-        description: parts.join(" / "),
-      };
-    }
+    case "present": return savedSnapshotParts(slot.snapshot, confirmingOverwrite, vnCard, text);
     default: return assertNever(slot);
   }
 }
 
+
+function savedSnapshotParts(
+  snapshot: SaveSnapshot,
+  confirmingOverwrite: boolean,
+  vnCard: boolean,
+  text: (key: VnUiKey) => string,
+): { value: string; description?: string } {
+  const parts = [snapshot.projectTitle];
+  if (typeof snapshot.partyLevel === "number") parts.push(`L${snapshot.partyLevel}`);
+  if (snapshot.mapName) parts.push(snapshot.mapName);
+  if (typeof snapshot.playTimeSeconds === "number") parts.push(formatPlayTime(snapshot.playTimeSeconds));
+  const monster = snapshot.monsterSummary;
+  if (monster) {
+    // 몬스터 수집 게임: 고른 칸의 쇼케이스(설명)에 도감·배지·주인공·장소·시간·파티. 행의 오른쪽 값은 짧게 둔다(쇼케이스가 열리면 목록 폭이 좁다).
+    const progress = [`도감 ${monster.caught}/${monster.dexTotal}`, ...(monster.badgeTotal > 0 ? [`배지 ${monster.badges}/${monster.badgeTotal}`] : [])].join(" · ");
+    const where = [progress, monster.trainer, snapshot.mapName, typeof snapshot.playTimeSeconds === "number" ? formatPlayTime(snapshot.playTimeSeconds) : undefined, `파티 ${monster.party}`];
+    return { value: confirmingOverwrite ? text("save.overwrite") : text("save.saved"), description: where.filter(Boolean).join(" / ") };
+  }
+  // 미연시 세이브 카드(saveCards): 날짜와 저장 시점의 마지막 대사 한 줄을 함께 보인다.
+  if (vnCard) {
+    const when = formatSaveDate(snapshot.savedAt);
+    if (when) parts.push(when);
+    if (snapshot.sceneLine) parts.push(`“${snapshot.sceneLine}”`);
+  }
+  return {
+    value: confirmingOverwrite ? text("save.overwrite") : text("save.saved"),
+    description: parts.join(" / "),
+  };
+}
 
 function skillKindLabel(skill: SkillRecord): string {
   switch (skill.effect.kind) {
