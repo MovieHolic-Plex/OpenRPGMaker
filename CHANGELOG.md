@@ -5,6 +5,12 @@
 
 <!-- releases -->
 
+## 0.355.2 — 2026-10-27
+
+### 기타
+
+- Dungeon themes: otherworld slab floor on a new sheet-end tail (#3866) (`2e94009`)
+
 ## 0.355.1 — 2026-10-27
 
 ### 수정
