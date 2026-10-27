@@ -38,8 +38,8 @@
 .hud-slot .hud-art { width:72%; height:80%; }
 .hud-art { position:relative; display:grid; place-items:center; overflow:hidden; }
 .hud-art img { position:absolute; width:100%; height:100%; object-fit:contain; image-rendering:pixelated; }
-.hud-slot-key { position:absolute; left:1px; top:0; font:5px/1.2 monospace; opacity:.9; }
-.hud-slot-count { position:absolute; right:1px; bottom:0; font:6px/1.1 monospace; }
+.hud-slot-key { position:absolute; left:1px; top:0; font:5px/1.2 var(--font-mono-system); opacity:.9; }
+.hud-slot-count { position:absolute; right:1px; bottom:0; font:6px/1.1 var(--font-mono-system); }
 .hud-slot-empty { opacity:.4; }
 .hud-widget[data-kind="party"] { justify-content:flex-start; gap:5px; }
 .hud-party-row { display:flex; gap:5px; min-height:24px; }
@@ -70,8 +70,8 @@
 
 /* Explicit, bundled Korean typography. Bitmap faces use their native 9/16px grids. */
 .field-hud { font-synthesis:none; font-variant-numeric:tabular-nums; }
-.field-hud[data-font="pixel"] { font-family:"Galmuri9",sans-serif; }
-.field-hud[data-font="round"] { font-family:"NeoDunggeunmo",monospace; }
+.field-hud[data-font="pixel"] { font-family:var(--font-pixel-small); }
+.field-hud[data-font="round"] { font-family:var(--font-pixel-legacy); }
 .field-hud:is([data-font="pixel"],[data-font="round"]) :is(.hud-label,.hud-value,.hud-date,.hud-party-name,.hud-party-value,.hud-effect) { font-size:9px; line-height:1; letter-spacing:0; }
 .field-hud:is([data-font="pixel"],[data-font="round"]) .hud-text { font-size:9px; line-height:1.3; }
 .field-hud[data-font="pixel"] .hud-time { font-size:18px; letter-spacing:0; }
@@ -83,13 +83,13 @@
 .field-hud[data-theme="hearts"] .hud-heart { width:14px; height:13px; background:#312f36d9; }
 .field-hud[data-theme="hearts"] .hud-hearts { gap:3px; }
 .field-hud[data-theme="hearts"] .hud-slot { border:2px solid #ecdca5; background:#263b39d9; box-shadow:0 1px 0 #142624; border-radius:5px; }
-.field-hud[data-theme="hearts"] .hud-slot-key { font-family:"Galmuri9",sans-serif; font-size:9px; left:2px; top:1px; }
+.field-hud[data-theme="hearts"] .hud-slot-key { font-family:var(--font-pixel-small); font-size:9px; left:2px; top:1px; }
 .field-hud[data-theme="hearts"] .hud-text { color:#ffe39a; }
 .field-hud[data-theme="farm"] .hud-widget[data-shape="vertical"] .hud-label { font-size:9px; }
 .field-hud[data-theme="farm"] .hud-widget[data-shape="vertical"] .hud-value { font-family:var(--runtime-ui-font); font-size:5px; }
 .field-hud[data-theme="farm"] .hud-widget[data-kind="slots"] .hud-label { display:none; }
-.field-hud[data-theme="farm"] .hud-slot-key { font-family:"Galmuri9",sans-serif; font-size:9px; }
-.field-hud[data-theme="farm"] .hud-slot-count { font-family:"Galmuri9",sans-serif; font-size:9px; }
+.field-hud[data-theme="farm"] .hud-slot-key { font-family:var(--font-pixel-small); font-size:9px; }
+.field-hud[data-theme="farm"] .hud-slot-count { font-family:var(--font-pixel-small); font-size:9px; }
 .field-hud[data-theme="farm"] .hud-date { font-size:9px; }
 .hud-widget[data-shape="petals"] { align-items:center; padding:0; overflow:visible; }
 .hud-flower { width:38px; height:48px; position:relative; filter:drop-shadow(0 1px 1px #140e1b); }

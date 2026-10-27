@@ -14,7 +14,7 @@ Work order (cheapest first): timeout → fake-DOM/env gaps → combined_town / o
 | removed | 2 |
 | timeout | 13 |
 | external | 0 |
-| drift | 344 |
+| drift | 343 |
 
 ## removed (2)
 
@@ -47,7 +47,7 @@ Work order (cheapest first): timeout → fake-DOM/env gaps → combined_town / o
 - **1** — `AssertionError: expected 'OPRN Studio저장된 작업을 바로 열 수 없습니다기존 저장본은…' to contain '예제 작업으로 시작'`
   - [ ] `test/uxcLoadFailure.test.ts`
 
-## drift (344)
+## drift (343)
 
 - **31** — `AssertionError: expected false to be true // Object.is equality`
   - [ ] `test/cssDropDead.test.ts`
@@ -149,12 +149,6 @@ Work order (cheapest first): timeout → fake-DOM/env gaps → combined_town / o
   - [ ] `test/spatialGeographyControllerLifecycle.test.ts`
   - [ ] `test/spatialGeographyControllerMotion.test.ts`
   - [ ] `test/spatialGeographyControllerTransactions.test.ts`
-- **5** — `AssertionError: expected [ …(N) ] to deeply equal []`
-  - [ ] `test/charsetCatalogCoverage.test.ts`
-  - [ ] `test/charsetQuery.test.ts`
-  - [ ] `test/fontFamilyTokenGuard.test.ts`
-  - [ ] `test/roleNameComparisonGate.test.ts`
-  - [ ] `test/toolSchemaProviderCompat.test.ts`
 - **4** — `TypeError: rail.root.after is not a function`
   - [ ] `test/aiAutonomousRunSurface.test.ts`
   - [ ] `test/aiChatPanelComposerMode.test.ts`
@@ -165,6 +159,11 @@ Work order (cheapest first): timeout → fake-DOM/env gaps → combined_town / o
   - [ ] `test/dryTreeStack.test.ts`
   - [ ] `test/regionBlend.test.ts`
   - [ ] `test/runtimeMoveRouteCommands.test.ts`
+- **4** — `AssertionError: expected [ …(N) ] to deeply equal []`
+  - [ ] `test/charsetCatalogCoverage.test.ts`
+  - [ ] `test/charsetQuery.test.ts`
+  - [ ] `test/roleNameComparisonGate.test.ts`
+  - [ ] `test/toolSchemaProviderCompat.test.ts`
 - **4** — `AssertionError: expected null not to be null`
   - [ ] `test/playableSegment.test.ts`
   - [ ] `test/regionTaskModalEnhancements.test.ts`
