@@ -436,7 +436,6 @@ export function renderAiAuthSettings(
   }) as HTMLButtonElement;
   const deviceBlock = el("div", {
     class: "ai-oauth-device",
-    attrs: { hidden: "" },
     dataset: { testid: "ai-oauth-device-code" },
     children: [
       el("div", { class: "ai-oauth-device-steps", children: [
@@ -450,6 +449,8 @@ export function renderAiAuthSettings(
       el("div", { class: "ai-oauth-device-foot", children: [devicePoll, cancelButton] }),
     ],
   });
+  // 속성 대신 프로퍼티로 숨긴다 — 「진행 중 로그인 복원」이 deviceBlock.hidden 을 읽으므로 둘이 어긋나면 안 된다.
+  deviceBlock.hidden = true;
 
   // ── 시간 초과 ─────────────────────────────────────────────────────────────
   // 옛 구현은 상한에 닿으면 기기 블록을 조용히 접고 상태 줄만 바꿨다 — 사용자는 무엇이 끝났는지,

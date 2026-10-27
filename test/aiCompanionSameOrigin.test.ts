@@ -8,6 +8,8 @@ import { DEFAULT_OH_MY_PI_PROVIDER } from "@/ai/ohMyPiProviders";
 
 afterEach(() => {
   vi.restoreAllMocks();
+  // restoreAllMocks does not undo vi.stubGlobal; the Electron-bridge window stub leaked into the /auth case.
+  vi.unstubAllGlobals();
 });
 
 describe("동반 서비스 같은 오리진", () => {

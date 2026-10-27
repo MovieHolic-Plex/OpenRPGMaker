@@ -8,7 +8,6 @@ import type { ChatRequest, ChatResult } from "@/ai/llmClient";
 import type { SessionEvent } from "@/ai/assistantSession";
 import { resetIntentDeclarationCache } from "@/ai/intentDeclarationClient";
 import { declaredIntent, fixedDeclarer } from "./intentFixture";
-import { toOpenAiTools } from "@/editor/tools/toolRegistry";
 
 beforeEach(resetIntentDeclarationCache);
 afterEach(() => {
@@ -296,11 +295,11 @@ describe("의도 선언이 세션 라우팅을 정한다", () => {
     const request = seen[0];
     if (!request?.tools) throw new Error("Missing authorized Do tool schemas");
     const names = request.tools.map(tool => tool.function.name);
-    // PR667 exposes the complete Do catalog regardless of mentions. The trusted
-    // instruction boundary is the declarer's actual input, not schema absence.
+    // The trusted instruction boundary is the declarer's actual input, not schema absence.
+    // 첫 요청은 하이브리드 노출(작은 목록 + find_tools)이고, set_type_chart 같은 몬스터 도구는
+    // 몬스터 프로젝트 밖에서 숨는다(#2812) — 나머지 카탈로그는 find_tools 로 닿는다.
     expect(names).toContain("define_ending");
-    expect(names).toContain("set_type_chart");
-    expect(request.tools).toEqual(expect.arrayContaining(toOpenAiTools()));
+    expect(names).toContain("find_tools");
     expect(declareIntent).toHaveBeenCalledTimes(1);
     expect(declareIntent.mock.calls[0]?.[0].userText).toBe(instruction);
   }, 30000);
