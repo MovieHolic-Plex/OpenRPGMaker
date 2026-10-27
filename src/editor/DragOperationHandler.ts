@@ -13,7 +13,7 @@ import { tileCellsForPaintShape, tileRectFromDrag, tileRectWithinBounds, type Ti
 import { paintTilesBulk } from "@/editor/actions";
 import { worldmapAutoTile } from '@/project/worldmapAutoBrush';
 import { editorWorkingEvents } from "@/project/eventDrafts";
-import { eventBodyRect, findEventCoveringPoint } from "@/project/eventFootprintQuery";
+import { eventBodyFitsMap, eventBodyRect, findEventCoveringPoint } from "@/project/eventFootprintQuery";
 import { rectsOverlap } from "@/project/footprint";
 import { store } from "@/project/store";
 import type { GameEvent, MapId } from "@/project/types";
@@ -326,8 +326,9 @@ export function planEventDragMove(input: {
   const x = input.anchor.x + (input.drop.x - input.origin.x);
   const y = input.anchor.y + (input.drop.y - input.origin.y);
   if (x === input.anchor.x && y === input.anchor.y) return { ok: false, reason: "same" };
-  const body = eventBodyRect({ ...input.moving, x, y });
-  if (body.left < 0 || body.top < 0 || body.right >= input.mapWidth || body.bottom >= input.mapHeight) {
+  const moved = { ...input.moving, x, y };
+  const body = eventBodyRect(moved);
+  if (!eventBodyFitsMap(moved, input.mapWidth, input.mapHeight)) {
     return { ok: false, reason: "outside" };
   }
   const occupied = input.others.some((event) =>

@@ -1,6 +1,6 @@
 import { animaticResourceIds, retimeOpeningAnimatic, validateOpeningAnimatic } from "@/project/openingAnimatic";
 import { openingMapViewMapId } from "@/project/openingMapView";
-import { parseCinematicPresentation, CINEMATIC_PRESENTATION_PRESETS, CINEMATIC_TEXT_ANIMATIONS, CINEMATIC_ENTRANCES } from '@/project/cinematicPresentation';
+import { parseCinematicPresentation, CINEMATIC_PRESENTATION_PRESETS, CINEMATIC_TEXT_ANIMATIONS, CINEMATIC_ENTRANCES, CINEMATIC_TEXT_SIZE_MIN, CINEMATIC_TEXT_SIZE_MAX } from '@/project/cinematicPresentation';
 import { validateGameOverSettings } from "@/project/io/shapeDatabaseFields";
 import { parseCinematicDirection } from '@/project/cinematicDirection';
 // editor/tools/cinematicTools.ts
@@ -386,7 +386,7 @@ const OPENING_SCENE_SCHEMA: JsonSchema = {
         text: { type: 'object', additionalProperties: false, properties: {
           layout: { type: 'string', enum: ['center', 'bottom', 'bar', 'left', 'credits'] },
           font: { type: 'string', enum: ['serif', 'sans', 'pixel'] },
-          size: { type: 'integer', minimum: 8, maximum: 16 },
+          size: { type: 'integer', minimum: CINEMATIC_TEXT_SIZE_MIN, maximum: CINEMATIC_TEXT_SIZE_MAX },
           color: { type: 'string', pattern: '^#[0-9a-fA-F]{6}$' },
           animation: { type: 'string', enum: CINEMATIC_TEXT_ANIMATIONS },
           delayMs: { type: 'integer', minimum: 0, maximum: 10000 },

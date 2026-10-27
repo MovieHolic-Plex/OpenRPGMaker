@@ -10,6 +10,8 @@ import { el } from "@/util/dom";
 type PresentItemStep = Extract<StepResult, { kind: "presentItem" }>;
 
 const DEFAULT_PRESENT_PROMPT = "무엇을 보여줄까?";
+/** 보이는 질문이 창 이름이다. 커서가 옮기면 그 물건만 알린다. */
+const PRESENT_TITLE_ID = "runtime-present-title";
 
 /** 고른 itemId, 닫았거나 보여줄 것이 없으면 undefined. */
 export async function playPresentItem(scene: PlaySceneContext, step: PresentItemStep): Promise<string | undefined> {
@@ -32,14 +34,20 @@ export async function playPresentItem(scene: PlaySceneContext, step: PresentItem
     const overlay = document.createElement("section");
     overlay.className = "runtime-overlay runtime-gift-overlay runtime-present-overlay";
     overlay.dataset.testid = "present-item-scene";
+    overlay.setAttribute("role", "dialog");
+    overlay.setAttribute("aria-modal", "true");
+    overlay.setAttribute("aria-labelledby", PRESENT_TITLE_ID);
+    overlay.tabIndex = -1;
     const buttons = step.items.map((item, index) => {
       const button = document.createElement("button");
       button.type = "button";
       button.className = "runtime-gift-item";
       button.dataset.testid = `present-item-${item.itemId}`;
+      const name = names.get(item.itemId) ?? item.itemId;
+      button.setAttribute("aria-label", `${name} ${item.count}개`);
       if (index === 0) button.classList.add("selected");
       button.append(
-        el("span", { class: "runtime-gift-item-name", text: names.get(item.itemId) ?? item.itemId }),
+        el("span", { class: "runtime-gift-item-name", text: name }),
         el("span", { class: "runtime-gift-item-count", text: String(item.count) }),
       );
       button.addEventListener("click", () => resolveWith(item.itemId));
@@ -52,12 +60,24 @@ export async function playPresentItem(scene: PlaySceneContext, step: PresentItem
       dataset: { testid: "present-item-cancel" },
       on: { click: () => resolveWith(undefined) },
     }) as HTMLButtonElement;
+    const announcement = el("div", {
+      // 선택지 질문과 같은 화면 밖 알림. 보이는 행은 그대로 둔다.
+      class: "dialogue-choice-announcement",
+      dataset: { testid: "present-item-announcement" },
+      attrs: { role: "status", "aria-live": "polite", "aria-atomic": "true" },
+    });
     overlay.append(el("div", {
       class: "runtime-gift-window",
       children: [
-        el("div", { class: "runtime-gift-title", text: step.prompt || DEFAULT_PRESENT_PROMPT }),
-        el("div", { class: "runtime-gift-list", dataset: { testid: "present-item-list" }, children: buttons }),
+        el("div", { class: "runtime-gift-title", text: step.prompt || DEFAULT_PRESENT_PROMPT, attrs: { id: PRESENT_TITLE_ID } }),
+        el("div", {
+          class: "runtime-gift-list",
+          dataset: { testid: "present-item-list" },
+          attrs: { role: "group", "aria-label": "보여줄 물건" },
+          children: buttons,
+        }),
         cancel,
+        announcement,
       ],
     }));
     const layer = host.closest(".play-viewport") ?? host;
@@ -67,6 +87,11 @@ export async function playPresentItem(scene: PlaySceneContext, step: PresentItem
       items: buttons,
       cancelEl: cancel,
       initialIndex: 0,
+      onSelect: (index) => {
+        const label = buttons[index]?.getAttribute("aria-label") ?? "";
+        if (!label || announcement.textContent === label) return;
+        announcement.textContent = label;
+      },
     });
 
     function resolveWith(itemId: string | undefined): void {

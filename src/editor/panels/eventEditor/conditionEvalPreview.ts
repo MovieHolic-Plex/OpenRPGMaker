@@ -10,6 +10,7 @@ import { createPreviewSimState, previewSessionFromSimState, resolvePreviewLocati
 
 import { relationshipStateName } from "@/project/relationshipState";
 import { insideLocationSentence } from "@/editor/mapLocationLabels";
+import { timerThresholdLabel } from "./timerConditionText";
 type PreviewVerdict = boolean | undefined;
 
 /**
@@ -178,7 +179,7 @@ function describeCondition(condition: Condition | undefined): string {
     case "gold":
       return `소지금 ${comparison(condition.op, condition.amount)}`;
     case "timer":
-      return `${condition.timerId === "timer1" ? "타이머 1" : "타이머 2"} ${condition.seconds}초 이하`;
+      return `${condition.timerId === "timer1" ? "타이머 1" : "타이머 2"} ${timerThresholdLabel(condition)}`;
     case "timePhase":
       return `시간대 ${timePhaseName(condition.phase)}`;
     case "season":

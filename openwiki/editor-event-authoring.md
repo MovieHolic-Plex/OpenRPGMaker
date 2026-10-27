@@ -114,6 +114,8 @@ Enter 로 맡기면 곧바로 닫혀 다음 칸을 누를 수 있다. 맡긴 일
 
 우클릭 「붙여넣기」와 이벤트 레이어 Ctrl+V(`pasteEventAt`)는 붙이는 이벤트의 **몸 사각**이
 이미 있는 이벤트의 몸과 겹치면 넣지 않고 「이미 다른 이벤트가 있는 칸입니다.」를 알린다.
+몸 사각이 맵 밖으로 나가도 넣지 않고 「이벤트 몸이 맵 밖으로 나갑니다.」를 알린다.
+앵커만 맵 안인 넓은·키 큰 이벤트도 포함한다. 판정은 끌어 옮기기와 같은 `eventBodyFitsMap` 이다.
 되돌리기 스냅샷도 남기지 않는다.
 
 끌어 옮기기(`planEventDragMove`)는 잡은 칸이 커서 아래에 남도록 앵커를 포인터가 움직인
@@ -959,16 +961,16 @@ Event authoring, event pages, event commands, move routes, command dialogs, and 
 
 ### 함정: 부재 타이머는 0초로 읽혀 조건이 참이 된다
 
-세 평가기 모두 `(timers[timerId] ?? 0) <= condition.seconds` 다. 따라서 **타이머가 한 번도 켜지지
-않았어도** `seconds >= 0` 조건은 참이다(`0초 이하` 도 참). 이것은 이 엔진의 **의도된 계약**이며
+세 평가기 모두 꺼진 타이머를 `0`으로 읽고 `condition.op ?? "<="` 로 비교한다. 연산자를 적지 않은
+`N초 이하`(N ≥ 0)는 **타이머가 한 번도 켜지지 않아도** 참이다. 이것은 이 엔진의 **의도된 계약**이며
 `test/pageConditionsGuarantee.test.ts`, `test/commandContracts/fork.contract.test.ts`,
-`test/selfSwitch.test.ts` 가 고정하고 있다 — 거짓으로 만드는 유일한 방법은 **음수** 임계값이다.
+`test/selfSwitch.test.ts` 가 고정하고 있다. `>` · `>=` 에 양수 임계값을 주면 0초는 거짓이다.
 
 RM2K3/EasyRPG 와는 다르다(그쪽은 타이머가 **작동 중**이어야 한다). `PlaySession.timers` 에 running
 비트가 없고 `timer stop` 이 값을 지우지 않으므로, RM 정합은 스키마 변경이다. **"고치지" 말고**
-저작 시점 경고(`condition.timer.always-true`)로 보이게 두라.
-**음수는 폼에서 못 적는다** — 타이머 입력이 `min="0"` 이라 거짓으로 만드는 유일한 방법이 UI에 없다.
-대신 fork 폼이 `event-fork-timer-warning` 인라인 경고를 직접 보여준다(2026-09-18).
+저작 시점 경고(`condition.timer.always-true`)로 보이게 두라. 경고는 0초가 비교를 통과할 때만 낸다.
+`<= 60` 도 해당하고, `> 0` 은 해당하지 않는다. 분·초 칸을 고쳐도 저장된 `op` 는 유지한다.
+**음수는 폼에서 못 적는다.** 분기 폼과 페이지 조건 행의 비교 칸(`event-condition-timer-op`, `event-page-timer1-condition-op`)이 `op` 를 고친다. `<=` 는 기본값이라 필드를 빼 저장한다. fork 폼은 `event-fork-timer-warning` 으로 같은 문장을 보여 준다. 임계값이나 연산자가 바뀌면 그 문장을 다시 그린다(`shouldRerenderCommandForm`).
 
 ### 고급 조건 목록에서 극성을 벗기지 마라 (D08 재발 방지)
 
@@ -1093,9 +1095,12 @@ Only one unconditional text-only1×1 NPC page is allowed: story/commerce/battle 
 are rejected atomically. The same source tools serve browser and headless assistants.
 A fresh read_npc_layout is required before and after patrol writes by Pi production.
 
-Authored custom route.skippable:false now retries blocked absolute steps indefinitely;
-it cannot consume a blocked right step and later take its unmatched left step.
-Default/skippable custom, living replans and schedule retry limits keep their rules.
+Authored custom route.skippable:false, and a moveEvent command whose route.skippable is false,
+retry a blocked absolute step indefinitely. Page patrols and command-route NPCs set
+preserveBlockedSteps; a player moveEvent rewinds that step. They cannot consume a blocked
+right step and later take its unmatched left step.
+Default/skippable custom routes, a moveEvent that omits skippable, living replans and
+schedule retry limits keep their rules.
 Dialogues still pause autonomous movement. Entering a map applies its authored route.
 These checks do not replace native walking/collision evidence. Reviewed expedition
 layouts add27 ambient patrols in9 towns, retaining key story/vendor positions and

@@ -14,6 +14,7 @@ import { COMBINED_TOWN_TILESET_ID } from "@/project/defaults/constants";
 import { approvedReviewResponse } from "./independentReviewFixture";
 import { isWikiExtraction } from "./wikiTransportFixture";
 import { fixedDeclarer } from "./intentFixture";
+import { defaultSharedCharacterGraphics, SHARED_CHARACTER_GRAPHICS_ENDPOINT } from "@/project/sharedCharacterGraphicsSchema";
 
 vi.mock("@/ai/llmClient", async importOriginal => ({
   ...await importOriginal<typeof import("@/ai/llmClient")>(), chatCompletion: vi.fn(),
@@ -24,7 +25,10 @@ beforeEach(() => {
   localStorage.clear();
   localStorage.setItem(AI_CONFIG_STORAGE_KEY, JSON.stringify({ ...defaultAiConfig(), agentMode: "chat", maxToolCalls: 10, maxTokens: 16000 }));
   resetAiConnectionStatusCache();
-  vi.stubGlobal("fetch", vi.fn(async () => new Response(null, { status: 201 })));
+  // 조수 턴은 공용 캐릭터·얼굴 매핑을 호스트에서 새로 읽는다(sharedCharacterFaceResolver) — 같은 기본 문서를 JSON 으로 돌려준다.
+  vi.stubGlobal("fetch", vi.fn(async (input: RequestInfo | URL) => String(input).includes(SHARED_CHARACTER_GRAPHICS_ENDPOINT)
+    ? new Response(JSON.stringify({ document: defaultSharedCharacterGraphics() }), { status: 200, headers: { "content-type": "application/json" } })
+    : new Response(null, { status: 201 })));
   store._setPersistenceStateForTest({ loaded: false, remotePersistenceEnabled: false, disabledReason: null });
   store.replace(createBlankProject());
   editorState.set({ currentMapId: store.getCurrent().startMapId, selection: null });

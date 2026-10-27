@@ -88,7 +88,8 @@ describe("define_monster_species 외형 자동 부여", () => {
 
     expect(result.ok, result.summary).toBe(true);
     const species = ctx.project.database.monsterSpecies?.find((entry) => entry.id === "species_slime");
-    expect(species?.graphic.monsterResourceId).toBe("generated-enemy-slime-blue");
+    // Two catalog sprites are labelled 「푸른 슬라임」 (slime-blue and the later slime-01); either is the right look.
+    expect(["generated-enemy-slime-blue", "generated-enemy-slime-01"]).toContain(species?.graphic.monsterResourceId);
     expect((result.diff?.warnings ?? []).join(" ")).toContain("species.graphic.monsterResourceId");
   });
 });

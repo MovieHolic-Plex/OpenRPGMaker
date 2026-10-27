@@ -50,11 +50,5 @@ describe("shared team controls", () => {
     expect(events).toContainEqual(expect.objectContaining({ type: "team_report", text: expect.stringContaining("검수 담당이 없어 생략") }));
     await expect(runPiTeam(req, { runAgent: async r => done(r) })).rejects.toThrow("완료 후 검토를 끝내지 못했습니다");
   });
-  it("strips a village contract so team members are not locked to author_village", async () => {
-    const seen: PiAgentRequest[] = [];
-    const req = request(false);
-    await runPiTeam({ ...req, villageContract: { mapId: "m", houseCount: 2, npcCount: 2, args: {}, residentDialogue: true } },
-      { runAgent: async r => { seen.push(r); return done(r); } });
-    expect(seen[0]!.villageContract).toBeUndefined();
-  });
+  // 「마을 계약(villageContract) 벗기기」 사례는 은퇴 — author_village 와 villageContract 요청 필드가 2026-10-07 저작권 정리로 삭제됐다(toolRegistry CONSTRUCTION_WRITE_SUPERSEDED 주석).
 });

@@ -33,8 +33,16 @@ const noopActions: PlayerStatusMenuActions = {
   onToTitle: () => undefined,
 };
 
+/** 전투가 있는 게임으로 만든다 — 전투 없는 게임은 첫 화면이 파티 개요 대신 이야기 개요다(combatPresence, #3660). */
+function withCombat<T extends ReturnType<typeof createBlankProject>>(project: T): T {
+  const map = project.maps[project.startMapId]!;
+  map.encounterRate = 30;
+  map.troopIds = [project.database.troops[0]!.id];
+  return project;
+}
+
 function render(skin: MenuUiStyle | undefined, mode: "main" | "function" = "main", selectedCommand: StatusMenuRailId = "items") {
-  const project = createBlankProject();
+  const project = withCombat(createBlankProject());
   if (skin) project.system.menuUiStyle = skin;
   return renderWithFakeDom(() => renderPlayerStatusMenu({
     project,
@@ -85,10 +93,12 @@ describe("status menu skins", () => {
     } finally { restore(); }
   });
 
-  it("기본 스킨은 workbench 속성을 달고 파티 개요·사이드 파티가 없다", () => {
+  // 미설정 기본 스킨은 2026-09-28 에 workbench → pixel 로 바뀌었다(menuSkins/registry DEFAULT_MENU_SKIN_ID) — workbench 는 명시해 본다.
+  it("workbench 스킨은 workbench 속성을 달고 파티 개요·사이드 파티가 없다", () => {
     const restore = installFakeDom();
     try {
-      const menu = render(undefined);
+      expect(render(undefined).getAttribute("data-menu-skin")).toBe("pixel");
+      const menu = render("workbench");
       expect(menu.getAttribute("data-menu-skin")).toBe("workbench");
       expect(menu.getAttribute("data-menu-skin-icons")).toBe("glyph");
       expect(menu.getAttribute("data-menu-skin-landing")).toBe("work");
@@ -343,6 +353,34 @@ describe("status menu skins — controller", () => {
       expect(back.getAttribute("data-status-menu-screen")).toBe("main");
       expect(findByTestId(back, "status-menu-party-overview")).not.toBeNull();
       expect(findByTestId(back, "status-menu-detail")).toBeNull();
+    } finally {
+      if (previousWindow) Object.defineProperty(globalThis, "window", previousWindow);
+      else delete (globalThis as { window?: unknown }).window;
+      restore();
+    }
+  });
+
+  it("battle skill confirm says it is used in battle, and one cancel leaves that list", () => {
+    const restore = installFakeDom();
+    const previousWindow = Object.getOwnPropertyDescriptor(globalThis, "window");
+    Object.defineProperty(globalThis, "window", { configurable: true, value: { localStorage: memoryStorage() } });
+    try {
+      const { controller, layout } = mountController("workbench");
+      controller.toggleMenu();
+      expect(controller.handleKey("ArrowDown")).toBe(true);
+      expect(controller.handleKey("ArrowRight")).toBe(true);
+      expect(controller.handleKey("Enter")).toBe(true);
+      let menu = findByTestId(layout, "main-menu")!;
+      expect(menu.querySelector("[data-testid^='status-menu-skill-actor-']")).toBeNull();
+      expect(menu.querySelector("[data-testid*='skill_attack']")).not.toBeNull();
+      expect(controller.handleKey("Enter")).toBe(true);
+      menu = findByTestId(layout, "main-menu")!;
+      expect(findByTestId(menu, "status-menu-message")?.textContent).toBe("공격은 전투에서 사용합니다.");
+      expect(menu.querySelector("[data-testid*='skill_attack']")).not.toBeNull();
+      expect(controller.handleKey("Escape")).toBe(true);
+      menu = findByTestId(layout, "main-menu")!;
+      expect(menu.querySelector("[data-testid^='status-menu-skill-actor-']")).not.toBeNull();
+      expect(menu.querySelector("[data-testid*='skill_attack']")).toBeNull();
     } finally {
       if (previousWindow) Object.defineProperty(globalThis, "window", previousWindow);
       else delete (globalThis as { window?: unknown }).window;

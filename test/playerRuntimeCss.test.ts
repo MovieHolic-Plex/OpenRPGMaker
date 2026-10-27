@@ -29,7 +29,7 @@ const REQUIRED_RUNTIME_SELECTORS = [
   ".status-menu-command-rail",
   ".status-menu-primary-dock",
   ".status-menu-command",
-  ".status-menu-body",
+  // .status-menu-body 는 공개 기준선(0d4f13e7c8)부터 어느 시트·렌더러에도 없다 — 본문은 .status-menu-detail 계열이 맡는다.
   ".status-menu-party",
   ".status-menu-detail",
   ".status-menu-detail-list",
@@ -44,6 +44,7 @@ const REQUIRED_RUNTIME_SELECTORS = [
 ] as const;
 // 표면 진입 시트 src/styles/runtime/index.css 의 @import 순서(2026-09-11 Task 7 이후). 옛 배럴(battle.css,
 // battle-skins/index.css)은 사라져 슬라이스가 직접 나열된다. playerRuntime.css 는 이 시트로 전달하는 한 줄 허브다.
+// #2782·#2816·#3324·#3370 이 VN·모바일·전투 깊이 시트를 덧붙였다(76개).
 const RUNTIME_IMPORTS = [
   "./fonts.css",
   "./system.css",
@@ -66,28 +67,27 @@ const RUNTIME_IMPORTS = [
   "./battle/15-juice-capture-fx.css",
   "./battle/17-sprint-a-polish.css",
   "./battle/19-adversarial-review-3.css",
-  // 포켓몬 전용 통합 층은 19층과 21층 사이에 둔다.
   "./battle/20-pokemon-skin.css",
   "./battle/21-gen1-hud-type-badge.css",
   "./battle-skins/_pokemon.css",
   "./battle-skins/_rm2000.css",
   "./battle-skins/_rm2003.css",
-  // 유리 뼈대의 색·HUD 변형.
   "./battle-skins/_glass-variants.css",
   "./battle-skins/_transitions.css",
   "./battle-skins/_battlers.css",
   "./battle-skins/_windowskin.css",
-  // 타격감 층은 스킨 시트보다 뒤에서 덮는다.
   "./battle/22-hit-feel.css",
   "./battle/23-entry-exit.css",
   "./battle/24-input-prompt.css",
   "./battle/30-backdrop-motion.css",
   "./battle/25-rolling-hp.css",
-  // 전용 스킨·겹 배경·레트로 모션도 출하 CSS에 실려야 한다.
   "./battle-skins/_retro2003.css",
   "./battle-skins/_battle-look.css",
   "./battle/26-battle-scenery.css",
   "./battle/27-retro-motion.css",
+  "./battle/28-retro-state-aura.css",
+  "./battle/29-impact-contact.css",
+  "./battle/31-battle-depth.css",
   "./commerce.css",
   "./tacticsBattle.css",
   "./shop.css",
@@ -99,6 +99,8 @@ const RUNTIME_IMPORTS = [
   "./galleryMenu.css",
   "./statusMenuSkins.css",
   "./statusMenuLegacySkins.css",
+  "./pixelWindows.css",
+  "./monsterCampaignMenu.css",
   "./playLoading.css",
   "./actionHud.css",
   "./timer.css",
@@ -112,12 +114,14 @@ const RUNTIME_IMPORTS = [
   "../dialogue.css",
   "../dialogueStyles.css",
   "../dialogueReading.css",
+  "../vnLook.css",
   "./zoneFeedback.css",
   "./handSlot.css",
   "./minimap.css",
   "./from-database-system-studio.css",
   "./from-database-modern-utility-records.css",
   "./fieldHud.css",
+  "./mobileUi.css",
 ] as const;
 
 describe("exported player runtime CSS", () => {
@@ -196,7 +200,8 @@ describe("exported player runtime CSS", () => {
     // Given: the player-owned aggregator and both host entrypoints.
     const aggregator = await readFile(resolve("src/styles/runtime/index.css"), "utf8");
     const forwarder = await readFile(resolve("src/styles/runtime/playerRuntime.css"), "utf8");
-    const editorEntry = await readFile(resolve("src/styles/index.css"), "utf8");
+    // 에디터는 런타임 시트를 지연 로드한다(src/app/runtimeStyles.ts → runtimeStylesheet.ts, 공개 기준선부터).
+    const editorEntry = await readFile(resolve("src/app/runtimeStylesheet.ts"), "utf8");
     const exportEntry = await readFile(resolve("src/player/player.css"), "utf8");
 
     // When: import order is read from source rather than inferred from a repository grep.
@@ -205,7 +210,7 @@ describe("exported player runtime CSS", () => {
     // Then: the closure is explicit, ordered, unique, shared, and never pulls editor core into export.
     expect(imports).toEqual(RUNTIME_IMPORTS);
     expect(new Set(imports).size).toBe(imports.length);
-    expect(editorEntry).toContain('@import "./runtime/index.css";');
+    expect(editorEntry).toContain('import "@/styles/runtime/index.css";');
     expect(forwarder.trim()).toBe('@import "./index.css";');
     expect(exportEntry).toContain('@import "../styles/runtime/playerRuntime.css";');
     expect(exportEntry).not.toContain("../styles/index.css");
@@ -252,7 +257,9 @@ describe("exported player runtime CSS", () => {
     );
 
     // Then: legacy content primitives remain, but the modern dock contract disappears.
-    expect(hasCssSelector(fixtureCss, ".status-menu-primary-dock")).toBe(false);
+    // .status-menu-primary-dock 은 이제 스킨·모바일 시트(statusMenuSkins·mobileUi·pixelWindows)도 꾸미므로
+    // 이 모듈에만 있는 선택자(.has-item-facts)로 빠짐을 잰다.
+    expect(hasCssSelector(fixtureCss, ".has-item-facts")).toBe(false);
     expect(hasCssSelector(fixtureCss, ".status-menu-command-rail")).toBe(true);
     expect(hasCssSelector(fixtureCss, ".status-menu-party")).toBe(true);
     expect(hasCssSelector(fixtureCss, ".action-hud")).toBe(true);
@@ -260,6 +267,8 @@ describe("exported player runtime CSS", () => {
 });
 
 function hasBattleSkinSelector(css: string, skin: string): boolean {
+  // retro2003(도트 측면 기본)은 스킨 id 가 아니라 루트 data-battle-motion="retro" 에 규칙이 걸린다(skins/registry.ts 2026-10-01 주석).
+  if (skin === "retro2003" && (css.includes('[data-battle-motion="retro"]') || css.includes("[data-battle-motion=retro]"))) return true;
   return css.includes(`[data-battle-skin="${skin}"]`)
     || css.includes(`[data-battle-skin=${skin}]`);
 }

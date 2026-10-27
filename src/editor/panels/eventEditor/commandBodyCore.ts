@@ -16,7 +16,8 @@ import { conditionForm, databasePicker, selfSwitchControl } from "./conditionFor
 import { aiImageGenerateField } from "@/editor/panels/aiImageGenerateField";
 import { faceDisplayModeOf, renderFaceGallery, renderFacesetPreview } from "./facesetPreview";
 import { conditionPreviewSentence, renderConditionEvalPreview } from "./conditionEvalPreview";
-import { renderCommandPreview } from "./commandPreview";
+import { renderConditionEvalPreview } from "./conditionEvalPreview";
+import { idleTimerWarningMessage } from "./timerConditionText";import { renderCommandPreview } from "./commandPreview";
 import {
   BOOLEAN_OPTIONS,
   TIMER_ACTION_OPTIONS,
@@ -1299,24 +1300,27 @@ function forkBody(context: CommandEditContext, cmd: Extract<Command, { kind: "fo
   return wrap;
 }
 /**
- * 타이머 조건의 항상-참 함정 인라인 경고. 런타임은 미기동 타이머를 0초로 읽어
- * `seconds >= 0` 조건이 설정 전부터 참이 된다(의도된 계약). 검증기는 warning을
- * 내지만 폼에서 안 보이므로, 조건을 고르는 자리에서 직접 말한다.
+ * 타이머 조건의 꺼짐=0초 함정 인라인 경고. 런타임은 미기동 타이머를 0초로 읽고
+ * 저장된 연산자(없으면 `<=`)로 비교한다. `>` 30 처럼 0이 거짓인 비교는 경고하지 않는다.
  */
 function renderForkTimerWarning(condition: Condition): HTMLElement | null {
-  const timers: { readonly timerId: string; readonly seconds: number }[] = [];
-  const collect = (entry: Condition): void => {
-    if (entry.kind === "timer") timers.push(entry);
-    else if (entry.kind === "all" || entry.kind === "any") entry.conditions.forEach(collect);
-    else if (entry.kind === "not") collect(entry.condition);
+  const messages: string[] = [];
+  // `not` flips the leaf, so an idle-true timer inside it is not an idle-true branch.
+  const collect = (entry: Condition, negated: boolean): void => {
+    if (entry.kind === "timer") {
+      if (negated) return;
+      const message = idleTimerWarningMessage(entry);
+      if (message) messages.push(message);
+      return;
+    }
+    if (entry.kind === "all" || entry.kind === "any") entry.conditions.forEach((child) => collect(child, negated));
+    else if (entry.kind === "not") collect(entry.condition, !negated);
   };
-  collect(condition);
-  const risky = timers.filter((entry) => entry.seconds >= 0);
-  if (risky.length === 0) return null;
-  const names = [...new Set(risky.map((entry) => entry.timerId === "timer2" ? "타이머 2" : "타이머 1"))].join("·");
+  collect(condition, false);
+  if (messages.length === 0) return null;
   return el("p", {
     class: "event-fork-timer-warning",
-    text: `${names} · 0초 이하 조건은 타이머가 꺼져 있어도 참입니다. 타이머를 켜는 명령 뒤에 두거나 임계값을 올리세요.`,
+    text: messages.join(" "),
     dataset: { testid: "event-fork-timer-warning" },
   });
 }
