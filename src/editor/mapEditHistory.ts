@@ -5,6 +5,7 @@ import { store, type ProjectChangeCell } from "@/project/store";
 import { canWriteTeamProject } from "@/project/teamAccess";
 import { cloneProjectSharingSharedDictionaries } from "@/project/projectClone";
 import { jsonEqual } from "@/util/structuralJson";
+import { DEFAULT_BATTLE_SKIN_ID, resolveSkinId } from "@/battle/skins/registry";
 
 const MAX_HISTORY = 50;
 const LARGE_HISTORY_LIMIT = 25;
@@ -309,10 +310,22 @@ export function recordProjectSnapshot(label?: string, mapId?: string | null, opt
   pushSnapshot(makeSnapshotFromCurrent(mapId, options), label, historyMapId(mapId, options));
 }
 
+/**
+ * `system.battleUiStyle` 가 기본 스킨(retro2003)이면 「없음」과 같은 뜻이다 — 검증·직렬화(databaseRecordModel)는 기본값을
+ * 저장하지 않고 뗀다. 새 프로젝트의 저장소 상태는 기본값을 명시로 들고 있으므로, 검증을 거친 제안(공간 작성 미리보기 등)과
+ * 비교하면 바뀐 게 없는데도 다르게 보여 빈 변경이 되돌리기 항목으로 남았다. 비교에서만 같은 뜻으로 맞춘다(저장 값은 그대로).
+ */
+function withoutDefaultBattleSkin(project: Project): Project {
+  const style = project.system.battleUiStyle;
+  if (style === undefined || resolveSkinId(style) !== DEFAULT_BATTLE_SKIN_ID) return project;
+  const { battleUiStyle: _default, ...system } = project.system;
+  return { ...project, system };
+}
+
 /** Commit an already validated project proposal; rejected store writes never alter history. */
 export function applyProjectWithHistory(project: Project, label: string): boolean {
   const before = projectWithoutEventDrafts(store.getCurrent());
-  if (jsonEqual(before, projectWithoutEventDrafts(project))) return false;
+  if (jsonEqual(withoutDefaultBattleSkin(before), withoutDefaultBattleSkin(projectWithoutEventDrafts(project)))) return false;
   store.replace(project, { change: { label }, commitHistory: () => {
     lastCoalesceKey = null;
     pushSnapshot({ kind: "project", before }, label);
