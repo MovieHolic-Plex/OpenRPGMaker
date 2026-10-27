@@ -5,6 +5,12 @@
 
 <!-- releases -->
 
+## 0.355.0 — 2026-10-27
+
+### 기능
+
+- **beodeul-capital** — ship Astel capital art pieces (canal redrawn) into beodeul_city (#3860) (`d34ba46`)
+
 ## 0.354.0 — 2026-10-27
 
 ### 기능
