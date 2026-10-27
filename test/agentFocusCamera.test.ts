@@ -1,3 +1,4 @@
+/** @vitest-environment happy-dom */
 // 자동 적용은 맵·카메라를 유지한다. 사람이 미리보기 버튼을 직접 누른 경우만 이동한다.
 
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";

@@ -6,6 +6,7 @@ import {ensureBeodeulFacilityKits} from './beodeulFacilities';
 import {BEODEUL_ORGANIC_TEXTURE,createBeodeulOrganicTileset,ensureBeodeulOrganicTileset,ensureBeodeulOrganic} from './beodeulOrganic';
 import {BEODEUL_FORMS_TEXTURE,createBeodeulFormsTileset,ensureBeodeulFormsTileset,ensureBeodeulForms} from './beodeulForms';
 import {BEODEUL_REVIEWED_TEXTURE,createBeodeulReviewedTileset,ensureBeodeulReviewedTileset,ensureBeodeulReviewed} from './beodeulReviewed';
+import {BEODEUL_MASSING_TEXTURE,createBeodeulMassingTileset,ensureBeodeulMassingTileset,ensureBeodeulMassing} from './beodeulMassing';
 import { BEODEUL_DOOR_TEXTURE, createBeodeulDoorTileset, ensureBeodeulDoorReferences } from "./beodeulDoor";
 import { BEODEUL_GROUND_TEXTURE, createBeodeulGroundTileset, ensureBeodeulGroundReferences } from "./beodeulGround";
 import { BEODEUL_FOREST_TRUNKS_TEXTURE, createBeodeulForestTrunksTileset } from "./beodeulForestTrunks";
@@ -22,6 +23,7 @@ import { SKY_ISLAND_TEXTURE, createSkyIslandTileset, ensureSkyIslandReferences, 
 import { STEAMPUNK_CITY_TEXTURE, createSteampunkCityTileset, ensureSteampunkCityReferences, ensureSteampunkCityTileset, steampunkCityBundledReferenceDocuments } from "./steampunkCity";
 import { MODERN_CAMPUS_TEXTURE, createModernCampusTileset, ensureModernCampusReferences, ensureModernCampusTileset, modernCampusBundledReferenceDocuments } from "./modernCampus";
 import { SF_STATION_TEXTURE, createSfStationTileset, ensureSfStationReferences, ensureSfStationTileset, sfStationBundledReferenceDocuments } from "./sfStation";
+import { WASTELAND_RUINS_TEXTURE, createWastelandRuinsTileset, ensureWastelandRuinsReferences, ensureWastelandRuinsTileset, wastelandRuinsBundledReferenceDocuments } from "./wastelandRuins";
 import { GOTHIC_MANOR_TEXTURE, createGothicManorTileset, ensureGothicManorReferences, ensureGothicManorTileset, gothicManorBundledReferenceDocuments } from "./gothicManor";
 import { PREHISTORIC_TEXTURE, createPrehistoricTileset, ensurePrehistoricReferences, ensurePrehistoricTileset, prehistoricBundledReferenceDocuments } from "./prehistoric";
 import { DESERT_EAST_TEXTURE, createDesertEastTileset, ensureDesertEastReferences, ensureDesertEastTileset, desertEastBundledReferenceDocuments } from "./desertEast";
@@ -155,6 +157,7 @@ const REFERENCE_DOCS_WITHOUT_DEFINITION: Readonly<Record<string, () => TilesetRe
   [GOTHIC_MANOR_TEXTURE]: gothicManorBundledReferenceDocuments,
   [PIRATE_ISLES_TEXTURE]: pirateIslesBundledReferenceDocuments,
   [SF_STATION_TEXTURE]: sfStationBundledReferenceDocuments,
+  [WASTELAND_RUINS_TEXTURE]: wastelandRuinsBundledReferenceDocuments,
   [SENGOKU_EDO_TEXTURE]: sengokuEdoBundledReferenceDocuments,
   [MODERN_CAMPUS_TEXTURE]: modernCampusBundledReferenceDocuments,
   [STEAMPUNK_CITY_TEXTURE]: steampunkCityBundledReferenceDocuments,
@@ -210,6 +213,7 @@ export function ensureBundledTilesets(project: { tilesets: Record<string, Tilese
       if (asset.textureKey === BEODEUL_ARCHITECTURE_TEXTURE) changed = ensureBeodeulArchitectureTileset(project.tilesets[id]) || changed;
       if (asset.textureKey === BEODEUL_FORMS_TEXTURE) changed = ensureBeodeulFormsTileset(project.tilesets[id]) || changed;
       if (asset.textureKey === BEODEUL_REVIEWED_TEXTURE) changed = ensureBeodeulReviewedTileset(project.tilesets[id]) || changed;
+      if (asset.textureKey === BEODEUL_MASSING_TEXTURE) changed = ensureBeodeulMassingTileset(project.tilesets[id]) || changed;
       if (asset.textureKey === BEODEUL_ORGANIC_TEXTURE) changed = ensureBeodeulOrganicTileset(project.tilesets[id]) || changed;
       if (asset.textureKey === BEODEUL_GROUND_TEXTURE || asset.textureKey === BEODEUL_CITY_TEXTURE)
         changed = ensureBeodeulGroundReferences(project.tilesets[id]) || changed;
@@ -220,6 +224,7 @@ export function ensureBundledTilesets(project: { tilesets: Record<string, Tilese
         changed = ensureBeodeulFacilityKits(project.tilesets[id]) || changed;
         changed = ensureBeodeulForms(project.tilesets[id]) || changed;
         changed = ensureBeodeulReviewed(project.tilesets[id]) || changed;
+        changed = ensureBeodeulMassing(project.tilesets[id]) || changed;
         changed = ensureBeodeulOrganic(project.tilesets[id]) || changed;
       }
       // 조선 · 바람의나라풍 (tiledata/joseon-village): 번들 칸 표와 참고문서를 옛 사본에도 맞춘다.
@@ -271,6 +276,11 @@ export function ensureBundledTilesets(project: { tilesets: Record<string, Tilese
       if (asset.textureKey === SF_STATION_TEXTURE) {
         changed = ensureSfStationTileset(project.tilesets[id]) || changed;
         changed = ensureSfStationReferences(project.tilesets[id]) || changed;
+      }
+      // 폐허·황무지 (wasteland_ruins 굽기): 번들 칸 표·`wl-` 부품/오토타일·참고문서를 옛 사본에도 맞춘다(칸 번호는 덧붙이기 전용).
+      if (asset.textureKey === WASTELAND_RUINS_TEXTURE) {
+        changed = ensureWastelandRuinsTileset(project.tilesets[id]) || changed;
+        changed = ensureWastelandRuinsReferences(project.tilesets[id]) || changed;
       }
       // 고딕 저택·묘지 (gothic_manor 굽기): 번들 칸 표·`gm-` 부품/오토타일·참고문서를 옛 사본에도 맞춘다(칸 번호는 덧붙이기 전용).
       if (asset.textureKey === GOTHIC_MANOR_TEXTURE) {
@@ -455,6 +465,7 @@ function bundledEasyRpgTilesetBase(asset: (typeof BUNDLED_EASYRPG_CHIPSET_ASSETS
   if (asset.textureKey === BEODEUL_FORMS_TEXTURE) return createBeodeulFormsTileset();
   if (asset.textureKey === BEODEUL_ORGANIC_TEXTURE) return createBeodeulOrganicTileset();
   if (asset.textureKey === BEODEUL_REVIEWED_TEXTURE) return createBeodeulReviewedTileset();
+  if (asset.textureKey === BEODEUL_MASSING_TEXTURE) return createBeodeulMassingTileset();
   if (asset.textureKey === BEODEUL_CITY_TEXTURE) return createBeodeulCityTileset();
   if (asset.textureKey === JOSEON_BARAM_TEXTURE) return createJoseonBaramTileset();
   if (asset.textureKey === MODERN_CITY_TEXTURE) return createModernCityTileset();
@@ -466,6 +477,7 @@ function bundledEasyRpgTilesetBase(asset: (typeof BUNDLED_EASYRPG_CHIPSET_ASSETS
   if (asset.textureKey === STEAMPUNK_CITY_TEXTURE) return createSteampunkCityTileset();
   if (asset.textureKey === MODERN_CAMPUS_TEXTURE) return createModernCampusTileset();
   if (asset.textureKey === SF_STATION_TEXTURE) return createSfStationTileset();
+  if (asset.textureKey === WASTELAND_RUINS_TEXTURE) return createWastelandRuinsTileset();
   if (asset.textureKey === GOTHIC_MANOR_TEXTURE) return createGothicManorTileset();
   if (asset.textureKey === PREHISTORIC_TEXTURE) return createPrehistoricTileset();
   if (asset.textureKey === DESERT_EAST_TEXTURE) return createDesertEastTileset();
@@ -502,6 +514,15 @@ function bundledTilesetIdForAsset(asset: (typeof BUNDLED_EASYRPG_CHIPSET_ASSETS)
 
 /** 계약 테스트 전용 — id 계산이 생성자 결과와 같은지 대조한다. */
 export const bundledTilesetIdForAssetForTest = bundledTilesetIdForAsset;
+
+/**
+ * 2026-10-07 저작권 정리로 번들에서 지운 EasyRPG 시트(실내·합본 마을 등)의 타일셋 정의를 칸 번호만으로 다시 만든다.
+ * 그 전에 만든 프로젝트가 저장본에 들고 있는 정의와 같은 경로(bundledStandardChipsetTileset)다 — 그림 파일은 없다.
+ * 새 프로젝트에 넣지 않는다. 옛 저장본 호환을 재현해야 하는 쪽(테스트 픽스처·이관 도구)만 쓴다.
+ */
+export function retiredEasyRpgChipsetTileset(textureKey: string, name: string): TilesetDef {
+  return bundledStandardChipsetTileset({ textureKey, name });
+}
 
 function bundledStandardChipsetTileset(asset: { readonly textureKey: string; readonly name: string }): TilesetDef {
   const tileset = makeBundledTileset(bundledEasyRpgTilesetId(asset.textureKey), asset.name, asset.textureKey);

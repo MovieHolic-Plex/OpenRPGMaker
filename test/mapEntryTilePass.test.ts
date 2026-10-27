@@ -10,6 +10,7 @@ import * as tilesetImage from '@/editor/tilesetImage';
 import * as policy from '@/editor/tileLayerPolicy';
 import { setTileBackingOverride } from '@/editor/runtimeTileMetadata';
 import { legacyRenderTiles } from './tileLayerLegacyOracle';
+import { RETIRED_COMBINED_TOWN_TILESET_ID, withRetiredEasyRpgTilesets } from './support/retiredEasyRpgTilesets';
 import type { Project } from '@/project/types';
 
 const original = store.getCurrent();
@@ -94,7 +95,9 @@ describe('map entry tile render pass',()=>{
     equivalent(project,map);
   });
   it('does not retain texture/animation/backing decisions across invalidated renders or failures',()=>{
-    const project=createBlankProject(); const map=project.maps[project.startMapId];
+    // 290 은 옛 합본 마을의 정지 타일 번호다(버들항 기본 시트에서는 같은 번호가 애니메이션 띠라 add.image 를 안 탄다) — 그 시트를 싣는다.
+    const project=withRetiredEasyRpgTilesets(createBlankProject()); const map=project.maps[project.startMapId];
+    map.tilesetId=RETIRED_COMBINED_TOWN_TILESET_ID;
     map.lowerTiles.fill(290); map.upperTiles.fill(-1); store.replaceProject(project);
     const f=fixture(project,map); renderTiles(f.scene as never);
     invalidateTileLayer(f.scene); f.scene.resolveTilesetTexture.mockReturnValue('replacement');
@@ -120,7 +123,8 @@ describe('map entry tile render pass',()=>{
     expect(f.objects.filter(o=>o.active).map(o=>o.animation)).not.toEqual(first);
   });
   it('matches world coast quarters and observes group edits in the next pass',()=>{
-    const project=createBlankProject();const map=project.maps[project.startMapId];
+    // 월드 칩셋은 2026-10-07 저작권 정리로 새 프로젝트에서 빠졌다 — 옛 저장본처럼 은퇴 시트를 다시 싣는다.
+    const project=withRetiredEasyRpgTilesets(createBlankProject());const map=project.maps[project.startMapId];
     map.tilesetId='easyrpg_chipset_world';
     map.lowerTiles=map.lowerTiles.map((_,i)=>[0,30,60,90,120,240][i%6]);
     equivalent(project,map);

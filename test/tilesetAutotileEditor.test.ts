@@ -10,12 +10,13 @@ import { autotileGroupsForTileset } from "@/project/defaults/autotileGroups";
 import { DEFAULT_TILES_PER_ROW } from "@/project/defaults/constants";
 import { store } from "@/project/store";
 import { findByTestId, installFakeDom, renderWithFakeDom, type FakeElement } from "./fakeDom";
+import { withRetiredEasyRpgTilesets } from "./support/retiredEasyRpgTilesets";
 
 let restoreDom: (() => void) | null = null;
 
 beforeEach(() => {
   restoreDom = installFakeDom();
-  store.replace(createBlankProject());
+  store.replace(withRetiredEasyRpgTilesets(createBlankProject()));
   resetAutotileComposerState();
 });
 

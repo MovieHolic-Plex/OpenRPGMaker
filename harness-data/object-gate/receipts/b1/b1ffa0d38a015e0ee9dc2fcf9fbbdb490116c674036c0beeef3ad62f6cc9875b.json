@@ -1,0 +1,586 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b1ffa0d38a015e0ee9dc2fcf9fbbdb490116c674036c0beeef3ad62f6cc9875b",
+ "width": 64,
+ "height": 176,
+ "kind": "structure",
+ "name": "마법사 탑",
+ "label": "building-kit/massing/wizard-tower",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 7,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "5f62fef078ef7661"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 13,
+  "tileColorsP90": 17,
+  "darkV5": 43,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 21
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "borderline",
+   "borderline",
+   "borderline",
+   "wrong",
+   "borderline",
+   "right",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top tier of conical roof",
+      "rows": "9-36",
+      "evidence": "c",
+      "front_edge_line_row": 36,
+      "eave_shadow_rows": "37-38"
+     },
+     {
+      "part": "middle tier of conical roof",
+      "rows": "37-53",
+      "evidence": "c",
+      "front_edge_line_row": 52,
+      "eave_shadow_rows": "53-55"
+     },
+     {
+      "part": "bottom tier of conical roof, flared eave",
+      "rows": "54-71",
+      "evidence": "c",
+      "front_edge_line_row": 71,
+      "eave_shadow_rows": "72-73"
+     },
+     {
+      "part": "finial spike at roof apex",
+      "rows": "0-3",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stone cylindrical tower shaft with windows",
+      "rows": "72-160",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "flared stone base with wooden door",
+      "rows": "158-176",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 63,
+    "front_face_rows": 104,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The tower is capped by a tall conical roof of three stacked tiles tiers (rows 9-71). Each tier ends in a light edge line followed by darker shadow: tier ledges around rows 15/22/29 and 36, 52, with a flared eave at rows 69-71 where the width goes 40, 38, 36 and then drops to 31. The sloped roof plane is therefore a clear top surface (evidence c). Below it, the stone shaft (rows 72-160) and flared base (to about row 176) form a front face well over 3 rows, with windows, a ring ledge and a door. The silhouette is not a flat front elevation. The roof is the major top-bearing part and the cylindrical shaft does not need a separate top."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate has 11 visible tones per tile, against 12 and 10 for the references, so density is on par. Near-flat coverage is 0%, the same as both references, and the picture shows no flat fills. The blue roof has per-tile scallops with highlight bands, and the stone has individually shaded bricks across the tower body, the dark base and the door. I count about 5 steps on the roof and 4-5 on the stone, slightly under the references' 5-6. The outline is the weakest point: 51% of dark edge pixels are neutral, against 7-9% for the references. By eye the edges lean blue-grey beside the roof and grey beside the stone, and forms are often separated by value alone. That reads as mixed rather than a uniform black sticker line. Overall a careful artist would accept it next to the references, though its outline is a little less tinted than theirs.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 25369
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "finial at spire tip",
+      "rows": "0-3",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "upper conical roof tier",
+      "rows": "9-29",
+      "evidence": "c",
+      "front_edge_line_row": 29,
+      "eave_shadow_rows": "30-31"
+     },
+     {
+      "part": "middle conical roof tier",
+      "rows": "30-52",
+      "evidence": "c",
+      "front_edge_line_row": 36,
+      "eave_shadow_rows": "37-39"
+     },
+     {
+      "part": "lower conical roof tier with wide eave",
+      "rows": "53-71",
+      "evidence": "c",
+      "front_edge_line_row": 71,
+      "eave_shadow_rows": "54-70"
+     },
+     {
+      "part": "stone tower shaft and flared base",
+      "rows": "72-175",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 63,
+    "front_face_rows": 104,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The tower has a tall conical roof built from three stacked tiers. The width grows from 2 to 42 px across rows 9-68, and light bands cut across each tier (rows 15, 22, 29 at x=37; rows 36-37; the light eave at rows 51-52 at x=24 and row 71). Dark eave shadow follows the lowest tier (x=50, rows 54-70). Below the roof there is a vertical stone cylinder with a flared base, a door and windows, covering about 104 rows (72-175). The finial at rows 0-3 is decor. The roof planes read as sloped top surfaces above a clear south face, so the drawing reads as three-quarter view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate holds up against both references on the primary facts. It has 11 visible tones per tile against 12 and 10 for the references, and 0% near-flat coverage like both of them. By eye, the blue roof has scalloped tile rows with per-tile highlights and about 4-5 blue steps. The stone shaft is shaded block by block in about 4-5 greys, with window glints, a rune-like emblem and a plank door. The base is mottled and darker. Texture is rich and there are no flat fills. The weak point is the outline: 51% of dark edge pixels are near-neutral, against 7-9% for the references, so it leans towards a greyish line in places. It is not a uniform black sticker outline, though. Forms are mostly separated by value, and the roof edges and stone edges carry some blue or grey tint, so I call it mixed. Shading depth is about 5 steps against the references' 5-6, which is slightly shallower but acceptable. A careful artist would accept it next to the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 20498
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top finial/spire tip",
+      "rows": "0-8",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "upper conical roof tier",
+      "rows": "9-15",
+      "evidence": "c",
+      "front_edge_line_row": 15,
+      "eave_shadow_rows": "16-17"
+     },
+     {
+      "part": "middle conical roof tier",
+      "rows": "16-36",
+      "evidence": "c",
+      "front_edge_line_row": 22,
+      "eave_shadow_rows": "23-24"
+     },
+     {
+      "part": "lower conical roof tier (wide eave)",
+      "rows": "37-71",
+      "evidence": "c",
+      "front_edge_line_row": 59,
+      "eave_shadow_rows": "69-71"
+     },
+     {
+      "part": "stone tower shaft with windows",
+      "rows": "72-157",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "flared stone base with door",
+      "rows": "158-180",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 63,
+    "front_face_rows": 108,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The tower has a three-tier conical purple roof (rows 9-71). Each tier is a sloped plane that ends in a light edge line (rows 15, 22, 29, 36-37) with darker eave shadow beneath. The roof widens steadily from 4 to 42 px, so it reads as a canopy seen from above at an angle. Below it, the cylindrical stone shaft (rows 72+) and the flared base with the door form a front face of 100+ rows. The camera angle is consistent between roof and body."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate has 11 visible tones per 16x16 tile against 12 and 10 for the references, and 0% near-flat coverage, the same as both. The blue roof has per-tile scallops with highlights and light bands, in about 5 steps. The stone tower has brick-by-brick shading, a lighter upper band and a darker mossy base, with small windows and a door that add detail. The outline is mixed. 51% of dark edge pixels are neutral, against 7-9% for the references. But much of that sits beside grey stone, where a neutral dark is the material's own dark tone, and the roof edges lean navy rather than black. It is not a uniform black sticker outline. The candidate is slightly less varied than the references, with a few smooth stone areas, but a careful artist would accept it next to them as equal craft.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 23796
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "golden finial on the roof tip",
+      "rows": "0-3",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "conical purple roof, upper tiers (tile rows with light eave lines at rows 15, 22, 29)",
+      "rows": "4-35",
+      "evidence": "c",
+      "front_edge_line_row": 29,
+      "eave_shadow_rows": "30-35"
+     },
+     {
+      "part": "conical purple roof, main lower tier with wide brim (light edge line at row 36, rounded lower edge)",
+      "rows": "36-71",
+      "evidence": "c",
+      "front_edge_line_row": 36,
+      "eave_shadow_rows": "37-38"
+     },
+     {
+      "part": "stone shaft, flared base and wooden door",
+      "rows": "72-178",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 63,
+    "front_face_rows": 107,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The tower has a tiered conical roof over rows 4-71, which is the top surface (evidence c). Its stacked tiers each end in a light front-edge line (rows 15, 22, 29, 36) followed by darker shadow rows. The brim widens to 42 px and narrows again to 36 by row 71, so the lower edge curves like an ellipse. Below it the cylindrical stone shaft and flared base form a front face of about 107 rows (72-178), with a ledge band near row 108, a window, a round rune window and a door. The roof's top is clearly drawn, so the tower reads as 3/4 view and not as a flat front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "Visible tones per tile are 11, against 12 and 10 for the references, so density is on par. Near-flat coverage is 0%, the same as the references, and there are no flat 5x5 fills. The roof has scalloped tiles with per-tile highlights, light bands and a dark navy shadow side, about 5 steps. The stone walls have individually shaded bricks, a darker weathered base and small window and gem accents, about 4-5 steps. Outlines are mixed: the roof edges lean dark navy, which is a tinted material tone, while some wall and base edges look more neutral grey. The 51% neutral share of dark edge pixels is well above the references' 7-9%. Outlines are used selectively and forms are mostly separated by value, so this is not a uniform black sticker line. Raw colour count is low (38) but that comes from the locked palette, and the visible texture holds up next to the references. Overall it is slightly shallower than the references on outline tint but acceptable beside them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 21302
+  }
+ ],
+ "decidedAt": "2026-10-25T12:07:47.407Z",
+ "cells": {
+  "16": [
+   "0a7eb8d23efb4947",
+   "1d797e49db2d29a3",
+   "2d480b86188cf307",
+   "32cf967ab65b59e3",
+   "37be44a47bd262b3",
+   "39676b52036c6f27",
+   "3ceaeb73cb5621cb",
+   "48be602943692900",
+   "50f946dba615fa60",
+   "562a249d709c5b89",
+   "5b6b5a7bd2897e5a",
+   "7cc26fadc6ac30c9",
+   "7df93451bedece26",
+   "811317a6aed6cb2a",
+   "84d20231f4dc3873",
+   "8a6cd85a6e04931a",
+   "8d3d74073fdb6f26",
+   "9927bcdb641fae67",
+   "9b130dd6afd16f4d",
+   "a29837a8a3e00dcb",
+   "ab3fbe3737eb9d55",
+   "cdc907d9d3b334ff",
+   "d16ea1e22f2ca6e6",
+   "d2c2431e4d7c10a5",
+   "d9ad6bb19f709885",
+   "dc3f22881dcc66a8",
+   "ddbcd49a2c9475c4",
+   "de1612adb9d86b17",
+   "e752eeefabf731fe",
+   "f3690297fc402e0e",
+   "f853b73cc3b7d3f5",
+   "f9ae405ddf1f050e"
+  ],
+  "24": [
+   "0075c9d2499933bc",
+   "012fc6147cb2a733",
+   "0302078ed5f27462",
+   "0889ffa2f1af61ad",
+   "0a4c99395287cf30",
+   "0ccd530ca37b4299",
+   "151175dad3b92f68",
+   "15f6586c1983025a",
+   "168c9846fe27393e",
+   "17a3dbb4ae5363e9",
+   "17b99b5d061deeff",
+   "24243dff65351c53",
+   "244cb47c157bf312",
+   "24fd79ee4163501a",
+   "269e7926b4de0fd9",
+   "2cd29c19525b6594",
+   "2e41da66088937c4",
+   "2f823b7b68da342c",
+   "320177767fd5516c",
+   "3342b6c592517ad7",
+   "354ab17db866fb79",
+   "39c6b624783a8bc2",
+   "3bb3f3fdab19aa02",
+   "4268300a2cab80c0",
+   "439da3f065b08fff",
+   "46500e3b18d7d723",
+   "48e694149d3ba613",
+   "4bc33511b355fe2c",
+   "4e063da577bd2694",
+   "4e78ec27f7c430c9",
+   "4f17ed22c24d262c",
+   "5143f5681ebbb289",
+   "5238efe4dab32f45",
+   "54356d3ef51033fb",
+   "590e41c6cd56cae2",
+   "5b683cc753a82dae",
+   "5c83e15882443a15",
+   "6104febd2a6ce4ed",
+   "64079ae37f651439",
+   "658ba79c22b6dc62",
+   "672072ac982609ba",
+   "6d2bf55ec32a596d",
+   "6ec9bd35b4153b56",
+   "6f08ec5c0afb9a6d",
+   "76099e420968cc58",
+   "7ad0ba27db50fbcb",
+   "8158eeb33e601fff",
+   "820a47c75789416d",
+   "83a17324d9147272",
+   "83fddccdbe1baec9",
+   "87bdb06e0bbe0e8d",
+   "8942a2f96cc288d3",
+   "8aa89ea0f8ea086b",
+   "8ad74cf06a6b6907",
+   "8c572a51ab9e3eae",
+   "8d5753e2f5f772cf",
+   "8db58bb3fa7c8a2e",
+   "901fbf524a72a88a",
+   "982ffd8e03dc36cf",
+   "9864829ff5b0fffa",
+   "9868a819ff64456c",
+   "98979f4be3babe20",
+   "9bbfc7a364d79b5c",
+   "9cade3a6d964e949",
+   "9df4568c3d47c137",
+   "9eba4efc0a4f4c42",
+   "a08ccd45b68d2fac",
+   "a4eb4e3dcca42900",
+   "a5ee0382778200bd",
+   "a79b7f15a249992b",
+   "a7d2e29e355a6ad2",
+   "abf69d288228ff64",
+   "ac837a69545d0158",
+   "ae07c7d6c8365d43",
+   "af8cdc61634e3e4a",
+   "afdc1cf87ea4db76",
+   "b107a1177aaa255e",
+   "b58a58cb3235364b",
+   "b6420e8f1711e8f4",
+   "b930adb30058670c",
+   "bc83b7c76c5a7fc3",
+   "be199f6256ce780c",
+   "be6ceb5abf0ee426",
+   "c05659b16939f5f7",
+   "c0ae19d99331ad0b",
+   "c0f9da84d685c18f",
+   "c27b3bb1cbf9908a",
+   "c3959821729fbe40",
+   "c3ba55b291108777",
+   "c42507f6c1f89608",
+   "c73e59da9bea11e5",
+   "c8600c73a6d0de58",
+   "cda13c71318a3a6a",
+   "cdff723f8ee39008",
+   "ce8461acf8a5e2b0",
+   "cf50951119a054bf",
+   "d7a3554893f0b7a7",
+   "dec0624a2ded9a11",
+   "e09228232d38c6ff",
+   "e1094c4f479cff1b",
+   "e143206956bf3d2b",
+   "e1ad2dd994060b57",
+   "e3a01c8d0dcd29ca",
+   "e5c5f94ffa915c9a",
+   "e767a512b1065970",
+   "f3115a5208d175e4",
+   "f3bcda43613b9e19",
+   "f3d4d8a592e5ec4c",
+   "f50d5be0bccd05ce",
+   "f6765f04ab7040ea",
+   "f9b32db6a6fea15e",
+   "fae5b13f12318938",
+   "fb5dd9cfda2bc010",
+   "fd615e4dfde2ca87"
+  ],
+  "32": [
+   "0d67d479cd100619",
+   "1b34f8fa32ffc49e",
+   "3cd2698671e1522e",
+   "48b2429dbe64b934",
+   "4d0ef31eb31ed59c",
+   "7fee6563d3f97abc",
+   "832e8a209ad17aae",
+   "8a46a89b3f98e841",
+   "9fd0ab30180e9973",
+   "a03ece59de3b196f",
+   "ab656d27c9b06364",
+   "b6f7b6443fbd4b6e",
+   "b81cda481d3d3c40",
+   "b88a2b42fa8bc03a",
+   "c7b47e77ef98abbf",
+   "d0763eb3781b1fe3",
+   "d48f3f04442bd943",
+   "d59ea91bd56a9d87",
+   "df22be1088a8f749",
+   "e83a0998b9a364af",
+   "f211345e7509dbd2",
+   "f3f5cb7af82e31b0",
+   "f951407f39eb4b90"
+  ],
+  "48": [
+   "13d5eaee0d262e6d",
+   "17bb9998d38c8c99",
+   "1ca2b9a94c768feb",
+   "207c172d19d6eda0",
+   "2560b13a3cd906cb",
+   "27a0b0076403ba18",
+   "287150f76d2b6db6",
+   "2ca96d6b108dddda",
+   "2cb935ab69450000",
+   "2fc0e5fa940d7bde",
+   "3397baec38c253ab",
+   "355f326e724aafd2",
+   "393b3a9305c22a72",
+   "3ccfbac2c87bfb0a",
+   "4ea6521a49e9e48e",
+   "5829a07687888a33",
+   "5cf8ce9aa21dd39f",
+   "68d42f1cf3f398bd",
+   "69ad1db54e08f41d",
+   "7208a870f8006c11",
+   "76d6d6214a593c44",
+   "779d33f74c5cd193",
+   "7cb0bdaedc824802",
+   "7da27d463ea669dc",
+   "8351a5b973552790",
+   "85374ef08d3e7a51",
+   "867c693223763696",
+   "a19bf47a5c0857f0",
+   "a2fc0cf97a1dd69f",
+   "a9da08392f448a96",
+   "ae86ae52cebd3b23",
+   "b54cbf42939e5630",
+   "bc435bab6395e08b",
+   "be5f020b6a90fa71",
+   "c392ae5c385a1ebc",
+   "ce789a7d8ebf91a0",
+   "d2224a0a8c9364f9",
+   "d2e378b5ad19e2e6",
+   "eb21f4cf9220e99a",
+   "f9c138fd44ee5e98",
+   "fb76bce9bb79f377"
+  ]
+ }
+}

@@ -1,8 +1,9 @@
-import { normalizeFixedDamage, normalizeMultiHit } from "@/project/skillBattleRules";
+import { normalizePartyBonds } from "@/project/partyBonds";
+import { normalizeChargeBreak, normalizeFixedDamage, normalizeMultiHit } from "@/project/skillBattleRules";
 import { normalizeShinyRate } from "@/project/monsterIdentity";
 import { CHARACTER_MOTION_STYLES } from "@/battle/characterMotion";
 import { normalizeHeldItemEffect } from "@/battle/heldItems";
-import { normalizeRepelSteps } from "@/project/encounterGuard";
+import { ESCAPE_GRACE_STEPS_MAX, normalizeRepelSteps } from "@/project/encounterGuard";
 import { normalizeBattleGimmick } from "@/battle/battleGimmickRules";
 import { normalizeGallerySettings } from "./gallery";
 import { normalizeBattleAura } from "@/assets/battleStateAuras";
@@ -78,7 +79,7 @@ import {
   normalizeFarmBuildingTypes,
   normalizeHomeDecorationTypes,
 } from "@/project/spatialPlacements";
-import type { ActorExperienceCurve, CompanionConfig, ActorLearnedSkill, ActorParameterCurves, ActorRateGrade, BattleFlow, ClassBattleCommand, ClassPromotion, ClassPromotionRequirement, ClassRecord, CropRecord, DatabaseRecords, DatabaseStateEffect, EquipmentApGrant, EquipmentLevelUpBonus, EquipmentRecord, EquipmentStatBonuses, ItemCaptureProfile, ItemBagPocket, ItemCareProfile, ItemConsumptionLimit, ItemEquipmentEffectFlags, ItemEquipmentProfile, ItemRecord, LifeSkillRecord, MonsterCareConfig, ProjectDatabaseRecords, RewardPolicy, SkillEffect, SkillMpCost, SkillRecord, SkillStatStageEffect, StateRecord, SystemRecords, TitleBackgroundLayer, TitleIntroSettings, TitleParticleSettings, TitleScreenGraphic, TitleScreenMenuVisibility, TitleScreenSettings, TitleScreenSounds, TitleScreenTitleMode, TypeChartRecord } from "@/project/types";
+import type { ActorExperienceCurve, CompanionConfig, ActorLearnedSkill, ActorParameterCurves, ActorRateGrade, BattleFlow, ClassBattleCommand, ClassPromotion, ClassPromotionRequirement, ClassRecord, CropRecord, DatabaseRecords, DatabaseStateEffect, EquipmentApGrant, EquipmentLevelUpBonus, EquipmentRecord, EquipmentStatBonuses, ItemCaptureProfile, ItemBagPocket, ItemCareProfile, ItemConsumptionLimit, ItemEquipmentEffectFlags, ItemEquipmentProfile, ItemRecord, LifeSkillRecord, MonsterCareConfig, ProjectDatabaseRecords, RewardPolicy, SkillEffect, SkillMpCost, SkillRecord, SkillStatStageEffect, StateRecord, SystemRecords, TitleBackgroundLayer, TitleIntroSettings, TitleParticleSettings, TitlePressStart, TitleRunner, TitleScreenGraphic, TitleScreenMenuVisibility, TitleScreenSettings, TitleScreenSounds, TitleScreenTitleMode, TypeChartRecord } from "@/project/types";
 import { normalizeSkillInputSequence } from "@/battle/battleInputSequence";
 import { normalizeCaptureCondition } from "@/battle/captureBalls";
 import { isStatStageKey, STAT_STAGE_MAX, STAT_STAGE_MIN } from "@/battle/statStages";
@@ -377,6 +378,11 @@ export function normalizeSystemRecords(system: Partial<SystemRecords> & Pick<Sys
   { const boxNames = normalizeMonsterBoxNames(system.monsterBoxNames); if (boxNames) records.monsterBoxNames = boxNames; }
   if (fonts) records.fonts = fonts;
   if (system.monsterBattleParty !== undefined) records.monsterBattleParty = system.monsterBattleParty === true;
+  // 도망 뒤 무적 걸음. 생략은 장르 기본(몬스터 파티 4, 그 밖 0)이고, 0 은 «끔»이라 반드시 남긴다.
+  // 화이트리스트라 여기 없으면 저장/로드 1회 왕복에 사라지고 몬스터 게임이 다시 4걸음으로 돌아간다.
+  if (typeof system.escapeGraceSteps === "number" && Number.isFinite(system.escapeGraceSteps)) {
+    records.escapeGraceSteps = clampInteger(system.escapeGraceSteps, 0, ESCAPE_GRACE_STEPS_MAX);
+  }
   // 색이 다른 개체 확률 — 화이트리스트라 여기 없으면 저장/로드 1회 왕복에 사라진다.
   { const shinyRate = normalizeShinyRate(system.shinyRate); if (shinyRate !== undefined) records.shinyRate = shinyRate; }
   if (system.giftSystem !== undefined) records.giftSystem = system.giftSystem === true;
@@ -388,6 +394,8 @@ export function normalizeSystemRecords(system: Partial<SystemRecords> & Pick<Sys
       ...(typeof dailyFriendshipCap === "number" && Number.isFinite(dailyFriendshipCap) ? { dailyFriendshipCap: Math.trunc(dailyFriendshipCap) } : {}),
     };
   }
+  // 파티원 유대(옵트인) — 화이트리스트라 여기 없으면 저장/로드 1회 왕복에 사라진다.
+  { const partyBonds = normalizePartyBonds(system.partyBonds); if (partyBonds) records.partyBonds = partyBonds; }
   if (gallery) records.gallery = gallery;
   if (newGamePlus) records.newGamePlus = newGamePlus;
   if (chapter) records.chapter = chapter;
@@ -430,6 +438,7 @@ export function normalizeSystemRecords(system: Partial<SystemRecords> & Pick<Sys
   if (monsterFusions) records.monsterFusions = monsterFusions;
   records.titleScreen = normalizeTitleScreenSettings(system.titleScreen, titleResourceId);
   if (system.opening !== undefined) records.opening = normalizeCinematicSequence(system.opening);
+  if (system.titleIntro !== undefined) records.titleIntro = normalizeCinematicSequence(system.titleIntro);
   if (system.gameOver !== undefined) records.gameOver = normalizeGameOverSettings(system.gameOver);
   if (system.gameOvers !== undefined) {
     records.gameOvers = system.gameOvers.map(row => ({ id: row.id.trim(), name: row.name, settings: normalizeGameOverSettings(row.settings) }));
@@ -506,6 +515,8 @@ function normalizeTitleScreenSettings(
   const backgroundLayers = normalizeTitleBackgroundLayers(settings?.backgroundLayers);
   const particles = normalizeTitleParticles(settings?.particles);
   const intro = normalizeTitleIntro(settings?.intro);
+  const runners = normalizeTitleRunners(settings?.runners);
+  const pressStart = normalizeTitlePressStart(settings?.pressStart);
   return {
     title: textOrDefault(settings?.title, defaults.title),
     backgroundResourceId: cleanOptionalId(settings?.backgroundResourceId) ?? titleResourceId ?? defaults.backgroundResourceId,
@@ -541,6 +552,8 @@ function normalizeTitleScreenSettings(
     ...(backgroundLayers ? { backgroundLayers } : {}),
     ...(particles ? { particles } : {}),
     ...(intro ? { intro } : {}),
+    ...(runners ? { runners } : {}),
+    ...(pressStart ? { pressStart } : {}),
     // 오프닝 확장(맞춤·렌더링·영역 효과·로고/메뉴 스타일)도 omit-when-empty.
     ...normalizeTitleOpeningFields(settings),
     ...(() => {
@@ -567,8 +580,10 @@ function normalizeTitleBackgroundLayers(
     const scrollYPerSec = normalizeTitleScrollSpeed(layer.scrollYPerSec);
     const parallax = normalizeTitleParallax(layer.parallax);
     const opacity = normalizeTitleLayerOpacity(layer.opacity);
+    const cover = layer.fit === "cover";
     normalized.push({
       resourceId,
+      ...(cover ? { fit: "cover" as const } : {}),
       ...(scrollXPerSec !== undefined ? { scrollXPerSec } : {}),
       ...(scrollYPerSec !== undefined ? { scrollYPerSec } : {}),
       ...(parallax !== undefined ? { parallax } : {}),
@@ -602,12 +617,55 @@ function normalizeTitleParticles(
   if (!particles) return undefined;
   const preset = particles.preset;
   // preset enum 가드 — 무효 프리셋은 파티클 설정 전체를 버린다(런타임이 모르는 값을 그리지 않는다).
-  if (preset !== "snow" && preset !== "rain" && preset !== "fireflies") return undefined;
+  if (preset !== "snow" && preset !== "rain" && preset !== "fireflies" && preset !== "stars") return undefined;
   const density =
     typeof particles.density === "number" && Number.isFinite(particles.density)
       ? clampInteger(particles.density, 0, 100)
       : undefined;
   return { preset, ...(density !== undefined ? { density } : {}) };
+}
+
+/** 타이틀 달리기 칩 상한. */
+export const MAX_TITLE_RUNNERS = 6;
+
+/** 연계기(듀얼·트리플·4인 테크) 참가 배우 최대 수(시전자 포함). 정규화·조수 검증·편집기 칸·전투 연출이 같은 값을 본다. */
+export const COMBO_MAX_ACTORS = 4;
+
+export function normalizeTitleRunners(runners: readonly Partial<TitleRunner>[] | undefined): TitleRunner[] | undefined {
+  if (!Array.isArray(runners) || runners.length === 0) return undefined;
+  const out: TitleRunner[] = [];
+  const num = (value: unknown, min: number, max: number, integer = true): number | undefined =>
+    typeof value === "number" && Number.isFinite(value) ? (integer ? clampInteger(value, min, max) : clampNumber(value, min, max)) : undefined;
+  for (const runner of runners) {
+    if (out.length >= MAX_TITLE_RUNNERS) break;
+    const resourceId = cleanOptionalId(runner?.resourceId);
+    const y = num(runner?.y, 0, 240);
+    if (!resourceId || y === undefined) continue;
+    const characterIndex = num(runner.characterIndex, 0, 7);
+    const speed = num(runner.speed, 10, 400, false);
+    const scale = num(runner.scale, 1, 3);
+    const delayMs = num(runner.delayMs, 0, 60000);
+    const everyMs = num(runner.everyMs, 2000, 120000);
+    out.push({
+      resourceId, y,
+      ...(characterIndex ? { characterIndex } : {}),
+      ...(runner.direction === "left" ? { direction: "left" as const } : {}),
+      ...(speed !== undefined && speed !== 60 ? { speed } : {}),
+      ...(scale !== undefined && scale !== 1 ? { scale } : {}),
+      ...(delayMs ? { delayMs } : {}),
+      ...(everyMs !== undefined && everyMs !== 12000 ? { everyMs } : {}),
+      ...(runner.hop === true ? { hop: true } : {}),
+    });
+  }
+  return out.length > 0 ? out : undefined;
+}
+
+export function normalizeTitlePressStart(value: Partial<TitlePressStart> | undefined): TitlePressStart | undefined {
+  if (!value || typeof value !== "object") return undefined;
+  const text = typeof value.text === "string" ? value.text.trim().slice(0, 24) : "";
+  const blinkMs = typeof value.blinkMs === "number" && Number.isFinite(value.blinkMs) ? clampInteger(value.blinkMs, 300, 3000) : undefined;
+  const y = typeof value.y === "number" && Number.isFinite(value.y) ? clampInteger(value.y, 0, 240) : undefined;
+  return { ...(text ? { text } : {}), ...(blinkMs !== undefined && blinkMs !== 1000 ? { blinkMs } : {}), ...(y !== undefined ? { y } : {}) };
 }
 
 function normalizeTitleIntro(intro: Partial<TitleIntroSettings> | undefined): TitleIntroSettings | undefined {
@@ -757,6 +815,7 @@ export function normalizeSkillRecord(record: Partial<SkillRecord> & Pick<SkillRe
     ...(Number.isFinite(record.flinchChance) && record.flinchChance! > 0 ? { flinchChance: clampInteger(record.flinchChance!, 0, 100) } : {}),
     ...(Number.isFinite(record.gaugeShift) && record.gaugeShift !== 0 ? { gaugeShift: clampInteger(record.gaugeShift!, -100, 100) } : {}),
     ...(Number.isFinite(record.chargeTurns) && record.chargeTurns! > 0 ? { chargeTurns: clampInteger(record.chargeTurns!, 1, 3) } : {}),
+    ...(Number.isFinite(record.chargeTurns) && record.chargeTurns! > 0 && normalizeChargeBreak(record.chargeBreak) ? { chargeBreak: normalizeChargeBreak(record.chargeBreak) } : {}),
     ...(typeof record.summonResourceId === "string" && record.summonResourceId.trim() ? { summonResourceId: record.summonResourceId.trim().slice(0, 96) } : {}),
     ...(typeof record.retroChoreographyId === "string" && record.retroChoreographyId.trim() ? { retroChoreographyId: record.retroChoreographyId.trim().slice(0, 96) } : {}),
     ...(isPokemonMoveMotion(record.moveMotion) ? { moveMotion: record.moveMotion } : {}),
@@ -784,7 +843,7 @@ export function normalizeSkillRecord(record: Partial<SkillRecord> & Pick<SkillRe
     })(),
     // 연계기·범위기는 값이 있을 때만 남긴다 — 없는 옆 프로젝트는 바이트 그대로.
     ...(() => {
-      const comboActorIds = uniqueCleanIds(record.comboActorIds).slice(0, 3);
+      const comboActorIds = uniqueCleanIds(record.comboActorIds).slice(0, COMBO_MAX_ACTORS);
       if (comboActorIds.length < 2) return {};
       const comboRequires = Array.isArray(record.comboRequires)
         ? record.comboRequires.flatMap((entry) => {
@@ -1041,6 +1100,7 @@ function normalizeCompanionConfig(value: CompanionConfig | undefined): Companion
   if (value.display === "scenesOnly") out.display = "scenesOnly";
   if (value.sceneFormation === "abreast") out.sceneFormation = "abreast";
   if (value.monsterFollowers === false) out.monsterFollowers = false;
+  if (value.followMode === "spaced" || value.followMode === "breadcrumb") out.followMode = value.followMode;
   return Object.keys(out).length > 0 ? out : undefined;
 }
 

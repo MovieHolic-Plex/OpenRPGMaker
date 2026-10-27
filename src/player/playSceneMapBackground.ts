@@ -153,7 +153,7 @@ export function mapBackgroundTextureKey(imageId: string): string {
  * 기록돼 있으면 **첫 장의 그림을 대체한다** — 명령은 세션이 아니라 그 맵의 배경을 바꾼다.
  *
  * `mapId` 가 빈 기록(이 명령이 맵을 적기 전에 저장된 세이브)은 모든 맵에 적용한다. 값을 못 읽어
- * 배경이 통째로 사라지는 것보다 낫다.
+ * 배경이 통째로 사라지는 것보다 낫다. 세이브 슬롯은 `parallax_override` 와 `parallax_flow` 만 싣는다.
  */
 export function resolveMapBackgroundLayers(
   scene: Pick<PlaySceneContext, "map" | "session">,

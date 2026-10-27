@@ -1,0 +1,10 @@
+{"mode":"modify","space":"none","facility":null,"targetMapId":null,"useSelection":false,"clarify":null,"clarifyOptions":[],"needsPlan":false,"resetsContext":false,"tools":["get_title_screen","set_title_screen","improve_title_screen","generate_title_art","upsert_opening_layer","animate_opening_layer","place_opening_charset_actor","apply_opening_walk"],"viewNavigation":false,"summary":"타이틀 화면을 밤 풍경(깜빡이는 별, 별똥별, 속도가 다른 두 겹 하늘, 줄지어 달리는 스타터 셋)으로 바꾸고, 메뉴 대신 깜빡이는 PRESS START를 띄워 키를 누르면 메뉴가 나오게 한다."}
+타이틀 화면을 밤 풍경으로 바꿨습니다. 저장된 설정은 다시 읽어 확인했지만, 게임에서 실제로 재생해 보지는 않았습니다.
+
+- **하늘**: 성운이 낀 밤하늘 위에 별 층 두 겹이 서로 다른 속도로 흐릅니다. 먼 별은 느리게, 가까운 별은 3배 빠르게 움직입니다.
+- **별과 별똥별**: 별이 깜빡이며 천천히 흐르고 가끔 별똥별이 지나갑니다.
+- **스타터 셋**: 풀 속성 트렌트, 불 속성 구미호, 물 속성 갓파가 줄지어 화면을 가로질러 달립니다. 약 0.6초 간격으로 출발해 폴짝폴짝 뛰며 9초마다 반복됩니다. 프로젝트의 스타터 몬스터(리프링·스파킷·아쿠아링)용 필드 그림이 없어서, 속성이 같은 기본 몬스터 그림으로 대신했습니다. 전용 그림이 생기면 교체할 수 있습니다.
+- **PRESS START**: 메뉴 대신 「PRESS START」가 1초 간격으로 깜빡이고, 키를 누르면 메뉴가 나옵니다. 메뉴 항목은 새 게임·불러오기·종료 그대로입니다.
+- **함께 바꾼 것**: 제목 글자를 은은하게 빛나는 질감으로, 메뉴를 글자만 보이는 형태로 바꿨습니다.
+
+제목 문구는 아직 기본값 「새 프로젝트」입니다. 원하시는 이름을 알려 주시면 바꾸겠습니다.

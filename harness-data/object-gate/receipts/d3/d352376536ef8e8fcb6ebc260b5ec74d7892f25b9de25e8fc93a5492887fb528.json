@@ -1,0 +1,339 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d352376536ef8e8fcb6ebc260b5ec74d7892f25b9de25e8fc93a5492887fb528",
+ "width": 48,
+ "height": 48,
+ "kind": "structure",
+ "name": "small corrugated-sheet hut seen from above: flat tin roof almost covered by a faded orange tarp tied down with ropes and weighed with bricks, front wall of vertical grey corrugated sheets with a dark doorway hung with a blue cloth curtain and a small mesh window",
+ "label": "wasteland_ruins/hut-sheet",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 7,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "wasteland_ruins",
+   "fallback": true,
+   "reason": "칩셋 wasteland_ruins 의 화풍 기준 묶음이 없다",
+   "hash": "5f62fef078ef7661"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 11,
+  "tileColorsP90": 18,
+  "darkV5": 34,
+  "nearBlackEdge": 0.06,
+  "opaqueTiles": 9
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "flat tin roof with orange tarp, ropes and bricks",
+      "rows": "0-15",
+      "evidence": "c",
+      "front_edge_line_row": 16,
+      "eave_shadow_rows": "16-17"
+     },
+     {
+      "part": "bricks weighing down the tarp",
+      "rows": "4-12",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 16,
+    "front_face_rows": 29,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 0-15 are a roof plane seen from above: a tarp with rope bands and bricks. The silhouette widens from 40 to 48 px, which shows the roof overhang. A dark front-edge and eave line at row 16 (L=21), with a second dark row at 17, separates the roof from the front wall. Below that, rows 17-45 are the vertical corrugated front face with the doorway, curtain and mesh window. The roof is 16 rows tall and the wall is 29 rows, so the hut reads as a top plus a front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "Measured facts put the candidate level with the references. It has 10 visible tones per tile against 12 and 10. Near-flat coverage is 6% against 0%, a small amount. Dark edge pixels are 0% neutral, so the outlines are tinted rather than a black sticker line, which fits the dark-material-tone outline seen in the picture. By eye, the vertical corrugation ridges on the grey wall, the rope lines and bricks on the tarp, the mesh window and the blue curtain add several distinct tones and small details. The shading ramps are shallower than the references: roughly 4 steps on the tarp and wall, against about 6 on the tile roofs. The tarp and tin also lack per-tile highlights, and the raw colour count is low (27 against 185 and 66), but that comes from the locked palette and is not counted against it. The hut is small but reads as a whole building, and it is not flatter than the stone reference. Overall it is acceptable beside the references, only slightly leaner.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19040
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "tarp-covered tin roof",
+      "rows": "1-15",
+      "evidence": "c",
+      "front_edge_line_row": 16,
+      "eave_shadow_rows": "16-17"
+     },
+     {
+      "part": "corrugated front wall with doorway, curtain and mesh window",
+      "rows": "17-45",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 15,
+    "front_face_rows": 29,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-15 form a roof plane covered by an orange tarp with rope ties and bricks. It is bounded at row 16 by a dark front-edge line, followed by the dark eave row 17. Below it, rows 17-45 are the vertical corrugated front wall with the doorway, blue curtain and mesh window. The roof is a large top surface (15 rows) with a clear front face (29 rows), so the object reads as a 3/4 view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a whole small building (tarp roof, corrugated wall, door, window), so it matches the reference kind. Measured facts: 10 visible tones per tile against 12 and 10 for the references, so it is on par. Near-flat coverage is 6% against 0%, which is minor. 0% of its dark edge pixels are neutral, so the outlines carry a tint (dark blue-grey beside the sheet metal, dark brown-orange beside the tarp), not a sticker-like black line. By eye the grey wall has vertical corrugation striping, the tarp has rope and brick details, and the curtain and mesh window add variation, so no large area is a flat fill. The ramps are a little shallower (about 4 steps per material) than the references' 5-6, and the piece is much simpler and smaller than the tiled houses. That is acceptable for a humble tin hut, and it would sit next to the references without looking flatter or thinner.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17994
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "tarp-covered flat tin roof (orange tarp, ropes, bricks)",
+      "rows": "0-15",
+      "evidence": "c",
+      "front_edge_line_row": 16,
+      "eave_shadow_rows": "14-16"
+     },
+     {
+      "part": "front wall of grey corrugated sheets with doorway, blue curtain and mesh window",
+      "rows": "17-45",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 16,
+    "front_face_rows": 29,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 0-15 are a large roof plane covered by the orange tarp, with ropes and bricks lying on it, so it reads as a horizontal surface seen from above. The silhouette widens from 40 to 48 px over those rows. Row 16 is a dark front-edge line (L=21) with a shadow just above it, and rows 17-45 show the vertical corrugated front wall with the doorway, curtain and window (29 rows). That gives a top surface of 16 rows over a front face of 29 rows."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a very small building, about one and a half tiles wide, set beside two large references. Its measured visible tones per tile (10) are close to the references (12 and 10), and its dark edges are tinted (0% neutral), so it is not a black-sticker outline. By eye, though, each material has only about 3 steps. The grey corrugated wall is mostly one grey with a few vertical lines, and the orange tarp is a flat orange with a few darker dots and bricks. The blue curtain and door are mostly one or two tones. Flat coverage is 6% against 0% for both references, and the wall and tarp areas read as flat fills with little grain. The references have 5-6 steps per material, per-tile highlights and speckle. Next to them the candidate looks thinner and flatter, and the shading is shallow even though the tone count is comparable.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 13833
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "tarp-covered tin roof",
+      "rows": "0-15",
+      "evidence": "c",
+      "front_edge_line_row": 16,
+      "eave_shadow_rows": "16-17"
+     },
+     {
+      "part": "bricks on roof",
+      "rows": "5-12",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "front wall of corrugated sheets with doorway, curtain and mesh window",
+      "rows": "17-45",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 16,
+    "front_face_rows": 29,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The roof is a sloped tarp plane over rows 0-15. Its silhouette widens from 40 to 48 px, which gives it perspective. It ends in a dark front-edge line at row 16, followed by a dark eave shadow at row 17. Below that is a 29-row vertical front wall (rows 17-45) with a doorway, curtain and window, and a dark base strip at rows 45-46. No receding side face is drawn. The bricks sit on the roof as decor, so they are not counted as structure."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a whole building (tarp roof, corrugated wall, door, window), so it matches the reference kind. It is a much smaller hut, so it can't match the references' large tile-roof ramps. Measured facts: 10 visible tones per tile against 12 (h101) and 10 (h112 stone), so it is level with the stone reference and a little under h101. Near-flat coverage is 6% against 0% for both references, which is a small amount and not a flat-fill problem. Dark edge pixels are 0% neutral, so the outlines carry a tint, read by eye as dark bluish-grey beside the metal and dark brown beside the tarp. That is a dark material tone and not a black sticker line. By eye, the tarp has rope lines and brick dots, the wall has vertical corrugation ridges, and the doorway has a blue curtain with a mesh window. That is about 4 steps per material, fewer than the references' 5-6, but the texture dots and grain are present. The low raw colour count (27 against 66 and 185) fits a locked palette and is not held against it. Overall it would sit acceptably next to the references, though slightly simpler.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 14867
+  }
+ ],
+ "decidedAt": "2026-10-25T13:02:59.371Z",
+ "cells": {
+  "16": [
+   "0e1b55e981fe0c1f",
+   "1546d7e9ab36cf8c",
+   "710f4a50a0f86e55",
+   "7e810700e279de18",
+   "9c551f2ffc6bfd1e",
+   "b31152338b082fcc",
+   "cb20f8997e2ec439",
+   "e8042d586eb0d129",
+   "fc600ed4344195c8"
+  ],
+  "24": [
+   "3cda8078438e3823",
+   "58438a63e7b85875",
+   "985a3db5ef2d58f3",
+   "e9aeba39fc5abb16"
+  ],
+  "32": [
+   "03b343f053b171be",
+   "0c6f02974970ae43",
+   "122868ba6c2494a6",
+   "24ad1742a1f2c7a7",
+   "293ba6958a202e32",
+   "3637f559001ee919",
+   "41600a0bdc1bca4d",
+   "5f8c76cde5656853",
+   "6278dc1331406c76",
+   "79f2627e6d2d7bc6",
+   "8546ac30875cfa66",
+   "8a38d76ebe9308da",
+   "8aed3f25a7ac6569",
+   "8d59388041e36f87",
+   "91efe1a4dcb4b3db",
+   "9d3fb3137378a19b",
+   "a1691083c9be994d",
+   "a5abfc7ecb5c50d9",
+   "aa9501a9fb4336a8",
+   "ccaa7f0584426c50",
+   "d7282f1fc0bf037a",
+   "ddd3df5aeb7e180b",
+   "e06b2532f7600287",
+   "e080c89a5ad353b4"
+  ],
+  "48": [
+   "ad95e2ca519ca038"
+  ]
+ }
+}

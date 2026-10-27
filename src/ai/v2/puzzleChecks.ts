@@ -6,6 +6,8 @@
 import { canMove, isPassable } from "@/project/collision";
 import type { GameMap, Project } from "@/project/types";
 import { playerAnchors } from "@/editor/tools/transferReachability";
+import { eventAlwaysBlocks } from "@/project/eventPassageBlock";
+import { trivialCode } from "./puzzle";
 
 type Obj = Record<string, unknown>;
 const obj = (v: unknown): Obj | undefined => (v && typeof v === "object" && !Array.isArray(v) ? (v as Obj) : undefined);
@@ -176,6 +178,136 @@ export function unjoinedFollowers(project: Project, changedIds: ReadonlySet<stri
       if (cmd.kind === "text" && JOIN.test(String(cmd.body ?? ""))) says = true;
     });
     if (follower && !joinsParty && (says || JOIN.test(task))) out.push(`「${ev.name || ev.id}」(${ev.id}) 의 ${String(follower.name ?? "동료")}`);
+  }
+  return out;
+}
+
+/**
+ * 타일을 바꿔 길을 여는 장치(레버·다리·스위치)가 실제로 아무 데도 안 여는 경우(2026-10-25 판정 J1, 약초 동굴 B2):
+ * 레버가 다리를 내리지만 다리 없이도 보스 방까지 걸어갔다. 바뀐 칸 중 «못 가던 칸이 갈 수 있게 되는» 것이 있는
+ * 장치만 본다(레버 손잡이만 뒤집는 장식은 제외). 바꾼 뒤 새로 닿는 칸이 그 칸들 말고 하나도 없으면 퍼즐이 아니다.
+ */
+export function gatesThatOpenNothing(project: Project, changedIds?: ReadonlySet<string>): string[] {
+  const out: string[] = [];
+  for (const map of Object.values(project.maps)) {
+    for (const ev of map.events ?? []) {
+      if (changedIds && !changedIds.has(ev.id)) continue;
+      const edits: { layer: "lower" | "upper"; x: number; y: number; tile: number }[] = [];
+      for (const page of (ev.pages ?? []) as unknown[]) walk(obj(page)?.commands, (cmd) => {
+        if (cmd.kind !== "changeTile" || (cmd.mapId !== undefined && cmd.mapId !== map.id)) return;
+        const x = cmd.x, y = cmd.y, tile = cmd.tile;
+        if (!Number.isInteger(x) || !Number.isInteger(y) || !Number.isInteger(tile)) return;
+        if ((x as number) < 0 || (y as number) < 0 || (x as number) >= map.width || (y as number) >= map.height) return;
+        edits.push({ layer: cmd.layer === "upper" ? "upper" : "lower", x: x as number, y: y as number, tile: tile as number });
+      });
+      if (!edits.length) continue;
+      const lowerTiles = map.lowerTiles.slice(), upperTiles = map.upperTiles.slice();
+      for (const e of edits) (e.layer === "upper" ? upperTiles : lowerTiles)[e.y * map.width + e.x] = e.tile;
+      const opened: GameMap = { ...map, lowerTiles, upperTiles };
+      const freed = new Set(edits.filter((e) => !isPassable(project, map, e.x, e.y) && isPassable(project, opened, e.x, e.y)).map((e) => `${e.x},${e.y}`));
+      if (!freed.size) continue;
+      const before = reachWithout(project, map, new Set());
+      const after = reachWithout(project, opened, new Set());
+      if (!before || !after) continue;
+      const fresh = [...after].filter((k) => !before.has(k) && !freed.has(k));
+      if (fresh.length) continue;
+      const cells = [...freed].slice(0, 3).map((k) => `(${k})`).join("·");
+      out.push(`${map.name}의 「${ev.name || ev.id}」(${ev.id})가 ${cells} 칸을 열지만 그 너머는 이미 다른 길로 걸어 닿는다 — 장치를 안 써도 끝까지 간다`);
+    }
+  }
+  return out;
+}
+
+/**
+ * 너무 쉬운 자물쇠(2026-10-25 판정 J63): 번호 자물쇠 답이 1024·1234·0000 처럼 아무나 먼저 쳐 보는 번호이거나,
+ * 고르기 자물쇠의 정답이 첫 보기라 첫 칸만 누르면 풀린다. 정답 보기 = 스위치를 켜거나 아이템을 주는 유일한 보기.
+ */
+export function weakPuzzleLocks(project: Project, changedIds?: ReadonlySet<string>): string[] {
+  const out: string[] = [];
+  const pays = (branch: unknown): boolean => {
+    let hit = false;
+    walk(branch, (cmd) => { if ((cmd.kind === "setSwitch" && cmd.value !== false) || (cmd.kind === "changeItem" && Number(cmd.amount ?? cmd.value ?? 1) > 0)) hit = true; });
+    return hit;
+  };
+  for (const map of Object.values(project.maps)) for (const ev of map.events ?? []) {
+    if (changedIds && !changedIds.has(ev.id)) continue;
+    let found = "";
+    for (const page of (ev.pages ?? []) as unknown as Obj[]) {
+      let input = false;
+      walk(page.commands, (cmd) => {
+        if (found) return;
+        if (/^input/u.test(String(cmd.kind))) input = true;
+        const c = obj(cmd.condition);
+        if (input && cmd.kind === "fork" && c?.kind === "variable" && (c.op === "==" || c.op === undefined) && trivialCode(String(c.value ?? ""))) found = `번호 자물쇠 답 ${String(c.value)} 은 누구나 먼저 쳐 보는 번호다`;
+        if (cmd.kind === "choices" && Array.isArray(cmd.options) && cmd.options.length >= 3) {
+          const paid = cmd.options.map((o) => pays(obj(o)?.branch));
+          if (paid[0] && paid.filter(Boolean).length === 1) found = `고르기 자물쇠의 정답 「${String(obj(cmd.options[0])?.text ?? "")}」이 첫 보기다 — 첫 칸만 눌러도 풀린다`;
+        }
+      });
+      if (found) break;
+    }
+    if (found) out.push(`「${ev.name || ev.id}」(${ev.id}): ${found}`);
+  }
+  return out;
+}
+
+/**
+ * 엔딩으로 가는 길의 상호작용 이벤트(열쇠·금고·문·엔딩·단서 스위치)가 걸어 닿지 않는다(J75, 2026-10-26 저택 argon-high:
+ * 서재 금고 (2,4) 둘레가 가구·벽으로 막혀 예배당 열쇠와 엔딩에 못 간다). 플레이어가 그 칸에 서거나 이웃 칸에서 마주 볼 수 있어야 한다.
+ * 걷기는 타일 통행과 늘 막는 이벤트(J75 실측: 한 칸 복도에 선 일기장 이벤트가 금고 가는 길을 막음)를 본다. 잠긴 문은 열린다고 낙관한다.
+ * 대상: 버튼·접촉으로 켜는 페이지가 엔딩·아이템 주기·숫자 입력·다른 페이지 조건에 쓰이는 스위치 켜기 중 하나를 하거나, 잠긴 문이다.
+ */
+export function unreachableCriticalEvents(project: Project): string[] {
+  const usedSwitches = new Set<string>();
+  for (const map of Object.values(project.maps)) for (const ev of map.events ?? []) for (const page of (ev.pages ?? []) as unknown as Obj[]) {
+    for (const c of conds(page)) if (c.kind === "switch" && c.switchId !== undefined) usedSwitches.add(String(c.switchId));
+    walk(page.commands, (cmd) => { const c = obj(cmd.condition); if (c?.kind === "switch" && c.switchId !== undefined) usedSwitches.add(String(c.switchId)); });
+  }
+  for (const ce of (project.commonEvents ?? []) as unknown as Obj[]) walk(ce.commands, (cmd) => { const c = obj(cmd.condition); if (c?.kind === "switch" && c.switchId !== undefined) usedSwitches.add(String(c.switchId)); });
+  // 계산된 착지(변수 좌표·변수 맵)로 들어오는 맵은 앵커를 다 알 수 없다 — 거짓 차단을 피해 그 맵은 보지 않는다. 대상 맵을 모르는 이동이 하나라도 있으면 전부 건너뛴다.
+  const computedLanding = new Set<string>();
+  let unknownTarget = false;
+  const scanTransfers = (node: unknown): void => {
+    if (Array.isArray(node)) { node.forEach(scanTransfers); return; }
+    const o = obj(node);
+    if (!o) return;
+    if (o.kind === "transfer") {
+      if (typeof o.mapId !== "string") unknownTarget = true;
+      else if (typeof o.x !== "number" || typeof o.y !== "number") computedLanding.add(o.mapId);
+    }
+    for (const v of Object.values(o)) if (v && typeof v === "object") scanTransfers(v);
+  };
+  for (const map of Object.values(project.maps)) for (const ev of map.events ?? []) scanTransfers(ev.pages);
+  scanTransfers(project.commonEvents ?? []);
+  if (unknownTarget) return [];
+  const out: string[] = [];
+  for (const map of Object.values(project.maps)) {
+    if (map.worldmapSource || computedLanding.has(map.id)) continue;
+    const critical = (map.events ?? []).flatMap((ev) => {
+      const why: string[] = [];
+      for (const page of (ev.pages ?? []) as unknown as Obj[]) {
+        const t = trig(page);
+        if (t === "auto" || t === "autorun" || t === "parallel") continue;
+        walk(page.commands, (cmd) => {
+          if (cmd.kind === "triggerEnding") why.push("엔딩");
+          else if (cmd.kind === "changeItem" && Number(cmd.amount ?? cmd.value ?? 1) > 0) why.push("아이템");
+          else if (/^input/u.test(String(cmd.kind))) why.push("숫자 입력");
+          else if (cmd.kind === "setSwitch" && cmd.value !== false && usedSwitches.has(String(cmd.switchId))) why.push("단서 스위치");
+        });
+      }
+      if (lockOf(ev)) why.push("잠긴 문");
+      return why.length ? [{ ev, why: [...new Set(why)] }] : [];
+    });
+    if (!critical.length) continue;
+    // 늘 막는 이벤트(모든 페이지가 보통 우선순위 — 한 칸 복도의 일기장·가구 이벤트)는 벽처럼 친다. 잠긴 문은 열린다고 본다.
+    const blocked = new Set((map.events ?? []).filter((ev) => eventAlwaysBlocks(ev) && !lockOf(ev)).map((ev) => `${ev.x},${ev.y}`));
+    const reach = reachWithout(project, map, blocked);
+    if (!reach) continue;
+    const at = (x: number, y: number) => reach.has(`${x},${y}`);
+    for (const { ev, why } of critical) {
+      if (at(ev.x, ev.y) || STEPS.some(([dx, dy]) => at(ev.x + dx, ev.y + dy))) continue;
+      out.push(`${map.name}의 「${ev.name || ev.id}」(${ev.id}, ${ev.x},${ev.y} · ${why.join("·")})에 걸어 닿지 못한다 — 그 칸도 네 이웃 칸도 시작·입구에서 이어지지 않는다(벽·가구나 한 칸 길을 막고 선 이벤트에 갇힘). 엔딩으로 가는 길이 끊긴다`);
+    }
   }
   return out;
 }

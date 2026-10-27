@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-10-25T06:51:24.934Z",
+  "generatedAt": "2026-10-26T06:37:59.070Z",
   "metrics": {
-    "hexLiterals": 2734,
-    "important": 352,
-    "undefinedVars": 60,
+    "hexLiterals": 2756,
+    "important": 358,
+    "undefinedVars": 59,
     "globalRootFiles": 10,
     "cssFileCount": 419
   },
@@ -141,7 +141,7 @@
       "src/styles/runtime/battle/27-retro-motion.css": 28,
       "src/styles/runtime/battle/28-retro-state-aura.css": 79,
       "src/styles/runtime/battle/29-impact-contact.css": 24,
-      "src/styles/runtime/battle/31-battle-depth.css": 8,
+      "src/styles/runtime/battle/31-battle-depth.css": 11,
       "src/styles/runtime/battle-skins/_battle-look.css": 123,
       "src/styles/runtime/battle-skins/_pokemon.css": 6,
       "src/styles/runtime/battle-skins/_retro2003.css": 24,
@@ -160,14 +160,14 @@
       "src/styles/runtime/minimap.css": 2,
       "src/styles/runtime/mobileUi.css": 9,
       "src/styles/runtime/monsterCampaignMenu.css": 24,
-      "src/styles/runtime/nameEntry.css": 11,
+      "src/styles/runtime/nameEntry.css": 23,
       "src/styles/runtime/playLoading.css": 17,
       "src/styles/runtime/playSurface.css": 47,
       "src/styles/runtime/shop.css": 138,
       "src/styles/runtime/statusMenuSkins.css": 18,
       "src/styles/runtime/tacticsBattle.css": 3,
       "src/styles/runtime/timer.css": 1,
-      "src/styles/runtime/title.css": 49,
+      "src/styles/runtime/title.css": 56,
       "src/styles/runtime/tokens.dark.css": 3,
       "src/styles/runtime/touchpad.css": 1,
       "src/styles/runtime/transitions.css": 2,
@@ -226,7 +226,8 @@
       "src/styles/runtime/gameOver.css": 2,
       "src/styles/runtime/mobileUi.css": 26,
       "src/styles/runtime/playSurface.css": 4,
-      "src/styles/runtime/title.css": 6,
+      "src/styles/runtime/statusMenuEdgeDock.css": 5,
+      "src/styles/runtime/title.css": 7,
       "src/styles/runtime/touchpad.css": 1,
       "src/styles/shell/dialogs/cinematic-interview.css": 2,
       "src/styles/shell/editor-ui-modes.css": 2,
@@ -281,7 +282,6 @@
       "--dlg-tail",
       "--ink",
       "--ink-dim",
-      "--line",
       "--npc-walk-frame-0",
       "--npc-walk-frame-1",
       "--npc-walk-frame-2",
@@ -422,10 +422,6 @@
       ],
       "--ink-dim": [
         "src/styles/event/command-forms/forms-6.css"
-      ],
-      "--line": [
-        "src/styles/event/command-forms/forms-6.css",
-        "src/styles/shell/dialogs/ai-settings-modal.css"
       ],
       "--npc-walk-frame-0": [
         "src/styles/event/subdialogs/dialogs-4.css"

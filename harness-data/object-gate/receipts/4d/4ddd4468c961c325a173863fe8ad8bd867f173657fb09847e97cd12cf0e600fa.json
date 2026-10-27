@@ -1,0 +1,343 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "4ddd4468c961c325a173863fe8ad8bd867f173657fb09847e97cd12cf0e600fa",
+ "width": 48,
+ "height": 32,
+ "kind": "debris",
+ "name": "heap of scrap metal junk: bent corrugated sheets, pipes, a tyre, a rusty wheel rim and car parts piled on the ground",
+ "label": "wasteland_ruins/scrap-heap",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 18,
+  "tileColorsP90": 19,
+  "darkV5": 38,
+  "nearBlackEdge": 0.14,
+  "opaqueTiles": 4
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "scrap heap mound (piled sheets, pipes, car parts)",
+      "rows": "6-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "corrugated orange sheet upper right",
+      "rows": "11-15",
+      "evidence": "a",
+      "front_edge_line_row": 15,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "grey pipe/sheet band left",
+      "rows": "13-18",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 14,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The object is an irregular dome-shaped heap of debris, wider at the bottom (46 px) and tapering to the top (rows 6-14). The upper rows show a sloping mound with a lighter orange corrugated sheet at rows 11-15 and a grey pipe band at rows 14-18, which function as upper surfaces seen from above. Below, the front face (rows ~19-30) holds a blue sheet, a wheel rim and a tyre drawn face-on. As debris it is an irregular heap, so there is no strict box top, but the heap's top slope and the sheet planes give a top surface of about 5 rows above a front face of about 14 rows."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate measures 18 visible tones per 16x16 tile. That is level with the stall (17) and the well (20) and well above the hedge (9). Near-flat coverage is 0%, so there are no large flat fills. Dark edge pixels are 0% neutral, so the outline is tinted: dark rust-brown and blue-grey against the adjacent material, not a black sticker line. By eye, the heap reads as separate materials: corrugated sheet bands, a tyre, a rim and pipes, each with 3-4 tone steps and highlight/rust speckle. Its 26 total colours are fewer than the stall and well (38-40), and its material ramps are a little shallower than Beodeul's 5-6 steps. Its density per tile is still on par with the references, and the silhouette is varied and not a flat sticker. It would sit acceptably beside the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18298
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "upper slope of the heap (rusty brown scrap and dark pipes at the crest)",
+      "rows": "6-13",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "upper-right corrugated orange sheet with yellow top edge",
+      "rows": "11-16",
+      "evidence": "a",
+      "front_edge_line_row": 11,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "grey pipe or sheet on the left",
+      "rows": "14-18",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": "18"
+     },
+     {
+      "part": "blue corrugated panel",
+      "rows": "20-22",
+      "evidence": "none",
+      "front_edge_line_row": 19,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower-left orange corrugated sheet with yellow top edge",
+      "rows": "23-26",
+      "evidence": "a",
+      "front_edge_line_row": 23,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "tyre and wheel rim at the lower right",
+      "rows": "23-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 7,
+    "front_face_rows": 18,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette is a mound. Its width grows steadily from 2 px at row 6 to 46 px at rows 26-29, then ends flat at the ground. Rows 6-13 are the sloped upper surface of the pile, and a heap is visible as a mass (evidence d). The yellow-topped orange sheets at rows 11 and 23 have edge lines. The front is stacked face-on scrap (pipe, blue panel, tyre) over rows 13-30, which is more than 3 rows. Several parts, such as the blue panel, the grey pipe and the tyre, are drawn as vertical faces only. The overall read is a pile with a top slope and a front, not a flat slab."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate has 18 visible tones per 16x16 tile, against 17 for the cheese stall and 20 for the roofed well, and above the hedge at 9. Near-flat coverage is 0%, so the picture shows no flat fills. The dark edge pixels are 0% near-neutral, which means the outline is tinted (dark brown and rust) and follows the neighbouring material instead of being a black sticker line. The heap shows several ramps: rusty brown sheets, blue-grey corrugation, a cream pipe or tyre band and a dark rim. These give about 5 steps with scattered speckle and variation, close to the references. The silhouette is a little blobby and the interior slightly busy, so the texture counts as 'some' and not 'rich'. A careful artist would still accept it next to the stall and well props without it looking thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 21234
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "upper mound of piled scrap (sloped heap surface, rusty plates and pipe pieces)",
+      "rows": "7-18",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "orange corrugated sheet at upper right",
+      "rows": "11-15",
+      "evidence": "a",
+      "front_edge_line_row": 11,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "grey pipe/sheet lying on the left slope",
+      "rows": "14-18",
+      "evidence": "a",
+      "front_edge_line_row": 14,
+      "eave_shadow_rows": "18"
+     },
+     {
+      "part": "blue corrugated sheet and orange sheet in the lower front",
+      "rows": "19-27",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 10,
+    "front_face_rows": 12,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette is a dome-shaped mound that widens steadily from row 6 (2 px) to row 26 (46 px). Rows 7-18 are the sloped upper surface of the heap, with a yellow-edged corrugated sheet at rows 11-15 and a grey pipe at rows 14-18. Below, rows 19-30 are the front face of the pile: a blue sheet, an orange sheet with a yellow top edge at row 23, a tyre and a wheel rim. The heap shows both a top region and a front face of 3+ rows, so it is not a flat slab or a pure elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate has 18 visible tones per 16x16 tile, against 17 for the cheese stall, 20 for the roofed well and 9 for the hedge. Near-flat coverage is 0%, so the pile has no large flat areas, and the corrugated sheets, pipes, tyre and rim break the surface into many small clusters. The dark edge pixels are 0% neutral. By eye the outline leans dark brown and rust beside the metal rather than being a black sticker line. Each material carries about 4-5 lightness steps, slightly short of Beodeul's 5-6. The total of 26 distinct colours is lower than the stall (40) and well (38), but the visible-tone density matches them. At this small size the individual junk items read a little muddy, but the piece would sit acceptably beside the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19204
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "scrap heap mound top (sloped upper pile of sheets, pipe and car parts)",
+      "rows": "6-17",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "corrugated orange sheet on upper right",
+      "rows": "11-16",
+      "evidence": "a",
+      "front_edge_line_row": 11,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "front face of the pile (blue panel, tyre, wheel rim, rusty plates)",
+      "rows": "18-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 10,
+    "front_face_rows": 13,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette widens steadily from 2px at row 6 to 46px at rows 26-29. This is a mound whose sloped upper surface (rows 6-17) is visible from above and is made of overlapping sheets and a pipe. The corrugated sheet at upper right has a light edge line at row 11. Below it, the front face runs from about row 18 to row 30 and holds the blue panel, tyre and rim. It is a heap, so there is no flat tabletop, but the mound top and the front face together read as a 3/4 view rather than a flat front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate shows 18 visible tones per 16x16 tile, close to the stall (17) and well (20) and about double the hedge (9). Near-flat coverage is 0%, so there are no large flat fills. The dark edge pixels are 0% neutral, so the outline leans brown, rust or blue-grey with the adjacent material rather than being a uniform black sticker line. The pile has several lightness steps on the rust-brown mass and on the blue-grey corrugated sheets, with banded sheet ridges, a tyre and rim shapes, and speckled grain, so it reads as a clustered junk heap rather than a flat silhouette. It is a little blobby and less crisply modelled than the well or stall, but it does not look thinner, flatter or more sticker-like than the references next to them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15366
+  }
+ ],
+ "decidedAt": "2026-10-22T14:22:07.061Z",
+ "cells": {
+  "16": [
+   "49109f027344d110",
+   "5a6592b8e70072c0",
+   "bc658c175bd173e6",
+   "ca3e6203009eedc5",
+   "e468fe84829245b5",
+   "f311d6d01501c87c"
+  ],
+  "24": [
+   "0e2a66458fdc9c6f",
+   "5e3e27e0a8cbc5b9",
+   "715a1443b9e85007",
+   "a81fa3c6202ad2ac",
+   "ad345ad9a2cb2bce",
+   "c78d1fc4e820b0bc",
+   "e794a1f77da7b35e"
+  ],
+  "32": [
+   "08223c5421c1eec0",
+   "23f10ee47dc6262b",
+   "335f9a4cbc16a822",
+   "a51c58b1b45f10ab",
+   "e763ad4d452a2b65",
+   "f32502052e59053e"
+  ],
+  "48": [
+   "8b76363964c62f2d",
+   "f8b3fcb4ca0be963"
+  ]
+ }
+}

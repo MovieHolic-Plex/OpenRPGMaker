@@ -99,6 +99,7 @@ export const CONDITION_FIXTURES: Readonly<Record<ConditionKind, Condition>> = {
   facing: { kind: "facing", subject: "player", dir: "left" },
   relativeFacing: { kind: "relativeFacing", relation: "playerBehindEvent" },
   hiding: { kind: "hiding", value: true },
+  eventSeesPlayer: { kind: "eventSeesPlayer", eventId: "ev_probe", range: 5, value: true },
   pursuitActive: { kind: "pursuitActive", eventId: "ev_probe", value: true },
   clearCount: { kind: "clearCount", op: ">=", value: 2 },
   endingSeen: { kind: "endingSeen", endingId: "ending_probe", value: true },

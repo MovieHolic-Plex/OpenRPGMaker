@@ -59,3 +59,7 @@ export const ASTRA_CAST_URLS: Readonly<Record<string, string>> = Object.fromEntr
       [astraProfessorVariantBustId(variant, expression), `/assets/emerald-monster/cast/${professorBustFolder(variant)}/bust-${expression}.png`] as [string, string])),
   ),
 );
+
+/** 타이틀 키아트(2026-10-25): 생성 그림 4장 중 감독 선택(T2, GBA 결 도트)을 480×320·64색으로 줄였다. 글자는 없다 — 로고·PRESS START 는 엔진이 얹는다. */
+export const ASTRA_TITLE_ART_ID = "oprn_astra_title_day";
+export const ASTRA_TITLE_ART_URLS: Readonly<Record<string, string>> = { [ASTRA_TITLE_ART_ID]: "/assets/emerald-monster/astra/title-day.png" };

@@ -12,7 +12,8 @@ import {
   type WebExportContractErrorCode,
   type WebPlayerBundleFile,
 } from "@/project/playerDeploymentManifest";
-import type { Project } from "@/project/types";
+import type { Project, TileAiMetadata } from "@/project/types";
+import { bundledTilesetRefView, withBundledTilesetRefs } from "@/project/bundledTilesetRefs";
 import type { SpatialLibrary } from "@/project/spatial/types";
 import {
   collectRetiredExportReferences,
@@ -56,6 +57,23 @@ function withoutLibraryReferences(library: SpatialLibrary): SpatialLibrary {
   ])) as unknown as SpatialLibrary;
 }
 
+/**
+ * 출하 게임이 읽는 칸 이름표 필드만 남긴다. 설명·출처·확신도·잠금 같은 편집기·조수용 글은 플레이어가 읽지 않는데
+ * 칩셋 하나에 수 MB 다(시타마치 데모 play.json 22MB 중 jp_city tileMeta 8.7MB, 그중 description 3.4MB).
+ * 런타임은 label·tags(필드 효과·깊이·탈것), role·passage·terrainTag·defaultLayer·layerBacking 을 읽는다.
+ */
+function playTileMeta(meta: TileAiMetadata): TileAiMetadata {
+  if (!meta) return meta;
+  const out: TileAiMetadata = { label: meta.label, description: "" };
+  if (meta.tags?.length) out.tags = meta.tags;
+  if (meta.role !== undefined) out.role = meta.role;
+  if (meta.passage !== undefined) out.passage = meta.passage;
+  if (meta.terrainTag !== undefined) out.terrainTag = meta.terrainTag;
+  if (meta.defaultLayer !== undefined) out.defaultLayer = meta.defaultLayer;
+  if (meta.layerBacking !== undefined) out.layerBacking = meta.layerBacking;
+  return out;
+}
+
 /** Trim before cloning: a new project carries hundreds of unused assets and
  * editor reference documents. Copying those only to discard them can crash the
  * renderer. The final clone also isolates retained uploaded assets from edits. */
@@ -81,10 +99,14 @@ function exportProjection(project: Project): Project {
   };
   delete projection.audioDescriptions;
   delete projection.monsterMetadata;
-  for (const tileset of Object.values(projection.tilesets)) {
+  for (const [id, tileset] of Object.entries(projection.tilesets)) {
     delete tileset.referenceDocuments;
     delete tileset.referenceSourceTilesetId;
     for (const kit of tileset.structureKits ?? []) delete kit.referenceDocuments;
+    // 번들 정의와 같은 타일셋은 prepareWebExport 가 참조로 바꿔 싣지 않는다 — 설명을 줄이면 동치가 깨져 참조가 안 된다.
+    // 줄이기는 통째로 실리는 타일셋(업로드·고친 번들·출판 판본)에만.
+    const shipsAsRef = !project.meta.publication && bundledTilesetRefView(id, tileset) !== undefined;
+    if (tileset.tileMeta && !shipsAsRef) tileset.tileMeta = tileset.tileMeta.map(playTileMeta);
   }
   if (project.spatialAuthoring) {
     projection.spatialAuthoring = { ...project.spatialAuthoring,
@@ -104,7 +126,9 @@ function exportProjection(project: Project): Project {
 
 export function prepareWebExport(project: Project): PreparedWebExport {
   const exportProject = exportProjection(project);
-  const projectJson = serialize(exportProject);
+  // 번들 정의와 같은 타일셋은 참조로 싣는다 — 플레이어 번들이 같은 정의를 이미 갖고 있다(bundledTilesetRefs.ts, S4).
+  // 출판 판본(meta.publication)은 보관된 옛 런타임이 읽을 수 있으니 예전처럼 통째로 싣는다.
+  const projectJson = serialize(project.meta.publication ? exportProject : withBundledTilesetRefs(exportProject));
   deserialize(projectJson);
   const assets = collectWebExportAssets(exportProject);
   const projectJsonBytes = encoder.encode(projectJson).length;

@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { matchSupportedLocale, resolveLocale } from "@/i18n/locale";
+import { MAP_SHIFT_NOTE } from "@/editor/panels/mapShiftCopy";
+import { editorIntlLocale, matchSupportedLocale, resolveLocale } from "@/i18n/locale";
 import { createTranslator } from "@/i18n/translator";
 import en from "@/i18n/catalogs/en.json";
 import ja from "@/i18n/catalogs/ja.json";
@@ -33,6 +34,29 @@ describe("resolveLocale", () => {
     expect(resolveLocale({ languages: ["en-US"], automation: true })).toBe("ko");
     expect(resolveLocale({ languages: ["en-US"], automation: true, forceDetect: true })).toBe("en");
     expect(resolveLocale({ saved: "ja", languages: ["en-US"], automation: true })).toBe("ja");
+  });
+});
+
+describe("editorIntlLocale", () => {
+  const day = new Date(2026, 6, 11, 10, 0, 0);
+  const options: Intl.DateTimeFormatOptions = { year: "numeric", month: "long", day: "numeric", weekday: "short" };
+
+  it("keeps Korean dates on ko-KR and uses the chosen language otherwise", () => {
+    expect(editorIntlLocale("ko")).toBe("ko-KR");
+    expect(editorIntlLocale("en")).toBe("en");
+    expect(editorIntlLocale("ja")).toBe("ja");
+    expect(editorIntlLocale("zh")).toBe("zh-CN");
+    const ko = day.toLocaleDateString(editorIntlLocale("ko"), options);
+    const en = day.toLocaleDateString(editorIntlLocale("en"), options);
+    const ja = day.toLocaleDateString(editorIntlLocale("ja"), options);
+    const zh = day.toLocaleDateString(editorIntlLocale("zh"), options);
+    expect(ko).toBe(day.toLocaleDateString("ko-KR", options));
+    expect(ko).toMatch(/2026년/);
+    expect(en).toMatch(/July/);
+    expect(en).toMatch(/2026/);
+    expect(ja).toMatch(/2026年7月11日/);
+    expect(zh).toMatch(/2026年7月11日/);
+    for (const label of [en, ja, zh]) expect(label).not.toMatch(/[가-힣]/);
   });
 });
 
@@ -101,5 +125,156 @@ describe("shipped catalogs", () => {
     expect(createTranslator(en).translate("보기")).toBe("View");
     expect(createTranslator(ja).translate("언어")).toBeTruthy();
     expect(createTranslator(zh).translate("언어")).toBeTruthy();
+  });
+
+  it("translates map-content shift separately from view pan and map scroll", () => {
+    // 「맵 밀기」는 타일·이벤트·시작 위치를 칸 단위로 옮긴다. 화면 밀기(pan)나 맵 스크롤 명령이 아니다.
+    const note = MAP_SHIFT_NOTE;
+    expect(en["맵 밀기"]).toBe("Shift map contents");
+    expect(ja["맵 밀기"]).toBe("マップ内容をずらす");
+    expect(zh["맵 밀기"]).toBe("移动地图内容");
+    expect(en["맵 밀기"]).not.toBe(en["맵 화면 이동"]);
+    expect(ja["맵 밀기"]).not.toBe(ja["맵 스크롤"]);
+    expect(zh["맵 밀기"]).not.toBe(zh["맵 화면 이동"]);
+    expect(en["맵 밀기"].toLowerCase()).not.toMatch(/pan|scroll/);
+    expect(ja["맵 밀기"]).not.toContain("スクロール");
+    expect(createTranslator(en).translate(note)).toBe(en[note]);
+    expect(createTranslator(ja).translate(note)).toBe(ja[note]);
+    expect(createTranslator(zh).translate(note)).toBe(zh[note]);
+    expect(en[note]).toMatch(/tiles/i);
+    expect(ja[note]).toContain("マス");
+    expect(zh[note]).toContain("图块");
+  });
+
+  it("calls the ground layer 地上 in Japanese, not battle or a garbled reading", () => {
+    // 바닥과 배틀은 글자가 비슷해 명령 팔레트·레이어 필터·타일 변경 안내가 バトル / バーゾリアル 로 나갔다.
+    // 짧은 라벨 「바닥」과 같은 낱말(地上)을 쓴다.
+    expect(ja["바닥"]).toBe("地上");
+    expect(ja["레이어: 바닥"]).toBe("レイヤー: 地上");
+    expect(ja["레이어 필터: 바닥(하위) 타일만"]).toBe("レイヤーフィルター: 地上(下位)タイルのみ");
+    expect(ja["맵 한 칸의 바닥이나 상위 타일을 바꿉니다."]).toBe("マップ1マスの地上または上部タイルを変更します。");
+    expect(ja["맵 한 칸의 바닥이나 상위 타일을 바꿉니다. 비우기를 누르면 그 칸을 지웁니다."]).toBe(
+      "マップ1マスの地上または上部タイルを変更します。クリアを押すとそのマスを消します。",
+    );
+    for (const value of [
+      ja["레이어: 바닥"],
+      ja["레이어 필터: 바닥(하위) 타일만"],
+      ja["맵 한 칸의 바닥이나 상위 타일을 바꿉니다."],
+      ja["맵 한 칸의 바닥이나 상위 타일을 바꿉니다. 비우기를 누르면 그 칸을 지웁니다."],
+    ]) {
+      expect(value).not.toMatch(/バトル|バーゾリアル/);
+    }
+    expect(createTranslator(ja).translate("레이어: 바닥")).toBe("レイヤー: 地上");
+    expect(createTranslator(ja).translate("맵 한 칸의 바닥이나 상위 타일을 바꿉니다.")).toBe(
+      "マップ1マスの地上または上部タイルを変更します。",
+    );
+  });
+
+  it("calls the lower map layer the ground layer, not a child or subordinate", () => {
+    // 타일셋 필터·홈 레이어의 「하위」는 바닥 레이어다. 하위 맵·하위 조건의 자식 뜻과 갈라진다.
+    expect(en["하위"]).toBe("Ground");
+    expect(ja["하위"]).toBe("地上");
+    expect(zh["하위"]).toBe("地面");
+    expect(en["하위"]).toBe(en["바닥"]);
+    expect(ja["하위"]).toBe(ja["바닥"]);
+    expect(zh["하위"]).toBe(zh["바닥"]);
+
+    const layerKeys = [
+      "하위 + 받침",
+      "하위 = 초록 테두리",
+      "하위 고정",
+      "하위 레이어",
+      "하위 레이어 타일 — 하위 레이어 편집으로 전환",
+      "하위 레이어 타일만 강조",
+      "하위 레이어에서 자유롭게 칠하면 가장자리와 중앙이 자동으로 이어지는 물 지형입니다.",
+      "하위 레이어에서 자유롭게 칠하면 모서리, 변, 중앙이 자동으로 이어지는 길 지형입니다.",
+      "하위·상위 전부 표시",
+      "투명 하위 유지",
+      "투명 하위(받침 없음)",
+      "이 타일의 홈 레이어를 하위로 확정",
+      "받침 있는 하위",
+      "하위만",
+    ] as const;
+    for (const key of layerKeys) {
+      expect(en[key], key).not.toMatch(/\bsub\b/i);
+      expect(en[key], key).toMatch(/ground/i);
+      expect(ja[key], key).not.toMatch(/下位|子/);
+      expect(ja[key], key).toContain("地上");
+      expect(zh[key], key).not.toMatch(/子级|子图/);
+      expect(zh[key], key).toContain("地面");
+    }
+
+    expect(createTranslator(en).translate("하위 레이어 타일만 강조")).toBe("Highlight ground-layer tiles only");
+    expect(createTranslator(ja).translate("하위·상위 전부 표시")).toBe("地上・上位をともに表示");
+    expect(createTranslator(zh).translate("하위 고정")).toBe("固定地面");
+
+    // 같은 낱말이 자식·하위를 뜻하는 곳은 그대로다.
+    expect(en["하위 {0}"]).toBe("{0} sub");
+    expect(ja["하위 {0}"]).toBe("下位 {0}");
+    expect(zh["하위 {0}"]).toBe("子级 {0}");
+    expect(en["하위 맵"]).toBe("Sub-map");
+    expect(ja["하위 맵"]).toBe("サブマップ");
+    expect(zh["하위 맵"]).toBe("子地图");
+    expect(en["하위 조건"]).toBe("Sub-conditions");
+    expect(createTranslator(en).translate("하위 3")).toBe("3 sub");
+  });
+
+  it("calls terrain reachability a passability preview, not vehicle traffic or a corridor", () => {
+    // 지형 도구의 통행 미리보기는 시작 위치에서 걸어 닿는 땅을 칠한다. 차 흐름(traffic)도, 복도(passage)도 아니다.
+    const sentence = "경사로·기물, 지형 설계, 통행 미리보기는 아래 도구에서 고릅니다.";
+    expect(en["통행"]).toBe("Passability");
+    expect(en["통행 보기"]).toBe("View passability");
+    expect(en["통행 미리보기"]).toBe("Passability preview");
+    expect(en[sentence]).toBe("Choose ramps/props, terrain design, and passability preview from the tools below.");
+    expect(en["통행 미리보기"].toLowerCase()).not.toMatch(/traffic|\bpassage\b/);
+    expect(en[sentence].toLowerCase()).not.toMatch(/traffic|\bpassage\b/);
+    expect(ja["통행 보기"]).toBe("通行を見る");
+    expect(ja["통행 미리보기"]).toBe("通行プレビュー");
+    expect(ja[sentence]).toContain("通行");
+    expect(zh["통행 보기"]).toBe("查看通行");
+    expect(zh["통행 미리보기"]).toBe("通行预览");
+    expect(zh[sentence]).toContain("通行");
+    expect(createTranslator(en).translate("통행 보기")).toBe("View passability");
+    expect(createTranslator(en).translate("통행 미리보기")).toBe("Passability preview");
+    expect(createTranslator(en).translate(sentence)).toBe(en[sentence]);
+    expect(createTranslator(ja).translate("통행 보기")).toBe("通行を見る");
+    expect(createTranslator(zh).translate("통행 미리보기")).toBe("通行预览");
+  });
+
+  it("describes right-drag region select as a release, not placing an object", () => {
+    // 도움말의 우클릭 드래그. 「놓으면」은 드래그를 떼는 것이고, 그 뒤에 뜨는 동작은
+    // AI 작업·복사·지우기·구조물로 저장이다. 「저장」은 구조물에만 붙는다.
+    const hint = "영역 선택 — 놓으면 AI 작업·복사·지우기·구조물로 저장";
+    expect(en[hint]).toBe("Select region — when you release: 「AI task」, copy, erase, and 「Save as structure」");
+    expect(en[hint].toLowerCase()).not.toMatch(/placed|save as ai/);
+    expect(ja[hint]).toBe("範囲選択 — 離すと「AIタスク」·コピー·消去·「構造物として保存」");
+    expect(ja[hint]).not.toMatch(/配置|リージョン/);
+    expect(zh[hint]).toBe("选择区域 — 松开后：「AI 任务」·复制·擦除·「保存为结构物」");
+    expect(zh[hint]).not.toMatch(/放置|保存为AI/);
+    expect(createTranslator(en).translate(hint)).toBe(en[hint]);
+    expect(createTranslator(ja).translate(hint)).toBe(ja[hint]);
+    expect(createTranslator(zh).translate(hint)).toBe(zh[hint]);
+  });
+
+  it("calls a dragged rectangle a range in Japanese, and keeps region ids as リージョン", () => {
+    // 「영역」은 맵에서 드래그한 사각형(선택 도구 V, 채우기·복사·AI 작업)이다.
+    // 맵에 칠하는 지역 번호만 リージョン 이다. 도구 이름이 リージョン選択 이면 지역 번호 도구로 읽힌다.
+    const regionIds = "맵에 칠해 둔 지역 번호를 밟았을 때 이벤트를 부르거나 스위치를 켜도록 연결합니다. 지역 번호를 칠하는 것은 맵 편집 화면에서 합니다.";
+    expect(ja["영역"]).toBe("範囲");
+    expect(ja["영역 선택"]).toBe("範囲選択");
+    expect(ja["영역 선택"]).toBe(ja["영역 선택 — 놓으면 AI 작업·복사·지우기·구조물로 저장"].split(" — ")[0]);
+    expect(ja["선택 영역"]).toBe("選択範囲");
+    expect(ja["영역 채우기"]).toBe("範囲を塗りつぶす");
+    expect(ja["영역 표시"]).toBe("範囲を強調");
+    expect(ja["영역 표시"]).not.toBe(ja["영역 보기"]);
+    expect(ja[regionIds]).toContain("リージョン番号");
+    const japanese = createTranslator(ja);
+    const rectangle = Object.entries(ja).filter(([source]) => source.includes("영역"));
+    expect(rectangle.length).toBeGreaterThan(0);
+    for (const [source, target] of rectangle) {
+      expect(target, source).not.toContain("リージョン");
+      expect(japanese.translate(source), source).toBe(target);
+    }
+    expect(japanese.translate(regionIds)).toContain("リージョン");
   });
 });

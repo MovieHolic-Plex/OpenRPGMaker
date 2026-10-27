@@ -3,7 +3,7 @@
 
 import { PNG } from "pngjs";
 import { cellPassability } from "../../../src/project/collision.ts";
-import { flatMapFinding, offendingVoidBlobs, VOID_DARK_LUMA, voidFinding, type VoidCell } from "../../../src/qa/gameCheck/visualVoid.ts";
+import { flatMapFinding, offendingVoidBlobs, playerCarriesLight, unlitDarkFinding, VOID_DARK_LUMA, voidFinding, type VoidCell } from "../../../src/qa/gameCheck/visualVoid.ts";
 import type { Finding } from "../../../src/qa/gameCheck/types.ts";
 import type { GameMap, Project } from "../../../src/project/types.ts";
 
@@ -15,7 +15,12 @@ export async function checkVisualVoids(project: Project, log: (line: string) => 
     if (!tileset) continue;
     const flat = flatMapFinding(map);
     if (flat) findings.push(flat);
-    const { png: bytes, note } = renderMapPng(project, map, 1);
+    const unlit = unlitDarkFinding(map);
+    if (unlit) findings.push(unlit);
+    // 주인공이 빛을 들고 다니는 어둠은 연출이다 — 정적 그림은 광원 구멍을 못 그리니 조명을 빼고 덮개·빈 칸만 본다(J89: 지하 예배당
+    // 어두운 돌바닥에 어둡기 0.85 색조가 얹혀 「걸을 수 있는 칸 157개가 검다」고 잘못 읽혔다; 플레이 화면은 횃불로 바닥이 보인다).
+    const drawn = playerCarriesLight(map.defaultLighting) ? { ...map, defaultLighting: undefined } : map;
+    const { png: bytes, note } = renderMapPng(project, drawn, 1);
     if (note) { log(`[visual-void] ${map.id}: ${note} — 건너뜀`); continue; }
     const png = PNG.sync.read(bytes);
     const size = tileset.tileSize;
@@ -31,9 +36,13 @@ export async function checkVisualVoids(project: Project, log: (line: string) => 
         count += 1;
       }
       const flags = cellPassability(tileset, map, i);
+      // 빈 칸에 맵 배경(그림·다른 맵 줄여 깔기)이 비치는 맵이면 빈 칸은 구멍이 아니라 배경 창이다(옥상 난간 너머 동네, 2026-10-25).
+      // 이 렌더러는 배경을 그리지 않으므로 그 빈 칸은 검사에서 뺀다.
+      const showsBackground = Boolean(map.background?.showInEmptyCells && (map.background.imageId || map.background.fromMap));
+      const empty = emptyCell(map, i);
       cells.push({
-        dark: count > 0 && sum / count < VOID_DARK_LUMA,
-        empty: emptyCell(map, i),
+        dark: !(showsBackground && empty) && count > 0 && sum / count < VOID_DARK_LUMA,
+        empty: empty && !showsBackground,
         passable: flags.up || flags.down || flags.left || flags.right,
       });
     }

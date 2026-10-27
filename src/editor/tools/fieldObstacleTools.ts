@@ -19,11 +19,11 @@ import { ensureNamedSwitch } from './flagHelpers';
 import { assertEventShape, placeChest, upsertEventIntoMap } from './eventTools';
 import { ToolError, type JsonSchema, type ToolDefinition, type ToolExecResult } from './types';
 
-export const FIELD_OBSTACLE_KINDS = ['rock', 'tree', 'water', 'dark', 'waterfall'] as const;
+export const FIELD_OBSTACLE_KINDS = ['rock', 'tree', 'water', 'dark', 'waterfall', 'gap'] as const;
 type ObstacleKind = (typeof FIELD_OBSTACLE_KINDS)[number];
 
 const DIRS: Record<Dir, readonly [number, number]> = { up: [0, -1], down: [0, 1], left: [-1, 0], right: [1, 0] };
-const KEYS = ['mapId', 'x', 'y', 'kind', 'requiresSkillId', 'skillName', 'name', 'tile', 'passTile', 'direction', 'length', 'span', 'fullWidth', 'machine', 'hint', 'blockedText', 'requiresBadge', 'requiresSwitchId', 'giverX', 'giverY', 'giverMapId', 'id'] as const;
+const KEYS = ['mapId', 'x', 'y', 'kind', 'requiresSkillId', 'requiresActorId', 'skillName', 'name', 'tile', 'passTile', 'direction', 'length', 'span', 'fullWidth', 'machine', 'hint', 'blockedText', 'requiresBadge', 'requiresSwitchId', 'giverX', 'giverY', 'giverMapId', 'id'] as const;
 
 /** 종류별 기본: 독자 기술 이름(원작 이름을 쓰지 않는다), 안내 대사, 칩셋 타일 라벨 패턴. */
 const DEFAULTS: Record<ObstacleKind, { skillId: string; skillName: string; skillText: string; blocked: string; event: string; tile?: RegExp; pass?: RegExp; hmName: string }> = {
@@ -31,6 +31,7 @@ const DEFAULTS: Record<ObstacleKind, { skillId: string; skillName: string; skill
   rock: { skillId: 'skill_field_shove', skillName: '바위 밀치기', skillText: '길을 막은 큰 바위를 힘껏 옆으로 밀어낸다.', blocked: '커다란 바위가 길을 막고 있다.', event: '바위 장애물', tile: /깨지는 바위|바위 깨기|바위\(밀기/, hmName: '비전서 「바위 밀치기」' },
   water: { skillId: 'skill_field_ford', skillName: '물길 열기', skillText: '물 위에 잠시 건널 길을 낸다.', blocked: '깊은 물이 길을 가로막고 있다.', event: '물길 장애물', pass: /나무다리/, hmName: '비전서 「물길 열기」' },
   waterfall: { skillId: 'skill_field_ascend', skillName: '폭포 오르기', skillText: '거센 폭포를 거슬러 오를 발판을 만든다.', blocked: '거센 폭포가 앞을 막고 있다.', event: '폭포 장애물', pass: /디딤돌/, hmName: '비전서 「폭포 오르기」' },
+  gap: { skillId: 'skill_field_vault', skillName: '장대 도약', skillText: '장대를 짚고 좁은 틈을 단숨에 뛰어넘는다.', blocked: '발밑이 갈라져 있다. 맨몸으로 뛰어넘기엔 너무 넓다.', event: '틈', hmName: '비전서 「장대 도약」' },
   dark: { skillId: 'skill_field_glow', skillName: '반딧불 소환', skillText: '반딧불 떼가 주위를 환하게 비춘다.', blocked: '너무 어두워서 앞이 보이지 않는다.', event: '어둠 구역', hmName: '비전서 「반딧불 소환」' },
 };
 
@@ -40,7 +41,7 @@ const schema = (properties: Record<string, JsonSchema>, required: string[]): Jso
 
 function rejectUnknownKeys(args: Record<string, unknown>): void {
   const hints: Record<string, string> = {
-    skillId: 'requiresSkillId', skill: 'requiresSkillId', requires: 'requiresSkillId', hm: 'machine', item: 'machine', badge: 'requiresBadge(캠페인 배지 번호)/requiresSwitchId', badgeId: 'requiresBadge', giver: 'giverX·giverY(비전서 상자 위치)', chest: 'giverX·giverY', text: 'hint / blockedText', dialogue: 'hint / blockedText',
+    skillId: 'requiresSkillId', skill: 'requiresSkillId', actorId: 'requiresActorId', actor: 'requiresActorId', member: 'requiresActorId', requires: 'requiresSkillId', hm: 'machine', item: 'machine', badge: 'requiresBadge(캠페인 배지 번호)/requiresSwitchId', badgeId: 'requiresBadge', giver: 'giverX·giverY(비전서 상자 위치)', chest: 'giverX·giverY', text: 'hint / blockedText', dialogue: 'hint / blockedText',
     dir: 'direction', width: 'rock·tree 는 span(칸 수) 또는 fullWidth:true(도로 폭 전체), water·waterfall 은 length', cells: '이 도구는 (x,y)에서 direction 으로 rock·tree 는 span 칸을 막고 water·waterfall 은 length 칸을 건넙니다', tileId: 'tile', type: 'kind', obstacle: 'kind',
   };
   for (const key of Object.keys(args)) {
@@ -186,6 +187,127 @@ function openByAbility(skillName: string, doneSwitchId: string, gates: readonly 
   return [{ kind: 'fork', condition: { kind: 'switch', switchId: first!.switchId, value: true }, then: inner, else: [text(`아직 ${withJosa(first!.label, '이/가')} 없어 ${withJosa(skillName, '이/가')} 말을 듣지 않는다…`)] }];
 }
 
+/** 틈 건너뛰기에 쓰는 문맥 — run() 앞부분이 이미 검사·정리한 값. */
+interface GapContext {
+  x: number; y: number; id: string; eventName: string; machine: 'hm' | 'tm' | 'none';
+  gateSwitches: readonly { switchId: string; label: string }[]; warnings: string[]; giverX?: number; giverY?: number;
+}
+
+const OPPOSITE: Record<Dir, Dir> = { up: 'down', down: 'up', left: 'right', right: 'left' };
+
+/**
+ * kind:'gap' — 장대 도약(틈 건너뛰기). 폭 1~2칸의 막힌 틈(얼음 틈·구렁)을 두고 양쪽 가장자리 칸에 발밑 조사 이벤트를 하나씩 둔다.
+ * 다리를 놓지 않는다: 능력이 있는 파티(requiresActorId 배우가 파티에 있음 / requiresSkillId 를 누군가 앎)는 「뛰어넘을까?」 → 주인공 이동 경로 jump 로
+ * 건너편 가장자리에 내려선다. 돌아올 때도 건너편 이벤트로 같은 연출. 능력이 없으면 안내 대사만. 지형은 건드리지 않는다.
+ */
+function runGap(draft: Project, map: GameMap, args: Record<string, unknown>, ctx: GapContext): ToolExecResult {
+  const { x, y, id, eventName, machine, gateSwitches, warnings } = ctx;
+  const base = DEFAULTS.gap;
+  if (!isPassable(draft, map, x, y)) throw new ToolError(`(${x}, ${y}) 는 막힌 칸입니다 — kind:'gap' 의 (x,y) 는 틈 바로 앞의 걸을 수 있는 가장자리 칸(주인공이 서서 뛰는 자리)입니다.`, { code: 'obstacle-not-on-path', mapId: map.id, x, y });
+  if (args.length !== undefined) {
+    const n = Number(args.length);
+    if (!Number.isInteger(n) || n < 1 || n > 2) throw new ToolError('gap 의 length 는 틈 폭 1..2 칸입니다(장대로 뛸 수 있는 폭).', { code: 'invalid-args' });
+  }
+  if (args.direction !== undefined && !isDir(args.direction)) throw new ToolError('direction 은 up|down|left|right 입니다.', { code: 'invalid-args' });
+  // 틈의 방향·폭: 주어지면 그대로, 없으면 (x,y) 곁에서 「막힌 칸 1~2개 너머 걸을 수 있는 칸」인 쪽을 찾는다.
+  const fits = (d: Dir, n: number): boolean => {
+    const [dx, dy] = DIRS[d];
+    const lx = x + dx * (n + 1), ly = y + dy * (n + 1);
+    if (!inMapBounds(map, lx, ly) || !isPassable(draft, map, lx, ly)) return false;
+    return Array.from({ length: n }, (_, i) => i + 1).every((i) => inMapBounds(map, x + dx * i, y + dy * i) && !isPassable(draft, map, x + dx * i, y + dy * i));
+  };
+  const dirs: Dir[] = isDir(args.direction) ? [args.direction] : ['up', 'down', 'left', 'right'];
+  const widths = args.length !== undefined ? [Number(args.length)] : [1, 2];
+  let found: { dir: Dir; width: number } | undefined;
+  for (const width of widths) { for (const dir of dirs) { if (!found && fits(dir, width)) found = { dir, width }; } }
+  if (!found) {
+    const what = isDir(args.direction) ? `${args.direction} 쪽으로 ${widths.join('·')}칸` : '네 방향 어디에도 1~2칸';
+    throw new ToolError(`(${x}, ${y}) 에서 ${what} 너비의 막힌 틈 너머에 내려설 걸을 수 있는 칸이 없습니다 — 틈(통행 막힌 얼음 틈·구렁 칸)을 먼저 칠하고, 틈 바로 앞 가장자리 칸을 (x,y)로 주세요(get_map_region 으로 확인). 더 넓은 틈은 장대로 건널 수 없습니다.`, { code: 'gap-not-found', mapId: map.id, x, y });
+  }
+  const { dir, width } = found;
+  const [dx, dy] = DIRS[dir];
+  const far = { x: x + dx * (width + 1), y: y + dy * (width + 1) };
+  const gapCells = Array.from({ length: width }, (_, i) => ({ x: x + dx * (i + 1), y: y + dy * (i + 1) }));
+  const farId = `${id}_far`;
+  const blocker = map.events.find((entry) => entry.id !== id && entry.id !== farId && entry.x === far.x && entry.y === far.y);
+  if (blocker) throw new ToolError(`건너편 착지 칸 (${far.x}, ${far.y}) 에 이미 이벤트 '${blocker.id}' 가 있습니다 — 다른 틈 자리를 고르거나 remove_event 로 치우세요.`, { code: 'obstacle-occupied', mapId: map.id, x: far.x, y: far.y });
+  // 걸어서 돌아갈 수 있으면 능력 게이트가 아니다 — 경고만(틈은 지름길일 수도 있다).
+  const bypass = reachableFrom(draft, map, x, y).has(far.y * map.width + far.x);
+  if (bypass) warnings.push(`틈 양쪽 (${x},${y})↔(${far.x},${far.y}) 가 걸어서도 이어져 있습니다 — 능력 없이 돌아갈 수 있어 게이트가 아니라 지름길입니다. 막으려면 우회로를 막거나(paint_tiles·set_tile_passability) 좁은 협곡에 두세요.`);
+
+  // 능력: 배우(파티에 있어야) 와/또는 기술(파티 누군가가 알아야). 둘 다 주면 둘 다 필요. 아무것도 안 주면 기본 기술 「장대 도약」.
+  const conditions: EventPage['conditions'] = [];
+  const who: string[] = [];
+  let actorId: string | undefined;
+  if (args.requiresActorId !== undefined) {
+    if (typeof args.requiresActorId !== 'string' || !args.requiresActorId.trim()) throw new ToolError('requiresActorId 는 배우 id 문자열입니다.', { code: 'invalid-args' });
+    actorId = args.requiresActorId.trim();
+    const actor = draft.database.actors.find((entry) => entry.id === actorId);
+    if (!actor) throw new ToolError(`배우 '${actorId}' 가 없습니다 — get_database_records 로 배우 id 를 확인하세요(받은 배우: ${draft.database.actors.slice(0, 8).map((entry) => entry.id).join(', ')}).`, { code: 'gap-actor-missing' });
+    conditions.push({ kind: 'actor', actorId, present: true });
+    who.push(actor.name || actorId);
+  }
+  let skill: SkillRecord | undefined;
+  const wantSkill = typeof args.requiresSkillId === 'string' && args.requiresSkillId.trim() ? args.requiresSkillId.trim() : undefined;
+  if (wantSkill || !actorId) {
+    const skillId = wantSkill ?? base.skillId;
+    skill = draft.database.skills.find((entry) => entry.id === skillId);
+    if (skill) {
+      if (typeof args.skillName === 'string' && args.skillName.trim() && args.skillName.trim() !== skill.name) warnings.push(`스킬 '${skillId}' 는 이미 있어 이름(${skill.name})을 바꾸지 않았습니다 — 이름을 바꾸려면 upsert_skill.`);
+    } else {
+      skill = normalizeSkillRecord({
+        id: skillId, name: typeof args.skillName === 'string' && args.skillName.trim() ? args.skillName.trim() : base.skillName, scope: 'self', power: 0, type: 'normal',
+        description: `필드 능력 — ${base.skillText}`, mpCost: { flat: 0, percentMax: 0 }, successRate: 100, variance: 0, hitRate: 100, effect: { kind: 'support' },
+      } as Partial<SkillRecord> & Pick<SkillRecord, 'id' | 'name'>);
+      draft.database.skills.push(skill);
+      if (machine === 'none') warnings.push(`스킬 '${skill.name}'(${skill.id})을 만들었습니다 — 파티원 누군가가 익혀야 틈을 건넙니다(upsert_actor 의 배운 기술·learnSkill 이벤트, 또는 machine:'hm' 으로 비전서를 같이 만들기). 특정 동료만 건너게 하려면 requiresActorId.`);
+    }
+    conditions.push({ kind: 'partyKnowsSkill', skillId: skill.id });
+    if (actorId) who[0] = `${who[0]}의 ${skill.name}`; else who.push(withJosa(skill.name, '을/를') + ' 쓰는 동료');
+  }
+  for (const gate of gateSwitches) {
+    if (!draft.switches.some((entry) => entry.id === gate.switchId)) { ensureNamedSwitch(draft, gate.switchId, gate.label); warnings.push(`스위치 '${gate.switchId}'(${gate.label})가 없어 등록했습니다 — 이 스위치를 켜는 곳이 있어야 건널 수 있습니다.`); }
+  }
+  const item = skill && machine !== 'none' ? ensureMachineItem(draft, skill, 'gap', machine) : undefined;
+
+  const hint = typeof args.hint === 'string' && args.hint.trim() ? args.hint.trim() : `${withJosa(who.join('·'), '이/가')} 있으니 이 틈을 뛰어넘을 수 있겠다.`;
+  const blockedLine = typeof args.blockedText === 'string' && args.blockedText.trim() ? args.blockedText.trim() : `${base.blocked} ${withJosa(who.join('·'), '이/가')} 있다면…`;
+  const gateConditions = gateSwitches.map((gate) => ({ kind: 'switch', switchId: gate.switchId, value: true }) as const);
+  const sidePages = (eventId: string, jump: Dir): EventPage[] => {
+    const [jx, jy] = DIRS[jump];
+    const leap: Command = { kind: 'moveEvent', eventId: '@player', route: { moves: [{ kind: 'turn', dir: jump }, { kind: 'jump', dx: jx * (width + 1), dy: jy * (width + 1), heightPx: 16 + 4 * width }, { kind: 'turn', dir: jump }], repeat: false, wait: true, skippable: false } };
+    return [
+      { id: `${eventId}_blocked`, name: '건널 수 없음', conditions: [], graphic: { transparent: true }, ...PASS, trigger: { kind: 'action' }, commands: [text(blockedLine)] },
+      ...(gateConditions.length ? [{ id: `${eventId}_lacking`, name: '능력은 있지만 조건 부족', conditions, graphic: { transparent: true }, ...PASS, trigger: { kind: 'action' }, commands: [text(`아직 ${withJosa(gateSwitches.map((gate) => gate.label).join('·'), '이/가')} 없어 뛰어넘을 수 없다…`)] } as EventPage] : []),
+      { id: `${eventId}_leap`, name: '뛰어넘기', conditions: [...conditions, ...gateConditions], graphic: { transparent: true }, ...PASS, trigger: { kind: 'action' }, commands: [
+        text(hint),
+        { kind: 'choices', prompt: '틈을 뛰어넘을까?', options: [{ text: '뛰어넘는다', branch: [leap] }, { text: '그만둔다', branch: [] }] },
+      ] },
+    ];
+  };
+  const eventIds = [id, farId];
+  for (const [eventId, at, jump, label] of [[id, { x, y }, dir, eventName], [farId, far, OPPOSITE[dir], `${eventName} (건너편)`]] as const) {
+    const event: GameEvent = { id: eventId, name: label, x: at.x, y: at.y, trigger: { kind: 'action' }, commands: [], pages: sidePages(eventId, jump) };
+    assertEventShape(event, warnings, event, draft);
+    upsertEventIntoMap(map, event);
+  }
+
+  let giverNote = '';
+  if (item && ctx.giverX !== undefined && ctx.giverY !== undefined) {
+    const giverMap = typeof args.giverMapId === 'string' && args.giverMapId.trim() ? requireMap(draft, args.giverMapId.trim()) : map;
+    const chest = placeChest.run(draft, { mapId: giverMap.id, x: ctx.giverX, y: ctx.giverY, contents: { itemId: item.id }, name: `${item.name} 상자`, id: `${id}_giver` }) as ToolExecResult;
+    for (const warning of chest.warnings ?? []) warnings.push(`비전서 상자: ${warning}`);
+    giverNote = `, 비전서 상자 ${giverMap.id}(${ctx.giverX}, ${ctx.giverY})`;
+  } else if (item) {
+    warnings.push(`아이템 ${item.id}(${item.name})을 만들었습니다 — 누가 주는지 이어야 합니다(giverX·giverY 또는 NPC·상자의 changeItem).`);
+  }
+  return {
+    summary: `${map.name} (${x}, ${y})↔(${far.x}, ${far.y}) 에 폭 ${width}칸 틈 '${eventName}' — ${withJosa(who.join(' + '), '이/가')} 있으면${gateSwitches.length ? `(조건 ${gateSwitches.map((gate) => gate.switchId).join('+')})` : ''} 점프로 건넌다(다리 없음)${item ? `, 기술 아이템 ${item.id}` : ''}${giverNote}${bypass ? ' — 걸어서도 돌아갈 수 있음(게이트 아님)' : ''}`,
+    data: { eventId: id, eventIds, kind: 'gap', direction: dir, width, near: { x, y }, far, gapCells, ...(actorId ? { actorId } : {}), ...(skill ? { skillId: skill.id } : {}), itemId: item?.id, ...(gateSwitches.length ? { requiresSwitchIds: gateSwitches.map((gate) => gate.switchId) } : {}), bypass },
+    ...(warnings.length > 0 ? { warnings } : {}),
+  };
+}
+
 const BASE_PAGE = { movement: { type: 'fixed', speed: 3, frequency: 3 } } as const;
 const SOLID = { ...BASE_PAGE, priority: 'same', overlapForbidden: true, trigger: { kind: 'action' } } as const;
 const PASS = { ...BASE_PAGE, priority: 'below', overlapForbidden: false } as const;
@@ -201,19 +323,21 @@ export const FIELD_OBSTACLE_TOOLS: readonly ToolDefinition[] = [
       '길이 막혀 있는 칸(x,y)을 주면 된다 — rock·tree 는 걸어갈 수 있는 길 칸(바위·덩굴 타일을 깔아 막음; 기본 한 칸, 도로가 넓으면 span 칸 수나 fullWidth:true 로 폭 전체를 닫는다 — 한 칸만 놓으면 응답이 우회 가능(data.bypass:true)과 필요한 span 을 경고한다), water·waterfall 은 막힌 물·폭포 칸에서 시작해 direction 으로 length 칸(기술을 쓰면 다리·발판이 놓임), dark 는 걸을 수 있는 길목 칸(맵 전체를 어둡게 하고 그 칸에서 길을 막는다. 기술을 쓰거나 아는 파티가 입장하면 밝아지고 열림). ' +
       '**기술을 가르칠 방법**: giverX·giverY 를 주면 이 도구가 비전서 상자를 같이 놓는다(장애물보다 먼저 닿는 칸에). 안 주면 호출자가 data.itemId(기술머신)를 NPC·상자가 changeItem 으로 주게 하라(place_chest 나 upsert_event) — 자동 플레이(qa:game check)는 그 줄을 따라가 기술을 익힌 뒤 장애물 앞에서 쓴다. 몬스터마다 가르칠 수 있는 종을 제한하려면 define_monster_species.machineSkillIds. ' +
       '**원작식 진행 게이팅**: requiresBadge(캠페인 배지 번호) 또는 requiresSwitchId 를 주면 그 배지·스위치가 있어야 기술이 말을 듣는다(조사해도 메뉴에서 써도 안내만 나오고 열리지 않는다). 조사하면 기술을 아는 파티는 「쓸까?」 선택지를 받는다. ' +
+      '**gap(틈 건너뛰기·장대 도약)**: (x,y)=폭 1~2칸 막힌 틈(얼음 틈·구렁) 바로 앞의 걸을 수 있는 가장자리 칸. direction·length(1..2) 생략=자동 탐지. 지형을 바꾸지 않고 다리도 놓지 않는다 — 양쪽 가장자리 칸에 발밑 조사 이벤트(id, id_far)를 두고, requiresActorId 배우가 파티에 있거나(또는/그리고) requiresSkillId 를 누가 알면 「뛰어넘을까?」 → 주인공 jump 로 건너편에 내려선다(돌아올 때도 같음). 없으면 안내 대사. 둘 다 생략=기본 기술 skill_field_vault(장대 도약) 생성. gap 의 machine 기본은 none. ' +
       '쓰지 말 것: 퍼즐 문·열쇠 문(compile_puzzle), 밀어서 움직이는 바위(place_pushable), 전투로 지키는 길목(place_battle_blocker).',
     parameters: schema({
       mapId: { type: 'string' },
       x: { type: 'integer' },
       y: { type: 'integer' },
-      kind: { type: 'string', enum: [...FIELD_OBSTACLE_KINDS], description: 'rock 바위 밀치기형 · tree 덩굴 가르기형 · water 물길 열기형 · waterfall 폭포 오르기형 · dark 어둠 밝히기형' },
+      kind: { type: 'string', enum: [...FIELD_OBSTACLE_KINDS], description: 'rock 바위 밀치기형 · tree 덩굴 가르기형 · water 물길 열기형 · waterfall 폭포 오르기형 · dark 어둠 밝히기형 · gap 틈 건너뛰기(장대 도약, 다리 없이 점프)' },
       requiresSkillId: { type: 'string', description: '이 장애물을 여는 필드 스킬 id. 생략=종류별 기본(skill_field_shove·cut·ford·ascend·glow). 같은 id 를 쓰면 여러 장애물이 한 기술을 공유한다' },
+      requiresActorId: { type: 'string', description: "gap 전용: 이 배우가 파티에 있어야 뛰어넘는다(예: 창을 장대로 쓰는 동료). requiresSkillId 와 함께 주면 둘 다 필요" },
       skillName: { type: 'string', description: '새로 만들 때 기술 이름(독자 이름 — 원작 이름은 쓰지 않는다). 이미 있는 스킬이면 무시' },
       name: { type: 'string', description: '이벤트 이름(생략=종류별 기본)' },
       tile: { type: 'integer', description: 'rock·tree 에 깔 막는 칸 번호(생략=칩셋에서 자동). 칩셋에 없으면 필요 — tile_query' },
       passTile: { type: 'integer', description: 'water·waterfall 에서 기술을 쓰면 놓이는 다리·발판 칸 번호(생략=칩셋에서 나무다리·디딤돌 자동)' },
-      direction: { type: 'string', enum: ['up', 'down', 'left', 'right'], description: 'water·waterfall: (x,y)에서 건너갈 방향(기본 right=물, up=폭포). rock·tree 의 span: 막는 줄이 뻗는 방향(생략=도로 폭이 좁은 쪽 축)' },
-      length: { type: 'integer', description: 'water·waterfall: 건널 칸 수 1..12(기본 water 3, waterfall 2)' },
+      direction: { type: 'string', enum: ['up', 'down', 'left', 'right'], description: 'water·waterfall·gap: (x,y)에서 건너갈 방향(기본 right=물, up=폭포, gap 은 자동 탐지). rock·tree 의 span: 막는 줄이 뻗는 방향(생략=도로 폭이 좁은 쪽 축)' },
+      length: { type: 'integer', description: 'water·waterfall: 건널 칸 수 1..12(기본 water 3, waterfall 2). gap: 틈 폭 1..2(생략=자동)' },
       span: { type: 'integer', description: `rock·tree: (x,y)에서 direction 방향으로 막는 칸 수 1..${FIELD_OBSTACLE_MAX_SPAN}(기본 1). 도로가 한 칸보다 넓으면 한 칸만 막은 장애물은 옆으로 우회된다 — 응답의 data.bypass 와 경고를 보라` },
       fullWidth: { type: 'boolean', description: `rock·tree: true 면 (x,y)를 지나는 도로를 가로로(또는 direction 이 가리키는 축으로) 걸을 수 있는 칸 전체에 놓아 길을 완전히 닫는다(폭이 ${FIELD_OBSTACLE_MAX_SPAN}칸을 넘으면 광장이라 거절). span 과 함께 쓰지 않는다` },
       machine: { type: 'string', enum: ['hm', 'tm', 'none'], description: 'hm=사라지지 않는 비전서(기본) · tm=한 번 쓰면 없어지는 기술서 · none=아이템 안 만듦(NPC 가 learnSkill 로 줌)' },
@@ -226,7 +350,7 @@ export const FIELD_OBSTACLE_TOOLS: readonly ToolDefinition[] = [
       giverMapId: { type: 'string', description: '비전서 상자를 놓을 맵 id(생략=장애물과 같은 맵). 장애물보다 먼저 닿을 수 있는 곳에 둘 것' },
       id: { type: 'string' },
     }, ['mapId', 'x', 'y', 'kind']),
-    invalidArgsHint: '종류는 kind(rock|tree|water|dark|waterfall), 여는 기술은 requiresSkillId, 대사는 hint(알 때)·blockedText(모를 때), 바위·덩굴은 span·fullWidth, 물길·폭포는 direction·length, 배지 제한은 requiresBadge, 비전서 상자는 giverX·giverY. 그 밖의 칸은 받지 않습니다.',
+    invalidArgsHint: '종류는 kind(rock|tree|water|dark|waterfall|gap), 여는 기술은 requiresSkillId(gap 은 배우 requiresActorId 도), 대사는 hint(알 때)·blockedText(모를 때), 바위·덩굴은 span·fullWidth, 물길·폭포는 direction·length, 배지 제한은 requiresBadge, 비전서 상자는 giverX·giverY. 그 밖의 칸은 받지 않습니다.',
     invalidArgsExample: { mapId: 'map_route_3', x: 12, y: 9, kind: 'tree', skillName: '덩굴 가르기' },
     run(draft: Project, args: Record<string, unknown>): ToolExecResult {
       rejectUnknownKeys(args);
@@ -236,9 +360,10 @@ export const FIELD_OBSTACLE_TOOLS: readonly ToolDefinition[] = [
       const kind = args.kind;
       if (typeof kind !== 'string' || !(FIELD_OBSTACLE_KINDS as readonly string[]).includes(kind)) throw new ToolError(`kind 는 ${FIELD_OBSTACLE_KINDS.join('|')} 중 하나입니다(받은 값: ${JSON.stringify(args.kind)}).`, { code: 'invalid-args' });
       const k = kind as ObstacleKind;
+      if (args.requiresActorId !== undefined && k !== 'gap') throw new ToolError(`requiresActorId 는 kind:'gap'(틈 건너뛰기)에서만 씁니다 — ${k} 는 requiresSkillId(파티 누군가가 아는 필드 기술)로 엽니다.`, { code: 'invalid-args' });
       const base = DEFAULTS[k];
       const skillId = typeof args.requiresSkillId === 'string' && args.requiresSkillId.trim() ? args.requiresSkillId.trim() : base.skillId;
-      const machine = args.machine === undefined ? 'hm' : args.machine;
+      const machine = args.machine === undefined ? (k === 'gap' ? 'none' : 'hm') : args.machine;
       if (machine !== 'hm' && machine !== 'tm' && machine !== 'none') throw new ToolError("machine 은 'hm'|'tm'|'none' 입니다.", { code: 'invalid-args' });
       const direction: Dir = args.direction === undefined ? (k === 'waterfall' ? 'up' : 'right') : (isDir(args.direction) ? args.direction : (() => { throw new ToolError('direction 은 up|down|left|right 입니다.', { code: 'invalid-args' }); })());
       const length = args.length === undefined ? (k === 'waterfall' ? 2 : 3) : Number(args.length);
@@ -294,6 +419,8 @@ export const FIELD_OBSTACLE_TOOLS: readonly ToolDefinition[] = [
       map.events = map.events.filter((entry) => !(entry.id.startsWith(extraPrefix) && /^\d+$/u.test(entry.id.slice(extraPrefix.length))));
       const occupied = map.events.find((entry) => entry.id !== id && entry.x === x && entry.y === y);
       if (occupied) throw new ToolError(`(${x}, ${y}) 에는 이미 이벤트 '${occupied.id}' 가 있습니다 — 다른 칸을 고르거나 remove_event 로 치우세요.`, { code: 'obstacle-occupied', mapId: map.id, x, y });
+
+      if (k === 'gap') return runGap(draft, map, args, { x, y, id, eventName, machine, gateSwitches, warnings, giverX, giverY });
 
       const hint = typeof args.hint === 'string' && args.hint.trim() ? args.hint.trim() : undefined;
       const blocked = typeof args.blockedText === 'string' && args.blockedText.trim() ? args.blockedText.trim() : base.blocked;

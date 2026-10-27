@@ -19,12 +19,44 @@ function snapshotParty(session: Pick<PlaySession, "partyActorIds" | "currentMapI
   return { actorIds: [...session.partyActorIds], mapId: session.currentMapId, x: session.x, y: session.y };
 }
 
-/** 지금 파티를 이름으로 저장한다. 빈 이름·상한 초과(새 이름)는 거절. */
-export function storePartySet(session: PlaySession, partySetId: string): boolean {
+/** storeParty 의 「미리 만들기」 칸 — 지금 파티 대신 이 구성원·자리로 묶음을 만든다. */
+export interface PartySetPreset {
+  readonly actorIds?: readonly string[];
+  readonly mapId?: string;
+  readonly x?: number;
+  readonly y?: number;
+}
+
+function hasPreset(preset: PartySetPreset | undefined): preset is PartySetPreset {
+  return !!preset && (preset.actorIds !== undefined || preset.mapId !== undefined || preset.x !== undefined || preset.y !== undefined);
+}
+
+/**
+ * 지금 파티를 이름으로 저장한다. 빈 이름·상한 초과(새 이름)는 거절.
+ * preset 을 주면 지금 파티 대신 그 구성원·자리로 묶음을 만든다(빠진 칸은 지금 값). 이때는 지금 조작 중인
+ * 파티가 그 묶음이 아니므로 activePartySetId 를 건드리지 않는다 — 건드리면 다음 recallParty 가 지금 파티로
+ * 그 묶음을 덮어 버린다(파티 나누기 준비에서 두 묶음을 미리 만든 뒤 하나를 부르는 순서).
+ */
+export function storePartySet(session: PlaySession, partySetId: string, preset?: PartySetPreset): boolean {
   const id = normalizePartySetId(partySetId);
   if (!id) return false;
   const sets = session.partySets ?? {};
   if (!(id in sets) && Object.keys(sets).length >= PARTY_SET_LIMIT) return false;
+  if (hasPreset(preset)) {
+    const base = snapshotParty(session);
+    const actorIds = preset.actorIds ? [...new Set(preset.actorIds.filter((actorId) => typeof actorId === "string" && actorId))] : base.actorIds;
+    if (actorIds.length === 0) return false;
+    session.partySets = {
+      ...sets,
+      [id]: {
+        actorIds,
+        mapId: preset.mapId || base.mapId,
+        x: Number.isInteger(preset.x) ? preset.x! : base.x,
+        y: Number.isInteger(preset.y) ? preset.y! : base.y,
+      },
+    };
+    return true;
+  }
   session.partySets = { ...sets, [id]: snapshotParty(session) };
   session.activePartySetId ??= id;
   return true;

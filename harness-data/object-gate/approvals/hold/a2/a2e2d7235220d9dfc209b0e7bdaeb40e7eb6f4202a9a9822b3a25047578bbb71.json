@@ -1,0 +1,16 @@
+{
+ "schema": "oprn-object-gate-hold-decision/1",
+ "pixelSha256": "a2e2d7235220d9dfc209b0e7bdaeb40e7eb6f4202a9a9822b3a25047578bbb71",
+ "profileHash": "4d8774b517f41638",
+ "kind": "structure",
+ "decision": "allow",
+ "decidedBy": "supervisor (village-art)",
+ "decidedAt": "2026-10-23T07:56:52.429Z",
+ "by": "delegated",
+ "delegatedBy": "user",
+ "evidence": "tiledata/wasteland-ruins/_review/r57/draft1/opus-reviewer-shack-2f.md",
+ "via": "review-page",
+ "reasons": [],
+ "note": "delegated by user to supervisor 2026-10-23 — wasteland shack-2f: gate PASS (uncalibrated) + fresh independent Opus adversarial reviewer PASS (r57 draft1)",
+ "sig": "271542e1b87898d02216b8ba3d755faf9746e38d2422b62c7588ea926eb9817e"
+}

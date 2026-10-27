@@ -99,7 +99,8 @@ describe("verify:genre-packs CLI", () => {
 
 function runCli(receiptPath: string, projectPath: string): ReturnType<typeof spawnSync> {
   return spawnSync(process.execPath, [
-    resolve("node_modules", "vite-node", "vite-node.mjs"),
+    // vite-node 6(#2396)은 실행 파일을 dist/cli.mjs 로 옮겼다(package.json bin) — 옛 vite-node.mjs 는 없다.
+    resolve("node_modules", "vite-node", "dist", "cli.mjs"),
     "--script",
     resolve("scripts", "verify-genre-pack-receipts.mts"),
     receiptPath,

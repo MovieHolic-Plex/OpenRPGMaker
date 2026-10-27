@@ -1,0 +1,6 @@
+verdict: PASS
+
+1. 3/4 view: the roof is a 14-row top plane (rows 1-15) over a 14-row south front (rows 16-30). The trapezoid roof outline, narrow at the back, follows the existing shack convention (tin_roof/patch_roof in wl_ruins.py). Light falls correctly: the left roof edge is lit, the right exposed-tin strip x27-29 steps down to metal 2, and the cast shadow sits under the front. No side or isometric faces.
+2. Quality: 28 colours, palette-locked. The tarp has back-dark/front-light banding with diagonal folds. The corrugated wall has ribs, two rust patches and seam lines, and all outlines are tinted. Small nit, not blocking: the eave fringe on row 15 (orange every other 3-px group) reads as a dashed line between roof and wall.
+3. Distinctness: none of the existing roofs is a solid faded-orange sheet, and this piece is the smallest structure (2x2). The front layout (door left, barred window right) echoes container-home and shack-a, but the scale, the roof colour and the grey-only wall keep it separate at 1x and 3x. It is also clearly different from hut-stove: orange roof versus pale zinc roof with a pipe.
+4. Readability at 1x: the orange tarp, the two back-to-front ropes (dark core with gold twist pixels, knotted at the eave), three grey stones, the blue half-drawn curtain in a dark doorway and the 3-bar window all read.

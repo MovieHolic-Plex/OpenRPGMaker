@@ -1,7 +1,7 @@
 import { inspectPromptPayload, publishPromptInspection, inspectionEpoch } from "./authoring/promptInspection";
 import { applyAssistantEngine, isLocalCliProviderId, loadAssistantEngine } from "./localCliEngine";
 import { DEFAULT_PI_APPLY, normalizePiApplyMode, type PiApplyMode } from "./piAgent/applyMode";
-import { configForRole, parseRoleModels, type RoleModel, type SpecialistModels, type ThinkingEffort } from "./modelRoles";
+import { configForRole, parseRoleModel, parseRoleModels, type RoleModel, type SpecialistModels, type ThinkingEffort } from "./modelRoles";
 import { DEFAULT_PIXEL_MODEL, parsePixelModel } from "./pixelModel";
 // ai/llmClient.ts
 // OpenAI Chat Completions 호환 LLM 클라이언트(의존성 추가 없이 fetch 직접 구현).
@@ -65,7 +65,12 @@ export interface AiConfig {
    */
   pixelModel?: RoleModel;
   /** Slots edited directly by the user. Unpinned defaults follow the account selection. */
-  modelSelectionOverrides?: Partial<Record<"ultrabrain" | "vision" | "writer" | "deep" | "build" | "image" | "pixel", true>>;
+  modelSelectionOverrides?: Partial<Record<"ultrabrain" | "vision" | "writer" | "deep" | "build" | "image" | "pixel" | "smol" | "advisor", true>>;
+  /**
+   * 잔일(smol)·검토자(advisor) 칸 — src/ai/assistantRoles.ts. 연결된 계정으로 자동 배정되고, 직접 고르면 modelSelectionOverrides 에 표시가 남는다.
+   * "off" = 일부러 끔. 칸이 없으면 물러난다: 잔일은 주 모델이, 검토자는 꺼진다.
+   */
+  assistantRoles?: Partial<Record<"smol" | "advisor", RoleModel | "off">>;
   ultrabrainProviderId?: string;
   ultrabrainModel?: string;
   ultrabrainReasoningEffort?: ThinkingEffort;
@@ -387,16 +392,18 @@ function loadStoredAiConfig(): AiConfig {
         : withoutLegacySeededDeepRole(promoteLegacyRoleModels(parseRoleModels(parsed.roleModels)), providerId, liteModel || model),
       // 도트 저작 칸: 저장된 값만 읽는다. 옛 설정에는 없으므로 비워 두고 기존 동작(계획 모델)을 유지한다.
       ...(parsePixelModel(parsed.pixelModel) ? { pixelModel: parsePixelModel(parsed.pixelModel)! } : {}),
+      ...(parseAssistantRoleSlots(parsed.assistantRoles) ? { assistantRoles: parseAssistantRoleSlots(parsed.assistantRoles)! } : {}),
       // Old blobs cannot distinguish a user selection from an automatically seeded row.
       // Preserve every stored slot until the user explicitly chooses to align it.
       modelSelectionOverrides: Object.fromEntries(
-        (["ultrabrain", "vision", "writer", "deep", "build", "image", "pixel"] as const).filter(slot => {
+        (["ultrabrain", "vision", "writer", "deep", "build", "image", "pixel", "smol", "advisor"] as const).filter(slot => {
           if (parsed.modelSelectionOverrides && typeof parsed.modelSelectionOverrides === "object") {
             return parsed.modelSelectionOverrides[slot] === true;
           }
           return slot === "ultrabrain" ? Boolean(parsed.ultrabrainModel || parsed.ultrabrainProviderId)
             : slot === "image" ? Boolean(parsed.imageModel || parsed.imageProviderId)
             : slot === "pixel" ? Boolean(parsed.pixelModel)
+            : slot === "smol" || slot === "advisor" ? false
             : Boolean(parsed.roleModels?.[slot]);
         }).map(slot => [slot, true as const]),
       ),
@@ -441,6 +448,18 @@ function loadStoredAiConfig(): AiConfig {
   } catch {
     return defaultAiConfig();
   }
+}
+
+/** 잔일·검토자 칸(assistantRoles)을 읽는다. 모양이 틀린 칸은 버린다. 둘 다 없으면 undefined. */
+function parseAssistantRoleSlots(raw: unknown): AiConfig["assistantRoles"] | undefined {
+  if (!raw || typeof raw !== "object") return undefined;
+  const out: NonNullable<AiConfig["assistantRoles"]> = {};
+  for (const role of ["smol", "advisor"] as const) {
+    const value = (raw as Record<string, unknown>)[role];
+    if (value === "off") out[role] = "off";
+    else { const parsed = parseRoleModel(value); if (parsed) out[role] = parsed; }
+  }
+  return Object.keys(out).length ? out : undefined;
 }
 
 export function saveAiConfig(config: AiConfig): void {

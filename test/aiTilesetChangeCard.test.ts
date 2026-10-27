@@ -40,7 +40,7 @@ beforeEach(() => {
   editorState.set({ currentMapId: "map_blank_start", selection: null });
   restoreDom = installFakeDom();
   Object.defineProperty(document, "documentElement", { configurable: true, value: document.createElement("html") });
-  vi.stubGlobal("window", { addEventListener: () => {}, removeEventListener: () => {}, dispatchEvent: () => true });
+  vi.stubGlobal("window", { addEventListener: () => {}, removeEventListener: () => {}, dispatchEvent: () => true, setInterval: () => 0, clearInterval: () => undefined });
   const storage = new Map<string, string>();
   vi.stubGlobal("localStorage", {
     getItem: (key: string) => storage.get(key) ?? null,

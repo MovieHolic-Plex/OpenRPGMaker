@@ -1,0 +1,16 @@
+{
+ "schema": "oprn-object-gate-hold-decision/1",
+ "pixelSha256": "40d582ee10ddcfc1aa49db7277ebe91bc3e1e5f7ca6bfae4bb8f2636cbf9e30c",
+ "profileHash": "4d8774b517f41638",
+ "kind": "terrain",
+ "decision": "allow",
+ "decidedBy": "supervisor (village-art)",
+ "decidedAt": "2026-10-26T06:48:42.092Z",
+ "by": "delegated",
+ "delegatedBy": "user",
+ "evidence": "tiledata/wasteland-ruins/_review/r65/huskb-asph/verdict-S.md",
+ "via": "review-page",
+ "reasons": [],
+ "note": "r65 asphalt-ph",
+ "sig": "5028eac45fe9b29e17879c17902b85d86593267e21e892a8ade2b62676cd91ff"
+}

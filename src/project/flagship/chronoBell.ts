@@ -38,6 +38,7 @@ import { applyFallenInteractiveProps } from "./fallen/interactProps";
 import { buildFallenForestMaps } from "./fallen/forestMaps";
 import { applyFallenStoryPass } from "./fallen/storyPass";
 import { applyFallenAct1Finale, applyFallenFieldRules } from "./fallen/act1Finale";
+import { applyFallenAct2Opening } from "./fallen/act2Opening";
 import { applyFaceCellEmotions, applyFallenTownCast, applyNorthForest, fallenSpeakerBusts } from "./fallen/townCast";
 import { placeFallenStarVessel } from "./fallenStarVessel";
 import { dressObservatoryHall } from "./fallenObservatoryHall";
@@ -59,13 +60,14 @@ const IRIS_ID = "actor_fs_iris";
  * 도구 실행 — 도구는 초안 사본에 쓰고 그 결과를 project 에 덮는다. 그래서 도구를 부른 뒤에는 맵·이벤트 참조가 낡는다.
  * 맵은 늘 maps() 로 다시 꺼내 쓴다(낡은 참조에 쓴 변경은 조용히 사라진다 — 2026-10-20 문지기 위치·엔딩 명령 유실).
  */
-function execTool(project: Project, name: string, args: Record<string, unknown>): void {
+function execTool(project: Project, name: string, args: Record<string, unknown>): unknown {
   const ctx = { project, assistantRun: false };
   const res = runTool(ctx, name, args, { dryRun: false });
   if (!res.ok) {
     throw new Error(`[fallen-star] ${name} failed: ${res.summary} ${JSON.stringify(res.issues ?? [])}`);
   }
   Object.assign(project, ctx.project);
+  return (res as { data?: unknown }).data;
 }
 
 const clone = <T>(value: T): T => JSON.parse(JSON.stringify(value)) as T;
@@ -153,7 +155,7 @@ function setupFoes(project: Project): { field: string[]; boss: string } {
   makeEnemy(project, "enemy_fs_guardian", "별지기의 수호상", "golem-crystal", { maxHp: 900, maxMp: 0, attack: 92, defense: 90, mind: 40, agility: 22 }, 300, 0);
   // 발렌은 필드와 같은 걷기 칩의 전투 시트로 싸운다(감사 3차: 필드는 망토 마법사, 전투는 보라 후드 — 다른 사람처럼 보였다).
   const valen = project.database.enemies.find((e) => e.id === "enemy_fs_valen");
-  if (valen) valen.monsterResourceId = "charset-battler-actor1-4";
+  if (valen) valen.monsterResourceId = "charset-battler-fs-valen";
   // 보스 압박(가혹 검수 r1: 「공격 연타만으로 이긴다」) — 발렌은 둘째 차례부터 세 차례마다 「심판의 기도」로 예고하고 다음 차례에
   // 파티 전체에 「심판의 빛」을 쏟는다. 수호상은 둘째 차례부터 격 차례로 「수호의 철퇴」. 둘 다 방어가 두꺼워 통상 공격이 덜 박힌다.
   // 가혹 검수 r3·r4: 발렌의 자기 치유(체력 30% 아래, 한 차례에 두 번까지)가 싸움을 끝나지 않게 했다 — 치유를 뺐다.
@@ -2443,6 +2445,8 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
   applyFallenInteractiveProps(project);
   // 제1막 새 뼈대 — 추락지 발렌·지하 미궁(3·4층)·달빛의 용·「달의 아이」 패널·광장 포위 끝(fallen/act1Finale.ts). 얼굴 앞.
   applyFallenAct1Finale(project, execTool, ids);
+  // 제2막 여는 비트 — 1막 엔딩 → 「제2막으로」 → 초소 감방·막사 잠입·통금의 밤(fallen/act2Opening.ts). 얼굴 앞.
+  applyFallenAct2Opening(project, execTool, { hub: ids.hub, observatory: ids.observatory, smithy: "fs_smithy" });
   const speakerFaces: Record<string, string> = {
     [FS_NAMES.hero]: actorFace(DEFAULT_ACTOR_ID),
     엘레나: actorFace("actor_fs_elena"),

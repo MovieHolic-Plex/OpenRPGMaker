@@ -34,6 +34,7 @@ import {
 } from "@/project/package";
 import { projectWithoutEventDrafts } from "@/project/eventDrafts";
 import { createStandaloneHtmlExport } from "@/project/standaloneExport";
+import { standaloneExportDoneKind, standaloneExportDoneMessage } from "@/project/standaloneHostingNotice";
 import {
   createDesktopSteamExportPackage,
   type DesktopSteamExportOptions,
@@ -1145,15 +1146,13 @@ async function doExportStandaloneHtml(): Promise<void> {
     toast("실행형 HTML 을 만드는 중... (에셋을 문서에 넣느라 수십 초 걸립니다)", "info");
     const result = await createStandaloneHtmlExport(store.getCurrent());
     downloadBlob(result.blob, result.fileName);
-    const size = (result.summary.htmlBytes / 1048576).toFixed(1);
-    const missing = result.summary.missingAssets.length;
-    if (missing > 0) console.warn("[standalone-export] skipped retired (deleted) art:", result.summary.missingAssets);
-    toast(
-      missing === 0
-        ? `실행형 HTML 완료: ${size}MB, 에셋 ${result.summary.assetCount}개`
-        : `실행형 HTML 완료(경고): ${size}MB, 못 넣은 에셋 ${missing}개`,
-      missing === 0 ? "ok" : "info",
-    );
+    const done = {
+      htmlBytes: result.summary.htmlBytes,
+      assetCount: result.summary.assetCount,
+      missingCount: result.summary.missingAssets.length,
+    };
+    if (done.missingCount > 0) console.warn("[standalone-export] skipped retired (deleted) art:", result.summary.missingAssets);
+    toast(standaloneExportDoneMessage(done), standaloneExportDoneKind(done));
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
     toast(`실행형 HTML 내보내기 실패: ${message}`, "error");

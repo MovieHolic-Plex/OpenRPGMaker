@@ -4,12 +4,13 @@ import { expandHardClusterPlacement } from "@/editor/tools/clusterRulePlacement"
 import { createBlankProject, TILE } from "@/project/defaults";
 import { store } from "@/project/store";
 import type { TileGroupMetadata, TilesetDef } from "@/project/types";
+import { withRetiredEasyRpgTilesets } from "./support/retiredEasyRpgTilesets";
 
 const FOREIGN_NAMESPACES = ["custom", "interior"] as const;
 const TRUNKS = [290, 291, 292, 293] as const;
 
 function fixture(namespace: "custom" | "interior" | "town") {
-  const project = createBlankProject();
+  const project = withRetiredEasyRpgTilesets(createBlankProject());
   const map = project.maps[project.startMapId];
   map.width = 6;
   map.height = 6;

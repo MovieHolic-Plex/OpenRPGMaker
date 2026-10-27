@@ -1,0 +1,369 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "08f1bdec23aab9fad4817041a07844ec1f1e6b362a36ae4cc46c3a3c76a7a2d9",
+ "width": 16,
+ "height": 16,
+ "kind": "frame",
+ "name": "east-west scrap corrugated-metal fence section on posts: top rail seen from above, sheet front face, tiles into a line",
+ "label": "wasteland_ruins/fence-h",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 투영이 3/4 아님(front_elevation) (4/4)",
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)",
+  "3/4: 윗면 2행 < 3 (3/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "투영이 3/4 아님(front_elevation) (4/4)",
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)",
+   "윗면 2행 < 3 (3/4)"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 13,
+  "tileColorsP90": 13,
+  "darkV5": 47,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 1
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "borderline",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top rail / post caps",
+      "rows": "0-2",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "corrugated sheet front face",
+      "rows": "5-14",
+      "evidence": "none",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": "5"
+     },
+     {
+      "part": "posts",
+      "rows": "0-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 12,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The silhouette is a constant 16 px wide from row 1 to row 15, so nothing widens or narrows like an ellipse. At the middle column the light tan row 2 is only a 1-row rail highlight over brown face rows 3-4. At the post columns the light row 0 is a 1-row cap highlight over brown rows 1-2. The rail therefore has at most 2-3 rows, which is a rim and not a top surface. Row 6 is a reddish edge line on the sheet, with a dark row 5 above it. The corrugated sheet (rows 7-14, blue-gray) and the posts (rows 3-14) are drawn as vertical faces only. No horizontal top surface is visible on the rail, the posts or the base. The object reads as a flat front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is about one tile in size. It measures 13 visible tones per 16x16 tile, above the hedge reference (9) and below the stall (17) and well (20). Near-flat coverage is 0%, so there are no 5x5 flat fills, and the corrugation ridges and post grain break up the surfaces. The dark edge pixels are 0% neutral, so the outline is tinted. That matches Beodeul's practice of using the dark tone of the neighbouring material (brown beside wood, dark blue-grey beside metal) rather than a uniform black line. With only 13 colours across the posts and the metal sheet, each material gets roughly 4 steps, a little under Beodeul's 5-6. For a thin, sparse prop like a fence, though, it would sit next to the hedge and bench without looking flatter or more sticker-like. I judged this partly by eye because the candidate is very small on the board, and it passes on the measured facts and the tinted outline.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19325
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "post tops (left, middle, right)",
+      "rows": "0-2",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "top rail between posts",
+      "rows": "2-4",
+      "evidence": "none",
+      "front_edge_line_row": 4,
+      "eave_shadow_rows": "5"
+     },
+     {
+      "part": "corrugated sheet front face",
+      "rows": "6-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 9,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "In the x=8 scan, row 2 is a tan strip (#d6b073) and row 3 is mid-brown. Row 4 is darker and row 5 is a dark shadow, with a rust lip on row 6. That gives the rail only about 2 rows of top surface, which is a rim-sized strip. The posts are brown vertical strips with one light row (row 0) at the top and no ellipse or edge-line band. The sheet below (rows 7-14) is a flat front face of blue-grey corrugation with vertical stripes, and row 15 is a dark base. The result is a front elevation with only a thin rail rim on top, like the reference 'rim only: top 2' and 'band 2' cases."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is small and hard to read at board scale, so this leans on the measured facts plus what is visible. It has 13 visible tones per 16x16 tile, level with prop-hedge (9) and prop-stall-cheese (17) and below prop-well-roofed (20). Near-flat coverage is 0%, so there are no large flat fills. The posts and the corrugated sheet show ribbing and tonal variation rather than a single fill. 0% of the dark edge pixels are neutral, so the outlines lean toward the material tone (brown on the posts, dark metal on the sheet) and do not form a black sticker line. The whole piece uses only 13 colours, similar to the hedge's 11, which suggests roughly 4-5 steps per material, slightly under Beodeul's 5-6. It reads as a plausible peer to the references and not as a thinner or flatter piece.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 28791
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top rail / post caps",
+      "rows": "0-2",
+      "evidence": "none",
+      "front_edge_line_row": 2,
+      "eave_shadow_rows": "3-5"
+     },
+     {
+      "part": "corrugated sheet front face",
+      "rows": "6-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "posts",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 12,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "At the sheet column (x=8) the top is a 1-row dark outline (row 1) and a 1-row tan highlight (row 2), followed by darker brown and dark rows 3-5 and a rust edge at row 6. That is a 2-row rim with a shadow, not a horizontal surface. The posts (x=4 and x=11) show only a 1-row tan cap at row 0, then vertical brown faces down to row 15. The rail has no widening or ellipse and no visible depth. The slate-blue sheet face (rows 7-14) is a vertical face. The whole object reads as a front elevation with no real top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small fence section, and at 2x it is hard to make out fine detail. The measured facts carry most of the judgement. It has 13 visible tones per 16x16 tile, which is above prop-hedge (9) and close to the stall (17) and well (20). Near-flat coverage is 0%, so there are no flat fills. Dark edge pixels are 0% neutral, so the outlines lean toward dark brown and rust rather than black, which fits dark_material_tone. Posts and corrugated sheet are separated by value, with ribbing and rust dots giving some texture. Each material ramp holds roughly 4 steps against the references' 5-6, so shading is slightly shallower than the best references. Because the whole piece uses only 13 colours, similar to the hedge's 11, I judge it comparable to a simple Beodeul prop and not a sticker-style piece.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 21662
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "post tops",
+      "rows": "0-0",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "top rail",
+      "rows": "2-4",
+      "evidence": "none",
+      "front_edge_line_row": 2,
+      "eave_shadow_rows": "5-5"
+     },
+     {
+      "part": "corrugated sheet face",
+      "rows": "6-14",
+      "evidence": "none",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 1,
+    "front_face_rows": 13,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The fence is drawn almost entirely as a front elevation. The posts have a 1-row light cap at row 0. The top rail is a 1-row tan line at row 2 over a brown face at rows 3-4, with a dark shadow at row 5. That is a rim, not a top surface. The sheet below (reddish lip at row 6, blue-grey vertical corrugation at rows 7-14) is a flat vertical face. No band of rows or ellipse shows a horizontal top for the rail, posts or sheet, so the main top is 1 row."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is small, one fence tile with posts, a top rail and a corrugated sheet face. It shows 13 visible tones per 16x16 tile, above prop-hedge (9) and close to the stall (17) and well (20). Near-flat coverage is 0%, so there are no flat fills. Dark edge pixels are 0% near-neutral, so the outline is tinted by the neighbouring material (dark brown beside the posts, dark tone beside the metal) and not a black sticker line. The sheet shows corrugation ridges and the posts show grain, which is some texture rather than rich. Each material seems to have about 4 shading steps, slightly under the 5-6 in the references. That is acceptable for a thin, simple prop, and it would not look flatter or thinner next to the hedge or bench.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 1행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 1행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18880
+  }
+ ],
+ "decidedAt": "2026-10-22T14:22:06.458Z",
+ "cells": {
+  "16": [
+   "977441c58233c33b"
+  ],
+  "24": [
+   "0a4112aa76573e03",
+   "1b8b631a967bd854",
+   "5cd87c55b95b1b33",
+   "766f1da4ac7aeafb",
+   "8435ababb998b58c",
+   "985f634f60abe177"
+  ],
+  "32": [
+   "6972570fbe6634c6",
+   "7ff23595b706152b",
+   "a00b2c450ab3a988",
+   "a64a82c9cbc5bc5d",
+   "cc1daa9d2144329f",
+   "e5a59ce6d4c89e84"
+  ],
+  "48": [
+   "2a7b0627ed43b7db",
+   "30bb8c73422f1360",
+   "4906e859f535da97",
+   "8f8b53be6482fe45",
+   "d00b1f3a7eddbdf4",
+   "f3eca5a5666726ec"
+  ]
+ }
+}

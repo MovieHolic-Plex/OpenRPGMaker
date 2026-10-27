@@ -65,7 +65,7 @@ export type StepResult =
       showPad?: boolean;
       settings: MessageWindowSettings;
     }
-  | { kind: "enterHeroName"; actorId: string; maxLength: number; showInitialName: boolean; currentName: string; prompt?: string }
+  | { kind: "enterHeroName"; actorId: string; maxLength: number; showInitialName: boolean; currentName: string; prompt?: string; presentation?: "window" | "showcase" }
   | { kind: "timer"; action: "set" | "start" | "stop"; seconds?: number; timerId?: "timer1" | "timer2" }
   | { kind: "advanceTime"; minutes?: number; days?: number }
   | { kind: "setTime"; hour: number; minute?: number }
@@ -148,9 +148,11 @@ export type StepResult =
   | { kind: "flashScreen"; red: number; green: number; blue: number; durationMs: number }
   | { kind: "shakeScreen"; intensity: number; durationMs: number; direction?: ShakeDirection }
   /** 한 자리·한 인물에 터지는 파티클. wait 가 아니면 흐름을 막지 않는다. */
-  | { kind: "particleEffect"; preset: ParticlePreset; target: StagingTarget; durationMs: number; wait: boolean }
+  | { kind: "particleEffect"; preset: ParticlePreset; target: StagingTarget; durationMs: number; wait: boolean; sizePercent?: number }
   /** 캐릭터 모습 효과. 장면이 세션(m2Runtime.screen.spriteLooks)에 써서 매 프레임 그린다. */
   | { kind: "spriteLook"; target: Exclude<StagingTarget, { kind: "tile" }>; fields: Readonly<Record<string, unknown>> }
+  /** 승강 장치 타기 — 발판·레일·사슬을 그리고 파티를 태워 위/아래로 옮긴다(playSceneLiftRide). */
+  | ({ kind: "liftRide" } & import("@/project/eventCommands/liftRide").LiftRideSpec)
   | {
       kind: "scrollMap";
       direction: "down" | "left" | "right" | "up";
@@ -217,7 +219,7 @@ export type StepResult =
       branchOnNotEnoughGold?: boolean;
     }
   | { kind: "gameOver"; message?: string; gameOverId?: string }
-  | { kind: "returnToTitle"; title?: string; message?: string; presentation?: import("@/project/cinematicSettings").EndingPresentation; clear?: { readonly endingId: string } };
+  | { kind: "returnToTitle"; title?: string; message?: string; presentation?: import("@/project/cinematicSettings").EndingPresentation; clear?: { readonly endingId: string }; continueTo?: import("@/project/types").EndingContinueTo };
 
 export type ResumeValue = number | boolean | string | undefined | void | "failed";
 export type PendingStep = Exclude<StepResult["kind"], "done"> | "waitUntil";

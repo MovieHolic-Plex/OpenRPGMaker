@@ -1,11 +1,16 @@
+import { syncLiftRide } from "@/player/playSceneLiftRide";
 import { characterBaseOrigin } from "./characterOrigin";
-import Phaser from "phaser";
+// 타입만 가져온다. 값 import 는 phaser.esm.js 를 끌어와 모듈 평가 때 `window` 를 읽는다 —
+// 노드 vitest 에서 이 파일을 거치는 테스트 약 200개가 「window is not defined」로 수집조차 안 됐다(ci-full 40165485978).
+// 런타임에는 phaserRuntime 이 window.Phaser 를 꽂으므로 값은 전역 이름공간으로 읽는다(playSceneActionCombat 과 같다).
+import type Phaser from "phaser";
 import { ensureM2Runtime } from "@/player/interpreter/m2RuntimeState";
 import type { StepResult } from "@/player/interpreter/types";
 import { characterSpriteY } from "@/player/characterDepth";
 import { runtimeMapWorldScale } from "@/player/runtimeViewScale";
 import { screenOverlayHost } from "@/player/playSceneScreenEffects";
 import { syncDoors } from "@/player/playSceneDoors";
+import { syncFreezeFrame } from "@/player/playSceneFreezeFrame";
 import type { PlaySceneContext } from "@/player/playSceneTypes";
 import {
   isEmptySpriteLook,
@@ -19,6 +24,9 @@ import {
 import { mapTileSize } from "@/project/tileGeometry";
 import { store } from "@/project/store";
 import { runtimeEventViewById } from "@/project/runtimeEventState";
+
+/** Phaser.TintModes.FILL (Phaser 4). 값 import 없이 쓰려고 숫자로 둔다. */
+const TINT_MODE_FILL = 1;
 
 /**
  * 필드 연출 렌더러 — 파티클 · 캐릭터 모습 효과 · 레터박스.
@@ -43,6 +51,8 @@ const TEX = {
   puff: "oprn-fx-puff",
   plus: "oprn-fx-plus",
   drop: "oprn-fx-drop",
+  paper: "oprn-fx-paper",
+  petal: "oprn-fx-petal",
 } as const;
 
 /**
@@ -84,6 +94,16 @@ function ensureFxTextures(scene: PlaySceneContext): void {
     ctx.fillRect(3, 0, 1, 7);
     ctx.fillRect(0, 3, 7, 1);
     ctx.fillRect(2, 2, 3, 3);
+  });
+  // 종이 한 장(도트): 흰 면·아래 그늘·글줄 셋. 꽃잎: 연분홍 둥근 조각 + 짙은 끝.
+  canvasTexture(scene, TEX.paper, 7, (ctx) => {
+    ctx.fillStyle = "#c3c8d2"; ctx.fillRect(0, 0, 6, 7);
+    ctx.fillStyle = "#ffffff"; ctx.fillRect(0, 0, 5, 6);
+    ctx.fillStyle = "#9aa1ad"; ctx.fillRect(1, 1, 3, 1); ctx.fillRect(1, 3, 3, 1); ctx.fillRect(1, 5, 2, 1);
+  });
+  canvasTexture(scene, TEX.petal, 4, (ctx) => {
+    ctx.fillStyle = "#ffd1df"; ctx.fillRect(1, 0, 2, 1); ctx.fillRect(0, 1, 4, 2);
+    ctx.fillStyle = "#e88aa8"; ctx.fillRect(1, 3, 2, 1); ctx.fillRect(3, 2, 1, 1);
   });
   canvasTexture(scene, TEX.plus, 5, (ctx) => {
     ctx.fillStyle = "#fff";
@@ -172,6 +192,27 @@ const RECIPES: Record<ParticlePreset, ParticleRecipe> = {
       tint: [0xffffff, 0xffe060, 0xff8a30, 0xff3a18], blendMode: "ADD", emitting: false,
     }),
   },
+  // 부딪혀 떨군 서류 — 위로 확 흩어졌다가 천천히 회전하며 내려앉는다(낙하가 느려 «종이»로 읽힌다).
+  paper: {
+    texture: TEX.paper, burst: true, count: 9,
+    config: (s) => ({
+      x: { min: -6 * s, max: 6 * s }, y: { min: -18 * s, max: -10 * s },
+      speed: { min: 24 * s, max: 62 * s }, angle: { min: 200, max: 340 },
+      gravityY: 34 * s, lifespan: { min: 1500, max: 2300 },
+      rotate: { start: 0, end: 540 }, scale: { start: s, end: 0.9 * s }, alpha: { start: 1, end: 0.15 },
+      emitting: false,
+    }),
+  },
+  // 바람에 흩날리는 꽃잎 — 대상 위쪽에서 비스듬히 흘러내린다.
+  petals: {
+    texture: TEX.petal, burst: false, count: 1,
+    config: (s) => ({
+      x: { min: -40 * s, max: 40 * s }, y: { min: -48 * s, max: -30 * s },
+      speedX: { min: 6 * s, max: 22 * s }, speedY: { min: 8 * s, max: 20 * s },
+      lifespan: 2200, frequency: 120, quantity: 1,
+      rotate: { start: 0, end: 360 }, scale: { start: s, end: 0.8 * s }, alpha: { start: 1, end: 0 },
+    }),
+  },
   splash: {
     texture: TEX.drop, burst: true, count: 26,
     config: (s) => ({
@@ -196,7 +237,8 @@ function targetSprite(scene: PlaySceneContext, target: ParticleStep["target"], c
 export function playParticleEffect(scene: PlaySceneContext, step: ParticleStep, currentEventId?: string): Promise<void> {
   ensureFxTextures(scene);
   const recipe = RECIPES[step.preset];
-  const scale = runtimeMapWorldScale(scene);
+  // 크기(%)는 입자 그림과 퍼지는 거리를 함께 키운다(레시피 수치가 모두 s 배) — 1배 화면에서 서류·불티가 점으로 보이던 것을 키운다.
+  const scale = runtimeMapWorldScale(scene) * ((step.sizePercent ?? 100) / 100);
   const sprite = targetSprite(scene, step.target, currentEventId);
   const size = mapTileSize(scene.map);
   // 칸 대상은 칸 발밑 중앙(캐릭터 원점과 같은 기준)에 둔다.
@@ -207,7 +249,7 @@ export function playParticleEffect(scene: PlaySceneContext, step: ParticleStep, 
   const emitter = scene.add.particles(sprite ? 0 : x, sprite ? 0 : y, recipe.texture, recipe.config(scale));
   emitter.setDepth(PARTICLE_DEPTH);
   if (sprite) emitter.startFollow(sprite);
-  const longestLife = 1500;
+  const longestLife = step.preset === "paper" || step.preset === "petals" ? 2400 : 1500;
   return new Promise((resolve) => {
     const finish = (): void => {
       emitter.destroy();
@@ -299,7 +341,7 @@ function applyLook(scene: PlaySceneContext, sprite: Phaser.GameObjects.Sprite, r
   const definite = look as SpriteLook;
 
   if (definite.tint) {
-    if (definite.tintFill) sprite.setTint(hexToInt(definite.tint)).setTintMode(Phaser.TintModes.FILL);
+    if (definite.tintFill) sprite.setTint(hexToInt(definite.tint)).setTintMode(TINT_MODE_FILL);
     else sprite.setTint(hexToInt(definite.tint));
   } else sprite.clearTint();
   sprite.setFlipX(definite.flip === true);
@@ -332,7 +374,7 @@ function spawnAfterimage(scene: PlaySceneContext, sprite: Phaser.GameObjects.Spr
   ghost.setScale(sprite.scaleX, sprite.scaleY);
   ghost.setAngle(sprite.angle);
   ghost.setFlipX(sprite.flipX);
-  ghost.setTint(0x9ec8ff).setTintMode(Phaser.TintModes.FILL);
+  ghost.setTint(0x9ec8ff).setTintMode(TINT_MODE_FILL);
   ghost.setAlpha(0.45);
   ghost.setDepth(sprite.depth - 1);
   scene.tweens.add({ targets: ghost, alpha: 0, duration: 300, onComplete: () => ghost.destroy() });
@@ -414,7 +456,125 @@ export function updateFieldStaging(scene: PlaySceneContext): void {
   for (const [sprite, look] of lookTargets(scene)) applyLook(scene, sprite, look, now);
   syncLetterbox(scene);
   syncDoors(scene);
+  syncFreezeFrame(scene);
   syncNearSparkles(scene, now);
+  syncEventGlows(scene, now);
+  syncLiftRide(scene);
+}
+
+// ── 늘 빛나는 표지(page.glow) ────────────────────────────────────────────
+
+const GLOW_TEX = { halo: "oprn-fx-glow-halo", ring: "oprn-fx-glow-ring" } as const;
+const GLOW_HALO_DEPTH = 150_000;
+const DEFAULT_GLOW_COLOR = 0x8fd8ff;
+
+type GlowParts = {
+  readonly halo: Phaser.GameObjects.Image;
+  readonly core: Phaser.GameObjects.Image;
+  readonly twinkles: Phaser.GameObjects.Particles.ParticleEmitter;
+  readonly motes: Phaser.GameObjects.Particles.ParticleEmitter;
+  readonly ring: Phaser.GameObjects.Image;
+  readonly radiusPx: number;
+  readonly phase: number;
+  x: number;
+  y: number;
+};
+type GlowState = { mapId: string; ids: readonly string[]; parts: Map<string, GlowParts>; nextCheck: number };
+const glowStates = new WeakMap<PlaySceneContext, GlowState>();
+
+function ensureGlowTextures(scene: PlaySceneContext): void {
+  canvasTexture(scene, GLOW_TEX.halo, 64, (ctx, size) => softCircle(ctx, size, 0.05));
+  canvasTexture(scene, GLOW_TEX.ring, 64, (ctx, size) => {
+    ctx.strokeStyle = "#fff";
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.arc(size / 2, size / 2, size / 2 - 3, 0, Math.PI * 2);
+    ctx.stroke();
+  });
+}
+
+function destroyGlow(parts: GlowParts): void {
+  parts.halo.destroy();
+  parts.core.destroy();
+  parts.ring.destroy();
+  parts.twinkles.destroy();
+  parts.motes.destroy();
+}
+
+function glowColor(hex: string | undefined): number {
+  return typeof hex === "string" && /^#[0-9a-f]{6}$/i.test(hex) ? Number.parseInt(hex.slice(1), 16) : DEFAULT_GLOW_COLOR;
+}
+
+/** 세이브 포인트처럼 page.glow 가 있는 이벤트 — 거리와 무관하게 늘 숨 쉬는 빛무리·반짝임·오르는 빛 알갱이·퍼지는 고리. */
+function syncEventGlows(scene: PlaySceneContext, now: number): void {
+  const map = scene.map;
+  if (!map || !scene.session || !scene.add) return;
+  let state = glowStates.get(scene);
+  if (!state || state.mapId !== map.id) {
+    for (const parts of state?.parts.values() ?? []) destroyGlow(parts);
+    state = { mapId: map.id, ids: map.events.filter((event) => event.pages?.some((page) => page.glow)).map((event) => event.id), parts: new Map(), nextCheck: 0 };
+    glowStates.set(scene, state);
+  }
+  if (state.ids.length === 0) return;
+  if (now >= state.nextCheck) {
+    state.nextCheck = now + 300;
+    const project = store.getCurrent();
+    const size = mapTileSize(map);
+    const s = runtimeMapWorldScale(scene);
+    for (const id of state.ids) {
+      const view = runtimeEventViewById(project, map, scene.session, scene.eventPositions, id);
+      const glow = view?.page?.glow;
+      const existing = state.parts.get(id);
+      if (!view || !glow) {
+        if (existing) { destroyGlow(existing); state.parts.delete(id); }
+        continue;
+      }
+      const x = (view.x + 0.5 + (glow.offsetX ?? 0)) * size;
+      const y = (view.y + 0.35 + (glow.offsetY ?? 0)) * size;
+      if (existing) { existing.x = x; existing.y = y; continue; }
+      ensureFxTextures(scene);
+      ensureGlowTextures(scene);
+      const color = glowColor(glow.color);
+      const radiusPx = Math.max(1, Math.min(3, glow.radius ?? 2)) * size;
+      const halo = scene.add.image(x, y, GLOW_TEX.halo).setBlendMode("ADD").setTint(color).setDepth(GLOW_HALO_DEPTH);
+      const core = scene.add.image(x, y, GLOW_TEX.halo).setBlendMode("ADD").setTint(0xffffff).setDepth(GLOW_HALO_DEPTH + 1);
+      const ring = scene.add.image(x, y, GLOW_TEX.ring).setBlendMode("ADD").setTint(color).setDepth(GLOW_HALO_DEPTH + 2);
+      const twinkles = scene.add.particles(x, y, TEX.star, {
+        x: { min: -radiusPx * 0.75, max: radiusPx * 0.75 }, y: { min: -radiusPx * 0.9, max: radiusPx * 0.35 },
+        lifespan: 650, frequency: 170, quantity: 1, speed: 0,
+        scale: { start: 1.2 * s, end: 0 }, alpha: { start: 1, end: 0 },
+        tint: [0xffffff, color, 0xfff6c0], blendMode: "ADD",
+      });
+      twinkles.setDepth(PARTICLE_DEPTH);
+      const motes = scene.add.particles(x, y, TEX.dot, {
+        x: { min: -size * 0.55, max: size * 0.55 }, y: { min: -size * 0.1, max: size * 0.3 },
+        speedX: { min: -3 * s, max: 3 * s }, speedY: { min: -30 * s, max: -16 * s },
+        lifespan: 1500, frequency: 110, quantity: 1,
+        scale: { start: 0.8 * s, end: 0.1 * s }, alpha: { start: 0.95, end: 0 },
+        tint: [color, 0xffffff], blendMode: "ADD",
+      });
+      motes.setDepth(PARTICLE_DEPTH);
+      state.parts.set(id, { halo, core, ring, twinkles, motes, radiusPx, phase: (state.parts.size * 0.37) % 1, x, y });
+    }
+  }
+  // 숨 쉬는 빛: 1.8초 주기로 빛무리가 커졌다 작아지고, 2.4초마다 고리가 퍼진다.
+  for (const parts of state.parts.values()) {
+    const breath = 0.5 + 0.5 * Math.sin((now / 1800 + parts.phase) * Math.PI * 2);
+    const haloSize = parts.radiusPx * 2 * (0.85 + 0.25 * breath);
+    parts.halo.setPosition(parts.x, parts.y).setDisplaySize(haloSize, haloSize * 0.8).setAlpha(0.35 + 0.4 * breath);
+    const coreSize = parts.radiusPx * (0.55 + 0.2 * (1 - breath));
+    parts.core.setPosition(parts.x, parts.y).setDisplaySize(coreSize, coreSize).setAlpha(0.25 + 0.35 * breath);
+    const ringT = ((now / 2400 + parts.phase) % 1);
+    const ringSize = parts.radiusPx * (0.4 + 1.9 * ringT);
+    parts.ring.setPosition(parts.x, parts.y + parts.radiusPx * 0.2).setDisplaySize(ringSize, ringSize * 0.5).setAlpha(0.7 * (1 - ringT));
+    parts.twinkles.setPosition(parts.x, parts.y);
+    parts.motes.setPosition(parts.x, parts.y);
+  }
+}
+
+/** QA: 지금 빛나는 표지 수. */
+export function eventGlowCount(scene: PlaySceneContext): number {
+  return glowStates.get(scene)?.parts.size ?? 0;
 }
 
 // ── 가까이 오면 반짝임(page.nearSparkle) ────────────────────────────────

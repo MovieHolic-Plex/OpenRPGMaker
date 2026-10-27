@@ -6,6 +6,13 @@ import { PIXEL_ENEMY_SHEETS, pixelEnemyCell } from "@/assets/pixelEnemySheets";
 import { pixelEnemyPortraitPath } from "@/assets/pixelEnemyPortraits";
 import { defaultBattleRecords } from "@/project/defaults/defaultDatabaseBattleRecords";
 
+/** 알파 0 화소의 RGB 를 0 으로 맞춘 사본 — 투명 칸에 남은 RGB 찌꺼기를 비교에서 뺀다. */
+function visibleBytes(rgba: Buffer): Buffer {
+  const out = Buffer.from(rgba);
+  for (let i = 0; i < out.length; i += 4) if (out[i + 3] === 0) out.fill(0, i, i + 3);
+  return out;
+}
+
 describe("native enemy battler files", () => {
   it("resolves every registered generated enemy to an existing public image", () => {
     const ids = builtinGeneratedResourceIds().filter((id) => id.startsWith("generated-enemy-"));
@@ -28,9 +35,10 @@ describe("native enemy battler files", () => {
       expect(resolveAssetResourceUrl(sheet.resourceId)).toBe(`/${portraitPath}`);
       expect([source.width, source.height]).toEqual([cell * 3, cell * 3]);
       expect([portrait.width, portrait.height]).toEqual([cell, cell]);
+      // 완전 투명 칸의 RGB 는 그림이 아니다 — 다시 그린 시트(#2931 등)와 초상은 투명 칸 RGB 가 다르게 저장됐다. 보이는 화소만 같아야 한다.
       for (let y = 0; y < cell; y++) {
-        expect(portrait.data.subarray(y * cell * 4, (y + 1) * cell * 4).equals(
-          source.data.subarray(y * source.width * 4, (y * source.width + cell) * 4),
+        expect(visibleBytes(portrait.data.subarray(y * cell * 4, (y + 1) * cell * 4)).equals(
+          visibleBytes(source.data.subarray(y * source.width * 4, (y * source.width + cell) * 4)),
         ), sheet.resourceId).toBe(true);
       }
     }

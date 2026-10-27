@@ -1,0 +1,22 @@
+{
+  "surface": "flag",
+  "image": "tiledata/beodeul-yard/_gate/yard_flag.png",
+  "pixel_sha256": "add8917533afb371e8557033c61442d175688372fc4f674d8ebfd69250f45e46",
+  "verdict": "fail",
+  "view34": "pass",
+  "autotile": "pass",
+  "quality": "fail",
+  "material": "fail",
+  "defects": [
+    "/home/main/.cache/yard/vqa-r4/flag_a.png: slabs are mostly near-square 3-5px blocks laid on a regular grid (8x rows of squares at y~75,120,165,210,255,300,345,390,435), so the court reads as small square setts/cobbles, not irregular crazy-paved flagstones; body region is 54% (h) / 45% (v) pixel-identical at a 16px shift vs 9-21% at 4/8px (r3: 53/63) - cells are still near-copies.",
+    "yard_flag-4x.png: across the body (4x x 340-690, y 200-470) the slab pattern repeats on a visible 64px period; the 16px grid is readable at 4x.",
+    "/home/main/.cache/yard/vqa-r4/flag_a.png: the curved pale 'comma' slab glyph recurs with the same shape and orientation (8x ~(150,210),(150,420),(410,130),(540,250),(560,420)), reading as a stamp."
+  ],
+  "evidence": "Rim with 2px south face, corners, hole, neck and isolated cell are seamless and the plane is flat and lit from upper-left; pale limestone with moss joints is distinct from the blue Beodeul plaza. However slab size is so small and regular that the surface reads as a square-sett grid rather than large irregular flagstones (compare the large slabs in the compare-3x bottom row), and cell-period repetition remains as in r3.",
+  "crops": [
+    "/home/main/.cache/yard/vqa-r4/flag_full8x.png",
+    "/home/main/.cache/yard/vqa-r4/flag_a.png",
+    "/home/main/.cache/yard/vqa-r4/flag_neck.png"
+  ],
+  "reviewer": "claude-opus independent adversarial review 2026-10-23 r4"
+}

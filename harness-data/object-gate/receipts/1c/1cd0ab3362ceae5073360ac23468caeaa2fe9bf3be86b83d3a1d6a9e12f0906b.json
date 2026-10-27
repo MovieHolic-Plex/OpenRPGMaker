@@ -1,0 +1,325 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "1cd0ab3362ceae5073360ac23468caeaa2fe9bf3be86b83d3a1d6a9e12f0906b",
+ "width": 16,
+ "height": 16,
+ "kind": "flat",
+ "name": "dry yellow-brown grass tufts",
+ "label": "wasteland_ruins/weeds-b",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 칸 정보량이 기준보다 훨씬 낮음 (4/4)",
+  "화풍: 명암 3단 < 4 (4/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "칸 정보량이 기준보다 훨씬 낮음 (4/4)",
+   "명암 3단 < 4 (4/4)"
+  ],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 3
+ },
+ "metrics": {
+  "tileColorsMedian": 0,
+  "tileColorsP90": 0,
+  "darkV5": 101,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 0
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "grass blades and clump (main body)",
+      "rows": "3-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dark brown soil/root base with green bits",
+      "rows": "11-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 12,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The silhouette is a ragged clump of upright blades. Widths run 1, 3, 8, 10, 11, 13 down to 10 over rows 3-13, then taper to 5 and 1 at rows 14-15. The column scans show vertical colour bands: pale yellow blade tips (rows 4-9), olive body (rows 9-12), then dark brown base (rows 11-14). There is no band ending in a front-edge line, no eave shadow and no ellipse. The base is not drawn as a horizontal plate seen from above. The clump is drawn as an upright elevation of blades with a brown base, not as a flat top-down plate or a 3/4 volume."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a single tiny tuft sprite on a transparent or dark background, well under one 16x16 tile. It is not a 4x3-tile ground patch like the grass and paving references, which fill their tiles edge to edge. The measured per-tile facts are 0 for the candidate because it is smaller than a tile, so I judged by eye. It has only 8 distinct colours in total, against 80 for the grass reference. The visible ramp is about 3 yellow-brown steps (a light straw highlight, a mid tone and a dark brown base), with no clumped grain or soil texture around it. Its dark edge pixels look brown-tinted rather than neutral, so the outline is a dark material tone, and I see no large flat fills. Even so, it does not deliver a tiling ground surface and carries clearly less information than the references. It would not sit next to the grass reference as an equal.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 15138
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "grass blades (yellow-brown spikes)",
+      "rows": "3-9",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "olive mid band of tuft",
+      "rows": "9-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "brown dirt base with small green sprouts",
+      "rows": "11-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 12,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The silhouette is narrow at the top (rows 3-6, width 1-3) and widens to 13 px at row 10. It is made of upright blade spikes standing on a dirt strip. The column scan shows only vertical colour bands: pale tips, then yellow, olive and brown, with no front-edge line, no eave shadow and no ellipse. The blades are drawn as an upright front view, not as a plate seen from above, so it does not read as a flat floor decal. It has no horizontal top surface, so the top is 0 rows and the front face is about 12 rows (rows 3-14)."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a single tiny tuft sprite, smaller than one 16x16 tile, on a blank grey background. It is not the 4x3-tile ground patch the kind requires, so it does not match the reference kind. The facts show 0 visible tones per tile (smaller than a tile) and only 8 distinct colours in total, against 80 for the grass reference. By eye it has about 3 yellow-brown steps with a few highlight dots, and the dark pixels look brown-tinted rather than neutral (0% near-neutral). That is far thinner than the grass reference, which has layered greens, mottled clumps and a darker soil/grass transition. There is no continuous ground surface, no tiling, and none of the grain or variation a ground patch needs. Placed next to the reference it reads as a small sticker-like prop, not a ground tile.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 14364
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "grass tufts with blades (yellow-brown) and dirt base",
+      "rows": "3-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The object is a ground decal of dry grass tufts: spiky blades at rows 3-9 widen into a clump at rows 10-13, with a brown soil strip at rows 11-14 and a few green pixels at rows 13-14. The silhouette is irregular and has no front-edge line, eave shadow or ellipse. There is no vertical front face of 3 or more rows, so it reads as a flat ground patch, which is consistent with the flat kind."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a single tiny tuft sprite, smaller than one 16x16 tile, on an empty background. It is not a 4x3-tile ground patch, so it cannot be compared with the grass and paving references, which fill whole tiles with grain. It has only 8 distinct colours in total, roughly 3 visible yellow-brown steps, and the blades are too small to show any real texture. The edge pixels look warm-tinted rather than neutral (0% near-neutral), which is in its favour. The per-tile facts read 0 only because the piece is smaller than a tile, so I judged by eye. By eye it is far thinner than the grass reference, which shows about 3 visible tones with clumped grain across the full tile. It does not deliver a ground surface, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 9750
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "dry grass blades (yellow-tan, upright spikes)",
+      "rows": "3-11",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "brown soil/shadow strip at base with a few green sprigs",
+      "rows": "11-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "other",
+    "evidence": "This is an irregular clump of upright grass blades (rows 3-10, width growing from 1 to 13) on a brown soil patch (rows 11-14, width 12 narrowing to 5, with a point at row 15). There is no plate, rim, ellipse, front-edge line or eave shadow, so no horizontal top surface is drawn. There is also no built front face. The blades are shown standing in side elevation, not as a flat decal seen from above. It is an organic scatter with a ragged outline, not a slab, a volume or a clean profile, so it fits none of the structured categories."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a single tiny tuft sprite, less than one 16x16 tile in size (8 distinct colours in total). It is not the 4x3-tile ground patch that was requested. The reference grass and paving cover whole tiles with grain, clumps and per-stone shading, and measure 3 and 7 visible tones per tile. The candidate has no full tile to measure, so the per-tile facts are 0. By eye it shows only about 3 yellow-brown steps with no soil grain or surrounding ground fill, which is clearly thinner than the references. It does not read as a tileable ground surface at all, so the kind does not match and the piece fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 16290
+  }
+ ],
+ "decidedAt": "2026-10-22T15:08:30.338Z",
+ "cells": {
+  "16": [
+   "1b6420825ae2512b"
+  ],
+  "24": [
+   "39cac24330f1194e",
+   "566bb30a39252633",
+   "5a0866c2787db33d",
+   "6e03cbde0390e811",
+   "719e223030b8b310",
+   "7b60b851528c2645"
+  ],
+  "32": [
+   "38b5a7c58ca08dea",
+   "423c89b2cf4a2a10",
+   "5f8357698c766a28",
+   "d5e5e80925141f94",
+   "dc884bd9039a2c82",
+   "e24e204ca8d07c3d"
+  ],
+  "48": [
+   "299221f5ebdad293",
+   "4413aad6f8de4585",
+   "69d94320868b6a2e",
+   "af5d78326b9b8fe5",
+   "bc4c5cd5155ce9ef",
+   "f7b1c40f4506e792"
+  ]
+ }
+}

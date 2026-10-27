@@ -11,6 +11,7 @@
 // 않아 영향이 0 이다.
 
 import { el } from "@/util/dom";
+import { HeldDirectionRepeat } from "@/player/heldDirectionRepeat";
 import { getPlayerPreferences, playerAlwaysRun, updatePlayerPreferences } from "@/player/playerPreferences";
 import { DEFAULT_TOUCH_CONTROLS, type ResolvedTouchControls } from "@/project/touchControls";
 
@@ -173,8 +174,10 @@ export function keyTarget(): EventTarget {
   return document;
 }
 
-function dispatchKey(type: "keydown" | "keyup", key: string): void {
-  keyTarget().dispatchEvent(new KeyboardEvent(type, { key, bubbles: true }));
+function dispatchKey(type: "keydown" | "keyup", key: string, repeat = false): void {
+  // cancelable so a menu can preventDefault the same way it does for a real key.
+  // repeat is set only for a direction the stick is still holding.
+  keyTarget().dispatchEvent(new KeyboardEvent(type, { key, code: key, bubbles: true, cancelable: true, repeat }));
 }
 
 // host(플레이 스테이지)에 가상 패드를 부착한다.
@@ -199,6 +202,9 @@ export function createTouchPad(host: HTMLElement, options?: TouchPadOptions): To
   const settings = (): ResolvedTouchControls => options?.settings?.() ?? DEFAULT_TOUCH_CONTROLS;
   const haptic = (ms: number): void => { if (settings().haptics) buzz(ms); };
   const heldKeys = new Set<string>();
+  const directionRepeat = new HeldDirectionRepeat();
+  let directionRepeatFrame = 0;
+  let cleanedUp = false;
   const setKeyHeld = (key: string, held: boolean): void => {
     if (held && !heldKeys.has(key)) {
       heldKeys.add(key);
@@ -214,6 +220,25 @@ export function createTouchPad(host: HTMLElement, options?: TouchPadOptions): To
   const releaseDirectionKeys = (): void => {
     for (const key of DIRECTION_KEYS) setKeyHeld(key, false);
     setKeyHeld(RUN_KEY, false);
+    directionRepeat.clear();
+  };
+
+  // 스틱을 누르고 있는 동안 방향키를 키보드 반복처럼 다시 보낸다. 손을 가만히 두면
+  // pointermove 가 없으므로 프레임마다 확인한다. 확인/취소(Enter/Escape)는 반복하지 않는다.
+  const scheduleDirectionRepeat = (): void => {
+    if (directionRepeatFrame !== 0 || cleanedUp) return;
+    if (typeof window.requestAnimationFrame !== "function") return;
+    directionRepeatFrame = window.requestAnimationFrame(() => {
+      directionRepeatFrame = 0;
+      if (cleanedUp) return;
+      const held = DIRECTION_KEYS.filter((key) => heldKeys.has(key));
+      if (held.length === 0) {
+        directionRepeat.clear();
+        return;
+      }
+      for (const key of directionRepeat.tick(held, performance.now())) dispatchKey("keydown", key, true);
+      scheduleDirectionRepeat();
+    });
   };
 
   // ── 조이스틱(왼쪽) ──
@@ -269,6 +294,11 @@ export function createTouchPad(host: HTMLElement, options?: TouchPadOptions): To
     }
     if (runs) zone.dataset.run = "true";
     else delete zone.dataset.run;
+    // 이번 샘플이 반복 타이머를 켠다. 첫 샘플은 엣지 keydown 직후라 반복을 만들지 않는다.
+    // 드래그 중에도 여기서 보낸다 — 프레임 펌프만 보면 pointermove 가 타이머를 먹어 반복이 사라진다.
+    const heldDirections = DIRECTION_KEYS.filter((key) => heldKeys.has(key));
+    for (const key of directionRepeat.tick(heldDirections, performance.now())) dispatchKey("keydown", key, true);
+    if (heldDirections.length > 0) scheduleDirectionRepeat();
     // knob 시각 이동(반경 제한).
     const maxTravel = safeKnobTravel(base, knob);
     // 손잡이는 달리기 고리(반지름 70%)를 넘어갈 만큼 움직인다 — 손잡이가 고리 밖에 있으면 달리는 중이다.
@@ -468,12 +498,15 @@ export function createTouchPad(host: HTMLElement, options?: TouchPadOptions): To
   window.addEventListener("blur", releaseAllInteractions, listenerOptions);
   document.addEventListener("visibilitychange", releaseOnVisibilityLoss, listenerOptions);
 
-  let cleanedUp = false;
-
   return {
     cleanup: () => {
       if (cleanedUp) return;
       cleanedUp = true;
+      if (directionRepeatFrame && typeof window.cancelAnimationFrame === "function") {
+        window.cancelAnimationFrame(directionRepeatFrame);
+        directionRepeatFrame = 0;
+      }
+      directionRepeat.clear();
       releaseAllInteractions();
       controller.abort();
       pad.remove();

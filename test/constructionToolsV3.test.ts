@@ -15,13 +15,14 @@ import { COMBINED_TOWN_TILESET_ID, TILE } from "@/project/defaults/constants";
 import { LAKE_AUTOTILE_TILE, isLakeAutotileTile, lakeAutotileQuarterSources } from "@/project/defaults/lakeAutotile";
 import { COMBINED_TOWN_HARNESS_PREFIX } from "@/project/tilesetHarness/combinedTownGroups";
 import type { TileGroupMetadata, TilesetDef } from "@/project/types";
+import { withRetiredCombinedTownMaps } from "./support/retiredCombinedTownMaps";
 
 const MAP_ID = "map_blank_start";
 const WALL_GROUP_ID = `${COMBINED_TOWN_HARNESS_PREFIX}plaster-wall-9slice`;
 const WATER_GROUP_ID = `${COMBINED_TOWN_HARNESS_PREFIX}lake-water-autotile`;
 
 function context(): { ctx: ToolContext; tileset: () => TilesetDef } {
-  const ctx: ToolContext = { project: createBlankProject() };
+  const ctx: ToolContext = { project: withRetiredCombinedTownMaps(createBlankProject()) };
   return { ctx, tileset: () => ctx.project.tilesets[COMBINED_TOWN_TILESET_ID] };
 }
 

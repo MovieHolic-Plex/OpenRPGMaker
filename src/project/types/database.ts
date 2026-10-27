@@ -273,6 +273,20 @@ export interface ClassEquipmentPermissions {
   equipmentIds: EquipmentId[];
 }
 
+/** 힘 모으기 끊기 규칙(SkillRecord.chargeBreak). 조건은 「또는」 — 하나만 맞아도 끊긴다. */
+export interface SkillChargeBreak {
+  /** 모으는 동안 받은 HP 피해 누계가 이 값 이상이면 끊긴다. */
+  damage?: number;
+  /** 이 속성(DatabaseElementRecord.id) 기술에 맞으면 끊긴다. */
+  elementIds?: string[];
+  /** 이 상태가 걸리면 끊긴다. */
+  stateIds?: string[];
+  /** 끊겼을 때 시전자의 한 줄(예 「송신 실패」). 생략 = 시스템 문장만. */
+  message?: string;
+  /** 끊긴 뒤 다음 자기 차례 하나를 쉰다(기본 true). */
+  stagger?: boolean;
+}
+
 export interface SkillRecord {
   /** Native turn battle gimmick. Omitted keeps the original skill rules. */
   battleGimmick?: import("@/battle/battleGimmickRules").BattleGimmick;
@@ -339,7 +353,7 @@ export interface SkillRecord {
   movePriority?: number;
   /** 실시간 액션 전투에서 캐스트 가능한 액션 스킬. 생략 시 턴제 전용. */
   actionSkill?: ActionSkillProfile;
-  /** 연계기(듀얼·트리플 테크): 함께 쓰는 배우 2~3명(시전자 포함). 모두 준비돼야 쓸 수 있고 각자 MP·턴을 소비한다. */
+  /** 연계기(듀얼·트리플·4인 테크): 함께 쓰는 배우 2~4명(시전자 포함, COMBO_MAX_ACTORS). 모두 준비돼야 쓸 수 있고 각자 MP·턴을 소비한다. */
   comboActorIds?: ActorId[];
   /**
    * 연계기 해금 조건(크로노 트리거식): 각 항목의 배우가 그 기술을 **배운 상태**여야 연계기가 메뉴에 열린다
@@ -422,6 +436,12 @@ export interface SkillRecord {
    * 적이 쓰면 보스 대기술 예고가 된다 — 플레이어가 방어·회복으로 대비할 틈. 아군도 같다. 생략 = 바로 발동.
    */
   chargeTurns?: number;
+  /**
+   * 충전 끊기(chargeTurns 가 있을 때만 의미): 모으는 동안 이 조건 중 하나를 맞으면 모으던 기술이 취소된다.
+   * damage = 모으는 동안 받은 HP 피해 누계 문턱, elementIds = 이 속성 기술에 맞으면, stateIds = 이 상태가 걸리면.
+   * message = 끊겼을 때 시전자가 하는 한 줄(예 「송신 실패」). stagger(기본 true) = 끊긴 뒤 다음 자기 차례 하나를 휘청거려 쉰다.
+   */
+  chargeBreak?: SkillChargeBreak;
   /**
    * 소환(retro2003 연출): 파티원 도트 시트 id("party-pixel-<칩>"). 시전하면 그 몬스터가 시전자 앞에 나타나
    * 대상에게 달려가 첫 착탄에 맞춰 치고 사라진다. 그림만이다 — 위력·타수·상태는 이 레코드 값 그대로. 생략 = 소환 없음.
@@ -1090,6 +1110,22 @@ export interface TroopRecord {
    * 모델·순회는 project/troopAfterBattle.ts.
    */
   afterBattle?: TroopAfterBattle;
+  /**
+   * 전투 중 손님 — 조건(트룹 페이지 조건과 같은 어휘, 모두 참)이 맞는 순간 배우 하나가 이 전투에만 합류해
+   * 작전대로 자동으로 싸운다. 파티 명단(partyActorIds)에는 들어가지 않으므로 전투가 끝나면 저절로 빠진다
+   * (경험치·전리품 몫도 없다). 생략·빈 목록 = 없음. 런타임은 battle/battleEvents.ts · battle/runtime.ts.
+   */
+  battleGuests?: TroopBattleGuest[];
+}
+
+export interface TroopBattleGuest {
+  actorId: ActorId;
+  /** 합류 조건(모두 참일 때 한 번). 예: [{ kind: "enemyHp", enemyId, minPercent: 0, maxPercent: 60 }, { kind: "switch", switchId, value: true }]. 빈 목록 = 첫 평가 때. */
+  conditions: BattleEventCondition[];
+  /** 자동 전투 작전. 생략 = 균형. followOrders 는 받지 않는다(손님은 늘 자동). */
+  tactic?: Exclude<ActorAutoTactic, "followOrders">;
+  /** 합류 띠 문구. 생략 = 「{이름}이(가) 합류했다!」. */
+  message?: string;
 }
 
 export type TroopAfterBattleOutcome = "victory" | "defeat" | "escape";
@@ -1659,9 +1695,52 @@ export interface TitleBackgroundLayer {
   parallax?: number;
   /** 0..1. 생략 = 1(불투명). */
   opacity?: number;
+  /**
+   * tile(생략) = 320×240 타일로 반복(스크롤 레이어). cover = 화면을 한 장으로 덮고 아래쪽에 붙인다(하늘을 오린 땅·전경 그림).
+   * 화면 비율이 그림과 다르면 위(하늘)부터 잘린다. 스크롤 속도는 tile 에만 쓴다.
+   */
+  fit?: "tile" | "cover";
 }
 
-export type TitleParticlePreset = "snow" | "rain" | "fireflies";
+/** stars = 깜빡이며 천천히 흐르는 밤하늘 별(가끔 별똥별이 지난다). */
+export type TitleParticlePreset = "snow" | "rain" | "fireflies" | "stars";
+
+/**
+ * 타이틀을 가로질러 달려가는 캐릭터 칩(포켓몬 타이틀의 스타터 셋처럼). 24×32 칸 RM2000 캐릭터 시트를 쓴다.
+ * 좌표는 타이틀 논리 좌표(320×240). 한 번 지나간 뒤 everyMs 마다 다시 달린다. 최대 6.
+ */
+export interface TitleRunner {
+  resourceId: string;
+  /** 시트 안 인물 번호 0..7. 생략 0. */
+  characterIndex?: number;
+  /** 달리는 쪽. 생략 right(왼→오). */
+  direction?: "left" | "right";
+  /** 발끝 y(논리 px, 0..240). */
+  y: number;
+  /** 논리 px/s 10..400. 생략 60. */
+  speed?: number;
+  /** 정수 배율 1..3. 생략 1. */
+  scale?: number;
+  /** 첫 등장 ms 0..60000. 생략 0. */
+  delayMs?: number;
+  /** 다시 달리기 시작하는 간격 ms 2000..120000. 생략 12000. */
+  everyMs?: number;
+  /** 걸음마다 통통 튄다. */
+  hop?: boolean;
+}
+
+/**
+ * 「PRESS START」 관문. 켜면 메뉴가 숨은 채 글자가 깜빡이고, 아무 키·탭을 하면 반짝이며 메뉴가 나온다(첫 입력은 메뉴를 고르지 않는다).
+ * 타이틀에 처음 들어올 때만 — 메뉴 이동 재렌더에는 다시 걸지 않는다.
+ */
+export interface TitlePressStart {
+  /** 최대 24자. 생략 "PRESS START". */
+  text?: string;
+  /** 깜빡임 주기 ms 300..3000. 생략 1000. */
+  blinkMs?: number;
+  /** 글자 가운데 y(논리 px 0..240). 생략 = 메뉴 자리. */
+  y?: number;
+}
 
 export interface TitleParticleSettings {
   preset: TitleParticlePreset;
@@ -1802,6 +1881,10 @@ export interface TitleScreenSettings {
   particles?: TitleParticleSettings;
   /** 로고/메뉴 등장 연출. 유효한 연출이 하나도 없으면 normalize 가 필드를 생략한다. */
   intro?: TitleIntroSettings;
+  /** 화면을 가로질러 달리는 캐릭터 칩(최대 6). 비면 normalize 가 생략. */
+  runners?: TitleRunner[];
+  /** 「PRESS START」 관문. 생략 = 바로 메뉴. */
+  pressStart?: TitlePressStart;
   /** 입장 시퀀스. 있으면 intro 의 로고/메뉴 연출보다 우선한다. */
   sequence?: TitleOpeningSequence;
   /** 로고 반사광. 생략 = none. */
@@ -2070,6 +2153,12 @@ export interface SystemRecords {
   titleScreen?: TitleScreenSettings;
   /** Opt-in pre-map new-game sequence. Disabled sequences retain their authored content. */
   opening?: CinematicSequence;
+  /**
+   * 타이틀 앞 인트로(포켓몬식 «전설 추격» 콜드 오픈). 게임을 켜면 타이틀보다 먼저 한 번 재생되고, 아무 키나 누르면 타이틀로 간다.
+   * opening(새 게임 뒤 박사 소개)과 따로 있어 둘을 함께 쓸 수 있다. entry.mode "attract" 면 타이틀에서 idleMs 동안 입력이 없을 때도 다시 튼다.
+   * 생략 = 없음(옛 동작: opening.entry 가 before-title 이면 그것을 튼다).
+   */
+  titleIntro?: CinematicSequence;
   /** Optional game-over sequence and terminal-menu presentation. */
   gameOver?: GameOverSettings;
   gameOvers?: import("../cinematicSettings").GameOverDefinition[];
@@ -2082,6 +2171,8 @@ export interface SystemRecords {
   giftSystem?: boolean;
   /** 관계·연애 하루 루프(옵트인): 호감 대화가 시간대 칸을 쓰고 사람별 하루 호감 상한이 있다. project/socialLoop.ts. 생략 = 기존 동작 그대로. */
   socialLoop?: import("@/project/socialLoop").SocialLoopConfig;
+  /** 파티원 유대(옵트인): 동료별 유대 점수 변수 목록 + 상한. 상태 메뉴 「관계」에 함께 보인다. project/partyBonds.ts · 저작 configure_party_bonds. */
+  partyBonds?: import("@/project/partyBonds").PartyBondsConfig;
   /**
    * 갤러리. enabled 가 아니면 메뉴에 나오지 않는다.
    * label 을 비우면 메뉴 이름은 「갤러리」. 다른 낱말을 적어 두면 그 이름으로 보인다.
@@ -2319,6 +2410,13 @@ export interface CompanionConfig {
    * 떠난 칸으로 같은 박자에 한 칸 뒤를 걷는다(@/player/playSceneFollowers beginFollowerStep).
    */
   monsterFollowers?: boolean;
+  /**
+   * 뒤따르는 방식. "breadcrumb"(기본·생략) = 고전 빵부스러기 — 동료마다 앞사람이 밟은 칸을 **그대로** 한 칸씩 밟는다
+   * (포켓몬·마더·크로노 트리거). 길 찾기·모퉁이 가로지르기·기다렸다 몰려오기가 없고, 주인공이 서면 그 자리에 선다.
+   * 맵을 옮기면 주인공 칸에 겹쳐 같은 쪽을 보고 섰다가 걸으면 한 명씩 풀려 나온다.
+   * "spaced" = 옛 동작 — 몸 길이만큼 떨어지려고 기다리거나 궤적 뒤 칸으로 건너뛴다.
+   */
+  followMode?: "breadcrumb" | "spaced";
 }
 
 export interface MonsterCareConfig {

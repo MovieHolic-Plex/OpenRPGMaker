@@ -11,11 +11,11 @@ import { runTool } from "./toolRunner";
 import { requireMap } from "./mapHelpers";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
 
-type Side = "north" | "south" | "east" | "west";
+export type Side = "north" | "south" | "east" | "west";
 type Mood = "normal" | "dim" | "dark" | "fog" | "darkfog";
-const ACROSS = 32, ALONG = 40;
+export const ACROSS = 32, ALONG = 40;
 
-function call(project: Project, name: string, args: Record<string, unknown>): { data?: unknown; summary?: string } {
+export function call(project: Project, name: string, args: Record<string, unknown>): { data?: unknown; summary?: string } {
   const ctx = { project, assistantRun: false };
   const res = runTool(ctx, name, args, { dryRun: false });
   if (!res.ok) throw new ToolError(`${name} 실패: ${res.summary}`);
@@ -24,7 +24,7 @@ function call(project: Project, name: string, args: Record<string, unknown>): { 
 }
 
 /** 추상 좌표(u = 가로지름 0..31, v = 진행 0..39, v=39 가 들어오는 쪽, v=0 이 나가는 쪽)를 실제 맵 칸으로. */
-function toMap(side: Side, u: number, v: number): Cell {
+export function toMap(side: Side, u: number, v: number): Cell {
   switch (side) {
     case "north": return { x: u, y: v };
     case "south": return { x: ACROSS - 1 - u, y: ALONG - 1 - v };
@@ -32,10 +32,10 @@ function toMap(side: Side, u: number, v: number): Cell {
     case "west": return { x: v, y: ACROSS - 1 - u };
   }
 }
-const dims = (side: Side): { width: number; height: number } =>
+export const dims = (side: Side): { width: number; height: number } =>
   side === "north" || side === "south" ? { width: ACROSS, height: ALONG } : { width: ALONG, height: ACROSS };
 /** 두 칸 폭 문은 「왼쪽/위쪽 칸」 — 가로지름 축이 뒤집히는 쪽은 한 칸 당긴다. */
-function exitCell(side: Side, u: number, v: number): Cell {
+export function exitCell(side: Side, u: number, v: number): Cell {
   const flip = side === "south" || side === "west";
   const c = toMap(side, Math.floor(u) + (flip ? 1 : 0), v);
   return { x: Math.round(c.x), y: Math.round(c.y) };
@@ -78,16 +78,17 @@ function forestSpec(id: string, name: string, side: Side, seed: number, last: bo
     entry, exit,
   };
 }
-function centerBlob(side: Side, u: number, v: number, ru: number, rv: number) {
+export function centerBlob(side: Side, u: number, v: number, ru: number, rv: number) {
   const c = toMap(side, u, v);
   const vertical = side === "north" || side === "south";
   return { cx: c.x, cy: c.y, rx: vertical ? ru : rv, ry: vertical ? rv : ru };
 }
 
 /** 시작 맵 그쪽 가장자리에서 걸어 닿는 칸 — 길·빈 칸을 가운데 가까운 것부터. 없으면 가까운 칸에서 가장자리까지 윗층을 걷어 길을 낸다. */
-function originEdge(project: Project, map: GameMap, side: Side): Cell {
+export function originEdge(project: Project, map: GameMap, side: Side, walkFrom?: Cell): Cell {
   const W = map.width, H = map.height;
-  const start = project.startMapId === map.id && project.startPos ? project.startPos : { x: Math.floor(W / 2), y: Math.floor(H / 2) };
+  // 걸어 닿는 기준 칸 — 주면 그 칸(다른 맵에서 들어오는 입구), 아니면 시작 위치·맵 가운데.
+  const start = walkFrom ?? (project.startMapId === map.id && project.startPos ? project.startPos : { x: Math.floor(W / 2), y: Math.floor(H / 2) });
   const reach = computeReachableCells(project, map, start.x, start.y);
   const edge: Cell[] = [];
   if (side === "north" || side === "south") for (let x = 1; x < W - 1; x += 1) edge.push({ x, y: side === "north" ? 0 : H - 1 });
@@ -111,7 +112,13 @@ function originEdge(project: Project, map: GameMap, side: Side): Cell {
     c = { x: c.x + step.dx, y: c.y + step.dy };
     for (const d of [0, step.dx === 0 ? 1 : W]) {
       const i = c.y * W + c.x + d;
-      if (i >= 0 && i < W * H) { map.upperTiles[i] = -1; map.lowerTiles[i] = ground; }
+      if (i >= 0 && i < W * H) {
+        map.upperTiles[i] = -1; map.lowerTiles[i] = ground;
+        // 겹 칸(나무 밑동·덤불)도 걷어야 실제로 지나간다 — 윗층만 걷으면 들판 북쪽 끝이 막힌 채 남았다(2026-10-26).
+        const layers = map as unknown as { lowerOverlayTiles?: number[]; upperOverlayTiles?: number[] };
+        if (layers.lowerOverlayTiles) layers.lowerOverlayTiles[i] = -1;
+        if (layers.upperOverlayTiles) layers.upperOverlayTiles[i] = -1;
+      }
     }
   }
   return c;
@@ -123,7 +130,7 @@ function inward(map: GameMap, at: Cell): { x: number; y: number; direction: "up"
   if (at.x === 0) return { x: 1, y: at.y, direction: "right" };
   return { x: at.x - 1, y: at.y, direction: "left" };
 }
-function link(project: Project, a: { mapId: string } & Cell, b: { mapId: string } & Cell): void {
+export function link(project: Project, a: { mapId: string } & Cell, b: { mapId: string } & Cell): void {
   call(project, "create_transfer_pair", { a, b });
   for (const [from, to] of [[a, b], [b, a]] as const) {
     const map = project.maps[from.mapId]!;
@@ -161,6 +168,7 @@ const authorForestRoute: ToolDefinition = {
       hiddenPerMap: { type: "integer", description: "맵마다 숨은 물건 수 0~3(기본 0)" },
       hiddenItemIds: { type: "array", items: { type: "string" }, description: "숨은 물건 아이템 id(돌아가며 쓴다, 없으면 돈)" },
       terrain: { type: "string", enum: ["forest", "field"], description: "forest(기본)=나무 사이 숲길 · field=트인 들판(큰 풀밭 빈터, 가장자리만 나무)" },
+      linkFrom: { type: "boolean", description: "false 면 시작 맵 가장자리에 길을 내지 않고 이동 이벤트도 두지 않는다 — 성벽 개구멍·뒷문·우물처럼 시작 맵의 정한 칸에서 이벤트로 들여보낼 때. 첫 맵 입구는 data.maps[0].entry(그 칸에 돌아가는 이벤트를 직접 둔다). 기본 true" },
       seed: { type: "integer" },
     },
     required: ["fromMapId", "side"],
@@ -179,7 +187,8 @@ const authorForestRoute: ToolDefinition = {
     const field = args.terrain === "field";
     const warnings: string[] = [];
     const out: Array<{ mapId: string; name: string; entry: Cell; exit: Cell | null; clearing: Cell; hidden: Cell[] }> = [];
-    let prev: { mapId: string } & Cell = { mapId: from.id, ...originEdge(draft, from, side) };
+    const linkFrom = args.linkFrom !== false;
+    let prev: ({ mapId: string } & Cell) | null = linkFrom ? { mapId: from.id, ...originEdge(draft, from, side) } : null;
     let used = 0;
     for (let i = 0; i < count; i += 1) {
       let id = `map_${field ? "field" : "forest"}_${side}_${i + 1}`;
@@ -191,7 +200,7 @@ const authorForestRoute: ToolDefinition = {
       const result = paintWoodland(draft, spec);
       // 시작 맵의 이 숲 묶음 아래로 — 범위 체크포인트가 새 맵을 버리지 않게.
       try { call(draft, "manage_map_tree", { operation: "move", mapId: id, parentId: from.id }); } catch { /* 트리 이동 실패는 무시 */ }
-      link(draft, prev, { mapId: id, ...entry });
+      if (prev) link(draft, prev, { mapId: id, ...entry });
       const mood = MOODS[moods[i] ?? "normal"] ?? {};
       if (mood.ambient !== undefined || mood.fog !== undefined) {
         try {

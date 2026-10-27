@@ -1,0 +1,464 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "37af4750c226dd3b95ed0b8f17c3d86ba4a2a3da87ac0604b877d5791ac11afe",
+ "width": 64,
+ "height": 96,
+ "kind": "structure",
+ "name": "tall ruined multi-storey concrete facade remnant: top of the remaining walls and broken upper floor slabs seen from above, tall front face with rows of empty windows",
+ "label": "wasteland_ruins/husk-tall",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 평면 채움 (4/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "평면 채움 (4/4)"
+  ],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 5
+ },
+ "metrics": {
+  "tileColorsMedian": 11,
+  "tileColorsP90": 16,
+  "darkV5": 32,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 24
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "remaining wall tops and floor slab seen from above (rubble-strewn)",
+      "rows": "0-37",
+      "evidence": "a",
+      "front_edge_line_row": 37,
+      "eave_shadow_rows": "38-39"
+     },
+     {
+      "part": "broken upper floor slab, left (light top with front edge and dark underside)",
+      "rows": "15-21",
+      "evidence": "a",
+      "front_edge_line_row": 19,
+      "eave_shadow_rows": "20-21"
+     },
+     {
+      "part": "broken upper floor slab, right",
+      "rows": "20-27",
+      "evidence": "a",
+      "front_edge_line_row": 23,
+      "eave_shadow_rows": "26-27"
+     },
+     {
+      "part": "vines and plant growth",
+      "rows": "13-17",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 38,
+    "front_face_rows": 58,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 0-37 show the tops of the surviving walls (a light grey border) enclosing a debris-covered floor slab seen from above. Within it, two broken slabs have light top bands and dark shadow underside rows (about rows 19-21 and 23-27). The top ends in a light front-edge line at rows 35-37 (L≈157-189, #bcbdc3 at row 37). Below it is a tall south face, rows 38-95 (about 58 rows), with rows of dark empty windows, sills and a doorway. The top surface is large and the front face is tall, so the view is three-quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "Per-tile visible tones (10) match house-h112 and are close to h101 (12), so density is not far off. The rest is shallower than the references. The concrete front face is a mostly flat grey wall with only light speckle, about 4 lightness steps against 5-6 on the reference roofs and walls. Near-flat coverage is 13% where both references have 0%, and the candidate has only 31 distinct colours against 66 and 185. The window openings are dark blocks with little internal shading or edge modelling. 41% of dark edge pixels are neutral, against 7-9% on the references, so the outlines are partly a neutral dark line rather than a tinted material tone. The rubble and plant detail on the top slab adds some variety, but it does not give the per-tile grain and per-element shading of the Beodeul tiles. Next to the references it looks flatter and more sticker-like.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 18451
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top of remaining walls and broken floor slab seen from above (rubble-strewn floor, wall-top rim)",
+      "rows": "0-36",
+      "evidence": "a",
+      "front_edge_line_row": 37,
+      "eave_shadow_rows": "38-39"
+     },
+     {
+      "part": "inner broken floor slab ledges (left and right)",
+      "rows": "15-25",
+      "evidence": "a",
+      "front_edge_line_row": 19,
+      "eave_shadow_rows": "20-21"
+     },
+     {
+      "part": "vines and brick/rubble debris on the slab",
+      "rows": "12-33",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "front facade face with window rows and sill ledges",
+      "rows": "37-95",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 37,
+    "front_face_rows": 58,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The upper rows 0-36 show a large horizontal surface seen from above: a wall-top rim, a floor of rubble with debris, and inner slab ledges with light edge lines (row 4, rows 17-19 and 35-37) followed by dark shadow rows (10-11, 20-21). A light front-edge line at row 37 (x=16, L=189) closes the top band. Below it, rows 38-95 form a tall vertical south face with three storeys of empty dark windows, sills at rows 50, 65 and 82, floor lines at rows 54 and 70, and a door at the bottom. The top surface is well over 3 rows and the front face is well over 3 rows, so the structure reads as three-quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a grey concrete facade. Visible tones per tile (10) match the stone reference (10) and are close to the other reference (12), so the raw density is not the problem. The structure is shallower than the references. The wall ramp is only about 4 grey steps (light top edge, mid, dark, deep window), against 5-6 steps on the roof tiles and stone. Near-flat coverage is 13% against 0% for both references, and I can see flat grey wall bands between the window rows. The windows are mostly dark rectangles with little reveal or sill shading. Dark edge pixels are 41% near-neutral against 7-9% on the references, so the outline is part neutral near-black and part tinted, which gives a partial sticker look. The broken-slab top has debris specks and some grain, but the front face, which is the bulk of the piece, is repetitive and flat. Side by side with the references it looks thinner and flatter, so it does not clear the bar.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 15345
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "main roof/floor-slab top with wall-top rims and rubble, seen from above",
+      "rows": "1-37",
+      "evidence": "a",
+      "front_edge_line_row": 37,
+      "eave_shadow_rows": "38-39"
+     },
+     {
+      "part": "broken inner slab left (light top, dark front edge)",
+      "rows": "15-21",
+      "evidence": "a",
+      "front_edge_line_row": 20,
+      "eave_shadow_rows": "21-22"
+     },
+     {
+      "part": "broken inner slab right (light top, dark front edge)",
+      "rows": "20-26",
+      "evidence": "a",
+      "front_edge_line_row": 23,
+      "eave_shadow_rows": "26-27"
+     },
+     {
+      "part": "vines and brick rubble on the slab and facade",
+      "rows": "13-17",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "floor ledge strips between storeys",
+      "rows": "54-54",
+      "evidence": "none",
+      "front_edge_line_row": 54,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 37,
+    "front_face_rows": 58,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-37 show the tops of the remaining walls and broken floor slabs from above: a light rim around the edge, a rubble-strewn floor, and inner slabs with front-edge lines and dark shadow rows below them (rows 20-21, 26). The light band at rows 35-37 (L~157-189) is the front-edge line of the top, with darker shadow at rows 38-43. Below it a tall front face of about 58 rows (38-95) holds three storeys of dark empty windows with sills and a doorway at the bottom. The top is a large surface, not a rim, and the front face is well over 3 rows, so it reads as three-quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The measured tones per tile (10) match the references (12 and 10), so density is not far off. The other facts point to a shallower build. Near-flat coverage is 13% against 0% for both references, and the whole piece has only 31 distinct colours against 185 and 66. Dark edge pixels are 41% near-neutral against 7-9% for the references, so the outlines are partly untinted black/grey, which gives the sticker look. By eye, the front wall is a mostly flat grey with sparse speckle and only about 3-4 lightness steps, where the references carry 5-6 steps with per-tile highlights and grain. The windows are near-black rectangles with thin, simple frames, so they read as flat cut-outs and not shaded recesses. The rubble top is the most textured area, but the tall facade face is the weaker part. A careful artist would find it flatter and thinner than the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 17714
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "main broken floor slab and wall tops seen from above (rubble-strewn)",
+      "rows": "1-37",
+      "evidence": "a",
+      "front_edge_line_row": 37,
+      "eave_shadow_rows": "38-39"
+     },
+     {
+      "part": "inner left wall/slab fragment top",
+      "rows": "15-18",
+      "evidence": "a",
+      "front_edge_line_row": 19,
+      "eave_shadow_rows": "19-21"
+     },
+     {
+      "part": "inner right wall/slab fragment top",
+      "rows": "20-23",
+      "evidence": "a",
+      "front_edge_line_row": 24,
+      "eave_shadow_rows": "24-26"
+     },
+     {
+      "part": "upper wall top band with windows",
+      "rows": "1-10",
+      "evidence": "a",
+      "front_edge_line_row": 10,
+      "eave_shadow_rows": "10-11"
+     },
+     {
+      "part": "floor slab ledge strips on facade",
+      "rows": "54, 70",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "vines and moss",
+      "rows": "14-17, 38-50",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 36,
+    "front_face_rows": 58,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The upper part (rows 1-37) is a large horizontal floor slab with rubble, wall-top rims and inner wall fragments. It ends in a light front-edge line at row 37, with darker shadow rows 38-39 beneath. Below it a tall south face (rows 38-95) carries rows of empty windows and a doorway, with floor-slab ledges at rows 54 and 70. Inner wall fragments also show light top bands with edge lines and dark shadow rows (rows 15-21, 20-26). The top surface is large, the front face is well over 3 rows, and no side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate matches the references on visible tones per tile (10, against 12 and 10), but it falls short on the other measures. Its concrete wall is only about 3-4 grey steps, with a lighter cornice band and speckle, where the references carry 5-6 steps per material. Near-flat coverage is 13% against 0% for both references, and the picture agrees: the wall sections between the window rows read as broad, evenly grey areas with little per-block grain. The windows are dark rectangles with near-black interiors and a hard dark frame, which is more sticker-like than the references' material-toned edges. 41% of the dark edge pixels are neutral, against 7-9% for the references, so the outline is mixed rather than a dark tone of the neighbouring material. The rubble roof, plants and slab edges add some variety, but the tall facade face is flatter and less crafted than the tiles, plaster and stone in the references. Next to them it looks thinner and flatter.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 19281
+  }
+ ],
+ "decidedAt": "2026-10-22T14:22:06.289Z",
+ "cells": {
+  "16": [
+   "0199393b40ef8cea",
+   "0d0155a362c98a84",
+   "15c94d55a64464da",
+   "17afa1d27090606e",
+   "17dec5090d7d37bf",
+   "206bcb48adbb33a5",
+   "20a616f87e0c81ab",
+   "2530dc7b0320fdf9",
+   "26da307fa9610787",
+   "4099d99d05aa7b45",
+   "443de5fdb5d931b2",
+   "47ada946865d33b0",
+   "5692b406e8903a0e",
+   "588ab9df7c1afece",
+   "5f1144bfef023f4b",
+   "6e99e349a495df59",
+   "79cf2578afe5862f",
+   "817eafd6bfc746bc",
+   "95233bcd449e92c8",
+   "95239fc69620dca7",
+   "baf893ef762c2949",
+   "d726666f491cd3be",
+   "e22aa09d304e1f57",
+   "edb1030c7f0454d0"
+  ],
+  "24": [
+   "0fa8761b310cb689",
+   "0fe52ce119f6dd4e",
+   "122d99efd8708b6e",
+   "23bd775ede580f73",
+   "325269593207d3d1",
+   "33f1207294c3b2e3",
+   "34f9478ff2f1c9ba",
+   "4084ef7864612a54",
+   "4360694c594d67f9",
+   "55dd59fd4074b4d2",
+   "57509102f4f4a318",
+   "5de342d93654003b",
+   "5e851bc4c084eccd",
+   "644f6b6023cef432",
+   "6d92b3d991f1a4f6",
+   "7d15be8e2e2f9df1",
+   "85b6cbbfa16594c4",
+   "8dd49883e2b4fa4b",
+   "96dc61470cb06a8f",
+   "9806342525f93fb1",
+   "a890047ae14e9511",
+   "b21d4e9777a39bb0",
+   "bf3b8b701b3eb5fe",
+   "c008f73e00045685",
+   "c062602c235cbec4",
+   "c420833141041a87",
+   "c921123a985b1929",
+   "cd7bbe1d18d9d648",
+   "d907911c69c13ea4",
+   "d939b01edde026ef",
+   "de5444a0b3f155bb",
+   "ead3b51d5e0ecde0",
+   "ece9f73803611154",
+   "ecfcfd85a8223db6",
+   "f06b39c92d43bdbb",
+   "f25dc8c5c139b37e"
+  ],
+  "32": [
+   "14ebd86c0ca5da7d",
+   "318d12cc918dc0bc",
+   "6df23709fc006c90",
+   "a5f0ce1fb79b96ca",
+   "af467ee5f7a25702",
+   "ca101e6864adbdea"
+  ],
+  "48": [
+   "1f4bfe4ee67bc4f3",
+   "20c773acb7b24f5f",
+   "2cb78a160f7d22cd",
+   "63af67c88fefe6dc",
+   "67ec173340698b9c",
+   "ad55f6bb916fdd5e",
+   "ae07625c34b8f17c",
+   "b7872642de8b2820",
+   "c006ef9e97e98d15",
+   "cc201a4b26db71ee",
+   "d4cadc225aa8fdd6",
+   "f4361cb01735daca"
+  ]
+ }
+}

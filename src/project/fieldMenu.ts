@@ -1,7 +1,7 @@
 import type { Project } from './types';
 import { usesRelationshipMenu } from './relationshipMenu';
 
-export const FIELD_MENU_COMMANDS = ['items','skills','equipment','monsters','save','load','status','row','formation','monster-dex','region-map','campaign-progress','trainer-card','battle-reports','quests','relationships','gallery','endings','life-ledger','backlog','options','wait','to-title'] as const;
+export const FIELD_MENU_COMMANDS = ['items','skills','equipment','monsters','save','load','status','row','formation','monster-dex','region-map','campaign-progress','trainer-card','battle-reports','quests','journal','relationships','gallery','endings','life-ledger','backlog','options','wait','to-title'] as const;
 export type FieldMenuCommand = typeof FIELD_MENU_COMMANDS[number];
 /** Metadata extension survives older host normalizers. Runtime reads this authored contract directly. */
 export type AuthoredFieldMenu = { version: 1; entries: { command: FieldMenuCommand; label: string }[] };

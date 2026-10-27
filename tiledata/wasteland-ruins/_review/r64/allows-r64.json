@@ -1,0 +1,98 @@
+[
+ {
+  "sha": "834919d01242b9e85cf1b41f99c01ed608508b21d1f7986797991537e6802ec8",
+  "id": "shack-a",
+  "evidence": "/home/main/z-project/rpg-zzu-village-art/tiledata/wasteland-ruins/_review/r64/verdict-S.md",
+  "note": "wasteland_ruins/shack-a r63; object-gate PASS; r64 scale-up measured from Beodeul; independent adversarial reviewer Sonnet 5.5 r64 check PASS for this piece's category (verdict-S.md); one Sonnet reviewer by user instruction"
+ },
+ {
+  "sha": "4ad48a89cf415b6779e7137618ee83d44b650f40657e847278e21cda749bf294",
+  "id": "shack-c",
+  "evidence": "/home/main/z-project/rpg-zzu-village-art/tiledata/wasteland-ruins/_review/r64/verdict-S.md",
+  "note": "wasteland_ruins/shack-c r63; object-gate PASS; r64 scale-up measured from Beodeul; independent adversarial reviewer Sonnet 5.5 r64 check PASS for this piece's category (verdict-S.md); one Sonnet reviewer by user instruction"
+ },
+ {
+  "sha": "3fc940747d0b6aa2279cd83d5546bfd92ba02e774e5d9b080732f4bf12cfff00",
+  "id": "hut-sheet",
+  "evidence": "/home/main/z-project/rpg-zzu-village-art/tiledata/wasteland-ruins/_review/r64/verdict-S.md",
+  "note": "wasteland_ruins/hut-sheet r63; object-gate PASS; r64 scale-up measured from Beodeul; independent adversarial reviewer Sonnet 5.5 r64 check PASS for this piece's category (verdict-S.md); one Sonnet reviewer by user instruction"
+ },
+ {
+  "sha": "09895a5fac5878e298009050a9c3d4c8b8c93ed2d7e2ac6e727b18c05e1dc885",
+  "id": "hut-stove",
+  "evidence": "/home/main/z-project/rpg-zzu-village-art/tiledata/wasteland-ruins/_review/r64/verdict-S.md",
+  "note": "wasteland_ruins/hut-stove r63; object-gate PASS; r64 scale-up measured from Beodeul; independent adversarial reviewer Sonnet 5.5 r64 check PASS for this piece's category (verdict-S.md); one Sonnet reviewer by user instruction"
+ },
+ {
+  "sha": "5497f7081c83cce3f970ccb3229cca9fec7255f09e7be4c46ab90d1a2a757d00",
+  "id": "shack-b",
+  "evidence": "/home/main/z-project/rpg-zzu-village-art/tiledata/wasteland-ruins/_review/r64/verdict-S.md",
+  "note": "wasteland_ruins/shack-b r63; object-gate PASS; r64 scale-up measured from Beodeul; independent adversarial reviewer Sonnet 5.5 r64 check PASS for this piece's category (verdict-S.md); one Sonnet reviewer by user instruction"
+ },
+ {
+  "sha": "5d0eb63b75ecd8950d308ea74ac9320821e7d6bb2d7ab6de359f47491b69b367",
+  "id": "container-home",
+  "evidence": "/home/main/z-project/rpg-zzu-village-art/tiledata/wasteland-ruins/_review/r64/verdict-S.md",
+  "note": "wasteland_ruins/container-home r63; object-gate REFER; r64 scale-up measured from Beodeul; independent adversarial reviewer Sonnet 5.5 r64 check PASS for this piece's category (verdict-S.md); one Sonnet reviewer by user instruction"
+ },
+ {
+  "sha": "0d983dc30e4e10cbdcbd3bc1006e47a8203fda21288b4a626474db7a77745995",
+  "id": "shack-2f",
+  "evidence": "/home/main/z-project/rpg-zzu-village-art/tiledata/wasteland-ruins/_review/r64/verdict-S.md",
+  "note": "wasteland_ruins/shack-2f r63; object-gate PASS; r64 scale-up measured from Beodeul; independent adversarial reviewer Sonnet 5.5 r64 check PASS for this piece's category (verdict-S.md); one Sonnet reviewer by user instruction"
+ },
+ {
+  "sha": "b49cdda3ad57bc682aba88d93b6c1d3c9361b9db6e1425591ddba9eefbcd7484",
+  "id": "husk-e",
+  "evidence": "/home/main/z-project/rpg-zzu-village-art/tiledata/wasteland-ruins/_review/r64/verdict-S.md",
+  "note": "wasteland_ruins/husk-e r63; object-gate REFER; r64 scale-up measured from Beodeul; independent adversarial reviewer Sonnet 5.5 r64 check PASS for this piece's category (verdict-S.md); one Sonnet reviewer by user instruction"
+ },
+ {
+  "sha": "3c9f344317542fc4ad7f83cc3798e567455d5b3fa1a092626d4b7f68565e9eef",
+  "id": "husk-g",
+  "evidence": "/home/main/z-project/rpg-zzu-village-art/tiledata/wasteland-ruins/_review/r64/verdict-S.md",
+  "note": "wasteland_ruins/husk-g r63; object-gate PASS; r64 scale-up measured from Beodeul; independent adversarial reviewer Sonnet 5.5 r64 check PASS for this piece's category (verdict-S.md); one Sonnet reviewer by user instruction"
+ },
+ {
+  "sha": "2cffeadf24323614da483b36b0526d1864cc69f33ed4507646cd90355cf17524",
+  "id": "husk-h",
+  "evidence": "/home/main/z-project/rpg-zzu-village-art/tiledata/wasteland-ruins/_review/r64/verdict-S.md",
+  "note": "wasteland_ruins/husk-h r63; object-gate PASS; r64 scale-up measured from Beodeul; independent adversarial reviewer Sonnet 5.5 r64 check PASS for this piece's category (verdict-S.md); one Sonnet reviewer by user instruction"
+ },
+ {
+  "sha": "2e10ddf64d4093af2fe42b36c87eeb764cd603c82179c730fb947a9349166d97",
+  "id": "tent-tarp",
+  "evidence": "/home/main/z-project/rpg-zzu-village-art/tiledata/wasteland-ruins/_review/r64/verdict-S.md",
+  "note": "wasteland_ruins/tent-tarp r63; object-gate PASS; r64 scale-up measured from Beodeul; independent adversarial reviewer Sonnet 5.5 r64 check PASS for this piece's category (verdict-S.md); one Sonnet reviewer by user instruction"
+ },
+ {
+  "sha": "6c5db9b4c7744098861bca51769eca444baeb5e418403da752ffa3686793bfec",
+  "id": "lean-to",
+  "evidence": "/home/main/z-project/rpg-zzu-village-art/tiledata/wasteland-ruins/_review/r64/verdict-S.md",
+  "note": "wasteland_ruins/lean-to r63; object-gate REFER; r64 scale-up measured from Beodeul; independent adversarial reviewer Sonnet 5.5 r64 check PASS for this piece's category (verdict-S.md); one Sonnet reviewer by user instruction"
+ },
+ {
+  "sha": "b4893984fa903502bdb5af7751d47e0336e694f61cf053576c6f1a11ad3ecf89",
+  "id": "market-shelter",
+  "evidence": "/home/main/z-project/rpg-zzu-village-art/tiledata/wasteland-ruins/_review/r64/verdict-S.md",
+  "note": "wasteland_ruins/market-shelter r63; object-gate REFER; r64 scale-up measured from Beodeul; independent adversarial reviewer Sonnet 5.5 r64 check PASS for this piece's category (verdict-S.md); one Sonnet reviewer by user instruction"
+ },
+ {
+  "sha": "c95cf9bd8269d82239d873b35b86a2455c58b0847f6aa70c0ec06684049f27b9",
+  "id": "car-rust-h",
+  "evidence": "/home/main/z-project/rpg-zzu-village-art/tiledata/wasteland-ruins/_review/r64/verdict-S.md",
+  "note": "wasteland_ruins/car-rust-h r63; object-gate PASS; r64 scale-up measured from Beodeul; independent adversarial reviewer Sonnet 5.5 r64 check PASS for this piece's category (verdict-S.md); one Sonnet reviewer by user instruction"
+ },
+ {
+  "sha": "630990ee8d0a7ab84b8d2d297a66aee980f994d990a453ffc99cfe7302347a8b",
+  "id": "car-rust-v",
+  "evidence": "/home/main/z-project/rpg-zzu-village-art/tiledata/wasteland-ruins/_review/r64/verdict-S.md",
+  "note": "wasteland_ruins/car-rust-v r63; object-gate REFER; r64 scale-up measured from Beodeul; independent adversarial reviewer Sonnet 5.5 r64 check PASS for this piece's category (verdict-S.md); one Sonnet reviewer by user instruction"
+ },
+ {
+  "sha": "0e546c9059a9cadd531c75f8eaf26a28db7c75090b65b43dcd64ce00e6c545e9",
+  "id": "van-rust",
+  "evidence": "/home/main/z-project/rpg-zzu-village-art/tiledata/wasteland-ruins/_review/r64/verdict-S.md",
+  "note": "wasteland_ruins/van-rust r63; object-gate PASS; r64 scale-up measured from Beodeul; independent adversarial reviewer Sonnet 5.5 r64 check PASS for this piece's category (verdict-S.md); one Sonnet reviewer by user instruction"
+ }
+]

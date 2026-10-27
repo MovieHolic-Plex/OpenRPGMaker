@@ -52,7 +52,9 @@ import { presentationArtIds, presentationArtImages } from '../../src/editor/tool
 // 이 파일 하나를 다시 쓰면 된다.
 
 import { Agent, type StreamFn } from "@oh-my-pi/pi-agent-core";
-import { streamSimple } from "@oh-my-pi/pi-ai";
+import { streamSimple, validateToolArguments } from "@oh-my-pi/pi-ai";
+import { isCliContextExhaustedError } from "../../src/ai/piAgent/cliContextBudget.ts";
+import { refusalLoopRefusal, refusalSignature, repairToolArgs, repeatedRefusalHint, repeatedShapeHint, shapeErrorSignature, shapeLoopRefusal } from "../../src/ai/piAgent/argRepair.ts";
 import type { RoleModel } from "../../src/ai/modelRoles.ts";
 import { resolveOhMyPiModel } from "./ohMyPiModel.ts";
 import { codexVersionFetch } from "./codexClientVersion.ts";
@@ -74,6 +76,7 @@ import { isTransientProviderStreamError, PI_PROVIDER_STREAM_RETRY_LIMIT, provide
 import { explainOpenAiCompatRunError, guardedOpenAiCompatFetch, shapeOpenAiCompatCall } from "./openAiCompatModel.ts";
 import { isOpenAiCompatProviderId } from "../../src/ai/openAiCompat.ts";
 import { PLAN_EXECUTION_REKICK, ULTRABRAIN_PLAN_HEADING } from "../../src/ai/piAgent/planExecution.ts";
+import { WHOLE_GAME_REKICKS, unbuiltGameSigns, wantsWholeGame, wholeGameRekickPrompt } from "../../src/ai/v2/shipChecks.ts";
 import { addPiAgentUsage, changedProjectKeys, PI_AGENT_DEFAULT_TIMEOUT_MS, PI_MAP_LOSS_DECLINED_PREFIX, piMapScopeGuard, restoreCheckpointProject, slimCheckpointProject, slimProjectForWire, snapshotProjectKeepingHeavy, slimDoneEvent, unchangedHeavyKeys, type PiAgentDoneEvent, type PiAgentEvent, type PiAgentRequest, type PiAgentUsage, type PiCheckpointHeavyKey } from "../../src/ai/piAgent/protocol.ts";
 import { normalizePiThinkingLevel } from "../../src/ai/piAgent/thinkingLevel.ts";
 import { antigravityToolEnumPayload } from "./ohMyPiToolEnums.ts";
@@ -88,6 +91,7 @@ import type { ToolContext, ToolResult } from "../../src/editor/tools/types.ts";
 import { runTool } from '../../src/editor/tools/index.ts';
 import { prepareMapBackgroundGeneration } from '../../src/editor/tools/mapBackgroundGenerationTool.ts';
 import { emptyTopRows } from '../../src/project/mapBackgroundVisibility.ts';
+import { isEmptyAssistantReply, messagesHaveImages, stripImages } from '../../src/ai/piAgent/emptyReply.ts';
 import { mapTileSize } from '../../src/project/tileGeometry.ts';
 import { composeVisiblePanorama } from '../../src/editor/mapPanoramaGeneration.ts';
 import { prepareOpeningImageRequest, prepareOpeningLayerRequest } from '../../src/editor/tools/cinematicTools.ts';
@@ -98,6 +102,7 @@ import { localCliIdOf } from './localCliAgent/types.ts';
 import { createLocalCliLoop, type LocalCliLoop } from './localCliAgent/localCliLoop.ts';
 import { shrinkReferenceImage } from './referenceImageShrink.ts';
 import { LOCAL_CLI_ADAPTERS, localCliBinary } from './localCliAgent/registry.ts';
+import { animaticResourceIds } from '../../src/project/openingAnimatic.ts';
 import { PiOpeningProduction, OPENING_ANIMATIC_AUTHORING_TOOLS, OPENING_PRODUCTION_PROMPT, requestsFullGameOpeningProduction, requestsOpeningProduction, openingImageProject } from '../../src/ai/piAgent/openingProduction.ts';
 
 // 조수 도구는 이 Bun 일꾼 안에서 돈다 — 편집기 기본값(상대 /v1 fetch)은 여기서 닿지 않으므로 월드맵 빌드를 프로세스 안에서 부른다.
@@ -276,6 +281,22 @@ export const resolvePiModel = resolveOhMyPiModel;
  * 렌더러(toolImageRenderer.renderPiMapImage)는 칸 배열을 받는다. 좌표만 넘기면 「map-rendering-unavailable: invalid region」으로 거절한다 —
  * 1배 확인 루프(#3258)에서 고친 것과 같은 실패가 컷신 검토·inspect_interior_layout 그림에도 남아 있었다(2026-10-22).
  */
+/** 애니메틱 샷 하나가 쓰는 그림 id(찍을 때 실을 것만). */
+function animaticResourceIdsFor(project: Project, shotId: string): string[] {
+  const scene = project.system.opening?.scenes.find((entry) => entry.id === shotId);
+  if (!scene || scene.kind !== "animatic") return [];
+  return animaticResourceIds(scene.composition);
+}
+/** CLI 문맥 한도로 멈춘 뒤 빈 세션에서 이어 할 첫 글 — 앞 대화가 없으니 요청을 다시 싣는다(J79). */
+function cliContextResumePrompt(task: string): string {
+  return [
+    "[이어 하기] 앞 차례가 CLI 문맥 한도로 끊겨 대화 기록을 비웠다. 지은 것은 프로젝트에 남아 있다 — 먼저 inspect 로 지금 상태를 읽고, 아래 글에서 남은 일만 이어 한다. 이미 한 일을 다시 하지 않는다. 큰 결과(그림 여러 장·긴 이벤트)는 필요한 것만 읽는다.",
+    "",
+    "[이번 차례에 받은 글]",
+    task.length > 6000 ? `${task.slice(0, 6000)}…` : task,
+  ].join("\n");
+}
+
 export async function renderMapRegionImage(project: Project, region: { mapId: string; x: number; y: number; w: number; h: number },
   renderToolImage: NonNullable<RunPiAgentOptions["renderToolImage"]>, signal?: AbortSignal): Promise<string> {
   const copy = cloneProjectSharingSharedDictionaries(project);
@@ -338,6 +359,13 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   referenceGate.evidence.shrinkImage = shrinkReferenceImage;
   const charsetGate = new PiCharsetSelectionGate();
   const model = localCli ? ({ id: request.model ?? "" } as unknown as ReturnType<typeof resolvePiModel>) : options.model ?? resolvePiModel(request.provider, request.model);
+  // 그림을 도구 응답에 넣었다고 모델이 본 것은 아니다 — 그림을 못 받는 모델(input 에 image 가 없다)이면 pi-ai 가 그림 자리를 글 한 줄로 바꾼다.
+  // 그때 「모델 입력에 포함했습니다」라고 적으면 거짓 상태다(J69, hf2-school-flash: supportsImages:false 인데 charset.image.delivered).
+  // 로컬 CLI 처럼 input 을 모르면 예전처럼 전달로 본다.
+  const modelSeesImages = (): boolean => { const input = (model as { input?: unknown }).input; return !Array.isArray(input) || input.includes('image'); };
+  const imageStatus = (summary: string): { ok: boolean; summary: string } => modelSeesImages()
+    ? { ok: true, summary }
+    : { ok: false, summary: `그림을 만들었지만 이 모델(${String((model as { id?: unknown }).id ?? '')})은 그림을 받지 못해 전달되지 않았습니다 — 모델은 그림 대신 글만 봤습니다.` };
   // 어댑터와 코어 이벤트의 호출 id로 결과를 연결한다. 같은 이름의 병렬 호출도 섞지 않는다.
   const pendingSummaries = new Map<string, { ok: boolean; summary: string; result: unknown; visuals?: readonly ActivityVisual[] }>();
   const toolStartedAt = new Map<string, number>();
@@ -347,7 +375,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   const tools: PiToolShape[] = [];
   const exposed = new Set<string>();
   const monsterGameProduction = new PiMonsterGameProduction(!options.v2 && !request.readOnly && !options.readOnlyTools && (requestsEmeraldMonsterGame(request.task) || classifyMonsterGameRequest(request.task) === 'campaign'), request.task);
-  const gameSystemProduction = new PiGameSystemProduction();
+  const gameSystemProduction = new PiGameSystemProduction(!options.v2);
   // 채팅 한 줄 연애 게임 요청 — 도구 목록이 고정된 팀 하위 실행은 제외(팀은 finish 게이트가 한다).
   const romanceProduction = new PiRomanceProduction(!request.readOnly && !options.readOnlyTools && !options.toolNames && !options.subscribeTeamMessages, request.task);
   const npcLayoutProduction = new PiNpcLayoutProduction();
@@ -535,15 +563,76 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
       if (note) result.content.unshift({ type: "text", text: `[${note}]` });
       return result;
     } });
+  // 인자 모양 고치기(src/ai/piAgent/argRepair.ts) — 코어 검증을 느슨하게 하고 여기서 검증한다. 맞는 호출은 그대로 지나가고,
+  // 실패한 호출만 뜻이 분명한 모양 실수(감싸는 객체 빠뜨림·안쪽 칸 바깥에 둠·목록 항목 id 빠뜨림)를 고쳐 한 번 더 검증한다.
+  // 같은 도구가 연달아 모양 오류를 내면 오류 끝에 필수 칸 모양을 붙인다(2026-10-25: 같은 인자로 13번 실패).
+  // 도구마다 연달아 난 모양 오류 수와 마지막 오류 줄(같은 오류가 되풀이되는지).
+  const shapeFailures = new Map<string, { count: number; same: number; sig: string }>();
+  // 도구마다 연달아 같은 문장으로 거절된 횟수(J74) — 모양이 맞아도 도구가 같은 이유로 거절하면 같은 차단기를 쓴다.
+  const refusalRepeats = new Map<string, { same: number; sig: string }>();
+  const executeCountingRefusals = async (tool: PiToolShape, id: string, args: unknown, signal: AbortSignal | undefined) => {
+    try {
+      const result = await tool.execute(id, args as never, signal);
+      refusalRepeats.delete(tool.name);
+      return result;
+    } catch (error) {
+      if (signal?.aborted) throw error;
+      const message = error instanceof Error ? error.message : String(error);
+      const sig = refusalSignature(message);
+      const prior = refusalRepeats.get(tool.name);
+      const same = prior && prior.sig === sig ? prior.same + 1 : 1;
+      refusalRepeats.set(tool.name, { same, sig });
+      if (same >= 3) {
+        emit({ type: 'execution_status', name: 'tool.refusal.loop', ok: false, summary: `${tool.name}: 같은 거절 ${same}번째 — 방법을 바꾸라고 거절` });
+        throw new Error(refusalLoopRefusal(tool.name, sig, same, message));
+      }
+      if (same === 2) throw new Error(`${message}${repeatedRefusalHint(tool.name, message, same)}`);
+      throw error;
+    }
+  };
+  const withArgRepair = (tool: PiToolShape): PiToolShape => (!tool.parameters ? tool : { ...tool, lenientArgValidation: true, async execute(id, params, signal) {
+    const check = (args: unknown) => validateToolArguments(tool as never, { type: "toolCall", id, name: tool.name, arguments: args as Record<string, unknown> } as never);
+    let valid: unknown;
+    try {
+      valid = check(params);
+    } catch (error) {
+      const repaired = repairToolArgs(tool.parameters, params);
+      let fixed: unknown;
+      let repairedError: unknown;
+      if (repaired.changes.length) { try { fixed = check(repaired.args); } catch (again) { repairedError = again; } }
+      if (fixed === undefined) {
+        const rawMessage = repairedError instanceof Error ? repairedError.message : error instanceof Error ? error.message : String(repairedError ?? error);
+        const sig = shapeErrorSignature(rawMessage);
+        const prior = shapeFailures.get(tool.name);
+        const failures = (prior?.count ?? 0) + 1;
+        const same = prior && prior.sig === sig ? prior.same + 1 : 1;
+        shapeFailures.set(tool.name, { count: failures, same, sig });
+        // 같은 오류 세 번째 — 긴 오류를 또 돌려주면 모델이 같은 호출을 되풀이했다(set_lighting_volume 13번). 거절하고 방법을 바꾸라고 한다.
+        if (same >= 3) {
+          emit({ type: 'execution_status', name: 'tool.args.loop', ok: false, summary: `${tool.name}: 같은 인자 모양 오류 ${same}번째 — 거절` });
+          throw new Error(shapeLoopRefusal(tool.name, tool.parameters, sig, same));
+        }
+        // 모양을 고친 뒤에도 틀리면 고친 쪽 오류가 더 가깝다(남은 빈칸만 말한다) — 무엇을 고쳤는지 함께 알린다.
+        const message = repairedError
+          ? `[인자 모양 고침: ${repaired.changes.join(" · ")} — 그래도 남은 오류]\n${repairedError instanceof Error ? repairedError.message : String(repairedError)}`
+          : error instanceof Error ? error.message : String(error);
+        throw new Error(failures >= 2 ? `${message}${repeatedShapeHint(tool.name, tool.parameters, failures)}` : message);
+      }
+      valid = fixed;
+      emit({ type: 'execution_status', name: 'tool.args.repaired', ok: true, summary: `${tool.name}: 인자 모양을 고쳐 실행 — ${repaired.changes.join(" · ")}`, data: { toolCallId: id, tool: tool.name, changes: repaired.changes } });
+    }
+    shapeFailures.delete(tool.name);
+    return executeCountingRefusals(tool, id, valid, signal);
+  } });
   const wrapTool = (tool: PiToolShape): PiToolShape => {
     const wrapped = wrapCoreTool(withHandInteriorEdits(tool));
     const live = options.liveProject;
-    return live ? { ...wrapped, async execute(id, params, signal) {
+    return withArgRepair(live ? { ...wrapped, async execute(id, params, signal) {
       if (liveDepth++ === 0) ownProject = ctx.project;
       ctx.project = cloneProjectSharingSharedDictionaries(live());
       try { return await wrapped.execute(id, params, signal); }
       finally { if (--liveDepth === 0) ctx.project = ownProject; }
-    } } : wrapped;
+    } } : wrapped);
   };
   const wrapCoreTool = (tool: PiToolShape): PiToolShape => !incremental && !['show_map_region', 'inspect_interior_layout', 'show_opening_image', 'generate_opening_image', 'generate_map_background', 'generate_image_asset', 'run_ffmpeg', 'generate_opening_layer', 'preview_opening_animatic', 'preview_opening_reference', 'show_title_opening', 'list_npc_graphics', 'list_resources'].includes(tool.name) ? tool : ({ ...tool,
     async execute(id, params, signal) {
@@ -664,7 +753,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
           // 모델에게는 플레이어 첫 화면에 실제로 비치는 부분만 보여 준다 — 전체 그림을 주면 가려진 아래쪽(반영·땅)까지 보고했다(2026-10-22 검수).
           const visible = await composeVisiblePanorama(far.dataUrl, near?.dataUrl, args.view, visibleTop).catch(() => undefined);
           if (visible?.startsWith('data:image/png;base64,')) result.content.push({ type: 'image', mimeType: 'image/png', data: visible.slice(visible.indexOf(',') + 1) });
-          emit({ type: 'execution_status', name: 'map.background.delivered', ok: true, summary: '생성한 맵 배경 그림을 모델에게 전달했습니다.', data: { resourceIds: made.map(entry => entry.still.resourceId), toolCallId: id } });
+          emit({ type: 'execution_status', name: 'map.background.delivered', ...imageStatus('생성한 맵 배경 그림을 모델에게 전달했습니다.'), data: { resourceIds: made.map(entry => entry.still.resourceId), toolCallId: id } });
         } else result = await tool.execute(id, params, signal);
       }
       if (tool.name === 'show_opening_image' || tool.name === 'generate_opening_image' || tool.name === 'generate_opening_layer') {
@@ -674,7 +763,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
         if (!png) throw new Error('오프닝 그림을 모델에게 전달하지 못했습니다.');
         result.content.push({ type: 'image', mimeType: 'image/png', data: png });
         if (data?.resourceId) {openingProduction.saw(ctx.project, data.resourceId);monsterGameProduction.saw(ctx.project, data.resourceId);}
-        emit({ type: 'execution_status', name: 'opening.image.delivered', ok: true, summary: '실제 오프닝 그림을 모델에게 전달했습니다.', data: { resourceId: data?.resourceId, toolCallId: id } });
+        emit({ type: 'execution_status', name: 'opening.image.delivered', ...imageStatus('실제 오프닝 그림을 모델에게 전달했습니다.'), data: { resourceId: data?.resourceId, toolCallId: id } });
       }
       if (tool.name === 'preview_opening_reference') {
         if (!options.renderToolImage) throw new Error('참고 프레임 전달 경로 없음.');
@@ -721,7 +810,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
         }
         if (png && data && typeof data === "object") interiorCompletion.recordPreview(ctx.project, data);
         const region = data && typeof data === 'object' ? data as Record<string, unknown> : {};
-        options.onEvent?.({ type: "execution_status", name: "map.image.delivered", ok: true, summary: "현재 초안 이미지를 모델 도구 응답에 포함했습니다.", data: { toolCallId: id, base64Length: png.length,
+        options.onEvent?.({ type: "execution_status", name: "map.image.delivered", ...imageStatus("현재 초안 이미지를 모델 도구 응답에 포함했습니다."), data: { toolCallId: id, base64Length: png.length,
           ...Object.fromEntries(['mapId', 'x', 'y', 'w', 'h'].map(key => [key, region[key]])) } });
       }
       const charsetResult = result.details as ToolResult;
@@ -739,7 +828,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
           imageLegend: `실제 칩 그림의 번호는 왼쪽 위부터 행 순서입니다. ${candidates.map((row, i) => `${i + 1}: ${row.label} (${row.selectionId})`).join(' / ')}` }) };
         result.content.push({ type: 'image', mimeType: 'image/png', data: png });
         charsetGate.offer(tool.name, charsetResult, png);
-        emit({ type: 'execution_status', name: 'charset.image.delivered', ok: true, summary: '검색 후보의 실제 캐릭터 칩 이미지를 모델 입력에 포함했습니다.', data: { toolCallId: id, selectionIds: candidates.map(row => row.selectionId), base64Length: png.length } });
+        emit({ type: 'execution_status', name: 'charset.image.delivered', ...imageStatus('검색 후보의 실제 캐릭터 칩 이미지를 모델 입력에 포함했습니다.'), data: { toolCallId: id, selectionIds: candidates.map(row => row.selectionId), base64Length: png.length } });
       }
       if (tool.name === 'show_title_opening') {
         const ids = presentationArtImages(ctx.project).map(image => image.resourceId);
@@ -753,8 +842,8 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
         }
         // 연결된 오프닝 그림을 실제로 본 것도 오프닝 제작 확인으로 친다 — 첫 제작 타이틀·오프닝 단계의 확인 도구가 이것이다.
         for (const resourceId of ids) openingProduction.saw(ctx.project, resourceId);
-        emit({ type: 'execution_status', name: 'presentation.image.delivered', ok: true,
-          summary: '연결된 타이틀·오프닝 원화를 모델 도구 응답에 포함했습니다.', data: { toolCallId: id, resourceIds: ids } });
+        emit({ type: 'execution_status', name: 'presentation.image.delivered',
+          ...imageStatus('연결된 타이틀·오프닝 원화를 모델 도구 응답에 포함했습니다.'), data: { toolCallId: id, resourceIds: ids } });
       }
       if (tool.concurrency === "exclusive" && request.applyMode !== "step") await checkpoint(tool.name, tool.name, signal);
       return result;
@@ -780,13 +869,60 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
     ...(options.extraTools ?? []),
   );
   // v2 동사 — wrapTool 을 거쳐 쓰기마다 체크포인트(실시간 적용·시공 재생)가 v1 과 같은 길로 간다.
+  // 검토자 칸(request.assistantRoles.advisor) — 주 모델과 다른 모델로 따로 부른다. 키가 없는 계정이면 주 모델로 물러난다(작문과 같은 관례).
+  const advisorRole = request.assistantRoles?.advisor && request.assistantRoles.advisor !== "off" ? request.assistantRoles.advisor : undefined;
+  const advisorCli = advisorRole ? localCliIdOf(advisorRole.provider) : undefined;
+  const advisorKey = advisorRole ? options.providerApiKeys?.[advisorRole.provider] ?? (advisorRole.provider === request.provider ? options.apiKey : undefined) : undefined;
+  const advisorChat = advisorRole && (advisorCli || advisorKey) ? async (messages: readonly unknown[], signal?: AbortSignal): Promise<string> => {
+    const t0 = Date.now();
+    sideUsage.calls += 1;
+    try {
+      if (advisorCli) return await localCliChat(advisorCli, advisorRole.model, addSideUsage)(messages, signal ?? options.signal);
+      const result = await completeProvider(advisorRole.provider, { model: advisorRole.model, max_tokens: 8192, messages },
+        { apiKey: advisorKey!, ...(signal ?? options.signal ? { signal: signal ?? options.signal } : {}) });
+      const reported = (result.completion as { usage?: { prompt_tokens?: number; completion_tokens?: number } }).usage;
+      if (reported) addSideUsage({ input: reported.prompt_tokens ?? 0, output: reported.completion_tokens ?? 0 });
+      const content = result.completion.choices[0]?.message.content;
+      return typeof content === "string" ? content : "";
+    } finally { sideUsage.ms += Date.now() - t0; }
+  } : undefined;
+  // 화면 검수 고치기 차례: 다음 지시의 첫 모델 호출 하나만 도구 호출을 강제한다(아래 Agent 의 getToolChoice 가 한 번 쓰고 내린다).
+  let forceToolTurn = false;
+  // 다음 후속 지시 앞에서 대화 기록을 비운다(J78) — 아래 v2 후속 고리가 한 번 쓰고 내린다.
+  let freshContextNext = false;
   const v2Env: PiAssistantV2Env | undefined = options.v2 ? {
     ctx, request, emit, record: recordCall,
+    requireToolNextTurn: () => { forceToolTurn = true; },
+    freshContextNextTurn: () => { freshContextNext = true; },
     checkpoint: (label: string) => request.applyMode !== "step" ? checkpoint(label, label, options.signal) : Promise.resolve(),
     sideChat: async (messages, signal) => {
       const reply = await eventAssistChat(null, { messages, ...(signal ?? options.signal ? { signal: signal ?? options.signal } : {}) });
       return typeof reply.message.content === "string" ? reply.message.content : "";
     },
+    ...(advisorChat ? { advisorChat, advisorModel: `${advisorRole!.provider}/${advisorRole!.model}` } : {}),
+    ...(options.renderToolImage ? { renderArt: async (art: { resourceId: string } | { shotId: string; atMs: readonly number[] }) => {
+      const ids = "resourceId" in art ? [art.resourceId] : animaticResourceIdsFor(ctx.project, art.shotId);
+      const tool = "resourceId" in art ? "show_opening_image" : "preview_opening_animatic";
+      const data = "resourceId" in art ? { resourceId: art.resourceId } : { shotId: art.shotId, atMs: [...art.atMs], resourceIds: ids, bare: true };
+      const png = await options.renderToolImage!(openingImageProject(ctx.project, ids), tool, data, options.signal);
+      return png.startsWith("data:") ? png : `data:image/png;base64,${png}`;
+    } } : {}),
+    roleChat: async (role: { provider: string; model: string; effort?: "low" | "medium" | "high" }, messages: readonly unknown[], signal?: AbortSignal): Promise<string> => {
+      const t0 = Date.now();
+      sideUsage.calls += 1;
+      try {
+        const cli = localCliIdOf(role.provider);
+        if (cli) return await localCliChat(cli, role.model, addSideUsage)(messages, signal ?? options.signal);
+        const key = options.providerApiKeys?.[role.provider] ?? (role.provider === request.provider ? options.apiKey : undefined);
+        if (!key) throw new Error(`${role.provider} 계정 키가 이 실행에 없음`);
+        const result = await completeProvider(role.provider, { model: role.model, max_tokens: 8192, messages, ...(role.effort ? { reasoning: { effort: role.effort } } : {}) }, { apiKey: key, ...(signal ?? options.signal ? { signal: signal ?? options.signal } : {}) });
+        const reported = (result.completion as { usage?: { prompt_tokens?: number; completion_tokens?: number } }).usage;
+        if (reported) addSideUsage({ input: reported.prompt_tokens ?? 0, output: reported.completion_tokens ?? 0 });
+        const content = result.completion.choices[0]?.message.content;
+        return typeof content === "string" ? content : "";
+      } finally { sideUsage.ms += Date.now() - t0; }
+    },
+    keyedProviders: new Set([...Object.entries(options.providerApiKeys ?? {}).filter(([, key]) => Boolean(key)).map(([id]) => id), ...(options.apiKey ? [request.provider] : []), ...(localCliIdOf(request.provider) ? [request.provider] : [])]),
     ...(options.renderToolImage ? { render: async (mapId: string, x: number, y: number, w: number, h: number) => `data:image/png;base64,${await renderMapRegionImage(ctx.project, { mapId, x, y, w, h }, options.renderToolImage!, options.signal)}` } : {}),
     ...(options.signal ? { signal: options.signal } : {}),
     toolsetOptions: { referenceGate, charsetGate, findToolsCallable, eventAssistChat: eventAssistChat as never, ...scopeGuard },
@@ -958,7 +1094,22 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
     ...(options.signal ? { signal: options.signal } : {}),
     onStatus: (name, summary, data) => emit({ type: "execution_status", name, ok: true, summary, data }),
   }) : undefined;
+  // 빈 답 지키기(src/ai/piAgent/emptyReply.ts): 그림이 든 요청 뒤 빈 완료면 남은 요청에서 그림을 글로 바꿔 다시 묻는다.
+  let imagesStripped = false;
+  let lastRequestHadImages = false;
+  let emptyRetries = 0;
+  // 이 실행이 사용자에게 글로 된 답을 한 번이라도 냈나 — 없이 «정상» 끝나면 빈 보고로 정착시키지 않는다.
+  let answered = false;
   const agent: PiLoopDriver = localLoop ?? new Agent({
+    getToolChoice: () => {
+      if (!forceToolTurn) return undefined;
+      forceToolTurn = false;
+      return "required";
+    },
+    transformContext: async (messages: unknown[]) => {
+      lastRequestHadImages = messagesHaveImages(messages);
+      return (imagesStripped && lastRequestHadImages ? stripImages(messages) : messages) as never;
+    },
     initialState: {
       systemPrompt,
       model,
@@ -993,6 +1144,8 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   // 제공자 스트림이 도중에 끊긴 오류. 실행을 끝내지 않고 같은 기록 위에서 이어 가기 턴을 연다(providerRetry.ts).
   let resumeAfter: string | undefined;
   let providerRetries = 0;
+  let cliContextResets = 0;
+  let cliContextResetPending = false;
   const started = Date.now();
   emit({ type: "start", provider: request.provider, model: String((model as { id?: string }).id ?? ""), toolCount: tools.length });
   // 모델 스트림 조각은 버리지 않고 합쳐 중계한다 — 이게 없어서 모델이 생각하는 동안 와이어가 비었다(실측 2026-09-14).
@@ -1102,9 +1255,33 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
         .filter((part): part is { type: "text"; text: string } => !!part && typeof part === "object" && (part as { type?: string }).type === "text")
         .map((part) => part.text)
         .join("");
-      if (text.trim()) emit({ type: "assistant", text });
+      if (text.trim()) { emit({ type: "assistant", text }); answered = true; }
       usage = addPiAgentUsage(usage, message.usage);
+      // 글도 도구 호출도 없는 «정상 끝» = 제공자가 답을 못 만든 것. 끝난 차례로 두지 않고 한 번 더 묻는다(그림이 원인이면 그림을 빼고).
+      // 로컬 CLI 는 도구 호출 블록·사용량 결과를 내용 없는 message_end 로 알린다 — 빈 답으로 보지 않는다(끝에 보고가 없으면 아래 run.no_answer).
+      if (!localLoop && !fatal && !options.signal?.aborted && isEmptyAssistantReply(message)) {
+        const imageCause = lastRequestHadImages && !imagesStripped;
+        if (imageCause) imagesStripped = true;
+        if (imageCause || emptyRetries < 1) {
+          if (!imageCause) emptyRetries += 1;
+          resumeAfter = imageCause ? "그림이 든 요청에 AI 가 빈 답을 보냄" : "AI 가 빈 답을 보냄";
+          emit({ type: "execution_status", name: "provider_empty_reply", ok: false, summary: imageCause
+            ? "이 AI 연결이 그림이 든 요청에 빈 답을 보냈습니다 — 이 실행의 남은 요청에서 그림을 빼고 다시 묻습니다."
+            : "AI 가 빈 답을 보냈습니다 — 한 번 더 묻습니다." });
+        } else {
+          fatal = fatal ?? "AI 모델이 빈 답만 보내 작업을 마치지 못했습니다. 다른 모델로 바꾸거나 다시 보내 주세요.";
+          emit({ type: "error", message: fatal });
+        }
+      }
       if (message.stopReason === "error" || message.errorMessage) {
+        // 로컬 CLI 가 문맥 한도로 멈췄다(J79 「Autocompact is thrashing」) — 같은 세션으로는 다시 찬다. 세션을 비우고 한 번 이어 한다.
+        if (!fatal && !options.signal?.aborted && localLoop && cliContextResets < 1 && isCliContextExhaustedError(message.errorMessage)) {
+          cliContextResets += 1;
+          cliContextResetPending = true;
+          resumeAfter = message.errorMessage;
+          emit({ type: "execution_status", name: "local-cli.context_reset", ok: false, summary: "CLI 문맥이 한도에 차서 멈췄습니다 — 대화 기록을 비우고 요청과 지금 프로젝트에서 한 번 이어 합니다." });
+          return;
+        }
         // 우리가 먼저 정한 사유(턴·시간 상한, 클라이언트 끊김)가 있으면 그것이 이긴다 — 코어가 합성한
         // aborted 메시지의 문구로 덮어쓰지 않는다.
         if (!fatal && !options.signal?.aborted && providerRetries < PI_PROVIDER_STREAM_RETRY_LIMIT
@@ -1137,6 +1314,13 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
     await agent.prompt(text);
     while (resumeAfter && !fatal && !rejected && !options.signal?.aborted) {
       resumeAfter = undefined;
+      if (cliContextResetPending && localLoop) {
+        cliContextResetPending = false;
+        await localLoop.resetSession();
+        emit({ type: "execution_status", name: "v2.context.reset", ok: true, summary: "CLI 문맥 한도 — 앞 대화 기록을 비우고 요청만 다시 싣고 이어 한다" });
+        await agent.prompt(cliContextResumePrompt(text));
+        continue;
+      }
       providerRetries += 1;
       await new Promise((resolve) => setTimeout(resolve, PROVIDER_RETRY_DELAY_MS * providerRetries));
       await agent.prompt(providerStreamResumePrompt(providerRetries, PI_PROVIDER_STREAM_RETRY_LIMIT));
@@ -1157,10 +1341,31 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
       emit({ type: "execution_status", name: "plan_execution_rekick", ok: false, summary: "계획만 다시 쓰고 바뀐 것 없이 끝나 실행을 한 번 더 요청합니다." });
       await promptResuming(PLAN_EXECUTION_REKICK);
     }
-    // v2 완료 조건(비평 통과·기계 검사 통과) — 못 채웠으면 한 차례 더 돌며 사실대로 보고하게 한다.
-    if (options.v2?.afterMain && v2Env && !fatal && !rejected && !options.signal?.aborted && turns < maxTurns) {
-      const followUp = await options.v2.afterMain(v2Env);
-      if (followUp && !fatal && !rejected && !options.signal?.aborted) await promptResuming(followUp);
+    // 게임 하나를 만드는 요청인데 뼈대(「기억의 조각 → 첫 구간 끝」)만 남았거나 엔딩이 하나도 없이 «확인하겠습니다» 같은 말로 턴이 끝났다
+    // (2026-10-25 Salad S3: 58판 중 9판이 뼈대만 남긴 채 끝났다 — 오류 없이 모델이 다음 할 일을 말하고 멈췄다). 최대 3번 이어 짓게 한다.
+    if (!options.v2 && !fatal && !rejected && !request.readOnly && !options.readOnlyTools && wantsWholeGame(request.task)) {
+      for (let kick = 1; kick <= WHOLE_GAME_REKICKS && turns < maxTurns && !fatal && !rejected && !options.signal?.aborted; kick++) {
+        const missing = unbuiltGameSigns(ctx.project, request.task);
+        if (!missing.length) break;
+        const beforeKick = ctx.project;
+        emit({ type: "execution_status", name: "whole_game_rekick", ok: false, summary: `게임이 아직 다 지어지지 않아 이어 짓게 합니다(${kick}/${WHOLE_GAME_REKICKS}): ${missing.join(" / ").slice(0, 300)}` });
+        await promptResuming(wholeGameRekickPrompt(missing));
+        if (kick > 1 && changedProjectKeys(beforeKick, ctx.project).length === 0) break;
+      }
+    }
+    // v2 완료 조건(비평 통과·기계 검사 통과·독립 검토자) — 못 채웠으면 한 차례 더 돌며 사실대로 보고하게 한다.
+    // 두 번째 차례는 첫 후속이 쓴 «최종 보고»를 검토자가 다시 대어 보는 자리다(최대 2차례 — 끝없이 돌지 않는다).
+    for (let round = 0; options.v2?.afterMain && v2Env && round < (options.v2?.maxRounds ?? 2) && !fatal && !rejected && !options.signal?.aborted && turns < maxTurns; round++) {
+      const followUp = await options.v2.afterMain(v2Env, round);
+      if (!followUp || fatal || rejected || options.signal?.aborted) break;
+      if (freshContextNext) {
+        freshContextNext = false;
+        // 로컬 CLI 는 새 대화로, Pi 코어는 기록을 비운다(시스템 지시·도구는 그대로). 후속 글이 요청·결함·맵 요약을 스스로 담는다.
+        if (localLoop) await localLoop.resetSession();
+        else (agent as unknown as { clearMessages(): void }).clearMessages();
+        emit({ type: "execution_status", name: "v2.context.reset", ok: true, summary: "고치기 차례 — 앞 대화 기록을 비우고 결함·맵 요약만으로 시작" });
+      }
+      await promptResuming(followUp);
     }
     // 인게임 컷신은 조수의 보고가 아니라 객관 측정 + 독립 판정자로 검증한다(openingProduction.recordCutsceneReview).
     const reviewInGameCutscene = async (): Promise<void> => {
@@ -1433,6 +1638,15 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   }
   emitMapDelta();
   if (fatal && toolCalls === 0) throw Object.assign(new Error(fatal), { status: 502 });
+  // 글 답 없이 끝난 실행(2026-10-25 romance-seoul-v2: 적용 대기 46분 중단 뒤 다음 차례들이 20초 만에 빈 답으로 «정착»했다).
+  // 빈 보고로 두지 않고, 무엇을 했는지와 함께 «보고 없이 끝났다»고 정직하게 남긴다.
+  if (!fatal && !answered && !options.signal?.aborted) {
+    const note = toolCalls
+      ? `AI 가 도구를 ${toolCalls}번 쓴 뒤 보고 없이 끝났습니다(오류 ${toolErrors}번). 요청이 다 됐는지 확인되지 않았습니다 — 결과를 확인하거나 다시 보내 주세요.`
+      : "AI 가 아무 일도 하지 않고 보고 없이 끝났습니다. 요청은 처리되지 않았습니다 — 다시 보내 주세요(같으면 모델을 바꿔 보세요).";
+    emit({ type: "execution_status", name: "run.no_answer", ok: false, summary: note });
+    emit({ type: "assistant", text: note });
+  }
   const interiorProblems = interiorCompletion.inspect(ctx.project, base);
   if (interiorProblems.length) emit({ type: 'error', message: '실내 미완료: ' + JSON.stringify(interiorProblems) });
   const done: PiAgentDoneEvent = {

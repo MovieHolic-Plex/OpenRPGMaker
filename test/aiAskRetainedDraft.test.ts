@@ -18,6 +18,11 @@ import { installFakeDom } from "./fakeDom";
 import { fixedDeclarer } from "./intentFixture";
 import { approvedReviewResponse } from "./independentReviewFixture";
 
+// Tests here build the ~63MB blank project (createBlankProject) and drive assistant sessions or editor
+// panels over it, fingerprinting/copying it per session. Under ci-full load (8 workers on 4-core runners)
+// single tests measured 10-50s, past vitest's 15s default, so the budget is raised for this file only.
+vi.setConfig({ testTimeout: 120_000 });
+
 // Telemetry is not the apply boundary. Session, registered tools, runner, apply and undo stay real.
 vi.mock("@/ai/activityLog", async original => ({
   ...await original<typeof import("@/ai/activityLog")>(),

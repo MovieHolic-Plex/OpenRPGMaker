@@ -39,6 +39,16 @@ const CLASS_BATTLERS = [
     characterIndex: 0,
     label: "손 도트 전투 · 은발 여검사",
   },
+  {
+    // 폴른 스타 심문관 발렌 — 걷기 칩(oprn-charset-fs-valen, 광대 모자를 걷고 긴 푸른 머리·금빛 머리띠)과 같은 사람.
+    // actor1-4 포즈에서 모자만 머리카락으로 바꾼 파생(scripts/asset-gen/charset-battler/derive_hatless.py actor1-4 fs-valen).
+    resourceId: "charset-battler-fs-valen",
+    path: "assets/generated/charset-battlers/fs-valen.png",
+    castPath: "assets/generated/charset-battlers/cast/fs-valen.png",
+    characterResourceId: "oprn-charset-fs-valen",
+    characterIndex: 0,
+    label: "걷기 칩 전투 · 심문관 발렌(긴 푸른 머리)",
+  },
 ];
 
 /**
@@ -67,7 +77,13 @@ export function charsetBattler(resourceId: string | undefined) {
   return resourceId ? byId.get(resourceId) : undefined;
 }
 
+/** 손으로 고친 걷기 칩(업로드 칩)에 맞춘 전투 시트 — 칩 id·자리로 찾는다. 원본 칩의 전투 시트를 쓰면 모자·머리가 다른 사람이 된다. */
+const BY_CUSTOM_CHIP = new Map(CLASS_BATTLERS.filter((entry) => entry.characterResourceId && !entry.characterResourceId.startsWith("easyrpg-"))
+  .map((entry) => [`${entry.characterResourceId}#${entry.characterIndex}`, entry.resourceId]));
+
 export function charsetBattlerForCharacter(characterResourceId?: string, characterIndex = 0): string | undefined {
+  const custom = BY_CUSTOM_CHIP.get(`${characterResourceId ?? ""}#${characterIndex}`);
+  if (custom) return custom;
   if (!/^easyrpg-charset-(actor[1-4]|people[1-5])$/.test(characterResourceId ?? "")) return undefined;
   if (!Number.isInteger(characterIndex) || characterIndex < 0 || characterIndex > 7) return undefined;
   const id = `charset-battler-${characterResourceId!.slice("easyrpg-charset-".length)}-${characterIndex}`;

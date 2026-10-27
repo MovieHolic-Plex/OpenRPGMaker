@@ -1,0 +1,16 @@
+{
+ "schema": "oprn-object-gate-hold-decision/1",
+ "pixelSha256": "503425dc67d36168294061fac98d66e747ceda3584843736051645a2bd8571a6",
+ "profileHash": "4d8774b517f41638",
+ "kind": "structure",
+ "decision": "allow",
+ "decidedBy": "supervisor (building-kit massing)",
+ "decidedAt": "2026-10-25T06:46:25.085Z",
+ "by": "delegated",
+ "delegatedBy": "user 2026-10-25 (bk-massing-100 → 실제 건물, 머지까지 위임)",
+ "evidence": "/home/main/z-project/rpg-zzu-building-kit/harness-data/building-kit/massing/reviews/cottage/503425dc67d3-evidence.json",
+ "via": "review-page",
+ "reasons": [],
+ "note": "object-gate 영수증 pass(미보정 프로필, 조언) + argon·klb-sonnet-5-5 독립 검수 PASS(함정 잡은 유효 회차)",
+ "sig": "902d2df511c9806dd51002251a2c0e81182ac33257cbf821e605cd1127e70dbf"
+}

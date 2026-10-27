@@ -147,6 +147,7 @@ affects mp 면 MP). 둘 다 0/생략이면 키가 없다 — 옛 프로젝트는
 ## 데스크톱 시작 화면 — 라이브러리 홈 (2026-10-20, 2026-10-17 플레이·만들기 두 갈래를 대체 · 2026-10-21 칸 나누기)
 
 첫 화면은 「라이브러리 홈」이다(설계 http://mdc-server:18301/home-redesign-1.html A안, 사용자 선택 2026-10-20).
+명령줄에 `project.sqlite` 가 있는 폴더를 넘기면 이 홈을 건너뛰고 그 프로젝트를 연다 — `openwiki/architecture.md` 「명령줄 프로젝트 폴더」.
 
 **2026-10-21 칸 나누기(사용자 신고 「왼쪽 버튼 누르면 상태 관리 엉망 · 홈은 지금 만들 수 있는 것만」).** 10-20 판은 한 긴 본문을 레일 단추로 스크롤했고
 스크롤 위치가 레일 표시를 다시 정했다. 실측 결함: (1) 누르자마자 표시가 「홈」으로 되돌아갔다가 스크롤이 끝나야 맞음, (2) 컨셉 상세·검색어가
@@ -1314,6 +1315,13 @@ bytes after real remote reload and Test Play. The default is not remote proof.
 - Web export treats authored project JSON as the source of truth but strips editor-only event drafts and prunes `assets.uploaded` to statically referenced resource ids before writing `project.json`. `prepareWebExport()` must deserialize the serialized JSON once for shape validation before any package/download path reports success.
   As of 2026-10-05 it also keeps only map-owned tilesets and their transitive graft source definitions (source record ID or image ID), before cloning/serialization. Canonical editor definitions remain intact. This prevents unused bundled tileset dictionaries from exhausting the player while loading a six-map worldmap QA export; the retained saved maps and graft sources are compared in `verify-shots/worldmap-autotile-adversarial/export-checked.json`.
 - **SQLite media in shipped ZIPs (2026-10-03):** `webUploadedAssetPath` is the shared filename contract for the writer and exported player. `exportEntry` installs `exportUploadedAssets` before rendering, so an uploaded asset's content-addressed `ref` resolves to the adjacent `assets/uploaded/` file. The player has no editor SQLite bridge. Opening a game with inline media clears the previous ref resolver. `prepareWebExport` strips authoring references and unused uploaded assets before its deep clone, and keeps retained assets isolated from the open project. It preserves retained runtime tileset definitions and the existing image-catalog inclusion policy.
+- **번들 타일셋 참조 (2026-10-25, S4):**
+  - `prepareWebExport` 가 쓰는 project.json 에서 번들 정의와 내보내기 모양(참고문서 뺀 것)까지 JSON 동치인 타일셋은 머리(`id·name·image·kind·family·tileSize·tilesPerRow·count`)와 `bundledTilesetRef: <정의 지문>` 만 남긴다(`src/project/bundledTilesetRefs.ts`).
+  - `deserializeParsed` 가 검사 전에 플레이어 번들의 정의로 되돌린다. 지문이 다르거나 이 플레이어에 그 번들이 없으면 `ProjectFormatError` 로 막는다. 조용히 다른 칸 표로 놀지 않는다.
+  - 고친 타일셋(공방 칸·옛 판본·저자 tileMeta)과 `meta.publication` 판본은 예전처럼 통째로 싣는다.
+  - `prepared.project`(그림 수집·요약용)는 전체 정의를 그대로 가진다.
+  - 실측: 새 프로젝트는 3.5MB, g2 는 17.3→5.6MB, salad repro-f1b 는 17.9→13.9MB(옛 beodeul_city 사본은 번들과 달라 그대로)였다.
+  - `scripts/lib/playSession.mjs prepareBoot` 는 qp·repro·build-games 가 띄우는 저장본을 같은 투영(`runtimeProjection.ts`)으로 바꿔 넘긴다. 출하물을 검증하고, 98MB 저장본을 브라우저에 싣지 않는다.
 - **Export resource completeness (2026-09-06):** `src/battle/partySpriteResources.ts` owns party back-view/fallback selection for both battle rendering and export. `webExportAssets` includes derived resources for reserve actors and both fallback slot parities, then adds idle strips from the runtime catalog. Derived uploaded overrides must survive `prepareWebExport` pruning; a party texture key or successful combat result is not proof that its image decoded.
 - **Export URL ownership:** `exportEntry` registers the game directory in `inlineAssetStore` before boot. `withInlineAsset` prefers embedded data, then rebases local `assets/` paths for exported players only. Editor paths, external URLs and SVG fragments remain unchanged. Image warmup, minimap tileset URLs and movie fallbacks use the same boundary. Catalog BGM may be fetched from the editor's configured CDN, but is packaged at the player's canonical local fallback path so exported playback needs no CDN setting.
 - **Invalid ingredients do not produce success artifacts:** standalone rejects missing/empty/HTML bundle or media bytes; ZIP additional media rejects empty/HTML bytes while its existing manifest/hash checks remain authoritative for the player bundle. `url(#battle-flash-tint)` is a document fragment, not a file to fetch. The standalone CLI delegates to the same exporter.

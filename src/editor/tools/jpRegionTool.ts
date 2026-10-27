@@ -135,9 +135,11 @@ export const COMPOSE_JP_REGION_TOOL: ToolDefinition = {
     // 숲 구획: r3 오토타일이 있거나, 나무 composer(r4 활엽)가 있으면 paint_forest 로 칠한다. 대숲 등산로는 r4(활엽만)로 바꾸면 대숲이 사라지므로 r3 가 없을 땐 옛 키트(대숲·삼나무)로 둔다.
     const useForestAutotile = hasJpForestR3(tileset) || (hasJpForestR4(tileset) && region.id !== "bamboo_mountain_trail");
     const grounding = args.grounding !== false;
-    let plan = planJpRegionScene({ region: varied.region, mapId, width: map.width, height: map.height, seed, kitSize: (id) => kits.get(id), forestAutotile: useForestAutotile });
+    // 동서 큰길 횡단보도 칸: 생활도로 횡단보도 키트의 줄 칸(흰 줄이 동서로 나란한 투명 덧그림)을 그대로 쓴다 — 새 그림 없음.
+    const crosswalkTile = (tileset.structureKits ?? []).find((k) => k.id === "jp-road-lane-crosswalk-h")?.rows.flatMap((row) => row.upperTiles ?? []).find((t) => t >= 0);
+    let plan = planJpRegionScene({ region: varied.region, mapId, width: map.width, height: map.height, seed, kitSize: (id) => kits.get(id), forestAutotile: useForestAutotile, crosswalkTile });
     for (let retry = 1; retry < 8 && plan.violations.length > 0; retry++) {
-      const candidate = planJpRegionScene({ region: varied.region, mapId, width: map.width, height: map.height, seed: seed + retry, kitSize: (id) => kits.get(id), forestAutotile: useForestAutotile });
+      const candidate = planJpRegionScene({ region: varied.region, mapId, width: map.width, height: map.height, seed: seed + retry, kitSize: (id) => kits.get(id), forestAutotile: useForestAutotile, crosswalkTile });
       if (candidate.violations.length < plan.violations.length) plan = candidate;
       if (plan.violations.length === 0) break;
     }

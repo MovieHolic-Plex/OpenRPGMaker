@@ -43,8 +43,8 @@
   },
   {
    "id": "party-follow",
-   "label": "숲 어귀 — 동료가 뒤를 따라 걷는다 · 메뉴에 저장 없음 · 사당 세이브 포인트",
-   "note": "configure_companion_rules display follow · set_project_settings saveAccess savePoints · place_savepoint ev_fs_hub_savepoint",
+   "label": "숲 어귀 — 동료가 주인공이 밟은 칸을 그대로 한 걸음 뒤에서 밟는다 · 메뉴에 저장 없음 · 사당 세이브 포인트",
+   "note": "companions.followMode breadcrumb(기본) · set_project_settings saveAccess savePoints · place_savepoint",
    "mapId": "fs_forest_edge",
    "x": 15,
    "y": 35,
@@ -74,27 +74,42 @@
       {
        "kind": "hold",
        "dir": null,
-       "ms": 1500
+       "ms": 1200
       },
       {
        "kind": "hold",
        "dir": "up",
-       "ms": 2200
+       "ms": 1300
       },
       {
        "kind": "hold",
        "dir": "right",
-       "ms": 500
+       "ms": 800
       },
       {
        "kind": "hold",
-       "dir": "down",
-       "ms": 1600
+       "dir": "up",
+       "ms": 800
+      },
+      {
+       "kind": "hold",
+       "dir": "left",
+       "ms": 650
       },
       {
        "kind": "hold",
        "dir": null,
-       "ms": 600
+       "ms": 1400
+      },
+      {
+       "kind": "hold",
+       "dir": "down",
+       "ms": 500
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1200
       }
      ],
      "shot": true
@@ -130,7 +145,7 @@
        "kind": "teleport",
        "mapId": "fs_forest_shrine",
        "x": 24,
-       "y": 12
+       "y": 15
       },
       {
        "kind": "face",
@@ -140,6 +155,16 @@
        "kind": "hold",
        "dir": null,
        "ms": 900
+      },
+      {
+       "kind": "hold",
+       "dir": "up",
+       "ms": 2600
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 600
       }
      ],
      "shot": true
@@ -148,14 +173,18 @@
      "id": "save-open",
      "ops": [
       {
+       "kind": "face",
+       "dir": "up"
+      },
+      {
        "kind": "action"
       },
       {
        "kind": "pressUntilJs",
        "key": "Enter",
-       "fn": "(()=>!!document.querySelector(\"[data-testid='runtime-choices'], [data-testid*='save-slot'], [data-testid*='save']\"))",
+       "fn": "(()=>!!document.querySelector(\"[data-testid='runtime-choices']\"))",
        "maxPresses": 8,
-       "settleMs": 700
+       "settleMs": 900
       },
       {
        "kind": "key",
@@ -164,7 +193,7 @@
       {
        "kind": "hold",
        "dir": null,
-       "ms": 1200
+       "ms": 1500
       }
      ],
      "shot": true
@@ -2349,6 +2378,3466 @@
     },
     {
      "id": "slots",
+     "ops": [
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1500
+      }
+     ],
+     "shot": true
+    }
+   ]
+  },
+  {
+   "id": "lift-ride",
+   "label": "지하 4층 승강 장치 — 발판·레일·사슬, 동료가 올라타고 함께 위로, 천문대에 올라와 선다",
+   "note": "m2 Lift Ride depart/arrive · place_lift",
+   "mapId": "fs_vault_b4",
+   "x": 14,
+   "y": 4,
+   "facing": "right",
+   "switches": {
+    "sw_fs_main_started": true,
+    "sw_fs_main_step0": true,
+    "sw_fs_valen_marched": true,
+    "sw_fs_main_step1": true,
+    "sw_fs_iris_awake": true,
+    "sw_fs_iris_joined": true,
+    "sw_fs_valen_crash_on": true,
+    "sw_fs_valen_crash_met": true,
+    "sw_fs_main_step2": true,
+    "sw_fs_vault_seal_open": true,
+    "sw_fs_b3_west_lever": true,
+    "sw_fs_b3_sun_lever": true,
+    "sw_fs_b3_moon_lever": true,
+    "sw_fs_dragon_met": true,
+    "sw_fs_dragon_down": true,
+    "sw_fs_b4_lift_open": true
+   },
+   "party": [
+    {
+     "actorId": "actor_hero",
+     "level": 9
+    },
+    {
+     "actorId": "actor_fs_elena",
+     "level": 9
+    },
+    {
+     "actorId": "actor_fs_iris",
+     "level": 9
+    }
+   ],
+   "items": {
+    "item_potion": 3
+   },
+   "beats": [
+    {
+     "id": "board",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1200
+      },
+      {
+       "kind": "hold",
+       "dir": "right",
+       "ms": 420
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 900
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "ride",
+     "ops": [
+      {
+       "kind": "pressUntilJs",
+       "key": "Enter",
+       "fn": "(()=>!document.querySelector(\"[data-testid='dialogue-box']\"))",
+       "maxPresses": 4,
+       "settleMs": 500
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 2600
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "arrive",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 4200
+      }
+     ],
+     "shot": true
+    }
+   ]
+  },
+  {
+   "id": "save-glow",
+   "label": "마을 광장 기록석 — 멀리서도 늘 빛난다(숨 쉬는 빛무리·반짝임·오르는 빛)",
+   "note": "page.glow · place_savepoint glow 기본",
+   "mapId": "fs_hub",
+   "x": 37,
+   "y": 36,
+   "facing": "up",
+   "party": [
+    {
+     "actorId": "actor_hero",
+     "level": 6
+    }
+   ],
+   "switches": {
+    "sw_fs_main_started": true,
+    "sw_fs_valen_marched": true
+   },
+   "beats": [
+    {
+     "id": "far",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 4500
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "near",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": "up",
+       "ms": 900
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 3000
+      }
+     ],
+     "shot": true
+    }
+   ]
+  },
+  {
+   "id": "combo-starfall",
+   "label": "트리플 테크 「폴른 스타」 — 셋이 모두 움직이고 함께 마무리",
+   "note": "battleComboPartners: 동료 rush/cast, 착탄마다 차례로, 끝에 함께 마무리",
+   "mapId": "fs_forest",
+   "x": 15,
+   "y": 9,
+   "facing": "down",
+   "switches": {
+    "sw_fs_main_started": true,
+    "sw_fs_main_step0": true,
+    "sw_fs_valen_marched": true,
+    "sw_fs_main_step1": true,
+    "sw_fs_iris_awake": true,
+    "sw_fs_iris_joined": true,
+    "sw_fs_valen_crash_on": true
+   },
+   "variables": {
+    "var_fs_main_progress": 2
+   },
+   "party": [
+    {
+     "actorId": "actor_hero",
+     "level": 9
+    },
+    {
+     "actorId": "actor_fs_elena",
+     "level": 9
+    },
+    {
+     "actorId": "actor_fs_iris",
+     "level": 9
+    }
+   ],
+   "items": {
+    "item_potion": 3,
+    "item_ether": 3
+   },
+   "beats": [
+    {
+     "id": "battle",
+     "ops": [
+      {
+       "kind": "pressUntilJs",
+       "key": "Enter",
+       "fn": "(()=>!!document.querySelector(\"[data-testid='battle-scene']\"))",
+       "maxPresses": 60,
+       "settleMs": 600
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 2500
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "cutin",
+     "ops": [
+      {
+       "kind": "battle",
+       "plan": {
+        "actor_hero": [
+         "combo:skill_combo_fs_fallen_star"
+        ],
+        "actor_fs_elena": [
+         "combo:skill_combo_fs_fallen_star"
+        ],
+        "actor_fs_iris": [
+         "combo:skill_combo_fs_fallen_star"
+        ]
+       },
+       "fallback": "defend",
+       "commands": 3,
+       "timeoutMs": 60000
+      },
+      {
+       "kind": "pressUntilJs",
+       "key": "Shift",
+       "fn": "(()=>(window.__qaBattleLog||[]).some(r=>/연계기/.test(r.line||'')))",
+       "maxPresses": 3,
+       "settleMs": 400
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 2500
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "after",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 3500
+      }
+     ],
+     "shot": true
+    }
+   ]
+  },
+  {
+   "id": "approach-pounce",
+   "label": "덤불 숲 — 거미는 웅크렸다 아치로 뛰어든다",
+   "note": "movement.approachStyle · tune_field_enemies approachStyle auto",
+   "mapId": "fs_forest_thicket",
+   "x": 10,
+   "y": 21,
+   "facing": "right",
+   "switches": {
+    "sw_fs_main_started": true,
+    "sw_fs_valen_marched": true
+   },
+   "variables": {
+    "var_fs_main_progress": 0
+   },
+   "party": [
+    {
+     "actorId": "actor_hero",
+     "level": 6
+    },
+    {
+     "actorId": "actor_fs_elena",
+     "level": 6
+    }
+   ],
+   "items": {
+    "item_potion": 3
+   },
+   "beats": [
+    {
+     "id": "approach",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 7000
+      }
+     ],
+     "shot": true
+    }
+   ]
+  },
+  {
+   "id": "approach-swoop",
+   "label": "덤불 숲 — 나방은 좌우로 흔들리며 들쭉날쭉 날아든다",
+   "note": "movement.approachStyle · tune_field_enemies approachStyle auto",
+   "mapId": "fs_forest_thicket",
+   "x": 22,
+   "y": 13,
+   "facing": "up",
+   "switches": {
+    "sw_fs_main_started": true,
+    "sw_fs_valen_marched": true
+   },
+   "variables": {
+    "var_fs_main_progress": 0
+   },
+   "party": [
+    {
+     "actorId": "actor_hero",
+     "level": 6
+    },
+    {
+     "actorId": "actor_fs_elena",
+     "level": 6
+    }
+   ],
+   "items": {
+    "item_potion": 3
+   },
+   "beats": [
+    {
+     "id": "approach",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 7000
+      }
+     ],
+     "shot": true
+    }
+   ]
+  },
+  {
+   "id": "approach-float",
+   "label": "숲 — 도깨비불은 둥실 떠서 미끄러지듯 온다",
+   "note": "movement.approachStyle · tune_field_enemies approachStyle auto",
+   "mapId": "fs_forest",
+   "x": 14,
+   "y": 21,
+   "facing": "up",
+   "switches": {
+    "sw_fs_main_started": true,
+    "sw_fs_valen_marched": true
+   },
+   "variables": {
+    "var_fs_main_progress": 0
+   },
+   "party": [
+    {
+     "actorId": "actor_hero",
+     "level": 6
+    },
+    {
+     "actorId": "actor_fs_elena",
+     "level": 6
+    }
+   ],
+   "items": {
+    "item_potion": 3
+   },
+   "beats": [
+    {
+     "id": "approach",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 7000
+      }
+     ],
+     "shot": true
+    }
+   ]
+  },
+  {
+   "id": "approach-slither",
+   "label": "개울 — 뱀장어는 S자로 기어 온다",
+   "note": "movement.approachStyle · tune_field_enemies approachStyle auto",
+   "mapId": "fs_forest_stream",
+   "x": 30,
+   "y": 13,
+   "facing": "up",
+   "switches": {
+    "sw_fs_main_started": true,
+    "sw_fs_valen_marched": true
+   },
+   "variables": {
+    "var_fs_main_progress": 0
+   },
+   "party": [
+    {
+     "actorId": "actor_hero",
+     "level": 6
+    },
+    {
+     "actorId": "actor_fs_elena",
+     "level": 6
+    }
+   ],
+   "items": {
+    "item_potion": 3
+   },
+   "beats": [
+    {
+     "id": "approach",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 7000
+      }
+     ],
+     "shot": true
+    }
+   ]
+  },
+  {
+   "id": "act2-b1-cell",
+   "label": "제2막 B1 — 감방의 밤: 막 제목 → 리노의 납작빵",
+   "note": "act2Opening.ts cellEvents director·rino",
+   "mapId": "fs2_cell",
+   "x": 6,
+   "y": 4,
+   "facing": "down",
+   "switches": {
+    "sw_fs_main_started": true,
+    "sw_fs_main_done": true,
+    "sw_fs_iris_joined": true
+   },
+   "party": [
+    {
+     "actorId": "actor_hero",
+     "level": 8
+    },
+    {
+     "actorId": "actor_fs_elena",
+     "level": 8
+    }
+   ],
+   "beats": [
+    {
+     "id": "open",
+     "ops": [
+      {
+       "kind": "waitFor",
+       "testid": "dialogue-box",
+       "state": "present",
+       "timeoutMs": 15000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1800
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "rino",
+     "ops": [
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 700
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 700
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 4200
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "bread",
+     "ops": [
+      {
+       "kind": "repeatUntil",
+       "testid": "dialogue-box",
+       "state": "absent",
+       "maxRounds": 14,
+       "ops": [
+        {
+         "kind": "key",
+         "key": "Enter"
+        },
+        {
+         "kind": "hold",
+         "dir": null,
+         "ms": 1100
+        }
+       ]
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1200
+      }
+     ],
+     "shot": true
+    }
+   ]
+  },
+  {
+   "id": "act2-b1-key",
+   "label": "제2막 B1 — 빵 속 열쇠 → 쇠살문",
+   "note": "짚 침대(10,4) 앞(10,5)에서 쪼갠다 → 쇠살문(7,6) → 복도",
+   "mapId": "fs2_cell",
+   "x": 10,
+   "y": 5,
+   "facing": "up",
+   "switches": {
+    "sw_fs_main_started": true,
+    "sw_fs_main_done": true,
+    "sw_fs_iris_joined": true,
+    "sw_fs2_act2_started": true,
+    "sw_fs2_bread_given": true
+   },
+   "party": [
+    {
+     "actorId": "actor_hero",
+     "level": 8
+    },
+    {
+     "actorId": "actor_fs_elena",
+     "level": 8
+    }
+   ],
+   "items": {
+    "item_fs2_heavy_bread": 1
+   },
+   "beats": [
+    {
+     "id": "break",
+     "ops": [
+      {
+       "kind": "action"
+      },
+      {
+       "kind": "waitFor",
+       "testid": "dialogue-box",
+       "state": "present",
+       "timeoutMs": 8000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1500
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "walk-gate",
+     "ops": [
+      {
+       "kind": "repeatUntil",
+       "testid": "dialogue-box",
+       "state": "absent",
+       "maxRounds": 10,
+       "ops": [
+        {
+         "kind": "key",
+         "key": "Enter"
+        },
+        {
+         "kind": "hold",
+         "dir": null,
+         "ms": 900
+        }
+       ]
+      },
+      {
+       "kind": "move",
+       "dir": "left",
+       "steps": 3
+      },
+      {
+       "kind": "face",
+       "dir": "down"
+      },
+      {
+       "kind": "action"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1800
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "open",
+     "ops": [
+      {
+       "kind": "repeatUntil",
+       "testid": "dialogue-box",
+       "state": "absent",
+       "maxRounds": 6,
+       "ops": [
+        {
+         "kind": "key",
+         "key": "Enter"
+        },
+        {
+         "kind": "hold",
+         "dir": null,
+         "ms": 900
+        }
+       ]
+      },
+      {
+       "kind": "move",
+       "dir": "down",
+       "steps": 4
+      },
+      {
+       "kind": "move",
+       "dir": "right",
+       "steps": 7
+      },
+      {
+       "kind": "move",
+       "dir": "up",
+       "steps": 4
+      },
+      {
+       "kind": "move",
+       "dir": "right",
+       "steps": 2
+      },
+      {
+       "kind": "move",
+       "dir": "up",
+       "steps": 2
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 2500
+      }
+     ],
+     "shot": true
+    }
+   ]
+  },
+  {
+   "id": "act2-bridge",
+   "label": "제1막 끝 카드 → 「제2막으로」 → 감방",
+   "note": "define_ending continueTo — 엔딩 마지막 버튼이 타이틀 대신 fs2_cell 로",
+   "mapId": "fs_observatory",
+   "x": 4,
+   "y": 18,
+   "facing": "down",
+   "switches": {
+    "sw_fs_main_started": true,
+    "sw_fs_main_step0": true,
+    "sw_fs_valen_marched": true,
+    "sw_fs_main_step1": true,
+    "sw_fs_iris_awake": true,
+    "sw_fs_iris_joined": true,
+    "sw_fs_valen_crash_on": true,
+    "sw_fs_valen_crash_met": true,
+    "sw_fs_main_step2": true,
+    "sw_fs_vault_seal_open": true,
+    "sw_fs_b3_west_lever": true,
+    "sw_fs_b3_sun_lever": true,
+    "sw_fs_b3_moon_lever": true,
+    "sw_fs_dragon_met": true,
+    "sw_fs_dragon_down": true,
+    "sw_fs_main_step3": true,
+    "sw_fs_act1_lifted": true
+   },
+   "party": [
+    {
+     "actorId": "actor_hero",
+     "level": 9
+    },
+    {
+     "actorId": "actor_fs_elena",
+     "level": 9
+    },
+    {
+     "actorId": "actor_fs_iris",
+     "level": 9
+    }
+   ],
+   "items": {
+    "item_potion": 3
+   },
+   "gold": 300,
+   "beats": [
+    {
+     "id": "alarm",
+     "ops": [
+      {
+       "kind": "waitFor",
+       "testid": "dialogue-box",
+       "state": "present",
+       "timeoutMs": 12000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1500
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "siege",
+     "ops": [
+      {
+       "kind": "pressUntil",
+       "key": "Enter",
+       "testid": "dialogue-box",
+       "state": "present",
+       "maxPresses": 40,
+       "timeoutMs": 900
+      },
+      {
+       "kind": "repeatUntil",
+       "testid": "ending-screen",
+       "state": "present",
+       "maxRounds": 140,
+       "ops": [
+        {
+         "kind": "key",
+         "key": "Enter"
+        },
+        {
+         "kind": "hold",
+         "dir": null,
+         "ms": 500
+        }
+       ]
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 2500
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "credits",
+     "ops": [
+      {
+       "kind": "key",
+       "key": "Enter",
+       "times": 2,
+       "holdMs": 80
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 4000
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "continue",
+     "ops": [
+      {
+       "kind": "repeatUntil",
+       "testid": "ending-screen",
+       "state": "absent",
+       "maxRounds": 40,
+       "ops": [
+        {
+         "kind": "key",
+         "key": "Enter"
+        },
+        {
+         "kind": "hold",
+         "dir": null,
+         "ms": 900
+        }
+       ]
+      },
+      {
+       "kind": "waitFor",
+       "testid": "dialogue-box",
+       "state": "present",
+       "timeoutMs": 20000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1500
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "cell",
+     "ops": [
+      {
+       "kind": "repeatUntil",
+       "testid": "dialogue-box",
+       "state": "absent",
+       "maxRounds": 20,
+       "ops": [
+        {
+         "kind": "key",
+         "key": "Enter"
+        },
+        {
+         "kind": "hold",
+         "dir": null,
+         "ms": 1000
+        }
+       ]
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1500
+      }
+     ],
+     "shot": true
+    }
+   ]
+  },
+  {
+   "id": "act2-b1-ladder",
+   "label": "제2막 B1 — 막사 사다리 → 통금의 밤 광장",
+   "note": "act2Opening.ts barracks ladder (18,5) → fs2_hub_night (52,25)",
+   "mapId": "fs2_barracks",
+   "x": 18,
+   "y": 6,
+   "facing": "up",
+   "switches": {
+    "sw_fs_main_started": true,
+    "sw_fs_main_done": true,
+    "sw_fs_iris_joined": true,
+    "sw_fs2_act2_started": true,
+    "sw_fs2_bread_given": true,
+    "sw_fs2_cell_key_found": true,
+    "sw_fs2_cell_open": true,
+    "sw_fs2_barracks_cleared": true
+   },
+   "party": [
+    {
+     "actorId": "actor_hero",
+     "level": 8
+    },
+    {
+     "actorId": "actor_fs_elena",
+     "level": 8
+    }
+   ],
+   "beats": [
+    {
+     "id": "climb",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 800
+      },
+      {
+       "kind": "action"
+      },
+      {
+       "kind": "waitFor",
+       "testid": "dialogue-box",
+       "state": "present",
+       "timeoutMs": 8000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1200
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "hub",
+     "ops": [
+      {
+       "kind": "repeatUntil",
+       "testid": "dialogue-box",
+       "state": "absent",
+       "maxRounds": 12,
+       "ops": [
+        {
+         "kind": "key",
+         "key": "Enter"
+        },
+        {
+         "kind": "hold",
+         "dir": null,
+         "ms": 1100
+        }
+       ]
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1200
+      },
+      {
+       "kind": "hold",
+       "dir": "left",
+       "ms": 1500
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 800
+      }
+     ],
+     "shot": true
+    }
+   ]
+  },
+  {
+   "id": "act2-b2-marta",
+   "label": "제2막 B2 — 통금의 밤: 여관 문간의 마르타 「쇠 마차, 세 번」",
+   "note": "act2Opening.ts curfewHub marta (49,32)",
+   "mapId": "fs2_hub_night",
+   "x": 49,
+   "y": 33,
+   "facing": "up",
+   "switches": {
+    "sw_fs_main_started": true,
+    "sw_fs_main_done": true,
+    "sw_fs_iris_joined": true,
+    "sw_fs2_act2_started": true,
+    "sw_fs2_bread_given": true,
+    "sw_fs2_cell_key_found": true,
+    "sw_fs2_cell_open": true,
+    "sw_fs2_barracks_cleared": true,
+    "sw_fs2_out_of_cells": true,
+    "sw_fs2_hub_arrived": true
+   },
+   "party": [
+    {
+     "actorId": "actor_hero",
+     "level": 8
+    },
+    {
+     "actorId": "actor_fs_elena",
+     "level": 8
+    }
+   ],
+   "beats": [
+    {
+     "id": "look",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1500
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "talk",
+     "ops": [
+      {
+       "kind": "action"
+      },
+      {
+       "kind": "waitFor",
+       "testid": "dialogue-box",
+       "state": "present",
+       "timeoutMs": 8000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1500
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "carriage",
+     "ops": [
+      {
+       "kind": "repeatUntil",
+       "testid": "dialogue-box",
+       "state": "absent",
+       "maxRounds": 10,
+       "ops": [
+        {
+         "kind": "key",
+         "key": "Enter"
+        },
+        {
+         "kind": "hold",
+         "dir": null,
+         "ms": 1100
+        }
+       ]
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1000
+      }
+     ],
+     "shot": true
+    }
+   ]
+  },
+  {
+   "id": "act2-b2-toby",
+   "label": "제2막 B2 — 기둥 뒤의 토비, 은수저",
+   "note": "act2Opening.ts curfewHub toby (34,25)",
+   "mapId": "fs2_hub_night",
+   "x": 34,
+   "y": 26,
+   "facing": "up",
+   "switches": {
+    "sw_fs_main_started": true,
+    "sw_fs_main_done": true,
+    "sw_fs_iris_joined": true,
+    "sw_fs2_act2_started": true,
+    "sw_fs2_bread_given": true,
+    "sw_fs2_cell_key_found": true,
+    "sw_fs2_cell_open": true,
+    "sw_fs2_barracks_cleared": true,
+    "sw_fs2_out_of_cells": true,
+    "sw_fs2_hub_arrived": true
+   },
+   "party": [
+    {
+     "actorId": "actor_hero",
+     "level": 8
+    },
+    {
+     "actorId": "actor_fs_elena",
+     "level": 8
+    }
+   ],
+   "beats": [
+    {
+     "id": "talk",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 800
+      },
+      {
+       "kind": "action"
+      },
+      {
+       "kind": "waitFor",
+       "testid": "dialogue-box",
+       "state": "present",
+       "timeoutMs": 8000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1500
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "spoon",
+     "ops": [
+      {
+       "kind": "repeatUntil",
+       "testid": "dialogue-box",
+       "state": "absent",
+       "maxRounds": 12,
+       "ops": [
+        {
+         "kind": "key",
+         "key": "Enter"
+        },
+        {
+         "kind": "hold",
+         "dir": null,
+         "ms": 1100
+        }
+       ]
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1000
+      }
+     ],
+     "shot": true
+    }
+   ]
+  },
+  {
+   "id": "act2-b2-patrol",
+   "label": "제2막 B2 — 순찰 기사에게 들킨다 → 전투",
+   "note": "place_field_enemy chase cone (44,21)",
+   "mapId": "fs2_hub_night",
+   "x": 45,
+   "y": 25,
+   "facing": "up",
+   "switches": {
+    "sw_fs_main_started": true,
+    "sw_fs_main_done": true,
+    "sw_fs_iris_joined": true,
+    "sw_fs2_act2_started": true,
+    "sw_fs2_bread_given": true,
+    "sw_fs2_cell_key_found": true,
+    "sw_fs2_cell_open": true,
+    "sw_fs2_barracks_cleared": true,
+    "sw_fs2_out_of_cells": true,
+    "sw_fs2_hub_arrived": true
+   },
+   "party": [
+    {
+     "actorId": "actor_hero",
+     "level": 8
+    },
+    {
+     "actorId": "actor_fs_elena",
+     "level": 8
+    }
+   ],
+   "beats": [
+    {
+     "id": "spotted",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 6000
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "battle",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 5000
+      }
+     ],
+     "shot": true
+    }
+   ]
+  },
+  {
+   "id": "act2-b3-well",
+   "label": "제2막 B3 — 광장 우물 → 서고 승강구 → 승강 장치로 천문대, 하넬",
+   "note": "act2Opening.ts observatoryNight — well (40,28) · shaft lift (6,4) · obs (3,19) · Hanel (7,18)",
+   "mapId": "fs2_hub_night",
+   "x": 40,
+   "y": 29,
+   "facing": "up",
+   "switches": {
+    "sw_fs_main_started": true,
+    "sw_fs_main_done": true,
+    "sw_fs_iris_joined": true,
+    "sw_fs2_act2_started": true,
+    "sw_fs2_bread_given": true,
+    "sw_fs2_cell_key_found": true,
+    "sw_fs2_cell_open": true,
+    "sw_fs2_barracks_cleared": true,
+    "sw_fs2_out_of_cells": true,
+    "sw_fs2_hub_arrived": true,
+    "sw_fs2_mire_well": true,
+    "sw_fs2_heard_carriage": true
+   },
+   "party": [
+    {
+     "actorId": "actor_hero",
+     "level": 8
+    },
+    {
+     "actorId": "actor_fs_elena",
+     "level": 8
+    }
+   ],
+   "beats": [
+    {
+     "id": "well",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 800
+      },
+      {
+       "kind": "action"
+      },
+      {
+       "kind": "waitFor",
+       "testid": "dialogue-box",
+       "state": "present",
+       "timeoutMs": 8000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1200
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "shaft",
+     "ops": [
+      {
+       "kind": "repeatUntil",
+       "testid": "dialogue-box",
+       "state": "absent",
+       "maxRounds": 6,
+       "ops": [
+        {
+         "kind": "key",
+         "key": "Enter"
+        },
+        {
+         "kind": "hold",
+         "dir": null,
+         "ms": 1100
+        }
+       ]
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 2000
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "lift",
+     "ops": [
+      {
+       "kind": "move",
+       "dir": "right",
+       "steps": 4
+      },
+      {
+       "kind": "action"
+      },
+      {
+       "kind": "waitFor",
+       "testid": "dialogue-box",
+       "state": "present",
+       "timeoutMs": 8000
+      },
+      {
+       "kind": "repeatUntil",
+       "testid": "dialogue-box",
+       "state": "absent",
+       "maxRounds": 4,
+       "ops": [
+        {
+         "kind": "key",
+         "key": "Enter"
+        },
+        {
+         "kind": "hold",
+         "dir": null,
+         "ms": 1100
+        }
+       ]
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 7000
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "call",
+     "ops": [
+      {
+       "kind": "repeatUntil",
+       "testid": "dialogue-box",
+       "state": "absent",
+       "maxRounds": 4,
+       "ops": [
+        {
+         "kind": "key",
+         "key": "Enter"
+        },
+        {
+         "kind": "hold",
+         "dir": null,
+         "ms": 1100
+        }
+       ]
+      },
+      {
+       "kind": "move",
+       "dir": "up",
+       "steps": 1
+      },
+      {
+       "kind": "move",
+       "dir": "right",
+       "steps": 5
+      },
+      {
+       "kind": "face",
+       "dir": "right"
+      },
+      {
+       "kind": "action"
+      },
+      {
+       "kind": "waitFor",
+       "testid": "dialogue-box",
+       "state": "present",
+       "timeoutMs": 8000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1500
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "hanel",
+     "ops": [
+      {
+       "kind": "repeatUntil",
+       "testid": "dialogue-box",
+       "state": "absent",
+       "maxRounds": 24,
+       "ops": [
+        {
+         "kind": "key",
+         "key": "Enter"
+        },
+        {
+         "kind": "hold",
+         "dir": null,
+         "ms": 1100
+        }
+       ]
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1200
+      }
+     ],
+     "shot": true
+    }
+   ]
+  },
+  {
+   "id": "act2-b4-rohan",
+   "label": "제2막 B4 — 대장간 뒷문, 로한의 별쇠 창·새라 소식",
+   "note": "act2Opening.ts northGateEvents rohan (10,6) 계산대 (10,7)",
+   "mapId": "fs2_smithy_night",
+   "x": 10,
+   "y": 8,
+   "facing": "up",
+   "switches": {
+    "sw_fs_main_started": true,
+    "sw_fs_main_done": true,
+    "sw_fs_iris_joined": true,
+    "sw_fs2_act2_started": true,
+    "sw_fs2_bread_given": true,
+    "sw_fs2_cell_key_found": true,
+    "sw_fs2_cell_open": true,
+    "sw_fs2_barracks_cleared": true,
+    "sw_fs2_out_of_cells": true,
+    "sw_fs2_hub_arrived": true,
+    "sw_fs2_mire_well": true,
+    "sw_fs2_heard_carriage": true,
+    "sw_fs2_hanel_told": true
+   },
+   "party": [
+    {
+     "actorId": "actor_hero",
+     "level": 8
+    },
+    {
+     "actorId": "actor_fs_elena",
+     "level": 8
+    }
+   ],
+   "beats": [
+    {
+     "id": "talk",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 800
+      },
+      {
+       "kind": "action"
+      },
+      {
+       "kind": "waitFor",
+       "testid": "dialogue-box",
+       "state": "present",
+       "timeoutMs": 8000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1500
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "spear",
+     "ops": [
+      {
+       "kind": "repeatUntil",
+       "testid": "dialogue-box",
+       "state": "absent",
+       "maxRounds": 14,
+       "ops": [
+        {
+         "kind": "key",
+         "key": "Enter"
+        },
+        {
+         "kind": "hold",
+         "dir": null,
+         "ms": 1100
+        }
+       ]
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1000
+      }
+     ],
+     "shot": true
+    }
+   ]
+  },
+  {
+   "id": "act2-b4-hole",
+   "label": "제2막 B4 — 성벽 밑 브람, 개구멍 → 북쪽 숲 어귀",
+   "note": "act2Opening.ts bram (39,16) · hole (38,15) → map_field_north_1",
+   "mapId": "fs2_hub_night",
+   "x": 38,
+   "y": 16,
+   "facing": "right",
+   "switches": {
+    "sw_fs_main_started": true,
+    "sw_fs_main_done": true,
+    "sw_fs_iris_joined": true,
+    "sw_fs2_act2_started": true,
+    "sw_fs2_bread_given": true,
+    "sw_fs2_cell_key_found": true,
+    "sw_fs2_cell_open": true,
+    "sw_fs2_barracks_cleared": true,
+    "sw_fs2_out_of_cells": true,
+    "sw_fs2_hub_arrived": true,
+    "sw_fs2_mire_well": true,
+    "sw_fs2_heard_carriage": true,
+    "sw_fs2_hanel_told": true,
+    "sw_fs2_rohan_spear": true
+   },
+   "party": [
+    {
+     "actorId": "actor_hero",
+     "level": 8
+    },
+    {
+     "actorId": "actor_fs_elena",
+     "level": 8
+    }
+   ],
+   "beats": [
+    {
+     "id": "bram",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 800
+      },
+      {
+       "kind": "action"
+      },
+      {
+       "kind": "waitFor",
+       "testid": "dialogue-box",
+       "state": "present",
+       "timeoutMs": 8000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1500
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "hole",
+     "ops": [
+      {
+       "kind": "repeatUntil",
+       "testid": "dialogue-box",
+       "state": "absent",
+       "maxRounds": 8,
+       "ops": [
+        {
+         "kind": "key",
+         "key": "Enter"
+        },
+        {
+         "kind": "hold",
+         "dir": null,
+         "ms": 1100
+        }
+       ]
+      },
+      {
+       "kind": "face",
+       "dir": "up"
+      },
+      {
+       "kind": "action"
+      },
+      {
+       "kind": "waitFor",
+       "testid": "dialogue-box",
+       "state": "present",
+       "timeoutMs": 8000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1200
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "field",
+     "ops": [
+      {
+       "kind": "repeatUntil",
+       "testid": "dialogue-box",
+       "state": "absent",
+       "maxRounds": 6,
+       "ops": [
+        {
+         "kind": "key",
+         "key": "Enter"
+        },
+        {
+         "kind": "hold",
+         "dir": null,
+         "ms": 1100
+        }
+       ]
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 2000
+      },
+      {
+       "kind": "move",
+       "dir": "up",
+       "steps": 5
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1500
+      }
+     ],
+     "shot": true
+    }
+   ]
+  },
+  {
+   "id": "act2-b5-field",
+   "label": "제2막 B5 — 재의 들판: 잿불 도깨비가 둥실 다가온다",
+   "note": "act2Opening.ts dawnwell foes map_field_north_2",
+   "mapId": "map_field_north_2",
+   "x": 16,
+   "y": 24,
+   "facing": "up",
+   "switches": {
+    "sw_fs_main_started": true,
+    "sw_fs_main_done": true,
+    "sw_fs_iris_joined": true,
+    "sw_fs2_act2_started": true,
+    "sw_fs2_out_of_cells": true,
+    "sw_fs2_hub_arrived": true,
+    "sw_fs2_mire_well": true,
+    "sw_fs2_heard_carriage": true,
+    "sw_fs2_hanel_told": true,
+    "sw_fs2_rohan_spear": true,
+    "sw_fs2_bram_hole": true
+   },
+   "party": [
+    {
+     "actorId": "actor_hero",
+     "level": 10
+    },
+    {
+     "actorId": "actor_fs_elena",
+     "level": 10
+    }
+   ],
+   "beats": [
+    {
+     "id": "approach",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 7000
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "battle",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 4000
+      }
+     ],
+     "shot": true
+    }
+   ]
+  },
+  {
+   "id": "act2-b5-door",
+   "label": "제2막 B5 — 새벽샘 터: 바깥에서 잠긴 집, 정착 확인서 「엄마 문 열어」",
+   "note": "act2Opening.ts dawnwellEvents door (14,19)",
+   "mapId": "fs2_dawnwell",
+   "x": 14,
+   "y": 20,
+   "facing": "up",
+   "switches": {
+    "sw_fs_main_started": true,
+    "sw_fs_main_done": true,
+    "sw_fs_iris_joined": true,
+    "sw_fs2_act2_started": true,
+    "sw_fs2_out_of_cells": true,
+    "sw_fs2_hub_arrived": true,
+    "sw_fs2_mire_well": true,
+    "sw_fs2_heard_carriage": true,
+    "sw_fs2_hanel_told": true,
+    "sw_fs2_rohan_spear": true,
+    "sw_fs2_bram_hole": true,
+    "sw_fs2_dawn_mem_0": true,
+    "sw_fs2_dawn_mem_1": true,
+    "sw_fs2_dawn_mem_2": true
+   },
+   "party": [
+    {
+     "actorId": "actor_hero",
+     "level": 10
+    },
+    {
+     "actorId": "actor_fs_elena",
+     "level": 10
+    }
+   ],
+   "beats": [
+    {
+     "id": "look",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1500
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "open",
+     "ops": [
+      {
+       "kind": "action"
+      },
+      {
+       "kind": "waitFor",
+       "testid": "dialogue-box",
+       "state": "present",
+       "timeoutMs": 8000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1500
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "form",
+     "ops": [
+      {
+       "kind": "repeatUntil",
+       "testid": "dialogue-box",
+       "state": "absent",
+       "maxRounds": 16,
+       "ops": [
+        {
+         "kind": "key",
+         "key": "Enter"
+        },
+        {
+         "kind": "hold",
+         "dir": null,
+         "ms": 1100
+        }
+       ]
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1200
+      }
+     ],
+     "shot": true
+    }
+   ]
+  },
+  {
+   "id": "act2-b6-enter",
+   "label": "제2막 B6 — 새벽샘 북쪽 길 끝 → 북방 관문 요새",
+   "note": "act2Opening.ts northFortress — author_dungeon entrance (25,0) — 길은 성벽 사이 한 칸",
+   "mapId": "fs2_dawnwell",
+   "x": 25,
+   "y": 3,
+   "facing": "up",
+   "switches": {
+    "sw_fs_main_started": true,
+    "sw_fs_main_done": true,
+    "sw_fs_iris_joined": true,
+    "sw_fs2_act2_started": true,
+    "sw_fs2_out_of_cells": true,
+    "sw_fs2_hub_arrived": true,
+    "sw_fs2_mire_well": true,
+    "sw_fs2_heard_carriage": true,
+    "sw_fs2_hanel_told": true,
+    "sw_fs2_rohan_spear": true,
+    "sw_fs2_bram_hole": true,
+    "sw_fs2_dawn_mem_0": true,
+    "sw_fs2_dawn_mem_1": true,
+    "sw_fs2_dawn_mem_2": true,
+    "sw_fs2_serin_form": true
+   },
+   "party": [
+    {
+     "actorId": "actor_hero",
+     "level": 12
+    },
+    {
+     "actorId": "actor_fs_elena",
+     "level": 12
+    }
+   ],
+   "beats": [
+    {
+     "id": "walk",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 800
+      },
+      {
+       "kind": "move",
+       "dir": "up",
+       "steps": 4
+      },
+      {
+       "kind": "waitForMap",
+       "mapId": "fs2_fortress",
+       "timeoutMs": 8000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1500
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "yard",
+     "ops": [
+      {
+       "kind": "move",
+       "dir": "down",
+       "steps": 2
+      },
+      {
+       "kind": "move",
+       "dir": "right",
+       "steps": 6
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 2500
+      }
+     ],
+     "shot": true
+    }
+   ]
+  },
+  {
+   "id": "act2-b6-sarah",
+   "label": "제2막 B6 — 요새 꼭대기 새라 + 경비견 둘, 이기면 선택 1·합류",
+   "note": "act2Opening.ts fortressEvents ev_fs2_fort_sarah",
+   "mapId": "fs2_fortress",
+   "x": 6,
+   "y": 23,
+   "facing": "up",
+   "switches": {
+    "sw_fs_main_started": true,
+    "sw_fs_main_done": true,
+    "sw_fs_iris_joined": true,
+    "sw_fs2_act2_started": true,
+    "sw_fs2_out_of_cells": true,
+    "sw_fs2_hub_arrived": true,
+    "sw_fs2_mire_well": true,
+    "sw_fs2_heard_carriage": true,
+    "sw_fs2_hanel_told": true,
+    "sw_fs2_rohan_spear": true,
+    "sw_fs2_bram_hole": true,
+    "sw_fs2_dawn_mem_0": true,
+    "sw_fs2_dawn_mem_1": true,
+    "sw_fs2_dawn_mem_2": true,
+    "sw_fs2_serin_form": true
+   },
+   "party": [
+    {
+     "actorId": "actor_hero",
+     "level": 40
+    },
+    {
+     "actorId": "actor_fs_elena",
+     "level": 40
+    }
+   ],
+   "beats": [
+    {
+     "id": "meet",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 800
+      },
+      {
+       "kind": "action"
+      },
+      {
+       "kind": "waitFor",
+       "testid": "dialogue-box",
+       "state": "present",
+       "timeoutMs": 15000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1200
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "battle",
+     "ops": [
+      {
+       "kind": "repeatUntil",
+       "testid": "dialogue-box",
+       "state": "absent",
+       "maxRounds": 10,
+       "ops": [
+        {
+         "kind": "key",
+         "key": "Enter"
+        },
+        {
+         "kind": "hold",
+         "dir": null,
+         "ms": 1100
+        }
+       ]
+      },
+      {
+       "kind": "pressUntil",
+       "key": "Enter",
+       "testid": "battle-scene",
+       "state": "present",
+       "maxPresses": 20,
+       "timeoutMs": 900
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 2500
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "win",
+     "ops": [
+      {
+       "kind": "battle",
+       "fallback": "attack",
+       "untilEnd": true,
+       "timeoutMs": 180000
+      },
+      {
+       "kind": "waitFor",
+       "testid": "dialogue-box",
+       "state": "present",
+       "timeoutMs": 15000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1200
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "choice",
+     "ops": [
+      {
+       "kind": "repeatUntil",
+       "testid": "dialogue-choice-frame",
+       "state": "present",
+       "maxRounds": 24,
+       "ops": [
+        {
+         "kind": "key",
+         "key": "Enter"
+        },
+        {
+         "kind": "hold",
+         "dir": null,
+         "ms": 1100
+        }
+       ]
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1500
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "join",
+     "ops": [
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1200
+      },
+      {
+       "kind": "repeatUntil",
+       "testid": "dialogue-box",
+       "state": "absent",
+       "maxRounds": 16,
+       "ops": [
+        {
+         "kind": "key",
+         "key": "Enter"
+        },
+        {
+         "kind": "hold",
+         "dir": null,
+         "ms": 1100
+        }
+       ]
+      },
+      {
+       "kind": "waitForMap",
+       "mapId": "map_snow_north_1",
+       "timeoutMs": 10000
+      },
+      {
+       "kind": "waitFor",
+       "testid": "dialogue-box",
+       "state": "present",
+       "timeoutMs": 8000
+      },
+      {
+       "kind": "repeatUntil",
+       "testid": "dialogue-box",
+       "state": "absent",
+       "maxRounds": 8,
+       "ops": [
+        {
+         "kind": "key",
+         "key": "Enter"
+        },
+        {
+         "kind": "hold",
+         "dir": null,
+         "ms": 1100
+        }
+       ]
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 2000
+      }
+     ],
+     "shot": true
+    }
+   ]
+  },
+  {
+   "id": "act2-b6-lose",
+   "label": "제2막 B6 — 새라에게 지면 요새 감방에서 깬다(게임 오버 아님)",
+   "note": "act2Opening.ts fortressEvents defeatBranch → ev_fs2_fort_cell_wake",
+   "mapId": "fs2_fortress",
+   "x": 6,
+   "y": 23,
+   "facing": "up",
+   "switches": {
+    "sw_fs_main_started": true,
+    "sw_fs_main_done": true,
+    "sw_fs_iris_joined": true,
+    "sw_fs2_act2_started": true,
+    "sw_fs2_out_of_cells": true,
+    "sw_fs2_hub_arrived": true,
+    "sw_fs2_mire_well": true,
+    "sw_fs2_heard_carriage": true,
+    "sw_fs2_hanel_told": true,
+    "sw_fs2_rohan_spear": true,
+    "sw_fs2_bram_hole": true,
+    "sw_fs2_dawn_mem_0": true,
+    "sw_fs2_dawn_mem_1": true,
+    "sw_fs2_dawn_mem_2": true,
+    "sw_fs2_serin_form": true
+   },
+   "party": [
+    {
+     "actorId": "actor_hero",
+     "level": 1
+    },
+    {
+     "actorId": "actor_fs_elena",
+     "level": 1
+    }
+   ],
+   "beats": [
+    {
+     "id": "meet",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 800
+      },
+      {
+       "kind": "action"
+      },
+      {
+       "kind": "waitFor",
+       "testid": "dialogue-box",
+       "state": "present",
+       "timeoutMs": 15000
+      },
+      {
+       "kind": "repeatUntil",
+       "testid": "dialogue-box",
+       "state": "absent",
+       "maxRounds": 10,
+       "ops": [
+        {
+         "kind": "key",
+         "key": "Enter"
+        },
+        {
+         "kind": "hold",
+         "dir": null,
+         "ms": 1100
+        }
+       ]
+      },
+      {
+       "kind": "pressUntil",
+       "key": "Enter",
+       "testid": "battle-scene",
+       "state": "present",
+       "maxPresses": 20,
+       "timeoutMs": 900
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "lose",
+     "ops": [
+      {
+       "kind": "battle",
+       "fallback": "defend",
+       "untilEnd": true,
+       "timeoutMs": 180000
+      },
+      {
+       "kind": "waitFor",
+       "testid": "dialogue-box",
+       "state": "present",
+       "timeoutMs": 15000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1500
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "cell",
+     "ops": [
+      {
+       "kind": "repeatUntil",
+       "testid": "dialogue-box",
+       "state": "absent",
+       "maxRounds": 6,
+       "ops": [
+        {
+         "kind": "key",
+         "key": "Enter"
+        },
+        {
+         "kind": "hold",
+         "dir": null,
+         "ms": 1100
+        }
+       ]
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1500
+      }
+     ],
+     "shot": true
+    }
+   ]
+  },
+  {
+   "id": "act2-b7-gap",
+   "label": "제2막 B7 — 서리 가도 얼음 틈, 새라의 장대 도약",
+   "note": "act2Opening.ts snowPass — author_snow_route paintGaps + place_field_obstacle gap requiresActorId",
+   "mapId": "map_snow_north_1",
+   "x": 13,
+   "y": 17,
+   "facing": "up",
+   "switches": {
+    "sw_fs_main_started": true,
+    "sw_fs_main_done": true,
+    "sw_fs_iris_joined": true,
+    "sw_fs2_act2_started": true,
+    "sw_fs2_out_of_cells": true,
+    "sw_fs2_hub_arrived": true,
+    "sw_fs2_mire_well": true,
+    "sw_fs2_heard_carriage": true,
+    "sw_fs2_hanel_told": true,
+    "sw_fs2_rohan_spear": true,
+    "sw_fs2_bram_hole": true,
+    "sw_fs2_dawn_mem_0": true,
+    "sw_fs2_dawn_mem_1": true,
+    "sw_fs2_dawn_mem_2": true,
+    "sw_fs2_serin_form": true,
+    "sw_fs2_sarah_joined": true,
+    "sw_fs2_snow_arrived": true,
+    "sw_fs2_spear_returned": true
+   },
+   "party": [
+    {
+     "actorId": "actor_hero",
+     "level": 14
+    },
+    {
+     "actorId": "actor_fs_elena",
+     "level": 14
+    },
+    {
+     "actorId": "actor_fs2_sarah",
+     "level": 14
+    }
+   ],
+   "beats": [
+    {
+     "id": "look",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1500
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "vault",
+     "ops": [
+      {
+       "kind": "action"
+      },
+      {
+       "kind": "repeatUntil",
+       "testid": "dialogue-choice-frame",
+       "state": "present",
+       "maxRounds": 6,
+       "ops": [
+        {
+         "kind": "key",
+         "key": "Enter"
+        },
+        {
+         "kind": "hold",
+         "dir": null,
+         "ms": 1100
+        }
+       ]
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 600
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1500
+      },
+      {
+       "kind": "repeatUntil",
+       "testid": "dialogue-box",
+       "state": "absent",
+       "maxRounds": 6,
+       "ops": [
+        {
+         "kind": "key",
+         "key": "Enter"
+        },
+        {
+         "kind": "hold",
+         "dir": null,
+         "ms": 1100
+        }
+       ]
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 2000
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "onward",
+     "ops": [
+      {
+       "kind": "move",
+       "dir": "up",
+       "steps": 3
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1500
+      }
+     ],
+     "shot": true
+    }
+   ]
+  },
+  {
+   "id": "act2-b7-fire",
+   "label": "제2막 B7 — 눈보라 고개 모닥불, 한 사람과 이야기(유대)",
+   "note": "act2Opening.ts snowPass — configure_party_bonds campfire",
+   "mapId": "map_snow_north_2",
+   "x": 23,
+   "y": 22,
+   "facing": "right",
+   "switches": {
+    "sw_fs_main_started": true,
+    "sw_fs_main_done": true,
+    "sw_fs_iris_joined": true,
+    "sw_fs2_act2_started": true,
+    "sw_fs2_out_of_cells": true,
+    "sw_fs2_hub_arrived": true,
+    "sw_fs2_mire_well": true,
+    "sw_fs2_heard_carriage": true,
+    "sw_fs2_hanel_told": true,
+    "sw_fs2_rohan_spear": true,
+    "sw_fs2_bram_hole": true,
+    "sw_fs2_dawn_mem_0": true,
+    "sw_fs2_dawn_mem_1": true,
+    "sw_fs2_dawn_mem_2": true,
+    "sw_fs2_serin_form": true,
+    "sw_fs2_sarah_joined": true,
+    "sw_fs2_snow_arrived": true,
+    "sw_fs2_spear_returned": true
+   },
+   "party": [
+    {
+     "actorId": "actor_hero",
+     "level": 14
+    },
+    {
+     "actorId": "actor_fs_elena",
+     "level": 14
+    },
+    {
+     "actorId": "actor_fs2_sarah",
+     "level": 14
+    }
+   ],
+   "beats": [
+    {
+     "id": "fire",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1200
+      },
+      {
+       "kind": "action"
+      },
+      {
+       "kind": "repeatUntil",
+       "testid": "dialogue-choice-frame",
+       "state": "present",
+       "maxRounds": 6,
+       "ops": [
+        {
+         "kind": "key",
+         "key": "Enter"
+        },
+        {
+         "kind": "hold",
+         "dir": null,
+         "ms": 1100
+        }
+       ]
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1200
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "talk",
+     "ops": [
+      {
+       "kind": "key",
+       "key": "ArrowDown"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 400
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1200
+      },
+      {
+       "kind": "repeatUntil",
+       "testid": "dialogue-box",
+       "state": "absent",
+       "maxRounds": 8,
+       "ops": [
+        {
+         "kind": "key",
+         "key": "Enter"
+        },
+        {
+         "kind": "hold",
+         "dir": null,
+         "ms": 1100
+        }
+       ]
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1500
+      }
+     ],
+     "shot": true
+    }
+   ]
+  },
+  {
+   "id": "act2-b8-arrive",
+   "label": "제2막 B8 — 눈보라 고개 끝 → 서리나루 도착",
+   "note": "act2Opening.ts frostford — create_transfer_pair 고개 출구 ↔ 마을 남쪽(틈 도약을 길로 인정)",
+   "mapId": "map_snow_north_2",
+   "x": 10,
+   "y": 2,
+   "facing": "up",
+   "switches": {
+    "sw_fs_main_started": true,
+    "sw_fs_main_done": true,
+    "sw_fs_iris_joined": true,
+    "sw_fs2_act2_started": true,
+    "sw_fs2_out_of_cells": true,
+    "sw_fs2_hub_arrived": true,
+    "sw_fs2_mire_well": true,
+    "sw_fs2_heard_carriage": true,
+    "sw_fs2_hanel_told": true,
+    "sw_fs2_rohan_spear": true,
+    "sw_fs2_bram_hole": true,
+    "sw_fs2_dawn_mem_0": true,
+    "sw_fs2_dawn_mem_1": true,
+    "sw_fs2_dawn_mem_2": true,
+    "sw_fs2_serin_form": true,
+    "sw_fs2_sarah_joined": true,
+    "sw_fs2_snow_arrived": true,
+    "sw_fs2_spear_returned": true
+   },
+   "party": [
+    {
+     "actorId": "actor_hero",
+     "level": 14
+    },
+    {
+     "actorId": "actor_fs_elena",
+     "level": 14
+    },
+    {
+     "actorId": "actor_fs2_sarah",
+     "level": 14
+    }
+   ],
+   "beats": [
+    {
+     "id": "walk",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 800
+      },
+      {
+       "kind": "move",
+       "dir": "up",
+       "steps": 3
+      },
+      {
+       "kind": "waitForMap",
+       "mapId": "fs2_frostford",
+       "timeoutMs": 10000
+      },
+      {
+       "kind": "waitFor",
+       "testid": "dialogue-box",
+       "state": "present",
+       "timeoutMs": 15000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1200
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "town",
+     "ops": [
+      {
+       "kind": "repeatUntil",
+       "testid": "dialogue-box",
+       "state": "absent",
+       "maxRounds": 10,
+       "ops": [
+        {
+         "kind": "key",
+         "key": "Enter"
+        },
+        {
+         "kind": "hold",
+         "dir": null,
+         "ms": 1100
+        }
+       ]
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1200
+      },
+      {
+       "kind": "move",
+       "dir": "up",
+       "steps": 6
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1500
+      }
+     ],
+     "shot": true
+    }
+   ]
+  },
+  {
+   "id": "act2-b8-harma",
+   "label": "제2막 B8 — 하르마: 세린 이야기, 은빛 송어 부탁",
+   "note": "act2Opening.ts frostford — 하르마(16,13)",
+   "mapId": "fs2_frostford",
+   "x": 16,
+   "y": 14,
+   "facing": "up",
+   "switches": {
+    "sw_fs_main_started": true,
+    "sw_fs_main_done": true,
+    "sw_fs_iris_joined": true,
+    "sw_fs2_act2_started": true,
+    "sw_fs2_out_of_cells": true,
+    "sw_fs2_hub_arrived": true,
+    "sw_fs2_mire_well": true,
+    "sw_fs2_heard_carriage": true,
+    "sw_fs2_hanel_told": true,
+    "sw_fs2_rohan_spear": true,
+    "sw_fs2_bram_hole": true,
+    "sw_fs2_dawn_mem_0": true,
+    "sw_fs2_dawn_mem_1": true,
+    "sw_fs2_dawn_mem_2": true,
+    "sw_fs2_serin_form": true,
+    "sw_fs2_sarah_joined": true,
+    "sw_fs2_snow_arrived": true,
+    "sw_fs2_spear_returned": true,
+    "sw_fs2_frost_arrived": true
+   },
+   "party": [
+    {
+     "actorId": "actor_hero",
+     "level": 14
+    },
+    {
+     "actorId": "actor_fs_elena",
+     "level": 14
+    },
+    {
+     "actorId": "actor_fs2_sarah",
+     "level": 14
+    }
+   ],
+   "beats": [
+    {
+     "id": "meet",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 800
+      },
+      {
+       "kind": "action"
+      },
+      {
+       "kind": "waitFor",
+       "testid": "dialogue-box",
+       "state": "present",
+       "timeoutMs": 15000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1000
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "ask",
+     "ops": [
+      {
+       "kind": "repeatUntil",
+       "testid": "dialogue-box",
+       "state": "absent",
+       "maxRounds": 16,
+       "ops": [
+        {
+         "kind": "key",
+         "key": "Enter"
+        },
+        {
+         "kind": "hold",
+         "dir": null,
+         "ms": 1100
+        }
+       ]
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1200
+      }
+     ],
+     "shot": true
+    }
+   ]
+  },
+  {
+   "id": "act2-b8-fish",
+   "label": "제2막 B8 Q5 — 얼음 구멍에서 은빛 송어 → 하르마의 은빛 노",
+   "note": "act2Opening.ts frostford — 얼음 구멍(14,9)",
+   "mapId": "fs2_frostford",
+   "x": 14,
+   "y": 10,
+   "facing": "up",
+   "switches": {
+    "sw_fs_main_started": true,
+    "sw_fs_main_done": true,
+    "sw_fs_iris_joined": true,
+    "sw_fs2_act2_started": true,
+    "sw_fs2_out_of_cells": true,
+    "sw_fs2_hub_arrived": true,
+    "sw_fs2_mire_well": true,
+    "sw_fs2_heard_carriage": true,
+    "sw_fs2_hanel_told": true,
+    "sw_fs2_rohan_spear": true,
+    "sw_fs2_bram_hole": true,
+    "sw_fs2_dawn_mem_0": true,
+    "sw_fs2_dawn_mem_1": true,
+    "sw_fs2_dawn_mem_2": true,
+    "sw_fs2_serin_form": true,
+    "sw_fs2_sarah_joined": true,
+    "sw_fs2_snow_arrived": true,
+    "sw_fs2_spear_returned": true,
+    "sw_fs2_frost_arrived": true,
+    "sw_fs2_harma_told": true,
+    "sw_fs2_q5_trout_asked": true
+   },
+   "party": [
+    {
+     "actorId": "actor_hero",
+     "level": 14
+    },
+    {
+     "actorId": "actor_fs_elena",
+     "level": 14
+    },
+    {
+     "actorId": "actor_fs2_sarah",
+     "level": 14
+    }
+   ],
+   "beats": [
+    {
+     "id": "catch",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 800
+      },
+      {
+       "kind": "action"
+      },
+      {
+       "kind": "waitFor",
+       "testid": "dialogue-box",
+       "state": "present",
+       "timeoutMs": 15000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1000
+      },
+      {
+       "kind": "repeatUntil",
+       "testid": "dialogue-box",
+       "state": "absent",
+       "maxRounds": 8,
+       "ops": [
+        {
+         "kind": "key",
+         "key": "Enter"
+        },
+        {
+         "kind": "hold",
+         "dir": null,
+         "ms": 1100
+        }
+       ]
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1000
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "give",
+     "ops": [
+      {
+       "kind": "move",
+       "dir": "down",
+       "steps": 3
+      },
+      {
+       "kind": "move",
+       "dir": "right",
+       "steps": 1
+      },
+      {
+       "kind": "move",
+       "dir": "right",
+       "steps": 1
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 400
+      },
+      {
+       "kind": "action"
+      },
+      {
+       "kind": "waitFor",
+       "testid": "dialogue-box",
+       "state": "present",
+       "timeoutMs": 15000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1000
+      },
+      {
+       "kind": "repeatUntil",
+       "testid": "dialogue-box",
+       "state": "absent",
+       "maxRounds": 10,
+       "ops": [
+        {
+         "kind": "key",
+         "key": "Enter"
+        },
+        {
+         "kind": "hold",
+         "dir": null,
+         "ms": 1100
+        }
+       ]
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1200
+      }
+     ],
+     "shot": true
+    }
+   ]
+  },
+  {
+   "id": "act2-b8-sled",
+   "label": "제2막 B8 Q6 — 징발대 병사와 새라: 장작 썰매를 마을로",
+   "note": "act2Opening.ts frostford — 징발대(20,10)",
+   "mapId": "fs2_frostford",
+   "x": 20,
+   "y": 11,
+   "facing": "up",
+   "switches": {
+    "sw_fs_main_started": true,
+    "sw_fs_main_done": true,
+    "sw_fs_iris_joined": true,
+    "sw_fs2_act2_started": true,
+    "sw_fs2_out_of_cells": true,
+    "sw_fs2_hub_arrived": true,
+    "sw_fs2_mire_well": true,
+    "sw_fs2_heard_carriage": true,
+    "sw_fs2_hanel_told": true,
+    "sw_fs2_rohan_spear": true,
+    "sw_fs2_bram_hole": true,
+    "sw_fs2_dawn_mem_0": true,
+    "sw_fs2_dawn_mem_1": true,
+    "sw_fs2_dawn_mem_2": true,
+    "sw_fs2_serin_form": true,
+    "sw_fs2_sarah_joined": true,
+    "sw_fs2_snow_arrived": true,
+    "sw_fs2_spear_returned": true,
+    "sw_fs2_frost_arrived": true
+   },
+   "party": [
+    {
+     "actorId": "actor_hero",
+     "level": 14
+    },
+    {
+     "actorId": "actor_fs_elena",
+     "level": 14
+    },
+    {
+     "actorId": "actor_fs2_sarah",
+     "level": 14
+    }
+   ],
+   "beats": [
+    {
+     "id": "meet",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 800
+      },
+      {
+       "kind": "action"
+      },
+      {
+       "kind": "waitFor",
+       "testid": "dialogue-box",
+       "state": "present",
+       "timeoutMs": 15000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1000
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "back",
+     "ops": [
+      {
+       "kind": "repeatUntil",
+       "testid": "dialogue-box",
+       "state": "absent",
+       "maxRounds": 16,
+       "ops": [
+        {
+         "kind": "key",
+         "key": "Enter"
+        },
+        {
+         "kind": "hold",
+         "dir": null,
+         "ms": 1100
+        }
+       ]
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1500
+      }
+     ],
+     "shot": true
+    }
+   ]
+  },
+  {
+   "id": "act2-b8-inn",
+   "label": "제2막 B8 — 서리나루 여관(별빛 결정)",
+   "note": "act2Opening.ts frostford — 여관 문",
+   "mapId": "fs2_frostford",
+   "x": 31,
+   "y": 20,
+   "facing": "up",
+   "switches": {
+    "sw_fs_main_started": true,
+    "sw_fs_main_done": true,
+    "sw_fs_iris_joined": true,
+    "sw_fs2_act2_started": true,
+    "sw_fs2_out_of_cells": true,
+    "sw_fs2_hub_arrived": true,
+    "sw_fs2_mire_well": true,
+    "sw_fs2_heard_carriage": true,
+    "sw_fs2_hanel_told": true,
+    "sw_fs2_rohan_spear": true,
+    "sw_fs2_bram_hole": true,
+    "sw_fs2_dawn_mem_0": true,
+    "sw_fs2_dawn_mem_1": true,
+    "sw_fs2_dawn_mem_2": true,
+    "sw_fs2_serin_form": true,
+    "sw_fs2_sarah_joined": true,
+    "sw_fs2_snow_arrived": true,
+    "sw_fs2_spear_returned": true,
+    "sw_fs2_frost_arrived": true
+   },
+   "party": [
+    {
+     "actorId": "actor_hero",
+     "level": 14
+    },
+    {
+     "actorId": "actor_fs_elena",
+     "level": 14
+    },
+    {
+     "actorId": "actor_fs2_sarah",
+     "level": 14
+    }
+   ],
+   "beats": [
+    {
+     "id": "enter",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 800
+      },
+      {
+       "kind": "move",
+       "dir": "up",
+       "steps": 1
+      },
+      {
+       "kind": "waitForMap",
+       "mapId": "fs2_frostford_inn",
+       "timeoutMs": 10000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1200
+      },
+      {
+       "kind": "move",
+       "dir": "up",
+       "steps": 3
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 3000
+      }
+     ],
+     "shot": true
+    }
+   ]
+  },
+  {
+   "id": "act2-b9-night",
+   "label": "제2막 B9 — 여관에서 밤을 기다려 얼음 위의 밤으로",
+   "note": "act2Opening.ts lanternNightEvents — 여관 주인 밤 페이지",
+   "mapId": "fs2_frostford_inn",
+   "x": 23,
+   "y": 15,
+   "facing": "up",
+   "switches": {
+    "sw_fs_main_started": true,
+    "sw_fs_main_done": true,
+    "sw_fs_iris_joined": true,
+    "sw_fs2_act2_started": true,
+    "sw_fs2_out_of_cells": true,
+    "sw_fs2_hub_arrived": true,
+    "sw_fs2_mire_well": true,
+    "sw_fs2_heard_carriage": true,
+    "sw_fs2_hanel_told": true,
+    "sw_fs2_rohan_spear": true,
+    "sw_fs2_bram_hole": true,
+    "sw_fs2_dawn_mem_0": true,
+    "sw_fs2_dawn_mem_1": true,
+    "sw_fs2_dawn_mem_2": true,
+    "sw_fs2_serin_form": true,
+    "sw_fs2_sarah_joined": true,
+    "sw_fs2_snow_arrived": true,
+    "sw_fs2_spear_returned": true,
+    "sw_fs2_frost_arrived": true,
+    "sw_fs2_harma_told": true,
+    "sw_fs2_q5_trout_asked": true
+   },
+   "party": [
+    {
+     "actorId": "actor_hero",
+     "level": 14
+    },
+    {
+     "actorId": "actor_fs_elena",
+     "level": 14
+    },
+    {
+     "actorId": "actor_fs2_sarah",
+     "level": 14
+    }
+   ],
+   "beats": [
+    {
+     "id": "ask",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 800
+      },
+      {
+       "kind": "action"
+      },
+      {
+       "kind": "waitFor",
+       "testid": "dialogue-box",
+       "state": "present",
+       "timeoutMs": 15000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1000
+      },
+      {
+       "kind": "repeatUntil",
+       "testid": "dialogue-box",
+       "state": "absent",
+       "maxRounds": 10,
+       "ops": [
+        {
+         "kind": "key",
+         "key": "Enter"
+        },
+        {
+         "kind": "hold",
+         "dir": null,
+         "ms": 1100
+        }
+       ]
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "night",
+     "ops": [
+      {
+       "kind": "waitForMap",
+       "mapId": "fs2_frostford_night",
+       "timeoutMs": 15000
+      },
+      {
+       "kind": "waitFor",
+       "testid": "dialogue-box",
+       "state": "present",
+       "timeoutMs": 15000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1200
+      },
+      {
+       "kind": "repeatUntil",
+       "testid": "dialogue-box",
+       "state": "absent",
+       "maxRounds": 8,
+       "ops": [
+        {
+         "kind": "key",
+         "key": "Enter"
+        },
+        {
+         "kind": "hold",
+         "dir": null,
+         "ms": 1100
+        }
+       ]
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1500
+      }
+     ],
+     "shot": true
+    }
+   ]
+  },
+  {
+   "id": "act2-b9-valen",
+   "label": "제2막 B9 — 얼음 위의 발렌: 등을 같이 띄운다(세린 이름) → 갈라지는 얼음 탈출 → 하늘탑",
+   "note": "act2Opening.ts lanternNight — 발렌(8,13), make_timed_escape",
+   "mapId": "fs2_frostford_night",
+   "x": 8,
+   "y": 14,
+   "facing": "up",
+   "switches": {
+    "sw_fs_main_started": true,
+    "sw_fs_main_done": true,
+    "sw_fs_iris_joined": true,
+    "sw_fs2_act2_started": true,
+    "sw_fs2_out_of_cells": true,
+    "sw_fs2_hub_arrived": true,
+    "sw_fs2_mire_well": true,
+    "sw_fs2_heard_carriage": true,
+    "sw_fs2_hanel_told": true,
+    "sw_fs2_rohan_spear": true,
+    "sw_fs2_bram_hole": true,
+    "sw_fs2_dawn_mem_0": true,
+    "sw_fs2_dawn_mem_1": true,
+    "sw_fs2_dawn_mem_2": true,
+    "sw_fs2_serin_form": true,
+    "sw_fs2_sarah_joined": true,
+    "sw_fs2_snow_arrived": true,
+    "sw_fs2_spear_returned": true,
+    "sw_fs2_frost_arrived": true,
+    "sw_fs2_harma_told": true,
+    "sw_fs2_q5_trout_asked": true
+   },
+   "party": [
+    {
+     "actorId": "actor_hero",
+     "level": 14
+    },
+    {
+     "actorId": "actor_fs_elena",
+     "level": 14
+    },
+    {
+     "actorId": "actor_fs2_sarah",
+     "level": 14
+    }
+   ],
+   "items": {
+    "item_fs2_serin_form": 1
+   },
+   "beats": [
+    {
+     "id": "meet",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 800
+      },
+      {
+       "kind": "action"
+      },
+      {
+       "kind": "waitFor",
+       "testid": "dialogue-box",
+       "state": "present",
+       "timeoutMs": 15000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1000
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "choice",
+     "ops": [
+      {
+       "kind": "repeatUntil",
+       "testid": "dialogue-choice-frame",
+       "state": "present",
+       "maxRounds": 12,
+       "ops": [
+        {
+         "kind": "key",
+         "key": "Enter"
+        },
+        {
+         "kind": "hold",
+         "dir": null,
+         "ms": 1100
+        }
+       ]
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1200
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "lantern",
+     "ops": [
+      {
+       "kind": "key",
+       "key": "ArrowDown"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 400
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1200
+      },
+      {
+       "kind": "repeatUntil",
+       "testid": "dialogue-box",
+       "state": "absent",
+       "maxRounds": 24,
+       "ops": [
+        {
+         "kind": "key",
+         "key": "Enter"
+        },
+        {
+         "kind": "hold",
+         "dir": null,
+         "ms": 1100
+        }
+       ]
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 600
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "run",
+     "ops": [
+      {
+       "kind": "move",
+       "dir": "up",
+       "steps": 9
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 800
+      },
+      {
+       "kind": "repeatUntil",
+       "testid": "dialogue-box",
+       "state": "absent",
+       "maxRounds": 4,
+       "ops": [
+        {
+         "kind": "key",
+         "key": "Enter"
+        },
+        {
+         "kind": "hold",
+         "dir": null,
+         "ms": 1100
+        }
+       ]
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 800
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "tower",
+     "ops": [
+      {
+       "kind": "move",
+       "dir": "up",
+       "steps": 3
+      },
+      {
+       "kind": "waitForMap",
+       "mapId": "fs2_sky_tower",
+       "timeoutMs": 12000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1500
+      }
+     ],
+     "shot": true
+    }
+   ]
+  },
+  {
+   "id": "act2-b8-stop",
+   "label": "제2막 B8 끝(1.23 판본 끝) — 여관에서 「다음 업데이트」 카드와 저장 화면",
+   "note": "act2Opening.ts lanternNightEvents — FS2_RELEASE_STOP B8",
+   "mapId": "fs2_frostford_inn",
+   "x": 23,
+   "y": 15,
+   "facing": "up",
+   "switches": {
+    "sw_fs_main_started": true,
+    "sw_fs_main_done": true,
+    "sw_fs_iris_joined": true,
+    "sw_fs2_act2_started": true,
+    "sw_fs2_out_of_cells": true,
+    "sw_fs2_hub_arrived": true,
+    "sw_fs2_mire_well": true,
+    "sw_fs2_heard_carriage": true,
+    "sw_fs2_hanel_told": true,
+    "sw_fs2_rohan_spear": true,
+    "sw_fs2_bram_hole": true,
+    "sw_fs2_dawn_mem_0": true,
+    "sw_fs2_dawn_mem_1": true,
+    "sw_fs2_dawn_mem_2": true,
+    "sw_fs2_serin_form": true,
+    "sw_fs2_sarah_joined": true,
+    "sw_fs2_snow_arrived": true,
+    "sw_fs2_spear_returned": true,
+    "sw_fs2_frost_arrived": true,
+    "sw_fs2_harma_told": true,
+    "sw_fs2_q5_trout_asked": true
+   },
+   "party": [
+    {
+     "actorId": "actor_hero",
+     "level": 14
+    },
+    {
+     "actorId": "actor_fs_elena",
+     "level": 14
+    },
+    {
+     "actorId": "actor_fs2_sarah",
+     "level": 14
+    }
+   ],
+   "beats": [
+    {
+     "id": "ask",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 800
+      },
+      {
+       "kind": "action"
+      },
+      {
+       "kind": "waitFor",
+       "testid": "dialogue-box",
+       "state": "present",
+       "timeoutMs": 15000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1000
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "card",
+     "ops": [
+      {
+       "kind": "pressUntil",
+       "key": "Enter",
+       "testid": "main-menu",
+       "state": "present",
+       "maxPresses": 20,
+       "timeoutMs": 1500
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1200
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "saved",
      "ops": [
       {
        "kind": "key",

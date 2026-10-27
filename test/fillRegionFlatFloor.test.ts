@@ -3,12 +3,13 @@
 import { describe, expect, it } from "vitest";
 import { runTool, type ToolContext } from "@/editor/tools";
 import { createBlankProject } from "@/project/defaults";
+import { withRetiredEasyRpgTilesets } from "./support/retiredEasyRpgTilesets";
 
 const MAP_ID = "map_blank_start";
 const INTERIOR = "easyrpg_chipset_interior";
 
 function interiorContext(): ToolContext {
-  const project = createBlankProject();
+  const project = withRetiredEasyRpgTilesets(createBlankProject());
   const map = project.maps[MAP_ID]!;
   map.tilesetId = INTERIOR;
   map.lowerTiles.fill(0);

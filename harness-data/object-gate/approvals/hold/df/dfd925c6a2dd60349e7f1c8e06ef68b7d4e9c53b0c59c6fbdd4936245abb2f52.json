@@ -1,0 +1,19 @@
+{
+ "schema": "oprn-object-gate-hold-decision/1",
+ "pixelSha256": "dfd925c6a2dd60349e7f1c8e06ef68b7d4e9c53b0c59c6fbdd4936245abb2f52",
+ "profileHash": "4d8774b517f41638",
+ "kind": "box",
+ "decision": "allow",
+ "decidedBy": "supervisor (village-art)",
+ "decidedAt": "2026-10-23T07:20:31.537Z",
+ "by": "delegated",
+ "delegatedBy": "user",
+ "evidence": "tiledata/wasteland-ruins/_review/r57/draft1/opus-reviewer-crates-plastic.md",
+ "via": "review-page",
+ "reasons": [
+  "3/4: 판정자 의견이 갈림(분명한 3/4 0/4, 분명한 위반 0/4)",
+  "3/4: 앞면 7행 < 8 (4/4)"
+ ],
+ "note": "delegated by user to supervisor 2026-10-23 — wasteland crates-plastic: gate REFER (front 7 rows) re-judged by fresh independent Opus adversarial reviewer PASS (r57 draft1)",
+ "sig": "ad76d55f431c2abb9762c949ec267a0c55e91bb793c94c4b9538da183c365e25"
+}

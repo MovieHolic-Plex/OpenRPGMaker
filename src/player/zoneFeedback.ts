@@ -58,7 +58,8 @@ export function createZoneFeedbackModel(
     seenCount: 0,
     banner: null,
     toast: null,
-    objective: null,
+    // 목표 줄은 사건이 아니라 상태다 — 지난 안내(배너·토스트)는 건너뛰어도 마지막 목표는 불러오기·장면 재생성 뒤에도 남긴다(J90).
+    objective: mode === "consumeExisting" ? null : lastObjective(entries),
   };
 }
 
@@ -138,6 +139,17 @@ function timedToast(message: string, durationMs: number, nowMs: number): TimedMe
 
 function activeMessage(message: TimedMessage | null, nowMs: number): TimedMessage | null {
   return message && message.expiresAtMs > nowMs ? message : null;
+}
+
+function lastObjective(entries: readonly M2UiCommandState[]): string | null {
+  for (let index = entries.length - 1; index >= 0; index -= 1) {
+    const entry = entries[index];
+    if (entry?.surface.trim() !== "objectiveChip") continue;
+    const message = entry.message.trim();
+    if (!message) continue;
+    return completedObjective(message) ? null : message;
+  }
+  return null;
 }
 
 function completedObjective(message: string): boolean {

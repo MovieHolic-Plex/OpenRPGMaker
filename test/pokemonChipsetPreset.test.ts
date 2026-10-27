@@ -20,11 +20,12 @@ import { COMBINED_TOWN_TILESET_ID, TILE } from "@/project/defaults/constants";
 import { COMBINED_TOWN_HARNESS_PREFIX } from "@/project/tilesetHarness/combinedTownGroups";
 import { isTrustedGroupSource } from "@/project/tileVocabulary";
 import type { TilesetDef } from "@/project/types";
+import { startOnRetiredCombinedTown, withRetiredEasyRpgTilesets } from "./support/retiredEasyRpgTilesets";
 
 const MAP_ID = "map_blank_start";
 
 function defaultTilesetOf(): TilesetDef {
-  return createBlankProject().tilesets[COMBINED_TOWN_TILESET_ID];
+  return withRetiredEasyRpgTilesets(createBlankProject()).tilesets[COMBINED_TOWN_TILESET_ID];
 }
 
 describe("포켓몬풍 오버월드 프리셋 — role 노출", () => {
@@ -102,7 +103,8 @@ describe("키큰 풀(DARK_GRASS) 시맨틱 — 통행 가능 유지", () => {
 
 describe("헤드리스 장면 조립 — 잔디 맵 + 흙길 + 키큰풀 구역", () => {
   it("프리셋 material 라벨로 fill_region 을 태워 잔디/흙길/키큰풀을 실제 배치한다", () => {
-    const ctx: ToolContext = { project: createBlankProject() };
+    // 프리셋은 합본 마을 칩셋용이다 — 그 칩셋 위의 시작 맵에 장면을 조립한다.
+    const ctx: ToolContext = { project: startOnRetiredCombinedTown(createBlankProject()) };
 
     // 1) 잔디 벌판으로 맵 전체 바닥을 깐다.
     const grass = runTool(ctx, "fill_region", { mapId: MAP_ID, rect: { x: 0, y: 0, w: 20, h: 15 }, material: "잔디" });

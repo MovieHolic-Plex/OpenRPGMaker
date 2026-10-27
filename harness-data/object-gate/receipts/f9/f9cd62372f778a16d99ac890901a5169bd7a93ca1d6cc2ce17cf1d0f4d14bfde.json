@@ -1,0 +1,456 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f9cd62372f778a16d99ac890901a5169bd7a93ca1d6cc2ce17cf1d0f4d14bfde",
+ "width": 192,
+ "height": 96,
+ "kind": "structure",
+ "name": "십일조 헛간",
+ "label": "building-kit/massing/tithe-barn",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 8,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "5f62fef078ef7661"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 17,
+  "tileColorsP90": 25,
+  "darkV5": 44,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 70
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "upper hip roof",
+      "rows": "2-29",
+      "evidence": "c",
+      "front_edge_line_row": 30,
+      "eave_shadow_rows": "30-32"
+     },
+     {
+      "part": "lower roof (eave skirt)",
+      "rows": "33-53",
+      "evidence": "c",
+      "front_edge_line_row": 52,
+      "eave_shadow_rows": "52-53"
+     },
+     {
+      "part": "door porch gable roof",
+      "rows": "34-64",
+      "evidence": "c",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stone front wall with door, windows and shutters",
+      "rows": "54-95",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 29,
+    "front_face_rows": 42,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The building has two tiers of tiled roof planes. The upper hip roof spans rows 2-29 and its width widens from 132 to 192 px. It ends in a dark brown eave beam at rows 30-32, which is the front-edge line plus shadow. A second tiled roof spans rows 33-53 and ends in a dark eave line at about rows 52-53. A gabled porch roof sits over the door. Below the roofs is a stone front wall of about 42 rows (rows 54-95) with a double door, a window and shutters. The roofs are clearly drawn as sloped top surfaces above a vertical south face, so this is a three-quarter view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The candidate has two tiers of tile roof with scalloped tiles, per-tile highlights and purple/red mottling, about 5 visible steps. The stone wall is shaded brick by brick with speckle, and the wood door, shutters and gable porch have grain. Outlines are dark red-brown beside the roof and dark brown beside the wood, with no uniform black line, which fits the measured 12% near-neutral edge share. Measured facts: 15 visible tones per tile against 12 and 10 for the references, and 0% near-flat coverage like both references. Density is at or above the references. The roof is slightly more uniform in its mottling than h101, and the walls are a little regular, but a careful artist would accept it next to the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16547
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "upper hip roof (tile plane)",
+      "rows": "2-29",
+      "evidence": "c",
+      "front_edge_line_row": 30,
+      "eave_shadow_rows": "30-32"
+     },
+     {
+      "part": "lower roof (tile plane)",
+      "rows": "33-52",
+      "evidence": "c",
+      "front_edge_line_row": 53,
+      "eave_shadow_rows": "52-53"
+     },
+     {
+      "part": "entrance porch gable roof",
+      "rows": "34-64",
+      "evidence": "c",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 28,
+    "front_face_rows": 42,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The upper roof is a large tile plane over rows 2-29. It ends in a dark eave line and shadow at rows 30-32, and the roof widens steadily from 132 to 192 px over those rows, so it reads as a sloped surface seen from above. A second tile roof (rows 33-52) sits below it and ends in a dark edge at about rows 52-53. The south stone wall with door and windows (rows 53-95, about 42 rows) is the front face. The gabled porch roof over the door also shows its sloped planes. Every major part has a top surface and the front face is over 3 rows, so it matches the green references rather than the flat-front red ones."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The candidate is a whole building with a two-tier tile roof, stone walls, a gabled porch with a wooden door, and shuttered windows, so it matches the reference kind. Measured facts: 15 visible tones per tile against 12 and 10 for the references, 0% near-flat coverage (same as the references), and only 12% neutral dark edge pixels, so the outlines are tinted. By eye, the roof shows per-tile scallops with highlights and a mottled mix of reds and purples, and the stone wall has individually shaded bricks with grain. The outlines are dark red-brown beside the roof and dark brown beside the wood. The roof has about 5 distinct lightness steps against 6 in the references, a small gap. No flat fills are visible, and the density is at or above the references. It would sit acceptably next to the Beodeul pieces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15378
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "upper hipped tile roof",
+      "rows": "2-29",
+      "evidence": "c",
+      "front_edge_line_row": 30,
+      "eave_shadow_rows": "30-32"
+     },
+     {
+      "part": "lower hipped tile roof",
+      "rows": "33-53",
+      "evidence": "c",
+      "front_edge_line_row": 53,
+      "eave_shadow_rows": "53-54"
+     },
+     {
+      "part": "porch gable roof over door",
+      "rows": "34-63",
+      "evidence": "c",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stone front wall with door and windows",
+      "rows": "54-95",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 28,
+    "front_face_rows": 42,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The building has a two-tier tile roof. The upper roof (rows 2-29) widens from 132 to 192 px, which shows a receding sloped plane with hipped corner ridges. A dark eave beam at rows 30-32 ends it. The lower roof (rows 33-53) is a second sloped tile plane that ends at a dark eave line just above the wall. A gabled porch roof also shows its slopes. The south stone wall (rows ~54-95) is a vertical front face of about 42 rows with a door, shutters and windows. The roofs are the top surfaces and are tall, so this is a three-quarter view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The candidate's tile roof has scalloped tiles with per-tile highlights and several red-brown to purple steps (about 5). The stone walls are shaded brick by brick in pink-grey, with speckle and mortar variation. The measured facts support this: 15 visible tones per tile against 12 and 10 for the references, 0% near-flat coverage, and only 12% neutral dark edge pixels. The outline is therefore tinted, dark brown beside wood and dark red-brown beside the roof, and not a neutral black sticker line. The wooden door and gable details carry grain, and the windows and shutters are small but shaded. Density matches or exceeds the references and the structure reads as the same craft level. The two-tier roof is slightly repetitive, but that is minor.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15746
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "upper hipped tile roof",
+      "rows": "2-29",
+      "evidence": "c",
+      "front_edge_line_row": 30,
+      "eave_shadow_rows": "30-32"
+     },
+     {
+      "part": "lower tile roof (lean-to skirt)",
+      "rows": "33-53",
+      "evidence": "c",
+      "front_edge_line_row": 53,
+      "eave_shadow_rows": "52-53"
+     },
+     {
+      "part": "central entrance gable roof over door",
+      "rows": "34-62",
+      "evidence": "c",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 28,
+    "front_face_rows": 42,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The building has two tiers of sloped tile roof. The upper roof runs from row 2 (width 132) to row 29 (width 192), and the width profile widens steadily as a hip roof does. A dark eave band at rows 30-32 (L=40) ends it. The lower roof runs from about row 33 to 53 with its own eave line at the wall top. Below that is a stone front wall of about 42 rows (54-95) with a door, windows and shutters. The door has a small gable roof of its own. The roofs are the top surfaces and the wall is the south face, so this is a three-quarter view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The candidate's tile roof carries about 5 lightness steps with per-tile scallops, highlights and speckled variation, close to the references' roofs. The stone walls are shaded block by block with pink-grey variation, and the door and shutters have wood grain. Outlines lean dark brown or red-brown beside the roof and wood, with no uniform black line, which matches the measured 12% near-neutral edge share (references 7-9%). Visible tones per tile are 15 against 12 and 10 for the references, and near-flat coverage is 0%, so there are no flat fills. The structure is a clean two-tier roof with a gabled porch, comparable in craft to the references. It is slightly less varied than h101's detail, but no careful artist would see it as thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 14244
+  }
+ ],
+ "decidedAt": "2026-10-25T08:52:40.813Z",
+ "cells": {
+  "16": [
+   "026000fafea78c9a",
+   "07c2e114220cceda",
+   "0b2e2e7f82982496",
+   "0d28ae7ac03e5849",
+   "0e871c4334e8d355",
+   "11b02b1273c21c9f",
+   "11d1f449ddf6a184",
+   "160ac3ae003a44fc",
+   "174b9b6867a0d084",
+   "184581485749920a",
+   "1e863a81cfc8974b",
+   "1fea48ce9bc138a5",
+   "226ef12abd5ad607",
+   "31fbb27e176541ad",
+   "36b83b6088f6b1ef",
+   "378d5a673562c98d",
+   "3a72f24249d91c67",
+   "3fdba861a94c85b7",
+   "4436706015d1be45",
+   "4b97d6c444498045",
+   "4bf47bc47fd4b1ab",
+   "596adaf357630090",
+   "59fb1c689696c937",
+   "5b01821e115c69f4",
+   "5c2418ddccbcae64",
+   "62bfcfb1b15a82c1",
+   "6406843abc880a25",
+   "6cda4256d9bf205a",
+   "6f15c18309253e63",
+   "71c954520baacd5d",
+   "73d9719c3bbbc884",
+   "76b663543c98f9b3",
+   "7c42150208b51530",
+   "7f011c634569b124",
+   "88a816ac7c079d9e",
+   "8f50f4b6cecda427",
+   "8ff54b96032cf5cf",
+   "91d56c8fbe0da812",
+   "94a4c87f14244d17",
+   "957113dcbdb46130",
+   "97e330f4fc4b394a",
+   "983f3d3b931bbdfd",
+   "9adda60ab87f39b3",
+   "9bf943bbe426d0c1",
+   "9d5b3e1db9b6405b",
+   "9ff1433829c1bf98",
+   "a02ff245a9a35828",
+   "a8a2fe0a86093412",
+   "aff8519b8608f1c7",
+   "b1771dfd4310f734",
+   "b59b8a7f3cf3b3e3",
+   "b59c85a13f50d906",
+   "b8a32cdbb042f1e5",
+   "c02a053fe248da6b",
+   "c9cad6f4450ae75e",
+   "cb9e1584143a39f2",
+   "cccd1c68b82362ae",
+   "d08c171fc64286d2",
+   "d68adb42a25cd36d",
+   "d999f919cb6e518f",
+   "deb3cf6868d41e05",
+   "e189f1044a3d09b0",
+   "e38d7aa033b8b460",
+   "e5e5ac942747b2e6",
+   "ec8224aa5c679105",
+   "edbed95a155c4b11",
+   "f7db675cde1bb7dc",
+   "f80da82568b1651a",
+   "fd255e2ad703fffb",
+   "ff70e5a6db91e078",
+   "ffd837e75fb32b69"
+  ],
+  "24": [
+   "0d47f53b0dc40e74",
+   "12092c981082762d",
+   "12f55a555364734b",
+   "16796a4ac1543f8c",
+   "1b155139bda566e6",
+   "3ba9ed13ba383184",
+   "3d8b9d8100bb1ee0",
+   "4cfbf6bb60ce71b9",
+   "591390c2ad439399",
+   "5f1b0edfeeaf8cb0",
+   "64e2a8270a367d3f",
+   "65299d836384e5a5",
+   "67989a38fe49c43c",
+   "70bcef8a1be40619",
+   "713a4746b27ad2e9",
+   "7274910de23cc805",
+   "84568f2bb42f5c58",
+   "954549a3e4b4e46e",
+   "98b9772101fa28fd",
+   "a51492a61742a5ca",
+   "aaaa741f58f18d7c",
+   "abc0d3f64844d13a",
+   "adc3b113d83d910f",
+   "bf97a886eda75435",
+   "cbe88f1d555e64ea",
+   "cee7ddef9273bd1a",
+   "cff1edf336b7e7d6",
+   "db56c0b34a46bd25",
+   "dbd320b5bcbf3193",
+   "ed981c3bf34ad750",
+   "f4c854b8647445c1",
+   "fdf15f06121ac18a"
+  ],
+  "32": [
+   "1ee2fe101c6368e0",
+   "241accfc71b951ca",
+   "2fbf5c28b028df67",
+   "3fe06e548e7c6626",
+   "4591fe73ecbfdd6c",
+   "482b8884a49fef2c",
+   "5a438a66bc118945",
+   "6f3a6893c52a24fe",
+   "73f63c5c8ed0e2e7",
+   "7c7f90662d802f3b",
+   "8f1911940f2f58bd",
+   "92d51f01a08b2961",
+   "993a6615db4be029",
+   "a15ec571136db50a",
+   "b750aead7c300719",
+   "ba7d7f8a622c82ff",
+   "be02ae885245897e",
+   "c934d5198cb1b4de"
+  ],
+  "48": [
+   "08036a4f10b4dfb4",
+   "0b51e8ab1f0a8227",
+   "1d308356fb8c5d51",
+   "280beebb18fcc6ea",
+   "5f5d60551777b6ba",
+   "62aedb453b0ac94f",
+   "e4339a69ff3696a8",
+   "f574a7ef4c0919c0"
+  ]
+ }
+}

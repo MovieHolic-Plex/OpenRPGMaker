@@ -1,0 +1,16 @@
+{
+ "schema": "oprn-object-gate-hold-decision/1",
+ "pixelSha256": "86f71babc75b67e34cb555b964d02cb1a29c8af68f5dab37f546a951f65c2a39",
+ "profileHash": "4d8774b517f41638",
+ "kind": "structure",
+ "decision": "allow",
+ "decidedBy": "supervisor (building-kit massing)",
+ "decidedAt": "2026-10-25T08:38:35.195Z",
+ "by": "delegated",
+ "delegatedBy": "user 2026-10-25 (bk-massing-100 → 실제 건물, 머지까지 위임)",
+ "evidence": "/home/main/z-project/rpg-zzu-building-kit/harness-data/building-kit/massing/reviews/great-hall/86f71babc75b-evidence.json",
+ "via": "review-page",
+ "reasons": [],
+ "note": "object-gate pass + argon PASS + klb-sonnet-5-5 PASS (원문 파일)",
+ "sig": "cb611f0c49723e6fa21bd28255c757cfee0a2abd10d35b286689a9b28e727a27"
+}

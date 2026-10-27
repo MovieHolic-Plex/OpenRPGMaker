@@ -19,3 +19,15 @@ export function resolvePictureSource(
   if (uploaded !== undefined && AUDIO_RESOURCE_KINDS.has(uploaded.kind)) return null;
   return resolveAssetResourceUrl(resourceId, project ? { project } : {});
 }
+
+
+// 배우 걷기 그림 픽처("actor:<배우 ID>") 판독은 프로젝트 층이 소유한다(검증기도 쓴다).
+export { ACTOR_PICTURE_PREFIX, actorPictureActorId } from "@/project/pictureSources";
+import { actorPictureActorId } from "@/project/pictureSources";
+
+/** 픽처로 그릴 수 있는 id 인가 — 배우 걷기 그림(있는 배우)이거나 이미지로 해석되는 리소스. 조수 제안·검증이 같은 판정을 쓴다. */
+export function pictureResourceDrawable(resourceId: string | undefined, project: Pick<Project, "assets"> & { readonly database?: Pick<Project["database"], "actors"> }): boolean {
+  const actorId = actorPictureActorId(resourceId);
+  if (actorId) return project.database?.actors.some((actor) => actor.id === actorId) ?? false;
+  return resolvePictureSource(resourceId, project) !== null;
+}

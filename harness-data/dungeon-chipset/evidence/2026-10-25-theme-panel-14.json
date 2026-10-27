@@ -1,0 +1,24 @@
+{
+ "round": "theme-props-r10",
+ "panel": 14,
+ "date": "2026-10-25",
+ "boards": [
+  "qa-runs/walls/theme-props-r10/board-wall.ice_face-p10i.png"
+ ],
+ "criteria": "same as panel 13. Blind.",
+ "reviewers": {
+  "klb-sonnet-5-5": "a7637df96d4339f7f",
+  "argon": "aa0e80060fca21bd8"
+ },
+ "tally": {
+  "wall.ice_face": {
+   "A1": "FAIL both (sonnet: cracked-pebble mosaic, glittery specks, seam line; argon: cobble-sized cells with bright rims)",
+   "A2": "argon PASS (minors: crystal same value range, isolated glints); sonnet FAIL (dark vertical slab seam on 3x sheet + 48px rhythm, ledge strip pasted on, slightly saturated)"
+  }
+ },
+ "next": "A2: remove vertical seam (wrap facets across slab edges), vary facet layout, ledge irregular, desaturate toward Beodeul",
+ "object_gate": {
+  "A1": "REFER 77a8da8471ce (style 2/4: 8 tones/tile < 13)",
+  "A2": "FAIL 3f7e60834b78 (style 4/4: flat fill)"
+ }
+}

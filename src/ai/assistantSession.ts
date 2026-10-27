@@ -291,6 +291,7 @@ import {
   type SpecGatePass,
 } from "./session/buildSpecGate";
 import { appendDiffWarning, withSpecGateWarnings } from "./session/toolResultWarnings";
+import { resolveSpecNpcGraphic, specNpcGraphicLadder } from "./session/specNpcGraphic";
 import {
   eventBaseTarget,
   eventTargetKey,
@@ -4390,12 +4391,15 @@ export class AssistantSession {
     let placed = 0;
     for (const { mapId, asset } of assets) {
       const name = specNpcName(asset);
+      // 그래픽 검색어 사다리: 전체 문구 → 역할 명사(「잡화점 상인」→「상인」). 대체 그림은 없다 — 다 못 찾으면 아래에서 실패를 알린다.
+      const graphicMatch = resolveSpecNpcGraphic(name);
+      const triedTerms = specNpcGraphicLadder(name).map((step) => step.query);
       const args: Record<string, unknown> = {
         mapId,
         x: asset.x,
         y: asset.y,
         name,
-        graphic: { query: name },
+        graphic: { query: graphicMatch?.query ?? name },
         // 대사 없는 대기 페이지 — 코드가 "${name}입니다." 류를 지어내지 않는다. 라운드 끝의 캐스트 라이터가
         // 테마·이웃·세계관에 맞춰 채운다(authorPendingNpcCast). 상점 역할이어도 빈 shop 커맨드는 꽂지 않는다
         // (eventDraftValidator 가 shop.items.empty 로 막는다) — 재고는 set_shop_stock 이 맡는다는 사실만 감사에 남긴다.
@@ -4407,8 +4411,17 @@ export class AssistantSession {
       this.emitToolStarted(onEvent, "place_npc", args);
       if (this.activeTurnSignal?.aborted) break;
       const reason = harnessToolReason("spec-npc", name);
-      const result = this.readEvidence.beforeWrite(this.ctx.project, "place_npc", args)
-        ?? runTool(this.ctx, "place_npc", args, { dryRun: false });
+      const ran: ToolResult = graphicMatch === null
+        ? { ok: false, summary: `밑그림 NPC 「${name}」의 그림을 찾지 못했습니다 — 검색어 ${triedTerms.map((term) => `「${term}」`).join("·")} 모두 charset 라벨과 맞지 않습니다. 다른 그림으로 대체하지 않습니다. list_npc_graphics 로 그림을 골라 place_npc 를 직접 부르세요.` }
+        : this.readEvidence.beforeWrite(this.ctx.project, "place_npc", args)
+          ?? runTool(this.ctx, "place_npc", args, { dryRun: false });
+      // 어떤 검색어가 맞았는지 남긴다(전체 문구 full / 역할 명사 role).
+      const graphicNote = graphicMatch ? { query: graphicMatch.query, term: graphicMatch.term } : { query: null, term: null, tried: triedTerms };
+      const result: ToolResult = {
+        ...ran,
+        summary: graphicMatch && graphicMatch.term === "role" ? `${ran.summary} (그림 검색: 「${name}」 없음 → 역할 「${graphicMatch.query}」)` : ran.summary,
+        data: { ...(isRecord(ran.data) ? ran.data : {}), specNpcGraphic: graphicNote },
+      };
       this.pushAudit({
         kind: "tool",
         name: "place_npc",

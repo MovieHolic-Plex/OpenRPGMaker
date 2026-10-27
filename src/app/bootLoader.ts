@@ -53,17 +53,48 @@ export function failBootLoader(error: unknown, kind: BootFailureKind = "unknown"
   splashApi()?.fail(kind, detail);
 }
 
+/**
+ * 편집기 셸 DOM 이 붙었다 — 맵 판(Phaser)·나머지 마운트를 기다리지 않고 로더를 걷어 셸을 먼저 보인다.
+ * 첫 화면 신호(markBootSettled — 미뤄 둔 한가한 일·부팅 정규화의 출발 신호)는 켜지 않는다: 그것은 dismissBootLoader 가 마운트를 다 끝낸 뒤 켠다.
+ * 실패 화면이 떠 있으면 걷지 않는다.
+ */
+let shellRevealedEarly = false;
+
+export function revealShellEarly(): void {
+  const loader = loaderElement();
+  if (!loader || loader.dataset.leaving !== undefined || loader.hasAttribute("data-failed")) return;
+  shellRevealedEarly = true;
+  bootMark("shell-visible");
+  splashApi()?.leave();
+  loader.dataset.leaving = "";
+  setTimeout(() => loader.remove(), 200);
+}
+
 /** 멱등. 로더가 없으면(플레이어·테스트·두 번째 호출) 첫 화면 신호만 켠다. */
 export function dismissBootLoader(): void {
   // 로더가 없어도(플레이어·테스트·두 번째 부팅) 첫 화면 신호는 켠다 — 미뤄 둔 한가한 일이 영영 안 도는 것을 막는다.
   markBootSettled();
+  // 셸을 먼저 보였으면(revealShellEarly) 로더는 이미 걷혔다 — 여기서 «다 끝났다» 마크와 데스크톱 알림만 낸다.
+  if (shellRevealedEarly) {
+    shellRevealedEarly = false;
+    bootMark("settled");
+    notifyEditorReady();
+    return;
+  }
   const loader = loaderElement();
   if (!loader || loader.dataset.leaving !== undefined) return;
   // 실패 화면이 떠 있으면 걷지 않는다 — 메시지와 «다시 시도»가 사라지면 빈 셸만 남는다.
   if (loader.hasAttribute("data-failed")) return;
   bootMark("settled");
   splashApi()?.leave();
+  notifyEditorReady();
   loader.dataset.leaving = "";
   // 페이드아웃 뒤 DOM 에서 뺀다. reduced-motion(transition:none)이면 transitionend 가 안 오므로 시간으로.
   setTimeout(() => loader.remove(), 200);
+}
+
+/** 데스크톱: 이제 이 화면을 «마지막 편집 화면»으로 찍어도 된다(electron/main/lastView.ts — 다음 부팅의 자리표시). */
+function notifyEditorReady(): void {
+  if (typeof window === "undefined") return;
+  (window as unknown as { oprn?: { resume?: { editorReady?: () => void } } }).oprn?.resume?.editorReady?.();
 }

@@ -1,0 +1,16 @@
+{
+ "schema": "oprn-object-gate-hold-decision/1",
+ "pixelSha256": "5ee92bdac627b2ec805821baeae13b7f06f8a6ed2c166e2841cde605363813cc",
+ "profileHash": "4d8774b517f41638",
+ "kind": "terrain",
+ "decision": "allow",
+ "decidedBy": "supervisor (village-art)",
+ "decidedAt": "2026-10-22T16:27:19.442Z",
+ "by": "delegated",
+ "delegatedBy": "user",
+ "evidence": "/home/main/z-project/rpg-zzu-village-art/tiledata/beodeul-yard/_gate/review-cobble.json",
+ "via": "review-page",
+ "reasons": [],
+ "note": "delegated by user to supervisor 2026-10-23 — beodeul_yard/cobble; gate AI pass + fresh Opus adversarial r6 pass",
+ "sig": "6e372e84d422a073531e52e76729777d12b394d22df45a07bcf308eb45923ede"
+}

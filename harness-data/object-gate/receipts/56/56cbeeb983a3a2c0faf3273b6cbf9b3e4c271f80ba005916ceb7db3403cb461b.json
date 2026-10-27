@@ -1,0 +1,453 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "56cbeeb983a3a2c0faf3273b6cbf9b3e4c271f80ba005916ceb7db3403cb461b",
+ "width": 144,
+ "height": 96,
+ "kind": "structure",
+ "name": "ㄱ자 농가",
+ "label": "building-kit/massing/l-farmhouse",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 8,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "5f62fef078ef7661"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 19,
+  "tileColorsP90": 23,
+  "darkV5": 47,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 38
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "main wing tiled roof",
+      "rows": "12-42",
+      "evidence": "c",
+      "front_edge_line_row": 42,
+      "eave_shadow_rows": "41-43"
+     },
+     {
+      "part": "cross-wing gable roof (left and right slopes)",
+      "rows": "2-64",
+      "evidence": "c",
+      "front_edge_line_row": 64,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "chimney",
+      "rows": "3-24",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 31,
+    "front_face_rows": 30,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main wing has a large sloped tile roof spanning rows 12-42 (widening from 99 to 142 px), ending in a dark eave shadow at rows 41-43 above the half-timbered plaster front wall at rows 44-79. The cross-wing has two sloped tile roof planes on either side of a ridge, with a gable front and a door below. The chimney is a structural vertical stack with a light cap at its top. The roofs show clear top surfaces and the front walls have 30+ rows, so this reads as a three-quarter view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The candidate is an L-shaped farmhouse with a scalloped tile roof showing about 5 steps (highlight, light, mid, dark, deep) and per-tile highlights, plus a few small green moss dots. The plaster walls are speckled, and the timber framing, windows and door use brown shading. Outlines are dark brown or red-brown beside the wood and roof, not neutral black, which matches the measured 4% near-neutral edge share against 7-9% for the references. Visible tones per tile are 18 against 12 and 10 for the references, and near-flat coverage is 2% against 0%, so there are no real flat fills. Its construction (roof, half-timber wall, gable, chimney) matches the references in density and craft, so it would sit next to them without looking thinner or more sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 11310
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "main roof (long wing)",
+      "rows": "12-42",
+      "evidence": "c",
+      "front_edge_line_row": 42,
+      "eave_shadow_rows": "41-43"
+     },
+     {
+      "part": "gabled cross-wing roof (ㄱ wing, left and right slopes)",
+      "rows": "6-64",
+      "evidence": "c",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "chimney",
+      "rows": "2-24",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "timber-frame front wall of main wing",
+      "rows": "44-79",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 31,
+    "front_face_rows": 36,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is a half-timbered farmhouse. The long wing has a large sloped tile roof (rows 12-42) that widens from 99 to 138 px, ends in a dark eave shadow at rows 41-43, and sits above a white plaster front wall (rows 44-79) with windows and beams. The projecting cross-wing has its own gabled roof planes with tile rows, and below them a front gable wall with a door. Both roofs show their top slopes, and the front faces are 30+ rows, so the building reads as three-quarter view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The candidate's tile roof shows scalloped tiles with per-tile highlights and about 5 tones, from highlight through light, mid and dark to deep red-brown. Its plaster walls are speckled and its timber framing is brown. Small green moss dots add variation. The outlines are dark brown or red-brown beside wood and tile, not neutral black, and only 4% of dark edge pixels are near-neutral, against 7-9% for the references. Measured density is 18 visible tones per tile against 10-12 for the references. Near-flat coverage is 2%, close to the references' 0%, so there are no large flat fills. The ㄱ-shaped massing with a gable wing, chimney, windows and door matches the reference kind and craft level. The roof is slightly less deeply stepped than the h101 roof, but a careful artist would accept it next to the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 12454
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "main roof (long wing)",
+      "rows": "12-42",
+      "evidence": "c",
+      "front_edge_line_row": 42,
+      "eave_shadow_rows": "41-43"
+     },
+     {
+      "part": "gable wing roof (left and right slopes)",
+      "rows": "2-64",
+      "evidence": "c",
+      "front_edge_line_row": 64,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "chimney",
+      "rows": "3-24",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 31,
+    "front_face_rows": 30,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The long wing has a sloped tiled roof spanning rows 12-42, ending in an eave line with dark shadow at rows 41-43, and below it a half-timbered front wall (rows 44-79) with windows. The gable wing has tiled roof planes on both sides of the ridge (rows 2-64) above a gabled front with a door. The chimney is drawn mostly as a vertical brick face with a thin grey cap at its top (rows 3-4) and a ledge at the bottom (about row 24), so it has little top surface. The main roof and front face clearly give a three-quarter reading."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The candidate is an L-shaped farmhouse with a tile roof, half-timbered plaster walls, windows, a door and a chimney, so it is the same kind as the references. The roof has scalloped tiles with per-tile highlights and about 5 lightness steps from highlight through deep shadow. The plaster is speckled and the timber is brown with grain. Outlines are dark brown beside wood and dark red-brown beside roof tiles, not neutral black; the measured near-neutral share of dark edge pixels is 4%, below the references' 7% and 9%. Measured density is 18 visible tones per tile against 12 and 10 for the references, and near-flat coverage is 2% against 0%. The few small flat patches are minor and do not look like sticker fills. A careful artist would accept it next to the references.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 10969
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "main roof (long wing, tiled slope)",
+      "rows": "12-43",
+      "evidence": "c",
+      "front_edge_line_row": 43,
+      "eave_shadow_rows": "41-43"
+     },
+     {
+      "part": "cross-gable wing roof (right, tiled slopes)",
+      "rows": "3-64",
+      "evidence": "c",
+      "front_edge_line_row": 64,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "chimney",
+      "rows": "2-24",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "chimney cap",
+      "rows": "2-3",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 32,
+    "front_face_rows": 36,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main long wing has a sloped tiled roof occupying rows 12-43, widening from 99 to 140 px, with a dark eave shadow at rows 41-43 and the half-timbered plaster front wall (rows 44-79) below. The right cross-gable wing also shows tiled roof slopes down to an eave line around row 64, with a gable triangle, window and door beneath. Roof planes are clearly drawn as top surfaces above the front faces, so this is a three-quarter view. The chimney is a vertical brick shaft with a thin cap, but it is a minor detail."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The candidate is an L-shaped farmhouse built the same way as the references: a tile roof with scalloped per-tile highlights, a timber-framed plaster wall with speckle, and a chimney. The roof reads as about 5 lightness steps (highlight, light, mid, dark, deep), and a few green moss dots add variety. The plaster has grain dots, and the wood beams and door carry their own tones. The outline is a dark brown/red-brown tied to the adjacent material, not a neutral black line. Only 4% of dark edge pixels are near-neutral, so the outline is tinted. On the measured facts it has 18 visible tones per tile against 12 and 10 for the references, and 2% near-flat coverage against 0%. Neither is a meaningful flat-fill problem. It is slightly less varied than the references in raw colours overall (63 against 185 and 66), but that is consistent with a locked palette. A careful artist would accept it next to the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 12055
+  }
+ ],
+ "decidedAt": "2026-10-25T07:35:08.529Z",
+ "cells": {
+  "16": [
+   "00e53ddf112ec76d",
+   "05799079536b3765",
+   "110cd6f09bef5fb0",
+   "143be386cd6f42d0",
+   "14d6c7f656521e3e",
+   "2552b2c24f3f6c4d",
+   "29bc2b8aa611c4d3",
+   "2aeee4d151f4bbec",
+   "2d5448c9ee398bd9",
+   "39061661fbb2be64",
+   "3b1e5dc5ce6b3057",
+   "3fa74df3afe3dd3d",
+   "401eea54cfae373d",
+   "41ae9b1306fab60a",
+   "48d72a0188053e28",
+   "4982c84fa9bc9fdf",
+   "5039ed51499dddbc",
+   "508c64bcb9949629",
+   "51da21e50c944f67",
+   "547f75d562fc1f46",
+   "5688a51cf1aee55f",
+   "681dfe5eeeecc038",
+   "74806efad27d8cba",
+   "752b4b81d6358be2",
+   "7c4316f2d121548b",
+   "7d9213f9212919ad",
+   "82fcf75fa44193f6",
+   "8a2a6ee038daa0fc",
+   "91b81a1153060dd9",
+   "94df9f0bb9f14f7f",
+   "96b1a6ec8f9bd223",
+   "9cc751929349f89b",
+   "9d14857bbacf1895",
+   "af3bc85adcee7c5e",
+   "b0662dbe1a116d31",
+   "b8f3e794dc786aee",
+   "be42f8518ff39fe2",
+   "d53b28b2eeb9e200",
+   "d8fea1b0257793cf",
+   "dfd4c3130549d493",
+   "e15ca157bc5e5380",
+   "e217963b0f062060",
+   "eeaf3ea86c6bd224",
+   "f0cb0db1e04c52dc",
+   "fc00e98ea78d49fc",
+   "fcc34fb6ffee0701",
+   "ff3d2f8d5faf6890"
+  ],
+  "24": [
+   "0288c209b737573c",
+   "058a73d7d15964a9",
+   "0e62eadf928aaed5",
+   "0ef49f468d902282",
+   "0f5bd22104928a66",
+   "175f8f56b94b4344",
+   "27af483bf95bf1bd",
+   "27f60d099de928e2",
+   "3048ab5a32250c75",
+   "361e9c6a17db2b08",
+   "47cda88cb0fce0c1",
+   "5aaef2f3ef08a67c",
+   "6da90b947af13414",
+   "84584b9a324effea",
+   "8b4422afa5f2e8bc",
+   "8ba5cfe71534b056",
+   "953992bb4d1a7b51",
+   "9ce7e7a6ddbf7118",
+   "ba3024727d3c005f",
+   "be8b81229b661379",
+   "c151f054154cfe72",
+   "e727e2369ffb9516",
+   "f7150a1131519d98",
+   "fa6e7cf34c0213c4"
+  ],
+  "32": [
+   "0732550d14dd5797",
+   "0cc969a7bb622b56",
+   "10149cbe14baf661",
+   "1348bc7d19523c44",
+   "180b96efbb9e2780",
+   "1e7082c31b4c5ad3",
+   "22cddade94fa006d",
+   "26d65ff646b03979",
+   "34614e61250befc5",
+   "3dee5ec6687e0a84",
+   "488428cf4142475d",
+   "56008611d772a894",
+   "5df40baaf0db2520",
+   "6193254ff7fb86c3",
+   "71c265d0991e859d",
+   "791274c83c3f067a",
+   "7fdebf4eccedabb0",
+   "8e17572166590e28",
+   "956a2b4205713436",
+   "965e98d8fd52494d",
+   "9d52fabdca6d7bca",
+   "a46d82a0e4b5eda7",
+   "a60c2231de665907",
+   "acaed597769e1cbc",
+   "b42518bc160a2f9c",
+   "b560ecc9a832a224",
+   "b83e9d106e7ed560",
+   "b94f18bd0c8810b0",
+   "be59a224b72e1169",
+   "ca976e1fe8715822",
+   "cb2f2ae7ca78b1b2",
+   "cca1661a9af1bffc",
+   "d4c22a3305b3d8e9",
+   "d6c31dfca8120ddb",
+   "d8b3aa42af15598e",
+   "da16331da988cb76",
+   "de490643465ca0e2",
+   "e04d32a0e9bd2a4e",
+   "e0de5edd2e67333c",
+   "e9d04e37abae1cc4",
+   "eaa1d823d7b02293",
+   "ebaf797fa6ad00ea",
+   "ebfa83403f238171",
+   "edfb279c68fa01df",
+   "f79ae7025d8efdfd"
+  ],
+  "48": [
+   "06318adc8d2ec205",
+   "172cd939c1e1f35c",
+   "19e763357f333ada",
+   "8c9c12cee20de8f0",
+   "d5b5dca9bf6350c7",
+   "e9ea9ed5881062e6"
+  ]
+ }
+}

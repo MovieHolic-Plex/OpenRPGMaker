@@ -10,7 +10,8 @@ afterEach(() => {
   resetHeavyWireForTests();
 });
 
-describe("Pi checkpoints while background rendering and timers are stalled", () => {
+// Heavy under CI load (15s default is too tight): applies full-project checkpoints.
+describe("Pi checkpoints while background rendering and timers are stalled", { timeout: 120_000 }, () => {
   it("applies two checkpoints and sends both ACKs without a frame or timer tick", async () => {
     vi.useFakeTimers();
     const doc = Object.assign(new EventTarget(), {

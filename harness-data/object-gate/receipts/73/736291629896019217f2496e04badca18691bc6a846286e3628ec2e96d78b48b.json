@@ -1,0 +1,372 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "736291629896019217f2496e04badca18691bc6a846286e3628ec2e96d78b48b",
+ "width": 48,
+ "height": 32,
+ "kind": "other",
+ "name": "burnt-out car wreck lying east-west seen from above: charred roof and hood, empty window frames, scorched rusty body on flat tyres",
+ "label": "wasteland_ruins/car-burnt",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 투영이 3/4 아님(top_down_slab) (4/4)",
+  "3/4: 앞면 2행 < 3 (3/4)",
+  "3/4: 윗면/앞면 25/2 — 앞면이 거의 없는 평면도 (2/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "투영이 3/4 아님(top_down_slab) (4/4)",
+   "앞면 2행 < 3 (3/4)",
+   "윗면/앞면 25/2 — 앞면이 거의 없는 평면도 (2/4)"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 12,
+  "tileColorsP90": 14,
+  "darkV5": 33,
+  "nearBlackEdge": 0.25,
+  "opaqueTiles": 6
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "borderline",
+   "wrong",
+   "wrong",
+   "wrong",
+   "borderline",
+   "wrong",
+   "wrong",
+   "borderline",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "car body (roof, hood and boot seen from above)",
+      "rows": "2-27",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "windscreen and window openings (dark frames)",
+      "rows": "5-17",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "tyres peeking out under the body",
+      "rows": "27-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 25,
+    "front_face_rows": 2,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The drawing is a plan view of the car. The charred roof, hood and boot fill rows 2-27 as one flat rusty surface, with dark window openings inside it and the wheel arches at the sides. No front-edge line or eave shadow marks a top plane above a south face. The body also has no vertical south face. The only vertical hint is a few rows of dark tyre at rows 27-30, under the body at the left and right ends, which is under 3 rows of real front face. The silhouette is nearly constant at 48 px wide from row 13 to row 24, as in a flat slab, so it reads as top_down_slab."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate measures 11 visible tones per 16x16 tile, above prop-hedge (9) and below the stall (17) and well (20). Near-flat coverage is 0%, so there are no flat fills. The dark edge pixels are 0% neutral, so the outline leans dark brown or rust beside the body rather than being a black sticker line. The body shows several rust and char steps (about 5) with speckled grain, window frames and tyres separated mostly by value. It is a bit muddy and low in contrast, and slightly poorer than the stall and well, but it is on par with the hedge and a careful artist would accept it beside the references. Pass.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(top_down_slab) (1/1)",
+    "앞면 2행 < 3 (1/1)",
+    "윗면/앞면 25/2 — 앞면이 거의 없는 평면도 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(top_down_slab) (1/1)",
+     "앞면 2행 < 3 (1/1)",
+     "윗면/앞면 25/2 — 앞면이 거의 없는 평면도 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 20173
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "east",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "roof and cabin with window openings",
+      "rows": "2-20",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "hood and boot, scorched rust body",
+      "rows": "7-26",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "flat tyres",
+      "rows": "27-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 22,
+    "front_face_rows": 2,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The body is drawn as a plan view. The roof, hood and windows fill rows 2-26 as one continuous rust and charcoal surface. No front-edge line or eave shadow is visible in the column scans. The body colour (x=12, x=35) is unbroken from about row 5 to row 27, and x=24 changes only through window and roof detail, with no edge line. Rows 27-30 show only dark tyre shapes, with no vertical south face on the body. The result is a top-down slab, not a 3/4 view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate has 11 visible tones per tile, which is above prop-hedge (9) but below prop-stall-cheese (17) and prop-well-roofed (20). Near-flat coverage is 0%, so there are no flat fills; the charred and rusty surface is broken up with speckle and mottling, much like the hedge's leaf clumps. The dark edge pixels are 0% neutral, so the outline carries a brown/rust tint and reads as dark material tone, not a sticker line. I count about 5 lightness steps across the char, dark brown and rust ramps. That is slightly short of Beodeul's 5-6, and a palette of 16 colours supports it. Structure such as the window frames and tyres is muddy at this scale, which keeps it a little below the richest references, but it is not shallow. A careful artist would accept it beside the hedge and the stall without it looking flatter or more sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(top_down_slab) (1/1)",
+    "앞면 2행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(top_down_slab) (1/1)",
+     "앞면 2행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19084
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "charred roof / cabin",
+      "rows": "2-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "hood and trunk (rusty body)",
+      "rows": "7-26",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "flat tyres / wheels",
+      "rows": "26-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 24,
+    "front_face_rows": 3,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The car is drawn in plan view. The roof (gray, rows 2-13), the left and right rusty hood and trunk areas (rows 7-26) and the dark window openings are all seen from directly above. There is no front-edge line or eave shadow, and no distinct vertical south face. Only the dark tyre stubs at rows 27-30 and a thin underside strip suggest any front face, which is under 3-4 rows and not a body face. The silhouette is a wide, nearly rectangular plan-view shape (width 43-48 over rows 7-28), as in the top-down slab example."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate carries 11 visible tones per 16x16 tile. That is above prop-hedge (9) and a little below prop-stall-cheese (17) and prop-well-roofed (20). Near-flat coverage is 0%, so there are no flat fills, and the charred roof and rusty body show mottled grain with scorched and rust patches. The dark edge pixels are 0% neutral, so the outline leans brown or rust rather than being a black sticker line. The candidate uses only 16 distinct colours in total, and I read about 5 lightness steps on the rust and char ramps against roughly 6 on the references. That gives a slight density deficit against the richest references, which suits a burnt, dull wreck. The shape reads as a car body with dark window openings and wheels. Structure, tinted outline and texture are close enough to the references to sit beside them without looking sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(top_down_slab) (1/1)",
+    "윗면/앞면 24/3 — 앞면이 거의 없는 평면도 (1/1)",
+    "맨 위의 큰 부분(13행)이 윗면 없이 세로 면뿐 — 윗끝이 3/4 가 아님 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(top_down_slab) (1/1)",
+     "윗면/앞면 24/3 — 앞면이 거의 없는 평면도 (1/1)",
+     "맨 위의 큰 부분(13행)이 윗면 없이 세로 면뿐 — 윗끝이 3/4 가 아님 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19326
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "east",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "charred roof and cabin with window frames",
+      "rows": "2-18",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "hood and trunk body panels (rusty, scorched)",
+      "rows": "7-27",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "flat tyres",
+      "rows": "27-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 25,
+    "front_face_rows": 2,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The car is drawn in plan view from above. The roof, hood, trunk and window openings fill rows 2-27 as one flat patchwork of rust and char. There is no front-edge line or eave shadow, and no horizontal band separates a top from a vertical south face. The only hint of a south side is the dark flat tyres at rows 28-30, which is about 2-3 rows and not a real front face. The silhouette is a near-constant 48 px wide from rows 13-24, so it reads as a flat slab, not a 3/4 volume."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate shows 11 visible tones per 16x16 tile, above prop-hedge (9) and below the stall (17) and well (20). Near-flat coverage is 0%, so there are no flat fills. The mottled rust and char patches give grain across the roof, hood and body. Dark edge pixels are 0% neutral, so the outline is a dark brown-black tinted to the rusty body rather than a uniform black sticker line. I count about 5 lightness steps on the body ramp (deep char, dark rust, mid rust, light rust, a few highlight flecks), against about 6 for the references. The window frames and flat tyres read as dark shapes separated by value, and the form is readable as a wreck. It is somewhat lower in tone variety and contrast than the stall and well, but it is on par with the hedge and clearly not a flat sticker.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(top_down_slab) (1/1)",
+    "앞면 2행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(top_down_slab) (1/1)",
+     "앞면 2행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16748
+  }
+ ],
+ "decidedAt": "2026-10-22T14:22:06.592Z",
+ "cells": {
+  "16": [
+   "0323b0f827f5a982",
+   "1dbf156af446f2a7",
+   "6b895fdc1947c376",
+   "9888113eb6b174d0",
+   "a3bb5eec04fdda01",
+   "f7cee99e26bfd328"
+  ],
+  "24": [
+   "0c399179274a354e",
+   "62c826cee92dfd47",
+   "63852cd0b51e2c4e",
+   "6e89fca19e6fccd7",
+   "a88af4e1cb3d9d4e",
+   "ce5b08b95ae0d6e0",
+   "dab40191a4317d4a",
+   "e7ac2e9ec45f14ec"
+  ],
+  "32": [
+   "785977be926da3c5",
+   "7c1e3f9b20a587f3",
+   "81a8c4517f1d2bd5",
+   "8595d26dadc2b286",
+   "ac6add0bdf32a848",
+   "f3afc20f3f0287c6"
+  ],
+  "48": [
+   "c6a9327b22eae3b5",
+   "fb9c4f788b9686ef"
+  ]
+ }
+}

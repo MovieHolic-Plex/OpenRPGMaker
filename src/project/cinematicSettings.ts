@@ -40,6 +40,8 @@ export type EndingPresentation = {
   badge?: string;
   /** 마지막 장의 큰 글자. 비우면 「끝」, 막·장 끝 엔딩(id 에 act1·chapter2)이면 「제1막 끝」 — 게임 언어. */
   finalTitle?: string;
+  /** 엔딩 CG 위에 엔딩 상대·주인공 전신 초상을 세울지. 비우면(auto) 호감 엔딩에 세운다. none = 배경 그림에 두 사람이 이미 그려진 결말 그림일 때(초상이 겹쳐 두 번 나온다). */
+  portraits?: "auto" | "none";
 };
 
 export type GameOverOutcome = "menu" | "recover" | "title";

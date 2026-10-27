@@ -49,6 +49,8 @@ export const THEME_SCENES: readonly ThemeScene[] = [
     about: "성하 마을·여관 거리·무사 저택·성·절·마을", keywords: ["센고쿠", "에도", "사무라이", "무사", "닌자", "sengoku", "edo", "samurai"] },
   { id: "sf_station", label: "SF 정거장", tilesetId: "sf_station", tool: "compose_sf_station_map", styleParam: "kind", styles: ["station", "street", "lab", "moonbase"], defaultStyle: "station",
     about: "우주 정거장·거리·연구소·달 기지", keywords: ["우주", "정거장", "sf", "sci-fi", "station", "moonbase", "달 기지"] },
+  { id: "wasteland", label: "폐허·황무지", tilesetId: "wasteland_ruins", tool: "compose_wasteland_map", styleParam: "kind", styles: ["settlement", "ruined-city", "shanty"], defaultStyle: "settlement",
+    about: "포스트아포칼립스 생존자 정착지·좀비 폐허 도시·황무지 판잣집 촌", keywords: ["폐허", "아포칼립스", "종말", "좀비", "황무지", "판잣집", "wasteland", "apocalypse", "zombie", "ruins"] },
   { id: "modern_city", label: "현대 도시 거리", tilesetId: "modern_city", tool: "compose_modern_city_street",
     about: "현대 도시 상점 거리", keywords: ["현대", "도심", "modern", "city street", "빌딩"] },
   { id: "campus", label: "캠퍼스", tilesetId: "modern_campus", tool: "compose_campus_grounds", styleParam: "style", styles: ["school", "university"], defaultStyle: "school",

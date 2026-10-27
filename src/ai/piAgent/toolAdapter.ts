@@ -50,6 +50,8 @@ export interface PiToolShape {
   readonly parameters: unknown;
   /** Pi core schedules shared calls together and treats exclusive calls as ordered barriers. */
   readonly concurrency?: "shared" | "exclusive";
+  /** true 면 코어가 스키마 불일치에도 원래 인자를 넘긴다 — 실행기의 인자 고치기 층(argRepair)이 직접 검증한다. */
+  readonly lenientArgValidation?: boolean;
   execute(toolCallId: string, params: unknown, signal?: AbortSignal): Promise<PiToolExecResult>;
 }
 

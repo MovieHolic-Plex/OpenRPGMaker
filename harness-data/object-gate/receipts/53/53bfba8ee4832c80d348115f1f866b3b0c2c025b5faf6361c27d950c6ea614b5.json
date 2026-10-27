@@ -1,0 +1,377 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "53bfba8ee4832c80d348115f1f866b3b0c2c025b5faf6361c27d950c6ea614b5",
+ "width": 16,
+ "height": 32,
+ "kind": "other",
+ "name": "세로 입간판 「약국」",
+ "label": "modern_city/street-kr/mc-prop-kr-sign-pharm",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 투영이 3/4 아님(front_elevation) (4/4)",
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)",
+  "3/4: 윗면 0행 < 3 (3/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "투영이 3/4 아님(front_elevation) (4/4)",
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)",
+   "윗면 0행 < 3 (3/4)"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "bus-shelter-a",
+   "kiosk-a",
+   "vending-a"
+  ],
+  "scale": 2,
+  "score": 7,
+  "refSet": {
+   "id": "modern_city",
+   "chipset": "modern_city",
+   "fallback": false,
+   "hash": "dc20de17343e77e8"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 10,
+  "tileColorsP90": 10,
+  "darkV5": 37,
+  "nearBlackEdge": 1,
+  "opaqueTiles": 2
+ },
+ "eye": {
+  "verdicts": [
+   "borderline",
+   "borderline",
+   "right",
+   "borderline",
+   "right",
+   "right",
+   "right",
+   "right",
+   "borderline",
+   "right",
+   "borderline",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top header cap with white label",
+      "rows": "0-5",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "green sign panel with white Hangul text",
+      "rows": "6-26",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "bottom base cap",
+      "rows": "27-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 31,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The whole sign is a face-on vertical panel. The top header (rows 1-5) is a front-facing gray block with a white label oval. Width goes 8, 14, 16, then 14, so it is a flat-bottomed hat on a 14-wide body, not an ellipse. There is no front-edge line or eave shadow, only a dark outline at row 6. The green panel (rows 7-26) and the base cap (rows 27-31) are also vertical faces with no horizontal surface visible, so nothing reads as a top and the object is front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a vertical green capsule sign with a lighter panel and a cross/text glyph. It has about 5 lightness steps across the green body, panel and trim, and shows a highlight edge and a darker side shade. Its dark edge pixels are tinted dark teal-green, not neutral (0% near-neutral, matching all three references), so the outline is a dark material tone. Near-flat coverage is 0%, against 9% for bus-shelter-a. It has 10 visible tones per tile, above bus-shelter-a (6) and just under kiosk-a (12), but below vending-a (20). That puts it slightly below the richest reference, which is acceptable for a thin single-tile sign. The panel and glyph break up the surface, so there are no flat fills. A careful artist would accept it next to these shipped references without it looking like a flat sticker.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 0행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 0행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15497
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "gray header cap with a light plate in the middle",
+      "rows": "0-5",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "green sign board with white vertical lettering",
+      "rows": "6-27",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dark base strip",
+      "rows": "27-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 30,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The sign is a flat vertical panel drawn face-on. The gray header at rows 1-5 is a front-facing strip. Its width profile goes 8, 14, 16, 16, 16, then 14, so it does not narrow again, and no ellipse forms. It has no front-edge line and no eave shadow below it (row 6 is just the dark outline). The green board (rows 6-26) carries white lettering, which is a vertical face. The base at rows 27-31 is also a face-on strip, and row 31 narrows to 8 only as an outline. No row shows a horizontal surface seen from above, so the main body has no top, only a front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a narrow vertical sign, one tile wide, with a dark green body, a lighter panel and a light cross/text glyph. It shows 10 visible tones per tile, above bus-shelter-a (6) and below kiosk-a (12) and vending-a (20). Near-flat coverage is 0%, so no 5x5 area is a flat fill, and the panel has a glyph and highlight edge breaking it up. The dark edge pixels are 0% neutral, so the outline leans dark green and matches the adjacent material, as in the references, rather than a black sticker line. The body ramp is about 4 steps (highlight, mid, dark, deep) against about 5 in the references, which is a little shallower, but this is a thin single-tile prop and sits acceptably next to the shipped modern_city pieces.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 0행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 0행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 13380
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top header cap with white label",
+      "rows": "0-5",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "green sign board with white vertical lettering",
+      "rows": "7-26",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dark base foot",
+      "rows": "27-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 25,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The sign is a tall front-facing panel. The header at rows 0-5 is a gray strip whose width goes 8, 14, 16, 16, 16, 14. Its top edge is only slightly rounded and its bottom edge is flat against the dark outline at row 6, so it reads as a hat or label strip, not an ellipse. Row 6 is a 1-row outline, not a front-edge line with eave shadow. The green board (rows 7-26) carries white vertical lettering and is a flat vertical face. Rows 27-31 are a dark base. There is no band with an edge line, no ellipse, no roof plane and no visible contents, so no horizontal top surface shows anywhere. Width stays constant at 14 from rows 5-30, so no side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a vertical standing sign with a dark teal-green frame, a lighter green panel and pale lettering. It has about 5 lightness steps across the frame, panel and highlight edge, similar to the bus shelter and kiosk. The outline is a dark teal-green that leans toward the neighbouring material, matching the measured 0% near-neutral dark edge pixels, so it is not a black sticker line. The measured 10 visible tones per tile sit between bus-shelter-a (6) and kiosk-a (12), below vending-a (20). Near-flat coverage is 0%, lower than bus-shelter-a (9%) and equal to kiosk-a and vending-a, so there are no flat fills. The panel is broken up by the lettering and shading, and the frame has edge highlights. It is a little simpler than vending-a but at the level of the other shipped modern_city props, so it would sit acceptably next to them.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 0행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 0행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 14800
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top header cap (grey plate with a white highlight)",
+      "rows": "1-5",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "green sign board with vertical white lettering",
+      "rows": "7-26",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dark base foot",
+      "rows": "27-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 1,
+    "front_face_rows": 25,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "This is a tall standing signboard seen face-on. The width profile (0:8, 1:14, 2-4:16, 5-30:14, 31:8) is rounded at the top and bottom edges only. The grey header at rows 1-5 is a hat-like frame. Its bottom edge (row 5, width 14) sits flat on a body of the same width, so it does not narrow again and is not an ellipse. Its columns (x=4 uniform L=113; x=8 a white highlight at rows 2-4) look like a front-facing plate or label. Row 6 is a uniform dark outline (L=17) across all columns. It is a frame divider, not a lighter or darker front-edge line followed by eave shadow. The green board (rows 7-26) has white glyph strokes and no horizontal surface. The base at rows 27-31 is a dark frame, also drawn face-on. No row band shows a top surface, so the object is a flat front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a vertical green sign with a dark green-teal outline, a lighter inner panel, a highlight edge on the capsule frame and a mid/dark side. The outline is tinted to match the green body, not neutral black. The measured near-neutral share of dark edge pixels is 0%, the same as all three references. It has 10 visible tones per tile, which sits between bus-shelter-a (6) and kiosk-a (12) and below vending-a (20). Near-flat coverage is 0%, so there are no large flat fills. The lettering and symbol panel add detail inside the sign. It shows about 5 lightness steps on the frame and panel, matching the references' ramp depth. It is a little less dense than the richest reference, but a thin standing sign is sparse by nature. A careful artist would accept it beside the shipped modern_city pieces without it looking flatter or more sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 1행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 1행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19102
+  }
+ ],
+ "decidedAt": "2026-10-24T14:39:12.589Z",
+ "cells": {
+  "16": [
+   "239c8b0731de6336",
+   "4e9e2c001f116a94"
+  ],
+  "24": [
+   "0aaf6c8e7633d4ad",
+   "157e61d243cdb1ab",
+   "313e029eb7281476",
+   "3558447028b9d334",
+   "64ba29e6bc1bf27f",
+   "6a37a4dced211fdb",
+   "77901dfeb207be50",
+   "8a8fcd4b374b0d0e",
+   "a06be01594ab3673",
+   "b959ca7c59367164",
+   "e330f6ae748a0a43",
+   "e77952d673b43332"
+  ],
+  "32": [
+   "8a1764e6d5cefc0e",
+   "b64e481d63e45bc3",
+   "b73639cfebcd21b1"
+  ],
+  "48": [
+   "29cf9ee5b1ad4b03",
+   "2eecaba5868901f4",
+   "34b858716c4b90b4",
+   "80b10f18990bdc16",
+   "916a08f80d680b3e",
+   "baec2b8ba3d155fe"
+  ]
+ }
+}

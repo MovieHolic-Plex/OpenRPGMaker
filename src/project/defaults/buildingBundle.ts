@@ -11,6 +11,20 @@ export interface BuildingCatalog{count:number;priority:unknown[];passability:unk
 export interface BuildingBundleConfig{
  tilesetId:string;texture:string;name:string;label:string;catalog:BuildingCatalog;references:unknown;
  hostTilesetId:string;hostTexture:string;ids:{house:string;shadow:string;foundation:string;docs:string};tags:string[];
+ /** 허용 출처 문구(없으면 「사람이 허용」). building-kit massing 은 사용자 위임 + 독립 검수 둘 + object-gate. */
+ approval?:{tag:string;text:string};
+}
+
+/**
+ * 판이 바뀌어 count 가 줄거나 늘면 tileMeta 도 같은 길이로 맞춘다(되읽기 validateTileset 은 «길이 == count»).
+ * 이 시트들은 tileMeta 를 싣지 않지만 편집기가 빈 칸으로 채워 저장해 둔 옛 프로젝트가 있다 — 실측(2026-10-25):
+ * #3514 가 beodeul_massing 을 1392→1184 칸으로 줄이자 count 만 따라가고 tileMeta 1392 가 남아 저장이 「tileMeta 길이 불일치」로 막혔다.
+ */
+export function fitTileMetaToCount(ts:TilesetDef):boolean{
+ const meta=ts.tileMeta;if(!meta||meta.length===ts.count)return false;
+ if(meta.length>ts.count)ts.tileMeta=meta.slice(0,ts.count);
+ else ts.tileMeta=[...meta,...Array.from({length:ts.count-meta.length},()=>({label:'',description:''}))];
+ return true;
 }
 
 export function defineBuildingBundle(cfg:BuildingBundleConfig){
@@ -22,8 +36,8 @@ export function defineBuildingBundle(cfg:BuildingBundleConfig){
  function createTileset():TilesetDef{
   const structureKits:StructureKitDef[]=catalog.buildings.map(b=>({id:b.id,name:b.name,kind:'section',learnedFrom:'pack-preset',
    width:b.width,height:b.height,tileSize:16,rows:b.rows.map(r=>({tiles:r.map(()=>-1),upperTiles:[...r]})),parts:structuredClone(b.parts) as StructureKitDef['parts'],
-   ai:{role:'building',repeatability:'fixed',layerHome:'upper',tags:[...cfg.tags,'사람이 허용',b.material==='log'?'통나무':'목골·돌','문 1개'],
-    description:`${b.name}. 사람이 검수 화면에서 허용한 그림(${b.source}). 집당 한 입구, 벽은 막히고 지붕 처마는 걸을 수 있다.`,
+   ai:{role:'building',repeatability:'fixed',layerHome:'upper',tags:[...cfg.tags,cfg.approval?.tag??'사람이 허용',b.material==='log'?'통나무':'목골·돌','문 1개'],
+    description:`${b.name}. ${cfg.approval?.text??'사람이 검수 화면에서 허용한 그림'}(${b.source}). 집당 한 입구, 벽은 막히고 지붕 처마는 걸을 수 있다.`,
     placementRules:`전체 ${b.width}×${b.height}와 문 앞 접근칸(문 아래 한 칸)을 예약한다. 같은 키트를 연속으로 놓지 말고 크기·지붕을 섞는다. ${ids.shadow}${kidOf(b.id)}를 2층, 본체를 3층, ${ids.foundation}${kidOf(b.id)}를 4층에 같은 원점으로 함께 놓는다.`}}));
   for(const b of catalog.buildings)for(const [kind,rows] of [['shadow',b.shadowRows],['foundation',b.foundationRows]] as const){
    structureKits.push({id:`${kind==='shadow'?ids.shadow:ids.foundation}${kidOf(b.id)}`,name:`${b.name} · ${kind==='shadow'?'바닥 그림자':'기초'}`,kind:'section',learnedFrom:'pack-preset',
@@ -38,6 +52,7 @@ export function defineBuildingBundle(cfg:BuildingBundleConfig){
   if(ts.id!==cfg.tilesetId||ts.image.id!==cfg.texture)return false;
   const fresh=createTileset();let changed=false;
   for(const key of ['count','priority','passability','terrain'] as const)if(JSON.stringify(ts[key])!==JSON.stringify(fresh[key])){(ts as any)[key]=fresh[key];changed=true;}
+  if(fitTileMetaToCount(ts))changed=true;
   const kits=ts.structureKits??=[];
   for(const k of fresh.structureKits!){const at=kits.findIndex(old=>old.id===k.id);if(at<0){kits.push(k);changed=true;}else if(JSON.stringify(kits[at])!==JSON.stringify(k)){kits[at]=k;changed=true;}}
   // a building removed from the catalog must not linger as a placeable kit

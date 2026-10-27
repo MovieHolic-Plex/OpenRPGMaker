@@ -951,6 +951,19 @@ revision 16 기와 변경은 사용자 지적을 오해한 것이며 철회했�
 - monster: catacomb·castle·sewer·mine 일체 / 마른 동굴 안 물·용암 조각 / 유적 신전 안쪽 칸막이 / 화산 제단·보스 연출 / 얼음 판 퍼즐 문.
 - stub 칩셋: 고딕(지하 벽·석관·감방) · 조선(동굴 벽 앞면·천장·바닥) · 마법 학교(지하 감옥 오토타일) · 해적(동굴 천장·물웅덩이) · 선사(동굴 일체·용암) · 사막동양(지하 무덤 일체) · 그 밖(던전 조각 일체).
 
+## 마당 바닥 오토타일 (2026-10-23, village-art)
+
+- **오토타일 셋:** `beodeul_yard_cobble`(자갈) · `beodeul_yard_dirt`(다진 흙) · `beodeul_yard_flag`(판석).
+  - 위치: 시트 줄 259, `BEODEUL_YARD_BASE` = 33152, 칸 33152~33222(던전 주제 꼬리 30,848~33,151 바로 뒤). 2026-10-24 main 의 던전 gap(29,568~)·주제(30,848~) 꼬리와 겹쳐 29,568 에서 옮겼다(이전 판의 마당 칸 번호는 main 에 나간 적이 없다).
+  - 한 면은 21칸이다: 몸 8, 변 4, 모서리 4, 외딴 1, 안쪽 모서리 4. 자갈·판석은 변 칸이 둘씩 있다.
+- **굽기:** 시트 순서 성벽(`bake_wall.py`) → 던전 gap(`bake_gap.py --from-store`) → 던전 주제(`bake_theme.py`) → 마당(`bake_yard.py`). `bake_theme.py` 가 끝에서 `bake_yard.py` 를 잇는다. 마당 꼬리는 두 행 33,152~33,407(마당 셋 71칸, 포도나무 줄 16칸 33,223~, 판석→흙 가장자리 129칸 33,239~), 시트 33,408칸.
+- **이식 칸 이동:** 기존 사본의 이식 칸은 `relocateLocalTail` 이 새 번들 끝(`beodeulCitySheet.count`) 뒤로 민다. 증명: `scripts/qa/beodeul-graft-relocation-proof.mts`(옛 증명 28800→29696 은 마당이 29,568 이던 판의 기록이다).
+  - 증명: `scripts/qa/beodeul-graft-relocation-proof.mts`. 기존 프로젝트 사본으로 이동 후 모든 맵이 화소까지 같음을 보였다.
+- **배선:** `src/project/defaults/beodeulCity.ts` 의 `mergeShippedFarm(…, withYard)` · `mergeShippedKits(…, withYard)`.
+  - 타일 묶음은 `beodeul:yard_*`, 견본 킷은 `bd-yard-*-sample` 이다.
+- **쓰는 곳:** `dress_village_quarter` 의 temple-ruins(판석) · mining · vineyard(다진 흙) 마당. `author_beodeul_town({quarter})` 가 빌더 `yard` 옵션으로 마당 자리를 먼저 비운다(다른 마을은 옵션이 없어 그대로). 규칙은 `openwiki/editor-ai-tools.md` 「마을 종류 표」 절에 있다.
+- **검수 증거:** `tiledata/beodeul-yard/_gate/`
+
 ## 자연 기물 beodeul_organic (2026-10-24) — 숲·들판의 바위·덤불·통나무·버섯·들꽃·고사리·풀·이끼 돌·고목·사당 돌
 
 버들항 B1 활엽 숲(낙성 숲 화풍) 나무 사이에 놓는 자연 기물 37종. 버들항 잠금 팔레트(원본 키트에서 뽑은 137색) 코드 손 도트다. 생성 이미지·object-gen 은 쓰지 않았다.

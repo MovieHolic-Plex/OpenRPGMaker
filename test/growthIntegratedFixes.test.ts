@@ -99,7 +99,9 @@ it.each([
   expect(applied).toHaveLength(1);
   expect(applied[0]).toMatchObject({ fromLevel, toLevel, maxHpGain: 10, learnedSkillIds: ['B-skill'] });
   expect(snapshot.rewards.levelUps).toEqual(applied);
-  expect(session.actorSkillIds[actor.id]).toContain('B-skill');
+  // #3370 부터 직업 습득표 기술은 세션 목록에 넣지 않고(직업을 바꾸면 따라 바뀐다) 직업에서 다시 센다 — 소유 기술로 본다.
+  expect(session.actorSkillIds[actor.id] ?? []).not.toContain('B-skill');
+  expect(actorOwnedSkillIds(project, session, actor.id)).toContain('B-skill');
   expect(session.actorVitals[actor.id]?.hp).toBe(beforeHp + 10);
 });
 
@@ -109,7 +111,9 @@ it('R2 keeps authored initial levels authoritative without party or session-stat
   if (!troop) throw new Error('troop missing');
   project.system.battleFlow = 'strict';
   actor.parameterCurves.maxHp = Array.from({ length: 99 }, (_, i) => 100 + i);
-  const earnedExp = totalExpForLevel(actor.expCurve, 3);
+  // 경험치 바닥(#3234): 시작 레벨 3 배우는 세션 경험치 0 이어도 레벨 3 바닥에서 센다 — 바닥 + 보상이 레벨 4 문턱에 한 점 못 미치게 준다.
+  const floorExp = totalExpForLevel(actor.expCurve, 3);
+  const earnedExp = totalExpForLevel(actor.expCurve, 4) - floorExp - 1;
   for (const enemy of project.database.enemies) enemy.rewards.exp = earnedExp;
   troop.battleEventPages = [{
     id: 'default-growth', name: 'default-growth', span: 'battle',
@@ -130,7 +134,7 @@ it('R2 keeps authored initial levels authoritative without party or session-stat
   expect(initial.eventState.actorLevels?.[actor.id]).toBe(3);
   expect(snapshot.eventState.actorLevels?.[actor.id]).toBe(3);
   expect(session.actorLevels[actor.id]).toBe(3);
-  expect(session.actorExperience[actor.id]).toBe(earnedExp);
+  expect(session.actorExperience[actor.id]).toBe(floorExp + earnedExp);
 });
 
 it.each(['lowered rank', 'deleted node', 'invalid override', 'unchanged'] as const)('R3 restores effective growth maxima without healing after %s', change => {

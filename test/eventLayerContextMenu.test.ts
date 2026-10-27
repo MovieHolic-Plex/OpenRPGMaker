@@ -1,5 +1,8 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { setStartMap } from "@/editor/actions";
+import { editorState } from "@/editor/editorState";
+import { getMapEditHistoryEntries, resetMapEditHistory } from "@/editor/mapEditHistory";
+import { openNewEventEditorModal } from "@/editor/panels/eventEditor/modal";
 import {
   clearEventLayerClipboard,
   eventLayerContextMenuItems,
@@ -7,12 +10,15 @@ import {
 } from "@/editor/panels/eventLayerContextMenu";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
-import type { GameEvent } from "@/project/types";
+import type { EventPage, GameEvent } from "@/project/types";
+import { toast } from "@/util/toast";
 
 vi.mock("@/editor/panels/eventEditor/modal", () => ({
   openEventEditorModal: vi.fn(),
   openNewEventEditorModal: vi.fn(() => "event-new"),
 }));
+
+vi.mock("@/util/toast", () => ({ toast: vi.fn() }));
 
 describe("event layer context menu", () => {
   let target: EventLayerContextMenuTarget;
@@ -140,4 +146,95 @@ describe("event layer context menu", () => {
     eventLayerContextMenuItems(sourceTarget).find((item) => item.id === "delete")?.action();
     expect(store.getCurrent().maps[target.mapId].events.some((item) => item.id === event.id)).toBe(false);
   });
+
+  it("refuses to paste an event onto a cell another event already covers", () => {
+    resetMapEditHistory();
+    const source = sampleEvent("event-source", 1, 1);
+    const occupant = sampleEvent("event-occupant", target.x, target.y);
+    store.update((project) => {
+      project.maps[target.mapId]?.events.push(source, occupant);
+    });
+    editorState.set({ selectedEventId: source.id });
+    eventLayerContextMenuItems({ ...target, x: 1, y: 1 }).find((item) => item.id === "copy")?.action();
+
+    eventLayerContextMenuItems(target).find((item) => item.id === "paste")?.action();
+
+    const events = store.getCurrent().maps[target.mapId].events;
+    expect(events.map((item) => item.id)).toEqual([source.id, occupant.id]);
+    expect(editorState.get().selectedEventId).toBe(source.id);
+    expect(getMapEditHistoryEntries()).toHaveLength(0);
+    expect(toast).toHaveBeenCalledWith("이미 다른 이벤트가 있는 칸입니다.", "error");
+  });
+
+  it("refuses to paste onto the non-anchor cell of a taller event", () => {
+    resetMapEditHistory();
+    const source = sampleEvent("event-source", 1, 1);
+    const tall = sampleEvent("event-tall", target.x, target.y + 1, { width: 1, height: 2 });
+    store.update((project) => {
+      project.maps[target.mapId]?.events.push(source, tall);
+    });
+    eventLayerContextMenuItems({ ...target, x: 1, y: 1 }).find((item) => item.id === "copy")?.action();
+
+    eventLayerContextMenuItems(target).find((item) => item.id === "paste")?.action();
+
+    expect(store.getCurrent().maps[target.mapId].events.map((item) => item.id)).toEqual([source.id, tall.id]);
+    expect(getMapEditHistoryEntries()).toHaveLength(0);
+  });
+
+  it("refuses a wide paste whose body would cover a neighbor, and still pastes when the body is clear", () => {
+    resetMapEditHistory();
+    const source = sampleEvent("event-wide", 1, 1, { width: 3, height: 1 });
+    const neighbor = sampleEvent("event-neighbor", target.x + 1, target.y);
+    store.update((project) => {
+      project.maps[target.mapId]?.events.push(source, neighbor);
+    });
+    eventLayerContextMenuItems({ ...target, x: 1, y: 1 }).find((item) => item.id === "copy")?.action();
+
+    eventLayerContextMenuItems(target).find((item) => item.id === "paste")?.action();
+    expect(store.getCurrent().maps[target.mapId].events.map((item) => item.id)).toEqual([source.id, neighbor.id]);
+
+    const clearTarget = { ...target, x: target.x, y: target.y + 3 };
+    eventLayerContextMenuItems(clearTarget).find((item) => item.id === "paste")?.action();
+    const pasted = store.getCurrent().maps[target.mapId].events.find((item) => item.x === clearTarget.x && item.y === clearTarget.y);
+    expect(pasted?.id).not.toBe(source.id);
+    expect(pasted?.pages?.[0]?.footprint).toEqual({ width: 3, height: 1 });
+    expect(getMapEditHistoryEntries()).toHaveLength(1);
+  });
+
+  it("does not create a second event on a cell that is already covered", () => {
+    const occupant = sampleEvent("event-occupant", target.x, target.y + 1, { width: 1, height: 2 });
+    store.update((project) => {
+      project.maps[target.mapId]?.events.push(occupant);
+    });
+    const items = eventLayerContextMenuItems(target);
+
+    items.find((item) => item.id === "create-event")?.action();
+    items.find((item) => item.id === "create-transfer-event")?.action();
+    items.find((item) => item.id === "vehicle-start")?.action();
+
+    expect(openNewEventEditorModal).not.toHaveBeenCalled();
+    expect(store.getCurrent().maps[target.mapId].events.map((item) => item.id)).toEqual([occupant.id]);
+  });
 });
+
+function sampleEvent(id: string, x: number, y: number, footprint?: { width: number; height: number }): GameEvent {
+  const page: EventPage = {
+    id: `${id}-page`,
+    name: id,
+    conditions: [],
+    graphic: {},
+    trigger: { kind: "action" },
+    priority: "same",
+    movement: { type: "fixed", speed: 3, frequency: 3 },
+    commands: [{ kind: "text", body: id }],
+    ...(footprint ? { footprint } : {}),
+  };
+  return {
+    id,
+    x,
+    y,
+    trigger: { kind: "action" },
+    commands: [],
+    pages: [page],
+  };
+}

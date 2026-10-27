@@ -55,7 +55,7 @@ describe("store preserves open event drafts across autosave", () => {
     expect(store.getCurrent().characters?.["autosave-npc"]).toBeUndefined();
     saveEventDraft(mapId, eventId);
     expect(store.getCurrent().characters?.["autosave-npc"]?.displayName).toBe("Staged name");
-  });
+  }, 60_000);
 
   it("keeps a new event draft after map-patch save returns a draft-stripped project", async () => {
     const { store } = await import("@/project/store");
@@ -77,5 +77,7 @@ describe("store preserves open event drafts across autosave", () => {
     expect(kept?.draft?.kind).toBe("new");
     expect(kept?.x).toBe(8);
     expect(kept?.y).toBe(9);
-  });
+    // 빈 프로젝트(약 63MB) 복제·지문·map-patch 저장이 CI 러너에서 15s 근처다(ci-full 40280643391: 15.3s 통과,
+    // 40318900099: 15s 초과). 기본 15s 는 경계라 흔들린다.
+  }, 60_000);
 });

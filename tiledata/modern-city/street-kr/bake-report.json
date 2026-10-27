@@ -1,0 +1,24 @@
+{
+ "gate": {
+  "prov": 9,
+  "blocked": 0
+ },
+ "count_before": 13814,
+ "count_after": 13831,
+ "owned_cells": 17,
+ "kits": [
+  "mc-prop-kr-exit-1",
+  "mc-prop-kr-exit-2",
+  "mc-prop-kr-exit-3",
+  "mc-prop-kr-exit-4",
+  "mc-prop-kr-sign-cafe",
+  "mc-prop-kr-sign-conv",
+  "mc-prop-kr-sign-food",
+  "mc-prop-kr-sign-pharm",
+  "mc-prop-kr-tree-grate"
+ ],
+ "sheet": [
+  768,
+  4624
+ ]
+}

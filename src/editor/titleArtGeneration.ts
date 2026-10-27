@@ -3,6 +3,7 @@
 // 연결(set_title_screen)은 호출자가 기존 쓰기 툴로 해 diff·제안 회계를 그대로 탄다.
 import { pixelizeOpeningImage } from "./openingImageGeneration";
 import { generateAiImage, ImageGenerationError, type GenerateAiImageRequest, type GeneratedImageAsset } from "@/ai/imageGenerationClient";
+import { imageFailureNextStep } from "./imageGenerationFallback";
 import { buildTitleArtPrompt, prepareTitleArtRequest, type TitleArtRequest } from "@/editor/tools/titleArtTools";
 import { fitTitleArtEffects, type TitleArtFitResult } from "@/editor/titleArtFitting";
 import { ToolError } from "@/editor/tools/types";
@@ -76,7 +77,7 @@ export async function generateTitleArt(
   } catch (error) {
     if (error instanceof DOMException && error.name === "AbortError") throw error;
     const reason = error instanceof ImageGenerationError || error instanceof Error ? error.message : String(error);
-    return { ok: false, summary: `타이틀 키아트 생성에 실패했습니다: ${reason}`, code: "image-generation-failed" };
+    return { ok: false, summary: `타이틀 키아트 생성에 실패했습니다: ${reason} ${imageFailureNextStep("title", request.prompt, error)}`, code: "image-generation-failed" };
   }
 }
 

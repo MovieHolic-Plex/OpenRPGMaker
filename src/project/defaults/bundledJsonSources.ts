@@ -13,6 +13,7 @@ import wizardingWorldTileset from "@/assets/wizardingWorldTileset.json";
 import gothicManorTileset from "@/assets/gothicManorTileset.json";
 import pirateIslesTileset from "@/assets/pirateIslesTileset.json";
 import sfStationTileset from "@/assets/sfStationTileset.json";
+import wastelandRuinsTileset from "@/assets/wastelandRuinsTileset.json";
 import sengokuEdoTileset from "@/assets/sengokuEdoTileset.json";
 import modernCampusTileset from "@/assets/modernCampusTileset.json";
 import steampunkCityTileset from "@/assets/steampunkCityTileset.json";
@@ -31,6 +32,7 @@ const ALL = {
   gothicManorTileset,
   pirateIslesTileset,
   sfStationTileset,
+  wastelandRuinsTileset,
   sengokuEdoTileset,
   modernCampusTileset,
   steampunkCityTileset,

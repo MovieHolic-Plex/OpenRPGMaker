@@ -1,0 +1,337 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "69d2024740265c9509ef90207cbcd63fc9cb3a7dfbabe5981f2c8165f53f6614",
+ "width": 16,
+ "height": 16,
+ "kind": "round_body",
+ "name": "stack of old worn tyres seen from above: top tyre ring with a dark hole, stacked tread sides below",
+ "label": "wasteland_ruins/tyres",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 칸 정보량이 기준보다 훨씬 낮음 (4/4)",
+  "화풍: 명암 3단 < 4 (2/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "칸 정보량이 기준보다 훨씬 낮음 (4/4)",
+   "명암 3단 < 4 (2/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 4
+ },
+ "metrics": {
+  "tileColorsMedian": 6,
+  "tileColorsP90": 6,
+  "darkV5": 32,
+  "nearBlackEdge": 0.38,
+  "opaqueTiles": 1
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top tyre ring with dark hole",
+      "rows": "1-10",
+      "evidence": "b",
+      "front_edge_line_row": 11,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stacked tyre tread sides",
+      "rows": "11-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 10,
+    "front_face_rows": 5,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The top tyre is drawn as a ring with a dark hole. The width profile grows from 9 at row 1 to 15 by row 4 and stays near 15 through row 11. Column x=8 shows ring rows 2-3, hole rows 4-6 and lower ring rows 7-10. A dark front-edge line at row 11 follows. Below it, rows 12-15 are tread sides of about 4 rows, so there is a clear front face. The lower rim is fairly flat rather than a full ellipse, but the 10-row top with its hole still reads as a top surface seen from above, over a front face of 3+ rows."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a small, dark grey tyre stack with only 6 raw colours and 5 visible tones per tile. The comparable references show 9 (hedge), 17 (cheese stall) and 20 (roofed well). Its dark edge pixels are 0% neutral, so the outline is tinted rather than a black sticker line, and there are no flat 5x5 fills. But the tyre ring, hole and stacked tread sides are built from about 4 lightness steps with almost no grain, no per-tread highlights and no wear or dirt speckle. Beodeul pieces use 5-6 steps with clustered texture, so the candidate reads as simple and flat beside them. Per-tile information is roughly half the hedge's and a quarter of the well's, so it would look thinner than the references. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 16668
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top tyre ring with dark hole",
+      "rows": "1-10",
+      "evidence": "a",
+      "front_edge_line_row": 11,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stacked tread sides",
+      "rows": "12-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 10,
+    "front_face_rows": 4,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-10 form the top tyre disc. The width grows 9, 11, 13, 15 over rows 1-4. A dark hole spans rows 4-7, with the column scan at x=8 dark over rows 4-6. A brown ring surrounds the hole, at x=4 and x=11 in rows 2-10. Row 11 is a dark line (L=17) across all scanned columns, and it works as the front-edge line. Rows 12-15 are the tread-side front face (4 rows), widening to 16 and darkening toward the bottom. The silhouette does not narrow again at the bottom of the top disc, only at the upper corners, so the ellipse is weak. The ring, hole and front-edge line still give a clear top surface above a front face of 3 or more rows."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 5,
+    "evidence": "The candidate is a small, roughly one-tile object with only 6 distinct colours in total and 5 visible tones per tile. The comparable references carry 9 (hedge), 17 (stall) and 20 (well) visible tones per tile, so it is far below them. Its dark edge pixels are 0% neutral, so the outline leans cool and tinted rather than pure black. That is better than a sticker outline, but it does not make up for the shallow shading. The tyre ring, hole and stacked tread sides get only about 4 lightness steps against roughly 6 on the references. There are no per-tyre rubber grain dots, wear marks or cracks, and the tread bands look like simple banded fills. Near-flat coverage is 0%, so no large flat fills, but the piece still reads as simpler and flatter than the references. A careful artist would likely want more texture and tonal variety next to the well or stall.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 17484
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top tyre ring with dark hole (ellipse top)",
+      "rows": "1-10",
+      "evidence": "b",
+      "front_edge_line_row": 11,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stacked tyre tread sides",
+      "rows": "12-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 10,
+    "front_face_rows": 4,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The width profile grows from 9 at row 1 to 15 by rows 4-6, with a small notch to 13 at row 7. That shape is an ellipse-like top, and the dark hole (x=8, rows 4-6) sits inside a lighter ring (rows 2-3 above it, rows 7-10 below it). A dark front-edge line at row 11 closes the top. Below it, rows 12-15 are the tread-side front face, with a dark line at row 15. The top is about 10 rows and the front face 4 rows, so it reads as a top surface over a front face, like the green barrel reference."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a tiny stack of tyres, smaller than one tile, with only 6 distinct colours in total. Visible tones per tile is 5, against 9 for the hedge, 17 for the cheese stall and 20 for the well. The measured tone count is also low because the piece is small. By eye the tyre ring shows only about 3 grey steps: a dark hole, a mid ring and a light rim highlight. The tread sides below look like a flat grey with a dark band. The edge pixels are tinted (0% neutral), so the outline is not a uniform black line, but it reads as a simple dark shape with little grain. There is almost no tread texture, wear, rubber speckle or per-tyre shading, so it looks flatter and more sticker-like than the well, stall and hedge. The wooden bench and lamp are sparse too, but they still carry more shaded detail. The candidate has no large flat areas (0% near-flat), but it is clearly thinner than the references. A careful artist would not accept it beside the well or hedge without more steps and texture.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 17048
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top tyre ring with dark hole (ellipse)",
+      "rows": "1-10",
+      "evidence": "b",
+      "front_edge_line_row": 11,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stacked tyre tread sides (front face)",
+      "rows": "12-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 10,
+    "front_face_rows": 4,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The width profile grows from 9 at row 1 to 15 at rows 4-6, with a slight pinch to 13 at row 7, and stays at 15 through row 11. This forms a rounded top ellipse of about 10 rows. Inside it is a lighter tyre ring around a dark hole (rows 4-6), which also shows the opening. Row 11 is a dark line (#091125) that works as the front rim edge. Below it are about 3 rows of tread side (rows 12-14, L about 59) and an outline at row 15. The top is a clear tall ellipse and the front face has 3+ rows, so it matches the green barrel reference (ellipse top), not the 2-row lid."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a small grey-black tyre stack of about 16x16 px with only 6 raw colours and 5 visible tones per tile. That is well under the well (20), the cheese stall (17) and the hedge (9). The measured near-flat coverage is 0%, but that is because the piece is tiny. By eye the tyre body is mostly dark with a thin lighter rim and a hole, so it reads as 2-3 shading steps with no tread grain, no wear marks and no per-tyre highlights. The tread sides below the top ring are not clearly separated into individual tyres. The dark edge pixels carry 0% neutral share, so the outline is tinted, but the dark body and outline blend together and give a silhouette-with-fill look rather than Beodeul's material-toned shading. Next to the hedge, well and stall it looks thinner, flatter and more sticker-like than the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 15263
+  }
+ ],
+ "decidedAt": "2026-10-22T14:22:07.033Z",
+ "cells": {
+  "16": [
+   "4970c85ce5829639"
+  ],
+  "24": [
+   "0b27054bc37ce5ce",
+   "88c061fc0861d7df",
+   "977ee6a8e1b862c3",
+   "c44f830feea8c831",
+   "e068a10c73af4117",
+   "fa240423288f8b7d"
+  ],
+  "32": [
+   "5977a6ad1d3e478d",
+   "b5c7764a446f7edc",
+   "c91298e2ce66469c",
+   "cb99526df324fa05",
+   "eb32414f0a69f322",
+   "fee1c11efd2fcc7f"
+  ],
+  "48": [
+   "432f6f5fd29eb828",
+   "7dc1eb67b3a32be5",
+   "7fdc5c9c21fad115",
+   "98682485c681194c",
+   "a0aa900087e9db05",
+   "f85c1b9573626848"
+  ]
+ }
+}

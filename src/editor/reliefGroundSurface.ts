@@ -13,7 +13,7 @@ export interface GroundRaster { readonly width: number; readonly height: number;
 const reliefStore = store as Pick<typeof store, "getCurrent"> & Partial<Pick<typeof store, "getVersionToken" | "subscribe">>;
 const cellCaches = new WeakMap<object, WeakMap<TilesetDef, Map<string, Uint8ClampedArray>>>();
 const imageRasters = new WeakMap<object, GroundRaster>();
-const isImage = (image: unknown): image is HTMLImageElement | HTMLCanvasElement | ImageBitmap => typeof document !== "undefined" && (image instanceof HTMLImageElement || image instanceof HTMLCanvasElement || typeof ImageBitmap !== "undefined" && image instanceof ImageBitmap);
+const isImage = (image: unknown): image is HTMLImageElement | HTMLCanvasElement | ImageBitmap => typeof document !== "undefined" && (typeof HTMLImageElement !== "undefined" && image instanceof HTMLImageElement || typeof HTMLCanvasElement !== "undefined" && image instanceof HTMLCanvasElement || typeof ImageBitmap !== "undefined" && image instanceof ImageBitmap);
 
 /** Editor writes (including shallow in-place writers, undo and replacement) all
  * publish the store generation. Uncommitted inputs keep content verification.

@@ -1,0 +1,274 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "0c0c53720fe64977fd706a6421292b5810162b280b7f727a667d753ac5b37fec",
+ "width": 64,
+ "height": 48,
+ "kind": "terrain",
+ "name": "cracked old concrete slab floor tile",
+ "label": "wasteland_ruins/slab-a",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (3/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (3/4)"
+  ],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 5
+ },
+ "metrics": {
+  "tileColorsMedian": 6,
+  "tileColorsP90": 6,
+  "darkV5": 81,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 12
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cracked concrete slab floor tiles (4x3 repeat of a 16px tile with dark grout lines)",
+      "rows": "0-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 48,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The image is a flat, seamless floor texture. The silhouette is 64 px wide on every row from 0 to 47, so it is a full rectangle. Columns x=16 and x=32 are one uniform dark run over rows 0-47. Column x=47 alternates 1 dark grout row (rows 0, 16, 32) with 15 rows of gray-brown slab, which is the repeating 16px tile grid. Each tile has a light bevel line on its top and left edges and a diagonal crack pattern. There is no front-edge line, no eave shadow, no ellipse and no south face, so no front face rows are drawn. It is a top-down ground surface, which fits the terrain kind."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate shows 6 visible tones per tile, against 7 for the paving reference and 3 for the grass reference. Near-flat coverage is 0%, the same as both references, so there are no big flat fills. Its dark edge pixels are 0% neutral, so the outline carries a tint and is not a black sticker line. The slab shows a light bevel, mid-tone speckle and a darker tinted edge, which gives about 5 shading steps against roughly 6 for the references. Weaknesses: the slabs repeat identically, the cracks are faint, and the per-tile frame looks a little boxy. These are modest, and the piece is at or near the references on the primary facts, so it passes.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16071
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cracked concrete slab floor (4x3 grid of 16px tiles separated by 1px dark grout lines)",
+      "rows": "0-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 48,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "This is a flat, seamless floor texture, not a standing object. The column scan at x=47 repeats a 1-row grout line (L=71) and a 15-row slab (L=116) every 16 rows. At x=16 and x=32 the scan shows one uniform run over rows 0-47. The silhouette is a full 64 px wide on every row. No front face, eave, edge line, ellipse or side face is drawn. The light top and left rows and the darker bottom rows of each slab are a bevel on a flat paving stone, not a vertical face. The slab is seen straight down with a crack pattern, so it reads as a top-down slab, which is expected for a terrain tile."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The measured facts are acceptable: 6 visible tones per tile against 7 for the paving reference, 0% near-flat coverage, and tinted dark edges (0% neutral). By eye the candidate is weaker than the paving reference. Each 16x16 tile is an identical bevelled grey slab with a dark frame, so the 4x3 patch reads as a grid of stamped stickers rather than one continuous floor. The shading is shallow: a light bevel edge, a mid fill, a few darker speckles and short crack marks give about 4 clear steps, where the reference has about 6. The crack and grain marks are sparse and small, and the slab faces are mostly one mid-grey with light speckle. The paving reference shades stones one by one and has irregular joints that run across tile boundaries. The candidate has no variation between neighbouring tiles and no cracks that continue across them. It is close to the reference on raw counts but a careful artist would see it as flatter and more repetitive, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 15839
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cracked concrete floor tile (repeated 4x3 in the sheet, 16px each)",
+      "rows": "0-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The image is a flat, seamless ground texture: 12 identical 16x16 tiles separated by 1-row dark grout lines at rows 0, 16, 32 (column x=47 scan: 15-row stone runs between single dark rows). Each tile has a light bevel on its top and left edges and a crack pattern drawn straight on. There is no front-edge line followed by eave shadow, no ellipse, no roof or awning and no visible contents. There is also no vertical south face of 3 or more rows: the 15-row runs are repeated tiles seen from above, not a front face. The silhouette is a constant 64 wide on every row. This is a top-down terrain tile with no front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The measured facts are close to the paving reference: 6 visible tones per tile against 7, 0% near-flat coverage, and 0% neutral dark edge pixels, so the edges are tinted rather than near-black. By eye, though, it reads as a 4x3 grid of identical bevelled slabs, each with a light rim and a dark gap, so it looks like repeated buttons or stickers. The interior is mostly one mid grey with sparse speckle, and I see no clear crack lines, which the 'cracked old concrete' name calls for. It has about 4 effective shading steps (rim highlight, face, speckle, gap) against the paving reference's 6, which shades each stone separately and carries its joints across tiles. The grid repetition and the missing cracks leave it a step below the reference, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 17463
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "concrete slab floor tiles (3 rows x 4 columns of flat slabs separated by 1-row dark grooves)",
+      "rows": "1-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 15,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "This is a terrain floor tile. The silhouette is 64 px wide on every row from 0 to 47, so it fills the full frame with no standing volume. The column scan at x=47 shows 15-row light slab runs (rows 1-15, 17-31, 33-47) separated by single dark groove rows (0, 16, 32). Each slab is a flat face seen from above, with a light bevel on the top and left and a few cracks drawn as diagonal light and dark pixels. No front face of 3 or more rows, no eave shadow, no ellipse and no side face is drawn, so it reads as a flat top-down slab. That is expected for a ground tile."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate's measured facts are acceptable. It has 6 visible tones per tile against 7 for the paving reference, 0% near-flat coverage, and tinted rather than neutral dark edges. By eye it is still shallower than the paving reference. It is one beveled slab repeated identically 12 times, with a dark seam grid and a light top-left bevel, so it reads as a stamped sticker rather than a continuous worn floor. The shading is about 4 steps (bevel light, mid body, speckle, dark edge) against the reference's 6, which include per-stone shading and irregular light slab edges. Texture is only a few sparse speckle dots. The 'cracked' and 'old' character is barely present, with no real crack lines or chipped areas. The repetition is obvious and nothing breaks it up, unlike the reference's varied layout. A careful artist would not accept it next to the reference without it looking thinner and flatter.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 16990
+  }
+ ],
+ "decidedAt": "2026-10-22T15:08:30.295Z",
+ "cells": {
+  "16": [
+   "95f3ea94f3f460e2"
+  ],
+  "24": [
+   "1e40a24e05f31979",
+   "7b08f53bb5511eae",
+   "82da8c30ccfece3a",
+   "8af246919223e01a",
+   "a52b8c3431fa6da9",
+   "b31f3eb60b02d662",
+   "b6b8126b7a089370",
+   "cefa0b47014be9e4",
+   "dec6b6a6723983a4",
+   "e7757b2e95ec6ec1",
+   "f45209b8f8868106",
+   "fd44e8a94b0807e9",
+   "fd6a89a54bf24234",
+   "ff25e1dd7c9f14ca"
+  ],
+  "32": [
+   "3c59c0ebd59df066",
+   "e02d9ca069431146",
+   "fa7224ca2595c471"
+  ],
+  "48": [
+   "0091f2d08789bc8b",
+   "0a9e3dbcfd3c2a87",
+   "231a278b435bfe37",
+   "9d8dd8c3f6a69fda",
+   "e9d9296d63f0d08c"
+  ]
+ }
+}

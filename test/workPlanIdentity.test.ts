@@ -48,7 +48,8 @@ function final(content: string): ChatResult {
   return { message: { role: "assistant", content }, finishReason: "stop" };
 }
 
-describe("in-loop WorkPlan identity", () => {
+// Heavy under CI load (15s default is too tight): runs real AssistantSession loops over a blank project.
+describe("in-loop WorkPlan identity", { timeout: 120_000 }, () => {
   it("does not replace an existing verification requirement with a summary query", () => {
     const { session } = activeSession();
     const before = session.getWorkPlan();

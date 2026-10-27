@@ -1,5 +1,5 @@
 import { BattleAdmissionError } from "@/project/battleAdmission";
-import type { Project } from "@/project/types";
+import type { Project, EndingContinueTo } from "@/project/types";
 import { getPlayerPreferences } from "@/player/playerPreferences";
 import { playCinematicSequence } from "@/player/cinematicSequence";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
@@ -20,6 +20,7 @@ import type { FaceGraphic } from "@/project/types";
 import { sharedPortraitRendering } from "@/assets/sharedPortraitAssets";
 import { vnUiText, type VnUiKey } from "@/player/vnExtrasStrings";
 import { vnExtrasLanguage } from "@/project/vnExtras";
+import { endingSummaryText } from "@/project/endingSummary";
 
 /** 엔딩 화면 글자 — 게임 언어(편집기 언어가 아니다: 저작 vnExtras·대사 시스템 언어, 없으면 ko)로 고른다. */
 function endingText(key: VnUiKey, ...args: readonly (string | number)[]): string {
@@ -363,7 +364,7 @@ function endingFigure(project: Project, face: FaceGraphic, role: "hero" | "partn
 function buildEndingCg(terminal: TerminalScene, project: Project, presentation: EndingPresentation | undefined, endingId: string | undefined): EndingCg | undefined {
   const ending = endingId ? project.endings?.find((entry) => entry.id === endingId) : undefined;
   const partnerKey = ending?.conditions.find((condition) => condition.kind === "friendshipAtLeast" && condition.npcKey !== ANY_FRIENDSHIP_KEY);
-  const couple = resolveEndingCouplePortraits(project, partnerKey?.kind === "friendshipAtLeast" ? partnerKey.npcKey : undefined);
+  const couple = presentation?.portraits === "none" ? {} as ReturnType<typeof resolveEndingCouplePortraits> : resolveEndingCouplePortraits(project, partnerKey?.kind === "friendshipAtLeast" ? partnerKey.npcKey : undefined);
   const backdropId = endingBackdropResourceId(project, presentation);
   const backdropUrl = backdropId ? resolveAssetResourceUrl(backdropId, { project }) : null;
   const partnerFigure = couple.partner && endingFigure(project, couple.partner, "partner");
@@ -399,15 +400,8 @@ function buildEndingCg(terminal: TerminalScene, project: Project, presentation: 
     layer.append(pair);
   }
   layer.append(textNode("div", "ending-cg-frame", ""));
-  const epilogue = (ending?.epilogue ?? [])
-    // 말한 사람이 있는 줄은 이름을 붙인다 — 이름 없이 존댓말·반말 두 줄이 붙으면 누가 한 말인지 모른다.
-    .map((beat) => {
-      const text = typeof beat.text === "string" ? beat.text.trim() : "";
-      const speaker = "speaker" in beat && typeof beat.speaker === "string" ? beat.speaker.trim() : "";
-      return text && speaker ? `${speaker}: ${text}` : text;
-    })
-    .filter(Boolean)
-    .join("\n");
+  // 카드는 내레이션 — 말한 사람이 있는 줄은 「이름: …」 대본이 아니라 「」 인용으로 보인다(J36).
+  const epilogue = endingSummaryText(ending?.epilogue ?? []);
   return { layer, mode: partnerFigure ? "couple" : "scene", badge: endingBadge(endingId, Boolean(partnerFigure), presentation), epilogue };
 }
 
@@ -455,7 +449,7 @@ function fitOneLine(element: HTMLElement, from: number, to: number, unit: string
   element.style.whiteSpace = "";
 }
 
-export function showEndingScreen(scene: PlaySceneContext, title: string, message: string, presentation?: EndingPresentation, endingId?: string): void {
+export function showEndingScreen(scene: PlaySceneContext, title: string, message: string, presentation?: EndingPresentation, endingId?: string, continueTo?: EndingContinueTo): void {
   const terminal = createTerminalScene(scene, "ending", title || endingText("ending.heading"));
   if (!terminal) return;
   terminal.root.dataset.tone = presentation?.tone ?? "warm";
@@ -534,7 +528,10 @@ export function showEndingScreen(scene: PlaySceneContext, title: string, message
     if (summary) meta.append(textNode("div", "ending-final-summary", summary));
     final.append(meta);
     const actions = textNode("div", "game-over-actions", "");
-    const button = terminalButton("return-title", endingText("ending.returnTitle"), () => { void exitTerminal(terminal, () => scene.returnToTitle()); });
+    // 다음 막으로 이어지는 엔딩 — 타이틀 대신 그 맵으로 옮겨 이야기를 잇는다(EndingDef.continueTo).
+    const button = continueTo
+      ? terminalButton("continue-next", continueTo.label || endingText("ending.nextAct"), () => { void exitTerminal(terminal, () => { void scene.transferTo({ mapId: continueTo.mapId, x: continueTo.x, y: continueTo.y, direction: continueTo.direction ?? "down", fade: "black" }); }); })
+      : terminalButton("return-title", endingText("ending.returnTitle"), () => { void exitTerminal(terminal, () => scene.returnToTitle()); });
     actions.append(button); final.append(actions); terminal.root.append(final);
     const fitFinal = (): void => {
       if (!final.isConnected || terminal.root.dataset.monsterStyle === "emerald") return;

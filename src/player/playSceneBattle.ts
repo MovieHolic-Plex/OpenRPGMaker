@@ -371,7 +371,7 @@ export async function playBattle(
                   exitBattleAudio(project, session, savedAudio);
                 }
                 applyBattleRewardsToSession(session,
-                  { result, canLose: snapshot.canLose, rewards: snapshot.rewards, actors: [...snapshot.actors, ...snapshot.reserveActors], eventState: snapshot.eventState, capturedMonsters: terminalDefeat ? [] : snapshot.capturedMonsters, participatingActorIds: snapshot.participatingActorIds, monsterPartyMode }, project);
+                  { result, canLose: snapshot.canLose, rewards: snapshot.rewards, actors: [...snapshot.actors, ...snapshot.reserveActors].filter((actor) => !snapshot.guestActorIds?.includes(actor.recordId)), eventState: snapshot.eventState, capturedMonsters: terminalDefeat ? [] : snapshot.capturedMonsters, participatingActorIds: snapshot.participatingActorIds, monsterPartyMode }, project);
                 if (!terminalDefeat && scene.runtimeTimers) {
                   applyBattleTimerWrites({ session, runtimeTimers: scene.runtimeTimers }, snapshot.eventState);
                 }

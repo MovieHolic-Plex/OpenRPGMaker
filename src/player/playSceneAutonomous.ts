@@ -1,5 +1,8 @@
 import { mapTileSize } from "@/project/tileGeometry";
 import { npcMoveDurationMs } from "@/project/characterMotion";
+import { fieldApproachPauseAfter, fieldApproachRecipe } from "@/project/fieldApproachStyle";
+import { jumpHop } from "@/player/characterHop";
+import type { Dir } from "@/project/types";
 import { actionFieldSlow } from "./actionFieldSlow";
 import { isDetectionEmoting } from "./npcDetectionEncounter";
 import { pursuitTarget } from "./horrorRuntime";
@@ -29,6 +32,7 @@ import { detourAroundPlayer, sidestepForPlayer } from "@/player/commandRouteDeto
 import { startPlayerRoute } from "@/player/playerRouteState";
 import { applySpriteAlpha, setNpcIdleFrame, setNpcWalkFrame } from "@/player/playSceneAutonomousSprites";
 import { nextChaseDecision } from "@/player/chaseAi";
+import { tickChaseSpawnGrace } from "@/player/chaseSpawnGrace";
 import { strollChainPending, strollPauseScale, wanderCommand } from "@/player/npcStroll";
 import { followerOccupiesTile } from "@/player/playSceneFollowers";
 import { nextSessionRandom } from "@/project/session";
@@ -45,6 +49,8 @@ export function updateAutonomousNPCs(scene: AutonomousNpcSceneContext, frameDelt
 
 function updateAutonomousNPCsInPass(scene: AutonomousNpcSceneContext, frameDeltaMs: number): void {
   const project = store.getCurrent();
+  // 시작·복귀 직후 은총 시간에는 추격자가 제자리에서 기다린다(시야 판정·접촉 없음, J61).
+  const spawnGrace = tickChaseSpawnGrace(scene, frameDeltaMs);
   const repathCandidates: LivingRepathCandidate[] = [];
   for (const [eventId, mover] of scene.autonomousNPCs) {
     const deltaMs = frameDeltaMs * (actionFieldSlow.get(mover) ?? 1);
@@ -74,6 +80,7 @@ function updateAutonomousNPCsInPass(scene: AutonomousNpcSceneContext, frameDelta
     } else {
       mover.carryMs = 0;
     }
+    if (mover.strategy === "chase" && spawnGrace && !mover.chaseTarget) continue;
     if (mover.strategy === "chase") {
       // 순찰+추격: 경로가 있고 추격 중이 아니면 아래 순찰(sequence) 처리로 흘려보낸다.
       const patrol = mover.moves.length > 0 && !mover.chaseTarget && !mover.actionFrozen
@@ -347,6 +354,7 @@ function updateChaseNpc(
     : pursuitTarget({ project, map: scene.map, session: scene.session, positions: scene.eventPositions }, view, mover, deltaMs);
   const sightAlert = view.movement.sightAlert;
   const lunge = view.movement.chaseLunge;
+  const approach = fieldApproachRecipe(view.movement.approachStyle);
   const seenBefore = mover.alertSeen === true;
   if (sightAlert && !mover.chaseTarget && holdForSightAlert(scene, eventId, mover, sightAlert, tracked, deltaMs)) {
     // 덮치기(movement.chaseLunge)는 놀람 멈춤이 끝나는 순간부터 센다.
@@ -366,6 +374,10 @@ function updateChaseNpc(
   // 덮치는 동안은 걸음 사이 쉼 없이 바로 다음 칸으로.
   const lunging = (mover.lungeLeft ?? 0) > 0 && lunge !== undefined;
   if (lunging) mover.timer = Math.max(mover.timer, mover.moveIntervalMs);
+  // 다가오는 방식: 추격 중 칸 사이 쉼은 방식이 정한다(질주·육중은 쉬지 않음, 도약은 두 칸 뒤 웅크림, 통통은 매 칸 짧게).
+  const styled = approach !== undefined && !mover.chaseTarget && tracked !== undefined && tracked !== null && !tracked.searching;
+  if (styled && !lunging) mover.timer = Math.max(mover.timer, mover.moveIntervalMs - (mover.approachPauseMs ?? 0));
+  if (!styled) { mover.approachStep = 0; mover.approachPauseMs = 0; }
   const pursuit = mover.chaseTarget ?? tracked ?? { x: scene.tileX, y: scene.tileY };
   const targetEvent = mover.chaseTarget
     ? findBlockingEventOverlappingRect(project, scene.map, scene.session, scene.eventPositions,
@@ -379,7 +391,7 @@ function updateChaseNpc(
     deltaMs,
     mover,
     sightRange: tracked ? undefined : mover.sightRange,
-    giveUpRange: tracked ? undefined : mover.giveUpRange,
+    giveUpRange: tracked ? undefined : mover.giveUpRange !== undefined && approach?.giveUpBonus ? mover.giveUpRange + approach.giveUpBonus : mover.giveUpRange,
     pathfind: mover.pathfind,
     kite: mover.kite,
     requestRepath: () => requestChaseRepath(scene, mover),
@@ -391,6 +403,16 @@ function updateChaseNpc(
   if (decision.kind === "wait") {
     setNpcIdleFrame(sprite, baseFrame, mover.facing, view.animationType, mover.animationEnabled);
     return;
+  }
+  // 들쭉날쭉(박쥐): 가끔 옆 칸으로 샌다 — 막혔으면 그대로 다가온다.
+  if (styled && approach?.erratic && decision.kind === "move" && nextSessionRandom(scene.session, "movement") < approach.erratic) {
+    const horizontal = decision.dir === "left" || decision.dir === "right";
+    const side: Dir = horizontal ? (nextSessionRandom(scene.session, "movement") < 0.5 ? "up" : "down") : (nextSessionRandom(scene.session, "movement") < 0.5 ? "left" : "right");
+    const d = side === "up" ? { x: 0, y: -1 } : side === "down" ? { x: 0, y: 1 } : side === "left" ? { x: -1, y: 0 } : { x: 1, y: 0 };
+    const to = { x: view.x + d.x, y: view.y + d.y };
+    if (!isPlayerOccupyingTile(scene, to.x, to.y) && canNpcMove({ project, scene, mover, eventId, from: { x: view.x, y: view.y }, to }, { ...d, face: side })) {
+      decision = { kind: "move", x: to.x, y: to.y, dir: side };
+    }
   }
   const frameDir = applyFacing(mover, decision.dir);
   if (decision.kind === "touch") {
@@ -428,9 +450,22 @@ function updateChaseNpc(
     return;
   }
   moveAutonomousRuntimePosition(scene, eventId, decision.x, decision.y, frameDir);
+  const lungeMs = lunging ? Math.min(npcMoveDurationMs(lunge!.speed), styled && approach?.lungeStepMs ? approach.lungeStepMs : Infinity) : undefined;
+  const stepMs = lungeMs ?? (styled ? approach!.stepMs : undefined);
+  const tile = mapTileSize(scene.map);
+  const stepIndex = mover.approachStep ?? 0;
   mover.activeMove = { fromX: view.x, fromY: view.y, toX: decision.x, toY: decision.y, dir: frameDir, baseFrame, elapsedMs: 0,
-    ...(lunging ? { durationMs: npcMoveDurationMs(lunge!.speed) } : {}) };
+    ...(stepMs !== undefined ? { durationMs: stepMs } : {}),
+    ...(styled && approach?.hop ? { hop: jumpHop({ heightPx: approach.hop * tile, durationMs: stepMs ?? approach.stepMs, impact: false }) } : {}),
+    ...(styled && (approach?.sway || approach?.bob) ? { approach: {
+      sway: approach.sway ?? 0, bob: approach.bob ?? 0,
+      sign: approach.erratic ? (nextSessionRandom(scene.session, "movement") < 0.5 ? -1 : 1) : stepIndex % 2 === 0 ? 1 : -1,
+    } } : {}) };
   if (lunging) mover.lungeLeft = (mover.lungeLeft ?? 1) - 1;
+  if (styled) {
+    mover.approachStep = stepIndex + 1;
+    mover.approachPauseMs = lunging ? 0 : fieldApproachPauseAfter(approach!, stepIndex);
+  }
   if (sprite) {
     sprite.setPosition(footprintSpriteX(view.x, view.footprint, mapTileSize(scene.map)), characterSpriteY(view.y, mapTileSize(scene.map)));
     updateCharacterDepth(sprite, view.priority);
@@ -489,6 +524,14 @@ function updateActiveNpcMove(target: ActiveNpcMoveTarget, deltaMs: number): void
     const groundX = footprintSpriteX(lerp(move.fromX, move.toX, progress), footprint, mapTileSize(scene.map));
     const groundY = characterSpriteY(lerp(move.fromY, move.toY, progress), mapTileSize(scene.map));
     sprite.setPosition(groundX, groundY);
+    if (move.approach && !hop) {
+      // 다가오는 몸짓: 진행 방향과 수직으로 흔들리고(S자·급강하), 칸마다 둥실/쿵 하고 오르내린다.
+      const tile = mapTileSize(scene.map);
+      const arc = Math.sin(progress * Math.PI);
+      const sway = move.approach.sway * tile * arc * move.approach.sign;
+      const horizontal = move.dir === "left" || move.dir === "right";
+      sprite.setPosition(groundX + (horizontal ? 0 : sway), groundY + (horizontal ? sway : 0) - move.approach.bob * tile * arc);
+    }
     updateCharacterDepth(sprite, priority);
     applySpriteAlpha(sprite, mover.opacity);
     // 체공 중에는 걸음을 돌리지 않는다 — 공중에서 발을 젓는 모양이 된다.

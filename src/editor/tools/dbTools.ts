@@ -36,7 +36,7 @@ import { retitlePlaceholderOpening } from "@/project/defaults/defaultOpeningSequ
 import { normalizeActorRecord } from "@/project/actorModel";
 import { reconcileSharedFaceWithCharset as reconcileFaceWithCharset } from "@/project/sharedCharacterFaceResolver";
 import { normalizeEnemyRecord, normalizeTroopRecord } from "@/project/databaseEnemyTroopRecordModel";
-import { MAX_TITLE_BACKGROUND_LAYERS, normalizeClassRecord, normalizeEquipmentRecord, normalizeItemRecord, normalizeSkillRecord, normalizeStateRecord, normalizeTypeChart } from "@/project/databaseRecordModel";
+import { COMBO_MAX_ACTORS, MAX_TITLE_BACKGROUND_LAYERS, MAX_TITLE_RUNNERS, normalizeTitlePressStart, normalizeTitleRunners, normalizeClassRecord, normalizeEquipmentRecord, normalizeItemRecord, normalizeSkillRecord, normalizeStateRecord, normalizeTypeChart } from "@/project/databaseRecordModel";
 import { normalizeCropRecord } from "@/project/farmModel";
 import { monsterBattleStatsForSpecies, monsterSkillIdsAtLevel, monsterSpeciesById, normalizeMonsterSpeciesRecord } from "@/project/monsterCollection";
 import { collectResourceIds } from "@/project/io/resourceReferenceValidation";
@@ -837,7 +837,7 @@ const skillRecordSchema = objectSchema({
   },
   unforgettable: { type: "boolean", description: "잊을 수 없는 기술(비전머신 HM): 몬스터의 기술 교체 후보에서 빠진다. false 면 해제. 필드 기술(절단·파도타기)에 쓴다" },
   comboActorIds: stringArraySchema(
-    "연계기(듀얼·트리플 테크) 참가 배우 2~3명. 전원이 참전·생존·준비 상태여야 메뉴에 열리고, 각자 mpCost 와 턴을 소비한다. 멤버는 따로 배우지 않아도 된다. 빈 배열이면 해제",
+    "연계기(듀얼·트리플·4인 테크) 참가 배우 2~4명. 전원이 참전·생존·준비 상태여야 메뉴에 열리고, 각자 mpCost 와 턴을 소비한다. 멤버는 따로 배우지 않아도 된다. 빈 배열이면 해제",
   ),
   comboRequires: {
     type: "array",
@@ -856,7 +856,7 @@ const skillRecordSchema = objectSchema({
   comboStaging: objectSchema(
     {
       tint: { type: "string", description: "번쩍임·오라·제목 색 #rrggbb(생략 = 속성 색)" },
-      shake: { type: "string", enum: ["none", "light", "heavy"], description: "착탄 흔들림(생략 = 트리플 heavy · 듀얼 light)" },
+      shake: { type: "string", enum: ["none", "light", "heavy"], description: "착탄 흔들림(생략 = 셋 이상 heavy · 듀얼 light)" },
       slowMo: booleanSchema("착탄 순간 느린 화면(생략 = 켜기)"),
       kicker: { type: "string", description: "제목 카드 위 작은 글(예: 「듀얼 테크」). 생략 = 인원수로" },
     },
@@ -941,6 +941,16 @@ const skillRecordSchema = objectSchema({
   },
   chargeTurns: integerSchema(
     "힘 모으기 1~3(0=바로 발동). 고른 차례엔 「…을 준비한다!」 예고만 하고 자기 차례가 N 번 더 오면 발동한다. 적이 쓰면 보스 대기술 예고. 한 차례를 버리므로 위력을 1.6~1.8배로",
+  ),
+  chargeBreak: objectSchema(
+    {
+      damage: integerSchema("모으는 동안 받은 HP 피해 누계가 이 값 이상이면 끊긴다(예 300)"),
+      elementIds: stringArraySchema("이 속성 id 기술에 맞으면 끊긴다(database.elements id, 1~8)"),
+      stateIds: stringArraySchema("이 상태가 걸리면 끊긴다(상태 id 1~8, 예 기절·침묵)"),
+      message: stringSchema("끊겼을 때 시전자가 하는 한 줄(예 「송신 실패」). 생략 = 「…이 끊겼다!」 시스템 문장만"),
+      stagger: booleanSchema("끊긴 뒤 다음 자기 차례 하나를 휘청거려 쉰다(적만, 기본 true). false = 바로 다시 행동"),
+    },
+    "충전 끊기(chargeTurns 가 있을 때만): 모으는 동안 damage 이상 맞거나 elementIds 속성·stateIds 상태를 맞으면 모으던 기술이 취소된다(조건은 「또는」). 모으는 중엔 머리 위 「기술 · 남은 차례」 표식, 끊기면 「끊김!」 글자 + 시스템 문장 + message. simulate_battle 의 chargeBreaks 로 끊긴 횟수를 확인한다. 해제 = null",
   ),
   summonResourceId: stringSchema(
     '소환 그림(retro2003 도트 연출): 파티원 도트 시트 id "party-pixel-<칩>"(예 party-pixel-monster2-4 흙 골렘, party-pixel-monster3-6 업화, party-pixel-animal-7 사자). 시전하면 그 몬스터가 시전자 앞에 나타나 대상에게 달려가 첫 타에 맞춰 친다. 그림만 — 위력·타수·상태는 이 스킬 값. 시전자 motion 은 cast 가 어울린다. 빈 문자열이면 해제',
@@ -1538,8 +1548,8 @@ function validateSkillTechPatch(draft: Project, patch: unknown): void {
       throw new ToolError("skill.comboActorIds 는 배우 id 문자열 배열이어야 합니다. 예: [\"actor_hero\", \"actor_mage\"]", { code: "invalid-combo-actors" });
     }
     const unique = [...new Set((ids as string[]).map((id) => id.trim()))];
-    if (unique.length > 0 && (unique.length < 2 || unique.length > 3)) {
-      throw new ToolError(`skill.comboActorIds 는 서로 다른 배우 2~3명이어야 합니다(받은 ${unique.length}명). 해제하려면 빈 배열을 주세요.`, { code: "invalid-combo-actors" });
+    if (unique.length > 0 && (unique.length < 2 || unique.length > COMBO_MAX_ACTORS)) {
+      throw new ToolError(`skill.comboActorIds 는 서로 다른 배우 2~${COMBO_MAX_ACTORS}명이어야 합니다(받은 ${unique.length}명). 해제하려면 빈 배열을 주세요.`, { code: "invalid-combo-actors" });
     }
     const missing = unique.filter((id) => !draft.database.actors.some((actor) => actor.id === id));
     if (missing.length > 0) {
@@ -1593,6 +1603,30 @@ function validateSkillTechPatch(draft: Project, patch: unknown): void {
     const missing = (exploit.stateIds as unknown[]).filter((id) => typeof id !== "string" || !draft.database.states.some((state) => state.id === id));
     if (missing.length > 0) {
       throw new ToolError(`exploitStates.stateIds 에 없는 상태: ${missing.map(String).join(", ")} — 허용 예시: ${knownIds(draft.database.states)}`, { code: "state-not-found" });
+    }
+  }
+  if (record.chargeBreak !== undefined && record.chargeBreak !== null) {
+    const rule = record.chargeBreak as Record<string, unknown>;
+    const allowed = ["damage", "elementIds", "stateIds", "message", "stagger"];
+    const unknownKeys = rule && typeof rule === "object" && !Array.isArray(rule) ? Object.keys(rule).filter((key) => !allowed.includes(key)) : ["(객체 아님)"];
+    const hasCondition = unknownKeys.length === 0 && ((typeof rule.damage === "number" && rule.damage >= 1)
+      || (Array.isArray(rule.elementIds) && rule.elementIds.length > 0) || (Array.isArray(rule.stateIds) && rule.stateIds.length > 0));
+    if (!hasCondition) {
+      throw new ToolError(`skill.chargeBreak 는 {damage?:1 이상, elementIds?:[속성 id], stateIds?:[상태 id], message?, stagger?} 이고 조건(damage·elementIds·stateIds) 하나 이상이 필요합니다${unknownKeys.length ? `(모르는 키: ${unknownKeys.join(", ")})` : ""}. 예: {damage:300, message:"송신 실패"}`, { code: "invalid-charge-break" });
+    }
+    const chargeTurns = typeof record.chargeTurns === "number" ? record.chargeTurns
+      : typeof record.id === "string" ? draft.database.skills.find((skill) => skill.id === record.id)?.chargeTurns : undefined;
+    if (!chargeTurns || chargeTurns < 1) {
+      throw new ToolError("skill.chargeBreak 는 힘 모으기 기술에만 붙습니다 — chargeTurns(1~3)를 같이 주세요. 예: {chargeTurns:3, chargeBreak:{damage:300}}", { code: "invalid-charge-break" });
+    }
+    const missingStates = (Array.isArray(rule.stateIds) ? rule.stateIds : []).filter((id) => typeof id !== "string" || !draft.database.states.some((state) => state.id === id));
+    if (missingStates.length > 0) {
+      throw new ToolError(`chargeBreak.stateIds 에 없는 상태: ${missingStates.map(String).join(", ")} — 허용 예시: ${knownIds(draft.database.states)}`, { code: "state-not-found" });
+    }
+    const elements = draft.database.elements ?? [];
+    const missingElements = (Array.isArray(rule.elementIds) ? rule.elementIds : []).filter((id) => typeof id !== "string" || !elements.some((element) => element.id === id));
+    if (missingElements.length > 0) {
+      throw new ToolError(`chargeBreak.elementIds 에 없는 속성: ${missingElements.map(String).join(", ")} — 있는 속성: ${elements.map((element) => element.id).slice(0, 12).join(", ") || "없음"}`, { code: "element-not-found" });
     }
   }
   if (typeof record.comboSwitchId === "string" && record.comboSwitchId.trim()) {
@@ -2560,8 +2594,12 @@ function parseTitleBackgroundLayers(value: unknown): TitleBackgroundLayer[] {
     const scrollYPerSec = optionalNumber("scrollYPerSec");
     const parallax = optionalNumber("parallax");
     const opacity = optionalNumber("opacity");
+    if (layer.fit !== undefined && layer.fit !== "tile" && layer.fit !== "cover") {
+      throw new ToolError(`backgroundLayers[${index}].fit 은 "tile" 또는 "cover" 입니다.`, { code: "invalid-args" });
+    }
     return {
       resourceId,
+      ...(layer.fit === "cover" ? { fit: "cover" as const } : {}),
       ...(scrollXPerSec !== undefined ? { scrollXPerSec: Math.max(-480, Math.min(480, scrollXPerSec)) } : {}),
       ...(scrollYPerSec !== undefined ? { scrollYPerSec: Math.max(-480, Math.min(480, scrollYPerSec)) } : {}),
       ...(parallax !== undefined ? { parallax: Math.max(0, Math.min(4, parallax)) } : {}),
@@ -2581,7 +2619,7 @@ function registerTitleLayerResourceIds(draft: Project, layers: readonly TitleBac
   }
 }
 
-const TITLE_PARTICLE_PRESETS = ["snow", "rain", "fireflies"] as const;
+const TITLE_PARTICLE_PRESETS = ["snow", "rain", "fireflies", "stars"] as const;
 
 function parseTitleParticles(value: unknown): TitleParticleSettings {
   if (!value || typeof value !== "object" || Array.isArray(value)) {
@@ -2589,7 +2627,7 @@ function parseTitleParticles(value: unknown): TitleParticleSettings {
   }
   const particles = value as Record<string, unknown>;
   const preset = particles.preset;
-  if (preset !== "snow" && preset !== "rain" && preset !== "fireflies") {
+  if (preset !== "snow" && preset !== "rain" && preset !== "fireflies" && preset !== "stars") {
     throw new ToolError(`particles.preset은 ${TITLE_PARTICLE_PRESETS.join(", ")} 중 하나여야 합니다.`, { code: "invalid-args" });
   }
   const density = particles.density;
@@ -2642,7 +2680,7 @@ function parseTitleIntro(value: unknown): TitleIntroSettings {
  * 「참조 검증 실패 … backgroundResourceId 가 존재하지 않습니다」 로 **변경 전체**를 되돌려 제목·음악까지 날아갔다
  * (추리 도그푸딩 gen: 지어낸 easyrpg-backdrop-room-1).
  */
-function requireTitleResource(draft: Project, field: string, id: string, kind: "picture" | "bgm"): string {
+function requireTitleResource(draft: Project, field: string, id: string, kind: "picture" | "bgm" | "charset"): string {
   const known = collectResourceIds(draft);
   if (known.has(id)) return id;
   const stem = id.split(/[-_]/u).slice(0, 2).join("-");
@@ -2655,7 +2693,7 @@ function requireTitleResource(draft: Project, field: string, id: string, kind: "
 
 const setTitleScreen: ToolDefinition = {
   name: "set_title_screen",
-  description: "타이틀 화면 제목/메뉴/표시/오디오와 배경 레이어/파티클/등장 연출, 오프닝 효과(빛내림·빛 알갱이·칼날 반사광·물결·안개)와 로고/메뉴 질감을 갱신한다. titleScreen이 없으면 생성한다. 새 키아트까지 한 번에 만들려면 generate_title_art 를 써라.",
+  description: "타이틀 화면 제목/메뉴/표시/오디오와 배경 레이어/파티클(별 stars 포함)/달리는 캐릭터 runners/PRESS START 관문/등장 연출, 오프닝 효과(빛내림·빛 알갱이·칼날 반사광·물결·안개)와 로고/메뉴 질감을 갱신한다. titleScreen이 없으면 생성한다. 새 키아트까지 한 번에 만들려면 generate_title_art 를 써라.",
   mode: "write",
   parameters: {
     type: "object",
@@ -2714,11 +2752,12 @@ const setTitleScreen: ToolDefinition = {
       musicResourceId: { type: "string" },
       backgroundLayers: {
         type: "array",
-        description: `무한 스크롤 배경 레이어. 최대 ${MAX_TITLE_BACKGROUND_LAYERS}개`,
+        description: `배경 레이어(뒤에서 앞 순서). 최대 ${MAX_TITLE_BACKGROUND_LAYERS}개. 별·구름은 scroll 로 흐르는 tile, 하늘을 오린 땅·전경 그림은 fit:"cover"(화면을 한 장으로 덮고 아래에 붙음).`,
         items: {
           type: "object",
           properties: {
             resourceId: { type: "string" },
+            fit: { type: "string", enum: ["tile", "cover"], description: "tile(기본)=320×240 반복·스크롤, cover=한 장 전경(스크롤 무시)" },
             scrollXPerSec: { type: "number", minimum: -480, maximum: 480 },
             scrollYPerSec: { type: "number", minimum: -480, maximum: 480 },
             parallax: { type: "number", minimum: 0, maximum: 4 },
@@ -2728,8 +2767,39 @@ const setTitleScreen: ToolDefinition = {
           additionalProperties: false,
         },
       },
+      runners: {
+        type: "array",
+        description: `화면을 가로질러 달리는 캐릭터 칩(최대 ${MAX_TITLE_RUNNERS}) — 포켓몬 타이틀의 스타터 셋처럼. resourceId 는 24×32 캐릭터 시트(list_resources kind:"charset"; 몬스터 동료는 그 종의 필드 칩 시트), y 는 발끝(320×240 논리 px). 셋이 줄지어 달리게 하려면 같은 speed·everyMs 에 delayMs 를 400~700ms 씩 벌린다. 빈 배열이면 지운다.`,
+        items: {
+          type: "object",
+          properties: {
+            resourceId: { type: "string" },
+            characterIndex: { type: "integer", minimum: 0, maximum: 7 },
+            direction: { type: "string", enum: ["left", "right"] },
+            y: { type: "integer", minimum: 0, maximum: 240 },
+            speed: { type: "number", minimum: 10, maximum: 400 },
+            scale: { type: "integer", minimum: 1, maximum: 3 },
+            delayMs: { type: "integer", minimum: 0, maximum: 60000 },
+            everyMs: { type: "integer", minimum: 2000, maximum: 120000 },
+            hop: { type: "boolean" },
+          },
+          required: ["resourceId", "y"],
+          additionalProperties: false,
+        },
+      },
+      pressStart: {
+        type: ["object", "null"],
+        description: "「PRESS START」 관문: 메뉴를 숨기고 글자를 깜빡이다 첫 키·탭에 반짝이며 메뉴를 연다(첫 입력은 메뉴를 고르지 않는다). {} = 기본(PRESS START, 1초). null 이면 끈다.",
+        properties: {
+          text: { type: "string", maxLength: 24 },
+          blinkMs: { type: "integer", minimum: 300, maximum: 3000 },
+          y: { type: "integer", minimum: 0, maximum: 240 },
+        },
+        additionalProperties: false,
+      },
       particles: {
         type: "object",
+        description: "타이틀 입자. stars = 깜빡이며 천천히 흐르는 밤하늘 별 + 가끔 별똥별.",
         properties: {
           preset: { type: "string", enum: TITLE_PARTICLE_PRESETS },
           density: { type: "number", minimum: 0, maximum: 100 },
@@ -2775,6 +2845,7 @@ const setTitleScreen: ToolDefinition = {
       logoStyle: { type: "string", enum: TITLE_LOGO_STYLES, description: "제목 글자 질감. 지정하면 기본 편집 문구(A NEW ADVENTURE)를 숨긴다." },
       logoSubtitle: { type: "string", description: "로고 밑 작은 부제(예: OATH OF THE BLADE). 빈 문자열이면 해제." },
       menuStyle: { type: "string", enum: TITLE_MENU_STYLES, description: "window(창) | plain(키아트 위 글자 메뉴)" },
+      menuFontPx: { type: "integer", minimum: 10, maximum: 24, description: "타이틀 메뉴 글자 크기(논리 px 10~24). 생략·0 = 스킨 기본(11px). 넓은 화면(480 폭 이상)이나 큰 키아트 위 글자 메뉴는 14~18 이 읽기 좋다. CSS 를 고치지 말고 이 값으로." },
       sequence: {
         type: ["object", "null"],
         description:
@@ -2935,6 +3006,18 @@ const setTitleScreen: ToolDefinition = {
     }
 
     if ("particles" in args) current.particles = parseTitleParticles(args.particles);
+    if ("runners" in args) {
+      if (!Array.isArray(args.runners)) throw new ToolError("runners 는 배열이어야 합니다.", { code: "invalid-args" });
+      const runners = normalizeTitleRunners(args.runners as never) ?? [];
+      for (const [index, runner] of runners.entries()) requireTitleResource(draft, `runners[${index}].resourceId`, runner.resourceId, "charset");
+      if (runners.length < args.runners.length) throw new ToolError(`runners 중 ${args.runners.length - runners.length}개가 버려졌습니다(resourceId·y 필수, 최대 ${MAX_TITLE_RUNNERS}).`, { code: "invalid-args" });
+      if (runners.length === 0) delete current.runners;
+      else current.runners = runners;
+    }
+    if ("pressStart" in args) {
+      if (args.pressStart === null) delete current.pressStart;
+      else current.pressStart = normalizeTitlePressStart(args.pressStart as never) ?? {};
+    }
     if ("intro" in args) {
       const intro = parseTitleIntro(args.intro);
       if (Object.keys(intro).length === 0) delete current.intro;
@@ -3006,6 +3089,13 @@ function applyTitleOpeningArgs(current: TitleScreenSettings, args: Record<string
     const style = normalizeTitleMenuStyle(args.menuStyle);
     if (style) current.menuStyle = style;
     else delete current.menuStyle;
+  }
+  if ("menuFontPx" in args) {
+    // 정본 범위는 titleEffects normalize(10..24) — 저장 직후 읽어도 같은 값이 되도록 여기서도 같은 규칙으로 자른다.
+    const px = typeof args.menuFontPx === "number" && Number.isFinite(args.menuFontPx) && args.menuFontPx > 0 ? Math.min(24, Math.max(10, Math.round(args.menuFontPx))) : undefined;
+    if (px) current.menuFontPx = px;
+    else delete current.menuFontPx;
+    notes.push(px ? `메뉴 글자 ${px}px` : "메뉴 글자 기본 크기");
   }
   if ("sequence" in args) {
     const sequence = normalizeTitleOpeningSequence(args.sequence);

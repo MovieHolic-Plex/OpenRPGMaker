@@ -6,7 +6,7 @@ import { DEFAULT_EASYRPG_CHARSET_ID } from "@/project/defaults/constants";
 import { store } from "@/project/store";
 import { characterSpriteX, characterSpriteY, placeCharacterSprite, updateCharacterDepth } from "@/player/characterDepth";
 import { eventSpriteScale, resolveEventSpriteTexture } from "@/player/eventSpriteResources";
-import { followerMinDistance, followerPositions, getFollowerBodySpan, recordFollowerPlayerStep, setFollowerBodySpan, type FollowerSlotMotion, type FollowerWorld } from "@/project/followers";
+import { followerMinDistance, followerPositions, isBreadcrumbFollow, getFollowerBodySpan, recordFollowerPlayerStep, setFollowerBodySpan, type FollowerSlotMotion, type FollowerWorld } from "@/project/followers";
 import type { PlaySceneContext } from "@/player/playSceneTypes";
 import {
   NPC_MOVE_DURATION_MS,
@@ -230,7 +230,8 @@ export function syncFollowerSprites(
     const reappearing = !position.hidden && followerHidden.has(key);
     if (position.hidden) followerHidden.add(key);
     else followerHidden.delete(key);
-    if (reappearing && isMonsterFollower(position.follower)) followerEmerging.set(key, 0);
+    // 다시 나타나는 동료는 주인공 몸이 그 칸을 비운 뒤 떠오른다 — 문으로 막 들어와 숨었던 파티 동료도 같다(J9).
+    if (reappearing) followerEmerging.set(key, 0);
     if (options?.snap || position.hidden || reappearing) {
       followerSlotMotion.delete(key);
       followerWalkElapsedMs.set(key, 0);
@@ -332,6 +333,8 @@ export function updateFollowerSpriteMotion(scene: PlaySceneContext, deltaMs: num
   const bodies = new Map<string, { x: number; y: number }>();
   if (scene.player && size > 0) bodies.set("hero", { x: scene.player.x / size - 0.5, y: scene.player.y / size - 1 });
   const yieldDistance = followerMinDistance(scene.session, store.getCurrent().system.companions) - 0.25;
+  // 고전 빵부스러기(기본)는 비켜 서지 않는다 — 앞사람이 밟은 칸을 같은 박자로 그대로 밟는다.
+  const breadcrumb = isBreadcrumbFollow(store.getCurrent().system.companions);
   // 뒤에 선 채 서 있는(걷지 않는) 동료 — 기다렸다 따라잡는 앞사람이 그 몸을 뚫고 지나가지 않게 이것도 피한다.
   // 다만 한 걸음 길이까지만: 앞사람 자리가 그 너머라면 결국 지나가야 한다.
   const resting = new Map<string, { x: number; y: number }>();
@@ -373,7 +376,7 @@ export function updateFollowerSpriteMotion(scene: PlaySceneContext, deltaMs: num
     let motion = followerSlotMotion.get(key);
     // 한 칸 간격(몸 길이 1)이면 비켜 서지 않는다 — 주인공과 같은 박자로 걷는 동료는 모퉁이에서 반 칸 대각으로 스칠 뿐
     // 겹치지 않는다. 여기서 멈추면 모퉁이마다 뒤처졌다가 따라붙는다(2026-10-23).
-    if (yieldDistance > 0.75 && !motion?.lockToHero && motion && now - motion.startedAt < motion.durationMs && size > 0 && sprite.visible) {
+    if (yieldDistance > 0.75 && !breadcrumb && !motion?.lockToHero && motion && now - motion.startedAt < motion.durationMs && size > 0 && sprite.visible) {
       // 남의 몸 안으로 더 파고드는 걸음이면 이번 프레임은 제자리 — 시계를 미뤄서 나중에 끊김 없이 이어 걷는다.
       // 이미 붙어 있어도 멀어지는 걸음은 그대로 간다.
       const progress = (now - motion.startedAt) / motion.durationMs;
@@ -483,10 +486,19 @@ function isMonsterFollower(follower: { readonly kind?: string; readonly monsterI
  * 몬스터 동료는 주인공을 가리지 않는다. 한 칸 뒤(아래)에 선 24×32 동료는 y 정렬대로면 주인공 다리를 덮어
  * 둘이 한 덩이로 보였다(2026-10-23 실측) — 주인공을 언제나 앞에 그린다. 동료가 위쪽(뒤)일 때는 원래 그렇다.
  */
-function keepHeroInFront(scene: PlaySceneContext, sprite: { readonly depth: number; setDepth(depth: number): unknown }, monster: boolean): void {
+function keepHeroInFront(scene: PlaySceneContext, sprite: { readonly depth: number; readonly x?: number; readonly y?: number; setDepth(depth: number): unknown }, monster: boolean): void {
   const heroDepth = scene.player?.depth;
-  if (!monster || typeof heroDepth !== "number" || !Number.isFinite(heroDepth)) return;
-  if (sprite.depth >= heroDepth) sprite.setDepth(heroDepth - 0.5);
+  if (typeof heroDepth !== "number" || !Number.isFinite(heroDepth)) return;
+  if (monster) {
+    if (sprite.depth >= heroDepth) sprite.setDepth(heroDepth - 0.5);
+    return;
+  }
+  // 빵부스러기 뒤따르기: 맵에 막 들어와 주인공 칸에 겹쳐 선 동료는 주인공 뒤에 그린다(주인공이 걸으면 한 명씩 풀려 나온다).
+  const hero = scene.player;
+  if (hero && typeof sprite.x === "number" && typeof sprite.y === "number"
+    && Math.abs(sprite.x - hero.x) < 1 && Math.abs(sprite.y - hero.y) < 1 && sprite.depth >= heroDepth) {
+    sprite.setDepth(heroDepth - 0.5);
+  }
 }
 
 function stepDirection(from: { readonly x: number; readonly y: number }, to: { readonly x: number; readonly y: number }): Dir {

@@ -2,6 +2,9 @@ import type { Command, GameEvent, Project } from "@/project/types";
 import { castTheAstraHorizon } from "./emeraldCrownCast";
 import { isLedgeCell } from "@/project/collision";
 import { charsetFrameIndex } from "@/assets/easyrpgRtp";
+import { M2_COMMAND_CATALOG } from "@/project/eventCommands/m2Catalog";
+import { astraCastBustId } from "@/assets/astraCast";
+import { emeraldOpeningBackdrop } from "@/assets/emeraldOpeningBackdrops";
 
 /**
  * 아스트라 호라이즌 첫 10분(타이틀 → 내 방 → 엄마 → 연구소 → 스타터 → 라이벌 → 1번 도로 → 실바나 체육관) 다듬기.
@@ -42,14 +45,74 @@ function replaceText(event: GameEvent | undefined, from: RegExp, to: Command[]):
   }
 }
 
+/**
+ * 박사 무대(포켓몬 3세대 결, 2026-10-25): 새 게임 첫 이벤트가 내 방을 그림으로 덮고 박사(흉상 cg-nat10)와 주인공을 세운다.
+ * 소년·소녀 고르기 → 별빛 쇼케이스 이름 짓기 → 「모험이 시작된다」 → 주인공 그림이 작아지며 무대가 걷히고 방의 주인공이 남는다.
+ * 주인공 그림은 "actor:actor_hero" — 지금 입은 걷기 그림이라 고른 성별이 바로 보인다. 고른 모습은 Change Actor Graphic 으로 세션에 남는다.
+ * 그림 좌표는 놀이 화면(480×320) px, 기준점은 그림 왼쪽 위다 — 작아질 때 가운데가 그대로 있게 x·y 를 함께 옮긴다.
+ */
+function heroIntroductionCommands(): Command[] {
+  const entry = M2_COMMAND_CATALOG.find((candidate) => candidate.title === "Change Actor Graphic" && candidate.index <= 97);
+  if (!entry) throw new Error("[astra] Change Actor Graphic 명령을 찾지 못했다");
+  const wear = (value: string): Command => ({ kind: "m2Command", commandId: entry.id, fields: { target: "actor_hero", value } });
+  const picture = (pictureId: string, resourceId: string, x: number, y: number, scale: number, opacity = 255, durationMs = 0, waitForPicture = false, easing?: "easeIn" | "easeOut"): Command =>
+    ({ kind: "showPicture", pictureId, resourceId, x, y, scale, opacity, ...(durationMs ? { durationMs } : {}), ...(easing ? { easing } : {}), ...(waitForPicture ? { waitForPicture } : {}) });
+  const se = (resourceId: string): Command => ({ kind: "playAudio", resourceId, channel: "se", loop: false });
+  const BG = "astra_stage_bg", PROF = "astra_stage_professor", HERO = "astra_stage_hero";
+  const lab = emeraldOpeningBackdrop("lab");
+  // 주인공: 24×32 걷기 칸을 4배(96×128). 박사 흉상: 64×64 를 3배(192×192).
+  const hero = { x: 80, y: 90, scale: 400 };
+  // 줄어든 끝 = 방에 선 주인공 그 자리·그 크기(시작 칸 (5,5), 맵 그림 2배 → 걷기 칸 200%, 놀이 화면 px 실측 2026-10-25).
+  // 무대가 걷히면 그림 주인공이 맵 주인공과 겹친 채 남았다가 지워진다 — 「작아지며 세계로 들어간다」.
+  const inWorld = { x: 184, y: 143, scale: 200 };
+  // 흉상 64×64 를 3배(192) — 아래 끝이 대화창 윗선(y 240)에 닿게 y 48(적대 검수 r3: 22px 떠 있었다).
+  const bustY = 48;
+  return [
+    // 무대 동안은 컷신 잠금 — 필드 HUD(「내 방」 위치 표시)가 무대 그림 위에 뜨지 않는다.
+    { kind: "cutsceneControl", mode: "begin", skippable: false } as Command,
+    picture(BG, lab.resourceId, 0, -32, 200),
+    picture(PROF, astraCastBustId("professor", "happy"), 264, bustY, 300, 0),
+    picture(PROF, astraCastBustId("professor", "happy"), 264, bustY, 300, 255, 300, true),
+    se("cc0-sound-monster-ui-confirm"),
+    text("자, 이제 너에 대해 알려 주겠니?", "천문박사"),
+    {
+      kind: "choices",
+      prompt: "너는 남자아이니, 여자아이니?",
+      options: [
+        { text: "남자아이", branch: [wear("oprn-charset-scarloxy-people14#2")] },
+        { text: "여자아이", branch: [wear("oprn-charset-scarloxy-people10#3")] },
+      ],
+      cancelBehavior: "disallow",
+    },
+    picture(HERO, "actor:actor_hero", hero.x, hero.y, hero.scale, 0),
+    picture(HERO, "actor:actor_hero", hero.x, hero.y, hero.scale, 255, 250, true),
+    text("좋아! 그럼 이름은 뭐라고 부를까?", "천문박사"),
+    { kind: "enterHeroName", actorId: "actor_hero", maxLength: 6, showInitialName: false, presentation: "showcase" },
+    text("\\N[1]! 정말 멋진 이름이구나!", "천문박사"),
+    text("\\N[1]! 몬스터와 함께하는\n너의 모험이 지금 시작된단다!", "천문박사"),
+    // 주인공이 작아지며 세계로 들어간다: 박사와 무대(연구소 그림)가 먼저 걷히고, 방 위에 남은 큰 주인공이
+    // 방 안 주인공 자리로 줄어든다(적대 검수 r3: 연구소 위에서 줄고 두 방이 겹쳐 보였다).
+    picture(PROF, astraCastBustId("professor", "happy"), 264, bustY, 300, 0, 300, true),
+    picture(BG, lab.resourceId, 0, -32, 200, 0, 450, true),
+    se("cc0-sound-monster-evolve-after"),
+    picture(HERO, "actor:actor_hero", inWorld.x, inWorld.y, inWorld.scale, 255, 900, true, "easeIn"),
+    { kind: "erasePicture", pictureId: HERO },
+    { kind: "erasePicture", pictureId: PROF },
+    { kind: "erasePicture", pictureId: BG },
+    { kind: "cutsceneControl", mode: "end" } as Command,
+  ];
+}
+
 /** 내 방 — 오늘 무슨 날인지 한 줄, 조작은 짧은 안내 한 줄. */
 function polishBedroom(project: Project): void {
   const intro = eventOf(project, "mx_map_home_house_2f", "mx_map_home_house_2f_opening");
   for (const page of intro?.pages ?? []) {
     page.commands = [
+      // 박사 소개의 끝(2026-10-25 승인안 B): 소년·소녀를 고르고 별빛 쇼케이스에서 이름을 짓는다.
+      ...heroIntroductionCommands(),
+      { kind: "showEmote", target: "player", emote: "exclamation", durationMs: 900 },
       // 한 쪽에 한 생각(적대 검수 m1: 문장 가운데서 쪽이 넘어갔다).
       text("드디어 오늘! 박사님께 첫 동료를 받는 날이다."),
-      text("창밖에서는 「여명의 날개」 새들이 길을 잃은 듯 맴돌고 있다."),
       text("〔방향키〕 걷기 · 〔Z〕 말 걸기 · 〔X〕 메뉴"),
       { kind: "setSwitch", switchId: "mx_intro", value: true },
     ];
@@ -81,8 +144,8 @@ function polishMom(project: Project): void {
         },
       ],
       else: [
-        text("일어났구나! 박사님이 아침부터 기다리셔.", "엄마"),
-        text("연구소는 광장 건너 초록 지붕의 큰 건물이야. 나루는 벌써 뛰어나갔단다!", "엄마"),
+        text("\\N[1], 잘 잤니? 박사님이 아침부터 기다리셔.", "엄마"),
+        text("연구소는 광장 건너 초록 지붕 건물이야.\n나루는 벌써 뛰어나갔단다. 조심히 다녀오렴!", "엄마"),
       ],
     },
   ];

@@ -4,6 +4,7 @@ import { validateFieldMenu } from '../fieldMenu';
 import { validateDialogueSystem } from '../dialogueSystem';
 import { validateVnExtras } from '../vnExtras';
 import { validateVnLook } from '../vnLook';
+import { validateStoryJournal } from "../storyJournal";
 import { validateMusicScore } from '../musicScore';
 import { validateOpeningPortraitMotion } from '../openingPortraitMotion';
 import { isInteriorRoomShape } from "@/project/interiorRoomFootprint";
@@ -50,6 +51,7 @@ export function validateMeta(value: unknown): void {
   if (meta.oprnDialogueSystem !== undefined) validateDialogueSystem(meta.oprnDialogueSystem);
   if (meta.oprnVnExtras !== undefined) validateVnExtras(meta.oprnVnExtras);
   if (meta.oprnVnLook !== undefined) validateVnLook(meta.oprnVnLook);
+  if (meta.oprnStoryJournal !== undefined) validateStoryJournal(meta.oprnStoryJournal);
   if (meta.oprnJpCityPinRepairs !== undefined) {
     for (const item of requireArray("meta.oprnJpCityPinRepairs", meta.oprnJpCityPinRepairs)) {
       const record = requireRecord("jp_city pin repair", item);

@@ -1,0 +1,169 @@
+{
+ "boards": [
+  "r7-dirt-field1x.png",
+  "r7-dirt-field3x.png",
+  "r7-dirt-field4x-crop.png",
+  "r7-slab-field1x.png",
+  "r7-slab-field3x.png",
+  "r7-raw8x-dirt-a.png",
+  "r7-raw8x-dirt-b.png",
+  "r7-raw8x-dirt-c.png",
+  "r7-raw8x-dirt-d.png",
+  "r7-raw8x-slab-a.png",
+  "r7-raw8x-slab-b.png",
+  "r7-raw8x-slab-c.png",
+  "r7-raw8x-asphalt.png",
+  "r7-gate4x-asphalt.png",
+  "r7-board-decals8x.png",
+  "r7-gate6x-rubble-b.png",
+  "r7-gate6x-rubble-c.png",
+  "r7-gate6x-weeds-a.png",
+  "r7-gate6x-weeds-b.png",
+  "r7-gate6x-puddle.png",
+  "r7-ref8x-grass.png",
+  "r7-ref8x-paving.png",
+  "r7-beo-crop0.png",
+  "r7-beo-crop1.png"
+ ],
+ "reviews": [
+  {
+   "id": "dirt-a",
+   "sha": "7555079fbab174ef5ebc7f6f40da9d65560aef03b8684101db29e414740b2040",
+   "verdict": "fail",
+   "reasons": [
+    "No 16px lattice and no landmark blots, so the 64px repeat is gone at 1x. But the field is still uniform grey-speckle-on-brown camouflage mottle: 6 colours, every pixel noise, no structure.",
+    "The 'long dry cracks' in the brief do not exist. 8x shows only 1-2px blotches, no linear crack anywhere in 64x64.",
+    "Blotches are built on a 2-row grid: the 1x field row-diff alternates about 6-10 by about 16 by y parity, giving horizontal dash 'camo' runs at 3x.",
+    "Beodeul's dirt (chipset ~704,3456 and 160,1440) has fine speckle plus directional strokes. This has neither hierarchy nor direction."
+   ],
+   "fix": "Cut the grey speckle density by about 70%. Add 2-3 real 1px dark cracks with light lips that cross cell borders, and some broad low-contrast tonal swells. Break the 2-row blotch grid into native 1px shapes."
+  },
+  {
+   "id": "dirt-b",
+   "sha": "4156ce81b9fbddd70c9d62aab9baa67b6f0821d60ec0d1a3f8af021d41a9509d",
+   "verdict": "fail",
+   "reasons": [
+    "Inherits every dirt-a base failure.",
+    "The 'damp hollow' is a small dark oval smudge drawn with the same two tones as the base: no wet sheen, rim or darker centre. At 1x it is an indistinct dark stamp, and repeated in the same cell slot it reads as a dirty mark, not a hollow."
+   ],
+   "fix": "Give the hollow a lit rim on its south-east and a deeper core with 1-2 damp highlight pixels. Vary its shape per cell. Fix the base first."
+  },
+  {
+   "id": "dirt-c",
+   "sha": "d1229d5edb6fa3fe055e9b9bea84a27cecb79f5df01e4c327e4f46418e746c1a",
+   "verdict": "fail",
+   "reasons": [
+    "Inherits every dirt-a base failure.",
+    "Grey pebble and rust clusters are spread evenly over the whole 64x64 with near-identical spacing, so they add more grey/brown camouflage mottle rather than a gravel feature.",
+    "In the field the swapped cells show lone identical 3-4px pebble+rust clumps."
+   ],
+   "fix": "Concentrate the gravel into one irregular patch per cell with a few strays. Give pebbles a lit top and a shadow pixel. Make rust flakes flat and sparse."
+  },
+  {
+   "id": "dirt-d",
+   "sha": "139d33899d2dd20cd539476ba13470d9257ab090f3eb256175c55724fb8eee78",
+   "verdict": "fail",
+   "reasons": [
+    "Dry-grass tufts are bright yellow horizontal scribbles laid in 4 regular rows across the 64px. At 8x they read as letters ('alb', 'vis').",
+    "At 1x they are bright yellow glyph stickers popping off the ground, the brightest marks in the field. The rows are glyph-like and mechanical."
+   ],
+   "fix": "Draw tufts as vertical blade fans (3-6 blades, dark base, lit tips) at irregular positions. Lower the yellow value one step and add a shadow pixel underneath."
+  },
+  {
+   "id": "slab-a",
+   "sha": "ba1c68575fe855c45b99daa0bbe506c0c940b3b572d073c637af89b81d3d4c80",
+   "verdict": "fail",
+   "reasons": [
+    "At 1x the 32x24-cell field reads as a stone-block wall or tiled floor laid in running bond. The horizontal joints are perfectly straight, full-width lines at fixed rows, so it is brick bond with only the vertical joints staggered.",
+    "The 128px repeat is obvious at 1x: the pattern rows recur with identical diagonal cracks and identical joint nubs.",
+    "The 'broken corners showing earth' are tiny brown lozenge blobs sitting on almost every T-junction, like rivets or stickers.",
+    "The sunken pads are not readable: no pad shows shading or a lip that implies a height change.",
+    "Pad fill is the same grey/brown speckle noise as the dirt."
+   ],
+   "fix": "Break the continuous horizontal joints: offset and tilt them, and let pads end at different y. Make 1-2 pads per period visibly sunken (dark north lip, light south edge). Replace the junction lozenges with irregular missing chunks of varying size that show the dirt texture. Calm the pad interior to 2-3 broad tones with sparse wear."
+  },
+  {
+   "id": "slab-b",
+   "sha": "9370ca965d4677fdd2fcfd6edc219a618d36f2a1df59d47ebae3b50219578307",
+   "verdict": "fail",
+   "reasons": [
+    "Inherits every slab-a base failure (brick bond, 128px repeat, lozenge nubs).",
+    "Weed sprigs are reasonably drawn, but they are spaced metronomically along every joint (about one per 16px), so the joints read as a dotted line instead of an overgrown crack."
+   ],
+   "fix": "Fix the base. Cluster the weeds into 2-3 clumps per period, in the widest broken seams and missing corners, with bare seams in between."
+  },
+  {
+   "id": "slab-c",
+   "sha": "715e05624c1b2ddda622cf4b220a64be29d1d554a21585861e36529a79527f37",
+   "verdict": "fail",
+   "reasons": [
+    "Inherits every slab-a base failure.",
+    "The 'oil stains' are 20-30 small dark polka dots spread evenly across every pad. That is a leopard-spot texture, not oil: no large irregular blot, no sheen, no spread."
+   ],
+   "fix": "Use 1-2 large irregular stains per period (6-14px), dark core and soft edge, with a single faint sheen pixel. No uniform dots."
+  },
+  {
+   "id": "asphalt",
+   "sha": "ac2cafc9d9db4ce788f9ec4d98ca44dcbb6d324286abd46430169ebf87f1824e",
+   "verdict": "fail",
+   "reasons": [
+    "Sample: road edges are crenellated with an identical bump pattern every 16px, which is still a zipper or crenellation, not crumbling.",
+    "Every 16px of road interior shows the same dark rectangle at the same offset (clear in the raw 8x), so a 16px lattice runs along every road at 1x.",
+    "The interior is speckle on speckle and reads as cobble or gravel, not smooth tar. Nothing visibly reads as a south front face at 1x."
+   ],
+   "fix": "Make the tar 2 broad tones with sparse aggregate pixels, and remove the per-cell dark block. Vary the edge-erosion masks per variant so there is no repeat every 16px. Add one clear darker 1px south lip."
+  },
+  {
+   "id": "rubble-b",
+   "sha": "e2c0e1474b51ea221852e43caa8afdcdcf16be39f8dba87864bb39641db31b7f",
+   "verdict": "fail",
+   "reasons": [
+    "The brick pile is drawn as a compact near-square 9x8 block with regular courses and a hard maroon outline. On the dirt at 1x it reads as a small red box or crate of bricks, not spilled rubble.",
+    "There are no scattered fragments or dust spill to blend it into the ground."
+   ],
+   "fix": "Break the outline into an irregular low mound. Tumble some bricks at angles, add 2-4 loose fragments and a dust halo onto the dirt, and drop the uniform outline."
+  },
+  {
+   "id": "rubble-c",
+   "sha": "be0d96b0afbf1a696ba634dfcd1e97ec24bf09332c59415687c390ae310766c8",
+   "verdict": "fail",
+   "reasons": [
+    "The cyan glint pixels are still there: (63,133,138) at (11,1), (13,12), (15,14), (3,15), plus teal (38,83,89). At 3x and 8x they read as glowing corner dots.",
+    "There is a near-black magenta (45,1,15) bar on rows 12-13.",
+    "The boxy grey-teal blocks with light caps read as machinery or a robot rather than broken concrete or metal debris."
+   ],
+   "fix": "Remove all teal and cyan, and the magenta-black. Use the concrete greys plus rust only. Make it an irregular heap with varied chunk sizes and one shadow side."
+  },
+  {
+   "id": "weeds-a",
+   "sha": "6e778b73b5f70ae13977080165c04c4c16999ad0978839e3d80b81b6bc9a5895",
+   "verdict": "fail",
+   "reasons": [
+    "Two stacked horizontal rows of green strokes. At 8x they read like handwriting ('Mse' / 'Slwk'), and at 1x like a green glyph sticker.",
+    "There is no clump structure (no radial blades from a base) and no shadow on the ground."
+   ],
+   "fix": "Draw 1-2 radial clumps with blades rising from a dark base, dark-to-light blade values and a 1px ground shadow. No horizontal stroke rows."
+  },
+  {
+   "id": "weeds-b",
+   "sha": "2585104f7e25dc1c4f0e5912fa56236c09d4c0574760ae8061da4056fef62c0f",
+   "verdict": "fail",
+   "reasons": [
+    "The yellow strokes form letter-like shapes (an 'e/R' pattern) in rows, the same glyph problem as the dirt-d tufts.",
+    "At 1x it is a bright yellow scribble sticker."
+   ],
+   "fix": "Same fix as weeds-a: vertical blade fans, a muted straw value, and a base shadow."
+  },
+  {
+   "id": "puddle",
+   "sha": "d81892aa927ac213dc2541baa110e93c098271c5e84e071a6fe8a1200b6fc947",
+   "verdict": "fail",
+   "reasons": [
+    "It still reads as a gem or sticker. A navy blob carries a hot magenta pixel (206,98,142) at (8,8) and scattered light-blue sparkle dots.",
+    "A grey dashed ring around the blob reads as an outline sticker. There is no damp darkened soil margin and no sky reflection band.",
+    "At 1x it is a dark jewel on the dirt."
+   ],
+   "fix": "Drop the magenta and the ring. Use a darkened wet-soil margin, then a dark water body, then one short light reflection streak along the north edge. Make the shape irregular and flatter."
+  }
+ ]
+}

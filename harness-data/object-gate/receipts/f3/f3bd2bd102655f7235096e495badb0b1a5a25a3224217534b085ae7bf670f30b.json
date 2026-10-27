@@ -1,0 +1,274 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f3bd2bd102655f7235096e495badb0b1a5a25a3224217534b085ae7bf670f30b",
+ "width": 64,
+ "height": 48,
+ "kind": "terrain",
+ "name": "cracked old concrete slab floor tile",
+ "label": "wasteland_ruins/slab-a",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 6,
+  "tileColorsP90": 10,
+  "darkV5": 73,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 12
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "concrete floor slab tiles in a 4x3 grid, separated by dark joint lines at rows 0, 16 and 32",
+      "rows": "0-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 48,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The whole 64x48 image is a flat, face-on floor texture. It has a grid of grey-brown slab tiles with light and dark crack marks, a few dark deep-crack tiles and one tile with a small green weed. The silhouette is a full rectangle (width 64 on every row). The column scan shows only 16-row tile cells divided by 1-row dark joint lines at rows 0, 16 and 32. There is no front-edge line, eave shadow, ellipse or roof plane, and no south face of 3 or more rows. It reads as a flat top-down terrain surface, not a standing object."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a 4x3 grid of near-identical grey slab tiles, each with a lighter bevel edge, a darker rim and a thin crack line plus a few speckle dots. It reads as repeated individual tiles, not a continuous worn slab floor. Measured facts: 6 visible tones per tile against 7 for the paving reference and 3 for the grass reference, with 0% near-flat coverage, so density is close to the paving reference and above the grass. Only 10% of dark edge pixels are near-neutral, so the outline leans toward a tinted grey-brown and is not the neutral black line. Shading has about 5 steps (highlight, light, mid, dark, deep crack). Weaknesses: the crack pattern is almost the same in every tile and looks stamped; the paving reference has stones shaded one by one and irregular joints, while the candidate's interior is mostly one grey with sparse speckle. Each tile has a strong bevel border that makes the repeat obvious. Texture is present but thinner than the paving reference, and the tiling is not seamless, which a careful artist would flag when laying 4x3. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 21291
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "concrete floor tile variants (4x3 sheet of 16px tiles, cracks and a few moss patches)",
+      "rows": "0-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 16,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The image is a 4x3 sheet of flat 16px ground tiles, each seen straight down with a speckled grey-brown texture and dark crack lines. Dark grid lines at rows 0, 16 and 32 only separate the tiles. They are not front-edge lines or eave shadows. The column scan at x=47 shows each tile as about 15 rows of uniform paving, with no front face, no vertical face and no ellipse. This is a terrain surface, not a standing object, so the whole tile counts as one flat horizontal surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate has 6 visible tones per tile, against 7 for the paving reference and 3 for the grass reference. Near-flat coverage is 0%, the same as both references, so there are no flat fills. Only 10% of its dark edge pixels are neutral, so the slab edges and cracks lean toward a tinted dark tone of the stone rather than a black sticker line. That differs from the paving reference (80% neutral), but its dark pixels are tinted, so the outline counts as dark_material_tone. Each slab shows a highlight edge, a mid fill, speckle grain and dark crack lines, which is roughly 5 steps against the reference's 6. The 4x3 layout reads as separate slabs with cracks and some variation between tiles. Texture is a little sparser than the cobble paving's per-stone shading, and the repeated tile bevel looks slightly grid-like, but overall it sits at the reference level.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16442
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "concrete slab floor tiles (4x3 sheet of 16px tiles with cracks)",
+      "rows": "0-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The image is a 4x3 sheet of 16px flat floor tiles. Each tile is a uniform grey-brown concrete texture with light and dark crack pixels and, in a few tiles, a green moss patch or a dark crack with shadow. The silhouette is a full 64px wide on every row. The column scan shows only the dark tile borders at rows 0, 16 and 32, with no front-edge line, eave shadow, ellipse or vertical front face. This is a flat ground texture, which fits the terrain kind, so it reads as a top-down slab with no front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate shows 6 visible tones per tile against 7 for the paving reference, with 0% near-flat coverage, so there are no flat fills. Each slab has a light bevel highlight, a mid body, a darker edge and speckle grain. Only 10% of its dark edge pixels are neutral, so the dark lines lean toward a blue-grey stone tone rather than black, unlike the paving reference at 80%. The cracks, the occasional dark patch and the single green moss dot vary from tile to tile, which avoids a pure sticker repeat. It is a little less dense and less varied than the paving reference, and the boxed slab edges are somewhat regular. That is plausible for a slab floor, and a careful artist would accept it next to the reference without it looking flatter or thinner.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 14762
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "concrete floor slab tiles (3x3 grid of cracked slabs)",
+      "rows": "0-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 48,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The image is a flat, seamless floor texture, 64 px wide and 48 rows tall, made of a 4x3 grid of 16px cracked concrete tiles. Dark grout lines sit at rows 0, 16 and 32 (x=47 scan: L=71 at rows 0, 16, 32, with L=108-116 slab rows between). Each tile has a lighter chipped edge and a few crack lines. No front-edge line, eave shadow, ellipse or vertical south face is drawn, so there is no front face (0 rows) and no depth cue. It is a plain top-down ground surface, which is expected for a terrain tile."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate's slabs have a lighter bevel edge, a mid-grey body, darker crack lines and speckle dots, which gives about 5 distinct steps. The paving reference has about 6. Measured facts: 6 visible tones per tile against 7 for the paving reference and 3 for the grass reference. Near-flat coverage is 0%, so there are no flat fills. Only 10% of the dark edge pixels are neutral, so the outlines and cracks lean toward the material's own cool grey rather than a black sticker line. Texture is present but sparser than the reference's stone-by-stone cobble shading, and each tile repeats a framed slab, which looks a little mechanical. Even so, a careful artist would likely accept it next to the paving reference without it looking flat or sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17903
+  }
+ ],
+ "decidedAt": "2026-10-22T15:35:18.284Z",
+ "cells": {
+  "16": [
+   "c517a312ff57f667",
+   "e8002d69d56ea8aa",
+   "efcf9065f9b858c5"
+  ],
+  "24": [
+   "1e0d7840bd9091c8",
+   "29a8ebfba987e867",
+   "331739f3db78dab4",
+   "37295d30eec1c715",
+   "3b8f69a5db36b9ba",
+   "57043ee579ab1932",
+   "67c56caff98f3558",
+   "79f390d628152237",
+   "7c4ed328b3318956",
+   "a1e7d05bdcf20f5c",
+   "a5185f608f13e681",
+   "a8e5f49a82406078",
+   "aa796ffe1eb74ed2",
+   "abc3771960a39d73",
+   "c24d46a8cac131fa",
+   "c9a4958b7e623b9e",
+   "c9ede1ef0bc4ad40",
+   "d9878bee1154adec"
+  ],
+  "32": [
+   "0c42a11c74c13ce2",
+   "3f030883bcf0d2b4",
+   "41297c4418ccefc7",
+   "580196856603a251",
+   "792dfa2a0b7558a7",
+   "8b1fe31507d0c80b",
+   "b57a296710f7f3e3",
+   "f737986f8c209a6b"
+  ],
+  "48": [
+   "26fcb129de049ca4",
+   "3b65494a36113313",
+   "72560ab21bc47b0d",
+   "85c36f1b052b1931",
+   "85da2008ee5387b9",
+   "e15b5cd819048922"
+  ]
+ }
+}

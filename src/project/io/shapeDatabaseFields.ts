@@ -99,6 +99,7 @@ export function validateSystem(value: unknown): void {
   requireArray("system.startActorIds", system.startActorIds);
   if (system.fieldHud !== undefined) validateFieldHud(system.fieldHud);
   if (system.opening !== undefined) validateCinematicSequence("system.opening", system.opening);
+  if (system.titleIntro !== undefined) validateCinematicSequence("system.titleIntro", system.titleIntro);
   if (system.gameOver !== undefined) validateGameOverSettings(system.gameOver);
   if (system.captureShakesVariableId !== undefined) requireNonBlankString("system.captureShakesVariableId", system.captureShakesVariableId);
   if (system.defaultGameOverId !== undefined) requireNonBlankString("system.defaultGameOverId", system.defaultGameOverId);
@@ -150,6 +151,8 @@ export function validateSystem(value: unknown): void {
     if (titleScreen.backgroundLayers !== undefined) {
       requireArray("system.titleScreen.backgroundLayers", titleScreen.backgroundLayers);
     }
+    if (titleScreen.runners !== undefined) requireArray("system.titleScreen.runners", titleScreen.runners);
+    if (titleScreen.pressStart !== undefined) requireRecord("system.titleScreen.pressStart", titleScreen.pressStart);
   }
   if (system.monsterCollection !== undefined) requireBoolean("system.monsterCollection", system.monsterCollection);
   if (system.monsterCampaign !== undefined) validateMonsterCampaign(system.monsterCampaign);
@@ -236,6 +239,16 @@ export function validateSystem(value: unknown): void {
   if (system.weaknessExtraAction !== undefined) requireBoolean("system.weaknessExtraAction", system.weaknessExtraAction);
   if (system.allowAutoBattle !== undefined) requireBoolean("system.allowAutoBattle", system.allowAutoBattle);
   if (system.clearStatesAfterBattle !== undefined) requireBoolean("system.clearStatesAfterBattle", system.clearStatesAfterBattle);
+  if (system.partyBonds !== undefined) {
+    const partyBonds = requireRecord("system.partyBonds", system.partyBonds);
+    requireOnlyFields("system.partyBonds", partyBonds, ["max", "members"]);
+    if (partyBonds.max !== undefined) requireNumber("system.partyBonds.max", partyBonds.max);
+    for (const [index, raw] of requireArray("system.partyBonds.members", partyBonds.members).entries()) {
+      const member = requireRecord(`system.partyBonds.members[${index}]`, raw);
+      requireString(`system.partyBonds.members[${index}].actorId`, member.actorId);
+      requireString(`system.partyBonds.members[${index}].variableId`, member.variableId);
+    }
+  }
   if (system.saveAccess !== undefined) assert(system.saveAccess === "anywhere" || system.saveAccess === "savePoints", "system.saveAccess 는 anywhere | savePoints");
   if (system.emotionCycle !== undefined) {
     for (const [index, raw] of requireArray("system.emotionCycle", system.emotionCycle).entries()) {
@@ -254,7 +267,7 @@ export function validateSystem(value: unknown): void {
 
 function validateCinematicSequence(label: string, value: unknown): void {
   const sequence = requireRecord(label, value);
-  requireOnlyFields(label, sequence, ["enabled", "skippable", "musicResourceId", "scenes", ...(label === "system.opening" ? ["entry"] : [])]);
+  requireOnlyFields(label, sequence, ["enabled", "skippable", "musicResourceId", "scenes", ...(label === "system.opening" || label === "system.titleIntro" ? ["entry"] : [])]);
   requireBoolean(`${label}.enabled`, sequence.enabled);
   requireBoolean(`${label}.skippable`, sequence.skippable);
   if (sequence.musicResourceId !== undefined) requireNonBlankString(`${label}.musicResourceId`, sequence.musicResourceId);
@@ -262,6 +275,7 @@ function validateCinematicSequence(label: string, value: unknown): void {
     const entry = requireRecord(`${label}.entry`, sequence.entry);
     requireOnlyFields(`${label}.entry`, entry, ["mode", "idleMs", "repeatDelayMs"]);
     assert(entry.mode === "new-game" || entry.mode === "before-title" || entry.mode === "attract", `${label}.entry.mode invalid`);
+    assert(label !== "system.titleIntro" || entry.mode !== "new-game", `${label}.entry.mode: a title intro plays before the title (before-title or attract)`);
     for (const key of ["idleMs", "repeatDelayMs"]) if (entry[key] !== undefined) assertSafeIntegerInRange(`${label}.entry.${key}`, entry[key], 1000, 300000);
   }
   const scenes = requireArray(`${label}.scenes`, sequence.scenes);
@@ -932,9 +946,21 @@ function assertFiniteNumberInRange(label: string, value: unknown, min: number, m
   assert(result >= min && result <= max, `${label} must be between ${min} and ${max}.`);
 }
 
+/** EndingDef.continueTo — 엔딩 뒤 다음 막으로 옮길 맵·칸. */
+export function validateEndingContinueTo(value: unknown, label = "ending.continueTo"): void {
+  const target = requireRecord(label, value);
+  requireOnlyFields(label, target, ["mapId", "x", "y", "direction", "label"]);
+  requireNonBlankString(`${label}.mapId`, target.mapId);
+  requireNumber(`${label}.x`, target.x);
+  requireNumber(`${label}.y`, target.y);
+  if (target.direction !== undefined) assert(["up", "down", "left", "right"].includes(target.direction as string), `${label}.direction is invalid.`);
+  if (target.label !== undefined) { requireString(`${label}.label`, target.label); assert((target.label as string).length <= 24, `${label}.label is too long.`); }
+}
+
 export function validateEndingPresentation(value: unknown, label = "ending.presentation"): void {
   const settings = requireRecord(label, value);
-  requireOnlyFields(label, settings, ["tone", "backgroundResourceId", "musicResourceId", "credits", "kicker", "badge", "finalTitle"]);
+  requireOnlyFields(label, settings, ["tone", "backgroundResourceId", "musicResourceId", "credits", "kicker", "badge", "finalTitle", "portraits"]);
+  if (settings.portraits !== undefined) assert(settings.portraits === "auto" || settings.portraits === "none", `${label}.portraits is invalid.`);
   for (const key of ["kicker", "badge", "finalTitle"] as const) {
     if (settings[key] === undefined) continue;
     requireString(`${label}.${key}`, settings[key]);

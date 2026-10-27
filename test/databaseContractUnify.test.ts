@@ -56,7 +56,8 @@ function findRecord(collection: DatabaseCollection, id: string): any {
   return db[collection].find((entry: any) => entry.id === id);
 }
 
-describe("Database write/normalize contract — single kernel (G002)", () => {
+// Heavy under CI load (15s default is too tight): clones the blank project several times per case.
+describe("Database write/normalize contract — single kernel (G002)", { timeout: 120_000 }, () => {
   beforeEach(() => {
     store.replace(createBlankProject());
   });

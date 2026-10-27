@@ -29,10 +29,10 @@ import type { BuildRun, ContentBuildResult, EventBeat, EventSpec } from "./types
 
 export const EVENT_CARD =
   "이벤트(events) 명세: {kind:'cutscene'|'talk'|'trigger', when?:'game-start'|'touch'|'talk', mapId?, where?, at?, beats:[…]}. " +
-  "after:'촌장' = 그 NPC 와 대화가 끝나면 이어서(그 NPC 대화 끝에 붙고 한 번만), afterTalk:[…] = 장면 뒤 그 NPC 가 할 말(밤이 됐으면 밤 인사처럼 바뀐 상황에 맞게). " +
+  "after:'촌장' = 그 NPC 와 대화가 끝나면 이어서(그 NPC 대화 끝에 붙고 한 번만 — 말 걸기 페이지가 여럿(낮·밤)이면 afterPage:번호), afterTalk:[…] = 장면 뒤 그 NPC 가 할 말(밤이 됐으면 밤 인사처럼 바뀐 상황에 맞게). " +
   "cutscene+game-start = 게임이 시작되면 한 번만 자동 재생(시작 맵, 맵마다 하나 — 다시 부르면 앞 컷신을 바꾼다). 비트 do: " +
   "walk{who,to}=걷기(to=길·광장·입구·문 앞 같은 자리 낱말, 다른 사람 이름이면 그 곁으로 걸어가 마주 선다, {x,y} 는 꼭 필요할 때만) / " +
-  "say{who,text}=대사 / appear{who,where?,looks?,talk?}=그 자리에 «팍» 나타남(where 생략 가능 — 뒤에 주인공에게 걸어오면 함수가 4~8칸 떨어진 길 위를 고른다; talk=컷신 뒤 말 걸면 할 말 배열) / " +
+  "say{who,text}=대사(who 를 비우면 내레이션) / appear{who,where?,looks?,talk?}=그 자리에 «팍» 나타남(where 생략 가능 — 뒤에 주인공에게 걸어오면 함수가 4~8칸 떨어진 길 위를 고른다; talk=컷신 뒤 말 걸면 할 말 배열) / " +
   "face{who,toward}=바라봄 / wait{ms} / fade{dir:'in'|'out'} / " +
   "tint{tone:'night'|'dusk'|'dawn'|'sepia'|'clear'}=화면 색(밤이 되면 컷신 뒤에도 밤으로 남는다, 되돌리려면 clear) / weather{weather:'rain'|'storm'|'snow'|'fog'|'none',intensity?:0~1}=실제 날씨(비가 오기 시작한다 → weather rain; tint 로 흉내 내지 않는다, 컷신 뒤에도 남는다) / shake{strength?:'weak'|'medium'|'strong',axis?:'vertical'(지진·쿵)|'horizontal'(부딪힘),ms?}=화면 흔들림(지진은 camera 로 흉내 내지 않는다) / flash{color?:'white'|'#rrggbb',ms?}=번쩍(번개·폭발 — fade 로 흉내 내지 않는다) / music{action:'bgm'|'se'|'bgs'|'stop'|'fade',query}=배경 음악 바꾸기(축제·전투 음악 등)·효과음·bgs=음악 밑에 계속 깔리는 환경음(바람·심장 고동·웅웅거림) — query 는 음원 낱말(공포: 비명·심장·삐걱·물방울·웅웅·속삭임·쾅·발소리는 함수가 만들어 넣는다) / emote{who,emote:'!'|'?'|'♥'|'땀'|'화'|'…'|'zzz'}=머리 위 감정 표시(놀람 «!»은 대사로 쓰지 않고 이것) / camera{to}=카메라를 자리 낱말·사람·'x,y' 로 옮겨 보여 줌, to:'back' 이면 주인공에게 복귀(빠뜨려도 끝에 돌아온다) / " +
   "look{who,as:'shadow'|'ghost'|'normal'}=검은 실루엣·반투명 유령·원래 모습 / vanish{who}=연기처럼 사라짐(«지나가는» 그림자는 등장한 반대쪽 자리 낱말로 걸어가 사라진다 — 다른 사람 곁으로 걸으면 «찾아온» 장면이 된다). " +
@@ -56,9 +56,11 @@ const SCENE_WALK_LEG = 14;
 /** tint 비트의 화면 색 — 'r,g,b,알파' 덮개(밤은 푸른 어둠), sepia 는 회상 필터, clear 는 원래대로. */
 const TINT_TONES: Record<string, string> = { night: "20,30,80,0.5", dusk: "170,80,40,0.28", dawn: "255,190,150,0.18", sepia: "sepia", clear: "" };
 
-function isHero(who: string): boolean {
-  return HERO.test(who.trim());
+function isHero(who: string | undefined): boolean {
+  return HERO.test(String(who ?? "").trim());
 }
+/** 말하는 사람이 없는 say = 내레이션(2026-10-25 장난감 가게 A/B: who 없는 say 가 「who.trim」 으로 도구를 죽였다). */
+const NARRATOR = /^(내레이션|나레이션|해설|narration|narrator|-)?$/iu;
 
 // ───────────────────────── 무대 모의 ─────────────────────────
 
@@ -354,6 +356,21 @@ function findNpcByName(map: GameMap, name: string): GameEvent | undefined {
   return eventsOf(map).find((e) => (e.name ?? "").trim().toLowerCase() === want);
 }
 
+/** after NPC 의 어느 페이지에 장면을 이을지. 말 걸기 페이지가 여럿인데 afterPage 가 없으면 problem(페이지 목록). */
+function afterPageChoice(npc: GameEvent, afterPage: number | undefined): { pick?: number; problem?: string } {
+  const all = npc.pages ?? [];
+  const talkIdx = all.map((pg, i) => ({ pg, i })).filter(({ pg }) => { const k = (pg.trigger as { kind?: string } | undefined)?.kind; return k === undefined || k === "action"; }).map(({ i }) => i);
+  if (typeof afterPage === "number" && all[afterPage]) return { pick: afterPage };
+  if (talkIdx.length <= 1) return { pick: talkIdx[0] ?? 0 };
+  const list = talkIdx.map((i) => {
+    const pg = all[i]!;
+    const cond = (pg.conditions ?? []).map((c) => { const o = c as { kind?: string; switchId?: string; key?: string; value?: unknown }; return o.kind === "switch" ? `${o.switchId}=${o.value === false ? "꺼짐" : "켜짐"}` : o.kind === "selfSwitch" ? `셀프 ${o.key}` : String(o.kind); }).join(",") || "조건 없음";
+    const line = (pg.commands ?? []).map((c) => (c as { body?: string; text?: string }).body ?? (c as { text?: string }).text).find((t) => typeof t === "string");
+    return `${i}) ${cond} «${String(line ?? "").slice(0, 24)}»`;
+  }).join(" / ");
+  return { problem: `after: '${npc.name}' 은 말 걸기 페이지가 ${talkIdx.length}개다 — 장면이 일어나는 페이지를 afterPage 로 골라 add_event 를 다시 부른다(장면은 만들지 않았다): ${list}` };
+}
+
 // ───────────────────────── 빌더 ─────────────────────────
 
 export function buildEvent(run: BuildRun, spec: EventSpec): EventBuildResult {
@@ -385,7 +402,7 @@ export function buildEvent(run: BuildRun, spec: EventSpec): EventBuildResult {
   // 1) 등장 인물 이름 모으기.
   const appearBeat = new Map<string, Extract<EventBeat, { do: "appear" }>>();
   const names: string[] = [];
-  const noteName = (n: string): void => { if (!isHero(n) && !names.includes(n)) names.push(n); };
+  const noteName = (n: string | undefined): void => { if (!n || NARRATOR.test(n.trim())) return; if (!isHero(n) && !names.includes(n)) names.push(n); };
   for (const b of spec.beats) {
     if (b.do === "appear") { noteName(b.who); if (!appearBeat.has(b.who)) appearBeat.set(b.who, b); }
     else if (b.do === "say" || b.do === "walk" || b.do === "face" || b.do === "look" || b.do === "vanish") noteName(b.who);
@@ -510,6 +527,11 @@ export function buildEvent(run: BuildRun, spec: EventSpec): EventBuildResult {
   };
 
   spec.beats.forEach((b, i) => {
+    // 누가(who) 가 꼭 있어야 하는 비트인데 비었다 — 도구를 죽이지 말고 건너뛰며 알린다.
+    if ((b.do === "appear" || b.do === "walk" || b.do === "face" || b.do === "look" || b.do === "vanish") && !String((b as { who?: unknown }).who ?? "").trim()) {
+      warnings.push(`${b.do}: who(누가)가 비어 이 비트를 건너뛰었다.`);
+      return;
+    }
     switch (b.do) {
       case "appear": {
         if (isHero(b.who)) { warnings.push("appear: 주인공은 처음부터 있다."); break; }
@@ -607,6 +629,7 @@ export function buildEvent(run: BuildRun, spec: EventSpec): EventBuildResult {
         break;
       }
       case "say": {
+        if (NARRATOR.test(String(b.who ?? "").trim())) { out.push({ kind: "say", text: b.text, context: "narration" }); break; }
         const key = keyOf(b.who) ?? ensureActor(b.who, i);
         if (!key) { warnings.push(`say: 누군지 모르는 '${b.who}'.`); break; }
         const beat: Record<string, unknown> = { kind: "say", text: b.text, actor: idFor(key) };
@@ -831,6 +854,13 @@ export function buildEvent(run: BuildRun, spec: EventSpec): EventBuildResult {
     mapId, x: hostCell.cell.x, y: hostCell.cell.y, trigger, beats, skippable: true, mode: "replace",
     once: when === "game-start" || when === "touch", ...(hostId ? { eventId: hostId } : {}),
   };
+  // after NPC 의 페이지를 못 고르면 장면을 만들기 전에 멈춘다(장면 배우·투명 이벤트를 남기지 않는다).
+  if (spec.after) {
+    const pre = findMap(run.ctx.project, mapId);
+    const npc0 = pre ? findNpcByName(pre, spec.after) : undefined;
+    const pre0 = npc0?.pages?.length ? afterPageChoice(npc0, spec.afterPage) : undefined;
+    if (pre0?.problem) return fail(pre0.problem, [mapId]);
+  }
   const cut = run.call("script_cutscene", args);
   for (const w of cut.warnings ?? []) warnings.push(`컷신: ${w}`);
   if (!cut.ok) return fail(`컷신을 만들지 못했다 — ${String(cut.summary).slice(0, 200)}`, [mapId]);
@@ -866,7 +896,16 @@ export function buildEvent(run: BuildRun, spec: EventSpec): EventBuildResult {
     if (!npc || !npc.pages?.length) warnings.push(`after: '${spec.after}' NPC 를 이 맵에서 못 찾아 따로 선 장면 이벤트로 남겼다.`);
     else if (commands.length === 0) warnings.push("after: 장면 명령을 못 읽어 NPC 에 잇지 못했다.");
     else {
-      const p0 = npc.pages[0]!;
+      // 어느 페이지에 이을까: 말 걸기 페이지가 여럿이면(낮·밤, 사건 전·후) 모델이 afterPage 로 고른다.
+      // 예전엔 늘 0번(낮 기본) 끝에 붙이고 「장면 뒤」 페이지를 맨 끝에 둬서, 셀프 스위치 D 가 켜진 뒤 밤 페이지의 기존 회상까지 가렸다
+      // (2026-10-25 장난감 가게 고치기 2턴: 오르골 추억이 밤 페이지에 있었다).
+      const choice = afterPageChoice(npc, spec.afterPage);
+      const pick = choice.pick;
+      if (pick === undefined) {
+        run.call("remove_event", { mapId, eventId: cutId });
+        return fail(choice.problem!, [mapId]);
+      } else {
+      const p0 = npc.pages[pick]!;
       const talked = { ...structuredClone(p0), id: undefined, name: `${p0.name ?? "대화"} (장면 뒤)`, conditions: [...(p0.conditions ?? []), { kind: "selfSwitch", key: "D", value: true }] };
       const afterLines = (spec.afterTalk ?? []).map((t) => String(t).trim()).filter(Boolean);
       if (afterLines.length) {
@@ -875,12 +914,16 @@ export function buildEvent(run: BuildRun, spec: EventSpec): EventBuildResult {
       }
       delete (talked as { id?: string }).id;
       const first = { ...structuredClone(p0), commands: [...(p0.commands ?? []), ...structuredClone(commands), { kind: "setSelfSwitch", key: "D", value: true }] };
-      const up = run.call("upsert_event", { mapId, replacePages: true, event: { id: npc.id, pages: [first, ...npc.pages.slice(1).map((pg) => structuredClone(pg)), talked] } });
+      // 「장면 뒤」 페이지는 고른 페이지 바로 뒤에 둔다 — 뒤쪽 페이지(밤·사건 뒤)가 조건이 맞으면 여전히 이긴다.
+      const pages: unknown[] = npc.pages.map((pg) => structuredClone(pg));
+      pages.splice(pick, 1, first, talked);
+      const up = run.call("upsert_event", { mapId, replacePages: true, event: { id: npc.id, pages } });
       if (!up.ok) warnings.push(`after: NPC 에 잇지 못했다 — ${String(up.summary).slice(0, 160)}`);
       else {
         run.call("remove_event", { mapId, eventId: cutId });
         hostEventId = npc.id;
-        warnings.push(`장면을 '${spec.after}' 대화 끝에 이었다(한 번만 — 그 뒤엔 원래 대사).`);
+        warnings.push(`장면을 '${spec.after}' ${pick}번 페이지 대화 끝에 이었다(한 번만 — 그 뒤엔 원래 대사).`);
+      }
       }
     }
   }

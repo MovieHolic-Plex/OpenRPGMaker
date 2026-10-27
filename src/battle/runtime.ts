@@ -145,6 +145,7 @@ import {
   areaTargets,
   requestedTargetId,
   resolveBattleTargets,
+  skillRevivesDefeatedAllies,
   targetIdFor,
   targetScopeForCommand,
   type BattleTargetScope,
@@ -155,7 +156,8 @@ import { effectiveActorEquipment } from "@/project/equipmentRules";
 import { orderGen1TurnActions, type Gen1TurnOrderEntry } from "@/battle/battleStrictOrder";
 import { attemptGen1Capture } from "@/battle/gen1/capture";
 import { effectiveTeamSwapCost, resolveBattleTeams } from "@/battle/battleTeams";
-import type { TeamSwapCost } from "@/project/types";
+import type { ActorAutoTactic, TeamSwapCost } from "@/project/types";
+import type { TroopBattleGuest } from "@/project/types/database";
 import { restoredMovePp } from "@/project/monsterMedicine";
 import {
   applyGen1MajorStatus,
@@ -166,6 +168,7 @@ import {
   stepGen1Confusion,
   gen1EffectChanceSucceeds,
   gen1MajorStatusBlockedByType,
+  gen1StatusMoveBlockedByTargetType,
   gen1ParalyzedSpeed,
   readGen1MajorStatus,
   stepGen1MajorStatus,
@@ -373,9 +376,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
   const usePartyMonsters =
     (options.project.system.battleParty === "monsters" || options.project.system.monsterBattleParty === true)
     && (options.partyMonsters?.length ?? 0) > 0;
-  const actors = usePartyMonsters
-    ? monsterPartyBattlers(options.project, options.partyMonsters ?? [])
-    : actorBattlers(options.project, {
+  const actorBattlerInputs = {
         names: options.party?.names,
         faceResourceIds: options.party?.faceResourceIds,
         levels: sessionState.actorLevels ?? options.party?.levels,
@@ -389,8 +390,10 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
         growthProgress: sessionState.growthProgress ?? options.party?.growthProgress,
         promotionLineage: sessionState.promotionLineage ?? options.party?.promotionLineage,
         stateIds: options.party?.stateIds,
-        partyActorIds: options.party?.partyActorIds,
-      });
+      };
+  const actors = usePartyMonsters
+    ? monsterPartyBattlers(options.project, options.partyMonsters ?? [])
+    : actorBattlers(options.project, { ...actorBattlerInputs, partyActorIds: options.party?.partyActorIds });
   if (!usePartyMonsters) applySkillLoadoutsToBattlers(options.project, actors, sessionState.actorSkillLoadouts);
   const enemies = enemyBattlers(options.project, troopRecord, options.enemyLevel !== undefined ? { wildLevel: options.enemyLevel } : undefined);
   // 리미트·기력·파티 게이지(battleGauges). 끈 프로젝트는 필드를 만들지 않는다.
@@ -423,6 +426,8 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
   const teamResting = new Set<string>();
   /** 연계 대기 중인 배우(게이지 100 유지·충전 제외). 아군 누군가의 차례가 오면 풀려 resumedFromHold 로 옮긴다. */
   const heldForCombo = new Set<string>();
+  /** 전투 중 합류한 트룹 손님(recordId → 작전). 손님은 배우 DB 의 autoBattle 과 상관없이 자동으로 싸운다. */
+  const guestTactics = new Map<string, ActorAutoTactic | undefined>();
   /** 연계 대기에서 풀려 다시 차례를 받는 배우 — 차례 시작 처리(지속 피해·턴 수)를 두 번 받지 않는다. */
   const resumedFromHold = new Set<string>();
   let activeActorIds: ActorId[] = battleTeams
@@ -478,8 +483,65 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
   // 지금 실행 중인 명령의 번호. 명령이 시작될 때 올리고, 그동안 기록되는 엔트리에 찍는다(연출 묶음의 열쇠).
   let actionCounter = 0;
   let currentActionId: number | undefined;
+  // 힘 모으기 장부(SkillRecord.chargeTurns). recordTimeline 이 충전 끊기(chargeBreak)를 판정하므로 그보다 먼저 선언한다.
+  // damageTaken = 모으는 동안 받은 HP 피해 누계.
+  const pendingCharges = new Map<string, { readonly skillId: SkillId; turnsLeft: number; damageTaken: number; readonly command?: ActorCommand; readonly action?: EnemyActionChoice }>();
+  // 끊긴 힘 모으기의 줄. 타격 엔트리 사이에 끼우면 연출 묶음(같은 actionId)을 깨므로, 다음 명령이 시작되거나 스냅숏을 뜰 때 제 actionId 로 내보낸다.
+  const pendingChargeBreakLines: Omit<BattleTimelineEntrySnapshot, "sequence">[] = [];
+  // 충전이 끊겨 다음 자기 차례 하나를 쉬는 배틀러(SkillChargeBreak.stagger).
+  const chargeStaggeredIds = new Set<string>();
+  function flushChargeBreaks(): void {
+    if (pendingChargeBreakLines.length === 0) return;
+    const resumeActionId = currentActionId;
+    for (const line of pendingChargeBreakLines.splice(0)) {
+      flushHitWakes();
+      actionCounter += 1;
+      currentActionId = actionCounter;
+      recordTimeline(line);
+    }
+    currentActionId = resumeActionId;
+  }
+  /** 충전 끊기(SkillRecord.chargeBreak): 모으는 중인 배틀러가 맞은 피해·속성·상태를 규칙과 견준다. */
+  function noteChargeBreak(entry: Omit<BattleTimelineEntrySnapshot, "sequence">): void {
+    if (!entry.targetId || entry.aside) return;
+    const pending = pendingCharges.get(entry.targetId);
+    if (!pending) return;
+    const rule = lookupSkill(pending.skillId)?.chargeBreak;
+    if (!rule) return;
+    let broken = false;
+    if (entry.kind === "damage" && entry.hit !== false && (entry.resource ?? "hp") === "hp") {
+      pending.damageTaken += Math.max(0, entry.amount ?? 0);
+      if (rule.damage && rule.damage > 0 && pending.damageTaken >= rule.damage) broken = true;
+      const elementId = entry.skillId ? lookupSkill(entry.skillId)?.elementId : undefined;
+      if (elementId && rule.elementIds?.includes(elementId)) broken = true;
+    } else if (entry.kind === "stateAdded" && entry.stateId && rule.stateIds?.includes(entry.stateId)) {
+      broken = true;
+    }
+    if (!broken) return;
+    pendingCharges.delete(entry.targetId);
+    const battler = [...actors, ...enemies].find((row) => row.id === entry.targetId);
+    if (!battler) return;
+    // 휘청거림은 적만 — 아군은 명령을 고른 뒤에 차례를 빼앗으면 고른 명령이 말없이 사라진다.
+    if (rule.stagger !== false && battlerSide(battler) === "enemy") chargeStaggeredIds.add(battler.id);
+    const skillName = lookupSkill(pending.skillId)?.name ?? "기술";
+    const line = rule.message?.trim();
+    pendingChargeBreakLines.push({
+      kind: "special", side: battlerSide(battler), userRecordId: battler.recordId, targetId: battler.id,
+      charge: true, chargeBroken: true, chargeSkillId: pending.skillId,
+      message: `${withJosa(battler.name, "이/가")} 모으던 ${withJosa(skillName, "이/가")} 끊겼다!`,
+      ...(line ? { chargeBreakLine: line } : {}),
+    });
+  }
+  /** 충전이 끊겨 휘청거리는 차례면 그 줄을 남기고 true(차례를 쓴다). */
+  function consumeChargeStagger(battler: MutableBattler): boolean {
+    if (!chargeStaggeredIds.delete(battler.id)) return false;
+    beginTimelineAction();
+    recordTimeline({ kind: "special", side: battlerSide(battler), userRecordId: battler.recordId, targetId: battler.id, charge: true, message: `${withJosa(battler.name, "은/는")} 힘이 끊겨 휘청거린다!` });
+    return true;
+  }
   function beginTimelineAction(): void {
     flushHitWakes();
+    flushChargeBreaks();
     actionCounter += 1;
     currentActionId = actionCounter;
   }
@@ -497,6 +559,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     if (!strikesWoken) flushHitWakes();
     timeline.push({ ...stamped, sequence: timeline.length });
     if (strikesWoken) flushHitWakes();
+    noteChargeBreak(stamped);
   }
   /** 방금 기록된 타임라인 엔트리에 애니메이션을 붙인다. 스킬/아이템 실행부가
    *  recordAction 직후 lastAnimation 을 세팅하므로, 그 시점에 호출해 엔트리와 짝을 맞춘다. */
@@ -702,8 +765,29 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     playAudio: options.playAudio,
     stopAudio: options.stopAudio,
     moveEnemy: moveEnemyByTarget,
+    joinBattleGuest,
   });
   markActiveParticipants();
+
+  /**
+   * 트룹 손님(TroopRecord.battleGuests) 합류. 이 전투의 배틀러 목록·전열에만 넣는다 — 파티 명단(partyActorIds)에는
+   * 넣지 않으므로 전투가 끝나면 저절로 빠지고 경험치·전리품 몫(rewardActorIds)도 없다. 손님은 늘 작전대로 자동으로 싸운다.
+   * 세션의 상처(vitals)·상태는 물려받지 않는다(가득 찬 몸으로 들어온다). 몬스터 파티·gen1·팀 교대 전투는 받지 않는다.
+   */
+  function joinBattleGuest(guest: TroopBattleGuest): string | undefined {
+    if (gen1 || usePartyMonsters || battleTeams || result) return undefined;
+    if (actors.some((actor) => actor.recordId === guest.actorId)) return undefined;
+    if (!options.project.database.actors.some((record) => record.id === guest.actorId)) return undefined;
+    const [battler] = actorBattlers(options.project, { ...actorBattlerInputs, vitals: undefined, stateIds: undefined, partyActorIds: [guest.actorId] });
+    if (!battler) return undefined;
+    applySkillLoadoutsToBattlers(options.project, [battler], sessionState.actorSkillLoadouts);
+    seedBattleGauges(options.project, [battler]);
+    battler.gauge = 0;
+    actors.push(battler);
+    activeActorIds = [...activeActorIds, battler.recordId as ActorId];
+    guestTactics.set(battler.recordId, guest.tactic);
+    return battler.name;
+  }
 
   function battlerSide(battler: MutableBattler): "actor" | "enemy" {
     return actors.some((entry) => entry.id === battler.id) ? "actor" : "enemy";
@@ -781,20 +865,33 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     const stateRecords = gen1StateRecords();
     for (const effect of effects) {
       const stateRecord = stateRecords.find((state) => state.id === effect.stateId);
+      const moveType = move ? gen1CanonicalTypeForId(options.project, move.type) : undefined;
+      const targetCanonicalTypes = battlerTypes(options.project, target).flatMap((typeId) => {
+        const canonical = gen1CanonicalTypeForId(options.project, typeId);
+        return canonical ? [canonical] : [];
+      });
       if (
         effect.operation === "add"
         && stateRecord?.gen1MajorStatus
         && move
         && gen1MajorStatusBlockedByType(
           stateRecord.gen1MajorStatus,
-          gen1CanonicalTypeForId(options.project, move.type),
-          battlerTypes(options.project, target).flatMap((typeId) => {
-            const canonical = gen1CanonicalTypeForId(options.project, typeId);
-            return canonical ? [canonical] : [];
-          }),
+          moveType,
+          targetCanonicalTypes,
           move.kind,
         )
-      ) continue;
+      ) {
+        // 상태 기술이 타입 때문에 막히면 그 이유를 말한다. 이미 다른 주요 상태가 있어도
+        // 「이미 마비 상태다」로 읽히면 기술이 그 상태 때문에 막힌 것처럼 보인다.
+        if (move.kind === "status") {
+          const immune = gen1StatusMoveBlockedByTargetType(stateRecord.gen1MajorStatus, moveType, targetCanonicalTypes);
+          if (immune) {
+            const label = typeName(gen1ElementIdForCanonical(options.project, immune));
+            recordSpecial(user, target, `${withJosa(target.name, "은/는")} ${label} 타입이라 ${stateName(effect.stateId)} 상태에 걸리지 않는다!`);
+          }
+        }
+        continue;
+      }
       if (!gen1EffectChanceSucceeds(effect.chance, nextGen1Byte)) continue;
       if (effect.operation === "remove") {
         if (!target.stateIds.includes(effect.stateId)) continue;
@@ -1285,7 +1382,13 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     const skillId = ids[Math.min(ids.length - 1, Math.floor(rng() * ids.length))] ?? "";
     const skill = skillId ? lookupSkill(skillId) : undefined;
     if (!skill) return { kind: "attack", targetEnemyId: opponent.id };
-    const resolution = resolveBattleTargets({ scope: skill.scope, user: actor, actors: activeActors(), enemies: visibleEnemies() });
+    const resolution = resolveBattleTargets({
+      scope: skill.scope,
+      user: actor,
+      actors: activeActors(),
+      enemies: visibleEnemies(),
+      includeDefeatedAllies: skillRevivesDefeatedAllies(skill),
+    });
     const candidates = resolution.candidates.filter((entry) => entry.hp > 0 || resolution.scope === "ally");
     if (resolution.targets.length === 0 && candidates.length === 0) return { kind: "attack", targetEnemyId: opponent.id };
     const pick = resolution.requiresSelection
@@ -1591,8 +1694,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
   function commandRevives(command: TargetedActorCommand): boolean {
     if (command.kind === "item") return options.project.database.items.find(item => item.id === command.itemId)?.onlyEffectiveOnDeadActors === true;
     if (command.kind !== "skill") return false;
-    const skill = lookupSkill(command.skillId);
-    return skill?.effect.kind === "healing" && (skill.stateEffects ?? []).some(effect => effect.operation === "remove" && effect.stateId === "state_death");
+    return skillRevivesDefeatedAllies(lookupSkill(command.skillId));
   }
 
   function resolvedCommandTargets(user: MutableBattler, command: TargetedActorCommand & { readonly targetEnemyId?: string; readonly targetActorId?: string }) {
@@ -1608,8 +1710,8 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     // 직접 실행 경로(테스트/헤드리스)에서 ally 계열 대상이 명시되지 않으면
     // 가장 아픈 생존 동료를 자동 선택한다(전투 UI 의 beginTargetSelection 은 그대로).
     if (resolution.targets.length === 0 && (resolution.scope === "ally" || resolution.scope === "allAllies" || resolution.scope === "self")) {
-      const ally = resolution.candidates
-        .filter((entry) => entry.hp > 0)
+      const downed = commandRevives(command) ? resolution.candidates.filter((entry) => entry.hp <= 0) : [];
+      const ally = (downed.length > 0 ? downed : resolution.candidates.filter((entry) => entry.hp > 0))
         .sort((a, b) => (a.hp / Math.max(1, a.maxHp)) - (b.hp / Math.max(1, b.maxHp)))[0];
       if (ally) return { ...resolution, targets: [ally] };
     }
@@ -2129,13 +2231,14 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
 
   /** 자동 전투 배우의 이번 차례 명령. 수동 배우·gen1·고를 명령이 없으면 undefined(메뉴를 연다). */
   function autoActorCommand(actor: MutableBattler): ActorCommand | undefined {
-    if (gen1 || usePartyMonsters || !actorFightsAutomatically(options.project, actor.recordId, actor.classId)) return undefined;
+    const guest = guestTactics.has(actor.recordId);
+    if (gen1 || usePartyMonsters || (!guest && !actorFightsAutomatically(options.project, actor.recordId, actor.classId))) return undefined;
     const savedPhase = phase;
     const savedActorId = activeActorId;
     phase = "actorCommand";
     activeActorId = actor.recordId;
     try {
-      const command = chooseAutoBattleCommand(options.project, snapshot(), rng, actorAutoTactic(options.project, actor.recordId));
+      const command = chooseAutoBattleCommand(options.project, snapshot(), rng, guest ? guestTactics.get(actor.recordId) : actorAutoTactic(options.project, actor.recordId));
       return command && isValidActorCommand(actor, command) ? command : undefined;
     } finally {
       phase = savedPhase;
@@ -2354,6 +2457,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
 
   function finishStrictRoundLog(round: number): void {
     flushHitWakes();
+    flushChargeBreaks();
     roundLogs.push({
       round,
       actions: [...strictCurrentRoundActions],
@@ -2408,6 +2512,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
 
   function snapshot(): BattleSnapshot {
     flushHitWakes();
+    flushChargeBreaks();
     const enemiesInBattle = visibleEnemies();
     const nextReady = battleFlow === "gauge" && phase === "charging" && !result
       ? nextReadyBattler(chargingActors(), enemiesInBattle, Infinity, skinHasteMultiplier,
@@ -2434,6 +2539,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       switchCandidateActorIds: switchCandidateActors().map((actor) => actor.recordId),
       ...(battleTeams ? { teams: teamSnapshots(), activeTeamId, teamSwapCost } : {}),
       participatingActorIds: [...participatingActorIds],
+      ...(guestTactics.size > 0 ? { guestActorIds: [...guestTactics.keys()] as ActorId[] } : {}),
       actors: activeActors().map((actor, index) => withCharging(actor, battlerSnapshot(actor, activeActorPosition(index), actorPoseContext))),
       reserveActors: reserveActors().map((actor) => battlerSnapshot(actor, undefined, { showActionPose: false })),
       enemies: enemiesInBattle.map((enemy) => withCharging(enemy, battlerSnapshot(enemy, undefined, poseContext))),
@@ -2523,7 +2629,6 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
   // ── 힘 모으기(SkillRecord.chargeTurns, 2026-10-01) ──
   // 쓰겠다고 정한 차례에는 예고만 남기고, 자기 차례가 chargeTurns 번 더 오면 그때 발동한다. 적·아군 같은 규칙이고
   // gauge·strict 흐름 모두 「자기 차례」를 센다. 반격(drainCounters)처럼 차례 밖에서 쓰는 기술은 모으지 않는다.
-  const pendingCharges = new Map<string, { readonly skillId: SkillId; turnsLeft: number; readonly command?: ActorCommand; readonly action?: EnemyActionChoice }>();
 
   function chargeTurnsOf(skillId: SkillId | undefined): number {
     if (gen1 || !skillId) return 0;
@@ -2537,6 +2642,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     // skillId 를 싣지 않는다 — 실으면 연출 재생기가 이 줄을 기술 시전으로 보고 시전자 위에 착탄 연출을 튼다(녹화 실측).
     recordTimeline({
       kind: "special", side: battlerSide(battler), userRecordId: battler.recordId, targetId: battler.id, charge: true,
+      ...(first ? { chargeStart: true as const, chargeSkillId: skillId } : {}),
       message: first
         ? `${withJosa(battler.name, "이/가")} ${withJosa(name, "을/를")} 준비한다! (${turnsLeft}턴 뒤)`
         : `${withJosa(battler.name, "이/가")} 힘을 모으고 있다… (${name}까지 ${turnsLeft}턴)`,
@@ -2564,7 +2670,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     if (command.kind === "skill") {
       const turns = chargeTurnsOf(command.skillId);
       if (turns > 0) {
-        pendingCharges.set(actor.id, { skillId: command.skillId, turnsLeft: turns, command });
+        pendingCharges.set(actor.id, { skillId: command.skillId, turnsLeft: turns, damageTaken: 0, command });
         recordCharging(actor, command.skillId, turns, true);
         return undefined;
       }
@@ -2574,6 +2680,10 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
 
   /** 적의 자기 차례 행동(gauge·strict). 힘 모으기를 거친 뒤 executeEnemyAction 으로 넘긴다. */
   function executeEnemyTurnAction(enemy: MutableBattler, action: EnemyActionChoice | undefined): void {
+    if (consumeChargeStagger(enemy)) {
+      weakness.standUp(enemy.id);
+      return;
+    }
     const pending = pendingCharges.get(enemy.id);
     if (pending?.action) {
       pending.turnsLeft -= 1;
@@ -2589,7 +2699,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     const turns = chargeTurnsOf(action?.skillId);
     if (action?.skillId && turns > 0) {
       weakness.standUp(enemy.id);
-      pendingCharges.set(enemy.id, { skillId: action.skillId, turnsLeft: turns, action });
+      pendingCharges.set(enemy.id, { skillId: action.skillId, turnsLeft: turns, damageTaken: 0, action });
       recordCharging(enemy, action.skillId, turns, true);
       return;
     }
@@ -2598,7 +2708,10 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
 
   /** 쓰러진 배틀러는 모으던 힘을 잃는다(부활해도 이어지지 않는다). */
   function dropDefeatedCharges(): void {
-    for (const battler of [...actors, ...enemies]) if (battler.hp <= 0) pendingCharges.delete(battler.id);
+    for (const battler of [...actors, ...enemies]) if (battler.hp <= 0) {
+      pendingCharges.delete(battler.id);
+      chargeStaggeredIds.delete(battler.id);
+    }
   }
 
   /** 스냅숏에 힘 모으기·변신을 싣는다(배틀러 자체 필드가 아니라 런타임 장부·상태에서 온다). */
@@ -2641,6 +2754,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
         enemies: visibleEnemies(),
         requestedTargetId,
         area: skill.area,
+        includeDefeatedAllies: skillRevivesDefeatedAllies(skill),
       });
       const targets = resolution.requiresSelection
         ? resolution.targets
@@ -3416,6 +3530,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
           user: enemy,
           actors: activeActors(),
           enemies: visibleEnemies(),
+          includeDefeatedAllies: skillRevivesDefeatedAllies(skill),
         });
         if (resolution.candidates.length === 0) return [];
         // 효용 0(풀피 힐, 기대 데미지 0)인 저작 액션도 버리지 않는다 — 예전에는 여기서
@@ -3447,6 +3562,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
             user: enemy,
             actors: activeActors(),
             enemies: visibleEnemies(),
+            includeDefeatedAllies: skillRevivesDefeatedAllies(skill),
           });
           if (resolution.candidates.length === 0) return [];
           const targets = resolution.requiresSelection
@@ -3522,6 +3638,9 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       return expected + (expected >= target.hp ? 1000 : 0) + (1 - target.hp / Math.max(1, target.maxHp)) * 20;
     }
     if (skill.effect.kind === "healing") {
+      // 쓰러진 동료(HP 0)는 회복량 0이라 풀피 힐과 같이 버려졌다. 부활 기술이면
+      // 어떤 피해·생환자 힐보다 우선한다(최대 HP 99999 + 처치 보너스보다 큼).
+      if (target.hp <= 0) return skillRevivesDefeatedAllies(skill) ? 100_000_000 : 0;
       const missing = skill.effect.affects === "mp" ? target.maxMp - target.mp : target.maxHp - target.hp;
       return missing > 0 ? missing + (target.hp / Math.max(1, target.maxHp) < 0.35 ? 500 : 0) : 0;
     }
@@ -4529,7 +4648,10 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     if (applied.hit && effectKind === "damage" && applied.amount > 0 && !usesMagicalDefense(options.project, skill?.elementId)) {
       applyContactAbility(user, target);
     }
-    if (applied.hit && (effectKind !== "damage" || applied.amount > 0)) {
+    // 피해로 쓰러뜨린 대상에게는 부가 상태·능력 단계를 걸지 않는다 — rm2k3 경로와 같은 계약.
+    // 쓰러진 몬스터에게 「화상에 걸렸다!」가 이어지던 결함(amount 는 0보다 커도 HP 는 이미 0).
+    const livingStatusTarget = effectKind !== "damage" || (applied.amount > 0 && target.hp > 0);
+    if (applied.hit && livingStatusTarget) {
       const stateEffects = defrosted
         ? skill?.stateEffects?.filter((stateEffect) => {
             const state = options.project.database.states.find((record) => record.id === stateEffect.stateId);
@@ -4541,7 +4663,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
         kind: effectKind === "damage" ? "damage" : "status",
       });
     }
-    if (applied.hit && (effectKind !== "damage" || applied.amount > 0)) applyStatStageEffects(user, target, skill);
+    if (applied.hit && livingStatusTarget) applyStatStageEffects(user, target, skill);
     if (applied.hit && skill?.effect?.kind === "switch" && skill.effect.switchId) {
       battleEventState.switches[skill.effect.switchId] = true;
     }

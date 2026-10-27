@@ -1,0 +1,474 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "6395aba49fa267066c2a8bd44380f2d6e6b07ce711b3929032bde098520550c5",
+ "width": 144,
+ "height": 80,
+ "kind": "flat",
+ "name": "a long thin wandering dark grey-black crack with three short side branches and one dirt-filled opening, drawn as a transparent decal on old asphalt",
+ "label": "wasteland_ruins/road-crack-a",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 명암 3단 < 4 (3/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "명암 3단 < 4 (3/4)"
+  ],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 4,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "wasteland_ruins",
+   "fallback": true,
+   "reason": "칩셋 wasteland_ruins 의 화풍 기준 묶음이 없다",
+   "hash": "8cecb3a70460aa86"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 5,
+  "tileColorsP90": 8,
+  "darkV5": 77,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 45
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "asphalt patch with two small dark cracks",
+      "rows": "19-62",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dirt ground background",
+      "rows": "0-79",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 44,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The drawing is a flat grey asphalt rectangle (rows 19-62, about 130 px wide) on an opaque brown dirt background that fills all 144x80 px. The only edge treatment is a 1-row lighter top edge at row 19 and a 1-3 row darker bottom shadow at rows ~59-62, so there is no front face of 3 or more rows. Only two small dark crack marks sit on it; I see no long wandering crack, no three branches and no dirt-filled opening. Nothing is drawn as a standing volume, so it reads as a flat top-down plate, which suits the flat kind."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "none",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 4,
+    "evidence": "The candidate does not show the described object. I see a hard-edged grey asphalt rectangle on a brown speckled dirt field, with only two tiny dark squiggles. There is no long wandering crack, no three side branches and no dirt-filled opening. The asphalt has about 3-4 close grey steps of fine noise speckle. It has no per-stone shading or highlight clusters like the paving reference, which has crisp cobble scallops, edge highlights and about 6 steps. Measured facts: 5 visible tones per tile (grass reference 3, paving reference 7), 1% near-flat coverage, and 0% neutral dark edge pixels. Only 10 colours in total. There is no near-black sticker outline, but the slab edge is a plain soft rectangle with no material-tone edge work. The density numbers are acceptable, but the visible structure is thinner and flatter than the paving reference, and the crack, the core feature, is almost missing. Fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 16303
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "grey asphalt patch with two small dark cracks, seen from above",
+      "rows": "19-62",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "brown dirt ground around the patch",
+      "rows": "0-79",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 80,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The image is a flat top-down view with no front face. A grey asphalt rectangle (about rows 19-62) sits on speckled brown dirt that fills the whole 144x80 frame. The column scans show only flat texture runs, with no front-edge line, eave shadow, ellipse or vertical face. The only dark marks are two small crack clusters (around rows 39-46) and a faint darker strip near rows 59-63 along the lower edge, which reads as a shadow. These are not a front face. The picture does not match the description of one long wandering crack with three branches. It shows a patch with two small cracks. As a flat floor decal, the kind is still plausible."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 4,
+    "evidence": "The candidate has only 10 distinct colours in total. The crack decal reads as a thin dark line with few tonal steps (about 3: crack core, a slightly lighter edge, and dirt speckle). It has no per-pixel highlight or edge shading like the paving reference's stone-by-stone rendering (7 visible tones). The measured facts are fine on paper: 5 visible tones per tile (between grass at 3 and paving at 7), 1% near-flat coverage, and 0% neutral dark edges, so the tint is not a sticker black line. By eye, though, the visible crack is only two small, faint marks on the asphalt patch. It does not show the long wandering line with three branches and a dirt-filled opening described. It looks thinner and flatter than the references, and the asphalt around it is an even speckled grey with little tile-by-tile variation. For a sparse object like this, a careful artist would not accept it next to the reference, so it fails on shallow shading and lower density.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 16013
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "flat ground patch (dirt background with a grey asphalt rectangle and two small dark cracks)",
+      "rows": "0-79",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 80,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The silhouette is a full 144-pixel-wide rectangle on every row from 0 to 79. The column scans show only ground texture: brown dirt (L about 105) around a grey asphalt patch (L about 77, rows 19-62) with a few darker crack pixels at rows 39-45. There is no front face, no front-edge line, no eave shadow and no vertical face. The asphalt patch has a slightly darker lower edge at rows 59-63, but it is a flat decal seen from above, so the drawing reads as a top-down slab. This is acceptable for a flat floor decal."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 4,
+    "evidence": "The candidate has only 10 distinct colours, and about 3 lightness steps on the grey asphalt ramp. It reads as a mid-grey slab with fine speckle, much shallower than the paving reference, which has stone-by-stone shading, light edges and about 7 visible tones per tile. The measured 5 visible tones per tile sit between grass (3) and paving (7), and near-flat coverage is only 1%, so the speckle does stop the surface from being a flat fill. Dark edge pixels are 0% neutral, so any darks lean toward the material tone and are not a black sticker line. The described subject, a long wandering crack with three side branches and a dirt-filled opening, is barely legible. Only two tiny dark squiggles show, so the crack structure and its shading (depth, lit edge, dirt fill) are essentially missing. The overall look is a flat, noisy rectangle with a hard edge, not a rich decal at Beodeul quality. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 16242
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "grey asphalt patch with two small dark crack marks, on a brown dirt ground",
+      "rows": "19-60",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 42,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The sprite is a full 144x80 opaque tile. A flat grey-brown asphalt rectangle (rows 19-60) lies on a brown dirt background (rows 0-18 and 61-79). Only a 1-row lighter edge at the top and a 1-2 row darker shadow at the bottom (rows 59-62) frame the patch, so they read as outline and not as a vertical face. There is no front face of 3 or more rows, no ellipse, and no roof. The only dark details are two small cracks near rows 39-46. The drawing does not show the described long wandering crack with three branches and a dirt-filled opening. It is a flat top-down decal, which fits the kind flat."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "none",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The asphalt patch has fine speckle and a slightly lighter, rough rim, so it is not a flat fill. Near-flat coverage is 1% and the candidate has 5 visible tones per tile, against 3 for grass and 7 for paving. The whole piece uses only 10 distinct colours, so the ramps are shallow at about 4 steps against the reference's 5-6. Dark edge pixels are 0% neutral, so there is no sticker-style black outline, but the crack is not drawn with its own outline or tone ramp either. The crack itself is the weak point. The brief asks for a long wandering crack with three side branches and a dirt-filled opening. What shows is a plain grey slab with two tiny dark marks and no visible long crack, no branches and no dirt opening. The key feature is almost absent, so the piece is thinner and flatter than the references, which have per-stone and per-tuft shading. A careful artist would not accept it next to them.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 16848
+  }
+ ],
+ "decidedAt": "2026-10-22T23:04:20.651Z",
+ "cells": {
+  "16": [
+   "046ede623f4e1fc4",
+   "197b836a71c41856",
+   "1f44054c1c6f2733",
+   "1f63d6fbff477767",
+   "27576df1e90b51f8",
+   "325f9d03f6670acf",
+   "4b271912bf41a0ae",
+   "516c62bd6b436521",
+   "53f0b8bb3fdf6927",
+   "55ca2b999cb2777f",
+   "57a01a5ce41b8fcf",
+   "57b8fa4d1eb95887",
+   "57fc98f3f560dfdf",
+   "592fb3651515ca56",
+   "6d3b0c5494311d44",
+   "701963da1546c5a0",
+   "7424c8a02611249a",
+   "7c598be88bdd2402",
+   "7d3438decb8024d8",
+   "87ebaacfb06760b3",
+   "8886fb93697d5499",
+   "92e45a208bd9b499",
+   "9841c0306962d588",
+   "9d76d9e966cd91e5",
+   "9ebaf740a8e38141",
+   "9f5af927f0af984a",
+   "a406069af4766046",
+   "aeecd0409de5c59b",
+   "bbb27ca60933d095",
+   "bf4d1cbcd45adc03",
+   "c2f6cebe48735da0",
+   "c66f08a2482faec4",
+   "c87e4edc3d9417aa",
+   "ca3f76d628f12761",
+   "cf9344953836512b",
+   "d1085b2c564bf36b",
+   "e2745db7140954d1",
+   "e53c6edd0faa43fa",
+   "f54e9742cdc5a18f",
+   "f97566546c89e906"
+  ],
+  "24": [
+   "02e1d47b5867c3fa",
+   "04db272cc35fe0be",
+   "0fea1629c342ebe2",
+   "19dcff530783cff6",
+   "1a1b870c3bed39b3",
+   "2cb95e5e29bea7ee",
+   "399edf9d6097460e",
+   "39c981fabc4530cc",
+   "3d561460bf5bb889",
+   "3d62c754ec01c445",
+   "47b2f0cad2cbdf70",
+   "47c0fd5663d671c7",
+   "4823b8be3286fffb",
+   "5346acb9380e5ac3",
+   "563035350d3190cd",
+   "5b3dbbadfcb403c5",
+   "6685ac12c7ae3ec1",
+   "69317cd254971b40",
+   "697569e061a5f203",
+   "6bc67a9f7ce0a20f",
+   "6efeede0ce6c5d1a",
+   "6f55dc1f00d2b1be",
+   "766dbecd8dd2ad82",
+   "79bf85253cfc92c2",
+   "7e6926d64716e740",
+   "85c71610ffbb61ee",
+   "85fe6d5c2d2b5501",
+   "8cf353eae40d6cb6",
+   "97110e727c9c1c86",
+   "a7ba61d30ac995b2",
+   "ad223ca73c65eb9e",
+   "bb0c01f1c328cea8",
+   "bb2d3f38942b0113",
+   "c88b235423cc97f4",
+   "ca9a4fbdd37afbbd",
+   "d0a83fef3edf9721",
+   "d22ecbaea85d42e5",
+   "d78c52070d4d4177",
+   "e1b70665021de036",
+   "e27e250386ad777e",
+   "e936dd22b4bb01e9",
+   "eaaa733451e9c17c",
+   "ebcb2139ba19b0a6",
+   "ed588219cb824f85",
+   "eed588eed218c527",
+   "f11b52fb6b29cfae",
+   "f5a981d0df8e766f",
+   "f634157f64e9b4e7"
+  ],
+  "32": [
+   "00e36b1c1e9f093e",
+   "012075d1d7c120b3",
+   "0f9dc003afdd3d1f",
+   "191e7600042b6517",
+   "1a9305cd5311a8a8",
+   "1f67280409368a4b",
+   "23a32fed9dfbbd6e",
+   "23a95ee117c1c33d",
+   "280279a25484bb4b",
+   "2939199845b1b7fb",
+   "2b2157f903a56ba8",
+   "2d16713beda38b0e",
+   "2eb025039b5e39b8",
+   "32865f726c1ee105",
+   "32cd707117e83f9c",
+   "340d3d0b4124507a",
+   "3744a86468269126",
+   "38c458edd515070e",
+   "41b8c9874ea6ecf6",
+   "47559d22d55724a9",
+   "49992c17bca802ab",
+   "4f9c344785e5fa97",
+   "529335d1acdbc4a0",
+   "5462ba31baccc28f",
+   "5518385fdd89332c",
+   "572b6bfccb4d3b48",
+   "586061ac53d6d237",
+   "5b07c487f9f8c4bb",
+   "5e265e1a7b0681c5",
+   "63407964a55ce3a3",
+   "63f3a2b4d39e5909",
+   "68b6b89f451d3531",
+   "6b56958fb5d174ad",
+   "6e1065fa4cbbd2d4",
+   "7776af21b9bf77b5",
+   "7a8ac15edde779e1",
+   "7e57cf46250b476e",
+   "7e69f6678afe1b32",
+   "7f36c7e36ba6fdc8",
+   "845111d9a1fecd9d",
+   "88b9bfad2be56733",
+   "89b9824e0cf5df57",
+   "89dd37f741ee1171",
+   "8abd144a930e715e",
+   "8c3bd229a6c9d2ad",
+   "8e3bd964369654a8",
+   "920417a8acfb332d",
+   "9349e013c2c26b32",
+   "9515004f904a7d42",
+   "9846efcab2f48ae6",
+   "98550e12309621eb",
+   "9906e96d4c4bef60",
+   "9bd3161d0badb91c",
+   "a01242f76d2c270e",
+   "a0757279eed12447",
+   "a49c80849231e804",
+   "a6e523e4a9798ade",
+   "a8962c74b426ef0f",
+   "aa7d054109e9c960",
+   "ace58bfebe4ba6f8",
+   "ade71b55f7661614",
+   "afc7ce35249211e9",
+   "b0f024ea517ef184",
+   "b1b05ef54380e88e",
+   "b1efd3872495741f",
+   "b2688e3a292c8b96",
+   "b3ccd78b5ba2aa8d",
+   "b444452d797dc585",
+   "b4a682b4e8687925",
+   "b9b1b37a07e25368",
+   "bb0edcbc99c1a5f9",
+   "bff30c8182f54d84",
+   "c569aa7e0b03ef40",
+   "cb6398d0393f157b",
+   "d4b9dc75e6d9f0f4",
+   "d73f383a2e2887c6",
+   "d92fb661ef66b4d2",
+   "df5c9b74ad8ca28d",
+   "dfaa49a4220d2b89",
+   "e2e5d7a800ca0980",
+   "e2e94892b244b15b",
+   "e79c08acc52fe195",
+   "e9a1ebd775db6589",
+   "ecc886ecc9288eda",
+   "f1d2286a07df5cf6",
+   "f21ade4ecc0a5b50",
+   "f5adfaabdef05d5d",
+   "f7380a25ee1a703a",
+   "fd68587389143d2f",
+   "ff00bfac77585ef7"
+  ],
+  "48": [
+   "0aecd1d5d516846a",
+   "2abbcc8042a627eb",
+   "2bd07e0897ae14d4",
+   "338953c80bb0e9d9",
+   "58c4556fcbaf79b9",
+   "6c73aa21634defe6",
+   "7f7e761e4f0863da",
+   "8e83b83d6cb81258",
+   "96db7bef9eba1a5f",
+   "9fc23ef01b4c174e",
+   "afef40c104099df5",
+   "efe41626726b413f"
+  ]
+ }
+}

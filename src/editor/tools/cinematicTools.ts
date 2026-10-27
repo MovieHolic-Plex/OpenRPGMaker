@@ -235,6 +235,18 @@ function normalizeScene(project: Project, raw: unknown, index: number, isKnown: 
     return { ...common, kind: "text" };
   }
 
+  // 「게임 속 맵 그대로」(map-view:<mapId>)는 애니메틱 레이어 전용이다 — 그림 장면(kind:image)의 플레이어는 이 id 를 URL 로 못 바꿔
+  // 오프닝이 빈 장면으로 멈췄다(2026-10-26 hf2-school-claude-j80: shot_classroom 이 map-view 그림 장면으로 저장됨).
+  const directionLayers = (scene.direction as { layers?: unknown } | null | undefined)?.layers;
+  const mapViewIds: unknown[] = [scene.resourceId, ...(Array.isArray(directionLayers) ? directionLayers.map((layer: { resourceId?: unknown } | null) => layer?.resourceId) : [])];
+  const mapViewId = mapViewIds.find((id): id is string => typeof id === "string" && openingMapViewMapId(id) !== undefined);
+  if (mapViewId !== undefined) {
+    throw new ToolError(
+      `scenes[${index}]의 '${mapViewId}' 는 게임 맵을 그대로 쓰는 배경이라 애니메틱 장면에서만 그려집니다. `
+      + `create_opening_animatic_shot 으로 샷을 만들고 place_opening_background{shotId, layerId:'bg', mapId:'${openingMapViewMapId(mapViewId)}', focus:{x,y}} 로 깐 뒤 그 shotId 를 장면에 넣으세요.`,
+      { code: "invalid-args" },
+    );
+  }
   const resourceId = resolveResourceId(project, kind === "video" ? "movie" : "image", scene.resourceId, index, "resourceId", isKnown);
   if (kind === "video") {
     if (scene.motion !== undefined || scene.direction !== undefined) {
@@ -454,6 +466,8 @@ const getOpening: ToolDefinition = {
         + `${opening.musicResourceId ? `, 배경음악 ${opening.musicResourceId}` : ", 배경음악 없음"}.`,
       data: {
         opening,
+        // 타이틀 앞 인트로(track:"title-intro")는 따로 있다 — 여기선 요약만.
+        titleIntro: project.system.titleIntro ? { enabled: project.system.titleIntro.enabled, shots: project.system.titleIntro.scenes.map(scene => scene.id), musicResourceId: project.system.titleIntro.musicResourceId ?? null } : null,
         generatedStills,
         sceneCount: opening.scenes.length,
         enabled: opening.enabled,

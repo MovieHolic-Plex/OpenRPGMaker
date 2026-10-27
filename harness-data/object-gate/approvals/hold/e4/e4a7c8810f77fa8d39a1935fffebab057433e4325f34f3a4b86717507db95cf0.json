@@ -1,0 +1,18 @@
+{
+ "schema": "oprn-object-gate-hold-decision/1",
+ "pixelSha256": "e4a7c8810f77fa8d39a1935fffebab057433e4325f34f3a4b86717507db95cf0",
+ "profileHash": "4d8774b517f41638",
+ "kind": "structure",
+ "decision": "allow",
+ "decidedBy": "supervisor (village-art)",
+ "decidedAt": "2026-10-23T03:39:01.765Z",
+ "by": "delegated",
+ "delegatedBy": "user",
+ "evidence": "tiledata/wasteland-ruins/_review/r55/opus-reviewer-verdict.md",
+ "via": "review-page",
+ "reasons": [
+  "화풍: 판정자 fail (3/4)"
+ ],
+ "note": "delegated by user to supervisor 2026-10-23 — wasteland_ruins/husk-e: gate FAIL re-checked by a fresh independent adversarial Opus reviewer -> PASS (r55).",
+ "sig": "307afe54efc8ca64ab9b67d88fadb8ee560c48fbec6b215e6d080420f6dc90d4"
+}

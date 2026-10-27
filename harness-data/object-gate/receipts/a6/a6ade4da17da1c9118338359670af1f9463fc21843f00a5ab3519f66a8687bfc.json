@@ -1,0 +1,344 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a6ade4da17da1c9118338359670af1f9463fc21843f00a5ab3519f66a8687bfc",
+ "width": 96,
+ "height": 80,
+ "kind": "terrain",
+ "name": "dusty packed wasteland earth ground, a seamless 4x4-tile field with soft tonal patches, long dry cracks and pebbles running across tile borders, mixed with tiles of dried mud cracks",
+ "label": "wasteland_ruins/dirt-b",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 평면 채움 (4/4)",
+  "화풍: 명암 3단 < 4 (1/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "평면 채움 (4/4)",
+   "명암 3단 < 4 (1/4)"
+  ],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 6
+ },
+ "metrics": {
+  "tileColorsMedian": 7,
+  "tileColorsP90": 9,
+  "darkV5": 97,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 30
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "ground field (packed earth with mud patches, cracks, pebbles)",
+      "rows": "0-79",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 80,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The image is a seamless flat ground texture filling the full 96x80 frame. The width profile is a constant 96 for rows 0-79, so there is no silhouette, no front face and no standing volume. The column scans show only alternating tonal patches, dark crack lines (L=81 at rows 24, 32, 75), and light pebbles (L~157-163), with no front-edge line or eave shadow. It is a terrain tile, so the caller-supplied kind matches. It reads as a flat top-down surface, as expected for ground."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate has only 9 distinct colours in total, and about 7 visible tones per tile. That matches the paving reference on tone count, but the ground ramps are shallow. The grey-brown base is a large mostly flat field with only a few patch tones (grey, mid brown, dark brown) and sparse pebbles and cracks. Near-flat coverage is 35%, against 0% for both references, so there are real flat 5x5+ areas of one colour with no grain, which the grass reference doesn't have. The dark edge pixels carry a brown tint (0% neutral), so the crack and patch edges are tinted rather than black, which is good. The cracks and pebbles do run across tile borders, and the patches are soft. However, the surface lacks the per-pixel grain and speckle that Beodeul soil or grass tiles carry, so it reads as a flat base with decals. This is a visible step down in texture richness from the references, so I fail it.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 10363
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "ground field, a flat top-down texture of earth, cracks and pebbles filling the whole 96x80 area",
+      "rows": "0-79",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 80,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The image is a seamless terrain tile field. The silhouette is a full 96-wide rectangle for all 80 rows, with no outline, base or front face. Column scans show tonal patches, dark crack lines and pebble highlights repeating across the whole area, with no front-edge line or eave shadow. It is a flat top-down ground texture, which is correct for terrain, so there is no standing object and no vertical face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate has 7 visible tones per tile, equal to the paving reference and above the grass reference at 3, so the tone count alone is not a problem. Near-flat coverage is 35% against 0% for both references, and the grey-brown base shows large uniform areas with no grain or speckle between the mud patches. The patches are only 2-3 tones each, with a few pixel-cracks and lone pebbles on top, and they read as stamped blobs rather than shaded clusters. Only 9 distinct colours exist in the whole piece, so the ramps are shallow, while Beodeul grass carries clumped dots and grain across every tile. Dark edge pixels carry a brown tint (0% neutral), so there is no sticker outline, but the flat base and thin ramps still leave it below the reference's texture density.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 9065
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "ground field (packed earth, mud patches, cracks, pebbles)",
+      "rows": "0-79",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 80,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The image is a seamless full-bleed 96x80 texture: silhouette width is 96 on every row, with no transparent rows and no outline. The column scans show only short runs of mud patches, cracks and pebbles, with no recurring front-edge line, eave shadow or vertical face. There is no standing object, so no front face exists. This is a flat top-down terrain field, which fits the terrain kind."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate has only 9 colours in total and about 4 usable steps: a grey base, two or three brown patch tones, a dark crack tone and pebble highlights. Its visible tones per tile (7) match the paving reference and exceed the grass reference (3), so the tone count alone does not fail it. The 35% near-flat coverage is a real problem, because both references measure 0%. The grey base between the patches is large, nearly uniform fill with only sparse specks, and it lacks the per-tile grain and speckle the references carry. The crack lines and pebbles are thin and sparse, and the patches look like flat blobs with little internal grain. The dark edge pixels are 0% neutral, so the crack and patch edges lean brown and read as dark material tone, which is acceptable. Overall it is cleaner and flatter than the Beodeul ground standard, and in doubt it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 11910
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "ground tile field (dusty earth with mud patches, cracks, pebbles)",
+      "rows": "0-79",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 80,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The image is a seamless terrain field that fills the full 96x80 frame, with a constant width of 96 on every row. It has no silhouette, no standing body and no vertical south face. Patches, cracks and pebbles run across tile borders as flat ground texture, and the dark lines in the column scans are crack lines, not front-edge lines. This is a flat top-down ground texture, which is appropriate for the terrain kind."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a grey-brown packed earth field with brown mud patches, thin dark cracks and light pebbles. It reads as 4 tonal steps: a base grey-brown, a lighter speckle, a mid brown patch and a dark brown crack or pebble shadow. The Beodeul references show about 5-6 steps. Measured facts: 7 visible tones per tile matches the paving reference (7) and exceeds the grass reference (3), so tone count is not the weakness. Near-flat coverage is 35%, against 0% for both references, so about a third of the field is open flat grey base with no grain or dot variation. The Beodeul tiles carry grain across the whole surface. The 9 total colours is also a small ramp, and the cracks and pebbles are sparse, thin and repeated, so the patches look somewhat stamped. Dark edge pixels are 0% neutral, so the dark tones lean brown and nothing reads as a near-black sticker outline; there is no real outline, only crack lines. Overall the candidate is cleanly drawn and tinted correctly, but the large flat grey areas make it flatter than the references, and when in doubt it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 9788
+  }
+ ],
+ "decidedAt": "2026-10-22T16:59:41.707Z",
+ "cells": {
+  "16": [
+   "12e3bd35ed74c479",
+   "1359f954c249d525",
+   "13ebaf1a6e061f72",
+   "2cbaf2b26c1393b4",
+   "36c2d2609001cc8b",
+   "37511385463e6708",
+   "3868d55029388f0a",
+   "389f8f69bfd56deb",
+   "53f92aabef43d0d3",
+   "5d5b7d863abce659",
+   "5d7ee49b347e22c9",
+   "69113a26b58b0daf",
+   "71779ea9f610065b",
+   "82971389e938a213",
+   "99878ee2362b7666",
+   "b244318b5067765b",
+   "baa7333469ac1b35",
+   "c6196783790d3821",
+   "e4c48e54e6cac543",
+   "e84ced9df825f731"
+  ],
+  "24": [
+   "2d18ac66c53819df",
+   "2e9e442affb01ee1",
+   "31d7642ee98153f3",
+   "423cc9b8de19ac8d",
+   "46560f513f83cf12",
+   "4d264194335c39ce",
+   "50ca54e15539739a",
+   "567eb8b720dfcae8",
+   "5deeba46341d9cc9",
+   "660ff53c1890f20a",
+   "66308651d504f249",
+   "6e49c87be79df5f4",
+   "6ee89666508d3bee",
+   "7a9b97d741e841b3",
+   "848a30b8111cf549",
+   "96195b332b309026",
+   "9f3bbcca7901d02f",
+   "a1168dcffd5c5d56",
+   "a7f4bb1273fcbd34",
+   "a95ba1d97a413c31",
+   "ae51e6e24cc0da61",
+   "ba40e528a0738607",
+   "c6e8a07ad0134570",
+   "d550e239aa55b73a",
+   "e73999f8313ca99c",
+   "f2128c05c3121a8e",
+   "f3efe3138805ccbb",
+   "f93a4b5ecab10eef",
+   "fa4dd8590af13c27",
+   "fd7f0aaa01d88802",
+   "fe53faf2060ccd31",
+   "ff53eb5aa359cf66"
+  ],
+  "32": [
+   "0d95e3990543bd42",
+   "1026ebb57df56d7f",
+   "20d600f71f445aea",
+   "2e660bd8b4a6a57f",
+   "4c7dc8a8898f8e78",
+   "750f53c751edf061",
+   "7e4d331fd32e29d9",
+   "84a6ff0cabf54e4c",
+   "9fcee587aafeed50",
+   "baeac6aac21a43ca",
+   "ce7402ef21167dcb",
+   "df7000961be70c90",
+   "ebfdf644b3f474d9",
+   "f022b4064275935a",
+   "f58a2ee659986839"
+  ],
+  "48": [
+   "4dd3941ace0ced7c",
+   "6a8aad7019314ddb",
+   "823e259b059c45e4",
+   "8a873bbc1c179238",
+   "921d901243cef26f",
+   "a826f84f3602b3a0",
+   "d49dfd8d6d589162",
+   "fe9efe815ab57acd"
+  ]
+ }
+}

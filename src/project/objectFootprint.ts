@@ -106,3 +106,54 @@ export function footprintRefusal(project: Project, map: GameMap, cells: readonly
     : " 둘레 10칸 안에 놓을 자리가 없다 — 방 안 빈 바닥을 show_map_region 으로 찾아 고른다.";
   return { code: problem.code, suggestion, message: `${label} 을(를) (${ox},${oy}) 에 놓으면 (${problem.x},${problem.y}) 칸이 ${problem.why}.${foot}${next}` };
 }
+
+/** 가구 이름표의 이름 부분(「안락의자 (0,0)」「더블 침대 1,0」→ 「안락의자」「더블 침대」). */
+export function objectBaseLabel(label: string): string {
+  return label.replace(/\s*\([^)]*\)\s*$/u, "").replace(/\s+\d+,\d+$/u, "").trim();
+}
+
+/**
+ * (x,y) 칸의 물체(위층 그림) 한 점 — 같은 이름표 이름이 이어진 위층 칸 전부(최대 64칸). 바닥 덧그림·이름표 없는 칸은 물체로 보지 않는다.
+ * stamp_object 가 겹친 물체를 걷어 낼 때 쓴다(2026-10-25 J64: 학교 교실에 남은 소파·냉장고 때문에 책상 11번 거부).
+ */
+export function objectClusterAt(project: Project, map: GameMap, x: number, y: number): { label: string; cells: number[] } | null {
+  const tileset = project.tilesets[map.tilesetId];
+  const nameAt = (i: number): string => {
+    const tile = objectAt(map, i, tileset);
+    return tile >= 0 ? objectBaseLabel(tileset?.tileMeta?.[tile]?.label ?? "") : "";
+  };
+  if (x < 0 || y < 0 || x >= map.width || y >= map.height) return null;
+  const start = y * map.width + x;
+  const label = nameAt(start);
+  if (!label) return null;
+  const seen = new Set([start]);
+  const queue = [start];
+  for (let k = 0; k < queue.length && seen.size < 64; k += 1) {
+    const i = queue[k]!;
+    const cx = i % map.width, cy = (i - cx) / map.width;
+    for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]] as const) {
+      const nx = cx + dx, ny = cy + dy;
+      if (nx < 0 || ny < 0 || nx >= map.width || ny >= map.height) continue;
+      const j = ny * map.width + nx;
+      if (seen.has(j) || nameAt(j) !== label) continue;
+      seen.add(j);
+      queue.push(j);
+    }
+  }
+  return { label, cells: [...seen] };
+}
+
+/** 발자국이 겹치는 물체들(한 점씩). */
+export function overlappedObjects(project: Project, map: GameMap, cells: readonly FootprintCell[], ox: number, oy: number): { label: string; cells: number[] }[] {
+  const out: { label: string; cells: number[] }[] = [];
+  const taken = new Set<number>();
+  for (const cell of cells) {
+    const x = ox + cell.dx, y = oy + cell.dy;
+    if (x < 0 || y < 0 || x >= map.width || y >= map.height || taken.has(y * map.width + x)) continue;
+    const cluster = objectClusterAt(project, map, x, y);
+    if (!cluster) continue;
+    for (const i of cluster.cells) taken.add(i);
+    out.push(cluster);
+  }
+  return out;
+}

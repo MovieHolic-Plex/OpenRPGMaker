@@ -1,0 +1,845 @@
+"""wasteland_ruins 바닥 — 황무지 흙 4 · 금 간 아스팔트 오토타일(4방향 16마스크) + 낱칸 변형 2 · 금 간 콘크리트 판 3 · 투명 덧그림(잔해 3·잡초 3·기름 웅덩이).
+
+마스크 비트 N=1 E=2 S=4 W=8 (그 방향 이웃이 아스팔트면 켠다). 마스크 m 칸은 조각 안 (m%4, m//4).
+이웃이 없는 쪽은 아스팔트가 흙으로 부서져 끝난다(들쭉날쭉한 가장자리, 남쪽은 1화소 앞면 + 흙 그림자).
+바닥 칸끼리 이음: 모든 흙·아스팔트 칸은 가장자리 3화소 띠를 같은 바탕 결(seed 0)로 칠하고 안쪽만 변형마다 다르다.
+"""
+import collections
+from wl_kit import *
+
+TERRAIN, FLAT = 'terrain', 'flat'
+N, E, Sb, W = 1, 2, 4, 8
+AUTO = {}
+
+
+def edge_d(x, y): return min(x, y, 15 - x, 15 - y)
+
+
+def dirt_cell(c, ox, oy, seed):
+    for y in range(16):
+        for x in range(16):
+            c.P(ox + x, oy + y, dirt_px(x, y, 0))
+
+
+def tiled(ids, grid):
+    """표본: grid = 행 문자열(글자 → ids 의 키). 조각 그림을 칸으로 깔아 붙인다."""
+    def mk(f=0):
+        h, w = len(grid), len(grid[0])
+        a = np.zeros((h * 16, w * 16, 4), np.uint8)
+        for j, row in enumerate(grid):
+            for i, ch in enumerate(row):
+                pid, cx, cy = ids[ch]
+                src = render(PIECES[pid])
+                if cx is None: cx, cy = i % PIECES[pid]['w'], j % PIECES[pid]['h']      # 이음 판(4×4): 자리 (x mod 4, y mod 4) 칸
+                a[j * 16:(j + 1) * 16, i * 16:(i + 1) * 16] = src[cy * 16:(cy + 1) * 16, cx * 16:(cx + 1) * 16]
+        return a
+    return mk
+
+
+def decal_sample(pid, grid=('abXa', 'aaab', 'Xaca'), extra=((3, 1),)):
+    """덧그림 표본: 흙 칸(4×3)을 깔고 X 칸(+ extra 칸)에 덧그림을 얹는다 — 실제 쓰임(흙 위 드문드문)대로 보인다."""
+    def mk(f=0):
+        a = tiled(DIRT_IDS, [r.replace('X', 'a') for r in grid])(f)
+        d = render(PIECES[pid], f); m = d[..., 3] > 0
+        cells = [(i, j) for j, r in enumerate(grid) for i, ch in enumerate(r) if ch == 'X'] + list(extra)
+        for (i, j) in cells:
+            blk = a[j * 16:(j + 1) * 16, i * 16:(i + 1) * 16]
+            op = d[..., 3] == 255; blk[op] = d[op]
+            sh = m & ~op                                           # 반투명 그림자: 흙 위에 섞어 굽는다(표본만, 관문 그림은 불투명)
+            al = d[..., 3:4].astype(np.float32) / 255.0
+            blk[sh, :3] = (blk[sh, :3] * (1 - al[sh]) + d[sh, :3] * al[sh]).astype(np.uint8)
+        return a
+    return mk
+
+
+
+# ------------------------------------------------------------------ 흙 4 (64×64 이음 판 — 칸 (x mod 4, y mod 4) 자리에 깐다)
+FP = 64                                                     # 바닥 이음 주기(화소) = 4칸
+
+
+def wrapnoise(x, y, seed, cell, per=None):
+    """주기 per(기본 FP) 로 감싼 값 잡음 0..1(격자 cell)."""
+    per = per or FP
+    return vnoise(x % per, y % per, seed, cell, per)
+
+
+def dirt64_tone(x, y):
+    """흙 바탕 단: 갈색 단만(2·3·5, 드물게 1) — 큰 얼룩은 낮은 대비(3↔2/5), 2×2 덩이로 5×5 평면을 깬다. 낱화소 잡음·회색 얼룩 없음."""
+    f = 0.55 * wrapnoise(x, y, 201, 16) + 0.45 * wrapnoise(x, y, 207, 8)
+    t = 3
+    if f > 0.70: t = 5
+    gx, gy = (x + (y // 2) % 2) // 2, y // 2
+    d = h2(gx % (FP // 2), gy % (FP // 2), 211) % 7
+    if d in (0, 1): t = {2: 3, 3: 5, 5: 3}[t]
+    elif d == 2: t = {2: 1, 3: 2, 5: 3}[t]
+    k = h2(x % FP, y % FP, 215) % 61
+    if k == 0: t = 6                                          # 드문 밝은 먼지 알(낱알, 덩이 아님)
+    elif k == 1: t = 7 if t == 5 else 6
+    elif k == 2: t = 1                                        # 드문 어두운 구멍 알
+    return t
+
+
+# 바탕에 공유되는 결(칸 경계를 넘는다): 긴 마른 금, 젖은 얼룩, 자갈 — 좌표는 64 판 안(감싼다)
+DIRT_CRACKS = [[(2, 21), (8, 20), (13, 22), (19, 22), (25, 24)], [(13, 22), (14, 27)],
+               [(40, 44), (46, 43), (52, 44), (58, 42), (66, 43)],
+               [(29, 59), (34, 61), (38, 66)]]
+DIRT_BLOTS = [(46, 12, 6, 3), (12, 47, 7, 4), (60, 30, 5, 3)]   # (cx, cy, rx, ry) 젖은 얼룩(두 단 어둡게 가장자리 한 단)
+DIRT_PEBBLES = [(7, 6, 2), (31, 14, 1), (54, 23, 2), (23, 39, 2), (40, 31, 1), (5, 58, 1), (47, 55, 2), (62, 3, 1), (15, 30, 1), (35, 50, 1)]
+
+
+_BLOBS = {}
+
+
+def blobs(per, seed, step=3):
+    """주기 per 로 감싼 작은 덩이 분할(지터 격자 보로노이, 덩이 2~4화소): {(x,y): (덩이 id, 아래·오른 경계?)}."""
+    key = (per, seed, step)
+    if key in _BLOBS: return _BLOBS[key]
+    n = per // step; seeds = {}
+    for j in range(n):
+        for i in range(n):
+            r = h2(i, j, seed); seeds[(i, j)] = ((i * step + r % step) % per, (j * step + (r >> 4) % step) % per)
+    own = {}
+    for y in range(per):
+        for x in range(per):
+            gi, gj = x // step, y // step; best = None
+            for dj in (-1, 0, 1):
+                for di in (-1, 0, 1):
+                    k = ((gi + di) % n, (gj + dj) % n); sx, sy = seeds[k]
+                    dx = min(abs(x - sx), per - abs(x - sx)); dy = min(abs(y - sy), per - abs(y - sy))
+                    d = dx * dx + dy * dy + (h2(x, y, seed + 1) % 3) * 0.3
+                    if best is None or d < best[0]: best = (d, k)
+            own[(x, y)] = best[1]
+    out = {}
+    for (x, y), k in own.items():
+        edge = own[((x + 1) % per, y)] != k or own[(x, (y + 1) % per)] != k
+        lit = own[((x - 1) % per, y)] != k or own[(x, (y - 1) % per)] != k     # 왼·위 가장자리(빛 받는 쪽)
+        out[(x, y)] = (k, edge, lit)
+    _BLOBS[key] = out
+    return out
+
+
+_DT = {}
+
+
+def _dirt_tones():
+    """덩이마다 단을 정한다: 3 · 밝은 5 · 드문 2. 이미 3 인 이웃 덩이가 둘 이상이면 3 대신 5/2 로 바꿔 같은 단 덩이가 크게 뭉치지 않게 한다(5×5 같은 색 판 방지)."""
+    if _DT: return _DT
+    B = blobs(FP, 521, 3)
+    nb = collections.defaultdict(set)
+    for (x, y), (k, e, l) in B.items():
+        for (dx, dy) in ((1, 0), (0, 1)):
+            k2 = B[((x + dx) % FP, (y + dy) % FP)][0]
+            if k2 != k: nb[k].add(k2); nb[k2].add(k)
+    for k in sorted(nb, key=lambda k: (k[1], k[0])):
+        r = h2(k[0], k[1], 503) % 100
+        f = wrapnoise(k[0] * 3, k[1] * 3, 505, 32)
+        lite = 26 + int(f * 14)
+        t = 5 if r < lite else 2 if r < lite + 9 else 3
+        if t == 3 and sum(1 for n in nb[k] if _DT.get(n) == 3) >= 2: t = 5 if r % 5 else 2
+        _DT[k] = t
+    return _DT
+
+
+def dirt_base(x, y):
+    """새 흙 바탕 단(주기 64): 흙덩이(2~4화소)마다 한 단 — 가운데 3 · 밝은 5 덩이(아래·오른 그늘 3 → 솟은 흙덩이) · 드문 어두운 2 덩이.
+    큰 흐름(32화소 잡음)은 밝은 덩이 몫만 조금 바꾼다(어두운 얼룩 판·테두리 그물 없음). 낱화소 잡음 없음."""
+    k, edge, lit = blobs(FP, 521, 3)[(x % FP, y % FP)]
+    t = _dirt_tones()[k]
+    return t
+
+
+def dirt_col(t):
+    return K('dirt', t)
+
+
+def dirt_field(c, ox, oy):
+    """64×64 흙 이음 판: 덩이 바탕(낱화소 잡음 없음, 큰 흐름 낮게) + 솟은 흙덩이 14 + 잔돌·부스러기 무리 5 — 바퀴 자국은 64 주기로 줄지어 보여 뺐다(발길 오토타일이 맡는다)."""
+    for y in range(FP):
+        for x in range(FP):
+            c.P(ox + x, oy + y, dirt_col(dirt_base(x, y)))
+    def P(x, y, col): c.P(ox + x % FP, oy + y % FP, col)
+    for i in range(6):                                        # 솟은 흙덩이(3×2~4×3) 두 무리: 윗면 빛 5 · 몸 3 · 앞 그늘 2 · 밑 그림자 1(가운데 0)
+        gx, gy = ((10, 14), (42, 44))[i % 2]
+        x0 = gx + h2(i, 1, 531) % 10; y0 = gy + h2(i, 2, 531) % 8; w = 3 + h2(i, 3, 531) % 2; hh = 2 + h2(i, 4, 531) % 2
+    for i in range(5):                                        # 잔돌·부스러기 무리(지름 7~9 자리에 2화소 알 5~7개, 알마다 밝은 위 · 그늘 아래)
+        cx0 = h2(i, 5, 541) % FP; cy0 = h2(i, 6, 541) % FP
+        for j in range(5 + h2(i, 7, 541) % 3):
+            x = cx0 + h2(i, j, 543) % 8; y = cy0 + h2(j, i, 545) % 6
+            stone = (i + j) % 3 == 0
+            P(x, y, K('conc', 4) if stone else K('dirt', 5)); P(x, y + 1, K('dirt', 1))
+            if stone and j % 2: P(x + 1, y, K('conc', 3))
+
+
+def _dirt64(v):
+    """v=0 바탕 판. v=1..3 은 같은 바탕 + 칸 안에서만 끝나는 낱칸 결(칸마다 자리·크기·모양이 다르다) — 어느 자리에 섞어도 바탕이 이어진다."""
+    def draw(c):
+        dirt_field(c, 0, 0)
+        if v == 0: return
+        sh = K('dirt', 1)
+        for cy in range(4):
+            for cx in range(4):
+                ox, oy = cx * 16, cy * 16; r = h2(cx, cy, 300 + v)
+                jx, jy = 2 + r % 4, 2 + (r >> 4) % 4
+                if v == 1:                                    # 얕게 파인 젖은 땅: 부드러운 어두운 얼룩(가장자리 2단 → 속 1단) + 앞 빛 턱 + 흙덩이
+                    cxm, cym, rx, ry = 7 + r % 3, 7 + (r >> 3) % 3, 4.8 + (r % 2), 3.4
+                    B = blobs(FP, 521, 3)
+                    for y in range(16):
+                        for x in range(16):
+                            k, edge, lit = B[((ox + x) % FP, (oy + y) % FP)]
+                            jit = (h2(k[0], k[1], r) % 4) * 0.07       # 덩이 단위로 흔들린 테두리(낱화소 들쭉 없음)
+                            d = ((x - cxm) / rx) ** 2 + ((y - cym) / ry) ** 2 + jit
+                            if d < 0.45: c.P(ox + x, oy + y, K('dirt', 2 if edge or h2(k[0], k[1], 517) % 3 == 0 else 1))
+                            elif d < 1: c.P(ox + x, oy + y, K('dirt', 1 if edge and h2(k[0], k[1], 519) % 2 else 2))
+                            elif d < 1.4 and y > cym + 1: c.P(ox + x, oy + y, K('dirt', 3 if edge else 5))   # 앞쪽 마른 턱(덩이째)
+                elif v == 2:                                  # 자갈 무리(크기 섞임, 그늘 있는 돌) + 녹 조각 — 칸마다 배치가 다르다
+                    for i in range(4 + r % 3):                    # 그늘 진 돌 무리(3·2화소 섞임)
+                        x = jx + 1 + h2(i, 3, r) % 9; y = jy + 1 + h2(i, 4, r) % 8; sz = 3 if i < 2 else 2
+                        pebble(c, ox + x, oy + y, sz, 'conc' if (i + r) % 3 else 'brick', 6 if (i + r) % 3 else 5, 4, 2, sh)
+                    if r % 2:
+                        x, y = jx + 7, jy + 10
+                        c.P(ox + x, oy + y, K('rust', 5)); c.P(ox + x + 1, oy + y, K('rust', 4)); c.P(ox + x + 2, oy + y, K('rust', 2)); c.HL(ox + x, oy + y + 1, 3, sh)
+                else:                                         # 마른 풀 포기(부채꼴, 크기·자리 칸마다 다름) + 부스러기
+                    fan(c, ox + jx + 4, oy + jy + 9, 6 + r % 2, 'dry', r % 97, 8, 3, droop=bool(r % 2))
+                    fan(c, ox + jx + 9, oy + jy + 10, 4, 'dry', r % 89, 6, 2)
+                    if (r >> 5) % 2: fan(c, ox + jx + 1, oy + jy + 11, 3, 'grass', r % 83, 4, 1)
+    return draw
+
+
+DIRT_IDS = {'a': ('dirt-a', None, None), 'b': ('dirt-b', None, None), 'c': ('dirt-c', None, None), 'd': ('dirt-d', None, None)}
+_dirt_grid = {'a': ['aaaaaa', 'aaaaaa', 'aaaaaa', 'aaaaaa', 'aaaaaa'], 'b': ['aabaaa', 'aaaaba', 'baaaaa', 'aaabaa', 'abaaab'],
+              'c': ['aaacaa', 'caaaaa', 'aaaaca', 'acaaaa', 'aaacaa'], 'd': ['adaaaa', 'aaaada', 'aadaaa', 'daaaad', 'aaadaa']}
+for _v, _l in enumerate('abcd'):
+    piece('dirt-' + _l, '황무지 흙 ' + 'ABCD'[_v], 4, 4, TERRAIN,
+          en='dusty packed wasteland earth ground, a seamless 4x4-tile field with soft clumped earth with raised clods, gentle lighter dry and darker damp areas and small grit clusters running across tile borders' +
+             ['', ', mixed with tiles of shallow damp hollows', ', mixed with tiles of gravel and rust flakes', ', mixed with tiles of dry grass tufts'][_v],
+          group='ground', tags=['흙', '황무지', '바닥'],
+          desc='먼지 낀 다져진 황무지 흙 이음 판(4×4칸, 주기 64화소) — 맵 칸 (x,y) 에는 판의 (x mod 4, y mod 4) 칸을 깐다. A 바탕, B 젖은 웅덩이 자국·C 자갈·녹·D 마른 풀은 같은 자리 칸을 드물게(10~20%) 바꿔 끼운다.',
+          sample=tiled(DIRT_IDS, _dirt_grid[_l]))(_dirt64(_v))
+
+
+# ------------------------------------------------------------------ 아스팔트
+def asph_px(x, y, seed):
+    """차분한 어두운 타르 한 화소: 2단 바탕에 작은 덩이(2~3화소) 3단 — 두 값만, 3 의 몫은 칸 안 큰 흐름(왼위 조금 밝음)으로 부드럽게 바뀐다."""
+    k2, e2, _ = blobs(16, 607 + seed * 5, 3)[(x & 15, y & 15)]
+    q = h2(k2[0], k2[1], 609 + seed) % 100
+    share = 14 + int(16 * (1 - (k2[0] + k2[1]) / 32))          # 14~30%
+    return K('asph', 3 if q < share else 2)
+
+
+def asph_cell(c, ox, oy, seed):
+    for y in range(16):
+        for x in range(16):
+            c.P(ox + x, oy + y, asph_px(x, y, seed))
+
+
+def aggregate(c, ox, oy, cx, cy, seed, n=3):
+    """골재 무리: 2화소 알(밝은 5 + 4) 2~3개를 4×4 안에 모은다."""
+    for i in range(n):
+        x = cx + h2(i, 1, seed) % 4; y = cy + h2(i, 2, seed) % 4
+        c.P(ox + x, oy + y, K('asph', 5)); c.P(ox + x + 1, oy + y, K('asph', 3 if h2(i, 3, seed) % 2 else 5)); c.P(ox + x, oy + y + 1, K('asph', 1))
+
+
+def hairline(c, ox, oy, pts, seed, dirt=False):
+    """머리카락 금: 1화소 어두운 줄(1단, 군데군데 0단) — 빛 턱 없음. dirt=True 면 군데군데 흙이 낀다."""
+    for (p0, p1) in zip(pts, pts[1:]):
+        n = max(abs(p1[0] - p0[0]), abs(p1[1] - p0[1]), 1)
+        for i in range(n + 1):
+            x = round(p0[0] + (p1[0] - p0[0]) * i / n); y = round(p0[1] + (p1[1] - p0[1]) * i / n)
+            if 0 <= x < 16 and 0 <= y < 16:
+                hv = h2(x, y, seed) % 5
+                c.P(ox + x, oy + y, K('dirt', 2) if dirt and hv == 0 else K('asph', 0))
+                if y + 1 < 16: c.P(ox + x, oy + y + 1, K('asph', 5 if hv == 3 else 3))     # 금 아래 깨진 턱 빛
+
+
+def jag(i, side, m):
+    """이웃 없는 쪽(side)에서 흙이 먹어 들어온 깊이(화소) 1..4 — 마스크·변마다 다른 불규칙 굴곡(이웃 칸과 잇도록 끝 0·15 는 2 고정)."""
+    if i <= 0 or i >= 15: return 2
+    v = 0.6 * vnoise(i + m * 3, side * 7, 91 + side, 5, 64) + 0.4 * (h2(i // 2, side, 93 + m) % 100) / 100
+    d = 1 + int(v * 3.6)
+    if i in (1, 14): d = min(d, 3)
+    return max(1, min(4, d))
+
+
+def soil_depth(m, jagf=jag):
+    dep = [[0] * 16 for _ in range(16)]
+    for y in range(16):
+        for x in range(16):
+            dd = 0
+            if not m & N: dd = max(dd, jagf(x, 0, m) - y)
+            if not m & Sb: dd = max(dd, jagf(x, 2, m) - (15 - y))
+            if not m & W: dd = max(dd, jagf(y, 3, m) - x)
+            if not m & E: dd = max(dd, jagf(y, 1, m) - (15 - x))
+            dep[y][x] = dd
+    return dep
+
+
+def at_asphalt(c, m, ox, oy):
+    asph_cell(c, ox, oy, m % 5)
+    P = lambda x, y, col: c.P(ox + x, oy + y, col)
+    dep = soil_depth(m)
+    soil = lambda x, y: 0 <= x < 16 and 0 <= y < 16 and dep[y][x] > 0
+    # 골재 무리 하나(마스크마다 자리 다름, 가장자리 밖)
+    ax, ay = 4 + h2(m, 1, 611) % 6, 4 + h2(m, 2, 611) % 6
+    if m != 15 and all(not soil(ax + dx, ay + dy) for dx in range(-1, 6) for dy in range(-1, 5)): aggregate(c, ox, oy, ax, ay, 613 + m, 3)
+    for y in range(16):
+        for x in range(16):
+            if soil(x, y): P(x, y, dirt_col(dirt_base(x, y)))           # 흙 바탕과 같은 덩이 결
+    # 부서진 턱: 흙에 닿은 아스팔트 1~2화소를 어둡게(남쪽 앞면은 0단) — 밝은 윤곽 없음, 두 번째 줄은 드문드문
+    for y in range(16):
+        for x in range(16):
+            if soil(x, y): continue
+            n4 = [(dx, dy) for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1)) if soil(x + dx, y + dy)]
+            if n4:
+                hv = h2(x, y, m + 23) % 10
+                if soil(x, y + 1): P(x, y, K('asph', 0 if hv < 4 else 1 if hv < 7 else 2 if hv < 9 else 3))    # 남쪽 앞면: 깨진 두께(어두운 0·1, 군데군데 밝은 깨진 알)
+                elif hv < 4: P(x, y, K('asph', 1))                                         # 다른 변: 끊긴 어두운 깨진 턱(틈 많이)
+                elif hv < 5: P(x, y, K('asph', 3))                                         # 밝게 들뜬 부스러기
+    for y in range(1, 16):                                # 앞면 아래 흙 그늘(군데군데)
+        for x in range(16):
+            if soil(x, y) and not soil(x, y - 1) and h2(x, y, m + 7) % 3: P(x, y, K('dirt', 2))
+    # 흙 쪽으로 떨어진 아스팔트 덩이(2×1 · 3×2): 윗면 빛 3 · 몸 2 · 앞 깨진 면 0 · 밑 흙 그림자 1 — 가장자리 흙 띠에만, 많이
+    placed = 0
+    for k in range(24):
+        if placed >= 4: break
+        x = h2(k, m, 621) % 14; y = h2(k, m, 623) % 15
+        w = 3 if k % 3 == 0 else 2; hh = 2 if k % 3 == 0 and dep[min(15, y + 2)][x] > 0 else 1
+        cells = [(x + dx, y + dy) for dx in range(w) for dy in range(hh)]
+        if all(soil(px, py) for px, py in cells) and not any(0 <= px + dx < 16 and 0 <= py + dy < 16 and not soil(px + dx, py + dy) for px, py in cells for dx, dy in ((0, -1), (-1, 0), (1, 0)) if (px + dx, py + dy) not in cells):
+            for (px, py) in cells:
+                P(px, py, K('asph', (3 if px == x else 2) if py == y else 0))
+            for px in range(x, x + w):
+                if soil(px, y + hh): P(px, y + hh, K('dirt', 1))
+            placed += 1
+    # 아스팔트 쪽 흙 낀 금 조각(가장자리 근처, 2화소)
+    for k in range(4):
+        x = h2(k, m, 631) % 15; y = h2(k, m, 633) % 15
+        if not soil(x, y) and not soil(x + 1, y) and any(soil(x + dx, y + dy) for dx in (-2, -1, 0, 1, 2, 3) for dy in (-2, -1, 1, 2)) and h2(k, m, 635) % 2:
+            P(x, y, K('dirt', 2)); P(x + 1, y, K('dirt', 3))
+
+
+def at_asphalt_inner(c, v, ox, oy):
+    """꽉 찬 길 속 변형(마스크 15 와 같은 테두리 없는 칸) — 긴 머리카락 금·때운 자리·기름 얼룩·골재 무리."""
+    asph_cell(c, ox, oy, 5 + v)
+    if v == 0:                                            # 칸을 가로지르는 긴 금(왼 → 오른 변까지)
+        hairline(c, ox, oy, [(0, 4), (4, 6), (8, 6), (11, 9), (15, 10)], 641)
+        hairline(c, ox, oy, [(8, 6), (9, 3), (11, 1)], 643)
+        aggregate(c, ox, oy, 2, 10, 645, 3)
+    elif v == 1:                                          # 때운 자리(새 타르 판: 위 턱 빛 3 · 몸 1·2 덩이 · 아래 턱 0, 모서리 이 빠짐) + 이음 금
+        B = blobs(16, 653)
+        for y in range(4, 13):
+            for x in range(2, 13):
+                if (x in (2, 12) and y in (4, 12)) or ((x in (2, 12) or y in (4, 12)) and h2(x, y, 651) % 5 == 0): continue
+                k, edge, lit = B[(x, y)]
+                if y == 4: t = 5 if h2(x, y, 654) % 3 else 3              # 덧씌운 판 윗턱 빛
+                elif y == 12: t = 0                                       # 앞 턱 그늘
+                elif x == 12: t = 1 if h2(x, y, 652) % 2 else 2
+                else: t = 2 if edge and h2(k[0], k[1], 655) % 3 == 0 else 1     # 새 타르: 바탕보다 한 단 어둡고 매끈
+                c.P(ox + x, oy + y, K('asph', t))
+        hairline(c, ox, oy, [(12, 9), (15, 13)], 661)
+        aggregate(c, ox, oy, 4, 0, 663, 2)
+    elif v == 2:                                          # 기름 얼룩(덩이로 번진 어두운 자국, 가운데 흐린 무지개 빛 띠) + 금 한 줄
+        B = blobs(16, 671)
+        for y in range(16):
+            for x in range(16):
+                k, edge, lit = B[(x, y)]
+                d = ((x - 8) / 6.4) ** 2 + ((y - 9) / 4.4) ** 2 + (h2(k[0], k[1], 673) % 4) * 0.1
+                if d < 0.75: c.P(ox + x, oy + y, K('oil', 2) if not edge or d < 0.4 else K('asph', 1))
+                elif d < 1.1: c.P(ox + x, oy + y, K('asph', 1))
+        for (x, y, t) in ((5, 8, 3), (6, 8, 4), (7, 8, 4), (8, 8, 3), (9, 9, 3), (10, 9, 3)):
+            c.P(ox + x, oy + y, K('oil', t))
+        hairline(c, ox, oy, [(15, 2), (12, 3), (9, 2), (6, 0)], 675)
+    else:                                                 # 거북등 금 무리 + 흙 낀 금 + 골재
+        hairline(c, ox, oy, [(0, 11), (3, 10), (6, 12), (9, 11), (12, 13), (15, 12)], 681, dirt=True)
+        hairline(c, ox, oy, [(6, 12), (6, 15)], 683); hairline(c, ox, oy, [(9, 11), (10, 8), (13, 7)], 685)
+        aggregate(c, ox, oy, 9, 2, 687, 3); aggregate(c, ox, oy, 1, 3, 689, 2)
+
+
+def autosheet(fn, inner=None):
+    """4×4 마스크 칸(칸 (m%4, m//4)) + inner 가 있으면 5번째 줄에 꽉 찬 속 변형 4칸."""
+    def draw(c):
+        for m in range(16): fn(c, m, (m % 4) * 16, (m // 4) * 16)
+        if inner:
+            for v in range(4): inner(c, v, v * 16, 64)
+    return draw
+
+
+# 오토타일 표본: 흙 위 길 — 교차로·막다른 길·T자·굽이·넓은 판·외딴 칸까지 16마스크가 모두 나온다.
+AUTO_LAYOUT = [
+    '...........',
+    '.#...#...#.',
+    '.##..#..##.',
+    '.#.#####.#.',
+    '.....#.....',
+    '.....#.....',
+    '...#.#..##.',
+    '.#####..##.',
+    '...........',
+    '..###..#...',
+    '...#.......',
+    '...........',
+]
+
+
+def auto_masks(layout):
+    H, Wd = len(layout), len(layout[0]); out = {}
+    on = lambda x, y: 0 <= x < Wd and 0 <= y < H and layout[y][x] in '#bc'
+    for y in range(H):
+        for x in range(Wd):
+            if on(x, y): out[(x, y)] = (N if on(x, y - 1) else 0) | (E if on(x + 1, y) else 0) | (Sb if on(x, y + 1) else 0) | (W if on(x - 1, y) else 0)
+    return out
+
+
+AUTO_SAMPLE_LAYOUT = [r + ('.####' if 1 <= i <= 6 else '.....') for i, r in enumerate(AUTO_LAYOUT)]   # 오른쪽 넓은 판: 속 변형이 섞이는 꽉 찬 칸
+
+
+def auto_sample(pid, inner=True):
+    def f(_=0):
+        lay = AUTO_SAMPLE_LAYOUT; H, Wd = len(lay), len(lay[0])
+        a = np.zeros((H * 16, Wd * 16, 4), np.uint8)
+        ms = auto_masks(lay); nv = [0]
+        da_full = render(PIECES['dirt-a']); at = render(PIECES[pid])
+        for y in range(H):
+            for x in range(Wd):
+                if (x, y) in ms:
+                    m = ms[(x, y)]; cx, cy = m % 4, m // 4
+                    if m == 15 and inner and at.shape[0] > 64 and hsh(x, y, 9) % 2: nv[0] += 1; cx, cy = (nv[0] - 1) % 4, 4
+                    src = at[cy * 16:(cy + 1) * 16, cx * 16:(cx + 1) * 16]
+                else: src = da_full[(y % 4) * 16:(y % 4 + 1) * 16, (x % 4) * 16:(x % 4 + 1) * 16]
+                a[y * 16:(y + 1) * 16, x * 16:(x + 1) * 16] = src
+        return a
+    return f
+
+
+piece('asphalt', '금 간 아스팔트 (오토타일)', 4, 5, TERRAIN, en='calm dark worn asphalt road with sparse aggregate, long hairline cracks, a repair patch and an oil stain, its unconnected edges crumbling into dirt with a darker broken lip and loose chunks, laid as a road network with crossroads and dead ends',
+      group='ground', tags=['아스팔트', '도로', '오토타일'], desc='금 간 옛 아스팔트 도로. 이웃이 도로가 아닌 쪽은 어두운 깨진 턱으로 흙에 부서져 끝난다. 4×4 는 마스크 칸(N1 E2 S4 W8, 칸 (m%4, m//4)), 5번째 줄 4칸은 꽉 찬 칸(마스크 15)에 섞는 속 변형(긴 금·때운 자리·기름 얼룩·거북등 금).',
+      sample=auto_sample('asphalt'))(autosheet(at_asphalt, at_asphalt_inner))
+AUTO['asphalt'] = dict(name='금 간 아스팔트', kind=TERRAIN)
+assert len(set(auto_masks(AUTO_LAYOUT).values())) == 16, sorted(set(auto_masks(AUTO_LAYOUT).values()))
+
+
+def _asph_var(v):
+    def draw(c):
+        asph_cell(c, 0, 0, 50 + v)
+        if v == 0:                                           # 패인 구멍(깨진 아스팔트 조각 둘레 + 고인 흙탕물) + 잡초
+            c.ell(8, 8, 5, 4, K('asph', 0))
+            c.ell(8, 9, 4, 3, K('dirt', 2)); c.HL(5, 6, 7, K('asph', 0))
+            c.ell(8, 9, 3, 2, K('oil', 2)); c.P(7, 9, K('oil', 4)); c.P(9, 10, K('oil', 1)); c.P(10, 9, K('oil', 3))
+            c.HL(4, 12, 9, K('asph', 6)); c.P(3, 11, K('asph', 5)); c.P(13, 11, K('asph', 5))      # 앞 가장자리 빛(뒤가 패여 그늘)
+            for (x, y, w, h) in ((2, 4, 3, 2), (12, 5, 3, 2), (10, 13, 3, 2)): chunk5(c, x, y, w, h + 1, 'asph', 1, seed=x)
+            crack(c, [(1, 9), (3, 9), (4, 8)], K('asph', 0), K('asph', 5)); crack(c, [(13, 8), (15, 7)], K('asph', 0), K('asph', 5))
+            tuft(c, 13, 15, 'grass'); tuft(c, 2, 15, 'dry')
+        else:                                                # 매끈한 타르 속 + 거북등 균열 무리 + 작은 패인 구멍 + 바랜 차선 조각(끊긴 점선)
+            for y in range(16):                                  # 속(가장자리 3화소 안쪽)은 골재 잡음 대신 매끈한 타르 결(2·3단 큰 얼룩)
+                for x in range(16):
+                    if edge_d(x, y) < 3: continue
+                    f = field(x, y, 77)
+                    t = 3 if f > 0.55 else 2
+                    if h2(x, y, 78) % 41 == 0: t = 5
+                    c.P(x, y, K('asph', t))
+            core = [(2, 13), (4, 12), (6, 12), (8, 10), (10, 10), (12, 9), (13, 7)]            # 긴 갈래 균열 하나(1화소 어두운 줄 + 아래 빛 턱)
+            branches = [[(6, 12), (7, 14)], [(10, 10), (11, 13)], [(4, 12), (3, 10)]]
+            for pts in [core] + branches:
+                for (p0, p1) in zip(pts, pts[1:]):
+                    n = max(abs(p1[0] - p0[0]), abs(p1[1] - p0[1]), 1)
+                    for i in range(n + 1):
+                        x = round(p0[0] + (p1[0] - p0[0]) * i / n); y = round(p0[1] + (p1[1] - p0[1]) * i / n)
+                        c.P(x, y, K('asph', 0)); c.P(x, y + 1, K('asph', 5))
+            for (x, y) in ((7, 11), (9, 11), (11, 11)): c.P(x, y, K('asph', 1)); c.P(x, y - 1, K('asph', 5))   # 금 가장자리 들뜬 조각
+            c.P(5, 12, K('dirt', 2)); c.P(9, 10, K('grass', 3)); c.P(9, 9, K('grass', 5)); c.P(10, 9, K('grass', 4))   # 금 속 흙·싹
+            for (x, y, t) in ((10, 3, 0), (11, 3, 0), (12, 3, 0), (13, 3, 1), (9, 4, 1), (10, 4, 2), (11, 4, 3), (12, 4, 3), (13, 4, 2), (14, 4, 1),
+                              (10, 5, 2), (11, 5, 4), (12, 5, 3), (13, 5, 2)):                         # 패인 구멍: 뒤 그늘 → 물(하늘빛) → 앞 빛 턱
+                c.P(x, y, K('asph', t) if t <= 1 else K('oil', t + 1))
+            c.HL(10, 6, 4, K('asph', 5)); c.P(9, 5, K('asph', 5)); c.P(14, 5, K('asph', 4))
+            for x in range(2, 9):                                # 바랜 차선 점선 조각(2행, 끝이 닳았다)
+                if x not in (2,) or h2(x, 2, 82) % 2: c.P(x, 2, K('paint', 1))
+                if x not in (8,): c.P(x, 3, K('paint', 0))
+            c.P(5, 2, K('asph', 3)); c.P(3, 3, K('asph', 2))
+    return draw
+
+
+# ------------------------------------------------------------------ 발길(판잣집 사이 다져진 흙길, 오토타일)
+def track_jag(i, side, m):
+    """발길 가장자리 깊이 3..5 — 아스팔트보다 넓고 부드럽게 흙으로 번진다(끝 0·15 는 4 고정)."""
+    if i <= 0 or i >= 15: return 3
+    v = 0.7 * vnoise(i + m * 5, side * 11, 811 + side, 6, 64) + 0.3 * (h2(i // 3, side, 813 + m) % 100) / 100
+    return 2 + int(v * 2.9)
+
+
+def at_track(c, m, ox, oy):
+    P = lambda x, y, col: c.P(ox + x, oy + y, col)
+    dep = soil_depth(m, track_jag)
+    B = blobs(16, 801)
+    def is_soil(x, y):
+        k, _, _ = B[(x, y)]
+        return dep[y][x] + ((h2(k[0], k[1], 803 + m) % 100) / 100 - 0.5) * 3.6 + (h2(x, y // 2, 809 + m) % 3 - 1) * 0.5 > 0.6     # 덩이째 흙/길이 섞이는 번진 가장자리(윤곽 없음)
+    S = [[is_soil(x, y) for x in range(16)] for y in range(16)]
+    for y in range(16):
+        for x in range(16):
+            if S[y][x]: P(x, y, dirt_col(dirt_base(x, y))); continue
+            k, edge, _ = B[(x, y)]
+            r = h2(k[0], k[1], 805) % 100
+            t = 5 if r < 80 else 3                                      # 다져져 밝게 닳은 흙(밝은 5 가 큰 몫 — 둘레 흙은 3 이 큰 몫)
+            up = B[(x, (y - 1) & 15)][0] != k
+            P(x, y, K('dirt', t))
+    for y in range(16):                                   # 길가로 밀려난 흙둔덕: 길에 닿은 흙 1~2화소를 덩이째 한 단 어둡게(끊긴 덩이 — 윤곽선 아님)
+        for x in range(16):
+            if not S[y][x]: continue
+            near = any(0 <= x + dx < 16 and 0 <= y + dy < 16 and not S[y + dy][x + dx] for dx in (-1, 0, 1) for dy in (-1, 0, 1))
+            if near:
+                k, edge, _ = B[(x, y)]
+                if h2(k[0], k[1], 851 + m) % 5 < 2: P(x, y, K('dirt', 2))
+    def mark(x, y, t):
+        if 0 <= x < 16 and 0 <= y < 16 and not S[y][x]: P(x, y, K('dirt', t))
+    # 옅은 바퀴 자국: 곧은 칸(가로만·세로만 이어짐)에만 두 줄(3단, 군데군데 끊김) — 넓은 판·갈림길엔 격자가 생기지 않게 뺀다
+    if m & (E | W) and not m & (N | Sb):
+        for x in range(0 if m & W else 4, 16 if m & E else 12):
+            for yy in (5, 10):
+                if h2(x, yy, 821) % 4: mark(x, yy, 2 if h2(x, yy, 825) % 3 == 0 else 3)
+    if m & (N | Sb) and not m & (E | W):
+        for y in range(0 if m & N else 4, 16 if m & Sb else 12):
+            for xx in (5, 10):
+                if h2(xx, y, 823) % 4: mark(xx, y, 2 if h2(xx, y, 827) % 3 == 0 else 3)
+    # 옅은 발자국: 길 가운데 띠에 2화소 자국 몇 개(마스크마다 자리 다름)
+    for i in range(3 if m != 15 else 0):
+        x = 6 + h2(i, m, 831) % 4; y = 2 + h2(i, m, 833) % 11
+        if not S[y][x] and (y + 1 < 16 and not S[y + 1][x]): mark(x, y, 3); mark(x, y + 1, 2 if i == 0 else 3)
+    # 길가 흙 쪽 흙덩이·자갈 한두 개(2화소)
+    for i in range(2):
+        x = h2(i, m, 841) % 15; y = h2(i, m, 843) % 15
+        if S[y][x] and S[y][x + 1] and dep[y][x] <= 4 and h2(i, m, 845) % 2:
+            P(x, y, K('conc', 4)); P(x + 1, y, K('conc', 3))
+            if y + 1 < 16 and S[y + 1][x]: P(x, y + 1, K('dirt', 1))
+
+
+piece('track', '발길 (오토타일)', 4, 4, TERRAIN,
+      en='a worn footpath of packed earth between shacks, lighter than the surrounding dirt, with faint wheel ruts and footprints, its edges feathering softly into the dirt with no outline, laid as a path network with crossings and dead ends',
+      group='ground', tags=['흙길', '발길', '오토타일'],
+      desc='판잣집 사이 다져진 흙 발길. 둘레 흙보다 밝게 닳았고 이어진 쪽으로 옅은 바퀴 자국이 난다. 이웃이 길이 아닌 쪽은 덩이째 흙으로 번져 끝난다(윤곽 없음). 4×4 마스크 칸(N1 E2 S4 W8, 칸 (m%4, m//4)).',
+      sample=auto_sample('track', inner=False))(autosheet(at_track))
+AUTO['track'] = dict(name='발길', kind=TERRAIN)
+
+
+ASPH_IDS = {'a': ('asphalt', 3, 3), 'b': ('asphalt-b', 0, 0), 'c': ('asphalt-c', 0, 0)}
+piece('asphalt-b', '아스팔트 패인 구멍', 1, 1, TERRAIN, en='cracked asphalt road tile with a water-filled pothole and weeds, laid among plain asphalt',
+      group='ground', tags=['아스팔트', '도로'], desc='도로 안쪽(사방이 도로인 칸)에 드물게 섞는 패인 구멍 변형.',
+      sample=tiled(ASPH_IDS, ['abac', 'aaab', 'caaa']))(_asph_var(0))
+piece('asphalt-c', '아스팔트 균열·잡초', 1, 1, TERRAIN, en='asphalt road tile with smooth worn tar, a long branching crack with weeds, a small water-filled pothole and a worn lane-paint dash, laid among plain asphalt',
+      group='ground', tags=['아스팔트', '도로'], desc='도로 안쪽에 드물게 섞는 균열·잡초·바랜 차선 변형.',
+      sample=tiled(ASPH_IDS, ['aaaa', 'acaa', 'aaac']))(_asph_var(1))
+
+
+# ------------------------------------------------------------------ 콘크리트 판
+# 깨진 콘크리트 판 이음 판(64×64, 칸 (x mod 4, y mod 4) 자리): 불규칙한 판(감싼 보로노이, 크기 20~34화소) — 이음은 비스듬하고 칸 격자와 안 맞는다.
+SP = 128                                                   # 콘크리트 판 이음 주기(8칸) — 판이 커야 깨진 포장으로 읽힌다(64 주기에선 벽돌처럼 보였다)
+SLAB_BANDS = [(0, [0, 37, 83]), (34, [19, 64, 101]), (79, [8, 51, 90])]     # (띠 시작 y, 세로 이음 x 들) — 띠 높이 34·45·49, 판 폭 37~46
+SLAB_FRACTURES = [[(37, 3), (47, 14), (52, 33)], [(64, 37), (75, 51), (79, 66), (86, 78)], [(8, 82), (22, 96), (31, 112), (40, 127)],
+                  [(101, 40), (110, 47), (128, 52)], [(83, 6), (90, 20), (101, 33)], [(51, 90), (63, 99), (70, 112)], [(0, 55), (10, 62), (19, 64)]]
+SLAB_HOLES = [(84, 34, 7, 4), (19, 79, 5, 3), (52, 126, 6, 4), (101, 80, 4, 3), (36, 34, 3, 2), (1, 1, 5, 3), (70, 60, 4, 3)]
+SLAB_SUNK = [(40, 60), (110, 100)]                                        # 이 화소가 든 판은 내려앉아 한 단 어둡다
+SLAB_CRACKS = [[(6, 14), (13, 18), (22, 17)], [(70, 15), (76, 19), (80, 26)], [(25, 50), (31, 55), (38, 54)], [(108, 60), (114, 66), (120, 66)],
+               [(60, 106), (66, 110), (75, 109)], [(114, 112), (119, 118)]]
+
+
+def _slab_maps():
+    seam, frac, hole = set(), set(), set()
+    for k, (y0, xs) in enumerate(SLAB_BANDS):
+        y1 = SLAB_BANDS[(k + 1) % len(SLAB_BANDS)][0] + (SP if k == len(SLAB_BANDS) - 1 else 0)
+        for x in range(SP):
+            w = 1 if h2(x // 7, y0, 266) % 4 == 0 else 0                     # 가로 이음 살짝 흔들림
+            seam.add((x, (y0 + w) % SP))
+        for vx in xs:
+            for y in range(y0, y1):
+                w = 1 if h2(vx, y // 7, 267) % 4 == 0 else 0
+                seam.add(((vx + w) % SP, y % SP))
+    for pts in SLAB_FRACTURES:
+        for (a, b) in zip(pts, pts[1:]):
+            n = max(abs(b[0] - a[0]), abs(b[1] - a[1]), 1)
+            for i in range(n + 1): frac.add((round(a[0] + (b[0] - a[0]) * i / n) % SP, round(a[1] + (b[1] - a[1]) * i / n) % SP))
+    for (cx, cy, rx, ry) in SLAB_HOLES:
+        for y in range(cy - ry - 1, cy + ry + 2):
+            for x in range(cx - rx - 1, cx + rx + 2):
+                if ((x - cx) / rx) ** 2 + ((y - cy) / ry) ** 2 + (h2(x, y, 265) % 3) * 0.15 < 1: hole.add((x % SP, y % SP))
+    sunk = set()
+    for st in SLAB_SUNK:
+        todo = [st]
+        while todo:
+            p_ = todo.pop()
+            if p_ in sunk or p_ in seam or p_ in frac: continue
+            sunk.add(p_); x, y = p_
+            todo += [((x + 1) % SP, y), ((x - 1) % SP, y), (x, (y + 1) % SP), (x, (y - 1) % SP)]
+    return seam, frac, hole, sunk
+
+
+_SLAB_MAPS = None
+
+
+def slab_field(c, ox, oy):
+    global _SLAB_MAPS
+    if _SLAB_MAPS is None: _SLAB_MAPS = _slab_maps()
+    seam, frac, hole, sunk = _SLAB_MAPS
+    line = lambda x, y: (x % SP, y % SP) in seam or (x % SP, y % SP) in frac
+    for y in range(SP):
+        for x in range(SP):
+            if (x, y) in hole:
+                up = (x, (y - 1) % SP) not in hole
+                c.P(ox + x, oy + y, K('dirt', 1 if up else dirt64_tone(x, y))); continue
+            if (x, y) in seam: c.P(ox + x, oy + y, K('conc', 1)); continue
+            if (x, y) in frac: c.P(ox + x, oy + y, K('conc', 2)); continue
+            f = 0.6 * wrapnoise(x, y, 231, 32, SP) + 0.4 * wrapnoise(x, y, 237, 8, SP)
+            t = 5 + (1 if f > 0.66 else 0) - (1 if f < 0.26 else 0)
+            gx, gy = (x + (y // 2) % 2) // 2, y // 2
+            d = h2(gx % (SP // 2), gy % (SP // 2), 241) % 7
+            if d in (0, 1): t += 1
+            elif d == 2: t -= 1
+            if (x, y) in sunk: t -= 1
+            if line(x, y - 1) or line(x - 1, y): t = 7 if (x, y) not in sunk else 5
+            elif line(x, y + 1) or line(x + 1, y): t = 3
+            if (x, (y - 1) % SP) in hole: t = 7
+            c.P(ox + x, oy + y, K('conc', max(2, min(7, t))))
+    def P(x, y, col): c.P(ox + x % SP, oy + y % SP, col)
+    for pts in SLAB_CRACKS:
+        for (a, b) in zip(pts, pts[1:]):
+            n = max(abs(b[0] - a[0]), abs(b[1] - a[1]), 1)
+            for k in range(n + 1):
+                x = round(a[0] + (b[0] - a[0]) * k / n); y = round(a[1] + (b[1] - a[1]) * k / n)
+                if not line(x, y) and (x % SP, y % SP) not in hole: P(x, y, K('conc', 3))
+
+
+def _slab_seams_in(cx, cy):
+    global _SLAB_MAPS
+    if _SLAB_MAPS is None: _SLAB_MAPS = _slab_maps()
+    seam, frac = _SLAB_MAPS[0], _SLAB_MAPS[1]
+    return [(x, y) for y in range(cy * 16 + 3, cy * 16 + 14) for x in range(cx * 16 + 2, cx * 16 + 14) if (x, y) in seam or (x, y) in frac]
+
+
+def _slab64(v):
+    """v=0 바탕 판. v=1 은 이음에서 자란 잡초(칸마다 다른 자리·크기), v=2 는 모양이 제각각인 기름 얼룩 — 같은 자리 칸과 바꿔 끼운다."""
+    def draw(c):
+        slab_field(c, 0, 0)
+        if v == 0: return
+        for cy in range(SP // 16):
+            for cx in range(SP // 16):
+                ox, oy = cx * 16, cy * 16; r = h2(cx, cy, 310 + v)
+                if v == 1:
+                    sm = _slab_seams_in(cx, cy)
+                    if not sm: continue
+                    for k in range(1 + r % 2):
+                        x, y = sm[(r >> (4 * k)) % len(sm)]
+                        fan(c, x, min(y + 1, oy + 14), 4 + (r >> 2) % 3, 'grass' if (k + r) % 3 else 'dry', (r + k) % 97, 6, 2)
+                else:
+                    cxm, cym = ox + 4 + r % 8, oy + 4 + (r >> 4) % 8
+                    rx, ry = 2.5 + (r % 3), 1.6 + ((r >> 2) % 2)
+                    for y in range(int(cym - ry - 1), int(cym + ry + 2)):
+                        for x in range(int(cxm - rx - 1), int(cxm + rx + 2)):
+                            d = ((x - cxm) / rx) ** 2 + ((y - cym) / ry) ** 2 + (h2(x, y, r) % 5) * 0.08
+                            if d < 1 and c.get(x, y) in MAT['conc']:
+                                c.P(x, y, K('soot', 5) if d > 0.6 else K('soot', 4 if (x + y) % 4 else 5))
+    return draw
+
+
+SLAB_IDS = {'a': ('slab-a', None, None), 'b': ('slab-b', None, None), 'c': ('slab-c', None, None)}
+_slab_grid = {'a': ['aaaaaaaaaa'] * 8, 'b': ['aabaaaabaa', 'aaaabaaaab', 'baaaaaaaba', 'aaabaabaaa', 'abaaabaaaa', 'aaaaaaabaa', 'abaaaaaaab', 'aaaabaaaaa'],
+              'c': ['aaacaaaaca', 'caaaaacaaa', 'aaaacaaaac', 'acaaaaaaca', 'aaacaacaaa', 'caaaaaaaca', 'aaaacaaaaa', 'acaaaaacaa']}
+for _v, _l in enumerate('abc'):
+    piece('slab-' + _l, '금 간 콘크리트 판 ' + 'ABC'[_v], 8, 8, TERRAIN,
+          en='broken old concrete pavement: irregular slanted pads of different sizes, raised and sunken edges along the seams, missing chunks showing earth where pads meet, cracks crossing tile borders, a seamless 8x8-tile field' +
+             ['', ', mixed with tiles of weeds in small cracks', ', mixed with tiles of oil stains and grit'][_v],
+          group='ground', tags=['콘크리트', '광장', '바닥'],
+          desc='옛 광장·건물 바닥의 깨진 콘크리트 판 이음 판(8×8칸, 주기 128화소) — 맵 칸 (x,y) 에는 판의 (x mod 8, y mod 8) 칸을 깐다. A 바탕, B 잡초·C 기름 얼룩은 같은 자리 칸을 드물게 바꿔 끼운다.',
+          sample=tiled(SLAB_IDS, _slab_grid[_l]))(_slab64(_v))
+
+
+# ------------------------------------------------------------------ 투명 덧그림(flat)
+def layer(c, fn, outline=True, top=False, col=None):
+    """따로 그린 겹(덩이·풀)을 c 위에 덮는다 — 윤곽은 그 겹 둘레에만(밑 흙 자리 둘레엔 두지 않는다)."""
+    l = Cv(c.w, c.h); fn(l)
+    if outline: l.outline(col=col, top=top)
+    m = l.a[..., 3] == 255; c.a[m] = l.a[m]
+
+
+def soil_patch(c, cx, cy, rx, ry, seed=0, mat='dirt', lo=1, crumbs=True):
+    """불규칙한 흙 자리(덧그림 밑바탕): 가장자리는 둘레 흙(4단)에 녹아들고 속은 젖어 어둡다(lo..lo+2) + 알갱이. 윤곽 없음."""
+    n = len(MAT[mat])
+    for y in range(16):
+        for x in range(16):
+            d = ((x - cx) / rx) ** 2 + ((y - cy) / ry) ** 2 + (field(x, y, seed + 70) - 0.5) * 0.6
+            if d > 1.0: continue
+            t = lo if d < 0.35 else lo + 1 if d < 0.7 else lo + 2
+            k = h2(x, y, seed + 3) % 11
+            if k == 0: t += 2
+            elif k == 1: t = max(0, t - 1)
+            elif k == 2 and d > 0.6: t += 1
+            c.P(x, y, K(mat, min(n - 1, t)))
+    if crumbs:
+        for i in range(5):
+            x = (cx + (h2(i, 1, seed) % (2 * rx + 3)) - rx - 1); y = (cy + (h2(i, 2, seed) % (2 * ry + 3)) - ry - 1)
+            if not c.has(x, y) and 0 <= x < 16 and 0 <= y < 16: c.P(x, y, K(mat, lo + 2)); c.P(x, y + 1, K(mat, lo)) if y + 1 < 16 and not c.has(x, y + 1) else None
+
+
+def _rubble(v):
+    def draw(c):
+        if v == 0:                                            # 콘크리트 덩이 무리(뒤 → 앞): 칸의 2/3 를 덮는다
+            for (x, y, w, h, t) in ((2, 2, 6, 5, 2), (8, 1, 5, 4, 2), (11, 4, 4, 5, 2), (0, 6, 5, 4, 2), (4, 6, 7, 6, 3), (11, 9, 4, 4, 2), (1, 11, 5, 4, 2), (7, 11, 5, 4, 2)):
+                chunk5(c, x, y, w, h, 'conc', t, seed=x + y)
+            rebar(c, 6, 7, 5, 3); rebar(c, 12, 5, 4, -1)
+            for (x, y) in ((13, 14), (5, 10), (10, 3)): c.P(x, y, K('glass', 5))
+            c.outline()
+        elif v == 1:                                          # 붉은 벽돌 가루 자리 위에 흩어진 벽돌(낱장마다 윗면 2~3행 + 앞면 2행) · 반쪽 벽돌 · 모르타르 덩이
+            soil_patch(c, 8, 8, 7, 6, seed=11, mat='brust', lo=4)
+            def bricks(l):
+                for (x, y, w, h, t, mat) in ((1, 2, 5, 4, 2, 'brick'), (9, 1, 5, 4, 2, 'brick'), (6, 5, 4, 4, 2, 'conc'), (11, 6, 4, 5, 3, 'brick'),
+                                             (1, 8, 4, 4, 2, 'brick'), (6, 10, 5, 4, 2, 'brick'), (12, 12, 3, 3, 1, 'conc')):
+                    chunk5(l, x, y, w, h, mat, t, seed=x * 3 + y)
+                    if mat == 'brick': l.P(x + 1, y + t, K('brick', 1)); l.P(x + w - 2, y + t + 1, K('brick', 2))   # 줄눈 흠
+                l.P(3, 3, K('conc', 6)); l.P(11, 2, K('conc', 5)); l.P(13, 8, K('conc', 6))                           # 붙은 모르타르
+            layer(c, bricks, col=K('brick', 1))
+            for (x, y) in ((5, 14), (10, 15), (0, 12), (15, 4)): c.P(x, y, K('brick', 3))
+            for (x, y) in ((8, 4), (4, 13)): c.P(x, y, K('conc', 6)); c.P(x, y + 1, K('brust', 1))
+        else:                                                 # 기름 밴 흙 자리 + 휜 녹슨 철판(윗면 4행·앞 끝면 2행) + 유리 조각 + 끊긴 전선 + 콘크리트 덩이
+            soil_patch(c, 8, 9, 7, 6, seed=23, mat='dirt', lo=2)
+            def scrap(l):
+                for i in range(9):                            # 철판: 동쪽이 한 행 내려앉은 휜 판
+                    yy = 3 + (1 if i > 5 else 0)
+                    for j, t in enumerate((6, 5, 5, 4)): l.P(2 + i, yy + j, K('metal', t - (1 if (i + j) % 4 == 0 else 0)))
+                    l.P(2 + i, yy + 4, K('metal', 2)); l.P(2 + i, yy + 5, K('metal', 1))
+                l.P(2, 3, K('metal', 7)); l.P(3, 3, K('metal', 7)); l.P(9, 4, K('metal', 7))
+                rust_patch(l, 2, 6, 9, 4, seed=5, dens=0.6, on=set(MAT['metal']))
+                for (x, y) in ((4, 4), (7, 5)): l.P(x, y, K('rust', 4))
+                chunk5(l, 11, 7, 5, 4, 'conc', 2, seed=4); chunk5(l, 6, 11, 4, 4, 'conc', 2, seed=5); chunk5(l, 0, 10, 4, 4, 'brick', 2, seed=8)
+                chunk5(l, 12, 1, 3, 3, 'conc', 1, seed=7)
+            layer(c, scrap, col=K('metal', 1))
+            for (x, y) in ((12, 12), (2, 15), (14, 14), (10, 1)):
+                c.P(x, y, K('conc', 6)); c.P(x + 1, y, K('conc', 4)); c.P(x, y + 1, K('conc', 2)) if y < 15 else None   # 콘크리트 부스러기(빛나는 청록 유리 점 없음)
+            c.line(1, 1, 4, 2, K('rubber', 2)); c.line(4, 2, 6, 1, K('rubber', 3)); c.P(6, 0, K('rust', 5))
+            c.P(11, 14, K('oil', 1)); c.P(12, 14, K('oil', 3)); c.P(10, 13, K('oil', 2))
+        m = c.a[..., 3] == 255
+        c.shadow([(x + 1, y + 1) for y in range(16) for x in range(16) if m[y, x]])
+    return draw
+
+
+for _v, _l in enumerate('abc'):
+    piece('rubble-' + _l, '잔해 ' + ['콘크리트 덩이', '깨진 벽돌', '유리·쇳조각'][_v], 1, 1, FLAT,
+          en=['small broken concrete chunks with a rebar stub lying on the ground',
+              'scattered broken bricks and mortar lumps lying on a patch of red brick dust on the ground',
+              'a bent rusty metal sheet, broken concrete lumps, glass shards and a torn cable lying on an oil-stained patch of earth'][_v],
+          group='ground', tags=['잔해', '덧그림'], desc='바닥 위 투명 잔해 덧그림 — 걷는다, 캐릭터 밑에 그린다.',
+          sample=None if _v == 0 else decal_sample('rubble-' + _l))(_rubble(_v))
+
+
+def clump(c, x, y, w, h, mat, seed=0, dens=0.9, rows=3, step=1):
+    """풀 덩이: 잎 줄기(1화소, 높이 2~h, 기울기 -1..1)를 줄마다 엇갈린 열에 세운다 — 밑동 어둡고 끝 밝게(재질 전 단). 뒤 줄부터 그려 앞 줄이 덮는다."""
+    n = len(MAT[mat]); blades = []
+    for row in range(rows):
+        for i in range(row % 2 if step > 1 else 0, w, step):
+            if h2(i, row, seed) % 100 > dens * 100: continue
+            hh = max(2, h - row * 2 - h2(i, row, seed + 1) % 4)
+            lean = (h2(i, row, seed + 2) % 3) - 1
+            blades.append((y + h - 1 - row * 2, x + i, hh, lean))
+    for k, (by, bx, hh, lean) in enumerate(sorted(blades)):
+        off = -2 if h2(bx, by, seed + 9) % 3 == 0 else 0           # 그늘 속 잎(두 단 어둡게) — 덩이가 한 덩어리 채움으로 읽히지 않게
+        for j in range(hh):
+            xx = bx + (lean * j) // 3; yy = by - j
+            f = j / max(1, hh - 1)
+            t = 0 if f < 0.12 else 1 if f < 0.3 else 2 if f < 0.5 else 3 if f < 0.68 else 4 if f < 0.84 else n - 2 if f < 0.97 else n - 1
+            c.P(xx, yy, K(mat, max(0, min(t + (off if j > 0 else 0), n - 1))))
+
+
+def rosette(c, cx, cy, seed=0):
+    """위에서 본 넓은 잎 잡초(민들레 꼴): 잎 5장이 방사, 잎마다 위·왼 빛 → 끝 어둡게, 가운데 그늘."""
+    for k, (dx, dy) in enumerate(((-3, -1), (3, -1), (-2, 2), (2, 2), (0, -3))):
+        for s_ in range(1, 4):
+            x = cx + (dx * s_) // 3; y = cy + (dy * s_) // 3
+            c.P(x, y, K('plant', 8 - s_ * 2 + (1 if k == 4 else 0))); c.P(x + (1 if dx >= 0 else -1), y, K('plant', 5 - s_))
+    c.P(cx, cy, K('plant', 1)); c.P(cx, cy - 1, K('plant', 7))
+
+
+def fan(c, bx, by, h, mat, seed=0, n=7, spread=3, droop=False):
+    """부채꼴 풀 포기: 뿌리 (bx,by) 에서 잎 n 장이 퍼진다(바깥 잎일수록 눕고 짧다). 잎마다 밑동 어둡게 → 끝 밝게, 가운데 잎이 앞(나중)에 그려진다."""
+    r = len(MAT[mat]); blades = []
+    for k in range(n):
+        u = (k / max(1, n - 1)) * 2 - 1                        # -1..1
+        hh = max(2, round(h * (1 - 0.2 * abs(u))) - h2(k, bx, seed) % 3)
+        blades.append((abs(u), u, hh, k))
+    for (_, u, hh, k) in sorted(blades, reverse=True):        # 바깥 잎 먼저(V 꼴: 바깥 잎이 길게 밖으로 눕는다)
+        dark = h2(k, by, seed + 1) % 3 == 0
+        x0 = bx + round(u * 1.2)                               # 밑동 폭 3
+        for j in range(hh):
+            f = j / max(1, hh - 1)
+            x = x0 + round(u * spread * f); y = by - j
+            if droop and f > 0.85: x += 1 if u >= 0 else -1; y += 1
+            t = 0 if f < 0.15 else 1 if f < 0.35 else 2 if f < 0.55 else 3 if f < 0.72 else r - 3 if f < 0.86 else r - 2 if f < 0.96 else r - 1
+            c.P(x, y, K(mat, max(0, t - (2 if dark and j > 0 else 0))))
+    c.P(bx - 1, by + 1, K('dirt', 1)); c.P(bx, by + 1, K('dirt', 1)); c.P(bx + 1, by + 1, K('dirt', 2))
+
+
+def _weeds(v):
+    def draw(c):
+        if v == 0:                                            # 흩어진 초록 잡초 포기(부채꼴) 넷 + 넓은 잎 포기 둘 — 사이로 흙이 보인다
+            rosette(c, 4, 4, 1); rosette(c, 12, 13, 2)
+            for (x, y, h, n, sp, sd) in ((10, 8, 7, 9, 3, 3), (3, 14, 6, 8, 3, 5), (14, 4, 4, 5, 1, 6), (8, 15, 4, 6, 2, 7)):
+                fan(c, x, y, h, 'grass', sd, n, sp)
+            c.P(6, 1, K('paint', 1)); c.P(1, 8, K('paint', 2))
+        elif v == 1:                                          # 마른 풀 포기(부채꼴, 이삭 끝이 처진다) 셋 + 초록 새싹 + 부스러진 흙
+            for (x, y, h, n, sp, sd) in ((11, 8, 7, 10, 3, 11), (4, 13, 7, 10, 3, 12), (13, 15, 4, 6, 1, 13)):
+                fan(c, x, y, h, 'dry', sd, n, sp, droop=True)
+            for (x, y) in ((9, 1), (14, 2), (1, 6), (7, 6)): c.P(x, y, K('dry', 5)); c.P(x, y + 1, K('dry', 3))      # 이삭 알
+            fan(c, 7, 15, 3, 'grass', 14, 4, 1); fan(c, 1, 3, 3, 'grass', 15, 3, 1)
+            for (x, y) in ((10, 12), (15, 9), (3, 1)): c.P(x, y, K('dirt', 5)); c.P(x, y + 1, K('dirt', 2))
+        else:                                                 # 대각 균열을 따라 난 흙 줄 + 잡초 띠 + 들꽃
+            for i in range(16):                               # 균열 흙 줄(2~3폭)
+                x = i; y = 14 - (i * 11) // 15
+                for d in (-1, 0, 1):
+                    t = 1 if d == 0 else 3
+                    if 0 <= y + d < 16: c.P(x, y + d, K('dirt', t if h2(x, y + d, 5) % 5 else t + 1))
+                if i % 3 == 0 and y + 2 < 16: c.P(x, y + 2, K('dirt', 4))
+            for (x, y, w, h, s_) in ((0, 7, 6, 8, 7), (4, 4, 6, 8, 8), (9, 1, 6, 7, 9)):
+                clump(c, x, y, w, h, 'grass', s_, 0.7, 3, 1)
+            rosette(c, 12, 11, 6); rosette(c, 3, 3, 7)
+            for (x, y, col) in ((2, 8, 'azalea'), (7, 5, 'ginkgo'), (12, 2, 'ginkgo'), (10, 7, 'wpaint'), (5, 10, 'ginkgo')):
+                c.P(x, y, K(col, 3)); c.P(x + 1, y, K(col, 1)); c.P(x, y - 1, K(col, 2))
+    return draw
+
+
+for _v, _l in enumerate('abc'):
+    piece('weeds-' + _l, '잡초 ' + 'ABC'[_v], 1, 1, FLAT,
+          en=['scattered small tufts of green weeds and two broad-leaved rosettes growing from bare earth',
+              'scattered tufts of dry yellow-brown grass with drooping seed heads and a few green shoots on bare earth',
+              'a line of weeds, rosettes and tiny wild flowers growing along a diagonal crack of earth'][_v],
+          group='ground', tags=['잡초', '덧그림'], desc='균열·흙 위 잡초 덧그림 — 걷는다.',
+          sample=None if _v == 2 else decal_sample('weeds-' + _l))(_weeds(_v))
+
+
+@piece('puddle', '빗물 웅덩이', 1, 1, FLAT, en='a shallow rain puddle lying on the ground, reflecting a pale sky band, with a soft damp earth halo and only a faint low bank shadow along its far edge',
+       group='ground', tags=['웅덩이', '덧그림'],
+       desc='얕은 빗물 웅덩이 덧그림 — 하늘빛 띠가 비치고 둘레 흙은 젖어 어둡게 번진다. 걷는다.', sample=decal_sample('puddle', ('aaaa', 'aXaa', 'aaaa'), ()))
+def _puddle(c):
+    B = blobs(16, 701, 2)
+    jit = lambda x, y: (h2(*B[(x, y)][0], 703) % 4) * 0.09               # 덩이 단위 테두리 흔들림(낱화소 들쭉 없음)
+    water, halo = set(), {}
+    for y in range(16):
+        for x in range(16):
+            a = ((x - 7.5) / 7.0) ** 2 + ((y - 8.0) / 4.3) ** 2 + (0.18 if x > 11 and y < 7 else 0)
+            dw = a + jit(x, y)
+            if dw < 1.0: water.add((x, y))
+            elif a + jit(x, y) * 1.5 < 2.1: halo[(x, y)] = a
+    for (x, y), a in halo.items():                                   # 젖은 흙 번짐: 가까울수록 어둡게(2), 멀면 덩이째 3 — 바깥은 투명(바탕 흙이 보인다)
+        k, edge, _ = B[(x, y)]
+        t = (1 if h2(k[0], k[1], 711) % 3 == 0 and y < 8 else 2) if a < 1.35 else (2 if h2(k[0], k[1], 705) % 3 else 3)   # 젖은 흙: 고르게 2, 먼 쪽만 군데군데 1
+        if a > 1.7 and h2(k[0], k[1], 707) % 2: continue
+        c.P(x, y, K('dirt', t))
+    for (x, y) in water:
+        far = (x, y - 1) not in water; far2 = (x, y - 2) not in water
+        rel = (y - 8.0) / 4.3                                            # -1 먼 쪽 .. +1 가까운 쪽
+        if far and y < 8: t = ('oil', 3)                                 # 먼(위) 물가만 낮은 대비 둑 그늘 한 줄(옆·앞 물가엔 없다)
+        elif far2 and y < 7 and h2(x, y, 715) % 2: t = ('oil', 3)
+        else: t = ('oil', 4)                                             # 얕은 물 몸: 흐린 하늘빛(바닥보다 밝다 — 구멍이 아니다)
+        c.P(x, y, K(*t))
+    for (x, y) in ((3, 9), (4, 9), (5, 9), (7, 9), (8, 9), (9, 8), (10, 8), (11, 8), (13, 8)):   # 하늘 반사 띠: 1화소 굵기, 군데군데 끊긴 한 줄
+        if (x, y) in water and (x, y - 1) in water and (x, y - 2) in water: c.P(x, y, K('oil', 5))
+    for (x, y) in water:                                             # 먼(위) 둑: 물 바로 위 흙 한 줄 그늘(낮은 대비, 위쪽에만)
+        if (x, y - 1) not in water and y - 1 >= 0 and y < 8: c.P(x, y - 1, K('dirt', 1))
+    for x in range(16):                                              # 가까운(아래) 물가: 테두리 없이 젖은 흙으로 바로 이어진다 — 군데군데 진흙 턱 3
+        for y in range(15, -1, -1):
+            if (x, y) in water:
+                if y + 1 < 16 and (x, y + 1) not in water and h2(x, y, 709) % 3 == 0: c.P(x, y + 1, K('dirt', 3))
+                break

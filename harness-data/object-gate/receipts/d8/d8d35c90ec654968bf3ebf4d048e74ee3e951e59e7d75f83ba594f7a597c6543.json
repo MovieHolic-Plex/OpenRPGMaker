@@ -1,0 +1,444 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d8d35c90ec654968bf3ebf4d048e74ee3e951e59e7d75f83ba594f7a597c6543",
+ "width": 64,
+ "height": 64,
+ "kind": "structure",
+ "name": "low one-storey ruined shop seen from above: flat concrete roof with a parapet, the middle of the roof caved in to a dark hole with sagging broken slabs and rebar; front face with a blank rusty fascia panel and a wide rolling shutter torn and bent up at one corner",
+ "label": "wasteland_ruins/husk-d",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (3/4)",
+  "화풍: 평면 채움 (3/4)",
+  "화풍: 명암 3단 < 4 (3/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (3/4)",
+   "평면 채움 (3/4)",
+   "명암 3단 < 4 (3/4)"
+  ],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 5,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "wasteland_ruins",
+   "fallback": true,
+   "reason": "칩셋 wasteland_ruins 의 화풍 기준 묶음이 없다",
+   "hash": "5f62fef078ef7661"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 13,
+  "tileColorsP90": 16,
+  "darkV5": 32,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 16
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "borderline",
+   "right",
+   "right",
+   "wrong",
+   "right",
+   "borderline",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "flat concrete roof with parapet and caved-in hole",
+      "rows": "1-37",
+      "evidence": "a",
+      "front_edge_line_row": 37,
+      "eave_shadow_rows": "38-39"
+     },
+     {
+      "part": "rusty fascia panel",
+      "rows": "40-46",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "rolling shutter with torn corner",
+      "rows": "47-63",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 36,
+    "front_face_rows": 26,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The roof fills rows 1-37 as a large horizontal surface seen from above. It has a back parapet at rows 1-3, a speckled concrete field, and a dark collapse hole at rows 9-27 showing the roof's interior. A light front parapet edge line sits at rows 36-37, followed by darker eave shadow at rows 38-39. Below the roof is a vertical south face of about 26 rows: a rusty fascia panel at rows 40-46 and a rolling shutter with a torn corner at rows 47-63. No receding side face is drawn, since the width stays at 64 for every row."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small, simple building, but the measured facts are close to the references: 13 visible tones per tile against 12 and 10, and 7% near-flat coverage against 0%. Its dark edge pixels are 28% neutral, against 7% and 9% for the references, so part of the outline is drifting toward neutral dark grey rather than a tinted material tone. By eye, the main concrete roof and the front wall read as only about 3 grey-blue lightness steps, where the references carry 5-6 steps per material. The roof has some speckle and the collapsed hole has rubble, but the parapet and the fascia panel are fairly flat bands. The shutter has stripes but little per-slat shading. The overall look is more like a flat tinted sticker with a dark frame than the references' hand-shaded materials (roof tile scallops with per-tile highlights, plaster speckle, stones shaded one by one). A careful artist would see it as thinner and flatter than the references, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 12346
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "flat concrete roof with caved-in hole and parapet",
+      "rows": "0-37",
+      "evidence": "a",
+      "front_edge_line_row": 37,
+      "eave_shadow_rows": "38-39"
+     },
+     {
+      "part": "rusty fascia panel",
+      "rows": "38-45",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "rolling shutter with torn corner",
+      "rows": "47-63",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 36,
+    "front_face_rows": 26,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 0-37 are a large roof plane seen from above, with a back parapet at rows 0-4 and the caved-in hole at rows 9-28. It ends in a light front-edge line at row 37 (L=189), then darker shadow at rows 38-39 (L~107). Below it is a vertical front face of about 26 rows (rows 38-63): the fascia panel at rows 38-45 and the rolling shutter at rows 47-63. The structure shows both a top surface and a front face, so it reads as three-quarter view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "Visible tones per tile (13) match or exceed the references (12 and 10), and near-flat coverage is low at 7%, so the numbers alone do not mark it as shallow. By eye the candidate is weaker on structure: the roof is a mostly flat grey slab with a few speckles, and the collapsed hole is a dark mass with little ramp. Each material (concrete, rust fascia, shutter) shows only about 3 steps, against 5-6 per material on the references. The rolling shutter and fascia are broad panels with thin horizontal banding and no per-element highlights. The outline is mixed: dark edge pixels are only 28% neutral, so some are tinted, but the dark frame around the hole and the panels reads close to a uniform dark line, a bit sticker-like. There are no per-tile highlights or scallops like the references' roof tiles, and the shapes are not shaded one by one. The building is also small and sparse compared with the references. Overall it is clearly shallower than the Beodeul standard.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 12958
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "flat concrete roof with parapet and caved-in hole",
+      "rows": "0-37",
+      "evidence": "a",
+      "front_edge_line_row": 37,
+      "eave_shadow_rows": "38-39"
+     },
+     {
+      "part": "rusty fascia panel",
+      "rows": "38-46",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "rolling shutter with torn corner",
+      "rows": "47-63",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 37,
+    "front_face_rows": 26,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 0-37 are a large horizontal roof seen from above. It has a parapet rim at the top, a speckled concrete surface, and a dark hole with broken slabs in rows 8-28. The roof ends in a light front-edge line at rows 36-37 (L=189), followed by darker eave shadow at rows 38-39 (L=107). Below that the vertical front face runs from row 38 to the bottom: the fascia panel (rows 38-46) and the shutter (rows 47-63). That gives a front face of about 26 rows, so the roof is a real top surface and not a rim."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a small, whole building of the same kind as the references. The measured facts support it. It has 13 visible tones per tile against 12 and 10 for the references. Near-flat coverage is 7%, which is low, though the references have 0%. Only 28% of its dark edge pixels are neutral, so most outlines lean toward the neighbouring material (dark teal-grey beside the fascia, dark grey beside the concrete) rather than being a uniform black sticker line. By eye, the concrete roof has speckle and grain, the collapsed hole has dark and mid slabs with rebar fragments, and the shutter has slat lines and a bent corner. The weaker points are that the concrete ramp has about 4 steps against the references' 5-6, and the fascia panel is fairly plain. The brief asks for that panel to be blank, and the rust variation keeps it from being a true flat fill. A careful artist would accept it next to the references, but only just.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17982
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "flat concrete roof with parapet and collapsed hole",
+      "rows": "0-37",
+      "evidence": "a",
+      "front_edge_line_row": 37,
+      "eave_shadow_rows": "38-39"
+     },
+     {
+      "part": "rusty fascia panel",
+      "rows": "40-45",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "rolling shutter with torn corner",
+      "rows": "47-63",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 38,
+    "front_face_rows": 26,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The roof fills rows 0-37 as a large foreshortened horizontal surface. It has a parapet rim at rows 0-3, a concrete field with a caved-in dark hole at rows 8-28, and a light front-edge line at rows 36-37. Dark eave shadow follows at rows 38-39. Below that is a vertical south face from row 38 to the bottom: a fascia panel at rows 40-45 and a shutter at rows 47-63, about 26 rows in all. The roof is clearly a top surface, not a rim, and the front face is well over 3 rows, so the building reads as three-quarter view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small, simple ruin and the measured facts are close to the references: 13 visible tones per tile against 12 and 10, and 7% near-flat coverage against 0%. That does not match what the picture shows. The concrete roof is a mostly flat grey-blue fill with only light speckle, about 3 lightness steps against roughly 6 on the tile roofs. The parapet is a thin light edge, and the hole is dark with a few light slab shapes. The front fascia and shutter are mostly stripes and flat panels with a dark rim. The outline is mixed: 28% of dark edge pixels are neutral, against 7-9% for the references. The dark frame around the building reads as a near-black sticker line, not a tinted material tone. Per-material ramps are shallow, and the shutter and fascia show little grain or per-element shading, unlike the references' per-tile highlights and stone-by-stone shading. The piece has a decent concept and some texture, but it falls short of the Beodeul standard on shading depth and outline craft.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 13973
+  }
+ ],
+ "decidedAt": "2026-10-23T03:30:44.477Z",
+ "cells": {
+  "16": [
+   "074b885dce755f8c",
+   "102d1535b7bbdd68",
+   "152cd51025591a9b",
+   "450bfdb18c2f0dd6",
+   "46996deeb568e134",
+   "4b5e9131fbe4f0f3",
+   "4cfb12caf446f744",
+   "54c0d372d85140b2",
+   "60fa21b181b92301",
+   "65cb569663cbe376",
+   "6d90d0909cdd7a36",
+   "b7168fbd15f1443b",
+   "b7291ed54dc5cfca",
+   "eed87d2588fbb6f9",
+   "f219cf369556009a",
+   "fde3b99bc4827508"
+  ],
+  "24": [
+   "001f0e9436d981f1",
+   "02ceea39e616cd23",
+   "0e7cfb01037088e6",
+   "135066c354938c84",
+   "26614351bbdd4f67",
+   "28d5b5f0526ae7b2",
+   "2d12a9f8ff3dc4e4",
+   "342e058a9e76bf51",
+   "36631f66510ba85a",
+   "38265eaff964dc69",
+   "3b16898077c6e0e9",
+   "44963a4249fa9c70",
+   "469b0014ca577cae",
+   "4cf8efed2696d192",
+   "512f944525484d71",
+   "537dd4005750a235",
+   "549271e4f911bbbe",
+   "552ad38b93913a71",
+   "553f8344d4ff8b3d",
+   "67dce55b84d9eb6f",
+   "6ac5d9a4a0e36163",
+   "70b9d739c07dcfc0",
+   "7486430897337be1",
+   "75026d22738a7da5",
+   "75994a83353a403c",
+   "770601a022007261",
+   "77522faafd4c3257",
+   "794b82a879babb30",
+   "7bdcd470354718c9",
+   "7ca5def24919d563",
+   "7e32e7b192e64d94",
+   "818c587e26c3118e",
+   "8223048db66eff5a",
+   "82fd79a1a57949c1",
+   "8592ca23441e607e",
+   "89a1da483164fa7a",
+   "8fd4ea984cf2e9e2",
+   "9548823fa0f82172",
+   "97282483d46dd424",
+   "9a10f4e055548619",
+   "a366fe3c3a277a59",
+   "a91e45763ad045af",
+   "ab6ecbfcd07a2f81",
+   "b4ba250fa8e73324",
+   "b7820851477a1998",
+   "c26e93bf6f0b4c70",
+   "dc6c6deabc625b93",
+   "e176478671113455",
+   "e1dd45b766110992",
+   "e5071df76fc7af1f",
+   "f242f643809aa089",
+   "f3dd823d65cdbd40",
+   "f437f46c2bd56113",
+   "f48ee52001eb8e9d"
+  ],
+  "32": [
+   "283774f087fbd312",
+   "3f4237b2a983bf1d",
+   "68b7ddd112abaa82",
+   "f000af178f8184b7"
+  ],
+  "48": [
+   "052181048f430309",
+   "24371c9b6ecb408b",
+   "3138ca0716158477",
+   "31ddce6da30c3439",
+   "3aa126466da29426",
+   "3c1b2e5eae16c013",
+   "40b9e2938f32cd66",
+   "47d84fa117684704",
+   "56163f3731d8af8b",
+   "7bf9cd02b601cf77",
+   "8a2bea45ed311c7a",
+   "a5efa7628c0f05d1",
+   "a9309f86b136f961",
+   "a95749c62660dc7e",
+   "b4b3fe94d92e4910",
+   "b53995f6cdf2776b",
+   "bbf13ed1f55fb2f9",
+   "c4dc7effb51097ac",
+   "c6160eb60a6d4c19",
+   "d401437f8bac5b0f",
+   "e2df2a99310737dd",
+   "eae165b47241dca6",
+   "f441564dc309d27f",
+   "f91cd8037a0932b8"
+  ]
+ }
+}

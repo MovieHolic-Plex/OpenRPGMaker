@@ -36,7 +36,7 @@ function cmd(id: string, label: string): EditorCommand {
 
 beforeEach(() => {
   store.replace(createBlankProject());
-  restoreDom = installFakeDom();
+  restoreDom = installFakeDom({ window: true });
   writtenKeys = [];
   installRecordingLocalStorage();
 });

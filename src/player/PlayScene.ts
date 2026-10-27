@@ -90,6 +90,7 @@ import { applyStoredCameraState, centerRuntimeCamera, panRuntimeCamera } from "@
 import { runtimeMapViewZoom, runtimePixelDensity } from "@/player/runtimeViewScale";
 import { hasSessionCheckpoint, restoreSessionCheckpoint, setSessionCheckpoint, getSessionCheckpoint } from "@/player/checkpoints";
 import { syncFollowerSceneVisibility, syncFollowerSprites } from "@/player/playSceneFollowers";
+import { startChaseSpawnGrace } from "@/player/chaseSpawnGrace";
 import { syncPartyFollowers } from "@/project/followers";
 import { seedLocationOccupancyForScene } from "@/player/playSceneLocationTransitions";
 import { installLightingLayer, syncLightingLayer, updateLighting } from "@/player/playSceneLighting";
@@ -120,6 +121,7 @@ import { dialogueHost } from "@/player/playSceneDom";
 import {
   createMinimap,
   destroyMinimap,
+  minimapToggleKeyHandler,
   syncMinimapPosition,
   syncMinimapVisibility,
   type MinimapRuntimeState,
@@ -291,6 +293,7 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
       return host instanceof HTMLElement ? host : undefined;
     }, { qaInstrumentation, playResolution });
     this.session = this.initialSession(project);
+    startChaseSpawnGrace(this);
     this.zoneFeedback = createPlaySceneZoneFeedback(this.session);
     // dialogueHost 는 player.ts 가 게임 생성 후 registry 에 넣으므로 여기선 아직 없을 수 있다.
     // zoneFeedback 과 동일하게 update 에서 host 를 다시 해석해 붙인다.
@@ -330,17 +333,18 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
     const destroyAtlas = (): void => { this.worldAtlasController?.destroy(); this.worldAtlasController = null; };
     this.events.once('shutdown', destroyAtlas);
     this.events.once('destroy', destroyAtlas);
-    // M = minimap toggle. Input abstraction doesn't expose Phaser keyboard; use document.
+    // M toggles the minimap. The document listener is outside Phaser's keyboard plugin.
     const toggleMinimap = (): void => {
       if (!this.minimap) return;
       this.minimapUserHidden = !this.minimapUserHidden;
       const host = this.game.registry.get("dialogueHost") as HTMLElement | undefined;
       syncMinimapVisibility(this.minimap, host ?? null, this.minimapUserHidden);
     };
-    const onDocKey = (e: KeyboardEvent): void => {
-      if (this.game.registry.get('initialPresentationPending') === true) return;
-      if (e.key.toLowerCase() === "m" && !e.repeat) toggleMinimap();
-    };
+    const onDocKey = minimapToggleKeyHandler({
+      presentationPending: () => this.game.registry.get("initialPresentationPending") === true,
+      host: () => this.game.registry.get("dialogueHost") as HTMLElement | undefined,
+      toggle: toggleMinimap,
+    });
     document.addEventListener("keydown", onDocKey);
     const detachMinimapKey = (): void => {
       document.removeEventListener("keydown", onDocKey);
@@ -707,6 +711,8 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
   applySession(session: PlaySession): void {
     this.battleAbortController?.abort();
     this.session = structuredClone(session);
+    // 불러오기·체크포인트·패배 복구는 주인공을 새로 세운다 — 추격자가 곧바로 잡지 않게 은총 시간을 다시 준다(J61).
+    startChaseSpawnGrace(this);
     // 엔딩·CG 해금은 세이브가 아니라 이 기기 기록이다 — 불러오기·체크포인트·패배 복구로 세션을 갈아 끼워도 목록이 0 으로 돌아가지 않게 다시 비춘다.
     if (typeof window !== "undefined" && window.localStorage) syncSessionWithDeviceRecords(window.localStorage, store.getCurrent(), this.session);
     this.clearRuntimeOverlay("runtime-error");
@@ -770,8 +776,8 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
     showSceneGameOverScreen(this, message, gameOverId);
   }
 
-  showEndingScreen(title: string, message: string, presentation?: import("@/project/cinematicSettings").EndingPresentation, endingId?: string): void {
-    showSceneEndingScreen(this, title, message, presentation, endingId);
+  showEndingScreen(title: string, message: string, presentation?: import("@/project/cinematicSettings").EndingPresentation, endingId?: string, continueTo?: import("@/project/types").EndingContinueTo): void {
+    showSceneEndingScreen(this, title, message, presentation, endingId, continueTo);
   }
 
   returnToTitle(): void {

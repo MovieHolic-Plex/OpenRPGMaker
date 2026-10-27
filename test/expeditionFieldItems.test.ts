@@ -12,7 +12,8 @@ describe("monster campaign field items", () => {
   it("ships repellents, an escape rope, an angler with a rod and one fishing pond that only covers water", async () => {
     const ctx: any = { project: createBlankProject(), currentMapId: undefined };
     ctx.currentMapId = ctx.project.startMapId;
-    const built = await runToolAsync(ctx, "build_monster_game", { mode: "create", gymCount: 1 });
+    // 체육관 수로 세계를 덜어 내면(#2573·#2581) 1~2관 판에는 낚시할 물길(강·항구·해변의 넓은 물)이 없다 — 강이 남는 3관 판에서 본다.
+    const built = await runToolAsync(ctx, "build_monster_game", { mode: "create", gymCount: 3 });
     expect(built.ok).toBe(true);
     const project = deserialize(serialize(ctx.project));
     for (const id of [...EXPEDITION_FIELD_ITEM_IDS, EXPEDITION_FISHING_ROD_ID]) expect(project.database.items.some((item) => item.id === id)).toBe(true);
@@ -47,6 +48,7 @@ describe("upsert_item field utility fields", () => {
     expect(runTool(ctx, "upsert_item", { item: { id: "e2", name: "나쁜 로프", escapeTo: "somewhere" } }).ok).toBe(false);
     const wrongOccasion = runTool(ctx, "upsert_item", { item: { id: "r3", name: "배틀 향", repelSteps: 5, occasion: "battle", scope: "ally" } });
     expect(wrongOccasion.ok).toBe(true);
-    expect((wrongOccasion.warnings ?? []).length).toBeGreaterThan(0);
+    // 쓰기 도구 경고는 이제 diff.warnings 로 온다(toolRunner).
+    expect((wrongOccasion.diff?.warnings ?? wrongOccasion.warnings ?? []).length).toBeGreaterThan(0);
   });
 });

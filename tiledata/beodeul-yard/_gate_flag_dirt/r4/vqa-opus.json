@@ -1,0 +1,50 @@
+{
+ "reviewer": "opus fresh adversarial (r4)",
+ "verdict": "fail",
+ "notes": "Coords are sample-1x px (352x240, 16px cells, cell (cx,cy)) unless noted. W edge, 2x2 hole and south tail improved; N straight edge and NE diagonal still fail on stamp repetition and comb-like shard row; lip shadow unchanged from r3.",
+ "criteria": {
+  "ragged_ruin_edge": {
+   "result": "fail",
+   "evidence": "W edge (x40-112,y40-160) and the 2x2 hole read as genuinely broken paving. But the N edge (x64-224,y24-56; /tmp crop 8x) is a row of upright pointed triangular shards standing side by side on top of the straight body joint at y~47-48: a picket/teeth silhouette, not slabs sinking into earth. Above it, loose dark chips sit in a regular row at y~33-36 (approx x68,101,130,134,164,195) together with green sprouts at y~35 every ~16px (x77,86,107,141,148,173,182,214) - a dotted line tracing the outline, the same r3 defect. NE diagonal (x192-288,y24-112) is a staircase of near-identical shard clusters per step."
+  },
+  "no_kerb": {
+   "result": "pass",
+   "evidence": "No continuous dressed rim band on any of the 29 tiles or on the board; outside the shards is plain dirt texture."
+  },
+  "no_square_holes": {
+   "result": "pass",
+   "evidence": "2x2 interior hole (approx x128-160,y80-112; sample-4x x400-620,y270-500) reads as a rounded irregular pit with shards breaking into it from all sides; inner corners on the south tail have no cell-aligned square notches; isolated cell (20,4) is a small rubble pile, not a square."
+  },
+  "seamless": {
+   "result": "pass",
+   "evidence": "Dirt in edge tiles continues into dirt body tiles without visible lines; body joint lines carry into edge tiles. Remaining straight joint lines on cell borders are the pre-existing body joint grid."
+  },
+  "no_repeat_grid": {
+   "result": "fail",
+   "evidence": "Byte-identical cell hashes on the N edge row y=2: (4,2)=(6,2)=(8,2)=(10,2) and (5,2)=(9,2)=(11,2) -> every even cell is the same tile, an exact 32px stamp (A,B,A,C,A,B,A,B) clearly visible in the alternating sprout/chip pattern of the N crop. 'Hash within parity' collapsed to one variant per parity. NE diagonal still (13,2)=(14,3)=(15,4) identical (and (13,3)=(14,4)=(15,5)), so the stair diagonal is one stamp repeated 3x. Also (3,3)=(3,5)=(9,5), (3,4)=(9,6)=(4,8)=(6,10), (6,4)=(14,8)=(10,9)=(7,10), (7,4)=(11,9)=(13,9)=(9,10)."
+  },
+  "beodeul_quality": {
+   "result": "fail",
+   "evidence": "Lip/sunken shadow still negligible: dirt pixel directly above N shard tops averages luminance 277, 3px above 283, dirt body 289 (~4% darker, same as r3's 5%); below S edge shards 284. Edge shards keep the body's bright cream tops so the edge reads as white shards standing on dirt rather than sinking. Loose chips are mostly the same dark 3x2 oval shape, reading as stamped dots."
+  }
+ },
+ "preexisting_issues": [
+  "Flag body joint grid visible on 16px cell borders; body cells repeat byte-identically (e.g. (7,3)=(8,3)=(4,4)=(13,4)=(10,6)=(11,6)=(12,7)=(13,7)), giving a repeating triangle-facet pattern.",
+  "Body slab tops very bright cream/blue-grey, higher contrast than Beodeul stone reference.",
+  "Dirt body scatters grey pebble pairs and orange clods on a fairly regular lattice."
+ ],
+ "defects": [
+  "N straight-edge variant selection: all even-position cells get the same tile -> 32px repeat over 8 cells.",
+  "Convex staircase diagonal uses the same corner tile 3 times in a row.",
+  "N edge silhouette is a row of upright pointed shards (comb/teeth) on a straight base line.",
+  "Chips and green sprouts at a fixed offset outside the edge form dotted lines.",
+  "Lip shadow only ~4% darker than dirt body; shards too bright to sink."
+ ],
+ "fixes": [
+  "Fix the variant hash: hash (x,y) with full mixing (e.g. fmix32) and reject only equality with the left/up neighbour; verify with a cell-hash dump that no two cells within 3 of each other along an edge are identical.",
+  "Give convex corners on diagonals at least 3 variants, chosen by the same mixed hash, or make diagonal steps use straight-edge variants for the step faces.",
+  "Redraw N edge variants so the outermost slabs are flat broken slab pieces lying down (wide, low, tilted), with uneven recess 2-10px, not vertical triangular spikes on a common baseline.",
+  "Scatter chips/sprouts at random distances 1-12px, varied sizes and shapes, with long empty stretches; never one per cell at the same y.",
+  "Add a 1-2px darker dirt band (15-20% darker) on the S/E side of each outer shard and darken/warm outermost shard tops, partially overlapping with dirt pixels."
+ ]
+}

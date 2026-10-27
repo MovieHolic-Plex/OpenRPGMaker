@@ -7,6 +7,7 @@ import { createBlankProject } from "@/project/defaults";
 import { COMBINED_TOWN_TILESET_ID, TILE } from "@/project/defaults/constants";
 import type { TileGroupMetadata } from "@/project/types";
 import type { ToolContext } from "@/editor/tools/types";
+import { startOnRetiredCombinedTown } from "./support/retiredEasyRpgTilesets";
 
 type PatternGrammar = NonNullable<TileGroupMetadata["patternGrammar"]>;
 type SetGroupLayoutData = {
@@ -16,7 +17,8 @@ type SetGroupLayoutData = {
 };
 
 function contextWithGroup(): ToolContext {
-  const project = createBlankProject();
+  // set_group_layout 은 tilesetId 를 생략하면 시작 맵의 칩셋을 쓴다 — 시작 맵을 합본 마을 위에 둔다.
+  const project = startOnRetiredCombinedTown(createBlankProject());
   project.tilesets[COMBINED_TOWN_TILESET_ID].tileGroups = [layoutGroup()];
   return { project };
 }

@@ -25,6 +25,7 @@ import {
   validateEnemyResources,
   validateEquipmentResources,
   validateItemResources,
+  isKnownResourceId,
   validateOptionalResource,
   validateSystemResources,
 } from "./resourceReferenceValidation";
@@ -1051,8 +1052,8 @@ function repairSpatialReferences(project: Project): void {
     project.database.farmBuildingTypes = uniqueById(project.database.farmBuildingTypes)
       .filter((type) => type.levels.length > 0 && type.levels.every((level) => (
         isSpatialFootprint(level.footprint)
-        && resourceIds.has(level.graphicResourceId)
-        && Object.values(level.orientationGraphicResourceIds ?? {}).every((id) => resourceIds.has(id))
+        && isKnownResourceId(resourceIds, level.graphicResourceId)
+        && Object.values(level.orientationGraphicResourceIds ?? {}).every((id) => isKnownResourceId(resourceIds, id))
         && (level.cost?.items ?? []).every((entry) => itemIds.has(entry.itemId))
       )))
       .map((type) => ({ ...type, ...repairedAllowedMaps(type.allowedMapIds, mapIds) }));
@@ -1061,8 +1062,8 @@ function repairSpatialReferences(project: Project): void {
     project.database.homeDecorationTypes = uniqueById(project.database.homeDecorationTypes)
       .filter((type) => itemIds.has(type.placementItemId)
         && isSpatialFootprint(type.footprint)
-        && resourceIds.has(type.graphicResourceId)
-        && Object.values(type.orientationGraphicResourceIds ?? {}).every((id) => resourceIds.has(id)))
+        && isKnownResourceId(resourceIds, type.graphicResourceId)
+        && Object.values(type.orientationGraphicResourceIds ?? {}).every((id) => isKnownResourceId(resourceIds, id)))
       .map((type) => ({ ...type, ...repairedAllowedMaps(type.allowedMapIds, mapIds) }));
   }
 
@@ -1158,7 +1159,7 @@ function initialSpatialOccupiedCells(project: Project): Map<string, Set<string>>
 }
 
 function collectSpatialResourceIssue(path: string, resourceId: string, resourceIds: ReadonlySet<string>, issues: string[]): void {
-  if (!resourceIds.has(resourceId)) issues.push(`${path} does not exist: ${resourceId}`);
+  if (!isKnownResourceId(resourceIds, resourceId)) issues.push(`${path} does not exist: ${resourceId}`);
 }
 
 function uniqueById<T extends { readonly id: string }>(rows: readonly T[]): T[] {

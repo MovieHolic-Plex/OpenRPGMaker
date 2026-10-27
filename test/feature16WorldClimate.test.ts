@@ -28,7 +28,8 @@ it("actual layer hides immediately on entry and restores without touching sessio
   const graphics: object = new Proxy({}, { get: () => () => graphics });
   const scene = {
     map: { climate: { mode: "indoor" } }, session: { m2Runtime: { screen: { weather: "rain,0.8" } } },
-    weatherLayer: { setVisible: (next: boolean) => { visible = next; } }, weatherGraphics: graphics,
+    // 층은 이제 줌·밀도를 상쇄하려 위치·배율도 맞춘다(playSceneWeather syncWeatherLayer) — 대역도 그 두 메서드를 받는다.
+    weatherLayer: { setVisible: (next: boolean) => { visible = next; }, setPosition: () => undefined, setScale: () => undefined }, weatherGraphics: graphics,
     weatherClockMs: 0, weatherTransition: null,
     cameras: { main: { width: 320, height: 240 } },
   } as unknown as PlaySceneContext;

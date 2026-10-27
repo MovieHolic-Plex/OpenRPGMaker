@@ -1,6 +1,9 @@
+import { normalizeCameraZoom } from "@/project/cameraZoom";
 import { mapCharacterSizeFactor } from "@/project/characterScale";
+import { CHASER_SPAWN_MIN_STEPS, chaserThreatLine, chaserThreatsAt } from "@/project/chaserSpawnSafety";
 import { patchSunlight, type MapSunlight } from "@/project/sunlight";
 import { isRetiredInteriorTileset, retiredInteriorMessage } from "@/project/retiredInteriorTilesets";
+import { isRetiredEasyRpgTileset, retiredEasyRpgMessage } from "@/project/retiredEasyRpgTilesets";
 import { isMapLoop, mapLoopLabel, mapLoopsX, mapLoopsY, MAP_LOOP_VALUES } from "@/project/mapLoop";
 import { isMapRoleKind, MAP_ROLE_LABELS } from "@/project/mapRole";
 import { isCombinedTownCompatibleTileset } from "@/project/tilesetHarness";
@@ -66,7 +69,7 @@ import { mapBackgroundFromPanoramaSet, oprnPanoramaSetOfImage, OPRN_PANORAMA_SET
 import { mapTileSize } from "@/project/tileGeometry";
 import { tileCategoriesForTile } from "@/project/tilesetPalette";
 import { isActionCombatMap } from "@/project/actionCombat";
-import type { EncounterTableEntry, FieldSpawnDef, GameEvent, GameMap, MapBackground, PaletteSlotRole, Project, Rect, RoguelikeRoomDef, TilesetDef } from "@/project/types";
+import type { Command, EncounterTableEntry, FieldSpawnDef, GameEvent, GameMap, MapBackground, PaletteSlotRole, Project, Rect, RoguelikeRoomDef, TilesetDef } from "@/project/types";
 import { mapLocations, resolveLocation } from "@/project/mapNamedLocations";
 import { terrainRecordAt } from "@/project/terrainAt";
 import { ensureGrassTerrainRecord, GRASS_TERRAIN_ID } from "@/project/defaults/defaultDatabaseUtilityRecords";
@@ -293,9 +296,14 @@ const createMap: ToolDefinition = {
     const size = width * height;
     const tilesetId = typeof args.tilesetId === "string" && args.tilesetId.trim().length > 0 ? args.tilesetId.trim() : defaultOutdoorTilesetId(draft);
     const tileset = draft.tilesets[tilesetId];
-    if (!tileset) throw new ToolError(`타일셋을 찾을 수 없습니다: ${tilesetId}`, { code: "tileset-not-found" });
     // 폐기된 실내 칩셋(Tibo·EasyRPG 실내·LPC 가구)으로는 새 맵을 만들지 않는다 — 실내는 build_hand_interior_room(손 도트 v5).
     if (isRetiredInteriorTileset(tilesetId, tileset)) throw new ToolError(retiredInteriorMessage(tilesetId), { code: "retired-interior-tileset" });
+    // 2026-10-07 정리 뒤 새 프로젝트에는 폐기 EasyRPG 계열 정의가 없다. 「타일셋 없음」만 돌려주면 폐기 사유와 장소 가져오기 안내
+    // (실행기 rejectRetiredEasyRpgMaps 가 주던 것)가 사라져 조수가 같은 id 로 재시도한다 — 없는 폐기 id 도 같은 거부로 답한다.
+    if (!tileset && isRetiredEasyRpgTileset(draft, tilesetId)) {
+      throw new ToolError(retiredEasyRpgMessage(tilesetId, "create_map"), { code: "retired-easyrpg-tileset" });
+    }
+    if (!tileset) throw new ToolError(`타일셋을 찾을 수 없습니다: ${tilesetId}`, { code: "tileset-not-found" });
     const map: GameMap = {
       id,
       name,
@@ -347,7 +355,9 @@ const createMap: ToolDefinition = {
 
 const duplicateMap: ToolDefinition = {
   name: "duplicate_map",
-  description: "맵 전체(타일·이벤트·BGM·배경·미니맵 설정)를 복제하고 원본 바로 뒤에 배치한다. 새 map id는 명시해야 한다.",
+  description: "맵 전체(타일·이벤트·BGM·배경·미니맵 설정)를 복제하고 원본 바로 뒤에 배치한다. 새 map id는 명시해야 한다. " +
+    "같은 장소의 다른 때 판(점령된 밤·통금·폐허 직후)을 만들 때는 events:\"doors\" 로 사람·연출 이벤트를 비우고 문·출입구(이동만 하는 이벤트)만 남기며, " +
+    "lockedDoorText 를 주면 남긴 문은 옮기지 않고 그 한 줄만 보여 준다(통금으로 잠긴 집). 열어 둘 문은 openDoorMapIds 에 그 문이 가는 맵 id 를 적는다.",
   mode: "write",
   parameters: {
     type: "object",
@@ -355,6 +365,9 @@ const duplicateMap: ToolDefinition = {
       mapId: { type: "string" },
       id: { type: "string", description: "새 맵 id" },
       name: { type: "string", description: "새 맵 이름(생략 시 '<원본> 복사')" },
+      events: { type: "string", enum: ["all", "doors", "none"], description: "all(기본)=이벤트 전부 복제 · doors=이동(transfer)만 하는 문·출입구 이벤트만 남김 · none=이벤트 없이 타일만" },
+      lockedDoorText: { type: "string", description: "events:doors 일 때 남긴 문을 잠근다 — 이동 대신 이 한 줄(예: 「통금이다. 문이 굳게 잠겨 있다.」)" },
+      openDoorMapIds: { type: "array", items: { type: "string" }, description: "lockedDoorText 를 줘도 그대로 열어 둘 문(이 맵들로 가는 문)" },
     },
     required: ["mapId", "id"],
     additionalProperties: false,
@@ -366,8 +379,34 @@ const duplicateMap: ToolDefinition = {
       throw new ToolError(`이미 사용 중인 맵/폴더 id입니다: ${id} — ${MAP_ID_TAKEN_GUIDANCE}`, { code: "map-exists", mapId: id });
     }
     const name = typeof args.name === "string" && args.name.trim() ? args.name.trim() : `${source.name} 복사`;
-    cloneMapIntoProject(draft, source, id, name);
-    return { summary: `맵 '${source.name}' 복제 → '${name}' (${id})`, data: { mapId: id } };
+    const { copy } = cloneMapIntoProject(draft, source, id, name);
+    const mode = args.events === "doors" || args.events === "none" ? args.events : "all";
+    let kept = copy.events.length;
+    let locked = 0;
+    if (mode !== "all") {
+      // 문 = 모든 페이지가 이동(transfer)·얼굴·대사만으로 된 이벤트(출입구·잠긴 집 안내 포함). 사람·연출·상자는 뺀다.
+      const doorish = (event: GameEvent): boolean => {
+        const pages = event.pages ?? [];
+        return pages.length > 0
+          && pages.some((page) => page.commands.some((command) => command.kind === "transfer"))
+          && pages.every((page) => page.commands.every((command) => command.kind === "transfer" || command.kind === "text" || command.kind === "changeFace"));
+      };
+      copy.events = mode === "none" ? [] : copy.events.filter(doorish);
+      kept = copy.events.length;
+      const lockText = typeof args.lockedDoorText === "string" ? args.lockedDoorText.trim() : "";
+      const open = new Set(Array.isArray(args.openDoorMapIds) ? args.openDoorMapIds.map(String) : []);
+      if (mode === "doors" && lockText) {
+        for (const event of copy.events) {
+          const targets = (event.pages ?? []).flatMap((page) => page.commands.flatMap((command) => command.kind === "transfer" ? [String((command as { mapId?: unknown }).mapId)] : []));
+          if (targets.some((target) => open.has(target))) continue;
+          const first = event.pages![0]!;
+          event.pages = [{ ...first, conditions: [], commands: [{ kind: "text", body: lockText } as Command] }];
+          locked += 1;
+        }
+      }
+    }
+    const note = mode === "all" ? "" : ` — 이벤트 ${mode === "none" ? "비움" : `문 ${kept}개만 남김${locked ? `(잠금 ${locked})` : ""}`}`;
+    return { summary: `맵 '${source.name}' 복제 → '${name}' (${id})${note}`, data: { mapId: id, events: kept, lockedDoors: locked } };
   },
 };
 
@@ -1340,6 +1379,8 @@ const setStartPosition: ToolDefinition = {
     if (previous && previous.id !== map.id && (previous.events?.length ?? 0) > 0 && !reachableMapIdsFromStart(draft).has(previous.id)) {
       warnings.push(`이전 시작 맵 '${previous.name}'(${previous.id}, 이벤트 ${previous.events.length}개)은 새 시작 맵에서 문으로 닿지 않습니다 — create_transfer_pair 나 이동 선택지로 이어야 거기 만든 것이 플레이에 나옵니다.`);
     }
+    // 추격자 시야 안·바로 곁이면 시작하자마자 잡힌다(J61).
+    for (const threat of chaserThreatsAt(draft, map.id, x, y, CHASER_SPAWN_MIN_STEPS, { skipGated: true })) warnings.push(`${chaserThreatLine(`시작 위치 (${x}, ${y})`, threat)}. 추격자 시야 밖(벽 너머·다른 방) 칸으로 옮기거나, 추격자를 스위치로 나중에 깨우세요(make_chase_scene activateSwitch).`);
     return { summary: `시작 위치 설정: ${map.name} (${x}, ${y})`, ...(warnings.length > 0 ? { warnings } : {}) };
   },
 };
@@ -2169,6 +2210,7 @@ const setMapProperties: ToolDefinition = {
       climate: mapClimateSchema,
       clearClimate: { type: "boolean" },
       characterScale: { type: "number", description: "이 맵에서 걷는 캐릭터(주인공·동료·탈것·캐릭터 이벤트) 크기 배율 0.25~1. 월드맵처럼 땅을 멀리서 보는 지도에서 0.5~0.75 로 줄인다. 1 이면 기본 크기로 되돌린다. 사용자가 원할 때만 — 기본은 줄이지 않는다." },
+      zoom: { type: "number", description: "이 맵의 기본 카메라 배율 0.25~6(1 = 프로젝트 기본으로 되돌림). 넓은 들판을 멀리(0.5~0.75), 좁은 방·긴장 장면을 가까이(1.5~2). 맵에 들어올 때마다 자동으로 걸린다 — auto 이벤트로 카메라 줌을 켜고 끄지 말 것. 연출 중 잠깐 당기는 줌만 이벤트 명령으로." },
       loop: { type: "string", enum: ["none", ...MAP_LOOP_VALUES], description: "반복 맵. horizontal=좌우 끝이 이어짐, vertical=위아래, both=사방, none=끔. 플레이어가 가장자리를 넘으면 반대편 같은 줄에 선다(반대편 칸이 통행 가능해야 한다)." },
     },
     required: ["mapId"],
@@ -2363,6 +2405,11 @@ const setMapProperties: ToolDefinition = {
         map.characterScale = mapCharacterSizeFactor({ characterScale: args.characterScale });
         changed.push(`캐릭터 크기=${Math.round(map.characterScale * 100)}%`);
       }
+    }
+    if (typeof args.zoom === "number" && Number.isFinite(args.zoom)) {
+      const zoom = normalizeCameraZoom(args.zoom);
+      if (zoom === undefined) { delete map.cameraZoom; changed.push("카메라 배율=프로젝트 기본"); }
+      else { map.cameraZoom = zoom; changed.push(`카메라 배율=${zoom}`); }
     }
     if (args.loop === "none") {
       delete map.loop;

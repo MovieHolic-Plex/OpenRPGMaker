@@ -1,0 +1,350 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f38b8da5fce8e5ab5c831ae8fa29699007ab5cc70d23a9be18d65767e4d0d8c9",
+ "width": 16,
+ "height": 16,
+ "kind": "round_body",
+ "name": "two rusty oil drums seen from above: elliptical lids with bung caps, banded rusty bodies",
+ "label": "wasteland_ruins/drums",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 16,
+  "tileColorsP90": 16,
+  "darkV5": 39,
+  "nearBlackEdge": 0.1,
+  "opaqueTiles": 1
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "left drum elliptical lid with bung",
+      "rows": "0-8",
+      "evidence": "b",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": "9"
+     },
+     {
+      "part": "right drum elliptical lid (teal/green)",
+      "rows": "3-10",
+      "evidence": "b",
+      "front_edge_line_row": 10,
+      "eave_shadow_rows": "11"
+     },
+     {
+      "part": "left drum banded body",
+      "rows": "9-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "right drum banded body",
+      "rows": "11-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 8,
+    "front_face_rows": 7,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette width profile grows 7, 9, 11, 14, 15, 16 from rows 0-5, which is the shape of an ellipse lid. Column x=4 shows the left lid from rows 1-8: a dark outline, then a gold bung and a lighter brown face, ending at a darker band at row 8-9. Below it the rows alternate between dark and mid-brown bands, which is the front face for rows 9-15 (about 7 rows). The right drum has a teal lid at rows 3-10 (column x=11 shows a lid outline at row 3-4 and lid fill through row 10). Its brown banded body is at rows 11-15, and it overlaps the left drum. Both drums have an elliptical top and a front face of 3 or more rows, so this matches the green barrel reference (ellipse top) and not the 2px-lid reference."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a small cluster, roughly one tile, so I judged it by the measured facts as well as by eye. It carries 16 visible tones in its full tile, against 9 for the hedge, 17 for the cheese stall and 20 for the roofed well, so it sits inside the reference range. Near-flat coverage is 0%, so there are no flat fills. The dark edge pixels are 0% neutral, so the outline leans toward the material colour rather than a black sticker line. By eye there are about 5 lightness steps across the lids and the banded bodies, with mottled rust and band highlights. That is slightly shallower than the references' 5-6 steps, and the piece is tiny and hard to read, so density is slightly lower than the best references. It does not look thinner or flatter than the hedge or the bench, so I pass it.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19818
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "left drum lid (rust and yellow ellipse with bung)",
+      "rows": "1-8",
+      "evidence": "b",
+      "front_edge_line_row": 9,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "right drum lid (green ellipse with bung)",
+      "rows": "4-10",
+      "evidence": "b",
+      "front_edge_line_row": 10,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "banded drum bodies",
+      "rows": "9-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 8,
+    "front_face_rows": 5,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Left drum: x=4 shows a rim at row 1, then a lid from rows 2-8 (yellow bung highlights at rows 2-4 and 7, rust between). A darker band starts at row 9, and alternating dark and rust bands run through rows 9-13, which is the banded front face of about 5 rows. Right drum: x=8 and x=11 show a green lid from rows 4-10 with a lighter rim at row 9-10. Below it, dark and green bands (x=8) and brown body (x=11) run through rows 11-14. The silhouette widens from 7 at row 0 to 16 at row 5, and the lid reads as a rounded ellipse above a banded body, not a flat band or a 1-2 row rim. The silhouette narrows only slightly at rows 14-15, so the top edge of the lid is round while the bottom is the drum base."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a small two-drum prop, about one tile across, so I judged it by eye as well as by the numbers. It reads as lids with a lighter rim, rust-brown banded bodies, and a darker shadow side. It uses 16 colours in total, which gives roughly 4 steps per material. That is a little under Beodeul's 5-6 but similar to the hedge reference (11 colours in total). Its dark edge pixels are 0% neutral, so the outline is tinted by the neighbouring material rather than a uniform black sticker line. Near-flat coverage is 0%, with no 5x5 flat fills. It has 16 visible tones per tile, against 9 for the hedge, 17 for the cheese stall and 20 for the well. That is on par with the references that fill a tile, so density is not a problem. Texture is moderate: rim highlights and rust variation, but little speckle or grain. It would sit acceptably next to the references without looking flat or sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 23946
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "left drum lid (rust ellipse with yellow bung caps)",
+      "rows": "1-7",
+      "evidence": "b",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": "9-9"
+     },
+     {
+      "part": "right drum lid (teal-green ellipse, overlapping the left drum)",
+      "rows": "3-10",
+      "evidence": "b",
+      "front_edge_line_row": 10,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "left drum banded rusty body",
+      "rows": "8-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "right drum body",
+      "rows": "11-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 7,
+    "front_face_rows": 6,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette widens from 7 px at row 0 to 16 px at row 5, giving a rounded back rim for the left drum's lid. Column x=4 shows the lid as rows 1-7: a dark rim at row 1, tan bung highlights at rows 2-4 and 7, and rust between them. Row 8 is a lighter front-rim line, row 9 is a dark shadow, and the banded body follows in rows 9-13 as alternating dark and rust bands. The right drum shows a teal lid ellipse at about rows 3-10 (dark rim at rows 3-5, light centre at rows 5-9). Below it are dark and green banded body rows through row 14, and the silhouette narrows at rows 14-15 where the drum bottoms are rounded. Both drums have an ellipse top and a front face of 3+ rows, so this reads as three_quarter and matches the green barrel reference. The overlap of the two drums makes the exact row boundaries somewhat uncertain."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is about one tile in size (two small drums). It measures 16 visible tones per 16x16 tile, against 17 for the cheese stall, 20 for the roofed well and 9 for the hedge. Near-flat coverage is 0%, so there are no flat fills. Dark edge pixels are 0% neutral, so the outline is a tinted dark material tone, not a black sticker line. By eye, the lids, bands and body show a few ramp steps with rim highlights and rust speckle. Each material has roughly 4 steps (total palette 16 colours) against about 6 in the references, so it is a little shallower in shading steps. For a one-tile prop it holds up beside the references on tone density and outline treatment, and does not look flatter or more sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 22947
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "left drum elliptical lid with bung",
+      "rows": "1-8",
+      "evidence": "b",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": "9"
+     },
+     {
+      "part": "right (green-teal) drum elliptical lid with bung",
+      "rows": "4-10",
+      "evidence": "b",
+      "front_edge_line_row": 10,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "left drum banded body",
+      "rows": "9-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "right drum banded body",
+      "rows": "11-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 8,
+    "front_face_rows": 6,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette widens 7,9,11,14,15,16 over rows 0-5, which is an elliptical lid outline. In column x=4 the left drum shows a lid with a yellow bung at rows 2-4 and 7, then a dark edge at row 8 and banded rust rows 9-13 below. The right drum has a teal ellipse at about rows 4-10 (x=8 and x=11), a highlight at row 9, and dark banded body rows 11-14 below. Both drums show an elliptical top plus 4-6 rows of banded front face, so this is three-quarter. The top and front-face row counts are approximate because the two drums overlap."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is small, so I judged it mostly from the measured facts. It has 16 visible tones per 16x16 tile, against 17 for the cheese stall and 20 for the roofed well. Near-flat coverage is 0%, so there are no large flat fills. Neutral dark edge pixels are 0%, so the outline is tinted: dark brown beside the rusty bodies and dark teal beside the lids, not a black sticker line. The drums show about 4 lightness steps per material, with lid rims, bands and a rusty body, which is slightly under the 5-6 of the references but not shallow. Texture is visible as banding and rust variation, though not as rich as the stall or well. Its density matches the references of the same kind, and it would sit acceptably next to them. The total palette is only 16 colours, but the visible tones per tile are comparable.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19950
+  }
+ ],
+ "decidedAt": "2026-10-22T15:08:30.429Z",
+ "cells": {
+  "16": [
+   "38e6c5ba6d261a5d"
+  ],
+  "24": [
+   "1cf796cdb3fcf56a",
+   "20a913b3728f4fd2",
+   "39c1331b12941410",
+   "649078b847c5b6f3",
+   "b226ef4b7dcc9999",
+   "f161570c31196017"
+  ],
+  "32": [
+   "4a89cdf5547c8086",
+   "501b0d4fd5cb506f",
+   "6bb5a9a5919caa20",
+   "91dedc9ed4d80ee7",
+   "d1819641bf5d7ee8",
+   "efb2d6818dcc8abc"
+  ],
+  "48": [
+   "2c7844731e7c3da1",
+   "39e2c03cf4346771",
+   "48b778cb07d5a2df",
+   "5f8f883f6bd93496",
+   "e5721f28aae55b51",
+   "fa64e74af5edcf40"
+  ]
+ }
+}

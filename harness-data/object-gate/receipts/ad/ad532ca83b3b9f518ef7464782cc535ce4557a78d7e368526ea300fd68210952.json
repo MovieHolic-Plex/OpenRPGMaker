@@ -1,0 +1,329 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ad532ca83b3b9f518ef7464782cc535ce4557a78d7e368526ea300fd68210952",
+ "width": 16,
+ "height": 16,
+ "kind": "flat",
+ "name": "scattered broken bricks lying on the ground",
+ "label": "wasteland_ruins/rubble-b",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 칸 정보량이 기준보다 훨씬 낮음 (4/4)",
+  "화풍: 명암 3단 < 4 (4/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "칸 정보량이 기준보다 훨씬 낮음 (4/4)",
+   "명암 3단 < 4 (4/4)"
+  ],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 4
+ },
+ "metrics": {
+  "tileColorsMedian": 0,
+  "tileColorsP90": 0,
+  "darkV5": 45,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 0
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "scattered brick fragments (about 6 small pieces)",
+      "rows": "3-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 1,
+    "front_face_rows": 1,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "This is a flat floor decal of loose bricks, each only about 4 rows tall. The column scan shows the same pattern in every brick: a dark outline row, then one light row (#a35f4c or #b27361), then one darker row (#70402f), then an outline row. The silhouette widths run 3, 9, 11, 13, 8, 11, 9, 8, 12, 8, 2 with no single large body. Each brick has about a 1-row light top and a 1-row darker face. That is a rim-like strip, not an ellipse, a roof, or a front-edge line with eave shadow, and no part has a front face of 3 rows or more. The object reads as a flat top-down scatter of bricks, which fits the flat kind."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a tiny cluster of about 5 red-brown bricks, smaller than one 16x16 tile, on a blank background. It is not a 4x3-tile ground patch like the grass and paving references, which fill their whole area with texture. The 9 distinct colours give roughly 3 tones per brick: a light top, a mid face and a dark edge. The edge tint leans red-brown, so the outline is a dark material tone rather than near-black (0% neutral). The bricks show no grain, speckle or per-brick highlights, and there is no ground texture such as soil, dust or gravel around them. The reference paving has 7 visible tones per tile and the grass 3, both with tufts and grain across the whole surface. Next to them the candidate looks thin, flat and sticker-like. Nothing is laid out as a continuous ground surface, so it does not meet the standard for this kind.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 15990
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "scattered brick pieces (flat on ground)",
+      "rows": "3-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 13,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The object is a scatter of small brick fragments seen from above, with dark outlines and a light top face with a darker lower edge on each piece. Rows 3-15 hold several separate pieces with no tall body and no vertical front face of 3 or more rows, so it reads as a flat ground decal. That matches the supplied kind 'flat'."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a tiny cluster of a few red-brown bricks, smaller than one 16x16 tile, on a plain dark background. It is not a 4x3-tile ground patch like the grass and paving references, which cover whole tiles with grain, tufts and per-stone shading. The measured facts give 0 tones per tile and 9 distinct colours in total, so they cannot support a density claim and I judged by eye. The brick ramp has only about 3 steps (a light edge, a mid red, a dark red-brown), against 5-6 in the references. The outline is a dark red-brown that leans toward the brick colour, with 0% neutral edge pixels, so it reads as dark_material_tone. There are no large flat fills, but the bricks carry little grain or per-brick variation. Nothing here suggests the ground surface the kind calls for: no soil, grass or paving base, and no scatter spread over the area. Next to the references it looks like a thin, sticker-like sprite, not a textured ground patch.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 12763
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "upper brick cluster (top-center and top-left bricks)",
+      "rows": "3-6",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "middle bricks (left, center and right)",
+      "rows": "7-11",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower bricks (left, center and right)",
+      "rows": "11-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 1,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "This is a scatter of small bricks lying flat on the ground, with no standing body. The column scans show each brick as a 1-row outline, 1 row of light top (#a35f4c or #b27361), 1 row of darker face (#70402f), then an outline row. That is at most 2 top rows and a 1-row front strip, which is under the 3-row front face minimum. There is no front-edge line with eave shadow, no ellipse and no roof plane. Each brick reads as a flat plate seen mostly from above with a thin shaded lower edge, which fits the flat kind."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a tiny cluster of about 5-6 red-brown bricks, smaller than one 16x16 tile, on an empty background. It is not a 4x3-tile ground patch like the grass and paving references, which fill their tiles edge to edge. The tile facts read 0 because the piece is smaller than a tile, so I judged by eye. It has only 9 distinct colours in total, and each brick shows roughly 3 steps (light top, mid, dark red-brown edge). The grass reference has about 3 visible tones per tile and the paving about 7, with stone-by-stone shading and mortar. The candidate's outlines lean dark red-brown rather than neutral black, which is acceptable, and the bricks are not large flat fills. But the piece covers no ground surface at all: there is no base soil or paving, no grain and no tile-level variation. It is far thinner than either reference and does not meet the ground-patch brief.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 18680
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "upper-left brick (rows 3-6)",
+      "rows": "4-5",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "middle-left brick (rows 9-11)",
+      "rows": "9-10",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "right brick (rows 9-12)",
+      "rows": "9-10",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower bricks (rows 12-15)",
+      "rows": "12-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 1,
+    "front_face_rows": 1,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The piece is a scatter of small separate brick shapes, each outlined in dark #2d010f. In the column scans every brick shows the same stack: 1 outline row, 1 light row (#a35f4c or #b27361), 1 darker row (#70402f), 1 outline row. That is about 1 row of lit top and 1 row of face, so there is no front face of 3 or more rows. There is no eave shadow and no ellipse. The bricks read as flat decals seen from above. This suits the flat kind, and the reading is top_down_slab."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a tiny sprite, smaller than one 16x16 tile, with a few red-brown brick fragments on a transparent background. It is not a 4x3-tile ground surface patch like the grass and paving references, which fill their whole area with continuous texture. The tile-based facts read 0 because the piece is under one tile, so I judged by eye. It has only 9 distinct colours and about 3 lightness steps on the bricks (light face, mid, dark edge), against 5-6 steps and 3-7 visible tones per tile in the references. The dark edges lean reddish-brown rather than neutral black, which is the right kind of outline, and the bricks carry some chunk detail. It is still much thinner and sparser than either reference. It also provides no ground surface to compare against paving or grass, so it would look like a sticker next to them.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 14058
+  }
+ ],
+ "decidedAt": "2026-10-22T14:22:06.144Z",
+ "cells": {
+  "16": [
+   "14248e0df6cc3285"
+  ],
+  "24": [
+   "826ee03524cc0f05",
+   "a5695996edd391f7",
+   "a96e0d28dd4bd6c5",
+   "ad2f834107b0ecfe",
+   "c3ed460468bb4c19",
+   "df6270fc47644f86"
+  ],
+  "32": [
+   "221ab0009fd56418",
+   "448cf87588076cb1",
+   "55cbf9896aaa71c8",
+   "727bbc3a069382fc",
+   "ef8406727f2b86d2",
+   "f23c54b8055f5d8c"
+  ],
+  "48": [
+   "15a643996d132501",
+   "19b92167a418b377",
+   "1fc6f720e29f66e7",
+   "44afd26eabb08788",
+   "8257fe11a9285e5a",
+   "91ad30a78b756219"
+  ]
+ }
+}

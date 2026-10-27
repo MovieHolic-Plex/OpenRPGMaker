@@ -1,0 +1,16 @@
+{
+ "schema": "oprn-object-gate-hold-decision/1",
+ "pixelSha256": "f774c73215e2843a572e34871536bde2d8cac4fb4c8ccd375b2fe983b857f3c6",
+ "profileHash": "4d8774b517f41638",
+ "kind": "structure",
+ "decision": "allow",
+ "decidedBy": "supervisor (village-art)",
+ "decidedAt": "2026-10-23T07:56:52.418Z",
+ "by": "delegated",
+ "delegatedBy": "user",
+ "evidence": "tiledata/wasteland-ruins/_review/r57/draft2/opus-reviewer-lean-doors.md",
+ "via": "review-page",
+ "reasons": [],
+ "note": "delegated by user to supervisor 2026-10-23 — wasteland lean-doors: gate PASS (uncalibrated) + fresh independent Opus adversarial reviewer PASS (r57 draft2)",
+ "sig": "b71148ce4c7a04caf4ee4995b4b38c53b1073296ee30cbf0c9e75ccbf111d755"
+}

@@ -355,4 +355,76 @@ describe("touch pad capability and input parity", () => {
     expect(trace.events).toEqual(["keydown:Escape", "keyup:Escape"]);
     trace.cleanup();
   });
+
+  it("repeats a held stick direction and does not repeat A", async () => {
+    const frames: FrameRequestCallback[] = [];
+    const previousRaf = window.requestAnimationFrame;
+    const previousCancel = window.cancelAnimationFrame;
+    window.requestAnimationFrame = (callback) => {
+      frames.push(callback);
+      return frames.length;
+    };
+    window.cancelAnimationFrame = () => {};
+    let now = 5_000;
+    const nowSpy = vi.spyOn(performance, "now").mockImplementation(() => now);
+    try {
+      const { createTouchPad } = await loadTouchPad({ VITE_TOUCH_CONTROLS: "1" });
+      const host = document.createElement("div");
+      const handle = createTouchPad(host);
+      const base = host.querySelector<HTMLElement>(".touch-dpad-base");
+      const actionA = host.querySelector<HTMLElement>("[data-testid='touch-action-a']");
+      expect(base).toBeTruthy();
+      expect(actionA).toBeTruthy();
+      if (!base || !actionA) return;
+      installPointerCapture(base);
+      installPointerCapture(actionA);
+      vi.spyOn(base, "getBoundingClientRect").mockReturnValue(new DOMRect(0, 0, 132, 132));
+      const events: KeyboardEvent[] = [];
+      const onKey = (event: Event): void => {
+        if (event instanceof KeyboardEvent && event.type === "keydown") events.push(event);
+      };
+      document.addEventListener("keydown", onKey);
+
+      base.dispatchEvent(pointerEvent("pointerdown"));
+      actionA.dispatchEvent(pointerEvent("pointerdown"));
+      expect(events.map((event) => `${event.key}:${event.repeat}`)).toEqual(["ArrowRight:false", "Enter:false"]);
+
+      const flush = (): void => {
+        const callback = frames.shift();
+        if (!callback) throw new Error("touch direction repeat was not scheduled");
+        callback(now);
+      };
+
+      now = 5_400;
+      flush();
+      expect(events.filter((event) => event.key === "ArrowRight")).toHaveLength(1);
+
+      now = 5_500;
+      flush();
+      expect(events.map((event) => `${event.key}:${event.repeat}`)).toEqual([
+        "ArrowRight:false",
+        "Enter:false",
+        "ArrowRight:true",
+      ]);
+
+      now = 5_540;
+      flush();
+      expect(events.filter((event) => event.key === "ArrowRight" && event.repeat)).toHaveLength(2);
+      expect(events.filter((event) => event.key === "Enter")).toHaveLength(1);
+
+      base.dispatchEvent(pointerEvent("pointerup"));
+      const arrows = events.filter((event) => event.key === "ArrowRight").length;
+      now = 8_000;
+      if (frames.length > 0) flush();
+      expect(events.filter((event) => event.key === "ArrowRight")).toHaveLength(arrows);
+      expect(events.filter((event) => event.key === "Enter")).toHaveLength(1);
+
+      document.removeEventListener("keydown", onKey);
+      handle.cleanup();
+    } finally {
+      nowSpy.mockRestore();
+      window.requestAnimationFrame = previousRaf;
+      window.cancelAnimationFrame = previousCancel;
+    }
+  });
 });

@@ -184,8 +184,12 @@ function checkPlannedMap(
   issues: SpecIssue[],
 ): { width: number; height: number } | null {
   const plannedId = typeof plannedMap.mapId === "string" ? plannedMap.mapId : null;
-  const pw = Number.isInteger(plannedMap.width) ? (plannedMap.width as number) : null;
-  const ph = Number.isInteger(plannedMap.height) ? (plannedMap.height as number) : null;
+  // 에셋 x/y/w/h 와 같다. set_build_spec 은 runTool 스키마 정규화를 안 거치므로 모델이 "40" 을 보낸다.
+  // Number.isInteger 만 보면 그 확장이 「1 이상의 정수여야 합니다」로 거절되고, 맵 밖 에셋은 현재 크기로만 재서 키울 수 없다.
+  const width = coerceInteger(plannedMap.width);
+  const height = coerceInteger(plannedMap.height);
+  const pw = isInteger(width) ? width : null;
+  const ph = isInteger(height) ? height : null;
   if (plannedId === null || plannedId !== mapId) {
     issues.push({ severity: "error", message: `plannedMap.mapId('${plannedId ?? "?"}')가 BuildSpec.mapId('${mapId}')와 다릅니다.` });
     return null;

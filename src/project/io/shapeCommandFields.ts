@@ -472,6 +472,9 @@ function validateCommandShape(label: string, value: unknown): void {
       requireBoolean(`${label}.showInitialName`, command.showInitialName);
       if (command.stringVariableId !== undefined) requireString(`${label}.stringVariableId`, command.stringVariableId);
       if (command.prompt !== undefined) requireString(`${label}.prompt`, command.prompt);
+      if (command.presentation !== undefined && command.presentation !== "window" && command.presentation !== "showcase") {
+        throw new ProjectFormatError(`${label}.presentation 은 window 또는 showcase 여야 합니다.`);
+      }
       const maxLength = requireNumber(`${label}.maxLength`, command.maxLength);
       if (Number.isInteger(maxLength) && maxLength >= 1 && maxLength <= 12) return;
       throw new ProjectFormatError(`${label}.maxLength가 잘못되었습니다.`);
@@ -483,6 +486,15 @@ function validateCommandShape(label: string, value: unknown): void {
       requireString(`${label}.difficultyId`, command.difficultyId);
       return;
     case "storeParty":
+      requireString(`${label}.partySetId`, command.partySetId);
+      if (command.actorIds !== undefined) {
+        requireArray(`${label}.actorIds`, command.actorIds);
+        (command.actorIds as unknown[]).forEach((actorId, index) => requireString(`${label}.actorIds[${index}]`, actorId));
+      }
+      if (command.mapId !== undefined) requireString(`${label}.mapId`, command.mapId);
+      if (command.x !== undefined) requireNumber(`${label}.x`, command.x);
+      if (command.y !== undefined) requireNumber(`${label}.y`, command.y);
+      return;
     case "recallParty":
       requireString(`${label}.partySetId`, command.partySetId);
       return;

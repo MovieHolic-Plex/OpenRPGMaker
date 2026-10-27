@@ -8,7 +8,7 @@ import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
 
 const simulateBattleTool: ToolDefinition = {
   name: "simulate_battle",
-  description: "전투를 헤드리스로 N회 시뮬레이션해 승률/평균 타수/포션 사용/잔여 HP를 반환한다(seed로 재현 가능).",
+  description: "전투를 헤드리스로 N회 시뮬레이션해 승률/평균 타수/포션 사용/잔여 HP를 반환한다(seed로 재현 가능). 힘 모으기(chargeTurns) 기술이 있으면 data.chargeBreaks 에 모으기 시작·충전 끊기(chargeBreak) 횟수가 기술별로 나온다.",
   mode: "read",
   parameters: {
     type: "object",
@@ -22,6 +22,7 @@ const simulateBattleTool: ToolDefinition = {
         additionalProperties: true,
       },
       potionItemId: { type: "string", description: "저HP 시 사용할 회복 아이템 id" },
+      switchesOn: { type: "array", items: { type: "string" }, description: "켜 둔 채 시작할 스위치 id(앞선 선택 결과에 걸린 전투 페이지·add_battle_guest 손님 시험). 생략 = 모두 꺼짐" },
       n: { type: "integer", description: "시뮬 횟수(기본 50)" },
       seed: { type: "integer", description: "PRNG 시드(재현성)" },
       battleFlow: { type: "string", enum: ["gauge", "strict"], description: "전투 흐름(gauge 기본, strict 엄격 턴제)" },
@@ -67,6 +68,7 @@ const simulateBattleTool: ToolDefinition = {
       ...(partyActorIds && partyActorIds.length > 0 ? { partyActorIds } : {}),
       inventory: args.inventory as Record<string, number> | undefined,
       potionItemId: args.potionItemId as string | undefined,
+      ...(Array.isArray(args.switchesOn) ? { switchesOn: (args.switchesOn as unknown[]).filter((id): id is string => typeof id === "string") } : {}),
       n: args.n as number | undefined,
       seed: args.seed as number | undefined,
       battleFlow: args.battleFlow as "gauge" | "strict" | undefined,
@@ -86,6 +88,8 @@ const simulateBattleTool: ToolDefinition = {
     const skillNote = skillEntries.length > 0
       ? `, 기술 ${skillEntries.map(([id, count]) => `${project.database.skills.find((skill) => skill.id === id)?.name ?? id}×${count}`).join("·")}`
       : args.useSkills === true ? ", 기술 사용 0회(연계기·기술이 조건/MP/해금으로 막혔는지 확인)" : "";
+    const charge = result.chargeBreaks;
+    const chargeNote = charge.started > 0 ? `, 힘 모으기 ${charge.started}회 중 끊김 ${charge.broken}회` : "";
     const warnings: string[] = [];
     if (silent.length > 0) {
       warnings.push(
@@ -102,7 +106,7 @@ const simulateBattleTool: ToolDefinition = {
       );
     }
     return {
-      summary: `전투 시뮬(${troopId}, Lv${args.heroLevel}, n=${result.samples}): 승률 ${(result.winRate * 100).toFixed(0)}%, 평균 ${result.avgTurns.toFixed(1)}타${phaseNote}${skillNote}`,
+      summary: `전투 시뮬(${troopId}, Lv${args.heroLevel}, n=${result.samples}): 승률 ${(result.winRate * 100).toFixed(0)}%, 평균 ${result.avgTurns.toFixed(1)}타${phaseNote}${skillNote}${chargeNote}`,
       data: result,
       ...(warnings.length > 0 ? { warnings } : {}),
     };

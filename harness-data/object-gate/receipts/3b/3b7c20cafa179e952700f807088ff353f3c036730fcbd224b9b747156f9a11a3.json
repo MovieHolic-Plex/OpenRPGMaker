@@ -1,0 +1,376 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "3b7c20cafa179e952700f807088ff353f3c036730fcbd224b9b747156f9a11a3",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "bent broken street lamp: round concrete base plate seen from above, rusty pole bent over to the side, with a wide oval lamp hood plate hanging at the end",
+ "label": "wasteland_ruins/lamp-broken",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "refer",
+ "reasons": [
+  "3/4: 판정자 의견이 갈림(분명한 3/4 0/4, 분명한 위반 0/4)",
+  "3/4: 기둥 머리가 타원 판이 아님(위아래 둥글림 true, 몸통보다 5 튀어나옴 < 6) (4/4)"
+ ],
+ "view34": {
+  "verdict": "refer",
+  "reasons": [
+   "판정자 의견이 갈림(분명한 3/4 0/4, 분명한 위반 0/4)",
+   "기둥 머리가 타원 판이 아님(위아래 둥글림 true, 몸통보다 5 튀어나옴 < 6) (4/4)"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 15,
+  "tileColorsP90": 15,
+  "darkV5": 34,
+  "nearBlackEdge": 0.17,
+  "opaqueTiles": 1
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "borderline",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "lamp hood plate (oval, light top with dark front rim)",
+      "rows": "7-13",
+      "evidence": "b",
+      "front_edge_line_row": 13,
+      "eave_shadow_rows": "14-16"
+     },
+     {
+      "part": "bent rusty pole",
+      "rows": "14-22",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "round concrete base plate seen from above",
+      "rows": "23-30",
+      "evidence": "b",
+      "front_edge_line_row": 29,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 7,
+    "front_face_rows": 6,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": {
+     "cap_rows": 7,
+     "cap_width": 10,
+     "shaft_width": 5,
+     "rounded_at_both_edges": true
+    },
+    "reads_as": "three_quarter",
+    "evidence": "The hood at the top of the pole has a width profile of 2,7,9,10,10,10,10,9,9,8 over rows 7-16. It narrows to a point at the back rim and narrows slightly again at the front, so it reads as an ellipse plate. Column x=9 shows a light top (rows 9-11) and column x=12 a dark front rim at row 13. The hood is 10 wide against a 5-wide shaft (rows 17-22), so it overhangs. The base plate is also an ellipse: widths 7, 11, 13 over rows 23-25, light top rows 24-28, darker front edge at row 29, outline at row 30. The pole between them is a vertical face about 6 rows tall. No receding side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate has 14 visible tones per 16x16 tile, 0% near-flat coverage and 0% neutral dark edge pixels. That is above the lamp-crook reference (14 total colours, 100% neutral outline) and in the range of the hedge (9 tones) and cheese stall (17 tones). The outline leans toward the colour of the adjacent material rather than being a uniform black line. The concrete base plate, rusty bent pole and oval hood each show several lightness steps, with rust and concrete grain dots and no large flat areas. It is a thin object, so I judged density by eye. It reads as at least as rich as the crook lamp reference, not thinner or more sticker-like. The one weakness is that the pole is fairly narrow, with limited room for extra shading steps.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 의견이 갈림(분명한 3/4 0/1, 분명한 위반 0/1)",
+    "기둥 머리가 타원 판이 아님(위아래 둥글림 true, 몸통보다 5 튀어나옴 < 6) (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "판정자 의견이 갈림(분명한 3/4 0/1, 분명한 위반 0/1)",
+     "기둥 머리가 타원 판이 아님(위아래 둥글림 true, 몸통보다 5 튀어나옴 < 6) (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16828
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "lamp hood plate (oval, at the bent end of the pole)",
+      "rows": "8-12",
+      "evidence": "b",
+      "front_edge_line_row": 13,
+      "eave_shadow_rows": "14-16"
+     },
+     {
+      "part": "round concrete base plate",
+      "rows": "23-28",
+      "evidence": "b",
+      "front_edge_line_row": 29,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "bent rusty pole",
+      "rows": "14-22",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 6,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": {
+     "cap_rows": 9,
+     "cap_width": 10,
+     "shaft_width": 5,
+     "rounded_at_both_edges": true
+    },
+    "reads_as": "three_quarter",
+    "evidence": "The hood is an oval plate. Its width profile goes 2, 7, 9, 10 (rows 10-13), 9, 9, 8, then drops to the 5-wide shaft at row 17, so it widens and narrows again. Its lit top spans rows 8-12 with a highlight at row 10. A dark front-edge line at row 13 is followed by darker underside rows 14-16. The pole shows a front face for rows 17-22, 5 px wide. The base plate widens 7, 11, 13 over rows 23-25, has a light top at rows 24-28, an edge line at row 29 and an outline at row 30, so it also reads as an ellipse seen from above."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small thin prop with a round base plate, a bent pole and an oval hood. It has about 4 visible lightness steps on the pole and hood, with highlights and shadow edges, so it is not a flat body with a single outline. The measured facts support it: 14 visible tones per tile (the hedge reference has 9, the cheese stall 17, the well 20), 0% near-flat coverage, and 0% near-neutral dark edge pixels, so the outline is tinted rather than a black sticker line. It has 19 total colours against 14 for the lamp-crook reference, which is the closest of the same kind. The pole and base carry some grain, but there is no large flat fill. I would accept it next to the lamp-crook reference without it looking thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 의견이 갈림(분명한 3/4 0/1, 분명한 위반 0/1)",
+    "기둥 머리가 타원 판이 아님(위아래 둥글림 true, 몸통보다 5 튀어나옴 < 6) (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "판정자 의견이 갈림(분명한 3/4 0/1, 분명한 위반 0/1)",
+     "기둥 머리가 타원 판이 아님(위아래 둥글림 true, 몸통보다 5 튀어나옴 < 6) (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 22216
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "lamp hood oval plate",
+      "rows": "8-14",
+      "evidence": "b",
+      "front_edge_line_row": 13,
+      "eave_shadow_rows": "14-16"
+     },
+     {
+      "part": "round concrete base plate",
+      "rows": "24-28",
+      "evidence": "b",
+      "front_edge_line_row": 29,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 7,
+    "front_face_rows": 6,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": {
+     "cap_rows": 9,
+     "cap_width": 10,
+     "shaft_width": 5,
+     "rounded_at_both_edges": true
+    },
+    "reads_as": "three_quarter",
+    "evidence": "The lamp hood at the top is an ellipse. Its width profile goes 2, 7, 9, 10 (rows 10-13), 9, 8, then drops to the 5-wide pole at row 17, so it is bounded by narrower rows above and below. Its light top surface (rows 9-12) ends at a dark front-edge line at row 13, with shadow below it in rows 14-16. The pole is a 6-row front face (rows 17-22, 5 px wide) that is clearly narrower than the 10 px hood. The base plate widens from 7 to 13 px (rows 23-25) and has a light top of about 5 rows (rows 24-28). It ends in a dark edge at row 29 and an outline at row 30, so the base also reads as a top plus a front. Both the cap and the base show a top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate has 14 visible tones per full tile, above prop-hedge (9) and close to the well and stall (17-20). Near-flat coverage is 0%, so no 5x5 block is a flat fill. Dark edge pixels are 0% neutral, so the outline leans toward the material (dark grey-brown beside the pole and base) rather than a uniform black sticker line. The base plate, bent pole and oval hood each show about 4-5 lightness steps with a highlight edge and some rust or grain variation, slightly fewer than the 5-6 steps in Beodeul. It is a thin prop, but it holds up against the reference lamp and the other props without looking flatter or thinner. The call rests partly on the measured facts, since the figure is tiny at this scale.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 의견이 갈림(분명한 3/4 0/1, 분명한 위반 0/1)",
+    "기둥 머리가 타원 판이 아님(위아래 둥글림 true, 몸통보다 5 튀어나옴 < 6) (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "판정자 의견이 갈림(분명한 3/4 0/1, 분명한 위반 0/1)",
+     "기둥 머리가 타원 판이 아님(위아래 둥글림 true, 몸통보다 5 튀어나옴 < 6) (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18381
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "lamp hood plate (oval cap)",
+      "rows": "7-13",
+      "evidence": "b",
+      "front_edge_line_row": 13,
+      "eave_shadow_rows": "14-16"
+     },
+     {
+      "part": "round concrete base plate top",
+      "rows": "23-28",
+      "evidence": "b",
+      "front_edge_line_row": 29,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "bent rusty pole",
+      "rows": "14-22",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 7,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": {
+     "cap_rows": 7,
+     "cap_width": 10,
+     "shaft_width": 5,
+     "rounded_at_both_edges": true
+    },
+    "reads_as": "three_quarter",
+    "evidence": "The hood spans rows 7-16 and its width runs 2,7,9,10,10,10,10,9,9,8, so it widens and then narrows slightly, which reads as an ellipse plate. Its light top surface covers rows 9-12. A dark front-edge line at row 13 is followed by underside shadow in rows 14-16. The hood overhangs the 5px-wide pole (rows 17-22), so the cap is wider than the shaft. The round base plate at rows 23-28 widens to 13px and has a lighter top face with a dark edge at row 29. The base front face is only about 2 rows (29-30), but the pole gives roughly 7 rows of front face. The cap's bottom edge steps from 8px to 5px rather than tapering, so the narrowing below it is weak."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate has 14 visible tones per 16x16 tile. That is above the hedge reference (9) and close to the stall (17) and well (20) references, and far above the thin lamp-crook reference, which measures 0 because it is sparse. Near-flat coverage is 0%, so there are no large flat fills. Dark edge pixels are 0% neutral, so the outline leans toward the material tone, as in the hedge and stall references, and is not a near-black sticker line. The base plate, bent pole and oval hood each show roughly 4 lightness steps with highlight and shadow separation. That is slightly fewer than the roughly 5 on the references, but the candidate is a small, thin prop. Judged by eye at the same scale, it would sit acceptably beside the lamp-crook reference without looking flatter or thinner. No flat fills.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 의견이 갈림(분명한 3/4 0/1, 분명한 위반 0/1)",
+    "기둥 머리가 타원 판이 아님(위아래 둥글림 true, 몸통보다 5 튀어나옴 < 6) (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "판정자 의견이 갈림(분명한 3/4 0/1, 분명한 위반 0/1)",
+     "기둥 머리가 타원 판이 아님(위아래 둥글림 true, 몸통보다 5 튀어나옴 < 6) (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 20080
+  }
+ ],
+ "decidedAt": "2026-10-22T15:35:18.445Z",
+ "cells": {
+  "16": [
+   "9509289b446386af",
+   "ffd182d07d395857"
+  ],
+  "24": [
+   "08d049ae2c1d4e28",
+   "102617d2cd3ef212",
+   "293dc464ec42f6d0",
+   "2db616980a68ad6f",
+   "54556d4880562f26",
+   "61ab00f4456c3682",
+   "80c99a4614d87c8c",
+   "92bf3473b598c12a",
+   "ab648a9efb95b749",
+   "c36ba1458fcd61d0",
+   "c7f934e3e40b2f4a",
+   "ff442b563959bd7e"
+  ],
+  "32": [
+   "15ff52ba67b51050",
+   "611e81ba15fa0f08",
+   "619e9b2439559f39"
+  ],
+  "48": [
+   "02d5254d25d23628",
+   "0d7f931df8ce26e7",
+   "5529601a9601507d",
+   "85dfa14300b65345",
+   "c6df91e63ebf136e",
+   "da7f031f8d9f12bf"
+  ]
+ }
+}

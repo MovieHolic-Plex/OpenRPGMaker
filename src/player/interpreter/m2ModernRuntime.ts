@@ -243,6 +243,11 @@ function applyScreenEffect(session: PlaySessionLike, runtime: M2RuntimeState, fi
       else delete runtime.screen.letterbox;
       runtime.screen.letterboxDurationMs = plan.durationMs;
       return true;
+    case "freeze":
+      if (plan.on) runtime.screen.freeze = { style: plan.style, at: (runtime.screen.freeze?.at ?? 0) + 1 };
+      else delete runtime.screen.freeze;
+      runtime.screen.freezeDurationMs = plan.durationMs;
+      return true;
     case "unsupported":
       return false;
   }

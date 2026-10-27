@@ -1,0 +1,340 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "15beae405d071070030d786bbe6c4d5bb979246f43c5d9955f83e107e97f9ae4",
+ "width": 96,
+ "height": 80,
+ "kind": "terrain",
+ "name": "dusty packed wasteland earth ground, a seamless 4x4-tile field with soft clumped earth with raised clods, gentle lighter dry and darker damp areas and small grit clusters running across tile borders, mixed with tiles of dry grass tufts",
+ "label": "wasteland_ruins/dirt-d",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)"
+  ],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 6
+ },
+ "metrics": {
+  "tileColorsMedian": 5,
+  "tileColorsP90": 9,
+  "darkV5": 73,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 30
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "ground field",
+      "rows": "0-79",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dry grass tufts",
+      "rows": "6-14",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The image is a seamless full-bleed terrain field (96 px wide across all rows 0-79, no transparent rows or silhouette). It is a flat ground texture of earth clods, light and dark patches, grit and grass tufts, with no standing object, front face, edge line or eave shadow. The terrain kind is a flat top-down surface, so there is no object structure to measure."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a brown earth field with about 5 visible tones per tile, near-flat coverage of 2% and 0% neutral dark edges, so it has no black sticker outline. The measured facts sit between the grass reference (3 tones) and the paving reference (7 tones). By eye the earth shows crack and clod shapes in 4-5 brown steps, with yellow grit/tuft clusters, which is a reasonable ramp. Weaknesses: only 13 distinct colours overall, and the clods are mostly drawn as mottled noise with thin dark crack lines rather than shaded one by one. The yellow tufts are small, sparse and repeat, and the brief asked for dry grass tufts mixed in tile-wise, but there are no real grass tiles. The lighter dry and darker damp areas are subtle. It looks a little flatter and less clumped than the reference grass clusters, though it avoids flat fills and there is no outline problem. Overall it is borderline: acceptable shading but lower in structure and variety than the references, and when in doubt this fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 10770
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "packed earth ground field with clods, grit and dry grass tufts",
+      "rows": "0-79",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The image is a full-bleed seamless terrain field, 96 px wide across all 80 rows. It has no silhouette, no front-edge line, no eave shadow, no ellipse and no vertical face. The column scans show only mottled earth tones in short runs with no band structure. Grass tufts and grit are scattered flat detail. It is a flat top-down ground texture, which is the expected form for a terrain tile."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a brown earth field with mottled clods, lighter dry and darker damp patches, and yellow grass tufts. It has about 5 visible tones per tile, against 3 for the grass reference and 7 for the paving. Near-flat coverage is 2%, and the dark edge pixels carry a colour tint (0% neutral), so there is no black sticker outline. The ramps run light to dark brown with some clustered speckle, so the surface is not a flat fill. But the whole field has only 13 distinct colours, and the clods are soft, repeated blotches. There is little per-clod highlight or grain, and the grit clusters are sparse. The tufts are small yellow marks that repeat as the same motif. The Beodeul references show more individually shaded detail, such as stones shaded one by one and grass clumps in several greens. The candidate's density is therefore a little below that. A careful artist could accept it, but it looks a bit flatter and more uniform than the references, and when in doubt this fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 10801
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "ground field (whole 96x80 tile area, a flat top-down earth texture with grass tufts and grit)",
+      "rows": "0-79",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "This is a seamless terrain field. The silhouette is a full 96-wide rectangle on every row (rows 0-79), with no front edge line, eave shadow, ellipse, or roof plane. The column scans show only irregular noise: clods, damp and dry patches, and grit and grass clusters, with no band that ends in an edge line. There is no standing volume and no vertical south face, so it reads as a flat top-down ground texture, which is the expected look for a terrain tile."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a brown earth field with darker crack and clod shading plus small yellow grit/grass tufts. It shows 5 visible tones per tile, above the grass reference (3) and a bit below the paving reference (7). Near-flat coverage is 2%, so there are no real flat fills. There are no hard outlines, and the dark pixels carry a brown tint (0% neutral), which matches Beodeul's material-tone approach. The weaknesses are only 13 distinct colours in total and about 5 per tile. The clods are soft, low-contrast blotches with a repeated crack texture rather than individually shaded clumps. The yellow tufts are sparse and similar to each other. The 'mixed with dry grass tile' brief is only weakly met, since the tufts are small accents with no distinct grass tiles. It reads as slightly thinner than the references, and it lacks the crisp per-clod highlights and the clear lighter dry and darker damp variation the brief asks for. Because the ramp is shallow and the shading is muddy, it is borderline, and when in doubt it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 10082
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "ground field (earth with clods, grit and grass tufts)",
+      "rows": "0-79",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 80,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The image is a seamless 96x80 terrain field of packed earth. The opaque width is 96 px on every row, so there is no silhouette, no standing body, no front face and no edge line or eave shadow. The column scans show only mottled light and dark earth values, with no band that ends in an edge line. Small yellow grass tufts and gray grit clusters sit on the surface as flat texture. This is a flat top-down ground texture, as expected for terrain, with no vertical front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a brown earth field with darker crack and clod shading, plus scattered yellow grass tufts. It reads as 5 visible tones per tile against 3 for the grass reference and 7 for the paving reference, with only 2% near-flat coverage, so there are no real flat fills. Dark edge pixels are 0% neutral, so any darkening is tinted, but there is no true outline and the form is separated by value, as in the references. The weaknesses are that it uses only 13 colours in total, the clods and cracks are soft and repeat as a mottled noise pattern, and the clods are not shaded one by one with highlights as the reference stones are. The yellow tufts are tiny, sparse clusters in one repeated shape. The earth lacks the grit clusters and lighter dry versus darker damp zones the brief asks for, and the surface looks a little muddy and uniform next to the crisp, layered references. It is acceptable but a notch shallower than the reference.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 9446
+  }
+ ],
+ "decidedAt": "2026-10-22T18:28:21.230Z",
+ "cells": {
+  "16": [
+   "0432334bd291276d",
+   "108f9236b971102e",
+   "334f4ba75fd37291",
+   "35fcfc64f8ff0065",
+   "36d1c06eba215894",
+   "473307db9e4619a1",
+   "4e060cbf43e32170",
+   "4e4e5a1aa702afcc",
+   "54d99b2b003beb30",
+   "70bad5b387e2239f",
+   "79c20bd981777983",
+   "91e64ce0e14026b6",
+   "9dbab8224fcc6f1c",
+   "b5b15bb73eab2a6e",
+   "ba61182febb90b91",
+   "c0c90b3b00126781",
+   "c65b6909fb6c1506",
+   "cfde2c49536f3d9a",
+   "d0fa6b5376e25f7b",
+   "f57905a23734971a",
+   "f69d2b2a08c0a014"
+  ],
+  "24": [
+   "10f0d4435d6e8860",
+   "11e516436e0d9b97",
+   "170ad0b7bfb8fca0",
+   "19dafaeb6075ece8",
+   "37a713fe9a3d287a",
+   "3db94e1ba6829177",
+   "3eeb0e97da6de1e0",
+   "4668b9728bcca241",
+   "4af57ee7286d77f9",
+   "5ca45219e834e603",
+   "60b2a931c1b9cd43",
+   "6f59c3be4aa767f3",
+   "7017aa44252f7bbc",
+   "70ede728abcad1ec",
+   "71017edadc274cc8",
+   "72e41ca6db2f7cbf",
+   "79c9d676bb218a5f",
+   "812cd411cec232cd",
+   "888950ab13375b2d",
+   "aafbb7f9d555b2e4",
+   "b760819b2bf2c006",
+   "ba6a20f91ea32e0e",
+   "bd21c54a37035bbf",
+   "c3540f1316d8df40",
+   "d2990d0552299237",
+   "d62753296bcfaa2b",
+   "d850c2c37c0b22e0",
+   "debad9eb9355ac40",
+   "e9bfd8aea8ce0bbe",
+   "ec99ace1a687b57e",
+   "f1f779ba07d99d63",
+   "fa3378e687878ec7"
+  ],
+  "32": [
+   "01faad80351c7ae2",
+   "1934ed3dea63d21b",
+   "4b78e7a671df6cec",
+   "4e96b6bfc8f27078",
+   "5e770ab7728a64fb",
+   "6312c77c01871efc",
+   "764e14aaf6ffbb89",
+   "83cc6596e547ad63",
+   "92c9bd8bb1ef3a52",
+   "9b350cb80ee0e0c2",
+   "9c46744e17fa7891",
+   "ac47271279465394",
+   "d372fd37eedaebd2",
+   "dfc62027dd718e27",
+   "e3e20d11332f2f4c",
+   "e528b9ad1cee4a9d",
+   "f93c7d2c22065f4b"
+  ],
+  "48": [
+   "1f1acc6fb01673ff",
+   "79081b27ff887735",
+   "b3143b050cc3357e",
+   "be0e1239c1486ca2",
+   "c1bb2bd99ab71ff9",
+   "dbb8b551aab09cf4",
+   "df04680ea17c8571",
+   "ecbd723e3632dd7b"
+  ]
+ }
+}

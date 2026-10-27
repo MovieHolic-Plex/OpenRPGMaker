@@ -290,6 +290,10 @@
   transform: scale(var(--dock-unscale));
   transform-origin: 0 0;
 }
+/* 독은 무대 밖(아래 띠)이라 컷신 띠(레터박스)를 피해 올리지 않는다 — 올리면 독이 무대 아래 끝을 덮었다(J33 실측). */
+.player-layout .play-viewport[data-dialogue-dock] > .play-stage[data-letterbox] > .dialogue-overlay:is(.position-bottom, .position-top):not(.balloon-active) {
+  translate: none;
+}
 .player-layout .play-viewport[data-dialogue-dock] > .play-stage > .dialogue-overlay.choices-active:is(.position-bottom, .position-top):not(.balloon-active) {
   height: auto !important;
   min-height: 0 !important;
@@ -438,4 +442,20 @@
 .play-viewport[data-touch-layout] > .touch-pad .touch-stick-zone[data-run] .touch-dpad-knob {
   background: color-mix(in srgb, var(--accent, #6c79f2) 55%, white);
   border-color: #fff;
+}
+
+/* 가로 2판(2026-10-25): 조작은 좌우 칸에만 있고 게임을 덮지 않는다(playSurface calculateTouchLayout). 단추 모양은 그대로 두고
+   눌림 영역만 둘레 10px 씩 넓힌다 — 엄지가 단추 가장자리를 스쳐도 들어간다. A 와 B 사이 틈(4px)에서는 가까운 쪽이 받는다. */
+.play-viewport[data-touch-layout="landscape"] > .touch-pad .touch-actions .touch-action-btn { position: relative; }
+.play-viewport[data-touch-layout="landscape"] > .touch-pad .touch-actions .touch-action-btn::after {
+  content: "";
+  position: absolute;
+  inset: -10px;
+  border-radius: 50%;
+}
+.play-viewport[data-touch-layout="landscape"] > .touch-pad :is(.touch-menu-btn, .touch-run-btn)::after {
+  content: "";
+  position: absolute;
+  inset: -8px -6px;
+  border-radius: 26px;
 }

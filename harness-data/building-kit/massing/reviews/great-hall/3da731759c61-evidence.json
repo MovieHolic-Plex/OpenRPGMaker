@@ -1,0 +1,23 @@
+{
+ "schema": "oprn-building-kit-massing-evidence/1",
+ "id": "great-hall",
+ "pixelSha256": "3da731759c61dcde6bc9f3f626f309d8ffb1c5469090bade55ceaed7ca08e75a",
+ "kind": "structure",
+ "objectGate": {
+  "receipt": "/home/main/z-project/rpg-zzu-object-gate-holds/harness-data/object-gate/receipts/3d/3da731759c61dcde6bc9f3f626f309d8ffb1c5469090bade55ceaed7ca08e75a.json",
+  "verdict": "pass",
+  "profile": "4d8774b517f41638",
+  "profileCalibrated": false
+ },
+ "reviews": {
+  "argon": {
+   "verdict": "PASS",
+   "file": "harness-data/building-kit/massing/reviews/great-hall/3da731759c61-argon.md"
+  },
+  "klb-sonnet-5-5": {
+   "verdict": "PASS",
+   "file": "harness-data/building-kit/massing/reviews/great-hall/3da731759c61-klb-sonnet-5-5.md"
+  }
+ },
+ "delegatedBy": "user 2026-10-25 (bk-massing-100 → 실제 건물, 머지까지 위임)"
+}

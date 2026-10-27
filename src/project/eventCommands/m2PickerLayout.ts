@@ -123,6 +123,7 @@ const QUICK_AUTHORING_PAGE_TITLES: ReadonlySet<string> = new Set([
   "Wait Until",
   "Weighted Branch",
   "Quest Objective",
+  "Journal Line",
   "Advanced Dialogue",
   "Sound Layer",
 ]);
@@ -218,6 +219,7 @@ const DETAILED_MAP_PRESENTATION_PAGE_TITLES: ReadonlySet<string> = new Set([
   "Screen Effect",
   "Particle Effect",
   "Sprite Look",
+  "Lift Ride",
   "Cutscene Control",
   "Spawn Event",
   "Remove Event",
@@ -283,6 +285,7 @@ const MAP_SCREEN_STAGING_TITLES: ReadonlySet<string> = new Set([
   "Screen Effect",
   "Particle Effect",
   "Sprite Look",
+  "Lift Ride",
   "Camera Control",
   "Cutscene Control",
 ]);
@@ -386,7 +389,8 @@ function isDialogueInputCommand(title: string): boolean {
     title === "Show Choices" ||
     title === "Input Number" ||
     title === "Name Input Processing" ||
-    title === "Advanced Dialogue"
+    title === "Advanced Dialogue" ||
+    title === "Journal Line"
   );
 }
 
@@ -445,6 +449,7 @@ function isScreenPresentationCommand(title: string): boolean {
     title === "Screen Effect" ||
     title === "Particle Effect" ||
     title === "Sprite Look" ||
+    title === "Lift Ride" ||
     title === "Cutscene Control"
   );
 }

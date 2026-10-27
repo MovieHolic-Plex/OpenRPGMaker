@@ -3,9 +3,10 @@ import { EASYRPG_INTERIOR_TILESET_ID as INTERIOR_TILESET_ID } from "@/project/ma
 import type { StructureKitDef, TilesetDef } from "@/project/types";
 import baseline from "../fixtures/spatial/interiorCatalogBaseline.json";
 import { designBase, emptySpatialDocument } from "./spatialSchemaFixture";
+import { withRetiredEasyRpgTilesets } from "./retiredEasyRpgTilesets";
 
 export function spatialAssetFixture() {
-  const project = createBlankProject();
+  const project = withRetiredEasyRpgTilesets(createBlankProject());
   const interior = project.tilesets[INTERIOR_TILESET_ID];
   if (!interior) throw new Error("Missing default interior atlas");
   interior.structureKits = [];

@@ -10,6 +10,8 @@ import { currentChapterLabel } from "@/project/newGamePlus";
 import { DEFAULT_FRIENDSHIP_MAX, isGiftSystemEnabled, listFriendshipEntries } from "@/project/friendship";
 import { friendshipDisplayMax, socialLoopSummary } from "@/project/socialLoop";
 import { usesRelationshipMenu } from "@/project/relationshipMenu";
+import { gameHasCombat, gameUsesMoney } from "@/project/combatPresence";
+import { hasPartyBonds } from "@/project/partyBonds";
 import { backlogEnabled, normalizeBacklog, resolveDialogueSystem } from "@/project/dialogueSystem";
 import { dialogueUiText } from "@/player/dialogueUiStrings";
 import { vnGalleryLabel, vnUiText, type VnUiKey } from "@/player/vnExtrasStrings";
@@ -18,9 +20,11 @@ import { resolveTerms } from "@/project/terms";
 import type { Project } from "@/project/types";
 import { hasLifeLedgerData } from "@/player/lifeLedger";
 import { menuSkinFor } from "@/player/menuSkins/registry";
+import { actorFieldStateNames } from "@/player/actorFieldStates";
 import { buildQuestLog } from "@/player/questLog";
 import type { SaveSlotReadResult } from "@/player/saveSlots";
 import type { MenuSkinRailStyle } from "@/player/menuSkins/types";
+import { STORY_JOURNAL_DEFAULT_TITLE, storyJournal } from "@/project/storyJournal";
 
 export const STATUS_MENU_COMMAND_IDS = FIELD_MENU_COMMANDS;
 
@@ -40,7 +44,7 @@ const STATUS_MENU_COMMAND_GROUPS: readonly {
 }[] = [
   { id: "action", label: "행동", commandIds: ["items", "skills", "equipment"] },
   { id: "party", label: "파티", commandIds: ["status", "row", "formation", "monsters"] },
-  { id: "record", label: "기록", commandIds: ["monster-dex", "region-map", "campaign-progress", "trainer-card", "battle-reports", "quests", "relationships", "gallery", "endings", "life-ledger", "backlog"] },
+  { id: "record", label: "기록", commandIds: ["monster-dex", "region-map", "campaign-progress", "trainer-card", "battle-reports", "quests", "journal", "relationships", "gallery", "endings", "life-ledger", "backlog"] },
   // to-title 은 진행 손실 위험이 있는 파괴적 액션이므로 항상 마지막.
   { id: "system", label: "시스템", commandIds: ["save", "load", "wait", "options", "to-title"] },
 ];
@@ -226,6 +230,10 @@ export type RelationshipMenuOverview = {
 export type PlayerStatusMenuSnapshot = {
   /** 관계 중심 게임이면 있다 — 있으면 렌더러는 HP/MP/EX 대신 이것을 그린다. */
   readonly relationship?: RelationshipMenuOverview;
+  /** 전투가 없는 게임(공포·이야기·추리)이면 있다 — 렌더러는 직업·Lv·HP·MP·EX 대신 주인공 이름만 그린다(J88). */
+  readonly story?: { readonly leadName: string };
+  /** 돈 칸을 보일지 — 돈을 쓰지 않는 게임(상점·여관·돈 바꾸기·전투 보상 없음)이면 「0G」 를 두지 않는다(J88). */
+  readonly showGold?: boolean;
   readonly commands: readonly StatusMenuCommand[];
   readonly commandLabels: readonly string[];
   readonly partyRows: readonly PlayerStatusMenuPartyRow[];
@@ -239,10 +247,10 @@ export type PlayerStatusMenuSnapshot = {
 export type StatusMenuSnapshotOptions = {
   readonly waitModeEnabled?: boolean;
 };
-/** O3: hide 관계 rail unless giftSystem or any known friendship keys. */
+/** O3: hide 관계 rail unless giftSystem, any known friendship keys, or party bonds (system.partyBonds). */
 export function listStatusMenuCommandIds(project: Project, session: PlaySession): StatusMenuCommandId[] {
   const showRelationships =
-    isGiftSystemEnabled(project) || Object.keys(session.friendship ?? {}).length > 0;
+    isGiftSystemEnabled(project) || Object.keys(session.friendship ?? {}).length > 0 || hasPartyBonds(project);
   const relationship = usesRelationshipMenu(project);
   // Change Save Access: false면 메뉴의 저장 항목을 숨긴다(세이브 포인트 전용 설계).
   // system.saveAccess "savePoints": 세이브 포인트(openSaveMenu)에서만 저장 — 메뉴 항목은 없다.
@@ -267,6 +275,8 @@ export function listStatusMenuCommandIds(project: Project, session: PlaySession)
     if (id === "life-ledger") return hasLifeLedgerData(project, session);
     // 백로그는 저작된 대사 시스템에서 켠 게임에만 — 그 밖의 메뉴(옛 프로젝트 포함)는 그대로다.
     if (id === "backlog") return backlogEnabled(project);
+    // 이야기 일지는 저작했거나(configure_story_journal) 이미 줄이 적힌 게임에만.
+    if (id === "journal") return Boolean(storyJournal(project)) || (session.storyJournal?.length ?? 0) > 0;
     if (id === "save") return !saveDisabled;
     return true;
   });
@@ -320,16 +330,14 @@ export function createPlayerStatusMenuSnapshot(
     const nextLevel = level < normalized.maxLevel && levelNext > levelBase
       ? { remaining: Math.max(0, levelNext - exp), ratio: vitalRatio(exp - levelBase, levelNext - levelBase) }
       : undefined;
-    const stateNames = (session.actorStateIds?.[actorId] ?? [])
-      .map((stateId) => project.database.states.find((state) => state.id === stateId)?.name)
-      .filter((name): name is string => Boolean(name));
+    const stateNames = actorFieldStateNames(project, session, actorId);
     return [{
       actorId,
       name: resolveActorName(session, actor),
       levelLabel: `L${level}`,
       className: (classId ? classesById.get(classId)?.name : undefined) ?? "직업 없음",
       level,
-      condition: "정상",
+      condition: stateNames.join(" · ") || "정상",
       faceResourceId: resolveActorFaceResourceId(session, actor, project) ?? defaultActorFaceResourceId(actor),
       hpLabel: vitals ? `${hpTerm} ${vitals.hp}/${vitals.maxHp}` : `${hpTerm} 0/0`,
       mpLabel: vitals ? `${mpTerm} ${vitals.mp}/${vitals.maxMp}` : `${mpTerm} 0/0`,
@@ -360,8 +368,11 @@ export function createPlayerStatusMenuSnapshot(
   });
 
   const relationship = usesRelationshipMenu(project) ? relationshipOverview(project, session, partyRows[0]?.name ?? "") : undefined;
+  const story = !relationship && !gameHasCombat(project) ? { leadName: partyRows[0]?.name ?? project.meta.title } : undefined;
   return {
     ...(relationship ? { relationship } : {}),
+    ...(story ? { story } : {}),
+    showGold: !relationship && (gameUsesMoney(project) || session.gold > 0),
     commands,
     commandLabels: commands.map((command) => command.label),
     partyRows,
@@ -423,6 +434,7 @@ export function statusMenuCommandLabel(commandId: StatusMenuCommandId, waitModeE
     case "formation": return "진형";
     case "battle-reports": return "전투 기록";
     case "quests": return "임무";
+    case "journal": return (project && storyJournal(project)?.title) || STORY_JOURNAL_DEFAULT_TITLE;
     case "relationships": return "관계";
     case "gallery": return project && resolveVnExtras(project)?.gallery.enabled ? vnGalleryLabel(project) : galleryMenuLabel(project);
     case "endings": return vnUiText(vnExtrasLanguage(project), "menu.endings");
@@ -503,6 +515,8 @@ export function statusMenuCommandSummary(
       return `${session.battleReports?.length ?? 0}전투`;
     case "quests":
       return `${buildQuestLog(project, session).length}건`;
+    case "journal":
+      return `${session.storyJournal?.length ?? 0}줄`;
     case "save":
     case "load":
       return `${slots.filter((slot) => slot.kind === "present").length}/${Math.max(slots.length, 1)}칸`;

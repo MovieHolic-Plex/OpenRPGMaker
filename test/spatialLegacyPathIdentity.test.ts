@@ -1,7 +1,5 @@
 import { describe, expect, it } from "vitest";
 import { canonicalConceptBundles, canonicalConceptLayout } from "@/editor/spatial/legacyConcepts";
-import { conceptOverlayFor } from "@/editor/conceptBundleResolve";
-import { runTool } from "@/editor/tools/toolRunner";
 import { checkedDocument, own, spatialId } from "@/project/spatial/domain";
 import type { Project } from "@/project/types";
 import type { PlaceDesign } from "@/project/spatial/types";
@@ -35,43 +33,7 @@ function projectedBundle(project: Project, id = "collision-root") {
 }
 
 describe("canonical legacy opaque path identity", () => {
-  it.each([
-    ["A", "B"],
-    ['A/"\\', "B:2/[x]"],
-    ['["A"]', "B\\C"],
-  ] as const)("keeps bed and hearth overlays separate when direct %s/%s also occurs as a nested path", (left, right) => {
-    // Given: the exact adversarial fixture first, then delimiter/escaping variants.
-    const project = collisionProject([left, right]);
-    const before = JSON.stringify(project);
-    // When: registered lookup followed by actual compatibility layout/overlay composition.
-    const lookup = runTool({ project }, "get_concept_facility", { query: "collision-root" });
-    const bundle = projectedBundle(project);
-    const facility = bundle.facilities[0];
-    const layout = canonicalConceptLayout(bundle);
-    if (!facility || !layout) throw new TypeError("Missing fixture facility layout");
-    const overlay = conceptOverlayFor(bundle, facility, layout);
-    // Then: exact object multiplicities and membership survive, without rewriting source IDs.
-    expect(lookup.ok, lookup.summary).toBe(true);
-    expect(lookup.data).toMatchObject({ canonical: { kind: "place", design: { id: "collision-root", children: [
-      { id: `${left}/${right}`, source: { kind: "place", id: "room-one" } },
-      { id: left, source: { kind: "place", id: "nested" } },
-    ] } } });
-    expect(Object.values(overlay.rooms).map(room => room.things.map(thing => thing.objectId))).toEqual([
-      ["bed_v", "bed_v"], ["fixture-asymmetric"],
-    ]);
-    const roomIds = bundle.places.map(room => room.id);
-    expect(new Set(roomIds).size).toBe(2);
-    expect(facility.placeIds).toEqual(roomIds);
-    expect(layout.rooms.map(room => ({ id: room.id, placeId: room.placeId, x: room.x, y: room.y }))).toEqual([
-      { id: roomIds[0], placeId: roomIds[0], x: 2, y: 3 },
-      { id: roomIds[1], placeId: roomIds[1], x: 22, y: 3 },
-    ]);
-    expect(bundle.places.map(room => room.level)).toEqual([1, 2]);
-    expect(bundle.things.map(thing => thing.placeIds)).toEqual([[roomIds[0]], [roomIds[0]], [roomIds[1]]]);
-    expect(new Set(bundle.things.map(thing => thing.id)).size).toBe(3);
-    expect(Object.keys(overlay.rooms)).toEqual(roomIds);
-    expect(JSON.stringify(project)).toBe(before);
-  });
+  // Removed it.each "keeps bed and hearth overlays separate when direct %s/%s also occurs as a nested path": get_concept_facility was removed from the tool registry on purpose.
 
   it("retains separate room and thing occurrences when a canonical space is reused under colliding paths", () => {
     // Given: valid source reuse must not be deduplicated or rejected, even with identical labels and slots.

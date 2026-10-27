@@ -1,0 +1,23 @@
+{
+ "schema": "oprn-building-kit-massing-evidence/1",
+ "id": "keep-tower",
+ "pixelSha256": "d7b4227dfa90c898e4f9509a407f1d2cd784fbbd7d2e9f122b24843895ea3c80",
+ "kind": "structure",
+ "objectGate": {
+  "receipt": "/home/main/z-project/rpg-zzu-object-gate-holds/harness-data/object-gate/receipts/d7/d7b4227dfa90c898e4f9509a407f1d2cd784fbbd7d2e9f122b24843895ea3c80.json",
+  "verdict": "pass",
+  "profile": "4d8774b517f41638",
+  "profileCalibrated": false
+ },
+ "reviews": {
+  "argon": {
+   "verdict": "PASS",
+   "file": "harness-data/building-kit/massing/reviews/keep-tower/d7b4227dfa90-argon.md"
+  },
+  "klb-sonnet-5-5": {
+   "verdict": "PASS",
+   "file": "harness-data/building-kit/massing/reviews/keep-tower/d7b4227dfa90-klb-sonnet-5-5.md"
+  }
+ },
+ "delegatedBy": "user 2026-10-25 (bk-massing-100 → 실제 건물, 머지까지 위임)"
+}

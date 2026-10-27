@@ -1,0 +1,400 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "1959425d93c91fb745dbc88506297aca577510b8a87687e3a02663a8834a87c6",
+ "width": 64,
+ "height": 32,
+ "kind": "other",
+ "name": "abandoned rusty box van lying east-west seen from above: long flat roof top, cab windshield, side with sliding door and flat tyres",
+ "label": "wasteland_ruins/van-rust",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (3/4)",
+  "3/4: 맨 위의 큰 부분(28행)이 윗면 없이 세로 면뿐 — 윗끝이 3/4 가 아님 (3/4)",
+  "3/4: 투영이 3/4 아님(side_profile_no_top) (2/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (3/4)",
+   "맨 위의 큰 부분(28행)이 윗면 없이 세로 면뿐 — 윗끝이 3/4 가 아님 (3/4)",
+   "투영이 3/4 아님(side_profile_no_top) (2/4)"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 15,
+  "tileColorsP90": 17,
+  "darkV5": 34,
+  "nearBlackEdge": 0.17,
+  "opaqueTiles": 8
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "east",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "van body side (box with windows, sliding door, rust patches)",
+      "rows": "1-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "cab windshield and cab side",
+      "rows": "3-24",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "wheels / flat tyres",
+      "rows": "25-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 28,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "side_profile_no_top",
+    "evidence": "The van is drawn as a flat side elevation. Row 1 is a dark outline and row 2 is a light 1-row edge. Rows 3-24 are the vertical body side, with windows (rows 6-11), a sliding-door outline, rust patches and a teal windshield strip on the right. The wheels are at rows 25-30. No band ends in a front-edge line with eave shadow, no ellipse, and no roof plane is visible. The silhouette widens from 46 to 64 px over rows 1-12 and stays 64 wide through row 24. That is the profile of a vertical side wall, not a foreshortened roof. The flat roof described in the name is not drawn as a separate top surface, so this is a profile with no top."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate carries 13 visible tones per full tile, between the hedge (9) and the stall and well (17-20). Near-flat coverage is 0%, so the large grey roof is broken up by rust blotches, speckle and panel seams rather than left as a flat fill. The dark edge pixels are 0% neutral, so the outline leans toward a dark blue-grey or brown-rust tone rather than a sticker-style black line. Shading is about 4 steps on the grey body and about 3 on the rust, slightly shallower than the 5-6 on the references. The total palette is small at 26 colours, but the visible texture is comparable to the references, and the windshield, sliding door and flat tyres read clearly. It is a little leaner than the richest references but would sit acceptably next to them.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(side_profile_no_top) (1/1)",
+    "윗면 0행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(side_profile_no_top) (1/1)",
+     "윗면 0행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19186
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "east",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "van body side (box with sliding door)",
+      "rows": "1-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "cab with windshield (right end)",
+      "rows": "3-18",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "wheels",
+      "rows": "24-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 1,
+    "front_face_rows": 27,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "side_profile_no_top",
+    "evidence": "The van is drawn as a flat side elevation. Row 1 is a dark outline and row 2 a light highlight line. Below that, rows 3-28 are the side panel with windows, a door outline, rust patches and wheels. No band ends in a front-edge line with eave shadow, no ellipse and no roof plane is visible. The widening from 46 to 64 px over rows 1-12 is rounded body corners, not a foreshortened roof. The windshield and cab are vertical faces and the wheels are seen from the side. The brief says 'seen from above', but the drawing shows no top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The van roof is a pale grey-blue ramp of about 4-5 steps, with rust patches in several orange-brown tones, panel seams, a windshield and dark tyres. These tonal steps are comparable to the stall and well references. Measured facts: 13 visible tones per tile against 9 for the hedge, 17 for the stall and 20 for the well. Near-flat coverage is 0%, so there are no flat fills. The dark edge pixels are 0% near-neutral, meaning the outlines carry a tint (dark rust-brown or blue-grey) rather than a black sticker line, matching the hedge and stall. The rust speckle and grime give real texture, and the piece does not look thinner or flatter than the references.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(side_profile_no_top) (1/1)",
+    "윗면 1행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(side_profile_no_top) (1/1)",
+     "윗면 1행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 14279
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "van roof (long flat top with hatches)",
+      "rows": "2-10",
+      "evidence": "a",
+      "front_edge_line_row": 11,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "cab windshield/front glass",
+      "rows": "3-16",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "side body with sliding door",
+      "rows": "12-24",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "wheels",
+      "rows": "25-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 9,
+    "front_face_rows": 17,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The roof is a light grey band at rows 2-10 (column x=47 is a uniform L=165) with rust patches and roof hatches. A faint edge line at row 11 (rust or dark, x=16, x=32, x=47) separates it from the side body below. The side body is rows 12-24 with a sliding-door outline at rows 19-24. The wheels run to row 30. The silhouette steps from width 53 to 63 at rows 7-11, which suggests a cab. The edge line is weak and the picture could also be read as a side elevation, but the roof band is tall enough (9 rows) and sits above a front face of 17 rows."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate has 13 visible tones per 16x16 tile, between the hedge (9) and the stall (17) and well (20) references. Near-flat coverage is 0%, so there are no large flat fills; the roof and side carry panel lines, rust blotches and speckle. 0% of its dark edge pixels are neutral, so the outline is tinted (dark grey-brown or rust beside the body panels) rather than a uniform black sticker line. The grey body ramp is a little shallower than Beodeul's 5-6 steps, at roughly 4 steps for the body and 3 for the rust. Tyres, windshield and sliding door are separated by value and read as distinct forms. At the same scale it would sit acceptably next to the stall and well references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 22168
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "east",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "van body side (box and cab)",
+      "rows": "1-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "wheels",
+      "rows": "25-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 28,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The van is drawn as a flat side elevation. Row 1 is only a 1-row dark outline. Below it, rows 2-10 at x=47 are a uniform grey (L=165) with no front-edge line and no eave shadow. The rows below that hold the side windows, the door outline at rows 19-24, rust patches, and the wheels at rows 25-30. The silhouette widens quickly to 64 px by row 12 and stays constant, so no ellipse or roof plane narrows or recedes. The windows, door and wheel arches all sit on the same vertical plane, so there is no horizontal top surface despite the 'seen from above' description."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate has 13 visible tones per 16x16 tile, between the hedge (9) and the stall (17) and well (20) references. Near-flat coverage is 0%, so no 5x5 block is a flat fill. The roof carries panel seams, highlight edges and scattered rust patches in orange-brown, and the body panels have grime and rust streaks. Tyres, windshield and sliding door each have their own tone steps. The main grey-blue metal ramp shows about 5 steps against roughly 6 on Beodeul materials. The measured dark edge pixels are 0% neutral, so the outline is tinted: a dark blue-grey beside the metal and dark brown beside the rust, not a uniform black sticker line. Texture is more patchy than the per-tile grain of the best references, so it reads as 'some' rather than 'rich'. A careful artist would still accept it next to the references without it looking thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 0행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 0행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 40528
+  }
+ ],
+ "decidedAt": "2026-10-22T15:08:30.395Z",
+ "cells": {
+  "16": [
+   "04b8462104eb81ac",
+   "071db61aa0353132",
+   "137c4b6b86545494",
+   "5761e50bd0e0de2f",
+   "8a737e4b3fb9ae37",
+   "ab8a894b7da44669",
+   "b50c2a7abed8af9f",
+   "c0cad1c36c98814c"
+  ],
+  "24": [
+   "0c8f722d608aa156",
+   "0fdc3208b4263b47",
+   "1007892d2bb59337",
+   "100fe139cf412711",
+   "1b23261c52e86202",
+   "206bc663b4f2c887",
+   "28a3d4a48338f75f",
+   "34edaa9679a9b2e4",
+   "3d57a3beb2566646",
+   "497f22cc6bd08286",
+   "4dee35c027c67be5",
+   "55c7691381ed8809",
+   "56ced8a69423d9bc",
+   "5ed9848fffc5bf27",
+   "67b0e8dcf01e011e",
+   "715a768044221625",
+   "8e562871af56e974",
+   "9a783391b24dbba4",
+   "a0c035bef5c50a21",
+   "a22c7ec6e9ed9a59",
+   "ab80fa50a2f55b18",
+   "b4859ee7c0063e2f",
+   "bf89f0623b106f02",
+   "c1c0c3b14dbccd8e",
+   "c446991af46dfb5a",
+   "cf16eb610e02b47d",
+   "d2ccea0f669707ac",
+   "deb536bd7ce9311a",
+   "e0b56b039f94f331",
+   "e10860bbfe3615ca",
+   "e1544021a4cca695",
+   "e88126ffa9a2be22",
+   "edbc32091886edd8",
+   "f0feb61fe545a703",
+   "f37cbd4b149084a3",
+   "f63b328440bdc4e1"
+  ],
+  "32": [
+   "8eeddc1bf69b64d6",
+   "d1bef99a5dcdfd5b"
+  ],
+  "48": [
+   "11f7033d77215e0c",
+   "141f9461ab6e6974",
+   "16dabdc13a0d388c",
+   "57d2ec509c1cbd65",
+   "5975a556ba854894",
+   "72613f2e84e25097",
+   "83b0312a9846ba33",
+   "af1b3234b18424f2",
+   "b08ec6601ee5c7e8",
+   "b109a17c474913ea",
+   "b1a370981ec8fd87",
+   "cb700f8b2cc019fe"
+  ]
+ }
+}

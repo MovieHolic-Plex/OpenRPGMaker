@@ -1,0 +1,472 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "609789d222a7930143a25e5d06ce6798f06431e8c14f1416fb9d6d33cc343ac4",
+ "width": 144,
+ "height": 80,
+ "kind": "flat",
+ "name": "a small patch of alligator cracking — a net of three or four small polygons outlined by dark grey-black cracks, one plate slightly lifted, drawn as a transparent decal on old asphalt",
+ "label": "wasteland_ruins/road-crack-c",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 명암 3단 < 4 (2/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "명암 3단 < 4 (2/4)"
+  ],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 4,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "wasteland_ruins",
+   "fallback": true,
+   "reason": "칩셋 wasteland_ruins 의 화풍 기준 묶음이 없다",
+   "hash": "8cecb3a70460aa86"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 5,
+  "tileColorsP90": 8,
+  "darkV5": 75,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 45
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "asphalt patch with crack marks, seen from above",
+      "rows": "19-63",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "brown ground background",
+      "rows": "0-79",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 45,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The image is a flat grey asphalt rectangle (rows 19-63) on a brown ground texture, viewed straight down. The column scans at x=36, 72 and 107 show only flat texture runs. There is no front-edge line, no eave shadow, no ellipse and no vertical face. The only dark details are two small crack outlines (rows ~35-47). The slightly darker rows 59-63 at the bottom read as a soft edge shadow, not a front face. This is a flat decal with no front face, so it reads as a top-down slab, which is expected for a flat floor decal."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 4,
+    "evidence": "The candidate reads as a plain grey rounded rectangle with two small squiggle marks, not a net of three or four crack-outlined polygons with one lifted plate. There is no visible crack network and no lifted-plate highlight or shadow. Only about 4 grey steps and 10 distinct colours in total, against roughly 7 tones and richer grain in the paving reference. The 5 visible tones per tile beat the grass reference (3), but they come mostly from speckle noise, not from shaded structure. Near-flat coverage is 1%, so there are no big flat fills, and the edge is soft and tinted (0% neutral dark edge pixels), so it is not a sticker outline. Structure and shading craft are still weaker than the references, because the cracks, which are the subject, are missing. A careful artist would not accept this next to the paving reference.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 14663
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "asphalt patch with crack network, drawn as a flat decal on dirt",
+      "rows": "19-62",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 44,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The asphalt patch is a flat grey rectangle (rows 19-62) with crack lines inside it, seen straight from above. The column scans at x=36, 72 and 107 show uniform grey (L~77) with dark crack pixels and no front-edge line, eave shadow or vertical face. The thin darker band at the bottom edge (rows 59-62) reads as a soft decal shadow, not a front face. There are no front-face rows, so this is a flat top-down decal, which fits the flat kind."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 4,
+    "evidence": "The candidate does not read as alligator cracking. It looks like a grey rounded slab with two tiny squiggle marks, and the net of three or four polygons with a lifted plate is missing. The asphalt ramp has only about 3 visible steps (a mid grey, a lighter speckle and a darker edge), against roughly 6 on the paving reference. Measured facts: 5 visible tones per tile against 7 for paving, and only 10 distinct colours overall. Flat coverage is low (1%), and the speckle grain stops it being a flat fill. The dark edge pixels carry a tint (0% neutral), so the outline is not a uniform near-black line, but the cracks are too sparse and small to count as real structure. Nothing shows the individual plate shading, tile-by-tile highlights or chipped edges that the paving reference has. Overall it is thinner and less structured than the reference.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 15315
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "asphalt patch with crack marks (flat decal)",
+      "rows": "19-63",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 45,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The image is a flat grey asphalt rectangle (rows 19-63) on a brown dirt background, seen from above. Two small dark crack marks sit around rows 35-46. The column scans show only the flat asphalt tone (L about 77) with scattered speckles and crack pixels. There is no front-edge line, no eave shadow and no vertical face. Rows 59-63 are only slightly darker, which reads as a thin edge shade and not a front face. There are no vertical faces and no volume, so the object is a ground-level decal with no front face, as the 'flat' kind expects."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 4,
+    "evidence": "The candidate reads as a speckled grey rounded rectangle on brown dirt, not as an alligator-crack net. I can't see three or four outlined polygons or a lifted plate. The only crack-like marks are two small '22'-like glyphs. The grey body has about 3 lightness steps and only 10 colours in total, against the paving reference's 6-7 clearly stepped tones with per-stone shading. Measured facts: 5 visible tones per tile (grass 3, paving 7), 1% near-flat coverage and 0% neutral dark edges, so the tint is not near-black. The edge is a soft dark grey-blue rim, which I'd call 'mixed' rather than a clean material-tone outline. Fine speckle keeps it from being a flat fill, but it is a uniform noise grain without per-plate highlights or shaded fragments. It is thinner and more sticker-like than the paving reference and doesn't deliver the described object.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 14113
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "asphalt patch with two small crack glyphs, seen from above",
+      "rows": "19-63",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "brown dirt ground surrounding the patch (fills the whole 144x80 canvas)",
+      "rows": "0-79",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 45,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The image is a flat, uniformly shaded grey asphalt rectangle (rows 19-63) on a brown dirt background. Columns x=36, 72 and 107 each show one grey run bounded by brown above and below, with no front-edge line, no eave shadow, no ellipse and no vertical face. A darker brown strip near rows 59-63 reads as a ground shadow or edge, not a front face. The only structure is two small dark crack glyphs near rows 35-46 (x=36 and x=107). This is a flat floor decal seen from above, so there is no front face (0 rows). The drawing shows a plain patch with two small crack marks, not a net of three or four polygons with a lifted plate. The kind 'flat' still fits."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 4,
+    "evidence": "The candidate reads as a single grey rectangular slab with a hard rectangular edge and two tiny '22'-like squiggles. It does not show the requested net of three or four polygons with one lifted plate, so the structure is wrong for the object. The slab has fine speckle and about 4 grey steps against the reference's 6, and only 10 distinct colours in total (5 per tile) against 80 for the grass. Measured visible tones per tile are 5, between grass (3) and paving (7), and near-flat coverage is 1%, so it is not literally flat. Even so, the tiles carry little beyond speckle: no per-plate highlights or shading, no lifted-edge shadow, and the cracks are barely legible. The border is a dark, slightly tinted grey line with a uniform sticker-like edge. Dark edge pixels measure 0% neutral, but the outline is a plain rim around the whole shape rather than selective material-toned edges. Next to the paving reference, which shows individually shaded stones and separated slabs, it looks flatter and thinner.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 16527
+  }
+ ],
+ "decidedAt": "2026-10-22T23:04:20.661Z",
+ "cells": {
+  "16": [
+   "046ede623f4e1fc4",
+   "0952e61bfb82683d",
+   "197b836a71c41856",
+   "1f44054c1c6f2733",
+   "1f63d6fbff477767",
+   "27576df1e90b51f8",
+   "325f9d03f6670acf",
+   "4b271912bf41a0ae",
+   "516c62bd6b436521",
+   "53f0b8bb3fdf6927",
+   "55ca2b999cb2777f",
+   "57a01a5ce41b8fcf",
+   "57b8fa4d1eb95887",
+   "57fc98f3f560dfdf",
+   "592fb3651515ca56",
+   "6d3b0c5494311d44",
+   "701963da1546c5a0",
+   "7424c8a02611249a",
+   "7c598be88bdd2402",
+   "7d3438decb8024d8",
+   "82dd33c31a46d037",
+   "87ebaacfb06760b3",
+   "8886fb93697d5499",
+   "92e45a208bd9b499",
+   "9841c0306962d588",
+   "9d76d9e966cd91e5",
+   "9ebaf740a8e38141",
+   "9f5af927f0af984a",
+   "a406069af4766046",
+   "aeecd0409de5c59b",
+   "bbb27ca60933d095",
+   "bf4d1cbcd45adc03",
+   "c2f6cebe48735da0",
+   "c87e4edc3d9417aa",
+   "ca3f76d628f12761",
+   "cf9344953836512b",
+   "d1085b2c564bf36b",
+   "e2745db7140954d1",
+   "e53c6edd0faa43fa",
+   "f54e9742cdc5a18f"
+  ],
+  "24": [
+   "02e1d47b5867c3fa",
+   "04db272cc35fe0be",
+   "0fea1629c342ebe2",
+   "19dcff530783cff6",
+   "1a1b870c3bed39b3",
+   "26e8fb7c7764c630",
+   "2cb95e5e29bea7ee",
+   "399edf9d6097460e",
+   "39c981fabc4530cc",
+   "3d561460bf5bb889",
+   "3d62c754ec01c445",
+   "47b2f0cad2cbdf70",
+   "47c0fd5663d671c7",
+   "4823b8be3286fffb",
+   "5346acb9380e5ac3",
+   "563035350d3190cd",
+   "5b3dbbadfcb403c5",
+   "6685ac12c7ae3ec1",
+   "69317cd254971b40",
+   "6bc67a9f7ce0a20f",
+   "6efeede0ce6c5d1a",
+   "766dbecd8dd2ad82",
+   "79bf85253cfc92c2",
+   "7e6926d64716e740",
+   "85c71610ffbb61ee",
+   "85fe6d5c2d2b5501",
+   "8cf353eae40d6cb6",
+   "97110e727c9c1c86",
+   "a7ba61d30ac995b2",
+   "ad223ca73c65eb9e",
+   "b71e48abaf0c9b1f",
+   "bb0c01f1c328cea8",
+   "bb2d3f38942b0113",
+   "c1ccdd6720c46952",
+   "c88b235423cc97f4",
+   "ca9a4fbdd37afbbd",
+   "d0a83fef3edf9721",
+   "d22ecbaea85d42e5",
+   "d5d7e49b238ac1bb",
+   "e1b70665021de036",
+   "e27e250386ad777e",
+   "e936dd22b4bb01e9",
+   "eaaa733451e9c17c",
+   "ebcb2139ba19b0a6",
+   "eed588eed218c527",
+   "f11b52fb6b29cfae",
+   "f5a981d0df8e766f",
+   "f634157f64e9b4e7"
+  ],
+  "32": [
+   "00e36b1c1e9f093e",
+   "012075d1d7c120b3",
+   "0a5eea5cf269f7c5",
+   "0f9dc003afdd3d1f",
+   "0fb4009f62066faf",
+   "191e7600042b6517",
+   "1a9305cd5311a8a8",
+   "1f67280409368a4b",
+   "23a32fed9dfbbd6e",
+   "23a95ee117c1c33d",
+   "280279a25484bb4b",
+   "2939199845b1b7fb",
+   "29e00cc577b7fc73",
+   "2b2157f903a56ba8",
+   "2d16713beda38b0e",
+   "2eb025039b5e39b8",
+   "32cd707117e83f9c",
+   "340d3d0b4124507a",
+   "3744a86468269126",
+   "3f7860ef7726c722",
+   "40c1a153ec50004a",
+   "41b8c9874ea6ecf6",
+   "42f45e094022f32f",
+   "47559d22d55724a9",
+   "4f9c344785e5fa97",
+   "5462ba31baccc28f",
+   "5518385fdd89332c",
+   "572b6bfccb4d3b48",
+   "5aea8932c38cb878",
+   "5b07c487f9f8c4bb",
+   "5e265e1a7b0681c5",
+   "63f3a2b4d39e5909",
+   "67b8593af63caca4",
+   "68b6b89f451d3531",
+   "6b56958fb5d174ad",
+   "6e1065fa4cbbd2d4",
+   "7575fcbdd0c2381e",
+   "7776af21b9bf77b5",
+   "7a8ac15edde779e1",
+   "7e57cf46250b476e",
+   "7e69f6678afe1b32",
+   "7f36c7e36ba6fdc8",
+   "845111d9a1fecd9d",
+   "88b9bfad2be56733",
+   "89b9824e0cf5df57",
+   "89dd37f741ee1171",
+   "8abd144a930e715e",
+   "8c3bd229a6c9d2ad",
+   "920417a8acfb332d",
+   "9515004f904a7d42",
+   "9846efcab2f48ae6",
+   "98550e12309621eb",
+   "9bd3161d0badb91c",
+   "a01242f76d2c270e",
+   "a0757279eed12447",
+   "a49c80849231e804",
+   "a61e285be03b0731",
+   "a6e523e4a9798ade",
+   "a8962c74b426ef0f",
+   "aa7d054109e9c960",
+   "ace58bfebe4ba6f8",
+   "afc7ce35249211e9",
+   "b0f024ea517ef184",
+   "b1b05ef54380e88e",
+   "b1efd3872495741f",
+   "b2688e3a292c8b96",
+   "b3ccd78b5ba2aa8d",
+   "b444452d797dc585",
+   "b4a682b4e8687925",
+   "b9b1b37a07e25368",
+   "bb0edcbc99c1a5f9",
+   "bff30c8182f54d84",
+   "c569aa7e0b03ef40",
+   "c67e3aa29d7253e8",
+   "cb6398d0393f157b",
+   "d4b9dc75e6d9f0f4",
+   "d73f383a2e2887c6",
+   "d92fb661ef66b4d2",
+   "df5c9b74ad8ca28d",
+   "dfaa49a4220d2b89",
+   "e2e5d7a800ca0980",
+   "e2e94892b244b15b",
+   "e3c08d1234690e40",
+   "e79c08acc52fe195",
+   "e9a1ebd775db6589",
+   "f1d2286a07df5cf6",
+   "f21ade4ecc0a5b50",
+   "f5adfaabdef05d5d",
+   "f7380a25ee1a703a",
+   "ff00bfac77585ef7"
+  ],
+  "48": [
+   "0aecd1d5d516846a",
+   "2abbcc8042a627eb",
+   "538151baae47b843",
+   "58c4556fcbaf79b9",
+   "6c73aa21634defe6",
+   "7f7e761e4f0863da",
+   "8e83b83d6cb81258",
+   "91b6201ecf6fce28",
+   "92b5e8337dc92bb1",
+   "9fc23ef01b4c174e",
+   "afef40c104099df5",
+   "d54759246984e5e7"
+  ]
+ }
+}

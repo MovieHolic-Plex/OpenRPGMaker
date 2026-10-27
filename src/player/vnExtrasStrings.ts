@@ -72,7 +72,8 @@ export type VnUiKey =
   | "ending.continue"
   | "ending.creditsSkip"
   | "ending.creditsRead"
-  | "ending.returnTitle";
+  | "ending.returnTitle"
+  | "ending.nextAct";
 
 type Row = Readonly<Record<SupportedLocale, string>>;
 
@@ -142,6 +143,7 @@ export const VN_UI_STRINGS: Readonly<Record<VnUiKey, Row>> = {
   "ending.creditsSkip": { ko: "Z / Enter 누르면 빠르게   ·   Esc 건너뛰기", en: "Hold Z / Enter  Fast   ·   Esc  Skip", ja: "Z / Enter 長押しで早送り   ·   Esc とばす", zh: "按住 Z / Enter 快进   ·   Esc 跳过" },
   "ending.creditsRead": { ko: "PgUp/PgDn 읽기   ·   Z / Enter 마침", en: "PgUp/PgDn  Read   ·   Z / Enter  Finish", ja: "PgUp/PgDn 読む   ·   Z / Enter 終わる", zh: "PgUp/PgDn 阅读   ·   Z / Enter 结束" },
   "ending.returnTitle": { ko: "타이틀로 돌아가기", en: "Return to title", ja: "タイトルへ戻る", zh: "返回标题" },
+  "ending.nextAct": { ko: "다음 막으로", en: "On to the next act", ja: "次の幕へ", zh: "进入下一幕" },
 };
 
 export function vnUiText(language: { readonly language: DialogueUiLanguage } | undefined, key: VnUiKey, ...args: readonly (string | number)[]): string {

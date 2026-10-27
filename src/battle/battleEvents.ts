@@ -1,4 +1,5 @@
 import { calendarOptionsOf, evalActorQueryCondition, type ActorQuerySession } from "@/project/conditionActorQueries";
+import { withJosa } from "@/util/josa";
 import { ownsMonsterSpecies } from "@/project/monsterOwnership";
 import { growthEffects, permanentActorSkillIds } from '@/project/growth/runtime';
 import { executeM2BattleCommand as executeM2Command } from "@/battle/battleM2CommandExecutor";
@@ -15,7 +16,8 @@ import { evalRoguelikeRunCondition, type RoguelikeRunState } from "@/project/rog
 import { effectiveActorClassId, promoteActor as promoteActorClass, type ClassOverrideSession } from "@/project/sessionClass";
 import { badgeContext } from "@/project/badgeProgress";
 import type { ActorId, ActorInitialEquipment, Command, Condition, FaceGraphic, MessageWindowSettings, Project, ShowAnimationTarget, VariableOperand } from "@/project/types";
-import type { BattleEventCondition, BattleEventPageRecord, TroopRecord } from "@/project/types/database";
+import type { BattleEventCondition, BattleEventPageRecord, TroopBattleGuest, TroopRecord } from "@/project/types/database";
+import { normalizeTroopBattleGuests } from "@/project/databaseEnemyTroopRecordModel";
 
 export type BattleEventRuntimeState = {
   gameOverRequest?: { gameOverId: string; message?: string };
@@ -169,6 +171,11 @@ export type BattleEventRuntimeOptions = {
   // (refreshActorBattlerDerivedStats) — 런타임이 세션 paramBonuses 를 닫아 주입한다.
   // refreshSkills 는 전직처럼 클래스 스킬 셋이 바뀔 때만 true(장비 변경은 스킬 불변).
   readonly refreshActorDerivedStats?: (battler: MutableBattler, options?: { readonly refreshSkills?: boolean }) => void;
+  /**
+   * 트룹 손님(TroopRecord.battleGuests) 합류: 런타임이 그 배우의 배틀러를 이 전투에만 세운다.
+   * 세운 배틀러의 이름을 돌려준다. 세울 수 없으면(배우 없음·이미 있음·몬스터 파티 전투) undefined.
+   */
+  readonly joinBattleGuest?: (guest: TroopBattleGuest) => string | undefined;
 };
 
 export type BattleEventRuntimeResult =
@@ -254,6 +261,11 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
   // 소유 이벤트 없는 전투에서 소유자 의존 조건이 평가되면 종류별로 1회만 추적 로그를 남긴다
   // (조건 평가는 tick/라운드마다 반복되므로 매번 기록하면 eventLogs 가 범람한다).
   const loggedOwnerlessConditions = new Set<OwnerlessConditionKind>();
+  // 트룹 손님은 페이지 목록 뒤에 붙는 한 번짜리 가상 페이지다 — 같은 조건 평가·같은 정지/재개 흐름을 탄다.
+  const guestPages = normalizeTroopBattleGuests(options.troopRecord.battleGuests).map((guest) => ({
+    guest,
+    page: { id: `battle-guest:${guest.actorId}`, name: `guest ${guest.actorId}`, conditions: guest.conditions, span: "battle", runOnce: true, commands: [] } satisfies BattleEventPageRecord,
+  }));
 
   function logOwnerlessConditionOnce(kind: OwnerlessConditionKind): void {
     if (loggedOwnerlessConditions.has(kind)) return;
@@ -300,10 +312,22 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
         if (invocations.at(-1) === invocation && invocation.frames.length === 0) invocations.pop();
         continue;
       }
-      const page = options.troopRecord.battleEventPages[batch.nextPage++];
+      const pageIndex = batch.nextPage++;
+      const authoredPages = options.troopRecord.battleEventPages;
+      const guestEntry = pageIndex >= authoredPages.length ? guestPages[pageIndex - authoredPages.length] : undefined;
+      const page = authoredPages[pageIndex] ?? guestEntry?.page;
       if (!page) { batch = undefined; break; }
       const context = batch.context;
       if (!shouldRunBattleEventPage(page, context)) continue;
+      if (guestEntry) {
+        firedBattleEventPageIds.add(page.id);
+        const name = options.joinBattleGuest?.(guestEntry.guest);
+        if (!name) { logUnsupported(page, context, `battle guest ${guestEntry.guest.actorId} could not join`); continue; }
+        logs.push({ pageId: page.id, round: context.turn, triggerId: page.id, kind: "fired", detail: `guest join ${guestEntry.guest.actorId}` });
+        const body = guestEntry.guest.message ?? `${withJosa(name, "이/가")} 합류했다!`;
+        pushInvocation(page, [{ kind: "text", body }], context, 0);
+        continue;
+      }
       logs.push({ pageId: page.id, round: context.turn, triggerId: page.id, kind: "fired" });
       if (pageRunsOnce(page)) firedBattleEventPageIds.add(page.id);
       if (pageHasRoundCadenceCondition(page)) firedBattleEventPageRoundKeys.add(pageRoundKey(page, context));

@@ -29,9 +29,11 @@ import { machineSkillOf, menuItemUnavailableReason, previewEvolutionStoneTarget,
 import type { SaveSlotIndex, SaveSlotReadResult } from "@/player/saveSlots";
 import { canEquip, effectiveActorEquipment, equipmentSlotAccepts } from "@/project/equipmentRules";
 import { resolveActorName, resolveActorFaceResourceId } from "@/project/sessionActorCommands";
+import { listPartyBondEntries, partyBondMeter } from "@/project/partyBonds";
 import { defaultActorFaceResourceId, normalizeActorRecord } from "@/project/actorModel";
 import type { StatusMenuStatDelta } from "@/player/playerStatusMenuDetailTypes";
 import { effectiveActorClassId } from "@/project/sessionClass";
+import { actorFieldStateNames, KNOCKED_OUT_STATE_NAME } from "@/player/actorFieldStates";
 import type { PlaySession } from "@/project/session";
 import type {
   ActorInitialEquipment,
@@ -56,6 +58,7 @@ import { resourceDisplayName } from "@/player/resourceDisplay";
 import { friendshipDisplayName, listFriendshipEntries } from "@/project/friendship";
 import { friendshipDisplayMax } from "@/project/socialLoop";
 import { createLifeLedgerDetail } from "@/player/lifeLedger";
+import { STORY_JOURNAL_DEFAULT_TITLE, journalLineStateLabel, journalWriterName, storyJournal } from "@/project/storyJournal";
 import {
   isStatusMenuGroupEntryId,
   listStatusMenuGroupCommandIds,
@@ -111,6 +114,7 @@ export function createStatusMenuDetail(options: StatusMenuDetailOptions): Status
     case "gallery": return galleryDetail(options.project, options.session);
     case "endings": return endingsDetail(options.project, options.session);
     case "backlog": return backlogDetail(options.project, options.session);
+    case "journal": return journalDetail(options.project, options.session);
     case "life-ledger": return createLifeLedgerDetail({
       project: options.project,
       session: options.session,
@@ -154,6 +158,7 @@ const GROUP_COMMAND_DESCRIPTIONS: Partial<Record<StatusMenuCommandId, string>> =
   relationships: "동료·주민과의 관계를 봅니다.",
   gallery: "모아 둔 그림을 다시 봅니다.",
   backlog: "지난 대사와 고른 선택지를 다시 읽습니다.",
+  journal: "이야기 일지에 적힌 줄을 다시 읽습니다.",
   "life-ledger": "출하·꾸러미·생활 기술·가공 설비·수집 도감·박물관 기록을 관리합니다.",
   options: "음량·대사 속도·메뉴 움직임을 이 기기에 설정합니다.",
   save: "현재 진행을 슬롯에 저장합니다.",
@@ -399,8 +404,11 @@ function itemDetail(options: StatusMenuDetailOptions): StatusMenuDetail {
       entries: partyActors(project, session).map((actor) => {
         const preview = previewMenuItemTarget(project, session, item, actor.id);
         const stateName = (stateId: string) => project.database.states.find((state) => state.id === stateId)?.name;
-        const stateNames = preview.stateIds.map(stateName).filter((name): name is string => Boolean(name));
+        // HP 0 이면 「전투불능」 — 회복약 대상 목록에서 쓰러진 동료가 「정상」으로 보이면 안 된다(J7).
+        const stateNames = actorFieldStateNames(project, session, actor.id);
         const curedStateNames = preview.curedStateIds.map(stateName).filter((name): name is string => Boolean(name));
+        // 되살리는 아이템(HP 0 → 1 이상)은 「전투불능 → 정상」을 미리 보인다.
+        if (!preview.reason && preview.hp <= 0 && preview.hpAfter > 0 && stateNames.includes(KNOCKED_OUT_STATE_NAME)) curedStateNames.push(KNOCKED_OUT_STATE_NAME);
         const anyTarget = item.scope === "allAllies" && session.partyActorIds.some((id) => canUseMenuItemOnActor(project, session, item, id));
         const eligible = anyTarget || canUseMenuItemOnActor(project, session, item, actor.id);
         return {
@@ -740,7 +748,7 @@ function statusDetail(project: Project, session: PlaySession): StatusMenuDetail 
       // 구분자를 "/" 로 쓰면 HP 510/514 의 분수 슬래시와 뒤섞여 어디까지가 한 항목인지
       // 읽히지 않는다. 가운뎃점으로 갈라 분수 슬래시만 슬래시로 남긴다.
       description: vitals
-        ? `HP ${vitals.hp}/${vitals.maxHp} · MP ${vitals.mp}/${vitals.maxMp} · 정상`
+        ? `HP ${vitals.hp}/${vitals.maxHp} · MP ${vitals.mp}/${vitals.maxMp} · ${actorFieldStateNames(project, session, actor.id).join(" · ") || "정상"}`
         : "HP 0/0 · MP 0/0 · 정상",
     };
   });
@@ -1026,7 +1034,36 @@ function backlogDetail(project: Project, session: PlaySession): StatusMenuDetail
   };
 }
 
+/** 이야기 일지 — 적힌 순서대로, 날짜·필체 머리 + 본문. 지워진 줄은 흐리게(본문을 가린다), 다시 읽은 줄은 표시를 단다. */
+function journalDetail(project: Project, session: PlaySession): StatusMenuDetail {
+  const lines = session.storyJournal ?? [];
+  const title = storyJournal(project)?.title ?? STORY_JOURNAL_DEFAULT_TITLE;
+  return {
+    title,
+    entries: lines.map((line) => {
+      const head = [line.date, line.writer ? journalWriterName(project, line.writer) : ""].filter(Boolean).join(" · ");
+      const mark = journalLineStateLabel(line.state);
+      return {
+        label: head || "—",
+        value: mark,
+        description: line.state === "erased" ? line.text.replace(/\S/gu, "·") : line.text,
+        testId: `status-menu-journal-${line.id}`,
+        attributes: { "data-journal-state": line.state },
+      };
+    }),
+    emptyLabel: "아직 적힌 줄이 없습니다.",
+    hint: lines.some((line) => line.state === "erased") ? "흐린 줄은 지워진 줄입니다. 누군가 다시 읽어 주면 돌아옵니다." : undefined,
+  };
+}
+
 function relationshipsDetail(project: Project, session: PlaySession): StatusMenuDetail {
+  // 파티원 유대(system.partyBonds)가 먼저, 그 아래 NPC 호감. 유대는 0 이어도 늘 보인다 — 「아직 가깝지 않다」도 정보다.
+  const bonds = listPartyBondEntries(project, session).map((entry) => ({
+    label: entry.name,
+    value: `${partyBondMeter(entry.value, entry.max)} ${entry.value}/${entry.max}`,
+    description: entry.inParty ? "동료와의 유대" : "동료와의 유대 · 지금 파티에 없음",
+    testId: `status-menu-bond-${entry.actorId}`,
+  }));
   const entries = listFriendshipEntries(session.friendship, friendshipDisplayMax(project), undefined, project).map((entry) => ({
     label: entry.displayName ?? entry.key,
     value: entry.secondary,
@@ -1035,9 +1072,9 @@ function relationshipsDetail(project: Project, session: PlaySession): StatusMenu
   }));
   return {
     title: "관계",
-    entries,
+    entries: [...bonds, ...entries],
     emptyLabel: "알려진 관계가 없습니다.",
-    hint: "호감이 기록된 관계만 표시됩니다.",
+    hint: bonds.length > 0 ? "동료와의 유대와 호감이 기록된 관계를 표시합니다." : "호감이 기록된 관계만 표시됩니다.",
   };
 }
 

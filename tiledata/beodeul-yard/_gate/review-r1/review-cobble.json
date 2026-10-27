@@ -1,0 +1,17 @@
+{
+  "surface": "cobble",
+  "image": "/home/main/z-project/rpg-zzu-village-art/tiledata/beodeul-yard/_gate/yard_cobble.png",
+  "verdict": "fail",
+  "view34": "pass",
+  "autotile": "fail",
+  "quality": "fail",
+  "material": "pass",
+  "defects": [
+    "Every NE convex corner: a dark mitre 'X' is drawn inside the kerb and a 1px dark joint line pokes above the kerb top into the grass (1x approx (123,17), (139,33), (171,49)); NW corners do not have it, so the corner piece is wrong/asymmetric.",
+    "Isolated single cell (1x ~(150-158,0-8)): rim is a lopsided pentagon - NW corner chamfered/notched, NE corner spiked with the same dark tick at (155,1); interior is a 3x3px dark pit rather than a cobbled cell.",
+    "Body: cobbles sit in strict rows and columns that repeat every 16px (adjacent body cells share ~60-70% identical pixels); at 1x/3x the yard reads as a regular wallpaper grid of identical bead rows, unlike natural laid river cobbles.",
+    "Individual cobbles are small flat ovals with 2-3 value steps and no dark-tone outline of their own; joints are a near-black earth that makes the field busy/beady next to Beodeul road."
+  ],
+  "evidence": "At 4x/12x the plane reads flat top-down with a light north kerb and a 2px south front face, so the 3/4 reading holds. The convex NE corner tile carries a mitre cross and a stray dark pixel above the rim, repeated at all three NE corners and the isolated cell. The body is a rigid grid of identical cobble rows with obvious 16px periodicity. Material does read as cobbles and differs from the grey Beodeul road.",
+  "reviewer": "claude-opus independent adversarial review 2026-10-23"
+}

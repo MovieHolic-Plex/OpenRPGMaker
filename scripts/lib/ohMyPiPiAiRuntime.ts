@@ -241,7 +241,12 @@ export async function completeProvider(
     (err as Error & { status?: number }).status = 400;
     throw err;
   }
-  const { context, imageDelivery } = openaiToContextWithDelivery(provider, body, model.input.includes("image"));
+  // 사용자 지정 엔드포인트: 추론 강도를 엔드포인트가 정한 방식(none/field/suffix)으로 맞춘다. 차단 모델은 여기서도 403 으로 거절한다.
+  // 그림 가능 여부는 접미사가 붙은 최종 모델 ID 로 정해지므로 문맥을 만들기 전에 맞춘다.
+  const shaped = isOpenAiCompatProviderId(provider)
+    ? shapeOpenAiCompatCall(provider, model as { id: string; name?: string }, completionThinkingOptions(body, provider))
+    : { model, options: completionThinkingOptions(body, provider) };
+  const { context, imageDelivery } = openaiToContextWithDelivery(provider, body, (shaped.model as { input?: readonly string[] }).input?.includes("image") ?? model.input.includes("image"));
   if (testStub()) {
     return {
       stream: false,
@@ -259,10 +264,6 @@ export async function completeProvider(
     };
   }
   const apiKey = options?.apiKey;
-  // 사용자 지정 엔드포인트: 추론 강도를 엔드포인트가 정한 방식(none/field/suffix)으로 맞춘다. 차단 모델은 여기서도 403 으로 거절한다.
-  const shaped = isOpenAiCompatProviderId(provider)
-    ? shapeOpenAiCompatCall(provider, model as { id: string; name?: string }, completionThinkingOptions(body, provider))
-    : { model, options: completionThinkingOptions(body, provider) };
   const message = await completeSimple(shaped.model as never, context as never, {
     ...(apiKey ? { apiKey } : {}),
     fetch: provider === "openai-codex" ? codexVersionFetch(options?.fetch ?? fetch)

@@ -53,6 +53,14 @@ export function resolveCameraZoom(
   return DEFAULT_CAMERA_ZOOM;
 }
 
+/** 이 맵의 기본 배율: 맵 값(map.cameraZoom)이 있으면 그것, 없으면 프로젝트 기본(resolveCameraZoom). 연출 명령의 배율은 그 위에 덮는다. */
+export function resolveMapCameraZoom(
+  system: Pick<SystemRecords, "cameraZoom" | "dialogueStyle" | "playResolution"> | undefined,
+  map: { readonly cameraZoom?: number } | undefined,
+): number {
+  return normalizeCameraZoom(map?.cameraZoom, { keepDefault: true }) ?? resolveCameraZoom(system);
+}
+
 /** 편집기 입력용 저장 함수 — 1 이면 필드를 지운다. */
 export function storeCameraZoom(system: SystemRecords, value: unknown): void {
   const normalized = normalizeCameraZoom(value, { keepDefault: keepsExplicitDefaultZoom(system) });

@@ -1,0 +1,379 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "470ffdd14ad34218271c56568c2dfa4667d4ba0e8f757bc915196667afe56629",
+ "width": 48,
+ "height": 32,
+ "kind": "structure",
+ "name": "market stall of scavenged goods: patched burlap sack-cloth roof seen from above, crate counter with scrap parts, folded cloth and a rusty can",
+ "label": "wasteland_ruins/stall-b",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 6
+ },
+ "metrics": {
+  "tileColorsMedian": 10,
+  "tileColorsP90": 11,
+  "darkV5": 47,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 6
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "burlap sack-cloth roof with patches",
+      "rows": "1-13",
+      "evidence": "c",
+      "front_edge_line_row": 13,
+      "eave_shadow_rows": "14-15"
+     },
+     {
+      "part": "counter top behind the goods",
+      "rows": "17-22",
+      "evidence": "a",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "scrap parts, folded cloth and rusty can on the counter",
+      "rows": "17-23",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "crate counter front",
+      "rows": "23-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 13,
+    "front_face_rows": 16,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The roof fills rows 1-13 as a sloped burlap plane with patches (a green patch at rows 4-8). Row 13 is a light front-edge line, followed by dark eave shadow at rows 14-15. Below it the stall front is drawn from rows 16-31: a dark interior with goods on the counter (rows 17-22) over a crate front with planks and braces (rows 23-31). The width stays at 46-48 px with no receding side face. The roof is 13 rows tall, so it is a real top surface and not a rim."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a burlap-roofed stall with a crate counter, and it is the right kind of prop to sit beside prop-stall-cheese. Measured facts: 10 visible tones per tile (hedge 9, stall-cheese 17, well-roofed 20), 0% near-flat coverage, and only 5% neutral dark edge pixels, so the outline is tinted brown rather than black. The roof has speckled patches and a darker border, and the counter has a few small items, so it is not a sticker. But the roof is mostly a mid-brown with only about 4 lightness steps, and the counter goods are tiny and sparse. It has fewer tones and less per-item shading than the cheese stall (17) and well (20), with no strong highlight tier, so it looks a little flatter than the best references. Density is slightly lower than the closest same-kind reference, and with doubt resolving to fail, this does not reach the Beodeul bar.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 12027
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "burlap sack-cloth roof",
+      "rows": "1-13",
+      "evidence": "c",
+      "front_edge_line_row": 13,
+      "eave_shadow_rows": "14-15"
+     },
+     {
+      "part": "crate counter top strip behind goods",
+      "rows": "17-22",
+      "evidence": "a",
+      "front_edge_line_row": 22,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "scrap parts, folded cloth, rusty can and green cloth on counter",
+      "rows": "17-22",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "green patch on roof",
+      "rows": "3-8",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 13,
+    "front_face_rows": 16,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The roof fills rows 1-13 as a sloped sack-cloth plane. It has patchwork texture and ends in a lighter front-edge line at row 13 (L=134), followed by dark eave shadow in rows 14-15. Below it, rows 16-31 hold the open stall front: posts, a counter with goods, and a slatted crate face in rows 23-31. The goods on the counter are decor. The roof is far taller than a 1-2 row rim and the front face is well over 3 rows, so this is a three-quarter view. The side posts are vertical elements, not a receding side face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate's outlines are tinted dark brown (only 5% of dark edge pixels are near-neutral), so it avoids the sticker look. The burlap roof has speckle and patch variation, and there are no flat fills (0% near-flat coverage). The weak point is depth. The candidate has 10 visible tones per tile, about level with the simple hedge (9) but well under the closest same-kind reference, prop-stall-cheese (17), and prop-well-roofed (20). Its total palette is only 20 colours against 38-40 for those two. By eye the roof reads as about 4 lightness steps rather than 5-6. The crate counter is a fairly dark, uniform brown mass with small scrap, cloth and can accents, so it is less richly shaded than the cheese stall's goods and awning. It is clean and coherent but thinner than the references, and I fail it when in doubt.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 16351
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "burlap sack-cloth roof (sloped plane seen from above)",
+      "rows": "1-15",
+      "evidence": "c",
+      "front_edge_line_row": 13,
+      "eave_shadow_rows": "14-15"
+     },
+     {
+      "part": "crate counter top",
+      "rows": "17-22",
+      "evidence": "a",
+      "front_edge_line_row": 22,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "goods on counter (scrap parts, folded cloth, rusty can)",
+      "rows": "16-22",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "crate counter front face",
+      "rows": "23-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 13,
+    "front_face_rows": 9,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The roof is a large sloped plane in rows 1-12. A light front-edge line at row 13 follows it, then dark eave shadow in rows 14-15 and the open stall below. The crate counter has a top strip in rows 17-22 with decor goods on it and a yellow edge at row 22, then a crate front face of about 9 rows (23-31) with plank and band lines. This gives top surfaces plus a front face of 3+ rows, so the drawing reads as three-quarter. No isometric side face is drawn; the side posts are vertical only."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate stall is a wide burlap roof with a crate counter. Measured facts: 10 visible tones per tile, 0% near-flat coverage, and only 5% neutral dark edge pixels, so the outline is tinted brown and reads as dark material tone, not a sticker line. The roof has speckled grain and patches, which is some texture, but it is a fairly uniform brown-grey with about 4 lightness steps. The cheese stall (17 tones) and the roofed well (20 tones) carry 5-6 steps with per-tile highlights, clustered goods and shaded stones. The candidate's counter goods (scrap parts, cloth, rusty can) are small and low-contrast, so the front reads muddy and flatter than the references. Tone count is on par with the hedge but well below the closest same-kind references (stalls and well). Slightly lower density and shallower shading than the bar, so when in doubt it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 15499
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "burlap sack-cloth roof",
+      "rows": "1-13",
+      "evidence": "c",
+      "front_edge_line_row": 13,
+      "eave_shadow_rows": "14-15"
+     },
+     {
+      "part": "counter top behind goods",
+      "rows": "17-22",
+      "evidence": "a",
+      "front_edge_line_row": 22,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "scrap parts, folded cloth and rusty can on counter",
+      "rows": "16-22",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "crate counter front",
+      "rows": "23-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 13,
+    "front_face_rows": 9,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The patched burlap roof fills rows 1-13 as a large sloped plane seen from above. It ends in a light front-edge line at row 13 (L=134), followed by dark eave shadow in rows 14-15. Below it is the open stall interior with the counter top and goods (decor) in rows 16-22. The crate-slat front face runs rows 23-31, about 9 rows. The silhouette is symmetric with no receding side face, so the roof top and the front face both read."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate has 10 visible tones per tile, above prop-hedge (9) and below prop-stall-cheese (17) and prop-well-roofed (20). Near-flat coverage is 0%, so there are no large flat fills. Only 5% of its dark edge pixels are neutral, so the outline is a tinted dark brown beside the burlap and wood, not a sticker line. The burlap roof carries speckle and patch variation in about 5 lightness steps. The crate counter and the small goods (can, cloth, scrap) are simpler, with about 3-4 steps and less per-item shading than the cheese stall's goods. It has 20 distinct colours against about 40 for the stall references, so it is a little leaner, but it is not shallow or sticker-like. A careful artist would accept it beside the references."
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 15913
+  }
+ ],
+ "decidedAt": "2026-10-22T15:35:18.432Z",
+ "cells": {
+  "16": [
+   "29fbdaeae3098843",
+   "424fdb925e3beab0",
+   "4ef62c3274b55a3d",
+   "78c3ccdc9eecd3fa",
+   "7e9a9597934b5564",
+   "fa4cf74e7e880cbe"
+  ],
+  "24": [
+   "1eae662b1d2177ba",
+   "298612b874d223db",
+   "408fedf8ae5d6e29",
+   "773d7abbf905d0c4",
+   "823074b480a3fa6f",
+   "93b3d169a6ac0514",
+   "d0f5b5692fb40c73",
+   "e4f40f114f6e968f"
+  ],
+  "32": [
+   "287fa83b01618cf0",
+   "33da19624c11780a",
+   "755793ed06e62eba",
+   "97719228b6b5c56d",
+   "d2f9ad44febadee1",
+   "ed8f6fdf01d3f534"
+  ],
+  "48": [
+   "265db45ca86333f3",
+   "ecc82d41cda193ce"
+  ]
+ }
+}

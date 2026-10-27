@@ -3,12 +3,23 @@
 // 왜(2026-10-24 새 12 사례): 비 → 화면 색만, 독 → 소리·번쩍임만, 엔딩 → 내레이션+타이틀, 우물 동전 → 물건이 없어도 고르기 창,
 // 암호 → 「이미 통과」 페이지 없음·선언 안 한 깃발. 모델이 「됐다」고 말해도 이 검사가 남은 문제를 끝맺음 관문에 올린다.
 // 순수 함수(before·after·요청 글) — 워커·테스트가 같이 부른다.
-import type { Command, Project } from "@/project/types";
+import type { Command, GameMap, Project } from "@/project/types";
 import { choiceMetaTag } from "@/project/choiceText";
 import { fieldMenu } from "@/project/fieldMenu";
 import { usesRelationshipMenu } from "@/project/relationshipMenu";
 import { simulateBattle } from "@/battle/simulate";
-import { lockBypasses, placeholderTexts, selfRevealingLocks, unjoinedFollowers } from "./puzzleChecks";
+import { gatesThatOpenNothing, lockBypasses, placeholderTexts, selfRevealingLocks, unjoinedFollowers, weakPuzzleLocks } from "./puzzleChecks";
+import { splitScriptSpeaker } from "@/project/endingSummary";
+import { wantsWholeGame } from "./shipChecks";
+import { lookMismatches, oversizedSprites, pristineFantasyHero, titleBackdropMismatch } from "./lookChecks";
+import { dryBoats, dryBridges, placementProblems, type PlacementProblem } from "./placementRules";
+import { offPurposeProps } from "./roomPurpose";
+import { unsafeSpawnLines } from "@/project/chaserSpawnSafety";
+import { npcMoveDurationMs, npcPageMoveIntervalMs, PLAYER_WALK_STEP_MS } from "@/project/characterMotion";
+import { fieldApproachRecipe } from "@/project/fieldApproachStyle";
+import { projectCanLoseHp, resolvedHudWidgets } from "@/project/fieldHud";
+import { gameHasCombat } from "@/project/combatPresence";
+import { FACTORY_HERO_ARMS } from "./genreDefaults";
 
 type Obj = Record<string, unknown>;
 const obj = (v: unknown): Obj | undefined => (v && typeof v === "object" && !Array.isArray(v) ? (v as Obj) : undefined);
@@ -26,6 +37,52 @@ function eventsOf(project: Project): Map<string, EventRef> {
     out.set(`common/${String(c.id)}`, { mapId: "common", id: String(c.id), name: String(c.name ?? c.id), pages: [{ commands: c.commands ?? [] }] });
   }
   return out;
+}
+
+/**
+ * 시간 체계 달력과 따로 날짜를 세는 변수(J18): 잠자기(sleepUntilMorning)·하루 넘기기(advanceTime days)와 같은 명령 줄에서 +1 되거나,
+ * 이름이 날짜 세기(일수·일차·날짜·day)인데 +1 되는 변수. onDayEnd 공통 이벤트 안의 카운트는 달력과 함께 가므로 뺀다.
+ */
+export function dayCounterVariables(project: Project, onDayEnd?: string): { id: string; name: string; where: string }[] {
+  const names = new Map((project.variables ?? []).map((v) => [v.id, v.name || v.id] as const));
+  const found = new Map<string, string>();
+  const scan = (commands: unknown, where: string): void => {
+    const lists: unknown[][] = [];
+    const collect = (list: unknown): void => {
+      if (!Array.isArray(list)) return;
+      lists.push(list);
+      for (const raw of list) {
+        const c = obj(raw);
+        if (!c) continue;
+        for (const [key, child] of Object.entries(c)) {
+          if (key === "condition" || !Array.isArray(child)) continue;
+          if (child.some((x) => obj(x)?.kind)) collect(child);
+          else for (const x of child) { const o = obj(x); if (o) { collect(o.branch); collect(o.commands); } }
+        }
+      }
+    };
+    collect(commands);
+    for (const list of lists) {
+      const cmds = list.map(obj).filter((c): c is Obj => !!c);
+      const sleeps = cmds.some((c) => c.kind === "sleepUntilMorning" || (c.kind === "advanceTime" && Number(c.days ?? 0) > 0));
+      for (const c of cmds) {
+        if (c.kind !== "setVariable" || c.op !== "+=" || Number(c.value) !== 1 || typeof c.variableId !== "string") continue;
+        const name = names.get(c.variableId) ?? c.variableId;
+        // 날짜를 세는 이름만 본다(호감도·피로처럼 잠잘 때 같이 오르는 변수는 아니다). 영어는 낱말 경계(birthday·holiday·today 제외).
+        // 이름만으로 잡을 때는 「일수·일차·N일째」, 잠자기 줄과 함께면 「날짜·며칠」도 날짜 세기로 본다.
+        const label = `${name} ${c.variableId}`;
+        const dayName = /일수|일차|일째|(?:^|[^a-z])days?(?:_?(?:count|elapsed|passed|num))?(?![a-z])/iu.test(label);
+        if (dayName || (sleeps && /날짜|며칠/u.test(label))) if (!found.has(c.variableId)) found.set(c.variableId, where);
+      }
+    }
+  };
+  for (const map of Object.values(project.maps)) for (const ev of map.events ?? []) for (const page of (ev.pages ?? []) as unknown as Obj[]) scan(page.commands, `「${ev.name || ev.id}」`);
+  for (const ce of project.commonEvents ?? []) {
+    const c = ce as unknown as Obj;
+    if (onDayEnd && c.id === onDayEnd) continue;
+    scan(c.commands, `공통 이벤트 「${String(c.name ?? c.id)}」`);
+  }
+  return [...found].map(([id, where]) => ({ id, name: names.get(id) ?? id, where }));
 }
 
 /** 이 실행이 새로 만들거나 바꾼 이벤트. */
@@ -225,6 +282,38 @@ export function skippableClues(project: Project): string[] {
   return out;
 }
 
+/**
+ * 걸어 도망치는 주인공을 못 따라오는 추격자(J77, 2026-10-26 저택 argon-high: patch_event_page 가 frequency 5 를 넣어
+ * 한 칸 160ms 걸음 + 240ms 쉼 = 400ms — 주인공 걷기 160ms/칸의 40% 속도). 한 칸 걸음이 주인공 걸음보다 느리거나,
+ * 걸음 사이 쉼이 최소(80ms, frequency 8)보다 길면 잡을 수 없다. 다가오는 방식(approachStyle)을 고른 추격자는 일부러 고른 걸음새라 보지 않는다.
+ * 전투로 이어지는 필드 적(battleProcessing)은 보지 않는다 — 잡히면 끝나는 위협만.
+ */
+export function slowChasers(project: Project, changedIds?: ReadonlySet<string>): string[] {
+  const out: string[] = [];
+  // 공통 이벤트를 거쳐 전투로 가는 추격자(필드 적)도 뺀다.
+  const battleCommons = new Set(((project.commonEvents ?? []) as unknown as Obj[]).filter((ce) => JSON.stringify(ce.commands ?? []).includes("battleProcessing")).map((ce) => String(ce.id)));
+  const startsBattle = (commands: unknown): boolean => {
+    const text = JSON.stringify(commands ?? []);
+    if (text.includes("battleProcessing")) return true;
+    return [...battleCommons].some((id) => text.includes(`"${id}"`));
+  };
+  for (const map of Object.values(project.maps)) for (const ev of map.events ?? []) {
+    if (changedIds && !changedIds.has(ev.id)) continue;
+    for (const page of (ev.pages ?? []) as unknown as Obj[]) {
+      const mv = obj(page.movement);
+      if (mv?.type !== "chase" || startsBattle(page.commands)) continue;
+      // 다가오는 방식(approachStyle: 육중·둥실·통통…)은 일부러 고른 걸음새다 — 그 추격자는 이 검사로 보지 않는다.
+      if (fieldApproachRecipe(mv.approachStyle)) continue;
+      const stepMs = npcMoveDurationMs(Number(mv.speed ?? 3));
+      const pauseMs = npcPageMoveIntervalMs({ frequency: Number(mv.frequency ?? 3), ...(typeof mv.moveIntervalMs === "number" ? { moveIntervalMs: mv.moveIntervalMs } : {}) });
+      if (stepMs <= PLAYER_WALK_STEP_MS && pauseMs <= 80) continue;
+      out.push(`「${ev.name || ev.id}」(${ev.id}) 추격자가 한 칸에 ${Math.round(stepMs + pauseMs)}ms(걸음 ${stepMs}ms + 쉼 ${Math.round(pauseMs)}ms · speed ${String(mv.speed ?? 3)}·frequency ${String(mv.frequency ?? 3)}) — 주인공 걷기(${PLAYER_WALK_STEP_MS}ms/칸)를 못 따라와 걸어서 도망치면 잡히지 않는다`);
+      break;
+    }
+  }
+  return out;
+}
+
 /** 한 번 숨으면 영영 사라지는 추격자: 쫓는 페이지를 덮는 스위치 페이지에 그림·쫓기가 없고, 그 스위치를 다시 끄는 곳이 없다(G25). */
 export function vanishingChasers(project: Project): string[] {
   const out: string[] = [];
@@ -317,6 +406,16 @@ const HIDDEN_WORDS = /숨겨|숨은|몰래|보이지\s*않|투명|비밀|hidden|
 const ENDING_WORDS = /엔딩|결말|ending/iu;
 const STATE_WORDS = /독초|독에|독이|독을|독\s*상태|중독|맹독|마비|수면\s*상태|잠\s*상태|상태\s*이상|혼란|침묵|poison|paraly|stun/iu;
 
+/** 맵 배경음·기본 전투곡·승리 팡파르·타이틀·오프닝 곡 연결이 바뀌었나(set_game_audio) — 그러면 음악 요청은 이벤트 명령 없이도 채워졌다. */
+function audioBindingsChanged(before: Project, after: Project): boolean {
+  const pick = (p: Project) => JSON.stringify([
+    Object.entries(p.maps).map(([id, map]) => [id, map.bgm ?? null]),
+    p.system.defaultBgmResourceId ?? null, p.system.battleBgmResourceId ?? null, p.system.battleVictoryMeResourceId ?? null,
+    p.system.titleScreen?.musicResourceId ?? null, p.system.opening?.musicResourceId ?? null,
+  ]);
+  return pick(before) !== pick(after);
+}
+
 /** 데이터베이스에서 새로 생기거나 바뀐 레코드만 JSON 으로(기본 데이터의 독 기술 등이 섞이지 않게). */
 function changedRecordsJson(before: Project, after: Project): string {
   const out: unknown[] = [];
@@ -344,7 +443,7 @@ export function gameContentProblems(before: Project, after: Project, task: strin
   const m2Has = (re: RegExp) => cmds.some((r) => r.cmd.kind === "m2Command" && re.test(String(r.cmd.commandId)));
   if (SHAKE_WORDS.test(task) && !m2Has(/m2-048/u)) problems.push("[게임 검사 화면] 요청에 흔들림·지진이 있는데 실제 화면 흔들기 명령이 없다(카메라 이동은 흔들림이 아니다). add_event 의 shake 비트({do:'shake',strength:'strong',axis:'vertical'})로 넣는다.");
   if (FLASH_WORDS.test(task) && !m2Has(/m2-047/u) && !cmds.some((r) => r.cmd.kind === "setWeather" && r.cmd.weather === "storm")) problems.push("[게임 검사 화면] 요청에 번쩍임·번개가 있는데 실제 화면 번쩍 명령이 없다(페이드 아웃은 번쩍이 아니다). add_event 의 flash 비트({do:'flash',color:'white'})로 넣는다.");
-  if (MUSIC_WORDS.test(task) && !kinds.has("playAudio") && !kinds.has("stopAudio") && !m2Has(/bgm|audio|music/iu)) problems.push("[게임 검사 음악] 요청에 음악·BGM 이 있는데 바꾼 이벤트에 음악 명령(playAudio)이 없다. add_event 의 music 비트({do:'music',action:'bgm',query:'festival'})로 넣는다.");
+  if (MUSIC_WORDS.test(task) && !audioBindingsChanged(before, after) && !kinds.has("playAudio") && !kinds.has("stopAudio") && !m2Has(/bgm|audio|music/iu)) problems.push("[게임 검사 음악] 요청에 음악·BGM 이 있는데 어느 자리에도 곡을 걸지 않았다. 맵·전투·보스·승리·타이틀 곡은 set_game_audio 로 건다(맞는 곡이 프로젝트에 없으면 store_find_music → 묻지 말고 store_install 로 넣은 뒤). 장면 도중 잠깐 바뀌는 곡만 add_event 의 music 비트({do:'music',action:'bgm',query:'festival'}).");
   // 1c) 눈에 안 보이는 «조사하는» 물건: 새로 만든 결정 키(action) 이벤트에 그림도 없고 그 칸에 물건 타일도 없다(이동석·덤불·표지판이 맨땅으로 보였다).
   if (!HIDDEN_WORDS.test(task)) {
     for (const ev of changed) {
@@ -483,6 +582,18 @@ export function gameContentProblems(before: Project, after: Project, task: strin
     if (!kinds.has("triggerEnding")) problems.push(`[게임 검사 엔딩] 요청에 엔딩이 있는데 triggerEnding 명령이 없다${kinds.has("returnToTitle") ? "(내레이션+타이틀로 돌아가기는 엔딩이 아니다)" : ""}. define_ending 으로 엔딩을 정의하고 갈래에 {kind:'triggerEnding',endingId} 를 넣는다.`);
     else if (!newEndings.length && !(after.endings ?? []).length) problems.push("[게임 검사 엔딩] triggerEnding 은 있는데 정의된 엔딩(define_ending)이 없다.");
   }
+  // 2b) 엔딩 카드 요약은 내레이션이다: 에필로그 대사 본문 앞에 「이름:」을 직접 쓰면 카드에 대본 머리말이 그대로 샌다
+  //     (장난감 가게 「노장인 제페토: …」, 2026-10-25 심판 J36). 말한 사람은 speaker 칸에 두면 카드가 「」 인용으로 보인다.
+  for (const ending of after.endings ?? []) {
+    const old = (before.endings ?? []).find((b) => b.id === ending.id);
+    if (old && JSON.stringify(old.epilogue ?? []) === JSON.stringify(ending.epilogue ?? [])) continue;
+    const leaks = (ending.epilogue ?? []).flatMap((beat) => {
+      const text = typeof beat.text === "string" ? beat.text.trim() : "";
+      const split = text ? splitScriptSpeaker(text) : { text };
+      return split.speaker ? [`「${text.slice(0, 24)}…」`] : [];
+    });
+    if (leaks.length) problems.push(`[게임 검사 엔딩] 엔딩 「${ending.name}」(${ending.id}) 에필로그 대사 본문이 「이름:」으로 시작한다: ${leaks.slice(0, 2).join(" · ")} — 엔딩 카드에 대본 머리말이 그대로 보인다. 이름은 본문에서 빼고 say 비트의 speaker 에 둔다(카드는 「」 인용으로 보인다). 장면 설명은 context:'narration' 으로.`);
+  }
   // 3) 상태 이상: 실제 상태 걸기(m2-019-change-state add) 또는 상태를 거는 데이터(아이템·기술·적의 stateEffects).
   if (STATE_WORDS.test(task)) {
     // 치료·해독 요청이면 상태를 «지우는» 것도 실제 상태 처리다(g-healer). 아이템의 healStateIds 도.
@@ -540,14 +651,47 @@ export function gameContentProblems(before: Project, after: Project, task: strin
       const dead = guessable ? deadClues(after, changedIds) : [];
       if (dead.length) problems.push(`[게임 검사 퍼즐] ${dead.slice(0, 3).join(" / ")} — 퍼즐 이벤트가 그 스위치를 보지 않아 단서를 안 읽어도 풀린다. 퍼즐 이벤트의 첫 페이지는 「뭔가 단서가 필요하다」 대사만 두고, 정답 고르기·보상은 그 단서 스위치 조건의 다음 페이지로 옮긴다.`);
     }
+    const slow = slowChasers(after, changedIds);
+    if (slow.length) problems.push(`[게임 검사 위협] ${slow.slice(0, 3).join(" / ")}. 추격 페이지 movement 를 speed 6 이상·frequency 8 로 두거나(빠른 걸음새가 필요하면 approachStyle dash·swoop) — make_chase_scene 기본값(speed 6·frequency 8)이 그 값이다. 느린 추격이 의도면(숨바꼭질형) 보고에 적는다.`);
     const chasers = vanishingChasers(after).filter((line) => [...changedIds].some((id) => line.includes(`(${id})`)));
     if (chasers.length) problems.push(`[게임 검사 위협] ${chasers.slice(0, 3).join(" / ")}. 숨기가 «이번 한 번» 지나가게 하는 것이면 그 스위치를 다시 끈다(예: 옷장에서 나온 뒤 기다렸다 setSwitch false, 또는 맵을 나갈 때), 영영 사라지는 것이 요청이면 보고에 적는다.`);
+  }
+  // 말로만 쫓는 추격자(2026-10-25 심판 J54): 요청이 「시야·추격·순찰·느낌표」인데 바뀐 이벤트 어디에도 쫓는 움직임·순찰 길·시야가 없다.
+  {
+    const asked = /시야|추격|쫓|순찰|느낌표|「!」|patrol|chase|line of sight/iu.test(task);
+    const built = changed.some((ev) => ev.pages.some((pg) => {
+      const mv = obj(pg.movement) ?? obj(pg.moveRoute);
+      return !!mv && (mv.type === "chase" || !!obj(mv.route) || !!obj(mv.sight) || typeof mv.sightRange === "number");
+    }));
+    if (asked && !built) problems.push(`[게임 검사 위협] 요청은 시야·추격·순찰인데 이번에 바꾼 이벤트에 쫓는 움직임(movement.type 'chase')·순찰 길(movement.route)·시야가 하나도 없다 — make_chase_scene{mapId, chaser, patrol:{mode:'auto'}} 로 실제 추격자를 만들거나(이미 있으면 configure_npc_patrol 로 순찰 길을 더한다), 못 지었으면 보고에 「추격 없음」이라고 적는다. 대사·느낌표 말풍선만으로는 쫓아오지 않는다.`);
+  }
+  // 맵 기본 배율을 이벤트로 켜고 끄기(2026-10-25 J69): 자동 실행 페이지가 카메라 배율만 건다 — 저장·불러오기·맵 재진입에서 어긋나고 매번 한 박자 늦게 걸린다.
+  {
+    const zoomOnly = changed.filter((ev) => ev.mapId !== "common" && ev.pages.some((pg) => {
+      const trig = String(obj(pg.trigger)?.kind ?? pg.trigger ?? "");
+      if (trig !== "auto" && trig !== "parallel") return false;
+      const cmds = Array.isArray(pg.commands) ? (pg.commands as Obj[]) : [];
+      const zoom = cmds.some((c) => c.kind === "m2Command" && c.commandId === "m2-201-camera-control" && obj(c.fields)?.zoom !== undefined || c.kind === "cameraControl" && c.zoom !== undefined);
+      return zoom && cmds.every((c) => ["m2Command", "cameraControl", "setSelfSwitch", "eraseEvent", "wait", "comment"].includes(String(c.kind)) && (c.kind !== "m2Command" || c.commandId === "m2-201-camera-control"));
+    }));
+    if (zoomOnly.length) problems.push(`[게임 검사 카메라] 자동 실행 이벤트가 맵 카메라 배율만 건다: ${zoomOnly.slice(0, 3).map((ev) => `「${ev.name}」(${ev.id}) @${ev.mapId}`).join(", ")} — 맵 기본 배율은 set_map_properties{mapId, zoom} 로 맵에 두고 그 이벤트는 지운다(들어올 때마다 바로 걸리고 저장·불러오기에서도 맞다). 장면 중 잠깐 당기는 줌만 연출 명령으로 둔다.`);
+  }
+  // 태어나자마자 잡히는 시작·체크포인트(2026-10-25 심판 J61).
+  {
+    const changedIds = new Set(changed.map((ev) => ev.id));
+    const startTouched = after.startMapId !== before.startMapId || JSON.stringify(after.startPos) !== JSON.stringify(before.startPos);
+    const unsafe = unsafeSpawnLines(after).filter((entry) => startTouched || changedIds.has(entry.eventId) || (!!entry.spotEventId && changedIds.has(entry.spotEventId)));
+    if (unsafe.length) problems.push(`[게임 검사 위협] ${unsafe.slice(0, 3).map((entry) => entry.line).join(" / ")}. 추격자를 시야 밖(벽 너머·다른 방)에 두거나, set_start_position 으로 시작을 옮기거나, 체크포인트를 추격 구역 앞(문 밖)으로 옮긴다.`);
   }
   // 사슬 전체 검사(2026-10-25 판정 J11~J14): 잠긴 방이 벽 틈으로 열림·자물쇠가 답을 말함·자리 표시 글·파티에 없는 동료.
   {
     const changedIds = new Set(changed.map((ev) => ev.id));
     const bypass = lockBypasses(after, changedIds);
     if (bypass.length) problems.push(`[게임 검사 잠긴 방] ${bypass.slice(0, 3).join(" / ")}. seal_locked_room{mapId, eventId} 로 문 말고 다른 길(벽 틈)을 막거나, 퍼즐 전체를 author_puzzle_chain 으로 다시 묶는다.`);
+    const idle = gatesThatOpenNothing(after, changedIds);
+    if (idle.length) problems.push(`[게임 검사 퍼즐] ${idle.slice(0, 3).join(" / ")}. 장치가 연 칸 말고 다른 길(벽 틈·옆 통로)을 막아 그 칸이 유일한 길이 되게 하거나(seal_locked_room), 보스 방 앞 진짜 외길에 장치를 다시 둔다.`);
+    const weak = weakPuzzleLocks(after, changedIds);
+    if (weak.length) problems.push(`[게임 검사 퍼즐] ${weak.slice(0, 3).join(" / ")}. 답은 단서에서만 알 수 있는 번호(날짜·시계 바늘·쪽수를 이은 것)로 바꾸고 단서 대사도 같이 고친다. 고르기면 정답을 첫 보기가 아닌 자리에 둔다(author_puzzle_chain 은 자동으로 섞는다).`);
     const leaks = selfRevealingLocks(after, changedIds);
     if (leaks.length) problems.push(`[게임 검사 퍼즐] ${leaks.slice(0, 3).join(" / ")}. 자물쇠 대사에서 답을 빼고(「번호를 모르겠다」), 답은 단서(일기·쪽지)에만 두고 단서를 읽으면 켜지는 스위치 조건 페이지에서만 입력받는다 — author_puzzle_chain 이 이 순서로 짓는다.`);
     const holes = placeholderTexts(after, changedIds, JSON.stringify(after.system.opening ?? null) !== JSON.stringify(before.system.opening ?? null) || JSON.stringify(after.endings ?? []) !== JSON.stringify(before.endings ?? []));
@@ -627,6 +771,19 @@ export function gameContentProblems(before: Project, after: Project, task: strin
     }
     if (off.length) problems.push(`[게임 검사 시계] 시간 체계가 켜져 있어 화면 시계(HUD)가 따로 흐르는데, ${off.slice(0, 3).join(", ")} 은 밤을 스위치와 화면 색으로만 만든다 — 「자정」 뒤에도 시계는 아침 시각을 보인다. 밤으로 바꾸는 갈래에 {kind:'setTime',hour:24,minute:0}(자정), 낮으로 돌리는 갈래에 {kind:'setTime',hour:6,minute:0} 을 같이 넣는다. 시계가 필요 없는 이야기면 configure_time_system{enabled:false} 로 끈다.`);
   }
+  // 날짜를 두 번 센다(2026-10-25 판정 J18, 서울 연애): 시간 체계가 켜져 HUD 달력이 「봄 4일」을 보이는데 대사·엔딩은
+  // 「서울에서 보낸 일수」 변수로 1일차를 센다. 대화마다 advanceTime 이 달력을 넘기고 잠자기가 또 넘겨 두 날짜가 어긋난다.
+  // onDayEnd 공통 이벤트 안의 카운트(set_deadline_ending 의 var_days_elapsed)는 달력과 같이 넘어가므로 뺀다.
+  {
+    const ts = after.system.timeSystem as { enabled?: boolean; onDayEnd?: string } | undefined;
+    const dualDays = ts?.enabled ? dayCounterVariables(after, ts.onDayEnd) : [];
+    const touched = changed.some((ev) => allCommands(ev).some((r) => r.cmd.kind === "setVariable" && dualDays.some((d) => d.id === r.cmd.variableId)))
+      || JSON.stringify(before.system.timeSystem ?? null) !== JSON.stringify(after.system.timeSystem ?? null);
+    if (dualDays.length && touched) {
+      const v = dualDays[0]!;
+      problems.push(`[게임 검사 시계] 시간 체계가 켜져 HUD 달력(「봄 N일」)이 따로 흐르는데, 날짜를 변수 「${v.name}」(${v.id})로 또 센다(${v.where}) — 대화의 advanceTime·잠자기가 달력을 넘겨 화면 날짜와 대사·엔딩의 「N일차」가 어긋난다. 하나만 쓴다: 변수로 세려면 configure_time_system{enabled:false} 로 달력을 끄고(잠자기 대신 화면 전환·대사로 하루를 넘긴다), 달력을 쓰려면 그 변수를 지우고 날짜는 set_deadline_ending(onDayEnd 카운트)으로 센다.`);
+    }
+  }
   // 「제1막 끝」 카드: 대사 한 줄로 흉내 내면 게임이 그대로 이어진다 — 진짜 엔딩(막 끝 화면)이어야 한다(fs-end-act).
   if (/제\s*\d+\s*막\s*끝|막이?\s*끝나|막 끝/u.test(task) && !kinds.has("triggerEnding")) {
     problems.push("[게임 검사 엔딩] 요청에 「막 끝」 화면이 있는데 바꾼 이벤트에 진짜 엔딩 명령이 없다 — 대사 「제1막 끝」만으로는 게임이 그대로 이어진다. define_ending{id:'ending_act1',presentation:{finalTitle:'제1막 끝',badge:'제2막으로 이어집니다'}} 뒤 그 장면 끝에 {kind:'triggerEnding',endingId:'ending_act1'} 를 넣는다.");
@@ -651,9 +808,13 @@ export function gameContentProblems(before: Project, after: Project, task: strin
     const party = after.system.startActorIds ?? [];
     const level = Math.max(1, ...party.map((id) => after.database.actors.find((a) => a.id === id)?.initialLevel ?? 1));
     const seen = new Set<string>();
+    // 이 실행 전에도 그 이벤트에 있던 전투는 새로 저작한 것이 아니다(2026-10-25 실조수: 보스전 음악만 바꿨는데 드래곤 능력치를 깎았다).
+    const had = new Set<string>();
+    for (const ev of eventsOf(before).values()) for (const row of allCommands(ev)) if (row.cmd.kind === "battleProcessing") had.add(`${ev.mapId}/${ev.id}#${String(row.cmd.troopId)}`);
     for (const r of cmds) {
       const c = r.cmd as { kind?: string; troopId?: string; canLose?: boolean; troopSource?: string };
       if (c.kind !== "battleProcessing" || c.canLose || c.troopSource === "variable" || !c.troopId || seen.has(c.troopId)) continue;
+      if (had.has(`${r.ev.mapId}/${r.ev.id}#${c.troopId}`)) continue;
       seen.add(c.troopId);
       if (!after.database.troops.some((t) => t.id === c.troopId) || !party.length) continue;
       try {
@@ -668,7 +829,101 @@ export function gameContentProblems(before: Project, after: Project, task: strin
     const combo = after.database.skills.some((sk) => (sk.comboActorIds?.length ?? 0) >= 2 && prior.get(sk.id) !== JSON.stringify(sk));
     if (!combo) problems.push("[게임 검사 연계기] 요청에 연계기가 있는데 새로 만든 연계 기록이 없다(평범한 기술은 「연계」 명령에 안 뜬다). upsert_combo_tech{id:'skill_combo_…', name, actorIds:[두 배우], mpCosts, scope, power} 로 만들고, 참가 배우가 파티에 없으면 set_party 로 넣는다.");
   }
+  // 그림 크기(J23): 보스가 아닌데 파티보다 훨씬 크게 그린 칩.
+  problems.push(...oversizedSprites(before, after));
+  // 그림 ↔ 이름(J35·J30·J41): 젊은 인물에 노인 얼굴, 인형·태엽 병정에 사람 얼굴, 하얀 드레스에 분홍 드레스 칩.
+  problems.push(...lookMismatches(before, after));
+  // 체력이 줄 일이 없는 게임에 체력 HUD(공포 꽃잎·하트)가 설명 없이 떠 있다(2026-10-25 심사 J67). 이번 실행이 HUD 를 바꿨을 때만.
+  if (JSON.stringify(before.system.fieldHud ?? null) !== JSON.stringify(after.system.fieldHud ?? null) && after.system.fieldHud
+    && resolvedHudWidgets(after.system.fieldHud).some((widget) => widget.source === "hp") && !projectCanLoseHp(after)) {
+    problems.push(`[게임 검사 HUD] 필드 HUD(${after.system.fieldHud.theme})가 체력(꽃잎·하트)을 늘 보이는데 이 게임에는 체력이 줄 일(전투·피해 명령·인카운트)이 없다 — 플레이어에게 설명 없는 장식이다. set_field_hud{theme:'${after.system.fieldHud.theme}', vitals:false} 로 끄거나, 체력을 쓰는 게임이면 피해를 주는 장치(함정·추격자 changeActorHp)를 만들고 set_life_flower 로 꽃잎의 뜻을 보인다.`);
+  }
+  // 타이틀 그림 ↔ 시대(J38): 이번에 타이틀을 바꿨을 때만.
+  if (JSON.stringify(before.system.titleScreen ?? null) !== JSON.stringify(after.system.titleScreen ?? null)) problems.push(...titleBackdropMismatch(after, task));
+  // 주인공 모습 ↔ 장르(J43): 게임을 만드는 요청은 출하 검사(hero-look)가 이미 짚는다. 그 밖에는 이번에 장소(맵)를 새로 지은 실행만 —
+  // 시작 위치 옮기기 같은 작은 고치기에서 시키지 않은 주인공 바꾸기를 시키지 않는다.
+  if (!wantsWholeGame(task) && Object.keys(after.maps).some((id) => !before.maps[id])) problems.push(...pristineFantasyHero(after, task));
+  problems.push(...placementContentProblems(before, after));
   return problems;
+}
+
+/** 장비 칸에서 사라진 것이 모두 공장 기본 장비인가. */
+function onlyFactoryGearRemoved(before: unknown, after: unknown): boolean {
+  const b = (before ?? {}) as Record<string, unknown>, a = (after ?? {}) as Record<string, unknown>;
+  const gone = Object.keys(b).filter((slot) => b[slot] && a[slot] !== b[slot]);
+  return gone.length > 0 && gone.every((slot) => FACTORY_HERO_ARMS[slot] === b[slot] && !a[slot]);
+}
+
+/** 값의 크기(배열 길이·객체의 빈 아닌 칸 수·빈 아닌 값 1). */
+function fill(v: unknown): number {
+  if (Array.isArray(v)) return v.length;
+  if (v && typeof v === "object") return Object.values(v as Obj).reduce<number>((n, x) => n + (fill(x) > 0 ? 1 : 0), 0);
+  return v === undefined || v === null || v === "" || v === false ? 0 : 1;
+}
+const BATTLE_DATA: Record<"actors" | "classes", readonly string[]> = {
+  actors: ["learnedSkills", "initialEquipment", "battleCommandIds", "classId"],
+  classes: ["skillIds", "learnedSkills", "battleCommands", "equipmentPermissions"],
+};
+/** 배우·직업의 전투 데이터가 줄었다(요청이 메뉴·화면이 아니라 그 데이터를 지우라고 했을 때만 정상). */
+export function battleDataEmptied(before: Project, after: Project, task: string): string[] {
+  const deleteAsk = /(스킬|기술|장비|직업|전투\s*명령|skill|equip)[^.!?\n]{0,10}(지워|지우|없애|삭제|비워|빼앗|못\s*쓰게|배우지)/iu.test(task)
+    && !/메뉴|탭|ESC|화면|창에서|창의|HUD|menu/iu.test(task);
+  if (deleteAsk) return [];
+  const out: string[] = [];
+  for (const section of ["actors", "classes"] as const) {
+    const old = new Map(((before.database as unknown as Obj)[section] as Obj[] | undefined ?? []).map((r) => [String(r.id), r]));
+    for (const r of ((after.database as unknown as Obj)[section] as Obj[] | undefined) ?? []) {
+      const prev = old.get(String(r.id));
+      if (!prev) continue;
+      // 전투 없는 게임에서 공장 기본 장비(검·방패·갑옷…)만 뺀 것은 장르 기본값이다 — 「되돌려라」 하지 않는다(J88: 그 말에 조수가 검·방패를 다시 넣었다).
+      const lost = BATTLE_DATA[section].filter((k) => fill(prev[k]) > 0 && fill(r[k]) < fill(prev[k]))
+        .filter((k) => !(section === "actors" && k === "initialEquipment" && !gameHasCombat(after) && onlyFactoryGearRemoved(prev[k], r[k])));
+      if (!lost.length) continue;
+      out.push(`[게임 검사 부작용] 기존 ${section === "actors" ? "배우" : "직업"} 「${String(r.name ?? r.id)}」의 전투 데이터(${lost.join(",")})를 비웠다 — 요청은 그 데이터를 지우라는 것이 아니다. 메뉴·화면에서 숨기는 것은 데이터 지우기가 아니다: 원래 값으로 되돌리고(${section === "actors" ? "upsert_actor" : "upsert_class"}), 메뉴 항목은 configure_field_menu{preset:'story'} 로, 체력 표시는 set_field_hud{off:true} 로 뺀다.`);
+    }
+  }
+  return out;
+}
+
+/**
+ * 놓기 검사(2026-10-25 판정 J5·J6·J40·J42·J31·J64, 사용자 규칙 «차도 한가운데 사람 금지»):
+ * 이번에 바뀐 맵의 사람·조사 이벤트 자리, 방 쓰임에 안 맞는 가구. 바뀐 이벤트(자리·페이지)만, 새로 지은 맵·타일이 바뀐 맵은 전부 본다.
+ */
+export function placementContentProblems(before: Project, after: Project): string[] {
+  const out: string[] = [];
+  const tilesKey = (m: GameMap | undefined): string => (m ? `${m.width}x${m.height}:${(m.lowerTiles as readonly number[] | undefined)?.join(",") ?? ""}|${(m.upperTiles as readonly number[] | undefined)?.join(",") ?? ""}|${(m.lowerOverlayTiles as readonly number[] | undefined)?.join(",") ?? ""}` : "");
+  for (const map of Object.values(after.maps)) {
+    const prev = before.maps[map.id];
+    const rebuilt = !prev || tilesKey(prev) !== tilesKey(map);
+    const oldEvents = new Map((prev?.events ?? []).map((e) => [e.id, JSON.stringify(e)]));
+    const ids = new Set((map.events ?? []).filter((e) => rebuilt || oldEvents.get(e.id) !== JSON.stringify(e)).map((e) => e.id));
+    if (ids.size) {
+      const rows = placementProblems(after, map, ids);
+      const by = (kind: PlacementProblem["kind"]) => rows.filter((r) => r.kind === kind).slice(0, 4).map((r) => `「${r.name}」(${r.eventId}) ${r.detail}`);
+      const where = map.name ?? map.id;
+      const lane = by("npc-lane"), exit = by("npc-exit"), counter = by("npc-counter"), object = by("event-object");
+      if (lane.length) out.push(`[게임 검사 사람 자리] ${where}: ${lane.join(" / ")} — 사람은 차도·선로 한가운데 서서 말하지 않는다. move_event 로 보도·가게 문 앞·벤치 옆·광장으로 옮기고, 배회하는 사람이면 movement 를 fixed 로 바꾸거나 보도 안쪽에 둔다.`);
+      if (exit.length) out.push(`[게임 검사 길막] ${where}: ${exit.join(" / ")} — 출구로 가는 한 칸 길이 막히면 플레이어가 맵을 못 나간다. move_event 로 길목에서 두세 칸 떨어진 넓은 바닥으로 옮기고, 배회는 fixed 로 바꾼다.`);
+      if (counter.length) out.push(`[게임 검사 카운터] ${where}: ${counter.join(" / ")} — 주인은 카운터 «뒤»(카운터 바로 위 칸, 아래를 보게) 선다. move_event 로 카운터 북쪽 칸에 옮기면 플레이어는 카운터 너머로 말을 건다.`);
+      const prop = by("transfer-prop"), bare = by("door-bare");
+      if (prop.length) out.push(`[게임 검사 출입구] ${where}: ${prop.join(" / ")} — move_event 로 출입구를 옆 빈 바닥(계단·문 앞 칸)으로 옮기거나 그 물건을 tile_erase 로 걷는다.`);
+      if (bare.length) {
+        const r0 = rows.find((r) => r.kind === "door-bare")!;
+        const adit = map.tilesetId === "beodeul_city" ? ` 버들항이면 stamp_object{objectId:'kit:beodeul_city/bd-pick-mining-valley-adit',mapId:'${map.id}',x:${r0.at.x - 2},y:${r0.at.y - 4}} — 갱구 문이 출입구 바로 위 칸에 온다.` : "";
+        out.push(`[게임 검사 출입구] ${where}: ${bare.join(" / ")} — 출입구 바로 위에 굴 입구·문 그림을 찍는다(list_spatial_designs{kind:'object',query:'갱구·동굴 입구·문'}).${adit} 그림이 없으면 보고에 「굴 입구 그림 없음」으로 적는다.`);
+      }
+      if (object.length) out.push(`[게임 검사 물건 자리] ${where}: ${object.join(" / ")} — 조사 이벤트는 이름이 말하는 물건 칸(키 큰 가구는 맨 아래 앞면 칸)에 둔다. move_event 로 그 칸으로 옮긴다.`);
+    }
+    if (rebuilt) {
+      const dry = dryBridges(after, map);
+      if (dry.length) out.push(`[게임 검사 다리] ${map.name ?? map.id}: 물에 닿지 않는 다리 ${dry.length}곳 ${dry.slice(0, 4).map((c) => `(${c.x},${c.y})`).join(" ")} — 마른 바닥 위 다리로 보인다. tile_erase 로 그 다리 칸을 바닥으로 되돌리거나, 물을 건너는 자리로 옮긴다.`);
+      const boats = dryBoats(after, map);
+      if (boats.length) out.push(`[게임 검사 다리] ${map.name ?? map.id}: 물이 아닌 바닥 위의 배 ${boats.length}척 ${boats.slice(0, 4).map((c) => `(${c.x},${c.y})`).join(" ")} — 뭍에 오른 배·마른 바닥 위 나무다리로 보인다. tile_erase 로 걷고 물 칸 위(배 전체가 물)로 다시 찍거나 edit_place 로 다시 짓는다.`);
+      const off = offPurposeProps(after, map);
+      if (off.length) out.push(`[게임 검사 방 쓰임] ${map.name ?? map.id}: ${off.slice(0, 3).map((r) => `${r.room}(${r.purpose}) 에 ${r.props.slice(0, 4).map((p) => `${p.label}(${p.at.x},${p.at.y})`).join("·")}`).join(" / ")} — 그 방의 쓰임에 안 맞는 다른 방 가구다(거실 한 벌). tile_erase 로 걷어 내고 그 쓰임의 가구(예배당: 장의자·촛대, 가게: 진열대·카운터, 교실: 책상·의자, 병원: 침상·진료 책상)를 stamp_object 로 그 가구 자리에 찍거나(쓰임에 안 맞는 가구는 찍을 때 저절로 걷힌다, 다른 가구와 겹치면 onOverlap:'replace'|'nearest') edit_place 로 그 방을 다시 꾸민다.`);
+    }
+  }
+  return out;
 }
 
 /** 요청과 상관없이 바뀌면 안 되는 것 — 기존 NPC 의 그림·이름이 요청 없이 바뀌었는지(고치기 요청에서 흔한 부작용). */
@@ -698,10 +953,14 @@ export function unaskedChanges(before: Project, after: Project, task: string): s
         const size = (ev.pages ?? []).reduce((n, pg) => n + (pg.commands?.length ?? 0), 0);
         const auto = (ev.pages ?? []).some((pg) => ["auto", "parallel"].includes(String((pg.trigger as { kind?: string } | undefined)?.kind ?? "")));
         if (size < 3) continue;
-        out.push(`[게임 검사 부작용] 요청에 없는데 기존 이벤트 「${ev.name || ev.id}」(${ev.id}${auto ? ", 자동 실행 컷신" : ""}, 명령 ${size}개)를 지웠다 — 그 장면·대사가 게임에서 사라진다. 요청과 상관없으면 같은 내용으로 되살리고, 일부러 대신했으면 보고에 무엇을 왜 지웠는지 적는다.`);
+        out.push(`[게임 검사 부작용] 요청에 없는데 기존 이벤트 「${ev.name || ev.id}」(${ev.id}${auto ? ", 자동 실행 컷신" : ""}, 명령 ${size}개)를 지웠다 — 그 장면·대사가 게임에서 사라진다. 요청과 상관없으면 restore_event{eventId:"${ev.id}"} 로 요청 전 그대로 되살리고(기억으로 다시 쓰지 않는다), 일부러 대신했으면 보고에 무엇을 왜 지웠는지 적는다.`);
       }
     }
   }
+  // 배우·직업의 전투 데이터(배울 기술·처음 장비·전투 명령·장비 허용)를 비웠다 — 「메뉴의 스킬·장비 빼 줘」를 데이터 지우기로 흉내 냈다
+  // (2026-10-25 장난감 가게 고치기 4턴: 메뉴 도구가 안 실려 upsert_actor·upsert_class 로 주인공 기술·직업을 비웠다. 요청에 「파티」「스킬」이 있어
+  // 아래 일반 검사의 낱말 면제에 걸려 못 잡았다). 메뉴·화면에서 숨기는 요청이면 데이터는 그대로 둔다 — 낱말 면제 없이 본다.
+  out.push(...battleDataEmptied(before, after, task));
   // 이미 있던 데이터(아이템·장비·적·기술·직업)를 요청이 그 이름을 말하지 않았는데 고쳤다 — 값·능력치가 게임 전체에서 바뀐다(2026-10-24 스위트).
   const bdb = before.database as unknown as Record<string, unknown>, adb = after.database as unknown as Record<string, unknown>;
   if (!artAsk) for (const section of ["items", "weapons", "armors", "enemies", "skills", "classes", "actors"]) {

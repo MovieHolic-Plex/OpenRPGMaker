@@ -556,6 +556,245 @@
     "the friend NPC event has a page with text then a showChoices with three options",
     "in the shipped player, a screenshot taken while the choices are open shows both the hero and the friend sprites above the top edge of the choice window"
    ]
+  },
+  {
+   "id": "opening-petal-montage",
+   "label": "벚꽃이 흩날리는 애니 오프닝 몽타주",
+   "lessons": [
+    "opening-particles-petals",
+    "opening-cast-roll"
+   ],
+   "prompt": "현대 연애 게임 오프닝을 애니메이션 오프닝처럼 만들어 줘. 벚꽃잎이 흩날리는 교정, 출근길 지하철, 사무실, 노을 지는 옥상 컷이 차례로 지나가고, 주인공과 등장인물들이 한 명씩 이름과 함께 지나간 다음 마지막에 제목이 뜨게 해 줘.",
+   "requirements": [
+    "system.opening has at least 5 animatic shots and the last shot shows the game title text",
+    "at least one shot has a particles layer with preset 'petals' (not snow or dust standing in for petals)",
+    "cast shots show bundled portrait/bust or charset images of the game's own characters with a text layer naming each one",
+    "preview_opening_animatic frames were actually inspected before reporting completion"
+   ],
+   "lint0": [],
+   "port": 19529
+  },
+  {
+   "id": "freeze-frame-meeting",
+   "label": "부딪히는 순간 정지 화면",
+   "lessons": [
+    "screen-freeze-frame",
+    "cutscene-freeze-beat"
+   ],
+   "prompt": "출근길 횡단보도에서 주인공이 어떤 사람과 부딪히는 첫 만남 장면을 만들어 줘. 부딪히는 순간 서류가 흩날리고, 화면이 만화처럼 멈춘 다음 주인공 속마음 한 줄이 나오게. 그다음엔 다시 움직이게 해 줘.",
+   "requirements": [
+    "the meeting is a script_cutscene (or event page) that runs once when the scene starts",
+    "it uses a freeze beat (Screen Effect effect 'freeze') after the collision and an unfreeze (explicit or cutscene cleanup) before control returns",
+    "the inner-thought line is shown while the freeze frame is up",
+    "the two people actually move into each other before the freeze (moveActor/approach), not a still pose"
+   ],
+   "lint0": [],
+   "port": 19530
+  },
+  {
+   "id": "paper-scatter-bump",
+   "label": "부딪혀 서류가 흩날림",
+   "lessons": [
+    "particles-paper"
+   ],
+   "prompt": "사무실 복도에서 신입이 서류 뭉치를 들고 가다 선배와 부딪혀 서류가 바닥에 흩날리는 장면을 넣어 줘.",
+   "requirements": [
+    "the collision is staged with a particles beat/command using preset 'paper' on the person who drops the papers",
+    "a shake or flash marks the impact",
+    "the scene does not fake the papers with picture images or unrelated presets such as dust or smoke"
+   ],
+   "lint0": [],
+   "port": 19531
+  },
+  {
+   "id": "title-intro-legend-chase",
+   "label": "타이틀 앞 전설 추격 인트로",
+   "port": 19532,
+   "lessons": [
+    "title-intro-track",
+    "silhouette-tint",
+    "meteor-particles",
+    "beat-cut-audio"
+   ],
+   "prompt": "몬스터 수집 게임이야. 게임을 켜면 타이틀보다 먼저 20~30초짜리 인트로가 돌게 해 줘. 별똥별이 흐르는 밤하늘 → 전설의 몬스터가 검은 실루엣으로 달 앞을 가로지르고 → 숲가의 스타터 셋이 놀라 하늘을 올려다보고 → 게임 로고가 쾅 박히면서 화면이 번쩍. 아무 키나 누르면 바로 타이틀로.",
+   "requirements": [
+    "system.titleIntro exists and is enabled and skippable (not system.opening)",
+    "total scene duration 20000-30000 ms",
+    "a particles layer with preset meteors",
+    "an image layer with tint (silhouette) crossing the frame via x keys",
+    "three starter monster images with an emote or hop",
+    "a text logo layer with a scale or opacity key plus a camera shake or flash near the same time",
+    "at least one audioCue on the logo beat",
+    "project saves and reloads with the same titleIntro"
+   ],
+   "lint0": []
+  },
+  {
+   "id": "title-screen-runners-press-start",
+   "label": "타이틀: 별 흐르는 밤 + 스타터 달리기 + PRESS START",
+   "port": 19533,
+   "lessons": [
+    "title-parallax-layers",
+    "title-stars",
+    "title-runners",
+    "title-press-start",
+    "title-cover-layer"
+   ],
+   "prompt": "타이틀 화면을 밤 풍경으로 바꿔 줘. 별이 깜빡이며 천천히 흐르고 가끔 별똥별이 지나가게, 하늘은 두 겹이 다른 속도로 흐르게. 스타터 셋이 화면을 가로질러 줄지어 달려가고, 메뉴 대신 「PRESS START」가 깜빡이다가 키를 누르면 메뉴가 나오게 해 줘.",
+   "requirements": [
+    "titleScreen.particles.preset == stars",
+    "at least two backgroundLayers with different scrollXPerSec",
+    "a foreground layer uses fit cover or the background art is not stretched",
+    "titleScreen.runners has 3 entries using the starters' field charsets with staggered delayMs",
+    "titleScreen.pressStart present",
+    "in the shipped player the title shows PRESS START first and the menu after one key"
+   ],
+   "lint0": []
+  },
+  {
+   "id": "professor-region-flyover",
+   "label": "박사 소개: 몬스터 튀어나옴 + 지역 비행",
+   "port": 19534,
+   "lessons": [
+    "opening-monster-pop",
+    "opening-region-pan",
+    "opening-place-labels"
+   ],
+   "prompt": "새 게임을 누르면 나오는 박사 소개를 더 화려하게 해 줘. 박사 대사는 그대로 두고, 스타터를 소개하는 컷에서는 빛 구슬이 터지며 진짜 몬스터 그림이 하나씩 튀어나오게, '이 세계' 이야기를 하는 컷에서는 카메라가 지역 지도 위를 날며 마을 이름이 하나씩 뜨게.",
+   "requirements": [
+    "system.opening narration lines unchanged",
+    "the starter shot has image layers of the starter species front sprites with y/scale keys and a glow or particles burst",
+    "one shot pans the camera over several map pictures with x keys spanning > 600 px",
+    "place-name text layers appear in sequence",
+    "save/reload keeps opening"
+   ],
+   "lint0": []
+  },
+  {
+   "id": "name-gender-showcase",
+   "label": "성별 고르기 + 별빛 쇼케이스 이름 짓기",
+   "port": 19535,
+   "lessons": [
+    "gender-choice-actor-graphic",
+    "name-entry-showcase",
+    "name-control-code"
+   ],
+   "prompt": "게임이 시작되면 박사가 소년인지 소녀인지 묻고, 고른 쪽으로 주인공 모습이 바뀌게 해 줘. 그다음 이름을 짓는데, 평범한 창 말고 별빛 배경에서 주인공이 빙글 돌고 확정하면 반짝 터지는 화려한 이름 입력으로. 이름을 정하면 박사가 그 이름을 불러 줘.",
+   "requirements": [
+    "a choices command with two options, each branch changes the hero graphic (Change Actor Graphic) to different character sheets/cells",
+    "an enterHeroName command with presentation showcase",
+    "a following text line uses \\N[1] (or the hero name control code)",
+    "in the shipped player the showcase overlay shows the hero sprite and the confirm burst"
+   ],
+   "lint0": []
+  },
+  {
+   "id": "pokemon-style-opening",
+   "label": "포켓몬식(3세대) 오프닝 전체: 짧은 밝은 인트로 → 타이틀 → 박사 소개 → 성별·이름 → 작아지며 세계로",
+   "port": 19536,
+   "lessons": [
+    "title-intro-track",
+    "title-runners",
+    "title-press-start",
+    "opening-capsule-pop",
+    "actor-picture",
+    "name-showcase"
+   ],
+   "prompt": "포켓몬식 오프닝 만들어 줘. 전원을 켜면 10초 안쪽으로 맑은 들판에서 스타터들이 뛰노는 짧은 인트로, 그다음 로고와 깜빡이는 PRESS START 타이틀. 새 게임을 누르면 박사가 「어서 와! 몬스터의 세계에 온 걸 환영해」 하며 구슬에서 몬스터를 꺼내 보여 주고, 사람과 몬스터가 함께 사는 세계를 짧게 소개해 줘. 그다음 남자아이/여자아이를 고르고 이름을 지으면, 「모험이 시작된다」 하고 주인공이 작아지며 방으로 들어가게 해 줘. 밤하늘·달·별똥별은 쓰지 마.",
+   "requirements": [
+    "system.titleIntro.enabled and skippable; every scene is an animatic; total durationMs <= 10000",
+    "no titleIntro layer uses particles preset stars or meteors, an image tint, or a night/moon resource",
+    "titleScreen.pressStart present and titleScreen.runners has at least one entry",
+    "system.opening has 3-8 pages, each line <= 22 Korean characters and <= 2 lines, one page shows a monster popping out of a capsule",
+    "the start map's first autorun has a 2-option gender choice that changes the hero graphic and an enterHeroName",
+    "after naming, a showPicture of actor:<hero actor id> shrinks (scale goes down with durationMs >= 500) and the stage pictures are erased",
+    "every animatic composition passes validateOpeningAnimatic and the project saves and reloads"
+   ],
+   "lint0": []
+  },
+  {
+   "id": "story-hud-replaces-genre-default",
+   "label": "장르 기본 HUD 대신 이 게임의 목표 카운터",
+   "port": 19537,
+   "lessons": [
+    "field-hud-authoring"
+   ],
+   "prompt": "연애 게임인데 화면 위에 뜨는 호감 하트 판은 빼 줘. 대신 이 게임 목표인 「소원 등롱」 모은 개수를 왼쪽 위에 3개 중 몇 개인지 작게 보여 주고, 아직 하나도 없을 땐 안 보이게 해 줘.",
+   "requirements": [
+    "project.system.fieldHud.widgets has exactly one widget and no friendship hearts widget (set via set_project_settings fieldHud.widgets)",
+    "that widget reads a project variable holding the lantern count with max 3, anchor top-left, condition nonzero",
+    "in the shipped player the counter is hidden at start and shows 1 / 3 after the variable becomes 1"
+   ]
+  },
+  {
+   "id": "painted-opening-from-story-stills",
+   "label": "이 이야기 전용 그림 다섯 장으로 오프닝",
+   "port": 19538,
+   "lessons": [
+    "opening-painted-stills"
+   ],
+   "prompt": "오프닝을 게임 맵 잘라 붙인 것 말고, 이 이야기용으로 그린 일러스트 다섯 장(전철·상점가·빵집·사무소·정문 등롱)으로 다시 만들어 줘. 컷마다 천천히 밀고 들어가고, 자막은 그 컷에 보이는 것만 한 문장씩.",
+   "requirements": [
+    "five animatic shots whose background layer is a painted still (resourceId, not map-view) placed with place_opening_background sampling:linear",
+    "each shot has a camera zoom/position track (animate_opening_camera) and a caption track with one or two cues",
+    "in the shipped player, frames from each shot show the painting edge to edge without stair-step aliasing and with faces not cut by the letterbox"
+   ]
+  },
+  {
+   "id": "ending-scene-then-final-image",
+   "label": "결말: 맵 위 마지막 장면 → 결말 그림 → 각자의 매듭 → 엔딩 카드",
+   "port": 19539,
+   "lessons": [
+    "ending-epilogue-beats"
+   ],
+   "prompt": "고백 결말이 너무 짧아. 고백이 받아들여지면 옥상에서 한두 마디 더 나누고, 화면이 어두워졌다가 두 사람 그림이 화면 가득 뜬 다음, 그 위로 그 뒤 이야기와 다른 친구들이 각자 어떻게 됐는지 몇 줄 보여 주고 엔딩 카드로 끝내 줘.",
+   "requirements": [
+    "the accepted-confession branch runs extra dialogue, a fadeOut, a full-screen showPicture of an ending still, then triggerEnding",
+    "define_ending epilogue starts with a picture beat and contains at least five say beats including one line for each other heroine",
+    "in the shipped player, the epilogue frames show the ending still behind the dialogue box and the ending card appears after it"
+   ]
+  },
+  {
+   "id": "npcs-stand-on-sidewalks",
+   "label": "거리 NPC 는 차도가 아니라 보도·가게 앞에",
+   "port": 19540,
+   "lessons": [
+    "npc-placement-sidewalk"
+   ],
+   "prompt": "상점가 맵에서 사람들이 차도 한가운데 서 있어 이상해. 서 있는 사람과 모이는 장면 인물은 보도나 가게 문 앞에, 걸어 다니는 행인도 보도로만 다니게 옮겨 줘.",
+   "requirements": [
+    "no NPC event's standing cell or street-walker stop on the town map has a lower tile labelled as asphalt road or crosswalk",
+    "the gather-scene NPCs remain reachable and the town routes still complete (endings reachable headlessly)"
+   ]
+  },
+  {
+   "id": "confession-cg-over-dialogue",
+   "label": "고백 순간 한 장면 그림(CG)을 대사 아래로 띄웠다 걷기",
+   "port": 19541,
+   "lessons": [
+    "story-cg-mid-scene"
+   ],
+   "prompt": "옥상 고백이 받아들여지는 순간에 두 사람 그림이 서서히 떠오르게 하고, 그림이 떠 있는 동안 나누는 대사에는 얼굴 흉상을 띄우지 말아 줘. 집에서 옛 사진을 볼 때도 그 사진이 화면에 보였다가 사라지게 해 줘.",
+   "requirements": [
+    "the accepted branch shows a picture with opacity 0 then the same picture at opacity 255 with durationMs > 0 before the post-confession lines",
+    "while that picture is shown, no changeFace command sets a non-empty bust",
+    "the photo event fades the picture in, runs the thought lines, then fades it to 0 and erases it",
+    "in the shipped player, a frame during the post-confession lines shows the picture behind the dialogue box and no bust over it"
+   ]
+  },
+  {
+   "id": "lanterns-visibly-light",
+   "label": "점등: 등롱 칸마다 작은 따뜻한 불",
+   "port": 19542,
+   "lessons": [
+    "lighting-small-warm-sources"
+   ],
+   "prompt": "점등식에서 등롱이 켜졌는데 화면엔 차가운 큰 원 하나만 보여. 칩셋에서 초롱·등롱이 그려진 칸마다 작은 따뜻한 불을 하나씩 켜고, 가게 문 앞에도 처마 등 불을 달아 줘. 어둠은 너무 짙지 않게.",
+   "requirements": [
+    "the lighting command list adds a light at or next to every tile whose tileMeta label mentions 초롱 or 등롱 (one per lantern object)",
+    "no single added light has radius above 3 tiles; ambient after the lighting change is at most 0.65",
+    "in the shipped player, a frame after the lighting shows several separate warm glows along the arcade instead of one large disc"
+   ]
   }
  ]
 }

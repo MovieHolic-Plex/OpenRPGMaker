@@ -1,4 +1,6 @@
-import { isParticlePreset, normalizeParticleDurationMs, normalizeShakeDirection } from "@/project/eventCommands/cinematicStaging";
+import { applyJournalLine } from "./journalCommands";
+import { normalizeLiftRide } from "@/project/eventCommands/liftRide";
+import { isParticlePreset, normalizeParticleDurationMs, normalizeParticleSizePercent, normalizeShakeDirection } from "@/project/eventCommands/cinematicStaging";
 import { playerChoiceText } from "@/project/choiceText";
 import { playMonsterSfx } from "@/player/monsterSfx";
 import { monsterCampaign } from "@/project/monsterJournal";
@@ -157,6 +159,11 @@ function executeM2Command(
   }
   if (entry.title === "High Score") {
     applyHighScore(state.session, command.fields);
+    return resumeNext(frame);
+  }
+  // 이야기 일지 — 즉시 끝나는 기록 명령(ESC 메뉴 「일지」 가 읽는다).
+  if (entry.title === "Journal Line") {
+    applyJournalLine(state.session, command.fields);
     return resumeNext(frame);
   }
   if (entry.title === "Timed Choice") return pause("timedChoice", timedChoiceStep(command.fields));
@@ -379,8 +386,12 @@ function executeM2Command(
       preset: isParticlePreset(preset) ? preset : "sparkle",
       target: stagingTarget(command.fields, state.currentEventId, true),
       durationMs: normalizeParticleDurationMs(command.fields.durationMs),
+      sizePercent: normalizeParticleSizePercent(command.fields.sizePercent),
       wait: fieldBoolean(command.fields, "wait", false),
     });
+  }
+  if (entry.title === "Lift Ride") {
+    return pause("liftRide", { kind: "liftRide", ...normalizeLiftRide(command.fields) });
   }
   if (entry.title === "Sprite Look") {
     const target = stagingTarget(command.fields, state.currentEventId, false);
@@ -431,12 +442,12 @@ function executeM2Command(
   }
 }
 
-function saveCheckpoint(state: InterpreterState): void {
+function saveCheckpoint(state: InterpreterState, label?: string): void {
   if (!state.project) {
     console.warn("[interpreter] checkpointSave skipped: project context missing");
     return;
   }
-  saveSessionCheckpoint(state.project, state.session as PlaySession);
+  saveSessionCheckpoint(state.project, state.session as PlaySession, label);
 }
 
 function advanceCommandMinutes(command: Extract<Command, { kind: "advanceTime" }>): number {
@@ -459,6 +470,8 @@ function killParty(state: InterpreterState): void {
 
 // 에필로그 끝에 붙는 합성 ending 명령 → 실제로 본 엔딩 id. 저작된 ending 명령은 클리어가 아니다.
 const ENDING_CLEAR_COMMANDS = new WeakMap<Command, string>();
+/** 다음 막으로 이어지는 엔딩(EndingDef.continueTo) — 에필로그 뒤 마지막 명령에 붙인다. */
+const ENDING_CONTINUE_COMMANDS = new WeakMap<Command, import("@/project/types").EndingContinueTo>();
 // 에필로그 안의 문장 명령. 스킵(대사창 읽기 보조)은 이 글을 절대 건너뛰지 않는다 — StepResult text 의 endingEpilogue.
 const ENDING_EPILOGUE_TEXT = new WeakSet<Command>();
 
@@ -497,6 +510,7 @@ function triggerEnding(
   const clear = { endingId: ending.id };
   const finalCommand: Command = { kind: "ending", title: ending.name, message: "", ...(ending.presentation ? { presentation: ending.presentation } : {}) };
   ENDING_CLEAR_COMMANDS.set(finalCommand, ending.id);
+  if (ending.continueTo) ENDING_CONTINUE_COMMANDS.set(finalCommand, ending.continueTo);
   const epilogueCommands = compileEndingEpilogue(state, ending);
   for (const epilogueCommand of epilogueCommands) {
     if (epilogueCommand.kind === "text") ENDING_EPILOGUE_TEXT.add(epilogueCommand);
@@ -504,7 +518,7 @@ function triggerEnding(
   if (epilogueCommands.length > 0 && pushFrame(state, [...epilogueCommands, finalCommand])) {
     return { kind: "continue" };
   }
-  return pause("returnToTitle", { kind: "returnToTitle", title: ending.name, message: "", clear, ...(ending.presentation ? { presentation: ending.presentation } : {}) });
+  return pause("returnToTitle", { kind: "returnToTitle", title: ending.name, message: "", clear, ...(ending.presentation ? { presentation: ending.presentation } : {}), ...(ending.continueTo ? { continueTo: ending.continueTo } : {}) });
 }
 
 function selectEnding(
@@ -850,7 +864,7 @@ export function executeCommand(
       });
     }
     case "checkpointSave":
-      saveCheckpoint(state);
+      saveCheckpoint(state, command.label);
       return resumeNext(frame);
     case "openSaveMenu":
       return pause("openSaveMenu", { kind: "openSaveMenu" });
@@ -904,12 +918,14 @@ export function executeCommand(
       return pause("gameOver", { kind: "gameOver", ...(command.gameOverId ? { gameOverId: command.gameOverId } : {}) });
     case "ending": {
       const clearedEndingId = ENDING_CLEAR_COMMANDS.get(command);
+      const continueTo = ENDING_CONTINUE_COMMANDS.get(command);
       return pause("returnToTitle", {
         kind: "returnToTitle",
         title: command.title,
         message: command.message,
         ...(clearedEndingId ? { clear: { endingId: clearedEndingId } } : {}),
         ...(command.presentation ? { presentation: command.presentation } : {}),
+        ...(continueTo ? { continueTo } : {}),
       });
     }
     case "returnToTitle":
@@ -967,6 +983,7 @@ export function executeCommand(
         showInitialName: command.showInitialName,
         currentName: textTarget ? (state.session.stringVariables?.[textTarget] ?? "") : (actor?.name ?? ""),
         ...(command.prompt ? { prompt: command.prompt } : {}),
+        ...(command.presentation === "showcase" ? { presentation: "showcase" as const } : {}),
       });
     }
     case "changeGold": {
@@ -1140,7 +1157,7 @@ export function executeCommand(
       if (state.project) setSessionDifficulty(state.project.system, state.session, command.difficultyId);
       return resumeNext(frame);
     case "storeParty":
-      storePartySet(state.session as PlaySession, command.partySetId);
+      storePartySet(state.session as PlaySession, command.partySetId, command);
       return resumeNext(frame);
     case "recallParty": {
       if (!state.project) return resumeNext(frame);

@@ -19,7 +19,9 @@ export const TOOL_ALIASES: readonly ToolAlias[] = [
   // ── 인물·성장·장비 ──
   { terms: ["배우", "캐릭터 만들", "파티원", "동료 만들", "주인공 만들", "actor", "character record", "party member"], tools: ["upsert_actor", "upsert_class", "upsert_character_profile"], label: "배우" },
   { terms: ["직업", "클래스", "class", "job"], tools: ["upsert_class", "define_promotion"], label: "직업" },
-  { terms: ["연계기", "합체기", "듀얼 테크", "트리플 테크", "협동기", "combo tech", "dual tech", "triple tech", "연계"], tools: ["upsert_combo_tech", "list_combo_techs", "upsert_skill"], label: "연계기(듀얼·트리플 테크)" },
+  { terms: ["손님", "전투 중 합류", "합류했다", "원군", "지원군", "도우러 온", "guest", "battle guest"], tools: ["add_battle_guest", "simulate_battle"], label: "전투 중 손님" },
+  { terms: ["연계기", "합체기", "듀얼 테크", "트리플 테크", "쿼드 테크", "4인 연계기", "협동기", "combo tech", "dual tech", "triple tech", "연계"], tools: ["upsert_combo_tech", "list_combo_techs", "upsert_skill"], label: "연계기(듀얼·트리플·4인 테크)" },
+  { terms: ["유대", "파티원 유대", "동료 유대", "모닥불 대화", "모닥불 이야기", "누구와 이야기", "여관 밤", "party bond", "bond", "campfire talk"], tools: ["configure_party_bonds", "upsert_combo_tech"], label: "파티원 유대(모닥불 대화·문턱 해금)" },
   { terms: ["레벨업 연출", "레벨 업 연출", "기술 습득 연출", "새 기술 습득", "팡파레", "level up fanfare", "skill learned"], tools: ["set_project_settings"], label: "전투 결과 팡파레(battle.fanfare)" },
   { terms: ["스킬", "기술", "마법", "주문", "필살기", "리미트", "skill", "spell", "magic", "limit break", "ability"], tools: ["upsert_skill", "read_retro_skill_guide", "upsert_state"], label: "스킬" },
   { terms: ["장비", "무기", "방어구", "방패", "투구", "유물", "악세사리", "액세서리", "equipment", "weapon", "armor", "accessory", "relic"], tools: ["upsert_equipment", "upsert_item"], label: "장비" },
@@ -33,7 +35,9 @@ export const TOOL_ALIASES: readonly ToolAlias[] = [
   // ── 파티 ──
   { terms: ["파티", "party", "편성", "동료", "합류", "이탈", "companion", "recruit", "join", "changeparty", "recallparty", "storeparty"], tools: ["set_party", "add_companion", "configure_companion_rules"], label: "파티·동료" },
   { terms: ["파티 선택", "멤버 고르", "파티 편성 화면", "formation menu", "party select", "choose members"], tools: ["configure_companion_rules", "set_party", "configure_field_menu"], label: "파티 편성" },
-  { terms: ["분할 파티", "파티 분할", "여러 팀", "split party", "multiple teams", "3팀", "세 팀"], tools: ["set_party", "configure_companion_rules", "run_scene_test"], label: "파티 분할" },
+  // 맵을 나눠 걷는 FF6 식 분할과 전투 팀 교대는 다른 도구다. 「파티」 별칭이 set_party 에 보너스를 주므로, 분할 질의는 author_party_split 만 가리킨다.
+  { terms: ["분할 파티", "파티 분할", "파티 나누", "파티를 나눠", "갈라진 파티", "split party", "party split"], tools: ["author_party_split"], label: "맵을 나눠 걷는 파티 분할" },
+  { terms: ["여러 팀", "multiple teams", "3팀", "세 팀", "팀 교대", "교대 전투"], tools: ["set_party", "configure_companion_rules"], label: "전투 팀 교대" },
   // ── 적·전투 ──
   { terms: ["적군", "적 몬스터", "적 만들", "적 추가", "몬스터 만들", "몬스터 추가", "보스", "enemy", "monster", "boss"], tools: ["upsert_enemy", "upsert_troop", "author_boss_phases"], label: "적" },
   { terms: ["트룹", "적 구성", "전투 구성", "무리", "troop", "encounter group", "battle group"], tools: ["upsert_troop", "upsert_troop_battle_page"], label: "트룹" },
@@ -44,7 +48,7 @@ export const TOOL_ALIASES: readonly ToolAlias[] = [
   { terms: ["밸런스", "난이도", "시뮬레이션", "승률", "simulate", "balance", "difficulty"], tools: ["simulate_battle", "tune_enemy", "evaluate_game_quality"], label: "전투 시뮬" },
   { terms: ["전투 연출", "배틀 애니", "전투 애니메이션", "battle animation", "battle fx", "효과"], tools: ["upsert_battle_animation", "read_directing_guide", "list_fx_sheets"], label: "전투 연출" },
   { terms: ["액션 전투", "action combat", "realtime battle"], tools: ["set_action_combat", "make_action_enemy", "run_action_combat_test"], label: "액션 전투" },
-  { terms: ["비전머신", "필드 기술", "필드 스킬", "hidden machine", "field skill", "절단", "괴력", "파도타기", "폭포 오르기", "플래시", "덩굴", "물길 열기", "배지가 있어야", "배지 필요", "비전서 상자"], tools: ["place_field_obstacle", "upsert_skill", "run_scene_test"], label: "필드 기술 장애물(비전머신)" },
+  { terms: ["비전머신", "필드 기술", "필드 스킬", "hidden machine", "field skill", "절단", "괴력", "파도타기", "폭포 오르기", "플래시", "덩굴", "물길 열기", "배지가 있어야", "배지 필요", "비전서 상자", "장대 도약", "틈 건너뛰기", "뛰어넘게", "얼음 틈", "gap jump", "pole vault"], tools: ["place_field_obstacle", "upsert_skill", "run_scene_test"], label: "필드 기술 장애물(비전머신)" },
   // ── 포켓몬식 몬스터 전투 깊이(2026-10-16 깊이 감사 #3): 검색하면 맞아 보이는 틀린 도구(날씨→일상 날씨 upsert_life_system, 조건부 볼→set_encounter_table)가 먼저 나오던 것을 바로잡는다 ──
   { terms: ["특성", "몬스터 특성", "종 특성", "포켓몬 특성", "species ability", "immunetype", "resisttype", "boostlowhp", "immunestatus", "contactstatus", "statmultiplier"], tools: ["define_monster_species", "define_monster_families"], label: "몬스터 특성(species.ability)" },
   { terms: ["맹독", "혼란", "독 걸", "독 피해", "독 데미지", "독상태", "badly poisoned", "toxic", "confusion", "volatilestatus", "gen1majorstatus", "화상 상태", "마비 상태", "수면 상태"], tools: ["upsert_state", "upsert_skill"], label: "몬스터 상태이상(독·맹독·혼란)" },
@@ -71,13 +75,16 @@ export const TOOL_ALIASES: readonly ToolAlias[] = [
   { terms: ["비행선", "비공정", "배 타", "배를", "탈것", "초코보", "뗏목", "airship", "vehicle", "ship", "boat", "mount"], tools: ["place_vehicle", "set_street_traffic", "set_map_transit"], label: "탈것" },
   { terms: ["자동차", "승용차", "차 다니", "차가 다니", "차량 흐름", "움직이는 차", "차 깔", "도로에 차", "회전하는 차", "교차로 회전", "경찰차", "택시", "기차", "지하철", "열차", "버스", "교통", "street traffic", "moving cars", "traffic", "train", "subway", "transit"], tools: ["set_street_traffic", "set_map_transit", "inspect_map_transit", "compose_modern_city_street"], label: "거리 주행 차량·교통(직진·교차로 90° 회전·버스·지하철)" },
   { terms: ["빈 맵", "텅 빈", "빈칸", "단색", "단색 잔디", "잔디 평지", "비어 있", "empty map", "blank", "flat grass", "채우기", "꾸미기", "decorate", "fill"], tools: ["check_map_emptiness", "create_map", "find_empty_ground", "furnish_outdoor_area", "place_props"], label: "맵 채우기" },
-  { terms: ["눈 마을", "설원", "북방", "눈덮인", "snow village", "snow north", "눈 맵"], tools: ["compose_snow_north_map", "link_snow_north_interior"], label: "설원 테마" },
+  // 「설원」만 두면 「설원 길」까지 마을 구성기로 간다. 고갯길은 author_snow_route.
+  { terms: ["눈 마을", "설원 마을", "북방", "눈덮인", "snow village", "snow north", "눈 맵"], tools: ["compose_snow_north_map", "link_snow_north_interior"], label: "설원 마을" },
+  { terms: ["설원 길", "고갯길", "서리 가도", "얼음 들판", "눈보라", "snow route", "snow path", "blizzard path"], tools: ["author_snow_route"], label: "설원 고갯길" },
   { terms: ["사막", "오아시스", "바자르", "피라미드", "desert", "oasis", "bazaar"], tools: ["compose_desert_east_map", "compose_desert_east_room"], label: "사막 테마" },
   { terms: ["증기", "스팀펑크", "기계 도시", "제국 도시", "steampunk", "industrial city"], tools: ["compose_steampunk_city_map", "link_steampunk_interior"], label: "스팀펑크 테마" },
   { terms: ["천공", "하늘섬", "공중", "sky island", "floating island"], tools: ["compose_sky_island_map", "link_sky_island_interior"], label: "천공섬 테마" },
   { terms: ["해적", "섬 맵", "섬 마을", "pirate", "isles", "island"], tools: ["compose_pirate_isles_map"], label: "해적 섬 테마" },
   { terms: ["선사", "원시", "공룡", "prehistoric", "stone age"], tools: ["compose_prehistoric_map", "link_prehistoric_interior"], label: "선사 테마" },
   { terms: ["우주 정거장", "sf", "우주선", "sci-fi", "space station"], tools: ["compose_sf_station_map"], label: "SF 정거장 테마" },
+  { terms: ["포스트 아포칼립스", "아포칼립스", "좀비 도시", "황무지", "폐허 마을", "wasteland", "post-apocalyptic"], tools: ["compose_wasteland_map"], label: "폐허·황무지 테마" },
   { terms: ["센고쿠", "에도", "전국시대", "sengoku", "edo", "samurai"], tools: ["compose_sengoku_edo_map", "link_sengoku_edo_interior"], label: "센고쿠 테마" },
   { terms: ["마을 종류", "시대 마을", "사이버펑크 마을", "조선 마을", "장터 마을", "중세 마을", "고대 도시", "미래 도시", "village type", "town type"], tools: ["find_village_type"], label: "마을 종류 표" },
   { terms: ["일본 거리", "상점가", "일본 지역", "온천 마을", "신사", "다랑논", "등산로", "jp city", "japanese street", "jp region"], tools: ["compose_jp_city_street", "compose_jp_region", "list_jp_regions", "build_jp_city_building"], label: "일본 거리·지역 30종" },
@@ -104,6 +111,8 @@ export const TOOL_ALIASES: readonly ToolAlias[] = [
   { terms: ["센터", "포켓몬 센터", "몬스터 센터", "회복 센터", "간호사", "병원", "pokemon center", "monster center", "nurse", "heal center"], tools: ["place_monster_center", "place_savepoint"], label: "몬스터 센터(회복 연출)" },
   { terms: ["보물상자", "상자", "chest", "treasure"], tools: ["place_chest", "place_storage_chest"], label: "상자" },
   { terms: ["함정", "trap", "spike"], tools: ["place_trap"], label: "함정" },
+  { terms: ["제한 시간 탈출", "무너지는 얼음", "갈라지는 얼음", "무너지는 탑", "가라앉는 다리", "갈라지는 바닥", "timed escape", "collapsing floor", "countdown escape"], tools: ["make_timed_escape"], label: "제한 시간 탈출" },
+  { terms: ["이야기 일지", "일지", "story journal", "journal line"], tools: ["configure_story_journal"], label: "이야기 일지" },
   { terms: ["공통 이벤트", "common event", "field skill", "필드 스킬", "필드 기술", "field ability"], tools: ["upsert_common_event", "upsert_skill", "upsert_event"], label: "공통 이벤트·필드 스킬" },
   // ── 시스템·검사·기타 ──
   { terms: ["검사", "점검", "린트", "lint", "validate", "check"], tools: ["run_lint", "check_reachability", "evaluate_game_quality", "check_export_readiness"], label: "검사" },

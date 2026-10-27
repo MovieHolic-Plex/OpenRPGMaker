@@ -5,6 +5,7 @@ import {
   LETTERBOX_DEFAULT_PERCENT,
   normalizeLetterboxPercent,
   normalizeParticleDurationMs,
+  normalizeParticleSizePercent,
   normalizeShakeDirection,
   PARTICLE_PRESETS,
   SHAKE_DIRECTIONS,
@@ -44,6 +45,7 @@ export type CutsceneBeat =
   | CutsceneTransferBeat
   | CutsceneEndingBeat
   | CutsceneLetterboxBeat
+  | CutsceneFreezeBeat
   | CutsceneParticlesBeat
   | CutsceneLookBeat
   | CutsceneEmoteBeat
@@ -264,6 +266,22 @@ export type CutsceneLetterboxBeat = {
   readonly keep?: boolean;
 };
 
+/**
+ * 정지 화면(만화식 프리즈 프레임, 「화면 효과」 freeze) — 지금 화면을 한 장 찍어 멈춘 그림으로 세운다. 부딪힘·첫 만남·결정적 순간에.
+ * 대사는 그 위에 뜬다. 컷신이 끝나면(건너뛰어도) 자동으로 풀린다. show:false 로 직접 풀거나, 남기려면 keep:true.
+ */
+export type CutsceneFreezeBeat = {
+  readonly kind: "freeze";
+  /** false 면 푼다. 기본 true. */
+  readonly show?: boolean;
+  /** 색감 — warm(기본)·mono·sepia·cool·none. */
+  readonly style?: "warm" | "mono" | "sepia" | "cool" | "none";
+  /** 들어올 때 번쩍임이 빠지는(풀 때 걷히는) 시간. 기본 500. */
+  readonly durationMs?: number;
+  readonly wait?: boolean;
+  readonly keep?: boolean;
+};
+
 /** 파티클 — 한 인물이나 한 칸에서 터지는 반짝임·불티·연기·폭발(「파티클 효과」). 흐름을 막지 않는다(wait 면 끝까지 기다림). */
 export type CutsceneParticlesBeat = {
   readonly kind: "particles";
@@ -274,6 +292,8 @@ export type CutsceneParticlesBeat = {
   readonly x?: number;
   readonly y?: number;
   readonly durationMs?: number;
+  /** 크기(%, 25~400, 기본 100) — 입자 그림과 퍼지는 거리를 같이 키운다. 1배 화면에서 작게 보이는 부딪힘·폭발에 150~250. */
+  readonly sizePercent?: number;
   readonly wait?: boolean;
 };
 
@@ -429,6 +449,8 @@ type CompileState = {
   distort?: { readonly clear: boolean; readonly axes: Partial<Record<"wave" | "mosaic" | "rotate", number | undefined>> };
   /** 레터박스 끝 상태. keep 이 아니면 정리 단계가 걷는다. */
   letterbox?: { readonly percent: number; readonly keep: boolean };
+  /** 정지 화면 끝 상태. keep 이 아니면 정리 단계가 푼다. */
+  freeze?: { readonly on: boolean; readonly style: string; readonly keep: boolean };
   /** 모습 효과 명령들 — 정리 단계가 순서대로 다시 걸어 건너뛰어도 끝 모습이 같다. */
   readonly looks: M2CommandFields[];
   /** 마지막 날씨 — 정리 단계가 전환 없이 다시 건다. */
@@ -473,12 +495,24 @@ function compileLetterboxBeat(beat: CutsceneLetterboxBeat, state: CompileState, 
   return commands;
 }
 
+const FREEZE_BEAT_STYLES: ReadonlySet<string> = new Set(["warm", "mono", "sepia", "cool", "none"]);
+function compileFreezeBeat(beat: CutsceneFreezeBeat, state: CompileState, forceNonBlocking: boolean): Command[] {
+  const on = beat.show !== false;
+  const style = typeof beat.style === "string" && FREEZE_BEAT_STYLES.has(beat.style) ? beat.style : "warm";
+  const ms = durationMs(beat.durationMs, 500);
+  state.freeze = { on, style, keep: beat.keep === true };
+  const commands: Command[] = [m2Command("Screen Effect", on ? { effect: "freeze", value: style, durationMs: ms } : { effect: "unfreeze", value: "", durationMs: ms })];
+  if (!forceNonBlocking && beat.wait === true && ms > 0) commands.push({ kind: "wait", ms });
+  return commands;
+}
+
 function particleFields(beat: CutsceneParticlesBeat, forceNonBlocking: boolean): M2CommandFields {
   const onTile = beat.target === undefined && beat.eventId === undefined && beat.x !== undefined && beat.y !== undefined;
   return m2Fields({
     preset: isParticlePreset(beat.preset) ? beat.preset : "sparkle",
     ...(onTile ? { target: "tile", x: Math.round(beat.x ?? 0), y: Math.round(beat.y ?? 0) } : stagingTargetFields(beat.target, beat.eventId)),
     durationMs: normalizeParticleDurationMs(beat.durationMs),
+    ...(beat.sizePercent !== undefined ? { sizePercent: normalizeParticleSizePercent(beat.sizePercent) } : {}),
     wait: forceNonBlocking ? false : beat.wait === true,
   });
 }
@@ -715,6 +749,8 @@ function compileBeat(
     }
     case "letterbox":
       return compileLetterboxBeat(beat, state, options.forceNonBlocking);
+    case "freeze":
+      return compileFreezeBeat(beat, state, options.forceNonBlocking);
     case "particles":
       return [m2Command("Particle Effect", particleFields(beat, options.forceNonBlocking))];
     case "look": {
@@ -1096,6 +1132,7 @@ function parallelWaitMs(beat: CutsceneBeat): number {
   if (beat.kind === "tint" && beat.wait === true) return durationMs(beat.durationMs, 0);
   if (beat.kind === "distort" && beat.wait === true) return durationMs(beat.durationMs, 0);
   if (beat.kind === "letterbox" && beat.wait === true) return durationMs(beat.durationMs, 400);
+  if (beat.kind === "freeze" && beat.wait === true) return durationMs(beat.durationMs, 500);
   if (beat.kind === "particles" && beat.wait === true) return normalizeParticleDurationMs(beat.durationMs);
   if (beat.kind === "emote" && beat.wait === true) return clampEmoteDurationMs(beat.durationMs);
   if (beat.kind === "background" && beat.wait === true) return durationMs(beat.durationMs, 0);
@@ -1130,6 +1167,10 @@ function cleanupCommands(state: CompileState): Command[] {
     commands.push(m2Command("Screen Effect", percent > 0
       ? { effect: "letterbox", value: String(percent), durationMs: state.letterbox.keep ? 0 : 400 }
       : { effect: "clearLetterbox", value: "", durationMs: 400 }));
+  }
+  if (state.freeze) {
+    // 정지 화면은 컷신과 함께 풀린다(건너뛰어도). keep 이면 그대로 둔다.
+    if (!state.freeze.keep && state.freeze.on) commands.push(m2Command("Screen Effect", { effect: "unfreeze", value: "", durationMs: 300 }));
   }
   // 건너뛰기 착지에서는 대상마다 끝 모습 하나만 다시 건다 — 거쳐 온 모습을 차례로 다 걸면 정상 재생 끝에서도
   // 불투명 0→100→검정→0 처럼 깜빡였다(2026-10-24 v2 밤 컷신 눈가림 지적).
@@ -1420,6 +1461,7 @@ const KNOWN_BEAT_KINDS: ReadonlySet<string> = new Set([
   "transfer",
   "ending",
   "letterbox",
+  "freeze",
   "particles",
   "look",
   "emote",

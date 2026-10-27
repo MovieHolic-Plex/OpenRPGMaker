@@ -1,0 +1,19 @@
+{
+ "name": "모임지붕 2층 상인 집",
+ "massing": "9",
+ "material": "plaster",
+ "refs": [
+  "bd-house-h106_1",
+  "bd-house-inn"
+ ],
+ "walk": [
+  ".*****.",
+  "*******",
+  "*******",
+  "XXXXXXX",
+  "XXXXXXX",
+  "XXXDXXX",
+  "XXXDXXX"
+ ],
+ "id": "merchant-house"
+}

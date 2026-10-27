@@ -1,6 +1,6 @@
 name: ci-full
 
-# 전체 게이트 — main 푸시 + 야간 스케줄 + 수동.
+# 전체 게이트 — 4시간마다 main(cron) + 수동.
 # 다른 브랜치의 푸시마다 돌리지는 않는다. GitHub 호스티드 러너(ubuntu-latest)에서 돈다.
 #
 # 왜 테스트를 샤드로 나누는가 (2026-10-12, run 38238570454):
@@ -16,25 +16,31 @@ name: ci-full
 #
 #   이 저장소는 공개라 소유자 컴퓨터의 self-hosted 러너에서 포크 코드를 돌리지 않는다.
 #   "같은 브랜치의 전체 vitest 두 개 동시 실행"은 아래 concurrency group 이 막는다.
-#   main 이 연달아 머지되면 진행 중인 잡은 끝내고, 대기 중인 옛 커밋만 최신 커밋으로 바뀐다.
 #
 #   수동 실행(workflow_dispatch)은 브랜치마다 따로 줄을 선다 (2026-10-24, run 40055350951).
 #   전에는 저장소 전체가 그룹 하나였고 대기 자리도 하나라, PR 브랜치로 수동 실행을 걸어 두면
-#   main 푸시가 들어오는 순간 대기 중이던 그 실행이 취소됐다. 앞의 main 실행이 몇 시간씩
+#   main 실행이 들어오는 순간 대기 중이던 그 실행이 취소됐다. 앞의 main 실행이 몇 시간씩
 #   도는 날에는 PR 브랜치의 전체 vitest 가 영영 시작되지 못한다. 러너는 호스티드라 잡마다
-#   VM 이 따로라서 그룹을 나눠도 메모리를 나눠 쓰지 않는다. main 푸시·야간 스케줄은 그대로
+#   VM 이 따로라서 그룹을 나눠도 메모리를 나눠 쓰지 않는다. main cron 은 그대로
 #   그룹 하나(`ci-full-main`)를 쓴다.
 #
 # 판정은 verify-gates.mjs 가 한다. 이 스크립트는 .omo/gates-baseline.json 과 대조해
 # **새로 생긴 실패만** 회귀로 보고 exit 1 을 낸다. 기준선은 CI 가 절대 갱신하지 않는다 —
 # 사람이 `node scripts/verify-gates.mjs --save-baseline` 으로 내리는 결정이다(래칫 보호).
 
+# 언제 도는가 (2026-10-25 바꿈): main 푸시가 아니라 **4시간마다 cron** 이 그때의 main 머리를 돈다.
+#   전에는 main 푸시마다 걸었다. 한 판이 약 3~4시간(샤드 넷 중 가장 느린 것)인데 머지는 시간당 수십 건이라,
+#   그룹 `ci-full-main` 의 대기 자리 하나를 새 푸시가 계속 빼앗았다 — 최근 60판 중 51판이 「cancelled」로
+#   남았다(실측 2026-10-25). 실제로 끝나는 판은 4시간에 한 번뿐이었고, 그 판이 어느 커밋인지는 우연이었다.
+#   cron 이면 같은 4시간에 한 판이 정해진 시각에 돌고, 대기열 취소가 없어 Actions 목록이 「취소」로 덮이지 않는다.
+#   러너 예산도 같다(하루 6판 × 잡 5개). PR 머지 전 판정은 ci-fast(pull_request) 몫이다.
+#   ci-full 의 일은 「main 이 기준선보다 나빠졌나」를 하루 여러 번 확인하는 것이다.
+#   cron 이 앞 판이 끝나기 전에 오면 그 판은 기다렸다가 돈다(cancel-in-progress: false, 대기 자리 하나).
+#   급하면 `gh workflow run ci-full.yml --ref main` 으로 당장 한 판 건다.
 on:
-  push:
-    branches: [main]
   schedule:
-    # main 이 하루 종일 조용해도 한 번은 돈다. 03:17 KST (18:17 UTC 전날).
-    - cron: "17 18 * * *"
+    # 4시간마다(UTC 0:17·4:17·8:17·12:17·16:17·20:17). 한 판이 4시간을 넘기면 다음 판이 대기 줄에 선다.
+    - cron: "17 */4 * * *"
   workflow_dispatch:
 
 concurrency:
@@ -117,11 +123,16 @@ jobs:
   tests:
     runs-on: ubuntu-latest
     # 호스티드 잡 상한은 6시간이다. 샤드 하나와 그 샤드의 플레이크 재확인이 여기 들어온다.
-    timeout-minutes: 240
+    # 2026-10-25: 샤드 넷은 240분에 잘려 리포트 업로드가 건너뛰어졌다 → 샤드 여덟, 잡 300분,
+    # vitest 단계는 280분에 스스로 끊겨 뒤의 always() 보관·업로드 단계가 돌 시간을 남긴다.
+    # 2026-10-26: 8샤드에서도 샤드 1(AI 세션 테스트가 몰린 샤드)이 55~80분에 러너째 사라졌다
+    # (「The operation was canceled」, always() 단계까지 건너뜀 — 러너 메모리 고갈로 본다). 같은 파일을
+    # 반씩(--shard=1/16·2/16) 돌리면 둘 다 끝났다(ci-vitest-files 40308924284·40308932285) → 샤드 16.
+    timeout-minutes: 300
     strategy:
       fail-fast: false
       matrix:
-        shard: [1, 2, 3, 4]
+        shard: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
 
@@ -130,19 +141,26 @@ jobs:
           node-version: 24
           cache: npm
 
+      # 일부 테스트(spatialPlaceCli·npcGoldReward·assistantAcceptanceProvider)가 bun 으로 CLI 를 띄운다.
+      # 러너에 bun 이 없어 「spawnSync bun ENOENT」로 실패했다(ci-full 40165485978).
+      #    저장소 정책이 GitHub 소유 액션만 허용하므로(oven-sh/setup-bun 은 startup_failure) npm 패키지로 깐다.
+      - name: bun 설치
+        run: npm install -g bun@1.4.2 && bun --version
+
       - run: npm ci
 
       - name: 자원 스냅샷 (시작)
         run: node scripts/ci-resource-report.mjs start
 
       # --flake-budget-min: 이 샤드에서 「새로 실패」한 파일을 단독으로 다시 보는 시간.
-      # 샤드가 넷이라 잡마다 40분. 후보가 수십 건이면 기준선이 낡은 것이다.
+      # 샤드마다 40분. 후보가 상한(30)을 넘으면 재확인 자체를 건너뛴다. 후보가 수십 건이면 기준선이 낡은 것이다.
       - name: vitest 샤드 (기준선 대비 회귀만 실패)
-        run: node scripts/verify-gates.mjs --only tests --shard ${{ matrix.shard }}/4 --flake-budget-min=40
+        timeout-minutes: 280
+        run: node scripts/verify-gates.mjs --only tests --shard ${{ matrix.shard }}/16 --flake-budget-min=40 --flake-max-candidates=30
 
       - name: 자원 리포트
         if: always()
-        run: node scripts/ci-resource-report.mjs report "vitest 샤드 ${{ matrix.shard }}/4"
+        run: node scripts/ci-resource-report.mjs report "vitest 샤드 ${{ matrix.shard }}/16"
 
       # 호스티드 러너 디스크는 잡이 끝나면 사라진다. 판정 파일은 아티팩트로 올린다.
       # 계정 아티팩트 쿼터가 차 있으면 이 단계가 게이트를 실패시키진 않는다.
@@ -158,7 +176,7 @@ jobs:
           git rev-parse HEAD > "$dest/commit.txt"
           ls -la "$dest"
           {
-            echo "### vitest 리포트 (shard ${{ matrix.shard }}/4)"
+            echo "### vitest 리포트 (shard ${{ matrix.shard }}/16)"
             echo ""
             echo "판정 파일은 이 잡의 아티팩트 \`gates-report-shard-${{ matrix.shard }}\` 에 있다."
           } >> "$GITHUB_STEP_SUMMARY"

@@ -335,6 +335,9 @@ export function installPlaySceneTestHooks(
     },
     playerRoute: (moves) => {
       startPlayerRoute(scene as unknown as PlaySceneContext, moves, false);
+      // QA 걷기는 사람이 걷는 것과 같다 — 닿은 이벤트가 돌면 멈춘다(맵 탭 경로와 같은 규칙).
+      const route = (scene as unknown as PlaySceneContext).playerRoute;
+      if (route) route.yieldsToEvents = true;
     },
     applyPreset: (preset) => {
       applyStatePreset(getSession(), preset);

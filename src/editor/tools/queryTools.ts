@@ -3,13 +3,14 @@
 //         / list_resources / run_lint / check_reachability.
 // 읽기 툴은 project를 변형하지 않는다(runner가 read 모드로 처리).
 
+import { faceLookText } from "@/assets/faceLooks";
 import { oprnPanoramaSetOfImage } from "@/assets/oprnPanoramas";
 import { mapBackgroundVisibility } from "@/project/mapBackgroundVisibility";
 import { lintScenePolish } from "@/project/lint/scenePolishLint";
 import { SHARED_PORTRAIT_ASSETS, findSharedPortrait, sharedExpressionSetIdOf, sharedPortraitExpressionsOfSet, sharedPortraitReferenceNote } from "@/assets/sharedPortraitAssets";
 import { activeGenreLockVisualCatalog } from "@/project/genreLockVisuals";
 import { facePresentationForResource } from "@/project/facePresentation";
-import { jrpgHeroesCharsetHint, queryNpcGraphics } from "@/assets/charsetQuery";
+import { GHOST_WORDS, jrpgHeroesCharsetHint, PERSON_WORDS, queryNpcGraphics, unmatchedNpcGraphicTerms } from "@/assets/charsetQuery";
 import { findCharsetSemantic } from "@/assets/charsetSemantics";
 import { sharedCharsetRow, sharedCharacterGraphicsCatalog } from "@/project/sharedCharacterFaceResolver";
 import { faceReferenceMetadata, isAuthorableFaceReference } from "@/project/faceReferenceMetadata";
@@ -453,9 +454,10 @@ function searchFacesets(project: Project, query: string): Pick<ResourceSearchRes
     return {
       id: face.resourceId,
       label: metadata.name,
-      description: `${paired.length > 0
+      // 그림 설명(나이·종류·외형)을 맨 앞에 — 설명은 240자에서 잘린다(2026-10-25 J35: 이름표만 보고 노인 얼굴을 「젊은 제페토」에게 줬다).
+      description: `${metadata.description} ${paired.length > 0
         ? `짝 걷기 그림: ${paired.join(", ")}. ${(pairedNotes.get(face.resourceId) ?? []).join(" ")}`
-        : "짝 걷기 그림 없음 — 걷기 그림과 같은 인물인지 직접 확인하고 쓴다."} ${metadata.description}`,
+        : "짝 걷기 그림 없음 — 걷기 그림과 같은 인물인지 직접 확인하고 쓴다."}`.trim(),
       haystack: `${face.resourceId} ${metadata.name} ${traits} ${metadata.description} ${paired.join(" ")}`.toLocaleLowerCase(),
     };
   });
@@ -467,8 +469,8 @@ function searchFacesets(project: Project, query: string): Pick<ResourceSearchRes
   const portraits = SHARED_PORTRAIT_ASSETS.filter(asset => !project.assets.uploaded?.[asset.id]).map((asset) => ({
     id: asset.id,
     label: faceReferenceMetadata(asset.id, asset.name, project).name,
-    description: `${sharedPortraitReferenceNote(asset.setId)} ${asset.mode === "full" ? "전신 — 대사 창 뒤에 크게 선다" : "흉상 — 대사 창 옆 초상"}. 얼굴 바꾸기에 이 id 를 쓰면 이어지는 대사의 emotion(happy·sad·angry·surprised)이 같은 인물의 표정 그림으로 바꾼다. 다른 표정은 끝의 -base 를 ${sharedPortraitExpressionsOfSet(asset.setId).filter((expression) => expression !== "base").join("·")} 로 바꾼다.`,
-    haystack: `${asset.id} ${asset.name} ${asset.mode === "full" ? "전신 full body 초상 portrait" : "흉상 bust 초상 portrait"}`.toLocaleLowerCase(),
+    description: `${faceLookText(asset.id) ? `${faceLookText(asset.id)} ` : ""}${sharedPortraitReferenceNote(asset.setId)} ${asset.mode === "full" ? "전신 — 대사 창 뒤에 크게 선다" : "흉상 — 대사 창 옆 초상"}. 얼굴 바꾸기에 이 id 를 쓰면 이어지는 대사의 emotion(happy·sad·angry·surprised)이 같은 인물의 표정 그림으로 바꾼다. 다른 표정은 끝의 -base 를 ${sharedPortraitExpressionsOfSet(asset.setId).filter((expression) => expression !== "base").join("·")} 로 바꾼다.`,
+    haystack: `${asset.id} ${asset.name} ${faceLookText(asset.id) ?? ""} ${asset.mode === "full" ? "전신 full body 초상 portrait" : "흉상 bust 초상 portrait"}`.toLocaleLowerCase(),
   }));
   const basePortraits = portraits.filter(asset => asset.id.endsWith("-base"));
   const terms = needle.split(/\s+/).filter(Boolean);
@@ -509,8 +511,14 @@ const listNpcGraphics: ToolDefinition = {
     },
   },
   run(project, args): ToolExecResult {
-    const query = typeof args.query === "string" ? args.query : undefined;
-    const matches = queryNpcGraphics(query, 20, project.charsetLabels).map((match) => ({
+    const rawQuery = typeof args.query === "string" ? args.query : undefined;
+    // 유령인 사람(「하얀 드레스의 여자 유령」): 사람 칩을 찾고 반투명 빛으로 그리게 한다 — 시트 유령 몬스터 칩은 만화풍 이불 유령이라
+    // 사람 유령 자리에 놓으면 고무 오리처럼 읽혔다(2026-10-25 심사 J66).
+    const personGhost = !!rawQuery && GHOST_WORDS.test(rawQuery) && PERSON_WORDS.test(rawQuery);
+    const query = personGhost ? rawQuery!.replace(new RegExp(GHOST_WORDS.source, "giu"), " ").replace(/\s+/gu, " ").trim() : rawQuery;
+    const found = queryNpcGraphics(query, 20, project.charsetLabels);
+    const partial = !!query && found.some((match) => unmatchedNpcGraphicTerms(query, match.entry).length > 0);
+    const matches = found.map((match) => ({
       selectionId: `charset:${match.entry.textureKey}:${match.entry.characterIndex}`,
       textureKey: match.entry.textureKey,
       characterIndex: match.entry.characterIndex,
@@ -542,6 +550,9 @@ const listNpcGraphics: ToolDefinition = {
       summary: `NPC 그래픽 ${matches.length}개 조회(${label})`,
       data: {
         matches,
+        ...(personGhost ? { ghostHint: "유령인 사람이다: 위 사람 칩(외형이 맞는 것)을 고르고 그 이벤트 페이지 graphic 에 blendMode:'add' 를 더해 반투명 빛으로 그린다. 흰 시트 유령 몬스터 칩(easyrpg monster1 「유령」)은 만화풍 이불 유령이라 사람 유령에 쓰지 않는다." } : {}),
+        ...(partial
+          ? { partial: `모든 낱말이 맞는 칸이 없어 가장 많이 맞는 칸을 보였다 — 각 칸의 appearance 를 읽고 고르며, 보고에 «맞는 그림 없음, 가장 가까운 것 사용»을 적는다.` } : {}),
         ...(matches.length === 0 && query && query.trim().length > 0
           ? { hint: "0건이다. 검색어는 낱말 하나로(예: 여학생, 남학생, 카페 점원, 교수, 정장) 줄이거나 query 를 생략해 기본 후보를 본다. 여러 낱말을 공백으로 이으면 모두 맞아야 한다." }
           : jrpgHeroesHintForNpcList(project, query)),

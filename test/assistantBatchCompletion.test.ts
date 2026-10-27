@@ -8,6 +8,12 @@ import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
 import { fixedDeclarer } from "./intentFixture";
 import { approvedReviewResponse } from "./independentReviewFixture";
+import { withRetiredCombinedTownMaps } from "./support/retiredCombinedTownMaps";
+
+// Tests here build the ~63MB blank project (createBlankProject) and drive assistant sessions or editor
+// panels over it, fingerprinting/copying it per session. Under ci-full load (8 workers on 4-core runners)
+// single tests measured 10-50s, past vitest's 15s default, so the budget is raised for this file only.
+vi.setConfig({ testTimeout: 120_000 });
 
 type Call = { name: string; args: Record<string, unknown> };
 type ToolEvent = Extract<SessionEvent, { type: "tool_call" }>;
@@ -29,6 +35,10 @@ afterEach(() => {
 function harness(rounds: Call[][]) {
   const context = { project: createBlankProject() };
   expect(runTool(context, "create_map", { id: "map_other", name: "Other", width: 20, height: 15 }).ok).toBe(true);
+  // These cases measure batch dependency/completion, not the tileset-reference gate. On the current default
+  // (beodeul_city) place_props is refused until the model reads its reference documents
+  // (tilesetReferenceEvidence), so both maps run on the retired combined-town sheet, which has none.
+  withRetiredCombinedTownMaps(context.project);
   vi.stubEnv("VITE_LEGACY_DB_URL", "http://dbserver:8100");
   vi.stubEnv("VITE_LEGACY_DB_ANON_KEY", "test-key");
   vi.stubEnv("VITE_LEGACY_DB_PROJECT_ID", "test-batch");

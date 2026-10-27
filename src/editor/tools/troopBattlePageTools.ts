@@ -18,6 +18,7 @@ import type {
   Project,
   TroopRecord,
 } from "@/project/types";
+import type { TroopBattleGuest } from "@/project/types/database";
 import { normalizeLowLevelCommandArray, validateLowLevelCommandArray } from "./commandArgs";
 import { assertPartyActorReferences } from "./partyActorReferences";
 import { ensureNamedSwitch } from "./flagHelpers";
@@ -592,8 +593,108 @@ const authorBossPhases: ToolDefinition = {
   },
 };
 
+const GUEST_TACTICS = ["attackAll", "healFirst", "conserveMp"] as const;
+
+const addBattleGuest: ToolDefinition = {
+  name: "add_battle_guest",
+  description:
+    "전투 중 손님: 트룹 전투에서 조건(보스 HP %·라운드·스위치)이 맞는 순간 배우 하나가 이 전투에만 합류해 작전대로 자동으로 싸우고, " +
+    "「OO이(가) 합류했다!」 띠를 띄운다. 파티 명단에는 넣지 않으므로 전투가 끝나면 저절로 빠진다(경험치·전리품 몫 없음, HP·상태도 세션에 남지 않는다). " +
+    "requireSwitchId 를 주면 그 스위치가 켜져 있을 때만 합류한다(앞선 선택 결과로 합류 여부 가르기). " +
+    "배우는 먼저 upsert_actor 로 만든다. 같은 트룹·같은 배우로 다시 부르면 교체, remove:true 면 뺀다. " +
+    "changeParty 를 전투 페이지에 넣는 방식은 다음 전투부터 파티에 남으므로 손님에는 이 도구를 쓴다. 저작 뒤 simulate_battle 로 확인하라.",
+  mode: "write",
+  domains: ["battle", "database"],
+  parameters: {
+    type: "object",
+    properties: {
+      troopId: { type: "string" },
+      actorId: { type: "string", description: "합류할 배우 id(배우 DB 에 있어야 한다). 이미 파티에 있는 배우는 합류하지 않는다." },
+      atEnemyHpPercent: { type: "integer", description: "이 적(enemyId, 생략 = 트룹 첫 적) HP 가 이 % 이하가 되면 합류(1~100)" },
+      enemyId: { type: "string", description: "atEnemyHpPercent 기준 적 id" },
+      atRound: { type: "integer", description: "이 라운드(1부터)에 합류" },
+      conditions: { type: "array", items: BATTLE_CONDITION_SCHEMA, description: "직접 쓰는 추가 조건(모두 참). atEnemyHpPercent·atRound·requireSwitchId 와 함께 AND." },
+      requireSwitchId: { type: "string", description: "이 스위치가 켜져 있을 때만 합류. 없는 id 면 이름 붙여 새로 만든다(꺼진 채)." },
+      requireSwitchName: { type: "string", description: "requireSwitchId 를 새로 만들 때 붙일 이름" },
+      tactic: { type: "string", enum: [...GUEST_TACTICS], description: "자동 전투 작전: attackAll 전원 공격 · healFirst 회복 우선 · conserveMp MP 아끼기. 생략 = 균형" },
+      message: { type: "string", description: "합류 띠 문구. 생략 = 「{배우 이름}이(가) 합류했다!」" },
+      remove: { type: "boolean", description: "true 면 이 트룹에서 이 손님을 뺀다" },
+    },
+    required: ["troopId", "actorId"],
+    additionalProperties: false,
+  },
+  invalidArgsExample: {
+    troopId: "troop_boss",
+    actorId: "actor_valen",
+    atEnemyHpPercent: 60,
+    enemyId: "enemy_boss",
+    requireSwitchId: "sw_valen_trust",
+    tactic: "attackAll",
+  },
+  run(draft, args): ToolExecResult {
+    const troop = requireTroop(draft, args.troopId);
+    const actorId = requireActor(draft, args.actorId, "add_battle_guest");
+    const actor = draft.database.actors.find((entry) => entry.id === actorId)!;
+    const guests = troop.battleGuests ?? [];
+    const existing = guests.findIndex((guest) => guest.actorId === actorId);
+    if (args.remove === true) {
+      if (existing < 0) throw new ToolError(`트룹 '${troop.id}'에 손님 '${actorId}'가 없습니다.`, { code: "battle-guest-not-found" });
+      guests.splice(existing, 1);
+      if (guests.length === 0) delete troop.battleGuests; else troop.battleGuests = guests;
+      return { summary: `트룹 '${troop.name}' 손님 '${actor.name}' 제거`, data: { troopId: troop.id, actorId, guestCount: guests.length } };
+    }
+    const warnings: string[] = [];
+    const conditions: BattleEventCondition[] = [];
+    if (args.atEnemyHpPercent !== undefined) {
+      const percent = Math.trunc(Number(args.atEnemyHpPercent));
+      if (!Number.isFinite(percent) || percent < 1 || percent > 100) {
+        throw new ToolError(`atEnemyHpPercent 는 1~100 이어야 합니다: ${String(args.atEnemyHpPercent)}`, { code: "invalid-args" });
+      }
+      conditions.push({ kind: "enemyHpBelow", enemyId: bossEnemy(draft, troop, args.enemyId).id, percent });
+    }
+    if (args.atRound !== undefined) {
+      const round = Math.trunc(Number(args.atRound));
+      if (!Number.isFinite(round) || round < 1) throw new ToolError(`atRound 는 1 이상이어야 합니다: ${String(args.atRound)}`, { code: "invalid-args" });
+      conditions.push({ kind: "onRound", round });
+    }
+    const extra = Array.isArray(args.conditions) ? args.conditions : args.conditions === undefined ? [] : [args.conditions];
+    extra.forEach((entry, index) => conditions.push(normalizeBattleCondition(draft, troop, entry, `conditions[${index}]`)));
+    if (typeof args.requireSwitchId === "string" && args.requireSwitchId.trim()) {
+      const switchId = args.requireSwitchId.trim();
+      const known = draft.switches.some((entry) => entry.id === switchId);
+      ensureNamedSwitch(draft, switchId, typeof args.requireSwitchName === "string" && args.requireSwitchName.trim() ? args.requireSwitchName.trim() : `${actor.name} 전투 합류`);
+      if (!known) warnings.push(`스위치 '${switchId}'를 새로 만들었습니다(꺼짐). 앞선 선택지·이벤트에서 setSwitch 로 켜야 손님이 합류합니다.`);
+      conditions.push({ kind: "switch", switchId, value: true });
+    }
+    if (conditions.length === 0) {
+      warnings.push("조건이 없어 전투가 시작되자마자(첫 평가 때) 합류합니다.");
+    }
+    if (draft.system.startActorIds.includes(actorId)) {
+      warnings.push(`'${actor.name}'는 시작 파티에 있습니다 — 이미 파티에 있는 배우는 손님으로 합류하지 않습니다.`);
+    }
+    if (draft.system.battleParty === "monsters" || draft.system.monsterBattleParty === true) {
+      warnings.push("몬스터 파티 전투에서는 손님이 합류하지 않습니다(배우가 직접 싸우는 전투 전용). 팀 교대 전투도 마찬가지입니다.");
+    }
+    const tactic = (GUEST_TACTICS as readonly string[]).includes(args.tactic as string) ? (args.tactic as TroopBattleGuest["tactic"]) : undefined;
+    const message = typeof args.message === "string" && args.message.trim() ? args.message.trim() : undefined;
+    const guest: TroopBattleGuest = { actorId, conditions, ...(tactic ? { tactic } : {}), ...(message ? { message } : {}) };
+    if (existing >= 0) guests[existing] = guest; else guests.push(guest);
+    troop.battleGuests = guests;
+    const switchNote = conditions.some((condition) => condition.kind === "switch")
+      ? `, switchesOn:[${conditions.flatMap((condition) => condition.kind === "switch" ? [`"${condition.switchId}"`] : []).join(",")}]`
+      : "";
+    warnings.push(`실제 합류는 simulate_battle { troopId:"${troop.id}"${switchNote} } 의 phaseCoverage 「battle-guest:${actorId}」 firedRuns 로 확인하세요.`);
+    return {
+      summary: `트룹 '${troop.name}'에 전투 중 손님 '${actor.name}' ${existing >= 0 ? "수정" : "추가"}(조건 ${conditions.length}개${tactic ? `, 작전 ${tactic}` : ""})`,
+      data: { troopId: troop.id, actorId, conditions, tactic: tactic ?? "balanced", message: message ?? null, guestCount: guests.length },
+      warnings,
+    };
+  },
+};
+
 export const TROOP_BATTLE_PAGE_TOOLS: readonly ToolDefinition[] = [
   authorBossPhases,
+  addBattleGuest,
   upsertTroopBattlePage,
   deleteTroopBattlePage,
 ];

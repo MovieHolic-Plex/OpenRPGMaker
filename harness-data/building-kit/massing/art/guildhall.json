@@ -1,0 +1,23 @@
+{
+ "name": "계단 박공 길드 회관",
+ "massing": "10",
+ "material": "stone",
+ "refs": [
+  "bd-house-h124_0",
+  "bd-house-cathedral"
+ ],
+ "walk": [
+  ".****.",
+  "******",
+  "******",
+  "******",
+  "******",
+  "******",
+  "XXXXXX",
+  "XXXXXX",
+  "XXXXXX",
+  "XXDXXX",
+  "XXDXXX"
+ ],
+ "id": "guildhall"
+}

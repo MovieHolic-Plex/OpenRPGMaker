@@ -69,6 +69,13 @@ interface Goal {
    * 끄는 프로젝트의 되풀이 준비. 침대 이벤트가 없어도 하루는 넘어간다(강제 취침).
    */
   readonly sleepDays?: number;
+  /** 이 목표가 채우는 요구 — 앞에서 이미 지나간 일시 값(오프닝 자동 실행 사슬이 1 로 올렸다가 2 로 넘긴 단계 변수)인지 판단할 때 쓴다. */
+  readonly req?: Requirement;
+  /**
+   * 되돌리는 세터가 없는 한 번짜리 세터 대신 문턱 쪽으로 움직이는 다른 이벤트의 세터들 — 소원 등롱 셋을 세 사람에게서 하나씩 받듯
+   * 「== 3」 이 서로 다른 한 번짜리 이벤트 셋의 +1 로 채워질 때 차례로 부른다.
+   */
+  readonly pool?: readonly CommandVisit[];
 }
 
 function requirementLabel(project: Project, req: Requirement): string {
@@ -221,6 +228,25 @@ function commandsRunBefore(visit: CommandVisit): RawCommand[] {
     list = child?.list ?? [];
   }
   return out;
+}
+
+/**
+ * 같은 페이지의 `bonus` 명령이 `main` 명령과 한 번의 실행에서 함께 돌 수 있는가 — 둘이 갈라지는 자리까지 같은 갈래를 타고,
+ * 갈라진 뒤 bonus 쪽은 조건 분기의 then 만 지난다(다른 선택지 보기·else 는 같은 실행에서 함께 닿지 않는다).
+ */
+function runsAlongside(main: CommandVisit, bonus: CommandVisit): boolean {
+  const segmentKey = (segment: CommandVisit["segments"][number]): string => JSON.stringify({ ...segment, command: undefined });
+  const depth = Math.min(main.indexPath.length, bonus.indexPath.length);
+  for (let level = 0; level < depth; level++) {
+    if (main.indexPath[level] !== bonus.indexPath[level]) {
+      return bonus.segments.slice(level).every((segment) => segment.kind === "fork" && segment.branch === "then");
+    }
+    const a = main.segments[level];
+    const b = bonus.segments[level];
+    if (!a || !b) return false; // 한쪽이 다른 쪽을 감싸는 명령
+    if (segmentKey(a) !== segmentKey(b)) return false;
+  }
+  return false;
 }
 
 /**
@@ -518,7 +544,31 @@ export function planCriticalPath(project: Project, target: CommandVisit, targetG
         if (planVisit(candidate, depth + 1)) {
           const threshold = req.kind === "variable" && req.op && req.value !== undefined ? req : undefined;
           const friendshipGoal = req.kind === "friendship" ? req : undefined;
+          // 문턱 세터와 같은 실행 길에 조건 분기(fork then) 속 덤 세터가 더 있으면 그 분기 조건도 먼저 채운다 — 사진을 봤으면 +100,
+          // 쪽지를 읽었으면 +100 처럼 한 번만 열리는 페이지가 분기 덤까지 합쳐야 문턱에 닿는다(2026-10-25 시타마치: 지호 300/400).
+          // 덤 조건을 못 채우면 그 덤만 버린다(계획 되돌림) — 본 세터의 계획은 그대로다.
+          if (threshold || friendshipGoal) {
+            for (const bonus of visits) {
+              if (bonus === candidate || bonus.page.page !== candidate.page.page || bonus.page.event !== candidate.page.event) continue;
+              if (!bonus.segments.some((segment) => segment.kind === "fork") || !setterMatches(project, req, bonus)) continue;
+              if (!runsAlongside(candidate, bonus)) continue;
+              const bonusSnapshot = snapshotPlan();
+              if (!planVisit(bonus, depth + 1)) restorePlan(bonusSnapshot);
+            }
+          }
+          const resets = threshold || friendshipGoal ? pageResetGoals(project, candidate, visits) : [];
+          // 되풀이할 길이 없는 한 번짜리 세터면 다른 이벤트의 같은 쪽 세터도 계획에 넣어 둔다(선행까지) — 못 푸는 것은 버린다.
+          const pool: CommandVisit[] = [];
+          if ((threshold || friendshipGoal) && resets.length === 0) {
+            for (const other of candidates) {
+              if (other.page.event === candidate.page.event || pool.some((kept) => kept.page.event === other.page.event)) continue;
+              const poolSnapshot = snapshotPlan();
+              if (planVisit(other, depth + 1)) pool.push(other);
+              else restorePlan(poolSnapshot);
+            }
+          }
           goals.push({
+            req,
             label: req.kind === "map" ? requirementLabel(project, req) : threshold || friendshipGoal ? `${requirementLabel(project, req)} 만들기` : `${requirementLabel(project, req)} 켜기`, visit: candidate,
             done: (session) => req.kind === "switch" ? session.switches[req.id] === true
               : req.kind === "selfSwitch" ? session.selfSwitches?.[req.eventId]?.[req.key] === true
@@ -529,7 +579,8 @@ export function planCriticalPath(project: Project, target: CommandVisit, targetG
               : req.kind === "friendship" ? friendshipValueOf(session.friendship, req.npcKey) >= req.value
               : threshold ? compare(session.variables[req.id] ?? 0, threshold.op!, threshold.value!) : false,
             ...(req.kind === "skill" && candidate.command.kind === "changeItem" && typeof candidate.command.itemId === "string" ? { useItemAfter: candidate.command.itemId } : {}),
-            ...(threshold || friendshipGoal ? { repeat: { resets: pageResetGoals(project, candidate, visits), max: 20 } } : {}),
+            ...(threshold || friendshipGoal ? { repeat: { resets, max: 20 } } : {}),
+            ...(pool.length ? { pool } : {}),
             alternatives: candidates.filter((other) => other !== candidate && other.page.map?.id === candidate.page.map?.id
               && requirementsOf(project, other).length <= requirementsOf(project, candidate).length),
           });
@@ -606,6 +657,8 @@ interface Driver {
   readonly deadline: number;
   /** 저장해 두었다가 불러오는 지점 — 있으면 steps 는 처음이 아니라 여기서부터 다시 돈다. */
   base?: PlaySession;
+  /** base 를 잡을 때 그 맵에서 컷신이 옮겨 둔 인물 칸 — 이어 도는 판도 같은 자리에서 시작한다(J92). */
+  baseMoved?: SceneTestResult["movedEvents"];
   /** base 이전에 이미 확정한 단계 수(보고용). */
   committed: number;
   /** 수련 중에는 조우 직전마다 회복한다(회복 센터를 오가는 걸음을 줄인 것). */
@@ -615,6 +668,57 @@ interface Driver {
   readonly badGrounds: Map<string, number>;
   /** 필드 기술을 익히러 가는 중인 스킬 — 익히는 길이 같은 장애물에 막혀 맴돌지 않게 한다. */
   acquiring?: Set<string>;
+  /** 이번 판에서 확정한 단계마다 본 변수 값·켜진 스위치 — 지나간 일시 값을 「이미 거쳤다」로 알아보는 증거. */
+  seen?: { readonly vars: Map<string, Set<number>>; readonly switches: Set<string> };
+}
+
+/** 막힘이 아니라 경고로 낮춰 통과시킨 단계의 detail 머리 — runPlan 이 뒤의 실패에 덧붙인다. */
+const TRANSIENT_NOTE = "경고:";
+
+/** 세션에서 지금 값을 기록한다 — 변수마다 값 64개까지. */
+function observe(driver: Driver, session: PlaySession): void {
+  const seen = driver.seen ??= { vars: new Map(), switches: new Set() };
+  for (const [id, value] of Object.entries(session.variables ?? {})) {
+    if (typeof value !== "number") continue;
+    let values = seen.vars.get(id);
+    if (!values) seen.vars.set(id, values = new Set<number>());
+    if (values.size < 64) values.add(value);
+  }
+  for (const [id, on] of Object.entries(session.switches ?? {})) if (on === true) seen.switches.add(id);
+}
+
+/**
+ * 이 목표의 요구가 이번 판 어느 시점에 이미 채워져 있었는가(지금은 아니어도). 증거는 둘 중 하나다:
+ * 확정한 단계 경계에서 그 값을 봤다, 또는 세터가 시작 조건만으로 열리는 자동 실행 페이지의 맨 윗단 명령이고 그 이벤트가 이번 판에 돌았다
+ * (선택지 없이 한 번에 흘러가는 오프닝 사슬은 단계 경계가 없어 값을 못 본다).
+ */
+function seenSatisfied(driver: Driver, goal: Goal): boolean {
+  const req = goal.req;
+  if (!req) return false;
+  if (req.kind === "switch" && driver.seen?.switches.has(req.id)) return true;
+  if (req.kind === "variable" && req.op && req.value !== undefined
+    && [...driver.seen?.vars.get(req.id) ?? []].some((value) => compare(value, req.op!, req.value!))) return true;
+  return openingSetterRan(driver, goal.visit, req);
+}
+
+function openingSetterRan(driver: Driver, visit: CommandVisit, req: Requirement): boolean {
+  const { project } = driver;
+  const command = visit.command;
+  const sets = req.kind === "switch" ? command.kind === "setSwitch" && command.switchId === req.id && command.value === true
+    : req.kind === "variable" && req.op && req.value !== undefined
+      ? command.kind === "setVariable" && command.variableId === req.id && command.op === "=" && typeof command.value === "number" && compare(command.value, req.op, req.value)
+      : false;
+  const event = visit.page.event;
+  if (!sets || !event || !visit.page.page || visit.segments.length > 0 || visit.page.trigger?.kind !== "auto") return false;
+  // 조건을 모두 요구로 옮길 수 있고 그 요구가 시작부터 참인 페이지 — 옮길 수 없는 조건(not·시각 등)이 있으면 증거로 안 쓴다.
+  const opensAtStart = (conditions: readonly Condition[]): boolean => conditions.every((condition) => {
+    const leaves = leafRequirements(condition, visit.page);
+    return leaves.length > 0 && leaves.every((leaf) => satisfiedAtStart(project, leaf));
+  });
+  if (!opensAtStart(visit.page.conditions)) return false;
+  // 뒤 페이지가 먼저 고른다(resolveEventPage 는 뒤에서부터) — 뒤 페이지도 시작부터 열리면 이 페이지가 돌았다고 못 한다.
+  if ((event.pages ?? []).slice(visit.page.pageIndex + 1).some((later) => opensAtStart(later.conditions ?? []))) return false;
+  return driver.last.log.includes(`event ${event.id} start`);
 }
 
 /** runAutoPlay({ recoverBeforeRandomEncounters }) 로 도는 프로젝트 — 인카운터 직전마다 파티를 회복한다. */
@@ -623,13 +727,14 @@ const MAX_COMPANION_JOINS = 3;
 const RECOVERING_PROJECTS = new WeakSet<Project>();
 
 /** 러너는 같은 단계를 몇 번이고 다시 돈다 — 런타임 경고(console.warn)가 매번 쏟아지지 않게 모아 둔다. */
-function quietScene(project: Project, steps: SceneStep[], base?: PlaySession, recover?: boolean): SceneTestResult {
+function quietScene(project: Project, steps: SceneStep[], base?: PlaySession, recover?: boolean, moved?: SceneTestResult["movedEvents"]): SceneTestResult {
   const warn = console.warn;
   console.warn = () => undefined;
   try {
     const start = base ? { mapId: base.currentMapId, start: { x: base.x, y: base.y } } : { mapId: project.startMapId, start: project.startPos };
     return runSceneTest(project, { ...start, steps }, undefined,
       { recoverBeforeRandomEncounters: recover ?? RECOVERING_PROJECTS.has(project), ...(base ? { initialSession: base } : {}),
+        ...(base && moved ? { initialEventPositions: moved } : {}),
         // 몬스터 게임의 자동 플레이어는 동료를 잡고 상성에 맞춰 교체한다(실제 플레이어처럼).
         ...(isMonsterPartyGame(project) ? { monsterTactics: true } : {}) });
   } finally {
@@ -639,7 +744,7 @@ function quietScene(project: Project, steps: SceneStep[], base?: PlaySession, re
 
 function run(driver: Driver, steps: SceneStep[]): SceneTestResult {
   driver.runs += 1;
-  return quietScene(driver.project, steps, driver.base, driver.recover);
+  return quietScene(driver.project, steps, driver.base, driver.recover, driver.baseMoved);
 }
 
 /**
@@ -690,13 +795,14 @@ function learnPendingMoves(project: Project, session: PlaySession): PlaySession 
 
 /**
  * 지금 세션을 저장했다가 불러온 것처럼 다음 시도의 출발점으로 삼는다. 72맵 몬스터 캠페인은 목표가 60개를 넘어
- * 매 시도를 처음부터 다시 돌리면(단계 수의 제곱) 시간 상한에 걸렸다. 맵 안 일시 상태(이벤트 위치)는
- * 실제 불러오기처럼 맵 기본값으로 돌아간다.
+ * 매 시도를 처음부터 다시 돌리면(단계 수의 제곱) 시간 상한에 걸렸다. 컷신이 옮긴 인물 칸은 이어 간다(baseMoved) —
+ * 실제 한 판은 저장·불러오기 없이 이어지므로, 저작 칸으로 되돌리면 사람이 못 찾는 인물을 러너만 찾는다(J92).
  */
 function checkpoint(driver: Driver): void {
   const learned = isMonsterPartyGame(driver.project) ? learnPendingMoves(driver.project, driver.last.session) : null;
   if (driver.steps.length === 0 && driver.base && !learned) return;
   driver.base = learned ?? structuredClone(driver.last.session);
+  driver.baseMoved = driver.last.movedEvents;
   // 복제하면 세션에 붙은 체크포인트(마지막 회복 센터)가 사라진다 — 함께 옮긴다.
   const saved = getSessionCheckpoint(driver.last.session);
   if (saved) setSessionCheckpoint(driver.base, saved);
@@ -733,6 +839,7 @@ function tryCommit(driver: Driver, extra: SceneStep[]): { ok: true } | { ok: fal
   }
   driver.steps = steps;
   driver.last = result;
+  observe(driver, result.session);
   return { ok: true };
 }
 
@@ -1333,7 +1440,10 @@ function train(driver: Driver, target: number, knockedOut = 0, heals = 0): strin
 }
 
 /** 일정이 있는 NPC 의 지금 위치 — 러너가 세운 자리(session.eventLocations)를 따른다. 일정이 없거나 아직 안 세웠으면 저작 위치. */
-function presentLocation(session: PlaySession, authoredMap: string, event: GameEvent): { mapId: string; event: GameEvent } {
+function presentLocation(session: PlaySession, authoredMap: string, event: GameEvent, moved?: SceneTestResult["movedEvents"]): { mapId: string; event: GameEvent } {
+  // 컷신이 옮긴 인물(J92): 지금 이 맵에 있고 저작 칸을 떠났으면 그 칸으로 간다 — 사람이 찾는 자리.
+  const shifted = session.currentMapId === authoredMap ? moved?.[event.id] : undefined;
+  if (shifted) return { mapId: authoredMap, event: { ...event, x: shifted.x, y: shifted.y } };
   if (!event.schedule?.length) return { mapId: authoredMap, event };
   const at = session.eventLocations?.[event.id];
   if (!at || (at.mapId === authoredMap && at.x === event.x && at.y === event.y)) return { mapId: authoredMap, event };
@@ -1353,7 +1463,7 @@ function executeGoal(driver: Driver, goal: Goal, escaped = false, trained = 0, h
   if (!authoredMap || !authoredEvent) return trace(goal.label, false, "공통 이벤트 안의 명령은 자동 플레이가 부를 수 없습니다.", driver, visit.where);
   // NPC 일정: 러너는 시각에 맞춰 일정이 있는 이벤트를 다른 맵·칸에 세운다(session.eventLocations). 저작 위치(「교실 앞 27,34」)로
   // 걸어가 «조사할 이벤트 없음» 으로 오판하지 않고, 지금 그 사람이 선 자리로 간다(2026-10-16 연애 도그푸딩: 한유나는 1~5일 아침 강의실).
-  const present = presentLocation(driver.last.session, authoredMap, authoredEvent);
+  const present = presentLocation(driver.last.session, authoredMap, authoredEvent, driver.last.movedEvents);
   const targetMap = present.mapId;
   const event = present.event;
   if (goal.done?.(driver.last.session, driver.last)) return trace(goal.label, true, "이미 충족돼 건너뜀", driver, visit.where);
@@ -1373,6 +1483,11 @@ function executeGoal(driver: Driver, goal: Goal, escaped = false, trained = 0, h
       const off = tryCommit(driver, [{ kind: "set", switches: { [project.database.items.find((item) => item.id === stuckId)!.switchId!]: false } }]);
       if (!off.ok) return trace(goal.label, false, `스위치 아이템 ${stuckId} 끄기 실패: ${off.reason}`, driver, visit.where);
       return executeGoal(driver, goal, false);
+    }
+    // 이번 판에서 이 값을 이미 거쳤다(오프닝 자동 실행 사슬이 단계 1 로 올리고 곧바로 2 로 넘긴 것처럼) — 지나간 일시 값을 다시 만들러
+    // 돌아갈 문이 없는 것은 막힘이 아니다. 건너뛰고 경고로 남긴다. 한 번도 본 적 없는 값이면 그대로 막힘이다.
+    if (seenSatisfied(driver, goal)) {
+      return trace(goal.label, true, `${TRANSIENT_NOTE} 이번 판에서 이미 거친 값이라 건너뜀 — 지금은 ${project.maps[targetMap]?.name ?? targetMap}(${targetMap}) 으로 돌아갈 문이 없어 다시 만들 수 없습니다.`, driver, visit.where);
     }
     return trace(goal.label, false, `${driver.last.session.currentMapId} 에서 ${project.maps[targetMap]?.name ?? targetMap}(${targetMap}) 으로 가는 문이 (현재 스위치 상태로는) 없습니다.`, driver, visit.where);
   }
@@ -1459,6 +1574,20 @@ function executeGoal(driver: Driver, goal: Goal, escaped = false, trained = 0, h
     }
   }
   if (goal.done && !goal.done(driver.last.session, driver.last)) {
+    // 세터 페이지가 한 번만 열리고 되돌리는 세터도 없으면 되풀이는 애초에 불가능하다 — 문턱 미달은 경고로 두고 계속 간다.
+    // 그 문턱이 정말 엔딩을 막으면 뒤의 엔딩 목표가 막힘으로 실패하고, 그 실패에 이 경고가 붙는다(runPlan).
+    if (goal.repeat && goal.repeat.resets.length === 0 && goal.pool?.length) {
+      const used: string[] = [];
+      for (const other of goal.pool) {
+        if (goal.done(driver.last.session, driver.last)) break;
+        const step = executeGoal(driver, { ...goal, visit: other, repeat: undefined, done: undefined, pool: undefined, alternatives: undefined });
+        if (step.ok) used.push(other.where.eventName ?? other.where.eventId ?? "?");
+      }
+      if (goal.done(driver.last.session, driver.last)) return trace(goal.label, true, `완료(다른 세터 ${used.join("·")} 함께)`, driver, visit.where);
+    }
+    if (goal.repeat && goal.repeat.resets.length === 0) {
+      return trace(goal.label, true, `${TRANSIENT_NOTE} 한 번만 열리는 세터 페이지(되돌리는 이벤트 없음)라 되풀이할 수 없어 문턱 미달인 채 계속합니다(지금 ${describeProgress(driver, goal)}).`, driver, visit.where);
+    }
     if (goal.repeat) return trace(goal.label, false, `되풀이해도 문턱에 닿지 않습니다(지금 ${describeProgress(driver, goal)}).`, driver, visit.where);
     // 이벤트 안 전투(대개 보스)에져 게임 오버가 났으면 「다른 페이지가 실행됐다」로 보면 오판이다 —
     // 승리 분기의 목표 명령이 실행되지 않은 원인을 전투 패배라고 못박는다(2026-09-24 JRPG 도그푸딩: 등대·잿불 광산 보스전).
@@ -1468,6 +1597,9 @@ function executeGoal(driver: Driver, goal: Goal, escaped = false, trained = 0, h
       return trace(goal.label, false,
         `이벤트 전투에서 패배해 게임 오버 — 승리 분기의 목표 명령에 닿지 않았습니다${battles.length ? ` — 전투 ${battles.length}회, 마지막: ${battles.slice(-3).join(" / ")}` : ""}`,
         driver, visit.where);
+    }
+    if (seenSatisfied(driver, goal)) {
+      return trace(goal.label, true, `${TRANSIENT_NOTE} 이번 판에서 이미 거친 값이라 건너뜀 — 세터 페이지가 지금은 다시 돌지 않습니다.`, driver, visit.where);
     }
     return trace(goal.label, false, `이벤트는 돌았지만 목표가 충족되지 않았습니다 (페이지 ${visit.page.pageIndex + 1} 대신 다른 페이지가 실행됐거나 선택지·조건 분기가 목표 명령을 건너뜀).`, driver, visit.where);
   }
@@ -1517,6 +1649,7 @@ function runPlan(project: Project, label: string, goals: readonly Goal[], deadli
   const started = Date.now();
   const first = quietScene(project, []);
   const driver: Driver = { project, steps: [], runs: 1, last: first, deadline, committed: 0, badGrounds: new Map() };
+  observe(driver, first.session);
   const steps: AutoPlayStepTrace[] = preamble.map((detail) => ({ goal: "계획", ok: false, detail }));
   if (!first.ok) {
     const failure: AutoPlayStepTrace = { goal: "게임 시작(자동 실행 이벤트)", ok: false, detail: first.failureReason ?? "시작 실패", mapId: project.startMapId };
@@ -1548,10 +1681,20 @@ function runPlan(project: Project, label: string, goals: readonly Goal[], deadli
     if (step.ok && isMonsterPartyGame(project)) checkpoint(driver);
     if (!step.ok && step.soft) { firstFailure ??= step; continue; }
     if (!step.ok) {
+      // 앞에서 경고로 낮춰 지나간 단계(지나간 일시 값·되풀이 못 하는 문턱)가 이 실패의 원인일 수 있다 — 함께 보인다.
+      const warned = steps.filter((earlier) => earlier.ok && earlier.detail.startsWith(TRANSIENT_NOTE));
+      if (warned.length) {
+        step = { ...step, detail: `${step.detail} (앞서 경고로 넘긴 단계: ${warned.map((earlier) => `「${earlier.goal}」 ${earlier.detail.slice(TRANSIENT_NOTE.length).trim()}`).join(" / ")})` };
+        steps[steps.length - 1] = step;
+      }
       return { label, ok: false, steps, failure: firstFailure ?? step, sceneSteps: driver.committed + driver.steps.length, runs: driver.runs, ms: Date.now() - started, partyAtEnd: driver.last.session.partyActorIds.map((id) => (typeof id === "string" ? id : null)) };
     }
   }
-  const reached = driver.last.finalState.endingsReached[0];
+  // 이 경로의 엔딩 — 목표가 이름을 준 엔딩이 도달 목록에 있으면 그것, 없으면 마지막에 켜진 것.
+  // 첫 원소를 쓰면 앞 경로·자동 선택이 먼저 켠 엔딩 플래그(서연)를 지호·유나 경로의 결과로 적었다(2026-10-25 Shitamachi #3512).
+  const allReached = driver.last.finalState.endingsReached;
+  const targeted = queue.map((goal) => goal.visit.command.endingId).filter((id): id is string => typeof id === "string");
+  const reached = [...targeted].reverse().find((id) => allReached.includes(id)) ?? allReached.at(-1);
   return { label, ok: !firstFailure, ...(firstFailure ? { failure: firstFailure } : {}), ...(reached ? { endingReached: reached } : {}), steps, sceneSteps: driver.committed + driver.steps.length, runs: driver.runs, ms: Date.now() - started, partyAtEnd: driver.last.session.partyActorIds.map((id) => (typeof id === "string" ? id : null)) };
 }
 

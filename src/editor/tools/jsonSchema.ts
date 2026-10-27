@@ -77,24 +77,49 @@ function isCoordinateObjectSchema(schema: JsonSchema): boolean {
 function normalizeFlatCoordinateAliases(properties: Record<string, JsonSchema>, args: Record<string, unknown>): void {
   for (const key of coordinateKeys(properties)) {
     if (args[key] !== undefined) continue;
-    const aliasValue = coordinateValue(args, key);
-    if (aliasValue !== undefined) args[key] = aliasValue;
+    const alias = dimensionAlias(key);
+    if (!alias || args[alias] === undefined) continue;
+    args[key] = args[alias];
+    // width 만 선언된 칸에 w 를 남기면 additionalProperties:false 가 방금 옮긴 값을 거부한다.
+    if (!(alias in properties)) delete args[alias];
+  }
+}
+
+/** 포장 객체의 열쇠가 이미 선언 칸(또는 w↔width 별칭)으로 옮겨졌는가. */
+function wrapperAccountedFor(properties: Record<string, JsonSchema>, args: Record<string, unknown>, wrapper: Record<string, unknown>): boolean {
+  const keys = Object.keys(wrapper);
+  if (keys.length === 0) return false;
+  return keys.every((key) => {
+    if (key in properties) return args[key] !== undefined;
+    const alias = dimensionAlias(key);
+    return alias !== null && alias in properties && args[alias] !== undefined;
+  });
+}
+
+function copyMissingProperties(args: Record<string, unknown>, wrapper: Record<string, unknown>, keys: readonly string[]): void {
+  for (const key of keys) {
+    if (args[key] !== undefined) continue;
+    const value = coordinateValue(wrapper, key);
+    if (value !== undefined) args[key] = value;
   }
 }
 
 function flattenCoordinateWrapper(properties: Record<string, JsonSchema>, args: Record<string, unknown>): void {
-  const keys = coordinateKeys(properties);
-  if (!keys.includes("x") || !keys.includes("y")) return;
+  const coordinates = coordinateKeys(properties);
+  if (!coordinates.includes("x") || !coordinates.includes("y")) return;
 
   for (const wrapperKey of COORDINATE_WRAPPER_KEYS) {
     const wrapper = args[wrapperKey];
     if (!isRecord(wrapper)) continue;
-    for (const key of keys) {
-      if (args[key] !== undefined) continue;
-      const value = coordinateValue(wrapper, key);
-      if (value !== undefined) args[key] = value;
-    }
-    return;
+    // 선언된 rect·region 은 그 칸 자체다 — 좌표만 비어 있는 형제 칸으로 옮기고 칸은 남긴다.
+    // 선언되지 않은 포장은 호출 전체를 그 안으로 넣은 것이므로 mapId 같은 형제 칸도 함께 올린다.
+    const declared = wrapperKey in properties;
+    copyMissingProperties(args, wrapper, declared ? coordinates : Object.keys(properties));
+    if (declared) continue;
+    // 열쇠가 모두 선언 칸으로 옮겨졌으면 포장을 지운다. 남기면 place_field_obstacle·author_party_split 처럼
+    // 선언 밖 키를 거부하는 도구가 방금 고친 호출을 「rect 는 받지 않습니다」로 다시 거절한다.
+    // 좌표가 아닌 열쇠가 섞여 있으면 포장을 남겨 그 거절이 보이게 한다.
+    if (wrapperAccountedFor(properties, args, wrapper)) delete args[wrapperKey];
   }
 }
 
@@ -119,6 +144,12 @@ function wrapFlatCoordinates(properties: Record<string, JsonSchema>, args: Recor
     if (value !== undefined) wrapped[key] = value;
   }
   args[field] = wrapped;
+  // 평탄 좌표는 이제 rect 안이 정본이다. 선언되지 않은 x·w·width 를 남기면 엄격 스키마가 거절한다.
+  for (const key of ["x", "y", "w", "h", "width", "height"] as const) {
+    if (key in properties || args[key] === undefined) continue;
+    const alias = dimensionAlias(key);
+    if (keys.includes(key) || (alias !== null && keys.includes(alias))) delete args[key];
+  }
 }
 
 function normalizeCoordinateShape(schema: JsonSchema, args: Record<string, unknown>): void {

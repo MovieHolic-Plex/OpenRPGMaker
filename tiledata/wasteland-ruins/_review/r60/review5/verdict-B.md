@@ -1,0 +1,13 @@
+VERDICT: FAIL
+1: PASS — joint layout is irregular running-bond with varying panel sizes; no 16/32/64/128px repeat visible in the plaza or map overviews at 1x or 2x. /tmp/r60-rev5-B/gg-top.png, /tmp/r60-rev5-B/s1-plaza.png, /tmp/r60-rev5-B/rc2-mid.png
+2: PASS — stains, cracks and chip notches differ in shape and position; no fixed-offset pairs. Weeds sit on three different joint runs (no stacking now), but all three use the same green zigzag glyph within about 50px of one panel cluster, which is a minor repeat risk (see FIXES). /tmp/r60-rev5-B/gj-weeds.png, /tmp/r60-rev5-B/s1-plaza.png
+3: PASS — reads as broken poured concrete / old city slabs; no worm joints, dead ends, crazy paving or patio look. /tmp/r60-rev5-B/gg-top.png, /tmp/r60-rev5-B/rc2-mid.png
+4: PASS — soft mottling, no salt-and-pepper, no stitched or dashed highlight lines, not dead flat. /tmp/r60-rev5-B/gj-tl.png, /tmp/r60-rev5-B/gg-top.png
+5: PASS — cracks read as thin diagonal cracks of varied length; chip notches are irregular broken-chunk shapes with no teal bar and do not read as bugs or rivets; weeds read as weeds. /tmp/r60-rev5-B/gj-weeds.png, /tmp/r60-rev5-B/s1-plaza.png
+6: PASS — 1-cell strips have only transverse cuts, no lengthwise joint, no half-height slivers, and read as a sidewalk beside asphalt. /tmp/r60-rev5-B/gj-bot.png, /tmp/r60-rev5-B/rc2-ne.png
+7: FAIL — the strip-to-strip connector stubs are still present on the joints board (about x=500 and x=1140 in the crop). Each neck pinches narrower than the strip, has a notched side, and the two stubs are near-identical mirror shapes, so they read as dripping tongues rather than a slab edge or kerb. The slab-to-asphalt kerb and the dirt crumble with south thickness are otherwise good. /tmp/r60-rev5-B/gj-stubs.png
+8: PASS — at the same scale the slab sits within the modern-city family and holds up against the Beodeul quality bar in the map crops, apart from the connector stubs noted in item 7. /tmp/r60-rev5-B/rc2-mid.png, /tmp/r60-rev5-B/s1-plaza.png
+FIXES:
+- Remove the two strip connector stubs from slab-joints, or redraw them as full-strip-width, square-ended junctions with no pinched neck. Make the two instances differ (different length, different notch side), and keep the south thickness band continuous across the junction. Evidence: /tmp/r60-rev5-B/gj-stubs.png
+- Recheck every cell border where a connector meets a strip: the south edge teeth and the dark thickness band must line up with the neighbouring cell.
+- Optional, for item 2: add a second weed glyph (different width and lean) and space weeds at least 3 cells apart so no 50px area holds three identical tufts. Evidence: /tmp/r60-rev5-B/gj-weeds.png

@@ -319,6 +319,12 @@
   color: var(--runtime-window-text);
 }
 
+.runtime-chest-search:focus-visible,
+.runtime-chest-qty:focus-visible {
+  outline: 2px solid var(--runtime-window-text, currentColor);
+  outline-offset: 1px;
+}
+
 .runtime-chest-item:focus-visible,
 .runtime-chest-item.selected,
 .runtime-chest-cancel:focus-visible,

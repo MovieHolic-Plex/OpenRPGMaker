@@ -116,7 +116,8 @@ export const COMPOSE_JP_CITY_STREET_TOOL: ToolDefinition = {
     const target = next.maps[mapId]!;
     target.lowerTiles.fill(blankFillTileFor(JP_CITY_ID, 0, next.tilesets[map.tilesetId]!));
     for (let i = 0; i < target.lowerTiles.length; i++) { setLayerTileAt(target, 3, i, -1); setLayerTileAt(target, 4, i, -1); clearTileStack(target, "upper", i); }
-    const plan = planJpCityStreet({ mapId, width: target.width, height: target.height, seed, style, shops });
+    const crosswalkTile = (tileset.structureKits ?? []).find((k) => k.id === "jp-road-lane-crosswalk-h")?.rows.flatMap((row) => row.upperTiles ?? []).find((t) => t >= 0);
+    const plan = planJpCityStreet({ mapId, width: target.width, height: target.height, seed, style, shops, crosswalkTile });
     const outcome = runJpStreetPlan(plan, (name, a) => {
       const tool = lookup(name);
       if (!tool) throw new ToolError(`도구 ${name} 이 없다`, { code: "unknown-tool" });

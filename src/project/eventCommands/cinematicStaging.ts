@@ -40,7 +40,7 @@ export function normalizeShakeDirection(value: unknown): ShakeDirection {
 
 // ── 파티클 ──────────────────────────────────────────────────────
 
-export const PARTICLE_PRESETS = ["sparkle", "magic", "heal", "fire", "smoke", "dust", "explosion", "splash"] as const;
+export const PARTICLE_PRESETS = ["sparkle", "magic", "heal", "fire", "smoke", "dust", "explosion", "splash", "paper", "petals"] as const;
 export type ParticlePreset = (typeof PARTICLE_PRESETS)[number];
 export const PARTICLE_PRESET_LABELS: Record<ParticlePreset, string> = {
   sparkle: "반짝임 (보물·축복·변신)",
@@ -51,6 +51,8 @@ export const PARTICLE_PRESET_LABELS: Record<ParticlePreset, string> = {
   dust: "흙먼지 (착지·달리기 멈춤·붕괴)",
   explosion: "폭발 (폭탄·충돌)",
   splash: "물보라 (물에 빠짐·분수)",
+  paper: "흩날리는 종이 (부딪혀 서류를 떨굼·바람에 날린 편지)",
+  petals: "꽃잎 (벚꽃이 흩날림·고백·만남)",
 };
 
 export function isParticlePreset(value: unknown): value is ParticlePreset {
@@ -64,6 +66,16 @@ export function normalizeParticleDurationMs(value: unknown): number {
   const numeric = typeof value === "number" ? value : typeof value === "string" && value.trim() !== "" ? Number(value) : NaN;
   if (!Number.isFinite(numeric)) return PARTICLE_DEFAULT_DURATION_MS;
   return Math.round(Math.max(PARTICLE_DURATION_LIMITS.min, Math.min(PARTICLE_DURATION_LIMITS.max, numeric)));
+}
+
+/** 파티클 크기(%) — 입자 그림 크기와 퍼지는 거리를 같이 키운다. 화면에서 작게 보이는 1배 장면(부딪힘·폭발)을 읽히게 한다. */
+export const PARTICLE_SIZE_LIMITS = { min: 25, max: 400 } as const;
+export const PARTICLE_DEFAULT_SIZE_PERCENT = 100;
+
+export function normalizeParticleSizePercent(value: unknown): number {
+  const numeric = typeof value === "number" ? value : typeof value === "string" && value.trim() !== "" ? Number(value) : NaN;
+  if (!Number.isFinite(numeric)) return PARTICLE_DEFAULT_SIZE_PERCENT;
+  return Math.round(Math.max(PARTICLE_SIZE_LIMITS.min, Math.min(PARTICLE_SIZE_LIMITS.max, numeric)));
 }
 
 // ── 캐릭터 모습 효과 ─────────────────────────────────────────────

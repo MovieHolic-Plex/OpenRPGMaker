@@ -28,6 +28,7 @@ import { partyWalker } from "@/player/partyWalker";
 import type { PlayerStatusMenuActions, PlayerStatusMenuOptions } from "@/player/playerStatusMenuTypes";
 import { el } from "@/util/dom";
 import { stampEmeraldSurface } from "@/player/emeraldSurfaces";
+import { resolvePlayResolution } from "@/project/playResolution";
 
 export {
   createPlayerStatusMenuSnapshot,
@@ -84,6 +85,13 @@ export function renderPlayerStatusMenu(options: PlayerStatusMenuOptions): HTMLEl
         : selectedCommand;
     panel.dataset.bagPocket = usesMonsterParty(options.project) ? options.inventoryView?.pocket ?? "items" : options.inventoryView?.filter ?? "all";
     panel.style.setProperty("--emerald-command-count", String(snapshot.commands.length));
+  }
+  // 메뉴 스킨은 전부 320×240 논리 무대 기준으로 짰다. 고해상도 프로젝트(연애 프리셋 1024×768 등)에서는 무대를 꽉 채운 창 안에
+  // 글자·레일이 원래 크기 그대로라 1280×720 에서 10px 남짓으로 눌렸다(2026-10-25 S6 club-festival). 정수배로 키워 같은 배치를 그린다.
+  const zoom = statusMenuZoom(resolvePlayResolution(options.project.system));
+  if (!emerald && zoom > 1) {
+    panel.dataset.menuZoom = String(zoom);
+    panel.style.setProperty("--status-menu-zoom", String(zoom));
   }
   // 도트 스킨 명령 창은 높이를 항목 수로 잡는다(pixelWindows.css --px-dock-h) — 7항목 연애 메뉴에서 「타이틀로」 가 창 밖으로 나갔다(R10).
   panel.style.setProperty("--status-menu-command-count", String(snapshot.commands.length));
@@ -170,7 +178,7 @@ export function renderPlayerStatusMenu(options: PlayerStatusMenuOptions): HTMLEl
   // Effects, equipment comparisons and tabbed pages need the full detail layout.
   // Never hide decision-making information to make room for a second party view.
   const needsFullDetail = Boolean(detail.layout?.startsWith("campaign-")) || selectedCommand === "options" || selectedCommand === "items" || selectedCommand === "gallery" || selectedCommand === "endings" || selectedCommand === "backlog" || Boolean(detail.tabs?.length) || detail.entries.some((entry) => entry.statDelta || entry.facts?.length);
-  const sideParty = skin.sideParty && !snapshot.relationship && !needsFullDetail && mode === "function" && presentation === "work-panel" && !options.targetItemId
+  const sideParty = skin.sideParty && !snapshot.relationship && !snapshot.story && !needsFullDetail && mode === "function" && presentation === "work-panel" && !options.targetItemId
     ? renderSidePartyMini(options.project, snapshot)
     : undefined;
   const detailPanel = renderStatusMenuDetailPanel(options.project, detail, {
@@ -228,7 +236,8 @@ export function renderPlayerStatusMenu(options: PlayerStatusMenuOptions): HTMLEl
           ? [el("span", { class: "status-menu-chapter", text: snapshot.chapterLabel, dataset: { testid: "status-menu-chapter" } })]
           : []),
         // 관계 중심(연애) 게임은 돈을 쓰지 않는다 — 머리줄에 「0G」 를 두지 않는다(첫사랑 VQA 1차).
-        ...(snapshot.relationship ? [] : [el("span", { class: "status-menu-gold", text: snapshot.goldLabel, dataset: { testid: "status-menu-gold" } })]),
+        // 돈을 쓰지 않는 게임(공포·이야기)도 「0G」 를 두지 않는다(J88).
+        ...(!(snapshot.showGold ?? !snapshot.relationship) ? [] : [el("span", { class: "status-menu-gold", text: snapshot.goldLabel, dataset: { testid: "status-menu-gold" } })]),
         // 연애 게임에서는 플레이 시간 알약도 뜻이 없다 — 관계 패널이 머리줄을 대신한다(첫사랑 VQA 2차).
         ...(snapshot.relationship ? [] : [el("span", { class: "status-menu-time", text: snapshot.timeLabel, dataset: { testid: "status-menu-time" } })]),
       ],
@@ -250,6 +259,8 @@ export function renderPlayerStatusMenu(options: PlayerStatusMenuOptions): HTMLEl
     ...(landingOnly
       ? [snapshot.relationship
         ? renderRelationshipOverview(options.project, options.session, snapshot)
+        : snapshot.story
+          ? renderStoryOverview(options.project, options.session, snapshot)
         : skin.landing === "hub"
           ? renderPartyStrip(options.project, snapshot)
           // 사이드 시트는 140px 폭에 4행이라 얼굴을 22px 로 줄인다(파티 퍼스트는 30px).
@@ -374,6 +385,7 @@ function statusMenuCommandIcon(commandId: StatusMenuRailId): string {
     case "life-ledger": return "▦";
     case "endings": return "★";
     case "backlog": return "≡";
+    case "journal": return "✎";
     case "save": return "↓";
     case "load": return "↑";
     case "wait": return "Ⅱ";
@@ -408,6 +420,7 @@ function statusMenuCommandIconName(commandId: StatusMenuRailId): string {
     case "life-ledger": return "book-magic";
     case "endings": return "badge";
     case "backlog": return "book-magic";
+    case "journal": return "book-magic";
     case "save": return "crystal";
     case "load": return "warp-scroll";
     case "wait": return "clock";
@@ -450,6 +463,7 @@ function runCommand(command: StatusMenuCommand, actions: PlayerStatusMenuActions
     case "endings":
     case "life-ledger":
     case "backlog":
+    case "journal":
       actions.onCommand(command.id as StatusMenuCommandId);
       return;
     default:
@@ -605,6 +619,31 @@ function renderRelationshipOverview(project: PlayerStatusMenuOptions["project"],
       ...(row.note ? [el("span", { class: "status-menu-rel-note", text: row.note })] : []),
     ],
   })));
+  return overview;
+}
+
+// ── 전투 없는 게임(공포·이야기)의 첫 화면 — 주인공 모습과 이름, 지금 있는 곳만. 직업·Lv·HP·MP·EX 는 그 게임에서 아무 뜻이 없다(J88) ──
+function renderStoryOverview(project: PlayerStatusMenuOptions["project"], session: PlayerStatusMenuOptions["session"], snapshot: PlayerStatusMenuSnapshot): HTMLElement {
+  const lead = snapshot.partyRows[0];
+  const overview = el("section", {
+    class: "status-menu-party-overview status-menu-rel-overview status-menu-story-overview",
+    attrs: { "aria-label": "주인공" },
+    dataset: { testid: "status-menu-party-overview" },
+  });
+  overview.append(el("article", {
+    class: "status-menu-overview-row status-menu-rel-lead",
+    dataset: { testid: "status-menu-story-lead" },
+    children: [
+      ...(lead ? [renderPartyCharacter(project, session, lead, 0, 30)] : []),
+      el("div", {
+        class: "status-menu-overview-info",
+        children: [
+          el("span", { class: "status-menu-actor-name", text: snapshot.story?.leadName || project.meta.title }),
+          el("span", { class: "status-menu-actor-subline", text: project.maps[session.currentMapId]?.name ?? "" }),
+        ],
+      }),
+    ],
+  }));
   return overview;
 }
 
@@ -844,4 +883,10 @@ function statusMenuDebug(selectedCommand: StatusMenuRailId, mode: "function" | "
 
 function assertNever(value: never): never {
   throw new Error(`Unhandled status menu command: ${String(value)}`);
+}
+
+/** 320×240 기준 메뉴를 논리 해상도에 맞춰 키우는 정수 배율(1 = 그대로). 도트 글꼴이 번지지 않게 정수만 쓴다. */
+export function statusMenuZoom(resolution: { readonly width: number; readonly height: number }): number {
+  const fit = Math.min(resolution.width / 320, resolution.height / 240);
+  return Number.isFinite(fit) && fit >= 2 ? Math.floor(fit) : 1;
 }

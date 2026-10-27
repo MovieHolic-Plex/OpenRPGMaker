@@ -40610,6 +40610,75 @@ null,
 ],
 "passage": "solid",
 "layer": "lower"
+},
+{
+"key": "6648a76e6dbef42349eefc18",
+"origin": "earth.portcullis/*/theme-earth-r1:A1@dff6a3e0",
+"label": "버들항 던전 · 내리닫이 쇠창살문 3×2 닫힘·올림 닫힘 (1,0)",
+"description": "성 벽 앞면 두 단 자리에 끼우는 문틀 + 쇠 격자. 안쪽은 북쪽으로 이어지는 어두운 통로. 그림 = [닫힘|올림].",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"portcullis",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+],
+"passage": "star",
+"layer": "upper"
+},
+{
+"key": "37314cc62faf21d00e726ef0",
+"origin": "earth.portcullis/*/theme-earth-r1:A1@dff6a3e0",
+"label": "버들항 던전 · 내리닫이 쇠창살문 3×2 닫힘·올림 닫힘 (1,1)",
+"description": "성 벽 앞면 두 단 자리에 끼우는 문틀 + 쇠 격자. 안쪽은 북쪽으로 이어지는 어두운 통로. 그림 = [닫힘|올림].",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"portcullis",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+],
+"passage": "star",
+"layer": "upper"
+},
+{
+"key": "51b3a231b1f202d2313d2884",
+"origin": "earth.portcullis/*/theme-earth-r1:A1@dff6a3e0",
+"label": "버들항 던전 · 내리닫이 쇠창살문 3×2 닫힘·올림 올림 (1,0)",
+"description": "성 벽 앞면 두 단 자리에 끼우는 문틀 + 쇠 격자. 안쪽은 북쪽으로 이어지는 어두운 통로. 그림 = [닫힘|올림].",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"portcullis",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+],
+"passage": "star",
+"layer": "upper"
 }
 ],
 "defs": {
@@ -44896,30 +44965,6 @@ null,
 "description": "풀·뿌리가 뚫고 나온 판석(덧그림 2×2)(키트 bd-pick-dungeon-theme-overgrown). 하네스 theme-earth-r2 A2.",
 "placementRules": "통행: 걸음(덧그림 — 바닥 위 두 번째 바닥층)"
 },
-"beodeul:dungeon_theme_earth_portcullis": {
-"id": "beodeul:dungeon_theme_earth_portcullis",
-"name": "버들항 던전 주제 내리닫이 쇠창살문 3×2 닫힘·올림",
-"role": "object",
-"source": "bundled-default",
-"defaultLayer": "upper",
-"confidence": "high",
-"tileIds": [
-31155,
-31156,
-31157,
-31158,
-31159,
-31160,
-31161,
-31162,
-31163,
-31164,
-31165,
-31166
-],
-"description": "내리닫이 쇠창살문 3×2 닫힘·올림(키트 bd-pick-dungeon-theme-portcullis, bd-pick-dungeon-theme-portcullis-open). 하네스 theme-earth-r1 A1.",
-"placementRules": "통행: 상태별 통행 격자(올림 = 아래 줄 가운데 걸음, 이동 이벤트)"
-},
 "beodeul:dungeon_theme_earth_rails": {
 "id": "beodeul:dungeon_theme_earth_rails",
 "name": "버들항 던전 주제 광산 선로 이음 세트 15칸",
@@ -46434,6 +46479,30 @@ null,
 ],
 "description": "마계 천장 오토타일 `beodeul_dungeon_ceiling_void`. 하네스 theme-walls-r10 A2.",
 "placementRules": "방·통로 바깥 칸(천장)을 이 그룹으로 칠한다. author_dungeon 의 otherworld 테마가 저절로 쓴다."
+},
+"beodeul:dungeon_theme_earth_portcullis": {
+"id": "beodeul:dungeon_theme_earth_portcullis",
+"name": "버들항 던전 주제 내리닫이 쇠창살문 3×2 닫힘·올림",
+"role": "object",
+"source": "bundled-default",
+"defaultLayer": "upper",
+"confidence": "high",
+"tileIds": [
+31155,
+31157,
+31158,
+31160,
+31161,
+31163,
+31164,
+31165,
+31166,
+33102,
+33103,
+33104
+],
+"description": "내리닫이 쇠창살문 3×2 닫힘·올림(키트 bd-pick-dungeon-theme-portcullis, bd-pick-dungeon-theme-portcullis-open). 하네스 theme-earth-r1 A1.",
+"placementRules": "통행: 상태별 통행 격자(양옆 문틀 막힘 · 가운데 윗칸 ★ 사람 위 · 닫힘 가운데 아랫칸 ★ = 막는 일은 보이지 않는 문 이벤트가 한다 · 올림 가운데 아랫칸 걸음)"
 }
 },
 "structureKits": {
@@ -47489,142 +47558,6 @@ null,
 "role": "floor",
 "repeatability": "fixed",
 "layerHome": "lower",
-"themes": [
-"dungeon",
-"던전",
-"mine",
-"catacomb",
-"castle",
-"temple",
-"광산",
-"묘지",
-"성",
-"유적"
-]
-}
-},
-"bd-pick-dungeon-theme-portcullis": {
-"id": "bd-pick-dungeon-theme-portcullis",
-"kind": "object",
-"name": "버들항 던전 · 내리닫이 쇠창살문 3×2 닫힘·올림 닫힘 3×2",
-"width": 3,
-"height": 2,
-"tileSize": 16,
-"rows": [
-{
-"tiles": [
--1,
--1,
--1
-],
-"upperTiles": [
-31155,
-31156,
-31157
-]
-},
-{
-"tiles": [
--1,
--1,
--1
-],
-"upperTiles": [
-31158,
-31159,
-31160
-]
-}
-],
-"learnedFrom": "db-authored",
-"ai": {
-"description": "내리닫이 쇠창살문 3×2 닫힘·올림 — 닫힘. 성 벽 앞면 두 단 자리에 끼우는 문틀 + 쇠 격자. 안쪽은 북쪽으로 이어지는 어두운 통로. 그림 = [닫힘|올림].",
-"placementRules": "통행: 상태별 통행 격자(올림 = 아래 줄 가운데 걸음, 이동 이벤트)",
-"tags": [
-"버들항",
-"던전",
-"주제",
-"portcullis",
-"mine",
-"catacomb",
-"castle",
-"temple",
-"광산",
-"묘지",
-"성",
-"유적"
-],
-"role": "prop",
-"repeatability": "fixed",
-"layerHome": "upper",
-"themes": [
-"dungeon",
-"던전",
-"mine",
-"catacomb",
-"castle",
-"temple",
-"광산",
-"묘지",
-"성",
-"유적"
-]
-}
-},
-"bd-pick-dungeon-theme-portcullis-open": {
-"id": "bd-pick-dungeon-theme-portcullis-open",
-"kind": "object",
-"name": "버들항 던전 · 내리닫이 쇠창살문 3×2 닫힘·올림 올림 3×2",
-"width": 3,
-"height": 2,
-"tileSize": 16,
-"rows": [
-{
-"tiles": [
--1,
--1,
--1
-],
-"upperTiles": [
-31161,
-31162,
-31163
-]
-},
-{
-"tiles": [
--1,
--1,
--1
-],
-"upperTiles": [
-31164,
-31165,
-31166
-]
-}
-],
-"learnedFrom": "db-authored",
-"ai": {
-"description": "내리닫이 쇠창살문 3×2 닫힘·올림 — 올림. 성 벽 앞면 두 단 자리에 끼우는 문틀 + 쇠 격자. 안쪽은 북쪽으로 이어지는 어두운 통로. 그림 = [닫힘|올림].",
-"placementRules": "통행: 상태별 통행 격자(올림 = 아래 줄 가운데 걸음, 이동 이벤트)",
-"tags": [
-"버들항",
-"던전",
-"주제",
-"portcullis",
-"mine",
-"catacomb",
-"castle",
-"temple",
-"광산",
-"묘지",
-"성",
-"유적"
-],
-"role": "prop",
-"repeatability": "fixed",
-"layerHome": "perCell",
 "themes": [
 "dungeon",
 "던전",
@@ -52376,6 +52309,142 @@ null,
 "던전",
 "주제",
 "carpet-runner",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+],
+"role": "prop",
+"repeatability": "fixed",
+"layerHome": "perCell",
+"themes": [
+"dungeon",
+"던전",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+]
+}
+},
+"bd-pick-dungeon-theme-portcullis": {
+"id": "bd-pick-dungeon-theme-portcullis",
+"kind": "object",
+"name": "버들항 던전 · 내리닫이 쇠창살문 3×2 닫힘·올림 닫힘 3×2",
+"width": 3,
+"height": 2,
+"tileSize": 16,
+"rows": [
+{
+"tiles": [
+-1,
+-1,
+-1
+],
+"upperTiles": [
+31155,
+33102,
+31157
+]
+},
+{
+"tiles": [
+-1,
+-1,
+-1
+],
+"upperTiles": [
+31158,
+33103,
+31160
+]
+}
+],
+"learnedFrom": "db-authored",
+"ai": {
+"description": "내리닫이 쇠창살문 3×2 닫힘·올림 — 닫힘. 성 벽 앞면 두 단 자리에 끼우는 문틀 + 쇠 격자. 안쪽은 북쪽으로 이어지는 어두운 통로. 그림 = [닫힘|올림].",
+"placementRules": "통행: 상태별 통행 격자(양옆 문틀 막힘 · 가운데 윗칸 ★ 사람 위 · 닫힘 가운데 아랫칸 ★ = 막는 일은 보이지 않는 문 이벤트가 한다 · 올림 가운데 아랫칸 걸음)",
+"tags": [
+"버들항",
+"던전",
+"주제",
+"portcullis",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+],
+"role": "prop",
+"repeatability": "fixed",
+"layerHome": "upper",
+"themes": [
+"dungeon",
+"던전",
+"mine",
+"catacomb",
+"castle",
+"temple",
+"광산",
+"묘지",
+"성",
+"유적"
+]
+}
+},
+"bd-pick-dungeon-theme-portcullis-open": {
+"id": "bd-pick-dungeon-theme-portcullis-open",
+"kind": "object",
+"name": "버들항 던전 · 내리닫이 쇠창살문 3×2 닫힘·올림 올림 3×2",
+"width": 3,
+"height": 2,
+"tileSize": 16,
+"rows": [
+{
+"tiles": [
+-1,
+-1,
+-1
+],
+"upperTiles": [
+31161,
+33104,
+31163
+]
+},
+{
+"tiles": [
+-1,
+-1,
+-1
+],
+"upperTiles": [
+31164,
+31165,
+31166
+]
+}
+],
+"learnedFrom": "db-authored",
+"ai": {
+"description": "내리닫이 쇠창살문 3×2 닫힘·올림 — 올림. 성 벽 앞면 두 단 자리에 끼우는 문틀 + 쇠 격자. 안쪽은 북쪽으로 이어지는 어두운 통로. 그림 = [닫힘|올림].",
+"placementRules": "통행: 상태별 통행 격자(양옆 문틀 막힘 · 가운데 윗칸 ★ 사람 위 · 닫힘 가운데 아랫칸 ★ = 막는 일은 보이지 않는 문 이벤트가 한다 · 올림 가운데 아랫칸 걸음)",
+"tags": [
+"버들항",
+"던전",
+"주제",
+"portcullis",
 "mine",
 "catacomb",
 "castle",

@@ -423,6 +423,10 @@ export interface PlaySession {
   audio: AudioCommandState;
   systemAudioOverrides?: import("./systemAudioOverrides").SystemAudioOverrides;
   pictures: Record<string, PictureState>;
+  /**
+   * «문장 표시 설정»이 남긴 대사창(형식·위치·가림 방지·대기 중 이벤트 이동).
+   * 기본값과 다를 때만 세이브에 실린다. 없거나 깨진 옛 세이브는 기본 창으로 불러온다.
+   */
   messageWindowSettings?: MessageWindowSettings;
   m2Runtime?: M2RuntimeState;
   // 누적 플레이 타임(초). 매 프레임 update 에서 증가.
@@ -437,6 +441,8 @@ export interface PlaySession {
   teleportPoints?: import("./teleportPoints").TeleportPoint[];
   /** 미니게임 최고 점수(id → 점수). 세이브에 들어간다. */
   highScores?: Record<string, number>;
+  /** 이야기 일지 줄(«Journal Line» 이 쌓고 ESC 메뉴 「일지」 가 읽는다). 세이브에 들어간다. project/storyJournal.ts */
+  storyJournal?: import("./storyJournal").JournalLine[];
   /** Key Poll 이 읽는 지금 눌린 키(필드 씬이 매 프레임 쓴다). 세이브에 넣지 않는다. */
   heldInput?: { readonly dir: number; readonly confirm: boolean; readonly cancel: boolean; readonly dash: boolean };
   /** 상태별 필드 걸음 카운터(actorId → stateId → 걸음). 걸음 상태 효과(#25)가 쓴다. */

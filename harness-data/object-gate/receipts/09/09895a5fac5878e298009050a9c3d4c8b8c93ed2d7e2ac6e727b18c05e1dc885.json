@@ -1,0 +1,433 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "09895a5fac5878e298009050a9c3d4c8b8c93ed2d7e2ac6e727b18c05e1dc885",
+ "width": 64,
+ "height": 64,
+ "kind": "structure",
+ "name": "small sheet-metal hut seen from above: flat pale zinc roof of standing-seam plates with riveted overlapping laps as a top plane, a tall stovepipe with a cone cap and a soot stain, front wall of riveted grey metal plates with a hinged metal door, a small window and a stack of firewood",
+ "label": "wasteland_ruins/hut-stove",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 7,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "wasteland_ruins",
+   "fallback": true,
+   "reason": "칩셋 wasteland_ruins 의 화풍 기준 묶음이 없다",
+   "hash": "5f62fef078ef7661"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 13,
+  "tileColorsP90": 17,
+  "darkV5": 33,
+  "nearBlackEdge": 0.12,
+  "opaqueTiles": 16
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "standing-seam zinc roof plane",
+      "rows": "2-29",
+      "evidence": "c",
+      "front_edge_line_row": 29,
+      "eave_shadow_rows": "30-32"
+     },
+     {
+      "part": "stovepipe with cone cap and soot stain",
+      "rows": "0-20",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "firewood stack",
+      "rows": "48-59",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 28,
+    "front_face_rows": 30,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The roof is a large sloped plane in rows 2-29. It is cut into plates by seams and lap lines at rows 12 and 22, and the silhouette widens from 50 to 64 px going down. A light front-edge line sits at row 29 (L=202), followed by darker eave shadow in rows 30-32 (L=71, then 21). Below it the riveted front wall with door and window runs from rows 33 to 62, about 30 rows. The stovepipe is a thin vertical element on the roof and is too small to count as a major part. The firewood stack is goods placed in front of the wall, so I listed it as decor."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate has 13 visible tones per 16x16 tile against 12 and 10 for the references, and 0% near-flat coverage, the same as both references. Only 1% of its dark edge pixels are neutral, so the outlines lean visibly toward the neighbouring material (grey-blue and brown) and are not a uniform black sticker line. By eye, the zinc roof carries about 5 lightness steps with speckle, rust stains, rivet dots and lap seams. The riveted wall plates, window, door and firewood stack are each shaded in several tones. The stovepipe, cone cap and soot stain are present. It has fewer raw colours overall (31 against 66 and 185) and slightly shallower ramps than the references, and its texture is less varied than the per-tile tile scallops. Even so, it is not flat or sticker-like, and it matches the references on the primary facts. This is a close call, and the verdict is a pass on those measured facts.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15832
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "standing-seam zinc roof plane (trapezoid widening 50 to 64 px)",
+      "rows": "2-30",
+      "evidence": "c",
+      "front_edge_line_row": 29,
+      "eave_shadow_rows": "31-33"
+     },
+     {
+      "part": "stovepipe with cone cap on the roof",
+      "rows": "0-20",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "front wall of riveted metal plates with door and window",
+      "rows": "34-61",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "firewood stack",
+      "rows": "47-60",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 28,
+    "front_face_rows": 28,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The roof is a large sloped plane in rows 2-30 with seam and lap lines. Its silhouette widens from 50 to 64 px, which shows the receding slope. A light front-edge line at row 29 is followed by dark eave shadow in rows 31-33 (L=71, 21, 50). Below it the south wall runs from row 34 to 61, with riveted plates, a hinged door and a window. That gives a top of about 28 rows and a front face of about 28 rows. The stovepipe is a thin vertical element with a small cone cap, so I treated it as a small detail and not as a major part missing a top."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a whole building (roof, wall, door, window, firewood), so it matches the reference kind. Measured facts: 13 visible tones per 16x16 tile against 12 and 10 for the references. Near-flat coverage is 0%, the same as both references. Only 1% of dark edge pixels are neutral, so the outlines lean toward the neighbouring material (dark blue-grey beside metal, brown beside wood) rather than being a black sticker line. By eye, the roof and wall carry mottling, rust patches, rivet dots and plate seams, and the firewood stack is shaded log by log. Each material has about 4 steps, a little below the references' 5-6 on the tile roofs, and the total of 31 colours is modest. Nothing reads as a flat fill, and a careful artist would accept it next to the references without it looking thinner or more sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17773
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "zinc roof plane with standing seams and riveted laps",
+      "rows": "2-30",
+      "evidence": "c",
+      "front_edge_line_row": 29,
+      "eave_shadow_rows": "31-33"
+     },
+     {
+      "part": "front wall of riveted plates with door and window",
+      "rows": "34-62",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stovepipe with cone cap",
+      "rows": "0-20",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "firewood stack",
+      "rows": "48-60",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 28,
+    "front_face_rows": 29,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The roof is a wide trapezoid on rows 2-30. Its width grows from 50 to 64 px, and the panels are separated by seams and horizontal lap lines. It ends in a bright front-edge line around row 29-30, followed by dark eave shadow on rows 31-33. Below that is a front wall of about 29 rows (34-62) holding the door, window and firewood stack. The stovepipe is a thin vertical element on the roof with a small cone cap. The roof is a clear top plane over the front face, so the hut reads as three-quarter view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate measures 13 visible tones per 16x16 tile, against 12 and 10 for the references. Near-flat coverage is 0%, the same as both references, so no large flat fills. Only 1% of its dark edge pixels are near-neutral, so the outlines lean toward the material (dark blue-grey beside the zinc, dark brown beside the wood) rather than being a black sticker line. The zinc roof carries seam, rivet and rust-stain variation, and the wall plates are mottled, with a stovepipe, a stack of firewood and a window frame. It uses only 31 colours in total (the references use 66 and 185), so each material ramp is a bit shallower, at about 5 steps against 6. The visible tone count still matches the references, so the piece sits at the same level of finish and I am not failing it on density. It is a plausible match for the Beodeul bar, slightly less nuanced in per-material shading and without the per-tile highlights of the reference roof tiles.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 24813
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "zinc standing-seam roof plane",
+      "rows": "2-30",
+      "evidence": "c",
+      "front_edge_line_row": 29,
+      "eave_shadow_rows": "31-33"
+     },
+     {
+      "part": "stovepipe with cone cap",
+      "rows": "0-20",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "front wall of riveted plates with door and window",
+      "rows": "34-62",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "firewood stack",
+      "rows": "48-60",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 29,
+    "front_face_rows": 29,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body has a large sloped roof plane at rows 2-30. Its silhouette widens from 50 to 64 px and it is crossed by seam and lap lines. A bright front-edge line sits at rows 29-30 (L=202 at x=32), followed by dark eave shadow at rows 31-33 (L=71, 21, 50). Below is a front wall of 29 rows (34-62) with a window, a hinged door and rivets. The stovepipe is a narrow vertical strip drawn as a small detail, so it does not count as a major part lacking a top. The firewood is counted as decor."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a whole building (roof, wall, door, window, stovepipe, firewood), so it matches the reference kind. The measured facts support it: 13 visible tones per tile against 12 and 10 for the references, 0% near-flat coverage, and only 1% neutral dark edge pixels. Outlines are therefore tinted, a dark grey-blue tone beside the metal, not a uniform black sticker line. By eye, the roof carries standing-seam lines, rivet dots and rust or soot spots. The wall shows plate seams with rust variation, and the window frame and wood stack have their own tones. The main metal ramps look like about 4 steps, a little shallower than the references' 5-6, and the wall is less textured than the tile and plaster of the references. Still, no large flat fills appear, and the piece would sit acceptably next to the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18794
+  }
+ ],
+ "decidedAt": "2026-10-25T14:29:56.782Z",
+ "cells": {
+  "16": [
+   "078c9b2d205ba995",
+   "2d02227c767a7057",
+   "309008934c136219",
+   "32f9787dcd090175",
+   "3c3571b1873d35e5",
+   "6a63582252f80509",
+   "8890207cc2fdfd1a",
+   "94131a602cdd230c",
+   "9ffb2e20ac672289",
+   "a16fe7204773297a",
+   "a8f20b2002473c94",
+   "b75f6a1b89adbef9",
+   "b8d22a496fef5329",
+   "ce9f8997d2143b7a",
+   "dccb4a0b71e69ede",
+   "f66330f2020b75c4"
+  ],
+  "24": [
+   "0bca5d5053f593c0",
+   "0d6ead1b2d4e8a31",
+   "0f22f4be9f3ac028",
+   "1682dce327ee762f",
+   "1eeb9f8519f7c784",
+   "21950c20b145ef50",
+   "2bc038a598dda32d",
+   "3017d49a741a7ae6",
+   "36a4b8646f9e04da",
+   "37c21a36d56ac4b0",
+   "424d103bf63b2bbb",
+   "42a76509f21e5eac",
+   "4df33f01ec4b784e",
+   "4e4c613c5664014a",
+   "50c7464b55c46c16",
+   "5341670f5015c470",
+   "5d71d1a1e3526e15",
+   "61400a6a55c66e0f",
+   "6555023562597b79",
+   "65c4f5211010dccb",
+   "6742b374725143bd",
+   "6b1943424064434b",
+   "6f2c37bba9092593",
+   "73ed5ec756a2d526",
+   "8c5e71fb8cf4bb05",
+   "8e9a506c85d3b147",
+   "8fc2d375431cfc0f",
+   "8fe7b7224ecdcfed",
+   "9da135c9cf56de31",
+   "a20e46e513663fb8",
+   "a4086ec61712684f",
+   "ad5a2ae9d54af73f",
+   "b0515dac86699c46",
+   "b59fe7db5a85a083",
+   "b9bb781646e84e0f",
+   "bca975201b01f44f",
+   "c1f0983e2889136e",
+   "c2da6893bad21083",
+   "c57864bc599791ed",
+   "c9b4f990d70fd768",
+   "cebb7ad23e33cc3e",
+   "cf322961a2e1fcb6",
+   "d3c7f46ed36a1477",
+   "d6d744e6c02c10c3",
+   "dd4634be5a8357b3",
+   "e0af78c27b72631b",
+   "e268f19c5916c089",
+   "e84b5ef00bc2d087",
+   "f01c6d3b1f175a58",
+   "f85733e9b51ff728",
+   "f93062f29f8d0c82",
+   "f97ca1037dcb76e3",
+   "f99ee47a59491b95",
+   "fc7735dd682c51be"
+  ],
+  "32": [
+   "1bdaeab4b16114ce",
+   "b7d22167c283323f",
+   "c2f6319e4cf0c1a9",
+   "eed5dec837f29b76"
+  ],
+  "48": [
+   "01366f03ee5e5c6b",
+   "031fd17fd37c06b5",
+   "04989847c3001f02",
+   "202dbf6451738c41",
+   "2538f5c1999785d8",
+   "39529a40ebfc5ac0",
+   "3b56b1c049ae5853",
+   "4e2e23cb1a034222",
+   "510b08841db9227b",
+   "55f5d40d24f53ef8",
+   "5d51222df9fd73ea",
+   "60160b2eb1f947f6",
+   "6658b17f8e01d855",
+   "6f4084125e1575f0",
+   "81cb2feb0e4ccf52",
+   "86b718c9fea01f0f",
+   "9eda39a0356aca8f",
+   "a25bad6ff79587e8",
+   "af5c9b9eef566100",
+   "b8601fdf477f1edb",
+   "c2c535f4bf72b5f0",
+   "d51b3c2f097637c7",
+   "da2953e0c1a5119c",
+   "e97c90f1a8bda490"
+  ]
+ }
+}

@@ -1,0 +1,16 @@
+{
+ "schema": "oprn-object-gate-hold-decision/1",
+ "pixelSha256": "8b3fd9c89e85f5217388cf4853cee50aeaa2e14aea1bded19a77c9ad8d4ba46c",
+ "profileHash": "4d8774b517f41638",
+ "kind": "organic",
+ "decision": "allow",
+ "decidedBy": "supervisor (village-art)",
+ "decidedAt": "2026-10-23T04:33:43.533Z",
+ "by": "delegated",
+ "delegatedBy": "user",
+ "evidence": "tiledata/beodeul-yard/_vine_review/verdict_r3.txt",
+ "via": "review-page",
+ "reasons": [],
+ "note": "delegated by user to supervisor 2026-10-23 — vine rows 2-cell (29639-29654): gate organic PASS (uncalibrated) + fresh independent Opus adversarial reviewer r3 PASS",
+ "sig": "76879a9fedec85690aa138ce030378297770dfe538fd9f3d3e4f742c17f09454"
+}

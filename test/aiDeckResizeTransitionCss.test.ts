@@ -3,7 +3,7 @@ import { readCssFamily } from "./cssFamily";
 
 describe("ai-deck width transition contracts", () => {
   const css = readCssFamily(
-    "src/styles/database/index.css",
+    "src/styles/index.css",
     "src/styles/database/tabs-b-assistant-panel/18-assistant-deck.css",
   );
 

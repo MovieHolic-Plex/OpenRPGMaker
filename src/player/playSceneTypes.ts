@@ -95,6 +95,9 @@ export type AutonomousMover = {
   alertHoldMs?: number;
   /** movement.chaseLunge: 발견 뒤 남은 덮치기 칸 수. */
   lungeLeft?: number;
+  /** movement.approachStyle: 추격 중 지금까지 뗀 칸 수(묶음 쉼 계산)와 이번 칸 뒤 쉴 시간. */
+  approachStep?: number;
+  approachPauseMs?: number;
   /** 순찰+추격: 직전 프레임에 추격 상태였다. 추격이 끝나면 순찰을 처음 걸음부터 다시 시작한다. */
   patrolChasing?: boolean;
   chaseHome?: { readonly x: number; readonly y: number };
@@ -138,6 +141,8 @@ export type AutonomousMoveTween = {
   readonly hop?: import("@/player/characterHop").CharacterHop;
   /** 이 한 수의 지속 시간. 없으면 mover.moveDurationMs(이동 속도) 를 쓴다. */
   readonly durationMs?: number;
+  /** 다가오는 방식의 몸짓 — 진행 수직 흔들림(sway)·위아래(bob), 칸 비율. sign 은 흔들리는 쪽. */
+  readonly approach?: { readonly sway: number; readonly bob: number; readonly sign: number };
 };
 
 export type RuntimeTimer = {
@@ -155,6 +160,14 @@ export type TimeTintTransition = {
   readonly to: TimeTintVisual;
   readonly durationMs: number;
   elapsedMs: number;
+};
+
+/** Last tint submitted to the Graphics object. Matching values skip clear and fill. */
+export type TimeTintPaint = {
+  color: number;
+  alpha: number;
+  width: number;
+  height: number;
 };
 
 export type TransferRequest = {
@@ -181,6 +194,12 @@ export interface PlayerRouteState {
   through?: boolean;
   /** 맵 탭(클릭)으로 시작한 경로 — 패드·키 입력이 들어오면 그만두고, 걷는 중 새 탭이 갈아 끼운다. */
   pointer?: boolean;
+  /**
+   * 사람이 시킨 자유 걷기(맵 탭·QA 걷기 훅) — 이벤트가 돌기 시작하면 지금 걸음이 칸에 닿는 대로 그만둔다.
+   * 이벤트(moveEvent·길찾기)가 시킨 강제 이동은 이 표시가 없어 해석기가 기다리는 동안에도 계속 걷는다.
+   * 없으면 닿기(playerTouch) 놀래킴의 대사창이 떠 있는데 주인공이 목적지까지 계속 걸었다(2026-10-25 심판 J62, 공포 학교).
+   */
+  yieldsToEvents?: boolean;
   /** 이 경로는 달린다(맵 탭으로 먼 곳에 갈 때 — playScenePointerMove TAP_RUN_MIN_STEPS). 생략 = 걷기(이벤트 강제 이동). */
   dash?: boolean;
 }
@@ -273,6 +292,8 @@ export interface PlaySceneContext extends Phaser.Scene {
   timeTintPhase?: TimePhase;
   timeTintDisplayed?: TimeTintVisual;
   timeTintTransition: TimeTintTransition | null;
+  /** 마지막으로 화면에 올린 틴트. 같으면 Graphics 를 다시 비우지 않는다. */
+  timeTintPainted?: TimeTintPaint;
   mapAnimationLayer?: Phaser.GameObjects.Container;
   activeMapAnimations: Set<Phaser.GameObjects.Container>;
   /** 맵 배경 스프라이트 스택(아래→위) — 화면 고정, 하층 타일(depth 0) 아래. */
@@ -362,7 +383,7 @@ export interface PlaySceneContext extends Phaser.Scene {
   hasCheckpoint(): boolean;
   restoreCheckpoint(): void;
   showGameOverScreen(message?: string, gameOverId?: string): void;
-  showEndingScreen(title: string, message: string, presentation?: import("@/project/cinematicSettings").EndingPresentation, endingId?: string): void;
+  showEndingScreen(title: string, message: string, presentation?: import("@/project/cinematicSettings").EndingPresentation, endingId?: string, continueTo?: import("@/project/types").EndingContinueTo): void;
   recoverFromDefeat(settings?: import("@/project/cinematicSettings").GameOverSettings): boolean;
   returnToTitle(): void;
 }

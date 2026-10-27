@@ -7,6 +7,7 @@ import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { createScarloxyDemoProject } from "@/project/defaults/defaultProject";
 import { projectWithoutEventDrafts } from "@/project/eventDrafts";
 import { serialize } from "@/project/io";
+import { deserializeStoredProjectJson } from "@/project/persistence/core/loadRepair";
 import type { Project } from "@/project/types";
 import { sha256HexTextSync } from "@/util/sha256";
 import { initLocalProjectStore, openLocalProjectStore } from "../../electron/local-store/store";
@@ -123,7 +124,9 @@ describe("local project store", () => {
 
     const reopened = await openLocalProjectStore({ projectDir });
     expect(reopened.exportSerialized()).toBe(expected);
-    expect(serialize(reopened.loadSnapshot()!.project)).toBe(expected);
+    // loadSnapshot runs load repair (e.g. it now backfills the hero's paired face), so the reload is compared with
+    // the same repair applied to the saved text; the folded text itself is byte-checked by exportSerialized above.
+    expect(serialize(reopened.loadSnapshot()!.project)).toBe(serialize(deserializeStoredProjectJson(JSON.parse(expected))));
     reopened.close();
   });
 

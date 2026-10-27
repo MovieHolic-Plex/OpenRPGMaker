@@ -57,6 +57,14 @@ export type M2ScreenRuntimeState = {
   letterbox?: number;
   /** 레터박스 전환 시간(ms). */
   letterboxDurationMs?: number;
+  /**
+   * 정지 화면(프리즈 프레임). 켠 순간의 필드 그림을 한 장 찍어 그림 위·대사창 아래에 세운다(뒤의 맵·인물은 계속 돈다).
+   * at = 켤 때마다 1 씩 늘어 「다시 찍기」를 구분한다. 세이브에는 색감·횟수·전환 시간만 남고,
+   * 불러오기 뒤에는 그때 화면을 다시 찍는다(찍은 그림은 세이브에 넣지 않는다). `screenEffectPlan` freeze/unfreeze.
+   */
+  freeze?: { style: import("@/player/interpreter/screenEffectPlan").FreezeStyle; at: number };
+  /** 정지 화면이 들어오고(하얗게 번쩍 → 멈춤) 걷히는 시간(ms). */
+  freezeDurationMs?: number;
   /** 열려 있거나 막 닫히는 타일 그림 문(키 = `doorKey`). `@/project/eventCommands/doorAnimation`. 세이브에는 남기지 않는다. */
   doors?: Record<string, import("@/project/eventCommands/doorAnimation").RuntimeDoorState>;
   /**
@@ -331,6 +339,7 @@ export interface PlaySessionLike {
   stepCount?: number;
   teleportPoints?: import("./teleportPoints").TeleportPoint[];
   highScores?: Record<string, number>;
+  storyJournal?: import("./storyJournal").JournalLine[];
   /** 키 폴링(Key Poll) 이 매 프레임 쓰는 현재 입력. 세이브에 넣지 않는다. */
   heldInput?: { readonly dir: number; readonly confirm: boolean; readonly cancel: boolean; readonly dash: boolean };
   clearHistory?: { count: number; endingIds: string[] };

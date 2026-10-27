@@ -1,0 +1,16 @@
+{
+ "schema": "oprn-object-gate-hold-decision/1",
+ "pixelSha256": "c95cf9bd8269d82239d873b35b86a2455c58b0847f6aa70c0ec06684049f27b9",
+ "profileHash": "4d8774b517f41638",
+ "kind": "other",
+ "decision": "allow",
+ "decidedBy": "supervisor (village-art)",
+ "decidedAt": "2026-10-25T15:02:37.916Z",
+ "by": "delegated",
+ "delegatedBy": "user",
+ "evidence": "/home/main/z-project/rpg-zzu-village-art/tiledata/wasteland-ruins/_review/r64/verdict-S.md",
+ "via": "review-page",
+ "reasons": [],
+ "note": "wasteland_ruins/car-rust-h r63; object-gate PASS; r64 scale-up measured from Beodeul; independent adversarial reviewer Sonnet 5.5 r64 check PASS for this piece's category (verdict-S.md); one Sonnet re",
+ "sig": "a50e82ec5585b06c9ffce747654103462bf9a8ce9faf8290f0f417f17a0a6964"
+}

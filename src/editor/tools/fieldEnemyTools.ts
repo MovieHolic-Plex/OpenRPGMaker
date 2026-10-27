@@ -3,6 +3,7 @@
 // 새 런타임 개념이 아니라 이미 있는 조각의 조립이다: eventTouch 트리거 + movement(fixed/custom 순찰/chase 시야 추격)
 // + showEmote + battleProcessing + 승리 스위치 페이지 + 도망 뒤 기절(self switch B) 페이지.
 // 랜덤 인카운터(set_encounter_table)·구역 스폰(make_hunting_ground)·지키는 한 마리(place_battle_blocker)와 구분한다.
+import { FIELD_APPROACH_STYLES, defaultFieldApproachStyle, isFieldApproachStyle, type FieldApproachStyle } from '@/project/fieldApproachStyle';
 import type { Command, Dir, EventPage, EventPageGraphic, GameEvent, GameMap, Project } from '@/project/types';
 import { canMove, isPassable } from '@/project/collision';
 import { genId } from '@/util/id';
@@ -159,6 +160,35 @@ function fieldEnemyPages(input: {
   ];
 }
 
+/** 필드 적 이벤트의 종족 — 이벤트 이름·적 그룹 이름·선두 적 이름·그림으로 «다가오는 방식» 기본값을 고른다. */
+export function inferFieldApproachStyle(project: Project, event: GameEvent): FieldApproachStyle {
+  const troopIds = (event.pages ?? []).flatMap((page) => page.commands.flatMap((c) => c.kind === 'battleProcessing' ? [String((c as { troopId?: unknown }).troopId ?? '')] : []));
+  const hints: string[] = [event.name ?? '', event.id];
+  for (const troopId of troopIds) {
+    const troop = project.database.troops.find((entry) => entry.id === troopId);
+    if (!troop) continue;
+    hints.push(troop.id, troop.name ?? '');
+    for (const enemyId of troop.enemyIds) {
+      const enemy = project.database.enemies.find((entry) => entry.id === enemyId);
+      if (enemy) hints.push(enemy.id, enemy.name ?? '', String((enemy as { monsterResourceId?: string }).monsterResourceId ?? ''));
+    }
+  }
+  return defaultFieldApproachStyle(...hints);
+}
+
+/** 'auto' 면 종족으로, 아니면 그 값. 모르는 값은 오류. */
+function resolveApproachArg(project: Project, event: GameEvent, raw: unknown): FieldApproachStyle | undefined {
+  if (raw === undefined) return undefined;
+  if (raw === 'auto') return inferFieldApproachStyle(project, event);
+  if (!isFieldApproachStyle(raw)) throw new ToolError(`approachStyle 은 auto|${FIELD_APPROACH_STYLES.join('|')} 입니다.`, { code: 'invalid-args' });
+  return raw;
+}
+
+const APPROACH_STYLE_SCHEMA = {
+  type: 'string', enum: ['auto', ...FIELD_APPROACH_STYLES],
+  description: '추격할 때 다가오는 방식 — dash 질주(늑대·짐승: 쉬지 않고, 덮치기는 훨씬 빠르게) · pounce 웅크렸다 두 칸 아치 도약(거미) · hop 통통 튀기(슬라임) · swoop 좌우로 흔들리며 들쭉날쭉 날아듦(박쥐·새) · lumber 느릿하지만 쉬지 않고 멀리까지 쫓음(골렘·거인) · float 둥실 부유(유령) · slither S자로 기어 옴(뱀) · walk 기본 걷기. auto = 적 이름·그룹으로 종족을 읽어 고른다',
+} as const;
+
 export interface FieldEnemyChaseOptions {
   /** 시야 칸(2..8, 기본 5). 입구가 시야+1 칸 안이면 그만큼 줄인다(들어서자마자 덮치지 않게). */
   readonly sightRange?: number;
@@ -173,6 +203,8 @@ export interface FieldEnemyChaseOptions {
   readonly lungeSteps?: number;
   /** 덮치기 걸음 랭크(1~6, 기본 6 = 주인공 걷기와 같은 160ms/칸 — 계속 걸으면 따라잡히지 않는다). */
   readonly lungeSpeed?: number;
+  /** 다가오는 방식. 'auto' = 종족으로. 생략하면 이미 있던 방식을 그대로 둔다. */
+  readonly approachStyle?: FieldApproachStyle | 'auto';
 }
 
 /**
@@ -194,6 +226,8 @@ export function makeFieldEnemyChase(project: Project, map: GameMap, event: GameE
   while (range >= 2 && nearest <= range + 1) range -= 1;
   if (range < 2) return { ok: false, reason: 'entry-too-close' };
   const pace = CHASE_PACE[options.pace ?? 'fast'];
+  const approachStyle = options.approachStyle === undefined ? fight.movement.approachStyle
+    : options.approachStyle === 'auto' ? inferFieldApproachStyle(project, event) : options.approachStyle;
   fight.movement = {
     type: 'chase', speed: pace.speed, frequency: pace.frequency, sightRange: range, giveUpRange: range + 4, pathfind: true,
     sight: { range, lineOfSight: true, facing: options.vision ?? 'cone' },
@@ -203,6 +237,7 @@ export function makeFieldEnemyChase(project: Project, map: GameMap, event: GameE
     ...(options.lungeSteps && options.lungeSteps > 0
       ? { chaseLunge: { steps: Math.max(1, Math.min(8, Math.round(options.lungeSteps))), speed: Math.max(1, Math.min(6, Math.round(options.lungeSpeed ?? 6))) } }
       : {}),
+    ...(approachStyle && approachStyle !== 'walk' ? { approachStyle } : {}),
   };
   fight.animationType = 'normal';
   // 시야에 든 순간 이미 놀람을 냈다 — 닿을 때 또 띄우지 않는다(fieldEnemyPages 와 같은 규칙).
@@ -235,11 +270,13 @@ export const FIELD_ENEMY_TOOLS: readonly ToolDefinition[] = [
       vision: { type: 'string', enum: ['any', 'cone'], description: "behavior:chase 시야 모양. any(기본)=사방, cone=바라보는 방향 앞 부채꼴만(등 뒤로 몰래 지나가면 못 본다)" },
       giveUpRange: { type: 'integer', description: 'behavior:chase 이만큼(칸) 멀어지면 포기하고 출발 칸으로 돌아간다(기본 시야+4, 시야+1..20)' },
       pace: { type: 'string', enum: [...PACES], description: 'slow(기본)|normal|fast — 셋 다 주인공 걷기보다 느리다' },
+      approachStyle: { ...APPROACH_STYLE_SCHEMA, description: 'behavior:chase 일 때 ' + APPROACH_STYLE_SCHEMA.description + '. 생략 = auto' },
       graphic: { ...GRAPHIC_SPEC_SCHEMA, description: '생략 시 적 그룹 선두 몬스터 이름으로 검색한 기존 도트' },
       alert: { type: 'string', enum: [...ALERTS], description: '머리 위 말풍선(chase=시야에 든 순간, 그 외=닿기 직전). 기본 exclamation, none 이면 말풍선 없이 바로' },
       canEscape: { type: 'boolean', description: '도망 가능 여부(기본 true). false 는 도망 불가 전투' },
       respawnSec: { type: 'integer', description: '0(기본)=한 번 이기면 영구 소멸. 양수면 그 맵에 머문 채 N초 뒤 같은 자리에 다시 나타난다' },
       clearSwitchId: { type: 'string', description: '승리 시 켜지는 스위치(생략 시 자동 생성). 퀘스트·문 조건으로 쓸 수 있다' },
+      factionId: { type: 'string', description: '진영(set_factions 로 정의한 id). 적대(태도 -1 이하) 진영의 보이는 적과 2칸 안에서 마주치면 맵 위에서 짧게 부딪히고 전력이 약한 쪽이 사라진다(맵에 다시 들어오면 돌아온다). 플레이어는 두 진영 모두에게 덮쳐진다. 생략 = 선두 적 레코드의 factionId(있고 정의된 진영일 때), 그것도 없으면 진영 싸움 없음' },
       id: { type: 'string' },
     }, ['mapId', 'x', 'y']),
     invalidArgsExample: { mapId: 'map_dungeon_1', x: 12, y: 8, troopId: 'troop_bat', behavior: 'chase', sightRange: 4, pace: 'slow' },
@@ -373,10 +410,23 @@ export const FIELD_ENEMY_TOOLS: readonly ToolDefinition[] = [
           ? { type: 'custom', speed: 3, frequency: 3, moveIntervalMs: PATROL_INTERVAL_MS[pace], route: patrolRoute(false) }
           : { type: 'fixed', speed: 3, frequency: 3 };
 
+      // 진영 싸움(project/fieldEnemyClash.ts): 명시 factionId → 선두 적의 factionId. 정의되지 않은 진영은 거절한다.
+      const declaredFactions = new Set((draft.factions?.defs ?? []).map((def) => def.id));
+      const explicitFaction = typeof args.factionId === 'string' && args.factionId.trim() ? args.factionId.trim() : undefined;
+      if (explicitFaction && !declaredFactions.has(explicitFaction)) {
+        throw new ToolError(`정의되지 않은 진영입니다: ${explicitFaction} — set_factions 로 먼저 진영과 태도(서로 -1 이하 = 싸움)를 정하세요. 있는 진영: ${[...declaredFactions].join(', ') || '없음'}`, { code: 'unknown-faction', mapId: map.id });
+      }
+      const fieldFactionId = explicitFaction ?? (lead?.factionId && declaredFactions.has(lead.factionId) ? lead.factionId : undefined);
       const event: GameEvent = {
         id, x: start.x, y: start.y, trigger: { kind: 'eventTouch' }, commands: [],
         pages: fieldEnemyPages({ id, troopId, graphic, clearSwitchId, movement, alert, canEscape, respawnSec }),
+        ...(fieldFactionId ? { fieldFactionId } : {}),
       };
+      if (behavior === 'chase') {
+        // 종족마다 다른 몸짓으로 다가온다(질주·도약·통통·급강하·육중·부유·기기). 생략 = 종족으로.
+        const style = resolveApproachArg(draft, event, args.approachStyle ?? 'auto');
+        for (const page of event.pages ?? []) if (page.movement.type === 'chase' && style && style !== 'walk') page.movement.approachStyle = style;
+      }
       const warnings: string[] = [];
       assertEventShape(event, warnings);
       upsertEventIntoMap(map, event);
@@ -391,7 +441,7 @@ export const FIELD_ENEMY_TOOLS: readonly ToolDefinition[] = [
 
       return {
         summary: `${map.name} (${start.x}, ${start.y}) 에 필드 적 '${troopId}' — ${behavior}${patrol ? ` ${patrol.dirs.length}걸음 왕복` : ''}${behavior === 'chase' ? ` 시야 ${sightRaw}칸${patrol ? '(시야 밖 순찰)' : ''}·놓치면 복귀` : ''}`,
-        data: { eventId: id, clearSwitchId, behavior, x: start.x, y: start.y, cells: patrol ? cells : undefined, adjusted: placement.adjusted },
+        data: { eventId: id, clearSwitchId, behavior, x: start.x, y: start.y, cells: patrol ? cells : undefined, adjusted: placement.adjusted, ...(fieldFactionId ? { factionId: fieldFactionId } : {}) },
         ...(warnings.length > 0 ? { warnings } : {}),
       };
     },
@@ -411,6 +461,7 @@ export const FIELD_ENEMY_TOOLS: readonly ToolDefinition[] = [
       pace: { type: 'string', enum: [...PACES], description: '덮치기 뒤 평소 추격 걸음(기본 fast)' },
       lungeSteps: { type: 'integer', description: '발견 직후 덮치는 칸 수(0..8, 0 = 없음)' },
       lungeSpeed: { type: 'integer', description: '덮치기 걸음 랭크(1..6, 기본 6 = 주인공 걷기와 같은 빠르기)' },
+      approachStyle: { ...APPROACH_STYLE_SCHEMA, description: APPROACH_STYLE_SCHEMA.description + '. 생략 = 지금 방식 그대로' },
     }, []),
     invalidArgsExample: { sightRange: 7, lungeSteps: 3, lungeSpeed: 6 },
     run(draft, args): ToolExecResult {
@@ -431,8 +482,9 @@ export const FIELD_ENEMY_TOOLS: readonly ToolDefinition[] = [
           ...(args.vision === 'any' || args.vision === 'cone' ? { vision: args.vision } : {}),
           ...(args.pace !== undefined ? { pace: args.pace as Pace } : {}),
           ...(steps > 0 ? { lungeSteps: steps, lungeSpeed: speed } : {}),
+          ...(args.approachStyle !== undefined ? { approachStyle: (args.approachStyle === 'auto' ? 'auto' : resolveApproachArg(draft, event, args.approachStyle)) as FieldApproachStyle | 'auto' } : {}),
         });
-        if (result.ok) tuned.push(`${map.id}/${event.id}(시야 ${result.sightRange})`);
+        if (result.ok) tuned.push(`${map.id}/${event.id}(시야 ${result.sightRange}${(event.pages ?? []).find((page) => page.movement.type === 'chase')?.movement.approachStyle ? `, ${(event.pages ?? []).find((page) => page.movement.type === 'chase')!.movement.approachStyle}` : ''})`);
         else if (result.reason !== 'not-field-enemy') skipped.push(`${map.id}/${event.id}: ${result.reason}`);
       }
       if (tuned.length === 0) throw new ToolError('고칠 필드 적이 없습니다 — place_field_enemy 로 먼저 놓으세요.', { code: 'field-enemy-none' });
@@ -440,6 +492,47 @@ export const FIELD_ENEMY_TOOLS: readonly ToolDefinition[] = [
         summary: `필드 적 ${tuned.length}마리를 추격형으로 맞췄다(시야 ${sight ?? 5}칸${steps > 0 ? `, 발견 뒤 ${steps}칸 덮치기 랭크 ${speed}` : ''}).`,
         data: { tuned, skipped },
         ...(skipped.length ? { warnings: skipped.slice(0, 12) } : {}),
+      };
+    },
+  },
+  {
+    name: 'set_field_approach_style',
+    mode: 'write',
+    domains: ['event'],
+    description:
+      '추격하는 필드 적(보면 쫓아오는 적)의 「다가오는 방식」을 정한다 — 종족마다 몸짓이 다르게: 늑대는 질주(dash, 덮치기가 훨씬 빠름), 거미는 웅크렸다 아치로 뛰어듦(pounce), 슬라임은 통통(hop), ' +
+      '박쥐는 좌우로 흔들리며 들쭉날쭉(swoop), 골렘은 느리지만 쉬지 않고 멀리까지 쫓음(lumber), 유령은 둥실(float), 뱀은 S자(slither). ' +
+      'eventIds 를 주면 그 적만, 생략하면 mapIds(생략 = 모든 맵)의 추격 적 전부. style:auto 면 적마다 이름·적 그룹으로 종족을 읽어 고른다. 추격하지 않는 적(보초·순찰만)은 건너뛴다 — 먼저 tune_field_enemies 로 추격형으로.',
+    parameters: schema({
+      style: APPROACH_STYLE_SCHEMA as unknown as JsonSchema,
+      eventIds: { type: 'array', items: { type: 'string' }, description: '고칠 적 이벤트 id(생략 = 맵의 추격 적 전부)' },
+      mapIds: { type: 'array', items: { type: 'string' }, description: '찾을 맵(생략 = 모든 맵)' },
+    }, ['style']),
+    invalidArgsExample: { style: 'auto' },
+    run(draft, args): ToolExecResult {
+      const wantedMaps = Array.isArray(args.mapIds) ? (args.mapIds as unknown[]).map(String) : undefined;
+      for (const id of wantedMaps ?? []) if (!draft.maps[id]) throw new ToolError(`맵을 찾을 수 없습니다: ${id}`, { code: 'map-not-found' });
+      const wantedEvents = Array.isArray(args.eventIds) ? new Set((args.eventIds as unknown[]).map(String)) : undefined;
+      const maps = wantedMaps ? wantedMaps.map((id) => draft.maps[id]!) : Object.values(draft.maps);
+      const changed: string[] = [];
+      const counts: Record<string, number> = {};
+      for (const map of maps) for (const event of map.events) {
+        if (wantedEvents && !wantedEvents.has(event.id)) continue;
+        const pages = (event.pages ?? []).filter((page) => page.movement.type === 'chase' && page.trigger.kind === 'eventTouch');
+        if (pages.length === 0) continue;
+        const style = resolveApproachArg(draft, event, args.style)!;
+        for (const page of pages) {
+          if (style === 'walk') delete page.movement.approachStyle;
+          else page.movement.approachStyle = style;
+        }
+        changed.push(`${map.id}/${event.id}=${style}`);
+        counts[style] = (counts[style] ?? 0) + 1;
+      }
+      if (wantedEvents) for (const id of wantedEvents) if (!changed.some((entry) => entry.includes(`/${id}=`))) throw new ToolError(`추격 적 이벤트를 찾지 못했습니다: ${id}`, { code: 'field-enemy-none' });
+      if (changed.length === 0) throw new ToolError('추격하는 필드 적이 없습니다 — place_field_enemy(behavior:chase) 나 tune_field_enemies 를 먼저.', { code: 'field-enemy-none' });
+      return {
+        summary: `필드 적 ${changed.length}마리의 다가오는 방식: ${Object.entries(counts).map(([k, v]) => `${k} ${v}`).join(' · ')}.`,
+        data: { changed, counts },
       };
     },
   },

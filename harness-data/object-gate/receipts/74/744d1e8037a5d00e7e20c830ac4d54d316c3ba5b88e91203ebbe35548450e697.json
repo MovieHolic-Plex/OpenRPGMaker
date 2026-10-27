@@ -1,0 +1,444 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "744d1e8037a5d00e7e20c830ac4d54d316c3ba5b88e91203ebbe35548450e697",
+ "width": 80,
+ "height": 64,
+ "kind": "flat",
+ "name": "a small garden bed seen from above: a thick weathered plank frame (lit top edge, dark underside, plank-end joints, overlapping broken corners) around four tilled soil ridges in three tones, wider-spaced bean plants on stakes with lit leaves and a few missing plants",
+ "label": "wasteland_ruins/crop-bed-c",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 명암 3단 < 4 (4/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "명암 3단 < 4 (4/4)"
+  ],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 5,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "wasteland_ruins",
+   "fallback": true,
+   "reason": "칩셋 wasteland_ruins 의 화풍 기준 묶음이 없다",
+   "hash": "8cecb3a70460aa86"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 5,
+  "tileColorsP90": 11,
+  "darkV5": 57,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 20
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "plank frame (top edges, plank-end joints, corners)",
+      "rows": "16-48",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "tilled soil ridges in three tones",
+      "rows": "18-46",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "bean plants on stakes",
+      "rows": "17-44",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 31,
+    "front_face_rows": 2,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The bed is drawn straight down: all four plank sides are the same thin frame ring (about 2-3 rows, with a lit top edge and a dark underside line at rows 46-48), and the soil ridges and plants fill the interior from rows 18-46. No separate vertical south face of 3 or more rows is drawn, so the south plank is just part of the frame ring. There is no eave, no ellipse and no receding side face. This is a flat plate, which matches the flat kind and has no front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The measured facts are acceptable. The candidate has 5 visible tones per tile, between the grass (3) and paving (7) references, with 0% near-flat coverage and 0% neutral dark edge pixels, so the outlines are tinted brown rather than near-black. The craft is shallower than Beodeul, though. The whole piece uses only 13 distinct colours. That gives each material about 3 steps: soil in three tones, the frame in two or three, and the bean leaves in two or three. The Beodeul references show 5-6 steps per material with per-element shading. The frame reads thin at this scale, not like the thick weathered plank with a lit top edge, dark underside and broken overlapping corners that was described. The leaves are small teal dots with little clump structure. The soil ridges are mostly speckle with weak ridge form. A careful artist would find this flatter and sparser than the reference tiles, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 15813
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "plank frame and tilled soil bed seen from above",
+      "rows": "16-48",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "bean plants on stakes",
+      "rows": "18-44",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 32,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The bed is drawn as a plan view. The plank frame (rows 16-18 at the top, 46-48 at the bottom, with vertical planks on the left and right) wraps four soil ridges that run horizontally across rows 19-45. The ridges are drawn as flat dark furrows and lit bands. The bottom plank is only about 2-3 rows of the same top-down plank face, with no separate vertical front face, so there is no front face of 3 or more rows. There are no eave shadows, no front-edge line, and no ellipse. The bean plants are decor. The full 80x64 canvas is filled with ground texture, so the silhouette width profile gives no information about the bed's shape. This matches the flat kind and the top-down slab reference."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate has only 13 distinct colours across the whole 4x3 patch, split between soil, plank and leaf materials, so each ramp has about 3 steps against Beodeul's 5-6. The soil shows three tones with some grain, but the surround reads as a mostly uniform brown field. The plank frame looks thinner and flatter than the brief's 'thick weathered' frame. Its lit top edge and dark underside are only lightly differentiated, and plank-end joints and broken corners are hard to see at this scale. The bean plants are small dark-green dots with little lit-leaf clustering, and the stakes barely register. The outline is tinted (0% near-neutral dark edge pixels), so it is dark material tone with no sticker look. The primary facts are acceptable: 5 visible tones per tile (grass reference 3, paving reference 7) and 0% near-flat coverage, so there are no flat fills. The weakness is the shallow per-material ramps and the lack of grain and cluster detail that the references carry. Next to the references it looks simpler, and when in doubt it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 16546
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "plank frame with soil ridges (whole bed, seen straight down)",
+      "rows": "16-48",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "bean plants on stakes",
+      "rows": "17-43",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 31,
+    "front_face_rows": 1,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The bed is drawn as a plan view: the plank frame is a flat ring around the soil. The top and bottom frame planks (rows 16-18 and 46-48) have the same thickness as the side planks. The south plank has a dark line at row 47, but it reads as an underside outline, not a vertical front face of 3 or more rows. The soil ridges are horizontal bands with no receding side or front. The plants are decor. The surrounding ground texture fills the whole 80x64 canvas. The structure matches the 'top-down slab (no front)' guide example."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a soil patch with a plank frame and bean plants. It measures 5 visible tones per tile, 0% near-flat coverage and 0% neutral dark edges, so the outlines are tinted brown and green rather than black. Against the references (grass 3, paving 7) it sits between them on tones. By eye, though, the main materials are shallow. The soil ridges look like a few mottled browns with little per-clump shading. The plank frame reads as a thin pale-brown line with a dark edge rather than a thick weathered plank with a lit top, dark underside, joints and broken corners. The beans are small, similar-looking green dots with only 2-3 greens each. Only 13 distinct colours are used overall, against about 5-6 steps per material in Beodeul. The surrounding soil is mostly one mottled brown with sparse grain. This is cleaner and more tinted than a sticker look, but it is flatter and thinner than the reference craft, and the described detail (thick plank frame, three soil tones, lit leaves) does not come through.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 14772
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "north",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "plank frame (flat border around the bed)",
+      "rows": "16-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "tilled soil ridges inside the frame, seen from above",
+      "rows": "18-45",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "bean plants on stakes",
+      "rows": "18-43",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 30,
+    "front_face_rows": 2,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The bed is a plan view. The frame is a rectangle of planks with a lit top edge near row 16 and a dark band near rows 46-47. The soil ridges run as horizontal stripes from rows 18 to 45, and the plants are drawn from above as rounded leaf clusters. There is no front-edge line followed by eave shadow, no ellipse, and no tall south face. The only front-like strip is the 2-3 row plank underside at the bottom of the frame, so there is no real front face of 3 or more rows. The whole 80x64 canvas is opaque ground texture with the bed in the middle. The bed lies flat on the ground and matches the flat kind."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a brown soil patch with a thin plank frame and small bean plants. The measured facts are 5 visible tones per tile, 0% near-flat coverage and 0% neutral dark edges, so the outline is tinted brown and the surface has grain with no flat fills. The picture reads shallower than the description promises. The soil ridges look like a mottled brown field with little visible ridge structure in three clear tones. The frame is thin rather than a thick weathered plank with a lit top edge, dark underside, plank-end joints and broken corners. The bean plants are tiny, uniform teal-green dots with almost no leaf highlights or stakes, and the plant layout looks dense and regular rather than wider-spaced with missing plants. Each material ramp has about 3 steps against 5-6 in the references. The grass reference shows only 3 visible tones but has clumped variation, and the paving reference has 7 tones with per-stone shading. The candidate's tone count falls between them, but its structure is flatter than the paving and its shading steps are fewer. Overall it is acceptable in tint and texture but visibly thinner than the Beodeul standard, so I fail it when in doubt.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 16369
+  }
+ ],
+ "decidedAt": "2026-10-24T17:32:47.999Z",
+ "cells": {
+  "16": [
+   "0bca46be8c1bf24d",
+   "2542a2c1ec5565be",
+   "2874620db6e7d039",
+   "35f676449b8096fb",
+   "36f280a70166f6d5",
+   "41d0c2cbb1e2d856",
+   "60ed277fd039c497",
+   "7cecc29347230a3b",
+   "7f4211b803aa0a9f",
+   "86321864d112f0e8",
+   "9bc28703d23608ab",
+   "a5a5143982bbc314",
+   "b47ab801b394980a",
+   "e45f363a5b731bf9",
+   "ed0859328dc445d2",
+   "efe044aa04cf6c04"
+  ],
+  "24": [
+   "008a64f6dbe58c32",
+   "025521a233892dc9",
+   "06bbbcc234b20f01",
+   "07194534a418322c",
+   "07245a0155ff86e0",
+   "0b110beeee97c379",
+   "10b126cf23d14806",
+   "11ec1097eb3019d8",
+   "15cbf67152a749d7",
+   "1923f6475a9b12ff",
+   "1ceb9f4e754fd557",
+   "20553318ccadce2a",
+   "21c049b2df3d145a",
+   "23b94207a14fe0cf",
+   "2a53137624d24d7e",
+   "2a9ec6780a2b76bb",
+   "2bf2826d422d165b",
+   "2cbbbe91bfb80382",
+   "319e79d7480e2be5",
+   "32361dd4c341bdaa",
+   "39b525df90a5b731",
+   "3e028f1e3e6208c6",
+   "3f588d3fe92668a7",
+   "4050d0099274e2a6",
+   "40d1688fbd7fae05",
+   "41a3a9fd0260fad7",
+   "4222533fce6b20ee",
+   "4256d18163f33812",
+   "4ec3d1b0faf57835",
+   "4f490f11450701be",
+   "50bc3fb2d1853259",
+   "56f17503fe2dc2c0",
+   "5714866c5f458968",
+   "5db0b53c06ddbb40",
+   "602b5189d536d73f",
+   "63245de85b7a7c63",
+   "661104b8a2ff0724",
+   "6712361c9412f4a5",
+   "6841c4f62d598f3f",
+   "68b04e0f424e8844",
+   "6c7424724d4ee789",
+   "71bbb147b4f150cf",
+   "7c2b8195a6cb0a05",
+   "7cfd519e803665f0",
+   "7ef0f0ed9305e745",
+   "861ff9894f9ab48b",
+   "8f7daa31a927de61",
+   "8fb8d6e380cad634",
+   "967b89cddde06023",
+   "97bf0cab83065c05",
+   "9e64b6950e906f03",
+   "a26c91f3055fd034",
+   "a4213c35caa82240",
+   "acf2b156fc1ce9c8",
+   "ae28584a4cbd97df",
+   "ae7ccbe463869d34",
+   "b1585df71fa4d9e2",
+   "b24c524bfa6ccb50",
+   "bb9ae115769e02ca",
+   "bee5f0daa47deb7e",
+   "c5d068edcf96851e",
+   "c897d8704142ab95",
+   "d0173a56d5e9e489",
+   "d3134206e04fd2d7",
+   "d7a567949703ffff",
+   "db802f8d6fec4bb5",
+   "e35c00d163560ef0",
+   "eadb42f724164d57",
+   "ed271701e4323f2b",
+   "f9897a221fc44b28",
+   "fa8af98f7d2169f1",
+   "fb995c59799b05a8"
+  ],
+  "32": [
+   "043f52ca574491b9",
+   "0e6308e97b7e172e",
+   "1958c9a62772e5cd",
+   "1fd364a21a9d594c",
+   "36491f8684591aa7",
+   "3c9770673af2e866",
+   "526acfccc7234fe7",
+   "5dabd2139ee2d338",
+   "78766f4f781dc155",
+   "78ea0f2e6e2f2b53",
+   "9b3c0ed164f1709d",
+   "ab4729d7445ad489",
+   "c9681c19e465baaa",
+   "d25458aa3e678861",
+   "d479429ae3fcc416",
+   "f4aebc17ca3e93c7",
+   "f58a4c2ff3d9e635",
+   "fa6ac8211a7a3bf4"
+  ],
+  "48": [
+   "0bd3daeff1586fbc",
+   "14dfc7b05b71c3d6",
+   "1b39219abbe96ed0",
+   "1f5214fc468548fe",
+   "2ac38dc502c25e91",
+   "4548f26f66756576",
+   "5105228943fe5e7e",
+   "65fa9bde1066476f",
+   "6def09b867c5b4d2",
+   "6dfe9dd2977b7af5",
+   "86599164eaedee60",
+   "92bfba55f2fa30f2",
+   "9cb46378412f4070",
+   "aeb4c722fece2f4c",
+   "be0de0bbd05dadf2",
+   "c91c8c0e58079893",
+   "d0ca3febecf207fe",
+   "d45ebaa672d51896",
+   "d96a2c13fcd09129",
+   "dc02f80f145ed800",
+   "e280b9d52e630a9d",
+   "f4031caebadf15c2",
+   "f4a86192522b122f",
+   "ff37ee5efaa40c52"
+  ]
+ }
+}

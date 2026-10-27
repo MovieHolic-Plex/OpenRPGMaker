@@ -339,7 +339,7 @@ const commandSummaryPartHandlers: CommandSummaryPartHandlers = {
   tradeMonster: (cmd) => commandLine("몬스터 교환", valuePart(monsterSpeciesName(cmd.fromSpeciesId)), plainPart(" → "), valuePart(monsterSpeciesName(cmd.toSpeciesId))),
   fuseMonsters: (cmd) => commandLine("몬스터 합성", valuePart(monsterInstanceLabel(cmd.instanceIdA)), plainPart(" + "), valuePart(monsterInstanceLabel(cmd.instanceIdB))),
   setDifficulty: (cmd) => commandLine("난이도 변경", valuePart(difficultyDisplayName(store.getCurrent().system, cmd.difficultyId))),
-  storeParty: (cmd) => commandLine("파티 저장", valuePart(cmd.partySetId || "(이름 없음)")),
+  storeParty: (cmd) => commandLine("파티 저장", valuePart(`${cmd.partySetId || "(이름 없음)"}${cmd.actorIds?.length ? ` · ${cmd.actorIds.join(", ")}` : ""}${cmd.mapId || cmd.x !== undefined ? ` @ ${cmd.mapId ?? ""}(${cmd.x ?? "?"}, ${cmd.y ?? "?"})` : ""}`)),
   recallParty: (cmd) => commandLine("파티 전환", valuePart(cmd.partySetId || "(이름 없음)")),
   addFollower: (cmd) => commandLine("동료 추가", valuePart(cmd.name || (cmd.actorId ? actorName(cmd.actorId) : cmd.graphic?.sprite?.id ?? "그래픽"))),
   removeFollower: (cmd) => commandLine("동료 제거", valuePart(cmd.all === true ? "전체" : cmd.name || "이름 없음")),
@@ -923,7 +923,29 @@ function page3M2SummaryParts(
         plainPart(" · "),
         valuePart(stagingTargetLabel(str("target"), str("eventId"), str("x"), str("y"))),
         plainPart(" · "),
-        valuePart(`${str("durationMs") || "1200"}ms`)
+        valuePart(`${str("durationMs") || "1200"}ms`),
+        ...(str("sizePercent") && str("sizePercent") !== "100" ? [plainPart(" · 크기 "), valuePart(`${str("sizePercent")}%`)] : [])
+      );
+    }
+    case "Journal Line": {
+      const action = str("action") || "write";
+      const line = str("lineId");
+      if (action === "erase" || action === "reread") {
+        return commandLine(labelOf("일지"), valuePart(action === "erase" ? "줄 지우기" : "다시 읽어 주기"), plainPart(" · "), valuePart(line || "(줄 id 없음)"));
+      }
+      const head = [str("date"), str("writer")].filter(Boolean).join(" · ");
+      return commandLine(labelOf("일지"), ...(head ? [valuePart(head), plainPart(" — ")] : []), valuePart(str("text") || "(내용 없음)"));
+    }
+    case "Lift Ride": {
+      const mode = str("mode") || "depart";
+      const modeLabel = mode === "arrive" ? "도착" : mode === "move" ? "층 이동" : "떠나기";
+      return commandLine(
+        labelOf("승강 장치"),
+        valuePart(modeLabel),
+        plainPart(" · "),
+        valuePart(`${str("direction") === "down" ? "아래로" : "위로"} ${str("distance") || "4"}칸`),
+        plainPart(" · "),
+        valuePart(`${str("durationMs") || "2600"}ms`)
       );
     }
     case "Sprite Look": {

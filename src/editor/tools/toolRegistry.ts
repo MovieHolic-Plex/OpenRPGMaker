@@ -29,6 +29,7 @@ import { TILESET_REFERENCE_TOOLS, withTilesetReferencePurpose } from "./tilesetR
 
 import { BATTLE_TOOLS } from "./battleTools";
 import { COMBO_TECH_TOOLS } from "./comboTechTools";
+import { PARTY_BOND_TOOLS } from "./partyBondTools";
 import { TROOP_BATTLE_PAGE_TOOLS } from "./troopBattlePageTools";
 import { CLUSTER_RULE_TOOLS } from "./clusterRuleTools";
 import { DB_TOOLS } from "./dbTools";
@@ -61,6 +62,7 @@ import { HOUSE_VISION_TOOLS } from "./houseVisionTools";
 import { INVESTIGATION_TOOLS } from "./investigationTools";
 import { SEARCH_CONTAINER_TOOLS } from "./searchContainerTools";
 import { FOREST_ROUTE_TOOLS } from "./forestRouteTool";
+import { SNOW_ROUTE_TOOLS } from "./snowRouteTool";
 import { MYSTERY_CASE_TOOLS } from "./mysteryCaseTool";
 import { NARRATIVE_HORROR_TEMPLATE_TOOLS } from "./narrativeHorrorTemplateTools";
 import { CUTSCENE_ART_TOOLS } from "./cutsceneArtTools";
@@ -119,6 +121,7 @@ import { SENGOKU_EDO_TOOLS } from "./sengokuEdoTools";
 import { SKY_ISLAND_TOOLS } from "./skyIslandTools";
 import { STEAMPUNK_CITY_TOOLS } from "./steampunkCityTools";
 import { SF_STATION_TOOLS } from "./sfStationTools";
+import { WASTELAND_TOOLS } from "./wastelandTools";
 import { GOTHIC_PLACE_TOOLS } from "./gothicPlaceTools";
 import { PREHISTORIC_TOOLS } from "./prehistoricTools";
 import { SNOW_NORTH_TOOLS } from "./snowNorthTools";
@@ -163,9 +166,12 @@ import { BUILD_CONCEPT_EXAMPLE_TOOL } from "./conceptExampleTool";
 import { SHARED_SCENE_TOOLS } from "./sharedSceneTools";
 import { SHARED_OBJECT_TOOLS } from "./sharedObjectTools";
 import { REVEAL_TOOLS } from "./revealTools";
+import { PARTY_SPLIT_TOOLS } from "./partySplitTools";
+import { STORY_JOURNAL_TOOLS } from "./storyJournalTools";
 import { WEB_SEARCH_TOOLS } from "./webSearchTool";
 import { TILESET_CHANGE_TOOLS } from "./tilesetChangeTools";
 import { STORE_TOOLS } from "./storeTools";
+import { TIMED_ESCAPE_TOOLS } from "./timedEscapeTools";
 import { OBJECT_GEN_TOOLS } from "./objectGenTool";
 import { SCENE_SETTING_TOOLS } from "./sceneSettingTools";
 
@@ -265,9 +271,12 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   ...SHARED_SCENE_TOOLS,
   ...SHARED_OBJECT_TOOLS,
   ...REVEAL_TOOLS,
+  ...PARTY_SPLIT_TOOLS,
+  ...STORY_JOURNAL_TOOLS,
   ...SCENE_SETTING_TOOLS,
   ...withDomain(CONSTRUCTION_TOOLS_V3, "tile"),
   ...withDomain(HOUSE_VISION_TOOLS, "tile"),
+  ...TIMED_ESCAPE_TOOLS,
   // 손 도트 실내 v5 — 실내를 까는 유일한 조수 경로(2026-09-29). 옛 EasyRPG·Tibo 실내 방 세션·던전 방 파이프라인·팩 마을·
   // 숲 조립·키큰 풀 도구는 2026-10-07 저작권 정리로 칩셋과 함께 지웠다.
   ...withDomain(HAND_INTERIOR_TOOLS, "tile"),
@@ -297,6 +306,8 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   ...withDomain(JRPG_CHAPTER_TOOLS, "tile"),
   // SF 정거장·네온 거리(sf_station) 맵 구성기 — 정거장·연구 기지 실내·네온 거리·달 기지를 씨앗으로 한 장째 짠다. oprn-scifi 맵에서만 동작한다.
   ...withDomain(SF_STATION_TOOLS, "tile"),
+  // 폐허·황무지(wasteland_ruins) 구성기 — 생존자 정착지·좀비 폐허 도시·황무지 판잣집 촌을 씨앗으로 한 장째 짠다(마을 종류 표 post-apoc-kit).
+  ...withDomain(WASTELAND_TOOLS, "tile"),
   ...withDomain(GOTHIC_PLACE_TOOLS, "tile"),
   // 선사 시대 원시 세계(prehistoric) 구성기 — 부족 마을·늪지·화산 골짜기·화석 계곡·실내 넷을 한 번에 짓고(배치·통행·바닥 가장자리는 구성기), 집·동굴 문 ↔ 실내를 잇는다.
   ...withDomain(PREHISTORIC_TOOLS, "tile"),
@@ -342,6 +353,7 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   ...withDomain(INVESTIGATION_TOOLS, "event"),
   ...withDomain(SEARCH_CONTAINER_TOOLS, "event"),
   ...withDomain(FOREST_ROUTE_TOOLS, "map"),
+  ...withDomain(SNOW_ROUTE_TOOLS, "map"),
   ...withDomain(PUZZLE_AUTHORING_TOOLS, "event"),
   ...withDomain(MYSTERY_CASE_TOOLS, "event"),
   ...withDomain(NARRATIVE_HORROR_TEMPLATE_TOOLS, "event"),
@@ -397,6 +409,7 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   ...withDomain(STORY_TOOLS, "quest"),
   ...withDomain(BATTLE_TOOLS, "battle"),
   ...withDomain(COMBO_TECH_TOOLS, "battle"),
+  ...withDomain(PARTY_BOND_TOOLS, "event"),
   ...withDomain(TROOP_BATTLE_PAGE_TOOLS, "battle"),
   ...withDomain(REFACTOR_TOOLS, "system"),
   ...withDomain(QUALITY_EVALUATION_TOOLS, "system"),

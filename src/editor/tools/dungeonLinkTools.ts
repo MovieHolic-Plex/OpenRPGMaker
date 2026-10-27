@@ -10,6 +10,9 @@
  */
 import type { GameMap, MapId, MapNamedLocation, Project } from "@/project/types";
 import { linkMapsInDraft, type LinkResult } from "./worldGraphTools";
+import { isDoorArtCell } from "@/project/staging/doorCells";
+import { isPassable } from "@/project/collision";
+import { SHARED_OBJECT_TOOLS } from "./sharedObjectTools";
 import { ToolError, type JsonSchema, type ToolDefinition, type ToolExecResult } from "./types";
 
 export const DUNGEON_ENTRANCE_TAG = "dungeon-entrance";
@@ -101,9 +104,15 @@ export function linkEntranceInDraft(draft: Project, args: DungeonLinkArgs): { li
   }
   let toGate = args.toGate;
   let toLanding: Pt | undefined;
+  let toDoor: Pt | undefined;
   if (!toGate) {
     const info = dungeonGateOf(toMap);
     if (info.source === "marker") { toGate = info.gate; toLanding = info.landing; }
+    // 문으로 들어가는 던전(문 그림 칸은 못 걷는다, 착지 = 바로 남쪽): 연결 도구의 문 계약대로 문앞 칸을 출입구, 문 칸을 doorAt 으로 준다.
+    // 그대로 주면 연결 도구가 막힌 문 칸을 문앞으로 옮겨 착지와 겹친다(transfer-retrigger, 2026-10-26 북방 요새).
+    if (toGate && toLanding && toLanding.x === toGate.x && toLanding.y === toGate.y + 1 && !isPassable(draft, toMap, toGate.x, toGate.y)) {
+      toDoor = toGate; toGate = toLanding; toLanding = undefined;
+    }
     else notes.push(`맵 ${toMap.id} 에 던전 입구 표식이 없어 문 칸을 고르지 못했다 — 연결 도구가 맵 가장자리 중앙 문으로 보정한다. 정확히 하려면 toGate{x,y}.`);
   }
   // author_dungeon 의 자리표시 출구(바깥 맵이 없을 때 입구 계단에 둔 것)는 진짜 연결로 바꾼다.
@@ -111,8 +120,11 @@ export function linkEntranceInDraft(draft: Project, args: DungeonLinkArgs): { li
   const otherExit = toMap.events.find((e) => (e.pages ?? []).some((page) => page.commands.some((c) => c.kind === "transfer"
     && (c as { mapId?: string }).mapId !== fromMap.id)) && toGate && Math.abs(e.x - toGate.x) <= 1 && Math.abs(e.y - toGate.y) <= 1);
   if (otherExit) notes.push(`던전 ${toMap.id} 의 문 칸에는 이미 다른 야외로 나가는 문(${otherExit.id})이 있다 — 한 던전은 입구 하나가 원칙이다. 두 번째 문은 가까운 다른 빈 칸에 놓였으니 위치를 확인하라(여러 입구가 필요하면 입구마다 던전을 따로 짓는다).`);
+  // 굴 입구(2026-10-25 J25): 숲·들판의 맨땅 출입구로 동굴에 들어가 «풀밭에서 갑자기 동굴»로 읽혔다. 버들항 바깥 맵이면 출입구 바로 위에 갱구를 찍는다.
+  const mouth = caveMouth(draft, fromMap, fromGate);
+  if (mouth) notes.push(mouth);
   const from = { mapId: fromMap.id, x: fromGate.x, y: fromGate.y };
-  const to = { mapId: toMap.id, ...(toGate ? { x: toGate.x, y: toGate.y } : {}), ...(toLanding ? { entry: { x: toLanding.x, y: toLanding.y } } : {}) };
+  const to = { mapId: toMap.id, ...(toGate ? { x: toGate.x, y: toGate.y } : {}), ...(toLanding ? { entry: { x: toLanding.x, y: toLanding.y } } : {}), ...(toDoor ? { doorAt: { x: toDoor.x, y: toDoor.y } } : {}) };
   const link = linkMapsInDraft(draft, { from, to, bidirectional: true, fade: args.fade ?? "black", registerEdge: true });
   return { link, fromGate, ...(toGate ? { toGate } : {}), ...(placeName ? { placeName } : {}), notes };
 }
@@ -241,3 +253,19 @@ const linkWorldEntrance: ToolDefinition = {
 };
 
 export const DUNGEON_LINK_TOOLS: readonly ToolDefinition[] = [linkWorldEntrance];
+
+const CAVE_MOUTH_KIT = "kit:beodeul_city/bd-pick-mining-valley-adit";
+/** 바깥(실내·던전이 아닌) 버들항 맵의 출입구 칸 위에 문·계단 그림이 없으면 갱구(3×4, 문 칸 = 왼쪽 위+(2,3))를 출입구 바로 위에 찍는다. 못 찍으면 조용히 넘긴다(끝맺음 검사가 짚는다). */
+function caveMouth(draft: Project, map: GameMap, gate: Pt): string | undefined {
+  const role = (map as unknown as { mapRole?: string }).mapRole;
+  if (map.tilesetId !== "beodeul_city" || role === "dungeon" || role === "interior" || map.climate?.mode === "indoor") return undefined;
+  if ([0, -1].some((dy) => isDoorArtCell(draft, map, gate.x, gate.y + dy))) return undefined;
+  const tool = SHARED_OBJECT_TOOLS.find((t) => t.name === "stamp_object");
+  if (!tool?.run) return undefined;
+  try {
+    tool.run(draft, { objectId: CAVE_MOUTH_KIT, mapId: map.id, x: gate.x - 2, y: gate.y - 4 });
+    return `${map.name ?? map.id} 출입구 (${gate.x},${gate.y}) 바로 위에 굴 입구(갱구)를 찍었다.`;
+  } catch {
+    return undefined;
+  }
+}

@@ -508,6 +508,11 @@ export type Command =
       stringVariableId?: string;
       /** 문자열 변수 입력일 때 창 위 안내 문구. */
       prompt?: string;
+      /**
+       * 입력 화면 연출. 생략·"window" = 기본 문자표 창. "showcase" = 별빛 배경 위에서 주인공 걷기 그림이 사방으로 돌고,
+       * 확정하면 반짝이 폭발과 함께 이름이 박힌다(포켓몬 오프닝의 이름 짓기처럼). 입력 방식은 같다.
+       */
+      presentation?: "window" | "showcase";
     }
   | { kind: "changeGold"; op: "=" | "+=" | "-="; amount: VariableOperand }
   | { kind: "changeItem"; itemId: ItemId; op: "=" | "+=" | "-="; amount: VariableOperand }
@@ -681,8 +686,12 @@ export type Command =
   | { kind: "m2Command"; commandId: string; fields: M2CommandFields }
   /** 난이도 변경(system.difficulties 의 id). 없는 id 는 무시한다. */
   | { kind: "setDifficulty"; difficultyId: string }
-  /** 현재 파티(구성원·위치)를 이름 붙은 파티 묶음으로 저장한다. 같은 이름은 덮어쓴다. */
-  | { kind: "storeParty"; partySetId: string }
+  /**
+   * 현재 파티(구성원·위치)를 이름 붙은 파티 묶음으로 저장한다. 같은 이름은 덮어쓴다.
+   * actorIds·mapId·x·y 를 주면 지금 파티 대신 그 구성원·자리로 묶음을 미리 만든다(파티 나누기 준비 —
+   * 지금 조작 중인 파티는 바뀌지 않는다). 빠진 칸은 지금 파티·자리로 채운다.
+   */
+  | { kind: "storeParty"; partySetId: string; actorIds?: ActorId[]; mapId?: MapId; x?: number; y?: number }
   /**
    * 저장한 파티 묶음으로 조작을 바꾼다. 지금 파티는 activePartySetId 로 자동 저장되고,
    * 불러온 묶음의 위치로 이동한다(맵이 같으면 제자리 교체). 없는 묶음이면 flags.recallPartySuccess=false.
@@ -837,6 +846,11 @@ export interface EventPageMovement {
    * 그 뒤는 평소 추격 걸음. 주인공 걷기(랭크 6 = 160ms/칸)보다 빠르게 두면 피할 수 없으니 6 이하로 둔다.
    */
   chaseLunge?: ChaseLunge;
+  /**
+   * chase 전용 «다가오는 방식» — 종족마다 다른 몸짓(질주·도약·통통·급강하·육중·부유·기기). 생략·walk = 기존 걷기.
+   * 표는 project/fieldApproachStyle.ts. 조수: place_field_enemy·tune_field_enemies(approachStyle, auto = 종족으로)·set_field_approach_style.
+   */
+  approachStyle?: import("@/project/fieldApproachStyle").FieldApproachStyle;
 }
 
 export interface ChaseLunge {
@@ -876,8 +890,23 @@ export interface EventPage {
    * 조사할 것을 멀리서도 알아보게 한다. 안에 머무는 동안은 다시 터지지 않고, 나갔다 들어오면 또 터진다.
    */
   nearSparkle?: NearSparkle;
+  /**
+   * 늘 빛나는 표지(세이브 포인트·성물) — 거리와 무관하게 끝없이 돈다: 숨 쉬듯 커졌다 작아지는 빛무리, 둘레 반짝임, 위로 오르는
+   * 빛 알갱이. 화면 끝에서도 눈에 띄게 하려고 칸보다 크게 번진다. 그리기는 player/playSceneFieldStaging(syncEventGlows).
+   */
+  glow?: EventGlow;
   movement: EventPageMovement;
   commands: Command[];
+}
+
+export interface EventGlow {
+  /** 빛 색(#rrggbb). 기본 푸른 별빛 #8fd8ff. */
+  color?: string;
+  /** 빛무리 반지름(칸, 1~3). 기본 2. */
+  radius?: number;
+  /** 빛을 놓을 칸이 이벤트 칸에서 얼마나 떨어졌나(오브젝트 그림 가운데로 옮길 때). 기본 0,0. */
+  offsetX?: number;
+  offsetY?: number;
 }
 
 export interface NearSparkle {
@@ -932,6 +961,12 @@ export interface GameEvent {
   socialCalendar?: SocialCalendar;
   /** Opt-in shop buy-price discount when buyer friendship with this merchant meets minFriendship. */
   socialShop?: SocialShop;
+  /**
+   * 보이는 필드 적(place_field_enemy)의 진영(project.factions 의 id). 적대(태도 -1 이하)인 진영의 보이는 적과
+   * 2칸 안에서 마주치면 맵 위에서 짧게 부딪히고 전력이 약한 쪽이 사라진다(맵에 다시 들어오면 돌아온다).
+   * 생략 = 진영 싸움 없음(옛 맵 그대로). 판정 project/fieldEnemyClash.ts, 연출 player/playSceneFieldEnemyClash.ts.
+   */
+  fieldFactionId?: string;
   draft?: EventDraftMeta;
 }
 

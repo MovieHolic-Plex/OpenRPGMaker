@@ -14,9 +14,11 @@
  * 3. 내장 HTML5 Gamepad API 폴링 루프 (Steam Deck / Xbox / DualSense 컨트롤러):
  *    별도 설정 없이 패드 연결 시 D-Pad / 좌측 스틱 → 방향키, A(0) → Enter/Z, B(1) → Escape/X,
  *    X(2)/LB(4) → Shift, Y(3)/Start(9) → Escape 키 이벤트를 합성해 타이틀·필드·전투·대사창 전체가
- *    패드로 완벽히 조작된다.
+ *    패드로 조작된다. 방향키를 누르고 있으면 키보드 반복과 같이 `repeat` keydown 을 보낸다
+ *    (메뉴 커서가 한 칸에서 멈추지 않게). 확인·취소는 가장자리에서 한 번만 보낸다.
  */
 import type { DesktopDisplayMode, DesktopExportPlatform } from "@/project/desktopGameExport";
+import { HeldDirectionRepeat } from "@/player/heldDirectionRepeat";
 
 export interface DesktopShellBootConfig {
   readonly enabled?: boolean;
@@ -308,33 +310,54 @@ function startGamepadPolling(state: DesktopShellRuntimeState): () => void {
     return () => {};
   }
   const pressedKeys = new Set<string>();
+  const directionRepeat = new HeldDirectionRepeat();
   let rafId = 0;
   let active = true;
 
-  const dispatchSyntheticKey = (type: "keydown" | "keyup", key: string, code: string): void => {
+  const dispatchSyntheticKey = (type: "keydown" | "keyup", key: string, code: string, repeat = false): void => {
+    // One event, on the focused element, so it bubbles through document to window once.
+    // A second copy dispatched on window made one pad press confirm twice: the first
+    // event already reaches window listeners (battle, tactics). That second event also
+    // has target=window, so a text-field guard that looks at event.target let it through
+    // while the player was typing. Battle then treated one A press as command + target.
     const target = document.activeElement instanceof HTMLElement ? document.activeElement : document.body;
-    const event = new KeyboardEvent(type, {
+    target.dispatchEvent(new KeyboardEvent(type, {
       key,
       code,
       bubbles: true,
       cancelable: true,
-    });
-    target.dispatchEvent(event);
-    window.dispatchEvent(
-      new KeyboardEvent(type, {
-        key,
-        code,
-        bubbles: true,
-        cancelable: true,
-      }),
-    );
+      repeat,
+    }));
+  };
+
+  const readConnectedGamepad = (): Gamepad | undefined => {
+    const pads = navigator.getGamepads ? navigator.getGamepads() : [];
+    return Array.from(pads ?? []).find((item): item is Gamepad => Boolean(item && item.connected));
+  };
+
+  // Dropping the pad does not deliver keyup. Release every key we synthesized,
+  // or the last direction/dash stays down and the character keeps walking.
+  const releasePressedKeys = (): void => {
+    if (pressedKeys.size === 0) return;
+    const tokens = [...pressedKeys];
+    pressedKeys.clear();
+    for (const token of tokens) {
+      const [key, code] = token.split("|");
+      if (key && code) dispatchSyntheticKey("keyup", key, code);
+    }
+  };
+
+  const markDisconnected = (): void => {
+    state.gamepadConnected = false;
+    state.gamepadId = null;
+    releasePressedKeys();
+    directionRepeat.clear();
   };
 
   const poll = (): void => {
     if (!active) return;
     try {
-      const pads = navigator.getGamepads ? navigator.getGamepads() : [];
-      const pad = Array.from(pads ?? []).find((item): item is Gamepad => Boolean(item && item.connected));
+      const pad = readConnectedGamepad();
       if (pad) {
         state.gamepadConnected = true;
         state.gamepadId = pad.id || "Xbox / Steam Input Controller";
@@ -366,14 +389,22 @@ function startGamepadPolling(state: DesktopShellRuntimeState): () => void {
         }
         pressedKeys.clear();
         for (const token of nextPressed) pressedKeys.add(token);
-      } else if (state.gamepadConnected) {
-        state.gamepadConnected = false;
-        state.gamepadId = null;
-        for (const token of pressedKeys) {
-          const [key, code] = token.split("|");
-          if (key && code) dispatchSyntheticKey("keyup", key, code);
+        // Held directions repeat like a keyboard key so a stick in a menu keeps
+        // moving the cursor. The first tick only arms the timer. Confirm and
+        // cancel are not in this list, so a held A stays one press.
+        const heldDirections: string[] = [];
+        for (const token of nextPressed) {
+          const key = token.split("|")[0] ?? "";
+          if (key.startsWith("Arrow")) heldDirections.push(key);
         }
-        pressedKeys.clear();
+        const now = typeof performance !== "undefined" ? performance.now() : 0;
+        for (const key of directionRepeat.tick(heldDirections, now)) {
+          dispatchSyntheticKey("keydown", key, key, true);
+        }
+      } else if (state.gamepadConnected || pressedKeys.size > 0) {
+        // `gamepaddisconnected` clears the flag before this poll. Releasing
+        // only while the flag is still true left the held key stuck.
+        markDisconnected();
       }
     } catch {
       // Ignore gamepad SecurityError in sandboxed contexts
@@ -388,8 +419,13 @@ function startGamepadPolling(state: DesktopShellRuntimeState): () => void {
     state.gamepadId = event.gamepad?.id || "Steam Input Gamepad";
   };
   const onGamepadDisconnected = (): void => {
-    state.gamepadConnected = false;
-    state.gamepadId = null;
+    // Another pad may still be held. Let the next poll reconcile that one.
+    try {
+      if (readConnectedGamepad()) return;
+    } catch {
+      // Same sandbox miss as the poll: treat the pad as gone.
+    }
+    markDisconnected();
   };
   window.addEventListener("gamepadconnected", onGamepadConnected as EventListener);
   window.addEventListener("gamepaddisconnected", onGamepadDisconnected as EventListener);
@@ -403,6 +439,8 @@ function startGamepadPolling(state: DesktopShellRuntimeState): () => void {
     if (rafId && typeof window.cancelAnimationFrame === "function") {
       window.cancelAnimationFrame(rafId);
     }
+    releasePressedKeys();
+    directionRepeat.clear();
     window.removeEventListener("gamepadconnected", onGamepadConnected as EventListener);
     window.removeEventListener("gamepaddisconnected", onGamepadDisconnected as EventListener);
   };

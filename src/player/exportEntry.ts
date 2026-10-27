@@ -122,7 +122,7 @@ async function bootExportedPlayer(root: HTMLElement): Promise<void> {
     if (!demo.ok) { loader.remove(); renderBootError(root, demo.message); return; }
     loader.setInfo({ title: demo.project.meta.title });
     await prepareFirstScreen(loader, demo.project, autoStartFor(boot));
-    void startPlayer(root, boot, demo.project, "bundled");
+    void startPlayer(root, boot, demo.project, "bundled", loader);
     return;
   }
   // 단일 HTML 로 내보낸 게임: 프로젝트도 에셋도 이 문서 안에 있다. fetch 가 막히는 file:// 에서
@@ -154,7 +154,7 @@ async function bootExportedPlayer(root: HTMLElement): Promise<void> {
   // 판본이 원본 대신 실은 파일(큰 WAV → MP3 등). 주소를 하나라도 만들기 전에 건다.
   registerAssetAliases((await loadingInfo).aliases);
   await prepareFirstScreen(loader, bundled.project, autoStartFor(boot));
-  void startPlayer(root, boot, bundled.project, "bundled");
+  void startPlayer(root, boot, bundled.project, "bundled", loader);
 }
 
 function autoStartFor(boot: OpenRpgBootConfig): boolean {
@@ -189,7 +189,8 @@ async function prepareFirstScreen(loader: BootLoader, project: Project, autoStar
   document.documentElement.dataset.preloadStartedAt = String(Math.round(performance.now()));
   // 사용자 입력 안에서 소리 잠금을 푼다 — 타이틀 BGM 이 기다림 없이 처음부터 나온다.
   getAudioEngine().unlock();
-  loader.remove();
+  // 불러오는 화면은 여기서 걷지 않는다 — 플레이어가 첫 화면을 그리면(onFirstScreen) 걷는다. 그 사이 엔진 기동의
+  // 검은 «• • •»·두 번째 로딩 카드가 비쳤다(2026-10-26 첫사랑 op5: 시작 전 4초 검은 화면).
   // 시작한 뒤: 가까운 맵부터 나머지를 낮은 우선순위로 받는다(맵 이동 때 기다림을 줄인다).
   const background = backgroundUrls(project, project.startMapId);
   setTimeout(() => {
@@ -344,7 +345,13 @@ async function startPlayer(
   boot: OpenRpgBootConfig,
   project: Project,
   source: ExportProjectSource,
+  loader?: BootLoader,
 ): Promise<void> {
+  // 첫 화면이 끝내 안 그려져도(예상 못 한 실패) 불러오는 화면이 영영 덮지 않게 한도를 둔다.
+  const dropLoader = (): void => { clearTimeout(loaderLimit); loader?.remove(); };
+  const loaderLimit = loader ? setTimeout(dropLoader, 30_000) : undefined;
+  // renderPlayer 는 root 를 비운다 — 불러오는 화면은 문서 맨 위로 옮겨 그 위를 덮는다.
+  if (loader) { document.body.append(loader.root); loader.root.style.zIndex = "2147483000"; }
   try {
     installExportUploadedAssets(project);
     // 옛 저장본에서 내보낸 게임도 에디터와 같은 얼굴을 보여 준다(faceMatchRepair.ts — 걷기 그림의 짝으로 교정).
@@ -369,10 +376,13 @@ async function startPlayer(
     if (storeGame && source === "bundled") {
       setSavePublication(project.meta.publication, resolveCommunitySaveScope(window.location.pathname));
       try {
+        // 클라우드 묻기 창(askUploadLocalSaves)은 root 안에 뜬다 — 불러오는 화면이 그 위를 가리지 않게 잠깐 숨긴다.
+        if (loader) loader.root.style.visibility = "hidden";
         await startStoreCloudSync(root, storeGame, window.localStorage);
       } catch (error) {
         console.warn("[oprn] 클라우드 세이브 맞추기를 건너뜁니다:", error);
       }
+      if (loader) loader.root.style.visibility = "";
     }
     document.title = project.meta.title || `${PRODUCT_BRAND} Player`;
     // 호스트(커뮤니티 사이트)가 주입한 returnUrl/hostFeatures — 잘못된 값은 조용히 무시된다.
@@ -391,6 +401,7 @@ async function startPlayer(
       qaInstrumentation: boot.qaInstrumentation === true,
       hostBridge: host,
       onExit: () => exitToHost(root, host),
+      onFirstScreen: dropLoader,
       ...(probe ? {
         startOverride: { mapId: probe.mapId, ...project.startPos },
         onPlayBootSuccess: () => {
@@ -404,6 +415,7 @@ async function startPlayer(
       } : {}),
     });
   } catch (error) {
+    dropLoader();
     renderBootError(root, error instanceof Error ? error.message : String(error));
   }
 }

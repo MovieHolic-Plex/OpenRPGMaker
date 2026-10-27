@@ -430,6 +430,23 @@
 .oprn-status-menu .status-menu-detail-value { max-width: 100%; }
 .oprn-status-menu [data-testid="status-menu-owned-equipment-worn"] .status-menu-detail-value { justify-self: stretch; text-align: left; }
 
+/* Story journal lines: full-width prose; erased lines fade, re-read lines keep a quiet mark. */
+.oprn-status-menu .status-menu-detail-row[data-journal-state] {
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+.oprn-status-menu [data-journal-state] .status-menu-detail-description {
+  grid-column: 1 / -1;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+.oprn-status-menu .status-menu-detail-row[data-journal-state="erased"] {
+  opacity: 0.38;
+  filter: grayscale(1);
+}
+.oprn-status-menu .status-menu-detail-row[data-journal-state="reread"] .status-menu-detail-value {
+  font-style: italic;
+}
+
 /* Quest prose needs the whole row; max-content values otherwise squeeze titles. */
 .oprn-status-menu .status-menu-detail-row[data-quest-row] {
   grid-template-columns: minmax(0, 1fr);
@@ -447,3 +464,14 @@
    목록 상자만 휠을 받고, 안의 행은 계속 포인터를 받지 않는다(호버·클릭 없음 — 입력 차단기가 휠만 이 목록 위에서 통과시킨다). */
 [data-play-input-owner="keyboard-only"] .oprn-status-menu .status-menu-detail-list { pointer-events: auto; }
 [data-play-input-owner="keyboard-only"] .oprn-status-menu .status-menu-detail-list > * { pointer-events: none; }
+/* 고해상도 프로젝트(논리 무대가 320×240 의 2배 이상): 메뉴를 320×240 쯤의 판으로 그리고 정수배로 키운다(playerStatusMenu statusMenuZoom).
+   세로 폰 창 칸(data-window-panel)은 자기 배율을 쓰고, 에메랄드 스킨은 자기 480 판형이라 건드리지 않는다. */
+.player-layout .play-viewport:not([data-window-panel]) > .play-stage > .oprn-status-menu.main-menu[data-menu-zoom] {
+  inset: 0 auto auto 0 !important;
+  width: calc(100% / var(--status-menu-zoom)) !important;
+  height: calc(100% / var(--status-menu-zoom)) !important;
+  max-width: none !important;
+  max-height: none !important;
+  transform: scale(var(--status-menu-zoom));
+  transform-origin: 0 0;
+}

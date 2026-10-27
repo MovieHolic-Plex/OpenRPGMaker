@@ -76,7 +76,8 @@ export interface PlainPiTurnInput {
   readonly hasActivePlan: boolean;
   readonly autonomy: AutonomyResolution;
   /** 계획 전용 턴 이외에 요청 의도와 위치 안내 권한을 읽는다. */
-  readonly declarer: () => IntentDeclarer;
+  /** attempt 2 = 시간 초과 뒤 재시도(호출자가 벽시계를 늘린다). */
+  readonly declarer: (attempt?: number) => IntentDeclarer;
   readonly piTeam: boolean;
   /** 선언 호출 직전 — 패널은 「의도 읽는 중…」 을 띄운다. */
   readonly onDeclaring?: () => void;
@@ -198,13 +199,22 @@ export async function classifyPlainPiTurn(input: PlainPiTurnInput): Promise<Plai
       selection,
       hasActivePlan: input.hasActivePlan,
     });
+    let intentTimedOut = false;
     let declared = await declareIntentCached(input.declarer(), declareFacts);
     // 공급자가 한 번 느렸다고 지시 전체를 버리지 않는다 — 시간 초과만 한 번 더 시도한다(분류 호출은 폴백을 캐시하지 않는다).
     // 실측 2026-10-13: 동시 실행 5건 중 2건이 「시간 초과(30000ms)」로 턴이 시작도 못 하고 끝났다.
     if (declared.intent.source === "fallback" && !plan.readOnly && /시간 초과/u.test(declared.error ?? "")) {
-      declared = await declareIntentCached(input.declarer(), declareFacts);
+      declared = await declareIntentCached(input.declarer(2), declareFacts);
+      // 느린 추론 공급자(2026-10-25 Salad DeepSeek: 30초 벽에 턴이 시작도 못 하고 죽었다)는 늘린 재시도도 넘길 수 있다.
+      // 그때는 턴을 버리지 않고 중립 선언(아무 것도 추측하지 않는다 — 노출 툴·계획은 본문 모델이 정한다)으로 간다.
+      if (declared.intent.source === "fallback" && /시간 초과/u.test(declared.error ?? "")) {
+        const { requestRequirements: _unresolved, ...neutral } = declared.intent as typeof declared.intent & { requestRequirements?: unknown };
+        void _unresolved;
+        declared = { ...declared, intent: neutral as typeof declared.intent };
+        intentTimedOut = true;
+      }
     }
-    if (declared.intent.source === "fallback" && !plan.readOnly) throw new Error(declared.error ?? "요청 범위를 확정하지 못했습니다. 다시 시도해 주세요.");
+    if (declared.intent.source === "fallback" && !plan.readOnly && !intentTimedOut) throw new Error(declared.error ?? "요청 범위를 확정하지 못했습니다. 다시 시도해 주세요.");
     plan = { ...plan, viewNavigation: declared.intent.source === "llm" && declared.intent.viewNavigation === true };
     if (declared.intent.source === "llm" && declared.intent.clarify && declared.intent.mode !== "question") clarifyIntent = declared.intent;
     // 선언이 확정한 것을 본문도 읽게 한다 — 세션 경로의 pushOrchestrationMessage(intentNote) 와 같은 자리.
@@ -315,7 +325,7 @@ export async function classifyPlainPiTurn(input: PlainPiTurnInput): Promise<Plai
       ])];
       if (SCENE_SETTING_PATTERN.test(text)) intentNote = intentNote ? `${intentNote}\n\n${SCENE_SETTING_NOTE}` : SCENE_SETTING_NOTE;
       if ((requestsOpeningProduction(text) || requestsFullGameOpeningProduction(text) || isRomanceGameRequest(text)) && !(intentNote ?? "").includes("create_opening_animatic_shot")) {
-        const openingNote = "[새로하기 오프닝·타이틀 — #2852 레이어드 도트 애니메틱 6샷 필수] 새 게임 제작 시 타이틀(set_title_screen title + backgroundResourceId:'oprn-still-...')과 새로하기 오프닝 **6샷(shot_1..shot_6)**도 반드시 함께 제작한다(generate_title_art·generate_opening_image 호출 금지, list_opening_media 의 oprn-still-kingdom-day·oprn-still-dark-citadel·oprn-still-snow-village·oprn-still-desert-ruin·oprn-still-farm-golden·oprn-still-forest-path·oprn-pack-still-sky-01·oprn-pack-still-sky-03 등 한 장면이 화면을 꽉 채우는 번들 배경 활용 — 분할 화면·게임 UI가 박힌 참고 스틸(suitableForOpening:false, 예 oprn-still-hero-dawn)은 거절된다): plan_opening(bible 포함, 6샷) → 6샷 각각 create_opening_animatic_shot(width:384,height:216,durationMs:6500) → set_opening_pixel_grid(384,216) → place_opening_background(6샷 서로 다른 oprn-still-*/oprn-pack-still-* 배경) → place_opening_charset_actor(charsetResourceId:'oprn-charset-heroes1', characterIndex:0..7, x:72, y:136, toX:200 걷기 포함) → upsert_opening_light_fx + animate_opening_camera → set_opening_caption(전 샷 #fff0dc 통일) → set_opening(6개 animatic shotId 연결) → review_opening. 제목 카드 한 장이나 정지 그림 슬라이드, 6샷 미만으로 끝내지 않는다.";
+        const openingNote = "[새로하기 오프닝·타이틀 — #2852 레이어드 도트 애니메틱 6샷 필수] 새 게임 제작 시 타이틀(set_title_screen title + backgroundResourceId:'oprn-still-...')과 새로하기 오프닝 **6샷(shot_1..shot_6)**도 반드시 함께 제작한다(generate_title_art·generate_opening_image 호출 금지, list_opening_media 의 oprn-still-kingdom-day·oprn-still-dark-citadel·oprn-still-snow-village·oprn-still-desert-ruin·oprn-still-farm-golden·oprn-still-forest-path 등(oprn-pack-still-* 는 목록에 보일 때만) 한 장면이 화면을 꽉 채우는 번들 배경 활용 — 분할 화면·게임 UI가 박힌 참고 스틸(suitableForOpening:false, 예 oprn-still-hero-dawn)은 거절된다): plan_opening(bible 포함, 6샷) → 6샷 각각 create_opening_animatic_shot(width:384,height:216,durationMs:6500) → set_opening_pixel_grid(384,216) → place_opening_background(6샷 서로 다른 oprn-still-*/oprn-pack-still-* 배경) → place_opening_charset_actor(charsetResourceId:'oprn-charset-heroes1', characterIndex:0..7, x:72, y:136, toX:200 걷기 포함) → upsert_opening_light_fx + animate_opening_camera → set_opening_caption(전 샷 #fff0dc 통일) → set_opening(6개 animatic shotId 연결) → review_opening. 제목 카드 한 장이나 정지 그림 슬라이드, 6샷 미만으로 끝내지 않는다.";
         intentNote = intentNote ? `${intentNote}\n\n${openingNote}` : openingNote;
       }
       // 개념 카드 노트가 붙는 요청이면 예제를 짓는 도구를 처음부터 쥐여 준다 — 노트가 이 도구 이름을 부른다.

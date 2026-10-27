@@ -396,6 +396,8 @@ export interface OpenAiCompatSaveRequest {
   readonly allowModels?: readonly string[];
   readonly blockModels?: readonly string[];
   readonly supportsImages?: boolean;
+  /** 그림을 실제로 보는 모델 패턴(프리셋이 아는 값). */
+  readonly imageModels?: readonly string[];
   readonly maxOutputTokens?: number;
   readonly contextWindow?: number;
   readonly firstTokenTimeoutSec?: number;
@@ -448,6 +450,8 @@ function readCompatEndpoints(payload: Record<string, unknown> | null): OpenAiCom
       allowModels: Array.isArray(item.allowModels) ? item.allowModels.filter((p): p is string => typeof p === "string") : [],
       blockModels: Array.isArray(item.blockModels) ? item.blockModels.filter((p): p is string => typeof p === "string") : [],
       supportsImages: item.supportsImages === true,
+      ...(Array.isArray(item.imageModels) ? { imageModels: item.imageModels.filter((p): p is string => typeof p === "string") } : {}),
+      ...(Array.isArray(item.imageBlindModels) ? { imageBlindModels: item.imageBlindModels.filter((m): m is string => typeof m === "string") } : {}),
       maxOutputTokens: typeof item.maxOutputTokens === "number" ? item.maxOutputTokens : 16_384,
       contextWindow: typeof item.contextWindow === "number" ? item.contextWindow : 128_000,
       firstTokenTimeoutSec: typeof item.firstTokenTimeoutSec === "number" ? item.firstTokenTimeoutSec : 180,

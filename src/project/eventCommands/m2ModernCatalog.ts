@@ -43,6 +43,9 @@ export const SCREEN_EFFECT_OPTIONS: readonly M2CommandFieldOption[] = [
   // 영화식 위아래 검은 띠. 값 = 띠 두께(화면 높이 %, 비우면 12), 0 = 걷기.
   { value: "letterbox", label: "레터박스 (위아래 검은 띠)" },
   { value: "clearLetterbox", label: "레터박스 걷기" },
+  // 만화식 정지 화면: 지금 화면을 한 장 찍어 멈춘 그림으로 세운다. 값 = 색감 warm(기본)·mono·sepia·cool·none. 풀 때까지 남는다.
+  { value: "freeze", label: "정지 화면 (프리즈 프레임)" },
+  { value: "unfreeze", label: "정지 화면 풀기" },
   // 타일 그림 문 열기·닫기. 값 = "x,y,너비,높이,slide|swing,left|right[,lit|dark|none][,l4,r3,t7,b1]"(문 그림 왼쪽 위 칸, 문틀 두께 px). 소리는 효과음 명령을 같이.
   { value: "doorOpen", label: "문 열기 (타일 문 그림)" },
   { value: "doorClose", label: "문 닫기 (타일 문 그림)" },
@@ -57,6 +60,22 @@ export const PARTICLE_PRESET_OPTIONS: readonly M2CommandFieldOption[] = PARTICLE
   value,
   label: PARTICLE_PRESET_LABELS[value],
 }));
+
+const JOURNAL_ACTION_OPTIONS: readonly M2CommandFieldOption[] = [
+  { value: "write", label: "한 줄 쓰기(같은 줄 id 면 고쳐 쓰기)" },
+  { value: "erase", label: "줄 지우기(메뉴에서 흐리게)" },
+  { value: "reread", label: "지워진 줄 다시 읽어 주기(되살리기)" },
+];
+
+const LIFT_MODE_OPTIONS: readonly M2CommandFieldOption[] = [
+  { value: "depart", label: "떠나기(움직인 채로 — 뒤에 장소 이동)" },
+  { value: "arrive", label: "도착하기(반대쪽에서 지금 자리로)" },
+  { value: "move", label: "같은 맵 안 다른 층으로" },
+];
+const LIFT_DIRECTION_OPTIONS: readonly M2CommandFieldOption[] = [
+  { value: "up", label: "위로" },
+  { value: "down", label: "아래로" },
+];
 
 /** 파티클·모습 효과가 붙을 대상. event 면 eventId 칸을 쓴다. */
 const STAGING_TARGET_OPTIONS: readonly M2CommandFieldOption[] = [
@@ -165,6 +184,7 @@ const UI_SURFACE_OPTIONS: readonly M2CommandFieldOption[] = [
   { value: "hud", label: "HUD" },
   { value: "banner", label: "배너" },
   { value: "menuPrompt", label: "메뉴 프롬프트" },
+  { value: "objectiveChip", label: "현재 목표(계속 표시)" },
 ];
 
 const DEBUG_LEVEL_OPTIONS: readonly M2CommandFieldOption[] = [
@@ -410,6 +430,7 @@ export function modernFieldsFor(title: string): readonly M2CommandFieldSpec[] | 
         { key: "x", label: "X(맵 좌표일 때)", type: "number", defaultValue: 0 },
         { key: "y", label: "Y(맵 좌표일 때)", type: "number", defaultValue: 0 },
         { key: "durationMs", label: "시간(ms)", type: "number", defaultValue: 1200, min: 100, max: 60000, step: 100 },
+        { key: "sizePercent", label: "크기(%)", type: "number", defaultValue: 100, min: 25, max: 400, step: 25 },
         { key: "wait", label: "끝날 때까지 대기", type: "boolean", defaultValue: false },
       ];
     case "Sprite Look":
@@ -425,6 +446,30 @@ export function modernFieldsFor(title: string): readonly M2CommandFieldSpec[] | 
         { key: "afterimage", label: "잔상", type: "select", defaultValue: "keep", options: KEEP_ON_OFF_OPTIONS },
         { key: "angle", label: "기울기(도, 비우면 그대로)", type: "text", defaultValue: "" },
         { key: "opacity", label: "불투명도(%, 비우면 그대로)", type: "text", defaultValue: "" },
+      ];
+    case "Lift Ride":
+      return [
+        { key: "mode", label: "방식", type: "select", defaultValue: "depart", options: LIFT_MODE_OPTIONS },
+        { key: "direction", label: "방향", type: "select", defaultValue: "up", options: LIFT_DIRECTION_OPTIONS },
+        { key: "distance", label: "움직이는 칸 수", type: "number", defaultValue: 4, min: 1, max: 20, step: 1 },
+        { key: "durationMs", label: "시간(ms)", type: "number", defaultValue: 2600, min: 400, max: 20000, step: 100 },
+        { key: "x", label: "발판 왼쪽 X(-1 = 주인공 칸)", type: "number", defaultValue: -1 },
+        { key: "y", label: "발판 위쪽 Y(-1 = 주인공 칸)", type: "number", defaultValue: -1 },
+        { key: "width", label: "발판 폭(칸)", type: "number", defaultValue: 2, min: 1, max: 6, step: 1 },
+        { key: "depth", label: "발판 깊이(칸)", type: "number", defaultValue: 2, min: 1, max: 4, step: 1 },
+        { key: "se", label: "기계음 효과음", type: "text", defaultValue: "cc0-se-osx-machine-02" },
+        { key: "wait", label: "끝날 때까지 대기", type: "boolean", defaultValue: true },
+      ];
+    case "Journal Line":
+      return [
+        { key: "action", label: "동작", type: "select", defaultValue: "write", options: JOURNAL_ACTION_OPTIONS },
+        { key: "lineId", label: "줄 id(지우기·다시 읽기가 가리킨다, 쓰기는 비우면 자동)", type: "text", defaultValue: "" },
+        { key: "writer", label: "필체(일지 필체 id 또는 이름)", type: "text", defaultValue: "" },
+        { key: "date", label: "날짜 칸", type: "text", defaultValue: "" },
+        { key: "text", label: "내용", type: "textarea", defaultValue: "" },
+        { key: "learnActorId", label: "다시 읽을 때 기술을 배울 배우", type: "text", defaultValue: "" },
+        { key: "learnSkillId", label: "다시 읽을 때 배울 기술", type: "text", defaultValue: "" },
+        { key: "resultSwitchId", label: "실제로 바뀌면 켤 스위치", type: "text", defaultValue: "" },
       ];
     case "Data Query":
       return [

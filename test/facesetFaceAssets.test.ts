@@ -10,12 +10,12 @@ import {
 } from "@/assets/facesetFaceAssets";
 
 describe("얼굴 낱장 에셋 목록", () => {
-  it("81장의 시트를 16칸씩 쪼갠 1296개 낱장을 등록한다", () => {
-    expect(LEGACY_FACESET_SHEET_IDS).toHaveLength(81);
-    expect(FACESET_FACE_ASSETS).toHaveLength(1296);
+  it("84장의 시트를 16칸씩 쪼갠 1344개 낱장을 등록한다", () => {
+    expect(LEGACY_FACESET_SHEET_IDS).toHaveLength(84);
+    expect(FACESET_FACE_ASSETS).toHaveLength(1344);
 
     const ids = new Set(FACESET_FACE_ASSETS.map((face) => face.id));
-    expect(ids.size).toBe(1296);
+    expect(ids.size).toBe(1344);
     for (const sheetId of LEGACY_FACESET_SHEET_IDS) {
       expect(FACESET_FACE_ASSETS.filter((face) => face.sheetResourceId === sheetId)).toHaveLength(16);
     }
@@ -24,13 +24,13 @@ describe("얼굴 낱장 에셋 목록", () => {
     );
   });
 
-  it("삭제된 starter 낱장을 저작 목록에 등록하지 않는다", () => {
-    // 삭제된 두 starter 시트는 카탈로그에서도 제외한다.
-    expect(GENERATED_FACESET_FACE_IDS.size).toBe(0);
+  it("생성 시리즈 낱장을 저작 목록에 등록하지 않는다", () => {
+    // 생성 시리즈(generated-faceset-missing-*)는 카탈로그에는 있지만 저작 목록에서는 뺀다.
+    expect(GENERATED_FACESET_FACE_IDS.size).toBeGreaterThan(0);
     for (const id of GENERATED_FACESET_FACE_IDS) {
-      expect(id.startsWith("generated-actor-hero-")).toBe(true);
+      expect(id.startsWith("generated-faceset-missing-")).toBe(true);
     }
-    expect(AUTHORABLE_FACESET_FACE_ASSETS).toHaveLength(1296 - GENERATED_FACESET_FACE_IDS.size);
+    expect(AUTHORABLE_FACESET_FACE_ASSETS).toHaveLength(1344 - GENERATED_FACESET_FACE_IDS.size);
     for (const face of AUTHORABLE_FACESET_FACE_ASSETS) {
       expect(GENERATED_FACESET_FACE_IDS.has(face.id)).toBe(false);
     }

@@ -2,10 +2,11 @@ import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
 import { createBlankProject } from "../../src/project/defaults/defaultProject";
 import { designBase, emptySpatialDocument } from "./spatialSchemaFixture";
+import { withRetiredEasyRpgTilesets } from "./retiredEasyRpgTilesets";
 
 /** Synthetic raw-wire root plus a newer map overlay; never a normalized Project. */
 export function legacyRawFixture() {
-  const project = createBlankProject();
+  const project = withRetiredEasyRpgTilesets(createBlankProject());
   const tilesetId = "easyrpg_chipset_interior" as const;
   const tileset = project.tilesets[tilesetId];
   const map = project.maps[project.startMapId];

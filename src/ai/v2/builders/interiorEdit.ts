@@ -11,6 +11,7 @@ import { isPassable } from "@/project/collision";
 import type { GameMap, Project } from "@/project/types";
 import { runMachineChecks } from "../checks";
 import { findPart, roomSetsFor } from "./interior";
+import { handObjectKitId } from "./dressRoom";
 import type { BuildRun, PlaceBuildResult, PlaceSpec } from "../types";
 
 const HAND_LAYOUT_ROOM_TAG = "hand-layout-room";
@@ -42,7 +43,9 @@ function stampPart(run: BuildRun, spec: HandInteriorSpec, tilesetId: string, map
   const def = spec.objects[id];
   if (!def) return false;
   const minDx = Math.min(...def.cells.map((c) => c[0])), minDy = Math.min(...def.cells.map((c) => c[1]));
-  const res = run.call("stamp_object", { objectId: `kit:${tilesetId}/hand-interior:${id}`, mapId, x: x + minDx, y: y + minDy });
+  const kitId = handObjectKitId(run.ctx.project, tilesetId, id);
+  if (!kitId) return false;
+  const res = run.call("stamp_object", { objectId: `kit:${tilesetId}/${kitId}`, mapId, x: x + minDx, y: y + minDy });
   return res.ok;
 }
 
@@ -71,6 +74,8 @@ export function interiorStampEdit(run: BuildRun, spec: PlaceSpec, mapId: string,
   /** 한 벌을 찍고 길을 막으면 되돌린다. */
   const tryStampSet = (set: readonly { id: string; x: number; y: number }[], ox: number, oy: number): boolean => {
     const snapshot = run.ctx.project;
+    // 빈 한 벌(이 칩셋에 그 부품이 없다)은 찍은 것이 아니다 — 「덧찍었다」고 세지 않는다(2026-10-26: modern_city 에서 0개를 찍고 성공으로 셌다).
+    if (!set.length) return false;
     if (!set.every((o) => fits(run.ctx.project, map(), roomSpec, o.id, ox + o.x, oy + o.y))) return false;
     for (const o of set) if (!stampPart(run, roomSpec, tilesetId, mapId, o.id, ox + o.x, oy + o.y)) { run.ctx.project = snapshot; return false; }
     if (!reachOk(run.ctx.project, mapId)) { run.ctx.project = snapshot; return false; }
@@ -87,7 +92,7 @@ export function interiorStampEdit(run: BuildRun, spec: PlaceSpec, mapId: string,
     if (!region) break;
     tried.add(`${region.x},${region.y}`);
     const room = roomAt(region.x + Math.floor(region.w / 2), region.y + Math.floor(region.h / 2));
-    const options = roomSetsFor(room?.id ?? "living");
+    const options = roomSetsFor(room?.id ?? "living", rooms.length <= 1 ? map().name ?? spec.name : "");
     let done = false;
     for (let k = 0; k < options.length && !done; k++) {
       const set = options[(sets + k) % options.length]!.filter((o) => roomSpec.objects[o.id]);
@@ -97,7 +102,7 @@ export function interiorStampEdit(run: BuildRun, spec: PlaceSpec, mapId: string,
     }
     if (done) sets++;
   }
-  if (want) notes.push(sets ? `원래 그림은 그대로 두고 빈 바닥 ${sets}곳에 방 쓰임 한 벌을 덧찍었다` : "덧찍을 빈 바닥이 없었다");
+  if (want) notes.push(sets ? `원래 그림은 그대로 두고 빈 바닥 ${sets}곳에 방 쓰임 한 벌을 덧찍었다` : "덧찍지 못했다(빈 바닥이 없거나 이 칩셋에 방 쓰임 한 벌 부품이 없다) — 방마다 dress_room(mapId, at, purpose)으로 채운다");
 
   // 2) 주인공 물건 더하기.
   for (const add of req.adds) {

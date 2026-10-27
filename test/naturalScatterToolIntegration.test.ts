@@ -3,11 +3,12 @@ import { runTool } from "@/editor/tools/toolRunner";
 import type { ToolContext, ToolResult } from "@/editor/tools/types";
 import { inMapBounds, lineCells, type Point } from "@/editor/tools/mapHelpers";
 import { DIRT_ROAD_TILE } from "@/project/defaults/chipsetMapping";
-import { TILE } from "@/project/defaults/constants";
+import { COMBINED_TOWN_TILESET_ID, TILE } from "@/project/defaults/constants";
 import { shapeRoadAround, isRoadTile } from "@/project/defaults/roadAutotile";
 import { createBlankProject } from "@/project/defaults";
 import { COMBINED_TOWN_HARNESS_PREFIX } from "@/project/tilesetHarness/combinedTownGroups";
 import type { GameMap } from "@/project/types";
+import { withRetiredEasyRpgTilesets } from "./support/retiredEasyRpgTilesets";
 
 const CONIFER_GROUP_ID = `${COMBINED_TOWN_HARNESS_PREFIX}conifer-tree`;
 
@@ -22,8 +23,10 @@ type ScatterData = {
 };
 
 function context(width = 30, height = 30): { readonly ctx: ToolContext; readonly mapId: string } {
-  const ctx: ToolContext = { project: createBlankProject() };
-  const created = runTool(ctx, "create_map", { id: "map_natural_tools", name: "자연 툴", width, height });
+  // These cases target the combined-town harness (conifer group, bench tiles 327/328/358/388, dirt road). That sheet is retired
+  // from new projects, so restore it the way a pre-purge project carried it and build the map on it.
+  const ctx: ToolContext = { project: withRetiredEasyRpgTilesets(createBlankProject()) };
+  const created = runTool(ctx, "create_map", { id: "map_natural_tools", name: "자연 툴", width, height, tilesetId: COMBINED_TOWN_TILESET_ID });
   expect(created.ok, created.summary).toBe(true);
   return { ctx, mapId: "map_natural_tools" };
 }
@@ -416,21 +419,7 @@ describe("natural scatter tool integration", () => {
     expect(dataRecord<OriginData>(result).origin).toEqual({ x: 0, y: 0 });
   });
 
-  it("stamp_structure jitters within the two-cell maximum and is seed-replayable", () => {
-    const first = context();
-    const second = context();
-    const args = { template: "plaster", origin: { x: 8, y: 8 }, naturalness: 1, seed: 88 };
-
-    const firstResult = runTool(first.ctx, "stamp_structure", { mapId: first.mapId, ...args });
-    const secondResult = runTool(second.ctx, "stamp_structure", { mapId: second.mapId, ...args });
-
-    expectOk(firstResult);
-    expectOk(secondResult);
-    const firstOrigin = dataRecord<OriginData>(firstResult).origin;
-    expect(firstOrigin).not.toEqual(args.origin);
-    expect(Math.max(Math.abs(firstOrigin.x - args.origin.x), Math.abs(firstOrigin.y - args.origin.y))).toBeLessThanOrEqual(2);
-    expect(firstOrigin).toEqual(dataRecord<OriginData>(secondResult).origin);
-  });
+  // Removed it "stamp_structure jitters within": stamp_structure was removed from the tool registry on purpose.
 });
 
 describe("wobblePath 닫힌 폴리라인 (2026-07-08 회귀)", () => {

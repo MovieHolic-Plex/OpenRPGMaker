@@ -19,7 +19,7 @@ import { newCommand } from "@/editor/eventCommandFactory";
 import { commandOwnFieldSignature } from "@/editor/panels/eventEditor/commandDiff";
 import { commandBranches } from "@/editor/tools/commandTraversal";
 import { isPassableLanding } from "@/project/collision";
-import { resolvePictureSource } from "@/player/pictures/pictureResources";
+import { pictureResourceDrawable } from "@/player/pictures/pictureResources";
 import { COMMAND_KINDS } from "@/project/commandKindRegistry";
 import { COMMAND_GUARANTEES } from "@/project/commandGuaranteeRegistry";
 import {
@@ -628,7 +628,7 @@ function walkResourceSlots(
         // 알려진 한계: playMovie 는 미등록 id 폴백(playSceneMovies.ts:30-39)이 있어 이론상
         // 같은 false-reject 가 가능하지만, 동영상 슬롯이 비면 kind 자체를 빼므로 오늘은 도달 불가다.
         const allowed = slots.includes("picture")
-          ? resolvePictureSource(resourceId, project) !== null
+          ? pictureResourceDrawable(resourceId, project)
           : slots.some((slot) => idsOf(slot).has(resourceId));
         if (!allowed) {
           const labels = slots.map((slot) => EVENT_RESOURCE_SLOT_LABELS[slot]).join(" 또는 ");

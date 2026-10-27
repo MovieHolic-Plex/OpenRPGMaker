@@ -1,0 +1,22 @@
+{
+  "surface": "cobble",
+  "image": "tiledata/beodeul-yard/_gate/yard_cobble.png",
+  "pixel_sha256": "25789100acedb5175e8e4a1870b45d47eb6490d405fa3da45599ccddbd783ebf",
+  "verdict": "fail",
+  "view34": "pass",
+  "autotile": "pass",
+  "quality": "fail",
+  "material": "pass",
+  "defects": [
+    "/home/main/.cache/yard/vqa-r4/cobble_a.png: r3 lattice defect not fixed - stones still sit in strict horizontal courses at a fixed pitch (8x rows y~40,75,130,165,205,250,295,330,375,420) with grey stones and tan ovals at the same column positions; body region (96..144,48..96 at 1x) is 63% (h) / 56% (v) pixel-identical at a 16px shift vs 18-22% at 4/8px, i.e. unchanged from r3 (62/70).",
+    "/home/main/.cache/yard/vqa-r4/cobble_a.png: the brown '+' sparkle fleck is still stamped at identical positions in every cell (8x row y~75 at x~130,260,390; row y~205 at x~260,515,645; row y~330 at x~130,260,385,515).",
+    "yard_cobble-4x.png: whole court reads as an even checker of same-size 3-5px ovals (e.g. 4x x 330-690, y 210-420); no large/small stone mix that would read as laid river cobble."
+  ],
+  "evidence": "Kerb rim with 2px south face, outer and inner corners, hole, 2-wide neck and isolated cell are seamless and the ground plane is flat 3/4; warm/grey stones in earth joints are distinct from the Beodeul road. But the body is the same rigid cell-period lattice with stamped '+' flecks that failed r3; the measured 16px self-similarity is essentially unchanged, and at 4x the grid is the dominant read.",
+  "crops": [
+    "/home/main/.cache/yard/vqa-r4/cobble_full8x.png",
+    "/home/main/.cache/yard/vqa-r4/cobble_a.png",
+    "/home/main/.cache/yard/vqa-r4/cobble_neck.png"
+  ],
+  "reviewer": "claude-opus independent adversarial review 2026-10-23 r4"
+}

@@ -1,0 +1,325 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "75db6a291e4c1db45abe1cc4a6b1e0ef2e961ff7d53f5c99ed2696e112e35410",
+ "width": 32,
+ "height": 16,
+ "kind": "box",
+ "name": "two weathered wooden salvage crates seen from above: light plank lids with nails and a crowbar, darker slatted fronts with corner battens",
+ "label": "wasteland_ruins/crates",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 17,
+  "tileColorsP90": 17,
+  "darkV5": 36,
+  "nearBlackEdge": 0.18,
+  "opaqueTiles": 2
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "left crate plank lid",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": "7"
+     },
+     {
+      "part": "right crate plank lid",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": "7"
+     },
+     {
+      "part": "crowbar and nails on lid",
+      "rows": "2-5",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "slatted front faces with corner battens",
+      "rows": "7-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 9,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Both crates have a plank lid in rows 1-5 that ends in a 1-row front-edge line at row 6. The column scans at x=16 and x=23 show it as a light line (#d6b073 at x=16, #8ca29d at x=23). Darker eave shadow follows at row 7, then the slatted front face runs down to the dark base at rows 14-15, about 9 rows. The silhouette is 32 wide in rows 1-14 and no side face is drawn. The lid is a real top surface, as in the green cabinet 'top 5 + edge + eave' reference, not a rim-only top."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small two-crate prop, about 28x16 source pixels. Its 17 visible tones per 16x16 tile match prop-stall-cheese (17) and are close to prop-well-roofed (20), and are well above prop-hedge (9). Near-flat coverage is 0%, so there are no flat fills. The plank lids show grain, nails and a crowbar, and the slatted fronts show slat separation and corner battens. The dark edge pixels are 0% neutral, so the outline leans toward the material colour (dark brown beside the wood lid, dark teal beside the slatted front). That matches Beodeul's practice of using the adjacent material's dark tone, not a black sticker line. The ramps per material are about 4 steps, a little under the 5-6 in the references, but at this small size the information per tile is on par with the stall and well. A careful artist would accept it next to the references without it looking flatter or thinner.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15909
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "left crate plank lid with nails and crowbar",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": "7"
+     },
+     {
+      "part": "right crate plank lid",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": "7"
+     },
+     {
+      "part": "slatted front faces with corner battens",
+      "rows": "7-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 8,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Both crates have a lid band in rows 1-5 (L≈114 in column x=16) with nails and a crowbar. A light front-edge line sits at row 6 (L=180 at x=16, L=155 at x=23). Row 7 is a darker eave shadow (L=60 at x=8, L=45 at x=23). Below that, the darker slatted front runs rows 7-14 (L≈81 at x=16, then a dark base at rows 14-15), which is at least 8 rows. The lids read as horizontal tops seen from above, similar to the green cabinet and barrel references with a top, edge line and front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is small, two crates about 21x13 source pixels, and I can only judge it at low resolution. Per full 16x16 tile it has 17 visible tones, the same as prop-stall-cheese (17) and close to prop-well-roofed (20). Its near-flat coverage is 0%, and 0% of its dark edge pixels are neutral, so the outlines carry a colour tint (dark brown beside the wood lid, dark teal-green beside the slatted front) rather than a black sticker line. By eye, the lid shows plank seams, nails and a crowbar, and the front shows slats and corner battens, so there are no big flat fills. Each material ramp has about 4 steps, a little below the 5-6 of the references, but the grain and detail are enough that it does not look thinner or flatter than the references. A careful artist would accept it next to them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15724
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "left crate plank lid (with nails and crowbar)",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": "7-7"
+     },
+     {
+      "part": "right crate plank lid",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": "7-7"
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 8,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Both crates have a lid band in rows 1-5 that ends in a 1-row lighter front-edge line at row 6 (x=8 L=180 #d6b073, x=23 L=155). Row 7 is a darker eave shadow (x=8 L=60, x=23 L=45). Below that is a slatted front face in rows 7-13, with a dark base in rows 14-15. This matches the 'cabinet: top 5 + edge + eave' reference. The lid is more than a 1-2 row rim, and the front face is well over 3 rows. No isometric side face is drawn, since the silhouette is a straight 32px wide with no receding side."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is small, about one tile tall, and the board is low-resolution, so this rests mostly on the measured facts. It has 17 visible tones per full 16x16 tile, level with prop-stall-cheese (17) and prop-well-roofed (20) and above prop-hedge (9). Near-flat coverage is 0%, so there are no flat fills. The dark edge pixels are 0% near-neutral, so the outlines lean brown or teal like the adjacent material rather than reading as a black sticker line. By eye, the plank lids carry nails and a crowbar, the fronts are slatted with corner battens, and the two crates are distinguished by value. Each crate shows roughly 4 lightness steps, a little under the references' 5, and there are only 22 distinct colours overall, but the density per tile is on par with the references of the same kind. A careful artist would accept it next to them without it looking flatter or more sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15118
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "left crate plank lid with nails and crowbar",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": "7"
+     },
+     {
+      "part": "right crate plank lid",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": "7"
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 9,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Both crates have a lid band at rows 1-5. It ends in a clear 1-row front-edge line at row 6 (light #d6b073 on the left crate, light #8ca29d on the right). Row 7 is dark eave shadow (L=60 and L=45). Below it the slatted front face runs rows 7-13, with a dark base at rows 14-15, so about 9 front rows. The lid planks, nails and crowbar read as seen from above. No receding side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small two-crate prop, about 2 tiles wide and 1 tile tall. It measures 17 visible tones per 16x16 tile, level with prop-stall-cheese (17) and above prop-hedge (9). It is slightly below prop-well-roofed (20). Near-flat coverage is 0%, so no 5x5 flat fills. Only 0% of its dark edge pixels are near-neutral, so the outlines lean toward the wood and teal tones, like the hedge and stall references, and are not a black sticker line. The plank lid shows grain, nails and the crowbar. The slatted front shows slat separation and corner battens built from value steps, with about 5 steps per material across 22 total colours. It is a little simpler than the roofed well, but it does not look thinner or flatter than the same-kind references at this scale.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18359
+  }
+ ],
+ "decidedAt": "2026-10-22T16:00:54.436Z",
+ "cells": {
+  "16": [
+   "62d6777a307a492d",
+   "f544b72a568a5864"
+  ],
+  "24": [
+   "07810fe16b492577",
+   "5b644c4a894bdb41",
+   "6721a1cdd888a27c",
+   "69a9d591ba0f1fac",
+   "6d5ab49447a44995",
+   "7670ce8df95db449",
+   "7bd0867efcea8a29",
+   "8791e3e9b5adceee",
+   "bf21db3efa80388a",
+   "ced086ae1461727e",
+   "d26c236681a1f792",
+   "d3692ca8d79c9a08"
+  ],
+  "32": [
+   "910b27b89bca77f2",
+   "e996ea894c850ee7"
+  ],
+  "48": [
+   "09021c238ad97df4",
+   "1e5db2c8e2ef8c14",
+   "2117e742739e6703",
+   "6d021aa2373d566d",
+   "a0831943f6af6503",
+   "f43dd2bba18b623c"
+  ]
+ }
+}

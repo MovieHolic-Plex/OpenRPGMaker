@@ -1,0 +1,16 @@
+{
+ "schema": "oprn-object-gate-hold-decision/1",
+ "pixelSha256": "0e546c9059a9cadd531c75f8eaf26a28db7c75090b65b43dcd64ce00e6c545e9",
+ "profileHash": "4d8774b517f41638",
+ "kind": "other",
+ "decision": "allow",
+ "decidedBy": "supervisor (village-art)",
+ "decidedAt": "2026-10-25T15:02:38.052Z",
+ "by": "delegated",
+ "delegatedBy": "user",
+ "evidence": "/home/main/z-project/rpg-zzu-village-art/tiledata/wasteland-ruins/_review/r64/verdict-S.md",
+ "via": "review-page",
+ "reasons": [],
+ "note": "wasteland_ruins/van-rust r63; object-gate PASS; r64 scale-up measured from Beodeul; independent adversarial reviewer Sonnet 5.5 r64 check PASS for this piece's category (verdict-S.md); one Sonnet revi",
+ "sig": "ead48b575afc30d936b3ca25d4630bf7cbc3c87c2fa6384401237cf74389361d"
+}

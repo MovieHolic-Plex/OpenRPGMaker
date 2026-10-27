@@ -892,9 +892,10 @@
 
 /* === 초상 무대 — 앞 화자는 반대쪽에 흐리게 남는다 === */
 /* 0.45 는 머리색까지 검게 바꿔 다른 사람처럼 보였다(첫사랑 VQA r23) — 듣는 쪽은 한발 물러선 정도로만 누른다. */
+/* 반투명은 뒤의 길·가구가 얼굴에 비쳐 보였다(시타마치 VQA r1) — 밝기만 누르고 불투명으로 둔다. */
 .dialogue-box .dialogue-face.dialogue-portrait-listener {
   filter: brightness(0.66) saturate(0.78);
-  opacity: 0.9;
+  opacity: 1;
   z-index: 0;
 }
 

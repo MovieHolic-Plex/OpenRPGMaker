@@ -14,8 +14,12 @@ for(let round=0;round<Number(process.env.BATTLE_WARMUP_ROUNDS ?? 3);round++) for
  await page.addScriptTag({content:'window.__name = (fn) => fn'});
  for(let attempt=0;;attempt++) { try { await page.evaluate(async()=>{
   const imp=(p:string)=>import(/* @vite-ignore */p);
-  const [defaults,shim,runtime,warm,dom]=await Promise.all(['/src/project/defaults/defaultProject.ts','/src/player/exportProjectStoreShim.ts','/src/battle/runtime.ts','/src/player/battleStyleWarmup.ts','/src/player/battleDom.ts'].map(imp));
-  const project=defaults.createScarloxyPokemonDemoProject();shim.setExportedProject(project);
+  // 데모 팩토리는 `/src/project/defaults/defaultProject.ts` 의 createScarloxyDemoProject 다.
+  // 예전 이름(createScarloxyPokemonDemoProject)은 그 모듈에 없고 저장소 어디에도 export 되지 않는다.
+  // 이 오류는 player QA 서버가 없어 page.goto 가 먼저 죽는 동안(ERR_CONNECTION_REFUSED) 가려져 있었다.
+  // 전투 무리(troop_pkmn_grass_a)는 configureScarloxyPokemonDemoProject 가 넣으므로 그 설정을 직접 적용한다.
+  const [defaults,demo,shim,runtime,warm,dom]=await Promise.all(['/src/project/defaults/defaultProject.ts','/src/project/defaults/scarloxyPokemonDemoGame.ts','/src/player/exportProjectStoreShim.ts','/src/battle/runtime.ts','/src/player/battleStyleWarmup.ts','/src/player/battleDom.ts'].map(imp));
+  const project=defaults.createScarloxyDemoProject();demo.configureScarloxyPokemonDemoProject(project);shim.setExportedProject(project);
   const battle=runtime.createBattleRuntime({project,troopId:'troop_pkmn_grass_a',canEscape:true,canLose:true,rng:()=>0.5});
   const host=document.createElement('div');host.className='player-layout system-shell';host.style.cssText='position:relative;width:640px;height:480px';document.body.replaceChildren(host);
   (window as any).bench={host,battle,warm,dom};

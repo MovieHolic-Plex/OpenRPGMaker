@@ -9,16 +9,22 @@ import { noteMainActivity, preloadProjectCoreWhenIdle } from "./projectCorePrelo
 const PROJECT_LOAD_CHANNELS: ReadonlySet<string> = new Set([OPRN_CHANNELS.projectLoad, OPRN_CHANNELS.projectLoadFolded]);
 
 /** IPC and HTTP execute the same project service, including conflict checks. */
-export function registerIpcHandlers(sessions: SessionRegistry): void {
+/** 저장 채널 — 성공하면 onSaved 를 부른다(마지막 편집 화면 찍기, lastView.ts). */
+const SAVE_CHANNELS: ReadonlySet<string> = new Set([OPRN_CHANNELS.projectSave, OPRN_CHANNELS.projectSaveMapPatch]);
+
+export function registerIpcHandlers(sessions: SessionRegistry, onSaved?: (webContentsId: number) => void): void {
   const handlers = createStoreHandlers(sessions);
   // OPRN_IPC_TIMING=1 이면 채널마다 처리 시간을 stderr 에 남긴다(시작 속도 측정기 scripts/perf/startup-bench.mjs 가 읽는다).
   const timing = process.env.OPRN_IPC_TIMING === "1";
   for (const [channel, handler] of Object.entries(handlers)) {
     const loadsProject = PROJECT_LOAD_CHANNELS.has(channel);
+    const saves = onSaved !== undefined && SAVE_CHANNELS.has(channel);
     const run = (senderId: number, payload: unknown): unknown => {
       noteMainActivity();
       if (loadsProject) preloadProjectCoreWhenIdle();
-      return handler(senderId, payload);
+      const result = handler(senderId, payload);
+      if (saves) void Promise.resolve(result).then(() => onSaved?.(senderId), () => {});
+      return result;
     };
     ipcMain.handle(channel, timing
       ? async (event, payload: unknown) => {

@@ -1,0 +1,347 @@
+{
+ "note": "자동 생성 — src/harnesses/building-kit/palette.py. 손으로 고치지 말 것. 단 0 = 가장 어두움(그 재료의 윤곽).",
+ "theme": "beodeul-noble",
+ "sheet": "public/assets/beodeul-city/beodeul-city-chipset.png",
+ "tileset": "src/assets/beodeulCityTileset.json",
+ "method": "출처 칸·키트 줄의 불투명 화소를 밝기순 화소 수 k등분 → 칸마다 최빈 실제색 → 공용 시트 존재 대조(손 램프는 같은 단 밝기 ±0.04)",
+ "ramps": {
+  "grass": [
+   "#3f723e",
+   "#618c3b",
+   "#6e9943",
+   "#729c44",
+   "#7aa34b",
+   "#84ab52",
+   "#8bb14e"
+  ],
+  "cobble": [
+   "#374243",
+   "#565755",
+   "#5b6667",
+   "#777579",
+   "#929491",
+   "#c4c6c3"
+  ],
+  "stone": [
+   "#37383c",
+   "#3e403d",
+   "#5a5b62",
+   "#929491",
+   "#c4c6c3",
+   "#dee0dd"
+  ],
+  "wood": [
+   "#22150c",
+   "#452a17",
+   "#5e3a1c",
+   "#744c2a",
+   "#9a5d39",
+   "#a26e36",
+   "#c69250"
+  ],
+  "iron": [
+   "#262729",
+   "#37383c",
+   "#5a5b62",
+   "#797a84"
+  ],
+  "roof": [
+   "#582840",
+   "#863736",
+   "#9b5d2b",
+   "#c97a33",
+   "#da8437",
+   "#f0df97"
+  ],
+  "stucco": [
+   "#b1a094",
+   "#bcaaa0",
+   "#c8b5a8",
+   "#ecd6c6",
+   "#f7fdff"
+  ],
+  "marble": [
+   "#9d9f9c",
+   "#bcaaa0",
+   "#c4c6c3",
+   "#ecd6c6",
+   "#f7e59c",
+   "#f7fdff"
+  ],
+  "ivy": [
+   "#264d2c",
+   "#4b8232",
+   "#6f9a43",
+   "#8bb14e",
+   "#a8ca5c"
+  ],
+  "shutter": [
+   "#312210",
+   "#452a17",
+   "#633712",
+   "#863736",
+   "#8d3938",
+   "#885a26",
+   "#81756c"
+  ]
+ },
+ "sources": {
+  "grass": {
+   "kind": "shared",
+   "from": [
+    {
+     "kit": "bd-ground-lawn-1"
+    },
+    {
+     "kit": "bd-ground-lawn-4"
+    }
+   ],
+   "pixels": 14848,
+   "pred": null,
+   "why": "버들항 잔디(외곽 마당 잔디 키트 6×6 몸통)"
+  },
+  "cobble": {
+   "kind": "shared",
+   "from": [
+    {
+     "group": "beodeul:paving"
+    },
+    {
+     "group": "beodeul:plaza"
+    }
+   ],
+   "pixels": 2034,
+   "pred": "grey",
+   "why": "버들항 길 포석·광장 판석(연석·판석 회색)"
+  },
+  "stone": {
+   "kind": "shared",
+   "from": [
+    {
+     "kit": "bd-house-h101_0",
+     "rows": [
+      5
+     ]
+    },
+    {
+     "kit": "bd-house-h109_0",
+     "rows": [
+      5
+     ]
+    }
+   ],
+   "pixels": 316,
+   "pred": "grey",
+   "why": "버들항 살림집 기단(맨 아래 줄 회색 주춧돌 — 문기둥 나무색은 뺀다)"
+  },
+  "wood": {
+   "kind": "shared",
+   "from": [
+    {
+     "kit": "bd-out-log-wall"
+    },
+    {
+     "kit": "bd-out-plank-wall"
+    },
+    {
+     "kit": "bd-out-plank-door"
+    }
+   ],
+   "pixels": 2048,
+   "pred": null,
+   "why": "버들항 외곽 통나무·널벽·널문 나무"
+  },
+  "iron": {
+   "kind": "shared",
+   "from": [
+    {
+     "kit": "bd-prop-lamp_double"
+    },
+    {
+     "kit": "bd-prop-lamp_crook"
+    },
+    {
+     "kit": "bd-out-hanging-sign"
+    }
+   ],
+   "pixels": 321,
+   "pred": "ironish",
+   "why": "버들항 가로등 기둥·간판 걸이 쇠(푸른 회색 — 유리·등불 색은 뺀다)"
+  },
+  "roof": {
+   "kind": "beodeul",
+   "from": [
+    {
+     "kit": "bd-house-manor",
+     "rows": [
+      1,
+      2,
+      3
+     ]
+    },
+    {
+     "kit": "bd-mpart-roof-m"
+    }
+   ],
+   "pixels": 5225,
+   "pred": "warm",
+   "why": "테라코타 지붕 — 버들항 저택 지붕·저택 지붕 부품"
+  },
+  "stucco": {
+   "kind": "beodeul",
+   "from": [
+    {
+     "kit": "bd-house-manor",
+     "rows": [
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+     ]
+    }
+   ],
+   "pixels": 9678,
+   "pred": "cream",
+   "why": "크림 스투코 — 버들항 저택 벽"
+  },
+  "marble": {
+   "kind": "beodeul",
+   "from": [
+    {
+     "kit": "bd-mpart-porch"
+    },
+    {
+     "kit": "bd-mpart-stairs"
+    }
+   ],
+   "pixels": 1576,
+   "pred": "light",
+   "why": "흰 대리석 — 버들항 저택 현관 기둥·계단"
+  },
+  "ivy": {
+   "kind": "beodeul",
+   "from": [
+    {
+     "kit": "bd-mpart-ivy-wall-a"
+    },
+    {
+     "kit": "bd-mpart-ivy-wall-b"
+    }
+   ],
+   "pixels": 801,
+   "pred": "green",
+   "why": "덩굴 — 버들항 저택 덩굴 벽 부품"
+  },
+  "shutter": {
+   "kind": "beodeul",
+   "from": [
+    {
+     "kit": "bd-house-manor",
+     "rows": [
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+     ]
+    }
+   ],
+   "pixels": 4696,
+   "pred": "darkwarm",
+   "why": "덧창·문 나무 — 버들항 저택 창 덧문"
+  }
+ },
+ "envelope": [
+  [
+   0.054,
+   0.404
+  ],
+  [
+   0.148,
+   0.502
+  ],
+  [
+   0.216,
+   0.551
+  ],
+  [
+   0.29,
+   0.563
+  ],
+  [
+   0.38,
+   0.592
+  ],
+  [
+   0.427,
+   0.625
+  ],
+  [
+   0.564,
+   0.645
+  ]
+ ],
+ "shadow": {
+  "rgb": [
+   12,
+   14,
+   20
+  ],
+  "alpha": 88,
+  "why": "버들항 시트에 실제로 있는 반투명 바닥 그림자(윗칸 기물·처마 전용)"
+ },
+ "allowed": [
+  "#22150c",
+  "#262729",
+  "#264d2c",
+  "#312210",
+  "#37383c",
+  "#374243",
+  "#3e403d",
+  "#3f723e",
+  "#452a17",
+  "#4b8232",
+  "#565755",
+  "#582840",
+  "#5a5b62",
+  "#5b6667",
+  "#5e3a1c",
+  "#618c3b",
+  "#633712",
+  "#6e9943",
+  "#6f9a43",
+  "#729c44",
+  "#744c2a",
+  "#777579",
+  "#797a84",
+  "#7aa34b",
+  "#81756c",
+  "#84ab52",
+  "#863736",
+  "#885a26",
+  "#8bb14e",
+  "#8d3938",
+  "#929491",
+  "#9a5d39",
+  "#9b5d2b",
+  "#9d9f9c",
+  "#a26e36",
+  "#a8ca5c",
+  "#b1a094",
+  "#bcaaa0",
+  "#c4c6c3",
+  "#c69250",
+  "#c8b5a8",
+  "#c97a33",
+  "#da8437",
+  "#dee0dd",
+  "#ecd6c6",
+  "#f0df97",
+  "#f7e59c",
+  "#f7fdff"
+ ],
+ "count": 48
+}

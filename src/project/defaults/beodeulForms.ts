@@ -3,6 +3,7 @@ import references from '../../assets/beodeulFormsReferences.json';
 import type {TilesetDef,StructureKitDef} from '../types';
 import type {TilesetReferenceCategory} from '../tilesetReferences';
 import {translateTiles} from '../objectStamp';
+import {fitTileMetaToCount} from './buildingBundle';
 
 export const BEODEUL_FORMS_TEXTURE='tex_beodeul_forms';
 /** 호스트(beodeul_city)에 심는 참고문서 원본 — 읽기 전용(beodeulCity 의 참고문서 전용 경로가 쓴다). */
@@ -37,6 +38,7 @@ export function ensureBeodeulFormsTileset(ts:TilesetDef):boolean{
  if(ts.id!=='beodeul_forms'||ts.image.id!==BEODEUL_FORMS_TEXTURE)return false;
  const fresh=createBeodeulFormsTileset();let changed=removeRejectedKits(ts);
  for(const key of ['count','priority','passability','terrain'] as const)if(JSON.stringify(ts[key])!==JSON.stringify(fresh[key])){(ts as any)[key]=fresh[key];changed=true;}
+ if(fitTileMetaToCount(ts))changed=true;
  const kits=ts.structureKits??=[];
  for(const k of fresh.structureKits!){const at=kits.findIndex(old=>old.id===k.id);if(at<0){kits.push(k);changed=true;}else if(JSON.stringify(kits[at])!==JSON.stringify(k)){kits[at]=k;changed=true;}}
  return changed;

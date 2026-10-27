@@ -45,7 +45,8 @@ describe("Scarloxy Gen1 authored content", () => {
     const majorStatuses = Object.fromEntries(project.database.states
       .filter((state) => state.gen1MajorStatus)
       .map((state) => [state.gen1MajorStatus, state]));
-    expect(Object.keys(majorStatuses).sort()).toEqual(["burn", "freeze", "paralysis", "poison", "sleep"]);
+    // 맹독(toxic)은 #2657 에서 gen1 주 상태로 더해졌다.
+    expect(Object.keys(majorStatuses).sort()).toEqual(["burn", "freeze", "paralysis", "poison", "sleep", "toxic"]);
     for (const state of Object.values(majorStatuses)) {
       expect(state.runtimeEffects?.removeOnBattleEnd).toBe(false);
     }

@@ -142,7 +142,8 @@ describe("new-plan geometry remains a declared-kind gate", () => {
   });
 });
 
-describe("code-selected recovery through the dispatched session tool", () => {
+// Heavy under CI load (15s default is too tight): dispatches real session tools over a blank project.
+describe("code-selected recovery through the dispatched session tool", { timeout: 120_000 }, () => {
   it.each([false, true])("preserves codes to events, audit and model JSON; mixed existing conflicts=%s", async mixed => {
     const project = fixture(mixed);
     const spec = intersecting();

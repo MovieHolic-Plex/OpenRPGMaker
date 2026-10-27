@@ -9,6 +9,7 @@ import { EASYRPG_INTERIOR_TILESET_ID as INTERIOR_TILESET_ID } from "@/project/ma
 import { instantiateSpatialDesign } from "@/project/spatial/instances";
 import * as snapshotRaster from "@/project/spatial/snapshotRaster";
 import { expansionFixture, first, instancesFixture, selectedCells } from "./support/spatialInstancesFixture";
+import { withRetiredEasyRpgTilesets } from "./support/retiredEasyRpgTilesets";
 
 describe("frozen spatial occurrences", () => {
   it("expands ordered independent descendants when a repeated transitive design is instantiated through IO", () => {
@@ -191,6 +192,7 @@ describe("frozen spatial occurrences", () => {
   it("rejects inert legacy house records instead of falling back to builtin pixels", () => {
     // Given: a kind:"house" record left over in stored data — removed concept, raster must refuse it.
     const { project, document, request } = instancesFixture();
+    withRetiredEasyRpgTilesets(project);
     own(project.tilesets, INTERIOR_TILESET_ID).structureKits = JSON.parse(
       `[{"id":"bed_h","kind":"house","houseKitId":"old","wings":[{"x":0,"y":0,"w":3,"h":3}],"learnedFrom":"db-authored"}]`);
     const input = { ...document, library: { ...document.library, objects: { desk: { ...own(document.library.objects, "desk"), graphic: { tilesetId: INTERIOR_TILESET_ID, kitId: "bed_h" } } } } };

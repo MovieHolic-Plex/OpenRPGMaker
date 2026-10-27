@@ -12,7 +12,8 @@ type DomGlobalName =
   | "HTMLTextAreaElement"
   | "requestAnimationFrame"
   | "cancelAnimationFrame"
-  | "getComputedStyle";
+  | "getComputedStyle"
+  | "window";
 type PreviousDomGlobals = {
   readonly document: Document | undefined;
   readonly Node: typeof Node | undefined;
@@ -28,16 +29,30 @@ type PreviousDomGlobals = {
   readonly requestAnimationFrame: typeof requestAnimationFrame | undefined;
   readonly cancelAnimationFrame: typeof cancelAnimationFrame | undefined;
   readonly getComputedStyle: typeof getComputedStyle | undefined;
+  readonly window: (Window & typeof globalThis) | undefined;
 };
 
 type FakeDomOptions = {
   readonly animationFrames?: "manual";
+  /**
+   * 최소 window 를 깐다(호스트에 window 가 없을 때만). 기본은 끈다: 앱 코드 일부는 「window 가 없으면
+   * 헤드리스」로 보고 다르게 움직인다(ui/modal.ts 의 confirm 자동 통과 등). window 에 사용자 정의 이벤트를
+   * 붙이는 패널(aiWorkspace·aiPresence)을 그리는 테스트만 켠다.
+   */
+  readonly window?: boolean;
 };
 
 const animationFrames = new Map<number, FrameRequestCallback>();
 let nextAnimationFrameId = 1;
 
 export class FakeNode {
+  // Node 상수 — 가짜 DOM 이 Node 전역을 FakeNode 로 바꾸므로 `Node.TEXT_NODE` 비교(domTranslator.sourceTextOf)가 여기를 본다.
+  static readonly ELEMENT_NODE = 1;
+  static readonly TEXT_NODE = 3;
+  static readonly COMMENT_NODE = 8;
+  static readonly DOCUMENT_FRAGMENT_NODE = 11;
+  /** 글자 노드는 3, FakeElement 는 1, 조각은 11. */
+  readonly nodeType: number = 3;
   readonly childNodes: FakeNode[] = [];
   parentNode: FakeNode | null = null;
 
@@ -64,8 +79,30 @@ export class FakeNode {
   }
   private ownText = "";
 
+  /** Text.data — 글자 노드의 자기 글자. */
+  get data(): string {
+    return this.ownText;
+  }
+
+  set data(value: string) {
+    this.textContent = value;
+  }
+
   get firstChild(): FakeNode | null {
     return this.childNodes[0] ?? null;
+  }
+
+  /** Node.nextSibling/previousSibling — quickBuildPanel 이 `insertBefore(x, cards.nextSibling)` 로 끼운다. */
+  get nextSibling(): FakeNode | null {
+    const siblings = this.parentNode?.childNodes;
+    if (!siblings) return null;
+    return siblings[siblings.indexOf(this) + 1] ?? null;
+  }
+
+  get previousSibling(): FakeNode | null {
+    const siblings = this.parentNode?.childNodes;
+    if (!siblings) return null;
+    return siblings[siblings.indexOf(this) - 1] ?? null;
   }
 
   get textContent(): string {
@@ -135,6 +172,21 @@ export class FakeNode {
   remove(): void {
     this.parentNode?.removeChild(this);
     this.parentNode = null;
+  }
+
+  /** ChildNode.after/before — 부모 안에서 이 노드 바로 뒤/앞에 끼운다(aiChatPanel 이 레일 뒤에 레인 요약을 붙인다). */
+  after(...nodes: (FakeNode | string)[]): void {
+    const parent = this.parentNode;
+    if (!parent) return;
+    const index = parent.childNodes.indexOf(this);
+    const reference = parent.childNodes.slice(index + 1).find((node) => !nodes.includes(node)) ?? null;
+    for (const node of convertFakeNodes(nodes)) parent.insertBefore(node, reference);
+  }
+
+  before(...nodes: (FakeNode | string)[]): void {
+    const parent = this.parentNode;
+    if (!parent) return;
+    for (const node of convertFakeNodes(nodes)) parent.insertBefore(node, this);
   }
 
   replaceWith(...nodes: FakeNode[]): void {
@@ -283,10 +335,11 @@ function notifyValueMutation(target: FakeNode, type: "attributes" | "characterDa
 
 /** DocumentFragment — 붙지 않은 자식 목록. FakeNode.appendChild 가 자식만 옮긴다. */
 class FakeFragment extends FakeNode {
-  readonly nodeType = 11;
+  override readonly nodeType: number = 11;
 }
 
 export class FakeElement extends FakeNode {
+  override readonly nodeType: number = 1;
   checked = false;
   className = "";
   dataset: Record<string, string> = {};
@@ -694,10 +747,15 @@ export function installFakeDom(options: FakeDomOptions = {}): () => void {
     requestAnimationFrame: globalThis.requestAnimationFrame,
     cancelAnimationFrame: globalThis.cancelAnimationFrame,
     getComputedStyle: globalThis.getComputedStyle,
+    window: (globalThis as { window?: Window & typeof globalThis }).window,
   } satisfies PreviousDomGlobals;
   animationFrames.clear();
   for (const observer of mutationObservers) observer.disconnect();
   nextAnimationFrameId = 1;
+  // 옵트인(options.window): node 환경(가짜 DOM 만 쓰는 테스트)에는 window 가 없다. 편집기 패널은 window 에 사용자 정의 이벤트를
+  // 붙이므로(aiWorkspace·aiPresence 등) 이벤트 대상 하나와 자주 쓰는 속성만 갖춘 최소 window 를 준다.
+  // happy-dom 환경이면 진짜 window 를 그대로 둔다.
+  if (options.window && !previous.window) defineDomGlobal("window", createFakeWindow());
   defineDomGlobal("Node", FakeNode);
   defineDomGlobal("Element", FakeElement);
   defineDomGlobal("MutationObserver", FakeMutationObserver);
@@ -804,6 +862,7 @@ export function installFakeDom(options: FakeDomOptions = {}): () => void {
     animationFrames.clear();
     for (const observer of mutationObservers) observer.disconnect();
     restoreDomGlobal("document", previous.document);
+    if (options.window) restoreDomGlobal("window", previous.window);
     restoreDomGlobal("Node", previous.Node);
     restoreDomGlobal("Element", previous.Element);
     restoreDomGlobal("MutationObserver", previous.MutationObserver);
@@ -919,6 +978,31 @@ function matchesSelector(element: FakeElement, selector: string): boolean {
   }
   const tag = simpleSelector.match(/^([a-zA-Z]+)(?::not\(:disabled\))?$/u)?.[1];
   return tag ? element.tagName === tag.toUpperCase() && !element.disabled : false;
+}
+
+function createFakeWindow(): unknown {
+  const target = new EventTarget();
+  return Object.assign(target, {
+    setTimeout: globalThis.setTimeout.bind(globalThis),
+    clearTimeout: globalThis.clearTimeout.bind(globalThis),
+    setInterval: globalThis.setInterval.bind(globalThis),
+    clearInterval: globalThis.clearInterval.bind(globalThis),
+    innerWidth: 1280,
+    innerHeight: 800,
+    devicePixelRatio: 1,
+    matchMedia: (query: string) => ({ matches: false, media: query, addEventListener() {}, removeEventListener() {}, addListener() {}, removeListener() {} }),
+    get document() { return globalThis.document; },
+    location: { href: "http://localhost/", origin: "http://localhost", protocol: "http:", host: "localhost", hostname: "localhost", pathname: "/", search: "", hash: "" },
+    // 전역 rAF 가 없으면(node 환경) 다음 매크로태스크로 미룬다 — window 가 생겼다고 rAF 를 부르는 코드가 터지지 않게.
+    get requestAnimationFrame() {
+      return globalThis.requestAnimationFrame
+        ?? ((callback: FrameRequestCallback) => globalThis.setTimeout(() => callback(Date.now()), 0) as unknown as number);
+    },
+    get cancelAnimationFrame() {
+      return globalThis.cancelAnimationFrame ?? ((id: number) => globalThis.clearTimeout(id));
+    },
+    get getComputedStyle() { return globalThis.getComputedStyle; },
+  });
 }
 
 function defineDomGlobal(name: DomGlobalName, value: unknown): void {

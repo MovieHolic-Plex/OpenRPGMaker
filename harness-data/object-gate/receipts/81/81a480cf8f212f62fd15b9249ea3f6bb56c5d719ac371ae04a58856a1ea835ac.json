@@ -1,0 +1,577 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "81a480cf8f212f62fd15b9249ea3f6bb56c5d719ac371ae04a58856a1ea835ac",
+ "width": 80,
+ "height": 112,
+ "kind": "structure",
+ "name": "three-storey roofless concrete shell seen from above: wall tops and a dark gutted interior with a fallen floor slab and a bare stairwell, tall front face with rows of empty window holes; the whole east corner has collapsed in a stepped diagonal, so its wall tops and rubble-filled floor sit lower and lower toward the east, with cut floor-slab edges and rebar along the break",
+ "label": "wasteland_ruins/husk-c",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "refer",
+ "reasons": [
+  "3/4: 독립 눈이 「3/4 아님」 12/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면",
+  "화풍: 화풍 판정이 갈림(걸린 판정 2/4)",
+  "화풍: 판정자 fail (2/4)"
+ ],
+ "view34": {
+  "verdict": "refer",
+  "reasons": [
+   "독립 눈이 「3/4 아님」 12/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면"
+  ]
+ },
+ "style": {
+  "verdict": "refer",
+  "reasons": [
+   "화풍 판정이 갈림(걸린 판정 2/4)",
+   "판정자 fail (2/4)"
+  ],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 7,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "wasteland_ruins",
+   "fallback": true,
+   "reason": "칩셋 wasteland_ruins 의 화풍 기준 묶음이 없다",
+   "hash": "5f62fef078ef7661"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 10,
+  "tileColorsP90": 13,
+  "darkV5": 33,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 30
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "roofless building top: wall tops, gutted interior with fallen slab and stairwell",
+      "rows": "0-45",
+      "evidence": "d",
+      "front_edge_line_row": 45,
+      "eave_shadow_rows": "46-47"
+     },
+     {
+      "part": "collapsed east corner: stepped rubble and cut slab edges sloping down to the east",
+      "rows": "10-90",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "front wall with window holes and door",
+      "rows": "46-111",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 45,
+    "front_face_rows": 66,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 0-44 show the roofless top from above: wall-top rims, a dark gutted interior with a fallen floor slab, and a stairwell. A light wall-top edge band at rows 42-45 peaks at row 45 (L=189 in columns x=20 and x=40), followed by a darker row 46+. Below it the front face runs rows 46-111, with rows of window holes and a door. The silhouette widens from 31 to 80 px over rows 0-45, which fits the collapsed east corner stepping down diagonally. The rubble on that side is a top surface seen from above, not a receding side face. The main body has a deep top surface and a front face of more than 3 rows."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate holds 10 visible tones per tile against 12 and 10 in the references, so it sits within their range. Near-flat coverage is 11% against 0% for both references, which means a few quiet concrete wall patches, but the picture shows speckle, cracks, stain streaks and rubble variation across the walls, so I don't count them as flat fills. Only 15% of dark edge pixels are neutral, so the outlines lean toward a tint (blue-grey and dark concrete tone) rather than a neutral black sticker line. The window holes are dark but not a uniform black outline. The concrete ramp has about 5 steps (highlight edge, light, mid, dark, deep interior), a little under the 6 steps of the roof tiles. The stepped collapse, cut slab edges, red rebar dots and ivy are all readable and carry detail. It is slightly less dense and less varied than the tile-scalloped references, but a careful artist would accept it beside them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 13819
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "gutted interior with fallen slab and stairwell, enclosed by wall tops",
+      "rows": "0-45",
+      "evidence": "d",
+      "front_edge_line_row": 45,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "collapsed east corner: stepped wall tops and rubble-filled floor with cut slab edges",
+      "rows": "5-46",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "south front wall with window holes",
+      "rows": "46-111",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 45,
+    "front_face_rows": 66,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 0-45 are a large top region seen from above: a light wall-top rim along the top and left, a dark gutted interior with a fallen slab and a stairwell with stair treads (rows 8-28), and a light front-edge line at rows 42-45 (L about 159-189, brightest at row 45). Below it, rows 46-111 are a tall south face of about 66 rows with three tiers of window holes and a doorway. The east collapse is a stepped diagonal in the silhouette (width 31 at row 0 growing to 80 at row 46). It shows lower wall tops and rubble, not a receding isometric side face. The top surface and the front face are both clearly present."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a concrete shell with weathered grey stone: its wall faces carry speckle, stains, cracks and moss patches, and the diagonal collapse edge shows stepped wall tops with rust-coloured rebar dots. Shading runs about 5 steps on the concrete (light cap, light, mid, dark, deep interior), close to the references' 5-6 on the roof tiles and stone. Edge pixels are only 15% near-neutral (references 7-9%), so the outline leans tinted with a blue-grey tone beside concrete rather than a uniform black sticker line. Measured visible tones per tile are 10, matching house-h112 (10) and just below house-h101 (12). Near-flat coverage is 11% against 0% in the references, so a few wall areas and window interiors are flat. The references have per-tile scallops and highlights that the candidate's plain wall faces lack, so density is slightly lower. Overall it is close to the reference bar, but a careful artist would still see the flat window holes and the cleaner wall faces as a small step down.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 12977
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "roofless top: wall tops with gutted interior, fallen slab and stairwell",
+      "rows": "0-44",
+      "evidence": "d",
+      "front_edge_line_row": 45,
+      "eave_shadow_rows": "46-50"
+     },
+     {
+      "part": "collapsed east corner: stepped diagonal rubble and broken slab tops with rebar",
+      "rows": "10-90",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "south front wall with window holes and door",
+      "rows": "46-111",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 45,
+    "front_face_rows": 66,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 0-44 show the open top of the shell: wall tops, a dark interior with a fallen slab and a stairwell (evidence d). The top ends in a light front-edge line at row 45 (L=189 at x=20) with darker wall below it. Below that is a tall south face of about 66 rows (rows 46-111) with window holes and a door. The east corner steps down diagonally, with rubble and broken slab tops that read as horizontal surfaces, not as an isometric side face. The silhouette widens from 31 to 80 px and then stays constant."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a whole building like the references, so the kind matches. Measured facts are close to the references: 10 visible tones per tile against 12 and 10, near-flat coverage 11% against 0%, and only 15% neutral dark edge pixels, so the outlines lean toward a tint and are not a neutral black line. By eye, the concrete walls show about 4 grey steps, where the references' roof tiles and plaster show 5-6. The wall faces are fairly smooth with sparse speckle, and the windows are dark holes with little internal shading. The stepped collapse, rebar and stair details do add structure. Even so, the 11% near-flat coverage against 0% in both references shows the broad wall faces have large areas of uniform tone, and the ramps and per-surface grain are thinner than Beodeul's. Placed beside the references, it reads slightly flatter and thinner, so with doubt it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 15054
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "wall tops and gutted interior (fallen slab, stairwell) of main shell",
+      "rows": "0-44",
+      "evidence": "d",
+      "front_edge_line_row": 45,
+      "eave_shadow_rows": "46-47"
+     },
+     {
+      "part": "stepped collapsed east corner: rubble and cut slab edges sloping down to the east",
+      "rows": "5-90",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "front (south) wall with window holes and door",
+      "rows": "46-111",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 45,
+    "front_face_rows": 66,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 0-44 show the open roofless interior from above: wall tops, a dark gutted floor, a fallen slab and a stairwell. This counts as contents visible inside an open container (d). The pale parapet strip at rows 42-44 ends in a lighter front-edge line at row 45 (x=20 L=189), and a darker band follows at rows 46-50. Below that, the south face runs from row 46 to 111 (about 66 rows) with window holes and a door. The width profile grows from 31 to 80 along the east diagonal, which is the collapsed corner, not a receding side face. The rubble and slab edges on that slope are top surfaces that step lower toward the east."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a whole building of the same kind and at the same scale as the references. Measured facts: 10 visible tones per tile against 12 and 10 for the references, 11% near-flat coverage (references 0%), and only 15% neutral dark edge pixels (references 7% and 9%). The outlines therefore lean toward a tinted, material-toned dark (blue-grey beside concrete, dark teal in the interior) rather than a uniform black sticker line. The concrete wall carries speckle, cracks, stains, and rebar and rubble accents, and the stepped diagonal collapse edge has per-block highlights, so it reads as textured. The grey concrete ramp shows about 5 steps. It is a little less dense than the references: the wall face between windows and parts of the dark interior are fairly smooth, and the 11% near-flat coverage is above the references' 0%. Those areas are small and look like deliberate dark voids, not sticker fills. Next to the references it holds up with only slightly lower richness.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15207
+  }
+ ],
+ "decidedAt": "2026-10-23T03:30:44.471Z",
+ "cells": {
+  "16": [
+   "0d8ed554e2f9bb08",
+   "0f88034e50ed48d8",
+   "180d6d950963459e",
+   "1b96dd8433175765",
+   "1c15a9823ee329c5",
+   "1f2db8abc7b6c277",
+   "35111f2307c007ce",
+   "3d114df0beebc5ce",
+   "4392d35bc134a382",
+   "4f14685c2350cbfd",
+   "510786126529c0fe",
+   "513396d777d6bbd9",
+   "590bd64e86237616",
+   "5edb74591d479089",
+   "6069e99462898586",
+   "650a8e06f74624d6",
+   "70531c56ce70d541",
+   "745153a05a5e847d",
+   "7e619fa13da4f557",
+   "865c9fdf693db0a8",
+   "870a8d5b89cf98df",
+   "92fffe6ea3119118",
+   "95fbd6fbfd1fd3f2",
+   "9958e1dc085ae2e4",
+   "a1e148b259471a08",
+   "a4c1799c1cf9a4b4",
+   "b2adf288981674b7",
+   "cbf48bc21a116a54",
+   "dfa00fba99140d92",
+   "e0f0deed3c49e1e9",
+   "e41ef349a970fd6d",
+   "fbd63029a1853d06"
+  ],
+  "24": [
+   "01dc73ee34fcb754",
+   "02709a13e6a775c2",
+   "028aae92d754b9ec",
+   "04e2427d8b0762ee",
+   "054a640cb99819b9",
+   "055cbb7bf5de7e47",
+   "06e4bb28bc2576b0",
+   "0a3169aaf015825c",
+   "0ac730f36b749b2d",
+   "1692f4878f262adf",
+   "18168f34b1a3c3f0",
+   "1cac4d373f22b428",
+   "1eb77837eaa3ef91",
+   "2060283cd2e6fe0e",
+   "2067771889a725e5",
+   "216da2bc30f8bbc9",
+   "22057276c8c9dace",
+   "225c9614c22b5e7c",
+   "22bc75a186fc1c4e",
+   "25898092ab9c448d",
+   "2683ed4d04baed62",
+   "29ebc693a108acdd",
+   "2deb0bed1aa296e0",
+   "33fb3faf2497bcdf",
+   "34f0763dfcdaf7dc",
+   "3b45c97d64b12d61",
+   "3d19e990d0544be4",
+   "3dca8f943393c2d8",
+   "3dcc0c6c38983a79",
+   "3e26bbd52927c6b2",
+   "3f2938c1ee80ed48",
+   "41d7882132682972",
+   "43922b95413789a2",
+   "4607efe8db8630da",
+   "483863b78a634df6",
+   "4a877e954a9a26d2",
+   "5091d5605bfb62ac",
+   "522631ec11ece14e",
+   "524d816ef7c7010a",
+   "547ad2c82dc9b77d",
+   "5615119b65a6c799",
+   "57e54951c5b7c5bc",
+   "58195040dd781098",
+   "59492abfce101f62",
+   "5ccc1bc969f86fc0",
+   "5fea10755f268411",
+   "65bafb4573d09c2a",
+   "65bbc4567b31d51d",
+   "67f1aedddb7ed5f8",
+   "68018db5050c9fae",
+   "6a18095681e20a65",
+   "6a73b45476b4ee67",
+   "6abb090a944b72ec",
+   "6b1735746b32cbe8",
+   "6cf941aceb2bd53e",
+   "72b92c8d0fe321c0",
+   "74e217492e731b96",
+   "763e982607f7b473",
+   "785b58d32eaa60b6",
+   "7b1530b7da3b8caa",
+   "7bda4ecd38b9bae9",
+   "7e56e6aeaae3251a",
+   "844e42f24558d238",
+   "8670cc0976de1fe0",
+   "87a266edbab4b01b",
+   "92b93c9562862e0d",
+   "92c4b72e48379122",
+   "92e6a85b38a70e0c",
+   "9646959438f7c73c",
+   "9c8d6fdb90730d3e",
+   "9d033f924390f525",
+   "9de129dd1625dfb0",
+   "a257eb938fe0b338",
+   "a5146de0be61b64a",
+   "a6238fc6c16b9df3",
+   "a79de5b8e63ef3f5",
+   "a86ca94520c86e0a",
+   "a9fd156460b795d6",
+   "ab51e46785069bcb",
+   "aebdc61878d3789c",
+   "aff1aa01f6e13ba5",
+   "b1169b47c5a3b0aa",
+   "ba36d0016b59b30c",
+   "bd95590858eba4a0",
+   "c26e026abd74229b",
+   "c6c6b7c90e3b9400",
+   "c7138a7f8503a2f5",
+   "c91b1b929d0a18e0",
+   "c99a35265f074931",
+   "ca74e2ad29a7be2e",
+   "d00eeed698849cee",
+   "d321b180d185780e",
+   "d7561dbe4a4cf5fd",
+   "dda520d205d765f2",
+   "deb7cbab14bba5ad",
+   "e4ecba587a7d5325",
+   "e59afba2ae2005f0",
+   "e62ede4d257fcf22",
+   "ea27cb05c868e910",
+   "eb70dc05d0a4185d",
+   "ebfd0f4034d494c4",
+   "f4b2d791575d33cd",
+   "f4c7eb1dd40ee2a9",
+   "f5a6e80b3fda2f53",
+   "f6e3d5b68dfa7c1a",
+   "f76d6ce2e54e5ac2",
+   "fa713adbbedec32e",
+   "fc5e1d8dfaf5fbba",
+   "fe895597f4b2afe4",
+   "fe8d717a00a7ae29",
+   "ff86ee9b5323db41"
+  ],
+  "32": [
+   "165647ddb774524a",
+   "206f87d43b6b7bde",
+   "22f2db4b256fe2bf",
+   "2473c0fb0e2d8a22",
+   "2564cf4030e3d196",
+   "273399e968c1ac5a",
+   "283e2ae8646448b4",
+   "294787416c325d6d",
+   "2d4d9a59ac320ab7",
+   "328e7c3e89096b15",
+   "32d50646ecbd269a",
+   "3b2070afe9f0561b",
+   "3bf9f0aaa49384b5",
+   "3ce1089ee95eefbb",
+   "3f36fb03045554c9",
+   "405212e3d3e9e3e7",
+   "41f841b52f4bad0c",
+   "44337d0215dc05ea",
+   "4e285d6b14a7e534",
+   "51f74c46d432321d",
+   "54dfb57f4b6acf75",
+   "5993ec7fd5db3a9b",
+   "5a10c17a2e4343ab",
+   "5a3993f8a6c11099",
+   "5fb513226435e7df",
+   "600fe7104abccc00",
+   "637f1de61396ebe0",
+   "64c8a64a50b9338e",
+   "6b5b85770718988b",
+   "6f259b9e64555deb",
+   "6fb7fac3ff3302d5",
+   "6fef910e23fc7580",
+   "75b0c8ea5ff3913d",
+   "7abcbc77082b2462",
+   "7bead67a34033dfe",
+   "7c32bda779038a57",
+   "82c792c9a3e56781",
+   "893ab4e8f22bbdca",
+   "9025c46b65ab7635",
+   "94883f488caae3b1",
+   "a6a34e1501e636d4",
+   "a8ac71f42239a59e",
+   "aef6f32505f5e102",
+   "af8e988160036d5e",
+   "afe425938e9bd1e7",
+   "b0ead9676fa06005",
+   "b7a6b0c877eb713a",
+   "bb0d6f5617f49c5c",
+   "bed6a9bc094af241",
+   "c0f052ed9e53eea3",
+   "c38f8567a99054b6",
+   "c43e0b96ba7389d2",
+   "c81c63d43641883d",
+   "ca542aa0faef337b",
+   "d090e16ca0753e1e",
+   "d0eb97d44d92e543",
+   "d77fc6a21ae5a8af",
+   "d87d61668ba10f21",
+   "d8a8e59a77412866",
+   "e1c7acdc87693cc5",
+   "e39004defee59470",
+   "e572542c0f65bfcf",
+   "e901c25ee472d73a",
+   "eaf1d23f5f453302",
+   "ed0cd328f6c26c8a",
+   "ee6ea5a6f9fd04b6",
+   "f0bab79a86a3dd95",
+   "fab11eb8ae98d8db"
+  ],
+  "48": [
+   "026bece0861a0e2b",
+   "0c15b81bc0d6ac15",
+   "0d4db6546c7e989d",
+   "16f4b4eb9635f919",
+   "17452d6a7569d46e",
+   "1ffee3afabfc8d0e",
+   "30a5e21b7b6fa544",
+   "4ac39e0782c1ad4a",
+   "54fe3113885f5ccb",
+   "61a81dea11bbee82",
+   "6b30031ba06763b8",
+   "6eac5271092be3b2",
+   "7afb7ceb682568ef",
+   "8175f0639be9828a",
+   "83c3b870b37d480c",
+   "85d51f34ddca02e2",
+   "8ffba1e7154ac062",
+   "947345624cc01e8d",
+   "948ba84080cf9e89",
+   "999ef8f4aa74e804",
+   "99a45e2f8810a9db",
+   "9b6a5d9e690f9baa",
+   "9cc6b02f764ac489",
+   "aae5c7eb70d1fc18",
+   "c08dfbd8482e3fa9",
+   "cf4396902604f725",
+   "d172d18e6af7efcf",
+   "d23d945b9eaddefa",
+   "dbe83d20a1a4b735",
+   "ddaebe452f7aacc3",
+   "e71e6d3e3e42fdad",
+   "f0954671e4c6eff3",
+   "f64f68d7e5bd8ba9",
+   "f6d9eb3d7db17ce3",
+   "f8751271affb909c"
+  ]
+ }
+}

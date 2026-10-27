@@ -8,16 +8,19 @@ import { runTool } from "@/editor/tools/toolRunner";
 import type { ToolContext } from "@/editor/tools/types";
 import { createBlankProject } from "@/project/defaults";
 import { COMBINED_TOWN_TILESET_ID, TILE } from "@/project/defaults/constants";
+import { withRetiredCombinedTownMaps } from "./support/retiredCombinedTownMaps";
 
 const WINDOW_TILE = 85; // 상위 레이어 소품(창문) — 클러스터 페인팅용.
 
+// 창문(85)·TILE.* 번호와 그 라벨은 합본 마을 칩셋 것이다 — 정리 전 빈 프로젝트처럼 합본 마을 시작 맵에서 잰다.
 function ctx(): ToolContext {
-  return { project: createBlankProject() };
+  return { project: withRetiredCombinedTownMaps(createBlankProject()) };
 }
 
 function ctxWithMap(): { context: ToolContext; mapId: string } {
   const context = ctx();
-  const created = runTool(context, "create_map", { name: "인터뷰 테스트", width: 8, height: 8, id: "map_interview" });
+  // create_map 의 tilesetId 생략은 새 야외 기본(버들항)이다 — 합본 마을 번호를 쓰므로 칩셋을 밝힌다.
+  const created = runTool(context, "create_map", { name: "인터뷰 테스트", width: 8, height: 8, id: "map_interview", tilesetId: COMBINED_TOWN_TILESET_ID });
   expect(created.ok, created.summary).toBe(true);
   return { context, mapId: "map_interview" };
 }

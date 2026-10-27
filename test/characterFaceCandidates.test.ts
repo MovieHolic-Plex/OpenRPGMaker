@@ -42,6 +42,11 @@ describe("character face evidence", () => {
         expect(reviewedFaceIdForCharset("easyrpg-charset-actor3", 5)).toBe("generated-faceset-missing-people-10");
         continue;
       }
+      // Actor4 #5(금발 남성 갑옷 전사)는 기존 얼굴이 여성·녹색 스카프라 다른 인물이다 — 2026-10-05 재검토로 공용 대응표가 「얼굴 없음」으로 바꿨다.
+      if (charset === "actor4" && slot === 5) {
+        expect(reviewedFaceIdForCharset("easyrpg-charset-actor4", 5)).toBeUndefined();
+        continue;
+      }
       const expected = `easyrpg-faceset-${faceset}-${String(slot + offset).padStart(2, "0")}`;
       const texture = `tex_easyrpg_charset_${charset}`;
       expect(reviewedCharsetFace(texture, slot)?.resourceId).toBe(expected);

@@ -1,0 +1,282 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f14c03ff0c635fac02306ea6db36eb67c51dd90c8b715e0daf488bd9357775a4",
+ "width": 64,
+ "height": 48,
+ "kind": "terrain",
+ "name": "asphalt road tile with smooth worn tar, a patch of alligator cracking, a small water-filled pothole and a worn broken lane-paint fragment, laid among plain asphalt",
+ "label": "wasteland_ruins/asphalt-c",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "refer",
+ "reasons": [
+  "화풍: 화풍 판정이 갈림(걸린 판정 2/4)",
+  "화풍: 판정자 fail (2/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "refer",
+  "reasons": [
+   "화풍 판정이 갈림(걸린 판정 2/4)",
+   "판정자 fail (2/4)"
+  ],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 6
+ },
+ "metrics": {
+  "tileColorsMedian": 6,
+  "tileColorsP90": 14,
+  "darkV5": 45,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 12
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "asphalt ground surface with cracks, pothole and lane paint fragment",
+      "rows": "0-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 48,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "This is a flat terrain tile filling the full 64x48 area with a uniform opaque silhouette (width 63-64 on every row). It shows a repeating texture pattern with periodic 16-row bands in the column scan. There is no front-edge line, eave shadow, ellipse, or vertical south face. The pothole and lane paint are painted flat on the surface. It reads as a top-down ground texture with no front face, which is normal for a terrain tile."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate shows 6 visible tones per 16x16 tile, above the grass reference (3) and close to the paving reference (7). Near-flat coverage is 0%, so the speckled blue-grey asphalt has no flat fills. The main asphalt ramp has about 5 steps. Texture is some: mottled grain, with the pothole and cracks only sparsely drawn. Only 17% of dark edge pixels are near-neutral, so the dark marks lean tinted rather than black, and the outline is mixed. The small crack, pothole and lane-paint details look thin and small at this scale, and the pothole barely reads as water. They lack the per-element shading of the reference stones and tufts. The patch is a bit less rich and structured than the paving reference, so I rate density slightly lower. It is close, but when in doubt I fail it.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 9323
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "asphalt ground tile (full 64x48 area with crack, pothole, lane paint fragment)",
+      "rows": "0-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "This is a terrain tile that fills the whole 64x48 frame with a flat ground texture. The silhouette is 64 wide on every row, with no outline, no front face and no standing volume. The column scans repeat in a 16-row period, which is texture tiling and not a top/front structure. The pothole (rows ~20-28) and the lane-paint fragment (rows ~19-21) are surface details on the ground plane. Because the object is a flat terrain tile, there is no front face, so it reads as a top-down slab. That is expected for ground terrain."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 6,
+    "evidence": "The candidate shows about 6 visible tones per 16x16 tile, against 7 for the paving reference and 3 for the grass reference, so density is on par. Near-flat coverage is 0%, the same as both references, and the speckled asphalt has no 5x5 flat fills. Only 17% of its dark edge pixels are neutral, so the dark crack and pothole pixels lean blue-grey and read as material-tone darks, not a black sticker outline. The ramp runs from deep dark through mid blue-greys to light flecks, about 5 steps, slightly below the paving reference's 6. Texture is speckle-driven and less structured than the reference's stone-by-stone shading. The pothole, crack patch and lane-paint fragment are small and sparse, but they are present and set apart by value, not by hard outlines. A careful artist would accept it next to the references without it looking flatter or thinner.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 11864
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "asphalt ground tile (full 64x48 area, flat mottled tar with crack, pothole, lane paint fragment)",
+      "rows": "0-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The candidate is a terrain tile filling the whole 64x48 frame (silhouette width 64 on nearly every row). It is a flat ground texture with mottled asphalt, a crack network around rows 22-29, a dark water pothole near rows 20-28 at the right, and a yellow paint fragment at rows 19-21. No front face, no edge line, no eave shadow and no vertical south face are drawn. The column scan shows a repeating texture pattern with a 16-row period rather than a structural top and front. For terrain this is the expected flat top-down surface, and it has no standing volume."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate has 6 visible tones per tile, close to the paving reference (7) and above the grass reference (3). Near-flat coverage is 0%, like both references, so there are no flat fills. Only 17% of its dark edge pixels are neutral, so the dark pixels lean toward the blue-grey tar rather than being a black sticker outline. The asphalt is a speckled ramp of about 5 lightness steps with scattered dark and light grains, plus a pothole and a lane-paint fragment with its own dark tones. The speckle is fairly even and noise-like, which is less structured than the reference's per-stone shading. The total of 21 distinct colours is modest but enough for the visible texture. It is slightly thinner than the references but would sit acceptably beside them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 12880
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "asphalt ground surface with cracks, pothole and lane paint fragment",
+      "rows": "0-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "Terrain tile filling the full 64x48 frame (width 64 on nearly every row). The texture is a repeating mottled asphalt pattern with no front-edge line, no eave shadow, and no south face. Cracks, a dark water-filled pothole near rows 20-30 and a yellow paint fragment near rows 19-21 are drawn flat on the surface. As ground terrain it is a flat top-down surface, so there is no standing volume and no front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a blue-grey asphalt patch with speckle noise. It measures 6 visible tones per tile, against 7 for the paving reference and 3 for the grass reference, so it is in range. Near-flat coverage is 0%, so there are no flat fills. The speckle gives a granular grain, but it is fairly uniform and noisy, with little clustering or per-stone shading like the paving reference's individually shaded cobbles. The ramp has about 4 steps against the references' 5-6. The cracks, pothole and lane-paint fragment are tiny, dark, and read as scattered dark blobs rather than shaped forms. The pothole has no clear rim highlight or water gradation. Dark edge pixels are only 17% neutral, so the dark marks lean tinted, but they are sparse and close to the dark noise. They do not form a deliberate material-tone outline. The piece is competent but visibly thinner in structure than the references, and the features lack the crafted shading Beodeul pieces carry. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 9229
+  }
+ ],
+ "decidedAt": "2026-10-22T16:59:41.727Z",
+ "cells": {
+  "16": [
+   "3cc825096bc4beb4",
+   "84962c54489e6926",
+   "be32b3ecac07f5ed"
+  ],
+  "24": [
+   "090240668f2873b3",
+   "1c0d23ebca61d9a3",
+   "254ad7830bd4deb6",
+   "2d4511198a76b79f",
+   "2deacdfcb5a8116d",
+   "55ee624ab69365db",
+   "5ee2604f88811c03",
+   "69fcec684670c3d9",
+   "6abbc496c9d5e245",
+   "74ea19b20a19263f",
+   "a080fb59da6dbf2a",
+   "a29469947514ed1f",
+   "b239763cf1581d2f",
+   "b87866de0eea4231",
+   "c6387553ae4919f8",
+   "df49e3b11eb8835f",
+   "ec0164f5a612e09e",
+   "ec9f6dd3f901e734"
+  ],
+  "32": [
+   "1a392afa7f9b2a24",
+   "3bcd03466a9648ce",
+   "5a7d873b31386ba3",
+   "65648a3256a6a61d",
+   "7be3a0de96078826",
+   "f7e2fc9976b5e4af"
+  ],
+  "48": [
+   "049508507dbc4320",
+   "3460316e8c924eed",
+   "69ae4ab630c098cb",
+   "9c69c2fd66f2c7ff",
+   "9e5cd2c9683a0122",
+   "c55a4486b387c4d4"
+  ]
+ }
+}

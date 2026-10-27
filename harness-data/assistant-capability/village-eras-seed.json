@@ -1,6 +1,6 @@
 {
  "id": "assistant-capability-village-eras-v1",
- "version": 1,
+ "version": 2,
  "purpose": "시대·세계별 마을 요청(선사·고대·중세·동아시아·근대·오늘날·미래·판타지)을 실제 입력창 경로로 지어, 맞는 칩셋·시공기·선택지로 가는지와 그림이 없는 종류를 정직하게 말하는지 본다. 한 과제 = 빈 프로젝트 하나 + 자연어 한 번. 표 정본 src/ai/villageTypeCatalog.ts.",
  "internalAi": "조수 엔진은 제품의 로컬 CLI 엔진 스위치(src/ai/localCliEngine.ts) — Claude Code + claude-sonnet-5-5, effort high. 기본 Argon 이 한도 소진이라 대용이다. Argon 점수와 직접 비교하지 않는다.",
  "assistantEngine": {
@@ -239,15 +239,16 @@
    "lint0": []
   },
   {
-   "id": "gap-postapoc",
-   "label": "폐허 마을(그림 없음)",
+   "id": "era-postapoc",
+   "label": "포스트아포칼립스 폐허 마을",
    "port": 19656,
    "lessons": [
     "village-eras"
    ],
    "prompt": "포스트아포칼립스 폐허 마을 맵을 만들어 줘.",
    "requirements": [
-    "no map built; the answer says clearly which art is missing and offers the nearest buildable type"
+    "a built map on the chipset that matches the requested era/world",
+    "saved and reloaded"
    ],
    "lint0": []
   },
@@ -261,6 +262,76 @@
    "prompt": "해저 돔 도시 맵을 만들어 줘.",
    "requirements": [
     "no map built; the answer says clearly which art is missing and offers the nearest buildable type"
+   ],
+   "lint0": []
+  },
+  {
+   "id": "era-ruins-village",
+   "label": "고대 신전 폐허 마을",
+   "port": 19658,
+   "lessons": [
+    "village-eras"
+   ],
+   "prompt": "고대 신전 폐허가 있는 마을 맵을 만들어 줘.",
+   "requirements": [
+    "a built map on the chipset that matches the requested era/world",
+    "saved and reloaded"
+   ],
+   "lint0": []
+  },
+  {
+   "id": "era-mining",
+   "label": "광산촌",
+   "port": 19659,
+   "lessons": [
+    "village-eras"
+   ],
+   "prompt": "광산촌 마을 맵을 만들어 줘.",
+   "requirements": [
+    "a built map on the chipset that matches the requested era/world",
+    "saved and reloaded"
+   ],
+   "lint0": []
+  },
+  {
+   "id": "era-vineyard",
+   "label": "포도원 마을",
+   "port": 19660,
+   "lessons": [
+    "village-eras"
+   ],
+   "prompt": "포도원 마을 맵을 만들어 줘.",
+   "requirements": [
+    "a built map on the chipset that matches the requested era/world",
+    "saved and reloaded"
+   ],
+   "lint0": []
+  },
+  {
+   "id": "era-ruined-city",
+   "label": "좀비 폐허 도시",
+   "port": 19661,
+   "lessons": [
+    "village-eras"
+   ],
+   "prompt": "좀비 아포칼립스 폐허 도시 맵을 만들어 줘.",
+   "requirements": [
+    "a built map on the chipset that matches the requested era/world",
+    "saved and reloaded"
+   ],
+   "lint0": []
+  },
+  {
+   "id": "era-wasteland",
+   "label": "황무지 판잣집 정착촌",
+   "port": 19662,
+   "lessons": [
+    "village-eras"
+   ],
+   "prompt": "황무지 판잣집 정착촌 맵을 만들어 줘.",
+   "requirements": [
+    "a built map on the chipset that matches the requested era/world",
+    "saved and reloaded"
    ],
    "lint0": []
   }

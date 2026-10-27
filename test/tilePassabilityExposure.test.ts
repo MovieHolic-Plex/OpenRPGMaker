@@ -9,6 +9,7 @@ import { createBlankProject } from "@/project/defaults";
 import { COMBINED_TOWN_TILESET_ID } from "@/project/defaults/constants";
 import { applyCombinedTownHarness } from "@/project/tilesetHarness";
 import type { Project, TilesetDef } from "@/project/types";
+import { startOnRetiredCombinedTown, withRetiredEasyRpgTilesets } from "./support/retiredEasyRpgTilesets";
 
 const SETTER = "set_tile_passability";
 const TILESET = "passage_fixture";
@@ -22,7 +23,9 @@ const SEMANTIC_TOOLS = [
   "set_group_junction", "set_group_overlay", "set_cluster_rule", "upsert_palette_preset",
   "set_group_layout", "suggest_group_from_range", "propose_tile_vocabulary",
 ];
-const LEGACY_PAINT_TOOLS = ["clear_region", "scatter_object", "stamp_structure"];
+const LEGACY_PAINT_TOOLS = ["clear_region", "scatter_object"];
+// 2026-10-07 저작권 정리로 레지스트리에서 아예 지운 옛 칠 도구(mapTools.ts — 대체는 stamp_object). 숨김보다 강하다.
+const REMOVED_PAINT_TOOLS = ["stamp_structure"];
 
 function passage(passable: boolean) {
   return { up: passable, down: passable, left: passable, right: passable };
@@ -30,7 +33,7 @@ function passage(passable: boolean) {
 
 // Three cells/three chips; no authored project, store, browser, or remote persistence.
 function fixture(initialPassable = false): Project {
-  const project = createBlankProject();
+  const project = withRetiredEasyRpgTilesets(createBlankProject());
   const tileset: TilesetDef = {
     id: TILESET, name: "Passage fixture", image: project.tilesets[COMBINED_TOWN_TILESET_ID].image,
     tileSize: 16, tilesPerRow: 3, count: 3,
@@ -128,6 +131,13 @@ describe("public technical tile passage capability", () => {
       const matches = (result.data as { matches: { name: string }[] }).matches;
       expect(matches.map(match => match.name), name).not.toContain(name);
     }
+    for (const name of REMOVED_PAINT_TOOLS) {
+      expect(getTool(name), name).toBeUndefined();
+      expect(names, name).not.toContain(name);
+      const result = runTool({ project: fixture() }, "find_tools", { query: name });
+      const matches = (result.data as { matches: { name: string }[] }).matches;
+      expect(matches.map(match => match.name), name).not.toContain(name);
+    }
   });
 
   it.each([true, false])("dispatches discovered passage=%s through an ordinary detached session", async passable => {
@@ -158,7 +168,10 @@ describe("public technical tile passage capability", () => {
     expect(result.stoppedReason).toBe("error");
     expect(result.error).toBe("fixture-dispatch-observed");
     expect(requests).toHaveLength(3);
-    expect(requests[0].tools?.some(tool => tool.function.name === SETTER)).toBe(true);
+    // The first request is narrowed on purpose (the full catalog exceeds the window), so the setter
+    // arrives through find_tools rather than in the opening tool list.
+    expect(requests[0].tools?.some(tool => tool.function.name === "find_tools")).toBe(true);
+    expect(requests[0].tools?.some(tool => tool.function.name === SETTER)).toBe(false);
     expect(events.filter(event => event.type === "tool_call")).toMatchObject([
       { name: "find_tools", result: { ok: true } },
       { name: SETTER, result: { ok: true, data: { tilesetId: TILESET, tile: 1, passable } } },
@@ -206,7 +219,8 @@ describe("public technical tile passage capability", () => {
   });
 
   it("keeps the native passage metadata through JSON reload and bundled harness reapplication", () => {
-    const context = { project: createBlankProject() };
+    // tilesetId 를 생략한 호출은 시작 맵의 칩셋(342번 = 합본 마을 칩)에 쓴다.
+    const context = { project: startOnRetiredCombinedTown(createBlankProject()) };
     const schema = toOpenAiTools().find(tool => tool.function.name === SETTER);
     expect(schema).toBeDefined();
     const args = { tile: 342, passable: true, reason: "repair physical passage" };

@@ -1,0 +1,415 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d832375f991f0bd5952c0572b290614e7cffe8b0d3f63817eeae6952eea8213d",
+ "width": 32,
+ "height": 64,
+ "kind": "structure",
+ "name": "scrap scaffold watchtower seen from above: plank lookout platform top with sandbag rim and a tarp roof corner, sheet-metal skirt, braced legs with a plank landing, ladder and concrete footings",
+ "label": "wasteland_ruins/watchtower",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "refer",
+ "reasons": [
+  "3/4: 독립 눈이 「3/4 아님」 12/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면"
+ ],
+ "view34": {
+  "verdict": "refer",
+  "reasons": [
+   "독립 눈이 「3/4 아님」 12/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 14,
+  "tileColorsP90": 19,
+  "darkV5": 42,
+  "nearBlackEdge": 0.06,
+  "opaqueTiles": 8
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "plank lookout platform top with sandbag rim",
+      "rows": "2-17",
+      "evidence": "a",
+      "front_edge_line_row": 17,
+      "eave_shadow_rows": "18-18"
+     },
+     {
+      "part": "tarp roof corner (teal diagonal-striped plane, top right)",
+      "rows": "0-12",
+      "evidence": "c",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "plank landing between the braced legs",
+      "rows": "41-47",
+      "evidence": "a",
+      "front_edge_line_row": 47,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "sheet-metal skirt",
+      "rows": "19-25",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 16,
+    "front_face_rows": 45,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The platform band at rows 2-17 shows planks and sandbags seen from above. It ends in a light front-edge line at row 17 (#d6b073) with a dark shadow row at 18 (#192737). The tarp at the top right is a sloped diagonal-striped plane (rows 0-12). Below, the sheet-metal skirt (rows 19-25) and the braced legs with ladder and footings (rows 26-63) form a front face of 45 rows. The plank landing at rows 41-47 has a light front edge, so it also reads as a horizontal surface. No receding side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a small, narrow tower, about 1.5 tiles wide, set against two large house references. Its measured facts are healthy: 14 visible tones per tile against 12 and 10 for the references, 0% near-flat coverage, and 0% neutral dark edge pixels, so the outlines are tinted (dark brown beside wood) and not a black sticker line. The ramps are shallower than the references. Planks, the tarp and the sandbag rim show about 3-4 steps each, where the references show 5-6 per material on roof tiles and plaster speckle. The tower is a thin, sparse object with little grain on the legs, skirt and footings, so by eye it reads thinner and simpler than the references, with less per-element highlighting. The 14 tones come mostly from many small differently-coloured parts, not from deep ramps within a material. A careful artist would likely see it as a bit flatter than Beodeul next to the references, and when in doubt this fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 25074
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "tarp roof corner (top right)",
+      "rows": "0-10",
+      "evidence": "c",
+      "front_edge_line_row": 10,
+      "eave_shadow_rows": "8-10"
+     },
+     {
+      "part": "plank lookout platform top with sandbag rim",
+      "rows": "2-17",
+      "evidence": "a",
+      "front_edge_line_row": 17,
+      "eave_shadow_rows": "18"
+     },
+     {
+      "part": "sheet-metal skirt (front face)",
+      "rows": "19-25",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "plank landing between the legs",
+      "rows": "41-47",
+      "evidence": "a",
+      "front_edge_line_row": 46,
+      "eave_shadow_rows": "47"
+     },
+     {
+      "part": "braced legs, ladder and footings",
+      "rows": "28-63",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 15,
+    "front_face_rows": 44,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The platform is a plank deck seen from above, rows 2-17. Its sandbag rows and plank rows are foreshortened, and a light front-edge line at row 17 is followed by a dark shadow line at row 18. The tarp corner at the top right is a sloped roof plane above its own edge. Below the deck is a 7-row sheet-metal skirt (rows 19-25) and then an open leg section with ladder and braces (rows 28-63), which gives a front face well over 3 rows. The plank landing at rows 41-47 also has a top band ending in a lighter edge line at row 46. The overall structure shows top surfaces plus a front face, so it reads as three-quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate has 14 visible tones per 16x16 tile against 12 and 10 for the references. Near-flat coverage is 0%, the same as both references. None of its dark edge pixels are neutral (0%), so the outline is a tinted dark brown beside the planks and tarp, not a sticker line. The planks, sandbag rim, tarp, metal skirt, braced legs and ladder are separated by value with plank grain and speckle, and no large area is a single flat colour. It is a small piece with only about 33 distinct colours in total, and each material ramp shows roughly 4 steps against the references' 5-6, so it is slightly shallower in shading. That is not enough to look thinner or flatter than the references, because the tile-level tone count is at or above theirs.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 20534
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "plank lookout platform top with sandbag rim",
+      "rows": "2-17",
+      "evidence": "a",
+      "front_edge_line_row": 17,
+      "eave_shadow_rows": "18"
+     },
+     {
+      "part": "tarp roof corner (sloped teal plane with diagonal folds)",
+      "rows": "0-10",
+      "evidence": "c",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": "8-10"
+     },
+     {
+      "part": "sheet-metal skirt (vertical front face)",
+      "rows": "19-25",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "plank landing across the legs",
+      "rows": "41-47",
+      "evidence": "a",
+      "front_edge_line_row": 46,
+      "eave_shadow_rows": "47"
+     },
+     {
+      "part": "braced legs, ladder and footings",
+      "rows": "26-63",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 14,
+    "front_face_rows": 45,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is the watchtower platform. Rows 2-17 form a plank deck band with a sandbag rim and a light front-edge line at row 17. Row 18 is a dark shadow line, and below it the sheet-metal skirt (rows 19-25) forms the front face. The tarp roof corner at upper right (rows 0-10) is a sloped plane with diagonal fold lines. Below the skirt, the legs, braces and ladder (rows 26-63) give a tall front face. The plank landing at rows 41-47 has its own top band with a light front edge. The platform content is partly drawn face-on, so the top reading is moderate rather than strong."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small, thin scaffold tower, much narrower than the references, so I judged it mostly by eye plus the measured facts. It measures 14 visible tones per 16x16 tile, against 12 and 10 for the references. Near-flat coverage is 0%, the same as both references, so no large flat fills. Dark edge pixels are 0% neutral, so the outlines are tinted: dark brown beside the planks and dark teal beside the tarp, not a black sticker line. The plank platform, sandbag rim, tarp corner, braced legs, ladder and footings are each separated by value, with plank grain and sandbag speckle. Each material ramp has roughly 4 steps, a little below the references' 5-6, but the tile density and texture are on par and it does not look thinner or flatter beside them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 21265
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "plank lookout platform top with sandbag rim",
+      "rows": "2-17",
+      "evidence": "a",
+      "front_edge_line_row": 17,
+      "eave_shadow_rows": "18"
+     },
+     {
+      "part": "tarp roof corner (teal sloped plane, top right)",
+      "rows": "0-10",
+      "evidence": "c",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "plank landing between the legs",
+      "rows": "41-47",
+      "evidence": "a",
+      "front_edge_line_row": 46,
+      "eave_shadow_rows": "47"
+     },
+     {
+      "part": "sheet-metal skirt",
+      "rows": "19-25",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 16,
+    "front_face_rows": 45,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The platform at rows 2-17 is a 16-row plank and sandbag surface. It ends in a light front-edge line at row 17 and a dark shadow line at row 18. The tarp roof corner at the top right is a sloped plane with diagonal stripes. Below the platform, the front face is the sheet-metal skirt (rows 19-25) and the braced legs, ladder and footings (rows 26-63). The plank landing at rows 41-47 has its own lighter top band and a darker front edge. No isometric side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small, thin tower, so I judged it mostly by eye next to the references. Its measured facts are at or above both references: 14 visible tones per tile against 12 and 10, 0% near-flat coverage like both references, and 0% neutral dark edge pixels, which means the outlines are tinted. The outlines read as dark brown beside the planks and legs, not a uniform black line. The planks, sandbag rim, teal tarp, sheet-metal skirt and ladder are separated by value changes, with plank grain and rung details. It has fewer shading steps per material (about 4) than the roof tiles and plaster of the references (about 6), and its total colour count is low at 33. It still shows no flat fills and no sticker look, so a careful artist would accept it beside the references without it looking flatter.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18714
+  }
+ ],
+ "decidedAt": "2026-10-22T15:08:30.398Z",
+ "cells": {
+  "16": [
+   "082f89273cc538fc",
+   "11796680597b5f3b",
+   "12dd67ffe019f19e",
+   "16ebb9fd1054a1e1",
+   "30bc68413782bd65",
+   "bc65000a28f35a39",
+   "d296a33c18ba2a6a",
+   "fd56e1e08e8ff775"
+  ],
+  "24": [
+   "019f15574045948e",
+   "032c793d5534e317",
+   "0c9ea814d01b70e5",
+   "12cc63b66400d8ca",
+   "24f81021ecde5365",
+   "2d372f30cb8c7c8c",
+   "3ae0ad2b25a16e55",
+   "3b326ab3d3fa8791",
+   "3bf82a7b8361093d",
+   "4287a3ac7ee83867",
+   "498b53f5fde16fc6",
+   "4e3c3096b77d1ed7",
+   "5a16da9ee51de3b5",
+   "7ac6c37cb5b6d46c",
+   "7b8037ee4375fe9c",
+   "8524ccf8468ceb8a",
+   "865047a2d746e188",
+   "893290a2b6a19ce3",
+   "89478a837fcfa9c5",
+   "8c2a94e87a3c4991",
+   "949b7e2577b3dc74",
+   "95c58012bd9b015b",
+   "9c1dafcda7817325",
+   "a3b58522791bab00",
+   "a4598598bef5aee7",
+   "ac28a1507d3be970",
+   "b11e75383137f34f",
+   "b328a77ece3c1f20",
+   "bc34e92f1dda6102",
+   "d6fa223963255c66",
+   "d86a03c40a574191",
+   "d8ea7426135188c0",
+   "dbb6bdc4592b70c1",
+   "e692548469550437",
+   "f1de9cb756efd008",
+   "ff49c589f5eb0e24"
+  ],
+  "32": [
+   "14810a90428c160e",
+   "bea11f6206047b26"
+  ],
+  "48": [
+   "0e1e02814a68e11d",
+   "185e372b7369dc95",
+   "1a068b6e8bb0782d",
+   "1f256f7f5ddf58ea",
+   "20d5369962e6eb9e",
+   "3706c9a3076b5e70",
+   "5a29c1339429dd65",
+   "7406e534fcfd2aaf",
+   "8f25acb49a6656b9",
+   "ca95d24ddcef9a5f",
+   "d0ba30e99fce49d3",
+   "de245942e2da1b75"
+  ]
+ }
+}

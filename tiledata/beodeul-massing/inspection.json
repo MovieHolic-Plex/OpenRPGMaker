@@ -1,0 +1,417 @@
+{
+ "buildings": [
+  {
+   "id": "bakery",
+   "kit": "bd-house-mk-bakery",
+   "sha256": "da87405c8e48081f1602c10517d55a7944aedafea18f2653c610e12e34d3bdfc",
+   "size": [
+    6,
+    5
+   ],
+   "blockedCells": 17,
+   "overhangCells": 9,
+   "entrance": [
+    3,
+    3,
+    1,
+    2
+   ]
+  },
+  {
+   "id": "barracks",
+   "kit": "bd-house-mk-barracks",
+   "sha256": "cc30ca850e9c02e8c1830d44bac09416dd3c71bd9af2a99d8b4289edd2a7f356",
+   "size": [
+    10,
+    6
+   ],
+   "blockedCells": 30,
+   "overhangCells": 21,
+   "entrance": [
+    4,
+    4,
+    1,
+    2
+   ]
+  },
+  {
+   "id": "chapel",
+   "kit": "bd-house-mk-chapel",
+   "sha256": "2cf55a33bb0b1470601cd38e758fe8c98ac770fbd7c5949a8d385c16d4f7a97b",
+   "size": [
+    11,
+    9
+   ],
+   "blockedCells": 25,
+   "overhangCells": 39,
+   "entrance": [
+    2,
+    7,
+    1,
+    2
+   ]
+  },
+  {
+   "id": "cottage",
+   "kit": "bd-house-mk-cottage",
+   "sha256": "58707f18ffdc4b94643c0ff6fe398fe19ba92ea75f141bd19bbefdca6d19ce00",
+   "size": [
+    5,
+    5
+   ],
+   "blockedCells": 10,
+   "overhangCells": 15,
+   "entrance": [
+    1,
+    4,
+    1,
+    1
+   ]
+  },
+  {
+   "id": "cross-house",
+   "kit": "bd-house-mk-cross-house",
+   "sha256": "290c98b2883c11071ede4632116b5e23a87309621ff50f2ba0969fe6a70a3df5",
+   "size": [
+    9,
+    8
+   ],
+   "blockedCells": 30,
+   "overhangCells": 28,
+   "entrance": [
+    4,
+    6,
+    1,
+    2
+   ]
+  },
+  {
+   "id": "dovecote",
+   "kit": "bd-house-mk-dovecote",
+   "sha256": "35c9666c5a5fd181069f8c67f00792278151c53285579f8b805220eb2fe43cbd",
+   "size": [
+    3,
+    5
+   ],
+   "blockedCells": 6,
+   "overhangCells": 9,
+   "entrance": [
+    1,
+    4,
+    1,
+    1
+   ]
+  },
+  {
+   "id": "gable-cottage",
+   "kit": "bd-house-mk-gable-cottage",
+   "sha256": "73426b65baffd51fcc83986d9a0f427548b096ccf1319624f783535f8e20f18e",
+   "size": [
+    4,
+    6
+   ],
+   "blockedCells": 8,
+   "overhangCells": 14,
+   "entrance": [
+    1,
+    4,
+    1,
+    2
+   ]
+  },
+  {
+   "id": "granary-mill",
+   "kit": "bd-house-mk-granary-mill",
+   "sha256": "9f043402f0aab4b56736698d348671c791576778810c6553ab1f675710f4193e",
+   "size": [
+    10,
+    7
+   ],
+   "blockedCells": 40,
+   "overhangCells": 29,
+   "entrance": [
+    3,
+    5,
+    1,
+    2
+   ]
+  },
+  {
+   "id": "great-hall",
+   "kit": "bd-house-mk-great-hall",
+   "sha256": "8b0014357ad73046773eb44ff7d96b9356a1c520059e4f71675840558d2691b3",
+   "size": [
+    11,
+    8
+   ],
+   "blockedCells": 44,
+   "overhangCells": 32,
+   "entrance": [
+    5,
+    6,
+    1,
+    2
+   ]
+  },
+  {
+   "id": "inn",
+   "kit": "bd-house-mk-inn",
+   "sha256": "13303ceccbe70c4927082bd0aa5b4d22c53aebf8e9ab39f818b90f832a483c01",
+   "size": [
+    10,
+    7
+   ],
+   "blockedCells": 40,
+   "overhangCells": 19,
+   "entrance": [
+    2,
+    5,
+    1,
+    2
+   ]
+  },
+  {
+   "id": "jetty-house",
+   "kit": "bd-house-mk-jetty-house",
+   "sha256": "2a7a6724328f0c12a517986af1d926d5a4f92e9b1ff64f76b97496d3ab2b6158",
+   "size": [
+    5,
+    7
+   ],
+   "blockedCells": 20,
+   "overhangCells": 13,
+   "entrance": [
+    2,
+    5,
+    1,
+    2
+   ]
+  },
+  {
+   "id": "l-farmhouse",
+   "kit": "bd-house-mk-l-farmhouse",
+   "sha256": "a1e7fd8c47e21388d44b92f35fd471adbae0e39e2fc41b69dd8adfa73b4e97ef",
+   "size": [
+    9,
+    6
+   ],
+   "blockedCells": 19,
+   "overhangCells": 29,
+   "entrance": [
+    7,
+    4,
+    1,
+    2
+   ]
+  },
+  {
+   "id": "lighthouse",
+   "kit": "bd-house-mk-lighthouse",
+   "sha256": "722b17fcca13aef3950a2928876567c5ff96941db7c45d1e5b81ea4fea842de9",
+   "size": [
+    3,
+    9
+   ],
+   "blockedCells": 6,
+   "overhangCells": 19,
+   "entrance": [
+    1,
+    7,
+    1,
+    2
+   ]
+  },
+  {
+   "id": "longhouse",
+   "kit": "bd-house-mk-longhouse",
+   "sha256": "67e998eca43365c398d85488d61f4b3c8e33eecced2e109195419ea5e3349cf9",
+   "size": [
+    11,
+    5
+   ],
+   "blockedCells": 22,
+   "overhangCells": 30,
+   "entrance": [
+    1,
+    3,
+    1,
+    2
+   ]
+  },
+  {
+   "id": "manor",
+   "kit": "bd-house-mk-manor",
+   "sha256": "b27e0cf50dc975681d00978ed975ab30a58d1c1b71e1d7463ed5fcc50c4f8a3c",
+   "size": [
+    11,
+    8
+   ],
+   "blockedCells": 44,
+   "overhangCells": 39,
+   "entrance": [
+    5,
+    5,
+    1,
+    2
+   ]
+  },
+  {
+   "id": "market-hall",
+   "kit": "bd-house-mk-market-hall",
+   "sha256": "d30589b5c362bc9cd6f16413c58212b990c48266ea4892643e8157ed6be936d2",
+   "size": [
+    8,
+    6
+   ],
+   "blockedCells": 16,
+   "overhangCells": 28,
+   "entrance": [
+    4,
+    5,
+    1,
+    1
+   ]
+  },
+  {
+   "id": "merchant-house",
+   "kit": "bd-house-mk-merchant-house",
+   "sha256": "1eab77b3ed57ae141335dcf31fd338e0fc0e3a1619ea256caeae9e4772dcfa6f",
+   "size": [
+    7,
+    7
+   ],
+   "blockedCells": 28,
+   "overhangCells": 19,
+   "entrance": [
+    3,
+    5,
+    1,
+    2
+   ]
+  },
+  {
+   "id": "smithy",
+   "kit": "bd-house-mk-smithy",
+   "sha256": "490a2228a000a1483020d56786086d889a50d8eb00cb232340c478458633ccb9",
+   "size": [
+    7,
+    5
+   ],
+   "blockedCells": 14,
+   "overhangCells": 16,
+   "entrance": [
+    1,
+    3,
+    1,
+    2
+   ]
+  },
+  {
+   "id": "thouse",
+   "kit": "bd-house-mk-thouse",
+   "sha256": "74a8991b73da24e25ca980f5fec4a87c2cb702906b2fc60400d4d49928741597",
+   "size": [
+    9,
+    8
+   ],
+   "blockedCells": 41,
+   "overhangCells": 24,
+   "entrance": [
+    4,
+    6,
+    1,
+    2
+   ]
+  },
+  {
+   "id": "tithe-barn",
+   "kit": "bd-house-mk-tithe-barn",
+   "sha256": "41f5ae10bbd42ffbff0c9d6c79b5c10bf46f81696cfac6cb19dbf7a6e0c54853",
+   "size": [
+    12,
+    6
+   ],
+   "blockedCells": 36,
+   "overhangCells": 34,
+   "entrance": [
+    6,
+    4,
+    1,
+    2
+   ]
+  },
+  {
+   "id": "tower-house",
+   "kit": "bd-house-mk-tower-house",
+   "sha256": "44308e3c95652565079c9e2e481f9fb1f10557992320f3fae29ef77fa0e69a54",
+   "size": [
+    9,
+    8
+   ],
+   "blockedCells": 27,
+   "overhangCells": 34,
+   "entrance": [
+    2,
+    6,
+    1,
+    2
+   ]
+  },
+  {
+   "id": "town-hall",
+   "kit": "bd-house-mk-town-hall",
+   "sha256": "99921abed71bf2528d182dd55e357bda7a6c73bc7eb953ef94b1ddf57ba58a3d",
+   "size": [
+    9,
+    9
+   ],
+   "blockedCells": 36,
+   "overhangCells": 22,
+   "entrance": [
+    4,
+    7,
+    1,
+    2
+   ]
+  },
+  {
+   "id": "warehouse",
+   "kit": "bd-house-mk-warehouse",
+   "sha256": "abfae20630c90d2718c1d30d6c179ccd6d9149ef9b3c718f1e57c4eae2b87358",
+   "size": [
+    5,
+    10
+   ],
+   "blockedCells": 35,
+   "overhangCells": 13,
+   "entrance": [
+    2,
+    8,
+    1,
+    2
+   ]
+  },
+  {
+   "id": "wizard-tower",
+   "kit": "bd-house-mk-wizard-tower",
+   "sha256": "530ee7d022005c898a44553c8a91ae1618b4ec7bd9ea2c71b148b88dec525782",
+   "size": [
+    4,
+    11
+   ],
+   "blockedCells": 8,
+   "overhangCells": 24,
+   "entrance": [
+    2,
+    9,
+    1,
+    2
+   ]
+  }
+ ],
+ "installed": 24,
+ "tiles": 1180,
+ "sheetTiles": 1184,
+ "decisionLog": "harness-data/building-kit/massing/decisions.json",
+ "visualVerdict": "requires actual image review (gallery.png)"
+}

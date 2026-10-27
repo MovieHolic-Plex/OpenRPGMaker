@@ -6,6 +6,7 @@ import {
   STANDALONE_ASSETS_NODE_ID,
   STANDALONE_PROJECT_NODE_ID,
 } from "@/project/standaloneHtml";
+import { Script } from "node:vm";
 import { describe, expect, it } from "vitest";
 
 const BASE = {
@@ -45,6 +46,28 @@ describe("standalone html", () => {
     expect(html).toContain("\\u003c/script>");
     // 스크립트 태그는 본문 한 개 + JSON 노드 두 개 = 정확히 3쌍이어야 한다.
     expect(html.match(/<script/g)?.length).toBe(3);
+  });
+
+  // 플레이어 번들(한 줄짜리 IIFE)에 같은 글자가 있으면 JSON 과 같이 문서가 끊긴다.
+  it("플레이어 스크립트와 스타일시트의 닫는 태그가 문서를 끊지 않는다", () => {
+    const script = 'globalThis.seen = "</ScRiPt>"; globalThis.cmp = 1 < 2;';
+    const css = 'body{content:"</STYLE><script>alert(1)"} i < b {}';
+    const html = buildStandaloneHtml({ ...BASE, script, css });
+
+    expect(html.match(/<\/script>/gi)).toHaveLength(3);
+    expect(html.match(/<\/style>/gi)).toHaveLength(1);
+    expect(html).not.toContain("</STYLE><script>");
+    expect(html).toContain("<\\/ScRiPt>");
+    expect(html).toContain("<\\/STYLE>");
+    expect(html).toContain("1 < 2");
+    expect(html).toContain("i < b {}");
+
+    const afterApp = html.slice(html.indexOf('<div id="app"></div>'));
+    const embedded = afterApp.match(/<script>([\s\S]*?)<\/script>/)?.[1];
+    const sandbox: { seen?: string; cmp?: boolean } = {};
+    new Script(embedded ?? "").runInNewContext(sandbox);
+    expect(sandbox.seen).toBe("</ScRiPt>");
+    expect(sandbox.cmp).toBe(true);
   });
 
   it("제목의 태그 문자를 이스케이프한다", () => {

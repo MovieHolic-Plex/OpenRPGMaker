@@ -121,7 +121,7 @@ npm run dev              # 开发服务器 (http://localhost:9999)
 npm run build:packaged   # 托管 / 桌面版渲染构建
 npm run build:player     # 独立网页游戏播放器
 npm start -- --project-dir /path/to/project   # 打开现有 SQLite 项目
-npm test                 # 单元测试
+npm test                 # 单元测试（在 GitHub CI 上运行。本地未设置 OPRN_LOCAL_TESTS=1 时会直接退出）
 ```
 
 - 架构、数据与编辑器文档位于 [`openwiki/`](openwiki/)（目前为韩语）——请从 [`openwiki/quickstart.md`](openwiki/quickstart.md) 和 [`openwiki/PROJECT_WIKI.md`](openwiki/PROJECT_WIKI.md) 开始。

@@ -64,7 +64,14 @@ export function getFollowerBodySpan(session: object): number {
 function effectiveGap(session: object, config: CompanionConfig | undefined): number {
   const authored = config?.gap;
   if (typeof authored === "number" && Number.isFinite(authored)) return resolveCompanionRules(config).gap;
+  // 고전 빵부스러기: 앞사람 바로 한 걸음 뒤(크로노 트리거·마더·포켓몬). 몸이 큰 칩은 조금 겹쳐 그려진다 — 그 게임들과 같다.
+  if (isBreadcrumbFollow(config)) return 1;
   return getFollowerBodySpan(session);
+}
+
+/** 고전 빵부스러기 뒤따르기(기본). companions.followMode "spaced" 만 옛 동작. */
+export function isBreadcrumbFollow(config: CompanionConfig | undefined): boolean {
+  return config?.followMode !== "spaced";
 }
 
 /** 몸끼리 띄울 최소 거리(체비쇼프, 칸). 1 = 같은 칸만 피한다(몸 길이 1·옛 동작). */
@@ -314,13 +321,21 @@ export function resetFollowerTrailNearPlayer(
     if (!inBounds(map, x, y)) return false;
     return options?.project ? isPassable(options.project, map, x, y) : true;
   };
-  // 몬스터만 따라오는 열차(HGSS): 바로 뒤 칸이 문·계단·벽이면 옆 칸에 세우지 않고 잠깐 숨긴다 — 주인공이 첫 걸음을 떼면
-  // 주인공이 떠난 칸(문 앞·계단 앞)에서 나타나 뒤를 따른다. 옆 칸에 세우면 주인공이 그쪽으로 걸을 때 둘이 서로를
-  // 뚫고 자리를 바꿨다(2026-10-23 회복 센터 문·2층 계단 실측).
-  const monsterOnly = session.followers.every((entry) => entry.kind === "monster" || Boolean(entry.monsterInstanceId));
+  // 바로 뒤 칸이 문·계단·벽이면(문으로 막 들어왔다) 옆·앞 칸에 세우지 않고 잠깐 숨긴다 — 주인공이 첫 걸음을 떼면
+  // 주인공이 떠난 칸(문 앞·계단 앞)에서 나타나 뒤를 따른다. 옆·앞 칸에 세우면 주인공이 그쪽으로 걸을 때 둘이 서로를
+  // 뚫고 자리를 바꿨다 — 몬스터 열차(2026-10-23 회복 센터 문·2층 계단)와 파티 동료(J9: 동굴 계단으로 내려오면 동료가
+  // 주인공 앞에 섰다가 첫 걸음에 뒤로 튀었다) 모두. 저작자가 spreadWhenBlocked 를 켰으면 followerPositions 가 빈 궤적일 때
+  // 옆 빈 칸에 세운다(그 선택은 그대로 존중한다).
   const back = DIR_STEP[OPPOSITE[facing]];
-  if (monsterOnly && !open(session.x + back.dx, session.y + back.dy)) {
+  if (!open(session.x + back.dx, session.y + back.dy)) {
     session.followerTrail = [];
+    return;
+  }
+  // 고전 빵부스러기: 맵에 들어서면 동료가 주인공 칸에 겹쳐 같은 쪽을 보고 선다 — 주인공이 걸으면 밟은 칸을 따라 한 명씩 풀려 나온다
+  // (마더·크로노 트리거). 문 밖·벽 너머 칸에 미리 세우지 않는다.
+  const monsterOnly = session.followers.every((entry) => entry.kind === "monster" || Boolean(entry.monsterInstanceId));
+  if (isBreadcrumbFollow(config) && !monsterOnly) {
+    session.followerTrail = Array.from({ length: slots }, () => ({ x: session.x, y: session.y, direction: facing }));
     return;
   }
   session.followerTrail = trailBehind({ x: session.x, y: session.y }, facing, slots, open);
@@ -465,6 +480,7 @@ export function followerPositions(
   readonly hidden?: boolean;
 }[] {
   const { formation } = resolveCompanionRules(config);
+  const breadcrumb = isBreadcrumbFollow(config) && formation === "line";
   // 걸음을 막 시작한 주인공은 목적지 칸에 선 것으로 본다 — 동료가 비워지는 칸(주인공이 떠나는 칸)으로 같이 걷는다.
   const hero = world?.heroAt ?? { x: session.x, y: session.y };
   const gap = effectiveGap(session, config);
@@ -528,6 +544,16 @@ export function followerPositions(
     // 옆자리가 모자라면(인접 4칸 초과 인원, 또는 물·벽으로 막힌 칸) 그 동료는 일렬로 떨어진다.
     const slot = slots[index];
     if (slot && !blocked?.(slot.x, slot.y)) return { follower, x: slot.x, y: slot.y, direction: slot.direction };
+    // 고전 빵부스러기(기본): 앞사람이 gap 걸음 전에 밟은 칸 — 건너뛰기·기다리기·비켜 서기 없이 그 칸 그대로.
+    // 궤적이 짧으면(막 맵에 들어옴) 가장 오래된 칸(= 들어선 칸)에 겹쳐 선다. 장면 대형(위 분기)은 그대로 쓴다.
+    if (breadcrumb && !(config?.fanOutInScenes === true && world?.inScene && index > 0)) {
+      if (trail.length === 0) return { follower, x: hero.x, y: hero.y, direction: follower.graphic.direction, hidden: true };
+      const crumb = Math.min(trailIndexFor(index, gap), trail.length - 1);
+      const point = trail[crumb]!;
+      cursor = crumb;
+      taken.push({ x: point.x, y: point.y });
+      return { follower, x: point.x, y: point.y, direction: point.direction ?? follower.graphic.direction };
+    }
     // 1) 앞사람에게서 gap 칸 뒤 궤적 점.
     // 2) 그 점이 주인공·앞 동료와 붙어 있으면(모퉁이·되돌아오기) 지금 선 칸에서 **기다린다** — 그 칸이
     //    여전히 궤적 위·앞사람 뒤이고 붙어 있지 않을 때. 더 뒤 점으로 뛰었다 돌아오면 두 칸씩 미끄러진다.
@@ -555,7 +581,11 @@ export function followerPositions(
     }
     const point = trail[at];
     if (!point) {
-      const spread = config?.spreadWhenBlocked === true && world ? nearestSpreadCell(hero, world, clear) : null;
+      // 문으로 막 들어와 궤적이 비었다. 걸을 때는 숨겼다가 주인공이 떠난 칸에서 나타나게 두고(J9: 앞에 세우면 첫 걸음에
+      // 뒤로 튄다), 도착하자마자 이야기 장면(컷신 잠금·동료 대사)이 돌면 액터 동료는 옆 빈 칸에 세운다 — 문 이벤트 자체도
+      // 이벤트라 inScene 으로는 가르지 않는다(그러면 문을 지날 때마다 앞에 섰다).
+      const actor = follower.kind !== "monster" && !follower.monsterInstanceId;
+      const spread = (config?.spreadWhenBlocked === true || (actor && world?.storyScene === true)) && world ? nearestSpreadCell(hero, world, clear) : null;
       if (spread) {
         taken.push(spread);
         return { follower, x: spread.x, y: spread.y, direction: world?.playerFacing ?? follower.graphic.direction };

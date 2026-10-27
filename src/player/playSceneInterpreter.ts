@@ -1,3 +1,4 @@
+import { playLiftRide } from "@/player/playSceneLiftRide";
 import { isTouchUiHost } from "@/player/touchTap";
 import { stepStopReason, stopsReading } from "@/project/dialogueSystem";
 import { applySpriteLookStep, playParticleEffect } from "@/player/playSceneFieldStaging";
@@ -31,6 +32,7 @@ import { playInn, playShop } from "@/player/playSceneCommerce";
 import { playOpenChest } from "@/player/playSceneChest";
 import { dialogueHost, dialogueUi } from "@/player/playSceneDom";
 import { showNameEntry } from "@/player/nameEntry/nameEntryOverlay";
+import { nameEntryShowcaseHero } from "@/player/nameEntry/nameEntryShowcase";
 import { applyTimerStep } from "@/player/playSceneTimers";
 import { startPlayerRoute } from "@/player/playSceneMovement";
 import { PLAYER_MOVE_TARGET } from "@/project/moveRouteTarget";
@@ -517,6 +519,7 @@ async function consumeBlockingStep(
         maxLength: step.maxLength,
         showInitialName: step.showInitialName,
         ...(step.prompt ? { prompt: step.prompt } : {}),
+        ...(step.presentation === "showcase" ? { showcase: { hero: nameEntryShowcaseHero(store.getCurrent(), scene.session, step.actorId) } } : {}),
       });
       const result = interpreter.resume(name);
       // 액터 이름 변경을 메뉴/전투 표시에 즉시 반영.
@@ -695,6 +698,11 @@ async function consumeBlockingStep(
     case "spriteLook":
       applySpriteLookStep(scene, step, currentEventId);
       return resumeAfterSurface(scene, interpreter);
+    case "liftRide": {
+      const done = playLiftRide(scene, step);
+      if (step.wait) await done;
+      return resumeAfterSurface(scene, interpreter);
+    }
     case "scrollMap":
       await scene.panScreen(step);
       return resumeAfterSurface(scene, interpreter);
@@ -773,7 +781,7 @@ async function consumeBlockingStep(
     case "returnToTitle":
       reportEndingClear(scene, step.clear);
       if (step.title !== undefined || step.message !== undefined || step.presentation) {
-        scene.showEndingScreen(step.title ?? "", step.message ?? "", step.presentation, step.clear?.endingId);
+        scene.showEndingScreen(step.title ?? "", step.message ?? "", step.presentation, step.clear?.endingId, step.continueTo);
       } else {
         scene.returnToTitle();
       }

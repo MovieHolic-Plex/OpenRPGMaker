@@ -1,5 +1,19 @@
 > 저장소 전환 안내(2026-09-21): 아래 옛 원격 DB·설정·명령은 과거 기록이다. 현재 저장·이관 지침은 [프로젝트 저장 전환](storage-retirement.md)과 AGENTS를 따른다.
 
+## 파티원 유대 `configure_party_bonds` · 「관계」에 유대 (2026-10-25)
+
+- **한 콜:** `members [{actorId, talk, choiceText?, variableId?}]` → 동료마다 유대 변수(기본 `var_bond_<배우>`, 0~`max` 기본 5).
+  공용 이벤트 `ce_party_bond_talk` = intro → 「누구와 이야기할까?」 선택지(동료당 하나) → 고른 동료가 파티에 있으면 대화 줄 + 상한 아래면 +1 → `ce_party_bond_check` 호출.
+  없으면 「지금 곁에 없다」.
+- **문턱 해금:** `unlocks [{actorId, atLeast(기본 3), comboTechId | learn | switchId, message?}]` → `ce_party_bond_check` 에 「유대 ≥ N 이고 해금 스위치 꺼짐」 fork 하나씩.
+  `comboTechId` 는 그 연계기 `comboRequires` 중 **이 동료 줄의 기술을 learnSkill** 해 연계기를 연다(연계기에 그 줄이 없으면 거절 — upsert_combo_tech 로 requires 부터).
+  시작할 때 이미 아는 기술이면 경고한다(해금이 아무것도 막지 않음). 스위치는 늘 켠다(생략하면 `sw_bond_<배우>_<N>`) — 대사 분기는 이 스위치나 변수 비교로.
+- **모닥불:** `campfires [{mapId,x,y}]` → 칸마다 투명 조사 이벤트(셀프 스위치 A 로 한 번, 뒤로는 불씨 한 줄). 그림은 따로 찍는다.
+- **다른 장면에서 올리기:** `setVariable += 1` 뒤 `callCommonEvent ce_party_bond_check`. 다시 부르면 두 공용 이벤트와 `system.partyBonds` 를 통째로 덮어쓴다.
+- **엔진:** `system.partyBonds {max?, members[{actorId, variableId}]}` (`src/project/partyBonds.ts`) — 화이트리스트(`databaseRecordModel.ts`)·형태 검사(`shapeDatabaseFields.ts`)에 넣어 저장 왕복에 남는다.
+  상태 메뉴 「관계」는 NPC 호감(friendship) 위에 유대 줄(「♥♥♥♡♡ 3/5」, 파티에 없으면 표시)을 먼저 보이고, 유대가 정의된 게임은 호감 기록이 없어도 「관계」 항목이 뜬다(`playerStatusMenuModel.ts`·`playerStatusMenuDetails.ts`).
+- 시험 과제: `harness-data/space-craft/seed.json` `fs2-party-bonds`.
+
 ## 「드러났다」를 지도에 보이기 `stage_map_reveal` · 장면 대형 `sceneFormation` · 보스 HP 숨김 (2026-10-25)
 
 사용자 지적(폴른 스타 1막): 「승강 장치가 드러났다」는 대사뿐이고 지도에는 아무것도 나타나지 않았다. 일반 도구로 푼다.
@@ -184,6 +198,7 @@
 - **find_tools 순위**(`src/editor/tools/discoveryTools.ts`): 낱말 희귀도(IDF) 가중 + 이름 조각 일치 + 첫 문장 우대 + **용어 별칭 사전**(`toolAliases.ts` — 「마석·에스퍼→upsert_equipment/upsert_skill」「시간문→create_time_gate」「필드 적→place_field_enemy」「월드맵→edit_world_terrain」 …).
   결과마다 `data.matches[].why` 와 요약의 `이름 [이유]` 로 왜 골랐는지 보인다. 아무것도 안 맞으면 글자 쌍 겹침이 가장 큰 3개(`data.nearest`)를 준다. `matchScore` 는 자연어 승격(`capabilityEscalation`)이 계속 쓴다.
   **별칭을 추가할 땐 도구 이름이 실제 레지스트리에 있어야 한다**(없으면 조용히 무시). 낱말이 너무 흔하면(「적」「배」「벽」) 다른 말에 끼어드니 두 글자 이상 구로 쓴다.
+  짧은 낱말이 긴 질의에 끼면(「파티」가 「파티 분할」에) 두 별칭의 보너스가 같아지므로, 그 질의의 정본 도구만 긴 구 별칭에 둔다. 2026-10-25: 맵을 나눠 걷는 파티 분할은 `author_party_split`(전투 팀 교대 `set_party` 와 별개), 설원 고갯길은 `author_snow_route`(「설원」만으로는 마을 구성기 `compose_snow_north_map`), 이야기 일지는 `configure_story_journal`, 제한 시간 탈출은 `make_timed_escape`.
 - **재생 코퍼스**: `scripts/qa/fixtures/find-tools-corpus.json`(감사 역할극 3판의 find_tools 질의 107건 + 이후 실제 호출 도구) → `bun scripts/qa/find-tools-replay.mts [--verbose]`.
   적중(hit@5) = 이후 실제로 호출된 도구가 상위 5개 안. 실측: 자연어 질의 62건 hit@5 **48.4% → 79.0%**, 정밀도@5 0.155 → 0.26.
 - **인자 교정·거절 공통 헬퍼**: `argRepair.ts`(최상위 인자: `table→collection`·`actors→actorIds`·snake/kebab/대소문자 → 옮기고 「'X' 는 'Y' 입니다」 경고, 못 옮기면 가장 가까운 이름·허용 목록·예시 호출 JSON 을 붙여 거절), `dbRecordAliases.ts`(레코드 안쪽: `enemy.maxHp→stats.maxHp`·`exp/gold→rewards`·`role→도구 최상위 role`·`actor.class→classId`, 자유 서술 칸 `description` 은 「저장 안 했다」 경고). `toolRunner.runToolDefinition` 이 둘을 부르고, `upsert_actor`·`upsert_enemy` 가 레코드 교정을 쓴다. 새 별칭은 이 두 표에 한 줄씩.
@@ -3151,13 +3166,11 @@ Pi의 `generate_title_art`·`generate_opening_image`는 UI 핸드오프를 실�
 - **의도 메모는 몬스터 판정에서 뺀다(jrpg-loop-1)**: `composePiTask` 가 사용자 글과 의도 메모 사이에 `INTENT_NOTE_BOUNDARY`(monsterGameRequest.ts)를 끼우고, `hasMonsterCollectIntent`·`classifyMonsterGameRequest`·`requestsEmeraldMonsterGame` 은 경계 앞(사용자 글)만 본다. 메모(모험 지침·던전 노트의 「몬스터 키트」「포켓몬풍」「트레이너」)를 신호로 읽어 「FF6 같은 게임…동료들을 다시 모으는 이야기」가 포켓몬형 캠페인(build_monster_game 완료 검사)으로 납치되던 결함 수정.
 - `derive_map_variant {sourceMapId, variants:[{id,name?,era?,tilesetId?,tileRemap?,tileOverrides?,removeEvents?}], timeGates?:drop|keep, relinkDoors?, gates?:[create_time_gate 인자], resync?}` (`src/editor/tools/mapVariantTools.ts`): 같은 지리의 시대 변형(중세·현대·미래)을 한 번에 파생한다. 복제는 `cloneMapIntoProject`(`src/project/mapClone.ts`)를 거치며 **이벤트 id 를 새로 매기고 명령 트리·조건·빛 앵커·M2 이벤트 참조의 맵 안 이벤트 참조를 함께 고친다**(예전 `duplicate_map` 은 깨진 참조를 남겼다). `resync` 는 이미 만든 변형의 영역을 원본 지리로 다시 맞춘다. 모르는 키(`tile_overrides` 등)는 거절하고 올바른 이름을 알려 준다.
   - **시대 강도(jrpg-loop-1 D8·D16)**: `mapVariantLook.ts` LOOKS — ruin 철거 75%·어둠 0.5, past 철거 60%·소품 2~4개·옅은 안개 0.25, future 철거 55%·소품 2~3개. 시대 변형이 색조뿐이라 같은 마을로 읽히던 문제를 새 그림 없이 철거·소품 킷 밀도로 완화한다(칩셋이 다른 건물 그림을 못 주는 한계는 그대로). 폐허 조각은 물 칸 위에 놓지 않는다(`isWaterCell`) — 해안 건물 자리에 놓으면 받침 없는 물체로 커밋이 거절돼 `derive_map_variant` 가 통째로 실패했다(ff1 원본 맵에 변형 id 7개를 시험하면 옛 코드는 5개 거절, 새 코드는 0개).
-  - **철거 뒤 덧그림(jrpg-loop-1)**: 건물 철거는 1·3층만 `before` 로 되돌려 덧그림(2·4층)에 올라간 지붕 조각이 허공에 남았다. `clearDemolishedOverlays`(`mapVariantLook.ts`)가 철거 영역(4층은 오른쪽 한 칸 더)의 2·4층을 지운다.
-||||||| parent of 895e395c52 (fix(ai): demolition also clears the building shadow strips (BEODEUL_NATURE.shadows cells))
-  - **철거 뒤 덧그림(jrpg-loop-1)**: 건물 철거는 1·3층만 `before` 로 되돌려 덧그림(2·4층)에 올라간 지붕 조각이 허공에 남았다. `clearDemolishedOverlays`(`mapVariantLook.ts`)가 철거 영역(4층은 오른쪽 한 칸 더)의 2·4층을 지운다.
   - **철거 뒤 덧그림(jrpg-loop-1)**: 건물 철거는 1·3층만 `before` 로 되돌려 덧그림(2·4층)에 올라간 지붕 조각이 허공에 남았다. `clearDemolishedOverlays`(`mapVariantLook.ts`)가 철거 영역(4층은 오른쪽 한 칸 더)의 2·4층과, 마을 시공기가 얹은 건물 그림자 띠(`BEODEUL_NATURE.shadows[kitId]` 칸)를 지운다 — 그림자 띠는 원해상도 렌더에서 철거 자리에 남은 어두운 세로·가로 줄의 정체였다.
   - **땅·숲 시대 팔레트(jrpg-loop-4 R5.1)**: 철거·소품만으로는 맵 90%가 같은 초록 풀(737)·나무·포석 광장이라 「시대가 달라진 마을이 다 똑같다」로 반려됐다. `applyVariantTerrain`(`src/editor/tools/mapVariantTerrain.ts`)이 맵 전체를 바꾼다 — ruin·future 는 `wasteland`(풀 → 광재 땅·자갈·흙 얼룩, 길·광장 → 깨진 돌 부스러기, 나무 → 고사목·광재 더미·바위·뼈 더미), past 는 `primeval`(길·광장 → 흙길, 원시림 추가, 고사리·버섯·들꽃·돌). 버들항 칩셋 킷만 쓰고(그 외 칩셋은 손대지 않음), 새 나무는 둘레 한 칸이 모두 통행 가능할 때만 심어 연결을 끊지 않는다. LOOKS 는 ruin·past 철거 100%, past 는 철거 자리마다 통나무 오두막·헛간(`maxLandmarks`), ruin 조명 `#3a2016`·0.52 + 안개 0.35(0.9 는 `fogOpacity` 0.555 로 화면을 덮어 주인공이 안 보였다). `scripts/qa-game/render.mts` 는 `defaultLighting` 색조를 게임 오버레이 식(최대 0.55)으로 섞어 정적 그림에도 시대 색이 보인다.
   - **황무지 숲 덩어리(jrpg-loop-4 R6)**: 나무를 고사목 한두 개로만 바꾸면 덩어리가 통째로 빈 땅이 되어 가도의 숲 벽이 사라졌다. 남은 칸은 네 방향 모두 막힌 바위·광재·그루터기(`WASTELAND_WALLS`)로 메우되, 덩어리 속(네 이웃이 모두 숲) 칸의 4할은 잿빛 맨땅 웅덩이로 비워 바위 융단이 되지 않게 한다. 테두리가 그대로 막히므로 통행은 나무 때와 같다.
   - **시대 조명 새기(jrpg-loop-4 R6)**: 조명(`defaultLighting`) 없는 맵은 들어오기 전 맵의 조명을 이어 받는다(`applyMapDefaultLighting`). 폐허에서 시작하는 ff2 는 붕괴 전 왕도·여관·가도까지 폐허 조명(`#3a2016`·0.52)으로 덮여 두 시대가 같은 잿빛으로 보였고, ct1·ff1·ct2 도 폐허·고대를 다녀오면 원래 마을이 어두워졌다. `derive_map_variant` 는 변형 하나라도 시대 조명을 받으면 원본·변형과 그 문이 가는 맵 중 조명 없는 맵에 `{ambient:0}` 을 박는다(`pinNeutralLighting`, 결과 `data.pinnedLighting`). 나중에 붙인 맵은 qa-game 경고 `map-lighting-leak`(`mapGraph.ts` `checkLightingLeak`)이 잡는다 — 조명 없는 맵에 밝은 길과 어두운(ambient ≥ 0.3) 길이 함께 들어오면 `set_lighting_volume({mapId, ambient:0})` 을 안내한다. 어두운 맵에서만 들어오는 방은 늘 같은 조명이라 잡지 않는다. `jrpgCompletion` 의 붕괴 후 판정은 ambient 0 조명을 겉모습 변화로 세지 않는다.
+  - **불탄 마을 look:"burned"·keepIntact(2026-10-25, 폴른 스타 2막 B5)**: ruin 은 신전 폐허 조각·잿빛 광재로 맵 전체를 덮어 「불탄 민가」가 아니라 「고대 유적」이 됐고 길도 사라졌다. burned(`mapVariantLook.ts` `BURNED_SITE`·`dressBurnedSite`)는 건물을 모두 철거하되 **발자국을 집터로 남긴다** — 안은 어두운 광재(+재 얼룩), 테두리는 주춧돌 자국(광산 rock 바닥), 앞면 두 귀퉁이(깊은 집은 뒤 한 귀퉁이 더)에 숯 기둥 그루터기, 가운데 내려앉은 서까래(난파선 늑골), 숯더미·탄 판자·탄 들보 1~2개, 불씨·자갈 1~3개. 집보다 작은 구조물도 배치 기록(structurePlacements)이 있으면 철거한다 — 기록 없이 타일로만 찍힌 노점 등은 남는다(알려진 한계). 땅은 `applyVariantTerrain(…, "scorched", seed, mask)` 로 **집터 둘레만**(1칸은 늘, 2칸 45%·3칸 15% 얼룩) 그을린 흙·재 바닥과 고사목·그루터기·쓰러진 통나무로 바꾸고 길·광장은 건드리지 않는다(`path` 빈 목록). 덤불 같은 16칸 이하 나무 덩이는 막는 조각으로 메우지 않는다(집 사이에 통나무 줄이 늘어섰다). 안개 없이 조명 0.4 `#2e2219`. era·name·id 의 「불탄·화재·잿더미·burn…」 낱말이면 자동으로 고른다(ruin 보다 먼저). `keepIntact`(변형 인자, 모든 look)는 north·south·east·west·center 또는 `"x,y"`(그 칸을 덮거나 가장 가까운 건물)로 한 채를 철거에서 빼고 결과 `look.keptIntact` 에 적는다 — 그 집 문 이벤트는 남는다. 스키마는 유니온 금지라 string 하나다. 새 그림은 없다(버들항 칩셋 기존 조각만). 계약 `test/mapVariantLook.test.ts`, 조수 과제 `harness-data/space-craft/seed.json` `fs2-burned`.
 - `expand_jrpg_campaign_volume {hubMapId, prefix?, interiors?:[inn|shop|elder], route?, routeName?, dungeon?, dungeonName?, dungeonType?, look?:ruin|past|future, troops?:{field?,midBoss?,boss?}, shopItemIds?, seed?}` (`src/editor/tools/jrpgVolumeTools.ts`, jrpg-loop-4 R6 「게임 볼륨을 넓혀라」): 마을 하나에 한 고장 분량(맵 2~5장)을 덧붙인다. 새 규칙 없이 하위 도구를 순서대로 부른다 — ① 집 키트 문(parts entrance) ↔ `build_hand_interior_room` 실내(inn=숙박 `inn`, shop=`shop` 명령, elder=대화) + 실내마다 상자, ② 마을 가장자리 ↔ `author_wild_route` 40×30 가도(순찰·추격 보이는 적 3, 풀숲 조우, 길가 상자 2, `look` 이면 `applyVariantLook` 으로 시대 땅·숲·조명), ③ 가도 끝 ↔ `author_dungeon`(look 별 cave/temple/catacomb/castle, 계획된 자리의 보이는 적·상자, 보스 직전 방 중간 보스, 보스방 수호자 `canEscape:false`). 이벤트는 지워도 닿는 칸 수가 하나만 주는 칸(`pickSpot`)에만 놓아 길을 끊지 않는다. 씨앗은 생략하면 마을 id·이름에서 뽑고, 실내 화풍(styleVariant A~D)·배치 후보도 씨앗에서 고른다 — 고정값이면 네 게임의 여관·장로 집이 칸 하나까지 같았다. 잡몹은 DB 적 그룹 중 약한 3분의 1이되 맵들이 이미 쓰는 무작위 조우 그룹보다 약한 무리는 뺀다(Lv1 파티에 피해를 못 주는 `jrpg-encounters-harmless`). 도망 불가 적은 숨 고르기(셀프 스위치 B) 페이지를 만들지 않는다(`fieldEnemyTools.ts`).
 - `author_wild_route` 덧인자(2026-10-20, 폴른 스타): `end:{x,y}` = 맵 안 막다른 끝(마지막 경유점으로 붙고 출구가 하나여도 된다), `clearings:[{x,y,w,h}]` = 나무를 심지 않고 풀밭으로 두는 공터(`wildRouteBeodeul` 의 reserved). 장 구성기(`jrpgChapterTools.ts`, 이제 `buildJrpgChapter` 로 내보낸다)의 씬 장소는 `gateSide`(마을 어느 가장자리에 출구), `entry`(도착 칸), `route`(이 인자들로 그 필드를 다시 짓는다)를 받는다.
 - **타이틀·오프닝 배경 참고 스틸 금지(jrpg-loop-4 R5.1)**: `suitableForOpening:false` 스틸(분할 화면 `oprn-still-hero-dawn`·`quiet-room`, UI 막대 박힌 `rally`, 창 테두리 박힌 `dream`)은 목록 라벨뿐이라 r5-ff2 타이틀이 4분할 콜라주를 깔았다. `unsuitableOpeningStillMessage`(`src/assets/openingStillMoods.ts`)로 `set_title_screen`(배경·`backgroundLayers`), 애니메틱 샷 배경(`openingAnimaticTools.ts` `check`), 오프닝 장면 정규화(`cinematicTools.ts` `normalizeScene`)가 거절하고 깨끗한 스틸 id 를 대안으로 돌려준다.
@@ -3503,6 +3516,8 @@ r8~r11 실편집기 녹화에서 조수는 도구를 찾지 않고 paint_tiles �
 - **배지 게이팅·비전서 상자·「쓸까?」 (2026-10-16, poke-sys-field PR1)**: `requiresBadge`(1..16, 캠페인 `badges[N-1].switchId`, 없으면 `mx_badge_N`)·`requiresSwitchId` 를 주면 공통 이벤트의 열림 분기를 그 스위치 `fork` 로 감싼다 — **조사로 쓰든 메뉴로 쓰든** 배지가 없으면 「아직 ○○이(가) 없어 …말을 듣지 않는다」 안내만 나오고 열리지 않는다(기술은 아는 파티 전용 페이지 `기술은 알지만 조건 부족`). 조사 `know` 페이지는 안내 대사 뒤 `choices`(「○○!」/「그만둔다」)로 쓸까를 묻고 「예」는 메뉴 사용과 같은 열림 스위치를 켠다. `giverX`·`giverY`(+`giverMapId`) 를 주면 같은 호출이 `place_chest` 로 비전서 상자 `<id>_giver` 를 놓아 습득 경로까지 잇는다(안 주면 예전처럼 경고). 배지 스위치는 `mx_badge_N`(캠페인 `badges[].switchId`) — 체육관 승리 분기가 켠다. 증명: `scripts/qa/runtime/monster-hm.mjs`(픽스처 `monster-hm-fixture.mts`) — 스타터 → 상자 → 가방에서 가르치기 → 바위(배지 게이트: 모름/배지 없음 조사·메뉴 거절 → 배지 후 메뉴 사용) → 덩굴(조사 「쓸까?」 그만둔다/쓴다) → 길 열림 → 저장 → 새로고침·불러오기 → 열린 길 유지.
 - `run_scene_test` 설명에 HM 체인 선행 조건(새 세션의 몬스터 파티는 비어 있음 → 스타터 이벤트를 먼저 지나기, 가방에 TM 넣기, useItem 대상 규칙, choose 는 대기 선택지가 있을 때만)을 적었다. `define_monster_families` 는 계통·단계별 `ability`(`define_monster_species` 와 같은 검증)·`machineSkillIds` 를 받고 응답 summary 와 `data.speciesIds`/`data.created[].species` 에 만든 id 를 돌려준다.
 
+- **`kind:'gap'` 틈 건너뛰기·장대 도약 (2026-10-25, Fallen Star 2막 과제 3)**: 일반 RPG 필드 능력. `(x,y)` = 폭 1~2칸 막힌 틈(얼음 틈·구렁) 바로 앞의 걸을 수 있는 가장자리 칸, `direction`·`length(1..2)` 생략=자동 탐지(틈 너머 착지 칸이 걸을 수 있어야 함, 아니면 `gap-not-found`). 지형을 바꾸지 않고 다리도 놓지 않는다 — 양쪽 가장자리 칸에 발밑(`priority below`·조사) 투명 이벤트 `id`·`id_far` 를 두고, 능력 페이지(`actor present` = `requiresActorId` 배우가 파티에 있음, 그리고/또는 `partyKnowsSkill` = `requiresSkillId`; 둘 다 생략=`skill_field_vault` 「장대 도약」 생성)가 「뛰어넘을까?」 → `moveEvent @player` 이동 경로 `turn → jump(dx,dy = 방향×(폭+1)) → turn` 으로 건너편에 내려선다. 능력이 없으면 안내 대사. 돌아올 때도 건너편 이벤트로 같은 연출. `requiresSwitchId` 게이트·`machine:'hm'|'tm'`(gap 기본 `none`)·`giverX/Y` 도 받는다. 걸어서도 양쪽이 이어지면 `data.bypass:true` + 경고(지름길이지 게이트가 아님). `requiresActorId` 는 gap 전용(다른 kind 는 거절).
+- **몬스터 잠금과의 관계**: `place_field_obstacle` 은 `MONSTER_ONLY_TOOLS` 에서 빠지고 `ARG_RULES` 로 옮겼다 — 몬스터 수집이 아닌 프로젝트(조수 실행)에서 `kind:'gap'` 만 통과하고 나머지 kind(HM 게이트)는 이전처럼 「몬스터 수집 잠금」으로 거부된다. 능력 색인 레시피 `field-ability-gap`(monster- 접두가 아니라 일반 프로젝트 프롬프트에도 실린다), 별칭 「장대 도약·틈 건너뛰기·얼음 틈」. 시험 과제 `harness-data/space-craft/seed.json` `fs2-gap-vault`.
 
 ## 포켓몬풍 필드·진행 규칙 도구 (2026-10-15, poke-fix-p)
 
@@ -3596,7 +3611,7 @@ r8~r11 실편집기 녹화에서 조수는 도구를 찾지 않고 paint_tiles �
 ## `upsert_item.repelSteps` / `escapeTo` · `configure_monster_system.escapeGraceSteps` — 필드 도구 (2026-10-16, poke-sys ②)
 
 - 벌레퇴치 = `item {repelSteps: 1~9999, repelBelowLead?: boolean, occasion:"field", scope:"none", consumable:true}`. 탈출 로프 = `item {escapeTo:"entrance", occasion:"field", scope:"none"}`(던전·동굴 맵 mapRole `dungeon` 에서만, 마지막 입구로). 거절: `repelSteps` 가 1 미만·정수 아님 → `invalid-repel-steps`, `escapeTo` 가 "entrance" 아님 → `invalid-escape-to`. occasion 이 field/always 가 아니거나 scope 가 none 이 아니면 저장하되 경고. 둘을 한 아이템에 쓰면 벌레퇴치가 먼저 적용된다는 경고.
-- 도망 성공 뒤 무적 걸음은 `configure_monster_system {escapeGraceSteps: 0~99}`(생략 시 몬스터 파티 게임 4, 0 = 끔).
+- 도망 성공 뒤 무적 걸음은 `configure_monster_system {escapeGraceSteps: 0~99}`(생략 시 몬스터 파티 게임 4, 0 = 끔). 프로젝트 저장 정규화가 0을 포함해 남긴다.
 - 낚싯대는 새 도구가 아니다: `configure_fishing` 의 몬스터 어획(`catches[] {speciesId,…}`) + `upsert_tool_action {action:"fish", itemId}` 로 잇고, NPC `changeItem` 으로 낚싯대를 준다. 기본 `build_monster_game` 캠페인에는 이미 들어 있다. 능력 색인 `monster-field-items`, 별칭 「벌레퇴치·탈출 로프·도망 무적·낚싯대」. 자세한 런타임 동작은 `openwiki/monster-expedition.md` 「야생 조우 보호·필드 도구·낚시」.
 
 ## 이야기형 연애 기본값 `apply_romance_preset` (2026-10-25, 시타마치)
@@ -3609,6 +3624,19 @@ r8~r11 실편집기 녹화에서 조수는 도구를 찾지 않고 paint_tiles �
 - 조수: `set_project_settings({dialogue:{keepActorsVisible:true}})`. `apply_romance_preset` 도 값이 없을 때 켠다. false 도 저장한다(연애 기본값이 저작자가 끈 값을 다시 켜지 않게).
 - 시험: `test/dialogueCameraLift.test.ts`, 하네스 과제 `dialogue-keeps-speakers-visible`(scene-lessons-seed, 19528).
 헤드리스 러너(`sceneTestRunner`): 선택 → 장소 이동으로 끝나는 이벤트 뒤, 도착 맵 자동 실행이 선택지에서 기다리면 그 안쪽 해석기를 그대로 들고 간다(예전에는 «Nested interaction still waiting» 실패로 자동 플레이가 첫 장면에서 멈췄다).
+
+### 장르 기본값 걷어 내기 — HUD·오프닝 그림·결말 그림 (2026-10-25, 시타마치 2차)
+
+사용자가 시타마치를 보고 「오프닝이 에디터 기본 같다·기본 HUD·엔딩 약함·차도 위 NPC」를 짚었다. 조수가 직접 고칠 수 있게 한 것:
+- **HUD 저작** `set_project_settings({fieldHud:{theme?, menuStyle?, widgets:[…]}})` — 위젯 칸은 모두 열거된 이름 있는 속성(자유 키 없음). `widgets` 를 주면 통째로 바꾸고 테마 기본 위젯(체력·시계·도구)은 끈다. `widgets:[]` = HUD 끔. `source:"variable"` 은 없는 변수면 거절. 연애 기본값은 `widgets` 가 정해져 있으면 손대지 않는다. 시타마치: 「소원 등롱 n / 3」 하나(`condition:"nonzero"`, 왼쪽 위 종이 판).
+- **붓 그림 오프닝** `place_opening_background({…, resourceId, sampling:"linear"})` — 기본 nearest 는 도트·맵용이고, 1672×941 일러스트를 480×270 무대에 줄이면 계단처럼 깨진다. `mapId` 배경은 항상 nearest. 시타마치 오프닝 = 이 이야기용으로 생성한 다섯 장(공용 전신 초상으로 만든 참조 시트로 인물 일치, 감독 선택, 출처 `public/assets/generated/title/shitamachi-keyart-provenance.json`) + `animate_opening_camera` 천천히 밀기 + 자막.
+- **결말 순서**: 맵 위 마지막 대사 → `fadeOut` → `showPicture`(결말 그림, 480 무대에 29%) → `triggerEnding` → `define_ending.epilogue` 첫 비트 `{kind:"picture",action:"show"}` 위로 «그 뒤» 와 다른 인물 각자의 매듭 → 엔딩 카드. 첫사랑(`firstLove.ts endingOpen`)과 같은 모양.
+- **장면 그림(CG)**: 고백 순간·옛 사진처럼 이야기 중간의 한 장면은 `showPicture`(opacity 0) → 같은 그림 opacity 255 `durationMs` 로 서서히 띄우고, 그동안의 대사는 흉상 없이 이름표만(`changeFace` 비움) — 그림 속 인물 위에 같은 사람 흉상이 겹친다. 끝나면 opacity 0 → `erasePicture`. 시타마치 `cgIn`·`overCg`·`cgOut`.
+- **결말 카드 흉상 끄기** `define_ending.presentation.portraits:"none"` — 결말 그림에 이미 두 사람이 그려져 있으면 카드 위 커플 흉상을 그리지 않는다(`playSceneOverlays.buildEndingCg`). 기본 `auto`.
+- **듣는 사람 흉상은 불투명**(`dialogue.css`·`dialogueStyles.css`) — 반투명(0.9·0.96)이면 뒤 배경이 비쳐 «유령»으로 읽혔다(VQA r1). 누가 말하는지는 밝기·크기로 가린다.
+- **타이틀**: `set_title_screen({logoStyle:"gold", menuStyle:"plain"})` — 기본 창 메뉴·glow 글자는 차가운 파란 기본 스킨으로 읽혔다. 메뉴 글자 크기 `menuFontPx` 는 아직 도구 인자가 아니다(데이터 필드만 있음).
+- 하네스 과제(scene-lessons-seed): `story-hud-replaces-genre-default`(19537) · `painted-opening-from-story-stills`(19538) · `ending-scene-then-final-image`(19539) · `npcs-stand-on-sidewalks`(19540) · `confession-cg-over-dialogue`(19541) · `lanterns-visibly-light`(19542).
+- 조수가 스스로 못 한 것: 그림 생성 — 대표 데모 빌드는 헤드리스라 `generate_opening_image` 가 `image-generation-unavailable` 로 멈춘다. 감독이 같은 생성기(kaykai)를 직접 돌려 후보를 고르고 resolver 에 등록했다. 편집기 안 조수는 `generate_opening_image({referenceResourceIds:[인물 전신 초상…]})` 로 같은 일을 할 수 있다. NPC 를 «보도» 에 놓는 것 — `place_npc`·`add_street_walkers` 는 차도/보도를 가리지 않아, 칸 이름표(tileMeta label)를 읽어 자리를 감독이 골랐다. (2026-10-26 갱신: `add_street_walkers` 는 이제 보도·횡단보도로만 길을 찾고 차도 들를 곳을 거절한다 — `openwiki/modern-city.md`.)
 
 ## 연애 3차 수리 — 칩·ESC 메뉴·뼈대·완료 문 (2026-10-16, romance-fix-3)
 
@@ -3694,14 +3722,61 @@ r8~r11 실편집기 녹화에서 조수는 도구를 찾지 않고 paint_tiles �
   - 대안 `nearest` 가 빈 needs-art 종류는 맵을 만들지 않는다. 답 첫 문장에 빠진 그림을 말하고, 같은 시대의 지을 수 있는 종류 2~3개만 알린다.
     해당 종류는 로마 도시와 폐허 셋(포스트아포칼립스·좀비 도시·황무지)이다.
     실측: 대안이 다른 종류 맵의 복사본(공장 도시 판박이)이거나 흩뿌린 소품 마을로 읽혔다.
-  - 버들항 쓰임 덩이 종류(신전 폐허·광산촌·포도원)는 needs-art(`beodeul-quarter-yard`)다. 조각이 마당 바닥·길 없이 덤불 사이에 흩어진다.
-    `dress_village_quarter` 의 그 덩이들은 도구에 남아 있지만 표의 recipe 는 부르지 않는다. 장터 마을도 walled-market 덩이 없이 광장 마을만 짓는다.
+  - ~~버들항 쓰임 덩이 종류는 needs-art~~ → **2026-10-23 ready (village-art).** 마당 바닥 오토타일 셋을 그렸다.
+    - 그림: 버들항 시트 줄 259, 칸 33152~33222(2026-10-24 던전 꼬리 뒤로 옮김; 포도나무 줄 33223~, 판석→흙 33239~).
+    - 오토타일: `beodeul_yard_cobble`(자갈) · `beodeul_yard_dirt`(다진 흙) · `beodeul_yard_flag`(판석).
+    - 견본 킷: `bd-yard-*-sample`. `mergeShippedFarm`·`mergeShippedKits` 가 붙인다.
+    - `dress_village_quarter` 가 마당을 개간해 깔고, 덩이를 그 안에 앉힌다.
+    - recipe: 셋 다 `author_beodeul_town({quarter:"<종류>", ...})` 로 시작한다.
+      - `quarter` 를 주면 빌더(`beodeulVillage.ts` 의 `yard` 옵션)가 집·밭을 놓기 전에 마당 자리(마당 가로+3 × 세로+3, 안 되면 3×2·6×3 줄여 재시도)를 단이 같은 빈 땅에 먼저 비워 둔다. 길에 붙은 자리를 우선한다.
+      - 신전 폐허: `terrain flat, form scatter`
+      - 광산촌: `terrain terraces, form scatter`, 60×48. woods 는 기본(가장자리)이다. dense 는 마당 자리를 없앴다.
+      - 포도원: `terrain terraces, form scatter`
+    - 마당 규칙(검수 r1~r4):
+      - 개간 칸·위 1줄·아래 2줄·좌우 1열이 모두 같은 단이어야 한다.
+      - 숲 덩이(`FOREST` = 90칸)보다 큰 덩이에는 마당이 들어가지 않는다. 테두리가 큰 덩이에 걸리면 그 칸은 베지 않고 건너뛴다. 90칸 이하 덩이는 통째로 걷는다. 줄기가 남지 않게 아래 겹 있는 칸 옆이 큰 숲이면 그 칸도 뺀다.
+      - 마당 네 귀는 원래 바닥으로 둥글린다. 샛길은 2칸 폭이다. 마당이 이미 길에 닿으면 마당 가운데에 가까운 길 2칸을 마당 바닥으로 칠해 입구로 쓴다.
+      - 귀 채우기가 아닌 마당(신전 폐허, 광산)은 맵마다 크기를 −2~+1 / −1~0 흔든다. 덩이 중심도 마당 안 아무 자리로 잡고, 조각 순서를 섞고, 되풀이 조각을 몇 개 뺀다. 두 맵이 한 도장으로 읽혔기 때문이다.
+      - 포도원은 26×15 마당 북서·북동 귀부터 채운다(`packSlot`). 올리브는 마당 밖 반경 20에 둔다. 찍은 뒤 `varyVineRows` 가 포도 칸을 자리마다 같은 갈래(위 줄·속·아래 줄·좌우 끝) 안에서 바꾼다 — 같은 밭 넷이 도장으로 읽혔다(r4).
+      - r5~r7 에서 더한 것 (검수 과반 major 대응):
+        - **바뀌는 정면·덤:** 덩이마다 `faces`(정면 조각 대안, 40% 확률로 바꿈)와 `extras`(맵마다 2~4개 골라 더함)를 둔다. 크기 정렬에 0.4~1.6 무작위 곱을 섞고, 귀 채우기가 아닌 마당은 조각 1~3개를 더 뺀다. 두 seed 가 같은 배치로 읽혔다.
+        - **마당 가장자리 깎기(`roughenYard`):** 변마다 폭 2~3, 깊이 1 홈을 낸다(신전 폐허는 1~3개·폭 4까지). 샛길이 닿는 칸은 깎지 않는다. 마당 속 구멍은 연석 두른 화단으로 읽혀 뺐다.
+        - **무너진 판석 섬(`layFlagIsland`, 신전 폐허, r11):** 신전 폐허 마당은 다진 흙(`beodeul_yard_dirt`)이고, 그 안에 판석 섬을 `beodeul_yard_flag_dirt` 로 깐다. 이 그룹은 버들항 판석→흙 가장자리 129칸(29,655~, `flag_dirt_art.py` r7, 연석 없이 판 단위로 깨져 흙으로 무너짐, 몸통은 판석 몸통 칸)이다. 섬은 풀에서 두 칸 이상 안쪽 칸이고, 바깥 두세 줄은 값 잡음 덩이로 들쭉날쭉 깎은 뒤 외톨이 칸·한 칸 구멍을 메운다. 가장자리 칸 벌은 `fdTile` 이 `flag_dirt_art.phase_role`(fmix32 탐욕 수열)을 그대로 옮겨 고른다(파이썬과 4,368 경우 일치 확인). 흙 그룹의 connect 에 섬 칸이 들어 있어 흙 가장자리가 섬 쪽에 잔디 테를 그리지 않는다. 옛 판석 마당은 연석 테가 「갓 깐 광장」, 흙으로 바꾼 칸이 「네모 구멍」으로 읽혀(r8~r10) 이렇게 바꿨다. 그룹이 없는 옛 사본은 흙 마당만 깐다.
+        - **풀 덮기(`overgrowYard`, 신전 폐허):** `crumbleFlag` 뒤에 돈다. 버들항 decal 칸(26956·26666·27542·27511~27513·27598)을 위 층에 깐다. 가장자리는 상자가 아니라 남은 판석의 실제 윤곽으로 잰다. 확률은 가장자리 0.7, 한 칸 안 0.3, 더 안 0.08이다. 덩이 씨앗 4~6개 둘레는 0.35를 더한다. 조각 자리와 그 앞 줄은 건너뛴다.
+        - **갱도 둔덕(`planMound`·`wrapAdit`, 광산):** 갱구 뒤와 양 어깨를 높이 지형 2단 풀 언덕으로 감싼다.
+          - 자리 찾기: 마당 안 빈 자리(최대 60곳, 섞어서)마다 둔덕을 4→3→2줄로 계획해 본다. 둔덕이 서는 자리를 먼저 시도한다. r9 에서 갱구가 마당 윗변에 붙어 둔덕을 못 올리고 평지에 홀로 섰다.
+          - 모양: 뒤 줄은 갱구 x−2 ~ x+폭+1 에서 시작해 뒤로 갈수록 좌우를 −1~+1칸 흔든다. 첫 줄은 폭+2칸 이상이어야 한다. 어깨는 갱구 윗부분 두 줄 높이에서 좌우 1~2칸이다.
+          - 칸 조건: 마당 또는 빈 바닥이고, 조각 상자 밖이고, 갱구 바닥과 같은 단.
+          - 통행: 둔덕+갱구 상자를 막힌 칸으로 친 BFS 로 원래 통행 칸이 하나도 끊기지 않을 때만 쓴다.
+          - 윗면: 맵에서 가장 흔한 바닥(풀)을 갱구 윗줄보다 뒤 칸에만 깐다. 어깨 칸까지 풀로 덮으면 렌더러가 매끈하게 내린 칸이 연한 풀 네모로 보였다(r9).
+          - 발치 한쪽에만 작은 버력 하나를 둔다(광석·중간 바위·버력 돌 중). 양옆 같은 자리 바위 둘은 대칭 도장으로 읽혔다.
+          - 둔덕을 못 올리면(relief 없음·자리 없음) 갱구에 맞붙인 서로 다른 큰 더미·작은 더미 둘로 대신한다. 더미는 GAP 여백 대신 실제 조각 상자로만 겹침을 본다.
+          - 더미는 id 마다 맵에 한 번이다(`UNIQUE_SPOIL`). 둘레 흙 칸 돌 부스러기 덧칠(`screeAround`)은 30%이고 둔덕 칸은 건너뛴다.
+          - 왜: 갱구가 평지에 선 돌 상자로 읽혔다(r5~r8). 바위 땅 칸은 회색 콘크리트 판, 한 칸 띄운 더미는 따로 놓인 돌, 둔덕 흙 윗면은 오각형 받침대로 읽혀 바꿨다.
+        - **포도나무 줄(`fillVineRows`, 포도원, r10~r11):** 8×4 이랑 키트 대신 조각을 다 놓은 뒤 남은 마당을 두 칸 높이 포도나무 줄로 채운다. 위 칸은 잎 지붕 윗면(33,223~33,102, 걸음, 위층), 아래 칸은 앞면(+8, 막힘, 위층)이다. 줄마다 아래로 한 칸씩 훑어 둘 수 있는 곳에 두고, 바로 위 칸에 다른 줄이 없어야 한다(고랑 길 한 칸). 빈 구간은 12칸이 넘으면 고르게 나눠 나란한 줄로 만든다. 가운데 칸은 같은 것을 잇달아 두지 않고 기둥 칸은 2~3칸마다다. 줄 하나가 통행을 끊으면 걷는다. 포도원 조각은 창고(맵 열에 넷은 농장 헛간 `faces`) + 덤 2~4개(압착기·시렁·술통·바구니·짐수레·자루·장작 헛간·빨랫줄·닭장)다. 옛 이랑 키트는 16px 되풀이·죽은 칸·「맨흙 마당에 떨군 모듈 격자」로 읽혔다.
+        - **광산 집·조각(r11):** 집은 제련 오두막·판자 광부집·돌 기초 창고·통나무 오두막 중 하나, 나머지 마당 조각은 맵마다 4~6개를 섞어 고른다. 갱구 둘레 자갈 덧칠은 갱구 발치 두세 무더기(맵당 여섯 칸까지)다. 두 seed 가 같은 오두막·둔덕 거울 도장이었고, 30% 로 흩은 같은 자갈이 열다섯 번 찍혔다. 덩이 난수는 fmix32 로 씨앗을 섞은 mulberry32 다(LCG 첫 값이 씨앗을 따라가 두 맵이 같은 것을 골랐다).
+        - **둔덕 다듬기(r10):** 한 줄만 삐져나온 둔덕 칸은 「흙 위에 뜬 풀 네모」로 그려져 위·아래 또는 좌·우 이웃이 없는 칸을 두 번 깎는다(갱구는 이웃으로 친다). 둔덕에 셋 이상 둘린 풀 홈은 마당 흙으로 메우고 `shapeYard` 로 다시 맞춘다. 둔덕은 갱구 킷의 빈 윗줄이 아니라 보이는 윗변(갱구 y+1)에 맞춘다. 뒤 칸 윗면에는 고사리·헤더 덤불·자갈 덧칠을 45% 흩는다.
+    - 장터 마을은 아직 walled-market 덩이 없이 광장 마을만 짓는다.
+  - ~~폐허 셋(포스트아포칼립스·좀비 도시·황무지)은 needs-art~~ → **2026-10-23 ready.** 새 칩셋 `wasteland_ruins` + `compose_wasteland_map` 을 쓴다. `openwiki/wasteland-ruins.md` 참고.
+  - 마당 꼬리 뒤 이식 칸 이동(증명 사본 28800→29696, 2560칸, `verify-shots/beodeul-yard-graft-relocation/proof.json`; 꼬리가 두 행으로 자란 뒤 29696→29824, `verify-shots/beodeul-yard-graft-relocation-2/proof.json`) 증명은 `scripts/qa/beodeul-graft-relocation-proof.mts` 에 있다. 기존 프로젝트 사본에서 맵 화소가 같은지를 본다.
   - 달 기지 작곡기(`sfStationComposer` composeMoonbase)를 다시 짰다. 지붕을 1줄에 붙인 건물 줄 → 큰길 → 세로 연결 둘 → 설비 길 순서다.
     설비 길 위·아래에 전력·연료·화물·통신 마당과 착륙장을 둔다. 크레이터·바위는 놓인 기물 둘레 1칸을 피한다.
     기본 크기는 38×22, 하한은 34×20 이다.
   - 바이킹은 partial이다. 롱십·용머리 회관 그림이 없다.
   - needs-art 대안은 seed를 1 이상으로 준다. 기본 seed 0이면 대안 맵이 그 종류를 직접 요청한 맵과 바이트까지 같았다.
-- **시험 시드:** `harness-data/assistant-capability/village-eras-seed.json`(18건, 조수 대용 Sonnet 5.5 high, 포트 19640~19657).
+- **시험 시드:** `harness-data/assistant-capability/village-eras-seed.json`(v2 23건, 조수 대용 Sonnet 5.5 high, 포트 19640~19662). era-ruins-village·era-mining·era-vineyard·era-ruined-city·era-wasteland·era-postapoc 가 village-art 로 새로 지을 수 있게 된 종류다.
+
+## `make_timed_escape` — 제한 시간 탈출(무너지는 바닥·카운트다운·체크포인트) (2026-10-25, 폴른 2막 과제 10)
+
+`src/editor/tools/timedEscapeTools.ts`. 일반 도구 — 갈라지는 호수 얼음·붕괴하는 탑·가라앉는 다리.
+
+- **시작:** `start` 칸 묶음을 밟거나(밟기 이벤트) `startSwitchId` 가 켜지면(진행 이벤트 자동 페이지) 엔진 `timer start seconds` → 진행 스위치 `sw_escape_<map>_<id>_active` 켬. 타이머가 흐르는 동안 런타임 타이머 HUD(`runtime-timer-hud`)가 남은 시간을 띄운다.
+- **붕괴:** `area`+`from`+`bands`(그쪽부터 띠로 나눠 시간에 고르게) 또는 `steps[{x,y,width,height,atSecond}]`. 묶음마다 대표 칸 이벤트의 병렬 페이지가 「진행 중 · 남은 시간 ≤ seconds−atSecond · 남은 시간 > 0 · 묶음 스위치 꺼짐」에서 먼지·`collapse1`·흔들림·`changeTile`(layer 기본 lower → `collapsedTile`, 기본 -1; 2층 장식도 비움) 후 묶음 스위치를 켠다. 모든 붕괴 칸 이벤트는 묶음 스위치가 켜지면 「주인공과 같은 층」 투명 페이지가 되어 길을 막는다(칩셋 통행값에 기대지 않는다).
+- **빠짐:** `fallOnCollapse`(기본 true) — 묶음을 가로 줄 토막 로케이션(`loc_escape_<id>_c<i>_<j>`, 태그 `timed-escape`)으로 올려 두고, 무너지는 순간 `insideLocation` 이면 빠짐 스위치를 켜고 타이머를 0 으로 둔다 → 실패 경로로.
+- **실패:** 진행 이벤트의 자동 페이지(진행 중 · 타이머 ≤ 0): 진행 끔 → 타이머 0 → `startSwitchId` 끔 → 대사(빠짐/시간 초과) → 묶음 스위치 끔 + 원래 칸 `changeTile` 복원 → `checkpoint` 로 transfer(검은 페이드). 다시 시작은 시작 칸을 다시 밟기.
+- **성공:** 출구 칸 밟기(진행 중일 때만): 진행 스위치를 **먼저** 끄고 타이머 0(반대로 하면 그 사이 시간 초과 페이지가 실패로 받는다) → `_done`·`successSwitchId` 켬. 무너진 칸은 그대로 남는다.
+- start·exit·같은 맵 checkpoint 칸은 무너지지 않는다. 붕괴 칸 최대 400. 같은 `escapeId` 로 다시 부르면 이전 이벤트·로케이션을 지우고 새로 짓는다.
+- 시험 과제: `harness-data/space-craft/seed.json` 의 `fs2-timed-escape`.
 
 ## 연계기·기술 정체성·결과 팡파레 — `list_combo_techs` · `upsert_combo_tech` · `battle.fanfare` (2026-10-24, fs-battle-2)
 
@@ -3711,6 +3786,7 @@ r8~r11 실편집기 녹화에서 조수는 도구를 찾지 않고 paint_tiles �
 - `upsert_skill` 스키마에 `comboMpCosts`·`exploitStates`(약점 공략: 대상이 그 상태면 +N%, consume 이면 지움) 추가. 없는 상태 id 는 `state-not-found`.
 - `set_project_settings {battle: {fanfare: {levelUp, skillLearned, comboUnlocked, style: burst|classic|minimal, sound}}}` — 결과 화면 팡파레.
 - 레시피 `combo-techs`(`toolCapabilityIndex`) 정책: 기술마다 「센 한 방」 말고 한 가지 쓰임(깔기→거두기·지키기·시간·지속 피해·정화)을 엔진 수단으로 주고 설명에 그 쓰임을 쓴다. 연계기는 해금 조건을 레벨 업 기술에 걸어 「새 연계기!」 카드가 뜨게 한다. 별칭: 연계기·합체기·듀얼 테크 → 이 도구들, 팡파레·레벨 업 연출 → set_project_settings.
+- (2026-10-25, fs2-combo4) **참가자 2~4명.** 상한은 `COMBO_MAX_ACTORS = 4`(`src/project/databaseRecordModel.ts`) 하나 — 정규화(`normalizeSkillRecord` 의 `comboActorIds` slice)·`upsert_skill` 검증(`invalid-combo-actors`)·자료집 「연계기」 동료 칸(빈 칸은 하나만 더 보임, 최대 넷)·스킬 고급 칸 「연계 배우 1~4」가 이 값을 본다. 전투 판정(`battleActorSkillFailure` 동료 전원 생존·준비·MP 몫)·`combinedStats`(참가자 전원 합)·「새 연계기!」 카드·명령 줄 이름은 원래 인원수와 무관했다. 표시만 넷을 따로 맞췄다 — 얼굴 교차 컷인 네 줄(`data-members="4"`, 31-battle-depth.css)·제목 위 「쿼드 테크」/띠 「4인 연계!」, 달려드는 동료 자리는 `comboRushSlot`(`battleComboPartners.ts`: 안쪽 위·아래 ±16px, 셋째 동료는 바깥 위 줄 −38px·반 걸음 뒤). 시험 과업 `fs2-combo4`(space-craft seed).
 - (2026-10-25, fs-battle-3) `set_project_settings {battle: {staging: {enemyLunge: fast|normal|classic, comboCutIn: faces|band|off, comboFx: spectacular|simple, skillHint: line|window}}}` — 전투 연출(모르는 값은 ToolError, 기본값은 저장 안 함). `upsert_enemy.lungeSpeedPercent`(25~300, 100 = 기본) — 그 적만 더 빠르게/느리게 달려든다. `upsert_skill.comboStaging` · `upsert_combo_tech.staging` `{tint:"#rrggbb", shake: none|light|heavy, slowMo, kicker}` — 연계기 하나의 색·착탄 흔들림·느린 화면·제목 위 작은 글. 런타임 의미는 [runtime-battle.md](runtime-battle.md) 「전투 연출 설정」.
 
 ## 폴른 스타 제작을 조수 도구로 (2026-10-25, 폴른 재현 트랙)
@@ -3718,6 +3794,7 @@ r8~r11 실편집기 녹화에서 조수는 도구를 찾지 않고 paint_tiles �
 폴른 스타를 만들며 손으로(플래그십 코드로) 하던 일을 자연어 요청으로 할 수 있게 연 도구들. v2 조수는 요청 낱말이 맞을 때만 싣는다(`src/ai/v2/game.ts` `FALLEN_TIERS`).
 
 - `author_forest_route{fromMapId, side, count 1~5, terrain:'forest'|'field', moods[], hiddenPerMap}` — `flagship/fallen/woodland.ts` 화가(B1 활엽 composer)로 구불구불한 숲길(또는 트인 들판) 맵을 여러 장 짓고 시작 맵 가장자리 ↔ 숲1 ↔ 숲2 … 를 잇는다. 마지막 맵은 막다른 빈터. 나무 사이 틈에 숨은 물건. 새 맵은 시작 맵 밑으로 옮긴다(범위 체크포인트 보존).
+- `author_snow_route{fromMapId, side, count 1~3, moods[clear|snow|blizzard|dusk], gapCount 0~6, gapWidth 1~2, ice, drifts, openEnd}` — `editor/tools/snowRouteTool.ts`. 설원 길(고갯길·서리 가도) 맵을 짓고 `author_forest_route` 와 같은 좌표·연결(export 한 `originEdge`·`link`)로 잇는다. 새 그림 없음: 바탕 = `bd-pick-snowfield-ground-snow` 칸 해시 섞기, 눈길 = 곡선 1칸 안만 `ground-road`(키트 윗줄·아랫줄은 눈 덮인 가장자리라 북·남 이웃이 눈길이 아닌 칸에만), 벽 = 수관 오토타일 `planBeodeulCanopy("snow")`, 빙판 = `beodeul_dungeon_ice` 오토타일(2×2 덩이 미만은 버림), 눈더미·바위·낱 소나무 = 설원 키트 stamp. 얼음 틈 자리는 칠하지 않고 `data.maps[i].gaps[{cells, from, to, width, axis, seals}]` 로만 돌려준다 — 진행 축으로 가장 곧은 곡선 표본에서 띠를 잡고 둘레 진행 −3..+w+2 줄의 길 아닌 칸을 숲으로 좁혀, 띠를 막으면 입구→출구가 끊기는지(`seals`)를 통행 BFS 로 잰다. 틈 위 건너뛰기 장치는 따로(과제 3). 미리보기 `scripts/content/snow-route-preview.mts`.
 - `place_search_containers{mapId, containers[]}` — `project/containerSearchPattern.ts` 패턴. 여는 연출·전리품 떠오르기·한 번만·「이미 뒤짐」, `ownerId` 면 `eventSeesPlayer` 시선 분기(벽·방 경계), 시끄러운 수납은 「?」 들음. `caughtTakesLoot`(기본 false)·`caughtVariableId`(들킨 횟수). 칸이 비었으면 칩셋의 1칸 물건을 찍어 보이게 한다. `eventSeesPlayer` 는 **분기(fork) 조건 전용** — 페이지 조건으로 쓰면 직렬화가 거부한다.
 - `replace_text_in_project{find, replace, scope?, mapIds?, dryRun?}` — 대사·화자·이벤트/맵 이름·퀘스트·공통 이벤트·DB 글의 일괄 바꾸기(폴른 `applyNorthForest` 일반화). id·그림·조건 제외, 뒤 조사(은/는·이/가·을/를·와/과·으로/로)를 받침에 맞춘다.
 - 스키마가 막던 엔진 필드 개방: `upsert_equipment` `damageDealtPercent`/`damageTakenPercent`, `upsert_skill` `weaponAffinity`, `upsert_enemy` `damageTypeRates`, `upsert_state` `runtimeEffects.maxTurns`/`damageTypeRates`.
@@ -3726,3 +3803,47 @@ r8~r11 실편집기 녹화에서 조수는 도구를 찾지 않고 paint_tiles �
 - v2 마무리 검사(`gameChecks.ts`): 같은 두 맵 사이 떨어진 문 둘 이상(짓기 도구 자동 연결 + 다시 잇기), 숲·들판 요청인데 새 맵 없이 마을 맵에 둔 필드 적.
 - (2026-10-25) `set_project_settings {battle: {revealWeakness: never|afterDiscovery|always}}`(= `battle.staging.revealWeakness`) — 적 약점·저항을 대상 고르기에서 보이는가. 기본 afterDiscovery: 처음 맞힌 타격의 「약점 발견!」 뒤로만. 도구 설명이 「기술 설명에 ○○ 약점처럼 적 이름을 쓰지 말 것」을 함께 말한다.
 - (2026-10-25 데모 기능 묶음) v2 `FALLEN_TIERS` 에 데모 기능 묶음을 더했다 — 연계기(`upsert_combo_tech`)·전투 연출/팡파레/휴대폰 조작(`set_project_settings`)·대사 책상(`list_dialogue`·`rewrite_dialogue`·`set_speaker_voice`·`read_story_script`…)·거리 행인(`add_street_walkers`)·현대 거리(`compose_modern_city_street`)·옥상 배경(`set_map_properties` background.fromMap). 묶음마다 한 줄 사용법(`fallenTierCard`)이 게임 카드 뒤에 붙는다. 마무리 관문의 «아무것도 안 바뀜» 비교에 `system`·`dialogueDesk` 를 넣었고(설정·윤문 제안만 바꾼 요청이 거짓 「안 바뀜」으로 되돌아가지 않게), 기본값이 이미 켜진 설정 요청은 그 검사를 건너뛴다. 연계기 요청인데 연계 기록이 없으면 게임 검사가 돌려보낸다. 자연 기물은 `list_spatial_designs` query 「버들항 자연」(bd-org-*).
+
+## 충전 끊기 — `upsert_skill chargeBreak` (2026-10-25, fs2 과제 9)
+
+- 힘 모으기 기술(`chargeTurns` 1~3)에 `chargeBreak {damage?, elementIds?, stateIds?, message?, stagger?}` 를 단다. 모으는 동안
+  받은 HP 피해 누계가 `damage` 이상이거나, `elementIds` 속성 기술에 맞거나, `stateIds` 상태가 걸리면(「또는」) 모으던 기술이 취소된다.
+  `chargeTurns` 없이 주면 `invalid-charge-break`, 없는 상태·속성은 `state-not-found`·`element-not-found`.
+- 런타임(`battle/runtime.ts` `noteChargeBreak`): `recordTimeline` 이 기록마다 장부 `pendingCharges` 의 `damageTaken` 을 올리고 판정한다.
+  끊김 줄(`kind:"special", charge, chargeBroken, chargeSkillId, chargeBreakLine`)은 타격 묶음을 깨지 않게 다음 명령 시작·스냅숏 때 제 actionId 로 나온다.
+  적은 기본으로 다음 자기 차례 하나를 「휘청거린다」로 쉰다(`stagger:false` 로 끔, 아군은 휘청거리지 않음). 속성은 맞힌 기술의 `elementId` 만 본다(통상 공격 무기 속성은 안 봄).
+- 표시: 모으는 중엔 기존 머리 위 「기술 · 남은 차례」 표식, 끊기면 표식이 사라지고 대상 위 「끊김!」 글자 + 「X가 모으던 Y가 끊겼다!」 + `message` 한 줄(`battleSequencer`).
+- `simulate_battle` 결과 `data.chargeBreaks {started, broken, bySkill}`, 요약에 「힘 모으기 N회 중 끊김 M회」. 시험 시드 `fs2-chargebreak`.
+
+## `author_party_split` — FF6 식 파티 나누기·전환·레버 짝·합류 + 풀이 검사 (2026-10-25, 폴른 2막 과제 4)
+
+- 파일 `src/editor/tools/partySplitTools.ts`. 인자 `{mapId, splitAt, groups:[{actorIds,x,y[,mapId,name,switchAt]}×2], levers:[{lever,door[,name]}], rejoin, id?, splitText?, rejoinText?}`. 알 수 없는 칸은 거절한다.
+- 짓는 것(이벤트 id 머리 = `id`, 기본 `split`): `splitAt` 밟기 → 두 묶음 미리 저장(`storeParty` + `actorIds/mapId/x/y`) 뒤 첫 묶음 `recallParty`; 묶음마다 「전환」 구슬(조사 → 다른 묶음으로); 레버(object2#0) → 짝 철문(object1#3, 닫힘=막음·열림=below); 합류 칸 — 먼저 온 묶음은 기다리고 조작이 넘어가며, 둘 다 오면 `changeParty add`+`lead` 로 「첫 묶음 → 둘째 묶음」 순서로 합친다. 스위치 `<id>_split/_ctrl_b/_arrived_a/_arrived_b/_done/_lever_n`, 파티 묶음 `<id>_a/_b`.
+- **풀이 검사가 쓰기 전 관문이다.** 두 묶음의 출발 칸에서 칸 단위로 걷고(타일 `canMove`, 이동 이벤트는 건너편으로, 늘 막는 이벤트·닫힌 문·레버·구슬은 못 지남), 닿는 레버를 당겨 문을 여는 것을 고정점까지 되풀이한다. 두 묶음이 모두 합류 칸에 닿지 못하면 `party-split-unsolvable` 로 거절한다. 경고: 문이 다 닫혀도 풀림(문이 길목이 아님), 문 하나가 아무것도 안 막음, 모든 레버를 자기 문 앞 묶음이 스스로 당김(짝이 아님), 두 길이 안 갈라짐, 전환 구슬 곁에 설 수 없음.
+- 엔진 변경은 하나: `storeParty` 에 선택 칸 `actorIds·mapId·x·y`(`partySets.ts storePartySet(session, id, preset)`). 미리 만들기는 지금 파티·`activePartySetId` 를 건드리지 않는다 — 건드리면 다음 `recallParty` 가 지금 파티로 그 묶음을 덮는다.
+- 못 하는 것: ESC 메뉴 단추로 묶음 바꾸기(메뉴에 공통 이벤트를 다는 길이 없어 조사 구슬만), 기다리는 묶음을 맵에 그려 두기, 지형 칠하기(길·벽은 먼저 있어야 한다). 하네스 사례 `fs2-party-split`.
+
+## 이야기 일지 — `configure_story_journal` · m2 «Journal Line»(일지에 한 줄 쓰기) (2026-10-25, 폴른 2막 과제 7)
+
+- **설정**은 `meta.oprnStoryJournal {version:1, title, writers:[{id,name}]}`(`src/project/storyJournal.ts`, 검증은 `shapeResourceFields`). **줄**은 세이브에 들어가는 `session.storyJournal`(`saveSlots` 직렬화·복원·파싱).
+- 명령 `m2-227-journal-line` 필드: `action write|erase|reread`, `lineId`, `writer`, `date`, `text`, `learnActorId`, `learnSkillId`, `resultSwitchId`. 즉시 끝나는 기록 명령이다(해석 `player/interpreter/journalCommands.ts`, StepResult 없음).
+  write 는 같은 lineId 를 고쳐 쓰고(보통 상태로) 없으면 덧붙인다. erase 는 「지워진 줄」(메뉴에서 흐리게, 본문은 점으로 가린다), reread 는 지워진 줄만 「다시 읽은 줄」로 되살리고 묶인 배우가 기술을 배운다.
+- ESC 메뉴 항목 id `journal`(「기록」 묶음). 기본 메뉴는 설정이 있거나 줄이 하나라도 적혔을 때만 보인다. 저작된 메뉴(`oprnFieldMenu`)에는 도구가 저장 앞에 항목을 넣는다(12칸이 차 있으면 알리기만).
+- 도구 `configure_story_journal {title, writers, lines:[{mapId,eventId|commonEventId, pageId?, afterText?, action, lineId, writer, date, text, learnActorId, learnSkillId, say?, resultSwitchId?}], remove?}` — 일지 설정과 이벤트 안 명령을 한 번에 넣는다. say 는 명령 앞 대사 한 줄(다시 읽어 주는 말).
+- 시험 과제: `harness-data/space-craft/seed.json` `fs2-journal`.
+
+
+
+## 전투 중 손님 `add_battle_guest` · 보이는 적 진영 싸움 (2026-10-25, 폴른 스타 2막 과제 8·11)
+
+- **`add_battle_guest`**(`troopBattlePageTools.ts`) `{troopId, actorId, atEnemyHpPercent?, enemyId?, atRound?, conditions?, requireSwitchId?, requireSwitchName?, tactic?, message?, remove?}` —
+  트룹에 `battleGuests[]`(`TroopBattleGuest`: actorId·conditions·tactic·message) 한 줄을 넣는다. 조건은 트룹 페이지 조건과 같은 어휘(모두 참, 한 번).
+  런타임: `battle/battleEvents.ts` 가 손님을 페이지 목록 뒤의 한 번짜리 가상 페이지 `battle-guest:<배우>` 로 돌려 같은 정지·재개 흐름을 타고,
+  `battle/runtime.ts joinBattleGuest` 가 배틀러를 이 전투의 `actors`·전열에만 넣는다(세션 상처·상태는 물려받지 않음). 띠는 text 정지 「OO이(가) 합류했다!」.
+  손님은 배우 DB 의 autoBattle 과 상관없이 `guestTactics` 작전으로 자동으로 싸운다. **파티 명단(partyActorIds)에 넣지 않으므로** 전투가 끝나면 빠지고
+  경험치·전리품 몫이 없으며, 스냅샷 `guestActorIds` 로 `playSceneBattle` 이 HP·상태 되돌려 쓰기에서 뺀다. 몬스터 파티·gen1·팀 교대 전투는 합류하지 않는다(로그 unsupported).
+  전투 페이지에 changeParty 를 넣는 옛 방식은 전투 뒤 파티에 남으므로 손님이 아니다.
+- `simulate_battle` 에 `switchesOn`(켜 둔 채 시작할 스위치)을 더했다 — 시뮬은 스위치가 전부 꺼진 채 돌아 선택 결과에 걸린 페이지·손님을 못 쟀다. 손님은 `phaseCoverage` 에 `battle-guest:<배우>` 로 실린다.
+- **보이는 적 진영 싸움(과제 11 확인 결과):** `set_factions` 는 액션 전투 구역 스폰(`FieldSpawnDef.factionId`)에만 먹었고 `place_field_enemy` 의 심볼 적(맵 이벤트)에는 진영이 없었다.
+  이제 `GameEvent.fieldFactionId` 를 달 수 있다 — `place_field_enemy{factionId}`(생략 = 선두 적 레코드의 factionId 가 정의된 진영이면 그것). 정의 안 된 진영은 `unknown-faction` 으로 거절.
+  런타임 `player/playSceneFieldEnemyClash.ts`(판정 `project/fieldEnemyClash.ts`): 적대(태도 -1 이하) 진영의 보이는 적이 맨해튼 2칸 안에 들면 둘 다 분노 말풍선 → 적 그룹 전력(HP+능력치×4 합)이 약한 쪽이 붉게 깜빡이다 지워진다(eraseEvent 와 같은 뜻, 맵 재진입 시 복귀). 대화·전투 중엔 멈춘다. 플레이어는 두 진영 모두에게 여전히 덮쳐진다. 진영을 안 단 옛 맵은 그대로다.

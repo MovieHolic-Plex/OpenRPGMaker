@@ -6,7 +6,7 @@ import { actorBattlers } from "@/battle/battleBattlers";
 import { chooseAutoBattleCommand } from "@/battle/battleAuto";
 import { computeGen1BaseDamage, usesGen1Damage } from "@/battle/battleDamage";
 import { headlessBattleSnapshot, createBattleRuntime } from "@/battle/runtime";
-import type { ActorCommand, BattleCapturedMonsterSnapshot, BattleEventLogSnapshot, BattleFlow, BattleRewardsSnapshot, BattleRoundLogSnapshot, BattleRuntimeOptions, BattleSnapshot } from "@/battle/types";
+import type { ActorCommand, BattleCapturedMonsterSnapshot, BattleEventLogSnapshot, BattleFlow, BattleRewardsSnapshot, BattleRoundLogSnapshot, BattleRuntimeOptions, BattleSnapshot, BattleTimelineEntrySnapshot } from "@/battle/types";
 import type { Project, SkillId, ItemId } from "@/project/types";
 import type { MonsterInstance } from "@/project/session";
 import { mulberry32, type Rng } from "@/util/rng";
@@ -49,6 +49,8 @@ export interface SimulateBattleInput {
   // 세션 셀프 스위치 시드(eventId → key → on)와 직전 전투 결과 시드.
   readonly selfSwitches?: Readonly<Record<string, Readonly<Partial<Record<string, boolean>>>>>;
   readonly battleResult?: "victory" | "defeat" | "escape";
+  /** 켜 둔 채 시작할 스위치 id(선택 결과에 걸린 페이지·손님 시험). 생략 = 모두 꺼짐. */
+  readonly switchesOn?: readonly string[];
 }
 
 /**
@@ -86,6 +88,24 @@ export interface SimulateBattleResult {
   readonly firstRewards?: BattleRewardsSnapshot;
   /** 트룹의 전투 이벤트 페이지 전부(발동 0회 포함). 페이지가 없으면 빈 배열. */
   readonly phaseCoverage: readonly BattlePhaseCoverage[];
+  /** 힘 모으기(chargeTurns) 시작·충전 끊기(chargeBreak) 횟수(n판 합계, 적·아군 모두). 모으는 기술이 없으면 0. */
+  readonly chargeBreaks: ChargeBreakTally;
+}
+
+export interface ChargeBreakTally {
+  readonly started: number;
+  readonly broken: number;
+  /** 기술 id 별 { started, broken }. */
+  readonly bySkill: Readonly<Record<string, { readonly started: number; readonly broken: number }>>;
+}
+
+function tallyChargeBreaks(timeline: readonly BattleTimelineEntrySnapshot[], into: Record<string, { started: number; broken: number }>): void {
+  for (const entry of timeline) {
+    if (!entry.chargeSkillId || (!entry.chargeStart && !entry.chargeBroken)) continue;
+    const row = (into[entry.chargeSkillId] ??= { started: 0, broken: 0 });
+    if (entry.chargeStart) row.started += 1;
+    if (entry.chargeBroken) row.broken += 1;
+  }
 }
 
 interface SingleRunResult {
@@ -99,6 +119,7 @@ interface SingleRunResult {
   readonly capturedMonsters: readonly BattleCapturedMonsterSnapshot[];
   readonly rewards: BattleRewardsSnapshot;
   readonly skillUses: Readonly<Record<string, number>>;
+  readonly timeline: readonly BattleTimelineEntrySnapshot[];
 }
 
 // 회복 아이템을 가진 저HP 액터가 아이템을 쓰도록 하는 간단 AI로 한 판을 구동한다.
@@ -132,7 +153,7 @@ function runSingleBattle(input: SimulateBattleInput, rng: Rng): SingleRunResult 
       : { levels, experience: {}, partyActorIds: [...partyActorIds] },
     partyMonsters: monsterMode ? input.monsterParty : undefined,
     ownerEventId: input.ownerEventId,
-    sessionState: { switches: {}, variables: {}, inventory, selfSwitches: input.selfSwitches, battleResult: input.battleResult },
+    sessionState: { switches: Object.fromEntries((input.switchesOn ?? []).map((id) => [id, true])), variables: {}, inventory, selfSwitches: input.selfSwitches, battleResult: input.battleResult },
     captureLocation: { mapId: input.project.startMapId, x: input.project.startPos.x, y: input.project.startPos.y },
     onMonsterCaptured: (capture) => {
       capturedMonsters.push(capture);
@@ -199,6 +220,7 @@ function runSingleBattle(input: SimulateBattleInput, rng: Rng): SingleRunResult 
       capturedMonsters,
       rewards: final.rewards,
       skillUses,
+      timeline: final.timeline,
     };
   } finally {
     if (savedSystem) {
@@ -260,6 +282,7 @@ export function simulateBattle(input: SimulateBattleInput): SimulateBattleResult
   let capturedMonsters: readonly BattleCapturedMonsterSnapshot[] = [];
   let capturedCount = 0;
   const skillUses: Record<string, number> = {};
+  const chargeBySkill: Record<string, { started: number; broken: number }> = {};
   let firstRewards: BattleRewardsSnapshot | undefined;
   // 페이즈 발동은 판마다 다르다(HP 임계 조건은 그 판의 진행에 달렸다) — n판 전부를 합산한다.
   const firedRuns = new Map<string, number>();
@@ -273,6 +296,7 @@ export function simulateBattle(input: SimulateBattleInput): SimulateBattleResult
     totalHp += run.hpRemaining;
     capturedCount += run.capturedMonsters.length;
     for (const [skillId, count] of Object.entries(run.skillUses)) skillUses[skillId] = (skillUses[skillId] ?? 0) + count;
+    tallyChargeBreaks(run.timeline, chargeBySkill);
     const firedThisRun = new Set<string>();
     for (const log of run.eventLogs) {
       if (log.kind === "fired") {
@@ -296,7 +320,12 @@ export function simulateBattle(input: SimulateBattleInput): SimulateBattleResult
   }
   const troopRecord = input.project.database.troops.find((troop) => troop.id === input.troopId);
   // 저작된 페이지 전부를 나열한다 — 발동 0회를 결과에서 지우면 "안 뜬 연출" 을 볼 방법이 없다.
-  const phaseCoverage: BattlePhaseCoverage[] = (troopRecord?.battleEventPages ?? []).map((page) => {
+  // 트룹 손님(battleGuests)은 battleEvents 가 「battle-guest:<배우>」 가상 페이지로 돌린다 — 같은 표에 싣는다.
+  const guestPages = (troopRecord?.battleGuests ?? []).map((guest) => ({
+    id: `battle-guest:${guest.actorId}`,
+    name: `손님 합류: ${input.project.database.actors.find((actor) => actor.id === guest.actorId)?.name ?? guest.actorId}`,
+  }));
+  const phaseCoverage: BattlePhaseCoverage[] = [...(troopRecord?.battleEventPages ?? []), ...guestPages].map((page) => {
     const round = firstFiredRound.get(page.id);
     return {
       pageId: page.id,
@@ -321,6 +350,11 @@ export function simulateBattle(input: SimulateBattleInput): SimulateBattleResult
     capturedCount,
     skillUses,
     firstRewards,
+    chargeBreaks: {
+      started: Object.values(chargeBySkill).reduce((sum, row) => sum + row.started, 0),
+      broken: Object.values(chargeBySkill).reduce((sum, row) => sum + row.broken, 0),
+      bySkill: chargeBySkill,
+    },
   };
 }
 

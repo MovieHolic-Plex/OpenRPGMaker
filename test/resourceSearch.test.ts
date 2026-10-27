@@ -46,7 +46,7 @@ describe("searchResources", () => {
 
   it("finds sky-flavored backdrops for '하늘'", () => {
     const results = searchResources("backdrop", "하늘");
-    expect(results.map((r) => r.id)).toContain("backdrop:easyrpg-backdrop-sky1");
+    expect(results.map((r) => r.id)).toContain("backdrop:oprn-pano-sky-day");
   });
 
   it("finds fire-flavored sound effects for '불'", () => {

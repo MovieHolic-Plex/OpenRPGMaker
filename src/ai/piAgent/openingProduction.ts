@@ -2,10 +2,24 @@ import type { Project } from '../../project/types';
 import { resolveAssetResourceUrl } from '../../assets/generatedAssetResourceResolver';
 import { animaticResourceIds, animaticCaptionText, sampleAnimaticTrack } from '../../project/openingAnimatic';
 import { measureOpeningAnimatic } from '../../project/openingAnimaticMeasure';
+import { openingMapViewMapId } from '../../project/openingMapView';
 
-/** Image transport only, never a saveable proposal. Avoid resending every draft PNG per preview. */
+/**
+ * Image transport only, never a saveable proposal. Avoid resending every draft PNG per preview.
+ * 「게임 속 맵 그대로」 배경(map-view:<mapId>)은 그 맵과 칩셋이 있어야 그려진다 — 둘만 남긴다. 예전에는 맵을 다 비워서
+ * 조수의 preview_opening_animatic 과 화면 검수가 이 배경을 매번 「애니메틱 맵 배경 없음」으로 못 찍었다(2026-10-26 hf2-school-claude-j80 2턴).
+ */
 export function openingImageProject(project: Project, resourceIds: readonly string[]): Project {
-  return structuredClone({ ...project, maps: {}, tilesets: {}, database: {} as Project['database'], assets: { ...project.assets, sprites: {},
+  const maps: Project['maps'] = {}, tilesets: Project['tilesets'] = {};
+  for (const id of resourceIds) {
+    const mapId = openingMapViewMapId(id), map = mapId ? project.maps[mapId] : undefined;
+    if (!mapId || !map) continue;
+    maps[mapId] = map;
+    const tileset = project.tilesets[map.tilesetId];
+    // 참고문서(MD·그림)는 그리기에 안 쓰인다 — 전송 사본을 무겁게 하지 않게 뺀다.
+    if (tileset) { const { referenceDocuments: _docs, ...drawable } = tileset; tilesets[map.tilesetId] = drawable; }
+  }
+  return structuredClone({ ...project, maps, tilesets, database: {} as Project['database'], assets: { ...project.assets, sprites: {},
     uploaded: Object.fromEntries(resourceIds.flatMap(id => project.assets.uploaded[id] ? [[id, project.assets.uploaded[id]]] : [])),
   } });
 }
@@ -278,7 +292,7 @@ export const OPENING_PRODUCTION_PROMPT = `[오프닝 제작]
 계획·진행·최종 보고는 사용자가 요청한 언어로 작성한다. 한국어 요청이면 한국어로 보고한다. 이미지 모델용 프롬프트는 영어여도 된다.
 기존 오프닝·시작 세션·등장인물 리소스를 먼저 읽고 plan_opening으로 샷의 사건, 구도, 연속성, 플레이 진입을 설계한다. 장르와 사용자 의도가 우선이며 샷 수나 시간을 획일화하지 않는다.
 사용자가 「새로하기 오프닝」(게임을 새로 시작할 때 나오는 도입)을 요청했고 그림책·정지 패널을 명시로 원한 것이 아니면, 정지 그림 컷을 나열하지 말고 get_opening_direction 의 pixel-animatic-opening 레시피대로 **격자 무대 애니메틱 샷**으로 저작한다: create_opening_animatic_shot(width:384,height:216) → set_opening_pixel_grid(384,216) → 배경/전경 독립 레이어 + place_opening_charset_actor(번들 24×32 캐릭터 칩) + set_opening_region_loop/upsert_opening_light_fx/animate_opening_camera 로 한 샷에 최소 3개가 동시에 살아 있게 한다. 참조 도입부(KNIGHT OF LUMERIA 조사본)가 이 형태다. 정지 그림 + 카메라 줌만인 오프닝은 이 요청의 답이 아니다.
-각 애니메틱 샷의 role:background는 반드시 그 샷을 위해 generate_opening_image(role:"backdrop")로 새로 만든 환경 그림 하나를 사용한다. 다른 샷의 배경 ID를 재사용하지 말고, oprn-still/battle-scenery/title_art 같은 번들 스틸을 배경으로 대체하지 않는다. 이미지 생성이 quota/오류로 실패하면 즉시 멈추고 실패 사유를 보고한다 — 실패한 생성 결과를 번들 스틸, 빈 배경, 이름만 있는 resourceId로 조용히 바꾸지 않는다. 성당·수정 동굴처럼 한 beat에 구도 변화가 필요한 곳은 wide→close-up→reaction/crowd를 별도 샷과 별도 배경으로 만든다.
+각 애니메틱 샷의 role:background는 반드시 그 샷을 위해 generate_opening_image(role:"backdrop")로 새로 만든 환경 그림 하나를 사용한다. 다른 샷의 배경 ID를 재사용하지 말고, oprn-still/battle-scenery/title_art 같은 번들 스틸을 배경으로 대체하지 않는다. 이미지 생성이 실패하면 실패 결과의 안내를 따른다: 로그인·연결이 없으면 같은 생성을 되풀이하지 말고, 안 쓴 전용 그림 → 그림 설명(list_resources kind:backdrop 의 description)이 가장 가까운 라이브러리 그림 → 그림 없는 장면 순서로 두고 오프닝을 끝까지 짓는다. 실패를 성공으로 보고하거나 이름만 있는 resourceId 를 쓰지 않고, 보고에 «새 그림 생성 불가 — 가장 가까운 그림 사용»을 적는다. 성당·수정 동굴처럼 한 beat에 구도 변화가 필요한 곳은 wide→close-up→reaction/crowd를 별도 샷과 별도 배경으로 만든다.
 애니메틱 샷을 이미 create_opening_animatic_shot으로 만들었다면 set_opening으로 다시 빈 composition을 보내지 않는다. set_opening은 각 장면의 composition:{shotId:"기존샷ID"} 별칭으로 현재 애니메틱을 저장하고, 이전 그림책/0ms 장면을 제거해 계획한 샷 수만 남긴다. 기존 샷을 replace해야 하면 clearLayers:true 없이는 교체하지 않는다.
 get_opening.generatedStills에는 앞선 제작에서 만든 그림과 미연결 여부가 있다. 이미 생성한 그림을 활용하라는 요청이면 이 ID들을 실제로 보고 계획에 연결한다. list_opening_media는 프로젝트 그림을 공용 샘플보다 먼저 반환한다. 그림을 다시 만들기 전에 제작 중인 소재가 있는지 확인한다.
 사용자가 언더테일 같은 서사 도입이나 그림책을 요청하면 get_opening_direction을 읽고 세계→균열→위기→플레이 진입을 원문과 단색 패널로 설계한다. 정지 패널과 짧은 내레이션도 의도적인 연출이다. make_opening_storybook의 기본 progression=confirm으로 Enter까지 문장을 유지한다. 같은 그림은 여러 문장 페이지에 재사용하고 페이지마다 페이드/자동 넘김을 넣지 않는다. 자동 연출은 사용자가 요청한 경우에만 progression=auto와 읽기 시간을 명시한다. 그 요청에 캐릭터 소개 몽타주를 강요하지 않는다. 새 음악을 원하면 get_music_composer/compose_music로 기억할 원문 모티프와 구간별 악보를 만들고 실제 WAV를 연결한다. 모델은 소리를 듣지 않으므로 청취 검증을 주장하지 않는다.
@@ -303,7 +317,7 @@ inspect_opening_timeline은 구조만 검사한다. preview_opening_animatic으�
 영상·소리·이미지 가공이 필요하면 run_ffmpeg(inputs=리소스 id, args의 {in0}/{out})로 컷 이어붙이기·페이드·색 보정·소리 믹스·PNG→mp4를 직접 수행해 새 리소스로 등록한다. 외부 파일·네트워크는 쓸 수 없다.
 타이틀 키아트의 prompt에는 주인공이나 작품의 상징 사물을 시선의 중심에 명시한다(빈 풍경 금지). 배경 키아트를 set_title_screen의 titleGraphic(로고 그림 전용)에 넣지 않는다 — 로고 그림이 없으면 mode:text.
 픽셀 애니메틱의 타이틀은 anti-aliased system font로 끝내지 않는다. generate_title_art 또는 전용 pixel logo resource를 만들고, 실제 픽셀 문자/문장 엠블럼을 title shot의 image/strip 레이어로 배치한다. 생성 실패 시 텍스트 로고를 성공으로 보고하지 않는다.
-타이틀/배경 이미지 생성이 quota로 실패하면 실패를 사용자에게 보고하되, 이미 업로드된 미사용 opening_still 전용 그림을 먼저 list_opening_media에서 골라 쓰고, 그래도 없으면 author_pixel_art로 픽셀 로고/엠블럼을 저작해 모션·캡션·전환 작업을 계속한다. 번들 배경을 대체재로 쓰지 않는다.
+타이틀/배경 이미지 생성이 실패하면 실패를 사용자에게 보고하되, 이미 업로드된 미사용 opening_still 전용 그림을 먼저 list_opening_media에서 골라 쓰고, 없으면 그림 설명이 이 장면과 가장 가까운 라이브러리 그림(list_resources kind:backdrop 의 description 을 읽고)을, 그것도 맞지 않으면 author_pixel_art 픽셀 로고/엠블럼을 두고 모션·캡션·전환 작업을 계속한다. 이름만 보고 시대·장소가 다른 그림(현대 도시 노을 등)을 깔지 않는다.
 새 게임 시네마틱 오프닝(그림 컷 + 자막, 인게임 컷신 아님)은 get_opening_direction의 illustrated-chapter 문법을 따른다: 레터박스 14~18, 막대 안 한 줄 자막(layout:bar, typewriter), 한 장면을 가까워지는 그림 2~4장으로 나누고 dither 전환으로 잇고, 커지는 위협·변화는 투명 전경 레이어(opacity 키)와 effects로 컷 안에서 자라게 한다. 컷 하나가 정지 그림 한 장 + 줌뿐이면 미완성이다. 생성 그림은 실행기가 자동으로 한 도트 격자·팔레트로 내리므로 화풍 형용사 대신 피사체·빛·구도를 쓴다.
 새 게임 픽셀 애니메틱 오프닝(정수 픽셀 무대의 샷 목록)은 get_opening_direction의 pixel-animatic-opening 문법과 get_animatic_capabilities의 pixelOpening 계약을 따른다: 모든 샷을 width:384, height:216으로 만들고 set_opening_pixel_grid(384,216)을 부르면 샷 안의 모든 숫자가 이미 격자 픽셀이다(샷 길이 6000~9500ms). 레터박스 0.15(216의 32px, 참조 도입부 실측 32/216)에 막대 안 한 줄 자막을 set_opening_caption으로 넣고, 오프닝 전체에서 기본 자막 색 하나(#fff0dc)로 통일하며 마지막 절벽 결의 대사 한두 큐만 강조색(#ff6878)을 쓴다(전체 자막 색 전환 2회 이하, 샷마다 다른 색 금지!). 중요 규칙: ① 배우나 군중을 올릴 배경은 generate_opening_image 프롬프트에 "16-bit SNES JRPG pixel art, crisp pixel clusters, unified 32-color dark fantasy palette, empty environment only, no people or characters in background"와 cast:"nobody"를 지정해 배경 속 그려진 인물과 캐릭터 칩이 겹치지 않게 한다. ② 절대 384×216 전체 배경에 scroll-x/scroll-y를 걸지 않는다(건물·지평선이 화면 중앙에서 잘린다) — scroll-x는 상단 하늘 띠(x:0, y:28, width:384, height:44)에만 걸고 마을 분수대·수호 수정·창문은 작은 직사각형(width:28..48, height:24..40) palette-cycle을 쓰며, 전체 화면 하강/패닝은 반드시 모든 샷에 animate_opening_camera(예: y:96->114 하강 또는 zoom:1.04->1.14)로 넣는다. ③ 인물·기사·주민·주인공을 author_pixel_art로 찍지 않는다(막대인간 절대 금지!) — 인물은 반드시 번들 24×32 캐릭터 칩(현대·연애·학원·오피스는 oprn-charset-modern1~3, 중세·판타지 JRPG는 oprn-charset-heroes1, easyrpg-charset-actor1~4, easyrpg-charset-people1~5)을 place_opening_charset_actor로 놓는다(scale:1 = 24×32, 보폭 걷기 자동 연결). 성당 맹세 샷에는 기사 5~7명을 2열 대열로 배치하고 대장이 제단으로 걸어가게 하며, 새벽 마을 샷에는 분수대 광장 둘레에 주민 5~6명을 배치하고 1~2명이 걷게 하며, 수정이 마젠타 눈에 죽어가는 샷에는 황금 수정 동굴 배경 위에 독립 전경 레이어(role:foreground 또는 author_pixel_art 소품)로 마젠타 눈/덩굴을 얹어 opacity/scale 키로 서서히 깨어나게 연출한다. ④ 말풍선(upsert_opening_emote)은 width:12, height:14 소형으로 마을 광장(주민 2~3명)과 절벽(주인공 exclaim 1개) 1~2개 샷에만 절제해 쓰고 성당 맹세나 수정 동굴에는 절대 쓰지 않는다. ⑤ 샷마다 최소 3개 이상의 독립 움직임(카메라 키 + region 루프 + shaft/glow pulse + particles + 캐릭터 칩 보행)을 겹친다. ⑥ 샷 사이는 set_opening_transition으로 dither(600ms)를 최소 2~3개 샷에, 충격/검 뽑기/타이틀 등장에는 flash(240ms)를, 나머지에는 fade를 섞는다. ⑦ 마지막 타이틀 로고 샷에서 검/문장 엠블럼 소품은 상단(y:16..44)에 두어 중앙 제목/부제 글자(y:82..135)와 겹치지 않게 하고, 시작 맵은 그대로 유지하며 마지막 로고 샷 뒤에 여분 맵 전환 샷은 만들지 않는다.
 오프닝 형식은 하나가 아니다. 요청에 맞춰 get_opening_direction의 recipes(storybook·cinematic·pixel-march(FF6풍 무대사 없는 행진)·title-card·trailer-montage·memory-fragment·credits-roll·duel) 중 고르거나 섞는다. 사용자가 특정 작품풍을 말하면 그 작품의 기법(연출 호흡·무대사 여부·음악 역할)을 따르고 화풍은 기법 문장으로 쓴다. 이야기를 글로 설명하는 것이 기본값이 아니다.

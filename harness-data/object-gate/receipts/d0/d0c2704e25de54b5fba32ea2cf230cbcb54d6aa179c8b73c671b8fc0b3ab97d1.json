@@ -1,0 +1,389 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d0c2704e25de54b5fba32ea2cf230cbcb54d6aa179c8b73c671b8fc0b3ab97d1",
+ "width": 192,
+ "height": 144,
+ "kind": "terrain",
+ "name": "calm packed wasteland earth ground, a seamless 8x8-tile field (128px period): a quiet mid-brown base with a fine even 1-pixel grain of lighter and darker earth (deliberately low contrast so buildings and the hero read clearly, like the Beodeul village ground), with a few small shaded raised clods scattered far apart, no rows or grid alignment, a few tiles with small dry grass tufts",
+ "label": "wasteland_ruins/dirt-d",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 7,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "wasteland_ruins",
+   "fallback": true,
+   "reason": "칩셋 wasteland_ruins 의 화풍 기준 묶음이 없다",
+   "hash": "8cecb3a70460aa86"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 4,
+  "tileColorsP90": 4,
+  "darkV5": 93,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 108
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "flat earth ground field with 1px grain, small clods and grass tufts",
+      "rows": "0-143",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The image is a seamless terrain field with a full-width 192px silhouette across rows 0-143 and no outline or silhouette change. The column scans show only a mottled base (#7b5d48) with 1px darker (#654c39) and lighter (#916f57) grain specks, and no front-edge line, eave shadow, ellipse or vertical face. Small clods and tufts are scattered and read as flat ground texture. It is a flat ground texture with no standing volume, which is correct for terrain."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a ground patch and the grass reference is the same kind, so the comparison holds. The candidate has 4 visible tones per 16x16 tile against 3 for the grass reference. Its near-flat coverage is 2% against 0% for grass, so there are no flat fills. The even 1px grain of lighter and darker earth covers the whole field. The few clods and the yellow-ochre dry tufts break up the surface without adding contrast, matching the calm, low-contrast brief. The 9 total colours is a small palette, but the visible tones are at or above the grass reference. A ground field should stay quiet, as the reference grass does. It has no outlines. Dark edge pixels are 0% neutral, so there is no black sticker line. It is sparser than the reference's clumps and dark patch, and the clods are faint, but it does not look thinner or flatter than the reference grass.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 13438
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "packed earth ground field with grain, clods and small grass tufts",
+      "rows": "0-143",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "other",
+    "evidence": "This is a seamless terrain ground tile, not a standing object. The silhouette is a full-width rectangle (192 px wide on every row, rows 0-143) with no outline, no front edge line and no eave shadow. The column scans show only a uniform mid-brown (#7b5d48, L~100) with scattered 1-pixel darker (#654c39, #4a3828) and lighter (#916f57) grain pixels, and no banded structure. A few small clods and yellow grass tufts are scattered far apart. It is a flat ground texture with no standing volume, so top-surface and front-face rules do not apply."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 4,
+    "outline": "none",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a ground patch and the grass reference is the same kind. It carries 4 visible tones per 16x16 tile against 3 for the grass reference, and only 2% near-flat coverage against 0%. The grain is an even 1px speckle of lighter and darker earth with no large flat areas. The 0% neutral dark edge pixels shows any dark pixels are tinted brown, and there is no sticker outline. The raw count of 9 colours is low next to the grass's 80, but those raw counts are inflated by near-identical shades, so I do not weigh them against the candidate. The tones that show are the same as the grass reference. The sparse clods and the small dry tufts add a little structure. It is calmer and lower in contrast than the grass, but that is what the brief asks for and it matches the Beodeul village ground. It is a bit uniform, but I would accept it beside the reference without it looking flat or sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 12319
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "flat earth ground field with grain, clods and small grass tufts",
+      "rows": "0-143",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The candidate is a seamless terrain tile, a uniform full-width field (192px wide on every row, rows 0-143) of mid-brown earth with 1-pixel grain. The column scans show only scattered 1-2 row darker or lighter grain pixels (#654c39, #4a3828, #916f57) and no front-edge line, eave shadow, ellipse, or vertical face. There are a few small clods and yellow grass tufts, but they are decor-scale details. It is a flat ground surface with no standing volume and no front face, so it reads as a top-down slab, which is expected for ground terrain."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a ground patch, so it is the same kind as the grass and paving references. It shows 4 visible tones per 16x16 tile against 3 for the grass reference (paving has 7, but it is a structured stone pattern). Near-flat coverage is 2%, so there are no large flat fills. The fine 1px light/dark grain is even across the whole field. The few clods and tufts are small and low-contrast, which suits the brief of a calm ground behind buildings and the hero. Only 9 distinct colours in total makes the ramp slightly shallower than Beodeul's 5-6 steps, and the grain is somewhat uniform noise. There is no outline on a ground tile, and 0% of dark edge pixels are neutral, so nothing reads as a sticker. Overall it is comparable to the Beodeul grass ground in visible richness and would sit next to it without looking flatter.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 12708
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "packed earth ground field with grain, clods and dry grass tufts",
+      "rows": "0-143",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The image is a seamless terrain field of full-width rows (192 px across all rows 0-143) with no silhouette, no front-edge line, no eave shadow, no ellipse and no vertical face. Column scans show only 1-pixel grain variation (L about 100 with scattered darker and lighter pixels), not bands. The small clods and grass tufts are flat texture details. It is a flat top-down ground texture, which is the expected form for terrain, so it has no front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "Candidate has 4 visible tones per tile against 3 for the grass reference, so it is not lower on the primary fact. Near-flat coverage is 2% against 0% for both references, and dark edge pixels are 0% neutral, so there is no sticker outline. The fine 1px grain is even and low-contrast as requested, with no large flat areas. It is still a thin ramp: only 9 distinct colours in total, against 80 for the grass reference. The few clods are very faint, barely shaded and small, so the 'shaded raised clods' read as weak. The dry grass tufts are tiny yellow clusters that look sparse and slightly pasted on. The grain is uniform with no larger clumping or soil variation, so it is flatter and more uniform than the Beodeul ground, which has clumped tufts in several greens. A careful artist would likely ask for more tonal steps and clod shading, so I fail it on the cautious side.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 10020
+  }
+ ],
+ "decidedAt": "2026-10-25T13:14:25.832Z",
+ "cells": {
+  "16": [
+   "03f9b86b7a7515ab",
+   "04cfa8eca18ead97",
+   "11ba873af6dbd488",
+   "24a98f3ab9459cb7",
+   "2bfc0e6a906b9842",
+   "2f814f5562db5d1f",
+   "3e0d5596f10a6e72",
+   "494c177ef35d556d",
+   "52ae4ada04452734",
+   "5488f21cfc23734a",
+   "5e68e49e46af4391",
+   "67085da2606f739b",
+   "6b2f40ce4a4e7223",
+   "6f7b1483f122000d",
+   "730c2f94e4ea3238",
+   "74f4177a1e2cccf8",
+   "7f64adcc4bbdda2b",
+   "89bf654e7023165a",
+   "8be72d5f061ff585",
+   "8dc3a1461de966aa",
+   "917e7347d3c6bb52",
+   "9a602542f5f0b680",
+   "a301e0614cfff9eb",
+   "ac26d1ad8c9bbd03",
+   "bdc59f452c2244c9",
+   "c47382dc1a8e14c4",
+   "c6ea0cfe25e0b2ff",
+   "cafda7833250e402",
+   "d483fada5f06a8af",
+   "d6a54d32b2054def",
+   "d7aa47d296e83a1c",
+   "d8421801bc14c4b1",
+   "d91c26b066dfdb09",
+   "da773e3647c0ca0d",
+   "eda93530058e8220",
+   "edc0f40d636b219f",
+   "f135bf4f4b6e5be3",
+   "f1b09389dc0a3566",
+   "f34592bf1e83efa7",
+   "ff174a76880b2c64",
+   "ff71d9074286e905"
+  ],
+  "24": [
+   "031bd7a2d272d94f",
+   "0426f8ab5b3632d8",
+   "0cef24031fc3ffe3",
+   "0f85197307e0fe35",
+   "1ba753eadfd3fb93",
+   "227244a89f6ba0e7",
+   "284dba91028632be",
+   "29a72716f08d6519",
+   "30726d55b908cf66",
+   "36c475df5ec443ec",
+   "3d2b6f7c94138437",
+   "46c992326177cb73",
+   "579d51373033e15c",
+   "64ba2a7af82b9343",
+   "653c6792af83f97b",
+   "79e806e3230488aa",
+   "7a19c11fd568916a",
+   "895c2e1622239ddd",
+   "899cc759aff03861",
+   "89fa5a173b4009a9",
+   "8a9032cd6aa496fc",
+   "9757ddacd629497a",
+   "9f7aca8bad709d90",
+   "a03ea52e19b034c8",
+   "a1fd012892daa7c7",
+   "a3d4446ff929cf55",
+   "b5c2b57220a5b0f4",
+   "b6493c7421da1732",
+   "b679d0b3e30a5e03",
+   "b8a1710ec4689808",
+   "bb153038957eb8c7",
+   "c360bdea01c01bb4",
+   "c55740c6faeef984",
+   "cc347e343b7c8134",
+   "ccbb478006072919",
+   "cebe0aa889e316af",
+   "d4582ba3e95ef7aa",
+   "d4e57d65508f10ee",
+   "d817106e196b50fa",
+   "d838fab0edc38d8c",
+   "e446d548201dae6a",
+   "e533f0c4379c7c8c",
+   "e5d5398007dab6f2",
+   "ed0ec57e389fda70",
+   "efda9007e317a0b4",
+   "f0808d647fd13dcd",
+   "f9215e079403c95b",
+   "f9a8698bc8e2990a"
+  ],
+  "32": [
+   "029c3169a3776a34",
+   "03d804f365cf73a6",
+   "09d3f21ff7521c14",
+   "110702b1adc9bf75",
+   "1e19216c44446f86",
+   "2149b44633cbd651",
+   "21e06b5cb1451989",
+   "325ff267d9929c92",
+   "33de7b3d41bfcd61",
+   "3b24246c21cef25b",
+   "3bc96682a588d1d3",
+   "424cc090bc7ee32a",
+   "44c91166f0930cbe",
+   "48b8bfc0ea7e94d5",
+   "52e731311cee37ba",
+   "5c0a7f7365ccc6ea",
+   "61e05d7940eddda6",
+   "67b2481c70f65d0c",
+   "68125c82567c531b",
+   "6ea15aeea2dde01b",
+   "787f648a34471fa9",
+   "79dae01869e4d96c",
+   "8a603bdee239278c",
+   "92018622b1415b94",
+   "99a8efccc0fea9d6",
+   "9bec2f1b3b29dcf6",
+   "a3840d079df4f4fb",
+   "a5e2b884e50f1965",
+   "ace634c337be03ba",
+   "af652c489affa501",
+   "b630513bf8203583",
+   "b9b67efac37a16e0",
+   "c15feb68b960aeb8",
+   "c4007117c69b15fe",
+   "ce1c0f41a1d0e586",
+   "d40c962ae69b9a5e",
+   "d453d3f5ff8c1911",
+   "db13717786db446c",
+   "e2b21048501935a9",
+   "eb000c0253d89b8f",
+   "f61538debbb3a4c8",
+   "ffd1f68807e1b684"
+  ],
+  "48": [
+   "00ad864ed58a3492",
+   "0644ad3e2e6b5cf0",
+   "1415b49b76d78c55",
+   "252ee21b6e6e0720",
+   "6b830ab9f0932808",
+   "84279fce9741989e",
+   "93e11d645cfad490",
+   "94a3569850bd1e41",
+   "97befd10ee3ad3e5",
+   "b8da5ee3a1e002e9",
+   "f283b90f79d7cbf5",
+   "f78581d58f2e4ecc"
+  ]
+ }
+}

@@ -153,7 +153,7 @@ r3:
 ## 맹독·혼란 — gen1 전투의 상태이상 보강 (2026-10-16, poke-depth PR2)
 
 - 범위: **`battleModel: "gen1"` 프로젝트(몬스터 수집)만.** 다른 전투 모델에서는 같은 레코드가 일반 상태처럼만 돈다(`upsert_state` 가 경고).
-- 맹독 = `StateRecord.gen1MajorStatus: "toxic"`(독·화상·수면·얼음·마비와 같은 주요 상태 슬롯, 서로 배타). 차례 말마다 `stateTurns[id]` 카운터가 1→15(`gen1NextToxicCounter`)로 올라 **최대 HP 1/16 × 카운터**를 깎는다(`applyGen1PostActionResidual({kind:"toxic",toxicCounter})`). 교체해서 빠지면 카운터 0(`resetVolatileStatesOnSwitchOut`). 독·강철 타입은 독과 같이 맹독에 안 걸린다(`gen1MajorStatusBlockedByType`). 필드 걸음 독(`applyGen1FieldPoisonStep`)·포획 보너스·상태 오라는 독과 같다. 일반 독은 그대로 고정 1/16.
+- 맹독 = `StateRecord.gen1MajorStatus: "toxic"`(독·화상·수면·얼음·마비와 같은 주요 상태 슬롯, 서로 배타). 차례 말마다 `stateTurns[id]` 카운터가 1→15(`gen1NextToxicCounter`)로 올라 **최대 HP 1/16 × 카운터**를 깎는다(`applyGen1PostActionResidual({kind:"toxic",toxicCounter})`). 교체해서 빠지면 카운터 0(`resetVolatileStatesOnSwitchOut`). 독·강철 타입은 독과 같이 맹독에 안 걸린다(`gen1MajorStatusBlockedByType`). 불꽃 타입은 화상, 얼음 타입은 얼음에 걸리지 않는다 — 기술을 준 타입이 달라도, 타입이 없는 접촉 특성도(`gen1StatusMoveBlockedByTargetType`). 상태 기술이 그래서 막히면 「○○은 불꽃 타입이라 화상 상태에 걸리지 않는다!」. 이미 다른 주요 상태가 있어도 「이미 ○○ 상태다」로 바꾸지 않는다. 피해 기술의 부가 실패는 문장을 남기지 않는다. 필드 걸음 독(`applyGen1FieldPoisonStep`)·포획 보너스·상태 오라는 독과 같다. 일반 독은 그대로 고정 1/16.
 - 혼란 = `StateRecord.volatileStatus: "confusion"`(**새 선택 필드**, 생략=옛 동작). 주요 상태와 겹쳐 걸리고(`readGen1MajorStatus` 는 이 필드가 있는 상태를 주요 상태로 안 읽는다), 걸릴 때 바이트 하나로 남는 행동 수 2~5(`gen1ConfusionTurns`, `stateTurns[id]` 에 저장)가 정해진다. `prepareGen1CombatAction` 이 주요 상태(수면·얼음·마비) 뒤에 `stepGen1ConfusionBeforeAction` 을 부른다: 카운터를 하나 줄여 0 이면 풀리고(`stateRemoved`, reason natural, 그 행동은 정상), 아니면 바이트 하나로 절반(<128)이 **위력 40 무속성 물리 자해**(`gen1ConfusionSelfDamage`: 급소·자속·난수 없음, 자기 공격·방어에 상태·단계 배율 적용, 최소 1)로 그 행동을 잃는다. 자해는 `stateUpkeep` 엔트리(`userRecordId`+문장 「○○은 혼란에 빠져 자신을 공격했다!」)로 기록되고, 시퀀서는 이를 「명령을 못 쓴 차례」로 읽는다(`commandIncapacitated`) — 안 그러면 적의 첫 엔트리가 아군 명령 대사로 읽힌다. 이미 혼란이면 다시 안 걸리고 바이트도 안 쓴다. 교체해서 빠지면 풀린다. 전투가 끝나면 `removeOnBattleEnd` 로 풀린다(상태 레코드에 `runtimeEffects:{removeOnBattleEnd:true}`).
 - RNG: 맹독은 바이트를 안 쓴다(걸리는 순간의 확률 굴림만). 혼란은 걸릴 때 1바이트, 행동마다 1바이트(풀리는 행동은 0바이트). 이 상태를 안 쓰는 게임의 난수열은 그대로다.
 - 화면: 배지 `TOX`(진보라)·`CNF`(분홍, `stateIconToken` 이 `confus`·`toxic` 를 읽는다 — 옛 코드는 `confuse` 만 읽어 `state_confusion` 이 점(●)으로 떨어졌다). 에메랄드 문장: 「○○은 맹독에 걸렸다!」「○○은 맹독의 피해를 입었다!」「○○은 혼란에 빠졌다!」「○○의 혼란이 풀렸다!」. 혼란 오라(`confuse-stars`)는 `state_confusion` id 에 이미 매핑돼 있어 머리 위에 별이 돈다.
@@ -167,7 +167,7 @@ r3:
 - 데이터: `SkillRecord.weather?: {kind: "sun"|"rain"|"sandstorm"|"hail", turns?}`(**선택 필드**, 생략=날씨 없음·저장 바이트 불변; turns 3~8, 기본 5 는 저장하지 않는다). 규칙·정규화는 `src/battle/weather.ts`(`normalizeSkillWeather` 는 모르는 종류를 버린다). 전투 날씨는 런타임 지역 변수라 **저장하지 않는다**(`BattleSnapshot.weather` 로만 나간다).
 - 적용 범위: **gen1 전투 모델만**. 맵·트루프에서 날씨를 거는 길은 아직 없다(기술만).
 - 훅(`runtime.ts`): ① `applyGen1Skill` 이 날씨 기술이 닿은 뒤 `setBattleWeather` — 같은 날씨가 이미 있으면 「하지만 아무 일도 일어나지 않았다!」, 다르면 덮어쓰고 시작 문장 ② `applyExactGen1Damage` 의 피해에 `weatherDamagePercent`(쾌청: 불 150·물 50, 비: 물 150·불 50; 타입은 `gen1CanonicalTypeForId`) ③ 라운드 끝(`completeStrictRound`, gauge 흐름은 사이클 마감 `markGaugeActionCycle`)에 `tickBattleWeather`: 지속 문장 → 모래바람(바위·땅·강철 제외)·싸라기눈(얼음 제외)의 최대 HP 1/16(최소 1) 피해 → 남은 차례 −1 → 0 이면 종료 문장 → `resolveOutcome`(피해로 승패가 갈릴 수 있다).
-- 타임라인: 날씨가 만든 엔트리는 `weatherKind` 를 달고(피해는 `stateUpkeep`+message, 문장은 `special`), 배지가 바뀌는 엔트리는 `weatherAfter`(그 뒤 날씨, null=끝)를 싣는다. 스냅샷의 `weather` 는 명령 즉시 해결돼 문장보다 먼저 바뀌므로 `battleDom.pendingWeatherView` 가 재생한 `weatherAfter` 까지만 반영해 배지를 문장에 맞춘다(stateView·stageView 와 같은 방식). 피해 문장·팝업은 시퀀서가 표시 이름·날씨 이름으로 다시 만든다.
+- 타임라인: 날씨가 만든 엔트리는 `weatherKind` 를 달고(피해는 `stateUpkeep`+message, 문장은 `special`), 배지가 바뀌는 엔트리는 `weatherAfter`(그 뒤 날씨, null=끝)를 싣는다. 스냅샷의 `weather` 는 명령 즉시 해결돼 문장보다 먼저 바뀌므로 `battleDom.pendingWeatherView` 가 재생한 `weatherAfter` 까지만 반영해 배지를 문장에 맞춘다(stateView·stageView 와 같은 방식). 피해 문장·팝업은 시퀀서가 표시 이름·날씨 이름으로 다시 만든다. HP 를 깎는 `stateUpkeep`(독·화상·맹독·혼란 자해·모래바람·싸라기눈)도 격파 대사의 막타다 — 잔여 피해로 쓰러지면 그 엔트리 뒤에 「쓰러뜨렸다!」·「쓰러졌다!」가 나오고, 같은 타임라인의 앞선 비치명 타격이 막타로 오인되지 않는다. 선고 문장에 이미 「쓰러졌다」가 있으면 격파 대사를 겹치지 않는다.
 - 화면: 전투장 오른쪽 위 배지 `.battle-weather-badge`(testid `battle-weather-badge`, 「☀ 쾌청 4」 — 글자+색 4종, 새 그림 없음)와 전투 문장.
 - 조수: `upsert_skill.skill.weather`(enum·정수만, 자유 키 없음). 모르는 종류·turns 범위 밖·모르는 키는 허용 값을 담아 `invalid-skill-weather` 로 거절, gen1 이 아니면 경고. 레시피 `monster-weather`.
 - 예제 몬스터 원정: 주 타입 불·물·바위·땅·얼음 계통이 Lv30 에 날씨 기술(햇살·소나기·모래바람·싸라기눈 부르기, `buildWeatherMoves`)을 배운다.
@@ -511,7 +511,7 @@ SQLite 저장소를 자동 변경하는 이관은 수행하지 않는다.
 
 ## 힘 모으기 · 게이지 밀기 · 변신 · 소환 (2026-10-01, B)
 
-- **힘 모으기 `SkillRecord.chargeTurns`(1~3)** — 런타임 장부 `pendingCharges`(runtime.ts). 정한 차례엔 `kind:"special", charge:true` 예고 줄만 남기고(「X가 Y를 준비한다! (N턴 뒤)」), 자기 차례가 N 번 더 오면 저장한 명령/행동을 발동한다. 아군은 `applyActorCommandEffect` 앞의 `actorChargeStep`, 적은 `executeEnemyTurnAction`(gauge·strict 둘 다 이 길). 반격·최후의 일격(drainCounters)은 모으지 않는다. 모으는 동안 아군 메뉴는 열리지 않는다(gauge: tick 의 분기, strict: `queueBerserkStrictCommands` 가 저장 명령을 넣는다). 발동 때 MP·봉인으로 못 쓰면 「모은 힘이 흩어졌다」. 쓰러지면 장부에서 지운다(`dropDefeatedCharges`).
+- **힘 모으기 `SkillRecord.chargeTurns`(1~3)** — 런타임 장부 `pendingCharges`(runtime.ts). 정한 차례엔 `kind:"special", charge:true` 예고 줄만 남기고(「X가 Y를 준비한다! (N턴 뒤)」), 자기 차례가 N 번 더 오면 저장한 명령/행동을 발동한다. 아군은 `applyActorCommandEffect` 앞의 `actorChargeStep`, 적은 `executeEnemyTurnAction`(gauge·strict 둘 다 이 길). 반격·최후의 일격(drainCounters)은 모으지 않는다. 모으는 동안 아군 메뉴는 열리지 않는다(gauge: tick 의 분기, strict: `queueBerserkStrictCommands` 가 저장 명령을 넣는다). 발동 때 MP·봉인으로 못 쓰면 「모은 힘이 흩어졌다」. 쓰러지면 장부에서 지운다(`dropDefeatedCharges`). 충전 끊기 `SkillRecord.chargeBreak`(피해 누계·속성·상태) — `noteChargeBreak` 가 `recordTimeline` 에서 판정해 장부를 지우고 `chargeBroken` 줄을 다음 명령 앞에 낸다, 적은 다음 차례 휘청거림(`chargeStaggeredIds`). 자세히는 `editor-ai-tools.md` 「충전 끊기」.
   - 예고 줄에 **skillId 를 싣지 않는다** — 실으면 연출 재생기가 시전으로 보고 시전자 위에 착탄 연출을 튼다(녹화 실측). 시퀀서는 `charge` 줄이면 명령 줄(「…을 사용했다!」) 없이 예고 문장만 읽는다.
   - 스냅숏 `BattleBattlerSnapshot.charging {skillId, skillName, turnsLeft}` → DOM `data-charging` + `.battle-charge-mark`(머리 위 「기술 · 남은 차례」 띠), 몸은 금빛 떨림(28-retro-state-aura.css, 모든 스킨).
 - **게이지 밀기 `SkillRecord.gaugeShift`(-100~100)** — ATB(gauge) 흐름에서 명중한 대상의 `gauge` 를 타마다 옮긴다(`shiftGauge`). 음수 = 늦추기, 양수 = 아군 앞당기기. 대상당 「행동이 늦춰졌다/빨라졌다」 special 한 줄. strict 는 무시.
@@ -819,7 +819,7 @@ SQLite 저장소를 자동 변경하는 이관은 수행하지 않는다.
   `timelineDirectorState` → 「슬라임 1은 스톱에 걸렸다!」「…의 공격이 올랐다!」(「○○ 상승/하락」 이름) 「…의 암흑이 풀렸다.」 한 줄씩 800ms(`BATTLE_STATE_LINE_MS`).
   피해 0 보조 기술은 둘째 줄(효과가 충분하지 않았다)을 떼고, 뒤따르는 상태 변화가 없는데 기술에 상태 부여가 있으면 recover 뒤 「…에게는 효과가 없었다.」 한 비트(`supportOutcome`, 기술은 이름으로 찾는다).
   stateAdded 는 `DamageFeedback.label` 팝업(숫자 경로 재사용, `battle-damage-popup-status`, battleDom 이 원장·타격·효과음을 건너뜀)으로 상태 이름이 떠오른다.
-  이미 걸린 상태라 새로 안 붙었으면 「…은 이미 프로텍트 상태다.」(실패 아님). 훔치기처럼 action 없이 special 한 줄만 남기는 명령은
+  이미 걸린 상태라 새로 안 붙었으면 「…은 이미 프로텍트 상태다.」(실패 아님). gen1 주요 상태가 서로 달라 안 붙었으면(화상 중에 마비 등) 「…은 이미 화상 상태다.」— 「효과가 없었다」로 읽히면 기술이 빗나간 것처럼 보인다. 피해 기술의 부가 실패는 이 문장을 쓰지 않는다. 훔치기처럼 action 없이 special 한 줄만 남기는 명령은
   명령 대사가 그 엔트리를 차지해 결과가 사라졌다 → 명령 줄 뒤에 special 줄을 따로 읽힌다(`specialAfterCommand`).
   배지는 스냅샷이 아니라 **재생된 타임라인** 기준 — `stateView` 가 아직 재생 안 한 stateAdded/Removed 를 되감아 「걸렸다!」 비트에 붙는다.
 
@@ -1526,7 +1526,7 @@ For real-time action combat on action maps (`system.actionCombat` + `map.actionC
 
 세 필드 모두 **값이 있을 때만 저장**한다(없는 옛 프로젝트·세이브는 동작·바이트 그대로).
 
-- **연계기** `SkillRecord.comboActorIds`(2~3명, 시전자 포함). 판정 단일 권위는 `battleActorSkillFailure`(`src/battle/battleSkillUse.ts`) —
+- **연계기** `SkillRecord.comboActorIds`(2~4명 `COMBO_MAX_ACTORS`, 시전자 포함). 판정 단일 권위는 `battleActorSkillFailure`(`src/battle/battleSkillUse.ts`) —
   런타임 명령 적법성·전투 메뉴·자동 전투가 같은 함수를 쓴다. 동료 전원이 참전·생존·행동 가능·침묵 아님·MP 충분이고
   **준비**(gauge: 게이지 100 / strict: 이번 라운드 미명령)여야 한다. 연계 멤버는 따로 배우지 않아도 목록에 뜬다(`comboSkillIdsFor`),
   동료가 참전하지 않으면 숨고 준비 안 됨이면 사유와 함께 비활성. 사용 시 각자 `mpCost` 소비, 동료 게이지 0 + gauge 사이클 행동 처리,
@@ -2351,7 +2351,7 @@ retro2003 sideview 의 명령 창은 `data-look-command`(actor 156px · keys 152
 - **연계 MP 나누기** `SkillRecord.comboMpCosts [{actorId, mp}]` — 참가자별 몫. 없는 참가자는 `mpCost`. `battleSkillMpCostFor(skill, user)` 가 단일 권위(장비 절반 적용).
 - **약점 공략** `SkillRecord.exploitStates {stateIds, bonusPercent, consume?}` — 대상이 그 상태면 피해 ×(1+bonus/100), `consume` 이면 그 상태를 지운다(기술 자신의 상태 효과보다 먼저). 타임라인 `exploit:true` → 숫자 아래 「공략!」.
   「깔기 → 거두기」 짝(둔화 → 십자베기, 기절 → 광선 조준)을 만드는 수단이다.
-- **쓰러뜨린 대상에게 상태를 걸지 않는다** — 피해 기술의 상태 효과는 대상 HP 가 남았을 때만(녹화에서 「쓰러뜨렸다!」 다음 「화상에 걸렸다!」가 떴다).
+- **쓰러뜨린 대상에게 상태를 걸지 않는다** — 피해 기술의 상태 효과는 대상 HP 가 남았을 때만(녹화에서 「쓰러뜨렸다!」 다음 「화상에 걸렸다!」가 떴다). gen1(몬스터 수집) 피해도 같다. 쓰러뜨린 타격의 부가 상태(화상 등)와 능력 단계는 걸리지 않는다.
 - **결과 팡파레** `src/player/battleFanfareDom.ts` + `system.battleFanfare`(`src/project/battleFanfare.ts`, 기본값은 저장 안 함) — 도트 결과 화면의 레벨 업 창 넘기기 줄에:
   레벨 업 창 머리 「LEVEL UP!」 배너(빛줄기·파티클·능력치 줄 차례 등장) → 그 배우가 배운 기술마다 「새 기술 습득!」 카드(속성색 문장·비용·꼬리표·설명) → 이번에 해금 조건이 채워진 연계기마다 「새 연계기!」 카드(`newlyUnlockedCombos`).
   `levelUp`·`skillLearned`·`comboUnlocked`·`style`(burst·classic·minimal)·`sound`. 소리는 합성 `levelUp`·`skillLearned`·`combo`.
@@ -2369,7 +2369,7 @@ retro2003 sideview 의 명령 창은 `data-look-command`(actor 156px · keys 152
   흉상은 `actorBustImage`: 외형 흉상 → `faceResourceId` 의 공용 표정 세트 흉상(「결의」 우선) → 48px 얼굴. 전투 시작 때 `preloadComboBusts` 로 미리 읽는다(첫 프레임 빈 판 방지).
 - **착탄** `comboImpact(root, project, target, amount, critical, speed)` — `root.dataset.battleComboActive` 동안 `onDamageFeedback` 이 부른다. 첫 타: 번쩍임·참가자 색 모임 고리+핵+파편 16·흔들림(`comboStaging.shake`, 생략 = 트리플 heavy / 듀얼 light)·느린 화면(무대 애니메이션 `playbackRate` 0.3, 420ms; `slowMo:false` 로 끔)·합성음 `comboImpact`. 매 타: 피해 숫자 폭발. 적 엔트리나 다른 행동이 오면 `endComboAction`. 색은 `comboTint(skill)`(= `comboStaging.tint` → 속성 색 → 금색). reduced-motion 은 움직임을 끈다.
 - **한 줄 도움말** `skillHelpOneLiner(project, skill, user)`(`src/battle/skillHelp.ts`) — 「MP6 · 적 전체 · 냉기 · 둔화」: 비용(연계는 MP3+5) · 범위 · 속성 · 특징 둘(약점 노림·상태·해제·능력 단계·흡수·행동 지연·N연타·합체·방어 무시·급소↑·무기 공명), 없으면 회복/위력. `battleCommandDom.syncBattleSkillHintLine` 이 메시지 창 맨 위에 `.battle-message-hint`(testid `battle-skill-hint`)로 질문 줄을 대신한다. 큰 도움말 창은 `skillHint: "window"` 일 때만. 필드 메뉴 스킬 화면의 긴 설명은 그대로.
-- **터치 가로 전투 크기** — 따로 고치지 않는다. 모바일 일반 수정(9e7d458dd7, `landscapeTouchScale`: 가로에서 무대가 화면 높이를 채우고 조작은 반투명하게 겹침 `data-touch-overlay`)이 전투에도 그대로 적용된다. 전투 전용 배율 갈래를 만들었다가 겹쳐서 뺐다.
+- **터치 가로 전투 크기** — 따로 고치지 않는다. 모바일 일반 수정(9e7d458dd7, `landscapeTouchScale`: 가로에서 무대가 화면 높이를 채우고 조작은 반투명하게 겹침 `data-touch-overlay`)이 전투에도 그대로 적용된다. 2026-10-25 2판부터 가로 조작은 좌우 칸에만 있고 무대는 그 사이에 맞춘다(조작이 전투 창·적을 덮지 않음). 전투 전용 배율 갈래를 만들었다가 겹쳐서 뺐다.
   실측(`measureLayout`): iPhone 15 가로(852×393) 전투 장면 480×270 → 698×393, Galaxy(780×360) 480×270 → 640×360, 명령 단추 86×20 → 125×29 / 114×27. 남은 점: 반투명 조이스틱·B 가 명령 창 왼쪽 아래·파티 창 게이지에 조금 겹친다.
 - **성장 곡선**(폴른 스타) `battleDepth.applyFallenGrowthCurves` — 기본 곡선 끝이 평평해 레벨 업에 HP 만 올랐다. 역할별 `FS_GROWTH`(L6 기준, 레벨당 증가가 L16 무렵까지 앞→뒤로 커짐)로 모든 능력치가 오른다. 엔진에 행운·마법 방어 칸은 없다(정신이 마법 공·방). 모의전 n=200: 보스 약 +6%p.
 - QA: `fallen-battle-depth.json` 에 `lunge-wolves`·`lunge-goblins`, 세트 `fallen-battle-landscape-iphone15`·`-galaxy`·`fallen-battle-lunge-classic`. 새 op `measureLayout {selectors, label}` → 로그 `[measureLayout]` 에 요소 상자·글꼴·`enemyLunges`.
@@ -2380,6 +2380,6 @@ retro2003 sideview 의 명령 창은 `data-look-command`(actor 156px · keys 152
 
 - **미리 알려 주지 않는다.** 기술 설명·한 줄 도움말·결과 「새 기술 습득!」 카드·아이템 설명에 「늑대 약점」「거미는 창에 약하다」처럼 적 이름을 들어 상성을 쓰지 않는다(폴른 스타 `battleRoles.ts`·`battleDepth.ts`·`battleItems.ts` 문장을 고쳤다). 기술 자신의 성질(비용·대상·속성·「둔해진 적 +50%」 같은 조건부 위력)은 남는다 — 한 줄 도움말의 약점 공략 꼬리표는 「민첩 하락 +50%」(옛 「… 노림」).
 - **발견** `src/battle/weaknessDiscovery.ts` — 런타임이 피해 엔트리의 상성 배율을 속성·피해 종류로 나눠(`effectivenessParts`: `element:<id>` · `type:physical|magic`, 배율 1 은 빠짐) `BattleActionResultSnapshot.effectivenessParts` 에 싣는다(통상 공격·기술 두 곳, gen1/몬스터 경로는 제외). `recordAction` 이 아군 → 적 타격이면 `recordWeaknessDiscovery(knownWeaknesses, enemy.recordId, parts)` — 새 칸이면 타임라인 `weaknessDiscovered:true` → 시퀀서 피드백 → 숫자 아래 꼬리표가 「약점 발견!」·「저항 발견!」·「무효 발견!」(크게, `data-weakness-discovered`). 이후 타격은 늘 쓰던 「약점!」·「저항」.
-- **기록** `PlaySession.knownWeaknesses` (적 레코드 id → key → 배율). `playSceneBattle` 이 `session.knownWeaknesses ??= {}` 객체를 `sessionState.knownWeaknesses` 로 넘기고 전투가 **그 객체에 직접** 적는다 — 보상 정산을 거치지 않으므로 져도 도망쳐도 남는다. 세이브 슬롯이 저장·복원한다(`saveSlots.ts`, 검증 `isActorSkillPpRecord` 모양). 세션이 없으면 그 전투만의 장부.
+- **기록** `PlaySession.knownWeaknesses` (적 레코드 id → key → 배율). `playSceneBattle` 이 `session.knownWeaknesses ??= {}` 객체를 `sessionState.knownWeaknesses` 로 넘기고 전투가 **그 객체에 직접** 적는다 — 보상 정산을 거치지 않으므로 져도 도망쳐도 남는다. 세이브 슬롯이 저장·복원한다(`saveSlots.ts`, 검증 `isKnownWeaknessesRecord` — 유한한 배율, 흡수처럼 음수도 포함). PP 검증(`isActorSkillPpRecord`, 0 이상)으로 읽으면 흡수 칸 하나가 장부 전체를 버린다. 세션이 없으면 그 전투만의 장부.
 - **공개 설정** `system.battleStaging.revealWeakness`: never · afterDiscovery(기본) · always. 대상 고르기(`battleDom.syncWeaknessReveal`, 명령 패널을 만들 때마다)가 지금 명령(통상 공격 = 무기 속성·물리, 기술 = 속성·statistic 으로 물리/마법)의 `revealedEffectiveness` 를 적마다 구해 적 노드 위 칩(`battle-weakness-reveal`)과 대상 목록 줄 이름 옆(`.battle-weakness-row`)에 「약점」·「저항」·「무효」를 단다. afterDiscovery 는 아는 칸만 곱한다. 스냅샷 `knownWeaknesses` 가 그 객체다.
 - QA: `fallen-battle-depth.json` `weakness-discovery`(첫 대상 고르기 칩 없음 `measureLayout reveal-before: null` → 화염검 「약점 발견!」 → 다음 화염검 대상 고르기 칩·목록 「약점」).

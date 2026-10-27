@@ -1,0 +1,19 @@
+{
+ "name": "위층이 튀어나온 2층 집",
+ "massing": "3",
+ "material": "plaster",
+ "refs": [
+  "bd-house-h124_0",
+  "bd-house-h102_1"
+ ],
+ "walk": [
+  ".***.",
+  "*****",
+  "*****",
+  "XXXXX",
+  "XXXXX",
+  "XXDXX",
+  "XXDXX"
+ ],
+ "id": "jetty-house"
+}

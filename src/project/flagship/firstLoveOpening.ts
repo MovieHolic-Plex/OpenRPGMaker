@@ -1,150 +1,199 @@
 /**
- * 『첫사랑』 오프닝 — 다섯 컷, 약 30초. 30초 안에 「그 사람」이 나온다.
+ * 『첫사랑』 오프닝 — 애니메이션 오프닝풍 몽타주(2026-10-25 사용자 승인 C 안), 약 30초.
  *
- * 그림은 앱에 든 연애 타이틀 그림(뒷모습 두 사람) 두 장만 쓴다 — 교복의 두 사람(10년 전)과 밤 사무실 창가의 두 사람(지금).
- * 같은 두 사람이 10년을 사이에 두고 서 있다는 것이 오프닝의 전부다. 사이의 두 컷은 그림 없이 어둠과 빛 한 점과 자막뿐이다.
- * 자막은 그 컷에 보이는 것만 말한다. 마지막 컷 「월요일 아침」에서 게임 첫 장면(아침 승강장)으로 바로 이어진다.
+ * 벚꽃 거리 → 아침 지하철 → 사무실 → 노을 옥상 → 등장인물이 이름과 함께 한 명씩 → 검게 닫힘(제목은 타이틀 화면이 맡는다).
+ * 배경은 게임 맵 그 자체를 1:1 로 구운 그림(src/assets/firstLoveOpeningBackdrops.ts)이라 플레이 화면과 화풍이 같다.
+ * 걷는 사람은 게임의 같은 걷기 칩(CAST), 흉상은 대화에 쓰는 공용 흉상이다 — 새로 그린 인물은 없다.
+ * 벚꽃잎은 애니메틱 입자 'petals'(일반 기능), 노을은 공용 노을 파노라마. 마지막 컷이 검게 닫히면 게임은 출근길 횡단보도의 첫 만남에서 바로 시작한다.
  */
-import { validateOpeningAnimatic, type AnimaticLayer, type OpeningAnimatic } from "@/project/openingAnimatic";
+import { CHARSET_FRAME_COUNT, CHARSET_FRAME_HEIGHT, CHARSET_FRAME_WIDTH, CHARSET_SHEET_COLUMNS, charsetFrameIndex } from "@/assets/easyrpgRtp";
+import { firstLoveOpeningBackdrop, type FirstLoveOpeningBackdropId } from "@/assets/firstLoveOpeningBackdrops";
+import { validateOpeningAnimatic, type AnimaticKey, type AnimaticLayer, type OpeningAnimatic } from "@/project/openingAnimatic";
 import type { Project } from "@/project/types";
+import { CAST, bustId, type Who } from "./firstLoveKit";
 
 const STAGE = { width: 480, height: 270 } as const;
 const CAPTION = "#fff1e6";
-const SHOT_MS = 6400;
+const SHOT_MS = 4200;
+const PETAL = "#ffc6d9";
+const CHIP = { w: CHARSET_FRAME_WIDTH, h: CHARSET_FRAME_HEIGHT } as const;
+const SHEET = { frameWidth: CHARSET_FRAME_WIDTH, frameHeight: CHARSET_FRAME_HEIGHT, columns: CHARSET_SHEET_COLUMNS, count: CHARSET_FRAME_COUNT, fps: 0 } as const;
 
-/** 그림 원본 비율 1672×941 — 무대보다 조금 크게 깔고 천천히 민다(앵커 왼쪽 위, 크기는 scale 키로). */
-function painting(resourceId: string, from: { x: number; y: number; w: number }, to: { x: number; y: number; w: number }, ms: number): AnimaticLayer {
-  const h = (w: number) => Math.round((w * 941) / 1672);
+const key = (atMs: number, value: number, ease: AnimaticKey["ease"] = "ease-in-out"): AnimaticKey => ({ atMs, value, ease });
+
+/** 맵 그림 배경 — 1배(nearest)로 깔고 카메라 대신 그림을 천천히 민다. */
+function mapBackdrop(id: FirstLoveOpeningBackdropId, from: { x: number; y: number }, to: { x: number; y: number }, ms = SHOT_MS): AnimaticLayer {
+  const b = firstLoveOpeningBackdrop(id);
   return {
-    id: "painting", kind: "image", role: "background", resourceId, sampling: "linear",
-    x: from.x, y: from.y, width: from.w, height: h(from.w),
-    keys: {
-      x: [{ atMs: 0, value: from.x }, { atMs: ms, value: to.x, ease: "ease-in-out" }],
-      y: [{ atMs: 0, value: from.y }, { atMs: ms, value: to.y, ease: "ease-in-out" }],
-      scaleX: [{ atMs: 0, value: 1 }, { atMs: ms, value: to.w / from.w, ease: "ease-in-out" }],
-      scaleY: [{ atMs: 0, value: 1 }, { atMs: ms, value: to.w / from.w, ease: "ease-in-out" }],
-    },
+    id: `bg-${id}`, kind: "image", role: "background", resourceId: b.resourceId, sampling: "nearest",
+    x: from.x, y: from.y, width: b.crop.width, height: b.crop.height,
+    keys: { x: [key(0, from.x), key(ms, to.x)], y: [key(0, from.y), key(ms, to.y)] },
   } as AnimaticLayer;
 }
 
-/** 그림 한 부분(사람이 없는 쪽)을 무대 전체로 깔고 천천히 민다 — 빛 한 점 컷도 어디인지는 보이게(VQA r2: 검은 화면 셋). */
-function backdrop(resourceId: string, crop: { x: number; y: number; width: number; height: number }, opacity: readonly [number, number], ms: number, zoom = 1.08): AnimaticLayer {
+function petals(id: string, count: number, seed: number, extra: Partial<AnimaticLayer> = {}): AnimaticLayer {
   return {
-    id: "backdrop", kind: "image", role: "background", resourceId, sampling: "linear", crop,
-    x: 0, y: 0, width: STAGE.width, height: STAGE.height, opacity: opacity[0],
-    keys: {
-      opacity: [{ atMs: 0, value: opacity[0] }, { atMs: ms, value: opacity[1], ease: "ease-in-out" }],
-      scaleX: [{ atMs: 0, value: 1 }, { atMs: ms, value: zoom, ease: "ease-in-out" }],
-      scaleY: [{ atMs: 0, value: 1 }, { atMs: ms, value: zoom, ease: "ease-in-out" }],
-    },
+    id, kind: "particles", role: "effect", space: "screen", color: PETAL, opacity: 0.95,
+    x: -40, y: -20, width: STAGE.width + 80, height: STAGE.height + 40, particles: { preset: "petals", count, seed, size: 2 }, ...extra,
   } as AnimaticLayer;
 }
 
-function caption(cues: readonly { atMs: number; text: string }[], y = 0): AnimaticLayer {
+function caption(text: string, atMs = 300): AnimaticLayer {
   return {
-    id: "caption", kind: "caption", x: 0, y, width: STAGE.width, height: 38, color: CAPTION,
+    id: "caption", kind: "caption", x: 0, y: 0, width: STAGE.width, height: 38, color: CAPTION,
     typography: { fontSize: 12, align: "center", weight: 600 },
-    caption: { cues: cues.map((cue) => ({ ...cue, typewriterMs: 700 })), fadeOutMs: 400 },
+    caption: { cues: [{ atMs, text, typewriterMs: 600 }], fadeOutMs: 400 },
   };
 }
 
-function glow(id: string, color: string, x: number, y: number, size: number, extra: Partial<AnimaticLayer> = {}): AnimaticLayer {
+/** 걷는 사람(게임과 같은 칩) — 발걸음이 이동 거리에 맞물린다. 칩은 무대에서 2배(맵 그림과 같은 도트 크기: 맵도 1배 16px 칸 → 무대 480 이 맵 30칸). */
+function walker(id: string, who: Who | { resource: string; index: number }, dir: "left" | "right" | "up" | "down", from: { x: number; y: number }, to: { x: number; y: number }, ms = SHOT_MS, startMs = 0): AnimaticLayer {
+  const c = typeof who === "string" ? CAST[who] : who;
+  const frames = [1, 2, 1, 0].map((pattern) => charsetFrameIndex({ characterIndex: c.index, direction: dir, pattern }));
   return {
-    id, kind: "glow", role: "effect", color, blend: "lighter", x: x - size / 2, y: y - size / 2, width: size, height: size,
-    glow: { inner: 0.3, pulse: { hz: 0.5, amount: 0.25, pattern: "pulse", seed: id.length } }, ...extra,
+    id, kind: "image", role: "actor", characterRole: "crowd", resourceId: c.resource, sampling: "nearest",
+    sheet: { ...SHEET },
+    x: from.x, y: from.y, width: CHIP.w, height: CHIP.h,
+    walk: { stride: 8, frames, holdFrame: frames[0]! },
+    // 끝 키는 컷 길이를 넘지 않는다(늦게 출발한 사람은 컷이 끝날 때 그 비율만큼만 간다).
+    keys: (() => {
+      const end = Math.min(SHOT_MS, startMs + ms), t = (end - startMs) / ms;
+      const ex = Math.round(from.x + (to.x - from.x) * t), ey = Math.round(from.y + (to.y - from.y) * t);
+      return { x: [key(startMs, from.x, "linear"), key(end, ex, "linear")], y: [key(startMs, from.y, "linear"), key(end, ey, "linear")] };
+    })(),
   } as AnimaticLayer;
 }
 
-function dust(seed: number, color = "#ffe2c0"): AnimaticLayer {
+function standing(id: string, who: Who, dir: "left" | "right" | "up" | "down", at: { x: number; y: number }): AnimaticLayer {
+  const c = CAST[who];
   return {
-    id: "motes", kind: "particles", role: "effect", space: "screen", color, opacity: 0.55, blend: "lighter",
-    x: 0, y: 40, width: STAGE.width, height: 190, particles: { preset: "dust", count: 22, seed, speed: 4, size: 1 },
+    id, kind: "image", role: "actor", characterRole: "hero", resourceId: c.resource, sampling: "nearest",
+    sheet: { ...SHEET },
+    x: at.x, y: at.y, width: CHIP.w, height: CHIP.h,
+    keys: { frame: [{ atMs: 0, value: charsetFrameIndex({ characterIndex: c.index, direction: dir, pattern: 1 }) }] },
   } as AnimaticLayer;
 }
 
-function centerText(id: string, text: string, atMs: number, endMs: number, size = 14): AnimaticLayer {
-  return {
-    id, kind: "text", role: "credit", text, color: CAPTION, x: 40, y: 118, width: 400, height: 34, startMs: atMs, endMs,
-    typography: { fontSize: size, align: "center", weight: 600 },
-    keys: { opacity: [{ atMs, value: 0 }, { atMs: atMs + 700, value: 1, ease: "ease-out" }, { atMs: endMs - 600, value: 1 }, { atMs: endMs, value: 0, ease: "ease-in" }] },
-  } as AnimaticLayer;
-}
+const shot = (layers: AnimaticLayer[], transition: OpeningAnimatic["transition"], background = "#0b0a12"): OpeningAnimatic =>
+  ({ width: STAGE.width, height: STAGE.height, background, letterbox: 0.12, layers, ...(transition ? { transition } : {}) });
 
-const shot = (layers: AnimaticLayer[], transition: OpeningAnimatic["transition"], background = "#07060c"): OpeningAnimatic =>
-  ({ width: STAGE.width, height: STAGE.height, background, letterbox: 0.14, layers, ...(transition ? { transition } : {}) });
+const M = { modern1: "oprn-charset-modern1", modern2: "oprn-charset-modern2", modern3: "oprn-charset-modern3" } as const;
+const extra = (resource: string, index: number) => ({ resource, index });
 
-/** 1. 10년 전 — 노을 진 학교 복도 창가, 교복의 두 사람. */
-function schoolShot(): OpeningAnimatic {
+/** 1. 벚꽃 거리 — 꽃잎이 화면 가득 흩날리고, 출근하는 사람 둘이 보도를 지난다. */
+function blossomShot(): OpeningAnimatic {
   return shot([
-    painting("oprn-title-romance-school", { x: -60, y: -22, w: 600 }, { x: -110, y: -36, w: 640 }, SHOT_MS),
-    dust(3),
-    caption([
-      { atMs: 300, text: "열일곱, 금요일. 방송실 스피커에서 그 목소리가 흘러나왔다." },
-      { atMs: 3400, text: "“오늘의 마지막 사연. 보낸 사람은… 바나나우유 님.”" },
-    ]),
-  ], { kind: "fade", durationMs: 1000 });
-}
-
-/** 2. 어둠 속 편지 한 장의 빛 — 마지막 금요일, 처음으로 진짜 이름을 쓴 사연. */
-function letterShot(): OpeningAnimatic {
-  return shot([
-    backdrop("oprn-title-romance-school", { x: 0, y: 120, width: 1100, height: 619 }, [0.42, 0.3], SHOT_MS),
-    glow("letter", "#fff0c4", 240, 135, 84, { opacity: 1 }),
-    glow("letter-halo", "#ffcf9a", 240, 135, 230, { opacity: 0.45 }),
-    centerText("name", "‘바나나우유가 아니라, 윤서하가요.’", 600, 5600, 13),
-    caption([
-      { atMs: 300, text: "마지막 금요일. 처음으로, 진짜 이름을 썼다." },
-    ], 232),
-  ], { kind: "fade", durationMs: 800 });
-}
-
-/** 3. 꺼지는 빛 — 방송은 나가지 않았다. */
-function silenceShot(): OpeningAnimatic {
-  return shot([
-    backdrop("oprn-title-romance-school", { x: 0, y: 120, width: 1100, height: 619 }, [0.3, 0.06], SHOT_MS, 1.14),
-    {
-      ...glow("letter", "#fff0c4", 240, 135, 84, { opacity: 1 }),
-      keys: { opacity: [{ atMs: 0, value: 1 }, { atMs: 3200, value: 0, ease: "ease-in" }] },
-    } as AnimaticLayer,
-    { id: "rain", kind: "particles", role: "effect", space: "screen", color: "#8fa3c8", opacity: 0.35, x: 0, y: 38, width: STAGE.width, height: 194,
-      particles: { preset: "rain", count: 40, seed: 7, speed: 30, size: 1 } } as AnimaticLayer,
-    caption([
-      { atMs: 300, text: "그날 점심 방송은 나가지 않았다." },
-      { atMs: 3200, text: "월요일, 선배의 자리는 비어 있었다. 인사도 없이." },
-    ]),
-  ], { kind: "cut", durationMs: 1 });
-}
-
-/** 4. 지금 — 밤의 사무실 창가, 어른이 된 두 사람. */
-function officeShot(): OpeningAnimatic {
-  return shot([
-    painting("oprn-title-romance-office", { x: -40, y: -30, w: 580 }, { x: -150, y: -78, w: 700 }, SHOT_MS),
-    dust(9, "#ffd8a8"),
-    caption([
-      { atMs: 300, text: "10년이 지났다." },
-      { atMs: 3000, text: "그 사람이 어디서 무엇을 하는지, 나는 모른다. …몰랐다." },
-    ]),
-  ], { kind: "fade", durationMs: 1200 });
-}
-
-/** 5. 월요일 아침 — 첫 출근. 게임 첫 장면(아침 승강장)으로 이어진다. */
-function mondayShot(): OpeningAnimatic {
-  return shot([
-    backdrop("oprn-title-romance-office", { x: 0, y: 200, width: 1000, height: 563 }, [0.55, 0.85], SHOT_MS, 1.06),
-    glow("dawn", "#ffd9a8", 240, 300, 560, { opacity: 0.35 }),
-    centerText("title", "첫 출근, 월요일 아침.", 300, 5800, 15),
-    caption([
-      { atMs: 2400, text: "새 회사. 새 자리. 그리고 사수로 배정된, 한 사람." },
-    ], 232),
+    mapBackdrop("blossom", { x: 0, y: -6 }, { x: -20, y: -20 }),
+    walker("w1", extra(M.modern3, 0), "right", { x: 230, y: 134 }, { x: 420, y: 134 }),
+    walker("w2", "seoha", "right", { x: 190, y: 198 }, { x: 390, y: 198 }, SHOT_MS, 400),
+    petals("petals-far", 70, 3, { opacity: 0.7 }),
+    petals("petals-near", 40, 11, { particles: { preset: "petals", count: 40, seed: 11, size: 3, speed: 40 } } as Partial<AnimaticLayer>),
+    caption("봄. 새 회사로 가는 첫 월요일."),
   ], { kind: "fade", durationMs: 900 });
 }
 
+/** 2. 아침 지하철 — 승강장을 서둘러 지나는 출근 인파. */
+function subwayShot(): OpeningAnimatic {
+  return shot([
+    mapBackdrop("subway", { x: -16, y: 0 }, { x: -48, y: 0 }),   // 맵 왼쪽 끝 칸(벽 밖)이 안 비치게 -16 부터(Argon op2)
+    walker("c1", extra(M.modern3, 0), "right", { x: 20, y: 114 }, { x: 260, y: 114 }),
+    walker("c2", "commuterB", "right", { x: -40, y: 132 }, { x: 220, y: 132 }),
+    walker("c3", extra(M.modern3, 2), "left", { x: 470, y: 114 }, { x: 250, y: 114 }),
+    walker("c4", "seoha", "right", { x: 120, y: 132 }, { x: 330, y: 132 }, SHOT_MS - 400, 200),
+    caption("8시 41분, 한결역."),
+  ], { kind: "fade", durationMs: 500 });
+}
+
+/** 3. 사무실 — 모니터가 줄지어 선 7층, 자리에 앉은 사람들. */
+function officeShot(): OpeningAnimatic {
+  // 사무층 맵은 26칸(416px)이라 무대(480)보다 좁다 — 좌우 검은 띠(Argon op1)를 없애려고 맵 그림을 무대 폭으로 깔고 위아래만 민다.
+  // 확대하면 도트가 1.15배로 뭉개지므로 확대하지 않고, 맵 양옆 32px 를 같은 사무층 바닥색 띠(벽)로 메운다.
+  const W = 416, ox = Math.round((STAGE.width - W) / 2);
+  return shot([
+    { id: "wall", kind: "shape", shape: "rect", role: "background", color: "#2b2f3d", x: 0, y: 0, width: STAGE.width, height: STAGE.height } as AnimaticLayer,
+    mapBackdrop("office", { x: ox, y: -40 }, { x: ox, y: -96 }),
+    { ...standing("jihu", "jihu", "left", { x: ox + 18 * 16 - 4, y: -40 + 10 * 16 - 16 }),
+      keys: { y: [key(0, -40 + 10 * 16 - 16), key(SHOT_MS, -96 + 10 * 16 - 16)],
+        frame: [{ atMs: 0, value: charsetFrameIndex({ characterIndex: CAST.jihu.index, direction: "left", pattern: 1 }) }] } } as AnimaticLayer,
+    // 동료들은 통로를 오간다 — 의자 칸에 세우면 의자 위에 선 것으로 읽혔다(Argon op3). 배경과 같이 위로 민다.
+    { ...walker("aisle-1", "minho", "right", { x: ox + 8 * 16, y: -40 + 16 * 16 - 16 }, { x: ox + 12 * 16, y: -40 + 16 * 16 - 16 }, 3600, 200),
+      keys: { x: [key(200, ox + 8 * 16, "linear"), key(3800, ox + 12 * 16, "linear")], y: [key(0, -40 + 16 * 16 - 16, "linear"), key(SHOT_MS, -96 + 16 * 16 - 16, "linear")] } } as AnimaticLayer,
+    { ...walker("aisle-2", "commuterB", "down", { x: ox + 13 * 16, y: -40 + 13 * 16 - 16 }, { x: ox + 13 * 16, y: -40 + 17 * 16 - 16 }, 3600, 400),
+      keys: { x: [key(0, ox + 13 * 16)], y: [key(400, -40 + 13 * 16 - 16 - 9, "linear"), key(4000, -96 + 17 * 16 - 16, "linear")] } } as AnimaticLayer,
+    // 팀장은 사무실 바닥 통로(가구 없는 줄)로 걷는다 — 소파를 뚫고 지나갔다(Argon op2).
+    { ...walker("lead", "lead", "left", { x: ox + 21 * 16, y: -40 + 6 * 16 - 16 }, { x: ox + 12 * 16, y: -40 + 6 * 16 - 16 }, 3200, 300),
+      keys: { x: [key(300, ox + 21 * 16, "linear"), key(3500, ox + 12 * 16, "linear")], y: [key(0, -40 + 6 * 16 - 16, "linear"), key(SHOT_MS, -96 + 6 * 16 - 16, "linear")] } } as AnimaticLayer,
+    caption("서른 명 남짓한 작은 앱 회사, 스튜디오 늘봄."),
+  ], { kind: "fade", durationMs: 600 });
+}
+
+/** 4. 노을 옥상 — 노을 하늘 아래 난간, 지는 해. */
+function rooftopShot(): OpeningAnimatic {
+  return shot([
+    { id: "sky", kind: "image", role: "background", resourceId: "oprn-pano-sunset", sampling: "nearest", x: -40, y: -10, width: 640, height: 240,
+      keys: { x: [key(0, -40), key(SHOT_MS, -100)] } } as AnimaticLayer,
+    { id: "sky-clouds", kind: "image", role: "background", resourceId: "oprn-pano-sunset-clouds", sampling: "nearest", x: 0, y: -10, width: 640, height: 240,
+      keys: { x: [key(0, 0), key(SHOT_MS, -90)] } } as AnimaticLayer,
+    { id: "skyline", kind: "image", role: "background", resourceId: "oprn-pano-sunset-skyline", sampling: "nearest", x: -20, y: 10, width: 640, height: 240,
+      keys: { x: [key(0, -20), key(SHOT_MS, -60)] } } as AnimaticLayer,
+    // 옥상 아랫부분(난간·데크)만 — 하늘 자리는 노을 파노라마가 맡는다. 두 사람은 난간 앞에서 노을을 본다.
+    { ...mapBackdrop("rooftop", { x: 0, y: 94 }, { x: 0, y: 84 }), id: "deck" } as AnimaticLayer,
+    { ...standing("seoha", "seoha", "up", { x: 262, y: 116 }), keys: { y: [key(0, 116), key(SHOT_MS, 106)], frame: [{ atMs: 0, value: charsetFrameIndex({ characterIndex: CAST.seoha.index, direction: "up", pattern: 1 }) }] } } as AnimaticLayer,
+    { ...standing("jihu", "jihu", "up", { x: 288, y: 116 }), keys: { y: [key(0, 116), key(SHOT_MS, 106)], frame: [{ atMs: 0, value: charsetFrameIndex({ characterIndex: CAST.jihu.index, direction: "up", pattern: 1 }) }] } } as AnimaticLayer,
+    { id: "sun", kind: "glow", role: "effect", color: "#ffb36b", blend: "lighter", x: 300, y: 30, width: 180, height: 180, opacity: 0.55,
+      glow: { inner: 0.25, pulse: { hz: 0.4, amount: 0.15, pattern: "pulse", seed: 4 } } } as AnimaticLayer,
+    petals("petals", 26, 31, { opacity: 0.85 }),
+    caption("노을이 지는 옥상. 그리고 — 그 사람."),
+  ], { kind: "fade", durationMs: 650 });
+}
+
+/** 5·6. 등장인물 — 흉상이 한 명씩 미끄러져 들어오고 이름이 뜬다. */
+function castShot(pair: readonly { who: Who; role: string; expr?: "base" | "happy" }[], shade: string, closing = false): OpeningAnimatic {
+  const layers: AnimaticLayer[] = [
+    { id: "band", kind: "shape", shape: "rect", role: "background", color: shade, x: 0, y: 0, width: STAGE.width, height: STAGE.height } as AnimaticLayer,
+    petals("petals", 34, 41 + pair.length, { opacity: 0.8 }),
+  ];
+  const half = SHOT_MS / pair.length;
+  pair.forEach((p, i) => {
+    const at = Math.round(i * half), end = Math.round((i + 1) * half);
+    const left = i % 2 === 0;
+    const bustX = left ? 20 : 280, nameX = left ? 236 : 40;   // 오른쪽 흉상은 무대 끝(480)에 붙인다 — 250 이면 들어 올린 팔이 그림 끝(450)에서 잘려 보였다(Argon op1)
+    layers.push({
+      id: `bust-${p.who}`, kind: "image", role: "actor", resourceId: bustId(p.who, p.expr ?? "base"), sampling: "linear",
+      x: bustX, y: 34, width: 200, height: 200, startMs: at, endMs: end,
+      keys: {
+        x: [key(at, bustX + (left ? -60 : 60), "ease-out"), key(at + 500, bustX, "ease-out"), key(end - 300, bustX), key(end, bustX + (left ? 30 : -30), "ease-in")],
+        opacity: [key(at, 0), key(at + 400, 1, "ease-out"), key(end - 300, 1), key(end, 0, "ease-in")],
+      },
+    } as AnimaticLayer);
+    layers.push({
+      id: `name-${p.who}`, kind: "text", role: "credit", text: CAST[p.who].name === "오 팀장" ? "오정민" : nameOf(p.who), color: "#ffffff",
+      x: nameX, y: 110, width: 200, height: 40, startMs: at + 250, endMs: end, typography: { fontSize: 26, align: "center", weight: 700 },
+      keys: { opacity: [key(at + 250, 0), key(at + 650, 1, "ease-out"), key(end - 300, 1), key(end, 0, "ease-in")] },
+    } as AnimaticLayer);
+    layers.push({
+      id: `role-${p.who}`, kind: "text", role: "credit", text: p.role, color: "#ffe2ec",
+      x: nameX, y: 146, width: 200, height: 24, startMs: at + 450, endMs: end, typography: { fontSize: 12, align: "center", weight: 600 },
+      keys: { opacity: [key(at + 450, 0), key(at + 850, 1, "ease-out"), key(end - 300, 1), key(end, 0, "ease-in")] },
+    } as AnimaticLayer);
+  });
+  // 마지막 컷은 검게 닫는다 — 넘김 덮개가 이 마지막 장면을 잡고, 게임 첫 장면(첫 출근 아침)이 검은 화면에서 밝아진다.
+  if (closing) layers.push({ id: "close", kind: "shape", shape: "rect", role: "background", color: "#000000", opacity: 0, x: 0, y: 0, width: STAGE.width, height: STAGE.height,
+    keys: { opacity: [key(SHOT_MS - 700, 0), key(SHOT_MS - 60, 1, "ease-in")] } } as AnimaticLayer);
+  return shot(layers, { kind: "flash", durationMs: 220, color: "#fff1f6" }, shade);
+}
+
+const FULL_NAMES: Partial<Record<Who, string>> = { seoha: "윤서하", jihu: "강지후", minho: "차민호" };
+function nameOf(who: Who): string { return FULL_NAMES[who] ?? CAST[who].name; }
+
 const SHOTS: readonly { id: string; build: () => OpeningAnimatic }[] = [
-  { id: "fl_op_school", build: schoolShot },
-  { id: "fl_op_letter", build: letterShot },
-  { id: "fl_op_silence", build: silenceShot },
+  { id: "fl_op_blossom", build: blossomShot },
+  { id: "fl_op_subway", build: subwayShot },
   { id: "fl_op_office", build: officeShot },
-  { id: "fl_op_monday", build: mondayShot },
+  { id: "fl_op_rooftop", build: rooftopShot },
+  { id: "fl_op_cast1", build: () => castShot([{ who: "seoha", role: "신입 UX 디자이너", expr: "happy" }, { who: "jihu", role: "앱 개발 4년 차 · 사수" }], "#3a2236") },
+  // 제목 컷은 두지 않는다 — 제목은 타이틀 화면(set_title_screen)이 이미 보여 줬다. 오프닝 끝에 다시 띄우면 제목이 두 번 나왔다(Sonnet op5).
+  { id: "fl_op_cast2", build: () => castShot([{ who: "minho", role: "백엔드 신입 · 동기", expr: "happy" }, { who: "lead", role: "프로덕트팀 팀장" }], "#22304a", true) },
 ];
 
 export function buildFirstLoveOpening(project: Project, musicResourceId?: string): void {

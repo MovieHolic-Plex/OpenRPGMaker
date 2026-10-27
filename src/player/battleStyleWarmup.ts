@@ -53,12 +53,51 @@ export function warmBattleStyles(host: HTMLElement, snapshot: BattleSnapshot): v
     );
     host.append(stage);
     void scene.offsetHeight;
+    // 스타일만 데우면 실제 마운트가 img.src·배경 url 을 처음 요청한다 — 그 요청은 커버가 걷힌 뒤
+    // 도착해 첫 프레임을 막는다(2026-10-26 실측: mount 단계 이미지 요청 7건). 그림도 여기서 데운다.
+    preloadWarmImages(scene, () => teardownWarmStage(stage, scene));
   } catch {
     // 준비는 최적화일 뿐이다 — 실패해도 실제 마운트가 같은 일을 한다.
-  } finally {
-    stage.remove();
-    // 배경 물결 캔버스는 rAF 루프를 건다 — 한 번도 연결된 적 없는 채로 떼어졌으니 스스로 멈추지 않는다.
-    for (const backdrop of scene.querySelectorAll<HTMLElement>("[data-testid='battle-backdrop']")) clearBattleBackdropMotion(backdrop);
+    teardownWarmStage(stage, scene);
   }
+}
+
+/** 데운 무대를 떼고, 붙였던 동안 걸린 rAF 루프를 세운다. */
+function teardownWarmStage(stage: HTMLElement, scene: HTMLElement): void {
+  stage.remove();
+  // 배경 물결 캔버스는 rAF 루프를 건다 — 한 번도 연결된 적 없는 채로 떼어졌으니 스스로 멈추지 않는다.
+  for (const backdrop of scene.querySelectorAll<HTMLElement>("[data-testid='battle-backdrop']")) clearBattleBackdropMotion(backdrop);
+}
+
+/** 이 시간을 넘기면 그림을 기다리지 않고 무대를 뗀다 — 준비는 최적화이지 관문이 아니다. */
+const WARM_IMAGE_WAIT_MS = 400;
+
+/**
+ * 데운 DOM 의 그림을 브라우저가 실제로 받게 만든 뒤 정리한다.
+ *
+ * 왜 그냥 떼면 안 되는가: img.src 대입이나 배경 url 은 노드가 같은 동기 호출에서 떨어지면 요청이
+ * 취소된다. 그래서 무대를 붙인 채로 (1) rAF 한 번으로 레이아웃·페인트 단계를 지나 요청을 내보내고,
+ * (2) 그림이 모두 settle 하거나 상한에 닿으면 뗀다. 받은 것은 캐시에 남아 마운트가 다시 요청하지 않는다.
+ */
+function preloadWarmImages(scene: HTMLElement, cleanup: () => void): void {
+  const urls = new Set<string>();
+  for (const image of scene.querySelectorAll<HTMLImageElement>("img")) if (image.src) urls.add(image.src);
+  for (const node of scene.querySelectorAll<HTMLElement>("*")) {
+    const match = /url\(["']?([^"')]+)["']?\)/u.exec(node.style.backgroundImage);
+    if (match?.[1]) urls.add(match[1]);
+  }
+  const settle = (): Promise<unknown> => Promise.all([...urls].map((url) => new Promise<void>((resolve) => {
+    const probe = new Image();
+    probe.onload = () => resolve();
+    probe.onerror = () => resolve();
+    probe.src = url;
+  })));
+  const cap = (): Promise<unknown> => new Promise<void>((resolve) => setTimeout(resolve, WARM_IMAGE_WAIT_MS));
+  const done = (): void => cleanup();
+  if (urls.size === 0 || typeof requestAnimationFrame !== "function") {
+    void Promise.race([settle(), cap()]).then(done);
+    return;
+  }
+  requestAnimationFrame(() => { void Promise.race([settle(), cap()]).then(done); });
 }
 

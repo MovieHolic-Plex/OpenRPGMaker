@@ -14,7 +14,8 @@ const call = (name: string, args: object): ChatResult => ({ message: { role: "as
 const final: ChatResult = { message: { role: "assistant", content: "WRITER_SENTINEL" }, finishReason: "stop" };
 afterEach(() => vi.restoreAllMocks());
 
-describe("non-history integration contracts", () => {
+// Heavy under CI load (15s default is too tight): runs real AssistantSession reviews over a blank project.
+describe("non-history integration contracts", { timeout: 120_000 }, () => {
   // 2026-09-17 독립 검수 해체: 검수 봉투의 requiredProblems(밑그림 미이행 벽 행)·이미지 전달 확인을 검증하던
   // partial / review-image-undelivered 모드는 삭제했다 — 그 봉투 자체가 더 이상 만들어지지 않는다.
   it("independent review retains native preserved-wall accounting: complete", async () => {

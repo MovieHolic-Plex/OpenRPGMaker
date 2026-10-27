@@ -1,0 +1,417 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b49cdda3ad57bc682aba88d93b6c1d3c9361b9db6e1425591ddba9eefbcd7484",
+ "width": 64,
+ "height": 96,
+ "kind": "structure",
+ "name": "burnt-out two-storey brick house ruin seen from above: brick wall tops, the roof gone, the upper floor slab still spanning the south half with a broken edge, the north half open down to a charred lower floor with burnt beams; soot-blackened brick front with two rows of charred window holes",
+ "label": "wasteland_ruins/husk-e",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "refer",
+ "reasons": [
+  "3/4: 독립 눈이 「3/4 아님」 4/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면"
+ ],
+ "view34": {
+  "verdict": "refer",
+  "reasons": [
+   "독립 눈이 「3/4 아님」 4/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 7,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "wasteland_ruins",
+   "fallback": true,
+   "reason": "칩셋 wasteland_ruins 의 화풍 기준 묶음이 없다",
+   "hash": "5f62fef078ef7661"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 13,
+  "tileColorsP90": 19,
+  "darkV5": 32,
+  "nearBlackEdge": 0.01,
+  "opaqueTiles": 24
+ },
+ "eye": {
+  "verdicts": [
+   "borderline",
+   "wrong",
+   "borderline",
+   "wrong",
+   "right",
+   "wrong",
+   "right",
+   "borderline",
+   "right",
+   "right",
+   "wrong",
+   "borderline"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "north brick wall top and side wall tops (rim around the open interior)",
+      "rows": "0-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-8"
+     },
+     {
+      "part": "open charred lower floor with burnt beams (contents visible inside the open north half)",
+      "rows": "6-26",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "upper floor slab with broken edge, spanning the south half",
+      "rows": "27-36",
+      "evidence": "a",
+      "front_edge_line_row": 30,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "south brick wall top (coping band)",
+      "rows": "37-41",
+      "evidence": "a",
+      "front_edge_line_row": 41,
+      "eave_shadow_rows": "42-47"
+     }
+    ],
+    "main_top_rows": 42,
+    "front_face_rows": 54,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 0-41 are a horizontal top seen from above: wall tops at rows 0-5 and 37-41, an open charred interior at rows 6-26, and a light grey floor slab at rows 27-36. The south wall top ends in a lighter edge line at rows 40-41, followed by dark eave and lintel shadow at rows 42-47. Below that, the soot-blackened brick front face runs rows 42-95 (54 rows) with two rows of charred window holes and a door. No receding side face is drawn. The building has a clear top and a tall front face, so it reads as three-quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate matches the references on the primary facts. It shows 12 visible tones per tile against 12 and 10 for the references. Near-flat coverage is 4% against 0%, and only 12% of its dark edge pixels are neutral, so the outline is tinted. By eye, the brick wall has about 5 steps (dark soot, brick red, mid, light, plus mortar and rubble speckle). Individual bricks are broken up with scattered dark and light dots, and the charred window holes carry dark red-brown surrounds rather than black stickers. The slab edge, the burnt beams and the rubble strip in the upper half add varied detail. Total distinct colours (24) are well below the references (185 and 66), but that is expected from a locked palette and the visible texture holds up. The ramps are slightly shallower and the brick grain a little more uniform than the references' per-tile scallops, so I rate density slightly lower. There are no large flat fills, and a careful artist would accept it beside the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18120
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "brick wall tops (back and side rim)",
+      "rows": "0-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "open north half showing charred lower floor and burnt beams",
+      "rows": "6-26",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "surviving upper floor slab with broken edge",
+      "rows": "27-36",
+      "evidence": "a",
+      "front_edge_line_row": 30,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "front wall top / brick coping strip",
+      "rows": "37-41",
+      "evidence": "a",
+      "front_edge_line_row": 37,
+      "eave_shadow_rows": "42-43"
+     }
+    ],
+    "main_top_rows": 42,
+    "front_face_rows": 54,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 0-5 are a light brick wall-top frame. Rows 6-26 are the open, charred interior with beams visible inside (evidence d). Rows 27-36 are the grey floor slab seen from above, with a light edge line at row 30. Rows 37-41 are a brick coping band, followed by dark eave shadow at rows 42-47. Below that, the soot-blackened brick front face runs from row 42 to row 95 (54 rows) with two rows of charred window holes and a door. The main body therefore shows a large top region of about 42 rows above a tall front face, which reads as three-quarter view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The measured facts put the candidate level with the references. It has 12 visible tones per tile against 12 and 10, 4% near-flat coverage against 0%, and only 12% neutral dark edge pixels against 7% and 9%, so its outlines lean brown or red-brown rather than black. By eye, the brick facade has per-brick speckle and mortar variation, with soot and charring patches over about 5 tones of red-brown. The windows are dark brown-black holes with charred frames and no hard uniform outline. The slab edge and rubble are broken up with grey and brown dots and burnt beams, and I see no large flat fills. It is slightly less layered than the tile roofs of the references, because the roof is intentionally gone and the lighting is flatter. A careful artist could still accept it next to them without it looking sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17288
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "north and side brick wall tops",
+      "rows": "0-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-8"
+     },
+     {
+      "part": "open charred lower floor with burnt beams (north half)",
+      "rows": "6-26",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "upper floor slab spanning the south half with broken edge",
+      "rows": "27-36",
+      "evidence": "a",
+      "front_edge_line_row": 36,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "brick lip / front edge band of the slab and wall top",
+      "rows": "37-41",
+      "evidence": "a",
+      "front_edge_line_row": 41,
+      "eave_shadow_rows": "42-47"
+     }
+    ],
+    "main_top_rows": 42,
+    "front_face_rows": 54,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 0-41 show a large horizontal top region seen from above. It has brick wall tops at rows 0-5, an open interior with charred floor and diagonal beams at rows 6-26, and a pale grey floor slab at rows 27-36. A brick band at rows 37-41 forms the front edge line, and dark soot shadow follows at rows 42-47. Below that, the soot-blackened brick south face runs from row 42 to row 95 with two rows of window holes and a door. It is 54 rows tall, so the front face is well over 3 rows. No receding side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate matches the references on the primary facts. It has 12 visible tones per tile against 12 and 10, near-flat coverage of 4% against 0% for both references, and only 12% neutral dark edge pixels against 7% and 9%, so the outlines carry a tint. By eye, the brick facade is mottled with several brick tones and soot patches. The window holes have dark red-brown surrounds. The upper slab shows burnt beams, rubble and a broken edge. It has no large flat fills. Its total palette is small (24 colours against 66 and 185), which fits a locked palette. Its brick ramp is probably a step shallower than the roof-tile ramps in the references, but the tile-level information is equal.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17647
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "north brick wall top and side wall tops (rim around the open pit)",
+      "rows": "0-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "open burnt lower floor with charred beams (seen down into the pit)",
+      "rows": "6-26",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "surviving upper floor slab with broken front edge, plus the brick wall top along the south edge",
+      "rows": "27-41",
+      "evidence": "a",
+      "front_edge_line_row": 41,
+      "eave_shadow_rows": "42-47"
+     }
+    ],
+    "main_top_rows": 42,
+    "front_face_rows": 54,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 0-41 are a large horizontal top: wall-top rim in rows 0-5, a charred open interior with beams in rows 6-26, and a light floor slab in rows 27-36 that ends in a broken brick edge in rows 37-41. Dark eave shadow in rows 42-47, with soot above the windows, separates this top from the south face. The face is soot-blackened brick with two rows of charred window holes and a doorway in rows 42-95, which is 54 rows. The silhouette is a plain 64-wide rectangle with no receding side face. The top and front-face pattern matches the green cabinet and seat references, not the front-elevation ones."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate matches the references on the primary facts: 12 visible tones per tile (references 12 and 10) and 4% near-flat coverage (references 0%). Only 12% of its dark edge pixels are near-neutral, so the outlines lean brown/red-brown rather than neutral black. By eye, the soot-darkened brick front has mortar and brick speckle, with 4-5 steps from light brick through to charred dark. The charred windows have dark brown-black interiors, and the exposed beams and rubble on the upper slab are broken up by light and dark variation. The distinct-colour total is low (24 against 185 and 66), but that comes from the locked palette, and the visible information per tile is not thinner than the references. It is slightly less polished than the tiled roofs, which have per-tile highlights, but a careful artist would accept it next to them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 20418
+  }
+ ],
+ "decidedAt": "2026-10-25T14:27:56.754Z",
+ "cells": {
+  "16": [
+   "07783a59fc3988d3",
+   "080c4e1597fe494b",
+   "15151f213f7c55b7",
+   "222dbb35303e5f64",
+   "28d03eba9cefd374",
+   "2c86dda459702b3e",
+   "323a20d0426871f0",
+   "55c676c38a9dc053",
+   "5691f548f25c8ebf",
+   "577362a385c4d554",
+   "5be72011f4c1b662",
+   "6051780168e66245",
+   "6eb2b0362d130d69",
+   "7ca92daaca28404e",
+   "7ec93582109e5564",
+   "83ab68598c20a46c",
+   "84ebef287657449c",
+   "857789fbd0a489cc",
+   "b7d9db8552c93987",
+   "c1e2d7aee579b6b0",
+   "c77c4d240245f233",
+   "d8fe3bb11d6bd691",
+   "f4b84925ea1f07da",
+   "fb1ec680889165af"
+  ],
+  "24": [
+   "0b945551b09ecf6c",
+   "10254b3de45ba19f",
+   "266b9564f0444741",
+   "2a051b2034c42889",
+   "2b1f42920e3e9c63",
+   "32721dd72af65905",
+   "34e146e13cda475d",
+   "42c08af9715bb9d9",
+   "472d2ff5c6cc1339",
+   "48ef1596f8251edd",
+   "4fb0566b1fa8213d",
+   "511f3b2f3b466b7e",
+   "63d1175ffce8eedd",
+   "6e9bf654c556019a",
+   "879454b8b02aba8d",
+   "885d3a51fb9461f7",
+   "99daf73f29bd0493",
+   "a24a017d3b155a04",
+   "a36c981ff61d5252",
+   "af02d30032979482",
+   "ba5c63fa88c767ff",
+   "bc25ae877a35b443",
+   "be78a3fc1b855806",
+   "c0c2bda3f63e4d58",
+   "c656496b6a387590",
+   "cd0b0881b24f44c5",
+   "d2304b7d8f3242f9",
+   "d6e51898e0633acb",
+   "d9dfdbc57acea711",
+   "dcdce699cd2f2865",
+   "e5c2829f7041b709",
+   "f03d0d82f67373ec",
+   "f2e1d5baec092b18",
+   "f781b65f2b086d5c",
+   "f8975486bd617864",
+   "fc1fca21624c7e7c"
+  ],
+  "32": [
+   "1737149dce568068",
+   "31675994d3cfc198",
+   "5c6b739a79568bd5",
+   "abd4ccefe7dab555",
+   "e30bae64027cbbc8",
+   "ecdb75c9ccf7aaea"
+  ],
+  "48": [
+   "0741f00cb08d4a93",
+   "0fa72756a03db104",
+   "16d02eb071b051f6",
+   "60b425774c2355e2",
+   "6993b25a34a76086",
+   "782368463023800b",
+   "9252682059556e6a",
+   "9639e63ae9ced79d",
+   "c1ba4d6144b1fcfc",
+   "cde9874038bce9be",
+   "db000d0c57551745",
+   "e6b6c5a62a74317f"
+  ]
+ }
+}

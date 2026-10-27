@@ -12,6 +12,11 @@ import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
 import * as turnRunner from "@/editor/panels/aiTurnRunner";
 
+// Tests here build the ~63MB blank project (createBlankProject) and drive assistant sessions or editor
+// panels over it, fingerprinting/copying it per session. Under ci-full load (8 workers on 4-core runners)
+// single tests measured 10-50s, past vitest's 15s default, so the budget is raised for this file only.
+vi.setConfig({ testTimeout: 120_000 });
+
 vi.mock("@/ai/activityLog", async (original) => ({
   ...await original<typeof import("@/ai/activityLog")>(), recordAiActivity: vi.fn(async () => ({})),
 }));

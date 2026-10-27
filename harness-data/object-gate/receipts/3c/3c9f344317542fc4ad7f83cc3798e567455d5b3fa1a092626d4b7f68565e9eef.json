@@ -1,0 +1,449 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "3c9f344317542fc4ad7f83cc3798e567455d5b3fa1a092626d4b7f68565e9eef",
+ "width": 64,
+ "height": 144,
+ "kind": "structure",
+ "name": "narrow three-storey ruined office tower seen from above: the roof slab half gone, the remaining slab and the exposed top floor seen as planes with column stubs and bent rebar; the top storey stripped to a bare concrete frame of columns and floor slab edge with a dark gutted floor, the two lower storeys keep broken glass windows and a smashed double glass entrance door",
+ "label": "wasteland_ruins/husk-g",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 8,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "wasteland_ruins",
+   "fallback": true,
+   "reason": "칩셋 wasteland_ruins 의 화풍 기준 묶음이 없다",
+   "hash": "5f62fef078ef7661"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 17,
+  "tileColorsP90": 22,
+  "darkV5": 34,
+  "nearBlackEdge": 0.6,
+  "opaqueTiles": 36
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "roof slab and exposed rubble top (half gone)",
+      "rows": "1-44",
+      "evidence": "a",
+      "front_edge_line_row": 45,
+      "eave_shadow_rows": "49-51"
+     },
+     {
+      "part": "gutted top storey with bare frame, columns and dark interior",
+      "rows": "49-79",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "two lower storeys with broken windows, floor slab edges and smashed double door",
+      "rows": "80-143",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 44,
+    "front_face_rows": 95,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-44 are a large roof plane seen from above: a brown concrete slab on the left, rubble and debris on the right, with holes and rebar. It ends in a light front-edge band at about rows 44-48, followed by a dark shadow line at rows 49-51 (L=70 then 17). Below that is a tall south face of about 95 rows (rows 49-143) with the gutted top storey, window bays and floor slab edges. The result is a top surface plus a front face of 3 or more rows, so it reads as three-quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The candidate shows 17 visible tones per tile against 12 and 10 for the references, and only 1% near-flat coverage. The concrete walls carry mottled grain, stains, cracks and moss. The roof slab is speckled with rubble, dark holes and rebar. Windows have broken-glass highlights and the gutted top floor is dark with a visible frame. Dark edge pixels are 0% neutral, so outlines are tinted: dark teal-green beside concrete, not a black sticker line. Concrete steps are about 5, slightly fewer than the roof tile ramps on the references (about 6). Forms are separated by value and tinted edges, similar to the Beodeul approach. Overall it is at least as rich as the references for a ruined-concrete theme.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 13777
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "roof slab and exposed top floor (concrete slab with column stubs and rebar)",
+      "rows": "3-45",
+      "evidence": "a",
+      "front_edge_line_row": 48,
+      "eave_shadow_rows": "49-50"
+     },
+     {
+      "part": "storey 1 front face (gutted frame with dark floor, columns)",
+      "rows": "49-79",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "storeys 2-3 front face (broken windows, entrance door)",
+      "rows": "80-143",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 43,
+    "front_face_rows": 95,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The top of the tower is a large horizontal plane. It spans rows 3-45, with the brown slab on the left and the exposed floor on the right, and shows holes and rebar seen from above. It ends in a light front-edge band at about rows 44-48, with a dark line and shadow at rows 49-50. Below that, a front (south) face about 95 rows tall carries the stripped top floor, the windows and the entrance door. Both a top surface and a front face are present, so the object reads as three-quarter. No receding side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The measured facts favour the candidate. It has 17 visible tones per tile against 12 and 10 for the references. Near-flat coverage is 1%, close to the references' 0%. Dark edge pixels are 0% neutral, so the outlines lean toward the tint of the neighbouring material rather than black. By eye, the concrete walls have speckle, stains and grime in several lightness steps, about 5. The roof slab has debris and dark holes with varied tones. The windows have broken-glass glints and dark interiors, and the ivy is clumped in several greens. Nothing reads as a sticker outline or a large flat fill. The ramps are a little less layered than the references' tile roofs, which have 6 steps and per-tile highlights. The overall craft and information density are still comparable to the references, so a careful artist would accept it beside them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19162
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "remaining roof slab (left, brown-grey) and rubble-covered exposed slab (right)",
+      "rows": "1-48",
+      "evidence": "a",
+      "front_edge_line_row": 49,
+      "eave_shadow_rows": "50-51"
+     },
+     {
+      "part": "column stubs and bent rebar on the roof",
+      "rows": "4-43",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "gutted top storey (bare concrete frame, dark floor)",
+      "rows": "50-80",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "two lower storeys with broken windows and smashed double door",
+      "rows": "81-143",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 44,
+    "front_face_rows": 94,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-48 form a large roof slab seen from above, a broken brown slab on the left and rubble on the right. A light slab-edge band at rows 44-48 and a front-edge line at row 49 follow it, then dark eave shadow at rows 50-51. Below that, the front (south) face runs from row 50 to at least row 143 (about 94 rows). It shows the gutted top storey and two window storeys separated by floor-slab lines at about rows 81 and 113. The silhouette is a constant 64 px wide, so no side face is drawn. The main body therefore has a top surface of about 44 rows and a front face of 3+ rows."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The candidate has 17 visible tones per tile against 12 and 10 for the references, so it is at or above both. Near-flat coverage is 1% (references 0%), so there are no real flat fills. The concrete walls show mottled speckle, stains and cracks. The roof slab has dark holes and rebar, and the windows have broken glass with reflective highlights. Vines add a separate green ramp. The dark edge pixels are 0% neutral, so the outlines lean teal or green-grey with the material rather than being a black sticker line. Forms are mostly separated by value. The concrete ramp has about 5 steps (highlight, light, mid, shadow, deep gutted dark), slightly below the roof-tile ramps of the references but comparable on the walls. Window and entrance detail is as dense as the half-timber and stone walls of the references. A careful artist would accept it next to them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16053
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "roof slab and exposed top floor (rubble, rebar stubs)",
+      "rows": "3-44",
+      "evidence": "a",
+      "front_edge_line_row": 49,
+      "eave_shadow_rows": "50-52"
+     },
+     {
+      "part": "top storey gutted frame with columns and floor slab edge",
+      "rows": "51-80",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "two lower storeys with broken windows and smashed entrance door",
+      "rows": "81-143",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 42,
+    "front_face_rows": 93,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 3-44 form a large foreshortened roof slab: a brown-grey slab on the left and the exposed floor with rubble on the right. It ends in a light fascia/front-edge band at rows 44-49. Dark eave shadow follows at rows 50-52 (#265359, #091125). Below that is the south front face, about 93 rows (51-143), with the gutted top storey, window bands and floor-slab lines. No receding side face is drawn. The top surface is far more than a rim, so this is a three-quarter view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate has 17 visible tones per 16x16 tile against 12 and 10 for the references, and only 1% near-flat coverage, close to the references' 0%. The dark edge pixels are 0% neutral, so the outlines lean toward the neighbouring material (dark teal-grey beside concrete, dark green beside vines) and do not form a black sticker line. By eye, the concrete walls are speckled and stained, with cracked plaster and mottled rubble on the roof slab. The windows carry dark glass with highlight streaks, and vine clumps sit in several greens. The concrete ramp shows about 5 steps (highlight, light, mid, dark, deep), slightly fewer than Beodeul's 5-6 per material. That is fine for a ruin with a restrained palette. The candidate would sit acceptably beside the references and does not look thinner or flatter than them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16330
+  }
+ ],
+ "decidedAt": "2026-10-25T14:15:39.852Z",
+ "cells": {
+  "16": [
+   "0a90c0d00c44a805",
+   "0e185d230bf2ae81",
+   "23cbf1cbbe51447f",
+   "28144c874c4d5280",
+   "2a2c5b52102cbe62",
+   "311bcda34aa193cc",
+   "312b8cd23fa09a19",
+   "37dd22559798afc8",
+   "39231d2f59b7dc9c",
+   "39fe24ca06793b46",
+   "42448890ce42b21a",
+   "42c44ac9446e166f",
+   "443bf83f6951d02c",
+   "4d2095d1d11ca1e1",
+   "52c3bb8e18f7c6f0",
+   "62f8162596b99c18",
+   "776b941ec563db67",
+   "7f96c346e5806566",
+   "813c4cc5773b931f",
+   "880b7d4e5e24d177",
+   "8cb77ba91e982b1a",
+   "90277ee500f0e9c2",
+   "9817ae4674db5ba1",
+   "98b601b9f6878bd5",
+   "a01e8e5ff59cce2a",
+   "a16664ceaf3b7eca",
+   "a6fc797ac28d994f",
+   "b153a6b8358e3983",
+   "b1f29c3326590abb",
+   "b8cc4ab48603f8cd",
+   "c0270ca14879a286",
+   "c05b55fc1614ffd4",
+   "c7c3e429c7557816",
+   "d1d217ba5ab6ec80",
+   "e66c7822512352b4",
+   "f9d0f1b33ea0f030"
+  ],
+  "24": [
+   "032800422f2484b7",
+   "0434d77ea81bccf4",
+   "0b38215798045732",
+   "0d1b2ed5deef4496",
+   "0f5f50de08145a26",
+   "199b05b7da68ad02",
+   "1fd60c3ae20dfccc",
+   "1fe43e609e76500f",
+   "2759c4109f9f0a2d",
+   "27b4f676c7ceba24",
+   "280567a4eb326247",
+   "286ed79f8f1cd875",
+   "2f2e125202144477",
+   "31596ee65ce73146",
+   "31d5f0db23094a16",
+   "36a0bdf755390eac",
+   "3aa4496573b76b23",
+   "3ae2b8ecad085a96",
+   "3bf3c7dfb8b720b9",
+   "48e197abdb45418a",
+   "5138a9a435b9f8d3",
+   "537d82bfdb0b87b3",
+   "57b4c920380b8754",
+   "5a1626adf28b3883",
+   "5b1026a2777dc6bb",
+   "5ee1b5599bceedad",
+   "62a3e7da0b47538e",
+   "638faabcad62434e",
+   "68420783a59d8a6c",
+   "7050e8105e1588bb",
+   "75be841f99459209",
+   "7a688948e7dd9a2c",
+   "7ec22b5072ba3b98",
+   "82c0aa9562a800d8",
+   "832eeee49111659d",
+   "889ee2ec6f1f2293",
+   "8d72625cebdfb506",
+   "8ee4ba1f35727e5a",
+   "90aaec8e495b6e09",
+   "a55ae9f5c0fe6fa6",
+   "a902ef370d2e94fc",
+   "ae5817b3ee94983e",
+   "b2c93625a699e319",
+   "c3f64b9f4b175604",
+   "c48e1cdbe844f753",
+   "c70595653f262da9",
+   "cd1e77841cc000fa",
+   "d099ac2a6e5de197",
+   "d71698ae54344a54",
+   "d7e1ebaf57bed70f",
+   "e191cc0070095c59",
+   "e36fa445e8513040",
+   "eb8c370fc140dae8",
+   "fedd1056ceb5f4fe"
+  ],
+  "32": [
+   "01ecd563632fec24",
+   "0646bf3e4a5bc8df",
+   "0c74e0d2b2ae75ae",
+   "12cfbb3ac25d1450",
+   "24710db131242396",
+   "37e1bce4a53acf47",
+   "419e78ea1251eef3",
+   "4cfb8e9980e72819",
+   "4d555c6b2a52e35d",
+   "51f871606cf1d1dd",
+   "5c07cf28cf4f5e3a",
+   "6350d5b52b92a59f",
+   "6956b859d2d13085",
+   "988fede324e0e9f7",
+   "a1640b74f96767b3",
+   "abe371a7fd4a635f",
+   "b11f7c2a3fc78d22",
+   "cc5996ad19394e08",
+   "d27f027412d29958",
+   "eb82d6de528328de"
+  ],
+  "48": [
+   "06d5a2c420c6f17e",
+   "165657bbf2d82527",
+   "2cf78a00bd6641f9",
+   "44d9f61d25172eea",
+   "46701c8ce88e6d68",
+   "53732ca4604f8539",
+   "583f9acdf26daf60",
+   "5b855396bacc1e29",
+   "66788cac6141a01f",
+   "7e766412832a6216",
+   "b9576d7359668c40",
+   "c1589da305c72adf",
+   "c4444d1ad6d7e4a9",
+   "ca7e9756de6ed377",
+   "e5961a28fa14869e",
+   "e9a0c567149dd596",
+   "ee34c3575a4bbf32",
+   "f5519c7eeb226761"
+  ]
+ }
+}

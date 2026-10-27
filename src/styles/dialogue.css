@@ -221,6 +221,20 @@
   display: none;
 }
 
+/* 선택 질문은 화면 틀과 같은 글. 눈에 보이는 칸은 그대로 두고, 알림만 화면 밖에 둔다. */
+.dialogue-choice-announcement {
+  border: 0;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  padding: 0;
+  position: absolute;
+  white-space: nowrap;
+  width: 1px;
+}
+
 .dialogue-overlay.choices-active .choice-list {
   display: flex;
   flex: 1 1 auto;
@@ -566,7 +580,7 @@
 
 .dialogue-overlay .dialogue-face.dialogue-face-behind.dialogue-portrait-listener {
   filter: brightness(0.82) saturate(0.92);
-  opacity: 0.96;
+  opacity: 1;
   z-index: 0;
 }
 

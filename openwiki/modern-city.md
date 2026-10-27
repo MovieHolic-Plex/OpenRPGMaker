@@ -46,7 +46,7 @@ modern-chipset 하네스가 합성한 도시(건물·도로·소품·차량)를 
 - 도구는 시작 칸 → 모든 문 접근칸 도달·문 칸 막힘을 엔진 통행으로 다시 재고, 실패하면 맵을 안 바꾼다. 건물 이름표(`locations`, 태그 `modern-city-building`)에 문·접근칸·맞는 실내 방 구성(program)을 적는다.
 - QA: `qa/compose-street.mts OUT.json [W H seed …]` → `qa/render_map.py OUT.json DIR`.
 - **업무 지구 옵션 `district` (2026-10-24):** `landmark`(예: `tower10` — 가장 넓은 블록 왼쪽에 먼저 세움·공원 제외), `subwayExits`(1~4, 블록마다 5칸 틈을 비워 지하철 입구 키트 + 출구 번호 표지 `mc-prop-kr-exit-N`, 다른 블록 먼저), `korean:true`(점자 블록 줄 `mc-in-mci-tactile`·가로수 보호판·버스 쉘터·자전거 거치대·종류별 세로 간판 `mc-prop-kr-sign-*`). 결과 `subwayExits[{n,at,stair,step}]`·`propList`. 출구 번호 표지·세로 간판·보호판 그림은 `art_kr.py`/`bake_kr.py`(덧붙이기, 핀 `kr:<키트>:<x>,<y>`) — **3/4 관문 통과 전에는 굽지 않는다**(굽지 않은 키트는 구성기가 건너뛴다).
-- **행인 `add_street_walkers` (2026-10-24, `src/editor/tools/streetWalkersTool.ts`):** 사람마다 `stops`(2~8칸, `waitSec`·`face`·`vanish`)를 주면 지형 BFS 로 반복 custom 경로를 짠다. `vanish` 칸(문·계단 그림, 막힌 칸)은 마지막 걸음 전에 통과를 켜고 들어가 투명해졌다가 돌아 나온다. 그림은 charset `selectionId`/query(사람 생성 없음). 이벤트 id 머리 `ev_walker_`, `replace` 는 같은 이름만 지운다. 걷는 사람 앞에서 차가 서고(`playSceneTransit` playerBlocksCell 에 보이는 자율 NPC 칸), NPC 는 차 몸 칸으로 안 들어간다(`canNpcMove` → `transitBlocksCell`).
+- **행인 `add_street_walkers` (2026-10-24, `src/editor/tools/streetWalkersTool.ts`):** 사람마다 `stops`(2~8칸, `waitSec`·`face`·`vanish`)를 주면 지형 BFS 로 반복 custom 경로를 짠다. `vanish` 칸(문·계단 그림, 막힌 칸)은 마지막 걸음 전에 통과를 켜고 들어가 투명해졌다가 돌아 나온다. 그림은 charset `selectionId`/query(사람 생성 없음). 이벤트 id 머리 `ev_walker_`, `replace` 는 같은 이름만 지운다. 걷는 사람 앞에서 차가 서고(`playSceneTransit` playerBlocksCell 에 보이는 자율 NPC 칸), NPC 는 차 몸 칸으로 안 들어간다(`canNpcMove` → `transitBlocksCell`). **길은 보도·횡단보도만**(2026-10-26): BFS 가 `carLaneCells`(= `laneCells` − `crosswalkCells`, 칸 이름표·태그 판정, `placementRules.ts`)를 막고, 차도 칸에 준 들를 곳은 `invalid-args` 로 거절한다. 교차로 키트 칸 이름표 「교차로(12×12, 보도 모서리·횡단보도·정지선 포함)」는 괄호 속 «보도»·«횡단보도» 때문에 보도·횡단보도로 읽혔다 — `(… 포함)` 키트 설명 괄호는 판정에서 뺀다(#3535 과 같은 규칙).
 
 
 ## 거리 녹지 — 버들항 화풍 맞추기 (2026-10-14 quality-b, `scripts/content/modern-city-street/`)
@@ -94,6 +94,17 @@ modern-chipset 하네스가 합성한 도시(건물·도로·소품·차량)를 
 - `layout.ts` 는 규격이 있는 program(건물 id 또는 그 맵 key)의 배치 후보 중 규격 크기에 맞는 것을 고른다(작으면 칸당 3점, 크면 0.75점). 견본 방 크기는 위·아래 줄 너비 합 + 칸막이 + 바깥벽 = 규격이 되게 짰다. 백화점 청사진(`composeDepartmentStore`)도 48×38 바탕. 도구 설명(`build_hand_interior_room`)에 `venueScaleBrief()` 가 실린다.
 - 의자 방향: 탁자 둘레 의자는 탁자를 본다 — 북쪽 `-s`·남쪽 `-n`·서쪽 `-e`·동쪽 `-w`(`mci-chair-office-*`·`mci-chair-wood-*`·`mci-armchair-*`·`mci-sofa-*`). `builder.ts faceSeatsToTables` 가 견본·조수·청사진 어느 길로 온 남향 좌석이든 붙은 탁자 쪽 그림으로 바꾼다. 체육관 골대는 동서 양 끝 `gym-hoop-e`·`gym-hoop-w` 한 쌍.
 - 주차장 차는 새로 그리지 않고 거리 차량 `mc-veh-car-front-a-*`·`mc-veh-car-back-a-*` 칸을 그대로 쓴다(`park-car-*`). 통학 전동차는 modern_city 로 따로 짓지 않는다 — jp_city 손 도트 견본(`build_hand_interior_room({tileset:"jp_city", layout:{program:"train-car"}})`, 21×8 롱시트·우선석·출입문 둘·손잡이·봉)을 그대로 쓴다(2026-10-19 사용자 「전철은 기존에 만들던 게 있는데 그걸 그대로 쓰면 되는데」).
+
+## 막힌 이웃 `variation.sealed` · 남녀 센토 · 옥상 (2026-10-25, 시타마치 VQA)
+
+- `ModernProgramVariation.sealed: [[a,b],…]` — `layout.ts` 는 연결을 입구에서 인접 간선 BFS 로 짓는데, 이웃이라고 다 이어지면 안 되는 방이 있다(남탕↔여탕, 로비↔탕). `sealed` 쌍의 간선은 BFS 전에 빠진다. 문·트인 칸막이 어느 쪽도 그 사이에 생기지 않는다.
+- `mc_sento` = 번대 로비(가운데 아래) → 남/여 탈의실(양옆, 옆문) → 남탕/여탕(각자) → 사우나(남)·노천탕(여). 로비↔탕·남↔여 쌍은 sealed. 앞 판은 탕 하나에 남녀가 섞여 검수자 둘이 짚었다.
+- `mc_rooftop` = 콘크리트 데크 + 물탱크 기계실 + 사방 난간(남쪽은 출입구 틈). 데크 밖 «건물 밖» 칸(`modernCityRoomSpec.void`)은 저작자가 -1 로 비우고 `map.background.fromMap`(아래 거리 맵을 반 배율·안개)로 채우면 난간 너머로 동네가 보인다(시타마치 `buildRooftop`). 옥상 정원(마루)은 뺐다 — 옥상이 안뜰로 읽혔다.
+- `mc_sento_machi`(2026-10-25 VQA r1) = `mc_sento` 에서 위 줄(사우나·노천탕)을 뺀 골목 목욕탕(번대 로비·남녀 탈의실·남녀 탕 홀, 40×20). `dailyVenues.ts machiSento()` 가 원본에서 파생한다(줄·above·left·sealed·hubs 에서 두 방을 뺀다) — 원본 센토 견본을 고치면 같이 바뀐다. 시타마치 VQA 에서 사우나(금속 벤치 줄)·실내 노천탕이 «이상한 욕조 방·빈 마루방»으로 읽혀 뺐다.
+- `mc_rooftop` 데크는 가운데를 비운다 — 카페 탁자·의자 줄이 «옥상 카페·광장»으로 읽혀(VQA r1 둘 다) 벤치·화분만 난간 곁에 둔다.
+- `variation.plainDoorways`(2026-10-25): 연결 칸에 문짝이 없는(`DOOR_OF` 에 문 종류가 없는) 방 사이는 문틀 없이 트인 통로로 낸다. 가정집·베이커리·센토가 켠다 — 트인 입구 옆에 문짝이 따로 붙어 보였다(VQA r1).
+- 작은 사무소는 `mc_realty`(부동산 견본: 상담실·업무실·카운터 로비)를 쓴다. `mc_office`(대형 오피스 층, 엘리베이터·보안 게이트)는 상점가 진흥회 같은 동네 사무소로 쓰면 «회사 로비»로 읽혔다.
+- 사무소는 `mc_office`(밴드 연습실이 붙는 `mc_council_room` 시드 4 대신).
 
 ## 실조수 시험에서 나온 결함 (2026-10-14, gpt-6.1-sol — gemini-3.8-flash 는 할당량 429)
 

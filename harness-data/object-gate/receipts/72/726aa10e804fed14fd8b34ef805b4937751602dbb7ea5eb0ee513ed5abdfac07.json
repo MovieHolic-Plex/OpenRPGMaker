@@ -1,0 +1,406 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "726aa10e804fed14fd8b34ef805b4937751602dbb7ea5eb0ee513ed5abdfac07",
+ "width": 64,
+ "height": 32,
+ "kind": "other",
+ "name": "abandoned rusty box van lying east-west seen from above: long flat roof top, cab windshield, side with sliding door and flat tyres",
+ "label": "wasteland_ruins/van-rust",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "refer",
+ "reasons": [
+  "3/4: 독립 눈이 「3/4 아님」 12/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면",
+  "화풍: 화풍 판정이 갈림(걸린 판정 2/4)",
+  "화풍: 판정자 fail (2/4)"
+ ],
+ "view34": {
+  "verdict": "refer",
+  "reasons": [
+   "독립 눈이 「3/4 아님」 12/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면"
+  ]
+ },
+ "style": {
+  "verdict": "refer",
+  "reasons": [
+   "화풍 판정이 갈림(걸린 판정 2/4)",
+   "판정자 fail (2/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 14,
+  "tileColorsP90": 16,
+  "darkV5": 34,
+  "nearBlackEdge": 0.17,
+  "opaqueTiles": 8
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "east",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "van roof (long flat top with skylight hatches)",
+      "rows": "3-16",
+      "evidence": "a",
+      "front_edge_line_row": 16,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "cab windshield and hood area",
+      "rows": "4-15",
+      "evidence": "a",
+      "front_edge_line_row": 16,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "side body with sliding door",
+      "rows": "17-24",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "wheels and tyres",
+      "rows": "25-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 14,
+    "front_face_rows": 12,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The roof occupies rows 3-15 as a wide light-grey band with skylight hatches. A rust-coloured edge line at row 16 ends it (x=16 and x=32 show a colour change there). Below it the south side face runs from rows 17 to 24 with the sliding-door outline and rust streaks. The tyres sit at rows 25-30. The body has a top surface of about 14 rows over a front face of 8 or more rows, plus wheels. The eave shadow under the edge line is weak, but the roof band and the edge line still make this a top plus front structure rather than a flat slab."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "Measured facts: the candidate has 13 visible tones per tile, near-flat coverage of 4% and 0% near-neutral dark edge pixels. That is in the range of prop-hedge (9 tones, 0% flat) and below prop-well-roofed (20) and prop-stall-cheese (17). The outline is a tinted dark grey-blue/brown rather than black, so it reads as dark_material_tone. By eye, the grey body has about 4 steps (highlight, light, mid, shadow), plus rust patches in a couple of tones and dark tyres. The rust spots and panel seams add some texture, but the roof is largely a smooth grey with sparse variation, and the sliding door and windows are simple. It is a bit shallower than the 5-6 step references, but it has no big flat fills and no sticker outline, so it is close to the bar. Slightly lower density, so on balance it just misses the standard of the richest references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 15165
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "van roof (long flat top with windshield and roof windows)",
+      "rows": "3-16",
+      "evidence": "a",
+      "front_edge_line_row": 16,
+      "eave_shadow_rows": "17"
+     },
+     {
+      "part": "van side body with sliding door",
+      "rows": "17-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "tyres",
+      "rows": "25-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 14,
+    "front_face_rows": 11,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette is 64 px wide. Rows 3-16 form a light grey roof band with rust patches, roof windows and a teal windshield at the right. The band ends in a lighter edge line at row 16 (x=32, L=163), with a darker row 17 beneath it. Below that, rows 17-28 show the south side face with the sliding door outline, rust streaks and wheel arches, and rows 25-30 show the dark tyres. The roof is 14 rows and the front face about 11 rows, so it reads as a top surface over a front face. The roof is foreshortened less than ideal, but a top surface is present."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The van body has a grey-white ramp of about 5 steps (highlight, light, mid, shadow, deep) plus a separate 3-step rust ramp. The rust blotches, streaks and panel seams break up the roof and side, so there are no big dead fills. Measured near-flat coverage is only 4%, against 13% for the cheese stall. Visible tones per full tile are 13, above the hedge (9) and close to the stall (17) and well (20), only slightly below the richest references. The dark edge pixels are 0% near-neutral, so the outline carries a tint, as in the hedge and stall, and the form is not a uniform black sticker line. The windshield, tyres and sliding-door seam are separated by value as well as by outline. The texture is a little less granular than the roofed well's per-stone shading, so density is slightly lower, but it holds up next to the references. A careful artist would accept it beside them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17854
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "van roof (long flat top with vent hatch and rust patches)",
+      "rows": "3-16",
+      "evidence": "a",
+      "front_edge_line_row": 16,
+      "eave_shadow_rows": "17-17"
+     },
+     {
+      "part": "cab roof and windshield at east end",
+      "rows": "3-16",
+      "evidence": "a",
+      "front_edge_line_row": 16,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "south side panel with sliding door",
+      "rows": "17-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "flat tyres",
+      "rows": "25-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 14,
+    "front_face_rows": 12,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The roof is a 14-row band (rows 3-16) at the top of the silhouette. At x=32 it ends in a light front-edge line at row 16, followed by a dark eave shadow at row 17. Below that is a south side face of about 12 rows (17-28) with a sliding-door outline and rust streaks. Two dark tyres sit at rows 25-30. The width profile is a constant 64 px for rows 12-24, which is a boxy body, not a flat slab. A top surface plus a front face of 3 or more rows reads as three-quarter view. The cab windshield sits on the east end of the same top band."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate carries 13 visible tones per 16x16 tile. That sits between prop-hedge (9) and prop-stall-cheese (17) and prop-well-roofed (20), so it is not thinner than the references. Near-flat coverage is only 4%, against 13% for the cheese stall, so there are no large flat fills. The roof panel is a grey ramp of about 4-5 steps (highlight, light, mid, shadow, dark edge), with rust patches in orange-brown and dark-brown tones and speckle that break up the surface. Windows and tyres are shaded separately. The 0% near-neutral share of dark edge pixels means the outline is tinted, a dark bluish-grey or rust-brown beside the adjacent material rather than a uniform black sticker line. The sliding door seam, windshield and tyres read clearly. Texture is a little less varied than the best references, which have per-element grain, but a careful artist would accept it next to them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18206
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "east",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "van roof",
+      "rows": "3-16",
+      "evidence": "a",
+      "front_edge_line_row": 16,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "cab windshield and hood",
+      "rows": "3-15",
+      "evidence": "a",
+      "front_edge_line_row": 16,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "side body with sliding door",
+      "rows": "17-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "wheels",
+      "rows": "25-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 14,
+    "front_face_rows": 12,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette is 64 px wide from row 12 to row 24. Rows 3-15 are a flat roof plane with rust patches, a skylight panel and the windshield on the east end. A light 1-row edge line sits at row 16 (L=163 at x=32), and the vertical south side face starts below it. That face (rows 17-28) holds a door outline, a dark window and flat tyres that extend down to row 30. This is a roof top surface of about 14 rows above a front face of about 12 rows, so it reads as three-quarter. The eave shadow under the edge line is weak or absent, but the edge line plus the change from roof to side-panel shading is enough for evidence (a)."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate has 13 visible tones per 16x16 tile, close to prop-hedge (9) and below prop-well-roofed (20) and prop-stall-cheese (17). Near-flat coverage is 4%, which is low and comparable to the references. Dark edge pixels are 0% neutral, so the outline is tinted, a dark grey-blue/brown lean rather than a black sticker line. It reads as dark_material_tone. The roof is a pale grey with rust patches and some speckle, but it has only about 4 lightness steps and the rust streaks are fairly uniform. The roof panel, windshield and tyres are drawn with less per-material ramping and grain than the stall or well. The van is a large object, so I would expect richer variation in the long grey roof and side. Overall it is a decent attempt, but a careful artist would likely see it as slightly thinner than the best references. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 16646
+  }
+ ],
+ "decidedAt": "2026-10-22T14:22:06.617Z",
+ "cells": {
+  "16": [
+   "177093eb6483c3a2",
+   "4e322cf0174cb4f9",
+   "70da222ef6e1a9d7",
+   "81bcaef1262331ac",
+   "8e1531ab9a1c24e6",
+   "a555aa1c88ba61a8",
+   "a7d85bff92443608",
+   "dc9a861322b3518f"
+  ],
+  "24": [
+   "0cf92d5c8e676d13",
+   "0e933fd9f366d952",
+   "100fe139cf412711",
+   "12049ebefe16edd8",
+   "14d76d86c191345e",
+   "1b23261c52e86202",
+   "250bc04bedbe6fbf",
+   "2a03b0608dba4c0e",
+   "352a0d9e96503f74",
+   "3b00a96528806f98",
+   "3ce6b4bd2434d213",
+   "49688d1fa0030ea0",
+   "4d83ed838bda5219",
+   "4dee35c027c67be5",
+   "5cb356f8a828f602",
+   "66564881fdb45bfd",
+   "76cdac3b08111e1b",
+   "7d7ef089632cb842",
+   "82fb75eddd9e4378",
+   "9a783391b24dbba4",
+   "9f78be36e407e5c4",
+   "a0c035bef5c50a21",
+   "a9511d58d36c6975",
+   "aa737c7922300237",
+   "ab80fa50a2f55b18",
+   "bdd19e8001a016c1",
+   "bf89f0623b106f02",
+   "c6362db4065c9d5b",
+   "e10860bbfe3615ca",
+   "e206b8fc8f475670",
+   "e5281e29185c354b",
+   "e88126ffa9a2be22",
+   "ef8d4b5f904f317a",
+   "f142acc99e0d1079",
+   "f4dde7b6f9f95a35",
+   "fa382ff23eab97b9"
+  ],
+  "32": [
+   "ccf6508b3a45c2df",
+   "d523c3171abaddd9"
+  ],
+  "48": [
+   "042e12e7b8747942",
+   "2957039a6f2811d0",
+   "36a02f356d885317",
+   "52e61c2aa42d0262",
+   "6b03db840f163df6",
+   "719ff79e94056a45",
+   "97c09342e8f6d4a2",
+   "a1567a32623b75eb",
+   "b6cf2d2fe73a8acd",
+   "d0f82cb99e152738",
+   "d1d0878137f661a2",
+   "e28b99c331233a10"
+  ]
+ }
+}

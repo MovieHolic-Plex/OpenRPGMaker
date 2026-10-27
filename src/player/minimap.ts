@@ -1,5 +1,6 @@
 import type { GameEvent, GameMap, MapMinimapSetting, TilesetDef } from "@/project/types";
 import type { PlaySession } from "@/project/session";
+import { isTextEntryTarget } from "@/player/keyBindings";
 import { store } from "@/project/store";
 import { drawMapTileLayers, loadTilesetImage } from "@/editor/mapTileDraw";
 import { withWorldCoastRenderPass } from "@/project/defaults/worldCoastMapping";
@@ -218,4 +219,42 @@ export function destroyMinimap(state: MinimapRuntimeState | null): void {
 
 export function minimapSuppressedForTest(host: HTMLElement | null): boolean {
   return isSuppressed(host);
+}
+
+/** Fields the minimap hotkey reads. A full KeyboardEvent satisfies this. */
+export interface MinimapToggleKeyEvent {
+  readonly key: string;
+  readonly repeat?: boolean;
+  readonly isComposing?: boolean;
+  readonly keyCode?: number;
+  readonly ctrlKey?: boolean;
+  readonly metaKey?: boolean;
+  readonly altKey?: boolean;
+  readonly target?: unknown;
+}
+
+/**
+ * M toggles the field minimap. Typing, IME composition, and modifier chords do not.
+ * Dialogue, menus, and battle already hide the minimap; accepting M there would flip
+ * the saved hide flag with nothing on screen, so the map stays hidden after they close.
+ */
+export function acceptsMinimapToggle(event: MinimapToggleKeyEvent, host: HTMLElement | null): boolean {
+  if (event.repeat || event.isComposing || event.keyCode === 229) return false;
+  if (event.ctrlKey || event.metaKey || event.altKey) return false;
+  if (event.key.toLowerCase() !== "m") return false;
+  if (isTextEntryTarget(event.target)) return false;
+  if (isSuppressed(host)) return false;
+  return true;
+}
+
+export function minimapToggleKeyHandler(options: {
+  readonly presentationPending: () => boolean;
+  readonly host: () => HTMLElement | null | undefined;
+  readonly toggle: () => void;
+}): (event: MinimapToggleKeyEvent) => void {
+  return (event) => {
+    if (options.presentationPending()) return;
+    if (!acceptsMinimapToggle(event, options.host() ?? null)) return;
+    options.toggle();
+  };
 }

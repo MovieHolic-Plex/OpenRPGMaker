@@ -14,7 +14,6 @@
 import { describe, expect, it } from "vitest";
 import { canMove, isPassable } from "@/project/collision";
 import { COMBINED_TOWN_TILESET_ID } from "@/project/defaults/constants";
-import { defaultTilesets } from "@/project/defaults/defaultAssets";
 import {
   createStarterHouseInteriorMap,
   STARTER_HOUSE_INTERIOR_ENTRY,
@@ -22,8 +21,10 @@ import {
 } from "@/project/defaults/starterHouseTransfer";
 import { nearestPassableTile } from "@/player/playSceneMapCommands";
 import type { GameMap, Project } from "@/project/types";
+import { retiredEasyRpgTileset } from "./support/retiredEasyRpgTilesets";
 
-const tileset = defaultTilesets()[COMBINED_TOWN_TILESET_ID]!;
+// 시작 집 내부·함정 맵은 합본 마을 칩셋(TILE.* 번호) 위에 있다 — 2026-10-07 정리로 새 프로젝트에서 빠진 그 정의를 되살린다.
+const tileset = retiredEasyRpgTileset(COMBINED_TOWN_TILESET_ID);
 const project = { tilesets: { [COMBINED_TOWN_TILESET_ID]: tileset } } as unknown as Project;
 
 function reachableFrom(map: GameMap, sx: number, sy: number): Set<number> {

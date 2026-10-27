@@ -8,6 +8,8 @@ import { extractOriginalContext, originalContextWindow } from "@/ai/originalCont
 import { createBlankMap, createBlankProject } from "@/project/defaults";
 import type { Project } from "@/project/types";
 import { independentReviewPayload } from "./independentReviewFixture";
+// The 2026-10-07 default (beodeul_city, ~7MB) alone overflows complete review evidence; these window/scope cases keep the small retired sheet.
+import { RETIRED_COMBINED_TOWN_TILESET_ID, startOnRetiredCombinedTown } from "./support/retiredEasyRpgTilesets";
 
 /** Declare a switch/variable space and seed the authored start state for every id,
  * the way the editor writes it (measured: a 43-map village declares 1,000 of each). */
@@ -46,7 +48,7 @@ const declaredIntent = (collections: readonly string[]): IntentDeclaration => ({
 
 describe("review evidence scale", () => {
   it("delivers the flag space through the project summary, not one record per id", () => {
-    const project = createBlankProject();
+    const project = startOnRetiredCombinedTown(createBlankProject());
     declareFlagSpace(project, 400);
     const evidence = context(project);
     const ids = evidence.entries.map(entry => entry.id);
@@ -59,7 +61,7 @@ describe("review evidence scale", () => {
   });
 
   it("keeps an authored non-default start value as a reference", () => {
-    const project = createBlankProject();
+    const project = startOnRetiredCombinedTown(createBlankProject());
     declareFlagSpace(project, 400);
     project.session.switches.sw_7 = true;
     project.session.variables.var_9 = 5;
@@ -76,7 +78,7 @@ describe("review evidence scale", () => {
   });
 
   it("still includes flag records an intent explicitly declares", () => {
-    const project = createBlankProject();
+    const project = startOnRetiredCombinedTown(createBlankProject());
     declareFlagSpace(project, 400);
     const ids = entryIds(project, declaredIntent(["switches"]));
 
@@ -87,12 +89,12 @@ describe("review evidence scale", () => {
 
 describe("review evidence contexts", () => {
   const withMaps = (count: number): { before: Project; after: Project; mapIds: string[] } => {
-    const before = createBlankProject();
+    const before = startOnRetiredCombinedTown(createBlankProject());
     declareFlagSpace(before, 400);
     const mapIds = [before.startMapId];
     for (let i = 0; i < count - 1; i++) {
       const id = `map_extra_${i}`;
-      before.maps[id] = { ...createBlankMap(id, 40, 40), id };
+      before.maps[id] = { ...createBlankMap(id, 40, 40, RETIRED_COMBINED_TOWN_TILESET_ID), id };
       mapIds.push(id);
     }
     const after = structuredClone(before);
@@ -142,11 +144,13 @@ describe("review evidence contexts", () => {
     // The target map is where the user is standing, not what this review judges. A large
     // unchanged one can still overflow the envelope on its own, which is what the session's
     // single shrink-and-retry drops — required evidence for the changed map is untouched.
-    const before = createBlankProject();
+    const before = startOnRetiredCombinedTown(createBlankProject());
     declareFlagSpace(before, 400);
     const target = before.startMapId;
-    before.maps[target] = { ...createBlankMap(target, 512, 512), id: target };
-    before.maps.map_small = { ...createBlankMap("map_small", 8, 8), id: "map_small" };
+    // 640x640 (was 512x512): the overflow premise sat at 3.88M of the 4M body ceiling after the default
+    // database grew, so the large unchanged target no longer reliably overflowed on its own.
+    before.maps[target] = { ...createBlankMap(target, 640, 640, RETIRED_COMBINED_TOWN_TILESET_ID), id: target };
+    before.maps.map_small = { ...createBlankMap("map_small", 8, 8, RETIRED_COMBINED_TOWN_TILESET_ID), id: "map_small" };
     const after = structuredClone(before);
     after.maps.map_small = { ...after.maps.map_small!, name: "Renamed small" };
 
@@ -172,9 +176,9 @@ describe("review evidence contexts", () => {
   });
 
   it("packs a grid losslessly and keeps the literal form when packing would not help", () => {
-    const before = createBlankProject();
+    const before = startOnRetiredCombinedTown(createBlankProject());
     const target = before.startMapId;
-    before.maps[target] = { ...createBlankMap(target, 64, 64), id: target };
+    before.maps[target] = { ...createBlankMap(target, 64, 64, RETIRED_COMBINED_TOWN_TILESET_ID), id: target };
     // A hand-authored strip: uniform enough to pack, so the decode has runs to expand.
     const tiles = [...before.maps[target]!.lowerTiles];
     for (let i = 0; i < 200; i++) tiles[i] = i % 3;
@@ -217,7 +221,7 @@ describe("review evidence contexts", () => {
 
 describe("review evidence fit ladder", () => {
   const scene = (): { before: Project; after: Project; target: string } => {
-    const before = createBlankProject();
+    const before = startOnRetiredCombinedTown(createBlankProject());
     declareFlagSpace(before, 400);
     const after = structuredClone(before);
     after.maps[before.startMapId] = { ...after.maps[before.startMapId]!, name: "Renamed" };
@@ -264,7 +268,8 @@ describe("review evidence fit ladder", () => {
 
   it("never omits a reference that differs between the two sides", () => {
     const { before, after, target } = scene();
-    const tilesetId = Object.keys(after.tilesets)[0]!;
+    // The sheet the reviewed map actually references; Object.keys(...)[0] is now an unreferenced ~7MB bundled sheet.
+    const tilesetId = after.maps[target]!.tilesetId;
     after.tilesets[tilesetId] = { ...after.tilesets[tilesetId]!, name: "Retitled tileset" };
     const [actor] = after.database.actors;
     expect(actor).toBeDefined();
@@ -282,10 +287,10 @@ describe("review evidence fit ladder", () => {
     // A 200K reviewer window, and a changed map big enough that its own grids overflow it.
     const config = { ...defaultAiConfig(), providerId: "google-antigravity", model: "claude-opus-4-5" };
     expect(originalContextWindow(config)).toBe(200_000);
-    const before = createBlankProject();
+    const before = startOnRetiredCombinedTown(createBlankProject());
     declareFlagSpace(before, 400);
     const target = before.startMapId;
-    before.maps[target] = { ...createBlankMap(target, 512, 512), id: target };
+    before.maps[target] = { ...createBlankMap(target, 512, 512, RETIRED_COMBINED_TOWN_TILESET_ID), id: target };
     const after = structuredClone(before);
     after.maps[target] = { ...after.maps[target]!, name: "Renamed" };
 

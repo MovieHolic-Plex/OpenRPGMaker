@@ -4483,6 +4483,13 @@ Pi가 error 뒤 done을 보내도 성공 완료로 승격하지 않는다. 최�
 - 실서버 시험: `OPRN_LIVE_KEY=*** bun scripts/qa/openai-compat-live.mjs --base http://mdc-server:8318/v1 --models gemini-4-argon-high --items models,turn,effort,image --allow 'gemini-4-argon*' --block 'claude-*'` — 키는 환경변수로만 받고 출력은 마스킹되며, 패턴에 막힌 모델(claude-*)은 호출하지 않는다.
 - 안 돌린 것: vitest·게이트·typecheck(번들 확인은 esbuild·bun 으로 함). 이 PR 에 새 단위 테스트는 없다.
 
+### Windows 앱에서 「mdc-server:8318 이 안 된다」 (2026-10-25)
+
+- **CSP 문제가 아니다.** 렌더러는 호환 주소에 직접 fetch 하지 않는다 — 시험·모델 목록·채팅 모두 같은 출처 동반 서비스(`/auth/openai-compat/*`, `/v1/agent/run`; Electron 은 `app://` → 루프백 동반 서버)를 거치고 Node 쪽이 8318 을 부른다. Windows 의 Electron Node 도 `mdc-server` 를 100.73.251.77 로 풀고 연결된다(실측).
+- 실제 원인: 사용자 PC 의 `~/.oprn/openai-compat-endpoints.json` 에 Argon 프리셋이 **키 없이** 저장돼 있었다(모델 0, 시험 기록 없음). CLIProxyAPI 는 키 없으면 `401 Missing API key`. 그런데 시험 실패는 카드에 기록되지 않아(성공만 `recordTest`) 카드는 「아직 시험 안 함」, 모델이 없으니 「기본 연결로 사용」도 막혀 있었다.
+- 고친 것: 저장된 설정 그대로 한 시험은 실패도 `lastTest` 에 남기고 카드에 이유를 보인다(`ai-compat-last-error-<id>`). 오류 앞에 단계(「모델 목록 받기(GET /models)」)를 붙이고, 키가 비었으면 그 사실을 덧붙인다. Argon 프리셋 안내에 「API 키가 필요해요」. DNS 실패에는 「100.x 주소나 전체 이름(*.ts.net)」 대안.
+- **빈 답 지키기**(`guardedOpenAiCompatFetch`): 8318 은 이미지가 든 요청에 200 + 빈 내용(`content:null`, 도구 호출 없음, `stop`)을 준다. 그대로 두면 조수가 말없이 턴을 끝낸다. 이제 채팅 응답은 내용(글·도구 호출·추론)이 담긴 첫 조각까지만 모아 보고(스트림 전체를 붙잡지 않는다), 비었고 요청에 이미지가 있었으면 이미지 자리를 「못 봤다」 글(`OPENAI_COMPAT_IMAGE_OMITTED_NOTE`)로 바꿔 한 번 더 보낸다. 그래도 비거나 이미지가 없었으면 422 `empty reply` 로 바꿔 「빈 답을 돌려줬어요」 문장이 뜬다(422 는 전송 계층이 자동 재시도하지 않는다). 테스트 `test/openAiCompatEmptyReply.bun.test.ts`.
+
 ## 조수·팀 모드 렉 (2026-10-15)
 
 증상: 조수 패널을 열거나 팀 모드로 들어가면 편집기에서 사실상 아무것도 못 한다. 가설 「Phaser 렌더가 범인」은 **측정으로 기각**됐다 — Phaser step 비용 p50 0.3ms, 렌더하는 프레임 비율 11~16%, 팀 스트림 중에도 렌더 비용 p95 6ms. 범인은 메인 스레드의 JS·스타일 재계산이다.

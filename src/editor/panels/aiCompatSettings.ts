@@ -23,6 +23,7 @@ import {
   OPENAI_COMPAT_PRESETS,
   checkOpenAiCompatBaseUrl,
   checkOpenAiCompatPattern,
+  openAiCompatModelSeesImages,
   openAiCompatModelVerdict,
   parseOpenAiCompatReasoningMode,
   type OpenAiCompatReasoningMode,
@@ -175,7 +176,8 @@ export function renderAiCompatSettings(options: AiCompatSettingsOptions): AiComp
       ...(endpoint.reasoningMode === "field" ? ["추론 강도: reasoning_effort"] : endpoint.reasoningMode === "suffix" ? ["추론 강도: 모델 ID 접미사"] : []),
       ...(endpoint.allowModels.length ? [`허용 ${endpoint.allowModels.join(", ")}`] : []),
       ...(endpoint.blockModels.length ? [`차단 ${endpoint.blockModels.join(", ")}`] : []),
-      ...(endpoint.supportsImages ? ["이미지 입력"] : []),
+      ...(endpoint.supportsImages ? [endpoint.imageModels?.length ? `이미지 입력 ${endpoint.imageModels.join(", ")}` : "이미지 입력"] : []),
+      ...(endpoint.supportsImages && endpoint.imageBlindModels?.length ? [`그림 못 봄 ${endpoint.imageBlindModels.join(", ")}`] : []),
     ];
     const deleting = confirmingDelete === endpoint.id;
     const testButton = el("button", { class: "ai-assistant-action", text: "연결 시험", attrs: { type: "button" }, dataset: { testid: `ai-compat-card-test-${endpoint.id}` } }) as HTMLButtonElement;
@@ -219,6 +221,11 @@ export function renderAiCompatSettings(options: AiCompatSettingsOptions): AiComp
         .catch((error: unknown) => { loadError = describeError(error); loadErrorDetail = ""; renderList(); });
     });
 
+    // 마지막 시험이 실패했으면 그 이유(어느 단계·무엇을 고칠지)를 카드에 남긴다. 예전에는 「마지막 시험 실패」 알약만 있어서
+    // 키 없이 저장한 엔드포인트가 왜 안 되는지 카드에서 알 수 없었다.
+    const failureNote = endpoint.lastTest && !endpoint.lastTest.ok && endpoint.lastTest.message
+      ? el("p", { class: "ai-compat-warning", text: endpoint.lastTest.message, attrs: { role: "status" }, dataset: { testid: `ai-compat-last-error-${endpoint.id}` } })
+      : null;
     const toolsWarning = endpoint.lastTest?.toolsOk === false
       ? el("p", {
         class: "ai-compat-warning",
@@ -240,6 +247,7 @@ export function renderAiCompatSettings(options: AiCompatSettingsOptions): AiComp
         ] }),
         el("div", { class: "ai-compat-pills", children: [keyPill, testPill] }),
         ...(flags.length ? [el("small", { class: "ai-config-help", text: flags.join(" · ") })] : []),
+        ...(failureNote ? [failureNote] : []),
         ...(toolsWarning ? [toolsWarning] : []),
         cardResult,
         renderRoleAssigner(endpoint),
@@ -273,7 +281,9 @@ export function renderAiCompatSettings(options: AiCompatSettingsOptions): AiComp
       });
       const imageWarning = slot.id === "vision" && !endpoint.supportsImages
         ? el("small", { class: "ai-compat-warning", text: "이미지 입력이 꺼져 있어요. 편집에서 「이미지 입력」을 켜야 시각 관찰에 쓸 수 있어요." })
-        : null;
+        : slot.id === "vision" && input.value.trim() && !openAiCompatModelSeesImages(endpoint, input.value.trim())
+          ? el("small", { class: "ai-compat-warning", text: `「${input.value.trim()}」 은(는) 그림을 보지 못해요(그림 시험·그림 모델 패턴). 그림을 보는 모델 ID 를 고르세요.` })
+          : null;
       apply.addEventListener("click", () => {
         const model = input.value.trim();
         if (!model) {
@@ -469,6 +479,8 @@ export function renderAiCompatSettings(options: AiCompatSettingsOptions): AiComp
       urlNote.textContent = lines.join(" ");
       urlNote.dataset.tone = !check ? "idle" : !check.ok ? "bad" : check.insecurePublic ? "warn" : "idle";
     };
+    // 프리셋이 아는 «그림을 실제로 보는 모델» — 폼에 칸은 없고 저장할 때 같이 보낸다(연결 시험의 그림 시험이 나머지를 채운다).
+    let presetImageModels: readonly string[] | undefined;
     presetSelect.addEventListener("change", () => {
       const preset = OPENAI_COMPAT_PRESETS.find((entry) => entry.id === presetSelect.value);
       presetHint.textContent = preset?.hint ?? "";
@@ -479,6 +491,7 @@ export function renderAiCompatSettings(options: AiCompatSettingsOptions): AiComp
       allowModels.value = (preset.allowModels ?? []).join("\n");
       blockModels.value = (preset.blockModels ?? []).join("\n");
       images.input.checked = preset.supportsImages === true;
+      presetImageModels = preset.imageModels;
       refreshUrlNote();
       refreshReasoningHelp();
       refreshPatternNote();
@@ -568,6 +581,7 @@ export function renderAiCompatSettings(options: AiCompatSettingsOptions): AiComp
         allowModels: patternList(allowModels),
         blockModels: patternList(blockModels),
         supportsImages: images.input.checked,
+        ...(presetImageModels ? { imageModels: [...presetImageModels] } : {}),
         maxOutputTokens: Number(maxTokens.value),
         contextWindow: Number(contextWindow.value),
         firstTokenTimeoutSec: Number(timeoutSec.value),

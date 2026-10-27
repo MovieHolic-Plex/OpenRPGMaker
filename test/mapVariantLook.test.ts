@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { applyVariantLook, resolveVariantLook } from "@/editor/tools/mapVariantLook";
+import { applyVariantLook, parseKeepIntact, resolveVariantLook } from "@/editor/tools/mapVariantLook";
 import { BEODEUL_NATURE } from "@/project/defaults/beodeulNature";
 import { appendStructurePlacement, captureStructureTiles } from "@/project/structurePlacements";
 import type { GameMap, Project } from "@/project/types";
@@ -115,5 +115,31 @@ describe("derive_map_variant 시대 겉모습(J03)", () => {
     expect(report.demolishedBuildings).toBe(0);
     expect(map.defaultLighting).toBeDefined();
     expect(warnings.join(" ")).toContain("structurePlacements");
+  });
+
+  it("burned 는 집 자리를 잿빛 집터·숯 기둥으로 바꾸고 keepIntact 건물 하나는 그대로 둔다(폴른 스타 2막 B5)", () => {
+    expect(resolveVariantLook({ name: "새벽샘 (서른 해 전 불탄 마을)" })).toBe("burned");
+    expect(resolveVariantLook({ era: "ruin", look: "burned" })).toBe("burned");
+    expect(parseKeepIntact("north")).toBe("north");
+    expect(parseKeepIntact("3,4")).toEqual({ x: 3, y: 4 });
+    expect(parseKeepIntact("top")).toEqual({ error: expect.stringContaining("keepIntact") });
+    const { draft, map } = townDraft();
+    const kit = (id: string, rows: { tiles: number[]; upperTiles: number[] }[]) => ({ id, kind: "section", width: rows[0]!.tiles.length, height: rows.length, rows, learnedFrom: "db-authored" });
+    const ground = (tile: number) => [0, 1, 2].map(() => ({ tiles: [tile, tile, tile], upperTiles: [-1, -1, -1] }));
+    (draft.tilesets.ts as unknown as { structureKits: unknown[] }).structureKits.push(
+      kit("bd-pick-mining-valley-ground-slagg", ground(40)),
+      kit("bd-pick-mining-valley-ground-rock", ground(41)),
+      kit("bd-pick-volcano-cave-pillar-broken-a", [{ tiles: [-1], upperTiles: [60] }, { tiles: [-1], upperTiles: [61] }]),
+      kit("bd-pick-volcano-cave-coal-pile", [{ tiles: [-1, -1], upperTiles: [70, 71] }]),
+    );
+    const report = applyVariantLook(draft, map, "burned", [], "variants[b]", { keepIntact: "west" });
+    expect(report.keptIntact).toMatchObject({ x: 2, y: 3, w: 5, h: 5 });
+    expect(report.demolishedBuildings).toBe(1);
+    const rect = (x0: number) => Array.from({ length: 25 }, (_, n) => (3 + Math.floor(n / 5)) * map.width + x0 + (n % 5));
+    expect(rect(2).every((index) => map.upperTiles[index] === 900)).toBe(true);
+    expect(rect(12).some((index) => map.upperTiles[index] === 900)).toBe(false);
+    expect(rect(12).every((index) => map.lowerTiles[index] === 40 || map.lowerTiles[index] === 41)).toBe(true);
+    expect(rect(12).filter((index) => map.upperTiles[index] === 61).length).toBeGreaterThanOrEqual(2);
+    expect(map.climate).toBeUndefined();
   });
 });

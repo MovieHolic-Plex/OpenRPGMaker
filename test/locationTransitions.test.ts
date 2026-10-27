@@ -7,7 +7,11 @@
 //      옛 프로젝트/세이브는 byte-stable 이고 SCHEMA_VERSION 이 오르지 않는다.
 import { describe, expect, it } from "vitest";
 import { createBlankProject } from "@/project/defaults";
-import { TILE } from "@/project/defaults/constants";
+import { DEFAULT_TILESET_ID, TILE } from "@/project/defaults/constants";
+import { blankFillTileFor } from "@/project/defaults/defaultMaps";
+
+// 로케이션 계약은 칩셋과 무관하다 — 현재 기본 칩셋(버들항)의 빈 풀밭 위에서 잰다. 합본 마을은 2026-10-07 정리로 새 프로젝트에서 빠졌다.
+const GROUND = blankFillTileFor(DEFAULT_TILESET_ID);
 import { SCHEMA_VERSION } from "@/project/types";
 import { deserialize, serialize } from "@/project/io";
 import { projectLint } from "@/project/lint/projectLint";
@@ -52,9 +56,9 @@ function projectWithMap(width = 20, height = 20): Project {
     name: "로케이션 맵",
     width,
     height,
-    tilesetId: "easyrpg_chipset_combined_town",
+    tilesetId: DEFAULT_TILESET_ID,
     tileSize: 16,
-    lowerTiles: new Array(width * height).fill(TILE.GRASS),
+    lowerTiles: new Array(width * height).fill(GROUND),
     upperTiles: new Array(width * height).fill(TILE.EMPTY),
     events: [],
   };
@@ -288,7 +292,9 @@ describe("location transitions — schema load / migrate / save", () => {
     const project = projectWithMap();
     const map = project.maps[MAP_ID]!;
     map.events = [{ id: "ev_talk", x: 1, y: 1, trigger: { kind: "action" }, commands: [] }];
-    const before = serialize(project);
+    // 디스크에 있는 옛 프로젝트는 이미 한 번 로드 정규화를 거친 모양이다. 갓 만든 createBlankProject 는 첫 로드에서
+    // 기본 DB·system 이 정규화된다(배우 characterIndex 0 생략·직업 기술 순서) — 트리거와 무관하므로 그 모양에서 잰다.
+    const before = serialize(deserialize(serialize(project)));
     expect(serialize(deserialize(before))).toBe(before);
     // 점유 기록도 생기지 않는다 — 세션 필드는 런타임에서만 만들어진다.
     expect(JSON.parse(before).session.occupiedLocationIds).toBeUndefined();

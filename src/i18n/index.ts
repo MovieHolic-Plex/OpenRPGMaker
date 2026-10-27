@@ -4,6 +4,7 @@
 
 import {
   detectLocale,
+  editorIntlLocale,
   LOCALE_HTML_LANG,
   saveLocalePreference,
   SOURCE_LOCALE,
@@ -31,6 +32,11 @@ export function getLocale(): SupportedLocale {
 
 export function t(source: string): string {
   return currentTranslator?.translate(source) ?? source;
+}
+
+/** 편집기 크롬의 날짜·시각. 고른 언어의 Intl 태그로 만든다. 게임 화면 글자에는 쓰지 않는다. */
+export function formatEditorDate(date: Date, options?: Intl.DateTimeFormatOptions): string {
+  return date.toLocaleString(editorIntlLocale(currentLocale), options);
 }
 
 async function loadTranslator(locale: SupportedLocale): Promise<Translator | null> {

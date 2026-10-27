@@ -6,9 +6,10 @@ import { runTool, type ToolContext } from "@/editor/tools";
 import { createBlankProject } from "@/project/defaults";
 import { COMBINED_TOWN_TILESET_ID } from "@/project/defaults/constants";
 import type { TilesetDef } from "@/project/types";
+import { withRetiredEasyRpgTilesets } from "./support/retiredEasyRpgTilesets";
 
 function context(): { ctx: ToolContext; tileset: () => TilesetDef } {
-  const ctx: ToolContext = { project: createBlankProject() };
+  const ctx: ToolContext = { project: withRetiredEasyRpgTilesets(createBlankProject()) };
   return { ctx, tileset: () => ctx.project.tilesets[COMBINED_TOWN_TILESET_ID] };
 }
 
@@ -26,7 +27,7 @@ describe("tile_query ask:vocab", () => {
 
 describe("tile_query ask:labels tileset resolution", () => {
   it("defaults labels to startMap tileset so interior maps do not see combined-town labels", () => {
-    const project = createBlankProject();
+    const project = withRetiredEasyRpgTilesets(createBlankProject());
     const mapId = project.startMapId;
     const map = project.maps[mapId]!;
     map.tilesetId = "easyrpg_chipset_interior";
@@ -42,7 +43,7 @@ describe("tile_query ask:labels tileset resolution", () => {
   });
 
   it("mapId overrides default when querying another map tileset", () => {
-    const project = createBlankProject();
+    const project = withRetiredEasyRpgTilesets(createBlankProject());
     const start = project.maps[project.startMapId]!;
     start.tilesetId = "easyrpg_chipset_interior";
     // add outdoor map

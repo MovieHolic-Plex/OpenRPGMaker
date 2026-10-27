@@ -62,6 +62,6 @@ describe("store music pick", () => {
     const data = pick(projectWithPack(), { scene: "ending", query: "조선", limit: 5 });
     expect(data.sceneFallback).toBe(true);
     expect(data.candidates.length).toBeGreaterThan(0);
-    expect(data.guidance).toContain("store_search");
+    expect(data.guidance).toContain("store_find_music");
   });
 });

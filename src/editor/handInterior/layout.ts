@@ -395,6 +395,9 @@ function programVariation(tilesetId: string, req: LayoutRequest): { v: ModernPro
 interface Want { id: string; kind: string; tw: number; th: number; bw: number; bh: number; minW: number; minH: number; floor?: string; wall?: string; template?: InteriorRoomTemplate; dress?: HallDress }
 interface Rect { x: number; y: number; w: number; h: number }
 
+/** 바깥 출구 틈을 내지 않는 방 — 전철 차내는 남쪽 벽이 좌석·문 그림이라 틈이 좌석 사이에 났다(J45). 드나들기는 벽면의 차 문(st-car-door) 앞 칸이다. */
+const NO_EXTERIOR_EXIT_KINDS: ReadonlySet<string> = new Set(["traincar"]);
+
 export class LayoutError extends Error { constructor(message: string) { super(message); this.name = "LayoutError"; } }
 
 /** 요청 → 방 목록(목표 크기·견본). */
@@ -442,7 +445,10 @@ export function layoutWants(tilesetId: string, req: LayoutRequest): Want[] {
     const hasStairwell = Boolean(template?.items.some((it) => it.t === "o" && /stairwell/u.test(it.id)));
     const small = !hasStairwell && /^(hall|corridor|genkan|toilet|bath|unitbath|dressing|cell)$/u.test(q.kind);
     const minH = Math.max(small ? 4 : 5, Math.min(th, small ? 4 : 5));
-    return { id, kind: q.kind, tw, th: Math.max(th, minH), bw: tw0, bh: Math.max(th0, minH), minW: Math.max(2, Math.min(tw, 3) - (tw <= 2 ? 1 : 0)), minH,
+    // 견본 폭을 가로지르는 띠(선로·물길 같은 넓이 키트 't' 가 x 0 에서 견본 폭 끝까지)가 든 방은 견본보다 좁아지면 띠가 통째로 빠진다
+    // (2026-10-25 J45: 승강장이 15칸으로 잘려 16칸 선로·승강장 끝 줄·승차 표시가 모두 빠졌다) — 그 방의 최소 폭은 견본 폭이다.
+    const spansWidth = Boolean(template?.items.some((it) => it.t === "t" && it.x === 0 && (it.w ?? 0) >= template.w));
+    return { id, kind: q.kind, tw, th: Math.max(th, minH), bw: tw0, bh: Math.max(th0, minH), minW: spansWidth ? tw : Math.max(2, Math.min(tw, 3) - (tw <= 2 ? 1 : 0)), minH,
       floor: q.floor ?? pal?.[0] ?? template?.floor, wall: q.wall ?? pal?.[1] ?? template?.wall, template };
   });
 }
@@ -634,8 +640,10 @@ function buildCandidatesForVariant(
   const baseWants = [...layoutWants(tilesetId, req), ...hallWants];
   const vary = programVariation(tilesetId, req);
   const entrance = pickEntrance(baseWants, req.entrance || !vary?.v.entrance ? req : { ...req, entrance: vary.v.entrance });
-  const explicitFloorIds = new Set((req.rooms ?? []).filter((q) => q.floor).map((q) => q.id ?? q.kind));
-  const explicitWallIds = new Set((req.rooms ?? []).filter((q) => q.wall).map((q) => q.id ?? q.kind));
+  const keepKinds = new Set(vary?.v.keepMaterials ?? []);
+  const keptIds = baseWants.filter((w) => keepKinds.has(w.kind)).map((w) => w.id);
+  const explicitFloorIds = new Set([...(req.rooms ?? []).filter((q) => q.floor).map((q) => q.id ?? q.kind), ...keptIds]);
+  const explicitWallIds = new Set([...(req.rooms ?? []).filter((q) => q.wall).map((q) => q.id ?? q.kind), ...keptIds]);
   const wants: Want[] = baseWants.map((w, idx) => {
     const isEnt = w.id === entrance;
     const fixed = Boolean(vary?.v.fixed?.includes(w.kind));
@@ -657,6 +665,7 @@ function buildCandidatesForVariant(
   const pairOf = (list: readonly Pair[] | undefined) => (list ?? []).map(pairTuple).flatMap(([p, q]) =>
     wants.filter((w) => matches(w, p)).flatMap((a) => wants.filter((w) => w !== a && matches(w, q)).map((b) => [a.id, b.id] as [string, string])));
   const programOpen = pairOf(vary?.v.open);
+  const sealedPairs = pairOf(vary?.v.sealed);
   const prefer = [...pairOf(req.prefer), ...pairOf(PREFER_DEFAULT)];
   const openPairs = [...pairOf(req.open), ...programOpen, ...pairOf(OPEN_DEFAULT)];
   const isOpen = (a: string, b: string) => openPairs.some(([p, q]) => (p === a && q === b) || (p === b && q === a));
@@ -700,7 +709,8 @@ function buildCandidatesForVariant(
       for (const q of rects.values()) { q.x -= mx; q.y -= my; }
     }
     const BW = Math.max(...[...rects.values()].map((q) => q.x + q.w)) + 1, BH = Math.max(...[...rects.values()].map((q) => q.y + q.h)) + 1;
-    const edges = adjacency(rects);
+    // program 이 막은 쌍(sealed)은 이웃이어도 문을 내지 않는다 — 남탕↔여탕·로비↔목욕 홀(2026-10-25 센토 남녀 분리).
+    const edges = adjacency(rects).filter((e) => !sealedPairs.some(([p, q]) => (p === e.a && q === e.b) || (p === e.b && q === e.a)));
     const prio = (e: Edge, from: string) => {
       const to = e.a === from ? e.b : e.a;
       return (prefer.some(([p, q]) => (p === from && q === to) || (p === to && q === from)) ? 0 : 4) + (isOpen(from, to) ? 0 : 1) + (isHub(byId.get(to)!.kind) ? 0 : 2);
@@ -764,7 +774,7 @@ function buildCandidatesForVariant(
         return e.kind === "h" && !/^(genkan|entrance)$/u.test(lower.kind) ? { a: e.a, b: e.b, open: true, span } : { a: e.a, b: e.b, open: true };
       }
       const door = DOOR_OF[A.kind]?.[e.kind] ?? DOOR_OF[B.kind]?.[e.kind];
-      return { a: e.a, b: e.b, ...(door && S.objects[door] ? { door } : {}) };
+      return { a: e.a, b: e.b, ...(door && S.objects[door] ? { door } : vary?.v.plainDoorways ? { door: "none" } : {}) };
     });
     // 변주 seed 의 동↔서 뒤집기는 점수를 다 매긴 뒤 결과 좌표에만 한다 — 왼·오른 쌍 규칙까지 거울로 뒤집힌 배치가 된다.
     const rooms: LayoutRoom[] = wants.map((w) => {
@@ -812,7 +822,7 @@ function buildCandidatesForVariant(
         score: Math.round(score * 100) / 100,
         rooms,
         connect,
-        exit: { room: entrance, ...(vary?.v.noExteriorExit ? { width: 0 } : exitX !== undefined ? { x: exitX } : {}) },
+        exit: { room: entrance, ...(vary?.v.noExteriorExit || NO_EXTERIOR_EXIT_KINDS.has(exitRoom.kind) ? { width: 0 } : exitX !== undefined ? { x: exitX } : {}) },
         notes,
         styleVariant,
       });

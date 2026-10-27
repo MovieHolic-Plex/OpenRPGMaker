@@ -6,7 +6,7 @@ import type { JpRegion, JpRegionCategory, JpRegionOp, JpZoneHint } from "./japan
 
 export interface JpRegionStep {
   /** paint_forest: args.kinds(칸마다 0 숲 아님·1 활엽·2 대숲·3 벚나무·4 삼나무·5 단풍·6 소나무·7 신사 섞인 숲(소나무+단풍)·8 산비탈 섞인 숲(삼나무+활엽), 길이 W*H; 6~8 은 r3 오토타일이 있을 때만)·args.seed — forestPainter.paintJpForest 가 칠한다. */
-  readonly tool: "fill_region" | "stamp_object" | "paint_forest";
+  readonly tool: "fill_region" | "stamp_object" | "paint_forest" | "paint_tiles";
   readonly args: Record<string, unknown>;
   readonly note: string;
 }
@@ -267,6 +267,11 @@ export function planJpRegionScene(input: {
   readonly kitSize: (kitId: string) => { readonly w: number; readonly h: number } | undefined;
   /** 칩셋에 붓으로 칠하는 숲 오토타일 r3(jp-forest3-*)이 있는가 — 있으면 FOREST 구획을 paint_forest 로 칠한다. */
   readonly forestAutotile?: boolean;
+  /**
+   * 가로(동서) 큰길 횡단보도 덧그림 칸 — 흰 줄이 차 진행 방향(동서)과 나란한 투명 칸(jp-road-lane-crosswalk-h 의 줄 칸).
+   * 주면 2층에 칠한다. 없으면 옛 1칸 키트 jp-gnd-zebra(세로 줄 — 동서 길에는 방향이 틀리다)로 낮춘다.
+   */
+  readonly crosswalkTile?: number;
 }): JpRegionPlan {
   const { region, mapId, width: W, height: H, seed, kitSize } = input;
   if (region.engine.kind !== "scene") throw new Error(`${region.id} 은 장면 지역이 아니다(engine ${region.engine.kind})`);
@@ -281,6 +286,7 @@ export function planJpRegionScene(input: {
   const path = new Uint8Array(W * H);      // 1 = 길·보도·광장·선로·물·논(onPath 키트만)
   const wet = new Uint8Array(W * H);       // 1 = 물·논(최종 surface 에서만 도출)
   const used = new Uint8Array(W * H);      // 1 = 키트가 점유한 칸
+  const vehicleCell = new Uint8Array(W * H); // 1 = 차(위층만 그리는 키트)가 덮은 칸 — 그 밑 노면 표시(외측선·빗물받이·맨홀)는 그대로 깐다
 
   const fillSteps: JpRegionStep[] = [];
   const stampSteps: JpRegionStep[] = [];
@@ -436,6 +442,10 @@ export function planJpRegionScene(input: {
     if (s === JpSurface.ROAD && isBaseRow && !isVehicleKit(id) && !k.includes("fumikiri")) {
       return false;
     }
+    // 차는 몸 전체가 차도(큰길·생활도로·주차 마당) 위에 있어야 한다 — 바퀴 줄이 보도 띠에 걸치면 차 밑이 보도 판석 상자로 보였다(2026-10-25 J44).
+    if (isVehicleKit(id) && s !== JpSurface.ROAD && s !== JpSurface.LANE && s !== JpSurface.YARD && s !== JpSurface.LOT && s !== JpSurface.PLAZA) {
+      return false;
+    }
     if (path[cellIdx] && !onPath) {
       if (!isBaseRow && isTreeOrBushKit(k) && (s === JpSurface.WALK || s === JpSurface.LANE || s === JpSurface.TRAIL || s === JpSurface.PLAZA || s === JpSurface.YARD)) {
         return true;
@@ -480,7 +490,8 @@ export function planJpRegionScene(input: {
   };
 
   const stamp = (kit: string, x: number, y: number, w: number, h: number, fromOp = "op") => {
-    for (let yy = y; yy < y + h; yy++) for (let xx = x; xx < x + w; xx++) used[yy * W + xx] = 1;
+    const vehicle = isVehicleKit(kit);
+    for (let yy = y; yy < y + h; yy++) for (let xx = x; xx < x + w; xx++) { used[yy * W + xx] = 1; if (vehicle) vehicleCell[yy * W + xx] = 1; }
     stampSteps.push({ tool: "stamp_object", args: { objectId: `kit:jp_city/${kit}`, mapId, x, y }, note: kit });
     stampedRecords.push({ kit, x, y, w, h, fromOp });
     if (fromOp !== "decal") kitCounts.set(kit, (kitCounts.get(kit) ?? 0) + 1);
@@ -874,6 +885,8 @@ export function planJpRegionScene(input: {
   }
 
   function decorateRoads(): void {
+    // 노면 표시는 아래층 1칸 키트다 — 위층만 그리는 차 밑에도 깐다(차 자리만 비우면 차가 표시 없는 맨 아스팔트 상자 위에 선 것처럼 보였다, J44).
+    const bare = (i: number) => !used[i] || vehicleCell[i] === 1;
     for (const r of hRoads) {
       let cwX = -1;
       for (let tryX = Math.floor((r.x0 + r.x1) / 2) - 2; tryX >= r.x0 + 4; tryX -= 5) {
@@ -881,16 +894,21 @@ export function planJpRegionScene(input: {
         for (let y = r.y0; y <= r.y1; y++) for (let x = tryX; x < tryX + 4; x++) if (used[y * W + x]) ok = false;
         if (ok) { cwX = tryX; break; }
       }
-      if (cwX >= 0 && kitSize("jp-gnd-zebra")) {
+      if (cwX >= 0 && input.crosswalkTile !== undefined && input.crosswalkTile >= 0) {
+        // 동서 길의 횡단보도: 흰 줄이 차 진행 방향과 나란한 투명 칸을 2층에 — 바탕 아스팔트는 그대로 보인다.
+        const cells: { x: number; y: number }[] = [];
+        for (let y = r.y0; y <= r.y1; y++) for (let x = cwX; x < cwX + 4; x++) { cells.push({ x, y }); used[y * W + x] = 1; }
+        stampSteps.push({ tool: "paint_tiles", args: { mapId, layer: "2", mode: "cells", tile: input.crosswalkTile, cells }, note: "crosswalk-ew" });
+      } else if (cwX >= 0 && kitSize("jp-gnd-zebra")) {
         for (let y = r.y0; y <= r.y1; y++) for (let x = cwX; x < cwX + 4; x++) stamp("jp-gnd-zebra", x, y, 1, 1, "decal");
       }
       const midY = r.y0 + Math.floor((r.y1 - r.y0) / 2);
       for (let x = r.x0; x <= r.x1; x++) {
         if (cwX >= 0 && x >= cwX && x < cwX + 4) continue;
         const topId = x % 7 === 3 ? "jp-gnd-drain" : "jp-gnd-asph-line-n";
-        if (kitSize(topId) && !used[r.y0 * W + x]) stamp(topId, x, r.y0, 1, 1, "decal");
-        if (r.y1 > r.y0 && kitSize("jp-gnd-asph-line-s") && !used[r.y1 * W + x]) stamp("jp-gnd-asph-line-s", x, r.y1, 1, 1, "decal");
-        if (x % 11 === 5 && kitSize("jp-gnd-manhole") && !used[midY * W + x]) stamp("jp-gnd-manhole", x, midY, 1, 1, "decal");
+        if (kitSize(topId) && bare(r.y0 * W + x)) stamp(topId, x, r.y0, 1, 1, "decal");
+        if (r.y1 > r.y0 && kitSize("jp-gnd-asph-line-s") && bare(r.y1 * W + x)) stamp("jp-gnd-asph-line-s", x, r.y1, 1, 1, "decal");
+        if (x % 11 === 5 && kitSize("jp-gnd-manhole") && bare(midY * W + x)) stamp("jp-gnd-manhole", x, midY, 1, 1, "decal");
       }
     }
   }

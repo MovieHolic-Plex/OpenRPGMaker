@@ -13,6 +13,7 @@ import { sharedCharsetRow } from "@/project/sharedCharacterFaceResolver";
 import { charsetFrameIndex, decodeCharsetFrameIndex } from "@/assets/easyrpgRtp";
 import { genreLockCharsetCatalogFilter } from "@/project/genreLockCharsets";
 import type { BuildRun, ContentBuildResult, PersonSpec } from "./types";
+import { counterSide, exitThroats, isCounterArt, isShopkeeperName, laneCells, wanderReach } from "./placementRules";
 
 export const PEOPLE_CARD =
   "사람(people) 명세: {role,name?,where?,at?,looks?,firstTalk?,laterTalk?,movement?,mapId?}. " +
@@ -21,8 +22,9 @@ export const PEOPLE_CARD =
   "한쪽·벽 쪽 / 북쪽 벽(남·동·서) / 구석 / 창가 — 방 낱말(홀·부엌·침실)을 붙이면 그 방 안(«홀 한쪽», «부엌 화덕 옆») / 생략(시작 지점 근처). " +
   "at:{x,y} 는 정말 필요할 때만 — 막힌 칸이면 가까운 걸어 닿는 칸으로 옮긴다. " +
   "firstTalk=처음 말 걸 때 대사(배열), laterTalk=그 뒤 두 번째부터 대사(배열, 생략하면 같은 말 반복). " +
-  "movement: still(기본, 제자리) · wander(배회, 길막 보장 약해짐) · patrol(제자리로 처리). " +
-  "빌더가 길을 막지 않는 자리만 고르고, 놓은 뒤 길찾기로 확인한다.";
+  "movement: still(기본, 제자리) · wander(배회 — 출구 길목·차도 가까이면 제자리로 바꾼다) · patrol(제자리로 처리). " +
+  "빌더가 길을 막지 않는 자리만 고르고, 놓은 뒤 길찾기로 확인한다. 사람은 차도·선로 한가운데에 세우지 않는다 — 보도·가게 안·벤치·카운터 뒤·문 앞에 선다. " +
+  "가게 주인·점원은 where 를 «카운터 뒤»로 — 카운터 북쪽(주인 쪽)에 세운다(카운터 앞은 손님 자리).";
 
 type Cell = { x: number; y: number };
 const DIRS = [[0, -1], [0, 1], [-1, 0], [1, 0]] as const;
@@ -408,7 +410,7 @@ export function resolveWhere(
   project: Project,
   map: GameMap,
   word: string | undefined,
-  opts: { at?: Cell; avoid?: readonly Cell[]; keepFree?: readonly Cell[]; footprint?: Footprint } = {},
+  opts: { at?: Cell; avoid?: readonly Cell[]; keepFree?: readonly Cell[]; footprint?: Footprint; role?: string } = {},
 ): WhereResolution {
   const w = map.width;
   const start = walkStart(project, map);
@@ -426,10 +428,13 @@ export function resolveWhere(
   const labelAt = (c: Cell): string => tileLabel(project, map, layers(map).upper?.[c.y * w + c.x]) || tileLabel(project, map, layers(map).upperOverlay?.[c.y * w + c.x]);
 
   const inside = (c: Cell): boolean => c.x >= 0 && c.y >= 0 && c.x < w && c.y < map.height;
+  // 사람은 차도·선로 칸과 하나뿐인 출구 길목에 서지 않는다(2026-10-25 사용자 규칙·J5). 물건(footprint)도 차도에 놓지 않는다.
+  const lanes = laneCells(project, map);
+  const throats = fp ? new Set<number>() : exitThroats(project, map);
   const usableCell = (c: Cell): boolean => {
     if (!inside(c)) return false;
     const i = c.y * w + c.x;
-    if (!reach[i] || blockers.has(i) || transfers.has(i) || avoid.has(i)) return false;
+    if (!reach[i] || blockers.has(i) || transfers.has(i) || avoid.has(i) || lanes.has(i) || throats.has(i)) return false;
     if (playerStart && c.x === playerStart.x && c.y === playerStart.y) return false;
     if ((isObject || indoor) && objectAt(map, c)) return false; // 가구·소품 칸 위에 서거나 놓지 않는다
     return true;
@@ -524,12 +529,20 @@ export function resolveWhere(
   }
   const sideName: Record<Side, string> = { north: "북쪽 벽", south: "남쪽 벽", east: "동쪽 벽", west: "서쪽 벽" };
 
+  // 가게 주인은 카운터 뒤(북쪽)에 선다 — 「카운터 앞」이라 써도 손님 자리(남쪽)에 세우지 않는다(2026-10-25 J6: 무기점 주인이 빈 바닥 너머로 말했다).
+  const keeper = !fp && isShopkeeperName(`${opts.role ?? ""}`);
+  if (keeper && intent.kind !== "near" && intent.kind !== "entrance" && intent.kind !== "door" && indoor) {
+    const behind = cells.filter((c) => counterSide(project, map, c) === "behind" && (!room || inRoom(room, c)));
+    const c = behind.length ? pick((q) => (counterSide(project, map, q) === "behind" && (!room || inRoom(room, q)) ? dist(q, start) * 0.05 : Infinity)) : undefined;
+    if (c) return done(c, { how: "카운터 뒤(주인 쪽)", face: "down" });
+  }
   if (intent.kind === "near" && intent.object) {
     const centre = room ? { x: room.x + room.w / 2, y: room.y + room.h / 2 } : start;
     const box = findObjectBox(project, map, intent.object, room, centre);
     if (box) {
       const cx = (box.x0 + box.x1) / 2;
-      let rel = intent.relation ?? "near";
+      const counterBox = isCounterArt(project, map, box.x0, box.y1);
+      let rel = keeper && counterBox ? "back" : intent.relation ?? "near";
       const score = (b: Cell): number => {
         if (!roomOk(b)) return Infinity;
         const feet = footCells(b);
@@ -829,7 +842,7 @@ export function buildPeople(run: BuildRun, people: readonly PersonSpec[], mapId?
     // 바깥 맵에서는 같은 부름의 사람끼리 바로 옆에 붙여 세우지 않는다(마을 광장에 둘이 겹쳐 선 줄처럼 보였다) — 실내는 바 앞 손님처럼 붙어도 된다.
     const outdoor = (map as unknown as { climate?: { mode?: string } }).climate?.mode !== "indoor";
     const avoid = outdoor ? used.flatMap((c) => [-1, 0, 1].flatMap((dy) => [-1, 0, 1].map((dx) => ({ x: c.x + dx, y: c.y + dy })))) : used;
-    const where = resolveWhere(run.ctx.project, map, person.where, { at: person.at, avoid });
+    const where = resolveWhere(run.ctx.project, map, person.where, { at: person.at, avoid, role: `${person.role} ${person.name ?? ""}` });
     if (where.note) warnings.push(`${label}: ${where.note}`);
     const cell = where.cell;
 
@@ -843,8 +856,18 @@ export function buildPeople(run: BuildRun, people: readonly PersonSpec[], mapId?
       pages.push({ name: "대화", lines: first.length > 0 ? first : later });
     }
 
-    const movement = person.movement === "wander" ? "random" : "fixed";
-    if (person.movement === "wander") warnings.push(`${label}: wander 는 걸어 다니다 길목에 설 수 있어 «길을 막지 않는다» 보장이 약해진다.`);
+    let movement = person.movement === "wander" ? "random" : "fixed";
+    if (movement === "random") {
+      // 배회가 닿는 칸에 하나뿐인 출구 길목·차도가 있으면 제자리로 — 마을 동쪽 외길 출구에서 농부가 배회해 길을 막았다(2026-10-25 J5).
+      const roam = wanderReach(run.ctx.project, map, { id: "__new__", x: cell.x, y: cell.y, pages: [] } as unknown as GameEvent);
+      const throats = exitThroats(run.ctx.project, map);
+      const lanes = laneCells(run.ctx.project, map);
+      const hit = [...roam].find((i) => throats.has(i) || lanes.has(i));
+      if (hit !== undefined) {
+        movement = "fixed";
+        warnings.push(`${label}: 배회하면 ${throats.has(hit) ? "하나뿐인 출구 길목" : "차도·선로"} (${hit % map.width},${Math.floor(hit / map.width)})까지 걸어가 길을 막을 수 있어 제자리(still)로 두었다.`);
+      } else warnings.push(`${label}: wander 는 걸어 다니다 길목에 설 수 있어 «길을 막지 않는다» 보장이 약해진다.`);
+    }
     if (person.movement === "patrol") warnings.push(`${label}: patrol 은 v1 에 순찰 경로 도구가 없어 제자리(fixed)로 두었다.`);
 
     const baseArgs: Record<string, unknown> = { mapId: targetMapId, name: label, x: cell.x, y: cell.y, movement };

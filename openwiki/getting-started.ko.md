@@ -70,9 +70,10 @@ npm run dev:worktree     # git 워크트리용 — 체크아웃별 고정 포트
 npm run build:packaged   # 호스팅/데스크톱 렌더러 빌드
 npm run build:electron   # 저장 브리지 빌드
 npm start -- --project-dir /path/to/project  # 기존 SQLite 프로젝트 호스트 (기본 mdc-server:9888)
-npm test                 # 단위 테스트
-npm run typecheck:app    # 앱 타입 검사
+npm run typecheck:app    # src 타입 검사. 로컬에서 동작한다
 ```
+
+단위 테스트는 아래 [테스트](#테스트)를 보세요. `npm test`를 로컬에서 그대로 실행하면 스위트가 돌기 전에 끝납니다. 전체 `npm run typecheck`는 `test/`의 기존 타입 오류 때문에 기준선부터 실패하므로 게이트로 쓰지 않습니다.
 
 개인 실행(`npm run mac:launch`, `Start RPG Maker.command`)은 위 [처음 시작하기](#처음-시작하기)를 보세요. 외부 DB 설정은 필요하지 않습니다.
 
@@ -277,30 +278,28 @@ API 사용이 필요한 경우 `AI 설정 → API / 게이트웨이`로 전환�
 
 ## 데이터 스키마
 
-스펙 문서 참조: [`docs/specs/2026-06-18-rpg-maker-mvp-design.md`](../docs/specs/2026-06-18-rpg-maker-mvp-design.md)
+현재 프로젝트 스키마는 `SCHEMA_VERSION = 4`입니다(`src/project/types/base.ts`, `src/project/types.ts`가 다시 내보냅니다). 필드별 계약은 [`runtime-project-schema.md`](runtime-project-schema.md)에 있습니다.
 
-주요 타입은 `src/project/types.ts`. 스키마 버전(`Project.version`)이 바뀌면 `io.ts`에 마이그레이션을 추가합니다.
+저장본을 읽을 때 `src/project/io/serialize.ts`의 `deserializeParsed`가 `version`을 보고 `src/project/io/migration.ts`로 넘깁니다. v1·v2·v3 저장본은 `migrateV1toV3`, `migrateV2toV3`, `migrateV3toV4`를 거쳐 현재 스키마로 올라옵니다. 스키마를 올릴 때는 그 이관과 현재 셰이프 검사를 같은 변경에 넣습니다. `src/project/io.ts`는 이 함수들을 다시 내보내는 입구입니다. 앱 릴리스 버전은 스키마 버전과 따로이며 손으로 올리지 않습니다([`release-and-version.md`](release-and-version.md)).
 
 ## 테스트
 
+Vitest·Playwright·`npm run gates`는 GitHub CI에서 돕니다. 로컬에서 `npm test`, `npm run test:parity`, `npm run test:e2e`, `npm run gates`를 그대로 실행하면 `scripts/lib/ciOnlyTests.mjs`가 스위트 전에 exit 1 합니다(`vitest.config.ts`, `playwright.config.ts`, `scripts/verify-gates.mjs`). 그 실행을 직접 지시한 경우에만 `OPRN_LOCAL_TESTS=1`을 붙입니다. 절차는 [`testing.md`](testing.md)와 [`quickstart.md`](quickstart.md) 2절입니다.
+
 ```bash
-npm test               # Vitest 단위 스위트 (test/**/*.test.ts)
-npm run test:node      # node:test 스위트 (test/**/*.test.mjs)
-npm run test:parity    # 에디터→플레이어 parity 게이트 (test/parity/)
-npm run test:e2e       # Playwright 브라우저 스위트 (test/e2e/)
+npm run test:node      # node:test. test/**/*.test.mjs 를 탐색해서 실행 (로컬에서도 동작)
 ```
 
-Vitest 단위 스위트는 약 680개 파일 / 약 4,900개 테스트입니다(순수 로직 위주). 주요 파일:
+`npm test`는 Vitest(`test/**/*.test.ts`)입니다. `npm run test:parity`는 `test/parity/`, `npm run test:e2e`는 Playwright `test/e2e/`입니다. `test/e2e`에서 `_`로 시작하는 스펙은 진단·임시용이라 기본 실행에서 제외되고, 파일 이름을 직접 지목하거나 `E2E_INCLUDE_DIAGNOSTICS=1`일 때만 돌아갑니다(`playwright.config.ts`).
 
-- `interpreter.test.ts` — RM2K3 명령 상태머신
-- `migration.test.ts` — v1→v3 변환 + 왕복
-- `io.test.ts` — 직렬화 왕복 + 잘못된 파일 거부
-- `defaults.test.ts` / `collision.test.ts` — 프로젝트 무결성, 통행 기반 충돌
-- `actions.test.ts` / `eventActions.test.ts` — 페인트/채우기, 명령 경로 탐색
-- `battleRuntime.test.ts` / `battleRuntimeDb.test.ts` — ATB 전투 런타임, DB 구동 능력치/보상/스킬 효과/방어/도주
-- `eventCommandReorder.test.ts` — 이벤트 명령 드래그 재정렬
-- `editorHotkeys.test.ts` — RM2K3 스타일 에디터 단축키 매핑
+자주 보는 계약 파일:
 
-`npm run test:node`는 `test/`를 **탐색**해서 `*.test.mjs`를 전부 돌립니다(`scripts/run-node-tests.mjs`).
+- `test/interpreter.test.ts` — 이벤트 명령 상태머신
+- `test/migration.test.ts` — v1 저장본을 현재 스키마로 읽고, 직렬화 왕복과 잘못된 파일을 거부
+- `test/defaults.test.ts` / `test/collision.test.ts` — 프로젝트 무결성, 통행 기반 충돌
+- `test/actions.test.ts` / `test/eventActions.test.ts` — 페인트/채우기, 명령 경로
+- `test/battleRuntime.test.ts` / `test/battleRuntimeDb.test.ts` — 사이드뷰 전투 런타임
+- `test/eventCommandReorder.test.ts` — 이벤트 명령 드래그 재정렬
+- `test/editorHotkeys.test.ts` — 에디터 단축키
 
-Phaser 씬/DOM UI는 `npm run dev` + codex 브라우저 QA 및 `test/e2e`로 검증합니다. `test/e2e`에서 `_`로 시작하는 스펙은 진단·임시용이라 기본 실행에서 제외되고, 파일 이름을 직접 지목하거나 `E2E_INCLUDE_DIAGNOSTICS=1`일 때만 돌아갑니다(`playwright.config.ts`).
+`npm run test:node`는 `scripts/run-node-tests.mjs`가 `test/`를 탐색해서 `*.test.mjs`를 전부 돌립니다. 파일 목록으로 고정하지 않습니다.

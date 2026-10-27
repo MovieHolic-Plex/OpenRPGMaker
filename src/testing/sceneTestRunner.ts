@@ -2,6 +2,8 @@ import { recoverAll } from "@/project/sessionActorCommands";
 import { numberInputAnswer } from "@/testing/numberInputAnswer";
 import { buildLifeRuntimeSnapshot, type LifeRuntimeSnapshot } from "@/player/runtimeDom";
 import { canMove, isPassable, isPassableLanding } from "@/project/collision";
+import { DIR_DELTA as STAGE_DIR_DELTA, planApproach } from "@/project/staging/approach";
+import { PLAYER_MOVE_TARGET } from "@/project/moveRouteTarget";
 import { headlessBattleSnapshot, createBattleRuntime, type BattleResult } from "@/battle/runtime";
 import { predictSkillDamageFor } from "@/battle/battlePredict";
 import type { ActorCommand } from "@/battle/types";
@@ -26,7 +28,7 @@ import { createDefeatRecovery } from "@/player/defeatRecovery";
 import { invalidateTilePassabilityComponents } from "@/project/tilePassabilityComponents";
 import { syncActorVitals } from "@/project/sessionVitals";
 import { applyBattleRewardsToSession } from "@/player/battleRewardsToSession";
-import type { ChoiceCancelBehavior, Command, Dir, GameMap, Project } from "@/project/types";
+import type { ChoiceCancelBehavior, Command, Dir, GameMap, MoveCommand, Project } from "@/project/types";
 import { cancelChoiceIndex } from "@/project/choiceCancellation";
 import { characterSpriteX, characterSpriteY, footprintSpriteX } from "@/player/characterDepth";
 import { createInterpreter, type Interpreter, type StepResult } from "@/player/interpreter";
@@ -300,6 +302,11 @@ export interface SceneRunnerOptions {
    * 기본은 꺼짐: run_scene_test 의 전투는 지금처럼 공격만 한다.
    */
   readonly monsterTactics?: boolean;
+  /**
+   * Host-only: 이어 도는 판에서 지금 맵 인물이 서 있는 칸(앞 판에서 컷신이 옮긴 자리). QA 자동 플레이가 저장 지점에서
+   * 다시 돌 때 옮긴 인물이 저작 칸으로 돌아가 «사람은 못 찾는데 러너만 찾는» 통과가 나지 않게 한다(J92).
+   */
+  readonly initialEventPositions?: Readonly<Record<string, { readonly x: number; readonly y: number }>>;
 }
 
 export interface SceneInteractionReceipt {
@@ -324,6 +331,8 @@ export interface SceneTestResult {
   readonly failedStepIndex?: number;
   readonly failedStep?: SceneStep;
   readonly failureReason?: string;
+  /** 지금 맵에서 저작 칸을 떠난 이벤트의 칸(컷신 moveEvent·추격·일정) — 자동 플레이가 사람이 찾을 자리로 걸어가게(J92). */
+  readonly movedEvents?: Readonly<Record<string, { readonly x: number; readonly y: number }>>;
   readonly finalState: LifeRuntimeSnapshot & {
     readonly mapId: string;
     readonly x: number;
@@ -703,7 +712,7 @@ export function runSceneTest(project: Project, input: SceneTestInput, rewardProo
     project,
     runtimeMaps,
     session,
-    eventPositions: emptyEventPositionsFromMaps(runtimeMaps),
+    eventPositions: { ...emptyEventPositionsFromMaps(runtimeMaps), ...(runnerOptions.initialEventPositions ?? {}) },
     fieldSpawnState: null,
     log,
     camera: emptyCamera(session),
@@ -879,6 +888,11 @@ function movePlayerOneStep(state: RunnerState, x: number, y: number): string | n
   const map = currentMap(state);
   if (!map) return `현재 맵 없음: ${state.session.currentMapId}`;
   if (!canMove(state.project, map, state.session.x, state.session.y, x, y)) {
+    // 런타임과 같은 규칙(playSceneMovement 「지나갈 수 없는 그림 칸」): 막힌 문짝·계단 그림 칸 위의 같은 층 접촉 이벤트는 부딪히면 발동한다.
+    // 이것을 빼면 거리 건물 문(create_transfer_pair 가 막힌 문 칸에 priority same 으로 세운 문)을 자동 플레이가 못 열어 출하가 막혔다(2026-10-27 romance-j91).
+    const cardinal = Math.abs(x - state.session.x) + Math.abs(y - state.session.y) === 1;
+    const bumped = cardinal ? findBlockingRuntimeEventAtInMap(state.project, map, state.session, state.eventPositions, x, y) : undefined;
+    if (bumped && firesOnPlayerCollision(bumped.trigger.kind)) return runEventView(state, bumped);
     return `이동 불가: ${map.id} (${state.session.x},${state.session.y}) -> (${x},${y})`;
   }
   const blocking = findBlockingRuntimeEventAtInMap(state.project, map, state.session, state.eventPositions, x, y);
@@ -1551,7 +1565,6 @@ function pump(state: RunnerState, interp: Interpreter, first: StepResult): PumpS
       case "removeEvent":
       case "vehicle":
       case "setEventGraphicPattern":
-      case "moveEvent":
       case "waitForAllMovement":
       case "stopAllMovement":
       case "inn":
@@ -1559,6 +1572,11 @@ function pump(state: RunnerState, interp: Interpreter, first: StepResult): PumpS
       case "shakeScreen":
       case "particleEffect":
       case "spriteLook":
+        step = interp.resume(undefined);
+        break;
+      case "moveEvent":
+        // 컷신이 인물을 옮기면 실제 플레이어처럼 그 자리에 둔다 — 저작 칸으로 걸어가 «말 걸 사람 없음»을 모른 채 통과하지 않게(J92).
+        if (!step.repeat) applyMoveEventForRunner(state, step.eventId, step.moves);
         step = interp.resume(undefined);
         break;
       case "shop":
@@ -2595,6 +2613,70 @@ function emptyEventPositions(project: Project): RuntimeEventPositions {
   return Object.assign({}, ...Object.values(project.maps).map((map) => initialRuntimeEventPositions(map.events))) as RuntimeEventPositions;
 }
 
+/**
+ * moveEvent 한 번(반복 아님)이 끝난 자리를 러너 상태에 적는다 — 이벤트는 eventPositions, 주인공은 세션 칸.
+ * 실제 플레이어(playSceneInterpreter moveEvent → 자율 이동)는 인물을 그 자리에 세워 두므로, 오프닝이 「주인공 곁으로」
+ * 데려온 NPC 는 저작 칸에 없다(2026-10-26 J92: 태엽 장난감 가게 오르골 인형 — 자동 플레이는 저작 칸으로 가서 통과했고 사람은 못 찾았다).
+ * 걸음·대각·점프·순간이동·곁으로 가기·문으로 나가기/들어오기를 칸 단위로만 따라간다(시간·충돌 중 대기는 보지 않는다).
+ */
+function applyMoveEventForRunner(state: RunnerState, rawEventId: string, moves: readonly MoveCommand[]): void {
+  const map = state.runtimeMaps[state.session.currentMapId];
+  if (!map) return;
+  const id = rawEventId || state.executingEventId || "";
+  if (!id) return;
+  const isPlayer = id === PLAYER_MOVE_TARGET;
+  if (!isPlayer && !map.events.some((event) => event.id === id)) return;
+  const here = isPlayer ? { x: state.session.x, y: state.session.y } : state.eventPositions[id] ?? (() => { const e = map.events.find((event) => event.id === id)!; return { x: e.x, y: e.y }; })();
+  const me = { x: here.x, y: here.y };
+  let dir: Dir | undefined;
+  const cellOf = (ref: string | undefined): { x: number; y: number } | null => {
+    const r = (ref ?? "").trim();
+    if (r === PLAYER_MOVE_TARGET || r === "player") return { x: state.session.x, y: state.session.y };
+    const other = r === "" || r === "@this" || r === "this-event" ? (state.executingEventId ?? "") : r;
+    if (!other) return null;
+    const known = state.eventPositions[other];
+    if (known) return { x: known.x, y: known.y };
+    const event = map.events.find((e) => e.id === other);
+    return event ? { x: event.x, y: event.y } : null;
+  };
+  const busy = (c: { x: number; y: number }): boolean => (c.x === state.session.x && c.y === state.session.y && !isPlayer)
+    || Object.entries(state.eventPositions).some(([eventId, at]) => eventId !== id && at.x === c.x && at.y === c.y && map.events.some((e) => e.id === eventId));
+  for (const m of moves) {
+    if (!m || typeof m !== "object") continue;
+    switch (m.kind) {
+      case "move": {
+        const d = STAGE_DIR_DELTA[m.dir];
+        if (canMove(state.project, map, me.x, me.y, me.x + d.x, me.y + d.y)) { me.x += d.x; me.y += d.y; }
+        dir = m.dir;
+        break;
+      }
+      case "moveDiagonal": {
+        const nx = me.x + (m.horizontal === "left" ? -1 : 1), ny = me.y + (m.vertical === "up" ? -1 : 1);
+        if (isPassable(state.project, map, nx, ny)) { me.x = nx; me.y = ny; }
+        break;
+      }
+      case "jump": me.x += m.dx || 0; me.y += m.dy || 0; break;
+      case "placeAt": me.x = m.x; me.y = m.y; break;
+      case "approach": {
+        const target = m.target ? cellOf(m.target) : Number.isFinite(m.x) && Number.isFinite(m.y) ? { x: m.x!, y: m.y! } : null;
+        if (!target) break;
+        const plan = planApproach({
+          width: map.width, height: map.height,
+          canStep: (a, b) => canMove(state.project, map, a.x, a.y, b.x, b.y),
+          canStand: (c) => isPassable(state.project, map, c.x, c.y) && !busy(c),
+        }, me, target, m.distance);
+        if (plan) { me.x = plan.goal.x; me.y = plan.goal.y; if (plan.face) dir = plan.face; }
+        break;
+      }
+      default: break;
+    }
+  }
+  if (me.x === here.x && me.y === here.y) return;
+  if (isPlayer) { state.session.x = me.x; state.session.y = me.y; return; }
+  const facing = dir ?? state.eventPositions[id]?.direction;
+  state.eventPositions[id] = { x: me.x, y: me.y, ...(facing ? { direction: facing } : {}) };
+}
+
 function emptyEventPositionsFromMaps(maps: Record<string, GameMap>): RuntimeEventPositions {
   return Object.assign({}, ...Object.values(maps).map((map) => initialRuntimeEventPositions(map.events))) as RuntimeEventPositions;
 }
@@ -3044,10 +3126,15 @@ function result(
   setupFailure?: SceneSetupFailure,
   failedSelection?: SceneInteractionReceipt,
 ): SceneTestResult {
-  void eventPositions;
   const lighting = normalizeLightingState(session.lighting);
+  const movedEvents: Record<string, { x: number; y: number }> = {};
+  for (const event of project.maps[session.currentMapId]?.events ?? []) {
+    const at = eventPositions[event.id];
+    if (at && (at.x !== event.x || at.y !== event.y)) movedEvents[event.id] = { x: at.x, y: at.y };
+  }
   return {
     ok,
+    ...(Object.keys(movedEvents).length ? { movedEvents } : {}),
     stepsRun,
     totalSteps: steps.length,
     interactions,

@@ -207,7 +207,7 @@ export type TouchLayout = {
    * 세로 대사 독: 무대가 1배보다 작게 그려질 때 대사·선택지 창을 무대 아래 빈 띠에 1배(게임 px = 화면 px)로 그린다.
    * 뷰포트 위에서 잰 px. 독이 없으면 null.
    */
-  readonly dock: { readonly top: number; readonly left: number; readonly width: number; readonly height: number } | null;
+  readonly dock: { readonly top: number; readonly left: number; readonly width: number; readonly height: number; /** 독 안 창의 화면 배율(1배 미만 무대면 1, 아니면 무대 배율). */ readonly scale: number } | null;
   /**
    * 세로 창 칸(2026-10-24): 무대가 1배보다 작을 때 ESC 메뉴·상점 창을 무대 대신 이 칸에 그린다.
    * 칸은 어느 폰이든 같은 논리 크기(WINDOW_PANEL_WIDTH×HEIGHT 게임 px)이고, 들어가면 1배(글자 12px)다.
@@ -223,6 +223,10 @@ export type TouchLayout = {
 
 /** 터치 대상 최소 높이(화면 px) — Apple HIG 44pt, Material 48dp 의 아래쪽. */
 export const TOUCH_TARGET_MIN = 44;
+/** 가로 조작 칸 폭(화면 px) — A·B 묶음 120 + 양옆 숨 쉴 틈. 무대는 이 두 칸 사이에만 그린다. */
+export const LANDSCAPE_GUTTER = 128;
+/** 가로 조이스틱 지름 — 칸 안에 들어가게. 누르는 칸은 왼쪽 칸 전체라 지름보다 넓다. */
+export const LANDSCAPE_STICK = 108;
 /** 세로 창 칸의 최대 논리 높이 — 남는 높이가 있으면 칸을 늘려 메뉴 줄을 44px 로 벌릴 자리를 만든다. */
 export const WINDOW_PANEL_MAX_HEIGHT = 400;
 
@@ -277,10 +281,14 @@ export function calculateTouchLayout(
     const bandBottom = height - safe.bottom;
     let free = Math.max(0, bandBottom - bandTop - controlsBlock);
     let dock: TouchLayout["dock"] = null;
-    if (options.dialogueDock !== false && scale < 1 && free >= DIALOGUE_DOCK_MIN_HEIGHT + 8) {
+    // 독 배율: 무대가 1배 미만이면 1배(글자를 키운다), 1배 이상이면 무대와 같은 배율(글자 크기는 그대로).
+    // 4:3 무대(320×240)는 폰 세로에서 1.2배쯤이라 예전엔 독이 꺼지고 무대 아래 540px 가 비었다 — 대사가 지도를 덮은 채
+    // 빈 띠만 남았다(2026-10-25 심판 J33). 띠가 남으면 배율과 상관없이 대사 창을 그 띠로 내린다.
+    const dockScale = Math.max(1, scale);
+    if (options.dialogueDock !== false && free >= (DIALOGUE_DOCK_MIN_HEIGHT + 8) * dockScale) {
       // 독 높이: 남는 띠에서 조작 자리를 뺀 만큼(선택지까지 들어가게), 단 화면 절반을 넘기지 않는다.
-      const dockH = Math.floor(Math.min(free - 8, Math.max(DIALOGUE_DOCK_MIN_HEIGHT, logicalH * 0.6)));
-      dock = { top: Math.round(bandTop + 4), left: Math.round(safe.left), width: Math.floor(availW), height: dockH };
+      const dockH = Math.floor(Math.min(free - 8, Math.max(DIALOGUE_DOCK_MIN_HEIGHT * dockScale, logicalH * 0.6 * dockScale)));
+      dock = { top: Math.round(bandTop + 4), left: Math.round(safe.left), width: Math.floor(availW), height: dockH, scale: dockScale };
       free = Math.max(0, free - dockH - 8);
     }
     const controlsTop = dock ? dock.top + dock.height + 4 : bandTop;
@@ -306,22 +314,24 @@ export function calculateTouchLayout(
     const menuRow = Math.ceil(TOUCH_TARGET_MIN / (panel ? panel.scale : scale));
     return { mode: "portrait", scale, stageLeft, stageTop, bandTop, bandBottom, controlsY, gutter: 0, stick, dock, panel, menuRow };
   }
-  // 가로(2026-10-25 「모바일 가로 화면이 너무 작게 나온다」): 예전에는 좌우 조작 칸을 먼저 떼고 남은 폭에 정수 배율을 맞춰
-  // 아이폰 15 가로(734×343)에서 무대가 480×270(1배) — 화면 높이의 79%, 폭의 65% 였다. 이제 무대는 화면 높이를 채우고
-  // 조작(조이스틱·A/B·메뉴)은 무대 가장자리 위에 반투명하게 겹친다(data-touch-overlay). 칸 폭은 조작을 놓을 자리로만 쓴다.
-  // 칸은 조이스틱보다 넓어야 한다(좁으면 조이스틱이 화면 밖으로 잘린다 — 아이폰 가로 iframe 734px 에서 실측).
-  const gutterBase = Math.round(Math.min(stick + 40, Math.max(stick + 12, width * 0.15)));
+  // 가로(2026-10-25 2판, 사용자 「가로에서 버튼도 잘 안 눌리고 경험도 구림 — 데스크톱과 같은 경험」):
+  // 1판은 무대가 화면 높이를 채우고 조작을 무대 위에 반투명하게 겹쳤다 — 조이스틱·B 가 타이틀 메뉴·전투 적·창을 덮었고,
+  // 대사·전투·메뉴마다 조작을 옮기거나 옅게 하거나 끄는 규칙이 붙었다. 이제 좌우 칸은 조작 전용이고 무대는 그 사이에 맞춘다.
+  // 게임 화면은 데스크톱과 같은 모양 그대로 비율만 맞춰 커지고, 조작은 게임을 한 칸도 덮지 않는다.
+  // 칸 폭 = 조작 묶음 폭(A 64 + 틈 4 + B 52 = 120, 조이스틱 104) + 여백. 노치·둥근 모서리(안전 영역)는 칸에 일부만 더한다 —
+  // 조작은 안전 영역 안쪽 끝에 붙어도 엄지에 닿는다.
+  const stickL = LANDSCAPE_STICK;
   const availH = Math.max(40, height - safe.top - safe.bottom);
-  const fullW = Math.max(40, width - safe.left - safe.right);
-  const scale = landscapeTouchScale(fullW, availH, logicalW, logicalH, scaleMode);
-  const gutterL = gutterBase + safe.left;
-  const gutterR = gutterBase + safe.right;
+  const gutterL = Math.round(LANDSCAPE_GUTTER + safe.left * 0.6);
+  const gutterR = Math.round(LANDSCAPE_GUTTER + safe.right * 0.6);
+  const availW = Math.max(40, width - gutterL - gutterR);
+  const scale = landscapeTouchScale(availW, availH, logicalW, logicalH, scaleMode);
   const stageW = logicalW * scale;
   const stageH = logicalH * scale;
-  const stageLeft = Math.round(safe.left + (fullW - stageW) / 2);
+  const stageLeft = Math.round(gutterL + (availW - stageW) / 2);
   const stageTop = Math.round(safe.top + (availH - stageH) / 2);
   const controlsY = safe.top + availH * 0.62;
-  return { mode: "landscape", scale, stageLeft, stageTop, bandTop: safe.top, bandBottom: height - safe.bottom, controlsY, gutter: Math.max(gutterL, gutterR), stick, dock: null, panel: null, menuRow: Math.ceil(TOUCH_TARGET_MIN / scale) };
+  return { mode: "landscape", scale, stageLeft, stageTop, bandTop: safe.top, bandBottom: height - safe.bottom, controlsY, gutter: Math.max(gutterL, gutterR), stick: stickL, dock: null, panel: null, menuRow: Math.ceil(TOUCH_TARGET_MIN / scale) };
 }
 
 /**
@@ -374,11 +384,12 @@ function syncTouchLayout(viewport: HTMLElement, width: number, height: number, r
   if (layout.dock) {
     // 독은 무대의 자식(대사 창)을 무대 좌표로 옮기고 배율을 되돌려(1/scale) 1배로 그린다 — 값은 무대 좌표(게임 px).
     viewport.dataset.dialogueDock = "true";
+    // 폭·높이는 창 자신의 좌표(독 배율로 나눈 게임 px) — 1배 독이면 화면 px 그대로다.
     viewport.style.setProperty("--dock-top", cssPx((layout.dock.top - layout.stageTop) / scale));
     viewport.style.setProperty("--dock-left", cssPx((layout.dock.left - layout.stageLeft) / scale));
-    viewport.style.setProperty("--dock-width", cssPx(layout.dock.width));
-    viewport.style.setProperty("--dock-height", cssPx(layout.dock.height));
-    viewport.style.setProperty("--dock-unscale", String(1 / scale));
+    viewport.style.setProperty("--dock-width", cssPx(layout.dock.width / layout.dock.scale));
+    viewport.style.setProperty("--dock-height", cssPx(layout.dock.height / layout.dock.scale));
+    viewport.style.setProperty("--dock-unscale", String(layout.dock.scale / scale));
     viewport.style.setProperty("--touch-controls-top", cssPx(layout.dock.top + layout.dock.height + 4));
   } else {
     delete viewport.dataset.dialogueDock;

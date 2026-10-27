@@ -1,10 +1,10 @@
-import { validateEndingPresentation } from "@/project/io/shapeDatabaseFields";
+import { validateEndingContinueTo, validateEndingPresentation } from "@/project/io/shapeDatabaseFields";
 import type { EndingPresentation } from "@/project/cinematicSettings";
 import { BEAT_KIND_INFERRED_WARNING, canonicalizeSayBeatAliases, compileCutscene, CutsceneValidationError, SAY_BEAT_ALIAS_WARNING, withoutEndingBeats, type CutsceneBeat } from "@/editor/cutscene";
 import { collectEndingWarnings } from "@/project/endings";
 import { validateConditionShape } from "@/project/io/shapeCommandFields";
 import { collectResourceIds } from "@/project/io/resourceReferenceValidation";
-import type { Command, EndingCondition, EndingDef, Project } from "@/project/types";
+import type { Command, EndingCondition, EndingContinueTo, EndingDef, Project } from "@/project/types";
 import { nestedCommandLists } from "@/project/authoredCommandIndex";
 import { troopAfterBattleLists } from "@/project/troopAfterBattle";
 import { buildDeadlineEndingEvent, DEADLINE_ENDING_COMMON_EVENT_ID, DEADLINE_ENDING_VARIABLE_ID, ensureHeroineEndings, hasRomanceDeadlineSkeleton, retireGenericHappy } from "@/project/deadlineEnding";
@@ -124,9 +124,15 @@ const defineEnding: ToolDefinition = {
       presentation: {
         type: "object", additionalProperties: false,
         description: "에필로그 뒤의 마지막 화면. credits는 줄바꿈을 유지하는 크레딧. tone은 warm 또는 dark.",
-        properties: { musicResourceId: { type: "string" }, tone: { type: "string", enum: ["warm", "dark"] }, credits: { type: "string", maxLength: 20000 }, kicker: { type: "string", maxLength: 24, description: "제목 위 작은 줄. 비우면 연애 게임은 '두 사람의 이야기'" }, badge: { type: "string", maxLength: 40, description: "엔딩 CG 위 배지. 비우면 게임 언어로 HAPPY ENDING·다음 이야기에 계속 등을 고른다" }, finalTitle: { type: "string", maxLength: 40, description: "마지막 장의 큰 글자. 비우면 '끝', 막·장 끝(id 에 act1·chapter2)은 '제1막 끝' — 게임 언어" }, backgroundResourceId: { type: "string" } },
+        properties: { musicResourceId: { type: "string" }, tone: { type: "string", enum: ["warm", "dark"] }, credits: { type: "string", maxLength: 20000 }, kicker: { type: "string", maxLength: 24, description: "제목 위 작은 줄. 비우면 연애 게임은 '두 사람의 이야기'" }, badge: { type: "string", maxLength: 40, description: "엔딩 CG 위 배지. 비우면 게임 언어로 HAPPY ENDING·다음 이야기에 계속 등을 고른다" }, finalTitle: { type: "string", maxLength: 40, description: "마지막 장의 큰 글자. 비우면 '끝', 막·장 끝(id 에 act1·chapter2)은 '제1막 끝' — 게임 언어" }, backgroundResourceId: { type: "string" }, portraits: { type: "string", enum: ["auto", "none"], description: "엔딩 CG 위 상대·주인공 전신 초상. 비우면 호감 엔딩에 자동으로 세운다. 배경 그림에 두 사람이 이미 그려져 있으면 none" } },
       },
       epilogue: { type: "array", description: "CutsceneBeat[]", items: CUTSCENE_BEAT_SCHEMA },
+      continueTo: {
+        type: "object", additionalProperties: false,
+        description: "막·장 끝 엔딩이 게임을 끝내지 않고 다음 막으로 이어질 때(「제1막 끝 → 제2막」). 마지막 화면 버튼이 타이틀 대신 「다음 막으로」(label)가 되어 이 맵·칸으로 옮긴다 — 다음 막 첫 장면은 그 맵의 자동 실행 이벤트로 둔다. 엔딩 기록은 그대로 남는다. null 이면 지운다.",
+        properties: { mapId: { type: "string" }, x: { type: "integer" }, y: { type: "integer" }, direction: { type: "string", enum: ["up", "down", "left", "right"] }, label: { type: "string", maxLength: 24 } },
+        required: ["mapId", "x", "y"],
+      },
     },
     required: ["id", "name", "conditions"],
   },
@@ -154,6 +160,13 @@ const defineEnding: ToolDefinition = {
       if (presentation.musicResourceId && !collectResourceIds(draft).has(presentation.musicResourceId)) throw new ToolError("엔딩 음악 리소스를 찾을 수 없습니다.", { code: "invalid-args" });
       if (presentation.backgroundResourceId && !collectResourceIds(draft).has(presentation.backgroundResourceId)) throw new ToolError("엔딩 배경 리소스를 찾을 수 없습니다.", { code: "invalid-args" });
     }
+    const continueTo = args.continueTo === undefined ? prior?.continueTo : args.continueTo === null ? undefined : args.continueTo as EndingContinueTo;
+    if (continueTo) {
+      try { validateEndingContinueTo(continueTo); } catch (error) { throw new ToolError(String(error), { code: "invalid-args" }); }
+      const target = draft.maps[continueTo.mapId];
+      if (!target) throw new ToolError(`continueTo 맵 '${continueTo.mapId}' 이 없습니다.`, { code: "invalid-args" });
+      if (continueTo.x < 0 || continueTo.y < 0 || continueTo.x >= target.width || continueTo.y >= target.height) throw new ToolError(`continueTo 칸 (${continueTo.x},${continueTo.y}) 이 맵 '${continueTo.mapId}' 밖입니다.`, { code: "invalid-args" });
+    }
     const ending: EndingDef = {
       id,
       name,
@@ -161,6 +174,7 @@ const defineEnding: ToolDefinition = {
       priority,
       ...(epilogue ? { epilogue } : {}),
       ...(presentation ? { presentation: structuredClone(presentation) } : {}),
+      ...(continueTo ? { continueTo: { ...continueTo } } : {}),
     };
     draft.endings ??= [];
     const index = draft.endings.findIndex((entry) => entry.id === id);

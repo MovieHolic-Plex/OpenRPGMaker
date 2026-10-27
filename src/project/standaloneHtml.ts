@@ -30,13 +30,13 @@ export function buildStandaloneHtml(input: StandaloneHtmlInput): string {
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>${escapeHtmlText(input.title)}</title>
-    <style>${input.css}</style>
+    <style>${embedStyle(input.css)}</style>
   </head>
   <body>
     <div id="app"></div>
     <script type="application/json" id="${STANDALONE_ASSETS_NODE_ID}">${embedJson(JSON.stringify(input.inlineAssets))}</script>
     <script type="application/json" id="${STANDALONE_PROJECT_NODE_ID}">${embedJson(input.projectJson)}</script>
-    <script>${input.script}</script>
+    <script>${embedScript(input.script)}</script>
   </body>
 </html>
 `;
@@ -88,6 +88,20 @@ export function standaloneHtmlFileName(title: string): string {
  */
 function embedJson(json: string): string {
   return json.replace(/</g, "\\u003c");
+}
+
+/**
+ * HTML 은 대소문자 없이 `</script` 를 보면 문자열 안이어도 스크립트를 닫는다. 플레이어 번들
+ * 한 줄에 그 글자가 있으면 그 뒤 JS 가 본문이 되어 게임이 안 열린다. `\/` 는 JS 에서 `/` 와
+ * 같아서 프로그램이 보는 문자열은 그대로다. `<` 비교는 건드리지 않는다.
+ */
+function embedScript(script: string): string {
+  return script.replace(/<\/(script)/gi, "<\\/$1");
+}
+
+/** `<style>` 도 `</style` 에서 닫힌다. 그 뒤에 온 `<script>` 는 스타일이 아니라 코드가 된다. */
+function embedStyle(css: string): string {
+  return css.replace(/<\/(style)/gi, "<\\/$1");
 }
 
 function escapeHtmlText(value: string): string {

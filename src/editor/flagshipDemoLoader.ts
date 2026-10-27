@@ -8,7 +8,8 @@ import { dismissToastsByKey, toast } from "@/util/toast";
  * 왜: 메뉴·컨셉 피드 «열기/플레이»가 브라우저에서 createFlagshipDemoProject 로 모든 맵을 다시 짓고 있었다
  * (약 15MB JS + 메인 스레드 5~130초, chrono-bell 131초 — 탭이 멈춘다). 빌드(npm run bake:demos)가 이미
  * dist/demos/<id>.project.json 으로 구워 두므로 그 파일을 앱 기준 주소로 읽는다(Electron·웹 공통).
- * 구운 파일이 없는 dev 서버에서만 예전처럼 빌더로 짓는다.
+ * 데스크톱 패키지도 굽는다(desktop-release.yml·release-desktop.mjs·npm run package — 2026-10-27 전에는 빠져 있어
+ * 데스크톱 앱에서 폴른 스타가 「데모를 열지 못했습니다」로 끝났다). 구운 파일이 없을 때만 빌더로 짓는다.
  */
 
 export interface LoadedFlagshipDemo {
@@ -23,8 +24,9 @@ export async function loadBakedFlagshipDemo(id: FlagshipDemoId): Promise<Project
   if (import.meta.env.DEV) return null;
   try {
     const response = await fetch(new URL(`demos/${id}.project.json`, document.baseURI));
-    // 정적 호스트의 SPA 폴백(HTML 200)은 구운 파일이 아니다.
-    if (!response.ok || !(response.headers.get("content-type") ?? "").includes("json")) return null;
+    // 정적 호스트의 SPA 폴백(HTML 200)은 구운 파일이 아니다. 데스크톱 app:// 은 file: 로 흘려 content-type 이
+    // 비어 올 수 있어 «json 일 때만»이 아니라 «HTML 이 아닐 때»로 본다(JSON 이 아니면 아래 deserialize 가 던진다).
+    if (!response.ok || (response.headers.get("content-type") ?? "").includes("html")) return null;
     const { deserialize } = await import("@/project/io");
     return deserialize(await response.text());
   } catch (error) {
@@ -40,8 +42,12 @@ export async function loadFlagshipDemoProject(id: FlagshipDemoId): Promise<Loade
     return { project: baked, title: baked.meta.title, source: "baked", elapsedMs: performance.now() - started };
   }
   // 빌더는 예제 그림 수십 MB 를 끌고 온다 — 편집기 첫 화면 번들에 넣지 않고, 구운 파일이 없을 때만 받는다.
-  const { createFlagshipDemoProject } = await import("@/project/flagship");
-  const demo = createFlagshipDemoProject(id);
+  const [{ createFlagshipDemoProject }, { withAllBgmAssumedInstalled }] = await Promise.all([
+    import("@/project/flagship"),
+    import("@/assets/installedBgm"),
+  ]);
+  // 굽기와 같은 조건으로 짓는다 — 설치 안 된 곡은 지정만 되고, 팩을 받으면 그대로 울린다.
+  const demo = withAllBgmAssumedInstalled(() => createFlagshipDemoProject(id));
   return { project: demo.project, title: demo.manifest.title, source: "built", elapsedMs: performance.now() - started };
 }
 

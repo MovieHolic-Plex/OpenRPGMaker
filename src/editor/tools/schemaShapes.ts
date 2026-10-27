@@ -250,8 +250,9 @@ const CUTSCENE_BEAT_BASE_SCHEMA: JsonSchema = {
     preset: {
       type: "string",
       enum: [...PARTICLE_PRESETS],
-      description: "particles 비트: sparkle=반짝임(보물·축복) magic=마법 기운 heal=회복 빛 fire=불티 smoke=연기(사라짐) dust=흙먼지(착지) explosion=폭발 splash=물보라.",
+      description: "particles 비트: sparkle=반짝임(보물·축복) magic=마법 기운 heal=회복 빛 fire=불티 smoke=연기(사라짐) dust=흙먼지(착지) explosion=폭발 splash=물보라 paper=흩날리는 서류(부딪힘) petals=꽃잎.",
     },
+    sizePercent: { type: "integer", minimum: 25, maximum: 400, description: "particles 비트: 입자 크기 %(기본 100). 1배 화면에서 점으로 보이는 부딪힘 서류·폭발은 200 안팎." },
     pose: {
       type: "string",
       enum: [...SPRITE_POSES],
@@ -467,6 +468,7 @@ export const NATIVE_EVENT_PAGE_SCHEMA: JsonSchema = {
         pathfind: { type: "boolean" },
         moveIntervalMs: { type: "number" },
         sightAlert: { type: "object", description: "chase 전용. 시야에 처음 든 순간 {emote,holdMs} 말풍선+멈춤 뒤 추격" },
+        approachStyle: { type: "string", enum: ["walk", "dash", "pounce", "hop", "swoop", "lumber", "float", "slither"], description: "chase 전용 다가오는 방식 — dash 질주(늑대)·pounce 아치 도약(거미)·hop 통통(슬라임)·swoop 들쭉날쭉 급강하(박쥐)·lumber 느리지만 끈질김(골렘)·float 부유(유령)·slither S자(뱀)" },
       },
       description: "EventPageMovement. custom는 route:MoveRoute, living은 living:NpcLivingMovement, chase는 pursuit:ChaseAcrossMaps를 추가할 수 있다.",
       additionalProperties: true,

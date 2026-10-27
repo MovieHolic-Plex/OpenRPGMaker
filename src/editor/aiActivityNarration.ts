@@ -135,7 +135,7 @@ addFamily(ACTIONS.document, "present_doc upsert_village_document delete_village_
 addFamily(ACTIONS.plan, "plan_world propose_tile_vocabulary");
 addFamily(ACTIONS.quest, "create_quest create_quest_flags define_quest declare_story_flag define_ending");
 addFamily(ACTIONS.story, "author_story_arc make_horror_loop set_life_flower script_cutscene script_cutscene_preset author_stage_performance");
-addFamily(ACTIONS.battle, "set_action_combat make_action_enemy set_factions simulate_battle tune_enemy author_boss_phases");
+addFamily(ACTIONS.battle, "set_action_combat make_action_enemy set_factions simulate_battle tune_enemy author_boss_phases add_battle_guest");
 addFamily(ACTIONS.world, "build_world link_maps author_world_bridge author_world_mountain");
 addFamily(ACTIONS.deleteResource, "delete_resource delete_resource_profile delete_autotile_group delete_tile_group");
 addFamily(ACTIONS.resource, "upsert_resource upsert_resource_profile create_tileset set_tileset_properties upsert_autotile_group upsert_palette_preset upsert_tile_group set_audio_description");
@@ -147,7 +147,7 @@ addFamily(ACTIONS.focusView, "focus_editor_view");
 addFamily(ACTIONS.askTileset, "ask_tileset_change");
 addFamily(ACTIONS.askMissingTiles, "ask_missing_tiles");
 addFamily(ACTIONS.objectGen, "generate_missing_object");
-addFamily(ACTIONS.storeSearch, "store_search store_my_items store_game_changes store_game_reviews");
+addFamily(ACTIONS.storeSearch, "store_search store_find_music store_my_items store_game_changes store_game_reviews");
 addFamily(ACTIONS.storeInstall, "store_install");
 addFamily(ACTIONS.storePropose, "store_publish store_set_visibility store_game_post store_review_reply");
 addFamily(ACTIONS.opening, "set_opening edit_opening");

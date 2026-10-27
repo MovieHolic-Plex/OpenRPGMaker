@@ -1,3 +1,4 @@
+import { playLiftRide } from "@/player/playSceneLiftRide";
 import { applySpriteLookStep, playParticleEffect } from "@/player/playSceneFieldStaging";
 import { queueScheduledBattle, resumeScheduledBattle } from "./scheduledBattle";
 import { isRuntimeEventIdle } from "@/player/runtimeConditionWait";
@@ -377,6 +378,9 @@ export function applyNonBlockingStep(scene: PlaySceneContext, step: StepResult, 
     case "spriteLook":
       applySpriteLookStep(scene, step, currentEventId);
       return true;
+    case "liftRide":
+      void playLiftRide(scene, step);
+      return true;
     case "showEmote":
       showSceneEmote(
         scene,
@@ -426,7 +430,7 @@ export function applyNonBlockingStep(scene: PlaySceneContext, step: StepResult, 
       return true;
     case "returnToTitle":
       reportEndingClear(scene, step.clear);
-      if (step.title !== undefined || step.message !== undefined || step.presentation) scene.showEndingScreen(step.title ?? "", step.message ?? "", step.presentation, step.clear?.endingId);
+      if (step.title !== undefined || step.message !== undefined || step.presentation) scene.showEndingScreen(step.title ?? "", step.message ?? "", step.presentation, step.clear?.endingId, step.continueTo);
       else scene.returnToTitle();
       return true;
     case "done":

@@ -83,6 +83,28 @@ export function voidFinding(map: { readonly id: string; readonly name?: string }
   };
 }
 
+/** 이 어둡기(0~1) 이상이면 광원 밖 바닥이 플레이 화면에서 거의 검다. */
+export const UNLIT_AMBIENT = 0.7;
+
+/** 맵 기본 조명에 주인공을 따라다니는 광원(손전등·횃불)이 있다. */
+export function playerCarriesLight(lighting: { readonly sources?: readonly { readonly at: unknown; readonly radius: number; readonly intensity?: number }[] } | undefined): boolean {
+  return (lighting?.sources ?? []).some((source) => source.at === "player" && source.radius >= 2 && (source.intensity ?? 1) > 0);
+}
+
+/**
+ * 짙은 어둠인데 주인공이 들고 다니는 빛이 없다 — 광원 밖 걸을 수 있는 바닥이 통째로 「검은 구멍」이 된다(2026-10-26 판정 J89).
+ * 주인공 광원이 있는 어둠은 연출이다: 걸어가는 곳마다 바닥이 밝혀지므로 시각 공백 검사는 조명을 뺀 그림으로 한다.
+ */
+export function unlitDarkFinding(map: { readonly id: string; readonly name?: string; readonly defaultLighting?: { readonly ambient: number; readonly sources?: readonly { readonly at: unknown; readonly radius: number }[] } }): Finding | undefined {
+  const lighting = map.defaultLighting;
+  if (!lighting || lighting.ambient < UNLIT_AMBIENT || playerCarriesLight(lighting)) return undefined;
+  return {
+    severity: "warning", code: "visual-void",
+    message: `시각 공백: 어둡기 ${lighting.ambient} 인데 주인공을 따라다니는 빛이 없습니다 — 광원 밖 걸을 수 있는 바닥이 플레이 화면에서 검게 가려집니다. set_lighting_volume 의 sources 에 {at:'player', radius:3~4} 를 더하세요`,
+    where: { mapId: map.id, ...(map.name ? { mapName: map.name } : {}) },
+  };
+}
+
 /** 한 가지 바닥 타일이 맵의 대부분을 덮고 그 위에 아무것도 없다 — 「새로 지은 마을」이 회색 판 한 장에 집 하나로 남는 식의 빈 판. */
 export const FLAT_MIN_CELLS = 100;
 export const FLAT_DOMINANT_RATIO = 0.8;

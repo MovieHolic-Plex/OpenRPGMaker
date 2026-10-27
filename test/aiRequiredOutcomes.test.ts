@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { resetIntentDeclarationCache } from "@/ai/intentDeclarationClient";
 beforeEach(resetIntentDeclarationCache);
 afterEach(resetIntentDeclarationCache);
@@ -10,6 +10,11 @@ import { WORK_PLAN_TOOLS } from "@/ai/assistantSession";
 import { ACCEPTANCE_TOOLS } from "@/ai/assistantAcceptanceTools";
 import { parseOrchestratorDecision, workPlanFromOrchestratorDecision } from "@/ai/workPlan";
 import { fixture, plan, size, skip, target } from "./requiredOutcomeFixture";
+
+// Tests here build the ~63MB blank project (createBlankProject) and drive assistant sessions or editor
+// panels over it, fingerprinting/copying it per session. Under ci-full load (8 workers on 4-core runners)
+// single tests measured 10-50s, past vitest's 15s default, so the budget is raised for this file only.
+vi.setConfig({ testTimeout: 120_000 });
 
 describe("canonical requirements", () => {
   it("keeps required skipped obligations when a replan tries to weaken them", async () => {

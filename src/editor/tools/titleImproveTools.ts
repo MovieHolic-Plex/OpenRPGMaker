@@ -9,7 +9,7 @@ import { findTitleOpeningPreset, TITLE_OPENING_PRESETS, titleOpeningPresetEffect
 import type { TitleParticlePreset, TitleScreenSettings } from "@/project/types";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
 
-const PARTICLE_PRESETS: readonly TitleParticlePreset[] = ["snow", "rain", "fireflies"];
+const PARTICLE_PRESETS: readonly TitleParticlePreset[] = ["snow", "rain", "fireflies", "stars"];
 
 export const TITLE_IMPROVE_STAGES = [
   { stage: 1, label: "등장 연출", fields: ["intro", "logoStyle", "backgroundFit"] },

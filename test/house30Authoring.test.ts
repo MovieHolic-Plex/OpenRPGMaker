@@ -1,6 +1,7 @@
 import { describe,expect,it } from "vitest";
 import { createBlankProject } from "@/project/defaults";
 import { emptySpatialDocument } from "./support/spatialSchemaFixture";
+import { withRetiredEasyRpgTilesets } from "./support/retiredEasyRpgTilesets";
 import { authorHouse30, inspectHouse30 } from "../scripts/lib/house30Authoring.mts";
 import { buildHouse30BatchA } from "../scripts/lib/house30BatchA.mts";
 import { buildHouse30BatchB } from "../scripts/lib/house30BatchB.mts";
@@ -41,7 +42,8 @@ describe("thirty authored house exteriors",()=>{
 });
 
 it("advances an existing object revision when only its kit pixels change, and keeps a repeat registration stable", () => {
-  const project = createBlankProject(); project.spatialAuthoring = emptySpatialDocument();
+  // 30채 집 외형 킷은 합본 마을 칩셋 번호로 그렸고 그 칩셋의 structureKits 에 등록된다 — 옛 저장본처럼 그 정의를 되살린다.
+  const project = withRetiredEasyRpgTilesets(createBlankProject()); project.spatialAuthoring = emptySpatialDocument();
   const entries = buildHouse30BatchA();
   const first = authorHouse30(project, entries).project;
   const old = first.spatialAuthoring!.library.objects["house30:object:1"]!;

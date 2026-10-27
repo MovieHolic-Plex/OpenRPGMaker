@@ -5,6 +5,7 @@ import { COMBINED_TOWN_TILESET_ID, TILE } from "@/project/defaults/constants";
 import { createBlankProject } from "@/project/defaults/defaultProject";
 import type { ClusterRule, TileGroupMetadata } from "@/project/types";
 import type { ToolContext } from "@/editor/tools/types";
+import { withRetiredEasyRpgTilesets } from "./support/retiredEasyRpgTilesets";
 
 function clusterGroup(): TileGroupMetadata {
   return {
@@ -19,7 +20,7 @@ function clusterGroup(): TileGroupMetadata {
 }
 
 function contextWithGroup(): ToolContext {
-  const project = createBlankProject();
+  const project = withRetiredEasyRpgTilesets(createBlankProject());
   for (const map of Object.values(project.maps)) {
     map.lowerTiles.fill(TILE.GRASS);
     map.upperTiles.fill(TILE.EMPTY);
@@ -83,7 +84,7 @@ describe("set_cluster_rule", () => {
 
   it("upsert_tile_group stores rules and the registry exposes set_cluster_rule", () => {
     // Given: a blank project.
-    const ctx: ToolContext = { project: createBlankProject() };
+    const ctx: ToolContext = { project: withRetiredEasyRpgTilesets(createBlankProject()) };
 
     // When: a group is upserted with cluster rules.
     const result = runTool(ctx, "upsert_tile_group", {

@@ -6,6 +6,7 @@
 // Pi 렌더 브로커(scripts/lib/piRenderBroker.ts)의 «still» 응답 모양(CinematicStillResult)을 그대로 쓴다.
 
 import { generateAiImage, ImageGenerationError, type GenerateAiImageRequest, type GeneratedImageAsset } from "@/ai/imageGenerationClient";
+import { imageFailureNextStep } from "./imageGenerationFallback";
 import { genId } from "@/util/id";
 import type { RgbaImage } from "@/editor/cutsceneArt/imageProcess";
 import type { CinematicStillResult } from "./openingImageGeneration";
@@ -195,6 +196,6 @@ export async function generateMapPanoramaLayer(args: Record<string, unknown>, op
   } catch (error) {
     if (error instanceof DOMException && error.name === "AbortError") throw error;
     const message = error instanceof Error ? error.message : String(error);
-    return { ok: false, code: error instanceof ImageGenerationError ? "image-generation-failed" : "image-processing-failed", summary: `맵 배경 그림 생성에 실패했습니다: ${message}` };
+    return { ok: false, code: error instanceof ImageGenerationError ? "image-generation-failed" : "image-processing-failed", summary: `맵 배경 그림 생성에 실패했습니다: ${message}${error instanceof ImageGenerationError ? ` ${imageFailureNextStep("backdrop", prompt, error)}` : ""}` };
   }
 }

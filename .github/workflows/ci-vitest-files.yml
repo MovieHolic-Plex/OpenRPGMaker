@@ -1,0 +1,56 @@
+name: ci-vitest-files
+
+# 지정한 vitest 파일만 GitHub 호스티드 러너에서 돌린다 — 수동(workflow_dispatch) 전용.
+#
+# 왜 (2026-10-25): 테스트는 CI 에서만 돈다(로컬 vitest 는 금지). 그런데 ci-full 은 샤드 넷에 약 3시간 20분이 걸려
+# (run 40165485978), 실패 묶음 하나를 고친 뒤 그 파일 몇 개가 정말 통과하는지 보려고 ci-full 을 돌리면 하루에 몇 번 못 본다.
+# 이 워크플로는 고른 파일만 돌려 몇 분 안에 답한다. 판정·기준선과는 무관하다 — 래칫은 여전히 ci-full 이 맡는다.
+#
+# 쓰는 법:
+#   gh workflow run ci-vitest-files --ref <브랜치> -f files="test/a.test.ts test/b.test.ts"
+#   gh run list --workflow ci-vitest-files --branch <브랜치>   →   gh run view <id> --log
+#   files 를 비우면 아무것도 돌리지 않고 실패한다(전체 스위트는 ci-full 몫).
+
+on:
+  workflow_dispatch:
+    inputs:
+      files:
+        description: "공백으로 나눈 테스트 파일 경로(또는 vitest 필터)"
+        required: true
+        type: string
+
+concurrency:
+  group: ci-vitest-files-${{ github.ref_name }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  vitest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 24
+          cache: npm
+
+      # 일부 테스트(spatialPlaceCli·npcGoldReward·assistantAcceptanceProvider)가 bun 으로 CLI 를 띄운다.
+      # 러너에 bun 이 없어 「spawnSync bun ENOENT」로 실패했다(ci-full 40165485978).
+      #    저장소 정책이 GitHub 소유 액션만 허용하므로(oven-sh/setup-bun 은 startup_failure) npm 패키지로 깐다.
+      - name: bun 설치
+        run: npm install -g bun@1.4.2 && bun --version
+
+      - run: npm ci
+
+      - name: vitest (지정 파일만)
+        env:
+          FILES: ${{ inputs.files }}
+        run: |
+          set -euo pipefail
+          if [ -z "${FILES// /}" ]; then echo "files 가 비었다 — 전체 스위트는 ci-full 로 돌린다." >&2; exit 2; fi
+          # shellcheck disable=SC2086 — 공백으로 나눈 목록을 인자로 펼친다.
+          node scripts/run-vitest.mjs run --configLoader bundle --reporter=verbose --maxWorkers=4 --minWorkers=1 $FILES

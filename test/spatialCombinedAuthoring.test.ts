@@ -22,7 +22,8 @@ import { fixtureDocument, spaceDesign } from "./support/spatialSpaceCompilerFixt
 
 setupCombinedAuthoring();
 
-it("accepts one nested transaction when shared space and place adapters move delete and add actual members", () => {
+// Heavy under CI load (15s default is too tight): clones and edits a full project in happy-dom.
+it("accepts one nested transaction when shared space and place adapters move delete and add actual members", { timeout: 120_000 }, () => {
   // Given: a compiled village -> inn -> rooms -> objects, with the actual root known independently.
   installManualProject(compileSpatialOccurrence(placeCompilerFixture(19), { occurrenceId: placeRoot }));
   const before = structuredClone(store.getCurrent());
@@ -64,7 +65,8 @@ it("accepts one nested transaction when shared space and place adapters move del
   expectAcceptedTransaction(before, final);
 });
 
-it("preserves the continuing build when an obsolete member adapter hands off after a newer shared edit", () => {
+// Heavy under CI load (15s default is too tight): clones and edits a full project in happy-dom.
+it("preserves the continuing build when an obsolete member adapter hands off after a newer shared edit", { timeout: 120_000 }, () => {
   // Given: a pending real build, then an unretained member deletion preview on that shared generation.
   manualBuildFixture();
   const before = structuredClone(store.getCurrent());

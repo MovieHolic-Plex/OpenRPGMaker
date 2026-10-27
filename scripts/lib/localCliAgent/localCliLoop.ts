@@ -11,6 +11,7 @@
 //   Pi 의 onPayload(제공자 요청 본문)와 같은 자리다. 우리가 보낸 것이 아니라 CLI 가 받았다고 말한 것만 인정한다.
 // - 한 차례 끝(result)의 사용량은 내용 없는 message_end 하나로 합산한다.
 
+import { capResultImages, compactCliToolList, CLI_CONTEXT_EXHAUSTED_PREFIX, isCliApiErrorText, isCliContextExhaustedText } from "../../../src/ai/piAgent/cliContextBudget.ts";
 import type { PiToolShape } from "../../../src/ai/piAgent/toolAdapter.ts";
 import { startLocalMcpServer, type LocalMcpContent, type LocalMcpServer } from "./mcpHttpServer.ts";
 import { localCliBinary, LOCAL_CLI_ADAPTERS } from "./registry.ts";
@@ -68,6 +69,8 @@ export interface LocalCliLoop {
   abort(reason?: string): void;
   dispose(): Promise<void>;
   stats(): LocalCliLoopStats;
+  /** 지금 CLI 대화를 닫는다 — 다음 prompt 는 빈 대화(같은 시스템 지시·같은 MCP 도구)로 시작한다. */
+  resetSession(): Promise<void>;
 }
 
 /** 쓰기(배타) 도구는 혼자, 읽기 도구는 겹쳐 돈다 — Pi 코어의 순서 규칙과 같다. CLI 가 병렬로 불러도 지킨다. */
@@ -141,7 +144,8 @@ export async function createLocalCliLoop(setup: LocalCliLoopSetup): Promise<Loca
     name: "oprn-editor",
     tools: () => {
       listed = signature();
-      const list = setup.tools.map(mcpToolOf);
+      // 목록만 가볍게(깊은 설명 걷기·같은 큰 하위 스키마 한 줄) — J79: 24만 자 목록이 Claude 문맥의 80% 를 먹었다.
+      const list = compactCliToolList(setup.tools.map(mcpToolOf));
       weight.listChars = JSON.stringify(list).length;
       weight.listCount = list.length;
       weight.listTop = list.map((tool) => ({ name: tool.name, chars: JSON.stringify(tool).length })).sort((a, b) => b.chars - a.chars).slice(0, 12);
@@ -155,8 +159,10 @@ export async function createLocalCliLoop(setup: LocalCliLoopSetup): Promise<Loca
       const release = await gate.acquire(tool.concurrency === "exclusive");
       emit({ type: "tool_execution_start", toolCallId: id, toolName: name, args });
       try {
-        const result = await tool.execute(id, args, setup.signal);
-        emit({ type: "tool_execution_end", toolCallId: id, toolName: name, isError: false, result });
+        const raw = await tool.execute(id, args, setup.signal);
+        // 짓기 동사가 그림을 여러 장 돌려주면 CLI 에는 첫 장만 보낸다(J79). 실행기·관문이 보는 사건은 원본 그대로.
+        emit({ type: "tool_execution_end", toolCallId: id, toolName: name, isError: false, result: raw });
+        const result = { ...raw, content: capResultImages(name, raw.content) };
         weigh(name, result.content as never);
         sentResults.push({ name, content: result.content as never, isError: false });
         return { content: result.content as LocalMcpContent[] };
@@ -227,6 +233,16 @@ export async function createLocalCliLoop(setup: LocalCliLoopSetup): Promise<Loca
       if (pendingDelivered.length) { setup.onPayload({ messages: [{ role: "user", content: pendingDelivered }] }); pendingDelivered = []; }
       for (const block of event.blocks) if (block.type === "thinking" && block.text) emit({ type: "message_update", assistantMessageEvent: { type: "thinking_delta", delta: block.text } });
       const text = event.blocks.filter((block) => block.type === "text").map((block) => (block as { text: string }).text).join("");
+      // CLI 가 문맥 한도로 멈추고 그 사정을 답 글로 돌려줬다 — 보고가 아니라 실패다(J79). 실행기가 세션을 비우고 한 번 이어 한다.
+      if (text && isCliContextExhaustedText(text)) {
+        emit({ type: "message_end", message: { role: "assistant", content: [], stopReason: "error", errorMessage: `${CLI_CONTEXT_EXHAUSTED_PREFIX} ${text.slice(0, 300)}` } });
+        return;
+      }
+      // 제공자 오류 글(「API Error: 400 …」)도 답이 아니다 — 보고로 남기지 않고 오류로 끝낸다(J79b, hf2-school-claude-j79 2턴).
+      if (text && isCliApiErrorText(text)) {
+        emit({ type: "message_end", message: { role: "assistant", content: [], stopReason: "error", errorMessage: `로컬 CLI 제공자 오류: ${text.slice(0, 300)}` } });
+        return;
+      }
       emit({ type: "message_end", message: { role: "assistant", content: text ? [{ type: "text", text }] : [], stopReason: "stop" } });
       return;
     }
@@ -234,7 +250,7 @@ export async function createLocalCliLoop(setup: LocalCliLoopSetup): Promise<Loca
     if (event.costUsd !== undefined) costUsd = (costUsd ?? 0) + event.costUsd;
     if (event.usage) usage = usage ? { input: usage.input + event.usage.input, output: usage.output + event.usage.output, cacheRead: usage.cacheRead + event.usage.cacheRead, cacheWrite: usage.cacheWrite + event.usage.cacheWrite, calls: usage.calls + event.usage.calls } : event.usage;
     pendingDelivered = [];
-    const errorMessage = !event.ok && !aborted ? `${event.error ?? "CLI 실행 실패"}${stderrTail.trim() ? ` (${stderrTail.trim().split("\n").slice(-2).join(" / ").slice(0, 300)})` : ""}` : undefined;
+    const errorMessage = !event.ok && !aborted ? `${event.error && isCliContextExhaustedText(event.error) ? `${CLI_CONTEXT_EXHAUSTED_PREFIX} ` : ""}${event.error ?? "CLI 실행 실패"}${stderrTail.trim() ? ` (${stderrTail.trim().split("\n").slice(-2).join(" / ").slice(0, 300)})` : ""}` : undefined;
     emit({ type: "message_end", message: { role: "assistant", content: [], ...(event.usage ? { usage: { ...event.usage, totalTokens: event.usage.input + event.usage.output + event.usage.cacheRead + event.usage.cacheWrite } } : {}), stopReason: errorMessage ? "error" : "stop", ...(errorMessage ? { errorMessage } : {}) } });
   };
 
@@ -258,6 +274,11 @@ export async function createLocalCliLoop(setup: LocalCliLoopSetup): Promise<Loca
       if (text) session?.steer(text);
     },
     abort() { aborted = true; session?.kill(); },
+    async resetSession() {
+      const previous = session;
+      session = undefined;
+      await previous?.close().catch(() => undefined);
+    },
     async dispose() {
       await session?.close().catch(() => undefined);
       await mcp?.close();

@@ -15,7 +15,7 @@ import { MAKE_GAME_CARD, makeGameOn, wantsMakeGame } from "./makeGame";
 
 export const V2_CORE_PROMPT = [
   "너는 OPRN RPG 편집기의 조수(v2)다. 역할 분담: 너는 «무엇을» 정한다(명세), 함수가 «어떻게» 짓는다(결정론 빌더), 다른 눈(독립 비평가)이 1배 그림을 본다.",
-  "고리: 1) 요청을 읽고 명세를 쓴다 → 2) 동사(make_place·add_people·add_event·draw_object)를 부른다 → 3) 결과의 그림·기계 검사·비평 major 를 본다 → 4) 고칠 수 있는 major 는 edit_place 패치로 한 번 고친다(맵당 1바퀴, 패치 하나에 모아서) → 5) 짧게 보고한다.",
+  "고리: 1) 요청을 읽고 명세를 쓴다 → 2) 동사(make_place·add_people·add_event·draw_object)를 부른다 → 3) 결과의 그림·기계 검사·비평 major 를 본다 → 4) 고칠 수 있는 major 는 edit_place 패치로 한 번 고친다(맵당 1바퀴, 패치 하나에 모아서). 놓인 가구 하나가 문·길을 막거나 방향이 틀린 것은 move_object(at→to·face·remove)로, 방이 비었거나 빈 바닥이 많은 것은 dress_room(mapId·at 방 바닥 한 칸·purpose 방 쓰임)으로 — 둘 다 바퀴를 쓰지 않는다 → 5) 짧게 보고한다.",
   "규칙:",
   "- 칸 좌표·타일 번호·평면 문자열을 지어내지 않는다. 자리는 낱말(입구·광장·카운터 앞…)로 말하고, 비평가가 짚은 좌표만 near/at 으로 넘긴다.",
   "- 요청의 모든 부분(장소·사람·대사·사건·물건)을 빠짐없이 동사로 옮긴다. 이미 있는 맵을 고치라는 요청이면 make_place 로 새로 짓지 말고 edit_place(mapId=그 맵)를 쓴다.",

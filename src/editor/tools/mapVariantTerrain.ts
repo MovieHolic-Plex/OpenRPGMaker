@@ -7,6 +7,8 @@
 //  - wasteland(ruin·future): 풀 → 잿빛 광재 땅(+자갈·흙 얼룩), 길·광장 → 깨진 돌 부스러기 길, 나무 → 고사목·광재 더미·바위·뼈 더미,
 //    꽃·덤불 → 자갈, 물가 풀 가장자리·나무 그림자 덧그림 제거, 잔해 흩뿌리기.
 //  - primeval(past): 풀 → 짙은 들풀 땅, 길·광장 → 흙길, 빈 풀밭에 원시림 나무를 더 심고 고사리·버섯·들꽃·돌을 흩뿌린다.
+//  - scorched(burned): 불탄 집 자리 둘레(mask)만 — 풀 → 잿빛 광재·재 땅, 나무 → 고사목·그루터기·쓰러진 통나무, 불씨·자갈 흩뿌리기.
+//    길·광장은 그대로 둔다(불탄 마을도 길은 남는다). mask 밖은 손대지 않는다.
 // 통행 보장: 나무 자리에는 나무보다 막는 칸이 적은 물체만 놓고(나무 칸은 모두 막힘), 새로 심는 나무는 발자국 둘레 한 칸이
 // 모두 네 방향 통행 가능한 빈 땅이고 다른 새 나무의 둘레와 겹치지 않을 때만 심는다 — 둘레 고리로 언제나 돌아갈 수 있어 연결이 끊기지 않는다.
 // 킷이 없는 칩셋(버들항이 아닌 맵)에서는 아무것도 하지 않는다.
@@ -16,7 +18,7 @@ import { clearTileStack } from "@/project/mapOverlayTiles";
 import type { GameMap, Project, SectionStructureKitDef } from "@/project/types";
 
 type Tileset = Project["tilesets"][string];
-export type TerrainProfile = "wasteland" | "primeval";
+export type TerrainProfile = "wasteland" | "primeval" | "scorched";
 
 export type VariantTerrainReport = {
   profile: TerrainProfile;
@@ -56,12 +58,28 @@ const PROFILES = {
     ],
     scatterRatio: 0.07,
   },
+  scorched: {
+    groundBase: "bd-pick-temple-ruins-floor-dirt",
+    groundPatches: ["bd-pick-mining-valley-ground-yard"],
+    path: [] as string[],
+    treeSwaps: ["bd-pick-swamp-stilt-snag", "bd-pick-deep-forest-path-log-fallen", "bd-pick-deep-forest-path-stump", "bd-pick-volcano-cave-pillar-broken-a"],
+    scatter: [
+      "bd-pick-volcano-cave-ember-a", "bd-pick-mountain-pass-scree-a", "bd-pick-mountain-pass-scree-b",
+      "bd-pick-aqueduct-sewer-rubble", "bd-pick-castle-catacombs-rubble",
+    ],
+    scatterRatio: 0.03,
+  },
 } as const;
 
 /** 황무지에서 나무 덩어리의 남은 칸을 메우는 네 방향 모두 막힌 물체 — 여러 칸짜리를 섞어 넣고 1칸짜리로 마감한다. */
 const WASTELAND_WALLS = [
   "bd-pick-mining-valley-slagheap", "bd-pick-mountain-pass-boulder-l", "bd-pick-mountain-pass-boulder-m", "bd-pick-mining-valley-slagrock",
   "bd-pick-deep-forest-path-stump",
+];
+
+/** 불탄 숲 덩어리의 남은 칸 — 그루터기·쓰러진 통나무·탄 들보·숯더미(모두 네 방향 막힘). 바위·광재 더미는 불탄 마을에 어울리지 않는다. */
+const SCORCHED_WALLS = [
+  "bd-pick-deep-forest-path-log-fallen", "bd-pick-volcano-cave-pillar-fallen", "bd-pick-volcano-cave-coal-pile", "bd-pick-deep-forest-path-stump",
 ];
 
 /** 원시림에 더 심을 나무 — 마을 시공기가 쓰는 버들항 나무 킷(위층만, 모두 막힘). 큰 것부터 시도한다. */
@@ -137,9 +155,9 @@ function greenOverlaySources(): Set<number> {
 
 /**
  * 변형 맵 전체의 바닥·길·광장·숲을 시대 팔레트로 바꾼다. 건물 철거·폐허 조각 배치 뒤에 부른다(철거 자리의 되돌린 풀까지 바꾸도록).
- * 필요한 바닥 킷이 칩셋에 없으면 null(아무것도 안 함).
+ * 필요한 바닥 킷이 칩셋에 없으면 null(아무것도 안 함). `mask` 가 있으면 mask[칸]=1 인 칸만 바꾼다(숲 덩어리는 한 칸이라도 걸리면 통째로).
  */
-export function applyVariantTerrain(copy: GameMap, tileset: Tileset | undefined, profile: TerrainProfile, seed: number): VariantTerrainReport | null {
+export function applyVariantTerrain(copy: GameMap, tileset: Tileset | undefined, profile: TerrainProfile, seed: number, mask?: Uint8Array): VariantTerrainReport | null {
   if (!tileset) return null;
   const spec = PROFILES[profile];
   const kitsById = new Map<string, SectionStructureKitDef>((tileset.structureKits ?? []).filter((kit) => kit.kind === "section").map((kit) => [kit.id, kit]));
@@ -156,6 +174,8 @@ export function applyVariantTerrain(copy: GameMap, tileset: Tileset | undefined,
   const { width, height } = copy;
   const index = (x: number, y: number) => y * width + x;
   const eventCells = new Set(copy.events.map((event) => index(event.x, event.y)));
+  const inMask = (cell: number): boolean => !mask || mask[cell] === 1;
+  const ashen = profile !== "primeval";
 
   const flora = new Set<number>();
   for (const kit of kitsById.values()) {
@@ -164,9 +184,9 @@ export function applyVariantTerrain(copy: GameMap, tileset: Tileset | undefined,
   }
 
   // ① 숲 — 황무지는 나무 덩어리를 고사목·광재·바위로, 원시림은 그대로 두고 아래 ④에서 더 심는다.
-  if (profile === "wasteland") {
+  if (ashen) {
     const swaps = spec.treeSwaps.map((id) => upperPiece(kitsById.get(id))).filter((piece): piece is Piece => piece !== undefined);
-    const walls = WASTELAND_WALLS.map((id) => upperPiece(kitsById.get(id))).filter((piece): piece is Piece => piece !== undefined && piece.cells.every((c) => {
+    const walls = (profile === "scorched" ? SCORCHED_WALLS : WASTELAND_WALLS).map((id) => upperPiece(kitsById.get(id))).filter((piece): piece is Piece => piece !== undefined && piece.cells.every((c) => {
       const pass = tileset.passability?.[c.tile];
       return Boolean(pass && !pass.up && !pass.down && !pass.left && !pass.right);
     }));
@@ -188,6 +208,7 @@ export function applyVariantTerrain(copy: GameMap, tileset: Tileset | undefined,
           stack.push(next);
         }
       }
+      if (!component.some(inMask)) continue;
       const inside = new Set(component);
       for (const cell of component) {
         clearTileStack(copy, "upper", cell);
@@ -225,7 +246,8 @@ export function applyVariantTerrain(copy: GameMap, tileset: Tileset | undefined,
         const deep = [[cx + 1, cy], [cx - 1, cy], [cx, cy + 1], [cx, cy - 1]].every(([nx, ny]) => nx! >= 0 && ny! >= 0 && nx! < width && ny! < height && inside.has(index(nx!, ny!)));
         if (deep && !taken.has(cell) && hash32(`${seed}:clear:${Math.floor(cx / 2)}:${Math.floor(cy / 2)}`) % 100 < 40) taken.add(cell);
       }
-      const cells = [...component].sort((a, b) => b - a);
+      // 불탄 마을의 덤불·작은 나무 덩이(16칸 이하)는 막는 조각으로 메우지 않는다 — 집 사이에 통나무 줄이 늘어섰다. 길 벽이 아니라서 비워도 된다.
+      const cells = profile === "scorched" && component.length <= 16 ? [] : [...component].sort((a, b) => b - a);
       for (const cell of cells) {
         if (taken.has(cell)) continue;
         const cx = cell % width, cy = Math.floor(cell / width);
@@ -249,7 +271,7 @@ export function applyVariantTerrain(copy: GameMap, tileset: Tileset | undefined,
       const { toSource } = natureGraftTargets(tileset);
       const green = greenOverlaySources();
       copy.lowerOverlayTiles.forEach((tile, cell) => {
-        if (tile === undefined || tile < 0) return;
+        if (tile === undefined || tile < 0 || !inMask(cell)) return;
         const source = toSource.get(tile);
         if (source !== undefined && green.has(source)) copy.lowerOverlayTiles![cell] = -1;
       });
@@ -261,6 +283,7 @@ export function applyVariantTerrain(copy: GameMap, tileset: Tileset | undefined,
   for (let y = 0; y < height; y += 1) {
     for (let x = 0; x < width; x += 1) {
       const cell = index(x, y);
+      if (!inMask(cell)) continue;
       const lower = copy.lowerTiles[cell];
       const tags = tagsOf(tileset, lower);
       if (tags.includes("grass")) {
@@ -269,16 +292,16 @@ export function applyVariantTerrain(copy: GameMap, tileset: Tileset | undefined,
         report.groundCells += 1;
       } else if (paths.length > 0 && (tags.includes("plaza") || tags.includes("road") || tags.includes("sand"))) {
         const pick = hash32(`${seed}:p:${Math.floor(x / 2)}:${Math.floor(y / 2)}`) % 100;
-        copy.lowerTiles[cell] = profile === "wasteland" && pick < 22 ? base : paths[pick % paths.length]!;
+        copy.lowerTiles[cell] = ashen && pick < 22 ? base : paths[pick % paths.length]!;
         report.pathCells += 1;
       }
     }
   }
 
   // ③ 위층 풀꽃 — 폐허에서는 자갈·잔해로 바꾼다(통행 가능한 1칸 조각끼리라 통행은 그대로다).
-  if (profile === "wasteland" && scatter.length > 0) {
+  if (ashen && scatter.length > 0) {
     copy.upperTiles.forEach((tile, cell) => {
-      if (tile === undefined || tile < 0 || !flora.has(tile)) return;
+      if (tile === undefined || tile < 0 || !flora.has(tile) || !inMask(cell)) return;
       copy.upperTiles[cell] = scatter[hash32(`${seed}:f:${cell}`) % scatter.length]!.cells[0]!.tile;
     });
   }
@@ -331,7 +354,7 @@ export function applyVariantTerrain(copy: GameMap, tileset: Tileset | undefined,
   // ⑤ 흩뿌리기 — 통행 가능한 1칸 조각(자갈·뼈·불씨 / 고사리·버섯·들꽃)만 빈 땅에.
   if (scatter.length > 0) {
     for (let cell = 0; cell < width * height; cell += 1) {
-      if (!isOpenGround(cell)) continue;
+      if (!isOpenGround(cell) || !inMask(cell)) continue;
       if ((hash32(`${seed}:s:${cell}`) % 1000) >= spec.scatterRatio * 1000) continue;
       const piece = scatter[hash32(`${seed}:sp:${cell}`) % scatter.length]!;
       copy.upperTiles[cell] = piece.cells[0]!.tile;

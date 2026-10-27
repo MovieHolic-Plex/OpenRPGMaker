@@ -29,6 +29,27 @@ export function normalizeMultiHit(value: unknown): SkillRecord["multiHit"] {
 }
 
 /** 고정 피해 양. 시전자 레벨은 몬스터가 아니면 1 로 읽는다. 상한 FIXED_DAMAGE_MAX. */
+/** 충전 끊기(SkillRecord.chargeBreak) 정규화. 조건(damage·elementIds·stateIds)이 하나도 없으면 버린다. */
+export function normalizeChargeBreak(value: unknown): SkillRecord["chargeBreak"] {
+  if (!value || typeof value !== "object") return undefined;
+  const raw = value as Record<string, unknown>;
+  const ids = (list: unknown): string[] => Array.isArray(list)
+    ? [...new Set(list.filter((id): id is string => typeof id === "string").map((id) => id.trim()).filter(Boolean))].slice(0, 8)
+    : [];
+  const damage = typeof raw.damage === "number" && Number.isFinite(raw.damage) && raw.damage >= 1 ? Math.min(999999, Math.floor(raw.damage)) : undefined;
+  const elementIds = ids(raw.elementIds);
+  const stateIds = ids(raw.stateIds);
+  if (damage === undefined && elementIds.length === 0 && stateIds.length === 0) return undefined;
+  const message = typeof raw.message === "string" && raw.message.trim() ? raw.message.trim().slice(0, 120) : undefined;
+  return {
+    ...(damage !== undefined ? { damage } : {}),
+    ...(elementIds.length ? { elementIds } : {}),
+    ...(stateIds.length ? { stateIds } : {}),
+    ...(message ? { message } : {}),
+    ...(raw.stagger === false ? { stagger: false } : {}),
+  };
+}
+
 export function fixedDamageAmount(rule: SkillRecord["fixedDamage"], userLevel: number | undefined): number | undefined {
   if (!rule) return undefined;
   if (rule.mode === "level") return Math.max(1, Math.min(FIXED_DAMAGE_MAX, Math.floor(userLevel ?? 1)));

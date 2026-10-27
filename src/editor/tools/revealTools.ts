@@ -1,4 +1,6 @@
-import type { Command, GameMap, Project } from "@/project/types";
+import type { Command, EventPage, GameEvent, GameMap, Project, Trigger } from "@/project/types";
+import { assertEventShape, upsertEventIntoMap } from "./eventTools";
+import { FIXED_MOVEMENT } from "./puzzleKit";
 import { SHARED_OBJECT_TOOLS, prepareSharedObject } from "./sharedObjectTools";
 import { m2, revealInWaves, type RevealTheme } from "./puzzleKit";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
@@ -55,7 +57,7 @@ function changesFromObject(project: Project, map: GameMap, objectId: string, x: 
 
 type CommandList = Command[];
 /** 텍스트 본문에 anchor 가 든 첫 대사 바로 뒤에 넣는다(갈래·선택지 안까지 찾는다). 못 찾으면 false. */
-function insertAfterText(list: CommandList, anchor: string, inserted: Command[]): boolean {
+export function insertAfterText(list: CommandList, anchor: string, inserted: Command[]): boolean {
   for (let i = 0; i < list.length; i += 1) {
     const cmd = list[i] as unknown as Record<string, unknown>;
     if (cmd.kind === "text" && typeof cmd.body === "string" && cmd.body.includes(anchor)) {
@@ -170,4 +172,134 @@ const stageMapReveal: ToolDefinition = {
   },
 };
 
-export const REVEAL_TOOLS: readonly ToolDefinition[] = [stageMapReveal];
+// 승강 장치(2026-10-25) — 「바닥 칸에 올라서면 페이드로 사라짐」은 승강기로 읽히지 않는다는 지적. Lift Ride 명령이 발판·레일·사슬을
+// 그리고 파티를 태워 움직인다. 이 도구는 그 명령을 쓰는 탑승 이벤트(발판 칸마다 밟기)와, 다른 맵으로 가면 도착 이벤트까지 한 번에 깐다.
+const placeLift: ToolDefinition = {
+  name: "place_lift",
+  mode: "write",
+  domains: ["event", "map"],
+  description:
+    "승강 장치(엘리베이터·화물 승강기·광산 리프트)를 놓는다. 발판 칸(width×depth)마다 밟으면 타는 이벤트를 만들고, 타면 «Lift Ride» 명령이 " +
+    "쇠 발판·양옆 레일·위로 이어진 사슬을 그려 동료까지 발판에 모은 뒤 덜컹 소리와 함께 파티를 태워 위/아래로 움직인다(카메라가 따라간다, 기계음 반복). " +
+    "toMapId 를 주면 움직인 뒤 어두워지며 그 맵 (toX,toY) 로 가고, 도착 맵에는 같은 발판이 반대쪽에서 올라와 서는 도착 이벤트를 만든다. toMapId 가 없으면 같은 맵의 distance 칸 위/아래 층에 내려선다. " +
+    "switchId 를 주면 그 스위치가 켜졌을 때만 탈 수 있다(stage_map_reveal 로 드러낸 뒤 쓰기). 승강기를 바닥 칸 + 페이드로 흉내내지 말고 이 도구를 쓴다. " +
+    "이미 이벤트 본문이 있으면 직접 m2 «Lift Ride»(mode depart|arrive|move, direction up|down, distance, x, y, width, depth) 를 넣어도 된다.",
+  parameters: {
+    type: "object",
+    properties: {
+      mapId: { type: "string", description: "승강 장치가 있는 맵" },
+      x: { type: "integer", description: "발판 왼쪽 위 칸 x" },
+      y: { type: "integer", description: "발판 왼쪽 위 칸 y" },
+      width: { type: "integer", description: "발판 폭(칸, 1~6). 기본 2" },
+      depth: { type: "integer", description: "발판 깊이(칸, 1~4). 기본 2" },
+      direction: { type: "string", enum: ["up", "down"], description: "움직이는 방향. 기본 up" },
+      distance: { type: "integer", description: "움직이는 칸 수(1~20). 기본 4" },
+      durationMs: { type: "integer", description: "움직이는 시간(ms). 기본 2600" },
+      switchId: { type: "string", description: "이 스위치가 켜졌을 때만 탈 수 있다" },
+      text: { type: "string", description: "타기 직전 한 줄(예: 「승강 장치에 올라탔다.」). 비우면 없음" },
+      toMapId: { type: "string", description: "도착 맵. 없으면 같은 맵 안 다른 층" },
+      toX: { type: "integer", description: "도착 맵에서 주인공이 설 칸 x(발판 왼쪽 위)" },
+      toY: { type: "integer", description: "도착 맵에서 주인공이 설 칸 y(발판 왼쪽 위)" },
+      toDirection: { type: "string", enum: ["up", "down", "left", "right"], description: "도착해서 보는 방향. 기본 down" },
+      arrivedSwitchId: { type: "string", description: "도착 이벤트가 쓰는 스위치(도착 맵 다른 이벤트가 이어 받을 때). 기본 자동" },
+      se: { type: "string", description: "기계음 효과음 id. 기본 cc0-se-osx-machine-02" },
+      trigger: { type: "string", enum: ["touch", "action"], description: "touch(기본)=발판에 올라서면 바로 탄다 · action=발판 위에서 조사 키를 눌러야 탄다(도착한 발판에서 걸어 나가다 도로 타 버리지 않게 — 양방향 승강 장치의 도착 쪽에 쓴다)" },
+    },
+    required: ["mapId", "x", "y"],
+    additionalProperties: false,
+  },
+  invalidArgsExample: { mapId: "map_mine_b2", x: 10, y: 4, direction: "up", distance: 4, toMapId: "map_mine_b1", toX: 6, toY: 12 },
+  run(draft, args): ToolExecResult {
+    const map = draft.maps[String(args.mapId)];
+    if (!map) throw new ToolError(`맵을 찾을 수 없습니다: ${String(args.mapId)}`, { code: "lift-map" });
+    const int = (v: unknown, lo: number, hi: number, d: number): number => (Number.isFinite(Number(v)) && v !== undefined ? Math.max(lo, Math.min(hi, Math.round(Number(v)))) : d);
+    const x = Number(args.x), y = Number(args.y);
+    const width = int(args.width, 1, 6, 2), depth = int(args.depth, 1, 4, 2);
+    if (!Number.isInteger(x) || !Number.isInteger(y) || x < 0 || y < 0 || x + width > map.width || y + depth > map.height) {
+      throw new ToolError(`발판 (${String(args.x)},${String(args.y)}) ${width}×${depth} 가 맵 밖입니다.`, { code: "lift-bounds" });
+    }
+    const direction = args.direction === "down" ? "down" : "up";
+    const distance = int(args.distance, 1, 20, 4);
+    const durationMs = int(args.durationMs, 400, 20000, 2600);
+    const se = typeof args.se === "string" && args.se.trim() ? args.se.trim() : "cc0-se-osx-machine-02";
+    const toMapId = typeof args.toMapId === "string" && args.toMapId ? args.toMapId : undefined;
+    const toMap = toMapId ? draft.maps[toMapId] : undefined;
+    if (toMapId && !toMap) throw new ToolError(`도착 맵을 찾을 수 없습니다: ${toMapId}`, { code: "lift-to-map" });
+    const ride = (mode: "depart" | "arrive" | "move", px: number, py: number, wait: boolean): Command =>
+      m2("Lift Ride", { mode, direction, distance, durationMs, x: px, y: py, width, depth, se, wait });
+    const screen = (effect: "fadeOut" | "fadeIn", ms: number): Command => m2("Screen Effect", { effect, value: "", durationMs: ms });
+    const base = `ev_lift_${map.id}_${x}_${y}`;
+    const arrived = typeof args.arrivedSwitchId === "string" && args.arrivedSwitchId ? args.arrivedSwitchId : `sw_${base}_arrived`;
+    const text = typeof args.text === "string" && args.text.trim() ? args.text.trim() : "";
+    const toX = Number.isInteger(args.toX) ? Number(args.toX) : 0;
+    const toY = Number.isInteger(args.toY) ? Number(args.toY) : 0;
+    if (toMap && (toX < 0 || toY < 0 || toX + width > toMap.width || toY + depth > toMap.height)) {
+      throw new ToolError(`도착 발판 (${toX},${toY}) ${width}×${depth} 가 ${toMap.id} 밖입니다.`, { code: "lift-to-bounds" });
+    }
+    const toDirection = ["up", "down", "left", "right"].includes(String(args.toDirection)) ? String(args.toDirection) : "down";
+    const rideCmds: Command[] = [
+      ...(text ? [{ kind: "text", body: text } as Command] : []),
+      ...(toMap
+        ? [
+            ride("depart", x, y, true),
+            screen("fadeOut", 700), { kind: "wait", ms: 700 } as Command,
+            { kind: "setSwitch", switchId: arrived, value: true } as unknown as Command,
+            { kind: "transfer", mapId: toMap.id, x: toX, y: toY, direction: toDirection, fade: "none" } as unknown as Command,
+          ]
+        : [ride("move", x, y, true)]),
+    ];
+    const trigger: Trigger = { kind: args.trigger === "action" ? "action" : "playerTouch" } as Trigger;
+    const switchId = typeof args.switchId === "string" && args.switchId ? args.switchId : undefined;
+    const made: string[] = [];
+    for (let dy = 0; dy < depth; dy += 1) for (let dx = 0; dx < width; dx += 1) {
+      const id = `${base}_${dx}${dy}`;
+      const event: GameEvent = {
+        id, x: x + dx, y: y + dy, trigger, commands: [],
+        pages: [{
+          id: `${id}_ride`, name: "승강 장치",
+          conditions: switchId ? [{ kind: "switch", switchId, value: true }] as EventPage["conditions"] : [],
+          graphic: { transparent: true } as EventPage["graphic"],
+          trigger, priority: "below", overlapForbidden: false, animationType: "fixedGraphic", movement: FIXED_MOVEMENT,
+          commands: JSON.parse(JSON.stringify(rideCmds)) as Command[],
+        }],
+      } as GameEvent;
+      assertEventShape(event);
+      upsertEventIntoMap(map, event);
+      made.push(id);
+    }
+    let arrivalId: string | undefined;
+    if (toMap) {
+      // 도착 스위치가 프로젝트에 없으면 만든다 — 자동 이름(sw_ev_lift_…_arrived)은 참조 검증에서 「없는 스위치」로 거부됐다.
+      if (!draft.switches.some((s) => s.id === arrived)) draft.switches.push({ id: arrived, name: `승강 장치 도착 · ${toMap.name ?? toMap.id}` });
+      arrivalId = `ev_lift_arrival_${toMap.id}_${toX}_${toY}`;
+      const autorun: Trigger = { kind: "auto" } as Trigger;
+      const event: GameEvent = {
+        id: arrivalId, x: 0, y: 0, trigger: autorun, commands: [],
+        pages: [
+          { id: `${arrivalId}_idle`, name: "대기", conditions: [], graphic: { transparent: true } as EventPage["graphic"], trigger: { kind: "action" } as Trigger, priority: "below", overlapForbidden: false, animationType: "fixedGraphic", movement: FIXED_MOVEMENT, commands: [] },
+          {
+            id: `${arrivalId}_run`, name: "도착",
+            conditions: [{ kind: "switch", switchId: arrived, value: true }] as EventPage["conditions"],
+            graphic: { transparent: true } as EventPage["graphic"],
+            trigger: autorun, priority: "below", overlapForbidden: false, animationType: "fixedGraphic", movement: FIXED_MOVEMENT,
+            commands: [
+              ride("arrive", toX, toY, false),
+              screen("fadeIn", 600),
+              { kind: "wait", ms: durationMs + 700 } as Command,
+              { kind: "setSwitch", switchId: arrived, value: false } as unknown as Command,
+            ],
+          },
+        ],
+      } as GameEvent;
+      assertEventShape(event);
+      upsertEventIntoMap(toMap, event);
+    }
+    return {
+      summary: `${map.id} (${x},${y}) ${width}×${depth} 승강 장치 — ${direction === "up" ? "위로" : "아래로"} ${distance}칸` +
+        (toMap ? ` → ${toMap.id} (${toX},${toY}) 도착 이벤트 ${arrivalId}` : " (같은 맵 다른 층)") + (switchId ? `, 스위치 ${switchId} 켜진 뒤` : "") + ".",
+      data: { mapId: map.id, rideEvents: made, ...(arrivalId ? { arrivalEventId: arrivalId, arrivedSwitchId: arrived } : {}) },
+    };
+  },
+};
+
+export const REVEAL_TOOLS: readonly ToolDefinition[] = [stageMapReveal, placeLift];

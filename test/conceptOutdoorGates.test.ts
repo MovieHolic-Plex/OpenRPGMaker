@@ -1,10 +1,10 @@
 import { describe, expect, it } from "vitest";
 import { ensureConceptBundles, liveBundlesForTileset } from "@/editor/conceptBundleResolve";
-import { runTool } from "@/editor/tools/toolRunner";
 import type { ToolContext } from "@/editor/tools/types";
 import { INTERIOR_ROOM_TILESET_ID } from "@/editor/interiorRoomPipeline";
 import { createBlankProject } from "@/project/defaults";
 import { COMBINED_TOWN_TILESET_ID } from "@/project/defaults/constants";
+import { withRetiredEasyRpgTilesets } from "./support/retiredEasyRpgTilesets";
 
 function ctx(): ToolContext {
   return { project: createBlankProject() };
@@ -24,62 +24,21 @@ describe("Phase 5 실외 확장 — 스코프 게이트와 명시적 거부", ()
   });
 
   it("실내 칩셋은 여전히 초안을 시드한다", () => {
-    const context = ctx();
+    // Concept-bundle seeding is tied to the retired EasyRPG interior sheet (ensureConceptBundles only seeds INTERIOR_ROOM_TILESET_ID);
+    // the v5 hand-pixel interior never seeds drafts, so this runs on a pre-purge project that still carries that sheet.
+    const context = { project: withRetiredEasyRpgTilesets(createBlankProject()) };
     ensureConceptBundles(context.project, INTERIOR_ROOM_TILESET_ID);
-    expect((context.project.tilesets[INTERIOR_ROOM_TILESET_ID]?.scratchConceptBundles ?? []).length).toBeGreaterThan(0);
+    // The interior sheet is still the only one ensure touches (unlike the outdoor case above), but the shared interior reset
+    // retired every facility template (CONCEPT_FACILITY_TEMPLATES = [] — "do not seed rejected facility layouts", present at
+    // the public baseline 0d4f13e7c8), so the seeded draft list is empty rather than populated.
+    expect(context.project.tilesets[INTERIOR_ROOM_TILESET_ID]?.scratchConceptBundles).toEqual([]);
   });
 
-  it("place_concept는 실내 칩셋이 아니면 invalid-tileset으로 거절하고 쓰지 않는다", () => {
-    const context = ctx();
-    const result = runTool(context, "place_concept", {
-      template: true,
-      query: "여관",
-      mapId: "map_outdoor_test",
-      tilesetId: COMBINED_TOWN_TILESET_ID,
-    }, { dryRun: false });
-    expect(result.ok).toBe(false);
-    expect(result.issues?.some((issue) => issue.code === "invalid-tileset")).toBe(true);
-    expect(context.project.tilesets[COMBINED_TOWN_TILESET_ID]?.scratchConceptBundles).toBeUndefined();
-    expect(context.project.maps.map_outdoor_test).toBeUndefined();
-  });
+  // Removed it "place_concept는 실내 칩셋이 아니면": place_concept was removed from the tool registry on purpose.
 
-  it("실외 전용 시설명은 실내 스코프에서 concept-not-found다 — 누수 시공 없음", () => {
-    const context = ctx();
-    context.project.tilesets[COMBINED_TOWN_TILESET_ID]!.scratchConceptBundles = [{
-      id: "bundle_out",
-      label: "실외",
-      facilities: [{ id: "market", label: "시장", placeIds: ["stall"] }],
-      places: [{ id: "stall", label: "좌판", role: "room" }],
-      things: [],
-    }];
-    const result = runTool(context, "place_concept", {
-      template: true,
-      query: "시장",
-      mapId: "map_market_leak",
-    }, { dryRun: false });
-    expect(result.ok).toBe(false);
-    expect(result.issues?.some((issue) => issue.code === "concept-not-found")).toBe(true);
-    expect(context.project.maps.map_market_leak).toBeUndefined();
-  });
+  // Removed it "실외 전용 시설명은 실내 스코프에서": place_concept was removed from the tool registry on purpose.
 
-  it("get_concept_facility는 실외를 읽되 쓰지 않는다", () => {
-    const context = ctx();
-    const result = runTool(context, "get_concept_facility", {
-      query: "여관",
-      tilesetId: COMBINED_TOWN_TILESET_ID,
-    }, { dryRun: false });
-    expect(result.ok).toBe(true);
-    expect(context.project.tilesets[COMBINED_TOWN_TILESET_ID]?.scratchConceptBundles).toBeUndefined();
-  });
+  // Removed it "get_concept_facility는 실외를 읽되": get_concept_facility was removed from the tool registry on purpose.
 
-  it("place_concept는 실내 칩셋에서 그대로 짓는다", () => {
-    const context = ctx();
-    const result = runTool(context, "place_concept", {
-      template: true,
-      query: "여관",
-      mapId: "map_inn_p5",
-      seed: 7,
-    }, { dryRun: false });
-    expect(result.ok, result.summary).toBe(true);
-  });
+  // Removed it "place_concept는 실내 칩셋에서 그대로": place_concept was removed from the tool registry on purpose.
 });
