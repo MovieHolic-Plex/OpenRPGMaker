@@ -18,10 +18,12 @@ describe("m2 event command catalog", () => {
     const pdfEntries = M2_COMMAND_CATALOG.filter((entry) => entry.index <= 108);
 
     expect(pdfEntries).toHaveLength(108);
-    expect(M2_COMMAND_CATALOG).toHaveLength(133);
-    expect(new Set(M2_COMMAND_CATALOG.map((entry) => entry.id)).size).toBe(133);
+    // 133 → 135: m2-226 Lift Ride (#3509), m2-227 Journal Line (#3546).
+    expect(M2_COMMAND_CATALOG).toHaveLength(135);
+    expect(new Set(M2_COMMAND_CATALOG.map((entry) => entry.id)).size).toBe(135);
     // 주석은 탭 1 저작면의 1급 카드가 아니다 — 시스템·도구 탭으로 옮겼다.
-    expect(pageCount(1)).toBe(34);
+    // 34 → 35: Journal Line(#3546)은 대화·흐름 묶음으로 탭 1 에 놓인다.
+    expect(pageCount(1)).toBe(35);
     expect(pageCount(2)).toBeGreaterThan(0);
     expect(pageCount(3)).toBeGreaterThan(0);
     expect(pdfEntries.filter((entry) => entry.pickerPage === 4).length).toBeGreaterThan(0);
@@ -223,7 +225,8 @@ describe("m2 event command catalog", () => {
       "Evaluate Expression": 4,
       "Data Query": 4,
     };
-    const mapFullModernTitles = new Set(["Camera Control", "Spawn Event", "Remove Event", "Pathfind Move", "Wait Until", "Sound Layer"]);
+    // Screen Effect(m2-202) joined M2_MAP_COMMON_FULL_IDS on 2026-10-02 (see m2RuntimeClassificationData.ts).
+    const mapFullModernTitles = new Set(["Camera Control", "Screen Effect", "Spawn Event", "Remove Event", "Pathfind Move", "Wait Until", "Sound Layer"]);
     for (const title of modernTitles) {
       const entry = requireEntry(title);
       expect(entry.runtimeSupport).toBe(title === "Advanced Dialogue" ? "runtime-full" : "runtime-partial");

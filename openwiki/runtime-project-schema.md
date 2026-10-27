@@ -38,7 +38,7 @@ store.update 안에서 루트 키 **삭제**는 반영되지 않으므로 쓰기
 `variant?: { of, preset?, spec }`(2026-10-15, 선택) — `derive_world_variant` 가 파생한 변형 세계의 원본: `of` 는 기준 지도 id, `spec` 은 키트 `terrain.variant`
 (`WorldmapVariantSpec`: ops·palette·icon_preset·journey·protect_roads…). 없으면 일반 세계 지도. 옛 문서는 그대로 열린다(마이그레이션 없음).
 `EncounterConditions.terrainId?: string`(2026-10-15, 선택) — 서 있는 칸 지형 레코드 id 와 같을 때만 그 항목이 나온다. 없으면 지형 무관(옛 동작).
-`DatabaseTerrainRecord.vehiclePassage.{chocobo?,cart?,raft?}`(선택) — 초코보가 걸을 수 없는 칸도 지남 / 광산 수레가 다니는 칸 / 뗏목이 다니는 칸. 없으면 false.
+`DatabaseTerrainRecord.vehiclePassage.{chocobo?,cart?,raft?}`(선택) — 초코보가 걸을 수 없는 칸도 지남 / 광산 수레가 다니는 칸 / 뗏목이 다니는 칸. chocobo·cart 를 빼면 false. raft 를 빼면 소형선만 다니는 물(boat 이고 ship 이 아님)은 뗏목을 허용하고, `raft: false` 는 그 폴백을 끈다. 불러오기 정규화는 그 false 를 지우지 않는다.
 
 ## 캐릭터별 전투 동작 (2026-10-03)
 
@@ -127,6 +127,10 @@ width/height와 기존 전체 셀 배열 형태는 그대로이며 스키마/릴
   `defaultDatabaseUtilityRecords.ts`는 기존 17개 슬롯 뒤에 grass를 추가한다. 의존성 폐쇄가 빠진 행만 보충하고 같은 ID의 저자 행은 유지한다.
   누락 시 기존 프로젝트 부팅이 `Bundled retro roster dependency missing: elements.grass`로 중단된다.
 
+## 장비 능력치 보너스 (2026-10-27)
+
+`EquipmentRecord.statBonuses` 의 공격·방어·정신·민첩은 −9999~9999 다. 무거운 창·갑옷의 민첩 감점(음수)이 `normalizeStatBonuses` 에서 0으로 잘려 프로젝트 저장 왕복에 사라지던 것을 고쳤다. 생략한 칸은 0이고, 아이템 장비 프로필(−500~500)·씨앗(−50~50) 범위는 그대로다.
+
 ## FF6 마석 성장 — 선택 필드 (2026-10-15)
 
 모두 값이 있을 때만 저장한다(옛 프로젝트·세이브 불변). 형태: 장비 `apGrants`·`apRate`·`levelUpBonus`, 적 `rewards.ap`, 스킬 `oncePerBattle`, 장비 부위 `equipmentSlots[].equipsAs`(도형 검사 `shapeDatabaseFields`).
@@ -147,7 +151,7 @@ affects mp 면 MP). 둘 다 0/생략이면 키가 없다 — 옛 프로젝트는
 ## 데스크톱 시작 화면 — 라이브러리 홈 (2026-10-20, 2026-10-17 플레이·만들기 두 갈래를 대체 · 2026-10-21 칸 나누기)
 
 첫 화면은 「라이브러리 홈」이다(설계 http://mdc-server:18301/home-redesign-1.html A안, 사용자 선택 2026-10-20).
-명령줄에 `project.sqlite` 가 있는 폴더를 넘기면 이 홈을 건너뛰고 그 프로젝트를 연다 — `openwiki/architecture.md` 「명령줄 프로젝트 폴더」.
+명령줄에 `project.sqlite` 가 있는 폴더, 또는 그 파일 자체를 넘기면 이 홈을 건너뛰고 그 프로젝트를 연다 — `openwiki/architecture.md` 「명령줄 프로젝트 폴더」.
 
 **2026-10-21 칸 나누기(사용자 신고 「왼쪽 버튼 누르면 상태 관리 엉망 · 홈은 지금 만들 수 있는 것만」).** 10-20 판은 한 긴 본문을 레일 단추로 스크롤했고
 스크롤 위치가 레일 표시를 다시 정했다. 실측 결함: (1) 누르자마자 표시가 「홈」으로 되돌아갔다가 스크롤이 끝나야 맞음, (2) 컨셉 상세·검색어가
@@ -1331,11 +1335,16 @@ bytes after real remote reload and Test Play. The default is not remote proof.
   - **판 차이(앱 갱신):** 차이는 저장 때 번들 위에 계산했지만 다른 판의 번들 위에도 얹힌다. 저자가 안 바꾼 칸은 지금 번들 값, 바꾼 칸·필드·덧붙인 칸(`tail`, 공방 칸)은 그대로, 칸 표 길이는 저장 때 `n` 을 지킨다. 그래서 되돌린 결과는 «옛 사본과 같은 모양»이고 `ensureBundledTilesets` 의 옛 사본 맞추기가 예전과 똑같이 돈다. 실측: jp_city 를 64칸·킷 1개 짧은 옛 판으로 흉내 내고 저자 편집(이름·tileMeta·통행·킷·오토타일)을 얹어, 「통째 옛 사본 → ensure」와 「옛 판 차이 → 지금 번들에 얹기 → ensure」의 결과가 JSON 동치였다. 목록(킷·오토타일·참고문서)은 판이 다르면 `id` 로 맞춘다. 번들이 줄어 저자가 안 바꾼 칸이 사라졌으면 마지막 칸을 복제하고 `missing` 으로 센다.
   - **옛 앱:** 차이를 쓴 SQLite 저장소는 `meta.format_version` 3 이다(`LOCAL_STORE_FORMAT_VERSION`). 이전 빌드는 「store format 3 is newer」로 열기를 거절한다 — 검사 오류나 빈 타일셋으로 열지 않는다. 차이 없이 저장하면 2 로 내려간다. 호스트에 붙는 옛 앱·옛 플레이어는 차이 보기를 `validateTileset` 오류로 거절한다(덮어쓰지 않는다).
   - **이 앱에 없는 번들 id:** `ProjectFormatError`. 빈 정의로 채우지 않는다.
-  - **편집기:** 번들 정의 JSON 은 지연으로 읽는다(`bundledJson.ts`). 저장 보기는 정의가 읽혀 있을 때만 차이를 만든다(`bundledTilesetDefinitionReady`) — 동기 XHR 을 부르지 않고, 안 읽혔으면 예전처럼 통째로 싣는다. `electronRepository.loadSnapshotFromHost` 가 로드 전에 `preloadAllBundledTilesetDefinitions()` 를 기다리므로 같은 내용은 늘 같은 저장 모양이다. 첫 저장 보기의 비교(번들 정의 수십 개, node 약 1s)는 `store.baselineFrom` 의 한가한 예열이 `primeBundledTilesetDiffViews` 로 타일셋 하나씩 양보하며 먼저 한다.
+  - **편집기:** 번들 정의 JSON 은 지연으로 읽는다(`bundledJson.ts`). 저장 보기는 정의가 읽혀 있을 때만 차이를 만든다(`bundledTilesetDefinitionReady`) — 동기 XHR 을 부르지 않고, 안 읽혔으면 통째로 싣는다(그 판정은 객체마다 기억해 같은 내용은 늘 같은 저장 모양이다). 첫 저장 보기의 비교는 `store.baselineFrom` 의 한가한 예열이 `primeBundledTilesetDiffViews` 로 타일셋 하나씩 양보하며 먼저 한다.
+  - **지연 되돌리기 (2026-10-27):** 접힌 행 로드(`electronRepository.loadSnapshotFromHost`)는 **맵이 쓰는 번들 타일셋**(`mapTilesetIds`)의 정의만 비동기로 읽고 `withLazyBundledTilesets` 안에서 deserialize 한다. 나머지는 머리(`id·name·image·count …`)만 든 객체로 두고, 무거운 필드를 처음 읽거나 어떤 필드든 쓰면 그 자리에서 되돌린다(`lazyTileset`, 표지는 의존 없는 `bundledTilesetLazy.ts`). 접근자 속성이라 같은 객체가 제자리에서 온전해진다 — Proxy 는 structuredClone 을 깨서 쓰지 않는다.
+    - 왜: 로드마다 번들 정의 JSON 약 47MB 를 모두 읽고 수십 개를 되돌렸다. 맵이 쓰는 것은 대개 서너 개다.
+    - 되돌리기 전 저장 보기는 받은 차이 그대로다(바이트 동일 — 폴른 스타 사본에서 맵 칠하기 저장 뒤 타일셋 본문 sha 46/46 불변, 되돌린 수 0). 검사(`validateTileset`·`referenceOwner`)는 되돌릴 때까지 미룬다(`io/shape.ts`). 복제(`cloneProjectSharingReferenceDocuments`)는 지연 객체를 복제하지 않고 공유한다(스토어는 타일셋 항목을 제자리에서 고치지 않는다는 기존 계약).
+    - 모든 타일셋을 훑는 한가한 예열은 지연 타일셋이 남았으면 건너뛴다: 자료집 미리 그리기(`databaseModalLazy.ts`), 조수 무거운 키 해시(`heavyWire.warmHeavyWire`), 적용 권위 요약(`aiChatPanel` `warmApplyCaches`), 스트립 등록(`registerUploadedTilesets`, 시트가 실린 뒤에만). 그 화면을 실제로 열 때(자료집 열기·첫 조수 턴 `planHeavyWire`)는 `preloadPendingLazyBundledTilesets` 로 정의를 **비동기로** 먼저 읽고 연다 — 동기 XHR 대비책을 메인 스레드에서 타지 않는다. 그래서 자료집 첫 열기는 정의를 읽는 만큼 느리다(폴른 스타 약 0.9s → 2.1s).
+    - 남은 한계: 다른 판의 번들이 새로 가진 필드는 되돌린 뒤에야 키로 보인다(열거 중 되돌리면 그 열거에는 빠질 수 있다 — `sharedDictionaryJson` 은 먼저 되돌린다). 정규화가 도는 첫 부팅(새 빌드)은 예전처럼 모든 정의를 읽는다. 새 화면이 모든 타일셋의 무거운 필드를 읽으면 그때 모두 되돌린다 — 무엇이 되돌렸는지는 콘솔에서 `globalThis.__oprnLazyTraceStacks = []` 를 두고 로드한 뒤 그 배열(스택)과 `__oprnLazyTilesets()` 로 본다.
   - **기억:** 차이 보기는 타일셋 객체별로 기억하고, 필드 정체 + 배열 필드의 길이·원소 정체가 모두 같을 때만 쓴다(로드 정규화가 되돌린 객체를 제자리에서 고쳐도 잡는다). 같은 원소 객체 안 속성의 제자리 수정은 못 잡는다 — `sharedDictionaryJson` 의 글 기억과 같은 전제(스토어 항목은 `store.update` 가 읽을 때 복제한다).
   - 저장 왕복 검사(`serializeForRoundtripCheck`)는 차이 보기 대신 온전한 항목의 투영본을 넣는다 — 체크포인트마다 번들 정의를 다시 만들지 않는다.
   - **롤백:** `setBundledTilesetDiffWriting(false)` 면 다음 저장부터 통째로 싣는다(형식 2 로 내려감). 읽기는 항상 켠다 — 이 모듈을 되돌리면 형식 3 저장소를 못 연다. 되돌리기 전에 스위치를 끄고 한 번 저장한다.
-  - 저장소를 직접 읽는 스크립트(`tileset_blobs` 본문의 `passability`·`tileMeta` 등)는 차이 보기를 만나면 `deserialize` 로 되돌려 읽어야 한다. 시작 화면 표지(`summary.ts` → `startCover.ts`)는 머리만으로 그린다.
+  - 저장소를 직접 읽는 스크립트는 `npx tsx scripts/content/read-project-sqlite.mts <폴더|project.sqlite> [출력.json]`(읽기 전용, 접힌 본문 펼치기 → `deserializeStoredProjectJson` → 자기완결 JSON)으로 읽는다. `tileset_blobs` 본문을 직접 끼우면 차이 보기가 나온다 — 숲 장소 캡처·공용 마을 참고문서·카운터 걷기 픽스처·assistant-capability `writeRuntimeProject` 를 이 경로로 바꿨다. 시작 화면 표지(`summary.ts` → `startCover.ts`)는 그 타일셋의 정의만 읽어 되돌린 뒤 그린다. 백업 복구(`recovery.ts`)는 펼친 글을 `deserializeStoredProjectJson` 으로 읽어 원래 되돌린다.
 - **Export resource completeness (2026-09-06):** `src/battle/partySpriteResources.ts` owns party back-view/fallback selection for both battle rendering and export. `webExportAssets` includes derived resources for reserve actors and both fallback slot parities, then adds idle strips from the runtime catalog. Derived uploaded overrides must survive `prepareWebExport` pruning; a party texture key or successful combat result is not proof that its image decoded.
 - **Export URL ownership:** `exportEntry` registers the game directory in `inlineAssetStore` before boot. `withInlineAsset` prefers embedded data, then rebases local `assets/` paths for exported players only. Editor paths, external URLs and SVG fragments remain unchanged. Image warmup, minimap tileset URLs and movie fallbacks use the same boundary. Catalog BGM may be fetched from the editor's configured CDN, but is packaged at the player's canonical local fallback path so exported playback needs no CDN setting.
 - **Invalid ingredients do not produce success artifacts:** standalone rejects missing/empty/HTML bundle or media bytes; ZIP additional media rejects empty/HTML bytes while its existing manifest/hash checks remain authoritative for the player bundle. `url(#battle-flash-tint)` is a document fragment, not a file to fetch. The standalone CLI delegates to the same exporter.
@@ -1804,3 +1813,7 @@ project-v4 에 선택 필드만 추가한다(스키마 승격·마이그레이�
 ## ItemCaptureProfile.condition · MonsterInstance.caughtBallId (2026-10-16, poke-depth PR6)
 
 선택 필드 둘. `captureProfile.condition?`(선언형 네 종류 중 하나; 정규화는 모양이 맞을 때만 싣는다)와 `MonsterInstance.caughtBallId?`(포획에 쓴 볼 아이템 id; 세이브 검증은 문자열만 허용). 안 쓰는 프로젝트·세이브는 직렬화 바이트 그대로다. 규칙: `openwiki/runtime-battle.md` 「조건부 볼」.
+
+## 상태의 부위 손실·전투 오라 (2026-10-27)
+
+`StateRecord.disablesEquipSlot`(이 상태인 동안 그 장비 칸의 능력치 보너스를 잃음)와 `battleAura`(몸 위 표시 프리셋 id, `"none"` = 끔)는 `normalizeStateRecord` 가 이미 보존한다. 자료집 상태 폼은 `updateDatabaseRecord("states", …)` 로 이 두 칸을 넣는데, 그 갱신 화이트리스트에 키가 없어 저장 전에 버려졌다. 빈 값(칸 없음·표시 기본)은 키를 지운다. 왕복은 `test/stateSlotAuraSave.test.ts`.

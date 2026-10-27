@@ -6,7 +6,7 @@
 |---|---|
 | `src/editor/delayedTooltip.ts` | 동작(지연·초점·Escape·정리)과 순수 배치 계산 `computeTooltipPlacement` |
 | `src/editor/delayedTooltipRollout.ts` | **명시 대상 목록** `DELAYED_TOOLTIP_ROLLOUT` + 멱등 설치기 `installDelayedTooltips(root)` |
-| `src/styles/editor/delayed-tooltip.css` | 표시 스타일. `pointer-events: none` 으로 클릭을 가로채지 않는다 |
+| `src/styles/map/delayed-tooltip.css` | 표시 스타일. `pointer-events: none` 으로 클릭을 가로채지 않는다 |
 
 ## 동작 계약
 

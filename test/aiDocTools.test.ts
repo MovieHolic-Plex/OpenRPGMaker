@@ -2,10 +2,12 @@ import { describe, expect, it } from "vitest";
 import { runTool } from "@/editor/tools/toolRunner";
 import type { ToolContext } from "@/editor/tools/types";
 import { createBlankProject } from "@/project/defaults";
+import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
 import { deserialize, serialize } from "@/project/io";
 import type { AiDocument } from "@/project/types";
 
-const INTERIOR = "easyrpg_chipset_interior";
+// New projects carry the default tileset instead of the retired EasyRPG interior sheet (2026-10-07 purge).
+const INTERIOR = DEFAULT_TILESET_ID;
 
 function ctxOf(): ToolContext {
   return { project: createBlankProject() };
