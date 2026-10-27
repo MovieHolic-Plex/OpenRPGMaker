@@ -363,6 +363,8 @@ Phaser 3.90 에서 이 재생성은 **O(N²)** 다: `Container.add` 가 자식�
   주인공이고, 다듬기·복사·붙여넣기·지우기·걷기 전투·구조물 저장·해제는 같은 상자 안 30px 아이콘이다.
   Enter 실행(한글 조합 중 Enter 는 무시), Shift+Enter 줄바꿈, 입력이 있으면 `initialInstruction`+`autoRun`,
   비어 있으면 전체 AI 작업 창. 입력창이 비어 있는 동안 Ctrl+C·Ctrl+V·Del 은 캔버스 동작으로 넘기고,
+  캔버스에 포커스가 있을 때도 Delete 는 지금 맵의 선택 영역을 지운다(붙여넣기 미리보기 중에는 지우지 않는다.
+  이벤트 레이어에서 이벤트가 선택된 경우는 그 이벤트를 지운다).
   Esc 는 글을 지우거나(있으면) 선택을 해제한다. 아이콘 이름은 `delayedTooltipRollout` 에 등록돼 있다.
   `selection-chip-ai` 는 DOM 상 첫 버튼(Tab 순서·e2e 계약)이고 화면에서는 CSS `order` 로 맨 끝이다.
 - **lazy 창은 들어온 칸만 더하지 말고 나간 칸을 지운다 (2026-09-22).** `renderVisibleEditSceneTiles` 가
