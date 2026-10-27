@@ -15,9 +15,9 @@ import { setVariableBody } from "./commandBodyVariable";
 import { conditionForm, databasePicker, selfSwitchControl } from "./conditionForm";
 import { aiImageGenerateField } from "@/editor/panels/aiImageGenerateField";
 import { faceDisplayModeOf, renderFaceGallery, renderFacesetPreview } from "./facesetPreview";
+import { conditionPreviewSentence, renderConditionEvalPreview } from "./conditionEvalPreview";
 import { renderConditionEvalPreview } from "./conditionEvalPreview";
-import { idleTimerWarningMessage } from "./timerConditionText";
-import { renderCommandPreview } from "./commandPreview";
+import { idleTimerWarningMessage } from "./timerConditionText";import { renderCommandPreview } from "./commandPreview";
 import {
   BOOLEAN_OPTIONS,
   TIMER_ACTION_OPTIONS,
@@ -1251,6 +1251,9 @@ function forkBody(context: CommandEditContext, cmd: Extract<Command, { kind: "fo
       }),
       conditionForm(cmd.condition, (condition) => {
         context.actions.replaceCommand(context.path, { ...latestFork(), condition });
+        // 종류가 그대로면 폼은 유지된다. 체크한 요일과 아래 문장이 어긋나지 않게 문장만 고친다.
+        const summary = wrap.querySelector<HTMLElement>('[data-testid="event-condition-eval-summary"]');
+        if (summary) summary.textContent = conditionPreviewSentence(condition);
       }, context.path),
     ],
   });

@@ -298,15 +298,19 @@ export function renderActorQueryCondition(condition: ActorQueryCondition, onChan
       );
       break;
     case "weekday": {
+      // 조건 분기 창은 요일만 바뀌면 폼을 다시 그리지 않는다. 핸들러가 처음 그린
+      // weekdays 를 닫아 두면, 일요일을 끈 뒤 월요일을 켜도 저장본이 일요일을 되살린다.
+      let weekdays = [...condition.weekdays].sort((a, b) => a - b);
       const days = el("div", { class: "event-condition-weekdays", dataset: { testid: "event-condition-weekdays" } });
       WEEKDAY_LABELS.forEach((label, index) => {
         const box2 = el("input", { attrs: { type: "checkbox", "aria-label": `${label}요일` } }) as HTMLInputElement;
-        box2.checked = condition.weekdays.includes(index);
+        box2.checked = weekdays.includes(index);
         box2.addEventListener("change", () => {
-          const next = new Set(condition.weekdays);
+          const next = new Set(weekdays);
           if (box2.checked) next.add(index);
           else next.delete(index);
-          set({ weekdays: [...next].sort((a, b) => a - b) });
+          weekdays = [...next].sort((a, b) => a - b);
+          onChange({ kind: "weekday", weekdays });
         });
         days.append(el("label", { class: "event-condition-weekday", children: [box2, el("span", { text: label })] }));
       });
