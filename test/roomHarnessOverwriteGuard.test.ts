@@ -81,15 +81,7 @@ describe("방 하네스 기존 맵 덮어쓰기 가드", () => {
     expect((res.warnings ?? []).some((line) => line.includes("폐기"))).toBe(false);
   });
 
-  it("같은 던전 mapId 로 두 번 시작하면 두 번째가 거부된다", () => {
-    const args = { mapId: "map_dungeon_lava_1", theme: "lava" };
-    startRoomSession(project, "dungeon-room-v1", args);
-    expect(() => startRoomSession(project, "dungeon-room-v1", args)).toThrow(/map_dungeon_lava_1/);
-  });
-
-  it("던전 세션은 mapId 를 요구한다 — 테마 기본 id 가 앞선 던전을 덮었다", () => {
-    expect(() => startRoomSession(project, "dungeon-room-v1", { theme: "lava" })).toThrow(/mapId/);
-  });
+  // 던전 방 킷(dungeon-room-v1) 두 경우는 킷이 2026-10-07 저작권 정리(PR #2335)로 지워져 뺐다.
 
   it("세션이 만든 맵에는 플랜이 남아 mapId 만으로 재수립할 수 있다", () => {
     startRoomSession(project, "villager-room-v1", { ...INTERIOR_ARGS, mapId: "map_new_room" });

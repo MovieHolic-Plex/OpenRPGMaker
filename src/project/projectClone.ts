@@ -28,8 +28,8 @@ export function cloneProjectSharingReferenceDocuments(project: Project): Project
       continue;
     }
     shared.push([id, documents]);
-    // 키 순서를 지킨다: 빼고 나중에 다시 붙이면 referenceDocuments 가 맨 뒤로 가서 직렬화 바이트가
-    // 원본과 달라진다(DB 모달 dirty 서명이 폐기 직후에도 dirty 로 읽혔다).
+    // 키를 빼지 않고 빈 배열로 자리를 지킨다 — 빼고 다시 붙이면 referenceDocuments 가 맨 뒤로 가 직렬화 바이트가
+    // 원본·projectJsonWithoutEventDrafts 와 달라진다(cloneTilesetSharingReferenceDocuments 와 같은 규약).
     tilesets[id] = { ...tileset, referenceDocuments: [] };
   }
   const cloned = structuredClone({ ...project, tilesets });

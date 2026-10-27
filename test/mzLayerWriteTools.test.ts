@@ -62,11 +62,15 @@ describe("paint_tiles — 네 층", () => {
     expect(rLower.data).toMatchObject({ effectiveLayer: "1" });
   });
 
-  it("1층을 칠하면 그 칸의 2층을 지우고, 마지막 2층 칸이 비면 키가 빠진다", () => {
+  // 제품 규칙(src/editor/tools/mapTools.ts applyClusterAwarePaint): 한 층을 칠해도 다른 층을 말없이 지우지 않는다 —
+  // 조수 칠하기는 수동 붓을 따른다. 2층을 비우는 것은 tile_erase 층 "2" 의 일이다.
+  it("1층을 칠해도 그 칸의 2층은 남고, 2층을 지워 마지막 칸이 비면 키가 빠진다", () => {
     const ctx = context();
     ok(ctx, "paint_tiles", { mapId: MAP_ID, layer: "2", mode: "cells", tile: 20, cells: [{ x: 3, y: 3 }] });
     expect(mapOf(ctx).lowerOverlayTiles).toBeDefined();
     ok(ctx, "paint_tiles", { mapId: MAP_ID, layer: "1", mode: "cells", tile: TILE.GRASS, cells: [{ x: 3, y: 3 }] });
+    expect(layerTileAt(mapOf(ctx), 2, idx(mapOf(ctx), 3, 3))).toBe(20);
+    ok(ctx, "tile_erase", { mapId: MAP_ID, rect: { x: 3, y: 3, w: 1, h: 1 }, layer: "2" });
     expectNoExtraKeys(mapOf(ctx));
   });
 
