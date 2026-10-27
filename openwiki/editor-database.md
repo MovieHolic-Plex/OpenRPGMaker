@@ -26,6 +26,13 @@ CSS 는 `dialogue-desk.css` 아래 「대본 보기」 묶음.
   받기·고치기로 다시 그려도 스크롤 자리를 지킨다. 장면 요약 쓰기는 `setSceneSummary`(라벨 `장면 요약: …`).
 - 테스트 id: `db-script-outline-row`(`data-ref`), `db-script-scene`(`data-ref`), `db-script-line`(`data-ref` = S12.3), `db-script-proposal`, `db-script-accept`, `db-script-accept-all`, `db-script-summary-edit`.
 
+## 대사 탭 화면 다듬기 (2026-10-27, 독립 검수 지적 4건)
+
+- **제안 카드 스크롤:** `.db-dialogue-proposal-list` 의 따로 둔 `max-height: 46vh; overflow:auto` 를 없앴다. 상세 창 스크롤 안에 스크롤이 겹쳐 마지막 카드의 받기·버리기가 잘려 보였다. 이제 카드는 `PROPOSAL_PAGE`(8)개씩 그리고 「제안 더 보기」로 늘린다. 화자를 바꾸면 다시 8개부터.
+- **숫자 두 개:** 레일 배지(`dialogueTabCount`)는 대사·선택지만(설명·퀘스트 글 제외) 센다. 목록 머리글은 「대사·선택지 N줄 · 설명·퀘스트 글 M줄」로 같은 N 을 먼저 보이고, 화자 칸 「모든 화자」는 「글 N+M줄」이다.
+- **모두 받기 확인:** `showConfirm`(editor/ui/modal) 으로 받을 줄 수·장소 수, 원문이 바뀌어 남겨 둘 줄 수를 보이고 확인해야 받는다.
+- **조수 도구 카드:** `aiActivityTelemetry.ts extractActionBreakdown` 이 대사 도구(list_dialogue·get_dialogue_context·rewrite_dialogue·set_speaker_voice·get_story_outline·read_story_script·set_scene_summaries)의 인자를 JSON 대신 한국어 한 줄로 쓴다(`dialogueToolBreakdown`). 원본은 「상세 파라미터 · 결과 JSON 보기」 서랍에 그대로 있다.
+
 ## 대사 색인에 퀘스트·엔딩 글 추가 (2026-10-27)
 
 색인(`collectDialogueLines`)이 이벤트 명령 밖에 있는 플레이어 글을 놓치고 있었다. 실측(폴른 스타 1막 새 굽기): 색인 3,931줄 중 퀘스트·엔딩 0줄.
