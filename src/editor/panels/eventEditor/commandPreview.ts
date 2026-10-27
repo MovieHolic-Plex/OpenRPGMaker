@@ -11,6 +11,7 @@ import { shopCatalogRecords } from "./shopEditorModel";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { DEFAULT_BATTLE_FIELD_BACKGROUND_ID } from "@/project/databaseEnemyTroopRecordModel";
 import { parseDialogueText } from "@/player/dialogue";
+import { NUMBER_INPUT_CONFIRM_LABEL } from "@/player/dialogueNumberInput";
 import { resolveDialogueLook, type DialogueLook } from "@/project/dialogueStyles";
 import { resolveFontStack } from "@/project/fontRegistry";
 import { applySystemWindowSkinVariable } from "@/player/systemGraphics";
@@ -799,10 +800,10 @@ function inputNumberStage(cmd: Extract<Command, { kind: "inputNumber" }>): HTMLE
 
   if (cmd.showPad) {
     const pad = el("div", { class: "ecp-number-pad", dataset: { testid: "ecp-number-pad" } });
-    for (const key of ["1", "2", "3", "4", "5", "6", "7", "8", "9", "←", "0", "OK"] as const) {
+    for (const key of ["1", "2", "3", "4", "5", "6", "7", "8", "9", "←", "0", NUMBER_INPUT_CONFIRM_LABEL] as const) {
       pad.append(
         el("div", {
-          class: `ecp-number-pad-key${key === "OK" ? " ok" : ""}${key === "←" ? " back" : ""}`,
+          class: `ecp-number-pad-key${key === NUMBER_INPUT_CONFIRM_LABEL ? " ok" : ""}${key === "←" ? " back" : ""}`,
           text: key,
         })
       );
@@ -812,7 +813,7 @@ function inputNumberStage(cmd: Extract<Command, { kind: "inputNumber" }>): HTMLE
     win.append(
       el("div", {
         class: "ecp-number-ok-mock",
-        text: "OK",
+        text: NUMBER_INPUT_CONFIRM_LABEL,
         dataset: { testid: "ecp-number-ok-mock" },
       })
     );

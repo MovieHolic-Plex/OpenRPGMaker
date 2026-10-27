@@ -289,4 +289,17 @@ describe("shipped catalogs", () => {
     }
     expect(japanese.translate(regionIds)).toContain("リージョン");
   });
+
+  it("calls a number-input digit a digit, and one digit stays singular in English", () => {
+    // 숫자 입력 미리보기의 「N자리 · 대기 중」은 자릿수다. 좌석이 아니다.
+    expect(createTranslator(en).translate("1자리 · 대기 중")).toBe("1 digit · waiting");
+    expect(createTranslator(en).translate("4자리 · 대기 중")).toBe("4 digits · waiting");
+    expect(en["{0}자리 · 대기 중"]).not.toMatch(/seat/i);
+    expect(createTranslator(ja).translate("1자리 · 대기 중")).toBe("1桁 · 待機中");
+    expect(createTranslator(ja).translate("4자리 · 대기 중")).toBe("4桁 · 待機中");
+    expect(ja["{0}자리 · 대기 중"]).not.toContain("席");
+    expect(createTranslator(zh).translate("1자리 · 대기 중")).toBe("1位 · 等待中");
+    expect(createTranslator(zh).translate("4자리 · 대기 중")).toBe("4位 · 等待中");
+    expect(zh["{0}자리 · 대기 중"]).not.toContain("名额");
+  });
 });
