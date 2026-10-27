@@ -13,6 +13,7 @@ import {
 import { formatWeightedBranchSummary } from "./weightedBranchTable";
 import { BGM_CATALOG } from "@/assets/bgmCatalog";
 import { m2CommandById, type M2CommandFieldSpec } from "@/project/eventCommands/m2Catalog";
+import { HIDE_SHOW_SCREEN_FADE_MS } from "@/player/interpreter/screenEffectPlan";
 import { tintDurationMs } from "@/project/eventCommands/tintDuration";
 import { screenFilterFromFields } from "@/project/eventCommands/screenFilter";
 import { coordinateAxisSpec, coordinateFailurePolicy } from "@/project/eventCommands/coordinateDestination";
@@ -27,8 +28,12 @@ import { relationshipStateName } from "@/project/relationshipState";
 import { textBodyOf } from "@/project/io/rewriteLegacyDialogue";
 import { insideLocationSentence } from "@/editor/mapLocationLabels";
 import { difficultyDisplayName } from "@/project/difficulty";
-import { timerThresholdLabel } from "./timerConditionText";
-export type CommandSummaryTone =
+
+function hideShowFadeLabel(named: string, fallback: string): string {
+  const label = named || fallback;
+  return `${label} · ${HIDE_SHOW_SCREEN_FADE_MS}ms`;
+}
+import { timerThresholdLabel } from "./timerConditionText";export type CommandSummaryTone =
   | "plain"
   | "command"
   | "value"
@@ -902,9 +907,9 @@ function page3M2SummaryParts(
       );
     }
     case "Hide Screen":
-      return commandLine(labelOf("화면 숨기기"), valuePart(str("value") || str("transition") || "페이드 아웃"));
+      return commandLine(labelOf("화면 숨기기"), valuePart(hideShowFadeLabel(str("value") || str("transition"), "페이드 아웃")));
     case "Show Screen":
-      return commandLine(labelOf("화면 표시"), valuePart(str("value") || str("transition") || "페이드 인"));
+      return commandLine(labelOf("화면 표시"), valuePart(hideShowFadeLabel(str("value") || str("transition"), "페이드 인")));
     case "Tint Screen": {
       const color = str("value") || str("color") || "기본";
       const duration = tintDurationMs(cmd.fields);

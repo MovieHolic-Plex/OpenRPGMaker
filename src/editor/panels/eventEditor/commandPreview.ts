@@ -41,8 +41,8 @@ import { pictureSlotCaption } from "./options";
 import { commandLabel } from "./commandPicker";
 import { commandSummaryParts, isSummaryIconPart, transferEditorSummary } from "./commandSummary";
 import { textBodyOf } from "@/project/io/rewriteLegacyDialogue";
-import { LETTERBOX_DEFAULT_PERCENT } from "@/project/eventCommands/cinematicStaging";
-import { planScreenEffect } from "@/player/interpreter/screenEffectPlan";
+import { HIDE_SHOW_SCREEN_FADE_MS, planScreenEffect, LETTERBOX_DEFAULT_PERCENT } from "@/project/eventCommands/cinematicStaging";
+import { planScreenEffect } from "@/player/interpreter/screenEffectPlan"
 import { clampMs } from "@/player/interpreter/commandCatalog";
 import { isRecognizedTintValue, isVisibleTint, parseTintColor, rgbaToCss } from "@/player/screen/tintModel";
 import { formatVariableFormula } from "./commandBodyVariable";
@@ -1581,9 +1581,9 @@ function legacyScreenEffectCommand(
           durationMs: Number(m2Field(cmd, "durationMs", "300")),
         };
       case "Hide Screen":
-        return { effect: "fadeOut", value: "", durationMs: Number(m2Field(cmd, "durationMs", "300")) };
+        return { effect: "fadeOut", value: "", durationMs: HIDE_SHOW_SCREEN_FADE_MS };
       case "Show Screen":
-        return { effect: "fadeIn", value: "", durationMs: Number(m2Field(cmd, "durationMs", "300")) };
+        return { effect: "fadeIn", value: "", durationMs: HIDE_SHOW_SCREEN_FADE_MS };
       case "Set Weather Effects":
         return {
           effect: "weather",

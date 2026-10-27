@@ -162,12 +162,21 @@ describe("syncScreenEffects — DOM 오버레이", () => {
     expect(layer!.style.background).toBe("rgba(128,64,32,0.45)");
   });
 
+  it("진행 중인 페이드는 화면 갱신이 시계를 되돌리지 않는다", () => {
+    const frames: FrameRequestCallback[] = [];
+    const realNow = performance.now.bind(performance);
+    const realRaf = globalThis.requestAnimationFrame;
+    let now = 0;
+    performance.now = () => now;
+    globalThis.requestAnimationFrame = ((callback: FrameRequestCallback) => {
+      frames.push(callback);
+      return frames.length;
+    }) as typeof requestAnimationFrame;
   it("진행 중인 색조 전환은 다음 화면 동기화에서 시계를 되돌리지 않는다", () => {
     restore?.();
     restore = installFakeDom({ animationFrames: "manual" });
     let now = 0;
-    const nowSpy = vi.spyOn(performance, "now").mockImplementation(() => now);
-    try {
+    const nowSpy = vi.spyOn(performance, "now").mockImplementation(() => now);    try {
       const session = mkSession();
       session.m2Runtime!.screen.tint = "0,0,0,1";
       session.m2Runtime!.screen.tintDurationMs = 1000;
@@ -175,6 +184,55 @@ describe("syncScreenEffects — DOM 오버레이", () => {
 
       syncScreenEffects(scene);
       now = 500;
+      frames[0]?.(now);
+      const mid = findByTestId(hostOf(scene), "runtime-screen-effect")!.style.background;
+      expect(mid).toBe("rgba(0,0,0,0.5)");
+
+      syncScreenEffects(scene);
+      expect(findByTestId(hostOf(scene), "runtime-screen-effect")!.style.background).toBe("rgba(0,0,0,0.5)");
+
+      now = 1000;
+      frames.at(-1)?.(now);
+      expect(findByTestId(hostOf(scene), "runtime-screen-effect")!.style.background).toBe("rgba(0,0,0,1)");
+    } finally {
+      performance.now = realNow;
+      globalThis.requestAnimationFrame = realRaf;
+    }
+  });
+
+  it("화면 숨기기는 한 프레임에 검정으로 자르지 않고, 갱신 후에도 페이드를 이어 간다", () => {
+    const frames: FrameRequestCallback[] = [];
+    const realNow = performance.now.bind(performance);
+    const realRaf = globalThis.requestAnimationFrame;
+    let now = 0;
+    performance.now = () => now;
+    globalThis.requestAnimationFrame = ((callback: FrameRequestCallback) => {
+      frames.push(callback);
+      return frames.length;
+    }) as typeof requestAnimationFrame;
+    try {
+      const session = mkSession();
+      session.m2Runtime!.screen.hidden = true;
+      session.m2Runtime!.screen.hideFadeMs = 300;
+      const scene = mkScene(session);
+
+      syncScreenEffects(scene);
+      expect(session.m2Runtime!.screen.hideFadeMs).toBeUndefined();
+      now = 150;
+      frames[0]?.(now);
+      const layer = findByTestId(hostOf(scene), "runtime-screen-effect")!;
+      expect(layer.dataset.mode).toBe("screen-hidden");
+      expect(layer.style.background).toBe("rgba(0,0,0,0.5)");
+
+      syncScreenEffects(scene);
+      expect(layer.style.background).toBe("rgba(0,0,0,0.5)");
+
+      now = 300;
+      frames.at(-1)?.(now);
+      expect(layer.style.background).toBe("rgba(0,0,0,1)");
+    } finally {
+      performance.now = realNow;
+      globalThis.requestAnimationFrame = realRaf;
       flushFakeAnimationFrames(0, 1);
       const layer = findByTestId(hostOf(scene), "runtime-screen-effect");
       expect(layer!.style.background).toBe("rgba(0,0,0,0.5)");
@@ -185,7 +243,6 @@ describe("syncScreenEffects — DOM 오버레이", () => {
       flushFakeAnimationFrames(0, 1);
       expect(layer!.style.background).toBe("rgba(0,0,0,1)");
     } finally {
-      nowSpy.mockRestore();
-    }
+      nowSpy.mockRestore();    }
   });
 });
