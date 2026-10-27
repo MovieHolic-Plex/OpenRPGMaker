@@ -10652,6 +10652,52 @@
    ],
    "verify": "place_field_obstacle kind rock fullWidth tile+tileAbove requiresSkillId machine none / 열림 명령이 위 칸 changeTile 까지 되돌림 / learnSkill 이벤트",
    "suiteCategory": "fs2-ice-melt"
+  },
+  {
+   "category": "game",
+   "kind": "logic",
+   "mode": "balanced",
+   "startTileset": "beodeul_city",
+   "id": "fs2-alarm-chase",
+   "prompt": "성벽 개구멍을 빠져나가는 순간 순찰 기사에게 들키게 해 줘. 숲 어귀로 나가면 기사 둘이 쫓아오고, 숲 그늘(맵을 가로지르는 한 줄)에 닿으면 기사들이 돌아서고 숲지기가 고백하는 장면이 나오게.",
+   "requires": [
+    "개구멍 이벤트가 경보 스위치를 켠다",
+    "place_field_enemy appearSwitchId 로 경보 뒤에만 나타나는 추격 기사",
+    "숲 그늘 줄에 닿으면 vanishSwitchId 를 켜서 기사가 사라지고 고백 컷신"
+   ],
+   "verify": "place_field_enemy behavior chase + appearSwitchId(경보) + vanishSwitchId(안전 지점) — 페이지: 경보 전(없음) · 필드 적(경보 조건) · 물러남(없음)",
+   "suiteCategory": "fs2-alarm-chase"
+  },
+  {
+   "category": "game",
+   "kind": "logic",
+   "mode": "balanced",
+   "startTileset": "beodeul_city",
+   "id": "fs2-lamp-festival",
+   "prompt": "눈 덮인 나루 마을을 해 질 녘 「대답의 등」 축제 날로 꾸며 줘. 등불마다 따뜻한 빛, 못가 첫 등에서 한 줄을 적어 띄우는 선택, 어부와 등 접는 아이, 잠긴 집 셋은 들어갈 수 있는 실내로.",
+   "requires": [
+    "set_lighting_volume 해 질 녘 덮개 + 등불 광원",
+    "등 띄우기 선택(스위치)",
+    "place_npc 어부·아이",
+    "build_hand_interior_room 실내 3 + create_transfer_pair"
+   ],
+   "verify": "마을 맵 lighting ambient>0·등 광원 / 선택지 이벤트가 스위치를 켠다 / 실내 3곳 출입 쌍",
+   "suiteCategory": "fs2-lamp-festival"
+  },
+  {
+   "category": "game",
+   "kind": "logic",
+   "mode": "balanced",
+   "startTileset": "beodeul_city",
+   "id": "fs2-lamp-errand",
+   "prompt": "통금 밤 마을에 잔 일 하나: 빵집 미레가 꺼진 등 셋을 맡기면, 잠긴 집 세 곳 문고리에 몰래 걸어 주고 돌아오면 별빛빵 둘을 받게.",
+   "requires": [
+    "아이템 꺼진 등 x3 지급",
+    "문 세 곳 등 걸기 페이지(아이템 -1, 스위치)",
+    "세 스위치 모두 켜지면 보상 페이지"
+   ],
+   "verify": "미레 페이지 조건 = 세 등 스위치 / 문 이벤트 페이지 '등 걸기'·'등이 걸린 문'",
+   "suiteCategory": "fs2-lamp-errand"
   }
  ],
  "gates": {

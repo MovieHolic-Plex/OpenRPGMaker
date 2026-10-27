@@ -4,7 +4,7 @@
 // + showEmote + battleProcessing + 승리 스위치 페이지 + 도망 뒤 기절(self switch B) 페이지.
 // 랜덤 인카운터(set_encounter_table)·구역 스폰(make_hunting_ground)·지키는 한 마리(place_battle_blocker)와 구분한다.
 import { FIELD_APPROACH_STYLES, defaultFieldApproachStyle, isFieldApproachStyle, type FieldApproachStyle } from '@/project/fieldApproachStyle';
-import type { Command, Dir, EventPage, EventPageGraphic, EventPageMovement, GameEvent, GameMap, Project } from '@/project/types';
+import type { Command, Condition, Dir, EventPage, EventPageGraphic, EventPageMovement, GameEvent, GameMap, Project } from '@/project/types';
 import { npcMoveDurationMs, npcPageMoveIntervalMs } from '@/project/characterMotion';
 import { canMove, isPassable } from '@/project/collision';
 import { genId } from '@/util/id';
@@ -124,8 +124,15 @@ function resolvePatrol(project: Project, map: GameMap, from: { x: number; y: num
 function fieldEnemyPages(input: {
   id: string; troopId: string; graphic: EventPageGraphic;
   clearSwitchId: string; movement: EventPage['movement']; alert: (typeof ALERTS)[number]; canEscape: boolean; respawnSec: number;
+  appearSwitchId?: string; vanishSwitchId?: string;
 }): EventPage[] {
   const { id } = input;
+  // 경보형: appearSwitchId 가 켜지기 전엔 없는 자리(빈 첫 페이지), vanishSwitchId 가 켜지면 다시 없다(마지막 페이지가 이긴다).
+  const appear: Condition[] = input.appearSwitchId ? [{ kind: 'switch', switchId: input.appearSwitchId, value: true }] : [];
+  const absent = (pageId: string, name: string, conditions: Condition[]): EventPage => ({
+    id: pageId, name, conditions, graphic: { transparent: true }, trigger: { kind: 'parallel' }, priority: 'below', overlapForbidden: false,
+    animationType: 'fixedGraphic', movement: { type: 'fixed', speed: 3, frequency: 3 }, commands: [],
+  });
   // 추격 적은 시야에 든 순간(movement.sightAlert)에 이미 놀람을 냈다 — 닿을 때 또 띄우지 않는다.
   const alertedOnSight = input.movement.sightAlert !== undefined;
   const fight: Command[] = [
@@ -139,14 +146,15 @@ function fieldEnemyPages(input: {
     ...(input.canEscape ? [{ kind: 'fork', condition: { kind: 'battleResult', result: 'escape' }, then: [{ kind: 'setSelfSwitch', key: 'B', value: true }] } as Command] : []),
   ];
   return [
+    ...(input.appearSwitchId ? [absent(`${id}_waiting`, '경보 전(없음)', [])] : []),
     {
-      id: `${id}_fight`, name: '필드 적', conditions: [], graphic: structuredClone(input.graphic),
+      id: `${id}_fight`, name: '필드 적', conditions: [...appear], graphic: structuredClone(input.graphic),
       trigger: { kind: 'eventTouch' }, priority: 'same', overlapForbidden: true, animationType: input.movement.type === 'fixed' ? 'fixedGraphic' : 'normal',
       movement: input.movement, commands: fight,
     },
     // 도망 불가 전투(보스·수호자)에는 숨 고르기 페이지를 켤 곳이 없다 — 남기면 「셀프 스위치 B 를 켜는 곳이 없다」 경고가 된다.
     ...(input.canEscape ? [{
-      id: `${id}_stun`, name: '도망 뒤 숨 고르기', conditions: [{ kind: 'selfSwitch', key: 'B', value: true }], graphic: structuredClone(input.graphic),
+      id: `${id}_stun`, name: '도망 뒤 숨 고르기', conditions: [...appear, { kind: 'selfSwitch', key: 'B', value: true }], graphic: structuredClone(input.graphic),
       trigger: { kind: 'parallel' }, priority: 'same', overlapForbidden: true, animationType: 'fixedGraphic',
       movement: { type: 'fixed', speed: 3, frequency: 3 },
       commands: [{ kind: 'wait', ms: STUN_MS }, { kind: 'setSelfSwitch', key: 'B', value: false }],
@@ -158,6 +166,7 @@ function fieldEnemyPages(input: {
       movement: { type: 'fixed', speed: 3, frequency: 3 },
       commands: input.respawnSec > 0 ? [{ kind: 'wait', ms: Math.round(input.respawnSec * 1000) }, { kind: 'setSwitch', switchId: input.clearSwitchId, value: false }] : [],
     },
+    ...(input.vanishSwitchId ? [absent(`${id}_gone`, '물러남(없음)', [{ kind: 'switch', switchId: input.vanishSwitchId, value: true }])] : []),
   ];
 }
 
@@ -378,6 +387,8 @@ export const FIELD_ENEMY_TOOLS: readonly ToolDefinition[] = [
       canEscape: { type: 'boolean', description: '도망 가능 여부(기본 true). false 는 도망 불가 전투' },
       respawnSec: { type: 'integer', description: '0(기본)=한 번 이기면 영구 소멸. 양수면 그 맵에 머문 채 N초 뒤 같은 자리에 다시 나타난다' },
       clearSwitchId: { type: 'string', description: '승리 시 켜지는 스위치(생략 시 자동 생성). 퀘스트·문 조건으로 쓸 수 있다' },
+      appearSwitchId: { type: 'string', description: '경보형 — 이 스위치가 켜져야 나타난다(그 전엔 없는 칸). 「들켰다! 기사들이 몰려온다」 같은 추격 장면: 이벤트가 스위치를 켜는 순간 이미 그 맵에 있는 주인공을 쫓는다. 주면 입구 시야 검사는 경고로 바뀐다(경보를 켜는 쪽이 장면을 책임진다)' },
+      vanishSwitchId: { type: 'string', description: '이 스위치가 켜지면 사라진다(추격을 끝내는 안전 지점·도망 성공). appearSwitchId 와 같이 쓴다' },
       factionId: { type: 'string', description: '진영(set_factions 로 정의한 id). 적대(태도 -1 이하) 진영의 보이는 적과 2칸 안에서 마주치면 맵 위에서 짧게 부딪히고 전력이 약한 쪽이 사라진다(맵에 다시 들어오면 돌아온다). 플레이어는 두 진영 모두에게 덮쳐진다. 생략 = 선두 적 레코드의 factionId(있고 정의된 진영일 때), 그것도 없으면 진영 싸움 없음' },
       id: { type: 'string' },
     }, ['mapId', 'x', 'y']),
@@ -442,7 +453,11 @@ export const FIELD_ENEMY_TOOLS: readonly ToolDefinition[] = [
         if (near.length) throw new ToolError(`출입구·시작점·안내 표지 2칸 안에는 필드 적을 둘 수 없습니다: (${cell.x}, ${cell.y}) 곁 ${JSON.stringify(near.slice(0, 3))}. 더 안쪽 칸으로 옮기세요.`, { code: 'field-enemy-unsafe-spot', mapId: map.id, x: cell.x, y: cell.y });
         if (occupied.has(`${cell.x},${cell.y}`)) throw new ToolError(`(${cell.x}, ${cell.y}) 은 다른 이벤트 칸입니다.`, { code: 'field-enemy-unsafe-spot', mapId: map.id });
       }
-      if (behavior === 'chase') {
+      const appearSwitchId = typeof args.appearSwitchId === 'string' && args.appearSwitchId.trim() ? args.appearSwitchId.trim() : undefined;
+      const vanishSwitchId = typeof args.vanishSwitchId === 'string' && args.vanishSwitchId.trim() ? args.vanishSwitchId.trim() : undefined;
+      if (appearSwitchId) ensureNamedSwitch(draft, appearSwitchId, `필드 적 경보: ${appearSwitchId}`);
+      if (vanishSwitchId) ensureNamedSwitch(draft, vanishSwitchId, `필드 적 물러남: ${vanishSwitchId}`);
+      if (behavior === 'chase' && !appearSwitchId) {
         const reach = sightRaw + 1;
         const entries = entryCells(draft, map);
         // 순찰+추격은 순찰 경로 어느 칸에서도 입구가 시야 안이면 안 된다.
@@ -523,7 +538,7 @@ export const FIELD_ENEMY_TOOLS: readonly ToolDefinition[] = [
       const fieldFactionId = explicitFaction ?? (lead?.factionId && declaredFactions.has(lead.factionId) ? lead.factionId : undefined);
       const event: GameEvent = {
         id, x: start.x, y: start.y, trigger: { kind: 'eventTouch' }, commands: [],
-        pages: fieldEnemyPages({ id, troopId, graphic, clearSwitchId, movement, alert, canEscape, respawnSec }),
+        pages: fieldEnemyPages({ id, troopId, graphic, clearSwitchId, movement, alert, canEscape, respawnSec, appearSwitchId, vanishSwitchId }),
         ...(fieldFactionId ? { fieldFactionId } : {}),
       };
       if (behavior === 'chase') {
@@ -541,6 +556,7 @@ export const FIELD_ENEMY_TOOLS: readonly ToolDefinition[] = [
       const mapEnemies = map.events.filter((entry) => entry.pages?.some((page) => page.id.endsWith('_fight') && page.trigger.kind === 'eventTouch')).length;
       if (mapEnemies > 8) warnings.push(`이 맵의 필드 적이 ${mapEnemies}마리입니다 — 한 화면에 몰리면 피할 길이 없습니다. 보통 3~6마리.`);
       if (map.safeZones?.some((zone) => cells.some((cell) => cell.x >= zone.x && cell.x < zone.x + zone.w && cell.y >= zone.y && cell.y < zone.y + zone.h))) warnings.push('안전지대 안에 놓였습니다 — 추격은 안전지대 안의 주인공을 쫓지 않습니다.');
+      if (appearSwitchId && behavior === 'chase') warnings.push(`경보형 — 스위치 ${appearSwitchId} 가 켜지면 나타나 바로 쫓는다(입구 시야 검사 생략). 켜는 이벤트와 ${vanishSwitchId ? `끝내는 스위치 ${vanishSwitchId}` : '끝내는 지점(vanishSwitchId)'}을 확인하라.`);
       if (respawnSec > 0) warnings.push(`처치 ${respawnSec}초 뒤 같은 자리에 다시 나타납니다(그 맵에 머무는 동안). 영구 소멸이 필요하면 respawnSec 를 빼세요.`);
 
       return {
