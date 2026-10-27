@@ -5,6 +5,17 @@
 
 <!-- releases -->
 
+## 0.355.1 — 2026-10-27
+
+### 수정
+
+- **player** — phone landscape menus draw like PC, with wider invisible tap areas (#3861) (`0880dc5`)
+
+### 기타
+
+- Fallen act 2: independent playthrough judge (interactive QA) + fixes it found (#3864) (`376fc54`)
+- Dungeon themes: ice-cave wall redraw (gap-ice-r5) and portcullis lint fix (#3863) (`437c7af`)
+
 ## 0.355.0 — 2026-10-27
 
 ### 기능
