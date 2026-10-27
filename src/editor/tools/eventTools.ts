@@ -2384,7 +2384,8 @@ export function resolveTransferEndpoint(
   const endpoint = transferEndpoint(project, map, requested.x, requested.y, fixed ? 0 : 3, localNotes, fixed);
   const reach = walkableFromAnchors(project, map);
   // 앵커도 후보 시작점(원자리)도 없으면 후보를 지어내지 않는다 — 실패 원인 안내(A:/B:)를 유지.
-  if (!reach && !endpoint) {
+  // 맵 밖 좌표(근처 반경에서도 자리를 못 찾은 경우)는 다른 칸으로 지어 옮기지 않는다 — 맵 크기 안내(A:/B:)로 실패시킨다.
+  if (!endpoint && (!reach || !inMapBounds(map, requested.x, requested.y))) {
     notes.push(...localNotes);
     return endpoint;
   }
