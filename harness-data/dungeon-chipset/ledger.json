@@ -1207,16 +1207,16 @@
    "evidence": "harness-data/dungeon-chipset/evidence/2026-10-24-theme-panel-11.json"
   },
   {
-   "round": "gap-ice-r3",
+   "round": "gap-ice-r5",
    "item": "gap.ice_rock",
    "line": "*",
-   "letter": "A2",
-   "sha256": "ce46d8170c04648520ff1b9205b7363b3622957b8b74a85aa556efd439571b13",
-   "note": "",
-   "at": "2026-10-25T21:36:07",
+   "letter": "A1",
+   "sha256": "1b33ffeb92571ee3d50024aa7209a155cb123740287fd5b4c3e7063cab8857a8",
+   "note": "Sonnet VQA r5 PASS; object-gate PASS (advisory)",
+   "at": "2026-10-27T20:01:57",
    "by": "delegated",
-   "delegatedBy": "delegated by user to supervisor 2026-10-25",
-   "evidence": "harness-data/dungeon-chipset/evidence/2026-10-25-gap-ice-r3-panel.json"
+   "delegatedBy": "delegated by user to supervisor 2026-10-27",
+   "evidence": "harness-data/dungeon-chipset/evidence/2026-10-27-gap-ice-r5-panel.json"
   }
  ],
  "rejects": [],

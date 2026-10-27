@@ -1,0 +1,26 @@
+VERDICT: PASS
+A1: PASS
+A2: FAIL
+
+The overall line is PASS only because A1 passes. A2 does not pass. Coordinates are in the 3x scene images (864x576 left half) unless noted "x8" for the pieces sheets. The A1 pass is a close call, and the minor notes below are things I would still want fixed.
+
+Improvement over r4
+- The top face is now dark blue-grey slate with pale frost shards. It has several tone steps and real texture, not a flat fill.
+- The front face has a ruled grey cap strip (y~47-55) instead of a white rim. It has a faceted ice band with hanging teeth and a rock lower half with a scalloped base, so it no longer reads as bars or a curtain.
+
+A1
+(1) Top face: reads as frosted rock from above. Dark slate with light-blue shard flecks on the big block (x540-720, y0-190), the left strip (x0-45) and the border rows. The shards are chunky, but acceptable.
+(2) Front face: reads as an ice sheet over rock. Blue gradient with facet lines (y~58-95), dark rock showing through between the hanging ice teeth, and a rubble base (y~105-140). Translucency is only moderately sold. The dark spikes rising into the ice (e.g. x~95-110, 255-270 at y~65-95) look a little like a pine silhouette against sky at 1x.
+(3) Icicles: uneven. Broad ice teeth hang to different depths, and the thin cyan drip lines hang at irregular lengths and spacing (x~125, 215, 300, 375, 460 at y~95-135).
+(4) Repetition: the north wall (x48-528) is mostly varied. I count only two near-identical dark blobs (x~135 and x~470, y~70) and no obvious 16px period. Minor: the top-edge row (y~5-25) has similar light shards at roughly 16px pitch, and the four autotile-frame tiles (x8 sheet, x~50 and x~180) carry the same single shard in the same position.
+(5) Seams, ends, rim: no seams. There is no white rim; the cap is grey-blue. The wall ends are hard vertical cuts (x~48, 528, 816; small walls x~385, 480, 672, 720). The outcrop caps (x385-480, y340-390) are okay.
+(6) Floor contact: much better. A scalloped rubble base with small snow mounds (x8 sheet, x~800, 990, 1180, at about a 24px period, slightly regular) and a thin shadow under the wall. The bottom line is still fairly straight at y~140 and y~285.
+(7) 3/4 view: top visible, no side faces. Correct.
+(8) Versus Beodeul: comparable information per tile and clearly more than r4. Slightly more graphic and high-contrast than Beodeul. No flat fills.
+
+A2
+- Stamp repetition (4), major: the identical dark "mushroom/anvil" cap shapes sit on a regular grid on the north wall (x8 sheet x~760 and x~950, y~85-100, about 24px period; scene x~175, 310, 400, 490 at y~70-90). They are the same shape, size and row, so the repetition is obvious. They also read as anvils or lamp posts, not rock.
+- Ice reads as stiff faceted rays or shards, more graphic than translucent. The dark caps float above the rock base, which makes them look pasted on.
+- Icicles (3): the thin cyan drips are nearly uniform in length and spacing, so the unevenness is weaker than in A1.
+- The base snow mounds recur at a fixed 24px pitch (x8 sheet x~760, 870, 990, 1100, 1230), which is noticeable.
+- Top face, base, rim and 3/4 view are the same as A1 and fine. The hard wall ends are the same issue as in A1.

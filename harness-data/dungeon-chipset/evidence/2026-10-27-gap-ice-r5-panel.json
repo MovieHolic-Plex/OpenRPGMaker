@@ -1,0 +1,5 @@
+{"date":"2026-10-27","round":"gap-ice-r5","item":"gap.ice_rock","pick":"A1","artSha256":"1b33ffeb92571ee3d50024aa7209a155cb123740287fd5b4c3e7063cab8857a8",
+ "objectGate":{"A1":"PASS e29892650926 terrain (profile uncalibrated: advisory)","A2":"PASS 1c345c43008d terrain (advisory)"},
+ "vqa":{"reviewer":"klb-sonnet-5-5 (one blind adversarial reviewer)","r3":"FAIL","r4":"FAIL (A1, A2)","r5":"PASS A1, FAIL A2 (stamp-repeat dark caps)",
+        "raw":["harness-data/dungeon-chipset/evidence/ice-wall-vqa-raw/ice-wall-r3-sonnet.txt","harness-data/dungeon-chipset/evidence/ice-wall-vqa-raw/ice-wall-r4-sonnet.txt","harness-data/dungeon-chipset/evidence/ice-wall-vqa-raw/ice-wall-r5-sonnet.txt"]},
+ "decision":"supervisor-delegated allow of A1 (user delegated decisions to supervisor; 2026-10-21 rule)"}
