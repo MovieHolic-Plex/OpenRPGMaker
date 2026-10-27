@@ -29,6 +29,8 @@ import { createBlankProject, TILE } from "@/project/defaults";
 import { store } from "@/project/store";
 import type { PaletteStamp, PaletteStampCell } from "@/editor/tilePaletteStamp";
 import { resetToastsForTest } from "@/util/toast";
+// 큐레이션 조합 붓은 합본 마을(EasyRPG) 칸 번호로 정의돼 있다 — 2026-10-07 정리 뒤 시작 맵을 그 칩셋으로 되돌려 본다.
+import { startOnRetiredCombinedTown } from "./support/retiredEasyRpgTilesets";
 
 // Only Phaser graphics creation is replaced. Engine, tile mutation, history and
 // editor state stay connected — the point of this file is the real path.
@@ -102,7 +104,7 @@ beforeEach(() => {
   document.body.innerHTML = "";
   vi.clearAllMocks();
   resetToastsForTest();
-  store.replace(createBlankProject());
+  store.replace(startOnRetiredCombinedTown(createBlankProject()));
   resetMapEditHistory();
   editorState.set({
     activePaletteStamp: null,
