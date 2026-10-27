@@ -1790,3 +1790,7 @@ project-v4 에 선택 필드만 추가한다(스키마 승격·마이그레이�
 ## ItemCaptureProfile.condition · MonsterInstance.caughtBallId (2026-10-16, poke-depth PR6)
 
 선택 필드 둘. `captureProfile.condition?`(선언형 네 종류 중 하나; 정규화는 모양이 맞을 때만 싣는다)와 `MonsterInstance.caughtBallId?`(포획에 쓴 볼 아이템 id; 세이브 검증은 문자열만 허용). 안 쓰는 프로젝트·세이브는 직렬화 바이트 그대로다. 규칙: `openwiki/runtime-battle.md` 「조건부 볼」.
+
+## 상태의 부위 손실·전투 오라 (2026-10-27)
+
+`StateRecord.disablesEquipSlot`(이 상태인 동안 그 장비 칸의 능력치 보너스를 잃음)와 `battleAura`(몸 위 표시 프리셋 id, `"none"` = 끔)는 `normalizeStateRecord` 가 이미 보존한다. 자료집 상태 폼은 `updateDatabaseRecord("states", …)` 로 이 두 칸을 넣는데, 그 갱신 화이트리스트에 키가 없어 저장 전에 버려졌다. 빈 값(칸 없음·표시 기본)은 키를 지운다. 왕복은 `test/stateSlotAuraSave.test.ts`.
