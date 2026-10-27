@@ -4,6 +4,8 @@ vi.mock("@/editor/panels/aiActivitySave", () => ({ observeActivitySave: vi.fn() 
 // 렌더는 패널이 소유하고, 여기선 surface.setRunOutcome 으로 흘린 facts 만 고정한다.
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { configureProjectInterviewBootPreparation } from "@/editor/projectInterviewBootPreparation";
+// Ultrabrain 기본 모델은 gemini-4-argon 이다(#2535) — 이름을 박지 않고 상수를 따른다.
+import { DEFAULT_ULTRABRAIN_MODEL } from "@/ai/ultrabrainConfig";
 
 const h = vi.hoisted(() => ({
   villageIssues: [] as string[],
@@ -332,7 +334,8 @@ describe("Pi 경로 실행 결과 4축", () => {
     const { outcomeCalls, surface } = harness();
     const ok = await runPiCommand({ mode: "team", mapIds: [], task: "맵 조회" }, surface());
     expect(ok).toBe(false);
-    expect(outcomeCalls.at(-1)).toMatchObject({ execution: "blocked", delivery: "no-change" });
+    // Pi 경로는 실패한 조수 사유를 streamErrors 에 싣고 그것을 execution "failed" 로 낸다(publishFinalOutcome) — "blocked" 는 이 경로가 만들지 않는다.
+    expect(outcomeCalls.at(-1)).toMatchObject({ execution: "failed", delivery: "no-change" });
     expect(h.boardStates.at(-1)).toMatchObject({ phase: "실패", applied: expect.stringContaining("끝내지 못했어요") });
     expect(h.bubbles).toContain("assistant:안내판 조회 미완료: 조수 실행 실패.");
     expect(h.bubbles.some(line => line.includes("확인을 마쳤어요"))).toBe(false);
@@ -366,7 +369,8 @@ describe("Pi 경로 실행 결과 4축", () => {
 
     await runPiCommand({ mode: "single", mapIds: ["map_a"], task: "바꿔라" }, surface());
 
-    expect(outcomeCalls.at(-1)).toMatchObject({ execution: "response-final", delivery: "applied" });
+    // 끝까지 가서 적용은 되지만, 스트림 오류가 있으면 실행 축은 "failed" 다(publishFinalOutcome: streamErrors.length > 0 → failed).
+    expect(outcomeCalls.at(-1)).toMatchObject({ execution: "failed", delivery: "applied" });
     expect(h.boardStates.some(state => state.applied?.includes("오류 1건") && state.applied?.includes("OAuth token expired"))).toBe(true);
   });
 
@@ -471,7 +475,7 @@ describe("model role routing", () => {
     // 「다이얼이 실행 런까지 실제로 도달한다」를 지키는 자리다(2026-09-26 리뷰 R2: 이 배선을 아무 테스트도 안 덮었다).
     await runPiCommand({ mode: "single", mapIds: ["map_a"], task: "수정" }, harness().surface(), { thinkingLevel: "high" });
     expect(h.requests).toHaveLength(2);
-    expect(h.requests[0]).toMatchObject({ model: "gemini-3.8-flash", thinkingLevel: "high", readOnly: true });
+    expect(h.requests[0]).toMatchObject({ model: DEFAULT_ULTRABRAIN_MODEL, thinkingLevel: "high", readOnly: true });
     expect(h.requests[1]).toMatchObject({ model: "m", thinkingLevel: "high" });
     expect(h.requests[1]!.task).toContain("Ultrabrain 실행 계획");
   });
@@ -486,7 +490,7 @@ describe("model role routing", () => {
   it("planOnly always disables writes and never starts Deep", async () => {
     await runPiCommand({ mode: "single", mapIds: ["map_a"], task: "계획" }, harness().surface(), { planOnly: true });
     expect(h.requests).toHaveLength(1);
-    expect(h.requests[0]).toMatchObject({ model: "gemini-3.8-flash", thinkingLevel: "high", readOnly: true });
+    expect(h.requests[0]).toMatchObject({ model: DEFAULT_ULTRABRAIN_MODEL, thinkingLevel: "high", readOnly: true });
   });
 });
 
@@ -565,7 +569,7 @@ describe("routine edits", () => {
   it("plan-only still uses read-only Ultrabrain even with a routine hint", async () => {
     await runPiCommand({ mode: "single", mapIds: ["map_a"], task: "계획" }, harness().surface(), { routineEdit: true, planOnly: true });
     expect(h.requests).toHaveLength(1);
-    expect(h.requests[0]).toMatchObject({ model: "gemini-3.8-flash", readOnly: true });
+    expect(h.requests[0]).toMatchObject({ model: DEFAULT_ULTRABRAIN_MODEL, readOnly: true });
     expect(h.applyCalls).toBe(0);
   });
 });
