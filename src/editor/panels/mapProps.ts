@@ -39,6 +39,7 @@ import { editorState } from "@/editor/editorState";
 import { DEFAULT_ENEMY_FACTION_ID, factionName, resolveFactionTable } from "@/project/factions";
 import { isMapLoop, mapLoopLabel, MAP_LOOP_VALUES } from "@/project/mapLoop";
 import { mapCharacterSizeFactor } from "@/project/characterScale";
+import { MAX_TOOL_MAP_DIMENSION } from "@/project/mapSizeLimits";
 import { SEASONS, TIME_PHASES, type Season, type TimePhase } from "@/project/gameTime";
 import { store } from "@/project/store";
 import { normalizeSunlight, SUNLIGHT_LIMITS, sunDirectionLabel } from "@/project/sunlight";
@@ -404,12 +405,12 @@ function renderGeneralTab(host: HTMLElement, map: import("@/project/types").Game
 
   // 크기
   const wInput = el("input", {
-    attrs: { type: "number", min: "4", max: "128", "aria-label": "가로 (칸)" },
+    attrs: { type: "number", min: "4", max: String(MAX_TOOL_MAP_DIMENSION), "aria-label": "가로 (칸)" },
     value: String(map.width),
     dataset: { testid: "map-width-input" },
   });
   const hInput = el("input", {
-    attrs: { type: "number", min: "4", max: "128", "aria-label": "세로 (칸)" },
+    attrs: { type: "number", min: "4", max: String(MAX_TOOL_MAP_DIMENSION), "aria-label": "세로 (칸)" },
     value: String(map.height),
     dataset: { testid: "map-height-input" },
   });
@@ -423,8 +424,8 @@ function renderGeneralTab(host: HTMLElement, map: import("@/project/types").Game
       click: async () => {
         const w = Number(wInput.value);
         const h = Number(hInput.value);
-        if (![w, h].every((value) => Number.isInteger(value) && value >= 4 && value <= 128)) {
-          toast("가로와 세로는 4~128칸 사이의 정수로 입력하세요.", "error");
+        if (![w, h].every((value) => Number.isInteger(value) && value >= 4 && value <= MAX_TOOL_MAP_DIMENSION)) {
+          toast(`가로와 세로는 4~${MAX_TOOL_MAP_DIMENSION}칸 사이의 정수로 입력하세요.`, "error");
           return;
         }
         const fresh = store.getCurrent().maps[map.id];
@@ -443,7 +444,7 @@ function renderGeneralTab(host: HTMLElement, map: import("@/project/types").Game
   }));
   section.append(fieldRow("크기 (가로 × 세로)", sizeLine));
 
-  section.append(el("p", { class: "map-props-hint", text: "가로·세로 각각 4~128칸. 크기를 줄이면 범위 밖 타일이 삭제됩니다." }));
+  section.append(el("p", { class: "map-props-hint", text: `가로·세로 각각 4~${MAX_TOOL_MAP_DIMENSION}칸. 크기를 줄이면 범위 밖 타일이 삭제됩니다.` }));
 
   // 시작 위치
   const selection = editorState.get().selection;

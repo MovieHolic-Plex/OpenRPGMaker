@@ -189,6 +189,41 @@ describe("battle dom keyboard and status rows", () => {
     controller.destroy();
   });
 
+  it("reads the physical key while an IME reports Process", () => {
+    vi.useFakeTimers();
+    const { runtime, controller } = setup();
+    untilActorCommand(runtime);
+    vi.advanceTimersByTime(250);
+
+    const status = controller.root.querySelector("[data-testid='battle-playback-status']");
+    window.dispatchEvent(new KeyboardEvent("keydown", { key: "Process", code: "ShiftLeft", bubbles: true }));
+    window.dispatchEvent(new KeyboardEvent("keyup", { key: "Process", code: "ShiftLeft", bubbles: true }));
+    expect(status?.textContent).toContain("Shift 1.8×");
+
+    const commands = [...controller.root.querySelectorAll<HTMLButtonElement>(
+      "button.battle-command:not([data-preview-only='true'])",
+    )];
+    expect(commands[0]?.dataset.battleCommandCursor).toBe("true");
+    commands[0]?.dispatchEvent(new KeyboardEvent("keydown", { key: "가", isComposing: true, bubbles: true }));
+    expect(commands[0]?.dataset.battleCommandCursor).toBe("true");
+
+    const field = document.createElement("input");
+    controller.root.append(field);
+    const stolen = vi.fn();
+    commands[1]?.addEventListener("click", stolen);
+    field.dispatchEvent(new KeyboardEvent("keydown", { key: "Process", code: "KeyZ", bubbles: true }));
+    expect(stolen).not.toHaveBeenCalled();
+    field.remove();
+
+    commands[0]?.dispatchEvent(new KeyboardEvent("keydown", { key: "Process", code: "ArrowDown", bubbles: true }));
+    expect(commands[1]?.dataset.battleCommandCursor).toBe("true");
+    const confirmed = vi.fn();
+    commands[1]?.addEventListener("click", confirmed, { once: true });
+    window.dispatchEvent(new KeyboardEvent("keydown", { key: "Process", code: "KeyZ", bubbles: true }));
+    expect(confirmed).toHaveBeenCalledTimes(1);
+    controller.destroy();
+  });
+
   it("handles a focused command Enter once when rendering replaces its event target", () => {
     vi.useFakeTimers();
     const { runtime, controller } = setup();

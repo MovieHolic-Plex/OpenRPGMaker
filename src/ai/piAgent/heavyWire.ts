@@ -7,6 +7,7 @@
 
 import type { Project } from "@/project/types";
 import { stringifyAssets, stringifySharedDictionary } from "@/project/io/sharedDictionaryJson";
+import { pendingLazyBundledTilesetIds, preloadPendingLazyBundledTilesets } from "@/project/bundledTilesetDiff";
 import { jsonContentDigest, trustSharedProjectEntries, withTrustedSharedEntries } from "@/project/persistence/core/contentDigest";
 
 export const PI_HEAVY_PROJECT_KEYS = ["tilesets", "database", "assets"] as const;
@@ -141,6 +142,8 @@ export async function planHeavyWire<T extends { project: Project }>(request: T):
     if (!value || typeof value !== "object") continue;
     let hash = hashMemo.get(value);
     if (!hash) {
+      // 아직 되돌리지 않은 지연 번들 타일셋은 글을 만들 때 되돌린다 — 그 정의를 먼저 비동기로 읽는다(동기 요청 대비책을 피한다).
+      if (key === "tilesets") await preloadPendingLazyBundledTilesets(value as Record<string, unknown>);
       const made = await heavyHash(key, value);
       if (!made) continue;
       hash = made;
@@ -169,6 +172,9 @@ export function warmHeavyWire(getProject: () => Project, schedule: (run: () => v
       const value = (getProject() as unknown as Record<string, unknown>)[key];
       const next = () => step(index + 1);
       if (!value || typeof value !== "object" || hashMemo.has(value)) { next(); return; }
+      // 지연 번들 타일셋이 남았으면 미리 만들지 않는다 — 글을 만들면 모든 정의를 읽고 되돌린다(로드가 아낀 것을 한가할 때 다시 쓴다).
+      // 첫 조수 턴(planHeavyWire)이 정의를 비동기로 읽고 만든다.
+      if (key === "tilesets" && pendingLazyBundledTilesetIds(value as Record<string, unknown>).length > 0) { next(); return; }
       void heavyHash(key, value).then((made) => { if (made) hashMemo.set(value, made); }, () => undefined).finally(next);
     });
   };

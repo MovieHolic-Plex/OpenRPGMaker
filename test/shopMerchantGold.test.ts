@@ -4,7 +4,7 @@ import { handleShopTransaction } from "@/player/playSceneShop";
 import { sellPrice } from "@/player/playSceneShopDom";
 import { createBlankProject } from "@/project/defaults";
 import { DEFAULT_SHOP_MERCHANT_GOLD, resolveShopMerchantGold } from "@/project/shopStock";
-import { changeItem, startSession } from "@/project/session";
+import { changeItem, GOLD_MAX, startSession } from "@/project/session";
 import { store } from "@/project/store";
 import type { ItemRecord } from "@/project/types/database";
 import type { PlaySceneContext } from "@/player/playSceneTypes";
@@ -87,6 +87,31 @@ describe("shop merchant gold", () => {
     expect(ok.merchantGold).toBe(0);
     expect(session.inventory[item.id]).toBe(1);
     expect(session.gold).toBe(startGold + payout);
+  });
+
+  it("names the gold cap when a sale would pass it and leaves the purse unchanged", () => {
+    const project = createBlankProject();
+    const session = startSession(project);
+    const item = potionLike(200);
+    project.database.items = [...project.database.items.filter((entry) => entry.id !== item.id), item];
+    store.replaceProject(project);
+    changeItem(session, item.id, "+=", 2);
+    session.gold = GOLD_MAX;
+    const scene = fakeScene(session);
+
+    const blocked = handleShopTransaction(scene, item, "sell", 1, 500);
+    expect(blocked.ok).toBe(false);
+    if (blocked.ok) return;
+    expect(blocked.status).toBe("소지금이 한도에 도달했습니다.");
+    expect(session.gold).toBe(GOLD_MAX);
+    expect(session.inventory[item.id]).toBe(2);
+
+    session.gold = GOLD_MAX - sellPrice(item);
+    const ok = handleShopTransaction(scene, item, "sell", 1, 500);
+    expect(ok.ok).toBe(true);
+    if (!ok.ok) return;
+    expect(session.gold).toBe(GOLD_MAX);
+    expect(session.inventory[item.id]).toBe(1);
   });
 
   it("adds player purchase payments to merchant gold", () => {

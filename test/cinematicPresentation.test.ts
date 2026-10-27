@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { createBlankProject } from '@/project/defaults';
 import { deserialize, serialize } from '@/project/io';
-import { parseCinematicPresentation, hasAuthoredTextOpening } from '@/project/cinematicPresentation';
+import { clampCinematicTextSize, parseCinematicPresentation, hasAuthoredTextOpening } from '@/project/cinematicPresentation';
 import { normalizeSystemRecords } from '@/project/databaseRecordModel';
 
 describe('authored opening typography persistence', () => {
@@ -34,6 +34,16 @@ describe('authored opening typography persistence', () => {
     const wire = JSON.parse(serialize(project));
     wire.system.opening = { enabled: true, skippable: true, scenes: [{ id: 'bad', kind: 'text', narration: 'bad', durationMs: 3000, presentation }] };
     expect(() => deserialize(JSON.stringify(wire))).toThrow();
+  });
+
+  it('keeps a title-card size the opening form can save', () => {
+    expect(parseCinematicPresentation({ preset: 'chapter', text: { size: 40 } }).text?.size).toBe(40);
+    expect(parseCinematicPresentation({ preset: 'credits', text: { size: 11 } }).text?.size).toBe(11);
+    expect(clampCinematicTextSize(40)).toBe(40);
+    expect(clampCinematicTextSize(11)).toBe(11);
+    expect(clampCinematicTextSize(4)).toBe(8);
+    expect(clampCinematicTextSize(80)).toBe(64);
+    expect(() => parseCinematicPresentation({ text: { size: 65 } })).toThrow(/8\.\.64/);
   });
 
   it('accepts intentional varied typography and rejects unstyled black text', () => {

@@ -518,11 +518,13 @@
   font: 500 11px/1.4 var(--font-ui);
 }
 
+/* 22% 인디고를 흰 바탕에 섞으면 연한 라벤더다. --on-accent(#fff) 는 그 위에서
+   약 1.4:1 이라 「+ 새 맵」이 안 읽혔다. 사이드바 주 버튼과 같이 옅은 면 + 인디고 글자. */
 .map-tree-panel.is-basic-flyout .map-tree-basic-add {
-  background: color-mix(in srgb, var(--accent) 22%, var(--mix-base));
-  border: 1px solid color-mix(in srgb, var(--accent) 50%, transparent);
+  background: var(--accent-muted);
+  border: 1px solid var(--accent-border);
   border-radius: var(--radius-m);
-  color: var(--on-accent);
+  color: var(--accent);
   cursor: pointer;
   flex: 0 0 auto;
   font: 700 12px/1 var(--font-ui);
@@ -531,10 +533,16 @@
   white-space: nowrap;
 }
 
-.map-tree-panel.is-basic-flyout .map-tree-basic-add:hover,
+.map-tree-panel.is-basic-flyout .map-tree-basic-add:hover {
+  background: color-mix(in srgb, var(--accent) 22%, var(--mix-base));
+  color: var(--accent-hover);
+}
+
 .map-tree-panel.is-basic-flyout .map-tree-basic-add:focus-visible {
-  background: color-mix(in srgb, var(--accent) 38%, var(--mix-base));
-  outline: none;
+  background: color-mix(in srgb, var(--accent) 22%, var(--mix-base));
+  color: var(--accent-hover);
+  outline: var(--focus-outline);
+  outline-offset: -2px;
 }
 
 /* 행 밀도 + 그리드 계약 — 초보 행은 `+`(하위 추가) 버튼이 하나 더 붙어 공용 6열에
@@ -878,22 +886,33 @@
   padding: 7px 9px;
 }
 
-.map-inspector-action:hover:not(:disabled),
+.map-inspector-action:hover:not(:disabled) {
+  background: var(--control-bg-hover);
+  border-color: var(--border-strong);
+}
+
+/* hover 와 한 블록에 outline:none 을 두면 명시도 (0,3,0) 이 뒤의 :focus-visible
+   (0,2,0) 보다 높아 키보드 링이 지워진다. 링은 이 규칙이 직접 그린다. */
 .map-inspector-action:focus-visible:not(:disabled) {
   background: var(--control-bg-hover);
   border-color: var(--border-strong);
-  outline: none;
-}
-
-.map-inspector-action:focus-visible {
   outline: var(--focus-outline);
-  outline-offset: 1px;
+  outline-offset: -2px;
 }
 
+/* 「맵 설정」. 22% 워시 + --on-accent 는 약 1.4:1 이라 흰 글자가 사라졌다.
+   --accent-muted 위 --accent 는 4.6:1 이상(test/mapInspectorPrimaryContrast.test.ts). */
 .map-inspector-action.is-primary {
+  background: var(--accent-muted);
+  border-color: var(--accent-border);
+  color: var(--accent);
+}
+
+.map-inspector-action.is-primary:hover:not(:disabled),
+.map-inspector-action.is-primary:focus-visible:not(:disabled) {
   background: color-mix(in srgb, var(--accent) 22%, var(--mix-base));
-  border-color: color-mix(in srgb, var(--accent) 50%, transparent);
-  color: var(--on-accent);
+  border-color: var(--accent-border);
+  color: var(--accent-hover);
 }
 
 .map-inspector-action:disabled {

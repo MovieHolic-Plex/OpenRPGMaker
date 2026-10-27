@@ -115,7 +115,9 @@ describe("AI surfaces that teach page semantics", () => {
   });
 
   it("work rules tell the model to look up then author state-variant pages", () => {
-    const prompt = buildSystemPrompt(createBlankProject(), { budgetChars: 12_000 });
+    // INTRO now runs past 12,000 chars, so work rule 8 sits beyond a 12k cut; read it at the default budget.
+    // Budget survival of the page-semantics block itself is covered by the 6k/12k/40k case above.
+    const prompt = buildSystemPrompt(createBlankProject());
     expect(prompt).toContain("복잡한 NPC 저작");
     expect(prompt).toContain("find_events");
     expect(prompt).toContain("상태별 NPC");

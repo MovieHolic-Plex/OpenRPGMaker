@@ -819,6 +819,7 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     emitMenuJuice,
     menuCloseJuiceMs: MENU_CLOSE_JUICE_MS,
     loadSlot,
+    loadAutosave,
   });
 
   const handleTitleKey = (key: RuntimeMenuKey): boolean => {

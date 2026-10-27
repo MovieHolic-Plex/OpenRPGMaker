@@ -676,9 +676,12 @@ function normalizeLayer(
         doneWhen: typeof it.doneWhen === "string" ? it.doneWhen : undefined,
         mapTargets: parseWorkTargetIds(it.mapTargets),
         verificationChecks: parseVerificationChecks(it.verificationChecks),
+        // set_work_plan 은 스키마 정규화를 안 거친다. successTools:"create_map" 또는 "create_map, fill_region" 도 완료 조건으로 읽는다.
         successTools: Array.isArray(it.successTools)
           ? it.successTools.filter((t): t is string => typeof t === "string")
-          : undefined,
+          : typeof it.successTools === "string"
+            ? it.successTools.split(",").map((name) => name.trim()).filter((name) => name.length > 0)
+            : undefined,
       };
     })
     .filter((it): it is NonNullable<typeof it> => it !== null);

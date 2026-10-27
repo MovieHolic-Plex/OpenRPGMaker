@@ -2,7 +2,7 @@
 // Wide fullscreen-style review stage (review-only): side-by-side before/after,
 // checklist-styled change list/issues, sticky compare-actions, kbd hints with
 // Left/Right A/B flip wired to setAbView. Enter=apply / R=retry preserved.
-import { readFileSync } from "node:fs";
+import { readFileSync, readdirSync } from "node:fs";
 import { resolve } from "node:path";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { closeRegionTaskModal, openRegionTaskModal } from "@/editor/panels/regionTaskModal";
@@ -99,7 +99,9 @@ describe("wide review stage (review-only)", () => {
     const modal = findByTestId(root, "region-task-modal") ?? findByTestId(root, "region-task-popover");
     expect(modal?.dataset.stage).toBe("review");
     // Wide 진입은 data-stage 계약이다 — JS 가 별도 클래스를 달지 않고 CSS 가 판단한다(파일 원칙).
-    const css = readFileSync(resolve(__dirname, "..", "src", "styles", "editor", "region-task.css"), "utf8");
+    // 시트는 9b2ff9a9f1 로 styles/map/ 아래로 옮겨져 region-task.part-N.css 로 나뉘었다.
+    const dir = resolve(__dirname, "..", "src", "styles", "map");
+    const css = readdirSync(dir).filter((name) => /^region-task(\.part-\d+)?\.css$/.test(name)).map((name) => readFileSync(resolve(dir, name), "utf8")).join("\n");
     expect(css).toContain('.region-task-modal[data-stage="review"]');
   });
 

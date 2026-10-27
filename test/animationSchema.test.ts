@@ -13,10 +13,11 @@ describe("RPG2003 animation schema", () => {
     const hit = project.database.battleAnimations.find((animation) => animation.id === "anim_hit");
 
     // Then: it is not a shallow id/name/resource record.
+    // The starter hit uses the generated tackle-impact sheet since the scarloxy battle sheets left the starter records (public baseline 0d4f13e7c8).
     expect(hit).toMatchObject({
       id: "anim_hit",
-      resourceId: "scarloxy-battle-anim-scratch",
-      sheet: { frameWidth: 96, frameHeight: 96, columns: 5 },
+      resourceId: "generated-battle-anim-tackle-impact",
+      sheet: { frameWidth: 384, frameHeight: 384, columns: 8 },
       scope: "singleTarget",
       position: "center",
       large: false,
@@ -30,8 +31,8 @@ describe("RPG2003 animation schema", () => {
       visible: true,
     });
     expect(hit?.timings?.[0]).toMatchObject({
-      frameIndex: 0,
-      flash: { target: "target", color: { red: 255, green: 255, blue: 255, gray: 0 }, durationFrames: 4 },
+      frameIndex: 3,
+      flash: { target: "target", color: { red: 220, green: 232, blue: 245, gray: 0 }, durationFrames: 4 },
     });
   });
 

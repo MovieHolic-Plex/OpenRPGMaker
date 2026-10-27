@@ -19,6 +19,27 @@ type NumberInputSurfaceHelpers = {
   readonly resetOverlay: (overlay: HTMLElement) => void;
 };
 
+const NUMBER_INPUT_TITLE_ID = "runtime-number-input-title";
+
+/** Digits spaced so a screen reader speaks each one, not a hundreds number. Empty is a word. */
+function spokenDigits(value: string): string {
+  return value ? value.split("").join(" ") : "비어 있음";
+}
+
+function tabbable(root: HTMLElement): HTMLElement[] {
+  return [...root.querySelectorAll<HTMLElement>("button, input, select, textarea")].filter((el) => {
+    if (el.hasAttribute("disabled") || el.hidden) return false;
+    const tabindex = el.getAttribute("tabindex");
+    return tabindex === null || Number(tabindex) >= 0;
+  });
+}
+
+/**
+ * 숫자 입력의 확정 단추. 이름 입력의 「지우기」처럼 게임 글자는 한국어다.
+ * 편집기 미리보기는 카탈로그가 이 말을 OK·確認·确认 으로 옮긴다.
+ */
+export const NUMBER_INPUT_CONFIRM_LABEL = "확인";
+
 /**
  * RM2K3-style numeric entry: per-digit slots (not a free text field).
  * Free-text number inputs looked broken under the pixel window skin/font;
@@ -35,6 +56,11 @@ export function showNumberInput(
     const box = el("form", {
       class: "dialogue-box number-input-box",
       dataset: { testid: "runtime-input-number" },
+      attrs: {
+        role: "dialog",
+        "aria-modal": "true",
+        "aria-labelledby": NUMBER_INPUT_TITLE_ID,
+      },
     }) as HTMLFormElement;
     helpers.applyTextSettings(overlay, box, request);
 
@@ -78,9 +104,20 @@ export function showNumberInput(
       hidden.value = value;
     };
 
+    // Digit cells are aria-hidden, and keystrokes write the off-screen field in
+    // script, so this live region is what gets spoken. The empty start stays
+    // quiet — the dialog name already says the prompt.
+    const announcement = el("div", {
+      class: "number-input-announcement",
+      dataset: { testid: "runtime-input-number-announcement" },
+      attrs: { role: "status", "aria-live": "polite", "aria-atomic": "true" },
+    });
     const setValue = (next: string): void => {
-      value = next.replace(/\D/g, "").slice(0, digits);
+      const cleaned = next.replace(/\D/g, "").slice(0, digits);
+      if (cleaned === value) return;
+      value = cleaned;
       syncSlots();
+      announcement.textContent = spokenDigits(value);
     };
 
     const finish = (): void => {
@@ -93,6 +130,20 @@ export function showNumberInput(
     };
 
     const onKey = (event: KeyboardEvent): void => {
+      if (event.key === "Tab") {
+        const items = tabbable(box);
+        if (items.length === 0) return;
+        event.preventDefault();
+        event.stopPropagation();
+        const current = items.indexOf(document.activeElement as HTMLElement);
+        if (current < 0) {
+          (event.shiftKey ? items[items.length - 1] : items[0])?.focus();
+          return;
+        }
+        const delta = event.shiftKey ? -1 : 1;
+        items[(current + delta + items.length) % items.length]?.focus();
+        return;
+      }
       if (/^[0-9]$/.test(event.key)) {
         event.preventDefault();
         event.stopPropagation();
@@ -124,10 +175,12 @@ export function showNumberInput(
       el("div", {
         class: "number-input-title",
         text: titleText,
+        attrs: { id: NUMBER_INPUT_TITLE_ID },
         dataset: { testid: "runtime-input-number-title" },
       }),
       slots,
       hidden,
+      announcement,
     ];
 
     if (request.showPad) {
@@ -137,7 +190,7 @@ export function showNumberInput(
     children.push(
       el("button", {
         class: "number-input-ok",
-        text: "OK",
+        text: NUMBER_INPUT_CONFIRM_LABEL,
         attrs: { type: "submit" },
         dataset: { testid: "runtime-input-number-ok" },
       })
@@ -161,16 +214,16 @@ function buildNumberPad(
     class: "number-input-pad",
     dataset: { testid: "runtime-input-number-pad" },
   });
-  const keys = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "←", "0", "OK"] as const;
+  const keys = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "←", "0", NUMBER_INPUT_CONFIRM_LABEL] as const;
   for (const key of keys) {
     const btn = el("button", {
-      class: `number-input-pad-key${key === "OK" ? " ok" : ""}${key === "←" ? " back" : ""}`,
+      class: `number-input-pad-key${key === NUMBER_INPUT_CONFIRM_LABEL ? " ok" : ""}${key === "←" ? " back" : ""}`,
       text: key,
-      attrs: { type: "button" },
+      attrs: { type: "button", ...(key === "←" ? { "aria-label": "한 자리 지우기" } : {}) },
     });
     btn.addEventListener("click", (event) => {
       event.preventDefault();
-      if (key === "OK") {
+      if (key === NUMBER_INPUT_CONFIRM_LABEL) {
         finish();
         return;
       }

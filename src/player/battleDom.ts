@@ -75,7 +75,7 @@ import { bindEmeraldBattleSurface, stampEmeraldSurface } from "@/player/emeraldS
 import { mountEmeraldTrainerIntro } from "@/player/emeraldTrainerIntro";
 import { applyRollingHpSurvival, createRollingHpMeter, startRollingHpTicker } from "@/player/rollingHp";
 import { syncBattleScreenFilter } from "@/player/battleScreenFilter";
-import { emeraldNarrationActive, emeraldNoEscapeLine } from "@/player/emeraldBattleNarration";
+import { emeraldNarrationActive, noEscapeNoticeLine } from "@/player/emeraldBattleNarration";
 import { revealedEffectiveness, WEAKNESS_REVEAL_LABEL } from "@/battle/weaknessDiscovery";
 import { resolveBattleStaging } from "@/project/battleStaging";
 
@@ -879,7 +879,9 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     if (destroyed || options.runtime.snapshot().eventChoice || options.runtime.snapshot().eventPause) return;
     // 한글·일본어 IME 는 keydown 의 key 를 "Process" 로 바꾼다. 필드·메뉴와 같이 code 의 물리 키로 되돌린다.
     // 글자 자체가 온 조합(isComposing 이고 복원되지 않음)은 메뉴를 움직이지 않는다.
-    const key = keyboardEventKey(event);
+    // 한글 IME 는 칸 밖에서도 key 를 Process 로 바꾼다. 필드·대사·커서 메뉴와 같이 code 의 물리 키를 읽는다.
+    // 글자 자체가 온 조합은 명령이 아니고, 입력 칸에 친 키는 전투가 가져가지 않는다.
+    if (isTextInputTarget(event.target)) return;    const key = keyboardEventKey(event);
     if (key === "Process" || key === "Unidentified") return;
     if (event.isComposing && key === event.key) return;
     if (shiftHeld && key !== "Shift") shiftCombined = true;
@@ -926,7 +928,10 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       if (inputKey) {
         event.preventDefault();
         inputPrompt.press(inputKey);
-      }
+      const promptKey: SkillInputKey | undefined = dir ?? (isBattleConfirmKey(key) ? "confirm" : isBattleCancelKey(key) ? "cancel" : undefined);
+      if (promptKey) {
+        event.preventDefault();
+        inputPrompt.press(promptKey);      }
       return;
     }
     if (sequenceBusy) {
@@ -999,7 +1004,9 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
   // 속도를 토글한다. Shift+A(대문자)·Shift+Z 같은 조합에서는 토글되지 않는다(결함 2).
   function onWindowKeyup(event: KeyboardEvent): void {
     if (keyboardEventKey(event) !== "Shift") return;
-    if (options.runtime.snapshot().eventChoice || options.runtime.snapshot().eventPause) { shiftHeld = false; shiftCombined = false; return; }
+    // keydown 과 같이, IME 가 key 를 Process 로 바꿔도 Shift 를 놓친 것으로 본다.
+    const key = keyboardEventKey(event);
+    if (key !== "Shift") return;    if (options.runtime.snapshot().eventChoice || options.runtime.snapshot().eventPause) { shiftHeld = false; shiftCombined = false; return; }
     // 텍스트 입력 중에는 토글하지 않는다. 연출 중에는 허용한다 — 배속은 재생을
     // 보면서 조절하는 컨트롤이다(코덱스 리뷰 C6).
     if (shiftHeld && !shiftCombined && root.isConnected && !isTextInputTarget(event.target)) {
@@ -1228,6 +1235,19 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     syncView();
   }
 
+  /** 도주 명령이 이 전투에서 막혀 있는지. 대상 선택 중 비활성은 여기 해당하지 않는다. */
+  function isBlockedEscapeButton(button: HTMLButtonElement, snapshot: BattleSnapshot): boolean {
+    if (snapshot.phase !== "actorCommand" || snapshot.canEscape) return false;
+    const testId = button.dataset.testid;
+    return testId === "actor-command-escape" || testId === "actor-command-run";
+  }
+
+  /** 문장 창에 도주 불가 이유를 띄운다. 커서를 옮기면 clearFlashLine 이 원래 질문으로 되돌린다. */
+  function announceBlockedEscape(snapshot: BattleSnapshot): void {
+    directorState = { ...commandPromptState(snapshot, noEscapeNoticeLine(snapshot)), flash: true };
+    syncView();
+  }
+
   function handleConfirm(snapshot: BattleSnapshot): boolean {
     if (snapshot.phase === "targetSelect" && snapshot.targetSelection?.side === "enemy") {
       // 커서가 「뒤로」 행에 있으면(화살표 순환 또는 포커스 이동으로) 확인키는 그 행을 누른다.
@@ -1251,11 +1271,9 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     // 확인키는 거기서 아무 일도 하지 않고 거절음만 울린다. 메뉴는 열린 채로 둔다.
     if (button.dataset.battleCommandInert === "true") {
       playBattleCue("command-cancel");
-      // 3세대처럼 도망갈 수 없는 이유를 문장 창에 말한다(회색 줄만 있으면 왜 안 되는지 알 수 없다). 커서를 옮기면 원래 안내로 돌아온다.
-      if (button.dataset.testid === "actor-command-run" && snapshot.phase === "actorCommand" && !snapshot.canEscape) {
-        directorState = { ...commandPromptState(snapshot, emeraldNoEscapeLine(snapshot)), flash: true };
-        syncView();
-      }
+      // 회색 줄만 있으면 왜 안 되는지 알 수 없다. 클래식은 명령 중에 문장 창을 접으므로
+      // announceBlockedEscape 가 data-battle-notice 로 배너를 다시 편다. 커서를 옮기면 원래 안내로 돌아온다.
+      if (isBlockedEscapeButton(button, snapshot)) announceBlockedEscape(snapshot);
       return true;
     }
     button.click();
@@ -1304,7 +1322,14 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       : null;
     if (!button) return;
     // 비활성 행은 눌러도 확정이 아니다 — 거절음으로 갈라 준다.
-    playBattleCue(button.dataset.battleCommandInert === "true" ? "command-cancel" : "command-confirm");
+    // 키보드 확인(handleConfirm)과 같이, 막힌 도주를 클릭해도 이유를 문장 창에 말한다.
+    if (button.dataset.battleCommandInert === "true") {
+      playBattleCue("command-cancel");
+      const snap = options.runtime.snapshot();
+      if (isBlockedEscapeButton(button, snap)) announceBlockedEscape(snap);
+      return;
+    }
+    playBattleCue("command-confirm");
   });
 
   /** 시퀀서가 아직 재생하지 않은 stateAdded/stateRemoved 를 되돌린 배지 목록(표시 전용). */
