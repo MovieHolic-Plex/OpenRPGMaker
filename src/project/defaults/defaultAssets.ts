@@ -146,6 +146,33 @@ export function bundledTilesetById(id: string): TilesetDef | undefined {
   return undefined;
 }
 
+function bundledAssetForTilesetId(id: string): (typeof BUNDLED_EASYRPG_CHIPSET_ASSETS)[number] | undefined {
+  if (id === DEFAULT_TILESET_ID) return bundledAssetForTextureKey(DEFAULT_TILESET_TEXTURE_KEY);
+  return BUNDLED_EASYRPG_CHIPSET_ASSETS.find((asset) => bundledTilesetIdForAsset(asset) === id);
+}
+
+/**
+ * 번들 타일셋 id 의 정의를 지금 동기 읽기 없이 만들 수 있는가. 번들 id 가 아니면 undefined.
+ * 저장 보기(bundledTilesetDiff.ts)는 이것이 true 일 때만 번들 정의와 비교한다 — 편집기에서 동기 XHR 을 부르지 않는다.
+ */
+export function bundledTilesetDefinitionReady(id: string): boolean | undefined {
+  const asset = bundledAssetForTilesetId(id);
+  if (!asset) return undefined;
+  const key = bundledJsonKeyForTexture(asset.textureKey);
+  return key === undefined || bundledJsonLoaded(key);
+}
+
+/** 번들 타일셋 id 들의 정의 JSON 을 읽어 둔다(차이로 저장한 프로젝트를 되돌리기 전에 await). 읽을 것이 없으면 null. */
+export function preloadBundledTilesetDefinitions(ids: Iterable<string>): Promise<void> | null {
+  const keys = new Set<BundledJsonKey>();
+  for (const id of ids) {
+    const asset = bundledAssetForTilesetId(id);
+    const key = asset ? bundledJsonKeyForTexture(asset.textureKey) : undefined;
+    if (key && !bundledJsonLoaded(key)) keys.add(key);
+  }
+  return keys.size > 0 ? preloadBundledJson([...keys]) : null;
+}
+
 /** 정의 JSON 을 지연으로 읽는 번들 칩셋 → 정의 없이 참고문서만 만드는 함수(새 사본의 referenceDocuments 와 같은 값). */
 const REFERENCE_DOCS_WITHOUT_DEFINITION: Readonly<Record<string, () => TilesetReferenceCategory[]>> = {
   [JP_CITY_TEXTURE]: jpCityBundledReferenceDocuments,
