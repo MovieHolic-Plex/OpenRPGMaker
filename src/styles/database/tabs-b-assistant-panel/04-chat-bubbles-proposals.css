@@ -241,7 +241,7 @@
 }
 .ai-error-detail {
   box-sizing: border-box;
-  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-family: var(--font-mono);
   font-size: 11px;
   line-height: 1.45;
   margin: 8px 0 0;

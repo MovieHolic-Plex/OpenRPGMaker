@@ -77,7 +77,9 @@ const fakePhaser = vi.hoisted(() => {
 vi.mock("@/app/phaserRuntime", () => ({
   ensurePhaser: vi.fn(async () => ({
     AUTO: fakePhaser.AUTO,
-    Scale: { NONE: fakePhaser.NONE },
+    Scale: { NONE: fakePhaser.NONE, RESIZE: 30, NO_CENTER: 0 },
+    // startEditGame 이 편집 렌더 게이트에 Core.Events 이름을 넘긴다 — 가짜 게임은 step/loop 가 없어 게이트가 바로 빠진다.
+    Core: { Events: { PRE_STEP: "prestep", STEP: "step", POST_STEP: "poststep", PRE_RENDER: "prerender", POST_RENDER: "postrender", DESTROY: "destroy", VISIBLE: "visible", RESUME: "resume" } },
     Game: fakePhaser.FakeGame,
   })),
 }));
@@ -180,7 +182,10 @@ describe("player Phaser boot contract", { timeout: 60_000 }, () => {
         },
         scene: [fakePlayScene],
       });
+      // 부트 값 앞에 첫 연출 대기·픽셀 밀도가 먼저 실린다(createPlayGame preBoot).
       expect([...game.registryValues.entries()]).toEqual([
+        ["initialPresentationPending", false],
+        ["playPixelDensity", 1],
         ["initialSession", initialSession],
         ["initialEventTestId", "event_intro"],
         ["onPlayLoadProgress", onPlayLoadProgress],
@@ -230,6 +235,8 @@ describe("player Phaser boot contract", { timeout: 60_000 }, () => {
     expect(fakePhaser.constructorRegistrySnapshots).toHaveLength(2);
     for (const registry of fakePhaser.constructorRegistrySnapshots) {
       expect([...registry.entries()]).toEqual([
+        ["initialPresentationPending", false],
+        ["playPixelDensity", 1],
         ["initialSession", initialSession],
         ["initialEventTestId", "event_intro"],
         ["onPlayLoadProgress", onPlayLoadProgress],
