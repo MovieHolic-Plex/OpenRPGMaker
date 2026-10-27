@@ -16,8 +16,10 @@ import {
   tileGraftsTextureSuffix,
 } from "@/assets/tileGrafts";
 import type { Project, TilesetDef } from "@/project/types";
+import { withRetiredEasyRpgTilesets } from "./support/retiredEasyRpgTilesets";
 
-const RETRO_HOUSE = "tex_easyrpg_chipset_retro_house";
+// 레트로 집 시트는 2026-10-07 저작권 정리로 지워져 알 수 없는 소스가 된다 — 이식 계약은 출처 시트에 무관하므로 현재 번들 시트로 바꾼다.
+const RETRO_HOUSE = "tex_beodeul_city";
 
 function tileset(): TilesetDef {
   const found = store.getCurrent().tilesets[COMBINED_TOWN_TILESET_ID];
@@ -26,7 +28,8 @@ function tileset(): TilesetDef {
 }
 
 beforeEach(() => {
-  const project = createBlankProject();
+  // 2026-10-07 저작권 정리로 새 프로젝트에 합본 마을 시트가 없다 — 이식 계약은 그 시트로 검증하므로 옛 저장본 정의를 심는다(#3539 방식).
+  const project = withRetiredEasyRpgTilesets(createBlankProject());
   // Canonicalize the unrelated text-only titleGraphic before graft round trips.
   project.system = normalizeSystemRecords(project.system);
   store.replace(project);
