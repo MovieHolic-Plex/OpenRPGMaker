@@ -1,6 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { clearTimeout as clearDeadline, setTimeout as setDeadline } from "node:timers";
-import type { Project } from "@/project/types";
 import type { ChatResult } from "@/ai/llmClient";
 import { fixedDeclarer } from "./intentFixture";
 import { approvedReviewResponse, independentReviewPayload } from "./independentReviewFixture";
@@ -9,9 +8,10 @@ import { store } from "@/project/store";
 import { createBlankProject } from "@/project/defaults";
 import { resetMapEditHistory } from "@/editor/mapEditHistory";
 import { resetIntentDeclarationCache } from "@/ai/intentDeclarationClient";
+import type { ProjectSnapshot } from "@/project/persistence/types";
+import { installHookedMemoryRepository } from "./support/hookedMemoryRepository";
 
 const projectId = "p1-session-proof-fixture";
-type Row = { project_id: string; current_json: Project; current_sha256: string };
 const final = (content: string): ChatResult => ({ message: { role: "assistant", content }, finishReason: "stop" });
 const plan = {
   goal: "Set the title", layers: [{ title: "Title", items: [{
@@ -32,34 +32,13 @@ async function waitForSignal(signal: Promise<void>): Promise<void> {
 
 async function fixture(withPlan = true) {
   resetIntentDeclarationCache(); // Same prompt, different plan/no-plan scenarios must not share a cached declaration.
-  let row: Row | undefined;
-  let read: (() => Promise<Response>) | undefined;
-  let write: (() => Promise<void>) | undefined;
-  const requests: { path: string; method: string }[] = [];
-  const commits: string[] = [];
-  let commitResponse: (() => Promise<Response>) | undefined;
-  vi.stubGlobal("fetch", vi.fn<typeof fetch>(async (input, init) => {
-    const path = new URL(String(input)).pathname;
-    const method = init?.method ?? "GET";
-    requests.push({ path, method });
-    if (path === "/rest/v1/projects") {
-      if (method !== "GET") {
-        if (write) await write();
-        row = JSON.parse(String(init?.body));
-        return Response.json(method === "PATCH" ? [row] : []);
-      }
-      return read ? read() : Response.json(row ? [row] : []);
-    }
-    if (path === "/rest/v1/project_commits" && method === "POST") {
-      const body = JSON.parse(String(init?.body));
-      commits.push(body[0].commit_id);
-      if (commitResponse) return commitResponse();
-    }
-    if (["/rest/v1/maps", "/rest/v1/tilesets", "/rest/v1/project_commits", "/rest/v1/project_changes"].includes(path)) return Response.json([]);
-    throw new Error(`Unexpected transport: ${method} ${path}`);
-  }));
+  // The store persists through the project repository (SQLite host / Electron / memory); the LegacyDb REST rows this file used
+  // to mock are no longer read by src. The same seams (hold/fail the proof read, hold the save, hold/fail the commit log) come
+  // from a hooked memory repository.
+  const repo = installHookedMemoryRepository(projectId);
+  disposeRepository = repo.dispose;
   store._setPersistenceStateForTest({ loaded: false, remotePersistenceEnabled: false, disabledReason: null });
-  store.replace(createBlankProject());
+  store.replace(await repo.seedLoaded(createBlankProject()));
   store._setPersistedBaselineForTest(null);
   resetMapEditHistory();
   store._setPersistenceStateForTest({ loaded: true, remotePersistenceEnabled: true, disabledReason: null });
@@ -89,33 +68,32 @@ async function fixture(withPlan = true) {
     },
   });
   return {
-    store, session, requests, commits,
+    store, session, requests: repo.requests,
+    /** Commit ids the AI apply recorded (a human edit saved by a proof flush records its own manual commit). */
+    get commits() { return repo.commits.filter((commit) => commit.authorKind === "agent").map((commit) => commit.commitId); },
     failFinal: () => { failFinal = true; },
     chatCalls: () => chatCalls,
-    setRead: (next: () => Promise<Response>) => { read = next; },
-    setWrite: (next: () => Promise<void>) => { write = next; },
-    setCommit: (next: () => Promise<Response>) => { commitResponse = next; },
-    row: () => { if (!row) throw new Error("No saved row"); return row; },
+    setRead: repo.setRead,
+    setWrite: repo.setWrite,
+    setCommit: repo.setCommit,
+    snapshot: repo.snapshot,
     run: (onEvent: Parameters<typeof session.sendUserMessage>[1] = () => {}, signal?: AbortSignal) =>
       session.sendUserMessage("Set the title", onEvent, signal, { autonomous: withPlan }),
     savedAudits: () => session.getAuditEntries().filter((entry) => entry.kind === "status" && entry.text.split(" ")[0] === "agent_run_saved"),
   };
 }
 
+let disposeRepository: (() => void) | undefined;
+const unavailable = async (): Promise<never> => { throw new Error("unavailable"); };
+
 describe("AssistantSession accepted-revision proof", () => {
   beforeEach(() => {
     resetIntentDeclarationCache();
     vi.useFakeTimers(); // Disable unrelated autosave; no timer advancement synchronizes the test.
-    vi.stubEnv("VITE_LEGACY_DB_USE_PROXY", "0");
-    vi.stubEnv("VITE_LEGACY_DB_URL", "http://p1-session.invalid");
-    vi.stubEnv("VITE_LEGACY_DB_ANON_KEY", "test-anon-key");
-    vi.stubEnv("VITE_LEGACY_DB_PROJECT_ID", projectId);
-    vi.stubGlobal("window", {
-      location: { hostname: "127.0.0.1", pathname: "/", search: "" },
-      localStorage: { getItem: () => null, setItem: () => {}, removeItem: () => {} },
-    });
   });
   afterEach(() => {
+    disposeRepository?.();
+    disposeRepository = undefined;
     resetIntentDeclarationCache();
     vi.clearAllTimers(); vi.useRealTimers(); vi.restoreAllMocks(); vi.unstubAllGlobals(); vi.unstubAllEnvs();
   });
@@ -194,7 +172,7 @@ describe("AssistantSession accepted-revision proof", () => {
     const f = await fixture();
     const controller = new AbortController();
     controller.abort();
-    if (boundary === "failure") f.setRead(async () => new Response("unavailable", { status: 503 }));
+    if (boundary === "failure") f.setRead(unavailable);
     let nested: Promise<RunEndProofState> | undefined;
     const result = await f.session.proveAppliedRevision((event) => {
       if (event.type !== "persistence_proof" || nested) return;
@@ -212,8 +190,9 @@ describe("AssistantSession accepted-revision proof", () => {
     expect(f.savedAudits()).toHaveLength(0);
     expect(f.session.getAuditEntries().filter((entry) => entry.kind === "status").map((entry) => entry.text.split(" ")[0]))
       .toEqual(["agent_run:proof-failed"]);
-    if (boundary === "initial") expect(f.requests).toHaveLength(0);
-    if (boundary === "receipt") expect(f.requests.filter((r) => r.method === "GET")).toHaveLength(0);
+    // The commit log is a separate stream (an earlier save's manual commit may still be landing); the proof itself made no transport request.
+    if (boundary === "initial") expect(f.requests.filter((r) => r.op !== "commit-record")).toHaveLength(0);
+    if (boundary === "receipt") expect(f.requests.filter((r) => r.op === "proof-read")).toHaveLength(0);
   });
 
   it("does not resume publication after a pending flush is superseded", async () => {
@@ -231,7 +210,7 @@ describe("AssistantSession accepted-revision proof", () => {
       release.resolve();
       expect(await outer).toEqual(nested);
       expect(f.session.getRunEndProof()).toEqual(nested);
-      expect(f.requests.filter((r) => r.method === "GET")).toHaveLength(0);
+      expect(f.requests.filter((r) => r.op === "proof-read")).toHaveLength(0);
       expect(f.savedAudits()).toHaveLength(0);
     } finally {
       release.resolve();
@@ -248,55 +227,55 @@ describe("AssistantSession accepted-revision proof", () => {
   ])("keeps newer $newer proof when an overlapping read ends $older", async ({ newer, older }) => {
     const f = await fixture();
     const started = Promise.withResolvers<void>();
-    const reply = Promise.withResolvers<Response>();
+    const reply = Promise.withResolvers<ProjectSnapshot | null>();
     const controller = new AbortController();
     f.setRead(() => { started.resolve(); return reply.promise; });
     const outer = f.session.proveAppliedRevision(() => {}, controller.signal);
     try {
       await waitForSignal(started.promise);
-      const row = structuredClone(f.row());
-      f.setRead(async () => Response.json([f.row()]));
+      const row = await f.snapshot();
+      f.setRead(undefined);
       const nextController = new AbortController();
       if (newer === "cancelled") nextController.abort();
       const nested = await f.session.proveAppliedRevision(() => {}, nextController.signal);
       expect(nested).toMatchObject({ status: newer === "cancelled" ? "failed" : "succeeded", verified: newer === "succeeded" });
       if (older === "cancelled") controller.abort();
-      if (older === "mismatch") row.current_json.meta.title = "old-read-mismatch";
-      reply.resolve(Response.json([row]));
+      if (older === "mismatch") row.project.meta.title = "old-read-mismatch";
+      reply.resolve(row);
       expect(await outer).toEqual(nested);
       expect(f.session.getRunEndProof()).toEqual(nested);
       expect(f.savedAudits()).toHaveLength(newer === "succeeded" ? 1 : 0);
       expect(f.session.getAuditEntries().filter((entry) => entry.kind === "status")).toHaveLength(1);
     } finally {
-      reply.resolve(Response.json([f.row()]));
+      reply.resolve(await f.snapshot());
       await outer;
     }
   }, 60_000);
 
   it("does not claim verified after a failed proof read through actual session completion", async () => {
     const f = await fixture();
-    f.setRead(async () => new Response("unavailable", { status: 503 }));
+    f.setRead(unavailable);
     const result = await f.run();
     expect(result.appliedCalls?.map((call) => call.name)).toEqual(["set_title_screen"]);
     expect(f.session.getHarnessSnapshot().workPlan?.layers[0]?.items[0]?.status).toBe("done");
-    expect(f.requests.filter((r) => r.path === "/rest/v1/projects" && r.method === "GET")).toHaveLength(1);
+    expect(f.requests.filter((r) => r.op === "proof-read")).toHaveLength(1);
     expect(f.savedAudits()).toHaveLength(0);
     expect(f.session.getRunEndProof()).toMatchObject({ status: "failed", verified: false, reason: "failed" });
   }, 60_000);
 
   it("retries failed proof for the same plan/revision, deduplicates success, and reproves a changed revision", async () => {
     const f = await fixture();
-    f.setRead(async () => new Response("unavailable", { status: 503 }));
+    f.setRead(unavailable);
     await f.run();
     const receipt = f.session.getRunEndProof()?.receipt;
     expect(receipt?.projectId).toBe(projectId);
-    f.setRead(async () => Response.json([f.row()]));
+    f.setRead(undefined);
     // The user completion entry point, not a private proof method, retries the completed plan.
     await f.run();
     expect(f.session.getRunEndProof()).toMatchObject({ status: "succeeded", verified: true, receipt });
     expect(f.session.getRunEndProof()?.receipt).toBe(receipt);
-    expect(f.requests.filter((r) => r.path === "/rest/v1/projects" && r.method === "GET")).toHaveLength(2);
-    expect(f.requests.filter((r) => r.path === "/rest/v1/projects" && r.method !== "GET")).toHaveLength(1);
+    expect(f.requests.filter((r) => r.op === "proof-read")).toHaveLength(2);
+    expect(f.requests.filter((r) => r.op === "save" || r.op === "save-map-patch")).toHaveLength(1);
     const requests = f.requests.length;
     await f.session.proveAppliedRevision();
     expect(f.requests).toHaveLength(requests);
@@ -312,21 +291,21 @@ describe("AssistantSession accepted-revision proof", () => {
     const f = await fixture();
     const controller = new AbortController();
     const started = Promise.withResolvers<void>();
-    const reply = Promise.withResolvers<Response>();
+    const reply = Promise.withResolvers<ProjectSnapshot | null>();
     f.setRead(() => { started.resolve(); return reply.promise; });
     const reload = vi.spyOn(f.store, "reloadFromRemote");
     const running = f.run(() => {}, controller.signal);
     try {
       await waitForSignal(started.promise);
       expect(f.session.getRunEndProof()).toMatchObject({ status: "attempted", verified: false });
-      const row = structuredClone(f.row());
+      const row = await f.snapshot();
       if (failure === "cancelled") controller.abort();
       if (failure === "disabled") f.store._setPersistenceStateForTest({ loaded: true, remotePersistenceEnabled: false });
-      if (failure === "target") row.project_id = "other-project";
-      if (failure === "content") row.current_json.meta.title = "other-content";
+      if (failure === "target") (row as { projectId: string | null }).projectId = "other-project";
+      if (failure === "content") row.project.meta.title = "other-content";
       if (failure === "local-edit") f.store.update((draft) => { draft.meta.title = "human-edit"; });
       const live = f.store.getCurrent();
-      reply.resolve(Response.json([row]));
+      reply.resolve(row);
       await running;
       expect(f.savedAudits()).toHaveLength(0);
       expect(f.session.getRunEndProof()).toMatchObject({ status: "failed", verified: false,
@@ -339,7 +318,7 @@ describe("AssistantSession accepted-revision proof", () => {
         expect(f.session.getRunEndProof()?.proof).toMatchObject({ kind: "verified", isCurrent: false });
       }
     } finally {
-      reply.resolve(Response.json([]));
+      reply.resolve(null);
       await running;
     }
   }, 60_000);
@@ -350,12 +329,12 @@ describe("AssistantSession accepted-revision proof", () => {
     const proof = f.session.getRunEndProof();
     expect(proof).toMatchObject({ status: "succeeded", verified: true, commitId: f.commits[0] });
     expect(proof?.commitId).toMatch(/^[a-f0-9-]{36}$/);
-    expect(f.requests.filter((r) => r.path === "/rest/v1/project_commits" && r.method === "GET")).toHaveLength(0);
+    expect(f.requests.filter((r) => r.op === "commit-list")).toHaveLength(0);
   });
 
   it("project proof can succeed when the separate commit log fails", async () => {
     const f = await fixture();
-    f.setCommit(async () => new Response("unavailable", { status: 503 }));
+    f.setCommit(unavailable);
     await f.run();
     expect(f.session.getRunEndProof()).toMatchObject({ status: "succeeded", verified: true, commitId: null });
     expect(f.savedAudits()).toHaveLength(1);
@@ -384,14 +363,14 @@ describe("AssistantSession accepted-revision proof", () => {
     expect(result.review?.status).toBe("approved");
     expect(f.commits).toHaveLength(0);
     const started = Promise.withResolvers<void>();
-    const reply = Promise.withResolvers<Response>();
+    const reply = Promise.withResolvers<void>();
     f.setCommit(() => { started.resolve(); return reply.promise; });
     const { applyProposedProject } = await import("@/editor/tools/applyChangesetToStore");
     const applying = applyProposedProject(f.session.getProposedProject(), { base: f.session.getProposalBase(), baseline: f.session.getDraftBaseline(), source: "agent", summary: "title", toolNames: ["set_title_screen"] });
     try {
       await waitForSignal(started.promise);
       f.store.update((draft) => { draft.meta.title = "human-during-commit"; });
-      reply.resolve(Response.json([]));
+      reply.resolve();
       const applied = await applying;
       if (!applied.ok) throw new Error(applied.issue);
       expect(applied.commitProject).not.toBe(f.store.getCurrent());
@@ -399,20 +378,20 @@ describe("AssistantSession accepted-revision proof", () => {
       expect(await f.session.proveAppliedRevision()).toMatchObject({ status: "succeeded", verified: true, commitId: null });
       expect(f.store.getCurrent().meta.title).toBe("human-during-commit");
     } finally {
-      reply.resolve(Response.json([]));
+      reply.resolve();
       await applying;
     }
   }, 60_000);
 
   it("retryLastTurn retries failed proof without replaying the LLM or applied tools", async () => {
     const f = await fixture();
-    f.setRead(async () => new Response("unavailable", { status: 503 }));
+    f.setRead(unavailable);
     expect((await f.run()).stoppedReason).toBe("final");
     expect(f.session.getRunEndProof()).toMatchObject({ status: "failed", verified: false, reason: "failed" });
     const receipt = f.session.getRunEndProof()?.receipt;
     expect(receipt?.projectId).toBe(projectId);
     const chats = f.chatCalls();
-    f.setRead(async () => Response.json([f.row()]));
+    f.setRead(undefined);
     await f.session.retryLastTurn();
     expect(f.session.getRunEndProof()).toMatchObject({ status: "succeeded", verified: true, receipt });
     expect(f.chatCalls()).toBe(chats);
@@ -422,7 +401,7 @@ describe("AssistantSession accepted-revision proof", () => {
   it.each(["pending", "applied"] as const)("retryLastTurn proves %s milestones after a recovered LLM failure without replaying tools", async state => {
     const f = await fixture();
     if (state === "applied") {
-      f.setRead(async () => new Response("unavailable", { status: 503 }));
+      f.setRead(unavailable);
       expect((await f.run()).appliedCalls?.map(call => call.name)).toEqual(["set_title_screen"]);
       expect(f.session.getRunEndProof()).toMatchObject({ status: "failed", verified: false });
       expect(f.commits).toHaveLength(1);
@@ -434,7 +413,7 @@ describe("AssistantSession accepted-revision proof", () => {
     // Without independent review the completed item remains detached; earlier approved work is retained.
     expect(f.commits).toHaveLength(state === "pending" ? 0 : 1);
     if (state === "pending") expect(f.session.getRunEndProof()).toBeNull();
-    f.setRead(async () => Response.json([f.row()]));
+    f.setRead(undefined);
     const events: string[] = [];
     const recovered = await f.session.retryLastTurn(event => { events.push(event.type); });
     expect(recovered.stoppedReason, recovered.error).toBe("final");
