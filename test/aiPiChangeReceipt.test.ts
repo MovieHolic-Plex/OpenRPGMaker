@@ -1,6 +1,6 @@
 // Pi 경로의 적용 영수증 — 조수 세션이 남기던 그 카드(지금 → 적용 후)가 Pi 로 옮겨온 배선.
 //
-// 카드 자체의 렌더는 `aiChangePreview` 테스트가, 명령 내부는 `piAgentCommand` 테스트가 본다.
+// 2026-10 #2651 이후 영수증은 대화 속 인라인 작업 카드(aiInlineWorkCard)에 붙는다. 카드 자체의 렌더는 `aiChangePreview` 테스트가, 명령 내부는 `piAgentCommand` 테스트가 본다.
 // 여기서 보는 것은 하나다: **패널이 명령의 영수증 훅을 받아 로그에 카드를 남기는가**.
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { clearConversations } from "@/ai/conversationStore";
@@ -8,7 +8,6 @@ import { AI_CONFIG_STORAGE_KEY, defaultAiConfig } from "@/ai/llmClient";
 import { editorState } from "@/editor/editorState";
 import { renderAiChatPanel, teardownAiChatPanel } from "@/editor/panels/aiChatPanel";
 import { runPiCommand, type PiChangeReceipt } from "@/editor/panels/aiPiAgentCommand";
-import { getAiWorkStripElement, resetAiWorkStripForTest } from "@/editor/panels/aiWorkStrip";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
 import { findByTestId, installFakeDom, type FakeElement } from "./fakeDom";
@@ -58,7 +57,6 @@ beforeEach(() => {
 
 afterEach(async () => {
   teardownAiChatPanel();
-  resetAiWorkStripForTest();
   await clearConversations();
   restoreDom?.();
   restoreDom = null;
@@ -76,13 +74,21 @@ async function startTurn(panel: FakeElement, text: string): Promise<void> {
 
 const lastSurface = () => vi.mocked(runPiCommand).mock.calls.at(-1)?.[1];
 
-/** 영수증은 로그가 아니라 작업 띠 카드에 붙는다(방향 G). 카드를 펼치면 변경 카드가 그려진다. */
-function openWorkCard(): FakeElement {
-  const strip = getAiWorkStripElement() as unknown as FakeElement | null;
-  const card = strip ? findByTestId(strip, "ai-work-card") : null;
+/** #2651: 영수증은 문서 단위 작업 띠가 아니라 대화 속 인라인 작업 카드에 붙는다. 카드는 패널 대화 로그에 있다. */
+function inlineWorkCard(panel: FakeElement): FakeElement {
+  const card = findByTestId(panel, "ai-work-card");
   if (!card) throw new Error("작업 카드가 없다");
-  card.querySelector(".ai-work-card-body")!.click();
   return card;
+}
+
+/** 인라인 카드의 「변경 보기」는 넓은 비교 창(지금 / 적용 후)을 문서에 띄운다. */
+function openChangeViewer(card: FakeElement): FakeElement {
+  const view = findByTestId(card, "ai-inline-change-view");
+  if (!view) throw new Error("변경 보기 단추가 없다");
+  view.click();
+  const wide = findByTestId(document.body as unknown as FakeElement, "ai-change-wide");
+  if (!wide) throw new Error("넓은 비교 창이 없다");
+  return wide;
 }
 
 describe("Pi 적용 영수증", () => {
@@ -94,7 +100,7 @@ describe("Pi 적용 영수증", () => {
     expect(typeof lastSurface()?.showChangeReceipt).toBe("function");
   });
 
-  it("영수증이 오면 작업 띠 카드가 생기고, 펼치면 지금/적용 후 카드가 그려진다", async () => {
+  it("영수증이 오면 대화 속 작업 카드에 변경 요약과 되돌리기가 붙고, 변경 보기는 지금/적용 후를 띄운다", async () => {
     const panel = renderAiChatPanel({ clock: () => 37_000 }) as unknown as FakeElement;
     await startTurn(panel, "집 한 채 지어줘");
     const before = store.getCurrent();
@@ -114,19 +120,18 @@ describe("Pi 적용 영수증", () => {
 
     lastSurface()?.showChangeReceipt?.(receipt);
 
-    // 대화 창에는 카드가 없다 — 말풍선만 남긴다.
+    // 대화 창에는 옛 변경 카드가 없다 — 영수증은 인라인 작업 카드의 줄과 단추다(#2651).
     expect(findByTestId(panel, "ai-change-card")).toBeNull();
-    const work = openWorkCard();
-    expect(work.querySelector(".ai-work-card-title")?.textContent).toBe("Pi 에이전트 1개 — map_a");
-    expect(findByTestId(work, "ai-work-card-undo")).not.toBeNull();
-    const card = findByTestId(work, "ai-change-card");
-    expect(card).not.toBeNull();
-    expect(card?.querySelector(".ai-change-title")?.textContent).toBe("Pi 에이전트 1개 — map_a");
-    expect(card?.querySelector(".ai-change-chip")?.textContent).toBe("타일 48");
-    const labels = card?.querySelectorAll(".ai-change-shot-label").map((node) => node.textContent);
+    const work = inlineWorkCard(panel);
+    expect(findByTestId(work, "ai-work-card-changed")?.textContent).toBe("타일 48");
+    const undo = work.querySelectorAll("button").find((button) => button.textContent === "이 작업 되돌리기");
+    expect(undo).toBeDefined();
+    const wide = openChangeViewer(work);
+    expect(wide.querySelector(".ai-change-wide-title")?.textContent).toBe("Pi 에이전트 1개 — map_a");
+    expect(wide.querySelector(".ai-change-chip")?.textContent).toBe("타일 48");
+    const labels = wide.querySelectorAll(".ai-change-shot-label").map((node) => node.textContent);
     expect(labels).toEqual(["지금", "적용 후"]);
-    expect(card?.dataset.state).toBe("applied");
-    expect(findByTestId(work, "ai-change-undo")).not.toBeNull();
+    findByTestId(wide, "ai-change-wide-close")?.click();
   });
 
   it("지도 그림이 같은 영수증은 두 장 대신 사실 한 줄을 남긴다", async () => {
@@ -146,15 +151,14 @@ describe("Pi 적용 영수증", () => {
 
     lastSurface()?.showChangeReceipt?.(receipt);
 
-    const work = openWorkCard();
-    const card = findByTestId(work, "ai-change-card");
-    expect(card).not.toBeNull();
-    expect(card?.querySelector(".ai-change-chip")?.textContent).toBe("퀘스트");
-    expect(findByTestId(card!, "ai-change-pair")).toBeNull();
-    expect(findByTestId(card!, "ai-change-word-diff")).not.toBeNull();
+    const wide = openChangeViewer(inlineWorkCard(panel));
+    expect(wide.querySelector(".ai-change-chip")?.textContent).toBe("퀘스트");
+    expect(wide.querySelectorAll(".ai-change-shot-label")).toHaveLength(0);
+    expect(findByTestId(wide, "ai-change-word-diff")).not.toBeNull();
+    findByTestId(wide, "ai-change-wide-close")?.click();
   });
 
-  it("맵이 안 바뀐 영수증은 카드를 만들지 않는다", async () => {
+  it("맵이 안 바뀐 영수증은 변경 영수증을 붙이지 않는다", async () => {
     // 칩만 남은 가짜 카드는 "여기를 봐라" 하는 거짓 표시가 된다 — 그릴 영역이 없으면 만들지 않는다.
     const panel = renderAiChatPanel({ clock: () => 37_000 }) as unknown as FakeElement;
     await startTurn(panel, "이벤트가 몇 개지?");
@@ -171,7 +175,6 @@ describe("Pi 적용 영수증", () => {
     });
 
     expect(findByTestId(panel, "ai-change-card")).toBeNull();
-    const strip = getAiWorkStripElement() as unknown as FakeElement | null;
-    expect(strip ? findByTestId(strip, "ai-work-card") : null).toBeNull();
+    expect(findByTestId(panel, "ai-inline-change-view")).toBeNull();
   });
 });
