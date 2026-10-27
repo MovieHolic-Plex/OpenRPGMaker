@@ -25,6 +25,7 @@ import { dialogueModeToggle, renderStoryScriptView } from "@/editor/panels/datab
 import type { Project } from "@/project/types";
 import { el } from "@/util/dom";
 import { toast } from "@/util/toast";
+import { showConfirm } from "@/editor/ui/modal";
 
 type KindFilter = "all" | "line" | "choice" | "description" | "quest";
 
@@ -36,10 +37,17 @@ interface ViewState {
   kind: KindFilter;
   overflowOnly: boolean;
   limit: number;
+  proposalLimit: number;
 }
 
 const PAGE = 250;
-const state: ViewState = { mode: "script", query: "", speaker: "", mapId: "", kind: "all", overflowOnly: false, limit: PAGE };
+/**
+ * 제안 카드는 한 번에 이만큼만 그린다. 예전에는 카드 목록에 따로 max-height 스크롤을 두어
+ * 바깥 상세 창 스크롤 안에 스크롤이 겹쳤고, 마지막 카드의 받기·버리기가 아래에서 잘려 보였다(2026-10-27 검수).
+ * 이제 목록은 바깥 창 하나로만 스크롤하고, 길면 「제안 더 보기」로 늘린다.
+ */
+const PROPOSAL_PAGE = 8;
+const state: ViewState = { mode: "script", query: "", speaker: "", mapId: "", kind: "all", overflowOnly: false, limit: PAGE, proposalLimit: PROPOSAL_PAGE };
 
 let latestRerender: (() => void) | null = null;
 let subscribed = false;
@@ -89,9 +97,21 @@ function renderProposals(project: Project, lines: readonly DialogueLine[], reren
     return !state.speaker || line?.speaker === state.speaker;
   });
   if (visible.length === 0) return null;
-  const freshIds = visible.filter((proposal) => byId.get(proposal.lineId)?.hash === proposal.baseHash).map((proposal) => proposal.id);
+  const fresh = visible.filter((proposal) => byId.get(proposal.lineId)?.hash === proposal.baseHash);
+  const freshIds = fresh.map((proposal) => proposal.id);
   const instructions = [...new Set(visible.map((proposal) => proposal.instruction).filter((value): value is string => Boolean(value)))];
-  const acceptAll = (): void => {
+  const acceptAll = async (): Promise<void> => {
+    if (freshIds.length === 0) return;
+    const staleCount = visible.length - freshIds.length;
+    const places = new Set(fresh.map((proposal) => byId.get(proposal.lineId)?.groupKey)).size;
+    const confirmed = await showConfirm({
+      title: "윤문 제안 모두 받기",
+      message: `게임 대사 ${freshIds.length}줄(${places}곳)이 제안한 글로 바뀝니다.`
+        + (staleCount > 0 ? ` 원문이 바뀐 ${staleCount}줄은 받지 않고 남겨 둡니다.` : "")
+        + " 받은 뒤에도 되돌리기로 되돌릴 수 있습니다.",
+      confirmLabel: `${freshIds.length}줄 받기`,
+    });
+    if (!confirmed) return;
     const outcome = acceptDialogueProposals(freshIds);
     toast(outcome.failed.length
       ? `${outcome.accepted.length}줄 받음 · ${outcome.failed.length}줄은 원문이 바뀌어 남겨 둠`
@@ -103,7 +123,17 @@ function renderProposals(project: Project, lines: readonly DialogueLine[], reren
     toast(`윤문 제안 ${count}줄을 버렸습니다.`, "info");
     rerender();
   };
-  const rows = visible.map((proposal) => renderProposalRow(proposal, byId.get(proposal.lineId), project, rerender));
+  const shownProposals = visible.slice(0, state.proposalLimit);
+  const rows = shownProposals.map((proposal) => renderProposalRow(proposal, byId.get(proposal.lineId), project, rerender));
+  const moreProposals = visible.length > shownProposals.length
+    ? el("button", {
+      class: "db-ws-btn db-ws-btn-ghost db-dialogue-more",
+      text: `제안 더 보기 (${visible.length - shownProposals.length}줄 남음)`,
+      attrs: { type: "button" },
+      dataset: { testid: "db-dialogue-proposals-more" },
+      on: { click: () => { state.proposalLimit += PROPOSAL_PAGE; rerender(); } },
+    })
+    : null;
   return el("section", {
     class: "db-dialogue-proposals",
     dataset: { testid: "db-dialogue-proposals" },
@@ -128,13 +158,14 @@ function renderProposals(project: Project, lines: readonly DialogueLine[], reren
                 text: `모두 받기 (${freshIds.length})`,
                 attrs: { type: "button", ...(freshIds.length === 0 ? { disabled: "true" } : {}) },
                 dataset: { testid: "db-dialogue-accept-all" },
-                on: { click: acceptAll },
+                on: { click: () => { void acceptAll(); } },
               }),
             ],
           }),
         ],
       }),
       el("div", { class: "db-dialogue-proposal-list", children: rows }),
+      ...(moreProposals ? [moreProposals] : []),
     ],
   });
 }
@@ -288,10 +319,10 @@ export function renderDialogueTab(host: HTMLElement, panelRoot: HTMLElement, rer
   const speakerRows = [
     listRow({
       name: "모든 화자",
-      sub: `${lines.length}줄`,
+      sub: `글 ${lines.length}줄`,
       active: !state.speaker,
       testid: "db-dialogue-speaker-all",
-      onSelect: () => { state.speaker = ""; state.limit = PAGE; rerender(); },
+      onSelect: () => { state.speaker = ""; state.limit = PAGE; state.proposalLimit = PROPOSAL_PAGE; rerender(); },
     }),
     ...speakers.map(({ speaker, count }) => listRow({
       name: speaker,
@@ -300,7 +331,7 @@ export function renderDialogueTab(host: HTMLElement, panelRoot: HTMLElement, rer
       title: speakerVoiceNote(project, speaker) ?? speaker,
       dataset: { speaker },
       testid: "db-dialogue-speaker-row",
-      onSelect: () => { state.speaker = speaker; state.limit = PAGE; rerender(); },
+      onSelect: () => { state.speaker = speaker; state.limit = PAGE; state.proposalLimit = PROPOSAL_PAGE; rerender(); },
     })),
   ];
   const list = listPane({
@@ -399,13 +430,17 @@ export function renderDialogueTab(host: HTMLElement, panelRoot: HTMLElement, rer
     })
     : null;
 
+  // 레일 배지(dialogueTabCount)는 대사·선택지만 센다. 머리글은 같은 숫자를 「대사」로 먼저 보이고,
+  // 설명·퀘스트 글을 따로 적어 두 숫자가 어긋나 보이지 않게 한다(2026-10-27 검수: 배지 1518 · 머리 3956).
+  const spokenCount = dialogueTabCount(project);
+  const otherCount = Math.max(0, lines.length - spokenCount);
   const speakerCount = state.speaker ? speakers.find((entry) => entry.speaker === state.speaker)?.count ?? 0 : 0;
   const proposals = renderProposals(project, lines, rerender);
   const detail = detailPane({
     hero: detailHero({
       eyebrow: "이야기",
       title: state.speaker ? `${state.speaker}의 대사` : "대사",
-      subtitle: `${lines.length}줄 · 화자 ${speakers.length}명 · 창 넘침 ${overflowCount}줄${desk.proposals.length ? ` · 윤문 제안 ${desk.proposals.length}줄` : ""}`,
+      subtitle: `대사·선택지 ${spokenCount}줄${otherCount ? ` · 설명·퀘스트 글 ${otherCount}줄` : ""} · 화자 ${speakers.length}명 · 창 넘침 ${overflowCount}줄${desk.proposals.length ? ` · 윤문 제안 ${desk.proposals.length}줄` : ""}`,
       testid: "db-dialogue-hero",
     }),
     body: [
