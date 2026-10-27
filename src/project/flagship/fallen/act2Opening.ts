@@ -186,7 +186,26 @@ function openGate(map: GameMap, at: Cell): Command[] {
 // 0. 데이터 — 스위치·물건·일지
 // ════════════════════════════════════════════════════════════════════
 
+/** 밤 순찰 병사(1막 병사 판을 세게) — B1 막사 경비(들키면 싸움)와 B2 통금 순찰대가 같이 쓴다. */
+function nightSoldiers(project: Project, exec: Exec): void {
+  // 통금 순찰대 — 1막 병사보다 한참 세다(들키면 아프다). 1막 레코드는 그대로 두고 밤 순찰 판을 따로 둔다.
+  // 시작 레벨(9) 모의전 60회: 승률 1.0 · 남은 HP 약 35% · 회복약 약 0.9개(2026-10-27).
+  for (const [baseId, id, name, stats] of [
+    ["enemy_fs_valen_soldier", "enemy_fs2_night_soldier", "통금 순찰 병사", { maxHp: 260, maxMp: 0, attack: 92, defense: 40, mind: 10, agility: 50 }],
+    ["enemy_fs_valen_spearman", "enemy_fs2_night_spearman", "통금 순찰 창병", { maxHp: 220, maxMp: 0, attack: 98, defense: 32, mind: 10, agility: 60 }],
+  ] as const) {
+    const base = project.database.enemies.find((e) => e.id === baseId);
+    if (!base) throw new Error(`[fallen-star act2] ${baseId} 가 없다`);
+    const rec: Rec = { ...(JSON.parse(JSON.stringify(base)) as Rec), id, name, level: 9, stats };
+    for (const key of Object.keys(rec)) if (!ENEMY_TOOL_FIELDS.has(key)) delete rec[key];
+    exec(project, "upsert_enemy", { enemy: rec });
+  }
+  exec(project, "upsert_troop", { troop: { id: FS2_BARRACKS_GUARDS, name: "초소 경비", enemyIds: ["enemy_fs2_night_soldier", "enemy_fs2_night_spearman"] } });
+}
+const FS2_BARRACKS_GUARDS = "troop_fs2_barracks_guards";
+
 function database(project: Project, exec: Exec): void {
+  nightSoldiers(project, exec);
   for (const [id, name] of [
     [SW_ACT2, "제2막 시작"], [SW_BREAD, "B1: 리노가 빵을 넣어 줌"], [SW_KEY, "B1: 빵 속 열쇠"], [SW_CELL_OPEN, "B1: 감방 쇠살문 열림"],
     [SW_OUT, "B1: 초소를 빠져나옴"],
@@ -338,6 +357,8 @@ function barracks(project: Project, exec: Exec): void {
     solveSwitchId: SW_BARRACKS,
     hintText: "근무표: 「붉은 초소는 붉은 깃발 종에, 푸른 초소는 푸른 깃발 종에 응답할 것.\n등불이 비추는 곳으로는 아무도 지나가지 말 것.」",
     reward: { itemId: FS2_GEAR_ITEM, itemName: "압수품 꾸러미", itemDescription: "초소에 빼앗겼던 짐. 카엘의 검과 엘레나의 책이 그대로 있다." },
+    // 들키면 경비 둘과 싸우고(도망 불가) 감방으로 다시 끌려간다 — 실수에 값을 치른다.
+    failPenalty: { troopId: FS2_BARRACKS_GUARDS, sendTo: { mapId: FS2_CELL_ID, x: CELL.arrive.x, y: CELL.arrive.y }, text: "경비병: 「거기 누구냐! 탈옥수다!」 — 등불에 들켰다." },
   });
   // 북동 벽 사다리 — 광장 초소 뒷골목으로. 압수품을 되찾기 전엔 「짐부터」.
   exec(project, "stamp_object", { objectId: "kit:atlas_biome_interior/hand-interior:ship ladder", mapId: FS2_BARRACKS_ID, x: BARRACKS.ladder.x, y: BARRACKS.ladder.y });
@@ -426,7 +447,7 @@ function hubChip(project: Project, hubId: string, eventId: string): { textureKey
 function curfewHub(project: Project, exec: Exec, hubId: string): void {
   for (const [id, name] of [[SW_SPOON, "B2: 토비의 은수저"], [SW_CARRIAGE, "B2: 마르타 — 쇠 마차 북문으로"], [SW_MIRE, "B2: 미레 — 우물 길"]] as const) ensureSwitch(project, id, name);
   exec(project, "upsert_troop", { troop: {
-    id: FS2_PATROL_TROOP, name: "통금 순찰대", enemyIds: ["enemy_fs_valen_soldier", "enemy_fs_valen_spearman", "enemy_fs_valen_soldier"],
+    id: FS2_PATROL_TROOP, name: "통금 순찰대", enemyIds: ["enemy_fs2_night_soldier", "enemy_fs2_night_spearman", "enemy_fs2_night_soldier"],
   } });
   // 점령된 밤의 광장은 「필드」다 — 마을 판정이면 보이는 적을 거절한다(set_map_properties mapRole).
   exec(project, "set_map_properties", { mapId: FS2_HUB_NIGHT_ID, mapRole: "field" });
@@ -737,18 +758,19 @@ const SW_MEMS = ["sw_fs2_dawn_mem_0", "sw_fs2_dawn_mem_1", "sw_fs2_dawn_mem_2"] 
 const SAVE_CRYSTAL = "kit:beodeul_city/bd-pick-dungeon-theme-crystal-pedestal";
 /** 재의 들판 적 — 이미 있는 몬스터 도트를 쓴다(새 그림 없음; graphicHue 는 전투가 읽지 않아 색은 원래대로). */
 const ASH_FOES: { id: string; name: string; art: string; hue: number; stats: Rec; style: string; elementRates?: Rec; skills: string[] }[] = [
-  { id: "enemy_fs2_ash_wisp", name: "잿불 도깨비", art: "generated-enemy-spirit-fire", hue: 200, style: "float", stats: { maxHp: 180, maxMp: 40, attack: 74, defense: 24, mind: 80, agility: 52 }, elementRates: { fire: "E", ice: "A", water: "A" }, skills: ["skill_attack", "skill_mon_frost_orb"] },
-  { id: "enemy_fs2_ash_crow", name: "재까마귀", art: "generated-enemy-bird-hawk", hue: 220, style: "swoop", stats: { maxHp: 120, maxMp: 0, attack: 70, defense: 18, mind: 20, agility: 70 }, skills: ["skill_attack"] },
-  { id: "enemy_fs2_cinder_golem", name: "숯덩이 골렘", art: "generated-enemy-golem-clay", hue: 240, style: "lumber", stats: { maxHp: 420, maxMp: 0, attack: 82, defense: 80, mind: 20, agility: 18 }, elementRates: { fire: "E", water: "A" }, skills: ["skill_attack", "skill_earth"] },
-  { id: "enemy_fs2_starved_dog", name: "굶은 들개", art: "generated-enemy-hound-hell", hue: 150, style: "dash", stats: { maxHp: 150, maxMp: 0, attack: 72, defense: 20, mind: 20, agility: 62 }, skills: ["skill_attack"] },
-  { id: "enemy_fs2_ash_snake", name: "재뱀", art: "generated-enemy-snake-viper", hue: 210, style: "slither", stats: { maxHp: 160, maxMp: 0, attack: 70, defense: 26, mind: 30, agility: 48 }, skills: ["skill_attack"] },
+  { id: "enemy_fs2_ash_wisp", name: "잿불 도깨비", art: "generated-enemy-spirit-fire", hue: 200, style: "float", stats: { maxHp: 260, maxMp: 40, attack: 90, defense: 24, mind: 100, agility: 52 }, elementRates: { fire: "E", ice: "A", water: "A" }, skills: ["skill_attack", "skill_mon_frost_orb"] },
+  { id: "enemy_fs2_ash_crow", name: "재까마귀", art: "generated-enemy-bird-hawk", hue: 220, style: "swoop", stats: { maxHp: 190, maxMp: 0, attack: 92, defense: 24, mind: 20, agility: 80 }, skills: ["skill_attack"] },
+  { id: "enemy_fs2_cinder_golem", name: "숯덩이 골렘", art: "generated-enemy-golem-clay", hue: 240, style: "lumber", stats: { maxHp: 900, maxMp: 0, attack: 165, defense: 90, mind: 80, agility: 34 }, elementRates: { fire: "E", water: "A" }, skills: ["skill_attack", "skill_earth"] },
+  { id: "enemy_fs2_starved_dog", name: "굶은 들개", art: "generated-enemy-hound-hell", hue: 150, style: "dash", stats: { maxHp: 220, maxMp: 0, attack: 88, defense: 30, mind: 20, agility: 70 }, skills: ["skill_attack"] },
+  { id: "enemy_fs2_ash_snake", name: "재뱀", art: "generated-enemy-snake-viper", hue: 210, style: "slither", stats: { maxHp: 260, maxMp: 0, attack: 94, defense: 36, mind: 30, agility: 48 }, skills: ["skill_attack"] },
 ];
+// 시작 레벨(10, 카엘·엘레나) 모의전 60회(기술 자동 전투, 2026-10-27): 들개 셋 승 1.0·남은 HP 35% · 까마귀 0.97·25% · 도깨비 0.97·32% · 재뱀 1.0·62% · 골렘 0.98·45%.
 const ASH_TROOPS: { id: string; name: string; members: string[] }[] = [
   { id: "troop_fs2_ash_wisps", name: "잿불 도깨비 떼", members: ["enemy_fs2_ash_wisp", "enemy_fs2_ash_wisp", "enemy_fs2_ash_wisp"] },
   { id: "troop_fs2_ash_crows", name: "재까마귀 떼", members: ["enemy_fs2_ash_crow", "enemy_fs2_ash_crow", "enemy_fs2_ash_crow"] },
   { id: "troop_fs2_cinder_golem", name: "숯덩이 골렘", members: ["enemy_fs2_cinder_golem", "enemy_fs2_ash_wisp"] },
-  { id: "troop_fs2_starved_dogs", name: "굶은 들개", members: ["enemy_fs2_starved_dog", "enemy_fs2_starved_dog"] },
-  { id: "troop_fs2_ash_snakes", name: "재뱀", members: ["enemy_fs2_ash_snake", "enemy_fs2_ash_snake"] },
+  { id: "troop_fs2_starved_dogs", name: "굶은 들개", members: ["enemy_fs2_starved_dog", "enemy_fs2_starved_dog", "enemy_fs2_starved_dog"] },
+  { id: "troop_fs2_ash_snakes", name: "재뱀", members: ["enemy_fs2_ash_snake", "enemy_fs2_ash_snake", "enemy_fs2_ash_crow"] },
 ];
 
 const ENEMY_TOOL_FIELDS = new Set(["id", "name", "speciesId", "monsterResourceId", "battleScalePercent", "collapseEffect", "hideHp", "damageTypeRates", "criticalHit", "attackOptions", "skillIds", "level", "stats", "rewards", "actions", "reactions", "stealItems", "stateRates", "elementRates"]);
@@ -760,7 +782,7 @@ function ashFoes(project: Project, exec: Exec): void {
     Object.assign(rec, {
       id: f.id, name: f.name, level: 10, monsterResourceId: f.art, stats: f.stats, skillIds: f.skills,
       actions: f.skills.map((skillId, i) => ({ skillId, priority: i === 0 ? 7 : 8, condition: { kind: "always" }, switchOnAfterAction: { enabled: false }, switchOffAfterAction: { enabled: false } })),
-      rewards: { exp: 70, gold: 18, dropRatePercent: 0, drops: [{ itemId: "item_potion", ratePercent: 20, quantity: 1, condition: { kind: "always" } }] },
+      rewards: { exp: 90, gold: 18, dropRatePercent: 0, drops: [{ itemId: "item_potion", ratePercent: 8, quantity: 1, condition: { kind: "always" } }] },
       ...(f.elementRates ? { elementRates: { ...(base as unknown as Rec).elementRates as Rec, ...f.elementRates } } : {}),
     });
     delete rec.lungeSpeedPercent;
@@ -930,14 +952,14 @@ function northFortress(project: Project, exec: Exec, hubId: string): void {
   const act = (skillId: string, priority: number) => ({ skillId, priority, condition: { kind: "always" }, switchOnAfterAction: { enabled: false }, switchOffAfterAction: { enabled: false } });
   copyEnemy("enemy_fs_valen_spearman", {
     id: FS2_SARAH_ENEMY, name: SARAH, level: 12, monsterResourceId: "charset-battler-actor1-3",
-    stats: { maxHp: 1300, maxMp: 60, attack: 86, defense: 46, mind: 30, agility: 64 },
+    stats: { maxHp: 680, maxMp: 60, attack: 62, defense: 46, mind: 30, agility: 64 },
     skillIds: ["skill_attack", "skill_dragoon_lance_thrust", "skill_fs_taunt"],
     actions: [act("skill_attack", 6), act("skill_dragoon_lance_thrust", 5), act("skill_fs_taunt", 3)],
     rewards: { exp: 420, gold: 0, dropRatePercent: 0, drops: [] },
   });
   copyEnemy("enemy_fs2_starved_dog", {
-    id: FS2_FORT_DOG, name: "요새 경비견", level: 11, stats: { maxHp: 210, maxMp: 0, attack: 76, defense: 26, mind: 20, agility: 68 },
-    rewards: { exp: 80, gold: 12, dropRatePercent: 0, drops: [{ itemId: "item_potion", ratePercent: 20, quantity: 1, condition: { kind: "always" } }] },
+    id: FS2_FORT_DOG, name: "요새 경비견", level: 11, stats: { maxHp: 330, maxMp: 0, attack: 102, defense: 36, mind: 20, agility: 74 },
+    rewards: { exp: 100, gold: 12, dropRatePercent: 0, drops: [{ itemId: "item_potion", ratePercent: 8, quantity: 1, condition: { kind: "always" } }] },
   });
   exec(project, "upsert_troop", { troop: { id: FS2_FORT_DOGS, name: "요새 경비견", enemyIds: [FS2_FORT_DOG, FS2_FORT_DOG] } });
   exec(project, "upsert_troop", { troop: { id: FS2_SARAH_TROOP, name: "성벽 위의 새라", enemyIds: [FS2_SARAH_ENEMY, FS2_FORT_DOG, FS2_FORT_DOG], uncapturable: true } });
@@ -1525,7 +1547,6 @@ function lanternNightEvents(project: Project): void {
       : page("ev_fs2_frost_innkeeper_night", "밤을 기다림", [sw(SW_HARMA)], [
         say("여관 주인 오사", "밤에 얼음 위로 나가려고요? 그럼 불 앞에서 몸부터 녹여요.\n…하르마 할머니가 등 얘기 했구나."),
         fadeOut(1000),
-        { kind: "recoverAll" } as unknown as Command,
         setSw(SW_NIGHT),
         narrate("해가 지고, 못 위에 등 하나가 떴다."),
         transfer(FS2_FROST_NIGHT_ID, front, "down"),
@@ -1551,7 +1572,9 @@ function lanternNightEvents(project: Project): void {
 /** B10 하늘탑 — 이번 비트에서는 문만(층·적·장치는 B10). 밤 서리나루 북쪽 끝에서 들어간다. */
 function skyTower(project: Project, exec: Exec): void {
   exec(project, "author_dungeon", {
-    type: "tower", adapter: "beodeul", genre: "rpg", name: "하늘탑", id: FS2_TOWER_ID, floors: 4, gimmick: "teleporter", populate: false,
+    // 위로 쌓는 탑: 1층 사방 곁방(기사와 기계의 싸움터, 마법진 한 쌍) · 2층 양 날개(파티가 갈라진다) · 3층 돌아 오르는 방(거울) · 4층 렌즈 대기실.
+    type: "tower", adapter: "beodeul", genre: "rpg", name: "하늘탑", id: FS2_TOWER_ID, floors: 4, direction: "up",
+    floorShapes: ["cross", "twin", "spiral", "ring"], floorGimmicks: ["teleporter", "none", "none"], gimmick: "none", populate: false,
     entrance: { fromMapId: FS2_FROST_NIGHT_ID, x: FS2_LAKE.gate.x, y: FS2_LAKE.gate.y }, seed: 91,
   });
   // 탑 문은 발렌과 이야기한 뒤에만 열린다(그 전에는 부딪혀도 한 줄만). 문 자리는 도구가 고른 칸.
@@ -1591,4 +1614,24 @@ export function applyFallenAct2Opening(project: Project, exec: Exec, ids: Fallen
   skyTower(project, exec);
   lanternNightEvents(project);
   fortressEvents(project);
+  detection(project, exec);
+}
+
+/**
+ * 알아채기·다가오기(set_field_detection). 2026-10-27 사용자 지시:
+ * - 필드 몬스터: 보면 약 3배 빨리 다가온다(보통 추격 480ms/칸 → 160ms/칸 = 주인공 걷기), 더 멀리서 알아본다(시야 8칸, 부채꼴 110°), 놀람 짧게.
+ * - 밤 순찰 병사: 더 넓게 찾고 더 예민하다 — 시야 8칸, 부채꼴 140°, 알아채면 0.25초 만에, 놓쳐도 7초 동안 뒤진다, 16칸까지 쫓는다.
+ */
+function detection(project: Project, exec: Exec): void {
+  const routeMaps = [...FS2_NORTH_ROUTE.mapIds, ...FS2_SNOW.mapIds];
+  const act2Maps = Object.keys(project.maps).filter((id) => id.startsWith("fs2_") || routeMaps.includes(id));
+  const patrolIds: string[] = []; const beastIds: string[] = [];
+  for (const id of act2Maps) for (const e of M(project, id).events) {
+    const pages = e.pages ?? [];
+    if (!pages.some((p) => p.movement?.type === "chase")) continue;
+    const troop = JSON.stringify(pages).match(/"troopId":"([^"]+)"/)?.[1];
+    (troop === FS2_PATROL_TROOP ? patrolIds : beastIds).push(e.id);
+  }
+  if (patrolIds.length) exec(project, "set_field_detection", { mapIds: act2Maps, eventIds: patrolIds, sightRange: 8, coneDegrees: 140, alertMs: 250, searchMs: 7000, giveUpRange: 16, chaseStepMs: 200 });
+  if (beastIds.length) exec(project, "set_field_detection", { mapIds: act2Maps, eventIds: beastIds, sightRange: 8, coneDegrees: 110, alertMs: 350, chaseStepMs: 160 });
 }

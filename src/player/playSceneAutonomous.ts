@@ -440,7 +440,8 @@ function updateChaseNpc(
   if (lunging) mover.timer = Math.max(mover.timer, mover.moveIntervalMs);
   // 다가오는 방식: 추격 중 칸 사이 쉼은 방식이 정한다(질주·육중은 쉬지 않음, 도약은 두 칸 뒤 웅크림, 통통은 매 칸 짧게).
   const styled = approach !== undefined && !mover.chaseTarget && tracked !== undefined && tracked !== null && !tracked.searching;
-  if (styled && !lunging) mover.timer = Math.max(mover.timer, mover.moveIntervalMs - (mover.approachPauseMs ?? 0));
+  // 저작한 추격 박자(chaseStepMs)가 있으면 방식이 쉼을 지우지 않는다 — 몸짓은 남고 빠르기는 그 값(speed·moveIntervalMs)이 정한다.
+  if (styled && !lunging && view.movement.chaseStepMs === undefined) mover.timer = Math.max(mover.timer, mover.moveIntervalMs - (mover.approachPauseMs ?? 0));
   if (!styled) { mover.approachStep = 0; mover.approachPauseMs = 0; }
   const pursuit = mover.chaseTarget ?? tracked ?? { x: scene.tileX, y: scene.tileY };
   const targetEvent = mover.chaseTarget

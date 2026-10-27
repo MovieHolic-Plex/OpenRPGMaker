@@ -522,6 +522,10 @@ function validatePageShape(label: string, value: unknown): void {
   }
   if (movement.sightRange !== undefined) requireNumber(`${label}.movement.sightRange`, movement.sightRange);
   if (movement.giveUpRange !== undefined) requireNumber(`${label}.movement.giveUpRange`, movement.giveUpRange);
+  if (movement.chaseStepMs !== undefined) {
+    const stepMs = requireNumber(`${label}.movement.chaseStepMs`, movement.chaseStepMs);
+    assert(Number.isFinite(stepMs) && stepMs >= 80 && stepMs <= 3000, `${label}: 추격 박자는 80~3000ms/칸`);
+  }
   if (movement.pathfind !== undefined) requireBoolean(`${label}.movement.pathfind`, movement.pathfind);
   if (movement.sightAlert !== undefined) {
     const alert = requireRecord(`${label}.movement.sightAlert`, movement.sightAlert);

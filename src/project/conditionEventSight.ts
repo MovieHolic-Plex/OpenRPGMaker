@@ -78,13 +78,19 @@ export function shareRoom(locations: readonly SightLocation[] | undefined, a: { 
   return false;
 }
 
-/** from 이 dir 을 볼 때 to 가 정면 90° 부채꼴 안에 있는가(옆으로 벌어진 폭 ≤ 앞으로 간 거리). */
-export function inViewCone(from: { x: number; y: number }, dir: Dir, to: { x: number; y: number }): boolean {
+/**
+ * from 이 dir 을 볼 때 to 가 정면 부채꼴 안에 있는가. 기본 90°(옆으로 벌어진 폭 ≤ 앞으로 간 거리).
+ * degrees 를 주면 그 각(30~180)으로 — 180° 는 앞쪽 반평면 전부(바로 옆 줄 포함).
+ */
+export function inViewCone(from: { x: number; y: number }, dir: Dir, to: { x: number; y: number }, degrees = 90): boolean {
   const d = DELTA[dir];
   const forward = (to.x - from.x) * d.dx + (to.y - from.y) * d.dy;
   const lateral = Math.abs((to.x - from.x) * d.dy - (to.y - from.y) * d.dx);
   if (forward === 0 && lateral === 0) return true;
-  return forward > 0 && lateral <= forward;
+  const deg = Number.isFinite(degrees) ? Math.min(180, Math.max(30, degrees)) : 90;
+  if (deg >= 180) return forward >= 0;
+  if (deg === 90) return forward > 0 && lateral <= forward;
+  return forward > 0 && lateral <= forward * Math.tan((deg / 2) * Math.PI / 180) + 1e-9;
 }
 
 /** from→to 슈퍼커버 광선이 지나는 칸(양 끝 제외). 대각 모서리를 스치면 두 옆 칸을 모두 넣는다. */

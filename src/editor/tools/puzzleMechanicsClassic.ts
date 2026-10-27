@@ -690,14 +690,19 @@ export const guardPostStealth: MechanicDef = {
     const sightIndex = (): Command[] =>
       // 시야 그림 = 돌아선 경비 비트(0..3)
       [ifSw(swTurned[0]!, true, [ifSw(swTurned[1]!, true, b.room.set("sight", 3), b.room.set("sight", 1))], [ifSw(swTurned[1]!, true, b.room.set("sight", 2), b.room.set("sight", 0))])];
+    const penalty = ctx.failPenalty;
     const caught = (gi: number): Command[] => [
       { kind: "showEmote", target: { eventId: guardIds[gi]! }, emote: "exclamation", durationMs: 700 },
       sfx("wrong"),
       shake(3, 300),
-      textCmd("경비병: 「거기 누구냐! 썩 나가!」 — 등불에 들켜 입구로 쫓겨났다."),
+      textCmd(penalty?.text ?? (penalty?.sendTo ? "경비병: 「거기 누구냐!」 — 등불에 들켜 끌려갔다." : "경비병: 「거기 누구냐! 썩 나가!」 — 등불에 들켜 입구로 쫓겨났다.")),
+      // 들킨 벌: 먼저 경비와 싸운다(도망 불가). 져도 게임 오버가 아니라 끌려간다.
+      ...(penalty?.troopId ? [{ kind: "battleProcessing", troopId: penalty.troopId, canEscape: false, canLose: true } as unknown as Command] : []),
       ...swTurned.map((s) => setSw(s, false)),
       ...b.room.set("sight", 0),
-      { kind: "transfer", mapId: ctx.map.id, x: ctx.win.x + origin.x, y: ctx.win.y + origin.y, direction: "up", fade: "black" },
+      penalty?.sendTo
+        ? { kind: "transfer", mapId: penalty.sendTo.mapId, x: penalty.sendTo.x, y: penalty.sendTo.y, direction: "down", fade: "black" } as Command
+        : { kind: "transfer", mapId: ctx.map.id, x: ctx.win.x + origin.x, y: ctx.win.y + origin.y, direction: "up", fade: "black" } as Command,
     ];
     // 들킴 칸: 어느 상태에서든 시야에 드는 칸마다 밟기 이벤트 — 그 칸을 보는 경비가 그 방향을 보고 있으면 들킨다.
     const sightCells = new Map<string, Array<{ gi: number; turned: boolean }>>();
