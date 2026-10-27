@@ -131,7 +131,7 @@
         {
           "dx": 0,
           "dy": 0,
-          "layer": "upper",
+          "layer": "lower",
           "tile": 21
         },
         {
