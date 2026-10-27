@@ -56,7 +56,7 @@ KIT_NAME = {
     "tc.pyr_sarcophagus": "pharaoh-sarcophagus", "tc.pyr_obelisk": "obelisk", "tc.pyr_sand_trap": "sand-pit", "tc.pyr_drift": "sand-drift",
     "tc.pyr_statue": "jackal-statue", "tc.pyr_gold": "gold-pile",
     # 얼음
-    "tc.ice_icicles": "icicles", "tc.ice_crystal": "ice-crystal", "tc.ice_frozen": "frozen-warrior", "tc.ice_drift": "snow-drift",
+    "tc.ice_icicles": "icicles", "tc.cave_stalactite": "stalactites", "tc.ice_crystal": "ice-crystal", "tc.ice_frozen": "frozen-warrior", "tc.ice_drift": "snow-drift",
     # 늪
     "tc.sw_root_arch": "mangrove-roots", "tc.sw_moss": "swamp-moss", "tc.sw_lily": "lily-pads", "tc.sw_wisp": "will-o-wisp",
     "tc.sw_idol": "sunken-idol", "tc.sw_boardwalk": "boardwalk",
@@ -70,7 +70,7 @@ KIT_NAME = {
 THEME_OF = {"arcane": ["tower", "탑", "마법탑"], "other": ["otherworld", "마계"], "earth": ["mine", "catacomb", "castle", "temple", "광산", "묘지", "성", "유적"],
             "wall.other": ["otherworld", "마계"], "wall.tower": ["tower", "탑", "마법탑"], "wall.ice": ["ice", "얼음"],
             "prop.minecart": ["mine", "광산"], "prop.cracked_floor": ["castle", "catacomb", "temple", "성", "묘지", "유적"], "prop.wisp": ["swamp", "늪"],
-            "tc.pyr": ["pyramid", "피라미드", "사막"], "tc.ice": ["ice", "얼음"], "tc.sw": ["swamp", "늪"], "tc.fo": ["forest", "숲"]}
+            "tc.pyr": ["pyramid", "피라미드", "사막"], "tc.ice": ["ice", "얼음"], "tc.cave": ["cave", "동굴"], "tc.sw": ["swamp", "늪"], "tc.fo": ["forest", "숲"]}
 
 
 def themes_of(item):
@@ -105,6 +105,7 @@ PART_NAME = {
     "tc.pyr_statue": {"자칼": "jackal-statue", "풍뎅이": "scarab-statue"},
     "tc.sw_boardwalk": {"끝": "boardwalk", "부서짐": "boardwalk-broken"},
     "tc.ice_icicles": {"1칸": "icicles", "2칸": "icicles-2w"},
+    "tc.cave_stalactite": {"1칸": "stalactites", "2칸": "stalactites-2w"},
     "other.portal": {"닫힘": "portal-gate", "움직임": "portal-gate-open"},
 }
 FRAME_RE = re.compile(r"^(장면|frame|열림)\s*\d+$")

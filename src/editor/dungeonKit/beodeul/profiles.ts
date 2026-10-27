@@ -164,6 +164,6 @@ export const PROFILES: Record<BeodeulDungeonType, TypeProfile> = {
 // 2026-10-27 다시 셈: 예전 목록의 대부분이 그 뒤 판에서 채워졌다 — 얼음굴(gap-ice r1·r5 바닥·벽·빙판·고드름), 광산 선로 15·갱목·광맥,
 // 화산 줄 C 바위 벽 + 32px 용암·식은 껍질, 동굴 줄 A 흙굴 천장·벽, 숲·늪 수관·물가 둑. 남은 것만 적는다.
 export const MISSING: Record<string, string[]> = {
-  cave: ["종유석 천장 늘어짐(천장 칸 장식)"],
-  forest: ["숲 바닥 오솔길 오토타일(지금은 맨 잔디 + 풀·고사리 장식)"],
+  forest: ["숲 바닥 오솔길 오토타일(지금은 맨 잔디 + 풀·고사리 장식) — 마당 흙(beodeul_yard_dirt)은 남쪽 변이 돋운 턱이라 길로 안 읽힌다(2026-10-27 VQA)"],
+  swamp: ["늪 숲 수관(지금은 숲 수관을 빌림) — bog 양식 시안은 32px 주기 반복으로 검수 FAIL(2026-10-27, parked/swamp-bog.patch)"],
 };

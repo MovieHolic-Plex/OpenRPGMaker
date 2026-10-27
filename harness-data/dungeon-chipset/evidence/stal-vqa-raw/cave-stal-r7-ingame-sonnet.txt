@@ -1,0 +1,12 @@
+VERDICT: FAIL
+A: PASS - At 3x the hanging wedges under the ledge rim read as rock stalactites: tapered, with a lit left side and a dark right edge, and tip pixels that break up the silhouette. They do not read as bars, a fence or a comb. At 8x the 1-tile piece is a fat, straight-sided triangle that looks slightly geometric, a bit like a tooth or cone. In game it passes because the pieces are small and sparse.
+B: PASS - Every instance hangs from the rim line and stays inside the dark wall face. None float over floor, and I see no seams, holes or hooks. The "hook" at about (585,155) in cave1-c-3x is the ledge corner piece, not a stalactite. The small separate sliver beside the main cone (about (280,195) in cave1-b-3x, about (375,195) in cave1-a-3x) is attached but looks like a stray fragment.
+C: FAIL - The stalactite tan is close to the pale rim colour and much lighter than the dark brown wall face. Its shading is only two or three flat steps with straight diagonal edges, so it looks pasted on rather than carved from the wall. It does not match the layered, wavy strata texture of the face, and it falls short of the Beodeul bar. At 1x (cave1-b-1x, about (85,68) and (150,52)) it shrinks to a few light ticks that look like specks or stains. In the full maps they are hard to find.
+D: PASS - Placement is sparse and irregular, roughly one to three per wall segment, with no uniform fringe. Many wall segments have none, and the 1-tile and 2-tile variants are mixed. The cost is that they are barely noticeable, and the same single cone shape repeats (about (205,205) in cave@2-0 and about (350,160) in the first crop).
+
+Issues:
+- Lighter than the wall face and nearly the same colour as the rim, so the contrast is wrong. Examples: (205,205) and (350,160)/(410,160) in the 3x crops.
+- The straight, uniform diagonal edges and only 2-3 tones make the cones look geometric. At 8x the 1-tile piece reads as a triangle or tooth.
+- The sliver beside the main cone, about (280,195) in cave1-b-3x and about (375,195) in cave1-a-3x, looks like a stray fragment and reads as noise at 1x.
+- At 1x the pieces collapse into 4-6px specks, so they are almost invisible in cave@1-0 and cave@2-0.
+- The rim light and the stalactite light are the same tone, so the stalactite does not separate from the ledge lip. A darker top shadow band under the rim, or a lit/shade split matching the strata, is missing.

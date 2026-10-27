@@ -1,0 +1,270 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "afd4ff9f9e71a87876926d7e48237be101ebb73ecf4ae66649df622209636dce",
+ "width": 48,
+ "height": 16,
+ "kind": "wall_mounted",
+ "name": "tc.cave_stalactite r4b A1",
+ "label": "dungeon/tc.cave_stalactite.r4b.A1",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "dungeon",
+   "fallback": true,
+   "reason": "칩셋 dungeon 의 화풍 기준 묶음이 없다",
+   "hash": "2ad36264365ed8d5"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 13,
+  "tileColorsP90": 13,
+  "darkV5": 74,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 1
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "rock ceiling band with hanging stalactites",
+      "rows": "0-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 14,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "This is a flat, face-on cave-wall strip. The width profile is a constant 48 px for rows 0-3, then tapers to a point by row 13. That taper is the shape of the stalactite tips hanging down, not a horizontal surface. The columns show only mottled rock shading with small dark spots at rows 2-3, so there is no front-edge line, no eave shadow and no ellipse. It has no visible top surface and no receding side face, so it reads as a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a thin hanging stalactite strip, so sparseness alone is not a reason to fail it. It has about 5 visible rock tones: a light tan top band, mid tones, and dark brown-grey shadow in the spikes. The measured facts back this up: 11 visible tones per tile (hedge 9, stall 17, well 20), 0% near-flat coverage, and no flat fills. Only 33% of dark edge pixels are near-neutral, the same as the well reference, so most edges carry a brown tint. That reads as dark material tone, not a uniform black sticker line. Texture comes from per-spike highlight and shadow variation, but it is a little less rich than the stall and well references. At this scale it holds up next to the hedge and the other props without looking flat or sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 12573
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cave ceiling band with hanging stalactites",
+      "rows": "0-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 14,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The object is a wall-mounted cave ceiling strip. It is a 48px-wide band (rows 0-3) tapering into stalactite spikes down to row 13. It is drawn face-on as a vertical surface with no horizontal top, no front-edge line with eave shadow, and no ellipse. The brown/tan shading on the spikes reads as flat wall relief. The kind allows flat drawings, but it has no top surface, so it reads as front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a thin hanging stalactite strip, about 48x12 source pixels, so it is sparse by nature. Measured facts favour it. It has 11 visible tones per tile against 9 for the hedge, and the stall and well references have 17 and 20. Near-flat coverage is 0%, with no 5x5 flat fills. Only 33% of its dark edge pixels are near-neutral, so the outline is partly tinted and partly neutral, which I call mixed rather than a uniform black sticker line. By eye the rock body steps through about 5 tones, from a pale highlight through tan and grey-brown to a dark shadow. Jagged speckle and per-spike variation give it some grain, though less than the well or stall. The shading is a little shallower than the references, and the outline is not cleanly the dark tone of the adjacent material. That is acceptable for a small, simple prop and it does not look flatter or more sticker-like than the hedge.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 12034
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cave ceiling rock band with hanging stalactites",
+      "rows": "0-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 14,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The silhouette is a 48px wide band that tapers into hanging stalactite points down to row 13. It is drawn face-on as a vertical rock face with dark crevice marks at rows 2-3 and light and dark shading. No front-edge line, eave shadow, ellipse, roof plane or visible contents indicate a horizontal top surface. The object is mounted flat on a wall or ceiling and reads as a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a thin, sparse hanging stalactite band, so I judged it by eye as well as by the numbers. It reads as about 5 lightness steps from a pale highlight through mid greys and browns to a dark base. Stalactite tips and rock clumps are shaded individually, with speckle and variation along the band. Measured facts: 11 visible tones per 16x16 tile, which is above prop-hedge (9) and below stall-cheese (17) and well-roofed (20). Near-flat coverage is 0%, so there are no flat fills. Only 33% of dark edge pixels are neutral, the same as the well, and the rest lean tinted rock-brown. That makes the outline mixed rather than a uniform black sticker line. It is slightly less rich than the best references (stall, well), but a careful artist would accept it beside the hedge and well without it looking flat or sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 11137
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "stalactite cluster (rock mass with hanging points)",
+      "rows": "0-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 14,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The silhouette is 48 px wide at rows 0-3 and then tapers to points down to row 13. The column scans show only a mottled face with dark crevice pixels, for example at rows 2-3 and rows 10-11. There is no front-edge line, no eave shadow, no ellipse and no visible horizontal surface. It is a flat, front-facing picture of hanging rock, which fits a flat wall-mounted piece. No top is shown, so it reads as front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a thin, wide strip of hanging stalactites. It has about 4 rock tones: a pale highlight, a mid tone, a darker shadow and dark tips. The shading is mottled with speckle, so there are no flat fills (0% near-flat). Visible tones per tile (11) are on par with the hedge (9), but below the well (20) and the cheese stall (17). The total of 13 raw colours is far fewer than the 38-40 in the richer references (stall, well). Only 33% of the dark edge pixels are neutral, so the outline is partly tinted and partly grey-black, which reads as mixed. The forms rely on a few spike shapes with little per-spike shading, so the piece looks a bit flatter and more sticker-like than the well, stall or hedge. It is not clearly shallow, but a careful artist would likely want more ramp steps and per-stone shading beside the references. In doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 15487
+  }
+ ],
+ "decidedAt": "2026-10-27T12:58:49.159Z",
+ "cells": {
+  "16": [
+   "6d9ff2f5909e1de3",
+   "b017b2d9ae0ae54a",
+   "d75567a360cd9cac"
+  ],
+  "24": [
+   "24736b1e40086d11",
+   "5646d85edc56e014",
+   "ce5ca33af1c8670e",
+   "e324ecef648e20bc"
+  ],
+  "32": [
+   "29ecf12080921074",
+   "4013277efc7593ef",
+   "591569587b53943c",
+   "59b73dc9111b26b1",
+   "613f8bd94eee345c",
+   "6dc50707a07f40ed",
+   "81427985ae6bb1fe",
+   "9d9b6a22e40499a0",
+   "a571c4ff6c3b55b1",
+   "d05b4da61b9ad5a0",
+   "e9de86d8d7c20e72",
+   "f1106f95605d794a"
+  ],
+  "48": [
+   "0e6cdcba1ffedc6f",
+   "61872c62fe17a964"
+  ]
+ }
+}
