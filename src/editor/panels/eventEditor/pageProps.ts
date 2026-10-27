@@ -51,6 +51,7 @@ import {
   runResultLabel,
   timerIdLabel,
 } from "./options";
+import { timerRelationWord, timerThresholdLabel } from "./timerConditionText";
 import { openCharacterIdPicker } from "./characterIdPickerDialog";
 import { attachCharacterIdAutocomplete } from "./characterIdAutocomplete";
 import type { Command, EventPage, EventPageCondition, GameEvent, MapId, Trigger } from "@/project/types";
@@ -518,7 +519,7 @@ function pageConditionSummary(condition: EventPageCondition): string {
     case "gold":
       return `소지금 ${compareAmountLabel(condition.op, condition.amount)}`;
     case "timer":
-      return `${timerIdLabel(condition.timerId)} ${condition.seconds}초 이하`;
+      return `${timerIdLabel(condition.timerId)} ${timerThresholdLabel(condition)}`;
     case "timePhase":
       return `시간대 ${timePhaseLabel(condition.phase)}`;
     case "season":
@@ -587,7 +588,7 @@ function pageConditionCompactSummary(condition: EventPageCondition): string {
       return `소지금 ${compareAmountLabel(condition.op, condition.amount)}`;
     }
     case "timer":
-      return `${timerIdLabel(condition.timerId)} ${condition.seconds}초`;
+      return `${timerIdLabel(condition.timerId)} ${condition.seconds}초${condition.op && condition.op !== "<=" ? ` ${timerRelationWord(condition.op)}` : ""}`;
     default:
       return pageConditionBadgeText(condition);
   }
@@ -1625,7 +1626,7 @@ function pageConditionBadgeText(condition: EventPageCondition): string {
     case "gold":
       return `소지금 ${compareAmountLabel(condition.op, condition.amount)}`;
     case "timer":
-      return `${timerIdLabel(condition.timerId)} ${condition.seconds}초`;
+      return `${timerIdLabel(condition.timerId)} ${condition.seconds}초${condition.op && condition.op !== "<=" ? ` ${timerRelationWord(condition.op)}` : ""}`;
     case "timePhase":
       return timePhaseLabel(condition.phase);
     case "season":

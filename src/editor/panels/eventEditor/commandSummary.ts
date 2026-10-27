@@ -27,6 +27,7 @@ import { relationshipStateName } from "@/project/relationshipState";
 import { textBodyOf } from "@/project/io/rewriteLegacyDialogue";
 import { insideLocationSentence } from "@/editor/mapLocationLabels";
 import { difficultyDisplayName } from "@/project/difficulty";
+import { timerThresholdLabel } from "./timerConditionText";
 export type CommandSummaryTone =
   | "plain"
   | "command"
@@ -1224,7 +1225,7 @@ function conditionSummary(condition: Extract<Command, { kind: "fork" }>['conditi
     case "gold":
       return `소지금 ${compareAmountLabel(condition.op, condition.amount)}`;
     case "timer":
-      return `${timerIdLabel(condition.timerId)} ${condition.seconds}초 이하`;
+      return `${timerIdLabel(condition.timerId)} ${timerThresholdLabel(condition)}`;
     case "timePhase":
       return `시간대 ${timePhaseLabel(condition.phase)}`;
     case "season":
