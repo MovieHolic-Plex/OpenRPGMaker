@@ -6,6 +6,7 @@ import { createScarloxyDemoProject } from "@/project/defaults/defaultProject";
 import { activeTools, allTools, getTool, toOpenAiTools } from "@/editor/tools/toolRegistry";
 import { runTool } from "@/editor/tools/toolRunner";
 import { createEmptyToolProject } from "@/editor/tools/emptyProject";
+import { RETIRED_COMBINED_TOWN_TILESET_ID, withRetiredEasyRpgTilesets } from "./support/retiredEasyRpgTilesets";
 import type { ToolContext } from "@/editor/tools/types";
 import { TOOL_CATEGORIES } from "@/editor/panels/toolBrowserModal";
 
@@ -46,7 +47,7 @@ describe("toolRegistry", () => {
     }).toMatchInlineSnapshot(`
       {
         "upsert_common_event": "먼저 위 고수준 툴이 목적에 맞는지 확인하라(트랩=place_trap, 퍼즐=compile_puzzle, 컷신=script_cutscene 등). 이 툴은 커스텀 로직 전용. 커먼 이벤트를 등록/수정한다. trigger: none(호출 전용)/auto/parallel, 조건 스위치 지정 가능.",
-        "upsert_event": "먼저 위 고수준 툴이 목적에 맞는지 확인하라(트랩=place_trap, 퍼즐=compile_puzzle, 컷신=script_cutscene 등). 이 툴은 커스텀 로직 전용. GameEvent를 추가하거나 기존 이벤트를 부분 수정한다. 기존 id이면 입력에 포함한 최상위 필드만 바꾸고, 생략한 pages/commands/graphic/characterId/좌표 등은 보존한다. 빈 배열처럼 명시한 값은 그대로 반영한다. NPC/주민/대화 이벤트 배치는 place_npc, 스케줄만 바꿀 때는 set_npc_schedule을 우선 사용하라.",
+        "upsert_event": "먼저 위 고수준 툴이 목적에 맞는지 확인하라(트랩=place_trap, 퍼즐=compile_puzzle, 컷신=script_cutscene 등). 이 툴은 커스텀 로직 전용. GameEvent를 추가하거나 기존 이벤트를 부분 수정한다. 기존 id이면 입력에 포함한 최상위 필드만 바꾸고, 생략한 pages/commands/graphic/characterId/좌표 등은 보존한다. 기존 이벤트의 페이지 하나에서 그림·대사·조건 같은 칸만 바꿀 때는 patch_event_page 를 쓴다 — pages 는 배열 전체 교체라, 기존 이벤트에 pages 를 보내려면 replacePages:true(페이지 추가·삭제·순서 변경)를 함께 보내야 한다. 빈 배열처럼 명시한 값은 그대로 반영한다. NPC/주민/대화 이벤트 배치는 place_npc, 스케줄만 바꿀 때는 set_npc_schedule을 우선 사용하라. 증거 제시·아이템 보여주기·선물 건네기는 choices+아이템 조건이 아니라 presentItem 명령({kind:'presentItem',prompt,options:[{itemId,branch}],otherwiseBranch,cancelBranch,consume})으로 만든다. 보스전 결과 분기(이기면 스위치 켜기 등)는 선택지 모양 options 가 아니라 battleProcessing{troopId,branchOnResult:true,victoryBranch:[…],defeatBranch,escapeBranch}로 쓴다.",
       }
     `);
   });
@@ -106,7 +107,8 @@ describe("toolRegistry", () => {
     expect(result.ok, result.summary).toBe(true);
     expect(result.data).toMatchObject({
       matches: expect.arrayContaining([
-        expect.objectContaining({ id: "generated-item-potion-red-image" }),
+        // generated-item-potion-red-image 는 그림 파일이 없어 null 로 해석된다(generatedAssetResourceResolver) — 기본 포션 그림은 CC0 물약이다.
+        expect.objectContaining({ id: "cc0-jetrel-potion-red" }),
       ]),
     });
     const schema = toOpenAiTools().find(tool => tool.function.name === "list_resources");
@@ -135,11 +137,16 @@ describe("toolRegistry", () => {
     expect(hit.ok, hit.summary).toBe(true);
     const hits = (hit.data as { matches: Array<{ id: string; label: string }>; total: number }).matches;
     expect(hits.some((entry) => entry.id === "picture_potion_red" && entry.label === "빨간 포션 그림")).toBe(true);
-    const all = runTool(ctx, "list_resources", { kind: "picture", query: "*" }, {});
-    expect(all.ok, all.summary).toBe(true);
-    expect(all.data).toMatchObject({ matches: expect.arrayContaining([
-      { id: "picture_potion_red", label: "빨간 포션 그림" },
-    ]) });
+    // 번들 그림이 천 장을 넘어 '*' 첫 쪽(20개)에 업로드 그림이 오지 않는다 — 쪽을 넘기며 전체 목록에 있는지 본다.
+    const browsed: Array<{ id: string; label: string }> = [];
+    for (let offset: number | null = 0; offset !== null;) {
+      const page = runTool(ctx, "list_resources", { kind: "picture", query: "*", offset, limit: 50 }, {});
+      expect(page.ok, page.summary).toBe(true);
+      const data = page.data as { matches: Array<{ id: string; label: string }>; nextOffset: number | null };
+      browsed.push(...data.matches);
+      offset = data.nextOffset;
+    }
+    expect(browsed).toEqual(expect.arrayContaining([{ id: "picture_potion_red", label: "빨간 포션 그림" }]));
     const byId = runTool(ctx, "list_resources", { kind: "picture", query: " PICTURE_POTION_RED " }, {});
     expect(byId.ok, byId.summary).toBe(true);
     expect(byId.data).toEqual({
@@ -189,7 +196,8 @@ describe("toolRegistry", () => {
     }).matches;
     expect(matches.length).toBeGreaterThan(0);
     expect(matches[0]).toMatchObject({ gender: "female", age: "elder" });
-    expect(matches[0]?.textureKey).toMatch(/^tex_easyrpg_charset_/);
+    // OPRN 자체 주민 칩(tex_oprn_charset_*)이 들어와 EasyRPG 칩보다 앞설 수 있다.
+    expect(matches[0]?.textureKey).toMatch(/^tex_(easyrpg|oprn)_charset_/);
     expect(typeof matches[0]?.characterIndex).toBe("number");
   });
 
@@ -242,9 +250,10 @@ describe("toolRegistry", () => {
   });
 
   it("list_resources가 tile 검색을 지원한다(표지판 → tile:320)", () => {
-    const project = createEmptyToolProject();
+    // tile:320(벽보)은 합본 마을 칸이다. 새 프로젝트 기본은 버들항이므로 옛 합본 마을 정의를 싣고 그 타일셋을 지정한다.
+    const project = withRetiredEasyRpgTilesets(createEmptyToolProject());
     const ctx: ToolContext = { project };
-    const result = runTool(ctx, "list_resources", { kind: "tile", query: "표지판" }, {});
+    const result = runTool(ctx, "list_resources", { kind: "tile", query: "표지판", tilesetId: RETIRED_COMBINED_TOWN_TILESET_ID }, {});
     expect(result.ok).toBe(true);
     const matches = (result.data as { matches: Array<{ id: string }> }).matches;
     expect(matches.some((match) => match.id === "tile:320")).toBe(true);
