@@ -50,8 +50,21 @@ describe("bundled EasyRPG RTP assets", () => {
         image: { type: "bundled", id: asset.textureKey },
         tileSize: bundledChipsetTileSize(asset.textureKey),
         tilesPerRow: bundledChipsetTilesPerRow(asset.textureKey),
-        count: bundledChipsetFrameCount(asset.textureKey),
       });
+      // 칸 수는 시트 칸 수 이상이다. 시트 뒤 칸은 이식 칸(tileGrafts — 버들항 덧그림 시트·월드맵 저작 붓)이고,
+      // 덧그림 시트마다 줄 단위로 맞춘 빈 칸이 사이에 남는다. 이식이 없으면 시트와 정확히 같아야 한다.
+      const frameCount = bundledChipsetFrameCount(asset.textureKey);
+      const graftTargets = (tileset.tileGrafts ?? []).map((graft) => graft.targetTile);
+      if (!graftTargets.length) expect(tileset.count, id).toBe(frameCount);
+      else {
+        expect(tileset.count, id).toBeGreaterThanOrEqual(frameCount);
+        const lastGraft = Math.max(...graftTargets);
+        expect(lastGraft, id).toBeLessThan(tileset.count);
+        if (tileset.count > frameCount) {
+          const rowEnd = Math.ceil((lastGraft + 1) / tileset.tilesPerRow) * tileset.tilesPerRow;
+          expect(tileset.count, id).toBeLessThanOrEqual(Math.max(rowEnd, frameCount));
+        }
+      }
       // 2026-10-07 저작권 정리 뒤 이 목록은 손 도트 번들 시트다(합본 마을은 빠졌다 — expect 아래).
       // 칸 메타가 있는 시트는 bundled-default/unknown 으로 시작한다. 버들항 덧그림 시트(warm_trees·door·ground…)는
       // 칸 메타 없이 kit/조각 정의만 들고 다니므로 tileMeta 가 비어 있다 — 그때는 출처 칸이 없다.

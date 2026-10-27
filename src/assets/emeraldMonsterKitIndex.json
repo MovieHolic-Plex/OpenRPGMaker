@@ -6,7 +6,7 @@
     "textureKey": "tex_emerald_monster_overworld",
     "name": "에메랄드 몬스터 · overworld",
     "path": "assets/emerald-monster/tiles/overworld.png",
-    "count": 2192,
+    "count": 2256,
     "tilesPerRow": 16,
     "tileSize": 16
   },

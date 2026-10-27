@@ -161,7 +161,7 @@ export const BUNDLED_EASYRPG_CHIPSET_ASSETS = [
   {textureKey:"tex_jp_city",path:"assets/jp-city/jp-city-chipset.png",name:"일본 도시 · 상가·주택·역·신사 (도트)"},
   // 마법 학교 · 해리포터풍(2026-10) — HP 테마 42색 손 도트(성채 벽·12개 공간 기물·자연·탈것·생물·효과 움직임)를 48열 16px 칸으로 구운 시트. 칸 번호는 덧붙이기 전용(자리 키 핀).
   // 재생성: scripts/content/wizarding/bake_wz.py (검수 통과 조각만), 정의는 project/defaults/wizardingWorld.ts, openwiki/wizarding-world.md.
-  {textureKey:"tex_wizarding_world",path:"assets/wizarding-world/wizarding-world-chipset.png",name:"마법 학교 · 해리포터풍 (손 도트)"},
+  {textureKey:"tex_wizarding_world",path:"assets/wizarding-world/wizarding-world-chipset.png",name:"마법 학교 (해리포터풍)"},
   // 열대 군도·해적 항구(2026-10-14) — 잠긴 팔레트 코드 손 도트(해안 덩이 오토타일·야자·항구 건물·요새·배·실내 가구)를 48열 16px 칸으로 구운 시트. 칸 번호는 덧붙이기 전용(자리 키 핀).
   // 재생성: scripts/content/pirate-isles/pi_bake.py (object-gate 통과 조각만) → pi_refs.py, 정의는 project/defaults/pirateIsles.ts, openwiki/pirate-isles.md.
   {textureKey:"tex_pirate_isles",path:"assets/pirate-isles/pirate-isles-chipset.png",name:"열대 군도·해적 항구 (손 도트)"},
@@ -187,7 +187,7 @@ export const BUNDLED_EASYRPG_CHIPSET_ASSETS = [
   // 고딕 저택·묘지 · 호러(2026-10) — 잠긴 고딕 팔레트 손 도트(저택·예배당·묘지·미술관 건물, 묘비·고사목·철책, 실내 벽 셋·바닥·가구·전시실)를 48열 16px 칸으로 구운 시트.
   // 3/4 관문(object-gate) 영수증이 현재 그림 해시에 PASS 인 조각만 굽는다. 칸 번호는 덧붙이기 전용(자리 키 핀).
   // 재생성: scripts/content/gothic-manor/bake_gm.py, 정의는 project/defaults/gothicManor.ts, openwiki/gothic-manor.md.
-  {textureKey:"tex_gothic_manor",path:"assets/gothic-manor/gothic-manor-chipset.png",name:"고딕 저택·묘지 · 호러 (손 도트)"},
+  {textureKey:"tex_gothic_manor",path:"assets/gothic-manor/gothic-manor-chipset.png",name:"고딕 저택·묘지 (호러, 손 도트)"},
   // 선사 시대 원시 세계(2026-10) — 자체 잠금 팔레트 손 도트 야외(움집·가죽 천막·매머드 뼈 집·족장 긴 집·동굴 입구·모닥불·선돌·토템·고사리·소철·화산·용암·타르·공룡 화석·밧줄 다리,
   // 꼭짓점 가장자리 바닥 9쌍)와 실내(동굴 거처·벽화 회랑·족장 집·무당 천막)를 48열 16px 칸으로 구운 시트. 칸 번호는 덧붙이기 전용(자리 키 핀).
   // 재생성: scripts/content/prehistoric/bake_ph.py (object-gate 통과 조각만), 정의는 project/defaults/prehistoric.ts, openwiki/prehistoric.md.
@@ -206,7 +206,7 @@ export const BUNDLED_EASYRPG_CHIPSET_ASSETS = [
   {textureKey:"tex_atlas_biome_interior",path:"assets/atlas-interior/interior-chipset.png",name:"실내 · 손 도트 v5 (아틀라스)"},
   // 탈것·장면 조각(배·비공정·마차·축제·처형대·하늘) — EasyRPG 배 시트(CC0) 결로 찍은 손 도트. 정의는 project/defaults/atlasVehicles.ts,
   // 재생성: scripts/content/atlas-scenes/build_vehicles.py + register-vehicles.mjs. 출처 assets/atlas-scenes/CREDITS.txt.
-  { textureKey: "tex_oprn_atlas_vehicles", path: "assets/atlas-scenes/vehicles.png", name: "탈것·장면 조각 · 배·비공정·마차·축제 (EasyRPG 배 시트 CC0 + 손 도트)" },
+  { textureKey: "tex_oprn_atlas_vehicles", path: "assets/atlas-scenes/vehicles.png", name: "탈것·장면 조각 · 배·비공정·마차·축제·처형대 (EasyRPG 배 시트 + 손 도트)" },
   ...SCARLOXY_CHIPSET_ASSETS,
   ...MONSTER_KIT_CHIPSET_ASSETS,
   ...EMERALD_MONSTER_KIT_CHIPSET_ASSETS,

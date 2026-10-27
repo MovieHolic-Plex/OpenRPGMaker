@@ -1,10 +1,10 @@
 [
   {
     "theme": "overworld",
-    "count": 2192,
+    "count": 2256,
     "width": 256,
-    "height": 2192,
-    "pixelBoundsChecked": 2192,
+    "height": 2256,
+    "pixelBoundsChecked": 2256,
     "lostTiles": 0,
     "lostOpaqueBacking": 0,
     "namedIndicesChecked": 400,
@@ -37,7 +37,7 @@
       "room-mart",
       "route"
     ],
-    "sha256": "a2d2b50f928cab1347c761bb0332b6d2798b83d49823bda3f46c93a2353b9cb6"
+    "sha256": "c410f464ead0d91e724f46d2be17c30e2b83a743ba070a6e83d3d68ca90be8bc"
   },
   {
     "theme": "wild",
