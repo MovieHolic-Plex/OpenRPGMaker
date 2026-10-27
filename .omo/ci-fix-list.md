@@ -385,7 +385,6 @@ Work order (cheapest first): timeout → fake-DOM/env gaps → combined_town / o
 - **1** — `AssertionError: expected '변경 저장: 타일 N, DB N, 시스템' to be '변경 저장: 타일 N' // Object.is equality`
   - [ ] `test/manualCommitDiff.test.ts`
 - **1** — `TypeError: Cannot read properties of undefined (reading 'length')`
-  - [ ] `test/modeTransitions.test.ts`
 - **1** — `AssertionError: 'upsert_enemy' 실행 실패: enemy.transparent는 허용되지 않는 필드입니다. 허용 필드: id, name, speciesId, monsterResourceId, b`
   - [ ] `test/monsterGraphicReliability.test.ts`
 - **1** — `TypeError: Cannot read properties of undefined (reading 'tileSize')`
