@@ -195,8 +195,22 @@
 }
 
 .rm-license-dialog-title,
+.rm-license-dialog-hint,
 .rm-license-dialog-close {
   flex: 0 0 auto;
+}
+
+.rm-license-dialog-hint {
+  color: var(--text-2);
+  font-size: 13px;
+  line-height: 1.4;
+  margin: 0 0 8px;
+}
+
+.rm-license-dialog-close:focus-visible,
+.rm-license-dialog-body:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
 }
 
 .rm-license-dialog-body {
@@ -204,7 +218,8 @@
   margin: 0 0 10px;
   min-height: 0;
   overflow: auto;
-  font-size: 11px;
+  /* 11px 는 긴 저작자 표기를 읽기 어려웠다. */
+  font-size: 13px;
   line-height: 1.5;
   overflow-wrap: anywhere;
 }
@@ -219,7 +234,7 @@
 
 .rm-license-dialog-body .rm-license-dialog-heading {
   margin: 14px 0 4px;
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 600;
 }
 
