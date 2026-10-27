@@ -28,7 +28,8 @@ function projectWithTargetSpecies(speciesId: string): Project {
   const enemy = project.database.enemies.find((record) => record.id === "enemy_slime");
   if (!enemy) throw new Error("missing enemy_slime");
   enemy.speciesId = speciesId;
-  enemy.stats = { ...enemy.stats, maxHp: 100000, defense: 1, attack: 1 };
+  // 슬라임이 정신력 기반 「산성 침」·민첩 34 를 얻어 L20 몬스터를 먼저 쓰러뜨리므로 정신력·민첩도 1 로 묶어 무해하게 둔다.
+  enemy.stats = { ...enemy.stats, maxHp: 100000, defense: 1, attack: 1, mind: 1, agility: 1 };
   return project;
 }
 
