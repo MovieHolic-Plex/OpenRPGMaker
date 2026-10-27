@@ -24,6 +24,10 @@ const mocks = vi.hoisted(() => ({
 }));
 
 vi.mock("@/editor/ui/modal", () => ({ showConfirm: mocks.showConfirm }));
+// 파괴성 확인은 모달이 아니라 조수 창 안의 「답변 필요」 카드(requestAssistantDecision)로 묻는다 — 같은 결정 스텁으로 잇는다.
+vi.mock("@/editor/panels/aiDecisionPrompt", () => ({
+  requestAssistantDecision: (_surface: unknown, options: unknown) => mocks.showConfirm(options),
+}));
 vi.mock("@/editor/tools/applyChangesetToStore", () => ({ applyProposedProject: mocks.apply }));
 vi.mock("@/project/lint/layoutPlacementValidate", () => ({ validateLayoutPlacement: () => [], formatLayoutValidationSummary: () => "" }));
 vi.mock("@/editor/teamWorkflowUi", () => ({ ensureGuestIdentityForAiSurface: () => undefined }));
