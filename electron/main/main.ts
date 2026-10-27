@@ -396,12 +396,14 @@ function createWindow(options: { readonly splash?: () => Splash | undefined; rea
     if (!reloadArmed.has(webContentsId)) return;
     reloadArmed.delete(webContentsId);
     event.preventDefault();
+  });
   // 폴더 교체 저장도 새 문서가 준비됐다고 알릴 때까지 기다리지 않는다 — 부팅 중에는 저장할 변경이 없다.
   window.webContents.on("did-start-navigation", (details) => {
     if (details.isMainFrame && !details.isSameDocument) {
       markEditorLeft(id);
       replaceFlushReady.delete(id);
-    }  });
+    }
+  });
   window.webContents.on("will-navigate", (event, url) => {
     if (!url.startsWith(`${OPRN_APP_SCHEME}://`)) event.preventDefault();
   });
