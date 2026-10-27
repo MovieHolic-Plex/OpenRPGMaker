@@ -96,7 +96,7 @@ export async function openFlagshipDemo(id: FlagshipDemoId, options: OpenFlagship
  * 저장 브리지가 없으면(순수 정적 웹) false — 호출자가 메모리 열기로 내려간다.
  * 재로드가 일어나면 이 함수는 사실상 돌아오지 않는다.
  */
-async function createEditableCopy(demo: LoadedFlagshipDemo): Promise<boolean> {
+async function createEditableCopy(demo: Pick<LoadedFlagshipDemo, "project" | "title">): Promise<boolean> {
   const { store } = await import("@/project/store");
   const { saveProjectNow } = await import("@/editor/saveActions");
   // 다른 프로젝트 세션 위에서 열면 그 작업이 사라진다 — 먼저 저장한다(실패하면 열지 않는다).
@@ -108,4 +108,12 @@ async function createEditableCopy(demo: LoadedFlagshipDemo): Promise<boolean> {
   if (!(await createProjectFolderWithSeed(demo.title, demo.project, suggested?.projectDir))) return false;
   window.location.reload();
   return true;
+}
+
+/**
+ * 코드로 짓는 다른 예제(Scarloxy 등)도 같은 길로 연다 — 지금 프로젝트를 덮어쓰지 않고 새 프로젝트 폴더로.
+ * 저장 브리지가 없으면 false(호출자가 확인 뒤 메모리 열기로 내려간다).
+ */
+export async function openProjectAsNewFolder(project: Project, title: string): Promise<boolean> {
+  return createEditableCopy({ project, title });
 }

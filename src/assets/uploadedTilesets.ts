@@ -2,6 +2,7 @@ import { ensureSceneImageTexture } from "@/player/playSceneImageTexture";
 import type Phaser from "phaser";
 import { withInlineAsset } from "./inlineAssetStore";
 import { uploadedAssetUrl } from "@/project/persistence/assetAccessors";
+import { isPendingLazyTileset } from "@/project/bundledTilesetLazy";
 import type { Project, TilesetDef, TilesetAnimationStrip } from "@/project/types";
 
 /** Uploaded atlases cannot share the bundled exterior texture or its 480 fixed frames. */
@@ -97,6 +98,9 @@ export function registerUploadedTilesetFrames(
 
 export function registerUploadedTilesets(scene: Phaser.Scene, project?: Project): void {
   for (const tileset of Object.values(project?.tilesets ?? {})) {
+    // 아직 되돌리지 않은 지연 번들 타일셋은 그 시트가 실린 뒤에만 읽는다(스트립 등록은 시트가 없으면 어차피 아무것도 안 한다) —
+    // 읽으면 번들 정의를 읽고 되돌린다. 시트가 늦게 실리면 실린 뒤 여기를 다시 부른다(bundled.ts).
+    if (isPendingLazyTileset(tileset) && !scene.textures.exists(tileset.image.id)) continue;
     if (tileset.image.type === "uploaded") registerUploadedTilesetFrames(scene, tileset);
     // 번들 시트의 저작 스트립: 텍스처 키가 곧 image.id 다(이식·투명색으로 구운 사본은 ensureTilesetTexture 가 맡는다).
     else if (tileset.animationStrips?.length) registerTilesetStripAnimations(scene, tileset, tileset.image.id);
