@@ -252,10 +252,19 @@ describe("renderPlayer run controls", () => {
     expect(main.querySelector<HTMLElement>("[data-testid='play-viewport']")?.dataset.scaleMode).toBe("fit");
   });
 
-  it("keeps the integer surface scale mode by default", () => {
+  // #3077·#3155: 배율 기본값은 해상도를 저장한 프로젝트면 정수(integer), 해상도 없는 옛·빈 프로젝트는 창 맞춤(fit)이다
+  // (resolvePlaySurfaceScaleMode). 빈 프로젝트는 해상도를 저장하지 않으므로 둘을 따로 본다.
+  it("keeps the integer surface scale mode by default for a project with a stored resolution", () => {
+    store.update((project) => { project.system.playResolution = { width: 480, height: 270 }; });
     render({ autoStartRun: false });
 
     expect(main.querySelector<HTMLElement>("[data-testid='play-viewport']")?.dataset.scaleMode).toBe("integer");
+  });
+
+  it("fits the window by default for a project without a stored resolution", () => {
+    render({ autoStartRun: false });
+
+    expect(main.querySelector<HTMLElement>("[data-testid='play-viewport']")?.dataset.scaleMode).toBe("fit");
   });
 
   it("ignores run controls after teardown so no new timers are created", async () => {

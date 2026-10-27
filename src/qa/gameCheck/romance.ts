@@ -292,7 +292,10 @@ export function checkRomance(project: Project, briefText = briefTextOf(project))
       message: `서로 다른 인물 ${who.length}명(${who.slice(0, 5).join(", ")})이 같은 캐릭터 칩(${chip})입니다 — 화면에서 구분되지 않습니다. list_npc_graphics 에서 인물마다 다른 칩을 고르세요.`,
     });
   }
-  const objectBustNpcs = people.filter(({ event }) => {
+  // people(isPersonEvent)는 #2894 부터 사물 이름 이벤트를 빼므로, 그 목록을 거르면 이 검사가 영영 비었다 — 인물 표지(characterId·npc_ id)만 보고 직접 모은다.
+  const npcLike: { readonly map: GameMap; readonly event: GameEvent }[] = [];
+  for (const map of maps) for (const event of map.events) if (event.characterId?.trim() || /^(ev_)?npc[_-]/u.test(event.id)) npcLike.push({ map, event });
+  const objectBustNpcs = npcLike.filter(({ event }) => {
     if (event.id === SEGMENT_STARTER_EVENT_ID || event.id === SEGMENT_END_EVENT_ID) return false;
     const name = (event.name ?? "").trim();
     if (!OBJECT_NPC_NAME.test(name) || PERSON_ROLE_NAME.test(name)) return false;

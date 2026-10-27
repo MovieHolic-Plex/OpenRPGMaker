@@ -10,7 +10,8 @@ vi.mock('@/project/store', () => ({store:{getCurrent:vi.fn(),getProjectIdentity:
 vi.mock('@/editor/aiBootIntent', () => ({setPendingAiBootIntent:vi.fn(),applyPendingAiBootIntent:vi.fn(),peekAiAssistantDraft:vi.fn()}));
 vi.mock('@/ai/assistantEndpoint', () => ({resolveSurfaceAiConfig:vi.fn(()=>({})),isAssistantEndpointReady:vi.fn(()=>true)}));
 vi.mock('@/editor/panels/aiConnectionStatus', () => ({getAiConnectionStatus:vi.fn(()=>({})),refreshAiConnectionStatus:vi.fn(async()=>{}),AI_CONNECTION_STATUS_CHANGED_EVENT:'oprn:ai-connection-status-changed'}));
-vi.mock('@/project/playableSegment', () => ({withVerifiedPlayableSegment:vi.fn(()=>null)}));
+// 시작 경로가 뼈대 그림 준비(preparePlayableSegmentAssets)도 부른다 — 목에 없으면 예외로 저장·게시가 멈췄다.
+vi.mock('@/project/playableSegment', () => ({withVerifiedPlayableSegment:vi.fn(()=>null),preparePlayableSegmentAssets:vi.fn(async()=>{})}));
 vi.mock('@/util/toast', () => ({toast:vi.fn()}));
 let project: Project;
 let scope = 0;

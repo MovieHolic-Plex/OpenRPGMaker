@@ -9,7 +9,7 @@ const settings = PROJECT_TOOLS.find(tool => tool.name === "set_project_settings"
 describe("project font tool provider contract", () => {
   it("does not send empty enum members that prevent Gemini from starting any tool call", () => {
     const visit = (schema: JsonSchema): void => {
-      expect(schema.enum).not.toContain("");
+      expect(schema.enum ?? []).not.toContain("");
       for (const child of Object.values(schema.properties ?? {})) visit(child);
       for (const child of schema.oneOf ?? []) visit(child);
       if (schema.items) visit(schema.items);
