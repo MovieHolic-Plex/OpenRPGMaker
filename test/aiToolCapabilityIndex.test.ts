@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { buildSystemPrompt, DEFAULT_BUDGET_CHARS } from "@/ai/contextBuilder";
-import { buildToolCapabilityIndex } from "@/ai/toolCapabilityIndex";
+import { buildTaskRecipes, buildToolCapabilityIndex } from "@/ai/toolCapabilityIndex";
+import { isMonsterOnlyTool } from "@/project/genreLockMonsterAssets";
 import { ASSISTANT_PRESENTATION_BLOCK } from "@/ai/eventBeatStaging";
 import { EVENT_PAGE_SEMANTICS_BLOCK } from "@/ai/eventPageSemantics";
 import { activeTools, allTools, createEmptyToolProject } from "@/editor/tools";
@@ -29,11 +30,16 @@ function liveToolNames(): readonly string[] {
   return [...new Set(activeTools().filter((tool) => tool.deprecated !== true && tool.supersededBy === undefined).map((tool) => tool.name))];
 }
 
+/** 몬스터 프로젝트가 아닌 곳의 프롬프트는 포켓몬식 도구 이름을 색인에서 뺀다(#2812, contextBuilder withFixedBlocks). */
+function promptToolNames(): readonly string[] {
+  return liveToolNames().filter((name) => !isMonsterOnlyTool(name));
+}
+
 describe("tool capability index", () => {
   it("advertises every live registry tool inside the system prompt", () => {
     const project = createEmptyToolProject();
     const prompt = buildSystemPrompt(project);
-    const names = liveToolNames();
+    const names = promptToolNames();
 
     const missing = names.filter((name) => !prompt.includes(name));
 
@@ -79,7 +85,7 @@ describe("tool capability index", () => {
 
   it("survives the smallest calibrated budget", () => {
     const prompt = buildSystemPrompt(createBlankProject(), { budgetChars: CALIBRATED_MIN_BUDGET });
-    const missing = liveToolNames().filter((name) => !prompt.includes(name));
+    const missing = promptToolNames().filter((name) => !prompt.includes(name));
 
     expect(missing).toEqual([]);
     expect(prompt).toContain("find_tools(query)");
@@ -89,10 +95,12 @@ describe("tool capability index", () => {
     const prompt = buildSystemPrompt(createEmptyToolProject("x"), {});
 
     // 베이스 실측: 이 fixture 는 색인 이전에 11,978자로 예산(12,000) 이하였다. 예산 밖 고정 블록이
-    // 그 자리를 먹지 않았음을 고정한다. 고정 블록은 셋이다 — 툴 능력 색인 + 이벤트 페이지 의미론 + 충격 연출.
+    // 그 자리를 먹지 않았음을 고정한다. 고정 블록은 넷이다 — 툴 능력 색인(몬스터 도구 뺀 것, #2812) + 작업 레시피 +
+    // 이벤트 페이지 의미론 + 충격 연출.
     expect(prompt).not.toContain("[예산 초과");
     const withoutFixed = prompt
-      .replace(`${buildToolCapabilityIndex()}\n\n`, "")
+      .replace(`${buildToolCapabilityIndex(activeTools().filter((tool) => !isMonsterOnlyTool(tool.name)))}\n\n`, "")
+      .replace(`${buildTaskRecipes({ monster: false })}\n\n`, "")
       .replace(`${EVENT_PAGE_SEMANTICS_BLOCK}\n\n`, "")
       .replace(`${ASSISTANT_PRESENTATION_BLOCK}\n\n`, "");
     expect(withoutFixed).not.toContain("## 툴 능력 색인");

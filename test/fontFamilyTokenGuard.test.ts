@@ -18,7 +18,16 @@ const FONT_DECLARATION_OWNERS: readonly string[] = [
 
 const STYLE_EXTENSIONS = [".css"] as const;
 
-const ROLE_TOKENS: readonly string[] = ["--font-ui", "--font-mono", "--font-pixel", "--font-serif"];
+// 네 역할 토큰 + tokens.css 의 고정 글꼴면 토큰. 고정 글꼴면은 가드를 **넓히는** 것이지 느슨하게 하는 것이 아니다 —
+// 스택은 여전히 tokens.css 한 곳에서만 선언되고(아래 「소유 파일 밖」 검사), 소비지점은 여전히 이 목록의 토큰까지
+// 전이적으로 도달해야 한다. 늘어난 것은 「저작자 선택을 따르지 않는 화면 고정 글꼴」이라는 이름 붙은 출처뿐이다
+// (토큰 통일 이전 화면을 그대로 유지하려고 2026-10-27 추가, 목록과 쓰임은 tokens.css 주석).
+const ROLE_TOKENS: readonly string[] = [
+  "--font-ui", "--font-mono", "--font-pixel", "--font-serif",
+  "--font-pixel-text", "--font-pixel-title", "--font-pixel-small", "--font-pixel-legacy",
+  "--font-mono-system", "--font-sans-system", "--font-system-ui", "--font-serif-myeongjo",
+  "--font-title-display", "--font-title-menu",
+];
 
 const GENERIC_FAMILY = /\b(sans-serif|serif|monospace|cursive|fantasy|system-ui|ui-monospace|ui-sans-serif)\b/u;
 

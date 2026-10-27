@@ -23,12 +23,14 @@ import { createBlankProject, TILE } from "@/project/defaults";
 import { validateClusterRules } from "@/project/lint/clusterRuleValidators";
 import { store } from "@/project/store";
 import type { GameMap, MapId } from "@/project/types";
+// 합본 마을(EasyRPG) 칩셋의 타일 번호·그룹을 겨냥한 시험 — 2026-10-07 정리 뒤 새 프로젝트에 없어 옛 저장본처럼 다시 심는다.
+import { startOnRetiredCombinedTown } from "./support/retiredEasyRpgTilesets";
 
 const TRUNKS = [290, 291, 292] as const;
 const TRUNK_CANOPY: Readonly<Record<number, number>> = { 290: 260, 291: 261, 292: 262 };
 
 function fixture(): { readonly mapId: MapId } {
-  const project = createBlankProject();
+  const project = startOnRetiredCombinedTown(createBlankProject());
   const map = project.maps[project.startMapId];
   map.width = 8;
   map.height = 8;

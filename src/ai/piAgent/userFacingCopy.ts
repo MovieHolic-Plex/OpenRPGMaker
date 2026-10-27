@@ -23,6 +23,12 @@ export function friendlyExecutionError(message: string): string {
 }
 export const GENERIC_EXECUTION_ERROR = "작업을 끝내지 못했어요. 작업 과정에서 자세한 내용을 확인할 수 있어요.";
 /**
+ * 적용 직후 채팅에 붙는 되돌리기 안내.
+ * `[되돌리기](Ctrl+Z)` 처럼 적으면 채팅 마크다운이 http(s)가 아닌 주소를 버리고
+ * 단축키 없이 「되돌리려면 되돌리기.」만 남긴다.
+ */
+export const AI_APPLY_UNDO_HINT = "되돌리려면 입력줄의 「되돌리기」를 누르거나 Ctrl+Z를 누르세요.";
+/**
  * 적용 거절의 화면 문장. 사유 코드(`commit-rejected`)와 도구 이름(`set_start_position`·`tile_query`)은 실행 기록에만 남긴다.
  * 이슈 문장에서 영문 식별자를 걷고도 한국어 설명이 남으면 그것을 이유로 붙인다.
  */

@@ -99,7 +99,7 @@
   .touch-pad:is([data-skin="gba"], [data-skin="touch"]) .touch-actions { right: max(12px, env(safe-area-inset-right)); bottom: max(16px, env(safe-area-inset-bottom)); gap: 12px; }
   .touch-pad:is([data-skin="gba"], [data-skin="touch"]) .touch-dpad-base { width: 112px; height: 112px; }
   .touch-pad:is([data-skin="gba"], [data-skin="touch"]) .touch-dpad-knob { width: 46px; height: 46px; }
-  .touch-pad:is([data-skin="gba"], [data-skin="touch"]) .touch-action-btn { width: 56px; height: 56px; font: 18px/1 var(--runtime-pixel-font, "Galmuri9", "Noto Sans CJK KR", "Noto Sans KR", "Malgun Gothic", "Apple SD Gothic Neo", sans-serif); }
+  .touch-pad:is([data-skin="gba"], [data-skin="touch"]) .touch-action-btn { width: 56px; height: 56px; font: 18px/1 var(--runtime-pixel-font); }
   .touch-pad:is([data-skin="gba"], [data-skin="touch"]) .touch-actions [data-testid="touch-action-a"] { width: 62px; height: 62px; }
   .touch-pad:is([data-skin="gba"], [data-skin="touch"]) .touch-actions [data-testid="touch-action-b"] { margin-bottom: 16px; }
 }

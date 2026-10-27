@@ -32,6 +32,7 @@ import {
 } from "@/project/actionCombat";
 import { MAX_TITLE_BACKGROUND_LAYERS, normalizeMonsterCare, normalizeTimeSystemConfig, normalizeTypeChart } from "@/project/databaseRecordModel";
 import { defaultTitleScreenSettings } from "@/project/defaults/defaultDatabase";
+import { applyEditedGameTitle } from "@/project/defaults/defaultOpeningSequence";
 import {
   DEFAULT_DAY_END_HOUR,
   DEFAULT_DAY_START_HOUR,
@@ -73,7 +74,8 @@ import type {
   TypeChartRecord,
 } from "@/project/types";
 import { el } from "@/util/dom";
-import { playAudioCommand, stopAudioCommand } from "@/player/audio";
+import { playAudioCommand, stopAudioChannel, stopAudioCommand } from "@/player/audio";
+import { registerDatabasePreview, setDatabasePreviewsActiveIn } from "./databasePreviewLifecycle";
 import { DEFAULT_MENU_SKIN_ID, listMenuSkinIds, MENU_SKINS, resolveMenuSkinId } from "@/player/menuSkins/registry";
 import type { MenuSkinId } from "@/player/menuSkins/types";
 import { calculatePlaySurfaceScale } from "@/player/playSurfaceScale";
@@ -328,8 +330,12 @@ function activateSystemSection(slug: SystemSectionSlug, host: HTMLElement, nav: 
   }
   sectionHost.scrollTop = 0;
   for (const section of Array.from(sectionHost.querySelectorAll<HTMLElement>(".db-system-section"))) {
-    section.hidden = section.dataset.systemSection !== slug;
+    const show = section.dataset.systemSection === slug;
+    if (!show) setDatabasePreviewsActiveIn(section, false);
+    section.hidden = !show;
   }
+  const shown = sectionHost.querySelector<HTMLElement>(`[data-system-section="${slug}"]`);
+  if (shown) setDatabasePreviewsActiveIn(shown, true);
 }
 
 /**
@@ -2028,11 +2034,15 @@ function titleScreenDisplayFieldset(
   const children: HTMLElement[] = [
     systemHelp("좌표 범위: X 0–320, Y 0–240. 해상도를 바꿔도 좌표의 비례 위치는 유지됩니다."),
     textControl("게임 타이틀", titleScreen.title, (value) => {
-      updateTitleScreen((settings) => {
-        settings.title = value;
+      const previous = store.getCurrent().system.titleScreen?.title ?? "";
+      updateSystem((draft) => {
+        draft.system.titleScreen ??= defaultTitleScreenSettings();
+        draft.system.titleScreen.title = value;
+        applyEditedGameTitle(draft, previous, value);
       }, "system:title-screen:title");
       rerender("values");
     }, "db-field-title-screen-title"),
+    systemHelp("게임 타이틀을 바꾸면 위쪽 프로젝트 이름과 시작 화면 목록도 같이 바뀝니다."),
     selectLiteral(
       "타이틀 표시 방식",
       "db-field-title-screen-presentation",
@@ -2751,7 +2761,7 @@ function titleLogoStyleControls(titleScreen: TitleScreenSettings, rerender: Syst
       });
       rerender();
     }),
-    textControl("로고 부제", titleScreen.logoSubtitle ?? "", (value) => {
+    textControl("부제", titleScreen.logoSubtitle ?? "", (value) => {
       updateTitleScreen((settings) => {
         const trimmed = value.trim().slice(0, MAX_TITLE_LOGO_SUBTITLE_LENGTH);
         if (trimmed) settings.logoSubtitle = trimmed;
@@ -2759,6 +2769,7 @@ function titleLogoStyleControls(titleScreen: TitleScreenSettings, rerender: Syst
       }, "system:title-screen:logo-subtitle");
       rerender("effects");
     }, "db-field-title-screen-logo-subtitle"),
+    systemHelp("부제를 적으면 타이틀의 「A NEW ADVENTURE / 이야기가 시작되는 곳」 대신 그 문장이 제목 아래에 나옵니다. 로고 스타일이 기본이어도 같습니다. 비우면 기본 문구로 돌아갑니다."),
   ];
 }
 
@@ -3452,11 +3463,11 @@ function titleScreenWorkbenchPreview(
         if (introDelayMs > 0) titleNode.style.animationDelay = `${introDelayMs}ms`;
       }
       stage.append(titleNode);
-      if (titleScreen.logoStyle && titleScreen.logoSubtitle) {
+      if (titleScreen.logoSubtitle) {
         const subtitle = el("div", {
           class: "db-title-workbench-subtitle",
           text: titleScreen.logoSubtitle,
-          dataset: { testid: "db-title-workbench-subtitle", logoStyle: titleScreen.logoStyle },
+          dataset: { testid: "db-title-workbench-subtitle", logoStyle: titleScreen.logoStyle ?? "plain" },
         });
         placeTitleSubtitle(subtitle, titleScreen);
         stage.append(subtitle);
@@ -3549,6 +3560,12 @@ function titleScreenWorkbenchPreview(
   });
 
   const musicId = titleScreen.musicResourceId;
+  let owned = false;
+  const stopOwned = (): void => {
+    if (!owned) return;
+    owned = false;
+    stopAudioChannel("bgm", 0);
+  };
   const play = el("button", {
     class: "btn small",
     text: "BGM 재생",
@@ -3558,7 +3575,9 @@ function titleScreenWorkbenchPreview(
       click: () => {
         const current = store.getCurrent();
         const resourceId = current.system.titleScreen?.musicResourceId;
-        if (resourceId) playAudioCommand({ resourceId, loop: true }, current);
+        if (!resourceId) return;
+        owned = true;
+        playAudioCommand({ resourceId, loop: true }, current);
       },
     },
   });
@@ -3569,6 +3588,7 @@ function titleScreenWorkbenchPreview(
     dataset: { testid: "db-title-bgm-stop" },
     on: {
       click: () => {
+        owned = false;
         stopAudioCommand();
       },
     },
@@ -3596,6 +3616,7 @@ function titleScreenWorkbenchPreview(
     ],
   });
   titleStageRefreshers.set(preview, refreshStage);
+  registerDatabasePreview(preview, { suspend: stopOwned, resume: () => undefined });
   return preview;
 }
 

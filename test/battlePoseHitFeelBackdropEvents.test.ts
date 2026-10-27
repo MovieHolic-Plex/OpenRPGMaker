@@ -131,9 +131,12 @@ describe("battle backdrop resolution", () => {
     expect(fromTerrain).toBe("battle-scenery-plains");
 
     troop.previewBackgroundResourceId = "generated-battle-reference-forest";
+    // 적 그룹의 숲 값은 도구가 찍는 기본값인 경우가 많아, 지형·맵이 더 구체적으로 말하면 물러난다(battleBackdrop.ts, jrpg-real-1 J08).
     expect(resolveBattleBackdrop({ project, troopId: troop.id, location: { mapId, x: project.startPos.x, y: project.startPos.y } })).toBe(
-      "battle-scenery-forest"
+      "battle-scenery-plains"
     );
+    // 다른 단서가 없으면 그 숲 값이 그대로 쓰인다.
+    expect(resolveBattleBackdrop({ project, troopId: troop.id })).toBe("battle-scenery-forest");
 
     troop.previewBackgroundResourceId = undefined;
     // Off-map / no tag → forest fallback

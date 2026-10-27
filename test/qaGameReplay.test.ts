@@ -9,6 +9,7 @@ import { serialize } from "../src/project/io";
 
 const brief = JSON.parse(fs.readFileSync("scripts/qa-game/briefs/lighthouse-jrpg.json", "utf8")) as QaBrief;
 // 실제 gen 런(lighthouse-1)에서 뽑은 build 호출 13개: #41~#52(세계관·인물·장비·배우·파티·적·부대) + #57 define_ending.
+// #57 의 녹화 경고는 지금 define_ending 문구(「…을 부르는 triggerEnding 이 아직 없습니다」)로 맞췄다 — 문구가 바뀌면 다른 호출로 잡혀 이 시험이 흐려진다.
 const SAMPLE = "test/fixtures/qaGame/replay-lighthouse-sample.jsonl";
 
 function recordingDir(mutate?: (lines: Record<string, unknown>[]) => void): string {

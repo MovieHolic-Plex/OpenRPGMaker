@@ -98,7 +98,8 @@ describe("character appearance authored boundary", () => {
   it.each([
     ["bust", "generated-face-actor1-bust"],
     ["bust", "generated-face-actor1-full"],
-    ["face", "generated-actor-hero-01-face"],
+    // 생성 영웅 얼굴(generated-actor-hero-01-face)은 생성 계획에서 rejected 라 더는 고를 수 없다 — 출하 얼굴 칸으로 본다.
+    ["face", "easyrpg-faceset-actor1-00"],
   ] as const)("accepts built-in portrait %s/%s offered by the picker", (slot, resourceId) => {
     // Given a real built-in picture, without a redundant project profile.
     const project = characterAppearanceProject();

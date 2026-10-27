@@ -66,7 +66,7 @@ describe("quick authoring previews are identifiable", () => {
     return renderWithFakeDom(() => renderCommandPreview(cmd));
   }
 
-  it("speaks with sample dialogue and a face when the body is still empty", () => {
+  it("speaks with sample dialogue (without a borrowed face) when the body is still empty", () => {
     withProject(() => {
       const root = preview({ kind: "text", speaker: "", body: "" });
 
@@ -76,8 +76,8 @@ describe("quick authoring previews are identifiable", () => {
       expect(body?.textContent.trim()).not.toBe("...");
       expect(body?.textContent.length ?? 0).toBeGreaterThan(3);
       expect(findByTestId(root, "ecp-message-sample-note")).toBeTruthy();
-      // 얼굴은 카피가 아니라 faceset 크롭이다.
-      expect(root.querySelectorAll(".event-command-face-crop-shell").length).toBeGreaterThanOrEqual(1);
+      // 얼굴은 빌려 오지 않는다 — 얼굴 없는 명령은 게임에서도 얼굴 없이 뜬다(commandPreview.ts, 공개 기준선 0d4f13e7c8).
+      expect(root.querySelectorAll(".event-command-face-crop-shell")).toHaveLength(0);
       expect(root.querySelectorAll(".ecp-summary-card")).toHaveLength(0);
     });
   });

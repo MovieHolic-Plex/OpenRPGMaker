@@ -89,6 +89,17 @@ describe("새 맵 대화창의 상위 선택", () => {
     expect(parent.textContent).not.toContain("루트");
   });
 
+  it("부모 칸은 타일 레이어 「상위」가 아니고, 맵의 세로 칸수는 「높이」다", () => {
+    openMapCreateDialog();
+    const labels = [...node("map-create-dialog").querySelectorAll(".map-create-field > span")].map((el) => el.textContent);
+    expect(labels).toContain("상위 맵");
+    expect(labels).not.toContain("상위");
+    expect(labels).toContain("높이");
+    expect(labels).not.toContain("세로");
+    expect(node("map-create-parent").getAttribute("aria-label")).toBe("상위 맵");
+    expect(node("map-create-height").getAttribute("aria-label")).toBe("높이");
+  });
+
   it("대화창은 최상위 맵이 하나뿐이라는 계약을 글로 설명한다", () => {
     openMapCreateDialog();
     const text = node("map-create-dialog").textContent ?? "";

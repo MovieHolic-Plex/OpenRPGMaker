@@ -24,7 +24,7 @@ const REVIEW_EVENT_TILE = reviewEventTile(REVIEW_PROJECT);
 const COMMAND_SUMMARIES = [
   { kind: "showPicture", summary: "그림 표시: 위치 (24, 32)" },
   { kind: "playAudio", summary: "소리 재생: demo-town" },
-  { kind: "transfer", summary: "장소 이동: 빈 맵 (7,10) / 아래" },
+  { kind: "transfer", summary: "장소 이동: 빈 맵 (7,10) / 아래 / 페이드 흰색" },
   { kind: "changeTile", summary: "지형 변경: 빈 맵 상위 (4,5) → 그림 42" },
   { kind: "setVariable", summary: "변수 조작: (이름 없음) 이 값으로 7" },
   { kind: "setSwitch", summary: "스위치 조작: (이름 없음) 켜짐" },

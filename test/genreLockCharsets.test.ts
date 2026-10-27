@@ -89,7 +89,8 @@ describe("몬스터 잠금의 캐릭터 칩", () => {
 
   it("허용 칩에 없는 외형 검색은 다른 그림으로 대체하지 않고 거부한다", () => {
     const ctx = ctxOf(lockedProject());
-    const result = placeNpc(ctx, "할머니", 4, { graphic: { query: "할머니" } });
+    // 허용 칩(ScarloxyPeople 5~13, #2806 등)에 할머니가 생겼다 — 허용 칩에 여전히 없는 외형(공주)으로 본다.
+    const result = placeNpc(ctx, "공주", 4, { graphic: { query: "공주" } });
     expect(result.ok).toBe(false);
     expect(result.issues?.[0]?.message).toContain("장르 잠금");
   });
@@ -141,12 +142,14 @@ describe("몬스터 잠금의 캐릭터 칩", () => {
     expect(ctx.project.system.genreLock!.allowedCharsetFamilies).toBeDefined();
   });
 
-  it("연애 잠금은 캐릭터를 건드리지 않는다", () => {
+  // #2731 부터 연애 잠금도 캐릭터 칩을 잠근다(현대 연애 인물 칩·기물·올린 칩만) — RTP 판타지 사람 칩은 조수 경로에서 거부된다.
+  it("연애 잠금은 현대 인물 칩만 허용한다", () => {
     const project = createBlankProject();
     enableGenreLock(project, "romance");
-    expect(project.system.genreLock!.allowedCharsetFamilies).toBeUndefined();
-    expect(serialize(project)).not.toContain("allowedCharsetFamilies");
-    expect(placeNpc(ctxOf(project), "청년", 4, { graphic: RTP_YOUTH }).ok).toBe(true);
+    expect(project.system.genreLock!.allowedCharsetFamilies).toEqual(["modern", "object", "uploaded"]);
+    const result = placeNpc(ctxOf(project), "청년", 4, { graphic: RTP_YOUTH });
+    expect(result.ok).toBe(false);
+    expect(result.issues?.[0]?.message).toContain("장르 잠금");
   });
 
   it("잠금 안내에 캐릭터 그림 규칙이 있다(공간 시공·비공간 모두)", () => {
@@ -167,7 +170,8 @@ describe("몬스터 장르 표지(system.genre)", () => {
   }
 
   it("잠금이 못 걸리는 프로젝트도 몬스터 전용 도구가 성공하면 표지만 남기고 잠그지 않는다", () => {
-    const ctx = ctxOf(noKitProject());
+    // 역방향 잠금(#2812): 몬스터 게임이 아닌 프로젝트에서는 몬스터 수집 요청 턴(monsterTurn)에만 몬스터 도구가 풀린다.
+    const ctx: ToolContext = { ...ctxOf(noKitProject()), monsterTurn: true };
     expect(runTool(ctx, "configure_monster_system", { enabled: true }, { dryRun: false }).ok).toBe(true);
     expect(ctx.project.system.genre).toBe("monster-collect");
     expect(ctx.project.system.genreLock).toBeUndefined();
@@ -185,14 +189,15 @@ describe("몬스터 장르 표지(system.genre)", () => {
   it("다른 장르가 이미 선언된 프로젝트는 덮어쓰지 않고, 장르가 없으면 안내 줄도 없다", () => {
     const farm = createBlankProject();
     applyGenrePreset(farm, "farm-life");
-    const ctx = ctxOf(farm);
+    // 역방향 잠금(#2812): 몬스터 게임이 아닌 프로젝트에서는 몬스터 수집 요청 턴에만 configure_monster_system 이 돈다 — 표지 규칙은 그 턴에서 본다.
+    const ctx: ToolContext = { ...ctxOf(farm), monsterTurn: true };
     expect(runTool(ctx, "configure_monster_system", { enabled: false }, { dryRun: false }).ok).toBe(true);
     expect(ctx.project.system.genre).toBe("farm-life");
     expect(genreMarkerNote(createBlankProject())).toBeNull();
   });
 
   it("끄기 호출은 표지를 남기지 않고, 해제 뒤에도 프리셋 표지는 남는다", () => {
-    const blank = ctxOf(createBlankProject());
+    const blank: ToolContext = { ...ctxOf(createBlankProject()), monsterTurn: true };   // 역방향 잠금(#2812) — 위와 같다
     expect(runTool(blank, "configure_monster_system", { enabled: false }, { dryRun: false }).ok).toBe(true);
     expect(blank.project.system.genre).toBeUndefined();
     const ctx = ctxOf(lockedProject());
@@ -223,7 +228,8 @@ describe("생성한 캠페인 맞추기", () => {
     expect(chips[0]).toBe(chips[1]);                                  // 같은 원래 칩 → 같은 새 칩
     expect(chips.every((chip) => chip.startsWith("tex_scarloxy_charset_people") || chip.startsWith("tex_oprn_charset_scarloxy_people"))).toBe(true);   // 원본 People1~2 와 그 변형 ScarloxyPeople
     expect(chips[2]).not.toBe(chips[0]);                              // 관장 → 보스 칩
-    expect(remapCharsetsToPreset(project, "romance").pagesChanged).toBe(0);   // 캐릭터를 안 잠그는 장르는 바꾸지 않는다
+    // #2731 부터 연애 잠금도 캐릭터 칩을 잠근다 — 몬스터 칩(Scarloxy)은 연애 허용 밖이라 세 장 모두 현대 인물 칩으로 다시 맞춘다.
+    expect(remapCharsetsToPreset(project, "romance").pagesChanged).toBe(3);
   });
   it("Scarloxy 변형 사람 칩(ScarloxyPeople)은 몬스터 수집 잠금이 허용하고 RTP 사람 칩은 여전히 거부한다", () => {
     expect(charsetFamilyOf(undefined, "tex_oprn_charset_scarloxy_people1")).toBe("scarloxy-people");
@@ -253,6 +259,7 @@ describe("생성한 캠페인 맞추기", () => {
     const sheet5 = SCARLOXY_PEOPLE_CHARSET_SEMANTICS.filter((entry) => entry.textureKey === "tex_oprn_charset_scarloxy_people5").map((entry) => entry.characterIndex);
     expect(sheet5).toEqual([0, 1, 2, 3, 4, 5, 7]);
     expect(SCARLOXY_PEOPLE_CHARSET_SEMANTICS.some((entry) => entry.tags?.some((tag) => tag === "scarloxy-student-gakuran" || tag === "scarloxy-captain"))).toBe(false);
-    expect(SCARLOXY_PEOPLE_CHARSET_SEMANTICS).toHaveLength(90);   // 1~10 시트 68칸 + 갤러리 4 합성 22칸(시트 11~13)
+    // 1~10 시트 68칸 + 갤러리 4 합성 22칸(시트 11~13) + 아스트라 캐스트 시트 14 의 4칸(#3225)
+    expect(SCARLOXY_PEOPLE_CHARSET_SEMANTICS).toHaveLength(94);
   });
 });

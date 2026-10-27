@@ -147,6 +147,11 @@ jobs:
       - name: bun 설치
         run: npm install -g bun@1.4.2 && bun --version
 
+      # 하네스 테스트(joseonBaram)가 python3 관문 스크립트(mapgate.py·gate.py)를 부르고, 그 스크립트가 numpy·Pillow 를 쓴다.
+      # 러너의 시스템 python 은 PEP 668 로 막혀 있어 --break-system-packages 로 버전을 고정해 깐다.
+      - name: python 의존성 (numpy·Pillow)
+        run: python3 -m pip install --user --break-system-packages numpy==2.4.4 pillow==12.1.1 && python3 -c "import numpy, PIL; print(numpy.__version__, PIL.__version__)"
+
       - run: npm ci
 
       - name: 자원 스냅샷 (시작)

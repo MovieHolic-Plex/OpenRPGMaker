@@ -8,7 +8,7 @@ TAGS = ['배 안', '선실']
 
 @REG.piece('porthole', '놋쇠 둥근 창(배)', 'ship', 'hang', 1, 0, 0, 'wall_mounted',
            '선체 벽에 낸 놋쇠 테 둥근 창, 유리 너머 바다와 하늘, 둘레 리벳.', TAGS + ['창'],
-           '선체 벽면 윗줄에 2~3칸 간격으로.', ['stern windows', 'ship lantern'], use=('light',))
+           '선체 벽면 윗줄에 2~3칸 간격으로.', ['stern windows', 'hanging lantern'], use=('light',))
 def porthole(c):
     c.ell(7.5, 11, 6, 6, None, only=lambda x, y: K('brass', 5 if x + y < 17 else 4 if x + y < 22 else 2))
     c.ell(7.5, 11, 4, 4, None, only=lambda x, y: K('blue', 5) if y < 10 else K('water', 4 if (x + y) % 4 else 5))
@@ -66,7 +66,7 @@ def captain_bed(c):
 
 @REG.piece('captain desk', '선장 책상(2칸)', 'ship', 'floor', 2, 1, 8, 'low_furniture',
            '무거운 나무 책상 — 항해 일지, 깃펜과 잉크병, 놋쇠 나침반, 촛대.', TAGS + ['선장실', '책상'],
-           '선장실 가운데·선미 창 앞, 앞(남쪽)에 의자.', ['stern windows', 'chair'], use=('read', 'search'))
+           '선장실 가운데·선미 창 앞, 앞(남쪽)에 의자.', ['stern windows', 'chair S'], use=('read', 'search'))
 def captain_desk(c):
     m = 'dwood'
     box(c, 1, 4, 30, 7, 9, m, t0=4, f0=3)

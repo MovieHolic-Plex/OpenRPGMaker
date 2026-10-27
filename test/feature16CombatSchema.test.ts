@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { deserialize, serialize } from '@/project/io';
 import { normalizeSkillRecord } from '@/project/databaseRecordModel';
 import { normalizeEnemyRecord } from '@/project/databaseEnemyTroopRecordModel';
-import { updateSkillRecord } from '@/editor/databaseRecordMutators';
+import { updateEnemyRecord, updateSkillRecord } from '@/editor/databaseRecordMutators';
 import { evaluateDamageFormula, FORMULA_PREVIEW_CONTEXT } from '@/battle/damageFormula';
 import fixture from './fixtures/projects/battle-v3.json';
 
@@ -35,6 +35,55 @@ describe('feature16 combat authoring persistence', () => {
     expect(normalizeSkillRecord({ ...legacy, criticalRate: 300, cooldownTurns: -5, hitSequence: [NaN, -2, 50] })).toMatchObject({ criticalRate: 100, cooldownTurns: 0, hitSequence: [1, 0, 10] });
     expect(normalizeEnemyRecord({ id: 'e', name: 'E' }).rewards.drops).toBeUndefined();
     expect(normalizeEnemyRecord({ id: 'e', name: 'E', rewards: { exp: 0, gold: 0, dropRatePercent: 100, drops: [] } }).rewards.drops).toEqual([]);
+  });
+});
+
+describe('database form combat fields', () => {
+  it('keeps the skill and enemy fields the database forms write', () => {
+    const project = deserialize(JSON.stringify(fixture));
+    const id = project.database.skills[0].id;
+    const name = project.database.skills[0].name;
+    updateSkillRecord(project.database, id, {
+      gaugeShift: -20,
+      chargeTurns: 2,
+      summonResourceId: 'party-pixel-animal-0',
+      learnable: true,
+      inputSequence: { keys: ['up', 'confirm'], timeLimitMs: 2500, successMultiplier: 2, failMultiplier: 0.25 },
+      battleGimmick: { pattern: 'dash', durationTurns: 3 },
+    });
+    const saved = project.database.skills.find((skill) => skill.id === id);
+    expect(saved?.name).toBe(name);
+    expect(saved).toMatchObject({
+      gaugeShift: -20,
+      chargeTurns: 2,
+      summonResourceId: 'party-pixel-animal-0',
+      learnable: true,
+      inputSequence: { keys: ['up', 'confirm'], timeLimitMs: 2500, successMultiplier: 2, failMultiplier: 0.25 },
+      battleGimmick: { pattern: 'dash', durationTurns: 3 },
+    });
+    updateSkillRecord(project.database, id, {
+      gaugeShift: undefined,
+      chargeTurns: undefined,
+      summonResourceId: undefined,
+      learnable: undefined,
+      inputSequence: undefined,
+      battleGimmick: undefined,
+    });
+    const cleared = project.database.skills.find((skill) => skill.id === id);
+    expect(cleared?.gaugeShift).toBeUndefined();
+    expect(cleared?.chargeTurns).toBeUndefined();
+    expect(cleared?.summonResourceId).toBeUndefined();
+    expect(cleared?.learnable).toBeUndefined();
+    expect(cleared?.inputSequence).toBeUndefined();
+    expect(cleared?.battleGimmick).toBeUndefined();
+
+    const enemy = project.database.enemies[0];
+    const itemId = project.database.items[0].id;
+    updateEnemyRecord(project.database, enemy.id, { stealItems: [{ itemId, rate: 40 }] });
+    expect(project.database.enemies[0].stealItems).toEqual([{ itemId, rate: 40 }]);
+    updateEnemyRecord(project.database, enemy.id, { stealItems: undefined });
+    expect(project.database.enemies[0].stealItems).toBeUndefined();
+    expect(project.database.enemies[0].name).toBe(enemy.name);
   });
 });
 

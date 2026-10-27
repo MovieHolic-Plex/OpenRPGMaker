@@ -421,8 +421,10 @@ function scheduleFollowUps(
     const behind = Math.max(0, skipFrames - followUp.startFrame);
     if (behind >= follow.frames.length) continue;
     primary.pending += 1;
-    const start = (): void => {
-      if (!primary.element.isConnected) return;
+    const start = (deferred: boolean): void => {
+      // 즉시 시작(건너뛴 앞 프레임 안에 든 후속)은 본체가 아직 붙기 전(호출자가 mount 뒤에 붙인다)에 돈다 —
+      // 연결 검사는 타이머로 미룬 시작에만 건다. 예전엔 즉시 시작 후속이 통째로 빠졌다.
+      if (deferred && !primary.element.isConnected) return;
       const node = document.createElement("div");
       node.className = "battle-animation-followup";
       node.dataset.testid = "battle-animation-followup";
@@ -447,12 +449,12 @@ function scheduleFollowUps(
     };
     const startFrame = followUp.startFrame - skipFrames;
     if (startFrame <= 0) {
-      start();
+      start(false);
       continue;
     }
     const timer = window.setTimeout(() => {
       timers.delete(timer);
-      start();
+      start(true);
     }, startFrame * frameMs);
     timers.add(timer);
   }

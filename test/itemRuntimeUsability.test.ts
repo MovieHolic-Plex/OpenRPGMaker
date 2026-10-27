@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { createBattleRuntime } from "@/battle/runtime";
+import { targetScopeForCommand } from "@/battle/battleTargetResolver";
 import { createBlankProject } from "@/project/defaults";
 import { normalizeCropRecord } from "@/project/farmModel";
 import { startSession } from "@/project/session";
@@ -19,21 +20,12 @@ describe("default item runtime usability", () => {
 
     for (const item of project.database.items.filter(isMenuUsable)) {
       const session = startSession(project);
-      const actorId = session.partyActorIds[0];
+      const actorId = eligibleActorId(project, item, session);
       if (!actorId) throw new Error("default party actor is missing");
       session.inventory[item.id] = 1;
       session.actorVitals[actorId] = { hp: 1, mp: 0, maxHp: 500, maxMp: 200 };
       session.actorStateIds ??= {};
-      session.actorStateIds[actorId] = [
-        POISON,
-        SLEEP,
-        "state_paralysis",
-        "state_deep_poison",
-        "state_silence",
-        "state_attack_down",
-        "state_defense_down",
-        "state_agility_down",
-      ];
+      session.actorStateIds[actorId] = afflictedStateIds(item);
       session.actorSkillIds ??= {};
       session.actorSkillIds[actorId] = project.database.skills
         .map((skill) => skill.id)
@@ -53,10 +45,10 @@ describe("default item runtime usability", () => {
       const result = useItemFromMenu(project, session, item.id, actorId, targetMonsterInstanceId);
 
       expect(result.kind, item.id).toBe("used");
-      const expectedAfter = item.consumptionLimit === "noLimit" ? before - 1 : before;
-      expect(session.inventory[item.id] ?? 0, item.id).toBe(expectedAfter);
+      const expected = afterOneUse(item, before);
+      expect(session.inventory[item.id] ?? 0, item.id).toBe(expected.copies);
       if (item.consumptionLimit !== "noLimit") {
-        expect(session.itemUseCharges?.[item.id], item.id).toBe(1);
+        expect(session.itemUseCharges?.[item.id], item.id).toBe(expected.charge);
       }
     }
   });
@@ -123,18 +115,20 @@ describe("default item runtime usability", () => {
       const enemyId = before.enemies[0]?.id;
       if (!enemyId) throw new Error("default troop enemy is missing");
 
+      // scope "none" 인 투척물은 발동 기술의 대상 범위를 따른다(battleTargetResolver) — 실제 전투 UI 와 같은 판정으로 대상을 고른다.
+      const scope = targetScopeForCommand(project, { kind: "item", itemId: item.id });
       runtime.performActorCommand({
         kind: "item",
         itemId: item.id,
-        targetEnemyId: item.scope === "enemy" ? enemyId : "",
-        ...(item.scope === "ally" || item.scope === "allAllies" ? { targetActorId } : {}),
+        targetEnemyId: scope === "enemy" ? enemyId : "",
+        ...(scope === "ally" || scope === "allAllies" ? { targetActorId } : {}),
       });
       const after = runtime.snapshot();
 
-      const expectedAfter = item.consumptionLimit === "noLimit" ? 1 : 2;
-      expect(after.eventState.inventory[item.id] ?? 0, item.id).toBe(expectedAfter);
+      const expected = afterOneUse(item, 2);
+      expect(after.eventState.inventory[item.id] ?? 0, item.id).toBe(expected.copies);
       if (item.consumptionLimit !== "noLimit") {
-        expect(after.eventState.itemUseCharges?.[item.id], item.id).toBe(1);
+        expect(after.eventState.itemUseCharges?.[item.id], item.id).toBe(expected.charge);
       }
       expect(battleEffectLanded(before, after), item.id).toBe(true);
     }
@@ -158,6 +152,45 @@ function isBattleUsable(item: ItemRecord): boolean {
       item.healStateIds.length > 0 ||
       item.stateEffects.length > 0
   );
+}
+
+/**
+ * 한 번 쓴 뒤의 사본 수·충전 — consumptionLimit N 은 사본 하나를 N 번 쓰고 없앤다(itemTransitions normalizeItemState).
+ * 공용 투척물(item_shared_battle_*)은 N=1 이라 한 번에 사본 하나가 줄고 충전은 남지 않는다.
+ */
+function afterOneUse(item: ItemRecord, before: number): { copies: number; charge: number | undefined } {
+  if (item.consumptionLimit === "noLimit") return { copies: before - 1, charge: undefined };
+  return item.consumptionLimit === 1 ? { copies: before - 1, charge: undefined } : { copies: before, charge: 1 };
+}
+
+/** 직업·인물 제한이 있는 비전서(item_shared_manual_*)는 그 직업 인물이 써야 한다 — 그 인물을 파티 맨 앞에 세운다. */
+function eligibleActorId(project: Project, item: ItemRecord, session: ReturnType<typeof startSession>): string | undefined {
+  const fallback = session.partyActorIds[0];
+  if (item.usableActorIds.length === 0 && item.usableClassIds.length === 0) return fallback;
+  const eligible = project.database.actors.find((actor) => item.usableActorIds.includes(actor.id) || item.usableClassIds.includes(actor.classId));
+  if (!eligible) return fallback;
+  if (!session.partyActorIds.includes(eligible.id)) session.partyActorIds = [eligible.id, ...session.partyActorIds];
+  return eligible.id;
+}
+
+const BASE_AFFLICTIONS = [
+  POISON,
+  SLEEP,
+  "state_paralysis",
+  "state_deep_poison",
+  "state_silence",
+  "state_attack_down",
+  "state_defense_down",
+  "state_agility_down",
+] as const;
+
+/**
+ * 대상에게 미리 걸어 두는 상태 — 기본 묶음에 그 아이템이 푸는 상태를 더한다. 공용 아이템 카탈로그(item_shared_remedy_*)가
+ * 암흑·석화 같은 상태를 stateEffects remove 로 풀게 되면서, 기본 묶음에 없는 상태만 푸는 치료제는 「효과 없음」으로 거절됐다.
+ */
+function afflictedStateIds(item: ItemRecord): string[] {
+  const removes = item.stateEffects.filter((effect) => effect.operation === "remove").map((effect) => effect.stateId);
+  return [...new Set([...BASE_AFFLICTIONS, ...item.healStateIds, ...removes])];
 }
 
 function learnedSkillId(item: ItemRecord): string | undefined {
@@ -184,16 +217,7 @@ function battleRuntimeFor(project: Project, troopId: string, actorId: string, ta
         [targetActorId]: { hp: 1, mp: 0 },
       },
       stateIds: {
-        [targetActorId]: [
-          POISON,
-          SLEEP,
-          "state_paralysis",
-          "state_deep_poison",
-          "state_silence",
-          "state_attack_down",
-          "state_defense_down",
-          "state_agility_down",
-        ],
+        [targetActorId]: afflictedStateIds(item),
       },
       partyActorIds: [actorId, targetActorId],
     },

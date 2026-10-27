@@ -19,7 +19,8 @@ describe("editor-added item persistence", () => {
     expect(store.getAutoSaveState()).toMatchObject({ kind: "error", code: "session-not-persisted" });
 
     const flushResult = await store.flush();
-    expect(flushResult).toEqual({ kind: "saved-local" });
+    // fresh 세션은 기록을 건너뛰었다고 written:false 로 알린다(성공 토스트 금지, store.ts FlushResult).
+    expect(flushResult).toEqual({ kind: "saved-local", written: false });
     expect(store.getAutoSaveState()).toMatchObject({ kind: "error", code: "session-not-persisted" });
 
     await store.load();

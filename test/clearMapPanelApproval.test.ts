@@ -24,6 +24,10 @@ const mocks = vi.hoisted(() => ({
 }));
 
 vi.mock("@/editor/ui/modal", () => ({ showConfirm: mocks.showConfirm }));
+// 파괴성 확인은 모달이 아니라 조수 창 안의 「답변 필요」 카드(requestAssistantDecision)로 묻는다 — 같은 결정 스텁으로 잇는다.
+vi.mock("@/editor/panels/aiDecisionPrompt", () => ({
+  requestAssistantDecision: (_surface: unknown, options: unknown) => mocks.showConfirm(options),
+}));
 vi.mock("@/editor/tools/applyChangesetToStore", () => ({ applyProposedProject: mocks.apply }));
 vi.mock("@/project/lint/layoutPlacementValidate", () => ({ validateLayoutPlacement: () => [], formatLayoutValidationSummary: () => "" }));
 vi.mock("@/editor/teamWorkflowUi", () => ({ ensureGuestIdentityForAiSurface: () => undefined }));
@@ -68,7 +72,8 @@ function clearMapCall(name = "clear_map"): ProposedCall {
 
 /** run operation 은 **안정 참조**여야 한다 — 매번 새 객체면 소유권 검사가 전부 실패한다. */
 function sessionStub() {
-  const operation = { signal: { aborted: false } };
+  // 결정 모달은 진짜 AbortSignal 계약(throwIfAborted·abort 리스너)을 쓴다 — 가짜 객체 대신 실제 신호를 준다.
+  const operation = { signal: new AbortController().signal };
   const project = createBlankProject();
   return {
     isDraftReviewApproved: () => true,

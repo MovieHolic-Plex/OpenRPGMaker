@@ -106,6 +106,50 @@ describe("Desktop & Steam Depot Game Export", () => {
     expect(appIdText.trim()).toBe("480");
   });
 
+  it("escapes cmd and Steam VDF metacharacters in the game title", async () => {
+    const project = createBlankProject();
+    project.meta.title = "Dungeons & Dragons\n%PATH%";
+    const runtime = await createRuntimeManifest(
+      [
+        { name: "web/player.html", bytes: encoder.encode("<!doctype html><html><head></head><body><div id='app'></div></body></html>") },
+        { name: "web/player.js", bytes: encoder.encode("console.log('player');") },
+        { name: "web/dependency-collector.js", bytes: encoder.encode("var OPRN_RELEASE_COLLECTOR={collectReleaseDependencies:()=>[]};") },
+      ],
+      [],
+    );
+    project.meta.publication = preparePublication(runtime.runtimeTarget);
+    const html = encoder.encode("<!doctype html><html><head></head><body><div id='app'></div></body></html>");
+    const player = encoder.encode("console.log('player');");
+    const collector = encoder.encode("var OPRN_RELEASE_COLLECTOR={collectReleaseDependencies:()=>[]};");
+    const fileMap = new Map<string, Uint8Array>([
+      ["/runtime-archive/default.json", jsonBytes({ runtimeTarget: runtime.runtimeTarget })],
+      [`/runtime-archive/${runtime.runtimeTarget}/runtime.json`, jsonBytes(runtime)],
+      [`/runtime-archive/${runtime.runtimeTarget}/web/player.html`, html],
+      [`/runtime-archive/${runtime.runtimeTarget}/web/player.js`, player],
+      [`/runtime-archive/${runtime.runtimeTarget}/web/dependency-collector.js`, collector],
+    ]);
+    const result = await createDesktopSteamExportPackage(project, {
+      platform: "win64-steam",
+      versionLabel: '1.0 "beta"',
+      executableName: "ChronoBell",
+      fetchBytes: async (path) => {
+        const hit = fileMap.get(path);
+        if (!hit) throw new Error(`Missing fixture path: ${path}`);
+        return hit;
+      },
+    });
+    const zipBytes = new Uint8Array(await result.blob.arrayBuffer());
+    const bat = decoder.decode(readStoredZipEntry(zipBytes, "Launch-ChronoBell.bat")!);
+    const titleLine = bat.split(/\r?\n/).find((line) => line.startsWith("title "));
+    // `%` is doubled so cmd does not expand PATH, and `&` is caret-escaped so it is not a new command.
+    expect(titleLine).toBe('title Dungeons ^& Dragons %%PATH%% (v1.0 "beta")');
+    const vdf = decoder.decode(readStoredZipEntry(zipBytes, "steamworks/app_build_480.vdf")!);
+    expect(vdf).toContain(String.raw`"Desc" "Dungeons & Dragons %PATH% (win64-steam) v1.0 \"beta\""`);
+    const input = decoder.decode(readStoredZipEntry(zipBytes, "steamworks/steam_input_manifest.vdf")!);
+    expect(input).toContain(String.raw`"Set_GameControls" "Dungeons & Dragons %PATH% 기본 조작"`);
+    expect(vdf.split("\n").filter((line) => line.includes('"Desc"'))).toHaveLength(1);
+  });
+
   it("bridges localStorage save slots into saves/*.oprn-save.json for Steam Auto-Cloud", () => {
     expect(saveStorageKeyToDesktopFilePath("oprn:save-slot:v5:1")).toBe("saves/slot-01.oprn-save.json");
     expect(saveStorageKeyToDesktopFilePath("oprn:save-slot:v5:auto")).toBe("saves/autosave.oprn-save.json");

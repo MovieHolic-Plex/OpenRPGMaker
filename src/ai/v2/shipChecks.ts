@@ -14,7 +14,7 @@ import { gameHasCombat } from "@/project/combatPresence";
 import { hiddenStairExits } from "@/project/stairs/fit";
 import { unlitDarkFinding } from "@/qa/gameCheck/visualVoid";
 import { romanceCompletionGaps } from "@/qa/gameCheck/romance";
-import { invisibleStoryEvents, objectiveGaps } from "./discoverability";
+import { invisibleStoryEvents, objectiveGaps, offArtEntrances, doorCellBlocked, repeatedDayDialogue, lingeringHeavyTints } from "./discoverability";
 import { fieldMenu } from "@/project/fieldMenu";
 import { FACTORY_HERO_ARMS } from "./genreDefaults";
 
@@ -408,6 +408,24 @@ export function shipBlockers(project: Project, task: string): ShipBlocker[] {
     message: `「${event.mapName}」 ${event.name}(${event.eventId}, ${event.x},${event.y}) 은 ${event.ends ? "엔딩을 부르는" : "이야기를 넘기는"} 이벤트인데 화면에 아무것도 안 보인다(투명·건물 벽면 한 칸). 새 플레이어는 어디를 눌러야 하는지 모른다 — patch_event_page{mapId, eventId, pageIndex, set:{nearSparkle:{radius:2}}} 로 반짝임을 달거나, 그림이 있는 인물·작은 물건(상자·침대·표지판)으로 옮긴다.`,
     evidence: `${event.mapId} ${event.eventId} (${event.x},${event.y}) page ${event.pageIndex}`,
   }));
+  // 그려진 입구(계단·스크린도어·문짝) 옆 맨바닥에 선 문·이야기 이벤트 — 새 플레이어는 그림을 누른다(J103·J104).
+  const offArt: ShipBlocker[] = offArtEntrances(project).slice(0, 4).map((entry) => ({
+    id: "entrance-off-art",
+    message: `「${entry.mapName}」 ${entry.name}(${entry.eventId}) 이 그려진 입구 그림 (${entry.door.x},${entry.door.y}) 옆 맨바닥 (${entry.x},${entry.y}) 에 있다 — 새 플레이어는 그림을 눌러 보고 아무 일도 없어 길을 잃는다. move_event{mapId:'${entry.mapId}', eventId:'${entry.eventId}', x:${entry.door.x}, y:${entry.door.y}} 로 그림 칸에 옮긴다${doorCellBlocked(project, entry.mapId, entry.door.x, entry.door.y) ? ` — 그 칸은 막힌 칸이니 patch_event_page{mapId:'${entry.mapId}', eventId:'${entry.eventId}', pageIndex:0, set:{priority:'same', overlapForbidden:true}} 로 부딪혀 열리게 한다(조사형이면 그림을 바라보고 누르면 열린다)` : ""}.`,
+    evidence: `${entry.mapId} ${entry.eventId} (${entry.x},${entry.y}) door (${entry.door.x},${entry.door.y})`,
+  }));
+  // 하루 반복 게임에서 이튿날 첫날 대사를 그대로 다시 한다(J106 「신입이지?」 둘째 날).
+  const repeats: ShipBlocker[] = repeatedDayDialogue(project).slice(0, 4).map((entry) => ({
+    id: "dialogue-repeat",
+    message: `「${entry.mapName}」 ${entry.name}(${entry.eventId}) 의 「${entry.pageName}」 페이지가 ${entry.from}~${entry.to}일째를 덮는데 그 안에서 날을 가르지 않는다 — ${entry.from + 1}일째에 「${entry.line}…」 를 그대로 다시 한다. 날마다 페이지를 나누거나(조건 하루 변수 >= 그날), 페이지 안에서 fork{하루 변수 == ${entry.from}} 로 첫날과 다음 날 말을 가른다.`,
+    evidence: `${entry.eventId} ${entry.pageName} ${entry.from}-${entry.to}`,
+  }));
+  // 장면 뒤에 남는 짙은 화면 색 — 필드가 대화 배경이 걸린 것처럼 어둡다(J98).
+  const tints: ShipBlocker[] = lingeringHeavyTints(project).slice(0, 3).map((entry) => ({
+    id: "field-tint-heavy",
+    message: `「${entry.mapName}」 ${entry.name}(${entry.eventId}) 이 화면 색 「${entry.value}」(알파 ${entry.alpha})를 남긴 채 끝난다 — 필드 전체가 대화 배경이 걸린 것처럼 어두워 새 플레이어가 화면이 멈춘 줄 안다. 이 이벤트 끝의 화면 색을 알파 0.3 이하로 낮춘다(patch_event_page 로 그 m2-046 명령의 value 를 '20,30,80,0.3' 처럼) — 밤 분위기는 그 정도로 충분하고, 회상처럼 잠깐만 쓸 색이면 끝에 value:'neutral' 로 지운다.`,
+    evidence: `${entry.eventId} ${entry.value}`,
+  }));
   const objectives: ShipBlocker[] = objectiveGaps(project).map((message) => ({ id: "objective-missing", message, evidence: message.slice(0, 120) }));
   // 연애 게임의 호감이 인물에 묶이지 않으면 ESC 호감도·호감 HUD·호감 엔딩이 비어 있다(J91) — 경고가 아니라 막는다.
   const romance: ShipBlocker[] = romanceCompletionGaps(project, { task }).slice(0, 4).map((message) => ({ id: "romance-gap", message, evidence: message.slice(0, 120) }));
@@ -418,7 +436,7 @@ export function shipBlockers(project: Project, task: string): ShipBlocker[] {
     const finding = unlitDarkFinding(map);
     return finding ? [{ id: "dark-unlit", message: `「${map.name ?? map.id}」(${map.id}) ${finding.message.replace(/^시각 공백: /u, "")}`, evidence: `${map.id} ambient ${map.defaultLighting?.ambient}` }] : [];
   }).slice(0, 3);
-  return [...hidden, ...unlit, ...invisible, ...objectives, ...romance, ...editorDefaultsLeft(project), ...endingClosureProblems(project), ...openingWithoutPlace(project), ...offPremiseArt(project, task), ...defaultPlaceLeaks(project, task), ...titleMismatch(project, task), ...requestedFeatureGaps(project, task), ...unreachable, ...spoilers];
+  return [...hidden, ...unlit, ...invisible, ...offArt, ...repeats, ...tints, ...objectives, ...romance, ...editorDefaultsLeft(project), ...endingClosureProblems(project), ...openingWithoutPlace(project), ...offPremiseArt(project, task), ...defaultPlaceLeaks(project, task), ...titleMismatch(project, task), ...requestedFeatureGaps(project, task), ...unreachable, ...spoilers];
 }
 
 /** 게임이 «아직 안 지어졌다»는 신호 — 뼈대 자리표시만 남았거나 엔딩이 없다(편집기 기본 HUD·창 같은 마감 항목은 여기서 보지 않는다). */
