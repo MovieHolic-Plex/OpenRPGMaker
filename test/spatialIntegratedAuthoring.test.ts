@@ -116,7 +116,7 @@ describe("spatial Database authoring integration", () => {
     expect(getDatabaseActiveTab()).toBe("spatialSpaces");
     expect(spatialSession().tab).toBe("spaces");
     expect(spatialSession().breadcrumb).toHaveLength(1);
-    expect(host.querySelector("[data-testid='composition-board']")).not.toBeNull();
+    expect(host.querySelector("[data-testid='composition-board']"), JSON.stringify({ s: spatialSession(), h: host.innerHTML.slice(0, 400) })).not.toBeNull();
     expect(host.querySelector("[data-testid='spatial-places-board']")).toBeNull();
     expect(host.querySelector("[data-testid='db-tab-spatial-spaces']")).toBeNull();
     expect(host.querySelector("[data-testid='db-tab-spatial-places']")?.classList.contains("active")).toBe(true);

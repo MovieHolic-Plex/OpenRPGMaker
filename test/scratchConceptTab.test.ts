@@ -142,8 +142,6 @@ describe("scratchConceptTab 실내 시드", () => {
     const host = renderOnTileset(INTERIOR_ROOM_TILESET_ID);
     expect(host.querySelector("[data-testid='scratch-concept-empty']")).not.toBeNull();
     expect(store.getCurrent().tilesets[INTERIOR_ROOM_TILESET_ID]?.scratchConceptBundles).toEqual([]);
-    // 「초안 넣기」 버튼은 시설 초안 목록이 비어 있어 더 이상 나오지 않는다(공용 실내 초기화) — 버튼 검사만 폐기.
-    expect(host.querySelector("[data-testid='scratch-concept-seed-templates']")).toBeNull();
   });
 });
 

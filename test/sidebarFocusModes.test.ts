@@ -136,7 +136,8 @@ describe('focused sidebar', () => {
     // (제거) 위 줄에서 고정 토글이 툴바에 정확히 1개 있음을 이미 단언했다 — 같은 선택자 toBeNull 은 모순이었다.
     resetInspectionPinsForTests();
     expect(find('toolbar-toggle-history')).not.toBeNull();
-    find('oprn-tool-overflow')?.click();
+    // 핀 토글은 overflow 메뉴를 열어 둔 채 다시 그린다(tileToolbarMenus.ts openMenu = "overflow") — 이미 열려 있으면 다시 누르지 않는다.
+    if (!find('sidebar-pin-history')) find('oprn-tool-overflow')?.click();
     find('sidebar-pin-history')?.click();
     expect(JSON.parse(localStorage.getItem(SIDEBAR_PINS_KEY) ?? '[]')).toEqual([]);
     expect(find('toolbar-toggle-history')?.closest('[data-testid="toolbar-overflow-dropdown"]')).not.toBeNull();

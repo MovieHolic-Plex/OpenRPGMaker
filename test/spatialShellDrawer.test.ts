@@ -40,7 +40,8 @@ afterEach(() => {
 
 describe("spatial inspector drawer", () => {
   it("exposes a user-controlled inspector toggle that does not start open", () => {
-    // Given / When
+    // Given / When — 레거시 scratchConcepts 경로는 상세 무대가 없다(#2888 이후 places 탭이 정본).
+    setDatabaseActiveTab("spatialPlaces");
     renderDatabasePanel(host);
     const toggle = host.querySelector<HTMLButtonElement>("[data-testid='spatial-inspector-toggle']");
     const inspector = host.querySelector("[data-testid='spatial-inspector']");
@@ -56,7 +57,8 @@ describe("spatial inspector drawer", () => {
     setDatabaseActiveTab("spatialPlaces");
     renderDatabasePanel(host);
     // #2888 이후 상세 무대는 지연된다(spatialShell deferDetailStage) — 「상세」 토글로 연 뒤에 이름을 비교한다.
-    host.querySelector<HTMLButtonElement>("[data-testid='spatial-inspector-toggle']")?.click();
+    const detailToggle = host.querySelector<HTMLButtonElement>("[data-testid='spatial-inspector-toggle']");
+    if (detailToggle?.getAttribute("aria-pressed") !== "true") detailToggle?.click();
     const selected = host.querySelector("[data-testid^='spatial-card-'].is-selected");
     const header = host.querySelector("[data-testid='spatial-name']")?.textContent ?? "";
     const inspector = host.querySelector(".spatial-inspector-name")?.textContent ?? "";

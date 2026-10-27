@@ -132,6 +132,9 @@ describe("sidebar brush and source gestures", () => {
     custom();
     const old = node("chipset-tile-1");
     pointer(old, "pointerdown");
+    // renderTilePalette now keeps the sheet in the DOM when its retain key is unchanged (2026-09-30 palette perf work),
+    // so force a real replacement by emptying the host first.
+    host.replaceChildren();
     renderTilePalette(host);
     pointer(node("chipset-tile-6"), "pointerup");
     expect(editorState.get()).toMatchObject({ selectedTile: 0, activePaletteStamp: null });
