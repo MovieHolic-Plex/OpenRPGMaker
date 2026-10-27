@@ -66,7 +66,7 @@ describe("AI 툴 카탈로그 예산", () => {
       "place_opening_background",
       "place_opening_charset_actor",
       "show_title_opening", "upsert_opening_audio_cue", "upsert_opening_emote", "upsert_opening_layer", "upsert_opening_light_fx",
-    ]);
+    ].sort());
     const openingTokens = estimateContextTokens([{ role: "system", content: JSON.stringify(opening) }]);
     expect(openingTokens).toBeLessThanOrEqual(OPENING_FAMILY_TOKEN_CEILING);
   });

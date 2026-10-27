@@ -1872,6 +1872,25 @@ intent is a fixed test input. Browser screenshots use a scripted model with the 
 editor → HTTP request → Pi Agent → registry execution chain. They do not prove live-model
 intent or authoring quality. Live OAuth providers were disconnected during this verification.
 
+### 첫 요청 = 핵심 동사 + find_tools (2026-10-27)
+
+활성 도구가 465개로 늘자 첫 요청이 예산 세 개를 넘었다: 능력 색인 9,924자(상한 6,100), RPG 의도 첫 목록
+97개(상한 80), 오프닝 계열 7,774토큰(상한 7,400). 상한은 올리지 않고 첫 요청을 줄였다(#3630 로컬 CLI 압축과 같은 생각).
+
+- **능력 색인**(`toolCapabilityIndex.ts`)은 이제 모든 이름을 싣지 않는다. 핵심 동사(`core` 도메인 도구 +
+  `firstRequestTools.ts` 의 조회·제어 도구)만 이름으로 싣고, 나머지 영역은 「도구 수 · domain · 찾기 낱말」 한 줄이다
+  (낱말 = 그 영역 도구 이름의 명사 토막 빈도 상위 16개). 9,924자 → 2,232자, 상한 3,000으로 내림.
+  규칙 1·3이 바뀌었다: 이름이 안 보이는 기능도 대부분 있으니 **find_tools 로 찾아보지 않고 「없다」고 하는 것**이 결함이다.
+  오프닝 제작 경로(`piAgentRuntime`)는 이미 좁힌 목록이라 `{ listAllNames: true }` 로 예전처럼 전부 싣는다.
+- **도달성 계약**이 「색인에 이름이 있다」에서 「정확한 이름 한 번의 find_tools 가 그 도구를 돌려준다」로 바뀌었다
+  (`aiToolCapabilityIndex` 의 전수 검사, `aiEditorReachParity` 의 파사드 검사). 장르·몬스터 잠금이 가리는 도구는 제외 — 그 잠금의 계약이다.
+- **모험 의도의 첫 목록**(`adventureToolNames`)에서 오프닝 애니메틱 30개를 뺐다. 입구 `plan_opening`·`get_animatic_capabilities` 만 남는다.
+  2026-10-18(#2863)에 들어온 묶음이었다. 새 게임 한 줄 요청의 Pi 경로는 `plainTurn` 이 `requestsFullGameOpeningProduction` 일 때
+  `OPENING_ANIMATIC_AUTHORING_TOOLS` 를 따로 얹으므로 그 경로의 오프닝 노출은 그대로다. RPG 고정 의도: 97개 → 70개(73,584 → 67,236토큰).
+- **오프닝 계열 예산**: `edit_opening.scene` 이 `set_opening` 의 큰 장면 스키마를 두 번째로 싣던 것을 짧은 객체 설명으로 바꿨다
+  (검사는 `run` 의 `normalizeScene` 이 같다). 목록에 빠져 있던 `set_opening_sprite_states` 를 넣고 38도구 7,774 → 6,774토큰.
+- 남은 큰 몫: 레시피 블록(`buildTaskRecipes`)이 약 45,000자로 첫 요청 시스템 프롬프트의 가장 큰 고정 블록이다. 이번 변경 밖이다.
+
 Regression seams: `aiChatPanelComposerMode`, `piAgentRunOutcome`, `piAgentToolAdapter`,
 `piAgentTeamRuntime`, `piAgentToolEscalation.bun.test.ts`, `piApplyModes.bun.test.ts`,
 `aiToolExposureHybrid`, and `aiToolCapabilityIndex`. Reproducible browser QA:
