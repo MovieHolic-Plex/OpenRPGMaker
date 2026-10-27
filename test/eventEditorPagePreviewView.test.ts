@@ -143,6 +143,10 @@ describe("이 페이지가 하는 일 — 인스펙터의 미리보기", () => {
     const mapId = seedProject();
     renderEventEditorDynamic(host, mapId, EVENT_ID);
 
+    // 기본 보기가 이미 목록이라 현재 보기를 다시 누르면 아무것도 저장하지 않는다(renderViewToggle 의 mode !== current) —
+    // 저장을 보려면 다른 저작 보기로 갔다가 돌아와야 한다.
+    click(host, "event-view-toggle-storyboard");
+    expect(localStorage.getItem("oprn:storyboard-mode")).toBe("storyboard");
     click(host, "event-view-toggle-list");
     expect(localStorage.getItem("oprn:storyboard-mode")).toBe("list");
     expect(host.querySelector('[data-testid="event-view-toggle-preview"]')).toBeNull();
