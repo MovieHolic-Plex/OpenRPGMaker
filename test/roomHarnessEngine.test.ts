@@ -19,13 +19,13 @@ const INTERIOR_START = {
   door: { x: 8, y: 9 },
   theme: "bedroom",
 };
-const DUNGEON_START = { mapId: "m_dun", name: "테스트 던전", width: 26, height: 18, theme: "lava" };
 
 describe("room harness 공유 엔진", () => {
-  it("레지스트리에 두 킷이 등록돼 있다", () => {
-    expect(listRoomKitIds().sort()).toEqual(["dungeon-room-v1", "villager-room-v1"]);
+  // 던전 방 킷 dungeon-room-v1 은 2026-10-07 저작권 정리(PR #2335)로 지워졌다(registry.ts 주석) — 그 경우들은 뺐다.
+  it("레지스트리에 실내 킷이 등록돼 있다", () => {
+    expect(listRoomKitIds().sort()).toEqual(["villager-room-v1"]);
     expect(getRoomKit("villager-room-v1")).toBeDefined();
-    expect(getRoomKit("dungeon-room-v1")).toBeDefined();
+    expect(getRoomKit("dungeon-room-v1")).toBeUndefined();
     expect(getRoomKit("nope")).toBeUndefined();
     // 모든 킷은 필수 인터페이스를 구현한다
     for (const kit of Object.values(ROOM_HARNESS_KITS)) {
@@ -44,7 +44,6 @@ describe("room harness 공유 엔진", () => {
 
   it.each([
     { kitId: "villager-room-v1", args: INTERIOR_START, mapId: "m_int" },
-    { kitId: "dungeon-room-v1", args: DUNGEON_START, mapId: "m_dun" },
   ])("$kitId: start → 세션·맵·맵트리 등록", ({ kitId, args, mapId }) => {
     const project = createBlankProject();
     const res = startRoomSession(project, kitId, args);
@@ -62,7 +61,6 @@ describe("room harness 공유 엔진", () => {
 
   it.each([
     { kitId: "villager-room-v1", args: INTERIOR_START },
-    { kitId: "dungeon-room-v1", args: DUNGEON_START },
   ])("$kitId: advance 루프가 모든 레이어를 완료한다", ({ kitId, args }) => {
     const project = createBlankProject();
     const start = startRoomSession(project, kitId, args);
@@ -84,7 +82,6 @@ describe("room harness 공유 엔진", () => {
 
   it.each([
     { kitId: "villager-room-v1", demo: "bedroom" },
-    { kitId: "dungeon-room-v1", demo: "stone" },
   ])("$kitId: runRoomPipeline(demo=$demo)이 맵을 만든다", ({ kitId, demo }) => {
     const project = createBlankProject();
     const res = runRoomPipeline(project, kitId, { demo });
@@ -95,7 +92,6 @@ describe("room harness 공유 엔진", () => {
 
   it.each([
     { kitId: "villager-room-v1", args: INTERIOR_START },
-    { kitId: "dungeon-room-v1", args: DUNGEON_START },
   ])("$kitId: 완성 후 evaluateRoom이 리포트를 낸다", ({ kitId, args }) => {
     const project = createBlankProject();
     const start = startRoomSession(project, kitId, args);
@@ -113,8 +109,7 @@ describe("room harness 공유 엔진", () => {
     expect(Array.isArray(report.issues)).toBe(true);
   });
 
-  it("listRoomDemos는 킷 데모를 나열한다", () => {
-    const dun = listRoomDemos("dungeon-room-v1").data as { plans: unknown[] };
-    expect(dun.plans.length).toBeGreaterThan(0);
+  it("listRoomDemos는 지워진 던전 킷을 모른다고 한다", () => {
+    expect(() => listRoomDemos("dungeon-room-v1")).toThrow();
   });
 });

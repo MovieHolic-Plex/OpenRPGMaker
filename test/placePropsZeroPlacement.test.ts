@@ -1,7 +1,11 @@
 import { describe, expect, it } from "vitest";
-import { createBlankProject } from "@/project/defaults";
+import { createBlankProject as createBlankDefaultProject } from "@/project/defaults";
+import { startOnRetiredCombinedTown } from "./support/retiredEasyRpgTilesets";
 import { runTool } from "@/editor/tools/toolRunner";
 import type { Project } from "@/project/types";
+
+// 합본 마을 타일 번호·재료(돌벽=12, 팻말, 침엽수)를 겨냥한 시험 — 2026-10-07 저작권 정리 뒤 새 프로젝트 시작 맵은 버들항이라 옛 저장본처럼 합본 마을 위에서 시작한다.
+const createBlankProject = () => startOnRetiredCombinedTown(createBlankDefaultProject());
 
 // 라이브 QA 사고: fill_region 이 '키큰 풀'로 덮은 영역에 place_props 로 침엽수를 220개 요청하면
 // 0그루가 놓이는데도 ok=true 로 끝나, 나무 한 그루 없는 "빽빽한 숲"이 완성으로 보고됐다.

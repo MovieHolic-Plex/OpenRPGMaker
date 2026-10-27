@@ -98,7 +98,8 @@ describe("clipMapCellsToRegion", () => {
     if (otherId) expect(project.maps[otherId].lowerTiles[0]).toBe(99);
   });
 
-  it("맵 크기가 다르면(리사이즈) 클립하지 않고 통과시킨다", () => {
+  // 영역 작업은 맵 크기를 못 바꾼다 — 리사이즈는 영역 밖 변경이라 원래 맵으로 되돌리고 바뀐 폭·높이 합을 센다(clipToRegion.ts 크기 분기).
+  it("맵 크기가 다르면(리사이즈) 원래 맵으로 되돌린다", () => {
     const base = baseProject();
     const proposed: Project = structuredClone(base);
     proposed.maps[MAP_ID].width = W + 2;
@@ -106,8 +107,8 @@ describe("clipMapCellsToRegion", () => {
 
     const { project, clippedCells } = clipMapCellsToRegion(base, proposed, MAP_ID, REGION);
 
-    expect(clippedCells).toBe(0);
-    expect(project).toBe(proposed);
+    expect(clippedCells).toBe(2);
+    expect(project.maps[MAP_ID]).toBe(base.maps[MAP_ID]);
   });
 });
 

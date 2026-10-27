@@ -14,7 +14,8 @@ function horrorProject() {
 
 describe("qa gameCheck — 추격 호러", () => {
   it("추격자 한 칸 시간은 걸음 트윈 + 이동 간격이다", () => {
-    expect(chaserStepMs({ type: "chase", speed: 3, frequency: 3 })).toBe(960);
+    // #3231 이 걸음 속도표(characterMotion.ts)를 다시 잡았다 — 속도 3 트윈이 짧아져 960 → 880.
+    expect(chaserStepMs({ type: "chase", speed: 3, frequency: 3 })).toBe(880);
     expect(chaserStepMs({ type: "chase", speed: 6, frequency: 8 })).toBe(240);
   });
 
