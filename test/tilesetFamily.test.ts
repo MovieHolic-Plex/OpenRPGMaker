@@ -4,11 +4,14 @@ import { createBlankProject } from "@/project/defaults";
 import { sameFamilyTilesets, tilesetFamily, tilesetFamilyLabel } from "@/project/tilesetFamily";
 import type { Project, TilesetDef } from "@/project/types";
 import { deserialize, serialize } from "@/project/io/serialize";
+import { withRetiredEasyRpgTilesets } from "./support/retiredEasyRpgTilesets";
 
 function withUploaded(project: Project, id: string, extra: Partial<TilesetDef> = {}): Project {
-  const base = project.tilesets.easyrpg_chipset_combined_town ?? Object.values(project.tilesets)[0]!;
+  const base = Object.values(project.tilesets)[0]!;
   project.tilesets[id] = { ...structuredClone(base), id, name: `올린 ${id}`, image: { type: "uploaded", id: `asset_${id}` }, ...extra };
   delete project.tilesets[id]!.referenceDocuments;
+  // 2026-10-07 저작권 정리: 새 프로젝트의 첫 타일셋은 beodeul_city(family oprn-atlas)라 복제본이 그 family 를 물려받는다 — 「family 없는 업로드」를 만들려면 지운다.
+  if (!("family" in extra)) delete project.tilesets[id]!.family;
   delete project.tilesets[id]!.referenceSourceTilesetId;
   return project;
 }
@@ -19,7 +22,8 @@ function bundledIds(project: Project, prefix: string): string[] {
 
 describe("tilesetFamily", () => {
   it("easyrpg 번들 둘은 같은 계열이고 이름은 EasyRPG", () => {
-    const project = createBlankProject();
+    // 2026-10-07 저작권 정리: 새 프로젝트에 EasyRPG 시트가 없다 — 옛 저장본처럼 은퇴 시트를 심어 계열 판정을 검증한다.
+    const project = withRetiredEasyRpgTilesets(createBlankProject());
     const [a, b] = bundledIds(project, "easyrpg_");
     expect(a && b).toBeTruthy();
     expect(tilesetFamily(project, a!)).toBe("easyrpg");
@@ -28,7 +32,15 @@ describe("tilesetFamily", () => {
   });
 
   it("forest_harmony 는 easyrpg 계열, 성채는 다른 계열", () => {
+    // 2026-10-07 저작권 정리: 번들 forest_harmony·opengameart_castle 이 새 프로젝트에서 빠졌다. 계열은 id 로 판정하므로 같은 id 의 번들 칩셋을 합성해 계약을 유지한다.
     const project = createBlankProject();
+    const base = Object.values(project.tilesets)[0]!;
+    for (const [id, textureKey] of [["forest_harmony", "tex_forest_harmony"], ["opengameart_castle", "tex_opengameart_castle"]] as const) {
+      project.tilesets[id] = { ...structuredClone(base), id, name: id, image: { type: "bundled", id: textureKey } };
+      delete project.tilesets[id]!.family;
+      delete project.tilesets[id]!.referenceDocuments;
+      delete project.tilesets[id]!.referenceSourceTilesetId;
+    }
     expect(tilesetFamily(project, "forest_harmony")).toBe("easyrpg");
     const castle = bundledIds(project, "opengameart_castle")[0];
     expect(castle).toBeTruthy();
@@ -68,7 +80,10 @@ describe("tilesetFamily", () => {
     const project = withUploaded(createBlankProject(), "pack", { family: "rasak-fantasy" });
     const loaded = deserialize(serialize(project));
     expect(loaded.tilesets.pack?.family).toBe("rasak-fantasy");
-    const legacy = deserialize(serialize(createBlankProject()));
+    // 새 프로젝트의 beodeul_city 는 family 를 갖는다(2026-10-07 이후) — family 없는 옛 저장본은 그 필드를 지운 사본으로 재현한다.
+    const old = createBlankProject();
+    for (const tileset of Object.values(old.tilesets)) delete tileset.family;
+    const legacy = deserialize(serialize(old));
     expect(Object.values(legacy.tilesets).some((t) => "family" in t)).toBe(false);
   });
 });

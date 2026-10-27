@@ -24,11 +24,17 @@ import { COMBINED_TOWN_TILESET_ID } from "@/project/defaults/constants";
 import { store } from "@/project/store";
 import type { PalettePreset, Project, TileAiMetadata, TilesetDef } from "@/project/types";
 import { findByTestId, installFakeDom, renderWithFakeDom } from "./fakeDom";
+import { startOnRetiredCombinedTown } from "./support/retiredEasyRpgTilesets";
+
+// 2026-10-07 저작권 정리로 새 프로젝트에 합본 마을 시트가 없다 — 이 시험은 그 시트 id(COMBINED_TOWN_TILESET_ID)로 검토 흐름을 보고, tilesetId 없는 도구 호출은 시작 맵 시트를 쓰므로 옛 저장본처럼 시작 맵까지 얹는다.
+function blankProjectWithCombinedTown(): Project {
+  return startOnRetiredCombinedTown(createBlankProject());
+}
 
 let restoreDom: (() => void) | null = null;
 
 beforeEach(() => {
-  store.replace(createBlankProject());
+  store.replace(blankProjectWithCombinedTown());
   store.getCurrent().tilesets[COMBINED_TOWN_TILESET_ID].tileMeta = [];
   resetMapEditHistory();
   restoreDom = installFakeDom();
@@ -185,7 +191,7 @@ describe("locked tile metadata guards", () => {
 
 describe("tileset reaudit pipeline", () => {
   it("keeps the existing 0.5 fallback for missing metadata", async () => {
-    const project = createBlankProject();
+    const project = blankProjectWithCombinedTown();
     const seen: number[][] = [];
     const client: TilesetVisionClient = {
       classifyTiles: (request) => {
@@ -205,7 +211,7 @@ describe("tileset reaudit pipeline", () => {
   });
 
   it("mock vision client 호출에서 locked 타일을 제외하고 보존 카운트를 반환한다", async () => {
-    const project = createBlankProject();
+    const project = blankProjectWithCombinedTown();
     const tileset = project.tilesets[COMBINED_TOWN_TILESET_ID];
     setMeta(tileset, 1, { confidence: 0.2, locked: true });
     setMeta(tileset, 2, { confidence: 0.3 });
@@ -304,7 +310,7 @@ describe("palette preset editor", () => {
   });
 
   it("프리셋 upsert diff 요약에는 잠긴 항목 보존 문구가 포함된다", () => {
-    const context: ToolContext = { project: createBlankProject() };
+    const context: ToolContext = { project: blankProjectWithCombinedTown() };
     context.project.tilesets[COMBINED_TOWN_TILESET_ID].palettePresets = [preset("pp_locked", { locked: true })];
     const result = runTool(context, "upsert_palette_preset", {
       preset: { name: "새 AI 프리셋", slots: [{ role: "ground", tileIds: [1] }] },
@@ -328,7 +334,7 @@ function setMeta(tileset: TilesetDef, tile: number, patch: Partial<TileAiMetadat
 }
 
 function projectWithLockedTile(tile: number): Project {
-  const project = createBlankProject();
+  const project = blankProjectWithCombinedTown();
   setMeta(project.tilesets[COMBINED_TOWN_TILESET_ID], tile, {
     confidence: 1,
     label: "잠금 라벨",

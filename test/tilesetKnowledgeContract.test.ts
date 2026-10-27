@@ -10,13 +10,15 @@ describe("tileset knowledge persistence contract", () => {
   it("round-trips repeatable block dimensions and per-cell layers", () => {
     const project = createBlankProject();
     const tileset = project.tilesets[project.maps[project.startMapId].tilesetId];
+    // 2026-10-07 저작권 정리: 새 프로젝트 시작 칩셋이 beodeul_city(한 줄 128칸)로 바뀌어, 30칸 줄을 가정한 하드코딩 번호(31·32·61·62)는 직사각형이 아니다 — 줄 폭에서 계산한다.
+    const row = tileset.tilesPerRow;
     const result = compileTilesetKnowledge({
       groupId: "cliff-2x3",
       name: "반복 절벽",
       passage: open,
       template: "repeatable-cliff-2x3",
       tileCount: tileset.count,
-      tileIds: [1, 2, 31, 32, 61, 62],
+      tileIds: [1, 2, 1 + row, 2 + row, 1 + 2 * row, 2 + 2 * row],
       tilesPerRow: tileset.tilesPerRow,
     });
     expect(result.kind).toBe("valid");

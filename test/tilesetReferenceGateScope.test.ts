@@ -38,7 +38,8 @@ describe("tileset reference gate scope", () => {
 
   it("only tile-choosing tools tell the model to read references first", () => {
     const byName = new Map(listTools().map(tool => [tool.name, tool]));
-    for (const name of ["create_map", "run_dungeon_room_pipeline", "run_interior_room_pipeline"]) {
+    // run_dungeon_room_pipeline·run_interior_room_pipeline 은 도구 목록에서 제거됨(공개 기준 커밋 정리) — 남은 코드 선택 도구 create_map 만 본다.
+    for (const name of ["create_map"]) {
       const tool = byName.get(name)!;
       expect(tool.description).not.toContain("먼저 조회한다");
       expect(JSON.stringify(tool.parameters.properties.referencePurpose)).toContain("읽지 않아도 된다");
