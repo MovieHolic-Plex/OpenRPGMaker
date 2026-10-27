@@ -534,6 +534,20 @@ export function dialogueKindLabel(kind: DialogueLineKind): string {
   }
 }
 
+/** 퀘스트·엔딩 화면 글이 어느 칸인지(제목·요약·단계 N·머리말·크레딧). 그 밖의 줄은 undefined. */
+export function registryFieldLabel(line: Pick<DialogueLine, "scope" | "kind" | "field">): string | undefined {
+  if (line.scope === "quest") {
+    if (line.field === "title") return "퀘스트 제목";
+    if (line.field === "summary") return "퀘스트 요약";
+    const step = /^(?:step|node)(\d+)$/u.exec(line.field);
+    return step ? `퀘스트 ${Number(step[1]) + 1}단계` : "퀘스트";
+  }
+  if (line.scope === "ending" && line.kind === "ending") {
+    return line.field === "name" ? "엔딩 제목" : line.field === "kicker" ? "엔딩 머리말" : line.field === "credits" ? "엔딩 크레딧" : "엔딩";
+  }
+  return undefined;
+}
+
 /** 창 넘침 판정 대상인가 — 대화창에 뜨는 줄만(선택지 항목·설명·엔딩은 다른 창이다). */
 export function dialogueLineUsesMessageWindow(line: Pick<DialogueLine, "kind">): boolean {
   return line.kind === "text" || line.kind === "choicePrompt" || line.kind === "presentPrompt";
