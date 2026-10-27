@@ -75,4 +75,49 @@ describe("numberField bounds clamp + display write-back (P4)", () => {
     input.dispatchEvent(new Event("input"));
     expect(input.value).toBe("42");
   });
+
+  it("keeps a leading minus so a signed value can be typed (skill priority, backdrop scroll)", () => {
+    const committed: number[] = [];
+    const field = numberField("우선도", "test-number-field", 0, (next) => committed.push(next), { min: -7, max: 7 });
+    const input = (field as unknown as FakeElement).querySelector("input");
+    if (!input) throw new Error("numberField 가 input 을 렌더하지 않음");
+    input.value = "-";
+    input.dispatchEvent(new Event("input"));
+    expect(committed).toEqual([]);
+    expect(input.value).toBe("-");
+    input.value = "-2";
+    input.dispatchEvent(new Event("input"));
+    expect(committed.at(-1)).toBe(-2);
+    expect(input.value).toBe("-2");
+  });
+
+  it("keeps a trailing decimal and an equivalent spelling while a fraction is typed", () => {
+    const committed: number[] = [];
+    const field = numberField("배율", "test-number-field", 1, (next) => committed.push(next), { min: 0, max: 10, step: 0.05 });
+    const input = (field as unknown as FakeElement).querySelector("input");
+    if (!input) throw new Error("numberField 가 input 을 렌더하지 않음");
+    input.value = "1.";
+    input.dispatchEvent(new Event("input"));
+    expect(committed).toEqual([]);
+    expect(input.value).toBe("1.");
+    input.value = "1.0";
+    input.dispatchEvent(new Event("input"));
+    expect(committed.at(-1)).toBe(1);
+    expect(input.value).toBe("1.0");
+    input.value = "1.05";
+    input.dispatchEvent(new Event("input"));
+    expect(committed.at(-1)).toBe(1.05);
+    expect(input.value).toBe("1.05");
+  });
+
+  it("resolves a lone minus to the floor when the field blurs", () => {
+    const committed: number[] = [];
+    const field = numberField("우선도", "test-number-field", 1, (next) => committed.push(next), { min: -7, max: 7 });
+    const input = (field as unknown as FakeElement).querySelector("input");
+    if (!input) throw new Error("numberField 가 input 을 렌더하지 않음");
+    input.value = "-";
+    input.dispatchEvent(new Event("change"));
+    expect(input.value).toBe("-7");
+    expect(committed.at(-1)).toBe(-7);
+  });
 });

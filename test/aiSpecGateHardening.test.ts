@@ -166,6 +166,36 @@ describe("기존 내용 보호는 밑그림 안에서도 — 기준선(사용자
     expect(countLower(session.getProposedProject().maps.m1, TILE.WALL)).toBe(0);
   });
 
+  it("confirmDestroy 문자열 true 도 철거 의도로 읽고 clear_region 을 통과시킨다", async () => {
+    // break: set_build_spec 이 스키마 정규화를 안 거치므로 "true" 를 === true 로만 보면 선언이 버려지고 정리가 막힌다.
+    const project = mkProject();
+    fillLower(project.maps.m1, 3, 3, 4, 4, TILE.WALL);
+    const asset = { id: "c", kind: "clear", x: 2, y: 2, w: 6, h: 6, confirmDestroy: " true " };
+    expect(errors(project, { mapId: "m1", assets: [asset] })).toEqual([]);
+    expect(normalizeBuildSpec({ mapId: "m1", assets: [asset] } as unknown as BuildSpec).assets[0]?.confirmDestroy).toBe(true);
+    const chat = scriptedChat([
+      toolCallMsg("set_build_spec", { mapId: "m1", assets: [{ ...asset, confirmDestroy: "true" }] }, "c1"),
+      toolCallMsg("clear_region", { mapId: "m1", x: 2, y: 2, w: 6, h: 6 }, "c2"),
+      finalMsg("끝"),
+    ]);
+    const session = new AssistantSession(project, { config: CONFIG, chat });
+    const events: Ev[] = [];
+    await session.sendUserMessage("철거해줘", collect(events));
+    expect(events.find((event) => event.name === "set_build_spec")?.ok).toBe(true);
+    expect(session.getActiveSpec()?.assets[0]?.confirmDestroy).toBe(true);
+    expect(events.find((event) => event.name === "clear_region")?.ok).toBe(true);
+    expect(countLower(session.getProposedProject().maps.m1, TILE.WALL)).toBe(0);
+  });
+
+  it("confirmDestroy 문자열 false 는 철거 허가가 아니다", () => {
+    // break: 아무 문자열이나 true 로 읽으면 거부해야 할 철거가 통과한다.
+    const project = mkProject();
+    fillLower(project.maps.m1, 3, 3, 4, 4, TILE.WALL);
+    const refused = errors(project, { mapId: "m1", assets: [{ id: "c", kind: "clear", x: 2, y: 2, w: 6, h: 6, confirmDestroy: "false" }] });
+    expect(refused.join(" ")).toContain("confirmDestroy");
+    expect(normalizeBuildSpec({ mapId: "m1", assets: [{ id: "c", kind: "clear", x: 2, y: 2, w: 6, h: 6, confirmDestroy: "FALSE" }] } as unknown as BuildSpec).assets[0]?.confirmDestroy).toBeUndefined();
+  });
+
   it("overExisting 을 선언한 배치 에셋 자리의 기존 구조물은 덮을 수 있다", async () => {
     // break: 배치 에셋의 overExisting 을 허가로 읽지 않으면 선언하고도 막힌다.
     const project = mkProject();

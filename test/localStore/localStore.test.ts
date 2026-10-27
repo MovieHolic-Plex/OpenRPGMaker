@@ -39,7 +39,7 @@ describe("local project store", () => {
     expect(existsSync(join(projectDir, "assets"))).toBe(true);
 
     const info = store.info();
-    expect(info.formatVersion).toBe(2);
+    expect(info.formatVersion).toBe(3);
     expect(info.projectId).toMatch(/^[0-9a-f-]{36}$/);
     store.close();
 

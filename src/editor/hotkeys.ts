@@ -11,8 +11,10 @@
 // shouldIgnoreEditorShortcut() 로 가드한다.
 
 import { deleteSelectedEditorEvent } from "@/editor/eventDeletion";
+import { clearSelectionRegion } from "@/editor/mapClipboard";
 import { keyboardEventKey } from "@/player/keyBindings";
 import { EDITOR_ZOOM_LEVELS, editorState, type EditorState, type Layer, type Tool } from "@/editor/editorState";
+import { store } from "@/project/store";
 import { hasOpenModalLayer } from "@/editor/ui/modalStack";
 import { dismissLocationDrawModeForLayer, dismissLocationDrawModeForTool } from "@/editor/locationDrawMode";
 import { pendingHistoryLabels, redoMapEdit, undoMapEdit } from "@/editor/mapEditHistory";
@@ -335,10 +337,36 @@ export function handleEditorDeleteKey(event: KeyboardEvent): boolean {
   if (shouldIgnoreEditorShortcut(event)) return false;
   if (event.ctrlKey || event.metaKey || event.altKey) return false;
   if (keyboardEventKey(event) !== "Delete") return false;
-  if (editorState.get().layer !== "event") return false;
-  if (!deleteSelectedEditorEvent()) return false;
+  const state = editorState.get();
+  // 이벤트 레이어에서 이벤트가 잡혀 있으면 그 삭제가 우선이다. 확인을 취소하면
+  // 같은 Delete 로 타일 선택까지 지우지 않는다.
+  if (state.layer === "event" && state.selectedEventId) {
+    if (!deleteSelectedEditorEvent()) return false;
+    event.preventDefault();
+    return true;
+  }
+  if (!clearSelectedTileRegion()) return false;
   event.preventDefault();
   return true;
+}
+
+/**
+ * 캔버스에 포커스가 있을 때 Delete 는 지우기 버튼과 같다.
+ * 선택 바의 입력창이 포커스를 가진 경우는 그쪽 핸들러가 처리하고, 여기까지 오지 않는다.
+ * 붙여넣기 고스트가 떠 있는 동안에는 원본 영역을 비우지 않는다.
+ */
+function clearSelectedTileRegion(): boolean {
+  const state = editorState.get();
+  if (state.pastePreview || !state.selection) return false;
+  const project = store.getCurrent();
+  const preferred = state.currentMapId;
+  const mapId = preferred && project.maps[preferred]
+    ? preferred
+    : project.maps[project.startMapId]
+      ? project.startMapId
+      : null;
+  if (!mapId || state.selection.mapId !== mapId) return false;
+  return clearSelectionRegion(mapId);
 }
 
 /** 현재 줌에서 한 단계 위/아래로. 허용 줌 레벨 범위 안에서만. */

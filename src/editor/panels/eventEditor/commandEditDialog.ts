@@ -9,6 +9,7 @@ import { validateBattleProcessingForm } from "./commandBodyDatabase";
 import { renderCommandPreview } from "./commandPreview";
 import { createPreviewSimState, type ActiveFace, type PreviewSimState } from "./previewSimulation";
 import { commandLabel } from "./commandPicker";
+import { timerConditionSignature } from "./timerConditionText";
 import { openEventSubdialog } from "./subdialog";
 import type { CommandListActions } from "./types";
 
@@ -277,6 +278,7 @@ export function shouldRerenderCommandForm(prev: Command, next: Command): boolean
   if (prev.kind === "fork" && next.kind === "fork") {
     return (
       prev.condition.kind !== next.condition.kind ||
+      timerConditionSignature(prev.condition) !== timerConditionSignature(next.condition) ||
       (prev.condition.kind === "run" && next.condition.kind === "run" && prev.condition.query !== next.condition.query) ||
       Boolean(prev.else) !== Boolean(next.else) ||
       prev.then.length !== next.then.length ||

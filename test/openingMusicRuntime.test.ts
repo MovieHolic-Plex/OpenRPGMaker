@@ -65,13 +65,14 @@ describe("오프닝 배경음악 재생", () => {
     expect(root().dataset.music).toBeUndefined();
   });
 
-  it("시퀀스 시작에 반복 재생하고 장면이 넘어가도 끊지 않는다", () => {
+  it("시퀀스 시작에 반복 재생하고 장면이 넘어가도 끊지 않는다", async () => {
     start("bgm");
     const audio = music();
     expect(audio).not.toBeNull();
     expect(audio?.loop).toBe(true);
     expect(root().dataset.music).toBe("bgm");
-    expect(play).toHaveBeenCalled();
+    // #3440: 재생은 assets.prepareAudio 가 풀린 뒤에 건다(애니매틱을 얼리지 않게) — 마이크로태스크를 기다린다.
+    await vi.waitFor(() => expect(play).toHaveBeenCalled());
     press("Enter");
     expect(root().dataset.sceneId).toBe("two");
     expect(music()).toBe(audio);

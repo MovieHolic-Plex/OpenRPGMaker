@@ -4,7 +4,8 @@ type DialogueScene = { readonly game: { readonly registry: { get(key: string): u
 
 export function dialogueHost(scene: DialogueScene): HTMLElement | undefined {
   const host: unknown = scene.game.registry.get("dialogueHost");
-  return host instanceof HTMLElement ? host : undefined;
+  // node 환경(헤드리스·시험)에는 HTMLElement 전역이 없다 — 없으면 대화 호스트도 없다.
+  return typeof HTMLElement !== "undefined" && host instanceof HTMLElement ? host : undefined;
 }
 
 export function dialogueUi(scene: DialogueScene): DialogueUI | undefined {

@@ -232,7 +232,7 @@ function parseCertificateUrl(raw: string | undefined, projectRef: string, allowT
     if (allowTestLocalhost && url.protocol === "http:" && (url.hostname === "127.0.0.1" || url.hostname === "localhost")) {
       return url.origin;
     }
-    if (url.protocol !== "https:" || url.port || url.hostname !== `${projectRef}.legacyDb.co`) return null;
+    if (url.protocol !== "https:" || url.port || url.hostname !== `${projectRef}.legacyDb.co`.toLowerCase()) return null; // URL 은 호스트를 소문자로 정규화한다
     return url.origin;
   } catch {
     return null;

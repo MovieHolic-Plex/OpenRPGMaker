@@ -55,7 +55,8 @@ describe("몬스터 전용 도구의 첫 성공이 잠금을 건다(빈 시작 �
 
   it("맵에 이벤트가 이미 있는 기존 프로젝트는 소급 잠금 없이 표지만 남긴다", () => {
     const project = createBlankProject();
-    project.maps[project.startMapId]!.events.push({ id: "ev_old", name: "주민", x: 2, y: 2, pages: [] } as never);
+    // 최소 이벤트에도 trigger·commands 가 있어야 한다 — #2939 후처리 점검이 event.trigger.kind 를 읽는다.
+    project.maps[project.startMapId]!.events.push({ id: "ev_old", name: "주민", x: 2, y: 2, trigger: { kind: "action" }, commands: [], pages: [] } as never);
     const ctx = ctxOf(project);
     expect(runTool(ctx, "give_starter_monsters", starters(project), { dryRun: false }).ok).toBe(true);
     expect(ctx.project.system.genre).toBe("monster-collect");

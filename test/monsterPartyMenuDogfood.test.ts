@@ -15,7 +15,10 @@ function fixture(legacyFlag = false) {
   else project.system.battleParty = 'monsters';
   const session = startSession(project);
   const species = project.database.monsterSpecies![0];
-  const skill = project.database.skills.find(record => record.maxPp !== undefined && record.maxPp > 1)!;
+  // The blank project no longer ships a PP move; give the first damage skill PP so the menu has one to show.
+  const skill = project.database.skills.find(record => record.maxPp !== undefined && record.maxPp > 1)
+    ?? project.database.skills.find(record => record.effect?.kind === 'damage');
+  if (skill && (skill.maxPp === undefined || skill.maxPp <= 1)) skill.maxPp = 10;
   if (!species || !skill) throw new Error('Monster and PP skill fixtures are required');
   const given = giveMonster(project, session, { speciesId: species.id, level: 12, nickname: '동료', skillIds: [skill.id], skillPp: { [skill.id]: 1 } });
   if (!given.ok) throw new Error('Failed to give fixture monster');

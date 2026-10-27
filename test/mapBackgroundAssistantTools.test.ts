@@ -6,7 +6,7 @@
 import { describe, expect, it } from "vitest";
 import { compileCutscene } from "@/editor/cutscene";
 import { runTool, type ToolContext } from "@/editor/tools";
-import { craftpixDefaultLayers } from "@/assets/ogaCraftpixBackgrounds";
+import { findOprnPanoramaSet } from "@/assets/oprnPanoramas";
 import { createBlankProject } from "@/project/defaults";
 import { mapBackgroundFromLayerSet } from "@/project/mapBackground";
 import type { Command } from "@/project/types";
@@ -18,30 +18,31 @@ function context(): { ctx: ToolContext; mapId: string } {
 }
 
 describe("set_map_properties.background — 조수용 배경", () => {
+  // CraftPix sets (oga-craftpix-*) left with the 2026-10-07 copyright purge; the OPRN panoramas (oprnPanoramas.ts) replace them.
   it("layerSet 한 칸이 층 순서·cover·층별 깊이·구름 흐름을 채운다", () => {
     const { ctx, mapId } = context();
     const result = runTool(ctx, "set_map_properties", {
       mapId,
-      background: { layerSet: "oga-craftpix-hills", cloudDrift: 0.5, showInEmptyCells: true },
+      background: { layerSet: "oprn-sky-day", showInEmptyCells: true },
       clearForBackground: { x: 0, y: 0, width: 5, height: 3 },
     });
     expect(result.ok, result.summary).toBe(true);
     const background = ctx.project.maps[mapId]!.background!;
-    const ids = craftpixDefaultLayers("oga-craftpix-hills").map((layer) => layer.id);
+    const ids = findOprnPanoramaSet("oprn-sky-day")!.layers.map((layer) => layer.id);
     expect([background.imageId, ...(background.layers ?? []).map((layer) => layer.imageId)]).toEqual(ids);
     expect(background.fit).toBe("cover");
     expect(background.layers?.every((layer) => layer.fit === "cover")).toBe(true);
     expect(background.cameraFollow).toBeUndefined();
     const follows = (background.layers ?? []).map((layer) => layer.cameraFollow ?? 0);
-    expect(follows.at(-1)).toBe(0.7);
+    expect(follows.at(-1)).toBe(0.25);
     expect([...follows].sort((a, b) => a - b)).toEqual(follows);
     // 구름 층만 흐른다.
     for (const layer of background.layers ?? []) {
-      expect(layer.scrollX === 0.5).toBe(/clouds/.test(layer.imageId));
+      expect((layer.scrollX ?? 0) > 0).toBe(/clouds/.test(layer.imageId));
     }
     expect(background.showInEmptyCells).toBe(true);
     expect(result.summary).toContain("하늘 자리 15칸 비움");
-    expect(result.summary).toContain("층별 깊이 0/10/25/35/45/60/70%");
+    expect(result.summary).toContain("층별 깊이 0/10/25%");
     expect((result.diff?.warnings ?? []).join(" ")).not.toContain("0칸");
   });
 
@@ -49,7 +50,7 @@ describe("set_map_properties.background — 조수용 배경", () => {
     const { ctx, mapId } = context();
     const map = ctx.project.maps[mapId]!;
     map.lowerTiles.fill(240);
-    const result = runTool(ctx, "set_map_properties", { mapId, background: { layerSet: "oga-craftpix-ridge" } });
+    const result = runTool(ctx, "set_map_properties", { mapId, background: { layerSet: "oprn-sunset", showInEmptyCells: false } });
     expect(result.ok, result.summary).toBe(true);
     expect((result.diff?.warnings ?? []).join(" ")).toContain("showInEmptyCells");
   });
@@ -58,7 +59,7 @@ describe("set_map_properties.background — 조수용 배경", () => {
     const { ctx, mapId } = context();
     const result = runTool(ctx, "set_map_properties", {
       mapId,
-      background: { imageId: "oga-craftpix-pines-layer-sky", fit: "cover" },
+      background: { imageId: "oprn-pano-sky-day", fit: "cover" },
     });
     expect(result.ok, result.summary).toBe(true);
     expect(ctx.project.maps[mapId]!.background?.fit).toBe("cover");
@@ -68,7 +69,7 @@ describe("set_map_properties.background — 조수용 배경", () => {
     const { ctx, mapId } = context();
     const result = runTool(ctx, "set_map_properties", { mapId, background: { layerSet: "no-such-set" } });
     expect(result.ok).toBe(false);
-    expect(result.summary).toContain("oga-craftpix-hills");
+    expect(result.summary).toContain("oprn-sky-day");
   });
 
   it("세트 펴기 규칙은 편집기와 도구가 같은 함수를 쓴다", () => {

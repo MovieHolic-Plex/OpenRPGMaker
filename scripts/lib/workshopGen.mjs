@@ -218,7 +218,11 @@ async function runCharGen(job, input) {
 
 // ── 캐릭터: 사진으로(char-gen photo, 종이 인형) ─────────────────
 //
-// 사진 한 장 → char-gen `photo --no-picture`: 사용자 CLI 가 사진에서 사람의 특징(성별·나이·머리·옷)을 읽고, RTP 머리·몸 짝 후보마다
+// 사진 한 장 → char-gen `photo`: 그림 도구(사용자 컴퓨터의 Codex CLI 등)가 사진 속 사람을 걷기 그림으로 그리고, 그 그림의 실루엣과
+// 사용자 CLI 가 사진에서 읽은 특징(성별·나이·머리·수염·모자·옷)으로 RTP 머리·몸 짝을 고른다. 그림 도구가 사진을 거절하면(유명인 등)
+// 사진 속 모습을 글로 옮겨 그 글로 그리고, 그림 도구가 없거나 또 실패하면 그림 없이 특징만으로 고른다 — 어느 쪽이었는지는
+// candidates.json 의 picture("photo"|"description"|"none")로 받아 화면에 알린다. 그림이 있으면 훨씬 비슷하다(해리포터 시험
+// 2026-10-25: 닮음 8/10 대 5~6). 후보마다
 // 옷·머리 색을 칠한다(그림을 새로 그리지 않는다 — RTP 부위를 다시 칠한 종이 인형). 후보마다 조립 오류(눈으로 보는 검사)와 눈 순위를
 // 매겨 줄 세운다. 걷기 영상 검사는 CLI 가 영상을 못 봐서 건너뛴다. 마지막 선택은 사람이 한다 — 후보를 보여 주고(picking) 고른 것만 묶는다.
 // 사진은 이 컴퓨터의 작업 폴더에만 있고 묶음(게임)에는 들어가지 않는다.
@@ -236,10 +240,10 @@ async function runCharPhoto(job, input) {
   const file = `photo.${PHOTO_TYPES[m[1]]}`;
   writeFileSync(join(job.dir, file), Buffer.from(m[2], "base64"));
   job.stage = "drawing";
-  job.expectMs = 8 * 60 * 1000;   // 실측(2026-10-23, Sonnet CLI): 후보 6명·검사까지 수 분
-  note(job, `사진에 맞는 머리·몸을 고르고 색을 칠해요(${job.engine})`);
+  job.expectMs = 12 * 60 * 1000;   // 실측: 그림 없이 Sonnet CLI 수 분(2026-10-23), 그림 1~2분 + 글로 다시 그리기 1~2분 더(2026-10-25)
+  note(job, `사진을 그림으로 옮기고, 맞는 머리·몸을 고르고 색을 칠해요(${job.engine})`);
   const env = { CHARGEN_VISION_CLI: cli, ...(model ? { CHARGEN_VISION_MODEL: model } : {}) };
-  const made = await run(job, "python3", [join(kit, "cli.py"), "photo", file, "--out", "run", "--name", "photo", "--no-picture"], { cwd: job.dir, env, timeoutMs: 60 * 60 * 1000 });
+  const made = await run(job, "python3", [join(kit, "cli.py"), "photo", file, "--out", "run", "--name", "photo"], { cwd: job.dir, env, timeoutMs: 60 * 60 * 1000 });
   if (job.state === "cancelled") return;
   let list;
   try {
@@ -256,6 +260,7 @@ async function runCharPhoto(job, input) {
     chip: c.chip,
     gif: `data:image/gif;base64,${readFileSync(join(job.dir, "run", "candidates", c.preview)).toString("base64")}`,
   }));
+  job.photoPicture = ["photo", "description", "none"].includes(list.picture) ? list.picture : "none";
   if (!job.photoCandidates.length) { fail(job, "사진에 맞는 후보가 나오지 않았어요. 다른 사진으로 해 보세요."); return; }
   job.state = "picking";
   job.stage = "picking";
@@ -428,7 +433,7 @@ export function workshopGenStatus(jobId) {
     error: job.error, picked: job.picked ?? null, review: job.review ?? null,
     made: job.made ?? null, asked: job.asked ?? null, candidates: job.candidates ?? null,
     log: job.log.slice(-6), ...(job.state === "done" && job.pack ? { pack: job.pack } : {}),
-    ...(job.state === "picking" ? { photoCandidates: job.photoCandidates } : {}),
+    ...(job.state === "picking" ? { photoCandidates: job.photoCandidates, photoPicture: job.photoPicture } : {}),
   };
 }
 

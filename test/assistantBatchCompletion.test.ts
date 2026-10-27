@@ -131,21 +131,7 @@ describe("audit batch dependency and completion lifecycle", () => {
     expect(h.events.find((event) => event.name === "complete_work_item")?.result.ok).toBe(false);
   });
 
-  it("does not bypass open acceptance when every work item is done", async () => {
-    const mapId = createBlankProject().startMapId;
-    const promised = call("set_work_plan", {
-      ...plan.args,
-      acceptance: [{ id: "map-change", title: "Map change", criteria: [
-        { kind: "targetChange", target: { mapId }, region: { x: 2, y: 2, w: 2, h: 2 } },
-      ] }],
-    });
-    const h = harness([[promised], [title], [complete]]);
-    await h.session.sendUserMessage("제목과 지도 검증", h.collect, undefined, { autonomous: true });
-    expect(h.session.getWorkPlan()?.layers[0].items[0].status).toBe("done");
-    expect(h.session.getAcceptanceSnapshot()?.status).not.toBe("verified");
-    expect(h.events.find((event) => event.name === "complete_work_item")?.result.ok).toBe(false);
-  });
-
+  // Removed it "does not bypass open acceptance when every work item is done": the acceptance ledger was removed on purpose on 2026-09-17 ("assistant: 수용 원장(acceptance ledger)을 만들지 않는다"; getAcceptanceSnapshot is always null).
   it("records malformed optional lint as unsuccessful without inventing a completion-blocking finding", async () => {
     const h = harness([[plan], [title], [call("run_lint", { reachability: false })], [complete]]);
     await h.session.sendUserMessage("제목 설정 후 검증", h.collect, undefined, { autonomous: true });

@@ -9,10 +9,36 @@ const SQLITE_DRIVER_TOKENS = ["node:sqlite", "better-sqlite3", "sql.js", "sqlite
 const SQLITE_ALLOWED_PREFIX = "electron/local-store/";
 
 const ELECTRON_TO_SRC_ALLOWLIST = [
-  "src/brand.ts",
+  "src/brand", // normalized strips .ts — "src/brand.ts" never matched once splash.ts imported it (#3142)
   "src/project/types",
   "src/project/persistence/core",
+  // Pure (DOM-free) modules the main process already shared at the public baseline (0d4f13e7c8) and later
+  // asset-store work (#3078 deep link, store game publish). Listed file by file so a new reach into src still fails.
+  "src/project/persistence/backupTypes",
+  "src/project/io/serialize",
+  "src/project/sharedContentSchema",
+  "src/project/bundledReferenceImagePath",
+  "src/project/sharedCharacterGraphicsSchema",
+  "src/project/sharedTileReferences",
+  "src/editor/assetBrowser/assetPageAllowlist",
+  "src/assetStore/deepLink",
+  "src/assetStore/format",
+  "src/assetStore/pack",
+  "src/assetStore/sniff",
+  "src/assetStore/gamePublish",
+  "src/assetStore/bridgeTypes",
+  "src/concepts/format",
+  // 번들 타일셋 차이 저장(#3774) — electron/local-store/store.ts 가 차이 보기 표지(BUNDLED_TILESET_DIFF)를 읽는다.
+  "src/project/bundledTilesetDiff",
 ] as const;
+
+/**
+ * Node-side harness CLIs (src/harnesses/<id>/node/*, *.mjs) open project.sqlite through electron/local-store on purpose —
+ * they are separate node processes, not the renderer (AGENTS.md: every harness lives under src/harnesses/<id>/).
+ */
+function isNodeHarnessFile(file: string): boolean {
+  return file.startsWith("src/harnesses/") && (file.includes("/node/") || file.endsWith(".mjs"));
+}
 
 const SRC_TO_ELECTRON_ALLOWLIST = ["electron/shared/"] as const;
 
@@ -44,7 +70,7 @@ function read(file: string): string {
 
 describe("storage boundary policy", () => {
   it("렌더러(src)는 SQLite 드라이버를 부르지 않는다", () => {
-    const offenders = sourceFiles("src").flatMap((file) =>
+    const offenders = sourceFiles("src").filter((file) => !isNodeHarnessFile(file)).flatMap((file) =>
       sqliteDriverImports(read(file)).map((source) => `${file}: ${source}`));
 
     expect(offenders).toEqual([]);
@@ -81,6 +107,7 @@ describe("storage boundary policy", () => {
   it("src 는 electron/shared 밖을 import 하지 않는다", () => {
     const offenders: string[] = [];
     for (const file of sourceFiles("src")) {
+      if (isNodeHarnessFile(file)) continue;
       for (const source of importSources(read(file))) {
         if (!source.includes("electron/")) continue;
         if (SRC_TO_ELECTRON_ALLOWLIST.some((allowed) => source.includes(allowed))) continue;
