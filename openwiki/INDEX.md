@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **187쪽 / 7240KB / 약 2,122,763 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **187쪽 / 7242KB / 약 2,123,442 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -29,7 +29,7 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | `openwiki/editor-pre-edit-routing.md` | 189KB | 72KB ⚠상한 초과 — 절을 더 쪼개라 | 1173 | ~55,510 |
 | `openwiki/editor-validation.md` | 61KB | 16KB | 406 | ~17,230 |
 | `openwiki/editor-workflows-misc.md` | 91KB | 33KB | 636 | ~25,541 |
-| `openwiki/editor-workshop.md` | 63KB | 15KB | 253 | ~18,806 |
+| `openwiki/editor-workshop.md` | 64KB | 15KB | 260 | ~19,219 |
 | `openwiki/harnesses/assistant-capability.md` | 59KB | 8KB | 380 | ~18,190 |
 | `openwiki/harnesses/building-kit.md` | 99KB | 4KB | 984 | ~29,868 |
 | `openwiki/harnesses/interview-scene-bank.md` | 56KB | 38KB | 197 | ~17,387 |
@@ -96,7 +96,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | `openwiki/editor-preview-performance.md` | 1 | `verify-shots/editor-ux-audit-round2-20261004/agents/assets-idle.md` |
 | `openwiki/editor-validation.md` | 9 | `final-layout.json`, `test/aiBlockedEventRelocation.test.ts`, `test/aiToolDiscoveryEscalation.test.ts`, `test/databaseSystemView.test.ts`, `test/interiorLongTable.test.ts`, `test/p0ProjectSchema.test.ts`, `test/projectLint.test.ts`, `verify-shots/balt-parity/RESULTS-without-fix.json`, `viewport-matrix.json` |
 | `openwiki/editor-workflows-misc.md` | 45 | `.qa.json`, `basicTilePalette.test.ts`, `basicTilePalette.ts`, `default.json`, `dependency-collector.js`, `docs/village-plan-architecture-easy.md`, `firstWorldArrival.ts`, `game.html`, `loadNewRemoteProject.test.ts`, `release.json`, `runtime.json`, `scripts/build-dungeon-themed-maps.mts`, `scripts/build-grand-ice-cave.mts`, `scripts/build-ice-pass-map.mts`, `scripts/extend-home-8pyeong-with-dungeons.mts`, `skyStairMaps.ts`, `src/editor/authoringTestGate.ts`, `src/project/defaults/dungeonThemedLayouts.ts`, `src/project/defaults/iceDiagonalTerrain.ts`, `src/styles/editor/audio-test-dialog.css`, `src/styles/editor/event-editor-help.css`, `src/styles/editor/help-modal.css`, `src/styles/editor/map-event-search.css`, `src/styles/editor/map-props.css`, `test/audioDescriptionCommandSurfaces.test.ts`, `test/audioDescriptionLifecycle.test.ts`, `test/devRuntimeArchive.test.ts`, `test/dungeonRoomPipeline.test.ts`, `test/dungeonThemedLayouts.test.ts`, `test/editorWelcome.test.ts`, `test/forestDensity.test.ts`, `test/iceDiagonalTerrain.test.ts`, `test/mapSurfaceFocus.test.ts`, `test/runtimePictureStacking.test.ts`, `transactionalNewRemoteProject.test.ts`, `verify-shots/editor-ux-audit-round2-20261004/agents/palette-maps.md`, `verify-shots/props-pane/SUMMARY.md`, `village/decor.ts`, `village/forestDressing.ts`, `villageBuilder.ts`, `villageEvaluate.ts`, `villagePlan.ts`, `villageRequirements.ts`, `villageSession.ts`, `villageTerrainPass.ts` |
-| `openwiki/editor-workshop.md` | 15 | `checks.py`, `cli.py`, `docs/images/hero.png`, `docs/superpowers/plans/2026-10-02-workshop-editor.md`, `docs/superpowers/specs/2026-10-02-workshop-editor-design.md`, `objectGenKit.json`, `objectgen/flow.py`, `objectgen/picker.py`, `objectgen/reference.py`, `pack.py`, `prompts.py`, `quality.py`, `scripts/content/extract-objectgen-kit.py`, `set.json`, `vqa.py` |
+| `openwiki/editor-workshop.md` | 16 | `candidates.json`, `checks.py`, `cli.py`, `docs/images/hero.png`, `docs/superpowers/plans/2026-10-02-workshop-editor.md`, `docs/superpowers/specs/2026-10-02-workshop-editor-design.md`, `objectGenKit.json`, `objectgen/flow.py`, `objectgen/picker.py`, `objectgen/reference.py`, `pack.py`, `prompts.py`, `quality.py`, `scripts/content/extract-objectgen-kit.py`, `set.json`, `vqa.py` |
 | `openwiki/emerald-fields.md` | 35 | `ANALYSIS.md`, `VALIDATION.md`, `VISUAL-SUMMARY.md`, `author-emerald-wide.mts`, `before.json`, `checks.json`, `cliff-contours.json`, `editor-saved-proof.json`, `emerald-basin-atlas.png`, `emerald-wide-v2/reloaded-project.json`, `exit-seam-proof.json`, `fidelity/fidelity-proof.json`, `fidelity/reference-vs-editor.png`, `fidelity/runtime-visual/SUMMARY.md`, `inspection-16-fixed/manifest.json`, `inspection-16/REVIEW.md`, `legacy-db-proof.json`, `map-open-saved.png`, `output/evidence/emerald-fields/fidelity/VALIDATION.md`, `output/evidence/emerald-region/legacy-db-proof.json`, `output/evidence/emerald-wide/reloaded-project.json`, `public/assets/region-references/emerald-basin.png`, `refine-emerald-reference.mts`, `region-saved.png`, `road-graph.json`, `scripts/author-emerald-fields.mts`, `scripts/author-emerald-wide.mts`, `scripts/refine-emerald-reference.mts`, `scripts/refine-emerald-wide.mts`, `scripts/register-emerald-region.mts`, `src/project/regionReferences/emerald-basin.json`, `test/regionReferences.test.ts`, `verify-shots/runtime-qa/emerald-fields/SUMMARY.md`, `verify-shots/runtime-qa/emerald-wide-v2/SUMMARY.md`, `verify-shots/runtime-qa/emerald-wide/SUMMARY.md` |
 | `openwiki/emerald-monster-art-v2.md` | 3 | `emerald-art-v2-register-npc.mjs`, `public/assets/emerald-monster/cast/uploaded-cast.json`, `verify-shots/emerald-art-v2-20261004/SUMMARY.md` |
 | `openwiki/emerald-monster-production.md` | 3 | `docs/content/emerald-monster-production-contract.md`, `scripts/content/emerald-field-cast.py`, `verify-shots/emerald-monster-2026-10-04/REPORT.md` |
@@ -291,7 +291,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L253` Live editor AI assistant MCP (same UI session)
 - `L272` Refreshing the wiki
 
-### `openwiki/architecture.md` — 33KB · 161줄 · ~9,425 토큰
+### `openwiki/architecture.md` — 34KB · 162줄 · ~9,691 토큰
 
 절 제목 없음 (평면 목록 페이지).
 
@@ -1404,21 +1404,21 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L17` Quick routing
 - `L25` For AI agents
 
-### `openwiki/editor-workshop.md` — 63KB · 253줄 · ~18,806 토큰 · 통째읽기 잘림
+### `openwiki/editor-workshop.md` — 64KB · 260줄 · ~19,219 토큰 · 통째읽기 잘림
 
 - `L50` 한 번에 만들기 — 「딸깍」 공방 (2026-10-23)
   - `L72` 캐릭터 = 호스트가 고정판 char-gen 을 띄운다
   - `L83` 캐릭터 · 사진으로 만들기 (2026-10-23)
-  - `L99` 지형 = 빠르게(기본) 또는 새로 그리기(「자세히」)
-  - `L114` 물건 — 첫 결과 시간 줄이기
-  - `L122` 실화면 시험
-  - `L135` 2차 (2026-10-23): 3/4 관문 배선 · 물건 속도 · 작은 것
-- `L159` 공방 실행기(물건·가구 카드 안)
-- `L173` 칩셋에 굽기 (2단계, 2026-10-07)
-- `L185` 새 기물은 object-gen 흐름 그대로 그린다 (2026-10-21)
-- `L200` 새 기물 그리기 품질 — 참고 그림 단계 · 크기·윗면 · 1배 읽힘 · 3/4 관문 조언 (2026-10-21)
-- `L223` 작업 줄 — 여러 개를 함께 그리기 (2026-10-21)
-- `L241` 생성기 저장소 고정 — `npm run gen-kits:sync` (2026-10-21)
+  - `L106` 지형 = 빠르게(기본) 또는 새로 그리기(「자세히」)
+  - `L121` 물건 — 첫 결과 시간 줄이기
+  - `L129` 실화면 시험
+  - `L142` 2차 (2026-10-23): 3/4 관문 배선 · 물건 속도 · 작은 것
+- `L166` 공방 실행기(물건·가구 카드 안)
+- `L180` 칩셋에 굽기 (2단계, 2026-10-07)
+- `L192` 새 기물은 object-gen 흐름 그대로 그린다 (2026-10-21)
+- `L207` 새 기물 그리기 품질 — 참고 그림 단계 · 크기·윗면 · 1배 읽힘 · 3/4 관문 조언 (2026-10-21)
+- `L230` 작업 줄 — 여러 개를 함께 그리기 (2026-10-21)
+- `L248` 생성기 저장소 고정 — `npm run gen-kits:sync` (2026-10-21)
 
 ### `openwiki/emerald-fields.md` — 23KB · 208줄 · ~7,314 토큰
 
