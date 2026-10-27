@@ -194,24 +194,22 @@ describe("battle animation form playback lifetime", () => {
     expect(oldTarget.style.backgroundPosition).toBe("0px 0px");
   });
 
-  it("cached tab detach pauses, reattachment starts exactly one loop, and modal close cleans up", async () => {
-    const modal = document.createElement("div"); modal.className = "database-modal-backdrop";
-    const workspace = document.createElement("div"); workspace.className = "oprn-record-battleAnimations";
-    workspace.append(form); modal.append(workspace); document.body.append(modal);
-    await mutateDom(async () => { render(); await imageResult(); });
+  // 본문 감시자(body MutationObserver)는 일부러 없앴다 — 떼어 낸 폼은 DOM 변경에 반응하지 않고 자기 다음 틱에 멈춘다.
+  // 떼었다 다시 붙이는 재개는 탭 캐시(retain + setDatabasePreviewsActiveIn)의 몫이며 databaseAnimationCacheLifecycle 이 실제 모달로 검사한다.
+  it("a detached form stops on its own next tick and plain DOM reattachment does not restart it", async () => {
+    render(); await imageResult();
+    expectPlaying(true);
     const intervals = vi.spyOn(window, "setInterval");
     const clear = vi.spyOn(window, "clearInterval");
-    await mutateDom(() => workspace.remove());
+    form.remove();
+    expect(clear).not.toHaveBeenCalled();
+    vi.advanceTimersByTime(67);
     expect(clear).toHaveBeenCalledTimes(1);
     expectPlaying(false);
-    await mutateDom(() => modal.append(workspace));
-    expectPlaying(true);
-    expect(intervals).toHaveBeenCalledTimes(1);
-    vi.advanceTimersByTime(67);
-    expect(position()).toBe("-96px 0px");
-    await mutateDom(() => modal.remove());
-    expect(clear).toHaveBeenCalledTimes(2);
+    await Promise.resolve(); // deferred dispose: detached and not retained by a cache
+    document.body.append(form);
     vi.advanceTimersByTime(67 * 4);
     expectPlaying(false);
+    expect(intervals).not.toHaveBeenCalled();
   });
 });

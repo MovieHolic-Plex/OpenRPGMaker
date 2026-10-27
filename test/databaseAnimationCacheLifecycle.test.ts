@@ -18,8 +18,13 @@ class PreviewImage extends EventTarget {
   static requests: PreviewImage[] = [];
   readonly naturalWidth = 480;
   readonly naturalHeight = 96;
-  set src(_url: string) { PreviewImage.requests.push(this); }
+  url = "";
+  set src(url: string) { this.url = url; PreviewImage.requests.push(this); }
 }
+// The route to the animation subview passes the retro-choreography tab, whose stage probes
+// its own battler/fx sheets with Image. Only the animation sheet belongs to this preview.
+const PREVIEW_SHEET = "scarloxy-battle-anim-scratch";
+function previewRequests(): number { return PreviewImage.requests.filter((image) => image.url.includes(PREVIEW_SHEET)).length; }
 
 beforeEach(() => {
   vi.useFakeTimers();
@@ -159,7 +164,7 @@ describe("battle animation preview ownership in the real modal tab cache", () =>
   it("retains cached DOM with no body observer, resumes its loop, and closes a detached tab", async () => {
     await open();
     const workspace = node(".oprn-record-battleAnimations");
-    const imageRequests = PreviewImage.requests.length;
+    const imageRequests = previewRequests();
     await mutate(node(".db-body"), () => byTestId("db-tab-terms").click());
     expect(workspace.isConnected).toBe(false);
     expect(observers.size).toBe(0);
@@ -168,7 +173,8 @@ describe("battle animation preview ownership in the real modal tab cache", () =>
     await mutate(node(".db-body"), () => byTestId("db-tab-retro-choreographies").click());
     await mutate(node(".db-body"), () => byTestId("db-subview-animations").click());
     expect(node(".oprn-record-battleAnimations")).toBe(workspace);
-    expect(PreviewImage.requests).toHaveLength(imageRequests);
+    // Reattaching the cached workspace reuses the decoded preview: no new animation-sheet request.
+    expect(previewRequests()).toBe(imageRequests);
     expectCurrentOnly();
     vi.advanceTimersByTime(67);
     expect(byTestId("db-animation-stage-target").style.backgroundPosition).toBe("-96px 0px");
