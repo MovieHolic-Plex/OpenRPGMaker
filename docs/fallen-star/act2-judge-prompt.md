@@ -30,6 +30,8 @@ The command prints a JSON result containing:
 
 If it says the player is not ready yet (`res-0.json` missing), wait 60 seconds and try again. The first boot takes several minutes.
 
+Game time is frozen between your commands, so take your time to think. The world (patrols, monsters) only moves while your ops run. Use `hold` to let time pass, for example to watch a patrol walk away.
+
 While `state.dialogue` is not null, the game is waiting for you to press `Enter`. Moves do nothing until the text box is closed.
 
 ### Ops you may use
