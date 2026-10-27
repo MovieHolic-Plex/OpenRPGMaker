@@ -6060,12 +6060,12 @@
    ]
   },
   {
-   "id": "act2-b8-stop",
-   "label": "제2막 B8 끝(1.23 판본 끝) — 여관에서 「다음 업데이트」 카드와 저장 화면",
-   "note": "act2Opening.ts lanternNightEvents — FS2_RELEASE_STOP B8",
-   "mapId": "fs2_frostford_inn",
-   "x": 23,
-   "y": 15,
+   "id": "act2-b9-stop",
+   "label": "제2막 1.24 판본 끝 — 하늘탑 1층에 들어서면 막 카드·회복·저장",
+   "note": "act2Opening.ts towerReleaseStop (FS2_RELEASE_STOP B9)",
+   "mapId": "fs2_sky_tower",
+   "x": 29,
+   "y": 19,
    "facing": "up",
    "switches": {
     "sw_fs_main_started": true,
@@ -6088,7 +6088,8 @@
     "sw_fs2_spear_returned": true,
     "sw_fs2_frost_arrived": true,
     "sw_fs2_harma_told": true,
-    "sw_fs2_q5_trout_asked": true
+    "sw_fs2_q5_trout_asked": true,
+    "sw_fs2_valen_lake_met": true
    },
    "party": [
     {
@@ -6106,15 +6107,12 @@
    ],
    "beats": [
     {
-     "id": "ask",
+     "id": "arrive",
      "ops": [
       {
        "kind": "hold",
        "dir": null,
        "ms": 800
-      },
-      {
-       "kind": "action"
       },
       {
        "kind": "waitFor",
@@ -6160,6 +6158,17 @@
        "kind": "hold",
        "dir": null,
        "ms": 1500
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "stair",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 800
       }
      ],
      "shot": true

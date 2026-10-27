@@ -1909,9 +1909,11 @@ function frostford(project: Project, exec: Exec, hubId: string): void {
 
 /**
  * 판본이 끝나는 비트 — "B8" 이면 서리나루 여관에서 「제2막 계속 — 다음 업데이트」 카드와 저장 화면으로 멈추고, B9 밤 판으로 가는 이동을 만들지 않는다.
- * B9 를 실제로 내보낼 때 null 로 바꾼다(그러면 여관 주인이 밤 판으로 보낸다).
+ * "B9"(1.24) 면 얼음 위의 밤·탈출까지 열고, 하늘탑 1층에 닿으면 같은 카드와 저장 화면, 위층 계단은 「다음 업데이트」.
+ * B10 을 실제로 내보낼 때 null 로 바꾼다.
  */
-export const FS2_RELEASE_STOP: "B8" | null = null;
+export const FS2_RELEASE_STOP: "B8" | "B9" | null = "B9";
+const SW_STOP_B9 = "sw_fs2_release_stop_b9";
 export const FS2_FROST_NIGHT_ID = "fs2_frostford_night";
 export const FS2_TOWER_ID = "fs2_sky_tower";
 const SW_NIGHT = "sw_fs2_frost_night";
@@ -2103,6 +2105,34 @@ function skyTower(project: Project, exec: Exec): void {
       { trigger: first?.trigger ?? { kind: "playerTouch" }, priority: first?.priority ?? "below" }),
     ...(gate.pages ?? []),
   ];
+  if (FS2_RELEASE_STOP === "B9") towerReleaseStop(project);
+}
+
+/** 1.24 판본 끝 — 하늘탑 1층에 들어서면 막 카드·회복·저장, 위층으로 오르는 계단은 「다음 업데이트」(빈 위층을 걷지 않게). */
+function towerReleaseStop(project: Project): void {
+  ensureSwitch(project, SW_STOP_B9, "판본 끝(1.24): 하늘탑 1층");
+  addEv(project, FS2_TOWER_ID, "ev_fs2_tower_stop", "판본 끝", { x: 0, y: 0 }, [
+    page("ev_fs2_tower_stop_idle", "대기", [], [], { priority: "below" }),
+    page("ev_fs2_tower_stop_run", "판본 끝", [sw(SW_VALEN_MET)], [
+      wait(400),
+      say(SARAH, "…발렌 님은 벌써 위로 올라갔어. 기계 소리가 나."),
+      say(KAEL, "이리스가 이 위에 있어. 가자."),
+      fadeOut(900),
+      { kind: "recoverAll" } as unknown as Command,
+      narrate("제2막 「빌린 불」 — 여기까지", { position: "center", context: "narration" }),
+      narrate("하늘탑의 위층, 그리고 이리스는\n다음 업데이트에서 이어집니다.", { position: "center", context: "narration" }),
+      fadeIn(700),
+      setSw(SW_STOP_B9),
+      narrate("지금 저장해 두면 다음 판본에서 하늘탑 1층부터 이어서 할 수 있다.", { context: "system" }),
+      { kind: "openSaveMenu" } as unknown as Command,
+    ], { trigger: { kind: "auto" }, priority: "below" }),
+    page("ev_fs2_tower_stop_done", "끝", [sw(SW_STOP_B9)], [], { priority: "below" }),
+  ]);
+  const up = M(project, FS2_TOWER_ID).events.filter((e) => JSON.stringify(e.pages ?? []).includes(`"mapId":"${FS2_TOWER_ID}_f2"`));
+  if (!up.length) throw new Error("[fallen-star act2] 하늘탑 1층 위 계단을 못 찾음");
+  for (const e of up) {
+    e.pages = (e.pages ?? []).map((pg) => ({ ...pg, commands: [narrate("위층 계단. 쇠 긁는 소리가 멀리서 울린다.\n— 다음 업데이트에서 이어집니다.", { context: "system" })] }));
+  }
 }
 
 // ════════════════════════════════════════════════════════════════════
