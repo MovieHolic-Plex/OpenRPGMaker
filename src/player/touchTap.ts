@@ -3,6 +3,7 @@
 // 2) 겹친 창(대화 기록·백로그)은 짧게 탭하거나 아래/옆으로 쓸어 닫는다 — 키보드 안내(L · Esc)만 있으면 폰에서 갇힌다.
 // Phaser 는 DOM MouseEvent 만 듣는다. 여기서는 합성 키(Enter)를 보내 데스크톱과 같은 길을 탄다.
 
+import { snapRowAt } from "@/player/touchListTap";
 import { keyTarget } from "@/player/touchPad";
 
 const TAP_MAX_MS = 400;
@@ -58,6 +59,8 @@ export function installTapConfirm(root: HTMLElement, options: TapConfirmOptions 
     if (performance.now() - start.at > TAP_MAX_MS) return;
     if (Math.hypot(event.clientX - start.x, event.clientY - start.y) > TAP_MAX_MOVE) return;
     if (!isBackdrop(start.target)) return;
+    // 줄 바로 옆(넓힌 눌림 영역)을 탭한 것은 그 줄의 탭이다(touchListTap) — 타이틀에서 선택된 항목을 확정하지 않는다.
+    if (snapRowAt(root, start.target, start.x, start.y)) return;
     if (root.querySelector(BUSY_SELECTOR)) return;
     const dialogueOpen = root.querySelector(".dialogue-overlay:not(:empty) .dialogue-box") !== null;
     // 맵 탭 걷기가 켜진 게임: 필드에서 맵(캔버스 상자 안)을 탭하면 걷기다 — 확인을 보내지 않는다.
