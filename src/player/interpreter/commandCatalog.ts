@@ -51,7 +51,7 @@ import { executeM2RuntimeCommand, relocateM2Events } from "@/player/interpreter/
 import { fieldBoolean, fieldNumber, fieldString } from "@/player/interpreter/m2RuntimeFields";
 import { recordSoundLayer, waitConditionMet } from "@/player/interpreter/m2ModernRuntime";
 import { ensureM2Runtime } from "@/player/interpreter/m2RuntimeState";
-import { planScreenEffect } from "@/player/interpreter/screenEffectPlan";
+import { HIDE_SHOW_SCREEN_FADE_MS, planScreenEffect } from "@/player/interpreter/screenEffectPlan";
 import type { RuntimeCameraTarget } from "@/project/sessionRuntimeTypes"
 import { beginCutsceneControl, endCutsceneControl } from "@/player/cutsceneControl";
 import { saveSessionCheckpoint } from "@/player/checkpoints";
@@ -334,6 +334,11 @@ function executeM2Command(
 
   if (entry.title === "Stop All Movement" && executeM2RuntimeCommand(state.session, entry, command, m2Context)) {
     return pause("stopAllMovement", { kind: "stopAllMovement" });
+  }
+
+  // 화면 숨기기/표시는 페이드가 끝난 뒤에 다음 명령이 시작한다. 안 기다리면 대사가 검게 덮이는 도중에 뜬다.
+  if ((entry.title === "Hide Screen" || entry.title === "Show Screen") && executeM2RuntimeCommand(state.session, entry, command, m2Context)) {
+    return pause("wait", { kind: "wait", ms: HIDE_SHOW_SCREEN_FADE_MS });
   }
 
   // 일회성 화면 효과: 상태 기록(executeM2RuntimeCommand) 후 블로킹 pause 로 플레이어에 위임.

@@ -3,6 +3,7 @@
 import { aiImageGenerateField } from "@/editor/panels/aiImageGenerateField";
 import { openDatabaseResourcePickerDialog } from "@/editor/panels/databaseResourcePickerDialog";
 import { m2CommandById } from "@/project/eventCommands/m2Catalog";
+import { HIDE_SHOW_SCREEN_FADE_MS } from "@/player/interpreter/screenEffectPlan";
 import { tintDurationMs } from "@/project/eventCommands/tintDuration";
 import { MAP_BACKGROUND_FLOW_PERCENT_LIMIT } from "@/project/mapBackground";
 import { SCREEN_FILTER_LIMITS, screenFilterCss, screenFilterFromFields, type ScreenFilter } from "@/project/eventCommands/screenFilter";
@@ -537,24 +538,29 @@ function hideShowScreenBody(
   mode: "hide" | "show"
 ): HTMLElement {
   const testid = mode === "hide" ? "hide-screen-command-body" : "show-screen-command-body";
+  const fade = `${HIDE_SHOW_SCREEN_FADE_MS}ms`;
   const wrap = shell("page3-command-body actor-m2-command-body", testid);
   const preview = previewPanel(`${mode}-screen-preview`);
   preview.replaceChildren(
-    line(mode === "hide" ? "화면 숨김 (페이드 아웃)" : "화면 표시 (페이드 인)"),
-    note(mode === "hide" ? "맵 화면을 가립니다." : "가려진 화면을 다시 보여줍니다.")
+    line(mode === "hide" ? `화면 숨김 (페이드 아웃 · ${fade})` : `화면 표시 (페이드 인 · ${fade})`),
+    note(mode === "hide"
+      ? `${fade} 동안 화면이 점점 검게 덮입니다. 페이드가 끝난 뒤에 다음 명령이 실행됩니다.`
+      : `${fade} 동안 검은 화면이 걷힙니다. 페이드가 끝난 뒤에 다음 명령이 실행됩니다.`)
   );
   // field-less command — no form state to commit on open.
   wrap.append(
     intentCard(
       mode === "hide" ? "화면 숨기기" : "화면 표시",
-      mode === "hide" ? "화면을 어둡게 가립니다." : "숨긴 화면을 다시 표시합니다.",
+      mode === "hide"
+        ? `${fade} 동안 화면을 검게 페이드한 뒤 다음 명령으로 넘어갑니다.`
+        : `${fade} 동안 검은 화면을 걷은 뒤 다음 명령으로 넘어갑니다.`,
       `${mode}-screen-intent`
     ),
     layout(
       [
         el("p", {
           class: "actor-m2-preview-note",
-          text: "추가 설정 없이 실행됩니다.",
+          text: `길이 조절은 없습니다. ${fade} 페이드가 끝난 뒤에 다음 명령이 실행됩니다. 더 길게 덮으려면 화면 효과의 페이드를 쓰세요.`,
         }),
       ],
       preview

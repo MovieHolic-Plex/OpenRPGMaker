@@ -19,6 +19,7 @@ import { terrainTagAt } from "@/project/terrainAt";
 import { boardedVehicleId, isVehicleId, setParkedVehicleLocation } from "@/project/vehicles";
 import { runtimeEventViewById, runtimeEventViewsForMap, type RuntimeEventPositions } from "@/project/runtimeEventState";
 import { normalizeWeatherParams, parseWeather, weatherToRuntimeString } from "@/player/weather/weatherModel";
+import { HIDE_SHOW_SCREEN_FADE_MS } from "./screenEffectPlan";
 import { ensureM2Runtime, pushM2History } from "./m2RuntimeState";
 import { isSystemBgmCue, isSystemSeCue } from "@/project/systemAudioOverrides";
 import { isSystemAudioSlot, systemAudioOverrideKey } from "@/player/systemAudioSlots";
@@ -61,6 +62,8 @@ function executeByTitle(
   if (executeModernCommand(session, runtime, title, fields, context)) return;
   if (title === "Hide Screen" || title === "Show Screen") {
     runtime.screen.hidden = title === "Hide Screen";
+    // 한 프레임 컷이 아니라 편집기 미리보기와 같은 길이의 페이드. 세이브에는 남기지 않는다.
+    runtime.screen.hideFadeMs = HIDE_SHOW_SCREEN_FADE_MS;
     return;
   }
   if (title === "End Event Processing") {
