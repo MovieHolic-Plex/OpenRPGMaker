@@ -14,6 +14,7 @@ import { createBlankProject } from "@/project/defaults";
 import { COMBINED_TOWN_TILESET_ID, TILE } from "@/project/defaults/constants";
 import { EXTRA_LAYER_KEYS, layerTileAt, setLayerTileAt, setShadowAt, shadowAt } from "@/project/mapLayers";
 import type { AutotileGroup, GameMap } from "@/project/types";
+import { startOnRetiredCombinedTown } from "./support/retiredEasyRpgTilesets";
 
 const MAP_ID = "map_blank_start";
 // 2층 풀 장식 시험용 4방향 그룹(번호는 합성 — 기본 칩셋 내장 그룹과 겹치지 않게 고른다).
@@ -24,11 +25,9 @@ const DECO_GROUP: AutotileGroup = {
 };
 
 function context(withDecoGroup = false): ToolContext {
-  const project = createBlankProject();
   // 시험은 합본 마을 칩 번호(TILE.*)를 쓴다 — 빈 프로젝트 시작 맵의 기본 칩셋이 바뀌어도 같은 칩셋 위에서 잰다.
-  const start = project.maps[MAP_ID]!;
-  start.tilesetId = COMBINED_TOWN_TILESET_ID;
-  start.tileSize = project.tilesets[COMBINED_TOWN_TILESET_ID]!.tileSize;
+  // 저작권 정리(2026-10-07) 뒤 합본 마을 칩셋은 새 프로젝트에 없다 — 시험 지원 도우미로 되살린다.
+  const project = startOnRetiredCombinedTown(createBlankProject());
   if (withDecoGroup) project.tilesets[COMBINED_TOWN_TILESET_ID]!.autotileGroups = [DECO_GROUP];
   return { project };
 }

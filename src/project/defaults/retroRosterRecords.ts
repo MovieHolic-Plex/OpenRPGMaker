@@ -173,7 +173,8 @@ export function retroRosterActorRecords(): ActorRecord[] {
       name: row.name,
       nickname: "없음",
       characterResourceId,
-      characterIndex: index,
+      // 0 번 칸은 적지 않는다 — 로드 정규화(normalizeOptionalSheetIndex)가 0 을 지워 저장→재로드 바이트가 달라진다.
+      ...(index ? { characterIndex: index } : {}),
       battleCharacterResourceId,
       initialEquipment: humanoid
         ? {

@@ -19,7 +19,7 @@ export const WORKSHOP_ASSET_PREFIX = "workshop_";
 export const WORKSHOP_OBJECT_PREFIX = "workshop:";
 export const WORKSHOP_LEARNED_FROM: StructureKitLearnedFrom = "workshop";
 /** 공방 칸을 행에 맞추려고 끼운 빈 칸. 떼어 낼 때 이 이름표로 알아본다. */
-const PAD_LABEL = "공방 칸 자리(빈 칸)";
+export const PAD_LABEL = "공방 칸 자리(빈 칸)";
 const rowAlignedTileCount = (count: number, perRow: number): number => Math.ceil(Math.max(0, count) / Math.max(1, perRow)) * Math.max(1, perRow);
 const PASS: PassFlag = { up: true, down: true, left: true, right: true };
 const BLOCK: PassFlag = { up: false, down: false, left: false, right: false };
@@ -227,11 +227,23 @@ export interface ParkedWorkshopTiles {
  * 공방 칸 뒤에 다른 이식이 있으면(공방이 만들지 않은 배치) 건드리지 않고 null.
  */
 export function detachWorkshopTiles(tileset: TilesetDef): ParkedWorkshopTiles | null {
-  const grafts = (tileset.tileGrafts ?? []).filter(isWorkshopGraft).sort((a, b) => a.targetTile - b.targetTile);
-  const kits = (tileset.structureKits ?? []).filter(isWorkshopKit);
+  return detachGraftedTiles(tileset, isWorkshopGraft, isWorkshopKit);
+}
+
+/**
+ * 칩셋 끝에 덧붙인 이식 칸(공방이 아닌 것 — 데모 빌더가 다른 칩셋 그림을 꼬리에 붙인 것)을 떼어 낸다.
+ * from 이상 번호의 이식만 대상이다. 번들 정의를 새로 고친 뒤 attachWorkshopTiles 로 다시 붙인다.
+ */
+export function detachGraftTail(tileset: TilesetDef, from: number): ParkedWorkshopTiles | null {
+  return detachGraftedTiles(tileset, (g) => !isWorkshopGraft(g) && g.targetTile >= from, () => false);
+}
+
+function detachGraftedTiles(tileset: TilesetDef, parks: (graft: TileGraft) => boolean, parksKit: (kit: SectionStructureKitDef) => boolean): ParkedWorkshopTiles | null {
+  const grafts = (tileset.tileGrafts ?? []).filter(parks).sort((a, b) => a.targetTile - b.targetTile);
+  const kits = (tileset.structureKits ?? []).filter(parksKit);
   if (!grafts.length && !kits.length) return null;
   const base = grafts.length ? grafts[0]!.targetTile : tileset.count;
-  if ((tileset.tileGrafts ?? []).some((g) => !isWorkshopGraft(g) && g.targetTile >= base)) return null;
+  if ((tileset.tileGrafts ?? []).some((g) => !parks(g) && g.targetTile >= base)) return null;
   const tiles = grafts.map((graft) => ({
     oldId: graft.targetTile,
     graft: { ...graft },
@@ -240,10 +252,10 @@ export function detachWorkshopTiles(tileset: TilesetDef): ParkedWorkshopTiles | 
     terrain: tileset.terrain[graft.targetTile] ?? 0,
     meta: tileset.tileMeta?.[graft.targetTile] ? structuredClone(tileset.tileMeta[graft.targetTile]) : undefined,
   }));
-  const rest = (tileset.tileGrafts ?? []).filter((g) => !isWorkshopGraft(g));
+  const rest = (tileset.tileGrafts ?? []).filter((g) => !parks(g));
   if (rest.length) tileset.tileGrafts = rest;
   else delete tileset.tileGrafts;
-  tileset.structureKits = (tileset.structureKits ?? []).filter((k) => !isWorkshopKit(k));
+  tileset.structureKits = (tileset.structureKits ?? []).filter((k) => !parksKit(k));
   let end = Math.min(base, tileset.count);
   while (end > 0 && tileset.tileMeta?.[end - 1]?.label === PAD_LABEL) end -= 1;
   truncateTo(tileset, end);

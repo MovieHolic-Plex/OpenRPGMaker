@@ -1,5 +1,10 @@
 /** 2: `project.current_json` 의 타일셋을 `tileset_blobs` 로 접는다. 접힌 행을 쓸 때 올린다 — 이전 빌드는 열기를 거절한다. */
-export const LOCAL_STORE_FORMAT_VERSION = 2;
+export const LOCAL_STORE_FORMAT_FOLDED = 2;
+/**
+ * 3: 번들 타일셋을 번들 정의와의 차이(`bundledTilesetDiff`, src/project/bundledTilesetDiff.ts)로 싣는다. 그런 본문을 쓸 때 올린다 —
+ * 차이를 되돌릴 줄 모르는 이전 빌드가 검사 오류 대신 「더 새 형식」으로 열기를 거절하게 한다. 차이 없이 저장하면(롤백 스위치) 2 로 내려간다.
+ */
+export const LOCAL_STORE_FORMAT_VERSION = 3;
 
 export const PROJECT_STORE_FILE = "project.sqlite";
 /** 시작 화면 최근 목록 카드 그림. 정본이 아니라 편집기가 다시 만드는 캐시다. */

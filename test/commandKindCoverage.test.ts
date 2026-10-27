@@ -163,6 +163,8 @@ function buildMinimalConditions(ids: {
     relativeFacing: { kind: "relativeFacing", relation: "playerBehindEvent" },
     hiding: { kind: "hiding", value: true },
     pursuitActive: { kind: "pursuitActive", value: true },
+    // 시선 조건(dd8de6b90d #3317)이 CONDITION_KINDS 에 들어왔다.
+    eventSeesPlayer: { kind: "eventSeesPlayer", eventId: "watcher", range: 5 },
     clearCount: { kind: "clearCount", op: ">=", value: 1 },
     endingSeen: { kind: "endingSeen", endingId: "ending_true", value: true },
     newGamePlus: { kind: "newGamePlus", value: true },

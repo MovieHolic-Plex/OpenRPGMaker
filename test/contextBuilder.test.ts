@@ -10,7 +10,8 @@ describe("buildSystemPrompt tileset knowledge", () => {
     if (!map) throw new Error("missing start map");
     const tileset = project.tilesets[map.tilesetId];
     if (!tileset) throw new Error("missing tileset");
-    tileset.tileGroups = [...(tileset.tileGroups ?? []), {
+    // 버들항 시트는 그룹이 많아 다이제스트(700자로 자름) 끝에 덧붙인 그룹이 잘린다 — 이 그룹만 남겨 형식을 본다.
+    tileset.tileGroups = [{
       id: "user-cliff-private-id",
       name: "북쪽 반복 절벽",
       role: "wall",
@@ -49,10 +50,9 @@ describe("buildSystemPrompt — 수정 vs 신규 라우팅", () => {
     const context = buildSystemPrompt(project, { currentMapId: project.startMapId });
 
     expect(context).toContain("기존 실내 맵 수정");
-    expect(context).toContain("furnish_interior_space");
-    expect(context).toContain("list_interior_room_sessions");
-    // 기존 맵 id 로 세션을 시작하면 그 맵이 삭제된다는 사실을 프롬프트에 박아 둔다.
-    expect(context).toContain("map-exists");
+    // 실내 방 세션 도구(furnish_interior_space·list_interior_room_sessions)는 걷혔다 — 기존 실내는 같은 mapId 로
+    // 손 도트 실내 도구를 replace:true 로 다시 부른다.
+    expect(context).toContain("기존 실내 맵 수정=같은 mapId 로 build_hand_interior_room(replace:true)");
     // 대상 선택 규칙이 라우팅보다 먼저 읽히도록 명시돼 있다.
     expect(context).toContain("대상 선택");
   });

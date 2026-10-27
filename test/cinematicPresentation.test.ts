@@ -2,10 +2,14 @@ import { describe, expect, it } from 'vitest';
 import { createBlankProject } from '@/project/defaults';
 import { deserialize, serialize } from '@/project/io';
 import { parseCinematicPresentation, hasAuthoredTextOpening } from '@/project/cinematicPresentation';
+import { normalizeSystemRecords } from '@/project/databaseRecordModel';
 
 describe('authored opening typography persistence', () => {
   it('preserves text/image/video presentation in disabled opening and game-over records', () => {
     const project = createBlankProject();
+    // 새 프로젝트는 기본 전투 스킨(battleUiStyle: retro2003)을 명시해 두고 로드 정규화가 그것을 지운다 — 이 시험과 무관한
+    // 그 정규화를 먼저 적용해 바이트 비교의 전제를 맞춘다(autotileGroupPersistence 와 같은 방식).
+    project.system = normalizeSystemRecords(project.system);
     const presentation = parseCinematicPresentation({ preset: 'memory', text: { animation: 'typewriter', color: '#aAbBcC', revealMs: 1700 }, transition: { enter: 'wipe', exitMs: 500 } });
     const scene = { id: 'letter', kind: 'text' as const, narration: '가족 👨‍👩‍👧‍👦 é <b>기억</b>', durationMs: 0, presentation };
     project.assets.uploaded.still = { id: 'still', name: 'Still', kind: 'picture', meta: {}, dataUrl: 'data:image/png;base64,AQID' };

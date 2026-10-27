@@ -2,6 +2,7 @@
 import { describe, expect, it } from "vitest";
 import { createBlankProject, TILE } from "@/project/defaults";
 import { normalizeTerrainRecords } from "@/project/databaseUtilityRecordModel";
+import { startOnRetiredCombinedTown } from "./support/retiredEasyRpgTilesets";
 import {
   applySideViewLanding,
   planSideViewTick,
@@ -160,7 +161,8 @@ describe("옆보기 낙하 피해", () => {
 
 describe("옆보기 프로젝트 격자", () => {
   it("타일 통행과 지형 climbable 을 읽고, climbable 은 불러오기 정규화에서 살아남는다", () => {
-    const project = createBlankProject();
+    // TILE.* are combined-town chip ids (water solid, grass open); the start map is beodeul_city since the 2026-10-07 purge.
+    const project = startOnRetiredCombinedTown(createBlankProject());
     const map = project.maps[project.startMapId];
     const tileset = project.tilesets[map.tilesetId];
     map.lowerTiles.fill(TILE.GRASS);

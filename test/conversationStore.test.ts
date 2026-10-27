@@ -230,7 +230,8 @@ describe("conversationStore", () => {
     await failureReported;
 
     expect((await loadConversation("remote-failure"))?.id).toBe("remote-failure");
-    expect(console.error).toHaveBeenCalledWith("[ai-conversation] LegacyDb mirror failed:", failure);
+    // 원격 미러는 이제 프로젝트 저장소(SQLite 호스트)다 — 로그 문구도 바뀌었다.
+    expect(console.error).toHaveBeenCalledWith("[ai-conversation] Project storage mirror failed:", failure);
   });
 });
 
