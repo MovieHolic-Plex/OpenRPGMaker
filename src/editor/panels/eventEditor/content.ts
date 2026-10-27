@@ -481,7 +481,8 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
   );
 
   const workbench = el("div", {
-    class: `event-editor-workbench${inspectorColumn.hidden ? "" : " has-command-inspector"}`
+    // has-command-inspector 는 "선택한 명령이 있다"는 뜻이다. 미리보기 우선 칼럼(PR #3211)은 hidden 이 아니어도 선택 전에는 붙이지 않는다 — showInspector 가 붙인다.
+    class: "event-editor-workbench"
       + (narrowPreviewOpen ? " is-preview-open" : ""),
     children: [settingsColumn, columnResizer, commandsColumn, inspectorColumn, renderNarrowPreviewToggle()],
   });
