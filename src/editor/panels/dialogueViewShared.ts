@@ -104,6 +104,11 @@ export function speakerLabel(line: DialogueLine): string {
   return line.speaker || (line.kind === "text" ? "내레이션" : dialogueKindLabel(line.kind));
 }
 
+/** 「이동」할 편집 화면이 있는 줄인가. 퀘스트·엔딩 레지스트리 글은 따로 여는 화면이 없어 이 표에서만 고친다. */
+export function lineHasJumpTarget(line: DialogueLine): boolean {
+  return line.scope !== "quest" && line.scope !== "ending";
+}
+
 export function jumpToLine(line: DialogueLine, panelRoot: HTMLElement): void {
   const project = store.getCurrent();
   if (line.scope === "map" && line.mapId && line.eventId) {

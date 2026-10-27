@@ -52,13 +52,14 @@ function matchesKind(line: DialogueLine, kind: string): boolean {
   if (kind === "line") return line.kind === "text";
   if (kind === "choice") return line.kind === "choiceOption" || line.kind === "choicePrompt" || line.kind === "presentPrompt";
   if (kind === "description") return line.kind === "description";
+  if (kind === "quest") return line.kind === "quest" || line.scope === "ending";
   return true;
 }
 
 const listDialogue: ToolDefinition = {
   name: "list_dialogue",
   description:
-    "게임의 대사·선택지·설명 글을 한 줄씩(id·hash·화자·원문·자리·창 줄 수) 돌려준다. 윤문·말투 다듬기·길이 줄이기의 첫 단계다. " +
+    "게임의 대사·선택지·설명·퀘스트 일지·엔딩 글을 한 줄씩(id·hash·화자·원문·자리·창 줄 수) 돌려준다. 윤문·말투 다듬기·길이 줄이기의 첫 단계다. " +
     "speaker 로 한 인물만, mapId·query 로 장면만, overflowOnly 로 대화창 한 장을 넘는 줄만 고른다. " +
     "첫 쪽(offset 0)에는 화자 목록(대사 수·말투 메모)과 프로젝트 문체 규칙이 함께 온다. 고칠 때는 rewrite_dialogue 에 id·hash 를 그대로 넘긴다.",
   mode: "read",
@@ -68,8 +69,8 @@ const listDialogue: ToolDefinition = {
       query: { type: "string", description: "원문·화자·자리(맵·이벤트 이름)에 들어 있는 낱말." },
       speaker: { type: "string", description: "이 화자의 대사만(대사 명령의 화자 이름 그대로)." },
       mapId: { type: "string", description: "이 맵의 이벤트 대사만." },
-      scope: { type: "string", enum: ["all", "map", "common", "troop", "database"], description: "map=맵 이벤트, common=공용 이벤트, troop=적 그룹 전투 이벤트, database=아이템·장비·스킬 설명." },
-      kind: { type: "string", enum: ["all", "line", "choice", "description"], description: "line=대사 명령, choice=선택지·질문, description=자료집 설명." },
+      scope: { type: "string", enum: ["all", "map", "common", "troop", "database", "quest", "ending"], description: "map=맵 이벤트, common=공용 이벤트, troop=적 그룹 전투 이벤트, database=아이템·장비·스킬 설명, quest=퀘스트 일지 제목·요약·단계, ending=엔딩 제목·머리말·크레딧·에필로그 대사." },
+      kind: { type: "string", enum: ["all", "line", "choice", "description", "quest"], description: "line=대사(이벤트·에필로그), choice=선택지·질문, description=자료집 설명, quest=퀘스트·엔딩 화면 글." },
       overflowOnly: { type: "boolean", description: "대화창 한 장(추정)을 넘는 줄만." },
       minChars: { type: "integer", minimum: 0, description: "이 글자 수 이상인 줄만." },
       offset: { type: "integer", minimum: 0 },

@@ -20,13 +20,13 @@ import {
 } from "@/editor/dialogue/dialogueIndex";
 import { acceptDialogueProposals, rejectDialogueProposals, setSpeakerVoiceNote } from "@/editor/dialogue/dialogueActions";
 import { detailHero, detailPane, emptyState, listPane, listRow, listSearch, workspaceShell } from "@/editor/panels/databaseWorkspace";
-import { dialogueEditing, diffNode, fitBadge, inlineLineText, jumpToLine, lineFit, readyDialogueMeasurer, warmDialogueMeasurer } from "@/editor/panels/dialogueViewShared";
+import { dialogueEditing, diffNode, fitBadge, inlineLineText, jumpToLine, lineFit, lineHasJumpTarget, readyDialogueMeasurer, warmDialogueMeasurer } from "@/editor/panels/dialogueViewShared";
 import { dialogueModeToggle, renderStoryScriptView } from "@/editor/panels/databaseStoryScriptView";
 import type { Project } from "@/project/types";
 import { el } from "@/util/dom";
 import { toast } from "@/util/toast";
 
-type KindFilter = "all" | "line" | "choice" | "description";
+type KindFilter = "all" | "line" | "choice" | "description" | "quest";
 
 interface ViewState {
   mode: "script" | "list";
@@ -76,6 +76,7 @@ function matchesKind(line: DialogueLine, kind: KindFilter): boolean {
   if (kind === "line") return line.kind === "text";
   if (kind === "choice") return line.kind === "choiceOption" || line.kind === "choicePrompt" || line.kind === "presentPrompt";
   if (kind === "description") return line.kind === "description";
+  if (kind === "quest") return line.kind === "quest" || line.scope === "ending";
   return true;
 }
 
@@ -240,13 +241,15 @@ function renderLineRow(line: DialogueLine, project: Project, panelRoot: HTMLElem
     }),
     textCell,
     fitBadge(fit),
-    el("button", {
-      class: "db-dialogue-jump",
-      text: "이동",
-      attrs: { type: "button", title: "이 대사가 있는 이벤트(또는 레코드)를 엽니다" },
-      dataset: { testid: "db-dialogue-jump" },
-      on: { click: () => jumpToLine(line, panelRoot) },
-    }),
+    lineHasJumpTarget(line)
+      ? el("button", {
+        class: "db-dialogue-jump",
+        text: "이동",
+        attrs: { type: "button", title: "이 대사가 있는 이벤트(또는 레코드)를 엽니다" },
+        dataset: { testid: "db-dialogue-jump" },
+        on: { click: () => jumpToLine(line, panelRoot) },
+      })
+      : el("span", { class: "db-dialogue-jump-none", attrs: { "aria-hidden": "true" } }),
   );
   return row;
 }
@@ -327,6 +330,7 @@ export function renderDialogueTab(host: HTMLElement, panelRoot: HTMLElement, rer
       el("option", { value: "line", text: "대사" }),
       el("option", { value: "choice", text: "선택지·질문" }),
       el("option", { value: "description", text: "아이템·스킬 설명" }),
+      el("option", { value: "quest", text: "퀘스트·엔딩" }),
     ],
   });
   kindSelect.value = state.kind;
