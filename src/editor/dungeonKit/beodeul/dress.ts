@@ -503,6 +503,22 @@ function entranceCamp(c: DressCtx, r: PlacedRoom, rs: () => number, s: Slot | nu
   }
 }
 
+/** 동굴 벽 앞면 윗단 종유석(tc.cave_stalactite, 2026-10-27) — 구워진 사본에서만. 1칸·2칸을 섞어 벽을 따라 드문드문. */
+function stalactites(c: DressCtx, rs: () => number, slots: Slot[], n: number): void {
+  if (!c.hasKit(TK("stalactites"))) return;
+  const two = c.hasKit(TK("stalactites-2w"));
+  // 덩이 사이를 적어도 두 칸 띄운다 — 붙여 걸면 한 줄 빗살·울타리로 읽혔다(2026-10-27 지도 속 검수 r4).
+  const placed: Slot[] = [];
+  for (const q of c.shuffle(rs, slots)) {
+    if (placed.length >= n) break;
+    if (placed.some((p) => p.y === q.y && Math.abs(p.x - q.x) < 5)) continue;
+    // 2칸은 오른 칸도 같은 줄 벽 칸일 때만 — 벽 끝 모서리에 반쯤 걸려 갈고리처럼 잘렸다(2026-10-27 지도 검수 r6)
+    const wide = two && rs() < 0.35 && slots.some((o) => o.y === q.y && o.x === q.x + 1);
+    const id = wide ? TK("stalactites-2w") : TK("stalactites");
+    if (c.put(id, q.x, q.y)) placed.push(q);
+  }
+}
+
 function dressCave(c: DressCtx, r: PlacedRoom, rs: () => number, s: Slot | null, slots: Slot[]): boolean {
   const spikes = () => c.weighted(rs, [[CV("stalagmite-1"), 4], [CV("rock-pillar-2"), 1], [CV("rubble-cave"), 1]]);   // 잔돌은 드물게 — 흰 잔돌이 길가 쓰레기로 읽혔다(2026-10-25 floor VQA r2)
   const glow = () => c.weighted(rs, [[MUSH, 4], [CV("glow-moss-floor"), 2]]);
@@ -518,6 +534,7 @@ function dressCave(c: DressCtx, r: PlacedRoom, rs: () => number, s: Slot | null,
       const e = c.edgeCells(r, rs);
       for (const [x, y] of e.slice(0, 8)) if (rs() < 0.45 && lonely(c, x, y, 1)) stand(c, spikes(), x, y);
       mossPatch(e, 3);
+      stalactites(c, rs, slots, 2);
       entranceCamp(c, r, rs, s);
       return true;
     }
@@ -528,7 +545,8 @@ function dressCave(c: DressCtx, r: PlacedRoom, rs: () => number, s: Slot | null,
       sprinkle(c, rs, r, 0.03, spikes, { inset: 2, rad: 2, max: 3 });
       if (!c.lair) mossPatch(e, 3);   // 이끼 빛은 벽가 한 덩이만 — 방 한가운데 덩이가 걷는 길을 막아 보였다(2026-10-25 floor VQA r1)
       if (rs() < 0.7) { for (const [x, y] of shoreCells(c, r).slice(0, 3)) stand(c, MUSH, x, y); }
-      vinesOnWalls(c, rs, slots, 3);
+      stalactites(c, rs, slots, 3);   // 덩굴보다 먼저 — 덩굴이 벽 칸을 다 차지하면 종유석이 한 개도 못 걸렸다(2026-10-27)
+      vinesOnWalls(c, rs, slots, 2);
       c.hangAlong(slots, rs, 7, () => TORCH, 1);
       return true;
     }
@@ -543,7 +561,8 @@ function dressCave(c: DressCtx, r: PlacedRoom, rs: () => number, s: Slot | null,
       let n = 0; for (const [x, y] of shore) { if (n >= 6) break; if (rs() < 0.45 && lonely(c, x, y, 1) && stand(c, c.weighted(rs, [[MUSH, 4], [CV("driftwood"), 1], [CV("dock-post"), 1], [CV("rubble-cave"), 2]]), x, y)) n += 1; }
       const e = c.edgeCells(r, rs);
       for (const [x, y] of e.slice(0, 8)) if (rs() < 0.5 && lonely(c, x, y, 1)) stand(c, spikes(), x, y);
-      vinesOnWalls(c, rs, slots, 4);
+      stalactites(c, rs, slots, 2);
+      vinesOnWalls(c, rs, slots, 3);
       return true;
     }
     case "grotto": {
@@ -552,7 +571,8 @@ function dressCave(c: DressCtx, r: PlacedRoom, rs: () => number, s: Slot | null,
       mossPatch(e, 5);
       for (const [x, y] of e.slice(0, 6)) if (rs() < 0.5 && lonely(c, x, y, 1)) stand(c, glow(), x, y);
       sprinkle(c, rs, r, 0.04, () => c.weighted(rs, [[SW("bones"), 2], [SW("skulls"), 1], [CV("rubble-cave"), 2]]), { max: 3 });
-      vinesOnWalls(c, rs, slots, 3);
+      stalactites(c, rs, slots, 2);
+      vinesOnWalls(c, rs, slots, 2);
       return true;
     }
     case "boss": {
@@ -582,7 +602,8 @@ function dressCave(c: DressCtx, r: PlacedRoom, rs: () => number, s: Slot | null,
       if (e[0]) stand(c, SW("bone-heap"), e[0][0], e[0][1]);
       if (c.lair) lairCamp(c, r, rs, e.slice(1), true);
       sprinkle(c, rs, r, 0.04, () => c.weighted(rs, [[SW("bones"), 2], [SW("skulls"), 2]]), { inset: 2, max: 5 });
-      vinesOnWalls(c, rs, slots, 4);
+      stalactites(c, rs, slots, 3);
+      vinesOnWalls(c, rs, slots, 3);
       c.hangAlong(slots, rs, 5, () => TORCH, 2);
       return true;
     }
@@ -1073,7 +1094,8 @@ function dressIce(c: DressCtx, r: PlacedRoom, rs: () => number, s: Slot | null, 
   const icicle = pickKit(c, [TK("icicles"), CV("vines-2")]);
   const frozen = pickKit(c, [TK("frozen-warrior"), SF("snowman")]);
   const drift = pickKit(c, rs() < 0.5 ? [TK("snow-drift-2"), TK("snow-drift"), SF("mound")] : [TK("snow-drift"), SF("mound")]);
-  const bits = () => c.weighted(rs, [[drift, 3], [rock(), 2], [CV("stalagmite-1"), 2], [crystal, 2], [SF("mound"), 1]]);
+  // 흙빛 동굴 석순(CV stalagmite-1)은 얼음굴에서 빼었다 — 「얼음 동굴에 갈색 석순」(2026-10-27 themes audit ice)
+  const bits = () => c.weighted(rs, [[drift, 3], [rock(), 3], [crystal, 2], [SF("mound"), 1]]);
   const e = c.edgeCells(r, rs);
   const edgeBits = (n: number) => { let k = 0; for (const [x, y] of e) { if (k >= n) break; if (rs() < 0.5 && lonely(c, x, y, 1) && stand(c, bits(), x, y)) k += 1; } };
   const icicles = (n: number) => { if (c.hasKit(TK("icicles"))) c.hangAlong(slots, rs, 3, () => icicle, n); };

@@ -40679,6 +40679,108 @@ null,
 ],
 "passage": "star",
 "layer": "upper"
+},
+{
+"key": "7c4fe5751dc42a37d70df32e",
+"origin": "tc.cave_stalactite/*/theme-cave-stal-r11:A1@658af10e",
+"label": "버들항 던전 · 종유석(벽 앞면 걸이) 1×2·2×2 1칸 (0,0)",
+"description": "자연 동굴 벽 앞면 두 줄(바위 턱 바로 밑부터 바닥 바로 위까지)에 매달린 흙빛 종유석. 그림 = [1칸|2칸], 높이 2칸. 투명 바탕 — 줄 A 흙굴 바위 앞면에 얹힌다.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"stalactites",
+"cave",
+"동굴"
+],
+"passage": "solid",
+"layer": "upper"
+},
+{
+"key": "e46d47abf62f773887d4ff98",
+"origin": "tc.cave_stalactite/*/theme-cave-stal-r11:A1@658af10e",
+"label": "버들항 던전 · 종유석(벽 앞면 걸이) 1×2·2×2 1칸 (0,1)",
+"description": "자연 동굴 벽 앞면 두 줄(바위 턱 바로 밑부터 바닥 바로 위까지)에 매달린 흙빛 종유석. 그림 = [1칸|2칸], 높이 2칸. 투명 바탕 — 줄 A 흙굴 바위 앞면에 얹힌다.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"stalactites",
+"cave",
+"동굴"
+],
+"passage": "solid",
+"layer": "upper"
+},
+{
+"key": "4e8e333e235e59c7b4917145",
+"origin": "tc.cave_stalactite/*/theme-cave-stal-r11:A1@658af10e",
+"label": "버들항 던전 · 종유석(벽 앞면 걸이) 1×2·2×2 2칸 (0,0)",
+"description": "자연 동굴 벽 앞면 두 줄(바위 턱 바로 밑부터 바닥 바로 위까지)에 매달린 흙빛 종유석. 그림 = [1칸|2칸], 높이 2칸. 투명 바탕 — 줄 A 흙굴 바위 앞면에 얹힌다.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"stalactites",
+"cave",
+"동굴"
+],
+"passage": "solid",
+"layer": "upper"
+},
+{
+"key": "56b79058bae4e647577318f7",
+"origin": "tc.cave_stalactite/*/theme-cave-stal-r11:A1@658af10e",
+"label": "버들항 던전 · 종유석(벽 앞면 걸이) 1×2·2×2 2칸 (1,0)",
+"description": "자연 동굴 벽 앞면 두 줄(바위 턱 바로 밑부터 바닥 바로 위까지)에 매달린 흙빛 종유석. 그림 = [1칸|2칸], 높이 2칸. 투명 바탕 — 줄 A 흙굴 바위 앞면에 얹힌다.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"stalactites",
+"cave",
+"동굴"
+],
+"passage": "solid",
+"layer": "upper"
+},
+{
+"key": "97e3769457652b7059253606",
+"origin": "tc.cave_stalactite/*/theme-cave-stal-r11:A1@658af10e",
+"label": "버들항 던전 · 종유석(벽 앞면 걸이) 1×2·2×2 2칸 (0,1)",
+"description": "자연 동굴 벽 앞면 두 줄(바위 턱 바로 밑부터 바닥 바로 위까지)에 매달린 흙빛 종유석. 그림 = [1칸|2칸], 높이 2칸. 투명 바탕 — 줄 A 흙굴 바위 앞면에 얹힌다.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"stalactites",
+"cave",
+"동굴"
+],
+"passage": "solid",
+"layer": "upper"
+},
+{
+"key": "6c910af7f1609742b4a0786b",
+"origin": "tc.cave_stalactite/*/theme-cave-stal-r11:A1@658af10e",
+"label": "버들항 던전 · 종유석(벽 앞면 걸이) 1×2·2×2 2칸 (1,1)",
+"description": "자연 동굴 벽 앞면 두 줄(바위 턱 바로 밑부터 바닥 바로 위까지)에 매달린 흙빛 종유석. 그림 = [1칸|2칸], 높이 2칸. 투명 바탕 — 줄 A 흙굴 바위 앞면에 얹힌다.",
+"tags": [
+"버들항",
+"던전",
+"dungeon",
+"주제",
+"stalactites",
+"cave",
+"동굴"
+],
+"passage": "solid",
+"layer": "upper"
 }
 ],
 "defs": {
@@ -45387,6 +45489,24 @@ null,
 "description": "도깨비불 등잔 1×2(3장면)(키트 bd-pick-dungeon-theme-will-o-wisp). 하네스 theme-props-r8 A1.",
 "placementRules": "통행: 막힘"
 },
+"beodeul:dungeon_theme_tc_cave_stalactite": {
+"id": "beodeul:dungeon_theme_tc_cave_stalactite",
+"name": "버들항 던전 주제 종유석(벽 앞면 걸이) 1×2·2×2",
+"role": "object",
+"source": "bundled-default",
+"defaultLayer": "upper",
+"confidence": "high",
+"tileIds": [
+33105,
+33106,
+33107,
+33108,
+33109,
+33110
+],
+"description": "종유석(벽 앞면 걸이) 1×2·2×2(키트 bd-pick-dungeon-theme-stalactites, bd-pick-dungeon-theme-stalactites-2w). 하네스 theme-cave-stal-r11 A1.",
+"placementRules": "통행: 막힘(벽 앞면 위 덧칠 — 2칸 조각은 칸마다 x)"
+},
 "beodeul:dungeon_theme_tc_fo_ancient_tree": {
 "id": "beodeul:dungeon_theme_tc_fo_ancient_tree",
 "name": "버들항 던전 주제 숲 던전 거목(밑동 굴 문) 6×7",
@@ -49421,6 +49541,106 @@ null,
 ]
 }
 },
+"bd-pick-dungeon-theme-stalactites": {
+"id": "bd-pick-dungeon-theme-stalactites",
+"kind": "object",
+"name": "버들항 던전 · 종유석(벽 앞면 걸이) 1×2·2×2 1칸 1×2",
+"width": 1,
+"height": 2,
+"tileSize": 16,
+"rows": [
+{
+"tiles": [
+-1
+],
+"upperTiles": [
+33105
+]
+},
+{
+"tiles": [
+-1
+],
+"upperTiles": [
+33106
+]
+}
+],
+"learnedFrom": "db-authored",
+"ai": {
+"description": "종유석(벽 앞면 걸이) 1×2·2×2 — 1칸. 자연 동굴 벽 앞면 두 줄(바위 턱 바로 밑부터 바닥 바로 위까지)에 매달린 흙빛 종유석. 그림 = [1칸|2칸], 높이 2칸. 투명 바탕 — 줄 A 흙굴 바위 앞면에 얹힌다.",
+"placementRules": "통행: 막힘(벽 앞면 위 덧칠 — 2칸 조각은 칸마다 x)",
+"tags": [
+"버들항",
+"던전",
+"주제",
+"stalactites",
+"cave",
+"동굴"
+],
+"role": "prop",
+"repeatability": "fixed",
+"layerHome": "upper",
+"themes": [
+"dungeon",
+"던전",
+"cave",
+"동굴"
+]
+}
+},
+"bd-pick-dungeon-theme-stalactites-2w": {
+"id": "bd-pick-dungeon-theme-stalactites-2w",
+"kind": "object",
+"name": "버들항 던전 · 종유석(벽 앞면 걸이) 1×2·2×2 2칸 2×2",
+"width": 2,
+"height": 2,
+"tileSize": 16,
+"rows": [
+{
+"tiles": [
+-1,
+-1
+],
+"upperTiles": [
+33107,
+33108
+]
+},
+{
+"tiles": [
+-1,
+-1
+],
+"upperTiles": [
+33109,
+33110
+]
+}
+],
+"learnedFrom": "db-authored",
+"ai": {
+"description": "종유석(벽 앞면 걸이) 1×2·2×2 — 2칸. 자연 동굴 벽 앞면 두 줄(바위 턱 바로 밑부터 바닥 바로 위까지)에 매달린 흙빛 종유석. 그림 = [1칸|2칸], 높이 2칸. 투명 바탕 — 줄 A 흙굴 바위 앞면에 얹힌다.",
+"placementRules": "통행: 막힘(벽 앞면 위 덧칠 — 2칸 조각은 칸마다 x)",
+"tags": [
+"버들항",
+"던전",
+"주제",
+"stalactites",
+"cave",
+"동굴"
+],
+"role": "prop",
+"repeatability": "fixed",
+"layerHome": "upper",
+"themes": [
+"dungeon",
+"던전",
+"cave",
+"동굴"
+]
+}
+},
 "bd-pick-dungeon-theme-giant-tree": {
 "id": "bd-pick-dungeon-theme-giant-tree",
 "kind": "object",
@@ -52871,6 +53091,22 @@ null,
 "beodeul:dungeon_theme_otherworld_rim"
 ],
 "structureKits": []
+}
+},
+"tc.cave_stalactite|*": {
+"round": "theme-cave-stal-r11",
+"letter": "A1",
+"sha256": "658af10ec465e0f670977f9599c8df7beab3d8ed32b4ab011a64d489d96b8ada",
+"gate": "pass",
+"defs": {
+"autotileGroups": [],
+"tileGroups": [
+"beodeul:dungeon_theme_tc_cave_stalactite"
+],
+"structureKits": [
+"bd-pick-dungeon-theme-stalactites",
+"bd-pick-dungeon-theme-stalactites-2w"
+]
 }
 }
 }
