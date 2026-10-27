@@ -4412,6 +4412,15 @@
     "other.ground"
    ],
    "lead": "r7 반려(64px 반복·평면 판·가장자리 그늘 없음·적갈색·굵은 빛) → 128×96 밭(판 64), 3단 베벨, 보라 검정 바탕, 1px 줄눈 빛, 가장자리 그늘 사다리."
+  },
+  "theme-floors-r9": {
+   "module": "src/harnesses/dungeon-chipset/rounds/theme_floors_r9.py",
+   "wave": "theme_arcane",
+   "title": "던전 테마 바닥 다시 그림 theme-floors-r9",
+   "items": [
+    "other.ground"
+   ],
+   "lead": "r8 반려(가장자리 납작한 띠·붙인 판·2×2 반복) → 가장자리 47 변형 없이 112×80 밭을 칸 위치로 감아 깔고 벽 밑 줄은 그늘 줄 조각. 시트 여유 47칸 안(42칸)."
   }
  }
 }

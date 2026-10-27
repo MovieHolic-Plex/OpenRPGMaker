@@ -200,10 +200,29 @@ def quiet_body():
     return rows
 
 
+class FieldAutotile(dot.Autotile):
+    """가장자리 변형도 그 칸 자리의 밭 조각 위에 그늘을 얹는다(r8 첫 판 반려: 가장자리가 판석 없는 납작한 남색 띠라 몸통이 「붙인 판」으로 보였다).
+    tile_at(mask, x, y) = 밭 조각 (x % 8, y % 6) 위에 틀·안 모서리. tile(mask) = 밭 조각 0 위(굽기·시트용)."""
+
+    def piece(s, x, y):
+        fx, fy = x % (NX // 16), y % (NY // 16)
+        cv = Cv(16, 16)
+        cv.a[:] = s.field.a[fy * 16:(fy + 1) * 16, fx * 16:(fx + 1) * 16]
+        return cv
+
+    def tile_at(s, mask, x, y):
+        keep = s.body
+        s.body = s.piece(x, y)
+        try:
+            return s.tile(dot.canon(mask))
+        finally:
+            s.body = keep
+
+
 def ground_at():
     bs = [grid(quiet_body(), LEG7)] + [grid(b, LEG7) for b in bodies()]
-    # 본몸통(가장자리 47 변형이 쓰는 칸) = 빛 줄기 없는 가장 조용한 조각
-    at = autotile_cv(bs[0], grid(EDGE_FRAME, EDGE_LEG, 32, 32), grid(EDGE_INNER, EDGE_LEG, 16, 16), bs[1:])
+    base = autotile_cv(bs[0], grid(EDGE_FRAME, EDGE_LEG, 32, 32), grid(EDGE_INNER, EDGE_LEG, 16, 16), bs[1:])
+    at = FieldAutotile(base.body, base.edge, base.outer, base.inner, base.bodies[1:])
     at.field = grid(FIELD, LEG7)   # 관문: 시공기 배치(칸 위치로 감아 깖) 그대로 이음을 잰다
     return at
 
@@ -227,7 +246,7 @@ def c_ground():
         img = grid(FIELD, LEG7)   # 판석 밭 128×96 통째(8×6 칸)
         return img, {'kind': 'autotile', 'autotiles': {'ground': at}, 'vignette': v, 'fieldCols': NX // 16,
                      'note': '128×96 감김 판석 밭(지터 격자 판 64, 3단 베벨, 보라 검정, 줄눈 속 1px 빛 일곱 줄기) — r7 기술: 64×64(보로노이 판 22, 판마다 기울기·단, 검은 줄눈, 줄눈에서 새는 보라 빛 6줄기)을 16칸으로 잘라 몸통 변형',
-                     'extras': [('밭 2×2 감아 깐 바닥(시공기 배치, 2배)', tiled(), 2), ('47 변형(벽·문턱 쪽 가장자리)', variants_sheet(at), 2)]}
+                     'extras': [('밭 2×2 감아 깐 바닥(시공기 배치, 2배)', tiled(), 2), ('47 변형(밭 조각 위, 벽·문턱 쪽 가장자리)', variants_sheet(at), 2)]}
     return fn
 
 

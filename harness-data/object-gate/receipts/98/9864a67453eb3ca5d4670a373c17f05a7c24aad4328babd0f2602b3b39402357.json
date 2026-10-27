@@ -1,0 +1,406 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "9864a67453eb3ca5d4670a373c17f05a7c24aad4328babd0f2602b3b39402357",
+ "width": 128,
+ "height": 96,
+ "kind": "terrain",
+ "name": "other.ground r8 A1",
+ "label": "dungeon/other.ground.r8.A1",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "refer",
+ "reasons": [
+  "화풍: 화풍 판정이 갈림(걸린 판정 2/4)",
+  "화풍: 판정자 fail (2/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "refer",
+  "reasons": [
+   "화풍 판정이 갈림(걸린 판정 2/4)",
+   "판정자 fail (2/4)"
+  ],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 7,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "dungeon",
+   "fallback": true,
+   "reason": "칩셋 dungeon 의 화풍 기준 묶음이 없다",
+   "hash": "8cecb3a70460aa86"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 7,
+  "tileColorsP90": 9,
+  "darkV5": 20,
+  "nearBlackEdge": 0.3,
+  "opaqueTiles": 48
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cobblestone ground tiling, flat top-down texture of dark purple stones with mortar lines",
+      "rows": "0-95",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The image is a full-bleed 128x96 seamless cobblestone ground texture. It is a terrain tile, not a standing object. Stones are outlined by dark mortar lines and some have lighter top-left bevel highlights, but there is no front face, no eave line, no ellipse and no stacked vertical face. The silhouette is 128 wide on every row, so no object outline exists. It reads as a flat top-down surface, which is correct for ground terrain."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a dark flagstone patch, the same kind as the paving and grass references. It measures 6 visible tones per tile, against 7 for the paving and 3 for the grass, so it sits at the paving level and well above the grass. Near-flat coverage is 9%, low, and exact 5x5 flat fill is 0%. The stones carry fine grain, and the seams have lighter pinkish rims on their lit edges, which gives about 5 lightness steps (stone body, grain, seam shadow, rim highlight, glints). Only 21% of dark edge pixels are neutral, and the seams lean purple and red-brown, so the outline follows the stone's own dark tone rather than a black sticker line. Weaknesses: contrast is low, and the stones are shaded mostly by uniform grain rather than one by one as in the paving reference, so the surface is a little flatter than the reference. Overall it holds up beside the reference without looking sticker-like or thin.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 11709
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cobblestone ground texture, full tile",
+      "rows": "0-95",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The image is a full 128x96 tile of irregular dark purple cobblestones with dark mortar lines and lighter pink-brown highlights on some stone edges. It is a flat ground/floor texture, not a standing object. The silhouette is a full rectangle (width 128 on every row). There is no south face, eave, front-edge line or ellipse. The column scans show only mortar lines and stone patches, with no structural bands. As terrain it reads as a flat top-down surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a purple cobble/flagstone ground. The measured 6 visible tones per tile sits between grass (3) and paving (7), and near-flat coverage is low at 9% versus 0% in the references. Seam lines between stones lean reddish-purple, so the outline reads as a dark tint of the material rather than a neutral black line. Only 21% of dark edge pixels are neutral, versus 80% for the paving reference. Each stone has a faint grain, but it is subtle and the interiors are fairly uniform. Few highlights appear, apart from a handful of blue speckles. Stone shapes are large and smooth, so individual stones are not shaded one by one with per-stone highlights and bevels as in the paving reference. Raw colours are just 10 in total, and the dark mid-tone interior makes the ramp feel compressed. The overall structure is acceptable, but it looks a little flatter and less crisp than the reference, and I am not confident it matches the bar.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 9122
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cobblestone ground texture (whole tile)",
+      "rows": "0-95",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 96,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The tile is a full 128x96 flat cobblestone pattern with irregular stones separated by dark outline cracks and lighter reddish highlights on some stone edges. The width is 128 in every row and the tile has no silhouette. It shows no front face, no eave line and no ellipse. The column scans show only short runs of alternating stone and crack colours, not a top band followed by a vertical face. This is a seamless top-down ground texture, as expected for terrain, so it has no standing front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a cracked-flagstone ground in a purple/violet palette. Hue is not judged. Measured: 6 visible tones per tile against 7 for the paving reference and 3 for the grass reference, so it is in range. Near-flat coverage is 9%, low though above the references' 0%. Stone gaps are drawn in a dark purple tint, and the pinkish-lit edges on the stone faces give a tinted rim light, so the outline reads as dark_material_tone. The 21% near-neutral share of dark edge pixels supports this. Each stone has grain speckle and its own light edge, which is some texture but finer and more uniform than the reference paving. Shading is about 5 steps (face, mid, dark seam, rim highlight, speckle). Weaknesses: the stones are similar to each other in tone, there are no per-stone value shifts, and the surface is somewhat uniform and muddy next to the crisper reference stones. Because the board is only about 2x and the candidate has a few tiles of repeating cell pattern, I judge it slightly lower in density but not shallow or sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 9991
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cobblestone ground tiling (flat seamless terrain texture of dark purple stones with dark gaps)",
+      "rows": "0-95",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The image is a full-bleed 128x96 terrain tile of irregular cobblestones separated by dark gap lines. Stone highlights run along some upper and left edges, but they are local bevels on a flat surface. The tile has no silhouette, no standing body and no front face. It is a flat ground texture, which suits the terrain kind. A standing object's top-surface rules do not apply, and the tile reads as a top-down surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a cracked dark-violet flagstone pavement. Each stone has a lighter rim, a mid body, and a darker crack line. The crack outlines lean purple/maroon rather than neutral black, which fits the dark_material_tone call. Only 21% of dark edge pixels are near-neutral, against 80% for the paving reference's grey outline. Visible tones per tile are 6, close to the paving reference at 7 and well above the grass at 3. Near-flat coverage is 9%, slightly above the references' 0%, and a few stones show smooth interiors with only faint grain. There is speckle grain across the stones, plus a few blue glint pixels. The stones are less individually shaded than the paving reference, which has pebble-like texture on every slab. Raw colours are 10 in total, but that comes from the locked palette. The patch has a coherent structure and no sticker look, but the texture is subtler than the reference's, so density is slightly lower and the piece sits just under the bar.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 8694
+  }
+ ],
+ "decidedAt": "2026-10-27T11:28:18.887Z",
+ "cells": {
+  "16": [
+   "0411b85b2ee2a32d",
+   "044bc9a148a34854",
+   "0ed50bd6f66b685b",
+   "18aa1a0a46974400",
+   "206ddb7b5201fd7b",
+   "2499795b5e09aaed",
+   "2ff217ee36fc2bc7",
+   "33247f27b33bde76",
+   "334af6cbf1e18904",
+   "33aa2a9cb63b8cde",
+   "3ad82e54a0e0d913",
+   "40fef2a5c5401dc4",
+   "5005676688c987a0",
+   "51625170c45cd29d",
+   "52dd682c4765313e",
+   "54f7f93789da34fb",
+   "5515e36e44f9b7e5",
+   "55371e3d12e09747",
+   "58bb58c92dd67531",
+   "60b5cfbb183e8f14",
+   "698403ec29d36ff5",
+   "6b2191711d9502d8",
+   "788fd4dfebe93e8d",
+   "7ddcf3f1d3ccae0d",
+   "7fa916a7a38ecda3",
+   "81a36cf51160b81e",
+   "8ad0faede71294aa",
+   "a40bae016ef125e2",
+   "a53bf1fc6f8793b1",
+   "aa87806f65a559c0",
+   "b0016a811e9b5f74",
+   "b166864dfb7fb8b4",
+   "b355ec6ff7f049b1",
+   "b567d0653752582b",
+   "b5cd0013e06908e4",
+   "b6007d7d40b1985d",
+   "b798b705ba9c5f99",
+   "bd250520ec1339ae",
+   "c8e1ee28bc113261",
+   "ca51df791c3081d1",
+   "d0cfa86949ab46d1",
+   "db7a8eec61d9e9f6",
+   "e0ac02e56f8f9acb",
+   "e22b1a23177b9c9f",
+   "e3de00d745e27b30",
+   "e78657a081ab4a8d",
+   "ee52202544ab91fa",
+   "f053b2809f1947b2"
+  ],
+  "24": [
+   "0018b2d480d5d1ea",
+   "00cfba250522fd6e",
+   "028d4c9b816f90af",
+   "02ae50ff23898b0b",
+   "02e6f893246a704a",
+   "10f3f4d7637f8e56",
+   "198de9182cfe8957",
+   "1a38a6398d5c06dc",
+   "1c163d30ec03fd96",
+   "1c5bd91d3ed37ce2",
+   "20461574fddd2996",
+   "22962d57902971d5",
+   "27c243bd37c9541b",
+   "2a1410c3b39123ad",
+   "2d0eae52d2efd764",
+   "31f23a3eaba6d0af",
+   "321bd38d19bf3e2c",
+   "40e07b2e8a66c40e",
+   "4634c4ed77e968a4",
+   "49cd3ad0d28d490c",
+   "4ed9546ed14b79f3",
+   "4fd2906a4207f4cb",
+   "505e1438d44649cd",
+   "50696075e1676579",
+   "50c30236a7946e63",
+   "528a19edde32f6c0",
+   "5758cfedad030034",
+   "58ba8a34a925e44d",
+   "58c9e5c402f0fc8a",
+   "5aaa073b8b6766aa",
+   "5b135475dd53841b",
+   "61c5fb0130a4c85d",
+   "6217f34aee2bf36a",
+   "6822d6f78ffa2c3e",
+   "6cba169d74e60513",
+   "71fd7d29a3f97f4f",
+   "72a0cc14ab4c004c",
+   "74703e774238837b",
+   "827ed76b2ca2b492",
+   "85364ff0a5b4da8e",
+   "883703b7ce58720b",
+   "8e1161befa9bf26c",
+   "8e4d9809b49d259d",
+   "8feacb97f4f0b254",
+   "923a5911e2946be1",
+   "939dec7c17ce6ef0",
+   "9bcc5d8d83007a3b",
+   "a6165979749a0429",
+   "a6563150bb22a502",
+   "a9e673bf3f3380d8",
+   "adb448600184381f",
+   "b200d793a5b2ac14",
+   "b476f4a46a6b447b",
+   "b60efcb1b350e248",
+   "b76c4c9d0a57814c",
+   "b78adaeec2651b00",
+   "beb91d8c96e11fcf",
+   "c54bd00950dadff3",
+   "cabb26e0bb9c1368",
+   "ccf0ba4fdf5954f3",
+   "d4e9e79e8d65e548",
+   "d790233c5831b0f1",
+   "e478425caa0a7282",
+   "e619ce93bebfd72f",
+   "e799173e2fb1f546",
+   "ea5fdb26f8294e93",
+   "eb3d3c0a9473d956",
+   "ee00e64cf19f4de3",
+   "ef66a17820c3905e",
+   "f86aaadad04c31a5",
+   "f86eabc58c8c57a4",
+   "faab27bfa4fba415"
+  ],
+  "32": [
+   "04778fcd66424676",
+   "348fde80676f2bf4",
+   "3b1c397939ba3cb6",
+   "4cdc97c374d1e2da",
+   "72b40d9904642c43",
+   "760943ae1c046ac3",
+   "7bfc0a1709432b3c",
+   "8e2099eb1c99a44f",
+   "9c1b0a9a95f323e7",
+   "9ec91b8d6d34c323",
+   "a13f2e6e168f1639",
+   "ed004b18dd68bac1"
+  ],
+  "48": [
+   "165ca0b6a338c6b4",
+   "18556be6d86a1a66",
+   "1978cd0acd87fe2e",
+   "4df8afe72c104123",
+   "69877d28688afb18",
+   "735294ecee3ec9d9",
+   "75f18d5f4694b9f3",
+   "7ed3e5591f707899",
+   "7f8f7986527005d8",
+   "80770b518aca8460",
+   "a50fd9ec35469f65",
+   "a860a5bec65f6891",
+   "b230fd0796ac2191",
+   "c29999bfcc17a30a",
+   "dd6d1fc5655c9b9b",
+   "df772589d291db9a",
+   "e4cc7391ed8f2d6c",
+   "fec91e6943bf6399"
+  ]
+ }
+}

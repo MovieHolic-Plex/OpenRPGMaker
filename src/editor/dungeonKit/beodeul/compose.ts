@@ -348,6 +348,14 @@ export function composeDungeon(ts: TilesetDef, spec: DungeonSpec): DungeonCompos
     }
     if (fl.shore && hasKit(fl.shore) && nearLiquid(x, y) && hash01(x, y, seed + 71) < 0.8) id = fl.shore;
     if (fl.tile !== undefined && id === pick(fl.base)) { lower[idx(x, y)] = fl.tile; continue; }
+    // 판석 밭: 칸 위치로 감아 깐다. 북쪽이 걷지 못하는 칸(벽 앞면·천장)이면 벽 밑 그늘 줄의 같은 열.
+    if (fl.field && id === fl.field && hasKit(fl.field) && !kit(fl.field).ai?.tags?.includes("섞음")) {
+      const rows = kit(fl.field).rows, w = rows[0]!.tiles.length;
+      const shadeId = `${fl.field}-wall-shade`;
+      if (y > 0 && !isWalk(x, y - 1) && !bridge[idx(x, y - 1)] && hasKit(shadeId)) { lower[idx(x, y)] = kit(shadeId).rows[0]!.tiles[x % w]!; continue; }
+      lower[idx(x, y)] = rows[y % rows.length]!.tiles[x % w]!;
+      continue;
+    }
     // 섞음: 바닥 칸을 키트 무늬 순서 대신 해시로 고른다 — 키트 무늬 그대로 깔면 2~3칸 주기 반복이 넓은 방에서 격자로 드러났다(2026-10-25 floor VQA r4).
     if (fl.mix || kit(id).ai?.tags?.includes("섞음")) {
       const rows = kit(id).rows, w = rows[0]!.tiles.length;
