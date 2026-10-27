@@ -96,4 +96,28 @@ describe("inn dialog accessibility", () => {
     await pending;
     expect(document.querySelector("[data-testid='inn-scene']")).toBeNull();
   });
+
+  it("uses the database gold, HP, and MP terms on the inn purse and gauges", async () => {
+    const { scene } = sceneFixture(1250);
+    store.getCurrent().meta.terms = { gold: "냥", hp: "체력", mp: "마력" };
+    const actorId = scene.session.partyActorIds[0] ?? DEFAULT_ACTOR_ID;
+    const vitals = scene.session.actorVitals[actorId];
+    if (!vitals) throw new Error("missing party vitals");
+    vitals.hp = Math.max(1, Math.floor(vitals.maxHp * 0.4));
+    vitals.mp = Math.floor(vitals.maxMp * 0.25);
+
+    const pending = playInn(scene, { kind: "inn", price: 30 });
+    const dialog = document.querySelector<HTMLElement>("[data-testid='inn-scene']");
+    expect(dialog?.textContent).toContain("30 냥");
+    const purse = document.querySelector("[data-testid='inn-summary-gold']")?.textContent ?? "";
+    expect(purse).toContain("냥");
+    expect(purse).not.toContain("G");
+    expect(document.querySelector("[data-testid='inn-party-hp-0']")?.textContent).toContain("체력");
+    expect(document.querySelector("[data-testid='inn-party-mp-0']")?.textContent).toContain("마력");
+    expect(document.querySelector("[data-testid='inn-summary-hp']")?.textContent).toContain("체력");
+    expect(document.querySelector("[data-testid='inn-summary-mp']")?.textContent).toContain("마력");
+
+    document.querySelector<HTMLButtonElement>("[data-testid='inn-cancel']")?.click();
+    await pending;
+  });
 });

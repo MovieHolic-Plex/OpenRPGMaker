@@ -3,6 +3,7 @@ export type DatabasePreviewLifecycle = {
   isActive(): boolean;
   setActive(active: boolean): void;
   retain(retained: boolean): void;
+  isRetained(): boolean;
   dispose(): void;
 };
 type PreviewCallbacks = {
@@ -49,6 +50,7 @@ export function registerDatabasePreview(node: HTMLElement, callbacks: PreviewCal
   const lifecycle: DatabasePreviewLifecycle = {
     isActive: () => !disposed && active && node.isConnected && !document.hidden,
     retain(next) { retained = next; },
+    isRetained: () => retained,
     setActive(next) {
       if (disposed) return;
       requested = next;
@@ -76,6 +78,16 @@ export function registerDatabasePreview(node: HTMLElement, callbacks: PreviewCal
   bindings.set(node, lifecycle);
   queueMicrotask(() => { if (requested !== false) lifecycle.setActive(true); });
   return lifecycle;
+}
+
+/** Tab cache detaches DOM while it is still retained. Callers must not treat that as removal. */
+export function databasePreviewIsRetained(node: HTMLElement): boolean {
+  const visit = (el: HTMLElement): boolean => bindings.get(el)?.isRetained() === true;
+  if (visit(node)) return true;
+  for (const child of node.querySelectorAll<HTMLElement>(selector)) {
+    if (visit(child)) return true;
+  }
+  return false;
 }
 
 function eachPreview(scope: ParentNode, visit: (binding: DatabasePreviewLifecycle) => void, filter = selector): void {

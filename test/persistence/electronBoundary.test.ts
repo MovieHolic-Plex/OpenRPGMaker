@@ -28,6 +28,8 @@ const ELECTRON_TO_SRC_ALLOWLIST = [
   "src/assetStore/gamePublish",
   "src/assetStore/bridgeTypes",
   "src/concepts/format",
+  // 번들 타일셋 차이 저장(#3774) — electron/local-store/store.ts 가 차이 보기 표지(BUNDLED_TILESET_DIFF)를 읽는다.
+  "src/project/bundledTilesetDiff",
 ] as const;
 
 /**

@@ -9,6 +9,15 @@
 import type { MoveCommand } from "@/project/types";
 import type { PlaySceneContext } from "@/player/playSceneTypes";
 
+/** moveEvent `skippable: false` — 막힌 절대 걸음을 버리지 않고 다음 프레임에 다시 시도한다. */
+export function holdBlockedCommandRoute(
+  mover: { preserveBlockedSteps?: boolean; retryBlockedSteps?: boolean } | undefined,
+): void {
+  if (!mover) return;
+  mover.preserveBlockedSteps = true;
+  mover.retryBlockedSteps = true;
+}
+
 export function startPlayerRoute(
   scene: Pick<PlaySceneContext, "playerRoute" | "playerSlide" | "playerSlideKind">,
   moves: readonly MoveCommand[],

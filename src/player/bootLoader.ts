@@ -142,16 +142,37 @@ export function mountBootLoader(host: HTMLElement, initial: BootLoaderInfo): Boo
   };
 }
 
+const PACKAGED_PATH_MAX = 1024;
+
+/**
+ * loading.json 이 가리키는 ZIP 안 상대 경로.
+ * 내보내기 파일 이름(`safeFileName`)은 한글·아포스트로피를 남기는데, ASCII `\w` 만 허용하면
+ * 그 표지와 별칭이 조용히 버려진다. `#` `?` 와 퍼센트 인코딩된 `..` 는 URL 이 경로를 잘라 먹는다.
+ */
+function packagedRelativePath(value: unknown): string | undefined {
+  if (typeof value !== "string" || value.length === 0 || value.length > PACKAGED_PATH_MAX) return undefined;
+  if (value.startsWith("/") || value.includes("\\") || value.includes("://")) return undefined;
+  if (/[\u0000-\u001f\u007f?#\s]/u.test(value)) return undefined;
+  if (/%(?:2e|2f|5c)/iu.test(value)) return undefined;
+  const segments = value.split("/");
+  if (segments.some((segment) => segment.length === 0 || segment === "." || segment === "..")) return undefined;
+  return value;
+}
+
 /** 판본에 함께 실린 loading.json(없으면 빈 값). 잘못된 값은 버린다. */
 export async function readLoadingInfo(base: string | URL): Promise<BootLoaderInfo> {
   try {
     const response = await fetch(new URL("loading.json", base));
     if (!response.ok) return {};
     const raw = (await response.json()) as Record<string, unknown>;
-    const assetPath = (value: unknown): value is string => typeof value === "string" && /^assets\/[\w./-]+$/.test(value) && !value.includes("..");
+    const assetPath = (value: unknown): value is string => {
+      const path = packagedRelativePath(value);
+      return path !== undefined && path.startsWith("assets/");
+    };
     const aliasEntries = raw.aliases && typeof raw.aliases === "object" ? Object.entries(raw.aliases as Record<string, unknown>).filter((pair): pair is [string, string] => assetPath(pair[0]) && assetPath(pair[1])) : [];
     const aliases = aliasEntries.length > 0 ? Object.fromEntries(aliasEntries.slice(0, 5000)) : undefined;
-    const cover = typeof raw.cover === "string" && /^[\w./-]+$/.test(raw.cover) && !raw.cover.includes("..") ? new URL(raw.cover, base).href : undefined;
+    const coverPath = packagedRelativePath(raw.cover);
+    const cover = coverPath ? new URL(coverPath, base).href : undefined;
     return {
       ...(typeof raw.title === "string" ? { title: raw.title.slice(0, 120) } : {}),
       ...(cover ? { cover } : {}),

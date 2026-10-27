@@ -169,16 +169,74 @@ function splitOverflowLine(
   }
 
   const wordSplit = findWordBoundarySplit(line, measure, maxWidth);
-  if (wordSplit) return wordSplit;
+  // 공백에서 자르면 다음 줄이 「.」만 되는 경우는 글자 단위로 넘겨, 마침표를 앞 글자에 붙인다.
+  if (wordSplit && !startsWithProhibitedPunctuation(wordSplit.remainder)) return wordSplit;
 
   for (let end = line.length - 1; end > 0; end -= 1) {
     const candidate = line.slice(0, end);
     if (measureStyled(candidate, measure) <= maxWidth) {
-      return { line: candidate, remainder: line.slice(end) };
+      const at = retreatSplitForPunctuation(line, end);
+      return { line: line.slice(0, at), remainder: line.slice(at) };
     }
   }
 
   return { line: line.slice(0, 1), remainder: line.slice(1) };
+}
+
+/**
+ * 줄 맨 앞에 두면 안 되는 글자. 폭이 딱 찬 줄 다음 칸이 마침표면 그 마침표만
+ * 다음 줄(또는 다음 장)로 넘어가 「.」 한 글자 페이지가 된다.
+ */
+const LINE_START_PROHIBITED = new Set<string>([
+  ".", ",", "!", "?", ";", ":",
+  "。", "、", "，", "．", "！", "？", "；", "：",
+  "…", "‥",
+  ")", "）", "]", "］", "}", "｝",
+  "」", "』", "】", "〕", "〉", "》",
+  "”", "’",
+]);
+
+/** 줄 맨 끝에 두면 안 되는 글자(여는 괄호·따옴표). */
+const LINE_END_PROHIBITED = new Set<string>([
+  "(", "（", "[", "［", "{", "｛",
+  "「", "『", "【", "〔", "〈", "《",
+  "“", "‘",
+]);
+
+function isLineStartProhibited(char: string): boolean {
+  return LINE_START_PROHIBITED.has(char);
+}
+
+function isLineEndProhibited(char: string): boolean {
+  return LINE_END_PROHIBITED.has(char);
+}
+
+/** 다음 줄의 첫 비공백 글자가 마침표·닫는 괄호인가. 앞의 공백은 잘리므로 같이 본다. */
+function startsWithProhibitedPunctuation(chars: readonly StyledChar[]): boolean {
+  let index = 0;
+  while (index < chars.length && isSoftBreakChar(chars[index]?.char ?? "")) index += 1;
+  return index < chars.length && isLineStartProhibited(chars[index]?.char ?? "");
+}
+
+/**
+ * 자르는 자리를 앞으로 당겨, 마침표가 다음 줄 첫 글자가 되지 않게 하고
+ * 여는 괄호가 이 줄의 마지막 글자가 되지 않게 한다.
+ * 머리 줄은 짧아지기만 하므로 이미 맞던 폭을 넘지 않는다.
+ */
+function retreatSplitForPunctuation(line: readonly StyledChar[], splitAt: number): number {
+  let at = splitAt;
+  while (at > 1 && isDanglingOnNextLine(line, at)) at -= 1;
+  while (at > 1 && isLineEndProhibited(line[at - 1]?.char ?? "")) at -= 1;
+  return at;
+}
+
+function isDanglingOnNextLine(line: readonly StyledChar[], at: number): boolean {
+  const char = line[at]?.char ?? "";
+  if (isLineStartProhibited(char)) return true;
+  if (!isSoftBreakChar(char)) return false;
+  let next = at + 1;
+  while (next < line.length && isSoftBreakChar(line[next]?.char ?? "")) next += 1;
+  return next < line.length && isLineStartProhibited(line[next]?.char ?? "");
 }
 
 function findWordBoundarySplit(

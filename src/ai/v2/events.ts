@@ -54,7 +54,8 @@ const SCENE_WALK_BUDGET = 24;
 /** 그중 한 번 걷기 상한 — 첫 걷기가 예산을 다 먹지 않게. */
 const SCENE_WALK_LEG = 14;
 /** tint 비트의 화면 색 — 'r,g,b,알파' 덮개(밤은 푸른 어둠), sepia 는 회상 필터, clear 는 원래대로. */
-const TINT_TONES: Record<string, string> = { night: "20,30,80,0.5", dusk: "170,80,40,0.28", dawn: "255,190,150,0.18", sepia: "sepia", clear: "" };
+// 밤은 알파 0.3 — 0.5 는 장면 뒤 필드 전체를 대화 배경처럼 덮어 새 플레이어가 화면이 멈춘 줄 알았다(2026-10-27 toy-j91 J98).
+const TINT_TONES: Record<string, string> = { night: "20,30,80,0.3", dusk: "170,80,40,0.28", dawn: "255,190,150,0.18", sepia: "sepia", clear: "" };
 
 function isHero(who: string | undefined): boolean {
   return HERO.test(String(who ?? "").trim());

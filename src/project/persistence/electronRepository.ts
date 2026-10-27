@@ -2,7 +2,22 @@ import { deserialize, serialize } from "../io";
 import { yieldToTask } from "@/util/yieldToTask";
 import { afterBootSettled } from "@/util/bootSettled";
 import { deserializeParsed, projectWireView } from "../io/serialize";
-import { preloadAllBundledTilesetDefinitions } from "../defaults/defaultAssets";
+import { preloadAllBundledTilesetDefinitions, preloadBundledTilesetDefinitions } from "../defaults/defaultAssets";
+import { isPendingLazyTileset } from "../bundledTilesetLazy";
+import { withLazyBundledTilesets } from "../bundledTilesetDiff";
+
+/** 문서 트리(검사 전)의 맵이 쓰는 타일셋 id. */
+function mapTilesetIds(document: Record<string, unknown>): Set<string> {
+  const ids = new Set<string>();
+  const maps = document.maps;
+  if (maps && typeof maps === "object") {
+    for (const map of Object.values(maps as Record<string, unknown>)) {
+      const id = map && typeof map === "object" ? (map as { tilesetId?: unknown }).tilesetId : undefined;
+      if (typeof id === "string") ids.add(id);
+    }
+  }
+  return ids;
+}
 import { assetBlobOwners, parseFoldedDocument, restoreAssetBlobs, unfoldedDocumentTree } from "./core/foldedProject";
 import { jsonContentDigest } from "./core/contentDigest";
 import { bootNormalizationMatches, currentBootNormalizationMarker } from "../bootNormalization";
@@ -82,6 +97,10 @@ export type OprnBridgeLifecycle = {
   readonly flushDone: () => Promise<unknown>;
   /** 파일 → 저장(CmdOrCtrl+S). 메뉴가 보내는 flush 요청. */
   readonly onSaveRequest: (callback: () => void) => void;
+  /** 파일 → 새 프로젝트·폴더 열기. 폴더를 바꾸기 전에 flush 하고 결과를 보고한다. */
+  readonly onFlushBeforeReplace?: (callback: () => void) => void;
+  readonly flushReplaceDone?: (report: { readonly kind: string; readonly dirty: boolean }) => void;
+  readonly flushReplaceReady?: () => void;
 };
 export type OprnBridgeStart = {
   readonly recentProjects: () => Promise<readonly import("../../../electron/shared/start").RecentProjectEntry[]>;
@@ -275,10 +294,9 @@ export function createElectronRepository(): ElectronRepository {
    */
   const loadSnapshotFromHost = async (target: LocalProjectTarget): Promise<ProjectSnapshot | null> => {
     const bridge = electronBridge().project;
-    // 저장본은 번들 타일셋을 번들 정의와의 차이로 싣는다(bundledTilesetDiff.ts). 되돌리려면 정의가 필요하고, 저장 보기도 정의가
-    // 읽혀 있어야 차이로 싣는다 — 로드 전에 모두 읽어 두어 같은 내용이 늘 같은 저장 모양이 되게 한다(동기 XHR 안전망을 타지 않는다).
-    await preloadAllBundledTilesetDefinitions();
     if (!bridge.loadFolded || !bridge.tilesetBlobs) {
+      // 옛 브리지(접힌 행 없음): 문서 전체를 한 번에 되돌린다 — 번들 정의를 모두 먼저 읽어 동기 XHR 을 타지 않게 한다.
+      await preloadAllBundledTilesetDefinitions();
       const loaded = await bridge.load({ projectDir: target.projectDir });
       return snapshotOf(loaded?.serialized, loaded?.sha256, target);
     }
@@ -290,8 +308,15 @@ export function createElectronRepository(): ElectronRepository {
     for (let attempt = 0; attempt < 3; attempt += 1) {
       const loaded = await bridge.loadFolded({ projectDir: target.projectDir, ...(assetTransport ? { assetBlobs: true } : {}) });
       if (!loaded) return null;
-      if ("serialized" in loaded) return snapshotOf(loaded.serialized, loaded.sha256, target);
+      if ("serialized" in loaded) {
+        await preloadAllBundledTilesetDefinitions();
+        return snapshotOf(loaded.serialized, loaded.sha256, target);
+      }
       const folded = parseFoldedDocument(loaded.folded);
+      // 저장본은 번들 타일셋을 번들 정의와의 차이로 싣는다(bundledTilesetDiff.ts). 맵이 쓰는 타일셋만 정의를 읽어 곧바로 되돌리고,
+      // 나머지는 지연 객체로 두었다가 처음 열거나 고를 때 되돌린다 — 로드마다 정의 약 47MB 를 모두 읽지 않는다.
+      const eagerTilesets = mapTilesetIds(folded.document);
+      await preloadBundledTilesetDefinitions(eagerTilesets);
       const reusable = new Map<string, unknown>();
       for (const [id, sha] of folded.tilesetShas) {
         const previous = parsedTilesets.get(id);
@@ -322,7 +347,7 @@ export function createElectronRepository(): ElectronRepository {
       if ([...tilesetShas, ...assetShas].some((sha) => !blobs.has(sha))) continue;
       restoreAssetBlobs(folded.document, blobs);
       const tree = unfoldedDocumentTree(folded, blobs, (id) => reusable.get(id));
-      const project = deserializeParsed(tree);
+      const project = withLazyBundledTilesets(eagerTilesets, () => deserializeParsed(tree));
       // 검증·정규화를 지난 뒤의 객체와 **그 순간의** 요약을 기억한다(deserializeParsed 는 파싱한 트리를 그대로 채택한다).
       // 요약은 여기서 세야 한다 — 늦게 세면 그사이 제자리에서 고친 내용을 호스트 본문으로 착각한다. 비용이 더해지지는 않는다:
       // 스토어의 정규화 전 요약(normalizeCurrentProject)이 같은 객체의 노드 기억을 그대로 쓴다
@@ -341,6 +366,8 @@ export function createElectronRepository(): ElectronRepository {
       for (const [id, sha] of folded.tilesetShas) {
         const tileset = project.tilesets[id];
         if (tileset === undefined) continue;
+        // 지연 번들 타일셋은 요약하지 않는다(요약이 정의를 읽어 되돌린다). 다음 재로드에서 재사용하지 않을 뿐이다.
+        if (isPendingLazyTileset(tileset)) continue;
         const previous = parsedTilesets.get(id);
         if (previous && previous.tileset === tileset) { next.set(id, previous); continue; }
         const entry: ParsedTileset = { sha, tileset, digest: deferDigests ? undefined : jsonContentDigest(tileset) };

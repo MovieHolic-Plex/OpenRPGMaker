@@ -144,5 +144,49 @@ describe("playAudio command body", () => {
     fade.value = "0";
     fade.dispatchEvent(new Event("change"));
     expect(replaced).toMatchObject({ volume: 40, fadeInMs: 0, channel: "bgs" });
+  it("does not stop audio when a form that never previewed is removed", async () => {
+    const body = mountedAudioBody(host);
+    const stop = vi.spyOn(getAudioEngine(), "stopAll");
+    host.remove();
+    await flushMutations();
+    expect(body.isConnected).toBe(false);
+    expect(stop).not.toHaveBeenCalled();
   });
+
+  it("stops a preview when the form leaves the document", async () => {
+    const body = mountedAudioBody(host);
+    const engine = getAudioEngine();
+    const stop = vi.spyOn(engine, "stopAll");
+    vi.spyOn(engine, "play").mockImplementation(() => undefined);
+    (body.querySelector('[data-testid="play-audio-preview"]') as HTMLButtonElement).click();
+    // The preview button fades whatever was already playing, then starts this form's track.
+    expect(stop).toHaveBeenCalledTimes(1);
+    expect(stop).toHaveBeenCalledWith(true);
+
+    host.remove();
+    await flushMutations();
+    expect(stop).toHaveBeenCalledTimes(2);
+    expect(stop).toHaveBeenLastCalledWith(false);  });
 });
+
+function mountedAudioBody(parent: HTMLElement): HTMLElement {
+  const body = playAudioBodyForTest(
+    {
+      path: [0],
+      actions: {
+        addCommand: () => undefined,
+        insertCommand: () => undefined,
+        replaceCommand: () => undefined,
+        deleteCommand: () => undefined,
+        moveCommand: () => undefined,
+      },
+    },
+    { kind: "playAudio", resourceId: "cc0-music-field-loop", loop: true }
+  );
+  parent.append(body);
+  return body;
+}
+
+function flushMutations(): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, 0));
+}

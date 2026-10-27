@@ -19,6 +19,7 @@ import {
   withoutFirstCondition,
 } from "./pageConditionModel";
 import type { EventPage, MapId } from "@/project/types";
+import { timerComparisonOp, timerOpFromChoice, timerRelationWord } from "./timerConditionText";
 
 const SWITCH_VALUE_OPTIONS = [
   { value: "on", label: "켜짐" },
@@ -102,7 +103,7 @@ export function renderPageConditions(
       label: "타이머 1",
       build: (markActive) => timerConditionInputs(context, "timer1", markActive),
       enabled: timerCondition(context, "timer1") !== undefined,
-      suffix: "이하",
+      suffix: timerRelationWord(timerCondition(context, "timer1")?.op),
       toggle: (enabled) => toggleTimerCondition(context, "timer1", enabled),
     },
     {
@@ -111,7 +112,7 @@ export function renderPageConditions(
       label: "타이머 2",
       build: (markActive) => timerConditionInputs(context, "timer2", markActive),
       enabled: timerCondition(context, "timer2") !== undefined,
-      suffix: "이하",
+      suffix: timerRelationWord(timerCondition(context, "timer2")?.op),
       toggle: (enabled) => toggleTimerCondition(context, "timer2", enabled),
     },
     {
@@ -469,18 +470,25 @@ function timerConditionInputs(context: PageConditionContext, timerId: "timer1" |
     value: condition ? String(condition.seconds % 60) : "",
     dataset: { testid: `event-page-${timerId}-condition-seconds` },
   }) as HTMLInputElement;
+  const op = selectWithOptions(CONDITION_OP_OPTIONS, timerComparisonOp(condition), `event-page-${timerId}-condition-op`);
   const apply = () => {
     const next = context.page.conditions.filter((item) => item.kind !== "timer" || item.timerId !== timerId);
     const minutesValue = parseInt(minutes.value, 10) || 0;
     const secondsValue = parseInt(seconds.value, 10) || 0;
     if (minutes.value.trim() || seconds.value.trim()) {
-      next.push({ kind: "timer", timerId, seconds: minutesValue * 60 + secondsValue });
+      next.push({
+        kind: "timer",
+        timerId,
+        seconds: minutesValue * 60 + secondsValue,
+        ...timerOpFromChoice(selectedOptionValue(op, CONDITION_OP_OPTIONS, timerComparisonOp(condition))),
+      });
       markActive();
     }
     updateEventPage(context.mapId, context.eventId, context.page.id, { conditions: next });
   };
   minutes.addEventListener("change", apply);
   seconds.addEventListener("change", apply);
+  op.addEventListener("change", apply);
   return el("div", {
     class: "event-condition-control timer",
     children: [
@@ -488,6 +496,7 @@ function timerConditionInputs(context: PageConditionContext, timerId: "timer1" |
       el("span", { class: "event-condition-time-unit", text: "분" }),
       seconds,
       el("span", { class: "event-condition-time-unit", text: "초" }),
+      op,
     ],
   });
 }

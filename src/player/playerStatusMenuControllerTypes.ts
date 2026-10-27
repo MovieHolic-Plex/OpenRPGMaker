@@ -14,6 +14,7 @@ export type PlayerStatusMenuControllerOptions = {
   readonly emitMenuJuice: (event: RuntimeJuiceEvent, target?: HTMLElement | null) => void;
   readonly menuCloseJuiceMs: number;
   readonly loadSlot: (slot: SaveSlotIndex, fromTitle: boolean) => void;
+  readonly loadAutosave?: (fromTitle: boolean) => void;
 };
 
 export type PlayerStatusMenuController = {
