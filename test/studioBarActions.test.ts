@@ -28,6 +28,8 @@ const mocks = vi.hoisted(() => ({
 
 vi.mock("@/editor/projectFolderActions", () => ({ createProjectFolderWithSeed: mocks.createProjectFolderWithSeed }));
 vi.mock("@/editor/panels/databaseModal", () => ({ openDatabaseModal: mocks.openDatabaseModal }));
+// 자료집 버튼은 #2640 부터 지연 로더(openDatabaseModalLazy)로 연다 — 본문 모듈 대신 그 입구를 잡는다.
+vi.mock("@/editor/panels/databaseModalLazy", () => ({ openDatabaseModalLazy: mocks.openDatabaseModal, scheduleDatabaseModalPrefetch: () => {} }));
 vi.mock("@/editor/panels/resourceModal", () => ({ openResourceModal: mocks.openResourceModal }));
 vi.mock("@/editor/panels/worldEntries", () => ({ openWorldPanel: mocks.openWorldPanel }));
 vi.mock("@/editor/panels/audioTestDialog", () => ({ openAudioTestDialog: mocks.openAudioTestDialog }));
@@ -189,8 +191,9 @@ describe("스튜디오 바 — 한 줄, 집 하나", () => {
     expect(ids).toEqual([
       "menu-project-new", "menu-project-load", "menu-project-reload-db",
       "menu-project-samples",
-      "menu-project-import", "menu-project-export", "menu-project-publication",
-      "menu-project-export-web", "menu-project-export-standalone",
+      // 백업 만들기·백업에서 복구가 내보내기 다음에 있다(공개 기준 커밋 0d4f13e7c8).
+      "menu-project-import", "menu-project-export", "menu-project-backup", "menu-project-restore-backup",
+      "menu-project-publication", "menu-project-export-web", "menu-project-export-standalone",
     ]);
     expect(ids).not.toContain("menu-project-save");
   });
