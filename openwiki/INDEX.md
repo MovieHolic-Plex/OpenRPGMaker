@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **187쪽 / 7243KB / 약 2,123,701 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **187쪽 / 7244KB / 약 2,123,773 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -40,7 +40,7 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | `openwiki/runtime-battle.md` | 431KB | 32KB | 2386 | ~126,498 |
 | `openwiki/runtime-m2-flow-controls.md` | 51KB | 22KB | 340 | ~13,907 |
 | `openwiki/runtime-pre-edit-routing.md` | 176KB | 96KB ⚠상한 초과 — 절을 더 쪼개라 | 1086 | ~52,274 |
-| `openwiki/runtime-project-schema.md` | 257KB | 77KB ⚠상한 초과 — 절을 더 쪼개라 | 1807 | ~72,540 |
+| `openwiki/runtime-project-schema.md` | 257KB | 77KB ⚠상한 초과 — 절을 더 쪼개라 | 1807 | ~72,548 |
 | `openwiki/runtime-sessions.md` | 152KB | 62KB ⚠상한 초과 — 절을 더 쪼개라 | 865 | ~41,421 |
 | `openwiki/team-project-host.md` | 51KB | 5KB | 536 | ~15,628 |
 | `openwiki/testing.md` | 252KB | 48KB | 2337 | ~70,877 |
@@ -291,11 +291,11 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L253` Live editor AI assistant MCP (same UI session)
 - `L272` Refreshing the wiki
 
-### `openwiki/architecture.md` — 34KB · 162줄 · ~9,691 토큰
+### `openwiki/architecture.md` — 34KB · 162줄 · ~9,747 토큰
 
 절 제목 없음 (평면 목록 페이지).
 
-### `openwiki/asset-store.md` — 41KB · 315줄 · ~12,332 토큰
+### `openwiki/asset-store.md` — 41KB · 315줄 · ~12,340 토큰
 
 - `L6` 어디에 무엇이 있나
 - `L25` 계약 동기화 절차
@@ -2874,7 +2874,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L1067` 미연시 추가 화면 — 갤러리 잠금·엔딩 목록·세이브 카드 (2026-10-17, 미연시 시스템 UI 2단계)
 - `L1080` 인물 연출 런타임 — approach·turnToward·대사 자동 돌아보기 (2026-10-22)
 
-### `openwiki/runtime-project-schema.md` — 257KB · 1807줄 · ~72,540 토큰 · 통째읽기 잘림
+### `openwiki/runtime-project-schema.md` — 257KB · 1807줄 · ~72,548 토큰 · 통째읽기 잘림
 
 - `L3` 대사 책상 — 선택 필드 `project.dialogueDesk` (2026-10-24)
 - `L14` 세계 지도 연결 정의 — 선택 필드 `project.worldAtlases` (2026-10-05)
