@@ -1095,9 +1095,12 @@ Only one unconditional text-only1×1 NPC page is allowed: story/commerce/battle 
 are rejected atomically. The same source tools serve browser and headless assistants.
 A fresh read_npc_layout is required before and after patrol writes by Pi production.
 
-Authored custom route.skippable:false now retries blocked absolute steps indefinitely;
-it cannot consume a blocked right step and later take its unmatched left step.
-Default/skippable custom, living replans and schedule retry limits keep their rules.
+Authored custom route.skippable:false, and a moveEvent command whose route.skippable is false,
+retry a blocked absolute step indefinitely. Page patrols and command-route NPCs set
+preserveBlockedSteps; a player moveEvent rewinds that step. They cannot consume a blocked
+right step and later take its unmatched left step.
+Default/skippable custom routes, a moveEvent that omits skippable, living replans and
+schedule retry limits keep their rules.
 Dialogues still pause autonomous movement. Entering a map applies its authored route.
 These checks do not replace native walking/collision evidence. Reviewed expedition
 layouts add27 ambient patrols in9 towns, retaining key story/vendor positions and

@@ -78,7 +78,18 @@ export type StepResult =
       y: number;
       tile: number;
     }
-  | { kind: "moveEvent"; eventId: string; moves: MoveCommand[]; repeat: boolean; wait?: boolean }
+  | {
+      kind: "moveEvent";
+      eventId: string;
+      moves: MoveCommand[];
+      repeat: boolean;
+      wait?: boolean;
+      /**
+       * Present only when the authored route set `skippable: false`.
+       * Omitted means the historical default: a blocked step is consumed.
+       */
+      skippable?: false;
+    }
   | { kind: "openChest"; chestId: string } & import("@/project/storageChest").OpenChestFields
   | { kind: "openSaveMenu" }
   | { kind: "openMenuScreen"; screen?: "monster-box" }
