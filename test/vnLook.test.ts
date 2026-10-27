@@ -175,7 +175,8 @@ describe("set_vn_look", () => {
 
   it("rejects bad input with a hint and leaves the project untouched", () => {
     const ctx = { project: createBlankProject() };
-    for (const args of [{}, { fontScale: "huge" }, { preset: "nope" }, { readColor: "true" }, { color: "#fff" }, { preset: "default", fontScale: "large" }, { uiTheme: "dark" }]) {
+    // 문자열 "true"/"false" 는 #3226(1150b31d27, jsonSchema coerceForSchema)부터 불리언으로 읽는다 — 틀린 타입 표본은 "yes".
+    for (const args of [{}, { fontScale: "huge" }, { preset: "nope" }, { readColor: "yes" }, { color: "#fff" }, { preset: "default", fontScale: "large" }, { uiTheme: "dark" }]) {
       const result = runTool(ctx, "set_vn_look", args as never);
       expect(result.ok, JSON.stringify(args)).toBe(false);
       expect(result.summary.length).toBeGreaterThan(10);
