@@ -18,7 +18,7 @@ describe("sanitizeUserFacingToolId", () => {
   it.each([
     ["paint_road", "길 그리기"],
     ["build_house", "마을 짓기"],
-    ["author_village", "마을 짓기"],
+    // author_village 는 2026-10-07 저작권 정리로 숲마을 시공기와 함께 지워졌다(toolRegistry.ts CONSTRUCTION_WRITE_SUPERSEDED 주석).
     ["make_villager", "사람 만들기"],
     ["run_lint", "검사"],
     ["plan_world", "세계 계획"],
