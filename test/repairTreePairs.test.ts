@@ -146,10 +146,12 @@ describe("repairTreePairs", () => {
 
     const ctx = { project: createBlankProject() };
     const hookedMap = ctx.project.maps[MAP];
+    hookedMap.lowerTiles[5 * hookedMap.width + 5] = 290;
     hookedMap.upperTiles[4 * hookedMap.width + 5] = 237;
     // 이벤트·DB 편집은 나무를 고치지 않는다(toolRunner: 「Event/DB/name edits must not normalize trees」) —
-    // 래스터를 쓰는 도구로 밑동을 놓아 post-write hook 을 태운다.
-    const hooked = runTool(ctx, "paint_tiles", { mapId: MAP, layer: "lower", mode: "cells", tile: 290, cells: [{ x: 5, y: 5 }] });
+    // 같은 맵의 다른 칸을 칠하는 래스터 도구로 post-write hook 을 태운다. (밑동을 상자 밑에 직접 칠하는 것은
+    // paint_tiles 의 동반 배치 규칙이 이제 먼저 거부한다.)
+    const hooked = runTool(ctx, "paint_tiles", { mapId: MAP, layer: "lower", mode: "cells", tile: TILE.PATH, cells: [{ x: 10, y: 10 }] });
     expect(hooked.ok, hooked.summary).toBe(true);
     expect(ctx.project.maps[MAP].upperTiles[4 * hookedMap.width + 5]).toBe(260);
   });
