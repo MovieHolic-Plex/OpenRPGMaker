@@ -16,6 +16,7 @@ import { resetSpatialPlacesTabChrome } from "@/editor/panels/spatialPlaceChromeS
 import { resetSpatialSpacesTabChrome } from "@/editor/panels/spatialSpacesTab";
 import { resetSpatialObjectsTabChrome } from "@/editor/panels/spatialObjectChromeState";
 import {
+  patchSpatialSession,
   resetSpatialAuthoringSessions,
   selectSpatialDesign,
   setSpatialTab,
