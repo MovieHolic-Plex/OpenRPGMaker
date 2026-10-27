@@ -201,8 +201,7 @@ Work order (cheapest first): timeout → fake-DOM/env gaps → combined_town / o
 - **2** — `AssertionError: expected undefined to be 'approved' // Object.is equality`
   - [ ] `test/aiAuthoredBaselineSurfaces.test.ts`
   - [ ] `test/eventCommandScopedSession.test.ts`
-- **2** — `AssertionError: expected N to be less than N`
-  - [ ] `test/aiToolExposureHybrid.test.ts`
+- **1** — `AssertionError: expected N to be less than N`
   - [ ] `test/largeProjectPerf.test.ts`
 - **2** — `Error: Expected encounter state change did not occur`
   - [ ] `test/battleResultTransitionFailure.test.ts`
@@ -255,10 +254,6 @@ Work order (cheapest first): timeout → fake-DOM/env gaps → combined_town / o
   - [ ] `test/aiRunEndProof.test.ts`
 - **1** — `AssertionError: expected '' to be 'Npx' // Object.is equality`
   - [ ] `test/aiStudioOpacityPersistence.test.ts`
-- **1** — `AssertionError: expected [ 'define_monster_species', …(N) ] to deeply equal []`
-  - [ ] `test/aiToolCapabilityIndex.test.ts`
-- **1** — `AssertionError: expected [ 'animate_opening_camera', …(N) ] to deeply equal [ 'animate_opening_camera', …(N) ]`
-  - [ ] `test/aiToolCatalogBudget.test.ts`
 - **1** — `TypeError: Cannot read properties of null (reading 'items')`
   - [ ] `test/approachCorrection.test.ts`
 - **1** — `AssertionError: expected 'error' to be 'max-tool-calls' // Object.is equality`
