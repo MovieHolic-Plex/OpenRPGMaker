@@ -1,0 +1,376 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "9ac59e10b2d4917f2154a4c7a2ae18e0f3e8465082c97b3c69bbe49195972918",
+ "width": 64,
+ "height": 32,
+ "kind": "flat",
+ "name": "low raised stone proclamation platform on a plaza, 3/4 top-down: a large light flagstone top surface seen from above (rim stones, an inlaid blue disc with a gold star), a lit front edge, a short dark one-course front riser, and shadowed paving at its foot",
+ "label": "beodeul_city/capital/capital_dais",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "refer",
+ "reasons": [
+  "화풍: 화풍 판정이 갈림(걸린 판정 2/4)",
+  "화풍: 판정자 fail (2/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "refer",
+  "reasons": [
+   "화풍 판정이 갈림(걸린 판정 2/4)",
+   "판정자 fail (2/4)"
+  ],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 7,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "8cecb3a70460aa86"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 14,
+  "tileColorsP90": 19,
+  "darkV5": 57,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 8
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "flagstone platform top with rim stones and inlaid blue disc with gold star",
+      "rows": "1-19",
+      "evidence": "a",
+      "front_edge_line_row": 19,
+      "eave_shadow_rows": "20"
+     },
+     {
+      "part": "dark front riser (one stone course)",
+      "rows": "20-26",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "shadowed paving at the foot",
+      "rows": "28-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 19,
+    "front_face_rows": 7,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The column scan shows a large light flagstone top over rows 1-19 (x=16, x=32 and x=47 all read light, with the blue disc and gold star inlaid at x=32 rows 3-16). Rows 17-19 form a lit front edge (L about 219). Row 20 is a dark line (L=63 at x=32), which acts as the eave shadow. Rows 20-26 are a darker, mid-grey one-course riser (L about 90-147), which is a front face of 7 rows. Row 27 is a dark outline, and rows 28-31 are lighter paving with a shadowed bottom row. The 64-wide silhouette is constant, so no side face is drawn. The top is a deep horizontal surface with a front edge and a front face below it, so it reads as three-quarter view, not a flat slab."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate has 13 visible tones per tile against 7 for the paving reference and 3 for the grass. Near-flat coverage is 6%, close to the references' 0%, so there are no large flat fills. The flagstone top shows about 5 steps (highlight rim, light stone, mid grey, shadow joints, dark riser). The lit front edge, dark riser and shadowed foot separate forms by value. Only 29% of dark edge pixels are neutral, so the outlines lean toward the material tone (blue-grey beside stone, dark navy around the disc) rather than a uniform black sticker line. Texture is moderate: the stone joints and the disc and star inlay carry variation, though the top slabs are somewhat smoother than the paving reference's cobble grain. Overall it would sit acceptably next to the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18252
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "flagstone top surface with rim stones",
+      "rows": "1-19",
+      "evidence": "a",
+      "front_edge_line_row": 20,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "inlaid blue disc with gold star on the top",
+      "rows": "3-17",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "front riser, one stone course",
+      "rows": "20-26",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "shadowed paving at the foot (ground)",
+      "rows": "28-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 19,
+    "front_face_rows": 7,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The light flagstone top fills rows 1-19. The column scan shows a lit band at rows 12-19 (L≈220) for x=16 and x=47, and a dark edge line at row 20 for x=32. Below it, rows 20-26 are a darker, 7-row stone riser seen as the south face. Row 27 is a dark outline, and rows 28-31 are shadowed paving. The blue disc at rows 3-17 is an inlaid ellipse on the top and does not stand above it. The object has a large top surface and a front face of more than 3 rows, so it reads as three_quarter even though the caller kind is flat."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a small 4x3 platform with a light flagstone top, a blue disc with a gold star, a lit front edge and a dark riser. Measured facts are favourable: 13 visible tones per tile against 7 for the paving reference and 3 for grass, 6% near-flat coverage, and 29% neutral dark edge pixels, so the outlines mostly carry a tint. By eye, though, the flagstone top is mostly pale grey-white with only about 3-4 steps (light, mid, a darker joint line). The stones look like flat-ish panels with thin joint lines and little speckle or per-stone shading, unlike the references' grain. The blue disc has a dark outline, and some edges look fairly uniform and dark, giving a slightly sticker-like look. The riser and the shadowed foot are shaded reasonably. The piece is clean but a bit flatter and thinner than the references' textured surfaces, and a careful artist would likely ask for more stone-by-stone shading and grain on the top. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 16230
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "flagstone platform top with rim stones and inlaid blue disc with gold star",
+      "rows": "1-19",
+      "evidence": "a",
+      "front_edge_line_row": 19,
+      "eave_shadow_rows": "20"
+     },
+     {
+      "part": "dark stone front riser (one course)",
+      "rows": "20-26",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "shadowed paving at foot",
+      "rows": "27-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 19,
+    "front_face_rows": 7,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-19 form a large light flagstone top surface (inlaid disc ellipse at rows 3-17) that ends in a lit front edge at rows 17-19 (L~219). Below it, rows 20-26 are a darker vertical riser of 7 rows with a dark shadow line at row 20. Rows 27-31 are shadowed paving at the foot. The top is much taller than the front face, but a top surface and a front face of 3 or more rows are both clearly present. The kind is flat, but the drawing is a raised platform that is more than a flat decal."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate measures 13 visible tones per 16x16 tile against 7 for the paving reference and 3 for the grass. Near-flat coverage is 6% (references 0%), so there is no large flat fill. Only 29% of its dark edge pixels are neutral, so the outlines lean toward a tinted material tone (grey-blue and brown-grey) and not a uniform black sticker line. The stone top shows about 5 lightness steps across the lit rim, the light flagstone, the mid stone, the shadow joints and the dark riser. Flagstone joints, a lit front edge and a shadowed riser separate the forms by value, and the inlaid blue disc with its gold star carries its own shading. Texture is present but more modest than the references' per-stone speckle: the flagstones have some grain and joint variation, but several stone faces are fairly smooth. Overall this is at or above the references on the primary facts and structurally reads as a layered platform, not a flat sticker.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 10519
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "flagstone platform top with inlaid blue disc and gold star",
+      "rows": "1-19",
+      "evidence": "a",
+      "front_edge_line_row": 19,
+      "eave_shadow_rows": "20-20"
+     },
+     {
+      "part": "one-course stone front riser",
+      "rows": "20-26",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "shadowed paving at the foot",
+      "rows": "28-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 19,
+    "front_face_rows": 7,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-19 are a large flagstone top surface with rim stones and a blue disc with a gold star. Its lit bottom row at 19 (L about 219) acts as the front-edge line, and a darker row 20 follows. Rows 20-26 are a 7-row darker riser, which is the front face. Row 27 is a dark outline, and rows 28-31 are shadowed paving at the foot. The top surface and front face are both clearly drawn, so it reads as a low raised block seen in 3/4 view, not a flat plate, though the flat kind still loosely fits a low platform."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate has 13 visible tones per tile, well above the paving reference (7) and the grass reference (3), with only 6% near-flat coverage and 0% exact flat fill, so the density numbers do not count against it. By eye it is a clean flagstone slab with a blue disc and gold star. The stone top is mostly light grey in about 3-4 steps (light, mid, a darker joint line, a few speckles). The reference paving has per-stone shading and cobble grain. The candidate's stone faces are smooth, with little per-stone dotting, so texture is only 'some'. The outline is partly neutral grey-dark (29% near-neutral) and partly tinted, so it reads as mixed, not a clear dark material tone. The front riser and foot shadow are thin and sparse. A careful artist would find it somewhat flatter and more sticker-like than the reference, and the stone ramp is shallower than the 5-6 steps Beodeul uses. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 14912
+  }
+ ],
+ "decidedAt": "2026-10-23T03:50:17.105Z",
+ "cells": {
+  "16": [
+   "5c1197e3f7ad8f87",
+   "65d572aec62fa714",
+   "6c54cf3f8bc9ff7b",
+   "7a46cb459b897c86",
+   "999d97e06514c0b3",
+   "c8e6d1aab9eb5e77",
+   "cb5cdbb5e1108400",
+   "e3cdeab7f1f29625"
+  ],
+  "24": [
+   "01e23928ddfb8f00",
+   "0fb91f11f3d34c8a",
+   "1d99668cce864f09",
+   "25c84dd60c976dfc",
+   "38c6c8eb93733ea7",
+   "3e77781b6c61c209",
+   "43290ca53c3c52f2",
+   "4e284b3d5a4ce5b3",
+   "4f5ad8e0c583c479",
+   "560153eccdcdf964",
+   "5d085e230a52264b",
+   "5f69af812550189b",
+   "68ff20eb2d3f0246",
+   "73fb52942658aa6b",
+   "787a3e47f73b0acb",
+   "7b7d7725713496a5",
+   "7e0cbd6f209b3e5e",
+   "808b5fdab5771e0e",
+   "8439a1cac185192a",
+   "86a59b3f072691a4",
+   "88b24fa82dc82ff3",
+   "8a990f98ce30ffdf",
+   "980a7ca9116bbb07",
+   "b3fd5fa887b6299c",
+   "b5aa0da306fba8bf",
+   "bfcb12e59ed0cba3",
+   "c8bd3f8440c0e0f3",
+   "da2f26e1fa4de2a9",
+   "db818447d8e09b42",
+   "db9dde180bdb3a3b",
+   "df82f09b72ec5e41",
+   "e793530603e8fc4b",
+   "f07fec22266733b1",
+   "f4f45581ea79f74c",
+   "f71752103617cc19",
+   "fe0db1ca9589eea7"
+  ],
+  "32": [
+   "6056fc493939ed34",
+   "d2c061b61563c12b"
+  ],
+  "48": [
+   "0b932db215c9046b",
+   "1e4ec96e70de1112",
+   "5c6cc29c800d765f",
+   "6197118820dc1625",
+   "75eab18511d68606",
+   "8d896802fd2c91f4",
+   "95abc0355a31c3d6",
+   "a435fb6ba1619b71",
+   "a9b896860c9cf41e",
+   "accf0b94af8c8f8b",
+   "cb91d6823bd3f43d",
+   "f9aec787bfdba89b"
+  ]
+ }
+}

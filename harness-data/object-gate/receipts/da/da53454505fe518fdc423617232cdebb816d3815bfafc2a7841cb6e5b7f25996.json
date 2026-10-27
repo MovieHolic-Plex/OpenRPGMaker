@@ -1,0 +1,470 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "da53454505fe518fdc423617232cdebb816d3815bfafc2a7841cb6e5b7f25996",
+ "width": 64,
+ "height": 64,
+ "kind": "container",
+ "name": "plaza fountain, 3/4 top-down: round stone basin (rim top seen from above as an elliptical ring, curved ashlar front rim face), water surface with ripple rings inside, central pillar with two tiered bowls (their water seen from above) and a gold eight-point star finial, water streams falling",
+ "label": "beodeul_city/capital/capital_fountain",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 8,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "2ad36264365ed8d5"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 18,
+  "tileColorsP90": 21,
+  "darkV5": 57,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 10
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "basin rim ring and water surface (large elliptical opening)",
+      "rows": "30-52",
+      "evidence": "b",
+      "front_edge_line_row": 52,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "basin front rim face (curved ashlar)",
+      "rows": "53-63",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower tier bowl with water seen from above",
+      "rows": "21-29",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "upper small bowl with water",
+      "rows": "11-16",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "gold eight-point star finial",
+      "rows": "2-10",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "falling water streams",
+      "rows": "13-50",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 23,
+    "front_face_rows": 11,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is a round stone basin. The width profile grows from 35 at row 30 to 61 at rows 39-48, then narrows to 55 at row 53. That makes an ellipse of about 23 rows (30-52), with a stone rim ring and teal water with ripples and contents visible inside (evidence b and d). Below it, rows 53-63 form a curved ashlar front rim face of about 11 rows, with stone blocks and dark joints. The central pillar carries two tiered bowls whose water is seen from above, so they also read as ellipses. The star finial and water jets are decor. The column scan at x=31 shows the pillar shaft running down through the basin water."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The candidate has 14 visible tones per full tile, between the hedge (9) and the well/stall (20/17). Near-flat coverage is 0%, so no large flat fills. By eye, the stone rim has several value steps with ashlar blocks shaded one by one. The water has teal ripple rings in multiple tones, the tiered bowls and pillar are shaded separately, and the gold star finial has highlights. Only 8% of dark edge pixels are neutral, and the outlines lean dark teal or blue-grey next to the stone and water, so they read as dark material tones, not a black sticker line. The piece is larger than the references and looks at least as rich as the well and stall, with no flat or thin areas.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15554
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "basin rim ring and water surface (main body)",
+      "rows": "30-53",
+      "evidence": "b",
+      "front_edge_line_row": 53,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "basin front ashlar rim face",
+      "rows": "54-63",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "central pillar with two tiered bowls and water streams",
+      "rows": "11-45",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "gold star finial and stem",
+      "rows": "2-10",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 24,
+    "front_face_rows": 10,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The width profile widens from 35 at row 30 to 61 at rows 39-48, then narrows to 53 at row 54. This is an elliptical basin mouth, with a rim ring at rows 30-31 and 51-52 and teal water with ripples inside it (rows 32-50). A curved ashlar front face follows at rows 54-63, about 10 rows, and its width narrows to 23 at the bottom. The pillar, upper bowls, water streams and star finial stand on the basin and are decor. The basin is an open container whose contents are seen from above, so it reads as three-quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The candidate carries 14 visible tones per 16x16 tile, which sits between the hedge (9) and the stall (17) and well (20) references. Near-flat coverage is 0%, so there are no flat fills. Only 8% of dark edge pixels are neutral, so the outline is tinted: dark blue-teal beside the water and dark blue-grey beside the stone, not a black sticker line. The stone rim has about 5 lightness steps with per-block ashlar shading and highlights. The water has several teal steps with ripple rings, and the pillar bowls and gold star finial are shaded separately. Texture is somewhat less granular than the well's stonework but still varied. A careful artist would accept it next to the references without it looking thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15125
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "main basin rim top (elliptical ring seen from above)",
+      "rows": "30-40",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "basin water surface inside the opening",
+      "rows": "32-50",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "basin front rim face (ashlar)",
+      "rows": "51-62",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower tier bowl with water seen from above",
+      "rows": "21-29",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "upper small bowl",
+      "rows": "11-16",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "central pillar and gold star finial",
+      "rows": "2-12",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "water streams",
+      "rows": "13-42",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 21,
+    "front_face_rows": 12,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The width profile grows from 35 at row 30 to 61 at rows 39-48, then narrows to 23 at row 63. That is a wide ellipse, the basin mouth, and it shows the rim ring and teal water inside from about row 30 to row 50. The water is visible inside the opening (evidence d). Below it, rows 51-62 are the curved ashlar front rim face, 12 rows. The two tiered bowls above also show water surfaces and elliptical rims. The star and the streams are decor."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The candidate measures 14 visible tones per 16x16 tile, close to the well (20) and cheese stall (17) and above the hedge (9). Near-flat coverage is 0%, so there are no flat fills. Only 8% of its dark edge pixels are neutral, so the outline is tinted. By eye it is a dark teal beside the water and a dark blue-grey beside the stone, not a uniform black line. The stone rim is shaded block by block in about 5 steps, with lighter top faces and darker front faces. The water has teal ramps, ripple rings and highlights, and the pillar bowls are layered. The gold star finial is clean. Overall it looks like part of the Beodeul set and does not read as a sticker.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 10313
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "basin rim ring and water surface (main body)",
+      "rows": "30-52",
+      "evidence": "d",
+      "front_edge_line_row": 52,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower tier bowl with water",
+      "rows": "21-29",
+      "evidence": "b",
+      "front_edge_line_row": 29,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "upper tier bowl with water",
+      "rows": "11-17",
+      "evidence": "b",
+      "front_edge_line_row": 16,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "gold star finial",
+      "rows": "2-12",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "falling water streams",
+      "rows": "14-45",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 23,
+    "front_face_rows": 10,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The basin's width profile widens from 35 px at row 30 to 61 px at rows 39-48, then narrows toward row 63, so it is an ellipse. The rim ring runs rows 30-31 at the back and 51-52 at the front. Water is visible inside from about row 32 to 50 (dark teal with ripples), which is evidence (d). The curved ashlar front face below the front rim is rows 53-62, about 10 rows. The two tiered bowls above also show elliptical rims with water seen from above. The finial and water streams are decor."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The candidate carries 14 visible tones per 16x16 tile, which sits between the hedge (9) and the stall (17) and well (20). Near-flat coverage is 0%, so there are no flat fills. Only 8% of dark edge pixels are neutral, so the outlines lean toward the material tone (dark teal beside water, dark blue-grey beside stone) and are not a uniform black sticker line. By eye, the stone rim has ashlar blocks shaded one by one with light, mid and dark steps, and the water has several teal steps with ripple rings and highlights. The tiered bowls and the gold star finial add further tonal variety. Shading depth is comparable to the well and stall references and the piece would sit next to them without looking thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 13983
+  }
+ ],
+ "decidedAt": "2026-10-23T01:44:13.416Z",
+ "cells": {
+  "16": [
+   "2e98e45eb23edbfc",
+   "3ad4bfd6d5cfd28b",
+   "4556acfc9efcaa35",
+   "80074d63399523ae",
+   "8d54fb6407ccd23b",
+   "9a8e128ae2768b71",
+   "a9e75e7be857a0b9",
+   "b2fe437ca0e2f9de",
+   "c6fa0ea5167e860c",
+   "cb57315c6bc73123",
+   "e3a69c871234f960",
+   "fc8cf4f1a66cd3ee",
+   "fdd14d5a2e38f463",
+   "fff961feec5089c7"
+  ],
+  "24": [
+   "0de4368868e2ed65",
+   "10cfe8981e18b3e8",
+   "171a71afed7eaf7f",
+   "1ed1fcd6b8e204d5",
+   "22033023605071bc",
+   "2c63a19ff05653f8",
+   "39b63cc422968001",
+   "3fcb5e9bade4ee6b",
+   "49f7b20b86c83cd1",
+   "4bcf38a7179b1440",
+   "5270863eb24320a1",
+   "68228b8aa213da49",
+   "6e9b6167d2385ef4",
+   "74b4e962740e7c40",
+   "7946af61183af489",
+   "7db0ff3541f1c5fd",
+   "7f2d8f5af0e27ee4",
+   "849f611a11641203",
+   "878a3a074b9f7f7d",
+   "896e94208716225f",
+   "90a1497601859ee0",
+   "9aabb86c7378bd3a",
+   "a30db961c935900d",
+   "a72a006f10215d54",
+   "a748f4f5b84ac900",
+   "aa26bffa84c8acb6",
+   "ab5aafd9014f7f47",
+   "abe9be9fc0a142f2",
+   "b134660159c3c013",
+   "b71aec3f0eae21d9",
+   "c1d3eff1d491ae37",
+   "c21c0a4ede74276e",
+   "c7f7bfd6d502bf99",
+   "d19078d7c5d6b256",
+   "d3b99c7f9075b3f2",
+   "e3771af56572708a",
+   "e4ed5755d5f18da1",
+   "e80c7d92a94302cb",
+   "e822da2ed8bab91d",
+   "f0e58eeeb74b705c",
+   "f241cfe7fee5679b",
+   "f410dfd310ea7cb4",
+   "f8bf90df65881eee",
+   "fe82a519ea1bd12f"
+  ],
+  "32": [
+   "14ede27b825f2e19",
+   "1b594da63a8bbda6",
+   "84653904a837a093",
+   "add75c2a7510bfe0"
+  ],
+  "48": [
+   "10d738d7f38e9593",
+   "11556521cc6bc649",
+   "2695e8228e9c3879",
+   "4a4edbea06ddd228",
+   "5bff1075c6317d8e",
+   "9046f2ec1d2e531c",
+   "99e5bf0c82a230c7",
+   "9abbe8446f24b80f",
+   "a841049afb9b1614",
+   "adb6761122d6a9fc",
+   "bb1a158a736ec956",
+   "cb5a417da459abfd",
+   "d3ea4aace2bad229",
+   "d3f53569f5fb6cfa",
+   "d4863361018096ce",
+   "db40b4385651be75",
+   "dbc7a32063ba79b6",
+   "de1f1c853e1245c5",
+   "e2b7530fbdb216c7",
+   "e70e9539a303cf6f",
+   "f0abbe68126d8d70",
+   "fc5ee38fbe577b35"
+  ]
+ }
+}

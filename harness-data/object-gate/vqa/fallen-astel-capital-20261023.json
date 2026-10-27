@@ -1,0 +1,670 @@
+{
+ "schema": "oprn-delegated-vqa/1",
+ "subject": "Fallen Star royal city Astel — beodeul_city capital pieces (bake_capital.py SHIPPED)",
+ "delegatedBy": "delegated by user to supervisor 2026-10-23",
+ "method": "Two independent adversarial VQA judges (fresh Opus 5.5, Gemini 4 Argon) on shuffled candidates with 4 hidden reject decoys; allow only pieces both judges PASS. object-gate receipts (uncalibrated, advice) attached by sha.",
+ "key": {
+  "A": {
+   "piece": "NEG_old_lamp",
+   "src": "/tmp/astel/art/gate9/capital_lamp.png",
+   "sha256": "06913914952f290fe0a0479e1acdc81ba7de47c73172571b422bda11eb18f4f2"
+  },
+  "B": {
+   "piece": "NEG_canal_lock",
+   "src": "/tmp/astel/art/gate6/capital_canal_lock.png",
+   "sha256": "97c570b4b9e477e3e09e68572ed8bc6fd77a03a22a007fbe92d7e55499b65d78"
+  },
+  "C": {
+   "piece": "capital_lamp",
+   "src": "/tmp/astel/art/gate11/capital_lamp.png",
+   "sha256": "c467de4abd0b2050fa416d0d7ea68cd88af035358ba60d1d73878b7fe8fc5685"
+  },
+  "D": {
+   "piece": "NEG_old_dais",
+   "src": "/tmp/astel/art/gate9/capital_dais.png",
+   "sha256": "0c9e7d8e8dd40d5a8b984870e858c1a99daaf77bad0a268b0e56185a1a2f5806"
+  },
+  "E": {
+   "piece": "capital_dais",
+   "src": "/tmp/astel/art/gate11/capital_dais.png",
+   "sha256": "2ef5b325cfce948f37e0ea5106a75e610b7e00e16eb201a6f5c5bc10acaf199b"
+  },
+  "F": {
+   "piece": "capital_fountain",
+   "src": "/tmp/astel/art/gate11/capital_fountain.png",
+   "sha256": "e0d06aadc37317990329338f9094a74dce202dd744c68f1ab5184854f8f4af49"
+  },
+  "G": {
+   "piece": "NEG_quay_steps",
+   "src": "/tmp/astel/art/gate8/capital_quay_steps.png",
+   "sha256": "8ed7d3c74709b6fc877a6204a3c888efb96f4399bc8759e23e38bf9463faffed"
+  },
+  "H": {
+   "piece": "capital_wall_towers",
+   "src": "/tmp/astel/art/gate11/capital_wall_towers.png",
+   "sha256": "824d3d9083e6d0cfe09e626c7e72f30366f574a642b7134f8cd63a530ed2865e"
+  },
+  "I": {
+   "piece": "capital_watergate_n",
+   "src": "/tmp/astel/art/gate11/capital_watergate_n.png",
+   "sha256": "6d69118aea7e0fb282801b0953d297e17b3e20cb58a964bdcaa3c24b91bf9f2e"
+  },
+  "J": {
+   "piece": "capital_banner_pole",
+   "src": "/tmp/astel/art/gate11/capital_banner_pole.png",
+   "sha256": "bb0b8f746230212e93c3d16643a68650219a70c2d65fb1f43e4b887d7fbc872e"
+  }
+ },
+ "opus": {
+  "A": {
+   "object": "royal street lamp (larger lantern variant)",
+   "verdict": "FAIL",
+   "reasons": [
+    "Two fully isolated orange pixels float beside the lantern at 1x (x1,y9) and (x13,y11). Neither has any opaque 8-neighbour, so they read as stray specks or detached sparks.",
+    "(4,19) and (10,19) are only diagonally attached to the hanging loop under the lantern. The lantern-to-post connection is a thin diagonal ring that breaks up at 1x.",
+    "Otherwise the blue cone roof and gold lantern sit in 3/4 view and the palette matches, but the stray pixels are disqualifying."
+   ]
+  },
+  "B": {
+   "object": "canal lock (timber lock gate with sluice paddles and winches on both banks)",
+   "verdict": "FAIL",
+   "reasons": [
+    "The bank surface is a random 4-tone grey speckle (55,66,67 / 91,102,103 / 119,117,121 / 144,146,143) with no stone outlines or mortar. None of the references use noise fill: they all use outlined flagstones or bricks. It would stick out next to them.",
+    "The winches are ~9px brown blobs on that noise. At 1x they can't be read as winch mechanisms.",
+    "The gate is drawn as a pure front elevation of planks, with only a 2px teal strip and bollard caps above. There is no top beam or catwalk surface, so its 3/4 depth is weak.",
+    "The water spill and vertical flow streaks are fine and the curb stripes are continuous. The fail is about style and readability."
+   ]
+  },
+  "C": {
+   "object": "royal street lamp (compact variant)",
+   "verdict": "PASS",
+   "reasons": [
+    "Blue cone cap seen from above, gold lantern box with lit face, and a banded post with gold collars. It reads in 3/4 and matches the ref lamp-post silhouette language.",
+    "No isolated pixels (4- and 8-neighbour check both empty), outline continuous.",
+    "The plinth top shows as a light surface and its front face carries a blue/gold inlay. The shadow follows the same alpha-105/46 convention as J.",
+    "Minor: the plinth is wide for such a slim post. Acceptable."
+   ]
+  },
+  "D": {
+   "object": "proclamation platform (4x2) — flawed version",
+   "verdict": "FAIL",
+   "reasons": [
+    "The whole 64x32 is laid as running-bond brick courses. It reads as a wall elevation, not a flagstone top seen from above.",
+    "The star disc is squashed into a ~5-row oval pressed against the top rows (y~2-8), as if painted on a wall face. It doesn't lie flat on a top surface.",
+    "There is no lit front edge and no dark riser: the brief's bright band and dark riser are missing. The lower half is a light stone face (row means 170-190) separated only by a dark joint at y19.",
+    "Fails the 3/4 view and the spec."
+   ]
+  },
+  "E": {
+   "object": "low proclamation platform (4x2) with star disc",
+   "verdict": "PASS",
+   "reasons": [
+    "Irregular flagstone top (y1-18) with an elliptical blue/gold star disc lying flat on it, consistent with a top surface seen from above.",
+    "Bright lit front edge at y19 (row mean 213), then a darker grey riser (y20-26, mean ~135) and a dark base line. This is exactly the requested 3/4 read.",
+    "Dark outline on all four sides, no stray pixels. The stone colours match the reference wall and plaza stone.",
+    "Minor: the disc's right half is fairly dark navy, but it reads as shading."
+   ]
+  },
+  "F": {
+   "object": "plaza fountain (two-tier, gold finial)",
+   "verdict": "PASS",
+   "reasons": [
+    "Ellipses for the basin rim, mid bowl and top bowl are correct 3/4 top-down: the inner rim is visible and the outer wall face shows below. The teal water matches the canal ref.",
+    "The only 8-isolated pixel (38,15) is a deliberate falling water droplet along a jet. The other 4-isolated pixels are diagonal jet pixels.",
+    "Dark outline and grey stone with moss flecks fit the ref palette.",
+    "Minor: the semi-transparent shadow runs to x=63, the canvas edge. The same convention appears in A, C and J."
+   ]
+  },
+  "G": {
+   "object": "quay steps into a canal (N-S canal flanked by sandstone steps)",
+   "verdict": "FAIL",
+   "reasons": [
+    "The sandstone 'steps' are frontal brick courses, darkening and mossy toward the bottom. There is no tread-light / riser-dark alternation, so they read as a wall going into water, not steps seen from 3/4.",
+    "At the foot of the steps a light-teal water patch (y~38-47) butts against the darker central channel along a hard vertical seam at the step/channel boundary. Two waters of different colour sit side by side with no transition.",
+    "Same random speckle cobble bank fill as B, which no reference uses.",
+    "Unclear where the steps lead, since the central channel runs full height alongside them. Hard to read at 1x."
+   ]
+  },
+  "H": {
+   "object": "town wall scene: round blue-cone towers, curtain walls and gatehouse",
+   "verdict": "PASS",
+   "reasons": [
+    "Blue cones, round stone drums with arrow slits, crenellated wall tops with a tan walkway seen from above, and front wall faces. The 3/4 read is consistent and matches ref-beodeul-castle and ref-bd-wall-tower.",
+    "Side walls show as walkway strips with outer crenels, and they join the tower bases. Cast shadows fall consistently to the right and below.",
+    "Small-component scan found arrow slits, windows and crenel gaps all repeated symmetrically. One asymmetric detail: a single 3x2 dark slot at (134,314) on the front-left curtain wall. It reads as a drain or scupper, not a broken pixel.",
+    "Minor: the props on the gatehouse roof (grey lump at left) don't read at 1x."
+   ]
+  },
+  "I": {
+   "object": "canal water gate (double portcullis arch in town wall, canal above and below)",
+   "verdict": "PASS",
+   "reasons": [
+    "Crenellated parapet and tan wall walk seen from above, then the front wall face with two arched portcullis openings. The canal enters from the north behind the wall and leaves south with foam. Correct 3/4 read.",
+    "Stone, crenel and shadow treatment matches H and the refs. The canal edges and teal water match ref-bd-canal.",
+    "No seams: the upper and lower canal widths line up with the arches, the wall's bottom course stops cleanly at the channel, and the vines stay attached to the wall.",
+    "Readable at 1x."
+   ]
+  },
+  "J": {
+   "object": "royal banner pole (blue banner with gold crown and sun, crossbar finial)",
+   "verdict": "PASS",
+   "reasons": [
+    "Same plinth and shadow convention as C. The banner hangs from the crossbar with a gold border and a dark outline, and the shading darkens to the right, like the red ref banner.",
+    "The silhouette matches ref-bd-pick-walled-market-banner-red: pole, crossbar, swallow-tail hem.",
+    "No isolated pixels. The single green pixel on the plinth front is a moss fleck, also used elsewhere in the set.",
+    "Readable at 1x."
+   ]
+  },
+  "overall": "Yes for the passes. C, E, F, H, I and J use the same dark outline, light grey stone, blue/gold royal accents and teal water as the references, and would sit naturally in one tileset. The failures are A (floating pixels), D (wall elevation instead of a platform top) and the two canal pieces B and G, whose speckle-noise banks clash with the references; G also has unreadable steps and a water seam."
+ },
+ "argon": {
+  "A": {
+   "object": "royal street lamp",
+   "verdict": "FAIL",
+   "reasons": [
+    "Two disconnected floating orange pixels RGB(236,153,0) in mid-air at (1,9) and (13,11) on either side of the lantern head, immediately visible at 1x-2x.",
+    "Broken top outline on the stone pedestal base at y=36: pixels (3..4,36) and (10..12,36) are filled with light stone RGB(229,231,228)/RGB(211,213,210) instead of dark outline RGB(43,57,52), leaving the left and right vertical side outlines at (2,36) and (13,36) sticking up as disconnected 1px horns.",
+    "Detached lantern head and broken bracket at y=16..20: shifting the lantern head up by 2px leaves a 2px transparent gap at (6..8,17..18) between the lantern bottom (y=16) and the pole collar (y=19), and turns the side scroll brackets at (3,17..18)-(4,19)-(5,20) and (11,17..18)-(10,19)-(9,20) into unoutlined 1px diagonal stair-steps."
+   ],
+   "minor": []
+  },
+  "B": {
+   "object": "canal lock",
+   "verdict": "PASS",
+   "reasons": [
+    "Clear 3/4 top-down structure across 96x48 (6x3 tiles): upper canal water and iron safety rail (y=0..5), horizontal timber lock deck seen from above (y=6..17), vertical timber gate front face (y=18..24) with iron straps and dual sluice spouts at x=30..32 and x=62..64 pouring white/cyan foam (y=25..31) into lower canal water (y=25..47), flanked by stone curbs (x=16..18, x=77..79) and cobblestone banks with wooden winches (y=18..29).",
+    "No floating or disconnected pixels (single 8-connected and 4-connected component), intact outlines, and palette/material rendering matching ref-bd-canal-straight-ew.png."
+   ],
+   "minor": [
+    "Cobblestone bank pattern on the left and right wings (x=0..15, x=80..95) is slightly busy at 1x.",
+    "Rightmost timber beam pixel at (77,5..6) extends 1px into the right stone curb inner shadow column."
+   ]
+  },
+  "C": {
+   "object": "royal street lamp",
+   "verdict": "PASS",
+   "reasons": [
+    "Clean 3/4 top-down 16x48 (1x3 tiles) street lamp with a foreshortened stone pedestal (closed dark top outline at y=36, lit top face y=37..39, shaded vertical front riser y=40..45 with blue/gold emblem, ground shadow y=46..47), dark iron post (x=6..8, y=20..36), gold collar and scroll brackets (y=17..20), and warm glowing lantern with royal blue cap and gold finial (y=2..16).",
+    "Single connected component with no floating pixels or broken outlines, matching ref-bd-mpart-lamp-post.png and ref-bd-prop-lamp_crook.png."
+   ],
+   "minor": [
+    "Ground cast shadow at y=46..47 (x=4..15) touches the right tile boundary at x=15."
+   ]
+  },
+  "D": {
+   "object": "low raised proclamation platform",
+   "verdict": "FAIL",
+   "reasons": [
+    "Inverted 3/4 lighting and missing lit front edge: y=19 is a dark horizontal trench RGB(62,64,61) across the width (mean luminance 61.5), while the vertical front riser at y=20..26 (mean luminance 180.1-193.1 with bright highlights RGB(229,231,228)) is brighter than the platform top (y=14..18, mean luminance 162.6-192.7), contradicting the required lit front edge + dark riser and flattening the 3/4 read.",
+    "Top surface (y=0..18) is drawn as regular horizontal running-bond wall courses with full-width dark lines at y=3 and y=10, reading as a vertical brick wall rather than a horizontal flagstone floor.",
+    "The blue/gold star disc at x=22..40, y=3..10 is squashed to 8px height against the top border and its upper gold rim is broken/missing at y=3, x=30..34 where blue interior RGB(68,112,189) and dark mortar RGB(89,91,88) touch the line directly."
+   ],
+   "minor": []
+  },
+  "E": {
+   "object": "low raised proclamation platform",
+   "verdict": "PASS",
+   "reasons": [
+    "Proper 3/4 top-down 64x32 (4x2 tiles) low raised platform: irregular flagstone top surface (y=1..18) with warm mortar RGB(140,128,120) matching ref-bd-out-well-plaza.png, centered 3/4-foreshortened blue/gold star disc (x=18..44, y=3..16), continuous bright lit front edge at y=19 (RGB(218,220,217), mean luminance 214.0), darker vertical stone riser at y=20..26 (mean luminance 128.5-140.5) with gold rosettes, front step at y=27..30, and bottom contact shadow at y=31.",
+    "Intact dark outline around the entire 64x32 footprint and clear readability at 1x."
+   ],
+   "minor": [
+    "A few stone-grey/dark pixels inside the blue field of the star disc at (30,4), (27,5), (32,5..6), and (20,10) read as slight grit at 4x."
+   ]
+  },
+  "F": {
+   "object": "plaza fountain",
+   "verdict": "PASS",
+   "reasons": [
+    "Strong 3/4 top-down 64x64 (4x4 tiles) three-tier circular plaza fountain: foreshortened octagonal stone outer rim (lit top face, shaded lower front wall y=48..59 with gold medallions, ground shadow y=60..63), deep teal water basin with cyan ripples and foam, middle basin (y=21..33), upper bowl (y=11..16), and gold sun finial (y=3..10).",
+    "Palette, stonework, and water shading match ref-bd-out-well-plaza.png and ref-beodeul-castle.png, and the silhouette reads clearly at 1x."
+   ],
+   "minor": [
+    "On the upper-right falling water stream at x=38, y=15..20, there is a 1px horizontal gap at x=37 from the top bowl rim (x=36) and 1px droplet gaps at (38,16) and (38,21), making the right upper stream slightly sparser than the left stream."
+   ]
+  },
+  "G": {
+   "object": "quay steps into a canal",
+   "verdict": "FAIL",
+   "reasons": [
+    "Severe 3/4 orientation contradiction and vertical cut-off seams at tile boundaries x=47|48 and x=79|80: the two quay step strips (x=35..47 and x=80..92) descend north-to-south (horizontal step risers at y=5, 12, 20, 27, 34 leading into a horizontal foam waterline at y=37..38 and water at y=38..47), perpendicular to the central north-south canal channel (x=48..79, which is full-height deep water y=0..47).",
+    "Along x=47|48 and x=79|80 from y=0 to y=36, dry upper-level stone steps RGB(226,214,192) shear vertically against deep canal water RGB(26,70,64) with no retaining wall, curb, or elevation transition (vertical boundary mean RGB diff 81.3 and 87.7)."
+   ],
+   "minor": []
+  },
+  "H": {
+   "object": "round blue-cone town-wall towers with wall segments and a gatehouse (scene)",
+   "verdict": "PASS",
+   "reasons": [
+    "Cohesive 352x432 (22x27 tiles) 3/4 top-down fortified courtyard scene combining round blue-cone towers (reusing and adapting ref-bd-wall-tower.png and ref-beodeul-wizard-tower.png), crenelated wall segments with walkways, an arched central gatehouse with flanking royal banners, side walls with timber stairs, and a flagstone courtyard.",
+    "Consistent Beodeul palette, outlines, and 3/4 perspective across roof cones, battlements, vertical wall faces, and courtyard paving, reading clearly at 1x."
+   ],
+   "minor": [
+    "In the lower-center tower (x=144..191, y=192..368), the two side arrow slits at x=151..152 and x=182..183 (y=267..280) are narrower (2px wide) than on the upper four towers (3-4px wide) and lack the lower sill trim.",
+    "Side wall walkways (x=16..48 and x=304..336, y=192..287) meet the base of the upper corner towers at y=192 with a straight horizontal tile transition."
+   ]
+  },
+  "I": {
+   "object": "canal water gate (double arch in a town wall, canal above and below)",
+   "verdict": "PASS",
+   "reasons": [
+    "Well-constructed 160x192 (10x12 tiles) 3/4 top-down canal water gate: north canal channel with stone embankments (y=0..47), crenelated town-wall walkway seen from above (y=48..80), tall vertical ashlar wall front face (y=81..143) with ivy vines and twin arched water passages (x=54..78 and x=86..110, y=94..143) fitted with iron portcullis grates and spilling white/cyan foam into the south canal (y=144..191).",
+    "Seamless tile integration with ref-bd-canal-straight-ew.png and consistent Beodeul stone, water, and foliage palette."
+   ],
+   "minor": [
+    "The central pier between the twin arches (x=79..85, y=96..143) uses dark wet stone near the base that blends closely with the iron grate shadow at 1x."
+   ]
+  },
+  "J": {
+   "object": "royal banner pole",
+   "verdict": "PASS",
+   "reasons": [
+    "Clean 16x48 (1x3 tiles) 3/4 top-down royal banner pole with gold finial (y=0..3), horizontal crossbar (y=4..5), royal blue swallowtail banner with gold border, crown (y=8..12) and star (y=14..18) motifs, banded wooden pole (y=26..35), 3/4 stone pedestal base (closed top outline y=35, lit top face y=36..39, shaded front face y=40..45), and ground shadow (y=37..47).",
+    "Single connected component with crisp outlines and direct style/proportion harmony with ref-bd-pick-walled-market-banner-red.png."
+   ],
+   "minor": [
+    "Right-falling ground shadow (x=10..15, y=37..47) reaches the right edge of the 16px tile at x=15."
+   ]
+  },
+  "overall": "Yes — the 7 PASS pieces (B, C, E, F, H, I, J) share the exact Beodeul dark green-slate outlines, cool ashlar / warm courtyard stone ramps, deep teal canal water, and royal blue-gold accents, and sit naturally alongside the reference assets in the same 16px 3/4 top-down tileset."
+ },
+ "earlierRounds": {
+  "opus_r1": {
+   "judge": "opus-adversarial",
+   "candidates": {
+    "A": {
+     "what": "quay steps down into a canal (two side flights)",
+     "view34": "fail",
+     "style": "fail",
+     "flags": [
+      "steps read as vertical brick wall, no tread planes",
+      "hard unoutlined seam where step lanes meet water"
+     ],
+     "verdict": "fail",
+     "reasons": [
+      "Side lanes show stacked brick faces with dark mortar bands but no lighter tread tops between risers, so they read as a quay wall face, not steps descending",
+      "Step lanes butt straight into the water lane with no coping/edge outline or shadow",
+      "Flanking ground is salt-and-pepper grey noise, unlike Beodeul's rounded beige cobbles",
+      "Water lane is a near-flat dark teal fill with sparse ticks, low information"
+     ]
+    },
+    "B": {
+     "what": "single street lamp",
+     "view34": "pass",
+     "style": "fail",
+     "flags": [
+      "detached grey ring pixels under lamp head",
+      "floating orange spark pixels beside head"
+     ],
+     "verdict": "fail",
+     "reasons": [
+      "Grey bracket/ring under the lantern is drawn as disconnected arcs floating beside the pole - broken silhouette",
+      "Loose single orange pixels float left/right of the head",
+      "Plinth does show top+front, head cap reads fine, but the loose pixels would litter the map"
+     ]
+    },
+    "C": {
+     "what": "canal lock gate with side winches",
+     "view34": "pass",
+     "style": "pass",
+     "flags": [],
+     "verdict": "pass",
+     "reasons": [
+      "Plank gate shows its thin top rail with posts plus the south face, appropriate for a thin gate",
+      "Wood has 3-4 step ramp and dark brown outline; spill spouts and foam give detail",
+      "Winches have a lighter top and front; slightly blobby but readable"
+     ]
+    },
+    "D": {
+     "what": "low stone proclamation dais (with blue sun emblem)",
+     "view34": "fail",
+     "style": "fail",
+     "flags": [
+      "pure front elevation, no top plane",
+      "emblem pasted on a wall face"
+     ],
+     "verdict": "fail",
+     "reasons": [
+      "Entire 4x2 piece is brick courses seen head-on; no walkable top surface for a dais",
+      "Reads as a slice of wall, not a low platform; contradicts the in-map dais which shows a slab top",
+      "Bricks are pale near-flat fills with neutral grey mortar, less ramp depth than Beodeul stone"
+     ]
+    },
+    "E": {
+     "what": "plaza fountain (two tiers, gold star finial)",
+     "view34": "pass",
+     "style": "pass",
+     "flags": [],
+     "verdict": "pass",
+     "reasons": [
+      "Elliptical basin rim shows top plane and curved front wall; inner water visible from above",
+      "Stone uses multi-step grey ramp with dark tinted outline and moss flecks like Beodeul",
+      "Clean silhouette, no seams"
+     ]
+    },
+    "F": {
+     "what": "double street lamp",
+     "view34": "pass",
+     "style": "fail",
+     "flags": [
+      "star finial floats ~2px above the crossbar",
+      "stray orange pixels beside pole"
+     ],
+     "verdict": "fail",
+     "reasons": [
+      "Gold star finial is detached from the crossbar - broken silhouette",
+      "Loose single orange pixels float under the lanterns",
+      "Lantern bodies and plinth (top+front) are otherwise in style"
+     ]
+    },
+    "G": {
+     "what": "town wall kit with round blue-cone towers and gatehouse",
+     "view34": "pass",
+     "style": "pass",
+     "flags": [],
+     "verdict": "pass",
+     "reasons": [
+      "Cones, crenellated wall-walk tops and front faces read as Beodeul 3/4; N-S wall runs show top only",
+      "Blue scale cones and grey ashlar match the Beodeul castle kit ramp and outlines",
+      "Pennants are generic blue swallowtails, not real flags; no visible seams"
+     ]
+    },
+    "H": {
+     "what": "canal water-gate (twin arches) with square wall tower",
+     "view34": "pass",
+     "style": "pass",
+     "flags": [],
+     "verdict": "pass",
+     "reasons": [
+      "Wall shows crenellated top + pink wall-walk + front face; twin arches show water receding inside",
+      "Tower top deck visible with crate and pennant",
+      "Stone and water texture match Beodeul; spill foam where water exits arches"
+     ]
+    },
+    "I": {
+     "what": "heraldic banner pole",
+     "view34": "pass",
+     "style": "pass",
+     "flags": [],
+     "verdict": "pass",
+     "reasons": [
+      "Fictional crown + sun heraldry on blue, not a real national flag",
+      "Banner has gold trim and 3-step blue ramp, dark outline",
+      "Plinth shows top + front; silhouette intact"
+     ]
+    }
+   },
+   "context": {
+    "sameTileset": "yes",
+    "notes": "Plaza: cone towers, gatehouse, fountain, slab dais, banner poles and lamps sit comfortably beside Beodeul half-timber houses and market stalls; palette and outline weight match. Watergate render: twin arches and canal read as part of the wall, cone towers match the Beodeul wizard tower. Note the in-map dais is a slab with a top, unlike candidate D."
+   }
+  },
+  "argon_r1": {
+   "judge": "argon-adversarial",
+   "candidates": {
+    "A": {
+     "what": "quay steps into a canal",
+     "view34": "fail",
+     "style": "fail",
+     "flags": [
+      "seams",
+      "cut_edges",
+      "broken_silhouette"
+     ],
+     "verdict": "fail",
+     "reasons": [
+      "Steps descend north-to-south parallel to the canal rather than from the left/right cobblestone quays into the water, creating a contradictory water level where high dry top steps sit directly beside low central canal water with no vertical retaining wall.",
+      "Harsh vertical seam between the central canal water strip and the flanking step columns where horizontal ripples and stone risers terminate abruptly.",
+      "Top and bottom edges of the grey stone curbs and water pockets are cut off mid-tile without proper termination."
+     ]
+    },
+    "B": {
+     "what": "single street lamp",
+     "view34": "fail",
+     "style": "fail",
+     "flags": [
+      "broken_silhouette",
+      "cut_edges"
+     ],
+     "verdict": "fail",
+     "reasons": [
+      "Lantern housing, yellow rim, bottom tray, and post are drawn as a flat 2D front elevation with no visible 3/4 top plane.",
+      "Two isolated 1px orange/yellow spark pixels float disconnected in empty transparent space to the left and right of the lantern glass.",
+      "Stone pedestal base is missing its top horizontal outline, leaving two stray dark corner pixels protruding upward like horns and a cut-off grey shadow bar on the bottom-right."
+     ]
+    },
+    "C": {
+     "what": "canal lock gate",
+     "view34": "fail",
+     "style": "fail",
+     "flags": [
+      "seams",
+      "cut_edges"
+     ],
+     "verdict": "fail",
+     "reasons": [
+      "Wooden lock structure uses a single uniform staggered plank fill from top to bottom with no plane separation between a horizontal top walkway/coping and a vertical south-facing gate wall.",
+      "Sluice spouts and vertical metal bars are pasted directly onto the same flat plank rows without structural depth or recess.",
+      "Side winches read as indistinct brown blobs without clear 3/4 top and front planes, and the top beam has an asymmetric 1px overlap seam on the right canal curb."
+     ]
+    },
+    "D": {
+     "what": "low stone dais",
+     "view34": "fail",
+     "style": "fail",
+     "flags": [
+      "cut_edges",
+      "seams",
+      "broken_silhouette"
+     ],
+     "verdict": "fail",
+     "reasons": [
+      "Top, bottom, left, and right borders all contain sliced half-bricks and cut-off cobblestone fragments along the canvas edges.",
+      "Stone slabs use large flat rectangular fills separated by thick uniform dark-grey grid lines, and the front risers use crude 3-band flat horizontal stripes instead of Beodeul's hand-pixel masonry ramps.",
+      "Central blue-and-gold oval emblem has a jagged, pillow-shaded pixel silhouette that does not integrate with the stone joints beneath it."
+     ]
+    },
+    "E": {
+     "what": "plaza fountain",
+     "view34": "fail",
+     "style": "fail",
+     "flags": [
+      "broken_silhouette"
+     ],
+     "verdict": "fail",
+     "reasons": [
+      "Central column has a flat horizontal rectangular base sitting on the water and straight horizontal dark bands instead of curved elliptical bands for a 3/4 cylinder.",
+      "Top small basin and gold sun finial are drawn as flat 2D front-elevation shapes, with the finial stem shifted off-center to the right of the column axis.",
+      "North rim of the lower basin lacks an inner south-facing vertical wall above the water level, and the outer basin outline and right drop shadow have harsh stair-stepped jaggies."
+     ]
+    },
+    "F": {
+     "what": "double street lamp",
+     "view34": "fail",
+     "style": "fail",
+     "flags": [
+      "broken_silhouette",
+      "cut_edges"
+     ],
+     "verdict": "fail",
+     "reasons": [
+      "Gold star finial at the top is completely disconnected from the crossbar, floating in mid-air with a transparent gap below it, alongside two stray floating 1px orange pixels near the post.",
+      "Crossbar, hanging lanterns, and post are pure 2D front-elevation drawings lacking visible 3/4 top surfaces.",
+      "Stone pedestal base shares the same broken top edge as Candidate B (missing top outline with two protruding corner pixels and a cut-off bottom-right shadow strip)."
+     ]
+    },
+    "G": {
+     "what": "round blue-cone wall towers + wall segments",
+     "view34": "fail",
+     "style": "fail",
+     "flags": [
+      "seams"
+     ],
+     "verdict": "fail",
+     "reasons": [
+      "Cylindrical tower shafts use dead-straight horizontal mortar lines across the width of the tower instead of the curved cylindrical stone courses seen in ref-beodeul-castle and ref-beodeul-wizard-tower.",
+      "East and west vertical wall segments butt into the round towers and lower wall with raw 1px black line seams, and their outer parapets lack 3/4 merlon front faces.",
+      "Blue conical roofs have blotchy, noisy pixel clusters and harsh black stair-stepped outlines rather than Beodeul's clean curved shingle courses and tinted outlines."
+     ]
+    },
+    "H": {
+     "what": "canal water-gate (twin arch in a wall face)",
+     "view34": "fail",
+     "style": "fail",
+     "flags": [
+      "seams",
+      "cut_edges",
+      "broken_silhouette"
+     ],
+     "verdict": "fail",
+     "reasons": [
+      "Canal at the top does not connect into the wall: a strip of green grass runs continuously between the upper canal water and the north wall merlons.",
+      "Wall-to-square-tower junction on the right has a hard vertical cut seam where horizontal stone courses and parapet lines abruptly terminate.",
+      "Twin arch rings are noisy, jagged 1px pixel clusters rather than clean masonry voussoirs, and the stone blocks rely on flat rectangular fills with dark grid outlines."
+     ]
+    },
+    "I": {
+     "what": "heraldic banner pole",
+     "view34": "fail",
+     "style": "fail",
+     "flags": [
+      "broken_silhouette",
+      "cut_edges"
+     ],
+     "verdict": "fail",
+     "reasons": [
+      "A flat 2px-wide vertical grey shadow strip hangs in empty mid-air along the right outer edge of the banner cloth.",
+      "Stone pedestal base has a missing top horizontal outline with two stray dark pixels sticking up at the left and right corners, plus a cut-off bottom-right shadow bar.",
+      "Wooden crossbar and banner assembly read as a flat 2D front elevation without a top plane on the crossbar."
+     ]
+    }
+   },
+   "context": {
+    "sameTileset": "no",
+    "notes": "In both context-plaza-gate.png and context-watergate-tower.png, the new pieces visibly clash with the surrounding Beodeul art. In context-watergate-tower.png, placing the new round tower and water-gate wall right next to ref-beodeul-wizard-tower exposes the flat horizontal mortar lines on the new cylinder, noisy blotchy roof shading, and grid-like wall blocks versus Beodeul's curved shingle courses and smooth cylindrical shading ramps. In context-plaza-gate.png, the dais (D), fountain (E), lamps (B), and banners (I) stand out due to broken pedestal outlines, floating mid-air shadow/spark pixels, flat 2D front-elevation geometry, and harsh rectangular stone grids."
+   }
+  },
+  "opus_r2": {
+   "A": {
+    "object": "royal street lamp 1x3",
+    "verdict": "FAIL",
+    "reasons": "Two isolated gold pixels (236,153,0) float in empty space, detached from the lantern: (x1,y9) left of the glass and (x13,y11) right of it. Connected-component count is 3 (336+1+1 px). Under the lantern (rows 16-20) there is an open grey ring/hook (x3-4 and x10-11 diagonals), attached only by corner pixels. Inside it a gold collar sits apart from the post, so the lantern looks like it hangs from a loose loop instead of sitting on the post. These read as stray specks at 1x. Apart from that the art is the same as D (55 differing px)."
+   },
+   "B": {
+    "object": "low raised stone proclamation platform 4x2",
+    "verdict": "PASS",
+    "reasons": "Reads as a raised slab seen from above. The inlaid disc is a horizontally squashed ellipse (x18-45, y3-16), the correct foreshortening for a horizontal surface, with a gold rim and a central gold star. Row 19 is a full-width lit front edge (brightest row, lum 213). Rows 20-26 are a short riser with block joints, row 27 is a dark contact line, and rows 28-31 are paving at the foot. One single connected shape, no floating pixels. Caveats (not fatal): the top stones are laid in rectangular running-bond courses with full-width grey mortar rows (y4, y15). That is more ashlar-like than the reference's irregular flagstones with warm brown mortar, and nudges toward a wall reading. The riser is medium grey (lum about 137), not clearly dark, and its middle block x33-44 is lighter than its neighbours. The disc has a few grey/dark dots (y4-5 x27-30 and a dot row at y10) that read as glints/rivets, slightly noisy at 1x. Two 1px green moss specks on the riser foot (x20,y26 and x49,y26) are attached and intentional."
+   },
+   "C": {
+    "object": "low raised stone proclamation platform 4x2 (decoy)",
+    "verdict": "FAIL",
+    "reasons": "Reads as a brick-wall front elevation, not a walkable top. The whole tile is stacked brick courses with dark mortar lines at y3, y7, y10, y19 and y30, and the vertical joints are offset per course. The 'top' area (y1-9) is only 9 rows and is broken by those courses. The disc is crushed into a thin 7-row band (y3-10) wedged between mortar lines, so it looks like a wall plaque, not an inlay seen from above. There is no distinct lit front edge (y19 is a dark mortar line). The 'riser' (y20-29) is 10 rows, taller than the top, the opposite of a short riser. Paving at the foot is a single row (y31). Moss specks at y18 sit mid-wall. Unreadable as a platform at 1x."
+   },
+   "D": {
+    "object": "royal street lamp 1x3",
+    "verdict": "PASS",
+    "reasons": "One connected component (329 px), no stray pixels. Square pedestal: a light top face at y36-39 seen from above (post shadow/foot pixels at x8-9 on it), then a front face with horizontal courses and a blue/gold inlaid strip at y42-44, a dark base line at y45, and an offset dark drop shadow at y46-47 like the reference lamp bases. The post is dark slate/navy and 2-3 px wide, with three gold bands (y18-20, y27-29, y36-37) that sit directly on it. Octagonal lantern with warm gold glass panes and a dark mullion, a gold rim, and a blue cone cap with a highlight side, a dark side and a gold finial. Vertical elements in front view are correct for 3/4; no iso side faces. Silhouette and outline weight match ref-bd-mpart-lamp-post / lamp_double. The gold is somewhat more saturated than the refs' amber, which is acceptable. Readable at 1x."
+   }
+  },
+  "argon_r2": {
+   "judge": "argon-adversarial",
+   "candidates": {
+    "A": {
+     "what": "royal street lamp 1x3 (decoy with floating pixels and broken bracket)",
+     "view34": "fail",
+     "style": "fail",
+     "flags": [
+      "broken_silhouette",
+      "cut_edges"
+     ],
+     "verdict": "fail",
+     "reasons": [
+      "Two isolated 1px orange pixels float disconnected in empty space to the left and right of the lantern glass.",
+      "Broken, jagged 1px loop bracket under the lantern tray and flat 2D front-elevation lantern geometry with no visible 3/4 top plane.",
+      "Stone pedestal base is missing its top horizontal outline (leaving two stray dark corner pixels sticking up) and clashes in scale and texture with ref-bd-prop-lamp_crook.png."
+     ]
+    },
+    "B": {
+     "what": "low raised proclamation platform 4x2 (bordered top + darkened riser)",
+     "view34": "pass",
+     "style": "fail",
+     "flags": [
+      "cut_edges",
+      "seams"
+     ],
+     "verdict": "fail",
+     "reasons": [
+      "Although it adds a top/side border, front highlight lip, and darker south riser compared to C, the walkable top surface is still drawn as a rigid horizontal running-bond brick wall pattern rather than organic paving flagstones like ref-bd-out-well-plaza.png.",
+      "Bottom 3 pixel rows below the front riser contain cut-off dark brick fragments along the canvas bottom edge.",
+      "Central blue-and-gold oval emblem has a jagged, pillow-shaded silhouette that sits on top of the ruler-straight brick grid without matching Beodeul's stone shading language."
+     ]
+    },
+    "C": {
+     "what": "low raised proclamation platform 4x2 (decoy with unbordered brick wall front)",
+     "view34": "fail",
+     "style": "fail",
+     "flags": [
+      "cut_edges",
+      "seams",
+      "broken_silhouette"
+     ],
+     "verdict": "fail",
+     "reasons": [
+      "Reads as a vertical brick wall face rather than a 3/4 walkable platform: lacks an outer top/side border and lacks a front lip separating the top surface from the south riser.",
+      "All four canvas edges (top, bottom, left, right) slice directly through bricks, leaving cut-off stone slivers.",
+      "Emblem is pushed up against the top border and the flat rectangular blocks clash with ref-bd-out-well-plaza.png."
+     ]
+    },
+    "D": {
+     "what": "royal street lamp 1x3 (cleaned of floating pixels/bracket)",
+     "view34": "fail",
+     "style": "fail",
+     "flags": [
+      "broken_silhouette",
+      "cut_edges"
+     ],
+     "verdict": "fail",
+     "reasons": [
+      "Fixes A's floating orange pixels and broken loop bracket, but the stone pedestal base still lacks its top horizontal border, leaving two stray 1px dark corner pixels sticking up like horns (unlike the closed pedestal top in ref-bd-prop-lamp_crook.png).",
+      "Lantern housing, gold rim, and bottom tray remain a flat 2D front elevation with no 3/4 top surface.",
+      "Oversized, chunky cartoon lantern head (12px wide vs 6px in ref-bd-prop-lamp_crook.png) and banded post notches do not match the slender dark-iron style of ref-bd-prop-lamp_crook.png."
+     ]
+    }
+   },
+   "context": {
+    "sameTileset": "no",
+    "notes": "Neither the street lamp candidates (A, D) nor the proclamation platform candidates (B, C) match the reference assets /tmp/astel/art/ref-bd-prop-lamp_crook.png and /tmp/astel/art/ref-bd-out-well-plaza.png."
+   }
+  }
+ },
+ "decoysCaught": {
+  "opus": "4/4",
+  "argon": "3/4 (missed canal lock B)"
+ },
+ "objectGateReceipts": {
+  "capital_wall_towers": {
+   "receiptSha": "a419b33d1e03a2f723c9a59d38bc9aaf5b0a5181cd6188457a91aca813752ea6",
+   "verdict": "PASS"
+  },
+  "capital_watergate_n": {
+   "receiptSha": "d47e1377b5d3bba4a1f85fab8c3fc703f2b7244f0d0214be02980635cecff96b",
+   "verdict": "REFER"
+  },
+  "capital_fountain": {
+   "receiptSha": "d051b3d36d32512f8101b7dfec161016dc73152fcdd7a70805acb2daac264b1f",
+   "verdict": "PASS"
+  },
+  "capital_dais": {
+   "receiptSha": "9ac59e10b2d4917f2154a4c7a2ae18e0f3e8465082c97b3c69bbe49195972918",
+   "verdict": "REFER"
+  },
+  "capital_banner_pole": {
+   "receiptSha": "c50ec3a873d9fc6286ab9caa2f1dd52ed232c269441016b7aadb5d637c14da96",
+   "verdict": "REFER"
+  },
+  "capital_lamp": {
+   "receiptSha": "9866f4acc6337760dfba0a6322c5c3de19060d4d107ec77202badbcf02d35308",
+   "verdict": "PASS"
+  }
+ }
+}

@@ -1,0 +1,467 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b457757db51b0b1c30460a96e099b26dfecf5eca39f1375428b13aec271f7531",
+ "width": 96,
+ "height": 48,
+ "kind": "structure",
+ "name": "canal lock across a four-tile-wide stone-edged canal, 3/4 top-down: upper water, a plank walkway with an iron railing on top of the lock gates (seen from above), the south face of two heavy timber lock gates with iron straps meeting in the middle, water spilling from two sluices into foam below; a wooden capstan on each bank",
+ "label": "beodeul_city/capital/capital_canal_lock",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 투영이 3/4 아님(front_elevation) (4/4)",
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)",
+  "3/4: 윗면 2행 < 3 (2/4)",
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 평면 채움 (1/4)",
+  "화풍: 명암 3단 < 4 (1/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "투영이 3/4 아님(front_elevation) (4/4)",
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)",
+   "윗면 2행 < 3 (2/4)"
+  ]
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "평면 채움 (1/4)",
+   "명암 3단 < 4 (1/4)"
+  ],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 6,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "beodeul_city",
+   "fallback": false,
+   "hash": "5f62fef078ef7661"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 13,
+  "tileColorsP90": 20,
+  "darkV5": 57,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 18
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "borderline"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "upper water behind gates with railing posts",
+      "rows": "0-3",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "iron railing rail on top of gates",
+      "rows": "2-5",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "timber lock gates south face with iron straps",
+      "rows": "4-17",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "sluice beam band below gates, with spouts",
+      "rows": "18-24",
+      "evidence": "none",
+      "front_edge_line_row": 18,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "foam and lower water",
+      "rows": "25-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "capstans on banks",
+      "rows": "18-28",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 21,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The main body is the pair of timber gates, drawn as a vertical face in rows 4-17 with planks, straps and rivets. Above them, rows 0-5 show only a thin grey railing rail and posts over the upper water. No plank walkway is drawn as a horizontal surface on top of the gates. Row 18 is a light line, but it sits below the gate face, so it reads as a sill beam rather than a top edge. Rows 19-24 are the sluice beam with vertical iron pipes and spouts, which also read as a vertical face. Rows 25 onward are foam and lower water, a flat water surface rather than part of the structure. No band, ellipse, roof or canopy shows a top surface for the gates, so the object reads as front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a canal lock, not a roofed building, but it is broadly comparable as a structure. Measured facts are close to the references: 12 visible tones per tile (references 12 and 10), 11% near-flat coverage (references 0%). The dark edge pixels are 58% near-neutral, against 7-9% for the references, so a good share of the outline is a neutral black/grey line, the sticker look. By eye, the timber gates have plank separation and a few iron strap highlights, but each material carries only about 4 steps, against 5-6 on the reference roofs and walls. The stone banks are repetitive blocks with light per-stone shading. The water and foam have some variation but are less rich than the reference tile scallops and plaster speckle. The neutral outlines and the shallower ramps keep it below the Beodeul bar.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 20015
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "upper water strip with rail posts and top rail",
+      "rows": "0-3",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "timber lock gates with iron straps (vertical south face)",
+      "rows": "4-17",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "sluice beam / walkway band with posts and spouts",
+      "rows": "18-24",
+      "evidence": "none",
+      "front_edge_line_row": 18,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "wooden capstans on the banks",
+      "rows": "18-28",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 14,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The main body is the pair of timber gates in rows 4-17. They are drawn as a flat vertical plank face with iron straps and rivets, and no front-edge line or eave shadow sits above them. Rows 0-3 hold only a thin rail and posts over water, about 2 rows of rim at most. Rows 18-24 hold a dark brown beam with a 1-row lighter line at row 18, vertical gray posts, and sluice spouts. That reads as a vertical beam face rather than a foreshortened walkway surface. Below it, rows 25-47 are water and foam. No horizontal plank walkway surface of 3 or more rows is clearly visible, so it reads as a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate's visible tones per tile (12) match the references (12 and 10), and near-flat coverage is 11% against 0% for both references. That puts it slightly more flat, though not badly so. The gate planks show about 3-4 brown steps with some grain, and the water has teal ramps with foam dots, so it is not a pure flat fill. 58% of the dark edge pixels are neutral, against 7-9% for the references. That reads as a partly near-black outline around the gate frame, the iron railing and the stone edges, which gives a more sticker-like look than the tinted material-tone outlines of Beodeul. The stone banks are small and sparse and lack the stone-by-stone shading of the stone reference. The plank deck and the capstans are simple. Overall it is competent but shallower than the references in ramp depth and outline craft. A careful artist would likely notice it looking flatter next to them.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 21663
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "upper water with railing posts and rail",
+      "rows": "0-3",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "timber lock gates with iron straps (vertical south face)",
+      "rows": "4-17",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower timber beam with iron posts and sluices",
+      "rows": "18-24",
+      "evidence": "none",
+      "front_edge_line_row": 18,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "foam and lower water",
+      "rows": "25-47",
+      "evidence": "none",
+      "front_edge_line_row": 25,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "bank capstans",
+      "rows": "18-27",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 21,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The main body is the pair of lock gates. At rows 4-17 they are drawn as vertical planks with straps, seen face-on. Row 18 is a light line at the foot of the gates, but it sits above the sluice beam (rows 19-24) and the foam below, which are also front-facing, so it does not read as a walkway surface. The railing at rows 1-3 is only a thin iron rail with posts over the water, 1-2 rows tall. No plank walkway top is visible, so the gate structure has no top surface and reads as a flat front elevation. The capstans on the banks are small and have a small top, but they are not the main body."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate's visible tones per tile (12) match the references (12 and 10), and its near-flat coverage is only 11%, but its 58% neutral dark edge pixels is far above the references' 7-9%, so the outlines lean near-black rather than tinted. By eye, the timber gates are a handful of brown planks, each with only about 3 steps (light, mid, dark) and little grain, against the references' 5-6 steps with per-tile highlights and speckle. The stone banks are small and fairly flat. The water has some foam dots and teal variation, which is the richest part. The capstans are tiny and simple. Overall it reads thinner and more sticker-like than the Beodeul houses, with dark neutral lines between planks and a flat gate body.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 0행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 0행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 19196
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "upper canal water behind the gates with thin rail line",
+      "rows": "0-3",
+      "evidence": "none",
+      "front_edge_line_row": 3,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "timber lock gates with iron straps (vertical planks)",
+      "rows": "4-17",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "sluice beam with iron posts and spouts",
+      "rows": "18-24",
+      "evidence": "none",
+      "front_edge_line_row": 18,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "foam and lower water",
+      "rows": "25-47",
+      "evidence": "none",
+      "front_edge_line_row": 25,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "capstans on the banks",
+      "rows": "18-28",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 21,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The main body is the pair of timber gates (rows 4-17) with the sluice beam below (rows 18-24), drawn as a flat south elevation. The plank walkway on top of the gates is not drawn as a horizontal surface. Rows 0-3 above the gates show only upper water, with a 1-row gray rail line at row 3 and post tops. The gates start directly at row 4 with no band that ends in a front-edge line and eave shadow. Row 18 is a thin lighter line at the head of the sluice band, but it has no top band above it. Water in rows 25-47 is ground-level water, not a top of the structure. So the lock reads as a front elevation with no top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "Measured facts: the candidate has 12 visible tones per tile, matching house-h101_0 (12) and above house-h112_0-stone (10). Near-flat coverage is 11% against 0% in both references, so there are some flat areas. Dark edge pixels are 58% near-neutral against 7-9% in the references, so a good share of the outline is neutral black/grey, which leans toward the sticker look. By eye, the stone bank edges and the water with foam have some dotted texture and several teal steps. The timber gates are fairly flat vertical planks with only about 3-4 brown steps and little per-plank grain. The iron railing and straps are thin, dark and near-black. The capstans are small and simple. Overall it is competent but shallower than the references' 5-6 step ramps, with more neutral dark outlining and a less varied surface. A careful artist would likely see it as thinner and flatter than the roof and plaster work in the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 0행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 0행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 18186
+  }
+ ],
+ "decidedAt": "2026-10-23T01:59:29.886Z",
+ "cells": {
+  "16": [
+   "0c382673116a07dc",
+   "11909ff931e413cd",
+   "1c68515ba9931aa6",
+   "37baca91cccc2a19",
+   "54b4fe8d8944087b",
+   "55140c6e3ad57315",
+   "6fee45854827bbeb",
+   "c7f010138410716f",
+   "ca93a59ba2f29b57",
+   "ccac0a389a9df1b8",
+   "d5eb1700a0391e1f",
+   "dc9e61a0f00b7d0a",
+   "dfd831613d559bf3"
+  ],
+  "24": [
+   "23ca5264d5135484",
+   "62cf45d9eeb4e9bd",
+   "73c2a157647eb3e3",
+   "78c23665cd7d9b9f",
+   "9dc81795050b90da",
+   "b16ca0c7c1377f80",
+   "d04b6175ae57efdc",
+   "d0f01502bfa87e7c"
+  ],
+  "32": [
+   "382a7fed1ca938f0",
+   "57197c1f8a97e6aa",
+   "6e3060027060c402",
+   "aa92350946c5d7d3",
+   "ae0be7f736ac275a",
+   "b5d87d0c8f2f8643",
+   "e766e1d62b53156a",
+   "ea79829f9fa0b57e",
+   "eed3c1d11e5c1895",
+   "f4973e7381098a29",
+   "f750f0e03b6b53cc",
+   "f8f925e76fcf7cd5"
+  ],
+  "48": [
+   "4f3b1cd2804810c3",
+   "f92eecc4f3a645af"
+  ]
+ }
+}
