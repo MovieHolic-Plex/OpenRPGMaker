@@ -240,6 +240,11 @@ function setImmediateColor(host: HTMLElement, color: Rgba, mode: string): void {
 
 function applyTintColor(host: HTMLElement, target: Rgba, durationMs: number): void {
   const anim = animFor(host);
+  // 이미 같은 목표·같은 시간으로 트윈 중이면 매 동기화마다 다시 시작하지 않는다.
+  // refreshRuntimeSurfaces 가 명령마다 syncScreenEffects 를 부르므로, 여기서 시계를
+  // 되돌리면 페이드가 목표 색에 닿기 전에 남은 시간만큼 늘어난다. 색 필터 경로와 같다.
+  // 목표나 전환 시간이 바뀐 명령은 지금 보이는 색에서 새로 시작한다.
+  if (rgbaEqual(anim.to, target) && anim.durationMs > 0 && durationMs === anim.durationMs) return;
   if (durationMs <= 0 || rgbaEqual(anim.displayed, target)) {
     anim.displayed = target;
     anim.from = target;

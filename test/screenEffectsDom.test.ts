@@ -1,10 +1,10 @@
-import { describe, it, expect, beforeEach, afterEach } from "vitest";
+import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import { readFileSync } from "node:fs";
 import { createInterpreter } from "@/player/interpreter";
 import { SCREEN_EFFECT_Z_INDEX, syncScreenEffects } from "@/player/playSceneScreenEffects";
 import { M2_COMMAND_CATALOG } from "@/project/eventCommands/m2Catalog";
 import type { Command, M2CommandFields } from "@/project/types";
-import { FakeElement, installFakeDom, findByTestId } from "./fakeDom";
+import { FakeElement, installFakeDom, findByTestId, FakeElement, flushFakeAnimationFrames } from "./fakeDom"
 import type { PlaySceneContext } from "@/player/playSceneTypes";
 import type { PlaySessionLike } from "@/project/sessionRuntimeTypes"
 
@@ -190,5 +190,29 @@ describe("syncScreenEffects — DOM 오버레이", () => {
     expect(session.m2Runtime!.screen.tint).toBe("0,0,0,1");
     expect(after?.style.background).toBe("rgba(0,0,0,1)");
     expect(after?.dataset.mode).toBe("screen-tint");
-  });
+  it("진행 중인 색조 전환은 다음 화면 동기화에서 시계를 되돌리지 않는다", () => {
+    restore?.();
+    restore = installFakeDom({ animationFrames: "manual" });
+    let now = 0;
+    const nowSpy = vi.spyOn(performance, "now").mockImplementation(() => now);
+    try {
+      const session = mkSession();
+      session.m2Runtime!.screen.tint = "0,0,0,1";
+      session.m2Runtime!.screen.tintDurationMs = 1000;
+      const scene = mkScene(session);
+
+      syncScreenEffects(scene);
+      now = 500;
+      flushFakeAnimationFrames(0, 1);
+      const layer = findByTestId(hostOf(scene), "runtime-screen-effect");
+      expect(layer!.style.background).toBe("rgba(0,0,0,0.5)");
+
+      // 다음 명령이 refreshRuntimeSurfaces 로 같은 색조를 다시 맞춘다.
+      syncScreenEffects(scene);
+      now = 1000;
+      flushFakeAnimationFrames(0, 1);
+      expect(layer!.style.background).toBe("rgba(0,0,0,1)");
+    } finally {
+      nowSpy.mockRestore();
+    }  });
 });

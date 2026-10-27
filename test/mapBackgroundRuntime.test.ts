@@ -250,13 +250,14 @@ describe("맵 배경 렌더", () => {
   });
 
   it("저작된 배경 그림을 로드해 하층 타일 아래 화면 고정 레이어로 붙인다", async () => {
+    // EasyRPG backdrops were purged on 2026-10-07 (retiredAssets.ts); load a shipped OPRN panorama instead.
     await withProject(async () => {
-      const stub = createScene({ background: { imageId: "easyrpg-backdrop-sky1", scrollX: 2 } });
+      const stub = createScene({ background: { imageId: "oprn-pano-sky-day", scrollX: 2 } });
       syncMapBackgroundLayers(stub.scene);
 
       expect(stub.sprites).toHaveLength(0);
       expect(stub.queued).toHaveLength(1);
-      expect(stub.queued[0]!.url).toContain("Sky1.png");
+      expect(stub.queued[0]!.url).toContain("oprn-pano-sky-day.png");
 
       // 같은 그림을 다시 실으라고 해도 로더에 두 번 넣지 않는다.
       syncMapBackgroundLayers(stub.scene);
@@ -268,7 +269,7 @@ describe("맵 배경 렌더", () => {
       await Promise.resolve();
       const sprite = stub.sprite();
       expect(sprite).toBeDefined();
-      expect(sprite!.texture.key).toBe(mapBackgroundTextureKey("easyrpg-backdrop-sky1"));
+      expect(sprite!.texture.key).toBe(mapBackgroundTextureKey("oprn-pano-sky-day"));
       expect(sprite!.depth).toBe(MAP_BACKGROUND_LAYER_DEPTH);
       expect(sprite!.scrollFactorX).toBe(0);
       expect(sprite!.originX).toBe(0);

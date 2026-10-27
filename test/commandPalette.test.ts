@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { buildPaletteEntries, movePaletteIndex } from "@/editor/panels/commandPalette";
+import { buildPaletteEntries, movePaletteIndex, paletteKeyAction } from "@/editor/panels/commandPalette";
 import type { EditorCommand } from "@/editor/commandRegistry";
 
 function cmd(id: string, label: string): EditorCommand {
@@ -32,5 +32,23 @@ describe("movePaletteIndex", () => {
     expect(movePaletteIndex(3, 2, 1)).toBe(0);
     expect(movePaletteIndex(3, 0, -1)).toBe(2);
     expect(movePaletteIndex(0, 0, 1)).toBe(0);
+  });
+});
+
+describe("paletteKeyAction", () => {
+  it("조합 중 Enter·화살표는 명령을 실행하거나 선택을 옮기지 않는다", () => {
+    expect(paletteKeyAction({ key: "Enter", isComposing: true })).toBe("ignore");
+    expect(paletteKeyAction({ key: "Enter", keyCode: 229 })).toBe("ignore");
+    expect(paletteKeyAction({ key: "Process", keyCode: 229 })).toBe("ignore");
+    expect(paletteKeyAction({ key: "ArrowDown", isComposing: true })).toBe("ignore");
+    expect(paletteKeyAction({ key: "ArrowUp", keyCode: 229 })).toBe("ignore");
+    expect(paletteKeyAction({ key: "Unidentified" })).toBe("ignore");
+  });
+
+  it("조합이 끝난 Enter 는 실행이고 화살표는 이동이다", () => {
+    expect(paletteKeyAction({ key: "Enter" })).toBe("run");
+    expect(paletteKeyAction({ key: "ArrowDown" })).toBe("down");
+    expect(paletteKeyAction({ key: "ArrowUp" })).toBe("up");
+    expect(paletteKeyAction({ key: "Escape" })).toBe("ignore");
   });
 });

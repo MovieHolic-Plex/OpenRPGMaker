@@ -152,8 +152,10 @@ describe("렌더러 — 밝은 맵에서도 보이는 선, 원형 힌트", () =>
     setAgentBlueprintFromSpec({ mapId: "m1", assets: [{ id: "h", kind: "house", x: 2, y: 2, w: 4, h: 4 }] });
     new AgentBlueprintRenderer(scene, layer, () => "m1").render();
     const strokes = graphicsCalls[0].strokes;
-    expect(strokes.length).toBe(2);
-    const [halo, line] = strokes;
+    // halo + line, then a 1px ruler-tick stroke that agentBlueprintRenderer.ts now draws on finished rectangles.
+    expect(strokes.length).toBe(3);
+    const [halo, line, ticks] = strokes;
+    expect(ticks[0]).toBe(1);
     expect(halo[0]).toBeGreaterThan(line[0]);
     expect(halo[1]).toBe(blueprintStatusStyle("planned").haloColor);
     expect(line[2]).toBeGreaterThanOrEqual(0.85);

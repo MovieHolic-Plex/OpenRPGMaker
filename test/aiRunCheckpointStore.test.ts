@@ -69,8 +69,9 @@ it.each([1, 2] as const)("upgrades v%i at the real IDB seam without replacing co
   expect(await aiRecordBackendKind()).toBe("indexeddb");
   const db = await opened();
   try {
-    expect(db.version).toBe(3);
-    expect([...db.objectStoreNames]).toEqual(["conversationTombstones", "conversations", "runCheckpoints"]);
+    // v4 가 대화 요약 저장소 둘을 더했다(src/ai/aiRecordDb.ts AI_RECORD_DB_VERSION, public baseline 0d4f13e7c8).
+    expect(db.version).toBe(4);
+    expect([...db.objectStoreNames]).toEqual(["conversationSummaries", "conversationSummaryMeta", "conversationTombstones", "conversations", "runCheckpoints"]);
     const transaction = db.transaction(["conversations", checkpointStore], "readonly");
     const done = new Promise<void>((resolve, reject) => {
       transaction.oncomplete = () => resolve(); transaction.onabort = () => reject(transaction.error);

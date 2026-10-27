@@ -170,4 +170,57 @@ describe("publishing modal controls", () => {
       enableSteamInputGamepad: true,
     });
   });
+  it("previews and exports the web player zip from the web platform card", async () => {
+    const project = createBlankProject();
+    const runtime = await createRuntimeManifest([{ name: "web/player.js", bytes: new Uint8Array([2]) },
+      { name: "web/dependency-collector.js", bytes: new Uint8Array([3]) }], []);
+    let zipped = 0;
+    let steamed = 0;
+    await openPublishingDialog({
+      project,
+      apply: () => { throw new Error("publication is optional for a web zip"); },
+      exportZip: async () => { zipped += 1; },
+      exportHtml: async () => {},
+      exportDesktopSteam: async () => { steamed += 1; },
+      fetchBytes: async path => path.endsWith("default.json")
+        ? jsonBytes({ runtimeTarget: runtime.runtimeTarget })
+        : jsonBytes(runtime),
+    });
+    const webTarget = document.querySelector<HTMLButtonElement>('[data-testid="publication-target-web-pwa"]');
+    const linuxTarget = document.querySelector<HTMLButtonElement>('[data-testid="publication-target-linux64-steamos"]');
+    const preview = document.querySelector('[data-testid="publication-package-preview"]');
+    const note = document.querySelector('[data-testid="publication-web-platform-note"]');
+    const appId = document.querySelector<HTMLInputElement>('[data-testid="publication-steam-appid"]');
+    const buildBtn = document.querySelector<HTMLButtonElement>('[data-testid="publication-export-desktop-steam"]');
+    if (!webTarget || !linuxTarget || !preview || !note || !appId || !buildBtn) throw new Error("Missing web platform controls");
+
+    webTarget.click();
+    expect(preview.textContent).toContain("player.html");
+    expect(preview.textContent).toContain("project.json");
+    expect(preview.textContent).not.toContain("steam_appid.txt");
+    expect(preview.textContent).not.toContain("game.pak");
+    expect(note.hasAttribute("hidden")).toBe(false);
+    expect(appId.disabled).toBe(true);
+    expect(buildBtn.textContent).toContain("웹 서버 번들");
+
+    linuxTarget.click();
+    expect(preview.textContent).toContain("steam_appid.txt");
+    expect(preview.textContent).toContain("game.pak");
+    expect(note.hasAttribute("hidden")).toBe(true);
+    expect(appId.disabled).toBe(false);
+    expect(buildBtn.textContent).toContain("Steam");
+
+    webTarget.click();
+    buildBtn.click();
+    expect(zipped).toBe(1);
+    expect(steamed).toBe(0);
+    expect(document.querySelector('[data-testid="publication-dialog"]')).toBeNull();
+  });
+  it("saves a staged publication when the web platform build is used", async () => {
+    const { project, mutations } = await fixture(true);
+    document.querySelector<HTMLButtonElement>('[data-testid="publication-target-web-pwa"]')!.click();
+    button("export-desktop-steam").click();
+    expect(mutations()).toBe(1);
+    expect(project.meta.publication?.gameId).toBeTruthy();
+  });
 });

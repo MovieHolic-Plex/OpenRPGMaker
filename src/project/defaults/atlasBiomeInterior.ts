@@ -14,7 +14,7 @@ const data = () => bundledJson("atlasBiomeInteriorTileset");
 import references from "@/assets/sharedHandInteriorReferences.json";
 import type { AutotileGroup, PassFlag, Project, SlideRule, StructureKitDef, TileAiMetadata, TileGroupMetadata, TilesetDef } from "../types";
 import { REFERENCE_LIMITS, type TilesetReferenceCategory } from "../tilesetReferences";
-import { attachWorkshopTiles, detachWorkshopTiles } from "../workshopTiles";
+import { PAD_LABEL, attachWorkshopTiles, detachGraftTail, detachWorkshopTiles } from "../workshopTiles";
 
 export const ATLAS_BIOME_INTERIOR_ID = "atlas_biome_interior";
 export const ATLAS_BIOME_INTERIOR_TEXTURE = "tex_atlas_biome_interior";
@@ -131,12 +131,30 @@ export function ensureAtlasBiomeInteriorCurrent(project: InteriorProject, id: st
   const tileset = project.tilesets[id];
   if (!tileset || !isAtlasBiomeInteriorTileset(tileset) || id !== ATLAS_BIOME_INTERIOR_ID) return false;
   const parked = detachWorkshopTiles(tileset);
+  const tail = detachV5GraftTail(tileset);
   const changed = refreshAtlasBiomeInterior(project, id);
+  // 꼬리 이식을 먼저, 공방 칸을 그 뒤에 — 떼기 전과 같은 순서다.
+  const graftsMoved = tail ? attachWorkshopTiles(project, id, tail) : false;
   const moved = parked ? attachWorkshopTiles(project, id, parked) : false;
   const current = project.tilesets[id]!;
   const kit = !current.roomKit;
   if (kit) current.roomKit = { builtin: ATLAS_BIOME_INTERIOR_ID };
-  return changed || moved || kit;
+  return changed || graftsMoved || moved || kit;
+}
+
+/**
+ * 손 도트 v5 칩셋 끝에 다른 칩셋 그림을 이식해 붙인 꼬리(폴른 스타가 버들항 던전 수정 받침을 7677~ 에 붙였다)를 떼어 둔다.
+ * 떼지 않으면 count 가 번들 시트보다 커서 isHandInteriorV5Definition 이 거짓 → 옛 Tibo 정의로 오인해 통째로 갈아 끼우고
+ * 이식 칸을 잃는다(맵 17개 「다시 지어야 한다」 거짓 경고, 2026-10-27). 꼬리 = 끝에서부터 이식 칸·빈 칸(이름 없음·공방 자리 칸)만 이어진 구간.
+ */
+function detachV5GraftTail(tileset: TilesetDef) {
+  const targets = new Set((tileset.tileGrafts ?? []).map((g) => g.targetTile));
+  if (!targets.size) return null;
+  let start = tileset.count;
+  while (start > 0 && (targets.has(start - 1) || [undefined, "", PAD_LABEL].includes(tileset.tileMeta?.[start - 1]?.label))) start -= 1;
+  if (start >= tileset.count || ![...targets].some((t) => t >= start)) return null;
+  if (!isHandInteriorV5Definition({ ...tileset, count: start })) return null;
+  return detachGraftTail(tileset, start);
 }
 
 /**

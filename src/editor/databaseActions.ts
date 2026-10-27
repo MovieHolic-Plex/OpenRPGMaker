@@ -345,6 +345,16 @@ export function updateDatabaseRecord(collection: DatabaseCollection, id: string,
           if (patch.emotion === undefined) delete record.emotion;
           else record.emotion = patch.emotion;
         }
+        // 부위 손실·전투 오라는 자료집 폼이 이 패치로 넣는다. normalizeStateRecord 는 이미
+        // 보존하지만, 여기 없으면 저장 왕복 전에 폼 값이 버려진다(runtimeEffects 와 같은 구멍).
+        if ("disablesEquipSlot" in patch) {
+          if (typeof patch.disablesEquipSlot === "string" && patch.disablesEquipSlot.trim()) record.disablesEquipSlot = patch.disablesEquipSlot;
+          else delete record.disablesEquipSlot;
+        }
+        if ("battleAura" in patch) {
+          if (patch.battleAura) record.battleAura = patch.battleAura;
+          else delete record.battleAura;
+        }
         // runtimeEffects(전투 규칙 knob 5개)는 이 줄이 없으면 폼 입력이 조용히 버려졌다 —
         // normalizeStateRecord 는 이미 보존하므로 구멍은 이 뮤테이터 하나였다.
         // 부분 패치를 병합한다: 건드리지 않은 knob 은 undefined 로 남겨 온톨로지 폴백을 유지한다.

@@ -2,6 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { listEditorCommands, listMapCommands, matchEditorCommands } from "@/editor/commandRegistry";
 import { editorState } from "@/editor/editorState";
 import { allPanels } from "@/editor/workspace/panelRegistry";
+import { LEFT_DOCK_TASK_HOST } from "@/editor/workspace/leftDockPanels";
 import { getWorkspaceLayout, resetWorkspaceForTests, updateWorkspaceLayout } from "@/editor/workspace/workspaceStore";
 import { layoutFromPreset } from "@/editor/workspace/workspaceLayout";
 import { createBlankProject } from "@/project/defaults";
@@ -70,12 +71,14 @@ describe("commandRegistry", () => {
     installDockHosts();
     const commands = listEditorCommands();
     updateWorkspaceLayout(layoutFromPreset("map"));
-    commands.find((c) => c.id === "workspace-panel-tiles-right")!.run();
-    expect(getWorkspaceLayout().docks.left).toEqual(["maps"]);
-    expect(getWorkspaceLayout().docks.right).toContain("tiles");
+    // 타일(왼쪽 도크 작업 호스트, LEFT_DOCK_TASK_HOST)은 늘 마운트돼 패널 명령을 내놓지 않는다 — 맵 트리로 본다.
+    expect(commands.some((c) => c.id.startsWith("workspace-panel-tiles"))).toBe(false);
+    commands.find((c) => c.id === "workspace-panel-maps-right")!.run();
+    expect(getWorkspaceLayout().docks.left).toEqual(["tiles"]);
+    expect(getWorkspaceLayout().docks.right).toContain("maps");
 
-    commands.find((c) => c.id === "workspace-panel-tiles")!.run();
-    expect(getWorkspaceLayout().docks.right).not.toContain("tiles");
+    commands.find((c) => c.id === "workspace-panel-maps")!.run();
+    expect(getWorkspaceLayout().docks.right).not.toContain("maps");
   });
 
   it("도크 패널 명령은 저장된 도크 구성을 바꾸지 않고 항상 등록된다", () => {
@@ -89,9 +92,10 @@ describe("commandRegistry", () => {
     resetWorkspaceForTests();
 
     const ids = listEditorCommands().map((command) => command.id);
-    expect(ids).toContain("workspace-panel-tiles");
+    // 타일은 왼쪽 도크 작업 호스트라 패널 명령이 없다(#3245, LEFT_DOCK_TASK_HOST).
+    expect(ids).not.toContain("workspace-panel-tiles");
     expect(ids).toContain("workspace-panel-maps");
-    expect(ids).toContain("workspace-panel-tiles-right");
+    expect(ids).not.toContain("workspace-panel-tiles-right");
     expect(ids).toContain("workspace-panel-maps-right");
     expect(JSON.parse(storage.getItem(WORKSPACE_KEY) ?? "{}").docks.left).toEqual(["tiles", "maps"]);
   });
@@ -135,7 +139,7 @@ describe("commandRegistry", () => {
     const ids = listEditorCommands().map((command) => command.id);
     expect(new Set(ids).size).toBe(ids.length);
     expect(ids.filter((id) => id.startsWith("editor-ui-mode-"))).toEqual([]);
-    for (const panel of allPanels().filter((candidate) => candidate.id !== "assistant")) {
+    for (const panel of allPanels().filter((candidate) => candidate.id !== "assistant" && candidate.id !== LEFT_DOCK_TASK_HOST)) {
       expect(ids).toContain(`workspace-panel-${panel.id}`);
       expect(ids).toContain(`workspace-panel-${panel.id}-left`);
       expect(ids).toContain(`workspace-panel-${panel.id}-right`);
@@ -166,7 +170,8 @@ describe("commandRegistry", () => {
     expect(ids.filter(id => id.startsWith('sidebar-inspection-'))).toEqual([
       'sidebar-inspection-inspector', 'sidebar-inspection-ruleAudit', 'sidebar-inspection-history',
     ]);
-    expect(ids.some(id => id.startsWith('workspace-panel-'))).toBe(false);
+    // 화면을 못 바꾸는 도크 토글 = 늘 마운트된 왼쪽 작업 호스트(타일)의 열기/닫기·이동(#3245). 다른 패널 명령은 남는다.
+    expect(ids.some(id => id.startsWith(`workspace-panel-${LEFT_DOCK_TASK_HOST}`))).toBe(false);
   });
 
   it("도움말: 단축키 명령이 등록되어 '단축키' 검색으로 찾을 수 있다", () => {

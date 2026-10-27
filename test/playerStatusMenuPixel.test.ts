@@ -16,8 +16,16 @@ const actions: PlayerStatusMenuActions = {
   onMoveFormationActor: noop, onToggleMonsterView: noop, onMoveMonster: noop, onToggleWait: noop, onToTitle: noop,
 };
 
+/** 전투가 있는 게임으로 만든다 — 전투 없는 게임은 첫 화면이 파티 개요 대신 이야기 개요다(combatPresence, #3660). */
+function withCombat<T extends ReturnType<typeof createBlankProject>>(project: T): T {
+  const map = project.maps[project.startMapId]!;
+  map.encounterRate = 30;
+  map.troopIds = [project.database.troops[0]!.id];
+  return project;
+}
+
 function fourParty() {
-  const project = createBlankProject();
+  const project = withCombat(createBlankProject());
   const session = startSession(project);
   session.partyActorIds = ["actor_hero", "actor_guardian", "actor_mage", "actor_scout"];
   for (const id of session.partyActorIds) session.actorVitals[id] ??= { hp: 50, maxHp: 100, mp: 5, maxMp: 20 };
@@ -74,6 +82,8 @@ describe("pixel window menu (default skin)", () => {
       const { project, session } = fourParty();
       session.actorStateIds = { actor_mage: ["state_poison"] };
       session.inventory = { item_antidote: 1, item_potion: 1 };
+      // startSession 이 시작 파티의 체력을 이미 채워 두므로(fourParty 의 ??= 는 주인공을 건너뛴다) 회복 대상 주인공을 다치게 둔다.
+      session.actorVitals.actor_hero = { hp: 50, maxHp: 100, mp: 5, maxMp: 20 };
       const antidote = renderWithFakeDom(() => renderPlayerStatusMenu({ project, session, slots: [], actions, mode: "function", selectedCommand: "items", targetItemId: "item_antidote" }));
       expect(findByTestId(antidote, "status-menu-item-target-actor_mage-states")?.textContent).toBe("독 → 정상");
       expect(findByTestId(antidote, "status-menu-item-target-actor_hero-states")?.textContent).toBe("정상");

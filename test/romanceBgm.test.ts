@@ -21,13 +21,14 @@ describe("현대 일상 장소(연애·학원·직장물) BGM", () => {
     expect(recommendMapBgm("깊은 숲", 3)).toBe(recommendMapBgm("forest", 3));
   });
 
-  it("일본 현대 실내를 새로 지으면 BGM 이 비지 않는다, 환상 실내는 그대로", () => {
+  it("일본 현대 실내를 새로 지으면 BGM 이 비지 않는다, 환상 실내도 곡을 받는다", () => {
     const ctx = { project: createBlankProject() };
     const jp = runTool(ctx, "build_hand_interior_room", { tileset: "jp_city", name: "집", floor: "flooring", wall: "cloth", layout: { program: "house-1f" } });
     expect(jp.ok, jp.summary).toBe(true);
     expect(ctx.project.maps[(jp.data as { mapId: string }).mapId]?.bgm?.mode).toBe("custom");
     const fantasy = runTool(ctx, "build_hand_interior_room", { name: "빵집", floor: "plank", wall: "plaster", layout: { program: "bakery" } });
     expect(fantasy.ok, fantasy.summary).toBe(true);
-    expect(ctx.project.maps[(fantasy.data as { mapId: string }).mapId]?.bgm).toBeUndefined();
+    // #3226(2026-10-22): 환상 실내도 새로 지으면 무음으로 남지 않게 마을 곡이 기본으로 붙는다.
+    expect(ctx.project.maps[(fantasy.data as { mapId: string }).mapId]?.bgm?.mode).toBe("custom");
   });
 });

@@ -76,9 +76,10 @@ describe("author_story_arc 비트 이벤트 통행 가능 배치", () => {
     expect(warnings).toContain(`(${event.x}, ${event.y})`);
   });
 
-  it("반경 3칸이 전부 물이면 story-beat-impassable ToolError를 낸다", () => {
+  it("반경 5칸이 전부 물이면 story-beat-impassable ToolError를 낸다", () => {
     const { project, map, mapId } = fixture();
-    waterBlock(map, 8, 7, 3);
+    // nearestPassableCell now searches a clean landing up to radius 5 before failing (#2894), so the blocked area must cover radius 5.
+    waterBlock(map, 8, 7, 5);
     expect(isPassable(project, map, 8, 7)).toBe(false);
 
     let error: unknown;

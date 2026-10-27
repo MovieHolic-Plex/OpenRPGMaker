@@ -13,7 +13,8 @@ import { playAudioCommand, stopAudioCommand } from "@/player/audio";
 import { mountBattleScene, type BattleDomController } from "@/player/battleDom";
 import { preloadBattleJuiceSamples } from "@/player/battleJuice";
 import { warmBattleStyles } from "@/player/battleStyleWarmup";
-import { createSkinBattleTransition, type BattleTransition } from "@/player/battleTransition";
+import { createSkinBattleTransition, terminalDefeatCoverHoldMs, type BattleTransition } from "@/player/battleTransition";
+import { resolveGameOverSettings } from "@/project/cinematicSettings";
 import { computeOnFieldAnchors, hideOnFieldSprites, instantBattleTransition, type OnFieldScene } from "@/player/battleOnField";
 import { mapTileSize } from "@/project/tileGeometry";
 import { resolveSkinId, getBattleSkin } from "@/battle/skins/registry";
@@ -183,6 +184,16 @@ export async function playBattle(
         currentMapId: scene.session.currentMapId,
         x: scene.session.x,
         y: scene.session.y,
+        // 행동·시선·엔딩 조건(actorState·facing·eventSeesPlayer·hiding·stringVariable·clearCount …)이 읽는 칸.
+        // BATTLE_CONDITION_SESSION_STATE_FIELDS 에 있는데 다리에서 빠져 전투 이벤트 조건이 늘 기본값(거짓)으로 판정됐다.
+        actorVitals: scene.session.actorVitals,
+        actorStateIds: scene.session.actorStateIds,
+        playerFacing: scene.session.playerFacing,
+        eventLocations: scene.session.eventLocations,
+        horror: scene.session.horror,
+        flags: scene.session.flags,
+        stringVariables: scene.session.stringVariables,
+        clearHistory: scene.session.clearHistory,
       },
       partyMonsters: monsterPartyMode ? partyMonsters : undefined,
       // Terrain at the player's tile feeds battle backdrop when troop has no preview.
@@ -347,19 +358,30 @@ export async function playBattle(
                 closingDom = true;
                 battleScene?.destroy();
                 battleScene = undefined;
-                // 패배로 게임이 끝나는 길(canLose=false)은 커버를 걷지 않고 넘긴다. 걷으면 살아 있는
-                // 밝은 필드에 파티가 서 있는 장면이 300ms 드러난 뒤 게임오버 상자가 무전환으로 튀었다
-                // (2026-09-14 실측). 커버는 게임오버 화면이 그 아래에 마운트된 뒤 스스로 페이드아웃한다 —
-                // cleanup 이 오버레이를 즉시 지우지 않도록 소유권을 놓는다.
+                // 패배로 게임이 끝나는 길(canLose=false)은 커버를 걷지 않고 넘긴다. reveal() 은
+                // 커버를 투명으로 페이드하고 필드에 battle-return-settle 을 붙인다. 게임오버 화면은
+                // 그 커버보다 아래(z-index 65 < 70)이고 암전이 투명에서 시작하므로, 바로 걷으면
+                // 살아 있는 파티가 비친 뒤 상자가 튀어 올랐다(2026-09-14 실측). 불투명한 exit 커버를
+                // 암전이 끝난 뒤에야 떼고, cleanup 이 그 전에 지우지 않도록 소유권을 놓는다.
                 const authoredGameOver = result === "defeat" ? snapshot.eventState.gameOverRequest : undefined;
                 const terminalDefeat = result === "defeat" && (!snapshot.canLose || !!authoredGameOver);
+                let coverTimer: ReturnType<typeof window.setTimeout> | undefined;
                 if (terminalDefeat) {
                   exitTransition = undefined;
-                  void transition.reveal();
+                  const fadeOutMs = resolveGameOverSettings(project.system, authoredGameOver?.gameOverId)?.timing?.fadeOutMs;
+                  const holdMs = terminalDefeatCoverHoldMs(fadeOutMs, sceneReducedMotion());
+                  coverTimer = window.setTimeout(() => transition.destroy(), holdMs);
                 } else {
                   await transition.reveal();
                 }
-                if (!current()) { abort(); return; }
+                if (!current()) {
+                  if (coverTimer !== undefined) {
+                    window.clearTimeout(coverTimer);
+                    transition.destroy();
+                  }
+                  abort();
+                  return;
+                }
                 // Commit once, after all cancellable presentation has completed.
                 if (terminalDefeat) {
                   // 게임 오버가 이어지므로 필드국을 되돌리지 않는다 — 살아 있는 파티가 없는 화면
@@ -421,4 +443,11 @@ export async function playBattle(
   } finally {
     initializedRuntime?.cancel();
   }
+}
+
+/** Same gate as the game-over terminal: the in-game option and the OS setting both skip the darken. */
+function sceneReducedMotion(): boolean {
+  return getPlayerPreferences().reduceMenuMotion
+    || (typeof window !== "undefined" && typeof window.matchMedia === "function"
+      && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
 }

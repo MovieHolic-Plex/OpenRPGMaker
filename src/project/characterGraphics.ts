@@ -102,7 +102,9 @@ export function listCharacterSprites(project: Project): CharacterSprite[] {
     const written = authoredLabel ? [label, ...(authoredLabel.tags ?? [])] : [label, ...(semantic?.tags ?? [])];
     const defaults = seedGraphicAttributes(written.join(" "));
     if (!authoredLabel && semantic?.gender && semantic.gender !== "none") defaults.gender = semantic.gender === "male" ? "남성" : "여성";
-    if (!authoredLabel && semantic?.age) defaults.age = ({ child: "어린이", youth: "청년", middle: "중년", elder: "노년" } as const)[semantic.age];
+    // 표에 없는 나이 값(예: adult)은 비워 둔다 — undefined 를 심으면 내보낸 문서를 다시 읽을 때 「80자 이하 문자열」로 거절됐다.
+    const seededAge = semantic?.age ? ({ child: "어린이", youth: "청년", middle: "중년", elder: "노년" } as Partial<Record<string, string>>)[semantic.age] : undefined;
+    if (!authoredLabel && seededAge) defaults.age = seededAge;
     return { textureKey, characterIndex, label, path: asset.path, sheetName: profile?.name ?? asset.name,
       attributes: slot?.graphicAttributes ?? defaults, status: slot?.status ?? "pending",
       faceResourceId: slot?.faceResourceId ?? null, quality: slot?.quality ?? "unspecified", note: slot?.note ?? "" };

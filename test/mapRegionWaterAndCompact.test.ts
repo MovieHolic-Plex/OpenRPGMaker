@@ -5,6 +5,7 @@ import { TILE } from "@/project/defaults/constants";
 import { LAKE_AUTOTILE_TILE } from "@/project/defaults/lakeAutotile";
 import { runTool } from "@/editor/tools/toolRunner";
 import { isMapWaterTile, waterBoundsInMap } from "@/editor/tools/queryTools";
+import { startOnRetiredCombinedTown } from "./support/retiredEasyRpgTilesets";
 
 // toolResultForModel is private — exercise via compact behavior through session isn't easy;
 // water detection and get_map_region data.water are the public contract.
@@ -73,7 +74,8 @@ describe("isMapWaterTile / waterBoundsInMap", () => {
   });
 
   it("waterBoundsInMap matches painted water rectangle", () => {
-    const project = createBlankProject();
+    // TILE.WATER is a combined-town chip id; without a tileset argument only a combined-town map reads it as water.
+    const project = startOnRetiredCombinedTown(createBlankProject());
     const map = project.maps[project.startMapId]!;
     map.lowerTiles[3 * map.width + 4] = TILE.WATER;
     map.lowerTiles[3 * map.width + 5] = TILE.WATER;

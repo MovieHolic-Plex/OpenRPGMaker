@@ -15,6 +15,11 @@ const mocks = vi.hoisted(() => ({
 vi.mock("@/editor/panels/databaseModal", () => ({
   openDatabaseModal: mocks.openDatabaseModal,
 }));
+// 자료집은 이제 지연 로더(openDatabaseModalLazy)로 연다 — 본문 모듈을 비동기로 읽으므로 그 입구를 직접 대신한다.
+vi.mock("@/editor/panels/databaseModalLazy", () => ({
+  openDatabaseModalLazy: mocks.openDatabaseModal,
+  scheduleDatabaseModalPrefetch: vi.fn(),
+}));
 // app/mode 는 모듈 상단에서 workspaceStore 를 동적 import 해 구독한다 — 이 테스트가 workspaceBar 를
 // 통해 그 순환을 밟으면 초기화 전 `listeners` 접근(TDZ)이 unhandled rejection 으로 새어 나온다.
 vi.mock("@/app/mode", () => ({ getMode: () => "edit", toggleMode: vi.fn() }));

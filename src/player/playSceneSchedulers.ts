@@ -28,6 +28,7 @@ import { releaseCutsceneControlForOwner } from "@/player/cutsceneControl";
 import { applyLightingStep } from "@/player/playSceneLighting";
 import { playMapAnimation } from "@/player/playSceneMapAnimations";
 import { playPathfindMove } from "@/player/playScenePathfinding";
+import { holdBlockedCommandRoute } from "@/player/playerRouteState";
 import { playMovieOverlay } from "@/player/playSceneMovies";
 import { applyWeatherStep } from "@/player/playSceneWeather";
 import { applyEventRelocationStep } from "@/player/playSceneMapCommands";
@@ -310,10 +311,13 @@ export function applyNonBlockingStep(scene: PlaySceneContext, step: StepResult, 
     case "pathfindMove":
       void playPathfindMove(scene, step, currentEventId);
       return true;
-    case "moveEvent":
-      scene.registerAutonomousMover(step.eventId || currentEventId || "", step.moves, step.repeat);
-      scene.commandMoveRouteEventIds.add(step.eventId || currentEventId || "");
+    case "moveEvent": {
+      const eventId = step.eventId || currentEventId || "";
+      scene.registerAutonomousMover(eventId, step.moves, step.repeat);
+      scene.commandMoveRouteEventIds.add(eventId);
+      if (step.skippable === false) holdBlockedCommandRoute(scene.autonomousNPCs.get(eventId));
       return true;
+    }
     case "eraseEvent":
       eraseRuntimeEvent(scene, step.eventId || currentEventId);
       return true;
