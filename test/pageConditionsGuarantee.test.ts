@@ -465,6 +465,8 @@ describe("page conditions working guarantee (all kinds)", () => {
       actorLevels: { [DEFAULT_ACTOR_ID]: 5 },
       actorVitals: {},
       actorStateIds: { [DEFAULT_ACTOR_ID]: [store.getCurrent().database.states[0]?.id ?? "state_1"] },
+      // partyKnowsSkill(#2602)·badgeCount(#2713) 이 읽는 칸 — 단독 경로(아래 it)와 같은 값.
+      actorSkillIds: { [DEFAULT_ACTOR_ID]: ["skill_probe"] },
       playerFacing: "left" as const,
       currentMapId: "m",
       eventLocations: { ev_runtime: { mapId: "m", x: 1, y: 0, direction: "up" as const } },
@@ -481,6 +483,7 @@ describe("page conditions working guarantee (all kinds)", () => {
     if (varCond?.kind === "variable") passSession.variables[varCond.variableId] = 5;
     const swCond = conditions.find((c) => c.kind === "switch");
     if (swCond?.kind === "switch") passSession.switches[swCond.switchId] = true;
+    passSession.switches.mx_badge_1 = true;
 
     const locationContext = { locations: [{ id: "loc1", x: 0, y: 0, w: 4, h: 4 }] };
     expect(resolveEventPage(event, { ...passSession, x: 1, y: 1 }, locationContext)?.id).toBe("p1");

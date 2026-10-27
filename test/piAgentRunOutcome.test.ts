@@ -116,7 +116,7 @@ vi.mock("@/project/authoredProjectBaseline", () => ({ AuthoredProjectBaseline: c
 // subscribe 가 빠져 있어 mapEditHistory 의 모듈 초기화가 즉시 죽었다 — 파일 전체가 로드조차
 // 되지 않아 여기 담긴 12개 케이스가 통째로 침묵했다(main 기준으로도 빨간불).
 // getDbPersistenceStatus: aiMapRunOwnership.aiProjectRunKey 가 실행 잠금 키를 정할 때 읽는다(준비 안 됨 → 세션 정체성).
-vi.mock("@/project/store", () => ({ store: { getCurrent: () => h.project, getVersionToken: () => ({ lineage: 1 }), getProjectIdentity: () => ({ kind: "local-session", id: "outcome-fixture" }), getDbPersistenceStatus: () => ({ kind: "disabled" }), subscribe: () => () => {}, flush: async () => ({ kind: h.saveKind }) } }));
+vi.mock("@/project/store", () => ({ store: { getCurrent: () => h.project, getVersionToken: () => ({ lineage: 1 }), getProjectIdentity: () => ({ kind: "local-session", id: "outcome-fixture" }), getDbPersistenceStatus: () => ({ kind: "disabled" }), whenBootNormalized: async () => {}, subscribe: () => () => {}, flush: async () => ({ kind: h.saveKind }) } }));
 // 실제 결정 카드를 띄우지 않는다. 맵 소실 확인은 별도 케이스에서 반환값을 갈아 끼워 검사한다.
 vi.mock("@/editor/panels/aiDecisionPrompt", () => ({ requestAssistantDecision: async () => h.confirmAnswer }));
 vi.mock("@/ai/llmClient", () => ({ loadAiConfig: () => ({ providerId: "google-antigravity", model: "m", piApply: h.piApply, roleModels: h.roleModels }) }));

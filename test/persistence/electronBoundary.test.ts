@@ -9,7 +9,7 @@ const SQLITE_DRIVER_TOKENS = ["node:sqlite", "better-sqlite3", "sql.js", "sqlite
 const SQLITE_ALLOWED_PREFIX = "electron/local-store/";
 
 const ELECTRON_TO_SRC_ALLOWLIST = [
-  "src/brand.ts",
+  "src/brand", // normalized strips .ts — "src/brand.ts" never matched once splash.ts imported it (#3142)
   "src/project/types",
   "src/project/persistence/core",
   // Pure (DOM-free) modules the main process already shared at the public baseline (0d4f13e7c8) and later
