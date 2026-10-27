@@ -3,6 +3,7 @@ import { runTool } from "@/editor/tools";
 import { registerCompletedHouse } from "@/editor/tools/houseProtection";
 import { serialize } from "@/project/io";
 import { completedHouseProject, houseMap, HOUSE_RECT, mutateProject } from "./fixtures/completedHouse";
+import { RETIRED_COMBINED_TOWN_TILESET_ID, withRetiredEasyRpgTilesets } from "./support/retiredEasyRpgTilesets";
 
 function emptyContext() {
   const project = completedHouseProject();
@@ -31,14 +32,19 @@ describe("completed house transaction invariant", () => {
     expect(serialize(ctx.project)).toBe(before);
   });
 
-  it("catches global tree-repair spillover even when the tool edits another map", () => {
-    const ctx = { project: completedHouseProject() };
+  // 나무 짝 수리는 이제 이 도구가 타일을 바꾼 맵에만 돈다(toolRunner tileChangedMapIds — 「Event/DB/name edits must not
+  // normalize trees in this or any other map」). 다른 맵을 만드는 도구는 집 맵을 건드릴 일 자체가 없으므로, 거부 대신
+  // 집 맵이 바이트 그대로인지를 본다. 290(줄기)은 합본 마을 칸이라 그 시트 위에 둔다.
+  it("does not spill tree repair into the protected house map when the tool edits another map", () => {
+    const ctx = { project: withRetiredEasyRpgTilesets(completedHouseProject()) };
     const map = houseMap(ctx.project);
-    map.lowerTiles[7 * map.width + 3] = 290; // repair would overwrite protected upper at (3,6)
-    const before = serialize(ctx.project);
+    map.tilesetId = RETIRED_COMBINED_TOWN_TILESET_ID;
+    map.lowerTiles[7 * map.width + 3] = 290; // a global repair would overwrite protected upper at (3,6)
+    const houseBefore = structuredClone(map);
     const result = runTool(ctx, "create_map", { id: "elsewhere", name: "Elsewhere", width: 10, height: 10 });
-    expect(result.issues?.[0]?.code).toBe("protected-house-write");
-    expect(serialize(ctx.project)).toBe(before);
+    expect(result.ok, result.summary).toBe(true);
+    expect(ctx.project.maps.elsewhere).toBeDefined();
+    expect(houseMap(ctx.project)).toEqual(houseBefore);
   });
 
   it("does not allow removing metadata and then destroying the house", () => {
