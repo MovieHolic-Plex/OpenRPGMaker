@@ -1,18 +1,21 @@
 import { createRequire } from "node:module";
+import { dirname, join } from "node:path";
 import { expect, it, vi } from "vitest";
 import { installFakeDom } from "./fakeDom";
 import { renderRainBuffer } from "@/player/weather/rainBuffer";
 import { stormFlashOpacity } from "@/player/weather/weatherModel";
 import { legacyPrecipitation } from "./fixtures/runtimeLag8Legacy";
 const require = createRequire(import.meta.url);
+// Phaser 4 의 package.json "exports" 가 src/ 하위 경로를 막는다 — 패키지 폴더 절대 경로로 직접 연다.
+const phaserDir = dirname(require.resolve("phaser/package.json"));
 it("matches installed Phaser Graphics methods (including flash) without renderer-specific shortcuts", () => {
   const restore = installFakeDom({ animationFrames: "manual" });
   vi.stubGlobal("window", { devicePixelRatio: 1 });
-  const probe = require.resolve("phaser/src/device/CanvasFeatures.js");
+  const probe = require.resolve(join(phaserDir, "src/device/CanvasFeatures.js"));
   const previous = require.cache[probe];
   require.cache[probe] = { exports: {} } as any;
   try {
-    const Graphics = require("phaser/src/gameobjects/graphics/Graphics.js");
+    const Graphics = require(join(phaserDir, "src/gameobjects/graphics/Graphics.js"));
     const old = Object.create(Graphics.prototype), next = Object.create(Graphics.prototype);
     old.commandBuffer = []; next.commandBuffer = [];
     for (const kind of ["rain", "storm"] as const) for (const intensity of [0.1, 0.5, 1]) for (const time of [0, 120, 290, 4800]) {
