@@ -134,7 +134,7 @@ describe("saveSelectionAsStructureKit — 현재 맵 타일셋에만 등록", ()
       const chip = findByTestId(document.body as unknown as FakeElement, "selection-chip-save-structure");
       expect(chip).toBeTruthy();
       // 칩은 아이콘 버튼이라 글자 대신 aria-label/title 로 이름을 가진다(selectionActionChips iconButton).
-      expect(chip?.getAttribute("aria-label")).toContain("구조물로 저장");
+      expect(chip?.getAttribute("aria-label")).toContain("구조물 킷으로 저장");
 
       (chip as unknown as HTMLElement).click();
 
