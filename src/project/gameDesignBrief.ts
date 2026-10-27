@@ -2,7 +2,7 @@ import { gameDesignExecutionContext } from "./gameDesignExecution";
 import { detailedAuthoringPresetContext } from "./gameAuthoringPresets";
 import { interviewPreset, normalizeGameInterview, type GameInterview } from "./gameInterview";
 import { assert, requireRecord, requireString } from "./io/guards";
-import { getHarness } from '../harnesses/_core/registry';
+import { getHarnessContract } from '../harnesses/_core/contracts';
 import { ROMANCE_ART_DIRECTION } from '../harnesses/romance-scene/artDirection';
 
 import { GAME_BRIEF_SLOTS, GAME_PRESET_IDS, type GameBriefSlot, type GamePresetId } from "./gameDesignIds";
@@ -61,9 +61,9 @@ export function normalizeGameDesignBrief(value: unknown): GameDesignBrief {
   if (data.implementation !== undefined) {
     const raw = requireRecord('gameDesignBrief.implementation', data.implementation);
     const harnessId = requireString('implementation.harnessId', raw.harnessId);
-    const harness = getHarness(harnessId);
-    assert(Boolean(harness?.contract), '제작 하네스 계약을 읽을 수 없습니다.');
-    implementation = { harnessId, contract: harness!.contract!.normalize(raw.contract) };
+    const contract = getHarnessContract(harnessId);
+    assert(Boolean(contract), '제작 하네스 계약을 읽을 수 없습니다.');
+    implementation = { harnessId, contract: contract!.normalize(raw.contract) };
   }
   assert(!interview || interviewPreset(interview.genre, interview.secondary) === data.presetId, "인터뷰와 게임 시스템이 다릅니다.");
   let concept: GameDesignBrief["concept"];
