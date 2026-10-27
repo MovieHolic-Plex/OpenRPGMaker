@@ -1,0 +1,11 @@
+VERDICT: FAIL
+A: PASS - At 3x the clusters read as tapered rock stalactites (wide root, pointed tip, dark right edge), not bars or a comb. The isolated 8x piece is convincing. The cave1-b thin single spike is borderline (reads slightly like a crack or a lone spike), but acceptable.
+B: PASS - The roots merge into the tan ledge rim and hang into the top wall band. Nothing floats over floor, and I see no seams or holes. One exception is the stray hook at the right edge in cave1-d (see issues).
+C: FAIL - In game the pieces are much thinner and smaller than the 8x sheet suggests, mostly 1-2 px wide spikes of 6-12 px. Their pale tan sits close to the rim colour but lighter than the dark wall band, so they look slightly pasted on, with little lit/shaded modelling left at 1x. At 1x in the full maps they are barely findable (cave@1-0 about (320,630) and (260,85); cave@2-0 about (580,345) and (415,625) are tiny flecks). The cave1-d hook artifact is a concrete defect.
+D: PASS - Density is sparse, one to three per wall segment, with no uniform fringe and uneven spacing. The rhythm is fine. If anything it is a little too sparse to notice, and the same 2-3 spike cluster recurs.
+
+- cave1-d-3x: a curled hook/claw shape at about (578-592, 145-170) on the right end of the wall rim. It is not a stalactite, so it reads as a stray artifact or a bad cut-off of a 2-tile piece.
+- cave1-b-3x: the single long thin spike at about (345-360, 190-235) is only about 2 px wide at 1x and pale against the dark wall. It reads as a crack or scratch rather than a rock mass.
+- cave1-a-3x: the cluster at about (285-370, 195-230) is made of very short, thin teeth with a similar pale tone. At 3x it edges toward the "teeth" look. It is acceptable, but the root widths are inconsistent.
+- cave1-c-3x: the spikes at about (200-235, 190-235) are thin and low-contrast. The lit/shaded split is not visible at game scale.
+- cave@1-0 / cave@2-0 at 1x: the stalactites are essentially invisible at a glance. Fix: widen the roots, darken the right side and increase the lit/shaded contrast, and make them 1-2 px longer so they register at 1x.

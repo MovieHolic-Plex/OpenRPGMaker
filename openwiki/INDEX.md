@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **187쪽 / 7277KB / 약 2,133,577 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **187쪽 / 7279KB / 약 2,134,460 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -1724,7 +1724,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L172` 몬스터 세계 사람 칩 3차 — 1차 스크립트 칩 12종 재제작 (2026-10-16)
 - `L190` 몬스터 세계 사람 칩 4차 — char-gen 갤러리 4 합성 22종, ScarloxyPeople11~13 (2026-10-17)
 
-### `openwiki/harnesses/dungeon-chipset.md` — 43KB · 317줄 · ~12,967 토큰
+### `openwiki/harnesses/dungeon-chipset.md` — 46KB · 333줄 · ~13,850 토큰
 
 - `L3` 왜
 - `L13` 흐름
@@ -1745,6 +1745,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L252` 다음 판
 - `L256` gap bake handoff (2026-10-23)
 - `L311` 2026-10-27 판: 얼음굴 벽 gap-ice-r5 · 마계 바닥 theme-floors-r12 · 동굴 종유석
+  - `L324` 보류(parked) — 다음 판이 이어받을 것
 
 ### `openwiki/harnesses/dungeon-concepts-research.md` — 30KB · 180줄 · ~9,078 토큰
 
