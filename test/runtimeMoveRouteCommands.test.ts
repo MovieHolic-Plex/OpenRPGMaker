@@ -146,7 +146,8 @@ describe("runtime move route commands", () => {
     if (!mover) throw new Error("missing autonomous mover");
     const executeNext = () => {
       const beforeStep = mover.step;
-      updateAutonomousNPCs(runtimeScene, mover.moveIntervalMs);
+      // 산책 멈춤이 빈도 간격의 0.6~1.5배로 흔들린다(#3288, src/player/npcStroll.ts) — 최대치만큼 흘려야 매번 한 명령이 실행된다.
+      updateAutonomousNPCs(runtimeScene, mover.moveIntervalMs * 1.5);
       if (mover.activeMove) updateAutonomousNPCs(runtimeScene, mover.moveDurationMs);
       expect(mover.step).toBeGreaterThan(beforeStep);
     };

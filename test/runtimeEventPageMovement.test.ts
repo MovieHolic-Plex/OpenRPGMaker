@@ -83,7 +83,7 @@ describe("runtime event page movement", () => {
           repeat: false,
           moves: [
             { kind: "move", dir: "right" },
-            { kind: "move", dir: "right" },
+            { kind: "move", dir: "down" },
           ],
         },
       },
@@ -106,6 +106,8 @@ describe("runtime event page movement", () => {
     updateAutonomousNPCs(runtimeScene, mover.moveDurationMs);
     expect(mover.activeMove).toBeNull();
     expect(mover.timer).toBe(0);
+    // 같은 방향 걸음은 멈춤 없이 이어지고(#3288, src/player/npcStroll.ts) 멈춤 길이는 0.6~1.5배로 흔들린다 — 방향을 바꿔 멈춤을 만들고 배율을 1 로 고정한다.
+    mover.pauseScale = 1;
 
     updateAutonomousNPCs(runtimeScene, mover.moveIntervalMs - 1);
     expect(mover.step).toBe(1);
