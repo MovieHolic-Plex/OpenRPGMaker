@@ -1,4 +1,4 @@
-import { resolveCinematicPresentation, type CinematicPresentation, CINEMATIC_PRESENTATION_PRESETS } from '@/project/cinematicPresentation';
+import { CINEMATIC_TEXT_SIZE_MAX, CINEMATIC_TEXT_SIZE_MIN, resolveCinematicPresentation, type CinematicPresentation, CINEMATIC_PRESENTATION_PRESETS } from '@/project/cinematicPresentation';
 import type { DatabaseCinematicActions } from './databaseCinematicActions';
 import { field } from './databaseControls';
 import { el } from '@/util/dom';
@@ -43,7 +43,7 @@ export function cinematicPresentationForm(options: {
     });
     content.append(field(label, input));
   };
-  number('text', 'size', '글자 크기 (무대 px)', resolved.text.size, 8, 64);
+  number('text', 'size', '글자 크기 (무대 px)', resolved.text.size, CINEMATIC_TEXT_SIZE_MIN, CINEMATIC_TEXT_SIZE_MAX);
   number('text', 'delayMs', '글자 등장 대기 (ms)', resolved.text.delayMs, 0, 10000);
   number('text', 'revealMs', '글자 등장 시간 (ms)', resolved.text.revealMs, 0, 10000);
   number('text', 'exitMs', '글자 페이드아웃 (ms)', resolved.text.exitMs, 0, 10000);
