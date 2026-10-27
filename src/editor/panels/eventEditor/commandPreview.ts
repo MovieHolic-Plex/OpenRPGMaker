@@ -39,7 +39,7 @@ import { initialBadge } from "./recordPicker";
 import { m2CommandById } from "@/project/eventCommands/m2Catalog";
 import { pictureSlotCaption } from "./options";
 import { commandLabel } from "./commandPicker";
-import { commandSummaryParts, isSummaryIconPart } from "./commandSummary";
+import { commandSummaryParts, isSummaryIconPart, transferEditorSummary } from "./commandSummary";
 import { textBodyOf } from "@/project/io/rewriteLegacyDialogue";
 import { LETTERBOX_DEFAULT_PERCENT } from "@/project/eventCommands/cinematicStaging";
 import { planScreenEffect } from "@/player/interpreter/screenEffectPlan";
@@ -912,7 +912,7 @@ function transferStage(cmd: Extract<Command, { kind: "transfer" }>): HTMLElement
       }
     });
   }
-  stage.append(el("div", { class: "ecp-map-caption", text: `${map.name || cmd.mapId} (${cmd.x}, ${cmd.y})` }));
+  stage.append(el("div", { class: "ecp-map-caption", text: transferEditorSummary(cmd) }));
   return stage;
 }
 
