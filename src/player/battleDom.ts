@@ -75,7 +75,7 @@ import { bindEmeraldBattleSurface, stampEmeraldSurface } from "@/player/emeraldS
 import { mountEmeraldTrainerIntro } from "@/player/emeraldTrainerIntro";
 import { applyRollingHpSurvival, createRollingHpMeter, startRollingHpTicker } from "@/player/rollingHp";
 import { syncBattleScreenFilter } from "@/player/battleScreenFilter";
-import { emeraldNarrationActive, emeraldNoEscapeLine } from "@/player/emeraldBattleNarration";
+import { emeraldNarrationActive, noEscapeNoticeLine } from "@/player/emeraldBattleNarration";
 import { revealedEffectiveness, WEAKNESS_REVEAL_LABEL } from "@/battle/weaknessDiscovery";
 import { resolveBattleStaging } from "@/project/battleStaging";
 
@@ -1231,6 +1231,19 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     syncView();
   }
 
+  /** 도주 명령이 이 전투에서 막혀 있는지. 대상 선택 중 비활성은 여기 해당하지 않는다. */
+  function isBlockedEscapeButton(button: HTMLButtonElement, snapshot: BattleSnapshot): boolean {
+    if (snapshot.phase !== "actorCommand" || snapshot.canEscape) return false;
+    const testId = button.dataset.testid;
+    return testId === "actor-command-escape" || testId === "actor-command-run";
+  }
+
+  /** 문장 창에 도주 불가 이유를 띄운다. 커서를 옮기면 clearFlashLine 이 원래 질문으로 되돌린다. */
+  function announceBlockedEscape(snapshot: BattleSnapshot): void {
+    directorState = { ...commandPromptState(snapshot, noEscapeNoticeLine(snapshot)), flash: true };
+    syncView();
+  }
+
   function handleConfirm(snapshot: BattleSnapshot): boolean {
     if (snapshot.phase === "targetSelect" && snapshot.targetSelection?.side === "enemy") {
       // 커서가 「뒤로」 행에 있으면(화살표 순환 또는 포커스 이동으로) 확인키는 그 행을 누른다.
@@ -1254,11 +1267,9 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     // 확인키는 거기서 아무 일도 하지 않고 거절음만 울린다. 메뉴는 열린 채로 둔다.
     if (button.dataset.battleCommandInert === "true") {
       playBattleCue("command-cancel");
-      // 3세대처럼 도망갈 수 없는 이유를 문장 창에 말한다(회색 줄만 있으면 왜 안 되는지 알 수 없다). 커서를 옮기면 원래 안내로 돌아온다.
-      if (button.dataset.testid === "actor-command-run" && snapshot.phase === "actorCommand" && !snapshot.canEscape) {
-        directorState = { ...commandPromptState(snapshot, emeraldNoEscapeLine(snapshot)), flash: true };
-        syncView();
-      }
+      // 회색 줄만 있으면 왜 안 되는지 알 수 없다. 클래식은 명령 중에 문장 창을 접으므로
+      // announceBlockedEscape 가 data-battle-notice 로 배너를 다시 편다. 커서를 옮기면 원래 안내로 돌아온다.
+      if (isBlockedEscapeButton(button, snapshot)) announceBlockedEscape(snapshot);
       return true;
     }
     button.click();
@@ -1307,7 +1318,14 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       : null;
     if (!button) return;
     // 비활성 행은 눌러도 확정이 아니다 — 거절음으로 갈라 준다.
-    playBattleCue(button.dataset.battleCommandInert === "true" ? "command-cancel" : "command-confirm");
+    // 키보드 확인(handleConfirm)과 같이, 막힌 도주를 클릭해도 이유를 문장 창에 말한다.
+    if (button.dataset.battleCommandInert === "true") {
+      playBattleCue("command-cancel");
+      const snap = options.runtime.snapshot();
+      if (isBlockedEscapeButton(button, snap)) announceBlockedEscape(snap);
+      return;
+    }
+    playBattleCue("command-confirm");
   });
 
   /** 시퀀서가 아직 재생하지 않은 stateAdded/stateRemoved 를 되돌린 배지 목록(표시 전용). */

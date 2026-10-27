@@ -931,6 +931,10 @@ export function applyBattleDirectorState(
   snapshot: BattleSnapshot
 ): void {
   root.dataset.battleDirectorStep = state.step;
+  // 클래식 스킨은 명령 단계에서 문장 창을 접는다. 도주 불가 안내는 그 창이 유일한 자리라
+  // 잠깐 다시 편다(01-scene-base.css · _rm2000.css 의 data-battle-notice).
+  if (state.flash) root.dataset.battleNotice = "true";
+  else delete root.dataset.battleNotice;
   root.dataset.battlePhase = snapshot.phase;
   root.dataset.battleFlow = snapshot.battleFlow;
   // 결과 클래스는 연출(비트)이 전부 끝나고 디렉터가 result 단계에 진입했을 때만 붙인다.
