@@ -255,4 +255,26 @@ describe("shipped catalogs", () => {
     expect(createTranslator(ja).translate(hint)).toBe(ja[hint]);
     expect(createTranslator(zh).translate(hint)).toBe(zh[hint]);
   });
+
+  it("calls a dragged rectangle a range in Japanese, and keeps region ids as リージョン", () => {
+    // 「영역」은 맵에서 드래그한 사각형(선택 도구 V, 채우기·복사·AI 작업)이다.
+    // 맵에 칠하는 지역 번호만 リージョン 이다. 도구 이름이 リージョン選択 이면 지역 번호 도구로 읽힌다.
+    const regionIds = "맵에 칠해 둔 지역 번호를 밟았을 때 이벤트를 부르거나 스위치를 켜도록 연결합니다. 지역 번호를 칠하는 것은 맵 편집 화면에서 합니다.";
+    expect(ja["영역"]).toBe("範囲");
+    expect(ja["영역 선택"]).toBe("範囲選択");
+    expect(ja["영역 선택"]).toBe(ja["영역 선택 — 놓으면 AI 작업·복사·지우기·구조물로 저장"].split(" — ")[0]);
+    expect(ja["선택 영역"]).toBe("選択範囲");
+    expect(ja["영역 채우기"]).toBe("範囲を塗りつぶす");
+    expect(ja["영역 표시"]).toBe("範囲を強調");
+    expect(ja["영역 표시"]).not.toBe(ja["영역 보기"]);
+    expect(ja[regionIds]).toContain("リージョン番号");
+    const japanese = createTranslator(ja);
+    const rectangle = Object.entries(ja).filter(([source]) => source.includes("영역"));
+    expect(rectangle.length).toBeGreaterThan(0);
+    for (const [source, target] of rectangle) {
+      expect(target, source).not.toContain("リージョン");
+      expect(japanese.translate(source), source).toBe(target);
+    }
+    expect(japanese.translate(regionIds)).toContain("リージョン");
+  });
 });
