@@ -68,7 +68,8 @@ function clearMapCall(name = "clear_map"): ProposedCall {
 
 /** run operation 은 **안정 참조**여야 한다 — 매번 새 객체면 소유권 검사가 전부 실패한다. */
 function sessionStub() {
-  const operation = { signal: { aborted: false } };
+  // 결정 모달은 진짜 AbortSignal 계약(throwIfAborted·abort 리스너)을 쓴다 — 가짜 객체 대신 실제 신호를 준다.
+  const operation = { signal: new AbortController().signal };
   const project = createBlankProject();
   return {
     isDraftReviewApproved: () => true,
