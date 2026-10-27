@@ -5,6 +5,18 @@
 
 <!-- releases -->
 
+## 0.353.1 — 2026-10-27
+
+### 수정
+
+- **input** — read a diagonal gamepad stick inside the square dead zone (#3730) (`f4940dd`)
+- **ci** — slice-4 decisions — enemy/species transparent, Pi outcome keeps response-final/blocked, layer-1 paint keeps layer 2 (#3846) (`c094d63`)
+- **css** — route every font stack through the role tokens (#3761) (`70cd648`)
+
+### 테스트
+
+- **ci** — slice-5 drift fixes — 60 files green, 5 product fixes (#3822) (`cb32080`)
+
 ## 0.353.0 — 2026-10-27
 
 ### 기능
