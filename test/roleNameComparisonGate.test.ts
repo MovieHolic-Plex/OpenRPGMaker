@@ -59,9 +59,7 @@ const ALLOWED = new Map<string, { readonly matches: number; readonly why: string
   // 프롬프트 예시 이름 고르기 휴리스틱 — 행동 게이트가 아니다(스펙 "제외: turnGuide.ts:60").
   // 한 줄에 4 개(prop/terrain/water/fence)가 몰려 있다.
   ["src/ai/turnGuide.ts", { matches: 4, why: "프롬프트 형식 예시 선택 휴리스틱" }],
-  // 벤치마크 정답지 — 선언 표(시맨틱·하네스)를 직접 읽어 "역할이 이렇게 적혀 있다"는
-  // 사실을 검증한다. 능력으로 바꾸면 검증 대상이 사라진다. furniture 는 Task 10 참고.
-  ["src/benchmark/interior/groundTruth.ts", { matches: 8, why: "선언 표의 role 표기 자체를 검증하는 정답지" }],
+  // (src/benchmark/interior/groundTruth.ts 항목은 뺐다 — 그 파일은 공개 기준 커밋 0d4f13e7c8(2026-10-09)에 없다.)
   // BuildPaletteGroupRole(wall/door/window/roof/...) 프리셋 키 — TileGroupRole 이 아니다.
   ["src/editor/panels/buildPaletteCore.ts", { matches: 1, why: "빌드 팔레트 프리셋 키(다른 role 축)" }],
   // roleLabel(:613) — 역할 8 종을 한국어 표시 문자열로 바꾸는 switch. 능력이 아니라
@@ -78,14 +76,14 @@ const ALLOWED = new Map<string, { readonly matches: number; readonly why: string
   // :666 팔레트 레이어 판정(비교 3 개) + :638 paletteRoleAppliesToCell 의 switch(case 8 개).
   // 후자는 레이어가 아니라 "이 팔레트 역할이 스탬프의 이 행에 미치는가"를 묻는 별개 질문이며
   // 현행 능력 8 필드에 대응 항목이 없다. A-3 후보.
-  ["src/editor/tools/mapTools.ts", { matches: 11, why: "팔레트 레이어 판정 + 행별 적용 범위 switch — 능력 필드 없음, A-3 후보" }],
+  ["src/editor/tools/mapTools.ts", { matches: 12, why: "팔레트 레이어 판정 + 행별 적용 범위 switch + :506 키큰 풀·소품 칸 판정(이름 정규식과 짝) — 능력 필드 없음, A-3 후보" }],
   // :351/:503/:507/:1288 레이어·발자국 판정 + :1217 문법 없는 prop 가방 판정(`!== "prop"`)
   // + :358 paletteGroupRole 의 switch(PaletteSlotRole → TileGroupRole 매핑, case 5 개).
   // 뒤 두 형태는 === 만 보던 판정에서 빠져나갔다. 매핑은 능력 조회가 아니라 두 enum 사이의
   // 번역표이고, A-3 에서 두 enum 이 합쳐지면 사라진다.
   ["src/editor/tools/placementTools.ts", { matches: 13, why: "레이어/발자국 판정 + prop 가방 판정 + 두 enum 번역표, A-3 후보" }],
   // 어휘 선택 — "이 역할의 그룹을 골라라"는 질의이며 능력 조회가 아니다.
-  ["src/editor/tools/v3/constructionTools.ts", { matches: 1, why: "역할로 그룹을 고르는 질의" }],
+  ["src/editor/tools/v3/constructionTools.ts", { matches: 2, why: "역할로 그룹을 고르는 질의(벽 그룹 목록, 물 애니 지형 그룹)" }],
   // Roof completeness compares authored wall/roof groups, not collision/render capabilities.
   // Like constructionTools and benchmark groundTruth, substituting layerHome would mix in non-roof props.
   ["src/project/lint/postTileVerify.ts", { matches: 2, why: "저작 wall/roof 그룹으로 지붕 덮임을 검증하는 질의" }],
@@ -94,6 +92,31 @@ const ALLOWED = new Map<string, { readonly matches: number; readonly why: string
   // terrainTag 를 0(NORMAL)으로 강제 — 현행 능력 필드는 terrainTag?: "water" 뿐이라
   // "terrain → 0" 을 표현할 수 없다. terrainTag 가 number 로 열리는 A-3 후보.
   ["src/project/tilesetHarness/themePacks.ts", { matches: 2, why: "terrainTag=0 강제 — 능력 필드가 water 만 표현, A-3 후보" }],
+  // ── 2026-10-27 검토(공개 기준 이후 늘어난 53건). 순수 「이 칸이 물인가」 4건(stampPlaceRunner·startRoutePaint·
+  //    gameCheck/romance)은 능력 조회 isWaterRole(tileRoles.ts)로 바꿨다. 아래는 능력으로 접히지 않는 것만 남긴다.
+  // 다른 role 축 — 타일 역할이 아니다.
+  ["src/editor/gothic/composer.ts", { matches: 1, why: "고딕 빌더가 놓은 조각의 종류(placed.role) — 다른 축" }],
+  ["src/editor/tools/gothicPlaceTools.ts", { matches: 1, why: "고딕 빌더 배치 결과 종류(placed.role) — 다른 축" }],
+  ["src/editor/tools/wizardingSpaceTools.ts", { matches: 1, why: "마법 학교 빌더 배치 결과 종류(placed.role) — 다른 축" }],
+  ["src/editor/wizarding/builder.ts", { matches: 1, why: "마법 학교 빌더 배치 결과 종류(placed.role) — 다른 축" }],
+  ["src/editor/openingImageGeneration.ts", { matches: 1, why: "오프닝 합성 레이어 역할(background/actor/prop) — 다른 축" }],
+  ["src/editor/tools/cinematicTools.ts", { matches: 1, why: "오프닝 합성 레이어 역할 인자 검증 — 다른 축" }],
+  ["src/editor/tools/openingAnimaticTools.ts", { matches: 1, why: "오프닝 합성 레이어 역할 — 다른 축" }],
+  ["src/project/rpgmakerMv/tilesetPreset.ts", { matches: 4, why: "MV 프리셋 평타일 role 문자열을 TileGroupRole 로 옮기는 번역표" }],
+  // 구조 킷의 AI 선언 역할(kit.ai.role) — 킷을 분류해 고르는 질의이며 타일 능력 조회가 아니다.
+  ["src/editor/propRecommendations.ts", { matches: 1, why: "소품 추천에서 kit.ai.role 선언으로 우선순위를 주는 질의" }],
+  ["src/editor/tools/sharedObjectTools.ts", { matches: 1, why: "kit.ai.role 선언으로 소품 킷만 고르는 질의" }],
+  ["src/editor/tools/tilesetReferenceTools.ts", { matches: 1, why: "kit.ai.role 선언으로 지형 킷만 고르는 질의" }],
+  ["src/project/groundSupport.ts", { matches: 2, why: "던전 킷 kit.ai.role 선언으로 받침 종류를 고르는 질의" }],
+  // 역할로 그룹·재료를 고르거나 표시하는 질의 — 능력 8 필드에 대응 항목이 없다.
+  ["src/editor/tools/interiorPresetExamples.ts", { matches: 2, why: "재료(지형·벽) 그룹 이름을 모으는 질의" }],
+  ["src/harnesses/object-gate/node/rereview.ts", { matches: 2, why: "재검수 그림의 styleKind(water/wall/ground) 번역 — 관문 판정 입력" }],
+  ["src/project/objectFootprint.ts", { matches: 2, why: "벽/지붕 한국어 표시 라벨" }],
+  ["src/project/tileVocabulary.ts", { matches: 7, why: "채울 수 없는 재료의 안내 도구 문구(notFillableRoute switch) — 표시용" }],
+  // 벽·지붕(·물) 칸 판정 — structure 능력은 building/castle 까지 포함해 답이 다르다. A-3 후보.
+  ["src/editor/tools/tilesetObjectTools.ts", { matches: 2, why: "아래 칸이 벽·지붕인가 — structure 와 답이 다름, A-3 후보" }],
+  ["src/editor/stampPlaceRunner.ts", { matches: 14, why: "벽 재료 고르기 + 벽·지붕·물 칸 보호(이름 정규식과 짝) — structure 와 답이 다름, A-3 후보" }],
+  ["src/project/staging/doorCells.ts", { matches: 3, why: "키트 문 칸에서 바닥·건물·소품 그림을 거르는 판정 — 능력 필드 없음" }],
 ]);
 
 /**

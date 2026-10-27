@@ -106,3 +106,11 @@ export const LEGACY_ROLE_CAPABILITIES: Record<string, RoleCapabilities> = {
 export function roleCapabilities(_tileset: TilesetDef, roleId: string): Readonly<RoleCapabilities> {
   return LEGACY_ROLE_CAPABILITIES[roleId] ?? BASE;
 }
+
+/**
+ * 이 역할의 칸이 물인가 — 능력 표의 terrainTag 로 판정한다. 칸 설명(tileMeta.role)으로 물을 세는
+ * 호출자가 역할 이름 "water" 를 직접 비교하는 대신 쓴다(A-2 게이트, test/roleNameComparisonGate.test.ts).
+ */
+export function isWaterRole(roleId: string | undefined): boolean {
+  return roleId !== undefined && Object.hasOwn(LEGACY_ROLE_CAPABILITIES, roleId) && LEGACY_ROLE_CAPABILITIES[roleId].terrainTag === "water";
+}
