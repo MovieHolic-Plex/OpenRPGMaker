@@ -5,6 +5,21 @@
 
 <!-- releases -->
 
+## 0.351.6 — 2026-10-27
+
+### 수정
+
+- **i18n** — call a dragged map rectangle a range in Japanese (#3716) (`8f632f5`)
+
+### 테스트
+
+- drift slice 3 — 60 vitest files green on CI, 4 product fixes (#3739) (`952aadd`)
+- **ci** — fix timeout-tagged vitest files, slice to-00 (33/38 green) (#3725) (`8374a95`)
+
+### 잡무
+
+- **ci** — drop two files ci-full 40357882117 saw passing from the test baseline (633 → 631) (#3726) (`be5176b`)
+
 ## 0.351.5 — 2026-10-27
 
 ### 수정
