@@ -150,7 +150,9 @@ export const PROFILES: Record<BeodeulDungeonType, TypeProfile> = {
   otherworld: {
     ...GRAMMAR.otherworld,
     face: { h3: [TK("otherworld-face-3h"), C("face-cave-3h")], h2: [TK("otherworld-face-2h"), C("face-cave-2h")] },
-    floor: { base: [TK("otherworld-floor"), M("ground-slagg")], patches: [], mix: true, mixCells: [1, 5, 7, 10, 14, 17] },   // 분홍 점이 가장 적은 칸(6~7점)만 — 칸 13 붉은 사선 금·점 많은 칸은 「분홍 소금·후추」로 읽혔다(2026-10-25 floor VQA r1)
+    // 마계 판석 밭(theme-floors-r7): 몸통 4×4 키트를 칸 위치로 감아 깐다(섞지 않는다) — 64px 마다 되풀이되는 이음 없는 판석·줄눈·빛 틈.
+    //   옛 사본(섞음 키트)은 키트 태그 「섞음」 이 있어 그대로 섞인다. 옛 화산 재 바닥 물러섬은 mixCells 없이 칸 무늬 그대로.
+    floor: { base: [TK("otherworld-floor"), M("ground-slagg")], patches: [] },
     ceiling: ["beodeul_dungeon_ceiling_void"],
   },
 };

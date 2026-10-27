@@ -4394,6 +4394,15 @@
     "other.ground"
    ],
    "lead": "r5 반려(16px 줄눈 격자·납작한 보라 덩이) → 둘레 무특징 잔결, 금은 칸 안에서만(빛 턱·그늘), 보라 빛 1~3화소, 판 볼록 덩이."
+  },
+  "theme-floors-r7": {
+   "module": "src/harnesses/dungeon-chipset/rounds/theme_floors_r7.py",
+   "wave": "theme_arcane",
+   "title": "던전 테마 바닥 다시 그림 theme-floors-r7",
+   "items": [
+    "other.ground"
+   ],
+   "lead": "r6 반려(칸마다 같은 금+점 격자·카펫 잔점) → 64×64 감김 판석 밭(판마다 기울기)·검은 줄눈·줄눈에서 새는 보라 빛, 16칸으로 잘라 몸통 변형."
   }
  }
 }

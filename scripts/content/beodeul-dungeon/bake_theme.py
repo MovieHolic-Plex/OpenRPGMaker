@@ -276,13 +276,18 @@ def bake_pyr_sand_trap(st, p, line, meta, origin):
 def bake_auto_floor(gid, kid, title, desc, rune_kid=None):
     def run(st, p, line, meta, origin):
         at = next(iter(meta["autotiles"].values()))
-        tags = ["주제", "바닥", "floor", "섞음"] + themes_of(p["item"])[2:]
+        tags = ["주제", "바닥", "floor"] + ([] if meta.get("fieldOrder") else ["섞음"]) + themes_of(p["item"])[2:]
         def cmeta(m):
             s_ = G.mask_sides(m)
             return G.cm(f"버들항 던전 · {title}" + (f"({s_} 열림)" if s_ else " 몸통"), f"{desc} 오토타일(마스크 {m}). 걸음. 그룹 `{gid}`.", tags, "passable", "lower")
         g = G.bake_autotile(st, at, gid, f"버들항 던전 {title}", origin, cmeta)
         bodies = [g["variantMap"]["255"]] + [b for b in (g.get("interiorVariants") or [[]])[0] if b != g["variantMap"]["255"]]
         cols = 6 if len(bodies) >= 12 else len(bodies)
+        if meta.get("fieldOrder"):
+            # 판석 밭(theme-floors-r7 마계 바닥): 몸통 칸을 밭 자리 순서(4×4)로 — 시공기가 칸 위치로 감아 깔면(mix 없음) 밭이 이음 없이 이어진다.
+            fo = meta["fieldOrder"]
+            allb = [g["variantMap"]["255"]] + list((g.get("interiorVariants") or [[]])[0][1:])
+            bodies, cols = [allb[fo.index(i)] for i in range(len(fo))], int(len(fo) ** 0.5)
         rows_ = [bodies[i:i + cols] for i in range(0, len(bodies), cols)]
         rows_ = [r for r in rows_ if len(r) == cols]
         kits = [G.kit(f"{KP}{kid}", f"버들항 던전 · {title} 몸통 {cols}×{len(rows_)}(섞음)", cols, len(rows_), blank(cols, len(rows_)), rows_,
