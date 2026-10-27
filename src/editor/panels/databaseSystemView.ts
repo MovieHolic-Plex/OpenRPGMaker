@@ -73,7 +73,8 @@ import type {
   TypeChartRecord,
 } from "@/project/types";
 import { el } from "@/util/dom";
-import { playAudioCommand, stopAudioCommand } from "@/player/audio";
+import { playAudioCommand, stopAudioChannel, stopAudioCommand } from "@/player/audio";
+import { registerDatabasePreview, setDatabasePreviewsActiveIn } from "./databasePreviewLifecycle";
 import { DEFAULT_MENU_SKIN_ID, listMenuSkinIds, MENU_SKINS, resolveMenuSkinId } from "@/player/menuSkins/registry";
 import type { MenuSkinId } from "@/player/menuSkins/types";
 import { calculatePlaySurfaceScale } from "@/player/playSurfaceScale";
@@ -328,8 +329,12 @@ function activateSystemSection(slug: SystemSectionSlug, host: HTMLElement, nav: 
   }
   sectionHost.scrollTop = 0;
   for (const section of Array.from(sectionHost.querySelectorAll<HTMLElement>(".db-system-section"))) {
-    section.hidden = section.dataset.systemSection !== slug;
+    const show = section.dataset.systemSection === slug;
+    if (!show) setDatabasePreviewsActiveIn(section, false);
+    section.hidden = !show;
   }
+  const shown = sectionHost.querySelector<HTMLElement>(`[data-system-section="${slug}"]`);
+  if (shown) setDatabasePreviewsActiveIn(shown, true);
 }
 
 /**
@@ -3549,6 +3554,12 @@ function titleScreenWorkbenchPreview(
   });
 
   const musicId = titleScreen.musicResourceId;
+  let owned = false;
+  const stopOwned = (): void => {
+    if (!owned) return;
+    owned = false;
+    stopAudioChannel("bgm", 0);
+  };
   const play = el("button", {
     class: "btn small",
     text: "BGM 재생",
@@ -3558,7 +3569,9 @@ function titleScreenWorkbenchPreview(
       click: () => {
         const current = store.getCurrent();
         const resourceId = current.system.titleScreen?.musicResourceId;
-        if (resourceId) playAudioCommand({ resourceId, loop: true }, current);
+        if (!resourceId) return;
+        owned = true;
+        playAudioCommand({ resourceId, loop: true }, current);
       },
     },
   });
@@ -3569,6 +3582,7 @@ function titleScreenWorkbenchPreview(
     dataset: { testid: "db-title-bgm-stop" },
     on: {
       click: () => {
+        owned = false;
         stopAudioCommand();
       },
     },
@@ -3596,6 +3610,7 @@ function titleScreenWorkbenchPreview(
     ],
   });
   titleStageRefreshers.set(preview, refreshStage);
+  registerDatabasePreview(preview, { suspend: stopOwned, resume: () => undefined });
   return preview;
 }
 
