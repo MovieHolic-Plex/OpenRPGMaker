@@ -1201,6 +1201,10 @@ SQLite 저장소를 자동 변경하는 이관은 수행하지 않는다.
   `주인공에게 30 피해!`(팝업은 `+30`) 였다 — `impactLine` 이 `rolled > 0` 을 피해로 먼저 판정했기 때문이다.
   이제 회복 여부는 부호가 아니라 **타임라인 kind** 로 정해지고, 메시지는 `MP를 30 회복했다!` 처럼 자원을 밝힌다.
   팝업도 MP 회복은 `MP +30` 으로 구분한다. 회귀: `test/battleRecoveryResourceDisplay.test.ts`.
+  상태만 바꾸는 약(해독초·각성초·맑은 종)은 HP/MP 가 그대로면 healing 엔트리를 남기지 않는다.
+  0 회복 줄이 있으면 화면이 「효과가 충분하지 않았다」 또는 파티 약의 「합계 0 회복했다」로 읽고, 다음 줄에서 상태가 풀렸다고 말한다.
+  상태가 실제로 바뀌면 사용 선언과 상태 문장만 남긴다. 대상 전원이 HP·MP·상태 모두 그대로일 때만 무효 행동 한 줄을 남겨 효과가 충분하지 않았다고 말한다.
+  회귀: `test/battleStatusItemMessage.test.ts`.
 - **상태 유지 회복(`stateRecovery`)도 healing 이다.** `feedbackFromTimeline` 이 kind 를 healing 로 분류하지
   않으면 양수 회복량이 피해로 재생되어 팝업 `-8` / HP 50→42 / 메시지 `8 회복했다` 가 한 화면에 겹친다.
 - **인트로 배너는 커버가 걷힌 뒤에 뜬다.** `.battle-message-window` 의 `rm2000-banner-in` 지연은
