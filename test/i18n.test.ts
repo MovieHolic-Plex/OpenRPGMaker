@@ -219,6 +219,18 @@ describe("shipped catalogs", () => {
     expect(createTranslator(en).translate("하위 3")).toBe("3 sub");
   });
 
+  it("uses a singular English count for one map event and one door", () => {
+    // 맵 트리 메타는 「20×15 · 이벤트 1개 · 문 1개」를 조각으로 번역한다.
+    // 한 줄로 붙으면 `{0}×{1} · 이벤트 {2}` 가 개수를 삼켜 "Events 1" 이 된다.
+    const translator = createTranslator(en);
+    expect(translator.translate("이벤트 1개")).toBe("1 event");
+    expect(translator.translate("이벤트 2개")).toBe("2 events");
+    expect(translator.translate("이벤트 0개")).toBe("0 events");
+    expect(translator.translate("문 1개")).toBe("1 door");
+    expect(translator.translate("문 2개")).toBe("2 doors");
+    expect(translator.translate("문 0개")).toBe("0 doors");
+  });
+
   it("calls terrain reachability a passability preview, not vehicle traffic or a corridor", () => {
     // 지형 도구의 통행 미리보기는 시작 위치에서 걸어 닿는 땅을 칠한다. 차 흐름(traffic)도, 복도(passage)도 아니다.
     const sentence = "경사로·기물, 지형 설계, 통행 미리보기는 아래 도구에서 고릅니다.";
