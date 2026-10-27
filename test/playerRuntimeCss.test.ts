@@ -200,7 +200,8 @@ describe("exported player runtime CSS", () => {
     // Given: the player-owned aggregator and both host entrypoints.
     const aggregator = await readFile(resolve("src/styles/runtime/index.css"), "utf8");
     const forwarder = await readFile(resolve("src/styles/runtime/playerRuntime.css"), "utf8");
-    const editorEntry = await readFile(resolve("src/styles/index.css"), "utf8");
+    // 에디터는 런타임 시트를 지연 로드한다(src/app/runtimeStyles.ts → runtimeStylesheet.ts, 공개 기준선부터).
+    const editorEntry = await readFile(resolve("src/app/runtimeStylesheet.ts"), "utf8");
     const exportEntry = await readFile(resolve("src/player/player.css"), "utf8");
 
     // When: import order is read from source rather than inferred from a repository grep.
@@ -209,7 +210,7 @@ describe("exported player runtime CSS", () => {
     // Then: the closure is explicit, ordered, unique, shared, and never pulls editor core into export.
     expect(imports).toEqual(RUNTIME_IMPORTS);
     expect(new Set(imports).size).toBe(imports.length);
-    expect(editorEntry).toContain('@import "./runtime/index.css";');
+    expect(editorEntry).toContain('import "@/styles/runtime/index.css";');
     expect(forwarder.trim()).toBe('@import "./index.css";');
     expect(exportEntry).toContain('@import "../styles/runtime/playerRuntime.css";');
     expect(exportEntry).not.toContain("../styles/index.css");

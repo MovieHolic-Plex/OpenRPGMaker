@@ -33,8 +33,16 @@ const noopActions: PlayerStatusMenuActions = {
   onToTitle: () => undefined,
 };
 
+/** 전투가 있는 게임으로 만든다 — 전투 없는 게임은 첫 화면이 파티 개요 대신 이야기 개요다(combatPresence, #3660). */
+function withCombat<T extends ReturnType<typeof createBlankProject>>(project: T): T {
+  const map = project.maps[project.startMapId]!;
+  map.encounterRate = 30;
+  map.troopIds = [project.database.troops[0]!.id];
+  return project;
+}
+
 function render(skin: MenuUiStyle | undefined, mode: "main" | "function" = "main", selectedCommand: StatusMenuRailId = "items") {
-  const project = createBlankProject();
+  const project = withCombat(createBlankProject());
   if (skin) project.system.menuUiStyle = skin;
   return renderWithFakeDom(() => renderPlayerStatusMenu({
     project,
