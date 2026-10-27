@@ -27,9 +27,11 @@ function projectWithDocuments(docs: TilesetReferenceCategory[] | undefined): Pro
   const project = createBlankProject();
   const tilesetId = Object.keys(project.tilesets)[0]!;
   const tileset = project.tilesets[tilesetId]!;
+  // 첫 타일셋(버들항)은 번들 참고문서를 들고 태어난다 — 「문서 없음」은 그 필드를 실제로 뺀 모양이어야 한다.
+  const { referenceDocuments: _bundled, ...withoutDocuments } = tileset;
   project.tilesets[tilesetId] = docs === undefined
-    ? { ...tileset }
-    : { ...tileset, referenceDocuments: docs };
+    ? withoutDocuments
+    : { ...withoutDocuments, referenceDocuments: docs };
   return project;
 }
 
