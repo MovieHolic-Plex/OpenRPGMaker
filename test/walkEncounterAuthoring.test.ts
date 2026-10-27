@@ -179,7 +179,10 @@ it("rechecks map locks for save and delete without creating a history entry", ()
   const edit = beginWalkEncounter(draft.mapId, draft.region, true);
   resetMapEditHistory();
   const before = structuredClone(store.getCurrent());
+  // 잠긴 맵 흉내: 안내문도 함께 준다 — mapEditLockNotice 는 모듈 안의 canEditMap 을 직접 부르고, 팀 협업이 꺼진
+  // 뒤(#3201)에는 빈 문자열을 돌려줘 currentDraftError 가 막지 않는다. 잠긴 맵에서 실제로 나오는 문구로 흉내 낸다.
   vi.spyOn(locks, "canEditMap").mockReturnValue(false);
+  vi.spyOn(locks, "mapEditLockNotice").mockReturnValue("다른 사용자님이 편집 중입니다.");
   expect(applyWalkEncounter(edit).ok).toBe(false);
   expect(applyWalkEncounter(edit, "delete").ok).toBe(false);
   expect(store.getCurrent()).toEqual(before);

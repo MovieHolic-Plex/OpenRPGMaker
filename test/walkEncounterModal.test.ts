@@ -144,7 +144,10 @@ it("Escape closes only the top modal and restores the opener without mutations",
 
 it("keeps a stale or newly locked modal open with an error and makes no mutation", () => {
   open(); chooseFirstGroup();
+  // 잠긴 맵 흉내: canEditMap 과 안내문 둘 다 바꾼다. mapEditLockNotice 는 모듈 안에서 canEditMap 을 직접 불러
+  // 네임스페이스 스파이를 보지 못하므로(#3201 뒤 안내가 비면 막지 않는다), 잠긴 맵에서 실제로 나오는 문구를 준다.
   vi.spyOn(locks, "canEditMap").mockReturnValue(false);
+  vi.spyOn(locks, "mapEditLockNotice").mockReturnValue("다른 사용자님이 편집 중입니다.");
   const before = structuredClone(store.getCurrent());
   node("walk-encounter-save").click();
   expect(node("walk-encounter-error").textContent).not.toBe("");
@@ -227,7 +230,8 @@ it("reveals the correct group after DB open and restores the same pending draft 
   node("walk-encounter-edit-group-0").click();
   await opened;
   expect(document.querySelector('[data-testid="walk-encounter-modal"]')).toBeNull();
-  expect(modalStackDepthForTest()).toBe(0);
+  // 걷기 전투 창은 층에서 빠지고, 창 모드로 열린 자료집 하나만 modalStack 에 있다(databaseModal syncModalLayer).
+  expect(modalStackDepthForTest()).toBe(1);
   expect(selectedRecordIdForSession("troops")).toBe(id);
   expect(document.querySelector(`[data-testid="db-record-row-${id}"]`)).not.toBeNull();
   const restored = nextAddedNode("walk-encounter-modal");
