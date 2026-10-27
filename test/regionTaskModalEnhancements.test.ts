@@ -6,7 +6,7 @@ import {
   closeRegionTaskModal,
   openRegionTaskModal,
 } from "@/editor/panels/regionTaskModal";
-import { __clearPendingRegionApplyForTest, setPendingRegionApply } from "@/editor/regionTask/pendingRegionApply";
+import { __clearPendingRegionApplyForTest, getPendingRegionApply, setPendingRegionApply } from "@/editor/regionTask/pendingRegionApply";
 import { runDirectInteriorRoomDraft } from "@/editor/regionTask/runDirectRoomDraft";
 import type { RegionTaskResult } from "@/editor/regionTask/runRegionTask";
 import { createBlankProject } from "@/project/defaults";
@@ -344,9 +344,13 @@ describe("quota-independent interior entry", () => {
     await flush();
 
     expect(aiRun).not.toHaveBeenCalled();
-    expect(findByTestId(root, "region-task-room-controls")).not.toBeNull();
-    expect(findByTestId(root, "region-task-room-checkpoint-preview")?.textContent).toContain("완성 실내 미리보기");
-    expect(findByTestId(root, "region-task-room-checkpoint-5")?.classList.contains("is-selected")).toBe(true);
+    // 직접 실내 초안은 손 도트 실내 v5(atlas_biome_interior)로 짓는다 — 옛 villager-room-v1(EasyRPG 실내) 파이프라인의
+    // 레이어 체크포인트·방별 재생성 줄은 그 파이프라인과 함께 빠졌다(PR #2335 이후 기본 프로젝트에는 그 칩셋이 없다).
+    const pending = getPendingRegionApply();
+    expect(pending).not.toBeNull();
+    const added = Object.values(pending!.clippedProject.maps).filter((map) => !base.maps[map.id]);
+    expect(added.map((map) => map.tilesetId)).toEqual(["atlas_biome_interior"]);
+    expect(added[0]!.events.some((event) => event.name === "출구")).toBe(true);
     // 사전검사를 통과했으면 그 사실을 화면에 쓰지 않는다(초록 체크 줄 없음).
     expect(findByTestId(root, "region-task-checkpoint-timeline")?.textContent ?? "").not.toContain("게임플레이 사전검사");
     // 구조 제안(실내·맵 추가)은 타일만 떼어내면 문·맵 연결이 끊기므로 부분 적용을 제공하지

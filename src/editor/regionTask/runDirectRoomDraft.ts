@@ -3,21 +3,12 @@ import {
   setAgentGhostPreviewHidden,
 } from "@/editor/agentGhostPreview";
 import { cloneDetachedDraft } from "@/editor/detachedDraftMemory";
-import {
-  buildHouseInteriorPlan,
-  createHouseDoorEvent,
-} from "@/editor/houseInteriors";
-import {
-  advanceRoomDraft,
-  startInteriorRoomDraft,
-} from "@/editor/roomHarness/facade";
-import type {
-  InteriorRoomPlan,
-  InteriorThemeModifier,
-} from "@/editor/interiorRoomPipeline";
+import { createHouseDoorEvent } from "@/editor/houseInteriors";
+import type { InteriorThemeModifier } from "@/editor/interiorRoomPipeline";
+import { runTool } from "@/editor/tools";
 import { canMove, inBounds, isPassable } from "@/project/collision";
 import { store } from "@/project/store";
-import type { Command, GameMap, MapId, Project } from "@/project/types";
+import type { GameEvent, GameMap, MapId, Project } from "@/project/types";
 import { genId } from "@/util/id";
 import type { RegionRect } from "./clipToRegion";
 import {
@@ -67,14 +58,29 @@ const DEFAULT_DEPS: DirectInteriorRoomDraftDeps = {
   applyProject: applyRegionProjectWithHistory,
 };
 
+/**
+ * 직접 실내 초안은 손 도트 실내 v5(atlas_biome_interior)로 짓는다 — 공용 실내 칩셋은 v5 하나다(2026-09-29 hard rule).
+ * 예전에는 villager-room-v1 파이프라인(옛 EasyRPG 실내 칩셋)으로 지어서, 그 칩셋이 기본 프로젝트에서 빠진 뒤(#2335)
+ * 새 프로젝트에서 「AI 없이 실내」 버튼이 늘 실패했다. 방 구성은 build_hand_interior_room 의 방 종류(roomKinds)다.
+ */
+const HAND_INTERIOR_TILESET_ID = "atlas_biome_interior";
 const PRESET_CONFIG: Record<DirectInteriorPresetId, {
   readonly label: string;
-  readonly scale: "cottage-l" | "cottage3" | "mansion";
-  readonly program: "dwelling" | "inn" | "manor";
+  readonly rooms: readonly string[];
+  readonly entrance: string;
 }> = {
-  home: { label: "주거 3실", scale: "cottage-l", program: "dwelling" },
-  inn: { label: "여관 3실", scale: "cottage3", program: "inn" },
-  manor: { label: "대저택 5실", scale: "mansion", program: "manor" },
+  home: { label: "주거 3실", rooms: ["living", "kitchen", "bedroom"], entrance: "living" },
+  inn: { label: "여관 3실", rooms: ["tavern", "inn_room", "inn_room"], entrance: "tavern" },
+  manor: { label: "대저택 5실", rooms: ["entrance", "living", "dining", "kitchen", "bedroom"], entrance: "entrance" },
+};
+
+/** 분위기 선택 → v5 배치·색감 변형(A 기본 · B 웜 우드 · C 쿨 스톤 · D 다크 헤링본). */
+const MODIFIER_STYLE: Record<InteriorThemeModifier, "A" | "B" | "C" | "D"> = {
+  rustic: "B",
+  luxury: "D",
+  sacred: "C",
+  scholarly: "A",
+  martial: "C",
 };
 
 /**
@@ -111,37 +117,36 @@ export function runDirectInteriorRoomDraft(
       };
     }
 
-    const draft = cloneDetachedDraft(base);
+    const ctx = { project: cloneDetachedDraft(base) };
     const presetId = options.preset ?? "inn";
     const preset = PRESET_CONFIG[presetId];
     const seed = Number.isFinite(options.seed) ? Math.trunc(options.seed!) : Date.now() % 1_000_000;
-    const interiorMapId = uniqueMapId(draft);
-    const plan = withModifier(buildHouseInteriorPlan({
+    const interiorMapId = uniqueMapId(ctx.project);
+    const built = runTool(ctx, "build_hand_interior_room", {
+      tileset: HAND_INTERIOR_TILESET_ID,
       mapId: interiorMapId,
       name: `${sourceMap.name} · ${preset.label}`,
-      seed,
-      scale: preset.scale,
-      program: preset.program,
-    }), options.modifier);
-
-    let session = startInteriorRoomDraft(draft, plan as unknown as Record<string, unknown>);
-    for (let guard = 0; guard < 16 && Object.values(session.checklist).some((state) => state === "open"); guard += 1) {
-      session = advanceRoomDraft(draft, session.id);
-    }
-    if (Object.values(session.checklist).some((state) => state === "open")) {
-      throw new Error("실내 레이어 생성이 제한 단계 안에 완료되지 않았습니다.");
-    }
-
+      layout: {
+        rooms: preset.rooms.map((kind) => ({ kind })),
+        entrance: preset.entrance,
+        seed: Math.max(1, Math.abs(seed)),
+        ...(options.modifier ? { styleVariant: MODIFIER_STYLE[options.modifier] } : {}),
+      },
+    });
+    if (!built.ok) throw new Error(built.summary);
+    const draft = ctx.project;
     const interiorMap = draft.maps[interiorMapId];
     if (!interiorMap) throw new Error("생성된 실내 맵을 찾을 수 없습니다.");
-    const entry = pickInteriorEntry(draft, interiorMap, plan);
+    const exits = (built as { data?: { exits?: readonly { x: number; y: number }[] } }).data?.exits ?? [];
+    const exit = exits[0];
+    if (!exit) throw new Error("생성된 실내에 출구가 없습니다.");
+    const entry = pickInteriorEntry(draft, interiorMap, exit);
     if (!entry) throw new Error("실내 입구 옆에 통행 가능한 착지 칸이 없습니다.");
-    retargetInteriorEntrance(
-      interiorMap,
-      options.mapId,
-      doorway.returnPosition.x,
-      doorway.returnPosition.y,
-    );
+    interiorMap.events.push(interiorExitEvent(interiorMap, exit, {
+      mapId: options.mapId,
+      x: doorway.returnPosition.x,
+      y: doorway.returnPosition.y,
+    }));
 
     const draftSource = draft.maps[options.mapId]!;
     const exteriorEventId = uniqueEventId(draftSource);
@@ -217,21 +222,6 @@ export function runDirectInteriorRoomDraft(
   }
 }
 
-function withModifier(
-  plan: InteriorRoomPlan,
-  modifier: InteriorThemeModifier | undefined,
-): InteriorRoomPlan {
-  if (!modifier) return plan;
-  return {
-    ...plan,
-    themeModifiers: [...new Set([...(plan.themeModifiers ?? []), modifier])],
-    rooms: plan.rooms?.map((room) => ({
-      ...room,
-      modifiers: [...new Set([...(room.modifiers ?? []), modifier])],
-    })),
-  };
-}
-
 function uniqueMapId(project: Project): MapId {
   let id = genId("map_interior_direct") as MapId;
   while (project.maps[id]) id = genId("map_interior_direct") as MapId;
@@ -248,13 +238,14 @@ function uniqueEventId(map: GameMap): string {
 function pickInteriorEntry(
   project: Project,
   map: GameMap,
-  plan: InteriorRoomPlan,
+  exit: { readonly x: number; readonly y: number },
 ): { x: number; y: number } | null {
+  // 출구는 맨 아래 줄 틈이다 — 들어오면 그 바로 위 바닥에 선다.
   const candidates = [
-    { x: plan.door.x, y: plan.door.y - 1 },
-    { x: plan.door.x - 1, y: plan.door.y },
-    { x: plan.door.x + 1, y: plan.door.y },
-    { x: plan.door.x, y: plan.door.y + 1 },
+    { x: exit.x, y: exit.y - 1 },
+    { x: exit.x - 1, y: exit.y - 1 },
+    { x: exit.x + 1, y: exit.y - 1 },
+    { x: exit.x, y: exit.y - 2 },
   ];
   const occupied = new Set(map.events.map((event) => `${event.x},${event.y}`));
   for (const candidate of candidates) {
@@ -268,21 +259,30 @@ function pickInteriorEntry(
   return null;
 }
 
-function retargetInteriorEntrance(
+/** 실내 출구 칸(맨 아래 줄 틈)을 밟으면 바깥 문 앞 복귀 칸으로 나간다. */
+function interiorExitEvent(
   map: GameMap,
-  returnMapId: MapId,
-  returnX: number,
-  returnY: number,
-): void {
-  const event = map.events.find((candidate) => candidate.id === `ev_entrance_${map.id}`);
-  if (!event) throw new Error("생성된 실내 출구 이벤트를 찾을 수 없습니다.");
-  let replaced = 0;
-  const retarget = (commands: readonly Command[]): Command[] => commands.map((command) => {
-    if (command.kind !== "transfer") return command;
-    replaced += 1;
-    return { ...command, mapId: returnMapId, x: returnX, y: returnY };
-  });
-  event.commands = retarget(event.commands);
-  event.pages = (event.pages ?? []).map((page) => ({ ...page, commands: retarget(page.commands) }));
-  if (replaced === 0) throw new Error("생성된 실내 출구에 전송 명령이 없습니다.");
+  exit: { readonly x: number; readonly y: number },
+  to: { readonly mapId: MapId; readonly x: number; readonly y: number },
+): GameEvent {
+  const id = `ev_entrance_${map.id}`;
+  return {
+    id,
+    name: "출구",
+    x: exit.x,
+    y: exit.y,
+    trigger: { kind: "playerTouch" },
+    commands: [],
+    pages: [{
+      id: `${id}_page`,
+      name: "출구",
+      conditions: [],
+      graphic: {},
+      trigger: { kind: "playerTouch" },
+      priority: "below",
+      overlapForbidden: false,
+      movement: { type: "fixed", speed: 3, frequency: 3 },
+      commands: [{ kind: "transfer", mapId: to.mapId, x: to.x, y: to.y, direction: "down", fade: "black" }],
+    }],
+  } as unknown as GameEvent;
 }
