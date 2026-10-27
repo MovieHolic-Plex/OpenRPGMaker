@@ -97,6 +97,7 @@ import {
   chunkCoord,
   residentReliefTileCells,
   isMapOnlyCaptureMode,
+  createShadowQuarters,
   EDIT_RELIEF_ROW_DEPTH,
   RELIEF_STRIP_NAME,
   type EditSceneRenderStats,
@@ -105,7 +106,8 @@ import {
 } from "@/editor/editSceneRender";
 import { applyEditTileLayerPresentation, repaintEditGrid } from "@/editor/editSceneViewChrome";
 import { markEditRenderActive, requestEditRenderFrame } from "@/editor/editRenderGate";
-import { createChipsetTileObject } from "@/editor/chipsetTileRender";
+import { createChipsetTileObject, createRawChipsetTileObject } from "@/editor/chipsetTileRender";
+import { pasteGhostLiftSteps, pasteGhostPieces, pasteStampLiftField } from "@/editor/pastePreviewGhost";
 import { resetCullableTiles, syncTileCulling, tileCullingStats } from "@/player/playSceneTileCulling";
 import {
   cancelPastePreview,
@@ -122,6 +124,7 @@ import {
   resolveEscapeAction,
 } from "@/editor/escapeToPan";
 import { handleEditorKey, handleHistoryHotkey, historyHotkeyOwnedByPanel, isHistoryHotkeyChord, shouldIgnoreEditorShortcut } from "@/editor/hotkeys";
+import { keyboardEventKey } from "@/player/keyBindings";
 import { hasOpenModalLayer } from "@/editor/ui/modalStack";
 import { copyEventAt, openEventLayerContextMenu, pasteEventAt } from "@/editor/panels/eventLayerContextMenu";
 import { isCellInsideSelection } from "@/editor/panels/mapSelectionContextMenu";
@@ -1614,7 +1617,8 @@ export class EditScene extends PhaserRuntime.Scene {
   }
 
   // ── 붙여넣기 미리보기 고스트 ──
-  // 클립보드 내용을 반투명 타일로 커서 위치에 그린다.
+  // 확정 붙여넣기와 같은 칸을 반투명으로 그린다: 1층 → 스택 → 2층 → 그림자 → 3층 → 스택 → 4층.
+  // 2·4층은 합성 없는 칩이다. 조각 순서는 pasteGhostPieces 가 정한다.
   private renderPastePreviewGhost(): void {
     const layer = this.hoverPreviewLayer;
     if (!layer) return;
@@ -1630,11 +1634,14 @@ export class EditScene extends PhaserRuntime.Scene {
     if (!map) return;
     const tileset = store.getCurrent().tilesets[map.tilesetId];
     if (!tileset) return;
-    if (map.relief) prepareReliefRead(map);
-    const lift = map.relief ? reliefLiftField(map.relief) : null;
+    // 복사본이 높이를 들고 있으면 고스트는 그 높이로 들린다. 평지를 붙이면 목적지 언덕 위에 떠 보이지 않는다.
+    const stampHeight = clipboard.relief != null;
+    const stampLift = stampHeight ? pasteStampLiftField(clipboard) : null;
+    if (map.relief && !stampHeight) prepareReliefRead(map);
+    const lift = !stampHeight && map.relief ? reliefLiftField(map.relief) : null;
     const tileSize = this.activeTileSize();
     if (
-      !lift
+      (stampHeight || !lift)
       && this.pasteGhostClipboard === clipboard
       && this.pasteGhostAt
       && layer.list.length > 0
@@ -1660,24 +1667,25 @@ export class EditScene extends PhaserRuntime.Scene {
         const y = preview.y + cy;
         if (x < 0 || y < 0 || x >= map.width || y >= map.height) continue;
         const idx = cy * clipboard.width + cx;
-        const liftPx = (lift ? cellLift(lift, x, y) : 0) * tileSize;
-        // 하위 레이어
-        const lowerTile = clipboard.lower.tiles[idx];
-        if (lowerTile !== undefined && lowerTile >= 0) {
-          const obj = createChipsetTileObject(this, map, tileset, x, y, lowerTile);
+        const liftSteps = stampHeight ? pasteGhostLiftSteps(stampLift, cx, cy) : (lift ? cellLift(lift, x, y) : 0);
+        const liftPx = liftSteps * tileSize;
+        for (const piece of pasteGhostPieces(clipboard, idx)) {
+          if (piece.draw === "shadow") {
+            for (const shade of createShadowQuarters(this, x, y, tileSize, piece.bits)) {
+              shade.y -= liftPx;
+              shade.setAlpha(piece.alpha);
+              layer.add(shade);
+            }
+            continue;
+          }
+          const obj = piece.draw === "raw"
+            ? createRawChipsetTileObject(this, map, tileset, x, y, piece.tile)
+            : createChipsetTileObject(this, map, tileset, x, y, piece.tile);
           obj.y -= liftPx;
-          obj.setAlpha(0.4);
+          obj.setAlpha(piece.alpha);
           layer.add(obj);
         }
-        // 상위 레이어
-        const upperTile = clipboard.upper.tiles[idx];
-        if (upperTile !== undefined && upperTile >= 0) {
-          const obj = createChipsetTileObject(this, map, tileset, x, y, upperTile);
-          obj.y -= liftPx;
-          obj.setAlpha(0.55);
-          layer.add(obj);
-        }
-        if (lift) {
+        if (stampHeight ? stampLift : lift) {
           const border = this.add.rectangle(
             x * tileSize,
             y * tileSize - liftPx,
@@ -1695,7 +1703,7 @@ export class EditScene extends PhaserRuntime.Scene {
     // 외곽선 — 붙여넣기 범위 표시.
     const w = Math.min(clipboard.width, map.width - preview.x);
     const h = Math.min(clipboard.height, map.height - preview.y);
-    if (!lift && w > 0 && h > 0) {
+    if (!(stampHeight ? stampLift : lift) && w > 0 && h > 0) {
       const border = this.add.rectangle(
         preview.x * tileSize,
         preview.y * tileSize,
@@ -1842,7 +1850,7 @@ export class EditScene extends PhaserRuntime.Scene {
     if (shouldIgnoreEditorShortcut(event)) return;
     if (this.cameraPanController?.handleSpaceKeyDown(event)) return;
     if (!(event.ctrlKey || event.metaKey) && this.panWithArrowKey(event)) return;
-    if (!(event.ctrlKey || event.metaKey) && event.key === "Escape" && this.handleEscapeKey()) return;
+    if (!(event.ctrlKey || event.metaKey) && keyboardEventKey(event) === "Escape" && this.handleEscapeKey()) return;
     // RM2K3 스타일 단축키: F5/F6/F7 레이어, 1..7 도구, +/- 줌.
     if (!(event.ctrlKey || event.metaKey) && handleEditorKey(event)) return;
     this.handleShortcut(event);
@@ -1923,7 +1931,7 @@ export class EditScene extends PhaserRuntime.Scene {
 
   private panWithArrowKey(event: KeyboardEvent): boolean {
     const step = event.shiftKey ? this.activeTileSize() * 16 : this.activeTileSize() * 6;
-    switch (event.key) {
+    switch (keyboardEventKey(event)) {
       case "ArrowLeft":
         event.preventDefault();
         this.panCameraBy(-step, 0);
@@ -2094,7 +2102,7 @@ export class EditScene extends PhaserRuntime.Scene {
 
   private handleShortcut(event: KeyboardEvent): void {
     if (!(event.ctrlKey || event.metaKey)) return;
-    const key = event.key.toLowerCase();
+    const key = keyboardEventKey(event).toLowerCase();
     // Ctrl+S: 저장(맵 컨텍스트와 무관하게 항상 동작).
     if (key === "s") {
       event.preventDefault();

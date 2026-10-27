@@ -3,7 +3,7 @@
 // - 남은 것은 기존 구조물 보호 하나: 기준선 맵의 구조물·물·절벽은 confirmDestroy / overExisting 선언 없이 덮지 않는다.
 // - 검증기(validateBuildSpec)와 영역 추출(affectedRegions)은 그대로 결정적이다.
 // - 3회 거부·자동 확장·plannedMap 불일치·밑그림 없음 차단은 더 이상 없다(PR #892 후속 코멘트 실측).
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { AssistantSession, METADATA_ONLY_TOOLS } from "@/ai/assistantSession";
 import {
   SPATIAL_BUILD_TOOLS,
@@ -18,6 +18,11 @@ import { runTool } from "@/editor/tools";
 import { createBlankProject } from "@/project/defaults";
 import { COMBINED_TOWN_TILESET_ID } from "@/project/defaults/constants";
 import { withRetiredEasyRpgTilesets } from "./support/retiredEasyRpgTilesets";
+
+// Tests here build the ~63MB blank project (createBlankProject) and drive assistant sessions or editor
+// panels over it, fingerprinting/copying it per session. Under ci-full load (8 workers on 4-core runners)
+// single tests measured 10-50s, past vitest's 15s default, so the budget is raised for this file only.
+vi.setConfig({ testTimeout: 120_000 });
 
 type ChatResult = import("@/ai/llmClient").ChatResult;
 
@@ -108,6 +113,31 @@ describe("buildSpec 검증기(결정적)", () => {
     } as unknown as BuildSpec;
     const issues = validateBuildSpec(project, spec);
     expect(issues.filter((issue) => issue.severity === "error")).toEqual([]);
+  });
+
+  it("plannedMap 폭·높이도 숫자 문자열을 정수로 읽어 합성 경계로 쓴다", () => {
+    const project = createBlankProject();
+    const accepted = validateBuildSpec(project, {
+      mapId: "planned_village",
+      plannedMap: { mapId: "planned_village", width: "24", height: " 20 " },
+      assets: [{ id: "마을", kind: "village", x: "2", y: "2", w: "20", h: "16" }],
+    } as unknown as BuildSpec);
+    expect(accepted.filter((issue) => issue.severity === "error")).toEqual([]);
+
+    const tooSmall = validateBuildSpec(project, {
+      mapId: "planned_village",
+      plannedMap: { mapId: "planned_village", width: "10", height: "10" },
+      assets: [{ id: "마을", kind: "village", x: 2, y: 2, w: 20, h: 16 }],
+    } as unknown as BuildSpec);
+    expect(tooSmall.some((issue) => issue.severity === "error" && issue.message.includes("10×10"))).toBe(true);
+    expect(tooSmall.some((issue) => issue.message.includes("1 이상의 정수"))).toBe(false);
+
+    const grown = validateBuildSpec(projectWithMap(), {
+      mapId: "m1",
+      plannedMap: { mapId: "m1", width: "40", height: "30" },
+      assets: [{ id: "집E", kind: "house", x: 22, y: 22, w: 6, h: 6 }],
+    } as unknown as BuildSpec);
+    expect(grown.filter((issue) => issue.severity === "error")).toEqual([]);
   });
 
   it("같은 층(lower) 에셋 겹침은 error — 두 id를 모두 언급", () => {

@@ -13,6 +13,11 @@ import { fixedDeclarer } from "./intentFixture";
 import { installFakeDom } from "./fakeDom";
 import * as activityLog from "@/ai/activityLog";
 
+// Tests here build the ~63MB blank project (createBlankProject) and drive assistant sessions or editor
+// panels over it, fingerprinting/copying it per session. Under ci-full load (8 workers on 4-core runners)
+// single tests measured 10-50s, past vitest's 15s default, so the budget is raised for this file only.
+vi.setConfig({ testTimeout: 120_000 });
+
 vi.mock("@/ai/preferenceSignals", () => ({ observeTurn: () => ({}), shouldDistillPreferences: () => false }));
 
 const config = { ...defaultAiConfig(), agentMode: "chat", model: "test", liteModel: "test", apiKey: "test", maxToolCalls: 6 } satisfies ReturnType<typeof defaultAiConfig>;
@@ -100,39 +105,7 @@ it("an old successful tool callback cannot start image work or reacquire B's hel
   } finally { await bounded(a); if (b) await bounded(b); }
 });
 
-it("acceptance reentry retains the just-successful write and its real protocol response for same-goal resume", async () => {
-  const project = store.getCurrent(); const map = project.maps[project.startMapId];
-  if (!map) throw new Error("Missing fixture map");
-  const plan = { name: "set_work_plan", args: { goal: "Title", requirements: [{ id: "size", title: "Size",
-    criteria: [{ kind: "mapDimensions", target: { mapId: map.id }, width: map.width, height: map.height }] }],
-    layers: [{ title: "Title", items: [{ title: "Title", instruction: "Title" }] }] } };
-  let round = 0; let replacing = false;
-  let b: Promise<TurnResult> | undefined; let cancelled: TurnResult | undefined;
-  let atRetirement: ReturnType<AssistantSession["getHarnessSnapshot"]> | undefined;
-  const session = new AssistantSession(project, { config, declareIntent: fixedDeclarer({ mode: "other" }), yieldToUi: cooperativeNodeYield,
-    chat: reviewingChat(async () => replacing ? final : round++ === 0 ? tools(plan) : tools({ name: "set_title_screen", args: { title: "A_DRAFT" } })) });
-  const a = session.sendUserMessage("A", event => {
-    if (event.type !== "acceptance" || replacing || session.getProposedProject().system.titleScreen?.title !== "A_DRAFT") return;
-    replacing = true;
-    cancelled = session.retireRun();
-    atRetirement = session.getHarnessSnapshot();
-    b = session.sendUserMessage("Continue", undefined, undefined, { goalAction: "resume" });
-  });
-  try {
-    await bounded(a);
-    if (!b) throw new Error("Acceptance subscriber did not enter B");
-    const resultB = await bounded(b);
-    expect(cancelled?.proposedCalls.map(call => call.args.title)).toEqual(["A_DRAFT"]);
-    const response = atRetirement?.messages.filter(message => message.role === "tool" && message.name === "set_title_screen").at(-1);
-    if (typeof response?.content !== "string") throw new Error("Successful A protocol response missing");
-    expect(JSON.parse(response.content)).toMatchObject({ ok: true });
-    expect(resultB.proposedCalls.map(call => call.args.title)).toEqual(["A_DRAFT"]);
-    const applied = await applyProposedProject(session.getProposedProject(), { base: session.getProposalBase(), baseline: session.getDraftBaseline(), source: "agent", summary: "Resume A draft", toolNames: ["set_title_screen"], operation: session.getRunOperation() });
-    expect(applied.ok).toBe(true);
-    expect(store.getCurrent().system.titleScreen?.title).toBe("A_DRAFT");
-  } finally { await bounded(a); if (b) await bounded(b); }
-});
-
+// Removed it "acceptance reentry retains the just-successful write and its real prot": the acceptance ledger was removed on purpose on 2026-09-17 ("assistant: 수용 원장(acceptance ledger)을 만들지 않는다"; getAcceptanceSnapshot is always null).
 it("a replacement requested from retirement publication wins over the suspended outer entry", async () => {
   const entered = deferred<void>(); const release = deferred<ChatResult>();
   let b: Promise<TurnResult> | undefined;

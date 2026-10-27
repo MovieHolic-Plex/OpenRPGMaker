@@ -5,6 +5,7 @@ import { createBlankProject, TILE } from "@/project/defaults";
 import { store } from "@/project/store";
 import { editorState } from "@/editor/editorState";
 import type { GameMap, MapId } from "@/project/types";
+import { startOnRetiredCombinedTown } from "./support/retiredEasyRpgTilesets";
 
 // M1: 3레이어(lower/upper/event) 독립성 + harness 기반 자동 라우팅 검증.
 // 핵심 — 한 레이어를 편집해도 다른 레이어 데이터는 보존되어야 한다.
@@ -25,7 +26,8 @@ function upperAt(map: GameMap, x: number, y: number): number {
 }
 
 beforeEach(() => {
-  store.replace(createBlankProject());
+  // TILE.* 번호·하네스 라우팅은 합본 마을 칩셋 기준이다 — 2026-10-07 정리 뒤 기본이 beodeul_city 라 옛 저장본처럼 시작 맵을 합본 마을에 둔다.
+  store.replace(startOnRetiredCombinedTown(createBlankProject()));
   editorState.set({
     currentMapId: null,
     tool: "paint",

@@ -31,6 +31,17 @@ export const LOCALE_HTML_LANG: Record<SupportedLocale, string> = {
   zh: "zh-CN",
 };
 
+/**
+ * 편집기 크롬 날짜·시각의 Intl 태그.
+ * 한국어는 `ko-KR` 이라 기존 `toLocaleString("ko-KR")` 과 같은 문자열이 나온다.
+ * 중국어는 간체 카탈로그와 같이 `zh-CN`.
+ */
+export function editorIntlLocale(locale: SupportedLocale): string {
+  if (locale === "ko") return "ko-KR";
+  if (locale === "zh") return "zh-CN";
+  return locale;
+}
+
 /** BCP 47 태그(대소문자·밑줄 무관)를 지원 언어로. zh-TW·zh-Hant 도 간체 카탈로그로 보낸다. */
 export function matchSupportedLocale(tag: string | null | undefined): SupportedLocale | null {
   if (typeof tag !== "string") return null;

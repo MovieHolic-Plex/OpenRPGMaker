@@ -39,10 +39,11 @@ describe("beodeul_massing bundle", () => {
         const pass = city.passability[n]!;
         expect(pass.up && pass.down && pass.left && pass.right, `${b.id} ${x},${y}`).toBe(!blocked.has(`${x},${y}`));
       }
-      // 문 하나, 문 아랫칸 = 키트 맨 아랫줄
+      // 문 하나, 문 아랫칸 = 그 문 아래 땅선(groundLines). 앞이 들어간 ㄷ자 건물(manor, #3514)은 가운데 땅선이 맨 아랫줄보다 한 줄 위다.
       expect(body.parts?.length).toBe(1);
       const d = b.parts[0]!;
-      expect(d.dy + d.h).toBe(b.height);
+      const lines = (b as { groundLines: number[][] }).groundLines;
+      expect(lines.some(([x0, x1, y]) => d.dx >= x0! && d.dx + d.w - 1 <= x1! && y === d.dy + d.h - 1), b.id).toBe(true);
     }
   });
 

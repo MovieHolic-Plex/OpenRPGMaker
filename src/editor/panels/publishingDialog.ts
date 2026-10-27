@@ -10,7 +10,7 @@ import {
 import { installedRuntimeTarget, RUNTIME_ARCHIVE_BASE } from "../../project/publicationExport";
 import { parseRuntimeManifest, type RuntimeManifest } from "../../project/gameRelease";
 import { defaultFetchBytes } from "../../project/webExportZip";
-import { prepareWebExport, WEB_PLAYER_BUNDLE_BASE } from "../../project/webExport";
+import { prepareWebExport, WEB_PLAYER_BUNDLE_BASE, webExportFileName } from "../../project/webExport";
 import { STANDALONE_HTML_GITHUB_PAGES_HINT } from "../../project/standaloneHostingNotice";
 import { createStoreGameSection } from "./storeGameSection";
 import { storeGameProjectKey } from "../../project/storeGameRelease";
@@ -82,6 +82,12 @@ export async function openPublishingDialog(options: PublishingDialogOptions): Pr
   let packAssetsArchive = true;
   let enableSteamAutoCloud = true;
   let enableSteamInputGamepad = true;
+  let platformEyebrow: HTMLElement | undefined;
+  let platformChip: HTMLElement | undefined;
+  let desktopConfigTitle: HTMLElement | undefined;
+  let desktopConfigNote: HTMLElement | undefined;
+  let desktopConfigControls: HTMLElement | undefined;
+  let primaryBuildButton: HTMLButtonElement | undefined;
 
   const close = () => {
     closed = true;
@@ -111,12 +117,12 @@ export async function openPublishingDialog(options: PublishingDialogOptions): Pr
     children: [
       el("div", {
         children: [
-          el("div", {
+          (platformEyebrow = el("div", {
             attrs: {
               style: "display: inline-flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; color: #0284c7; margin-bottom: 2px;",
             },
             text: "STEAMWORKS PIPE · DESKTOP NATIVE PACKAGE BUILDER",
-          }),
+          })),
           el("h2", {
             class: "app-modal-title",
             text: "데스크톱 · Steam 게임 빌드 및 배포 스튜디오",
@@ -135,12 +141,12 @@ export async function openPublishingDialog(options: PublishingDialogOptions): Pr
             },
             text: `맵 ${mapCount}개 · 패키징 에셋 ${assetCount}개`,
           }),
-          el("span", {
+          (platformChip = el("span", {
             attrs: {
               style: "padding: 4px 10px; border-radius: 999px; background: #eff6ff; border: 1px solid #93c5fd; color: #1d4ed8; font-size: 11.5px; font-weight: 700;",
             },
             text: "Steam Auto-Cloud · XInput 패드 내장",
-          }),
+          })),
         ],
       }),
     ],
@@ -173,29 +179,68 @@ export async function openPublishingDialog(options: PublishingDialogOptions): Pr
   const platformButtons = new Map<DesktopExportPlatform, HTMLButtonElement>();
 
   const updatePackagePreview = () => {
+    const web = selectedPlatform === "web-pwa";
     const slug = desktopExportSlug(options.project);
     const ver = effectiveVersion();
-    const zipName = desktopSteamExportFileName(options.project, {
-      platform: selectedPlatform,
-      versionLabel: ver,
-    });
-    const exeLine =
-      selectedPlatform === "win64-steam"
-        ? `├── ${slug}.exe                        (Windows x64 네이티브 런처 + Launch-${slug}.bat)`
-        : selectedPlatform === "linux64-steamos"
-          ? `├── ${slug}.x86_64                     (Linux x64 / SteamOS 런처 + Launch-${slug}.sh)`
-          : selectedPlatform === "macos-universal"
-            ? `├── ${slug}.app/Contents/MacOS/${slug} (macOS Universal 앱 번들)`
-            : `├── index.html                         (웹 서버 배포 진입점)`;
+    if (web) {
+      packagePreviewCode.textContent = [
+        `📦 ${webExportFileName(options.project)}  (약 ${estimatedMb}MB · 맵 ${mapCount}장 · 파일 ${assetCount}개)`,
+        `├── player.html                        (브라우저에서 이 파일을 엽니다)`,
+        `├── project.json                       (게임 데이터)`,
+        `├── loading.json                       (불러오는 중 안내)`,
+        `└── assets/                            (이 게임이 쓰는 그림·소리)`,
+        ``,
+        `Steam App ID, game.pak, steam_appid.txt 는 이 압축에 넣지 않습니다.`,
+      ].join("\n");
+    } else {
+      const zipName = desktopSteamExportFileName(options.project, {
+        platform: selectedPlatform,
+        versionLabel: ver,
+      });
+      const exeLine =
+        selectedPlatform === "win64-steam"
+          ? `├── ${slug}.exe                        (Windows x64 네이티브 런처 + Launch-${slug}.bat)`
+          : selectedPlatform === "linux64-steamos"
+            ? `├── ${slug}.x86_64                     (Linux x64 / SteamOS 런처 + Launch-${slug}.sh)`
+            : `├── ${slug}.app/Contents/MacOS/${slug} (macOS Universal 앱 번들)`;
 
-    packagePreviewCode.textContent = [
-      `📦 ${zipName}  (예상 용량 ~${estimatedMb} MB · 에셋 ${assetCount}개 · 단일 HTML 노출 차단)`,
-      exeLine,
-      `├── steam_appid.txt                    (Steam AppID: ${steamAppIdValue} · DepotID: ${steamDepotIdValue})`,
-      `├── resources/game.pak                 (OPAK 바이너리 아카이브 패킹 + desktop-runtime.json: ${selectedDisplayMode})`,
-      `├── saves/slot-01.oprn-save.json       (Steam Auto-Cloud 로컬 파일 세이브 슬롯 1~3 · autosave · config.json)`,
-      `└── steamworks/app_build_${steamAppIdValue}.vdf   (SteamPipe 빌드 스크립트 · steam_input_manifest.vdf · 출시 체크리스트)`,
-    ].join("\n");
+      packagePreviewCode.textContent = [
+        `📦 ${zipName}  (예상 용량 ~${estimatedMb} MB · 에셋 ${assetCount}개 · 단일 HTML 노출 차단)`,
+        exeLine,
+        `├── steam_appid.txt                    (Steam AppID: ${steamAppIdValue} · DepotID: ${steamDepotIdValue})`,
+        `├── resources/game.pak                 (OPAK 바이너리 아카이브 패킹 + desktop-runtime.json: ${selectedDisplayMode})`,
+        `├── saves/slot-01.oprn-save.json       (Steam Auto-Cloud 로컬 파일 세이브 슬롯 1~3 · autosave · config.json)`,
+        `└── steamworks/app_build_${steamAppIdValue}.vdf   (SteamPipe 빌드 스크립트 · steam_input_manifest.vdf · 출시 체크리스트)`,
+      ].join("\n");
+    }
+
+    if (platformEyebrow) {
+      platformEyebrow.textContent = web
+        ? "WEB HOSTING · 브라우저에서 여는 게임"
+        : "STEAMWORKS PIPE · DESKTOP NATIVE PACKAGE BUILDER";
+    }
+    if (platformChip) {
+      platformChip.textContent = web
+        ? "player.html · project.json · 쓰는 그림과 소리"
+        : "Steam Auto-Cloud · XInput 패드 내장";
+    }
+    if (desktopConfigTitle) {
+      desktopConfigTitle.textContent = web
+        ? "웹 서버 번들 — Steam 설정은 이 압축에 들어가지 않습니다"
+        : "Steamworks & 데스크톱 런타임 구성 (SteamPipe · Auto-Cloud · XInput)";
+    }
+    if (desktopConfigNote) desktopConfigNote.hidden = !web;
+    if (desktopConfigControls) {
+      desktopConfigControls.style.opacity = web ? "0.45" : "1";
+      for (const node of desktopConfigControls.querySelectorAll("input, select")) {
+        if (node instanceof HTMLInputElement || node instanceof HTMLSelectElement) node.disabled = web;
+      }
+    }
+    if (primaryBuildButton) {
+      primaryBuildButton.textContent = web
+        ? "웹 서버 번들 내보내기 (.zip)"
+        : "🚀 선택한 플랫폼으로 데스크톱 · Steam 패키지 빌드 (.zip)";
+    }
 
     for (const [platformId, btn] of platformButtons.entries()) {
       const isSelected = platformId === selectedPlatform;
@@ -336,53 +381,67 @@ export async function openPublishingDialog(options: PublishingDialogOptions): Pr
       style: "padding: 10px 14px; border-radius: 10px; background: #f8fafc; border: 1px solid #cbd5e1; display: flex; flex-direction: column; gap: 8px;",
     },
     children: [
-      el("div", {
+      (desktopConfigTitle = el("div", {
         attrs: { style: "font-size: 12px; font-weight: 800; color: #0f172a;" },
         text: "Steamworks & 데스크톱 런타임 구성 (SteamPipe · Auto-Cloud · XInput)",
-      }),
-      el("div", {
-        attrs: { style: "display: grid; grid-template-columns: 1fr 1fr 1.8fr; gap: 10px;" },
+      })),
+      (desktopConfigNote = el("p", {
+        dataset: { testid: "publication-web-platform-note" },
+        attrs: {
+          hidden: "hidden",
+          style: "margin: 0; font-size: 12px; font-weight: 600; line-height: 1.45; color: #0f172a;",
+        },
+        text: "아래 App ID, Depot, game.pak, Auto-Cloud는 데스크톱·Steam 패키지용입니다. 웹 서버 번들에는 들어가지 않습니다.",
+      })),
+      (desktopConfigControls = el("div", {
+        dataset: { testid: "publication-desktop-options" },
+        attrs: { style: "display: flex; flex-direction: column; gap: 8px;" },
         children: [
-          el("label", {
-            class: "app-modal-message",
-            attrs: { style: "display: flex; flex-direction: column; gap: 3px; margin: 0; font-size: 11px; font-weight: 700; color: #334155;" },
-            children: [el("span", { text: "Steam App ID (steam_appid.txt)" }), steamAppIdInput],
+          el("div", {
+            attrs: { style: "display: grid; grid-template-columns: 1fr 1fr 1.8fr; gap: 10px;" },
+            children: [
+              el("label", {
+                class: "app-modal-message",
+                attrs: { style: "display: flex; flex-direction: column; gap: 3px; margin: 0; font-size: 11px; font-weight: 700; color: #334155;" },
+                children: [el("span", { text: "Steam App ID (steam_appid.txt)" }), steamAppIdInput],
+              }),
+              el("label", {
+                class: "app-modal-message",
+                attrs: { style: "display: flex; flex-direction: column; gap: 3px; margin: 0; font-size: 11px; font-weight: 700; color: #334155;" },
+                children: [el("span", { text: "Steam Depot ID (depot_build.vdf)" }), steamDepotIdInput],
+              }),
+              el("label", {
+                class: "app-modal-message",
+                attrs: { style: "display: flex; flex-direction: column; gap: 3px; margin: 0; font-size: 11px; font-weight: 700; color: #334155;" },
+                children: [el("span", { text: "기본 디스플레이 모드" }), displayModeSelect],
+              }),
+            ],
           }),
-          el("label", {
-            class: "app-modal-message",
-            attrs: { style: "display: flex; flex-direction: column; gap: 3px; margin: 0; font-size: 11px; font-weight: 700; color: #334155;" },
-            children: [el("span", { text: "Steam Depot ID (depot_build.vdf)" }), steamDepotIdInput],
-          }),
-          el("label", {
-            class: "app-modal-message",
-            attrs: { style: "display: flex; flex-direction: column; gap: 3px; margin: 0; font-size: 11px; font-weight: 700; color: #334155;" },
-            children: [el("span", { text: "기본 디스플레이 모드" }), displayModeSelect],
+          el("div", {
+            attrs: { style: "display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px;" },
+            children: [
+              makeFeatureToggle(
+                "publication-pack-archive",
+                "resources/game.pak 아카이브 패킹",
+                packAssetsArchive,
+                (v) => { packAssetsArchive = v; },
+              ),
+              makeFeatureToggle(
+                "publication-steam-autocloud",
+                "Steam Auto-Cloud (saves/*.json)",
+                enableSteamAutoCloud,
+                (v) => { enableSteamAutoCloud = v; },
+              ),
+              makeFeatureToggle(
+                "publication-steam-gamepad",
+                "Steam Deck / XInput 패드 매핑",
+                enableSteamInputGamepad,
+                (v) => { enableSteamInputGamepad = v; },
+              ),
+            ],
           }),
         ],
-      }),
-      el("div", {
-        attrs: { style: "display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px;" },
-        children: [
-          makeFeatureToggle(
-            "publication-pack-archive",
-            "resources/game.pak 아카이브 패킹",
-            packAssetsArchive,
-            (v) => { packAssetsArchive = v; },
-          ),
-          makeFeatureToggle(
-            "publication-steam-autocloud",
-            "Steam Auto-Cloud (saves/*.json)",
-            enableSteamAutoCloud,
-            (v) => { enableSteamAutoCloud = v; },
-          ),
-          makeFeatureToggle(
-            "publication-steam-gamepad",
-            "Steam Deck / XInput 패드 매핑",
-            enableSteamInputGamepad,
-            (v) => { enableSteamInputGamepad = v; },
-          ),
-        ],
-      }),
+      })),
       packagePreviewCode,
     ],
   });
@@ -600,7 +659,10 @@ export async function openPublishingDialog(options: PublishingDialogOptions): Pr
   };
 
   const exportAction = (kind: "zip" | "html") => {
-    apply();
+    // 웹 ZIP·단일 HTML 은 배포 ID 없이도 메뉴의 내보내기와 같이 만든다.
+    // 초안이 있을 때만 버전·호환 설정을 저장한다. 없으면 «먼저 배포를 준비해 주세요»로 막지 않는다.
+    if (draft) options.apply(sync());
+    close();
     void (kind === "zip" ? options.exportZip() : options.exportHtml()).catch((error) => {
       console.error("[publication export]", error);
     });
@@ -612,9 +674,13 @@ export async function openPublishingDialog(options: PublishingDialogOptions): Pr
   const buildDesktopButton = action(
     "export-desktop-steam",
     "🚀 선택한 플랫폼으로 데스크톱 · Steam 패키지 빌드 (.zip)",
-    runDesktopSteamBuild,
+    () => {
+      if (selectedPlatform === "web-pwa") exportAction("zip");
+      else runDesktopSteamBuild();
+    },
     true,
   );
+  primaryBuildButton = buildDesktopButton;
 
   card.append(
     headerBar,

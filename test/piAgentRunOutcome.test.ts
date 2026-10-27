@@ -4,6 +4,8 @@ vi.mock("@/editor/panels/aiActivitySave", () => ({ observeActivitySave: vi.fn() 
 // 렌더는 패널이 소유하고, 여기선 surface.setRunOutcome 으로 흘린 facts 만 고정한다.
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { configureProjectInterviewBootPreparation } from "@/editor/projectInterviewBootPreparation";
+// Ultrabrain 기본 모델은 gemini-4-argon 이다(#2535) — 이름을 박지 않고 상수를 따른다.
+import { DEFAULT_ULTRABRAIN_MODEL } from "@/ai/ultrabrainConfig";
 
 const h = vi.hoisted(() => ({
   villageIssues: [] as string[],
@@ -115,7 +117,8 @@ vi.mock("@/ai/piAgent/mapBundle", () => ({
 vi.mock("@/project/authoredProjectBaseline", () => ({ AuthoredProjectBaseline: class {} }));
 // subscribe 가 빠져 있어 mapEditHistory 의 모듈 초기화가 즉시 죽었다 — 파일 전체가 로드조차
 // 되지 않아 여기 담긴 12개 케이스가 통째로 침묵했다(main 기준으로도 빨간불).
-vi.mock("@/project/store", () => ({ store: { getCurrent: () => h.project, getVersionToken: () => ({ lineage: 1 }), getProjectIdentity: () => ({ kind: "local-session", id: "outcome-fixture" }), subscribe: () => () => {}, flush: async () => ({ kind: h.saveKind }) } }));
+// getDbPersistenceStatus: aiMapRunOwnership.aiProjectRunKey 가 실행 잠금 키를 정할 때 읽는다(준비 안 됨 → 세션 정체성).
+vi.mock("@/project/store", () => ({ store: { getCurrent: () => h.project, getVersionToken: () => ({ lineage: 1 }), getProjectIdentity: () => ({ kind: "local-session", id: "outcome-fixture" }), getDbPersistenceStatus: () => ({ kind: "disabled" }), whenBootNormalized: async () => {}, subscribe: () => () => {}, flush: async () => ({ kind: h.saveKind }) } }));
 // 실제 결정 카드를 띄우지 않는다. 맵 소실 확인은 별도 케이스에서 반환값을 갈아 끼워 검사한다.
 vi.mock("@/editor/panels/aiDecisionPrompt", () => ({ requestAssistantDecision: async () => h.confirmAnswer }));
 vi.mock("@/ai/llmClient", () => ({ loadAiConfig: () => ({ providerId: "google-antigravity", model: "m", piApply: h.piApply, roleModels: h.roleModels }) }));
@@ -129,9 +132,6 @@ vi.mock("@/editor/tools/applyChangesetToStore", () => ({
   },
 }));
 
-vi.mock("@/ai/piAgent/villageCompletion", () => ({
-  inspectPiVillageCompletion: (_project: unknown, _base: unknown, ids: Iterable<string>) => ({ mapIds: [...ids], issues: h.villageIssues }),
-}));
 
 const { runPiCommand } = await import("@/editor/panels/aiPiAgentCommand");
 
@@ -184,15 +184,7 @@ describe("Pi 경로 실행 결과 4축", () => {
     expect(h.requests).toHaveLength(0);
     expect(h.bubbles.join(" ")).toContain("저장");
   });
-  it.each(["default", "yolo"] as const)("%s: 마을 완료 검사 실패는 조화 검수 성공으로 지워지지 않는다", async mode => {
-    h.piApply = mode;
-    h.villageIssues.push("map_a: 대사 없는 페이지");
-    h.results.push({ project: projectWith("시공"), villageCompletion: { mapIds: ["map_a"], issues: h.villageIssues } });
-    const { outcomeCalls, surface } = harness();
-    await runPiCommand({ mode: "single", mapIds: ["map_a"], task: "마을을 지어라" }, surface());
-    expect(outcomeCalls.at(-1)).toMatchObject({ goal: "incomplete", delivery: mode === "yolo" ? "applied" : "draft" });
-    expect(h.applyCalls).toBe(mode === "yolo" ? 1 : 0);
-  });
+  // 「마을 완료 검사 실패는 조화 검수로 지워지지 않는다」(default·yolo) 는 뺐다 — villageCompletion 검사가 src 에서 제거됐다.
 
   // 깨질 것(2026-09-25, UX-005): 검색 상태가 「십 초 정도 걸릴 수 있어요」라고 약속했는데 바로 위
   // 주석의 실측은 31초였고, tool_end 를 아무도 듣지 않아 검색이 끝난 뒤에도 그 문장이 다음 모델
@@ -481,7 +473,7 @@ describe("model role routing", () => {
     // 「다이얼이 실행 런까지 실제로 도달한다」를 지키는 자리다(2026-09-26 리뷰 R2: 이 배선을 아무 테스트도 안 덮었다).
     await runPiCommand({ mode: "single", mapIds: ["map_a"], task: "수정" }, harness().surface(), { thinkingLevel: "high" });
     expect(h.requests).toHaveLength(2);
-    expect(h.requests[0]).toMatchObject({ model: "gemini-3.8-flash", thinkingLevel: "high", readOnly: true });
+    expect(h.requests[0]).toMatchObject({ model: DEFAULT_ULTRABRAIN_MODEL, thinkingLevel: "high", readOnly: true });
     expect(h.requests[1]).toMatchObject({ model: "m", thinkingLevel: "high" });
     expect(h.requests[1]!.task).toContain("Ultrabrain 실행 계획");
   });
@@ -496,7 +488,7 @@ describe("model role routing", () => {
   it("planOnly always disables writes and never starts Deep", async () => {
     await runPiCommand({ mode: "single", mapIds: ["map_a"], task: "계획" }, harness().surface(), { planOnly: true });
     expect(h.requests).toHaveLength(1);
-    expect(h.requests[0]).toMatchObject({ model: "gemini-3.8-flash", thinkingLevel: "high", readOnly: true });
+    expect(h.requests[0]).toMatchObject({ model: DEFAULT_ULTRABRAIN_MODEL, thinkingLevel: "high", readOnly: true });
   });
 });
 
@@ -575,7 +567,7 @@ describe("routine edits", () => {
   it("plan-only still uses read-only Ultrabrain even with a routine hint", async () => {
     await runPiCommand({ mode: "single", mapIds: ["map_a"], task: "계획" }, harness().surface(), { routineEdit: true, planOnly: true });
     expect(h.requests).toHaveLength(1);
-    expect(h.requests[0]).toMatchObject({ model: "gemini-3.8-flash", readOnly: true });
+    expect(h.requests[0]).toMatchObject({ model: DEFAULT_ULTRABRAIN_MODEL, readOnly: true });
     expect(h.applyCalls).toBe(0);
   });
 });

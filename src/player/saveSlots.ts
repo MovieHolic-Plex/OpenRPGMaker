@@ -64,6 +64,7 @@ import {
   isStringRecord,
   isActorSkillIdsRecord,
   isActorSkillPpRecord,
+  isKnownWeaknessesRecord,
   isActorStateIdsRecord,
   isActorVitalsRecord,
   isBooleanRecord,
@@ -295,8 +296,11 @@ export type SaveSnapshot = {
     /**
      * 「현재 BGM 기억」이 적어 둔 곡 id. 지금 나오는 곡(`audio.bgm`)과는 별개다.
      * 없거나 깨진 옛 세이브는 기억한 곡이 없고, 「기억한 BGM 재생」은 아무 곡도 틀지 않는다.
+     * volume(0..100)과 fadeInMs 는 그때 곡에 붙어 있던 값이다. 없으면 기본 음량·페이드.
      */
     readonly memorizedBgm?: string;
+    readonly memorizedBgmVolume?: number;
+    readonly memorizedBgmFadeInMs?: number;
   };
 };
 
@@ -617,10 +621,7 @@ export function createSaveSnapshot(project: Project, input: PlaySession): SaveSn
       mapBackground: pickMapBackground(session),
       systemAudio: parseSystemAudioState(session.m2Runtime?.system),
       access: session.m2Runtime?.access && Object.keys(session.m2Runtime.access).length > 0 ? { ...session.m2Runtime.access } : undefined,
-      ...(() => {
-        const memorizedBgm = persistedMemorizedBgm(session.m2Runtime?.audio?.memorizedBgm);
-        return memorizedBgm ? { memorizedBgm } : {};
-      })(),
+      ...persistedMemorizedBgmFields(session.m2Runtime?.audio),
     },
   };
 }
@@ -1025,7 +1026,14 @@ export function applySaveSnapshot(project: Project, input: SaveSnapshot): PlaySe
   applyMapBackground(session, parseMapBackground(snapshot.session.mapBackground));
   if (snapshot.session.systemAudio) Object.assign(ensureM2Runtime(session).system, snapshot.session.systemAudio);
   const memorizedBgm = persistedMemorizedBgm(snapshot.session.memorizedBgm);
-  if (memorizedBgm) ensureM2Runtime(session).audio.memorizedBgm = memorizedBgm;
+  if (memorizedBgm) {
+    const audio = ensureM2Runtime(session).audio;
+    audio.memorizedBgm = memorizedBgm;
+    const volume = persistedMemorizedBgmVolume(snapshot.session.memorizedBgmVolume);
+    const fadeInMs = persistedMemorizedBgmFadeInMs(snapshot.session.memorizedBgmFadeInMs);
+    if (volume !== undefined) audio.memorizedBgmVolume = volume;
+    if (fadeInMs !== undefined) audio.memorizedBgmFadeInMs = fadeInMs;
+  }
   if (snapshot.session.access) {
     const runtime = ensureM2Runtime(session);
     runtime.access = { ...snapshot.session.access };
@@ -1358,7 +1366,7 @@ function parseSessionRecord(session: Record<string, unknown>): ParsedSessionResu
   }
   const battleResult = parseBattleResult(session.battleResult);
   if (battleResult === "invalid") return { ok: false, message: "Invalid battle result" };
-  const memorizedBgm = persistedMemorizedBgm(session.memorizedBgm);
+  const memorizedBgm = persistedMemorizedBgmFields(session);
   const parsedOverrides = parseFactionStanceOverrides(session.factionStanceOverrides);
   const audio = parseAudioState(session.audio);
   if (!audio.ok) return { ok: false, message: audio.message };
@@ -1421,7 +1429,7 @@ function parseSessionRecord(session: Record<string, unknown>): ParsedSessionResu
       actorApProgress: isActorSkillPpRecord(session.actorApProgress) ? session.actorApProgress : undefined,
       learnedViaAp: isActorSkillIdsRecord(session.learnedViaAp) ? session.learnedViaAp : undefined,
       actorRageEnemyIds: isActorSkillIdsRecord(session.actorRageEnemyIds) ? session.actorRageEnemyIds : undefined,
-      knownWeaknesses: isActorSkillPpRecord(session.knownWeaknesses) ? session.knownWeaknesses : undefined,
+      knownWeaknesses: isKnownWeaknessesRecord(session.knownWeaknesses) ? session.knownWeaknesses : undefined,
       actorLevels: isNumberRecord(session.actorLevels) ? session.actorLevels : undefined,
       actorVitals: isActorVitalsRecord(session.actorVitals) ? session.actorVitals : undefined,
       horror: isHorrorState(session.horror) ? session.horror : undefined,
@@ -1509,7 +1517,7 @@ function parseSessionRecord(session: Record<string, unknown>): ParsedSessionResu
       mapBackground: parseMapBackground(session.mapBackground),
       systemAudio: parseSystemAudioState(session.systemAudio),
       access: parseAccessState(session.access),
-      ...(memorizedBgm ? { memorizedBgm } : {}),
+      ...memorizedBgm,
     },
   };
 }
@@ -1638,6 +1646,32 @@ function persistedMemorizedBgm(value: unknown): string | undefined {
   const id = value.trim();
   if (!id || id.length > MEMORIZED_BGM_LIMIT) return undefined;
   return id;
+}
+
+function persistedMemorizedBgmVolume(value: unknown): number | undefined {
+  if (typeof value !== "number" || !Number.isFinite(value) || value < 0 || value > 100) return undefined;
+  return value;
+}
+
+function persistedMemorizedBgmFadeInMs(value: unknown): number | undefined {
+  if (typeof value !== "number" || !Number.isFinite(value) || value < 0 || value > 60_000) return undefined;
+  return value;
+}
+
+function persistedMemorizedBgmFields(source: {
+  readonly memorizedBgm?: unknown;
+  readonly memorizedBgmVolume?: unknown;
+  readonly memorizedBgmFadeInMs?: unknown;
+} | undefined): { memorizedBgm?: string; memorizedBgmVolume?: number; memorizedBgmFadeInMs?: number } {
+  const memorizedBgm = persistedMemorizedBgm(source?.memorizedBgm);
+  if (!memorizedBgm) return {};
+  const volume = persistedMemorizedBgmVolume(source?.memorizedBgmVolume);
+  const fadeInMs = persistedMemorizedBgmFadeInMs(source?.memorizedBgmFadeInMs);
+  return {
+    memorizedBgm,
+    ...(volume === undefined ? {} : { memorizedBgmVolume: volume }),
+    ...(fadeInMs === undefined ? {} : { memorizedBgmFadeInMs: fadeInMs }),
+  };
 }
 
 function parseSystemAudioState(value: unknown): SaveSnapshot["session"]["systemAudio"] {

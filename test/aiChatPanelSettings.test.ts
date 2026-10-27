@@ -12,6 +12,11 @@ import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
 import { FakeElement, findByTestId, installFakeDom, renderWithFakeDom } from "./fakeDom";
 
+// Tests here build the ~63MB blank project (createBlankProject) and drive assistant sessions or editor
+// panels over it, fingerprinting/copying it per session. Under ci-full load (8 workers on 4-core runners)
+// single tests measured 10-50s, past vitest's 15s default, so the budget is raised for this file only.
+vi.setConfig({ testTimeout: 120_000 });
+
 let restoreDom: (() => void) | null = null;
 let storage: Map<string, string>;
 
@@ -53,27 +58,31 @@ function renderPanel(dock: "glass" | "side" | "float" = "side"): FakeElement {
 }
 
 describe("패널 접기", () => {
-  it("접기는 맵·타일 전환을 요청하고 AI 대화 DOM은 유지한다", () => {
+  // 현재 UI: 패널은 접힌 채 부팅하고(loadPanelCollapsed(true)), 접기 단추는 사이드바 도구 전환이 아니라
+  // 패널 자체를 여닫으며 그 선택을 oprn:ai-panel-collapsed 에 저장한다.
+  it("접힌 채 부팅하고, 펼치기·접기가 패널을 여닫으며 선택을 저장한다", () => {
     const panel = renderPanel();
-    const dispatch = vi.fn();
-    vi.stubGlobal("window", { dispatchEvent: dispatch });
-    try {
-      findByTestId(panel, "ai-collapse")?.click();
-      expect(dispatch.mock.calls[0]?.[0].type).toBe("oprn:ai-sidebar-tools");
-      expect(panel.classList.contains("is-collapsed")).toBe(false);
-      expect(storage.get("oprn:ai-panel-collapsed")).toBeUndefined();
-      findByTestId(panel, "ai-collapsed-restore")?.click();
-      expect(dispatch.mock.calls[1]?.[0].type).toBe("oprn:ai-sidebar-show");
-    } finally { vi.unstubAllGlobals(); }
+    expect(panel.classList.contains("is-collapsed")).toBe(true);
+    findByTestId(panel, "ai-collapsed-restore")?.click();
+    expect(panel.classList.contains("is-collapsed")).toBe(false);
+    expect(storage.get("oprn:ai-panel-collapsed")).toBe("0");
+    findByTestId(panel, "ai-collapse")?.click();
+    expect(panel.classList.contains("is-collapsed")).toBe(true);
+    expect(storage.get("oprn:ai-panel-collapsed")).toBe("1");
   });
 
-  it("이전 하단 덱의 접힘 설정이 있어도 도크의 AI는 펼쳐서 부팅한다", () => {
-    storage.set("oprn:ai-panel-collapsed", "1");
+  it("저장된 펼침 선택은 다음 부팅에도 지킨다", () => {
+    storage.set("oprn:ai-panel-collapsed", "0");
     const panel = renderPanel();
     expect(panel.classList.contains("is-collapsed")).toBe(false);
     expect(panel.classList.contains("is-left-sidebar")).toBe(true);
   });
 });
+
+/** 설정 모달의 input 자동 저장은 350ms 디바운스다(aiSettingsModal scheduleAutoSave). */
+function waitForAutoSave(): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, 450));
+}
 
 function openSettingsSurface(panel: FakeElement): FakeElement {
   expect(findByTestId(panel, "ai-settings-command-bar")).toBeNull();
@@ -212,16 +221,19 @@ describe("설정 자동 저장", () => {
     expect(loadAiConfig().liteModel).toBe("gemini-4-argon");
   });
 
-  it("모델 필드는 자유 입력이 가능하고 입력값이 그대로 저장된다", () => {
+  it("모델 필드는 자유 입력이 가능하고 입력값이 그대로 저장된다", async () => {
     const panel = renderPanel();
     const modal = openSettingsSurface(panel);
     const model = findByTestId(modal, "ai-config-model");
     if (!model) throw new Error("model field missing");
     model.value = "custom/free-form-model";
     model.dispatchEvent(new Event("input"));
+    // input 은 350ms 디바운스 뒤 자동 저장한다(scheduleAutoSave) — window 가 있으면 즉시 저장하지 않는다.
+    await waitForAutoSave();
 
     const stored = JSON.parse(storage.get(AI_CONFIG_STORAGE_KEY) ?? "{}");
     expect(stored.model).toBe("custom/free-form-model");
+    expect(stored.roleModels?.writer?.model).toBe("custom/free-form-model");
   });
 
   it("실행 모델 필드는 비우면 기본 liteModel로 저장된다", () => {
@@ -252,20 +264,20 @@ describe("설정 자동 저장", () => {
   });
 
   it("ChatGPT 모델 선택기는 GJC의 최신 Codex 모델을 바로 선택해 저장한다", () => {
-    storage.set(AI_CONFIG_STORAGE_KEY, JSON.stringify({
-      ...defaultAiConfig(),
-      providerId: "openai-codex",
-      model: "gpt-5.6-sol",
-      liteModel: "gpt-5.6-sol",
-    }));
+    // 모델은 역할별로 저장된다(roleModels) — 기본 roleModels 는 모두 Antigravity Argon 이므로
+    // 최상위 providerId 만 바꿔서는 Writer 칸이 Codex 가 되지 않는다. Writer 행의 제공자를 먼저 고른다.
     const panel = renderPanel();
     const modal = openSettingsSurface(panel);
+    const writer = findByTestId(modal, "ai-config-writer-provider") as unknown as HTMLSelectElement;
     const preset = findByTestId(modal, "ai-config-model-preset");
-    if (!preset) throw new Error("model preset missing");
+    if (!writer || !preset) throw new Error("writer provider or model preset missing");
+    writer.value = "openai-codex";
+    writer.dispatchEvent(new Event("change"));
     preset.value = "gpt-6-astra";
     preset.dispatchEvent(new Event("change"));
 
     const stored = JSON.parse(storage.get(AI_CONFIG_STORAGE_KEY) ?? "{}");
+    expect(stored.roleModels?.writer).toMatchObject({ provider: "openai-codex", model: "gpt-6-astra" });
     expect(stored.model).toBe("gpt-6-astra");
   });
 
@@ -288,9 +300,9 @@ describe("설정 자동 저장", () => {
     select.value = "openai-codex";
     select.dispatchEvent(new Event("change"));
 
-    // Codex 는 정확히 네 모델만 보인다(사용자 지시 2026-09-27).
+    // Codex 는 사용자 지시(2026-09-27)의 네 모델에 gpt-6.1-sol 을 더해 맨 앞(기본)에 둔다(2026-10-07, src/ai/modelCatalog.ts).
     const codexOptions = preset.querySelectorAll("option").map((option) => option.getAttribute("value")).filter(Boolean);
-    expect(codexOptions).toEqual(["gpt-5.6-sol", "gpt-6-astra", "gpt-6-sol", "gpt-6-luna"]);
+    expect(codexOptions).toEqual(["gpt-6.1-sol", "gpt-5.6-sol", "gpt-6-astra", "gpt-6-sol", "gpt-6-luna"]);
     for (const foreign of ["gemini-3.7-flash", "claude-opus", "glm-", "grok-", "gpt-5.4-mini", "gpt-5.6-terra"]) {
       expect(preset.textContent, foreign).not.toContain(foreign);
     }
@@ -309,8 +321,9 @@ describe("설정 자동 저장", () => {
     brain.value = "openai-codex";
     brain.dispatchEvent(new Event("change"));
 
-    expect((findByTestId(modal, "ai-config-model") as unknown as HTMLInputElement).value).toBe("gpt-6-luna");
-    expect((findByTestId(modal, "ai-config-ultrabrain-model") as unknown as HTMLInputElement).value).toBe("gpt-6-astra");
+    // Codex 는 빠른/강한 두 티어 모두 gpt-6.1-sol 이다(2026-10-07, src/ai/modelPresets.ts PROVIDER_TIER_MODELS).
+    expect((findByTestId(modal, "ai-config-model") as unknown as HTMLInputElement).value).toBe("gpt-6.1-sol");
+    expect((findByTestId(modal, "ai-config-ultrabrain-model") as unknown as HTMLInputElement).value).toBe("gpt-6.1-sol");
   });
 
   it("카탈로그 밖 모델도 명시적 선택을 보존하고 목록에는 추가하지 않는다", () => {
@@ -339,13 +352,14 @@ describe("설정 자동 저장", () => {
     }
   });
 
-  it("실행 모델 필드는 자유 입력이 가능하고 입력값이 그대로 저장된다", () => {
+  it("실행 모델 필드는 자유 입력이 가능하고 입력값이 그대로 저장된다", async () => {
     const panel = renderPanel();
     const modal = openSettingsSurface(panel);
     const liteModel = findByTestId(modal, "ai-config-lite-model");
     if (!liteModel) throw new Error("lite model field missing");
     liteModel.value = "custom/free-form-model";
     liteModel.dispatchEvent(new Event("input"));
+    await waitForAutoSave();
 
     const stored = JSON.parse(storage.get(AI_CONFIG_STORAGE_KEY) ?? "{}");
     expect(stored.liteModel).toBe("custom/free-form-model");
@@ -465,12 +479,13 @@ describe("감사 로그 내보내기", () => {
 
 describe("세션 설정 반영", () => {
   it("updateConfig가 진행 중인 세션의 설정을 교체한다", () => {
+    // 역할별 모델(roleModels)이 있으면 세션의 감독 모델은 ultrabrain 칸이다(configForLegacySupervisor).
     const session = new AssistantSession(createBlankProject(), {
-      config: { ...defaultAiConfig(), apiKey: "", model: "old-model" },
+      config: { ...defaultAiConfig(), apiKey: "", ultrabrainModel: "old-model" },
     });
     expect(JSON.parse(session.exportAudit()).model).toBe("old-model");
 
-    session.updateConfig({ ...defaultAiConfig(), apiKey: "sk-or-new", model: "custom/free-form-model" });
+    session.updateConfig({ ...defaultAiConfig(), apiKey: "sk-or-new", ultrabrainModel: "custom/free-form-model" });
     expect(JSON.parse(session.exportAudit()).model).toBe("custom/free-form-model");
   });
 });

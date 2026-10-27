@@ -1,6 +1,7 @@
 import { readFileSync } from "node:fs";
 import vm from "node:vm";
-import ts from "typescript";
+import { transformSync } from "esbuild";
+import { parseAst } from "rolldown/parseAst";
 import { Window } from "happy-dom";
 import { afterEach, describe, expect, it } from "vitest";
 import * as saves from "@/player/saveSlots";
@@ -10,21 +11,42 @@ import { startSession } from "@/project/session";
 const scripts = ["verify-gate-transfer.cjs", "capture-uiux-evidence.cjs", "playtest-driver2.cjs"];
 
 // Execute the tracked consumers, not a second implementation of their predicates/loops.
-function extract(file: string, kind: "observation" | "cleanup"): string {
-  const source = ts.createSourceFile(file, readFileSync(new URL(`../scripts/${file}`, import.meta.url), "utf8"), ts.ScriptTarget.Latest, true, ts.ScriptKind.JS);
-  const matches: string[] = [];
-  function visit(node: ts.Node): void {
-    if (kind === "observation" && ts.isVariableDeclaration(node) && node.name.getText(source) === "saved") {
-      const initializer = node.initializer;
-      if (!initializer || !ts.isAwaitExpression(initializer) || !ts.isCallExpression(initializer.expression)) throw new Error("Missing saved evaluation");
-      matches.push(initializer.expression.arguments[0].getText(source));
-    }
-    if (kind === "cleanup" && ts.isForStatement(node) && node.getText(source).includes("localStorage.removeItem") && node.getText(source).includes("save-slot:")) matches.push(node.getText(source));
-    ts.forEachChild(node, visit);
+// TypeScript 7(#2396)에는 JS 컴파일러 API(createSourceFile·transpileModule)가 없다 — 같은 일을 rolldown 의 ESTree 파서와 esbuild 로 한다.
+type EsNode = { readonly type: string; readonly start: number; readonly end: number; readonly [key: string]: unknown };
+function isEsNode(value: unknown): value is EsNode {
+  return typeof value === "object" && value !== null && typeof (value as { type?: unknown }).type === "string";
+}
+function walk(node: EsNode, visit: (node: EsNode) => void): void {
+  visit(node);
+  for (const value of Object.values(node)) {
+    if (Array.isArray(value)) { for (const child of value) if (isEsNode(child)) walk(child, visit); }
+    else if (isEsNode(value)) walk(value, visit);
   }
-  visit(source);
+}
+function parseScript(file: string): { readonly ast: EsNode; readonly text: (node: EsNode) => string } {
+  const source = readFileSync(new URL(`../scripts/${file}`, import.meta.url), "utf8");
+  return { ast: parseAst(source, { lang: "js" }) as unknown as EsNode, text: (node) => source.slice(node.start, node.end) };
+}
+function toCommonJs(code: string): string {
+  // TS 의 CommonJS 변환처럼 import() 도 require 로 바꾼다(vm 문맥에는 동적 import 콜백이 없다).
+  return transformSync(code, { format: "cjs", target: "es2022", loader: "js", supported: { "dynamic-import": false } }).code;
+}
+function extract(file: string, kind: "observation" | "cleanup"): string {
+  const { ast, text } = parseScript(file);
+  const matches: string[] = [];
+  walk(ast, (node) => {
+    const id = node.id;
+    if (kind === "observation" && node.type === "VariableDeclarator" && isEsNode(id) && id.type === "Identifier" && id.name === "saved") {
+      const initializer = node.init;
+      if (!isEsNode(initializer) || initializer.type !== "AwaitExpression" || !isEsNode(initializer.argument) || initializer.argument.type !== "CallExpression") throw new Error("Missing saved evaluation");
+      const [first] = initializer.argument.arguments as unknown[];
+      if (!isEsNode(first)) throw new Error("Missing saved evaluation");
+      matches.push(text(first));
+    }
+    if (kind === "cleanup" && node.type === "ForStatement" && text(node).includes("localStorage.removeItem") && text(node).includes("save-slot:")) matches.push(text(node));
+  });
   expect(matches).toHaveLength(1);
-  return matches[0];
+  return matches[0]!;
 }
 
 const observation = extract(scripts[0], "observation");
@@ -41,7 +63,7 @@ function fixture() {
 }
 function observe(storage: Storage): Promise<boolean> | boolean {
   // Transpile only the browser import transport; the reader is the real public module.
-  const code = ts.transpileModule(`(${observation})()`, { compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 } }).outputText;
+  const code = toCommonJs(`(${observation})()`);
   return vm.runInNewContext(code, {
     localStorage: storage,
     require: (id: string) => {
@@ -131,22 +153,21 @@ describe("tracked Save5 QA consumers", () => {
 const remainingScripts = ["playtest-driver3.cjs", "playtest-driver4.cjs", "playtest-driver5.cjs", "playtest-driver6.cjs", "capture-fullscreen-scale.cjs"];
 const mutatingScripts = ["playtest-driver4.cjs", "playtest-driver6.cjs"];
 function currentCallback(file: string, mutation = false): string {
-  const source = ts.createSourceFile(file, readFileSync(new URL(`../scripts/${file}`, import.meta.url), "utf8"), ts.ScriptTarget.Latest, true, ts.ScriptKind.JS);
+  const { ast, text } = parseScript(file);
   const matches: string[] = [];
-  function visit(node: ts.Node): void {
-    if (ts.isCallExpression(node) && node.expression.getText(source) === "page.evaluate") {
-      const callback = node.arguments[0]?.getText(source) ?? "";
+  walk(ast, (node) => {
+    if (node.type === "CallExpression" && isEsNode(node.callee) && text(node.callee) === "page.evaluate") {
+      const [first] = node.arguments as unknown[];
+      const callback = isEsNode(first) ? text(first) : "";
       if (callback.includes("localStorage.getItem") && callback.includes("localStorage.setItem") === mutation) matches.push(callback);
     }
-    ts.forEachChild(node, visit);
-  }
-  visit(source);
+  });
   expect(matches).toHaveLength(1);
-  return matches[0];
+  return matches[0]!;
 }
 function runCurrent(file: string, storage: Storage, mutation = false): Promise<unknown> {
   const callback = currentCallback(file, mutation);
-  const code = ts.transpileModule(`(${callback})(["map_warp", 7, 9, { switch_probe: true }])`, { compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 } }).outputText;
+  const code = toCommonJs(`(${callback})(["map_warp", 7, 9, { switch_probe: true }])`);
   return Promise.resolve(vm.runInNewContext(code, {
     localStorage: storage,
     require: (id: string) => {

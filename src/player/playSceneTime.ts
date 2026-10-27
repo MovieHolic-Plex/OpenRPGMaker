@@ -172,6 +172,15 @@ export type TimeTintVisual = {
   readonly alpha: number;
 };
 
+/** Day and "no clock" share one hidden tint so a stable frame does not allocate a new object. */
+const CLEAR_TINT: TimeTintVisual = { color: 0xffffff, alpha: 0 };
+const TIME_TINT_BY_PHASE: Record<TimePhase, TimeTintVisual> = {
+  morning: { color: 0xffd37a, alpha: 0.08 },
+  day: CLEAR_TINT,
+  evening: { color: 0xff8a3d, alpha: 0.16 },
+  night: { color: 0x09142f, alpha: 0.34 },
+};
+
 export function installTimeTintLayer(scene: PlaySceneContext): void {
   if (scene.timeTintGraphics) return;
   const graphics = scene.add.graphics();
@@ -179,7 +188,7 @@ export function installTimeTintLayer(scene: PlaySceneContext): void {
   graphics.setDepth(TIME_TINT_DEPTH);
   scene.timeTintGraphics = graphics;
   scene.timeTintPhase = undefined;
-  scene.timeTintDisplayed = { color: 0xffffff, alpha: 0 };
+  scene.timeTintDisplayed = CLEAR_TINT;
   scene.timeTintTransition = null;
   syncTimeTintLayer(scene);
 }
@@ -257,23 +266,34 @@ export function updateTimeTint(scene: PlaySceneContext, deltaMs: number): void {
   const current = scene.timeTintDisplayed ?? target;
   if (scene.timeTintPhase !== phase) {
     scene.timeTintPhase = phase;
-    scene.timeTintTransition = {
-      from: current,
-      to: target,
-      elapsedMs: 0,
-      durationMs: TIME_TINT_TRANSITION_MS,
-    };
+    if (current.color === target.color && current.alpha === target.alpha) {
+      scene.timeTintDisplayed = target;
+      scene.timeTintTransition = null;
+    } else {
+      scene.timeTintTransition = {
+        from: current,
+        to: target,
+        elapsedMs: 0,
+        durationMs: TIME_TINT_TRANSITION_MS,
+      };
+    }
   }
   const transition = scene.timeTintTransition;
   if (transition) {
-    transition.elapsedMs = Math.min(transition.durationMs, transition.elapsedMs + Math.max(0, deltaMs));
-    const progress = transition.durationMs === 0 ? 1 : transition.elapsedMs / transition.durationMs;
-    scene.timeTintDisplayed = interpolateTint(transition.from, transition.to, progress);
-    if (progress >= 1) {
-      scene.timeTintDisplayed = transition.to;
-      scene.timeTintTransition = null;
+    const elapsed = Math.min(transition.durationMs, transition.elapsedMs + Math.max(0, deltaMs));
+    // A zero-delta frame (or a duplicate step) keeps the previous sample. Interpolating it again
+    // allocates a tint object and dirties the full-screen Graphics for the same pixels.
+    if (elapsed !== transition.elapsedMs) {
+      transition.elapsedMs = elapsed;
+      const progress = transition.durationMs === 0 ? 1 : elapsed / transition.durationMs;
+      if (progress >= 1) {
+        scene.timeTintDisplayed = transition.to;
+        scene.timeTintTransition = null;
+      } else {
+        scene.timeTintDisplayed = interpolateTint(transition.from, transition.to, progress);
+      }
     }
-  } else {
+  } else if (scene.timeTintDisplayed !== target) {
     scene.timeTintDisplayed = target;
   }
   syncTimeTintLayer(scene);
@@ -410,38 +430,65 @@ export function isGameTimePausedForRuntime(scene: Pick<PlaySceneContext, "game" 
 }
 
 function hideTimeTint(scene: PlaySceneContext): void {
-  scene.timeTintGraphics?.clear();
-  scene.timeTintGraphics?.setVisible(false);
+  // Classic maps have no clock. refreshRuntimeSurfaces still installs the layer, and update()
+  // used to clear that empty Graphics every frame. Once it is hidden, later frames are free.
+  if (scene.timeTintPhase === undefined && scene.timeTintTransition === null) {
+    const graphics = scene.timeTintGraphics;
+    const painted = scene.timeTintPainted;
+    if (!graphics && (painted?.alpha ?? 0) === 0) return;
+    if (painted?.alpha === 0 && graphics?.visible === false) return;
+  }
   scene.timeTintPhase = undefined;
   scene.timeTintTransition = null;
+  scene.timeTintDisplayed = CLEAR_TINT;
+  if (!scene.timeTintGraphics) {
+    rememberTintPaint(scene, 0, 0, 0, 0);
+    return;
+  }
+  syncTimeTintLayer(scene);
 }
 
 function syncTimeTintLayer(scene: PlaySceneContext): void {
   const graphics = scene.timeTintGraphics;
   const tint = scene.timeTintDisplayed;
   if (!graphics || !tint) return;
+  const camera = scene.cameras.main;
+  const alpha = tint.alpha <= 0 ? 0 : tint.alpha;
+  // A hidden overlay does not depend on the camera size, so a resize must not clear it again.
+  const width = alpha === 0 ? 0 : camera.width || PLAY_RESOLUTION.width;
+  const height = alpha === 0 ? 0 : camera.height || PLAY_RESOLUTION.height;
+  const color = alpha === 0 ? 0 : tint.color;
+  if (sameTintPaint(scene, color, alpha, width, height)) return;
+  rememberTintPaint(scene, color, alpha, width, height);
   graphics.clear();
-  if (tint.alpha <= 0) {
-    graphics.setVisible(false);
+  if (alpha <= 0) {
+    if (graphics.visible !== false) graphics.setVisible(false);
     return;
   }
-  const camera = scene.cameras.main;
   graphics.setVisible(true);
-  graphics.fillStyle(tint.color, tint.alpha);
-  graphics.fillRect(0, 0, camera.width || PLAY_RESOLUTION.width, camera.height || PLAY_RESOLUTION.height);
+  graphics.fillStyle(color, alpha);
+  graphics.fillRect(0, 0, width, height);
+}
+
+function sameTintPaint(scene: PlaySceneContext, color: number, alpha: number, width: number, height: number): boolean {
+  const painted = scene.timeTintPainted;
+  return !!painted && painted.color === color && painted.alpha === alpha && painted.width === width && painted.height === height;
+}
+
+function rememberTintPaint(scene: PlaySceneContext, color: number, alpha: number, width: number, height: number): void {
+  const painted = scene.timeTintPainted;
+  if (painted) {
+    painted.color = color;
+    painted.alpha = alpha;
+    painted.width = width;
+    painted.height = height;
+    return;
+  }
+  scene.timeTintPainted = { color, alpha, width, height };
 }
 
 export function timeTintVisualForPhase(phase: TimePhase): TimeTintVisual {
-  switch (phase) {
-    case "morning":
-      return { color: 0xffd37a, alpha: 0.08 };
-    case "day":
-      return { color: 0xffffff, alpha: 0 };
-    case "evening":
-      return { color: 0xff8a3d, alpha: 0.16 };
-    case "night":
-      return { color: 0x09142f, alpha: 0.34 };
-  }
+  return TIME_TINT_BY_PHASE[phase];
 }
 
 function interpolateTint(from: TimeTintVisual, to: TimeTintVisual, progress: number): TimeTintVisual {

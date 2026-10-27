@@ -583,7 +583,7 @@ source `defaults/beodeulArchitecture.ts`, `beodeulArchitectureTools.ts`; `author
 - `place_vehicle {vehicle: boat|ship|airship|chocobo|cart|raft, mapId, x, y, characterIndex?}` (2026-10-15: 초코보·광산 수레·뗏목 추가, 모르는 인자 거절) (`src/editor/tools/vehicleTools.ts`, 도메인 event,
   라벨 「탈것 세우기」): `system.vehicles` 에 종류당 한 항목을 쓰고 다시 부르면 옮긴다. characterIndex 는 EasyRPG
   `Vehicles.png` 의 칸이다(기본 boat 0 소형선, ship 1 대형선, airship 2 비행선; 288×256 은 일반 8칸 시트다).
-- **걷는 탈것 셋 (2026-10-15, FF6급 감사 #28).** `vehicleCanEnter`(`src/project/vehicles.ts`) 규칙: 뗏목 = 지형 `vehiclePassage.raft` 참(강) 또는 boat 참·ship 거짓(호수)·이름표 water — 바다는 못 간다 /
+- **걷는 탈것 셋 (2026-10-15, FF6급 감사 #28).** `vehicleCanEnter`(`src/project/vehicles.ts`) 규칙: 뗏목 = 지형 `vehiclePassage.raft` 참(강), 또는 raft 를 적지 않은 boat 참·ship 거짓(호수)·이름표 water. `raft: false` 는 그 호수 폴백을 끄며 불러오기와 `upsert_database_utility` 가 그 false 를 지우지 않는다 — 바다는 못 간다 /
   초코보 = 걸을 수 있는 칸 + `vehiclePassage.chocobo` 참 + 이름표 tree·forest(통행 불가 숲도 지난다), 물·산은 불가, 걸음 두 배 / 광산 수레 = `vehiclePassage.cart` 참 또는 칸 이름에 선로·레일·궤도·rail(가드레일 제외)이 든 칸만, 걸음 두 배.
   그림은 새 도트 없이 기존 칩: 초코보 = Animal 시트 말(칸 5, `vehicleSheet`), 수레 = Vehicles 5(임시 무한궤도 차), 뗏목 = Vehicles 0. 월드맵 키트 지도는 지형 태그(`terrain_world_*`)로 바다 boat·ship / 강 boat·raft / 숲 chocobo 가 이미 붙는다.
   레일 칸이 칩셋에 없으면(버들항) `set_tile_rules` terrainTag 로 `cart` 참인 지형 레코드를 붙인다. 이벤트 편집기 「탈것 위치 설정」·M2 카탈로그 선택지도 여섯 종이다. 시험: `ct-vehicle-walkers`.
@@ -3176,7 +3176,7 @@ Pi의 `generate_title_art`·`generate_opening_image`는 UI 핸드오프를 실�
 - **타이틀·오프닝 배경 참고 스틸 금지(jrpg-loop-4 R5.1)**: `suitableForOpening:false` 스틸(분할 화면 `oprn-still-hero-dawn`·`quiet-room`, UI 막대 박힌 `rally`, 창 테두리 박힌 `dream`)은 목록 라벨뿐이라 r5-ff2 타이틀이 4분할 콜라주를 깔았다. `unsuitableOpeningStillMessage`(`src/assets/openingStillMoods.ts`)로 `set_title_screen`(배경·`backgroundLayers`), 애니메틱 샷 배경(`openingAnimaticTools.ts` `check`), 오프닝 장면 정규화(`cinematicTools.ts` `normalizeScene`)가 거절하고 깨끗한 스틸 id 를 대안으로 돌려준다.
 - `tile_change_effect {targetMapId, changes:[{layer:1|2|3|4|lower|upper, rect|cells, tile}], trigger?:{mapId,x,y,id?,name?,kind?,graphic?,text?,doneText?,requires?,lockedText?}, doneSwitchId?, alsoSetSwitches?, emitOnly?}` (`src/editor/tools/tileChangeEffectTools.ts`): 「과거 행동 → 미래 타일 변화」. 원인 이벤트가 `changeTile` 을 실행하고 한 번만 일어나게 스위치로 막는다. 오토타일 가장자리는 저작 시점에 scratch 사본에 `paint_tiles` 규칙으로 칠해 얻은 차이를 `changeTile` 목록으로 굳힌다. 레이어 2(`lowerOverlayTiles`)·4(`upperOverlayTiles`)를 지원하며, 변경은 `session.mapOverrides` 에 저장돼 맵 로드마다 다시 입혀지고 세이브에 남는다. `changeTile` 에 `tileId`·없는 레이어를 주면 `upsert_event`·`patch_event_page` 가 거절한다(`src/project/changeTileValidation.ts`). 그림자 비트는 `changeTile` 로 못 바꾼다.
 - 이벤트 쓰기 도구(`upsert_event`·`patch_event_page`)는 페이지의 모르는 키(예: `condition`→`conditions`)를 조용히 버리지 않고 거절·경고한다(`src/editor/tools/eventPageKeys.ts`).
-- 카운트다운은 저장·불러오기에서 이어진다: 흐르는 타이머는 `session.timerActive` 로 저장되고 `restoreRuntimeTimers` 가 다시 흐르게 한다. 헤드리스 `run_scene_test` 는 `timer` 명령(set/start/stop)과 `advanceTime` 흐름을 흉내 내며 `expect` 에 `timerRemaining`({timer1: 초})·`timerRunning`(id)을 쓸 수 있다.
+- 카운트다운은 저장·불러오기에서 이어진다: 흐르는 타이머는 `session.timerActive` 로 저장되고 `restoreRuntimeTimers` 가 다시 흐르게 한다(인게임 `applySession` 과, 타이틀에서 새 장면을 여는 `PlayScene.create`). 헤드리스 `run_scene_test` 는 `timer` 명령(set/start/stop)과 `advanceTime` 흐름을 흉내 내며 `expect` 에 `timerRemaining`({timer1: 초})·`timerRunning`(id)을 쓸 수 있다.
 - 강하게 다시 하기 `newGamePlus.carry` 에 `techPoints`(기술 포인트)·`party`(파티 구성)를 고를 수 있다. 파티 구성은 지금 프로젝트에 있는 배우만 복원한다.
 - 명령 보장 표: `setEventGraphicPattern`·`cutsceneControl`·`checkpointSave`·`triggerEnding`·`setSelfSwitch` 는 맵/공통에서 `full` 이다(전투는 종전 유지). 저작 길은 그대로라 `indirectAuthoring` 로 선택창 행 요구를 면제한다. 도구 요약의 「미지원 커맨드 N건」은 「런타임 제한 커맨드 N건」이 되었다.
 
@@ -3611,7 +3611,7 @@ r8~r11 실편집기 녹화에서 조수는 도구를 찾지 않고 paint_tiles �
 ## `upsert_item.repelSteps` / `escapeTo` · `configure_monster_system.escapeGraceSteps` — 필드 도구 (2026-10-16, poke-sys ②)
 
 - 벌레퇴치 = `item {repelSteps: 1~9999, repelBelowLead?: boolean, occasion:"field", scope:"none", consumable:true}`. 탈출 로프 = `item {escapeTo:"entrance", occasion:"field", scope:"none"}`(던전·동굴 맵 mapRole `dungeon` 에서만, 마지막 입구로). 거절: `repelSteps` 가 1 미만·정수 아님 → `invalid-repel-steps`, `escapeTo` 가 "entrance" 아님 → `invalid-escape-to`. occasion 이 field/always 가 아니거나 scope 가 none 이 아니면 저장하되 경고. 둘을 한 아이템에 쓰면 벌레퇴치가 먼저 적용된다는 경고.
-- 도망 성공 뒤 무적 걸음은 `configure_monster_system {escapeGraceSteps: 0~99}`(생략 시 몬스터 파티 게임 4, 0 = 끔).
+- 도망 성공 뒤 무적 걸음은 `configure_monster_system {escapeGraceSteps: 0~99}`(생략 시 몬스터 파티 게임 4, 0 = 끔). 프로젝트 저장 정규화가 0을 포함해 남긴다.
 - 낚싯대는 새 도구가 아니다: `configure_fishing` 의 몬스터 어획(`catches[] {speciesId,…}`) + `upsert_tool_action {action:"fish", itemId}` 로 잇고, NPC `changeItem` 으로 낚싯대를 준다. 기본 `build_monster_game` 캠페인에는 이미 들어 있다. 능력 색인 `monster-field-items`, 별칭 「벌레퇴치·탈출 로프·도망 무적·낚싯대」. 자세한 런타임 동작은 `openwiki/monster-expedition.md` 「야생 조우 보호·필드 도구·낚시」.
 
 ## 이야기형 연애 기본값 `apply_romance_preset` (2026-10-25, 시타마치)

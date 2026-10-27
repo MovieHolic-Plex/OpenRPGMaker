@@ -1,6 +1,7 @@
 // @vitest-environment happy-dom
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { installDesktopShellBridge } from "@/player/desktopShellBridge";
+import { gamepadStickSector, installDesktopShellBridge } from "@/player/desktopShellBridge";
+import { stickSectorKeys } from "@/player/touchPad";
 
 /**
  * One physical pad press must be one key event. The shell used to dispatch a
@@ -231,15 +232,115 @@ describe("desktop shell gamepad", () => {
     expect(downs.filter((event) => event.key === "Enter")).toHaveLength(1);
 
     axisY = 0;
+    const beforeRelease = downs.length;
     now = 4_000;
     flushFrame(frames);
-    expect(downs.filter((event) => event.key === "ArrowDown")).toHaveLength(4);
+    // 엣지 1 + 반복 2 = ArrowDown 3. 위 단언들(1520 길이 3 · 1533 반복 2)이 그 둘을 이미 고정하므로
+    // 총 keydown 은 Enter 까지 4 다 — 이 자리에서 4 를 기대하던 것은 총 개수와 ArrowDown 개수를 혼동한 것이다.
+    expect(downs.filter((event) => event.key === "ArrowDown")).toHaveLength(3);
     expect(downs.filter((event) => event.key === "Enter")).toHaveLength(1);
+    // 릴리스 프레임이 새 keydown 을 만들지 않아야 "반복이 멈춘다" 가 증명된다.
+    expect(downs).toHaveLength(beforeRelease);
 
     now = 5_000;
     flushFrame(frames);
-    expect(downs.filter((event) => event.key === "ArrowDown")).toHaveLength(4);
+    expect(downs).toHaveLength(beforeRelease);
     expect(downs.filter((event) => event.key === "Enter")).toHaveLength(1);
+  });
+
+  it("reads a 45° stick inside the old per-axis box, and keeps one cardinal when the tilt is slight", () => {
+    // 0.42 on both axes is magnitude ~0.59, but each axis is under the old 0.45 gate.
+    expect([...stickSectorKeys(gamepadStickSector(0.42, 0.42, null))].sort()).toEqual(["ArrowDown", "ArrowRight"]);
+    expect(gamepadStickSector(0.3, 0.3, null)).toBeNull();
+    expect([...stickSectorKeys(gamepadStickSector(0.8, 0.15, null))]).toEqual(["ArrowRight"]);
+    const held = gamepadStickSector(1, 0, null);
+    expect(gamepadStickSector(0.35, 0, held)).toBe(held);
+    expect(gamepadStickSector(0.2, 0, held)).toBeNull();
+  });
+
+  it("sends the diagonal from a half-tilt stick and does not drop it on the rim", () => {
+    const frames: FrameRequestCallback[] = [];
+    const restoreRaf = stubAnimationFrame(frames);
+    cleanups.push(restoreRaf);
+
+    let axisX = 0;
+    let axisY = 0;
+    const restorePads = stubGamepads(() => [gamepadWithStick(axisX, axisY)]);
+    cleanups.push(restorePads);
+
+    const downs: KeyboardEvent[] = [];
+    const ups: KeyboardEvent[] = [];
+    const onKeyDown = (event: Event): void => {
+      if (event instanceof KeyboardEvent && event.key.startsWith("Arrow")) downs.push(event);
+    };
+    const onKeyUp = (event: Event): void => {
+      if (event instanceof KeyboardEvent && event.key.startsWith("Arrow")) ups.push(event);
+    };
+    window.addEventListener("keydown", onKeyDown);
+    window.addEventListener("keyup", onKeyUp);
+    cleanups.push(() => {
+      window.removeEventListener("keydown", onKeyDown);
+      window.removeEventListener("keyup", onKeyUp);
+    });
+
+    const cleanup = installDesktopShellBridge(document.body, { gamepadPolling: true });
+    cleanups.push(cleanup);
+
+    flushFrame(frames);
+    axisX = 0.42;
+    axisY = 0.42;
+    flushFrame(frames);
+    expect(downs.map((event) => event.key).sort()).toEqual(["ArrowDown", "ArrowRight"]);
+    expect(ups).toHaveLength(0);
+
+    // Still outside the hold radius (~0.31), under the old 0.45 axis gate.
+    axisX = 0.22;
+    axisY = 0.22;
+    flushFrame(frames);
+    expect(ups).toHaveLength(0);
+    expect(downs).toHaveLength(2);
+
+    axisX = 0.1;
+    axisY = 0.1;
+    flushFrame(frames);
+    expect(ups.map((event) => event.key).sort()).toEqual(["ArrowDown", "ArrowRight"]);
+
+    // From rest, a nudge under the enter radius is still neutral.
+    axisX = 0.4;
+    axisY = 0;
+    flushFrame(frames);
+    expect(downs).toHaveLength(2);
+  });
+
+  it("forgets the stick hold radius when the pad disconnects", () => {
+    const frames: FrameRequestCallback[] = [];
+    const restoreRaf = stubAnimationFrame(frames);
+    cleanups.push(restoreRaf);
+
+    let pad: Gamepad | null = gamepadWithStick(-1, 0);
+    const restorePads = stubGamepads(() => [pad]);
+    cleanups.push(restorePads);
+
+    const downs: KeyboardEvent[] = [];
+    const onKeyDown = (event: Event): void => {
+      if (event instanceof KeyboardEvent && event.key === "ArrowLeft") downs.push(event);
+    };
+    window.addEventListener("keydown", onKeyDown);
+    cleanups.push(() => window.removeEventListener("keydown", onKeyDown));
+
+    const cleanup = installDesktopShellBridge(document.body, { gamepadPolling: true });
+    cleanups.push(cleanup);
+
+    flushFrame(frames);
+    expect(downs).toHaveLength(1);
+
+    pad = null;
+    window.dispatchEvent(new Event("gamepaddisconnected"));
+    // Between the enter radius (0.45) and the hold radius (0.30). Keeping the
+    // hold sector across a disconnect would start walking again.
+    pad = gamepadWithStick(-0.35, 0);
+    flushFrame(frames);
+    expect(downs).toHaveLength(1);
   });
 });
 

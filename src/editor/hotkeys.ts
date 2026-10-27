@@ -11,7 +11,10 @@
 // shouldIgnoreEditorShortcut() 로 가드한다.
 
 import { deleteSelectedEditorEvent } from "@/editor/eventDeletion";
+import { clearSelectionRegion } from "@/editor/mapClipboard";
+import { keyboardEventKey } from "@/player/keyBindings";
 import { EDITOR_ZOOM_LEVELS, editorState, type EditorState, type Layer, type Tool } from "@/editor/editorState";
+import { store } from "@/project/store";
 import { hasOpenModalLayer } from "@/editor/ui/modalStack";
 import { dismissLocationDrawModeForLayer, dismissLocationDrawModeForTool } from "@/editor/locationDrawMode";
 import { pendingHistoryLabels, redoMapEdit, undoMapEdit } from "@/editor/mapEditHistory";
@@ -133,7 +136,7 @@ export function isTextEditingElement(target: unknown): boolean {
 /** Ctrl/Cmd+Z · Ctrl/Cmd+Shift+Z · Ctrl/Cmd+Y 인지 — 히스토리 키를 다른 가드보다 먼저 라우팅하려면 필요. */
 export function isHistoryHotkeyChord(event: KeyboardEvent): boolean {
   if (!(event.ctrlKey || event.metaKey) || event.altKey) return false;
-  const key = event.key.toLowerCase();
+  const key = keyboardEventKey(event).toLowerCase();
   return key === "z" || key === "y";
 }
 
@@ -174,7 +177,7 @@ const handledHistoryEvents = new WeakSet<KeyboardEvent>();
 export function handleHistoryHotkey(event: KeyboardEvent): boolean {
   if (!(event.ctrlKey || event.metaKey) || event.altKey) return false;
   if (isTextEditingFocus(event)) return false;
-  const key = event.key.toLowerCase();
+  const key = keyboardEventKey(event).toLowerCase();
   if (key !== "z" && key !== "y") return false;
   if (handledHistoryEvents.has(event)) return false;
   handledHistoryEvents.add(event);
@@ -248,7 +251,9 @@ export function applyLayer(layer: Layer): void {
 /** Ctrl 없이 누른 키에 대한 에디터 전역 단축키 처리. true=처리함. */
 export function handleEditorKey(event: KeyboardEvent): boolean {
   if (shouldIgnoreEditorShortcut(event)) return false;
-  if ((event.ctrlKey || event.metaKey) && event.altKey && event.key.toLowerCase() === "w") {
+  // 한글 IME 가 켜져 있으면 B·1 같은 단축키의 key 가 Process 다. code 의 물리 키로 고른다.
+  const key = keyboardEventKey(event);
+  if ((event.ctrlKey || event.metaKey) && event.altKey && key.toLowerCase() === "w") {
     event.preventDefault();
     void import("@/editor/panels/worldEntries").then(({ openWorldPanel }) => { void openWorldPanel(); });
     return true;
@@ -277,7 +282,7 @@ export function handleEditorKey(event: KeyboardEvent): boolean {
   // F2/F3/F4: 그리드/줌 단축 보조(그리드 토글은 별도). 여기선 무시.
 
   // 숫자키 1..7: 도구.
-  const toolIndex = "1234567".indexOf(event.key);
+  const toolIndex = "1234567".indexOf(key);
   if (toolIndex >= 0 && toolIndex < TOOL_HOTKEYS.length) {
     event.preventDefault();
     const tool = TOOL_HOTKEYS[toolIndex];
@@ -296,8 +301,8 @@ export function handleEditorKey(event: KeyboardEvent): boolean {
   }
 
   // 문자키 도구 전환 — 숫자키와 동일한 레이어 가드.
-  const letterTool = TOOL_LETTER_HOTKEYS[event.key.toLowerCase()];
-  if (letterTool && event.key.length === 1) {
+  const letterTool = TOOL_LETTER_HOTKEYS[key.toLowerCase()];
+  if (letterTool && key.length === 1) {
     event.preventDefault();
     const state = editorState.get();
     if (letterTool === "event") {
@@ -314,12 +319,12 @@ export function handleEditorKey(event: KeyboardEvent): boolean {
   }
 
   // 줌: +/- 와 < > (RM2K3 는 +/- 사용). 정수 스텝만.
-  if (event.key === "+" || event.key === "=") {
+  if (key === "+" || key === "=") {
     event.preventDefault();
     stepZoom(+1);
     return true;
   }
-  if (event.key === "-" || event.key === "_") {
+  if (key === "-" || key === "_") {
     event.preventDefault();
     stepZoom(-1);
     return true;
@@ -331,11 +336,37 @@ export function handleEditorKey(event: KeyboardEvent): boolean {
 export function handleEditorDeleteKey(event: KeyboardEvent): boolean {
   if (shouldIgnoreEditorShortcut(event)) return false;
   if (event.ctrlKey || event.metaKey || event.altKey) return false;
-  if (event.key !== "Delete") return false;
-  if (editorState.get().layer !== "event") return false;
-  if (!deleteSelectedEditorEvent()) return false;
+  if (keyboardEventKey(event) !== "Delete") return false;
+  const state = editorState.get();
+  // 이벤트 레이어에서 이벤트가 잡혀 있으면 그 삭제가 우선이다. 확인을 취소하면
+  // 같은 Delete 로 타일 선택까지 지우지 않는다.
+  if (state.layer === "event" && state.selectedEventId) {
+    if (!deleteSelectedEditorEvent()) return false;
+    event.preventDefault();
+    return true;
+  }
+  if (!clearSelectedTileRegion()) return false;
   event.preventDefault();
   return true;
+}
+
+/**
+ * 캔버스에 포커스가 있을 때 Delete 는 지우기 버튼과 같다.
+ * 선택 바의 입력창이 포커스를 가진 경우는 그쪽 핸들러가 처리하고, 여기까지 오지 않는다.
+ * 붙여넣기 고스트가 떠 있는 동안에는 원본 영역을 비우지 않는다.
+ */
+function clearSelectedTileRegion(): boolean {
+  const state = editorState.get();
+  if (state.pastePreview || !state.selection) return false;
+  const project = store.getCurrent();
+  const preferred = state.currentMapId;
+  const mapId = preferred && project.maps[preferred]
+    ? preferred
+    : project.maps[project.startMapId]
+      ? project.startMapId
+      : null;
+  if (!mapId || state.selection.mapId !== mapId) return false;
+  return clearSelectionRegion(mapId);
 }
 
 /** 현재 줌에서 한 단계 위/아래로. 허용 줌 레벨 범위 안에서만. */

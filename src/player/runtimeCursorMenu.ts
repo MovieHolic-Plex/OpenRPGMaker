@@ -1,3 +1,4 @@
+import { keyboardEventKey } from "@/player/keyBindings";
 import { emitRuntimeJuice, type RuntimeJuiceOptions } from "@/player/runtimeJuice";
 import {
   isCancelKey,
@@ -79,8 +80,12 @@ export function attachCursorMenu(root: HTMLElement, opts: CursorMenuOptions): ()
 
   const handle = (event: KeyboardEvent): void => {
     if (signal.aborted) return;
-    if (event.isComposing) return; // IME 조합 중 무시
-    const dir = navDirection(event.key);
+    // IME 가 key 를 Process 로 바꿔도 code 의 물리 키로 커서를 움직인다.
+    // 글자 자체가 온 조합(isComposing 이고 복원되지 않음)은 그대로 무시한다.
+    const key = keyboardEventKey(event);
+    if (key === "Process" || key === "Unidentified") return;
+    if (event.isComposing && key === event.key) return;
+    const dir = navDirection(key);
     if (dir) {
       if ((dir === "left" || dir === "right") && opts.onHorizontal) {
         const consumed = opts.onHorizontal(dir === "left" ? -1 : 1, index);
@@ -97,14 +102,14 @@ export function attachCursorMenu(root: HTMLElement, opts: CursorMenuOptions): ()
       }
       return;
     }
-    if (isConfirmKey(event.key)) {
+    if (isConfirmKey(key)) {
       event.preventDefault();
       event.stopPropagation();
       if (event.repeat) return;
       items[index]?.click();
       return;
     }
-    if (isCancelKey(event.key)) {
+    if (isCancelKey(key)) {
       event.preventDefault();
       event.stopPropagation();
       if (event.repeat) return;

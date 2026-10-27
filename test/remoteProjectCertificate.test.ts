@@ -13,7 +13,8 @@ import {
 
 const REF = "abcdefghijklmnopqrst";
 const KEY = "aaa.bbb.ccc";
-const URL = `https://${REF}.legacyDb.co`;
+// 호스트는 소문자로 쓴다 — URL 파서가 호스트를 소문자로 바꾸므로 origin 비교가 그대로 맞는다.
+const URL = `https://${REF}.legacydb.co`;
 
 function validEnv(): RemoteCertificateEnvironment {
   return {

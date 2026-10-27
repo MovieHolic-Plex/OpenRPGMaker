@@ -121,7 +121,7 @@ npm run dev              # 개발 서버 (http://localhost:9999)
 npm run build:packaged   # 호스팅 / 데스크톱 렌더러 빌드
 npm run build:player     # 단독 웹 게임 플레이어
 npm start -- --project-dir /path/to/project   # 기존 SQLite 프로젝트 열기
-npm test                 # 단위 테스트
+npm test                 # 단위 테스트 (GitHub CI. 로컬은 OPRN_LOCAL_TESTS=1 이 없으면 바로 끝남)
 ```
 
 - 구조·데이터·에디터 문서는 [`openwiki/`](openwiki/) 에 있습니다. [`openwiki/quickstart.md`](openwiki/quickstart.md) 와 [`openwiki/PROJECT_WIKI.md`](openwiki/PROJECT_WIKI.md) 부터 읽으세요.

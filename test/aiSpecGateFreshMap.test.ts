@@ -1,8 +1,15 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { AssistantSession } from "@/ai/assistantSession";
 import { NON_TILE_SPATIAL_TOOLS, SPATIAL_BUILD_TOOLS, } from "@/ai/buildSpec";
 import { runTool } from "@/editor/tools";
 import { createBlankProject } from "@/project/defaults";
+import { COMBINED_TOWN_TILESET_ID } from "@/project/defaults/constants";
+import { withRetiredEasyRpgTilesets } from "./support/retiredEasyRpgTilesets";
+
+// Tests here build the ~63MB blank project (createBlankProject) and drive assistant sessions or editor
+// panels over it, fingerprinting/copying it per session. Under ci-full load (8 workers on 4-core runners)
+// single tests measured 10-50s, past vitest's 15s default, so the budget is raised for this file only.
+vi.setConfig({ testTimeout: 120_000 });
 
 type ChatResult = import("@/ai/llmClient").ChatResult;
 
@@ -27,9 +34,13 @@ function finalMsg(text: string): ChatResult {
   return { message: { role: "assistant", content: text, tool_calls: undefined }, finishReason: "stop" } as ChatResult;
 }
 
+// m1 sits on the retired combined-town sheet, as in aiSpecGate.test.ts: build_house is that sheet's harness, and on
+// the current default (beodeul_city) the tileset-reference read gate (tilesetReferenceEvidence) refuses tile writes
+// before the spec gate is even reached. The assistant refuses EasyRPG-family create_map (2026-10-06), so the map is
+// made outside the session.
 function projectWithMap() {
-  const ctx = { project: createBlankProject() };
-  expect(runTool(ctx, "create_map", { id: "m1", name: "게이트 테스트", width: 20, height: 20 }).ok).toBe(true);
+  const ctx = { project: withRetiredEasyRpgTilesets(createBlankProject()) };
+  expect(runTool(ctx, "create_map", { id: "m1", name: "게이트 테스트", width: 20, height: 20, tilesetId: COMBINED_TOWN_TILESET_ID }).ok).toBe(true);
   return ctx.project;
 }
 

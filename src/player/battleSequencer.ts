@@ -532,8 +532,20 @@ export function createBattleSequencer(
     const resultEntry = resultFromTimeline(entry);
     // 상태 엔트리는 userRecordId·targetId 를 들고 있어 resultEntry 가 만들어진다 — 예전에는 그래서
     // enemyActionDirectorState 로 떨어져 「발키리의 공격! 효과가 충분하지 않았다.」로 읽혔다(2026-09-29 실측).
+    // 상태만 치료한 약의 첫 엔트리는 stateRemoved 다. 명령 대사가 그 줄을 통째로 바꾸면
+    // 「독이 풀렸다」가 사라진다. 레트로 한 줄 창은 둘째 줄을 숨기므로, 선언과 상태 문장을
+    // 한 배열에 넣지 않고 이어서 읽힌다. 피해·회복 문장이 이미 있으면 명령 대사가 그 엔트리를 차지한다.
+    const statusAfterCommand = (firstDirector && entryOffset === firstDirectorIndex && (entry.kind === "stateAdded" || entry.kind === "stateRemoved"))
+      ? (() => {
+        const kept = firstDirector.lines.filter((line) => line && line !== "효과가 충분하지 않았다.");
+        if (kept.length > 1) return undefined;
+        const status = timelineDirectorState(entry, snapshot).lines.filter(Boolean);
+        if (status.length === 0) return undefined;
+        return { declaration: kept.slice(0, 1), status };
+      })()
+      : undefined;
     const rawDirector = (firstDirector && entryOffset === firstDirectorIndex)
-      ? firstDirector
+      ? (statusAfterCommand ? { ...firstDirector, lines: statusAfterCommand.declaration } : firstDirector)
       : actionEntryDirectorState(entry, snapshot)
         // 적 교체 엔트리도 userRecordId·targetId 가 있어 「○○의 공격!」으로 읽혔다 — 교체 문장으로.
         ?? (STATE_ENTRY_KINDS.has(entry.kind) || entry.kind === "switch" ? timelineDirectorState(entry, snapshot)
@@ -591,6 +603,20 @@ export function createBattleSequencer(
     }
     const visual = entry.kind === "damage" || entry.kind === "healing" || entry.kind === "miss"
       || entry.kind === "action" || entry.kind === "capture" || entry.kind === "stateUpkeep" || entry.kind === "stateRecovery";
+    if (statusAfterCommand) {
+      hooks.onDirectorState(directorBase);
+      hooks.onSyncView();
+      const statusPopup = entry.kind === "stateAdded" && entry.targetId
+        ? { targetId: entry.targetId, amount: 0, critical: false, healing: false, label: stateLabel(entry.stateId) }
+        : undefined;
+      delay(() => {
+        hooks.onDirectorState({ step: "acting", lines: [...statusAfterCommand.status], targetId: entry.targetId });
+        if (statusPopup) hooks.onDamageFeedback(statusPopup);
+        hooks.onSyncView();
+        delay(() => { if (statusPopup) hooks.onDamageFeedback(undefined); continueNext(); }, BATTLE_STATE_LINE_MS);
+      }, BATTLE_LOG_MS);
+      return;
+    }
     if (entry.kind === "stateAdded" && entry.targetId) {
       // 상태 이름이 대상 위에 숫자 팝업처럼 잠깐 떠오른다(표시 전용 label 피드백).
       hooks.onDirectorState(directorBase);
@@ -1052,7 +1078,23 @@ export function createBattleSequencer(
     if (target && adds.every((stateId) => target.stateIds.includes(stateId))) {
       return { failLine: `${withJosa(name, "은/는")} 이미 ${stateLabel(adds[0])} 상태다.` };
     }
+    // 주요 상태는 하나만 걸린다. 화상에 걸린 대상에게 마비가 막히면 「효과가 없었다」는
+    // 기술이 빗나간 것처럼 읽힌다 — 이미 있는 상태 이름을 말한다. 피해 기술의 부가 실패는
+    // 이 함수에 들어오지 않는다(action·피해 0 보조 기술만).
+    const occupied = target ? occupiedMajorStatusName(adds, target.stateIds) : undefined;
+    if (occupied) return { failLine: `${withJosa(name, "은/는")} 이미 ${occupied} 상태다.` };
     return { failLine: `${name}에게는 효과가 없었다.` };
+  }
+
+  /** 걸려고 한 상태 중 주요 상태가 있고, 대상에 다른 주요 상태가 이미 있으면 그 이름. */
+  function occupiedMajorStatusName(adds: readonly string[], stateIds: readonly string[]): string | undefined {
+    const byId = new Map(store.getCurrent().database.states.map((state) => [state.id, state]));
+    if (!adds.some((stateId) => byId.get(stateId)?.gen1MajorStatus)) return undefined;
+    for (const stateId of stateIds) {
+      const state = byId.get(stateId);
+      if (state?.gen1MajorStatus && !adds.includes(stateId)) return state.name;
+    }
+    return undefined;
   }
 
   /** 능력치 단계 변화(statStage)가 실린 special 엔트리의 문장 — 에메랄드 문장 규칙이면 「상대/야생 이름」을 쓴다. 아니면 undefined. */

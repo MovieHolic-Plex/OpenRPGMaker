@@ -9,6 +9,10 @@ import {
   validateLayoutPlacement,
 } from "@/project/lint/layoutPlacementValidate";
 import { repairLayoutPlacement } from "@/project/lint/layoutPlacementRepair";
+import { startOnRetiredCombinedTown } from "./support/retiredEasyRpgTilesets";
+
+// 나무·호수 타일 번호는 합본 마을 칩셋 기준이다 — 2026-10-07 정리 뒤 기본이 beodeul_city 라 옛 저장본처럼 시작 맵을 합본 마을에 둔다.
+const combinedTownProject = () => startOnRetiredCombinedTown(createBlankProject());
 
 const MAP = "map_blank_start";
 const CONIFER_TOP = 260;
@@ -16,7 +20,7 @@ const CONIFER_BOTTOM = 290;
 
 describe("validateLayoutPlacement", () => {
   it("flags props on water as error", () => {
-    const project = createBlankProject();
+    const project = combinedTownProject();
     const map = project.maps[MAP];
     map.lowerTiles[5 * map.width + 5] = LAKE_AUTOTILE_TILE.BODY;
     map.upperTiles[5 * map.width + 5] = CONIFER_BOTTOM;
@@ -26,7 +30,7 @@ describe("validateLayoutPlacement", () => {
   });
 
   it("flags incomplete conifer pair", () => {
-    const project = createBlankProject();
+    const project = combinedTownProject();
     const map = project.maps[MAP];
     map.upperTiles[4 * map.width + 4] = CONIFER_TOP;
     // no bottom
@@ -35,7 +39,7 @@ describe("validateLayoutPlacement", () => {
   });
 
   it("passes complete conifer on grass (canopy upper + trunk lower)", () => {
-    const project = createBlankProject();
+    const project = combinedTownProject();
     const map = project.maps[MAP];
     map.lowerTiles[4 * map.width + 4] = TILE.GRASS;
     map.lowerTiles[5 * map.width + 4] = CONIFER_BOTTOM;
@@ -49,7 +53,7 @@ describe("validateLayoutPlacement", () => {
   });
 
   it("passes forest stack where canopy sits on trunk cell", () => {
-    const project = createBlankProject();
+    const project = combinedTownProject();
     const map = project.maps[MAP];
     // 그루1: top@4, trunk lower@5 / 그루2: top upper@5, trunk lower@6
     map.lowerTiles[5 * map.width + 4] = CONIFER_BOTTOM;
@@ -61,7 +65,7 @@ describe("validateLayoutPlacement", () => {
   });
 
   it("warns (does not block) when instruction asks for trees but none landed", () => {
-    const project = createBlankProject();
+    const project = combinedTownProject();
     const issues = validateLayoutPlacement(project, {
       mapId: MAP,
       instruction: "호수 주변에 나무 심어",
@@ -75,7 +79,7 @@ describe("validateLayoutPlacement", () => {
 
 describe("repairLayoutPlacement", () => {
   it("물 위 나무를 육지로 옮겨 검증을 통과시킨다", () => {
-    const project = createBlankProject();
+    const project = combinedTownProject();
     const map = project.maps[MAP];
     map.lowerTiles[5 * map.width + 5] = LAKE_AUTOTILE_TILE.BODY;
     map.upperTiles[5 * map.width + 5] = CONIFER_BOTTOM;
@@ -87,7 +91,7 @@ describe("repairLayoutPlacement", () => {
   });
 
   it("밑동 없는 수관에 밑동을 붙여 통과시킨다", () => {
-    const project = createBlankProject();
+    const project = combinedTownProject();
     const map = project.maps[MAP];
     map.upperTiles[4 * map.width + 4] = CONIFER_TOP;
     const repaired = repairLayoutPlacement(project, { mapId: MAP });
@@ -96,7 +100,7 @@ describe("repairLayoutPlacement", () => {
   });
 
   it("지시만 있고 나무가 없으면 보식해서 통과시킨다", () => {
-    const project = createBlankProject();
+    const project = combinedTownProject();
     const repaired = repairLayoutPlacement(project, {
       mapId: MAP,
       instruction: "호수 주변에 나무 심어",
@@ -107,7 +111,7 @@ describe("repairLayoutPlacement", () => {
   });
 
   it("이미 통과하는 숲은 타일을 바꾸지 않는다", () => {
-    const project = createBlankProject();
+    const project = combinedTownProject();
     const map = project.maps[MAP];
     map.lowerTiles[4 * map.width + 4] = TILE.GRASS;
     map.lowerTiles[5 * map.width + 4] = CONIFER_BOTTOM;
@@ -122,7 +126,7 @@ describe("repairLayoutPlacement", () => {
   });
 
   it("region 을 주면 그 상자 안에만 보식한다 — 밖에 심으면 게이트는 여전히 0그루를 본다", () => {
-    const project = createBlankProject();
+    const project = combinedTownProject();
     const region = { x: 2, y: 2, width: 6, height: 6 };
     const repaired = repairLayoutPlacement(project, {
       mapId: MAP,

@@ -6,7 +6,7 @@ import { shopGreetingText } from '@/project/shopMessages';
 import type { ResolvedTerms } from '@/project/terms';
 import { dialogueHost } from '@/player/playSceneDom';
 import { goodsIndex, type ShopGoods } from '@/player/playSceneShopGoods';
-import { affordableQuantityMax, type ShopMode } from '@/player/playSceneShopParts';
+import { affordableQuantityMax, SHOP_BAG_FULL_REASON, SHOP_GOLD_CAP_REASON, unaffordableShopReason, type ShopMode } from '@/player/playSceneShopParts';
 import { installPlayPointerBlocker } from '@/player/playInputBlocker';
 import { emitRuntimeJuice } from '@/player/runtimeJuice';
 import { playMonsterSfx } from '@/player/monsterSfx';
@@ -120,7 +120,10 @@ export function playEmeraldShop(options: {
         const max = quantityMax(item);
         if (max < 1) {
           sound('menu-invalid'); phase = 'receipt';
-          message = mode === 'buy' ? '소지금이 부족합니다.' : '상인의 돈이 부족합니다.';
+          const reason = unaffordableShopReason(item, mode, session.gold, merchantGold, owned(item));
+          message = reason === SHOP_BAG_FULL_REASON || reason === SHOP_GOLD_CAP_REASON
+            ? reason
+            : mode === 'buy' ? '소지금이 부족합니다.' : '상인의 돈이 부족합니다.';
           render(); return;
         }
         sound('menu-confirm'); count = 1;

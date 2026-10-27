@@ -14,8 +14,12 @@ for(let round=0;round<Number(process.env.BATTLE_WARMUP_ROUNDS ?? 3);round++) for
  await page.addScriptTag({content:'window.__name = (fn) => fn'});
  for(let attempt=0;;attempt++) { try { await page.evaluate(async()=>{
   const imp=(p:string)=>import(/* @vite-ignore */p);
-  const [defaults,shim,runtime,warm,dom]=await Promise.all(['/src/project/defaults/defaultProject.ts','/src/player/exportProjectStoreShim.ts','/src/battle/runtime.ts','/src/player/battleStyleWarmup.ts','/src/player/battleDom.ts'].map(imp));
-  const project=defaults.createScarloxyPokemonDemoProject();shim.setExportedProject(project);
+  // 데모 팩토리는 `/src/project/defaults/defaultProject.ts` 의 createScarloxyDemoProject 다.
+  // 예전 이름(createScarloxyPokemonDemoProject)은 그 모듈에 없고 저장소 어디에도 export 되지 않는다.
+  // 이 오류는 player QA 서버가 없어 page.goto 가 먼저 죽는 동안(ERR_CONNECTION_REFUSED) 가려져 있었다.
+  // 전투 무리(troop_pkmn_grass_a)는 configureScarloxyPokemonDemoProject 가 넣으므로 그 설정을 직접 적용한다.
+  const [defaults,demo,shim,runtime,warm,dom]=await Promise.all(['/src/project/defaults/defaultProject.ts','/src/project/defaults/scarloxyPokemonDemoGame.ts','/src/player/exportProjectStoreShim.ts','/src/battle/runtime.ts','/src/player/battleStyleWarmup.ts','/src/player/battleDom.ts'].map(imp));
+  const project=defaults.createScarloxyDemoProject();demo.configureScarloxyPokemonDemoProject(project);shim.setExportedProject(project);
   const battle=runtime.createBattleRuntime({project,troopId:'troop_pkmn_grass_a',canEscape:true,canLose:true,rng:()=>0.5});
   const host=document.createElement('div');host.className='player-layout system-shell';host.style.cssText='position:relative;width:640px;height:480px';document.body.replaceChildren(host);
   (window as any).bench={host,battle,warm,dom};
@@ -24,8 +28,13 @@ for(let round=0;round<Number(process.env.BATTLE_WARMUP_ROUNDS ?? 3);round++) for
  const cdp=await page.context().newCDPSession(page);await cdp.send('Performance.enable');
  const metrics=async()=>Object.fromEntries((await cdp.send('Performance.getMetrics')).metrics.map(x=>[x.name,x.value]));
  await page.evaluate(()=>{performance.setResourceTimingBufferSize(5000);performance.clearResourceTimings();});
- let phase='warm';const requests:any[]=[];page.on('response',async r=>{if(r.request().resourceType()==='image')requests.push({phase,url:r.url(),status:r.status()});});
+ const imageEntries=async()=>page.evaluate(()=>performance.getEntriesByType('resource')
+  .filter((x:any)=>/[.](png|jpe?g|webp|gif|avif|svg)([?#]|$)/i.test(x.name))
+  .map((x:any)=>({url:x.name,bytes:x.transferSize,decoded:x.decodedBodySize})));
+ const phaseEntries=async(since:number)=>(await imageEntries()).slice(since);
+ const settleImages=async(start:number)=>{let prev=start,stable=0;for(let i=0;i<160;i++){await page.waitForTimeout(50);const n=(await imageEntries()).length;if(n>start&&n===prev){if(++stable>=2)return n;}else{stable=0;}prev=n;}return prev;};
  const a=await metrics();
+ const warmStart=(await imageEntries()).length;
  const warm=await page.evaluate(variant=>{
   const {host,battle,warm}= (window as any).bench;
   const append=host.append.bind(host);let images=0,backgrounds=0,width=0;
@@ -40,14 +49,17 @@ for(let round=0;round<Number(process.env.BATTLE_WARMUP_ROUNDS ?? 3);round++) for
   const t=performance.now();if(variant!=='cold')warm.warmBattleStyles(host,battle.snapshot());const ms=performance.now()-t;
   host.append=append;return {ms,images,backgrounds,width};
  },variant);
- await page.waitForTimeout(300);const b=await metrics();phase='mount';
+ await settleImages(warmStart);const b=await metrics();
+ const warmPhase=await phaseEntries(warmStart);
+ const mountStart=(await imageEntries()).length;
  const mount=await page.evaluate(()=>{const b=(window as any).bench;const t=performance.now();b.controller=b.dom.mountBattleScene({host:b.host,runtime:b.battle,onResult:()=>{},introHold:true});return performance.now()-t;});
- const c=await metrics();await page.waitForTimeout(300);
+ const c=await metrics();await settleImages(mountStart);
+ const mountPhase=await phaseEntries(mountStart);
  const resources=await page.evaluate(()=>performance.getEntriesByType('resource').filter((x:any)=>x.initiatorType==='img'||x.initiatorType==='css').map((x:any)=>({url:x.name,bytes:x.transferSize,decoded:x.decodedBodySize})));
- rows.push({round,variant,warm,mount,warmLayout:(b.LayoutDuration-a.LayoutDuration)*1000,mountLayout:(c.LayoutDuration-b.LayoutDuration)*1000,mountStyle:(c.RecalcStyleDuration-b.RecalcStyleDuration)*1000,requests,resources});
+ rows.push({round,variant,warm,mount,phases:{warm:warmPhase,mount:mountPhase},warmLayout:(b.LayoutDuration-a.LayoutDuration)*1000,mountLayout:(c.LayoutDuration-b.LayoutDuration)*1000,mountStyle:(c.RecalcStyleDuration-b.RecalcStyleDuration)*1000,resources});
  if(round===0 && variant==='current' && process.env.BATTLE_WARMUP_SCREENSHOT)await page.screenshot({path:process.env.BATTLE_WARMUP_SCREENSHOT});
  console.log(JSON.stringify(rows.at(-1)));
  await page.evaluate(()=>{const b=(window as any).bench;b.controller.destroy();b.battle.cancel();});await page.close();
 }
-writeFileSync(process.env.BATTLE_WARMUP_OUTPUT ?? '/tmp/lvD-save/battle-browser.json',JSON.stringify(rows,null,2));console.log(rows.map(({requests,resources,...r})=>r));
+writeFileSync(process.env.BATTLE_WARMUP_OUTPUT ?? '/tmp/lvD-save/battle-browser.json',JSON.stringify(rows,null,2));console.log(rows.map(({phases,resources,...r})=>r));
 }finally{await browser.close();}

@@ -70,22 +70,40 @@ export function gen1EffectChanceSucceeds(percent: number, nextByte: Gen1NextByte
   return normalizeByte(nextByte()) < threshold;
 }
 
+/**
+ * 상태 기술이 대상 타입 때문에 막힐 때 그 타입.
+ * 불꽃은 화상, 얼음은 얼음, 독·강철은 독·맹독에 걸리지 않는다. 기술을 준 타입과 무관하다
+ * (노말 기술로 거는 화상, 타입이 없는 접촉 특성도 포함). 전기 마비는 땅 타입에만 막힌다.
+ * 피해 기술의 「같은 타입이면 부가 상태가 안 붙는」 1세대 규칙은 여기 없다.
+ */
+export function gen1StatusMoveBlockedByTargetType(
+  status: Gen1MajorStatus,
+  moveType: Gen1CanonicalType | undefined,
+  targetTypes: readonly Gen1CanonicalType[],
+): Gen1CanonicalType | undefined {
+  const poisonous = status === "poison" || status === "toxic";
+  if (poisonous && targetTypes.includes("poison")) return "poison";
+  // 3세대 이후: 강철은 독 상태에 걸리지 않는다(15타입 1세대 프로젝트에는 강철 타입이 없어 영향 없음).
+  if (poisonous && targetTypes.includes("steel")) return "steel";
+  if (status === "burn" && targetTypes.includes("fire")) return "fire";
+  if (status === "freeze" && targetTypes.includes("ice")) return "ice";
+  if (status === "paralysis" && moveType === "electric" && targetTypes.includes("ground")) return "ground";
+  return undefined;
+}
+
 export function gen1MajorStatusBlockedByType(
   status: Gen1MajorStatus,
   moveType: Gen1CanonicalType | undefined,
   targetTypes: readonly Gen1CanonicalType[],
   moveKind: "damage" | "status",
 ): boolean {
-  const poisonous = status === "poison" || status === "toxic";
-  if (poisonous && targetTypes.includes("poison")) return true;
-  // 3세대 이후: 강철은 독 상태에 걸리지 않는다(15타입 1세대 프로젝트에는 강철 타입이 없어 영향 없음).
-  if (poisonous && targetTypes.includes("steel")) return true;
+  const immune = gen1StatusMoveBlockedByTargetType(status, moveType, targetTypes);
+  // 땅의 전기 마비 무효는 상태 기술(전기자석파)만. 피해 기술의 부가 마비는 상성 0 배가 맡는다.
+  if (immune && (immune !== "ground" || moveKind === "status")) return true;
   if (!moveType) return false;
+  // 1세대: 피해 기술의 부가 상태(수면 제외)는 기술과 같은 타입에게 붙지 않는다.
   if (moveKind === "damage" && status !== "sleep") return targetTypes.includes(moveType);
-  return moveKind === "status"
-    && status === "paralysis"
-    && moveType === "electric"
-    && targetTypes.includes("ground");
+  return false;
 }
 
 export function readGen1MajorStatus(

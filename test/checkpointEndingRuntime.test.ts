@@ -88,7 +88,8 @@ describe("checkpointSave / killPlayer / triggerEnding", () => {
 
     const step = createInterpreter([{ kind: "triggerEnding" }], session, project).start();
 
-    expect(step).toEqual({ kind: "returnToTitle", title: "높은 엔딩", message: "" });
+    // 엔딩 종료 단계는 이제 클리어 기록용 endingId 를 함께 싣는다.
+    expect(step).toEqual({ kind: "returnToTitle", title: "높은 엔딩", message: "", clear: { endingId: "ending_high" } });
     expect(session.flags["ending:ending_high"]).toBe(true);
     expect(session.flags["ending:ending_low"]).toBeUndefined();
   });
@@ -107,13 +108,15 @@ describe("checkpointSave / killPlayer / triggerEnding", () => {
 
     session.variables[variableId] = 6;
     const opened = createInterpreter([{ kind: "triggerEnding", endingId: "ending_love" }], session, project).start();
-    expect(opened).toEqual({ kind: "returnToTitle", title: "고백", message: "" });
+    expect(opened).toEqual({ kind: "returnToTitle", title: "고백", message: "", clear: { endingId: "ending_love" } });
     expect(session.flags["ending:ending_love"]).toBe(true);
   });
 
   it("define_ending은 같은 조건 집합의 낮은 priority 엔딩을 warning으로 보고한다", () => {
     const project = createBlankProject();
     const switchId = project.switches[0]!.id;
+    // priority 는 endingId 없는 triggerEnding(조건 선택형)이 있을 때만 결말을 가른다(3ed617bbea #2692) — 그 호출을 둔다.
+    project.commonEvents.push({ id: "pick_ending", name: "결말 고르기", trigger: "none", commands: [{ kind: "triggerEnding" }] });
     const ctx = { project };
     const first = runTool(ctx, "define_ending", {
       id: "ending_low",

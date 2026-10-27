@@ -13,9 +13,10 @@ import { tileCellsForPaintShape, tileRectFromDrag, tileRectWithinBounds, type Ti
 import { paintTilesBulk } from "@/editor/actions";
 import { worldmapAutoTile } from '@/project/worldmapAutoBrush';
 import { editorWorkingEvents } from "@/project/eventDrafts";
-import { findEventCoveringPoint } from "@/project/eventFootprintQuery";
+import { eventBodyFitsMap, eventBodyRect, findEventCoveringPoint } from "@/project/eventFootprintQuery";
+import { rectsOverlap } from "@/project/footprint";
 import { store } from "@/project/store";
-import type { MapId } from "@/project/types";
+import type { GameEvent, MapId } from "@/project/types";
 import { toast } from "@/util/toast";
 import type { TileLayer } from "./TilePaintEngine";
 
@@ -40,6 +41,8 @@ type DragOperation =
     readonly mapId: MapId;
     readonly eventId: string;
     readonly origin: TilePoint;
+    /** 드래그를 시작한 순간의 발밑 앵커. 잡은 칸과 다를 수 있다. */
+    readonly anchor: TilePoint;
   };
 
 type EventDragCandidate = {
@@ -146,11 +149,20 @@ export class DragOperationHandler {
     if (!candidate) return false;
     const point = this.deps.pointerToTile(ptr);
     if (point.x === candidate.origin.x && point.y === candidate.origin.y) return false;
+    const map = store.getCurrent().maps[candidate.mapId];
+    const moving = map
+      ? editorWorkingEvents(map.events).find((event) => event.id === candidate.eventId)
+      : undefined;
+    if (!moving) {
+      this.eventDragCandidate = null;
+      return false;
+    }
     this.dragOperation = {
       kind: "eventMove",
       mapId: candidate.mapId,
       eventId: candidate.eventId,
       origin: candidate.origin,
+      anchor: { x: moving.x, y: moving.y },
     };
     this.eventDragCandidate = null;
     this.deps.setPaintState({ isPainting: false, lastPaintKey: "" });
@@ -223,24 +235,34 @@ export class DragOperationHandler {
   private commitEventMoveDrag(operation: Extract<DragOperation, { readonly kind: "eventMove" }>, point: TilePoint): void {
     const map = store.getCurrent().maps[operation.mapId];
     if (!map || !isInsideMapPoint(point, map)) return;
-    if (point.x === operation.origin.x && point.y === operation.origin.y) return;
+    const events = editorWorkingEvents(map.events);
+    const moving = events.find((event) => event.id === operation.eventId);
+    if (!moving) return;
+    const plan = planEventDragMove({
+      mapWidth: map.width,
+      mapHeight: map.height,
+      moving: { ...moving, x: operation.anchor.x, y: operation.anchor.y },
+      others: events,
+      anchor: operation.anchor,
+      origin: operation.origin,
+      drop: point,
+    });
+    if (!plan.ok && plan.reason === "same") return;
     if (!canEditMap(operation.mapId)) {
       toast(mapEditLockNotice(operation.mapId), "error");
       return;
     }
-    // 끌어다 놓을 칸이 남의 **몸 사각**에 걸리면 거절한다. 앵커만 보던 시절에는 2x2
-    // 이벤트의 비앵커 칸으로 다른 이벤트를 밀어 넣을 수 있었다.
-    const occupied = findEventCoveringPoint(
-      editorWorkingEvents(map.events).filter((event) => event.id !== operation.eventId),
-      point.x,
-      point.y
-    ) !== undefined;
-    if (occupied) {
-      toast("이미 다른 이벤트가 있는 칸입니다.", "error");
+    if (!plan.ok) {
+      toast(
+        plan.reason === "occupied"
+          ? "이미 다른 이벤트가 있는 칸입니다."
+          : "이벤트 몸이 맵 밖으로 나갑니다.",
+        "error",
+      );
       return;
     }
     recordProjectSnapshot();
-    moveEvent(operation.mapId, operation.eventId, point.x, point.y);
+    moveEvent(operation.mapId, operation.eventId, plan.x, plan.y);
     editorState.set({ selectedEventId: operation.eventId });
   }
 
@@ -279,4 +301,38 @@ export class DragOperationHandler {
 
 function isInsideMapPoint(point: TilePoint, map: { readonly width: number; readonly height: number }): boolean {
   return point.x >= 0 && point.y >= 0 && point.x < map.width && point.y < map.height;
+}
+
+type EventDragMovePlan =
+  | { readonly ok: true; readonly x: number; readonly y: number }
+  | { readonly ok: false; readonly reason: "same" | "outside" | "occupied" };
+
+/**
+ * 이벤트 드래그의 도착 앵커.
+ *
+ * 잡은 칸이 커서 아래에 남는다. 1칸이면 잡은 칸이 곧 앵커라 도착점은 드롭 칸이다.
+ * 2칸 이상에서 머리·옆 칸을 잡으면 앵커는 포인터가 움직인 칸 수만큼만 이동한다.
+ * 도착한 몸 사각이 맵 밖이거나 다른 이벤트 몸과 겹치면 옮기지 않는다.
+ */
+export function planEventDragMove(input: {
+  readonly mapWidth: number;
+  readonly mapHeight: number;
+  readonly moving: GameEvent;
+  readonly others: readonly GameEvent[];
+  readonly anchor: TilePoint;
+  readonly origin: TilePoint;
+  readonly drop: TilePoint;
+}): EventDragMovePlan {
+  const x = input.anchor.x + (input.drop.x - input.origin.x);
+  const y = input.anchor.y + (input.drop.y - input.origin.y);
+  if (x === input.anchor.x && y === input.anchor.y) return { ok: false, reason: "same" };
+  const moved = { ...input.moving, x, y };
+  const body = eventBodyRect(moved);
+  if (!eventBodyFitsMap(moved, input.mapWidth, input.mapHeight)) {
+    return { ok: false, reason: "outside" };
+  }
+  const occupied = input.others.some((event) =>
+    event.id !== input.moving.id && rectsOverlap(eventBodyRect(event), body));
+  if (occupied) return { ok: false, reason: "occupied" };
+  return { ok: true, x, y };
 }

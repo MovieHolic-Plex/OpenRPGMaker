@@ -9,6 +9,7 @@ import {
 import { createAiPreviewProject } from "@/project/aiPreviewGenerator";
 import { createBlankProject } from "@/project/defaults";
 import { FakeElement, installFakeDom } from "./fakeDom";
+import { withRetiredEasyRpgTilesets } from "./support/retiredEasyRpgTilesets";
 
 function withFakeDom<T>(run: () => T): T {
   const restore = installFakeDom();
@@ -27,7 +28,8 @@ function directParagraphText(container: HTMLElement): string[] {
 
 describe("AI assistant preview summaries", () => {
   it("shows diff, evidence, and approval-relevant metadata for a successful preview", () => {
-    const source = createBlankProject();
+    // The preview generator targets the EasyRPG combined-town sheet, which new projects no longer ship (2026-10-07 purge).
+    const source = withRetiredEasyRpgTilesets(createBlankProject());
     const result = createAiPreviewProject({ goal: "작은 항구 마을", sourceProject: source });
 
     expect(result.ok).toBe(true);
@@ -49,7 +51,7 @@ describe("AI assistant preview summaries", () => {
   });
 
   it("surfaces fail-closed missing evidence instead of approval metadata", () => {
-    const result = createAiPreviewProject({ goal: "추상적인 분위기", sourceProject: createBlankProject() });
+    const result = createAiPreviewProject({ goal: "추상적인 분위기", sourceProject: withRetiredEasyRpgTilesets(createBlankProject()) });
 
     expect(result.ok).toBe(false);
     if (result.ok) throw new Error("expected fail-closed result");

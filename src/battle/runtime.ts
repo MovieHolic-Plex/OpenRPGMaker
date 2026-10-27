@@ -168,6 +168,7 @@ import {
   stepGen1Confusion,
   gen1EffectChanceSucceeds,
   gen1MajorStatusBlockedByType,
+  gen1StatusMoveBlockedByTargetType,
   gen1ParalyzedSpeed,
   readGen1MajorStatus,
   stepGen1MajorStatus,
@@ -864,20 +865,33 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     const stateRecords = gen1StateRecords();
     for (const effect of effects) {
       const stateRecord = stateRecords.find((state) => state.id === effect.stateId);
+      const moveType = move ? gen1CanonicalTypeForId(options.project, move.type) : undefined;
+      const targetCanonicalTypes = battlerTypes(options.project, target).flatMap((typeId) => {
+        const canonical = gen1CanonicalTypeForId(options.project, typeId);
+        return canonical ? [canonical] : [];
+      });
       if (
         effect.operation === "add"
         && stateRecord?.gen1MajorStatus
         && move
         && gen1MajorStatusBlockedByType(
           stateRecord.gen1MajorStatus,
-          gen1CanonicalTypeForId(options.project, move.type),
-          battlerTypes(options.project, target).flatMap((typeId) => {
-            const canonical = gen1CanonicalTypeForId(options.project, typeId);
-            return canonical ? [canonical] : [];
-          }),
+          moveType,
+          targetCanonicalTypes,
           move.kind,
         )
-      ) continue;
+      ) {
+        // 상태 기술이 타입 때문에 막히면 그 이유를 말한다. 이미 다른 주요 상태가 있어도
+        // 「이미 마비 상태다」로 읽히면 기술이 그 상태 때문에 막힌 것처럼 보인다.
+        if (move.kind === "status") {
+          const immune = gen1StatusMoveBlockedByTargetType(stateRecord.gen1MajorStatus, moveType, targetCanonicalTypes);
+          if (immune) {
+            const label = typeName(gen1ElementIdForCanonical(options.project, immune));
+            recordSpecial(user, target, `${withJosa(target.name, "은/는")} ${label} 타입이라 ${stateName(effect.stateId)} 상태에 걸리지 않는다!`);
+          }
+        }
+        continue;
+      }
       if (!gen1EffectChanceSucceeds(effect.chance, nextGen1Byte)) continue;
       if (effect.operation === "remove") {
         if (!target.stateIds.includes(effect.stateId)) continue;
@@ -1803,26 +1817,35 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
         // 소모되던 결함(계약: "consume one inventory unit per command"). applyItem 은
         // 효과 적용만 담당하고, finite-use 전환(transitionItemState)은 여기서 1회 돈다.
         if (targets.length > 0) consumeItemUse(command.itemId);
+        // 도구도 한 차례다. 독·화상은 회복 뒤에 깎인다(해독하면 잔여 피해 없음).
+        applyGen1Residual(actor);
         break;
       }
       case "capture":
         applyCapture(actor, command.captureItemId, command.targetEnemyId);
+        // 잡히면 전투가 끝난다. 실패한 던지기만 그 차례의 잔여 피해를 받는다.
+        if (!lastCaptureResult?.success) applyGen1Residual(actor);
         break;
       case "defend":
         actor.defending = true;
         recordTimeline({ kind: "action", side: "actor", userRecordId: actor.recordId, targetId: actor.id, commandKind: "defend" });
+        applyGen1Residual(actor);
         break;
       case "escape":
         attemptEscape();
         recordTimeline({ kind: "action", side: "actor", userRecordId: actor.recordId, targetId: actor.id, commandKind: "escape", success: escaped });
+        // 도망에 성공하면 전투가 끝난다. 실패만 그 차례의 잔여 피해를 받는다.
+        if (!escaped) applyGen1Residual(actor);
         break;
       case "switch":
+        // 교체로 빠지면 그 몬스터의 차례 말 독·화상은 없다(필드에 없다).
         switchActiveActor(actor.recordId, command.targetActorId);
         break;
       case "commonEvent":
         // 실행은 이 행동 뒤 트룹 이벤트 흐름(applyTroopEvents) 앞머리에서 — 문장·선택지가 같은 정지·재개를 탄다.
         battleEvents.queueCommonEvent(command.commonEventId);
         recordTimeline({ kind: "action", side: "actor", userRecordId: actor.recordId, targetId: actor.id, commandKind: "commonEvent" });
+        applyGen1Residual(actor);
         break;
     }
   }
@@ -2745,7 +2768,11 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       const targets = resolution.requiresSelection
         ? resolution.targets
         : resolution.targets;
-      if (targets.length === 0) return;
+      if (targets.length === 0) {
+        // 기술은 고르고 맞출 대상이 없어도 차례는 쓴다. 독·화상 잔여 피해를 건너뛰면 그 턴만 공짜가 된다.
+        applyGen1Residual(enemy);
+        return;
+      }
       // Red/Blue non-link opponents do not decrement PP. Player-controlled
       // battlers still use the normal finite-PP path above.
       if (!gen1) consumeBattleSkillResource(options.project, enemy, skillId);
@@ -3118,10 +3145,26 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     if (!usesNativeMedicineEffects && skillId) {
       applySkillCast(user, targets, skillId, "item", 1, attachItemAnimation);
     } else {
+      // 해독초·맑은 종처럼 HP/MP 가 안 움직이는 약은 0 회복 줄을 남기지 않는다.
+      // 그 줄이 있으면 화면이 「효과가 충분하지 않았다」·「합계 0 회복했다」로 읽고,
+      // 바로 다음 줄에서 독이 풀렸다고 말한다. 대상 전원이 그대로일 때만 무효 한 줄을 남긴다.
+      const unchanged: MutableBattler[] = [];
       for (const target of targets) {
+        const beforeLength = timeline.length;
         applyItemRecovery(user, target, item);
         applyStates(user, target, itemStateEffectsForBattle(item));
-        attachItemAnimation(target);
+        if (timeline.length === beforeLength) unchanged.push(target);
+        else attachItemAnimation(target);
+      }
+      if (unchanged.length === targets.length && unchanged[0]) {
+        recordAction({
+          userRecordId: user.recordId,
+          targetId: unchanged[0].id,
+          hit: true,
+          amount: 0,
+          critical: false,
+        }, "action", "item");
+        attachItemAnimation(unchanged[0]);
       }
     }
   }
@@ -3212,6 +3255,9 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       // PP is its own resource: never send a PP amount to the HP/MP ledger.
       if (hpGain === 0 && mpGain === 0) return;
     }
+    // 이미 가득 찼거나 회복량이 없는 약은 HP/MP 원장에 0 을 싣지 않는다.
+    // 상태 치료만 된 경우는 상태 엔트리가, 아무 변화도 없는 경우는 호출부가 무효 행동을 남긴다.
+    if (hpGain === 0 && mpGain === 0) return;
     const resource: "hp" | "mp" = hpGain > 0 ? "hp" : "mp";
     recordAction({
       userRecordId: user.recordId,

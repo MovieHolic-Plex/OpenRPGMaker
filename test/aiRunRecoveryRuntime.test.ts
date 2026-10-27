@@ -21,6 +21,11 @@ import { approvedReviewResponse } from "./independentReviewFixture";
 import { bounded, deferred, epochRunner, reviewingChat } from "./aiEpochFixture";
 import { installFakeDom } from "./fakeDom";
 
+// Tests here build the ~63MB blank project (createBlankProject) and drive assistant sessions or editor
+// panels over it, fingerprinting/copying it per session. Under ci-full load (8 workers on 4-core runners)
+// single tests measured 10-50s, past vitest's 15s default, so the budget is raised for this file only.
+vi.setConfig({ testTimeout: 120_000 });
+
 vi.mock("@/ai/preferenceSignals", () => ({ observeTurn: () => ({}), shouldDistillPreferences: () => false }));
 const checkpointHost = { conversationId: "crash-conversation", projectId: "recovery-project", projectContextKey: "remote:recovery-project" };
 const config = { ...llm.defaultAiConfig(), agentMode: "chat" as const, model: "fixture", liteModel: "fixture", maxToolCalls: 12 };
@@ -29,7 +34,7 @@ const tool = (name: string, args: unknown): llm.ChatResult => ({ message: { role
   tool_calls: [{ id: name, type: "function", function: { name, arguments: JSON.stringify(args) } }] }, finishReason: "tool_calls" });
 let restoreDom: () => void;
 beforeEach(async () => {
-  restoreDom = installFakeDom(); vi.stubGlobal("indexedDB", new IDBFactory()); resetAiRecordDbForTest();
+  restoreDom = installFakeDom({ window: true }); vi.stubGlobal("indexedDB", new IDBFactory()); resetAiRecordDbForTest();
   const values = new Map([[llm.AI_CONFIG_STORAGE_KEY, JSON.stringify(config)]]);
   vi.stubGlobal("localStorage", { getItem: (key: string) => values.get(key) ?? null,
     setItem: (key: string, value: string) => values.set(key, value), removeItem: (key: string) => values.delete(key) });

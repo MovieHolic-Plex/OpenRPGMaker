@@ -11,10 +11,10 @@ import {
   undoMapEdit,
 } from "@/editor/mapEditHistory";
 import { createBlankProject } from "@/project/defaults";
-import { serialize } from "@/project/io";
 import { store } from "@/project/store";
 import { setTeamRole } from "@/project/teamAccess";
 import type { Project } from "@/project/types";
+import { installMemoryProjectSession, type MemoryProjectSession } from "./support/projectSession";
 
 function firstMapId(project: Project): string {
   const id = Object.keys(project.maps)[0];
@@ -33,17 +33,15 @@ function projectNamed(mapName: string): Project {
   return project;
 }
 
-function stubRemoteProject(project: Project): void {
-  vi.stubEnv("VITE_LEGACY_DB_ANON_KEY", "test-anon-key");
-  vi.stubEnv("VITE_LEGACY_DB_PROJECT_ID", "previous-project");
-  vi.stubEnv("VITE_LEGACY_DB_URL", "http://dbserver:8100");
-  const currentJson = JSON.parse(serialize(project));
-  vi.stubGlobal("fetch", vi.fn<typeof fetch>(async (input) => {
-    if (String(input).includes("/rest/v1/projects?")) {
-      return new Response(JSON.stringify([{ current_json: currentJson, current_sha256: "test-sha" }]), { status: 200 });
-    }
-    return new Response("[]", { status: 200 });
-  }));
+let session: MemoryProjectSession | null = null;
+
+/**
+ * The store no longer picks a LegacyDb repository from VITE_LEGACY_DB_* env (storage retirement; the canonical store is
+ * the host SQLite behind ProjectRepository). Install a memory repository holding the selected project instead.
+ */
+async function stubRemoteProject(project: Project): Promise<void> {
+  session = installMemoryProjectSession();
+  await session.seed(project);
 }
 
 beforeEach(() => {
@@ -53,6 +51,8 @@ beforeEach(() => {
 });
 
 afterEach(() => {
+  session?.dispose();
+  session = null;
   setTeamRole(null);
   store._setPersistenceStateForTest({ loaded: false, remotePersistenceEnabled: false, disabledReason: null });
   vi.restoreAllMocks();
@@ -97,25 +97,10 @@ describe("project switch invalidates map edit history", () => {
     expect(currentMapName()).toBe("이전 프로젝트 맵");
   });
 
-  it("drops the undo stack after a transactional new remote project switch", async () => {
-    stubRemoteProject(projectNamed("원격 기준 맵"));
-    await expect(store.reconnectRemotePersistence()).resolves.toEqual({ kind: "connected", source: "remote" });
-    resetMapEditHistory();
-    recordProjectSnapshot("이전 프로젝트 편집");
-    expect(getMapEditHistoryState().canUndo).toBe(true);
-    const candidate = projectNamed("새 원격 프로젝트 맵");
-
-    await store.loadNewRemoteProjectTransactionally(candidate, { projectId: "next-project" }, {
-      createProjectId: () => "unused-project-id",
-      saveTarget: async (project) => ({ kind: "saved", project }),
-      reloadTarget: async () => structuredClone(candidate),
-    });
-
-    expect(getMapEditHistoryState().canUndo).toBe(false);
-  });
+  // 「transactional new remote project switch」 는 뺐다 — store.loadNewRemoteProjectTransactionally 가 저장소 정리(LegacyDb 은퇴)로 없어졌다.
 
   it("drops the undo stack after reconnecting to the selected remote project", async () => {
-    stubRemoteProject(projectNamed("선택한 원격 프로젝트 맵"));
+    await stubRemoteProject(projectNamed("선택한 원격 프로젝트 맵"));
     recordProjectSnapshot("이전 프로젝트 편집");
     expect(getMapEditHistoryState().canUndo).toBe(true);
 

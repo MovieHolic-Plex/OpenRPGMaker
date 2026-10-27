@@ -33,6 +33,8 @@ describe("account selection and persisted work models", () => {
     });
     const config = defaultAiConfig();
     config.roleModels = { vision: { provider: google, model: "gemini-3-pro", thinkingLevel: "high" } };
+    // The default image route is ChatGPT now (da29a9f402), so the user's direct Google image choice is made explicitly here.
+    config.imageProviderId = google;
     config.modelSelectionOverrides = { vision: true, image: true };
     saveAiConfig(config);
     const next = configForProviderSelection(loadAiConfig(), codex);

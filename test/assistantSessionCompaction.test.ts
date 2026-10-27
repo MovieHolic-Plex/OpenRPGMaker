@@ -7,7 +7,7 @@
 // 임계는 "직전 요청에 공급자가 과금한 prompt_tokens" 로 넘긴다(recordPromptUsage → lastPromptTokens).
 // 로컬 추정만으로 넘기려면 픽스처가 45만 자를 넘어야 하고, 그러면 어느 라운드에서 넘는지가
 // 시스템 프롬프트 길이에 딸려 흔들린다. 과금 값을 주면 트리거 지점이 하나로 고정된다.
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { AssistantSession } from "@/ai/assistantSession";
 import {
   isCompactionSummaryMessage,
@@ -15,6 +15,11 @@ import {
 } from "@/ai/contextCompaction";
 import type { AiConfig, ChatMessage, ChatRequest, ChatResult } from "@/ai/llmClient";
 import { createBlankProject } from "@/project/defaults";
+
+// Tests here build the ~63MB blank project (createBlankProject) and drive assistant sessions or editor
+// panels over it, fingerprinting/copying it per session. Under ci-full load (8 workers on 4-core runners)
+// single tests measured 10-50s, past vitest's 15s default, so the budget is raised for this file only.
+vi.setConfig({ testTimeout: 120_000 });
 
 // 알 수 없는 모델 = DEFAULT_CONTEXT_WINDOW 128,000. reserve 16,384 → 임계 111,616 토큰.
 // agentMode "chat" + liteModel === model → 플래너 라운드 없음(콜 수가 결정적이다).

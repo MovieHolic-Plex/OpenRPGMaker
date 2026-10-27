@@ -91,34 +91,60 @@ export function verificationInitialState(name: string, project: Project): unknow
   return { session: project.session, flags: project.flags, switches: project.switches.map(entry => entry.id), variables: project.variables.map(entry => entry.id) };
 }
 
+/**
+ * set_work_plan 은 레지스트리 밖이라 runTool 의 스키마 정규화를 안 거친다.
+ * stepIndex·criterionIndex 를 "0" 으로 보내면 선언 전체가 버려져 검증이 없는 계획이 된다.
+ * JSON Schema integer 와 같이, 비어 있지 않은 숫자 문자열을 안전한 정수로 읽는다.
+ */
+function coerceSchemaInteger(value: unknown): number | null {
+  if (typeof value === "string" && value.trim() === "") return null;
+  const numeric = typeof value === "string" ? Number(value) : value;
+  return typeof numeric === "number" && Number.isSafeInteger(numeric) ? numeric : null;
+}
+
+/**
+ * set_work_plan skips schema normalization, so one verification check or one
+ * interaction target often arrives as the object itself. Preflight already wraps
+ * that shape, then rejects the plan because the stored item dropped it.
+ * A string, null, or other non-object stays absent.
+ */
+function singleOrList(raw: unknown): readonly unknown[] | null {
+  if (Array.isArray(raw)) return raw;
+  return acceptanceRecord(raw) ? [raw] : null;
+}
+
 /** Partial ownership can be retained while pending; executable scopes require every interaction. */
 export function parseSceneInteractionTargets(input: SceneTestInput, raw: unknown, complete = true): SceneInteractionReceipt[] | null {
-  if (!Array.isArray(raw)) return null;
+  const list = singleOrList(raw);
+  if (!list) return null;
   const targets: SceneInteractionReceipt[] = [];
   let previous = -1;
-  for (const target of raw) {
+  for (const target of list) {
+    const stepIndex = acceptanceRecord(target) ? coerceSchemaInteger(target.stepIndex) : null;
     if (!acceptanceRecord(target) || Object.keys(target).some(k => !["stepIndex", "mapId", "eventId"].includes(k))
-      || typeof target.stepIndex !== "number" || !Number.isSafeInteger(target.stepIndex) || target.stepIndex <= previous
+      || stepIndex === null || stepIndex <= previous
       || typeof target.mapId !== "string" || !target.mapId || typeof target.eventId !== "string") return null;
-    const step = input.steps[target.stepIndex];
+    const step = input.steps[stepIndex];
     if (step?.kind !== "interact" || typeof step.eventId !== "string" || target.eventId !== step.eventId) return null;
-    targets.push({ stepIndex: target.stepIndex, mapId: target.mapId, eventId: target.eventId });
-    previous = target.stepIndex;
+    targets.push({ stepIndex, mapId: target.mapId, eventId: target.eventId });
+    previous = stepIndex;
   }
   return complete && targets.length !== input.steps.filter(step => step.kind === "interact").length ? null : targets;
 }
 
 export function parseVerificationChecks(raw: unknown): readonly VerificationCheck[] | undefined {
-  if (!Array.isArray(raw)) return undefined;
-  const parsed = raw.flatMap((entry): VerificationCheck[] => {
+  const list = singleOrList(raw);
+  if (!list) return undefined;
+  const parsed = list.flatMap((entry): VerificationCheck[] => {
     if (!acceptanceRecord(entry) || typeof entry.tool !== "string" || !VERIFICATION_TOOL_NAMES.has(entry.tool)
       || (entry.checkId !== undefined && (typeof entry.checkId !== "string" || !entry.checkId))) return [];
     const reference = typeof entry.checkId === "string" ? { checkId: entry.checkId } : {};
+    const criterionIndex = acceptanceRecord(entry.criterion) ? coerceSchemaInteger(entry.criterion.criterionIndex) : null;
     if (Object.keys(entry).every(k => ["tool", "criterion", "checkId"].includes(k)) && acceptanceRecord(entry.criterion)
       && Object.keys(entry.criterion).every(k => ["promiseId", "criterionIndex"].includes(k))
       && typeof entry.criterion.promiseId === "string" && entry.criterion.promiseId.length > 0
-      && typeof entry.criterion.criterionIndex === "number" && Number.isSafeInteger(entry.criterion.criterionIndex) && entry.criterion.criterionIndex >= 0) {
-      return [{ ...reference, tool: entry.tool, criterion: { promiseId: entry.criterion.promiseId, criterionIndex: entry.criterion.criterionIndex } }];
+      && criterionIndex !== null && criterionIndex >= 0) {
+      return [{ ...reference, tool: entry.tool, criterion: { promiseId: entry.criterion.promiseId, criterionIndex } }];
     }
     if (Object.keys(entry).some(k => !["tool", "args", "interactionTargets", "checkId"].includes(k))) return [];
     const args = verificationInput(entry.tool, entry.args);
@@ -129,7 +155,7 @@ export function parseVerificationChecks(raw: unknown): readonly VerificationChec
     }
     return entry.interactionTargets === undefined ? [{ ...reference, tool: entry.tool, args }] : [];
   });
-  return parsed.length === raw.length ? parsed : undefined;
+  return parsed.length === list.length ? parsed : undefined;
 }
 
 function sceneIdentity(args: Record<string, unknown>): unknown {

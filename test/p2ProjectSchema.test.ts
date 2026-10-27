@@ -61,7 +61,9 @@ describe("P2 authored foundation schema", () => {
 
   it("keeps legacy projects byte-stable without P2 fields", () => {
     // Break caught: P2 normalization invents empty packages in an old project.
-    const before = serialize(createLegacyLifeProject());
+    // 비교 기준은 한 번 읽은(정규화한) 모양이다 — 새 프로젝트의 기본값(system.battleUiStyle="retro2003")은 로드가 생략하므로
+    // 첫 저장 글과 재저장 글은 표현만 다르다(내용 같음, #3774 이전부터). 이 시험이 잡는 것은 «로드가 필드를 지어내지 않는다»이다.
+    const before = serialize(deserialize(serialize(createLegacyLifeProject())));
     const loaded = deserialize(before) as unknown as Mutable;
     expect(loaded.database.fishSpecies).toBeUndefined();
     expect(loaded.system.fishing).toBeUndefined();

@@ -175,8 +175,9 @@ function openCellBatchDialog(cells: readonly BattleAnimationCell[], onApply: (pa
   backdrop.append(
     el("div", {
       class: "db-enemy-dialog",
+      attrs: { role: "dialog", "aria-modal": "true", "aria-labelledby": "db-animation-cell-batch-title" },
       children: [
-        el("header", { text: "셀 일괄 설정" }),
+        el("header", { text: "셀 일괄 설정", attrs: { id: "db-animation-cell-batch-title" } }),
         el("main", {
           children: [
             fieldRow("패턴", pattern),
@@ -189,8 +190,8 @@ function openCellBatchDialog(cells: readonly BattleAnimationCell[], onApply: (pa
         el("footer", {
           children: [
             el("button", {
-              class: "btn small",
-              text: "OK",
+              class: "btn small primary",
+              text: "확인",
               dataset: { testid: "db-animation-cell-batch-ok" },
               attrs: { type: "button" },
               on: {
@@ -209,7 +210,7 @@ function openCellBatchDialog(cells: readonly BattleAnimationCell[], onApply: (pa
             }),
             el("button", {
               class: "btn small",
-              text: "Cancel",
+              text: "취소",
               dataset: { testid: "db-animation-cell-batch-cancel" },
               attrs: { type: "button" },
               on: { click: close },

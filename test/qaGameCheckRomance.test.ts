@@ -144,7 +144,8 @@ describe("checkRomance — 연애 게임 부합 경고", () => {
     const ctx = { project: romanceProject() };
     ctx.project.system.timeSystem = { enabled: true } as never;
     const map = Object.values(ctx.project.maps)[0]!;
-    map.events.push(npc("a"), npc("b"));
+    // 투명 이벤트는 사람이 아니라 인물 엔딩에서 빠진다(canonicalizeRomanceHeroines, #2894) — 두 인물에게 칩을 단다.
+    map.events.push(npc("a", { chip: "tex_oprn_charset_modern2" }), npc("b", { chip: "tex_oprn_charset_modern2" }));
     ctx.project.endings = [
       { id: "ending_first_segment", name: "혼자", conditions: [], priority: 0 },
       { id: "ending_romance_happy", name: "해피", conditions: [{ kind: "friendshipAtLeast", npcKey: "*", value: 60 }], priority: 20 },
@@ -208,7 +209,7 @@ describe("checkRomance — 연애 게임 부합 경고", () => {
   });
 
 
-  it("한글 characterId 인물도 서로 다른 엔딩 id 를 받고 기한 판정은 해피 호출을 유지한다", () => {
+  it("한글 characterId 인물도 서로 다른 엔딩 id 를 받고 기한 판정은 일반 해피를 뺀다", () => {
     const project = romanceProject();
     project.system.timeSystem = { enabled: true } as never;
     project.endings = [
@@ -228,7 +229,8 @@ describe("checkRomance — 연애 게임 부합 경고", () => {
     expect(made.every((ending) => ending.id.length > "ending_with_".length + 1)).toBe(true);
     const chain = JSON.stringify(ctx.project.commonEvents);
     for (const ending of made) expect(chain).toContain(ending.id);
-    expect(chain).toContain("ending_romance_happy");
+    // #2826: 인물 엔딩이 들어서면 같은 문턱의 일반 해피는 닿을 수 없어 기한 판정에서 뺀다(retireGenericHappy).
+    expect(chain).not.toContain("ending_romance_happy");
     expect(codes(ctx.project)).not.toContain("romance-heroine-endings-uncalled");
   });
 
@@ -260,7 +262,8 @@ describe("checkRomance — 연애 게임 부합 경고", () => {
     const project = romanceProject();
     const task = { task: "캠퍼스 연애 게임 만들어 줘" };
     const card = (narration: string) => ({ id: "s", kind: "text" as const, narration, durationMs: 4200 });
-    expect(codes(project)).not.toContain("romance-opening-title-card");
+    // #2848: 손대지 않은 오프닝(정의 없음)도 빈 오프닝으로 짚는다 — 끈 것(enabled:false)만 조용하다.
+    expect(codes(project)).toContain("romance-opening-title-card");
     project.system.opening = { enabled: true, skippable: true, scenes: [card("— 새 게임 —")] };
     expect(codes(project)).toContain("romance-opening-title-card");
     expect(romanceCompletionGaps(project, task).some((msg) => msg.includes("plan_opening/set_opening"))).toBe(true);

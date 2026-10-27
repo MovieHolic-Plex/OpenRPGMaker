@@ -11,6 +11,16 @@ import { validateTilesetReferences } from "@/project/tilesetReferences";
 import { isSharedReferenceImage, sharedReferenceImageAddress } from "@/project/bundledReferenceImagePath";
 import type { Project } from "@/project/types";
 
+// 출하 참고 그림은 2026-10-07 저작권 정리로 모두 빠져 매니페스트가 비었다({}). 외부화·왕복 메커니즘은 그대로 쓰이므로
+// 저장소에 남은 작은 출하 PNG 하나를 실은 매니페스트로 대신 검증한다.
+vi.mock("@/assets/bundledReferenceImageManifest.json", async () => {
+  const { readFileSync: read } = await import("node:fs");
+  const { referenceImageDigest: digest } = await import("@/project/bundledReferenceImagePath");
+  const path = "/assets/items/shared/key-castle-1.png";
+  const dataUrl = `data:image/png;base64,${read(`public${path}`).toString("base64")}`;
+  return { default: { [digest(dataUrl)]: path } };
+});
+
 const paths = Object.values(manifest as Record<string, string>);
 
 function referenceImages(value: unknown, out: string[] = []): string[] {

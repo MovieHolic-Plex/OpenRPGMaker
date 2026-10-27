@@ -5,6 +5,7 @@ import {
   gen1EffectChanceSucceeds,
   gen1EffectChanceThreshold,
   gen1MajorStatusBlockedByType,
+  gen1StatusMoveBlockedByTargetType,
   gen1BurnAdjustedAttack,
   gen1ParalyzedSpeed,
   readGen1MajorStatus,
@@ -63,6 +64,22 @@ describe("Gen1 major-status type immunity", () => {
     expect(gen1MajorStatusBlockedByType("paralysis", "normal", ["electric"], "damage")).toBe(false);
     expect(gen1MajorStatusBlockedByType("paralysis", "electric", ["electric"], "status")).toBe(false);
     expect(gen1MajorStatusBlockedByType("sleep", "grass", ["grass"], "status")).toBe(false);
+  });
+
+  it("blocks burn and freeze from any source, including a different move type or no move type", () => {
+    expect(gen1StatusMoveBlockedByTargetType("burn", "normal", ["fire"])).toBe("fire");
+    expect(gen1StatusMoveBlockedByTargetType("burn", undefined, ["fire"])).toBe("fire");
+    expect(gen1StatusMoveBlockedByTargetType("freeze", "normal", ["ice"])).toBe("ice");
+    expect(gen1StatusMoveBlockedByTargetType("freeze", undefined, ["ice", "water"])).toBe("ice");
+    expect(gen1MajorStatusBlockedByType("burn", "normal", ["fire"], "status")).toBe(true);
+    expect(gen1MajorStatusBlockedByType("burn", "normal", ["fire"], "damage")).toBe(true);
+    expect(gen1MajorStatusBlockedByType("burn", undefined, ["fire"], "status")).toBe(true);
+    expect(gen1MajorStatusBlockedByType("freeze", "water", ["ice"], "status")).toBe(true);
+    expect(gen1MajorStatusBlockedByType("burn", "fire", ["water"], "status")).toBe(false);
+    expect(gen1MajorStatusBlockedByType("freeze", "ice", ["water"], "damage")).toBe(false);
+    // 전기 피해 기술의 부가 마비는 땅 타입을 여기서 막지 않는다(상성 0 배가 맡는다). 상태 기술만 막는다.
+    expect(gen1MajorStatusBlockedByType("paralysis", "electric", ["ground"], "damage")).toBe(false);
+    expect(gen1StatusMoveBlockedByTargetType("paralysis", "electric", ["ground"])).toBe("ground");
   });
 
   it("resolves prefixed and localized authored type ids to cartridge semantics", () => {

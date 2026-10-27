@@ -178,7 +178,8 @@ describe("모델에 주는 입력과 모델이 낸 것의 표현", () => {
     const scope = { mapId: "map_start", region: { x: 2, y: 3, width: 8, height: 6 } };
     const inside = formatScopeNote(scope, declaredIntent({ useSelection: true }));
     expect(inside).toContain("영역 밖 타일·이벤트는 수정하지 말 것");
-    expect(inside).toContain('bounds:{x:2,y:3,w:8,h:6}');
+    // 경계는 bounds:{…} 객체 표기 대신 「(x,y) w×h 사각형」 문장으로 준다.
+    expect(inside).toContain("`map_start` 의 (2,3) 8×6 사각형");
     const outside = formatScopeNote(scope, declaredIntent({ space: "interior", useSelection: false }));
     expect(outside).toContain("참고용");
     // 폴백 선언은 안전한 쪽(영역 안)으로 본다.
@@ -198,7 +199,9 @@ describe("formatIntentNote — 선언이 확정한 것을 본문 모델에게 �
     expect(note).toContain("build_hand_interior_room");
     expect(note).not.toContain("place_concept");
     expect(note).toContain("다시 묻지 말고");
-    expect(note).toContain("author_house");
+    // author_house(야외 집 + linked-interior)는 은퇴했다 — 외장은 place_terrain_house, 실내와는 create_transfer_pair 로 잇는다.
+    expect(note).toContain("place_terrain_house");
+    expect(note).toContain("create_transfer_pair");
   });
 
   it("수정·질문·야외 선언은 각자의 경계를, 폴백·이어가기는 노트를 내지 않는다", () => {
@@ -206,7 +209,9 @@ describe("formatIntentNote — 선언이 확정한 것을 본문 모델에게 �
     expect(formatIntentNote(declaredIntent({ mode: "question" }))).toContain("바꾸지 말고");
     const outdoor = formatIntentNote(declaredIntent({ mode: "create", space: "outdoor" }));
     expect(outdoor).toContain("야외 시공");
-    expect(outdoor).toContain('interior:"linked-interior"');
+    // linked-interior(author_house) 대신 실내는 build_hand_interior_room, 연결은 create_transfer_pair.
+    expect(outdoor).toContain("build_hand_interior_room");
+    expect(outdoor).toContain("create_transfer_pair");
     expect(outdoor).not.toContain("실내 세션·새 실내 맵은 만들지 말 것");
     expect(formatIntentNote(declaredIntent({ mode: "create", space: "none" }))).toBeNull();
     expect(formatIntentNote(fallbackIntentDeclaration(FACTS))).toBeNull();
@@ -216,14 +221,16 @@ describe("formatIntentNote — 선언이 확정한 것을 본문 모델에게 �
   it("space=interior 선언은 독립 실내이며 linked-interior 집을 막지 않는다", () => {
     const note = formatIntentNote(declaredIntent({ mode: "create", space: "interior", facility: null, tools: ["start_interior_room_session"] }));
     expect(note).toContain("독립 실내");
-    expect(note).toContain('interior:"linked-interior"');
+    // 외장과 함께 짓는 집 길(옛 linked-interior)은 place_terrain_house + create_transfer_pair 로 남는다.
+    expect(note).toContain("place_terrain_house");
     expect(note).not.toContain("야외 집(author_house)을 대신 짓지 말 것");
   });
 
   it("space=both 선언은 linked-interior 한 번을 말한다", () => {
     const note = formatIntentNote(declaredIntent({ mode: "create", space: "both", facility: null, tools: ["author_house"] }));
-    expect(note).toContain("author_house");
-    expect(note).toContain('interior:"linked-interior"');
+    // author_house 은퇴 뒤: 외장 place_terrain_house + 실내 build_hand_interior_room 을 한 번에 말한다.
+    expect(note).toContain("place_terrain_house");
+    expect(note).toContain("build_hand_interior_room");
     expect(note).not.toContain("start_interior_room_session");
     expect(note).not.toContain("둘은 create_transfer_pair 로 잇는다");
     expect(note).not.toContain("create_transfer_pair 수동 연결은 불필요");
