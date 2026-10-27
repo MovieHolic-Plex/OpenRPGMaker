@@ -2,6 +2,7 @@ import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { editorState } from "@/editor/editorState";
 import { renderMapProps, resetMapPropsTabForTests } from "@/editor/panels/mapProps";
 import { createBlankProject } from "@/project/defaults";
+import { MAX_TOOL_MAP_DIMENSION } from "@/project/mapSizeLimits";
 import { store } from "@/project/store";
 import { FakeElement, findByTestId, installFakeDom } from "./fakeDom";
 
@@ -34,6 +35,36 @@ describe("map properties panel", () => {
     applyButton.dispatchEvent(new Event("click"));
 
     expect(store.getCurrent().maps[mapId]?.name).toBe("01 집 외관 정면");
+  });
+
+  it("resizes a map up to the official limit and refuses one tile past it", () => {
+    const container = new FakeElement("div");
+    const mapId = store.getCurrent().startMapId;
+    const original = store.getCurrent().maps[mapId];
+    if (!original) throw new Error("Expected a start map");
+
+    renderMapProps(container as unknown as HTMLElement);
+    const widthInput = findByTestId(container, "map-width-input");
+    const heightInput = findByTestId(container, "map-height-input");
+    const applyButton = findByTestId(container, "map-resize-apply");
+    if (!widthInput || !heightInput || !applyButton) throw new Error("Expected map size controls");
+
+    expect(widthInput.getAttribute("max")).toBe(String(MAX_TOOL_MAP_DIMENSION));
+    expect(heightInput.getAttribute("max")).toBe(String(MAX_TOOL_MAP_DIMENSION));
+    const hint = [...container.querySelectorAll(".map-props-hint")].find((node) => node.textContent?.includes("가로·세로 각각"));
+    expect(hint?.textContent).toContain(String(MAX_TOOL_MAP_DIMENSION));
+
+    widthInput.value = "200";
+    heightInput.value = "150";
+    applyButton.dispatchEvent(new Event("click"));
+    expect(store.getCurrent().maps[mapId]?.width).toBe(200);
+    expect(store.getCurrent().maps[mapId]?.height).toBe(150);
+
+    widthInput.value = String(MAX_TOOL_MAP_DIMENSION + 1);
+    heightInput.value = "150";
+    applyButton.dispatchEvent(new Event("click"));
+    expect(store.getCurrent().maps[mapId]?.width).toBe(200);
+    expect(store.getCurrent().maps[mapId]?.height).toBe(150);
   });
 
   it("renders all nine sections at once and preserves scroll across rerender", () => {
