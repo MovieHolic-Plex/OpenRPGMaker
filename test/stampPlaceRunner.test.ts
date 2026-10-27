@@ -192,7 +192,8 @@ describe("runStampPlaceWith", () => {
     expect(payload.placement?.chestGold.min).toBeGreaterThan(1);
     expect(payload.placement?.knownItemIds).toBeUndefined();
     const calls = h.applied[0]!;
-    expect(calls.map((call) => call.name)).toEqual(["place_chest", "place_chest", "place_npc", "place_savepoint"]);
+    // 상인 NPC(role merchant/이름 「상인」)는 stampPlanner 가 make_villager(상점 재고)로 컴파일한다 — #2987, 아래 「turns a merchant into make_villager」 와 같은 규칙.
+    expect(calls.map((call) => call.name)).toEqual(["place_chest", "place_chest", "make_villager", "place_savepoint"]);
     const first = calls[0]!.args.contents as { gold?: number };
     expect(first.gold).toBeGreaterThanOrEqual(payload.placement!.chestGold.min);
     const second = calls[1]!.args.contents as { itemId?: string; gold?: number };
@@ -310,7 +311,8 @@ describe("runStampPlaceWith", () => {
     });
     const tooSmall = await runStampPlaceWith({ text: "집 지어줘", mapId: h.mapId, selection: { mapId: h.mapId, x: 2, y: 2, width: 4, height: 4 } }, h.deps);
     expect(tooSmall.ok).toBe(false);
-    expect(tooSmall.lines.join(" ")).toContain("가장 작은 집도 5×6칸");
+    // 최소 크기는 카탈로그에서 계산한다(#2849) — 버들항 기본 이후 5×8, 고정 숫자 대신 형식만 확인.
+    expect(tooSmall.lines.join(" ")).toMatch(/가장 작은 집도 \d+×\d+칸/);
   });
 
   it("preserves missing house styles rejection reason when no other steps remain", async () => {
@@ -406,8 +408,19 @@ describe("runStampPlaceWith", () => {
       ],
     });
     const map = h.project.maps[h.mapId]!;
-    const ts = h.project.tilesets[map.tilesetId]!;
-    const treeKit = (ts.structureKits ?? []).find((k) => /tree|나무/i.test(`${k.id} ${k.name}`));
+    // 버들항 기본 타일셋에는 나무 구조물 킷이 없다(0d4f13e7c8) — 킷 감지 경로를 확인하려고 작은 나무 킷을 복사본에 직접 넣는다.
+    const baseTs = h.project.tilesets[map.tilesetId]!;
+    const treeKit = {
+      id: "bd-tree-test",
+      name: "나무",
+      width: 2,
+      height: 2,
+      rows: [
+        { tiles: [-1, -1], upperTiles: [6001, 6002] },
+        { tiles: [-1, -1], upperTiles: [6003, 6004] },
+      ],
+    } as unknown as NonNullable<typeof baseTs.structureKits>[number];
+    h.project.tilesets[map.tilesetId] = { ...baseTs, structureKits: [...(baseTs.structureKits ?? []), treeKit] };
     expect(treeKit).toBeDefined();
     // 오른쪽 위 (x=15, y=2) 에 나무 스탬프 배치
     const tx = 15;
@@ -459,11 +472,9 @@ describe("runStampPlaceWith", () => {
     const res = await runStampPlaceWith({ text: "집을 오른쪽으로 4칸 옮겨줘", mapId: h.mapId, selection: null }, h.deps);
     expect(res.ok).toBe(true);
     const eraseCalls = h.applied[0]!.filter((c) => c.name === "tile_erase");
-    expect(eraseCalls.length).toBeGreaterThanOrEqual(2);
+    // 이동 도착지는 #2978 이후 tile_erase/paint_tiles 가 아니라 구조 ops(tile_patch·relocate)로 쓰인다 — 호출로는 원위치 지우기만 보인다.
+    expect(eraseCalls.length).toBeGreaterThanOrEqual(1);
     expect(eraseCalls[0]!.args.rect).toMatchObject({ x: 3, y: 4, w: 4, h: 4 });
-    expect(eraseCalls[1]!.args.rect).toMatchObject({ x: 7, y: 4, w: 4, h: 4 });
-    const paintUpper = h.applied[0]!.filter((c) => c.name === "paint_tiles" && c.args.layer === "upper");
-    expect(paintUpper.length).toBeGreaterThan(0);
     expect(res.llmTurnsUsed).toBe(1);
   });
 
@@ -547,6 +558,7 @@ describe("runStampPlaceWith", () => {
     const turn4UserPayload = JSON.parse(String(h.requests[3]!.messages.at(-1)!.content));
     expect(turn4UserPayload.turn).toBe(4);
     expect(turn4UserPayload.observation.switchesWired.length).toBeGreaterThan(0);
-    expect(turn4UserPayload.observation.doorCells.length).toBeGreaterThanOrEqual(2);
+    // Only kit placements with upperTiles are detected as structures since the 2026-10-07 purge (0d4f13e7c8): the inn house yields one door cell; castle/shop no longer do.
+    expect(turn4UserPayload.observation.doorCells.length).toBeGreaterThanOrEqual(1);
   });
 });
