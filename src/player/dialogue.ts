@@ -676,7 +676,7 @@ export function createDialogueUI(
   const recordLog = (request: DialogueTextRequest, look: DialogueLook, toBacklog = true): { readonly text: string; readonly speaker?: string } | undefined => {
     const text = parseDialogueText(request.body, request.textContext).map((segment) => segment.text).join("").trim();
     if (!text) return undefined;
-    const speaker = look.hideName ? undefined : nameplateSpeaker(request.speaker);
+    const speaker = look.hideName ? undefined : nameplateSpeaker(request.speaker, request.textContext);
     logEntries.push({
       text,
       context: look.context,
@@ -818,7 +818,7 @@ export function createDialogueUI(
         node.append(faceEl);
       }
       const column = el("div", { class: "dialogue-corner-text" });
-      const cornerName = look.hideName ? undefined : nameplateSpeaker(request.speaker);
+      const cornerName = look.hideName ? undefined : nameplateSpeaker(request.speaker, request.textContext);
       if (cornerName) {
         const name = el("strong", { class: "dialogue-corner-name", text: cornerName });
         if (look.nameColor) name.style.color = look.nameColor;
@@ -888,7 +888,10 @@ export function createDialogueUI(
     const voiceUrl = voiceFile ? resolveAudioSource(voiceFile, activeProjectForRequest) : null;
     if (voiceUrl) playLineVoice(voiceUrl);
     else stopLineVoice();
-    const requestedLook = request.look ?? resolveDialogueLook(activeProjectForRequest, { speaker: request.speaker, emotion: request.emotion });
+    const requestedLook = request.look ?? resolveDialogueLook(activeProjectForRequest, {
+      speaker: resolveDialogueSpeakerName(request.speaker, request.textContext) ?? request.speaker,
+      emotion: request.emotion,
+    });
     if (isNonBlockingContainer(requestedLook.container)) {
       // 흘림·코너 대사는 대사 상자를 건드리지 않고, 기다리지도 않는다.
       showAmbient(request, voiceUrl ? { ...requestedLook, voice: null } : requestedLook);
@@ -940,7 +943,7 @@ export function createDialogueUI(
           delete overlay.dataset.dialogueStage;
           overlay.style.removeProperty("--dialogue-ui-scale");
         }
-        const speakerName = nameplateSpeaker(request.speaker);
+        const speakerName = nameplateSpeaker(request.speaker, request.textContext);
         const allowPortrait = !look.hideFace && !balloon && vnLookShowsPortraits(vnLook);
         const stagedSpeakerFace = !wasOpen
           ? undefined
@@ -2480,9 +2483,6 @@ function dialogueBox(extraClass: string, testId: string): HTMLElement {
   return box;
 }
 
-// 대사 진행은 결정 키만. Esc 는 취소 키인데 여기서만 "진행"으로 동작해
-// 취소가 확인 역할을 하던 결함(적대 리뷰 4)을 잘라냈다. 메시지 창에서 취소는
-// RM 관례대로 아무 일도 하지 않는다 — X 와 Esc 가 이제 동일하게 무반응이다.
 /**
  * 이름표로 보일 화자. 「내레이션」 같은 서술 표기는 인물이 아니다 — 생성 모델이 서술 줄에 speaker:"내레이션" 을
  * 달아 엔딩 에필로그에 「내레이션」 이름표가 떴다(2026-09-24 추리 도그푸딩). 이름표 없이 서술로 보인다.
@@ -2491,17 +2491,35 @@ const NARRATION_SPEAKER = /^(?:내레이션|나레이션|해설|서술|narration
 
 /** 본문 앞에 이름표와 같은 이름이 또 붙어 있으면 걷은 요청을 돌려준다(dialogueSpeakerEcho.ts). */
 function withoutSpeakerEcho(request: DialogueTextRequest): DialogueTextRequest {
-  if (!nameplateSpeaker(request.speaker)) return request;
-  const body = stripSpeakerEcho(request.body, request.speaker);
+  const raw = request.speaker?.trim();
+  if (!nameplateSpeaker(raw)) return request;
+  const plate = resolveDialogueSpeakerName(raw, request.textContext);
+  const byRaw = stripSpeakerEcho(request.body, raw);
+  const body = plate && plate !== raw && byRaw === request.body ? stripSpeakerEcho(request.body, plate) : byRaw;
   return body === request.body ? request : { ...request, body };
 }
 
-export function nameplateSpeaker(speaker: string | undefined): string | undefined {
+/**
+ * 이름표·화자 프로필에 쓸 이름. `\n[1]`·`\v[1]`·`\t[id]` 는 본문과 같은 규칙으로 푼다.
+ * 코드가 비면(없는 배우 번호) 원문을 남겨 오타가 이름표에 그대로 보이게 한다.
+ */
+export function resolveDialogueSpeakerName(speaker: string | undefined, context?: DialogueTextContext): string | undefined {
   const name = speaker?.trim();
-  if (!name || NARRATION_SPEAKER.test(name)) return undefined;
-  return name;
+  if (!name) return undefined;
+  if (!context || !name.includes("\\")) return name;
+  const resolved = resolveDialogueText(name, context).trim();
+  return resolved || name;
 }
 
+export function nameplateSpeaker(speaker: string | undefined, context?: DialogueTextContext): string | undefined {
+  const raw = speaker?.trim();
+  if (!raw || NARRATION_SPEAKER.test(raw)) return undefined;
+  return resolveDialogueSpeakerName(raw, context);
+}
+
+// 대사 진행은 결정 키만. Esc 는 취소 키인데 여기서만 "진행"으로 동작해
+// 취소가 확인 역할을 하던 결함(적대 리뷰 4)을 잘라냈다. 메시지 창에서 취소는
+// RM 관례대로 아무 일도 하지 않는다 — X 와 Esc 가 이제 동일하게 무반응이다.
 export function isDialogueAdvanceKey(key: string): boolean {
   return isConfirmKey(key);
 }

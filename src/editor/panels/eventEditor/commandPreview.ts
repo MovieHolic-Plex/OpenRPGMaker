@@ -10,7 +10,7 @@ import { resolveTerms } from "@/project/terms";
 import { shopCatalogRecords } from "./shopEditorModel";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { DEFAULT_BATTLE_FIELD_BACKGROUND_ID } from "@/project/databaseEnemyTroopRecordModel";
-import { parseDialogueText } from "@/player/dialogue";
+import { nameplateSpeaker, parseDialogueText, resolveDialogueSpeakerName, type DialogueTextContext } from "@/player/dialogue";
 import { resolveDialogueLook, type DialogueLook } from "@/project/dialogueStyles";
 import { resolveFontStack } from "@/project/fontRegistry";
 import { applySystemWindowSkinVariable } from "@/player/systemGraphics";
@@ -120,13 +120,15 @@ type VisualPreviewHandlers = {
 };
 
 const visualPreviewHandlers: VisualPreviewHandlers = {
-  text: (cmd, context) =>
-    messageWindowMock(cmd.speaker, textBodyOf(cmd), context?.face, {
+  text: (cmd, context) => {
+    const speaker = resolveDialogueSpeakerName(cmd.speaker, previewDialogueContext(context?.simState)) ?? cmd.speaker;
+    return messageWindowMock(cmd.speaker, textBodyOf(cmd), context?.face, {
       emotion: cmd.emotion,
       replay: context?.replayPresentation === true,
       simState: context?.simState,
-      look: resolveDialogueLook(store.getCurrent(), { speaker: cmd.speaker, style: cmd.style, context: cmd.context, container: cmd.container, emotion: cmd.emotion }),
-    }),
+      look: resolveDialogueLook(store.getCurrent(), { speaker, style: cmd.style, context: cmd.context, container: cmd.container, emotion: cmd.emotion }),
+    });
+  },
   changeFace: faceStage,
   displayTextSettings: settingsMessageMock,
   choices: choicesMock,
@@ -265,7 +267,10 @@ function messageWindowMock(
   const authored = body.trim().length > 0;
   const shownBody = authored ? body : SPEAK_SAMPLE_BODY;
   const rawSpeaker = (speaker?.trim() ?? "") || (authored ? "" : SPEAK_SAMPLE_SPEAKER);
-  const speakerName = look?.hideName || !rawSpeaker ? "" : rawSpeaker + (look?.nameSuffix ?? "");
+  const resolvedSpeaker = look?.hideName
+    ? ""
+    : (nameplateSpeaker(rawSpeaker, previewDialogueContext(presentation?.simState)) ?? "");
+  const speakerName = resolvedSpeaker ? resolvedSpeaker + (look?.nameSuffix ?? "") : "";
   const faceRight = face?.position === "right";
   const win = el("div", {
     class: [
@@ -428,8 +433,8 @@ export function renderDialogueLookSample(speaker: string, body: string, look: Di
   return frame;
 }
 
-/** Resolve RM control codes the same way play-mode dialogue does (editor preview). */
-function renderPreviewDialogueBody(body: string, simState?: PreviewSimState): HTMLElement {
+/** Same variable defaults and actor list the message body uses, so the name box resolves `\n[1]` too. */
+function previewDialogueContext(simState?: PreviewSimState): DialogueTextContext {
   const project = store.getCurrent();
   const variableDefaults: Record<string, number> = {};
   for (const entry of project.variables ?? []) {
@@ -439,10 +444,19 @@ function renderPreviewDialogueBody(body: string, simState?: PreviewSimState): HT
     const id = "var_" + String(i).padStart(4, "0");
     if (variableDefaults[id] === undefined) variableDefaults[id] = 0;
   }
-  const segments = parseDialogueText(body || "...", {
-    session: { variables: { ...variableDefaults, ...simState?.variables }, actorNames: {} },
+  return {
+    session: {
+      variables: { ...variableDefaults, ...simState?.variables },
+      actorNames: {},
+      ...(simState ? { gold: simState.gold } : {}),
+    },
     project,
-  });
+  };
+}
+
+/** Resolve RM control codes the same way play-mode dialogue does (editor preview). */
+function renderPreviewDialogueBody(body: string, simState?: PreviewSimState): HTMLElement {
+  const segments = parseDialogueText(body || "...", previewDialogueContext(simState));
   const bodyEl = el("div", {
     class: "body ecp-message-body",
     dataset: { testid: "ecp-message-body" },
