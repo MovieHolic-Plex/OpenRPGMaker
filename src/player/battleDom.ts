@@ -60,7 +60,7 @@ import { usesMonsterSfxSet } from "@/assets/monsterSfxAssets";
 import { monsterTimelineCue, playMonsterSfx } from "@/player/monsterSfx";
 import { pokemonActionMotion, pokemonDamageBlink, pokemonHitPower, pokemonHudBuzz, preloadPokemonMotionSounds, type PokemonMoveContext } from "@/player/battlePokemonMotion";
 import { pokemonMoveColor, pokemonMoveMotion, pokemonStrikeFromBelow } from "@/battle/pokemonMoveMotion";
-import { AUTO_BATTLE_KEY_LABEL, SPEED_KEY_LABEL, directionForKey, isAutoBattleKey, isCancelKey, isConfirmKey } from "@/player/keyBindings";
+import { AUTO_BATTLE_KEY_LABEL, SPEED_KEY_LABEL, directionForKey, isAutoBattleKey, isCancelKey, isConfirmKey, keyboardEventKey } from "@/player/keyBindings";
 import { unlockBattleSfx } from "@/player/battleSfx";
 import {
   createBattleSequencer,
@@ -75,7 +75,7 @@ import { bindEmeraldBattleSurface, stampEmeraldSurface } from "@/player/emeraldS
 import { mountEmeraldTrainerIntro } from "@/player/emeraldTrainerIntro";
 import { applyRollingHpSurvival, createRollingHpMeter, startRollingHpTicker } from "@/player/rollingHp";
 import { syncBattleScreenFilter } from "@/player/battleScreenFilter";
-import { emeraldNarrationActive, emeraldNoEscapeLine } from "@/player/emeraldBattleNarration";
+import { emeraldNarrationActive, noEscapeNoticeLine } from "@/player/emeraldBattleNarration";
 import { revealedEffectiveness, WEAKNESS_REVEAL_LABEL } from "@/battle/weaknessDiscovery";
 import { resolveBattleStaging } from "@/project/battleStaging";
 
@@ -855,12 +855,12 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
   // 확인/취소는 정본(keyBindings)만 본다. 전투에만 Space 처리가 없어서 커맨드
   // 버튼에 포커스가 있을 때만 네이티브 활성화로 "우연히" 먹던 결함(적대 리뷰 2),
   // 그리고 전투에만 있던 유령 취소키 C(적대 리뷰 7)를 함께 잘라냈다.
-  function isBattleConfirmKey(event: KeyboardEvent): boolean {
-    return isConfirmKey(event.key);
+  function isBattleConfirmKey(key: string): boolean {
+    return isConfirmKey(key);
   }
 
-  function isBattleCancelKey(event: KeyboardEvent): boolean {
-    return isCancelKey(event.key);
+  function isBattleCancelKey(key: string): boolean {
+    return isCancelKey(key);
   }
 
   // Enter 는 포커스된 네이티브 버튼을 keydown 에서 스스로 활성화한다. 그 한 번만
@@ -876,14 +876,20 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
   // 직접 확정해도 이중 발화가 없다.
 
   function onKeydown(event: KeyboardEvent): void {
-    if (destroyed || options.runtime.snapshot().eventChoice || options.runtime.snapshot().eventPause || event.isComposing) return;
-    if (shiftHeld && event.key !== "Shift") shiftCombined = true;
-    if (event.repeat && (isBattleConfirmKey(event) || isBattleCancelKey(event) || isAutoBattleKey(event.key) || event.key === "Shift")) { event.preventDefault(); return; }
+    if (destroyed || options.runtime.snapshot().eventChoice || options.runtime.snapshot().eventPause) return;
+    // 한글 IME 는 칸 밖에서도 key 를 Process 로 바꾼다. 필드·대사·커서 메뉴와 같이 code 의 물리 키를 읽는다.
+    // 글자 자체가 온 조합은 명령이 아니고, 입력 칸에 친 키는 전투가 가져가지 않는다.
+    if (isTextInputTarget(event.target)) return;
+    const key = keyboardEventKey(event);
+    if (key === "Process" || key === "Unidentified") return;
+    if (event.isComposing && key === event.key) return;
+    if (shiftHeld && key !== "Shift") shiftCombined = true;
+    if (event.repeat && (isBattleConfirmKey(key) || isBattleCancelKey(key) || isAutoBattleKey(key) || key === "Shift")) { event.preventDefault(); return; }
     // 첫 사용자 입력에서 오디오 컨텍스트를 깨운다(autoplay 정책).
     unlockBattleSfx();
     const snapshot = options.runtime.snapshot();
     if (snapshot.result) {
-      if (isBattleConfirmKey(event)) {
+      if (isBattleConfirmKey(key)) {
         event.preventDefault();
         // 클릭 핸들러와 같은 이유로, 결과 연출이 화면에 도달했을 때만 확정한다.
         // 첫 확인 = 보상 전부 공개, 둘째 확인 = 닫기. 막타 연타가 보상을 하나도 못 보고
@@ -903,12 +909,12 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     // 화면에 A·Shift 단축키가 표시되어 있는데 연출 중엔 눌러도 반응이 없었다).
     // 자동전투 토글은 F. 예전엔 A 였는데 필드를 WASD 로 걷던 플레이어가 전투에서
     // 좌측 이동을 누르면 자동전투가 켜졌다(적대 리뷰 11 — 화면 안내도 없는 상태였다).
-    if (isAutoBattleKey(event.key)) {
+    if (isAutoBattleKey(key)) {
       event.preventDefault();
       toggleAutoBattle();
       return;
     }
-    if (event.key === "Shift") {
+    if (key === "Shift") {
       // Shift 는 조합키다. keydown 시점에는 단독인지 조합인지 알 수 없으므로
       // 상태만 기록하고, keyup 에서 단독이었을 때만 속도를 토글한다(결함 2).
       shiftHeld = true;
@@ -916,11 +922,11 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       return;
     }
     if (inputPrompt) {
-      const dir = directionForKey(event.key);
-      const key: SkillInputKey | undefined = dir ?? (isBattleConfirmKey(event) ? "confirm" : isBattleCancelKey(event) ? "cancel" : undefined);
-      if (key) {
+      const dir = directionForKey(key);
+      const promptKey: SkillInputKey | undefined = dir ?? (isBattleConfirmKey(key) ? "confirm" : isBattleCancelKey(key) ? "cancel" : undefined);
+      if (promptKey) {
         event.preventDefault();
-        inputPrompt.press(key);
+        inputPrompt.press(promptKey);
       }
       return;
     }
@@ -928,7 +934,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       // 연출 중 확인/취소는 **남은 재생을 빨리감는다**. 예전에는 입력 1회당 2초 넘게
       // 아무 것도 못 하고 기다려야 했고 스킵 수단도 없었다 — 처음엔 연출, 세 번째부터는
       // 지연이다. 배속(Shift) 토글과 달리 이건 이 시퀀스 한 번에만 걸리고 끝나면 복귀한다.
-      if (isBattleConfirmKey(event) || isBattleCancelKey(event)) {
+      if (isBattleConfirmKey(key) || isBattleCancelKey(key)) {
         event.preventDefault();
         // 문장이 글자 단위로 나오는 중이면 이 입력은 그 문장을 한 번에 끝내는 데 쓴다(3세대). 다음 입력부터 빨리감기.
         if (completeBattleMessageTyping(messageWindow)) return;
@@ -936,13 +942,13 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       }
       return;
     }
-    if (isBattleCancelKey(event)) {
+    if (isBattleCancelKey(key)) {
       event.preventDefault();
       handleCancel(snapshot);
       return;
     }
     // 방향키 + WASD. 필드는 WASD 로 걷는데 전투 커서만 방향키 전용이던 비대칭을 없앴다.
-    const navDir = directionForKey(event.key);
+    const navDir = directionForKey(key);
     if (navDir) {
       const direction: 1 | -1 = navDir === "up" || navDir === "left" ? -1 : 1;
       const arrowKey = navDir === "up"
@@ -958,7 +964,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       if (moved) event.preventDefault();
       return;
     }
-    if (isBattleConfirmKey(event)) {
+    if (isBattleConfirmKey(key)) {
       // preventDefault 로 네이티부 활성화를 잠가 놓고 z 와 같은 커서 모델로 통일한다.
       event.preventDefault();
       handleConfirm(snapshot);
@@ -993,7 +999,9 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
   // Shift 단독 토글: keydown 에서 조합 여부를 기록하고, keyup 에서 단독이었을 때만
   // 속도를 토글한다. Shift+A(대문자)·Shift+Z 같은 조합에서는 토글되지 않는다(결함 2).
   function onWindowKeyup(event: KeyboardEvent): void {
-    if (event.key !== "Shift") return;
+    // keydown 과 같이, IME 가 key 를 Process 로 바꿔도 Shift 를 놓친 것으로 본다.
+    const key = keyboardEventKey(event);
+    if (key !== "Shift") return;
     if (options.runtime.snapshot().eventChoice || options.runtime.snapshot().eventPause) { shiftHeld = false; shiftCombined = false; return; }
     // 텍스트 입력 중에는 토글하지 않는다. 연출 중에는 허용한다 — 배속은 재생을
     // 보면서 조절하는 컨트롤이다(코덱스 리뷰 C6).
@@ -1223,6 +1231,19 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     syncView();
   }
 
+  /** 도주 명령이 이 전투에서 막혀 있는지. 대상 선택 중 비활성은 여기 해당하지 않는다. */
+  function isBlockedEscapeButton(button: HTMLButtonElement, snapshot: BattleSnapshot): boolean {
+    if (snapshot.phase !== "actorCommand" || snapshot.canEscape) return false;
+    const testId = button.dataset.testid;
+    return testId === "actor-command-escape" || testId === "actor-command-run";
+  }
+
+  /** 문장 창에 도주 불가 이유를 띄운다. 커서를 옮기면 clearFlashLine 이 원래 질문으로 되돌린다. */
+  function announceBlockedEscape(snapshot: BattleSnapshot): void {
+    directorState = { ...commandPromptState(snapshot, noEscapeNoticeLine(snapshot)), flash: true };
+    syncView();
+  }
+
   function handleConfirm(snapshot: BattleSnapshot): boolean {
     if (snapshot.phase === "targetSelect" && snapshot.targetSelection?.side === "enemy") {
       // 커서가 「뒤로」 행에 있으면(화살표 순환 또는 포커스 이동으로) 확인키는 그 행을 누른다.
@@ -1246,11 +1267,9 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     // 확인키는 거기서 아무 일도 하지 않고 거절음만 울린다. 메뉴는 열린 채로 둔다.
     if (button.dataset.battleCommandInert === "true") {
       playBattleCue("command-cancel");
-      // 3세대처럼 도망갈 수 없는 이유를 문장 창에 말한다(회색 줄만 있으면 왜 안 되는지 알 수 없다). 커서를 옮기면 원래 안내로 돌아온다.
-      if (button.dataset.testid === "actor-command-run" && snapshot.phase === "actorCommand" && !snapshot.canEscape) {
-        directorState = { ...commandPromptState(snapshot, emeraldNoEscapeLine(snapshot)), flash: true };
-        syncView();
-      }
+      // 회색 줄만 있으면 왜 안 되는지 알 수 없다. 클래식은 명령 중에 문장 창을 접으므로
+      // announceBlockedEscape 가 data-battle-notice 로 배너를 다시 편다. 커서를 옮기면 원래 안내로 돌아온다.
+      if (isBlockedEscapeButton(button, snapshot)) announceBlockedEscape(snapshot);
       return true;
     }
     button.click();
@@ -1299,7 +1318,14 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       : null;
     if (!button) return;
     // 비활성 행은 눌러도 확정이 아니다 — 거절음으로 갈라 준다.
-    playBattleCue(button.dataset.battleCommandInert === "true" ? "command-cancel" : "command-confirm");
+    // 키보드 확인(handleConfirm)과 같이, 막힌 도주를 클릭해도 이유를 문장 창에 말한다.
+    if (button.dataset.battleCommandInert === "true") {
+      playBattleCue("command-cancel");
+      const snap = options.runtime.snapshot();
+      if (isBlockedEscapeButton(button, snap)) announceBlockedEscape(snap);
+      return;
+    }
+    playBattleCue("command-confirm");
   });
 
   /** 시퀀서가 아직 재생하지 않은 stateAdded/stateRemoved 를 되돌린 배지 목록(표시 전용). */

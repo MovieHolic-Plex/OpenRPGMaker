@@ -213,16 +213,19 @@ type BattleExecFrame = {
   readonly commands: readonly Command[];
   pc: number;
   readonly loopBody?: boolean;
+  /** 이 루프 본문이 정상 완료된 횟수. loopBody 프레임만 쓴다. */
+  loopIterations?: number;
 };
 
 // 배틀 이벤트는 한 액션 비트 안에서 동기 실행되므로 맵 인터프리터(maxLoopIterations=100000,
-// 프레임 단위 yield)보다 엄격한 상한을 둔다. 도달 시 unsupported 로그 후 해당 흐름을 끝낸다.
+// 프레임 단위 yield)보다 엄격한 상한을 둔다. 도달 시 unsupported 로그 후 그 루프만 끝낸다.
+// 상한은 루프 본문마다 따로 센다. 호출 하나에 카운터를 두면 앞 루프가 상한을 쓴 뒤
+// 다음 루프가 한 바퀴 만에 끊긴다(맵 인터프리터 stack.ts 와 같은 계약).
 type BattleInvocation = {
   readonly page: BattleEventPageRecord;
   readonly context: BattleEventContext;
   readonly depth: number;
   readonly frames: BattleExecFrame[];
-  loopIterations: number;
   labelJumps: number;
 };
 
@@ -338,7 +341,7 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
 
   function pushInvocation(page: BattleEventPageRecord, commands: readonly Command[], context: BattleEventContext, depth: number): void {
     if (depth > 8) { logUnsupported(page, context, "common event recursion limit"); return; }
-    invocations.push({ page, context, depth, frames: [{ commands, pc: 0 }], loopIterations: 0, labelJumps: 0 });
+    invocations.push({ page, context, depth, frames: [{ commands, pc: 0 }], labelJumps: 0 });
   }
 
   function resumeChoice(requestId: number, index: number): BattleEventRuntimeResult | undefined {
@@ -501,11 +504,12 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
         frames.pop();
         if (frame.loopBody) {
           // 루프 본문이 정상 완료(breakLoop/gotoLabel 이탈 없이)되면 재진입한다.
-          invocation.loopIterations += 1;
-          if (invocation.loopIterations >= MAX_BATTLE_LOOP_ITERATIONS) {
+          // 완료 횟수는 이 프레임의 것 — 같은 페이지의 다른 루프와 더하지 않는다.
+          const iterations = (frame.loopIterations ?? 0) + 1;
+          if (iterations >= MAX_BATTLE_LOOP_ITERATIONS) {
             logUnsupported(page, context, "loop iteration limit reached");
           } else {
-            frames.push({ commands: frame.commands, pc: 0, loopBody: true });
+            frames.push({ commands: frame.commands, pc: 0, loopBody: true, loopIterations: iterations });
           }
         }
         continue;
@@ -572,7 +576,7 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
         }
         case "loop":
           // 빈 본문 루프는 무의미하므로 건너뛴다(맵 commandCatalog 와 동일).
-          if (command.body.length > 0) frames.push({ commands: command.body, pc: 0, loopBody: true });
+          if (command.body.length > 0) frames.push({ commands: command.body, pc: 0, loopBody: true, loopIterations: 0 });
           break;
         case "promoteActor": {
           // 전직 판정/전이 후 success/failure 분기를 fork 와 같은 프레임으로 쌓는다

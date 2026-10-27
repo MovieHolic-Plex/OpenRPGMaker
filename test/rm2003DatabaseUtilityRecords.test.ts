@@ -32,6 +32,8 @@ describe("RM2003 database utility records", () => {
       "INT",
       "AGI",
       "Absorb",
+      // 풀 속성은 몬스터 18타입 작업(#2603)이 기존 칸 뒤에 덧붙였다.
+      "Grass",
     ]);
     // 순서 = 타일셋 지형 태그 − 1 (chipsetMapping.TERRAIN_TAG: 1 물, 2 모래, 3 눈, 4 돌).
     expect(database.terrains?.map((terrain) => terrain.id)).toEqual(["terrain_water", "terrain_sand", "terrain_snow", "terrain_stone"]);

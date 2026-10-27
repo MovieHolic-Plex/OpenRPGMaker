@@ -70,8 +70,9 @@ export function renderEmeraldShop(model: EmeraldShopModel, callbacks: {
     row.setAttribute('role', 'option');
     row.dataset.itemId = goods.id;
     row.append(el('span', { class: 'emerald-shop-item-name', text: goods.name }),
-      el('span', { class: 'emerald-shop-item-price', text: model.mode === 'buy'
-        ? `${model.unitPrice(goods)}${model.terms.gold}` : `×${model.owned(goods)}` }));
+      // 오른쪽 칸은 구매·판매 모두 단가다. 판매에서 ×보유만 보이면 같은 자리가 가격이었다가
+      // 개수가 되어, 얼마에 넘기는지 수량 창까지 들어가야 알 수 있다. 보유 수는 가방·설명 창에 있다.
+      el('span', { class: 'emerald-shop-item-price', text: `${model.unitPrice(goods)}${model.terms.gold}` }));
     if (model.phase !== 'items') { row.tabIndex = -1; row.setAttribute('aria-disabled', 'true'); }
     list.append(row);
   });

@@ -71,6 +71,15 @@ function renderRoute(eventId: string): { root: HTMLElement; replaced: Replaced[]
   return { root, replaced };
 }
 
+/**
+ * 브라우저에서 대화상자는 첫 입력 컨트롤인 「대상 종류」 select 에 초점을 준다. happy-dom 은 select 의 tabIndex 를 -1 로
+ * 돌려줘 첫 컨트롤이 이벤트 ID 입력이 되고, 그 focus 가 목록을 미리 연다(그러면 「목록」 버튼이 닫기로 토글된다).
+ * 브라우저와 같은 시작 상태로 맞춘다.
+ */
+function focusTargetKind(dialog: HTMLElement): void {
+  byTestId(dialog, "move-route-target-select").focus();
+}
+
 function byTestId(root: ParentNode, testid: string): HTMLElement {
   const found = root.querySelector<HTMLElement>(`[data-testid="${testid}"]`);
   if (!found) throw new Error(`missing testid: ${testid}`);
@@ -242,6 +251,7 @@ describe("이동 경로 대상 픽커", () => {
       onApply: (command) => applied.push(command),
     });
     const dialog = byTestId(document, "event-command-edit-dialog");
+    focusTargetKind(dialog);
     const input = byTestId(dialog, "move-route-event-id-input");
     const picker = byTestId(dialog, "move-route-event-picker");
     for (let attempt = 0; attempt < 2; attempt += 1) {
@@ -265,6 +275,7 @@ describe("이동 경로 대상 픽커", () => {
       onApply: () => undefined,
     });
     const dialog = byTestId(document, "event-command-edit-dialog");
+    focusTargetKind(dialog);
     byTestId(dialog, "move-route-event-picker-open").click();
     const input = byTestId(dialog, "move-route-event-id-input");
     if (dismissal === "click") byTestId(dialog, "move-route-event-option-ev_npc_gate").click();

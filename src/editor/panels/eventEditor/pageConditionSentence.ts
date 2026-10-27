@@ -12,6 +12,7 @@ import { ordinalLabel } from "@/editor/panels/databaseDisplay";
 import { store } from "@/project/store";
 import { difficultyDisplayName } from "@/project/difficulty";
 import type { EventPageCondition, Project } from "@/project/types";
+import { timerRelationWord } from "./timerConditionText";
 
 export type SentencePart = {
   /** value 조각은 저작자가 고른 값 — UI 가 강조한다. */
@@ -75,7 +76,7 @@ function clauseParts(condition: EventPageCondition, project: Project): SentenceP
       return [text("소지금 "), value(compareLabel(condition.op, condition.amount))];
     case "timer":
       return [text(`${condition.timerId === "timer1" ? "타이머 1" : "타이머 2"} `),
-        value(durationLabel(condition.seconds)), text(" 이하")];
+        value(durationLabel(condition.seconds)), text(` ${timerRelationWord(condition.op)}`)];
     case "timePhase":
       return [text("시간대 "), value(timePhaseLabel(condition.phase))];
     case "season":

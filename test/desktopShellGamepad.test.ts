@@ -1,6 +1,7 @@
 // @vitest-environment happy-dom
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { installDesktopShellBridge } from "@/player/desktopShellBridge";
+import { gamepadStickSector, installDesktopShellBridge } from "@/player/desktopShellBridge";
+import { stickSectorKeys } from "@/player/touchPad";
 
 /**
  * One physical pad press must be one key event. The shell used to dispatch a
@@ -248,7 +249,17 @@ describe("desktop shell gamepad", () => {
   });
 
   it("releases a tilted stick when the window blurs and presses it again when focus returns", () => {
-    const frames: FrameRequestCallback[] = [];
+  it("reads a 45° stick inside the old per-axis box, and keeps one cardinal when the tilt is slight", () => {
+    // 0.42 on both axes is magnitude ~0.59, but each axis is under the old 0.45 gate.
+    expect([...stickSectorKeys(gamepadStickSector(0.42, 0.42, null))].sort()).toEqual(["ArrowDown", "ArrowRight"]);
+    expect(gamepadStickSector(0.3, 0.3, null)).toBeNull();
+    expect([...stickSectorKeys(gamepadStickSector(0.8, 0.15, null))]).toEqual(["ArrowRight"]);
+    const held = gamepadStickSector(1, 0, null);
+    expect(gamepadStickSector(0.35, 0, held)).toBe(held);
+    expect(gamepadStickSector(0.2, 0, held)).toBeNull();
+  });
+
+  it("sends the diagonal from a half-tilt stick and does not drop it on the rim", () => {    const frames: FrameRequestCallback[] = [];
     const restoreRaf = stubAnimationFrame(frames);
     cleanups.push(restoreRaf);
 
@@ -270,7 +281,24 @@ describe("desktop shell gamepad", () => {
     cleanups.push(() => {
       window.removeEventListener("keydown", onKey);
       window.removeEventListener("keyup", onKey);
-    });
+    let axisX = 0;
+    let axisY = 0;
+    const restorePads = stubGamepads(() => [gamepadWithStick(axisX, axisY)]);
+    cleanups.push(restorePads);
+
+    const downs: KeyboardEvent[] = [];
+    const ups: KeyboardEvent[] = [];
+    const onKeyDown = (event: Event): void => {
+      if (event instanceof KeyboardEvent && event.key.startsWith("Arrow")) downs.push(event);
+    };
+    const onKeyUp = (event: Event): void => {
+      if (event instanceof KeyboardEvent && event.key.startsWith("Arrow")) ups.push(event);
+    };
+    window.addEventListener("keydown", onKeyDown);
+    window.addEventListener("keyup", onKeyUp);
+    cleanups.push(() => {
+      window.removeEventListener("keydown", onKeyDown);
+      window.removeEventListener("keyup", onKeyUp);    });
 
     const cleanup = installDesktopShellBridge(document.body, { gamepadPolling: true });
     cleanups.push(cleanup);
@@ -311,7 +339,32 @@ describe("desktop shell gamepad", () => {
   });
 
   it("releases a tilted stick when the page hides and presses it again when the page is visible", () => {
-    const frames: FrameRequestCallback[] = [];
+    axisX = 0.42;
+    axisY = 0.42;
+    flushFrame(frames);
+    expect(downs.map((event) => event.key).sort()).toEqual(["ArrowDown", "ArrowRight"]);
+    expect(ups).toHaveLength(0);
+
+    // Still outside the hold radius (~0.31), under the old 0.45 axis gate.
+    axisX = 0.22;
+    axisY = 0.22;
+    flushFrame(frames);
+    expect(ups).toHaveLength(0);
+    expect(downs).toHaveLength(2);
+
+    axisX = 0.1;
+    axisY = 0.1;
+    flushFrame(frames);
+    expect(ups.map((event) => event.key).sort()).toEqual(["ArrowDown", "ArrowRight"]);
+
+    // From rest, a nudge under the enter radius is still neutral.
+    axisX = 0.4;
+    axisY = 0;
+    flushFrame(frames);
+    expect(downs).toHaveLength(2);
+  });
+
+  it("forgets the stick hold radius when the pad disconnects", () => {    const frames: FrameRequestCallback[] = [];
     const restoreRaf = stubAnimationFrame(frames);
     cleanups.push(restoreRaf);
 
@@ -338,7 +391,16 @@ describe("desktop shell gamepad", () => {
       window.removeEventListener("keydown", onKey);
       window.removeEventListener("keyup", onKey);
     });
+    let pad: Gamepad | null = gamepadWithStick(-1, 0);
+    const restorePads = stubGamepads(() => [pad]);
+    cleanups.push(restorePads);
 
+    const downs: KeyboardEvent[] = [];
+    const onKeyDown = (event: Event): void => {
+      if (event instanceof KeyboardEvent && event.key === "ArrowLeft") downs.push(event);
+    };
+    window.addEventListener("keydown", onKeyDown);
+    cleanups.push(() => window.removeEventListener("keydown", onKeyDown));
     const cleanup = installDesktopShellBridge(document.body, { gamepadPolling: true });
     cleanups.push(cleanup);
 
@@ -362,7 +424,15 @@ describe("desktop shell gamepad", () => {
       "keyup:false",
       "keydown:false",
     ]);
-  });
+    expect(downs).toHaveLength(1);
+
+    pad = null;
+    window.dispatchEvent(new Event("gamepaddisconnected"));
+    // Between the enter radius (0.45) and the hold radius (0.30). Keeping the
+    // hold sector across a disconnect would start walking again.
+    pad = gamepadWithStick(-0.35, 0);
+    flushFrame(frames);
+    expect(downs).toHaveLength(1);  });
 });
 
 function stubAnimationFrame(frames: FrameRequestCallback[]): () => void {

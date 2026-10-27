@@ -12,6 +12,8 @@ import { paintRoadRect, shapeRoadEdges, type RoadRect } from "@/project/defaults
 import { createBlankProject, COMBINED_TOWN_TILESET_ID, TILE } from "@/project/defaults";
 import { store } from "@/project/store";
 import { isHarnessStackableTile } from "@/project/tilesetHarness";
+// TILE.* / 263·319·85·378 are combined-town chip ids; new projects start on beodeul_city since the 2026-10-07 copyright purge.
+import { startOnRetiredCombinedTown } from "./support/retiredEasyRpgTilesets";
 
 function resetEditorState(): void {
   editorState.set({
@@ -26,7 +28,7 @@ function resetEditorState(): void {
 }
 
 beforeEach(() => {
-  store.replace(createBlankProject());
+  store.replace(startOnRetiredCombinedTown(createBlankProject()));
   resetMapEditHistory();
   resetEditorState();
 });

@@ -105,8 +105,11 @@ describe("P1 farm-animal project reference integrity", () => {
     repairProjectReferences(project);
 
     expect(project.database.farmAnimalSpecies?.map((row) => row.id)).toEqual(["chicken", "cow"]);
+    // 맵 밖으로 나간 축사는 지우지 않고 맵 안으로 당긴다(배정된 개체를 말없이 풀지 않게) — 맵이 없어진 축사만 빠진다.
+    const startHeight = project.maps[project.startMapId]!.height;
     expect(project.system.farmAnimalBuildings).toEqual([
       expect.objectContaining({ id: "coop", capacity: 1, allowedSpeciesIds: ["chicken"] }),
+      expect.objectContaining({ id: "off_map", capacity: 4, y: startHeight - 1, allowedSpeciesIds: ["chicken"] }),
     ]);
     expect(project.session.farmAnimals?.map((row) => row.instanceId)).toEqual([
       "keep", "overflow", "incompatible", "unknown_home", "removed_home",

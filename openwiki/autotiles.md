@@ -52,6 +52,7 @@ T+3R:   [SW T+90]     [S T+91]        [SE T+92]
 주의 사항:
 
 - **240 잔디는 절대 오토타일 그룹으로 승격하지 말 것.** `TILE.GRASS = 240` — 맵 기본 바닥 그 자체라 그룹 멤버로 만들면 전 맵이 성형 대상이 된다. 잔디는 `grass-autotile` 문법 그룹(combinedTownGroups.ts) 전담.
+- **채우기는 멤버 칸을 한 재료로 잇는다** (`fillTile`, 2026-10-27). 흙길처럼 몸통·변·모서리가 다른 번호로 저장된 그룹은, 그 중 한 칸을 누르면 사방으로 이어진 같은 그룹 `memberTileIds` 전체가 바뀐다. `connectTileIds` 만 겹치는 이웃(모래 옆 물)은 넘어가지 않는다. 누른 칸이 이미 칠할 번호이면 맵을 다시 쓰지 않는다.
 - 273/333 은 잔디가 아니라 **키큰 풀(243 블록)의 NW/SW 모서리**다 (2026-07-17 오분류 교정).
 - 키큰 풀 E/F/G(243 블록·1124~1190)는 조수 도구 `arrange_tall_grass`(src/editor/tools/tallGrassTool.ts)로 깐다 — 규칙은 `src/project/defaults/tallGrassArrange.ts`(scripts/content/lib/tall-grass.mjs 의 TS 판, 둘을 같이 고칠 것). `author_wild_route` 는 forest_harmony 맵에서 숲마을 흙길 `forest_harmony_road_47`·다듬은 풀숲 덩이·물러난 굽이숲을 쓴다(`wildRouteForest.ts`, 2026-09-25).
 - 246/249(석축 단)·366/369(어둠)는 **통행 불가** — 각각 `stoneWall`·`darkWallBody` 분류(chipsetMapping.ts `isSolidChipsetTile`)를 유지한다. 성곽 성벽 밴드·던전 어둠 둘레 그리기용.

@@ -76,7 +76,8 @@ describe("aiComposer 자율성 셀렉트", () => {
 
   it("적용 정책은 자율성과 별도로 다섯 모드를 제공한다", () => {
     const shell = render();
-    const select = (shell.actions as unknown as FakeElement).querySelector('[data-testid="ai-composer-apply-mode"]');
+    // 셀렉트들은 액션 행이 아니라 「작업 설정」 팝오버(commandBar 안)에 산다(public baseline 0d4f13e7c8).
+    const select = (shell.commandBar as unknown as FakeElement).querySelector('[data-testid="ai-composer-apply-mode"]');
     expect(select?.querySelectorAll("option").map(option => option.getAttribute("value"))).toEqual(["yolo", "auto", "default", "review", "step"]);
     expect(select?.value).toBe("default");
   });
@@ -97,7 +98,8 @@ describe("aiComposer 자율성 셀렉트", () => {
   it("추론 강도 셀렉트를 그리지 않는다", () => {
     // Break: 수동 override 가 남으면 다이얼이 저장한 프리셋 값과 갈라진다.
     const shell = render();
-    const selects = (shell.actions as unknown as FakeElement).querySelectorAll('[data-testid="ai-composer-autonomy"]');
+    // 셀렉트들은 액션 행이 아니라 「작업 설정」 팝오버(commandBar 안)에 산다(public baseline 0d4f13e7c8).
+    const selects = (shell.commandBar as unknown as FakeElement).querySelectorAll('[data-testid="ai-composer-autonomy"]');
     expect([...selects].length).toBe(1);
   });
 
@@ -129,11 +131,14 @@ describe("aiComposer 자율성 셀렉트", () => {
     expect(shell.autonomySelect?.value).toBe("max");
   });
 
-  it("셀렉트는 액션 행 lead 에 있고 팝오버 기계를 건드리지 않는다", () => {
+  it("셀렉트는 작업 설정 팝오버에 있고, 액션 행 lead 는 그 토글만 갖고, 팝오버 기계를 건드리지 않는다", () => {
+    // 자율성 셀렉트는 「작업 설정」 팝오버로 옮겨졌다(public baseline 0d4f13e7c8) — lead 에는 여는 토글이 남는다.
     const shell = render();
     const actions = shell.actions as unknown as FakeElement;
     const lead = actions.querySelector(".ai-composer-actions-lead");
-    expect(lead?.contains(shell.autonomySelect)).toBe(true);
+    expect(lead?.querySelector('[data-testid="ai-composer-settings"]')).toBeTruthy();
+    const popover = (shell.commandBar as unknown as FakeElement).querySelector('[data-testid="ai-composer-settings-popover"]');
+    expect(popover?.contains(shell.autonomySelect)).toBe(true);
     expect(shell.openKind()).toBeNull();
   });
 });

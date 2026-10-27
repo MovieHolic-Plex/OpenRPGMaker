@@ -16,6 +16,12 @@ import { store } from "@/project/store";
 import type { Project } from "@/project/types";
 
 function installHermeticEnv(project: Project): void {
+  // This smoke measures the work-item outcome gate. The beodeul_city default now ships reference docs, so fill_region
+  // would first stop at the separate reference-read gate (tileset-reference-read-required, src/ai/tilesetReferenceEvidence.ts).
+  for (const tileset of Object.values(project.tilesets)) {
+    delete tileset.referenceDocuments;
+    for (const kit of tileset.structureKits ?? []) delete kit.referenceDocuments;
+  }
   vi.stubEnv("VITE_LEGACY_DB_ANON_KEY", "test-anon-key");
   vi.stubEnv("VITE_LEGACY_DB_PROJECT_ID", "rpg-zzu-test-project");
   vi.stubEnv("VITE_LEGACY_DB_URL", "http://dbserver:8100");

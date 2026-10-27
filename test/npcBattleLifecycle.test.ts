@@ -20,7 +20,8 @@ describe('real battle result lifetime', () => {
     vi.spyOn(f.scene.game.registry, 'get').mockReturnValue(host);
     const mounted = deferred<BattleDomOptions>(), exit = deferred<void>();
     const destroyed = vi.fn();
-    surfaces.mount.mockImplementation((options: BattleDomOptions) => { mounted.resolve(options); return { root: host, destroy: destroyed }; });
+    // 컨트롤러는 ready(첫 프레임 디코드)·begin(인트로·ATB 시작)을 갖는다 — 진입 커버가 ready 를 기다린 뒤 begin 을 부른다.
+    surfaces.mount.mockImplementation((options: BattleDomOptions) => { mounted.resolve(options); return { root: host, destroy: destroyed, ready: Promise.resolve(), begin: () => undefined }; });
     surfaces.transition.mockImplementation(() => ({ cover: async () => undefined, reveal: async () => undefined,
       exit: () => exit.promise, destroy: () => undefined }));
     let current = true;

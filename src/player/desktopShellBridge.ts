@@ -14,13 +14,16 @@
  * 3. 내장 HTML5 Gamepad API 폴링 루프 (Steam Deck / Xbox / DualSense 컨트롤러):
  *    별도 설정 없이 패드 연결 시 D-Pad / 좌측 스틱 → 방향키, A(0) → Enter/Z, B(1) → Escape/X,
  *    X(2)/LB(4) → Shift, Y(3)/Start(9) → Escape 키 이벤트를 합성해 타이틀·필드·전투·대사창 전체가
- *    패드로 조작된다. 방향키를 누르고 있으면 키보드 반복과 같이 `repeat` keydown 을 보낸다
+ *    패드로 조작된다. 좌측 스틱은 반지름 데드존(진입 0.45, 유지 0.30) 뒤에 터치 스틱과 같은
+ *    상하좌우 우선 구역으로 읽는다 — 축마다 0.45 를 보면 45° 로 절반쯤 민 스틱(축 ≈ 0.42)이
+ *    아무 방향도 내지 않는다. 방향키를 누르고 있으면 키보드 반복과 같이 `repeat` keydown 을 보낸다
  *    (메뉴 커서가 한 칸에서 멈추지 않게). 확인·취소는 가장자리에서 한 번만 보낸다.
  *    창이 흐려지거나 페이지가 숨으면 스틱·D-pad 방향만 떼고, 다시 보이면 아직 기울인 스틱을
  *    새로 누른 것으로 보낸다. 확인·취소는 그 사이 엣지를 만들지 않는다.
  */
 import type { DesktopDisplayMode, DesktopExportPlatform } from "@/project/desktopGameExport";
 import { HeldDirectionRepeat } from "@/player/heldDirectionRepeat";
+import { stickSector, stickSectorKeys } from "@/player/touchPad";
 
 export interface DesktopShellBootConfig {
   readonly enabled?: boolean;
@@ -88,7 +91,27 @@ const BUTTON_KEY_MAP: ReadonlyArray<{
   { index: 15, key: "ArrowRight", code: "ArrowRight" }, // D-Pad Right
 ];
 
-const STICK_DEADZONE = 0.45;
+/** 중립에서 방향으로 들어가려면 이 반지름을 넘어야 한다. 옛 축별 문턱과 같은 값이라 정면 민감도는 그대로다. */
+const GAMEPAD_STICK_DEADZONE = 0.45;
+/** 이미 방향을 내고 있으면 이 반지름 아래로 돌아와야 놓는다. 문턱에 걸친 스틱이 매 프레임 눌림/뗌을 반복하지 않게. */
+const GAMEPAD_STICK_DEADZONE_HOLD = 0.3;
+/**
+ * `stickSector` 는 픽셀 거리(진입 12px)로 중립을 자른다. 축 값(-1..1)을 이 배율로 키우면
+ * 그 12px 관문은 반지름 0.12 라, 위의 0.45 관문보다 먼저 방향을 지우지 않는다.
+ */
+const GAMEPAD_STICK_SECTOR_SCALE = 100;
+
+/**
+ * 좌측 스틱 → 터치 스틱과 같은 8구역 번호, 또는 데드존 안이면 null.
+ * 축마다 0.45 를 재면 45° 입력은 양쪽 축이 모두 문턱을 넘을 때까지(반지름 ≈ 0.64) 무시된다.
+ * 반지름으로 자른 뒤 구역을 고르면 그 입력이 대각선이 되고, 정면에서 조금 비낀 입력은 한 방향만 남는다.
+ */
+export function gamepadStickSector(axisX: number, axisY: number, previous: number | null): number | null {
+  const distance = Math.hypot(axisX, axisY);
+  if (!Number.isFinite(distance)) return null;
+  if (distance <= (previous === null ? GAMEPAD_STICK_DEADZONE : GAMEPAD_STICK_DEADZONE_HOLD)) return null;
+  return stickSector(axisX * GAMEPAD_STICK_SECTOR_SCALE, axisY * GAMEPAD_STICK_SECTOR_SCALE, previous);
+}
 
 let activeCleanup: (() => void) | null = null;
 
@@ -314,7 +337,7 @@ function startGamepadPolling(state: DesktopShellRuntimeState): () => void {
   const pressedKeys = new Set<string>();
   const directionRepeat = new HeldDirectionRepeat();
   let windowBlurred = false;
-  let rafId = 0;
+  let stickSectorIndex: number | null = null;  let rafId = 0;
   let active = true;
 
   const isDirectionToken = (token: string): boolean => (token.split("|")[0] ?? "").startsWith("Arrow");
@@ -374,6 +397,7 @@ function startGamepadPolling(state: DesktopShellRuntimeState): () => void {
     state.gamepadId = null;
     releasePressedKeys();
     directionRepeat.clear();
+    stickSectorIndex = null;
   };
 
   const poll = (): void => {
@@ -392,10 +416,10 @@ function startGamepadPolling(state: DesktopShellRuntimeState): () => void {
         }
         const axisX = pad.axes[0] ?? 0;
         const axisY = pad.axes[1] ?? 0;
-        if (axisX < -STICK_DEADZONE) nextPressed.add("ArrowLeft|ArrowLeft");
-        else if (axisX > STICK_DEADZONE) nextPressed.add("ArrowRight|ArrowRight");
-        if (axisY < -STICK_DEADZONE) nextPressed.add("ArrowUp|ArrowUp");
-        else if (axisY > STICK_DEADZONE) nextPressed.add("ArrowDown|ArrowDown");
+        stickSectorIndex = gamepadStickSector(axisX, axisY, stickSectorIndex);
+        for (const key of stickSectorKeys(stickSectorIndex)) {
+          nextPressed.add(`${key}|${key}`);
+        }
 
         if (inputObscured()) {
           // Keep tracking buttons so a held A does not confirm again when the
