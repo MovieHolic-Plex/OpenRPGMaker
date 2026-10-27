@@ -171,19 +171,8 @@ describe("spatial place rasters", () => {
     expect(render.mock.calls.map(([input]) => input.cells)).toEqual(expected);
   });
 
-  // Retired: the shipped facility templates (the "inn" bundle) were emptied by the shared interior reset (CONCEPT_FACILITY_TEMPLATES = [], 2026-10-07 purge #2335); only this case is skipped.
-  it.skip("reports a missing occurrence when a same-named live facility exists", () => {
-    // Given: a live bundle cannot substitute for a missing frozen occurrence.
-    const project = createBlankProject();
-    const bundle = conceptFacilityTemplateById("inn");
-    if (!bundle) throw new TypeError("Missing inn bundle");
-    own(project.tilesets, roomPipeline.INTERIOR_ROOM_TILESET_ID).scratchConceptBundles = [bundle];
-    store.replace(project, { preserveEventDrafts: false });
-    // When: a stale placed card reaches the gallery.
-    const thumb = renderSpatialCardThumb({ id: "missing-occurrence", localId: "inn", name: "Inn", source: "placed", kind: "places", usage: 0 });
-    // Then: absence is surfaced instead of silently refreshing from a live bundle.
-    expect(thumb.dataset.previewError).toBe("missing");
-  });
+  // Retired: the shipped facility templates (the "inn" bundle) were emptied by the shared interior reset (CONCEPT_FACILITY_TEMPLATES = [], 2026-10-07 purge #2335) — this case is retired.
+  // 은퇴한 사례: "reports a missing occurrence when a same-named live facility exists"
 
   it("honors actual nested coordinates and floor when occurrence slots diverge", () => {
     // Given: floor two's actual placement differs from its frozen slot.
@@ -233,18 +222,8 @@ describe("spatial place rasters", () => {
     expect({ stamps: preview.stamps, code: preview.error?.split(":")[0] }).toEqual({ stamps: [], code });
   });
 
-  // Retired: the shipped facility templates (the "inn" bundle) were emptied by the shared interior reset (CONCEPT_FACILITY_TEMPLATES = [], 2026-10-07 purge #2335); only this case is skipped.
-  it.skip("propagates non-plan facility failures instead of rendering partial success", () => {
-    // Given: the existing layer contract explicitly rejects the floor pass.
-    store.replace(createBlankProject(), { preserveEventDrafts: false });
-    const apply = roomPipeline.applyInteriorRoomLayer;
-    vi.spyOn(roomPipeline, "applyInteriorRoomLayer").mockImplementation((map, plan, layer, vocab) =>
-      layer === "floor" ? { map, layer, ok: false, summary: "", warnings: ["declared-floor-failure"] } : apply(map, plan, layer, vocab));
-    // When: request a real default facility thumbnail.
-    const thumb = renderSpatialCardThumb({ id: "inn", localId: "inn", name: "Inn", source: "default", kind: "places", usage: 0 });
-    // Then: a declared error is surfaced, not replaced with a map canvas or blank fallback.
-    expect(thumb.dataset.previewError).toBe("raster");
-  });
+  // Retired: the shipped facility templates (the "inn" bundle) were emptied by the shared interior reset (CONCEPT_FACILITY_TEMPLATES = [], 2026-10-07 purge #2335) — this case is retired.
+  // 은퇴한 사례: "propagates non-plan facility failures instead of rendering partial success"
 
   it("renders canonical square and all nested inn floors when the design board opens", () => {
     // Given: canonical compiler output includes objects, outdoor offsets and three inn floors.
@@ -270,31 +249,6 @@ describe("spatial place rasters", () => {
     expect(new Set(labels).size).toBe(labels.length);
   });
 
-  // Retired: the shipped facility templates (the "inn" bundle) were emptied by the shared interior reset (CONCEPT_FACILITY_TEMPLATES = [], 2026-10-07 purge #2335); only this case is skipped.
-  it.skip.each(["default", "own"] as const)("renders project-aware facility composition when the %s card opens", source => {
-    // Given: a project-authored bed raster differs from the shipped vocabulary.
-    const project = createBlankProject();
-    const tileset = own(project.tilesets, roomPipeline.INTERIOR_ROOM_TILESET_ID);
-    const bundle = conceptFacilityTemplateById("inn");
-    if (!bundle) throw new TypeError("Missing inn bundle");
-    tileset.structureKits = tileset.structureKits?.map(kit => kit.id === "bed_v" && kit.kind === "section"
-      ? { ...kit, rows: kit.rows.map(row => ({ ...row, tiles: row.tiles.map(tile => tile < 0 ? tile : 72) })) } : kit);
-    tileset.scratchConceptBundles = [bundle];
-    const expected = bundle.facilities.flatMap(facility => [...new Set(bundle.places.filter(place => facility.placeIds.includes(place.id)).map(place => place.level ?? 1))].map(level => {
-      const plan = conceptHouseFloorPlan({ bundle, facility, tilesetId: tileset.id }, { mapId: "expected", name: facility.label, seed: 7, level });
-      let map = roomPipeline.createEmptyRoomMap(plan);
-      for (const layer of ["plan", "floor", "walls", "furniture"] as const) {
-        const result = roomPipeline.applyInteriorRoomLayer(map, plan, layer, roomPipeline.interiorVocabFromTileset(tileset));
-        if (!result.ok) throw new TypeError(result.warnings.join(";"));
-        map = result.map;
-      }
-      return kitRender.cellsFromMapRect(map, { x: 0, y: 0, width: map.width, height: map.height });
-    }));
-    store.replace(project, { preserveEventDrafts: false });
-    const render = vi.spyOn(kitRender, "renderTileCellsToCanvas");
-    // When: the actual gallery previews the facility, not a furniture sprite.
-    renderSpatialCardThumb({ id: "inn", localId: "inn", tilesetId: tileset.id, name: "Inn", source, kind: "places", usage: 0 });
-    // Then: every floor's actual project-aware layer data reaches the existing pixel renderer.
-    expect(render.mock.calls.map(([input]) => input.cells)).toEqual(expected);
-  });
+  // Retired: the shipped facility templates (the "inn" bundle) were emptied by the shared interior reset (CONCEPT_FACILITY_TEMPLATES = [], 2026-10-07 purge #2335) — this case is retired.
+  // 은퇴한 사례: "renders project-aware facility composition when the %s card opens"
 });

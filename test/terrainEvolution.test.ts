@@ -11,10 +11,8 @@ import { reliefAllowsStep, reliefSlopes } from "@/project/relief/walk";
 import { connectTerrainRoad } from "@/editor/terrainRoadRamps";
 import { parseTerrainLibrary } from "@/editor/terrainStampLibrary";
 import type { GameMap } from "@/project/types";
-import { withRetiredCombinedTownMaps } from "./support/retiredCombinedTownMaps";
 const options: TerrainFeatureOptions = { symmetry:"none",areaShape:"rect",width:3,delta:3,seed:1,weights:[70,25,5],waterLevel:0,maxDepth:3,shallowWidth:1,flattenRoad:false,unlock:false,density:35 };
-// 합본 마을 타일 번호를 가정하므로 되살린다 — 정리(0d4f13e7c8) 뒤 기본은 beodeul_city (#3657 패턴).
-function fixture(){const project=withRetiredCombinedTownMaps(createBlankProject()),map:GameMap={id:"terrain",name:"terrain",width:16,height:16,tileSize:16,tilesetId:project.maps[project.startMapId].tilesetId,lowerTiles:new Array(256).fill(0),upperTiles:new Array(256).fill(-1),events:[]};project.maps={terrain:map};project.startMapId=map.id;project.startPos={x:1,y:1};return {project,map,tileset:project.tilesets[map.tilesetId]};}
+function fixture(){const project=createBlankProject(),map:GameMap={id:"terrain",name:"terrain",width:16,height:16,tileSize:16,tilesetId:project.maps[project.startMapId].tilesetId,lowerTiles:new Array(256).fill(0),upperTiles:new Array(256).fill(-1),events:[]};project.maps={terrain:map};project.startMapId=map.id;project.startPos={x:1,y:1};return {project,map,tileset:project.tilesets[map.tilesetId]};}
 function clone(map:GameMap):GameMap{return {...map,lowerTiles:map.lowerTiles.slice(),upperTiles:map.upperTiles.slice(),...cloneExtraLayers(map)};}
 describe("editable terrain and gameplay contracts",()=>{
  it("replaces geometry and height without accumulation, restores a shortened area, rejects overlapping edits",()=>{

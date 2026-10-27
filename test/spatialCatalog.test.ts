@@ -104,7 +104,7 @@ describe("spatial catalog source fidelity", () => {
     // 배송 칩셋 가운데 구조 킷을 이미 갖는 것(성벽 실측 부품·공용 숲 오브젝트)은
     // 사용자가 만든 것이 아니므로 내 설계 목록에 나오지 않는다.
     expect(own.some((card) => card.tilesetId === "opengameart_castle")).toBe(false);
-    // 성벽 실측 부품(castle-measured-*)의 기본 카드는 2026-10-07 저작권 정리(#2335)로 칩셋째 지워져 이 한 줄만 접는다.
+    expect(defaults.some((card) => card.tilesetId === "opengameart_castle" && card.objectId === "castle-measured-fountain")).toBe(true);
     expect(own.map((card) => card.id).sort()).toEqual(
       [
         spatialPresentationId("tileset-kit", first, "bed_v"),
@@ -160,8 +160,9 @@ describe("spatial catalog source fidelity", () => {
     // Then
     expect(room?.name).toBe("Legacy Bedroom");
     expect(room?.compatibility).toBe("room-rule");
-    // 「건물 외형 · 호환 도안」(house-template) 카드는 2026-10-07 저작권 정리(#2335)로 지웠다(spatialCatalogHierarchy.ts) — 그 카드 단언만 접는다.
-    expect(house).toBeUndefined();
+    expect(house?.name).toBe("Cottage");
+    expect(house?.compatibility).toBe("house-shape");
+    expect(house?.placeKind).toBe("settlement");
   });
 
   it("marks occurrences missing when the live library drops the source but keeps the snapshot name", () => {
@@ -265,8 +266,7 @@ describe("spatial catalog source fidelity", () => {
     expect(byName("Unicode colon-local")?.objectId).toBe("한::침대");
     expect(objects.filter((card) => card.name === "Colon-scope bed" || card.name === "Colon-local bed")).toHaveLength(2);
     expect(objects.filter((card) => card.name === "Tileset-library desk" || card.name === "Canonical library desk")).toHaveLength(2);
-    // house-template 카드는 2026-10-07 저작권 정리(#2335)로 지웠다.
-    expect(places.filter((card) => card.name === "Template Cottage")).toHaveLength(0);
+    expect(places.filter((card) => card.name === "Template Cottage")).toHaveLength(1);
     expect(regions.filter((card) => card.name === "Preset Cottage")).toHaveLength(1);
     expect(regions.find((card) => card.name === "Preset Cottage")?.regionKind).toBe("settlement");
     expect(new Set(objects.map((card) => card.id)).size).toBe(objects.length);
