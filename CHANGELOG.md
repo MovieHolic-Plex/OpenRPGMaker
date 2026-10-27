@@ -5,6 +5,39 @@
 
 <!-- releases -->
 
+## 0.353.1 — 2026-10-27
+
+### 수정
+
+- **input** — read a diagonal gamepad stick inside the square dead zone (#3730) (`f4940dd`)
+- **ci** — slice-4 decisions — enemy/species transparent, Pi outcome keeps response-final/blocked, layer-1 paint keeps layer 2 (#3846) (`c094d63`)
+- **css** — route every font stack through the role tokens (#3761) (`70cd648`)
+
+### 테스트
+
+- **ci** — slice-5 drift fixes — 60 files green, 5 product fixes (#3822) (`cb32080`)
+
+## 0.353.0 — 2026-10-27
+
+### 기능
+
+- **ai** — objective says where, drawn entrances work, no repeated day dialogue (J98, J101-J106) (#3795) (`7a85bb6`)
+
+### 수정
+
+- **export** — escape game titles in the Steam launcher and VDF (#3719) (`1f665b1`)
+- **desktop** — demo music plays — embed demo BGM in baked demos, fetch other catalog tracks on demand (#3796) (`4cd15e1`)
+
+### 성능
+
+- **editor** — restore only map-used bundled tilesets on load; route tileset_blobs readers through deserialize (#3810) (`34cbea8`)
+
+### 테스트
+
+- **ci** — fix drift slice 0 — 51 vitest files green, 7 re-tagged timeout (#3765) (`a901a08`)
+- **persistence** — follow #3774 bundled-tileset diffs — electron may import bundledTilesetDiff; restore the patched tileset before checking its reference documents (#3811) (`8da9778`)
+- **ci** — slice-4 drift fixes — 62 files green, 4 product fixes (#3807) (`923287d`)
+
 ## 0.352.0 — 2026-10-27
 
 ### 기능

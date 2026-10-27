@@ -32,20 +32,24 @@ describe("parseGeneratedRecord", () => {
   it("적 레코드는 적 필드만 통과시킨다", () => {
     const raw = '{"name":"서슬 늑대","stats":{"maxHp":140,"attack":22},"price":10,"description":"x"}';
 
-    // monsterResourceId 를 빼먹으면 이름 조각으로도 못 고르니 슬라임으로 떨어진다(도트 몬스터만, 2026-10-02).
+    // monsterResourceId 를 빼먹으면 이름 조각으로 고른다 — 도트 몬스터 목록에 한국어 이름(「회색 늑대」)이 생겨 「늑대」가 늑대를 찾는다.
     expect(parseGeneratedRecord("enemy", raw)).toEqual({
-      name: "서슬 늑대", stats: { maxHp: 140, attack: 22 }, monsterResourceId: "generated-enemy-slime-01",
+      name: "서슬 늑대", stats: { maxHp: 140, attack: 22 }, monsterResourceId: "generated-enemy-wolf-grey",
     });
   });
 
   it("적 그림은 도트 몬스터 id 만 남긴다 — 목록 밖 id 는 가장 가까운 도트 몬스터로 옮긴다", () => {
     expect(parseGeneratedRecord("enemy", '{"name":"늑대","monsterResourceId":"generated-enemy-wolf-grey"}').monsterResourceId)
       .toBe("generated-enemy-wolf-grey");
+    // The name 「늑대」 now matches the catalog's Korean name 「회색 늑대」 before any id fragment does.
     expect(parseGeneratedRecord("enemy", '{"name":"늑대","monsterResourceId":"wolf-dire"}').monsterResourceId)
-      .toBe("generated-enemy-hound-hell");
+      .toBe("generated-enemy-wolf-grey");
     expect(parseGeneratedRecord("enemy", '{"name":"늑대","monsterResourceId":"generated-enemy-frost-wolf"}').monsterResourceId)
       .toBe("generated-enemy-wolf-grey");
     expect(parseGeneratedRecord("enemy", '{"name":"늑대","monsterResourceId":"mystery-thing"}').monsterResourceId)
+      .toBe("generated-enemy-wolf-grey");
+    // Nothing in the id or the name matches: fall back to the slime.
+    expect(parseGeneratedRecord("enemy", '{"name":"정체불명","monsterResourceId":"mystery-thing"}').monsterResourceId)
       .toBe("generated-enemy-slime-01");
   });
 

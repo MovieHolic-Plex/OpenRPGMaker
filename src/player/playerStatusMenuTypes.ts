@@ -2,7 +2,7 @@ import type { InventoryView } from '@/player/playerInventoryView';
 import type { GrowthMenuTab, GrowthMenuMutation } from "@/player/playerGrowthMenu";
 import type { PlaySession } from "@/project/session";
 import type { ActorInitialEquipment, Project } from "@/project/types";
-import type { SaveSlotIndex, SaveSlotReadResult } from "@/player/saveSlots";
+import type { AutosaveReadResult, SaveSlotIndex, SaveSlotReadResult } from "@/player/saveSlots";
 import type { StatusMenuCommandId, StatusMenuGroupEntryId, StatusMenuRailId } from "@/player/playerStatusMenuModel";
 import type { LifeLedgerTabId } from "@/player/lifeLedger";
 import type { MonsterCollectAction, MonsterCollectUi } from "@/player/playerMonsterCollectTypes";
@@ -15,6 +15,7 @@ export type PlayerStatusMenuActions = {
   readonly onOpenGroup: (entryId: StatusMenuGroupEntryId) => void;
   readonly onSaveSlot: (slot: SaveSlotIndex) => void;
   readonly onLoadSlot: (slot: SaveSlotIndex) => void;
+  readonly onLoadAutosave?: () => void;
   readonly onSelectItemTarget: (itemId: string) => void;
   readonly onUseItem: (itemId: string, actorId?: string, monsterInstanceId?: string) => void;
   readonly onOpenItemActions?: (itemId: string) => void;
@@ -54,6 +55,7 @@ export type PlayerStatusMenuOptions = {
   readonly project: Project;
   readonly session: PlaySession;
   readonly slots: readonly SaveSlotReadResult[];
+  readonly autosave?: AutosaveReadResult;
   readonly message?: string;
   readonly selectedCommand?: StatusMenuRailId;
   readonly mode?: "main" | "function";

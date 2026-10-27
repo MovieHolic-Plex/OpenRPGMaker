@@ -219,7 +219,10 @@ describe("aiImageGenerateField queue", () => {
     });
     vi.stubGlobal(
       "fetch",
-      vi.fn(() => gate),
+      // The default image route first probes /auth/status (da29a9f402); only the generate POST waits on the gate.
+      vi.fn((_url: unknown, init?: { body?: unknown }) => init?.body === undefined
+        ? Promise.resolve(new Response("{}", { status: 200, headers: { "Content-Type": "application/json" } }))
+        : gate),
     );
     const forA: string[] = [];
     const forB: string[] = [];
