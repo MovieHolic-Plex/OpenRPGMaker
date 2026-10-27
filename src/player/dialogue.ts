@@ -52,7 +52,7 @@ import {
   type DialoguePresentationProfile,
 } from "@/player/dialoguePresentation";
 import { prefersReducedMotion } from "@/player/characterLanding";
-import { isCancelKey, isConfirmKey, isTextEntryTarget, keyboardEventKey, normalizeKey } from "@/player/keyBindings";
+import { directionForKey, isCancelKey, isConfirmKey, isTextEntryTarget, keyboardEventKey } from "@/player/keyBindings";
 import { applySystemWindowSkinVariable } from "@/player/systemGraphics";
 import { resolveAudioSource } from "@/player/audio/audioResources";
 import { lineVoiceActive, playLineVoice, stopLineVoice } from "@/player/lineVoice";
@@ -1871,14 +1871,13 @@ export function createDialogueUI(
           }
           return;
         }
-        if (normalizeKey(key) === "arrowup") {
+        // 필드·전투·상태 메뉴와 같이 W/S 도 위아래다. ←→ 는 받지 않는다 — 패드 스틱이
+        // 대각선이면 ArrowDown 과 ArrowRight 가 한 번에 오고, 둘 다 「다음」이면 한 줄을 건너뛴다.
+        const dir = directionForKey(key);
+        if (dir === "up" || dir === "down") {
           e.preventDefault();
-          setSelected((selectedIndex + request.options.length - 1) % request.options.length);
-          return;
-        }
-        if (normalizeKey(key) === "arrowdown") {
-          e.preventDefault();
-          setSelected((selectedIndex + 1) % request.options.length);
+          const delta = dir === "up" ? request.options.length - 1 : 1;
+          setSelected((selectedIndex + delta) % request.options.length);
           return;
         }
         // 결정은 Z/Enter/Space/E. Enter·Space 만 받아서 대사를 Z 로 넘기다가
