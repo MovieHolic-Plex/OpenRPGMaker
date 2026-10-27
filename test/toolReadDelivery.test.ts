@@ -6,6 +6,8 @@ import { createBlankProject } from "@/project/defaults";
 
 const contract = { project: false, collections: ["items"], references: true };
 const writeArgs = { item: { id: "item_potion", price: 654 } };
+// 기본 포션 가격은 데이터 조정으로 바뀐다(50 → 60) — 고정 숫자 대신 지금 값을 다시 쓴다.
+const POTION_PRICE = createBlankProject().database.items.find(entry => entry.id === "item_potion")?.price;
 function fixture() {
   const project = createBlankProject();
   const evidence = new ToolReadEvidence();
@@ -25,7 +27,7 @@ describe("exact native receipts", () => {
       return { ...message, content: JSON.stringify({ ok: result.ok, summary: result.summary }) };
     }],
     ["failed result", (message: ChatMessage): ChatMessage => ({ ...message, content: String(message.content).replace('"ok":true', '"ok":false') })],
-    ["rewritten record", (message: ChatMessage): ChatMessage => ({ ...message, content: String(message.content).replace('"price":50', '"price":51') })],
+    ["rewritten record", (message: ChatMessage): ChatMessage => ({ ...message, content: String(message.content).replace(`"price":${POTION_PRICE}`, `"price":${Number(POTION_PRICE) + 1}`) })],
     ["truncated JSON", (message: ChatMessage): ChatMessage => ({ ...message, content: String(message.content).slice(0, -1) })],
     ["wrong call identity", (message: ChatMessage): ChatMessage => ({ ...message, tool_call_id: "another_read" })],
     ["wrong tool", (message: ChatMessage): ChatMessage => ({ ...message, name: "get_event" })],
