@@ -207,8 +207,11 @@ describe("UXC D14/D19/D27/D29 에디터 셸 크롬", () => {
       const expand = findByTestId(fakeElement(toolbar), "editor-canvas-toolbar-expand");
       // P2-11: 줌 그룹은 스테퍼(−/+)와 배율 버튼(1x/2x/4x)만 노출 — "확대"는 title/aria로 이동.
       expect(zoomGroup?.textContent).toContain("2x");
-      expect(zoomGroup?.textContent).not.toContain("맵 저장");
-      expect(saveGroup?.textContent).toContain("맵 저장");
+      // 맵 저장은 글자 없는 아이콘 단추다(접근명 「현재 맵만 PNG로 저장」) — 글자 대신 단추가 어느 그룹에 있는지 본다.
+      expect(zoomGroup).toBeTruthy();
+      expect(saveGroup).toBeTruthy();
+      expect(findByTestId(zoomGroup!, "editor-map-screenshot-button")).toBeNull();
+      expect(findByTestId(saveGroup!, "editor-map-screenshot-button")?.getAttribute("aria-label")).toBe("현재 맵만 PNG로 저장");
       expand?.click();
       expect(fakeElement(toolbar).classList.contains("is-expanded")).toBe(true);
     } finally {
