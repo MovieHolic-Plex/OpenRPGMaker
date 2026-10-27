@@ -32,6 +32,7 @@ import {
 } from "@/project/actionCombat";
 import { MAX_TITLE_BACKGROUND_LAYERS, normalizeMonsterCare, normalizeTimeSystemConfig, normalizeTypeChart } from "@/project/databaseRecordModel";
 import { defaultTitleScreenSettings } from "@/project/defaults/defaultDatabase";
+import { applyEditedGameTitle } from "@/project/defaults/defaultOpeningSequence";
 import {
   DEFAULT_DAY_END_HOUR,
   DEFAULT_DAY_START_HOUR,
@@ -2033,11 +2034,15 @@ function titleScreenDisplayFieldset(
   const children: HTMLElement[] = [
     systemHelp("좌표 범위: X 0–320, Y 0–240. 해상도를 바꿔도 좌표의 비례 위치는 유지됩니다."),
     textControl("게임 타이틀", titleScreen.title, (value) => {
-      updateTitleScreen((settings) => {
-        settings.title = value;
+      const previous = store.getCurrent().system.titleScreen?.title ?? "";
+      updateSystem((draft) => {
+        draft.system.titleScreen ??= defaultTitleScreenSettings();
+        draft.system.titleScreen.title = value;
+        applyEditedGameTitle(draft, previous, value);
       }, "system:title-screen:title");
       rerender("values");
     }, "db-field-title-screen-title"),
+    systemHelp("게임 타이틀을 바꾸면 위쪽 프로젝트 이름과 시작 화면 목록도 같이 바뀝니다."),
     selectLiteral(
       "타이틀 표시 방식",
       "db-field-title-screen-presentation",

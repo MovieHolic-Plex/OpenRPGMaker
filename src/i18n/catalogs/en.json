@@ -2780,6 +2780,7 @@
 "게임 창(320×240)과 같은 규격을 축소한 모습 · 줄바꿈이 게임과 같습니다":"A scaled-down version of the game window (320×240) · line breaks match the game",
 "게임 타이틀":"Game title",
 "게임 타이틀 글자를 투명 배경 로고 그림으로 그려 타이틀에 겁니다":"Draw the game title text as a transparent-background logo image and overlay it on the title screen",
+"게임 타이틀을 바꾸면 위쪽 프로젝트 이름과 시작 화면 목록도 같이 바뀝니다.":"Changing the game title also updates the project name in the top bar and on the start screen list.",
 "게임 타이틀이 비어 있습니다. 위 「타이틀」 칸을 먼저 채우세요.":"The game title is empty. Fill in the \"Title\" field above first.",
 "게임 타이틀이 비어 있어 로고를 그릴 수 없습니다.":"Cannot draw the logo because the game title is empty.",
 "게임 파일 열기":"Open game file",
