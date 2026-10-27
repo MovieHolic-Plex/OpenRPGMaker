@@ -52,7 +52,7 @@ import {
   type DialoguePresentationProfile,
 } from "@/player/dialoguePresentation";
 import { prefersReducedMotion } from "@/player/characterLanding";
-import { isCancelKey, isConfirmKey, isTextEntryTarget, keyboardEventKey, normalizeKey } from "@/player/keyBindings";
+import { directionForKey, isCancelKey, isConfirmKey, isTextEntryTarget, keyboardEventKey } from "@/player/keyBindings";
 import { applySystemWindowSkinVariable } from "@/player/systemGraphics";
 import { resolveAudioSource } from "@/player/audio/audioResources";
 import { lineVoiceActive, playLineVoice, stopLineVoice } from "@/player/lineVoice";
@@ -1871,14 +1871,13 @@ export function createDialogueUI(
           }
           return;
         }
-        if (normalizeKey(key) === "arrowup") {
+        // 필드는 WASD 로 걷는데 선택지 커서만 방향키 전용이었다. 상점·전투·상태 메뉴와 같이
+        // directionForKey 를 쓴다. 1열이라 ←→·A·D 도 한 칸이고, 결정은 Z/Enter/Space/E 그대로다.
+        const dir = directionForKey(key);
+        if (dir) {
           e.preventDefault();
-          setSelected((selectedIndex + request.options.length - 1) % request.options.length);
-          return;
-        }
-        if (normalizeKey(key) === "arrowdown") {
-          e.preventDefault();
-          setSelected((selectedIndex + 1) % request.options.length);
+          const delta = dir === "up" || dir === "left" ? -1 : 1;
+          setSelected((selectedIndex + delta + request.options.length) % request.options.length);
           return;
         }
         // 결정은 Z/Enter/Space/E. Enter·Space 만 받아서 대사를 Z 로 넘기다가
