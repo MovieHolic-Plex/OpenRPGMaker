@@ -48,6 +48,7 @@ import { downloadBlob } from "@/util/downloadBlob";
 import { clearChildren, el } from "@/util/dom";
 import { createLogger } from "@/util/logger";
 import { toast } from "@/util/toast";
+import { beginGameExport, endGameExport } from "./gameExportNotice";
 import { projectRepository } from "@/project/persistence/repository";
 import { sameProjectTarget } from "@/project/persistence/target";
 import { persistenceSurfaceVisible } from "@/editor/persistenceRecoveryUi";
@@ -106,6 +107,7 @@ let disposeStudioButton: (() => void) | null = null;
 let disposeAiConnectionChip: (() => void) | null = null;
 let disposeFullscreenButton: (() => void) | null = null;
 let disposeTopbarFit: (() => void) | null = null;
+let disposeProjectLabel: (() => void) | null = null;
 let lastLoggedAutoSaveKind: AutoSaveState["kind"] | null = null;
 // 실패 에피소드가 진행 중인가. error 로 켜지고 saved/idle 로 꺼진다 — 재시도 중(saving)에도
 // 칩을 붙잡아 두는 데 쓴다. 톱바가 다시 그려져도 에피소드는 이어져야 하므로 모듈 상태다.
@@ -130,6 +132,8 @@ export function renderTopbar(topbar: HTMLElement): void {
   disposeFullscreenButton = null;
   disposeTopbarFit?.();
   disposeTopbarFit = null;
+  disposeProjectLabel?.();
+  disposeProjectLabel = null;
   while (topbar.firstChild) topbar.removeChild(topbar.firstChild);
   const mode = getMode();
   const menuBar = el("div", {
@@ -140,9 +144,11 @@ export function renderTopbar(topbar: HTMLElement): void {
   // 왼쪽 — 파일·자료 묶음.
   const lead = el("div", { class: "studio-bar-lead", dataset: { testid: "studio-bar-lead" } });
   const projectLabel = projectMenuLabel();
+  const projectButton = renderMenu("project", projectLabel, menuCommands("project", topbar), { chevron: true, className: "studio-project-button", title: `프로젝트 — ${projectLabel}` });
+  disposeProjectLabel = watchProjectMenuLabel(projectButton);
   lead.append(
     renderProductBrand(),
-    renderMenu("project", projectLabel, menuCommands("project", topbar), { chevron: true, className: "studio-project-button", title: `프로젝트 — ${projectLabel}` }),
+    projectButton,
     renderSaveButton(),
     renderTopbarSaveStatus(topbar),
     toolButton({ testId: "toolbar-database", icon: "database", label: headerLabel("databaseShort"), title: headerLabel("database"), onClick: () => openDatabaseModalLazy() }),
@@ -228,6 +234,22 @@ export function renderTopbar(topbar: HTMLElement): void {
 export function projectMenuLabel(): string {
   const title = store.getCurrent().meta?.title?.trim();
   return title && title.length > 0 ? title : "제목 없는 프로젝트";
+}
+
+/**
+ * 자료집 「게임 타이틀」처럼 프로젝트 이름만 바뀌는 편집은 편집 기록 이벤트를 매 글자마다
+ * 내지 않는다. 톱바를 통째로 다시 그리지 않고, 이름이 달라질 때만 이 단추의 글자를 바꾼다.
+ */
+function watchProjectMenuLabel(button: HTMLElement): () => void {
+  let shown = projectMenuLabel();
+  return store.subscribe(() => {
+    const next = projectMenuLabel();
+    if (next === shown || !button.isConnected) return;
+    shown = next;
+    const label = button.querySelector(".oprn-menu-item-label");
+    if (label) label.textContent = next;
+    button.setAttribute("title", `프로젝트 — ${next}`);
+  });
 }
 
 /**
@@ -937,8 +959,12 @@ async function createProjectFromDialog(): Promise<void> {
 }
 
 async function newScarloxyDemoProject(): Promise<void> {
+  // 다른 예제처럼 새 프로젝트 폴더로 만든다. 예전에는 지금 열린 호스트 프로젝트를 통째로 갈아 끼워 자동 저장이 덮어썼다.
+  const project = createScarloxyDemoProject();
+  const { openProjectAsNewFolder } = await import("@/editor/flagshipDemoLoader");
+  if (await openProjectAsNewFolder(project, project.meta.title || "Scarloxy 몬스터 초원")) return;
   if (!(await showConfirm({ title: "Scarloxy 데모", message: "현재 작업을 지우고 Scarloxy 몬스터 초원 데모 프로젝트를 시작할까요?", confirmLabel: "시작", danger: true }))) return;
-  store.replaceProject(createScarloxyDemoProject());
+  store.replaceProject(project);
   focusLoadedProjectStartMap();
   toast("Scarloxy 몬스터 초원 데모를 불러왔습니다", "ok");
 }
@@ -1089,39 +1115,39 @@ function openDesktopSteamStudio(topbar: HTMLElement): void {
 }
 
 async function doExportDesktopSteamGame(options: DesktopSteamExportOptions = {}): Promise<void> {
+  if (!beginGameExport("데스크톱 · Steam Depot 패키지를 조립하는 중... (resources/game.pak 아카이브 패킹)")) return;
   try {
     await store.flush().catch((error) => {
       console.error("[desktop-steam-export] flush before export failed:", error);
-      toast("저장은 실패했지만 현재 상태로 데스크톱 · Steam 패키지를 만듭니다", "info");
+      toast("저장은 실패했지만 현재 상태로 데스크톱 · Steam 패키지를 만듭니다", { kind: "info", durationMs: 8_000 });
     });
-    toast("데스크톱 · Steam Depot 패키지를 조립하는 중... (resources/game.pak 아카이브 패킹)", "info");
     const project = store.getCurrent();
     const result = await createDesktopSteamExportPackage(project, options);
     downloadBlob(result.blob, result.fileName);
     const pakMb = (result.summary.pakArchiveBytes / 1048576).toFixed(1);
-    toast(
-      `Steam · 데스크톱 패키지 완료: ${result.summary.executablePath} + game.pak(${pakMb}MB), 에셋 ${result.summary.assetCount}개`,
+    endGameExport(
+      `Steam · 데스크톱 빌드 완료: ${result.summary.executablePath} (game.pak ${pakMb}MB, 에셋 ${result.summary.assetCount}개)`,
       "ok",
     );
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
-    toast(t(`데스크톱 · Steam 패키지 빌드 실패: ${message}`), "error");
+    endGameExport(`데스크톱 · Steam 패키지 빌드 실패: ${message}`, "error");
   }
 }
 
 async function doExportWebGame(): Promise<void> {
+  if (!beginGameExport("게임 번들을 만드는 중...")) return;
   try {
     await store.flush().catch((error) => {
       console.error("[web-export] flush before export failed:", error);
-      toast("저장은 실패했지만 현재 상태를 게임 번들로 내보냅니다", "info");
+      toast("저장은 실패했지만 현재 상태를 게임 번들로 내보냅니다", { kind: "info", durationMs: 8_000 });
     });
-    toast("게임 번들을 만드는 중...", "info");
     const project = store.getCurrent();
     const result = await createWebPlayerExportPackage(project);
     downloadBlob(result.blob, webExportFileName(project));
     const skipped = result.summary.skippedRetiredResources;
     if (skipped.length > 0) console.warn("[web-export] skipped retired (deleted) art:", skipped);
-    toast(
+    endGameExport(
       skipped.length === 0
         ? `게임 내보내기 완료: 맵 ${result.summary.mapCount}개, 에셋 ${result.summary.assetCount}개`
         : `게임 내보내기 완료(경고): 맵 ${result.summary.mapCount}개, 에셋 ${result.summary.assetCount}개, 삭제된 그림 ${skipped.length}개는 빼고 냈습니다`,
@@ -1129,7 +1155,7 @@ async function doExportWebGame(): Promise<void> {
     );
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
-    toast(`게임 내보내기 실패: ${message}`, "error");
+    endGameExport(`게임 내보내기 실패: ${message}`, "error");
   }
 }
 
@@ -1138,12 +1164,12 @@ async function doExportWebGame(): Promise<void> {
  * 문서 안에 넣는다는 점만 다르다 — `file://` 에서는 옆 파일도 못 읽기 때문이다.
  */
 async function doExportStandaloneHtml(): Promise<void> {
+  if (!beginGameExport("실행형 HTML 을 만드는 중... (에셋을 문서에 넣느라 수십 초 걸립니다)")) return;
   try {
     await store.flush().catch((error) => {
       console.error("[standalone-export] flush before export failed:", error);
-      toast("저장은 실패했지만 현재 상태로 실행형 HTML 을 만듭니다", "info");
+      toast("저장은 실패했지만 현재 상태로 실행형 HTML 을 만듭니다", { kind: "info", durationMs: 8_000 });
     });
-    toast("실행형 HTML 을 만드는 중... (에셋을 문서에 넣느라 수십 초 걸립니다)", "info");
     const result = await createStandaloneHtmlExport(store.getCurrent());
     downloadBlob(result.blob, result.fileName);
     const done = {
@@ -1152,10 +1178,10 @@ async function doExportStandaloneHtml(): Promise<void> {
       missingCount: result.summary.missingAssets.length,
     };
     if (done.missingCount > 0) console.warn("[standalone-export] skipped retired (deleted) art:", result.summary.missingAssets);
-    toast(standaloneExportDoneMessage(done), standaloneExportDoneKind(done));
+    endGameExport(standaloneExportDoneMessage(done), standaloneExportDoneKind(done));
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
-    toast(`실행형 HTML 내보내기 실패: ${message}`, "error");
+    endGameExport(`실행형 HTML 내보내기 실패: ${message}`, "error");
   }
 }
 

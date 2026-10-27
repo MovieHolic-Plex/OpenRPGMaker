@@ -384,7 +384,7 @@ export interface PlaySession {
   mapOverrides: Record<MapId, MapTileOverrides>;
   /**
    * 카운트다운 타이머 중 지금 흐르는 것(timerId → 진행 중). 값(`timers`)만 저장하면 불러온 뒤 시계가 멈춘다 —
-   * 장면의 runtimeTimers 가 이 표로 다시 짜인다(PlayScene.applySession). 없으면 모두 멈춘 상태.
+   * 장면의 runtimeTimers 가 이 표로 다시 짜인다(PlayScene.create · applySession). 없으면 모두 멈춘 상태.
    */
   timerActive?: Record<string, boolean>;
   farmPlots?: FarmPlots;

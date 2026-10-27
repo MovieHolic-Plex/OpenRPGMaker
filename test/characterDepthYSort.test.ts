@@ -12,10 +12,14 @@ import { store } from "@/project/store";
 import { passageMarkForTile } from "@/project/tilesetPassage";
 import { renderTiles } from "@/player/playSceneMapRuntime";
 import { mockSprite, mockTileImage, type MockTileImage } from "./runtimeEventPageFixtures";
+import { startOnRetiredCombinedTown, withRetiredEasyRpgTilesets } from "./support/retiredEasyRpgTilesets";
+
+// 칸 번호(260 침엽수 수관 ★·234 탁자 ×·443 다리 ○)는 합본 마을·월드 칩셋 것이다 — 2026-10-07 저작권 정리로 새 프로젝트에서 빠진
+// 그 칩셋을 들고 있는 옛 저장본을 재현한다.
 
 describe("map upper tile depth (furniture y-sort vs ★ canopy)", () => {
   it("keeps ★ canopy above same-priority characters and y-sorts solid upper furniture", () => {
-    const project = createBlankProject();
+    const project = startOnRetiredCombinedTown(createBlankProject());
     const tileset = project.tilesets[project.maps[project.startMapId].tilesetId];
     // 260 침엽수 수관 ★ / 234 가로 탁자 × (솔리드 upper)
     expect(passageMarkForTile(tileset, 260)).toBe("star");
@@ -36,8 +40,8 @@ describe("map upper tile depth (furniture y-sort vs ★ canopy)", () => {
   });
 
   it("keeps a directional ○ bridge below characters, preserving ★ and × behavior", () => {
-    const project = createBlankProject();
-    const ts = project.tilesets.easyrpg_chipset_world;
+    const project = withRetiredEasyRpgTilesets(createBlankProject());
+    const ts = project.tilesets.easyrpg_chipset_world!;
     ts.priority[443] = "lower";
     ts.passability[443] = { up: false, down: false, left: true, right: true };
     expect(passageMarkForTile(ts, 443)).toBe("o");
@@ -50,7 +54,7 @@ describe("map upper tile depth (furniture y-sort vs ★ canopy)", () => {
   });
 
   it("routes solid upper furniture to root (y-sort) and ★ canopy to upperTileLayer", () => {
-    const project = createBlankProject();
+    const project = startOnRetiredCombinedTown(createBlankProject());
     const map = project.maps[project.startMapId];
     map.lowerTiles.fill(TILE.GRASS);
     map.upperTiles.fill(-1);

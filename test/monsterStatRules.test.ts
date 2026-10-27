@@ -56,10 +56,13 @@ describe("monsterBattleStatsForSpecies extras", () => {
   });
 
   it("adds floor(ev/4) to the stat before the level scale", () => {
+    // Levels clamp to ACTOR_LEVEL_MAX (99), so the requested Lv100 is scaled by 99/100: the +63 lands before the scale.
     const base = monsterBattleStatsForSpecies(species, 100, IVS);
     const withEv = monsterBattleStatsForSpecies(species, 100, IVS, { evs: { atk: 252, hp: 252 } });
-    expect(withEv.attack - base.attack).toBe(63);
-    expect(withEv.maxHp - base.maxHp).toBe(63);
+    const scaled = (raw: number): number => Math.floor(raw * 99 / 100);
+    expect(withEv.attack - base.attack).toBe(scaled(2 * 50 + 10 + 63) - scaled(2 * 50 + 10));
+    expect(withEv.maxHp - base.maxHp).toBe(scaled(2 * 40 + 10 + 63) - scaled(2 * 40 + 10));
+    expect(withEv.maxHp - base.maxHp).toBe(62);
   });
 });
 
@@ -87,7 +90,9 @@ describe("rules gate", () => {
 
 describe("evs helpers", () => {
   it("clamps per stat 255 and total 510", () => {
-    expect(clampMonsterEvs({ hp: 300, atk: 300, def: 300, spd: 0 })).toEqual({ hp: 0, atk: 255, def: 255, spd: 0 });
+    // Over the 510 total, clampMonsterEvs trims from the last stat backwards (spd → def → atk → hp).
+    expect(clampMonsterEvs({ hp: 300, atk: 300, def: 300, spd: 0 })).toEqual({ hp: 255, atk: 255, def: 0, spd: 0 });
+    expect(clampMonsterEvs({ hp: 200, atk: 200, def: 200, spd: 200 })).toEqual({ hp: 200, atk: 200, def: 110, spd: 0 });
     expect(clampMonsterEvs(undefined)).toEqual({ hp: 0, atk: 0, def: 0, spd: 0 });
   });
 

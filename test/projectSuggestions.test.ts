@@ -2,6 +2,7 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { createBlankProject } from "@/project/defaults";
 import { TILE } from "@/project/defaults/constants";
+import { startOnRetiredCombinedTown } from "./support/retiredEasyRpgTilesets";
 import { inspectProjectSuggestions, selectProjectSuggestions } from "@/ai/projectSuggestions";
 import { createProjectSuggestions, type SuggestionSnapshot } from "@/editor/panels/aiProjectSuggestions";
 
@@ -93,7 +94,9 @@ describe("authoring-journey rules (2026-09-20)", () => {
     expect(ids(s)).toContain("empty-events");
   });
   it("flags a door that lands the player on an impassable tile", () => {
+    // TILE.WALL/GRASS 는 옛 combined_town 칸 번호다 — 기본 칩셋이 beodeul_city 로 바뀐 뒤(PR #2335) 그 칩셋을 직접 깐다.
     const s = fixture();
+    startOnRetiredCombinedTown(s.project);
     const map = s.project.maps[s.mapId]!;
     map.lowerTiles.fill(TILE.WALL);
     // 다른 맵에서 이 맵으로 들어오는 문을 만든다 — 착지가 벽이면 나올 수 없다.

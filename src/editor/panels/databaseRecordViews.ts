@@ -226,9 +226,7 @@ function updateRecordRowLabel(listEl: HTMLElement, id: string, name: string): vo
 
 export function resetDatabaseRecordViewSession(): void {
   resetRecordViewSessionState();
-  if (searchRerenderTimer === null) return;
-  window.clearTimeout(searchRerenderTimer);
-  searchRerenderTimer = null;
+  clearSearchRerenderTimer();
 }
 
 function toolbar(collection: DatabaseCollection, rerender: () => void): HTMLElement {
@@ -453,6 +451,19 @@ export function deleteButton(collection: DatabaseCollection, rerender: () => voi
   return button;
 }
 
+const RECORD_SEARCH_TESTID = "db-record-search";
+
+/** 한글·일본어 IME 조합 중 input. 요소를 갈아끼우면 조합 중인 음절이 끊긴다. */
+function isImeComposingInput(event: Event): boolean {
+  return "isComposing" in event && (event as InputEvent).isComposing === true;
+}
+
+function clearSearchRerenderTimer(): void {
+  if (searchRerenderTimer === null) return;
+  window.clearTimeout(searchRerenderTimer);
+  searchRerenderTimer = null;
+}
+
 function recordSearch(collection: DatabaseCollection, rerender: () => void): HTMLElement {
   // 문구는 그룹 안에서 통일한다 — 같은 동작(matchesNameOrId)에 "레코드 검색"/"종족 검색"/
   // "이름 또는 ID 검색" 세 문구가 섞여 있었다. 실제 술어를 그대로 적은 쪽으로 모은다.
@@ -460,27 +471,59 @@ function recordSearch(collection: DatabaseCollection, rerender: () => void): HTM
   const input = el("input", {
     attrs: { type: "search", placeholder, "aria-label": placeholder },
     value: searchQueryForCollection(collection),
+    dataset: { testid: RECORD_SEARCH_TESTID },
   });
-  input.addEventListener("input", () => {
-    const cursor = input.selectionStart ?? input.value.length;
-    setSearchQueryForCollection(collection, input.value);
-    if (searchRerenderTimer !== null) window.clearTimeout(searchRerenderTimer);
+  // 조합이 끝나기 전에는 목록을 다시 그리지 않는다. 디바운스 타이머가 그 사이에 터지면
+  // 아직 확정되지 않은 음절까지 검색어로 굳고, input 이 교체되며 IME 가 끊긴다.
+  let composing = false;
+  const commitSearch = (): void => {
+    if (composing) return;
+    const value = input.value;
+    // 같은 문자열이면 목록은 이미 맞다. 조합 종료 직후 같은 값의 input 이 한 번 더 오면
+    // 이미 떨어진 칸의 커서로 되돌리지 않는다.
+    if (value === searchQueryForCollection(collection)) return;
+    const start = input.selectionStart ?? value.length;
+    const end = input.selectionEnd ?? start;
+    setSearchQueryForCollection(collection, value);
+    clearSearchRerenderTimer();
+    rerender();
+    restoreSearchFocus(`[data-testid="${RECORD_SEARCH_TESTID}"]`, start, end);
+  };
+  input.addEventListener("compositionstart", () => {
+    composing = true;
+  });
+  input.addEventListener("input", (event) => {
+    if (composing || isImeComposingInput(event)) return;
+    clearSearchRerenderTimer();
+    // 커서는 타이머를 거는 순간이 아니라 목록을 다시 그릴 때 읽는다. 그 80ms 안에
+    // 방향키로 옮긴 자리가 첫 글자 위치로 되돌아가면, 다음 글자가 단어 가운데가 아니라 끝에 붙는다.
     searchRerenderTimer = window.setTimeout(() => {
       searchRerenderTimer = null;
-      rerender();
-      restoreSearchFocus(".db-body .db-search input", cursor);
+      commitSearch();
     }, 80);
+  });
+  input.addEventListener("compositionend", () => {
+    composing = false;
+    clearSearchRerenderTimer();
+    commitSearch();
   });
   return el("div", { class: "db-search", children: [input] });
 }
 
-function restoreSearchFocus(selector: string, cursor: number): void {
-  requestAnimationFrame(() => {
+function restoreSearchFocus(selector: string, start: number, end: number): void {
+  const apply = (): void => {
     const next = document.querySelector<HTMLInputElement>(selector);
     if (!next) return;
     next.focus();
-    next.setSelectionRange(cursor, cursor);
-  });
+    const caret = Math.max(0, Math.min(start, next.value.length));
+    const caretEnd = Math.max(caret, Math.min(end, next.value.length));
+    next.setSelectionRange(caret, caretEnd);
+  };
+  if (typeof requestAnimationFrame === "function") {
+    requestAnimationFrame(apply);
+    return;
+  }
+  apply();
 }
 
 type VisibleRow = {

@@ -1,3 +1,4 @@
+import { existsSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import { BATTLE_SKINS, DEFAULT_BATTLE_SKIN_ID, battleSkinFamily, getBattleSkin, isRetiredBattleSkinId, listActiveBattleSkinIds, listBattleSkinIds, resolveSkinId, retiredSkinLookWindow } from "@/battle/skins/registry";
 import { builtinGeneratedResourceIds, resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
@@ -146,7 +147,11 @@ describe("battle skin assets", () => {
       const skin = getBattleSkin(id);
       expect(skin.defaultBackdropResourceId, `${id} missing backdrop`).toBeTruthy();
       expect(ids.has(skin.defaultBackdropResourceId!), `${id} backdrop not in DB feed`).toBe(true);
-      expect(resolveAssetResourceUrl(skin.defaultBackdropResourceId)).toMatch(/battle-skins\/.*\.png$/);
+      // 옛 스킨 배경 그림은 2026-10-03 deprecated/ 로 옮겼고 id 는 지금 그림(도트 겹 배경 미리보기·Scarloxy 숲)으로 돌린다
+      // (generatedAssetResourceResolver.ts) — battle-skins/ 경로가 아니라 실제로 출하되는 PNG 를 가리키면 된다.
+      const url = resolveAssetResourceUrl(skin.defaultBackdropResourceId);
+      expect(url).toMatch(/^\/assets\/.*\.png$/);
+      expect(existsSync(`public${url}`), `${id} backdrop file ${url}`).toBe(true);
     }
   });
 

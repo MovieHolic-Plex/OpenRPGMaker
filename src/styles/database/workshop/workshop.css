@@ -275,6 +275,7 @@ body.is-map-picking canvas { cursor: crosshair !important; }
 .workshop-photo-thumb { max-width: 72px; max-height: 72px; border-radius: var(--radius-s); object-fit: cover; }
 .workshop-photo-picks { display: grid; grid-template-columns: repeat(auto-fill, minmax(420px, 1fr)); gap: var(--space-3); }
 .workshop-photo-picks:empty { display: none; }
+.workshop-photo-note { grid-column: 1 / -1; margin: 0; color: var(--text-2); }
 .workshop-photo-card { position: relative; margin: 0; display: grid; gap: var(--space-2); padding: var(--space-2); border: 2px solid var(--border-default); border-radius: var(--radius-m); background: var(--success); }
 .workshop-photo-card.is-picked { border-color: var(--accent); }
 .workshop-photo-card img { width: 100%; max-width: 432px; image-rendering: pixelated; justify-self: center; }

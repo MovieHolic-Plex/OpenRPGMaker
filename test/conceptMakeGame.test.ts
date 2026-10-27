@@ -53,8 +53,11 @@ describe("editor make", () => {
     const { store } = await import("@/project/store");
     const { createBlankProject } = await import("@/project/defaults");
     const blank = createBlankProject();
+    // 보존 계약은 열린 프로젝트에 화면 크기가 적혀 있을 때다. 비어 있으면 씨앗("wide" 480×270)이 그대로 쓰인다.
+    blank.system.playResolution = { width: 640, height: 360 };
     store.replace(blank);
     const playResolution = store.getCurrent().system.playResolution;
+    expect(playResolution).toEqual({ width: 640, height: 360 });
     const { welcomeMakeHandler } = await import("@/editor/conceptMake");
     const made = vi.fn();
     const adopt = vi.fn(async (project: import("@/project/types").Project) => { store.replaceProject(project, { label: "test" }); });

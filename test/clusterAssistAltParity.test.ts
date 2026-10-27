@@ -29,6 +29,8 @@ import { createBlankProject, TILE } from "@/project/defaults";
 import { validateClusterRules } from "@/project/lint/clusterRuleValidators";
 import { store } from "@/project/store";
 import type { GameMap, MapId } from "@/project/types";
+// 합본 마을(EasyRPG) 칩셋의 타일 번호·그룹을 겨냥한 시험 — 2026-10-07 정리 뒤 새 프로젝트에 없어 옛 저장본처럼 다시 심는다.
+import { startOnRetiredCombinedTown, withRetiredEasyRpgTilesets } from "./support/retiredEasyRpgTilesets";
 
 const DRY_TOP = 261;
 const DRY_BOTTOM = 291;
@@ -38,7 +40,7 @@ const TABLE_R = 327;
 const TABLE_GROUP_ID = "harness-interior-house-v1-tavern-table";
 
 function townFixture(): MapId {
-  const project = createBlankProject();
+  const project = startOnRetiredCombinedTown(createBlankProject());
   const map = project.maps[project.startMapId];
   map.width = 10;
   map.height = 10;
@@ -52,7 +54,7 @@ function townFixture(): MapId {
 }
 
 function interiorFixture(): MapId {
-  const project = createBlankProject();
+  const project = withRetiredEasyRpgTilesets(createBlankProject());
   const map = project.maps[project.startMapId];
   map.tilesetId = INTERIOR_ROOM_TILESET_ID;
   map.width = 10;

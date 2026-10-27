@@ -6,12 +6,14 @@ import { COMBINED_TOWN_HARNESS_PREFIX } from "@/project/tilesetHarness/combinedT
 import { compileTilesetKnowledge } from "@/project/tilesetKnowledge";
 import { blockedFlag } from "@/project/tilesetPassage";
 import type { GameMap } from "@/project/types";
+// 합본 마을(EasyRPG) 칩셋의 타일 번호·그룹을 겨냥한 시험 — 2026-10-07 정리 뒤 새 프로젝트에 없어 옛 저장본처럼 다시 심는다.
+import { startOnRetiredCombinedTown } from "./support/retiredEasyRpgTilesets";
 
 const CONIFER_GROUP_ID = `${COMBINED_TOWN_HARNESS_PREFIX}conifer-tree`;
 const BROADLEAF_GROUP_ID = `${COMBINED_TOWN_HARNESS_PREFIX}broadleaf-tree-2x2`;
 
 function context(): { readonly ctx: ToolContext; readonly map: GameMap } {
-  const ctx: ToolContext = { project: createBlankProject() };
+  const ctx: ToolContext = { project: startOnRetiredCombinedTown(createBlankProject()) };
   const map = ctx.project.maps[ctx.project.startMapId];
   if (!map) throw new Error("missing start map");
   map.lowerTiles.fill(TILE.GRASS);

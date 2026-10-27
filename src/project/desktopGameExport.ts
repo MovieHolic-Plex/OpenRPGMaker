@@ -546,7 +546,7 @@ function addPlatformLaunchers(options: {
       [
         "@echo off",
         "chcp 65001 >nul",
-        `title ${title} (v${versionLabel})`,
+        `title ${batWindowTitle(`${title} (v${versionLabel})`)}`,
         "setlocal",
         `set STEAM_APPID=${steamAppId}`,
         'set "GAME_ROOT=%~dp0"',
@@ -742,7 +742,7 @@ function buildSteamAppVdf(options: {
     '"AppBuild"',
     "{",
     `  "AppID" "${options.steamAppId}"`,
-    `  "Desc" "${options.title} (${options.platform}) v${options.versionLabel}"`,
+    `  "Desc" "${vdfText(options.title)} (${options.platform}) v${vdfText(options.versionLabel)}"`,
     '  "BuildOutput" "./output/"',
     '  "ContentRoot" "../"',
     '  "SetLive" ""',
@@ -807,7 +807,7 @@ function buildSteamInputManifestVdf(title: string): string {
     "  {",
     '    "koreana"',
     "    {",
-    `      "Set_GameControls" "${title} 기본 조작"`,
+    `      "Set_GameControls" "${vdfText(title)} 기본 조작"`,
     '      "Action_Move" "이동 (방향키 / 좌측 스틱)"',
     '      "Action_Confirm_Z_Enter" "결정 / 대화 / 조사 (A 버튼 · Z / Enter)"',
     '      "Action_Cancel_X_Escape" "취소 / 뒤로 (B 버튼 · X / Esc)"',
@@ -871,6 +871,24 @@ function buildSteamLaunchChecklistMd(options: {
     "  - Start / Y: 시스템 메뉴 (`Escape`)",
     "",
   ].join("\n");
+}
+
+/**
+ * The generated `.bat` runs in cmd.exe. `&`, `|`, `<`, `>`, `^`, and `%` in a title
+ * such as `Dungeons & Dragons` would otherwise start another command or expand a variable.
+ */
+function batWindowTitle(text: string): string {
+  const safe = text
+    .replace(/[\r\n]+/g, " ")
+    .replace(/%/g, "%%")
+    .replace(/[&|<>^]/g, (char) => `^${char}`)
+    .trim();
+  return safe.length > 0 ? safe : "OPRN Game";
+}
+
+/** SteamPipe VDF strings. A quote or newline in the title would end the `"Desc"` value. */
+function vdfText(text: string): string {
+  return text.replace(/[\r\n]+/g, " ").replace(/\\/g, "\\\\").replace(/"/g, '\\"');
 }
 
 function normalizePositiveInt(value: number | undefined, fallback: number): number {

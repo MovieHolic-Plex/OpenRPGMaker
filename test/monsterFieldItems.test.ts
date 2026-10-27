@@ -49,8 +49,9 @@ describe("rare candy (careProfile.levelUp)", () => {
     const before = structuredClone(session.monsterInstances[id]);
     const preview = previewCareItem(project, session, item, id);
     expect(preview.reason).toBeUndefined();
-    expect(preview).toMatchObject({ levelBefore: 4, levelAfter: 7 });
-    expect(preview.evolutions?.map((entry) => entry.toSpeciesId)).toEqual(["species_second"]);
+    // previewCareItem (#2707) names the fields level / levelAfter / evolveToSpeciesIds; this test was written against a draft shape.
+    expect(preview).toMatchObject({ level: 4, levelAfter: 7 });
+    expect(preview.evolveToSpeciesIds).toEqual(["species_second"]);
     expect(session.monsterInstances[id]).toEqual(before);
     expect(session.inventory.item_test_candy).toBe(1);
   });

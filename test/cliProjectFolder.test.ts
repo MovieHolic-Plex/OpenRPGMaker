@@ -80,6 +80,14 @@ describe("CLI project folder arguments", () => {
     expect(hit.dir).toBe(game);
   });
 
+  it("opens the parent folder when the command line points at project.sqlite", () => {
+    const root = scratch();
+    const game = project(root);
+    const store = join(game, CLI_PROJECT_STORE_FILE);
+    expect(inspectCliProjectArgs(["/opt/OPRN/oprn", store], root)).toEqual({ dir: game, ignored: [] });
+    expect(inspectCliProjectArgs(["/opt/OPRN/oprn", pathToFileURL(store).href], root).dir).toBe(game);
+  });
+
   it("follows a symlink to the project directory", () => {
     const root = scratch();
     const game = project(root, "real");

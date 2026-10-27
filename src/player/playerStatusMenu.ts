@@ -106,6 +106,8 @@ export function renderPlayerStatusMenu(options: PlayerStatusMenuOptions): HTMLEl
     session: options.session,
     selectedCommand,
     slots: options.slots,
+    autosave: options.autosave,
+    onLoadAutosave: options.actions.onLoadAutosave,
     waitModeEnabled,
     inventoryView: options.inventoryView,
     onInventoryViewChange: options.actions.onInventoryViewChange,

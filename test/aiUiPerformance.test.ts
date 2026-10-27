@@ -91,8 +91,10 @@ it('preserves search, pagination, actor switching and unchanged rows', () => {
   const input = view.root.querySelector('input')!; input.value = '항목109'; input.dispatchEvent(new Event('input')); expect(view.root.querySelectorAll('.ai-activity-entry')).toHaveLength(1);
 });
 it('restores 200 messages with one height read and still scrolls a live append', () => {
-  const log = document.createElement('div'); let reads = 0; Object.defineProperty(log, 'scrollHeight', { get() { reads++; return 900; } });
+  // An empty log is at the bottom (the follow controller samples it once at host creation, aiConversationScroll.ts); history fills it to 900px.
+  const log = document.createElement('div'); let reads = 0; Object.defineProperty(log, 'scrollHeight', { get() { reads++; return log.children.length ? 900 : 0; } });
   const host = createConversationLogHost({ log, removeStartScreen() {} });
+  reads = 0;
   host.renderConversationEntries(Array.from({ length: 200 }, (_, i) => ({ kind: 'assistant', text: '대답' + i, at: '2026-09-28' })));
   expect(reads).toBe(1); expect(log.querySelectorAll('.ai-command-row')).toHaveLength(200); expect(log.scrollTop).toBe(900);
   host.appendBubble('assistant', '다음'); expect(reads).toBe(2);

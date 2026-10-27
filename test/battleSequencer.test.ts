@@ -2,6 +2,7 @@ import { describe, expect, it, vi, beforeEach, afterEach } from "vitest";
 import { createBattleRuntime } from "@/battle/runtime";
 import * as advanceModule from "@/battle/battleRuntimeAdvance";
 import { deserialize } from "@/project/io";
+import { store } from "@/project/store";
 import {
   createBattleSequencer,
   BATTLE_ACTING_MS,
@@ -316,7 +317,16 @@ describe("battle sequencer", () => {
       () => undefined
     );
 
-    sequencer.startIntro(runtime.snapshot());
+    // 게이지 충전 안내는 포켓몬 스킨에서만 말한다 — 측면 도트 전투는 게이지 동안 윗창이 빈다(#3063).
+    const previous = store.getCurrent();
+    const pokemon = deserialize(JSON.stringify(battleFixture));
+    pokemon.system.battleUiStyle = "pokemon";
+    store.replace(pokemon);
+    try {
+      sequencer.startIntro(runtime.snapshot());
+    } finally {
+      store.replace(previous);
+    }
     // 인트로는 "○○이(가) 나타났다!" 배너 → 커맨드 프롬프트("무엇을 할까?") 순으로 흐른다.
     expect(introLines[0]).toContain("나타났다");
     expect(introLines.at(-1)).toMatch(/무엇을 할까|게이지/);

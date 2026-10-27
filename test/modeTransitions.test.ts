@@ -60,7 +60,8 @@ describe("mode transitions", () => {
       DbConnectionRequiredError: class DbConnectionRequiredError extends Error {},
       store: {
         load: vi.fn(async () => {}),
-        getCurrent: vi.fn(() => ({ startMapId: "map_town", system: { battleModel: "rm2k3" } })),
+        // finishEditorBoot reads maps/commonEvents (isBlankStartProject) to decide the first-visit briefing.
+        getCurrent: vi.fn(() => ({ startMapId: "map_town", system: { battleModel: "rm2k3" }, maps: {}, commonEvents: [] })),
         subscribe: vi.fn(),
         getDbPersistenceStatus: vi.fn(() => ({ kind: "ok" })),
         isSharedDemoSession: vi.fn(() => false),

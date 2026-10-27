@@ -10,7 +10,9 @@
 // 베끼지 않은 것: RM 의 소지 한도 99. 이 저장소의 한도는 ITEM_QUANTITY_MAX(9,999,999)
 // 이고 99로 낮추면 아이템을 다루는 전 시스템에 걸친 회귀가 된다.
 import { beforeEach, describe, expect, it } from "vitest";
-import { affordableQuantityMax, shopQuantityMaxIn, SHOP_QUANTITY_HARD_MAX } from "@/player/playSceneShopParts";
+import { affordableQuantityMax, shopQuantityMaxIn, SHOP_BAG_FULL_REASON, SHOP_GOLD_CAP_REASON, SHOP_QUANTITY_HARD_MAX } from "@/player/playSceneShopParts";
+import { GOLD_MAX } from "@/project/economyValues";
+import { ITEM_QUANTITY_MAX } from "@/project/itemQuantities";
 import { adjustShopQuantity, createShopOverlay, renderShopItems, updateShopQuantityTotal } from "@/player/playSceneShopDom";
 import { emitRuntimeJuice, runtimeJuiceLog } from "@/player/runtimeJuice";
 import { attachCursorMenu } from "@/player/runtimeCursorMenu";
@@ -100,6 +102,24 @@ describe("수량 상한 — RM2003 std::min(max, gold / price)", () => {
     expect(affordableQuantityMax(toGoods(POTION), "buy", 9_999_999, 900, 0)).toBe(99);
   });
 
+  it("구매 수량은 가방에 남은 칸에서 멈춘다", () => {
+    // 골드로는 99개까지 보여도, 한도까지 3칸이면 3에서 멈춘다. 넘기면 결정이 통째로 거절된다.
+    expect(affordableQuantityMax(toGoods(POTION), "buy", 9_999_999, 900, ITEM_QUANTITY_MAX - 3)).toBe(3);
+    expect(affordableQuantityMax(toGoods(POTION), "buy", 9_999_999, 900, ITEM_QUANTITY_MAX)).toBe(0);
+    expect(affordableQuantityMax(toGoods(FREEBIE), "buy", 0, 900, ITEM_QUANTITY_MAX)).toBe(0);
+  });
+
+  it("판매 수량은 소지금 한도까지 남은 금액에서 멈춘다", () => {
+    const project = createBlankProject();
+    project.database.items = [...project.database.items.filter((entry) => entry.id !== POTION.id), POTION];
+    project.system.sellPrices = (project.system.sellPrices ?? []).filter((entry) => entry.itemId !== POTION.id);
+    store.replace(project);
+    const goods = toGoods(POTION);
+    // 판매가 6G. 한도까지 20G 남으면 3개, 한도에 닿아 있으면 0개.
+    expect(affordableQuantityMax(goods, "sell", GOLD_MAX - 20, 900, 5)).toBe(3);
+    expect(affordableQuantityMax(goods, "sell", GOLD_MAX, 900, 5)).toBe(0);
+  });
+
   it("판매는 가진 개수가 먼저 상한이고 상인 지갑이 그다음이다", () => {
     // listingPrice reads the active project sell helper; keep the fixture item authoritative.
     const project = createBlankProject();
@@ -124,6 +144,32 @@ describe("수량 상한 — RM2003 std::min(max, gold / price)", () => {
     const overlay = render({ gold: 200, items: [CROWN] });
     expect(overlay.querySelector<HTMLElement>("[data-testid='shop-buy-item_crown']")?.dataset.maxQty).toBe("0");
     expect(shopQuantityMaxIn(overlay)).toBe(1);
+  });
+
+  it("가방이 가득 찬 구매 행은 그 이유를 말한다", () => {
+    const overlay = render({ gold: 9_999_999, items: [POTION], inventory: { item_potion: ITEM_QUANTITY_MAX } });
+    const row = overlay.querySelector<HTMLElement>("[data-testid='shop-buy-item_potion']");
+    expect(row?.dataset.maxQty).toBe("0");
+    expect(row?.classList.contains("is-unaffordable")).toBe(true);
+    expect(row?.getAttribute("aria-label")).toContain(SHOP_BAG_FULL_REASON);
+  });
+
+  it("소지금이 한도인 판매 행은 한도 너머 잔액을 보여 주지 않는다", () => {
+    const overlay = render({
+      gold: GOLD_MAX,
+      items: [POTION],
+      mode: "sell",
+      merchantGold: 900,
+      inventory: { item_potion: 4 },
+    });
+    const row = overlay.querySelector<HTMLElement>("[data-testid='shop-sell-item_potion']");
+    expect(row?.dataset.maxQty).toBe("0");
+    expect(row?.getAttribute("aria-label")).toContain(SHOP_GOLD_CAP_REASON);
+    updateShopQuantityTotal(overlay);
+    const balance = overlay.querySelector<HTMLElement>("[data-testid='shop-balance-after']");
+    expect(balance?.dataset.goldCap).toBe("1");
+    expect(balance?.dataset.balance).toBeUndefined();
+    expect(balance?.textContent).toBe("소지금이 한도를 넘습니다");
   });
 });
 
