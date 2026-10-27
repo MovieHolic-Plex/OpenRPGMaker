@@ -143,7 +143,8 @@ describe("spatial object draft actions", () => {
 });
 
 describe("spatial tiles and objects surfaces", () => {
-  it("renders the live tileset editor on the tiles tab without writing the project", () => {
+  // The tiles tab now shows the tileset library (renderTilesetsTab); the placed-instance tiles editor was retired ("Tiles have no placed-instance authoring modes", spatialShell.ts).
+  it("renders the tileset library on the tiles tab without writing the project", () => {
     // Given
     const host = document.createElement("div");
     host.className = "database-modal-body";
@@ -156,8 +157,7 @@ describe("spatial tiles and objects surfaces", () => {
     renderDatabasePanel(host);
 
     // Then
-    expect(host.querySelector("[data-testid='spatial-tiles-editor']")).not.toBeNull();
-    expect(host.querySelector("[data-testid='spatial-canvas']")).not.toBeNull();
+    expect(host.querySelector("[data-testid='tileset-db-search']")).not.toBeNull();
     expect(store.getCurrent()).toEqual(before);
     host.remove();
   });
@@ -173,6 +173,8 @@ describe("spatial tiles and objects surfaces", () => {
 
     // When
     renderDatabasePanel(host);
+    // The inspector opens only after a card is selected (asset browser, #2888 era shell).
+    host.querySelector<HTMLButtonElement>("[data-card-id]")?.click();
 
     // Then
     expect(host.querySelector("[data-testid='spatial-object-preview']")).not.toBeNull();
@@ -291,12 +293,14 @@ describe("spatial object UI wiring", () => {
     // Given
     loadLibraryProject();
     bindIdentityController();
+    selectSpatialDesign(libraryObjectCardId("desk"));
     setDatabaseActiveTab("spatialObjects");
     setSpatialTab("objects");
     const host = document.createElement("div");
     host.className = "database-modal-body";
     document.body.append(host);
     renderDatabasePanel(host);
+    selectDeskCard(host);
     const before = structuredClone(store.getCurrent());
     const originalKits = Object.values(before.tilesets).flatMap((tileset) => tileset.structureKits ?? []).map((kit) => kit.id);
 

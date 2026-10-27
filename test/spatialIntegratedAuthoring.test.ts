@@ -68,6 +68,12 @@ function village() {
   return place;
 }
 
+// #2888 이후 편집 진입은 선택만 하고 상세 무대는 지연된다(spatialShell deferDetailStage) — 「상세」 토글이 꺼져 있을 때만 눌러 연다.
+function openDeferredStage(): void {
+  const toggle = host.querySelector<HTMLButtonElement>("[data-testid='spatial-inspector-toggle']");
+  if (toggle?.getAttribute("aria-pressed") !== "true") toggle?.click();
+}
+
 describe("spatial Database authoring integration", () => {
   it("binds spaces and places canvases on the real Database tabs", () => {
     setDatabaseActiveTab("spatialSpaces");
@@ -83,6 +89,7 @@ describe("spatial Database authoring integration", () => {
     // 장소 갤러리는 목록이 기본이다 — 편집기(보드)는 「편집」으로 들어간다.
     expect(host.querySelector("[data-testid='spatial-gallery']")).not.toBeNull();
     host.querySelector<HTMLButtonElement>("[data-testid='spatial-cell-edit']")?.click();
+    openDeferredStage();
     expect(host.querySelector("[data-testid='spatial-places-board']")).not.toBeNull();
     expect(host.querySelector("[data-testid='spatial-place-floors']")).not.toBeNull();
   });
@@ -95,6 +102,7 @@ describe("spatial Database authoring integration", () => {
     paint();
     // 목록이 기본이므로 편집기로 먼저 들어간다.
     host.querySelector<HTMLButtonElement>("[data-testid='spatial-cell-edit']")?.click();
+    openDeferredStage();
     const picker = host.querySelector<HTMLSelectElement>("[data-testid='composition-design']");
     if (picker) { picker.value = libraryPlaceCardId(selected.id); picker.dispatchEvent(new Event("change")); }
     else host.querySelector<HTMLButtonElement>(`[data-testid='spatial-card-${libraryPlaceCardId(selected.id)}']`)?.click();

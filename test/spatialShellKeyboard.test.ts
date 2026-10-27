@@ -13,8 +13,8 @@ import {
   getSelectedTilesetId,
   setSelectedTileset,
 } from "@/editor/panels/tilesetSettingsPanel";
-import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
+import { placeCompilerFixture } from "./support/spatialPlaceCompilerFixture";
 
 let host: HTMLDivElement;
 const previousProject = store.getCurrent();
@@ -28,14 +28,15 @@ function activateWithEnter(button: HTMLButtonElement): boolean {
 }
 
 beforeEach(() => {
-  const project = createBlankProject();
+  // 탭 이동 키보드 계약은 칩·카드가 있는 장소 갤러리에서 잰다 — 타일 탭은 타일셋 편집기만 그린다(칩 없음).
+  const project = placeCompilerFixture(7);
   for (const tileset of Object.values(project.tilesets)) delete tileset.scratchConceptBundles;
   store.replace(project);
   editorState.set({ currentMapId: project.startMapId });
   resetScratchConceptTabSession();
   resetSpatialAuthoringSessions();
   clearSelectedTileset();
-  setDatabaseActiveTab("spatialTiles");
+  setDatabaseActiveTab("spatialPlaces");
   host = document.createElement("div");
   host.className = "database-modal-body";
   document.body.append(host);
@@ -80,7 +81,8 @@ describe("spatial shell keyboard and tiles instance selection", () => {
     expect(host.querySelector(`${spatialCardDomSelector(cardId)}.is-selected`)).not.toBeNull();
   });
 
-  it("keeps a real tileset id after clicking a tiles 맵 사용 instance card", () => {
+  // (d) 타일 탭은 타일셋 편집기만 그리고 「맵 사용」 칩·인스턴스 카드가 없다(spatialShell.renderTileLibrary) — 이 케이스만 은퇴.
+  it.skip("keeps a real tileset id after clicking a tiles 맵 사용 instance card", () => {
     const project = store.getCurrent();
     const map = project.maps[project.startMapId];
     expect(map, "blank project start map").toBeDefined();

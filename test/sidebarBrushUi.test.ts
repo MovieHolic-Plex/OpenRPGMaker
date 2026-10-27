@@ -7,6 +7,7 @@ import { resetTileToolbarMenusForTests } from "@/editor/panels/tileToolbarMenus"
 import { makeGridPalette } from "@/editor/panels/tilePaletteGrid";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
+import { RETIRED_COMBINED_TOWN_TILESET_ID, startOnRetiredCombinedTown, withRetiredEasyRpgTilesets } from "./support/retiredEasyRpgTilesets";
 
 describe("sidebar brush and source gestures", () => {
   let host: HTMLElement;
@@ -37,7 +38,8 @@ describe("sidebar brush and source gestures", () => {
     vi.useFakeTimers();
     resetTileToolbarMenusForTests();
     resetSmartPaletteForTests();
-    store.replace(createBlankProject());
+    // 시트 변형 번호(423→363)·분리 제스처는 합본 마을 기준 — 새 프로젝트 기본은 beodeul_city (PRs #3539·#3540·#3657).
+    store.replace(startOnRetiredCombinedTown(createBlankProject()));
     editorState.set({ currentMapId: store.getCurrent().startMapId, tool: "paint", layer: "lower", selectedTile: 0, paintShape: "pen", brushSize: 1, activePaletteStamp: null });
     host = document.createElement("div");
     host.dataset.testid = "left-palette-root";
@@ -82,7 +84,7 @@ describe("sidebar brush and source gestures", () => {
   });
   it("F5 retains the representative as pressed roving cell for an unmatched selected variant", () => {
     const project = store.getCurrent();
-    const tileset = Object.values(project.tilesets)[0];
+    const tileset = withRetiredEasyRpgTilesets(project).tilesets[RETIRED_COMBINED_TOWN_TILESET_ID];
     if (!tileset) throw new Error("Missing tileset");
     const onSelectTile = vi.fn();
     const sheet = makeGridPalette({ tileset, layer: "lower", selectedTile: 423, visibleTiles: new Set(), onSelectTile });

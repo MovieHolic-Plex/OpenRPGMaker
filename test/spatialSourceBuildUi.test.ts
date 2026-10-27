@@ -9,6 +9,7 @@ import {
   visibleAuthoringProject,
 } from "@/editor/panels/spatialAuthoringAccess";
 import {
+  patchSpatialSession,
   resetSpatialAuthoringSessions,
   selectSpatialDesign,
   setSpatialTab,
@@ -187,6 +188,8 @@ describe("source build chrome on the real Database controller", () => {
     }];
     setDatabaseActiveTab("spatialSpaces");
     setSpatialTab("spaces");
+    // The composition workspace's quick-switch picker lists canonical places only (no compat tileset-room cards); stay on the card gallery so the card click selects the compat card.
+    patchSpatialSession({ listView: true });
     paint();
     click(`spatial-card-tileset-room/${encodeURIComponent(interiorAtlas)}/${encodeURIComponent(spaceDesign)}`);
     // When
@@ -207,6 +210,8 @@ describe("source build chrome on the real Database controller", () => {
     }];
     setDatabaseActiveTab("spatialSpaces");
     setSpatialTab("spaces");
+    // The composition workspace's quick-switch picker lists canonical places only (no compat tileset-room cards); stay on the card gallery so the card click selects the compat card.
+    patchSpatialSession({ listView: true });
     paint();
     click(`spatial-card-tileset-room/${encodeURIComponent(interiorAtlas)}/${encodeURIComponent(spaceDesign)}`);
     expect(control<HTMLButtonElement>("spatial-build").disabled).toBe(true);

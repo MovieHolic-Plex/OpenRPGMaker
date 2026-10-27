@@ -93,6 +93,8 @@ describe("places gallery library-first layout", () => {
     expect(spatialSession().listView).toBe(false);
     // 자식이 있는 장소는 복합 편집기 대신 장소 캔버스(층·방)로 들어간다 — 이 픽스처의 마을이 그렇다.
     // 복합 편집기로 가는 장소(composition 보유)는 셸을 통째로 바꾸므로 여기서 단정하지 않는다.
+    // #2888 이후 편집 진입은 선택만 하고 상세 무대는 지연된다(spatialShell deferDetailStage) — 「상세」 토글로 연 뒤에 본다.
+    host.querySelector<HTMLButtonElement>("[data-testid='spatial-inspector-toggle']")?.click();
     expect(host.querySelector("[data-testid='spatial-places-board']")).not.toBeNull();
   });
 

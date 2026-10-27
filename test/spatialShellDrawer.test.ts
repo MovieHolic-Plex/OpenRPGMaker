@@ -47,7 +47,7 @@ describe("spatial inspector drawer", () => {
 
     // Then
     expect(toggle, "1024 inspector must be selectable").not.toBeNull();
-    expect(inspector?.classList.contains("is-open")).toBe(false);
+    expect(inspector?.classList.contains("is-open") ?? false).toBe(false);
     toggle?.click();
     expect(host.querySelector("[data-testid='spatial-inspector']")?.classList.contains("is-open")).toBe(true);
   });
@@ -55,6 +55,8 @@ describe("spatial inspector drawer", () => {
   it("selects a coherent default without a prior design id", () => {
     setDatabaseActiveTab("spatialPlaces");
     renderDatabasePanel(host);
+    // #2888 이후 상세 무대는 지연된다(spatialShell deferDetailStage) — 「상세」 토글로 연 뒤에 이름을 비교한다.
+    host.querySelector<HTMLButtonElement>("[data-testid='spatial-inspector-toggle']")?.click();
     const selected = host.querySelector("[data-testid^='spatial-card-'].is-selected");
     const header = host.querySelector("[data-testid='spatial-name']")?.textContent ?? "";
     const inspector = host.querySelector(".spatial-inspector-name")?.textContent ?? "";
@@ -145,6 +147,8 @@ describe("spatial inspector drawer", () => {
     setDatabaseActiveTab("spatialObjects");
     renderDatabasePanel(host);
     host.querySelector<HTMLButtonElement>("[data-testid='spatial-source-own']")?.click();
+    // 카탈로그가 쪽 매김(PAGE_SIZE)이라 버들항 키트에 밀려 첫 쪽에 없다 — 타일셋 레일로 좁힌 뒤 찾는다.
+    host.querySelector<HTMLButtonElement>("[data-tileset-id='atlas::west']")?.click();
     const id = spatialPresentationId("tileset-kit", "atlas::west", "bed");
     const card = host.querySelector(spatialCardDomSelector(id));
     expect(card, "opaque card selector").not.toBeNull();

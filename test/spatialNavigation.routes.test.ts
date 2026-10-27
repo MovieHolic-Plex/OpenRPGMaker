@@ -8,7 +8,7 @@ import {
   setDatabaseActiveTab,
   switchDatabaseActiveTab,
 } from "@/editor/panels/database";
-import { resetSpatialAuthoringSessions, spatialSession } from "@/editor/panels/spatialAuthoringSession";
+import { resetSpatialAuthoringSessions } from "@/editor/panels/spatialAuthoringSession";
 import { resetScratchConceptTabSession } from "@/editor/panels/scratchConceptTab";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";

@@ -10,6 +10,7 @@ import { store } from '@/project/store';
 import { resetInspectionPinsForTests, SIDEBAR_PINS_KEY } from '@/editor/panels/sidebarInspectionPins';
 import { listEditorCommands } from '@/editor/commandRegistry';
 import { resetModalStackForTest } from '@/editor/ui/modalStack';
+import { startOnRetiredCombinedTown } from './support/retiredEasyRpgTilesets';
 
 describe('focused sidebar', () => {
   let host: HTMLElement;
@@ -22,7 +23,8 @@ describe('focused sidebar', () => {
     localStorage.removeItem(SIDEBAR_PINS_KEY);
     resetInspectionPinsForTests();
     resetSmartPaletteForTests();
-    store.replace(createBlankProject());
+    // 칸 수·분류 기대값은 합본 마을 시트 기준이다 — 새 프로젝트 기본은 beodeul_city (PRs #3539·#3540·#3657).
+    store.replace(startOnRetiredCombinedTown(createBlankProject()));
     editorState.set({ currentMapId: store.getCurrent().startMapId, layer: 'lower', tool: 'paint', paintShape: 'pen', brushSize: 1, activePaletteStamp: null });
     host = document.createElement('div');
     host.dataset.testid = 'left-palette-root';
@@ -131,7 +133,7 @@ describe('focused sidebar', () => {
     expect(JSON.parse(localStorage.getItem(SIDEBAR_PINS_KEY) ?? '[]')).toEqual(['history']);
     expect(find('toolbar-toggle-history')?.closest('[data-testid="toolbar-overflow-dropdown"]')).toBeNull();
     expect(host.querySelectorAll('[data-testid="toolbar-toggle-history"]')).toHaveLength(1);
-    expect(find('toolbar-toggle-history')).toBeNull();
+    // (제거) 위 줄에서 고정 토글이 툴바에 정확히 1개 있음을 이미 단언했다 — 같은 선택자 toBeNull 은 모순이었다.
     resetInspectionPinsForTests();
     expect(find('toolbar-toggle-history')).not.toBeNull();
     find('oprn-tool-overflow')?.click();

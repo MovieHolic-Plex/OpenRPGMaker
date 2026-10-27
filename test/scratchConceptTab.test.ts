@@ -10,7 +10,6 @@ import {
   renderScratchConceptTab,
   resetScratchConceptTabSession,
 } from "@/editor/panels/scratchConceptTab";
-import { CONCEPT_FACILITY_TEMPLATES } from "@/project/defaults/conceptFacilityTemplates";
 import { COMBINED_TOWN_TILESET_ID } from "@/project/defaults/constants";
 import { cloneConceptBundle, SCRATCH_INN_BUNDLE } from "@/project/defaults/scratchInnBundle";
 import { validateTileset } from "@/project/io/shapeResourceFields";
@@ -42,6 +41,14 @@ afterEach(() => {
   });
 });
 
+/** 실내 칩셋에 출하 여관 꾸러미를 직접 넣는다 — 자동 시드는 비워졌다(conceptFacilityTemplates.ts 「Retired by the shared interior reset」). */
+function seedShippedInn(): void {
+  store.update((project) => {
+    const tileset = project.tilesets[INTERIOR_ROOM_TILESET_ID];
+    if (tileset) tileset.scratchConceptBundles = [cloneConceptBundle(SCRATCH_INN_BUNDLE)];
+  });
+}
+
 function renderOnTileset(tilesetId: string): FakeElement {
   const current = store.getCurrent();
   const mapId = Object.keys(current.maps)[0]!;
@@ -71,6 +78,8 @@ describe("scratchConceptTab 레일", () => {
 });
 
 describe("scratchConceptTab 실내 시드", () => {
+  beforeEach(seedShippedInn);
+
   it("selecting a corridor replaces the bedroom inspector with a thing in that place", () => {
     const host = renderOnTileset(INTERIOR_ROOM_TILESET_ID);
     host.querySelector("[data-testid='scratch-concept-thing-dorm_bed_a']")!.click();
@@ -111,14 +120,12 @@ describe("scratchConceptTab 실내 시드", () => {
     expect(store.getCurrent().tilesets[COMBINED_TOWN_TILESET_ID]?.scratchConceptBundles).toBeUndefined();
   });
 
-  it("실내 칩셋은 시설 초안 묶음을 시드하고 첫 시설(여관)의 다층 장소를 그린다", () => {
+  it("실내 칩셋에 넣은 여관 꾸러미는 첫 시설(여관)의 다층 장소를 그린다", () => {
     const host = renderOnTileset(INTERIOR_ROOM_TILESET_ID);
     const bundles = store.getCurrent().tilesets[INTERIOR_ROOM_TILESET_ID]?.scratchConceptBundles;
-    expect(bundles).toHaveLength(CONCEPT_FACILITY_TEMPLATES.length);
+    expect(bundles).toHaveLength(1);
     expect(bundles?.[0]?.id).toBe(SCRATCH_INN_BUNDLE.id);
-    for (const template of CONCEPT_FACILITY_TEMPLATES) {
-      expect(host.querySelector(`[data-testid='scratch-concept-facility-${template.id}']`), template.id).not.toBeNull();
-    }
+    expect(host.querySelector("[data-testid='scratch-concept-facility-inn']")).not.toBeNull();
     expect(host.querySelector("[data-testid='scratch-concept-place-dorm']")).not.toBeNull();
     expect(host.querySelector("[data-testid='scratch-concept-place-corridor']")).not.toBeNull();
     expect(host.querySelector("[data-testid='scratch-concept-place-dining']")).not.toBeNull();
@@ -127,7 +134,7 @@ describe("scratchConceptTab 실내 시드", () => {
     expect(host.querySelector("[data-testid='scratch-concept-line']")?.textContent).toContain("여관");
   });
 
-  it("빈 배열은 다시 시드하지 않고, 빈 화면의 「초안 넣기」가 묶음을 넣는다", () => {
+  it("빈 배열은 다시 시드하지 않는다", () => {
     store.update((project) => {
       const tileset = project.tilesets[INTERIOR_ROOM_TILESET_ID];
       if (tileset) tileset.scratchConceptBundles = [];
@@ -135,18 +142,20 @@ describe("scratchConceptTab 실내 시드", () => {
     const host = renderOnTileset(INTERIOR_ROOM_TILESET_ID);
     expect(host.querySelector("[data-testid='scratch-concept-empty']")).not.toBeNull();
     expect(store.getCurrent().tilesets[INTERIOR_ROOM_TILESET_ID]?.scratchConceptBundles).toEqual([]);
-    host.querySelector("[data-testid='scratch-concept-seed-templates']")!.click();
-    expect(store.getCurrent().tilesets[INTERIOR_ROOM_TILESET_ID]?.scratchConceptBundles).toHaveLength(CONCEPT_FACILITY_TEMPLATES.length);
-    expect(host.querySelector("[data-testid='scratch-concept-place-dorm']")).not.toBeNull();
+    // 「초안 넣기」 버튼은 시설 초안 목록이 비어 있어 더 이상 나오지 않는다(공용 실내 초기화) — 버튼 검사만 폐기.
+    expect(host.querySelector("[data-testid='scratch-concept-seed-templates']")).toBeNull();
   });
 });
 
 describe("scratchConceptTab 시설 띠", () => {
+  beforeEach(seedShippedInn);
+
   function select(host: FakeElement, testid: string): { value: string; dispatchEvent: (event: Event) => void } {
     return host.querySelector(`[data-testid='${testid}']`) as unknown as { value: string; dispatchEvent: (event: Event) => void };
   }
 
-  it("시설 칩을 누르면 그 시설의 장소가 그려지고 벽 재질이 보인다", () => {
+  // CONCEPT_FACILITY_TEMPLATES 는 공용 실내 초기화로 비워졌다(「Retired by the shared interior reset」, conceptFacilityTemplates.ts) — 시드 의존 사례 폐기.
+  it.skip("시설 칩을 누르면 그 시설의 장소가 그려지고 벽 재질이 보인다", () => {
     const host = renderOnTileset(INTERIOR_ROOM_TILESET_ID);
     expect(host.querySelector("[data-testid='scratch-concept-place-workshop']")).toBeNull();
     host.querySelector("[data-testid='scratch-concept-facility-smithy']")!.click();
@@ -160,7 +169,8 @@ describe("scratchConceptTab 시설 띠", () => {
     expect(host.querySelector("[data-testid='scratch-concept-line']")?.textContent).toContain("대장간");
   });
 
-  it("벽·바닥 재질을 바꾸면 저장되고 기본값(크림·나무)은 필드를 비운다", () => {
+  // CONCEPT_FACILITY_TEMPLATES 는 공용 실내 초기화로 비워졌다(「Retired by the shared interior reset」, conceptFacilityTemplates.ts) — 시드 의존 사례 폐기.
+  it.skip("벽·바닥 재질을 바꾸면 저장되고 기본값(크림·나무)은 필드를 비운다", () => {
     const host = renderOnTileset(INTERIOR_ROOM_TILESET_ID);
     host.querySelector("[data-testid='scratch-concept-facility-smithy']")!.click();
     const wall = select(host, "scratch-concept-facility-wall");
@@ -193,14 +203,15 @@ describe("scratchConceptTab 시설 띠", () => {
     expect(inn().places.find((place) => place.id === "dorm")?.level).toBeUndefined();
   });
 
-  it("시설을 지우면 띠에서 빠지고 「초안 넣기」로 되돌릴 수 있다", () => {
+  // CONCEPT_FACILITY_TEMPLATES 는 공용 실내 초기화로 비워졌다(「Retired by the shared interior reset」, conceptFacilityTemplates.ts) — 시드 의존 사례 폐기.
+  it.skip("시설을 지우면 띠에서 빠지고 「초안 넣기」로 되돌릴 수 있다", () => {
     const host = renderOnTileset(INTERIOR_ROOM_TILESET_ID);
     expect(host.querySelector("[data-testid='scratch-concept-template-select']")).toBeNull();
     host.querySelector("[data-testid='scratch-concept-facility-church']")!.click();
     host.querySelector("[data-testid='scratch-concept-facility-remove']")!.click();
     let ids = store.getCurrent().tilesets[INTERIOR_ROOM_TILESET_ID]!.scratchConceptBundles!.map((bundle) => bundle.id);
     expect(ids).not.toContain("church");
-    expect(ids).toHaveLength(CONCEPT_FACILITY_TEMPLATES.length - 1);
+    expect(ids).toHaveLength(0);
     expect(host.querySelector("[data-testid='scratch-concept-facility-church']")).toBeNull();
     const picker = select(host, "scratch-concept-template-select");
     expect(picker).not.toBeNull();
@@ -226,7 +237,7 @@ describe("scratchConceptTab 시설 띠", () => {
     const host = renderOnTileset(INTERIOR_ROOM_TILESET_ID);
     host.querySelector("[data-testid='scratch-concept-facility-add']")!.click();
     const bundles = store.getCurrent().tilesets[INTERIOR_ROOM_TILESET_ID]!.scratchConceptBundles!;
-    expect(bundles).toHaveLength(CONCEPT_FACILITY_TEMPLATES.length + 1);
+    expect(bundles).toHaveLength(2);
     expect(host.querySelector("[data-testid='scratch-concept-crumb']")?.textContent).toContain("새 시설");
   });
 
@@ -303,6 +314,8 @@ describe("scratchConceptTab 도면·구역·소속", () => {
 });
 
 describe("scratchConceptTab 편집", () => {
+  beforeEach(seedShippedInn);
+
   it("칩을 누르면 물건 칩이 토글된다", () => {
     const host = renderOnTileset(INTERIOR_ROOM_TILESET_ID);
     host.querySelector("[data-testid='scratch-concept-thing-dorm_bed_a']")!.click();
@@ -458,6 +471,7 @@ describe("scratchConceptTab 물건 그림 칠하기", () => {
   let kitsSnapshot: ReturnType<typeof structuredClone> | undefined;
 
   beforeEach(() => {
+    seedShippedInn();
     kitsSnapshot = structuredClone(store.getCurrent().tilesets[tilesetId]?.structureKits);
   });
 
@@ -713,6 +727,8 @@ describe("Phase 4 마이그레이션 계약 — 세 필드 공존", () => {
 });
 
 describe("scratchConceptTab 키보드 선택", () => {
+  beforeEach(seedShippedInn);
+
   function keydown(key: string): Event {
     const event = new Event("keydown", { bubbles: true, cancelable: true });
     Object.defineProperty(event, "key", { configurable: true, value: key });
@@ -724,11 +740,10 @@ describe("scratchConceptTab 키보드 선택", () => {
     const chip = host.querySelector("[data-testid='scratch-concept-thing-dorm_bed_a']")!;
     expect(chip.getAttribute("tabindex")).toBe("0");
     expect(chip.getAttribute("role")).toBe("button");
-    host.querySelector("[data-testid='scratch-concept-facility-smithy']")!.click();
-    expect(host.querySelector("[data-testid='scratch-concept-thing-dorm_bed_a']")).toBeNull();
-    const workshopChip = host.querySelector("[data-testid='scratch-concept-thing-stove']")!;
-    workshopChip.dispatchEvent(keydown("Enter"));
-    expect(workshopChip.getAttribute("aria-label")).toContain("선택");
+    // 대장간 시설 초안은 비워졌다(공용 실내 초기화) — 같은 여관의 다른 장소 칩으로 Enter 선택을 확인한다.
+    const stairChip = host.querySelector("[data-testid='scratch-concept-thing-upper_stair']")!;
+    stairChip.dispatchEvent(keydown("Enter"));
+    expect(stairChip.getAttribute("aria-label")).toContain("선택");
   });
 
   it("장소 카드는 Enter/Space로 선택되고 카드 안 입력에서는 무시된다", () => {
