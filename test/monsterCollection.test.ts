@@ -229,13 +229,25 @@ describe("monster collection core", () => {
     tool.run(project, { speciesIds: ["species_leafling", "species_sparkit", "species_aqualing"] });
     const event = project.maps[project.startMapId]?.events.find((entry) => entry.id === "ev_starter_monsters");
     const page = event?.pages?.[0];
-    expect(page?.commands[0]?.kind).toBe("choices");
+    // starterChoice.ts: a loop label precedes the species list; picking one shows its card and info pages and then
+    // asks 「…첫 동료로 정할까요?」 (예 gives, 아니오 loops back to the label).
+    expect(page?.commands.map((command) => command.kind)).toEqual(["label", "choices"]);
     const session = startSession(project, 5);
     const interpreter = createInterpreter(page?.commands as Command[], session, project, { currentEventId: event?.id });
     const choices = interpreter.start();
     expect(choices.kind).toBe("choices");
-    const result = interpreter.resume(1);
-    if (result.kind === "text") interpreter.resume(undefined);
+    let result = interpreter.resume(1);
+    let confirmations = 0;
+    for (let guard = 0; guard < 32 && result.kind !== "done"; guard += 1) {
+      if (result.kind === "choices") {
+        confirmations += 1;
+        result = interpreter.resume(0);
+      } else {
+        result = interpreter.resume(undefined);
+      }
+    }
+    expect(result.kind).toBe("done");
+    expect(confirmations).toBe(1);
     expect(session.monsterParty).toHaveLength(1);
     expect(session.monsterInstances[session.monsterParty[0] ?? ""]?.speciesId).toBe("species_sparkit");
   });

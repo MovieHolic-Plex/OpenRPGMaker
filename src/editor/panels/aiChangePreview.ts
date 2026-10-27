@@ -489,10 +489,20 @@ export function openWideChangeViewer(input: ChangePreviewInput): { readonly root
   });
   after.canvasHost.style.clipPath = "inset(0 0% 0 0)";
 
+  // 창은 aria-modal 인데 제목과 연결이 없어 스크린 리더는 이름 없는 대화상자로 읽었고,
+  // Tab 은 뒤 편집기로 새었다. 보이는 제목을 이름으로 묶고 초점을 창 안에 가둔다.
+  const opener = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+  const titleId = "ai-change-wide-title";
+  const titleText = reportMode ? `${input.title} — 변경 지점 ${sites.length}곳` : input.title;
+  const focusableSelector = "button:not(:disabled), input:not(:disabled), [href], select:not(:disabled), textarea:not(:disabled), [tabindex]:not([tabindex='-1'])";
+  const focusableControls = (): HTMLElement[] => [...root.querySelectorAll<HTMLElement>(focusableSelector)]
+    .filter((node) => !node.closest("[hidden]"));
   const close = (): void => {
     document.removeEventListener("keydown", onKeydown);
+    root.removeEventListener("keydown", trapFocus);
     root.removeEventListener("click", onBackdropClick);
     root.remove();
+    if (opener && opener.isConnected && opener !== root) opener.focus();
   };
   const onKeydown = (event: Event): void => {
     if ((event as KeyboardEvent).key === "Escape") close();
@@ -500,11 +510,26 @@ export function openWideChangeViewer(input: ChangePreviewInput): { readonly root
   const onBackdropClick = (event: Event): void => {
     if (event.target === root) close();
   };
+  const trapFocus = (event: KeyboardEvent): void => {
+    if (event.key !== "Tab") return;
+    const focusable = focusableControls();
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    if (!first || !last) return;
+    const active = document.activeElement;
+    if (event.shiftKey && (active === first || active === root)) {
+      event.preventDefault();
+      last.focus();
+    } else if (!event.shiftKey && active === last) {
+      event.preventDefault();
+      first.focus();
+    }
+  };
 
   const head = el("header", {
     class: "ai-change-wide-head",
     children: [
-      el("h3", { class: "ai-change-wide-title", text: reportMode ? `${input.title} — 변경 지점 ${sites.length}곳` : input.title }),
+      el("h3", { class: "ai-change-wide-title", text: titleText, attrs: { id: titleId } }),
       chipRow(input.chips ?? []),
       ...(panesMatch || reportMode
         ? []
@@ -526,13 +551,15 @@ export function openWideChangeViewer(input: ChangePreviewInput): { readonly root
   const brief = reportMode ? reportBrief(input) : null;
   const root = el("div", {
     class: reportMode ? "ai-change-wide is-report" : "ai-change-wide",
-    attrs: { role: "dialog", "aria-modal": "true" },
+    attrs: { role: "dialog", "aria-modal": "true", "aria-labelledby": titleId, tabindex: "-1" },
     dataset: { testid: "ai-change-wide" },
     children: [head, ...(brief ? [brief] : []), body, ...(ledger ? [ledger] : [])],
   });
   root.addEventListener("click", onBackdropClick);
+  root.addEventListener("keydown", trapFocus);
   document.addEventListener("keydown", onKeydown);
   document.body.append(root);
+  (focusableControls()[0] ?? root).focus();
   if (!panesMatch && !reportMode) {
     attachShot(before.canvasHost, input.before, input.mapId, region, WIDE_SHOT_WIDTH, renderShot);
     attachShot(after.canvasHost, input.after, input.mapId, region, WIDE_SHOT_WIDTH, renderShot);

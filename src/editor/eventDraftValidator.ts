@@ -23,6 +23,7 @@ import { projectWithEventDraftAuthoredWrites } from "@/project/eventDraftAuthore
 import { hasCharacterId } from "@/project/socialKey";
 import { collectNpcActivitySuggestions } from "@/editor/panels/eventEditor/options";
 import { advancedConditionEntries, pageConditionField } from "@/editor/panels/eventEditor/pageConditionLayout";
+import { idleTimerSatisfies, idleTimerWarningMessage } from "@/editor/panels/eventEditor/timerConditionText";
 import { textBodyOf } from "@/project/io/rewriteLegacyDialogue";
 import { lookupLocation } from "@/editor/mapLocationLabels";
 import { findLocationById } from "@/project/mapNamedLocations";
@@ -539,12 +540,14 @@ function validateCondition(
       return;
     }
     case "timer": {
-      if (condition.seconds === 0) {
-        const timerLabel = condition.timerId === "timer2" ? "타이머 2" : "타이머 1";
+      if (idleTimerSatisfies(condition)) {
+        const detail = idleTimerWarningMessage(condition) ?? "";
         issues.push({
           severity: "warning",
           code: "condition.timer.always-true",
-          message: `${timerLabel} · 0초 이하 조건은 타이머가 꺼져 있으면 남은 시간을 0초로 보아 항상 참입니다. 페이지가 항상 보일 수 있습니다.`,
+          message: commandPath
+            ? detail
+            : `${detail} 이 페이지가 타이머를 켜기 전에 보일 수 있습니다.`,
           pageId,
           ...(commandPath ? { commandPath: [...commandPath] } : {}),
           field: {

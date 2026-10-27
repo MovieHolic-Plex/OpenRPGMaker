@@ -84,7 +84,9 @@ describe("page3 command body UX (맵·연출)", () => {
       change(findByTestId(body, "tint-screen-duration-input"), "240");
 
       const command = staged.current() as Extract<Command, { kind: "m2Command" }>;
-      expect(command.fields).toMatchObject({ color: "blue", value: "", duration: 240 });
+      // 편집기는 이제 durationMs 로 쓰고 옛 duration 키는 지운다(tintScreenBody commit).
+      expect(command.fields).toMatchObject({ color: "blue", value: "", durationMs: 240 });
+      expect(command.fields).not.toHaveProperty("duration");
       const session = execute(command);
       expect(session.m2Runtime?.screen).toMatchObject({ tint: "blue", tintDurationMs: 240 });
     });

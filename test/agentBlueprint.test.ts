@@ -314,8 +314,7 @@ describe("markAgentBlueprintProgress — 좌표를 wrapper 키에 담는 쓰기 
       .toEqual([{ mapId: "m1", x: 6, y: 8, w: 1, h: 1 }]);
     expect(affectedRegions("build_roof", { mapId: "m1", material: "붉은 기와", wallRect: { x: 4, y: 4, w: 6, h: 5 } }))
       .toEqual([{ mapId: "m1", x: 4, y: 4, w: 6, h: 5 }]);
-    expect(affectedRegions("author_village", { target: { kind: "existing", mapId: "m1" }, houseCount: 4, countPolicy: "exact" }))
-      .toEqual([{ mapId: "m1", x: 0, y: 0, w: 0, h: 0 }]);
+    // author_village (bounds-less facade) was removed from the tool registry; its zero-area fallback case is retired.
   });
 });
 
@@ -328,39 +327,7 @@ describe("markAgentBlueprintProgress — 좌표를 wrapper 키에 담는 쓰기 
 // 대한 보장은 아래 매개변수 블록이 한다 — 여기 하나만 두면 특정 N 에서만 통과하는 상태를
 // 다시 못 보고 지나친다(4차 리뷰 N4-1 이 그 사고였다).
 describe("markAgentBlueprintProgress — 집 여러 채를 한 호출로 짓는 author_house(kind=lots)", () => {
-  /** authorHouseToolDef.ts 의 invalidArgsExample 그대로(mapId 만 이 테스트 맵으로). */
-  const LOTS_CALL: Record<string, unknown> = {
-    kind: "lots",
-    mapId: "m1",
-    houses: [
-      { kitId: "blue-stone", wings: [{ x: 2, y: 1, w: 5, h: 6 }], interior: "exterior-only", door: true, ownerName: "대장장이", windows: {}, yard: ["firewood", "pot"] },
-      { kitId: "bright-plaster", wings: [{ x: 12, y: 1, w: 6, h: 5 }], interior: "exterior-only", door: true, ownerName: "약초사", windows: { spacing: 2 }, yard: ["flowers", "bench_h"] },
-      { kitId: "amber-wood", wings: [{ x: 7, y: 10, w: 5, h: 5 }], interior: "exterior-only", door: true, ownerName: "어부", windows: {}, yard: ["mailbox"] },
-    ],
-    seed: 42,
-  };
-
-  /** 한 채의 터 = 몸통 + 문 앞 마당 3행(buildSpec.wingsRegions 가 lots 에서 내는 모양). */
-  const LOTS_SPEC: BuildSpec = {
-    mapId: "m1",
-    title: "세 채 마을",
-    buildOrder: ["clear", "house"],
-    assets: [
-      { id: "site", kind: "clear", x: 0, y: 0, w: 30, h: 20 },
-      { id: "house_a", kind: "house", x: 2, y: 1, w: 5, h: 9 },
-      { id: "house_b", kind: "house", x: 12, y: 1, w: 6, h: 8 },
-      { id: "house_c", kind: "house", x: 7, y: 10, w: 5, h: 8 },
-    ],
-  };
-
-  it("게이트가 낸 6장(몸통 3 + 마당 3)이 집 세 칸을 모두 올린다", () => {
-    // 게이트는 이 호출에서 이미 정확한 영역 6장을 낸다 — 결함은 그것을 한 칸으로 접는 쪽이었다.
-    expect(affectedRegions("author_house", LOTS_CALL)).toHaveLength(6);
-
-    setAgentBlueprintFromSpec(LOTS_SPEC);
-    markAgentBlueprintProgress("author_house", LOTS_CALL, WRITE);
-    expect(statusById()).toEqual({ site: "planned", house_a: "building", house_b: "building", house_c: "building" });
-  });
+  // Retired: author_house was removed from the tool registry; its kind=lots blueprint cases went with it.
 
   it("영역이 여러 개여도 맵 전체를 덮는 정리 칸을 훔쳐 가지 않는다", () => {
     // 영역마다 독립으로 승자를 고르면 1×1 점 하나만 보고 "그 점을 담은 가장 작은 칸"을 뽑게
@@ -381,93 +348,7 @@ describe("markAgentBlueprintProgress — 집 여러 채를 한 호출로 짓는 
 // 전부 깨진 상태였다. 그래서 N 과 맵 크기를 **매개변수로** 돈다 — 한 N 에서만 통과하는 테스트는
 // 없는 테스트보다 나쁘다.
 describe("markAgentBlueprintProgress — author_house(kind=lots) 는 N·맵 크기와 무관하게 전 채를 올린다", () => {
-  /** 몸통 5×6 + 문 앞 마당 3행(buildSpec.wingsRegions 의 lots 모양) 을 맵 안에 격자로 깐다. */
-  function lotsFixture(houses: number, mapW: number, mapH: number, withRoad: boolean) {
-    const columns = Math.floor(mapW / 6);
-    const wings = Array.from({ length: houses }, (_, index) => ({
-      x: (index % columns) * 6,
-      y: Math.floor(index / columns) * 10,
-      w: 5,
-      h: 6,
-    }));
-    const spec: BuildSpec = {
-      mapId: "m1",
-      title: `${houses}채 마을`,
-      buildOrder: withRoad ? ["clear", "road", "house"] : ["clear", "house"],
-      assets: [
-        { id: "site", kind: "clear", x: 0, y: 0, w: mapW, h: mapH },
-        ...(withRoad ? [{ id: "main_road", kind: "road", x: 0, y: mapH - 2, w: mapW, h: 2 }] : []),
-        // 칸 = 몸통 + 마당(게이트가 내는 영역 2장의 합집합).
-        ...wings.map((wing, index) => ({ id: `house_${index}`, kind: "house", x: wing.x, y: wing.y, w: wing.w, h: wing.h + 3 })),
-      ],
-    };
-    const call: Record<string, unknown> = {
-      kind: "lots",
-      mapId: "m1",
-      houses: wings.map((wing) => ({
-        kitId: "blue-stone",
-        wings: [wing],
-        interior: "exterior-only",
-        door: true,
-        yard: ["firewood"],
-      })),
-      seed: 42,
-    };
-    return { spec, call };
-  }
-
-  for (const [houses, mapW, mapH] of [[2, 30, 20], [3, 30, 20], [4, 30, 20], [6, 30, 20], [4, 40, 30], [6, 40, 30], [20, 100, 100]] as const) {
-    it(`집 ${houses}채 · 맵 ${mapW}×${mapH} — 전 채가 building, 정리 칸은 계획 그대로`, () => {
-      const { spec, call } = lotsFixture(houses, mapW, mapH, false);
-      // 게이트는 집마다 몸통+마당 2장을 정확히 낸다 — 결함은 언제나 그것을 접는 쪽이었다.
-      expect(affectedRegions("author_house", call)).toHaveLength(houses * 2);
-
-      setAgentBlueprintFromSpec(spec);
-      markAgentBlueprintProgress("author_house", call, WRITE);
-
-      const status = statusById();
-      for (let index = 0; index < houses; index += 1) {
-        expect(status[`house_${index}`]).toBe("building");
-      }
-      expect(status.site).toBe("planned");
-    });
-  }
-
-  it("계획에 길 칸이 있어도 집 4채가 모두 올라간다", () => {
-    const { spec, call } = lotsFixture(4, 30, 20, true);
-    setAgentBlueprintFromSpec(spec);
-    markAgentBlueprintProgress("author_house", call, WRITE);
-    expect(statusById()).toEqual({
-      site: "planned",
-      main_road: "planned",
-      house_0: "building",
-      house_1: "building",
-      house_2: "building",
-      house_3: "building",
-    });
-  });
-
-  // 더 아픈 변종: 정리 칸이 **앞선 호출로 이미 building** 이면 IoU 승자가 그 칸 하나로 뽑히고
-  // advancing 이 비어 markAgentBlueprintProgress 가 첫 return 으로 빠져나갔다 — 집 4채를 실제로
-  // 짓고 커밋해도 청사진은 한 칸도 움직이지 않았다(실측: 호출 전후 상태가 완전히 동일).
-  it("맵 전체 정리가 이미 짓는 중이어도 집 4채가 올라가고 정리 칸은 done 으로 내려간다", () => {
-    const { spec, call } = lotsFixture(4, 30, 20, false);
-    setAgentBlueprintFromSpec(spec);
-    markAgentBlueprintProgress("fill_region", { mapId: "m1", rect: { x: 0, y: 0, w: 30, h: 20 }, material: "잔디" }, WRITE);
-    expect(statusById().site).toBe("building");
-    const revisionBefore = getAgentBlueprintState().revision;
-
-    markAgentBlueprintProgress("author_house", call, WRITE);
-
-    expect(getAgentBlueprintState().revision).toBeGreaterThan(revisionBefore);
-    expect(statusById()).toEqual({
-      site: "done",
-      house_0: "building",
-      house_1: "building",
-      house_2: "building",
-      house_3: "building",
-    });
-  });
+  // Retired: author_house was removed from the tool registry; its kind=lots blueprint cases went with it.
 
   // 커버리지 판정이 1차 리뷰의 보호를 유지하는지 — 맵 전체를 치우는 호출은 정리 칸 **하나만**
   // 올려야 한다(전 칸이 100% 덮이므로 동점이고, 겹침 면적 타이브레이크가 정리 칸을 고른다).
@@ -503,12 +384,7 @@ describe("markAgentBlueprintProgress — 대상 전체를 짓는 파사드(autho
     expect(statusById()).toEqual({ site: "done", main_road: "done", house_a: "done", grove: "done" });
   });
 
-  it("bounds 가 있으면 그 영역에 걸리는 칸만 올린다", () => {
-    setAgentBlueprintFromSpec(VILLAGE_SPEC);
-    markAgentBlueprintProgress("author_village", { ...VILLAGE_CALL, target: { ...VILLAGE_CALL.target, bounds: { x: 0, y: 0, w: 12, h: 12 } } }, WRITE);
-    // grove(20,2)·main_road(y=16) 는 bounds 밖이라 계획 그대로다.
-    expect(statusById()).toEqual({ site: "building", main_road: "planned", house_a: "building", grove: "planned" });
-  });
+  // Retired: author_village was removed from the tool registry; the bounds-scoped facade case went with it.
 
   it("다른 맵을 짓는 파사드는 진행을 옮기지 않는다", () => {
     setAgentBlueprintFromSpec(VILLAGE_SPEC);

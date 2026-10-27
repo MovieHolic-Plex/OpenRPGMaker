@@ -139,7 +139,8 @@ test("battle target and result states stay readable without HUD collision", asyn
   expect(resultMetrics.resultPanel).toBeTruthy();
   expect(resultMetrics.scene.y).toBeGreaterThanOrEqual(0);
   expect(resultMetrics.scene.bottom).toBeLessThanOrEqual(768);
-  expect(resultMetrics.resultRows).toEqual(expect.arrayContaining(["경험치", "골드"]));
+  // battle-v3 용어의 화폐는 「G」다. 승리 칸이 「골드」로 고정되면 상점·메뉴와 다른 돈처럼 읽힌다.
+  expect(resultMetrics.resultRows).toEqual(expect.arrayContaining(["경험치", "G"]));
   expect(resultMetrics.messageDisplay).toBe("none");
   expect(resultMetrics.commandPanelVisibility).toBe("hidden");
   expect(resultMetrics.enemyListPanelVisibility).toBe("hidden");

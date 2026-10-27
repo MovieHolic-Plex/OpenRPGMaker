@@ -26,7 +26,8 @@ function installFakeLocalStorage(): void {
 
 beforeEach(() => {
   store.replace(createBlankProject());
-  restoreDom = installFakeDom();
+  // renderAiChatPanel 이 window 에 이벤트를 붙인다(aiWorkspace) — 가짜 DOM 의 최소 window 를 켠다(#3645).
+  restoreDom = installFakeDom({ window: true });
   installFakeLocalStorage();
 });
 
@@ -54,7 +55,8 @@ describe("buildInterviewKickoff", () => {
   it("구조물 발견 시 집 외장/메타데이터 학습 프로토콜(그리드→집 판단→템플릿 저장 금지)을 담는다", () => {
     const kickoff = buildInterviewKickoff("map_v");
     expect(kickoff).toContain("show_tile_grid");
-    expect(kickoff).toContain("author_house");
+    // author_house 는 제거됐고 집은 칩셋 건물 킷(stamp_object)이 맡는다(public baseline 0d4f13e7c8).
+    expect(kickoff).toContain("stamp_object");
     expect(kickoff).toContain("별도 템플릿을 저장하지 않습니다");
   });
 });
@@ -64,7 +66,8 @@ describe("buildStructureLearnKickoff (📐 선택 영역 학습)", () => {
     const kickoff = buildStructureLearnKickoff("map_v", { x: 3, y: 4, width: 10, height: 8 });
     const gridAt = kickoff.indexOf("show_tile_grid");
     const highlightAt = kickoff.indexOf("highlight_map_region");
-    const kitAt = kickoff.indexOf("author_house");
+    // author_house 제거 뒤 집 판단은 건물 킷(stamp_object) 기준이다(0d4f13e7c8).
+    const kitAt = kickoff.indexOf("stamp_object");
     const noDumpAt = kickoff.indexOf("나열하지 말고");
     expect(gridAt).toBeGreaterThan(-1);
     expect(highlightAt).toBeGreaterThan(gridAt);

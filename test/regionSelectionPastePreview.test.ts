@@ -43,7 +43,9 @@ async function setupWithSelection(): Promise<{
   const { createBlankProject, TILE } = await import("@/project/defaults");
   const { store } = await import("@/project/store");
   const { paintTile } = await import("@/editor/tileActions");
-  store.replace(createBlankProject());
+  // TILE.* 는 옛 combined_town 칸 번호다 — 기본 칩셋이 beodeul_city 로 바뀐 뒤(PR #2335) 그 칩셋을 직접 깐다.
+  const { startOnRetiredCombinedTown } = await import("./support/retiredEasyRpgTilesets");
+  store.replace(startOnRetiredCombinedTown(createBlankProject()));
   editorState.set({ selection: null, clipboard: null, pastePreview: null, tool: "select", layer: "lower" });
   const mapId = store.getCurrent().startMapId;
   // 원본 타일 배치
@@ -202,7 +204,11 @@ describe("renderSelectionActionChips — 복사/붙여넣기/지우기/해제 �
     expect(findByTestId(body, "selection-chip-ai")).toBeTruthy();
     expect(findByTestId(body, "selection-chip-dismiss")).toBeTruthy();
     // 「AI 작업」이 주 진입점이므로 맨 앞이다 — 예전에는 크기 텍스트와 복사·지우기 뒤였다.
-    const first = (bar as unknown as FakeElement).children?.[0];
+    // 바 앞머리는 장식 아이콘·입력창이고(#3211 계열 재설계), 첫 **버튼**이 AI 실행이다.
+    const first = (bar as unknown as FakeElement).children?.find((child) => {
+      const testid = child.dataset?.testid;
+      return typeof testid === "string" && testid.startsWith("selection-chip-") && testid !== "selection-chip-prompt";
+    });
     expect(first?.dataset?.testid).toBe("selection-chip-ai");
     // 크기(W×H)는 캔버스의 선택 사각형 옆 배지(region-size-badge, EditScene)로 옮겼다.
     // 정적 사실이 버튼들 사이에 앉아 버튼처럼 읽혔고, 정작 사각형 옆에는 아무 표시가 없었다.

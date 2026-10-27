@@ -1,4 +1,4 @@
-import { emptyToUndefined, numberField, selectLiteral, textField } from "@/editor/panels/databaseControls";
+import { emptyToUndefined, field, numberField, textField } from "@/editor/panels/databaseControls";
 import { updateTroopBattleEventPage } from "@/editor/panels/databaseTroopBattleEventActions";
 import { store } from "@/project/store";
 import type { Command, M2CommandFields } from "@/project/types";
@@ -19,6 +19,11 @@ const FORCE_ESCAPE_ID = "m2-107-force-escape";
 const ACTION_TIMES_ID = "m2-108-action-times";
 const RESULT_SUMMARY_ID = "m2-109-result-summary";
 const NUMERIC_OPERATIONS = ["set", "add", "remove"] as const;
+const HP_OPERATION_LABEL: Record<NumericOperation, string> = {
+  set: "이 값으로",
+  add: "더하기",
+  remove: "빼기",
+};
 
 export function battleEventCommandControls(record: TroopRecord, page: BattleEventPageRecord, rerender: () => void): HTMLElement {
   const enemyHp = findM2Command(page, CHANGE_ENEMY_HP_ID);
@@ -62,7 +67,7 @@ export function battleEventCommandControls(record: TroopRecord, page: BattleEven
 
 export function battleEventCommandSummary(command: Command): string {
   if (command.kind === "m2Command" && command.commandId === CHANGE_ENEMY_HP_ID) {
-    return `@> 적 HP 변경: ${stringField(command, "target")} ${stringField(command, "operation")} ${numberFieldValue(command, "value")}`;
+    return `@> 적 HP 변경: ${stringField(command, "target")} ${hpOperationLabel(stringField(command, "operation"))} ${numberFieldValue(command, "value")}`;
   }
   if (command.kind === "m2Command" && command.commandId === ENEMY_ENCOUNTER_ID) return `@> 적 출현: ${stringField(command, "target")}`;
   if (command.kind === "m2Command" && command.commandId === CHANGE_BATTLEBACK_ID) return `@> 전투 배경 변경: ${stringField(command, "resourceId")}`;
@@ -80,7 +85,7 @@ function enemyHpControls(record: TroopRecord, page: BattleEventPageRecord, comma
   return fieldset("적 HP 변경", [
     textField("대상", "db-field-troop-event-change-enemy-hp-target", stringField(command, "target"), (target) =>
       updateM2Command(record, page, { commandId: CHANGE_ENEMY_HP_ID, fields: { target } })),
-    selectLiteral("연산", "db-field-troop-event-change-enemy-hp-operation", numericOperation(command), NUMERIC_OPERATIONS, (operation) =>
+    hpOperationField(numericOperation(command), (operation) =>
       updateM2Command(record, page, { commandId: CHANGE_ENEMY_HP_ID, fields: { operation } })),
     numberField("값", "db-field-troop-event-change-enemy-hp-value", numberFieldValue(command, "value"), (value) =>
       updateM2Command(record, page, { commandId: CHANGE_ENEMY_HP_ID, fields: { value } })),
@@ -126,6 +131,23 @@ function getCurrentPage(record: TroopRecord, page: BattleEventPageRecord): Battl
 
 function findM2Command(page: BattleEventPageRecord, commandId: string): M2Command | undefined {
   return page.commands.find((command): command is M2Command => command.kind === "m2Command" && command.commandId === commandId);
+}
+
+function hpOperationLabel(operation: string): string {
+  return operation === "set" || operation === "add" || operation === "remove" ? HP_OPERATION_LABEL[operation] : operation;
+}
+
+function hpOperationField(value: NumericOperation, onChange: (operation: NumericOperation) => void): HTMLElement {
+  const select = el("select", { dataset: { testid: "db-field-troop-event-change-enemy-hp-operation" } });
+  for (const operation of NUMERIC_OPERATIONS) {
+    select.append(el("option", { text: HP_OPERATION_LABEL[operation], attrs: { value: operation } }));
+  }
+  select.value = value;
+  select.addEventListener("change", () => {
+    const next = NUMERIC_OPERATIONS.find((operation) => operation === select.value);
+    if (next) onChange(next);
+  });
+  return field("연산", select);
 }
 
 function numericOperation(command: M2Command): NumericOperation {

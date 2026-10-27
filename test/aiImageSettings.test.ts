@@ -87,7 +87,8 @@ describe("independent image settings", () => {
   });
 
   it("preserves an unsupported saved image choice across chat changes and reopening", () => {
-    saveAiConfig({ ...defaultAiConfig(), imageProviderId: "openai-codex", imageModel: "gpt-image-1" });
+    // 사용자가 고른 그림 칸만 제공자 전환에서 살아남는다 — 자동 칸은 권장 경로로 다시 맞춘다(da29a9f402).
+    saveAiConfig({ ...defaultAiConfig(), imageProviderId: "openai-codex", imageModel: "gpt-image-1", modelSelectionOverrides: { image: true } });
     const view = form();
     view.get("ai-auth-quick-openai-codex").click();
     view.change("ai-config-model", "gpt-5.6-sol");
@@ -100,7 +101,8 @@ describe("independent image settings", () => {
   });
 
   it("changes image selection without changing either chat model or provider", () => {
-    saveAiConfig({ ...defaultAiConfig(), providerId: "openai-codex", model: "gpt-5.6-sol", liteModel: "gpt-5.6-sol", imageProviderId: "openai-codex", imageModel: "gpt-image-1" });
+    // defaultAiConfig() 는 역할 칸을 Argon 으로 고정한다(#2535) — 이 대화 모델을 쓰려면 역할 칸을 비운다.
+    saveAiConfig({ ...defaultAiConfig(), roleModels: {}, providerId: "openai-codex", model: "gpt-5.6-sol", liteModel: "gpt-5.6-sol", imageProviderId: "openai-codex", imageModel: "gpt-image-1" });
     const before = loadAiConfig();
     const view = form();
     view.change("ai-config-image-provider", "google-antigravity");

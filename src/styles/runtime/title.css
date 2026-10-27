@@ -195,8 +195,22 @@
 }
 
 .rm-license-dialog-title,
+.rm-license-dialog-hint,
 .rm-license-dialog-close {
   flex: 0 0 auto;
+}
+
+.rm-license-dialog-hint {
+  color: var(--text-2);
+  font-size: 13px;
+  line-height: 1.4;
+  margin: 0 0 8px;
+}
+
+.rm-license-dialog-close:focus-visible,
+.rm-license-dialog-body:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
 }
 
 .rm-license-dialog-body {
@@ -204,7 +218,8 @@
   margin: 0 0 10px;
   min-height: 0;
   overflow: auto;
-  font-size: 11px;
+  /* 11px 는 긴 저작자 표기를 읽기 어려웠다. */
+  font-size: 13px;
   line-height: 1.5;
   overflow-wrap: anywhere;
 }
@@ -219,7 +234,7 @@
 
 .rm-license-dialog-body .rm-license-dialog-heading {
   margin: 14px 0 4px;
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 600;
 }
 
@@ -537,7 +552,7 @@
   --oprn-logo-fill: linear-gradient(180deg, #ffffff 0%, #f1f4f8 45%, #cfd8e3 56%, #ffffff 100%);
   --oprn-logo-edge: rgb(6 10 20 / 92%);
   --oprn-logo-glow: rgb(0 0 0 / 80%);
-  font-family: "Cinzel", "Trajan Pro", "Cormorant SC", Georgia, "Noto Serif KR", serif;
+  font-family: var(--font-title-display);
   font-size: 27px;
   font-weight: 700;
   letter-spacing: 0.06em;
@@ -594,7 +609,7 @@
 .rm-title-screen .rm-title-logo-subtitle {
   position: absolute;
   z-index: 3;
-  font-family: "Cinzel", "Trajan Pro", Georgia, "Noto Serif KR", serif;
+  font-family: var(--font-title-display);
   font-size: 8px;
   letter-spacing: 0.32em;
   text-transform: uppercase;
@@ -631,7 +646,7 @@
   background: none;
   box-shadow: none;
   color: rgb(226 232 240 / 78%);
-  font-family: "Cinzel", "Trajan Pro", Georgia, var(--runtime-ui-font), serif;
+  font-family: var(--font-title-menu);
   letter-spacing: 0.08em;
   padding: 1px 4px 1px 12px;
   position: relative;

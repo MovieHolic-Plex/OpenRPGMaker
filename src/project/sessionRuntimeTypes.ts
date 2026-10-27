@@ -43,6 +43,11 @@ export type M2ScreenRuntimeState = {
   /** performance.now() 시각. 이 시각 전까지 syncScreenEffects 가 플래시 오버레이를 유지한다. */
   flashUntilMs?: number;
   hidden?: boolean;
+  /**
+   * 화면 숨기기/표시가 방금 건 페이드(ms). 세이브하지 않는다.
+   * 첫 화면 동기화가 읽고 지운다 — 불러온 숨김 화면은 페이드를 다시 틀지 않고 검게 선다.
+   */
+  hideFadeMs?: number;
   shake?: number;
   tint?: string;
   // 색조 전환에 걸릴 시간(ms). 0/미지정이면 즉시 적용.
@@ -86,7 +91,11 @@ export type M2SoundLayerState = {
 export type M2AudioRuntimeState = {
   memorizedBgm?: string;
   playedMemorizedBgm?: string;
-} & Record<string, M2SoundLayerState | string | undefined>;
+  /** Authored track volume (0..100) captured with Memorize BGM. Absent = default full volume. */
+  memorizedBgmVolume?: number;
+  /** Fade-in (ms) captured with Memorize BGM. Absent = no authored fade. 0 is an instant start. */
+  memorizedBgmFadeInMs?: number;
+} & Record<string, M2SoundLayerState | string | number | undefined>;
 
 export type M2ActorRuntimeState = {
   battleCommands?: string;
