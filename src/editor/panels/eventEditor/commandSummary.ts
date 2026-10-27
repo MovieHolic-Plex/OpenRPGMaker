@@ -375,6 +375,7 @@ const commandSummaryPartHandlers: CommandSummaryPartHandlers = {
     commandLine(
       "그림 표시",
       valuePart(`위치 (${cmd.x}, ${cmd.y})`),
+      ...(cmd.waitForPicture ? [plainPart(" / "), valuePart("끝날 때까지 대기")] : []),
     ),
   erasePicture: (cmd) => commandLine("그림 지우기", valuePart(pictureSlotCaption(cmd.pictureId))),
   playAudio: (cmd) => commandLine("소리 재생", valuePart(audioName(cmd.resourceId))),
