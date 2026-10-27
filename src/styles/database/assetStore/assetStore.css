@@ -22,7 +22,7 @@
 .store-title { display: flex; align-items: center; gap: 10px; width: 188px; flex: none; white-space: nowrap; }
 .store-mark { width: 26px; height: 26px; flex: none; image-rendering: pixelated; background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' shape-rendering='crispEdges'%3E%3Crect x='2' y='5' width='12' height='9' fill='%23e0a63a'/%3E%3Crect x='2' y='5' width='12' height='2' fill='%23f3c66b'/%3E%3Crect x='1' y='3' width='14' height='3' fill='%23b07d22'/%3E%3Crect x='3' y='2' width='10' height='2' fill='%237a4a8c'/%3E%3Crect x='7' y='7' width='2' height='4' fill='%23161b2e'/%3E%3Crect x='6' y='8' width='4' height='1' fill='%23161b2e'/%3E%3Crect x='2' y='13' width='12' height='1' fill='%238a5d0a'/%3E%3C/svg%3E") center / contain no-repeat; }
 .store-title-text { display: flex; flex-direction: column; line-height: 1.05; }
-.store-title-text b { font: 700 15px/1.1 "Galmuri11", var(--font-ui, system-ui), sans-serif; letter-spacing: .04em; color: var(--s-gold); }
+.store-title-text b { font: 700 15px/1.1 var(--font-ui); letter-spacing: .04em; color: var(--s-gold); }
 .store-title-text small { font-size: 12px; font-weight: 600; color: var(--s-text-2); }
 .store-search-wrap { flex: 1; max-width: 560px; position: relative; }
 .store-search-wrap::before { content: ""; position: absolute; left: 14px; top: 50%; width: 14px; height: 14px; margin-top: -7px; background: var(--s-muted); clip-path: path("M5 1h4v1h1v1h1v1h1v4h-1v1h-1v1h-1v1h-4v-1h-1v-1h-1v-1h-1v-4h1v-1h1v-1h1zM5 3v1h-1v4h1v1h4v-1h1v-4h-1v-1zM11 10h1v1h1v1h1v1h1v2h-2v-1h-1v-1h-1v-1h-1v-1h1z"); pointer-events: none; }
@@ -191,7 +191,7 @@
 .store-login-overlay { position: absolute; inset: 0; display: grid; place-items: center; background: rgb(6 7 10 / 0.72); }
 .store-login-box { display: grid; gap: 10px; justify-items: center; max-width: 440px; padding: 28px; border-radius: 14px; background: var(--s-bg-2); border: 1px solid var(--s-line-2); text-align: center; }
 .store-login-box p { margin: 0; color: var(--s-text-2); }
-.store-user-code { margin: 6px 0 !important; padding: 14px 22px; border-radius: var(--s-r); border: 1px dashed var(--s-gold); font: 700 28px/1 ui-monospace, monospace; letter-spacing: .14em; color: var(--s-gold) !important; background: var(--s-bg); }
+.store-user-code { margin: 6px 0 !important; padding: 14px 22px; border-radius: var(--s-r); border: 1px dashed var(--s-gold); font: 700 28px/1 var(--font-mono); letter-spacing: .14em; color: var(--s-gold) !important; background: var(--s-bg); }
 
 /* 왼쪽 활동 막대 「스토어」 */
 .left-store-pane { display: grid; gap: 8px; padding: 10px; flex: 1 1 auto; min-width: 0; min-height: 0; overflow-y: auto; align-content: start; }

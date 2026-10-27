@@ -13,6 +13,7 @@ import type {
 import { commandPromptState, type BattleDirectorState } from "@/player/battleDirectorDom";
 import { battleNameText, disambiguatedBattlerName, hpBarState, syncStatusIcons } from "@/player/battleFieldDom";
 import type { BattlePresentationLedger } from "@/player/battlePresentation";
+import { noEscapeNoticeLine } from "@/player/emeraldBattleNarration";
 import { store } from "@/project/store";
 import { isEmeraldMonsterStyle } from "@/project/emeraldMonsterStyle";
 import type { ItemId, SkillId } from "@/project/types";
@@ -370,7 +371,7 @@ function pokemonRootCommands(
     }, targetMode || switches.length === 0),
     commandButton("도망간다", "actor-command-run", "boot", "", () => {
       if (!targetMode) options.runActorCommand({ kind: "escape" });
-    }, targetMode || !snapshot.canEscape),
+    }, targetMode || !snapshot.canEscape, snapshot.canEscape ? undefined : noEscapeNoticeLine(snapshot)),
   ];
 }
 
@@ -438,7 +439,7 @@ function commandControl(
     case "escape":
       return commandButton(label, commandTestId(command), "boot", "", () => {
         if (!targetMode) options.runActorCommand({ kind: "escape" });
-      }, targetMode || !snapshot.canEscape);
+      }, targetMode || !snapshot.canEscape, snapshot.canEscape ? undefined : noEscapeNoticeLine(snapshot));
     case "commonEvent": {
       // RM2003 「이벤트 연결」 — 대상 없이 바로 행동이 되고, 차례가 오면 공통 이벤트를 실행한다.
       const commonEventId = command.commonEventId;

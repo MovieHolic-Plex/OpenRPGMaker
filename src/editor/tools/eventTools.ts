@@ -45,6 +45,7 @@ import { sharedFaceForCharset } from "@/project/sharedCharacterFaceResolver";
 import { reconcileSharedFaceWithCharset as reconcileFaceWithCharset } from "@/project/sharedCharacterFaceResolver";
 import { decodeCharsetFrameIndex } from "@/assets/easyrpgRtp";
 import { searchResources } from "@/assets/resourceSearch";
+import { pickNpcGraphic } from "@/assets/charsetQuery";
 import {
   charsetGraphic,
   compileSimplePages,
@@ -3640,9 +3641,12 @@ const placeStorageChest: ToolDefinition = {
     const { x, y, adjusted } = placement;
     const id = (args.id as string | undefined) ?? genId("ev_storage_chest");
     const name = (args.name as string | undefined) ?? "보관 상자";
-    // 이름·템플릿이 금고를 가리키면 금고 그림(object2#2), 아니면 서랍장. 「철제 금고」가 서랍장으로 서던 경로(2026-09-27).
+    // 이름·템플릿이 금고를 가리키면 금고 그림, 아니면 서랍장. 「철제 금고」가 서랍장으로 서던 경로(2026-09-27).
+    // object2#2 는 원본 대조로 「원형 바닥 판」으로 정정됐다(characterReferenceCorrections) — 금고 칩이 없으면
+    // 모든 금고 보관 상자가 graphic-not-found 로 실패했다. 금고 라벨 칩(프로젝트 덮어쓰기 포함)이 없을 때만 서랍장으로 선다.
     const vault = args.template === "vault" || /금고|vault|safe/iu.test(name);
-    const graphic = resolveGraphic({ query: vault ? "금고" : "서랍장" }, { overrides: draft.charsetLabels });
+    const pick = { overrides: draft.charsetLabels };
+    const graphic = vault && pickNpcGraphic("금고", pick) ? resolveGraphic({ query: "금고" }, pick) : resolveGraphic({ query: "서랍장" }, pick);
     const chestIdRaw = typeof args.chestId === "string" ? args.chestId.trim() : "";
     const chestId = chestIdRaw || `storage_${id}`;
     const templateRaw = typeof args.template === "string" ? args.template.trim() : "farm";

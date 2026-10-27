@@ -1859,7 +1859,7 @@ export interface TitleScreenSettings {
   effects?: TitleEffect[];
   /** 글자 로고 질감. 생략 = 레거시 편집 글꼴. 지정하면 기본 문구("A NEW ADVENTURE")를 숨긴다. */
   logoStyle?: TitleLogoStyle;
-  /** 로고 아래 부제(최대 60자). */
+  /** 제목 아래 부제(최대 60자). 있으면 로고 질감이 없어도 기본 문구("A NEW ADVENTURE")를 대신한다. */
   logoSubtitle?: string;
   menuStyle?: TitleMenuStyle;
   /** 메뉴 글자 크기(논리 px, 10..24). 생략 = 스킨 기본(11px). 480 폭 화면에서 11px 은 작다(폴른 스타 가혹 검수 r12). */

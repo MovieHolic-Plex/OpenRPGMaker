@@ -28,8 +28,9 @@ export function cloneProjectSharingReferenceDocuments(project: Project): Project
       continue;
     }
     shared.push([id, documents]);
-    const { referenceDocuments: _documents, ...rest } = tileset;
-    tilesets[id] = rest;
+    // 키를 빼지 않고 빈 배열로 자리를 지킨다 — 빼고 다시 붙이면 referenceDocuments 가 맨 뒤로 가 직렬화 바이트가
+    // 원본·projectJsonWithoutEventDrafts 와 달라진다(cloneTilesetSharingReferenceDocuments 와 같은 규약).
+    tilesets[id] = { ...tileset, referenceDocuments: [] };
   }
   const cloned = structuredClone({ ...project, tilesets });
   for (const [id, tileset] of lazy) cloned.tilesets[id] = tileset;

@@ -11,6 +11,7 @@ import { store } from "@/project/store";
 import { PLAYER_MOVE_TARGET } from "@/project/moveRouteTarget";
 import type { Command } from "@/project/types";
 import type { CommandListActions } from "@/editor/panels/eventEditor/types";
+import { PORTRAIT_BOTTOM_NOTICE } from "@/project/dialoguePortraitPosition";
 import { FakeElement, FakeNode, findByTestId, installFakeDom, renderWithFakeDom } from "./fakeDom";
 
 const noopActions: CommandListActions = {
@@ -66,6 +67,30 @@ describe("command edit modal — image-rich preview", () => {
       expect(preview.dataset.previewKind).toBe(cmd.kind);
       expect(findByTestId(preview, "event-command-preview-body")).toBeTruthy();
     }
+  });
+
+  it("places the message preview where the line's window position says", () => {
+    const overlayOf = (position?: "auto" | "top" | "center" | "bottom") =>
+      renderWithFakeDom(() =>
+        renderCommandPreview({ kind: "text", speaker: "촌장", body: "마을에 온 걸 환영하네.", ...(position ? { position } : {}) })
+      ).querySelector(".dialogue-overlay");
+    expect(overlayOf()?.className).toContain("position-bottom");
+    expect(overlayOf("bottom")?.className).toContain("position-bottom");
+    expect(overlayOf("auto")?.className).toContain("position-bottom");
+    expect(overlayOf("top")?.className).toContain("position-top");
+    expect(overlayOf("top")?.className).not.toContain("position-bottom");
+    expect(overlayOf("center")?.className).toContain("position-center");
+  });
+
+  it("keeps a bust portrait's message preview at the bottom and says why", () => {
+    const preview = renderWithFakeDom(() =>
+      renderCommandPreview(
+        { kind: "text", speaker: "촌장", body: "마을에 온 걸 환영하네.", position: "top" },
+        { face: { resourceId: "hero-bust" } },
+      )
+    );
+    expect(preview.querySelector(".dialogue-overlay")?.className).toContain("position-bottom");
+    expect(findByTestId(preview, "ecp-message-position-note")?.textContent).toBe(PORTRAIT_BOTTOM_NOTICE);
   });
 
   it("renders the RM2003 message window for text and reflects speaker + body", () => {
@@ -157,6 +182,8 @@ describe("command edit modal — image-rich preview", () => {
     expect(findByTestId(preview, "ecp-number-window")).toBeTruthy();
     expect(findByTestId(preview, "ecp-number-slots")).toBeTruthy();
     expect(findByTestId(preview, "ecp-number-pad")).toBeTruthy();
+    expect(preview.textContent).toContain("확인");
+    expect(preview.textContent).not.toContain("OK");
     expect(preview.textContent).toContain("비밀번호");
     expect(preview.textContent).toContain("4자리");
     expect(preview.textContent).toContain("대기 중");
@@ -187,13 +214,15 @@ describe("command edit modal — image-rich preview", () => {
     expect(body.textContent).not.toContain("자릿수");
   });
 
-  it("inputNumber preview without pad shows OK mock instead of keypad", () => {
+  it("inputNumber preview without pad shows a Korean confirm mock instead of a keypad", () => {
     const preview = renderWithFakeDom(() =>
       renderCommandPreview({ kind: "inputNumber", variableId: "var_0001", digits: 1 })
     );
-    expect(findByTestId(preview, "ecp-number-ok-mock")).toBeTruthy();
+    const mock = findByTestId(preview, "ecp-number-ok-mock");
+    expect(mock?.textContent).toBe("확인");
     expect(findByTestId(preview, "ecp-number-pad")).toBeFalsy();
     expect(preview.textContent).toContain("1자리");
+    expect(preview.textContent).not.toContain("OK");
   });
 
   it("setVariable form shows labeled fields, op segments, and live formula", () => {

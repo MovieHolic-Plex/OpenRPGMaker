@@ -42,6 +42,26 @@ export function isTitleCardNarration(narration: string, title?: string): boolean
 }
 
 /**
+ * 자료집 「게임 타이틀」은 만든 사람이 나중에 이름을 고치는 칸이다.
+ * 타이틀 화면 글자만 바꾸고 프로젝트 이름(meta.title)을 두면, 편집기 위쪽과
+ * 시작 화면의 게임 목록은 「새 게임」·「새 프로젝트」로 남는다.
+ * 비어 있지 않은 새 제목이면 프로젝트 이름을 맞추고, 씨앗이 남긴 제목 카드 한 장도 같이 옮긴다.
+ * 칸을 잠시 비우는 중간 입력은 프로젝트 이름을 지우지 않는다.
+ */
+export function applyEditedGameTitle(
+  project: { meta: { title: string }; system: { opening?: CinematicSequence } },
+  previousGameTitle: string,
+  nextGameTitle: string,
+): void {
+  const next = nextGameTitle.trim();
+  if (!next) return;
+  const previousTitles = [project.meta.title, previousGameTitle];
+  if (project.meta.title !== next) project.meta.title = next;
+  const opening = retitlePlaceholderOpening(project.system.opening, previousTitles, next);
+  if (opening) project.system.opening = opening;
+}
+
+/**
  * 게임 제목이 바뀔 때 씨앗이 남긴 제목 카드 한 장짜리 오프닝(「— 새 게임 —」)의 글자도 새 제목으로 옮긴다.
  * 연애 인터뷰 씨앗은 동기 문장이 없어 이 한 장만 남고, 제목을 정한 뒤에도 새 게임을 누르면 「— 새 게임 —」 이 떴다(2026-10-17).
  * 장면이 하나뿐인 그림 없는 글 장면이고 그 글이 옛 제목 또는 기본 제목의 카드일 때만 바꾼다 — 저작된 오프닝은 그대로다.

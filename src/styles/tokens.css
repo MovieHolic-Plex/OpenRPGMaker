@@ -111,6 +111,27 @@
   --font-pixel: "NeoDunggeunmo", "Galmuri11", "Galmuri9", "GulimChe", "DotumChe", "MS Gothic", monospace;
   --font-serif: Georgia, "Noto Serif KR", serif;
 
+  /* 고정 글꼴면. 아래 스택은 저작자 글꼴 선택(applyProjectFontTheme)을 따르지 않고, 특정 런타임 화면이
+     토큰 통일 이전에 실제로 그리던 글꼴을 그대로 유지한다(2026-10-27, 화면 변화 없는 CI 정리).
+     test/fontFamilyTokenGuard.test.ts 의 ROLE_TOKENS 가 이 이름들을 안다. 리터럴 스택은 여전히 이 파일만 선언한다.
+     - text: 12px 격자 갈무리11 보통 — pixel-cinematic 대화창 · 픽셀 상점 · 픽셀 ESC 메뉴 본문 (runtime/fonts.css)
+     - title: 에메랄드 타이틀 로고(33px)
+     - small: 10px 격자 갈무리9 — 에메랄드 표면 · 필드 HUD · 결말 · 로딩 · 필드 목록 메뉴 · 픽셀 메뉴 작은 글자
+     - legacy: 들이지 않은 이름(갈무리11·Neo둥근모)이라 대개 고정폭으로 그려지던 도트 측면 전투 숫자·상태 오라 · HUD 「둥근」
+     - mono-system / sans-system / system-ui: 일반 글꼴 이름만 쓰던 자리(HUD 단축키 · 혼란 별 · 성별 기호 등)
+     - serif-myeongjo: 연출 서술 「명조」
+     - title-display / title-menu: 타이틀 화면 Cinzel 로고·부제 / 단순 메뉴 버튼(한글은 UI 글꼴로 내려간다) */
+  --font-pixel-text: "Galmuri11 Regular", var(--font-pixel);
+  --font-pixel-title: "Galmuri11 Bold", Galmuri9, monospace;
+  --font-pixel-small: "Galmuri9", "Noto Sans CJK KR", "Noto Sans KR", "Malgun Gothic", "Apple SD Gothic Neo", sans-serif;
+  --font-pixel-legacy: "Galmuri11", "NeoDunggeunmo", monospace;
+  --font-mono-system: monospace;
+  --font-sans-system: sans-serif;
+  --font-system-ui: system-ui, sans-serif;
+  --font-serif-myeongjo: 'Noto Serif KR', 'Nanum Myeongjo', 'Batang', Georgia, serif;
+  --font-title-display: "Cinzel", "Trajan Pro", "Cormorant SC", Georgia, "Noto Serif KR", serif;
+  --font-title-menu: "Cinzel", "Trajan Pro", Georgia, var(--font-ui), serif;
+
   /* 브레이크포인트 토큰(--bp-sm/md/lg/xl)은 2026-09-17 에 삭제했다. 참조가 0이었고,
      0인 이유가 "아직 안 썼다"가 아니라 **쓸 수 없다**이기 때문이다 — CSS 커스텀 속성은
      `@media` 조건절에서 평가되지 않는다(`@media (max-width: var(--bp-md))` 는 무효 쿼리가

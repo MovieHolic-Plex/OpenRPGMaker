@@ -36,6 +36,7 @@ import { showNameEntry } from "@/player/nameEntry/nameEntryOverlay";
 import { nameEntryShowcaseHero } from "@/player/nameEntry/nameEntryShowcase";
 import { applyTimerStep } from "@/player/playSceneTimers";
 import { startPlayerRoute } from "@/player/playSceneMovement";
+import { holdBlockedCommandRoute } from "@/player/playerRouteState";
 import { PLAYER_MOVE_TARGET } from "@/project/moveRouteTarget";
 import { resolvePlayerBody } from "@/project/playerFootprint";
 import type { PlaySceneContext } from "@/player/playSceneTypes";
@@ -617,12 +618,14 @@ async function consumeBlockingStep(
       if (target === PLAYER_MOVE_TARGET) {
         // 주인공 강제 이동: 이벤트 무버가 아니라 플레이어를 한 칸씩 걷게 한다.
         startPlayerRoute(scene, moves, step.repeat);
+        if (step.skippable === false && scene.playerRoute) scene.playerRoute.preserveBlockedSteps = true;
         if (step.wait) {
           await Promise.race([waitForPlayerRouteComplete(scene), skipController.waitForSkip()]);
         }
       } else {
         scene.registerAutonomousMover(target, moves, step.repeat);
         scene.commandMoveRouteEventIds.add(target);
+        if (step.skippable === false) holdBlockedCommandRoute(scene.autonomousNPCs.get(target));
         if (step.wait) {
           await Promise.race([waitForMoverComplete(scene, target), skipController.waitForSkip()]);
         }

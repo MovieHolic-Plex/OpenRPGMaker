@@ -138,6 +138,20 @@ describe("sliderStepperField", () => {
     expect(range.value).toBe("100");
     expect(stepper.value).toBe("100");
   });
+
+  it("keeps a leading minus until the signed number is complete", () => {
+    const { range, stepper, committed } = render(0, { min: -400, max: 400, step: 5 });
+    stepper.value = "-";
+    stepper.dispatchEvent(new Event("input"));
+    expect(committed).toEqual([]);
+    expect(stepper.value).toBe("-");
+    expect(range.value).toBe("0");
+    stepper.value = "-20";
+    stepper.dispatchEvent(new Event("input"));
+    expect(committed.at(-1)).toBe(-20);
+    expect(stepper.value).toBe("-20");
+    expect(range.value).toBe("-20");
+  });
 });
 
 describe("segmentedControl (native radio group)", () => {

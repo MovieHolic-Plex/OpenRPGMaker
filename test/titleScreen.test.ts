@@ -81,6 +81,35 @@ describe("title screen", () => {
     }
   });
 
+  it("replaces the stock tagline with an authored subtitle even when the logo style is unset", () => {
+    const restoreDom = installFakeDom();
+    try {
+      const project = createBlankProject();
+      project.system.titleScreen = fullVisibilitySettings({
+        ...defaultTitleScreenSettings(),
+        title: "첫사랑",
+        logoSubtitle: "10년 만에, 사수가 됐다",
+      });
+      const screen = renderWithFakeDom(() =>
+        renderTitleScreen(project, {
+          onNewGame: () => undefined,
+          onResume: () => undefined,
+          onContinue: () => undefined,
+          onCredits: () => undefined,
+          onQuit: () => undefined,
+        }),
+      );
+
+      expect(findByTestId(screen, "title-kicker")).toBeNull();
+      expect(findByTestId(screen, "title-subtitle")).toBeNull();
+      const subtitle = findByTestId(screen, "title-logo-subtitle");
+      expect(subtitle?.textContent).toBe("10년 만에, 사수가 됐다");
+      expect(subtitle?.dataset.logoStyle).toBe("plain");
+    } finally {
+      restoreDom();
+    }
+  });
+
   it("renders database-configured title text, menu labels, and positions", () => {
     const restoreDom = installFakeDom();
     try {

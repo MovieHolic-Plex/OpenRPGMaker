@@ -38,7 +38,7 @@ store.update 안에서 루트 키 **삭제**는 반영되지 않으므로 쓰기
 `variant?: { of, preset?, spec }`(2026-10-15, 선택) — `derive_world_variant` 가 파생한 변형 세계의 원본: `of` 는 기준 지도 id, `spec` 은 키트 `terrain.variant`
 (`WorldmapVariantSpec`: ops·palette·icon_preset·journey·protect_roads…). 없으면 일반 세계 지도. 옛 문서는 그대로 열린다(마이그레이션 없음).
 `EncounterConditions.terrainId?: string`(2026-10-15, 선택) — 서 있는 칸 지형 레코드 id 와 같을 때만 그 항목이 나온다. 없으면 지형 무관(옛 동작).
-`DatabaseTerrainRecord.vehiclePassage.{chocobo?,cart?,raft?}`(선택) — 초코보가 걸을 수 없는 칸도 지남 / 광산 수레가 다니는 칸 / 뗏목이 다니는 칸. 없으면 false.
+`DatabaseTerrainRecord.vehiclePassage.{chocobo?,cart?,raft?}`(선택) — 초코보가 걸을 수 없는 칸도 지남 / 광산 수레가 다니는 칸 / 뗏목이 다니는 칸. chocobo·cart 를 빼면 false. raft 를 빼면 소형선만 다니는 물(boat 이고 ship 이 아님)은 뗏목을 허용하고, `raft: false` 는 그 폴백을 끈다. 불러오기 정규화는 그 false 를 지우지 않는다.
 
 ## 캐릭터별 전투 동작 (2026-10-03)
 
@@ -126,6 +126,10 @@ width/height와 기존 전체 셀 배열 형태는 그대로이며 스키마/릴
 - 2026-10-03 호스트 로드 복구: 농부 로스터·잎날 기술의 `elementId: grass`는 기본 속성 목록에도 있어야 한다.
   `defaultDatabaseUtilityRecords.ts`는 기존 17개 슬롯 뒤에 grass를 추가한다. 의존성 폐쇄가 빠진 행만 보충하고 같은 ID의 저자 행은 유지한다.
   누락 시 기존 프로젝트 부팅이 `Bundled retro roster dependency missing: elements.grass`로 중단된다.
+
+## 장비 능력치 보너스 (2026-10-27)
+
+`EquipmentRecord.statBonuses` 의 공격·방어·정신·민첩은 −9999~9999 다. 무거운 창·갑옷의 민첩 감점(음수)이 `normalizeStatBonuses` 에서 0으로 잘려 프로젝트 저장 왕복에 사라지던 것을 고쳤다. 생략한 칸은 0이고, 아이템 장비 프로필(−500~500)·씨앗(−50~50) 범위는 그대로다.
 
 ## FF6 마석 성장 — 선택 필드 (2026-10-15)
 
@@ -1809,3 +1813,7 @@ project-v4 에 선택 필드만 추가한다(스키마 승격·마이그레이�
 ## ItemCaptureProfile.condition · MonsterInstance.caughtBallId (2026-10-16, poke-depth PR6)
 
 선택 필드 둘. `captureProfile.condition?`(선언형 네 종류 중 하나; 정규화는 모양이 맞을 때만 싣는다)와 `MonsterInstance.caughtBallId?`(포획에 쓴 볼 아이템 id; 세이브 검증은 문자열만 허용). 안 쓰는 프로젝트·세이브는 직렬화 바이트 그대로다. 규칙: `openwiki/runtime-battle.md` 「조건부 볼」.
+
+## 상태의 부위 손실·전투 오라 (2026-10-27)
+
+`StateRecord.disablesEquipSlot`(이 상태인 동안 그 장비 칸의 능력치 보너스를 잃음)와 `battleAura`(몸 위 표시 프리셋 id, `"none"` = 끔)는 `normalizeStateRecord` 가 이미 보존한다. 자료집 상태 폼은 `updateDatabaseRecord("states", …)` 로 이 두 칸을 넣는데, 그 갱신 화이트리스트에 키가 없어 저장 전에 버려졌다. 빈 값(칸 없음·표시 기본)은 키를 지운다. 왕복은 `test/stateSlotAuraSave.test.ts`.
