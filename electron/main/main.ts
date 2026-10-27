@@ -19,7 +19,8 @@ import { captureLastViewBeforeClose, forgetLastViewWindow, markEditorLeft, markE
 import { firstShowSteps } from "./windowShow";
 import { SessionConsumerClosed, createProjectSessionRegistry } from "./sessions";
 import { startCompanionServer, type CompanionServer } from "./companion";
-import { describeRecentProjects, listRecentTeams, prepareNewProjectDir, recentProjectCoverSource, rememberRecentProject, rememberRecentTeam, suggestProjectDir, writeRecentProjectCover } from "./recent";
+import { acceptMenuFolder, prepareNewProjectDir } from "./newProjectDir";
+import { describeRecentProjects, listRecentTeams, recentProjectCoverSource, rememberRecentProject, rememberRecentTeam, suggestProjectDir, writeRecentProjectCover } from "./recent";
 import { openTeamWindow } from "./teamWindow";
 import type { Splash } from "./splash";
 import { peekPendingProjectDir, rendererDirectory, takePendingOpenFiles, windowIconPath, type BootContext, type SecondInstanceLaunch } from "./bootContext";
@@ -455,8 +456,10 @@ function openChosenFolder(window: BrowserWindow, options: {
 }): void {
   void (async () => {
     try {
-      const dir = await askForDirectory(window, options.title, options.createDirectory === true);
-      if (!dir || window.isDestroyed()) return;
+      const picked = await askForDirectory(window, options.title, options.createDirectory === true);
+      if (!picked || window.isDestroyed()) return;
+      // 새 프로젝트는 빈 폴더만. 폴더 열기는 저장소가 없어도 연다.
+      const dir = acceptMenuFolder(picked, options.createDirectory === true ? "new" : "open");
       await adoptFolder(window, dir, options.recentTitle);
     } catch (error) {
       console.warn("[project] 폴더를 열지 못했습니다:", error);
@@ -778,13 +781,14 @@ export async function startApp(boot: BootContext): Promise<void> {
     const senderId = event.sender.id;
     const input = payload as { readonly title?: string; readonly seed?: string; readonly projectDir?: string };
     let dir: string;
-    // 시작 화면은 저장 위치를 미리 보여 주고 확정된 경로를 보낸다. 편집기 메뉴 경로는 예전처럼 대화상자를 연다.
+    // 시작 화면은 저장 위치를 미리 보여 주고 확정된 경로를 보낸다. 경로가 없으면 대화상자를 연다.
+    // 어느 쪽이든 파일이 있는 폴더는 거절한다.
     if (typeof input?.projectDir === "string" && input.projectDir) {
       dir = prepareNewProjectDir(input.projectDir);
     } else {
       const picked = await askForDirectory(BrowserWindow.fromWebContents(event.sender), "새 프로젝트 폴더 선택", true);
       if (!picked || event.sender.isDestroyed()) return null;
-      dir = picked;
+      dir = acceptMenuFolder(picked, "new");
     }
     const session = await openWindowSession(senderId, dir);
     if (!session) return null;
